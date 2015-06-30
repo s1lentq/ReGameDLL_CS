@@ -1,28 +1,18 @@
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
+**/build
+**/.gradle
+.idea
+*.iml
+**/msvc/Debug*
+**/msvc/Release*
+**/msvc/Tests
+**/msvc/*.sdf
+**/msvc/*.opensdf
+**/msvc/*.user
+**/msvc/*.suo
+**/msvc/ipch
 
-# Precompiled Headers
-*.gch
-*.pch
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-
-# Fortran module files
-*.mod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
-*.exe
-*.out
-*.app
+regamedll/version/appversion.h
+regamedll/msvc/PublishPath*.txt
+regamedll/_regamedllTestImg
+regamedll/_dev
+publish
