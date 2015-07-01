@@ -85,6 +85,13 @@ void CGameRules::RefreshSkillData_(void)
 /* <ada23> ../cstrike/dlls/gamerules.cpp:157 */
 NOBODY CGameRules *InstallGameRules(void)
 {
+	SERVER_COMMAND("exec game.cfg\n");
+	SERVER_EXECUTE();
+
+	if (!gpGlobals->deathmatch)
+		return new CHalfLifeTraining;
+
+	return new CHalfLifeMultiplay;
 }
 
 #ifdef HOOK_GAMEDLL

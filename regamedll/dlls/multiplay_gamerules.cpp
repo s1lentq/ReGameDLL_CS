@@ -6,17 +6,17 @@
 #ifndef HOOK_GAMEDLL
 
 //static char mp_com_token[1500];
-//cvar_t *sv_clienttrace;
+cvar_t *sv_clienttrace;
 
 #else
 
 //char mp_com_token[1500];
-//cvar_t *sv_clienttrace;
+cvar_t *sv_clienttrace;
 
 #endif // HOOK_GAMEDLL
 
-//CCStrikeGameMgrHelper g_GameMgrHelper;
-//CHalfLifeMultiplay *g_pMPGameRules;
+CCStrikeGameMgrHelper g_GameMgrHelper;
+CHalfLifeMultiplay *g_pMPGameRules;
 
 //void info_map_parameters(entvars_t *pev)
 
@@ -128,7 +128,7 @@ BOOL CHalfLifeMultiplay::IsCareer(void)
 }
 
 /* <113e08> ../cstrike/dlls/multiplay_gamerules.cpp:263 */
-NOBODY void CMapInfo::KeyValue(KeyValueData *pkvd)
+NOBODY void CMapInfo::KeyValue_(KeyValueData *pkvd)
 {
 //	FStrEq(const char *sz1,
 //		const char *sz2);  //   265
@@ -140,7 +140,7 @@ NOBODY void CMapInfo::KeyValue(KeyValueData *pkvd)
 }
 
 /* <112879> ../cstrike/dlls/multiplay_gamerules.cpp:280 */
-NOBODY void CMapInfo::Spawn(void)
+NOBODY void CMapInfo::Spawn_(void)
 {
 }
 
@@ -149,35 +149,6 @@ NOBODY void CMapInfo::Spawn(void)
 //{
 //	GetClassPtr<CMapInfo>(CMapInfo *a);  //   288
 //}
-
-/* <111732> ../cstrike/dlls/multiplay_gamerules.cpp:292 */
-class CCStrikeGameMgrHelper: public IVoiceGameMgrHelper
-{
-public:
-	virtual bool CanPlayerHearPlayer(CBasePlayer *pListener, CBasePlayer *pSender)
-	{
-		if (pListener->m_iTeam == pSender->m_iTeam)
-		{
-			BOOL bListenerAlive = pListener->IsAlive();
-			BOOL bSenderAlive = pSender->IsAlive();
-
-			if (!pListener->pev->iuser1)
-				return true;
-
-			if (!bListenerAlive)
-			{
-				if (bSenderAlive)
-					return true;
-			}
-			else
-			{
-				if (!bSenderAlive)
-					return false;
-			}
-			return (bListenerAlive == bSenderAlive);
-		}
-	}
-};/* size: 4, cachelines: 1, members: 1 */
 
 /* <11474f> ../cstrike/dlls/multiplay_gamerules.cpp:331 */
 NOBODY void Broadcast(const char *sentence)
@@ -223,22 +194,187 @@ NOBODY void ReadMultiplayCvars(CHalfLifeMultiplay *mp)
 /* <11492c> ../cstrike/dlls/multiplay_gamerules.cpp:479 */
 NOBODY CHalfLifeMultiplay::CHalfLifeMultiplay(void)
 {
-//	{
-//		float flAutoKickIdle;                                 //   570
-//		bool installedCommands;                               //   633
-//		RefreshSkillData(CHalfLifeMultiplay *const this);  //   483
-//		{
-//			int j;                                        //   541
-//		}
-//		{
-//			char *lservercfgfile;                        //   612
-//			{
-//				char szCommand;                       //   616
-//			}
-//		}
-//		{
-//		}
-//	}
+	m_VoiceGameMgr.Init(&g_GameMgrHelper, gpGlobals->maxClients);
+	RefreshSkillData();
+
+	m_flIntermissionEndTime = 0;
+	m_flIntermissionStartTime = 0;
+	m_fTeamCount = 0;
+	m_iAccountCT = 0;
+	m_iAccountTerrorist = 0;
+	m_iHostagesRescued = 0;
+	m_iRoundWinStatus = 0;
+	m_iNumCTWins = 0;
+	m_iNumTerroristWins = 0;
+	m_pVIP = NULL;
+	m_iNumCT = 0;
+	m_iNumTerrorist = 0;
+	m_iNumSpawnableCT = 0;
+	m_iNumSpawnableTerrorist = 0;
+	m_bMapHasCameras = 2;
+	g_fGameOver = FALSE;
+
+	m_iLoserBonus = 1400;
+	m_iNumConsecutiveCTLoses = 0;
+	m_iNumConsecutiveTerroristLoses = 0;
+	m_iC4Guy = 0;
+	m_bBombDefused = false;
+	m_bTargetBombed = false;
+	m_bFreezePeriod = TRUE;
+	m_bLevelInitialized = false;
+	m_tmNextPeriodicThink = 0;
+	m_bFirstConnected = 0;
+	m_bCompleteReset = false;
+	m_flRequiredEscapeRatio = 0.5;
+	m_iNumEscapers = 0;
+	m_bCTCantBuy = false;
+	m_bTCantBuy = false;
+	m_flBombRadius = 500.0;
+	m_iTotalGunCount = 0;
+	m_iTotalGrenadeCount = 0;
+	m_iTotalArmourCount = 0;
+	m_iConsecutiveVIP = 0;
+	m_iUnBalancedRounds = 0;
+	m_iNumEscapeRounds = 0;
+	m_bRoundTerminating = false;
+
+	g_iHostageNumber = 0;
+
+	m_bBombDropped = FALSE;
+	m_iMaxRounds = (int)CVAR_GET_FLOAT("mp_maxrounds");
+
+	if (m_iMaxRounds < 0)
+	{
+		m_iMaxRounds = 0;
+		CVAR_SET_FLOAT("mp_maxrounds", 0);
+	}
+
+	m_iTotalRoundsPlayed = 0;
+	m_iMaxRoundsWon = (int)CVAR_GET_FLOAT("mp_winlimit");
+
+	if (m_iMaxRoundsWon < 0)
+	{
+		m_iMaxRoundsWon = 0;
+		CVAR_SET_FLOAT("mp_winlimit", 0);
+	}
+
+	memset(m_iMapVotes, 0, sizeof(m_iMapVotes));
+
+	m_iLastPick = 1;
+	m_bMapHasEscapeZone = false;
+	m_iMapHasVIPSafetyZone = 0;
+	m_bMapHasBombZone = false;
+	m_bMapHasRescueZone = false;
+	m_iStoredSpectValue = (int)allow_spectators.value;
+
+	for (int j = 0; j < MAX_VIP_QUEUES; j++)
+		VIPQueue[ j ] = NULL;
+
+	CVAR_SET_FLOAT("cl_himodels", 0);
+	ReadMultiplayCvars(this);
+
+	m_iIntroRoundTime += 2;
+	m_fMaxIdlePeriod = m_iRoundTime * 2;
+
+	float flAutoKickIdle = CVAR_GET_FLOAT("mp_autokick_timeout");
+	if (flAutoKickIdle > 0.0)
+		m_fMaxIdlePeriod = flAutoKickIdle;
+
+	m_bInCareerGame = false;
+	m_iRoundTimeSecs = m_iIntroRoundTime;
+
+	if (IS_DEDICATED_SERVER())
+	{
+		CVAR_SET_FLOAT("pausable", 0);
+	}
+	else
+	{
+		if (IsCareer())
+		{
+			CVAR_SET_FLOAT("pausable", 1);
+			CVAR_SET_FLOAT("sv_aim", 0);
+			CVAR_SET_FLOAT("sv_maxspeed", 322);
+			CVAR_SET_FLOAT("sv_cheats", 0);
+			CVAR_SET_FLOAT("mp_windifference", 2);
+
+			m_bInCareerGame = true;
+			UTIL_LogPrintf("Career Start\n");
+		}
+		else
+		{
+			CVAR_SET_FLOAT("pausable", 0);
+
+			const char *lservercfgfile = CVAR_GET_STRING("lservercfgfile");
+
+			if (lservercfgfile && *lservercfgfile)
+			{
+				char szCommand[256];
+				ALERT(at_console, "Executing listen server config file\n");
+				Q_sprintf(szCommand, "exec %s\n", lservercfgfile);
+				SERVER_COMMAND(szCommand);
+			}
+		}
+	}
+
+	m_fRoundCount = 0;
+	m_fIntroRoundCount = 0;
+
+	InstallBotControl();
+	InstallHostageManager();
+
+	m_bSkipSpawn = m_bInCareerGame;
+
+	static bool installedCommands = false;
+
+	if (!installedCommands)
+	{
+		if (UTIL_IsGame("czero"))
+		{
+#if defined(HOOK_GAMEDLL) && !defined(REGAMEDLL_UNIT_TESTS)
+			ADD_SERVER_COMMAND("career_continue", (xcommand_t)GetOriginalFuncAddrOrDefault("_Z13SV_Continue_fv", (void *)SV_Continue_f));
+			ADD_SERVER_COMMAND("career_matchlimit", (xcommand_t)GetOriginalFuncAddrOrDefault("_Z21SV_CareerMatchLimit_fv", (void *)SV_CareerMatchLimit_f));
+			ADD_SERVER_COMMAND("career_add_task", (xcommand_t)GetOriginalFuncAddrOrDefault("_Z18SV_CareerAddTask_fv", (void *)SV_CareerAddTask_f));
+			ADD_SERVER_COMMAND("career_endround", (xcommand_t)GetOriginalFuncAddrOrDefault("_Z20SV_Career_EndRound_fv", (void *)SV_Career_EndRound_f));
+			ADD_SERVER_COMMAND("career_restart", (xcommand_t)GetOriginalFuncAddrOrDefault("_Z19SV_Career_Restart_fv", (void *)SV_Career_Restart_f));
+			ADD_SERVER_COMMAND("tutor_toggle", (xcommand_t)GetOriginalFuncAddrOrDefault("_Z17SV_Tutor_Toggle_fv", (void *)SV_Tutor_Toggle_f));
+#else
+			ADD_SERVER_COMMAND("career_continue", SV_Continue_f);
+			ADD_SERVER_COMMAND("career_matchlimit", SV_CareerMatchLimit_f);
+			ADD_SERVER_COMMAND("career_add_task", SV_CareerAddTask_f);
+			ADD_SERVER_COMMAND("career_endround", SV_Career_EndRound_f);
+			ADD_SERVER_COMMAND("career_restart", SV_Career_Restart_f);
+			ADD_SERVER_COMMAND("tutor_toggle", SV_Tutor_Toggle_f);
+#endif // HOOK_GAMEDLL
+		}
+
+#if defined(HOOK_GAMEDLL) && !defined(REGAMEDLL_UNIT_TESTS)
+		ADD_SERVER_COMMAND("perf_test", (xcommand_t)GetOriginalFuncAddrOrDefault("_Z15loopPerformancev", (void *)loopPerformance));
+		ADD_SERVER_COMMAND("print_ent", (xcommand_t)GetOriginalFuncAddrOrDefault("_Z13printEntitiesv", (void *)printEntities));
+#else
+		ADD_SERVER_COMMAND("perf_test", loopPerformance);
+		ADD_SERVER_COMMAND("print_ent", printEntities);
+#endif // HOOK_GAMEDLL
+
+		installedCommands = true;
+	}
+
+	m_fCareerRoundMenuTime = 0;
+	m_fCareerMatchMenuTime = 0;
+	m_iCareerMatchWins = 0;
+
+	m_iRoundWinDifference = (int)CVAR_GET_FLOAT("mp_windifference");
+	CCareerTaskManager::Create();
+
+	if (m_iRoundWinDifference < 1)
+	{
+		m_iRoundWinDifference = 1;
+		CVAR_SET_FLOAT("mp_windifference", 1);
+	}
+
+	sv_clienttrace = CVAR_GET_POINTER("sv_clienttrace");
+	InstallTutor(CVAR_GET_POINTER("tutor_enable") != NULL);
+
+	g_pMPGameRules = this;
 }
 
 /* <113b92> ../cstrike/dlls/multiplay_gamerules.cpp:678 */
@@ -1487,6 +1623,16 @@ NOBODY void CHalfLifeMultiplay::ClientUserInfoChanged_(CBasePlayer *pPlayer, cha
 }
 
 #ifdef HOOK_GAMEDLL
+
+void CMapInfo::Spawn(void)
+{
+	Spawn_();
+}
+
+void CMapInfo::KeyValue(KeyValueData *pkvd)
+{
+	KeyValue_(pkvd);
+}
 
 void CHalfLifeMultiplay::RefreshSkillData(void)
 {

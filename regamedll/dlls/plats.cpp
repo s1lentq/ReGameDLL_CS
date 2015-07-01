@@ -70,18 +70,6 @@ TYPEDESCRIPTION (*CGunTarget::m_SaveData)[1];
 
 #endif // HOOK_GAMEDLL
 
-/* <12d629> ../cstrike/dlls/plats.cpp:36 */
-NOBODY int CBasePlatTrain::ObjectCaps_(void)
-{
-	return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION;
-}
-
-/* <12d64f> ../cstrike/dlls/plats.cpp:41 */
-NOBODY BOOL CBasePlatTrain::IsTogglePlat_(void)
-{
-	return (pev->spawnflags & SF_PLAT_TOGGLE) != 0;
-}
-
 /* <12e11a> ../cstrike/dlls/plats.cpp:59 */
 IMPLEMENT_SAVERESTORE(CBasePlatTrain, CBaseToggle);
 
@@ -105,6 +93,8 @@ NOBODY void CBasePlatTrain::KeyValue_(KeyValueData *pkvd)
 //	atof(const char *__nptr);  //    90
 }
 
+#define noiseMoving noise
+#define noiseArrived noise1
 
 /* <12d675> ../cstrike/dlls/plats.cpp:105 */
 NOBODY void CBasePlatTrain::Precache_(void)
@@ -131,6 +121,9 @@ NOBODY void CFuncPlat::CallHitBottom(void)
 
 /* <130666> ../cstrike/dlls/plats.cpp:244 */
 LINK_ENTITY_TO_CLASS(func_plat, CFuncPlat);
+
+#define noiseMovement noise
+#define noiseStopMoving noise1
 
 /* <130730> ../cstrike/dlls/plats.cpp:275 */
 NOBODY void CFuncPlat::Setup(void)
@@ -697,12 +690,6 @@ NOBODY void CFuncTrackTrain::Precache_(void)
 /* <1314d9> ../cstrike/dlls/plats.cpp:1595 */
 LINK_ENTITY_TO_CLASS(func_traincontrols, CFuncTrainControls);
 
-/* <12d7cc> ../cstrike/dlls/plats.cpp:1591 */
-NOBODY int CFuncTrainControls::ObjectCaps_(void)
-{
-	return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION;
-}
-
 /* <12fb10> ../cstrike/dlls/plats.cpp:1598 */
 NOBODY void CFuncTrainControls::Find(void)
 {
@@ -922,32 +909,6 @@ NOBODY void CFuncTrackAuto::Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, 
 //		float value);  //  2083
 }
 
-/* <12d873> ../cstrike/dlls/plats.cpp:2146 */
-NOBODY int CGunTarget::BloodColor_(void)
-{
-	return DONT_BLEED;
-}
-
-/* <12d899> ../cstrike/dlls/plats.cpp:2147 */
-NOBODY int CGunTarget::Classify_(void)
-{
-	return CLASS_MACHINE;
-}
-
-/* <12d8bf> ../cstrike/dlls/plats.cpp:2150 */
-NOBODY Vector CGunTarget::BodyTarget_(const Vector &posSrc)
-{
-	return pev->origin;
-//	Vector(Vector *const this,
-//		const Vector &v);  //  2150
-}
-
-/* <12d921> ../cstrike/dlls/plats.cpp:2152 */
-NOBODY int CGunTarget::ObjectCaps_(void)
-{
-	return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION;
-}
-
 /* <131c90> ../cstrike/dlls/plats.cpp:2163 */
 LINK_ENTITY_TO_CLASS(func_guntarget, CGunTarget);
 
@@ -1051,16 +1012,6 @@ int CBasePlatTrain::Restore(CRestore &restore)
 	return Restore_(restore);
 }
 
-int CBasePlatTrain::ObjectCaps(void)
-{
-	return ObjectCaps_();
-}
-
-BOOL CBasePlatTrain::IsTogglePlat(void)
-{
-	return IsTogglePlat_();
-}
-
 void CFuncPlat::Spawn(void)
 {
 	Spawn_();
@@ -1094,11 +1045,6 @@ void CFuncPlat::HitTop(void)
 void CFuncPlat::HitBottom(void)
 {
 	HitBottom_();
-}
-
-int CPlatTrigger::ObjectCaps(void)
-{
-	return ObjectCaps_();
 }
 
 void CPlatTrigger::Touch(CBaseEntity *pOther)
@@ -1140,11 +1086,6 @@ void CFuncPlatRot::HitBottom(void)
 {
 	HitBottom_();
 }
-
-
-
-
-
 
 void CFuncTrain::Spawn(void)
 {
@@ -1226,11 +1167,6 @@ int CFuncTrackTrain::Restore(CRestore &restore)
 	return Restore_(restore);
 }
 
-int CFuncTrackTrain::ObjectCaps(void)
-{
-	return ObjectCaps_();
-}
-
 void CFuncTrackTrain::OverrideReset(void)
 {
 	OverrideReset_();
@@ -1255,17 +1191,6 @@ void CFuncTrainControls::Spawn(void)
 {
 	Spawn_();
 }
-
-int CFuncTrainControls::ObjectCaps(void)
-{
-	return ObjectCaps_();
-}
-
-
-
-
-
-
 
 void CFuncTrackChange::Spawn(void)
 {
@@ -1347,14 +1272,6 @@ void CFuncTrackAuto::UpdateAutoTargets(int toggleState)
 	UpdateAutoTargets_(toggleState);
 }
 
-
-
-
-
-
-
-
-
 void CGunTarget::Spawn(void)
 {
 	Spawn_();
@@ -1370,19 +1287,9 @@ int CGunTarget::Restore(CRestore &restore)
 	return Restore_(restore);
 }
 
-int CGunTarget::ObjectCaps(void)
-{
-	return ObjectCaps_();
-}
-
 void CGunTarget::Activate(void)
 {
 	Activate_();
-}
-
-int CGunTarget::Classify(void)
-{
-	return Classify_();
 }
 
 int CGunTarget::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
@@ -1390,19 +1297,9 @@ int CGunTarget::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, floa
 	return TakeDamage_(pevInflictor, pevAttacker, flDamage, bitsDamageType);
 }
 
-int CGunTarget::BloodColor(void)
-{
-	return BloodColor_();
-}
-
 void CGunTarget::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	Use_(pActivator, pCaller, useType, value);
-}
-
-Vector CGunTarget::BodyTarget(const Vector &posSrc)
-{
-	return BodyTarget_(posSrc);
 }
 
 #endif // HOOK_GAMEDLL

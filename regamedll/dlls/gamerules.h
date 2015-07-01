@@ -35,7 +35,9 @@
 #include "game_shared/voice_gamemgr.h"
 
 #define MAX_RULE_BUFFER		1024
+#define MAX_VOTE_MAPS		100
 #define ITEM_RESPAWN_TIME	30
+#define MAX_VIP_QUEUES		5
 
 enum
 {
@@ -487,7 +489,7 @@ public:
 	int m_iTotalArmourCount;
 	int m_iUnBalancedRounds;
 	int m_iNumEscapeRounds;
-	int m_iMapVotes[100];
+	int m_iMapVotes[ MAX_VOTE_MAPS ];
 	int m_iLastPick;
 	int m_iMaxMapTime;
 	int m_iMaxRounds;
@@ -498,7 +500,7 @@ public:
 	float m_flForceChaseCamValue;
 	float m_flFadeToBlackValue;
 	CBasePlayer *m_pVIP;
-	CBasePlayer *VIPQueue[5];
+	CBasePlayer *VIPQueue[ MAX_VIP_QUEUES ];
 protected:
 	float m_flIntermissionEndTime;
 	float m_flIntermissionStartTime;
@@ -537,23 +539,75 @@ class CMapInfo: public CPointEntity
 public:
 	virtual void Spawn(void);
 	virtual void KeyValue(KeyValueData *pkvd);
+
+#ifdef HOOK_GAMEDLL
+
+	void Spawn_(void);
+	void KeyValue_(KeyValueData *pkvd);
+
+#endif // HOOK_GAMEDLL
+
 public:
 	int m_iBuyingStatus;
 	float m_flBombRadius;
+
 };/* size: 160, cachelines: 3, members: 3 */
+
+/* <111732> ../cstrike/dlls/multiplay_gamerules.cpp:292 */
+class CCStrikeGameMgrHelper: public IVoiceGameMgrHelper
+{
+public:
+	virtual bool CanPlayerHearPlayer(CBasePlayer *pListener, CBasePlayer *pSender)
+	{
+		return CanPlayerHearPlayer_(pListener, pSender);
+	}
+
+#ifdef HOOK_GAMEDLL
+
+	bool CanPlayerHearPlayer_(CBasePlayer *pListener, CBasePlayer *pSender)
+	{
+		if (!pSender->IsPlayer() || pListener->m_iTeam != pSender->m_iTeam)
+			return false;
+
+		BOOL bListenerAlive = pListener->IsAlive();
+		BOOL bSenderAlive = pSender->IsAlive();
+
+		if (pListener->IsObserver())
+			return true;
+
+		if (bListenerAlive)
+		{
+			if (!bSenderAlive)
+				return false;
+		}
+		else
+		{
+			if (bSenderAlive)
+				return true;
+		}
+
+		return (bListenerAlive == bSenderAlive);
+	}
+
+#endif // HOOK_GAMEDLL
+
+};/* size: 4, cachelines: 1, members: 1 */
 
 #ifdef HOOK_GAMEDLL
 
 #define g_pGameRules (*pg_pGameRules)
+#define g_GameMgrHelper (*pg_GameMgrHelper)
+#define sv_clienttrace (*psv_clienttrace)
+#define g_pMPGameRules (*pg_pMPGameRules)
 
 #endif // HOOK_GAMEDLL
 
 extern CHalfLifeMultiplay *g_pGameRules;
+extern CCStrikeGameMgrHelper g_GameMgrHelper;
+extern cvar_t *sv_clienttrace;
+extern CHalfLifeMultiplay *g_pMPGameRules;
 
-NOBODY CGameRules *InstallGameRules(void);
-
-
-
+CGameRules *InstallGameRules(void);
 
 /*
 * Multiplay gamerules

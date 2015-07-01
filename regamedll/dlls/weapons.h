@@ -140,7 +140,7 @@ public:
 	int Restore_(CRestore &restore);
 	int ObjectCaps_(void)
 	{
-		return m_bIsC4 != false ? FCAP_CONTINUOUS_USE : 0;
+		return m_bIsC4 ? FCAP_CONTINUOUS_USE : 0;
 	}
 	void Killed_(entvars_t *pevAttacker, int iGib);
 	int BloodColor_(void)

@@ -74,7 +74,6 @@ public:
 	void SendPartialNotification(void);
 
 private:
-	//int ()(void) * * _vptr.CCareerTask;
 
 	bool m_isComplete;
 	const char *m_name;
@@ -95,13 +94,15 @@ private:
 
 typedef std::list<CCareerTask *> CareerTaskList;
 
+/* <1efed1> ../cstrike/dlls/career_tasks.cpp:636 */
 class CCareerTaskManager
 {
 public:
 	CCareerTaskManager(void);
 
 public:
-	void Create(void);
+	static void Create(void);
+
 	void Reset(bool deleteTasks);
 	void AddTask(const char *taskName, const char *weaponName, int eventCount, bool mustLive, bool crossRounds, bool isComplete);
 
@@ -138,19 +139,17 @@ public:
 	void UnlatchRoundEndMessage(void);
 
 private:
-	CareerTaskList m_tasks;		// Lin - 0  | Win - 0
 
 #if defined(_WIN32) && defined(HOOK_GAMEDLL)
-	// TODO: std::list have be size with 12 on platform Windows
-
-	int padding_std_list_size_12;
-
+	int unknown_padding1;
 #endif // HOOK_GAMEDLL
 
-	int m_nextId;			// Lin - 8  | Win - 12
-	float m_roundStartTime;		// Lin - 12 | Win - 16
-	int m_taskTime;			// Lin - 16 | Win - 20
-	int m_finishedTaskTime;		// Lin - 20 | Win - 24
+	CareerTaskList m_tasks;
+
+	int m_nextId;
+	float m_roundStartTime;
+	int m_taskTime;
+	int m_finishedTaskTime;
 
 	int m_finishedTaskRound;
 	GameEventType m_roundEndMessage;
@@ -168,6 +167,7 @@ struct TaskInfo
 
 };/* size: 12, cachelines: 1, members: 3 */
 
+/* <1ef56d> ../cstrike/dlls/career_tasks.cpp:139 */
 class CPreventDefuseTask: public CCareerTask
 {
 public:

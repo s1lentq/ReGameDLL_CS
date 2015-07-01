@@ -35,16 +35,32 @@
 class CRecharge: public CBaseToggle
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual void KeyValue(KeyValueData *pkvd);
-	NOBODY virtual int Save(CSave &save);
-	NOBODY virtual int Restore(CRestore &restore);
-	NOBODY virtual int ObjectCaps(void)
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual void KeyValue(KeyValueData *pkvd);
+	virtual int Save(CSave &save);
+	virtual int Restore(CRestore &restore);
+	virtual int ObjectCaps(void)
+	{
+		return ObjectCaps_();
+	}
+	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+
+#ifdef HOOK_GAMEDLL
+
+	void Spawn_(void);
+	void Precache_(void);
+	void KeyValue_(KeyValueData *pkvd);
+	int Save_(CSave &save);
+	int Restore_(CRestore &restore);
+	int ObjectCaps_(void)
 	{
 		return ((CBaseToggle::ObjectCaps()|FCAP_CONTINUOUS_USE) & ~FCAP_ACROSS_TRANSITION);
 	}
-	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+
+#endif // HOOK_GAMEDLL
+
 public:
 	void EXPORT Off(void);
 	void EXPORT Recharge(void);
@@ -65,19 +81,6 @@ public:
 	int m_iOn;
 	float m_flSoundTime;
 
-#ifdef HOOK_GAMEDLL
-
-	NOBODY void Spawn_(void);
-	NOBODY void Precache_(void);
-	NOBODY void KeyValue_(KeyValueData *pkvd);
-	NOBODY int Save_(CSave &save);
-	NOBODY int Restore_(CRestore &restore);
-	NOBODY void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-#endif // HOOK_GAMEDLL
-
 };/* size: 332, cachelines: 6, members: 7 */
-
-
 
 #endif // H_BATTERY_H

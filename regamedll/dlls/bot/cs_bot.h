@@ -1297,7 +1297,6 @@ private:
 
 };/* size: 8, cachelines: 1, members: 2 */
 
-
 /* <5a0af3> ../cstrike/dlls/bot/cs_bot.h:1114 */
 class PathCost
 {
@@ -1396,7 +1395,84 @@ public:
 private:
 	CCSBot *m_bot;
 	RouteType m_route;
-};
+
+};/* size: 8, cachelines: 1, members: 2 */
+
+/* <568fae> ../cstrike/dlls/bot/states/cs_bot_follow.cpp:95 */
+class FollowTargetCollector
+{
+public:
+	FollowTargetCollector(CBasePlayer *player)
+	{
+		m_player = player;
+
+		Vector playerVel = player->pev->velocity;
+
+		m_forward.x = playerVel.x;
+		m_forward.y = playerVel.y;
+
+		float speed = m_forward.NormalizeInPlace();
+
+		Vector playerOrigin = player->pev->origin;
+
+		const float walkSpeed = 100.0f;
+		if (speed < walkSpeed)
+		{
+			m_cutoff.x = playerOrigin.x;
+			m_cutoff.y = playerOrigin.y;
+
+			m_forward.x = 0.0f;
+			m_forward.y = 0.0f;
+		}
+		else
+		{
+			const float k = 1.5f; // 2.0f;
+			float trimSpeed = min(speed, 200.0f);
+
+			m_cutoff.x = playerOrigin.x + k * trimSpeed * m_forward.x;
+			m_cutoff.y = playerOrigin.y + k * trimSpeed * m_forward.y;
+		}
+
+		m_targetAreaCount = 0;
+	}
+
+	enum { MAX_TARGET_AREAS = 128 };
+
+	/* <568dc3> ../cstrike/dlls/bot/states/cs_bot_follow.cpp:124 */
+	bool operator()(CNavArea *area)
+	{
+		if (m_targetAreaCount >= MAX_TARGET_AREAS)
+			return false;
+		
+		// only use two-way connections
+		if (!area->GetParent() || area->IsConnected(area->GetParent(), NUM_DIRECTIONS))
+		{
+			if (m_forward.IsZero())
+			{
+				m_targetArea[ m_targetAreaCount++ ] = area;
+			}
+			else
+			{
+				// collect areas in the direction of the player's forward motion
+				Vector2D to(((*area->GetCenter()).x - m_cutoff.x), (*area->GetCenter()).y - m_cutoff.y);
+				to.NormalizeInPlace();
+
+				//if (DotProduct( to, m_forward ) > 0.7071f)
+				if ((to.x * m_forward.x + to.y * m_forward.y) > 0.7071f)
+					m_targetArea[ m_targetAreaCount++ ] = area;
+			}
+		}
+
+		return (m_targetAreaCount < MAX_TARGET_AREAS);
+	}
+
+	CBasePlayer *m_player;
+	Vector2D m_forward;
+	Vector2D m_cutoff;
+	CNavArea *m_targetArea[ MAX_TARGET_AREAS ];
+	int m_targetAreaCount;
+
+};/* size: 536, cachelines: 9, members: 5 */
 
 #ifdef HOOK_GAMEDLL
 

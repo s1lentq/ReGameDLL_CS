@@ -116,7 +116,7 @@ class CGib: public CBaseEntity
 public:
 	virtual int ObjectCaps(void)
 	{
-		return (CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION)|FCAP_DONT_SAVE;
+		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION)|FCAP_DONT_SAVE;
 	}
 public:
 	NOBODY void Spawn(const char *szGibModel);

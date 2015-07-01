@@ -77,14 +77,10 @@ public:
 	NOBODY virtual void Restart(void);
 	NOBODY virtual int Save(CSave &save);
 	NOBODY virtual int Restore(CRestore &restore);
-	NOBODY virtual int ObjectCaps(void);
-	//{
-	//	int flags = 0;
-	//	if (pev->spawnflags & SF_SPRITE_TEMPORARY)
-	//		flags = FCAP_DONT_SAVE;
-
-	//	return (CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION)|flags;
-	//}
+	NOBODY virtual int ObjectCaps(void)
+	{
+		return ObjectCaps_();
+	}
 	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
@@ -100,7 +96,7 @@ public:
 		if (pev->spawnflags & SF_SPRITE_TEMPORARY)
 			flags = FCAP_DONT_SAVE;
 
-		return (CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION)|flags;
+		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION)|flags;
 	}
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
@@ -187,18 +183,14 @@ class CBeam: public CBaseEntity
 public:
 	NOBODY virtual void Spawn(void);
 	NOBODY virtual void Precache(void);
-	NOBODY virtual int ObjectCaps(void);
-	//{
-	//	int flags = 0;
-	//	if (pev->spawnflags & SF_BEAM_TEMPORARY)
-	//		flags = FCAP_DONT_SAVE;
-
-	//	return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION)|flags;
-	//}
-	NOBODY virtual Vector Center(void);
-	//{
-	//	return (GetStartPos() + GetEndPos()) * 0.5;
-	//}
+	NOBODY virtual int ObjectCaps(void)
+	{
+		return ObjectCaps_();
+	}
+	NOBODY virtual Vector Center(void)
+	{
+		return Center_();
+	}
 
 #ifdef HOOK_GAMEDLL
 
@@ -402,10 +394,10 @@ public:
 	NOBODY virtual void KeyValue(KeyValueData *pkvd);
 	NOBODY virtual int Save(CSave &save);
 	NOBODY virtual int Restore(CRestore &restore);
-	NOBODY virtual int ObjectCaps(void);
-	//{
-	//	return 0;//CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION;
-	//}
+	NOBODY virtual int ObjectCaps(void)
+	{
+		return ObjectCaps_();
+	}
 	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
@@ -415,7 +407,10 @@ public:
 	void KeyValue_(KeyValueData *pkvd);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
-	int ObjectCaps_(void);
+	int ObjectCaps_(void)
+	{
+		return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION;
+	}
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #endif // HOOK_GAMEDLL

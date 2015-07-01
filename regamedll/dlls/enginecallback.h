@@ -82,6 +82,8 @@ extern enginefuncs_t g_engfuncs;
 #define CRC32_FINAL			(*g_engfuncs.pfnCRC32_Final)
 #define RANDOM_LONG			(*g_engfuncs.pfnRandomLong)
 #define RANDOM_FLOAT			(*g_engfuncs.pfnRandomFloat)
+#define ADD_SERVER_COMMAND		(*g_engfuncs.pfnAddServerCommand)
+#define SET_CLIENT_LISTENING		(*g_engfuncs.pfnVoice_SetClientListening)
 #define GETPLAYERAUTHID			(*g_engfuncs.pfnGetPlayerAuthId)
 #define IS_CAREER_MATCH			(*g_engfuncs.pfnIsCareerMatch)
 

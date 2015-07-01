@@ -271,10 +271,12 @@ private:
 #ifdef HOOK_GAMEDLL
 
 #define g_pHostages (*pg_pHostages)
+#define g_iHostageNumber (*pg_iHostageNumber)
 
 #endif // HOOK_GAMEDLL
 
 extern CHostageManager *g_pHostages;
+extern int g_iHostageNumber;
 
 NOBODY void Hostage_RegisterCVars(void);
 NOBODY void InstallHostageManager(void);

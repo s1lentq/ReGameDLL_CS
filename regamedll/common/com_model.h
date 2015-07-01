@@ -175,16 +175,6 @@ typedef struct mleaf_s
 	byte ambient_sound_level[ NUM_AMBIENTS ];
 } mleaf_t;
 
-#ifdef CUSTOM_H
-
-void da(void)
-{
-	;
-}
-
-#endif// TI_LOX
-
-
 struct msurface_s
 {
 	int visframe;			// should be drawn when node is crossed

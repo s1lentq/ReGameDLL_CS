@@ -111,7 +111,10 @@ public:
 	NOBODY virtual void KeyValue(KeyValueData* pkvd);
 	NOBODY virtual int Save(CSave &save);
 	NOBODY virtual int Restore(CRestore &restore);
-	NOBODY virtual int ObjectCaps(void);
+	NOBODY virtual int ObjectCaps(void)
+	{
+		return ObjectCaps_();
+	}
 	NOBODY virtual void OverrideReset(void);
 	NOBODY virtual BOOL OnControls(entvars_t *pev);
 	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);

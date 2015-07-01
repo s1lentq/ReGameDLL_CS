@@ -703,11 +703,6 @@ int CGrenade::Restore(CRestore &restore)
 	Restore_(restore);
 }
 
-//int CGrenade::ObjectCaps(void)
-//{
-//	return ObjectCaps_();
-//}
-
 void CGrenade::Killed(entvars_t *pevAttacker, int iGib)
 {
 	Killed_(pevAttacker, iGib);

@@ -157,12 +157,6 @@ NOBODY void CGameText::Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_T
 //		float value);  //   321
 }
 
-/* <eee07> ../cstrike/dlls/maprules.cpp:357 */
-NOBODY int CGameTeamMaster::ObjectCaps_(void)
-{
-	return CRulePointEntity:: ObjectCaps() | FCAP_MASTER;
-}
-
 /* <f0bfe> ../cstrike/dlls/maprules.cpp:371 */
 LINK_ENTITY_TO_CLASS(game_team_master, CGameTeamMaster);
 
@@ -487,11 +481,6 @@ void CGameText::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useT
 void CGameTeamMaster::KeyValue(KeyValueData *pkvd)
 {
 	KeyValue_(pkvd);
-}
-
-int CGameTeamMaster::ObjectCaps(void)
-{
-	return ObjectCaps_();
 }
 
 BOOL CGameTeamMaster::IsTriggered(CBaseEntity *pActivator)

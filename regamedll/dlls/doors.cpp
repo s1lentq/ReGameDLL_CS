@@ -98,6 +98,9 @@ NOBODY void CBaseDoor::SetToggleState_(int state)
 //			int state);  //   350
 }
 
+#define noiseMoving noise1
+#define noiseArrived noise2
+
 /* <6924c> ../cstrike/dlls/doors.cpp:359 */
 NOBODY void CBaseDoor::Precache_(void)
 {

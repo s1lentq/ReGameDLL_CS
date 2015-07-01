@@ -524,12 +524,13 @@ private:
 	friend class CCSBotManager;
 
 	void Initialize(void);
-	static bool m_isReset;
 
 #ifndef HOOK_GAMEDLL
+	static bool m_isReset;
 	static unsigned int m_nextID;
 #else
 public:
+	static bool (*m_isReset);
 	static unsigned int (*m_nextID);
 private:
 #endif // HOOK_GAMEDLL
@@ -549,7 +550,16 @@ private:
 	float m_danger[MAX_AREA_TEAMS];
 	float m_dangerTimestamp[MAX_AREA_TEAMS];
 
+#if defined(_WIN32) && defined(HOOK_GAMEDLL)
+	int unknown_padding1;
+#endif // HOOK_GAMEDLL
+
 	HidingSpotList m_hidingSpotList;
+
+#if defined(_WIN32) && defined(HOOK_GAMEDLL)
+	int unknown_padding2;
+#endif // HOOK_GAMEDLL
+
 	SpotEncounterList m_spotEncounterList;
 
 	enum { MAX_APPROACH_AREAS = 16 };
@@ -579,14 +589,38 @@ public:
 private:
 #endif // HOOK_GAMEDLL
 
-	CNavArea *m_nextOpen, *m_prevOpen;
+	CNavArea *m_nextOpen;
+	CNavArea *m_prevOpen;
 	unsigned int m_openMarker;
 
-	NavConnectList m_connect[NUM_DIRECTIONS];
-	NavLadderList m_ladder[NUM_LADDER_DIRECTIONS];
+#ifdef _WIN32
+	int unknown_padding3;
+#endif // _WIN32
 
-	CNavNode *m_node[NUM_CORNERS];
+	NavConnectList m_connect[ NUM_DIRECTIONS ];
+
+#ifdef _WIN32
+	int unknown_padding4;
+	int unknown_padding5;
+
+	int unknown_padding6;
+	int unknown_padding7;
+#endif // _WIN32
+
+	NavLadderList m_ladder[ NUM_LADDER_DIRECTIONS ];
+
+#ifdef _WIN32
+	int unknown_padding8;
+#endif // _WIN32
+
+	CNavNode *m_node[ NUM_CORNERS ];
+
+#ifdef _WIN32
+	int unknown_padding9;
+#endif // _WIN32
+
 	NavAreaList m_overlapList;
+
 	CNavArea *m_prevHash;
 	CNavArea *m_nextHash;
 
@@ -594,11 +628,13 @@ private:
 
 extern NavAreaList TheNavAreaList;
 
+/* <4c1534> ../game_shared/bot/nav_area.h:417 */
 inline bool CNavArea::IsDegenerate(void) const
 {
 	return (m_extent.lo.x >= m_extent.hi.x || m_extent.lo.y >= m_extent.hi.y);
 }
 
+/* <568e1d> ../game_shared/bot/nav_area.h:422 */
 inline CNavArea *CNavArea::GetAdjacentArea(NavDirType dir, int i) const
 {
 	NavConnectList::const_iterator iter;
@@ -611,6 +647,7 @@ inline CNavArea *CNavArea::GetAdjacentArea(NavDirType dir, int i) const
 	return NULL;
 }
 
+/* <5a01dc> ../game_shared/bot/nav_area.h:435 */
 inline bool CNavArea::IsOpen(void) const
 {
 #ifndef HOOK_GAMEDLL
@@ -620,6 +657,7 @@ inline bool CNavArea::IsOpen(void) const
 #endif // HOOK_GAMEDLL
 }
 
+/* <5a0a62> ../game_shared/bot/nav_area.h:440 */
 inline bool CNavArea::IsOpenListEmpty(void)
 {
 #ifndef HOOK_GAMEDLL
@@ -629,6 +667,7 @@ inline bool CNavArea::IsOpenListEmpty(void)
 #endif // HOOK_GAMEDLL
 }
 
+/* <5a1483> ../game_shared/bot/nav_area.h:445 */
 inline CNavArea *CNavArea::PopOpenList(void)
 {
 #ifndef HOOK_GAMEDLL
@@ -649,6 +688,7 @@ inline CNavArea *CNavArea::PopOpenList(void)
 	return NULL;
 }
 
+/* <5a0a2a> ../game_shared/bot/nav_area.h:460 */
 inline bool CNavArea::IsClosed(void) const
 {
 	if (IsMarked() && !IsOpen())
@@ -657,16 +697,19 @@ inline bool CNavArea::IsClosed(void) const
 	return false;
 }
 
+/* <5a0a46> ../game_shared/bot/nav_area.h:468 */
 inline void CNavArea::AddToClosedList(void)
 {
 	Mark();
 }
 
+/* <5a01f8> ../game_shared/bot/nav_area.h:473 */
 inline void CNavArea::RemoveFromClosedList(void)
 {
 
 }
 
+/* <4cf943> ../game_shared/bot/nav_area.cpp:4947 */
 class CNavAreaGrid
 {
 public:

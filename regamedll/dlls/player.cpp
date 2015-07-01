@@ -770,7 +770,7 @@ int TrainSpeed(int iSpeed, int iMax)
 }
 
 /* <153c8e> ../cstrike/dlls/player.cpp:902 */
-void CBasePlayer::DeathSound(void)
+NOXREF void CBasePlayer::DeathSound(void)
 {
 	switch (RANDOM_LONG(1, 4))
 	{
@@ -823,7 +823,7 @@ void CBasePlayer::TraceAttack_(entvars_t *pevAttacker, float flDamage, Vector ve
 	if (CVAR_GET_FLOAT("mp_friendlyfire") == 0 && m_iTeam == pAttacker->m_iTeam)
 		bShouldBleed = false;
 
-	if (!pev->takedamage)
+	if (pev->takedamage == DAMAGE_NO)
 		return;
 
 	m_LastHitGroup = ptr->iHitgroup;
@@ -3202,14 +3202,8 @@ NOBODY void FixPlayerCrouchStuck(edict_t *pPlayer)
 /* <153ef5> ../cstrike/dlls/player.cpp:4580 */
 NOBODY void CBasePlayer::Duck_(void)
 {
-	//TODO: check it, check last of update.
-#ifdef _WIN32
 	if (pev->button & IN_DUCK)
 		SetAnimation(PLAYER_WALK);
-#else
-	if (pev->button & IN_DUCK && pev->modelindex && (m_flFlinchTime < gpGlobals->time || pev->health <= 0.0f))
-		SetAnimation(PLAYER_WALK);
-#endif
 }
 
 /* <150f8f> ../cstrike/dlls/player.cpp:4591 */
@@ -3758,11 +3752,6 @@ NOBODY void CBasePlayer::SelectPrevItem(int iItem)
 
 /* <15106c> ../cstrike/dlls/player.cpp:6987 */
 NOBODY const char *CBasePlayer::TeamID_(void)
-{
-}
-
-/* <151094> ../cstrike/dlls/player.cpp:7007 */
-NOBODY int CSprayCan::ObjectCaps_(void)
 {
 }
 
@@ -5699,11 +5688,6 @@ int CBasePlayer::Restore(CRestore &restore)
 	return Restore_(restore);
 }
 
-int CBasePlayer::ObjectCaps(void)
-{
-	return ObjectCaps_();
-}
-
 int CBasePlayer::Classify(void)
 {
 	return Classify_();
@@ -5917,11 +5901,6 @@ int CDeadHEV::Classify(void)
 void CSprayCan::Think(void)
 {
 	Think_();
-}
-
-int CSprayCan::ObjectCaps(void)
-{
-	return ObjectCaps_();
 }
 
 void CInfoIntermission::Spawn(void)

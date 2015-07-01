@@ -430,7 +430,7 @@ public:
 	}
 	virtual BOOL ReflectGauss(void)
 	{
-		return (IsBSPModel() && pev->takedamage == 0.0f);
+		return (IsBSPModel() && pev->takedamage == DAMAGE_NO);
 	}
 	virtual BOOL HasTarget(string_t targetname)
 	{
@@ -667,7 +667,10 @@ class CPointEntity: public CBaseEntity
 {
 public:
 	NOBODY virtual void Spawn(void);
-	NOBODY virtual int ObjectCaps(void);
+	NOBODY virtual int ObjectCaps(void)
+	{
+		return ObjectCaps_();
+	}
 
 #ifdef HOOK_GAMEDLL
 
@@ -918,16 +921,11 @@ public:
 	int Restore_(CRestore &restore);
 	int ObjectCaps_(void)
 	{
-		if(pev->takedamage == 0.0f)
+		if(pev->takedamage == DAMAGE_NO)
 			return FCAP_IMPULSE_USE;
 
-		return (CBaseToggle:: ObjectCaps() & ~FCAP_ACROSS_TRANSITION);
+		return (CBaseToggle::ObjectCaps() & ~FCAP_ACROSS_TRANSITION);
 	}
-
-
-
-
-
 
 #endif // HOOK_GAMEDLL
 

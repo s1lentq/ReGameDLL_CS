@@ -79,12 +79,6 @@ LINK_ENTITY_TO_CLASS(env_bubbles, CBubbling);
 /* <741e0> ../cstrike/dlls/effects.cpp:68 */
 IMPLEMENT_SAVERESTORE(CBubbling, CBaseEntity);
 
-/* <73427> ../cstrike/dlls/effects.cpp:48 */
-NOBODY int CBubbling::ObjectCaps_(void)
-{
-	return 0;
-}
-
 /* <7344d> ../cstrike/dlls/effects.cpp:73 */
 NOBODY void CBubbling::Spawn_(void)
 {
@@ -1245,11 +1239,6 @@ int CSprite::Restore(CRestore &restore)
 	return Restore_(restore);
 }
 
-int CSprite::ObjectCaps(void)
-{
-	return ObjectCaps_();
-}
-
 void CSprite::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	Use_(pActivator, pCaller, useType, value);
@@ -1263,16 +1252,6 @@ void CBeam::Spawn(void)
 void CBeam::Precache(void)
 {
 	Precache_();
-}
-
-int CBeam::ObjectCaps(void)
-{
-	return ObjectCaps_();
-}
-
-Vector CBeam::Center(void)
-{
-	return Center_();
 }
 
 void CLaser::Spawn(void)
@@ -1328,11 +1307,6 @@ int CBubbling::Save(CSave &save)
 int CBubbling::Restore(CRestore &restore)
 {
 	return Restore_(restore);
-}
-
-int CBubbling::ObjectCaps(void)
-{
-	return ObjectCaps_();
 }
 
 void CBubbling::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)

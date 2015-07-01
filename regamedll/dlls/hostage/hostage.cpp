@@ -16,6 +16,7 @@
 #endif // HOOK_GAMEDLL
 
 CHostageManager *g_pHostages;
+int g_iHostageNumber;
 
 /* <45c3fa> ../cstrike/dlls/hostage/hostage.cpp:47 */
 LINK_ENTITY_TO_CLASS(hostage_entity, CHostage);

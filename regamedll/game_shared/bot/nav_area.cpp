@@ -49,8 +49,7 @@ HidingSpotList TheHidingSpotList;
 NavAreaList TheNavAreaList;
 CNavAreaGrid TheNavAreaGrid;
 CNavArea *(*CNavArea::m_openList);
-
-//bool CNavArea::m_isReset = false;
+bool (*CNavArea::m_isReset);
 
 //float lastDrawTimestamp;
 NavAreaList goodSizedAreaList;
@@ -210,49 +209,46 @@ NOBODY CNavArea::CNavArea(CNavNode *nwNode, class CNavNode *neNode, class CNavNo
 /* <4d58d7> ../game_shared/bot/nav_area.cpp:295 */
 NOBODY CNavArea::~CNavArea(void)
 {
-//	{
-//		iterator iter;                                        //   302
-//		{
-//			class CNavArea *area;                        //   305
-//			OnDestroyNotify(CNavArea *const this,
-//					class CNavArea *dead);  //   310
-//		}
-//		operator++(_List_iterator<CNavArea*> *const this);  //   303
-//		{
-//			int i;                                        //   314
-//			{ /* ~CNavArea+0x18e */
-//				iterator liter;                       //   316
-//				{
-//					class CNavLadder *ladder;    //   318
-//					OnDestroyNotify(CNavLadder *const this,
-//							class CNavArea *dead);  //   320
-//				}
-//				operator++(_List_iterator<CNavLadder*> *const this);  //   316
-//			}
-//		}
-//		RemoveNavArea(CNavAreaGrid *const this,
-//				class CNavArea *area);  //   325
-//	}
-//	~list(list<CNavArea*, std::allocator<CNavArea*>> *const this,
-//		int const __in_chrg);  //   295
-//	~list(list<CNavLadder*, std::allocator<CNavLadder*>> *const this,
-//		int const __in_chrg);  //   295
-//	~list(list<NavConnect, std::allocator<NavConnect>> *const this,
-//		int const __in_chrg);  //   295
-//	~list(list<SpotEncounter, std::allocator<SpotEncounter>> *const this,
-//		int const __in_chrg);  //   295
-//	~list(list<HidingSpot*, std::allocator<HidingSpot*>> *const this,
-//		int const __in_chrg);  //   295
-//	~list(list<CNavArea*, std::allocator<CNavArea*>> *const this,
-//		int const __in_chrg);  //   295
-//	~list(list<CNavLadder*, std::allocator<CNavLadder*>> *const this,
-//		int const __in_chrg);  //   295
-//	~list(list<NavConnect, std::allocator<NavConnect>> *const this,
-//		int const __in_chrg);  //   295
-//	~list(list<SpotEncounter, std::allocator<SpotEncounter>> *const this,
-//		int const __in_chrg);  //   295
-//	~list(list<HidingSpot*, std::allocator<HidingSpot*>> *const this,
-//		int const __in_chrg);  //   295
+#ifndef HOOK_GAMEDLL
+	if (m_isReset)
+#else
+	if (*m_isReset)
+#endif // HOOK_GAMEDLL
+	{
+		//m_overlapList.~list();
+		//m_ladder->~list();
+		//m_connect->~list();
+		//m_spotEncounterList.~list();
+		//m_hidingSpotList.~list();
+
+		return;
+	}
+
+	// tell the other areas we are going away
+	NavAreaList::iterator iter;
+	for (iter = TheNavAreaList.begin(); iter != TheNavAreaList.end(); ++iter)
+	{
+		CNavArea *area = *iter;
+
+		if (area == this)
+			continue;
+
+		area->OnDestroyNotify(this);
+	}
+
+	// unhook from ladders
+	for (int i = 0; i < NUM_LADDER_DIRECTIONS; ++i)
+	{
+		for (NavLadderList::iterator liter = m_ladder[i].begin(); liter != m_ladder[i].end(); ++liter)
+		{
+			CNavLadder *ladder = *liter;
+
+			ladder->OnDestroyNotify(this);
+		}
+	}
+
+	// remove the area from the grid
+	TheNavAreaGrid.RemoveNavArea(this);
 }
 
 /* <4c67f0> ../game_shared/bot/nav_area.cpp:333 */
@@ -1510,6 +1506,16 @@ NOBODY void CNavArea::UpdateOnOpenList(void)
 /* <4cbdbc> ../game_shared/bot/nav_area.cpp:2713 */
 NOBODY void CNavArea::RemoveFromOpenList(void)
 {
+	if (m_prevOpen)
+		m_prevOpen->m_nextOpen = m_nextOpen;
+	else
+		(*m_openList) = m_nextOpen;
+
+	if (m_nextOpen)
+		m_nextOpen->m_prevOpen = m_prevOpen;
+
+	// zero is an invalid marker
+	m_openMarker = 0;
 }
 
 /* <4cbddf> ../game_shared/bot/nav_area.cpp:2731 */

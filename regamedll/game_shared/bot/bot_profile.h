@@ -253,6 +253,10 @@ public:
 
 protected:
 
+#if defined(_WIN32) && defined(HOOK_GAMEDLL)
+	int unknown_padding1;
+#endif // HOOK_GAMEDLL
+
 	BotProfileList m_profileList;
 	VoiceBankList m_voiceBanks;
 

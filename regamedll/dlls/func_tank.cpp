@@ -485,12 +485,6 @@ LINK_ENTITY_TO_CLASS(func_tankcontrols, CFuncTankControls);
 /* <8d71d> ../cstrike/dlls/func_tank.cpp:995 */
 IMPLEMENT_SAVERESTORE(CFuncTankControls, CBaseEntity);
 
-/* <8d2ea> ../cstrike/dlls/func_tank.cpp:997 */
-NOBODY int CFuncTankControls::ObjectCaps_(void)
-{
-	return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | FCAP_IMPULSE_USE;
-}
-
 /* <8d310> ../cstrike/dlls/func_tank.cpp:1003 */
 NOBODY void CFuncTankControls::Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
@@ -629,11 +623,6 @@ int CFuncTankControls::Save(CSave &save)
 int CFuncTankControls::Restore(CRestore &restore)
 {
 	return Restore_(restore);
-}
-
-int CFuncTankControls::ObjectCaps(void)
-{
-	return ObjectCaps_();
 }
 
 void CFuncTankControls::Think(void)

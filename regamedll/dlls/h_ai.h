@@ -26,18 +26,14 @@
 *
 */
 
-#ifndef VOICE_COMMON_H
-#define VOICE_COMMON_H
+#ifndef H_AI_H
+#define H_AI_H
 #ifdef _WIN32
 #pragma once
 #endif
 
-#include "bitvec.h"
+NOBODY BOOL FBoxVisible(entvars_t *pevLooker, entvars_t *pevTarget, Vector &vecTargetOrigin, float flSize);
+NOBODY Vector VecCheckToss(entvars_t *pev, Vector &vecSpot1, Vector vecSpot2, float flGravityAdj);
+NOBODY Vector VecCheckThrow(entvars_t *pev, Vector &vecSpot1, Vector vecSpot2, float flSpeed, float flGravityAdj);
 
-// TODO: this should just be set to MAX_CLIENTS
-#define VOICE_MAX_PLAYERS		32
-#define VOICE_MAX_PLAYERS_DW		((VOICE_MAX_PLAYERS / 32) + !!(VOICE_MAX_PLAYERS & 31))
-
-typedef CBitVec< VOICE_MAX_PLAYERS > CPlayerBitVec;
-
-#endif // VOICE_COMMON_H
+#endif // H_AI_H

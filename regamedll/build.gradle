@@ -125,7 +125,7 @@ void setupToolchain(NativeBinarySpec b) {
     }
     b.lib LazyNativeDepSet.create(dep_bzip2, 'bzip2', b.buildType.name, true)
 
-    cfg.singleDefines 'USE_BREAKPAD_HANDLER', 'DEDICATED', 'REGAMEDLL_SELF'
+    cfg.singleDefines 'USE_BREAKPAD_HANDLER', 'DEDICATED', 'REGAMEDLL_SELF', 'HOOK_GAMEDLL'
 
     if (cfg instanceof MsvcToolchainConfig) {
 
@@ -168,8 +168,12 @@ void setupToolchain(NativeBinarySpec b) {
 
     // TODO: check it
     //if (!unitTestExecutable && !mpLib) {
-        cfg.singleDefines 'HOOK_GAMEDLL'
+    //    cfg.singleDefines 'HOOK_GAMEDLL'
     //}
+
+    if (unitTestExecutable) {
+        cfg.singleDefines 'REGAMEDLL_UNIT_TESTS'
+    }
 
     if (regamedllFixes) {
         cfg.singleDefines 'REGAMEDLL_FIXES', 'REGAMEDLL_CHECKS'

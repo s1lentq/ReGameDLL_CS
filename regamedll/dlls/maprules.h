@@ -218,7 +218,10 @@ class CGameTeamMaster: public CRulePointEntity
 {
 public:
 	NOBODY virtual void KeyValue(KeyValueData *pkvd);
-	NOBODY virtual int ObjectCaps(void);
+	NOBODY virtual int ObjectCaps(void)
+	{
+		return ObjectCaps_();
+	}
 	NOBODY virtual BOOL IsTriggered(CBaseEntity *pActivator);
 	NOBODY virtual const char *TeamID(void);
 	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
@@ -226,7 +229,10 @@ public:
 #ifdef HOOK_GAMEDLL
 
 	void KeyValue_(KeyValueData *pkvd);
-	int ObjectCaps_(void);
+	int ObjectCaps_(void)
+	{
+		return CRulePointEntity::ObjectCaps() | FCAP_MASTER;
+	}
 	BOOL IsTriggered_(CBaseEntity *pActivator);
 	const char *TeamID_(void);
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);

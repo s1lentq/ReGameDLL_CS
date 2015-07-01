@@ -34,14 +34,6 @@
 
 #define SF_PLAT_TOGGLE		0x0001
 
-// CBasePlatTrain
-#define noiseMoving		noise
-#define noiseArrived		noise1
-
-// CFuncPlat
-#define noiseMovement		noise
-#define noiseStopMoving		noise1
-
 #define TRAIN_STARTPITCH	60
 #define TRAIN_MAXPITCH		200
 #define TRAIN_MAXSPEED		1000
@@ -62,10 +54,16 @@ public:
 	NOBODY virtual void KeyValue(KeyValueData *pkvd);
 	NOBODY virtual int Save(CSave &save);
 	NOBODY virtual int Restore(CRestore &restore);
-	NOBODY virtual int ObjectCaps(void);
+	NOBODY virtual int ObjectCaps(void)
+	{
+		return ObjectCaps_();
+	}
 
 	// This is done to fix spawn flag collisions between this class and a derived class
-	NOBODY virtual BOOL IsTogglePlat(void);
+	NOBODY virtual BOOL IsTogglePlat(void)
+	{
+		return IsTogglePlat_();
+	}
 
 #ifdef HOOK_GAMEDLL
 
@@ -73,8 +71,14 @@ public:
 	void KeyValue_(KeyValueData *pkvd);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
-	int ObjectCaps_(void);
-	BOOL IsTogglePlat_(void);
+	int ObjectCaps_(void)
+	{
+		return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION;
+	}
+	BOOL IsTogglePlat_(void)
+	{
+		return (pev->spawnflags & SF_PLAT_TOGGLE) != 0;
+	}
 
 #endif // HOOK_GAMEDLL
 
@@ -131,7 +135,10 @@ public:
 class CPlatTrigger: public CBaseEntity
 {
 public:
-	NOBODY virtual int ObjectCaps(void);
+	NOBODY virtual int ObjectCaps(void)
+	{
+		return ObjectCaps_();
+	}
 	NOBODY virtual void Touch(CBaseEntity *pOther);
 
 #ifdef HOOK_GAMEDLL
@@ -249,12 +256,18 @@ class CFuncTrainControls: public CBaseEntity
 {
 public:
 	NOBODY virtual void Spawn(void);
-	NOBODY virtual int ObjectCaps(void);
+	NOBODY virtual int ObjectCaps(void)
+	{
+		return ObjectCaps_();
+	}
 
 #ifdef HOOK_GAMEDLL
 
 	void Spawn_(void);
-	int ObjectCaps_(void);
+	int ObjectCaps_(void)
+	{
+		return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION;
+	}
 
 #endif // HOOK_GAMEDLL
 
@@ -370,26 +383,50 @@ public:
 	NOBODY virtual void Spawn(void);
 	NOBODY virtual int Save(CSave &save);
 	NOBODY virtual int Restore(CRestore &restore);
-	NOBODY virtual int ObjectCaps(void);
+	NOBODY virtual int ObjectCaps(void)
+	{
+		return ObjectCaps_();
+	}
 	NOBODY virtual void Activate(void);
-	NOBODY virtual int Classify(void);
+	NOBODY virtual int Classify(void)
+	{
+		return Classify_();
+	}
 	NOBODY virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
-	NOBODY virtual int BloodColor(void);
+	NOBODY virtual int BloodColor(void)
+	{
+		return BloodColor_();
+	}
 	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-	NOBODY virtual Vector BodyTarget(const Vector &posSrc);
+	NOBODY virtual Vector BodyTarget(const Vector &posSrc)
+	{
+		return BodyTarget_(posSrc);
+	}
 
 #ifdef HOOK_GAMEDLL
 
 	void Spawn_(void);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
-	int ObjectCaps_(void);
+	int ObjectCaps_(void)
+	{
+		return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION;
+	}
 	void Activate_(void);
-	int Classify_(void);
+	int Classify_(void)
+	{
+		return CLASS_MACHINE;
+	}
 	int TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
-	int BloodColor_(void);
+	int BloodColor_(void)
+	{
+		return DONT_BLEED;
+	}
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-	Vector BodyTarget_(const Vector &posSrc);
+	Vector BodyTarget_(const Vector &posSrc)
+	{
+		return pev->origin;
+	}
 
 #endif // HOOK_GAMEDLL
 
@@ -412,22 +449,8 @@ private:
 
 };/* size: 408, cachelines: 7, members: 3 */
 
-
-
-
-
-
-
-
-
-
-
 NOBODY void PlatSpawnInsideTrigger(entvars_t *pevPlatform);
 NOBODY float Fix(float angle);
 NOBODY void FixupAngles(Vector &v);
-
-
-
-
 
 #endif // PLATS_H

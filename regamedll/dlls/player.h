@@ -329,12 +329,18 @@ class CSprayCan: public CBaseEntity
 {
 public:
 	NOBODY virtual void Think(void);
-	NOBODY virtual int ObjectCaps(void);
+	NOBODY virtual int ObjectCaps(void)
+	{
+		return ObjectCaps_();
+	}
 
 #ifdef HOOK_GAMEDLL
 
 	void Think_(void);
-	int ObjectCaps_(void);
+	int ObjectCaps_(void)
+	{
+		return FCAP_DONT_SAVE;
+	}
 
 #endif // HOOK_GAMEDLL
 
@@ -362,10 +368,10 @@ public:
 	NOBODY virtual void Precache(void);
 	NOBODY virtual int Save(CSave &save);
 	NOBODY virtual int Restore(CRestore &restore);
-	virtual int ObjectCaps(void);
-	//{
-	//	return (CBaseMonster::ObjectCaps() & ~FCAP_ACROSS_TRANSITION);
-	//}
+	NOBODY virtual int ObjectCaps(void)
+	{
+		return ObjectCaps_();
+	}
 	virtual int Classify(void);
 	virtual void TraceAttack(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType);
 	NOBODY virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
@@ -562,7 +568,7 @@ public:
 	void FlashlightTurnOn(void);
 	NOBODY void FlashlightTurnOff(void);
 	NOBODY void UpdatePlayerSound(void);
-	void DeathSound(void);
+	NOXREF void DeathSound(void);
 	void SetAnimation(PLAYER_ANIM playerAnim);
 	NOBODY void SetWeaponAnimType(const char *szExtention);
 	NOBODY void CheatImpulseCommands(int iImpulse);

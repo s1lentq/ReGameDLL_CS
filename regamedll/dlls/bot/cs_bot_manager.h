@@ -387,7 +387,7 @@ public:
 	NOBODY static void MonitorBotCVars(void);
 	NOBODY static void MaintainBotQuota(void);
 	NOBODY static bool AddBot(BotProfile *profile, BotProfileTeamType team);
-	NOBODY static bool BotAddCommand(BotProfileTeamType, bool isFromConsole);
+	NOBODY static bool BotAddCommand(BotProfileTeamType team, bool isFromConsole);
 
 #ifndef HOOK_GAMEDLL
 private:

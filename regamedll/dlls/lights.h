@@ -55,7 +55,7 @@ public:
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #endif // HOOK_GAMEDLL
-	static TYPEDESCRIPTION m_SaveData2[2];
+
 #ifndef HOOK_GAMEDLL
 	static TYPEDESCRIPTION m_SaveData[2];
 #else // HOOK_GAMEDLL

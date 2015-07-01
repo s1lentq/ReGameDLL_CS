@@ -119,6 +119,7 @@
 #include "hostage/hostage_improv.h"
 
 #include "airtank.h"
+#include "h_ai.h"
 #include "h_cycler.h"
 #include "h_battery.h"
 

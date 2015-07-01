@@ -543,6 +543,7 @@
     <ClInclude Include="..\dlls\hostage\hostage_improv.h" />
     <ClInclude Include="..\dlls\hostage\hostage_localnav.h" />
     <ClInclude Include="..\dlls\hostage\hostage_states.h" />
+    <ClInclude Include="..\dlls\h_ai.h" />
     <ClInclude Include="..\dlls\h_battery.h" />
     <ClInclude Include="..\dlls\h_cycler.h" />
     <ClInclude Include="..\dlls\h_export.h" />
@@ -579,6 +580,7 @@
     <ClInclude Include="..\dlls\vehicle.h" />
     <ClInclude Include="..\dlls\weapons.h" />
     <ClInclude Include="..\engine\cdll_int.h" />
+    <ClInclude Include="..\engine\cmd.h" />
     <ClInclude Include="..\engine\common.h" />
     <ClInclude Include="..\engine\custom.h" />
     <ClInclude Include="..\engine\customentity.h" />

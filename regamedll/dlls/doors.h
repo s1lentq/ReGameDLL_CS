@@ -32,9 +32,6 @@
 #pragma once
 #endif
 
-#define noiseMoving			noise1
-#define noiseArrived			noise2
-
 #define DOOR_SENTENCEWAIT		6
 #define DOOR_SOUNDWAIT			3
 #define BUTTON_SOUNDWAIT		0.5

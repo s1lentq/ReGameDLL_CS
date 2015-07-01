@@ -13,12 +13,6 @@ TYPEDESCRIPTION CLight::m_SaveData[] =
 
 #else
 
-TYPEDESCRIPTION CLight::m_SaveData2[] =
-{
-	DEFINE_FIELD(CLight, m_iStyle, FIELD_INTEGER),
-	DEFINE_FIELD(CLight, m_iszPattern, FIELD_STRING),
-};
-
 TYPEDESCRIPTION (*CLight::m_SaveData)[2];
 
 #endif // HOOK_GAMEDLL
@@ -153,9 +147,6 @@ void CEnvLight::KeyValue_(KeyValueData *pkvd)
 		g = pow( g / 114.0, 0.6 ) * 264;
 		b = pow( b / 114.0, 0.6 ) * 264;
 
-		//r = (int)(powf(r / 114.0, 0.6) * 264);
-		//g = (int)(powf(g / 114.0, 0.6) * 264);
-		//b = (int)(powf(b / 114.0, 0.6) * 264);
 		pkvd->fHandled = TRUE;
 
 		char szColor[64];

@@ -260,7 +260,10 @@ public:
 	NOBODY virtual void Spawn(void);
 	NOBODY virtual int Save(CSave &save);
 	NOBODY virtual int Restore(CRestore &restore);
-	NOBODY virtual int ObjectCaps(void);
+	NOBODY virtual int ObjectCaps(void)
+	{
+		return ObjectCaps_();
+	}
 	NOBODY virtual void Think(void);
 	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 	
@@ -269,7 +272,10 @@ public:
 	void Spawn_(void);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
-	int ObjectCaps_(void);
+	int ObjectCaps_(void)
+	{
+		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | FCAP_IMPULSE_USE;
+	}
 	void Think_(void);
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 

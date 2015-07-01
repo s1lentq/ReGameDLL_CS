@@ -26,18 +26,35 @@
 *
 */
 
-#ifndef VOICE_COMMON_H
-#define VOICE_COMMON_H
+#ifndef CMD_H
+#define CMD_H
 #ifdef _WIN32
 #pragma once
 #endif
 
-#include "bitvec.h"
+#define FCMD_HUD_COMMAND		BIT(0)
+#define FCMD_GAME_COMMAND		BIT(1)
+#define FCMD_WRAPPER_COMMAND		BIT(2)
 
-// TODO: this should just be set to MAX_CLIENTS
-#define VOICE_MAX_PLAYERS		32
-#define VOICE_MAX_PLAYERS_DW		((VOICE_MAX_PLAYERS / 32) + !!(VOICE_MAX_PLAYERS & 31))
+/* <8f1> ../engine/cmd.h:65 */
+typedef void (*xcommand_t)(void);
 
-typedef CBitVec< VOICE_MAX_PLAYERS > CPlayerBitVec;
+/* <904> ../engine/cmd.h:71 */
+typedef struct cmd_function_s
+{
+	struct cmd_function_s *next;
+	char *name;
+	xcommand_t function;
+	int flags;
 
-#endif // VOICE_COMMON_H
+} cmd_function_t;
+
+/* <95a> ../engine/cmd.h:80 */
+typedef enum cmd_source_s
+{
+	src_client = 0,		// came in over a net connection as a clc_stringcmd. host_client will be valid during this state.
+	src_command = 1,	// from the command buffer.
+
+} cmd_source_t;
+
+#endif // CMD_H
