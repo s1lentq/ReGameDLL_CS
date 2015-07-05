@@ -37,8 +37,6 @@
 #include "FileSystem.h"
 #include "info.h"
 
-#define COM_TOKEN_LEN	1024
-
 // Don't allow overflow
 #define SIZEBUF_CHECK_OVERFLOW		0
 #define SIZEBUF_ALLOW_OVERFLOW		BIT(0)

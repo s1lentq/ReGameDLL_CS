@@ -273,12 +273,18 @@ private:
 #define g_pHostages (*pg_pHostages)
 #define g_iHostageNumber (*pg_iHostageNumber)
 
+#define cv_hostage_debug (*pcv_hostage_debug)
+#define cv_hostage_stop (*pcv_hostage_stop)
+
 #endif // HOOK_GAMEDLL
 
 extern CHostageManager *g_pHostages;
 extern int g_iHostageNumber;
 
-NOBODY void Hostage_RegisterCVars(void);
+extern cvar_t cv_hostage_debug;
+extern cvar_t cv_hostage_stop;
+
+void Hostage_RegisterCVars(void);
 NOBODY void InstallHostageManager(void);
 
 #endif // HOSTAGE_H

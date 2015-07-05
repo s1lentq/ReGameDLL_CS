@@ -179,8 +179,19 @@ NOBODY Activity CBaseMonster::GetSmallFlinchActivity(void)
 }
 
 /* <5f8a6> ../cstrike/dlls/combat.cpp:525 */
-NOBODY void CBaseMonster::BecomeDead_(void)
+void CBaseMonster::BecomeDead_(void)
 {
+	// don't let autoaim aim at corpses.
+	pev->takedamage = DAMAGE_YES;
+
+	// give the corpse half of the monster's original maximum health. 
+	pev->health = pev->max_health / 2;
+
+	// max_health now becomes a counter for how many blood decals the corpse can place.
+	pev->max_health = 5;
+
+	// make the corpse fly away from the attack vector
+	pev->movetype = MOVETYPE_TOSS;
 }
 
 /* <5f8cc> ../cstrike/dlls/combat.cpp:542 */
@@ -286,6 +297,10 @@ int CBaseMonster::TakeHealth_(float flHealth, int bitsDamageType)
 {
 	if (pev->takedamage == DAMAGE_NO)
 		return 0;
+
+	// clear out any damage types we healed.
+	// UNDONE: generic health should not heal any
+	// UNDONE: time-based damage
 
 	m_bitsDamageType &= ~(bitsDamageType & ~DMG_TIMEBASED);
 	return CBaseEntity::TakeHealth(flHealth, bitsDamageType);
@@ -451,6 +466,24 @@ NOBODY void RadiusDamage2(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pev
 //		class Vector vecSpot;                                 //  1354
 //		int bInWater;                                         //  1362
 //	}
+}
+
+/* <5e0d2> ../cstrike/dlls/combat.cpp:1442 */
+NOBODY void CBaseMonster::RadiusDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int iClassIgnore, int bitsDamageType)
+{
+	if (flDamage > 80)
+		::RadiusDamage(pev->origin, pevInflictor, pevAttacker, flDamage, flDamage * 3.5, iClassIgnore, bitsDamageType);
+	else
+		RadiusDamage2(pev->origin, pevInflictor, pevAttacker, flDamage, iClassIgnore, bitsDamageType);
+}
+
+/* <5e0d2> ../cstrike/dlls/combat.cpp:1448 */
+NOXREF void CBaseMonster::RadiusDamage(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int iClassIgnore, int bitsDamageType)
+{
+	if (flDamage > 80)
+		::RadiusDamage(vecSrc, pevInflictor, pevAttacker, flDamage, flDamage * 3.5, iClassIgnore, bitsDamageType);
+	else
+		RadiusDamage2(vecSrc, pevInflictor, pevAttacker, flDamage, iClassIgnore, bitsDamageType);
 }
 
 /* <61949> ../cstrike/dlls/combat.cpp:1454 */
@@ -670,13 +703,15 @@ NOBODY void CBaseEntity::FireBullets(ULONG cShots, Vector vecSrc, Vector vecDirS
 }
 
 /* <62693> ../cstrike/dlls/combat.cpp:1856 */
-/* linkage=_Z4vstrPf */
-NOBODY NOXREF char *vstr(float *v)
+NOXREF char *vstr(float *v)
 {
-//	{
-//		int idx;                                              //  1858
-//		char string;                                          //  1859
-//	} 
+	static int idx = 0;
+	static char string[ 16 ][ 1024 ];
+
+	idx = (idx + 1) % 0xF;
+	Q_sprintf(string[ idx ], "%.4f %.4f %.4f", v[0], v[1], v[2]);
+
+	return string[ idx ];
 }
 
 Vector (*pFireBullets3)(Vector, Vector, float, float, int, int, int, float, entvars_t *, bool, int);
@@ -685,7 +720,7 @@ Vector (*pFireBullets3)(Vector, Vector, float, float, int, int, int, float, entv
 Vector __declspec(naked) CBaseEntity::FireBullets3(Vector vecSrc, Vector vecDirShooting, float vecSpread, float flDistance, int iPenetration, int iBulletType, int iDamage, float flRangeModifier, entvars_t *pevAttacker, bool bPistol, int shared_rand)
 {
 	UNTESTED
-	//TODO: crash to czero
+	//TODO: crash a test to czero
 
 	__asm
 	{
@@ -771,7 +806,7 @@ Vector __declspec(naked) CBaseEntity::FireBullets3(Vector vecSrc, Vector vecDirS
 	}
 
 	if (!pevAttacker)
-		pevAttacker = pev;
+		pevAttacker = pev; // the default attacker is ourselves
 
 	gMultiDamage.type = (DMG_BULLET | DMG_NEVERGIB);
 
@@ -779,6 +814,8 @@ Vector __declspec(naked) CBaseEntity::FireBullets3(Vector vecSrc, Vector vecDirS
 
 	if (IsPlayer())
 	{
+		// Use player's random seed.
+		// get circular gaussian spread
 		x = UTIL_SharedRandomFloat(shared_rand, -0.5, 0.5) + UTIL_SharedRandomFloat(shared_rand + 1, -0.5, 0.5);
 		y = UTIL_SharedRandomFloat(shared_rand + 2, -0.5, 0.5) + UTIL_SharedRandomFloat(shared_rand + 3, -0.5, 0.5);
 	}
@@ -931,11 +968,12 @@ void CBaseEntity::TraceBleed_(float flDamage, Vector vecDir, TraceResult *ptr, i
 	if (!(bitsDamageType & (DMG_CRUSH | DMG_BULLET | DMG_SLASH | DMG_BLAST | DMG_CLUB | DMG_MORTAR)))
 		return;
 
-	int i;
+	// make blood decal on the wall! 
 	TraceResult Bloodtr;
 	Vector vecTraceDir;
 	float flNoise;
 	int cCount;
+	int i;
 
 	if (flDamage < 10.0f)
 	{
@@ -955,7 +993,9 @@ void CBaseEntity::TraceBleed_(float flDamage, Vector vecDir, TraceResult *ptr, i
 
 	for (i = 0; i < cCount; i++)
 	{
+		// trace in the opposite direction the shot came from (the direction the shot is going)
 		vecTraceDir = vecDir * -1.0f;
+
 		vecTraceDir.x += RANDOM_FLOAT(-flNoise, flNoise);
 		vecTraceDir.y += RANDOM_FLOAT(-flNoise, flNoise);
 		vecTraceDir.z += RANDOM_FLOAT(-flNoise, flNoise);
@@ -970,17 +1010,40 @@ void CBaseEntity::TraceBleed_(float flDamage, Vector vecDir, TraceResult *ptr, i
 }
 
 /* <62e0e> ../cstrike/dlls/combat.cpp:2145 */
-NOBODY void CBaseMonster::MakeDamageBloodDecal(int cCount, float flNoise, TraceResult *ptr, Vector &vecDir)
+NOXREF void CBaseMonster::MakeDamageBloodDecal(int cCount, float flNoise, TraceResult *ptr, Vector &vecDir)
 {
-//	{ 
-//		TraceResult Bloodtr;                                  //  2148
-//		class Vector vecTraceDir;                             //  2149
-//		int i;                                                //  2150
-//		operator*(const Vector *const this,
-//				float fl);  //  2174
-//		operator+(const Vector *const this,
-//				const Vector &v);  //  2174
-//	} 
+	// make blood decal on the wall! 
+	TraceResult Bloodtr;
+	Vector vecTraceDir; 
+	int i;
+
+	if (!IsAlive())
+	{
+		// dealing with a dead monster.
+		if (pev->max_health <= 0)
+		{
+			// no blood decal for a monster that has already decalled its limit.
+			return;
+		}
+		else
+			pev->max_health--;
+	}
+
+	for (i = 0 ; i < cCount ; i++)
+	{
+		vecTraceDir = vecDir;
+
+		vecTraceDir.x += RANDOM_FLOAT(-flNoise, flNoise);
+		vecTraceDir.y += RANDOM_FLOAT(-flNoise, flNoise);
+		vecTraceDir.z += RANDOM_FLOAT(-flNoise, flNoise);
+
+		UTIL_TraceLine(ptr->vecEndPos, ptr->vecEndPos + vecTraceDir * 172, ignore_monsters, ENT(pev), &Bloodtr);
+
+		if (Bloodtr.flFraction != 1.0)
+		{
+			UTIL_BloodDecalTrace(&Bloodtr, BloodColor());
+		}
+	}
 }
 
 /* <62f3e> ../cstrike/dlls/combat.cpp:2197 */

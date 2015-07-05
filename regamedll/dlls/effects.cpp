@@ -61,12 +61,12 @@ TYPEDESCRIPTION CGibShooter::m_SaveData[] =
 
 #else
 
-TYPEDESCRIPTION (*CBubbling::m_SaveData)[3];
-TYPEDESCRIPTION (*CLightning::m_SaveData)[13];
-TYPEDESCRIPTION (*CLaser::m_SaveData)[3];
-TYPEDESCRIPTION (*CGlow::m_SaveData)[2];
-TYPEDESCRIPTION (*CSprite::m_SaveData)[2];
-TYPEDESCRIPTION (*CGibShooter::m_SaveData)[7];
+TYPEDESCRIPTION (*CBubbling::pm_SaveData)[3];
+TYPEDESCRIPTION (*CLightning::pm_SaveData)[13];
+TYPEDESCRIPTION (*CLaser::pm_SaveData)[3];
+TYPEDESCRIPTION (*CGlow::pm_SaveData)[2];
+TYPEDESCRIPTION (*CSprite::pm_SaveData)[2];
+TYPEDESCRIPTION (*CGibShooter::pm_SaveData)[7];
 
 #endif // HOOK_GAMEDLL
 

@@ -24,9 +24,9 @@ TYPEDESCRIPTION CWreckage::m_SaveData[] =
 
 #else
 
-TYPEDESCRIPTION (*CCycler::m_SaveData)[1];
-TYPEDESCRIPTION (*CCyclerSprite::m_SaveData)[3];
-TYPEDESCRIPTION (*CWreckage::m_SaveData)[1];
+TYPEDESCRIPTION (*CCycler::pm_SaveData)[1];
+TYPEDESCRIPTION (*CCyclerSprite::pm_SaveData)[3];
+TYPEDESCRIPTION (*CWreckage::pm_SaveData)[1];
 
 #endif // HOOK_GAMEDLL
 

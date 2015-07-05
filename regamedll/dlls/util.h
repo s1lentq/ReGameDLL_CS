@@ -101,7 +101,7 @@ extern globalvars_t *gpGlobals;
 #ifndef HOOK_GAMEDLL
 
 #define LINK_ENTITY_TO_CLASS(mapClassName,DLLClassName)\
-	extern "C" _DLLEXPORT void mapClassName(entvars_t *pev);\
+	C_DLLEXPORT void mapClassName(entvars_t *pev);\
 	void mapClassName(entvars_t *pev)\
 	{\
 		GetClassPtr((DLLClassName *)pev);\
@@ -126,7 +126,7 @@ typedef enum
 	dont_ignore_glass = 0
 } IGNORE_GLASS;
 
-typedef enum
+enum
 {
 	point_hull = 0,
 	human_hull = 1,
@@ -329,13 +329,6 @@ extern int g_groupmask;
 extern int g_groupop;
 extern const int gSizes[18];
 
-//extern "C" _DLLEXPORT void func_recharge(entvars_t *pev);
-//extern "C" _DLLEXPORT void cycler_prdroid(entvars_t *pev);
-//extern "C" _DLLEXPORT void cycler(entvars_t *pev);
-//extern "C" _DLLEXPORT void cycler_sprite(entvars_t *pev);
-//extern "C" _DLLEXPORT void cycler_weapon(entvars_t *pev);
-//extern "C" _DLLEXPORT void cycler_wreckage(entvars_t *pev);
-
 int UTIL_SharedRandomLong(unsigned int seed, int low, int high);
 float UTIL_SharedRandomFloat(unsigned int seed, float low, float high);
 NOXREF void UTIL_ParametricRocket(entvars_t *pev, Vector vecOrigin, Vector vecAngles, edict_t *owner);
@@ -369,7 +362,7 @@ void UTIL_ScreenFadeAll(const Vector &color, float fadeTime, float fadeHold, int
 void UTIL_ScreenFade(CBaseEntity *pEntity, const Vector &color, float fadeTime, float fadeHold = 0.0f, int alpha = 0, int flags = 0);
 void UTIL_HudMessage(CBaseEntity *pEntity, const hudtextparms_t &textparms, const char *pMessage);
 void UTIL_HudMessageAll(const hudtextparms_t &textparms, const char *pMessage);
-void UTIL_ClientPrintAll(int msg_dest, const char *msg_name, const char *param1, const char *param2, const char *param3, const char *param4);
+void UTIL_ClientPrintAll(int msg_dest, const char *msg_name, const char *param1 = NULL, const char *param2 = NULL, const char *param3 = NULL, const char *param4 = NULL);
 void ClientPrint(entvars_t *client, int msg_dest, const char *msg_name, const char *param1 = NULL, const char *param2 = NULL, const char *param3 = NULL, const char *param4 = NULL);
 NOXREF void UTIL_SayText(const char *pText, CBaseEntity *pEntity);
 void UTIL_SayTextAll(const char *pText, CBaseEntity *pEntity);
@@ -377,9 +370,9 @@ char *UTIL_dtos1(int d);
 char *UTIL_dtos2(int d);
 NOXREF char *UTIL_dtos3(int d);
 NOXREF char *UTIL_dtos4(int d);
-void UTIL_ShowMessageArgs(const char *pString, CBaseEntity *pPlayer, CUtlVector<char*> *args, bool isHint);
-void UTIL_ShowMessage(const char *pString, CBaseEntity *pEntity, bool isHint);
-void UTIL_ShowMessageAll(const char *pString, bool isHint);
+void UTIL_ShowMessageArgs(const char *pString, CBaseEntity *pPlayer, CUtlVector<char*> *args, bool isHint = false);
+void UTIL_ShowMessage(const char *pString, CBaseEntity *pEntity, bool isHint = false);
+void UTIL_ShowMessageAll(const char *pString, bool isHint = false);
 void UTIL_TraceLine(const Vector &vecStart, const Vector &vecEnd, IGNORE_MONSTERS igmon, edict_t *pentIgnore, TraceResult *ptr);
 void UTIL_TraceLine(const Vector &vecStart, const Vector &vecEnd, IGNORE_MONSTERS igmon, IGNORE_GLASS ignoreGlass, edict_t *pentIgnore, TraceResult *ptr);
 void UTIL_TraceHull(const Vector &vecStart, const Vector &vecEnd, IGNORE_MONSTERS igmon, int hullNumber, edict_t *pentIgnore, TraceResult *ptr);
@@ -426,7 +419,12 @@ NOXREF int GetPlayerTeam(int index);
 bool UTIL_IsGame(const char *gameName);
 float UTIL_GetPlayerGaitYaw(int playerIndex);
 
+// combat.cpp
 NOBODY void RadiusFlash(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int iClassIgnore, int bitsDamageType);
+NOBODY void GetAmountOfPlayerVisible(Vector vecSrc, CBaseEntity *entity);
+NOBODY void RadiusDamage(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, float flRadius, int iClassIgnore, int bitsDamageType);
+NOBODY void RadiusDamage2(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, float flRadius, int iClassIgnore, int bitsDamageType);
+NOXREF char *vstr(float *v);
 
 /*
 * Declared for function overload

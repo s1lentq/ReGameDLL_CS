@@ -13,7 +13,7 @@ TYPEDESCRIPTION CLight::m_SaveData[] =
 
 #else
 
-TYPEDESCRIPTION (*CLight::m_SaveData)[2];
+TYPEDESCRIPTION (*CLight::pm_SaveData)[2];
 
 #endif // HOOK_GAMEDLL
 
@@ -164,14 +164,26 @@ void CEnvLight::KeyValue_(KeyValueData *pkvd)
 /* <e7bb3> ../cstrike/dlls/lights.cpp:215 */
 void CEnvLight::Spawn_(void)
 {
+#if defined(HOOK_GAMEDLL)
+// NOTE: fix negative the values for function sprintf from STD C++:
+// expected - sv_skyvec_y "0.000000"
+// with using sprintf from STD C++, got - sv_skyvec_y "-0.000000"
+// If we not doing it then the test will be failed!
+#define SPRINTF_OLD_STD_FIX + 0
+#else
+#define SPRINTF_OLD_STD_FIX
+#endif // HOOK_GAMEDLL
+
 	char szVector[64];
 	UTIL_MakeAimVectors( pev->angles );
 
-	Q_sprintf(szVector, "%f", gpGlobals->v_forward.x);
+	Q_sprintf(szVector, "%f", gpGlobals->v_forward.x SPRINTF_OLD_STD_FIX);
 	CVAR_SET_STRING("sv_skyvec_x", szVector);
-	Q_sprintf(szVector, "%f", gpGlobals->v_forward.y);
+
+	Q_sprintf(szVector, "%f", gpGlobals->v_forward.y SPRINTF_OLD_STD_FIX);
 	CVAR_SET_STRING("sv_skyvec_y", szVector);
-	Q_sprintf(szVector, "%f", gpGlobals->v_forward.z);
+
+	Q_sprintf(szVector, "%f", gpGlobals->v_forward.z SPRINTF_OLD_STD_FIX);
 	CVAR_SET_STRING("sv_skyvec_z", szVector);
 
 	CLight::Spawn();

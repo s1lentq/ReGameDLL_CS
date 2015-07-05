@@ -25,9 +25,9 @@ TYPEDESCRIPTION CGamePlayerZone::m_SaveData[] =
 
 #else
 
-TYPEDESCRIPTION (*CRuleEntity::m_SaveData)[1];
-TYPEDESCRIPTION (*CGameText::m_SaveData)[1];
-TYPEDESCRIPTION (*CGamePlayerZone::m_SaveData)[4];
+TYPEDESCRIPTION (*CRuleEntity::pm_SaveData)[1];
+TYPEDESCRIPTION (*CGameText::pm_SaveData)[1];
+TYPEDESCRIPTION (*CGamePlayerZone::pm_SaveData)[4];
 
 #endif // HOOK_GAMEDLL
 

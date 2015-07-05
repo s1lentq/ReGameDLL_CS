@@ -186,6 +186,14 @@ WeaponStruct g_weaponStruct[MAX_WEAPONS] =
 	{ 0, 0, 0, 0, 0 }
 };
 
+char *CDeadHEV::m_szPoses[] =
+{
+	"deadback",
+	"deadsitting",
+	"deadstomach",
+	"deadtable"
+};
+
 #else //HOOK_GAMEDLL
 
 int giPrecacheGrunt;
@@ -211,7 +219,7 @@ int gmsgWeaponList;
 //int gmsgDeathMsg;
 int gmsgScoreAttrib;
 int gmsgScoreInfo;
-//int gmsgTeamInfo;
+int gmsgTeamInfo;
 //int gmsgTeamScore;
 //int gmsgGameMode;
 //int gmsgMOTD;
@@ -262,7 +270,7 @@ int gmsgScenarioIcon;
 int gmsgBotVoice;
 int gmsgBuyClose;
 int gmsgItemStatus;
-//int gmsgLocation;
+int gmsgLocation;
 int gmsgSpecHealth2;
 int gmsgBarTime2;
 int gmsgBotProgress;
@@ -273,9 +281,10 @@ int gmsgBotProgress;
 BOOL gInitHUD;
 cvar_t *sv_aim;
 
-TYPEDESCRIPTION (*CRevertSaved::m_SaveData)[2];
-TYPEDESCRIPTION (*CBasePlayer::m_playerSaveData)[40];
+TYPEDESCRIPTION (*CRevertSaved::pm_SaveData)[2];
+TYPEDESCRIPTION (*CBasePlayer::pm_playerSaveData)[40];
 WeaponStruct g_weaponStruct[ MAX_WEAPONS ];
+char *(*CDeadHEV::pm_szPoses)[4];
 
 #endif //HOOK_GAMEDLL
 
@@ -311,11 +320,7 @@ void WriteSigonMessages(void)
 {
 	for (int i = 0; i < MAX_WEAPONS; i++)
 	{
-#ifndef HOOK_GAMEDLL
-		ItemInfo &II = CBasePlayerItem::ItemInfoArray[i];
-#else
-		ItemInfo &II = (*CBasePlayerItem::pItemInfoArray)[i];
-#endif // HOOK_GAMEDLL
+		ItemInfo &II = IMPLEMENT_ARRAY_CLASS(CBasePlayerItem, ItemInfoArray)[i];
 
 		if (!II.iId)
 			continue;
@@ -559,31 +564,33 @@ NOXREF CBasePlayer *CBasePlayer::GetNextRadioRecipient(CBasePlayer *pStartPlayer
 		if (FNullEnt(pEntity->edict()))
 			break;
 
-		//BOOL bSend = FALSE;
+		BOOL bSend = FALSE;
 		CBasePlayer *pPlayer = GetClassPtr((CBasePlayer *)pEntity->pev);
 
 		if (pEntity->IsPlayer())
 		{
-			if (pEntity->pev->flags != FL_DORMANT)
-			{
-				if (pPlayer && pPlayer->m_iTeam == m_iTeam)
-					return pPlayer;
-			}
+			if (pEntity->IsDormant())
+				continue;
+
+			if (pPlayer && pPlayer->m_iTeam == m_iTeam)
+				bSend = TRUE;
 		}
 		else if (pPlayer)
 		{
-			if (pPlayer->pev->iuser1 == OBS_CHASE_LOCKED || pPlayer->pev->iuser1 == OBS_CHASE_FREE || pPlayer->pev->iuser1 == OBS_IN_EYE)
-			{
-				if (!FNullEnt(m_hObserverTarget))
-					continue;
+			if (pPlayer->pev->iuser1 != OBS_CHASE_LOCKED && pPlayer->pev->iuser1 != OBS_CHASE_FREE && pPlayer->pev->iuser1 != OBS_IN_EYE)
+				continue;
 
-				CBasePlayer *pTarget = (CBasePlayer *)CBaseEntity::Instance(pPlayer->m_hObserverTarget->pev);
-				if (pTarget && pTarget->m_iTeam == m_iTeam)
-				{
-					return pPlayer;
-				}
-			}
+			if (!FNullEnt(m_hObserverTarget))
+				continue;
+
+			CBasePlayer *pTarget = (CBasePlayer *)CBaseEntity::Instance( pPlayer->m_hObserverTarget->pev );
+
+			if (pTarget && pTarget->m_iTeam == m_iTeam)
+				bSend = TRUE;
 		}
+
+		if (bSend)
+			return pPlayer;
 	}
 	return NULL;
 }
@@ -625,7 +632,7 @@ void CBasePlayer::Radio(const char *msg_id, const char *msg_verbose, short pitch
 
 			CBasePlayer *pTarget = (CBasePlayer *)CBaseEntity::Instance(pPlayer->m_hObserverTarget->pev);
 
-			if (pTarget && pTarget->m_iTeam == pPlayer->m_iTeam)
+			if (pTarget && pTarget->m_iTeam == m_iTeam)
 				bSend = TRUE;
 		}
 
@@ -640,6 +647,8 @@ void CBasePlayer::Radio(const char *msg_id, const char *msg_verbose, short pitch
 
 		if (msg_verbose)	
 		{
+			// search the place name where is located the player
+
 			const char *placeName = NULL;
 			Place playerPlace = TheNavAreaGrid.GetPlace( &pev->origin );
 			const BotPhraseList *placeList = TheBotPhrases->GetPlaceList();
@@ -1220,13 +1229,9 @@ void packPlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 			pWeaponBox->pev->nextthink = gpGlobals->time + 300;
 			pWeaponBox->PackWeapon(pItem);
 
-#ifndef HOOK_GAMEDLL
 			if (packAmmo)
-				pWeaponBox->PackAmmo(MAKE_STRING(CBasePlayerItem::ItemInfoArray[pItem->m_iId].pszAmmo1), pPlayer->m_rgAmmo[pItem->PrimaryAmmoIndex()]);
-#else // HOOK_GAMEDLL
-			if (packAmmo)
-				pWeaponBox->PackAmmo(MAKE_STRING((*CBasePlayerItem::pItemInfoArray)[pItem->m_iId].pszAmmo1), pPlayer->m_rgAmmo[pItem->PrimaryAmmoIndex()]);
-#endif // HOOK_GAMEDLL
+				pWeaponBox->PackAmmo(MAKE_STRING( IMPLEMENT_ARRAY_CLASS(CBasePlayerItem, ItemInfoArray)[ pItem->m_iId ].pszAmmo1 ), pPlayer->m_rgAmmo[pItem->PrimaryAmmoIndex()]);
+
 			SET_MODEL(ENT(pWeaponBox->pev), modelName);
 		}
 	}
@@ -1250,10 +1255,9 @@ void CBasePlayer::PackDeadPlayerItems(void)
 		int nBestWeight = 0;
 		CBasePlayerItem *pBestItem = NULL;
 
-		//TODO: 1 - 6?
 		for (int n = 0; n < MAX_ITEM_TYPES; n++)
 		{
-			CBasePlayerItem *pPlayerItem = m_rgpPlayerItems[n];
+			CBasePlayerItem *pPlayerItem = m_rgpPlayerItems[ n ];
 
 			while (pPlayerItem != NULL)
 			{
@@ -2784,7 +2788,7 @@ void WINAPI_HOOK CBasePlayer::MenuPrint(const char *msg)
 	const char *msg_portion = msg;
 	char sbuf[MAX_BUFFER_MENU_BRIEFING + 1];
 
-	while (strlen(msg_portion) >= MAX_BUFFER_MENU_BRIEFING)
+	while (Q_strlen(msg_portion) >= MAX_BUFFER_MENU_BRIEFING)
 	{
 		Q_strncpy(sbuf, msg_portion, MAX_BUFFER_MENU_BRIEFING);
 		sbuf[ MAX_BUFFER_MENU_BRIEFING ] = '\0';
@@ -4191,17 +4195,10 @@ int CBasePlayer::GetAmmoIndex(const char *psz)
 
 	for (int i = 1; i < MAX_AMMO_SLOTS; i++)
 	{
-#ifndef HOOK_GAMEDLL
-		if (!AmmoInfoArray[i].pszName)
+		if (!IMPLEMENT_ARRAY_CLASS(CBasePlayerItem, AmmoInfoArray)[ i ].pszName)
 			continue;
 
-		if (!Q_stricmp(psz, CBasePlayerItem::AmmoInfoArray[i].pszName))
-#else
-		if (!(*CBasePlayerItem::pAmmoInfoArray)[i].pszName)
-			continue;
-
-		if (!Q_stricmp(psz, (*CBasePlayerItem::pAmmoInfoArray)[i].pszName))
-#endif // HOOK_GAMEDLL
+		if (!Q_stricmp(psz, IMPLEMENT_ARRAY_CLASS(CBasePlayerItem, AmmoInfoArray)[ i ].pszName))
 			return i;
 	}
 	return -1;
@@ -4737,9 +4734,9 @@ NOBODY void CBasePlayer::SwitchTeam(void)
 void CBasePlayer::UpdateShieldCrosshair(bool draw)
 {
 	if (draw)
-		m_iHideHUD &= ~HIDEHUD_CROSSHAIR;//0xFFFFFFBF;//0xBF;
+		m_iHideHUD &= ~HIDEHUD_CROSSHAIR;
 	else
-		m_iHideHUD |= HIDEHUD_CROSSHAIR;//0x40
+		m_iHideHUD |= HIDEHUD_CROSSHAIR;
 }
 
 /* <152fbc> ../cstrike/dlls/player.cpp:9313 */
@@ -4783,37 +4780,68 @@ void CBasePlayer::TabulateAmmo(void)
 }
 
 /* <1511eb> ../cstrike/dlls/player.cpp:9365 */
-NOBODY int CDeadHEV::Classify_(void)
+int CDeadHEV::Classify_(void)
 {
+	return CLASS_HUMAN_MILITARY;
 }
 
 /* <152451> ../cstrike/dlls/player.cpp:9375 */
-NOBODY void CDeadHEV::KeyValue_(KeyValueData *pkvd)
+void CDeadHEV::KeyValue_(KeyValueData *pkvd)
 {
-//	FStrEq(const char *sz1,
-//		const char *sz2);  //  9377
-//	KeyValue(CDeadHEV *const this,
-//		KeyValueData *pkvd);  //  9375
+	if (FStrEq(pkvd->szKeyName, "pose"))
+	{
+		m_iPose = atoi(pkvd->szValue);
+		pkvd->fHandled = TRUE;
+	}
+	else
+		CBaseMonster::KeyValue(pkvd);
 }
 
 /* <159a88> ../cstrike/dlls/player.cpp:9386 */
 LINK_ENTITY_TO_CLASS(monster_hevsuit_dead, CDeadHEV);
 
 /* <1513ce> ../cstrike/dlls/player.cpp:9391 */
-NOBODY void CDeadHEV::Spawn_(void)
+void CDeadHEV::Spawn_(void)
 {
+	PRECACHE_MODEL("models/player.mdl");
+	SET_MODEL(ENT(pev), "models/player.mdl");
+
+	pev->effects = 0;
+	pev->yaw_speed = 8.0f;
+
+	pev->sequence = 0;
+	pev->body = 1;
+
+	m_bloodColor = BLOOD_COLOR_RED;
+	pev->sequence = LookupSequence(m_szPoses[ m_iPose ]);
+
+	if (pev->sequence == -1)
+	{
+		ALERT(at_console, "Dead hevsuit with bad pose\n");
+		pev->sequence = 0;
+		pev->effects = EF_BRIGHTFIELD;
+	}
+
+	pev->health = 8;
+	MonsterInitDead();
 }
 
 /* <159b64> ../cstrike/dlls/player.cpp:9426 */
 LINK_ENTITY_TO_CLASS(player_weaponstrip, CStripWeapons);
 
 /* <15f62f> ../cstrike/dlls/player.cpp:9428 */
-NOBODY void CStripWeapons::Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CStripWeapons::Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
-//	{
-//		class CBasePlayer *pPlayer;                          //  9430
-//		Instance(edict_t *pent);  //  9438
-//	}
+	CBasePlayer *pPlayer = NULL;
+
+	if (pActivator && pActivator->IsPlayer())
+		pPlayer = (CBasePlayer *)pActivator;
+
+	else if (!g_pGameRules->IsDeathmatch())
+		pPlayer = (CBasePlayer *)Instance(INDEXENT(1));
+
+	if (pPlayer)
+		pPlayer->RemoveAllItems(FALSE);
 }
 
 /* <159c40> ../cstrike/dlls/player.cpp:9473 */
@@ -4823,149 +4851,342 @@ LINK_ENTITY_TO_CLASS(player_loadsaved, CRevertSaved);
 IMPLEMENT_SAVERESTORE(CRevertSaved, CPointEntity);
 
 /* <152540> ../cstrike/dlls/player.cpp:9483 */
-NOBODY void CRevertSaved::KeyValue_(KeyValueData *pkvd)
+void CRevertSaved::KeyValue_(KeyValueData *pkvd)
 {
-//	FStrEq(const char *sz1,
-//		const char *sz2);  //  9485
-//	FStrEq(const char *sz1,
-//		const char *sz2);  //  9490
-//	KeyValue(CRevertSaved *const this,
-//		KeyValueData *pkvd);  //  9483
-//	atof(const char *__nptr);  //  9487
-//	atof(const char *__nptr);  //  9492
+	if (FStrEq(pkvd->szKeyName, "duration"))
+	{
+		SetDuration( atof(pkvd->szValue) );
+		pkvd->fHandled = TRUE;
+	}
+	else if (FStrEq(pkvd->szKeyName, "holdtime"))
+	{
+		SetHoldTime( atof(pkvd->szValue) );
+		pkvd->fHandled = TRUE;
+	}
+	else if (FStrEq(pkvd->szKeyName, "messagetime"))
+	{
+		SetMessageTime( atof(pkvd->szValue) );
+		pkvd->fHandled = TRUE;
+	}
+	else if (FStrEq(pkvd->szKeyName, "loadtime"))
+	{
+		SetLoadTime( atof(pkvd->szValue) );
+		pkvd->fHandled = TRUE;
+	}
+	else
+		CPointEntity::KeyValue(pkvd);
 }
 
 /* <151365> ../cstrike/dlls/player.cpp:9509 */
-NOBODY void CRevertSaved::Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CRevertSaved::Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
+	UTIL_ScreenFadeAll(pev->rendercolor, Duration(), HoldTime(), (int)pev->renderamt, FFADE_OUT);
+	pev->nextthink = gpGlobals->time + MessageTime();
+	SetThink(&CRevertSaved::MessageThink);
 }
 
 /* <152a96> ../cstrike/dlls/player.cpp:9517 */
-NOBODY void CRevertSaved::MessageThink(void)
+void CRevertSaved::MessageThink(void)
 {
-//	{
-//		float nextThink;                                      //  9520
-//		LoadThink(CRevertSaved *const this);  //  9527
-//	}
+	float nextThink = LoadTime() - MessageTime();
+	UTIL_ShowMessageAll(STRING(pev->message));
+
+	if (nextThink > 0)
+	{
+		pev->nextthink = gpGlobals->time + nextThink;
+		SetThink(&CRevertSaved::LoadThink);
+	}
+	else
+		LoadThink();
 }
 
 /* <15198b> ../cstrike/dlls/player.cpp:9531 */
-NOBODY void CRevertSaved::LoadThink(void)
+void CRevertSaved::LoadThink(void)
 {
-//	LoadThink(CRevertSaved *const this);  //  9531
+	if (!gpGlobals->deathmatch)
+		SERVER_COMMAND("reload\n");
 }
 
 /* <15133c> ../cstrike/dlls/player.cpp:9549 */
-NOBODY void CInfoIntermission::Spawn_(void)
+void CInfoIntermission::Spawn_(void)
 {
+	UTIL_SetOrigin(pev, pev->origin);
+
+	pev->solid = SOLID_NOT;
+	pev->effects = EF_NODRAW;
+	pev->v_angle = g_vecZero;
+	pev->nextthink = gpGlobals->time + 2;
 }
 
 /* <1530e6> ../cstrike/dlls/player.cpp:9560 */
-NOBODY void CInfoIntermission::Think_(void)
+void CInfoIntermission::Think_(void)
 {
-//	{
-//		edict_t *pTarget;                                    //  9562
-//		FIND_ENTITY_BY_TARGETNAME(edict_t *entStart,
-//						const char *pszName);  //  9565
-//		FNullEnt(const edict_t *pent);  //  9567
-//		operator-(const Vector *const this,
-//				const Vector &v);  //  9569
-//		Normalize(const Vector *const this);  //  9569
-//	}
+	edict_t *pTarget = FIND_ENTITY_BY_TARGETNAME(NULL, STRING(pev->target));
+
+	if (!FNullEnt(pTarget))
+	{
+		pev->v_angle = UTIL_VecToAngles((pTarget->v.origin - pev->origin).Normalize());
+		pev->v_angle.x = -pev->v_angle.x;
+	}
 }
 
 /* <159d1c> ../cstrike/dlls/player.cpp:9574 */
 LINK_ENTITY_TO_CLASS(info_intermission, CInfoIntermission);
 
 /* <159df8> ../cstrike/dlls/player.cpp:9586 */
-NOBODY void CBasePlayer::StudioEstimateGait(void)
+void CBasePlayer::StudioEstimateGait(void)
 {
-//	{
-//		float dt;                                             //  9588
-//		Vector est_velocity;                            //  9589
-//		operator-(const Vector *const this,
-//				const Vector &v);  //  9604
-//		Length(const Vector *const this);  //  9607
-//		{
-//			float flYawDiff;                              //  9618
-//			float flYaw;                                  //  9619
-//		}
-//	}
+	float_precision dt;
+	Vector est_velocity;
+
+	dt = gpGlobals->frametime;
+
+	if (dt < 0)
+		dt = 0;
+
+	else if (dt > 1.0)
+		dt = 1;
+
+	if (dt == 0)
+	{
+		m_flGaitMovement = 0;
+		return;
+	}
+
+	est_velocity = pev->origin - m_prevgaitorigin;
+	m_prevgaitorigin = pev->origin;
+
+	m_flGaitMovement = est_velocity.Length();
+	
+	if (dt <= 0 || m_flGaitMovement / dt < 5)
+	{
+		m_flGaitMovement = 0;
+
+		est_velocity.x = 0;
+		est_velocity.y = 0;
+	}
+
+	if (!est_velocity.x && !est_velocity.y)
+	{
+		float_precision flYawDiff = pev->angles.y - m_flGaityaw;
+		float_precision flYaw = fmod(flYawDiff, 360);
+
+		flYawDiff = flYawDiff - (int64_t)(flYawDiff / 360) * 360;
+
+		if (flYawDiff > 180)
+			flYawDiff -= 360;
+
+		if (flYawDiff < -180)
+			flYawDiff += 360;
+
+		if (flYaw < -180)
+			flYaw += 360;
+
+		else if (flYaw > 180)
+			flYaw -= 360;
+
+		if (flYaw > -5 && flYaw < 5)
+			m_flYawModifier = 0.05;
+
+		if (flYaw < -90 || flYaw > 90)
+			m_flYawModifier = 3.5;
+
+		if (dt < 0.25)
+			flYawDiff *= dt * m_flYawModifier;
+		else
+			flYawDiff *= dt;
+
+		if ((float_precision)abs((int64_t)flYawDiff) < 0.1)
+			flYawDiff = 0;
+
+		m_flGaityaw += flYawDiff;
+		m_flGaityaw -= (int64_t)(m_flGaityaw / 360) * 360;
+
+		m_flGaitMovement = 0;
+	}
+	else
+	{
+		m_flGaityaw = (atan2((float_precision)est_velocity.y, (float_precision)est_velocity.x) * 180 / M_PI);
+
+		if (m_flGaityaw > 180)
+			m_flGaityaw = 180;
+
+		if (m_flGaityaw < -180)
+			m_flGaityaw = -180;
+	}
 }
 
 /* <159f01> ../cstrike/dlls/player.cpp:9685 */
-NOBODY void CBasePlayer::StudioPlayerBlend(int *pBlend, float *pPitch)
+NOXREF void CBasePlayer::StudioPlayerBlend(int *pBlend, float *pPitch)
 {
-//	{
-//		float range;                                          //  9688
-//	}
+	// calc up/down pointing
+	float range = (float)(int64_t)(*pPitch * 3.0f);
+	
+	*pBlend = range;
+
+	if (range <= -45.0f)
+	{
+		*pBlend = 255;
+		*pPitch = 0;
+	}
+	else if (range >= 45.0f)
+	{
+		*pBlend = 0;
+		*pPitch = 0;
+	}
+	else
+	{
+		*pBlend = (int64_t)((45.0f - range) * (255.0f / 90.0f));
+		*pPitch = 0;
+	}
 }
 
 /* <159f81> ../cstrike/dlls/player.cpp:9709 */
-NOBODY void CBasePlayer::CalculatePitchBlend(void)
+NOXREF void CBasePlayer::CalculatePitchBlend(void)
 {
-//	{
-//		int iBlend;                                           //  9711
-//		float temp;                                           //  9712
-//		StudioPlayerBlend(CBasePlayer *const this,
-//					int *pBlend,
-//					float *pPitch);  //  9714
-//	}
+	int iBlend;
+	float temp = pev->angles.x;
+
+	StudioPlayerBlend(&iBlend, &temp);
+
+	pev->blending[1] = iBlend;
+	m_flPitch = iBlend;
 }
 
 /* <15a007> ../cstrike/dlls/player.cpp:9720 */
-NOBODY void CBasePlayer::CalculateYawBlend(void)
+void CBasePlayer::CalculateYawBlend(void)
 {
-//	{
-//		float dt;                                             //  9722
-//		float flYaw;                                          //  9723
-//		float maxyaw;                                         //  9745
-//		float blend_yaw;                                      //  9763
-//	}
+	float dt;
+	float maxyaw = 255.0f;
+
+	float_precision flYaw;
+	float_precision blend_yaw;
+
+	dt = gpGlobals->frametime;
+
+	if (dt < 0)
+		dt = 0;
+
+	else if (dt > 1)
+		dt = 1;
+
+	StudioEstimateGait();
+
+	flYaw = fmod((float_precision)(pev->angles.y - m_flGaityaw), 360);
+
+	if (flYaw < -180)
+		flYaw += 360;
+
+	else if (flYaw > 180)
+		flYaw -= 360;
+
+	if (m_flGaitMovement != 0.0)
+	{
+		if (flYaw > 120)
+		{
+			m_flGaityaw -= 180;
+			m_flGaitMovement = -m_flGaitMovement;
+			flYaw -= 180;
+		}
+		else if (flYaw < -120)
+		{
+			m_flGaityaw += 180;
+			m_flGaitMovement = -m_flGaitMovement;
+			flYaw += 180;
+		}
+	}
+
+	flYaw = (flYaw / 90) * 128 + 127;
+
+	if (flYaw > 255)
+		flYaw = 255;
+
+	else if (flYaw < 0)
+		flYaw = 0;
+
+	blend_yaw = maxyaw - flYaw;
+
+	pev->blending[0] = (int64_t)blend_yaw;
+	m_flYaw = blend_yaw;
 }
 
 /* <15a07b> ../cstrike/dlls/player.cpp:9776 */
-NOBODY void CBasePlayer::StudioProcessGait(void)
+void CBasePlayer::StudioProcessGait(void)
 {
-//	{
-//		mstudioseqdesc_t *pseqdesc;                          //  9778
-//		float dt;                                             //  9779
-//		class model_s *model;                                //  9793
-//		studiohdr_t *pstudiohdr;                             //  9797
-//		CalculatePitchBlend(CBasePlayer *const this);  //  9791
-//	}
+	mstudioseqdesc_t *pseqdesc;
+	float_precision dt = gpGlobals->frametime;
+
+	if (dt < 0.0)
+		dt = 0;
+
+	else if (dt > 1.0)
+		dt = 1;
+
+	CalculateYawBlend();
+	CalculatePitchBlend();
+
+	model_t *model = (model_t *)GET_MODEL_PTR(edict());
+
+	if (!model)
+		return;
+
+	studiohdr_t *pstudiohdr = (studiohdr_t *)model;
+
+	pseqdesc = (mstudioseqdesc_t *)((byte *)pstudiohdr + pstudiohdr->seqindex) + pev->gaitsequence;
+
+	if (pseqdesc->linearmovement.x > 0.0f)
+		m_flGaitframe += (m_flGaitMovement / pseqdesc->linearmovement.x) * pseqdesc->numframes;
+	else
+		m_flGaitframe += pev->framerate * pseqdesc->fps * dt;
+
+	m_flGaitframe -= (int)(m_flGaitframe / pseqdesc->numframes) * pseqdesc->numframes;
+
+	if (m_flGaitframe < 0)
+		m_flGaitframe += pseqdesc->numframes;
 }
 
 /* <15a444> ../cstrike/dlls/player.cpp:9821 */
-NOBODY void CBasePlayer::ResetStamina(void)
+NOXREF void CBasePlayer::ResetStamina(void)
 {
+	pev->fuser1 = 0;
+	pev->fuser3 = 0;
+	pev->fuser2 = 0;
 }
 
 /* <15a467> ../cstrike/dlls/player.cpp:9829 */
-NOBODY float GetPlayerPitch(const edict_t *pEdict)
+float GetPlayerPitch(const edict_t *pEdict)
 {
-//	{
-//		class CBasePlayer *pPlayer;                          //  9831
-//		Instance(entvars_t *pev);  //  9836
-//	}
-}
+	entvars_t *pev = VARS((edict_t *)pEdict);
+	CBasePlayer *pPlayer = reinterpret_cast< CBasePlayer * >(CBasePlayer::Instance( pev ));
 
-/* <15a5f9> ../cstrike/dlls/player.cpp:9863 */
-NOBODY int GetPlayerGaitsequence(edict_t *pEdict)
-{
-//	{
-//		class CBasePlayer *pPlayer;                          //  9865
-//		Instance(entvars_t *pev);  //  9870
-//	}
+	if (!pPlayer)
+		return 0.0f;
+
+	return pPlayer->m_flPitch;
 }
 
 /* <15a530> ../cstrike/dlls/player.cpp:9846 */
-NOBODY float GetPlayerYaw(const edict_t *pEdict)
+float GetPlayerYaw(const edict_t *pEdict)
 {
-//	{
-//		class CBasePlayer *pPlayer;                          //  9848
-//		Instance(entvars_t *pev);  //  9853
-//	}
+	entvars_t *pev = VARS((edict_t *)pEdict);
+	CBasePlayer *pPlayer = reinterpret_cast< CBasePlayer * >(CBasePlayer::Instance( pev ));
+
+	if (!pPlayer)
+		return 0.0f;
+
+	return pPlayer->m_flYaw;
+}
+
+/* <15a5f9> ../cstrike/dlls/player.cpp:9863 */
+int GetPlayerGaitsequence(edict_t *pEdict)
+{
+	entvars_t *pev = VARS((edict_t *)pEdict);
+	CBasePlayer *pPlayer = reinterpret_cast< CBasePlayer * >(CBasePlayer::Instance( pev ));
+
+	if (!pPlayer)
+		return 1;
+
+	return pPlayer->m_iGaitsequence;
 }
 
 /* <15a6c2> ../cstrike/dlls/player.cpp:9880 */
@@ -4996,29 +5217,86 @@ void CBasePlayer::SpawnClientSideCorpse(void)
 }
 
 /* <15a7a2> ../cstrike/dlls/player.cpp:9909 */
-NOBODY BOOL CBasePlayer::IsArmored(int nHitGroup)
+NOXREF BOOL CBasePlayer::IsArmored(int nHitGroup)
 {
-//	{
-//		BOOL fApplyArmor;                                     //  9911
-//	}
-//	IsArmored(CBasePlayer *const this,
-//			int nHitGroup);  //  9909
+	BOOL fApplyArmor = FALSE;
+
+	if (m_iKevlar == ARMOR_TYPE_EMPTY)
+		return FALSE;
+
+	switch (nHitGroup)
+	{
+	case HITGROUP_HEAD:
+	{
+		fApplyArmor = (m_iKevlar == ARMOR_TYPE_HELMET);
+		break;
+	}
+	case HITGROUP_GENERIC:
+	case HITGROUP_CHEST:
+	case HITGROUP_STOMACH:
+	case HITGROUP_LEFTARM:
+	case HITGROUP_RIGHTARM:
+		fApplyArmor = TRUE;
+		break;
+	}
+
+	return fApplyArmor;
 }
 
 /* <15a847> ../cstrike/dlls/player.cpp:9939 */
-NOBODY BOOL CBasePlayer::ShouldDoLargeFlinch(int nHitGroup, int nGunType)
+NOXREF BOOL CBasePlayer::ShouldDoLargeFlinch(int nHitGroup, int nGunType)
 {
+	if (pev->flags & FL_DUCKING)
+		return FALSE;
+
+	if (nHitGroup != HITGROUP_LEFTLEG && nHitGroup != HITGROUP_RIGHTLEG)
+	{
+		switch (nGunType)
+		{
+		case WEAPON_SCOUT:
+		case WEAPON_AUG:
+		case WEAPON_SG550:
+		case WEAPON_GALIL:
+		case WEAPON_FAMAS:
+		case WEAPON_AWP:
+		case WEAPON_M3:
+		case WEAPON_M4A1:
+		case WEAPON_G3SG1:
+		case WEAPON_DEAGLE:
+		case WEAPON_SG552:
+		case WEAPON_AK47:
+			return TRUE;
+		}
+	}
+
+	return FALSE;
 }
 
 /* <15a87d> ../cstrike/dlls/player.cpp:9971 */
-NOBODY void CBasePlayer::SetPrefsFromUserinfo(char *infobuffer)
+void CBasePlayer::SetPrefsFromUserinfo(char *infobuffer)
 {
-//	{
-//		const char *pszKeyVal;                              //  9973
-//		atoi(const char *__nptr);  // 10005
-//		atoi(const char *__nptr);  //  9994
-//		atoi(const char *__nptr);  //  9983
-//	}
+	const char *pszKeyVal;
+	
+	pszKeyVal = GET_KEY_VALUE(infobuffer, "_cl_autowepswitch");
+
+	if (Q_strcmp(pszKeyVal, ""))
+		m_iAutoWepSwitch = atoi(pszKeyVal);
+	else
+		m_iAutoWepSwitch = 1;
+
+	pszKeyVal = GET_KEY_VALUE(infobuffer, "_vgui_menus");
+
+	if (Q_strcmp(pszKeyVal, ""))
+		m_bVGUIMenus = atoi(pszKeyVal) != 0;
+	else
+		m_bVGUIMenus = true;
+
+	pszKeyVal = GET_KEY_VALUE(infobuffer, "_ah");
+
+	if (Q_strcmp(pszKeyVal, ""))
+		m_bShowHints = atoi(pszKeyVal) != 0;
+	else
+		m_bShowHints = true;
 }
 
 /* <15a92a> ../cstrike/dlls/player.cpp:10013 */
@@ -5048,7 +5326,7 @@ bool CBasePlayer::CanAffordPrimary(void)
 		{
 			temp = &g_weaponStruct[ i ];
 
-			if (temp->m_side & TERRORIST && temp->m_slot == PRIMARY_WEAPON_SLOT && account >= temp->m_price)
+			if ((temp->m_side & TERRORIST) && temp->m_slot == PRIMARY_WEAPON_SLOT && account >= temp->m_price)
 				return true;
 		}
 	}
@@ -5059,7 +5337,7 @@ bool CBasePlayer::CanAffordPrimary(void)
 		{
 			temp = &g_weaponStruct[ i ];
 
-			if (temp->m_side & CT && temp->m_slot == PRIMARY_WEAPON_SLOT && account >= temp->m_price)
+			if ((temp->m_side & CT) && temp->m_slot == PRIMARY_WEAPON_SLOT && account >= temp->m_price)
 				return true;
 		}
 	}
@@ -5102,14 +5380,10 @@ bool CBasePlayer::CanAffordSecondaryAmmo(void)
 /* <15ac14> ../cstrike/dlls/player.cpp:10199 */
 bool CBasePlayer::CanAffordArmor(void)
 {
-	if (m_iKevlar == 1 && pev->armorvalue == 100.0f && m_iAccount >= HELMET_PRICE)
+	if (m_iKevlar == ARMOR_TYPE_KEVLAR && pev->armorvalue == 100.0f && m_iAccount >= HELMET_PRICE)
 		return true;
 
 	return (m_iAccount >= KEVLAR_PRICE);
-
-	//if (m_iKevlar != 1 || pev->armorvalue != 100.0f || m_iAccount < HELMET_PRICE)
-	//	return (m_iAccount >= KEVLAR_PRICE);
-	//return true;
 }
 
 /* <15ac3c> ../cstrike/dlls/player.cpp:10217 */
@@ -5201,87 +5475,192 @@ NOBODY void CBasePlayer::ClientCommand(const char *cmd, const char *arg1, const 
 }
 
 /* <15aea9> ../cstrike/dlls/player.cpp:10401 */
-NOBODY const char *GetBuyStringForWeaponClass(int weaponClass)
+NOXREF const char *GetBuyStringForWeaponClass(int weaponClass)
 {
+	switch (weaponClass)
+	{
+	case WEAPONCLASS_PISTOL:
+		return "deagle elites fn57 usp glock p228 shield";
+	case WEAPONCLASS_SNIPERRIFLE:
+		return "awp sg550 g3sg1 scout";
+	case WEAPONCLASS_GRENADE:
+		return "hegren";
+	case WEAPONCLASS_SHOTGUN:
+		return "xm1014 m3";
+	case WEAPONCLASS_SUBMACHINEGUN:
+		return "p90 ump45 mp5 tmp mac10";
+	case WEAPONCLASS_MACHINEGUN:
+		return "m249";
+	case WEAPONCLASS_RIFLE:
+		return "sg552 aug ak47 m4a1 galil famas";
+	}
+
+	return NULL;
 }
 
 /* <15aee9> ../cstrike/dlls/player.cpp:10454 */
-NOBODY void CBasePlayer::ClearAutoBuyData(void)
+void CBasePlayer::ClearAutoBuyData(void)
 {
+	m_autoBuyString[0] = '\0';
 }
 
 /* <15af11> ../cstrike/dlls/player.cpp:10459 */
-NOBODY void CBasePlayer::AddAutoBuyData(const char *str)
+void CBasePlayer::AddAutoBuyData(const char *str)
 {
-//	{
-//		int len;                                              // 10461
-//	}
+	int len = Q_strlen(m_autoBuyString);
+
+	if (len < MAX_AUTOBUY_LENGTH - 1)
+	{
+		if (len > 0)
+			m_autoBuyString[ len ] = ' ';
+
+		Q_strncat(m_autoBuyString, str, MAX_AUTOBUY_LENGTH - len);
+	}
 }
 
 /* <15af66> ../cstrike/dlls/player.cpp:10478 */
-NOBODY void CBasePlayer::InitRebuyData(const char *str)
+void CBasePlayer::InitRebuyData(const char *str)
 {
+	if (!str || Q_strlen(str) > MAX_REBUY_LENGTH)
+	{
+		return;
+	}
+
+	if (m_rebuyString != NULL)
+	{
+		delete m_rebuyString;
+		m_rebuyString = NULL;
+	}
+
+	m_rebuyString = new char[ Q_strlen(str) + 1 ];
+	Q_strcpy(m_rebuyString, str);
+	m_rebuyString[ Q_strlen(str) ] = '\0';
 }
 
 /* <15be4f> ../cstrike/dlls/player.cpp:10500 */
 NOBODY void CBasePlayer::AutoBuy(void)
 {
-//	{
-//		const char *c;                                      // 10502
-//		bool boughtPrimary;                                   // 10504
-//		bool boughtSecondary;                                 // 10505
-//		char prioritizedString;                               // 10519
-//		PickFlashKillWeaponString(CBasePlayer *const this);  // 10507
-//		PickGrenadeKillWeaponString(CBasePlayer *const this);  // 10513
-//		PrioritizeAutoBuyString(CBasePlayer *const this,
-//					char *autobuyString,
-//					const char *priorityString);  // 10524
-//		PrioritizeAutoBuyString(CBasePlayer *const this,
-//					char *autobuyString,
-//					const char *priorityString);  // 10531
-//		PickFlashKillWeaponString(CBasePlayer *const this);  // 10542
-//	}
+	const int d = sizeof(g_SentBanMasks);
+	const char *c = NULL;
+	bool boughtPrimary = false;
+	bool boughtSecondary = false;
+	char prioritizedString[ MAX_AUTOBUY_LENGTH ];
+
+	c = PickFlashKillWeaponString();
+
+	if (c != NULL)
+	{
+		ParseAutoBuyString(c, boughtPrimary, boughtSecondary);
+	}
+
+	c = PickGrenadeKillWeaponString();
+
+	if (c != NULL)
+	{
+		ParseAutoBuyString(c, boughtPrimary, boughtSecondary);
+	}
+
+	// TODO: Reverse me
+	c = PickPrimaryCareerTaskWeapon();
+
+	if (c != NULL)
+	{
+		Q_strcpy(prioritizedString, c);
+
+		PrioritizeAutoBuyString(prioritizedString, m_autoBuyString);
+		ParseAutoBuyString(prioritizedString, boughtPrimary, boughtSecondary);
+	}
+
+	// TODO: Reverse me
+	c = PickSecondaryCareerTaskWeapon();
+
+	if (c != NULL)
+	{
+		Q_strcpy(prioritizedString, c);
+
+		PrioritizeAutoBuyString(prioritizedString, m_autoBuyString);
+		ParseAutoBuyString(prioritizedString, boughtPrimary, boughtSecondary);
+	}
+
+	ParseAutoBuyString(m_autoBuyString, boughtPrimary, boughtSecondary);
+
+	c = PickFlashKillWeaponString();
+
+	if (c != NULL)
+	{
+		ParseAutoBuyString(c, boughtPrimary, boughtSecondary);
+	}
+
+	if (TheTutor)
+		TheTutor->OnEvent( EVENT_PLAYER_LEFT_BUY_ZONE );
 }
 
 /* <14ea4e> ../cstrike/dlls/player.cpp:10556 */
-NOBODY bool IsPrimaryWeaponClass(int classId)
+NOXREF bool IsPrimaryWeaponClass(int classId)
 {
+	return (classId >= WEAPONCLASS_SUBMACHINEGUN && classId <= WEAPONCLASS_SNIPERRIFLE);
 }
 
 /* <15afbe> ../cstrike/dlls/player.cpp:10571 */
-NOBODY bool IsPrimaryWeaponId(int id)
+NOXREF bool IsPrimaryWeaponId(int id)
 {
-//	{
-//		const char *alias;                                  // 10573
-//		int classId;                                          // 10579
-//	}
+	int classId = WEAPONCLASS_NONE;
+	const char *alias = WeaponIDToAlias( id );
+
+	if (alias)
+	{
+		classId = AliasToWeaponClass(alias);
+	}
+
+	return IsPrimaryWeaponClass(classId);
 }
 
 /* <14ea6f> ../cstrike/dlls/player.cpp:10583 */
-NOBODY bool IsSecondaryWeaponClass(int classId)
+NOXREF bool IsSecondaryWeaponClass(int classId)
 {
+	return (classId == WEAPONCLASS_PISTOL);
 }
 
 /* <15b059> ../cstrike/dlls/player.cpp:10588 */
-NOBODY bool IsSecondaryWeaponId(int id)
+NOXREF bool IsSecondaryWeaponId(int id)
 {
-//	{
-//		const char *alias;                                  // 10590
-//		int classId;                                          // 10596
-//	}
+	int classId = WEAPONCLASS_NONE;
+	const char *alias = WeaponIDToAlias( id );
+
+	if (alias)
+	{
+		classId = AliasToWeaponClass(alias);
+	}
+
+	return IsSecondaryWeaponClass(classId);
 }
 
 /* <15b0f1> ../cstrike/dlls/player.cpp:10600 */
-NOBODY const char *GetWeaponAliasFromName(const char *weaponName)
+NOXREF const char *GetWeaponAliasFromName(const char *weaponName)
 {
+	UNTESTED
+
+	if (!Q_strncmp(weaponName, "weapon_", 7))
+		weaponName += 7;
+
+	return weaponName;
 }
 
 /* <15b133> ../cstrike/dlls/player.cpp:10607 */
-NOBODY bool CurrentWeaponSatisfies(CBasePlayerWeapon *pWeapon, int id, int classId)
+NOXREF bool CurrentWeaponSatisfies(CBasePlayerWeapon *pWeapon, int id, int classId)
 {
-//	{
-//		const char *weaponName;                             // 10612
-//	}
+	if (pWeapon == NULL)
+		return false;
+
+	const char *weaponName = GetWeaponAliasFromName( pWeapon->pszName() );
+
+	if (id && AliasToWeaponID( weaponName ) == id)
+		return true;
+
+	if (classId && AliasToWeaponClass( weaponName ) == classId)
+		return true;
+
+	return false;
 }
 
 /* <15b1eb> ../cstrike/dlls/player.cpp:10623 */
@@ -5368,302 +5747,523 @@ NOBODY const char *CBasePlayer::PickSecondaryCareerTaskWeapon(void)
 }
 
 /* <15b9ea> ../cstrike/dlls/player.cpp:10759 */
-NOBODY const char *CBasePlayer::PickFlashKillWeaponString(void)
+NOXREF const char *CBasePlayer::PickFlashKillWeaponString(void)
 {
-//	{
-//		bool foundOne;                                        // 10761
-//		CareerTaskListIt it;                                  // 10762
-//		{
-//			class CCareerTask *pTask;                    // 10765
-//			operator++(_List_iterator<CCareerTask*> *const this);  // 10776
-//		}
-//	}
+	bool foundOne = false;
+
+	for (CareerTaskListIt it = TheCareerTasks->GetTasks()->begin(); it != TheCareerTasks->GetTasks()->end(); ++it)
+	{
+		CCareerTask *pTask = (*it);
+
+		if (!pTask->IsComplete() && !Q_strcmp(pTask->GetTaskName(), "killblind"))
+		{
+			foundOne = true;
+			break;
+		}
+	}
+
+	if (foundOne)
+		return "flash flash";
+	
+	return NULL;
+
 }
 
 /* <15baa1> ../cstrike/dlls/player.cpp:10787 */
-NOBODY const char *CBasePlayer::PickGrenadeKillWeaponString(void)
+NOXREF const char *CBasePlayer::PickGrenadeKillWeaponString(void)
 {
-//	{
-//		bool foundOne;                                        // 10789
-//		CareerTaskListIt it;                                  // 10790
-//		{
-//			class CCareerTask *pTask;                    // 10793
-//			operator++(_List_iterator<CCareerTask*> *const this);  // 10804
-//		}
-//	}
+	bool foundOne = false;
+
+	for (CareerTaskListIt it = TheCareerTasks->GetTasks()->begin(); it != TheCareerTasks->GetTasks()->end(); ++it)
+	{
+		CCareerTask *pTask = (*it);
+
+		if (!pTask->IsComplete() && pTask->GetWeaponId() == WEAPON_HEGRENADE)
+		{
+			foundOne = true;
+			break;
+		}
+	}
+
+	if (foundOne)
+		return "hegren";
+	
+	return NULL;
 }
 
 /* <15bb0c> ../cstrike/dlls/player.cpp:10816 */
-NOBODY void CBasePlayer::PrioritizeAutoBuyString(char *autobuyString, const char *priorityString)
+void CBasePlayer::PrioritizeAutoBuyString(char *autobuyString, const char *priorityString)
 {
-//	{
-//		char newString;                                       // 10818
-//		int newStringPos;                                     // 10819
-//		char priorityToken;                                   // 10820
-//		const char *priorityChar;                           // 10827
-//		char *autobuyPosition;                               // 10872
-//	}
+	char newString[ MAX_AUTOBUY_LENGTH ];
+	int newStringPos = 0;
+	char priorityToken[32];
+
+	if (!priorityString || !autobuyString)
+		return;
+
+	const char *priorityChar = priorityString;
+
+	while (*priorityChar != '\0')
+	{
+		int i = 0;
+
+		while (*priorityChar != '\0' && *priorityChar != ' ')
+		{
+			priorityToken[ i++ ] = *priorityChar;
+			priorityChar++;
+		}
+
+		priorityToken[i] = 0;
+
+		while (*priorityChar == ' ')
+			priorityChar++;
+
+		if (!Q_strlen(priorityToken))
+			continue;
+
+		char *autoBuyPosition = Q_strstr(autobuyString, priorityToken);
+
+		if (autoBuyPosition != NULL)
+		{
+			while (*autoBuyPosition != '\0' && *autoBuyPosition != ' ')
+			{
+				newString[ newStringPos ] = *autoBuyPosition;
+				*autoBuyPosition = ' ';
+
+				++newStringPos;
+				++autoBuyPosition;
+			}
+
+			newString[ newStringPos++ ] = ' ';
+		}
+	}
+
+	char *autobuyPosition = autobuyString;
+
+	while (*autobuyPosition != '\0')
+	{
+		while (*autobuyPosition == ' ')
+			autobuyPosition++;
+
+		while (*autobuyPosition != '\0' && *autobuyPosition != ' ')
+		{
+			newString[ newStringPos++ ] = *autobuyPosition;
+			autobuyPosition++;
+		}
+
+		newString[ newStringPos++ ] = ' ';
+	}
+
+	newString[ newStringPos ] = 0;
+	Q_sprintf(autobuyString, "%s", newString);
 }
 
 /* <15bcd5> ../cstrike/dlls/player.cpp:10899 */
-NOBODY void CBasePlayer::ParseAutoBuyString(const char *string, bool &boughtPrimary, bool &boughtSecondary)
+void CBasePlayer::ParseAutoBuyString(const char *string, bool &boughtPrimary, bool &boughtSecondary)
 {
-//	{
-//		char command;                                         // 10901
-//		const char *c;                                      // 10902
-//		{
-//			int i;                                        // 10912
-//			class AutoBuyInfoStruct *commandInfo;        // 10945
-//			GetAutoBuyCommandInfo(CBasePlayer *const this,
-//						const char *command);  // 10945
-//			ShouldExecuteAutoBuyCommand(CBasePlayer *const this,
-//							const class AutoBuyInfoStruct *commandInfo,
-//							bool boughtPrimary,
-//							bool boughtSecondary);  // 10947
-//			ClientCommand(CBasePlayer *const this,
-//					const char *cmd,
-//					const char *arg1,
-//					const char *arg2,
-//					const char *arg3);  // 10949
-//		}
-//	}
+	char command[32];
+	const char *c = string;
+
+	if (!string || !string[0])
+		return;
+
+	while (*c)
+	{
+		int i = 0;
+
+		while (*c && (*c != ' ') && i < sizeof(command))
+		{
+			command[i] = *c;
+			++c;
+			++i;
+		}
+
+		if (*c == ' ')
+			++c;
+
+		command[i] = 0;
+		i = 0;
+
+		while (command[i] != 0)
+		{
+			if (command[i] == ' ')
+			{
+				command[i] = 0;
+				break;
+			}
+
+			++i;
+		}
+
+		if (!Q_strlen(command))
+			continue;
+
+		AutoBuyInfoStruct *commandInfo = GetAutoBuyCommandInfo(command);
+		if (ShouldExecuteAutoBuyCommand(commandInfo, boughtPrimary, boughtSecondary))
+		{
+			ClientCommand(commandInfo->m_command);
+			PostAutoBuyCommandProcessing(commandInfo, boughtPrimary, boughtSecondary);
+		}
+	}
 }
 
 /* <15bb6b> ../cstrike/dlls/player.cpp:10957 */
-NOBODY bool CBasePlayer::ShouldExecuteAutoBuyCommand(AutoBuyInfoStruct *commandInfo, bool boughtPrimary, bool boughtSecondary)
+NOXREF bool CBasePlayer::ShouldExecuteAutoBuyCommand(AutoBuyInfoStruct *commandInfo, bool boughtPrimary, bool boughtSecondary)
 {
+	if (!commandInfo)
+		return false;
+
+	if (boughtPrimary && (commandInfo->m_class & AUTOBUYCLASS_PRIMARY) != 0 && !(commandInfo->m_class & AUTOBUYCLASS_AMMO))
+		return false;
+
+	if (boughtSecondary && (commandInfo->m_class & AUTOBUYCLASS_SECONDARY) != 0 && !(commandInfo->m_class & AUTOBUYCLASS_AMMO))
+		return false;
+
+	return true;
 }
 
 /* <15bbfa> ../cstrike/dlls/player.cpp:10978 */
-AutoBuyInfoStruct *CBasePlayer::GetAutoBuyCommandInfo(const char *command)
+NOXREF AutoBuyInfoStruct *CBasePlayer::GetAutoBuyCommandInfo(const char *command)
 {
-//	{
-//		class AutoBuyInfoStruct *ret;                        // 10980
-//		int i;                                                // 10982
-//		class AutoBuyInfoStruct *temp;                       // 10983
-//	}
+	int i = 0;
+	AutoBuyInfoStruct *ret = NULL;
+	AutoBuyInfoStruct *temp = NULL;
+
+	while (ret == NULL)
+	{
+		temp = &(g_autoBuyInfo[ i ]);
+
+		if (!temp->m_class)
+			break;
+
+		if (Q_stricmp(temp->m_command, command) == 0)
+			ret = temp;
+
+		i++;
+	}
+
+	return ret;
 }
 
 /* <15bc49> ../cstrike/dlls/player.cpp:11000 */
-NOBODY void CBasePlayer::PostAutoBuyCommandProcessing(AutoBuyInfoStruct *commandInfo, bool &boughtPrimary, bool &boughtSecondary)
+void CBasePlayer::PostAutoBuyCommandProcessing(AutoBuyInfoStruct *commandInfo, bool &boughtPrimary, bool &boughtSecondary)
 {
-//	{
-//		class CBasePlayerWeapon *primary;                    // 11002
-//		class CBasePlayerWeapon *secondary;                  // 11003
-//	}
+	CBasePlayerWeapon *primary = (CBasePlayerWeapon *)m_rgpPlayerItems[ PRIMARY_WEAPON_SLOT ];
+	CBasePlayerWeapon *secondary = (CBasePlayerWeapon *)m_rgpPlayerItems[ PISTOL_SLOT ];
+
+	if (!commandInfo)
+		return;
+
+	if (primary != NULL && !Q_stricmp(STRING(primary->pev->classname), commandInfo->m_classname))
+		boughtPrimary = true;
+
+	else if (commandInfo->m_class & AUTOBUYCLASS_SHIELD && HasShield())
+		boughtPrimary = true;
+
+	else if (secondary != NULL && !Q_stricmp(STRING(secondary->pev->classname), commandInfo->m_classname))
+		boughtSecondary = true;
 }
 
 /* <15c0b4> ../cstrike/dlls/player.cpp:11027 */
-NOBODY void CBasePlayer::BuildRebuyStruct(void)
+void CBasePlayer::BuildRebuyStruct(void)
 {
-//	{
-//		class CBasePlayerWeapon *primary;                    // 11035
-//		class CBasePlayerWeapon *secondary;                  // 11036
-//		int iAmmoIndex;                                       // 11072
-//		GetAmmoIndex(const char *psz);  // 11075
-//		GetAmmoIndex(const char *psz);  // 11087
-//		GetAmmoIndex(const char *psz);  // 11099
-//	}
+	int iAmmoIndex;
+
+	if (m_bIsInRebuy)
+		return;
+
+	CBasePlayerWeapon *primary = (CBasePlayerWeapon *)m_rgpPlayerItems[ PRIMARY_WEAPON_SLOT ];
+	CBasePlayerWeapon *secondary = (CBasePlayerWeapon *)m_rgpPlayerItems[ PISTOL_SLOT ];
+
+	if (primary != NULL)
+	{
+		m_rebuyStruct.m_primaryWeapon = primary->m_iId;
+		m_rebuyStruct.m_primaryAmmo = m_rgAmmo[ primary->m_iPrimaryAmmoType ];
+	}
+	else
+	{
+		m_rebuyStruct.m_primaryAmmo = 0;
+
+		if (HasShield())
+			m_rebuyStruct.m_primaryWeapon = WEAPON_SHIELDGUN;
+		else
+			m_rebuyStruct.m_primaryWeapon = 0;
+	}
+
+	if (secondary != NULL)
+	{
+		m_rebuyStruct.m_secondaryWeapon = secondary->m_iId;
+		m_rebuyStruct.m_secondaryAmmo = m_rgAmmo[ secondary->m_iPrimaryAmmoType ];
+	}
+	else
+	{
+		m_rebuyStruct.m_secondaryWeapon = 0;
+		m_rebuyStruct.m_secondaryAmmo = 0;
+	}
+
+	iAmmoIndex = GetAmmoIndex("HEGrenade");
+
+	if (iAmmoIndex != -1)
+		m_rebuyStruct.m_heGrenade = m_rgAmmo[ iAmmoIndex ];
+	else
+		m_rebuyStruct.m_heGrenade = 0;
+
+	iAmmoIndex = GetAmmoIndex("Flashbang");
+
+	if (iAmmoIndex != -1)
+		m_rebuyStruct.m_flashbang = m_rgAmmo[ iAmmoIndex ];
+	else
+		m_rebuyStruct.m_flashbang = 0;
+
+	iAmmoIndex = GetAmmoIndex("SmokeGrenade");
+
+	if (iAmmoIndex != -1)
+		m_rebuyStruct.m_smokeGrenade = m_rgAmmo[ iAmmoIndex ];
+	else
+		m_rebuyStruct.m_smokeGrenade = 0;
+
+	m_rebuyStruct.m_defuser = m_bHasDefuser;
+	m_rebuyStruct.m_nightVision = m_bHasNightVision;
+	m_rebuyStruct.m_armor = m_iKevlar;
 }
 
 /* <15c37d> ../cstrike/dlls/player.cpp:11134 */
-NOBODY void CBasePlayer::Rebuy(void)
+void CBasePlayer::Rebuy(void)
 {
-//	{
-//		char *fileData;                                      // 11138
-//		char *token;                                         // 11140
-//		RebuyArmor(CBasePlayer *const this);  // 11182
-//		RebuyPrimaryWeapon(CBasePlayer *const this);  // 11146
-//		RebuyPrimaryAmmo(CBasePlayer *const this);  // 11150
-//		RebuySecondaryWeapon(CBasePlayer *const this);  // 11154
-//		RebuySecondaryAmmo(CBasePlayer *const this);  // 11158
-//		RebuyHEGrenade(CBasePlayer *const this);  // 11162
-//		RebuyFlashbang(CBasePlayer *const this);  // 11166
-//		RebuySmokeGrenade(CBasePlayer *const this);  // 11170
-//		RebuyDefuser(CBasePlayer *const this);  // 11174
-//		RebuyNightVision(CBasePlayer *const this);  // 11178
-//	}
+	char *fileData = m_rebuyString;
+	char *token;
+
+	m_bIsInRebuy = true;
+
+	while (true)
+	{
+		fileData = MP_COM_Parse(fileData);
+		token = MP_COM_GetToken();
+
+		if (!fileData)
+			break;
+
+		if (!Q_stricmp(token, "primaryWeapon"))
+			RebuyPrimaryWeapon();
+		else if (!Q_stricmp(token, "primaryAmmo"))
+			RebuyPrimaryAmmo();
+		else if (!Q_stricmp(token, "secondaryWeapon"))
+			RebuySecondaryWeapon();
+		else if (!Q_stricmp(token, "secondaryAmmo"))
+			RebuySecondaryAmmo();
+		else if (!Q_stricmp(token, "hegrenade"))
+			RebuyHEGrenade();
+		else if (!Q_stricmp(token, "flashbang"))
+			RebuyFlashbang();
+		else if (!Q_stricmp(token, "smokegrenade"))
+			RebuySmokeGrenade();
+		else if (!Q_stricmp(token, "defuser"))
+			RebuyDefuser();
+		else if (!Q_stricmp(token, "nightvision"))
+			RebuyNightVision();
+		else if (!Q_stricmp(token, "armor"))
+			RebuyArmor();
+	}
+
+	m_bIsInRebuy = false;
+
+	if (TheTutor)
+		TheTutor->OnEvent(EVENT_PLAYER_LEFT_BUY_ZONE);
 }
 
 /* <15c96a> ../cstrike/dlls/player.cpp:11200 */
-NOBODY void CBasePlayer::RebuyPrimaryWeapon(void)
+NOXREF void CBasePlayer::RebuyPrimaryWeapon(void)
 {
-//	{
-//		const char *alias;                                  // 11209
-//		ClientCommand(CBasePlayer *const this,
-//				const char *cmd,
-//				const char *arg1,
-//				const char *arg2,
-//				const char *arg3);  // 11212
-//	}
+	if (!m_rgpPlayerItems[ PRIMARY_WEAPON_SLOT ])
+	{
+		if (m_rebuyStruct.m_primaryWeapon)
+		{
+			const char *alias = WeaponIDToAlias(m_rebuyStruct.m_primaryWeapon);
+
+			if (alias != NULL)
+				ClientCommand(alias);
+		}
+	}
 }
 
 /* <15c9e4> ../cstrike/dlls/player.cpp:11217 */
-NOBODY void CBasePlayer::RebuyPrimaryAmmo(void)
+NOXREF void CBasePlayer::RebuyPrimaryAmmo(void)
 {
-//	{
-//		class CBasePlayerWeapon *primary;                    // 11219
-//		ClientCommand(CBasePlayer *const this,
-//				const char *cmd,
-//				const char *arg1,
-//				const char *arg2,
-//				const char *arg3);  // 11229
-//	}
+	CBasePlayerWeapon *primary = (CBasePlayerWeapon *)m_rgpPlayerItems[ PRIMARY_WEAPON_SLOT ];
+
+	if (primary != NULL)
+	{
+		if (m_rebuyStruct.m_primaryAmmo > m_rgAmmo[ primary->m_iPrimaryAmmoType ])
+			ClientCommand("primammo");
+	}
 }
 
 /* <15ca68> ../cstrike/dlls/player.cpp:11233 */
-NOBODY void CBasePlayer::RebuySecondaryWeapon(void)
+NOXREF void CBasePlayer::RebuySecondaryWeapon(void)
 {
-//	{
-//		const char *alias;                                  // 11237
-//		ClientCommand(CBasePlayer *const this,
-//				const char *cmd,
-//				const char *arg1,
-//				const char *arg2,
-//				const char *arg3);  // 11240
-//	}
+	if (m_rebuyStruct.m_secondaryWeapon)
+	{
+		const char *alias = WeaponIDToAlias(m_rebuyStruct.m_secondaryWeapon);
+
+		if (alias != NULL)
+			ClientCommand(alias);
+	}
 }
 
 /* <15cae2> ../cstrike/dlls/player.cpp:11245 */
-NOBODY void CBasePlayer::RebuySecondaryAmmo(void)
+NOXREF void CBasePlayer::RebuySecondaryAmmo(void)
 {
-//	{
-//		class CBasePlayerWeapon *secondary;                  // 11247
-//		ClientCommand(CBasePlayer *const this,
-//				const char *cmd,
-//				const char *arg1,
-//				const char *arg2,
-//				const char *arg3);  // 11255
-//	}
+	CBasePlayerWeapon *secondary = (CBasePlayerWeapon *)m_rgpPlayerItems[ PISTOL_SLOT ];
+
+	if (secondary)
+	{
+		if (m_rebuyStruct.m_secondaryAmmo > m_rgAmmo[ secondary->m_iPrimaryAmmoType ])
+			ClientCommand("secammo");
+	}
 }
 
 /* <15cb66> ../cstrike/dlls/player.cpp:11259 */
-NOBODY void CBasePlayer::RebuyHEGrenade(void)
+NOXREF void CBasePlayer::RebuyHEGrenade(void)
 {
-//	{
-//		int iAmmoIndex;                                       // 11262
-//		int numToBuy;                                         // 11269
-//		GetAmmoIndex(const char *psz);  // 11262
-//		{
-//			int i;                                        // 11272
-//			ClientCommand(CBasePlayer *const this,
-//					const char *cmd,
-//					const char *arg1,
-//					const char *arg2,
-//					const char *arg3);  // 11274
-//		}
-//	}
+	int iAmmoIndex = GetAmmoIndex("HEGrenade");
+
+	if (iAmmoIndex == -1)
+		return;
+
+	int numToBuy = m_rebuyStruct.m_heGrenade - m_rgAmmo[ iAmmoIndex ];
+
+	for (int i = 0; i < numToBuy; i++)
+		ClientCommand("hegren");
 }
 
 /* <15cc3f> ../cstrike/dlls/player.cpp:11279 */
-NOBODY void CBasePlayer::RebuyFlashbang(void)
+NOXREF void CBasePlayer::RebuyFlashbang(void)
 {
-//	{
-//		int iAmmoIndex;                                       // 11282
-//		int numToBuy;                                         // 11289
-//		GetAmmoIndex(const char *psz);  // 11282
-//		{
-//			int i;                                        // 11292
-//			ClientCommand(CBasePlayer *const this,
-//					const char *cmd,
-//					const char *arg1,
-//					const char *arg2,
-//					const char *arg3);  // 11294
-//		}
-//	}
+	int iAmmoIndex = GetAmmoIndex("Flashbang");
+
+	if (iAmmoIndex == -1)
+		return;
+
+	int numToBuy = m_rebuyStruct.m_flashbang - m_rgAmmo[ iAmmoIndex ];
+
+	for (int i = 0; i < numToBuy; i++)
+		ClientCommand("flash");
 }
 
 /* <15cd18> ../cstrike/dlls/player.cpp:11299 */
-NOBODY void CBasePlayer::RebuySmokeGrenade(void)
+NOXREF void CBasePlayer::RebuySmokeGrenade(void)
 {
-//	{
-//		int iAmmoIndex;                                       // 11302
-//		int numToBuy;                                         // 11309
-//		GetAmmoIndex(const char *psz);  // 11302
-//		{
-//			int i;                                        // 11312
-//			ClientCommand(CBasePlayer *const this,
-//					const char *cmd,
-//					const char *arg1,
-//					const char *arg2,
-//					const char *arg3);  // 11314
-//		}
-//	}
+	int iAmmoIndex = GetAmmoIndex("SmokeGrenade");
+
+	if (iAmmoIndex == -1)
+		return;
+
+	int numToBuy = m_rebuyStruct.m_smokeGrenade - m_rgAmmo[ iAmmoIndex ];
+
+	for (int i = 0; i < numToBuy; i++)
+		ClientCommand("sgren");
 }
 
 /* <15cdf1> ../cstrike/dlls/player.cpp:11319 */
-NOBODY void CBasePlayer::RebuyDefuser(void)
+void CBasePlayer::RebuyDefuser(void)
 {
-//	ClientCommand(CBasePlayer::RebuyDefuser(//			const char *cmd,
-//			const char *arg1,
-//			const char *arg2,
-//			const char *arg3);  // 11327
+	if (m_rebuyStruct.m_defuser)
+	{
+		if (!m_bHasDefuser)
+			ClientCommand("defuser");
+	}
 }
 
 /* <15ce59> ../cstrike/dlls/player.cpp:11330 */
-NOBODY void CBasePlayer::RebuyNightVision(void)
+void CBasePlayer::RebuyNightVision(void)
 {
-//	ClientCommand(CBasePlayer::RebuyNightVision(//			const char *cmd,
-//			const char *arg1,
-//			const char *arg2,
-//			const char *arg3);  // 11338
+	if (m_rebuyStruct.m_nightVision)
+	{
+		if (!m_bHasNightVision)
+			ClientCommand("nvgs");
+	}
 }
 
 /* <15cec1> ../cstrike/dlls/player.cpp:11341 */
-NOBODY void CBasePlayer::RebuyArmor(void)
+void CBasePlayer::RebuyArmor(void)
 {
-//	ClientCommand(CBasePlayer::RebuyArmor(//			const char *cmd,
-//			const char *arg1,
-//			const char *arg2,
-//			const char *arg3);  // 11361
-//	ClientCommand(CBasePlayer *const this,
-//			const char *cmd,
-//			const char *arg1,
-//			const char *arg2,
-//			const char *arg3);  // 11357
+	if (m_rebuyStruct.m_armor)
+	{
+		if (m_rebuyStruct.m_armor > m_iKevlar)
+		{
+			if (m_rebuyStruct.m_armor == 1)
+				ClientCommand("vest");
+			else
+				ClientCommand("vesthelm");
+		}
+	}
 }
 
 /* <15cf7c> ../cstrike/dlls/player.cpp:11366 */
-NOBODY bool CBasePlayer::IsObservingPlayer(CBasePlayer *pPlayer)
+bool CBasePlayer::IsObservingPlayer(CBasePlayer *pPlayer)
 {
-//	edict(CBaseEntity *const this);  // 11368
-//	FNullEnt(const edict_t *pent);  // 11368
-//	entindex(CBaseEntity *const this);  // 11371
+	if (!pPlayer || pev->flags == FL_DORMANT)
+		return false;
+
+	if (FNullEnt(pPlayer))
+		return false;
+
+	return (pev->iuser1 == OBS_IN_EYE && pev->iuser2 == pPlayer->entindex()) != 0;
 }
 
 /* <15d049> ../cstrike/dlls/player.cpp:11380 */
-NOBODY void CBasePlayer::UpdateLocation(bool forceUpdate)
+void CBasePlayer::UpdateLocation(bool forceUpdate)
 {
-//	{
-//		const char *placeName;                              // 11390
-//		{
-//			Place playerPlace;                            // 11393
-//			const BotPhraseList *placeList;             // 11394
-//			int i;                                        // 11395
-//			{
-//				const_iterator iter;                  // 11398
-//				operator++(_List_const_iterator<BotPhrase*> *const this);  // 11398
-//			}
-//		}
-//		{
-//			int i;                                        // 11416
-//			{
-//				class CBasePlayer *player;           // 11418
-//				edict(CBaseEntity *const this);  // 11425
-//				MESSAGE_BEGIN(int msg_dest,
-//						int msg_type,
-//						const float *pOrigin,
-//						edict_t *ed);  // 11425
-//				entindex(CBaseEntity *const this);  // 11426
-//				edict(CBaseEntity *const this);  // 11434
-//				MESSAGE_BEGIN(int msg_dest,
-//						int msg_type,
-//						const float *pOrigin,
-//						edict_t *ed);  // 11434
-//				entindex(CBaseEntity *const this);  // 11435
-//			}
-//		}
-//	}
+	if (!forceUpdate && m_flLastUpdateTime >= gpGlobals->time + 2)
+		return;
+
+	const char *placeName = "";
+
+	if (pev->deadflag == DEAD_NO && UTIL_IsGame("czero"))
+	{
+		Place playerPlace = TheNavAreaGrid.GetPlace( &pev->origin );
+		const BotPhraseList *placeList = TheBotPhrases->GetPlaceList();
+
+		for (BotPhraseList::const_iterator iter = placeList->begin(); iter != placeList->end(); ++iter)
+		{
+			if ((*iter)->GetID() == playerPlace)
+			{
+				placeName = (*iter)->GetName();
+				break;
+			}
+		}
+	}
+
+	if (!placeName[0] || (m_lastLocation[0] && !Q_strcmp(placeName, &m_lastLocation[1])))
+	{
+		return;
+	}
+
+	m_flLastUpdateTime = gpGlobals->time;
+	Q_snprintf(m_lastLocation, sizeof(m_lastLocation), "#%s", placeName);
+
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	{
+		CBasePlayer *player = (CBasePlayer *)UTIL_PlayerByIndex( i );
+
+		if (!player)
+			continue;
+
+		if (player->m_iTeam == m_iTeam || player->m_iTeam == SPECTATOR)
+		{
+			MESSAGE_BEGIN(MSG_ONE, gmsgLocation, NULL, player->edict());
+			WRITE_BYTE(entindex());
+			WRITE_STRING(m_lastLocation);
+			MESSAGE_END();
+		}
+		else if (forceUpdate)
+		{
+			MESSAGE_BEGIN(MSG_ONE, gmsgLocation, NULL, player->edict());
+			WRITE_BYTE(entindex());
+			WRITE_STRING("");
+			MESSAGE_END();
+		}
+	}
 }
 
 #ifdef HOOK_GAMEDLL
@@ -5738,36 +6338,6 @@ int CBasePlayer::GiveAmmo(int iAmount,char *szName,int iMax)
 	return GiveAmmo_(iAmount,szName,iMax);
 }
 
-void CBasePlayer::StartSneaking(void)
-{
-	StartSneaking_();
-}
-
-void CBasePlayer::StopSneaking(void)
-{
-	StopSneaking_();
-}
-
-BOOL CBasePlayer::IsSneaking(void)
-{
-	return IsSneaking_();
-}
-
-BOOL CBasePlayer::IsAlive(void)
-{
-	return IsAlive_();
-}
-
-BOOL CBasePlayer::IsPlayer(void)
-{
-	return IsPlayer_();
-}
-
-BOOL CBasePlayer::IsNetClient(void)
-{
-	return IsNetClient_();
-}
-
 const char *CBasePlayer::TeamID(void)
 {
 	return TeamID_();
@@ -5778,19 +6348,9 @@ BOOL CBasePlayer::FBecomeProne(void)
 	return FBecomeProne_();
 }
 
-Vector CBasePlayer::BodyTarget(const Vector &posSrc)
-{
-	return BodyTarget_(posSrc);
-}
-
 int CBasePlayer::Illumination(void)
 {
 	return Illumination_();
-}
-
-BOOL CBasePlayer::ShouldFadeOnDeath(void)
-{
-	return ShouldFadeOnDeath_();
 }
 
 void CBasePlayer::ResetMaxSpeed(void)
@@ -5823,11 +6383,6 @@ Vector CBasePlayer::GetGunPosition(void)
 	return GetGunPosition_();
 }
 
-BOOL CBasePlayer::IsBot(void)
-{
-	return IsBot_();
-}
-
 void CBasePlayer::UpdateClientData(void)
 {
 	UpdateClientData_();
@@ -5851,11 +6406,6 @@ Vector CBasePlayer::GetAutoaimVector(float flDelta)
 void CBasePlayer::Blind(float flUntilTime,float flHoldTime,float flFadeTime,int iAlpha)
 {
 	Blind_(flUntilTime,flHoldTime,flFadeTime,iAlpha);
-}
-
-void CBasePlayer::OnTouchingWeapon(CWeaponBox *pWeapon)
-{
-	OnTouchingWeapon_(pWeapon);
 }
 
 void CStripWeapons::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)

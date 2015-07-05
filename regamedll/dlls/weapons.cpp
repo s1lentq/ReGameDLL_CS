@@ -41,9 +41,9 @@ const char *g_pModelNameLaser = "sprites/laserbeam.spr";
 ItemInfo (*CBasePlayerItem::pItemInfoArray)[32];
 AmmoInfo (*CBasePlayerItem::pAmmoInfoArray)[32];
 
-TYPEDESCRIPTION (*CBasePlayerItem::m_SaveData)[3];
-TYPEDESCRIPTION (*CBasePlayerWeapon::m_SaveData)[7];
-TYPEDESCRIPTION (*CWeaponBox::m_SaveData)[4];
+TYPEDESCRIPTION (*CBasePlayerItem::pm_SaveData)[3];
+TYPEDESCRIPTION (*CBasePlayerWeapon::pm_SaveData)[7];
+TYPEDESCRIPTION (*CWeaponBox::pm_SaveData)[4];
 
 const char *g_pModelNameLaser;
 
@@ -76,19 +76,13 @@ int MaxAmmoCarry(int iszName)
 {
 	for (int i = 0; i < MAX_WEAPONS; i++)
 	{
-#ifndef HOOK_GAMEDLL
-		if (CBasePlayerItem::ItemInfoArray[i].pszAmmo1 && !Q_strcmp(STRING(iszName), CBasePlayerItem::ItemInfoArray[i].pszAmmo1))
-			return CBasePlayerItem::ItemInfoArray[i].iMaxAmmo1;
+		ItemInfo *pInfo = &IMPLEMENT_ARRAY_CLASS(CBasePlayerItem, ItemInfoArray)[ i ];
 
-		if (CBasePlayerItem::ItemInfoArray[i].pszAmmo2 && !Q_strcmp(STRING(iszName), CBasePlayerItem::ItemInfoArray[i].pszAmmo2))
-			return CBasePlayerItem::ItemInfoArray[i].iMaxAmmo2;
-#else
-		if ((*CBasePlayerItem::pItemInfoArray)[i].pszAmmo1 && !Q_strcmp(STRING(iszName), (*CBasePlayerItem::pItemInfoArray)[i].pszAmmo1))
-			return (*CBasePlayerItem::pItemInfoArray)[i].iMaxAmmo1;
+		if (pInfo->pszAmmo1 && !Q_strcmp(STRING(iszName), pInfo->pszAmmo1))
+			return pInfo->iMaxAmmo1;
 
-		if ((*CBasePlayerItem::pItemInfoArray)[i].pszAmmo2 && !Q_strcmp(STRING(iszName), (*CBasePlayerItem::pItemInfoArray)[i].pszAmmo2))
-			return (*CBasePlayerItem::pItemInfoArray)[i].iMaxAmmo2;
-#endif // HOOK_GAMEDLL
+		if (pInfo->pszAmmo2 && !Q_strcmp(STRING(iszName), pInfo->pszAmmo2))
+			return pInfo->iMaxAmmo2;
 	}
 
 	ALERT(at_console, "MaxAmmoCarry() doesn't recognize '%s'!\n", STRING(iszName));
@@ -168,13 +162,12 @@ NOBODY void EjectBrass2(Vector &vecOrigin, Vector &vecVelocity, float rotation, 
 /* <1d020f> ../cstrike/dlls/weapons.cpp:242 */
 NOXREF void AddAmmoNameToAmmoRegistry(const char *szAmmoname)
 {
-#ifndef HOOK_GAMEDLL
 	for (int i = 0; i < MAX_AMMO_SLOTS; i++)
 	{
-		if (!CBasePlayerItem::AmmoInfoArray[i].pszName)
+		if (!IMPLEMENT_ARRAY_CLASS(CBasePlayerItem, AmmoInfoArray)[ i ].pszName)
 			continue;
 
-		if (!Q_stricmp(CBasePlayerItem::AmmoInfoArray[i].pszName, szAmmoName))
+		if (!Q_stricmp(IMPLEMENT_ARRAY_CLASS(CBasePlayerItem, AmmoInfoArray)[ i ].pszName, szAmmoname))
 			return;
 	}
 
@@ -183,29 +176,8 @@ NOXREF void AddAmmoNameToAmmoRegistry(const char *szAmmoname)
 	if (giAmmoIndex >= MAX_AMMO_SLOTS)
 		giAmmoIndex = 0;
 
-	CBasePlayerItem::AmmoInfoArray[ giAmmoIndex ].pszName = szAmmoName;
-	CBasePlayerItem::AmmoInfoArray[ giAmmoIndex ].iId = giAmmoIndex;
-
-#else // HOOK_GAMEDLL
-
-	for (int i = 0; i < MAX_AMMO_SLOTS; i++)
-	{
-		if (!(*CBasePlayerItem::pAmmoInfoArray)[i].pszName)
-			continue;
-
-		if (!Q_stricmp((*CBasePlayerItem::pAmmoInfoArray)[i].pszName, szAmmoname))
-			return;
-	}
-
-	giAmmoIndex++;
-
-	if (giAmmoIndex >= MAX_AMMO_SLOTS)
-		giAmmoIndex = 0;
-
-	(*CBasePlayerItem::pAmmoInfoArray)[ giAmmoIndex ].pszName = szAmmoname;
-	(*CBasePlayerItem::pAmmoInfoArray)[ giAmmoIndex ].iId = giAmmoIndex;
-
-#endif // HOOK_GAMEDLL
+	IMPLEMENT_ARRAY_CLASS(CBasePlayerItem, AmmoInfoArray)[ giAmmoIndex ].pszName = szAmmoname;
+	IMPLEMENT_ARRAY_CLASS(CBasePlayerItem, AmmoInfoArray)[ giAmmoIndex ].iId = giAmmoIndex;
 }
 
 /* <1d2e01> ../cstrike/dlls/weapons.cpp:265 */
@@ -229,12 +201,7 @@ void UTIL_PrecacheOtherWeapon(const char *szClassname)
 
 		if (((CBasePlayerItem *)pEntity)->GetItemInfo(&II))
 		{
-#ifndef HOOK_GAMEDLL
-			CBasePlayerItem::ItemInfoArray[II.iId] = II;
-#else
-			(*CBasePlayerItem::pItemInfoArray)[II.iId] = II;
-#endif // HOOK_GAMEDLL
-
+			IMPLEMENT_ARRAY_CLASS(CBasePlayerItem, ItemInfoArray)[ II.iId ] = II;
 
 			if (II.pszAmmo1 && *II.pszAmmo1)
 				AddAmmoNameToAmmoRegistry(II.pszAmmo1);
@@ -268,12 +235,7 @@ NOXREF void UTIL_PrecacheOtherWeapon2(const char *szClassname)
 
 		if (((CBasePlayerItem *)pEntity)->GetItemInfo(&II))
 		{
-#ifndef HOOK_GAMEDLL
-			CBasePlayerItem::ItemInfoArray[II.iId] = II;
-#else
-			(*CBasePlayerItem::pItemInfoArray)[II.iId] = II;
-#endif // HOOK_GAMEDLL
-
+			IMPLEMENT_ARRAY_CLASS(CBasePlayerItem, ItemInfoArray)[ II.iId ] = II;
 
 			if (II.pszAmmo1 && *II.pszAmmo1)
 				AddAmmoNameToAmmoRegistry(II.pszAmmo1);
@@ -289,14 +251,7 @@ NOXREF void UTIL_PrecacheOtherWeapon2(const char *szClassname)
 /* <1d3191> ../cstrike/dlls/weapons.cpp:345 */
 void W_Precache(void)
 {
-#ifndef HOOK_GAMEDLL
-	memset(CBasePlayerItem::ItemInfoArray, 0, ARRAYSIZE(CBasePlayerItem::ItemInfoArray));
-	memset(CBasePlayerItem::AmmoInfoArray, 0, ARRAYSIZE(CBasePlayerItem::AmmoInfoArray));
-#else
-	memset((*CBasePlayerItem::pItemInfoArray), 0, ARRAYSIZE((*CBasePlayerItem::pItemInfoArray)));
-	memset((*CBasePlayerItem::pAmmoInfoArray), 0, ARRAYSIZE((*CBasePlayerItem::pAmmoInfoArray)));
-#endif // HOOK_GAMEDLL
-
+	memset(IMPLEMENT_ARRAY_CLASS(CBasePlayerItem, ItemInfoArray), 0, ARRAYSIZE( IMPLEMENT_ARRAY_CLASS(CBasePlayerItem, ItemInfoArray) ));
 	giAmmoIndex = 0;
 
 	UTIL_PrecacheOther("item_suit");

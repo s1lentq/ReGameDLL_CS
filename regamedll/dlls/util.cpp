@@ -745,10 +745,10 @@ void UTIL_HudMessage(CBaseEntity *pEntity, const hudtextparms_t &textparms, cons
 		WRITE_STRING(" ");	//TODO: oh yeah
 	else
 	{
-		if (strlen(pMessage) >= 512)
+		if (Q_strlen(pMessage) >= 512)
 		{
 			char tmp[512];
-			strncpy(tmp, pMessage, 511);
+			Q_strncpy(tmp, pMessage, 511);
 			tmp[511] = 0;
 			WRITE_STRING(tmp);
 		}
@@ -1779,7 +1779,7 @@ NOXREF void CSave::WriteTime(const char *pname, const float *data, int count)
 /* <1b1053> ../cstrike/dlls/util.cpp:2065 */
 NOXREF void CSave::WriteString(const char *pname, const char *pdata)
 {
-	BufferField(pname, strlen(pdata) + 1, pdata);
+	BufferField(pname, Q_strlen(pdata) + 1, pdata);
 }
 
 /* <1b121f> ../cstrike/dlls/util.cpp:2076 */
@@ -1789,13 +1789,13 @@ NOXREF void CSave::WriteString(const char *pname, const int *stringId, int count
 	int size = 0;
 
 	for (i = 0; i < count; i++)
-		size += strlen(STRING(stringId[i])) + 1;
+		size += Q_strlen(STRING(stringId[i])) + 1;
 
 	BufferHeader(pname, size);
 	for (i = 0; i < count; i++)
 	{
 		const char *pString = STRING(stringId[i]);
-		BufferData(pString, strlen(pString) + 1);
+		BufferData(pString, Q_strlen(pString) + 1);
 	}
 }
 
@@ -1845,7 +1845,7 @@ NOXREF void CSave::WriteFunction(const char *pname, void **data, int count)
 	const char *functionName = NAME_FOR_FUNCTION((uint32)*data);
 
 	if (functionName)
-		BufferField(pname, strlen(functionName) + 1, functionName);
+		BufferField(pname, Q_strlen(functionName) + 1, functionName);
 	else
 		ALERT(at_error, "Invalid function pointer in entity!");
 }
@@ -2109,7 +2109,7 @@ int CRestore::ReadField(void *pBaseData, TYPEDESCRIPTION *pFields, int fieldCoun
 							}
 
 							pInputData = pString;
-							if (!strlen((char *)pInputData))
+							if (!Q_strlen((char *)pInputData))
 								*((int *)pOutputData) = 0;
 							else
 							{
@@ -2211,7 +2211,7 @@ int CRestore::ReadField(void *pBaseData, TYPEDESCRIPTION *pFields, int fieldCoun
 							break;
 						case FIELD_FUNCTION:
 						{
-							if (!strlen((char *)pInputData))
+							if (!Q_strlen((char *)pInputData))
 								*((int *)pOutputData) = 0;
 							else
 								*((int *)pOutputData) = FUNCTION_FROM_NAME((char *)pInputData);
@@ -2369,7 +2369,7 @@ NOXREF int CRestore::BufferCheckZString(const char *string)
 		return 0;
 
 	int maxLen = m_pdata->bufferSize - m_pdata->size;
-	int len = strlen(string);
+	int len = Q_strlen(string);
 
 	if (len <= maxLen)
 	{

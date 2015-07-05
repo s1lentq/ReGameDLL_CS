@@ -26,46 +26,30 @@
 *
 */
 
-#ifndef AIRTANK_H
-#define AIRTANK_H
+#ifndef WORLD_H
+#define WORLD_H
 #ifdef _WIN32
 #pragma once
 #endif
 
-/* <468c> ../cstrike/dlls/airtank.cpp:23 */
-class CAirtank: public CGrenade
-{
-
-public:
-	virtual void Spawn(void);
-	virtual void Precache(void);
-	virtual int Save(CSave &save);
-	virtual int Restore(CRestore &restore);
-	virtual void Killed(entvars_t *pevAttacker, int iGib);
-	virtual int BloodColor(void);
-public:
-	void EXPORT TankThink(void);
-	void EXPORT TankTouch(CBaseEntity *pOther);
-
 #ifdef HOOK_GAMEDLL
 
-	NOBODY void Spawn_(void);
-	NOBODY void Precache_(void);
-	NOBODY int Save_(CSave &save);
-	NOBODY int Restore_(CRestore &restore);
-	NOBODY void Killed_(entvars_t *pevAttacker, int iGib);
-	NOBODY int BloodColor_(void);
+#define g_pBodyQueueHead (*pg_pBodyQueueHead)
+#define gGlobalState (*pgGlobalState)
+#define g_flWeaponCheat (*pg_flWeaponCheat)
+#define gGlobalEntitySaveData (*pgGlobalEntitySaveData)
 
 #endif // HOOK_GAMEDLL
 
-public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[1];
+NOBODY void CopyToBodyQue(entvars_t *pev);
+NOBODY void ClearBodyQue(void);
+NOBODY void SaveGlobalState(SAVERESTOREDATA *pSaveData);
+NOBODY void RestoreGlobalState(SAVERESTOREDATA *pSaveData);
+NOBODY void ResetGlobalState(void);
 
-private:
-	int m_state;
+extern edict_t *g_pBodyQueueHead;
+extern CGlobalState gGlobalState;
+extern float g_flWeaponCheat;
+extern TYPEDESCRIPTION gGlobalEntitySaveData[3];
 
-};
-
-//NOBODY void item_airtank(entvars_t *pev);
-
-#endif // AIRTANK_H
+#endif // WORLD_H

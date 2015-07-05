@@ -48,9 +48,9 @@ TYPEDESCRIPTION CFuncTankControls::m_SaveData[] =
 
 #else
 
-TYPEDESCRIPTION (*CFuncTank::m_SaveData)[26];
-TYPEDESCRIPTION (*CFuncTankLaser::m_SaveData)[2];
-TYPEDESCRIPTION (*CFuncTankControls::m_SaveData)[1];
+TYPEDESCRIPTION (*CFuncTank::pm_SaveData)[26];
+TYPEDESCRIPTION (*CFuncTankLaser::pm_SaveData)[2];
+TYPEDESCRIPTION (*CFuncTankControls::pm_SaveData)[1];
 
 #endif // HOOK_GAMEDLL
 

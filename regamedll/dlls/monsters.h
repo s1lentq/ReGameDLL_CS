@@ -116,8 +116,15 @@ class CGib: public CBaseEntity
 public:
 	virtual int ObjectCaps(void)
 	{
-		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION)|FCAP_DONT_SAVE;
+		return ObjectCaps_();
 	}
+#ifdef HOOK_GAMEDLL
+	int ObjectCaps_(void)
+	{
+		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | FCAP_DONT_SAVE;
+	}
+#endif // HOOK_GAMEDLL
+
 public:
 	NOBODY void Spawn(const char *szGibModel);
 	NOBODY void EXPORT BounceGibTouch(CBaseEntity *pOther);

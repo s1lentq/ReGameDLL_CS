@@ -64,16 +64,9 @@ public:
 public:
 	void EXPORT Off(void);
 	void EXPORT Recharge(void);
+
 public:
-
-#ifndef HOOK_GAMEDLL
-
-	static TYPEDESCRIPTION m_SaveData[5];
-
-#else
-	static TYPEDESCRIPTION (*m_SaveData)[5];
-
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[5];
 
 	float m_flNextCharge;
 	int m_iReactivate;

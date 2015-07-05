@@ -122,7 +122,7 @@ public:
 	NOBODY void DestroyAllGrenades(void);
 
 	// return true if line intersects smoke volume
-	NOBODY bool IsLineBlockedBySmoke(const Vector *from, const Vector *to);
+	bool IsLineBlockedBySmoke(const Vector *from, const Vector *to);
 
 	// return true if position is inside a smoke cloud
 	bool IsInsideSmokeCloud(const Vector *pos);

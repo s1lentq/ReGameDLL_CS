@@ -64,11 +64,7 @@ public:
 	NOBODY void EXPORT FieldUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 public:
-#ifndef HOOK_GAMEDLL
-	static TYPEDESCRIPTION m_SaveData[6];
-#else // HOOK_GAMEDLL
-	static TYPEDESCRIPTION (*m_SaveData)[6];
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[6];
 
 public:
 	int m_iszXController;
@@ -95,6 +91,7 @@ public:
 #endif // HOOK_GAMEDLL
 
 	NOBODY void EXPORT MortarExplode(void);
+
 public:
 	int m_spriteTexture;
 

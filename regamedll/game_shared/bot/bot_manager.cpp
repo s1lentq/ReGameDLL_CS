@@ -241,7 +241,7 @@ bool CBotManager::IsInsideSmokeCloud(const Vector *pos)
 }
 
 /* <49fd8b> ../game_shared/bot/bot_manager.cpp:355 */
-NOBODY bool CBotManager::IsLineBlockedBySmoke(const Vector *from, const Vector *to)
+bool CBotManager::IsLineBlockedBySmoke(const Vector *from, const Vector *to)
 {
 	const float smokeRadiusSq = smokeRadius * smokeRadius;
 

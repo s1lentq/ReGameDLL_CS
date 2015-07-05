@@ -76,6 +76,7 @@ struct FunctionHook
 	const char		*symbolName;
 	size_t			handlerFunc;
 	int				symbolIndex;
+	bool			bIsHooked;
 };
 
 struct AddressRef

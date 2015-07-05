@@ -61,12 +61,12 @@ TYPEDESCRIPTION CGunTarget::m_SaveData[] =
 
 #else
 
-TYPEDESCRIPTION (*CBasePlatTrain::m_SaveData)[3];
-TYPEDESCRIPTION (*CFuncPlatRot::m_SaveData)[2];
-TYPEDESCRIPTION (*CFuncTrain::m_SaveData)[3];
-TYPEDESCRIPTION (*CFuncTrackTrain::m_SaveData)[12];
-TYPEDESCRIPTION (*CFuncTrackChange::m_SaveData)[9];
-TYPEDESCRIPTION (*CGunTarget::m_SaveData)[1];
+TYPEDESCRIPTION (*CBasePlatTrain::pm_SaveData)[3];
+TYPEDESCRIPTION (*CFuncPlatRot::pm_SaveData)[2];
+TYPEDESCRIPTION (*CFuncTrain::pm_SaveData)[3];
+TYPEDESCRIPTION (*CFuncTrackTrain::pm_SaveData)[12];
+TYPEDESCRIPTION (*CFuncTrackChange::pm_SaveData)[9];
+TYPEDESCRIPTION (*CGunTarget::pm_SaveData)[1];
 
 #endif // HOOK_GAMEDLL
 

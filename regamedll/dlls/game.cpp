@@ -405,7 +405,7 @@ cvar_t sk_scientist_heal3;
 #endif //HOOK_GAMEDLL
 
 /* <9c900> ../cstrike/dlls/game.cpp:500 */
-NOBODY void GameDLLInit(void)
+void GameDLLInit(void)
 {
 	g_psv_gravity = CVAR_GET_POINTER("sv_gravity");
 	g_psv_aim = CVAR_GET_POINTER("sv_aim");
@@ -494,8 +494,7 @@ NOBODY void GameDLLInit(void)
 	CVAR_REGISTER(&sk_scientist_heal2);
 	CVAR_REGISTER(&sk_scientist_heal3);
 
-	//TODO: Reverse me
 	Bot_RegisterCvars();
 	Tutor_RegisterCVars();
-	//Hostage_RegisterCVars();
+	Hostage_RegisterCVars();
 }

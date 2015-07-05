@@ -196,13 +196,9 @@ public:
 	NOBODY void EXPORT RotatingUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 	NOBODY void EXPORT Rotate(void);
 	NOBODY void RampPitchVol(int fUp);
-public:
 
-#ifndef HOOK_GAMEDLL
-	static TYPEDESCRIPTION m_SaveData[5];
-#else
-	static TYPEDESCRIPTION (*m_SaveData)[5];
-#endif // HOOK_GAMEDLL
+public:
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[5];
 
 public:
 	float m_flFanFriction;
@@ -249,11 +245,7 @@ public:
 	NOBODY void EXPORT Stop(void);
 	NOBODY void EXPORT RopeTouch(CBaseEntity *pOther);
 
-#ifndef HOOK_GAMEDLL
-	static TYPEDESCRIPTION m_SaveData[8];
-#else
-	static TYPEDESCRIPTION (*m_SaveData)[8];
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[8];
 
 public:
 	float m_accel;

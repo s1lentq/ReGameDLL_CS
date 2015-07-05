@@ -26,8 +26,8 @@ TYPEDESCRIPTION CBaseGrenCatch::m_SaveData[] =
 
 #else
 
-TYPEDESCRIPTION (*CFuncWeaponCheck::m_SaveData)[6];
-TYPEDESCRIPTION (*CBaseGrenCatch::m_SaveData)[5];
+TYPEDESCRIPTION (*CFuncWeaponCheck::pm_SaveData)[6];
+TYPEDESCRIPTION (*CBaseGrenCatch::pm_SaveData)[5];
 
 #endif // HOOK_GAMEDLL
 

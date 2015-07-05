@@ -16,7 +16,7 @@ TYPEDESCRIPTION CWallHealth::m_SaveData[] =
 
 #else
 
-TYPEDESCRIPTION (*CWallHealth::m_SaveData)[5];
+TYPEDESCRIPTION (*CWallHealth::pm_SaveData)[5];
 
 #endif // HOOK_GAMEDLL
 

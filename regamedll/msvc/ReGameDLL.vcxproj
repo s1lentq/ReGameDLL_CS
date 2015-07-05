@@ -535,6 +535,7 @@
     <ClInclude Include="..\dlls\extdll.h" />
     <ClInclude Include="..\dlls\func_break.h" />
     <ClInclude Include="..\dlls\func_tank.h" />
+    <ClInclude Include="..\dlls\game.h" />
     <ClInclude Include="..\dlls\gamerules.h" />
     <ClInclude Include="..\dlls\globals.h" />
     <ClInclude Include="..\dlls\healthkit.h" />
@@ -579,6 +580,7 @@
     <ClInclude Include="..\dlls\vector.h" />
     <ClInclude Include="..\dlls\vehicle.h" />
     <ClInclude Include="..\dlls\weapons.h" />
+    <ClInclude Include="..\dlls\world.h" />
     <ClInclude Include="..\engine\cdll_int.h" />
     <ClInclude Include="..\engine\cmd.h" />
     <ClInclude Include="..\engine\common.h" />
@@ -821,8 +823,8 @@
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>IF EXIST "$(ProjectDir)PostBuild.bat" (CALL "$(ProjectDir)PostBuild.bat" "$(TargetDir)" "$(TargetName)" "$(TargetExt)" "$(ProjectDir)")</Command>
       <Message>Automatic deployment script</Message>
+      <Command>IF EXIST "$(ProjectDir)PostBuild.bat" (CALL "$(ProjectDir)PostBuild.bat" "$(TargetDir)" "$(TargetName)" "$(TargetExt)" "$(ProjectDir)")</Command>
     </PostBuildEvent>
     <CustomBuildStep>
       <Command>echo Empty Action</Command>

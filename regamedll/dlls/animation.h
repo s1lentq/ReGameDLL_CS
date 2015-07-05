@@ -46,7 +46,7 @@ NOBODY void SequencePrecache(void *pmodel, const char *pSequenceName);
 void GetSequenceInfo(void *pmodel, entvars_t *pev, float *pflFrameRate, float *pflGroundSpeed);
 int GetSequenceFlags(void *pmodel, entvars_t *pev);
 NOBODY int GetAnimationEvent(void *pmodel, entvars_t *pev, MonsterEvent_t *pMonsterEvent, float flStart, float flEnd, int index);
-NOBODY float SetController(void *pmodel, entvars_t *pev, int iController, float flValue);
+float SetController(void *pmodel, entvars_t *pev, int iController, float flValue);
 NOBODY float SetBlending(void *pmodel, entvars_t *pev, int iBlender, float flValue);
 NOBODY int FindTransition(void *pmodel, int iEndingAnim, int iGoalAnim, int *piDir);
 NOBODY void SetBodygroup(void *pmodel, entvars_t *pev, int iGroup, int iValue);

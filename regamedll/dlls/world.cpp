@@ -13,7 +13,7 @@ float g_flWeaponCheat;
 */
 #ifndef HOOK_GAMEDLL
 
-DLL_DECALLIST gDecals2[] =
+DLL_DECALLIST gDecals[] =
 {
 	{ "{shot1", 0 },		// DECAL_GUNSHOT1
 	{ "{shot2", 0 },		// DECAL_GUNSHOT2
@@ -59,17 +59,29 @@ DLL_DECALLIST gDecals2[] =
 	{ "{mommablob", 0 },		// DECAL_MOMMASPLAT		// BM Mortar spray?? need decal*/
 };
 
+TYPEDESCRIPTION CGlobalState::m_SaveData[] =
+{
+	DEFINE_FIELD(CGlobalState, m_listCount, FIELD_INTEGER)
+};
+
+TYPEDESCRIPTION gGlobalEntitySaveData[] =
+{
+	DEFINE_ARRAY(globalentity_t, name, FIELD_CHARACTER, 64),
+	DEFINE_ARRAY(globalentity_t, levelName, FIELD_CHARACTER, 32),
+	DEFINE_FIELD(globalentity_t, state, FIELD_INTEGER)
+};
+
 #else // HOOK_GAMEDLL
 
 DLL_DECALLIST gDecals[42];
 
+TYPEDESCRIPTION (*CGlobalState::pm_SaveData)[1];
+TYPEDESCRIPTION gGlobalEntitySaveData[3];
+
 #endif // HOOK_GAMEDLL
 
 /* <1db42b> ../cstrike/dlls/world.cpp:120 */
-//void infodecal(entvars_t *pev)
-//{
-//	GetClassPtr((CDecal *)pev);
-//}
+LINK_ENTITY_TO_CLASS(infodecal, CDecal);
 
 /* <1db00a> ../cstrike/dlls/world.cpp:123 */
 NOBODY void CDecal::Spawn(void)
@@ -124,13 +136,10 @@ NOBODY void CDecal::KeyValue(KeyValueData *pkvd)
 }
 
 /* <1db4f5> ../cstrike/dlls/world.cpp:212 */
-//void bodyque(entvars_t *pev)
-//{
-//	GetClassPtr((CCorpse *)pev);
-//}
+LINK_ENTITY_TO_CLASS(bodyque, CCorpse);
 
 /* <1da107> ../cstrike/dlls/world.cpp:214 */
-INLINEBODY NOXREF void InitBodyQue(void)
+NOXREF void InitBodyQue(void)
 {
 	g_pBodyQueueHead = NULL;
 }
@@ -299,10 +308,7 @@ NOBODY void ResetGlobalState(void)
 }
 
 /* <1dbeff> ../cstrike/dlls/world.cpp:493 */
-///extern "C" _DLLEXPORT void __cdecl worldspawn(entvars_t *pev)
-//{
-//	GetClassPtr((CWorld *)pev);
-//}
+LINK_ENTITY_TO_CLASS(worldspawn, CWorld);
 
 /* <1dad1d> ../cstrike/dlls/world.cpp:502 */
 void CWorld::Spawn_(void)
@@ -323,7 +329,7 @@ void CWorld::Spawn_(void)
 	pFile = (char *)LOAD_FILE_FOR_ME(UTIL_VarArgs("maps/%s.txt",STRING(gpGlobals->mapname)), &flength);
 	if (pFile && flength)
 	{
-		strncpy(g_szMapBriefingText, pFile, 510);
+		Q_strncpy(g_szMapBriefingText, pFile, 510);
 #ifdef REGAMEDLL_FIXES
 		g_szMapBriefingText[510] = 0;
 #endif // REGAMEDLL_FIXES
@@ -336,7 +342,7 @@ void CWorld::Spawn_(void)
 		pFile = (char *)LOAD_FILE_FOR_ME(UTIL_VarArgs("maps/default.txt"), &flength);
 		if (pFile && flength)
 		{
-			strncpy(g_szMapBriefingText, pFile, 510);
+			Q_strncpy(g_szMapBriefingText, pFile, 510);
 #ifdef REGAMEDLL_FIXES
 			g_szMapBriefingText[510] = 0;
 #endif // REGAMEDLL_FIXES

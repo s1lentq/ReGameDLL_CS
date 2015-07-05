@@ -48,8 +48,9 @@ NOBODY bool BotProfile::HasPistolPreference(void) const
 }
 
 /* <4a7b5e> ../game_shared/bot/bot_profile.cpp:112 */
-NOBODY bool BotProfile::IsValidForTeam(BotProfileTeamType team) const
+bool BotProfile::IsValidForTeam(BotProfileTeamType team) const
 {
+	return (team == BOT_TEAM_ANY || m_teams == BOT_TEAM_ANY || team == m_teams);
 }
 
 /* <4a7bb2> ../game_shared/bot/bot_profile.cpp:122 */

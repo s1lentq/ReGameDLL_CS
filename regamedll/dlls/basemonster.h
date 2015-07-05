@@ -37,10 +37,10 @@ class CBaseMonster: public CBaseToggle
 {
 public:
 	NOBODY virtual void KeyValue(KeyValueData *pkvd);
-	NOBODY virtual void TraceAttack(entvars_t *pevAttacker,float flDamage,Vector vecDir,TraceResult *ptr,int bitsDamageType);
-	NOBODY virtual int TakeDamage(entvars_t *pevInflictor,entvars_t *pevAttacker,float flDamage,int bitsDamageType);
-	NOBODY virtual int TakeHealth(float flHealth,int bitsDamageType);
-	NOBODY virtual void Killed(entvars_t *pevAttacker,int iGib);
+	NOBODY virtual void TraceAttack(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType);
+	NOBODY virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
+	NOBODY virtual int TakeHealth(float flHealth, int bitsDamageType);
+	NOBODY virtual void Killed(entvars_t *pevAttacker, int iGib);
 	virtual int BloodColor(void)
 	{
 		return m_bloodColor;
@@ -55,13 +55,13 @@ public:
 	NOBODY virtual void FadeMonster(void);
 	NOBODY virtual void GibMonster(void);
 	NOBODY virtual Activity GetDeathActivity(void);
-	NOBODY virtual void BecomeDead(void);
+	virtual void BecomeDead(void);
 	NOBODY virtual BOOL ShouldFadeOnDeath(void);
 	NOBODY virtual int IRelationship(CBaseEntity *pTarget);
 	NOBODY virtual void PainSound(void) {};
 	NOBODY virtual void ResetMaxSpeed(void) {};
 	NOBODY virtual void ReportAIState(void) {};
-	NOBODY virtual void MonsterInitDead(void);
+	virtual void MonsterInitDead(void);
 	NOBODY virtual void Look(int iDistance);
 	NOBODY virtual CBaseEntity *BestVisibleEnemy(void);
 	NOBODY virtual BOOL FInViewCone(CBaseEntity *pEntity);
@@ -70,10 +70,10 @@ public:
 #ifdef HOOK_GAMEDLL
 
 	void KeyValue_(KeyValueData *pkvd);
-	void TraceAttack_(entvars_t *pevAttacker,float flDamage,Vector vecDir,TraceResult *ptr,int bitsDamageType);
-	int TakeDamage_(entvars_t *pevInflictor,entvars_t *pevAttacker,float flDamage,int bitsDamageType);
-	int TakeHealth_(float flHealth,int bitsDamageType);
-	void Killed_(entvars_t *pevAttacker,int iGib);
+	void TraceAttack_(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType);
+	int TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
+	int TakeHealth_(float flHealth, int bitsDamageType);
+	void Killed_(entvars_t *pevAttacker, int iGib);
 	float ChangeYaw_(int speed);
 	BOOL HasHumanGibs_(void);
 	BOOL HasAlienGibs_(void);
@@ -100,9 +100,11 @@ public:
 	NOBODY int DeadTakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
 	NOBODY float DamageForce(float damage);
 	NOBODY void RadiusDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int iClassIgnore, int bitsDamageType);
-	NOBODY void RadiusDamage(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int iClassIgnore, int bitsDamageType);
-	//wtf??
-	//void RadiusDamage2(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int iClassIgnore, int bitsDamageType);
+	NOXREF void RadiusDamage(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int iClassIgnore, int bitsDamageType);
+	void RadiusDamage2(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int iClassIgnore, int bitsDamageType)
+	{
+		::RadiusDamage2(vecSrc, pevInflictor, pevAttacker, flDamage, flDamage * (RANDOM_FLOAT(0.5, 1.5) + 3), iClassIgnore, bitsDamageType);
+	}
 	void SetConditions(int iConditions)
 	{
 		m_afConditions |= iConditions;
@@ -157,7 +159,7 @@ public:
 	}
 	NOBODY void CorpseFallThink(void);
 	NOBODY CBaseEntity *CheckTraceHullAttack(float flDist, int iDamage, int iDmgType);
-	NOBODY void MakeDamageBloodDecal(int cCount, float flNoise, TraceResult *ptr, Vector &vecDir);
+	NOXREF void MakeDamageBloodDecal(int cCount, float flNoise, TraceResult *ptr, Vector &vecDir);
 	void MonsterUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 	{
 		m_IdealMonsterState = MONSTERSTATE_ALERT;
@@ -181,14 +183,17 @@ public:
 	int m_bloodColor;			// color of blood particless
 	Vector m_HackedGunPos;			// HACK until we can query end of gun
 	Vector m_vecEnemyLKP;			// last known position of enemy. (enemy's origin)
+
 };/* size: 404, cachelines: 7, members: 17 */
 
 #ifdef HOOK_GAMEDLL
-typedef void (CBaseMonster::*RADIUSDAMAGE_ENTVARS)(entvars_t *,entvars_t *,float,int,int);
-typedef void (CBaseMonster::*RADIUSDAMAGE_VECTOR)(Vector,entvars_t *,entvars_t *,float,int,int);
+
+typedef void (CBaseMonster::*RADIUSDAMAGE_ENTVARS)(entvars_t *, entvars_t *, float, int, int);
+typedef void (CBaseMonster::*RADIUSDAMAGE_VECTOR)(Vector, entvars_t *, entvars_t *, float, int, int);
 
 typedef BOOL (CBaseMonster::*FINVIEWCONE_ENTITY)(CBaseEntity *);
 typedef BOOL (CBaseMonster::*FINVIEWCONE_VECTOR)(Vector *);
-#endif
+
+#endif // HOOK_GAMEDLL
 
 #endif // BASEMONSTER_H

@@ -111,14 +111,8 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[5];
 
-#ifndef HOOK_GAMEDLL
-	static TYPEDESCRIPTION m_SaveData[5];
-#else
-	static TYPEDESCRIPTION (*m_SaveData)[5];
-#endif // HOOK_GAMEDLL
-
-public:
 	int m_NeedGrenadeType;
 	string_t sTriggerOnGrenade;
 	string_t sDisableOnGrenade;
@@ -148,12 +142,7 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-
-#ifndef HOOK_GAMEDLL
-	static TYPEDESCRIPTION m_SaveData[6];
-#else
-	static TYPEDESCRIPTION (*m_SaveData)[6];
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[6];
 
 private:
 	string_t sTriggerWithItems;
@@ -162,6 +151,7 @@ private:
 	unsigned int sItemName[32];
 	int iItemCount;
 	int iAnyWeapon;
+
 };/* size: 300, cachelines: 5, members: 8 */
 
-#endif //T RAINING_GAMERULES_H
+#endif // TRAINING_GAMERULES_H

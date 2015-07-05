@@ -7,6 +7,8 @@ import dirsync.model.tree.DirectoryNode
 import dirsync.model.tree.FSMapper
 import dirsync.model.tree.ZipData
 import dirsync.model.tree.ZipTreeMapper
+import org.apache.ant.compress.taskdefs.Unzip
+import org.apache.tools.ant.types.PatternSet;
 
 class RegamedllDemoRunner {
     ZipTreeMapper regamedllImage = new ZipTreeMapper()
@@ -30,6 +32,29 @@ class RegamedllDemoRunner {
         this.postExtract = postExtract
     }
 
+    void prepareDemo(File demoArchive) {
+
+	if (demoArchive == null) {
+		throw new RuntimeException("ReGameDLL_CS testdemos: file is null")
+	}
+
+	PatternSet patt = new PatternSet();
+
+	patt.setExcludes("**/*.bin");
+	patt.setExcludes("**/*.xml");
+
+	//patt.setIncludes("**/cstrike/*");
+	//patt.setIncludes("**/czero/*");
+	//patt.setIncludes("**/valve/*");
+
+        Unzip unzipper = new Unzip();
+
+	unzipper.setDest( rootDir ); // directory unzipped
+	unzipper.setSrc( demoArchive ); // zip file
+	unzipper.addPatternset( patt );
+	unzipper.execute();
+    }
+
     void prepareEngine() {
         def existingTree = FileSystemTreeBuilder.buildFileSystemTree(rootDir)
         def cmds = FileTreeComparator.mergeTrees(engineImageTree, existingTree)
@@ -43,12 +68,14 @@ class RegamedllDemoRunner {
 
     TestResult runTest(RegamedllTestInfo info, File testLogDir) {
         long startTime = System.currentTimeMillis()
-        prepareEngine()
+
+        //prepareEngine()
 
         def outPath = new File(testLogDir, "${info.testName}_run.log")
 
         def cmdParams = []
         cmdParams << new File(rootDir, 'hlds.exe').absolutePath
+
         cmdParams.addAll(info.hldsArgs)
         if (info.regamedllExtraArgs) {
             cmdParams.addAll(info.regamedllExtraArgs)
@@ -57,7 +84,6 @@ class RegamedllDemoRunner {
 
         def pb = new ProcessBuilder(cmdParams).redirectErrorStream(true).directory(rootDir)
         def sout = new StringBuffer()
-
 
         def p = pb.start()
         p.consumeProcessOutput(sout, sout)

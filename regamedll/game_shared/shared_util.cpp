@@ -34,16 +34,16 @@ char *SharedVarArgs(char *format, ...)
 	const int BufLen = 1024;
 	const int NumBuffers = 4;
 
-	static char string[NumBuffers][BufLen];
+	static char string[ NumBuffers ][ BufLen ];
 	static int curstring = 0;
 
 	curstring = (curstring + 1) % NumBuffers;
 
 	va_start(argptr, format);
-	Q_vsnprintf(string[curstring], BufLen, format, argptr);
+	Q_vsnprintf(string[ curstring ], BufLen, format, argptr);
 	va_end(argptr);
 
-	return string[curstring];
+	return string[ curstring ];
 }
 
 /* <2d4ba1> ../game_shared/shared_util.cpp:90 */
@@ -56,8 +56,8 @@ char *BufPrintf(char *buf, int &len, const char *fmt, ...)
 		Q_vsnprintf(buf, len, fmt, argptr);
 		va_end(argptr);
 
-		len -= strlen(buf);
-		return buf + strlen(buf);
+		len -= Q_strlen(buf);
+		return buf + Q_strlen(buf);
 	}
 	return NULL;
 }

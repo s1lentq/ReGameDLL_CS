@@ -35,7 +35,6 @@
 #include "enginecallback.h"
 //#include "entity_state.h"
 #include "nodes.h"
-#include "saverestore.h"
 #include "screenfade.h"
 #include "utlvector.h"
 
@@ -46,6 +45,7 @@
 
 // Globals vars
 #include "globals.h"
+#include "saverestore.h"
 
 // GameInit
 #include "game.h"
@@ -62,6 +62,7 @@
 #include "util.h"
 #include "decals.h"
 #include "cbase.h"
+#include "world.h"
 
 #include "sound.h"
 #include "basemonster.h"

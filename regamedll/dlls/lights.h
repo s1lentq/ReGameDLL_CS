@@ -43,7 +43,7 @@ public:
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
 	virtual void KeyValue(KeyValueData *pkvd);
-	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
 
@@ -56,11 +56,7 @@ public:
 
 #endif // HOOK_GAMEDLL
 
-#ifndef HOOK_GAMEDLL
-	static TYPEDESCRIPTION m_SaveData[2];
-#else // HOOK_GAMEDLL
-	static TYPEDESCRIPTION (*m_SaveData)[2];
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[2];
 
 private:
 
@@ -83,6 +79,6 @@ public:
 	void KeyValue_(KeyValueData *pkvd);
 
 #endif // HOOK_GAMEDLL
-};
+};/* size: 164, cachelines: 3, members: 1 */
 
 #endif // LIGHT_H

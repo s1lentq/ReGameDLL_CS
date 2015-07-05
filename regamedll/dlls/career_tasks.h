@@ -94,6 +94,8 @@ private:
 
 typedef std::list<CCareerTask *> CareerTaskList;
 
+typedef CareerTaskList::iterator CareerTaskListIt;
+
 /* <1efed1> ../cstrike/dlls/career_tasks.cpp:636 */
 class CCareerTaskManager
 {

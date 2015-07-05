@@ -21,8 +21,8 @@ TYPEDESCRIPTION CPathTrack::m_SaveData[] =
 
 #else // HOOK_GAMEDLL
 
-TYPEDESCRIPTION (*CPathCorner::m_SaveData)[1];
-TYPEDESCRIPTION (*CPathTrack::m_SaveData)[5];
+TYPEDESCRIPTION (*CPathCorner::pm_SaveData)[1];
+TYPEDESCRIPTION (*CPathTrack::pm_SaveData)[5];
 
 #endif // HOOK_GAMEDLL
 

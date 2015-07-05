@@ -23,8 +23,8 @@ TYPEDESCRIPTION CMomentaryDoor::m_SaveData[] =
 
 #else
 
-TYPEDESCRIPTION (*CBaseDoor::m_SaveData)[7];
-TYPEDESCRIPTION (*CMomentaryDoor::m_SaveData)[1];
+TYPEDESCRIPTION (*CBaseDoor::pm_SaveData)[7];
+TYPEDESCRIPTION (*CMomentaryDoor::pm_SaveData)[1];
 
 #endif // HOOK_GAMEDLL
 

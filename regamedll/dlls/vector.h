@@ -35,7 +35,7 @@
 #ifdef HOOK_GAMEDLL
 
 // probably gamedll compiled with flag /fpmath:fasted,
-// so you need to use double, otherwise the demo will fail
+// so we need to use type double, otherwise will be the test failed
 
 typedef double float_precision;
 

@@ -5,13 +5,13 @@
 */
 #ifndef HOOK_GAMEDLL
 
-//cvar_t cv_hostage_stop = { "hostage_stop", "0", FCVAR_SERVER };
-//cvar_t cv_hostage_debug = { "hostage_debug", "0", FCVAR_SERVER };
+cvar_t cv_hostage_stop = { "hostage_stop", "0", FCVAR_SERVER };
+cvar_t cv_hostage_debug = { "hostage_debug", "0", FCVAR_SERVER };
 
 #else
 
-//cvar_t cv_hostage_debug;
-//cvar_t cv_hostage_stop;
+cvar_t cv_hostage_debug;
+cvar_t cv_hostage_stop;
 
 #endif // HOOK_GAMEDLL
 
@@ -601,8 +601,10 @@ void CHostage::PreThink(void)
 }
 
 /* <45e24e> ../cstrike/dlls/hostage/hostage.cpp:1421 */
-NOBODY void Hostage_RegisterCVars(void)
+void Hostage_RegisterCVars(void)
 {
+	CVAR_REGISTER(&cv_hostage_debug);
+	CVAR_REGISTER(&cv_hostage_stop);
 }
 
 /* <45e2a6> ../cstrike/dlls/hostage/hostage.cpp:1430 */

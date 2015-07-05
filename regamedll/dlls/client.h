@@ -189,4 +189,7 @@ void CreateInstancedBaselines(void);
 int InconsistentFile(const edict_t *player, const char *filename, char *disconnect_message);
 int AllowLagCompensation(void);
 
+// refs
+extern void (*pClientCommand)(edict_t *pEntity);
+
 #endif // CLIENT_H

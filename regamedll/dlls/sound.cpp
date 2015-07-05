@@ -62,9 +62,9 @@ TYPEDESCRIPTION CSpeaker::m_SaveData[] =
 int fSentencesInit;
 int gcallsentences;
 
-TYPEDESCRIPTION (*CAmbientGeneric::m_SaveData)[4];
-TYPEDESCRIPTION (*CEnvSound::m_SaveData)[2];
-TYPEDESCRIPTION (*CSpeaker::m_SaveData)[1];
+TYPEDESCRIPTION (*CAmbientGeneric::pm_SaveData)[4];
+TYPEDESCRIPTION (*CEnvSound::pm_SaveData)[2];
+TYPEDESCRIPTION (*CSpeaker::pm_SaveData)[1];
 
 #endif // HOOK_GAMEDLL
 
@@ -371,10 +371,10 @@ int USENTENCEG_Pick(int isentenceg, char *szfound)
 			USENTENCEG_InitLRU(plru, count);
 		else
 		{
-			strcpy(szfound, "!");
-			strcat(szfound, szgroupname);
-			sprintf(sznum, "%d", ipick);
-			strcat(szfound, sznum);
+			Q_strcpy(szfound, "!");
+			Q_strcat(szfound, szgroupname);
+			Q_sprintf(sznum, "%d", ipick);
+			Q_strcat(szfound, sznum);
 			return ipick;
 		}
 	}

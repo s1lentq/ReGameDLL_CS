@@ -88,11 +88,7 @@ public:
 #endif // HOOK_GAMEDLL
 	
 public:
-#ifndef HOOK_GAMEDLL
-	static TYPEDESCRIPTION m_SaveData[7];
-#else
-	static TYPEDESCRIPTION (*m_SaveData)[7];
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[7];
 
 public:
 	NOBODY void EXPORT DoorTouch(CBaseEntity *pOther);
@@ -163,11 +159,7 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-#ifndef HOOK_GAMEDLL
-	static TYPEDESCRIPTION m_SaveData[1];
-#else
-	static TYPEDESCRIPTION (*m_SaveData)[1];
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[1];
 
 public:
 	BYTE m_bMoveSnd;

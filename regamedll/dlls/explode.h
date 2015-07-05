@@ -89,11 +89,7 @@ public:
 	NOBODY void EXPORT Smoke(void);
 
 public:
-#ifndef HOOK_GAMEDLL
-	static TYPEDESCRIPTION m_SaveData[2];
-#else
-	static TYPEDESCRIPTION (*m_SaveData)[2];
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[2];
 
 public:
 	int m_iMagnitude;

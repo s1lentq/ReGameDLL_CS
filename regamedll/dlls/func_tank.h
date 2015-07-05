@@ -135,11 +135,7 @@ public:
 	NOBODY void ControllerPostFrame(void);
 
 public:
-#ifndef HOOK_GAMEDLL
-	static TYPEDESCRIPTION m_SaveData[26];
-#else // HOOK_GAMEDLL
-	static TYPEDESCRIPTION (*m_SaveData)[26];
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[26];
 
 protected:
 	CBasePlayer *m_pController;
@@ -208,12 +204,7 @@ public:
 	NOBODY CLaser *GetLaser(void);
 
 public:
-
-#ifndef HOOK_GAMEDLL
-	static TYPEDESCRIPTION m_SaveData[2];
-#else // HOOK_GAMEDLL
-	static TYPEDESCRIPTION (*m_SaveData)[2];
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[2];
 
 private:
 	CLaser *m_pLaser;
@@ -282,11 +273,7 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-#ifndef HOOK_GAMEDLL
-	static TYPEDESCRIPTION m_SaveData[1];
-#else // HOOK_GAMEDLL
-	static TYPEDESCRIPTION (*m_SaveData)[1];
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[1];
 
 public:
 	CFuncTank *m_pTank;

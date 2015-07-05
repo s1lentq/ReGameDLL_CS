@@ -164,11 +164,7 @@ public:
 	NOBODY void EXPORT AnimateUntilDead(void);
 	NOBODY static CSprite *SpriteCreate(const char *pSpriteName, const Vector &origin, BOOL animate);
 
-#ifndef HOOK_GAMEDLL
-	static TYPEDESCRIPTION m_SaveData[2];
-#else // HOOK_GAMEDLL
-	static TYPEDESCRIPTION (*m_SaveData)[2];
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[2];
 
 private:
 
@@ -370,13 +366,9 @@ public:
 
 	NOBODY void FireAtPoint(TraceResult &point);
 	NOBODY void EXPORT StrikeThink(void);
-public:
 
-#ifndef HOOK_GAMEDLL
-	static TYPEDESCRIPTION m_SaveData[3];
-#else // HOOK_GAMEDLL
-	static TYPEDESCRIPTION (*m_SaveData)[3];
-#endif // HOOK_GAMEDLL
+public:
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[3];
 
 public:
 	CSprite *m_pSprite;
@@ -419,12 +411,7 @@ public:
 	void EXPORT FizzThink(void);
 
 public:
-
-#ifndef HOOK_GAMEDLL
-	static TYPEDESCRIPTION m_SaveData[3];
-#else // HOOK_GAMEDLL
-	static TYPEDESCRIPTION (*m_SaveData)[3];
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[3];
 
 public:
 	int m_density;
@@ -476,11 +463,7 @@ public:
 	void BeamUpdateVars(void);
 
 public:
-#ifndef HOOK_GAMEDLL
-	static TYPEDESCRIPTION m_SaveData[13];
-#else // HOOK_GAMEDLL
-	static TYPEDESCRIPTION (*m_SaveData)[13];
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[13];
 
 public:
 	int m_active;
@@ -519,11 +502,7 @@ public:
 
 	NOBODY void Animate(float frames);
 public:
-#ifndef HOOK_GAMEDLL
-	static TYPEDESCRIPTION m_SaveData[2];
-#else // HOOK_GAMEDLL
-	static TYPEDESCRIPTION (*m_SaveData)[2];
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[2];
 
 public:
 	float m_lastTime;
@@ -572,11 +551,7 @@ public:
 public:
 	void EXPORT ShootThink(void);
 public:
-#ifndef HOOK_GAMEDLL
-	static TYPEDESCRIPTION m_SaveData[7];
-#else // HOOK_GAMEDLL
-	static TYPEDESCRIPTION (*m_SaveData)[7];
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[7];
 
 public:
 	int m_iGibs;

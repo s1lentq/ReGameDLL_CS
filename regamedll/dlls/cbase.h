@@ -32,10 +32,6 @@
 #pragma once
 #endif
 
-//#include "archtypes.h"
-//#include "saverestore.h"
-//#include "schedule.h"
-
 #include "monsterevent.h"
 
 #include <utlvector.h>
@@ -255,8 +251,6 @@ class CSound;
 #define hashItemMemPool (*phashItemMemPool)
 #define gTouchDisabled (*pgTouchDisabled)
 
-#define g_flWeaponCheat (*pg_flWeaponCheat)
-
 #define gFunctionTable (*pgFunctionTable)
 #define gNewDLLFunctions (*pgNewDLLFunctions)
 
@@ -265,13 +259,10 @@ class CSound;
 #define fTextureTypeInit (*pfTextureTypeInit)
 #define gcTextures (*pgcTextures)
 
-#define g_pBodyQueueHead (*pg_pBodyQueueHead)
-
 #endif // HOOK_GAMEDLL
 
 extern CMemoryPool hashItemMemPool;
 extern BOOL gTouchDisabled;
-extern float g_flWeaponCheat;
 
 extern DLL_FUNCTIONS gFunctionTable;
 extern NEW_DLL_FUNCTIONS gNewDLLFunctions;
@@ -281,7 +272,6 @@ extern char grgchTextureType[ CTEXTURESMAX ];
 extern int fTextureTypeInit;
 extern int gcTextures;
 
-extern edict_t *g_pBodyQueueHead;
 extern CUtlVector< hash_item_t > stringsHashTable;
 
 class EHANDLE
@@ -510,17 +500,14 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	void *operator new(size_t stAllocateBlock,entvars_t *pevnew)
+	void *operator new(size_t stAllocateBlock, entvars_t *pevnew)
 	{
 		return ALLOC_PRIVATE(ENT(pevnew), stAllocateBlock);
 	}
-	// TODO: it is not declared in linux or the compiler this erease
-//#ifdef _WIN32
 	void operator delete(void *pMem, entvars_t *pev)
 	{
 		pev->flags |= FL_KILLME;
 	}
-//#endif
 	void UpdateOnRemove(void);
 	void EXPORT SUB_Remove(void);
 	void EXPORT SUB_DoNothing(void);
@@ -542,26 +529,26 @@ public:
 		return FALSE;
 	}
 public:
-	INLINEBODY static CBaseEntity *Instance(edict_t *pent)
+	static CBaseEntity *Instance(edict_t *pent)
 	{
 		return (CBaseEntity *)GET_PRIVATE(pent ? pent : ENT(0));
 	}
-	INLINEBODY static CBaseEntity *Instance(entvars_t *pevit)
+	static CBaseEntity *Instance(entvars_t *pevit)
 	{
 		return Instance(ENT(pevit));
 	}
-	INLINEBODY static CBaseEntity *Instance(int offset)
+	static CBaseEntity *Instance(int offset)
 	{
 		return Instance(ENT(offset));
 	}
-	INLINEBODY CBaseMonster *GetMonsterPointer(entvars_t *pevMonster)
+	CBaseMonster *GetMonsterPointer(entvars_t *pevMonster)
 	{
 		CBaseEntity *pEntity = Instance(pevMonster);
 		if(pEntity)
 			return pEntity->MyMonsterPointer();
 		return NULL;
 	}
-	INLINEBODY CBaseMonster *GetMonsterPointer(edict_t *pentMonster)
+	CBaseMonster *GetMonsterPointer(edict_t *pentMonster)
 	{
 		CBaseEntity *pEntity = Instance(pentMonster);
 		if(pEntity)
@@ -569,15 +556,15 @@ public:
 		return NULL;
 	}
 	static CBaseEntity *Create(char *szName, const Vector &vecOrigin, const Vector &vecAngles, edict_t *pentOwner = NULL);
-	INLINEBODY edict_t *edict(void)
+	edict_t *edict(void)
 	{
 		return ENT(pev);
 	}
-	INLINEBODY EOFFSET eoffset(void)
+	EOFFSET eoffset(void)
 	{
 		return OFFSET(pev);
 	}
-	INLINEBODY int entindex(void)
+	int entindex(void)
 	{
 		return ENTINDEX(edict());
 	}
@@ -586,13 +573,7 @@ public:
 	CBaseEntity *m_pGoalEnt;
 	CBaseEntity *m_pLink;
 
-#ifndef HOOK_GAMEDLL
-
-	static TYPEDESCRIPTION m_SaveData[5];
-#else
-	static TYPEDESCRIPTION (*m_SaveData)[5];
-
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[5];
 
 	void (CBaseEntity::*m_pfnThink)(void);
 	//int m_pfnThink_Flag;
@@ -716,15 +697,9 @@ public:
 
 public:
 	NOBODY void EXPORT Register(void);
+
 public:
-
-#ifndef HOOK_GAMEDLL
-
-	static TYPEDESCRIPTION m_SaveData[4];
-#else
-	static TYPEDESCRIPTION (*m_SaveData)[4];
-
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[4];
 
 	EHANDLE m_rgEntities[MS_MAX_TARGETS];
 	int m_rgTriggered[MS_MAX_TARGETS];
@@ -753,16 +728,7 @@ public:
 	void SUB_UseTargets(CBaseEntity *pActivator, USE_TYPE useType, float value);
 	void EXPORT DelayThink(void);
 public:
-
-#ifndef HOOK_GAMEDLL
-
-	static TYPEDESCRIPTION m_SaveData[2];
-
-#else // HOOK_GAMEDLL
-
-	static TYPEDESCRIPTION (*m_SaveData)[2];
-
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[2];
 
 	float m_flDelay;
 	int m_iszKillTarget;
@@ -793,8 +759,8 @@ public:
 	int LookupSequence(const char *label);
 	void ResetSequenceInfo(void);
 	NOBODY void DispatchAnimEvents(float flFutureInterval = 0.1f);
-	NOBODY float SetBoneController(int iController, float flValue);
-	NOBODY void InitBoneControllers(void);
+	float SetBoneController(int iController, float flValue);
+	void InitBoneControllers(void);
 	NOBODY float SetBlending(int iBlender, float flValue);
 	NOBODY void GetBonePosition(int iBone, Vector &origin, Vector &angles);
 	NOXREF void GetAutomovement(Vector &origin, Vector &angles, float flInterval = 0.1f);
@@ -805,14 +771,7 @@ public:
 	NOBODY int ExtractBbox(int sequence, float *mins, float *maxs);
 	NOBODY void SetSequenceBox(void);
 public:
-
-#ifndef HOOK_GAMEDLL
-
-	static TYPEDESCRIPTION m_SaveData[5];
-#else
-	static TYPEDESCRIPTION (*m_SaveData)[5];
-
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[5];
 
 	float m_flFrameRate;
 	float m_flGroundSpeed;
@@ -857,14 +816,7 @@ public:
 	NOBODY static float AxisDelta(int flags, Vector &angle1, Vector &angle2);
 
 public:
-
-#ifndef HOOK_GAMEDLL
-
-	static TYPEDESCRIPTION m_SaveData[19];
-#else
-	static TYPEDESCRIPTION (*m_SaveData)[19];
-
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[19];
 
 	TOGGLE_STATE m_toggle_state;
 	float m_flActivateFinished;
@@ -945,14 +897,7 @@ public:
 	NOBODY BUTTON_CODE ButtonResponseToTouch(void);
 
 public:
-
-#ifndef HOOK_GAMEDLL
-
-	static TYPEDESCRIPTION m_SaveData[8];
-#else
-	static TYPEDESCRIPTION (*m_SaveData)[8];
-
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[8];
 
 	BOOL m_fStayPushed;
 	BOOL m_fRotating;
@@ -1035,14 +980,7 @@ public:
 	NOBODY void InitModulationParms(void);
 
 public:
-
-#ifndef HOOK_GAMEDLL
-
-	static TYPEDESCRIPTION m_SaveData[4];
-#else
-	static TYPEDESCRIPTION (*m_SaveData)[4];
-
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[4];
 
 	float m_flAttenuation;
 	dynpitchvol_t m_dpv;
@@ -1069,14 +1007,7 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-
-#ifndef HOOK_GAMEDLL
-
-	static TYPEDESCRIPTION m_SaveData[2];
-#else
-	static TYPEDESCRIPTION (*m_SaveData)[2];
-
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[2];
 
 	float m_flRadius;
 	float m_flRoomtype;
@@ -1107,14 +1038,7 @@ public:
 	NOBODY void EXPORT ToggleUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 	NOBODY void EXPORT SpeakerThink(void);
 public:
-
-#ifndef HOOK_GAMEDLL
-
-	static TYPEDESCRIPTION m_SaveData[1];
-#else
-	static TYPEDESCRIPTION (*m_SaveData)[1];
-
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[1];
 
 	int m_preset;
 };/* size: 156, cachelines: 3, members: 3 */
@@ -1161,30 +1085,6 @@ NOBODY void SaveWriteFields(SAVERESTOREDATA *pSaveData, const char *pname, void 
 NOBODY void SaveReadFields(SAVERESTOREDATA *pSaveData, const char *pname, void *pBaseData, TYPEDESCRIPTION *pFields, int fieldCount);
 NOBODY void SetObjectCollisionBox(entvars_t *pev);
 NOBODY void OnFreeEntPrivateData(edict_t *pEnt);
-
-NOBODY void CopyToBodyQue(entvars_t *pev);
-NOBODY void ClearBodyQue(void);
-NOBODY void SaveGlobalState(SAVERESTOREDATA *pSaveData);
-NOBODY void RestoreGlobalState(SAVERESTOREDATA *pSaveData);
-NOBODY void ResetGlobalState(void);
-
-/* extern "C" */
-
-//extern "C" _DLLEXPORT void ambient_generic(entvars_t *pev);
-//extern "C" _DLLEXPORT void env_sound(entvars_t *pev);
-//extern "C" _DLLEXPORT void speaker(entvars_t *pev);
-
-//extern "C" _DLLEXPORT void infodecal(entvars_t *pev);
-//extern "C" _DLLEXPORT void worldspawn(entvars_t *pev);
-//extern "C" _DLLEXPORT void bodyque(entvars_t *pev);
-
-//extern "C" void infodecal(entvars_t *pev);
-//extern "C" void worldspawn(entvars_t *pev);
-//extern "C" void bodyque(entvars_t *pev);
-
-//NOBODY void infodecal(entvars_t *pev);
-//NOBODY void worldspawn(entvars_t *pev);
-//NOBODY void bodyque(entvars_t *pev);
 
 #ifdef HOOK_GAMEDLL
 

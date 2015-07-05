@@ -196,7 +196,7 @@ inline bool IsIntersecting2D(const Vector &startA, const Vector &endA, const Vec
 template <
 	typename Functor
 >
-INLINEBODY bool ForEachPlayer(Functor &func)
+bool ForEachPlayer(Functor &func)
 {
 	for(int i = 1; i <= gpGlobals->maxClients; i++)
 	{

@@ -28,8 +28,8 @@ TYPEDESCRIPTION CPendulum::m_SaveData[] =
 
 #else
 
-TYPEDESCRIPTION (*CFuncRotating::m_SaveData)[5];
-TYPEDESCRIPTION (*CPendulum::m_SaveData)[8];
+TYPEDESCRIPTION (*CFuncRotating::pm_SaveData)[5];
+TYPEDESCRIPTION (*CPendulum::pm_SaveData)[8];
 
 #endif // HOOK_GAMEDLL
 

@@ -34,6 +34,8 @@
 
 #include "game_shared/voice_gamemgr.h"
 
+#define COM_TOKEN_LEN		1500
+
 #define MAX_RULE_BUFFER		1024
 #define MAX_VOTE_MAPS		100
 #define ITEM_RESPAWN_TIME	30
@@ -430,7 +432,7 @@ private:
 	NOBODY bool IsBombPlanted(void);
 	NOBODY void MarkLivingPlayersOnTeamAsNotReceivingMoneyNextRound(int iTeam);
 
-	INLINEBODY inline void TerminateRound(float tmDelay, int iWinStatus)
+	inline void TerminateRound(float tmDelay, int iWinStatus)
 	{
 		m_iRoundWinStatus = iWinStatus;
 		m_bRoundTerminating = true;
@@ -599,6 +601,7 @@ public:
 #define g_GameMgrHelper (*pg_GameMgrHelper)
 #define sv_clienttrace (*psv_clienttrace)
 #define g_pMPGameRules (*pg_pMPGameRules)
+#define mp_com_token (*pmp_com_token)
 
 #endif // HOOK_GAMEDLL
 
@@ -606,6 +609,7 @@ extern CHalfLifeMultiplay *g_pGameRules;
 extern CCStrikeGameMgrHelper g_GameMgrHelper;
 extern cvar_t *sv_clienttrace;
 extern CHalfLifeMultiplay *g_pMPGameRules;
+extern char mp_com_token[ COM_TOKEN_LEN ];
 
 CGameRules *InstallGameRules(void);
 
@@ -625,9 +629,11 @@ char *GetTeam(int teamNo);
 NOBODY void EndRoundMessage(const char *sentence, int event);
 NOBODY void ReadMultiplayCvars(CHalfLifeMultiplay *mp);
 NOBODY void DestroyMapCycle(mapcycle_t *cycle);
-NOBODY char *MP_COM_GetToken(void);
-NOBODY char *MP_COM_Parse(char *data);
-NOBODY int MP_COM_TokenWaiting(char *buffer);
+
+char *MP_COM_GetToken(void);
+char *MP_COM_Parse(char *data);
+NOXREF int MP_COM_TokenWaiting(char *buffer);
+
 NOBODY int ReloadMapCycleFile(char *filename, mapcycle_t *cycle);
 NOBODY int CountPlayers(void);
 NOBODY void ExtractCommandString(char *s, char *szCommand);

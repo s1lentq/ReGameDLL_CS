@@ -83,11 +83,7 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-#ifndef HOOK_GAMEDLL
-	static TYPEDESCRIPTION m_SaveData[3];
-#else // HOOK_GAMEDLL
-	static TYPEDESCRIPTION (*m_SaveData)[3];
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[3];
 
 public:
 	BYTE m_bMoveSnd;
@@ -121,13 +117,12 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	void Setup(void);
+	NOBODY void Setup(void);
 
-public:
-	void EXPORT PlatUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-	void EXPORT CallGoDown(void);
-	void EXPORT CallHitTop(void);
-	void EXPORT CallHitBottom(void);
+	NOBODY void EXPORT PlatUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	NOBODY void EXPORT CallGoDown(void);
+	NOBODY void EXPORT CallHitTop(void);
+	NOBODY void EXPORT CallHitBottom(void);
 
 };/* size: 320, cachelines: 5, members: 1 */
 
@@ -189,11 +184,7 @@ public:
 	NOBODY void RotMove(Vector &destAngle, float time);
 	
 public:
-#ifndef HOOK_GAMEDLL
-	static TYPEDESCRIPTION m_SaveData[2];
-#else // HOOK_GAMEDLL
-	static TYPEDESCRIPTION (*m_SaveData)[2];
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[2];
 
 public:
 	Vector m_end;
@@ -232,15 +223,11 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	void EXPORT Wait(void);
-	void EXPORT Next(void);
+	NOBODY void EXPORT Wait(void);
+	NOBODY void EXPORT Next(void);
 
 public:
-#ifndef HOOK_GAMEDLL
-	static TYPEDESCRIPTION m_SaveData[3];
-#else // HOOK_GAMEDLL
-	static TYPEDESCRIPTION (*m_SaveData)[3];
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[3];
 
 public:
 	Vector m_vStartPosition;
@@ -272,7 +259,7 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	void EXPORT Find(void);
+	NOBODY void EXPORT Find(void);
 
 };/* size: 152, cachelines: 3, members: 1 */
 
@@ -338,11 +325,7 @@ public:
 	}
 
 public:
-#ifndef HOOK_GAMEDLL
-	static TYPEDESCRIPTION m_SaveData[9];
-#else // HOOK_GAMEDLL
-	static TYPEDESCRIPTION (*m_SaveData)[9];
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[9];
 
 public:
 	CPathTrack *m_trackTop;
@@ -438,11 +421,7 @@ public:
 	NOBODY void Stop(void);
 
 public:
-#ifndef HOOK_GAMEDLL
-	static TYPEDESCRIPTION m_SaveData[1];
-#else // HOOK_GAMEDLL
-	static TYPEDESCRIPTION (*m_SaveData)[1];
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[1];
 
 private:
 	BOOL m_on;

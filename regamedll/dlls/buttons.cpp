@@ -49,11 +49,11 @@ TYPEDESCRIPTION CEnvSpark::m_SaveData[] =
 
 #else
 
-TYPEDESCRIPTION (*CEnvGlobal::m_SaveData)[3];
-TYPEDESCRIPTION (*CMultiSource::m_SaveData)[4];
-TYPEDESCRIPTION (*CBaseButton::m_SaveData)[8];
-TYPEDESCRIPTION (*CMomentaryRotButton::m_SaveData)[6];
-TYPEDESCRIPTION (*CEnvSpark::m_SaveData)[1];
+TYPEDESCRIPTION (*CEnvGlobal::pm_SaveData)[3];
+TYPEDESCRIPTION (*CMultiSource::pm_SaveData)[4];
+TYPEDESCRIPTION (*CBaseButton::pm_SaveData)[8];
+TYPEDESCRIPTION (*CMomentaryRotButton::pm_SaveData)[6];
+TYPEDESCRIPTION (*CEnvSpark::pm_SaveData)[1];
 
 #endif // HOOK_GAMEDLL
 

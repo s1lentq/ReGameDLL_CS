@@ -43,6 +43,17 @@ void printAddrRebase(size_t addr,const char *funcName)
 	printf("#%d. %s - 0x%p\n", ++inum, funcName, (void *)addr);
 }
 
+FunctionHook *GetFunctionPtrByName(const char *funcName)
+{
+	for (FunctionHook *cfh = &g_FunctionHooks[0]; cfh->symbolName; cfh++)
+	{
+		if (!strcmp(cfh->symbolName, funcName))
+			return cfh;
+	}
+
+	return NULL;
+}
+
 void *GetOriginalFuncAddrOrDie(const char *funcName)
 {
 	for (FunctionHook *cfh = &g_FunctionHooks[0]; cfh->symbolName; cfh++)
@@ -181,7 +192,6 @@ int HookGameDLL(size_t gameAddr, size_t engAddr)
 		{
 			if (!HookFunction(&g_GameDLLModule, hookFunc))
 				return (FALSE);
-
 			hookFunc++;
 		}
 	}

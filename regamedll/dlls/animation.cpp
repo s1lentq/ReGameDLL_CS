@@ -173,14 +173,58 @@ NOBODY int GetAnimationEvent(void *pmodel, entvars_t *pev, MonsterEvent_t *pMons
 }
 
 /* <157e1> ../cstrike/dlls/animation.cpp:359 */
-NOBODY float SetController(void *pmodel, entvars_t *pev, int iController, float flValue)
+float SetController(void *pmodel, entvars_t *pev, int iController, float flValue)
 {
-//	{
-//		studiohdr_t *pstudiohdr;                             //   361
-//		mstudiobonecontroller_t *pbonecontroller;            //   367
-//		int i;                                                //   370
-//		int setting;                                          //   404
-//	}
+	studiohdr_t *pstudiohdr = (studiohdr_t *)pmodel;
+
+	if (!pstudiohdr)
+		return flValue;
+
+	int i;
+	mstudiobonecontroller_t *pbonecontroller = (mstudiobonecontroller_t *)((byte *)pstudiohdr + pstudiohdr->bonecontrollerindex);
+	for (i = 0; i < pstudiohdr->numbonecontrollers; i++, pbonecontroller++)
+	{
+		if (pbonecontroller->index == iController)
+			break;
+	}
+
+	if (i >= pstudiohdr->numbonecontrollers)
+		return flValue;
+
+	if (pbonecontroller->type & (STUDIO_XR | STUDIO_YR | STUDIO_ZR))
+	{
+		if (pbonecontroller->end < pbonecontroller->start)
+			flValue = -flValue;
+
+		if (pbonecontroller->end > pbonecontroller->start + 359.0)
+		{
+			if (flValue > 360.0)
+				flValue = flValue - (int64_t)(flValue / 360.0) * 360.0;
+
+			else if (flValue < 0.0)
+				flValue = flValue + (int64_t)((flValue / -360.0) + 1) * 360.0;
+		}
+		else
+		{
+			if (flValue > ((pbonecontroller->start + pbonecontroller->end) / 2) + 180)
+				flValue -= 360;
+
+			if (flValue < ((pbonecontroller->start + pbonecontroller->end) / 2) - 180)
+				flValue += 360;
+		}
+	}
+
+	int setting = (int64_t)(255.0f * (flValue - pbonecontroller->start) / (pbonecontroller->end - pbonecontroller->start));
+
+	if (setting < 0)
+		setting = 0;
+
+	if (setting > 255)
+		setting = 255;
+
+	pev->controller[ iController ] = setting;
+
+	return setting * (1.0f / 255.0f) * (pbonecontroller->end - pbonecontroller->start) + pbonecontroller->start;
 }
 
 /* <15883> ../cstrike/dlls/animation.cpp:414 */

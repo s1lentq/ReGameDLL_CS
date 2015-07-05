@@ -16,7 +16,7 @@ TYPEDESCRIPTION CRecharge::m_SaveData[] =
 
 #else
 
-TYPEDESCRIPTION (*CRecharge::m_SaveData)[5];
+TYPEDESCRIPTION (*CRecharge::pm_SaveData)[5];
 
 #endif // HOOK_GAMEDLL
 

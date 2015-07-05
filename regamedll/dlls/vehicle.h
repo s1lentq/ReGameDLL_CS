@@ -77,4 +77,6 @@ public:
 
 };/* size: 152, cachelines: 3, members: 1 */
 
+NOBODY void FixupAngles2(Vector &v);
+
 #endif // VEHICLE_H

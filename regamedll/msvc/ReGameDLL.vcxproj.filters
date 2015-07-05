@@ -1100,6 +1100,12 @@
     <ClInclude Include="..\engine\cmd.h">
       <Filter>engine</Filter>
     </ClInclude>
+    <ClInclude Include="..\dlls\game.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\world.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\linux\appversion.sh">

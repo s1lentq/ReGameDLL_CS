@@ -35,7 +35,7 @@
 #include "hintmessage.h"
 //#include "weapons.h"
 
-#define MAX_BUFFER_MENU			175//??
+#define MAX_BUFFER_MENU			175//?
 #define MAX_BUFFER_MENU_BRIEFING	50
 
 #define MAX_PLAYER_NAME_LENGTH		32
@@ -271,11 +271,103 @@ struct WeaponStruct
 
 };/* size: 20, cachelines: 1, members: 5 */
 
+#ifdef HOOK_GAMEDLL
+
+#define m_szPoses (*pm_szPoses)
+#define g_weaponStruct (*pg_weaponStruct)
+#define gEvilImpulse101 (*pgEvilImpulse101)
+#define g_szMapBriefingText (*pg_szMapBriefingText)
+#define gInitHUD (*pgInitHUD)
+#define sv_aim (*psv_aim)
+#define giPrecacheGrunt (*pgiPrecacheGrunt)
+#define gmsgWeapPickup (*pgmsgWeapPickup)
+#define gmsgHudText (*pgmsgHudText)
+#define gmsgHudTextArgs (*pgmsgHudTextArgs)
+#define gmsgShake (*pgmsgShake)
+#define gmsgFade (*pgmsgFade)
+#define gmsgFlashlight (*pgmsgFlashlight)
+//#define gmsgFlashBattery (*pgmsgFlashBattery)
+//#define gmsgResetHUD (*pgmsgResetHUD)
+//#define gmsgInitHUD (*pgmsgInitHUD)
+//#define gmsgViewMode (*pgmsgViewMode)
+//#define gmsgShowGameTitle (*pgmsgShowGameTitle)
+#define gmsgCurWeapon (*pgmsgCurWeapon)
+//#define gmsgHealth (*pgmsgHealth)
+//#define gmsgDamage (*pgmsgDamage)
+//#define gmsgBattery (*pgmsgBattery)
+//#define gmsgTrain (*pgmsgTrain)
+//#define gmsgLogo (*pgmsgLogo)
+#define gmsgWeaponList (*pgmsgWeaponList)
+//#define gmsgAmmoX (*pgmsgAmmoX)
+//#define gmsgDeathMsg (*pgmsgDeathMsg)
+#define gmsgScoreAttrib (*pgmsgScoreAttrib)
+#define gmsgScoreInfo (*pgmsgScoreInfo)
+#define gmsgTeamInfo (*pgmsgTeamInfo)
+//#define gmsgTeamScore (*pgmsgTeamScore)
+//#define gmsgGameMode (*pgmsgGameMode)
+//#define gmsgMOTD (*pgmsgMOTD)
+//#define gmsgServerName (*pgmsgServerName)
+#define gmsgAmmoPickup (*pgmsgAmmoPickup)
+#define gmsgItemPickup (*pgmsgItemPickup)
+//#define gmsgHideWeapon (*pgmsgHideWeapon)
+#define gmsgSayText (*pgmsgSayText)
+#define gmsgTextMsg (*pgmsgTextMsg)
+#define gmsgSetFOV (*pgmsgSetFOV)
+#define gmsgShowMenu (*pgmsgShowMenu)
+#define gmsgSendAudio (*pgmsgSendAudio)
+#define gmsgRoundTime (*pgmsgRoundTime)
+#define gmsgMoney (*pgmsgMoney)
+#define gmsgBlinkAcct (*pgmsgBlinkAcct)
+#define gmsgArmorType (*pgmsgArmorType)
+//#define gmsgStatusValue (*pgmsgStatusValue)
+//#define gmsgStatusText (*pgmsgStatusText)
+#define gmsgStatusIcon (*pgmsgStatusIcon)
+#define gmsgBarTime (*pgmsgBarTime)
+#define gmsgReloadSound (*pgmsgReloadSound)
+#define gmsgCrosshair (*pgmsgCrosshair)
+#define gmsgNVGToggle (*pgmsgNVGToggle)
+//#define gmsgRadar (*pgmsgRadar)
+#define gmsgSpectator (*pgmsgSpectator)
+//#define gmsgVGUIMenu (*pgmsgVGUIMenu)
+#define gmsgCZCareer (*pgmsgCZCareer)
+//#define gmsgCZCareerHUD (*pgmsgCZCareerHUD)
+#define gmsgTaskTime (*pgmsgTaskTime)
+//#define gmsgTutorText (*pgmsgTutorText)
+#define gmsgTutorLine (*pgmsgTutorLine)
+//#define gmsgShadowIdx (*pgmsgShadowIdx)
+#define gmsgTutorState (*pgmsgTutorState)
+#define gmsgTutorClose (*pgmsgTutorClose)
+//#define gmsgAllowSpec (*pgmsgAllowSpec)
+#define gmsgBombDrop (*pgmsgBombDrop)
+//#define gmsgBombPickup (*pgmsgBombPickup)
+//#define gmsgHostagePos (*pgmsgHostagePos)
+//#define gmsgHostageK (*pgmsgHostageK)
+#define gmsgGeigerRange (*pgmsgGeigerRange)
+#define gmsgSendCorpse (*pgmsgSendCorpse)
+//#define gmsgHLTV (*pgmsgHLTV)
+//#define gmsgSpecHealth (*pgmsgSpecHealth)
+//#define gmsgForceCam (*pgmsgForceCam)
+//#define gmsgADStop (*pgmsgADStop)
+//#define gmsgReceiveW (*pgmsgReceiveW)
+#define gmsgScenarioIcon (*pgmsgScenarioIcon)
+#define gmsgBotVoice (*pgmsgBotVoice)
+#define gmsgBuyClose (*pgmsgBuyClose)
+#define gmsgItemStatus (*pgmsgItemStatus)
+#define gmsgLocation (*pgmsgLocation)
+#define gmsgSpecHealth2 (*pgmsgSpecHealth2)
+#define gmsgBarTime2 (*pgmsgBarTime2)
+#define gmsgBotProgress (*pgmsgBotProgress)
+//#define gmsgBrass (*pgmsgBrass)
+//#define gmsgFog (*pgmsgFog)
+//#define gmsgShowTimer (*pgmsgShowTimer)
+
+#endif // HOOK_GAMEDLL
+
 /* <14efbf> ../cstrike/dlls/player.cpp:9418 */
 class CStripWeapons: public CPointEntity
 {
 public:
-	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
 
@@ -289,8 +381,8 @@ public:
 class CInfoIntermission: public CPointEntity
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Think(void);
+	virtual void Spawn(void);
+	virtual void Think(void);
 
 #ifdef HOOK_GAMEDLL
 
@@ -305,9 +397,9 @@ public:
 class CDeadHEV: public CBaseMonster
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void KeyValue(KeyValueData *pkvd);
-	NOBODY virtual int Classify(void);
+	virtual void Spawn(void);
+	virtual void KeyValue(KeyValueData *pkvd);
+	virtual int Classify(void);
 
 #ifdef HOOK_GAMEDLL
 
@@ -320,7 +412,7 @@ public:
 public:
 
 	int m_iPose;
-	char *m_szPoses[4];
+	static char *m_szPoses[4];
 
 };/* size: 408, cachelines: 7, members: 3 */
 
@@ -382,59 +474,60 @@ public:
 	virtual BOOL AddPlayerItem(CBasePlayerItem *pItem);
 	virtual BOOL RemovePlayerItem(CBasePlayerItem *pItem);
 	virtual int GiveAmmo(int iAmount, char *szName, int iMax);
-	virtual void StartSneaking(void);
-	//{
-	//	m_tSneaking = gpGlobals->time - 1.0f;
-	//}
-	virtual void StopSneaking(void);
-	//{
-	//	m_tSneaking = gpGlobals->time + 30.0f;
-	//}
-	virtual BOOL IsSneaking(void);
-	//{
-	//	return m_tSneaking <= gpGlobals->time;
-	//}
-	virtual BOOL IsAlive(void);
-	//{
-	//	return (pev->deadflag == DEAD_NO && pev->health > 0.0f);
-	//}
-	virtual BOOL IsPlayer(void);
-	//{
-	//	return !(pev->flags & FL_SPECTATOR);
-	//}
-	virtual BOOL IsNetClient(void);
-	//{
-	//	return TRUE;
-	//}
+	NOBODY virtual void StartSneaking(void)
+	{
+		StartSneaking_();
+	}
+	NOBODY virtual void StopSneaking(void)
+	{
+		StopSneaking_();
+	}
+	NOBODY virtual BOOL IsSneaking(void)
+	{
+		return IsSneaking_();
+	}
+	NOBODY virtual BOOL IsAlive(void)
+	{
+		return IsAlive_();
+	}
+	NOBODY virtual BOOL IsPlayer(void)
+	{
+		return IsPlayer_();
+	}
+	NOBODY virtual BOOL IsNetClient(void)
+	{
+		return IsNetClient_();
+	}
 	NOBODY virtual const char *TeamID(void);
 	NOBODY virtual BOOL FBecomeProne(void);
-	virtual Vector BodyTarget(const Vector &posSrc);
-	//{
-	//	return Center() + pev->view_ofs * RANDOM_FLOAT(0.5,1.1);
-	//
+	NOBODY virtual Vector BodyTarget(const Vector &posSrc)
+	{
+		return BodyTarget_(posSrc);
+	}
 	NOBODY virtual int Illumination(void);
-	virtual BOOL ShouldFadeOnDeath(void);
-	//{
-	//	return FALSE;
-	//}
+	NOBODY virtual BOOL ShouldFadeOnDeath(void)
+	{
+		return ShouldFadeOnDeath_();
+	}
 	NOBODY virtual void ResetMaxSpeed(void);
 	NOBODY virtual void Jump(void);
 	NOBODY virtual void Duck(void);
 	NOBODY virtual void PreThink(void);
 	NOBODY virtual void PostThink(void);
 	NOBODY virtual Vector GetGunPosition(void);
-	virtual BOOL IsBot(void);
-	//{
-	//	return FALSE;
-	//}
+	NOBODY virtual BOOL IsBot(void)
+	{
+		return IsBot_();
+	}
 	NOBODY virtual void UpdateClientData(void);
 	NOBODY virtual void ImpulseCommands(void);
 	virtual void RoundRespawn(void);
 	virtual Vector GetAutoaimVector(float flDelta);
 	NOBODY virtual void Blind(float flUntilTime, float flHoldTime, float flFadeTime, int iAlpha);
-	virtual void OnTouchingWeapon(CWeaponBox *pWeapon);// = 0;
-	//{
-	//}
+	NOBODY virtual void OnTouchingWeapon(CWeaponBox *pWeapon)
+	{
+		OnTouchingWeapon_(pWeapon);
+	}
 
 #ifdef HOOK_GAMEDLL
 
@@ -508,6 +601,7 @@ public:
 	void Blind_(float flUntilTime, float flHoldTime, float flFadeTime, int iAlpha);
 	void OnTouchingWeapon_(CWeaponBox *pWeapon)
 	{
+		;
 	}
 
 #endif // HOOK_GAMEDLL
@@ -615,17 +709,17 @@ public:
 	NOBODY int GetCustomDecalFrames(void);
 	NOBODY void InitStatusBar(void);
 	NOBODY void UpdateStatusBar(void);
-	NOBODY void StudioEstimateGait(void);
-	NOBODY void StudioPlayerBlend(int *pBlend, float *pPitch);
-	NOBODY void CalculatePitchBlend(void);
-	NOBODY void CalculateYawBlend(void);
-	NOBODY void StudioProcessGait(void);
+	void StudioEstimateGait(void);
+	NOXREF void StudioPlayerBlend(int *pBlend, float *pPitch);
+	NOXREF void CalculatePitchBlend(void);
+	void CalculateYawBlend(void);
+	void StudioProcessGait(void);
 	NOBODY void SendHostagePos(void);
 	void SendHostageIcons(void);
-	NOBODY void ResetStamina(void);
-	NOBODY BOOL IsArmored(int nHitGroup);
-	NOBODY BOOL ShouldDoLargeFlinch(int nHitGroup, int nGunType);
-	NOBODY void SetPrefsFromUserinfo(char *infobuffer);
+	NOXREF void ResetStamina(void);
+	NOXREF BOOL IsArmored(int nHitGroup);
+	NOXREF BOOL ShouldDoLargeFlinch(int nHitGroup, int nGunType);
+	void SetPrefsFromUserinfo(char *infobuffer);
 	NOBODY void SendWeatherInfo(void);
 	void UpdateShieldCrosshair(bool);
 	bool HasShield(void);
@@ -648,39 +742,50 @@ public:
 	NOBODY bool IsAutoFollowAllowed(void);
 	NOBODY void InhibitAutoFollow(float);
 	NOBODY void AllowAutoFollow(void);
-	NOBODY void ClearAutoBuyData(void);
-	NOBODY void AddAutoBuyData(const char *str);
+	void ClearAutoBuyData(void);
+	void AddAutoBuyData(const char *str);
 	NOBODY void AutoBuy(void);
-	NOBODY void ClientCommand(const char *cmd, const char *arg1, const char *arg2, const char *arg3);
-	NOBODY void PrioritizeAutoBuyString(char *autobuyString, const char *priorityString);
+	NOBODY void ClientCommand(const char *cmd, const char *arg1 = NULL, const char *arg2 = NULL, const char *arg3 = NULL);
+	void PrioritizeAutoBuyString(char *autobuyString, const char *priorityString);
 	NOBODY const char *PickPrimaryCareerTaskWeapon(void);
 	NOBODY const char *PickSecondaryCareerTaskWeapon(void);
-	NOBODY const char *PickFlashKillWeaponString(void);
-	NOBODY const char *PickGrenadeKillWeaponString(void);
-	NOBODY bool ShouldExecuteAutoBuyCommand(AutoBuyInfoStruct *commandInfo, bool boughtPrimary, bool boughtSecondary);
-	NOBODY void PostAutoBuyCommandProcessing(AutoBuyInfoStruct *commandInfo, bool &boughtPrimary, bool &boughtSecondary);
-	NOBODY void ParseAutoBuyString(const char *string, bool &boughtPrimary, bool &boughtSecondary);
-	NOBODY AutoBuyInfoStruct *GetAutoBuyCommandInfo(const char *command);
+	NOXREF const char *PickFlashKillWeaponString(void);
+	NOXREF const char *PickGrenadeKillWeaponString(void);
+	NOXREF bool ShouldExecuteAutoBuyCommand(AutoBuyInfoStruct *commandInfo, bool boughtPrimary, bool boughtSecondary);
+	void PostAutoBuyCommandProcessing(AutoBuyInfoStruct *commandInfo, bool &boughtPrimary, bool &boughtSecondary);
+	void ParseAutoBuyString(const char *string, bool &boughtPrimary, bool &boughtSecondary);
+	NOXREF AutoBuyInfoStruct *GetAutoBuyCommandInfo(const char *command);
 	NOBODY void InitRebuyData(const char *str);
-	NOBODY void BuildRebuyStruct(void);
-	NOBODY void Rebuy(void);
-	NOBODY void RebuyPrimaryWeapon(void);
-	NOBODY void RebuyPrimaryAmmo(void);
-	NOBODY void RebuySecondaryWeapon(void);
-	NOBODY void RebuySecondaryAmmo(void);
-	NOBODY void RebuyHEGrenade(void);
-	NOBODY void RebuyFlashbang(void);
-	NOBODY void RebuySmokeGrenade(void);
-	NOBODY void RebuyDefuser(void);
-	NOBODY void RebuyNightVision(void);
-	NOBODY void RebuyArmor(void);
-	NOBODY void UpdateLocation(bool);
-	NOBODY void SetObserverAutoDirector(bool);
-	NOBODY bool IsObservingPlayer(CBasePlayer *pPlayer);
-	NOBODY bool CanSwitchObserverModes(void);
-	NOBODY void Intense(void);
+	void BuildRebuyStruct(void);
+	void Rebuy(void);
+	NOXREF void RebuyPrimaryWeapon(void);
+	NOXREF void RebuyPrimaryAmmo(void);
+	NOXREF void RebuySecondaryWeapon(void);
+	NOXREF void RebuySecondaryAmmo(void);
+	NOXREF void RebuyHEGrenade(void);
+	NOXREF void RebuyFlashbang(void);
+	NOXREF void RebuySmokeGrenade(void);
+	void RebuyDefuser(void);
+	void RebuyNightVision(void);
+	void RebuyArmor(void);
+	void UpdateLocation(bool forceUpdate);
+	void SetObserverAutoDirector(bool val)
+	{
+		m_bObserverAutoDirector = val;
+	}
+	bool IsObservingPlayer(CBasePlayer *pPlayer);
+	bool CanSwitchObserverModes(void)
+	{
+		return m_canSwitchObserverModes;
+	}
+	NOBODY void Intense(void)
+	{
+		//m_musicState = INTENSE;
+		//m_intenseTimestamp = gpGlobals->time;
+	}
+
 public:
-	int random_seed;//Lin - 404 | 384 | Currnet (396:)
+	int random_seed;
 	unsigned short m_usPlayerBleed;
 	EHANDLE m_hObserverTarget;
 	float m_flNextObserverInput;
@@ -717,7 +822,6 @@ public:
 	bool m_bHasNightVision;
 	bool m_bNightVisionOn;
 	Vector m_vRecentPath[ MAX_RECENT_PATH ];
-
 	float m_flIdleCheckTime;
 	float m_flRadioTime;
 	int m_iRadioMessages;
@@ -832,20 +936,15 @@ public:
 	float m_flNextDecalTime;
 	char m_szTeamName[ TEAM_NAME_LENGTH ];
 
-#ifndef HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_playerSaveData)[40];
 
-	static TYPEDESCRIPTION m_playerSaveData[40];
-#else
-	static TYPEDESCRIPTION (*m_playerSaveData)[40];
-
-#endif // HOOK_GAMEDLL
-
-//TOOD: check out
+//TOOD: check out!
 //protected:
 
-	int m_modelIndexPlayer;
+	int m_modelIndexPlayer;//++1964
 	char m_szAnimExtention[32];
 	int m_iGaitsequence;
+
 	float m_flGaitframe;
 	float m_flGaityaw;
 	Vector m_prevgaitorigin;
@@ -903,97 +1002,7 @@ public:
 	float m_flTimeToIgnoreTouches;
 };/* size: 164, cachelines: 3, members: 3 */
 
-#ifdef HOOK_GAMEDLL
-
-#define g_weaponStruct (*pg_weaponStruct)
-#define gEvilImpulse101 (*pgEvilImpulse101)
-#define g_szMapBriefingText (*pg_szMapBriefingText)
-#define gInitHUD (*pgInitHUD)
-#define sv_aim (*psv_aim)
-#define giPrecacheGrunt (*pgiPrecacheGrunt)
-#define gmsgWeapPickup (*pgmsgWeapPickup)
-#define gmsgHudText (*pgmsgHudText)
-#define gmsgHudTextArgs (*pgmsgHudTextArgs)
-#define gmsgShake (*pgmsgShake)
-#define gmsgFade (*pgmsgFade)
-#define gmsgFlashlight (*pgmsgFlashlight)
-//#define gmsgFlashBattery (*pgmsgFlashBattery)
-//#define gmsgResetHUD (*pgmsgResetHUD)
-//#define gmsgInitHUD (*pgmsgInitHUD)
-//#define gmsgViewMode (*pgmsgViewMode)
-//#define gmsgShowGameTitle (*pgmsgShowGameTitle)
-#define gmsgCurWeapon (*pgmsgCurWeapon)
-//#define gmsgHealth (*pgmsgHealth)
-//#define gmsgDamage (*pgmsgDamage)
-//#define gmsgBattery (*pgmsgBattery)
-//#define gmsgTrain (*pgmsgTrain)
-//#define gmsgLogo (*pgmsgLogo)
-#define gmsgWeaponList (*pgmsgWeaponList)
-//#define gmsgAmmoX (*pgmsgAmmoX)
-//#define gmsgDeathMsg (*pgmsgDeathMsg)
-#define gmsgScoreAttrib (*pgmsgScoreAttrib)
-#define gmsgScoreInfo (*pgmsgScoreInfo)
-//#define gmsgTeamInfo (*pgmsgTeamInfo)
-//#define gmsgTeamScore (*pgmsgTeamScore)
-//#define gmsgGameMode (*pgmsgGameMode)
-//#define gmsgMOTD (*pgmsgMOTD)
-//#define gmsgServerName (*pgmsgServerName)
-#define gmsgAmmoPickup (*pgmsgAmmoPickup)
-#define gmsgItemPickup (*pgmsgItemPickup)
-//#define gmsgHideWeapon (*pgmsgHideWeapon)
-#define gmsgSayText (*pgmsgSayText)
-#define gmsgTextMsg (*pgmsgTextMsg)
-#define gmsgSetFOV (*pgmsgSetFOV)
-#define gmsgShowMenu (*pgmsgShowMenu)
-#define gmsgSendAudio (*pgmsgSendAudio)
-#define gmsgRoundTime (*pgmsgRoundTime)
-#define gmsgMoney (*pgmsgMoney)
-#define gmsgBlinkAcct (*pgmsgBlinkAcct)
-#define gmsgArmorType (*pgmsgArmorType)
-//#define gmsgStatusValue (*pgmsgStatusValue)
-//#define gmsgStatusText (*pgmsgStatusText)
-#define gmsgStatusIcon (*pgmsgStatusIcon)
-#define gmsgBarTime (*pgmsgBarTime)
-#define gmsgReloadSound (*pgmsgReloadSound)
-#define gmsgCrosshair (*pgmsgCrosshair)
-#define gmsgNVGToggle (*pgmsgNVGToggle)
-//#define gmsgRadar (*pgmsgRadar)
-#define gmsgSpectator (*pgmsgSpectator)
-//#define gmsgVGUIMenu (*pgmsgVGUIMenu)
-#define gmsgCZCareer (*pgmsgCZCareer)
-//#define gmsgCZCareerHUD (*pgmsgCZCareerHUD)
-#define gmsgTaskTime (*pgmsgTaskTime)
-//#define gmsgTutorText (*pgmsgTutorText)
-#define gmsgTutorLine (*pgmsgTutorLine)
-//#define gmsgShadowIdx (*pgmsgShadowIdx)
-#define gmsgTutorState (*pgmsgTutorState)
-#define gmsgTutorClose (*pgmsgTutorClose)
-//#define gmsgAllowSpec (*pgmsgAllowSpec)
-#define gmsgBombDrop (*pgmsgBombDrop)
-//#define gmsgBombPickup (*pgmsgBombPickup)
-//#define gmsgHostagePos (*pgmsgHostagePos)
-//#define gmsgHostageK (*pgmsgHostageK)
-#define gmsgGeigerRange (*pgmsgGeigerRange)
-#define gmsgSendCorpse (*pgmsgSendCorpse)
-//#define gmsgHLTV (*pgmsgHLTV)
-//#define gmsgSpecHealth (*pgmsgSpecHealth)
-//#define gmsgForceCam (*pgmsgForceCam)
-//#define gmsgADStop (*pgmsgADStop)
-//#define gmsgReceiveW (*pgmsgReceiveW)
-#define gmsgScenarioIcon (*pgmsgScenarioIcon)
-#define gmsgBotVoice (*pgmsgBotVoice)
-#define gmsgBuyClose (*pgmsgBuyClose)
-#define gmsgItemStatus (*pgmsgItemStatus)
-//#define gmsgLocation (*pgmsgLocation)
-#define gmsgSpecHealth2 (*pgmsgSpecHealth2)
-#define gmsgBarTime2 (*pgmsgBarTime2)
-#define gmsgBotProgress (*pgmsgBotProgress)
-//#define gmsgBrass (*pgmsgBrass)
-//#define gmsgFog (*pgmsgFog)
-//#define gmsgShowTimer (*pgmsgShowTimer)
-
-#endif // HOOK_GAMEDLL
-
+extern char *m_szPoses[4];
 extern WeaponStruct g_weaponStruct[MAX_WEAPONS];
 
 extern int gEvilImpulse101;
@@ -1024,7 +1033,7 @@ extern int gmsgWeaponList;
 //extern int gmsgDeathMsg;
 extern int gmsgScoreAttrib;
 extern int gmsgScoreInfo;
-//extern int gmsgTeamInfo;
+extern int gmsgTeamInfo;
 //extern int gmsgTeamScore;
 //extern int gmsgGameMode;
 //extern int gmsgMOTD;
@@ -1075,7 +1084,7 @@ extern int gmsgScenarioIcon;
 extern int gmsgBotVoice;
 extern int gmsgBuyClose;
 extern int gmsgItemStatus;
-//extern int gmsgLocation;
+extern int gmsgLocation;
 extern int gmsgSpecHealth2;
 extern int gmsgBarTime2;
 extern int gmsgBotProgress;
@@ -1101,10 +1110,6 @@ NOXREF void EscapeZoneIcon_Set(CBasePlayer *player);
 NOXREF void EscapeZoneIcon_Clear(CBasePlayer *player);
 NOXREF void VIP_SafetyZoneIcon_Set(CBasePlayer *player);
 
-
-
-
-
 NOBODY void LinkUserMessages(void);
 void WriteSigonMessages(void);
 void SendItemStatus(CBasePlayer *pPlayer);
@@ -1122,16 +1127,16 @@ NOBODY CBaseEntity *FindZombieSpawn(CBaseEntity *player, bool forceSpawn);
 NOBODY edict_t *EntSelectSpawnPoint(CBaseEntity *pPlayer);
 void SetScoreAttrib(CBasePlayer *dest, CBasePlayer *src);
 NOBODY CBaseEntity *FindEntityForward(CBaseEntity *pMe);
-NOBODY float GetPlayerPitch(const edict_t *pEdict);
-NOBODY int GetPlayerGaitsequence(edict_t *pEdict);
-NOBODY float GetPlayerYaw(const edict_t *pEdict);
-NOBODY const char *GetBuyStringForWeaponClass(int weaponClass);
-NOBODY bool IsPrimaryWeaponClass(int classId);
-NOBODY bool IsPrimaryWeaponId(int id);
-NOBODY bool IsSecondaryWeaponClass(int classId);
-NOBODY bool IsSecondaryWeaponId(int id);
-NOBODY const char *GetWeaponAliasFromName(const char *weaponName);
-NOBODY bool CurrentWeaponSatisfies(CBasePlayerWeapon *pWeapon, int id, int classId);
+float GetPlayerPitch(const edict_t *pEdict);
+float GetPlayerYaw(const edict_t *pEdict);
+int GetPlayerGaitsequence(edict_t *pEdict);
+NOXREF const char *GetBuyStringForWeaponClass(int weaponClass);
+NOXREF bool IsPrimaryWeaponClass(int classId);
+NOXREF bool IsPrimaryWeaponId(int id);
+NOXREF bool IsSecondaryWeaponClass(int classId);
+NOXREF bool IsSecondaryWeaponId(int id);
+NOXREF const char *GetWeaponAliasFromName(const char *weaponName);
+NOXREF bool CurrentWeaponSatisfies(CBasePlayerWeapon *pWeapon, int id, int classId);
 
 // refs
 extern void (*CBasePlayer__UpdateClientData)(void);

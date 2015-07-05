@@ -147,11 +147,7 @@ public:
 	static const char *pSoundsConcrete[3];
 	static const char *pSpawnObjects[32];
 
-#ifndef HOOK_GAMEDLL
-	static TYPEDESCRIPTION m_SaveData[5];
-#else
-	static TYPEDESCRIPTION (*m_SaveData)[5];
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[5];
 
 public:
 	Materials m_Material;
@@ -207,11 +203,7 @@ public:
 	}
 
 public:
-#ifndef HOOK_GAMEDLL
-	static TYPEDESCRIPTION m_SaveData[2];
-#else
-	static TYPEDESCRIPTION (*m_SaveData)[2];
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[2];
 
 public:
 	static char *m_soundNames[3];

@@ -13,7 +13,7 @@ TYPEDESCRIPTION CEnvExplosion::m_SaveData[] =
 
 #else // HOOK_GAMEDLL
 
-TYPEDESCRIPTION (*CEnvExplosion::m_SaveData)[2];
+TYPEDESCRIPTION (*CEnvExplosion::pm_SaveData)[2];
 
 #endif // HOOK_GAMEDLL
 

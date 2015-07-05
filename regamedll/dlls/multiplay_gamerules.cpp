@@ -5,12 +5,12 @@
 */
 #ifndef HOOK_GAMEDLL
 
-//static char mp_com_token[1500];
+static char mp_com_token[ COM_TOKEN_LEN ];
 cvar_t *sv_clienttrace;
 
 #else
 
-//char mp_com_token[1500];
+char mp_com_token[ COM_TOKEN_LEN ];
 cvar_t *sv_clienttrace;
 
 #endif // HOOK_GAMEDLL
@@ -163,14 +163,14 @@ char *GetTeam(int teamNo)
 {
 	switch (teamNo)
 	{
-		case TERRORIST:
-			return "TERRORIST";
-		case CT:
-			return "CT";
-		case SPECTATOR:
-			return "SPECTATOR";
-		default:
-			break;
+	case TERRORIST:
+		return "TERRORIST";
+	case CT:
+		return "CT";
+	case SPECTATOR:
+		return "SPECTATOR";
+	default:
+		break;
 	}
 	return "";
 }
@@ -1448,27 +1448,106 @@ NOBODY void DestroyMapCycle(mapcycle_t *cycle)
 }
 
 /* <115d30> ../cstrike/dlls/multiplay_gamerules.cpp:4271 */
-NOBODY char *MP_COM_GetToken(void)
+char *MP_COM_GetToken(void)
 {
+	return mp_com_token;
 }
 
 /* <115d4d> ../cstrike/dlls/multiplay_gamerules.cpp:4283 */
-NOBODY char *MP_COM_Parse(char *data)
+char *MP_COM_Parse(char *data)
 {
-//	
-//skipwhite:                                                            //  4295
-//	{
-//		int c;                                                //  4285
-//		int len;                                              //  4286
-//	}
+	int c;
+	int len;
+
+	len = 0;
+	mp_com_token[0] = '\0';
+
+	if (!data)
+	{
+		return NULL;
+	}
+
+skipwhite:
+	// skip whitespace
+	while (*data <= ' ')
+	{
+		if (!data[0])
+			return NULL;
+
+		data++;
+	}
+
+	c = *data;
+
+	// skip // comments till the next line
+	if (c == '/' && data[1] == '/')
+	{
+		while (*data && *data != '\n')
+			data++;
+
+		goto skipwhite;	// start over new line
+	}
+
+	// handle quoted strings specially: copy till the end or another quote
+	if (c == '\"')
+	{
+		data++;	// skip starting quote
+
+		while (true)
+		{
+			// get char and advance
+			c = *data++;
+
+			if (c == '\"' || !c)
+			{
+				mp_com_token[len] = '\0';
+				return data;
+			}
+
+			mp_com_token[ len++ ] = c;
+		}
+	}
+
+	// parse single characters
+	if (c == '{' || c == '}'|| c == ')'|| c == '(' || c == '\'' || c == ',')
+	{
+		mp_com_token[ len++ ] = c;
+		mp_com_token[ len ] = '\0';
+
+		return data + 1;
+	}
+
+	// parse a regular word
+	do
+	{
+		mp_com_token[ len++ ] = c;
+		data++;
+		c = *data;
+
+		if (c == '{' || c == '}'|| c == ')'|| c == '(' || c == '\'' || c == ',')
+			break;
+	}
+	while (c > 32);
+
+	mp_com_token[len] = '\0';
+	return data;
 }
 
 /* <115db1> ../cstrike/dlls/multiplay_gamerules.cpp:4360 */
-NOBODY int MP_COM_TokenWaiting(char *buffer)
+NOXREF int MP_COM_TokenWaiting(char *buffer)
 {
-//	{
-//		char *p;                                             //  4362
-//	}
+	char *p;
+
+	p = buffer;
+	while (*p && *p != '\n')
+	{
+		if (!isspace(*p) || isalnum(*p))
+			return 1;
+
+		p++;
+	}
+
+	return 0;
 }
 
 /* <115e11> ../cstrike/dlls/multiplay_gamerules.cpp:4384 */

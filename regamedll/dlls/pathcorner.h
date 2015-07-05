@@ -57,17 +57,11 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-#ifndef HOOK_GAMEDLL
-	static TYPEDESCRIPTION m_SaveData[1];
-#else // HOOK_GAMEDLL
-	static TYPEDESCRIPTION (*m_SaveData)[1];
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[1];
 
 private:
 	float m_flWait;
 
 };/* size: 156, cachelines: 3, members: 3 */
-
-
 
 #endif // PATHCORNER_H

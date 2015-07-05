@@ -36,6 +36,12 @@
 
 #ifndef HOOK_GAMEDLL
 
+#define IMPLEMENT_ARRAY(var)\
+	var
+
+#define IMPLEMENT_ARRAY_CLASS(baseClass,var)\
+	baseClass::var
+
 #define IMPLEMENT_SAVERESTORE(derivedClass,baseClass)\
 	int derivedClass::Save(CSave &save)\
 	{\
@@ -52,18 +58,24 @@
 
 #else // HOOK_GAMEDLL
 
+#define IMPLEMENT_ARRAY(var)\
+	(*p##var)
+
+#define IMPLEMENT_ARRAY_CLASS(baseClass,var)\
+	(*baseClass::p##var)
+
 #define IMPLEMENT_SAVERESTORE(derivedClass, baseClass)\
 	int derivedClass::Save_(CSave &save)\
 	{\
 		if(!baseClass::Save(save))\
 			return 0;\
-		return save.WriteFields(#derivedClass, this, (*m_SaveData), ARRAYSIZE(*m_SaveData));\
+		return save.WriteFields(#derivedClass, this, (*pm_SaveData), ARRAYSIZE(*pm_SaveData));\
 	}\
 	int derivedClass::Restore_(CRestore &restore)\
 	{\
 		if(!baseClass::Restore(restore))\
 			return 0;\
-		return restore.ReadFields(#derivedClass, this, (*m_SaveData), ARRAYSIZE(*m_SaveData));\
+		return restore.ReadFields(#derivedClass, this, (*pm_SaveData), ARRAYSIZE(*pm_SaveData));\
 	}
 
 #endif // HOOK_GAMEDLL
@@ -111,7 +123,9 @@ public:
 	int EntityFlagsSet(int entityIndex, int flags);
 	edict_t *EntityFromIndex(int entityIndex);
 	unsigned short TokenHash(const char *pszToken);
+
 protected:
+
 	SAVERESTOREDATA *m_pdata;
 	void BufferRewind(int size);
 	unsigned int HashString(const char *pszToken);
@@ -197,15 +211,13 @@ private:
 private:
 	int m_global;
 	BOOL m_precache;
+
 };/* size: 12, cachelines: 1, members: 3 */
 
 /* <245f6> ../cstrike/dlls/saverestore.h:153 */
 class CGlobalState
 {
 public:
-	//TODO: it unused!
-	static TYPEDESCRIPTION m_SaveData[0];
-
 	NOBODY CGlobalState();
 	NOBODY void Reset(void);
 	NOBODY void ClearStates(void);
@@ -214,7 +226,7 @@ public:
 	NOBODY void EntityUpdate(string_t globalname, string_t mapname);
 	NOBODY const globalentity_t *EntityFromTable(string_t globalname);
 	NOBODY GLOBALESTATE EntityGetState(string_t globalname);
-	INLINEBODY int EntityInTable(string_t globalname)
+	int EntityInTable(string_t globalname)
 	{
 		if(Find(globalname) != NULL)
 			return 1;
@@ -224,22 +236,19 @@ public:
 	NOBODY int Restore(CRestore &restore);
 	NOBODY void DumpGlobals(void);
 
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[1];
+
 #ifdef HOOK_GAMEDLL
 public:
 #else
 private:
 #endif // HOOK_GAMEDLL
 	globalentity_t *Find(string_t globalname);
+
 private:
 	globalentity_t *m_pList;
 	int m_listCount;
 
 };/* size: 8, cachelines: 1, members: 3 */
-
-#ifdef HOOK_GAMEDLL
-#define gGlobalState (*pgGlobalState)
-#endif // HOOK_GAMEDLL
-
-extern CGlobalState gGlobalState;
 
 #endif // SAVERESTORE_H

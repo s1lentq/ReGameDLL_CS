@@ -116,8 +116,8 @@ const char *(*CBreakable::ppSoundsGlass)[3];
 
 char *(*CPushable::pm_soundNames)[3];
 
-TYPEDESCRIPTION (*CBreakable::m_SaveData)[5];
-TYPEDESCRIPTION (*CPushable::m_SaveData)[2];
+TYPEDESCRIPTION (*CBreakable::pm_SaveData)[5];
+TYPEDESCRIPTION (*CPushable::pm_SaveData)[2];
 
 #endif // HOOK_GAMEDLL
 

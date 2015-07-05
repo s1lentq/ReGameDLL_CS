@@ -36,8 +36,8 @@ TYPEDESCRIPTION CBaseToggle::m_SaveData[] =
 
 #else // HOOK_GAMEDLL
 
-TYPEDESCRIPTION (*CBaseDelay::m_SaveData)[2];
-TYPEDESCRIPTION (*CBaseToggle::m_SaveData)[19];
+TYPEDESCRIPTION (*CBaseDelay::pm_SaveData)[2];
+TYPEDESCRIPTION (*CBaseToggle::pm_SaveData)[19];
 
 #endif // HOOK_GAMEDLL
 

@@ -86,19 +86,13 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	void EXPORT ChangeFriction(CBaseEntity *pOther);
+	NOBODY void EXPORT ChangeFriction(CBaseEntity *pOther);
 
 public:
-
-#ifndef HOOK_GAMEDLL
-
-	static TYPEDESCRIPTION m_SaveData[1];
-#else
-	static TYPEDESCRIPTION (*m_SaveData)[1];
-
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[1];
 
 	float m_frictionFraction;
+
 };/* size: 156, cachelines: 3, members: 3 */
 
 /* <19e39c> ../cstrike/dlls/triggers.cpp:108 */
@@ -132,17 +126,11 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[2];
 
-#ifndef HOOK_GAMEDLL
+	int m_globalstate; // 160
+	USE_TYPE triggerType; // 164
 
-	static TYPEDESCRIPTION m_SaveData[2];
-#else
-	static TYPEDESCRIPTION (*m_SaveData)[2];
-
-#endif // HOOK_GAMEDLL
-
-	int m_globalstate;//160
-	USE_TYPE triggerType;//164
 };/* size: 168, cachelines: 3, members: 4 */
 
 /* <19e3ed> ../cstrike/dlls/triggers.cpp:191 */
@@ -174,13 +162,8 @@ public:
 
 #endif // HOOK_GAMEDLL
 
-#ifndef HOOK_GAMEDLL
-
-	static TYPEDESCRIPTION m_SaveData[1];
-#else
-	static TYPEDESCRIPTION (*m_SaveData)[1];
-
-#endif // HOOK_GAMEDLL
+public:
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[1];
 
 	USE_TYPE triggerType;
 
@@ -219,6 +202,7 @@ public:
 
 	NOBODY void EXPORT ManagerThink(void);
 	NOBODY void EXPORT ManagerUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+
 private:
 	/* <19dfe1> ../cstrike/dlls/triggers.cpp:293 */
 	inline BOOL IsClone(void)
@@ -236,14 +220,10 @@ private:
 			return TRUE;
 		return FALSE;
 	}
-	CMultiManager *Clone(void);
-public:
+	NOBODY CMultiManager *Clone(void);
 
-#ifndef HOOK_GAMEDLL
-	static TYPEDESCRIPTION m_SaveData[5];
-#else
-	static TYPEDESCRIPTION (*m_SaveData)[5];
-#endif // HOOK_GAMEDLL
+public:
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[5];
 
 	int m_cTargets;//312
 	int m_index;
@@ -267,7 +247,6 @@ public:
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #endif // HOOK_GAMEDLL
-
 
 };/* size: 152, cachelines: 3, members: 1 */
 
@@ -379,6 +358,7 @@ public:
 
 public:
 	NOBODY void Play(void);
+
 };/* size: 152, cachelines: 3, members: 1 */
 
 /* <19e725> ../cstrike/dlls/triggers.cpp:1080 */
@@ -388,7 +368,9 @@ public:
 	NOBODY virtual void Spawn(void);
 
 #ifdef HOOK_GAMEDLL
+
 	void Spawn_(void);
+
 #endif // HOOK_GAMEDLL
 
 };/* size: 312, cachelines: 5, members: 1 */
@@ -400,7 +382,9 @@ public:
 	NOBODY virtual void Spawn(void);
 
 #ifdef HOOK_GAMEDLL
+
 	void Spawn_(void);
+
 #endif // HOOK_GAMEDLL
 
 };/* size: 312, cachelines: 5, members: 1 */
@@ -412,7 +396,9 @@ public:
 	NOBODY virtual void Spawn(void);
 
 #ifdef HOOK_GAMEDLL
+
 	void Spawn_(void);
+
 #endif // HOOK_GAMEDLL
 
 };/* size: 312, cachelines: 5, members: 1 */
@@ -424,7 +410,9 @@ public:
 	NOBODY virtual void Spawn(void);
 
 #ifdef HOOK_GAMEDLL
+
 	void Spawn_(void);
+
 #endif // HOOK_GAMEDLL
 
 };/* size: 152, cachelines: 3, members: 1 */
@@ -485,15 +473,9 @@ public:
 	NOBODY static int ChangeList(LEVELLIST *pLevelList, int maxList);
 	NOBODY static int AddTransitionToList(LEVELLIST *pLevelList, int listCount, const char *pMapName, const char *pLandmarkName, edict_t *pentLandmark);
 	NOBODY static int InTransitionVolume(CBaseEntity *pEntity, char *pVolumeName);
+
 public:
-
-#ifndef HOOK_GAMEDLL
-
-	static TYPEDESCRIPTION m_SaveData[4];
-#else
-	static TYPEDESCRIPTION (*m_SaveData)[4];
-
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[4];
 
 	char m_szMapName[ cchMapNameMost ];
 	char m_szLandmarkName[ cchMapNameMost ];
@@ -545,7 +527,9 @@ public:
 	NOBODY virtual void Spawn(void);
 
 #ifdef HOOK_GAMEDLL
+
 	void Spawn_(void);
+
 #endif // HOOK_GAMEDLL
 
 };/* size: 312, cachelines: 5, members: 1 */
@@ -557,10 +541,13 @@ public:
 	NOBODY virtual void Spawn(void);
 
 #ifdef HOOK_GAMEDLL
+
 	void Spawn_(void);
+
 #endif // HOOK_GAMEDLL
 
 	NOBODY void EXPORT BuyTouch(CBaseEntity *pOther);
+
 };/* size: 312, cachelines: 5, members: 1 */
 
 /* <19eb2e> ../cstrike/dlls/triggers.cpp:2007 */
@@ -570,12 +557,15 @@ public:
 	NOBODY virtual void Spawn(void);
 
 #ifdef HOOK_GAMEDLL
+
 	void Spawn_(void);
+
 #endif // HOOK_GAMEDLL
 
 public:
-	void EXPORT BombTargetTouch(CBaseEntity *pOther);
-	void EXPORT BombTargetUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	NOBODY void EXPORT BombTargetTouch(CBaseEntity *pOther);
+	NOBODY void EXPORT BombTargetUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+
 };/* size: 312, cachelines: 5, members: 1 */
 
 /* <19eb81> ../cstrike/dlls/triggers.cpp:2056 */
@@ -585,11 +575,14 @@ public:
 	NOBODY virtual void Spawn(void);
 
 #ifdef HOOK_GAMEDLL
+
 	void Spawn_(void);
+
 #endif // HOOK_GAMEDLL
 
 public:
 	NOBODY void EXPORT HostageRescueTouch(CBaseEntity *pOther);
+
 };/* size: 312, cachelines: 5, members: 1 */
 
 /* <19ebd9> ../cstrike/dlls/triggers.cpp:2098 */
@@ -599,10 +592,13 @@ public:
 	NOBODY virtual void Spawn(void);
 
 #ifdef HOOK_GAMEDLL
+
 	void Spawn_(void);
+
 #endif // HOOK_GAMEDLL
 
 	NOBODY void EXPORT EscapeTouch(CBaseEntity *pOther);
+
 };/* size: 312, cachelines: 5, members: 1 */
 
 /* <19ec2c> ../cstrike/dlls/triggers.cpp:2155 */
@@ -612,10 +608,13 @@ public:
 	NOBODY virtual void Spawn(void);
 
 #ifdef HOOK_GAMEDLL
+
 	void Spawn_(void);
+
 #endif // HOOK_GAMEDLL
 
 	NOBODY void EXPORT VIP_SafetyTouch(CBaseEntity *pOther);
+
 };/* size: 312, cachelines: 5, members: 1 */
 
 /* <19ec7f> ../cstrike/dlls/triggers.cpp:2198 */
@@ -625,10 +624,13 @@ public:
 	NOBODY virtual void Spawn(void);
 
 #ifdef HOOK_GAMEDLL
+
 	void Spawn_(void);
+
 #endif // HOOK_GAMEDLL
 
 	NOBODY void EXPORT SaveTouch(CBaseEntity *pOther);
+
 };/* size: 312, cachelines: 5, members: 1 */
 
 /* <19ecd2> ../cstrike/dlls/triggers.cpp:2234 */
@@ -639,8 +641,10 @@ public:
 	NOBODY virtual void KeyValue(KeyValueData *pkvd);
 
 #ifdef HOOK_GAMEDLL
+
 	void Spawn_(void);
 	void KeyValue_(KeyValueData *pkvd);
+
 #endif // HOOK_GAMEDLL
 
 public:
@@ -656,10 +660,13 @@ public:
 	NOBODY virtual void Spawn(void);
 
 #ifdef HOOK_GAMEDLL
+
 	void Spawn_(void);
+
 #endif // HOOK_GAMEDLL
 
 	NOBODY void EXPORT GravityTouch(CBaseEntity *pOther);
+
 };/* size: 312, cachelines: 5, members: 1 */
 
 /* <19ed7d> ../cstrike/dlls/triggers.cpp:2335 */
@@ -691,15 +698,11 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-#ifndef HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[1];
 
-	static TYPEDESCRIPTION m_SaveData[1];
-#else
-	static TYPEDESCRIPTION (*m_SaveData)[1];
-
-#endif // HOOK_GAMEDLL
 private:
 	int m_iszNewTarget;
+
 };/* size: 164, cachelines: 3, members: 3 */
 
 /* <19edd0> ../cstrike/dlls/triggers.cpp:2391 */
@@ -735,13 +738,7 @@ public:
 	NOBODY void Move(void);
 
 public:
-#ifndef HOOK_GAMEDLL
-
-	static TYPEDESCRIPTION m_SaveData[13];
-#else
-	static TYPEDESCRIPTION (*m_SaveData)[13];
-
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[13];
 
 	EHANDLE m_hPlayer;
 	EHANDLE m_hTarget;
@@ -777,7 +774,6 @@ public:
 
 };/* size: 312, cachelines: 5, members: 1 */
 
-
 /* <1a5b85> ../cstrike/dlls/triggers.cpp:2710 */
 class CClientFog: public CBaseEntity
 {
@@ -798,42 +794,6 @@ public:
 	float m_fDensity;
 
 };/* size: 164, cachelines: 3, members: 4 */
-
-//NOBODY extern "C" _DLLEXPORT void func_friction(entvars_t *pev);
-//NOBODY extern "C" _DLLEXPORT void trigger_auto(entvars_t *pev);
-//NOBODY extern "C" _DLLEXPORT void trigger_relay(entvars_t *pev);
-//NOBODY extern "C" _DLLEXPORT void multi_manager(entvars_t *pev);
-//NOBODY extern "C" _DLLEXPORT void env_render(entvars_t *pev);
-//NOBODY extern "C" _DLLEXPORT void trigger(entvars_t *pev);
-//NOBODY extern "C" _DLLEXPORT void trigger_hurt(entvars_t *pev);
-//NOBODY extern "C" _DLLEXPORT void trigger_monsterjump(entvars_t *pev);
-//NOBODY extern "C" _DLLEXPORT void trigger_cdaudio(entvars_t *pev);
-//NOBODY extern "C" _DLLEXPORT void target_cdaudio(entvars_t *pev);
-//NOBODY extern "C" _DLLEXPORT void trigger_multiple(entvars_t *pev);
-//NOBODY extern "C" _DLLEXPORT void trigger_once(entvars_t *pev);
-//NOBODY extern "C" _DLLEXPORT void trigger_counter(entvars_t *pev);
-//NOBODY extern "C" _DLLEXPORT void trigger_transition(entvars_t *pev);
-//NOBODY extern "C" _DLLEXPORT void fireanddie(entvars_t *pev);
-//NOBODY extern "C" _DLLEXPORT void trigger_changelevel(entvars_t *pev);
-//NOBODY extern "C" _DLLEXPORT void func_ladder(entvars_t *pev);
-//NOBODY extern "C" _DLLEXPORT void trigger_push(entvars_t *pev);
-//NOBODY extern "C" _DLLEXPORT void trigger_teleport(entvars_t *pev);
-//NOBODY extern "C" _DLLEXPORT void info_teleport_destination(entvars_t *pev);
-//NOBODY extern "C" _DLLEXPORT void func_buyzone(entvars_t *pev);
-//NOBODY extern "C" _DLLEXPORT void func_bomb_target(entvars_t *pev);
-//NOBODY extern "C" _DLLEXPORT void func_hostage_rescue(entvars_t *pev);
-//NOBODY extern "C" _DLLEXPORT void func_escapezone(entvars_t *pev);
-//NOBODY extern "C" _DLLEXPORT void func_vip_safetyzone(entvars_t *pev);
-//NOBODY extern "C" _DLLEXPORT void trigger_autosave(entvars_t *pev);
-//NOBODY extern "C" _DLLEXPORT void trigger_endsection(entvars_t *pev);
-//NOBODY extern "C" _DLLEXPORT void trigger_gravity(entvars_t *pev);
-//NOBODY extern "C" _DLLEXPORT void trigger_changetarget(entvars_t *pev);
-//NOBODY extern "C" _DLLEXPORT void trigger_camera(entvars_t *pev);
-//NOBODY extern "C" _DLLEXPORT void env_snow(entvars_t *pev);
-//NOBODY extern "C" _DLLEXPORT void func_snow(entvars_t *pev);
-//NOBODY extern "C" _DLLEXPORT void env_rain(entvars_t *pev);
-//NOBODY extern "C" _DLLEXPORT void func_rain(entvars_t *pev);
-//NOBODY extern "C" _DLLEXPORT void env_fog(entvars_t *pev);
 
 NOBODY void PlayCDTrack(int iTrack);
 NOBODY int BuildChangeList(LEVELLIST * pLevelList, int maxList);

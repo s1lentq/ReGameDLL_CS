@@ -16,7 +16,7 @@ TYPEDESCRIPTION CBaseAnimating::m_SaveData[] =
 
 #else
 
-TYPEDESCRIPTION (*CBaseAnimating::m_SaveData)[5];
+TYPEDESCRIPTION (*CBaseAnimating::pm_SaveData)[5];
 
 #endif // HOOK_GAMEDLL
 
@@ -92,19 +92,22 @@ BOOL CBaseAnimating::GetSequenceFlags(void)
 }
 
 /* <10837> ../cstrike/dlls/animating.cpp:171 */
-NOBODY float CBaseAnimating::SetBoneController(int iController, float flValue)
+float CBaseAnimating::SetBoneController(int iController, float flValue)
 {
-//	{ 
-//		void *pmodel;                                        //   173
-//	} 
+	void *pmodel = GET_MODEL_PTR( ENT(pev) );
+
+	return SetController(pmodel, pev, iController, flValue);
 }
 
 /* <10893> ../cstrike/dlls/animating.cpp:180 */
-NOBODY void CBaseAnimating::InitBoneControllers(void)
+void CBaseAnimating::InitBoneControllers(void)
 {
-//	{ 
-//		void *pmodel;                                        //   182
-//	} 
+	void *pmodel = GET_MODEL_PTR(ENT(pev));
+
+	SetController(pmodel, pev, 0, 0);
+	SetController(pmodel, pev, 1, 0);
+	SetController(pmodel, pev, 2, 0);
+	SetController(pmodel, pev, 3, 0);
 }
 
 /* <108d3> ../cstrike/dlls/animating.cpp:192 */

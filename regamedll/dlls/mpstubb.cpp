@@ -60,6 +60,24 @@ void CBaseMonster::CorpseFallThink(void)
 /* <fc2a1> ../cstrike/dlls/mpstubb.cpp:62 */
 void CBaseMonster::MonsterInitDead_(void)
 {
+	InitBoneControllers();
+
+	pev->solid = SOLID_BBOX;
+	pev->movetype = MOVETYPE_TOSS;
+
+	pev->frame = 0;
+	ResetSequenceInfo();
+	pev->framerate = 0;
+
+	pev->max_health = pev->health;
+	pev->deadflag = DEAD_DEAD;
+
+	UTIL_SetSize(pev, g_vecZero, g_vecZero);
+	UTIL_SetOrigin(pev, pev->origin);
+
+	BecomeDead();
+	SetThink(&CBaseEntity::SUB_Remove);
+	pev->nextthink = gpGlobals->time + 0.5;
 }
 
 /* <fc057> ../cstrike/dlls/mpstubb.cpp:89 */

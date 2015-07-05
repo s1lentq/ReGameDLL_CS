@@ -87,11 +87,8 @@ public:
 	NOBODY CPathTrack *GetNext(void);
 	NOBODY CPathTrack *GetPrevious(void);
 
-#ifndef HOOK_GAMEDLL
-	static TYPEDESCRIPTION m_SaveData[5];
-#else // HOOK_GAMEDLL
-	static TYPEDESCRIPTION (*m_SaveData)[5];
-#endif // HOOK_GAMEDLL
+public:
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[5];
 
 	float m_length;
 	string_t m_altName;
@@ -157,11 +154,8 @@ public:
 
 	NOBODY static CFuncTrackTrain *Instance(edict_t *pent);
 
-#ifndef HOOK_GAMEDLL
-	static TYPEDESCRIPTION m_SaveData[12];
-#else // HOOK_GAMEDLL
-	static TYPEDESCRIPTION (*m_SaveData)[12];
-#endif // HOOK_GAMEDLL
+public:
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[12];
 
 	CPathTrack *m_ppath;
 	float m_length;
@@ -248,13 +242,9 @@ public:
 public:
 	NOBODY static CFuncVehicle *Instance(edict_t *pent);
 
-#ifndef HOOK_GAMEDLL
-	static TYPEDESCRIPTION m_SaveData[12];
-#else // HOOK_GAMEDLL
-	static TYPEDESCRIPTION (*m_SaveData)[12];
-#endif // HOOK_GAMEDLL
-
 public:
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[12];
+
 	CPathTrack *m_ppath;
 	float m_length;
 	float m_width;

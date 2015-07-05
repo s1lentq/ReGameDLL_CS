@@ -731,9 +731,15 @@ NOBODY BOOL HandleRadioAliasCommands(CBasePlayer *pPlayer, const char *pszComman
 //	}
 }
 
+void (*pClientCommand)(edict_t *pEntity);
+
 /* <4c6c1> ../cstrike/dlls/client.cpp:3234 */
-NOBODY void ClientCommand(edict_t *pEntity)
+NOBODY void __declspec(naked) ClientCommand(edict_t *pEntity)
 {
+	__asm
+	{
+		jmp pClientCommand
+	}
 //	{
 //		const char *pcmd;                                   //  3236
 //		const char *pstr;                                   //  3237

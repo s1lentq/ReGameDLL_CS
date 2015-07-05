@@ -93,14 +93,14 @@ public:
 	{
 		return m_weaponPreference[i];
 	}
-	const char *GetWeaponPreferenceAsString(int i) const;
+	NOBODY const char *GetWeaponPreferenceAsString(int i) const;
 	int GetWeaponPreferenceCount(void) const
 	{
 		return m_weaponPreferenceCount;
 	}
 
-	bool HasPrimaryPreference(void) const;
-	bool HasPistolPreference(void) const;
+	NOBODY bool HasPrimaryPreference(void) const;
+	NOBODY bool HasPistolPreference(void) const;
 
 	int GetCost(void) const
 	{
@@ -110,7 +110,7 @@ public:
 	{
 		return m_skin;
 	}
-	bool IsDifficulty(BotDifficultyType diff) const;
+	NOBODY bool IsDifficulty(BotDifficultyType diff) const;
 	int GetVoicePitch(void) const
 	{
 		return m_voicePitch;
@@ -133,7 +133,7 @@ public:
 		return m_prefersSilencer;
 	}
 	// TODO: it func private
-	void Inherit(const BotProfile *parent, const BotProfile *baseline);
+	NOBODY void Inherit(const BotProfile *parent, const BotProfile *baseline);
 
 private:
 

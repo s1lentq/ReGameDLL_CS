@@ -333,7 +333,7 @@ NOBODY void loopPerformance(void)
 }
 
 /* <313df> ../cstrike/dlls/cbase.cpp:451 */
-extern "C" _DLLEXPORT int GetEntityAPI(DLL_FUNCTIONS *pFunctionTable, int interfaceVersion)
+C_DLLEXPORT int GetEntityAPI(DLL_FUNCTIONS *pFunctionTable, int interfaceVersion)
 {
 	if (!pFunctionTable || interfaceVersion != INTERFACE_VERSION)
 		return 0;

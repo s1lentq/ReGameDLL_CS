@@ -61,13 +61,13 @@ TYPEDESCRIPTION CTriggerCamera::m_SaveData[] =
 
 #else
 
-TYPEDESCRIPTION (*CFrictionModifier::m_SaveData)[1];
-TYPEDESCRIPTION (*CAutoTrigger::m_SaveData)[2];
-TYPEDESCRIPTION (*CTriggerRelay::m_SaveData)[1];
-TYPEDESCRIPTION (*CMultiManager::m_SaveData)[5];
-TYPEDESCRIPTION (*CChangeLevel::m_SaveData)[4];
-TYPEDESCRIPTION (*CTriggerChangeTarget::m_SaveData)[1];
-TYPEDESCRIPTION (*CTriggerCamera::m_SaveData)[13];
+TYPEDESCRIPTION (*CFrictionModifier::pm_SaveData)[1];
+TYPEDESCRIPTION (*CAutoTrigger::pm_SaveData)[2];
+TYPEDESCRIPTION (*CTriggerRelay::pm_SaveData)[1];
+TYPEDESCRIPTION (*CMultiManager::pm_SaveData)[5];
+TYPEDESCRIPTION (*CChangeLevel::pm_SaveData)[4];
+TYPEDESCRIPTION (*CTriggerChangeTarget::pm_SaveData)[1];
+TYPEDESCRIPTION (*CTriggerCamera::pm_SaveData)[13];
 
 #endif // HOOK_GAMEDLL
 

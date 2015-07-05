@@ -726,7 +726,7 @@ bool HIDDEN HookFunction(Module *module, FunctionHook *hook)
 	patch[0] = 0xE9;
 
 #if 1
-	if(strcmp(hook->symbolName,"_ZN6CCSBot16UpdateLookAnglesEv")==0)
+	if(strcmp(hook->symbolName,"_ZN11CBasePlayer18StudioEstimateGaitEv")==0)
 	{
 		addr_orig = (void *)hook->originalAddress;
 
@@ -736,6 +736,7 @@ bool HIDDEN HookFunction(Module *module, FunctionHook *hook)
 #endif
 	ExchangeMemoryBytes(hook->originalAddress, (size_t)patch, 5);
 
+	hook->bIsHooked = true;
 	return true;
 }
 

@@ -194,12 +194,7 @@ public:
 	NOBODY void EXPORT C4Think(void);
 
 public:
-
-#ifndef HOOK_GAMEDLL
-	static TYPEDESCRIPTION m_SaveData[15];
-#else
-	static TYPEDESCRIPTION (*m_SaveData)[15];
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[15];
 
 	bool m_bStartDefuse;
 	bool m_bIsC4;
@@ -230,8 +225,8 @@ public:
 
 #ifdef HOOK_GAMEDLL
 
-#define ItemInfoArray (*pItemInfoArray)
-#define AmmoInfoArray (*pAmmoInfoArray)
+//#define ItemInfoArray (*pItemInfoArray)
+//#define AmmoInfoArray (*pAmmoInfoArray)
 
 #endif // HOOK_GAMEDLL
 
@@ -349,51 +344,47 @@ public:
 public:
 	inline int iItemPosition(void)
 	{
-		return ItemInfoArray[ m_iId ].iPosition;
+		return IMPLEMENT_ARRAY(ItemInfoArray)[ m_iId ].iPosition;
 	}
 	inline const char *pszAmmo1(void)
 	{
-		return ItemInfoArray[ m_iId ].pszAmmo1;
+		return IMPLEMENT_ARRAY(ItemInfoArray)[ m_iId ].pszAmmo1;
 	}
 	inline int iMaxAmmo1(void)
 	{
-		return ItemInfoArray[ m_iId ].iMaxAmmo1;
+		return IMPLEMENT_ARRAY(ItemInfoArray)[ m_iId ].iMaxAmmo1;
 	}
 	inline const char *pszAmmo2(void)
 	{
-		return ItemInfoArray[ m_iId ].pszAmmo2;
+		return IMPLEMENT_ARRAY(ItemInfoArray)[ m_iId ].pszAmmo2;
 	}
 	inline int iMaxAmmo2(void)
 	{
-		return ItemInfoArray[ m_iId ].iMaxAmmo2;
+		return IMPLEMENT_ARRAY(ItemInfoArray)[ m_iId ].iMaxAmmo2;
 	}
 	inline const char *pszName(void)
 	{
-		return ItemInfoArray[ m_iId ].pszName;
+		return IMPLEMENT_ARRAY(ItemInfoArray)[ m_iId ].pszName;
 	}
 	inline int iMaxClip(void)
 	{
-		return ItemInfoArray[ m_iId ].iMaxClip;
+		return IMPLEMENT_ARRAY(ItemInfoArray)[ m_iId ].iMaxClip;
 	}
 	inline int iWeight(void)
 	{
-		return ItemInfoArray[ m_iId ].iWeight;
+		return IMPLEMENT_ARRAY(ItemInfoArray)[ m_iId ].iWeight;
 	}
 	inline int iFlags(void)
 	{
-		return ItemInfoArray[ m_iId ].iFlags;
+		return IMPLEMENT_ARRAY(ItemInfoArray)[ m_iId ].iFlags;
 	}
 public:
-#ifndef HOOK_GAMEDLL
-	static TYPEDESCRIPTION m_SaveData[3];
-#else
-	static TYPEDESCRIPTION (*m_SaveData)[3];
-#endif // HOOK_GAMEDLL
 
-	static ItemInfo ItemInfoArray[32];
-	static AmmoInfo AmmoInfoArray[32];
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[3];
+	static ItemInfo IMPLEMENT_ARRAY(ItemInfoArray)[32];
+	static AmmoInfo IMPLEMENT_ARRAY(AmmoInfoArray)[32];
 
-	CBasePlayer *m_pPlayer;//180
+	CBasePlayer *m_pPlayer;
 	CBasePlayerItem *m_pNext;
 	int m_iId;
 
@@ -493,11 +484,8 @@ public:
 	bool ShieldSecondaryFire(int iUpAnim,int iDownAnim);
 
 public:
-#ifndef HOOK_GAMEDLL
-	static TYPEDESCRIPTION m_SaveData[7];
-#else
-	static TYPEDESCRIPTION (*m_SaveData)[7];
-#endif // HOOK_GAMEDLL
+
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[7];
 
 	int m_iPlayEmptySound;
 	int m_fFireOnEmpty;
@@ -596,11 +584,7 @@ public:
 	BOOL PackAmmo(int iszName, int iCount);
 public:
 
-#ifndef HOOK_GAMEDLL
-	static TYPEDESCRIPTION m_SaveData[4];
-#else
-	static TYPEDESCRIPTION (*m_SaveData)[4];
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[4];
 
 	CBasePlayerItem *m_rgpPlayerItems[ MAX_ITEM_TYPES ];
 	int m_rgiszAmmo[ MAX_AMMO_SLOTS ];
@@ -1654,46 +1638,6 @@ extern short g_sModelIndexC4Glow;
 extern int giAmmoIndex;
 extern short g_sModelIndexRadio;
 extern MULTIDAMAGE gMultiDamage;
-
-//extern "C" _DLLEXPORT void weapon_usp(entvars_t *pev);
-//_DLLEXPORT void weapon_usp(entvars_t *pev);
-
-//extern "C" _DLLEXPORT void func_weaponcheck(entvars_t *pev);
-//extern "C" _DLLEXPORT void func_grencatch(entvars_t *pev);
-
-//extern "C" _DLLEXPORT void weaponbox(entvars_t *pev);
-//extern "C" _DLLEXPORT void armoury_entity(entvars_t *pev);
-
-//extern "C" _DLLEXPORT void weapon_usp(entvars_t *pev);
-//extern "C" _DLLEXPORT void weapon_mp5navy(entvars_t *pev);
-//extern "C" _DLLEXPORT void weapon_sg552(entvars_t *pev);
-//extern "C" _DLLEXPORT void weapon_ak47(entvars_t *pev);
-//extern "C" _DLLEXPORT void weapon_aug(entvars_t *pev);
-//extern "C" _DLLEXPORT void weapon_awp(entvars_t *pev);
-//extern "C" _DLLEXPORT void weapon_c4(entvars_t *pev);
-//extern "C" _DLLEXPORT void weapon_deagle(entvars_t *pev);
-//extern "C" _DLLEXPORT void weapon_flashbang(entvars_t *pev);
-//extern "C" _DLLEXPORT void weapon_g3sg1(entvars_t *pev);
-//extern "C" _DLLEXPORT void weapon_glock18(entvars_t *pev);
-//extern "C" _DLLEXPORT void weapon_hegrenade(entvars_t *pev);
-//extern "C" _DLLEXPORT void weapon_knife(entvars_t *pev);
-//extern "C" _DLLEXPORT void weapon_m249(entvars_t *pev);
-//extern "C" _DLLEXPORT void weapon_m3(entvars_t *pev);
-//extern "C" _DLLEXPORT void weapon_m4a1(entvars_t *pev);
-//extern "C" _DLLEXPORT void weapon_mac10(entvars_t *pev);
-//extern "C" _DLLEXPORT void weapon_p228(entvars_t *pev);
-//extern "C" _DLLEXPORT void weapon_p90(entvars_t *pev);
-//extern "C" _DLLEXPORT void weapon_scout(entvars_t *pev);
-//extern "C" _DLLEXPORT void weapon_smokegrenade(entvars_t *pev);
-//extern "C" _DLLEXPORT void weapon_tmp(entvars_t *pev);
-//extern "C" _DLLEXPORT void weapon_elite(entvars_t *pev);
-//extern "C" _DLLEXPORT void weapon_xm1014(entvars_t *pev);
-//extern "C" _DLLEXPORT void weapon_fiveseven(entvars_t *pev);
-//extern "C" _DLLEXPORT void weapon_ump45(entvars_t *pev);
-//extern "C" _DLLEXPORT void weapon_sg550(entvars_t *pev);
-//extern "C" _DLLEXPORT void weapon_galil(entvars_t *pev);
-//extern "C" _DLLEXPORT void weapon_famas(entvars_t *pev);
-//extern "C" _DLLEXPORT void grenade(entvars_t *pev);
 
 NOBODY void FindHullIntersection(Vector &vecSrc, TraceResult &tr, float *mins, float *maxs, edict_t *pEntity);
 

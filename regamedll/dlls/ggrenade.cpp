@@ -26,7 +26,7 @@ TYPEDESCRIPTION CGrenade::m_SaveData[] =
 
 #else // HOOK_GAMEDLL
 
-TYPEDESCRIPTION (*CGrenade::m_SaveData)[15];
+TYPEDESCRIPTION (*CGrenade::pm_SaveData)[15];
 
 #endif // HOOK_GAMEDLL
 
