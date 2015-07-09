@@ -126,14 +126,14 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	NOBODY void Spawn(const char *szGibModel);
-	NOBODY void EXPORT BounceGibTouch(CBaseEntity *pOther);
+	void Spawn(const char *szGibModel);
+	void EXPORT BounceGibTouch(CBaseEntity *pOther);
 	NOBODY void EXPORT StickyGibTouch(CBaseEntity *pOther);
-	NOBODY void EXPORT WaitTillLand(void);
-	NOBODY void LimitVelocity(void);
+	void EXPORT WaitTillLand(void);
+	void LimitVelocity(void);
 public:
 	NOBODY static void SpawnHeadGib(entvars_t *pevVictim);
-	NOBODY static void SpawnRandomGibs(entvars_t *pevVictim, int cGibs, int human);
+	static void SpawnRandomGibs(entvars_t *pevVictim, int cGibs, int human);
 	NOBODY static void SpawnStickyGibs(entvars_t *pevVictim, Vector vecOrigin, int cGibs);
 public:
 	int m_bloodColor;
@@ -158,5 +158,7 @@ public:
 				return baseClass::ScheduleFromName(pName);\
 			return pSchedule;\
 		}
+// refs
+extern void (*pCGib__SpawnRandomGibs)(entvars_t *pevVictim, int cGibs, int human);
 
 #endif // MONSTERS_H

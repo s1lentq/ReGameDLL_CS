@@ -127,7 +127,7 @@ void setupToolchain(NativeBinarySpec b) {
     }
     b.lib LazyNativeDepSet.create(dep_bzip2, 'bzip2', b.buildType.name, true)
 
-    cfg.singleDefines 'USE_BREAKPAD_HANDLER', 'DEDICATED', 'REGAMEDLL_SELF', 'HOOK_GAMEDLL', 'BUILD_GRADLE'
+    cfg.singleDefines 'USE_BREAKPAD_HANDLER', 'DEDICATED', 'REGAMEDLL_SELF', 'HOOK_GAMEDLL', 'CLIENT_WEAPONS'
 
     if (cfg instanceof MsvcToolchainConfig) {
 

@@ -35,11 +35,13 @@ void CGraph::ShowNodeConnections(int iNode)
 /* <fc528> ../cstrike/dlls/mpstubb.cpp:38 */
 int CGraph::FindNearestNode(const Vector &vecOrigin, int afNodeTypes)
 {
+	return 0;
 }
 
 /* <fc528> ../cstrike/dlls/mpstubb.cpp:38 */
 int CGraph::FindNearestNode(const Vector &vecOrigin, CBaseEntity *pEntity)
 {
+	return 0;
 }
 
 /* <fc023> ../cstrike/dlls/mpstubb.cpp:45 */

@@ -168,11 +168,53 @@ NOBODY void CBreakable::Restart_(void)
 }
 
 /* <864f1> ../cstrike/dlls/func_break.cpp:260 */
-NOBODY const char **CBreakable::MaterialSoundList(Materials precacheMaterial, int &soundCount)
+const char **CBreakable::MaterialSoundList(Materials precacheMaterial, int &soundCount)
 {
-//	{
-//		const char ** pSoundList;                           //   262
-//	}
+	const char **pSoundList = NULL;
+
+	switch (precacheMaterial)
+	{
+		case matWood:
+		{
+			pSoundList = pSoundsWood;
+			soundCount = ARRAYSIZE(pSoundsWood);
+			const int dad = ARRAYSIZE(pSoundsConcrete);
+			break;
+		}
+		case matFlesh:
+		{
+			pSoundList = pSoundsFlesh;
+			soundCount = ARRAYSIZE(pSoundsFlesh);
+			break;
+		}
+		case matComputer:
+		case matUnbreakableGlass:
+		case matGlass:
+		{
+			pSoundList = pSoundsGlass;
+			soundCount = ARRAYSIZE(pSoundsGlass);
+			break;
+		}
+		case matMetal:
+		{
+			pSoundList = pSoundsMetal;
+			soundCount = ARRAYSIZE(pSoundsMetal);
+			break;
+		}
+		case matCinderBlock:
+		case matRocks:
+		{
+			pSoundList = pSoundsConcrete;
+			soundCount = ARRAYSIZE(pSoundsConcrete);
+			break;
+		}
+		case matCeilingTile:
+		case matNone:
+		default:
+			soundCount = 0;
+			break;
+	}
+	return pSoundList;
 }
 
 /* <86526> ../cstrike/dlls/func_break.cpp:303 */
@@ -188,19 +230,13 @@ NOBODY void CBreakable::MaterialSoundPrecache(Materials precacheMaterial)
 }
 
 /* <86598> ../cstrike/dlls/func_break.cpp:316 */
-NOBODY void CBreakable::MaterialSoundRandom(edict_t *pEdict, Materials soundMaterial, float volume)
+void CBreakable::MaterialSoundRandom(edict_t *pEdict, Materials soundMaterial, float volume)
 {
-//	{
-//		const char ** pSoundList;                           //   318
-//		int soundCount;                                       //   319
-//		MaterialSoundList(Materials precacheMaterial,
-//					int &soundCount);  //   321
-//		EMIT_SOUND(edict_t *entity,
-//				int channel,
-//				const char *sample,
-//				float volume,
-//				float attenuation);  //   324
-//	}
+	int soundCount = 0;
+	const char **pSoundList = MaterialSoundList(soundMaterial, soundCount);
+
+	if (soundCount)
+		EMIT_SOUND(pEdict, CHAN_BODY, pSoundList[ RANDOM_LONG(0, soundCount - 1) ], volume, 1.0);
 }
 
 /* <8634b> ../cstrike/dlls/func_break.cpp:328 */

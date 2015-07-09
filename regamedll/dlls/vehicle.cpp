@@ -358,20 +358,22 @@ NOBODY void CFuncVehicle::SetControls(entvars_t *pevControls)
 }
 
 /* <1bb1b2> ../cstrike/dlls/vehicle.cpp:819 */
-NOBODY BOOL CFuncVehicle::OnControls_(entvars_t *pevTest)
+BOOL CFuncVehicle::OnControls_(entvars_t *pevTest)
 {
-//	{
-//		Vector offset;                                  //   821
-//		Vector local;                                   //   828
-//		operator-(const Vector *const this,
-//				const Vector &v);  //   821
-//		DotProduct(Vector &a,
-//				const Vector &b);  //   829
-//		DotProduct(Vector &a,
-//				const Vector &b);  //   830
-//		DotProduct(Vector &a,
-//				const Vector &b);  //   831
-//	}
+	Vector offset = pevTest->origin - pev->origin;
+
+	if (pev->spawnflags & SF_TRACKTRAIN_NOCONTROL)
+		return FALSE;
+
+	UTIL_MakeVectors(pev->angles);
+
+	Vector local;
+	local.x = DotProduct(offset, gpGlobals->v_forward);
+	local.y = -DotProduct(offset, gpGlobals->v_right);
+	local.z = DotProduct(offset, gpGlobals->v_up);
+
+	return (local.x >= m_controlMins.x && local.y >= m_controlMins.y && local.z >= m_controlMins.z
+		&& local.x <= m_controlMaxs.x && local.y <= m_controlMaxs.y && local.z <= m_controlMaxs.z);
 }
 
 /* <1bb676> ../cstrike/dlls/vehicle.cpp:841 */
@@ -438,8 +440,9 @@ NOBODY CFuncVehicle *CFuncVehicle::Instance(edict_t *pent)
 }
 
 /* <1bb055> ../cstrike/dlls/vehicle.cpp:951 */
-NOBODY int CFuncVehicle::Classify_(void)
+int CFuncVehicle::Classify_(void)
 {
+	return CLASS_VEHICLE;
 }
 
 /* <1bb0ef> ../cstrike/dlls/vehicle.cpp:956 */
@@ -461,8 +464,43 @@ NOBODY void CFuncVehicle::Restart_(void)
 }
 
 /* <1bb07b> ../cstrike/dlls/vehicle.cpp:1032 */
-NOBODY void CFuncVehicle::Precache_(void)
+void CFuncVehicle::Precache_(void)
 {
+	if (m_flVolume == 0.0f)
+		m_flVolume = 1.0f;
+
+	switch (m_sounds)
+	{
+		case 1:
+			PRECACHE_SOUND("plats/vehicle1.wav");
+			pev->noise = MAKE_STRING("plats/vehicle1.wav");
+			break;
+		case 2:
+			PRECACHE_SOUND("plats/vehicle2.wav");
+			pev->noise = MAKE_STRING("plats/vehicle2.wav");
+			break;
+		case 3:
+			PRECACHE_SOUND("plats/vehicle3.wav");
+			pev->noise = MAKE_STRING("plats/vehicle3.wav");
+			break;
+		case 4:
+			PRECACHE_SOUND("plats/vehicle4.wav");
+			pev->noise = MAKE_STRING("plats/vehicle4.wav");
+			break;
+		case 5:
+			PRECACHE_SOUND("plats/vehicle6.wav");
+			pev->noise = MAKE_STRING("plats/vehicle6.wav");
+			break;
+		case 6:
+			PRECACHE_SOUND("plats/vehicle7.wav");
+			pev->noise = MAKE_STRING("plats/vehicle7.wav");
+			break;
+	}
+
+	PRECACHE_SOUND("plats/vehicle_brake1.wav");
+	PRECACHE_SOUND("plats/vehicle_start1.wav");
+
+	m_usAdjustPitch = PRECACHE_EVENT(1, "events/vehicle.sc");
 }
 
 /* <1bd23c> ../cstrike/dlls/vehicle.cpp:1064 */

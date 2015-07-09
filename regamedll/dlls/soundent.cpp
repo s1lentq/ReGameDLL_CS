@@ -56,21 +56,41 @@ NOBODY void CSoundEnt::FreeSound(int iSound, int iPrevious)
 }
 
 /* <178e2d> ../cstrike/dlls/soundent.cpp:171 */
-NOBODY int CSoundEnt::IAllocSound(void)
+int CSoundEnt::IAllocSound(void)
 {
-//	{
-//		int iNewSound;                                        //   173
-//	}
-//	IAllocSound(CSoundEnt *const this);  //   171
+	if (m_iFreeSound == SOUNDLIST_EMPTY)
+	{
+		ALERT(at_console, "Free Sound List is full!\n");
+		return SOUNDLIST_EMPTY;
+	}
+
+	int iNewSound = m_iFreeSound;
+
+	m_iFreeSound = m_SoundPool[ iNewSound ].m_iNext;
+	m_SoundPool[ iNewSound ].m_iNext = m_iActiveSound;
+	m_iActiveSound = iNewSound;
+
+	return iNewSound;
 }
 
 /* <178e94> ../cstrike/dlls/soundent.cpp:200 */
-NOBODY void CSoundEnt::InsertSound(int iType, const Vector &vecOrigin, int iVolume, float flDuration)
+void CSoundEnt::InsertSound(int iType, const Vector &vecOrigin, int iVolume, float flDuration)
 {
-//	{
-//		int iThisSound;                                       //   202
-//		IAllocSound(CSoundEnt *const this);  //   210
-//	}
+	if (!pSoundEnt)
+		return;
+
+	int iThisSound = pSoundEnt->IAllocSound();
+
+	if (iThisSound == SOUNDLIST_EMPTY)
+	{
+		ALERT(at_console, "Could not AllocSound() for InsertSound() (DLL)\n");
+		return;
+	}
+
+	pSoundEnt->m_SoundPool[ iThisSound ].m_vecOrigin = vecOrigin;
+	pSoundEnt->m_SoundPool[ iThisSound ].m_iType = iType;
+	pSoundEnt->m_SoundPool[ iThisSound ].m_iVolume = iVolume;
+	pSoundEnt->m_SoundPool[ iThisSound ].m_flExpireTime = gpGlobals->time + flDuration;
 }
 
 /* <178f4e> ../cstrike/dlls/soundent.cpp:228 */

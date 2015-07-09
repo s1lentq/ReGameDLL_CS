@@ -35,6 +35,15 @@
 #define LOG_ENEMYATTACK		1
 #define LOG_TEAMMATEATTACK	2
 
+// playerid
+#define PLAYERID_MODE_EVERYONE	0
+#define PLAYERID_MODE_TEAMONLY	1
+#define PLAYERID_MODE_OFF	2
+
+#define PLAYERID_EVERYONE 0
+#define PLAYERID_TEAMONLY 1
+#define PLAYERID_OFF 2
+
 #ifdef HOOK_GAMEDLL
 
 #define g_psv_gravity (*pg_psv_gravity)

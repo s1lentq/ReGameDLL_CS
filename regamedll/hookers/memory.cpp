@@ -726,7 +726,7 @@ bool HIDDEN HookFunction(Module *module, FunctionHook *hook)
 	patch[0] = 0xE9;
 
 #if 1
-	if(strcmp(hook->symbolName,"_ZN11CBasePlayer18StudioEstimateGaitEv")==0)
+	if(strcmp(hook->symbolName,"_ZN11CBasePlayer10SwitchTeamEv")==0)
 	{
 		addr_orig = (void *)hook->originalAddress;
 

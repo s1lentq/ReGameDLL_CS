@@ -1093,37 +1093,42 @@ NOBODY void CBasePlayerWeapon::RetireWeapon_(void)
 
 }
 
+// GetNextAttackDelay - An accurate way of calcualting the next attack time.
+
 /* <1d3f76> ../cstrike/dlls/weapons.cpp:1580 */
 float CBasePlayerWeapon::GetNextAttackDelay(float delay)
 {
-	float flNextAttack;
-
 	if (m_flLastFireTime == 0.0f || m_flNextPrimaryAttack == -1.0f)
 	{
+		// At this point, we are assuming that the client has stopped firing
+		// and we are going to reset our book keeping variables.
 		m_flPrevPrimaryAttack = delay;
 		m_flLastFireTime = gpGlobals->time;
 	}
 
 #ifdef REGAMEDLL_BUILD_6153
-	float flCreep;
-	float flTimeBetweenFires;
 
 	// TODO: Build 6xxx
 	// at build 6153 beta this removed
 	// maybe it was initiated due to the delay of the shot
 
-	flCreep = gpGlobals->time - m_flLastFireTime;
-	if (flCreep > 0.0f)
-		flTimeBetweenFires = flCreep - m_flPrevPrimaryAttack;
-	else
-		flTimeBetweenFires = 0.0f;
+	// calculate the time between this shot and the previous
+	float flTimeBetweenFires = gpGlobals->time - m_flLastFireTime;
+	float flCreep = 0.0f;
 
-	flNextAttack = delay - flTimeBetweenFires + 0.0f;
+	if (flTimeBetweenFires > 0.0f)
+		flCreep = flTimeBetweenFires - m_flPrevPrimaryAttack;
+
+	float flNextAttack = delay - flCreep + 0.0f;
 #else
-	flNextAttack = delay + 0.0f;
-#endif
+	float flNextAttack = delay + 0.0f;
+#endif // REGAMEDLL_BUILD_6153
 
+	// save the last fire time
 	m_flLastFireTime = gpGlobals->time;
+
+	// we need to remember what the m_flNextPrimaryAttack time is set to for each shot, 
+	// store it as m_flPrevPrimaryAttack.
 	m_flPrevPrimaryAttack = flNextAttack;
 
 	return flNextAttack;

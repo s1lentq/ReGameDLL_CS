@@ -46,6 +46,7 @@
 
 #define PLAYER_FATAL_FALL_SPEED		1100.0f
 #define PLAYER_MAX_SAFE_FALL_SPEED	500.0f
+#define	PLAYER_SEARCH_RADIUS		64.0f
 
 // damage per unit per second.
 #define DAMAGE_FOR_FALL_SPEED		100.0f / (PLAYER_FATAL_FALL_SPEED - PLAYER_MAX_SAFE_FALL_SPEED)
@@ -296,9 +297,9 @@ struct WeaponStruct
 //#define gmsgDamage (*pgmsgDamage)
 //#define gmsgBattery (*pgmsgBattery)
 //#define gmsgTrain (*pgmsgTrain)
-//#define gmsgLogo (*pgmsgLogo)
+#define gmsgLogo (*pgmsgLogo)
 #define gmsgWeaponList (*pgmsgWeaponList)
-//#define gmsgAmmoX (*pgmsgAmmoX)
+#define gmsgAmmoX (*pgmsgAmmoX)
 //#define gmsgDeathMsg (*pgmsgDeathMsg)
 #define gmsgScoreAttrib (*pgmsgScoreAttrib)
 #define gmsgScoreInfo (*pgmsgScoreInfo)
@@ -319,8 +320,8 @@ struct WeaponStruct
 #define gmsgMoney (*pgmsgMoney)
 #define gmsgBlinkAcct (*pgmsgBlinkAcct)
 #define gmsgArmorType (*pgmsgArmorType)
-//#define gmsgStatusValue (*pgmsgStatusValue)
-//#define gmsgStatusText (*pgmsgStatusText)
+#define gmsgStatusValue (*pgmsgStatusValue)
+#define gmsgStatusText (*pgmsgStatusText)
 #define gmsgStatusIcon (*pgmsgStatusIcon)
 #define gmsgBarTime (*pgmsgBarTime)
 #define gmsgReloadSound (*pgmsgReloadSound)
@@ -340,7 +341,7 @@ struct WeaponStruct
 //#define gmsgAllowSpec (*pgmsgAllowSpec)
 #define gmsgBombDrop (*pgmsgBombDrop)
 //#define gmsgBombPickup (*pgmsgBombPickup)
-//#define gmsgHostagePos (*pgmsgHostagePos)
+#define gmsgHostagePos (*pgmsgHostagePos)
 //#define gmsgHostageK (*pgmsgHostageK)
 #define gmsgGeigerRange (*pgmsgGeigerRange)
 #define gmsgSendCorpse (*pgmsgSendCorpse)
@@ -348,7 +349,7 @@ struct WeaponStruct
 //#define gmsgSpecHealth (*pgmsgSpecHealth)
 //#define gmsgForceCam (*pgmsgForceCam)
 //#define gmsgADStop (*pgmsgADStop)
-//#define gmsgReceiveW (*pgmsgReceiveW)
+#define gmsgReceiveW (*pgmsgReceiveW)
 #define gmsgScenarioIcon (*pgmsgScenarioIcon)
 #define gmsgBotVoice (*pgmsgBotVoice)
 #define gmsgBuyClose (*pgmsgBuyClose)
@@ -420,8 +421,8 @@ public:
 class CSprayCan: public CBaseEntity
 {
 public:
-	NOBODY virtual void Think(void);
-	NOBODY virtual int ObjectCaps(void)
+	virtual void Think(void);
+	virtual int ObjectCaps(void)
 	{
 		return ObjectCaps_();
 	}
@@ -445,8 +446,8 @@ public:
 class CBloodSplat: public CBaseEntity
 {
 public:
-	NOBODY void Spawn(entvars_t *pevOwner);
-	NOBODY void Spray(void);
+	void Spawn(entvars_t *pevOwner);
+	void Spray(void);
 
 };/* size: 152, cachelines: 3, members: 1 */
 
@@ -498,13 +499,13 @@ public:
 	{
 		return IsNetClient_();
 	}
-	NOBODY virtual const char *TeamID(void);
-	NOBODY virtual BOOL FBecomeProne(void);
+	virtual const char *TeamID(void);
+	virtual BOOL FBecomeProne(void);
 	NOBODY virtual Vector BodyTarget(const Vector &posSrc)
 	{
 		return BodyTarget_(posSrc);
 	}
-	NOBODY virtual int Illumination(void);
+	virtual int Illumination(void);
 	NOBODY virtual BOOL ShouldFadeOnDeath(void)
 	{
 		return ShouldFadeOnDeath_();
@@ -523,7 +524,7 @@ public:
 	NOBODY virtual void ImpulseCommands(void);
 	virtual void RoundRespawn(void);
 	virtual Vector GetAutoaimVector(float flDelta);
-	NOBODY virtual void Blind(float flUntilTime, float flHoldTime, float flFadeTime, int iAlpha);
+	virtual void Blind(float flUntilTime, float flHoldTime, float flFadeTime, int iAlpha);
 	NOBODY virtual void OnTouchingWeapon(CWeaponBox *pWeapon)
 	{
 		OnTouchingWeapon_(pWeapon);
@@ -628,7 +629,7 @@ public:
 	NOBODY void Disappear(void);
 	void MakeVIP(void);
 	NOBODY bool CanPlayerBuy(bool display);
-	NOBODY void SwitchTeam(void);
+	void SwitchTeam(void);
 	void TabulateAmmo(void);
 	void Pain(int m_LastHitGroup, bool HasArmour);
 	BOOL IsBombGuy(void);
@@ -658,35 +659,35 @@ public:
 	bool NeedsDefuseKit(void);
 	bool NeedsGrenade(void);
 	BOOL IsOnLadder(void);
-	NOXREF BOOL FlashlightIsOn(void);
+	BOOL FlashlightIsOn(void);
 	void FlashlightTurnOn(void);
-	NOBODY void FlashlightTurnOff(void);
+	void FlashlightTurnOff(void);
 	NOBODY void UpdatePlayerSound(void);
 	NOXREF void DeathSound(void);
 	void SetAnimation(PLAYER_ANIM playerAnim);
 	NOBODY void SetWeaponAnimType(const char *szExtention);
-	NOBODY void CheatImpulseCommands(int iImpulse);
+	void CheatImpulseCommands(int iImpulse);
 	NOXREF void StartDeathCam(void);
 	NOBODY void StartObserver(Vector vecPosition, Vector vecViewAngle);
 	NOBODY void HandleSignals(void);
 	void DropPlayerItem(const char *pszItemName);
 	BOOL HasPlayerItem(CBasePlayerItem *pCheckItem);
-	NOBODY BOOL HasNamedPlayerItem(const char *pszItemName);
+	BOOL HasNamedPlayerItem(const char *pszItemName);
 	NOXREF BOOL HasWeapons(void);
-	NOBODY void SelectPrevItem(int iItem);
+	NOXREF void SelectPrevItem(int iItem);
 	NOBODY void SelectNextItem(int iItem);
 	void SelectLastItem(void);
 	NOBODY void SelectItem(const char *pstr);
-	NOBODY void ItemPreFrame(void);
-	NOBODY void ItemPostFrame(void);
+	NOXREF void ItemPreFrame(void);
+	NOXREF void ItemPostFrame(void);
 	void GiveNamedItem(const char *pszName);
-	NOBODY void EnableControl(BOOL fControl);
+	void EnableControl(BOOL fControl);
 	NOBODY bool HintMessage(const char *pMessage, BOOL bDisplayIfPlayerDead = FALSE, BOOL bOverride = FALSE);
-	NOBODY void SendAmmoUpdate(void);
+	void SendAmmoUpdate(void);
 	NOXREF void SendFOV(int fov);
 	NOBODY void WaterMove(void);
 	NOBODY void EXPORT PlayerDeathThink(void);
-	NOBODY void PlayerUse(void);
+	void PlayerUse(void);
 	NOBODY void HostageUsed(void);
 	NOBODY void JoiningThink(void);
 	NOBODY void RemoveLevelText(void);
@@ -697,8 +698,8 @@ public:
 	void SetSuitUpdate(char *name = NULL, int fgroup = 0, int iNoRepeatTime = 0);
 	NOXREF void UpdateGeigerCounter(void);
 	NOBODY void CheckTimeBasedDamage(void);
-	NOBODY void BarnacleVictimBitten(entvars_t *pevBarnacle);
-	NOBODY void BarnacleVictimReleased(void);
+	NOXREF void BarnacleVictimBitten(entvars_t *pevBarnacle);
+	NOXREF void BarnacleVictimReleased(void);
 	static int GetAmmoIndex(const char *psz);
 	int AmmoInventory(int iAmmoIndex);
 	NOBODY void ResetAutoaim(void);
@@ -706,21 +707,21 @@ public:
 	NOBODY void ForceClientDllUpdate(void);
 	void DeathMessage(entvars_t *pevAttacker) { };
 	void SetCustomDecalFrames(int);
-	NOBODY int GetCustomDecalFrames(void);
-	NOBODY void InitStatusBar(void);
-	NOBODY void UpdateStatusBar(void);
+	NOXREF int GetCustomDecalFrames(void);
+	NOXREF void InitStatusBar(void);
+	void UpdateStatusBar(void);
 	void StudioEstimateGait(void);
 	NOXREF void StudioPlayerBlend(int *pBlend, float *pPitch);
 	NOXREF void CalculatePitchBlend(void);
 	void CalculateYawBlend(void);
 	void StudioProcessGait(void);
-	NOBODY void SendHostagePos(void);
+	NOXREF void SendHostagePos(void);
 	void SendHostageIcons(void);
 	NOXREF void ResetStamina(void);
 	NOXREF BOOL IsArmored(int nHitGroup);
 	NOXREF BOOL ShouldDoLargeFlinch(int nHitGroup, int nGunType);
 	void SetPrefsFromUserinfo(char *infobuffer);
-	NOBODY void SendWeatherInfo(void);
+	void SendWeatherInfo(void);
 	void UpdateShieldCrosshair(bool);
 	bool HasShield(void);
 	bool IsProtectedByShield(void)
@@ -1027,9 +1028,9 @@ extern int gmsgCurWeapon;
 //extern int gmsgDamage;
 //extern int gmsgBattery;
 //extern int gmsgTrain;
-//extern int gmsgLogo;
+extern int gmsgLogo;
 extern int gmsgWeaponList;
-//extern int gmsgAmmoX;
+extern int gmsgAmmoX;
 //extern int gmsgDeathMsg;
 extern int gmsgScoreAttrib;
 extern int gmsgScoreInfo;
@@ -1050,8 +1051,8 @@ extern int gmsgRoundTime;
 extern int gmsgMoney;
 extern int gmsgBlinkAcct;
 extern int gmsgArmorType;
-//extern int gmsgStatusValue;
-//extern int gmsgStatusText;
+extern int gmsgStatusValue;
+extern int gmsgStatusText;
 extern int gmsgStatusIcon;
 extern int gmsgBarTime;
 extern int gmsgReloadSound;
@@ -1071,7 +1072,7 @@ extern int gmsgTutorClose;
 //extern int gmsgAllowSpec;
 extern int gmsgBombDrop;
 //extern int gmsgBombPickup;
-//extern int gmsgHostagePos;
+extern int gmsgHostagePos;
 //extern int gmsgHostageK;
 extern int gmsgGeigerRange;
 extern int gmsgSendCorpse;
@@ -1079,7 +1080,7 @@ extern int gmsgSendCorpse;
 //extern int gmsgSpecHealth;
 //extern int gmsgForceCam;
 //extern int gmsgADStop;
-//extern int gmsgReceiveW;
+extern int gmsgReceiveW;
 extern int gmsgScenarioIcon;
 extern int gmsgBotVoice;
 extern int gmsgBuyClose;
@@ -1099,16 +1100,22 @@ extern int gmsgBotProgress;
 //NOBODY void player_weaponstrip(entvars_t *pev);
 //NOBODY void monster_hevsuit_dead(entvars_t *pev);
 
-NOBODY void BuyZoneIcon_Set(CBasePlayer *player);
-NOBODY void BuyZoneIcon_Clear(CBasePlayer *player);
-NOBODY void BombTargetFlash_Set(CBasePlayer *player);
-NOBODY void BombTargetFlash_Clear(CBasePlayer *player);
-NOBODY void RescueZoneIcon_Set(CBasePlayer *player);
-NOBODY void RescueZoneIcon_Clear(CBasePlayer *player);
+void OLD_CheckBuyZone(CBasePlayer *player);
+void OLD_CheckBombTarget(CBasePlayer *player);
+void OLD_CheckRescueZone(CBasePlayer *player);
 
-NOXREF void EscapeZoneIcon_Set(CBasePlayer *player);
-NOXREF void EscapeZoneIcon_Clear(CBasePlayer *player);
-NOXREF void VIP_SafetyZoneIcon_Set(CBasePlayer *player);
+void BuyZoneIcon_Set(CBasePlayer *player);
+void BuyZoneIcon_Clear(CBasePlayer *player);
+void BombTargetFlash_Set(CBasePlayer *player);
+void BombTargetFlash_Clear(CBasePlayer *player);
+void RescueZoneIcon_Set(CBasePlayer *player);
+void RescueZoneIcon_Clear(CBasePlayer *player);
+void EscapeZoneIcon_Set(CBasePlayer *player);
+void EscapeZoneIcon_Clear(CBasePlayer *player);
+void EscapeZoneIcon_Set(CBasePlayer *player);
+void EscapeZoneIcon_Clear(CBasePlayer *player);
+void VIP_SafetyZoneIcon_Set(CBasePlayer *player);
+void VIP_SafetyZoneIcon_Clear(CBasePlayer *player);
 
 NOBODY void LinkUserMessages(void);
 void WriteSigonMessages(void);
@@ -1119,14 +1126,14 @@ int TrainSpeed(int iSpeed, int iMax);
 const char *GetWeaponName(entvars_t *pevInflictor, entvars_t *pKiller);
 void LogAttack(CBasePlayer *pAttacker, CBasePlayer *pVictim, int teamAttack, int healthHit, int armorHit, int newHealth, int newArmor, const char *killer_weapon_name);
 void packPlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo);
-NOBODY bool CanSeeUseable(void);
+bool CanSeeUseable(CBasePlayer *me, CBaseEntity *entity);
 NOBODY void FixPlayerCrouchStuck(edict_t *pPlayer);
 NOXREF BOOL IsSpawnPointValid(CBaseEntity *pPlayer, CBaseEntity *pSpot);
 NOBODY void InitZombieSpawns(void);
 NOBODY CBaseEntity *FindZombieSpawn(CBaseEntity *player, bool forceSpawn);
 NOBODY edict_t *EntSelectSpawnPoint(CBaseEntity *pPlayer);
 void SetScoreAttrib(CBasePlayer *dest, CBasePlayer *src);
-NOBODY CBaseEntity *FindEntityForward(CBaseEntity *pMe);
+NOXREF CBaseEntity *FindEntityForward(CBaseEntity *pMe);
 float GetPlayerPitch(const edict_t *pEdict);
 float GetPlayerYaw(const edict_t *pEdict);
 int GetPlayerGaitsequence(edict_t *pEdict);

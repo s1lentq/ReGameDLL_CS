@@ -6,12 +6,12 @@
 #ifndef HOOK_GAMEDLL
 
 static short s_iBeamSprite = 0;
-static float cosTable[COS_TABLE_SIZE];
+static float cosTable[ COS_TABLE_SIZE ];
 
 #else
 
 short s_iBeamSprite;
-float cosTable[COS_TABLE_SIZE];
+float cosTable[ COS_TABLE_SIZE ];
 
 #endif // HOOK_GAMEDLL
 

@@ -184,7 +184,7 @@ class CFuncVehicle: public CBaseEntity
 {
 public:
 	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
+	virtual void Precache(void);
 	NOBODY virtual void Restart(void);
 	NOBODY virtual void KeyValue(KeyValueData *pkvd);
 	NOBODY virtual int Save(CSave &save);
@@ -193,9 +193,9 @@ public:
 	{
 		return ObjectCaps_();
 	}
-	NOBODY virtual int Classify(void);
+	virtual int Classify(void);
 	NOBODY virtual void OverrideReset(void);
-	NOBODY virtual BOOL OnControls(entvars_t *pev);
+	virtual BOOL OnControls(entvars_t *pev);
 	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 	NOBODY virtual void Blocked(CBaseEntity *pOther);
 

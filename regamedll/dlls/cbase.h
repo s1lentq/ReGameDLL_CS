@@ -511,8 +511,8 @@ public:
 	void UpdateOnRemove(void);
 	void EXPORT SUB_Remove(void);
 	void EXPORT SUB_DoNothing(void);
-	NOBODY void EXPORT SUB_StartFadeOut(void);
-	NOBODY void EXPORT SUB_FadeOut(void);
+	void EXPORT SUB_StartFadeOut(void);
+	void EXPORT SUB_FadeOut(void);
 	NOBODY void EXPORT SUB_CallUseToggle(void)
 	{
 		Use(this,this,USE_TOGGLE,0);
@@ -1093,6 +1093,10 @@ typedef BOOL (CBaseEntity::*FVISIBLE_VECTOR)(Vector &);
 
 typedef void (CGrenade::*EXPLODE_VECTOR)(Vector, Vector);
 typedef void (CGrenade::*EXPLODE_TRACERESULT)(TraceResult *, int);
+
+typedef CBaseEntity *(CBaseEntity::*CBASE_ISTANCE_EDICT)(edict_t *);
+typedef CBaseEntity *(CBaseEntity::*CBASE_ISTANCE_ENTVARS)(entvars_t *);
+typedef CBaseEntity *(CBaseEntity::*CBASE_ISTANCE_INT)(int);
 
 #endif // HOOK_GAMEDLL
 

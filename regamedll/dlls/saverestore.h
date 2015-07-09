@@ -234,7 +234,7 @@ public:
 	}
 	NOBODY int Save(CSave &save);
 	NOBODY int Restore(CRestore &restore);
-	NOBODY void DumpGlobals(void);
+	void DumpGlobals(void);
 
 	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[1];
 

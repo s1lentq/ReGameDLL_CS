@@ -32,6 +32,11 @@
 #pragma once
 #endif
 
+#define bits_NODE_LAND		( 1 << 0 )	// Land node, so nudge if necessary.
+#define bits_NODE_AIR		( 1 << 1 )	// Air node, don't nudge.
+#define bits_NODE_WATER		( 1 << 2 )	// Water node, don't nudge.
+#define bits_NODE_GROUP_REALM	(bits_NODE_LAND | bits_NODE_AIR | bits_NODE_WATER)
+
 class CBaseEntity;
 
 class CLink
@@ -49,7 +54,7 @@ public:
 	NOBODY int CheckNODFile(char *szMapName);
 	NOBODY int FLoadGraph(char *szMapName);
 	NOBODY int FSetGraphPointers(void);
-	NOBODY void ShowNodeConnections(int iNode);
+	void ShowNodeConnections(int iNode);
 	NOBODY int FindNearestNode(const Vector &vecOrigin, CBaseEntity *pEntity);
 	NOBODY int FindNearestNode(const Vector &vecOrigin, int afNodeTypes);
 public:

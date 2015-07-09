@@ -1,13 +1,21 @@
 #include "precompiled.h"
 
+#define GERMAN_GIB_COUNT	4
+#define	HUMAN_GIB_COUNT		6
+#define ALIEN_GIB_COUNT		4
+
 /* <5f4cb> ../cstrike/dlls/combat.cpp:52 */
-NOBODY void CGib::LimitVelocity(void)
+void CGib::LimitVelocity(void)
 {
-//	{
-//		float length;                                         //    54
-//		Length(const Vector *const this);  //    54
-//	} 
-//	LimitVelocity(CGib *const this);  //    52
+	float length = pev->velocity.Length();
+
+	// ceiling at 1500.  The gib velocity equation is not bounded properly.  Rather than tune it
+	// in 3 separate places again, I'll just limit it here.
+	if (length > 1500.0)
+	{
+		// This should really be sv_maxvelocity * 0.75 or something
+		pev->velocity = pev->velocity.Normalize() * 1500;
+	}
 }
 
 /* <60320> ../cstrike/dlls/combat.cpp:63 */
@@ -73,36 +81,16 @@ NOBODY void CGib::SpawnHeadGib(entvars_t *pevVictim)
 //	} 
 }
 
+void (*pCGib__SpawnRandomGibs)(entvars_t *pevVictim, int cGibs, int human);
+
 /* <606c8> ../cstrike/dlls/combat.cpp:190 */
-NOBODY void CGib::SpawnRandomGibs(entvars_t *pevVictim, int human, int cGibs)
+NOBODY void __declspec(naked) CGib::SpawnRandomGibs(entvars_t *pevVictim, int cGibs, int human)
 {
-//	{
-//		int cSplat;                                           //   192
-//		{
-//			class CGib *pGib;                            //   196
-//			operator*(const Vector *const this,
-//					float fl);  //   227
-//			operator*(const Vector *const this,
-//					float fl);  //   234
-//			Instance(entvars_t *pev);  //   240
-//			operator*(const Vector *const this,
-//					float fl);  //   244
-//			operator*(const Vector *const this,
-//					float fl);  //   252
-//			Vector(Vector *const this,
-//				float X,
-//				float Y,
-//				float Z);  //   256
-//			Vector(Vector *const this,
-//				float X,
-//				float Y,
-//				float Z);  //   256
-//			LimitVelocity(CGib *const this);  //   258
-//			GetClassPtr<CGib>(CGib *a);  //   196
-//			operator*(const Vector *const this,
-//					float fl);  //   248
-//		} 
-//	} 
+	// TODO: Reverse me!
+	__asm
+	{
+		jmp pCGib__SpawnRandomGibs
+	}
 }
 
 /* <5f58a> ../cstrike/dlls/combat.cpp:263 */
@@ -234,34 +222,88 @@ NOBODY void CBaseMonster::Killed_(entvars_t *pevAttacker, int iGib)
 }
 
 /* <5e84e> ../cstrike/dlls/combat.cpp:652 */
-NOBODY void CBaseEntity::SUB_StartFadeOut(void)
+void CBaseEntity::SUB_StartFadeOut(void)
 {
+	if (pev->rendermode == kRenderNormal)
+	{
+		pev->renderamt = 255.0f;
+		pev->rendermode = kRenderTransTexture;
+	}
+
+	pev->solid = SOLID_NOT;
+	pev->avelocity = g_vecZero;
+	pev->nextthink = gpGlobals->time + 0.1f;
+
+	SetThink(&CBaseEntity::SUB_FadeOut);
 }
 
 /* <5ea72> ../cstrike/dlls/combat.cpp:667 */
-NOBODY void CBaseEntity::SUB_FadeOut(void)
+void CBaseEntity::SUB_FadeOut(void)
 {
-//	SUB_FadeOut(CBaseEntity *const this);  //   667
+	if (pev->renderamt > 7)
+	{
+		pev->renderamt -= 7.0f;
+		pev->nextthink = gpGlobals->time + 0.1f;
+	}
+	else
+	{
+		pev->renderamt = 0.0f;
+		pev->nextthink = gpGlobals->time + 0.2f;
+		SetThink(&CBaseEntity::SUB_Remove);
+	}
 }
 
 /* <5eab1> ../cstrike/dlls/combat.cpp:688 */
-NOBODY void CGib::WaitTillLand(void)
+void CGib::WaitTillLand(void)
 {
-//	operator==(const Vector ::WaitTillLand(//			const Vector  &v);  //   696
-//	WaitTillLand(CGib *const this);  //   688
+	if (!IsInWorld())
+	{
+		UTIL_Remove(this);
+		return;
+	}
+
+	if (pev->velocity == g_vecZero)
+	{
+		SetThink(&CBaseEntity::SUB_StartFadeOut);
+		pev->nextthink = gpGlobals->time + m_lifeTime;
+
+		if (m_bloodColor != DONT_BLEED)
+			CSoundEnt::InsertSound(bits_SOUND_MEAT, pev->origin, 384, 25);
+	}
+	else
+		pev->nextthink = gpGlobals->time + 0.5f;
 }
 
 /* <5eee0> ../cstrike/dlls/combat.cpp:718 */
-NOBODY void CGib::BounceGibTouch(CBaseEntity *pOther)
+void CGib::BounceGibTouch(CBaseEntity *pOther)
 {
-//	{
-//		class Vector vecSpot;                                 //   720
-//		TraceResult tr;                                       //   721
-//		operator*(const Vector *const this,
-//				float fl);  //   728
-//	} 
-//	BounceGibTouch(CGib *const this,
-//			class CBaseEntity *pOther);  //   718
+	if (pev->flags & FL_ONGROUND)
+	{
+		pev->velocity = pev->velocity * 0.9;
+		pev->angles.x = 0;
+		pev->angles.z = 0;
+		pev->avelocity.x = 0;
+		pev->avelocity.z = 0;
+	}
+	else
+	{
+		if (g_Language != LANGUAGE_GERMAN && m_cBloodDecals > 0 && m_bloodColor != DONT_BLEED)
+		{
+			TraceResult tr;
+			Vector vecSpot = pev->origin + Vector(0, 0, 8);
+			UTIL_TraceLine(vecSpot, vecSpot + Vector(0, 0, -24), ignore_monsters, ENT(pev), &tr);
+			UTIL_BloodDecalTrace(&tr, m_bloodColor);
+			m_cBloodDecals--;
+		}
+
+		if (m_material != matNone && !RANDOM_LONG(0, 2))
+		{
+			float zvel = fabs(pev->velocity.z);
+			float volume = 0.8 * min(1, zvel / 450);
+
+			CBreakable::MaterialSoundRandom(edict(), (Materials)m_material, volume);
+		}
+	}
 }
 
 /* <5ed6d> ../cstrike/dlls/combat.cpp:761 */
@@ -278,18 +320,41 @@ NOBODY void CGib::StickyGibTouch(CBaseEntity *pOther)
 }
 
 /* <5fb0b> ../cstrike/dlls/combat.cpp:789 */
-NOBODY void CGib::Spawn(const char *szGibModel)
+void CGib::Spawn(const char *szGibModel)
 {
-//	MAKE_STRING_CLASS(const char *str,
-//				entvars_t *pev);  //   800
-//	Vector(Vector *const this,
-//		float X,
-//		float Y,
-//		float Z);  //   803
-//	Vector(Vector *const this,
-//		float X,
-//		float Y,
-//		float Z);  //   803
+	pev->movetype = MOVETYPE_BOUNCE;
+
+	// deading the bounce a bit
+	pev->friction = 0.55;
+
+	// sometimes an entity inherits the edict from a former piece of glass,
+	// and will spawn using the same render FX or rendermode! bad!
+	pev->renderamt = 255.0;
+	pev->rendermode = kRenderNormal;
+	pev->renderfx = kRenderFxNone;
+
+	/// hopefully this will fix the VELOCITY TOO LOW crap
+	pev->solid = SOLID_SLIDEBOX;
+
+	if (pev->classname)
+		RemoveEntityHashValue(pev, STRING(pev->classname), CLASSNAME);
+
+	MAKE_STRING_CLASS("gib", pev);
+	AddEntityHashValue(pev, STRING(pev->classname), CLASSNAME);
+
+	SET_MODEL(ENT(pev), szGibModel);
+	UTIL_SetSize(pev, Vector(0, 0, 0), Vector(0, 0, 0));
+
+	pev->nextthink = gpGlobals->time + 4.0f;
+	m_lifeTime = 25.0f;
+
+	SetThink(&CGib::WaitTillLand);
+	SetTouch(&CGib::BounceGibTouch);
+
+	m_material = matNone;
+
+	// how many blood decals this gib can place (1 per bounce until none remain).
+	m_cBloodDecals = 5;
 }
 
 /* <60aea> ../cstrike/dlls/combat.cpp:815 */

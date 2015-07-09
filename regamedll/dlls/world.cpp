@@ -182,13 +182,22 @@ globalentity_t *CGlobalState::Find(string_t globalname)
 	return pTest;
 }
 
+// This is available all the time now on impulse 104, remove later
+
 /* <1db703> ../cstrike/dlls/world.cpp:329 */
-NOBODY void CGlobalState::DumpGlobals(void)
+void CGlobalState::DumpGlobals(void)
 {
-//	{
-//		char *const estates;                                  //   331
-//		globalentity_t *pTest;                               //   332
-//	}
+	static char *estates[] = { "Off", "On", "Dead" };
+	globalentity_t *pTest;
+
+	ALERT(at_console, "-- Globals --\n");
+	pTest = m_pList;
+
+	while (pTest != NULL)
+	{
+		ALERT(at_console, "%s: %s (%s)\n", pTest->name, pTest->levelName, estates[ pTest->state ]);
+		pTest = pTest->pNext;
+	}
 }
 
 /* <1db76a> ../cstrike/dlls/world.cpp:345 */

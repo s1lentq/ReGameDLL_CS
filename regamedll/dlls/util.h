@@ -35,8 +35,8 @@
 #include "activity.h"
 
 #define _LOG_TRACE\
-	static int iNum = 0;\
-	printf2(__FUNCTION__":: iNum - %d", iNum++);
+	static int iNumPassed = 0;\
+	printf2(__FUNCTION__":: iNumPassed - %d", iNumPassed++);
 
 // Makes these more explicit, and easier to find
 #ifdef HOOK_GAMEDLL
@@ -65,6 +65,13 @@ extern globalvars_t *gpGlobals;
 
 #define STRING(offset)		((const char *)(gpGlobals->pStringBase + (unsigned int)(offset)))
 #define MAKE_STRING(str)	((uint64_t)(str) - (uint64_t)(STRING(0)))
+
+// Dot products for view cone checking
+
+#define VIEW_FIELD_FULL		-1.0		// +-180 degrees
+#define	VIEW_FIELD_WIDE		-0.7		// +-135 degrees 0.1 // +-85 degrees, used for full FOV checks
+#define	VIEW_FIELD_NARROW	0.7		// +-45 degrees, more narrow check used to set up ranged attacks
+#define	VIEW_FIELD_ULTRA_NARROW	0.9		// +-25 degrees, more narrow check used to set up ranged attacks
 
 #define SND_SPAWNING		(1<<8)		// duplicated in protocol.h we're spawing, used in some cases for ambients
 #define SND_STOP		(1<<5)		// duplicated in protocol.h stop sound

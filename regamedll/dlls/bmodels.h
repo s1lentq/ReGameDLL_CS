@@ -259,6 +259,6 @@ public:
 
 };/* size: 200, cachelines: 4, members: 10 */
 
-NOBODY Vector VecBModelOrigin(entvars_t *pevBModel);
+Vector VecBModelOrigin(entvars_t *pevBModel);
 
 #endif // BMODELS_H

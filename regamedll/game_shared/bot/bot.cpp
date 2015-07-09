@@ -370,13 +370,13 @@ void CBot::PrintIfWatched(char *format, ...) const
 		Q_sprintf(buffer, "%s: ", (name != NULL) ? name : "(NULL netname)");
 
 		SERVER_PRINT( buffer );
-		_logf(buffer);
+		//_logf(buffer);
 
 		va_start(varg, format);
 		Q_vsnprintf(buffer, ARRAYSIZE(buffer), format, varg);
 		va_end(varg);
 
-		_logf(buffer);
+		//_logf(buffer);
 
 		SERVER_PRINT( buffer );
 	}

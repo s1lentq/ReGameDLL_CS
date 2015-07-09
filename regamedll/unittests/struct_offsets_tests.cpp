@@ -49,6 +49,7 @@ TEST(StructOffsets, ReversingChecks, 5000)
 	REPEAT_SIZEOF_PRINT(CHalfLifeMultiplay);
 	REPEAT_SIZEOF_PRINT(CHalfLifeTraining);
 	REPEAT_SIZEOF_PRINT(CGib);
+	REPEAT_SIZEOF_PRINT(CSprayCan);
 
 	// offset the members
 	REPEAT_OFFSETOF_PRINT(CBaseEntity, pev);
@@ -64,6 +65,7 @@ TEST(StructOffsets, ReversingChecks, 5000)
 	CHECK_CLASS_SIZE(CHalfLifeMultiplay, 0x2D0u, 0x2C4u);
 	CHECK_CLASS_SIZE(CHalfLifeTraining, 0x2E8u, 0x2D8u);
 	CHECK_CLASS_SIZE(CGib, 0x98, 0xA8);
+	CHECK_CLASS_SIZE(CSprayCan, 0x88, 0x98);
 
 	//CHECK_CLASS_SIZE(CBotManager, 12u, 12);
 	//CHECK_CLASS_SIZE(CCSBotManager, 740, 0x2E0u);//0x2E4u | 0x2E0u

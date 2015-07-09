@@ -137,8 +137,8 @@ public:
 	}
 
 	NOBODY static void MaterialSoundPrecache(Materials precacheMaterial);
-	NOBODY static void MaterialSoundRandom(edict_t *pEdict, Materials soundMaterial, float volume);
-	NOBODY static const char **MaterialSoundList(Materials precacheMaterial, int &soundCount);
+	static void MaterialSoundRandom(edict_t *pEdict, Materials soundMaterial, float volume);
+	static const char **MaterialSoundList(Materials precacheMaterial, int &soundCount);
 
 	static const char *pSoundsWood[3];
 	static const char *pSoundsFlesh[6];
