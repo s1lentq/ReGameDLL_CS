@@ -142,16 +142,16 @@ private:
 /* <14ed68> ../game_shared/bot/bot_util.h:224 */
 inline bool IsEntityValid(CBaseEntity *entity)
 {
-	if(entity == NULL)
+	if (entity == NULL)
 		return false;
 
-	if(FNullEnt(entity->pev))
+	if (FNullEnt(entity->pev))
 		return false;
 
-	if(FStrEq(STRING(entity->pev->netname), ""))
+	if (FStrEq(STRING(entity->pev->netname), ""))
 		return false;
 
-	if(entity->pev->flags & FL_DORMANT)
+	if (entity->pev->flags & FL_DORMANT)
 		return false;
 
 	return true;
@@ -198,16 +198,16 @@ template <
 >
 bool ForEachPlayer(Functor &func)
 {
-	for(int i = 1; i <= gpGlobals->maxClients; i++)
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{
 		CBasePlayer *player = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
-		if(!IsEntityValid((CBaseEntity *)player))
+		if (!IsEntityValid((CBaseEntity *)player))
 			continue;
 
-		if(!player->IsPlayer())
+		if (!player->IsPlayer())
 			continue;
 
-		if(func(player) == false)
+		if (func(player) == false)
 			return false;
 	}
 	return true;

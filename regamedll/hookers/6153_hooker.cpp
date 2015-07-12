@@ -197,13 +197,13 @@ FunctionHook g_FunctionHooks[] =
 	{ 0x01DB0000, "AngleVectors", (size_t)&AngleVectors },
 
 	//{ 0x0, "AngleVectorsTranspose", (size_t)&AngleVectorsTranspose },
-	//{ 0x0, "AngleMatrix", (size_t)&AngleMatrix },
+	{ 0x01DB0200, "AngleMatrix", (size_t)&AngleMatrix },
 	//{ 0x0, "AngleIMatrix", (size_t)&AngleIMatrix },
 	//{ 0x0, "NormalizeAngles", (size_t)&NormalizeAngles },
 	//{ 0x0, "InterpolateAngles", (size_t)&InterpolateAngles },
 	//{ 0x0, "AngleBetweenVectors", (size_t)&AngleBetweenVectors },
 	//{ 0x0, "VectorTransform", (size_t)&VectorTransform },
-	//{ 0x0, "VectorCompare", (size_t)&VectorCompare },
+	{ 0x01DB0610, "VectorCompare", (size_t)&VectorCompare },
 	//{ 0x0, "VectorMA", (size_t)&VectorMA },
 	//{ 0x01DB0680, "_DotProduct", (size_t)&_DotProduct },	// NOXREF
 	//{ 0x01DB06A0, "_VectorSubtract", (size_t)&_VectorSubtract },	// NOXREF
@@ -268,7 +268,7 @@ FunctionHook g_FunctionHooks[] =
 	//{ 0x01D64460, "CountTeamPlayers", (size_t)&CountTeamPlayers },			//extern c func
 	//{ 0x0, "_Z15ProcessKickVoteP11CBasePlayerS0_", (size_t)&ProcessKickVote },
 	//{ 0x0, "_Z17SelectDefaultTeamv", (size_t)&SelectDefaultTeam },
-	//{ 0x0, "_Z15CheckStartMoneyv", (size_t)&CheckStartMoney },
+	{ 0x01D649A0, "_Z15CheckStartMoneyv", (size_t)&CheckStartMoney },
 	//{ 0x01D649F0, "_Z17ClientPutInServerP7edict_s", (size_t)&ClientPutInServer },
 	//{ 0x0, "Q_strlen", (size_t)&Q_strlen_ },
 	//{ 0x0, "_Z8Host_SayP7edict_si", (size_t)&Host_Say },
@@ -495,8 +495,8 @@ FunctionHook g_FunctionHooks[] =
 //CBaseToggle
 	//virtual func
 	{ 0x01DBB7D0, "_ZN11CBaseToggle8KeyValueEP14KeyValueData_s", mfunc_ptr_cast(&CBaseToggle::KeyValue_) },
-	//{ 0x0, "_ZN11CBaseToggle4SaveER5CSave", mfunc_ptr_cast(&CBaseToggle::Save_) },
-	///{ 0x0, "_ZN11CBaseToggle7RestoreER8CRestore", mfunc_ptr_cast(&CBaseToggle::Restore_) },
+	{ 0x01DBB770, "_ZN11CBaseToggle4SaveER5CSave", mfunc_ptr_cast(&CBaseToggle::Save_) },
+	{ 0x01DBB7A0, "_ZN11CBaseToggle7RestoreER8CRestore", mfunc_ptr_cast(&CBaseToggle::Restore_) },
 	//{ 0x0, "_ZN11CBaseToggle14GetToggleStateEv", mfunc_ptr_cast(&CBaseToggle::GetToggleState_) },
 	//{ 0x0, "_ZN11CBaseToggle8GetDelayEv", mfunc_ptr_cast(&CBaseToggle::GetDelay_) },
 	//non-virtual func
@@ -586,14 +586,14 @@ FunctionHook g_FunctionHooks[] =
 #endif // BaseMonster_Region
 
 #ifndef Player_Region
-
+	
 //CBasePlayer
 	//virtual func
 	//{ 0x01DA5200, "_ZN11CBasePlayer5SpawnEv", mfunc_ptr_cast(&CBasePlayer::Spawn_) },
-	//{ 0x01DA5E40, "_ZN11CBasePlayer8PrecacheEv", mfunc_ptr_cast(&CBasePlayer::Precache_) },
-	//{ 0x0, "_ZN11CBasePlayer4SaveER5CSave", mfunc_ptr_cast(&CBasePlayer::Save_) },
-	//{ 0x0, "_ZN11CBasePlayer7RestoreER8CRestore", mfunc_ptr_cast(&CBasePlayer::Restore_) },
-	//{ 0x0, "_ZN11CBasePlayer10ObjectCapsEv", mfunc_ptr_cast(&CBasePlayer::ObjectCaps_) },
+	{ 0x01DA5E40, "_ZN11CBasePlayer8PrecacheEv", mfunc_ptr_cast(&CBasePlayer::Precache_) },
+	{ 0x01DA5EE0, "_ZN11CBasePlayer4SaveER5CSave", mfunc_ptr_cast(&CBasePlayer::Save_) },
+	{ 0x01DA6080, "_ZN11CBasePlayer7RestoreER8CRestore", mfunc_ptr_cast(&CBasePlayer::Restore_) },
+	{ 0x01D210A0, "_ZN11CBasePlayer10ObjectCapsEv", mfunc_ptr_cast(&CBasePlayer::ObjectCaps_) },
 	{ 0x01DA3550, "_ZN11CBasePlayer8ClassifyEv", mfunc_ptr_cast(&CBasePlayer::Classify_) },
 	{ 0x01D9BE00, "_ZN11CBasePlayer11TraceAttackEP9entvars_sf6VectorP11TraceResulti", mfunc_ptr_cast(&CBasePlayer::TraceAttack_) },
 	//{ 0x0, "_ZN11CBasePlayer10TakeDamageEP9entvars_sS1_fi", mfunc_ptr_cast(&CBasePlayer::TakeDamage_) },
@@ -617,13 +617,13 @@ FunctionHook g_FunctionHooks[] =
 	//{ 0x01D21060, "_ZN11CBasePlayer17ShouldFadeOnDeathEv", mfunc_ptr_cast(&CBasePlayer::ShouldFadeOnDeath_) },
 	{ 0x01DA9CB0, "_ZN11CBasePlayer13ResetMaxSpeedEv", mfunc_ptr_cast(&CBasePlayer::ResetMaxSpeed_) },
 	//{ 0x0, "_ZN11CBasePlayer4JumpEv", mfunc_ptr_cast(&CBasePlayer::Jump_) },
-	//{ 0x01DA3530, "_ZN11CBasePlayer4DuckEv", mfunc_ptr_cast(&CBasePlayer::Duck_) },
-	//{ 0x0, "_ZN11CBasePlayer8PreThinkEv", mfunc_ptr_cast(&CBasePlayer::PreThink_) },
+	{ 0x01DA3530, "_ZN11CBasePlayer4DuckEv", mfunc_ptr_cast(&CBasePlayer::Duck_) },
+	//{ 0x01DA3850, "_ZN11CBasePlayer8PreThinkEv", mfunc_ptr_cast(&CBasePlayer::PreThink_) },
 	//{ 0x01DA4610, "_ZN11CBasePlayer9PostThinkEv", mfunc_ptr_cast(&CBasePlayer::PostThink_) },
 	{ 0x01D9BD80, "_ZN11CBasePlayer14GetGunPositionEv", mfunc_ptr_cast(&CBasePlayer::GetGunPosition_) },
 	//{ 0x0, "_ZN11CBasePlayer5IsBotEv", mfunc_ptr_cast(&CBasePlayer::IsBot_) },
 	//{ 0x01DA8F90, "_ZN11CBasePlayer16UpdateClientDataEv", mfunc_ptr_cast(&CBasePlayer::UpdateClientData_) },
-	//{ 0x01DA7020, "_ZN11CBasePlayer15ImpulseCommandsEv", mfunc_ptr_cast(&CBasePlayer::ImpulseCommands_) },	// NOXREF
+	{ 0x01DA7020, "_ZN11CBasePlayer15ImpulseCommandsEv", mfunc_ptr_cast(&CBasePlayer::ImpulseCommands_) },
 	{ 0x01DA2490, "_ZN11CBasePlayer12RoundRespawnEv", mfunc_ptr_cast(&CBasePlayer::RoundRespawn_) },
 	{ 0x01DA9DC0, "_ZN11CBasePlayer16GetAutoaimVectorEf", mfunc_ptr_cast(&CBasePlayer::GetAutoaimVector_) },
 	{ 0x01DAA220, "_ZN11CBasePlayer5BlindEfffi", mfunc_ptr_cast(&CBasePlayer::Blind_) },
@@ -652,9 +652,9 @@ FunctionHook g_FunctionHooks[] =
 	{ 0x01D9B9B0, "_ZN11CBasePlayer4PainEib", mfunc_ptr_cast(&CBasePlayer::Pain) },
 	{ 0x01D9F410, "_ZN11CBasePlayer9IsBombGuyEv", mfunc_ptr_cast(&CBasePlayer::IsBombGuy) },
 	{ 0x01DACC30, "_ZNK11CBasePlayer19IsLookingAtPositionEPK6Vectorf", mfunc_ptr_cast(&CBasePlayer::IsLookingAtPosition) },
-	//{ 0x01DA6310, "_ZN11CBasePlayer5ResetEv", mfunc_ptr_cast(&CBasePlayer::Reset) },
+	{ 0x01DA6310, "_ZN11CBasePlayer5ResetEv", mfunc_ptr_cast(&CBasePlayer::Reset) },
 	{ 0x01DA5F10, "_ZN11CBasePlayer23SetScoreboardAttributesEPS_", mfunc_ptr_cast(&CBasePlayer::SetScoreboardAttributes) },
-	//{ 0x0, "_ZN11CBasePlayer10RenewItemsEv", mfunc_ptr_cast(&CBasePlayer::RenewItems) },
+	//{ 0x01DA6070, "_ZN11CBasePlayer10RenewItemsEv", mfunc_ptr_cast(&CBasePlayer::RenewItems) },	// NOXREF
 	{ 0x01D9D630, "_ZN11CBasePlayer19PackDeadPlayerItemsEv", mfunc_ptr_cast(&CBasePlayer::PackDeadPlayerItems) },
 	{ 0x01D9DAD0, "_ZN11CBasePlayer16GiveDefaultItemsEv", mfunc_ptr_cast(&CBasePlayer::GiveDefaultItems) },
 	{ 0x01D9DD60, "_ZN11CBasePlayer14RemoveAllItemsEi", mfunc_ptr_cast(&CBasePlayer::RemoveAllItems) },
@@ -717,7 +717,7 @@ FunctionHook g_FunctionHooks[] =
 	//{ 0x01DA6920, "_ZN11CBasePlayer10HasWeaponsEv", mfunc_ptr_cast(&CBasePlayer::HasWeapons) },	// NOXREF
 	//{ 0x01DA6940, "_ZN11CBasePlayer14SelectPrevItemEi", mfunc_ptr_cast(&CBasePlayer::SelectPrevItem) }, // NOXREF
 	//{ 0x01DA6470, "_ZN11CBasePlayer14SelectNextItemEi", mfunc_ptr_cast(&CBasePlayer::SelectNextItem) }, // NOXREF
-	//{ 0x01DA65E0, "_ZN11CBasePlayer10SelectItemEPKc", mfunc_ptr_cast(&CBasePlayer::SelectItem) },
+	{ 0x01DA65E0, "_ZN11CBasePlayer10SelectItemEPKc", mfunc_ptr_cast(&CBasePlayer::SelectItem) },
 	{ 0x01DA67A0, "_ZN11CBasePlayer14SelectLastItemEv", mfunc_ptr_cast(&CBasePlayer::SelectLastItem) },
 	//{ 0x01DA8BB0, "_ZN11CBasePlayer12ItemPreFrameEv", mfunc_ptr_cast(&CBasePlayer::ItemPreFrame) },	// NOXREF
 	//{ 0x01DA8BE0, "_ZN11CBasePlayer13ItemPostFrameEv", mfunc_ptr_cast(&CBasePlayer::ItemPostFrame) },	// NOXREF
@@ -735,7 +735,7 @@ FunctionHook g_FunctionHooks[] =
 	{ 0x01DA14D0, "_ZN11CBasePlayer9MenuPrintEPS_PKc", mfunc_ptr_cast(&CBasePlayer::MenuPrint) },
 	//{ 0x01DA11F0, "_ZN11CBasePlayer9ResetMenuEv", mfunc_ptr_cast(&CBasePlayer::ResetMenu) },	// NOXREF
 	{ 0x01DA1240, "_ZN11CBasePlayer14SyncRoundTimerEv", mfunc_ptr_cast(&CBasePlayer::SyncRoundTimer) },
-	//{ 0x0, "_ZN11CBasePlayer15CheckSuitUpdateEv", mfunc_ptr_cast(&CBasePlayer::CheckSuitUpdate) },
+	//{ 0x01DA4220, "_ZN11CBasePlayer15CheckSuitUpdateEv", mfunc_ptr_cast(&CBasePlayer::CheckSuitUpdate) },
 	{ 0x01DA43E0, "_ZN11CBasePlayer13SetSuitUpdateEPcii", mfunc_ptr_cast(&CBasePlayer::SetSuitUpdate) },	// NOXREF
 	//{ 0x01DA4170, "_ZN11CBasePlayer19UpdateGeigerCounterEv", mfunc_ptr_cast(&CBasePlayer::UpdateGeigerCounter) },	// NOXREF
 	//{ 0x0, "_ZN11CBasePlayer20CheckTimeBasedDamageEv", mfunc_ptr_cast(&CBasePlayer::CheckTimeBasedDamage) },
@@ -745,7 +745,7 @@ FunctionHook g_FunctionHooks[] =
 	{ 0x01DA8C60, "_ZN11CBasePlayer13AmmoInventoryEi", mfunc_ptr_cast(&CBasePlayer::AmmoInventory) },
 	//{ 0x01DAA150, "_ZN11CBasePlayer12ResetAutoaimEv", mfunc_ptr_cast(&CBasePlayer::ResetAutoaim) },	// NOXREF
 	//{ 0x01DAA120, "_ZN11CBasePlayer17AutoaimDeflectionER6Vectorff", mfunc_ptr_cast(&CBasePlayer::AutoaimDeflection) },	// NOXREF
-	//{ 0x01DA6FD0, "_ZN11CBasePlayer20ForceClientDllUpdateEv", mfunc_ptr_cast(&CBasePlayer::ForceClientDllUpdate) },
+	{ 0x01DA6FD0, "_ZN11CBasePlayer20ForceClientDllUpdateEv", mfunc_ptr_cast(&CBasePlayer::ForceClientDllUpdate) },
 	//{ 0x0, "_ZN11CBasePlayer12DeathMessageEP9entvars_s", mfunc_ptr_cast(&CBasePlayer::DeathMessage) },
 	{ 0x01DAA1E0, "_ZN11CBasePlayer20SetCustomDecalFramesEi", mfunc_ptr_cast(&CBasePlayer::SetCustomDecalFrames) },
 	//{ 0x01DAA210, "_ZN11CBasePlayer20GetCustomDecalFramesEv", mfunc_ptr_cast(&CBasePlayer::GetCustomDecalFrames) },	// NOXREF
@@ -806,7 +806,7 @@ FunctionHook g_FunctionHooks[] =
 	{ 0x01DAEA40, "_ZN11CBasePlayer17IsObservingPlayerEPS_", mfunc_ptr_cast(&CBasePlayer::IsObservingPlayer) },
 	//{ 0x0, "_ZNK11CBasePlayer22CanSwitchObserverModesEv", mfunc_ptr_cast(&CBasePlayer::CanSwitchObserverModes) },
 	//{ 0x0, "_ZN11CBasePlayer7IntenseEv", mfunc_ptr_cast(&CBasePlayer::Intense) },
-	//{ 0x01D9AB20, "_Z16LinkUserMessagesv", (size_t)&LinkUserMessages },
+	{ 0x01D9AB20, "_Z16LinkUserMessagesv", (size_t)&LinkUserMessages },
 	{ 0x01D9B0F0, "_Z18WriteSigonMessagesv", (size_t)&WriteSigonMessages },
 	{ 0x01D9B280, "_Z14SendItemStatusP11CBasePlayer", (size_t)&SendItemStatus },
 	{ 0x01D9D8A0, "_ZL14GetCSModelNamei", (size_t)&GetCSModelName },
@@ -819,9 +819,9 @@ FunctionHook g_FunctionHooks[] =
 	{ 0x01DA3110, "_ZL13CanSeeUseableP11CBasePlayerP11CBaseEntity_isra_13", (size_t)&CanSeeUseable },
 	//{ 0x01DA34E0, "_Z20FixPlayerCrouchStuckP7edict_s", (size_t)&FixPlayerCrouchStuck },
 	//{ 0x01DA4A90, "_Z17IsSpawnPointValidP11CBaseEntityS0_", (size_t)&IsSpawnPointValid },	// NOXREF
-	//{ 0x01DA4B10, "_Z16InitZombieSpawnsv", (size_t)&InitZombieSpawns },	// NOXREF
+	//{ 0x01DA4B20, "_Z16InitZombieSpawnsv", (size_t)&InitZombieSpawns },	// NOXREF
 	//{ 0x01DA4BC0, "_Z15FindZombieSpawnP11CBaseEntityb", (size_t)&FindZombieSpawn },	// NOXREF
-	//{ 0x01DA4BD0, "_Z19EntSelectSpawnPointP11CBaseEntity", (size_t)&EntSelectSpawnPoint },
+	{ 0x01DA4BD0, "_Z19EntSelectSpawnPointP11CBaseEntity", (size_t)&EntSelectSpawnPoint },
 
 #ifdef _WIN32
 	{ 0x01DA5180, "", (size_t)&SetScoreAttrib },
@@ -2485,8 +2485,8 @@ FunctionHook g_FunctionHooks[] =
 	{ 0x01D909E0, "_ZN18CHalfLifeMultiplay19FShouldSwitchWeaponEP11CBasePlayerP15CBasePlayerItem", mfunc_ptr_cast(&CHalfLifeMultiplay::FShouldSwitchWeapon_) },
 	{ 0x01D90A70, "_ZN18CHalfLifeMultiplay17GetNextBestWeaponEP11CBasePlayerP15CBasePlayerItem", mfunc_ptr_cast(&CHalfLifeMultiplay::GetNextBestWeapon_) },
 	{ 0x01D909B0, "_ZN18CHalfLifeMultiplay13IsMultiplayerEv", mfunc_ptr_cast(&CHalfLifeMultiplay::IsMultiplayer_) },
-	//{ 0x01D909C0, "_ZN18CHalfLifeMultiplay12IsDeathmatchEv", mfunc_ptr_cast(&CHalfLifeMultiplay::IsDeathmatch_) },
-	//{ 0x01D909D0, "_ZN18CHalfLifeMultiplay6IsCoOpEv", mfunc_ptr_cast(&CHalfLifeMultiplay::IsCoOp_) },
+	{ 0x01D909C0, "_ZN18CHalfLifeMultiplay12IsDeathmatchEv", mfunc_ptr_cast(&CHalfLifeMultiplay::IsDeathmatch_) },
+	{ 0x01D909D0, "_ZN18CHalfLifeMultiplay6IsCoOpEv", mfunc_ptr_cast(&CHalfLifeMultiplay::IsCoOp_) },
 	//{ 0x0, "_ZN18CHalfLifeMultiplay15ClientConnectedEP7edict_sPKcS3_Pc", mfunc_ptr_cast(&CHalfLifeMultiplay::ClientConnected_) },
 	//{ 0x01D90BC0, "_ZN18CHalfLifeMultiplay7InitHUDEP11CBasePlayer", mfunc_ptr_cast(&CHalfLifeMultiplay::InitHUD_) },
 	//{ 0x0, "_ZN18CHalfLifeMultiplay18ClientDisconnectedEP7edict_s", mfunc_ptr_cast(&CHalfLifeMultiplay::ClientDisconnected_) },
@@ -3420,20 +3420,20 @@ FunctionHook g_FunctionHooks[] =
 	//{ 0x0, "_Z11SetBlendingPvP9entvars_sif", (size_t)&SetBlending },
 	//{ 0x0, "_Z14FindTransitionPviiPi", (size_t)&FindTransition },
 	//{ 0x0, "_Z12SetBodygroupPvP9entvars_sii", (size_t)&SetBodygroup },
-	//{ 0x0, "_Z12GetBodygroupPvP9entvars_si", (size_t)&GetBodygroup },
-	//{ 0x01D5B080, "Server_GetBlendingInterface", (size_t)&Server_GetBlendingInterface },
-	{ 0x01D5B0E0, "_Z15AngleQuaternionPfS_", (size_t)&AngleQuaternion },	/// TODO: FIXME CZERO!!! Test demo czer-testsmoke-1.bin
-	//{ 0x0, "_Z15QuaternionSlerpPfS_fS_", (size_t)&QuaternionSlerp },
-	//{ 0x0, "_Z16QuaternionMatrixPfPA4_f", (size_t)&QuaternionMatrix },
-	//{ 0x0, "_Z13StudioGetAnimP7model_sP16mstudioseqdesc_t", (size_t)&StudioGetAnim },
-	//{ 0x0, "_Z15LookupAnimationP11studiohdr_tP7model_sP16mstudioseqdesc_ti", (size_t)&LookupAnimation },
-	//{ 0x0, "_Z17StudioCalcBoneAdjfPfPKhS1_h", (size_t)&StudioCalcBoneAdj },
-	//{ 0x0, "_Z23StudioCalcBoneQuaterionifP13mstudiobone_tP13mstudioanim_tPfS3_", (size_t)&StudioCalcBoneQuaterion },
-	//{ 0x0, "_Z22StudioCalcBonePositionifP13mstudiobone_tP13mstudioanim_tPfS3_", (size_t)&StudioCalcBonePosition },
-	//{ 0x0, "_Z16StudioSlerpBonesPA4_fPA3_fS0_S2_f", (size_t)&StudioSlerpBones },
-	//{ 0x0, "_Z19StudioCalcRotationsP13mstudiobone_tPiiPfPA3_fPA4_fP16mstudioseqdesc_tP13mstudioanim_tff", (size_t)&StudioCalcRotations },
-	//{ 0x0, "_Z16ConcatTransformsPA4_fS0_S0_", (size_t)&ConcatTransforms },
-	//{ 0x0, "_Z19SV_StudioSetupBonesP7model_sfiPKfS2_PKhS4_iPK7edict_s", (size_t)&SV_StudioSetupBones },
+	{ 0x01D5B020, "_Z12GetBodygroupPvP9entvars_si", (size_t)&GetBodygroup },
+	{ 0x01D5B080, "Server_GetBlendingInterface", (size_t)&Server_GetBlendingInterface },
+	{ 0x01D5B0E0, "_Z15AngleQuaternionPfS_", (size_t)&AngleQuaternion },
+	{ 0x01D5B190, "_Z15QuaternionSlerpPfS_fS_", (size_t)&QuaternionSlerp },
+	//{ 0x01D5B350, "_Z16QuaternionMatrixPfPA4_f", (size_t)&QuaternionMatrix },
+	{ 0x01D5B430, "_Z13StudioGetAnimP7model_sP16mstudioseqdesc_t", (size_t)&StudioGetAnim },
+	//{ 0x01D5B4C0, "_Z15LookupAnimationP11studiohdr_tP7model_sP16mstudioseqdesc_ti", (size_t)&LookupAnimation },	// NOXREF
+	{ 0x01D5B500, "_Z17StudioCalcBoneAdjfPfPKhS1_h", (size_t)&StudioCalcBoneAdj },
+	{ 0x01D5B720, "_Z23StudioCalcBoneQuaterionifP13mstudiobone_tP13mstudioanim_tPfS3_", (size_t)&StudioCalcBoneQuaterion },
+	{ 0x01D5B8E0, "_Z22StudioCalcBonePositionifP13mstudiobone_tP13mstudioanim_tPfS3_", (size_t)&StudioCalcBonePosition },
+	{ 0x01D5BA20, "_Z16StudioSlerpBonesPA4_fPA3_fS0_S2_f", (size_t)&StudioSlerpBones },
+	//{ 0x01D5BB50, "_Z19StudioCalcRotationsP13mstudiobone_tPiiPfPA3_fPA4_fP16mstudioseqdesc_tP13mstudioanim_tff", (size_t)&StudioCalcRotations },	// NOXREF
+	{ 0x01D5BBE0, "_Z16ConcatTransformsPA4_fS0_S0_", (size_t)&ConcatTransforms },
+	//{ 0x01D5BD20, "_Z19SV_StudioSetupBonesP7model_sfiPKfS2_PKhS4_iPK7edict_s", (size_t)&SV_StudioSetupBones },
 
 #endif // Animation_Region
 
@@ -5177,6 +5177,8 @@ AddressRef g_FunctionRefs[] =
 
 	{ 0x01D6EEB0, "_ZN4CGib15SpawnRandomGibsEP9entvars_sii", (size_t)&pCGib__SpawnRandomGibs },
 
+	{ 0x01D5B350, "_Z16QuaternionMatrixPfPA4_f", (size_t)&pQuaternionMatrix },
+
 #endif // Function_References_Region
 	{ NULL, NULL, NULL }
 };
@@ -5280,30 +5282,30 @@ AddressRef g_DataRefs[] =
 	{ 0x01E635A0, "gmsgShake", (size_t)&pgmsgShake },
 	{ 0x01E635A4, "gmsgFade", (size_t)&pgmsgFade },
 	{ 0x01E635A8, "gmsgFlashlight", (size_t)&pgmsgFlashlight },
-	//{ 0x0, "gmsgFlashBattery", (size_t)&pgmsgFlashBattery },
-	//{ 0x0, "gmsgResetHUD", (size_t)&pgmsgResetHUD },
-	//{ 0x0, "gmsgInitHUD", (size_t)&pgmsgInitHUD },
-	//{ 0x0, "gmsgViewMode", (size_t)&pgmsgViewMode },
-	//{ 0x01E635BC, "gmsgShowGameTitle", (size_t)&pgmsgShowGameTitle },
+	{ 0x01E635AC, "gmsgFlashBattery", (size_t)&pgmsgFlashBattery },
+	{ 0x01E635B0, "gmsgResetHUD", (size_t)&pgmsgResetHUD },
+	{ 0x01E635B4, "gmsgInitHUD", (size_t)&pgmsgInitHUD },
+	{ 0x01E635B8, "gmsgViewMode", (size_t)&pgmsgViewMode },
+	{ 0x01E635BC, "gmsgShowGameTitle", (size_t)&pgmsgShowGameTitle },
 	{ 0x01E635C0, "gmsgCurWeapon", (size_t)&pgmsgCurWeapon },
-	//{ 0x0, "gmsgHealth", (size_t)&pgmsgHealth },
-	//{ 0x0, "gmsgDamage", (size_t)&pgmsgDamage },
-	//{ 0x0, "gmsgBattery", (size_t)&pgmsgBattery },
-	//{ 0x0, "gmsgTrain", (size_t)&pgmsgTrain },
+	{ 0x01E635C4, "gmsgHealth", (size_t)&pgmsgHealth },
+	{ 0x01E635C8, "gmsgDamage", (size_t)&pgmsgDamage },
+	{ 0x01E635CC, "gmsgBattery", (size_t)&pgmsgBattery },
+	{ 0x01E635D0, "gmsgTrain", (size_t)&pgmsgTrain },
 	{ 0x01E635D4, "gmsgLogo", (size_t)&pgmsgLogo },
 	{ 0x01E635D8, "gmsgWeaponList", (size_t)&pgmsgWeaponList },
 	{ 0x01E635DC, "gmsgAmmoX", (size_t)&pgmsgAmmoX },
-	//{ 0x0, "gmsgDeathMsg", (size_t)&pgmsgDeathMsg },
+	{ 0x01E635E8, "gmsgDeathMsg", (size_t)&pgmsgDeathMsg },
 	{ 0x01E635EC, "gmsgScoreAttrib", (size_t)&pgmsgScoreAttrib },
 	{ 0x01E635F0, "gmsgScoreInfo", (size_t)&pgmsgScoreInfo },
 	{ 0x01E635F4, "gmsgTeamInfo", (size_t)&pgmsgTeamInfo },
-	//{ 0x0, "gmsgTeamScore", (size_t)&pgmsgTeamScore },
-	//{ 0x0, "gmsgGameMode", (size_t)&pgmsgGameMode },
-	//{ 0x0, "gmsgMOTD", (size_t)&pgmsgMOTD },
-	//{ 0x0, "gmsgServerName", (size_t)&pgmsgServerName },
+	{ 0x01E635F8, "gmsgTeamScore", (size_t)&pgmsgTeamScore },
+	{ 0x01E635FC, "gmsgGameMode", (size_t)&pgmsgGameMode },
+	{ 0x01E63600, "gmsgMOTD", (size_t)&pgmsgMOTD },
+	{ 0x01E63604, "gmsgServerName", (size_t)&pgmsgServerName },
 	{ 0x01E63608, "gmsgAmmoPickup", (size_t)&pgmsgAmmoPickup },
 	{ 0x01E63610, "gmsgItemPickup", (size_t)&pgmsgItemPickup },
-	//{ 0x0, "gmsgHideWeapon", (size_t)&pgmsgHideWeapon },
+	{ 0x01E63614, "gmsgHideWeapon", (size_t)&pgmsgHideWeapon },
 	{ 0x01E63618, "gmsgSayText", (size_t)&pgmsgSayText },
 	{ 0x01E6361C, "gmsgTextMsg", (size_t)&pgmsgTextMsg },
 	{ 0x01E63620, "gmsgSetFOV", (size_t)&pgmsgSetFOV },
@@ -5320,28 +5322,28 @@ AddressRef g_DataRefs[] =
 	{ 0x01E6364C, "gmsgReloadSound", (size_t)&pgmsgReloadSound },
 	{ 0x01E63650, "gmsgCrosshair", (size_t)&pgmsgCrosshair },
 	{ 0x01E63654, "gmsgNVGToggle", (size_t)&pgmsgNVGToggle },
-	//{ 0x0, "gmsgRadar", (size_t)&pgmsgRadar },
+	{ 0x01E63658, "gmsgRadar", (size_t)&pgmsgRadar },
 	{ 0x01E6365C, "gmsgSpectator", (size_t)&pgmsgSpectator },
-	//{ 0x0, "gmsgVGUIMenu", (size_t)&pgmsgVGUIMenu },
+	{ 0x01E63660, "gmsgVGUIMenu", (size_t)&pgmsgVGUIMenu },
 	{ 0x01E63664, "gmsgCZCareer", (size_t)&pgmsgCZCareer },
-	//{ 0x0, "gmsgCZCareerHUD", (size_t)&pgmsgCZCareerHUD },
+	{ 0x01E63668, "gmsgCZCareerHUD", (size_t)&pgmsgCZCareerHUD },
 	{ 0x01E6366C, "gmsgTaskTime", (size_t)&pgmsgTaskTime },
-	//{ 0x0, "gmsgTutorText", (size_t)&pgmsgTutorText },
+	{ 0x01E63670, "gmsgTutorText", (size_t)&pgmsgTutorText },
 	{ 0x01E63674, "gmsgTutorLine", (size_t)&pgmsgTutorLine },
-	//{ 0x0, "gmsgShadowIdx", (size_t)&pgmsgShadowIdx },
+	{ 0x01E63678, "gmsgShadowIdx", (size_t)&pgmsgShadowIdx },
 	{ 0x01E6367C, "gmsgTutorState", (size_t)&pgmsgTutorState },
 	{ 0x01E63680, "gmsgTutorClose", (size_t)&pgmsgTutorClose },
-	//{ 0x0, "gmsgAllowSpec", (size_t)&pgmsgAllowSpec },
+	{ 0x01E63684, "gmsgAllowSpec", (size_t)&pgmsgAllowSpec },
 	{ 0x01E63688, "gmsgBombDrop", (size_t)&pgmsgBombDrop },
-	//{ 0x0, "gmsgBombPickup", (size_t)&pgmsgBombPickup },
+	{ 0x01E6368C, "gmsgBombPickup", (size_t)&pgmsgBombPickup },
 	{ 0x01E63690, "gmsgHostagePos", (size_t)&pgmsgHostagePos },
-	//{ 0x0, "gmsgHostageK", (size_t)&pgmsgHostageK },
+	{ 0x01E63694, "gmsgHostageK", (size_t)&pgmsgHostageK },
 	{ 0x01E63698, "gmsgGeigerRange", (size_t)&pgmsgGeigerRange },
 	{ 0x01E6369C, "gmsgSendCorpse", (size_t)&pgmsgSendCorpse },
-	//{ 0x0, "gmsgHLTV", (size_t)&pgmsgHLTV },
-	//{ 0x0, "gmsgSpecHealth", (size_t)&pgmsgSpecHealth },
-	//{ 0x0, "gmsgForceCam", (size_t)&pgmsgForceCam },
-	//{ 0x0, "gmsgADStop", (size_t)&pgmsgADStop },
+	{ 0x01E636A0, "gmsgHLTV", (size_t)&pgmsgHLTV },
+	{ 0x01E636A4, "gmsgSpecHealth", (size_t)&pgmsgSpecHealth },
+	{ 0x01E636A8, "gmsgForceCam", (size_t)&pgmsgForceCam },
+	{ 0x01E636AC, "gmsgADStop", (size_t)&pgmsgADStop },
 	{ 0x01E636B0, "gmsgReceiveW", (size_t)&pgmsgReceiveW },
 	{ 0x01E636B4, "gmsgScenarioIcon", (size_t)&pgmsgScenarioIcon },
 	{ 0x01E636B8, "gmsgBotVoice", (size_t)&pgmsgBotVoice },
@@ -5351,9 +5353,9 @@ AddressRef g_DataRefs[] =
 	{ 0x01E636C8, "gmsgSpecHealth2", (size_t)&pgmsgSpecHealth2 },
 	{ 0x01E636CC, "gmsgBarTime2", (size_t)&pgmsgBarTime2 },
 	{ 0x01E636D0, "gmsgBotProgress", (size_t)&pgmsgBotProgress },
-	//{ 0x0, "gmsgBrass", (size_t)&pgmsgBrass },
-	//{ 0x0, "gmsgFog", (size_t)&pgmsgFog },
-	//{ 0x0, "gmsgShowTimer", (size_t)&pgmsgShowTimer },
+	{ 0x01E636D4, "gmsgBrass", (size_t)&pgmsgBrass },
+	{ 0x01E636D8, "gmsgFog", (size_t)&pgmsgFog },
+	{ 0x01E636DC, "gmsgShowTimer", (size_t)&pgmsgShowTimer },
 
 	{ 0x01E61B80, "g_psv_gravity", (size_t)&pg_psv_gravity },
 	{ 0x01E61B84, "g_psv_aim", (size_t)&pg_psv_aim },//TODO: unused, used cvar_t *sv_aim
@@ -5525,7 +5527,7 @@ AddressRef g_DataRefs[] =
 	//{ 0x0, "_ZN9CPushable12m_soundNamesE", mfunc_ptr_cast(&CPushable::pm_soundNames) },
 
 	{ 0x01E1E00C, "_ZN8CDeadHEV9m_szPosesE", mfunc_ptr_cast(&CDeadHEV::pm_szPoses) },
-
+	{ 0x01E1DD88, "_ZN11CBasePlayer16m_playerSaveDataE", mfunc_ptr_cast(&CBasePlayer::pm_playerSaveData) },
 	//{ 0x01E14A68, "_ZN11CBaseEntity10m_SaveDataE", mfunc_ptr_cast(&CBaseEntity::pm_SaveData) },
 	//{ 0x0, "_ZN12CGlobalState10m_SaveDataE", mfunc_ptr_cast(&CGlobalState::pm_SaveData) },
 	//{ 0x0, "_ZN9CEnvSpark10m_SaveDataE", mfunc_ptr_cast(&CEnvSpark::pm_SaveData) },
@@ -5569,7 +5571,7 @@ AddressRef g_DataRefs[] =
 	//{ 0x0, "_ZN12CMultiSource10m_SaveDataE", mfunc_ptr_cast(&CMultiSource::pm_SaveData) },
 	{ 0x01E20538, "_ZN10CBaseDelay10m_SaveDataE", mfunc_ptr_cast(&CBaseDelay::pm_SaveData) },
 	{ 0x01E13438, "_ZN14CBaseAnimating10m_SaveDataE", mfunc_ptr_cast(&CBaseAnimating::pm_SaveData) },
-	//{ 0x0, "_ZN11CBaseToggle10m_SaveDataE", mfunc_ptr_cast(&CBaseToggle::pm_SaveData) },
+	{ 0x01E20558, "_ZN11CBaseToggle10m_SaveDataE", mfunc_ptr_cast(&CBaseToggle::pm_SaveData) },
 	//{ 0x0, "_ZN11CBaseButton10m_SaveDataE", mfunc_ptr_cast(&CBaseButton::pm_SaveData) },
 	//{ 0x0, "_ZN15CAmbientGeneric10m_SaveDataE", mfunc_ptr_cast(&CAmbientGeneric::pm_SaveData) },
 	//{ 0x0, "_ZN9CEnvSound10m_SaveDataE", mfunc_ptr_cast(&CEnvSound::pm_SaveData) },
@@ -5659,7 +5661,9 @@ AddressRef g_DataRefs[] =
 	{ 0x01E76594, "TheCareerTasks", (size_t)&pTheCareerTasks },
 	{ 0x01E28C7C, "TheBotProfiles", (size_t)&pTheBotProfiles },
 
+	{ 0x01E287CC, "g_pSelectedZombieSpawn", (size_t)&pg_pSelectedZombieSpawn },
 	{ 0x01E287F0, "TheBotPhrases", (size_t)&pTheBotPhrases },
+
 	{ 0x01E7657C, "TheTutor", (size_t)&pTheTutor },
 	{ 0x01E2A25C, "g_pHostages", (size_t)&pg_pHostages },
 	{ 0x01E2A258, "g_iHostageNumber", (size_t)&pg_iHostageNumber },
@@ -5669,6 +5673,25 @@ AddressRef g_DataRefs[] =
 	{ 0x01E61740, "theDebugBuffer", (size_t)&ptheDebugBuffer },
 
 	{ 0x01E75D04, "g_LessCtx", (size_t)&pg_LessCtx },
+	{ 0x01E62788, "g_pLastSpawn", (size_t)&pg_pLastSpawn },
+
+	{ 0x01E63590, "g_pLastCTSpawn", (size_t)&pg_pLastCTSpawn },
+	{ 0x01E63594, "g_pLastTerroristSpawn", (size_t)&pg_pLastTerroristSpawn },
+
+	{ 0x01E62990, "_ZL11zombieSpawn", (size_t)&pzombieSpawn },
+	{ 0x01E636E8, "_ZL16zombieSpawnCount", (size_t)&pzombieSpawnCount },
+
+	{ 0x01E13838, "svBlending", (size_t)&psvBlending },
+	{ 0x01E312D0, "IEngineStudio", (size_t)&pIEngineStudio },
+	{ 0x01E2DAA8, "g_pstudiohdr", (size_t)&pg_pstudiohdr },
+	{ 0x01E2F8C0, "g_pRotationMatrix", (size_t)&pg_pRotationMatrix },
+	{ 0x01E2F8B0, "g_pBoneTransform", (size_t)&pg_pBoneTransform },
+
+	{ 0x01E2F8BC, "omega", (size_t)&pomega },
+	{ 0x01E312E0, "cosom", (size_t)&pcosom },
+	{ 0x01E306C8, "sinom", (size_t)&psinom },
+	{ 0x01E2F8B4, "sclp", (size_t)&psclp },
+	{ 0x01E2F8B8, "sclq", (size_t)&psclq },
 
 #endif // Data_References_Region
 

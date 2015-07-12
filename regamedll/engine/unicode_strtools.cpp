@@ -497,7 +497,7 @@ uchar16 *StripUnprintableWorker(uchar16 *pwch, bool *pbStrippedAny)
 	uchar16 *pwchDest = pwch;
 	*pbStrippedAny = 0;
 
-	while(*pwchSource)
+	while (*pwchSource)
 	{
 		uchar16 cc = *pwchSource;
 		if (*pwchSource >= 0x20u && !Q_IsUnprintableW(cc) && cc != 0x2026)

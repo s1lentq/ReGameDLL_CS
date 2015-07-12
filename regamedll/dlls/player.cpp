@@ -3,13 +3,6 @@
 #define DEFINE_WEAPON(m_wpnid, m_cost, m_slotnum, m_acost)\
 	{ m_wpnid, m_cost, 3, m_slotnum, m_acost }
 
-/* <14e3fc> ../cstrike/dlls/player.cpp:5868 */
-struct ZombieSpawn
-{
-	CBaseEntity *entity;
-	CountdownTimer useableTimer;
-};/* size: 12, cachelines: 1, members: 2 */
-
 /*
 * Globals initialization
 */
@@ -203,30 +196,30 @@ int gmsgHudTextArgs;
 int gmsgShake;
 int gmsgFade;
 int gmsgFlashlight;
-//int gmsgFlashBattery;
-//int gmsgResetHUD;
-//int gmsgInitHUD;
-//int gmsgViewMode;
-//int gmsgShowGameTitle;
+int gmsgFlashBattery;
+int gmsgResetHUD;
+int gmsgInitHUD;
+int gmsgViewMode;
+int gmsgShowGameTitle;
 int gmsgCurWeapon;
-//int gmsgHealth;
-//int gmsgDamage;
-//int gmsgBattery;
-//int gmsgTrain;
+int gmsgHealth;
+int gmsgDamage;
+int gmsgBattery;
+int gmsgTrain;
 int gmsgLogo;
 int gmsgWeaponList;
 int gmsgAmmoX;
-//int gmsgDeathMsg;
+int gmsgDeathMsg;
 int gmsgScoreAttrib;
 int gmsgScoreInfo;
 int gmsgTeamInfo;
-//int gmsgTeamScore;
-//int gmsgGameMode;
-//int gmsgMOTD;
-//int gmsgServerName;
+int gmsgTeamScore;
+int gmsgGameMode;
+int gmsgMOTD;
+int gmsgServerName;
 int gmsgAmmoPickup;
 int gmsgItemPickup;
-//int gmsgHideWeapon;
+int gmsgHideWeapon;
 int gmsgSayText;
 int gmsgTextMsg;
 int gmsgSetFOV;
@@ -243,28 +236,28 @@ int gmsgBarTime;
 int gmsgReloadSound;
 int gmsgCrosshair;
 int gmsgNVGToggle;
-//int gmsgRadar;
+int gmsgRadar;
 int gmsgSpectator;
-//int gmsgVGUIMenu;
+int gmsgVGUIMenu;
 int gmsgCZCareer;
-//int gmsgCZCareerHUD;
+int gmsgCZCareerHUD;
 int gmsgTaskTime;
-//int gmsgTutorText;
+int gmsgTutorText;
 int gmsgTutorLine;
-//int gmsgShadowIdx;
+int gmsgShadowIdx;
 int gmsgTutorState;
 int gmsgTutorClose;
-//int gmsgAllowSpec;
+int gmsgAllowSpec;
 int gmsgBombDrop;
-//int gmsgBombPickup;
+int gmsgBombPickup;
 int gmsgHostagePos;
-//int gmsgHostageK;
+int gmsgHostageK;
 int gmsgGeigerRange;
 int gmsgSendCorpse;
-//int gmsgHLTV;
-//int gmsgSpecHealth;
-//int gmsgForceCam;
-//int gmsgADStop;
+int gmsgHLTV;
+int gmsgSpecHealth;
+int gmsgForceCam;
+int gmsgADStop;
 int gmsgReceiveW;
 int gmsgScenarioIcon;
 int gmsgBotVoice;
@@ -274,9 +267,9 @@ int gmsgLocation;
 int gmsgSpecHealth2;
 int gmsgBarTime2;
 int gmsgBotProgress;
-//int gmsgBrass;
-//int gmsgFog;
-//int gmsgShowTimer;
+int gmsgBrass;
+int gmsgFog;
+int gmsgShowTimer;
 
 BOOL gInitHUD;
 cvar_t *sv_aim;
@@ -292,27 +285,108 @@ char *(*CDeadHEV::pm_szPoses)[4];
 int gEvilImpulse101;
 char g_szMapBriefingText[512];
 
-//extern cvar_t fadetoblack;		// move player.h
-//extern cvar_t playerid;		// move player.h
-
-//CBaseEntity *g_pSelectedZombieSpawn;
-
 //entvars_t *g_pevLastInflictor;
-//extern cvar_t startmoney;		// move player.h
-//CBaseEntity *g_pLastSpawn;
-//CBaseEntity *g_pLastCTSpawn;
-//CBaseEntity *g_pLastTerroristSpawn;
-//ZombieSpawn zombieSpawn[256];
-//int zombieSpawnCount;
-//extern float g_flWeaponCheat;
-//float g_flWeaponCheat;		// move player.h
+CBaseEntity *g_pLastSpawn;
+CBaseEntity *g_pLastCTSpawn;
+CBaseEntity *g_pLastTerroristSpawn;
 
-//const char *BotArgs[4];
-//bool UseBotArgs;
+/* <14e3fc> ../cstrike/dlls/player.cpp:5868 */
+struct ZombieSpawn
+{
+	CBaseEntity *entity;
+	CountdownTimer useableTimer;
+
+};/* size: 12, cachelines: 1, members: 2 */
+
+ZombieSpawn zombieSpawn[256];
+int zombieSpawnCount;
 
 /* <15353b> ../cstrike/dlls/player.cpp:282 */
-NOBODY void LinkUserMessages(void)
+void LinkUserMessages(void)
 {
+	if (gmsgCurWeapon)
+		return;
+
+	gmsgCurWeapon = REG_USER_MSG("CurWeapon", 3);
+	gmsgGeigerRange = REG_USER_MSG("Geiger", 1);
+	gmsgFlashlight = REG_USER_MSG("Flashlight", 2);
+	gmsgFlashBattery = REG_USER_MSG("FlashBat", 1);
+	gmsgHealth = REG_USER_MSG("Health", 1);
+	gmsgDamage = REG_USER_MSG("Damage", 12);
+	gmsgBattery = REG_USER_MSG("Battery", 2);
+	gmsgTrain = REG_USER_MSG("Train", 1);
+	gmsgHudText = REG_USER_MSG("HudTextPro", -1);
+	REG_USER_MSG("HudText", -1);
+	gmsgSayText = REG_USER_MSG("SayText", -1);
+	gmsgTextMsg = REG_USER_MSG("TextMsg", -1);
+	gmsgWeaponList = REG_USER_MSG("WeaponList", -1);
+	gmsgResetHUD = REG_USER_MSG("ResetHUD", 0);
+	gmsgInitHUD = REG_USER_MSG("InitHUD", 0);
+	gmsgViewMode = REG_USER_MSG("ViewMode", 0);
+	gmsgShowGameTitle = REG_USER_MSG("GameTitle", 1);
+	gmsgDeathMsg = REG_USER_MSG("DeathMsg", -1);
+	gmsgScoreAttrib = REG_USER_MSG("ScoreAttrib", 2);
+	gmsgScoreInfo = REG_USER_MSG("ScoreInfo", 9);
+	gmsgTeamInfo = REG_USER_MSG("TeamInfo", -1);
+	gmsgTeamScore = REG_USER_MSG("TeamScore", -1);
+	gmsgGameMode = REG_USER_MSG("GameMode", 1);
+	gmsgMOTD = REG_USER_MSG("MOTD", -1);
+	gmsgServerName = REG_USER_MSG("ServerName", -1);
+	gmsgAmmoPickup = REG_USER_MSG("AmmoPickup", 2);
+	gmsgWeapPickup = REG_USER_MSG("WeapPickup", 1);
+	gmsgItemPickup = REG_USER_MSG("ItemPickup", -1);
+	gmsgHideWeapon = REG_USER_MSG("HideWeapon", 1);
+	gmsgSetFOV = REG_USER_MSG("SetFOV", 1);
+	gmsgShowMenu = REG_USER_MSG("ShowMenu", -1);
+	gmsgShake = REG_USER_MSG("ScreenShake", 6);
+	gmsgFade = REG_USER_MSG("ScreenFade", 10);
+	gmsgAmmoX = REG_USER_MSG("AmmoX", 2);
+	gmsgSendAudio = REG_USER_MSG("SendAudio", -1);
+	gmsgRoundTime = REG_USER_MSG("RoundTime", 2);
+	gmsgMoney = REG_USER_MSG("Money", 5);
+	gmsgArmorType = REG_USER_MSG("ArmorType", 1);
+	gmsgBlinkAcct = REG_USER_MSG("BlinkAcct", 1);
+	gmsgStatusValue = REG_USER_MSG("StatusValue", -1);
+	gmsgStatusText = REG_USER_MSG("StatusText", -1);
+	gmsgStatusIcon = REG_USER_MSG("StatusIcon", -1);
+	gmsgBarTime = REG_USER_MSG("BarTime", 2);
+	gmsgReloadSound = REG_USER_MSG("ReloadSound", 2);
+	gmsgCrosshair = REG_USER_MSG("Crosshair", 1);
+	gmsgNVGToggle = REG_USER_MSG("NVGToggle", 1);
+	gmsgRadar = REG_USER_MSG("Radar", 7);
+	gmsgSpectator = REG_USER_MSG("Spectator", 2);
+	gmsgVGUIMenu = REG_USER_MSG("VGUIMenu", -1);
+	gmsgTutorText = REG_USER_MSG("TutorText", -1);
+	gmsgTutorLine = REG_USER_MSG("TutorLine", -1);
+	gmsgTutorState = REG_USER_MSG("TutorState", -1);
+	gmsgTutorClose = REG_USER_MSG("TutorClose", -1);
+	gmsgAllowSpec = REG_USER_MSG("AllowSpec", 1);
+	gmsgBombDrop = REG_USER_MSG("BombDrop", 7);
+	gmsgBombPickup = REG_USER_MSG("BombPickup", 0);
+	gmsgSendCorpse = REG_USER_MSG("ClCorpse", -1);
+	gmsgHostagePos = REG_USER_MSG("HostagePos", 8);
+	gmsgHostageK = REG_USER_MSG("HostageK", 1);
+	gmsgHLTV = REG_USER_MSG("HLTV", 2);
+	gmsgSpecHealth = REG_USER_MSG("SpecHealth", 1);
+	gmsgForceCam = REG_USER_MSG("ForceCam", 3);
+	gmsgADStop = REG_USER_MSG("ADStop", 0);
+	gmsgReceiveW = REG_USER_MSG("ReceiveW", 1);
+	gmsgCZCareer = REG_USER_MSG("CZCareer", -1);
+	gmsgCZCareerHUD = REG_USER_MSG("CZCareerHUD", -1);
+	gmsgShadowIdx = REG_USER_MSG("ShadowIdx", 4);
+	gmsgTaskTime = REG_USER_MSG("TaskTime", 4);
+	gmsgScenarioIcon = REG_USER_MSG("Scenario", -1);
+	gmsgBotVoice = REG_USER_MSG("BotVoice", 2);
+	gmsgBuyClose = REG_USER_MSG("BuyClose", 0);
+	gmsgSpecHealth2 = REG_USER_MSG("SpecHealth2", 2);
+	gmsgBarTime2 = REG_USER_MSG("BarTime2", 4);
+	gmsgItemStatus = REG_USER_MSG("ItemStatus", 1);
+	gmsgLocation = REG_USER_MSG("Location", -1);
+	gmsgBotProgress = REG_USER_MSG("BotProgress", -1);
+	gmsgBrass = REG_USER_MSG("Brass", -1);
+	gmsgFog = REG_USER_MSG("Fog", 7);
+	gmsgShowTimer = REG_USER_MSG("ShowTimer", 0);
+	gmsgHudTextArgs = REG_USER_MSG("HudTextArgs", -1);
 }
 
 /* <1535a5> ../cstrike/dlls/player.cpp:380 */
@@ -1653,7 +1727,7 @@ void VIP_SafetyZoneIcon_Set(CBasePlayer *player)
 		WRITE_BYTE(0);
 	MESSAGE_END();
 
-	if(!(player->m_flDisplayHistory & DHF_IN_VIPSAFETY_ZONE))
+	if (!(player->m_flDisplayHistory & DHF_IN_VIPSAFETY_ZONE))
 	{
 		if (player->m_iTeam == CT)
 		{
@@ -3217,7 +3291,7 @@ NOBODY void FixPlayerCrouchStuck(edict_t *pPlayer)
 }
 
 /* <153ef5> ../cstrike/dlls/player.cpp:4580 */
-NOBODY void CBasePlayer::Duck_(void)
+void CBasePlayer::Duck_(void)
 {
 	if (pev->button & IN_DUCK)
 		SetAnimation(PLAYER_WALK);
@@ -3329,16 +3403,63 @@ NOXREF void CBasePlayer::UpdateGeigerCounter(void)
 }
 
 /* <156189> ../cstrike/dlls/player.cpp:5352 */
-NOBODY void CBasePlayer::CheckSuitUpdate(void)
+void CBasePlayer::CheckSuitUpdate(void)
 {
-//	{
-//		int i;                                                //  5354
-//		int isentence;                                        //  5355
-//		int isearch;                                          //  5356
-//		{
-//			char sentence;                                //  5390
-//		}
-//	}
+	_LOG_TRACE
+
+	int i;
+	int isentence = 0;
+	int isearch = m_iSuitPlayNext;
+
+	// Ignore suit updates if no suit
+	if (!(pev->weapons & (1<<WEAPON_SUIT)))
+		return;
+
+	// if in range of radiation source, ping geiger counter
+	UpdateGeigerCounter();
+
+	if (g_pGameRules->IsMultiplayer())
+	{
+		// don't bother updating HEV voice in multiplayer.
+		return;
+	}
+
+	if (gpGlobals->time >= m_flSuitUpdate && m_flSuitUpdate > 0)
+	{
+		// play a sentence off of the end of the queue
+		for (i = 0; i < CSUITPLAYLIST; i++)
+		{
+			if (isentence = m_rgSuitPlayList[ isearch ])
+				break;
+
+			if (++isearch == CSUITPLAYLIST)
+				isearch = 0;
+		}
+
+		if (isentence)
+		{
+			m_rgSuitPlayList[ isearch ] = 0;
+
+			if (isentence > 0)
+			{
+				// play sentence number
+
+				char sentence[CBSENTENCENAME_MAX + 1];
+				Q_strcpy(sentence, "!");
+				Q_strcat(sentence, gszallsentencenames[isentence]);
+				EMIT_SOUND_SUIT(ENT(pev), sentence);
+			}
+			else
+			{
+				// play sentence group
+				EMIT_GROUPID_SUIT(ENT(pev), -isentence);
+			}
+			m_flSuitUpdate = gpGlobals->time + SUITUPDATETIME;
+		}
+		else
+			// queue is empty, don't check
+			m_flSuitUpdate = 0;
+	}
 }
 
 /* <156201> ../cstrike/dlls/player.cpp:5414 */
@@ -3408,7 +3529,7 @@ NOBODY void CBasePlayer::PostThink_(void)
 }
 
 /* <14e39d> ../cstrike/dlls/player.cpp:5837 */
-NOXREF BOOL IsSpawnPointValid(CBaseEntity *pPlayer, CBaseEntity *pSpot)
+BOOL IsSpawnPointValid(CBaseEntity *pPlayer, CBaseEntity *pSpot)
 {
 	CBaseEntity *ent = NULL;
 
@@ -3425,18 +3546,27 @@ NOXREF BOOL IsSpawnPointValid(CBaseEntity *pPlayer, CBaseEntity *pSpot)
 }
 
 /* <1563a8> ../cstrike/dlls/player.cpp:5879 */
-NOBODY void InitZombieSpawns(void)
+NOXREF void InitZombieSpawns(void)
 {
-//	{
-//		class CBaseEntity *spot;                             //  5884
-//		operator!=(const Vector *const this,
-//				const Vector &v);  //  5889
-//		Invalidate(CountdownTimer *const this);  //  5892
-//	}
+	CBaseEntity *spot = NULL;
+
+	g_pSelectedZombieSpawn = NULL;
+	zombieSpawnCount = 0;
+
+	while ((spot = UTIL_FindEntityByClassname(spot, "info_player_start")) != NULL)
+	{
+		if (spot->pev->origin != Vector(0, 0, 0))
+		{
+			zombieSpawn[ zombieSpawnCount ].entity = spot;
+			zombieSpawn[ zombieSpawnCount ].useableTimer.Invalidate();
+
+			zombieSpawnCount++;
+		}
+	}
 }
 
 /* <14e440> ../cstrike/dlls/player.cpp:5906 */
-CBaseEntity *FindZombieSpawn(CBaseEntity *player, bool forceSpawn)
+NOXREF CBaseEntity *FindZombieSpawn(CBaseEntity *player, bool forceSpawn)
 {
 	return NULL;
 }
@@ -3444,57 +3574,156 @@ CBaseEntity *FindZombieSpawn(CBaseEntity *player, bool forceSpawn)
 /* <15645f> ../cstrike/dlls/player.cpp:6060 */
 edict_t *EntSelectSpawnPoint(CBaseEntity *pPlayer)
 {
-//	
-//CTSpawn:                                                              //  6095
-//	
-//ReturnSpot:                                                           //  6222
-//	{
-//		class CBaseEntity *pSpot;                            //  6062
-//		edict_t *player;                                     //  6063
-//		edict(CBaseEntity *const this);  //  6065
-//		FNullEnt(CBaseEntity *ent);  //  6071
-//		FNullEnt(CBaseEntity *ent);  //  6085
-//		{
-//			class CBaseEntity *pFirstSpot;               //  6116
-//			FNullEnt(CBaseEntity *ent);  //  6113
-//			IsSpawnPointValid(CBaseEntity *pPlayer,
-//						class CBaseEntity *pSpot);  //  6123
-//			FNullEnt(CBaseEntity *ent);  //  6140
-//			{
-//				class CBaseEntity *ent;              //  6142
-//				edict(CBaseEntity *const this);  //  6146
-//				VARS(edict_t *pent);  //  6147
-//				INDEXENT(int iEdictNum);  //  6147
-//				INDEXENT(int iEdictNum);  //  6147
-//				VARS(edict_t *pent);  //  6147
-//			}
-//			operator==(const Vector *const this,
-//					const Vector &v);  //  6125
-//		}
-//		{
-//			class CBaseEntity *pFirstSpot;               //  6168
-//			FNullEnt(CBaseEntity *ent);  //  6165
-//			IsSpawnPointValid(CBaseEntity *pPlayer,
-//						class CBaseEntity *pSpot);  //  6175
-//			FNullEnt(CBaseEntity *ent);  //  6192
-//			{
-//				class CBaseEntity *ent;              //  6194
-//				edict(CBaseEntity *const this);  //  6198
-//				VARS(edict_t *pent);  //  6199
-//				INDEXENT(int iEdictNum);  //  6199
-//				INDEXENT(int iEdictNum);  //  6199
-//				VARS(edict_t *pent);  //  6199
-//			}
-//			operator==(const Vector *const this,
-//					const Vector &v);  //  6177
-//		}
-//		FNullEnt(CBaseEntity *ent);  //  6074
-//		FNullEnt(CBaseEntity *ent);  //  6218
-//		FNullEnt(CBaseEntity *ent);  //  6223
-//		INDEXENT(int iEdictNum);  //  6226
-//		edict(CBaseEntity *const this);  //  6234
-//		FNullEnt(CBaseEntity *ent);  //  6212
-//	}
+	CBaseEntity *pSpot;
+	edict_t *player = pPlayer->edict();
+
+	// choose a info_player_deathmatch point
+	if (g_pGameRules->IsCoOp())
+	{
+		pSpot = UTIL_FindEntityByClassname(g_pLastSpawn, "info_player_coop");
+
+		if (!FNullEnt(pSpot))
+			goto ReturnSpot;
+
+		pSpot = UTIL_FindEntityByClassname(g_pLastSpawn, "info_player_start");
+
+		if (!FNullEnt(pSpot))
+			goto ReturnSpot;
+	}
+	else if (g_pGameRules->IsDeathmatch() && ((CBasePlayer *)pPlayer)->m_bIsVIP)
+	{
+		pSpot = UTIL_FindEntityByClassname(NULL, "info_vip_start");
+
+		if (!FNullEnt(pSpot))
+			goto ReturnSpot;
+
+		goto CTSpawn;
+	}
+	else if (g_pGameRules->IsDeathmatch() && ((CBasePlayer *)pPlayer)->m_iTeam == CT)
+	{
+CTSpawn:
+		pSpot = UTIL_FindEntityByClassname(g_pLastCTSpawn, "info_player_start");
+
+		// skip over the null point
+		if (FNullEnt(pSpot))
+			pSpot = UTIL_FindEntityByClassname(pSpot, "info_player_start");
+
+		CBaseEntity *pFirstSpot = pSpot;
+
+		do
+		{
+			if (pSpot)
+			{
+				// check if pSpot is valid
+				if (IsSpawnPointValid(pPlayer, pSpot))
+				{
+					if (pSpot->pev->origin == Vector(0, 0, 0))
+					{
+						pSpot = UTIL_FindEntityByClassname(pSpot, "info_player_start");
+						continue;
+					}
+
+					// if so, go to pSpot
+					goto ReturnSpot;
+				}
+			}
+
+			// increment pSpot
+			pSpot = UTIL_FindEntityByClassname(pSpot, "info_player_start");
+		}
+		// loop if we're not back to the start
+		while (pSpot != pFirstSpot);
+
+		// we haven't found a place to spawn yet,  so kill any guy at the first spawn point and spawn there
+		if (!FNullEnt(pSpot))
+		{
+			CBaseEntity *ent = NULL;
+			while ((ent = UTIL_FindEntityInSphere(ent, pSpot->pev->origin, 64)) != NULL)
+			{
+				// if ent is a client, kill em (unless they are ourselves)
+				if (ent->IsPlayer() && ent->edict() != player)
+					ent->TakeDamage(VARS(INDEXENT(0)), VARS(INDEXENT(0)), 200, DMG_GENERIC);
+			}
+			goto ReturnSpot;
+		}
+	}
+	else if (g_pGameRules->IsDeathmatch() && ((CBasePlayer *)pPlayer)->m_iTeam == TERRORIST)
+	{
+		pSpot = UTIL_FindEntityByClassname(g_pLastTerroristSpawn, "info_player_deathmatch");
+
+		// skip over the null point
+		if (FNullEnt(pSpot))
+			pSpot = UTIL_FindEntityByClassname(pSpot, "info_player_deathmatch");
+
+		CBaseEntity *pFirstSpot = pSpot;
+
+		do
+		{
+			if (pSpot)
+			{
+				// check if pSpot is valid
+				if (IsSpawnPointValid(pPlayer, pSpot))
+				{
+					if (pSpot->pev->origin == Vector(0, 0, 0))
+					{
+						pSpot = UTIL_FindEntityByClassname(pSpot, "info_player_deathmatch");
+						continue;
+					}
+
+					// if so, go to pSpot
+					goto ReturnSpot;
+				}
+			}
+
+			// increment pSpot
+			pSpot = UTIL_FindEntityByClassname(pSpot, "info_player_deathmatch");
+		}
+		// loop if we're not back to the start
+		while (pSpot != pFirstSpot);
+
+		// we haven't found a place to spawn yet,  so kill any guy at the first spawn point and spawn there
+		if (!FNullEnt(pSpot))
+		{
+			CBaseEntity *ent = NULL;
+			while ((ent = UTIL_FindEntityInSphere(ent, pSpot->pev->origin, 64)) != NULL)
+			{
+				// if ent is a client, kill em (unless they are ourselves)
+				if (ent->IsPlayer() && ent->edict() != player)
+					ent->TakeDamage(VARS(INDEXENT(0)), VARS(INDEXENT(0)), 200, DMG_GENERIC);
+			}
+			goto ReturnSpot;
+		}
+	}
+
+	// If startspot is set, (re)spawn there.
+	if (FStringNull(gpGlobals->startspot) || !Q_strlen(STRING(gpGlobals->startspot)))
+	{
+		pSpot = UTIL_FindEntityByClassname(NULL, "info_player_deathmatch");
+
+		if (!FNullEnt(pSpot))
+			goto ReturnSpot;
+	}
+	else
+	{
+		pSpot = UTIL_FindEntityByTargetname(NULL, STRING(gpGlobals->startspot));
+
+		if (!FNullEnt(pSpot))
+			goto ReturnSpot;
+	}
+
+ReturnSpot:
+	if (FNullEnt(pSpot))
+	{
+		ALERT(at_error, "PutClientInServer: no info_player_start on level");
+		return INDEXENT(0);
+	}
+
+	if (((CBasePlayer *)pPlayer)->m_iTeam == TERRORIST)
+		g_pLastTerroristSpawn = pSpot;
+	else
+		g_pLastCTSpawn = pSpot;
+
+	return pSpot->edict();
 }
 
 /* <15331b> ../cstrike/dlls/player.cpp:6237 */
@@ -3603,15 +3832,54 @@ NOBODY void CBasePlayer::Spawn_(void)
 }
 
 /* <153555> ../cstrike/dlls/player.cpp:6620 */
-NOBODY void CBasePlayer::Precache_(void)
+void CBasePlayer::Precache_(void)
 {
+	// in the event that the player JUST spawned, and the level node graph
+	// was loaded, fix all of the node graph pointers before the game starts.
+
+	// !!!BUGBUG - now that we have multiplayer, this needs to be moved!
+	if (WorldGraph.m_fGraphPresent && !WorldGraph.m_fGraphPointersSet)
+	{
+		if (!WorldGraph.FSetGraphPointers())
+		{
+			ALERT(at_console, "**Graph pointers were not set!\n");
+		}
+		else
+		{
+			ALERT(at_console, "**Graph Pointers Set!\n");
+		}
+	}
+
+	// SOUNDS / MODELS ARE PRECACHED in ClientPrecache() (game specific)
+	// because they need to precache before any clients have connected
+
+	// init geiger counter vars during spawn and each time
+	// we cross a level transition
+
+	m_flgeigerRange = 1000;
+	m_igeigerRangePrev = 1000;
+	m_bitsDamageType = 0;
+	m_bitsHUDDamage = -1;
+	m_iClientBattery = -1;
+	m_iTrain = (TRAIN_NEW | TRAIN_OFF);
+
+	// Make sure any necessary user messages have been registered
+	LinkUserMessages();
+
+	// won't update for 1/2 a second
+	m_iUpdateTime = 5;
+
+	if (gInitHUD)
+		m_fInitHUD = TRUE;
 }
 
 /* <151a77> ../cstrike/dlls/player.cpp:6671 */
-NOBODY int CBasePlayer::Save_(CSave &save)
+int CBasePlayer::Save_(CSave &save)
 {
-//	Save(CBasePlayer *const this,
-//		class CSave &save);  //  6671
+	if (!CBaseMonster::Save(save))
+		return 0;
+
+	return save.WriteFields("PLAYER", this, IMPLEMENT_ARRAY_CLASS(CBasePlayer, m_playerSaveData), ARRAYSIZE(IMPLEMENT_ARRAY_CLASS(CBasePlayer, m_playerSaveData)));
 }
 
 /* <153355> ../cstrike/dlls/player.cpp:6685 */
@@ -3633,72 +3901,181 @@ void CBasePlayer::SetScoreboardAttributes(CBasePlayer *destination)
 }
 
 /* <156e88> ../cstrike/dlls/player.cpp:6712 */
-NOBODY void CBasePlayer::RenewItems(void)
+NOXREF void CBasePlayer::RenewItems(void)
 {
+	;
 }
 
 /* <156b9b> ../cstrike/dlls/player.cpp:6718 */
-NOBODY int CBasePlayer::Restore_(CRestore &restore)
+int CBasePlayer::Restore_(CRestore &restore)
 {
-//	{
-//		int status;                                           //  6723
-//		SAVERESTOREDATA *pSaveData;                          //  6725
-//	}
-//	Restore(CBasePlayer *const this,
-//		class CRestore &restore);  //  6718
+	if (!CBaseMonster::Restore(restore))
+		return 0;
+	
+	int status = restore.ReadFields("PLAYER", this, IMPLEMENT_ARRAY_CLASS(CBasePlayer, m_playerSaveData), ARRAYSIZE(IMPLEMENT_ARRAY_CLASS(CBasePlayer, m_playerSaveData)));
+	SAVERESTOREDATA *pSaveData = (SAVERESTOREDATA *)gpGlobals->pSaveData;
+
+	if (!pSaveData->fUseLandmark)
+	{
+		ALERT(at_console, "No Landmark:%s\n", pSaveData->szLandmarkName);
+
+		edict_t *pentSpawnSpot = EntSelectSpawnPoint(this);
+
+		pev->origin = VARS(pentSpawnSpot)->origin + Vector(0, 0, 1);
+		pev->angles = VARS(pentSpawnSpot)->angles;
+	}
+
+	pev->v_angle.z = 0;
+	pev->angles = pev->v_angle;
+	pev->fixangle = 1;
+
+	m_bloodColor = BLOOD_COLOR_RED;
+	m_modelIndexPlayer = pev->modelindex;
+	
+	if (pev->flags & FL_DUCKING)
+		UTIL_SetSize(pev, VEC_DUCK_HULL_MIN, VEC_DUCK_HULL_MAX);
+	else
+		UTIL_SetSize(pev, VEC_HULL_MIN, VEC_HULL_MAX);
+	
+	m_flDisplayHistory &= ~DHM_CONNECT_CLEAR;
+	SetScoreboardAttributes();
+
+	return status;
 }
 
 /* <156eab> ../cstrike/dlls/player.cpp:6771 */
-NOBODY void CBasePlayer::Reset(void)
+void CBasePlayer::Reset(void)
 {
-//	AddAccount(CBasePlayer::Reset(//			int amount,
-//			bool bTrackChange);  //  6776
-//	RemoveShield(CBasePlayer *const this);  //  6779
-//	AddAccount(CBasePlayer *const this,
-//			int amount,
-//			bool bTrackChange);  //  6782
-//	MESSAGE_BEGIN(int msg_dest,
-//			int msg_type,
-//			const float *pOrigin,
-//			edict_t *ed);  //  6784
-//	edict(CBaseEntity *const this);  //  6785
-//	ENTINDEX(edict_t *pEdict);  //  6785
+	pev->frags = 0;
+	m_iDeaths = 0;
+	m_iAccount = 0;
+
+	MESSAGE_BEGIN(MSG_ONE, gmsgMoney, NULL, pev);
+	WRITE_LONG(m_iAccount);
+	WRITE_BYTE(0);
+	MESSAGE_END();
+
+	m_bNotKilled = false;
+
+	RemoveShield();
+	CheckStartMoney();
+	AddAccount(startmoney.value);
+
+	MESSAGE_BEGIN(MSG_ALL, gmsgScoreInfo);
+	WRITE_BYTE(ENTINDEX(edict()));
+	WRITE_SHORT(0);
+	WRITE_SHORT(0);
+	WRITE_SHORT(0);
+	WRITE_SHORT(m_iTeam);
+	MESSAGE_END();
 }
 
 /* <157066> ../cstrike/dlls/player.cpp:6794 */
-NOBODY void CBasePlayer::SelectNextItem(int iItem)
+NOXREF void CBasePlayer::SelectNextItem(int iItem)
 {
-//	{
-//		class CBasePlayerItem *pItem;                        //  6796
-//		{
-//			class CBasePlayerItem *pLast;                //  6812
-//		}
-//		ResetAutoaim(CBasePlayer *const this);  //  6823
-//		{
-//			class CBasePlayerWeapon *pWeapon;            //  6833
-//		}
-//		UpdateShieldCrosshair(CBasePlayer *const this,
-//					bool draw);  //  6844
-//	}
+	CBasePlayerItem *pItem = m_rgpPlayerItems[ iItem ];
+
+	if (!pItem)
+		return;
+
+	if (pItem == m_pActiveItem)
+	{
+		pItem = m_pActiveItem->m_pNext;
+
+		if (!pItem)
+			return;
+
+		CBasePlayerItem *pLast = pItem;
+
+		while (pLast->m_pNext != NULL)
+			pLast = pLast->m_pNext;
+
+		pLast->m_pNext = m_pActiveItem;
+		m_pActiveItem->m_pNext = NULL;
+		m_rgpPlayerItems[ iItem ] = pItem;
+	}
+
+	ResetAutoaim();
+
+	if (m_pActiveItem)
+		m_pActiveItem->Holster();
+
+	if (HasShield())
+	{
+		CBasePlayerWeapon *pWeapon = (CBasePlayerWeapon *)m_pActiveItem;
+		pWeapon->m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
+		m_bShieldDrawn = false;
+	}
+
+	m_pLastItem = m_pActiveItem;
+	m_pActiveItem = pItem;
+
+	if (m_pActiveItem)
+	{
+		UpdateShieldCrosshair(true);
+
+		m_pActiveItem->Deploy();
+		m_pActiveItem->UpdateItemInfo();
+
+		ResetMaxSpeed();
+	}
 }
 
 /* <15714a> ../cstrike/dlls/player.cpp:6851 */
-NOBODY void CBasePlayer::SelectItem(const char *pstr)
+void CBasePlayer::SelectItem(const char *pstr)
 {
-//	{
-//		class CBasePlayerItem *pItem;                        //  6856
-//		{
-//			int i;                                        //  6858
-//			FClassnameIs(entvars_t *pev,
-//					const char *szClassname);  //  6866
-//		}
-//		ResetAutoaim(CBasePlayer *const this);  //  6883
-//		{
-//			class CBasePlayerWeapon *pWeapon;            //  6896
-//			UpdateShieldCrosshair(CBasePlayer *const this,
-//						bool draw);  //  6901
-//		}
-//	}
+	if (!pstr)
+		return;
+
+	CBasePlayerItem *pItem = NULL;
+
+	for (int i = 0; i < MAX_ITEM_TYPES; i++)
+	{
+		pItem = m_rgpPlayerItems[ i ];
+
+		if (pItem != NULL)
+		{
+			while (pItem != NULL)
+			{
+				if (FClassnameIs(pItem->pev, pstr))
+					break;
+
+				pItem = pItem->m_pNext;
+			}
+
+			if (pItem)
+				break;
+		}
+	}
+
+	if (!pItem)
+		return;
+
+	if (pItem == m_pActiveItem)
+		return;
+
+	ResetAutoaim();
+
+	// FIX, this needs to queue them up and delay
+	if (m_pActiveItem)
+		m_pActiveItem->Holster();
+
+	m_pLastItem = m_pActiveItem;
+	m_pActiveItem = pItem;
+
+	if (m_pActiveItem)
+	{
+		CBasePlayerWeapon *pWeapon = (CBasePlayerWeapon *)m_pActiveItem;
+		pWeapon->m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
+
+		m_bShieldDrawn = false;
+		UpdateShieldCrosshair(true);
+
+		m_pActiveItem->Deploy();
+		m_pActiveItem->UpdateItemInfo();
+
+		ResetMaxSpeed();
+	}
 }
 
 /* <157268> ../cstrike/dlls/player.cpp:6909 */
@@ -3712,7 +4089,7 @@ void CBasePlayer::SelectLastItem(void)
 		for (int i = 1; i < MAX_ITEMS; i++)
 		{
 			CBasePlayerItem *pItem = m_rgpPlayerItems[i];
-			if(pItem && pItem != m_pActiveItem)
+			if (pItem && pItem != m_pActiveItem)
 			{
 				m_pLastItem = pItem;
 				break;
@@ -3720,7 +4097,7 @@ void CBasePlayer::SelectLastItem(void)
 		}
 	}
 
-	if(!m_pLastItem || m_pLastItem == m_pActiveItem)
+	if (!m_pLastItem || m_pLastItem == m_pActiveItem)
 		return;
 
 	ResetAutoaim();
@@ -3794,7 +4171,7 @@ void CSprayCan::Spawn(entvars_t *pevOwner)
 }
 
 /* <151815> ../cstrike/dlls/player.cpp:7021 */
-NOBODY void CSprayCan::Think_(void)
+void CSprayCan::Think_(void)
 {
 	TraceResult tr;
 	int playernum;
@@ -3934,20 +4311,20 @@ void CBasePlayer::FlashlightTurnOff(void)
 }
 
 /* <158ae7> ../cstrike/dlls/player.cpp:7179 */
-NOBODY void CBasePlayer::ForceClientDllUpdate(void)
+void CBasePlayer::ForceClientDllUpdate(void)
 {
-	m_fInitHUD = TRUE;
 	m_iClientHealth = -1;
 	m_iClientBattery = -1;
-	m_iTrain |= TRAIN_NEW;
 	m_fWeapon = FALSE;
+	m_fInitHUD = TRUE;
+	m_iTrain |= (TRAIN_NEW | TRAIN_OFF);
 
 	UpdateClientData();
-	HandleSignals();// TODO: Reverse me!
+	HandleSignals();
 }
 
 /* <157f8d> ../cstrike/dlls/player.cpp:7202 */
-NOBODY void CBasePlayer::ImpulseCommands_(void)
+void CBasePlayer::ImpulseCommands_(void)
 {
 	TraceResult tr;
 
@@ -4485,17 +4862,13 @@ NOXREF void CBasePlayer::ItemPostFrame(void)
 #else
 	if (gpGlobals->time < m_flNextAttack)
 #endif // CLIENT_WEAPONS
-	{
 		return;
-	}
 
 	// TODO: Reverse me!
 	ImpulseCommands();
 
-	if (!m_pActiveItem)
-		return;
-
-	m_pActiveItem->ItemPostFrame();
+	if (m_pActiveItem != NULL)
+		m_pActiveItem->ItemPostFrame();
 }
 
 /* <158b71> ../cstrike/dlls/player.cpp:7834 */
@@ -4582,7 +4955,7 @@ void CBasePlayer::SendHostageIcons(void)
 
 	Q_snprintf(buf, ARRAYSIZE(buf), "hostage%d", numHostages);
 
-	if(numHostages)
+	if (numHostages)
 	{
 		MESSAGE_BEGIN(MSG_ONE, gmsgScenarioIcon, NULL, pev);
 			WRITE_BYTE(1);
@@ -5905,7 +6278,7 @@ float GetPlayerYaw(const edict_t *pEdict)
 }
 
 /* <15a5f9> ../cstrike/dlls/player.cpp:9863 */
-int GetPlayerGaitsequence(edict_t *pEdict)
+int GetPlayerGaitsequence(const edict_t *pEdict)
 {
 	entvars_t *pev = VARS((edict_t *)pEdict);
 	CBasePlayer *pPlayer = reinterpret_cast< CBasePlayer * >(CBasePlayer::Instance( pev ));

@@ -638,7 +638,7 @@ inline bool CNavArea::IsDegenerate(void) const
 inline CNavArea *CNavArea::GetAdjacentArea(NavDirType dir, int i) const
 {
 	NavConnectList::const_iterator iter;
-	for(iter = m_connect[dir].begin(); iter != m_connect[dir].end(); ++iter)
+	for (iter = m_connect[dir].begin(); iter != m_connect[dir].end(); ++iter)
 	{
 		if (i == 0)
 			return (*iter).area;
@@ -846,7 +846,7 @@ bool NavAreaBuildPath(CNavArea *startArea, CNavArea *goalArea, const Vector *goa
 		*closestArea = startArea;
 	float closestAreaDist = startArea->GetTotalCost();
 
-	while(!CNavArea::IsOpenListEmpty())
+	while (!CNavArea::IsOpenListEmpty())
 	{
 		CNavArea *area = CNavArea::PopOpenList();
 		if (area == goalArea)
@@ -875,7 +875,7 @@ bool NavAreaBuildPath(CNavArea *startArea, CNavArea *goalArea, const Vector *goa
 		};
 		int ladderTopDir;
 
-		while(true)
+		while (true)
 		{
 			CNavArea *newArea;
 			NavTraverseType how;
@@ -1014,7 +1014,7 @@ float NavAreaTravelDistance(CNavArea *startArea, CNavArea *endArea, CostFunctor 
 		return -1.0f;
 
 	float distance = 0.0f;
-	for(CNavArea *area = endArea; area->GetParent(); area = area->GetParent())
+	for (CNavArea *area = endArea; area->GetParent(); area = area->GetParent())
 	{
 		distance += (*area->GetCenter() - *area->GetParent()->GetCenter()).Length();
 	}
@@ -1043,7 +1043,7 @@ float NavAreaTravelDistance(const Vector *startPos, CNavArea *startArea, const V
 		CNavArea *area = goalArea->GetParent();
 		float distance = (*goalPos - *area->GetCenter()).Length();
 
-		for(; area->GetParent(); area = area->GetParent())
+		for (; area->GetParent(); area = area->GetParent())
 		{
 			distance += (*area->GetCenter() - *area->GetParent()->GetCenter()).Length();
 		}
@@ -1098,16 +1098,16 @@ void SearchSurroundingAreas(CNavArea *startArea, const Vector *startPos, Functor
 	startArea->SetParent(NULL);
 	startArea->Mark();
 
-	while(!CNavArea::IsOpenListEmpty())
+	while (!CNavArea::IsOpenListEmpty())
 	{
 
 		CNavArea *area = CNavArea::PopOpenList();
 		if (func(area))
 		{
-			for(int dir = 0; dir < NUM_DIRECTIONS; ++dir)
+			for (int dir = 0; dir < NUM_DIRECTIONS; ++dir)
 			{
 				int count = area->GetAdjacentCount((NavDirType)dir);
-				for(int i = 0; i < count; ++i)
+				for (int i = 0; i < count; ++i)
 				{
 					CNavArea *adjArea = area->GetAdjacentArea((NavDirType)dir, i);
 					AddAreaToOpenList(adjArea, area, startPos, maxRange);
@@ -1118,7 +1118,7 @@ void SearchSurroundingAreas(CNavArea *startArea, const Vector *startPos, Functor
 			const NavLadderList *ladderList = area->GetLadderList(LADDER_UP);
 			if (ladderList)
 			{
-				for(ladderIt = ladderList->begin(); ladderIt != ladderList->end(); ++ladderIt)
+				for (ladderIt = ladderList->begin(); ladderIt != ladderList->end(); ++ladderIt)
 				{
 					const CNavLadder *ladder = *ladderIt;
 					if (ladder->m_isDangling)
@@ -1134,7 +1134,7 @@ void SearchSurroundingAreas(CNavArea *startArea, const Vector *startPos, Functor
 			ladderList = area->GetLadderList(LADDER_DOWN);
 			if (ladderList)
 			{
-				for(ladderIt = ladderList->begin(); ladderIt != ladderList->end(); ++ladderIt)
+				for (ladderIt = ladderList->begin(); ladderIt != ladderList->end(); ++ladderIt)
 				{
 					const CNavLadder *ladder = *ladderIt;
 					AddAreaToOpenList(ladder->m_bottomArea, area, startPos, maxRange);
@@ -1149,7 +1149,7 @@ template <typename Functor>
 void ForAllAreas(Functor &func)
 {
 	NavAreaList::iterator iter;
-	for(iter = TheNavAreaList.begin(); iter != TheNavAreaList.end(); ++iter)
+	for (iter = TheNavAreaList.begin(); iter != TheNavAreaList.end(); ++iter)
 	{
 		CNavArea *area = *iter;
 		func(area);
@@ -1190,7 +1190,7 @@ CNavArea *FindMinimumCostArea(CNavArea *startArea, CostFunctor &costFunc)
 	int cheapAreaSetCount = 0;
 
 	NavAreaList::iterator iter;
-	for(iter = TheNavAreaList.begin(); iter != TheNavAreaList.end(); ++iter)
+	for (iter = TheNavAreaList.begin(); iter != TheNavAreaList.end(); ++iter)
 	{
 		CNavArea *area = *iter;
 		const Extent *extent = area->GetExtent();
@@ -1206,7 +1206,7 @@ CNavArea *FindMinimumCostArea(CNavArea *startArea, CostFunctor &costFunc)
 		else
 		{
 			int expensive = 0;
-			for(int i = 1; i < NUM_CHEAP_AREAS; i++)
+			for (int i = 1; i < NUM_CHEAP_AREAS; i++)
 				if (cheapAreaSet[i].cost > cheapAreaSet[expensive].cost)
 					expensive = i;
 
@@ -1227,7 +1227,7 @@ CNavArea *FindMinimumCostArea(CNavArea *startArea, CostFunctor &costFunc)
 		int which = RANDOM_LONG(0, numAreas-1);
 
 		NavAreaList::iterator iter;
-		for(iter = TheNavAreaList.begin(); iter != TheNavAreaList.end(); ++iter)
+		for (iter = TheNavAreaList.begin(); iter != TheNavAreaList.end(); ++iter)
 			if (which-- == 0)
 				break;
 

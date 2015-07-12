@@ -169,7 +169,7 @@ int UTIL_SharedRandomLong(unsigned int seed, int low, int high)
 {
 	unsigned int range = high - low + 1;
 	U_Srand((unsigned int)(high + low + seed));
-	if(range != 1)
+	if (range != 1)
 	{
 		int rnum = U_Random();
 		int offset = rnum % range;
@@ -187,7 +187,7 @@ float UTIL_SharedRandomFloat(unsigned int seed, float low, float high)
 	U_Random();
 	U_Random();
 
-	if(range)
+	if (range)
 	{
 		int tensixrand = U_Random() & 0xFFFFu;
 		float offset = (float)tensixrand / 0x10000u;
@@ -2421,7 +2421,7 @@ char UTIL_TextureHit(TraceResult *ptr, Vector vecSrc, Vector vecEnd)
 NOXREF int GetPlayerTeam(int index)
 {
 	CBasePlayer *pPlayer = (CBasePlayer *)UTIL_PlayerByIndex(index);
-	if(pPlayer)
+	if (pPlayer)
 		return pPlayer->m_iTeam;
 	return 0;
 }

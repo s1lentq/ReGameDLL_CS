@@ -955,7 +955,7 @@ int CBasePlayerWeapon::DefaultReload(int iClipSize, int iAnim, float fDelay)
 /* <1d2607> ../cstrike/dlls/weapons.cpp:1389 */
 BOOL CBasePlayerWeapon::PlayEmptySound_(void)
 {
-	if(m_iPlayEmptySound)
+	if (m_iPlayEmptySound)
 	{
 		if (m_iId == WEAPON_USP || m_iId == WEAPON_GLOCK18 || m_iId == WEAPON_P228 || m_iId == WEAPON_DEAGLE || m_iId == WEAPON_ELITE || m_iId == WEAPON_FIVESEVEN)
 			EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/dryfire_pistol.wav", 0.8, ATTN_NORM);

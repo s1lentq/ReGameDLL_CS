@@ -125,7 +125,7 @@ NOBODY void ListPlayers(CBasePlayer *current);
 NOBODY int CountTeamPlayers(int iTeam);
 NOBODY void ProcessKickVote(CBasePlayer *pVotingPlayer, CBasePlayer *pKickPlayer);
 NOBODY TeamName SelectDefaultTeam(void);
-NOBODY void CheckStartMoney(void);
+void CheckStartMoney(void);
 NOBODY void ClientPutInServer(edict_t *pEntity);
 NOBODY int Q_strlen_(const char *str);
 NOBODY void Host_Say(edict_t *pEntity, int teamonly);

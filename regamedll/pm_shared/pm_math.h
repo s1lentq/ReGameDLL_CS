@@ -42,13 +42,13 @@ void AngleVectors(const vec_t *angles, vec_t *forward, vec_t *right, vec_t *up);
 
 
 NOBODY void AngleVectorsTranspose(const vec_t *angles, vec_t *forward, vec_t *right, vec_t *up);
-NOBODY void AngleMatrix(const vec_t *angles, float *matrix);
-NOBODY void AngleIMatrix(const vec_t *angles, float *matrix);
+void AngleMatrix(const vec_t *angles, float (*matrix)[4]);
+NOBODY void AngleIMatrix(const vec_t *angles, float (*matrix)[4]);
 NOBODY void NormalizeAngles(float *angles);
 NOBODY void InterpolateAngles(float *start, float *end, float *output, float frac);
 NOBODY float AngleBetweenVectors(const vec_t *v1, const vec_t *v2);
 NOBODY void VectorTransform(const vec_t *in1, float *in2, vec_t *out);
-NOBODY int VectorCompare(const vec_t *v1, const vec_t *v2);
+int VectorCompare(const vec_t *v1, const vec_t *v2);
 NOBODY void VectorMA(const vec_t *veca, float scale, const vec_t *vecb, vec_t *vecc);
 
 NOXREF vec_t _DotProduct(vec_t *v1, vec_t *v2);

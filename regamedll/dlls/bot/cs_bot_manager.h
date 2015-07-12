@@ -225,7 +225,7 @@ public:
 		if (startArea == NULL)
 			return NULL;
 
-		for(int i = 0; i < m_zoneCount; i++)
+		for (int i = 0; i < m_zoneCount; i++)
 		{
 			if (m_zone[i].m_areaCount == 0)
 				continue;

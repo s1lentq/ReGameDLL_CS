@@ -83,7 +83,7 @@ void CVoiceGameMgr::Update(double frametime)
 	// Only update periodically.
 	m_UpdateInterval += frametime;
 
-	if(m_UpdateInterval >= UPDATE_INTERVAL)
+	if (m_UpdateInterval >= UPDATE_INTERVAL)
 		UpdateMasks();
 }
 

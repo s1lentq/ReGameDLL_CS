@@ -224,7 +224,7 @@ inline EOFFSET OFFSET(const entvars_t *pev)
 /* <4631> ../cstrike/dlls/util.h:180 */
 inline entvars_t *VARS(edict_t *pent)
 {
-	if(!pent)
+	if (!pent)
 		return NULL;
 
 	return &pent->v;

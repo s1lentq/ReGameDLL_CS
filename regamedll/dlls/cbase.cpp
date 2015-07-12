@@ -580,7 +580,7 @@ NOBODY void SaveReadFields(SAVERESTOREDATA *pSaveData, const char *pname, void *
 /* <31a74> ../cstrike/dlls/cbase.cpp:802 */
 edict_t *EHANDLE::Get(void)
 {
-	if(!m_pent || m_pent->serialnumber != m_serialnumber)
+	if (!m_pent || m_pent->serialnumber != m_serialnumber)
 		return NULL;
 
 	return m_pent;
@@ -590,7 +590,7 @@ edict_t *EHANDLE::Get(void)
 edict_t *EHANDLE::Set(edict_t *pent)
 {
 	m_pent = pent;
-	if(pent)
+	if (pent)
 		m_serialnumber = pent->serialnumber;
 
 	return pent;
@@ -605,7 +605,7 @@ EHANDLE::operator CBaseEntity *(void)
 /* <31b30> ../cstrike/dlls/cbase.cpp:829 */
 CBaseEntity *EHANDLE::operator=(CBaseEntity *pEntity)
 {
-	if(pEntity)
+	if (pEntity)
 	{
 		m_pent = ENT(pEntity->pev);
 		if (m_pent)

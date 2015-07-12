@@ -45,13 +45,13 @@
 #define IMPLEMENT_SAVERESTORE(derivedClass,baseClass)\
 	int derivedClass::Save(CSave &save)\
 	{\
-		if(!baseClass::Save(save))\
+		if (!baseClass::Save(save))\
 			return 0;\
 		return save.WriteFields(#derivedClass, this, m_SaveData, ARRAYSIZE(m_SaveData));\
 	}\
 	int derivedClass::Restore(CRestore &restore)\
 	{\
-		if(!baseClass::Restore(restore))\
+		if (!baseClass::Restore(restore))\
 			return 0;\
 		return restore.ReadFields(#derivedClass, this, m_SaveData, ARRAYSIZE(m_SaveData));\
 	}
@@ -67,13 +67,13 @@
 #define IMPLEMENT_SAVERESTORE(derivedClass, baseClass)\
 	int derivedClass::Save_(CSave &save)\
 	{\
-		if(!baseClass::Save(save))\
+		if (!baseClass::Save(save))\
 			return 0;\
 		return save.WriteFields(#derivedClass, this, (*pm_SaveData), ARRAYSIZE(*pm_SaveData));\
 	}\
 	int derivedClass::Restore_(CRestore &restore)\
 	{\
-		if(!baseClass::Restore(restore))\
+		if (!baseClass::Restore(restore))\
 			return 0;\
 		return restore.ReadFields(#derivedClass, this, (*pm_SaveData), ARRAYSIZE(*pm_SaveData));\
 	}
@@ -228,7 +228,7 @@ public:
 	NOBODY GLOBALESTATE EntityGetState(string_t globalname);
 	int EntityInTable(string_t globalname)
 	{
-		if(Find(globalname) != NULL)
+		if (Find(globalname) != NULL)
 			return 1;
 		return 0;
 	}

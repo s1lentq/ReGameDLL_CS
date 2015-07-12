@@ -73,7 +73,7 @@ inline bool SteamFile::Read(void *data, int length)
 		return false;
 
 	byte *readCursor = static_cast<byte *>(data);
-	for(int i = 0; i < length; i++)
+	for (int i = 0; i < length; i++)
 	{
 		*readCursor++ = *m_cursor++;
 		--m_bytesLeft;

@@ -346,7 +346,7 @@ public:
 /* <2fea95> ../cstrike/dlls/bot/cs_bot_chatter.h:298 */
 inline int BotPhraseManager::FindPlaceIndex(Place where) const
 {
-	for(int i = 0; i < m_placeCount; i++)
+	for (int i = 0; i < m_placeCount; i++)
 	{
 		if (m_placeStatementHistory[i].placeID == where)
 			return i;
@@ -650,10 +650,12 @@ inline BotStatement *BotChatterInterface::GetStatement(void) const
 #ifdef HOOK_GAMEDLL
 
 #define TheBotPhrases (*pTheBotPhrases)
+#define g_pSelectedZombieSpawn (*pg_pSelectedZombieSpawn)
 
 #endif // HOOK_GAMEDLL
 
 extern BotPhraseManager *TheBotPhrases;
+extern CBaseEntity *g_pSelectedZombieSpawn;
 
 /* <5c4dcf> ../cstrike/dlls/bot/cs_bot_chatter.h:604 */
 inline void BotChatterInterface::Say(const char *phraseName, float lifetime, float delay)

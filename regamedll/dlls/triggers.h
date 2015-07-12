@@ -207,16 +207,16 @@ private:
 	/* <19dfe1> ../cstrike/dlls/triggers.cpp:293 */
 	inline BOOL IsClone(void)
 	{
-		if(pev->spawnflags & SF_MULTIMAN_CLONE)
+		if (pev->spawnflags & SF_MULTIMAN_CLONE)
 			return TRUE;
 		return FALSE;
 	}
 	/* <19e4f3> ../cstrike/dlls/triggers.cpp:294 */
 	inline BOOL ShouldClone(void)
 	{
-		if(IsClone())
+		if (IsClone())
 			return FALSE;
-		if(pev->spawnflags & SF_MULTIMAN_THREAD)
+		if (pev->spawnflags & SF_MULTIMAN_THREAD)
 			return TRUE;
 		return FALSE;
 	}

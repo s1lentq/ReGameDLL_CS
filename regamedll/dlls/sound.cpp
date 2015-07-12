@@ -538,7 +538,7 @@ void SENTENCEG_Init(void)
 	{
 		// skip whitespace
 		i = 0;
-		while(buffer[i] && buffer[i] == ' ')
+		while (buffer[i] && buffer[i] == ' ')
 			i++;
 
 		if (!buffer[i])
@@ -796,7 +796,7 @@ void TEXTURETYPE_Init(void)
 	{
 		// skip whitespace
 		i = 0;
-		while(buffer[i] && isspace(buffer[i]))
+		while (buffer[i] && isspace(buffer[i]))
 			i++;
 
 		if (!buffer[i])
@@ -810,7 +810,7 @@ void TEXTURETYPE_Init(void)
 		grgchTextureType[gcTextures] = toupper(buffer[i++]);
 
 		// skip whitespace
-		while(buffer[i] && isspace(buffer[i]))
+		while (buffer[i] && isspace(buffer[i]))
 			i++;
 
 		if (!buffer[i])

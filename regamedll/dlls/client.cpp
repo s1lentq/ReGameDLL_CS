@@ -235,11 +235,14 @@ NOBODY TeamName SelectDefaultTeam(void)
 }
 
 /* <473a3> ../cstrike/dlls/client.cpp:638 */
-NOBODY void CheckStartMoney(void)
+void CheckStartMoney(void)
 {
-//	{
-//		int money;                                            //   640
-//	}
+	int money = (int)startmoney.value;
+
+	if (money > 16000)
+		CVAR_SET_FLOAT("mp_startmoney", 16000);
+	else if (money < 800)
+		CVAR_SET_FLOAT("mp_startmoney", 800);
 }
 
 /* <4c084> ../cstrike/dlls/client.cpp:661 */

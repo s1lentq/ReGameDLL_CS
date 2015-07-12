@@ -90,7 +90,7 @@ inline void CPerformanceCounter::InitializePerformanceCounter(void)
 	highpart = (unsigned int)performanceFreq.HighPart;
 	m_iLowShift = 0;
 
-	while(highpart || (lowpart > 2000000.0))
+	while (highpart || (lowpart > 2000000.0))
 	{
 		m_iLowShift++;
 		lowpart >>= 1;
@@ -116,7 +116,7 @@ inline double CPerformanceCounter::GetCurTime(void)
 
 	LARGE_INTEGER PerformanceCount;
 	QueryPerformanceCounter(&PerformanceCount);
-	if(!m_iLowShift)
+	if (!m_iLowShift)
 		temp = (unsigned int)PerformanceCount.LowPart;
 	else
 		temp = ((unsigned int)PerformanceCount.LowPart>>m_iLowShift)|((unsigned int)PerformanceCount.HighPart<<(32 - m_iLowShift));
@@ -142,7 +142,7 @@ inline double CPerformanceCounter::GetCurTime(void)
 			if (m_flCurrentTime == m_flLastCurrentTime)
 			{
 				sametimecount++;
-				if(sametimecount > 100000)
+				if (sametimecount > 100000)
 				{
 					m_flCurrentTime += 1.0;
 					sametimecount = 0;
@@ -160,7 +160,7 @@ inline double CPerformanceCounter::GetCurTime(void)
 	static int secbase = 0;
 
 	gettimeofday(&tp,NULL);
-	if(!secbase)
+	if (!secbase)
 	{
 		secbase = tp.tv_sec;
 		return (tp.tv_usec / 1000000.0);

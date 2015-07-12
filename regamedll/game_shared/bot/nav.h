@@ -407,7 +407,7 @@ inline bool IsWalkableTraceLineClear(Vector &from, Vector &to, unsigned int flag
 	edict_t *ignore = NULL;
 	Vector useFrom = from;
 
-	while(true)
+	while (true)
 	{
 		UTIL_TraceLine(useFrom, to, ignore_monsters, ignore, &result);
 

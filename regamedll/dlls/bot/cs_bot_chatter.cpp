@@ -6,10 +6,12 @@
 #ifndef HOOK_GAMEDLL
 
 BotPhraseManager *TheBotPhrases = NULL;
+CBaseEntity *g_pSelectedZombieSpawn = NULL;
 
 #else // HOOK_GAMEDLL
 
 BotPhraseManager *TheBotPhrases;
+CBaseEntity *g_pSelectedZombieSpawn;
 
 #endif // HOOK_GAMEDLL
 

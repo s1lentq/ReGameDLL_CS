@@ -115,7 +115,7 @@ public:
 	}
 	BOOL HasConditions(int iConditions)
 	{
-		if(m_afConditions & iConditions)
+		if (m_afConditions & iConditions)
 		{
 			return TRUE;
 		}
@@ -123,7 +123,7 @@ public:
 	}
 	BOOL HasAllConditions(int iConditions)
 	{
-		if((m_afConditions & iConditions) == iConditions)
+		if ((m_afConditions & iConditions) == iConditions)
 		{
 			return TRUE;
 		}
@@ -139,7 +139,7 @@ public:
 	}
 	BOOL HasMemory(int iMemory)
 	{
-		if(m_afMemory & iMemory)
+		if (m_afMemory & iMemory)
 		{
 			return TRUE;
 		}
@@ -147,7 +147,7 @@ public:
 	}
 	BOOL HasAllMemories(int iMemory)
 	{
-		if((m_afMemory & iMemory) == iMemory)
+		if ((m_afMemory & iMemory) == iMemory)
 		{
 			return TRUE;
 		}

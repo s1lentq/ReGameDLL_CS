@@ -887,14 +887,15 @@ BOOL CHalfLifeMultiplay::IsMultiplayer_(void)
 }
 
 /* <1128f3> ../cstrike/dlls/multiplay_gamerules.cpp:3024 */
-NOBODY BOOL CHalfLifeMultiplay::IsDeathmatch_(void)
+BOOL CHalfLifeMultiplay::IsDeathmatch_(void)
 {
+	return TRUE;
 }
 
 /* <11291b> ../cstrike/dlls/multiplay_gamerules.cpp:3031 */
-NOBODY BOOL CHalfLifeMultiplay::IsCoOp_(void)
+BOOL CHalfLifeMultiplay::IsCoOp_(void)
 {
-	return TRUE;
+	return gpGlobals->coop;
 }
 
 /* <113fcf> ../cstrike/dlls/multiplay_gamerules.cpp:3038 */

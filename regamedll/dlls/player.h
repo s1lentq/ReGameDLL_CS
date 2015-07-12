@@ -44,6 +44,9 @@
 
 #define MAX_RECENT_PATH			20
 
+#define SUITUPDATETIME			3.5
+#define SUITFIRSTUPDATETIME		0.1
+
 #define PLAYER_FATAL_FALL_SPEED		1100.0f
 #define PLAYER_MAX_SAFE_FALL_SPEED	500.0f
 #define	PLAYER_SEARCH_RADIUS		64.0f
@@ -278,8 +281,14 @@ struct WeaponStruct
 #define g_weaponStruct (*pg_weaponStruct)
 #define gEvilImpulse101 (*pgEvilImpulse101)
 #define g_szMapBriefingText (*pg_szMapBriefingText)
+#define g_pLastSpawn (*pg_pLastSpawn)
+#define g_pLastCTSpawn (*pg_pLastCTSpawn)
+#define g_pLastTerroristSpawn (*pg_pLastTerroristSpawn)
 #define gInitHUD (*pgInitHUD)
 #define sv_aim (*psv_aim)
+#define zombieSpawnCount (*pzombieSpawnCount)
+#define zombieSpawn (*pzombieSpawn)
+#define g_pSelectedZombieSpawn (*pg_pSelectedZombieSpawn)
 #define giPrecacheGrunt (*pgiPrecacheGrunt)
 #define gmsgWeapPickup (*pgmsgWeapPickup)
 #define gmsgHudText (*pgmsgHudText)
@@ -287,30 +296,30 @@ struct WeaponStruct
 #define gmsgShake (*pgmsgShake)
 #define gmsgFade (*pgmsgFade)
 #define gmsgFlashlight (*pgmsgFlashlight)
-//#define gmsgFlashBattery (*pgmsgFlashBattery)
-//#define gmsgResetHUD (*pgmsgResetHUD)
-//#define gmsgInitHUD (*pgmsgInitHUD)
-//#define gmsgViewMode (*pgmsgViewMode)
-//#define gmsgShowGameTitle (*pgmsgShowGameTitle)
+#define gmsgFlashBattery (*pgmsgFlashBattery)
+#define gmsgResetHUD (*pgmsgResetHUD)
+#define gmsgInitHUD (*pgmsgInitHUD)
+#define gmsgViewMode (*pgmsgViewMode)
+#define gmsgShowGameTitle (*pgmsgShowGameTitle)
 #define gmsgCurWeapon (*pgmsgCurWeapon)
-//#define gmsgHealth (*pgmsgHealth)
-//#define gmsgDamage (*pgmsgDamage)
-//#define gmsgBattery (*pgmsgBattery)
-//#define gmsgTrain (*pgmsgTrain)
+#define gmsgHealth (*pgmsgHealth)
+#define gmsgDamage (*pgmsgDamage)
+#define gmsgBattery (*pgmsgBattery)
+#define gmsgTrain (*pgmsgTrain)
 #define gmsgLogo (*pgmsgLogo)
 #define gmsgWeaponList (*pgmsgWeaponList)
 #define gmsgAmmoX (*pgmsgAmmoX)
-//#define gmsgDeathMsg (*pgmsgDeathMsg)
+#define gmsgDeathMsg (*pgmsgDeathMsg)
 #define gmsgScoreAttrib (*pgmsgScoreAttrib)
 #define gmsgScoreInfo (*pgmsgScoreInfo)
 #define gmsgTeamInfo (*pgmsgTeamInfo)
-//#define gmsgTeamScore (*pgmsgTeamScore)
-//#define gmsgGameMode (*pgmsgGameMode)
-//#define gmsgMOTD (*pgmsgMOTD)
-//#define gmsgServerName (*pgmsgServerName)
+#define gmsgTeamScore (*pgmsgTeamScore)
+#define gmsgGameMode (*pgmsgGameMode)
+#define gmsgMOTD (*pgmsgMOTD)
+#define gmsgServerName (*pgmsgServerName)
 #define gmsgAmmoPickup (*pgmsgAmmoPickup)
 #define gmsgItemPickup (*pgmsgItemPickup)
-//#define gmsgHideWeapon (*pgmsgHideWeapon)
+#define gmsgHideWeapon (*pgmsgHideWeapon)
 #define gmsgSayText (*pgmsgSayText)
 #define gmsgTextMsg (*pgmsgTextMsg)
 #define gmsgSetFOV (*pgmsgSetFOV)
@@ -327,28 +336,28 @@ struct WeaponStruct
 #define gmsgReloadSound (*pgmsgReloadSound)
 #define gmsgCrosshair (*pgmsgCrosshair)
 #define gmsgNVGToggle (*pgmsgNVGToggle)
-//#define gmsgRadar (*pgmsgRadar)
+#define gmsgRadar (*pgmsgRadar)
 #define gmsgSpectator (*pgmsgSpectator)
-//#define gmsgVGUIMenu (*pgmsgVGUIMenu)
+#define gmsgVGUIMenu (*pgmsgVGUIMenu)
 #define gmsgCZCareer (*pgmsgCZCareer)
-//#define gmsgCZCareerHUD (*pgmsgCZCareerHUD)
+#define gmsgCZCareerHUD (*pgmsgCZCareerHUD)
 #define gmsgTaskTime (*pgmsgTaskTime)
-//#define gmsgTutorText (*pgmsgTutorText)
+#define gmsgTutorText (*pgmsgTutorText)
 #define gmsgTutorLine (*pgmsgTutorLine)
-//#define gmsgShadowIdx (*pgmsgShadowIdx)
+#define gmsgShadowIdx (*pgmsgShadowIdx)
 #define gmsgTutorState (*pgmsgTutorState)
 #define gmsgTutorClose (*pgmsgTutorClose)
-//#define gmsgAllowSpec (*pgmsgAllowSpec)
+#define gmsgAllowSpec (*pgmsgAllowSpec)
 #define gmsgBombDrop (*pgmsgBombDrop)
-//#define gmsgBombPickup (*pgmsgBombPickup)
+#define gmsgBombPickup (*pgmsgBombPickup)
 #define gmsgHostagePos (*pgmsgHostagePos)
-//#define gmsgHostageK (*pgmsgHostageK)
+#define gmsgHostageK (*pgmsgHostageK)
 #define gmsgGeigerRange (*pgmsgGeigerRange)
 #define gmsgSendCorpse (*pgmsgSendCorpse)
-//#define gmsgHLTV (*pgmsgHLTV)
-//#define gmsgSpecHealth (*pgmsgSpecHealth)
-//#define gmsgForceCam (*pgmsgForceCam)
-//#define gmsgADStop (*pgmsgADStop)
+#define gmsgHLTV (*pgmsgHLTV)
+#define gmsgSpecHealth (*pgmsgSpecHealth)
+#define gmsgForceCam (*pgmsgForceCam)
+#define gmsgADStop (*pgmsgADStop)
 #define gmsgReceiveW (*pgmsgReceiveW)
 #define gmsgScenarioIcon (*pgmsgScenarioIcon)
 #define gmsgBotVoice (*pgmsgBotVoice)
@@ -358,9 +367,9 @@ struct WeaponStruct
 #define gmsgSpecHealth2 (*pgmsgSpecHealth2)
 #define gmsgBarTime2 (*pgmsgBarTime2)
 #define gmsgBotProgress (*pgmsgBotProgress)
-//#define gmsgBrass (*pgmsgBrass)
-//#define gmsgFog (*pgmsgFog)
-//#define gmsgShowTimer (*pgmsgShowTimer)
+#define gmsgBrass (*pgmsgBrass)
+#define gmsgFog (*pgmsgFog)
+#define gmsgShowTimer (*pgmsgShowTimer)
 
 #endif // HOOK_GAMEDLL
 
@@ -438,7 +447,7 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	NOBODY void Spawn(entvars_t *pevOwner);
+	void Spawn(entvars_t *pevOwner);
 
 };/* size: 152, cachelines: 3, members: 1 */
 
@@ -458,10 +467,10 @@ public:
 	enum { MaxLocationLen = 32 };
 
 	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual int Save(CSave &save);
-	NOBODY virtual int Restore(CRestore &restore);
-	NOBODY virtual int ObjectCaps(void)
+	virtual void Precache(void);
+	virtual int Save(CSave &save);
+	virtual int Restore(CRestore &restore);
+	virtual int ObjectCaps(void)
 	{
 		return ObjectCaps_();
 	}
@@ -510,7 +519,7 @@ public:
 	{
 		return ShouldFadeOnDeath_();
 	}
-	NOBODY virtual void ResetMaxSpeed(void);
+	virtual void ResetMaxSpeed(void);
 	NOBODY virtual void Jump(void);
 	NOBODY virtual void Duck(void);
 	NOBODY virtual void PreThink(void);
@@ -521,7 +530,7 @@ public:
 		return IsBot_();
 	}
 	NOBODY virtual void UpdateClientData(void);
-	NOBODY virtual void ImpulseCommands(void);
+	virtual void ImpulseCommands(void);
 	virtual void RoundRespawn(void);
 	virtual Vector GetAutoaimVector(float flDelta);
 	virtual void Blind(float flUntilTime, float flHoldTime, float flFadeTime, int iAlpha);
@@ -634,9 +643,9 @@ public:
 	void Pain(int m_LastHitGroup, bool HasArmour);
 	BOOL IsBombGuy(void);
 	bool IsLookingAtPosition(Vector *pos, float angleTolerance = 20.0f);
-	NOBODY void Reset();
+	void Reset();
 	void SetScoreboardAttributes(CBasePlayer *destination = NULL);
-	NOBODY void RenewItems(void);
+	NOXREF void RenewItems(void);
 	void PackDeadPlayerItems(void);
 	void GiveDefaultItems(void);
 	void RemoveAllItems(BOOL removeSuit);
@@ -669,20 +678,20 @@ public:
 	void CheatImpulseCommands(int iImpulse);
 	NOXREF void StartDeathCam(void);
 	NOBODY void StartObserver(Vector vecPosition, Vector vecViewAngle);
-	NOBODY void HandleSignals(void);
+	void HandleSignals(void);
 	void DropPlayerItem(const char *pszItemName);
 	BOOL HasPlayerItem(CBasePlayerItem *pCheckItem);
 	BOOL HasNamedPlayerItem(const char *pszItemName);
 	NOXREF BOOL HasWeapons(void);
 	NOXREF void SelectPrevItem(int iItem);
-	NOBODY void SelectNextItem(int iItem);
+	NOXREF void SelectNextItem(int iItem);
 	void SelectLastItem(void);
-	NOBODY void SelectItem(const char *pstr);
+	void SelectItem(const char *pstr);
 	NOXREF void ItemPreFrame(void);
 	NOXREF void ItemPostFrame(void);
 	void GiveNamedItem(const char *pszName);
 	void EnableControl(BOOL fControl);
-	NOBODY bool HintMessage(const char *pMessage, BOOL bDisplayIfPlayerDead = FALSE, BOOL bOverride = FALSE);
+	bool HintMessage(const char *pMessage, BOOL bDisplayIfPlayerDead = FALSE, BOOL bOverride = FALSE);
 	void SendAmmoUpdate(void);
 	NOXREF void SendFOV(int fov);
 	NOBODY void WaterMove(void);
@@ -694,7 +703,7 @@ public:
 	void WINAPI_HOOK MenuPrint(const char *msg);
 	void ResetMenu(void);
 	void SyncRoundTimer(void);
-	NOBODY void CheckSuitUpdate(void);
+	NOXREF void CheckSuitUpdate(void);
 	void SetSuitUpdate(char *name = NULL, int fgroup = 0, int iNoRepeatTime = 0);
 	NOXREF void UpdateGeigerCounter(void);
 	NOBODY void CheckTimeBasedDamage(void);
@@ -702,9 +711,9 @@ public:
 	NOXREF void BarnacleVictimReleased(void);
 	static int GetAmmoIndex(const char *psz);
 	int AmmoInventory(int iAmmoIndex);
-	NOBODY void ResetAutoaim(void);
+	void ResetAutoaim(void);
 	Vector AutoaimDeflection(class Vector &vecSrc, float flDist, float flDelta);
-	NOBODY void ForceClientDllUpdate(void);
+	void ForceClientDllUpdate(void);
 	void DeathMessage(entvars_t *pevAttacker) { };
 	void SetCustomDecalFrames(int);
 	NOXREF int GetCustomDecalFrames(void);
@@ -739,14 +748,26 @@ public:
 
 		return false;
 	}
-	NOBODY bool IsBlind(void);
-	NOBODY bool IsAutoFollowAllowed(void);
-	NOBODY void InhibitAutoFollow(float);
-	NOBODY void AllowAutoFollow(void);
+	bool IsBlind(void)
+	{
+		return (gpGlobals->time > m_blindUntilTime);
+	}
+	bool IsAutoFollowAllowed(void)
+	{
+		return (gpGlobals->time > m_allowAutoFollowTime);
+	}
+	void InhibitAutoFollow(float duration)
+	{
+		m_allowAutoFollowTime = duration;
+	}
+	void AllowAutoFollow(void)
+	{
+		m_allowAutoFollowTime = 0;
+	}
 	void ClearAutoBuyData(void);
 	void AddAutoBuyData(const char *str);
 	NOBODY void AutoBuy(void);
-	NOBODY void ClientCommand(const char *cmd, const char *arg1 = NULL, const char *arg2 = NULL, const char *arg3 = NULL);
+	void ClientCommand(const char *cmd, const char *arg1 = NULL, const char *arg2 = NULL, const char *arg3 = NULL);
 	void PrioritizeAutoBuyString(char *autobuyString, const char *priorityString);
 	NOBODY const char *PickPrimaryCareerTaskWeapon(void);
 	NOBODY const char *PickSecondaryCareerTaskWeapon(void);
@@ -756,7 +777,7 @@ public:
 	void PostAutoBuyCommandProcessing(AutoBuyInfoStruct *commandInfo, bool &boughtPrimary, bool &boughtSecondary);
 	void ParseAutoBuyString(const char *string, bool &boughtPrimary, bool &boughtSecondary);
 	NOXREF AutoBuyInfoStruct *GetAutoBuyCommandInfo(const char *command);
-	NOBODY void InitRebuyData(const char *str);
+	void InitRebuyData(const char *str);
 	void BuildRebuyStruct(void);
 	void Rebuy(void);
 	NOXREF void RebuyPrimaryWeapon(void);
@@ -1008,8 +1029,14 @@ extern WeaponStruct g_weaponStruct[MAX_WEAPONS];
 
 extern int gEvilImpulse101;
 extern char g_szMapBriefingText[512];
+extern CBaseEntity *g_pLastSpawn;
+extern CBaseEntity *g_pLastCTSpawn;
+extern CBaseEntity *g_pLastTerroristSpawn;
 extern BOOL gInitHUD;
 extern cvar_t *sv_aim;
+extern int zombieSpawnCount;
+extern struct ZombieSpawn zombieSpawn[256];
+extern CBaseEntity *g_pSelectedZombieSpawn;
 
 extern int giPrecacheGrunt;
 extern int gmsgWeapPickup;
@@ -1018,30 +1045,30 @@ extern int gmsgHudTextArgs;
 extern int gmsgShake;
 extern int gmsgFade;
 extern int gmsgFlashlight;
-//extern int gmsgFlashBattery;
-//extern int gmsgResetHUD;
-//extern int gmsgInitHUD;
-//extern int gmsgViewMode;
-//extern int gmsgShowGameTitle;
+extern int gmsgFlashBattery;
+extern int gmsgResetHUD;
+extern int gmsgInitHUD;
+extern int gmsgViewMode;
+extern int gmsgShowGameTitle;
 extern int gmsgCurWeapon;
-//extern int gmsgHealth;
-//extern int gmsgDamage;
-//extern int gmsgBattery;
-//extern int gmsgTrain;
+extern int gmsgHealth;
+extern int gmsgDamage;
+extern int gmsgBattery;
+extern int gmsgTrain;
 extern int gmsgLogo;
 extern int gmsgWeaponList;
 extern int gmsgAmmoX;
-//extern int gmsgDeathMsg;
+extern int gmsgDeathMsg;
 extern int gmsgScoreAttrib;
 extern int gmsgScoreInfo;
 extern int gmsgTeamInfo;
-//extern int gmsgTeamScore;
-//extern int gmsgGameMode;
-//extern int gmsgMOTD;
-//extern int gmsgServerName;
+extern int gmsgTeamScore;
+extern int gmsgGameMode;
+extern int gmsgMOTD;
+extern int gmsgServerName;
 extern int gmsgAmmoPickup;
 extern int gmsgItemPickup;
-//extern int gmsgHideWeapon;
+extern int gmsgHideWeapon;
 extern int gmsgSayText;
 extern int gmsgTextMsg;
 extern int gmsgSetFOV;
@@ -1058,28 +1085,28 @@ extern int gmsgBarTime;
 extern int gmsgReloadSound;
 extern int gmsgCrosshair;
 extern int gmsgNVGToggle;
-//extern int gmsgRadar;
+extern int gmsgRadar;
 extern int gmsgSpectator;
-//extern int gmsgVGUIMenu;
+extern int gmsgVGUIMenu;
 extern int gmsgCZCareer;
-//extern int gmsgCZCareerHUD;
+extern int gmsgCZCareerHUD;
 extern int gmsgTaskTime;
-//extern int gmsgTutorText;
+extern int gmsgTutorText;
 extern int gmsgTutorLine;
-//extern int gmsgShadowIdx;
+extern int gmsgShadowIdx;
 extern int gmsgTutorState;
 extern int gmsgTutorClose;
-//extern int gmsgAllowSpec;
+extern int gmsgAllowSpec;
 extern int gmsgBombDrop;
-//extern int gmsgBombPickup;
+extern int gmsgBombPickup;
 extern int gmsgHostagePos;
-//extern int gmsgHostageK;
+extern int gmsgHostageK;
 extern int gmsgGeigerRange;
 extern int gmsgSendCorpse;
-//extern int gmsgHLTV;
-//extern int gmsgSpecHealth;
-//extern int gmsgForceCam;
-//extern int gmsgADStop;
+extern int gmsgHLTV;
+extern int gmsgSpecHealth;
+extern int gmsgForceCam;
+extern int gmsgADStop;
 extern int gmsgReceiveW;
 extern int gmsgScenarioIcon;
 extern int gmsgBotVoice;
@@ -1089,9 +1116,9 @@ extern int gmsgLocation;
 extern int gmsgSpecHealth2;
 extern int gmsgBarTime2;
 extern int gmsgBotProgress;
-//extern int gmsgBrass;
-//extern int gmsgFog;
-//extern int gmsgShowTimer;
+extern int gmsgBrass;
+extern int gmsgFog;
+extern int gmsgShowTimer;
 
 //NOBODY void player(entvars_t *pev);
 //NOBODY void weapon_shield(entvars_t *pev);
@@ -1128,15 +1155,15 @@ void LogAttack(CBasePlayer *pAttacker, CBasePlayer *pVictim, int teamAttack, int
 void packPlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo);
 bool CanSeeUseable(CBasePlayer *me, CBaseEntity *entity);
 NOBODY void FixPlayerCrouchStuck(edict_t *pPlayer);
-NOXREF BOOL IsSpawnPointValid(CBaseEntity *pPlayer, CBaseEntity *pSpot);
-NOBODY void InitZombieSpawns(void);
-NOBODY CBaseEntity *FindZombieSpawn(CBaseEntity *player, bool forceSpawn);
-NOBODY edict_t *EntSelectSpawnPoint(CBaseEntity *pPlayer);
+BOOL IsSpawnPointValid(CBaseEntity *pPlayer, CBaseEntity *pSpot);
+NOXREF void InitZombieSpawns(void);
+NOXREF CBaseEntity *FindZombieSpawn(CBaseEntity *player, bool forceSpawn);
+edict_t *EntSelectSpawnPoint(CBaseEntity *pPlayer);
 void SetScoreAttrib(CBasePlayer *dest, CBasePlayer *src);
 NOXREF CBaseEntity *FindEntityForward(CBaseEntity *pMe);
 float GetPlayerPitch(const edict_t *pEdict);
 float GetPlayerYaw(const edict_t *pEdict);
-int GetPlayerGaitsequence(edict_t *pEdict);
+int GetPlayerGaitsequence(const edict_t *pEdict);
 NOXREF const char *GetBuyStringForWeaponClass(int weaponClass);
 NOXREF bool IsPrimaryWeaponClass(int classId);
 NOXREF bool IsPrimaryWeaponId(int id);

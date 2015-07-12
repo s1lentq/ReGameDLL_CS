@@ -154,7 +154,7 @@ public:
 		Schedule_t *derivedClass::ScheduleFromName(const char *pName)\
 		{\
 			Schedule_t *pSchedule = ScheduleInList(pName, m_scheduleList, ARRAYSIZE(m_scheduleList));\
-			if(!pSchedule)\
+			if (!pSchedule)\
 				return baseClass::ScheduleFromName(pName);\
 			return pSchedule;\
 		}

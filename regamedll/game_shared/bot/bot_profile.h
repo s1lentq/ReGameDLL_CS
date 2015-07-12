@@ -183,7 +183,7 @@ inline void BotProfile::Inherit(const BotProfile *parent, const BotProfile *base
 	if (parent->m_weaponPreferenceCount != baseline->m_weaponPreferenceCount)
 	{
 		m_weaponPreferenceCount = parent->m_weaponPreferenceCount;
-		for(int i = 0; i<parent->m_weaponPreferenceCount; i++)
+		for (int i = 0; i<parent->m_weaponPreferenceCount; i++)
 			m_weaponPreference[i] = parent->m_weaponPreference[i];
 	}
 

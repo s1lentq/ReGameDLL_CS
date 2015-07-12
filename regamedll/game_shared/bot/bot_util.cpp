@@ -253,7 +253,7 @@ NOBODY bool UTIL_KickBotFromTeam(TeamName kickTeam)
 NOBODY bool UTIL_IsTeamAllBots(int team)
 {
 	int botCount = 0;
-	for(int i=1; i <= gpGlobals->maxClients; ++i)
+	for (int i=1; i <= gpGlobals->maxClients; ++i)
 	{
 		CBasePlayer *player = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
@@ -365,7 +365,7 @@ NOBODY void UTIL_ConstructBotNetName(char *name, int nameLength, const BotProfil
 /* <4adb6c> ../game_shared/bot/bot_util.cpp:440 */
 NOBODY bool UTIL_IsVisibleToTeam(const Vector &spot, int team, float maxRange)
 {
-	for(int i = 1; i <= gpGlobals->maxClients; ++i)
+	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
 		CBasePlayer *player = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
@@ -529,7 +529,7 @@ void BotPrecache(void)
 /* <4ae1b1> ../game_shared/bot/bot_util.cpp:666 */
 void InitBotTrig(void)
 {
-	for(int i = 0; i < COS_TABLE_SIZE; i++)
+	for (int i = 0; i < COS_TABLE_SIZE; i++)
 	{
 		float_precision angle = 2.0f * M_PI * (float)i / (float)(COS_TABLE_SIZE - 1);
 		cosTable[i] = cos( angle );

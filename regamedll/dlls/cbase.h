@@ -442,22 +442,22 @@ public:
 	NOBODY virtual CBaseEntity *GetNextTarget(void);
 	virtual void Think(void)
 	{
-		if(m_pfnThink)
+		if (m_pfnThink)
 			(this->*m_pfnThink)();
 	}
 	virtual void Touch(CBaseEntity *pOther)
 	{
-		if(m_pfnTouch)
+		if (m_pfnTouch)
 			(this->*m_pfnTouch)(pOther);
 	}
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType = USE_OFF, float value = 0.0f)
 	{
-		if(m_pfnUse)
+		if (m_pfnUse)
 			(this->*m_pfnUse)(pActivator, pCaller, useType, value);
 	}
 	virtual void Blocked(CBaseEntity *pOther)
 	{
-		if(m_pfnBlocked)
+		if (m_pfnBlocked)
 			(this->*m_pfnBlocked)(pOther);
 	}
 	virtual CBaseEntity *Respawn(void)
@@ -544,14 +544,14 @@ public:
 	CBaseMonster *GetMonsterPointer(entvars_t *pevMonster)
 	{
 		CBaseEntity *pEntity = Instance(pevMonster);
-		if(pEntity)
+		if (pEntity)
 			return pEntity->MyMonsterPointer();
 		return NULL;
 	}
 	CBaseMonster *GetMonsterPointer(edict_t *pentMonster)
 	{
 		CBaseEntity *pEntity = Instance(pentMonster);
-		if(pEntity)
+		if (pEntity)
 			return pEntity->MyMonsterPointer();
 		return NULL;
 	}
@@ -786,8 +786,8 @@ class CBaseToggle: public CBaseAnimating
 {
 public:
 	virtual void KeyValue(KeyValueData *pkvd);
-	NOBODY virtual int Save(CSave &save);
-	NOBODY virtual int Restore(CRestore &restore);
+	virtual int Save(CSave &save);
+	virtual int Restore(CRestore &restore);
 	virtual int GetToggleState(void)
 	{
 		return m_toggle_state;
@@ -873,7 +873,7 @@ public:
 	int Restore_(CRestore &restore);
 	int ObjectCaps_(void)
 	{
-		if(pev->takedamage == DAMAGE_NO)
+		if (pev->takedamage == DAMAGE_NO)
 			return FCAP_IMPULSE_USE;
 
 		return (CBaseToggle::ObjectCaps() & ~FCAP_ACROSS_TRANSITION);
@@ -1046,10 +1046,10 @@ public:
 template <class T> T *GetClassPtr(T *a)
 {
 	entvars_t *pev = (entvars_t *)a;
-	if(!pev)
+	if (!pev)
 		pev = VARS(CREATE_ENTITY());
 	a = (T *)GET_PRIVATE(ENT(pev));
-	if(!a)
+	if (!a)
 	{
 		a = new(pev) T;
 		a->pev = pev;

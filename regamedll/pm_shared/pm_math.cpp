@@ -60,19 +60,42 @@ NOBODY void AngleVectorsTranspose(const vec_t *angles, vec_t *forward, vec_t *ri
 }
 
 /* <2ce5d0> ../cstrike/pm_shared/pm_math.c:112 */
-NOBODY void AngleMatrix(const vec_t *angles, float *matrix)
+void AngleMatrix(const vec_t *angles, float (*matrix)[4])
 {
-//	float angle;                                                  //   114
-//	float sr;                                                     //   115
-//	float sp;                                                     //   115
-//	float sy;                                                     //   115
-//	float cr;                                                     //   115
-//	float cp;                                                     //   115
-//	float cy;                                                     //   115
+	float_precision angle;
+	float_precision  sr, sp, sy, cr, cp, cy;
+
+	angle = (float_precision)(angles[ROLL] * (M_PI * 2 / 360));
+	sy = sin(angle);
+	cy = cos(angle);
+
+	angle = (float_precision)(angles[YAW] * (M_PI * 2 / 360));
+	sp = sin(angle);
+	cp = cos(angle);
+
+	angle = (float_precision)(angles[PITCH] * (M_PI * 2 / 360));
+	sr = sin(angle);
+	cr = cos(angle);
+
+	matrix[0][0] = cr * cp;
+	matrix[1][0] = cr * sp;
+	matrix[2][0] = -sr;
+
+	matrix[0][1] = (sy * sr) * cp - cy * sp;
+	matrix[1][1] = (sy * sr) * sp + cy * cp;
+	matrix[2][1] = sy * cr;
+
+	matrix[0][2] = (cy * sr) * cp + sy * sp;
+	matrix[1][2] = (cy * sr) * sp - sy * cp;
+	matrix[2][2] = cy * cr;
+
+	matrix[0][3] = 0.0f;
+	matrix[1][3] = 0.0f;
+	matrix[2][3] = 0.0f;
 }
 
 /* <2ce67b> ../cstrike/pm_shared/pm_math.c:142 */
-NOBODY void AngleIMatrix(const vec_t *angles, float *matrix)
+NOBODY void AngleIMatrix(const vec_t *angles, float (*matrix)[4])
 {
 //	float angle;                                                  //   144
 //	float sr;                                                     //   145
@@ -117,9 +140,15 @@ NOBODY void VectorTransform(const vec_t *in1, float *in2, vec_t *out)
 }
 
 /* <2ce996> ../cstrike/pm_shared/pm_math.c:259 */
-NOBODY int VectorCompare(const vec_t *v1, const vec_t *v2)
+int VectorCompare(const vec_t *v1, const vec_t *v2)
 {
-//	int i;                                                        //   261
+	int i;
+	for (i = 0 ; i < 3 ; i++)
+	{
+		if (v1[i] != v2[i])
+			return 0;
+	}
+	return 1;
 }
 
 /* <2ce9de> ../cstrike/pm_shared/pm_math.c:270 */

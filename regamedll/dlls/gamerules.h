@@ -266,8 +266,8 @@ public:
 	virtual BOOL FShouldSwitchWeapon(CBasePlayer *pPlayer, CBasePlayerItem *pWeapon);
 	virtual BOOL GetNextBestWeapon(CBasePlayer *pPlayer, CBasePlayerItem *pCurrentWeapon);
 	virtual BOOL IsMultiplayer(void);
-	NOBODY virtual BOOL IsDeathmatch(void);
-	NOBODY virtual BOOL IsCoOp(void);
+	virtual BOOL IsDeathmatch(void);
+	virtual BOOL IsCoOp(void);
 	NOBODY virtual BOOL ClientConnected(edict_t *pEntity, const char *pszName, const char *pszAddress, char szRejectReason[128]);
 	NOBODY virtual void InitHUD(CBasePlayer *pl);
 	NOBODY virtual void ClientDisconnected(edict_t *pClient);
