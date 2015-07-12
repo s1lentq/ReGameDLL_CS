@@ -3405,8 +3405,6 @@ NOXREF void CBasePlayer::UpdateGeigerCounter(void)
 /* <156189> ../cstrike/dlls/player.cpp:5352 */
 void CBasePlayer::CheckSuitUpdate(void)
 {
-	_LOG_TRACE
-
 	int i;
 	int isentence = 0;
 	int isearch = m_iSuitPlayNext;

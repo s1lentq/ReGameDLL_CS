@@ -23,11 +23,6 @@ studiohdr_t *g_pstudiohdr;
 float (*g_pRotationMatrix)[3][4];
 float (*g_pBoneTransform)[128][3][4];
 
-//float (*g_pRotationMatrix)[3][4];
-//float (*g_pBoneTransform)[ MAXSTUDIOBONES ][3][4];
-//float *((*g_pRotationMatrix)[3][4]);
-//float *((*g_pBoneTransform)[ MAXSTUDIOBONES ][3][4]);
-
 float omega;
 float cosom;
 float sinom;
@@ -325,9 +320,7 @@ C_DLLEXPORT int Server_GetBlendingInterface(int version, struct sv_blending_inte
 	IEngineStudio.Mem_Calloc = pstudio->Mem_Calloc;
 	IEngineStudio.Cache_Check = pstudio->Cache_Check;
 	IEngineStudio.LoadCacheFile = pstudio->LoadCacheFile;
-
-	// TODO: Mod_Extradata offset +12
-	IEngineStudio.Mod_Extradata = (void *(*)(struct model_s *))pstudio->Mod_ForName;
+	IEngineStudio.Mod_Extradata = ((struct server_studio_api_s *)pstudio)->Mod_Extradata;
 
 	g_pRotationMatrix = (float (*)[3][4])rotationmatrix;
 	g_pBoneTransform = (float (*)[128][3][4])bonetransform;
@@ -468,7 +461,6 @@ void (*pQuaternionMatrix)(vec_t *quaternion, float matrix[3][4]);
 NOBODY void __declspec(naked) QuaternionMatrix(vec_t *quaternion, float matrix[3][4])
 {
 	UNTESTED
-
 	__asm
 	{
 		jmp pQuaternionMatrix
@@ -517,15 +509,10 @@ mstudioanim_t *StudioGetAnim(model_t *m_pSubModel, mstudioseqdesc_t *pseqdesc)
 NOXREF mstudioanim_t *LookupAnimation(studiohdr_t *pstudiohdr, model_s *model, mstudioseqdesc_t *pseqdesc, int index)
 {
 	mstudioanim_t *panim = StudioGetAnim(model, pseqdesc);
-	if (pseqdesc->numblends > index)
-		return &panim[index * pstudiohdr->numbones];
-		//panim += index * pstudiohdr->numbones;
+	if (index >= 0 && index <= (pseqdesc->numblends - 1))
+		panim += index * pstudiohdr->numbones;
 
 	return panim;
-
-	//if (index >= 0 && index <= (pseqdesc->numblends - 1))
-	//	panim += index * pstudiohdr->numbones;
-
 }
 
 /* <151a9> ../cstrike/dlls/animation.cpp:770 */
