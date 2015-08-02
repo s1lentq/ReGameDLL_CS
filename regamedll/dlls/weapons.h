@@ -54,6 +54,23 @@ class CBasePlayer;
 // the maximum amount of ammo each weapon's clip can hold
 #define WEAPON_NOCLIP			-1
 
+#define LOUD_GUN_VOLUME			1000
+#define NORMAL_GUN_VOLUME		600
+#define QUIET_GUN_VOLUME		200
+
+#define BRIGHT_GUN_FLASH		512
+#define NORMAL_GUN_FLASH		256
+#define DIM_GUN_FLASH			128
+
+#define BIG_EXPLOSION_VOLUME		2048
+#define NORMAL_EXPLOSION_VOLUME		1024
+#define SMALL_EXPLOSION_VOLUME		512
+
+#define WEAPON_ACTIVITY_VOLUME		64
+
+// spawn flags
+#define SF_DETONATE			0x0001	// Grenades flagged with this will be triggered when the owner calls detonateSatchelCharges
+
 typedef struct
 {
 	WeaponType type;
@@ -118,20 +135,20 @@ public:
 class CGrenade: public CBaseMonster
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual int Save(CSave &save);
-	NOBODY virtual int Restore(CRestore &restore);
-	NOBODY virtual int ObjectCaps(void)
+	virtual void Spawn(void);
+	virtual int Save(CSave &save);
+	virtual int Restore(CRestore &restore);
+	virtual int ObjectCaps(void)
 	{
 		return ObjectCaps_();
 	}
-	NOBODY virtual void Killed(entvars_t *pevAttacker,int iGib);
-	NOBODY virtual int BloodColor(void)
+	virtual void Killed(entvars_t *pevAttacker,int iGib);
+	virtual int BloodColor(void)
 	{
 		return BloodColor_();
 	}
-	NOBODY virtual void Use(CBaseEntity *pActivator,CBaseEntity *pCaller,USE_TYPE useType,float value);
-	NOBODY virtual void BounceSound(void);
+	virtual void Use(CBaseEntity *pActivator,CBaseEntity *pCaller,USE_TYPE useType,float value);
+	virtual void BounceSound(void);
 
 #ifdef HOOK_GAMEDLL
 
@@ -157,41 +174,42 @@ public:
 	{
 		SATCHEL_DETONATE,
 		SATCHEL_RELEASE
+
 	} SATCHELCODE;
 public:
-	NOBODY static CGrenade *ShootTimed(entvars_t *pevOwner, Vector vecStart, Vector vecVelocity, float time);
-	NOBODY static CGrenade *ShootTimed2(entvars_t *pevOwner, Vector vecStart, Vector vecVelocity, float time, int iTeam, unsigned short usEvent);
-	NOBODY static CGrenade *ShootContact(entvars_t *pevOwner, Vector vecStart, Vector vecVelocity);
-	NOBODY static CGrenade *ShootSmokeGrenade(entvars_t *pevOwner, Vector vecStart, Vector vecVelocity, float time, unsigned short usEvent);
-	NOBODY static CGrenade *ShootSatchelCharge(entvars_t *pevOwner, Vector vecStart, Vector vecVelocity);
-	NOBODY static void UseSatchelCharges(entvars_t *pevOwner, SATCHELCODE code);
+	static CGrenade *ShootTimed(entvars_t *pevOwner, Vector vecStart, Vector vecVelocity, float time);
+	static CGrenade *ShootTimed2(entvars_t *pevOwner, Vector vecStart, Vector vecVelocity, float time, int iTeam, unsigned short usEvent);
+	NOXREF static CGrenade *ShootContact(entvars_t *pevOwner, Vector vecStart, Vector vecVelocity);
+	static CGrenade *ShootSmokeGrenade(entvars_t *pevOwner, Vector vecStart, Vector vecVelocity, float time, unsigned short usEvent);
+	static CGrenade *ShootSatchelCharge(entvars_t *pevOwner, Vector vecStart, Vector vecVelocity);
+	NOXREF static void UseSatchelCharges(entvars_t *pevOwner, SATCHELCODE code);
 public:
-	NOBODY void Explode(Vector vecSrc, Vector vecAim);
-	NOBODY void Explode(TraceResult *pTrace, int bitsDamageType);
-	NOBODY void Explode2(TraceResult *pTrace, int bitsDamageType);
-	NOBODY void Explode3(TraceResult *pTrace, int bitsDamageType);
-	NOBODY void SG_Explode(TraceResult *pTrace, int bitsDamageType);
+	void Explode(Vector vecSrc, Vector vecAim);
+	void Explode(TraceResult *pTrace, int bitsDamageType);
+	void Explode2(TraceResult *pTrace, int bitsDamageType);
+	void Explode3(TraceResult *pTrace, int bitsDamageType);
+	NOXREF void SG_Explode(TraceResult *pTrace, int bitsDamageType);
 
-	NOBODY void EXPORT Smoke(void);
-	NOBODY void EXPORT Smoke2(void);
-	NOBODY void EXPORT Smoke3_A(void);
-	NOBODY void EXPORT Smoke3_B(void);
-	NOBODY void EXPORT Smoke3_C(void);
-	NOBODY void EXPORT SG_Smoke(void);
-	NOBODY void EXPORT BounceTouch(CBaseEntity *pOther);
-	NOBODY void EXPORT SlideTouch(CBaseEntity *pOther);
+	void EXPORT Smoke(void);
+	void EXPORT Smoke2(void);
+	void EXPORT Smoke3_A(void);
+	void EXPORT Smoke3_B(void);
+	void EXPORT Smoke3_C(void);
+	void EXPORT SG_Smoke(void);
+	void EXPORT BounceTouch(CBaseEntity *pOther);
+	void EXPORT SlideTouch(CBaseEntity *pOther);
 	void EXPORT C4Touch(CBaseEntity *pOther);
-	NOBODY void EXPORT ExplodeTouch(CBaseEntity *pOther);
-	NOBODY void EXPORT DangerSoundThink(void);
-	NOBODY void EXPORT PreDetonate(void);
-	NOBODY void EXPORT Detonate(void);
-	NOBODY void EXPORT SG_Detonate(void);
-	NOBODY void EXPORT Detonate2(void);
-	NOBODY void EXPORT Detonate3(void);
-	NOBODY void EXPORT DetonateUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-	NOBODY void EXPORT TumbleThink(void);
-	NOBODY void EXPORT SG_TumbleThink(void);
-	NOBODY void EXPORT C4Think(void);
+	void EXPORT ExplodeTouch(CBaseEntity *pOther);
+	void EXPORT DangerSoundThink(void);
+	void EXPORT PreDetonate(void);
+	void EXPORT Detonate(void);
+	void EXPORT SG_Detonate(void);
+	void EXPORT Detonate2(void);
+	void EXPORT Detonate3(void);
+	void EXPORT DetonateUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	void EXPORT TumbleThink(void);
+	void EXPORT SG_TumbleThink(void);
+	void EXPORT C4Think(void);
 
 public:
 	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[15];
@@ -1640,6 +1658,7 @@ extern short g_sModelIndexRadio;
 extern MULTIDAMAGE gMultiDamage;
 
 NOBODY void FindHullIntersection(Vector &vecSrc, TraceResult &tr, float *mins, float *maxs, edict_t *pEntity);
+void AnnounceFlashInterval(float interval, float offset = 0);
 
 int MaxAmmoCarry(int iszName);
 void ClearMultiDamage(void);
@@ -1655,5 +1674,7 @@ void UTIL_PrecacheOtherWeapon(const char *szClassname);
 NOXREF void UTIL_PrecacheOtherWeapon2(const char *szClassname);
 void W_Precache(void);
 NOXREF BOOL CanAttack(float attack_time, float curtime, BOOL isPredicted);
+
+C_DLLEXPORT void weapon_usp(entvars_t *pev);
 
 #endif // WEAPONS_H

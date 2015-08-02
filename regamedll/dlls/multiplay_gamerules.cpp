@@ -145,17 +145,24 @@ NOBODY void CMapInfo::Spawn_(void)
 }
 
 /* <114673> ../cstrike/dlls/multiplay_gamerules.cpp:288 */
-//void info_map_parameters(entvars_t *pev)
-//{
-//	GetClassPtr<CMapInfo>(CMapInfo *a);  //   288
-//}
+LINK_ENTITY_TO_CLASS(info_map_parameters, CMapInfo);
 
 /* <11474f> ../cstrike/dlls/multiplay_gamerules.cpp:331 */
-NOBODY void Broadcast(const char *sentence)
+void Broadcast(const char *sentence)
 {
-//	{
-//		char text;                                            //   333
-//	}
+	char text[32];
+
+	if (!sentence)
+		return;
+
+	Q_strcpy(text, "%!MRAD_");
+	Q_strcat(text, UTIL_VarArgs("%s", sentence));
+
+	MESSAGE_BEGIN(MSG_BROADCAST, gmsgSendAudio);
+	WRITE_BYTE(0);
+	WRITE_STRING(text);
+	WRITE_SHORT(100);
+	MESSAGE_END();
 }
 
 /* <111767> ../cstrike/dlls/multiplay_gamerules.cpp:348 */
@@ -651,34 +658,94 @@ NOBODY void CHalfLifeMultiplay::RestartRound_(void)
 //	}
 }
 
-/* <114d20> ../cstrike/dlls/multiplay_gamerules.cpp:2097 */
-NOBODY BOOL CHalfLifeMultiplay::IsThereABomb(void)
+/* <114ca3> ../cstrike/dlls/multiplay_gamerules.cpp:2073 */
+BOOL CHalfLifeMultiplay::IsThereABomber(void)
 {
-//	{
-//		class CGrenade *pC4;                                 //  2099
-//		class CBaseEntity *pWeaponC4;                        //  2100
-//		BOOL bFoundBomb;                                      //  2101
-//	}
+	CBasePlayer *pPlayer = NULL;
+
+	while ((pPlayer = (CBasePlayer *)UTIL_FindEntityByClassname(pPlayer, "player")) != NULL)
+	{
+		if (FNullEnt(pPlayer->edict()))
+			break;
+
+		if (pPlayer->m_iTeam != CT && pPlayer->IsBombGuy())
+			return TRUE;
+	}
+
+	return FALSE;
+
 }
 
-/* <114ca3> ../cstrike/dlls/multiplay_gamerules.cpp:2073 */
-NOBODY BOOL CHalfLifeMultiplay::IsThereABomber(void)
+/* <114d20> ../cstrike/dlls/multiplay_gamerules.cpp:2097 */
+BOOL CHalfLifeMultiplay::IsThereABomb(void)
 {
-//	{
-//		class CBasePlayer *pPlayer;                          //  2075
-//		edict(CBaseEntity *const this);  //  2079
-//		FNullEnt(const edict_t *pent);  //  2079
-//	}
+	CGrenade *pC4 = NULL;
+	CBaseEntity *pWeaponC4 = NULL;
+	BOOL bFoundBomb = FALSE;
+
+	while ((pWeaponC4 = UTIL_FindEntityByClassname(pWeaponC4, "grenade")) != NULL)
+	{
+		if (!pWeaponC4)
+			continue;
+
+		pC4 = (CGrenade *)pWeaponC4;
+
+		if (pC4->m_bIsC4)
+		{
+			bFoundBomb = TRUE;
+			break;
+		}
+	}
+
+	if (bFoundBomb || (UTIL_FindEntityByClassname(NULL, "weapon_c4")) != NULL)
+		return TRUE;
+
+	return FALSE;
+
 }
 
 /* <114d83> ../cstrike/dlls/multiplay_gamerules.cpp:2129 */
-NOBODY BOOL CHalfLifeMultiplay::TeamFull(int team_id)
+BOOL CHalfLifeMultiplay::TeamFull(int team_id)
 {
+	switch (team_id)
+	{
+		case TERRORIST:
+			return (m_iNumTerrorist >= m_iSpawnPointCount_Terrorist);
+		case CT:
+			return (m_iNumCT >= m_iSpawnPointCount_CT);
+	}
+
+	return FALSE;
 }
 
 /* <114dbb> ../cstrike/dlls/multiplay_gamerules.cpp:2144 */
-NOBODY BOOL CHalfLifeMultiplay::TeamStacked(int newTeam_id, int curTeam_id)
+BOOL CHalfLifeMultiplay::TeamStacked(int newTeam_id, int curTeam_id)
 {
+	if (newTeam_id == curTeam_id)
+		return FALSE;
+
+	if (!m_iLimitTeams)
+		return FALSE;
+
+	switch (newTeam_id)
+	{
+		case TERRORIST:
+		{
+			if (curTeam_id != UNASSIGNED && curTeam_id != SPECTATOR)
+				return ((m_iNumTerrorist + 1) > (m_iNumCT + m_iLimitTeams - 1));
+			else
+				return ((m_iNumTerrorist + 1) > (m_iNumCT + m_iLimitTeams));
+		}
+		case CT:
+		{
+			if (curTeam_id != UNASSIGNED && curTeam_id != SPECTATOR)
+				return ((m_iNumCT + 1) > (m_iNumTerrorist + m_iLimitTeams - 1));
+			else
+				return ((m_iNumCT + 1) > (m_iNumTerrorist + m_iLimitTeams));
+		}
+	}
+
+	return FALSE;
 }
 
 /* <114e2b> ../cstrike/dlls/multiplay_gamerules.cpp:2214 */
@@ -1101,8 +1168,10 @@ NOBODY void CHalfLifeMultiplay::ClientDisconnected_(edict_t *pClient)
 }
 
 /* <112a05> ../cstrike/dlls/multiplay_gamerules.cpp:3428 */
-NOBODY float CHalfLifeMultiplay::FlPlayerFallDamage_(CBasePlayer *pPlayer)
+float CHalfLifeMultiplay::FlPlayerFallDamage_(CBasePlayer *pPlayer)
 {
+	pPlayer->m_flFallVelocity -= PLAYER_MAX_SAFE_FALL_SPEED;
+	return pPlayer->m_flFallVelocity * DAMAGE_FOR_FALL_SPEED * 1.25;
 }
 
 /* <112a3d> ../cstrike/dlls/multiplay_gamerules.cpp:3436 */
@@ -1256,7 +1325,7 @@ NOBODY void CHalfLifeMultiplay::DeathNotice_(CBasePlayer *pVictim, entvars_t *pK
 }
 
 /* <112b2e> ../cstrike/dlls/multiplay_gamerules.cpp:3916 */
-void CHalfLifeMultiplay::PlayerGotWeapon_(CBasePlayer *pPlayer, class CBasePlayerItem *pWeapon)
+void CHalfLifeMultiplay::PlayerGotWeapon_(CBasePlayer *pPlayer, CBasePlayerItem *pWeapon)
 {
 	;
 }

@@ -32,6 +32,8 @@
 #pragma once
 #endif
 
+class CHostageImprov;
+
 /* <46f85d> ../cstrike/dlls/hostage/hostage_states.h:16 */
 class HostageState: public SimpleState<CHostageImprov *>, public IImprovEvent
 {
@@ -63,8 +65,8 @@ public:
 	}
 
 	void UpdateStationaryAnimation(CHostageImprov *improv) { };
-};/* size: 16, cachelines: 1, members: 2 */
 
+};/* size: 16, cachelines: 1, members: 2 */
 
 /* <46fccf> ../cstrike/dlls/hostage/hostage_states.h:38 */
 class HostageIdleState: public HostageState

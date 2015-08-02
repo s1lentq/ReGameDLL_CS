@@ -48,6 +48,7 @@ typedef struct localnode_s
 	byte bDepth;
 	BOOL fSearched;
 	node_index_t nindexParent;
+
 } localnode_t;
 /* size: 32, cachelines: 1, members: 6 */
 
@@ -113,13 +114,13 @@ private:
 #endif // HOOK_GAMEDLL
 
 	static float s_flStepSize;
-	static EHANDLE _queue[ MAX_HOSTAGES ];
+	static EHANDLE _queue[ MAX_HOSTAGES_NAV ];
 	static int qptr;
 	static int tot_inqueue;
 	static float nodeval;
 	static float flNextCvarCheck;
 	static float flLastThinkTime;
-	static EHANDLE hostages[ MAX_HOSTAGES ];
+	static EHANDLE hostages[ MAX_HOSTAGES_NAV ];
 	static int tot_hostages;
 
 #ifdef HOOK_GAMEDLL

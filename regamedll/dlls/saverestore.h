@@ -42,20 +42,6 @@
 #define IMPLEMENT_ARRAY_CLASS(baseClass,var)\
 	baseClass::var
 
-#define IMPLEMENT_SAVERESTORE(derivedClass,baseClass)\
-	int derivedClass::Save(CSave &save)\
-	{\
-		if (!baseClass::Save(save))\
-			return 0;\
-		return save.WriteFields(#derivedClass, this, m_SaveData, ARRAYSIZE(m_SaveData));\
-	}\
-	int derivedClass::Restore(CRestore &restore)\
-	{\
-		if (!baseClass::Restore(restore))\
-			return 0;\
-		return restore.ReadFields(#derivedClass, this, m_SaveData, ARRAYSIZE(m_SaveData));\
-	}
-
 #else // HOOK_GAMEDLL
 
 #define IMPLEMENT_ARRAY(var)\
@@ -64,21 +50,21 @@
 #define IMPLEMENT_ARRAY_CLASS(baseClass,var)\
 	(*baseClass::p##var)
 
+#endif // HOOK_GAMEDLL
+
 #define IMPLEMENT_SAVERESTORE(derivedClass, baseClass)\
 	int derivedClass::Save_(CSave &save)\
 	{\
 		if (!baseClass::Save(save))\
 			return 0;\
-		return save.WriteFields(#derivedClass, this, (*pm_SaveData), ARRAYSIZE(*pm_SaveData));\
+		return save.WriteFields(#derivedClass, this, IMPLEMENT_ARRAY(m_SaveData), ARRAYSIZE(IMPLEMENT_ARRAY(m_SaveData)));\
 	}\
 	int derivedClass::Restore_(CRestore &restore)\
 	{\
 		if (!baseClass::Restore(restore))\
 			return 0;\
-		return restore.ReadFields(#derivedClass, this, (*pm_SaveData), ARRAYSIZE(*pm_SaveData));\
+		return restore.ReadFields(#derivedClass, this, IMPLEMENT_ARRAY(m_SaveData), ARRAYSIZE(IMPLEMENT_ARRAY(m_SaveData)));\
 	}
-
-#endif // HOOK_GAMEDLL
 
 typedef enum
 {

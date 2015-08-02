@@ -8,7 +8,7 @@
 
 //float g_flTimeLimit = 0;
 //float g_flResetTime = 0;
-//bool g_bClientPrintEnable = true;
+bool g_bClientPrintEnable = true;
 
 char *sPlayerModelFiles[] = 
 {
@@ -58,11 +58,13 @@ static entity_field_alias_t custom_entity_field_alias[] =
 	{ "animtime",	0 },
 }
 
+static int g_serveractive = 0;
+
 #else
 
 //float g_flTimeLimit;
 //float g_flResetTime;
-//bool g_bClientPrintEnable;
+bool g_bClientPrintEnable;
 
 char *sPlayerModelFiles[12];
 bool g_skipCareerInitialSpawn;
@@ -70,6 +72,7 @@ bool g_skipCareerInitialSpawn;
 entity_field_alias_t entity_field_alias[6];
 entity_field_alias_t player_field_alias[3];
 entity_field_alias_t custom_entity_field_alias[9];
+int g_serveractive;
 
 #endif // HOOK_GAMEDLL
 
@@ -78,51 +81,120 @@ unsigned short m_usResetDecals;
 unsigned short g_iShadowSprite;
 
 /* <47b45> ../cstrike/dlls/client.cpp:76 */
-NOBODY int CMD_ARGC_(void)
+NOXREF int CMD_ARGC_(void)
 {
-//	{
-//		int i;                                                //    80
-//	}
+	UNTESTED
+
+	if (!UseBotArgs)
+		return CMD_ARGC();
+
+	int i = 0;
+
+	while (BotArgs[i])
+		i++;
+
+	return i;
 }
 
 /* <47b84> ../cstrike/dlls/client.cpp:90 */
-NOBODY const char *CMD_ARGV_(int i)
+NOXREF const char *CMD_ARGV_(int i)
 {
+	UNTESTED
+
+	if (!UseBotArgs)
+		return CMD_ARGV(i);
+
+	if (i < 4)
+		return BotArgs[i];
+
+	return NULL;
 }
 
 /* <47eac> ../cstrike/dlls/client.cpp:180 */
-NOBODY void set_suicide_frame(entvars_t *pev)
+NOXREF void set_suicide_frame(entvars_t *pev)
 {
-//	FStrEq(const char *sz1,
-//		const char *sz2);  //   182
+	if (!FStrEq(STRING(pev->model), "models/player.mdl"))
+		return;
+
+	pev->solid = SOLID_NOT;
+	pev->movetype = MOVETYPE_TOSS;
+	pev->deadflag = DEAD_DEAD;
+	pev->nextthink = -1;
 }
 
 /* <47a58> ../cstrike/dlls/client.cpp:192 */
-NOBODY inline void TeamChangeUpdate(CBasePlayer *player, int team_id)
+NOXREF void TeamChangeUpdate(CBasePlayer *player, int team_id)
 {
+	UNTESTED
+
 //	{
 //		int t;                                                //   194
 //	}
+	MESSAGE_BEGIN(MSG_ALL, gmsgTeamInfo);
+		WRITE_BYTE(player->entindex());
+		switch (team_id)
+		{
+		case CT:
+			WRITE_STRING("CT");
+			break;
+		case TERRORIST:
+			WRITE_STRING("TERRORIST");
+			break;
+		case SPECTATOR:
+			WRITE_STRING("SPECTATOR");
+			break;
+		default:
+			WRITE_STRING("UNASSIGNED");
+			break;
+		}
+	MESSAGE_END();
+
+	if (team_id != UNASSIGNED)
+		player->SetScoreboardAttributes();
 }
 
 /* <4731f> ../cstrike/dlls/client.cpp:222 */
-NOBODY inline void BlinkAccount(CBasePlayer *player, int numBlinks)
+NOXREF void BlinkAccount(CBasePlayer *player, int numBlinks)
 {
+	MESSAGE_BEGIN(MSG_ONE, gmsgBlinkAcct, NULL, player->pev);
+		WRITE_BYTE(numBlinks);
+	MESSAGE_END();
 }
 
 /* <47efd> ../cstrike/dlls/client.cpp:236 */
-NOBODY BOOL ClientConnect(edict_t *pEntity, const char *pszName, const char *pszAddress, char *szRejectReason)
+BOOL ClientConnect(edict_t *pEntity, const char *pszName, const char *pszAddress, char *szRejectReason)
 {
+	return g_pGameRules->ClientConnected(pEntity, pszName, pszAddress, szRejectReason);
 }
 
 /* <47f5b> ../cstrike/dlls/client.cpp:255 */
-NOBODY void ClientDisconnect(edict_t *pEntity)
+void ClientDisconnect(edict_t *pEntity)
 {
-//	{
-//		class CBasePlayer *pPlayer;                          //   257
-//		class CSound *pSound;                                //   276
-//		Instance(edict_t *pent);  //   257
-//	}
+	CBasePlayer *pPlayer = (CBasePlayer *)CBaseEntity::Instance(pEntity);
+
+	if (!g_fGameOver)
+	{
+		UTIL_ClientPrintAll(HUD_PRINTNOTIFY, "#Game_disconnected", STRING(pEntity->v.netname));
+		CSound *pSound = CSoundEnt::SoundPointerForIndex(CSoundEnt::ClientSoundIndex(pEntity));
+
+		if (pSound)
+			pSound->Reset();
+
+		pEntity->v.takedamage = DAMAGE_NO;
+		pEntity->v.solid = SOLID_NOT;
+		pEntity->v.flags = FL_DORMANT;
+
+		if (pPlayer)
+			pPlayer->SetThink(NULL);
+
+		UTIL_SetOrigin(&pEntity->v, pEntity->v.origin);
+		g_pGameRules->ClientDisconnected(pEntity);
+	}
+
+	if (pPlayer && pPlayer->IsBot())
+	{
+		TheBots->ClientDisconnect(pPlayer);
+	}
 }
 
 /* <4c477> ../cstrike/dlls/client.cpp:306 */
@@ -148,90 +220,240 @@ void respawn(entvars_t *pev, BOOL fCopyCorpse)
 }
 
 /* <48013> ../cstrike/dlls/client.cpp:347 */
-NOBODY void ClientKill(edict_t *pEntity)
+void ClientKill(edict_t *pEntity)
 {
-//	{
-//		entvars_t *pev;                                      //   349
-//		class CHalfLifeMultiplay *mp;                        //   350
-//		class CBasePlayer *pl;                               //   352
-//		Instance(entvars_t *pev);  //   352
-//		IsObserver(CBasePlayer *const this);  //   354
-//	}
+	entvars_t *pev = &pEntity->v;
+	CHalfLifeMultiplay *mp = g_pGameRules;
+	CBasePlayer *pl = (CBasePlayer *)CBasePlayer::Instance(pev);
+
+	if (pl->IsObserver())
+		return;
+
+	if (pl->m_iJoiningState != JOINED)
+		return;
+
+	if (gpGlobals->time >= pl->m_fNextSuicideTime)
+	{
+		pl->m_LastHitGroup = 0;
+		pl->m_fNextSuicideTime = gpGlobals->time + 1;
+		pEntity->v.health = 0;
+		pl->Killed(pev, GIB_NEVER);
+
+		if (mp->m_pVIP == pl)
+			mp->m_iConsecutiveVIP = 10;
+	}
 }
 
 /* <47a8a> ../cstrike/dlls/client.cpp:379 */
-NOBODY void ShowMenu(CBasePlayer *pPlayer, int bitsValidSlots, int nDisplayTime, BOOL fNeedMore, char *pszText)
+void ShowMenu(CBasePlayer *pPlayer, int bitsValidSlots, int nDisplayTime, BOOL fNeedMore, char *pszText)
 {
+	MESSAGE_BEGIN(MSG_ONE, gmsgShowMenu, NULL, pPlayer->pev);
+		WRITE_SHORT(bitsValidSlots);
+		WRITE_CHAR(nDisplayTime);
+		WRITE_BYTE(fNeedMore);
+		WRITE_STRING(pszText);
+	MESSAGE_END();
 }
 
 /* <4735f> ../cstrike/dlls/client.cpp:390 */
-NOBODY void ShowVGUIMenu(CBasePlayer *pPlayer, int MenuType, int BitMask, char *szOldMenu)
+void ShowVGUIMenu(CBasePlayer *pPlayer, int MenuType, int BitMask, char *szOldMenu)
 {
+	if (pPlayer->m_bVGUIMenus || MenuType > VGUI_MENU_BUY_ITEM)
+	{
+		MESSAGE_BEGIN(MSG_ONE, gmsgVGUIMenu, NULL, pPlayer->pev);
+		WRITE_BYTE(MenuType);
+		WRITE_SHORT(BitMask);
+		WRITE_CHAR(-1);
+		WRITE_BYTE(0);
+		WRITE_STRING(" ");
+		MESSAGE_END();
+	}
+	else
+		ShowMenu(pPlayer, BitMask, -1, 0, szOldMenu);
 }
 
 /* <4c3c5> ../cstrike/dlls/client.cpp:414 */
-NOBODY int CountTeams(void)
+NOXREF int CountTeams(void)
 {
-//	{
-//		int iNumCT;                                           //   416
-//		int iNumTerrorist;                                    //   416
-//		class CBaseEntity *pPlayer;                          //   421
-//		class CBasePlayer *player;                           //   422
-//		edict(CBaseEntity *const this);  //   425
-//		FNullEnt(const edict_t *pent);  //   425
-//	}
+	int iNumCT = 0, iNumTerrorist = 0;
+	CBaseEntity *pPlayer = NULL;
+
+	while ((pPlayer = UTIL_FindEntityByClassname(pPlayer, "player")) != NULL)
+	{
+		if (FNullEnt(pPlayer->edict()))
+			break;
+
+		CBasePlayer *player = GetClassPtr((CBasePlayer *)pPlayer->pev);
+
+		if (player->m_iTeam == UNASSIGNED)
+			continue;
+
+		if (player->pev->flags & FL_DORMANT)
+			continue;
+
+		if (player->m_iTeam == SPECTATOR)
+			continue;
+
+		if (player->m_iTeam == CT)
+			iNumCT++;
+
+		else if (player->m_iTeam == TERRORIST)
+			iNumTerrorist++;
+	}
+
+	return iNumCT - iNumTerrorist;
 }
 
 /* <4c2be> ../cstrike/dlls/client.cpp:443 */
-NOBODY void ListPlayers(CBasePlayer *current)
+void ListPlayers(CBasePlayer *current)
 {
-//	{
-//		class CBaseEntity *pPlayer;                          //   445
-//		class CBasePlayer *player;                           //   446
-//		char message;                                         //   447
-//		char cNumber;                                         //   448
-//		int iUserID;                                          //   449
-//		edict(CBaseEntity *const this);  //   454
-//		FNullEnt(const edict_t *pent);  //   454
-//		edict(CBaseEntity *const this);  //   460
-//	}
+	char message[120], cNumber[12];
+	Q_strcpy(message, "");
+
+	CBaseEntity *pPlayer = NULL;
+	while ((pPlayer = UTIL_FindEntityByClassname(pPlayer, "player")) != NULL)
+	{
+		if (FNullEnt(pPlayer->edict()))
+			break;
+
+		if (pPlayer->pev->flags & FL_DORMANT)
+			continue;
+
+		CBasePlayer *player = GetClassPtr((CBasePlayer *)pPlayer->pev);
+		int iUserID = GETPLAYERUSERID(ENT(player->pev));
+
+		Q_sprintf(cNumber, "%d", iUserID);
+		Q_strcpy(message, "\n");
+		Q_strcat(message, cNumber);
+		Q_strcat(message, " : ");
+		Q_strcat(message, STRING(player->pev->netname));
+
+		ClientPrint(current->pev, HUD_PRINTCONSOLE, message);
+	}
+
+	ClientPrint(current->pev, HUD_PRINTCONSOLE, "\n");
 }
 
 /* <4c200> ../cstrike/dlls/client.cpp:475 */
-NOBODY int CountTeamPlayers(int iTeam)
+int CountTeamPlayers(int iTeam)
 {
-//	{
-//		class CBaseEntity *pPlayer;                          //   477
-//		int i;                                                //   478
-//	}
+	CBaseEntity *pPlayer = NULL;
+	int i = 0;
+
+	while ((pPlayer = UTIL_FindEntityByClassname(pPlayer, "player")) != NULL)
+	{
+		if (FNullEnt(pPlayer->edict()))
+			break;
+
+		if (pPlayer->pev->flags & FL_DORMANT)
+			continue;
+
+		if (GetClassPtr((CBasePlayer *)pPlayer->pev)->m_iTeam == iTeam)
+			i++;
+	}
+
+	return i;
 }
 
 /* <4c4ef> ../cstrike/dlls/client.cpp:494 */
-NOBODY void ProcessKickVote(CBasePlayer *pVotingPlayer, CBasePlayer *pKickPlayer)
+void ProcessKickVote(CBasePlayer *pVotingPlayer, CBasePlayer *pKickPlayer)
 {
-//	{
-//		class CBaseEntity *pTempEntity;                      //   500
-//		class CBasePlayer *pTempPlayer;                      //   501
-//		int iValidVotes;                                      //   502
-//		int iVoteID;                                          //   503
-//		int iVotesNeeded;                                     //   504
-//		float fKickPercent;                                   //   505
-//		int iTeamCount;                                       //   507
-//		CountTeamPlayers(int iTeam);  //   507
-//		edict(CBaseEntity *const this);  //   560
-//		FNullEnt(const edict_t *pent);  //   560
-//		edict(CBaseEntity *const this);  //   517
-//		FNullEnt(const edict_t *pent);  //   517
-//	}
+	CBaseEntity *pTempEntity;
+	CBasePlayer *pTempPlayer;
+	int iValidVotes;
+	int iVoteID;
+	int iVotesNeeded;
+	float fKickPercent;
+
+	if (!pVotingPlayer || !pKickPlayer)
+		return;
+
+	int iTeamCount = CountTeamPlayers(pVotingPlayer->m_iTeam);
+
+	if (iTeamCount < 3)
+		return;
+
+	iValidVotes = 0;
+	pTempEntity = NULL;
+	iVoteID = pVotingPlayer->m_iCurrentKickVote;
+
+	while ((pTempEntity = UTIL_FindEntityByClassname(pTempEntity, "player")) != NULL)
+	{
+		if (FNullEnt(pTempEntity->edict()))
+			break;
+
+		pTempPlayer = GetClassPtr((CBasePlayer *)pTempEntity->pev);
+
+		if (!pTempPlayer || pTempPlayer->m_iTeam == UNASSIGNED)
+			continue;
+
+		if (pTempPlayer->m_iTeam == pVotingPlayer->m_iTeam && pTempPlayer->m_iCurrentKickVote == iVoteID)
+			iValidVotes++;
+	}
+
+	if (kick_percent.value < 0)
+		CVAR_SET_STRING("mp_kickpercent", "0.0");
+
+	else if (kick_percent.value > 1)
+		CVAR_SET_STRING("mp_kickpercent", "1.0");
+
+	iVotesNeeded = iValidVotes;
+	fKickPercent = (iTeamCount * kick_percent.value + 0.5);
+
+	if (iVotesNeeded >= (int)fKickPercent)
+	{
+		UTIL_ClientPrintAll(HUD_PRINTCENTER, "#Game_kicked", STRING(pKickPlayer->pev->netname));
+		SERVER_COMMAND(UTIL_VarArgs("kick # %d\n", iVoteID));
+		pTempEntity = NULL;
+
+		while ((pTempEntity = UTIL_FindEntityByClassname(pTempEntity, "player")) != NULL)
+		{
+			if (FNullEnt(pTempEntity->edict()))
+				break;
+
+			pTempPlayer = GetClassPtr((CBasePlayer *)pTempEntity->pev);
+
+			if (!pTempPlayer || pTempPlayer->m_iTeam == UNASSIGNED)
+				continue;
+
+			if (pTempPlayer->m_iTeam == pVotingPlayer->m_iTeam && pTempPlayer->m_iCurrentKickVote == iVoteID)
+				pTempPlayer->m_iCurrentKickVote = 0;
+		}
+	}
 }
 
 /* <48298> ../cstrike/dlls/client.cpp:580 */
-NOBODY TeamName SelectDefaultTeam(void)
+TeamName SelectDefaultTeam(void)
 {
-//	{
-//		enum TeamName team;                                   //   582
-//		class CHalfLifeMultiplay *mp;                        //   583
-//	}
+	TeamName team = UNASSIGNED;
+	CHalfLifeMultiplay *mp = g_pGameRules;
+
+	if (mp->m_iNumTerrorist < mp->m_iNumCT)
+		team = TERRORIST;
+	else if (mp->m_iNumTerrorist > mp->m_iNumCT)
+		team = CT;
+
+	else if (mp->m_iNumCTWins > mp->m_iNumTerroristWins)
+		team = TERRORIST;
+
+	else if (mp->m_iNumCTWins < mp->m_iNumTerroristWins)
+		team = CT;
+	else
+		team = RANDOM_LONG(0, 1) ? TERRORIST : CT;
+
+	if (mp->TeamFull(team))
+	{
+		if (team == TERRORIST)
+			team = CT;
+		else
+			team = TERRORIST;
+
+		if (mp->TeamFull(team))
+			return UNASSIGNED;
+	}
+
+	return team;
+
 }
 
 /* <473a3> ../cstrike/dlls/client.cpp:638 */
@@ -246,31 +468,123 @@ void CheckStartMoney(void)
 }
 
 /* <4c084> ../cstrike/dlls/client.cpp:661 */
-NOBODY void ClientPutInServer(edict_t *pEntity)
+void ClientPutInServer(edict_t *pEntity)
 {
-//	{
-//		class CBasePlayer *pPlayer;                          //   663
-//		class CBaseEntity *Target;                           //   664
-//		Vector CamAngles;                               //   665
-//		class CHalfLifeMultiplay *mp;                        //   666
-//		entvars_t *pev;                                      //   668
-//		char sName;                                           //   777
-//		CheckStartMoney(void);  //   696
-//		{
-//			char *pApersand;                             //   781
-//		}
-//		operator-(const Vector *const this,
-//				const Vector &v);  //   761
-//		Normalize(const Vector *const this);  //   762
-//	}
+	entvars_t *pev = &pEntity->v;
+	CBasePlayer *pPlayer = GetClassPtr((CBasePlayer *)pev);
+	CHalfLifeMultiplay *mp = g_pGameRules;
+
+	pPlayer->SetCustomDecalFrames(-1);
+	pPlayer->SetPrefsFromUserinfo(GET_INFO_BUFFER(pEntity));
+
+	if (!mp->IsMultiplayer())
+	{
+		pPlayer->Spawn();
+		return;
+	}
+
+	pPlayer->m_bNotKilled = true;
+	pPlayer->m_iIgnoreGlobalChat = IGNOREMSG_NONE;
+	pPlayer->m_iTeamKills = 0;
+	pPlayer->m_bJustConnected = true;
+	pPlayer->Spawn();
+	pPlayer->m_bTeamChanged = false;
+	pPlayer->m_iNumSpawns = 0;
+
+	CheckStartMoney();
+
+	pPlayer->m_iAccount = (int)startmoney.value;
+	pPlayer->m_fGameHUDInitialized = FALSE;
+	pPlayer->m_flDisplayHistory &= ~DHF_ROUND_STARTED;
+	pPlayer->pev->flags |= FL_SPECTATOR;
+	pPlayer->pev->solid = SOLID_NOT;
+	pPlayer->pev->movetype = MOVETYPE_NOCLIP;
+	pPlayer->pev->effects = EF_NODRAW;
+	pPlayer->pev->effects |= EF_NOINTERP;
+	pPlayer->pev->takedamage = DAMAGE_NO;
+	pPlayer->pev->deadflag = DEAD_DEAD;
+	pPlayer->pev->velocity = g_vecZero;
+	pPlayer->pev->punchangle = g_vecZero;
+	pPlayer->m_iJoiningState = READINGLTEXT;
+	pPlayer->m_iTeam = UNASSIGNED;
+	pPlayer->pev->fixangle = 1;
+	pPlayer->m_iModelName = MODEL_URBAN;
+	pPlayer->m_bContextHelp = true;
+	pPlayer->m_bHasNightVision = false;
+	pPlayer->m_iHostagesKilled = 0;
+	pPlayer->m_iMapVote = 0;
+	pPlayer->m_iCurrentKickVote = 0;
+	pPlayer->m_fDeadTime = 0;
+	pPlayer->has_disconnected = false;
+	pPlayer->m_iMenu = Menu_OFF;
+	pPlayer->ClearAutoBuyData();
+	pPlayer->m_rebuyString = NULL;
+
+	SET_CLIENT_MAXSPEED(ENT(pPlayer->pev), 1);
+	SET_MODEL(ENT(pPlayer->pev), "models/player.mdl");
+
+	pPlayer->SetThink(NULL);
+
+	CBaseEntity *Target = UTIL_FindEntityByClassname(NULL, "trigger_camera");
+	pPlayer->m_pIntroCamera = Target;
+
+	if (mp && mp->m_bMapHasCameras == 2)
+		mp->m_bMapHasCameras = (Target != NULL);
+
+	if (pPlayer->m_pIntroCamera)
+		Target = UTIL_FindEntityByTargetname(NULL, STRING(pPlayer->m_pIntroCamera->pev->target));
+
+	if (pPlayer->m_pIntroCamera && Target)
+	{
+		Vector CamAngles = UTIL_VecToAngles((Target->pev->origin - pPlayer->m_pIntroCamera->pev->origin).Normalize());
+		CamAngles.x = -CamAngles.x;
+
+		UTIL_SetOrigin(pPlayer->pev, pPlayer->m_pIntroCamera->pev->origin);
+
+		pPlayer->pev->angles = CamAngles;
+		pPlayer->pev->v_angle = pPlayer->pev->angles;
+
+		pPlayer->m_fIntroCamTime = gpGlobals->time + 6;
+		pPlayer->pev->view_ofs = g_vecZero;
+	}
+	else
+	{
+		pPlayer->m_iTeam = CT;
+
+		if (mp)
+		{
+			mp->GetPlayerSpawnSpot(pPlayer);
+		}
+
+		pPlayer->m_iTeam = UNASSIGNED;
+		pPlayer->pev->v_angle = g_vecZero;
+		pPlayer->pev->angles = gpGlobals->v_forward;
+	}
+
+	TheBots->OnEvent(EVENT_PLAYER_CHANGED_TEAM, (CBaseEntity *)pPlayer);
+	pPlayer->m_iJoiningState = SHOWLTEXT;
+	
+	static char sName[128];
+	Q_strcpy(sName, STRING(pPlayer->pev->netname));
+
+	for (char *pApersand = sName; pApersand && *pApersand != '\0'; pApersand++)
+	{
+		if (*pApersand == '%')
+			*pApersand = ' ';
+	}
+
+	UTIL_ClientPrintAll(HUD_PRINTNOTIFY, "#Game_connected", (sName[0] != '\0') ? sName : "<unconnected>");
 }
 
 /* <478f7> ../cstrike/dlls/client.cpp:792 */
-NOBODY int Q_strlen_(const char *str)
+int Q_strlen_(const char *str)
 {
-//	{
-//		int count;                                            //   794
-//	}
+	int count = 0;
+	if (str && *str)
+	{
+		while (str[count++ + 1]);
+	}
+	return count;
 }
 
 /* <4bbff> ../cstrike/dlls/client.cpp:814 */
@@ -337,14 +651,37 @@ NOBODY void Host_Say(edict_t *pEntity, int teamonly)
 /* <4865e> ../cstrike/dlls/client.cpp:1160 */
 NOBODY inline void DropSecondary(CBasePlayer *pPlayer)
 {
-//	{
-//		class CBasePlayerWeapon *pWeapon;                    //  1166
-//	}
+	UNTESTED
+
+	if (pPlayer->HasShield())
+	{
+		// TODO: check out
+		if (pPlayer->HasShield() && pPlayer->m_bShieldDrawn && pPlayer->m_pActiveItem != NULL)
+			((CBasePlayerWeapon *)pPlayer->m_pActiveItem)->SecondaryAttack();
+
+		pPlayer->m_bShieldDrawn = false;
+	}
+
+	CBasePlayerWeapon *pWeapon = (CBasePlayerWeapon *)pPlayer->m_rgpPlayerItems[ PISTOL_SLOT ];
+
+	if (pWeapon != NULL)
+	{
+		pPlayer->DropPlayerItem(STRING(pWeapon->pev->classname));
+	}
+
 }
 
 /* <473db> ../cstrike/dlls/client.cpp:1182 */
-NOBODY void DropPrimary(CBasePlayer *pPlayer)
+void DropPrimary(CBasePlayer *pPlayer)
 {
+	if (pPlayer->HasShield())
+	{
+		pPlayer->DropShield();
+		return;
+	}
+
+	if (pPlayer->m_rgpPlayerItems[ PRIMARY_WEAPON_SLOT ])
+		pPlayer->DropPlayerItem(STRING(pPlayer->m_rgpPlayerItems[ PRIMARY_WEAPON_SLOT ]->pev->classname));
 }
 
 /* <483a2> ../cstrike/dlls/client.cpp:1197 */
@@ -449,9 +786,15 @@ NOBODY void BuyItem(CBasePlayer *pPlayer, int iSlot)
 //	}
 }
 
+void (*pHandleMenu_ChooseAppearance)(void);
+
 /* <48d40> ../cstrike/dlls/client.cpp:1998 */
-NOBODY void HandleMenu_ChooseAppearance(CBasePlayer *player, int slot)
+NOBODY void  __declspec(naked) HandleMenu_ChooseAppearance(CBasePlayer *player, int slot)
 {
+	__asm
+	{
+		jmp pHandleMenu_ChooseAppearance
+	}
 //	{
 //		class CHalfLifeMultiplay *mp;                        //  2000
 //		class  appearance;                                    //  2007
@@ -461,9 +804,15 @@ NOBODY void HandleMenu_ChooseAppearance(CBasePlayer *player, int slot)
 //	}
 }
 
+void (*pHandleMenu_ChooseTeam)(void);
+
 /* <48e4b> ../cstrike/dlls/client.cpp:2214 */
-NOBODY BOOL HandleMenu_ChooseTeam(CBasePlayer *player, int slot)
+NOBODY BOOL __declspec(naked) HandleMenu_ChooseTeam(CBasePlayer *player, int slot)
 {
+	__asm
+	{
+		jmp pHandleMenu_ChooseTeam
+	}
 //	{
 //		class CHalfLifeMultiplay *mp;                        //  2216
 //		enum TeamName team;                                   //  2217
@@ -927,31 +1276,91 @@ NOBODY void ClientUserInfoChanged(edict_t *pEntity, char *infobuffer)
 }
 
 /* <4a378> ../cstrike/dlls/client.cpp:4362 */
-NOBODY void ServerDeactivate(void)
+void ServerDeactivate(void)
 {
+	// It's possible that the engine will call this function more times than is necessary
+	//  Therefore, only run it one time for each call to ServerActivate 
+	if (g_serveractive != 1)
+	{
+		return;
+	}
+
+	g_serveractive = 0;
+
+	// Peform any shutdown operations here...
+	g_pGameRules->ServerDeactivate();
+	CLocalNav::Reset();
+	TheBots->ServerDeactivate();
+
+	if (g_pHostages)
+	{
+		g_pHostages->ServerDeactivate();
+	}
 }
 
 /* <4a392> ../cstrike/dlls/client.cpp:4400 */
-NOBODY void ServerActivate(edict_t *pEdictList, int edictCount, int clientMax)
+void ServerActivate(edict_t *pEdictList, int edictCount, int clientMax)
 {
-//	{
-//		int i;                                                //  4402
-//		class CBaseEntity *pClass;                           //  4403
-//	}
+	int i;
+	CBaseEntity *pClass;
+
+	// Every call to ServerActivate should be matched by a call to ServerDeactivate
+	g_serveractive = 1;
+	EmptyEntityHashTable();
+
+	// Clients have not been initialized yet
+	for (i = 0; i < edictCount; i++)
+	{
+		edict_t *pEdict = &pEdictList[i];
+
+		if (pEdict->free)
+			continue;
+
+		// Clients aren't necessarily initialized until ClientPutInServer()
+		if (i < clientMax || !pEdict->pvPrivateData)
+			continue;
+
+		pClass = CBaseEntity::Instance(pEdict);
+
+		// Activate this entity if it's got a class & isn't dormant
+		if (pClass && !(pClass->pev->flags & FL_DORMANT))
+		{
+			AddEntityHashValue(&pEdict->v, STRING(pEdict->v.classname), CLASSNAME);
+			pClass->Activate();
+		}
+		else
+			ALERT(at_console, "Can't instance %s\n", STRING(pEdict->v.classname));
+	}
+
+	// Link user messages here to make sure first client can get them...
+	LinkUserMessages();
+	WriteSigonMessages();
+
+	if (g_pGameRules)
+	{
+		g_pGameRules->CheckMapConditions();
+	}
+
+	TheBots->ServerActivate();
+
+	if (g_pHostages)
+	{
+		g_pHostages->ServerActivate();
+	}
 }
 
 /* <4a404> ../cstrike/dlls/client.cpp:4459 */
-NOBODY void PlayerPreThink(edict_t *pEntity)
+void PlayerPreThink(edict_t *pEntity)
 {
-//	{
-//		entvars_t *pev;                                      //  4461
-//		class CBasePlayer *pPlayer;                          //  4462
-//		GET_PRIVATE(edict_t *pent);  //  4462
-//	}
+	entvars_t *pev = &pEntity->v;
+	CBasePlayer *pPlayer = (CBasePlayer *)GET_PRIVATE(pEntity);
+
+	if (pPlayer)
+		pPlayer->PreThink();
 }
 
 /* <4a47c> ../cstrike/dlls/client.cpp:4475 */
-NOBODY void PlayerPostThink(edict_t *pEntity)
+void PlayerPostThink(edict_t *pEntity)
 {
 	entvars_t *pev = &pEntity->v;
 	CBasePlayer *pPlayer = (CBasePlayer *)GET_PRIVATE(pEntity);
@@ -1529,10 +1938,10 @@ NOXREF void ResetPlayerPVS(edict_t *client, int clientnum)
 {
 	PLAYERPVSSTATUS *pvs = &g_PVSStatus[clientnum];
 
-	memset(pvs, 0, sizeof(*pvs));
+	Q_memset(pvs, 0, sizeof(*pvs));
 	pvs->headnode = client->headnode;
 	pvs->num_leafs = client->num_leafs;
-	memcpy(pvs->leafnums, client->leafnums, sizeof(pvs->leafnums));
+	Q_memcpy(pvs->leafnums, client->leafnums, sizeof(pvs->leafnums));
 }
 
 /* <4aae8> ../cstrike/dlls/client.cpp:5240 */
@@ -1636,7 +2045,7 @@ int AddToFullPack(struct entity_state_s *state, int e, edict_t *ent, edict_t *ho
 		UTIL_UnsetGroupTrace();
 	}
 
-	memset(state, 0, sizeof(*state));
+	Q_memset(state, 0, sizeof(*state));
 
 	state->number = e;
 	state->entityType = ENTITY_NORMAL;
@@ -1646,12 +2055,12 @@ int AddToFullPack(struct entity_state_s *state, int e, edict_t *ent, edict_t *ho
 
 	state->animtime = (int)(1000.0 * ent->v.animtime) / 1000.0;
 
-	memcpy(state->origin, ent->v.origin, sizeof(float) * 3);
-	memcpy(state->angles, ent->v.angles, sizeof(float) * 3);
-	memcpy(state->mins, ent->v.mins, sizeof(float) * 3);
-	memcpy(state->maxs, ent->v.maxs, sizeof(float) * 3);
-	memcpy(state->startpos, ent->v.startpos, sizeof(float) * 3);
-	memcpy(state->endpos, ent->v.endpos, sizeof(float) * 3);
+	Q_memcpy(state->origin, ent->v.origin, sizeof(float) * 3);
+	Q_memcpy(state->angles, ent->v.angles, sizeof(float) * 3);
+	Q_memcpy(state->mins, ent->v.mins, sizeof(float) * 3);
+	Q_memcpy(state->maxs, ent->v.maxs, sizeof(float) * 3);
+	Q_memcpy(state->startpos, ent->v.startpos, sizeof(float) * 3);
+	Q_memcpy(state->endpos, ent->v.endpos, sizeof(float) * 3);
 
 	state->impacttime = ent->v.impacttime;
 	state->starttime = ent->v.starttime;
@@ -1700,7 +2109,7 @@ int AddToFullPack(struct entity_state_s *state, int e, edict_t *ent, edict_t *ho
 
 	if (player)
 	{
-		memcpy(state->basevelocity, ent->v.basevelocity, sizeof(float) * 3);
+		Q_memcpy(state->basevelocity, ent->v.basevelocity, sizeof(float) * 3);
 
 		state->weaponmodel = MODEL_INDEX( STRING(ent->v.weaponmodel) );
 		state->gaitsequence = ent->v.gaitsequence;
@@ -1956,7 +2365,7 @@ int GetWeaponData(edict_s *player, struct weapon_data_s *info)
 	entvars_t *pev = &player->v;
 	CBasePlayer *pl = reinterpret_cast< CBasePlayer * >(CBasePlayer::Instance( pev ));
 
-	memset(info, 0, sizeof(weapon_data_t) * MAX_WEAPONS);
+	Q_memset(info, 0, sizeof(weapon_data_t) * MAX_WEAPONS);
 
 	if (!pl)
 		return 1;
@@ -1972,7 +2381,7 @@ int GetWeaponData(edict_s *player, struct weapon_data_s *info)
 			if (gun && gun->UseDecrement())
 			{
 				ItemInfo II;
-				memset(&II, 0, sizeof(II));
+				Q_memset(&II, 0, sizeof(II));
 				gun->GetItemInfo(&II);
 
 				if (II.iId >= 0 && II.iId < MAX_WEAPONS)
@@ -2099,7 +2508,7 @@ void UpdateClientData(const struct edict_s *ent, int sendweapons, struct clientd
 		if (pl->m_pActiveItem != NULL)
 		{
 			ItemInfo II;
-			memset(&II, 0, sizeof(II));
+			Q_memset(&II, 0, sizeof(II));
 
 			CBasePlayerWeapon *gun = reinterpret_cast< CBasePlayerWeapon * >(pl->m_pActiveItem->GetWeaponPtr());
 
@@ -2183,7 +2592,7 @@ void CreateInstancedBaselines(void)
 	int iret = 0;
 	entity_state_t state;
 
-	memset(&state, 0, sizeof( state ));
+	Q_memset(&state, 0, sizeof( state ));
 
 	// Create any additional baselines here for things like grendates, etc.
 	// iret = ENGINE_INSTANCE_BASELINE( pc->pev->classname, &state );
@@ -2196,7 +2605,7 @@ void CreateInstancedBaselines(void)
 int InconsistentFile(const edict_t *player, const char *filename, char *disconnect_message)
 {
 	// Server doesn't care?
-	if (CVAR_GET_FLOAT( "mp_consistency" ) != 1)
+	if (CVAR_GET_FLOAT("mp_consistency") != 1)
 		return 0;
 
 	// Default behavior is to kick the player

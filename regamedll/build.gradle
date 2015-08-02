@@ -168,11 +168,6 @@ void setupToolchain(NativeBinarySpec b) {
         cfg.extraLibs 'dl', 'm', 'stdc++', 'steam_api'
     }
 
-    // TODO: check it
-    //if (!unitTestExecutable && !mpLib) {
-    //    cfg.singleDefines 'HOOK_GAMEDLL'
-    //}
-
     if (unitTestExecutable) {
         cfg.singleDefines 'REGAMEDLL_UNIT_TESTS'
     }

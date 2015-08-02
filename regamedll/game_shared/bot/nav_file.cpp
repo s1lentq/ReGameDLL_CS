@@ -537,9 +537,15 @@ NOBODY void SanityCheckNavigationMap(const char *mapName)
 //	}
 }
 
+void (*pLoadNavigationMap)(void);
+
 /* <4f19c7> ../game_shared/bot/nav_file.cpp:947 */
-NOBODY NavErrorType LoadNavigationMap(void)
+NOBODY NavErrorType __declspec(naked) LoadNavigationMap(void)
 {
+	__asm
+	{
+		jmp pLoadNavigationMap
+	}
 //	{
 //		char filename;                                        //   955
 //		class SteamFile navFile;                              //   965

@@ -78,7 +78,7 @@ typedef struct
 
 //#define g_flTimeLimit (*pg_flTimeLimit)
 //#define g_flResetTime (*pg_flResetTime)
-//#define g_bClientPrintEnable (*pg_bClientPrintEnable)
+#define g_bClientPrintEnable (*pg_bClientPrintEnable)
 
 #define g_PVSStatus (*pg_PVSStatus)
 #define m_usResetDecals (*pm_usResetDecals)
@@ -88,6 +88,7 @@ typedef struct
 #define entity_field_alias (*pentity_field_alias)
 #define player_field_alias (*pplayer_field_alias)
 #define custom_entity_field_alias (*pcustom_entity_field_alias)
+#define g_serveractive (*pg_serveractive)
 
 #endif // HOOK_GAMEDLL
 
@@ -105,29 +106,32 @@ extern bool g_skipCareerInitialSpawn;
 extern entity_field_alias_t entity_field_alias[6];
 extern entity_field_alias_t player_field_alias[3];
 extern entity_field_alias_t custom_entity_field_alias[9];
+extern int g_serveractive;
 
 #endif // HOOK_GAMEDLL
 
 extern unsigned short m_usResetDecals;
 extern unsigned short g_iShadowSprite;
 
-NOBODY int CMD_ARGC_(void);
-NOBODY const char *CMD_ARGV_(int i);
-NOBODY void set_suicide_frame(entvars_t *pev);
-NOBODY BOOL ClientConnect(edict_t *pEntity, const char *pszName, const char *pszAddress, char *szRejectReason);
-NOBODY void ClientDisconnect(edict_t *pEntity);
+NOXREF int CMD_ARGC_(void);
+NOXREF const char *CMD_ARGV_(int i);
+NOXREF void set_suicide_frame(entvars_t *pev);
+NOXREF void TeamChangeUpdate(CBasePlayer *player, int team_id);
+NOXREF void BlinkAccount(CBasePlayer *player, int numBlinks);
+BOOL ClientConnect(edict_t *pEntity, const char *pszName, const char *pszAddress, char *szRejectReason);
+void ClientDisconnect(edict_t *pEntity);
 void respawn(entvars_t *pev, BOOL fCopyCorpse = FALSE);
-NOBODY void ClientKill(edict_t *pEntity);
-NOBODY void ShowMenu(CBasePlayer *pPlayer, int bitsValidSlots, int nDisplayTime, BOOL fNeedMore, char *pszText);
-NOBODY void ShowVGUIMenu(CBasePlayer *pPlayer, int MenuType, int BitMask, char *szOldMenu);
-NOBODY int CountTeams(void);
+void ClientKill(edict_t *pEntity);
+void ShowMenu(CBasePlayer *pPlayer, int bitsValidSlots, int nDisplayTime, BOOL fNeedMore, char *pszText);
+void ShowVGUIMenu(CBasePlayer *pPlayer, int MenuType, int BitMask, char *szOldMenu);
+NOXREF C_DLLEXPORT int CountTeams(void);
 NOBODY void ListPlayers(CBasePlayer *current);
-NOBODY int CountTeamPlayers(int iTeam);
-NOBODY void ProcessKickVote(CBasePlayer *pVotingPlayer, CBasePlayer *pKickPlayer);
-NOBODY TeamName SelectDefaultTeam(void);
+C_DLLEXPORT int CountTeamPlayers(int iTeam);
+void ProcessKickVote(CBasePlayer *pVotingPlayer, CBasePlayer *pKickPlayer);
+TeamName SelectDefaultTeam(void);
 void CheckStartMoney(void);
-NOBODY void ClientPutInServer(edict_t *pEntity);
-NOBODY int Q_strlen_(const char *str);
+void ClientPutInServer(edict_t *pEntity);
+int Q_strlen_(const char *str);
 NOBODY void Host_Say(edict_t *pEntity, int teamonly);
 NOBODY void DropPrimary(CBasePlayer *pPlayer);
 NOBODY bool CanBuyThis(CBasePlayer *pPlayer, int iWeapon);
@@ -152,9 +156,9 @@ NOBODY BOOL HandleRadioAliasCommands(CBasePlayer *pPlayer, const char *pszComman
 NOBODY void ClientCommand(edict_t *pEntity);
 NOBODY void ClientUserInfoChanged(edict_t *pEntity, char *infobuffer);
 NOBODY void ServerDeactivate(void);
-NOBODY void ServerActivate(edict_t *pEdictList, int edictCount, int clientMax);
-NOBODY void PlayerPreThink(edict_t *pEntity);
-NOBODY void PlayerPostThink(edict_t *pEntity);
+void ServerActivate(edict_t *pEdictList, int edictCount, int clientMax);
+void PlayerPreThink(edict_t *pEntity);
+void PlayerPostThink(edict_t *pEntity);
 void ParmsNewLevel(void);
 NOBODY void ParmsChangeLevel(void);
 NOBODY void StartFrame(void);
@@ -191,5 +195,7 @@ int AllowLagCompensation(void);
 
 // refs
 extern void (*pClientCommand)(edict_t *pEntity);
+extern void (*pHandleMenu_ChooseAppearance)(void);
+extern void (*pHandleMenu_ChooseTeam)(void);
 
 #endif // CLIENT_H

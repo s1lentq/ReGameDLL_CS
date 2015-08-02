@@ -555,10 +555,10 @@ void CFuncTank::Fire(const Vector &barrelEnd, const Vector &forward, entvars_t *
 	Fire_(barrelEnd, forward, pevAttacker);
 }
 
-//void CFuncTank::Fire(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker)
-//{
-//	Fire_(barrelEnd, forward, pevAttacker);
-//}
+void CFuncTankGun::Fire(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker)
+{
+	Fire_(barrelEnd, forward, pevAttacker);
+}
 
 void CFuncTankLaser::KeyValue(KeyValueData *pkvd)
 {

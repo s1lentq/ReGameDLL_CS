@@ -1247,7 +1247,7 @@ NOXREF int PM_GetPhysEntInfo(int ent)
 /* <2ce21b> ../cstrike/pm_shared/pm_shared.c:3638 */
 void PM_Init(struct playermove_s *ppmove)
 {
-	assert( !pm_shared_initialized );
+	assert(!pm_shared_initialized);
 
 	pmove = ppmove;
 

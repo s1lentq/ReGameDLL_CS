@@ -33,34 +33,38 @@ FILE_GLOBAL Vector anchor;
 FILE_GLOBAL bool isPlaceMode = false;
 FILE_GLOBAL bool isPlacePainting = false;
 
+FILE_GLOBAL float editTimestamp = 0.0f;
+
 FILE_GLOBAL unsigned int BlockedID[ MAX_BLOCKED_AREAS ];
 FILE_GLOBAL int BlockedIDCount = 0;
 
 #else // HOOK_GAMEDLL
 
-unsigned int (*CNavArea::m_nextID);
-unsigned int (*CNavArea::m_masterMarker);
+unsigned int IMPLEMENT_ARRAY_CLASS(CNavArea, m_nextID);
+unsigned int IMPLEMENT_ARRAY_CLASS(CNavArea, m_masterMarker);
 
-unsigned int (*HidingSpot::m_nextID);
-unsigned int (*HidingSpot::m_masterMarker);
+unsigned int IMPLEMENT_ARRAY_CLASS(HidingSpot, m_nextID);
+unsigned int IMPLEMENT_ARRAY_CLASS(HidingSpot, m_masterMarker);
 
-//NavLadderList TheNavLadderList;
+NavLadderList TheNavLadderList;
 HidingSpotList TheHidingSpotList;
 NavAreaList TheNavAreaList;
 CNavAreaGrid TheNavAreaGrid;
-CNavArea *(*CNavArea::m_openList);
-bool (*CNavArea::m_isReset);
+CNavArea *IMPLEMENT_ARRAY_CLASS(CNavArea, m_openList);
+bool IMPLEMENT_ARRAY_CLASS(CNavArea, m_isReset);
 
-//float lastDrawTimestamp;
+float lastDrawTimestamp;
 NavAreaList goodSizedAreaList;
-//CNavArea *markedArea;
-//CNavArea *lastSelectedArea;
+CNavArea *markedArea;
+CNavArea *lastSelectedArea;
 NavCornerType markedCorner;
-//bool isCreatingNavArea;
+bool isCreatingNavArea;
 //bool isAnchored;
 //Vector anchor;
 //bool isPlaceMode;
-//bool isPlacePainting;
+bool isPlacePainting;
+float editTimestamp;
+
 unsigned int BlockedID[ MAX_BLOCKED_AREAS ];
 int BlockedIDCount;
 
@@ -95,11 +99,7 @@ void DestroyHidingSpots(void)
 		area->m_hidingSpotList.clear();
 	}
 
-#ifndef HOOK_GAMEDLL
-	HidingSpot::m_nextID = 0;
-#else
-	(*HidingSpot::m_nextID) = 0;
-#endif // HOOK_GAMEDLL
+	IMPLEMENT_ARRAY_CLASS(HidingSpot, m_nextID) = 0;
 
 	// free all the HidingSpots
 	for (HidingSpotList::iterator iter = TheHidingSpotList.begin(); iter != TheHidingSpotList.end(); iter++)
@@ -209,11 +209,7 @@ NOBODY CNavArea::CNavArea(CNavNode *nwNode, class CNavNode *neNode, class CNavNo
 /* <4d58d7> ../game_shared/bot/nav_area.cpp:295 */
 NOBODY CNavArea::~CNavArea(void)
 {
-#ifndef HOOK_GAMEDLL
-	if (m_isReset)
-#else
-	if (*m_isReset)
-#endif // HOOK_GAMEDLL
+	if (IMPLEMENT_ARRAY(m_isReset))
 	{
 		//m_overlapList.~list();
 		//m_ladder->~list();
@@ -592,26 +588,49 @@ void CleanupApproachAreaAnalysisPrep(void)
 }
 
 /* <4c7b18> ../game_shared/bot/nav_area.cpp:980 */
-NOBODY void DestroyLadders(void)
+void DestroyLadders(void)
 {
-//	{
-//		class CNavLadder *ladder;                            //   984
-//	}
+	while (!TheNavLadderList.empty())
+	{
+		CNavLadder *ladder = TheNavLadderList.front();
+		TheNavLadderList.pop_front();
+		delete ladder;
+	}
 }
 
 /* <4d6733> ../game_shared/bot/nav_area.cpp:994 */
-NOBODY void DestroyNavigationMap(void)
+void DestroyNavigationMap(void)
 {
-//	{
-//		class CNavNode *node;                                //  1015
-//		class CNavNode *next;                                //  1015
-//		empty(const class list<CNavArea*, std::allocator<CNavArea*>> *const this);  //   999
-//		{
-//			class CNavArea *area;                        //  1001
-//			pop_front(list<CNavArea*, std::allocator<CNavArea*>> *const this);  //  1002
-//		}
-//		DestroyLadders(void);  //  1009
-//	}
+	IMPLEMENT_ARRAY_CLASS(CNavArea, m_isReset) = true;
+
+	// remove each element of the list and delete them
+	while (!TheNavAreaList.empty())
+	{
+		CNavArea *area = TheNavAreaList.front();
+		TheNavAreaList.pop_front();
+		delete area;
+	}
+
+	IMPLEMENT_ARRAY_CLASS(CNavArea, m_isReset) = false;
+
+	// destroy ladder representations
+	DestroyLadders();
+
+	// destroy all hiding spots
+	DestroyHidingSpots();
+
+	// destroy navigation nodes created during map learning
+	CNavNode *node, *next;
+	for (node = IMPLEMENT_ARRAY_CLASS(CNavNode, m_list); node; node = next)
+	{
+		next = node->m_next;
+		delete node;
+	}
+
+	IMPLEMENT_ARRAY_CLASS(CNavNode, m_list) = NULL;
+
+	// reset the grid
+	TheNavAreaGrid.Reset();
 }
 
 /* <4c7e9a> ../game_shared/bot/nav_area.cpp:1046 */
@@ -1509,8 +1528,8 @@ NOBODY void CNavArea::RemoveFromOpenList(void)
 	if (m_prevOpen)
 		m_prevOpen->m_nextOpen = m_nextOpen;
 	else
-		(*m_openList) = m_nextOpen;
-
+		IMPLEMENT_ARRAY(m_openList) = m_nextOpen;
+	
 	if (m_nextOpen)
 		m_nextOpen->m_prevOpen = m_prevOpen;
 
@@ -1522,11 +1541,7 @@ NOBODY void CNavArea::RemoveFromOpenList(void)
 NOBODY void CNavArea::ClearSearchLists(void)
 {
 	CNavArea::MakeNewMarker();
-#ifndef HOOK_GAMEDLL
-	m_openList = NULL;
-#else
-	(*m_openList) = NULL;
-#endif // HOOK_GAMEDLL
+	IMPLEMENT_ARRAY(m_openList) = NULL;
 }
 
 /* <4cbe06> ../game_shared/bot/nav_area.cpp:2744 */
@@ -2198,13 +2213,21 @@ NOBODY int CNavArea::GetPlayerCount(int teamID, CBasePlayer *ignore) const
 }
 
 /* <4cea33> ../game_shared/bot/nav_area.cpp:3749 */
-NOBODY CNavArea *GetMarkedArea(void)
+CNavArea *GetMarkedArea(void)
 {
+	return markedArea;
 }
 
 /* <4c2a8c> ../game_shared/bot/nav_area.cpp:3757 */
-NOBODY void EditNavAreasReset(void)
+void EditNavAreasReset(void)
 {
+	markedArea = NULL;
+	lastSelectedArea = NULL;
+	isCreatingNavArea = false;
+	isPlacePainting = false;
+
+	editTimestamp = 0.0f;
+	lastDrawTimestamp = 0.0f;
 }
 
 /* <4cea61> ../game_shared/bot/nav_area.cpp:3767 */
@@ -2754,13 +2777,23 @@ NOBODY CNavAreaGrid::~CNavAreaGrid(void)
 }
 
 /* <4cf837> ../game_shared/bot/nav_area.cpp:4962 */
-NOBODY void CNavAreaGrid::Reset(void)
+void CNavAreaGrid::Reset(void)
 {
-//	~list(list<CNavArea*, std::allocator<CNavArea*>>::Reset(//		int const __in_chrg);  //  4965
-//	{
-//		int i;                                                //  4972
-//	}
-//	EditNavAreasReset(void);  //  4977
+	if (m_grid)
+		delete[] m_grid;
+
+	m_grid = NULL;
+	m_gridSizeX = 0;
+	m_gridSizeY = 0;
+
+	// clear the hash table
+	for(int i = 0; i < HASH_TABLE_SIZE; i++)
+		m_hashTable[i] = NULL;
+
+	m_areaCount = 0;
+
+	// reset static vars
+	EditNavAreasReset();
 }
 
 /* <4cf984> ../game_shared/bot/nav_area.cpp:4983 */

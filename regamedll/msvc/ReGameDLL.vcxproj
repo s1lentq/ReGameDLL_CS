@@ -34,17 +34,24 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Play|Win32'">false</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\dlls\bot\cs_bot_chatter.cpp" />
+    <ClCompile Include="..\dlls\bot\cs_bot_chatter.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Play|Win32'">
+      </ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\dlls\bot\cs_bot_event.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Play|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Play|Win32'">false</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\dlls\bot\cs_bot_init.cpp" />
+    <ClCompile Include="..\dlls\bot\cs_bot_init.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Play|Win32'">
+      </ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\dlls\bot\cs_bot_learn.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Play|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Play|Win32'">
+      </ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Play|Win32'">false</ExcludedFromBuild>
     </ClCompile>
@@ -54,7 +61,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Play|Win32'">false</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\dlls\bot\cs_bot_manager.cpp" />
+    <ClCompile Include="..\dlls\bot\cs_bot_manager.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Play|Win32'">
+      </ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\dlls\bot\cs_bot_nav.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Play|Win32'">false</ExcludedFromBuild>
@@ -69,25 +79,34 @@
     </ClCompile>
     <ClCompile Include="..\dlls\bot\cs_bot_radio.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Play|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Play|Win32'">
+      </ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Play|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\dlls\bot\cs_bot_statemachine.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Play|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Play|Win32'">
+      </ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Play|Win32'">false</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\dlls\bot\cs_bot_update.cpp" />
-    <ClCompile Include="..\dlls\bot\cs_bot_vision.cpp" />
+    <ClCompile Include="..\dlls\bot\cs_bot_update.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Play|Win32'">
+      </ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\dlls\bot\cs_bot_vision.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Play|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\dlls\bot\cs_bot_weapon.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Play|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Play|Win32'">false</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\dlls\bot\cs_gamestate.cpp" />
+    <ClCompile Include="..\dlls\bot\cs_gamestate.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Play|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\dlls\bot\states\cs_bot_attack.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Play|Win32'">false</ExcludedFromBuild>
@@ -185,35 +204,35 @@
     <ClCompile Include="..\dlls\hintmessage.cpp" />
     <ClCompile Include="..\dlls\hostage\hostage.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Play|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Play|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\dlls\hostage\hostage_improv.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Play|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Play|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\dlls\hostage\hostage_localnav.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Play|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Play|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\dlls\hostage\states\hostage_animate.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Play|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Play|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\dlls\hostage\states\hostage_escape.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Play|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Play|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\dlls\hostage\states\hostage_follow.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Play|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Play|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\dlls\hostage\states\hostage_idle.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Play|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Play|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\dlls\hostage\states\hostage_retreat.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Play|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Play|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\dlls\h_ai.cpp" />
     <ClCompile Include="..\dlls\h_battery.cpp" />
@@ -499,6 +518,7 @@
     <ClInclude Include="..\common\cvardef.h" />
     <ClInclude Include="..\common\entity_state.h" />
     <ClInclude Include="..\common\event_flags.h" />
+    <ClInclude Include="..\common\hltv.h" />
     <ClInclude Include="..\common\in_buttons.h" />
     <ClInclude Include="..\common\mathlib.h" />
     <ClInclude Include="..\common\netadr.h" />
@@ -517,10 +537,21 @@
     <ClInclude Include="..\dlls\animation.h" />
     <ClInclude Include="..\dlls\basemonster.h" />
     <ClInclude Include="..\dlls\bmodels.h" />
-    <ClInclude Include="..\dlls\bot\cs_bot.h" />
-    <ClInclude Include="..\dlls\bot\cs_bot_chatter.h" />
-    <ClInclude Include="..\dlls\bot\cs_bot_manager.h" />
-    <ClInclude Include="..\dlls\bot\cs_gamestate.h" />
+    <ClInclude Include="..\dlls\bot\cs_bot.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Play|Win32'">
+      </ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\dlls\bot\cs_bot_chatter.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Play|Win32'">
+      </ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\dlls\bot\cs_bot_manager.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Play|Win32'">
+      </ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\dlls\bot\cs_gamestate.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Play|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="..\dlls\buttons.h" />
     <ClInclude Include="..\dlls\career_tasks.h" />
     <ClInclude Include="..\dlls\cbase.h" />
@@ -561,6 +592,7 @@
     <ClInclude Include="..\dlls\plats.h" />
     <ClInclude Include="..\dlls\player.h" />
     <ClInclude Include="..\dlls\saverestore.h" />
+    <ClInclude Include="..\dlls\schedule.h" />
     <ClInclude Include="..\dlls\skill.h" />
     <ClInclude Include="..\dlls\sound.h" />
     <ClInclude Include="..\dlls\soundent.h" />
@@ -813,6 +845,7 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>precompiled.h</PrecompiledHeaderFile>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -961,6 +994,7 @@
       <AdditionalOptions>/arch:IA32 %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>precompiled.h</PrecompiledHeaderFile>
+      <FloatingPointModel>Precise</FloatingPointModel>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

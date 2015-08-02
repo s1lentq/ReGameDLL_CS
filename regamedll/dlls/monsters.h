@@ -34,16 +34,16 @@
 
 #include "skill.h"
 
-#define	LOCALMOVE_INVALID				0	// move is not possible
+#define LOCALMOVE_INVALID				0	// move is not possible
 #define LOCALMOVE_INVALID_DONT_TRIANGULATE		1	// move is not possible, don't try to triangulate
 #define LOCALMOVE_VALID					2	// move is possible
 
-#define	SF_MONSTER_WAIT_TILL_SEEN			1	// spawnflag that makes monsters wait until player can see them before attacking.
-#define	SF_MONSTER_GAG					2	// no idle noises from this monster
+#define SF_MONSTER_WAIT_TILL_SEEN			1	// spawnflag that makes monsters wait until player can see them before attacking.
+#define SF_MONSTER_GAG					2	// no idle noises from this monster
 #define SF_MONSTER_HITMONSTERCLIP			4
 #define SF_MONSTER_PRISONER				16	// monster won't attack anyone, no one will attacke him.
 
-#define	SF_MONSTER_WAIT_FOR_SCRIPT			128	//spawnflag that makes monsters wait to check for attacking until the script is done or they've been attacked
+#define SF_MONSTER_WAIT_FOR_SCRIPT			128	//spawnflag that makes monsters wait to check for attacking until the script is done or they've been attacked
 #define SF_MONSTER_PREDISASTER				256	//this is a predisaster scientist or barney. Influences how they speak.
 #define SF_MONSTER_FADECORPSE				512	// Fade out corpse after death
 #define SF_MONSTER_FALL_TO_GROUND			0x80000000
@@ -60,7 +60,7 @@
 
 #define R_AL						-2	// (ALLY) pals. Good alternative to R_NO when applicable.
 #define R_FR						-1	// (FEAR)will run
-#define	R_NO						0	// (NO RELATIONSHIP) disregard
+#define R_NO						0	// (NO RELATIONSHIP) disregard
 #define R_DL						1	// (DISLIKE) will attack
 #define R_HT						2	// (HATE)will attack this character instead of any visible DISLIKEd characters
 #define R_NM						3	// (NEMESIS)  A monster Will ALWAYS attack its nemsis, no matter what
@@ -128,11 +128,11 @@ public:
 public:
 	void Spawn(const char *szGibModel);
 	void EXPORT BounceGibTouch(CBaseEntity *pOther);
-	NOBODY void EXPORT StickyGibTouch(CBaseEntity *pOther);
+	void EXPORT StickyGibTouch(CBaseEntity *pOther);
 	void EXPORT WaitTillLand(void);
 	void LimitVelocity(void);
 public:
-	NOBODY static void SpawnHeadGib(entvars_t *pevVictim);
+	static void SpawnHeadGib(entvars_t *pevVictim);
 	static void SpawnRandomGibs(entvars_t *pevVictim, int cGibs, int human);
 	NOBODY static void SpawnStickyGibs(entvars_t *pevVictim, Vector vecOrigin, int cGibs);
 public:
@@ -158,7 +158,5 @@ public:
 				return baseClass::ScheduleFromName(pName);\
 			return pSchedule;\
 		}
-// refs
-extern void (*pCGib__SpawnRandomGibs)(entvars_t *pevVictim, int cGibs, int human);
 
 #endif // MONSTERS_H

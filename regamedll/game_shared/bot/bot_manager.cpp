@@ -121,11 +121,11 @@ void CBotManager::StartFrame_(void)
 }
 
 /* <49f7a6> ../game_shared/bot/bot_manager.cpp:205 */
-NOBODY const char *CBotManager::GetNavMapFilename(void) const
+const char *CBotManager::GetNavMapFilename(void) const
 {
-	//static char filename[256];
-	//Q_sprintf(filename, "maps\\%s.nav", STRING(gpGlobals->mapname));
-	//return filename;
+	static char filename[256];
+	Q_sprintf(filename, "maps\\%s.nav", STRING(gpGlobals->mapname));
+	return filename;
 }
 
 /* <49f17b> ../game_shared/bot/bot_manager.cpp:219 */

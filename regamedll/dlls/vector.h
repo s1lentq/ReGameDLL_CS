@@ -50,7 +50,6 @@ class Vector2D
 {
 public:
 	vec_t x, y;
-
 	inline Vector2D(void) : x(0.0), y(0.0)
 	{
 	}
@@ -67,6 +66,20 @@ public:
 	{
 		return Vector2D(x - v.x, y - v.y);
 	}
+#ifdef HOOK_GAMEDLL
+	inline Vector2D operator*(float_precision fl) const
+	{
+		return Vector2D((vec_t)(x * fl), (vec_t)(y * fl));
+	}
+	inline Vector2D operator/(float_precision fl) const
+	{
+		return Vector2D((vec_t)(x / fl), (vec_t)(y / fl));
+	}
+	inline Vector2D operator/=(float_precision fl) const
+	{
+		return Vector2D((vec_t)(x / fl), (vec_t)(y / fl));
+	}
+#else
 	inline Vector2D operator*(float fl) const
 	{
 		return Vector2D(x * fl, y * fl);
@@ -79,36 +92,26 @@ public:
 	{
 		return Vector2D(x / fl, y / fl);
 	}
-#ifdef HOOK_GAMEDLL
+#endif // HOOK_GAMEDLL
 	inline double Length(void) const
 	{
-		return sqrt((double)(x * x + y * y));
+		return sqrt((float_precision)(x * x + y * y));
 	}
-#else
-	inline float Length(void) const
-	{
-		return sqrt(x * x + y * y);
-	}
-#endif // HOOK_GAMEDLL
 	inline float LengthSquared(void) const
 	{
 		return (x * x + y * y);
 	}
 	inline Vector2D Normalize(void) const
 	{
+		float_precision flLength = Length();
+		if (!flLength)
+			return Vector2D(0, 0);
+
+		flLength = 1 / flLength;
+	
 #ifdef HOOK_GAMEDLL
-		double flLength = Length();
-		if (!flLength)
-			return Vector2D(0, 0);
-
-		flLength = 1 / flLength;
-		return Vector2D((float)(x * flLength), (float)(y * flLength));
+		return Vector2D((vec_t)(x * flLength), (vec_t)(y * flLength));
 #else
-		float flLength = Length();
-		if (!flLength)
-			return Vector2D(0, 0);
-
-		flLength = 1 / flLength;
 		return Vector2D(x * flLength, y * flLength);
 #endif // HOOK_GAMEDLL
 	}
@@ -197,6 +200,20 @@ public:
 	{
 		return Vector(x - v.x, y - v.y, z - v.z);
 	}
+#ifdef HOOK_GAMEDLL
+	inline Vector operator*(float_precision fl) const
+	{
+		return Vector((vec_t)(x * fl), (vec_t)(y * fl), (vec_t)(z * fl));
+	}
+	inline Vector operator/(float_precision fl) const
+	{
+		return Vector((vec_t)(x / fl), (vec_t)(y / fl), (vec_t)(z / fl));
+	}
+	inline Vector operator/=(float_precision fl) const
+	{
+		return Vector((vec_t)(x / fl), (vec_t)(y / fl), (vec_t)(z / fl));
+	}
+#else
 	inline Vector operator*(float fl) const
 	{
 		return Vector(x * fl, y * fl, z * fl);
@@ -209,23 +226,18 @@ public:
 	{
 		return Vector(x / fl, y / fl, z / fl);
 	}
+#endif // HOOK_GAMEDLL
+
 	inline void CopyToArray(float *rgfl) const
 	{
 		rgfl[0] = x;
 		rgfl[1] = y;
 		rgfl[2] = z;
 	}
-#ifdef HOOK_GAMEDLL
 	inline double Length(void) const
 	{
-		return sqrt((double)(x * x + y * y + z * z));
+		return sqrt((float_precision)(x * x + y * y + z * z));
 	}
-#else
-	inline float Length(void) const
-	{
-		return sqrt(x * x + y * y + z * z);
-	}
-#endif // HOOK_GAMEDLL
 	inline float LengthSquared(void) const
 	{
 		return (x * x + y * y + z * z);
@@ -240,17 +252,16 @@ public:
 	}
 	inline Vector Normalize(void) const
 	{
-#ifdef HOOK_GAMEDLL
-		double flLength = Length();
-#else
-		float flLength = Length();
-#endif // HOOK_GAMEDLL
-
+		float_precision flLength = Length();
 		if (!flLength)
 			return Vector(0, 0, 1);
 
 		flLength = 1 / flLength;
-		return Vector((float)(x * flLength), (float)(y * flLength), (float)(z * flLength));
+#ifdef HOOK_GAMEDLL
+		return Vector((vec_t)(x * flLength), (vec_t)(y * flLength), (vec_t)(z * flLength));
+#else
+		return Vector(x * flLength, y * flLength, z * flLength);
+#endif // HOOK_GAMEDLL
 	}
 	inline Vector2D Make2D(void) const
 	{
@@ -259,17 +270,10 @@ public:
 		Vec2.y = y;
 		return Vec2;
 	}
-#ifdef HOOK_GAMEDLL
 	inline double Length2D(void) const
 	{
-		return sqrt((double)(x * x + y * y));
+		return sqrt((float_precision)(x * x + y * y));
 	}
-#else
-	inline double Length2D(void) const
-	{
-		return sqrt(x * x + y * y);
-	}
-#endif // HOOK_GAMEDLL
 	inline bool IsLengthLessThan(float length) const
 	{
 		return (LengthSquared() < length * length);

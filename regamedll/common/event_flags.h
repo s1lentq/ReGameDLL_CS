@@ -50,7 +50,7 @@
 #define FEV_UPDATE		(1<<3)
 
 // Only send to entity specified as the invoker
-#define	FEV_HOSTONLY		(1<<4)
+#define FEV_HOSTONLY		(1<<4)
 
 // Only send if the event was created on the server.
 #define FEV_SERVER		(1<<5)

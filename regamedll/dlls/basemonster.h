@@ -32,40 +32,52 @@
 #pragma once
 #endif
 
+void RadiusFlash(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int iClassIgnore = 0, int bitsDamageType = 0);
+float GetAmountOfPlayerVisible(Vector vecSrc, CBaseEntity *entity);
+void RadiusDamage(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, float flRadius, int iClassIgnore, int bitsDamageType);
+void RadiusDamage2(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, float flRadius, int iClassIgnore, int bitsDamageType);
+NOXREF char *vstr(float *v);
+
 /* <48ecff> ../cstrike/dlls/basemonster.h:18 */
 class CBaseMonster: public CBaseToggle
 {
 public:
 	NOBODY virtual void KeyValue(KeyValueData *pkvd);
-	NOBODY virtual void TraceAttack(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType);
+	virtual void TraceAttack(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType);
 	NOBODY virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
 	NOBODY virtual int TakeHealth(float flHealth, int bitsDamageType);
-	NOBODY virtual void Killed(entvars_t *pevAttacker, int iGib);
+	virtual void Killed(entvars_t *pevAttacker, int iGib);
 	virtual int BloodColor(void)
 	{
-		return m_bloodColor;
+		return BloodColor_();
 	}
 	virtual BOOL IsAlive(void)
 	{
-		return (pev->deadflag != DEAD_DEAD);
+		return IsAlive_();
 	}
-	NOBODY virtual float ChangeYaw(int speed);
-	NOBODY virtual BOOL HasHumanGibs(void);
-	NOBODY virtual BOOL HasAlienGibs(void);
+	virtual float ChangeYaw(int speed);
+	virtual BOOL HasHumanGibs(void);
+	virtual BOOL HasAlienGibs(void);
 	NOBODY virtual void FadeMonster(void);
-	NOBODY virtual void GibMonster(void);
+	virtual void GibMonster(void);
 	NOBODY virtual Activity GetDeathActivity(void);
 	virtual void BecomeDead(void);
-	NOBODY virtual BOOL ShouldFadeOnDeath(void);
+	virtual BOOL ShouldFadeOnDeath(void);
 	NOBODY virtual int IRelationship(CBaseEntity *pTarget);
-	NOBODY virtual void PainSound(void) {};
-	NOBODY virtual void ResetMaxSpeed(void) {};
-	NOBODY virtual void ReportAIState(void) {};
+	virtual void PainSound(void) {}
+	NOBODY virtual void ResetMaxSpeed(void) {}
+	NOBODY virtual void ReportAIState(void) {}
 	virtual void MonsterInitDead(void);
 	NOBODY virtual void Look(int iDistance);
 	NOBODY virtual CBaseEntity *BestVisibleEnemy(void);
+
+#ifdef _WIN32
+	NOBODY virtual BOOL FInViewCone(Vector *pOrigin);
+	NOBODY virtual BOOL FInViewCone(CBaseEntity *pEntity);
+#else
 	NOBODY virtual BOOL FInViewCone(CBaseEntity *pEntity);
 	NOBODY virtual BOOL FInViewCone(Vector *pOrigin);
+#endif // _WIN32
 
 #ifdef HOOK_GAMEDLL
 
@@ -74,6 +86,14 @@ public:
 	int TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
 	int TakeHealth_(float flHealth, int bitsDamageType);
 	void Killed_(entvars_t *pevAttacker, int iGib);
+	int BloodColor_(void)
+	{
+		return m_bloodColor;
+	}
+	BOOL IsAlive_(void)
+	{
+		return (pev->deadflag != DEAD_DEAD);
+	}
 	float ChangeYaw_(int speed);
 	BOOL HasHumanGibs_(void);
 	BOOL HasAlienGibs_(void);
@@ -92,14 +112,14 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	NOBODY void MakeIdealYaw(Vector vecTarget);
+	void MakeIdealYaw(Vector vecTarget);
 	NOBODY Activity GetSmallFlinchActivity(void);
-	NOBODY BOOL ShouldGibMonster(int iGib);
-	NOBODY void CallGibMonster(void);
-	NOBODY BOOL FCheckAITrigger(void);
-	NOBODY int DeadTakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
-	NOBODY float DamageForce(float damage);
-	NOBODY void RadiusDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int iClassIgnore, int bitsDamageType);
+	BOOL ShouldGibMonster(int iGib);
+	void CallGibMonster(void);
+	BOOL FCheckAITrigger(void);
+	int DeadTakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
+	float DamageForce(float damage);
+	void RadiusDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int iClassIgnore, int bitsDamageType);
 	NOXREF void RadiusDamage(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int iClassIgnore, int bitsDamageType);
 	void RadiusDamage2(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int iClassIgnore, int bitsDamageType)
 	{

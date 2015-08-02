@@ -33,8 +33,49 @@ HIDDEN Module g_EngineModule = { NULL, NULL, NULL, NULL };
 
 extern const size_t g_BaseOffset;
 extern FunctionHook g_FunctionHooks[];
+extern VirtualTableRef g_TableRefs[];
 extern AddressRef g_FunctionRefs[];
 extern AddressRef g_DataRefs[];
+
+VirtualTableRef *GetVirtualTableRefAddr(const char *szClassName)
+{
+	VirtualTableRef *refData = g_TableRefs;
+	while (refData->symbolName != NULL)
+	{
+		if (!strcmp(refData->symbolName, szClassName))
+		{
+			if (refData->originalAddress != NULL)
+			{
+				return refData;
+			}
+		}
+		refData++;
+	}
+
+	return NULL;
+}
+
+bool GetAddressUsingHook(size_t addr)
+{
+	for (FunctionHook *cfh = &g_FunctionHooks[0]; cfh->symbolName; cfh++)
+	{
+		if (addr == cfh->originalAddress)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+size_t OffsetToRebase(size_t addr)
+{
+	return (addr - g_GameDLLModule.base + g_BaseOffset);
+}
+
+void *GetFunctionEntity(const char *szClassName)
+{
+	return Sys_GetProcAddress((HMODULE)g_GameDLLModule.base, szClassName);
+}
 
 void printAddrRebase(size_t addr,const char *funcName)
 {
@@ -100,6 +141,8 @@ void *GetFuncRefAddrOrDefault(const char *funcName, void *def)
 	return def;
 }
 
+int nCountHook = 0;
+
 int HookGameDLL(size_t gameAddr, size_t engAddr)
 {
 	if (gameAddr == NULL
@@ -131,7 +174,7 @@ int HookGameDLL(size_t gameAddr, size_t engAddr)
 		if (!GetAddress(&g_GameDLLModule, (Address *)refFunc, g_BaseOffset))
 		{
 #if _DEBUG
-			printf(__FUNCTION__ ": symbol not found \"%s\", symbol index: %i\n", refData->symbolName, refData->symbolIndex);
+			printf(__FUNCTION__ ": symbol not found \"%s\", symbol index: %i\n", refFunc->symbolName, refFunc->symbolIndex);
 			success = false;
 #endif // _DEBUG
 		}
@@ -144,11 +187,24 @@ int HookGameDLL(size_t gameAddr, size_t engAddr)
 		if (!GetAddress(&g_GameDLLModule, (Address*)hookFunc, g_BaseOffset))
 		{
 #if _DEBUG
-			printf(__FUNCTION__ ": symbol not found \"%s\", symbol index: %i\n", refData->symbolName, refData->symbolIndex);
+			printf(__FUNCTION__ ": symbol not found \"%s\", symbol index: %i\n", hookFunc->symbolName, hookFunc->symbolIndex);
 			success = false;
 #endif // _DEBUG
 		}
 		hookFunc++;
+	}
+
+	VirtualTableRef *refVtbl = g_TableRefs;
+	while (refVtbl->symbolName != NULL)
+	{
+		if (!GetAddress(&g_GameDLLModule, (Address *)refVtbl, g_BaseOffset))
+		{
+#if _DEBUG
+			printf(__FUNCTION__ ": symbol not found \"%s\"\n", refVtbl->symbolName);
+			success = false;
+#endif // _DEBUG
+		}
+		refVtbl++;
 	}
 
 	if (!success)
@@ -192,7 +248,9 @@ int HookGameDLL(size_t gameAddr, size_t engAddr)
 		{
 			if (!HookFunction(&g_GameDLLModule, hookFunc))
 				return (FALSE);
+
 			hookFunc++;
+			nCountHook++;
 		}
 	}
 

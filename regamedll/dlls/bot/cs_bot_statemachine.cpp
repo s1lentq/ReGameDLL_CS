@@ -3,14 +3,29 @@
 /* <3b3a2a> ../cstrike/dlls/bot/cs_bot_statemachine.cpp:16 */
 NOBODY void CCSBot::SetState(BotState *state)
 {
-//	StopAttacking(CCSBot *const this);  //    22
+	PrintIfWatched("SetState: %s -> %s\n", (m_state != NULL) ? m_state->GetName() : "NULL", state->GetName());
+
+	if (m_isAttacking)
+	{
+		StopAttacking();
+	}
+
+	if (m_state)
+	{
+		m_state->OnExit(this);
+	}
+
+	state->OnEnter(this);
+
+	m_state = state;
+	m_stateTimestamp = gpGlobals->time;
 }
 
 /* <3b3ab4> ../cstrike/dlls/bot/cs_bot_statemachine.cpp:34 */
 NOBODY void CCSBot::Idle(void)
 {
-//	SetTask(CCSBot::Idle(//		enum TaskType task,
-//		class CBaseEntity *entity);  //    36
+	SetTask(SEEK_AND_DESTROY);
+	SetState(&m_idleState);
 }
 
 /* <3b3afa> ../cstrike/dlls/bot/cs_bot_statemachine.cpp:41 */
@@ -208,7 +223,15 @@ NOBODY void CCSBot::Attack(CBasePlayer *victim)
 /* <3b4416> ../cstrike/dlls/bot/cs_bot_statemachine.cpp:366 */
 NOBODY void CCSBot::StopAttacking(void)
 {
-//	Idle(CCSBot *const this);  //   374
+	PrintIfWatched("ATTACK END\n");
+	m_attackState.OnExit(this);//TODO: Reverse me
+	m_isAttacking = false;
+
+	// if we are following someone, go to the Idle state after the attack to decide whether we still want to follow
+	if (IsFollowing())
+	{
+		Idle();
+	}
 }
 
 /* <3b447d> ../cstrike/dlls/bot/cs_bot_statemachine.cpp:378 */

@@ -335,8 +335,12 @@ NOBODY void CCSBot::IncreaseMorale(void)
 }
 
 /* <2e9824> ../cstrike/dlls/bot/cs_bot.cpp:845 */
-NOBODY void CCSBot::DecreaseMorale(void)
+void CCSBot::DecreaseMorale(void)
 {
+	if (m_morale > TERRIBLE)
+	{
+		m_morale = static_cast<MoraleType>(m_morale - 1);
+	}
 }
 
 /* <2e984c> ../cstrike/dlls/bot/cs_bot.cpp:857 */

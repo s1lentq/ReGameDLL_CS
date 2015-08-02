@@ -991,7 +991,7 @@ NOBODY void CTriggerChangeTarget::Spawn_(void)
 }
 
 /* <1a010d> ../cstrike/dlls/triggers.cpp:2376 */
-NOBODY void CTriggerChangeTarget::Use_(CBaseEntity *pActivator, class CBaseEntity *pCaller, USE_TYPE useType, float value)
+NOBODY void CTriggerChangeTarget::Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 //	{ 
 //		class CBaseEntity *pTarget;                          //  2378
@@ -1359,6 +1359,21 @@ void CTriggerPush::KeyValue(KeyValueData *pkvd)
 void CTriggerPush::Touch(CBaseEntity *pOther)
 {
 	Touch_(pOther);
+}
+
+void CTriggerTeleport::Spawn(void)
+{
+	Spawn_();
+}
+
+void CBuyZone::Spawn(void)
+{
+	Spawn_();
+}
+
+void CBombTarget::Spawn(void)
+{
+	Spawn_();
 }
 
 void CHostageRescue::Spawn(void)

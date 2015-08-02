@@ -726,7 +726,7 @@ bool HIDDEN HookFunction(Module *module, FunctionHook *hook)
 	patch[0] = 0xE9;
 
 #if 1
-	if (strcmp(hook->symbolName,"_ZN11CBasePlayer10SwitchTeamEv")==0)
+	if (strcmp(hook->symbolName,"_ZNK9BotPhrase12GetSpeakableEiPf")==0)
 	{
 		addr_orig = (void *)hook->originalAddress;
 
@@ -778,3 +778,103 @@ void FindAllCalls(Section* section, CFuncAddr** calls, uint32_t findRefsTo)
 	}
 }
 #endif
+
+template<typename T>
+size_t vtable_size(const T &t)
+{
+	typedef void Function();
+	Function *const *const vtable = reinterpret_cast<Function *const *const&>(t);
+	size_t size = 0;
+
+	byte first_addr_byte = '\x2A';
+
+	while (vtable[size])
+	{
+		byte addr_byte = *((byte *)(&vtable[size]) + 3);
+
+		if (first_addr_byte == '\x2A')
+			first_addr_byte = addr_byte;
+
+		if (addr_byte != first_addr_byte)
+			break;
+
+		++size;
+	}
+
+	return size;
+}
+
+const char *stripClass(const char *str)
+{
+	const int BufLen = 256;
+	static char string[ BufLen ];
+	const char pattern[] = "class ";
+
+	int curlen = Q_strlen(str);
+
+	Q_strncpy(string, str, curlen);
+	string[ curlen ] = '\0';
+
+	curlen = (Q_strstr(string, pattern) != NULL) ? Q_strlen(pattern) : 0;
+
+	return &string[ curlen ];
+}
+
+#if defined(_WIN32) && !defined(REGAMEDLL_UNIT_TESTS)
+
+void VirtualTableInit(void *ptr, const char *baseClass)
+{
+	if (!baseClass || *baseClass == '\0')
+	{
+		return;
+	}
+
+	VirtualTableRef *refsVtbl = GetVirtualTableRefAddr(baseClass);
+	if (!refsVtbl)
+	{
+		regamedll_syserror(__FUNCTION__": Missing vtable for \"%s\"", baseClass);
+	}
+
+	/*
+	int nCount = vtable_size(refsVtbl->originalAddress);
+
+	if (nCount != refsVtbl->size)
+		regamedll_syserror(__FUNCTION__": Invalid size virtual table, expected [%d], got [%d]", nCount, refsVtbl->size);
+	*/
+
+	int **ivtable = *(int ***)ptr;
+	int **ivtable_orig = (int **)refsVtbl->originalAddress;
+
+	for (size_t i = 0; i < refsVtbl->size; i++)
+	{
+		if (!GetAddressUsingHook((size_t)ivtable_orig[i]))
+		{
+			EnablePageWrite((size_t)&ivtable[i], 5);
+			ivtable[i] = ivtable_orig[i];
+			RestorePageProtection((size_t)&ivtable[i], 5);
+		}
+	}
+}
+
+void HIDDEN GetAddressVtableByClassname(const char *szClassName, const int iOffset)
+{
+	edict_t *pObject = CREATE_ENTITY();
+
+	void *addr = GetFunctionEntity(szClassName);
+	
+	if (addr == NULL)
+	{
+		REMOVE_ENTITY(pObject);
+		return;
+	}
+
+	// call link to class GetClassPtr<BaseClass>(pev);
+	reinterpret_cast<void (*)(entvars_t *)>(addr)(&pObject->v);
+
+	void *vtable = *(void **)pObject->pvPrivateData;
+	printf2(__FUNCTION__ "* ADDRESS VTABLE: %p | ADDRESS VIRTUAL FUNC: %p",
+		OffsetToRebase((size_t)vtable),
+		OffsetToRebase(*(((size_t **)&vtable)[ iOffset ])));
+}
+
+#endif // _WIN32 && REGAMEDLL_UNIT_TESTS

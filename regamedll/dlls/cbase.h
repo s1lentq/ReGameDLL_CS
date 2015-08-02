@@ -103,7 +103,7 @@
 #define bits_CAP_MELEE_ATTACK1	(1<<13)
 #define bits_CAP_MELEE_ATTACK2	(1<<14)
 #define bits_CAP_FLY		(1<<15)
-#define bits_CAP_DOORS_GROUP	(bits_CAP_USE|bits_CAP_AUTO_DOORS|bits_CAP_OPEN_DOORS)
+#define bits_CAP_DOORS_GROUP	(bits_CAP_USE | bits_CAP_AUTO_DOORS | bits_CAP_OPEN_DOORS)
 
 #define DMG_GENERIC		0
 #define DMG_CRUSH		(1<<0)
@@ -132,13 +132,14 @@
 #define DMG_SLOWFREEZE		(1<<22)
 #define DMG_MORTAR		(1<<23)
 #define DMG_EXPLOSION		(1<<24)
-#define DMG_GIB_CORPSE		(DMG_CRUSH|DMG_FALL|DMG_BLAST|DMG_SONIC|DMG_CLUB)
-#define DMG_SHOWNHUD		(DMG_POISON|DMG_ACID|DMG_FREEZE|DMG_SLOWFREEZE|DMG_DROWN|DMG_BURN|DMG_SLOWBURN|DMG_NERVEGAS|DMG_RADIATION|DMG_SHOCK)
+#define DMG_GIB_CORPSE		(DMG_CRUSH | DMG_FALL | DMG_BLAST | DMG_SONIC | DMG_CLUB)
+#define DMG_SHOWNHUD		(DMG_POISON | DMG_ACID | DMG_FREEZE | DMG_SLOWFREEZE | DMG_DROWN | DMG_BURN | DMG_SLOWBURN | DMG_NERVEGAS | DMG_RADIATION | DMG_SHOCK)
 
-#define SF_NORESPAWN		(1<<30)
+#define SF_NORESPAWN		(1 << 30)
 
-#define PARALYZE_DURATION	2
-#define PARALYZE_DAMAGE		1.0f
+#define AIRTIME			12	// lung full of air lasts this many seconds
+#define PARALYZE_DURATION	2	// number of 2 second intervals to take damage
+#define PARALYZE_DAMAGE		1.0f	// damage to take each 2 second interval
 
 #define NERVEGAS_DURATION	2
 #define NERVEGAS_DAMAGE		5.0f
@@ -349,8 +350,11 @@ public:
 	{
 		return CLASS_NONE;
 	}
-	virtual void DeathNotice(entvars_t *pevChild) {}
-	NOBODY virtual void TraceAttack(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType);
+	virtual void DeathNotice(entvars_t *pevChild)
+	{
+		return DeathNotice_(pevChild);
+	}
+	virtual void TraceAttack(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType);
 	NOBODY virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
 	virtual int TakeHealth(float flHealth, int bitsDamageType);
 	NOBODY virtual void Killed(entvars_t *pevAttacker, int iGib);
@@ -373,25 +377,25 @@ public:
 	}
 	virtual int GetToggleState(void)
 	{
-		return TS_AT_TOP;
+		return GetToggleState_();
 	}
-	virtual void AddPoints(int score, BOOL bAllowNegativeScore) {}
-	virtual void AddPointsToTeam(int score, BOOL bAllowNegativeScore) {}
+	virtual void AddPoints(int score, BOOL bAllowNegativeScore) {}		// __stdcall
+	virtual void AddPointsToTeam(int score, BOOL bAllowNegativeScore) {}	// __stdcall
 	virtual BOOL AddPlayerItem(CBasePlayerItem *pItem)
 	{
 		return FALSE;
 	}
-	virtual BOOL RemovePlayerItem(CBasePlayerItem *pItem)
+	virtual BOOL RemovePlayerItem(CBasePlayerItem *pItem)			// __stdcall
 	{
 		return FALSE;
 	}
-	virtual int GiveAmmo(int iAmount, char *szName, int iMax)
+	virtual int GiveAmmo(int iAmount, char *szName, int iMax)		// __stdcall
 	{
 		return -1;
 	}
 	virtual float GetDelay(void)
 	{
-		return 0.0f;
+		return GetDelay_();
 	}
 	virtual int IsMoving(void)
 	{
@@ -426,7 +430,7 @@ public:
 	{
 		return FStrEq(STRING(targetname),STRING(pev->targetname));
 	}
-	NOBODY virtual BOOL IsInWorld(void);
+	virtual BOOL IsInWorld(void);
 	virtual BOOL IsPlayer(void)
 	{
 		return FALSE;
@@ -483,19 +487,48 @@ public:
 	}
 	virtual Vector BodyTarget(const Vector &posSrc)
 	{
-		return Center();
+		return BodyTarget_(posSrc);
 	}
 	virtual int Illumination(void)
 	{
 		return GETENTITYILLUM(ENT(pev));
 	}
+
+#ifdef _WIN32
+	NOBODY virtual BOOL FVisible(Vector &vecOrigin);
+	NOBODY virtual BOOL FVisible(CBaseEntity *pEntity);
+#else
 	NOBODY virtual BOOL FVisible(CBaseEntity *pEntity);
 	NOBODY virtual BOOL FVisible(Vector &vecOrigin);
+#endif // _WIN32
 
 #ifdef HOOK_GAMEDLL
 
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
+	void DeathNotice_(entvars_t *pevChild) { }
+	void TraceAttack_(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType);
+	int TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
+	int TakeHealth_(float flHealth, int bitsDamageType);
+	void Killed_(entvars_t *pevAttacker, int iGib);
+	void TraceBleed_(float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType);
+	int GetToggleState_(void)
+	{
+		return TS_AT_TOP;
+	}
+	float GetDelay_(void)
+	{
+		return 0.0f;
+	}
+	int DamageDecal_(int bitsDamageType);
+	BOOL IsInWorld_(void);
+	CBaseEntity *GetNextTarget_(void);
+	Vector BodyTarget_(const Vector &posSrc)
+	{
+		return Center();
+	}
+	BOOL FVisible_(CBaseEntity *pEntity);
+	BOOL FVisible_(Vector &vecOrigin);
 
 #endif // HOOK_GAMEDLL
 
@@ -533,9 +566,9 @@ public:
 	{
 		return (CBaseEntity *)GET_PRIVATE(pent ? pent : ENT(0));
 	}
-	static CBaseEntity *Instance(entvars_t *pevit)
+	static CBaseEntity *Instance(entvars_t *pev)
 	{
-		return Instance(ENT(pevit));
+		return Instance(ENT(pev));
 	}
 	static CBaseEntity *Instance(int offset)
 	{
@@ -613,21 +646,6 @@ public:
 	float m_flReleaseThrow;
 	int m_iSwing;
 	bool has_disconnected;
-
-#ifdef HOOK_GAMEDLL
-
-	void TraceAttack_(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType);
-	int TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
-	int TakeHealth_(float flHealth, int bitsDamageType);
-	void Killed_(entvars_t *pevAttacker, int iGib);
-	void TraceBleed_(float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType);
-	int DamageDecal_(int bitsDamageType);
-	BOOL IsInWorld_(void);
-	CBaseEntity *GetNextTarget_(void);
-	BOOL FVisible_(CBaseEntity *pEntity);
-	BOOL FVisible_(Vector &vecOrigin);
-
-#endif // HOOK_GAMEDLL
 
 };/* size: 152, cachelines: 3, members: 35 */
 
@@ -741,7 +759,7 @@ class CBaseAnimating: public CBaseDelay
 public:
 	NOBODY virtual int Save(CSave &save);
 	NOBODY virtual int Restore(CRestore &restore);
-	virtual void HandleAnimEvent(MonsterEvent_t *pEvent) { }
+	virtual void HandleAnimEvent(MonsterEvent_t *pEvent) {}
 
 #ifdef HOOK_GAMEDLL
 
@@ -752,7 +770,7 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	NOBODY float StudioFrameAdvance(float flInterval = 0.0f);
+	float StudioFrameAdvance(float flInterval = 0.0f);
 	BOOL GetSequenceFlags(void);
 	int LookupActivity(int activity);
 	NOBODY int LookupActivityHeaviest(int activity);
@@ -1041,10 +1059,13 @@ public:
 	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[1];
 
 	int m_preset;
+
 };/* size: 156, cachelines: 3, members: 3 */
 
-template <class T> T *GetClassPtr(T *a)
+template <class T>
+T *GetClassPtr(T *a)
 {
+	T *backup = a;
 	entvars_t *pev = (entvars_t *)a;
 	if (!pev)
 		pev = VARS(CREATE_ENTITY());
@@ -1053,6 +1074,11 @@ template <class T> T *GetClassPtr(T *a)
 	{
 		a = new(pev) T;
 		a->pev = pev;
+
+#if defined(_WIN32) && !defined(REGAMEDLL_UNIT_TESTS)
+		VirtualTableInit((void *)a, stripClass(typeid(T).name()));
+#endif // _WIN32 && HOOK_GAMEDLL
+
 	}
 	return a;
 }
@@ -1102,5 +1128,6 @@ typedef CBaseEntity *(CBaseEntity::*CBASE_ISTANCE_INT)(int);
 
 //Refs
 extern int (*pDispatchSpawn)(edict_t *);
+extern void (*pCGib__SpawnHeadGib)(void);
 
 #endif // CBASE_H

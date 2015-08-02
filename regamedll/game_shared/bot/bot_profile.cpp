@@ -235,27 +235,36 @@ NOBODY int BotProfileManager::FindVoiceBankIndex(const char *filename)
 }
 
 /* <4a8177> ../game_shared/bot/bot_profile.cpp:669 */
-NOBODY const BotProfile *BotProfileManager::GetRandomProfile(BotDifficultyType difficulty, BotProfileTeamType team) const
+const BotProfile *BotProfileManager::GetRandomProfile(BotDifficultyType difficulty, BotProfileTeamType team) const
 {
-//	{
-//		const_iterator iter;                                  //   674
-//		int validCount;                                       //   677
-//		int which;                                            //   690
-//		operator++(_List_const_iterator<BotProfile*> *const this);  //   678
-//		{
-//			const class BotProfile *profile;            //   680
-//			IsDifficulty(const class BotProfile *const this,
-//					enum BotDifficultyType diff);  //   682
-//			IsValidForTeam(const class BotProfile *const this,
-//					enum BotProfileTeamType team);  //   682
-//		}
-//		operator++(_List_const_iterator<BotProfile*> *const this);  //   691
-//		{
-//			const class BotProfile *profile;            //   693
-//			IsDifficulty(const class BotProfile *const this,
-//					enum BotDifficultyType diff);  //   695
-//			IsValidForTeam(const class BotProfile *const this,
-//					enum BotProfileTeamType team);  //   695
-//		}
-//	}
+	BotProfileList::const_iterator iter;
+
+	// count up valid profiles
+	int validCount = 0;
+	for (iter = m_profileList.begin(); iter != m_profileList.end(); ++iter)
+	{
+		const BotProfile *profile = (*iter);
+
+		if (profile->IsDifficulty(difficulty) && !UTIL_IsNameTaken(profile->GetName()) && profile->IsValidForTeam(team))
+			++validCount;
+	}
+
+	if (validCount == 0)
+		return NULL;
+
+	// select one at random
+	int which = RANDOM_LONG(0, validCount - 1);
+
+	for (iter = m_profileList.begin(); iter != m_profileList.end(); ++iter)
+	{
+		const BotProfile *profile = (*iter);
+
+		if (profile->IsDifficulty(difficulty) && !UTIL_IsNameTaken(profile->GetName()) && profile->IsValidForTeam(team))
+		{
+			if (which-- == 0)
+				return profile;
+		}
+	}
+
+	return NULL;
 }

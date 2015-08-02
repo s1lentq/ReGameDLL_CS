@@ -121,7 +121,7 @@ NOBODY CPathTrack *CPathTrack::ValidPath(CPathTrack *ppath, int testFlag)
 }
 
 /* <122745> ../cstrike/dlls/pathcorner.cpp:198 */
-NOBODY void CPathTrack::Project(CPathTrack *pstart, class CPathTrack *pend, Vector *origin, float dist)
+NOBODY void CPathTrack::Project(CPathTrack *pstart, CPathTrack *pend, Vector *origin, float dist)
 {
 //	{
 //		Vector dir;                                     //   202

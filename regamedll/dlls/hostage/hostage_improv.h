@@ -32,6 +32,11 @@
 #pragma once
 #endif
 
+#include "hostage/hostage_states.h"
+
+class CHostage;
+enum HostageChatterType;
+
 class CHostageImprov: public CImprov
 {
 public:
@@ -46,6 +51,17 @@ public:
 		//~CImprov();			//    49
 	};
 
+	virtual void OnMoveToSuccess(const Vector &goal)
+	{
+		//if (m_behavior.IsState(NULL))
+		//	IImprovEvent::OnMoveToSuccess(goal);
+	}
+	virtual void OnMoveToFailure(const Vector &goal, MoveToFailureType reason);
+	virtual void OnInjury(float amount)
+	{
+		//m_behavior.Update();
+		//m_lastInjuryTimer.Start();
+	}
 	virtual bool IsAlive(void) const;
 	virtual void MoveTo(const Vector &goal);
 	virtual void LookAt(const Vector &target);
@@ -151,18 +167,7 @@ public:
 	virtual void OnUpdate(float deltaT);
 	virtual void OnUpkeep(float deltaT);
 	virtual void OnReset(void);
-	virtual void OnMoveToSuccess(const Vector &goal)
-	{
-		//if (m_behavior.IsState(NULL))
-		//	IImprovEvent::OnMoveToSuccess(goal);
-	}
-	virtual void OnMoveToFailure(const Vector &goal, MoveToFailureType reason);
-	virtual void OnInjury(float amount)
-	{
-		//m_behavior.Update();
-		//m_lastInjuryTimer.Start();
-	}
-	virtual void OnGameEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *other);
+	virtual void OnGameEvent(GameEventType event, CBaseEntity *entity = NULL, CBaseEntity *other = NULL);
 	virtual void OnTouch(CBaseEntity *other);
 public:
 
@@ -179,7 +184,10 @@ public:
 		SCARED,
 		TERRIFIED,
 	};
-
+	//{
+	//	UNTESTED
+	//	return m_behavior.IsState(&m_followState);
+	//}
 	void FaceOutwards(void);
 	bool IsFriendInTheWay(void);
 	void SetKnownGoodPosition(const Vector &pos);
@@ -199,9 +207,17 @@ public:
 	CNavPath *GetPath(void);
 	CNavPathFollower *GetPathFollower(void);
 	void Idle(void);
-	bool IsIdle(void);
+	bool IsIdle(void)
+	{
+		UNTESTED
+		return m_behavior.IsState(&m_idleState);
+	}
 	void Follow(CBasePlayer *leader);
-	bool IsFollowing(const CBaseEntity *leader);
+	bool IsFollowing(const CBaseEntity *leader = NULL)
+	{
+		UNTESTED
+		return m_behavior.IsState(&m_followState);
+	}
 	void Escape(void);
 	bool IsEscaping(void);
 	void Retreat(void);
@@ -370,9 +386,12 @@ class CheckAhead
 {
 public:
 	/* <47046f> ../cstrike/dlls/hostage/hostage_improv.cpp:525 */
-	bool operator()(class CheckAhead *, class CBaseEntity *)
+	bool operator()(CBaseEntity *entity)
 	{
-
+//		Vector to;                                      //   530
+//		float range;                                          //   531
+//		float const closeRange;                                //   533
+//		float const aheadTolerance;                            //   537
 	}
 	/* <46f597> ../cstrike/dlls/hostage/hostage_improv.cpp:546 */
 	bool IsBlocked(void)

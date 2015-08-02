@@ -34,8 +34,10 @@ NOBODY CBot::CBot(void)
 }
 
 /* <48f6ef> ../game_shared/bot/bot.cpp:50 */
-NOBODY bool CBot::Initialize_(const BotProfile *profile)
+bool CBot::Initialize_(const BotProfile *profile)
 {
+	m_profile = profile;
+	return true;
 }
 
 /* <48fbbd> ../game_shared/bot/bot.cpp:57 */

@@ -38,6 +38,11 @@
 	static int iNumPassed = 0;\
 	printf2(__FUNCTION__":: iNumPassed - %d", iNumPassed++);
 
+#define _LOG_TRACE2\
+	static int iNumPassedt = 0;\
+	printf2(__FUNCTION__":: iNumPassed - %d", iNumPassedt++);\
+	_logf(__FUNCTION__":: iNumPassed - %d", iNumPassedt++);
+
 // Makes these more explicit, and easier to find
 #ifdef HOOK_GAMEDLL
 
@@ -50,6 +55,9 @@
 #define DLL_GLOBAL
 
 #endif // HOOK_GAMEDLL
+
+#define eoNullEntity		0	// Testing the three types of "entity" for nullity
+#define iStringNull		0	// Testing strings for nullity
 
 #define cchMapNameMost		32
 
@@ -69,9 +77,9 @@ extern globalvars_t *gpGlobals;
 // Dot products for view cone checking
 
 #define VIEW_FIELD_FULL		-1.0		// +-180 degrees
-#define	VIEW_FIELD_WIDE		-0.7		// +-135 degrees 0.1 // +-85 degrees, used for full FOV checks
-#define	VIEW_FIELD_NARROW	0.7		// +-45 degrees, more narrow check used to set up ranged attacks
-#define	VIEW_FIELD_ULTRA_NARROW	0.9		// +-25 degrees, more narrow check used to set up ranged attacks
+#define VIEW_FIELD_WIDE		-0.7		// +-135 degrees 0.1 // +-85 degrees, used for full FOV checks
+#define VIEW_FIELD_NARROW	0.7		// +-45 degrees, more narrow check used to set up ranged attacks
+#define VIEW_FIELD_ULTRA_NARROW	0.9		// +-25 degrees, more narrow check used to set up ranged attacks
 
 #define SND_SPAWNING		(1<<8)		// duplicated in protocol.h we're spawing, used in some cases for ambients
 #define SND_STOP		(1<<5)		// duplicated in protocol.h stop sound
@@ -93,7 +101,7 @@ extern globalvars_t *gpGlobals;
 #define SVC_CDTRACK		32
 #define SVC_WEAPONANIM		35
 #define SVC_ROOMTYPE		37
-#define	SVC_DIRECTOR		51
+#define SVC_DIRECTOR		51
 
 #define VEC_HULL_MIN_Z		Vector(0, 0, -36)
 #define VEC_DUCK_HULL_MIN_Z	Vector(0, 0, -18)
@@ -101,36 +109,32 @@ extern globalvars_t *gpGlobals;
 #define VEC_HULL_MIN		Vector(-16, -16, -36)
 #define VEC_HULL_MAX		Vector(16, 16, 36)
 
+#define VEC_VIEW		Vector(0, 0, 17)
+
 #define VEC_DUCK_HULL_MIN	Vector(-16, -16, -18)
 #define VEC_DUCK_HULL_MAX	Vector(16, 16, 32)
 #define VEC_DUCK_VIEW		Vector(0, 0, 12)
 
-#ifndef HOOK_GAMEDLL
-
-#define LINK_ENTITY_TO_CLASS(mapClassName,DLLClassName)\
+#define LINK_ENTITY_TO_CLASS(mapClassName, DLLClassName)\
 	C_DLLEXPORT void mapClassName(entvars_t *pev);\
 	void mapClassName(entvars_t *pev)\
 	{\
 		GetClassPtr((DLLClassName *)pev);\
 	}
-#else // HOOK_GAMEDLL
-
-// NOTE: There is no need to link the objects with HOOK_GAMEDLL
-#define LINK_ENTITY_TO_CLASS(mapClassName, DLLClassName)
-
-#endif // HOOK_GAMEDLL
 
 typedef enum
 {
 	ignore_monsters = 1,
 	dont_ignore_monsters = 0,
 	missile = 2
+
 } IGNORE_MONSTERS;
 
 typedef enum
 {
 	ignore_glass = 1,
 	dont_ignore_glass = 0
+
 } IGNORE_GLASS;
 
 enum
@@ -152,6 +156,7 @@ typedef enum
 	MONSTERSTATE_SCRIPT,
 	MONSTERSTATE_PLAYDEAD,
 	MONSTERSTATE_DEAD
+
 } MONSTERSTATE;
 
 typedef struct hudtextparms_s
@@ -166,6 +171,7 @@ typedef struct hudtextparms_s
 	float holdTime;
 	float fxTime;
 	int channel;
+
 } hudtextparms_t;
 /* size: 40, cachelines: 1, members: 16 */
 
@@ -177,6 +183,7 @@ public:
 private:
 	int m_oldgroupmask;
 	int m_oldgroupop;
+
 };/* size: 8, cachelines: 1, members: 2 */
 
 /* <5da42> ../cstrike/dlls/util.h:67 */
@@ -275,7 +282,7 @@ inline BOOL FNullEnt(const edict_t *pent)
 /* <1c1cb> ../cstrike/dlls/util.h:203 */
 inline BOOL FStringNull(int iString)
 {
-	return (iString == 0);
+	return (iString == iStringNull);
 }
 
 /* <42e8> ../cstrike/dlls/util.h:246 */
@@ -336,6 +343,8 @@ extern int g_groupmask;
 extern int g_groupop;
 extern const int gSizes[18];
 
+unsigned int U_Random(void);
+void U_Srand(unsigned int seed);
 int UTIL_SharedRandomLong(unsigned int seed, int low, int high);
 float UTIL_SharedRandomFloat(unsigned int seed, float low, float high);
 NOXREF void UTIL_ParametricRocket(entvars_t *pev, Vector vecOrigin, Vector vecAngles, edict_t *owner);
@@ -425,13 +434,6 @@ char UTIL_TextureHit(TraceResult *ptr, Vector vecSrc, Vector vecEnd);
 NOXREF int GetPlayerTeam(int index);
 bool UTIL_IsGame(const char *gameName);
 float UTIL_GetPlayerGaitYaw(int playerIndex);
-
-// combat.cpp
-NOBODY void RadiusFlash(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int iClassIgnore, int bitsDamageType);
-NOBODY void GetAmountOfPlayerVisible(Vector vecSrc, CBaseEntity *entity);
-NOBODY void RadiusDamage(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, float flRadius, int iClassIgnore, int bitsDamageType);
-NOBODY void RadiusDamage2(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, float flRadius, int iClassIgnore, int bitsDamageType);
-NOXREF char *vstr(float *v);
 
 /*
 * Declared for function overload

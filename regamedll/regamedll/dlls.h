@@ -30,7 +30,7 @@
 #include "extdll.h"
 
 #include "h_export.h"
-//#include "schedule.h"
+#include "schedule.h"
 #include "archtypes.h"
 #include "enginecallback.h"
 //#include "entity_state.h"
@@ -61,6 +61,7 @@
 #include "shake.h"
 #include "util.h"
 #include "decals.h"
+#include "hltv.h"
 #include "cbase.h"
 #include "world.h"
 
@@ -116,8 +117,6 @@
 // Hostage
 #include "hostage/hostage.h"
 #include "hostage/hostage_localnav.h"
-#include "hostage/hostage_states.h"
-#include "hostage/hostage_improv.h"
 
 #include "airtank.h"
 #include "h_ai.h"

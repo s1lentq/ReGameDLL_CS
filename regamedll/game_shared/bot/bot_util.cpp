@@ -16,7 +16,7 @@ float cosTable[ COS_TABLE_SIZE ];
 #endif // HOOK_GAMEDLL
 
 /* <4ad1c6> ../game_shared/bot/bot_util.cpp:26 */
-NOBODY bool UTIL_IsNameTaken(const char *name, bool ignoreHumans)
+bool UTIL_IsNameTaken(const char *name, bool ignoreHumans)
 {
 	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
@@ -33,7 +33,9 @@ NOBODY bool UTIL_IsNameTaken(const char *name, bool ignoreHumans)
 
 		if (player->IsPlayer() && (((CBasePlayer *)player)->IsBot() == TRUE))
 		{
-			CBot *bot = (CBot *)player;
+			// bots can have prefixes so we need to check the name
+			// against the profile name instead.
+			CBot *bot = reinterpret_cast<CBot *>(player);
 			if (FStrEq(name, bot->GetProfile()->GetName()))
 			{
 				return true;
@@ -52,7 +54,7 @@ NOBODY bool UTIL_IsNameTaken(const char *name, bool ignoreHumans)
 }
 
 /* <4ad2da> ../game_shared/bot/bot_util.cpp:66 */
-NOBODY int UTIL_ClientsInGame(void)
+int UTIL_ClientsInGame(void)
 {
 	int iCount = 0;
 	for (int iIndex = 1; iIndex <= gpGlobals->maxClients; iIndex++)
@@ -269,7 +271,7 @@ NOBODY bool UTIL_IsTeamAllBots(int team)
 		if (FStrEq(STRING(player->pev->netname), ""))
 			continue;
 
-		if (!FBitSet(player->pev->flags, FL_FAKECLIENT))
+		if (!(player->pev->flags & FL_FAKECLIENT))
 			return false;
 
 		++botCount;
@@ -341,24 +343,27 @@ NOBODY extern CBasePlayer *UTIL_GetClosestPlayer(const Vector *pos, int team, fl
 }
 
 /* <4ad0de> ../game_shared/bot/bot_util.cpp:411 */
-NOBODY const char *UTIL_GetBotPrefix()
+const char *UTIL_GetBotPrefix()
 {
 	return cv_bot_prefix.string;
 }
 
 /* <4adb11> ../game_shared/bot/bot_util.cpp:418 */
-NOBODY void UTIL_ConstructBotNetName(char *name, int nameLength, const BotProfile *profile)
+void UTIL_ConstructBotNetName(char *name, int nameLength, const BotProfile *profile)
 {
 	if (profile == NULL)
 	{
 		name[0] = 0;
 		return;
 	}
+
+	// if there is no bot prefix just use the profile name.
 	if ((UTIL_GetBotPrefix() == NULL) || (Q_strlen(UTIL_GetBotPrefix()) == 0))
 	{
 		Q_strncpy(name, profile->GetName(), nameLength);
 		return;
 	}
+
 	Q_snprintf(name, nameLength, "%s %s", UTIL_GetBotPrefix(), profile->GetName());
 }
 
@@ -694,23 +699,27 @@ NOBODY bool IsGameEventAudible(GameEventType event, CBaseEntity *entity, CBaseEn
 }
 
 /* <4ae3c1> ../game_shared/bot/bot_util.cpp:838 */
-NOBODY void HintMessageToAllPlayers(const char *message)
+void HintMessageToAllPlayers(const char *message)
 {
 	hudtextparms_t textParms;
 
-	textParms.x = -1.0f;
-	textParms.y = -1.0f;
-	textParms.fadeinTime = 1.0f;
-	textParms.fadeoutTime = 5.0f;
-	textParms.holdTime = 5.0f;
-	textParms.fxTime = 0.0f;
-	textParms.r1 = 100;
-	textParms.g1 = 255;
-	textParms.b1 = 100;
-	textParms.r2 = 255;
-	textParms.g2 = 255;
-	textParms.b2 = 255;
+	textParms.x = -1;
+	textParms.y = -1;
 	textParms.effect = 0;
+
+	textParms.r1 = 100;
+	textParms.g1 = -1;
+	textParms.b1 = 100;
+
+	textParms.r2 = -1;
+	textParms.g2 = -1;
+	textParms.b2 = -1;
+
+	textParms.fadeinTime = 1;
+	textParms.fadeoutTime = 5;
+	textParms.holdTime = 5;
+	textParms.fxTime = 0;
+
 	textParms.channel = 0;
 
 	UTIL_HudMessageAll(textParms, message);

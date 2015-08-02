@@ -272,7 +272,7 @@ public:
 	NOBODY virtual void InitHUD(CBasePlayer *pl);
 	NOBODY virtual void ClientDisconnected(edict_t *pClient);
 	NOBODY virtual void UpdateGameMode(CBasePlayer *pPlayer);
-	NOBODY virtual float FlPlayerFallDamage(CBasePlayer *pPlayer);
+	virtual float FlPlayerFallDamage(CBasePlayer *pPlayer);
 	NOBODY virtual BOOL FPlayerCanTakeDamage(CBasePlayer *pPlayer, CBaseEntity *pAttacker);
 	NOBODY virtual void PlayerSpawn(CBasePlayer *pPlayer);
 	NOBODY virtual void PlayerThink(CBasePlayer *pPlayer);
@@ -411,7 +411,7 @@ public:
 		return m_iRoundTimeSecs - gpGlobals->time + m_fRoundCount;
 	}
 	NOBODY BOOL TeamFull(int team_id);
-	NOBODY BOOL TeamStacked(int newTeam_id, int curTeam_id);
+	BOOL TeamStacked(int newTeam_id, int curTeam_id);
 	NOBODY bool IsVIPQueueEmpty(void);
 	NOBODY bool AddToVIPQueue(CBasePlayer *toAdd);
 	NOBODY void PickNextVIP(void);
@@ -423,8 +423,8 @@ public:
 	NOBODY void DisplayMaps(CBasePlayer *player, int iVote);
 	NOBODY void ResetAllMapVotes(void);
 	NOBODY void ProcessMapVote(CBasePlayer *player, int iVote);
-	NOBODY BOOL IsThereABomber(void);
-	NOBODY BOOL IsThereABomb(void);
+	BOOL IsThereABomber(void);
+	BOOL IsThereABomb(void);
 	NOBODY bool IsMatchStarted(void);
 	NOBODY void SendMOTDToClient(edict_t *client);
 private:
@@ -624,7 +624,7 @@ NOBODY void SV_Career_Restart_f(void);
 NOBODY void SV_Career_EndRound_f(void);
 NOBODY void SV_CareerAddTask_f(void);
 NOBODY void SV_CareerMatchLimit_f(void);
-NOBODY void Broadcast(void);
+void Broadcast(const char *sentence);
 char *GetTeam(int teamNo);
 NOBODY void EndRoundMessage(const char *sentence, int event);
 NOBODY void ReadMultiplayCvars(CHalfLifeMultiplay *mp);

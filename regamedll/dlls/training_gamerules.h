@@ -71,13 +71,14 @@ public:
 
 public:
 	static void HostageDied(void);
-	NOBODY static bool PlayerCanBuy(CBasePlayer *pPlayer);
+	static bool PlayerCanBuy(CBasePlayer *pPlayer);
 private:
 	float FillAccountTime;
 	float ServerRestartTime;
 	BOOL fInBuyArea;
 	BOOL fVisitedBuyArea;
 	bool fVGUIMenus;
+
 };/* size: 728, cachelines: 12, members: 6 */
 
 /* <18a1d5> ../cstrike/dlls/training_gamerules.cpp:252 */

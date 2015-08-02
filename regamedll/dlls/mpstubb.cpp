@@ -47,16 +47,26 @@ int CGraph::FindNearestNode(const Vector &vecOrigin, CBaseEntity *pEntity)
 /* <fc023> ../cstrike/dlls/mpstubb.cpp:45 */
 float CBaseMonster::ChangeYaw_(int speed)
 {
+	return 0.0f;
 }
 
 /* <fc571> ../cstrike/dlls/mpstubb.cpp:46 */
 void CBaseMonster::MakeIdealYaw(Vector vecTarget)
 {
+	;
 }
 
 /* <fc5a6> ../cstrike/dlls/mpstubb.cpp:49 */
-void CBaseMonster::CorpseFallThink(void)
+NOBODY void CBaseMonster::CorpseFallThink(void)
 {
+	if (pev->flags & FL_ONGROUND)
+	{
+		SetThink(NULL);
+		SetSequenceBox();
+		UTIL_SetOrigin(pev, pev->origin);
+	}
+	else
+		pev->nextthink = gpGlobals->time + 0.1;
 }
 
 /* <fc2a1> ../cstrike/dlls/mpstubb.cpp:62 */
@@ -85,20 +95,23 @@ void CBaseMonster::MonsterInitDead_(void)
 /* <fc057> ../cstrike/dlls/mpstubb.cpp:89 */
 BOOL CBaseMonster::ShouldFadeOnDeath_(void)
 {
+	return FALSE;
 }
 
 /* <fc5cd> ../cstrike/dlls/mpstubb.cpp:94 */
 BOOL CBaseMonster::FCheckAITrigger(void)
 {
+	return FALSE;
 }
 
 /* <fc26d> ../cstrike/dlls/mpstubb.cpp:99 */
 void CBaseMonster::KeyValue_(KeyValueData *pkvd)
 {
+	CBaseToggle::KeyValue(pkvd);
 }
 
 /* <fc07d> ../cstrike/dlls/mpstubb.cpp:104 */
-int CBaseMonster::IRelationship_(CBaseEntity *pTarget)
+NOBODY int CBaseMonster::IRelationship_(CBaseEntity *pTarget)
 {
 //	{
 //		int const iEnemy;                                      //   106
@@ -106,7 +119,7 @@ int CBaseMonster::IRelationship_(CBaseEntity *pTarget)
 }
 
 /* <fc0e4> ../cstrike/dlls/mpstubb.cpp:140 */
-void CBaseMonster::Look_(int iDistance)
+NOBODY void CBaseMonster::Look_(int iDistance)
 {
 //	{
 //		int iSighted;                                         //   142
@@ -129,7 +142,7 @@ void CBaseMonster::Look_(int iDistance)
 }
 
 /* <fc317> ../cstrike/dlls/mpstubb.cpp:220 */
-CBaseEntity *CBaseMonster::BestVisibleEnemy_(void)
+NOBODY CBaseEntity *CBaseMonster::BestVisibleEnemy_(void)
 {
 //	{
 //		class CBaseEntity *pReturn;                          //   222

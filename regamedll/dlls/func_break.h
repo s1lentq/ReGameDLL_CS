@@ -33,7 +33,7 @@
 #endif
 
 // this many shards spawned when breakable objects break;
-#define	NUM_SHARDS 6
+#define NUM_SHARDS 6
 
 typedef enum
 {

@@ -586,4 +586,9 @@ void CFuncVehicle::Blocked(CBaseEntity *pOther)
 	Blocked_(pOther);
 }
 
+void CFuncVehicleControls::Spawn(void)
+{
+	Spawn_();
+}
+
 #endif // HOOK_GAMEDLL

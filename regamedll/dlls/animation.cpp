@@ -361,42 +361,40 @@ void AngleQuaternion(vec_t *angles, vec_t *quaternion)
 	__m128 res = _mm_add_ps(part1, part2);
 	_mm_storeu_ps(quaternion, res);
 }
-#else //REGAMEDLL_FIXES
+#else // REGAMEDLL_FIXES
 void AngleQuaternion(vec_t *angles, vec_t *quaternion)
 {
-	long double sy; // st7@1
-	long double cy; // st6@1
-	double sp_; // qt1@1
-	long double cp; // st4@1
-	float sr; // ST08_4@1
-	float cr; // ST04_4@1
-	float ftmp0; // ST00_4@1
-	float ftmp1; // [sp+10h] [bp+4h]@1
-	float ftmp2; // [sp+10h] [bp+4h]@1
+	float_precision sy, cy, sp_, cp;
+	float_precision angle;
+	float sr, cr;
 
-	long double	angle;
+	float ftmp0;
+	float ftmp1;
+	float ftmp2;
 
-	angle = angles[2] * 0.5;
+	angle = angles[ROLL] * 0.5;
 	sy = sin(angle);
 	cy = cos(angle);
 
-	angle = angles[1] * 0.5;
+	angle = angles[YAW] * 0.5;
 	sp_ = sin(angle);
 	cp = cos(angle);
 
-	angle = angles[0] * 0.5;
+	angle = angles[PITCH] * 0.5;
 	sr = sin(angle);
 	cr = cos(angle);
 
 	ftmp0 = sr * cp;
 	ftmp1 = cr * sp_;
+
 	*quaternion = ftmp0 * cy - ftmp1 * sy;
 	quaternion[1] = ftmp1 * cy + ftmp0 * sy;
+
 	ftmp2 = cr * cp;
 	quaternion[2] = ftmp2 * sy - sp_ * sr * cy;
 	quaternion[3] = sp_ * sr * sy + ftmp2 * cy;
 }
-#endif //REGAMEDLL_FIXES
+#endif // REGAMEDLL_FIXES
 
 /* <15c4d> ../cstrike/dlls/animation.cpp:653 */
 void QuaternionSlerp(vec_t *p, vec_t *q, float t, vec_t *qt)
@@ -429,7 +427,7 @@ void QuaternionSlerp(vec_t *p, vec_t *q, float t, vec_t *qt)
 			sinom = sin(cosomega);
 
 			sclp = sin((1.0 - t) * omega) / sinom;
-			sclq = sin(omega * t) / sinom;
+			sclq = sin((float_precision)(omega * t)) / sinom;
 		}
 		else
 		{

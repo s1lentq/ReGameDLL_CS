@@ -41,7 +41,7 @@ void CUSP::Spawn_(void)
 {
 	Precache();
 	m_iId = WEAPON_USP;
-	SET_MODEL(ENT(pev),"models/w_usp.mdl");
+	SET_MODEL(ENT(pev), "models/w_usp.mdl");
 	m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
 	m_iDefaultAmmo = 12;//TODO: Default clip USP_MAX_CLIP
 	m_flAccuracy = 0.92f;

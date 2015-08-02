@@ -570,6 +570,8 @@ void UTIL_MakeInvVectors(const Vector &vec, globalvars_t *pgv)
 {
 	MAKE_VECTORS(vec);
 
+	pgv->v_right = pgv->v_right * -1;
+
 	SWAP(pgv->v_forward.y, pgv->v_right.x);
 	SWAP(pgv->v_forward.z, pgv->v_up.x);
 	SWAP(pgv->v_right.z, pgv->v_up.y);
@@ -667,8 +669,8 @@ NOXREF void UTIL_ScreenShakeAll(const Vector &center, float amplitude, float fre
 /* <1ac3a1> ../cstrike/dlls/util.cpp:858 */
 void UTIL_ScreenFadeBuild(ScreenFade &fade, const Vector &color, float fadeTime, float fadeHold, int alpha, int flags)
 {
-	fade.duration = FixedUnsigned16(fadeTime,1<<12);
-	fade.holdTime = FixedUnsigned16(fadeHold,1<<12);
+	fade.duration = FixedUnsigned16(fadeTime, 1<<12);
+	fade.holdTime = FixedUnsigned16(fadeHold, 1<<12);
 	fade.r = (int)color.x;
 	fade.g = (int)color.y;
 	fade.b = (int)color.z;
@@ -1373,10 +1375,6 @@ void UTIL_StringToIntArray(int *pVector, int count, const char *pString)
 	int j;
 
 	Q_strcpy(tempString, pString);
-
-#ifdef GAMEDLL_FIXES
-	tempString[127] = 0;
-#endif // GAMEDLL_FIXES
 
 	pstr = tempString;
 	pfront = tempString;

@@ -32,9 +32,9 @@
 #pragma once
 #endif
 
-#define	MAX_PHYSENTS 600 		  		// Must have room for all entities in the world.
+#define MAX_PHYSENTS 600 		  		// Must have room for all entities in the world.
 #define MAX_MOVEENTS 64
-#define	MAX_CLIP_PLANES	5
+#define MAX_CLIP_PLANES	5
 
 #define PM_NORMAL			0x00000000
 #define PM_STUDIO_IGNORE		0x00000001	// Skip studio models

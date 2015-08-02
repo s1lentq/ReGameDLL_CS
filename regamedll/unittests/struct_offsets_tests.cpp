@@ -40,6 +40,7 @@ TEST(StructOffsets, ReversingChecks, 5000)
 	REPEAT_SIZEOF_PRINT(CBotManager);
 	REPEAT_SIZEOF_PRINT(CCSBotManager);
 	REPEAT_SIZEOF_PRINT(BotPhraseManager);
+	REPEAT_SIZEOF_PRINT(BotPhrase);
 	REPEAT_SIZEOF_PRINT(CBasePlayer);
 	REPEAT_SIZEOF_PRINT(ActiveGrenade);
 
@@ -51,10 +52,15 @@ TEST(StructOffsets, ReversingChecks, 5000)
 	REPEAT_SIZEOF_PRINT(CGib);
 	REPEAT_SIZEOF_PRINT(CSprayCan);
 	REPEAT_SIZEOF_PRINT(CountdownTimer);
-
+	REPEAT_SIZEOF_PRINT(CCareerTaskManager);
+	REPEAT_SIZEOF_PRINT(CCareerTask);
+	REPEAT_SIZEOF_PRINT(CPreventDefuseTask);
+	
 	// offset the members
 	REPEAT_OFFSETOF_PRINT(CBaseEntity, pev);
 	REPEAT_OFFSETOF_PRINT(CBaseEntity, has_disconnected);
+	//REPEAT_OFFSETOF_PRINT(CPreventDefuseTask, m_bombPlantedThisRound);
+	//REPEAT_OFFSETOF_PRINT(CPreventDefuseTask, m_defuseStartedThisRound);
 
 	// assert
 	CHECK_CLASS_SIZE(CNavArea, 0x238u, 0x214u);
@@ -62,14 +68,21 @@ TEST(StructOffsets, ReversingChecks, 5000)
 	CHECK_CLASS_SIZE(CBasePlayer, 0x9B0, 0x9C4);
 	CHECK_CLASS_SIZE(CHostageImprov, 0x1C8Cu, 0x1C8Cu);
 	CHECK_CLASS_SIZE(BotPhraseManager, 0x21Cu, 0x214u);
-
+	CHECK_CLASS_SIZE(BotPhrase, 0x50, 0x44);
+	
 	CHECK_CLASS_SIZE(CHalfLifeMultiplay, 0x2D0u, 0x2C4u);
 	CHECK_CLASS_SIZE(CHalfLifeTraining, 0x2E8u, 0x2D8u);
 	CHECK_CLASS_SIZE(CGib, 0x98, 0xA8);
 	CHECK_CLASS_SIZE(CSprayCan, 0x88, 0x98);
+	CHECK_CLASS_SIZE(CBaseEntity, 0x88, 0x98);
+	CHECK_CLASS_SIZE(CGrenade, 0x1E0, 0x1F4);
 	//CHECK_CLASS_SIZE(CountdownTimer, 0xC, 0x8);
+	CHECK_CLASS_SIZE(CCareerTaskManager, 0x28, 0x24);
+	CHECK_CLASS_SIZE(CCareerTask, 0x2C, 0x2C);
+	CHECK_CLASS_SIZE(CPreventDefuseTask, 0x30, 0x30);
 
 	//CHECK_CLASS_SIZE(CBotManager, 12u, 12);
+	CHECK_CLASS_SIZE(CCSBot, 11404, 11424);
 	//CHECK_CLASS_SIZE(CCSBotManager, 740, 0x2E0u);//0x2E4u | 0x2E0u
 
 	//CHECK_CLASS_SIZE(HostageStateMachine, 0x10, 0x10);

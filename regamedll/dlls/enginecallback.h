@@ -85,7 +85,9 @@ extern enginefuncs_t g_engfuncs;
 #define ADD_SERVER_COMMAND		(*g_engfuncs.pfnAddServerCommand)
 #define SET_CLIENT_LISTENING		(*g_engfuncs.pfnVoice_SetClientListening)
 #define GETPLAYERAUTHID			(*g_engfuncs.pfnGetPlayerAuthId)
+#define GET_APPROX_WAVE_PLAY_LEN	(*g_engfuncs.pfnGetApproxWavePlayLen)
 #define IS_CAREER_MATCH			(*g_engfuncs.pfnIsCareerMatch)
+#define ENG_CHECK_PARM			(*g_engfuncs.pfnEngCheckParm)
 
 /* <472a4> ../cstrike/dlls/enginecallback.h:77 */
 inline void MESSAGE_BEGIN(int msg_dest, int msg_type, const float *pOrigin = NULL, edict_t *ed = NULL)
@@ -146,6 +148,8 @@ inline void *GET_PRIVATE(edict_t *pent)
 #define FREE_FILE			(*g_engfuncs.pfnFreeFile)
 #define COMPARE_FILE_TIME		(*g_engfuncs.pfnCompareFileTime)
 #define GET_GAME_DIR			(*g_engfuncs.pfnGetGameDir)
+#define SET_CLIENT_MAXSPEED		(*g_engfuncs.pfnSetClientMaxspeed)
+#define CREATE_FAKE_CLIENT		(*g_engfuncs.pfnCreateFakeClient)
 #define PLAYER_RUN_MOVE			(*g_engfuncs.pfnRunPlayerMove)
 #define NUMBER_OF_ENTITIES		(*g_engfuncs.pfnNumberOfEntities)
 #define GET_INFO_BUFFER			(*g_engfuncs.pfnGetInfoKeyBuffer)

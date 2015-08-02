@@ -744,10 +744,29 @@ NOBODY int CBaseEntity::IsDormant(void)
 }
 
 /* <30221> ../cstrike/dlls/cbase.cpp:1069 */
-NOBODY BOOL CBaseEntity::IsInWorld_(void)
+BOOL CBaseEntity::IsInWorld_(void)
 {
-//	IsInWorld(CBaseEntity *const this);  //  1069
-	return FALSE;
+	// position
+	if (pev->origin.x >= 4096.0 || pev->origin.y >= 4096.0 || pev->origin.z >= 4096.0)
+	{
+		return FALSE;
+	}
+	if (pev->origin.x <= -4096.0 || pev->origin.y <= -4096.0 || pev->origin.z <= -4096.0)
+	{
+		return FALSE;
+	}
+
+	// speed
+	if (pev->velocity.x >= 2000.0 || pev->velocity.y >= 2000.0 || pev->velocity.z >= 2000.0)
+	{
+		return FALSE;
+	}
+	if (pev->velocity.x <= -2000.0 || pev->velocity.y <= -2000.0 || pev->velocity.z <= -2000.0)
+	{
+		return FALSE;
+	}
+
+	return TRUE;
 }
 
 /* <31c8c> ../cstrike/dlls/cbase.cpp:1089 */

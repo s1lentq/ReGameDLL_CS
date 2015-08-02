@@ -22,18 +22,38 @@ TYPEDESCRIPTION (*CBaseAnimating::pm_SaveData)[5];
 
 /* <10583> ../cstrike/dlls/animating.cpp:38 */
 IMPLEMENT_SAVERESTORE(CBaseAnimating, CBaseDelay);
-//NOBODY int CBaseAnimating::Save(CSave &save)
-//{
-//}
-
-/* <10537> ../cstrike/dlls/animating.cpp:38 */
-//NOBODY int CBaseAnimating::Restore(CRestore &restore)
-//{
-//}
 
 /* <105cf> ../cstrike/dlls/animating.cpp:45 */
-NOBODY float CBaseAnimating::StudioFrameAdvance(float flInterval)
+float CBaseAnimating::StudioFrameAdvance(float flInterval)
 {
+	if (flInterval == 0.0f)
+	{
+		flInterval = gpGlobals->time - pev->animtime;
+
+		if (flInterval <= 0.001)
+		{
+			pev->animtime = gpGlobals->time;
+			return 0;
+		}
+	}
+
+	if (pev->animtime == 0.0f)
+		flInterval = 0;
+
+	pev->frame += flInterval * m_flFrameRate * pev->framerate;
+	pev->animtime = gpGlobals->time;
+
+	if (pev->frame < 0.0 || pev->frame >= 256.0)
+	{
+		if (m_fSequenceLoops)
+			pev->frame -= (int)(pev->frame / 256.0) * 256.0;
+		else
+			pev->frame = (pev->frame < 0) ? 0 : 255;
+
+		m_fSequenceFinished = TRUE;
+	}
+
+	return flInterval;
 }
 
 /* <10605> ../cstrike/dlls/animating.cpp:77 */
@@ -119,12 +139,12 @@ NOBODY float CBaseAnimating::SetBlending(int iBlender, float flValue)
 }
 
 /* <1092f> ../cstrike/dlls/animating.cpp:201 */
-NOBODY void CBaseAnimating::GetBonePosition(int iBone, class Vector &origin, class Vector &angles)
+NOBODY void CBaseAnimating::GetBonePosition(int iBone, Vector &origin, Vector &angles)
 {
 }
 
 /* <10984> ../cstrike/dlls/animating.cpp:208 */
-NOBODY void CBaseAnimating::GetAttachment(int iAttachment, class Vector &origin, class Vector &angles)
+NOBODY void CBaseAnimating::GetAttachment(int iAttachment, Vector &origin, Vector &angles)
 {
 }
 
@@ -141,7 +161,7 @@ NOBODY int CBaseAnimating::FindTransition(int iEndingSequence, int iGoalSequence
 }
 
 /* <10a5d> ../cstrike/dlls/animating.cpp:234 */
-NOXREF void CBaseAnimating::GetAutomovement(Vector &origin, class Vector &angles, float flInterval)
+NOXREF void CBaseAnimating::GetAutomovement(Vector &origin, Vector &angles, float flInterval)
 {
 }
 

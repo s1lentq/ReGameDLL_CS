@@ -10,9 +10,16 @@ NOBODY void CSound::Clear(void)
 {
 }
 
+// Reset - clears the volume, origin, and type for a sound,
+// but doesn't expire or unlink it. 
+
 /* <178d8f> ../cstrike/dlls/soundent.cpp:43 */
-NOBODY void CSound::Reset(void)
+void CSound::Reset(void)
 {
+	m_vecOrigin = g_vecZero;
+	m_iNext = SOUNDLIST_EMPTY;
+	m_iType = 0;
+	m_iVolume = 0;
 }
 
 /* <178db7> ../cstrike/dlls/soundent.cpp:54 */
@@ -123,18 +130,52 @@ NOBODY int CSoundEnt::FreeList(void)
 {
 }
 
+// SoundPointerForIndex - returns a pointer to the instance
+// of CSound at index's position in the sound pool.
+
 /* <179093> ../cstrike/dlls/soundent.cpp:339 */
-NOBODY CSound *CSoundEnt::SoundPointerForIndex(int iIndex)
+CSound *CSoundEnt::SoundPointerForIndex(int iIndex)
 {
+	if (!pSoundEnt)
+	{
+		return NULL;
+	}
+
+	if (iIndex > (MAX_WORLD_SOUNDS - 1))
+	{
+		ALERT(at_console, "SoundPointerForIndex() - Index too large!\n");
+		return NULL;
+	}
+
+	if (iIndex < 0)
+	{
+		ALERT(at_console, "SoundPointerForIndex() - Index < 0!\n");
+		return NULL;
+	}
+
+	return &pSoundEnt->m_SoundPool[ iIndex ];
 }
 
+// Clients are numbered from 1 to MAXCLIENTS, but the client
+// reserved sounds in the soundlist are from 0 to MAXCLIENTS - 1,
+// so this function ensures that a client gets the proper index
+// to his reserved sound in the soundlist.
+
 /* <1790b8> ../cstrike/dlls/soundent.cpp:367 */
-NOBODY int CSoundEnt::ClientSoundIndex(edict_t *pClient)
+int CSoundEnt::ClientSoundIndex(edict_t *pClient)
 {
-//	{
-//		int iReturn;                                          //   369
-//		ENTINDEX(edict_t *pEdict);  //   369
-//	}
+	int iReturn = ENTINDEX(pClient) - 1;
+
+#if defined(_DEBUG) && !defined(HOOK_GAMEDLL)
+
+	if (iReturn < 0 || iReturn > gpGlobals->maxClients)
+	{
+		ALERT(at_console, "** ClientSoundIndex returning a bogus value! **\n");
+	}
+
+#endif // _DEBUG && !HOOK_GAMEDLL
+
+	return iReturn;
 }
 
 #ifdef HOOK_GAMEDLL

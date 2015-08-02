@@ -56,7 +56,13 @@ NOBODY bool SharedTokenWaiting(const char *buffer);
 /* <db469> ../game_shared/shared_util.h:46 */
 inline char *CloneString(const char *str)
 {
-	char *cloneStr = new char [strlen(str) + 1];
+	if (!str)
+	{
+		char *cloneStr = new char[1];
+		cloneStr[0] = '\0';
+		return cloneStr;
+	}
+	char *cloneStr = new char [Q_strlen(str) + 1];
 	Q_strcpy(cloneStr, str);
 	return cloneStr;
 }

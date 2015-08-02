@@ -1106,6 +1106,12 @@
     <ClInclude Include="..\dlls\world.h">
       <Filter>dlls</Filter>
     </ClInclude>
+    <ClInclude Include="..\common\hltv.h">
+      <Filter>dlls\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\schedule.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\linux\appversion.sh">

@@ -54,7 +54,7 @@ public:
 
 	static CNavNode *GetFirst(void)
 	{
-		return m_list;
+		return IMPLEMENT_ARRAY(m_list);
 	}
 	static unsigned int GetListLength(void)
 	{
@@ -109,9 +109,14 @@ private:
 	unsigned int m_id;			// unique ID of this node
 	unsigned char m_attributeFlags;		// set of attribute bit flags (see NavAttributeType)
 
-	static CNavNode *m_list;		// the master list of all nodes for this map
+#ifdef HOOK_GAMEDLL
+public:
+#endif // HOOK_GAMEDLL
+	static CNavNode *IMPLEMENT_ARRAY(m_list);		// the master list of all nodes for this map
 	static unsigned int m_listLength;
-
+#ifdef HOOK_GAMEDLL
+private:
+#endif // HOOK_GAMEDLL
 	CNavNode *m_next;			// next link in master list
 
 	// below are only needed when generating

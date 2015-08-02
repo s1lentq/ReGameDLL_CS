@@ -274,6 +274,7 @@ NOBODY void CCSBot::UpdateSaveProcess(void)
 }
 
 /* <344e24> ../cstrike/dlls/bot/cs_bot_learn.cpp:554 */
-NOBODY void CCSBot::StartNormalProcess(void)
+void CCSBot::StartNormalProcess(void)
 {
+	m_processMode = PROCESS_NORMAL;
 }

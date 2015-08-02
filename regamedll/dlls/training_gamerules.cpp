@@ -144,8 +144,9 @@ NOBODY BOOL CHalfLifeTraining::FPlayerCanRespawn_(CBasePlayer *pPlayer)
 }
 
 /* <18bd40> ../cstrike/dlls/training_gamerules.cpp:190 */
-NOBODY bool CHalfLifeTraining::PlayerCanBuy(CBasePlayer *pPlayer)
+bool CHalfLifeTraining::PlayerCanBuy(CBasePlayer *pPlayer)
 {
+	return pPlayer->m_signals.GetState() & SIGNAL_BUY;
 }
 
 /* <18afa5> ../cstrike/dlls/training_gamerules.cpp:195 */

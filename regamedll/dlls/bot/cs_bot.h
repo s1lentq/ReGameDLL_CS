@@ -36,6 +36,9 @@
 #include "bot/cs_bot_manager.h"
 #include "bot/cs_bot_chatter.h"
 
+#define CSBOT_VERSION_MAJOR		1
+#define CSBOT_VERSION_MINOR		50
+
 #define FLAG_PROGRESS_DRAW		0x0	// draw status bar progress
 #define FLAG_PROGRESS_START		0x1	// init status bar progress
 #define FLAG_PROGRESS_HIDE		0x2	// hide status bar progress
@@ -121,6 +124,7 @@ protected:
 		JUMP,
 		NUM_ATTACK_STATES
 	} m_dodgeState;
+
 	float m_nextDodgeStateTimestamp;
 	CountdownTimer m_repathTimer;
 	float m_scopeTimestamp;
@@ -402,7 +406,7 @@ public:
 	NOBODY virtual bool Initialize(const BotProfile *profile);
 
 	NOBODY virtual void SpawnBot(void);
-	NOBODY virtual void Upkeep(void);
+	virtual void Upkeep(void);
 
 	NOBODY virtual void Update(void);
 	NOBODY virtual void Walk(void);
@@ -415,6 +419,7 @@ public:
 	NOBODY virtual bool IsVisible(CBasePlayer *player, bool testFOV = false, unsigned char *visParts = NULL) const;
 
 	virtual bool IsEnemyPartVisible(VisiblePartType part) const;
+
 #ifdef HOOK_GAMEDLL
 
 	bool Initialize_(const BotProfile *profile);
@@ -436,7 +441,7 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	NOBODY void Disconnect(void);
+	void Disconnect(void);
 	float GetCombatRange(void) const
 	{
 		return m_combatRange; 
@@ -630,7 +635,7 @@ public:
 		return m_morale;
 	}
 	NOBODY void IncreaseMorale(void);
-	NOBODY void DecreaseMorale(void);
+	void DecreaseMorale(void);
 	bool IsNoiseHeard(void) const
 	{
 		if (m_noiseTimestamp <= 0.0f)
@@ -950,7 +955,7 @@ public:
 	NOBODY CBasePlayer *FindMostDangerousThreat(void);
 	NOBODY void RespondToRadioCommands(void);
 	NOBODY bool IsRadioCommand(GameEventType event);
-	NOBODY void EndVoiceFeedback(bool force);
+	void EndVoiceFeedback(bool force = true);
 	NOBODY CNavNode *AddNode(const Vector *destPos, const Vector *normal, NavDirType dir, CNavNode *source);
 	NOBODY void StartLearnProcess(void);
 	NOBODY void UpdateLearnProcess(void);
@@ -963,7 +968,7 @@ public:
 	NOBODY bool AnalyzeBetaStep(void);
 	NOBODY void StartSaveProcess(void);
 	NOBODY void UpdateSaveProcess(void);
-	NOBODY void StartNormalProcess(void);
+	void StartNormalProcess(void);
 	NOBODY void BotTouch(CBaseEntity *other);
 private:
 	friend class CCSBotManager;
@@ -1488,7 +1493,7 @@ typedef CSGameState *(CCSBot::*GETGAMESTATE_NOTCONST)(void);
 #endif // HOOK_GAMEDLL
 
 NOBODY void InstallBotControl(void);
-NOBODY void Bot_ServerCommand(void);
+void Bot_ServerCommand(void);
 void Bot_RegisterCvars(void);
 NOBODY int GetBotFollowCount(CBasePlayer *leader);
 NOBODY const Vector *FindNearbyRetreatSpot(CCSBot *me, float maxRange);

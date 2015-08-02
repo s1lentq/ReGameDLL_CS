@@ -207,27 +207,15 @@ public:
 	}
 	void Mark(void)
 	{
-#ifndef HOOK_GAMEDLL
-		m_marker = m_masterMarker;
-#else
-		m_marker = (*m_masterMarker);
-#endif // HOOK_GAMEDLL
+		m_marker = IMPLEMENT_ARRAY(m_masterMarker);
 	}
 	bool IsMarked(void) const
 	{
-#ifndef HOOK_GAMEDLL
-		return (m_marker == m_masterMarker) ? true : false;
-#else
-		return (m_marker == (*m_masterMarker)) ? true : false;
-#endif // HOOK_GAMEDLL
+		return (m_marker == IMPLEMENT_ARRAY(m_masterMarker)) ? true : false;
 	}
 	static void ChangeMasterMarker(void)
 	{
-#ifndef HOOK_GAMEDLL
-		++m_masterMarker;
-#else
-		++(*m_masterMarker);
-#endif // HOOK_GAMEDLL
+		IMPLEMENT_ARRAY(m_masterMarker)++;
 	}
 
 private:
@@ -238,14 +226,11 @@ private:
 	unsigned int m_marker;
 	unsigned char m_flags;
 
-#ifndef HOOK_GAMEDLL
-	static unsigned int m_nextID;
-	static unsigned int m_masterMarker;
-#else
+#ifdef HOOK_GAMEDLL
 public:
-	static unsigned int (*m_nextID);
-	static unsigned int (*m_masterMarker);
 #endif // HOOK_GAMEDLL
+	static unsigned int IMPLEMENT_ARRAY(m_nextID);
+	static unsigned int IMPLEMENT_ARRAY(m_masterMarker);
 
 };/* size: 24, cachelines: 1, members: 6 */
 
@@ -260,6 +245,7 @@ struct SpotOrder
 		HidingSpot *spot;
 		unsigned int id;
 	};
+
 };/* size: 8, cachelines: 1, members: 2 */
 
 typedef std::list<SpotOrder> SpotOrderList;
@@ -273,6 +259,7 @@ struct SpotEncounter
 	NavDirType toDir;
 	Ray path;
 	SpotOrderList spotList;
+
 };/* size: 48, cachelines: 1, members: 6 */
 
 typedef std::list<SpotEncounter> SpotEncounterList;
@@ -414,31 +401,17 @@ public:
 	void ComputeApproachAreas(void);
 	static void MakeNewMarker(void)
 	{
-#ifndef HOOK_GAMEDLL
-		++m_masterMarker;
-		if (m_masterMarker == 0)
-			m_masterMarker = 1;
-#else
-		++(*m_masterMarker);
-		if ((*m_masterMarker) == 0)
-			(*m_masterMarker) = 1;
-#endif // HOOK_GAMEDLL
+		IMPLEMENT_ARRAY(m_masterMarker)++;
+		if (IMPLEMENT_ARRAY(m_masterMarker) == 0)
+			IMPLEMENT_ARRAY(m_masterMarker) = 1;
 	}
 	void Mark(void)
 	{
-#ifndef HOOK_GAMEDLL
-		m_marker = m_masterMarker;
-#else
-		m_marker = (*m_masterMarker);
-#endif // HOOK_GAMEDLL
+		m_marker = IMPLEMENT_ARRAY(m_masterMarker);
 	}
 	BOOL IsMarked(void) const
 	{
-#ifndef HOOK_GAMEDLL
-		return (m_marker == m_masterMarker) ? true : false;
-#else
-		return (m_marker == (*m_masterMarker)) ? true : false;
-#endif // HOOK_GAMEDLL
+		return (m_marker == IMPLEMENT_ARRAY(m_masterMarker)) ? true : false;
 	}
 	void SetParent(CNavArea *parent, NavTraverseType how = NUM_TRAVERSE_TYPES)
 	{
@@ -524,14 +497,14 @@ private:
 	friend class CCSBotManager;
 
 	void Initialize(void);
-
-#ifndef HOOK_GAMEDLL
-	static bool m_isReset;
-	static unsigned int m_nextID;
-#else
+	
+#ifdef HOOK_GAMEDLL
 public:
-	static bool (*m_isReset);
-	static unsigned int (*m_nextID);
+#endif // HOOK_GAMEDLL
+	static bool IMPLEMENT_ARRAY(m_isReset);
+	static unsigned int IMPLEMENT_ARRAY(m_nextID);
+
+#ifdef HOOK_GAMEDLL
 private:
 #endif // HOOK_GAMEDLL
 
@@ -559,19 +532,22 @@ private:
 #if defined(_WIN32) && defined(HOOK_GAMEDLL)
 	int unknown_padding2;
 #endif // HOOK_GAMEDLL
-
+#ifdef HOOK_GAMEDLL
+public:
+#endif // HOOK_GAMEDLL
 	SpotEncounterList m_spotEncounterList;
 
 	enum { MAX_APPROACH_AREAS = 16 };
 
-	ApproachInfo m_approach[MAX_APPROACH_AREAS];
+	ApproachInfo m_approach[MAX_APPROACH_AREAS];//104
 	unsigned char m_approachCount;
 
-#ifndef HOOK_GAMEDLL
-	static unsigned int m_masterMarker;
-#else
+#ifdef HOOK_GAMEDLL
 public:
-	static unsigned int (*m_masterMarker);
+#endif // HOOK_GAMEDLL
+	static unsigned int IMPLEMENT_ARRAY(m_masterMarker);
+
+#ifdef HOOK_GAMEDLL
 private:
 #endif // HOOK_GAMEDLL
 
@@ -581,11 +557,12 @@ private:
 	float m_totalCost;
 	float m_costSoFar;
 
-#ifndef HOOK_GAMEDLL
-	static CNavArea *m_openList;
-#else
+#ifdef HOOK_GAMEDLL
 public:
-	static CNavArea *(*m_openList);
+#endif // HOOK_GAMEDLL
+	static CNavArea *IMPLEMENT_ARRAY(m_openList);
+
+#ifdef HOOK_GAMEDLL
 private:
 #endif // HOOK_GAMEDLL
 
@@ -650,21 +627,13 @@ inline CNavArea *CNavArea::GetAdjacentArea(NavDirType dir, int i) const
 /* <5a01dc> ../game_shared/bot/nav_area.h:435 */
 inline bool CNavArea::IsOpen(void) const
 {
-#ifndef HOOK_GAMEDLL
-	return (m_openMarker == m_masterMarker) ? true : false;
-#else
-	return (m_openMarker == (*m_masterMarker)) ? true : false;
-#endif // HOOK_GAMEDLL
+	return (m_openMarker == IMPLEMENT_ARRAY(m_masterMarker)) ? true : false;
 }
 
 /* <5a0a62> ../game_shared/bot/nav_area.h:440 */
 inline bool CNavArea::IsOpenListEmpty(void)
 {
-#ifndef HOOK_GAMEDLL
-	return (m_openList != NULL) ? false : true;
-#else
-	return ((*m_openList) != NULL) ? false : true;
-#endif // HOOK_GAMEDLL
+	return (IMPLEMENT_ARRAY(m_openList) != NULL) ? false : true;
 }
 
 /* <5a1483> ../game_shared/bot/nav_area.h:445 */
@@ -678,9 +647,9 @@ inline CNavArea *CNavArea::PopOpenList(void)
 		return area;
 	}
 #else
-	if ((*m_openList))
+	if (IMPLEMENT_ARRAY(m_openList))
 	{
-		CNavArea *area = (*m_openList);
+		CNavArea *area = IMPLEMENT_ARRAY(m_openList);
 		area->RemoveFromOpenList();
 		return area;
 	}
@@ -1260,40 +1229,44 @@ typedef void (HidingSpot::*CNAV_AREA_NAVNODE)(CNavNode *nwNode, class CNavNode *
 
 #ifdef HOOK_GAMEDLL
 
-//#define TheNavLadderList (*pTheNavLadderList)
+#define TheNavLadderList (*pTheNavLadderList)
 #define TheHidingSpotList (*pTheHidingSpotList)
 #define TheNavAreaList (*pTheNavAreaList)
 #define TheNavAreaGrid (*pTheNavAreaGrid)
 
-//#define lastDrawTimestamp (*plastDrawTimestamp)
+#define lastDrawTimestamp (*plastDrawTimestamp)
 #define goodSizedAreaList (*pgoodSizedAreaList)
-//#define markedArea (*pmarkedArea)
-//#define lastSelectedArea (*plastSelectedArea)
+#define markedArea (*pmarkedArea)
+#define lastSelectedArea (*plastSelectedArea)
 #define markedCorner (*pmarkedCorner)
-//#define isCreatingNavArea (*pisCreatingNavArea)
+#define isCreatingNavArea (*pisCreatingNavArea)
 //#define isAnchored (*pisAnchored)
 //#define anchor (*panchor)
 //#define isPlaceMode (*pisPlaceMode)
-//#define isPlacePainting (*pisPlacePainting)
+#define isPlacePainting (*pisPlacePainting)
+#define editTimestamp (*peditTimestamp)
+
 #define BlockedID (*pBlockedID)
 #define BlockedIDCount (*pBlockedIDCount)
 
 #endif // HOOK_GAMEDLL
 
-//extern NavLadderList TheNavLadderList;
+extern NavLadderList TheNavLadderList;
 extern HidingSpotList TheHidingSpotList;
 extern NavAreaList TheNavAreaList;
 extern CNavAreaGrid TheNavAreaGrid;
-//extern float lastDrawTimestamp;
+extern float lastDrawTimestamp;
 extern NavAreaList goodSizedAreaList;
-//extern CNavArea *markedArea;
-//extern CNavArea *lastSelectedArea;
+extern CNavArea *markedArea;
+extern CNavArea *lastSelectedArea;
 extern NavCornerType markedCorner;
-//extern bool isCreatingNavArea;
+extern bool isCreatingNavArea;
 //extern bool isAnchored;
 //extern Vector anchor;
 //extern bool isPlaceMode;
-//extern bool isPlacePainting;
+extern bool isPlacePainting;
+extern float editTimestamp;
+
 extern unsigned int BlockedID[ MAX_BLOCKED_AREAS ];
 extern int BlockedIDCount;
 
@@ -1311,7 +1284,7 @@ bool GetGroundHeight(const Vector *pos, float *height, Vector *normal = NULL);
 NOBODY bool GetSimpleGroundHeight(const Vector *pos, float *height, Vector *normal = NULL);
 NOBODY inline bool IsAreaVisible(const Vector *pos, const CNavArea *area);
 NOBODY CNavArea *GetMarkedArea(void);
-NOBODY void EditNavAreasReset(void);
+void EditNavAreasReset(void);
 NOBODY void DrawHidingSpots(const CNavArea *area);
 NOBODY void IncreaseDangerNearby(int teamID, float amount, CNavArea *startArea, const Vector *pos, float maxRadius);
 NOBODY void DrawDanger(void);
@@ -1323,7 +1296,7 @@ NOBODY const Vector *FindRandomHidingSpot(CBaseEntity *me, Place place, bool isS
 NOBODY HidingSpot *GetHidingSpotByID(unsigned int id);
 void ApproachAreaAnalysisPrep(void);
 void CleanupApproachAreaAnalysisPrep(void);
-NOBODY void DestroyLadders(void);
+void DestroyLadders(void);
 NOBODY void DestroyNavigationMap(void);
 NOBODY void StripNavigationAreas(void);
 NOBODY inline CNavArea *FindFirstAreaInDirection(const Vector *start, NavDirType dir, float range, float beneathLimit, CBaseEntity *traceIgnore, Vector *closePos);

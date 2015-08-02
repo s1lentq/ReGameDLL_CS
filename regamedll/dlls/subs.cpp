@@ -206,7 +206,7 @@ void CBaseDelay::SUB_UseTargets(CBaseEntity *pActivator, USE_TYPE useType, float
 		if (pTemp->pev->classname)
 			RemoveEntityHashValue(pTemp->pev, STRING(pTemp->pev->classname), CLASSNAME);
 
-		MAKE_STRING_CLASS("DelayedUse",pTemp->pev);
+		MAKE_STRING_CLASS("DelayedUse", pTemp->pev);
 		AddEntityHashValue(pTemp->pev, STRING(pTemp->pev->classname), CLASSNAME);
 
 		pTemp->pev->nextthink = gpGlobals->time + m_flDelay;

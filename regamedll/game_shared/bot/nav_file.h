@@ -69,4 +69,6 @@ NOBODY void LoadLocationFile(const char *filename);
 NOBODY void SanityCheckNavigationMap(const char *mapName);
 NOBODY NavErrorType LoadNavigationMap(void);
 
+extern void (*pLoadNavigationMap)(void);
+
 #endif // NAV_FILE_H

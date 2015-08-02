@@ -7,24 +7,24 @@
 
 float CLocalNav::s_flStepSize;
 int CLocalNav::qptr;
-EHANDLE CLocalNav::_queue[ MAX_HOSTAGES ];
+EHANDLE CLocalNav::_queue[ MAX_HOSTAGES_NAV ];
 int CLocalNav::tot_inqueue;
 float CLocalNav::nodeval;
 float CLocalNav::flNextCvarCheck;
 float CLocalNav::flLastThinkTime;
-EHANDLE CLocalNav::hostages[ MAX_HOSTAGES ];
+EHANDLE CLocalNav::hostages[ MAX_HOSTAGES_NAV ];
 int CLocalNav::tot_hostages;
 
 #else
 
 float (*CLocalNav::ps_flStepSize);
 int (*CLocalNav::pqptr);
-EHANDLE (*CLocalNav::pqueue)[ MAX_HOSTAGES ];
+EHANDLE (*CLocalNav::pqueue)[ MAX_HOSTAGES_NAV ];
 int (*CLocalNav::ptot_inqueue);
 float (*CLocalNav::pnodeval);
 float (*CLocalNav::pflNextCvarCheck);
 float (*CLocalNav::pflLastThinkTime);
-EHANDLE (*CLocalNav::phostages)[ MAX_HOSTAGES ];
+EHANDLE (*CLocalNav::phostages)[ MAX_HOSTAGES_NAV ];
 int (*CLocalNav::ptot_hostages);
 
 #endif // HOOK_GAMEDLL
@@ -749,7 +749,7 @@ void CLocalNav::Think(void)
 		{
 			while (tot_inqueue > 0)
 			{
-				if (++qptr == MAX_HOSTAGES)
+				if (++qptr == MAX_HOSTAGES_NAV)
 					qptr = 0;
 
 				tot_inqueue--;
@@ -770,7 +770,7 @@ void CLocalNav::Think(void)
 		{
 			CHostage *pHostage = GetClassPtr((CHostage *)hostage->pev);
 
-			if (++qptr == MAX_HOSTAGES)
+			if (++qptr == MAX_HOSTAGES_NAV)
 				qptr = 0;
 
 			tot_inqueue--;
