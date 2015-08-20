@@ -36,11 +36,20 @@
 #define YAW	1	// left/right
 #define ROLL	2	// fall over
 
+#ifdef HOOK_GAMEDLL
+
+#define vec3_origin (*pvec3_origin)
+#define nanmask (*pnanmask)
+
+#endif // HOOK_GAMEDLL
+
+extern vec3_t vec3_origin;
+extern int nanmask;
+
+#define IS_NAN(x)	((*reinterpret_cast<int *>(&(x)) & nanmask) == nanmask)
+
 NOBODY float anglemod(float a);
-void AngleVectors3(const vec_t *angles, vec_t *forward, vec_t *right, vec_t *up);
 void AngleVectors(const vec_t *angles, vec_t *forward, vec_t *right, vec_t *up);
-
-
 NOBODY void AngleVectorsTranspose(const vec_t *angles, vec_t *forward, vec_t *right, vec_t *up);
 void AngleMatrix(const vec_t *angles, float (*matrix)[4]);
 NOBODY void AngleIMatrix(const vec_t *angles, float (*matrix)[4]);
@@ -49,15 +58,15 @@ NOBODY void InterpolateAngles(float *start, float *end, float *output, float fra
 NOBODY float AngleBetweenVectors(const vec_t *v1, const vec_t *v2);
 NOBODY void VectorTransform(const vec_t *in1, float *in2, vec_t *out);
 int VectorCompare(const vec_t *v1, const vec_t *v2);
-NOBODY void VectorMA(const vec_t *veca, float scale, const vec_t *vecb, vec_t *vecc);
+void VectorMA(const vec_t *veca, float scale, const vec_t *vecb, vec_t *vecc);
 
-NOXREF vec_t _DotProduct(vec_t *v1, vec_t *v2);
-NOXREF void _VectorSubtract(vec_t *veca, vec_t *vecb, vec_t *out);
-NOXREF void _VectorAdd(vec_t *veca, vec_t *vecb, vec_t *out);
-NOXREF void _VectorCopy(vec_t *in, vec_t *out);
-NOXREF void _CrossProduct(const vec_t *v1, const vec_t *v2, vec_t *cross);
+float_precision _DotProduct(vec_t *v1, vec_t *v2);
+void _VectorSubtract(vec_t *veca, vec_t *vecb, vec_t *out);
+void _VectorAdd(vec_t *veca, vec_t *vecb, vec_t *out);
+void _VectorCopy(vec_t *in, vec_t *out);
+void _CrossProduct(const vec_t *v1, const vec_t *v2, vec_t *cross);
 
-float Length(const vec_t *v);
+float_precision Length(const vec_t *v);
 NOBODY float Distance(const vec_t *v1, const vec_t *v2);
 float_precision VectorNormalize(vec_t *v);
 

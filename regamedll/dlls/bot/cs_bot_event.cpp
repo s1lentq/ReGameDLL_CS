@@ -1,7 +1,7 @@
 #include "precompiled.h"
 
 /* <31d087> ../cstrike/dlls/bot/cs_bot_event.cpp:22 */
-void CCSBot::OnEvent_(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
+void CCSBot::__MAKE_VHOOK(OnEvent)(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
 {
 //	{
 //		class CCSBotManager *ctrl;                           //    63

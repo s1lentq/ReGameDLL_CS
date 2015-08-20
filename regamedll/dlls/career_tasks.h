@@ -93,7 +93,7 @@ private:
 	bool m_isComplete;
 	const char *m_name;
 	int m_id;
-	enum GameEventType m_event;
+	GameEventType m_event;
 	int m_eventsNeeded;
 	int m_eventsSeen;
 	bool m_mustLive;

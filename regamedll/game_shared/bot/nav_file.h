@@ -32,8 +32,12 @@
 #pragma once
 #endif
 
+#undef min
+#undef max
+
 #include <list>
 #include <vector>
+#include <algorithm>
 
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -44,6 +48,16 @@
 #include <unistd.h>
 
 #endif // _WIN32
+
+// The 'place directory' is used to save and load places from
+// nav files in a size-efficient manner that also allows for the 
+// order of the place ID's to change without invalidating the
+// nav files.
+//
+// The place directory is stored in the nav file as a list of 
+// place name strings.  Each nav area then contains an index
+// into that directory, or zero if no place has been assigned to 
+// that area.
 
 /* <4ecb57> ../game_shared/bot/nav_file.cpp:54 */
 class PlaceDirectory
@@ -58,9 +72,16 @@ public:
 	Place EntryToPlace(EntryType entry) const;	// given an entry, return the Place
 	void Save(int fd);				// store the directory
 	void Load(SteamFile *file);			// load the directory
+
 private:
 	std::vector<Place> m_directory;
 };
+
+#ifdef HOOK_GAMEDLL
+#define placeDirectory (*pplaceDirectory)
+#endif // HOOK_GAMEDLL
+
+extern PlaceDirectory placeDirectory;
 
 NOBODY char *GetBspFilename(const char *navFilename);
 NOBODY void COM_FixSlashes(char *pname);

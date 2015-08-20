@@ -33,12 +33,12 @@ NOBODY BOOL CSound::FIsScent(void)
 }
 
 /* <17900a> ../cstrike/dlls/soundent.cpp:80 */
-NOBODY void CSoundEnt::Spawn_(void)
+NOBODY void CSoundEnt::__MAKE_VHOOK(Spawn)(void)
 {
 }
 
 /* <178b0c> ../cstrike/dlls/soundent.cpp:93 */
-NOBODY void CSoundEnt::Think_(void)
+NOBODY void CSoundEnt::__MAKE_VHOOK(Think)(void)
 {
 //	{
 //		int iSound;                                           //    95
@@ -53,7 +53,7 @@ NOBODY void CSoundEnt::Think_(void)
 }
 
 /* <178a76> ../cstrike/dlls/soundent.cpp:132 */
-NOBODY void CSoundEnt::Precache_(void)
+NOBODY void CSoundEnt::__MAKE_VHOOK(Precache)(void)
 {
 }
 

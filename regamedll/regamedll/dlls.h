@@ -26,12 +26,12 @@
 *
 */
 
-#include "mathlib.h"
 #include "extdll.h"
 
 #include "h_export.h"
 #include "schedule.h"
 #include "archtypes.h"
+#include "scriptevent.h"
 #include "enginecallback.h"
 //#include "entity_state.h"
 #include "nodes.h"

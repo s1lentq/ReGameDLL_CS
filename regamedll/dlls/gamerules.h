@@ -34,12 +34,111 @@
 
 #include "game_shared/voice_gamemgr.h"
 
-#define COM_TOKEN_LEN		1500
+#define COM_TOKEN_LEN			1500
 
-#define MAX_RULE_BUFFER		1024
-#define MAX_VOTE_MAPS		100
-#define ITEM_RESPAWN_TIME	30
-#define MAX_VIP_QUEUES		5
+#define MAX_RULE_BUFFER			1024
+#define MAX_VOTE_MAPS			100
+#define MAX_VIP_QUEUES			5
+
+#define MAX_BOMB_RADIUS			2048
+
+#define MAP_VIP_SAFETYZONE_INIT		0	// initial
+#define MAP_HAVE_VIP_SAFETYZONE_YES	1	// on map have of vip safety zone
+#define MAP_HAVE_VIP_SAFETYZONE_NO	2	// there is no safety zone
+
+#define MAP_HAS_CAMERAS_INIT		2	// initial
+#define MAP_HAS_CAMERAS_YES		1	// on map have of camera's
+
+#define ITEM_RESPAWN_TIME		30
+#define WEAPON_RESPAWN_TIME		20
+#define AMMO_RESPAWN_TIME		20
+
+// longest the intermission can last, in seconds
+#define MAX_INTERMISSION_TIME		120
+
+// when we are within this close to running out of entities,  items 
+// marked with the ITEM_FLAG_LIMITINWORLD will delay their respawn
+#define ENTITY_INTOLERANCE		100
+
+#define MAX_MOTD_CHUNK			60
+#define MAX_MOTD_LENGTH			1536 // (MAX_MOTD_CHUNK * 4)
+
+// custom enum
+enum
+{
+	WINSTATUS_CTS = 1,
+	WINSTATUS_TERRORISTS,
+	WINSTATUS_DRAW,
+};
+
+// custom enum
+enum ScenarionEventEndRound
+{
+	ROUND_TARGET_BOMB = 1,
+	ROUND_VIP_ESCAPED,
+	ROUND_VIP_ASSASSINATED,
+	ROUND_TERRORISTS_ESCAPED,
+	ROUND_CTS_PREVENT_ESCAPE,
+	ROUND_ESCAPING_TERRORISTS_NEUTRALIZED,
+	ROUND_BOMB_DEFUSED,
+	ROUND_CTS_WIN,
+	ROUND_TERRORISTS_WIN,
+	ROUND_END_DRAW,
+	ROUND_ALL_HOSTAGES_RESCUED,
+	ROUND_TARGET_SAVED,
+	ROUND_HOSTAGE_NOT_RESCUED,
+	ROUND_TERRORISTS_NOT_ESCAPED,
+	ROUND_VIP_NOT_ESCAPED,
+	ROUND_GAME_COMMENCE,
+};
+
+// custom enum
+enum RewardAccount
+{
+	REWARD_TARGET_BOMB		= 3500,
+	REWARD_VIP_ESCAPED		= 3500,
+	REWARD_VIP_ASSASSINATED		= 3250,
+	REWARD_TERRORISTS_ESCAPED	= 3150,
+	REWARD_CTS_PREVENT_ESCAPE	= 3500,
+	REWARD_ESCAPING_TERRORISTS_NEUTRALIZED	= 3250,
+	REWARD_BOMB_DEFUSED		= 3250,
+	REWARD_BOMB_PLANTED		= 800,
+	REWARD_BOMB_EXPLODED		= 3250,
+	REWARD_CTS_WIN			= 3000,
+	REWARD_TERRORISTS_WIN		= 3000,
+	REWARD_ALL_HOSTAGES_RESCUED	= 2500,
+
+	// the end round was by the expiration time
+	REWARD_TARGET_BOMB_SAVED	= 3250,
+	REWARD_HOSTAGE_NOT_RESCUED	= 3250,
+	REWARD_VIP_NOT_ESCAPED		= 3250,
+
+	// loser bonus
+	REWARD_LOSER_BONUS_DEFAULT	= 1400,
+	REWARD_LOSER_BONUS_MIN		= 1500,
+	REWARD_LOSER_BONUS_MAX		= 3000,
+	REWARD_LOSER_BONUS_ADD		= 500,
+
+	REWARD_RESCUED_HOSTAGE		= 750,
+	REWARD_KILLED_ENEMY		= 300,
+	REWARD_KILLED_VIP		= 2500,
+
+};
+
+// custom enum
+enum PaybackForBadThing
+{
+	PAYBACK_FOR_KILLED_TEAMMATES	= -3300,
+};
+
+// custom enum
+enum InfoMapBuyParam
+{
+	BUYING_EVERYONE = 0,
+	BUYING_ONLY_CTS,
+	BUYING_ONLY_TERRORISTS,
+	BUYING_NO_ONE,	
+};
 
 enum
 {
@@ -83,12 +182,12 @@ public:
 	virtual BOOL IsDeathmatch(void) = 0;
 	virtual BOOL IsTeamplay(void)
 	{
-		return FALSE;
+		return IsTeamplay_();
 	}
 	virtual BOOL IsCoOp(void) = 0;
 	virtual const char *GetGameDescription(void)
 	{
-		return "Counter-Strike";
+		return GetGameDescription_();
 	}
 	virtual BOOL ClientConnected(edict_t *pEntity, const char *pszName, const char *pszAddress, char *szRejectReason) = 0;
 	virtual void InitHUD(CBasePlayer *pl) = 0;
@@ -97,34 +196,34 @@ public:
 	virtual float FlPlayerFallDamage(CBasePlayer *pPlayer) = 0;
 	virtual BOOL FPlayerCanTakeDamage(CBasePlayer *pPlayer, CBaseEntity *pAttacker)
 	{
-		return TRUE;
+		return FPlayerCanTakeDamage_(pPlayer, pAttacker);
 	}
 	virtual BOOL ShouldAutoAim(CBasePlayer *pPlayer, edict_t *target)
 	{
-		return TRUE;
+		return ShouldAutoAim_(pPlayer, target);
 	}
 	virtual void PlayerSpawn(CBasePlayer *pPlayer) = 0;
 	virtual void PlayerThink(CBasePlayer *pPlayer) = 0;
 	virtual BOOL FPlayerCanRespawn(CBasePlayer *pPlayer) = 0;
 	virtual float FlPlayerSpawnTime(CBasePlayer *pPlayer) = 0;
-	NOBODY virtual edict_t *GetPlayerSpawnSpot(CBasePlayer *pPlayer);
+	virtual edict_t *GetPlayerSpawnSpot(CBasePlayer *pPlayer);
 	virtual BOOL AllowAutoTargetCrosshair(void)
 	{
-		return TRUE;
+		return AllowAutoTargetCrosshair_();
 	}
 	virtual BOOL ClientCommand_DeadOrAlive(CBasePlayer *pPlayer, const char *pcmd)
 	{
-		return FALSE;
+		return ClientCommand_DeadOrAlive_(pPlayer, pcmd);
 	}
 	virtual BOOL ClientCommand(CBasePlayer *pPlayer, const char *pcmd)
 	{
-		return FALSE;
+		return ClientCommand_(pPlayer, pcmd);
 	}
 	virtual void ClientUserInfoChanged(CBasePlayer *pPlayer, char *infobuffer) {}
 	virtual int IPointsForKill(CBasePlayer *pAttacker, CBasePlayer *pKilled) = 0;
 	virtual void PlayerKilled(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor) = 0;
 	virtual void DeathNotice(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pevInflictor) = 0;
-	NOBODY virtual BOOL CanHavePlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pItem);
+	virtual BOOL CanHavePlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pItem);
 	virtual void PlayerGotWeapon(CBasePlayer *pPlayer, CBasePlayerItem *pWeapon) = 0;
 	virtual int WeaponShouldRespawn(CBasePlayerItem *pWeapon) = 0;
 	virtual float FlWeaponRespawnTime(CBasePlayerItem *pWeapon) = 0;
@@ -143,7 +242,7 @@ public:
 	virtual float FlHealthChargerRechargeTime(void) = 0;
 	virtual float FlHEVChargerRechargeTime(void)
 	{
-		return 0.0f;
+		return FlHEVChargerRechargeTime_();
 	}
 	virtual int DeadPlayerWeapons(CBasePlayer *pPlayer) = 0;
 	virtual int DeadPlayerAmmo(CBasePlayer *pPlayer) = 0;
@@ -151,30 +250,30 @@ public:
 	virtual int PlayerRelationship(CBasePlayer *pPlayer, CBaseEntity *pTarget) = 0;
 	virtual int GetTeamIndex(const char *pTeamName)
 	{
-		return -1;
+		return GetTeamIndex_(pTeamName);
 	}
 	virtual const char *GetIndexedTeamName(int teamIndex)
 	{
-		return "";
+		return GetIndexedTeamName_(teamIndex);
 	}
 	virtual BOOL IsValidTeam(const char *pTeamName)
 	{
-		return TRUE;
+		return IsValidTeam_(pTeamName);
 	}
 	virtual void ChangePlayerTeam(CBasePlayer *pPlayer, const char *pTeamName, BOOL bKill, BOOL bGib) {}
 	virtual const char *SetDefaultPlayerTeam(CBasePlayer *pPlayer)
 	{
-		return "";
+		return SetDefaultPlayerTeam_(pPlayer);
 	}
 	virtual BOOL PlayTextureSounds(void)
 	{
-		return TRUE;
+		return PlayTextureSounds_();
 	}
 	virtual BOOL FAllowMonsters(void) = 0;
 	virtual void EndMultiplayerGame(void) {}
 	virtual BOOL IsFreezePeriod(void)
 	{
-		return m_bFreezePeriod;
+		return IsFreezePeriod_();
 	}
 	virtual void ServerDeactivate(void) {}
 	virtual void CheckMapConditions(void) {}
@@ -182,9 +281,65 @@ public:
 #ifdef HOOK_GAMEDLL
 
 	void RefreshSkillData_(void);
-	NOBODY edict_t *GetPlayerSpawnSpot_(CBasePlayer *pPlayer);
-	NOBODY BOOL CanHavePlayerItem_(CBasePlayer *pPlayer, CBasePlayerItem *pItem);
+	BOOL IsTeamplay_(void)
+	{
+		return FALSE;
+	}
+	const char *GetGameDescription_(void)
+	{
+		return "Counter-Strike";
+	}
+	BOOL FPlayerCanTakeDamage_(CBasePlayer *pPlayer, CBaseEntity *pAttacker)
+	{
+		return TRUE;
+	}
+	BOOL ShouldAutoAim_(CBasePlayer *pPlayer, edict_t *target)
+	{
+		return TRUE;
+	}
+	edict_t *GetPlayerSpawnSpot_(CBasePlayer *pPlayer);
+	BOOL AllowAutoTargetCrosshair_(void)
+	{
+		return TRUE;
+	}
+	BOOL ClientCommand_DeadOrAlive_(CBasePlayer *pPlayer, const char *pcmd)
+	{
+		return FALSE;
+	}
+	BOOL ClientCommand_(CBasePlayer *pPlayer, const char *pcmd)
+	{
+		return FALSE;
+	}
+	BOOL CanHavePlayerItem_(CBasePlayer *pPlayer, CBasePlayerItem *pItem);
 	BOOL CanHaveAmmo_(CBasePlayer *pPlayer, const char *pszAmmoName, int iMaxCarry);
+	float FlHEVChargerRechargeTime_(void)
+	{
+		return 0.0f;
+	}
+	int GetTeamIndex_(const char *pTeamName)
+	{
+		return -1;
+	}
+	const char *GetIndexedTeamName_(int teamIndex)
+	{
+		return "";
+	}
+	BOOL IsValidTeam_(const char *pTeamName)
+	{
+		return TRUE;
+	}
+	const char *SetDefaultPlayerTeam_(CBasePlayer *pPlayer)
+	{
+		return "";
+	}
+	BOOL PlayTextureSounds_(void)
+	{
+		return TRUE;
+	}
+	BOOL IsFreezePeriod_(void)
+	{
+		return m_bFreezePeriod;
+	}
 
 #endif // HOOK_GAMEDLL
 
@@ -192,12 +347,14 @@ public:
 	//int **_vptr.CGameRules;
 	BOOL m_bFreezePeriod;
 	BOOL m_bBombDropped;
+
 };/* size: 12, cachelines: 1, members: 3 */
 
 class CHalfLifeRules: public CGameRules
 {
 public:
 	CHalfLifeRules(void);
+
 	virtual void Think(void);
 	virtual BOOL IsAllowedToSpawn(CBaseEntity *pEntity);
 	virtual BOOL FAllowFlashlight(void)
@@ -248,7 +405,53 @@ public:
 
 #ifdef HOOK_GAMEDLL
 
+	void Think_(void);
+	BOOL IsAllowedToSpawn_(CBaseEntity *pEntity);
+	BOOL FAllowFlashlight_(void)
+	{
+		return TRUE;
+	};
+	BOOL FShouldSwitchWeapon_(CBasePlayer *pPlayer, CBasePlayerItem *pWeapon);
+	BOOL GetNextBestWeapon_(CBasePlayer *pPlayer, CBasePlayerItem *pCurrentWeapon);
+	BOOL IsMultiplayer_(void);
+	BOOL IsDeathmatch_(void);
+	BOOL IsCoOp_(void);
+	BOOL ClientConnected_(edict_t *pEntity, const char *pszName, const char *pszAddress, char szRejectReason[128]);
+	void InitHUD_(CBasePlayer *pl);
+	void ClientDisconnected_(edict_t *pClient);
+	float FlPlayerFallDamage_(CBasePlayer *pPlayer);
 	void PlayerSpawn_(CBasePlayer *pPlayer);
+	void PlayerThink_(CBasePlayer *pPlayer);
+	BOOL FPlayerCanRespawn_(CBasePlayer *pPlayer);
+	float FlPlayerSpawnTime_(CBasePlayer *pPlayer);
+	edict_t *GetPlayerSpawnSpot_(CBasePlayer *pPlayer);
+	BOOL AllowAutoTargetCrosshair_(void);
+	int IPointsForKill_(CBasePlayer *pAttacker, CBasePlayer *pKilled);
+	void PlayerKilled_(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor);
+	void DeathNotice_(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor);
+	void PlayerGotWeapon_(CBasePlayer *pPlayer, CBasePlayerItem *pWeapon);
+	int WeaponShouldRespawn_(CBasePlayerItem *pWeapon);
+	float FlWeaponRespawnTime_(CBasePlayerItem *pWeapon);
+	float FlWeaponTryRespawn_(CBasePlayerItem *pWeapon);
+	Vector VecWeaponRespawnSpot_(CBasePlayerItem *pWeapon);
+	BOOL CanHaveItem_(CBasePlayer *pPlayer, CItem *pItem);
+	void PlayerGotItem_(CBasePlayer *pPlayer, CItem *pItem);
+	int ItemShouldRespawn_(CItem *pItem);
+	float FlItemRespawnTime_(CItem *pItem);
+	Vector VecItemRespawnSpot_(CItem *pItem);
+	void PlayerGotAmmo_(CBasePlayer *pPlayer, char *szName, int iCount);
+	int AmmoShouldRespawn_(CBasePlayerAmmo *pAmmo);
+	float FlAmmoRespawnTime_(CBasePlayerAmmo *pAmmo);
+	Vector VecAmmoRespawnSpot_(CBasePlayerAmmo *pAmmo);
+	float FlHealthChargerRechargeTime_(void);
+	int DeadPlayerWeapons_(CBasePlayer *pPlayer);
+	int DeadPlayerAmmo_(CBasePlayer *pPlayer);
+	const char *GetTeamID_(CBaseEntity *pEntity)
+	{
+		return "";
+	};
+	int PlayerRelationship_(CBasePlayer *pPlayer, CBaseEntity *pTarget);
+	BOOL FAllowMonsters_(void);
 
 #endif // HOOK_GAMEDLL
 
@@ -260,74 +463,74 @@ public:
 	CHalfLifeMultiplay(void);
 public:
 	virtual void RefreshSkillData(void);
-	NOBODY virtual void Think(void);
-	NOBODY virtual BOOL IsAllowedToSpawn(CBaseEntity *pEntity);
+	virtual void Think(void);
+	virtual BOOL IsAllowedToSpawn(CBaseEntity *pEntity);
 	virtual BOOL FAllowFlashlight(void);
 	virtual BOOL FShouldSwitchWeapon(CBasePlayer *pPlayer, CBasePlayerItem *pWeapon);
 	virtual BOOL GetNextBestWeapon(CBasePlayer *pPlayer, CBasePlayerItem *pCurrentWeapon);
 	virtual BOOL IsMultiplayer(void);
 	virtual BOOL IsDeathmatch(void);
 	virtual BOOL IsCoOp(void);
-	NOBODY virtual BOOL ClientConnected(edict_t *pEntity, const char *pszName, const char *pszAddress, char szRejectReason[128]);
-	NOBODY virtual void InitHUD(CBasePlayer *pl);
-	NOBODY virtual void ClientDisconnected(edict_t *pClient);
-	NOBODY virtual void UpdateGameMode(CBasePlayer *pPlayer);
+	virtual BOOL ClientConnected(edict_t *pEntity, const char *pszName, const char *pszAddress, char szRejectReason[128]);
+	virtual void InitHUD(CBasePlayer *pl);
+	virtual void ClientDisconnected(edict_t *pClient);
+	virtual void UpdateGameMode(CBasePlayer *pPlayer);
 	virtual float FlPlayerFallDamage(CBasePlayer *pPlayer);
-	NOBODY virtual BOOL FPlayerCanTakeDamage(CBasePlayer *pPlayer, CBaseEntity *pAttacker);
-	NOBODY virtual void PlayerSpawn(CBasePlayer *pPlayer);
-	NOBODY virtual void PlayerThink(CBasePlayer *pPlayer);
-	NOBODY virtual BOOL FPlayerCanRespawn(CBasePlayer *pPlayer);
-	NOBODY virtual float FlPlayerSpawnTime(CBasePlayer *pPlayer);
-	NOBODY virtual edict_t *GetPlayerSpawnSpot(CBasePlayer *pPlayer);
-	NOBODY virtual BOOL AllowAutoTargetCrosshair(void);
-	NOBODY virtual BOOL ClientCommand_DeadOrAlive(CBasePlayer *pPlayer, const char *pcmd);
-	NOBODY virtual BOOL ClientCommand(CBasePlayer *pPlayer, const char *pcmd);
-	NOBODY virtual void ClientUserInfoChanged(CBasePlayer *pPlayer, char *infobuffer);
-	NOBODY virtual int IPointsForKill(CBasePlayer *pAttacker, CBasePlayer *pKilled);
-	NOBODY virtual void PlayerKilled(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor);
-	NOBODY virtual void DeathNotice(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor);
-	NOBODY virtual BOOL CanHavePlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pWeapon);
+	virtual BOOL FPlayerCanTakeDamage(CBasePlayer *pPlayer, CBaseEntity *pAttacker);
+	virtual void PlayerSpawn(CBasePlayer *pPlayer);
+	virtual void PlayerThink(CBasePlayer *pPlayer);
+	virtual BOOL FPlayerCanRespawn(CBasePlayer *pPlayer);
+	virtual float FlPlayerSpawnTime(CBasePlayer *pPlayer);
+	virtual edict_t *GetPlayerSpawnSpot(CBasePlayer *pPlayer);
+	virtual BOOL AllowAutoTargetCrosshair(void);
+	virtual BOOL ClientCommand_DeadOrAlive(CBasePlayer *pPlayer, const char *pcmd);
+	virtual BOOL ClientCommand(CBasePlayer *pPlayer, const char *pcmd);
+	virtual void ClientUserInfoChanged(CBasePlayer *pPlayer, char *infobuffer);
+	virtual int IPointsForKill(CBasePlayer *pAttacker, CBasePlayer *pKilled);
+	virtual void PlayerKilled(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor);
+	virtual void DeathNotice(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor);
+	virtual BOOL CanHavePlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pWeapon);
 	virtual void PlayerGotWeapon(CBasePlayer *pPlayer, CBasePlayerItem *pWeapon);
 	virtual int WeaponShouldRespawn(CBasePlayerItem *pWeapon);
-	NOBODY virtual float FlWeaponRespawnTime(CBasePlayerItem *pWeapon);
-	NOBODY virtual float FlWeaponTryRespawn(CBasePlayerItem *pWeapon);
-	NOBODY virtual Vector VecWeaponRespawnSpot(CBasePlayerItem *pWeapon);
+	virtual float FlWeaponRespawnTime(CBasePlayerItem *pWeapon);
+	virtual float FlWeaponTryRespawn(CBasePlayerItem *pWeapon);
+	virtual Vector VecWeaponRespawnSpot(CBasePlayerItem *pWeapon);
 	virtual BOOL CanHaveItem(CBasePlayer *pPlayer, CItem *pItem);
 	virtual void PlayerGotItem(CBasePlayer *pPlayer, CItem *pItem);
 	virtual int ItemShouldRespawn(CItem *pItem);
 	virtual float FlItemRespawnTime(CItem *pItem);
 	virtual Vector VecItemRespawnSpot(CItem *pItem);
-	NOBODY virtual void PlayerGotAmmo(CBasePlayer *pPlayer, char *szName, int iCount);
+	virtual void PlayerGotAmmo(CBasePlayer *pPlayer, char *szName, int iCount);
 	virtual int AmmoShouldRespawn(CBasePlayerAmmo *pAmmo);
 	virtual float FlAmmoRespawnTime(CBasePlayerAmmo *pAmmo);
 	virtual Vector VecAmmoRespawnSpot(CBasePlayerAmmo *pAmmo);
-	NOBODY virtual float FlHealthChargerRechargeTime(void);
-	NOBODY virtual float FlHEVChargerRechargeTime(void);
-	NOBODY virtual int DeadPlayerWeapons(CBasePlayer *pPlayer);
-	NOBODY virtual int DeadPlayerAmmo(CBasePlayer *pPlayer);
+	virtual float FlHealthChargerRechargeTime(void);
+	virtual float FlHEVChargerRechargeTime(void);
+	virtual int DeadPlayerWeapons(CBasePlayer *pPlayer);
+	virtual int DeadPlayerAmmo(CBasePlayer *pPlayer);
 	virtual const char *GetTeamID(CBaseEntity *pEntity)
 	{
-		return "";
+		return GetTeamID_(pEntity);
 	}
-	NOBODY virtual int PlayerRelationship(CBasePlayer *pPlayer, CBaseEntity *pTarget);
+	virtual int PlayerRelationship(CBasePlayer *pPlayer, CBaseEntity *pTarget);
 	virtual BOOL PlayTextureSounds(void)
 	{
-		return FALSE;
+		return PlayTextureSounds_();
 	}
-	NOBODY virtual BOOL FAllowMonsters(void);
+	virtual BOOL FAllowMonsters(void);
 	virtual void EndMultiplayerGame(void)
 	{
-		GoToIntermission();
-	};
-	NOBODY virtual void ServerDeactivate(void);
-	NOBODY virtual void CheckMapConditions(void);
-	NOBODY virtual void CleanUpMap(void);
-	NOBODY virtual void RestartRound(void);
-	NOBODY virtual void CheckWinConditions(void);
+		EndMultiplayerGame_();
+	}
+	virtual void ServerDeactivate(void);
+	virtual void CheckMapConditions(void);
+	virtual void CleanUpMap(void);
+	virtual void RestartRound(void);
+	virtual void CheckWinConditions(void);
 	virtual void RemoveGuns(void);
-	NOBODY virtual void GiveC4(void);
-	NOBODY virtual void ChangeLevel(void);
-	NOBODY virtual void GoToIntermission(void);
+	virtual void GiveC4(void);
+	virtual void ChangeLevel(void);
+	virtual void GoToIntermission(void);
 
 #ifdef HOOK_GAMEDLL
 
@@ -377,8 +580,20 @@ public:
 	float FlHEVChargerRechargeTime_(void);
 	int DeadPlayerWeapons_(CBasePlayer *pPlayer);
 	int DeadPlayerAmmo_(CBasePlayer *pPlayer);
+	const char *GetTeamID_(CBaseEntity *pEntity)
+	{
+		return "";
+	}
 	int PlayerRelationship_(CBasePlayer *pPlayer, CBaseEntity *pTarget);
+	BOOL PlayTextureSounds_(void)
+	{
+		return FALSE;
+	}
 	BOOL FAllowMonsters_(void);
+	void EndMultiplayerGame_(void)
+	{
+		GoToIntermission();
+	}
 	void ServerDeactivate_(void);
 	void CheckMapConditions_(void);
 	void CleanUpMap_(void);
@@ -393,10 +608,10 @@ public:
 
 public:
 	BOOL IsCareer(void);
-	NOBODY void QueueCareerRoundEndMenu(float tmDelay, int iWinStatus);
-	NOBODY void SetCareerMatchLimit(int minWins, int winDifference);
-	NOBODY bool IsInCareerRound(void);
-	NOBODY void CareerRestart(void);
+	void QueueCareerRoundEndMenu(float tmDelay, int iWinStatus);
+	void SetCareerMatchLimit(int minWins, int winDifference);
+	bool IsInCareerRound(void);
+	void CareerRestart(void);
 	bool ShouldSkipSpawn(void)
 	{
 		return m_bSkipSpawn;
@@ -405,39 +620,40 @@ public:
 	{
 		m_bSkipSpawn = false;
 	}
-	NOBODY void PlayerJoinedTeam(CBasePlayer *pPlayer);
+	NOXREF void PlayerJoinedTeam(CBasePlayer *pPlayer)
+	{
+		;
+	}
 	float TimeRemaining(void)
 	{
 		return m_iRoundTimeSecs - gpGlobals->time + m_fRoundCount;
 	}
-	NOBODY BOOL TeamFull(int team_id);
+	BOOL TeamFull(int team_id);
 	BOOL TeamStacked(int newTeam_id, int curTeam_id);
-	NOBODY bool IsVIPQueueEmpty(void);
-	NOBODY bool AddToVIPQueue(CBasePlayer *toAdd);
-	NOBODY void PickNextVIP(void);
-	NOBODY void StackVIPQueue(void);
-	NOBODY void ResetCurrentVIP(void);
-	NOBODY void BalanceTeams(void);
-	NOBODY void SwapAllPlayers(void);
-	NOBODY void UpdateTeamScores(void);
-	NOBODY void DisplayMaps(CBasePlayer *player, int iVote);
-	NOBODY void ResetAllMapVotes(void);
-	NOBODY void ProcessMapVote(CBasePlayer *player, int iVote);
+	bool IsVIPQueueEmpty(void);
+	bool AddToVIPQueue(CBasePlayer *toAdd);
+	void PickNextVIP(void);
+	void StackVIPQueue(void);
+	void ResetCurrentVIP(void);
+	void BalanceTeams(void);
+	void SwapAllPlayers(void);
+	void UpdateTeamScores(void);
+	void DisplayMaps(CBasePlayer *player, int iVote);
+	void ResetAllMapVotes(void);
+	void ProcessMapVote(CBasePlayer *player, int iVote);
 	BOOL IsThereABomber(void);
 	BOOL IsThereABomb(void);
-	NOBODY bool IsMatchStarted(void);
-	NOBODY void SendMOTDToClient(edict_t *client);
-private:
-	NOBODY bool HasRoundTimeExpired(void);
-	NOBODY bool IsBombPlanted(void);
-	NOBODY void MarkLivingPlayersOnTeamAsNotReceivingMoneyNextRound(int iTeam);
-
-	inline void TerminateRound(float tmDelay, int iWinStatus)
+	bool IsMatchStarted(void)
 	{
-		m_iRoundWinStatus = iWinStatus;
-		m_bRoundTerminating = true;
-		m_fTeamCount = gpGlobals->time + tmDelay;
+		return (m_fTeamCount != 0.0f || m_fCareerRoundMenuTime != 0.0f || m_fCareerMatchMenuTime != 0.0f);
 	}
+	void SendMOTDToClient(edict_t *client);
+
+private:
+	bool HasRoundTimeExpired(void);
+	bool IsBombPlanted(void);
+	void MarkLivingPlayersOnTeamAsNotReceivingMoneyNextRound(int iTeam);
+
 public:
 	CVoiceGameMgr m_VoiceGameMgr;
 	float m_fTeamCount;
@@ -503,6 +719,7 @@ public:
 	float m_flFadeToBlackValue;
 	CBasePlayer *m_pVIP;
 	CBasePlayer *VIPQueue[ MAX_VIP_QUEUES ];
+
 protected:
 	float m_flIntermissionEndTime;
 	float m_flIntermissionStartTime;
@@ -514,7 +731,7 @@ protected:
 	int m_iCareerMatchWins;
 	int m_iRoundWinDifference;
 	float m_fCareerMatchMenuTime;
-	bool m_bSkipSpawn;
+	bool m_bSkipSpawn;//712
 
 };/* size: 708, cachelines: 12, members: 76 */
 
@@ -532,6 +749,7 @@ typedef struct mapcycle_s
 {
 	struct mapcycle_item_s *items;
 	struct mapcycle_item_s *next_item;
+
 } mapcycle_t;
 /* size: 8, cachelines: 1, members: 2 */
 
@@ -559,37 +777,11 @@ public:
 class CCStrikeGameMgrHelper: public IVoiceGameMgrHelper
 {
 public:
-	virtual bool CanPlayerHearPlayer(CBasePlayer *pListener, CBasePlayer *pSender)
-	{
-		return CanPlayerHearPlayer_(pListener, pSender);
-	}
+	virtual bool CanPlayerHearPlayer(CBasePlayer *pListener, CBasePlayer *pSender);
 
 #ifdef HOOK_GAMEDLL
 
-	bool CanPlayerHearPlayer_(CBasePlayer *pListener, CBasePlayer *pSender)
-	{
-		if (!pSender->IsPlayer() || pListener->m_iTeam != pSender->m_iTeam)
-			return false;
-
-		BOOL bListenerAlive = pListener->IsAlive();
-		BOOL bSenderAlive = pSender->IsAlive();
-
-		if (pListener->IsObserver())
-			return true;
-
-		if (bListenerAlive)
-		{
-			if (!bSenderAlive)
-				return false;
-		}
-		else
-		{
-			if (bSenderAlive)
-				return true;
-		}
-
-		return (bListenerAlive == bSenderAlive);
-	}
+	bool CanPlayerHearPlayer_(CBasePlayer *pListener, CBasePlayer *pSender);
 
 #endif // HOOK_GAMEDLL
 
@@ -617,26 +809,32 @@ CGameRules *InstallGameRules(void);
 * Multiplay gamerules
 */
 
-NOBODY bool IsBotSpeaking(void);
-NOBODY void SV_Continue_f(void);
-NOBODY void SV_Tutor_Toggle_f(void);
-NOBODY void SV_Career_Restart_f(void);
-NOBODY void SV_Career_EndRound_f(void);
-NOBODY void SV_CareerAddTask_f(void);
-NOBODY void SV_CareerMatchLimit_f(void);
+bool IsBotSpeaking(void);
+void SV_Continue_f(void);
+void SV_Tutor_Toggle_f(void);
+void SV_Career_Restart_f(void);
+void SV_Career_EndRound_f(void);
+void SV_CareerAddTask_f(void);
+void SV_CareerMatchLimit_f(void);
 void Broadcast(const char *sentence);
 char *GetTeam(int teamNo);
-NOBODY void EndRoundMessage(const char *sentence, int event);
-NOBODY void ReadMultiplayCvars(CHalfLifeMultiplay *mp);
-NOBODY void DestroyMapCycle(mapcycle_t *cycle);
+void EndRoundMessage(const char *sentence, int event);
+void ReadMultiplayCvars(CHalfLifeMultiplay *mp);
+void DestroyMapCycle(mapcycle_t *cycle);
 
 char *MP_COM_GetToken(void);
 char *MP_COM_Parse(char *data);
-NOXREF int MP_COM_TokenWaiting(char *buffer);
+int MP_COM_TokenWaiting(char *buffer);
 
-NOBODY int ReloadMapCycleFile(char *filename, mapcycle_t *cycle);
-NOBODY int CountPlayers(void);
-NOBODY void ExtractCommandString(char *s, char *szCommand);
-NOBODY int GetMapCount(void);
+int ReloadMapCycleFile(char *filename, mapcycle_t *cycle);
+int CountPlayers(void);
+void ExtractCommandString(char *s, char *szCommand);
+int GetMapCount(void);
+
+// refs
+extern void (*pInstallGameRules)(void);
+
+// linked objects
+C_DLLEXPORT void info_map_parameters(entvars_t *pev);
 
 #endif // GAMERULES_H

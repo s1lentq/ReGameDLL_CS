@@ -251,7 +251,7 @@ NOXREF byte CBot::ThrottledMsec(void) const
 }
 
 /* <49016e> ../game_shared/bot/bot.cpp:389 */
-NOBODY void CBot::ClientCommand(const char *cmd, const char *arg1, const char *arg2, const char *arg3)
+void CBot::ClientCommand(const char *cmd, const char *arg1, const char *arg2, const char *arg3)
 {
 	BotArgs[0] = cmd;
 	BotArgs[1] = arg1;
@@ -314,7 +314,7 @@ bool CBot::IsLocalPlayerWatchingMe(void) const
 	if (pev == NULL)
 		return false;
 
-	int myIndex = const_cast< CBot * >(this)->entindex();
+	int myIndex = const_cast<CBot *>(this)->entindex();
 
 	CBasePlayer *player = UTIL_GetLocalPlayer();
 	if (player == NULL)
@@ -341,10 +341,10 @@ NOXREF void CBot::Print(char *format, ...) const
 
 	// prefix the message with the bot's name
 	Q_sprintf(buffer, "%s: ", STRING(pev->netname));
-	SERVER_PRINT( buffer );
+	SERVER_PRINT(buffer);
 
 	va_start(varg, format);
-	Q_vsnprintf(buffer, ARRAYSIZE(buffer), format, varg);
+	vsprintf(buffer, format, varg);
 	va_end(varg);
 
 	SERVER_PRINT(buffer);
@@ -371,16 +371,13 @@ void CBot::PrintIfWatched(char *format, ...) const
 
 		Q_sprintf(buffer, "%s: ", (name != NULL) ? name : "(NULL netname)");
 
-		SERVER_PRINT( buffer );
-		//_logf(buffer);
+		SERVER_PRINT(buffer);
 
 		va_start(varg, format);
-		Q_vsnprintf(buffer, ARRAYSIZE(buffer), format, varg);
+		vsprintf(buffer, format, varg);
 		va_end(varg);
 
-		//_logf(buffer);
-
-		SERVER_PRINT( buffer );
+		SERVER_PRINT(buffer);
 	}
 }
 

@@ -112,8 +112,8 @@
 
 #define TEAM_NAME_LENGTH		16
 
-#define MAX_ID_RANGE			2048
-#define MAX_SPECTATOR_ID_RANGE		8192
+#define MAX_ID_RANGE			2048.0f
+#define MAX_SPECTATOR_ID_RANGE		8192.0f
 #define SBAR_STRING_SIZE		128
 
 #define SBAR_TARGETTYPE_TEAMMATE	1
@@ -765,22 +765,22 @@ public:
 	void PrioritizeAutoBuyString(char *autobuyString, const char *priorityString);
 	NOBODY const char *PickPrimaryCareerTaskWeapon(void);
 	NOBODY const char *PickSecondaryCareerTaskWeapon(void);
-	NOXREF const char *PickFlashKillWeaponString(void);
-	NOXREF const char *PickGrenadeKillWeaponString(void);
-	NOXREF bool ShouldExecuteAutoBuyCommand(AutoBuyInfoStruct *commandInfo, bool boughtPrimary, bool boughtSecondary);
+	const char *PickFlashKillWeaponString(void);
+	const char *PickGrenadeKillWeaponString(void);
+	bool ShouldExecuteAutoBuyCommand(AutoBuyInfoStruct *commandInfo, bool boughtPrimary, bool boughtSecondary);
 	void PostAutoBuyCommandProcessing(AutoBuyInfoStruct *commandInfo, bool &boughtPrimary, bool &boughtSecondary);
 	void ParseAutoBuyString(const char *string, bool &boughtPrimary, bool &boughtSecondary);
-	NOXREF AutoBuyInfoStruct *GetAutoBuyCommandInfo(const char *command);
+	AutoBuyInfoStruct *GetAutoBuyCommandInfo(const char *command);
 	void InitRebuyData(const char *str);
 	void BuildRebuyStruct(void);
 	void Rebuy(void);
-	NOXREF void RebuyPrimaryWeapon(void);
-	NOXREF void RebuyPrimaryAmmo(void);
-	NOXREF void RebuySecondaryWeapon(void);
-	NOXREF void RebuySecondaryAmmo(void);
-	NOXREF void RebuyHEGrenade(void);
-	NOXREF void RebuyFlashbang(void);
-	NOXREF void RebuySmokeGrenade(void);
+	void RebuyPrimaryWeapon(void);
+	void RebuyPrimaryAmmo(void);
+	void RebuySecondaryWeapon(void);
+	void RebuySecondaryAmmo(void);
+	void RebuyHEGrenade(void);
+	void RebuyFlashbang(void);
+	void RebuySmokeGrenade(void);
 	void RebuyDefuser(void);
 	void RebuyNightVision(void);
 	void RebuyArmor(void);
@@ -1168,17 +1168,17 @@ NOXREF void InitZombieSpawns(void);
 NOXREF CBaseEntity *FindZombieSpawn(CBaseEntity *player, bool forceSpawn);
 edict_t *EntSelectSpawnPoint(CBaseEntity *pPlayer);
 void SetScoreAttrib(CBasePlayer *dest, CBasePlayer *src);
-NOXREF CBaseEntity *FindEntityForward(CBaseEntity *pMe);
+CBaseEntity *FindEntityForward(CBaseEntity *pMe);
 float GetPlayerPitch(const edict_t *pEdict);
 float GetPlayerYaw(const edict_t *pEdict);
 int GetPlayerGaitsequence(const edict_t *pEdict);
-NOXREF const char *GetBuyStringForWeaponClass(int weaponClass);
-NOXREF bool IsPrimaryWeaponClass(int classId);
-NOXREF bool IsPrimaryWeaponId(int id);
-NOXREF bool IsSecondaryWeaponClass(int classId);
-NOXREF bool IsSecondaryWeaponId(int id);
-NOXREF const char *GetWeaponAliasFromName(const char *weaponName);
-NOXREF bool CurrentWeaponSatisfies(CBasePlayerWeapon *pWeapon, int id, int classId);
+const char *GetBuyStringForWeaponClass(int weaponClass);
+bool IsPrimaryWeaponClass(int classId);
+bool IsPrimaryWeaponId(int id);
+bool IsSecondaryWeaponClass(int classId);
+bool IsSecondaryWeaponId(int id);
+const char *GetWeaponAliasFromName(const char *weaponName);
+bool CurrentWeaponSatisfies(CBasePlayerWeapon *pWeapon, int id, int classId);
 
 // refs
 extern void (*pCBasePlayer__PickPrimaryCareerTaskWeapon)(void);

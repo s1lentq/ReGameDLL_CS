@@ -36,20 +36,20 @@
 #include "studio.h"
 #include "r_studioint.h"
 
-NOBODY int ExtractBbox(void *pmodel, int sequence, float *mins, float *maxs);
+int ExtractBbox(void *pmodel, int sequence, float *mins, float *maxs);
 int LookupActivity(void *pmodel, entvars_t *pev, int activity);
-NOBODY int LookupActivityHeaviest(void *pmodel, entvars_t *pev, int activity);
-NOBODY void GetEyePosition(void *pmodel, float *vecEyePosition);
+int LookupActivityHeaviest(void *pmodel, entvars_t *pev, int activity);
+NOXREF void GetEyePosition(void *pmodel, float *vecEyePosition);
 int LookupSequence(void *pmodel, const char *label);
-NOBODY int IsSoundEvent(int eventNumber);
-NOBODY void SequencePrecache(void *pmodel, const char *pSequenceName);
+int IsSoundEvent(int eventNumber);
+NOXREF void SequencePrecache(void *pmodel, const char *pSequenceName);
 void GetSequenceInfo(void *pmodel, entvars_t *pev, float *pflFrameRate, float *pflGroundSpeed);
 int GetSequenceFlags(void *pmodel, entvars_t *pev);
-NOBODY int GetAnimationEvent(void *pmodel, entvars_t *pev, MonsterEvent_t *pMonsterEvent, float flStart, float flEnd, int index);
+int GetAnimationEvent(void *pmodel, entvars_t *pev, MonsterEvent_t *pMonsterEvent, float flStart, float flEnd, int index);
 float SetController(void *pmodel, entvars_t *pev, int iController, float flValue);
-NOBODY float SetBlending(void *pmodel, entvars_t *pev, int iBlender, float flValue);
-NOBODY int FindTransition(void *pmodel, int iEndingAnim, int iGoalAnim, int *piDir);
-NOBODY void SetBodygroup(void *pmodel, entvars_t *pev, int iGroup, int iValue);
+float SetBlending(void *pmodel, entvars_t *pev, int iBlender, float flValue);
+int FindTransition(void *pmodel, int iEndingAnim, int iGoalAnim, int *piDir);
+void SetBodygroup(void *pmodel, entvars_t *pev, int iGroup, int iValue);
 int GetBodygroup(void *pmodel, entvars_t *pev, int iGroup);
 C_DLLEXPORT int Server_GetBlendingInterface(int version, struct sv_blending_interface_s **ppinterface, struct engine_studio_api_s *pstudio, float *rotationmatrix, float *bonetransform);
 void AngleQuaternion(vec_t *angles, vec_t *quaternion);

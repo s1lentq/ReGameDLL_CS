@@ -39,7 +39,7 @@ IMPLEMENT_SAVERESTORE(CFuncVehicle, CBaseEntity);
 LINK_ENTITY_TO_CLASS(func_vehicle, CFuncVehicle);
 
 /* <1bb408> ../cstrike/dlls/vehicle.cpp:57 */
-NOBODY void CFuncVehicle::KeyValue_(KeyValueData *pkvd)
+NOBODY void CFuncVehicle::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 //	FStrEq(const char *sz1,
 //		const char *sz2);  //    59
@@ -75,7 +75,7 @@ NOBODY void CFuncVehicle::NextThink(float thinkTime, BOOL alwaysThink)
 }
 
 /* <1bb9d0> ../cstrike/dlls/vehicle.cpp:120 */
-NOBODY void CFuncVehicle::Blocked_(CBaseEntity *pOther)
+NOBODY void CFuncVehicle::__MAKE_VHOOK(Blocked)(CBaseEntity *pOther)
 {
 //	{
 //		entvars_t *pevOther;                                 //   122
@@ -125,7 +125,7 @@ NOBODY void CFuncVehicle::Blocked_(CBaseEntity *pOther)
 }
 
 /* <1bcf96> ../cstrike/dlls/vehicle.cpp:179 */
-NOBODY void CFuncVehicle::Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+NOBODY void CFuncVehicle::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 //	StopSound(CFuncVehicle *const this);  //   197
 //	{
@@ -358,7 +358,7 @@ NOBODY void CFuncVehicle::SetControls(entvars_t *pevControls)
 }
 
 /* <1bb1b2> ../cstrike/dlls/vehicle.cpp:819 */
-BOOL CFuncVehicle::OnControls_(entvars_t *pevTest)
+BOOL CFuncVehicle::__MAKE_VHOOK(OnControls)(entvars_t *pevTest)
 {
 	Vector offset = pevTest->origin - pev->origin;
 
@@ -426,7 +426,7 @@ NOBODY void CFuncVehicle::NearestPath(void)
 }
 
 /* <1bb00a> ../cstrike/dlls/vehicle.cpp:926 */
-NOBODY void CFuncVehicle::OverrideReset_(void)
+NOBODY void CFuncVehicle::__MAKE_VHOOK(OverrideReset)(void)
 {
 //	NextThink(class CFuncVehicle *const this, float thinkTime, BOOL alwaysThink);  //   928
 }
@@ -440,20 +440,20 @@ NOBODY CFuncVehicle *CFuncVehicle::Instance(edict_t *pent)
 }
 
 /* <1bb055> ../cstrike/dlls/vehicle.cpp:951 */
-int CFuncVehicle::Classify_(void)
+int CFuncVehicle::__MAKE_VHOOK(Classify)(void)
 {
 	return CLASS_VEHICLE;
 }
 
 /* <1bb0ef> ../cstrike/dlls/vehicle.cpp:956 */
-NOBODY void CFuncVehicle::Spawn_(void)
+NOBODY void CFuncVehicle::__MAKE_VHOOK(Spawn)(void)
 {
 //	NextThink(CFuncVehicle::Spawn(//			float thinkTime,
 //			BOOL alwaysThink);  //   999
 }
 
 /* <1bb13e> ../cstrike/dlls/vehicle.cpp:1005 */
-NOBODY void CFuncVehicle::Restart_(void)
+NOBODY void CFuncVehicle::__MAKE_VHOOK(Restart)(void)
 {
 //	STOP_SOUND(edict_t *entity,
 //			int channel,
@@ -464,7 +464,7 @@ NOBODY void CFuncVehicle::Restart_(void)
 }
 
 /* <1bb07b> ../cstrike/dlls/vehicle.cpp:1032 */
-void CFuncVehicle::Precache_(void)
+void CFuncVehicle::__MAKE_VHOOK(Precache)(void)
 {
 	if (m_flVolume == 0.0f)
 		m_flVolume = 1.0f;
@@ -525,7 +525,7 @@ NOBODY void CFuncVehicleControls::Find(void)
 }
 
 /* <1bb0c8> ../cstrike/dlls/vehicle.cpp:1088 */
-NOBODY void CFuncVehicleControls::Spawn_(void)
+NOBODY void CFuncVehicleControls::__MAKE_VHOOK(Spawn)(void)
 {
 }
 

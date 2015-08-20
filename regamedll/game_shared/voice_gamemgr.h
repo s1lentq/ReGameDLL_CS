@@ -63,7 +63,7 @@ class IVoiceGameMgrHelper
 {
 public:
 	virtual ~IVoiceGameMgrHelper() {}
-	NOBODY virtual bool CanPlayerHearPlayer(CBasePlayer *pListener, CBasePlayer *pTalker) = 0;
+	virtual bool CanPlayerHearPlayer(CBasePlayer *pListener, CBasePlayer *pTalker) = 0;
 
 };/* size: 4, cachelines: 1, members: 1 */
 
@@ -80,13 +80,12 @@ public:
 	bool ClientCommand(CBasePlayer *pPlayer, const char *cmd);
 	bool PlayerHasBlockedPlayer(CBasePlayer *pReceiver, CBasePlayer *pSender);
 
-#ifdef HOOK_GAMEDLL
-public:
-#else
+#ifndef HOOK_GAMEDLL
 private:
 #endif // HOOK_GAMEDLL
 
 	void UpdateMasks(void);
+
 private:
 	int m_msgPlayerVoiceMask;
 	int m_msgRequestState;

@@ -5,31 +5,37 @@ CGraph WorldGraph;
 /* <fc409> ../cstrike/dlls/mpstubb.cpp:32 */
 void CGraph::InitGraph(void)
 {
+	;
 }
 
 /* <fc436> ../cstrike/dlls/mpstubb.cpp:33 */
 int CGraph::FLoadGraph(char *szMapName)
 {
+	return 0;
 }
 
 /* <fc46c> ../cstrike/dlls/mpstubb.cpp:34 */
 int CGraph::AllocNodes(void)
 {
+	return 0;
 }
 
 /* <fc494> ../cstrike/dlls/mpstubb.cpp:35 */
 int CGraph::CheckNODFile(char *szMapName)
 {
+	return 0;
 }
 
 /* <fc4ca> ../cstrike/dlls/mpstubb.cpp:36 */
 int CGraph::FSetGraphPointers(void)
 {
+	return 0;
 }
 
 /* <fc4f2> ../cstrike/dlls/mpstubb.cpp:37 */
 void CGraph::ShowNodeConnections(int iNode)
 {
+	;
 }
 
 /* <fc528> ../cstrike/dlls/mpstubb.cpp:38 */
@@ -45,7 +51,7 @@ int CGraph::FindNearestNode(const Vector &vecOrigin, CBaseEntity *pEntity)
 }
 
 /* <fc023> ../cstrike/dlls/mpstubb.cpp:45 */
-float CBaseMonster::ChangeYaw_(int speed)
+float CBaseMonster::__MAKE_VHOOK(ChangeYaw)(int speed)
 {
 	return 0.0f;
 }
@@ -70,7 +76,7 @@ NOBODY void CBaseMonster::CorpseFallThink(void)
 }
 
 /* <fc2a1> ../cstrike/dlls/mpstubb.cpp:62 */
-void CBaseMonster::MonsterInitDead_(void)
+void CBaseMonster::__MAKE_VHOOK(MonsterInitDead)(void)
 {
 	InitBoneControllers();
 
@@ -93,7 +99,7 @@ void CBaseMonster::MonsterInitDead_(void)
 }
 
 /* <fc057> ../cstrike/dlls/mpstubb.cpp:89 */
-BOOL CBaseMonster::ShouldFadeOnDeath_(void)
+BOOL CBaseMonster::__MAKE_VHOOK(ShouldFadeOnDeath)(void)
 {
 	return FALSE;
 }
@@ -105,13 +111,13 @@ BOOL CBaseMonster::FCheckAITrigger(void)
 }
 
 /* <fc26d> ../cstrike/dlls/mpstubb.cpp:99 */
-void CBaseMonster::KeyValue_(KeyValueData *pkvd)
+void CBaseMonster::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	CBaseToggle::KeyValue(pkvd);
 }
 
 /* <fc07d> ../cstrike/dlls/mpstubb.cpp:104 */
-NOBODY int CBaseMonster::IRelationship_(CBaseEntity *pTarget)
+NOBODY int CBaseMonster::__MAKE_VHOOK(IRelationship)(CBaseEntity *pTarget)
 {
 //	{
 //		int const iEnemy;                                      //   106
@@ -119,7 +125,7 @@ NOBODY int CBaseMonster::IRelationship_(CBaseEntity *pTarget)
 }
 
 /* <fc0e4> ../cstrike/dlls/mpstubb.cpp:140 */
-NOBODY void CBaseMonster::Look_(int iDistance)
+NOBODY void CBaseMonster::__MAKE_VHOOK(Look)(int iDistance)
 {
 //	{
 //		int iSighted;                                         //   142
@@ -142,7 +148,7 @@ NOBODY void CBaseMonster::Look_(int iDistance)
 }
 
 /* <fc317> ../cstrike/dlls/mpstubb.cpp:220 */
-NOBODY CBaseEntity *CBaseMonster::BestVisibleEnemy_(void)
+NOBODY CBaseEntity *CBaseMonster::__MAKE_VHOOK(BestVisibleEnemy)(void)
 {
 //	{
 //		class CBaseEntity *pReturn;                          //   222

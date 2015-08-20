@@ -230,11 +230,11 @@ extern float cosTable[COS_TABLE_SIZE];
 
 bool UTIL_IsNameTaken(const char *name, bool ignoreHumans = false);
 int UTIL_ClientsInGame(void);
-NOBODY int UTIL_ActivePlayersInGame(void);
-NOBODY int UTIL_HumansInGame(bool ignoreSpectators);
+int UTIL_ActivePlayersInGame(void);
+int UTIL_HumansInGame(bool ignoreSpectators);
 NOBODY int UTIL_HumansOnTeam(int teamID, bool isAlive = false);
 NOBODY int UTIL_BotsInGame(void);
-NOBODY bool UTIL_KickBotFromTeam(TeamName kickTeam);
+bool UTIL_KickBotFromTeam(TeamName kickTeam);
 NOBODY bool UTIL_IsTeamAllBots(int team);
 NOBODY CBasePlayer *UTIL_GetClosestPlayer(const Vector *pos, float *distance = NULL);
 NOBODY CBasePlayer *UTIL_GetClosestPlayer(const Vector *pos, int team, float *distance = NULL);

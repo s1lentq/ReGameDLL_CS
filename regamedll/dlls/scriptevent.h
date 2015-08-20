@@ -26,61 +26,22 @@
 *
 */
 
-#ifndef STEAM_UTIL_H
-#define STEAM_UTIL_H
+#ifndef SCRIPTEVENT_H
+#define SCRIPTEVENT_H
 #ifdef _WIN32
 #pragma once
 #endif
 
-class SteamFile
-{
-public:
-	SteamFile(const char *filename);
-	~SteamFile(void);
+#define SCRIPT_EVENT_DEAD		1000 // character is now dead
+#define SCRIPT_EVENT_NOINTERRUPT	1001 // does not allow interrupt
+#define SCRIPT_EVENT_CANINTERRUPT	1002 // will allow interrupt
+#define SCRIPT_EVENT_FIREEVENT		1003 // event now fires
+#define SCRIPT_EVENT_SOUND		1004 // Play named wave file (on CHAN_BODY)
+#define SCRIPT_EVENT_SENTENCE		1005 // Play named sentence
+#define SCRIPT_EVENT_INAIR		1006 // Leave the character in air at the end of the sequence (don't find the floor)
+#define SCRIPT_EVENT_ENDANIMATION	1007 // Set the animation by name after the sequence completes
+#define SCRIPT_EVENT_SOUND_VOICE	1008 // Play named wave file (on CHAN_VOICE)
+#define SCRIPT_EVENT_SENTENCE_RND1	1009 // Play sentence group 25% of the time
+#define SCRIPT_EVENT_NOT_DEAD		1010 // Bring back to life (for life/death sequences)
 
-	bool IsValid(void) const
-	{
-		return (m_fileData) ? true : false;
-	}
-	bool Read(void *data, int length);
-
-private:
-	byte *m_fileData;
-	int m_fileDataLength;
-
-	byte *m_cursor;
-	int m_bytesLeft;
-
-};/* size: 16, cachelines: 1, members: 4 */
-
-/* <4eb7b4> ../game_shared/steam_util.h:29 */
-inline SteamFile::SteamFile(const char *filename)
-{
-	m_fileData = (byte *)LOAD_FILE_FOR_ME(const_cast<char *>(filename), &m_fileDataLength);
-	m_cursor = m_fileData;
-	m_bytesLeft = m_fileDataLength;
-}
-
-/* <4eb65d> ../game_shared/steam_util.h:36 */
-inline SteamFile::~SteamFile(void)
-{
-	if (m_fileData)
-		FREE_FILE(m_fileData);
-}
-
-/* <4bfdfa> ../game_shared/steam_util.h:42 */
-inline bool SteamFile::Read(void *data, int length)
-{
-	if (length > m_bytesLeft || m_cursor == NULL || m_bytesLeft <= 0)
-		return false;
-
-	byte *readCursor = static_cast<byte *>(data);
-	for (int i = 0; i < length; i++)
-	{
-		*readCursor++ = *m_cursor++;
-		--m_bytesLeft;
-	}
-	return true;
-}
-
-#endif // STEAM_UTIL_H
+#endif // SCRIPTEVENT_H

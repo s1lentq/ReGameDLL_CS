@@ -60,7 +60,7 @@ CPreventDefuseTask::CPreventDefuseTask(const char *taskName, GameEventType event
 }
 
 /* <1ef296> ../cstrike/dlls/career_tasks.cpp:147 */
-void CPreventDefuseTask::Reset_(void)
+void CPreventDefuseTask::__MAKE_VHOOK(Reset)(void)
 {
 	m_bombPlantedThisRound = false;
 	m_defuseStartedThisRound = false;
@@ -69,7 +69,7 @@ void CPreventDefuseTask::Reset_(void)
 }
 
 /* <1efbf8> ../cstrike/dlls/career_tasks.cpp:156 */
-void CPreventDefuseTask::OnEvent_(GameEventType event, CBasePlayer *pAttacker, CBasePlayer *pVictim)
+void CPreventDefuseTask::__MAKE_VHOOK(OnEvent)(GameEventType event, CBasePlayer *pAttacker, CBasePlayer *pVictim)
 {
 	if (IsComplete())
 		return;
@@ -128,27 +128,27 @@ CCareerTask::CCareerTask(const char *taskName, GameEventType event, const char *
 	if (m_isComplete)
 	{
 		MESSAGE_BEGIN(MSG_ALL, gmsgCZCareer);
-		WRITE_STRING("TASKDONE");
-		WRITE_BYTE(m_id);
+			WRITE_STRING("TASKDONE");
+			WRITE_BYTE(m_id);
 		MESSAGE_END();
 	}
 }
 
 /* <1ef211> ../cstrike/dlls/career_tasks.cpp:240 */
-void CCareerTask::Reset_(void)
+void CCareerTask::__MAKE_VHOOK(Reset)(void)
 {
 	m_eventsSeen = 0;
 	m_isComplete = false;
 
 	MESSAGE_BEGIN(MSG_ALL, gmsgCZCareer);
-	WRITE_STRING("TASKUNDONE");
-	WRITE_BYTE(m_id);
+		WRITE_STRING("TASKUNDONE");
+		WRITE_BYTE(m_id);
 	MESSAGE_END();
 
 	MESSAGE_BEGIN(MSG_ALL, gmsgCZCareer);
-	WRITE_STRING("TASKPART");
-	WRITE_BYTE(m_id);
-	WRITE_SHORT(m_eventsSeen);
+		WRITE_STRING("TASKPART");
+		WRITE_BYTE(m_id);
+		WRITE_SHORT(m_eventsSeen);
 	MESSAGE_END();
 }
 
@@ -156,9 +156,9 @@ void CCareerTask::Reset_(void)
 void CCareerTask::SendPartialNotification(void)
 {
 	MESSAGE_BEGIN(MSG_ALL, gmsgCZCareer);
-	WRITE_STRING("TASKPART");
-	WRITE_BYTE(m_id);
-	WRITE_SHORT(m_eventsSeen);
+		WRITE_STRING("TASKPART");
+		WRITE_BYTE(m_id);
+		WRITE_SHORT(m_eventsSeen);
 	MESSAGE_END();
 
 	UTIL_LogPrintf("Career Task Partial %d %d\n", m_id, m_eventsSeen);
@@ -254,7 +254,7 @@ void CCareerTask::OnWeaponInjury(int weaponId, int weaponClassId, bool attackerH
 }
 
 /* <1ef79d> ../cstrike/dlls/career_tasks.cpp:385 */
-void CCareerTask::OnEvent_(GameEventType event, CBasePlayer *pVictim, CBasePlayer *pAttacker)
+void CCareerTask::__MAKE_VHOOK(OnEvent)(GameEventType event, CBasePlayer *pVictim, CBasePlayer *pAttacker)
 {
 	if (m_isComplete)
 		return;
@@ -271,32 +271,37 @@ void CCareerTask::OnEvent_(GameEventType event, CBasePlayer *pVictim, CBasePlaye
 
 			while ((hostageEntity = UTIL_FindEntityByClassname(hostageEntity, "hostage_entity")) != NULL)
 			{
-				CHostage *hostage = (CHostage *)hostageEntity;
-
-				if (!hostage || hostage->pev->takedamage != DAMAGE_YES)
+				if (hostageEntity->pev->takedamage != DAMAGE_YES)
 					continue;
+
+				CHostage *hostage = reinterpret_cast<CHostage *>(hostageEntity);
 
 				if (hostage->m_improv)
 				{
 					if (!hostage->IsFollowingSomeone())
+					{
 						continue;
+					}
 				}
-				else if (!hostage->m_hTargetEnt || hostage->m_State != CHostage::FOLLOW)
+				else if (hostage->m_hTargetEnt == NULL || hostage->m_State != CHostage::FOLLOW)
+				{
 					continue;
+				}
 
 				if (hostage->IsValid() && hostage->m_target == pAttacker)
 					++hostages_;
 			}
 
 			if (!hostages_)
+			{
 				return;
+			}
 		}
 
-		if ((m_event != EVENT_KILL || (!m_weaponId && !m_weaponClassId))
-			&& (m_event != EVENT_HEADSHOT || (!m_weaponId && !m_weaponClassId))
-			&& (m_event != EVENT_PLAYER_TOOK_DAMAGE || (!m_weaponId && !m_weaponClassId)))
+		if (m_event != EVENT_KILL || (!m_weaponId && !m_weaponClassId)
+			&& m_event != EVENT_HEADSHOT || (!m_weaponId && !m_weaponClassId)
+			&& m_event != EVENT_PLAYER_TOOK_DAMAGE || (!m_weaponId && !m_weaponClassId))
 		{
-
 			if (m_event == EVENT_ROUND_WIN)
 			{
 				if (!Q_strcmp(m_name, "defendhostages"))
@@ -306,12 +311,7 @@ void CCareerTask::OnEvent_(GameEventType event, CBasePlayer *pVictim, CBasePlaye
 
 					while ((hostageEntity = UTIL_FindEntityByClassname(hostageEntity, "hostage_entity")) != NULL)
 					{
-						CHostage *hostage = (CHostage *)hostageEntity;
-
-						if (!hostage || hostage->IsValid())
-							continue;
-
-						if (hostage->pev->deadflag != DEAD_DEAD)
+						if (hostageEntity->pev->takedamage != 1.0f && hostageEntity->pev->deadflag != DEAD_DEAD)
 							++hostages_;
 					}
 
@@ -342,41 +342,49 @@ void CCareerTask::OnEvent_(GameEventType event, CBasePlayer *pVictim, CBasePlaye
 				}
 				else if (!Q_strcmp(m_name, "winfast"))
 				{
-					if (m_eventsNeeded >= (int)TheCareerTasks->GetRoundElapsedTime())
+					if (m_eventsNeeded >= TheCareerTasks->GetRoundElapsedTime())
 					{
 						m_eventsSeen = m_eventsNeeded;
 						SendPartialNotification();
 					}
 				}
 				else if (IsTaskCompletableThisRound())
+				{
+					++m_eventsSeen;
 					SendPartialNotification();
+				}
+			}
+			else
+			{
+				++m_eventsSeen;
+				SendPartialNotification();
 			}
 		}
 	}
 
-	if (event == m_event && !m_mustLive && (m_eventsSeen >= m_eventsNeeded) && IsTaskCompletableThisRound())
+	if (event == m_event && !m_mustLive && m_eventsSeen >= m_eventsNeeded && IsTaskCompletableThisRound())
 	{
 		CBasePlayer *player = UTIL_GetLocalPlayer();
 		EMIT_SOUND(ENT(player->pev), CHAN_VOICE, "events/task_complete.wav", VOL_NORM, ATTN_NORM); 
-		m_isComplete = true;
 
+		m_isComplete = true;
 		MESSAGE_BEGIN(MSG_ALL, gmsgCZCareer);
-		WRITE_STRING("TASKDONE");
-		WRITE_BYTE(m_id);
+			WRITE_STRING("TASKDONE");
+			WRITE_BYTE(m_id);
 		MESSAGE_END();
 
 		if (TheTutor)
+		{
 			TheTutor->OnEvent(EVENT_CAREER_TASK_DONE);
+		}
 
 		UTIL_LogPrintf("Career Task Done %d\n", m_id);
 
 		if (m_event == EVENT_ROUND_WIN && !Q_strcmp(m_name, "winfast"))
 		{
-			TheCareerTasks->SetFinishedTaskTime( TheCareerTasks->GetRoundElapsedTime() );
-			player->SyncRoundTimer();
+			TheCareerTasks->SetFinishedTaskTime((int)TheCareerTasks->GetRoundElapsedTime());
+			UTIL_GetLocalPlayer()->SyncRoundTimer();
 		}
-
-		return;
 	}
 	else if (event >= EVENT_ROUND_DRAW)
 	{
@@ -387,35 +395,37 @@ void CCareerTask::OnEvent_(GameEventType event, CBasePlayer *pVictim, CBasePlaye
 				m_eventsSeen = 0;
 				SendPartialNotification();
 				m_diedThisRound = true;
-			}
+			}		
 		}
 		else if (m_mustLive)
 		{
-			CBasePlayer *player = UTIL_GetLocalPlayer();
-
 			if (m_eventsSeen >= m_eventsNeeded && !m_diedThisRound && IsTaskCompletableThisRound())
 			{
+				CBasePlayer *player = UTIL_GetLocalPlayer();
 				EMIT_SOUND(ENT(player->pev), CHAN_VOICE, "events/task_complete.wav", VOL_NORM, ATTN_NORM); 
 
 				m_isComplete = true;
 				MESSAGE_BEGIN(MSG_ALL, gmsgCZCareer);
-				WRITE_STRING("TASKDONE");
-				WRITE_BYTE(m_id);
+					WRITE_STRING("TASKDONE");
+					WRITE_BYTE(m_id);
 				MESSAGE_END();
 
 				UTIL_LogPrintf("Career Task Done %d\n", m_id);
 
 				if (m_event == EVENT_ROUND_WIN && !Q_strcmp(m_name, "winfast"))
 				{
-					TheCareerTasks->SetFinishedTaskTime( TheCareerTasks->GetRoundElapsedTime() );
-					player->SyncRoundTimer();
+					TheCareerTasks->SetFinishedTaskTime((signed __int64)(TheCareerTasks->GetRoundElapsedTime()));
+					UTIL_GetLocalPlayer()->SyncRoundTimer();
 				}
 
 				if (TheTutor)
+				{
 					TheTutor->OnEvent(EVENT_CAREER_TASK_DONE);
+				}
 			}
 
 			m_diedThisRound = false;
+
 			if (m_mustLive)
 			{
 				m_eventsSeen = 0;
@@ -509,12 +519,14 @@ void CCareerTaskManager::AddTask(const char *taskName, const char *weaponName, i
 
 				m_tasks.push_back(newTask);
 
-				if (pTaskInfo->event == EVENT_ROUND_WIN && Q_strcmp(taskName, "winfast"))
+				if (pTaskInfo->event == EVENT_ROUND_WIN && !Q_strcmp(taskName, "winfast"))
 				{
 					m_taskTime = eventCount;
 
 					if (isComplete)
+					{
 						m_finishedTaskTime = eventCount;
+					}
 				}
 
 				return;
@@ -523,8 +535,8 @@ void CCareerTaskManager::AddTask(const char *taskName, const char *weaponName, i
 	}
 
 	MESSAGE_BEGIN(MSG_ALL, gmsgCZCareer);
-	WRITE_STRING("TASKDONE");
-	WRITE_BYTE(m_nextId);
+		WRITE_STRING("TASKDONE");
+		WRITE_BYTE(m_nextId);
 	MESSAGE_END();
 }
 
@@ -532,9 +544,12 @@ void CCareerTaskManager::AddTask(const char *taskName, const char *weaponName, i
 void CCareerTaskManager::HandleEvent(GameEventType event, CBasePlayer *pAttacker, CBasePlayer *pVictim)
 {
 	if (event == EVENT_ROUND_START)
+	{
 		m_roundStartTime = gpGlobals->time;
+		return;
+	}
 
-	else if ((event <= EVENT_ROUND_LOSS && event >= EVENT_ROUND_DRAW) && m_shouldLatchRoundEndMessage)
+	if ((event <= EVENT_ROUND_LOSS && event >= EVENT_ROUND_DRAW) && m_shouldLatchRoundEndMessage)
 	{
 		m_roundEndMessage = event;
 		return;

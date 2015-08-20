@@ -40,22 +40,25 @@ public:
 public:
 	virtual BOOL IsMultiplayer(void)
 	{
-		return FALSE;
+		return IsMultiplayer_();
 	}
-	NOBODY virtual BOOL IsDeathmatch(void);
+	virtual BOOL IsDeathmatch(void);
 	virtual void InitHUD(CBasePlayer *pl);
 	virtual void PlayerSpawn(CBasePlayer *pPlayer);
-	NOBODY virtual void PlayerThink(CBasePlayer *pPlayer);
-	NOBODY virtual BOOL FPlayerCanRespawn(CBasePlayer *pPlayer);
+	virtual void PlayerThink(CBasePlayer *pPlayer);
+	virtual BOOL FPlayerCanRespawn(CBasePlayer *pPlayer);
 	virtual edict_t *GetPlayerSpawnSpot(CBasePlayer *pPlayer);
-	NOBODY virtual void PlayerKilled(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor);
-	NOBODY virtual int ItemShouldRespawn(CItem *pItem);
-	NOBODY virtual void CheckMapConditions(void) {}
-	NOBODY virtual void CheckWinConditions(void);
+	virtual void PlayerKilled(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor);
+	virtual int ItemShouldRespawn(CItem *pItem);
+	virtual void CheckMapConditions(void) { }
+	virtual void CheckWinConditions(void);
 
 #ifdef HOOK_GAMEDLL
 
-	//BOOL IsMultiplayer_(void);
+	BOOL IsMultiplayer_(void)
+	{
+		return FALSE;
+	}
 	BOOL IsDeathmatch_(void);
 	void InitHUD_(CBasePlayer *pl);
 	void PlayerSpawn_(CBasePlayer *pPlayer);
@@ -64,7 +67,6 @@ public:
 	edict_t *GetPlayerSpawnSpot_(CBasePlayer *pPlayer);
 	void PlayerKilled_(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor);
 	int ItemShouldRespawn_(CItem *pItem);
-	//void CheckMapConditions_(void) {}
 	void CheckWinConditions_(void);
 
 #endif // HOOK_GAMEDLL
@@ -72,7 +74,8 @@ public:
 public:
 	static void HostageDied(void);
 	static bool PlayerCanBuy(CBasePlayer *pPlayer);
-private:
+
+//private:
 	float FillAccountTime;
 	float ServerRestartTime;
 	BOOL fInBuyArea;
@@ -85,16 +88,16 @@ private:
 class CBaseGrenCatch: public CBaseEntity
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void KeyValue(KeyValueData *pkvd);
-	NOBODY virtual int Save(CSave &save);
-	NOBODY virtual int Restore(CRestore &restore);
-	NOBODY virtual int ObjectCaps(void)
+	virtual void Spawn(void);
+	virtual void KeyValue(KeyValueData *pkvd);
+	virtual int Save(CSave &save);
+	virtual int Restore(CRestore &restore);
+	virtual int ObjectCaps(void)
 	{
 		return ObjectCaps_();
 	}
-	NOBODY virtual void Think(void);
-	NOBODY virtual void Touch(CBaseEntity *pOther);
+	virtual void Think(void);
+	virtual void Touch(CBaseEntity *pOther);
 
 #ifdef HOOK_GAMEDLL
 
@@ -126,11 +129,11 @@ public:
 class CFuncWeaponCheck: public CBaseEntity
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void KeyValue(KeyValueData *pkvd);
-	NOBODY virtual int Save(CSave &save);
-	NOBODY virtual int Restore(CRestore &restore);
-	NOBODY virtual void Touch(CBaseEntity *pOther);
+	virtual void Spawn(void);
+	virtual void KeyValue(KeyValueData *pkvd);
+	virtual int Save(CSave &save);
+	virtual int Restore(CRestore &restore);
+	virtual void Touch(CBaseEntity *pOther);
 
 #ifdef HOOK_GAMEDLL
 
@@ -154,5 +157,9 @@ private:
 	int iAnyWeapon;
 
 };/* size: 300, cachelines: 5, members: 8 */
+
+// linked objects
+C_DLLEXPORT void func_grencatch(entvars_t *pev);
+C_DLLEXPORT void func_weaponcheck(entvars_t *pev);
 
 #endif // TRAINING_GAMERULES_H

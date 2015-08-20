@@ -188,7 +188,7 @@ class RegamedllSrc {
         h.regamedll_src(CppSourceSet) {
 
             source {
-		srcDirs "dlls", "game_shared", "pm_shared", "regamedll", "public", "version"
+		srcDirs "engine", "dlls", "game_shared", "pm_shared", "regamedll", "public", "version"
                 if (GradleCppUtils.windows) {
 			srcDirs "testsuite"
 		}

@@ -12,17 +12,14 @@ float StayOnLadderLine(CCSBot *me, const CNavLadder *ladder)
 	// move toward ladder mount point
 	switch (faceDir)
 	{
-		case NORTH:
-			return stiffness * (ladder->m_top.x - me->pev->origin.x);
-
-		case EAST:
-			return stiffness * (ladder->m_top.y - me->pev->origin.y);
-
-		case SOUTH:
-			return -stiffness * (ladder->m_top.x - me->pev->origin.x);
-
-		case WEST:
-			return -stiffness * (ladder->m_top.y - me->pev->origin.y);
+	case NORTH:
+		return stiffness * (ladder->m_top.x - me->pev->origin.x);
+	case EAST:
+		return stiffness * (ladder->m_top.y - me->pev->origin.y);
+	case SOUTH:
+		return -stiffness * (ladder->m_top.x - me->pev->origin.x);
+	case WEST:
+		return -stiffness * (ladder->m_top.y - me->pev->origin.y);
 	}
 
 	return 0.0f;
@@ -175,7 +172,7 @@ void __declspec(naked) CCSBot::UpdateLookAngles(void)
 }
 
 /* <3d8c91> ../cstrike/dlls/bot/cs_bot_vision.cpp:238 */
-NOBODY bool CCSBot::IsVisible_(const Vector *pos, bool testFOV) const
+NOBODY bool CCSBot::__MAKE_VHOOK(IsVisible)(const Vector *pos, bool testFOV) const
 {
 //	{
 //		const Vector *eye;                            //   248
@@ -187,7 +184,7 @@ NOBODY bool CCSBot::IsVisible_(const Vector *pos, bool testFOV) const
 }
 
 /* <3d8d9b> ../cstrike/dlls/bot/cs_bot_vision.cpp:269 */
-NOBODY bool CCSBot::IsVisible_(CBasePlayer *player, bool testFOV, unsigned char *visParts) const
+NOBODY bool CCSBot::__MAKE_VHOOK(IsVisible)(CBasePlayer *player, bool testFOV, unsigned char *visParts) const
 {
 //	{
 //		float const topOfHead;                                 //   271
@@ -207,7 +204,7 @@ NOBODY bool CCSBot::IsVisible_(CBasePlayer *player, bool testFOV, unsigned char 
 }
 
 /* <3d8f9f> ../cstrike/dlls/bot/cs_bot_vision.cpp:302 */
-bool CCSBot::IsEnemyPartVisible_(VisiblePartType part) const
+bool CCSBot::__MAKE_VHOOK(IsEnemyPartVisible)(VisiblePartType part) const
 {
 	if (!IsEnemyVisible())
 		return false;
@@ -512,7 +509,7 @@ NOBODY float CCSBot::GetRangeToNearestRecognizedEnemy(void)
 }
 
 /* <3da170> ../cstrike/dlls/bot/cs_bot_vision.cpp:1063 */
-NOBODY void CCSBot::Blind_(float duration, float holdTime, float fadeTime, int alpha)
+NOBODY void CCSBot::__MAKE_VHOOK(Blind)(float duration, float holdTime, float fadeTime, int alpha)
 {
 //	Say(BotChatterInterface *const this,
 //		const char *phraseName,

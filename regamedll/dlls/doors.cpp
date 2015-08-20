@@ -56,7 +56,7 @@ NOBODY void PlayLockSounds(entvars_t *pev, locksound_t *pls, int flocked, int fb
 }
 
 /* <69a4f> ../cstrike/dlls/doors.cpp:201 */
-NOBODY void CBaseDoor::KeyValue_(KeyValueData *pkvd)
+NOBODY void CBaseDoor::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 //	FStrEq(const char *sz1,
 //		const char *sz2);  //   204
@@ -75,7 +75,7 @@ LINK_ENTITY_TO_CLASS(func_door, CBaseDoor);
 LINK_ENTITY_TO_CLASS(func_water, CBaseDoor);
 
 /* <690bc> ../cstrike/dlls/doors.cpp:285 */
-NOBODY void CBaseDoor::Spawn_(void)
+NOBODY void CBaseDoor::__MAKE_VHOOK(Spawn)(void)
 {
 //	fabs(double __x);  //   312
 //	fabs(double __x);  //   312
@@ -87,12 +87,12 @@ NOBODY void CBaseDoor::Spawn_(void)
 }
 
 /* <69949> ../cstrike/dlls/doors.cpp:334 */
-NOBODY void CBaseDoor::Restart_(void)
+NOBODY void CBaseDoor::__MAKE_VHOOK(Restart)(void)
 {
 }
 
 /* <69289> ../cstrike/dlls/doors.cpp:350 */
-NOBODY void CBaseDoor::SetToggleState_(int state)
+NOBODY void CBaseDoor::__MAKE_VHOOK(SetToggleState)(int state)
 {
 //	SetToggleState(CBaseDoor *const this,
 //			int state);  //   350
@@ -102,7 +102,7 @@ NOBODY void CBaseDoor::SetToggleState_(int state)
 #define noiseArrived noise2
 
 /* <6924c> ../cstrike/dlls/doors.cpp:359 */
-NOBODY void CBaseDoor::Precache_(void)
+NOBODY void CBaseDoor::__MAKE_VHOOK(Precache)(void)
 {
 //	{
 //		char *pszSound;                                      //   361
@@ -120,7 +120,7 @@ NOBODY void CBaseDoor::DoorTouch(CBaseEntity *pOther)
 }
 
 /* <6a33b> ../cstrike/dlls/doors.cpp:543 */
-NOBODY void CBaseDoor::Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+NOBODY void CBaseDoor::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 //	DoorActivate(CBaseDoor *const this);  //   548
 }
@@ -208,7 +208,7 @@ NOBODY void CBaseDoor::DoorHitBottom(void)
 }
 
 /* <6a465> ../cstrike/dlls/doors.cpp:817 */
-NOBODY void CBaseDoor::Blocked_(CBaseEntity *pOther)
+NOBODY void CBaseDoor::__MAKE_VHOOK(Blocked)(CBaseEntity *pOther)
 {
 //	{
 //		edict_t *pentTarget;                                 //   819
@@ -223,7 +223,7 @@ NOBODY void CBaseDoor::Blocked_(CBaseEntity *pOther)
 LINK_ENTITY_TO_CLASS(func_door_rotating, CRotDoor);
 
 /* <698be> ../cstrike/dlls/doors.cpp:946 */
-NOBODY void CRotDoor::Restart_(void)
+NOBODY void CRotDoor::__MAKE_VHOOK(Restart)(void)
 {
 //	operator*(const Vector ::Restart(//			float fl);  //   953
 //	{
@@ -234,7 +234,7 @@ NOBODY void CRotDoor::Restart_(void)
 }
 
 /* <69177> ../cstrike/dlls/doors.cpp:978 */
-NOBODY void CRotDoor::Spawn_(void)
+NOBODY void CRotDoor::__MAKE_VHOOK(Spawn)(void)
 {
 //	operator*(const class Vector  *const this,
 //			float fl);  //   986
@@ -250,7 +250,7 @@ NOBODY void CRotDoor::Spawn_(void)
 }
 
 /* <68fcc> ../cstrike/dlls/doors.cpp:1028 */
-NOBODY void CRotDoor::SetToggleState_(int state)
+NOBODY void CRotDoor::__MAKE_VHOOK(SetToggleState)(int state)
 {
 }
 
@@ -261,7 +261,7 @@ LINK_ENTITY_TO_CLASS(momentary_door, CMomentaryDoor);
 IMPLEMENT_SAVERESTORE(CMomentaryDoor, CBaseToggle);
 
 /* <69001> ../cstrike/dlls/doors.cpp:1065 */
-NOBODY void CMomentaryDoor::Spawn_(void)
+NOBODY void CMomentaryDoor::__MAKE_VHOOK(Spawn)(void)
 {
 //	fabs(double __x);  //  1082
 //	fabs(double __x);  //  1082
@@ -273,12 +273,12 @@ NOBODY void CMomentaryDoor::Spawn_(void)
 }
 
 /* <68fa5> ../cstrike/dlls/doors.cpp:1096 */
-NOBODY void CMomentaryDoor::Precache_(void)
+NOBODY void CMomentaryDoor::__MAKE_VHOOK(Precache)(void)
 {
 }
 
 /* <69970> ../cstrike/dlls/doors.cpp:1143 */
-NOBODY void CMomentaryDoor::KeyValue_(KeyValueData *pkvd)
+NOBODY void CMomentaryDoor::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 //	FStrEq(const char *sz1,
 //		const char *sz2);  //  1146
@@ -291,7 +291,7 @@ NOBODY void CMomentaryDoor::KeyValue_(KeyValueData *pkvd)
 }
 
 /* <6953e> ../cstrike/dlls/doors.cpp:1165 */
-NOBODY void CMomentaryDoor::Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+NOBODY void CMomentaryDoor::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 //	{
 //		Vector move;                                    //  1172

@@ -532,7 +532,7 @@ void CGrenade::SG_Smoke(void)
 }
 
 /* <b8467> ../cstrike/dlls/ggrenade.cpp:664 */
-void CGrenade::Killed_(entvars_t *pevAttacker, int iGib)
+void CGrenade::__MAKE_VHOOK(Killed)(entvars_t *pevAttacker, int iGib)
 {
 	Detonate();
 }
@@ -758,7 +758,7 @@ void CGrenade::SlideTouch(CBaseEntity *pOther)
 }
 
 /* <b7b20> ../cstrike/dlls/ggrenade.cpp:904 */
-void CGrenade::BounceSound_(void)
+void CGrenade::__MAKE_VHOOK(BounceSound)(void)
 {
 	if (pev->dmg > 50)
 	{
@@ -849,7 +849,7 @@ void CGrenade::SG_TumbleThink(void)
 }
 
 /* <b7010> ../cstrike/dlls/ggrenade.cpp:985 */
-void CGrenade::Spawn_(void)
+void CGrenade::__MAKE_VHOOK(Spawn)(void)
 {
 	m_iBounceCount = 0;
 	pev->movetype = MOVETYPE_BOUNCE;
@@ -977,7 +977,7 @@ CGrenade *CGrenade::ShootTimed(entvars_t *pevOwner, Vector vecStart, Vector vecV
 }
 
 /* <ba5be> ../cstrike/dlls/ggrenade.cpp:1113 */
-void CGrenade::Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CGrenade::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	if (!m_bIsC4)
 		return;
@@ -1145,8 +1145,8 @@ void AnnounceFlashInterval(float interval, float offset)
 		WRITE_BYTE(1);
 		WRITE_STRING("bombticking");
 		WRITE_BYTE(255);
-		WRITE_SHORT((short)interval);	// interval
-		WRITE_SHORT((short)offset);
+		WRITE_SHORT((int)interval);	// interval
+		WRITE_SHORT((int)offset);
 	MESSAGE_END();
 }
 

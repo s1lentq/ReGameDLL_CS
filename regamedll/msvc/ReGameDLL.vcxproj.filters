@@ -1112,6 +1112,12 @@
     <ClInclude Include="..\dlls\schedule.h">
       <Filter>dlls</Filter>
     </ClInclude>
+    <ClInclude Include="..\dlls\weapontype.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\scriptevent.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\linux\appversion.sh">

@@ -36,28 +36,33 @@ class CBaseTutorState
 {
 public:
 	CBaseTutorState(void);
-	virtual ~CBaseTutorState(void);
 
+	virtual ~CBaseTutorState(void);
 	virtual int CheckForStateTransition(GameEventType event, CBaseEntity *entity, CBaseEntity *other) = 0;
 	virtual char *GetStateString(void) = 0;
+
 public:
 	int GetType(void);
-private:
+
+protected:
 	int m_type;
+
 };/* size: 8, cachelines: 1, members: 2 */
 
 class CBaseTutorStateSystem
 {
 public:
 	CBaseTutorStateSystem(void);
-	virtual ~CBaseTutorStateSystem(void);
 
+	virtual ~CBaseTutorStateSystem(void);
 	virtual bool UpdateState(GameEventType event, CBaseEntity *entity, CBaseEntity *other) = 0;
 	virtual char *GetCurrentStateString(void) = 0;
 	virtual CBaseTutorState *ConstructNewState(int stateType) = 0;
 	
+public:
 	int GetCurrentStateType(void);
-private:
+
+protected:
 	CBaseTutorState *m_currentState;
 
 };/* size: 8, cachelines: 1, members: 2 */

@@ -5,8 +5,8 @@
 */
 #ifndef HOOK_GAMEDLL
 
-cvar_t cv_hostage_stop = { "hostage_stop", "0", FCVAR_SERVER };
-cvar_t cv_hostage_debug = { "hostage_debug", "0", FCVAR_SERVER };
+cvar_t cv_hostage_stop = { "hostage_stop", "0", FCVAR_SERVER, 0.0f, NULL };
+cvar_t cv_hostage_debug = { "hostage_debug", "0", FCVAR_SERVER, 0.0f, NULL };
 
 #else
 
@@ -25,7 +25,7 @@ LINK_ENTITY_TO_CLASS(hostage_entity, CHostage);
 LINK_ENTITY_TO_CLASS(monster_scientist, CHostage);
 
 /* <45c228> ../cstrike/dlls/hostage/hostage.cpp:54 */
-NOBODY void CHostage::Spawn_(void)
+NOBODY void CHostage::__MAKE_VHOOK(Spawn)(void)
 {
 //	MAKE_STRING_CLASS(const char *str,
 //				entvars_t *pev);  //    61
@@ -44,7 +44,7 @@ NOBODY void CHostage::Spawn_(void)
 }
 
 /* <45bf91> ../cstrike/dlls/hostage/hostage.cpp:137 */
-NOBODY void CHostage::Precache_(void)
+NOBODY void CHostage::__MAKE_VHOOK(Precache)(void)
 {
 //	{
 //		int which;                                            //   141
@@ -52,18 +52,39 @@ NOBODY void CHostage::Precache_(void)
 }
 
 /* <45c5ac> ../cstrike/dlls/hostage/hostage.cpp:179 */
-NOBODY void CHostage::SetActivity(int act)
+void CHostage::SetActivity(int act)
 {
-//	{
-//		int sequence;                                         //   181
-//	}
-//	SetActivity(CHostage *const this,
-//			int act);  //   179
+	if (m_Activity != act)
+	{
+		int sequence = LookupActivity(act);
+
+		if (sequence != -1)
+		{
+			if (pev->sequence != sequence)
+			{
+				if ((m_Activity != ACT_WALK && m_Activity != ACT_RUN) || (act != ACT_WALK && act != ACT_RUN))
+				{
+					pev->frame = 0;
+				}
+
+				pev->sequence = sequence;
+			}
+
+			m_Activity = act;
+			ResetSequenceInfo();
+		}
+	}
 }
 
+void (*pCHostage__IdleThink)(void);
+
 /* <45f194> ../cstrike/dlls/hostage/hostage.cpp:204 */
-NOBODY void CHostage::IdleThink(void)
+NOBODY void __declspec(naked) CHostage::IdleThink(void)
 {
+	__asm
+	{
+		jmp pCHostage__IdleThink
+	}
 //	{
 //		float const upkeepRate;                                //   220
 //		float flInterval;                                     //   224
@@ -135,22 +156,46 @@ NOBODY void CHostage::Remove(void)
 }
 
 /* <45c624> ../cstrike/dlls/hostage/hostage.cpp:426 */
-NOBODY void CHostage::RePosition(void)
+void CHostage::RePosition(void)
 {
-//	Vector(Vector::RePosition(//		float X,
-//		float Y,
-//		float Z);  //   449
-//	Vector(Vector *const this,
-//		float X,
-//		float Y,
-//		float Z);  //   449
-//	edict(CBaseEntity *const this);  //   451
-//	SetActivity(CHostage *const this,
-//			int act);  //   453
+	pev->health = pev->max_health;
+	pev->movetype = MOVETYPE_STEP;
+	pev->solid = SOLID_SLIDEBOX;
+	pev->takedamage = DAMAGE_YES;
+	pev->deadflag = DEAD_NO;
+	pev->velocity = Vector(0, 0, 0);
+	pev->angles = m_vStartAngles;
+	pev->effects &= ~EF_NODRAW;
+
+	m_hTargetEnt = NULL;
+	m_hStoppedTargetEnt = NULL;
+
+	m_bTouched = FALSE;
+	m_bRescueMe = FALSE;
+
+	m_flNextRadarTime = 0;
+	m_vOldPos = Vector(9999, 9999, 9999);
+
+	UTIL_SetOrigin(pev, m_vStart);
+	UTIL_SetSize(pev, VEC_HOSTAGE_HULL_MIN, VEC_HOSTAGE_HULL_MAX);
+
+	DROP_TO_FLOOR(edict());
+	SetActivity(ACT_IDLE);
+
+	SetThink(&CHostage::IdleThink);
+	pev->nextthink = gpGlobals->time + RANDOM_FLOAT(0.1, 0.2);
+
+	m_fHasPath = FALSE;
+	nTargetNode = -1;
+
+	m_flLastPathCheck = -1;
+	m_flPathAcquired = -1;
+	m_flPathCheckInterval = 0.1f;
+	m_flNextFullThink = gpGlobals->time + RANDOM_FLOAT(0.1, 0.2);
 }
 
 /* <45ee7f> ../cstrike/dlls/hostage/hostage.cpp:469 */
-NOBODY int CHostage::TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
+NOBODY int CHostage::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
 //	{
 //		float flActualDamage;                                 //   471
@@ -240,7 +285,7 @@ NOBODY void CHostage::ApplyHostagePenalty(CBasePlayer *pAttacker)
 }
 
 /* <45cfd6> ../cstrike/dlls/hostage/hostage.cpp:740 */
-NOBODY void CHostage::Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+NOBODY void CHostage::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 //	{
 //		class CBasePlayer *pPlayer;                          //   742
@@ -290,12 +335,12 @@ NOBODY void CHostage::GiveCTTouchBonus(CBasePlayer *pPlayer)
 }
 
 /* <45bf69> ../cstrike/dlls/hostage/hostage.cpp:869 */
-NOBODY int CHostage::ObjectCaps_(void)
+NOBODY int CHostage::__MAKE_VHOOK(ObjectCaps)(void)
 {
 }
 
 /* <45c0e3> ../cstrike/dlls/hostage/hostage.cpp:876 */
-NOBODY void CHostage::Touch_(CBaseEntity *pOther)
+NOBODY void CHostage::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 {
 //	{
 //		class Vector2D vPush;                                 //   901
@@ -395,67 +440,58 @@ NOBODY BOOL CHostage::IsOnLadder(void)
 }
 
 /* <45d727> ../cstrike/dlls/hostage/hostage.cpp:1106 */
-NOBODY void CHostage::NavReady(void)
+void CHostage::NavReady(void)
 {
-//	{
-//		class CBaseEntity *pFollowing;                       //  1108
-//		Vector vecDest;                                 //  1109
-//		float flRadius;                                       //  1110
-//		node_index_t nindexPath;                              //  1111
-//		GetClassPtr<CBaseEntity>(CBaseEntity *a);  //  1118
-//		{
-//			TraceResult tr;                               //  1123
-//			Vector vecDropDest;                     //  1124
-//			edict(CBaseEntity *const this);  //  1129
-//		}
-//		SetTargetEnt(CLocalNav *const this,
-//				class CBaseEntity *pTarget);  //  1142
-//	}
-
 	CBaseEntity *pFollowing;
 	Vector vecDest;
 	float flRadius = 40.0;
 
-	node_index_t nindexPath;
-
 	if (!m_hTargetEnt)
+	{
 		return;
+	}
 
 	pFollowing = GetClassPtr((CBaseEntity *)m_hTargetEnt->pev);
 	vecDest = pFollowing->pev->origin;
-
+	
 	if (!(pFollowing->pev->flags & FL_ONGROUND))
 	{
 		TraceResult tr;
-		Vector vecDropDest = pFollowing->pev->origin - Vector(0, 0, 300);
-
+		Vector vecDropDest = (pFollowing->pev->origin - Vector(0, 0, 300));
 		UTIL_TraceHull(vecDest, vecDropDest, ignore_monsters, human_hull, pFollowing->edict(), &tr);
 
-		if (tr.fStartSolid || tr.flFraction == 1.0)
+		if (tr.fStartSolid || tr.flFraction == 1.0f)
+		{
 			return;
+		}
 
 		vecDest = tr.vecEndPos;
 	}
 
 	vecDest.z += pFollowing->pev->mins.z;
 	m_LocalNav->SetTargetEnt(pFollowing);
-	nindexPath = m_LocalNav->FindPath(pev->origin, vecDest, flRadius, 1);// TODO: Reverse me
 
-	if (nindexPath != -1)
+	node_index_t nindexPath = m_LocalNav->FindPath(pev->origin, vecDest, flRadius, 1);
+	if (nindexPath == -1)
+	{
+		if (!m_fHasPath)
+		{
+			m_flPathCheckInterval += 0.1;
+
+			if (m_flPathCheckInterval >= 0.5f)
+			{
+				m_flPathCheckInterval = 0.5f;
+			}
+		}
+	}
+	else
 	{
 		m_fHasPath = TRUE;
 		nTargetNode = -1;
+		m_flPathAcquired = gpGlobals->time;
 		m_flPathCheckInterval = 0.5;
 
-		m_flPathAcquired = gpGlobals->time;
-		m_nPathNodes = m_LocalNav->SetupPathNodes(nindexPath, vecNodes, 1);// TODO: Reverse me
-	}
-	else if (!m_fHasPath)
-	{
-		m_flPathCheckInterval += 0.1;
-
-		if (m_flPathCheckInterval >= 0.5f)
-			m_flPathCheckInterval = 0.5;
+		m_nPathNodes = m_LocalNav->SetupPathNodes(nindexPath, vecNodes, 1);
 	}
 }
 
@@ -544,14 +580,20 @@ void CHostage::PreThink(void)
 	float flRaisedDist;
 	float flInterval;
 
-	if (m_improv)
+	if (m_improv != NULL)
+	{
 		return;
+	}
 
 	if (!(pev->flags & FL_ONGROUND))
+	{
 		return;
+	}
 
 	if (pev->velocity.Length2D() < 1)
+	{
 		return;
+	}
 
 	vecSrc = pev->origin;
 
@@ -566,8 +608,10 @@ void CHostage::PreThink(void)
 
 	TRACE_MONSTER_HULL(edict(), vecSrc, vecDest, dont_ignore_monsters, edict(), &tr);
 
-	if (tr.fStartSolid || tr.flFraction == 1.0 || tr.vecPlaneNormal.z > 0.7)
+	if (tr.fStartSolid || tr.flFraction == 1.0f || tr.vecPlaneNormal.z > 0.7f)
+	{
 		return;
+	}
 
 	flOrigDist = (tr.vecEndPos - pev->origin).Length2D();
 	vecSrc.z += flInterval;
@@ -577,7 +621,9 @@ void CHostage::PreThink(void)
 	TRACE_MONSTER_HULL(edict(), vecSrc, vecDest, dont_ignore_monsters, edict(), &tr);
 
 	if (tr.fStartSolid)
+	{
 		return;
+	}
 
 	vecSrc = tr.vecEndPos;
 	vecDest = tr.vecEndPos;
@@ -585,8 +631,10 @@ void CHostage::PreThink(void)
 
 	TRACE_MONSTER_HULL(edict(), vecSrc, vecDest, dont_ignore_monsters, edict(), &tr);
 
-	if (tr.vecPlaneNormal.z < 0.7)
+	if (tr.vecPlaneNormal.z < 0.7f)
+	{
 		return;
+	}
 
 	flRaisedDist = (tr.vecEndPos - pev->origin).Length2D();
 
@@ -618,7 +666,7 @@ NOBODY void InstallHostageManager(void)
 /* <45e375> ../cstrike/dlls/hostage/hostage.cpp:1443 */
 NOBODY CHostageManager::CHostageManager(void)
 {
-	memset(&m_chatter, 0, sizeof(m_chatter));
+	Q_memset(&m_chatter, 0, sizeof(m_chatter));
 	m_hostageCount = 0;
 
 //	SimpleChatter(SimpleChatter *const this);  //  1443
@@ -777,11 +825,15 @@ void CHostageManager::ServerDeactivate(void)
 }
 
 /* <45e3f7> ../cstrike/dlls/hostage/hostage.cpp:1631 */
-NOBODY void CHostageManager::RestartRound(void)
+void CHostageManager::RestartRound(void)
 {
-//	{
-//		int i;                                                //  1634
-//	}
+	for (int i = 0; i < m_hostageCount; i++)
+	{
+		if (m_hostage[ i ]->m_improv != NULL)
+		{
+			m_hostage[ i ]->m_improv->OnReset();
+		}
+	}
 }
 
 /* <45e43d> ../cstrike/dlls/hostage/hostage.cpp:1640 */
@@ -846,8 +898,10 @@ void CHostageManager::OnEvent(GameEventType event, CBaseEntity *entity, CBaseEnt
 	{
 		CHostageImprov *improv = m_hostage[ i ]->m_improv;
 
-		if (improv)
+		if (improv != NULL)
+		{
 			improv->OnGameEvent(event, entity, other);
+		}
 	}
 }
 

@@ -64,7 +64,7 @@ IMPLEMENT_SAVERESTORE(CEnvGlobal, CBaseEntity);
 LINK_ENTITY_TO_CLASS(env_global, CEnvGlobal);
 
 /* <26863> ../cstrike/dlls/buttons.cpp:66 */
-NOBODY void CEnvGlobal::KeyValue_(KeyValueData *pkvd)
+NOBODY void CEnvGlobal::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 //	FStrEq(const char *sz1,
 //		const char *sz2);  //    70
@@ -76,14 +76,14 @@ NOBODY void CEnvGlobal::KeyValue_(KeyValueData *pkvd)
 }
 
 /* <26486> ../cstrike/dlls/buttons.cpp:80 */
-NOBODY void CEnvGlobal::Spawn_(void)
+NOBODY void CEnvGlobal::__MAKE_VHOOK(Spawn)(void)
 {
 //	EntityInTable(CGlobalState::Spawn(//			string_t globalname);  //    89
 //	Spawn(CEnvGlobal *const this);  //    80
 }
 
 /* <25ee7> ../cstrike/dlls/buttons.cpp:95 */
-NOBODY void CEnvGlobal::Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+NOBODY void CEnvGlobal::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 //	{
 //		GLOBALESTATE oldState;                                //    97
@@ -100,7 +100,7 @@ IMPLEMENT_SAVERESTORE(CMultiSource, CBaseEntity);
 LINK_ENTITY_TO_CLASS(multisource, CMultiSource);
 
 /* <26d1e> ../cstrike/dlls/buttons.cpp:148 */
-NOBODY void CMultiSource::KeyValue_(KeyValueData *pkvd)
+NOBODY void CMultiSource::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 //	FStrEq(const char *sz1,
 //		const char *sz2);  //   150
@@ -121,12 +121,12 @@ NOBODY void CMultiSource::KeyValue_(KeyValueData *pkvd)
 }
 
 /* <256e2> ../cstrike/dlls/buttons.cpp:168 */
-NOBODY void CMultiSource::Spawn_(void)
+NOBODY void CMultiSource::__MAKE_VHOOK(Spawn)(void)
 {
 }
 
 /* <2633b> ../cstrike/dlls/buttons.cpp:179 */
-NOBODY void CMultiSource::Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+NOBODY void CMultiSource::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 //	{
 //		int i;                                                //   181
@@ -142,7 +142,7 @@ NOBODY void CMultiSource::Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, US
 }
 
 /* <26419> ../cstrike/dlls/buttons.cpp:211 */
-NOBODY BOOL CMultiSource::IsTriggered_(CBaseEntity *)
+NOBODY BOOL CMultiSource::__MAKE_VHOOK(IsTriggered)(CBaseEntity *)
 {
 //	{
 //		int i;                                                //   214
@@ -173,7 +173,7 @@ NOBODY void CMultiSource::Register(void)
 IMPLEMENT_SAVERESTORE(CBaseButton, CBaseToggle);
 
 /* <25709> ../cstrike/dlls/buttons.cpp:289 */
-NOBODY void CBaseButton::Precache_(void)
+NOBODY void CBaseButton::__MAKE_VHOOK(Precache)(void)
 {
 //	{
 //		char *pszSound;                                      //   291
@@ -183,7 +183,7 @@ NOBODY void CBaseButton::Precache_(void)
 }
 
 /* <269cb> ../cstrike/dlls/buttons.cpp:355 */
-NOBODY void CBaseButton::KeyValue_(KeyValueData *pkvd)
+NOBODY void CBaseButton::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 //	FStrEq(const char *sz1,
 //		const char *sz2);  //   357
@@ -195,7 +195,7 @@ NOBODY void CBaseButton::KeyValue_(KeyValueData *pkvd)
 }
 
 /* <26e90> ../cstrike/dlls/buttons.cpp:394 */
-NOBODY int CBaseButton::TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
+NOBODY int CBaseButton::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
 //	{
 //		enum BUTTON_CODE code;                                //   396
@@ -215,7 +215,7 @@ NOBODY int CBaseButton::TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttac
 LINK_ENTITY_TO_CLASS(func_button, CBaseButton);
 
 /* <25c2c> ../cstrike/dlls/buttons.cpp:442 */
-NOBODY void CBaseButton::Spawn_(void)
+NOBODY void CBaseButton::__MAKE_VHOOK(Spawn)(void)
 {
 //	{
 //		char *pszSound;                                      //   444
@@ -366,7 +366,7 @@ NOBODY void CBaseButton::ButtonBackHome(void)
 LINK_ENTITY_TO_CLASS(func_rot_button, CRotButton);
 
 /* <25a06> ../cstrike/dlls/buttons.cpp:808 */
-NOBODY void CRotButton::Spawn_(void)
+NOBODY void CRotButton::__MAKE_VHOOK(Spawn)(void)
 {
 //	{
 //		char *pszSound;                                      //   810
@@ -381,7 +381,7 @@ NOBODY void CRotButton::Spawn_(void)
 }
 
 /* <2577a> ../cstrike/dlls/buttons.cpp:878 */
-NOBODY int CMomentaryRotButton::ObjectCaps_(void)
+NOBODY int CMomentaryRotButton::__MAKE_VHOOK(ObjectCaps)(void)
 {
 //	{
 //		int flags;                                            //   880
@@ -395,7 +395,7 @@ IMPLEMENT_SAVERESTORE(CMomentaryRotButton, CBaseToggle);
 LINK_ENTITY_TO_CLASS(momentary_rot_button, CMomentaryRotButton);
 
 /* <25acc> ../cstrike/dlls/buttons.cpp:922 */
-NOBODY void CMomentaryRotButton::Spawn_(void)
+NOBODY void CMomentaryRotButton::__MAKE_VHOOK(Spawn)(void)
 {
 //	{
 //		char *pszSound;                                      //   952
@@ -412,7 +412,7 @@ NOBODY void CMomentaryRotButton::Spawn_(void)
 }
 
 /* <2678f> ../cstrike/dlls/buttons.cpp:958 */
-NOBODY void CMomentaryRotButton::KeyValue_(KeyValueData *pkvd)
+NOBODY void CMomentaryRotButton::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 //	FStrEq(const char *sz1,
 //		const char *sz2);  //   960
@@ -434,7 +434,7 @@ NOBODY void CMomentaryRotButton::PlaySound(void)
 }
 
 /* <27dc0> ../cstrike/dlls/buttons.cpp:982 */
-NOBODY void CMomentaryRotButton::Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+NOBODY void CMomentaryRotButton::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 //	UpdateTarget(CMomentaryRotButton *const this,
 //			float value);  //   987
@@ -514,17 +514,17 @@ LINK_ENTITY_TO_CLASS(env_spark, CEnvSpark);
 LINK_ENTITY_TO_CLASS(env_debris, CEnvSpark);
 
 /* <257b7> ../cstrike/dlls/buttons.cpp:1146 */
-NOBODY void CEnvSpark::Spawn_(void)
+NOBODY void CEnvSpark::__MAKE_VHOOK(Spawn)(void)
 {
 }
 
 /* <257de> ../cstrike/dlls/buttons.cpp:1173 */
-NOBODY void CEnvSpark::Precache_(void)
+NOBODY void CEnvSpark::__MAKE_VHOOK(Precache)(void)
 {
 }
 
 /* <26b97> ../cstrike/dlls/buttons.cpp:1183 */
-NOBODY void CEnvSpark::KeyValue_(KeyValueData *pkvd)
+NOBODY void CEnvSpark::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 //	FStrEq(const char *sz1,
 //		const char *sz2);  //  1185
@@ -564,12 +564,12 @@ NOBODY void CEnvSpark::SparkStop(CBaseEntity *pActivator, CBaseEntity *pCaller, 
 LINK_ENTITY_TO_CLASS(button_target, CButtonTarget);
 
 /* <258ca> ../cstrike/dlls/buttons.cpp:1235 */
-NOBODY void CButtonTarget::Spawn_(void)
+NOBODY void CButtonTarget::__MAKE_VHOOK(Spawn)(void)
 {
 }
 
 /* <25fc3> ../cstrike/dlls/buttons.cpp:1246 */
-NOBODY void CButtonTarget::Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+NOBODY void CButtonTarget::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 //	Use(CButtonTarget *const this,
 //		class CBaseEntity *pActivator,
@@ -579,7 +579,7 @@ NOBODY void CButtonTarget::Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, U
 }
 
 /* <258f1> ../cstrike/dlls/buttons.cpp:1258 */
-NOBODY int CButtonTarget::ObjectCaps_(void)
+NOBODY int CButtonTarget::__MAKE_VHOOK(ObjectCaps)(void)
 {
 //	{
 //		int caps;                                             //  1260
@@ -587,7 +587,7 @@ NOBODY int CButtonTarget::ObjectCaps_(void)
 }
 
 /* <2592e> ../cstrike/dlls/buttons.cpp:1269 */
-NOBODY int CButtonTarget::TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
+NOBODY int CButtonTarget::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
 //	Instance(entvars_t *pev);  //  1271
 }

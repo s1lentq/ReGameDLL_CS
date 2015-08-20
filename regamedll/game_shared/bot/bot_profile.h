@@ -32,6 +32,16 @@
 #pragma once
 #endif
 
+#pragma warning(disable : 4786)	// long STL names get truncated in browse info.
+
+#ifndef _WIN32
+#include <strings.h>
+#include <stdio.h>
+#endif // _WIN32
+
+#undef min
+#undef max
+
 #include <list>
 #include <vector>
 

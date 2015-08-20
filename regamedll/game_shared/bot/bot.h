@@ -272,7 +272,9 @@ public:
 	{
 		return m_profile;
 	}
+#ifndef HOOK_GAMEDLL
 protected:
+#endif // HOOK_GAMEDLL
 	// Do a "client command" - useful for invoking menu choices, etc.
 	void ClientCommand(const char *cmd, const char *arg1 = NULL, const char *arg2 = NULL, const char *arg3 = NULL);
 

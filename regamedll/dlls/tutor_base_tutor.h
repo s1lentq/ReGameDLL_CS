@@ -36,7 +36,7 @@ class TutorMessageEvent
 {
 public:
 	TutorMessageEvent(int mid, int duplicateID, float time, float lifetime, int priority);
-	//virtual ~TutorMessageEvent(void);
+	virtual ~TutorMessageEvent(void);
 
 	bool IsActive(float time);
 	int GetPriority(void);
@@ -62,7 +62,6 @@ private:
 
 };/* size: 36, cachelines: 1, members: 9 */
 
-
 class CBaseTutor
 {
 public:
@@ -82,6 +81,17 @@ public:
 
 	virtual void HandleShotFired(Vector source, Vector target) = 0;
 	virtual struct TutorMessage *GetTutorMessageDefinition(int messageID) = 0;
+
+#ifdef HOOK_GAMEDLL
+
+	bool IsEntityInViewOfPlayer_(CBaseEntity *entity, CBasePlayer *player);
+	bool IsBombsiteInViewOfPlayer_(CBaseEntity *entity, CBasePlayer *player);
+	bool IsEntityInBombsite_(CBaseEntity *bombsite, CBaseEntity *entity);
+	bool IsPlayerLookingAtPosition_(Vector *origin, CBasePlayer *player);
+	bool IsPlayerLookingAtEntity_(CBaseEntity *entity, CBasePlayer *player);
+
+#endif // HOOK_GAMEDLL
+
 public:
 	void StartFrame(float time);
 	void OnEvent(GameEventType event, CBaseEntity *entity = NULL, CBaseEntity *other = NULL);
@@ -89,17 +99,18 @@ public:
 	void ShotFired(Vector source, Vector target);
 	void DisplayMessageToPlayer(CBasePlayer *player, int id, const char *szMessage, TutorMessageEvent *event);
 	NOXREF void DrawLineToEntity(CBasePlayer *player, int entindex, int id);
-	NOXREF void DisplayNewStateDescriptionToPlayer(void);
+	void DisplayNewStateDescriptionToPlayer(void);
 	void CloseCurrentWindow(void);
-	NOXREF void CheckForStateTransition(GameEventType event, CBaseEntity *entity, CBaseEntity *other);
+	void CheckForStateTransition(GameEventType event, CBaseEntity *entity, CBaseEntity *other);
 	void CalculatePathForObjective(CBaseEntity *player);
 	bool DoMessagesHaveSameID(int id1, int id2);
 
-private:
+protected:
 	CBaseTutorStateSystem *m_stateSystem;
 	TutorMessageEvent *m_eventList;
 	float m_deadAirStartTime;
 	float m_roundStartTime;
+
 };/* size: 20, cachelines: 1, members: 5 */
 
 #ifdef HOOK_GAMEDLL

@@ -5,18 +5,18 @@
 */
 #ifndef HOOK_GAMEDLL
 
-DebugOutputLevel outputLevel[NUM_LEVELS] =
+DebugOutputLevel outputLevel[ NUM_LEVELS ] =
 {
-	{ "bot", DEBUG_BOT },
-	{ "career", DEBUG_CAREER },
-	{ "tutor", DEBUG_TUTOR },
-	{ "stats", DEBUG_STATS },
-	{ "hostage", DEBUG_HOSTAGE },
-	{ "all", DEBUG_ALL }
+	{ "bot",	DEBUG_BOT },
+	{ "career",	DEBUG_CAREER },
+	{ "tutor",	DEBUG_TUTOR },
+	{ "stats",	DEBUG_STATS },
+	{ "hostage",	DEBUG_HOSTAGE },
+	{ "all",	DEBUG_ALL }
 };
 
 unsigned int theDebugOutputTypes;
-static char theDebugBuffer[DebugBufferSize];
+static char theDebugBuffer[ DebugBufferSize ];
 
 #else // HOOK_GAMEDLL
 
@@ -27,7 +27,7 @@ char theDebugBuffer[ DebugBufferSize ];
 #endif // HOOK_GAMEDLL
 
 /* <22fe8b> ../cstrike/dlls/debug.cpp:39 */
-NOXREF bool IsDeveloper(void)
+bool IsDeveloper(void)
 {
 	return (CVAR_GET_FLOAT("developer") > 0.0);
 }
@@ -35,143 +35,203 @@ NOXREF bool IsDeveloper(void)
 /* <22ff69> ../cstrike/dlls/debug.cpp:45 */
 NOXREF void UTIL_DPrintf(DebugOutputType outputType, char *pszMsg, ...)
 {
-	va_list argptr;
-	va_start(argptr, pszMsg);
+	if (!IsDeveloper())
+		return;
 
-	if (IsDeveloper())
+	if (theDebugOutputTypes & outputType)
 	{
-		if (theDebugOutputTypes & outputType)
-		{
-#ifdef REGAMEDLL_FIXES
-			Q_vsnprintf(theDebugBuffer, DebugBufferSize, pszMsg, argptr);
-#else
-			vsprintf(theDebugBuffer, pszMsg, argptr);
-#endif // REGAMEDLL_FIXES
-			SERVER_PRINT(theDebugBuffer);
-		}
-	}
-}
-
-// OVERLOAD
-void UTIL_DPrintf(char *pszMsg, ...)
-{
-	va_list argptr;
-	va_start(argptr, pszMsg);
-
-	if (IsDeveloper())
-	{
-#ifdef REGAMEDLL_FIXES
-		Q_vsnprintf(theDebugBuffer, DebugBufferSize, pszMsg, argptr);
-#else
+		va_list argptr;
+		va_start(argptr, pszMsg);
 		vsprintf(theDebugBuffer, pszMsg, argptr);
-#endif // REGAMEDLL_FIXES
+		va_end(argptr);
+
 		SERVER_PRINT(theDebugBuffer);
 	}
 }
 
+/* <22fe23> ../cstrike/dlls/debug.cpp:56 */
+void UTIL_DPrintf(char *pszMsg, ...)
+{
+	if (!IsDeveloper())
+		return;
+
+	va_list argptr;
+	va_start(argptr, pszMsg);
+	vsprintf(theDebugBuffer, pszMsg, argptr);
+	va_end(argptr);
+
+	SERVER_PRINT(theDebugBuffer);
+}
+
 /* <22fe97> ../cstrike/dlls/debug.cpp:78 */
-NOXREF void PrintDebugFlags(void)
+void PrintDebugFlags(void)
 {
 	char *tmp;
-	char *state;
 	int remainder = DebugBufferSize;
 
-	theDebugBuffer[0] = 0;
+	theDebugBuffer[0] = '\0';
 	tmp = BufPrintf(theDebugBuffer, remainder, "mp_debug:\n");
 
 	for (int i = 0; i < NUM_LEVELS - 1; i++)
 	{
-		DebugOutputLevel *level = &outputLevel[i];
-		if (theDebugOutputTypes & level->value)
-			state = "on";
-		else 
-			state = "off";
+		DebugOutputLevel level = outputLevel[i];
 
-		tmp = BufPrintf(tmp, remainder, "  %s: %s\n", level->name, state);
+		tmp = BufPrintf(tmp, remainder, "  %s: %s\n", level.name, (theDebugOutputTypes & level.value) ? "on" : "off");
 	}
 	SERVER_PRINT(theDebugBuffer);
 }
 
 /* <22fed4> ../cstrike/dlls/debug.cpp:94 */
-NOBODY void SetDebugFlag(const char *flagStr, bool state)
+void SetDebugFlag(const char *flagStr, bool state)
 {
-//	{
-//		enum DebugOutputType flag;                            //    96
-//		{
-//			int i;                                        //    97
-//			{
-//				class DebugOutputLevel level;         //    99
-//				FStrEq(const char *sz1,
-//					const char *sz2);  //   100
-//			}
-//		}
-//	}
+	if (flagStr != NULL)
+	{
+		DebugOutputType flag;
+		for (int i = 0; i < ARRAYSIZE(outputLevel); i++)
+		{
+			DebugOutputLevel level = outputLevel[ i ];
+
+			if (FStrEq(level.name, flagStr))
+			{
+				flag = level.value;
+
+				if (state)
+					theDebugOutputTypes |= flag;
+				else
+					theDebugOutputTypes &= ~flag;
+
+				SERVER_PRINT(SharedVarArgs("mp_debug: %s is now %s\n", flagStr, state ? "on" : "off"));
+				return;
+			}
+		}
+	}
+
+	SERVER_PRINT(SharedVarArgs("mp_debug: unknown variable '%s'\n", flagStr));
 }
 
 /* <23001f> ../cstrike/dlls/debug.cpp:126 */
-NOBODY void PrintDebugFlag(const char *flagStr)
+void PrintDebugFlag(const char *flagStr)
 {
-//	{
-//		enum DebugOutputType flag;                            //   128
-//		{
-//			int i;                                        //   129
-//			{
-//				class DebugOutputLevel level;         //   131
-//				FStrEq(const char *sz1,
-//					const char *sz2);  //   132
-//			}
-//		}
-//	}
+	if (flagStr != NULL)
+	{
+		DebugOutputType flag;
+		for (int i = 0; i < ARRAYSIZE(outputLevel); i++)
+		{
+			DebugOutputLevel level = outputLevel[ i ];
+
+			if (FStrEq(level.name, flagStr))
+			{
+				flag = level.value;
+				SERVER_PRINT(SharedVarArgs("mp_debug: %s is %s\n", flagStr, (flag & theDebugOutputTypes) ? "on" : "off"));
+				return;
+			}
+		}
+	}
+
+	SERVER_PRINT(SharedVarArgs("mp_debug: unknown variable '%s'\n", flagStr));
 }
 
 /* <2300a9> ../cstrike/dlls/debug.cpp:149 */
-NOBODY void UTIL_SetDprintfFlags(const char *flagStr)
+void UTIL_SetDprintfFlags(const char *flagStr)
 {
-//	IsDeveloper(void);  //   151
-//	PrintDebugFlags(void);  //   156
+	if (!IsDeveloper())
+		return;
+
+	if (flagStr != NULL && flagStr[0] != '\0')
+	{
+		if (flagStr[0] == '+')
+			SetDebugFlag(&flagStr[1], true);
+
+		else if (flagStr[0] == '-')
+			SetDebugFlag(&flagStr[1], false);
+		else
+			PrintDebugFlag(flagStr);
+	}
+	else
+		PrintDebugFlags();
 }
 
 /* <23012d> ../cstrike/dlls/debug.cpp:175 */
-NOBODY void UTIL_BotDPrintf(char *pszMsg, ...)
+NOXREF void UTIL_BotDPrintf(char *pszMsg, ...)
 {
-//	IsDeveloper(void);  //   177
-//	{
-//		va_list argptr;                                       //   182
-//	}
+	if (!IsDeveloper())
+		return;
+
+	if (theDebugOutputTypes & DEBUG_BOT)
+	{
+		va_list argptr;
+		va_start(argptr, pszMsg);
+		vsprintf(theDebugBuffer, pszMsg, argptr);
+		va_end(argptr);
+
+		SERVER_PRINT(theDebugBuffer);
+	}
 }
 
 /* <230181> ../cstrike/dlls/debug.cpp:193 */
-NOBODY void UTIL_CareerDPrintf(char *pszMsg, ...)
+void UTIL_CareerDPrintf(char *pszMsg, ...)
 {
-//	IsDeveloper(void);  //   195
-//	{
-//		va_list argptr;                                       //   200
-//	}
+	if (!IsDeveloper())
+		return;
+
+	if (theDebugOutputTypes & DEBUG_CAREER)
+	{
+		va_list argptr;
+		va_start(argptr, pszMsg);
+		vsprintf(theDebugBuffer, pszMsg, argptr);
+		va_end(argptr);
+
+		SERVER_PRINT(theDebugBuffer);
+	}
 }
 
 /* <2301d5> ../cstrike/dlls/debug.cpp:211 */
-NOBODY void UTIL_TutorDPrintf(char *pszMsg, ...)
+NOXREF void UTIL_TutorDPrintf(char *pszMsg, ...)
 {
-//	IsDeveloper(void);  //   213
-//	{
-//		va_list argptr;                                       //   218
-//	}
+	if (!IsDeveloper())
+		return;
+
+	if (theDebugOutputTypes & DEBUG_TUTOR)
+	{
+		va_list argptr;
+		va_start(argptr, pszMsg);
+		vsprintf(theDebugBuffer, pszMsg, argptr);
+		va_end(argptr);
+
+		SERVER_PRINT(theDebugBuffer);
+	}
 }
 
 /* <230229> ../cstrike/dlls/debug.cpp:229 */
-NOBODY void UTIL_StatsDPrintf(char *pszMsg, ...)
+NOXREF void UTIL_StatsDPrintf(char *pszMsg, ...)
 {
-//	IsDeveloper(void);  //   231
-//	{
-//		va_list argptr;                                       //   236
-//	}
+	if (!IsDeveloper())
+		return;
+
+	if (theDebugOutputTypes & DEBUG_STATS)
+	{
+		va_list argptr;
+		va_start(argptr, pszMsg);
+		vsprintf(theDebugBuffer, pszMsg, argptr);
+		va_end(argptr);
+
+		SERVER_PRINT(theDebugBuffer);
+	}
 }
 
 /* <23027d> ../cstrike/dlls/debug.cpp:247 */
-NOBODY void UTIL_HostageDPrintf(char *pszMsg, ...)
+NOXREF void UTIL_HostageDPrintf(char *pszMsg, ...)
 {
-//	IsDeveloper(void);  //   249
-//	{
-//		va_list argptr;                                       //   254
-//	}
+	if (!IsDeveloper())
+		return;
+
+	if (theDebugOutputTypes & DEBUG_HOSTAGE)
+	{
+		va_list argptr;
+		va_start(argptr, pszMsg);
+		vsprintf(theDebugBuffer, pszMsg, argptr);
+		va_end(argptr);
+
+		SERVER_PRINT(theDebugBuffer);
+	}
 }

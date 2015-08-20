@@ -22,6 +22,7 @@
 #include "hooker.h"
 #endif // HOOK_GAMEDLL
 
+#include "mathlib.h"
 #include "dlls.h"
 #include "basetypes.h"
 

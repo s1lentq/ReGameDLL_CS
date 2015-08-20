@@ -593,6 +593,7 @@
     <ClInclude Include="..\dlls\player.h" />
     <ClInclude Include="..\dlls\saverestore.h" />
     <ClInclude Include="..\dlls\schedule.h" />
+    <ClInclude Include="..\dlls\scriptevent.h" />
     <ClInclude Include="..\dlls\skill.h" />
     <ClInclude Include="..\dlls\sound.h" />
     <ClInclude Include="..\dlls\soundent.h" />
@@ -612,6 +613,7 @@
     <ClInclude Include="..\dlls\vector.h" />
     <ClInclude Include="..\dlls\vehicle.h" />
     <ClInclude Include="..\dlls\weapons.h" />
+    <ClInclude Include="..\dlls\weapontype.h" />
     <ClInclude Include="..\dlls\world.h" />
     <ClInclude Include="..\engine\cdll_int.h" />
     <ClInclude Include="..\engine\cmd.h" />

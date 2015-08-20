@@ -5,8 +5,8 @@
 */
 #ifndef HOOK_GAMEDLL
 
-cvar_t voice_serverdebug = { "voice_serverdebug", "0" };
-cvar_t sv_alltalk = { "sv_alltalk", "0", FCVAR_SERVER };
+cvar_t voice_serverdebug = { "voice_serverdebug", "0", 0, 0.0f, NULL };
+cvar_t sv_alltalk = { "sv_alltalk", "0", FCVAR_SERVER, 0.0f, NULL };
 
 #else
 
@@ -31,7 +31,7 @@ void VoiceServerDebug(const char *pFmt, ...)
 		return;
 
 	va_start(marker, pFmt);
-	Q_vsnprintf(msg, sizeof(msg), pFmt, marker);
+	Q_vsnprintf(msg, ARRAYSIZE(msg), pFmt, marker);
 	va_end(marker);
 
 	ALERT(at_console, "%s", msg);
@@ -149,9 +149,9 @@ bool CVoiceGameMgr::ClientCommand(CBasePlayer *pPlayer, const char *cmd)
 	}
 	else if (Q_stricmp(cmd, "VModEnable") == 0 && CMD_ARGC() >= 2)
 	{
-		VoiceServerDebug("CVoiceGameMgr::ClientCommand: VModEnable (%d)\n", !!atoi(CMD_ARGV(1)));
+		VoiceServerDebug("CVoiceGameMgr::ClientCommand: VModEnable (%d)\n", !!Q_atoi(CMD_ARGV(1)));
 
-		g_PlayerModEnable[ playerClientIndex ] = !!atoi(CMD_ARGV(1));
+		g_PlayerModEnable[ playerClientIndex ] = !!Q_atoi(CMD_ARGV(1));
 		g_bWantModEnable[ playerClientIndex ] = false;
 
 		return true;

@@ -442,99 +442,40 @@ const char *GetCSModelName(int item_id)
 	const char *modelName = NULL;
 	switch (item_id)
 	{
-		case WEAPON_P228:
-			modelName = "models/w_p228.mdl";
-			break;
-		case WEAPON_SCOUT:
-			modelName = "models/w_scout.mdl";
-			break;
-		case WEAPON_HEGRENADE:
-			modelName = "models/w_hegrenade.mdl";
-			break;
-		case WEAPON_XM1014:
-			modelName = "models/w_xm1014.mdl";
-			break;
-		case WEAPON_C4:
-			modelName = "models/w_backpack.mdl";
-			break;
-		case WEAPON_MAC10:
-			modelName = "models/w_mac10.mdl";
-			break;
-		case WEAPON_AUG:
-			modelName = "models/w_aug.mdl";
-			break;
-		case WEAPON_SMOKEGRENADE:
-			modelName = "models/w_smokegrenade.mdl";
-			break;
-		case WEAPON_ELITE:
-			modelName = "models/w_elite.mdl";
-			break;
-		case WEAPON_FIVESEVEN:
-			modelName = "models/w_fiveseven.mdl";
-			break;
-		case WEAPON_UMP45:
-			modelName = "models/w_ump45.mdl";
-			break;
-		case WEAPON_SG550:
-			modelName = "models/w_sg550.mdl";
-			break;
-		case WEAPON_GALIL:
-			modelName = "models/w_galil.mdl";
-			break;
-		case WEAPON_FAMAS:
-			modelName = "models/w_famas.mdl";
-			break;
-		case WEAPON_USP:
-			modelName = "models/w_usp.mdl";
-			break;
-		case WEAPON_GLOCK18:
-			modelName = "models/w_glock18.mdl";
-			break;
-		case WEAPON_AWP:
-			modelName = "models/w_awp.mdl";
-			break;
-		case WEAPON_MP5N:
-			modelName = "models/w_mp5.mdl";
-			break;
-		case WEAPON_M249:
-			modelName = "models/w_m249.mdl";
-			break;
-		case WEAPON_M3:
-			modelName = "models/w_m3.mdl";
-			break;
-		case WEAPON_M4A1:
-			modelName = "models/w_m4a1.mdl";
-			break;
-		case WEAPON_TMP:
-			modelName = "models/w_tmp.mdl";
-			break;
-		case WEAPON_G3SG1:
-			modelName = "models/w_g3sg1.mdl";
-			break;
-		case WEAPON_FLASHBANG:
-			modelName = "models/w_flashbang.mdl";
-			break;
-		case WEAPON_DEAGLE:
-			modelName = "models/w_deagle.mdl";
-			break;
-		case WEAPON_SG552:
-			modelName = "models/w_sg552.mdl";
-			break;
-		case WEAPON_AK47:
-			modelName = "models/w_ak47.mdl";
-			break;
-		case WEAPON_KNIFE:
-			modelName = "models/w_knife.mdl";
-			break;
-		case WEAPON_P90:
-			modelName = "models/w_p90.mdl";
-			break;
-		case WEAPON_SHIELDGUN:
-			modelName = "models/w_shield.mdl";
-			break;
-		default:
-			ALERT(at_console, "CBasePlayer::PackDeadPlayerItems(): Unhandled item- not creating weaponbox\n");
+	case WEAPON_P228:		modelName = "models/w_p228.mdl"; break;
+	case WEAPON_SCOUT:		modelName = "models/w_scout.mdl"; break;
+	case WEAPON_HEGRENADE:		modelName = "models/w_hegrenade.mdl"; break;
+	case WEAPON_XM1014:		modelName = "models/w_xm1014.mdl"; break;
+ 	case WEAPON_C4:			modelName = "models/w_backpack.mdl"; break;
+	case WEAPON_MAC10:		modelName = "models/w_mac10.mdl"; break;
+	case WEAPON_AUG:		modelName = "models/w_aug.mdl"; break;
+	case WEAPON_SMOKEGRENADE:	modelName = "models/w_smokegrenade.mdl"; break;
+	case WEAPON_ELITE:		modelName = "models/w_elite.mdl"; break;
+	case WEAPON_FIVESEVEN:		modelName = "models/w_fiveseven.mdl"; break;
+	case WEAPON_UMP45:		modelName = "models/w_ump45.mdl"; break;
+	case WEAPON_SG550:		modelName = "models/w_sg550.mdl"; break;
+	case WEAPON_GALIL:		modelName = "models/w_galil.mdl"; break;
+	case WEAPON_FAMAS:		modelName = "models/w_famas.mdl"; break;
+	case WEAPON_USP:		modelName = "models/w_usp.mdl"; break;
+	case WEAPON_GLOCK18:		modelName = "models/w_glock18.mdl"; break;
+	case WEAPON_AWP:		modelName = "models/w_awp.mdl"; break;
+	case WEAPON_MP5N:		modelName = "models/w_mp5.mdl"; break;
+	case WEAPON_M249:		modelName = "models/w_m249.mdl"; break;
+	case WEAPON_M3:			modelName = "models/w_m3.mdl"; break;
+	case WEAPON_M4A1:		modelName = "models/w_m4a1.mdl"; break;
+	case WEAPON_TMP:		modelName = "models/w_tmp.mdl"; break;
+	case WEAPON_G3SG1:		modelName = "models/w_g3sg1.mdl"; break;
+	case WEAPON_FLASHBANG:		modelName = "models/w_flashbang.mdl"; break;
+	case WEAPON_DEAGLE:		modelName = "models/w_deagle.mdl"; break;
+	case WEAPON_SG552:		modelName = "models/w_sg552.mdl"; break;
+	case WEAPON_AK47:		modelName = "models/w_ak47.mdl"; break;
+	case WEAPON_KNIFE:		modelName = "models/w_knife.mdl"; break;
+	case WEAPON_P90:		modelName = "models/w_p90.mdl"; break;
+	case WEAPON_SHIELDGUN:		modelName = "models/w_shield.mdl"; break;
+	default:
+		ALERT(at_console, "CBasePlayer::PackDeadPlayerItems(): Unhandled item- not creating weaponbox\n");
 	}
+
 	return modelName;
 }
 
@@ -548,77 +489,77 @@ void CBasePlayer::SetPlayerModel(BOOL HasC4)
 	{		
 		switch (m_iModelName)
 		{
-			case MODEL_URBAN:
-				model = "urban";
-				break;
-			case MODEL_GSG9:
-				model = "gsg9";
-				break;
-			case MODEL_GIGN:
-				model = "gign";
-				break;
-			case MODEL_SAS:
-				model = "sas";
-				break;
-			case MODEL_VIP:
-				model = "vip";
-				break;
-			case MODEL_SPETSNAZ:
-				if (UTIL_IsGame("czero"))
-				{
-					model = "spetsnaz";
-					break;
-				}
-			default:
+		case MODEL_URBAN:
+			model = "urban";
+			break;
+		case MODEL_GSG9:
+			model = "gsg9";
+			break;
+		case MODEL_GIGN:
+			model = "gign";
+			break;
+		case MODEL_SAS:
+			model = "sas";
+			break;
+		case MODEL_VIP:
+			model = "vip";
+			break;
+		case MODEL_SPETSNAZ:
+			if (UTIL_IsGame("czero"))
 			{
-				if (IsBot())
-				{
-					model = (char *)TheBotProfiles->GetCustomSkinModelname(m_iModelName);
-					if (!model)
-						model = "urban";
-				}
-				else
-					model = "urban";
-
+				model = "spetsnaz";
 				break;
 			}
+		default:
+		{
+			if (IsBot())
+			{
+				model = (char *)TheBotProfiles->GetCustomSkinModelname(m_iModelName);
+				if (!model)
+					model = "urban";
+			}
+			else
+				model = "urban";
+
+			break;
+		}
 		}
 	}
 	else if (m_iTeam == TERRORIST)
 	{
 		switch (m_iModelName)
 		{
-			case MODEL_TERROR:
-				model = "terror";
-				break;
-			case MODEL_LEET:
-				model = "leet";
-				break;
-			case MODEL_ARCTIC:
-				model = "arctic";
-				break;
-			case MODEL_GUERILLA:
-				model = "guerilla";
-				break;
-			case MODEL_MILITIA:
-				if (UTIL_IsGame("czero"))
-				{
-					model = "militia";
-					break;
-				}
-			default:
+		case MODEL_TERROR:
+			model = "terror";
+			break;
+		case MODEL_LEET:
+			model = "leet";
+			break;
+		case MODEL_ARCTIC:
+			model = "arctic";
+			break;
+		case MODEL_GUERILLA:
+			model = "guerilla";
+			break;
+		case MODEL_MILITIA:
+			if (UTIL_IsGame("czero"))
 			{
-				if (IsBot())
-				{
-					model = (char *)TheBotProfiles->GetCustomSkinModelname(m_iModelName);
-					if (!model)
-						model = "terror";
-				}
-				else
-					model = "terror";
-
+				model = "militia";
 				break;
 			}
+		default:
+		{
+			if (IsBot())
+			{
+				model = (char *)TheBotProfiles->GetCustomSkinModelname(m_iModelName);
+				if (!model)
+					model = "terror";
+			}
+			else
+				model = "terror";
+
+			break;
+		}
 		}
 	}
 	else
@@ -660,15 +601,20 @@ NOXREF CBasePlayer *CBasePlayer::GetNextRadioRecipient(CBasePlayer *pStartPlayer
 			if (!FNullEnt(m_hObserverTarget))
 				continue;
 
-			CBasePlayer *pTarget = (CBasePlayer *)CBaseEntity::Instance( pPlayer->m_hObserverTarget->pev );
+			CBasePlayer *pTarget = (CBasePlayer *)CBaseEntity::Instance(pPlayer->m_hObserverTarget->pev);
 
 			if (pTarget && pTarget->m_iTeam == m_iTeam)
+			{
 				bSend = TRUE;
+			}
 		}
 
 		if (bSend)
+		{
 			return pPlayer;
+		}
 	}
+
 	return NULL;
 }
 
@@ -779,15 +725,9 @@ void CBasePlayer::Pain(int m_LastHitGroup, bool HasArmour)
 
 		switch (temp)
 		{
-		case 0:
-			EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/headshot1.wav", VOL_NORM, ATTN_NORM);
-			break;
-		case 1:
-			EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/headshot2.wav", VOL_NORM, ATTN_NORM);
-			break;
-		default:
-			EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/headshot3.wav", VOL_NORM, ATTN_NORM);
-			break;
+		case 0: EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/headshot1.wav", VOL_NORM, ATTN_NORM); break;
+		case 1: EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/headshot2.wav", VOL_NORM, ATTN_NORM); break;
+		default: EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/headshot3.wav", VOL_NORM, ATTN_NORM); break;
 		}
 	}
 	else
@@ -803,15 +743,9 @@ void CBasePlayer::Pain(int m_LastHitGroup, bool HasArmour)
 
 		switch (temp)
 		{
-		case 0:
-			EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/bhit_flesh-1.wav", VOL_NORM, ATTN_NORM);
-			break;
-		case 1:
-			EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/bhit_flesh-2.wav", VOL_NORM, ATTN_NORM);
-			break;
-		default:
-			EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/bhit_flesh-3.wav", VOL_NORM, ATTN_NORM);
-			break;
+		case 0: EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/bhit_flesh-1.wav", VOL_NORM, ATTN_NORM); break;
+		case 1: EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/bhit_flesh-2.wav", VOL_NORM, ATTN_NORM); break;
+		default: EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/bhit_flesh-3.wav", VOL_NORM, ATTN_NORM); break;
 		}
 	}
 }
@@ -860,25 +794,21 @@ void CBasePlayer::DeathSound(void)
 {
 	switch (RANDOM_LONG(1, 4))
 	{
-	case 1: EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/die1.wav", VOL_NORM, ATTN_NORM);
-		break;
-	case 2: EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/die2.wav", VOL_NORM, ATTN_NORM);
-		break;
-	case 3: EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/die3.wav", VOL_NORM, ATTN_NORM);
-		break;
-	case 4: EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/death6.wav", VOL_NORM, ATTN_NORM);
-		break;
+	case 1: EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/die1.wav", VOL_NORM, ATTN_NORM); break;
+	case 2: EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/die2.wav", VOL_NORM, ATTN_NORM); break;
+	case 3: EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/die3.wav", VOL_NORM, ATTN_NORM); break;
+	case 4: EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/death6.wav", VOL_NORM, ATTN_NORM); break;
 	}
 }
 
 /* <151213> ../cstrike/dlls/player.cpp:937 */
-int CBasePlayer::TakeHealth_(float flHealth, int bitsDamageType)
+int CBasePlayer::__MAKE_VHOOK(TakeHealth)(float flHealth, int bitsDamageType)
 {
 	return CBaseMonster::TakeHealth(flHealth, bitsDamageType);
 }
 
 /* <150f1c> ../cstrike/dlls/player.cpp:943 */
-Vector CBasePlayer::GetGunPosition_(void)
+Vector CBasePlayer::__MAKE_VHOOK(GetGunPosition)(void)
 {
 	return pev->origin + pev->view_ofs;
 }
@@ -899,7 +829,7 @@ bool CBasePlayer::IsHittingShield(Vector &vecDirection, TraceResult *ptr)
 }
 
 /* <152b58> ../cstrike/dlls/player.cpp:989 */
-void CBasePlayer::TraceAttack_(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType)
+void CBasePlayer::__MAKE_VHOOK(TraceAttack)(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType)
 {
 	bool bShouldBleed = true;
 	bool bShouldSpark = false;
@@ -1123,7 +1053,7 @@ void LogAttack(CBasePlayer *pAttacker, CBasePlayer *pVictim, int teamAttack, int
 // etc are implemented with subsequent calls to TakeDamage using DMG_GENERIC.
 
 /* <15dff9> ../cstrike/dlls/player.cpp:1241 */
-int CBasePlayer::TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
+int CBasePlayer::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
 	int fTookDamage;
 	float flRatio = ARMOR_RATIO;
@@ -1169,7 +1099,7 @@ int CBasePlayer::TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, fl
 					if (pGrenade->m_iTeam == m_iTeam)
 						teamAttack = TRUE;
 
-					pAttack = reinterpret_cast<CBasePlayer *>(CBasePlayer::Instance( pevAttacker ));
+					pAttack = reinterpret_cast<CBasePlayer *>(CBasePlayer::Instance(pevAttacker));
 				}
 				else if (pGrenade->m_iTeam == m_iTeam && (&edict()->v != pevAttacker))
 				{
@@ -1279,7 +1209,7 @@ int CBasePlayer::TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, fl
 
 		MESSAGE_BEGIN(MSG_SPEC, gmsgHLTV);
 			WRITE_BYTE(ENTINDEX(edict()));
-			WRITE_BYTE((int)max(pev->health, 0) | (1<<7));
+			WRITE_BYTE((int)_max(pev->health, 0) | DRC_FLAG_FACEPLAYER);
 		MESSAGE_END();
 
 		for (int i = 1; i <= gpGlobals->maxClients; i++)
@@ -1290,7 +1220,7 @@ int CBasePlayer::TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, fl
 				continue;
 
 			MESSAGE_BEGIN(MSG_ONE, gmsgSpecHealth, NULL, pPlayer->edict());
-				WRITE_BYTE((int)max(pev->health, 0));
+				WRITE_BYTE((int)_max(pev->health, 0));
 			MESSAGE_END();
 		}
 
@@ -1342,7 +1272,9 @@ int CBasePlayer::TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, fl
 					CBasePlayer *basePlayer = GetClassPtr((CBasePlayer *)pBasePlayer->pev);
 
 					if (basePlayer->m_iTeam == m_iTeam)
+					{
 						ClientPrint(basePlayer->pev, HUD_PRINTTALK, "#Game_teammate_attack", STRING(pAttack->pev->netname));
+					}
 				}
 
 				pAttack->m_flLastAttackedTeammate = gpGlobals->time;
@@ -1360,52 +1292,24 @@ int CBasePlayer::TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, fl
 			switch (iGunType)
 			{
 			case WEAPON_AUG:
-			case WEAPON_M4A1:
-				flRatio *= 1.4;
-				break;
-			case WEAPON_AWP:
-				flRatio *= 1.95;
-				break;
-			case WEAPON_G3SG1:
-				flRatio *= 1.65;
-				break;
-			case WEAPON_SG550:
-				flRatio *= 1.45;
-				break;
-			case WEAPON_M249:
-				flRatio *= 1.5;
-				break;
-			case WEAPON_ELITE:
-				flRatio *= 1.05;
-				break;
-			case WEAPON_DEAGLE:
-				flRatio *= 1.5;
-				break;
-			case WEAPON_GLOCK18:
-				flRatio *= 1.05;
-				break;
+			case WEAPON_M4A1:	flRatio *= 1.4; break;
+			case WEAPON_AWP:	flRatio *= 1.95; break;
+			case WEAPON_G3SG1:	flRatio *= 1.65; break;
+			case WEAPON_SG550:	flRatio *= 1.45; break;
+			case WEAPON_M249:	flRatio *= 1.5; break;
+			case WEAPON_ELITE:	flRatio *= 1.05; break;
+			case WEAPON_DEAGLE:	flRatio *= 1.5; break;
+			case WEAPON_GLOCK18:	flRatio *= 1.05; break;
 			case WEAPON_FIVESEVEN:
-			case WEAPON_P90:
-				flRatio *= 1.5;
-				break;
-			case WEAPON_MAC10:
-				flRatio *= 0.95;
-				break;
-			case WEAPON_P228:
-				flRatio *= 1.25;
-				break;
+			case WEAPON_P90:	flRatio *= 1.5; break;
+			case WEAPON_MAC10:	flRatio *= 0.95; break;
+			case WEAPON_P228:	flRatio *= 1.25; break;
 			case WEAPON_SCOUT:
-			case WEAPON_KNIFE:
-				flRatio *= 1.7;
-				break;
+			case WEAPON_KNIFE:	flRatio *= 1.7; break;
 			case WEAPON_FAMAS:
-			case WEAPON_SG552:
-				flRatio *= 1.4;
-				break;
+			case WEAPON_SG552:	flRatio *= 1.4; break;
 			case WEAPON_GALIL:
-			case WEAPON_AK47:
-				flRatio *= 1.55;
-				break;
+			case WEAPON_AK47:	flRatio *= 1.55; break;
 			}
 		}
 
@@ -1527,7 +1431,7 @@ int CBasePlayer::TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, fl
 
 	MESSAGE_BEGIN(MSG_SPEC, gmsgHLTV);
 		WRITE_BYTE(ENTINDEX(edict()));
-		WRITE_BYTE((int)max(pev->health, 0) | (1<<7));
+		WRITE_BYTE((int)_max(pev->health, 0) | DRC_FLAG_FACEPLAYER);
 	MESSAGE_END();
 
 	for (int i = 1; i <= gpGlobals->maxClients; i++)
@@ -1540,7 +1444,7 @@ int CBasePlayer::TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, fl
 		if (pPlayer->m_hObserverTarget == this)
 		{
 			MESSAGE_BEGIN(MSG_ONE, gmsgSpecHealth, NULL, pPlayer->edict());
-				WRITE_BYTE((int)max(pev->health, 0));
+				WRITE_BYTE((int)_max(pev->health, 0));
 			MESSAGE_END();
 		}
 	}
@@ -1574,8 +1478,9 @@ void packPlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 			pWeaponBox->PackWeapon(pItem);
 
 			if (packAmmo)
-				pWeaponBox->PackAmmo(MAKE_STRING( IMPLEMENT_ARRAY_CLASS(CBasePlayerItem, ItemInfoArray)[ pItem->m_iId ].pszAmmo1 ), pPlayer->m_rgAmmo[pItem->PrimaryAmmoIndex()]);
-
+			{
+				pWeaponBox->PackAmmo(MAKE_STRING(IMPLEMENT_ARRAY_CLASS(CBasePlayerItem, ItemInfoArray)[ pItem->m_iId ].pszAmmo1), pPlayer->m_rgAmmo[pItem->PrimaryAmmoIndex()]);
+			}
 			SET_MODEL(ENT(pWeaponBox->pev), modelName);
 		}
 	}
@@ -1636,24 +1541,18 @@ void CBasePlayer::GiveDefaultItems(void)
 
 	switch (m_iTeam)
 	{
-		case CT:
-		{
-			GiveNamedItem("weapon_knife");
-			GiveNamedItem("weapon_usp");
+	case CT:
+		GiveNamedItem("weapon_knife");
+		GiveNamedItem("weapon_usp");
+		GiveAmmo(m_bIsVIP ? 12 : 24, "45acp", MAX_AMMO_45ACP);
 
-			GiveAmmo(m_bIsVIP ? 12 : 24, "45acp", MAX_AMMO_45ACP);
+		break;
+	case TERRORIST:
+		GiveNamedItem("weapon_knife");
+		GiveNamedItem("weapon_glock18");
+		GiveAmmo(40, "9mm", MAX_AMMO_9MM);
 
-			break;
-		}
-		case TERRORIST:
-		{
-			GiveNamedItem("weapon_knife");
-			GiveNamedItem("weapon_glock18");
-
-			GiveAmmo(40, "9mm", MAX_AMMO_9MM);
-
-			break;
-		}
+		break;
 	}
 }
 
@@ -1885,7 +1784,7 @@ void BombTargetFlash_Set(CBasePlayer *player)
 	if (player->m_bHasC4 && !(player->m_flDisplayHistory & DHF_IN_TARGET_ZONE))
 	{
 		player->m_flDisplayHistory |= DHF_IN_TARGET_ZONE;
-		player->HintMessage("#Hint_you_are_in_targetzone");
+		player->HintMessage("#Hint_you_are_in_targetzone", TRUE); // TODO: send also for dead the players?
 	}
 	player->SetBombIcon(TRUE);
 }
@@ -1910,7 +1809,7 @@ void RescueZoneIcon_Set(CBasePlayer *player)
 	if (player->m_iTeam == CT && !(player->m_flDisplayHistory & DHF_IN_RESCUE_ZONE))
 	{
 		player->m_flDisplayHistory |= DHF_IN_RESCUE_ZONE;
-		player->HintMessage("#Hint_hostage_rescue_zone");
+		player->HintMessage("#Hint_hostage_rescue_zone", TRUE); // TODO: send also for dead the players?
 	}
 }
 
@@ -1952,7 +1851,7 @@ void EscapeZoneIcon_Set(CBasePlayer *player)
 		if (!(player->m_flDisplayHistory & DHF_IN_ESCAPE_ZONE))
 		{
 			player->m_flDisplayHistory |= DHF_IN_ESCAPE_ZONE;
-			player->HintMessage("#Hint_terrorist_escape_zone", TRUE);
+			player->HintMessage("#Hint_terrorist_escape_zone");
 		}
 	}
 }
@@ -1989,18 +1888,18 @@ void VIP_SafetyZoneIcon_Set(CBasePlayer *player)
 		WRITE_BYTE(160);
 		WRITE_BYTE(0);
 	MESSAGE_END();
-
+	
 	if (!(player->m_flDisplayHistory & DHF_IN_VIPSAFETY_ZONE))
 	{
 		if (player->m_iTeam == CT)
 		{
 			player->m_flDisplayHistory |= DHF_IN_VIPSAFETY_ZONE;
-			player->HintMessage("#Hint_ct_vip_zone");
+			player->HintMessage("#Hint_ct_vip_zone", TRUE);
 		}
 		else if (player->m_iTeam == TERRORIST)
 		{
 			player->m_flDisplayHistory |= DHF_IN_VIPSAFETY_ZONE;
-			player->HintMessage("#Hint_terrorist_vip_zone");
+			player->HintMessage("#Hint_terrorist_vip_zone", TRUE);
 		}
 	}
 }
@@ -2040,7 +1939,7 @@ void CBasePlayer::SendFOV(int fov)
 }
 
 /* <160a1a> ../cstrike/dlls/player.cpp:2300 */
-void CBasePlayer::Killed_(entvars_t *pevAttacker, int iGib)
+void CBasePlayer::__MAKE_VHOOK(Killed)(entvars_t *pevAttacker, int iGib)
 {
 	m_canSwitchObserverModes = false;
 
@@ -2139,32 +2038,34 @@ void CBasePlayer::Killed_(entvars_t *pevAttacker, int iGib)
 	{
 		switch (m_pActiveItem->m_iId)
 		{
-			case WEAPON_HEGRENADE:
+		case WEAPON_HEGRENADE:
+		{
+			CHEGrenade *pHEGrenade = (CHEGrenade *)m_pActiveItem;
+			if ((pev->button & IN_ATTACK) && m_rgAmmo[ pHEGrenade->m_iPrimaryAmmoType ])
 			{
-				CHEGrenade *pHEGrenade = (CHEGrenade *)m_pActiveItem;
-				if ((pev->button & IN_ATTACK) && m_rgAmmo[ pHEGrenade->m_iPrimaryAmmoType ])
-				{
-					CGrenade::ShootTimed2(pev, (pev->origin + pev->view_ofs), pev->angles, 1.5, m_iTeam, pHEGrenade->m_usCreateExplosion);
-				}
-				break;
+				CGrenade::ShootTimed2(pev, (pev->origin + pev->view_ofs), pev->angles, 1.5, m_iTeam, pHEGrenade->m_usCreateExplosion);
 			}
-			case WEAPON_FLASHBANG:
+			break;
+		}
+		case WEAPON_FLASHBANG:
+		{
+			if ((pev->button & IN_ATTACK) && m_rgAmmo[ ((CBasePlayerWeapon *)m_pActiveItem)->m_iPrimaryAmmoType ])
 			{
-				if ((pev->button & IN_ATTACK) && m_rgAmmo[ ((CBasePlayerWeapon *)m_pActiveItem)->m_iPrimaryAmmoType ])
-				{
-					CGrenade::ShootTimed(pev, (pev->origin + pev->view_ofs), pev->angles, 1.5);
-				}
-				break;
+				CGrenade::ShootTimed(pev, (pev->origin + pev->view_ofs), pev->angles, 1.5);
 			}
-			case WEAPON_SMOKEGRENADE:
+			break;
+		}
+		case WEAPON_SMOKEGRENADE:
+		{
+			CSmokeGrenade *pSmoke = (CSmokeGrenade *)m_pActiveItem;
+			if ((pev->button & IN_ATTACK) && m_rgAmmo[ pSmoke->m_iPrimaryAmmoType ])
 			{
-				CSmokeGrenade *pSmoke = (CSmokeGrenade *)m_pActiveItem;
-				if ((pev->button & IN_ATTACK) && m_rgAmmo[ pSmoke->m_iPrimaryAmmoType ])
-				{
-					CGrenade::ShootSmokeGrenade(pev, (pev->origin + pev->view_ofs), pev->angles, 1.5, pSmoke->m_usCreateSmoke);
-				}
-				break;
+				CGrenade::ShootSmokeGrenade(pev, (pev->origin + pev->view_ofs), pev->angles, 1.5, pSmoke->m_usCreateSmoke);
 			}
+			break;
+		}
+		default:
+			break;
 		}
 	}
 
@@ -2480,18 +2381,10 @@ void CBasePlayer::SetAnimation(PLAYER_ANIM playerAnim)
 
 			switch (m_Activity)
 			{
-				case ACT_RANGE_ATTACK1:
-					Q_strcpy(szAnim, "ref_shoot_");
-					break;
-				case ACT_RANGE_ATTACK2:
-					Q_strcpy(szAnim, "ref_shoot2_");
-					break;
-				case ACT_RELOAD:
-					Q_strcpy(szAnim, "ref_reload_");
-					break;
-				default:
-					Q_strcpy(szAnim, "ref_aim_");
-					break;
+			case ACT_RANGE_ATTACK1:	Q_strcpy(szAnim, "ref_shoot_"); break;
+			case ACT_RANGE_ATTACK2:	Q_strcpy(szAnim, "ref_shoot2_"); break;
+			case ACT_RELOAD:	Q_strcpy(szAnim, "ref_reload_"); break;
+			default:		Q_strcpy(szAnim, "ref_aim_"); break;
 			}
 
 			Q_strcat(szAnim, m_szAnimExtention);
@@ -2709,39 +2602,39 @@ void CBasePlayer::SetAnimation(PLAYER_ANIM playerAnim)
 				{
 					switch (RANDOM_LONG(0, 8))
 					{
-						case 0:
-							animDesired = LookupActivity(ACT_DIE_HEADSHOT);
-							m_iThrowDirection = THROW_BACKWARD;
-							break;
-						case 1:
-							animDesired = LookupActivity(ACT_DIE_GUTSHOT);
-							break;
-						case 2:
-							animDesired = LookupActivity(ACT_DIE_BACKSHOT);
-							m_iThrowDirection = THROW_HITVEL;
-							break;
-						case 3:
-							animDesired = LookupActivity(ACT_DIESIMPLE);
-							break;
-						case 4:
-							animDesired = LookupActivity(ACT_DIEBACKWARD);
-							m_iThrowDirection = THROW_HITVEL;
-							break;
-						case 5:
-							animDesired = LookupActivity(ACT_DIEFORWARD);
-							m_iThrowDirection = THROW_FORWARD;
-							break;
-						case 6:
-							animDesired = LookupActivity(ACT_DIE_CHESTSHOT);
-							break;
-						case 7:
-							animDesired = LookupActivity(ACT_DIE_GUTSHOT);
-							break;
-						case 8:
-							animDesired = LookupActivity(ACT_DIE_HEADSHOT);
-							break;
-						default:
-							break;
+					case 0:
+						animDesired = LookupActivity(ACT_DIE_HEADSHOT);
+						m_iThrowDirection = THROW_BACKWARD;
+						break;
+					case 1:
+						animDesired = LookupActivity(ACT_DIE_GUTSHOT);
+						break;
+					case 2:
+						animDesired = LookupActivity(ACT_DIE_BACKSHOT);
+						m_iThrowDirection = THROW_HITVEL;
+						break;
+					case 3:
+						animDesired = LookupActivity(ACT_DIESIMPLE);
+						break;
+					case 4:
+						animDesired = LookupActivity(ACT_DIEBACKWARD);
+						m_iThrowDirection = THROW_HITVEL;
+						break;
+					case 5:
+						animDesired = LookupActivity(ACT_DIEFORWARD);
+						m_iThrowDirection = THROW_FORWARD;
+						break;
+					case 6:
+						animDesired = LookupActivity(ACT_DIE_CHESTSHOT);
+						break;
+					case 7:
+						animDesired = LookupActivity(ACT_DIE_GUTSHOT);
+						break;
+					case 8:
+						animDesired = LookupActivity(ACT_DIE_HEADSHOT);
+						break;
+					default:
+						break;
 					}
 					break;
 				}
@@ -2755,21 +2648,21 @@ void CBasePlayer::SetAnimation(PLAYER_ANIM playerAnim)
 
 					switch (random)
 					{
-						case 1:
-						case 2:
-							m_iThrowDirection = THROW_BACKWARD;
-							break;
-						case 3:
-						case 4:
-							m_iThrowDirection = THROW_FORWARD;
-							break;
-						case 5:
-						case 6:
-							m_iThrowDirection = THROW_HITVEL;
-							break;
-						default:
-							m_iThrowDirection = THROW_NONE;
-							break;
+					case 1:
+					case 2:
+						m_iThrowDirection = THROW_BACKWARD;
+						break;
+					case 3:
+					case 4:
+						m_iThrowDirection = THROW_FORWARD;
+						break;
+					case 5:
+					case 6:
+						m_iThrowDirection = THROW_HITVEL;
+						break;
+					default:
+						m_iThrowDirection = THROW_NONE;
+						break;
 					}
 
 					animDesired = LookupActivity(ACT_DIE_HEADSHOT);
@@ -3002,18 +2895,10 @@ void CBasePlayer::WaterMove(void)
 	{
 		switch (RANDOM_LONG(0, 3))
 		{
-			case 0:
-				EMIT_SOUND(ENT(pev), CHAN_BODY, "player/pl_swim1.wav", 0.8, ATTN_NORM);
-				break;
-			case 1:
-				EMIT_SOUND(ENT(pev), CHAN_BODY, "player/pl_swim2.wav", 0.8, ATTN_NORM);
-				break;
-			case 2:
-				EMIT_SOUND(ENT(pev), CHAN_BODY, "player/pl_swim3.wav", 0.8, ATTN_NORM);
-				break;
-			case 3:
-				EMIT_SOUND(ENT(pev), CHAN_BODY, "player/pl_swim4.wav", 0.8, ATTN_NORM);
-				break;
+		case 0: EMIT_SOUND(ENT(pev), CHAN_BODY, "player/pl_swim1.wav", 0.8, ATTN_NORM); break;
+		case 1: EMIT_SOUND(ENT(pev), CHAN_BODY, "player/pl_swim2.wav", 0.8, ATTN_NORM); break;
+		case 2: EMIT_SOUND(ENT(pev), CHAN_BODY, "player/pl_swim3.wav", 0.8, ATTN_NORM); break;
+		case 3: EMIT_SOUND(ENT(pev), CHAN_BODY, "player/pl_swim4.wav", 0.8, ATTN_NORM); break;
 		}
 	}
 
@@ -3064,7 +2949,7 @@ NOXREF void CBasePlayer::ThrowWeapon(char *pszItemName)
 LINK_ENTITY_TO_CLASS(weapon_shield, CWShield);
 
 /* <151962> ../cstrike/dlls/player.cpp:3426 */
-void CWShield::Spawn_(void)
+void CWShield::__MAKE_VHOOK(Spawn)(void)
 {
 	pev->movetype = MOVETYPE_TOSS;
 	pev->solid = SOLID_TRIGGER;
@@ -3074,7 +2959,7 @@ void CWShield::Spawn_(void)
 }
 
 /* <152e95> ../cstrike/dlls/player.cpp:3436 */
-void CWShield::Touch_(CBaseEntity *pOther)
+void CWShield::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 {
 	if (!pOther->IsPlayer())
 		return;
@@ -3288,27 +3173,29 @@ void CBasePlayer::SyncRoundTimer(void)
 		tmRemaining = 0;
 
 	MESSAGE_BEGIN(MSG_ONE, gmsgRoundTime, NULL, pev);
-		WRITE_SHORT(tmRemaining);
+		WRITE_SHORT((int)tmRemaining);
 	MESSAGE_END();
 
 	if (!mp->IsMultiplayer())
 		return;
 
-	if (mp->IsFreezePeriod() && TheTutor && !IsObserver())
+	if (mp->IsFreezePeriod() && TheTutor != NULL && !IsObserver())
 	{
 		MESSAGE_BEGIN(MSG_ONE, gmsgBlinkAcct, NULL, pev);
-			WRITE_BYTE( MONEY_BLINK_AMOUNT );
+			WRITE_BYTE(MONEY_BLINK_AMOUNT);
 		MESSAGE_END();
 	}
 
 	if (mp->IsCareer())
 	{
-		int remaining;
+		int remaining = 0;
 		bool shouldCountDown = false;
 		int fadeOutDelay = 0;
 
-		if (tmRemaining)
-			remaining = (int)((float_precision)TheCareerTasks->GetTaskTime() - (gpGlobals->time - mp->m_fRoundCount));
+		if (tmRemaining != 0.0f)
+		{
+			remaining = TheCareerTasks->GetTaskTime() - (gpGlobals->time - mp->m_fRoundCount);
+		}
 
 		if (remaining < 0)
 			remaining = 0;
@@ -3320,20 +3207,23 @@ void CBasePlayer::SyncRoundTimer(void)
 			remaining = -TheCareerTasks->GetFinishedTaskTime();
 
 		if (!mp->IsFreezePeriod() && !TheCareerTasks->GetFinishedTaskTime())
+		{
 			shouldCountDown = true;
-
+		}
 		if (!mp->IsFreezePeriod())
 		{
-			if (TheCareerTasks->GetFinishedTaskTime() || ((float_precision)TheCareerTasks->GetTaskTime() <= TheCareerTasks->GetRoundElapsedTime()))
+			if (TheCareerTasks->GetFinishedTaskTime() || (TheCareerTasks->GetTaskTime() <= TheCareerTasks->GetRoundElapsedTime()))
+			{
 				fadeOutDelay = 3;
+			}
 		}
 
 		if (!TheCareerTasks->GetFinishedTaskTime() || TheCareerTasks->GetFinishedTaskRound() == mp->m_iTotalRoundsPlayed)
 		{
 			MESSAGE_BEGIN(MSG_ONE, gmsgTaskTime, NULL, pev);
-				WRITE_SHORT(remaining);
-				WRITE_BYTE(shouldCountDown);
-				WRITE_BYTE(fadeOutDelay);
+				WRITE_SHORT(remaining);		// remaining of time, -1 the timer is disappears
+				WRITE_BYTE(shouldCountDown);	// timer counts down
+				WRITE_BYTE(fadeOutDelay); // fade in time, hide HUD timer after the expiration time
 			MESSAGE_END();
 		}
 	}
@@ -3466,7 +3356,6 @@ void CBasePlayer::JoiningThink(void)
 
 			if (mp->FPlayerCanRespawn(this))
 			{
-				// TODO: Reverse me
 				Spawn();
 
 				mp->CheckWinConditions();
@@ -3526,7 +3415,7 @@ void CBasePlayer::JoiningThink(void)
 
 				MESSAGE_BEGIN(MSG_ALL, gmsgScoreInfo);
 					WRITE_BYTE(ENTINDEX(edict()));
-					WRITE_SHORT((short)pev->frags);
+					WRITE_SHORT((int)pev->frags);
 					WRITE_SHORT(m_iDeaths);
 					WRITE_SHORT(0);
 					WRITE_SHORT(m_iTeam);
@@ -3538,6 +3427,7 @@ void CBasePlayer::JoiningThink(void)
 					m_flDisplayHistory |= DHF_SPEC_DUCK;
 				}
 			}
+
 			return;
 		}
 	}
@@ -3587,7 +3477,9 @@ void CBasePlayer::Disappear(void)
 	CSound *pSound = CSoundEnt::SoundPointerForIndex(CSoundEnt::ClientSoundIndex(edict()));
 
 	if (pSound)
+	{
 		pSound->Reset();
+	}
 
 	m_fSequenceFinished = TRUE;
 	pev->modelindex = m_modelIndexPlayer;
@@ -3617,6 +3509,7 @@ void CBasePlayer::Disappear(void)
 	if (m_bHasC4)
 	{
 		DropPlayerItem("weapon_c4");
+		SetProgressBarTime(0);
 	}
 	else if (m_bHasDefuser)
 	{
@@ -3630,13 +3523,13 @@ void CBasePlayer::Disappear(void)
 		MESSAGE_END();
 
 		SendItemStatus(this);
+		SetProgressBarTime(0);
 	}
 
-	SetProgressBarTime(0);
 	BuyZoneIcon_Clear(this);
 
 	SetThink(&CBasePlayer::PlayerDeathThink);
-	pev->nextthink = gpGlobals->time + 0.1;
+	pev->nextthink = gpGlobals->time + 0.1f;
 
 	pev->angles.x = 0;
 	pev->angles.z = 0;
@@ -3726,14 +3619,22 @@ void CBasePlayer::PlayerDeathThink(void)
 }
 
 /* <153042> ../cstrike/dlls/player.cpp:4134 */
-void CBasePlayer::RoundRespawn_(void)
+void CBasePlayer::__MAKE_VHOOK(RoundRespawn)(void)
 {
 	m_canSwitchObserverModes = true;
 
 	if (m_bJustKilledTeammate && CVAR_GET_FLOAT("mp_tkpunish"))
 	{
 		m_bJustKilledTeammate = false;
+#ifndef REGAMEDLL_FIXES
+		// TODO: wtf?
 		CLIENT_COMMAND(edict(), "kill\n");
+#else
+		if (pev->health > 0.0f)
+		{
+			ClientKill(ENT(pev));
+		}
+#endif // REGAMEDLL_FIXES
 		m_bPunishedForTK = true;
 	}
 	if (m_iMenu != Menu_ChooseAppearance)
@@ -3747,10 +3648,12 @@ void CBasePlayer::RoundRespawn_(void)
 	if (m_pActiveItem)
 	{
 		if (m_pActiveItem->iItemSlot() == GRENADE_SLOT)
+		{
 			SwitchWeapon(m_pActiveItem);
+		}
 	}
 
-	m_lastLocation[0] = 0;
+	m_lastLocation[0] = '\0';
 }
 
 /* <155577> ../cstrike/dlls/player.cpp:4172 */
@@ -4062,7 +3965,7 @@ void CBasePlayer::HostageUsed(void)
 }
 
 /* <153f69> ../cstrike/dlls/player.cpp:4507 */
-void CBasePlayer::Jump_(void)
+void CBasePlayer::__MAKE_VHOOK(Jump)(void)
 {
 	if (pev->flags & FL_WATERJUMP)
 		return;
@@ -4135,20 +4038,20 @@ NOXREF void FixPlayerCrouchStuck(edict_t *pPlayer)
 }
 
 /* <153ef5> ../cstrike/dlls/player.cpp:4580 */
-void CBasePlayer::Duck_(void)
+void CBasePlayer::__MAKE_VHOOK(Duck)(void)
 {
 	if (pev->button & IN_DUCK)
 		SetAnimation(PLAYER_WALK);
 }
 
 /* <150f8f> ../cstrike/dlls/player.cpp:4591 */
-int CBasePlayer::Classify_(void)
+int CBasePlayer::__MAKE_VHOOK(Classify)(void)
 {
 	return CLASS_PLAYER;
 }
 
 /* <150fb7> ../cstrike/dlls/player.cpp:4597 */
-void CBasePlayer::AddPoints_(int score, BOOL bAllowNegativeScore)
+void CBasePlayer::__MAKE_VHOOK(AddPoints)(int score, BOOL bAllowNegativeScore)
 {
 	if (score < 0 && !bAllowNegativeScore)
 	{
@@ -4163,7 +4066,7 @@ void CBasePlayer::AddPoints_(int score, BOOL bAllowNegativeScore)
 
 	MESSAGE_BEGIN(MSG_BROADCAST, gmsgScoreInfo);
 		WRITE_BYTE(ENTINDEX(edict()));
-		WRITE_SHORT((short)pev->frags);
+		WRITE_SHORT((int)pev->frags);
 		WRITE_SHORT(m_iDeaths);
 		WRITE_SHORT(0);
 		WRITE_SHORT(m_iTeam);
@@ -4171,7 +4074,7 @@ void CBasePlayer::AddPoints_(int score, BOOL bAllowNegativeScore)
 }
 
 /* <15125b> ../cstrike/dlls/player.cpp:4626 */
-void CBasePlayer::AddPointsToTeam_(int score, BOOL bAllowNegativeScore)
+void CBasePlayer::__MAKE_VHOOK(AddPointsToTeam)(int score, BOOL bAllowNegativeScore)
 {
 	int index = entindex();
 
@@ -4247,7 +4150,7 @@ bool CBasePlayer::CanPlayerBuy(bool display)
 }
 
 /* <15f9ac> ../cstrike/dlls/player.cpp:4717 */
-void CBasePlayer::PreThink_(void)
+void CBasePlayer::__MAKE_VHOOK(PreThink)(void)
 {
 	int buttonsChanged = (pev->button ^ m_afButtonLast);
 
@@ -4513,46 +4416,46 @@ void CBasePlayer::CheckTimeBasedDamage(void)
 		{
 			switch (i)
 			{
-				case itbd_Paralyze:
-					// UNDONE - flag movement as half-speed
-					bDuration = PARALYZE_DURATION;
-					break;
-				case itbd_NerveGas:
-					bDuration = NERVEGAS_DURATION;
-					break;
-				case itbd_Poison:
+			case itbd_Paralyze:
+				// UNDONE - flag movement as half-speed
+				bDuration = PARALYZE_DURATION;
+				break;
+			case itbd_NerveGas:
+				bDuration = NERVEGAS_DURATION;
+				break;
+			case itbd_Poison:
+			{
+				TakeDamage(pev, pev, POISON_DAMAGE, DMG_GENERIC);
+				bDuration = POISON_DURATION;
+				break;
+			}
+			case itbd_DrownRecover:
+			{
+				if (m_idrowndmg > m_idrownrestored)
 				{
-					TakeDamage(pev, pev, POISON_DAMAGE, DMG_GENERIC);
-					bDuration = POISON_DURATION;
-					break;
+					int idif = _min(m_idrowndmg - m_idrownrestored, 10);
+					TakeHealth(idif, DMG_GENERIC);
+					m_idrownrestored += idif;
 				}
-				case itbd_DrownRecover:
-				{
-					if (m_idrowndmg > m_idrownrestored)
-					{
-						int idif = min(m_idrowndmg - m_idrownrestored, 10);
-						TakeHealth(idif, DMG_GENERIC);
-						m_idrownrestored += idif;
-					}
 
-					bDuration = 4;
-					break;
-				}
-				case itbd_Radiation:
-					bDuration = RADIATION_DURATION;
-					break;
-				case itbd_Acid:
-					bDuration = ACID_DURATION;
-					break;
-				case itbd_SlowBurn:
-					bDuration = SLOWBURN_DURATION;
-					break;
-				case itbd_SlowFreeze:
-					bDuration = SLOWFREEZE_DURATION;
-					break;
-				default:
-					bDuration = 0;
-					break;
+				bDuration = 4;
+				break;
+			}
+			case itbd_Radiation:
+				bDuration = RADIATION_DURATION;
+				break;
+			case itbd_Acid:
+				bDuration = ACID_DURATION;
+				break;
+			case itbd_SlowBurn:
+				bDuration = SLOWBURN_DURATION;
+				break;
+			case itbd_SlowFreeze:
+				bDuration = SLOWFREEZE_DURATION;
+				break;
+			default:
+				bDuration = 0;
+				break;
 			}
 
 			if (m_rgbTimeBasedDamage[i])
@@ -4792,7 +4695,7 @@ void CBasePlayer::UpdatePlayerSound(void)
 }
 
 /* <15a182> ../cstrike/dlls/player.cpp:5667 */
-void CBasePlayer::PostThink_(void)
+void CBasePlayer::__MAKE_VHOOK(PostThink)(void)
 {
 	// intermission or finale
 	if (g_fGameOver)
@@ -4898,12 +4801,12 @@ pt_end:
 
 				if (gun && gun->UseDecrement())
 				{
-					gun->m_flNextPrimaryAttack = max(gun->m_flNextPrimaryAttack - gpGlobals->frametime, -1.0);
-					gun->m_flNextSecondaryAttack = max(gun->m_flNextSecondaryAttack - gpGlobals->frametime, -0.001);
+					gun->m_flNextPrimaryAttack = _max(gun->m_flNextPrimaryAttack - gpGlobals->frametime, -1.0);
+					gun->m_flNextSecondaryAttack = _max(gun->m_flNextSecondaryAttack - gpGlobals->frametime, -0.001);
 
 					if (gun->m_flTimeWeaponIdle != 1000.0f)
 					{
-						gun->m_flTimeWeaponIdle = max(gun->m_flTimeWeaponIdle - gpGlobals->frametime, -0.001);
+						gun->m_flTimeWeaponIdle = _max(gun->m_flTimeWeaponIdle - gpGlobals->frametime, -0.001);
 					}
 				}
 
@@ -5146,7 +5049,7 @@ void SetScoreAttrib(CBasePlayer *dest, CBasePlayer *src)
 }
 
 /* <15fdba> ../cstrike/dlls/player.cpp:6264 */
-void CBasePlayer::Spawn_(void)
+void CBasePlayer::__MAKE_VHOOK(Spawn)(void)
 {
 	int i;
 
@@ -5277,7 +5180,7 @@ void CBasePlayer::Spawn_(void)
 	}
 
 	MESSAGE_BEGIN(MSG_ONE, SVC_ROOMTYPE, NULL, pev);
-		WRITE_SHORT((short)CVAR_GET_FLOAT("room_type"));
+		WRITE_SHORT((int)CVAR_GET_FLOAT("room_type"));
 	MESSAGE_END();
 
 	if (g_pGameRules->IsFreezePeriod())
@@ -5456,7 +5359,7 @@ void CBasePlayer::Spawn_(void)
 
 	MESSAGE_BEGIN(MSG_ALL, gmsgScoreInfo);
 		WRITE_BYTE(ENTINDEX(edict()));
-		WRITE_SHORT((short)pev->frags);
+		WRITE_SHORT((int)pev->frags);
 		WRITE_SHORT(m_iDeaths);
 		WRITE_SHORT(0);
 		WRITE_SHORT(m_iTeam);
@@ -5492,7 +5395,7 @@ void CBasePlayer::Spawn_(void)
 }
 
 /* <153555> ../cstrike/dlls/player.cpp:6620 */
-void CBasePlayer::Precache_(void)
+void CBasePlayer::__MAKE_VHOOK(Precache)(void)
 {
 	// in the event that the player JUST spawned, and the level node graph
 	// was loaded, fix all of the node graph pointers before the game starts.
@@ -5534,7 +5437,7 @@ void CBasePlayer::Precache_(void)
 }
 
 /* <151a77> ../cstrike/dlls/player.cpp:6671 */
-int CBasePlayer::Save_(CSave &save)
+int CBasePlayer::__MAKE_VHOOK(Save)(CSave &save)
 {
 	if (!CBaseMonster::Save(save))
 		return 0;
@@ -5567,7 +5470,7 @@ NOXREF void CBasePlayer::RenewItems(void)
 }
 
 /* <156b9b> ../cstrike/dlls/player.cpp:6718 */
-int CBasePlayer::Restore_(CRestore &restore)
+int CBasePlayer::__MAKE_VHOOK(Restore)(CRestore &restore)
 {
 	if (!CBaseMonster::Restore(restore))
 		return 0;
@@ -5636,14 +5539,18 @@ NOXREF void CBasePlayer::SelectNextItem(int iItem)
 	CBasePlayerItem *pItem = m_rgpPlayerItems[ iItem ];
 
 	if (!pItem)
+	{
 		return;
+	}
 
 	if (pItem == m_pActiveItem)
 	{
 		pItem = m_pActiveItem->m_pNext;
 
 		if (!pItem)
+		{
 			return;
+		}
 
 		CBasePlayerItem *pLast = pItem;
 
@@ -5658,7 +5565,9 @@ NOXREF void CBasePlayer::SelectNextItem(int iItem)
 	ResetAutoaim();
 
 	if (m_pActiveItem)
+	{
 		m_pActiveItem->Holster();
+	}
 
 	if (HasShield())
 	{
@@ -5685,7 +5594,9 @@ NOXREF void CBasePlayer::SelectNextItem(int iItem)
 void CBasePlayer::SelectItem(const char *pstr)
 {
 	if (!pstr)
+	{
 		return;
+	}
 
 	CBasePlayerItem *pItem = NULL;
 
@@ -5704,21 +5615,24 @@ void CBasePlayer::SelectItem(const char *pstr)
 			}
 
 			if (pItem)
+			{
 				break;
+			}
 		}
 	}
 
-	if (!pItem)
+	if (!pItem || pItem == m_pActiveItem)
+	{
 		return;
-
-	if (pItem == m_pActiveItem)
-		return;
+	}
 
 	ResetAutoaim();
 
 	// FIX, this needs to queue them up and delay
 	if (m_pActiveItem)
+	{
 		m_pActiveItem->Holster();
+	}
 
 	m_pLastItem = m_pActiveItem;
 	m_pActiveItem = pItem;
@@ -5808,7 +5722,7 @@ NOXREF void CBasePlayer::SelectPrevItem(int iItem)
 }
 
 /* <15106c> ../cstrike/dlls/player.cpp:6987 */
-const char *CBasePlayer::TeamID_(void)
+const char *CBasePlayer::__MAKE_VHOOK(TeamID)(void)
 {
 	// Not fully connected yet
 	if (pev == NULL)
@@ -5831,7 +5745,7 @@ void CSprayCan::Spawn(entvars_t *pevOwner)
 }
 
 /* <151815> ../cstrike/dlls/player.cpp:7021 */
-void CSprayCan::Think_(void)
+void CSprayCan::__MAKE_VHOOK(Think)(void)
 {
 	TraceResult tr;
 	int playernum;
@@ -5869,7 +5783,7 @@ void CSprayCan::Think_(void)
 }
 
 /* <157481> ../cstrike/dlls/player.cpp:7064 */
-NOXREF void CBloodSplat::Spawn(entvars_t *pevOwner)
+void CBloodSplat::Spawn(entvars_t *pevOwner)
 {
 	pev->origin = pevOwner->origin + Vector(0, 0, 32);
 	pev->angles = pevOwner->v_angle;
@@ -5880,7 +5794,7 @@ NOXREF void CBloodSplat::Spawn(entvars_t *pevOwner)
 }
 
 /* <151758> ../cstrike/dlls/player.cpp:7074 */
-NOXREF void CBloodSplat::Spray(void)
+void CBloodSplat::Spray(void)
 {
 	TraceResult tr;
 	if (g_Language != LANGUAGE_GERMAN)
@@ -5914,7 +5828,7 @@ void CBasePlayer::GiveNamedItem(const char *pszName)
 }
 
 /* <157568> ../cstrike/dlls/player.cpp:7114 */
-NOXREF CBaseEntity *FindEntityForward(CBaseEntity *pMe)
+CBaseEntity *FindEntityForward(CBaseEntity *pMe)
 {
 	TraceResult tr;
 
@@ -5984,7 +5898,7 @@ void CBasePlayer::ForceClientDllUpdate(void)
 }
 
 /* <157f8d> ../cstrike/dlls/player.cpp:7202 */
-void CBasePlayer::ImpulseCommands_(void)
+void CBasePlayer::__MAKE_VHOOK(ImpulseCommands)(void)
 {
 	TraceResult tr;
 
@@ -6198,8 +6112,9 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 			pEntity = FindEntityForward(this);
 
 			if (pEntity && pEntity->pev->takedamage != DAMAGE_NO)
+			{
 				pEntity->SetThink(&CBaseEntity::SUB_Remove);
-
+			}
 			break;
 		}
 		case 204:
@@ -6274,7 +6189,7 @@ void OLD_CheckRescueZone(CBasePlayer *player)
 	CBaseEntity *pSpot = NULL;
 	while ((pSpot = UTIL_FindEntityByClassname(pSpot, "info_hostage_rescue")) != NULL)
 	{
-		if ((pSpot->pev->origin - player->pev->origin).Length() <= 256)
+		if ((pSpot->pev->origin - player->pev->origin).Length() <= 256.0f)
 			player->m_signals.Signal(SIGNAL_RESCUE);
 	}
 }
@@ -6341,7 +6256,7 @@ void CBasePlayer::HandleSignals(void)
 // Add a weapon to the player (Item == Weapon == Selectable Object)
 
 /* <15325f> ../cstrike/dlls/player.cpp:7625 */
-BOOL CBasePlayer::AddPlayerItem_(CBasePlayerItem *pItem)
+BOOL CBasePlayer::__MAKE_VHOOK(AddPlayerItem)(CBasePlayerItem *pItem)
 {
 	CBasePlayerItem *pInsert = m_rgpPlayerItems[ pItem->iItemSlot() ];
 	while (pInsert != NULL)
@@ -6387,18 +6302,23 @@ BOOL CBasePlayer::AddPlayerItem_(CBasePlayerItem *pItem)
 		if (g_pGameRules->FShouldSwitchWeapon(this, pItem))
 		{
 			if (!m_bShieldDrawn)
+			{
 				SwitchWeapon(pItem);
+			}
 		}
+
 		return TRUE;
 	}
 	else if (gEvilImpulse101)
+	{
 		pItem->Kill();
+	}
 
 	return FALSE;
 }
 
 /* <1534bd> ../cstrike/dlls/player.cpp:7692 */
-BOOL CBasePlayer::RemovePlayerItem_(CBasePlayerItem *pItem)
+BOOL CBasePlayer::__MAKE_VHOOK(RemovePlayerItem)(CBasePlayerItem *pItem)
 {
 	if (m_pActiveItem == pItem)
 	{
@@ -6435,7 +6355,7 @@ BOOL CBasePlayer::RemovePlayerItem_(CBasePlayerItem *pItem)
 // Returns the unique ID for the ammo, or -1 if error
 
 /* <15997b> ../cstrike/dlls/player.cpp:7731 */
-int CBasePlayer::GiveAmmo_(int iCount, char *szName, int iMax)
+int CBasePlayer::__MAKE_VHOOK(GiveAmmo)(int iCount, char *szName, int iMax)
 {
 	if (pev->flags & FL_SPECTATOR)
 		return -1;
@@ -6457,7 +6377,7 @@ int CBasePlayer::GiveAmmo_(int iCount, char *szName, int iMax)
 	if (i < 0 || i >= MAX_AMMO_SLOTS)
 		return -1;
 
-	int iAdd = min(iCount, iMax - m_rgAmmo[i]);
+	int iAdd = _min(iCount, iMax - m_rgAmmo[i]);
 	if (iAdd < 1)
 		return i;
 
@@ -6567,7 +6487,7 @@ void CBasePlayer::SendAmmoUpdate(void)
 			// send "Ammo" update message
 			MESSAGE_BEGIN(MSG_ONE, gmsgAmmoX, NULL, pev);
 				WRITE_BYTE(i);
-				WRITE_BYTE( max( min( m_rgAmmo[i], 254 ), 0 ) ); // clamp the value to one byte
+				WRITE_BYTE( _max( _min( m_rgAmmo[i], 254 ), 0 ) ); // clamp the value to one byte
 			MESSAGE_END();
 		}
 	}
@@ -6576,13 +6496,13 @@ void CBasePlayer::SendAmmoUpdate(void)
 /* <158d4b> ../cstrike/dlls/player.cpp:7885 */
 void CBasePlayer::SendHostagePos(void)
 {
-	CHostage *pHostage = NULL;
+	CBaseEntity *pHostage = NULL;
 
-	while ((pHostage = (CHostage *)UTIL_FindEntityByClassname(pHostage, "hostage_entity")) != NULL)
+	while ((pHostage = UTIL_FindEntityByClassname(pHostage, "hostage_entity")) != NULL)
 	{
 		MESSAGE_BEGIN(MSG_ONE, gmsgHostagePos, NULL, pev);
 			WRITE_BYTE(1);
-			WRITE_BYTE(pHostage->m_iHostageIndex);
+			WRITE_BYTE(((CHostage *)pHostage)->m_iHostageIndex);
 			WRITE_COORD(pHostage->pev->origin.x);
 			WRITE_COORD(pHostage->pev->origin.y);
 			WRITE_COORD(pHostage->pev->origin.z);
@@ -6662,7 +6582,7 @@ void CBasePlayer::SendWeatherInfo(void)
 // reflecting all of the HUD state info.
 
 /* <159d3c> ../cstrike/dlls/player.cpp:7963 */
-void CBasePlayer::UpdateClientData_(void)
+void CBasePlayer::__MAKE_VHOOK(UpdateClientData)(void)
 {
 	if (m_fInitHUD)
 	{
@@ -7006,7 +6926,7 @@ void CBasePlayer::UpdateClientData_(void)
 }
 
 /* <1510bc> ../cstrike/dlls/player.cpp:8330 */
-BOOL CBasePlayer::FBecomeProne_(void)
+BOOL CBasePlayer::__MAKE_VHOOK(FBecomeProne)(void)
 {
 	m_afPhysicsFlags |= PFLAG_ONBARNACLE;
 	return TRUE;
@@ -7027,7 +6947,7 @@ NOXREF void CBasePlayer::BarnacleVictimReleased(void)
 // return player light level plus virtual muzzle flash
 
 /* <1510e4> ../cstrike/dlls/player.cpp:8360 */
-int CBasePlayer::Illumination_(void)
+int CBasePlayer::__MAKE_VHOOK(Illumination)(void)
 {
 	int iIllum = CBaseEntity::Illumination();
 
@@ -7049,7 +6969,7 @@ void CBasePlayer::EnableControl(BOOL fControl)
 }
 
 /* <151142> ../cstrike/dlls/player.cpp:8387 */
-void CBasePlayer::ResetMaxSpeed_(void)
+void CBasePlayer::__MAKE_VHOOK(ResetMaxSpeed)(void)
 {
 	float speed = 240.0f;
 
@@ -7081,7 +7001,7 @@ bool CBasePlayer::HintMessage(const char *pMessage, BOOL bDisplayIfPlayerDead, B
 }
 
 /* <1513f7> ../cstrike/dlls/player.cpp:8473 */
-Vector CBasePlayer::GetAutoaimVector_(float flDelta)
+Vector CBasePlayer::__MAKE_VHOOK(GetAutoaimVector)(float flDelta)
 {
 	Vector vecSrc;
 	BOOL m_fOldTargeting;
@@ -7184,7 +7104,7 @@ int CBasePlayer::GetCustomDecalFrames(void)
 }
 
 /* <151183> ../cstrike/dlls/player.cpp:8731 */
-void CBasePlayer::Blind_(float duration, float holdTime, float fadeTime, int alpha)
+void CBasePlayer::__MAKE_VHOOK(Blind)(float duration, float holdTime, float fadeTime, int alpha)
 {
 	m_blindUntilTime = gpGlobals->time + duration;
 	m_blindStartTime = gpGlobals->time;
@@ -7709,12 +7629,16 @@ void CBasePlayer::UpdateShieldCrosshair(bool draw)
 BOOL CBasePlayer::SwitchWeapon(CBasePlayerItem *pWeapon)
 {
 	if (!pWeapon->CanDeploy())
+	{
 		return FALSE;
+	}
 
 	ResetAutoaim();
 
 	if (m_pActiveItem)
+	{
 		m_pActiveItem->Holster();
+	}
 
 	CBasePlayerItem *pTemp = m_pActiveItem;
 	m_pActiveItem = pWeapon;
@@ -7722,10 +7646,14 @@ BOOL CBasePlayer::SwitchWeapon(CBasePlayerItem *pWeapon)
 	pWeapon->Deploy();
 
 	if (pWeapon->m_pPlayer)
+	{
 		pWeapon->m_pPlayer->ResetMaxSpeed();
+	}
 
 	if (HasShield())
+	{
 		UpdateShieldCrosshair(true);
+	}
 
 	return TRUE;
 }
@@ -7746,17 +7674,17 @@ void CBasePlayer::TabulateAmmo(void)
 }
 
 /* <1511eb> ../cstrike/dlls/player.cpp:9365 */
-int CDeadHEV::Classify_(void)
+int CDeadHEV::__MAKE_VHOOK(Classify)(void)
 {
 	return CLASS_HUMAN_MILITARY;
 }
 
 /* <152451> ../cstrike/dlls/player.cpp:9375 */
-void CDeadHEV::KeyValue_(KeyValueData *pkvd)
+void CDeadHEV::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "pose"))
 	{
-		m_iPose = atoi(pkvd->szValue);
+		m_iPose = Q_atoi(pkvd->szValue);
 		pkvd->fHandled = TRUE;
 	}
 	else
@@ -7767,7 +7695,7 @@ void CDeadHEV::KeyValue_(KeyValueData *pkvd)
 LINK_ENTITY_TO_CLASS(monster_hevsuit_dead, CDeadHEV);
 
 /* <1513ce> ../cstrike/dlls/player.cpp:9391 */
-void CDeadHEV::Spawn_(void)
+void CDeadHEV::__MAKE_VHOOK(Spawn)(void)
 {
 	PRECACHE_MODEL("models/player.mdl");
 	SET_MODEL(ENT(pev), "models/player.mdl");
@@ -7796,18 +7724,23 @@ void CDeadHEV::Spawn_(void)
 LINK_ENTITY_TO_CLASS(player_weaponstrip, CStripWeapons);
 
 /* <15f62f> ../cstrike/dlls/player.cpp:9428 */
-void CStripWeapons::Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CStripWeapons::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	CBasePlayer *pPlayer = NULL;
 
 	if (pActivator && pActivator->IsPlayer())
+	{
 		pPlayer = (CBasePlayer *)pActivator;
-
+	}
 	else if (!g_pGameRules->IsDeathmatch())
+	{
 		pPlayer = (CBasePlayer *)Instance(INDEXENT(1));
+	}
 
 	if (pPlayer)
+	{
 		pPlayer->RemoveAllItems(FALSE);
+	}
 }
 
 /* <159c40> ../cstrike/dlls/player.cpp:9473 */
@@ -7817,26 +7750,26 @@ LINK_ENTITY_TO_CLASS(player_loadsaved, CRevertSaved);
 IMPLEMENT_SAVERESTORE(CRevertSaved, CPointEntity);
 
 /* <152540> ../cstrike/dlls/player.cpp:9483 */
-void CRevertSaved::KeyValue_(KeyValueData *pkvd)
+void CRevertSaved::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "duration"))
 	{
-		SetDuration( atof(pkvd->szValue) );
+		SetDuration(Q_atof(pkvd->szValue));
 		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "holdtime"))
 	{
-		SetHoldTime( atof(pkvd->szValue) );
+		SetHoldTime(Q_atof(pkvd->szValue));
 		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "messagetime"))
 	{
-		SetMessageTime( atof(pkvd->szValue) );
+		SetMessageTime(Q_atof(pkvd->szValue));
 		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "loadtime"))
 	{
-		SetLoadTime( atof(pkvd->szValue) );
+		SetLoadTime(Q_atof(pkvd->szValue));
 		pkvd->fHandled = TRUE;
 	}
 	else
@@ -7844,7 +7777,7 @@ void CRevertSaved::KeyValue_(KeyValueData *pkvd)
 }
 
 /* <151365> ../cstrike/dlls/player.cpp:9509 */
-void CRevertSaved::Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CRevertSaved::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	UTIL_ScreenFadeAll(pev->rendercolor, Duration(), HoldTime(), (int)pev->renderamt, FFADE_OUT);
 	pev->nextthink = gpGlobals->time + MessageTime();
@@ -7874,7 +7807,7 @@ void CRevertSaved::LoadThink(void)
 }
 
 /* <15133c> ../cstrike/dlls/player.cpp:9549 */
-void CInfoIntermission::Spawn_(void)
+void CInfoIntermission::__MAKE_VHOOK(Spawn)(void)
 {
 	UTIL_SetOrigin(pev, pev->origin);
 
@@ -7885,7 +7818,7 @@ void CInfoIntermission::Spawn_(void)
 }
 
 /* <1530e6> ../cstrike/dlls/player.cpp:9560 */
-void CInfoIntermission::Think_(void)
+void CInfoIntermission::__MAKE_VHOOK(Think)(void)
 {
 	edict_t *pTarget = FIND_ENTITY_BY_TARGETNAME(NULL, STRING(pev->target));
 
@@ -8123,7 +8056,7 @@ void CBasePlayer::ResetStamina(void)
 float GetPlayerPitch(const edict_t *pEdict)
 {
 	entvars_t *pev = VARS((edict_t *)pEdict);
-	CBasePlayer *pPlayer = reinterpret_cast< CBasePlayer * >(CBasePlayer::Instance( pev ));
+	CBasePlayer *pPlayer = reinterpret_cast<CBasePlayer *>(CBasePlayer::Instance(pev));
 
 	if (!pPlayer)
 		return 0.0f;
@@ -8135,7 +8068,7 @@ float GetPlayerPitch(const edict_t *pEdict)
 float GetPlayerYaw(const edict_t *pEdict)
 {
 	entvars_t *pev = VARS((edict_t *)pEdict);
-	CBasePlayer *pPlayer = reinterpret_cast< CBasePlayer * >(CBasePlayer::Instance( pev ));
+	CBasePlayer *pPlayer = reinterpret_cast<CBasePlayer *>(CBasePlayer::Instance(pev));
 
 	if (!pPlayer)
 		return 0.0f;
@@ -8147,7 +8080,7 @@ float GetPlayerYaw(const edict_t *pEdict)
 int GetPlayerGaitsequence(const edict_t *pEdict)
 {
 	entvars_t *pev = VARS((edict_t *)pEdict);
-	CBasePlayer *pPlayer = reinterpret_cast< CBasePlayer * >(CBasePlayer::Instance( pev ));
+	CBasePlayer *pPlayer = reinterpret_cast<CBasePlayer *>(CBasePlayer::Instance(pev));
 
 	if (!pPlayer)
 		return 1;
@@ -8178,8 +8111,10 @@ void CBasePlayer::SpawnClientSideCorpse(void)
 
 	m_canSwitchObserverModes = true;
 
-	if (TheTutor)
+	if (TheTutor != NULL)
+	{
 		TheTutor->OnEvent(EVENT_CLIENT_CORPSE_SPAWNED, this);
+	}
 }
 
 /* <15a7a2> ../cstrike/dlls/player.cpp:9909 */
@@ -8246,21 +8181,21 @@ void CBasePlayer::SetPrefsFromUserinfo(char *infobuffer)
 	pszKeyVal = GET_KEY_VALUE(infobuffer, "_cl_autowepswitch");
 
 	if (Q_strcmp(pszKeyVal, ""))
-		m_iAutoWepSwitch = atoi(pszKeyVal);
+		m_iAutoWepSwitch = Q_atoi(pszKeyVal);
 	else
 		m_iAutoWepSwitch = 1;
 
 	pszKeyVal = GET_KEY_VALUE(infobuffer, "_vgui_menus");
 
 	if (Q_strcmp(pszKeyVal, ""))
-		m_bVGUIMenus = atoi(pszKeyVal) != 0;
+		m_bVGUIMenus = Q_atoi(pszKeyVal) != 0;
 	else
 		m_bVGUIMenus = true;
 
 	pszKeyVal = GET_KEY_VALUE(infobuffer, "_ah");
 
 	if (Q_strcmp(pszKeyVal, ""))
-		m_bShowHints = atoi(pszKeyVal) != 0;
+		m_bShowHints = Q_atoi(pszKeyVal) != 0;
 	else
 		m_bShowHints = true;
 }
@@ -8441,7 +8376,7 @@ void CBasePlayer::ClientCommand(const char *cmd, const char *arg1, const char *a
 }
 
 /* <15aea9> ../cstrike/dlls/player.cpp:10401 */
-NOXREF const char *GetBuyStringForWeaponClass(int weaponClass)
+const char *GetBuyStringForWeaponClass(int weaponClass)
 {
 	switch (weaponClass)
 	{
@@ -8561,13 +8496,13 @@ void CBasePlayer::AutoBuy(void)
 }
 
 /* <14ea4e> ../cstrike/dlls/player.cpp:10556 */
-NOXREF bool IsPrimaryWeaponClass(int classId)
+bool IsPrimaryWeaponClass(int classId)
 {
 	return (classId >= WEAPONCLASS_SUBMACHINEGUN && classId <= WEAPONCLASS_SNIPERRIFLE);
 }
 
 /* <15afbe> ../cstrike/dlls/player.cpp:10571 */
-NOXREF bool IsPrimaryWeaponId(int id)
+bool IsPrimaryWeaponId(int id)
 {
 	int classId = WEAPONCLASS_NONE;
 	const char *alias = WeaponIDToAlias( id );
@@ -8581,13 +8516,13 @@ NOXREF bool IsPrimaryWeaponId(int id)
 }
 
 /* <14ea6f> ../cstrike/dlls/player.cpp:10583 */
-NOXREF bool IsSecondaryWeaponClass(int classId)
+bool IsSecondaryWeaponClass(int classId)
 {
 	return (classId == WEAPONCLASS_PISTOL);
 }
 
 /* <15b059> ../cstrike/dlls/player.cpp:10588 */
-NOXREF bool IsSecondaryWeaponId(int id)
+bool IsSecondaryWeaponId(int id)
 {
 	int classId = WEAPONCLASS_NONE;
 	const char *alias = WeaponIDToAlias( id );
@@ -8601,26 +8536,28 @@ NOXREF bool IsSecondaryWeaponId(int id)
 }
 
 /* <15b0f1> ../cstrike/dlls/player.cpp:10600 */
-NOXREF const char *GetWeaponAliasFromName(const char *weaponName)
+const char *GetWeaponAliasFromName(const char *weaponName)
 {
 	if (!Q_strncmp(weaponName, "weapon_", 7))
+	{
 		weaponName += 7;
+	}
 
 	return weaponName;
 }
 
 /* <15b133> ../cstrike/dlls/player.cpp:10607 */
-NOXREF bool CurrentWeaponSatisfies(CBasePlayerWeapon *pWeapon, int id, int classId)
+bool CurrentWeaponSatisfies(CBasePlayerWeapon *pWeapon, int id, int classId)
 {
 	if (pWeapon == NULL)
 		return false;
 
-	const char *weaponName = GetWeaponAliasFromName( pWeapon->pszName() );
+	const char *weaponName = GetWeaponAliasFromName(pWeapon->pszName());
 
-	if (id && AliasToWeaponID( weaponName ) == id)
+	if (id && AliasToWeaponID(weaponName) == id)
 		return true;
 
-	if (classId && AliasToWeaponClass( weaponName ) == classId)
+	if (classId && AliasToWeaponClass(weaponName) == classId)
 		return true;
 
 	return false;
@@ -8722,7 +8659,7 @@ NOBODY const char __declspec(naked) *CBasePlayer::PickSecondaryCareerTaskWeapon(
 }
 
 /* <15b9ea> ../cstrike/dlls/player.cpp:10759 */
-NOXREF const char *CBasePlayer::PickFlashKillWeaponString(void)
+const char *CBasePlayer::PickFlashKillWeaponString(void)
 {
 	bool foundOne = false;
 
@@ -8744,7 +8681,7 @@ NOXREF const char *CBasePlayer::PickFlashKillWeaponString(void)
 }
 
 /* <15baa1> ../cstrike/dlls/player.cpp:10787 */
-NOXREF const char *CBasePlayer::PickGrenadeKillWeaponString(void)
+const char *CBasePlayer::PickGrenadeKillWeaponString(void)
 {
 	bool foundOne = false;
 
@@ -8882,7 +8819,7 @@ void CBasePlayer::ParseAutoBuyString(const char *string, bool &boughtPrimary, bo
 }
 
 /* <15bb6b> ../cstrike/dlls/player.cpp:10957 */
-NOXREF bool CBasePlayer::ShouldExecuteAutoBuyCommand(AutoBuyInfoStruct *commandInfo, bool boughtPrimary, bool boughtSecondary)
+bool CBasePlayer::ShouldExecuteAutoBuyCommand(AutoBuyInfoStruct *commandInfo, bool boughtPrimary, bool boughtSecondary)
 {
 	if (!commandInfo)
 		return false;
@@ -8897,7 +8834,7 @@ NOXREF bool CBasePlayer::ShouldExecuteAutoBuyCommand(AutoBuyInfoStruct *commandI
 }
 
 /* <15bbfa> ../cstrike/dlls/player.cpp:10978 */
-NOXREF AutoBuyInfoStruct *CBasePlayer::GetAutoBuyCommandInfo(const char *command)
+AutoBuyInfoStruct *CBasePlayer::GetAutoBuyCommandInfo(const char *command)
 {
 	int i = 0;
 	AutoBuyInfoStruct *ret = NULL;

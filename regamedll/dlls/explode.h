@@ -43,13 +43,13 @@
 class CShower: public CBaseEntity
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual int ObjectCaps(void)
+	virtual void Spawn(void);
+	virtual int ObjectCaps(void)
 	{
 		return ObjectCaps_();
 	}
-	NOBODY virtual void Think(void);
-	NOBODY virtual void Touch(CBaseEntity *pOther);
+	virtual void Think(void);
+	virtual void Touch(CBaseEntity *pOther);
 
 #ifdef HOOK_GAMEDLL
 
@@ -69,11 +69,11 @@ public:
 class CEnvExplosion: public CBaseMonster
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void KeyValue(KeyValueData *pkvd);
-	NOBODY virtual int Save(CSave &save);
-	NOBODY virtual int Restore(CRestore &restore);
-	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	virtual void Spawn(void);
+	virtual void KeyValue(KeyValueData *pkvd);
+	virtual int Save(CSave &save);
+	virtual int Restore(CRestore &restore);
+	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
 
@@ -86,7 +86,7 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	NOBODY void EXPORT Smoke(void);
+	void EXPORT Smoke(void);
 
 public:
 	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[2];
@@ -97,6 +97,10 @@ public:
 
 };/* size: 412, cachelines: 7, members: 4 */
 
-NOBODY void ExplosionCreate(Vector &center, Vector &angles, edict_t *pOwner, int magnitude, BOOL doDamage);
+void ExplosionCreate(Vector &center, Vector &angles, edict_t *pOwner, int magnitude, BOOL doDamage);
+
+// linked objects
+C_DLLEXPORT void spark_shower(entvars_t *pev);
+C_DLLEXPORT void env_explosion(entvars_t *pev);
 
 #endif // EXPLODE_H

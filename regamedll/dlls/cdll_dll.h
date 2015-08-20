@@ -39,13 +39,13 @@
 
 #define DEFAULT_FOV			90		// the default field of view
 
-#define HIDEHUD_WEAPONS			(1<<0)
-#define HIDEHUD_FLASHLIGHT		(1<<1)
-#define HIDEHUD_ALL			(1<<2)
-#define HIDEHUD_HEALTH			(1<<3)
-#define HIDEHUD_TIMER			(1<<4)
-#define HIDEHUD_MONEY			(1<<5)
-#define HIDEHUD_CROSSHAIR		(1<<6)
+#define HIDEHUD_WEAPONS			(1 << 0)
+#define HIDEHUD_FLASHLIGHT		(1 << 1)
+#define HIDEHUD_ALL			(1 << 2)
+#define HIDEHUD_HEALTH			(1 << 3)
+#define HIDEHUD_TIMER			(1 << 4)
+#define HIDEHUD_MONEY			(1 << 5)
+#define HIDEHUD_CROSSHAIR		(1 << 6)
 
 #define STATUSICON_HIDE			0
 #define STATUSICON_SHOW			1
@@ -78,17 +78,16 @@
 #define DATA_IUSER3_INBOMBZONE		(1<<2)
 #define DATA_IUSER3_HOLDINGSHIELD	(1<<3)
 
-#define VGUI_MENU_TEAM			2
-#define VGUI_MENU_MAPBRIEFING		4
-#define VGUI_MENU_CLASS_T		26
-#define VGUI_MENU_CLASS_CT		27
-#define VGUI_MENU_BUY			28
-#define VGUI_MENU_BUY_PISTOL		29
-#define VGUI_MENU_BUY_SHOTGUN		30
-#define VGUI_MENU_BUY_RIFLE		31
-#define VGUI_MENU_BUY_SUBMACHINEGUN	32
-#define VGUI_MENU_BUY_MACHINEGUN	33
-#define VGUI_MENU_BUY_ITEM		34
+#define MENU_KEY_1			(1<<0)
+#define MENU_KEY_2			(1<<1)
+#define MENU_KEY_3			(1<<2)
+#define MENU_KEY_4			(1<<3)
+#define MENU_KEY_5			(1<<4)
+#define MENU_KEY_6			(1<<5)
+#define MENU_KEY_7			(1<<6)
+#define MENU_KEY_8			(1<<7)
+#define MENU_KEY_9			(1<<8)
+#define MENU_KEY_0			(1<<9)
 
 #define MAX_AMMO_TYPES			32		// ???
 #define MAX_AMMO_SLOTS			32		// not really slots
@@ -99,6 +98,36 @@
 #define HUD_PRINTCENTER			4
 
 #define WEAPON_SUIT			31
-#define WEAPON_ALLWEAPONS		(~( 1 << WEAPON_SUIT ))
+#define WEAPON_ALLWEAPONS		(~(1 << WEAPON_SUIT))
+
+// custom enum
+enum VGUIMenu
+{
+	VGUI_Menu_Team = 2,
+	VGUI_Menu_MapBriefing = 4,
+
+	VGUI_Menu_Class_T = 26,
+	VGUI_Menu_Class_CT,
+	VGUI_Menu_Buy,
+	VGUI_Menu_Buy_Pistol,
+	VGUI_Menu_Buy_ShotGun,
+	VGUI_Menu_Buy_Rifle,
+	VGUI_Menu_Buy_SubMachineGun,
+	VGUI_Menu_Buy_MachineGun,
+	VGUI_Menu_Buy_Item,
+};
+
+// custom enum
+enum VGUIMenuSlot
+{
+	VGUI_MenuSlot_Buy_Pistol = 1,
+	VGUI_MenuSlot_Buy_ShotGun,
+	VGUI_MenuSlot_Buy_SubMachineGun,
+	VGUI_MenuSlot_Buy_Rifle,
+	VGUI_MenuSlot_Buy_MachineGun,
+	VGUI_MenuSlot_Buy_PrimAmmo,
+	VGUI_MenuSlot_Buy_SecAmmo,
+	VGUI_MenuSlot_Buy_Item,
+};
 
 #endif // CDLL_DLL_H

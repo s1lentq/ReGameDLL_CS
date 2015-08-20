@@ -136,7 +136,7 @@ public:
 		pev->impulse = magnitude;
 	}
 
-	NOBODY static void MaterialSoundPrecache(Materials precacheMaterial);
+	static void MaterialSoundPrecache(Materials precacheMaterial);
 	static void MaterialSoundRandom(edict_t *pEdict, Materials soundMaterial, float volume);
 	static const char **MaterialSoundList(Materials precacheMaterial, int &soundCount);
 

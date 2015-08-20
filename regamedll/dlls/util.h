@@ -115,6 +115,24 @@ extern globalvars_t *gpGlobals;
 #define VEC_DUCK_HULL_MAX	Vector(16, 16, 32)
 #define VEC_DUCK_VIEW		Vector(0, 0, 12)
 
+#define PLAYBACK_EVENT(flags, who, index)\
+		PLAYBACK_EVENT_FULL(flags, who, index, 0, (float *)&g_vecZero, (float *)&g_vecZero, 0.0, 0.0, 0, 0, 0, 0)
+
+#define PLAYBACK_EVENT_DELAY(flags, who, index, delay)\
+		PLAYBACK_EVENT_FULL(flags, who, index, delay, (float *)&g_vecZero, (float *)&g_vecZero, 0.0, 0.0, 0, 0, 0, 0)
+
+#ifdef HOOK_GAMEDLL
+
+// prefix _
+#define __MAKE_VHOOK(fname)\
+	fname##_
+#else
+
+#define __MAKE_VHOOK(fname)\
+	fname
+
+#endif // HOOK_GAMEDLL
+
 #define LINK_ENTITY_TO_CLASS(mapClassName, DLLClassName)\
 	C_DLLEXPORT void mapClassName(entvars_t *pev);\
 	void mapClassName(entvars_t *pev)\
@@ -460,7 +478,7 @@ typedef int (CSaveRestoreBuffer::*CSAVERESTOREBUFFER_POINTER)(const char *,const
 
 #endif // HOOK_GAMEDLL
 
-#if 1
+#if 0
 
 extern void *addr_orig;
 extern char patchByte[5];

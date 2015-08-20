@@ -32,7 +32,7 @@
 #pragma once
 #endif
 
-#define MAX_ENTITYARRAY 64
+#define MAX_ENTITY_ARRAY	64
 
 #ifndef HOOK_GAMEDLL
 
@@ -71,6 +71,7 @@ typedef enum
 	GLOBAL_OFF,
 	GLOBAL_ON,
 	GLOBAL_DEAD
+
 } GLOBALESTATE;
 
 typedef struct globalentity_s
@@ -79,14 +80,18 @@ typedef struct globalentity_s
 	char levelName[32];
 	GLOBALESTATE state;
 	struct globalentity_s *pNext;
+
 } globalentity_t;
+/* size: 104, cachelines: 2, members: 4 */
 
 typedef struct
 {
 	unsigned short size;
 	unsigned short token;
 	char *pData;
+
 } HEADER;
+/* size: 8, cachelines: 1, members: 3 */
 
 class CBaseEntity;
 
@@ -204,22 +209,23 @@ private:
 class CGlobalState
 {
 public:
-	NOBODY CGlobalState();
-	NOBODY void Reset(void);
-	NOBODY void ClearStates(void);
-	NOBODY void EntityAdd(string_t globalname, string_t mapName, GLOBALESTATE state);
+	CGlobalState(void);
+
+	void Reset(void);
+	void ClearStates(void);
+	void EntityAdd(string_t globalname, string_t mapName, GLOBALESTATE state);
 	void EntitySetState(string_t globalname, GLOBALESTATE state);
-	NOBODY void EntityUpdate(string_t globalname, string_t mapname);
-	NOBODY const globalentity_t *EntityFromTable(string_t globalname);
-	NOBODY GLOBALESTATE EntityGetState(string_t globalname);
+	void EntityUpdate(string_t globalname, string_t mapname);
+	const globalentity_t *EntityFromTable(string_t globalname);
+	GLOBALESTATE EntityGetState(string_t globalname);
 	int EntityInTable(string_t globalname)
 	{
 		if (Find(globalname) != NULL)
 			return 1;
 		return 0;
 	}
-	NOBODY int Save(CSave &save);
-	NOBODY int Restore(CRestore &restore);
+	int Save(CSave &save);
+	int Restore(CRestore &restore);
 	void DumpGlobals(void);
 
 	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[1];

@@ -1,5 +1,20 @@
 #include "precompiled.h"
 
+/*
+* Globals initialization
+*/
+#ifndef HOOK_GAMEDLL
+
+vec3_t vec3_origin = {0, 0, 0};
+int nanmask = 255<<23;
+
+#else
+
+vec3_t vec3_origin;
+int nanmask;
+
+#endif // HOOK_GAMEDLL
+
 /* <2ce436> ../cstrike/pm_shared/pm_math.c:35 */
 NOBODY float anglemod(float a)
 {
@@ -152,18 +167,21 @@ int VectorCompare(const vec_t *v1, const vec_t *v2)
 }
 
 /* <2ce9de> ../cstrike/pm_shared/pm_math.c:270 */
-NOBODY void VectorMA(const vec_t *veca, float scale, const vec_t *vecb, vec_t *vecc)
+void VectorMA(const vec_t *veca, float scale, const vec_t *vecb, vec_t *vecc)
 {
+	vecc[0] = veca[0] + scale * vecb[0];
+	vecc[1] = veca[1] + scale * vecb[1];
+	vecc[2] = veca[2] + scale * vecb[2];
 }
 
 /* <2cea34> ../cstrike/pm_shared/pm_math.c:278 */
-NOXREF vec_t _DotProduct(vec_t *v1, vec_t *v2)
+float_precision _DotProduct(vec_t *v1, vec_t *v2)
 {
 	return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
 }
 
 /* <2cea6e> ../cstrike/pm_shared/pm_math.c:283 */
-NOXREF void _VectorSubtract(vec_t *veca, vec_t *vecb, vec_t *out)
+void _VectorSubtract(vec_t *veca, vec_t *vecb, vec_t *out)
 {
 	out[0] = veca[0] - vecb[0];
 	out[1] = veca[1] - vecb[1];
@@ -171,7 +189,7 @@ NOXREF void _VectorSubtract(vec_t *veca, vec_t *vecb, vec_t *out)
 }
 
 /* <2ceab5> ../cstrike/pm_shared/pm_math.c:290 */
-NOXREF void _VectorAdd(vec_t *veca, vec_t *vecb, vec_t *out)
+void _VectorAdd(vec_t *veca, vec_t *vecb, vec_t *out)
 {
 	out[0] = veca[0] + vecb[0];
 	out[1] = veca[1] + vecb[1];
@@ -179,7 +197,7 @@ NOXREF void _VectorAdd(vec_t *veca, vec_t *vecb, vec_t *out)
 }
 
 /* <2ceafc> ../cstrike/pm_shared/pm_math.c:297 */
-NOXREF void _VectorCopy(vec_t *in, vec_t *out)
+void _VectorCopy(vec_t *in, vec_t *out)
 {
 	out[0] = in[0];
 	out[1] = in[1];
@@ -187,7 +205,7 @@ NOXREF void _VectorCopy(vec_t *in, vec_t *out)
 }
 
 /* <2ceb8d> ../cstrike/pm_shared/pm_math.c:307 */
-NOXREF void _CrossProduct(const vec_t *v1, const vec_t *v2, vec_t *cross)
+void _CrossProduct(const vec_t *v1, const vec_t *v2, vec_t *cross)
 {
 	cross[0] = v1[1] * v2[2] - v1[2] * v2[1];
 	cross[1] = v1[2] * v2[0] - v1[0] * v2[2];
@@ -195,10 +213,10 @@ NOXREF void _CrossProduct(const vec_t *v1, const vec_t *v2, vec_t *cross)
 }
 
 /* <2ce85f> ../cstrike/pm_shared/pm_math.c:313 */
-float Length(const vec_t *v)
+float_precision Length(const vec_t *v)
 {
 	int i;
-	float length = 0.0f;
+	float_precision length = 0.0f;
 	
 	for (i = 0; i < 3; i++)
 		length += v[i] * v[i];

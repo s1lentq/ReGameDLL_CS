@@ -70,14 +70,8 @@ public:
 	virtual void MonsterInitDead(void);
 	NOBODY virtual void Look(int iDistance);
 	NOBODY virtual CBaseEntity *BestVisibleEnemy(void);
-
-#ifdef _WIN32
-	NOBODY virtual BOOL FInViewCone(Vector *pOrigin);
-	NOBODY virtual BOOL FInViewCone(CBaseEntity *pEntity);
-#else
 	NOBODY virtual BOOL FInViewCone(CBaseEntity *pEntity);
 	NOBODY virtual BOOL FInViewCone(Vector *pOrigin);
-#endif // _WIN32
 
 #ifdef HOOK_GAMEDLL
 

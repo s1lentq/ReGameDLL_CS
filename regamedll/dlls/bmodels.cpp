@@ -43,12 +43,12 @@ Vector VecBModelOrigin(entvars_t *pevBModel)
 LINK_ENTITY_TO_CLASS(func_wall, CFuncWall);
 
 /* <1d193> ../cstrike/dlls/bmodels.cpp:65 */
-NOBODY void CFuncWall::Spawn_(void)
+NOBODY void CFuncWall::__MAKE_VHOOK(Spawn)(void)
 {
 }
 
 /* <1d873> ../cstrike/dlls/bmodels.cpp:77 */
-NOBODY void CFuncWall::Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+NOBODY void CFuncWall::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 //	Use(CFuncWall *const this,
 //		class CBaseEntity *pActivator,
@@ -61,7 +61,7 @@ NOBODY void CFuncWall::Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_T
 LINK_ENTITY_TO_CLASS(func_wall_toggle, CFuncWallToggle);
 
 /* <1e28f> ../cstrike/dlls/bmodels.cpp:98 */
-NOBODY void CFuncWallToggle::Spawn_(void)
+NOBODY void CFuncWallToggle::__MAKE_VHOOK(Spawn)(void)
 {
 //	Spawn(CFuncWall *const this);  //   100
 //	TurnOff(CFuncWallToggle *const this);  //   102
@@ -83,7 +83,7 @@ NOBODY BOOL CFuncWallToggle::IsOn(void)
 }
 
 /* <1e101> ../cstrike/dlls/bmodels.cpp:130 */
-NOBODY void CFuncWallToggle::Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+NOBODY void CFuncWallToggle::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 //	{
 //		int status;                                           //   132
@@ -97,7 +97,7 @@ NOBODY void CFuncWallToggle::Use_(CBaseEntity *pActivator, CBaseEntity *pCaller,
 LINK_ENTITY_TO_CLASS(func_conveyor, CFuncConveyor);
 
 /* <1e1c3> ../cstrike/dlls/bmodels.cpp:156 */
-NOBODY void CFuncConveyor::Spawn_(void)
+NOBODY void CFuncConveyor::__MAKE_VHOOK(Spawn)(void)
 {
 //	Spawn(CFuncWall *const this);  //   159
 //	UpdateSpeed(CFuncConveyor *const this,
@@ -114,7 +114,7 @@ NOBODY void CFuncConveyor::UpdateSpeed(float speed)
 }
 
 /* <1e021> ../cstrike/dlls/bmodels.cpp:194 */
-NOBODY void CFuncConveyor::Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+NOBODY void CFuncConveyor::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 //	UpdateSpeed(CFuncConveyor *const this,
 //			float speed);  //   197
@@ -124,7 +124,7 @@ NOBODY void CFuncConveyor::Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, U
 LINK_ENTITY_TO_CLASS(func_illusionary, CFuncIllusionary);
 
 /* <1ddc9> ../cstrike/dlls/bmodels.cpp:219 */
-NOBODY void CFuncIllusionary::KeyValue_(KeyValueData *pkvd)
+NOBODY void CFuncIllusionary::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 //	FStrEq(const char *sz1,
 //		const char *sz2);  //   221
@@ -133,7 +133,7 @@ NOBODY void CFuncIllusionary::KeyValue_(KeyValueData *pkvd)
 }
 
 /* <1d1db> ../cstrike/dlls/bmodels.cpp:230 */
-NOBODY void CFuncIllusionary::Spawn_(void)
+NOBODY void CFuncIllusionary::__MAKE_VHOOK(Spawn)(void)
 {
 }
 
@@ -141,7 +141,7 @@ NOBODY void CFuncIllusionary::Spawn_(void)
 LINK_ENTITY_TO_CLASS(func_monsterclip, CFuncMonsterClip);
 
 /* <1e24f> ../cstrike/dlls/bmodels.cpp:264 */
-NOBODY void CFuncMonsterClip::Spawn_(void)
+NOBODY void CFuncMonsterClip::__MAKE_VHOOK(Spawn)(void)
 {
 //	Spawn(CFuncWall *const this);  //   266
 }
@@ -153,7 +153,7 @@ LINK_ENTITY_TO_CLASS(func_rotating, CFuncRotating);
 IMPLEMENT_SAVERESTORE(CFuncRotating, CBaseEntity);
 
 /* <1dc21> ../cstrike/dlls/bmodels.cpp:315 */
-NOBODY void CFuncRotating::KeyValue_(KeyValueData *pkvd)
+NOBODY void CFuncRotating::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 //	FStrEq(const char *sz1,
 //		const char *sz2);  //   317
@@ -176,13 +176,13 @@ NOBODY void CFuncRotating::KeyValue_(KeyValueData *pkvd)
 }
 
 /* <1d5c4> ../cstrike/dlls/bmodels.cpp:362 */
-NOBODY void CFuncRotating::Spawn_(void)
+NOBODY void CFuncRotating::__MAKE_VHOOK(Spawn)(void)
 {
 //	operator*(const Vector ::Spawn(//			float fl);  //   404
 }
 
 /* <1d28a> ../cstrike/dlls/bmodels.cpp:447 */
-NOBODY void CFuncRotating::Precache_(void)
+NOBODY void CFuncRotating::__MAKE_VHOOK(Precache)(void)
 {
 //	{
 //		char *szSoundFile;                                   //   449
@@ -267,7 +267,7 @@ NOBODY void CFuncRotating::RotatingUse(CBaseEntity *pActivator, CBaseEntity *pCa
 }
 
 /* <1d325> ../cstrike/dlls/bmodels.cpp:706 */
-NOBODY void CFuncRotating::Blocked_(CBaseEntity *pOther)
+NOBODY void CFuncRotating::__MAKE_VHOOK(Blocked)(CBaseEntity *pOther)
 {
 }
 
@@ -278,7 +278,7 @@ LINK_ENTITY_TO_CLASS(func_pendulum, CPendulum);
 IMPLEMENT_SAVERESTORE(CPendulum, CBaseEntity);
 
 /* <1db2a> ../cstrike/dlls/bmodels.cpp:765 */
-NOBODY void CPendulum::KeyValue_(KeyValueData *pkvd)
+NOBODY void CPendulum::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 //	FStrEq(const char *sz1,
 //		const char *sz2);  //   767
@@ -292,7 +292,7 @@ NOBODY void CPendulum::KeyValue_(KeyValueData *pkvd)
 }
 
 /* <1d9c7> ../cstrike/dlls/bmodels.cpp:782 */
-NOBODY void CPendulum::Spawn_(void)
+NOBODY void CPendulum::__MAKE_VHOOK(Spawn)(void)
 {
 //	Spawn(CPendulum *const this);  //   782
 }
@@ -316,7 +316,7 @@ NOBODY void CPendulum::Stop(void)
 }
 
 /* <1d3a7> ../cstrike/dlls/bmodels.cpp:861 */
-NOBODY void CPendulum::Blocked_(CBaseEntity *pOther)
+NOBODY void CPendulum::__MAKE_VHOOK(Blocked)(CBaseEntity *pOther)
 {
 }
 
@@ -332,7 +332,7 @@ NOBODY void CPendulum::Swing(void)
 }
 
 /* <1d3f5> ../cstrike/dlls/bmodels.cpp:909 */
-NOBODY void CPendulum::Touch_(CBaseEntity *pOther)
+NOBODY void CPendulum::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 {
 //	{
 //		entvars_t *pevOther;                                 //   911

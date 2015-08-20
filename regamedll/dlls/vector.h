@@ -32,19 +32,6 @@
 #pragma once
 #endif
 
-#ifdef HOOK_GAMEDLL
-
-// probably gamedll compiled with flag /fpmath:fasted,
-// so we need to use type double, otherwise will be the test failed
-
-typedef double float_precision;
-
-#else // HOOK_GAMEDLL
-
-typedef float float_precision;
-
-#endif // HOOK_GAMEDLL
-
 /* <5d3ffa> ../cstrike/dlls/vector.h:26 */
 class Vector2D
 {
@@ -103,16 +90,16 @@ public:
 	}
 	inline Vector2D Normalize(void) const
 	{
-		float_precision flLength = Length();
-		if (!flLength)
+		float_precision flLen = Length();
+		if (!flLen)
 			return Vector2D(0, 0);
 
-		flLength = 1 / flLength;
+		flLen = 1 / flLen;
 	
 #ifdef HOOK_GAMEDLL
-		return Vector2D((vec_t)(x * flLength), (vec_t)(y * flLength));
+		return Vector2D((vec_t)(x * flLen), (vec_t)(y * flLen));
 #else
-		return Vector2D(x * flLength, y * flLength);
+		return Vector2D(x * flLen, y * flLen);
 #endif // HOOK_GAMEDLL
 	}
 	inline bool IsLengthLessThan(float length) const
@@ -125,18 +112,18 @@ public:
 	}
 	inline float_precision NormalizeInPlace(void)
 	{
-		float_precision flLength = Length();
-		if (flLength > 0.0)
+		float_precision flLen = Length();
+		if (flLen > 0.0)
 		{
-			x /= (vec_t)flLength;
-			y /= (vec_t)flLength;
+			x /= (vec_t)flLen;
+			y /= (vec_t)flLen;
 		}
 		else
 		{
 			x = 1.0;
 			y = 0.0;
 		}
-		return flLength;
+		return flLen;
 	}
 	inline bool IsZero(float tolerance = 0.01f) const
 	{
@@ -234,9 +221,16 @@ public:
 		rgfl[1] = y;
 		rgfl[2] = z;
 	}
-	inline double Length(void) const
+	inline float_precision Length(void) const
 	{
-		return sqrt((float_precision)(x * x + y * y + z * z));
+		float_precision x1 = (float_precision)x;
+		float_precision y1 = (float_precision)y;
+		float_precision z1 = (float_precision)z;
+
+
+		return sqrt(x1 * x1 + y1 * y1 + z1 * z1);
+
+		//return sqrt((float_precision)(x * x + y * y + z * z));
 	}
 	inline float LengthSquared(void) const
 	{
@@ -250,19 +244,41 @@ public:
 	{
 		return &x;
 	}
-	inline Vector Normalize(void) const
+#ifndef HOOK_GAMEDLL
+	inline Vector Normalize(void)
 	{
-		float_precision flLength = Length();
-		if (!flLength)
+		float flLen = Length();
+		if (flLen == 0)
 			return Vector(0, 0, 1);
 
-		flLength = 1 / flLength;
-#ifdef HOOK_GAMEDLL
-		return Vector((vec_t)(x * flLength), (vec_t)(y * flLength), (vec_t)(z * flLength));
+		flLen = 1 / flLen;
+		return Vector(x * flLen, y * flLen, z * flLen);
+	}
 #else
-		return Vector(x * flLength, y * flLength, z * flLength);
+	inline Vector Normalize(void)
+	{
+		float_precision flLen = Length();
+		if (flLen == 0)
+			return Vector(0, 0, 1);
+
+		vec_t fTemp = (vec_t)(1 / flLen);
+		return Vector(x * fTemp, y * fTemp, z * fTemp);
+	}
+	// for out precision normalize
+	inline Vector NormalizePrecision(void)
+	{
+#ifndef HOOK_GAMEDLL
+		return Normalize();
+#else
+		float_precision flLen = Length();
+		if (flLen == 0)
+			return Vector(0, 0, 1);
+
+		flLen = 1 / flLen;
+		return Vector((vec_t)(x * flLen), (vec_t)(y * flLen), (vec_t)(z * flLen));
 #endif // HOOK_GAMEDLL
 	}
+#endif // HOOK_GAMEDLL
 	inline Vector2D Make2D(void) const
 	{
 		Vector2D Vec2;
@@ -285,12 +301,12 @@ public:
 	}
 	inline float_precision NormalizeInPlace(void)
 	{
-		float_precision flLength = Length();
-		if (flLength > 0.0)
+		float_precision flLen = Length();
+		if (flLen > 0.0)
 		{
-			x /= (vec_t)flLength;
-			y /= (vec_t)flLength;
-			z /= (vec_t)flLength;
+			x /= (vec_t)flLen;
+			y /= (vec_t)flLen;
+			z /= (vec_t)flLen;
 		}
 		else
 		{
@@ -298,7 +314,7 @@ public:
 			y = 0.0;
 			z = 1.0;
 		}
-		return flLength;
+		return flLen;
 	}
 	inline bool IsZero(float tolerance = 0.01f) const
 	{
@@ -315,7 +331,7 @@ inline Vector operator*(float fl, const Vector &v)
 }
 
 /* <5d9a4> ../cstrike/dlls/vector.h:185 */
-inline float DotProduct(const Vector &a, const Vector &b)
+inline float_precision DotProduct(const Vector &a, const Vector &b)
 {
 	return (a.x * b.x + a.y * b.y + a.z * b.z);
 }
@@ -332,6 +348,58 @@ inline void SWAP(T &first, T &second)
 	T temp = first;
 	first = second;
 	second = temp;
+}
+
+template<
+	typename X,
+	typename Y,
+	typename Z,
+	typename LenType
+>
+inline LenType LenghtSubtract(Vector vecStart, Vector vecDest)
+{
+	X floatX = (vecDest.x - vecStart.x);
+	Y floatY = (vecDest.y - vecStart.y);
+	Z floatZ = (vecDest.z - vecStart.z);
+
+	return sqrt((float_precision)(floatX * floatX + floatY * floatY + floatZ * floatZ));
+}
+
+template<
+	typename X,
+	typename Y,
+	typename Z,
+	typename LenType
+>
+inline Vector NormalizeSubtract(Vector vecStart, Vector vecDest)
+{
+	Vector dir;
+
+#ifdef HOOK_GAMEDLL
+
+	X floatX = (vecDest.x - vecStart.x);
+	Y floatY = (vecDest.y - vecStart.y);
+	Z floatZ = (vecDest.z - vecStart.z);
+
+	LenType flLen = sqrt((float_precision)(floatX * floatX + floatY * floatY + floatZ * floatZ));
+
+	if (flLen == 0.0)
+	{
+		dir = Vector(0, 0, 1);
+	}
+	else
+	{
+		flLen = 1.0 / flLen;
+
+		dir.x = (vec_t)(floatX * flLen);
+		dir.y = (vec_t)(floatY * flLen);
+		dir.z = (vec_t)(floatZ * flLen);
+	}
+#else
+	dir = (vecDest - vecStart).Normalize();
+#endif // HOOK_GAMEDLL
+
+	return dir;
 }
 
 #endif // VECTOR_H

@@ -32,33 +32,29 @@
 #pragma once
 #endif
 
-#define savesolid team
+#define GRENADETYPE_SMOKE			1
+#define GRENADETYPE_FLASH			2
 
-#define GRENADETYPE_SMOKE 1
-#define GRENADETYPE_FLASH 2
+#define MAX_ITEM_COUNTS				32
+#define MAX_ENTITY				512	// We can only ever move 512 entities across a transition
 
-#define MAX_ITEM_COUNTS 32
+#define SF_TRIGGER_PUSH_START_OFF		2
+#define SF_TRIGGER_HURT_TARGETONCE		1
+#define SF_TRIGGER_HURT_START_OFF		2
+#define SF_TRIGGER_HURT_NO_CLIENTS		8
+#define SF_TRIGGER_HURT_CLIENTONLYFIRE		16
+#define SF_TRIGGER_HURT_CLIENTONLYTOUCH		32
 
-#define SF_TRIGGER_PUSH_START_OFF 2
-#define SF_TRIGGER_HURT_TARGETONCE 1
-#define SF_TRIGGER_HURT_START_OFF 2
-#define SF_TRIGGER_HURT_NO_CLIENTS 8
-#define SF_TRIGGER_HURT_CLIENTONLYFIRE 16
-#define SF_TRIGGER_HURT_CLIENTONLYTOUCH 32
+#define SF_AUTO_FIREONCE			0x0001
+#define SF_RELAY_FIREONCE			0x0001
 
-#define SF_AUTO_FIREONCE 0x0001
-#define SF_RELAY_FIREONCE 0x0001
+#define SF_MULTIMAN_CLONE			0x80000000
+#define SF_MULTIMAN_THREAD			0x00000001
 
-#define SF_MULTIMAN_CLONE 0x80000000
-#define SF_MULTIMAN_THREAD 0x00000001
-
-#define SF_CHANGELEVEL_USEONLY 0x0002
-
-#define MAX_ENTITY 512
-
-#define SF_CAMERA_PLAYER_POSITION 1
-#define SF_CAMERA_PLAYER_TARGET 2
-#define SF_CAMERA_PLAYER_TAKECONTROL 4
+#define SF_CHANGELEVEL_USEONLY			0x0002
+#define SF_CAMERA_PLAYER_POSITION		1
+#define SF_CAMERA_PLAYER_TARGET			2
+#define SF_CAMERA_PLAYER_TAKECONTROL		4
 
 class CFrictionModifier: public CBaseEntity
 {
@@ -469,10 +465,10 @@ public:
 
 	NOBODY void ChangeLevelNow(CBaseEntity *pActivator);
 
-	NOXREF static edict_t *FindLandmark(const char *pLandmarkName);
-	NOBODY static int ChangeList(LEVELLIST *pLevelList, int maxList);
-	NOBODY static int AddTransitionToList(LEVELLIST *pLevelList, int listCount, const char *pMapName, const char *pLandmarkName, edict_t *pentLandmark);
-	NOBODY static int InTransitionVolume(CBaseEntity *pEntity, char *pVolumeName);
+	static edict_t *FindLandmark(const char *pLandmarkName);
+	static int ChangeList(LEVELLIST *pLevelList, int maxList);
+	static int AddTransitionToList(LEVELLIST *pLevelList, int listCount, const char *pMapName, const char *pLandmarkName, edict_t *pentLandmark);
+	static int InTransitionVolume(CBaseEntity *pEntity, char *pVolumeName);
 
 public:
 	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[4];

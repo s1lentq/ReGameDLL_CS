@@ -45,13 +45,13 @@
 
 #ifdef HOOK_GAMEDLL
 
-#define navAreaCount (*pnavAreaCount)
-#define currentIndex (*pcurrentIndex)
+#define _navAreaCount (*pnavAreaCount)
+#define _currentIndex (*pcurrentIndex)
 
 #endif // HOOK_GAMEDLL
 
-extern int navAreaCount;
-extern int currentIndex;
+extern int _navAreaCount;
+extern int _currentIndex;
 
 /* <3327a8> ../cstrike/dlls/bot/cs_bot.h:44 */
 class BotState
@@ -676,7 +676,7 @@ public:
 	NOBODY void StartVoiceFeedback(float duration);
 	bool IsUsingVoice(void) const
 	{
-		return (m_voiceFeedbackEndTimestamp > gpGlobals->time);
+		return (m_voiceFeedbackEndTimestamp != 0.0f);	//return (m_voiceFeedbackEndTimestamp > gpGlobals->time);
 	}
 	void SetEnemy(CBasePlayer *enemy);
 	CBasePlayer *GetEnemy(void)
@@ -685,7 +685,7 @@ public:
 	}
 	int GetNearbyEnemyCount(void) const
 	{
-		return min( GetEnemiesRemaining(), m_nearbyEnemyCount );
+		return _min(GetEnemiesRemaining(), m_nearbyEnemyCount);
 	}
 	unsigned int GetEnemyPlace(void) const
 	{
@@ -698,7 +698,7 @@ public:
 	}
 	int GetNearbyFriendCount(void) const
 	{
-		return min( GetFriendsRemaining(), m_nearbyFriendCount );
+		return _min(GetFriendsRemaining(), m_nearbyFriendCount);
 	}
 	CBasePlayer *GetClosestVisibleFriend(void) const
 	{
@@ -1432,7 +1432,7 @@ public:
 		else
 		{
 			const float k = 1.5f; // 2.0f;
-			float trimSpeed = min(speed, 200.0f);
+			float trimSpeed = (speed < 200.0f) ? speed : 200.0f;
 
 			m_cutoff.x = playerOrigin.x + k * trimSpeed * m_forward.x;
 			m_cutoff.y = playerOrigin.y + k * trimSpeed * m_forward.y;

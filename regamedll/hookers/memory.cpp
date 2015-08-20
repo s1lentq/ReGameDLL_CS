@@ -725,7 +725,7 @@ bool HIDDEN HookFunction(Module *module, FunctionHook *hook)
 	*(size_t *)&patch[1] = hook->handlerFunc - hook->originalAddress - 5;
 	patch[0] = 0xE9;
 
-#if 1
+#if 0
 	if (strcmp(hook->symbolName,"_ZNK9BotPhrase12GetSpeakableEiPf")==0)
 	{
 		addr_orig = (void *)hook->originalAddress;
@@ -856,22 +856,35 @@ void VirtualTableInit(void *ptr, const char *baseClass)
 	}
 }
 
-void HIDDEN GetAddressVtableByClassname(const char *szClassName, const int iOffset)
+void HIDDEN GetAddressVtableByClassname(const char *szClassName, const int iOffset, bool bCreate)
 {
-	edict_t *pObject = CREATE_ENTITY();
+	void *vtable;
 
-	void *addr = GetFunctionEntity(szClassName);
-	
-	if (addr == NULL)
+	if (bCreate)
 	{
-		REMOVE_ENTITY(pObject);
-		return;
+		edict_t *pObject = CREATE_ENTITY();
+
+		void *addr = GetFunctionEntity(szClassName);
+	
+		if (addr == NULL)
+		{
+			//can't create object. 
+			printf2(__FUNCTION__ ":: Not found export function of binaries. Presumably looks '__declspec(dllexport) void %s(entvars_t *pev)'", szClassName);
+			REMOVE_ENTITY(pObject);
+			return;
+		}
+
+		// call link to class GetClassPtr<BaseClass>(pev);
+		reinterpret_cast<void (*)(entvars_t *)>(addr)(&pObject->v);
+
+		vtable = *(void **)pObject->pvPrivateData;
+	}
+	else
+	{
+		VirtualTableRef *refsVtbl = GetVirtualTableRefAddr(szClassName);
+		vtable = (void *)refsVtbl->originalAddress;
 	}
 
-	// call link to class GetClassPtr<BaseClass>(pev);
-	reinterpret_cast<void (*)(entvars_t *)>(addr)(&pObject->v);
-
-	void *vtable = *(void **)pObject->pvPrivateData;
 	printf2(__FUNCTION__ "* ADDRESS VTABLE: %p | ADDRESS VIRTUAL FUNC: %p",
 		OffsetToRebase((size_t)vtable),
 		OffsetToRebase(*(((size_t **)&vtable)[ iOffset ])));

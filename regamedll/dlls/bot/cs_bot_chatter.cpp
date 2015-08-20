@@ -199,11 +199,11 @@ char *BotPhrase::GetSpeakable(int bankIndex, float *duration) const
 	}
 
 	// find phrase that meets the current criteria
-	int start = m_index[bankIndex];
+	int start = m_index[ bankIndex ];
 	while (true)
 	{
-		BotSpeakableVector *speakables = m_voiceBank[bankIndex];
-		int &index = m_index[bankIndex];
+		BotSpeakableVector *speakables = m_voiceBank[ bankIndex ];
+		int &index = m_index[ bankIndex ];
 
 #ifdef HOOK_GAMEDLL
 		// TODO: temporary fix of std::vector padding
@@ -212,8 +212,8 @@ char *BotPhrase::GetSpeakable(int bankIndex, float *duration) const
 
 		const BotSpeakable *speak = (*speakables)[index++];
 
-		if (m_index[bankIndex] >= m_count[bankIndex])
-			m_index[bankIndex] = 0;
+		if (m_index[ bankIndex ] >= m_count[ bankIndex ])
+			m_index[ bankIndex ] = 0;
 
 		// check place criteria
 		// if this speakable has a place criteria, it must match to be used
@@ -225,7 +225,7 @@ char *BotPhrase::GetSpeakable(int bankIndex, float *duration) const
 			// check count criteria
 			// if this speakable has a count criteria, it must match to be used
 			// if this speakable does not have a count criteria, we dont care what the count is set to
-			if (speak->m_count == UNDEFINED_COUNT || speak->m_count == min(m_countCriteria, COUNT_MANY))
+			if (speak->m_count == UNDEFINED_COUNT || speak->m_count == _min(m_countCriteria, COUNT_MANY))
 			{
 				if (duration)
 					*duration = speak->m_duration;

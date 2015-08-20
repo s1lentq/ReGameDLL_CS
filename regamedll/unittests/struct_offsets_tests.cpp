@@ -43,8 +43,15 @@ TEST(StructOffsets, ReversingChecks, 5000)
 	REPEAT_SIZEOF_PRINT(BotPhrase);
 	REPEAT_SIZEOF_PRINT(CBasePlayer);
 	REPEAT_SIZEOF_PRINT(ActiveGrenade);
+	REPEAT_SIZEOF_PRINT(CSoundEnt);
+	REPEAT_SIZEOF_PRINT(CCSTutor);
 
 	REPEAT_SIZEOF_PRINT(CHostageImprov);
+	REPEAT_SIZEOF_PRINT(CHostage);
+
+	REPEAT_SIZEOF_PRINT(CBaseGrenCatch);
+	REPEAT_SIZEOF_PRINT(CFuncWeaponCheck);
+
 	REPEAT_SIZEOF_PRINT(HostageStateMachine);
 	REPEAT_SIZEOF_PRINT(HostageFollowState);
 	REPEAT_SIZEOF_PRINT(CHalfLifeMultiplay);
@@ -67,6 +74,11 @@ TEST(StructOffsets, ReversingChecks, 5000)
 
 	CHECK_CLASS_SIZE(CBasePlayer, 0x9B0, 0x9C4);
 	CHECK_CLASS_SIZE(CHostageImprov, 0x1C8Cu, 0x1C8Cu);
+	CHECK_CLASS_SIZE(CHostage, 0x7B0, 0x7C4);
+
+	CHECK_CLASS_SIZE(CBaseGrenCatch, 0x98, 0xA8);
+	CHECK_CLASS_SIZE(CFuncWeaponCheck, 0x11C, 0x12C);
+
 	CHECK_CLASS_SIZE(BotPhraseManager, 0x21Cu, 0x214u);
 	CHECK_CLASS_SIZE(BotPhrase, 0x50, 0x44);
 	
@@ -80,6 +92,8 @@ TEST(StructOffsets, ReversingChecks, 5000)
 	CHECK_CLASS_SIZE(CCareerTaskManager, 0x28, 0x24);
 	CHECK_CLASS_SIZE(CCareerTask, 0x2C, 0x2C);
 	CHECK_CLASS_SIZE(CPreventDefuseTask, 0x30, 0x30);
+	CHECK_CLASS_SIZE(CSoundEnt, 0x898, 0x8A8);
+	//CHECK_CLASS_SIZE(CCSTutor, 0x160u, 0x164u);		// UNDONE: don't need a check this
 
 	//CHECK_CLASS_SIZE(CBotManager, 12u, 12);
 	CHECK_CLASS_SIZE(CCSBot, 11404, 11424);

@@ -27,7 +27,7 @@ IMPLEMENT_SAVERESTORE(CRecharge, CBaseEntity);
 LINK_ENTITY_TO_CLASS(func_recharge, CRecharge);
 
 /* <c648b> ../cstrike/dlls/h_battery.cpp:66 */
-void CRecharge::KeyValue_(KeyValueData *pkvd)
+void CRecharge::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "style")
 		|| FStrEq(pkvd->szKeyName, "height")
@@ -39,7 +39,7 @@ void CRecharge::KeyValue_(KeyValueData *pkvd)
 	}
 	else if (FStrEq(pkvd->szKeyName, "dmdelay"))
 	{
-		m_iReactivate = atoi(pkvd->szValue);
+		m_iReactivate = Q_atoi(pkvd->szValue);
 		pkvd->fHandled = TRUE;
 	}
 	else
@@ -47,7 +47,7 @@ void CRecharge::KeyValue_(KeyValueData *pkvd)
 }
 
 /* <c616f> ../cstrike/dlls/h_battery.cpp:85 */
-void CRecharge::Spawn_(void)
+void CRecharge::__MAKE_VHOOK(Spawn)(void)
 {
 	Precache();
 
@@ -63,7 +63,7 @@ void CRecharge::Spawn_(void)
 }
 
 /* <c6122> ../cstrike/dlls/h_battery.cpp:99 */
-void CRecharge::Precache_(void)
+void CRecharge::__MAKE_VHOOK(Precache)(void)
 {
 	PRECACHE_SOUND("items/suitcharge1.wav");
 	PRECACHE_SOUND("items/suitchargeno1.wav");
@@ -71,7 +71,7 @@ void CRecharge::Precache_(void)
 }
 
 /* <c630e> ../cstrike/dlls/h_battery.cpp:107 */
-void CRecharge::Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CRecharge::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	// if it's not a player, ignore
 	if (!FClassnameIs(pActivator->pev, "player"))

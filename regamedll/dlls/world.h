@@ -32,6 +32,8 @@
 #pragma once
 #endif
 
+#define SF_DECAL_NOTINDEATHMATCH	2048
+
 #ifdef HOOK_GAMEDLL
 
 #define g_pBodyQueueHead (*pg_pBodyQueueHead)
@@ -41,11 +43,16 @@
 
 #endif // HOOK_GAMEDLL
 
-NOBODY void CopyToBodyQue(entvars_t *pev);
-NOBODY void ClearBodyQue(void);
-NOBODY void SaveGlobalState(SAVERESTOREDATA *pSaveData);
-NOBODY void RestoreGlobalState(SAVERESTOREDATA *pSaveData);
-NOBODY void ResetGlobalState(void);
+void CopyToBodyQue(entvars_t *pev);
+void ClearBodyQue(void);
+void SaveGlobalState(SAVERESTOREDATA *pSaveData);
+void RestoreGlobalState(SAVERESTOREDATA *pSaveData);
+void ResetGlobalState(void);
+
+// linked object
+C_DLLEXPORT void infodecal(entvars_t *pev);
+C_DLLEXPORT void bodyque(entvars_t *pev);
+C_DLLEXPORT void worldspawn(entvars_t *pev);
 
 extern edict_t *g_pBodyQueueHead;
 extern CGlobalState gGlobalState;

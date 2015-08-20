@@ -131,7 +131,7 @@ void CGib::SpawnRandomGibs(entvars_t *pevVictim, int cGibs, int human)
 }
 
 /* <5f58a> ../cstrike/dlls/combat.cpp:263 */
-BOOL CBaseMonster::HasHumanGibs_(void)
+BOOL CBaseMonster::__MAKE_VHOOK(HasHumanGibs)(void)
 {
 	int myClass = Classify();
 
@@ -145,7 +145,7 @@ BOOL CBaseMonster::HasHumanGibs_(void)
 }
 
 /* <5f5ca> ../cstrike/dlls/combat.cpp:278 */
-BOOL CBaseMonster::HasAlienGibs_(void)
+BOOL CBaseMonster::__MAKE_VHOOK(HasAlienGibs)(void)
 {
 	int myClass = Classify();
 	if (myClass == CLASS_ALIEN_MILITARY
@@ -160,7 +160,7 @@ BOOL CBaseMonster::HasAlienGibs_(void)
 }
 
 /* <5f60a> ../cstrike/dlls/combat.cpp:295 */
-void CBaseMonster::FadeMonster_(void)
+void CBaseMonster::__MAKE_VHOOK(FadeMonster)(void)
 {
 	StopAnimation();
 
@@ -174,7 +174,7 @@ void CBaseMonster::FadeMonster_(void)
 }
 
 /* <60a59> ../cstrike/dlls/combat.cpp:310 */
-void CBaseMonster::GibMonster_(void)
+void CBaseMonster::__MAKE_VHOOK(GibMonster)(void)
 {
 	TraceResult tr;
 	BOOL gibbed = FALSE;
@@ -219,7 +219,7 @@ void CBaseMonster::GibMonster_(void)
 }
 
 /* <5f65e> ../cstrike/dlls/combat.cpp:355 */
-NOBODY Activity CBaseMonster::GetDeathActivity_(void)
+NOBODY Activity CBaseMonster::__MAKE_VHOOK(GetDeathActivity)(void)
 {
 //	{
 //		Activity deathActivity;                               //   357
@@ -255,7 +255,7 @@ NOBODY Activity CBaseMonster::GetSmallFlinchActivity(void)
 }
 
 /* <5f8a6> ../cstrike/dlls/combat.cpp:525 */
-void CBaseMonster::BecomeDead_(void)
+void CBaseMonster::__MAKE_VHOOK(BecomeDead)(void)
 {
 	// don't let autoaim aim at corpses.
 	pev->takedamage = DAMAGE_YES;
@@ -324,10 +324,10 @@ void CBaseMonster::CallGibMonster(void)
 }
 
 /* <5f938> ../cstrike/dlls/combat.cpp:598 */
-void CBaseMonster::Killed_(entvars_t *pevAttacker, int iGib)
+void CBaseMonster::__MAKE_VHOOK(Killed)(entvars_t *pevAttacker, int iGib)
 {
-	unsigned int cCount = 0;
-	BOOL fDone = FALSE;
+	// unsigned int cCount = 0;
+	// BOOL fDone = FALSE;
 
 	if (HasMemory(bits_MEMORY_KILLED))
 	{
@@ -450,7 +450,7 @@ void CGib::BounceGibTouch(CBaseEntity *pOther)
 		if (m_material != matNone && !RANDOM_LONG(0, 2))
 		{
 			float zvel = fabs(pev->velocity.z);
-			float volume = 0.8 * min(1, zvel / 450);
+			float volume = 0.8 * _min(1, zvel / 450);
 
 			CBreakable::MaterialSoundRandom(edict(), (Materials)m_material, volume);
 		}
@@ -525,7 +525,7 @@ void CGib::Spawn(const char *szGibModel)
 }
 
 /* <60aea> ../cstrike/dlls/combat.cpp:815 */
-int CBaseMonster::TakeHealth_(float flHealth, int bitsDamageType)
+int CBaseMonster::__MAKE_VHOOK(TakeHealth)(float flHealth, int bitsDamageType)
 {
 	if (pev->takedamage == DAMAGE_NO)
 		return 0;
@@ -546,7 +546,7 @@ int CBaseMonster::TakeHealth_(float flHealth, int bitsDamageType)
 // When a monster is poisoned via an arrow etc it takes all the poison damage at once.
 
 /* <60d7a> ../cstrike/dlls/combat.cpp:845 */
-int CBaseMonster::TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
+int CBaseMonster::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
 	float flTake;
 	Vector vecDir;
@@ -556,7 +556,7 @@ int CBaseMonster::TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, f
 
 	if (!IsAlive())
 	{
-		return DeadTakeDamage(pevInflictor, pevAttacker, flDamage, bitsDamageType);// Reverse me
+		return DeadTakeDamage(pevInflictor, pevAttacker, flDamage, bitsDamageType);
 	}
 
 	if (pev->deadflag == DEAD_NO)
@@ -1070,7 +1070,7 @@ NOBODY CBaseEntity *CBaseMonster::CheckTraceHullAttack(float flDist, int iDamage
 }
 
 /* <61ae6> ../cstrike/dlls/combat.cpp:1490 */
-NOBODY BOOL CBaseMonster::FInViewCone_(CBaseEntity *pEntity)
+NOBODY BOOL CBaseMonster::__MAKE_VHOOK(FInViewCone)(CBaseEntity *pEntity)
 {
 //	{
 //		class Vector2D vec2LOS;                               //  1492
@@ -1085,7 +1085,7 @@ NOBODY BOOL CBaseMonster::FInViewCone_(CBaseEntity *pEntity)
 }
 
 /* <61be6> ../cstrike/dlls/combat.cpp:1517 */
-NOBODY BOOL CBaseMonster::FInViewCone_(Vector *pOrigin)
+NOBODY BOOL CBaseMonster::__MAKE_VHOOK(FInViewCone)(Vector *pOrigin)
 {
 //	{
 //		class Vector2D vec2LOS;                               //  1519
@@ -1100,7 +1100,7 @@ NOBODY BOOL CBaseMonster::FInViewCone_(Vector *pOrigin)
 }
 
 /* <5ecb4> ../cstrike/dlls/combat.cpp:1543 */
-NOBODY BOOL CBaseEntity::FVisible_(CBaseEntity *pEntity)
+NOBODY BOOL CBaseEntity::__MAKE_VHOOK(FVisible)(CBaseEntity *pEntity)
 {
 //	{
 //		TraceResult tr;                                       //  1545
@@ -1113,7 +1113,7 @@ NOBODY BOOL CBaseEntity::FVisible_(CBaseEntity *pEntity)
 }
 
 /* <5e9bb> ../cstrike/dlls/combat.cpp:1576 */
-NOBODY BOOL CBaseEntity::FVisible_(Vector &vecOrigin)
+NOBODY BOOL CBaseEntity::__MAKE_VHOOK(FVisible)(Vector &vecOrigin)
 {
 //	{
 //		TraceResult tr;                                       //  1578
@@ -1123,7 +1123,7 @@ NOBODY BOOL CBaseEntity::FVisible_(Vector &vecOrigin)
 }
 
 /* <5e872> ../cstrike/dlls/combat.cpp:1600 */
-void CBaseEntity::TraceAttack_(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType)
+void CBaseEntity::__MAKE_VHOOK(TraceAttack)(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType)
 {
 	Vector vecOrigin = ptr->vecEndPos - vecDir * 4;
 
@@ -1142,7 +1142,7 @@ void CBaseEntity::TraceAttack_(entvars_t *pevAttacker, float flDamage, Vector ve
 }
 
 /* <61ce5> ../cstrike/dlls/combat.cpp:1647 */
-void CBaseMonster::TraceAttack_(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType)
+void CBaseMonster::__MAKE_VHOOK(TraceAttack)(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType)
 {
 	Vector vecOrigin = ptr->vecEndPos - vecDir * 4;
 
@@ -1550,7 +1550,7 @@ Vector __declspec(naked) CBaseEntity::FireBullets3(Vector vecSrc, Vector vecDirS
 }
 
 /* <5eb17> ../cstrike/dlls/combat.cpp:2075 */
-void CBaseEntity::TraceBleed_(float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType)
+void CBaseEntity::__MAKE_VHOOK(TraceBleed)(float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType)
 {
 	if (BloodColor() == DONT_BLEED)
 		return;

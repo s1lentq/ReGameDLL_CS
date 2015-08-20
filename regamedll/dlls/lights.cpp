@@ -26,16 +26,16 @@ IMPLEMENT_SAVERESTORE(CLight, CPointEntity);
 // Cache user-entity-field values until spawn is called.
 
 /* <e7bef> ../cstrike/dlls/lights.cpp:62 */
-void CLight::KeyValue_(KeyValueData *pkvd)
+void CLight::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "style"))
 	{
-		m_iStyle = atoi(pkvd->szValue);
+		m_iStyle = Q_atoi(pkvd->szValue);
 		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "pitch"))
 	{
-		pev->angles.x = atof(pkvd->szValue);
+		pev->angles.x = Q_atof(pkvd->szValue);
 		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "pattern"))
@@ -48,7 +48,7 @@ void CLight::KeyValue_(KeyValueData *pkvd)
 }
 
 /* <e7b78> ../cstrike/dlls/lights.cpp:92 */
-void CLight::Spawn_(void)
+void CLight::__MAKE_VHOOK(Spawn)(void)
 {
 	// inert light
 	if (FStringNull(pev->targetname))
@@ -72,7 +72,7 @@ void CLight::Spawn_(void)
 }
 
 /* <e7a30> ../cstrike/dlls/lights.cpp:117 */
-void CLight::Restart_(void)
+void CLight::__MAKE_VHOOK(Restart)(void)
 {
 	if (m_iStyle >= 32)
 	{
@@ -94,7 +94,7 @@ void CLight::Restart_(void)
 }
 
 /* <e7a6b> ../cstrike/dlls/lights.cpp:139 */
-void CLight::Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CLight::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	if (m_iStyle >= 32)
 	{
@@ -125,7 +125,7 @@ LINK_ENTITY_TO_CLASS(light_spot, CLight);
 LINK_ENTITY_TO_CLASS(light_environment, CEnvLight);
 
 /* <e7d08> ../cstrike/dlls/lights.cpp:177 */
-void CEnvLight::KeyValue_(KeyValueData *pkvd)
+void CEnvLight::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "_light"))
 	{
@@ -162,7 +162,7 @@ void CEnvLight::KeyValue_(KeyValueData *pkvd)
 }
 
 /* <e7bb3> ../cstrike/dlls/lights.cpp:215 */
-void CEnvLight::Spawn_(void)
+void CEnvLight::__MAKE_VHOOK(Spawn)(void)
 {
 #if defined(HOOK_GAMEDLL)
 // NOTE: fix negative the values for function sprintf from STD C++:

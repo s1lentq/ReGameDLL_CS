@@ -33,7 +33,7 @@ LINK_ENTITY_TO_CLASS(path_corner, CPathCorner);
 IMPLEMENT_SAVERESTORE(CPathCorner, CPointEntity);
 
 /* <122697> ../cstrike/dlls/pathcorner.cpp:54 */
-NOBODY void CPathCorner::KeyValue_(KeyValueData *pkvd)
+NOBODY void CPathCorner::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 //	FStrEq(const char *sz1,
 //		const char *sz2);  //    56
@@ -44,7 +44,7 @@ NOBODY void CPathCorner::KeyValue_(KeyValueData *pkvd)
 }
 
 /* <122325> ../cstrike/dlls/pathcorner.cpp:66 */
-NOBODY void CPathCorner::Spawn_(void)
+NOBODY void CPathCorner::__MAKE_VHOOK(Spawn)(void)
 {
 }
 
@@ -55,7 +55,7 @@ IMPLEMENT_SAVERESTORE(CPathTrack, CBaseEntity);
 LINK_ENTITY_TO_CLASS(path_track, CPathTrack);
 
 /* <122602> ../cstrike/dlls/pathcorner.cpp:86 */
-NOBODY void CPathTrack::KeyValue_(KeyValueData *pkvd)
+NOBODY void CPathTrack::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 //	FStrEq(const char *sz1,
 //		const char *sz2);  //    88
@@ -66,7 +66,7 @@ NOBODY void CPathTrack::KeyValue_(KeyValueData *pkvd)
 }
 
 /* <122433> ../cstrike/dlls/pathcorner.cpp:97 */
-NOBODY void CPathTrack::Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+NOBODY void CPathTrack::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 //	{
 //		int on;                                               //    99
@@ -99,7 +99,7 @@ NOBODY void CPathTrack::Link(void)
 }
 
 /* <12239a> ../cstrike/dlls/pathcorner.cpp:165 */
-NOBODY void CPathTrack::Spawn_(void)
+NOBODY void CPathTrack::__MAKE_VHOOK(Spawn)(void)
 {
 //	Vector(Vector::Spawn(//		float X,
 //		float Y,
@@ -111,7 +111,7 @@ NOBODY void CPathTrack::Spawn_(void)
 }
 
 /* <122c76> ../cstrike/dlls/pathcorner.cpp:180 */
-NOBODY void CPathTrack::Activate_(void)
+NOBODY void CPathTrack::__MAKE_VHOOK(Activate)(void)
 {
 }
 

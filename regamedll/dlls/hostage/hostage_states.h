@@ -220,8 +220,14 @@ public:
 	}
 	virtual void UpdateStationaryAnimation(CHostageImprov *improv);
 public:
-	void SetLeader(CBaseEntity *leader);
-	CBaseEntity *GetLeader(void);
+	void SetLeader(CBaseEntity *leader)
+	{
+		m_leader = leader;
+	}
+	CBaseEntity *GetLeader(void)
+	{
+		return m_leader;
+	}
 private:
 	EHANDLE m_leader;
 	Vector m_lastLeaderPos;

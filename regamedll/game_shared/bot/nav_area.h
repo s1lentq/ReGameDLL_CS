@@ -157,6 +157,7 @@ public:
 		if (dead == m_bottomArea)
 			m_bottomArea = NULL;
 	}
+
 };/* size: 68, cachelines: 2, members: 12 */
 
 typedef std::list<CNavLadder *> NavLadderList;
@@ -570,31 +571,30 @@ private:
 	CNavArea *m_prevOpen;
 	unsigned int m_openMarker;
 
-#ifdef _WIN32
+#if defined(_WIN32) && defined(HOOK_GAMEDLL)
 	int unknown_padding3;
-#endif // _WIN32
-
+#endif // HOOK_GAMEDLL
 	NavConnectList m_connect[ NUM_DIRECTIONS ];
 
-#ifdef _WIN32
+#if defined(_WIN32) && defined(HOOK_GAMEDLL)
 	int unknown_padding4;
 	int unknown_padding5;
 
 	int unknown_padding6;
 	int unknown_padding7;
-#endif // _WIN32
+#endif // HOOK_GAMEDLL
 
 	NavLadderList m_ladder[ NUM_LADDER_DIRECTIONS ];
 
-#ifdef _WIN32
+#if defined(_WIN32) && defined(HOOK_GAMEDLL)
 	int unknown_padding8;
-#endif // _WIN32
+#endif // HOOK_GAMEDLL
 
 	CNavNode *m_node[ NUM_CORNERS ];
 
-#ifdef _WIN32
+#if defined(_WIN32) && defined(HOOK_GAMEDLL)
 	int unknown_padding9;
-#endif // _WIN32
+#endif // HOOK_GAMEDLL
 
 	NavAreaList m_overlapList;
 
@@ -1270,12 +1270,6 @@ extern float editTimestamp;
 extern unsigned int BlockedID[ MAX_BLOCKED_AREAS ];
 extern int BlockedIDCount;
 
-#ifdef HOOK_GAMEDLL
-
-NOXREF void buildGoodSizedList(void);
-
-#endif // HOOK_GAMEDLL
-
 NOBODY bool IsHidingSpotInCover(const Vector *spot);
 NOBODY void ClassifySniperSpot(HidingSpot *spot);
 NOBODY void DestroyHidingSpots(void);
@@ -1318,5 +1312,6 @@ NOBODY void GenerateNavigationAreaMesh(void);
 extern float (*pGetZ__Vector)(const Vector *pos);
 extern CNavArea *(*pGetNearestNavArea)(const Vector *pos, bool anyZ);
 extern CNavArea *(*pGetNavArea)(const Vector *pos, float beneathLimit);
+extern void (*pDestroyNavigationMap)(void);
 
 #endif // NAV_AREA_H

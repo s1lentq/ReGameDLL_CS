@@ -148,7 +148,7 @@ void FindAllCalls(Section* section, CFuncAddr** calls, uint32_t findRefsTo);
 
 const char *stripClass(const char *str);
 void VirtualTableInit(void *ptr, const char *baseClass = NULL);
-void HIDDEN GetAddressVtableByClassname(const char *szClassName, const int iOffset = 0);
+void HIDDEN GetAddressVtableByClassname(const char *szClassName, const int iOffset = 0, bool bCreate = true);
 
 #endif // _WIN32 && REGAMEDLL_UNIT_TESTS
 

@@ -72,16 +72,16 @@
 class CSprite: public CPointEntity
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual void Restart(void);
-	NOBODY virtual int Save(CSave &save);
-	NOBODY virtual int Restore(CRestore &restore);
-	NOBODY virtual int ObjectCaps(void)
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual void Restart(void);
+	virtual int Save(CSave &save);
+	virtual int Restore(CRestore &restore);
+	virtual int ObjectCaps(void)
 	{
 		return ObjectCaps_();
 	}
-	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
 
@@ -96,19 +96,19 @@ public:
 		if (pev->spawnflags & SF_SPRITE_TEMPORARY)
 			flags = FCAP_DONT_SAVE;
 
-		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION)|flags;
+		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | flags;
 	}
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #endif // HOOK_GAMEDLL
 
 public:
-	NOBODY void EXPORT AnimateThink(void);
-	NOBODY void EXPORT ExpandThink(void);
+	void EXPORT AnimateThink(void);
+	void EXPORT ExpandThink(void);
 
-	NOBODY void Animate(float frames);
-	NOBODY void Expand(float scaleSpeed, float fadeSpeed);
-	NOBODY void SpriteInit(const char *pSpriteName, const Vector &origin);
+	void Animate(float frames);
+	NOXREF void Expand(float scaleSpeed, float fadeSpeed);
+	void SpriteInit(const char *pSpriteName, const Vector &origin);
 
 	void SetAttachment(edict_t *pEntity, int attachment)
 	{
@@ -120,8 +120,8 @@ public:
 			pev->movetype = MOVETYPE_FOLLOW;
 		}
 	}
-	NOBODY void TurnOff(void);
-	NOBODY void TurnOn(void);
+	void TurnOff(void);
+	void TurnOn(void);
 	float Frames(void)
 	{
 		return m_maxFrame;
@@ -161,8 +161,8 @@ public:
 		pev->nextthink = gpGlobals->time;
 	}
 
-	NOBODY void EXPORT AnimateUntilDead(void);
-	NOBODY static CSprite *SpriteCreate(const char *pSpriteName, const Vector &origin, BOOL animate);
+	void EXPORT AnimateUntilDead(void);
+	static CSprite *SpriteCreate(const char *pSpriteName, const Vector &origin, BOOL animate);
 
 	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[2];
 
@@ -177,13 +177,13 @@ private:
 class CBeam: public CBaseEntity
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual int ObjectCaps(void)
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual int ObjectCaps(void)
 	{
 		return ObjectCaps_();
 	}
-	NOBODY virtual Vector Center(void)
+	virtual Vector Center(void)
 	{
 		return Center_();
 	}
@@ -198,7 +198,7 @@ public:
 		if (pev->spawnflags & SF_BEAM_TEMPORARY)
 			flags = FCAP_DONT_SAVE;
 
-		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION)|flags;
+		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | flags;
 	}
 	Vector Center_(void)
 	{
@@ -208,15 +208,15 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	NOBODY void EXPORT TriggerTouch(CBaseEntity *pOther);
+	void EXPORT TriggerTouch(CBaseEntity *pOther);
 
 	void SetType(int type)
 	{
-		pev->rendermode = (pev->rendermode & 0xF0)|(type & 0x0F);
+		pev->rendermode = (pev->rendermode & 0xF0) | (type & 0x0F);
 	}
 	void SetFlags(int flags)
 	{
-		pev->rendermode = (pev->rendermode & 0x0F)|(flags&0xF0);
+		pev->rendermode = (pev->rendermode & 0x0F) | (flags & 0xF0);
 	}
 	void SetStartPos(const Vector &pos)
 	{
@@ -226,8 +226,8 @@ public:
 	{
 		pev->angles = pos;
 	}
-	NOBODY void SetStartEntity(int entityIndex);
-	NOBODY void SetEndEntity(int entityIndex);
+	void SetStartEntity(int entityIndex);
+	void SetEndEntity(int entityIndex);
 	void SetStartAttachment(int attachment)
 	{
 		pev->sequence = (pev->sequence & 0x0FFF) | ((attachment & 0xF) << 12);
@@ -283,8 +283,8 @@ public:
 		return pev->skin & 0xFFF;
 	}
 
-	NOBODY const Vector &GetStartPos(void);
-	NOBODY const Vector &GetEndPos(void);
+	const Vector &GetStartPos(void);
+	const Vector &GetEndPos(void);
 
 	int GetTexture(void)
 	{
@@ -311,17 +311,17 @@ public:
 		return pev->animtime;
 	}
 
-	NOBODY void RelinkBeam(void);
-	NOBODY void DoSparks(const Vector &start, const Vector &end);
-	NOBODY CBaseEntity *RandomTargetname(const char *szName);
-	NOBODY void BeamDamage(TraceResult *ptr);
-	NOBODY void BeamInit(const char *pSpriteName, int width);
-	NOBODY void PointsInit(const Vector &start, const Vector &end);
-	NOBODY void PointEntInit(const Vector &start, int endIndex);
-	NOBODY void EntsInit(int startIndex, int endIndex);
-	NOBODY void HoseInit(const Vector &start, const Vector &direction);
+	void RelinkBeam(void);
+	void DoSparks(const Vector &start, const Vector &end);
+	CBaseEntity *RandomTargetname(const char *szName);
+	void BeamDamage(TraceResult *ptr);
+	void BeamInit(const char *pSpriteName, int width);
+	void PointsInit(const Vector &start, const Vector &end);
+	void PointEntInit(const Vector &start, int endIndex);
+	void EntsInit(int startIndex, int endIndex);
+	void HoseInit(const Vector &start, const Vector &direction);
 
-	NOBODY static CBeam *BeamCreate(const char *pSpriteName, int width);
+	static CBeam *BeamCreate(const char *pSpriteName, int width);
 
 	void LiveForTime(float time)
 	{
@@ -341,12 +341,12 @@ public:
 class CLaser: public CBeam
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual void KeyValue(KeyValueData *pkvd);
-	NOBODY virtual int Save(CSave &save);
-	NOBODY virtual int Restore(CRestore &restore);
-	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual void KeyValue(KeyValueData *pkvd);
+	virtual int Save(CSave &save);
+	virtual int Restore(CRestore &restore);
+	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
 
@@ -360,12 +360,12 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	NOBODY void TurnOn(void);
-	NOBODY void TurnOff(void);
-	NOBODY int IsOn(void);
+	void TurnOn(void);
+	void TurnOff(void);
+	int IsOn(void);
 
-	NOBODY void FireAtPoint(TraceResult &point);
-	NOBODY void EXPORT StrikeThink(void);
+	void FireAtPoint(TraceResult &point);
+	void EXPORT StrikeThink(void);
 
 public:
 	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[3];
@@ -381,16 +381,16 @@ public:
 class CBubbling: public CBaseEntity
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual void KeyValue(KeyValueData *pkvd);
-	NOBODY virtual int Save(CSave &save);
-	NOBODY virtual int Restore(CRestore &restore);
-	NOBODY virtual int ObjectCaps(void)
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual void KeyValue(KeyValueData *pkvd);
+	virtual int Save(CSave &save);
+	virtual int Restore(CRestore &restore);
+	virtual int ObjectCaps(void)
 	{
 		return ObjectCaps_();
 	}
-	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
 
@@ -401,7 +401,7 @@ public:
 	int Restore_(CRestore &restore);
 	int ObjectCaps_(void)
 	{
-		return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION;
+		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION);
 	}
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
@@ -425,12 +425,12 @@ public:
 class CLightning: public CBeam
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual void KeyValue(KeyValueData *pkvd);
-	NOBODY virtual int Save(CSave &save);
-	NOBODY virtual int Restore(CRestore &restore);
-	NOBODY virtual void Activate(void);
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual void KeyValue(KeyValueData *pkvd);
+	virtual int Save(CSave &save);
+	virtual int Restore(CRestore &restore);
+	virtual void Activate(void);
 
 #ifdef HOOK_GAMEDLL
 
@@ -486,10 +486,10 @@ public:
 class CGlow: public CPointEntity
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual int Save(CSave &save);
-	NOBODY virtual int Restore(CRestore &restore);
-	NOBODY virtual void Think(void);
+	virtual void Spawn(void);
+	virtual int Save(CSave &save);
+	virtual int Restore(CRestore &restore);
+	virtual void Think(void);
 
 #ifdef HOOK_GAMEDLL
 
@@ -500,7 +500,7 @@ public:
 
 #endif // HOOK_GAMEDLL
 
-	NOBODY void Animate(float frames);
+	void Animate(float frames);
 public:
 	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[2];
 
@@ -516,6 +516,13 @@ class CBombGlow: public CSprite
 public:
 	virtual void Spawn(void);
 	virtual void Think(void);
+
+#ifdef HOOK_GAMEDLL
+
+	void Spawn_(void);
+	void Think_(void);
+
+#endif // HOOK_GAMEDLL
 
 public:
 	float m_lastTime;
@@ -571,7 +578,7 @@ class CEnvShooter: public CGibShooter
 public:
 	virtual void Precache(void);
 	virtual void KeyValue(KeyValueData *pkvd);
-	CGib *CreateGib(void);
+	virtual CGib *CreateGib(void);
 
 #ifdef HOOK_GAMEDLL
 
@@ -589,14 +596,16 @@ public:
 class CTestEffect: public CBaseDelay
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
+
 	void Spawn_(void);
 	void Precache_(void);
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+
 #endif // HOOK_GAMEDLL
 
 public:
@@ -617,14 +626,16 @@ public:
 class CBlood: public CPointEntity
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void KeyValue(KeyValueData *pkvd);
-	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	virtual void Spawn(void);
+	virtual void KeyValue(KeyValueData *pkvd);
+	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
+
 	void Spawn_(void);
 	void KeyValue_(KeyValueData *pkvd);
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+
 #endif // HOOK_GAMEDLL
 
 public:
@@ -659,9 +670,9 @@ public:
 class CShake: public CPointEntity
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void KeyValue(KeyValueData *pkvd);
-	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	virtual void Spawn(void);
+	virtual void KeyValue(KeyValueData *pkvd);
+	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
 
@@ -719,14 +730,16 @@ public:
 class CFade: public CPointEntity
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void KeyValue(KeyValueData *pkvd);
-	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	virtual void Spawn(void);
+	virtual void KeyValue(KeyValueData *pkvd);
+	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
+
 	void Spawn_(void);
 	void KeyValue_(KeyValueData *pkvd);
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+
 #endif // HOOK_GAMEDLL
 
 public:
@@ -757,16 +770,18 @@ public:
 class CMessage: public CPointEntity
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual void KeyValue(KeyValueData *pkvd);
-	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual void KeyValue(KeyValueData *pkvd);
+	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
+
 	void Spawn_(void);
 	void Precache_(void);
 	void KeyValue_(KeyValueData *pkvd);
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+
 #endif // HOOK_GAMEDLL
 
 };/* size: 152, cachelines: 3, members: 1 */
@@ -775,9 +790,9 @@ public:
 class CEnvFunnel: public CBaseDelay
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
 
@@ -796,9 +811,9 @@ public:
 class CEnvBeverage: public CBaseDelay
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
 
@@ -814,12 +829,14 @@ public:
 class CItemSoda: public CBaseEntity
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
+	virtual void Spawn(void);
+	virtual void Precache(void);
 
 #ifdef HOOK_GAMEDLL
+
 	void Spawn_(void);
 	void Precache_(void);
+
 #endif // HOOK_GAMEDLL
 
 public:
@@ -828,6 +845,27 @@ public:
 
 };/* size: 152, cachelines: 3, members: 1 */
 
-NOBODY int IsPointEntity(CBaseEntity *pEnt);
+int IsPointEntity(CBaseEntity *pEnt);
+
+// linked objects
+C_DLLEXPORT void info_target(entvars_t *pev);
+C_DLLEXPORT void env_bubbles(entvars_t *pev);
+C_DLLEXPORT void beam(entvars_t *pev);
+C_DLLEXPORT void env_lightning(entvars_t *pev);
+C_DLLEXPORT void env_beam(entvars_t *pev);
+C_DLLEXPORT void env_laser(entvars_t *pev);
+C_DLLEXPORT void env_glow(entvars_t *pev);
+C_DLLEXPORT void env_bombglow(entvars_t *pev);
+C_DLLEXPORT void env_sprite(entvars_t *pev);
+C_DLLEXPORT void gibshooter(entvars_t *pev);
+C_DLLEXPORT void env_shooter(entvars_t *pev);
+C_DLLEXPORT void test_effect(entvars_t *pev);
+C_DLLEXPORT void env_blood(entvars_t *pev);
+C_DLLEXPORT void env_shake(entvars_t *pev);
+C_DLLEXPORT void env_fade(entvars_t *pev);
+C_DLLEXPORT void env_message(entvars_t *pev);
+C_DLLEXPORT void env_funnel(entvars_t *pev);
+C_DLLEXPORT void env_beverage(entvars_t *pev);
+C_DLLEXPORT void item_sodacan(entvars_t *pev);
 
 #endif // EFFECTS_H

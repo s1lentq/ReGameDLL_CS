@@ -131,7 +131,7 @@ typedef struct playermove_s
 	int deadflag;
 	int spectator;					// Should we use spectator physics model?
 	int movetype;					// Our movement type, NOCLIP, WALK, FLY
-	int onground;
+	int onground;					// -1 = in air, else pmove entity number
 	int waterlevel;
 	int watertype;
 	int oldwaterlevel;

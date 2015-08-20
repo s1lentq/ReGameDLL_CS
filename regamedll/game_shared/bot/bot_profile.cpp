@@ -181,8 +181,14 @@ NOBODY void BotProfileManager::Reset(void)
 }
 
 /* <4a7fdf> ../game_shared/bot/bot_profile.cpp:579 */
-NOBODY const char *BotProfileManager::GetCustomSkin(int index)
+const char *BotProfileManager::GetCustomSkin(int index)
 {
+	if (index < FirstCustomSkin || index > LastCustomSkin)
+	{
+		return NULL;
+	}
+
+	return m_skins[ index - FirstCustomSkin ];
 }
 
 /* <4a8019> ../game_shared/bot/bot_profile.cpp:593 */
@@ -193,7 +199,7 @@ const char *BotProfileManager::GetCustomSkinFname(int index)
 		return NULL;
 	}
 
-	return m_skinModelnames[ index - FirstCustomSkin ];
+	return m_skinFilenames[ index - FirstCustomSkin ];	//return m_skinModelnames[ index - FirstCustomSkin ];
 }
 
 /* <4a8053> ../game_shared/bot/bot_profile.cpp:607 */
@@ -203,7 +209,8 @@ const char *BotProfileManager::GetCustomSkinModelname(int index)
 	{
 		return NULL;
 	}
-	return m_skins[ index - FirstCustomSkin ];
+
+	return m_skinModelnames[ index - FirstCustomSkin ];	//return m_skins[ index - FirstCustomSkin ];
 }
 
 /* <4a80db> ../game_shared/bot/bot_profile.cpp:621 */

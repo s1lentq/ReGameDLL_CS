@@ -34,11 +34,16 @@
 
 #include "hostage/hostage_improv.h"
 
-#define MAX_NODES 100
-#define MAX_HOSTAGES 12
-#define MAX_HOSTAGES_NAV 20
+#define MAX_NODES			100
+#define MAX_HOSTAGES			12
+#define MAX_HOSTAGES_NAV		20
 
-#define HOSTAGE_STEPSIZE 26.0
+#define HOSTAGE_STEPSIZE		26.0
+#define HOSTAGE_STEPSIZE_DEFAULT	18.0
+
+#define VEC_HOSTAGE_VIEW		Vector(0, 0, 12)
+#define VEC_HOSTAGE_HULL_MIN		Vector(-10, -10, 0)
+#define VEC_HOSTAGE_HULL_MAX		Vector(10, 10, 62)
 
 class CHostage;
 class CLocalNav;
@@ -106,10 +111,11 @@ public:
 	NOBODY virtual void Touch(CBaseEntity *pOther);
 	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
+public:
 	NOBODY void EXPORT IdleThink(void);
 	NOBODY void Remove(void);
-	NOBODY void RePosition(void);
-	NOBODY void SetActivity(int act);
+	void RePosition(void);
+	void SetActivity(int act);
 	NOBODY int GetActivity(void);
 	NOBODY float GetModifiedDamage(float flDamage, int nHitGroup);
 	NOBODY void SetFlinchActivity(void);
@@ -132,9 +138,18 @@ public:
 	NOBODY bool IsFollowingSomeone(void)
 	{
 		UNTESTED
-		return ((CHostageImprov *)m_improv)->IsFollowing();
+		return m_improv->IsFollowing(NULL);
 	}
-	NOBODY CBaseEntity *GetLeader(void);//
+	NOBODY CBaseEntity *GetLeader(void)
+	{
+		UNTESTED
+		if (m_improv != NULL)
+		{
+			return m_improv->GetFollowLeader();
+		}
+
+		return NULL;
+	}
 	NOBODY bool IsFollowing(const CBaseEntity *entity)
 	{
 		return (entity == m_hTargetEnt && m_State == FOLLOW);
@@ -263,7 +278,7 @@ public:
 	void ServerActivate(void);
 	void ServerDeactivate(void);
 
-	NOBODY void RestartRound(void);
+	void RestartRound(void);
 	void AddHostage(CHostage *hostage);
 	SimpleChatter *GetChatter(void)
 	{
@@ -351,5 +366,8 @@ private:
 
 void Hostage_RegisterCVars(void);
 NOBODY void InstallHostageManager(void);
+
+// refs
+extern void (*pCHostage__IdleThink)(void);
 
 #endif // HOSTAGE_H

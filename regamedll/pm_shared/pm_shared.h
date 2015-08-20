@@ -32,6 +32,10 @@
 #pragma once
 #endif
 
+#define MAX_CLIENTS			32
+
+#define PM_DEAD_VIEWHEIGHT		-8
+
 #define OBS_NONE			0
 #define OBS_CHASE_LOCKED		1
 #define OBS_CHASE_FREE			2
@@ -60,66 +64,70 @@
 #define pm_gcTextures (*ppm_gcTextures)
 #define pm_grgszTextureName (*ppm_grgszTextureName)
 #define pm_grgchTextureType (*ppm_grgchTextureType)
+#define rgStuckLast (*prgStuckLast)
+#define g_onladder (*pg_onladder)
 
 #endif // HOOK_GAMEDLL
 
 extern playermove_t *pmove;
 extern int pm_shared_initialized;
 extern vec3_t rgv3tStuckTable[54];
+extern int rgStuckLast[MAX_CLIENTS][2];
+extern int g_onladder;
 
 extern int pm_gcTextures;
 extern char pm_grgszTextureName[ CTEXTURESMAX ][ CBTEXTURENAMEMAX ];
 extern char pm_grgchTextureType[ CTEXTURESMAX ];
 
-NOXREF void PM_SwapTextures(int i, int j);
+void PM_SwapTextures(int i, int j);
 NOXREF int PM_IsThereGrassTexture(void);
-NOXREF void PM_SortTextures(void);
+void PM_SortTextures(void);
 void PM_InitTextureTypes(void);
 char PM_FindTextureType(char *name);
 void PM_PlayStepSound(int step, float fvol);
-NOXREF int PM_MapTextureTypeStepType(char chTextureType);
+int PM_MapTextureTypeStepType(char chTextureType);
 void PM_CatagorizeTextureType(void);
 void PM_UpdateStepSound(void);
-NOBODY qboolean PM_AddToTouched(pmtrace_t tr, vec3_t impactvelocity);
-NOBODY void PM_CheckVelocity(void);
-NOBODY int PM_ClipVelocity(vec3_t in, vec3_t normal, vec3_t out, float overbounce);
-NOBODY void PM_AddCorrectGravity(void);
-NOBODY void PM_FixupGravityVelocity(void);
-NOBODY int PM_FlyMove(void);
-NOBODY void PM_Accelerate(vec3_t wishdir, float wishspeed, float accel);
-NOBODY void PM_WalkMove(void);
-NOBODY void PM_Friction(void);
-NOBODY void PM_AirAccelerate(vec3_t wishdir, float wishspeed, float accel);
-NOBODY void PM_WaterMove(void);
-NOBODY void PM_AirMove(void);
-NOBODY qboolean PM_InWater(void);
-NOBODY qboolean PM_CheckWater(void);
-NOBODY void PM_CatagorizePosition(void);
-NOBODY int PM_GetRandomStuckOffsets(int nIndex, int server, vec3_t offset);
-NOBODY void PM_ResetStuckOffsets(int nIndex, int server);
-NOBODY int PM_CheckStuck(void);
-NOBODY void PM_SpectatorMove(void);
-NOBODY float PM_SplineFraction(float value, float scale);
-NOBODY float PM_SimpleSpline(float value);
-NOBODY void PM_FixPlayerCrouchStuck(int direction);
-NOBODY void PM_Duck(void);
-NOBODY void PM_LadderMove(physent_t *pLadder);
-NOBODY physent_t *PM_Ladder(void);
-NOBODY void PM_WaterJump(void);
-NOBODY void PM_AddGravity(void);
-NOBODY pmtrace_t PM_PushEntity(vec3_t push);
-NOBODY void PM_Physics_Toss(void);
-NOBODY void PM_NoClip(void);
-NOBODY void PM_PreventMegaBunnyJumping(void);
-NOBODY void PM_Jump(void);
-NOBODY void PM_CheckWaterJump(void);
-NOBODY void PM_CheckFalling(void);
-NOBODY void PM_PlayWaterSounds(void);
-NOXREF float PM_CalcRoll(vec_t *angles, vec_t *velocity, float rollangle, float rollspeed);
-NOXREF void PM_DropPunchAngle(vec_t *punchangle);
+qboolean PM_AddToTouched(pmtrace_t tr, vec_t *impactvelocity);
+void PM_CheckVelocity(void);
+int PM_ClipVelocity(vec_t *in, vec_t *normal, vec_t *out, float overbounce);
+void PM_AddCorrectGravity(void);
+void PM_FixupGravityVelocity(void);
+int PM_FlyMove(void);
+void PM_Accelerate(vec_t *wishdir, float_precision wishspeed, float accel);
+void PM_WalkMove(void);
+void PM_Friction(void);
+void PM_AirAccelerate(vec_t *wishdir, float wishspeed, float accel);
+void PM_WaterMove(void);
+void PM_AirMove(void);
+qboolean PM_InWater(void);
+qboolean PM_CheckWater(void);
+void PM_CatagorizePosition(void);
+int PM_GetRandomStuckOffsets(int nIndex, int server, vec_t *offset);
+void PM_ResetStuckOffsets(int nIndex, int server);
+int PM_CheckStuck(void);
+void PM_SpectatorMove(void);
+float PM_SplineFraction(float value, float scale);
+NOXREF float PM_SimpleSpline(float value);
+void PM_FixPlayerCrouchStuck(int direction);
+void PM_Duck(void);
+void PM_LadderMove(physent_t *pLadder);
+physent_t *PM_Ladder(void);
+void PM_WaterJump(void);
+void PM_AddGravity(void);
+pmtrace_t PM_PushEntity(vec_t *push);
+void PM_Physics_Toss(void);
+void PM_NoClip(void);
+void PM_PreventMegaBunnyJumping(void);
+void PM_Jump(void);
+void PM_CheckWaterJump(void);
+void PM_CheckFalling(void);
+void PM_PlayWaterSounds(void);
+float PM_CalcRoll(vec_t *angles, vec_t *velocity, float rollangle, float rollspeed);
+void PM_DropPunchAngle(vec_t *punchangle);
 void PM_CheckParamters(void);
 void PM_ReduceTimers(void);
-NOXREF qboolean PM_ShouldDoSpectMode(void);
+qboolean PM_ShouldDoSpectMode(void);
 void PM_PlayerMove(qboolean server);
 void PM_CreateStuckTable(void);
 void PM_Move(struct playermove_s *ppmove, int server);

@@ -1,164 +1,310 @@
 #include "precompiled.h"
 
-enum TutorStateType
+/*
+* Globals initialization
+*/
+#ifndef HOOK_GAMEDLL
+
+char *const g_TutorStateStrings[20] = 
 {
-	TUTORSTATE_UNDEFINED = 0,
-	TUTORSTATE_LOOKING_FOR_HOSTAGE,
-	TUTORSTATE_ESCORTING_HOSTAGE,
-	TUTORSTATE_LOOKING_FOR_LOST_HOSTAGE,
-	TUTORSTATE_FOLLOWING_HOSTAGE_ESCORT,
-	TUTORSTATE_MOVING_TO_BOMBSITE,
-	TUTORSTATE_LOOKING_FOR_BOMB_CARRIER,
-	TUTORSTATE_GUARDING_LOOSE_BOMB,
-	TUTORSTATE_DEFUSING_BOMB,
-	TUTORSTATE_GUARDING_HOSTAGE,
-	TUTORSTATE_MOVING_TO_INTERCEPT_ENEMY,
-	TUTORSTATE_LOOKING_FOR_HOSTAGE_ESCORT,
-	TUTORSTATE_ATTACKING_HOSTAGE_ESCORT,
-	TUTORSTATE_ESCORTING_BOMB_CARRIER,
-	TUTORSTATE_MOVING_TO_BOMB_SITE,
-	TUTORSTATE_PLANTING_BOMB,
-	TUTORSTATE_GUARDING_BOMB,
-	TUTORSTATE_LOOKING_FOR_LOOSE_BOMB,
-	TUTORSTATE_RUNNING_AWAY_FROM_TICKING_BOMB,
-	TUTORSTATE_BUYTIME,
-	TUTORSTATE_WAITING_FOR_START,
+	"#Cstrike_TutorState_Undefined",
+	"#Cstrike_TutorState_Looking_For_Hostage",
+	"#Cstrike_TutorState_Escorting_Hostage",
+	"#Cstrike_TutorState_Following_Hostage_Escort",
+	"#Cstrike_TutorState_Moving_To_Bombsite",
+	"#Cstrike_TutorState_Looking_For_Bomb_Carrier",
+	"#Cstrike_TutorState_Guarding_Loose_Bomb",
+	"#Cstrike_TutorState_Defusing_Bomb",
+	"#Cstrike_TutorState_Guarding_Hostage",
+	"#Cstrike_TutorState_Moving_To_Intercept_Enemy",
+	"#Cstrike_TutorState_Looking_For_Hostage_Escort",
+	"#Cstrike_TutorState_Attacking_Hostage_Escort",
+	"#Cstrike_TutorState_Escorting_Bomb_Carrier",
+	"#Cstrike_TutorState_Moving_To_Bomb_Site",
+	"#Cstrike_TutorState_Planting_Bomb",
+	"#Cstrike_TutorState_Guarding_Bomb",
+	"#Cstrike_TutorState_Looking_For_Loose_Bomb",
+	"#Cstrike_TutorState_Running_Away_From_Ticking_Bomb",
+	"#Cstrike_TutorState_Buy_Time",
+	"#Cstrike_TutorState_Waiting_For_Start"
 };
+#else
+
+char *const g_TutorStateStrings[20];
+
+#endif // HOOK_GAMEDLL
 
 /* <22bf8e> ../cstrike/dlls/tutor_cs_states.cpp:53 */
-NOBODY CCSTutorStateSystem::CCSTutorStateSystem(void)
+CCSTutorStateSystem::CCSTutorStateSystem(void)
 {
-//	CCSTutorUndefinedState(CCSTutorUndefinedState *const this);  //    55
+	m_currentState = new CCSTutorUndefinedState;
 }
 
 /* <22bd56> ../cstrike/dlls/tutor_cs_states.cpp:58 */
-NOBODY CCSTutorStateSystem::~CCSTutorStateSystem(void)
+CCSTutorStateSystem::~CCSTutorStateSystem(void)
 {
+	if (m_currentState != NULL)
+	{
+		delete m_currentState;
+		m_currentState = NULL;
+	}
 }
 
 /* <22bccf> ../cstrike/dlls/tutor_cs_states.cpp:68 */
-NOBODY bool CCSTutorStateSystem::UpdateState(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
+bool CCSTutorStateSystem::__MAKE_VHOOK(UpdateState)(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
 {
-//	{
-//		enum TutorStateType nextStateType;                    //    70
-//		CCSTutorUndefinedState(CCSTutorUndefinedState *const this);  //    76
-//	}
+	if (m_currentState == NULL)
+	{
+		m_currentState = new CCSTutorUndefinedState;
+	}
+
+	if (m_currentState != NULL)
+	{
+		TutorStateType nextStateType = static_cast<TutorStateType>(m_currentState->CheckForStateTransition(event, entity, other));
+
+		if (nextStateType != TUTORSTATE_UNDEFINED)
+		{
+			if (m_currentState != NULL)
+			{
+				delete m_currentState;
+			}
+
+			m_currentState = NULL;
+			m_currentState = ConstructNewState(nextStateType);
+
+			return true;
+		}
+	}
+
+	return false;
 }
 
 /* <22b96f> ../cstrike/dlls/tutor_cs_states.cpp:108 */
-NOBODY char *CCSTutorStateSystem::GetCurrentStateString(void)
+char *CCSTutorStateSystem::__MAKE_VHOOK(GetCurrentStateString)(void)
 {
+	if (m_currentState != NULL)
+	{
+		return m_currentState->GetStateString();
+	}
+
+	return NULL;
 }
 
 /* <22bbfe> ../cstrike/dlls/tutor_cs_states.cpp:118 */
-NOBODY CBaseTutorState *CCSTutorStateSystem::ConstructNewState(int stateType)
+CBaseTutorState *CCSTutorStateSystem::__MAKE_VHOOK(ConstructNewState)(int stateType)
 {
-//	{
-//		class CBaseTutorState *ret;                          //   120
-//		CCSTutorWaitingForStartState(CCSTutorWaitingForStartState *const this);  //   128
-//		CCSTutorBuyMenuState(CCSTutorBuyMenuState *const this);  //   132
-//	}
-//	ConstructNewState(CCSTutorStateSystem *const this,
-//				int stateType);  //   118
+	CBaseTutorState *ret = NULL;
+
+	if (stateType != TUTORSTATE_UNDEFINED)
+	{
+		if (stateType == TUTORSTATE_BUYTIME)
+		{
+			ret = new CCSTutorBuyMenuState;
+		}
+		else if (stateType == TUTORSTATE_WAITING_FOR_START)
+		{
+			ret = new CCSTutorWaitingForStartState;
+		}
+	}
+	else
+	{
+		ret = new CCSTutorUndefinedState;
+	}
+
+	return ret;
 }
 
 /* <22bfcb> ../cstrike/dlls/tutor_cs_states.cpp:141 */
-NOBODY CCSTutorUndefinedState::CCSTutorUndefinedState(void)
+CCSTutorUndefinedState::CCSTutorUndefinedState(void)
 {
+	m_type = 0;
 }
 
 /* <22bb33> ../cstrike/dlls/tutor_cs_states.cpp:146 */
-NOBODY CCSTutorUndefinedState::~CCSTutorUndefinedState(void)
+CCSTutorUndefinedState::~CCSTutorUndefinedState(void)
 {
-//	~CCSTutorUndefinedState(CCSTutorUndefinedState::~CCSTutorUndefinedState();  //   148
+	;
 }
 
 /* <22bdd8> ../cstrike/dlls/tutor_cs_states.cpp:150 */
-NOBODY int CCSTutorUndefinedState::CheckForStateTransition(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
+int CCSTutorUndefinedState::__MAKE_VHOOK(CheckForStateTransition)(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
 {
-//	{
-//		int ret;                                              //   152
-//		HandlePlayerSpawned(CCSTutorUndefinedState *const this,
-//					class CBaseEntity *entity,
-//					class CBaseEntity *other);  //   156
-//	}
+	int ret = 0;
+
+	if (event == EVENT_PLAYER_SPAWNED)
+	{
+		ret = HandlePlayerSpawned(entity, other);
+	}
+
+	return ret;
 }
 
 /* <22bfed> ../cstrike/dlls/tutor_cs_states.cpp:163 */
-NOBODY int CCSTutorUndefinedState::HandlePlayerSpawned(CBaseEntity *entity, CBaseEntity *other)
+int CCSTutorUndefinedState::HandlePlayerSpawned(CBaseEntity *entity, CBaseEntity *other)
 {
-//	{
-//		class CBasePlayer *localPlayer;                      //   171
-//		class CBasePlayer *player;                           //   178
-//	}
+	CBasePlayer *localPlayer = UTIL_GetLocalPlayer();
+
+	if (localPlayer != NULL)
+	{
+		CBasePlayer *player = reinterpret_cast<CBasePlayer *>(entity);
+
+		if (player != NULL && player->IsPlayer() && player == localPlayer)
+		{
+			// flags
+			return TUTOR_STATE_FLAG_1;
+		}
+	}
+
+	return 0;
 }
 
 /* <22b995> ../cstrike/dlls/tutor_cs_states.cpp:190 */
-NOBODY char *CCSTutorUndefinedState::GetStateString(void)
+char *CCSTutorUndefinedState::__MAKE_VHOOK(GetStateString)(void)
 {
+	return NULL;
 }
 
 /* <22c03e> ../cstrike/dlls/tutor_cs_states.cpp:198 */
-NOBODY CCSTutorWaitingForStartState::CCSTutorWaitingForStartState(void)
+CCSTutorWaitingForStartState::CCSTutorWaitingForStartState(void)
 {
+	m_type = (TUTORMESSAGETYPE_ENEMY_DEATH | TUTORMESSAGETYPE_BUY);
 }
 
 /* <22bab6> ../cstrike/dlls/tutor_cs_states.cpp:203 */
-NOBODY CCSTutorWaitingForStartState::~CCSTutorWaitingForStartState(void)
+CCSTutorWaitingForStartState::~CCSTutorWaitingForStartState(void)
 {
+	;
 }
 
 /* <22beca> ../cstrike/dlls/tutor_cs_states.cpp:207 */
-NOBODY int CCSTutorWaitingForStartState::CheckForStateTransition(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
+int CCSTutorWaitingForStartState::__MAKE_VHOOK(CheckForStateTransition)(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
 {
-//	{
-//		int ret;                                              //   209
-//		HandlePlayerSpawned(CCSTutorWaitingForStartState *const this,
-//					class CBaseEntity *entity,
-//					class CBaseEntity *other);  //   214
-//	}
+	int ret = 0;
+
+	switch (event)
+	{
+	case EVENT_PLAYER_SPAWNED:
+		ret = HandlePlayerSpawned(entity, other);
+		break;
+	case EVENT_BUY_TIME_START:
+		ret = HandleBuyTimeStart(entity, other);
+		break;
+	}
+
+	return ret;
 }
 
 /* <22b9bb> ../cstrike/dlls/tutor_cs_states.cpp:224 */
-NOBODY char *CCSTutorWaitingForStartState::GetStateString(void)
+char *CCSTutorWaitingForStartState::__MAKE_VHOOK(GetStateString)(void)
 {
+	return g_TutorStateStrings[m_type];
 }
 
 /* <22c060> ../cstrike/dlls/tutor_cs_states.cpp:230 */
-NOBODY int CCSTutorWaitingForStartState::HandlePlayerSpawned(CBaseEntity *entity, CBaseEntity *other)
+int CCSTutorWaitingForStartState::HandlePlayerSpawned(CBaseEntity *entity, CBaseEntity *other)
 {
-//	{
-//		class CBasePlayer *localPlayer;                      //   238
-//		class CBasePlayer *player;                           //   245
-//	}
+	CBasePlayer *localPlayer = UTIL_GetLocalPlayer();
+
+	if (localPlayer != NULL)
+	{
+		CBasePlayer *player = reinterpret_cast<CBasePlayer *>(entity);
+
+		if (player != NULL && player->IsPlayer() && player == localPlayer)
+		{
+			// flags
+			return TUTOR_STATE_FLAG_1;
+		}
+	}
+
+	return 0;
 }
 
 /* <22c0b1> ../cstrike/dlls/tutor_cs_states.cpp:257 */
-NOBODY int CCSTutorWaitingForStartState::HandleBuyTimeStart(CBaseEntity *entity, CBaseEntity *other)
+int CCSTutorWaitingForStartState::HandleBuyTimeStart(CBaseEntity *entity, CBaseEntity *other)
 {
+	return TUTOR_STATE_FLAG_2;
 }
 
 /* <22c0e2> ../cstrike/dlls/tutor_cs_states.cpp:266 */
-NOBODY CCSTutorBuyMenuState::CCSTutorBuyMenuState(void)
+CCSTutorBuyMenuState::CCSTutorBuyMenuState(void)
 {
+	m_type = (TUTORMESSAGETYPE_DEFAULT | TUTORMESSAGETYPE_FRIEND_DEATH | TUTORMESSAGETYPE_BUY);
 }
 
 /* <22ba5a> ../cstrike/dlls/tutor_cs_states.cpp:271 */
-NOBODY CCSTutorBuyMenuState::~CCSTutorBuyMenuState(void)
+CCSTutorBuyMenuState::~CCSTutorBuyMenuState(void)
 {
+	;
 }
 
 /* <22b9e1> ../cstrike/dlls/tutor_cs_states.cpp:275 */
-NOBODY int CCSTutorBuyMenuState::CheckForStateTransition(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
+int CCSTutorBuyMenuState::__MAKE_VHOOK(CheckForStateTransition)(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
 {
+	if (event == EVENT_ROUND_START)
+	{
+		return HandleRoundStart(entity, other);
+	}
+
+	return 0;
 }
 
 /* <22ba34> ../cstrike/dlls/tutor_cs_states.cpp:288 */
-NOBODY char *CCSTutorBuyMenuState::GetStateString(void)
+char *CCSTutorBuyMenuState::__MAKE_VHOOK(GetStateString)(void)
 {
+	return g_TutorStateStrings[m_type];
 }
 
 /* <22c104> ../cstrike/dlls/tutor_cs_states.cpp:293 */
-NOBODY int CCSTutorBuyMenuState::HandleRoundStart(CBaseEntity *entity, CBaseEntity *other)
+int CCSTutorBuyMenuState::HandleRoundStart(CBaseEntity *entity, CBaseEntity *other)
 {
+	return TUTOR_STATE_FLAG_1;
 }
+
+#ifdef HOOK_GAMEDLL
+
+bool CCSTutorStateSystem::UpdateState(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
+{
+	return UpdateState_(event, entity, other);
+}
+
+char *CCSTutorStateSystem::GetCurrentStateString(void)
+{
+	return GetCurrentStateString_();
+}
+
+CBaseTutorState *CCSTutorStateSystem::ConstructNewState(int stateType)
+{
+	return ConstructNewState_(stateType);
+}
+
+int CCSTutorUndefinedState::CheckForStateTransition(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
+{
+	return CheckForStateTransition_(event, entity, other);
+}
+
+char *CCSTutorUndefinedState::GetStateString(void)
+{
+	return GetStateString_();
+}
+
+int CCSTutorWaitingForStartState::CheckForStateTransition(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
+{
+	return CheckForStateTransition_(event, entity, other);
+}
+
+char *CCSTutorWaitingForStartState::GetStateString(void)
+{
+	return GetStateString_();
+}
+
+int CCSTutorBuyMenuState::CheckForStateTransition(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
+{
+	return CheckForStateTransition_(event, entity, other);
+}
+
+char *CCSTutorBuyMenuState::GetStateString(void)
+{
+	return GetStateString_();
+}
+
+#endif // HOOK_GAMEDLL

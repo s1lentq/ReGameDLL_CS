@@ -88,7 +88,7 @@ void Bot_RegisterCvars(void)
 //}
 
 /* <3342ac> ../cstrike/dlls/bot/cs_bot_init.cpp:137 */
-NOBODY bool CCSBot::Initialize_(const BotProfile *profile)
+NOBODY bool CCSBot::__MAKE_VHOOK(Initialize)(const BotProfile *profile)
 {
 	CBot::Initialize(profile);
 
@@ -264,7 +264,7 @@ NOBODY void CCSBot::ResetValues(void)
 }
 
 /* <3342e4> ../cstrike/dlls/bot/cs_bot_init.cpp:336 */
-NOBODY void CCSBot::SpawnBot_(void)
+NOBODY void CCSBot::__MAKE_VHOOK(SpawnBot)(void)
 {
 //	{
 //		class CCSBotManager *ctrl;                           //   338
@@ -273,7 +273,7 @@ NOBODY void CCSBot::SpawnBot_(void)
 }
 
 /* <3338f7> ../cstrike/dlls/bot/cs_bot_init.cpp:366 */
-NOBODY void CCSBot::RoundRespawn_(void)
+NOBODY void CCSBot::__MAKE_VHOOK(RoundRespawn)(void)
 {
 }
 

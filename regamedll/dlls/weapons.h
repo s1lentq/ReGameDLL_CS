@@ -1675,6 +1675,7 @@ NOXREF void UTIL_PrecacheOtherWeapon2(const char *szClassname);
 void W_Precache(void);
 NOXREF BOOL CanAttack(float attack_time, float curtime, BOOL isPredicted);
 
+// linked object
 C_DLLEXPORT void weapon_usp(entvars_t *pev);
 
 #endif // WEAPONS_H

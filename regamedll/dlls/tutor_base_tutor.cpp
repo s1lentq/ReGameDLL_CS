@@ -3,79 +3,137 @@
 CBaseTutor *TheTutor;
 
 /* <1f545d> ../cstrike/dlls/tutor_base_tutor.cpp:22 */
-NOBODY TutorMessageEvent::TutorMessageEvent(int mid, int duplicateID, float time, float lifetime, int priority)
+TutorMessageEvent::TutorMessageEvent(int mid, int duplicateID, float time, float lifetime, int priority)
 {
+	m_messageID = mid;
+	m_duplicateID = duplicateID;
+	m_activationTime = time;
+	m_lifetime = lifetime;
+	m_priority = priority;
+
+	m_paramList = NULL;
+	m_numParameters = 0;
+	m_next = NULL;
 }
 
 /* <1f4d07> ../cstrike/dlls/tutor_base_tutor.cpp:34 */
-//NOBODY void TutorMessageEvent::~TutorMessageEvent(void)
-//{
-//}
+TutorMessageEvent::~TutorMessageEvent(void)
+{
+	;
+}
 
 /* <1f54a6> ../cstrike/dlls/tutor_base_tutor.cpp:38 */
-NOBODY bool TutorMessageEvent::IsActive(float time)
+bool TutorMessageEvent::IsActive(float time)
 {
+	return (m_lifetime + m_activationTime >= time);
 }
 
 /* <1f54da> ../cstrike/dlls/tutor_base_tutor.cpp:48 */
-NOBODY int TutorMessageEvent::GetPriority(void)
+int TutorMessageEvent::GetPriority(void)
 {
+	return m_priority;
 }
 
 /* <1f5500> ../cstrike/dlls/tutor_base_tutor.cpp:53 */
-NOBODY float TutorMessageEvent::GetTimeActive(float time)
+float TutorMessageEvent::GetTimeActive(float time)
 {
+	return (time - m_activationTime);
 }
 
 /* <1f5534> ../cstrike/dlls/tutor_base_tutor.cpp:58 */
-NOBODY void TutorMessageEvent::SetActivationTime(float time)
+void TutorMessageEvent::SetActivationTime(float time)
 {
+	m_activationTime = time;
 }
 
 /* <1f5568> ../cstrike/dlls/tutor_base_tutor.cpp:63 */
-NOBODY int TutorMessageEvent::GetID(void)
+int TutorMessageEvent::GetID(void)
 {
+	return m_messageID;
 }
 
 /* <1f5589> ../cstrike/dlls/tutor_base_tutor.cpp:68 */
-NOBODY int TutorMessageEvent::GetDuplicateID(void)
+int TutorMessageEvent::GetDuplicateID(void)
 {
+	return m_duplicateID;
 }
 
 /* <1f55af> ../cstrike/dlls/tutor_base_tutor.cpp:73 */
-NOBODY void TutorMessageEvent::SetNext(TutorMessageEvent *next)
+void TutorMessageEvent::SetNext(TutorMessageEvent *next)
 {
+	m_next = next;
 }
 
 /* <1f55e3> ../cstrike/dlls/tutor_base_tutor.cpp:78 */
-NOBODY TutorMessageEvent *TutorMessageEvent::GetNext(void)
+TutorMessageEvent *TutorMessageEvent::GetNext(void)
 {
+	return m_next;
 }
 
 /* <1f5604> ../cstrike/dlls/tutor_base_tutor.cpp:83 */
-NOBODY void TutorMessageEvent::AddParameter(char *str)
+void TutorMessageEvent::AddParameter(char *str)
 {
-//	{
-//		class TutorMessageEventParam *param;                 //    88
-//		class TutorMessageEventParam *temp;                  //   101
-//	}
+	if (str == NULL)
+	{
+		return;
+	}
+
+	TutorMessageEventParam *param = new TutorMessageEventParam;
+
+	param->m_next = NULL;
+	param->m_data = new char[Q_strlen(str) + 1];
+
+	if (param->m_data != NULL)
+	{
+		Q_strcpy(param->m_data, str);
+		param->m_data[Q_strlen(str)] = '\0';
+		++m_numParameters;
+
+		if (m_paramList != NULL)
+		{
+			TutorMessageEventParam *temp = m_paramList;
+
+			while (temp->m_next)
+				temp = temp->m_next;
+
+			temp->m_next = param;
+		}
+		else
+			m_paramList = param;
+	}
 }
 
 /* <1f565d> ../cstrike/dlls/tutor_base_tutor.cpp:117 */
-NOBODY char *TutorMessageEvent::GetNextParameter(char *buf, int buflen)
+char *TutorMessageEvent::GetNextParameter(char *buf, int buflen)
 {
-//	{
-//		class TutorMessageEventParam *param;                 //   119
-//	}
+	TutorMessageEventParam *param = m_paramList;
+
+	if (param == NULL)
+	{
+		return NULL;
+	}
+
+	m_numParameters--;
+	m_paramList = param->m_next;
+
+	Q_strncpy(buf, param->m_data, buflen);
+
+#ifdef REGAMEDLL_FIXES
+	buf[buflen] = '\0';
+#endif // REGAMEDLL_FIXES
+
+	delete param;
+	return buf;
 }
 
 /* <1f569e> ../cstrike/dlls/tutor_base_tutor.cpp:136 */
-NOBODY int TutorMessageEvent::GetNumParameters(void)
+int TutorMessageEvent::GetNumParameters(void)
 {
+	return m_numParameters;
 }
 
 /* <1f56d8> ../cstrike/dlls/tutor_base_tutor.cpp:144 */
-NOBODY CBaseTutor::CBaseTutor(void)
+CBaseTutor::CBaseTutor(void)
 {
 	m_eventList = NULL;
 	m_deadAirStartTime = 0;
@@ -83,15 +141,17 @@ NOBODY CBaseTutor::CBaseTutor(void)
 }
 
 /* <1f4d28> ../cstrike/dlls/tutor_base_tutor.cpp:152 */
-NOBODY CBaseTutor::~CBaseTutor(void)
+CBaseTutor::~CBaseTutor(void)
 {
-//	{
-//		class TutorMessageEvent *event;				//   154
-//		{
-//			class TutorMessageEvent *temp;			//   157
-//			GetNext(TutorMessageEvent *const this);		//   158
-//		}
-//	}
+	TutorMessageEvent *event = m_eventList;
+
+	while (event != NULL)
+	{
+		TutorMessageEvent *temp = event;
+		event = event->GetNext();
+
+		delete temp;
+	}
 }
 
 /* <1f5766> ../cstrike/dlls/tutor_base_tutor.cpp:163 */
@@ -102,52 +162,88 @@ void CBaseTutor::OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *
 }
 
 /* <1f5842> ../cstrike/dlls/tutor_base_tutor.cpp:172 */
-NOBODY void CBaseTutor::ShotFired(Vector source, Vector target)
+void CBaseTutor::ShotFired(Vector source, Vector target)
 {
-//	Vector(Vector *const this,
-//		const Vector &v);  //   175
-//	Vector(Vector *const this,
-//		const Vector &v);  //   175
+	HandleShotFired(source, target);
 }
 
 /* <1f58ca> ../cstrike/dlls/tutor_base_tutor.cpp:178 */
-NOXREF void CBaseTutor::CheckForStateTransition(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
+void CBaseTutor::CheckForStateTransition(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
 {
 	if (m_stateSystem->UpdateState(event, entity, other))
+	{
 		DisplayNewStateDescriptionToPlayer();
+	}
 }
 
 /* <1f58f5> ../cstrike/dlls/tutor_base_tutor.cpp:189 */
-NOBODY void CBaseTutor::StartFrame(float time)
+void CBaseTutor::StartFrame(float time)
 {
 	TutorThink(time);
 }
 
 /* <1f5993> ../cstrike/dlls/tutor_base_tutor.cpp:192 */
-NOBODY void CBaseTutor::DisplayMessageToPlayer(CBasePlayer *player, int id, const char *szMessage, TutorMessageEvent *event)
+void CBaseTutor::DisplayMessageToPlayer(CBasePlayer *player, int id, const char *szMessage, TutorMessageEvent *event)
 {
-//	{
-//		class TutorMessage *definition;                      //   196
-//		unsigned char numArgs;                                //   202
-//		char param;                                           //   207
-//		MESSAGE_BEGIN(int msg_dest,
-//				int msg_type,
-//				const float *pOrigin,
-//				entvars_t *ent);  //   198
-//		{
-//			int arg;                                      //   210
-//			{
-//				char *str;                           //   212
-//				GetNextParameter(TutorMessageEvent *const this,
-//						char *buf,
-//						int buflen);  //   212
-//			}
-//		}
-//	}
+	TutorMessage *definition;
+	int numArgs;
+	char param[512];
+
+	numArgs = event->GetNumParameters();
+	definition = GetTutorMessageDefinition(event->GetID());
+
+	MESSAGE_BEGIN(MSG_ONE, gmsgTutorText, NULL, player->pev);
+		WRITE_STRING(szMessage);
+		WRITE_BYTE(numArgs);
+
+		for (int arg = 0; arg < numArgs; arg++)
+		{
+			char *str = event->GetNextParameter(param, sizeof(param));
+
+			if (str != NULL)
+				WRITE_STRING(str);
+			else
+				WRITE_STRING("");
+		}
+
+		WRITE_SHORT(id);
+		WRITE_SHORT(player->IsAlive() == FALSE);
+
+		if (definition != NULL)
+			WRITE_SHORT(definition->m_type);
+		else
+			WRITE_SHORT(TUTORMESSAGETYPE_DEFAULT);
+	MESSAGE_END();
+
+	m_deadAirStartTime = -1.0f;
+
+	if (definition != NULL)
+	{
+		if (gpGlobals->time - m_roundStartTime > 1.0f)
+		{
+			switch (definition->m_type)
+			{
+			case TUTORMESSAGETYPE_FRIEND_DEATH:
+				EMIT_SOUND_DYN(ENT(player->pev), CHAN_ITEM, "events/friend_died.wav", VOL_NORM, ATTN_NORM, 0, 120);
+				break;
+			case TUTORMESSAGETYPE_ENEMY_DEATH:
+				EMIT_SOUND_DYN(ENT(player->pev), CHAN_ITEM, "events/enemy_died.wav", VOL_NORM, ATTN_NORM, 0, 85);
+				break;
+			default:
+				EMIT_SOUND_DYN(ENT(player->pev), CHAN_ITEM, "events/tutor_msg.wav", VOL_NORM, ATTN_NORM, 0, 100);
+				break;
+			}
+		}
+
+		if (definition->m_decay)
+		{
+			REGISTER_TUTOR_MESSAGE_SHOWN(id);
+		}
+	}
 }
 
 /* <1f5ad1> ../cstrike/dlls/tutor_base_tutor.cpp:264 */
-NOBODY void CBaseTutor::DrawLineToEntity(CBasePlayer *player, int entindex, int id)
+NOXREF void CBaseTutor::DrawLineToEntity(CBasePlayer *player, int entindex, int id)
 {
 	MESSAGE_BEGIN(MSG_ONE, gmsgTutorLine, NULL, player->pev);
 		WRITE_SHORT(entindex);
@@ -156,15 +252,16 @@ NOBODY void CBaseTutor::DrawLineToEntity(CBasePlayer *player, int entindex, int 
 }
 
 /* <1f5b4f> ../cstrike/dlls/tutor_base_tutor.cpp:275 */
-NOXREF void CBaseTutor::DisplayNewStateDescriptionToPlayer(void)
+void CBaseTutor::DisplayNewStateDescriptionToPlayer(void)
 {
-	char *desc;
 	CBasePlayer *localPlayer = UTIL_GetLocalPlayer();
 
 	if (localPlayer == NULL)
+	{
 		return;
+	}
 
-	desc = m_stateSystem->GetCurrentStateString();
+	char *desc = m_stateSystem->GetCurrentStateString();
 
 	if (!desc)
 	{
@@ -189,79 +286,195 @@ void CBaseTutor::CloseCurrentWindow(void)
 }
 
 /* <1f5c26> ../cstrike/dlls/tutor_base_tutor.cpp:307 */
-NOBODY void CBaseTutor::CalculatePathForObjective(CBaseEntity *player)
+void CBaseTutor::CalculatePathForObjective(CBaseEntity *player)
 {
+	;
 }
 
 /* <1f52e6> ../cstrike/dlls/tutor_base_tutor.cpp:312 */
-NOBODY bool CBaseTutor::IsEntityInViewOfPlayer(CBaseEntity *entity, CBasePlayer *player)
+bool CBaseTutor::__MAKE_VHOOK(IsEntityInViewOfPlayer)(CBaseEntity *entity, CBasePlayer *player)
 {
-//	{
-//		Vector eye;                                     //   332
-//		TraceResult result;                                   //   334
-//		operator-(const Vector *const this,
-//				const Vector &v);  //   320
-//		Length(const Vector *const this);  //   320
-//	}
-//	IsEntityInViewOfPlayer(CBaseTutor *const this,
-//				class CBaseEntity *entity,
-//				class CBasePlayer *player);  //   312
+	if (entity == NULL || player == NULL)
+	{
+		return false;
+	}
+
+	if (cv_tutor_view_distance.value < (entity->pev->origin - player->pev->origin).Length())
+	{
+		return false;
+	}
+
+	if (player->FInViewCone(entity))
+	{
+		TraceResult result;
+		Vector eye = player->pev->view_ofs + player->pev->origin;
+
+		UTIL_TraceLine(eye, entity->pev->origin, ignore_monsters, ignore_glass, player->pev->pContainingEntity, &result);
+
+		if (result.flFraction == 1.0f)
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 
 /* <1f508a> ../cstrike/dlls/tutor_base_tutor.cpp:343 */
-NOBODY bool CBaseTutor::IsPlayerLookingAtPosition(Vector *origin, CBasePlayer *player)
+bool CBaseTutor::__MAKE_VHOOK(IsPlayerLookingAtPosition)(Vector *origin, CBasePlayer *player)
 {
-//	{
-//		Vector eye;                                     //   363
-//		TraceResult result;                                   //   364
-//		operator-(const Vector *const this,
-//				const Vector &v);  //   351
-//		Length(const Vector *const this);  //   351
-//	}
-//	IsPlayerLookingAtPosition(CBaseTutor *const this,
-//					Vector *origin,
-//					class CBasePlayer *player);  //   343
+	if (origin == NULL || player == NULL)
+	{
+		return false;
+	}
+
+	if (cv_tutor_look_distance.value < (*origin - player->pev->origin).Length())
+	{
+		return false;
+	}
+
+	if (player->IsLookingAtPosition(origin, cv_tutor_look_angle.value))
+	{
+		TraceResult result;
+		Vector eye = player->pev->origin + player->pev->view_ofs;
+
+		UTIL_TraceLine(eye, *origin, ignore_monsters, ignore_glass, ENT(player->pev), &result);
+
+		if (result.flFraction == 1.0f)
+			return true;
+	}
+
+	return false;
 }
 
 /* <1f4e92> ../cstrike/dlls/tutor_base_tutor.cpp:373 */
-NOBODY bool CBaseTutor::IsPlayerLookingAtEntity(CBaseEntity *entity, CBasePlayer *player)
+bool CBaseTutor::__MAKE_VHOOK(IsPlayerLookingAtEntity)(CBaseEntity *entity, CBasePlayer *player)
 {
-//	{
-//		Vector srcVec;                                  //   380
-//		Vector destVec;                                 //   386
-//		TraceResult result;                                   //   389
-//	}
-//	IsPlayerLookingAtEntity(CBaseTutor *const this,
-//				class CBaseEntity *entity,
-//				class CBasePlayer *player);  //   373
+	if (entity == NULL || player == NULL)
+	{
+		return false;
+	}
+
+	UTIL_MakeVectors(player->pev->v_angle);
+
+	Vector srcVec = player->pev->view_ofs + player->pev->origin;
+	Vector destVec = gpGlobals->v_forward * cv_tutor_look_distance.value + srcVec;
+
+	TraceResult result;
+	UTIL_TraceLine(srcVec, destVec, dont_ignore_monsters, ignore_glass, ENT(player->pev), &result);
+
+	if (result.pHit != NULL)
+	{
+		if (!FNullEnt(result.pHit) && CBaseEntity::Instance(result.pHit) == entity)
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 
 /* <1f51b0> ../cstrike/dlls/tutor_base_tutor.cpp:402 */
-NOBODY bool CBaseTutor::IsBombsiteInViewOfPlayer(CBaseEntity *entity, CBasePlayer *player)
+bool CBaseTutor::__MAKE_VHOOK(IsBombsiteInViewOfPlayer)(CBaseEntity *entity, CBasePlayer *player)
 {
-//	{
-//		Vector bombSiteCenter;                          //   410
-//		Vector eye;                                     //   426
-//		TraceResult result;                                   //   428
-//	}
-//	IsBombsiteInViewOfPlayer(CBaseTutor *const this,
-//				class CBaseEntity *entity,
-//				class CBasePlayer *player);  //   402
+	if (entity == NULL || player == NULL)
+	{
+		return false;
+	}
+
+	Vector bombSiteCenter = (entity->pev->absmax + entity->pev->absmin) * 0.5;
+
+	if (cv_tutor_view_distance.value < (bombSiteCenter - player->pev->origin).Length())
+	{
+		return false;
+	}
+
+	if (player->FInViewCone(entity))
+	{
+		TraceResult result;
+		Vector eye = player->pev->origin + player->pev->view_ofs;
+
+		UTIL_TraceLine(eye, bombSiteCenter, ignore_monsters, ignore_glass, ENT(player->pev), &result);
+
+		if (result.flFraction == 1.0f)
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 
 /* <1f4e37> ../cstrike/dlls/tutor_base_tutor.cpp:436 */
-NOBODY bool CBaseTutor::IsEntityInBombsite(CBaseEntity *bombsite, CBaseEntity *entity)
+bool CBaseTutor::__MAKE_VHOOK(IsEntityInBombsite)(CBaseEntity *bombsite, CBaseEntity *entity)
 {
-//	IsEntityInBombsite(CBaseTutor *const this,
-//				class CBaseEntity *bombsite,
-//				class CBaseEntity *entity);  //   436
+	if (bombsite == NULL || entity == NULL)
+	{
+		return false;
+	}
+
+	if (entity->pev->origin.x <= bombsite->pev->absmax.x
+		&& entity->pev->origin.y <= bombsite->pev->absmax.y
+		&& entity->pev->origin.z <= bombsite->pev->absmax.z
+		&& entity->pev->origin.x >= bombsite->pev->absmin.x
+		&& entity->pev->origin.y >= bombsite->pev->absmin.y
+		&& entity->pev->origin.z >= bombsite->pev->absmin.z)
+	{
+		return true;
+	}
+
+	return false;
 }
 
 /* <1f5c5b> ../cstrike/dlls/tutor_base_tutor.cpp:457 */
-NOBODY bool CBaseTutor::DoMessagesHaveSameID(int id1, int id2)
+bool CBaseTutor::DoMessagesHaveSameID(int id1, int id2)
 {
-//	{
-//		class TutorMessage *message1;                        //   464
-//		class TutorMessage *message2;                        //   465
-//	}
+	if (id1 == id2)
+	{
+		return true;
+	}
+
+	TutorMessage *message1 = GetTutorMessageDefinition(id1);
+	TutorMessage *message2 = GetTutorMessageDefinition(id2);
+
+	if (message1 == NULL || message2 == NULL)
+	{
+		return false;
+	}
+
+	if (message1->m_duplicateID && message2->m_duplicateID)
+	{
+		return true;
+	}
+
+	return false;
 }
+
+#ifdef HOOK_GAMEDLL
+
+bool CBaseTutor::IsEntityInViewOfPlayer(CBaseEntity *entity, CBasePlayer *player)
+{
+	return IsEntityInViewOfPlayer_(entity, player);
+}
+
+bool CBaseTutor::IsBombsiteInViewOfPlayer(CBaseEntity *entity, CBasePlayer *player)
+{
+	return IsBombsiteInViewOfPlayer_(entity, player);
+}
+
+bool CBaseTutor::IsEntityInBombsite(CBaseEntity *bombsite, CBaseEntity *entity)
+{
+	return IsEntityInBombsite_(bombsite, entity);
+}
+
+bool CBaseTutor::IsPlayerLookingAtPosition(Vector *origin, CBasePlayer *player)
+{
+	return IsPlayerLookingAtPosition_(origin, player);
+}
+
+bool CBaseTutor::IsPlayerLookingAtEntity(CBaseEntity *entity, CBasePlayer *player)
+{
+	return IsPlayerLookingAtEntity_(entity, player);
+}
+
+#endif // HOOK_GAMEDLL

@@ -49,14 +49,14 @@ public:
 class CGraph
 {
 public:
-	NOBODY void InitGraph(void);
-	NOBODY int AllocNodes(void);
-	NOBODY int CheckNODFile(char *szMapName);
-	NOBODY int FLoadGraph(char *szMapName);
-	NOBODY int FSetGraphPointers(void);
+	void InitGraph(void);
+	int AllocNodes(void);
+	int CheckNODFile(char *szMapName);
+	int FLoadGraph(char *szMapName);
+	int FSetGraphPointers(void);
 	void ShowNodeConnections(int iNode);
-	NOBODY int FindNearestNode(const Vector &vecOrigin, CBaseEntity *pEntity);
-	NOBODY int FindNearestNode(const Vector &vecOrigin, int afNodeTypes);
+	int FindNearestNode(const Vector &vecOrigin, CBaseEntity *pEntity);
+	int FindNearestNode(const Vector &vecOrigin, int afNodeTypes);
 public:
 	BOOL m_fGraphPresent;
 	BOOL m_fGraphPointersSet;

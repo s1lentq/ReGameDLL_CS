@@ -42,12 +42,12 @@ TYPEDESCRIPTION (*CBaseToggle::pm_SaveData)[19];
 #endif // HOOK_GAMEDLL
 
 /* <1832bc> ../cstrike/dlls/subs.cpp:38 */
-NOBODY void CPointEntity::Spawn_(void)
+NOBODY void CPointEntity::__MAKE_VHOOK(Spawn)(void)
 {
 }
 
 /* <183417> ../cstrike/dlls/subs.cpp:53 */
-NOBODY void CNullEntity::Spawn_(void)
+NOBODY void CNullEntity::__MAKE_VHOOK(Spawn)(void)
 {
 }
 
@@ -73,7 +73,7 @@ LINK_ENTITY_TO_CLASS(info_hostage_rescue, CPointEntity);
 LINK_ENTITY_TO_CLASS(info_bomb_target, CPointEntity);
 
 /* <183647> ../cstrike/dlls/subs.cpp:79 */
-NOBODY void CBaseDMStart::KeyValue_(KeyValueData *pkvd)
+NOBODY void CBaseDMStart::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 //	FStrEq(const char *sz1,
 //		const char *sz2);  //    81
@@ -84,7 +84,7 @@ NOBODY void CBaseDMStart::KeyValue_(KeyValueData *pkvd)
 }
 
 /* <18331c> ../cstrike/dlls/subs.cpp:90 */
-NOBODY BOOL CBaseDMStart::IsTriggered_(CBaseEntity *pEntity)
+NOBODY BOOL CBaseDMStart::__MAKE_VHOOK(IsTriggered)(CBaseEntity *pEntity)
 {
 //	{
 //		BOOL master;                                          //    92
@@ -94,7 +94,7 @@ NOBODY BOOL CBaseDMStart::IsTriggered_(CBaseEntity *pEntity)
 /* <183f03> ../cstrike/dlls/subs.cpp:98 */
 void CBaseEntity::UpdateOnRemove(void)
 {
-	if (pev->flags & FL_GRAPHED) // NOXREF
+	if (pev->flags & FL_GRAPHED)
 	{
 		for (int i = 0; i < WorldGraph.m_cLinks; i++)
 		{
@@ -102,8 +102,11 @@ void CBaseEntity::UpdateOnRemove(void)
 				WorldGraph.m_pLinkPool[i].m_pLinkEnt = NULL;
 		}
 	}
+
 	if (pev->globalname)
+	{
 		gGlobalState.EntitySetState(pev->globalname, GLOBAL_DEAD);
+	}
 }
 
 /* <183f38> ../cstrike/dlls/subs.cpp:120 */
@@ -115,6 +118,7 @@ void CBaseEntity::SUB_Remove(void)
 		pev->health = 0;
 		ALERT(at_aiconsole, "SUB_Remove called on entity with health > 0\n");
 	}
+
 	REMOVE_ENTITY(ENT(pev));
 }
 
@@ -128,11 +132,11 @@ void CBaseEntity::SUB_DoNothing(void)
 IMPLEMENT_SAVERESTORE(CBaseDelay, CBaseEntity);
 
 /* <18356f> ../cstrike/dlls/subs.cpp:149 */
-void CBaseDelay::KeyValue_(KeyValueData *pkvd)
+void CBaseDelay::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "delay"))
 	{
-		m_flDelay = atof(pkvd->szValue);
+		m_flDelay = Q_atof(pkvd->szValue);
 		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "killtarget"))
@@ -254,16 +258,16 @@ void CBaseDelay::DelayThink(void)
 IMPLEMENT_SAVERESTORE(CBaseToggle, CBaseAnimating);
 
 /* <1836dc> ../cstrike/dlls/subs.cpp:397 */
-void CBaseToggle::KeyValue_(KeyValueData *pkvd)
+void CBaseToggle::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "lip"))
 	{
-		m_flLip = atof(pkvd->szValue);
+		m_flLip = Q_atof(pkvd->szValue);
 		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "wait"))
 	{
-		m_flWait = atof(pkvd->szValue);
+		m_flWait = Q_atof(pkvd->szValue);
 		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "master"))
@@ -273,7 +277,7 @@ void CBaseToggle::KeyValue_(KeyValueData *pkvd)
 	}
 	else if (FStrEq(pkvd->szKeyName, "distance"))
 	{
-		m_flMoveDistance = atof(pkvd->szValue);
+		m_flMoveDistance = Q_atof(pkvd->szValue);
 		pkvd->fHandled = TRUE;
 	}
 	else

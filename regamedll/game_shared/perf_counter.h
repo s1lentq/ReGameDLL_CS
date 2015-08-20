@@ -1,4 +1,4 @@
-/*
+﻿/*
 *
 *   This program is free software; you can redistribute it and/or modify it
 *   under the terms of the GNU General Public License as published by the
@@ -58,9 +58,10 @@
 class CPerformanceCounter
 {
 public:
-	CPerformanceCounter();
+	CPerformanceCounter(void);
+
 	void InitializePerformanceCounter(void);
-	double GetCurTime();
+	double GetCurTime(void);
 
 private:
 	int m_iLowShift;
@@ -71,7 +72,11 @@ private:
 };/* size: 28, cachelines: 1, members: 4 */
 
 /* <2ebfc> ../game_shared/perf_counter.h:61 */
-inline CPerformanceCounter::CPerformanceCounter()
+inline CPerformanceCounter::CPerformanceCounter(void) :
+	m_iLowShift(0),
+	m_flPerfCounterFreq(0),
+	m_flCurrentTime(0),
+	m_flLastCurrentTime(0)
 {
 	InitializePerformanceCounter();
 }
@@ -80,12 +85,13 @@ inline CPerformanceCounter::CPerformanceCounter()
 inline void CPerformanceCounter::InitializePerformanceCounter(void)
 {
 #ifdef _WIN32
-	unsigned int lowpart;
-	unsigned int highpart;
 
 	LARGE_INTEGER performanceFreq;
 	QueryPerformanceFrequency(&performanceFreq);
 
+	// get 32 out of the 64 time bits such that we have around
+	// 1 microsecond resolution
+	unsigned int lowpart, highpart;
 	lowpart = (unsigned int)performanceFreq.LowPart;
 	highpart = (unsigned int)performanceFreq.HighPart;
 	m_iLowShift = 0;
@@ -94,32 +100,37 @@ inline void CPerformanceCounter::InitializePerformanceCounter(void)
 	{
 		m_iLowShift++;
 		lowpart >>= 1;
-		lowpart |= (highpart & 1)<<31;
+		lowpart |= (highpart & 1) << 31;
 		highpart >>= 1;
 	}
+
 	m_flPerfCounterFreq = 1.0 / (double)lowpart;
-#endif
+
+#endif // _WIN32
 }
 
 /* <2ec16> ../game_shared/perf_counter.h:97 */
 inline double CPerformanceCounter::GetCurTime(void)
 {
 #ifdef _WIN32
-	static int first = 1;
+
 	static int sametimecount;
 	static unsigned int oldtime;
-
-	unsigned int t2;
-	unsigned int temp;
-
+	static int first = 1;
+	LARGE_INTEGER PerformanceCount;
+	unsigned int temp, t2;
 	double time;
 
-	LARGE_INTEGER PerformanceCount;
 	QueryPerformanceCounter(&PerformanceCount);
-	if (!m_iLowShift)
+	if (m_iLowShift == 0)
+	{
 		temp = (unsigned int)PerformanceCount.LowPart;
+	}
 	else
-		temp = ((unsigned int)PerformanceCount.LowPart>>m_iLowShift)|((unsigned int)PerformanceCount.HighPart<<(32 - m_iLowShift));
+	{
+		temp = ((unsigned int)PerformanceCount.LowPart >> m_iLowShift) |
+			((unsigned int)PerformanceCount.HighPart << (32 - m_iLowShift));
+	}
 
 	if (first)
 	{
@@ -128,8 +139,12 @@ inline double CPerformanceCounter::GetCurTime(void)
 	}
 	else
 	{
+		// check for turnover or backward time
 		if ((temp <= oldtime) && ((oldtime - temp) < 0x10000000))
+		{
+			// so we can't get stuck
 			oldtime = temp;
+		}
 		else
 		{
 			t2 = temp - oldtime;
@@ -142,6 +157,7 @@ inline double CPerformanceCounter::GetCurTime(void)
 			if (m_flCurrentTime == m_flLastCurrentTime)
 			{
 				sametimecount++;
+
 				if (sametimecount > 100000)
 				{
 					m_flCurrentTime += 1.0;
@@ -149,24 +165,32 @@ inline double CPerformanceCounter::GetCurTime(void)
 				}
 			}
 			else
+			{
 				sametimecount = 0;
+			}
 
 			m_flLastCurrentTime = m_flCurrentTime;
 		}
 	}
+
 	return m_flCurrentTime;
-#else
+
+#else // _WIN32
+
 	struct timeval tp;
 	static int secbase = 0;
 
-	gettimeofday(&tp,NULL);
+	gettimeofday(&tp, NULL);
+
 	if (!secbase)
 	{
 		secbase = tp.tv_sec;
 		return (tp.tv_usec / 1000000.0);
 	}
+
 	return ((tp.tv_sec - secbase) + tp.tv_usec / 1000000.0);
-#endif
+
+#endif // _WIN32
 }
 
 #endif // PERF_COUNTER_H

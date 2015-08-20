@@ -7,34 +7,34 @@
 
 CBotManager *TheBots = NULL;
 
-cvar_t cv_bot_traceview = { "bot_traceview", "0", FCVAR_SERVER,  0.0f, NULL };
-cvar_t cv_bot_stop = { "bot_stop", "0", FCVAR_SERVER,  0.0f, NULL };
-cvar_t cv_bot_show_nav = { "bot_show_nav", "0", FCVAR_SERVER,  0.0f, NULL };
-cvar_t cv_bot_show_danger = { "bot_show_danger", "0", FCVAR_SERVER,  0.0f, NULL };
-cvar_t cv_bot_nav_edit = { "bot_nav_edit", "0", FCVAR_SERVER,  0.0f, NULL };
-cvar_t cv_bot_nav_zdraw = { "bot_nav_zdraw", "4", FCVAR_SERVER,  0.0f, NULL };
-cvar_t cv_bot_walk = { "bot_walk", "0", FCVAR_SERVER,  0.0f, NULL };
-cvar_t cv_bot_difficulty = { "bot_difficulty", "0", FCVAR_SERVER,  0.0f, NULL };
-cvar_t cv_bot_debug = { "bot_debug", "0", FCVAR_SERVER,  0.0f, NULL };
-cvar_t cv_bot_quicksave = { "bot_quicksave", "0", FCVAR_SERVER,  0.0f, NULL };
-cvar_t cv_bot_quota = { "bot_quota", "0", FCVAR_SERVER,  0.0f, NULL };
-cvar_t cv_bot_quota_match = { "bot_quota_match", "0", FCVAR_SERVER,  0.0f, NULL };
-cvar_t cv_bot_prefix = { "bot_prefix", "", FCVAR_SERVER,  0.0f, NULL };
-cvar_t cv_bot_allow_rogues = { "bot_allow_rogues", "1", FCVAR_SERVER,  0.0f, NULL };
-cvar_t cv_bot_allow_pistols = { "bot_allow_pistols", "1", FCVAR_SERVER,  0.0f, NULL };
-cvar_t cv_bot_allow_shotguns = { "bot_allow_shotguns", "1", FCVAR_SERVER,  0.0f, NULL };
-cvar_t cv_bot_allow_sub_machine_guns = { "bot_allow_sub_machine_guns", "1", FCVAR_SERVER,  0.0f, NULL };
-cvar_t cv_bot_allow_rifles = { "bot_allow_rifles", "1", FCVAR_SERVER,  0.0f, NULL };
-cvar_t cv_bot_allow_machine_guns = { "bot_allow_machine_guns", "1", FCVAR_SERVER,  0.0f, NULL };
-cvar_t cv_bot_allow_grenades = { "bot_allow_grenades", "1", FCVAR_SERVER,  0.0f, NULL };
-cvar_t cv_bot_allow_snipers = { "bot_allow_snipers", "1", FCVAR_SERVER,  0.0f, NULL };
-cvar_t cv_bot_allow_shield = { "bot_allow_shield", "1", FCVAR_SERVER,  0.0f, NULL };
-cvar_t cv_bot_join_team = { "bot_join_team", "any", FCVAR_SERVER,  0.0f, NULL };
-cvar_t cv_bot_join_after_player = { &unk_1EF09A, "1", FCVAR_SERVER,  0.0f, NULL };
-cvar_t cv_bot_auto_vacate = { "bot_auto_vacate", "1", FCVAR_SERVER,  0.0f, NULL };
-cvar_t cv_bot_zombie = { "bot_zombie", "0", FCVAR_SERVER,  0.0f, NULL };
-cvar_t cv_bot_defer_to_human = { "bot_defer_to_human", "0", FCVAR_SERVER,  0.0f, NULL };
-cvar_t cv_bot_chatter = { "bot_chatter", "normal", FCVAR_SERVER,  0.0f, NULL };
+cvar_t cv_bot_traceview = { "bot_traceview", "0", FCVAR_SERVER, 0.0f, NULL };
+cvar_t cv_bot_stop = { "bot_stop", "0", FCVAR_SERVER, 0.0f, NULL };
+cvar_t cv_bot_show_nav = { "bot_show_nav", "0", FCVAR_SERVER, 0.0f, NULL };
+cvar_t cv_bot_show_danger = { "bot_show_danger", "0", FCVAR_SERVER, 0.0f, NULL };
+cvar_t cv_bot_nav_edit = { "bot_nav_edit", "0", FCVAR_SERVER, 0.0f, NULL };
+cvar_t cv_bot_nav_zdraw = { "bot_nav_zdraw", "4", FCVAR_SERVER, 0.0f, NULL };
+cvar_t cv_bot_walk = { "bot_walk", "0", FCVAR_SERVER, 0.0f, NULL };
+cvar_t cv_bot_difficulty = { "bot_difficulty", "0", FCVAR_SERVER, 0.0f, NULL };
+cvar_t cv_bot_debug = { "bot_debug", "0", FCVAR_SERVER, 0.0f, NULL };
+cvar_t cv_bot_quicksave = { "bot_quicksave", "0", FCVAR_SERVER, 0.0f, NULL };
+cvar_t cv_bot_quota = { "bot_quota", "0", FCVAR_SERVER, 0.0f, NULL };
+cvar_t cv_bot_quota_match = { "bot_quota_match", "0", FCVAR_SERVER, 0.0f, NULL };
+cvar_t cv_bot_prefix = { "bot_prefix", "", FCVAR_SERVER, 0.0f, NULL };
+cvar_t cv_bot_allow_rogues = { "bot_allow_rogues", "1", FCVAR_SERVER, 0.0f, NULL };
+cvar_t cv_bot_allow_pistols = { "bot_allow_pistols", "1", FCVAR_SERVER, 0.0f, NULL };
+cvar_t cv_bot_allow_shotguns = { "bot_allow_shotguns", "1", FCVAR_SERVER, 0.0f, NULL };
+cvar_t cv_bot_allow_sub_machine_guns = { "bot_allow_sub_machine_guns", "1", FCVAR_SERVER, 0.0f, NULL };
+cvar_t cv_bot_allow_rifles = { "bot_allow_rifles", "1", FCVAR_SERVER, 0.0f, NULL };
+cvar_t cv_bot_allow_machine_guns = { "bot_allow_machine_guns", "1", FCVAR_SERVER, 0.0f, NULL };
+cvar_t cv_bot_allow_grenades = { "bot_allow_grenades", "1", FCVAR_SERVER, 0.0f, NULL };
+cvar_t cv_bot_allow_snipers = { "bot_allow_snipers", "1", FCVAR_SERVER, 0.0f, NULL };
+cvar_t cv_bot_allow_shield = { "bot_allow_shield", "1", FCVAR_SERVER, 0.0f, NULL };
+cvar_t cv_bot_join_team = { "bot_join_team", "any", FCVAR_SERVER, 0.0f, NULL };
+cvar_t cv_bot_join_after_player = { &unk_1EF09A, "1", FCVAR_SERVER, 0.0f, NULL };
+cvar_t cv_bot_auto_vacate = { "bot_auto_vacate", "1", FCVAR_SERVER, 0.0f, NULL };
+cvar_t cv_bot_zombie = { "bot_zombie", "0", FCVAR_SERVER, 0.0f, NULL };
+cvar_t cv_bot_defer_to_human = { "bot_defer_to_human", "0", FCVAR_SERVER, 0.0f, NULL };
+cvar_t cv_bot_chatter = { "bot_chatter", "normal", FCVAR_SERVER, 0.0f, NULL };
 cvar_t cv_bot_profile_db = { "bot_profile_db", "BotProfile.db", FCVAR_SERVER, 0.0f, NULL };
 
 float CCSBotManager::m_flNextCVarCheck;
@@ -112,7 +112,7 @@ NOBODY CCSBotManager::CCSBotManager(void)
 }
 
 /* <36b22a> ../cstrike/dlls/bot/cs_bot_manager.cpp:111 */
-void CCSBotManager::RestartRound_(void)
+void CCSBotManager::__MAKE_VHOOK(RestartRound)(void)
 {
 	// extend
 	CBotManager::RestartRound();
@@ -159,19 +159,38 @@ NOBODY void UTIL_DrawBox(Extent *extent, int lifetime, int red, int green, int b
 }
 
 /* <36b13d> ../cstrike/dlls/bot/cs_bot_manager.cpp:195 */
-NOBODY void CCSBotManager::StartFrame_(void)
+NOBODY void CCSBotManager::__MAKE_VHOOK(StartFrame)(void)
 {
 
 }
 
 /* <36b62a> ../cstrike/dlls/bot/cs_bot_manager.cpp:276 */
-NOBODY bool CCSBotManager::IsWeaponUseable(CBasePlayerItem *item) const
+bool CCSBotManager::IsWeaponUseable(CBasePlayerItem *item) const
 {
-//	{
-//		int weaponClass;                                      //   284
-//		AllowShotguns(const class CCSBotManager *const this);  //   286
-//	}
-	return false;
+	if (item == NULL)
+	{
+		return false;
+	}
+
+	if (item->m_iId != WEAPON_C4)
+	{
+		int weaponClass = WeaponIDToWeaponClass(item->m_iId);
+
+		if ((!AllowShotguns() && weaponClass == WEAPONCLASS_SHOTGUN)
+			|| (!AllowMachineGuns() && weaponClass == WEAPONCLASS_MACHINEGUN)
+			|| (!AllowRifles() && weaponClass == WEAPONCLASS_RIFLE)
+			//|| (!AllowShotguns() && weaponClass == WEAPONCLASS_SHOTGUN) // TODO: already is checked shotguns!
+			|| (!AllowSnipers() && weaponClass == WEAPONCLASS_SNIPERRIFLE)
+			|| (!AllowSubMachineGuns() && weaponClass == WEAPONCLASS_SUBMACHINEGUN)
+			|| (!AllowTacticalShield() && item->m_iId == WEAPON_SHIELDGUN)
+			|| (!AllowPistols() && weaponClass == WEAPONCLASS_PISTOL)
+			|| (!AllowGrenades() && weaponClass == WEAPONCLASS_GRENADE))
+		{
+			return false;
+		}
+	}
+
+	return true;
 }
 
 /* <36b68c> ../cstrike/dlls/bot/cs_bot_manager.cpp:306 */
@@ -187,7 +206,7 @@ NOBODY bool CCSBotManager::IsOnOffense(CBasePlayer *player) const
 }
 
 /* <36a3b6> ../cstrike/dlls/bot/cs_bot_manager.cpp:331 */
-void CCSBotManager::ServerActivate_(void)
+void CCSBotManager::__MAKE_VHOOK(ServerActivate)(void)
 {
 	DestroyNavigationMap();
 	IMPLEMENT_ARRAY(m_isMapDataLoaded) = false;
@@ -208,7 +227,7 @@ void CCSBotManager::ServerActivate_(void)
 }
 
 /* <36afcd> ../cstrike/dlls/bot/cs_bot_manager.cpp:369 */
-void CCSBotManager::AddServerCommand_(const char *cmd)
+void CCSBotManager::__MAKE_VHOOK(AddServerCommand)(const char *cmd)
 {
 #if defined(HOOK_GAMEDLL) && !defined(REGAMEDLL_UNIT_TESTS)
 	ADD_SERVER_COMMAND((char *)cmd, (xcommand_t)GetOriginalFuncAddrOrDefault("_Z17Bot_ServerCommandv", (void *)Bot_ServerCommand));
@@ -218,7 +237,7 @@ void CCSBotManager::AddServerCommand_(const char *cmd)
 }
 
 /* <36b0e0> ../cstrike/dlls/bot/cs_bot_manager.cpp:375 */
-void CCSBotManager::AddServerCommands_(void)
+void CCSBotManager::__MAKE_VHOOK(AddServerCommands)(void)
 {
 	static bool fFirstTime = true;
 
@@ -274,13 +293,13 @@ void CCSBotManager::AddServerCommands_(void)
 }
 
 /* <36b2ac> ../cstrike/dlls/bot/cs_bot_manager.cpp:413 */
-void CCSBotManager::ServerDeactivate_(void)
+void CCSBotManager::__MAKE_VHOOK(ServerDeactivate)(void)
 {
 	m_bServerActive = false;
 }
 
 /* <36b5fa> ../cstrike/dlls/bot/cs_bot_manager.cpp:415 */
-void CCSBotManager::ClientDisconnect_(CBasePlayer *pPlayer)
+void CCSBotManager::__MAKE_VHOOK(ClientDisconnect)(CBasePlayer *pPlayer)
 {
 	if (!pPlayer || !pPlayer->IsBot())
 		return;
@@ -315,7 +334,7 @@ void PrintAllEntities(void)
 }
 
 /* <36ace2> ../cstrike/dlls/bot/cs_bot_manager.cpp:484 */
-void CCSBotManager::ServerCommand_(const char *pcmd)
+void CCSBotManager::__MAKE_VHOOK(ServerCommand)(const char *pcmd)
 {
 	if (!m_bServerActive || !UTIL_IsGame("czero"))
 		return;
@@ -326,7 +345,6 @@ void CCSBotManager::ServerCommand_(const char *pcmd)
 	if (FStrEq(pcmd, "bot_about"))
 	{
 		Q_sprintf(buffer, "\n--------------------------------------------------------------------------\nThe Official Counter-Strike Bot V%d.%02d\nCreated by Michael S. Booth\nWeb: www.turtlerockstudios.com\\csbot\nE-mail: csbot@turtlerockstudios.com\n--------------------------------------------------------------------------\n\n", CSBOT_VERSION_MAJOR, CSBOT_VERSION_MINOR);
-
 		CONSOLE_ECHO(buffer);
 		HintMessageToAllPlayers(buffer);
 	}
@@ -352,7 +370,7 @@ void CCSBotManager::ServerCommand_(const char *pcmd)
 
 		for (int iIndex = 1; iIndex <= gpGlobals->maxClients; iIndex++)
 		{
-			CBasePlayer *pPlayer = (CBasePlayer *)UTIL_PlayerByIndex( iIndex );
+			CBasePlayer *pPlayer = (CBasePlayer *)UTIL_PlayerByIndex(iIndex);
 
 			if (pPlayer == NULL)
 				continue;
@@ -384,7 +402,7 @@ void CCSBotManager::ServerCommand_(const char *pcmd)
 
 		for (int iIndex = 1; iIndex <= gpGlobals->maxClients; iIndex++)
 		{
-			CBasePlayer *pPlayer = (CBasePlayer *)UTIL_PlayerByIndex( iIndex );
+			CBasePlayer *pPlayer = (CBasePlayer *)UTIL_PlayerByIndex(iIndex);
 
 			if (pPlayer == NULL)
 				continue;
@@ -460,59 +478,59 @@ void CCSBotManager::ServerCommand_(const char *pcmd)
 	{
 		PrintAllEntities();
 	}
-	else if (FStrEq(pcmd, "bot_nav_delete") )
+	else if (FStrEq(pcmd, "bot_nav_delete"))
 	{
 		IMPLEMENT_ARRAY_CLASS(CCSBotManager, m_editCmd) = EDIT_DELETE;
 	}
-	else if (FStrEq(pcmd, "bot_nav_split") )
+	else if (FStrEq(pcmd, "bot_nav_split"))
 	{
 		IMPLEMENT_ARRAY_CLASS(CCSBotManager, m_editCmd) = EDIT_SPLIT;
 	}
-	else if (FStrEq(pcmd, "bot_nav_merge") )
+	else if (FStrEq(pcmd, "bot_nav_merge"))
 	{
 		IMPLEMENT_ARRAY_CLASS(CCSBotManager, m_editCmd) = EDIT_MERGE;
 	}
-	else if (FStrEq(pcmd, "bot_nav_mark") )
+	else if (FStrEq(pcmd, "bot_nav_mark"))
 	{
 		IMPLEMENT_ARRAY_CLASS(CCSBotManager, m_editCmd) = EDIT_MARK;
 	}
-	else if (FStrEq(pcmd, "bot_nav_begin_area") )
+	else if (FStrEq(pcmd, "bot_nav_begin_area"))
 	{
 		IMPLEMENT_ARRAY_CLASS(CCSBotManager, m_editCmd) = EDIT_BEGIN_AREA;
 	}
-	else if (FStrEq(pcmd, "bot_nav_end_area") )
+	else if (FStrEq(pcmd, "bot_nav_end_area"))
 	{
 		IMPLEMENT_ARRAY_CLASS(CCSBotManager, m_editCmd) = EDIT_END_AREA;
 	}
-	else if (FStrEq(pcmd, "bot_nav_connect") )
+	else if (FStrEq(pcmd, "bot_nav_connect"))
 	{
 		IMPLEMENT_ARRAY_CLASS(CCSBotManager, m_editCmd) = EDIT_CONNECT;
 	}
-	else if (FStrEq(pcmd, "bot_nav_disconnect") )
+	else if (FStrEq(pcmd, "bot_nav_disconnect"))
 	{
 		IMPLEMENT_ARRAY_CLASS(CCSBotManager, m_editCmd) = EDIT_DISCONNECT;
 	}
-	else if (FStrEq(pcmd, "bot_nav_splice") )
+	else if (FStrEq(pcmd, "bot_nav_splice"))
 	{
 		IMPLEMENT_ARRAY_CLASS(CCSBotManager, m_editCmd) = EDIT_SPLICE;
 	}
-	else if (FStrEq(pcmd, "bot_nav_crouch") )
+	else if (FStrEq(pcmd, "bot_nav_crouch"))
 	{
 		IMPLEMENT_ARRAY_CLASS(CCSBotManager, m_editCmd) = EDIT_ATTRIB_CROUCH;
 	}
-	else if (FStrEq(pcmd, "bot_nav_jump") )
+	else if (FStrEq(pcmd, "bot_nav_jump"))
 	{
 		IMPLEMENT_ARRAY_CLASS(CCSBotManager, m_editCmd) = EDIT_ATTRIB_JUMP;
 	}
-	else if (FStrEq(pcmd, "bot_nav_precise") )
+	else if (FStrEq(pcmd, "bot_nav_precise"))
 	{
 		IMPLEMENT_ARRAY_CLASS(CCSBotManager, m_editCmd) = EDIT_ATTRIB_PRECISE;
 	}
-	else if (FStrEq(pcmd, "bot_nav_no_jump") )
+	else if (FStrEq(pcmd, "bot_nav_no_jump"))
 	{
 		IMPLEMENT_ARRAY_CLASS(CCSBotManager, m_editCmd) = EDIT_ATTRIB_NO_JUMP;
 	}
-	else if (FStrEq(pcmd, "bot_nav_analyze") )
+	else if (FStrEq(pcmd, "bot_nav_analyze"))
 	{
 		IMPLEMENT_ARRAY_CLASS(CCSBotManager, m_isAnalysisRequested) = true;
 	}
@@ -591,23 +609,23 @@ void CCSBotManager::ServerCommand_(const char *pcmd)
 			}
 		}
 	}
-	else if (FStrEq(pcmd, "bot_nav_toggle_place_mode") )
+	else if (FStrEq(pcmd, "bot_nav_toggle_place_mode"))
 	{
 		IMPLEMENT_ARRAY_CLASS(CCSBotManager, m_editCmd) = EDIT_TOGGLE_PLACE_MODE;
 	}
-	else if (FStrEq(pcmd, "bot_nav_place_floodfill") )
+	else if (FStrEq(pcmd, "bot_nav_place_floodfill"))
 	{
 		IMPLEMENT_ARRAY_CLASS(CCSBotManager, m_editCmd) = EDIT_PLACE_FLOODFILL;
 	}
-	else if (FStrEq(pcmd, "bot_nav_place_pick") )
+	else if (FStrEq(pcmd, "bot_nav_place_pick"))
 	{
 		IMPLEMENT_ARRAY_CLASS(CCSBotManager, m_editCmd) = EDIT_PLACE_PICK;
 	}
-	else if (FStrEq(pcmd, "bot_nav_toggle_place_painting") )
+	else if (FStrEq(pcmd, "bot_nav_toggle_place_painting"))
 	{
 		IMPLEMENT_ARRAY_CLASS(CCSBotManager, m_editCmd) = EDIT_TOGGLE_PLACE_PAINTING;
 	}
-	else if (FStrEq(pcmd, "bot_goto_mark") )
+	else if (FStrEq(pcmd, "bot_goto_mark"))
 	{
 		// tell the first bot we find to go to our marked area
 		CNavArea *area = GetMarkedArea();// TODO: reverse me
@@ -633,7 +651,7 @@ void CCSBotManager::ServerCommand_(const char *pcmd)
 			}
 		}
 	}
-	else if (FStrEq(pcmd, "bot_memory_usage") )
+	else if (FStrEq(pcmd, "bot_memory_usage"))
 	{
 		CONSOLE_ECHO("Memory usage:\n");
 		CONSOLE_ECHO("  %d bytes per bot\b", sizeof(CCSBot));
@@ -653,7 +671,7 @@ void CCSBotManager::ServerCommand_(const char *pcmd)
 
 			for (SpotEncounterList::iterator siter = area->m_spotEncounterList.begin(); siter != area->m_spotEncounterList.end(); ++siter)
 			{
-				// TODO: Fix me
+				// TODO: Fix me, this is crashed in HOOK_GAMEDLL
 				SpotEncounter se = (*siter);
 
 				encounterMem += sizeof(SpotEncounter);
@@ -1108,7 +1126,7 @@ NOBODY CNavArea *CCSBotManager::GetRandomAreaInZone(const Zone *zone) const
 }
 
 /* <36b02d> ../cstrike/dlls/bot/cs_bot_manager.cpp:1477 */
-void CCSBotManager::OnEvent_(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
+void CCSBotManager::__MAKE_VHOOK(OnEvent)(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
 {
 	switch (event)
 	{
@@ -1147,9 +1165,17 @@ void CCSBotManager::OnEvent_(GameEventType event, CBaseEntity *entity, CBaseEnti
 	CBotManager::OnEvent(event, entity, other);
 }
 
-NOBODY BOOL CCSBotManager::ClientCommand_(CBasePlayer *pPlayer, const char *pcmd)
+BOOL CCSBotManager::__MAKE_VHOOK(ClientCommand)(CBasePlayer *pPlayer, const char *pcmd)
 {
+	// TODO: rly?
+#ifndef REGAMEDLL_FIXES
+	if (pPlayer && UTIL_GetLocalPlayer())
+	{
+		UTIL_GetLocalPlayer();
+	}
+#endif // REGAMEDLL_FIXES
 
+	return FALSE;
 }
 
 /* <36bdb3> ../cstrike/dlls/bot/cs_bot_manager.cpp:1541 */
@@ -1169,14 +1195,14 @@ void CCSBotManager::SetLooseBomb(CBaseEntity *bomb)
 }
 
 /* <36b14d> ../cstrike/dlls/bot/cs_bot_manager.cpp:1565 */
-NOBODY bool CCSBotManager::IsImportantPlayer_(CBasePlayer *player)
+NOBODY bool CCSBotManager::__MAKE_VHOOK(IsImportantPlayer)(CBasePlayer *player)
 {
 //	IsImportantPlayer(const class CCSBotManager *const this,
 //				class CBasePlayer *player);  //  1565
 }
 
 /* <36b1a7> ../cstrike/dlls/bot/cs_bot_manager.cpp:1602 */
-NOBODY unsigned int CCSBotManager::GetPlayerPriority_(CBasePlayer *player) const
+NOBODY unsigned int CCSBotManager::__MAKE_VHOOK(GetPlayerPriority)(CBasePlayer *player) const
 {
 //	{
 //		unsigned int const lowestPriority;                     //  1604

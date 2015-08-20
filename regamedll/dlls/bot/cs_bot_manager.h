@@ -113,7 +113,7 @@ public:
 	CCSBotManager(void);
 public:
 	virtual void ClientDisconnect(CBasePlayer *pPlayer);
-	NOBODY virtual BOOL ClientCommand(CBasePlayer *pPlayer, const char *pcmd);
+	virtual BOOL ClientCommand(CBasePlayer *pPlayer, const char *pcmd);
 
 	virtual void ServerActivate(void);
 	virtual void ServerDeactivate(void);
@@ -357,7 +357,7 @@ public:
 	{
 		return friendlyfire.value != 0;
 	}
-	NOBODY bool IsWeaponUseable(CBasePlayerItem *item) const;
+	bool IsWeaponUseable(CBasePlayerItem *item) const;
 	bool IsDefenseRushing(void) const
 	{
 		return m_isDefenseRushing;
