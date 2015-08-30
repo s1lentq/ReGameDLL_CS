@@ -1094,6 +1094,30 @@
     <ClInclude Include="..\dlls\sound.h">
       <Filter>dlls</Filter>
     </ClInclude>
+    <ClInclude Include="..\dlls\h_ai.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\engine\cmd.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\game.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\world.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\hltv.h">
+      <Filter>dlls\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\schedule.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\weapontype.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\scriptevent.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\linux\appversion.sh">

@@ -237,14 +237,14 @@ void CBasePlayer::Observer_HandleButtons(void)
 	// Attack moves to the next player
 	if (m_afButtonPressed & IN_ATTACK)
 	{
-		Observer_FindNextPlayer( false );
+		Observer_FindNextPlayer(false);
 		m_flNextObserverInput = gpGlobals->time + 0.2f;
 	}
 
 	// Attack2 moves to the prev player
 	if (m_afButtonPressed & IN_ATTACK2)
 	{
-		Observer_FindNextPlayer( true );
+		Observer_FindNextPlayer(true);
 		m_flNextObserverInput = gpGlobals->time + 0.2f;
 	}
 }
@@ -475,7 +475,7 @@ void CBasePlayer::Observer_SetMode(int iMode)
 	// if we are not roaming, we need a valid target to track
 	if (iMode != OBS_ROAMING && m_hObserverTarget == NULL)
 	{
-		Observer_FindNextPlayer(false);		// TODO: Reverse me
+		Observer_FindNextPlayer(false);
 
 		// if we didn't find a valid target switch to roaming
 		if (m_hObserverTarget == NULL)
@@ -501,7 +501,7 @@ void CBasePlayer::Observer_SetMode(int iMode)
 		WRITE_BYTE((iMode == OBS_ROAMING) != 0);
 	MESSAGE_END();
 
-	UpdateClientEffects(this, oldMode);	// TODO: Reverse me
+	UpdateClientEffects(this, oldMode);
 
 	// print spepctaor mode on client screen
 

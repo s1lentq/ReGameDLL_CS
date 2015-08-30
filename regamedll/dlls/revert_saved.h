@@ -36,10 +36,10 @@
 class CRevertSaved: public CPointEntity
 {
 public:
-	NOBODY void KeyValue(KeyValueData *pkvd);
-	NOBODY int Save(CSave &save);
-	NOBODY int Restore(CRestore &restore);
-	NOBODY void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	void KeyValue(KeyValueData *pkvd);
+	int Save(CSave &save);
+	int Restore(CRestore &restore);
+	void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
 
@@ -51,8 +51,8 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	NOBODY void EXPORT MessageThink(void);
-	NOBODY void EXPORT LoadThink(void);
+	void EXPORT MessageThink(void);
+	void EXPORT LoadThink(void);
 
 public:
 	inline float Duration(void)
@@ -89,12 +89,7 @@ public:
 	}
 
 public:
-
-#ifndef HOOK_GAMEDLL
-	static TYPEDESCRIPTION m_SaveData[2];
-#else // HOOK_GAMEDLL
-	static TYPEDESCRIPTION (*m_SaveData)[2];
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[2];
 
 public:
 	float m_messageTime;

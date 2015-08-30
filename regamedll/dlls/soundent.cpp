@@ -10,9 +10,16 @@ NOBODY void CSound::Clear(void)
 {
 }
 
+// Reset - clears the volume, origin, and type for a sound,
+// but doesn't expire or unlink it. 
+
 /* <178d8f> ../cstrike/dlls/soundent.cpp:43 */
-NOBODY void CSound::Reset(void)
+void CSound::Reset(void)
 {
+	m_vecOrigin = g_vecZero;
+	m_iNext = SOUNDLIST_EMPTY;
+	m_iType = 0;
+	m_iVolume = 0;
 }
 
 /* <178db7> ../cstrike/dlls/soundent.cpp:54 */
@@ -26,12 +33,12 @@ NOBODY BOOL CSound::FIsScent(void)
 }
 
 /* <17900a> ../cstrike/dlls/soundent.cpp:80 */
-NOBODY void CSoundEnt::Spawn_(void)
+NOBODY void CSoundEnt::__MAKE_VHOOK(Spawn)(void)
 {
 }
 
 /* <178b0c> ../cstrike/dlls/soundent.cpp:93 */
-NOBODY void CSoundEnt::Think_(void)
+NOBODY void CSoundEnt::__MAKE_VHOOK(Think)(void)
 {
 //	{
 //		int iSound;                                           //    95
@@ -46,7 +53,7 @@ NOBODY void CSoundEnt::Think_(void)
 }
 
 /* <178a76> ../cstrike/dlls/soundent.cpp:132 */
-NOBODY void CSoundEnt::Precache_(void)
+NOBODY void CSoundEnt::__MAKE_VHOOK(Precache)(void)
 {
 }
 
@@ -56,21 +63,41 @@ NOBODY void CSoundEnt::FreeSound(int iSound, int iPrevious)
 }
 
 /* <178e2d> ../cstrike/dlls/soundent.cpp:171 */
-NOBODY int CSoundEnt::IAllocSound(void)
+int CSoundEnt::IAllocSound(void)
 {
-//	{
-//		int iNewSound;                                        //   173
-//	}
-//	IAllocSound(CSoundEnt *const this);  //   171
+	if (m_iFreeSound == SOUNDLIST_EMPTY)
+	{
+		ALERT(at_console, "Free Sound List is full!\n");
+		return SOUNDLIST_EMPTY;
+	}
+
+	int iNewSound = m_iFreeSound;
+
+	m_iFreeSound = m_SoundPool[ iNewSound ].m_iNext;
+	m_SoundPool[ iNewSound ].m_iNext = m_iActiveSound;
+	m_iActiveSound = iNewSound;
+
+	return iNewSound;
 }
 
 /* <178e94> ../cstrike/dlls/soundent.cpp:200 */
-NOBODY void CSoundEnt::InsertSound(int iType, const Vector &vecOrigin, int iVolume, float flDuration)
+void CSoundEnt::InsertSound(int iType, const Vector &vecOrigin, int iVolume, float flDuration)
 {
-//	{
-//		int iThisSound;                                       //   202
-//		IAllocSound(CSoundEnt *const this);  //   210
-//	}
+	if (!pSoundEnt)
+		return;
+
+	int iThisSound = pSoundEnt->IAllocSound();
+
+	if (iThisSound == SOUNDLIST_EMPTY)
+	{
+		ALERT(at_console, "Could not AllocSound() for InsertSound() (DLL)\n");
+		return;
+	}
+
+	pSoundEnt->m_SoundPool[ iThisSound ].m_vecOrigin = vecOrigin;
+	pSoundEnt->m_SoundPool[ iThisSound ].m_iType = iType;
+	pSoundEnt->m_SoundPool[ iThisSound ].m_iVolume = iVolume;
+	pSoundEnt->m_SoundPool[ iThisSound ].m_flExpireTime = gpGlobals->time + flDuration;
 }
 
 /* <178f4e> ../cstrike/dlls/soundent.cpp:228 */
@@ -103,18 +130,52 @@ NOBODY int CSoundEnt::FreeList(void)
 {
 }
 
+// SoundPointerForIndex - returns a pointer to the instance
+// of CSound at index's position in the sound pool.
+
 /* <179093> ../cstrike/dlls/soundent.cpp:339 */
-NOBODY CSound *CSoundEnt::SoundPointerForIndex(int iIndex)
+CSound *CSoundEnt::SoundPointerForIndex(int iIndex)
 {
+	if (!pSoundEnt)
+	{
+		return NULL;
+	}
+
+	if (iIndex > (MAX_WORLD_SOUNDS - 1))
+	{
+		ALERT(at_console, "SoundPointerForIndex() - Index too large!\n");
+		return NULL;
+	}
+
+	if (iIndex < 0)
+	{
+		ALERT(at_console, "SoundPointerForIndex() - Index < 0!\n");
+		return NULL;
+	}
+
+	return &pSoundEnt->m_SoundPool[ iIndex ];
 }
 
+// Clients are numbered from 1 to MAXCLIENTS, but the client
+// reserved sounds in the soundlist are from 0 to MAXCLIENTS - 1,
+// so this function ensures that a client gets the proper index
+// to his reserved sound in the soundlist.
+
 /* <1790b8> ../cstrike/dlls/soundent.cpp:367 */
-NOBODY int CSoundEnt::ClientSoundIndex(edict_t *pClient)
+int CSoundEnt::ClientSoundIndex(edict_t *pClient)
 {
-//	{
-//		int iReturn;                                          //   369
-//		ENTINDEX(edict_t *pEdict);  //   369
-//	}
+	int iReturn = ENTINDEX(pClient) - 1;
+
+#if defined(_DEBUG) && !defined(HOOK_GAMEDLL)
+
+	if (iReturn < 0 || iReturn > gpGlobals->maxClients)
+	{
+		ALERT(at_console, "** ClientSoundIndex returning a bogus value! **\n");
+	}
+
+#endif // _DEBUG && !HOOK_GAMEDLL
+
+	return iReturn;
 }
 
 #ifdef HOOK_GAMEDLL

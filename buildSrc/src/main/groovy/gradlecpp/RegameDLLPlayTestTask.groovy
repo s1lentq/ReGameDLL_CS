@@ -39,15 +39,21 @@ class RegamedllPlayTestTask extends DefaultTask {
 
         TeamCityIntegration.suiteStarted("regamedllDemo.${testFor.name}")
         int failCount = 0;
-        testDemos.getFiles().each { f ->
+	testDemos.getFiles().each { f ->
+
+            demoRunner.prepareEngine();
             def testInfo = RegamedllTestParser.parseTestInfo(f)
+
             TeamCityIntegration.testStarted(testInfo.testName)
 
             if (!TeamCityIntegration.writeOutput) {
-                print "Running ReGameDLL_CS test demo ${testInfo.testName} "
+                println "Running ReGameDLL_CS test demo ${testInfo.testName} "
                 System.out.flush()
             }
 
+            println "Preparing files for test demo ${testInfo.testName} "
+
+            demoRunner.prepareDemo(f)
 
             def testRes = demoRunner.runTest(testInfo, regamedllTestLogs)
 

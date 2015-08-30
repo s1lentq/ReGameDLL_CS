@@ -3,6 +3,8 @@
 /* <4110a1> ../cstrike/dlls/hostage/states/hostage_animate.cpp:13 */
 void HostageAnimateState::Reset(void)
 {
+	m_sequenceCount = 0;
+	m_performance = None;
 }
 
 /* <4110c7> ../cstrike/dlls/hostage/states/hostage_animate.cpp:20 */

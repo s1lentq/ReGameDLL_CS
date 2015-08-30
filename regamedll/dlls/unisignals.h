@@ -44,10 +44,10 @@ public:
 public:
 	void Update(void)
 	{
-//		int old;                                              //    46
+		int old = m_flSignal;
 
-		m_flState = m_flSignal;
 		m_flSignal = 0;
+		m_flState = old;
 	}
 	void Signal(int flags)
 	{

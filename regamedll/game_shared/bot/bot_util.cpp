@@ -6,17 +6,17 @@
 #ifndef HOOK_GAMEDLL
 
 static short s_iBeamSprite = 0;
-static float cosTable[COS_TABLE_SIZE];
+static float cosTable[ COS_TABLE_SIZE ];
 
 #else
 
 short s_iBeamSprite;
-float cosTable[COS_TABLE_SIZE];
+float cosTable[ COS_TABLE_SIZE ];
 
 #endif // HOOK_GAMEDLL
 
 /* <4ad1c6> ../game_shared/bot/bot_util.cpp:26 */
-NOBODY bool UTIL_IsNameTaken(const char *name, bool ignoreHumans)
+bool UTIL_IsNameTaken(const char *name, bool ignoreHumans)
 {
 	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
@@ -33,7 +33,9 @@ NOBODY bool UTIL_IsNameTaken(const char *name, bool ignoreHumans)
 
 		if (player->IsPlayer() && (((CBasePlayer *)player)->IsBot() == TRUE))
 		{
-			CBot *bot = (CBot *)player;
+			// bots can have prefixes so we need to check the name
+			// against the profile name instead.
+			CBot *bot = reinterpret_cast<CBot *>(player);
 			if (FStrEq(name, bot->GetProfile()->GetName()))
 			{
 				return true;
@@ -52,7 +54,7 @@ NOBODY bool UTIL_IsNameTaken(const char *name, bool ignoreHumans)
 }
 
 /* <4ad2da> ../game_shared/bot/bot_util.cpp:66 */
-NOBODY int UTIL_ClientsInGame(void)
+int UTIL_ClientsInGame(void)
 {
 	int iCount = 0;
 	for (int iIndex = 1; iIndex <= gpGlobals->maxClients; iIndex++)
@@ -74,7 +76,7 @@ NOBODY int UTIL_ClientsInGame(void)
 }
 
 /* <4ad385> ../game_shared/bot/bot_util.cpp:93 */
-NOBODY int UTIL_ActivePlayersInGame(void)
+int UTIL_ActivePlayersInGame(void)
 {
 	int iCount = 0;
 	for (int iIndex = 1; iIndex <= gpGlobals->maxClients; iIndex++)
@@ -101,11 +103,12 @@ NOBODY int UTIL_ActivePlayersInGame(void)
 
 		iCount++;
 	}
+
 	return iCount;
 }
 
 /* <4ad43f> ../game_shared/bot/bot_util.cpp:128 */
-NOBODY int UTIL_HumansInGame(bool ignoreSpectators)
+int UTIL_HumansInGame(bool ignoreSpectators)
 {
 	int iCount = 0;
 
@@ -135,6 +138,7 @@ NOBODY int UTIL_HumansInGame(bool ignoreSpectators)
 
 		iCount++;
 	}
+
 	return iCount;
 }
 
@@ -198,12 +202,15 @@ NOBODY int UTIL_BotsInGame(void)
 }
 
 /* <4ad686> ../game_shared/bot/bot_util.cpp:240 */
-NOBODY bool UTIL_KickBotFromTeam(TeamName kickTeam)
+bool UTIL_KickBotFromTeam(TeamName kickTeam)
 {
 	int i;
+
+	// try to kick a dead bot first
 	for (i = 1; i <= gpGlobals->maxClients; ++i)
 	{
 		CBasePlayer *player = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+
 		if (player == NULL)
 			continue;
 
@@ -219,10 +226,13 @@ NOBODY bool UTIL_KickBotFromTeam(TeamName kickTeam)
 
 		if (!player->IsAlive() && player->m_iTeam == kickTeam)
 		{
+			// its a bot on the right team - kick it
 			SERVER_COMMAND(UTIL_VarArgs("kick \"%s\"\n", STRING(player->pev->netname)));
 			return true;
 		}
 	}
+
+	// no dead bots, kick any bot on the given team
 	for (i = 1; i <= gpGlobals->maxClients; ++i)
 	{
 		CBasePlayer *player = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
@@ -242,6 +252,7 @@ NOBODY bool UTIL_KickBotFromTeam(TeamName kickTeam)
 
 		if (player->m_iTeam == kickTeam)
 		{
+			// its a bot on the right team - kick it
 			SERVER_COMMAND(UTIL_VarArgs("kick \"%s\"\n", STRING(player->pev->netname)));
 			return true;
 		}
@@ -253,7 +264,7 @@ NOBODY bool UTIL_KickBotFromTeam(TeamName kickTeam)
 NOBODY bool UTIL_IsTeamAllBots(int team)
 {
 	int botCount = 0;
-	for(int i=1; i <= gpGlobals->maxClients; ++i)
+	for (int i=1; i <= gpGlobals->maxClients; ++i)
 	{
 		CBasePlayer *player = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
@@ -269,7 +280,7 @@ NOBODY bool UTIL_IsTeamAllBots(int team)
 		if (FStrEq(STRING(player->pev->netname), ""))
 			continue;
 
-		if (!FBitSet(player->pev->flags, FL_FAKECLIENT))
+		if (!(player->pev->flags & FL_FAKECLIENT))
 			return false;
 
 		++botCount;
@@ -341,31 +352,34 @@ NOBODY extern CBasePlayer *UTIL_GetClosestPlayer(const Vector *pos, int team, fl
 }
 
 /* <4ad0de> ../game_shared/bot/bot_util.cpp:411 */
-NOBODY const char *UTIL_GetBotPrefix()
+const char *UTIL_GetBotPrefix()
 {
 	return cv_bot_prefix.string;
 }
 
 /* <4adb11> ../game_shared/bot/bot_util.cpp:418 */
-NOBODY void UTIL_ConstructBotNetName(char *name, int nameLength, const BotProfile *profile)
+void UTIL_ConstructBotNetName(char *name, int nameLength, const BotProfile *profile)
 {
 	if (profile == NULL)
 	{
 		name[0] = 0;
 		return;
 	}
+
+	// if there is no bot prefix just use the profile name.
 	if ((UTIL_GetBotPrefix() == NULL) || (Q_strlen(UTIL_GetBotPrefix()) == 0))
 	{
 		Q_strncpy(name, profile->GetName(), nameLength);
 		return;
 	}
+
 	Q_snprintf(name, nameLength, "%s %s", UTIL_GetBotPrefix(), profile->GetName());
 }
 
 /* <4adb6c> ../game_shared/bot/bot_util.cpp:440 */
 NOBODY bool UTIL_IsVisibleToTeam(const Vector &spot, int team, float maxRange)
 {
-	for(int i = 1; i <= gpGlobals->maxClients; ++i)
+	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
 		CBasePlayer *player = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
@@ -479,14 +493,10 @@ void CONSOLE_ECHO(char *pszMsg, ...)
 	static char szStr[1024];
 
 	va_start(argptr, pszMsg);
-#ifdef REGAMEDLL_FIXES
-	Q_vsnprintf(szStr, sizeof(szStr), pszMsg, argptr);
-#else
 	vsprintf(szStr, pszMsg, argptr);
-#endif // REGAMEDLL_FIXES
 	va_end(argptr);
 
-	(*g_engfuncs.pfnServerPrint)(szStr);
+	SERVER_PRINT(szStr);
 }
 
 /* <4ae13e> ../game_shared/bot/bot_util.cpp:577 */
@@ -496,14 +506,10 @@ void CONSOLE_ECHO_LOGGED(char *pszMsg, ...)
 	static char szStr[1024];
 
 	va_start(argptr, pszMsg);
-#ifdef REGAMEDLL_FIXES
-	Q_vsnprintf(szStr, sizeof(szStr), pszMsg, argptr);
-#else
 	vsprintf(szStr, pszMsg, argptr);
-#endif // REGAMEDLL_FIXES
 	va_end(argptr);
 
-	(*g_engfuncs.pfnServerPrint)(szStr);
+	SERVER_PRINT(szStr);
 	UTIL_LogPrintf(szStr);
 }
 
@@ -529,28 +535,12 @@ void BotPrecache(void)
 /* <4ae1b1> ../game_shared/bot/bot_util.cpp:666 */
 void InitBotTrig(void)
 {
-	for(int i = 0; i < COS_TABLE_SIZE; i++)
+	for (int i = 0; i < COS_TABLE_SIZE; i++)
 	{
 		float_precision angle = 2.0f * M_PI * (float)i / (float)(COS_TABLE_SIZE - 1);
-		cosTable[i] = cos( angle );
+		cosTable[i] = cos(angle);
 	}
 }
-
-///* <4ae1fd> ../game_shared/bot/bot_util.cpp:675 */
-//float BotCOS(float angle)
-//{
-//	angle = NormalizeAnglePositive(angle);
-//	int i = angle * (COS_TABLE_SIZE - 1) / 360.0f;
-//	return cosTable[ i ];
-//}
-//
-///* <4ae261> ../game_shared/bot/bot_util.cpp:682 */
-//float BotSIN(float angle)
-//{
-//	angle = NormalizeAnglePositive(angle - 90);
-//	int i = angle * (COS_TABLE_SIZE - 1) / 360.0f;
-//	return cosTable[ i ];
-//}
 
 /* <4ae1fd> ../game_shared/bot/bot_util.cpp:675 */
 float BotCOS(float angle)
@@ -694,23 +684,27 @@ NOBODY bool IsGameEventAudible(GameEventType event, CBaseEntity *entity, CBaseEn
 }
 
 /* <4ae3c1> ../game_shared/bot/bot_util.cpp:838 */
-NOBODY void HintMessageToAllPlayers(const char *message)
+void HintMessageToAllPlayers(const char *message)
 {
 	hudtextparms_t textParms;
 
 	textParms.x = -1.0f;
 	textParms.y = -1.0f;
+	textParms.effect = 0;
+
+	textParms.r1 = 100;
+	textParms.g1 = 255;
+	textParms.b1 = 100;
+
+	textParms.r2 = 255;
+	textParms.g2 = 255;
+	textParms.b2 = 255;
+
 	textParms.fadeinTime = 1.0f;
 	textParms.fadeoutTime = 5.0f;
 	textParms.holdTime = 5.0f;
 	textParms.fxTime = 0.0f;
-	textParms.r1 = 100;
-	textParms.g1 = 255;
-	textParms.b1 = 100;
-	textParms.r2 = 255;
-	textParms.g2 = 255;
-	textParms.b2 = 255;
-	textParms.effect = 0;
+
 	textParms.channel = 0;
 
 	UTIL_HudMessageAll(textParms, message);

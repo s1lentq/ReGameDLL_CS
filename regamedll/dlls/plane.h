@@ -36,11 +36,12 @@
 class CPlane
 {
 public:
-	NOBODY CPlane(void);
+	CPlane(void);
 
-	NOBODY void InitializePlane(const Vector &vecNormal, const Vector &vecPoint);
-	NOBODY BOOL PointInFront(const Vector &vecPoint);
+	NOXREF void InitializePlane(const Vector &vecNormal, const Vector &vecPoint);
+	NOXREF BOOL PointInFront(const Vector &vecPoint);
 
+private:
 	Vector m_vecNormal;
 	float m_flDist;
 	BOOL m_fInitialized;

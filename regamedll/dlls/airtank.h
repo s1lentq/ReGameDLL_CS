@@ -42,37 +42,36 @@ public:
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
 	virtual void Killed(entvars_t *pevAttacker, int iGib);
-	virtual int BloodColor(void);
+	virtual int BloodColor(void)
+	{
+		return BloodColor_();
+	}
 public:
 	void EXPORT TankThink(void);
 	void EXPORT TankTouch(CBaseEntity *pOther);
 
 #ifdef HOOK_GAMEDLL
 
-	NOBODY void Spawn_(void);
-	NOBODY void Precache_(void);
-	NOBODY int Save_(CSave &save);
-	NOBODY int Restore_(CRestore &restore);
-	NOBODY void Killed_(entvars_t *pevAttacker, int iGib);
-	NOBODY int BloodColor_(void);
+	void Spawn_(void);
+	void Precache_(void);
+	int Save_(CSave &save);
+	int Restore_(CRestore &restore);
+	void Killed_(entvars_t *pevAttacker, int iGib);
+	int BloodColor_(void)
+	{
+		return DONT_BLEED;
+	}
 
 #endif // HOOK_GAMEDLL
 
 public:
-
-#ifndef HOOK_GAMEDLL
-
-	static TYPEDESCRIPTION m_SaveData[1];
-#else
-	static TYPEDESCRIPTION (*m_SaveData)[1];
-
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[1];
 
 private:
 	int m_state;
 
 };
 
-//NOBODY void item_airtank(entvars_t *pev);
+C_DLLEXPORT void item_airtank(entvars_t *pev);
 
 #endif // AIRTANK_H

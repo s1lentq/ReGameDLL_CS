@@ -24,9 +24,9 @@ TYPEDESCRIPTION CWreckage::m_SaveData[] =
 
 #else
 
-TYPEDESCRIPTION (*CCycler::m_SaveData)[1];
-TYPEDESCRIPTION (*CCyclerSprite::m_SaveData)[3];
-TYPEDESCRIPTION (*CWreckage::m_SaveData)[1];
+TYPEDESCRIPTION (*CCycler::pm_SaveData)[1];
+TYPEDESCRIPTION (*CCyclerSprite::pm_SaveData)[3];
+TYPEDESCRIPTION (*CWreckage::pm_SaveData)[1];
 
 #endif // HOOK_GAMEDLL
 
@@ -34,7 +34,7 @@ TYPEDESCRIPTION (*CWreckage::m_SaveData)[1];
 IMPLEMENT_SAVERESTORE(CCycler, CBaseToggle);
 
 /* <cd01f> ../cstrike/dlls/h_cycler.cpp:70 */
-void CGenericCycler::Spawn_(void)
+void CGenericCycler::__MAKE_VHOOK(Spawn)(void)
 {
 //	Vector(Vector::Spawn(//		float X,
 //		float Y,
@@ -56,7 +56,7 @@ LINK_ENTITY_TO_CLASS(cycler, CGenericCycler);
 LINK_ENTITY_TO_CLASS(cycler_prdroid, CCyclerProbe);
 
 /* <cd16d> ../cstrike/dlls/h_cycler.cpp:86 */
-void CCyclerProbe::Spawn_(void)
+void CCyclerProbe::__MAKE_VHOOK(Spawn)(void)
 {
 //	Vector(Vector::Spawn(//		float X,
 //		float Y,
@@ -81,23 +81,23 @@ void CCycler::GenericCyclerSpawn(char *szModel, Vector vecMin, Vector vecMax)
 }
 
 /* <ccc91> ../cstrike/dlls/h_cycler.cpp:115 */
-void CCycler::Spawn_(void)
+void CCycler::__MAKE_VHOOK(Spawn)(void)
 {
 }
 
 /* <ccd3e> ../cstrike/dlls/h_cycler.cpp:151 */
-void CCycler::Think_(void)
+void CCycler::__MAKE_VHOOK(Think)(void)
 {
 //	Think(CCycler *const this);  //   151
 }
 
 /* <cc8bf> ../cstrike/dlls/h_cycler.cpp:176 */
-void CCycler::Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CCycler::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 }
 
 /* <ccf43> ../cstrike/dlls/h_cycler.cpp:189 */
-int CCycler::TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
+int CCycler::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
 //	TakeDamage(CCycler *const this,
 //			entvars_t *pevInflictor,
@@ -113,7 +113,7 @@ LINK_ENTITY_TO_CLASS(cycler_sprite, CCyclerSprite);
 IMPLEMENT_SAVERESTORE(CCyclerSprite, CBaseEntity);
 
 /* <cc982> ../cstrike/dlls/h_cycler.cpp:284 */
-void CCyclerSprite::Restart_(void)
+void CCyclerSprite::__MAKE_VHOOK(Restart)(void)
 {
 //	{
 //		int i;                                                //   300
@@ -121,7 +121,7 @@ void CCyclerSprite::Restart_(void)
 }
 
 /* <cc943> ../cstrike/dlls/h_cycler.cpp:258 */
-void CCyclerSprite::Spawn_(void)
+void CCyclerSprite::__MAKE_VHOOK(Spawn)(void)
 {
 //	{
 //		int i;                                                //   279
@@ -129,7 +129,7 @@ void CCyclerSprite::Spawn_(void)
 }
 
 /* <cd0ef> ../cstrike/dlls/h_cycler.cpp:305 */
-void CCyclerSprite::Think_(void)
+void CCyclerSprite::__MAKE_VHOOK(Think)(void)
 {
 //	ShouldAnimate(CCyclerSprite *const this);  //   307
 //	Animate(CCyclerSprite *const this,
@@ -137,12 +137,12 @@ void CCyclerSprite::Think_(void)
 }
 
 /* <cc9c1> ../cstrike/dlls/h_cycler.cpp:315 */
-void CCyclerSprite::Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CCyclerSprite::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 }
 
 /* <cd228> ../cstrike/dlls/h_cycler.cpp:322 */
-int CCyclerSprite::TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
+int CCyclerSprite::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
 //	Animate(CCyclerSprite *const this,
 //		float frames);  //   326
@@ -159,7 +159,7 @@ void CCyclerSprite::Animate(float frames)
 LINK_ENTITY_TO_CLASS(cycler_weapon, CWeaponCycler);
 
 /* <ccbf6> ../cstrike/dlls/h_cycler.cpp:361 */
-void CWeaponCycler::Spawn_(void)
+void CWeaponCycler::__MAKE_VHOOK(Spawn)(void)
 {
 //	Vector(Vector::Spawn(//		float X,
 //		float Y,
@@ -171,22 +171,22 @@ void CWeaponCycler::Spawn_(void)
 }
 
 /* <cca7c> ../cstrike/dlls/h_cycler.cpp:378 */
-BOOL CWeaponCycler::Deploy_(void)
+BOOL CWeaponCycler::__MAKE_VHOOK(Deploy)(void)
 {
 }
 
 /* <ccaa3> ../cstrike/dlls/h_cycler.cpp:388 */
-void CWeaponCycler::Holster_(int skiplocal)
+void CWeaponCycler::__MAKE_VHOOK(Holster)(int skiplocal)
 {
 }
 
 /* <ccad8> ../cstrike/dlls/h_cycler.cpp:394 */
-void CWeaponCycler::PrimaryAttack_(void)
+void CWeaponCycler::__MAKE_VHOOK(PrimaryAttack)(void)
 {
 }
 
 /* <ccb97> ../cstrike/dlls/h_cycler.cpp:403 */
-void CWeaponCycler::SecondaryAttack_(void)
+void CWeaponCycler::__MAKE_VHOOK(SecondaryAttack)(void)
 {
 //	{
 //		float flFrameRate;                                    //   405
@@ -202,18 +202,18 @@ IMPLEMENT_SAVERESTORE(CWreckage, CBaseToggle);
 LINK_ENTITY_TO_CLASS(cycler_wreckage, CWreckage);
 
 /* <ccaff> ../cstrike/dlls/h_cycler.cpp:448 */
-void CWreckage::Spawn_(void)
+void CWreckage::__MAKE_VHOOK(Spawn)(void)
 {
 }
 
 /* <ccd07> ../cstrike/dlls/h_cycler.cpp:468 */
-void CWreckage::Precache_(void)
+void CWreckage::__MAKE_VHOOK(Precache)(void)
 {
 //	Precache(CWreckage *const this);  //   468
 }
 
 /* <ccb26> ../cstrike/dlls/h_cycler.cpp:474 */
-void CWreckage::Think_(void)
+void CWreckage::__MAKE_VHOOK(Think)(void)
 {
 //	{
 //		Vector VecSrc;                                  //   492

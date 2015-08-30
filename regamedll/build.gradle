@@ -19,6 +19,7 @@ import org.gradle.nativeplatform.SharedLibraryBinarySpec
 import regamedll.testdemo.RegamedllDemoRunner
 import versioning.RegamedllVersionInfo
 import org.apache.commons.io.FilenameUtils
+import org.apache.commons.compress.archivers.ArchiveInputStream
 
 apply plugin: 'cpp'
 apply plugin: IccCompilerPlugin
@@ -37,6 +38,7 @@ configurations {
 
 dependencies {
     regamedll_tests 'regamedll.testdemos:cstrike-fulltests-2:2.0'
+    regamedll_tests 'regamedll.testdemos:czero-ladder_hard:2.0'
     //regamedll_tests 'regamedll.testdemos:cstrike-multiplayer-2:2.0'
     //regamedll_tests 'regamedll.testdemos:cstrike-hostage-2:2.0'
     //regamedll_tests 'regamedll.testdemos:cstrike-weapon-1:1.0'
@@ -125,7 +127,7 @@ void setupToolchain(NativeBinarySpec b) {
     }
     b.lib LazyNativeDepSet.create(dep_bzip2, 'bzip2', b.buildType.name, true)
 
-    cfg.singleDefines 'USE_BREAKPAD_HANDLER', 'DEDICATED', 'REGAMEDLL_SELF'
+    cfg.singleDefines 'USE_BREAKPAD_HANDLER', 'DEDICATED', 'REGAMEDLL_SELF', 'HOOK_GAMEDLL', 'CLIENT_WEAPONS'
 
     if (cfg instanceof MsvcToolchainConfig) {
 
@@ -166,10 +168,9 @@ void setupToolchain(NativeBinarySpec b) {
         cfg.extraLibs 'dl', 'm', 'stdc++', 'steam_api'
     }
 
-    // TODO: check it
-    //if (!unitTestExecutable && !mpLib) {
-        cfg.singleDefines 'HOOK_GAMEDLL'
-    //}
+    if (unitTestExecutable) {
+        cfg.singleDefines 'REGAMEDLL_UNIT_TESTS'
+    }
 
     if (regamedllFixes) {
         cfg.singleDefines 'REGAMEDLL_FIXES', 'REGAMEDLL_CHECKS'
@@ -187,7 +188,7 @@ class RegamedllSrc {
         h.regamedll_src(CppSourceSet) {
 
             source {
-		srcDirs "dlls", "game_shared", "pm_shared", "regamedll", "public", "version"
+		srcDirs "engine", "dlls", "game_shared", "pm_shared", "regamedll", "public", "version"
                 if (GradleCppUtils.windows) {
 			srcDirs "testsuite"
 		}
@@ -363,7 +364,8 @@ task prepareDevEnvGamedll << {
 		def regamedllImage = new File(project.projectDir, gamedllDir)
 		regamedllImage.mkdirs()
 		def demoRunner = new RegamedllDemoRunner(project.configurations.regamedll_playtest_image.getFiles(), regamedllImage, null)
-		demoRunner.prepareGamedll()
+		demoRunner.prepareEngine()
+		//demoRunner.prepareDemo()
 	}
 }
 

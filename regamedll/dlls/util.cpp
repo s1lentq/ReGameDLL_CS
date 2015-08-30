@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-#if 1
+#if 0
 
 void *addr_orig;
 char patchByte[5];
@@ -169,12 +169,13 @@ int UTIL_SharedRandomLong(unsigned int seed, int low, int high)
 {
 	unsigned int range = high - low + 1;
 	U_Srand((unsigned int)(high + low + seed));
-	if(range != 1)
+	if (range != 1)
 	{
 		int rnum = U_Random();
 		int offset = rnum % range;
 		return (low + offset);
 	}
+
 	return low;
 }
 
@@ -187,12 +188,13 @@ float UTIL_SharedRandomFloat(unsigned int seed, float low, float high)
 	U_Random();
 	U_Random();
 
-	if(range)
+	if (range)
 	{
 		int tensixrand = U_Random() & 0xFFFFu;
 		float offset = (float)tensixrand / 0x10000u;
 		return (low + offset * range);
 	}
+
 	return low;
 }
 
@@ -341,6 +343,7 @@ int UTIL_EntitiesInBox(CBaseEntity **pList, int listMax, const Vector &mins, con
 		if (count >= listMax)
 			break;
 	}
+
 	return count;
 }
 
@@ -399,6 +402,7 @@ NOXREF int UTIL_MonstersInSphere(CBaseEntity ** pList, int listMax, const Vector
 		if (count >= listMax)
 			return count;
 	}
+
 	return count;
 }
 
@@ -413,7 +417,10 @@ CBaseEntity *UTIL_FindEntityInSphere(CBaseEntity *pStartEntity, const Vector &ve
 
 	pentEntity = FIND_ENTITY_IN_SPHERE(pentEntity, vecCenter, flRadius);
 	if (!FNullEnt(pentEntity))
+	{
 		return CBaseEntity::Instance(pentEntity);
+	}
+
 	return NULL;
 }
 
@@ -428,7 +435,10 @@ CBaseEntity *UTIL_FindEntityByString_Old(CBaseEntity *pStartEntity, const char *
 
 	pentEntity = FIND_ENTITY_BY_STRING(pentEntity, szKeyword, szValue);
 	if (!FNullEnt(pentEntity))
+	{
 		return CBaseEntity::Instance(pentEntity);
+	}
+
 	return NULL;
 }
 
@@ -454,52 +464,63 @@ CBaseEntity *UTIL_FindEntityByString(CBaseEntity *pStartEntity, const char *szKe
 
 		hash = CaseInsensitiveHash(szValue, stringsHashTable.Count());
 		count = stringsHashTable.Count();
-		item = &stringsHashTable[hash];
+		item = &stringsHashTable[ hash ];
 
-		while (item->pev)
-		{
-			if (!strcmp(STRING(item->pev->classname), szValue))
-				break;
-
-			hash = (hash + 1) % count;
-			item = &stringsHashTable[hash];
-		}
 		if (!item->pev)
 		{
 			item->lastHash = NULL;
 			return NULL;
 		}
-		if (pStartEntity)
+
+		while (item->pev != NULL)
+		{
+			if (!Q_strcmp(STRING(item->pev->classname), szValue))
+				break;
+
+			hash = (hash + 1) % count;
+			item = &stringsHashTable[ hash ];
+		}
+
+		if (!item->pev)
+		{
+			item->lastHash = NULL;
+			return NULL;
+		}
+
+		if (pStartEntity != NULL)
 		{
 			if (item->lastHash && item->lastHash->pevIndex <= startEntityIndex)
 				item = item->lastHash;
 
-			while (item->pevIndex <= startEntityIndex)
+			if (item->pevIndex <= startEntityIndex)
 			{
-				if (!item->next)
-					break;
+				while (item->pevIndex <= startEntityIndex)
+				{
+					if (!item->next)
+						break;
 
-				item = item->next;
+					item = item->next;
+				}
 
-				if (!(item->pevIndex <= startEntityIndex))
-					break;
-			}
-
-			if (item->pevIndex == startEntityIndex)
-			{
-				stringsHashTable[hash].lastHash = NULL;
-				return NULL;
+				if (item->pevIndex == startEntityIndex)
+				{
+					stringsHashTable[ hash ].lastHash = NULL;
+					return NULL;
+				}
 			}
 		}
 
-		stringsHashTable[hash].lastHash = item;
+		stringsHashTable[ hash ].lastHash = item;
 		pentEntity = ENT(item->pev);
 	}
 	else
 		pentEntity = FIND_ENTITY_BY_STRING(pentEntity, szKeyword, szValue);
 
 	if (!FNullEnt(pentEntity))
+	{
 		return CBaseEntity::Instance(pentEntity);
+	}
+
 	return NULL;
 }
 
@@ -569,6 +590,8 @@ void UTIL_MakeAimVectors(const Vector &vecAngles)
 void UTIL_MakeInvVectors(const Vector &vec, globalvars_t *pgv)
 {
 	MAKE_VECTORS(vec);
+
+	pgv->v_right = pgv->v_right * -1;
 
 	SWAP(pgv->v_forward.y, pgv->v_right.x);
 	SWAP(pgv->v_forward.z, pgv->v_up.x);
@@ -667,8 +690,8 @@ NOXREF void UTIL_ScreenShakeAll(const Vector &center, float amplitude, float fre
 /* <1ac3a1> ../cstrike/dlls/util.cpp:858 */
 void UTIL_ScreenFadeBuild(ScreenFade &fade, const Vector &color, float fadeTime, float fadeHold, int alpha, int flags)
 {
-	fade.duration = FixedUnsigned16(fadeTime,1<<12);
-	fade.holdTime = FixedUnsigned16(fadeHold,1<<12);
+	fade.duration = FixedUnsigned16(fadeTime, 1<<12);
+	fade.holdTime = FixedUnsigned16(fadeHold, 1<<12);
 	fade.r = (int)color.x;
 	fade.g = (int)color.y;
 	fade.b = (int)color.z;
@@ -745,10 +768,10 @@ void UTIL_HudMessage(CBaseEntity *pEntity, const hudtextparms_t &textparms, cons
 		WRITE_STRING(" ");	//TODO: oh yeah
 	else
 	{
-		if (strlen(pMessage) >= 512)
+		if (Q_strlen(pMessage) >= 512)
 		{
 			char tmp[512];
-			strncpy(tmp, pMessage, 511);
+			Q_strncpy(tmp, pMessage, 511);
 			tmp[511] = 0;
 			WRITE_STRING(tmp);
 		}
@@ -1050,11 +1073,7 @@ char *UTIL_VarArgs(char *format, ...)
 	static char string[1024];
 
 	va_start(argptr, format);
-#ifdef REGAMEDLL_FIXES
-	Q_vsnprintf(string, sizeof(string), format, argptr);
-#else
 	vsprintf(string, format, argptr);
-#endif // REGAMEDLL_FIXES
 	va_end(argptr);
 
 	return string;
@@ -1082,6 +1101,7 @@ int UTIL_IsMasterTriggered(string_t sMaster, CBaseEntity *pActivator)
 		}
 		ALERT(at_console, "Master was null or not a master!\n");
 	}
+
 	return 1;
 }
 
@@ -1128,7 +1148,7 @@ void UTIL_BloodStream(const Vector &origin, const Vector &direction, int color, 
 		WRITE_COORD(direction.y);
 		WRITE_COORD(direction.z);
 		WRITE_BYTE(color);
-		WRITE_BYTE(min( amount, 255 ));
+		WRITE_BYTE(_min( amount, 255 ));
 	MESSAGE_END();
 }
 
@@ -1158,7 +1178,7 @@ void UTIL_BloodDrips(const Vector &origin, const Vector &direction, int color, i
 		WRITE_SHORT(g_sModelIndexBloodSpray);
 		WRITE_SHORT(g_sModelIndexBloodDrop);
 		WRITE_BYTE(color);
-		WRITE_BYTE(min( max( 3, amount / 10 ), 16 ));
+		WRITE_BYTE(_min( _max( 3, amount / 10 ), 16 ));
 	MESSAGE_END();
 }
 
@@ -1262,7 +1282,7 @@ void UTIL_PlayerDecalTrace(TraceResult *pTrace, int playernum, int decalNumber, 
 			WRITE_COORD(pTrace->vecEndPos.x);
 			WRITE_COORD(pTrace->vecEndPos.y);
 			WRITE_COORD(pTrace->vecEndPos.z);
-			WRITE_SHORT((short)ENTINDEX(pTrace->pHit));
+			WRITE_SHORT((int)ENTINDEX(pTrace->pHit));
 			WRITE_BYTE(index);
 		MESSAGE_END();
 	}
@@ -1284,11 +1304,11 @@ void UTIL_GunshotDecalTrace(TraceResult *pTrace, int decalNumber, bool ClientOnl
 		MESSAGE_BEGIN(MSG_PAS, SVC_TEMPENTITY, pTrace->vecEndPos);
 
 	WRITE_BYTE(TE_GUNSHOTDECAL);
-	WRITE_COORD(pTrace->vecEndPos.x);
-	WRITE_COORD(pTrace->vecEndPos.y);
-	WRITE_COORD(pTrace->vecEndPos.z);
-	WRITE_SHORT((short)ENTINDEX(pTrace->pHit));
-	WRITE_BYTE(index);
+		WRITE_COORD(pTrace->vecEndPos.x);
+		WRITE_COORD(pTrace->vecEndPos.y);
+		WRITE_COORD(pTrace->vecEndPos.z);
+		WRITE_SHORT((int)ENTINDEX(pTrace->pHit));
+		WRITE_BYTE(index);
 	MESSAGE_END();
 }
 
@@ -1348,7 +1368,7 @@ void UTIL_StringToVector(float *pVector, const char *pString)
 
 	for (j = 0; j < 3; j++)
 	{
-		pVector[j] = atof(pfront);
+		pVector[j] = Q_atof(pfront);
 
 		while (*pstr && *pstr != ' ')
 			pstr++;
@@ -1374,16 +1394,12 @@ void UTIL_StringToIntArray(int *pVector, int count, const char *pString)
 
 	Q_strcpy(tempString, pString);
 
-#ifdef GAMEDLL_FIXES
-	tempString[127] = 0;
-#endif // GAMEDLL_FIXES
-
 	pstr = tempString;
 	pfront = tempString;
 
 	for (j = 0; j < count; j++)
 	{
-		pVector[j] = atoi(pfront);
+		pVector[j] = Q_atoi(pfront);
 
 		while (*pstr && *pstr != ' ')
 			pstr++;
@@ -1539,7 +1555,9 @@ void UTIL_PrecacheOther(const char *szClassname)
 
 	CBaseEntity *pEntity = CBaseEntity::Instance(VARS(pent));
 	if (pEntity)
+	{
 		pEntity->Precache();
+	}
 
 	REMOVE_ENTITY(pent);
 }
@@ -1551,13 +1569,7 @@ void UTIL_LogPrintf(char *fmt, ...)
 	static char string[1024];
 
 	va_start(argptr, fmt);
-
-#ifdef REGAMEDLL_FIXES
-	Q_vsnprintf(string, sizeof(string), fmt, argptr);
-#else
 	vsprintf(string, fmt, argptr);
-#endif // REGAMEDLL_FIXES
-
 	va_end(argptr);
 
 	ALERT(at_logged, "%s", string);
@@ -1664,8 +1676,8 @@ int CSaveRestoreBuffer::EntityFlagsSet(int entityIndex, int flags)
 	if (!m_pdata || entityIndex < 0 || entityIndex > m_pdata->tableCount)
 		return 0;
 
-	m_pdata->pTable[entityIndex].flags |= flags;
-	return m_pdata->pTable[entityIndex].flags;
+	m_pdata->pTable[ entityIndex ].flags |= flags;
+	return m_pdata->pTable[ entityIndex ].flags;
 }
 
 /* <1b0445> ../cstrike/dlls/util.cpp:1933 */
@@ -1779,7 +1791,7 @@ NOXREF void CSave::WriteTime(const char *pname, const float *data, int count)
 /* <1b1053> ../cstrike/dlls/util.cpp:2065 */
 NOXREF void CSave::WriteString(const char *pname, const char *pdata)
 {
-	BufferField(pname, strlen(pdata) + 1, pdata);
+	BufferField(pname, Q_strlen(pdata) + 1, pdata);
 }
 
 /* <1b121f> ../cstrike/dlls/util.cpp:2076 */
@@ -1789,13 +1801,13 @@ NOXREF void CSave::WriteString(const char *pname, const int *stringId, int count
 	int size = 0;
 
 	for (i = 0; i < count; i++)
-		size += strlen(STRING(stringId[i])) + 1;
+		size += Q_strlen(STRING(stringId[i])) + 1;
 
 	BufferHeader(pname, size);
 	for (i = 0; i < count; i++)
 	{
 		const char *pString = STRING(stringId[i]);
-		BufferData(pString, strlen(pString) + 1);
+		BufferData(pString, Q_strlen(pString) + 1);
 	}
 }
 
@@ -1845,7 +1857,7 @@ NOXREF void CSave::WriteFunction(const char *pname, void **data, int count)
 	const char *functionName = NAME_FOR_FUNCTION((uint32)*data);
 
 	if (functionName)
-		BufferField(pname, strlen(functionName) + 1, functionName);
+		BufferField(pname, Q_strlen(functionName) + 1, functionName);
 	else
 		ALERT(at_error, "Invalid function pointer in entity!");
 }
@@ -1868,10 +1880,10 @@ void EntvarsKeyvalue(entvars_t *pev, KeyValueData *pkvd)
 				break;
 			case FIELD_FLOAT:
 			case FIELD_TIME:
-				*(float *)((char *)pev + pField->fieldOffset) = atof(pkvd->szValue);
+				*(float *)((char *)pev + pField->fieldOffset) = Q_atof(pkvd->szValue);
 				break;
 			case FIELD_INTEGER:
-				*(string_t *)((char *)pev + pField->fieldOffset) = atoi(pkvd->szValue);
+				*(string_t *)((char *)pev + pField->fieldOffset) = Q_atoi(pkvd->szValue);
 				break;
 			case FIELD_VECTOR:
 			case FIELD_POSITION_VECTOR:
@@ -1912,7 +1924,7 @@ int CSave::WriteFields(const char *pname, void *pBaseData, TYPEDESCRIPTION *pFie
 			emptyCount++;
 	}
 
-	int entityArray[MAX_ENTITYARRAY];
+	int entityArray[ MAX_ENTITY_ARRAY ];
 	int actualCount = fieldCount - emptyCount;
 
 	WriteInt(pname, &actualCount, 1);
@@ -1946,8 +1958,8 @@ int CSave::WriteFields(const char *pname, void *pBaseData, TYPEDESCRIPTION *pFie
 			case FIELD_ENTITY:
 			case FIELD_EHANDLE:
 			{
-				if (pTest->fieldSize > MAX_ENTITYARRAY)
-					ALERT(at_error, "Can't save more than %d entities in an array!!!\n", MAX_ENTITYARRAY);
+				if (pTest->fieldSize > MAX_ENTITY_ARRAY)
+					ALERT(at_error, "Can't save more than %d entities in an array!!!\n", MAX_ENTITY_ARRAY);
 
 				for (int j = 0; j < pTest->fieldSize; j++)
 				{
@@ -2034,7 +2046,7 @@ void CSave::BufferField(const char *pname, int size, const char *pdata)
 void CSave::BufferHeader(const char *pname, int size)
 {
 	short hashvalue = TokenHash(pname);
-	if (size > (1<<(sizeof(short) * 8)))
+	if (size > (1 << (sizeof(short) * 8)))
 		ALERT(at_error, "CSave :: BufferHeader() size parameter exceeds 'short'!");
 
 	BufferData((const char *)&size, sizeof(short));
@@ -2109,7 +2121,7 @@ int CRestore::ReadField(void *pBaseData, TYPEDESCRIPTION *pFields, int fieldCoun
 							}
 
 							pInputData = pString;
-							if (!strlen((char *)pInputData))
+							if (!Q_strlen((char *)pInputData))
 								*((int *)pOutputData) = 0;
 							else
 							{
@@ -2211,7 +2223,7 @@ int CRestore::ReadField(void *pBaseData, TYPEDESCRIPTION *pFields, int fieldCoun
 							break;
 						case FIELD_FUNCTION:
 						{
-							if (!strlen((char *)pInputData))
+							if (!Q_strlen((char *)pInputData))
 								*((int *)pOutputData) = 0;
 							else
 								*((int *)pOutputData) = FUNCTION_FROM_NAME((char *)pInputData);
@@ -2369,7 +2381,7 @@ NOXREF int CRestore::BufferCheckZString(const char *string)
 		return 0;
 
 	int maxLen = m_pdata->bufferSize - m_pdata->size;
-	int len = strlen(string);
+	int len = Q_strlen(string);
 
 	if (len <= maxLen)
 	{
@@ -2421,7 +2433,7 @@ char UTIL_TextureHit(TraceResult *ptr, Vector vecSrc, Vector vecEnd)
 NOXREF int GetPlayerTeam(int index)
 {
 	CBasePlayer *pPlayer = (CBasePlayer *)UTIL_PlayerByIndex(index);
-	if(pPlayer)
+	if (pPlayer)
 		return pPlayer->m_iTeam;
 	return 0;
 }

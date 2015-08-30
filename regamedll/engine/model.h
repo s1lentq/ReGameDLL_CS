@@ -38,10 +38,10 @@
 //#include "quakedef.h"
 #include "crc.h"
 
-#define	TEX_SPECIAL		1		// sky or slime, no lightmap or 256 subdivision
+#define TEX_SPECIAL		1		// sky or slime, no lightmap or 256 subdivision
 
-#define	SURF_PLANEBACK		2
-#define	SURF_DRAWSKY		4
+#define SURF_PLANEBACK		2
+#define SURF_DRAWSKY		4
 #define SURF_DRAWSPRITE		8
 #define SURF_DRAWTURB		0x10
 #define SURF_DRAWTILED		0x20

@@ -32,10 +32,6 @@
 #pragma once
 #endif
 
-//#include "archtypes.h"
-//#include "saverestore.h"
-//#include "schedule.h"
-
 #include "monsterevent.h"
 
 #include <utlvector.h>
@@ -62,7 +58,7 @@
 #define SetTouch(a)\
 	m_pfnTouch = static_cast<void (CBaseEntity::*)(CBaseEntity *)>(a)
 #define SetUse(a)\
-	m_pfnUse = static_cast<void (CBaseEntity::*)(CBaseEntity *,CBaseEntity *,USE_TYPE,float)>(a)
+	m_pfnUse = static_cast<void (CBaseEntity::*)(CBaseEntity *, CBaseEntity *, USE_TYPE, float)>(a)
 #define SetBlocked(a)\
 	m_pfnBlocked = static_cast<void (CBaseEntity::*)(CBaseEntity *)>(a)
 
@@ -107,7 +103,7 @@
 #define bits_CAP_MELEE_ATTACK1	(1<<13)
 #define bits_CAP_MELEE_ATTACK2	(1<<14)
 #define bits_CAP_FLY		(1<<15)
-#define bits_CAP_DOORS_GROUP	(bits_CAP_USE|bits_CAP_AUTO_DOORS|bits_CAP_OPEN_DOORS)
+#define bits_CAP_DOORS_GROUP	(bits_CAP_USE | bits_CAP_AUTO_DOORS | bits_CAP_OPEN_DOORS)
 
 #define DMG_GENERIC		0
 #define DMG_CRUSH		(1<<0)
@@ -136,13 +132,14 @@
 #define DMG_SLOWFREEZE		(1<<22)
 #define DMG_MORTAR		(1<<23)
 #define DMG_EXPLOSION		(1<<24)
-#define DMG_GIB_CORPSE		(DMG_CRUSH|DMG_FALL|DMG_BLAST|DMG_SONIC|DMG_CLUB)
-#define DMG_SHOWNHUD		(DMG_POISON|DMG_ACID|DMG_FREEZE|DMG_SLOWFREEZE|DMG_DROWN|DMG_BURN|DMG_SLOWBURN|DMG_NERVEGAS|DMG_RADIATION|DMG_SHOCK)
+#define DMG_GIB_CORPSE		(DMG_CRUSH | DMG_FALL | DMG_BLAST | DMG_SONIC | DMG_CLUB)
+#define DMG_SHOWNHUD		(DMG_POISON | DMG_ACID | DMG_FREEZE | DMG_SLOWFREEZE | DMG_DROWN | DMG_BURN | DMG_SLOWBURN | DMG_NERVEGAS | DMG_RADIATION | DMG_SHOCK)
 
-#define SF_NORESPAWN		(1<<30)
+#define SF_NORESPAWN		(1 << 30)
 
-#define PARALYZE_DURATION	2
-#define PARALYZE_DAMAGE		1.0f
+#define AIRTIME			12	// lung full of air lasts this many seconds
+#define PARALYZE_DURATION	2	// number of 2 second intervals to take damage
+#define PARALYZE_DAMAGE		1.0f	// damage to take each 2 second interval
 
 #define NERVEGAS_DURATION	2
 #define NERVEGAS_DAMAGE		5.0f
@@ -190,6 +187,7 @@
 typedef enum
 {
 	CLASSNAME
+
 } hash_types_e;
 
 typedef struct hash_item_s
@@ -198,6 +196,7 @@ typedef struct hash_item_s
 	struct hash_item_s *next;
 	struct hash_item_s *lastHash;
 	int pevIndex;
+
 } hash_item_t;
 /* size: 16, cachelines: 1, members: 4 */
 
@@ -213,6 +212,7 @@ typedef struct locksounds
 	float flwaitSentence;
 	BYTE bEOFLocked;
 	BYTE bEOFUnlocked;
+
 } locksound_t;
 /* size: 36, cachelines: 1, members: 10 */
 
@@ -229,6 +229,7 @@ typedef enum
 	TRAIN_SAFE,
 	TRAIN_BLOCKING,
 	TRAIN_FOLLOWING
+
 } TRAIN_CODE;
 
 typedef enum
@@ -237,6 +238,7 @@ typedef enum
 	TS_AT_BOTTOM,
 	TS_GOING_UP,
 	TS_GOING_DOWN,
+
 } TOGGLE_STATE;
 
 class CGrenade;
@@ -255,8 +257,6 @@ class CSound;
 #define hashItemMemPool (*phashItemMemPool)
 #define gTouchDisabled (*pgTouchDisabled)
 
-#define g_flWeaponCheat (*pg_flWeaponCheat)
-
 #define gFunctionTable (*pgFunctionTable)
 #define gNewDLLFunctions (*pgNewDLLFunctions)
 
@@ -265,13 +265,10 @@ class CSound;
 #define fTextureTypeInit (*pfTextureTypeInit)
 #define gcTextures (*pgcTextures)
 
-#define g_pBodyQueueHead (*pg_pBodyQueueHead)
-
 #endif // HOOK_GAMEDLL
 
 extern CMemoryPool hashItemMemPool;
 extern BOOL gTouchDisabled;
-extern float g_flWeaponCheat;
 
 extern DLL_FUNCTIONS gFunctionTable;
 extern NEW_DLL_FUNCTIONS gNewDLLFunctions;
@@ -281,7 +278,6 @@ extern char grgchTextureType[ CTEXTURESMAX ];
 extern int fTextureTypeInit;
 extern int gcTextures;
 
-extern edict_t *g_pBodyQueueHead;
 extern CUtlVector< hash_item_t > stringsHashTable;
 
 class EHANDLE
@@ -351,19 +347,19 @@ public:
 		return FCAP_ACROSS_TRANSITION;
 	}
 	virtual void Activate(void) {}
-	NOBODY virtual void SetObjectCollisionBox(void);
-	//{
-	//	::SetObjectCollisionBox(pev);
-	//}
+	virtual void SetObjectCollisionBox(void);
 	virtual int Classify(void)
 	{
 		return CLASS_NONE;
 	}
-	virtual void DeathNotice(entvars_t *pevChild) {}
-	NOBODY virtual void TraceAttack(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType);
-	NOBODY virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
+	virtual void DeathNotice(entvars_t *pevChild)
+	{
+		return DeathNotice_(pevChild);
+	}
+	virtual void TraceAttack(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType);
+	virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
 	virtual int TakeHealth(float flHealth, int bitsDamageType);
-	NOBODY virtual void Killed(entvars_t *pevAttacker, int iGib);
+	virtual void Killed(entvars_t *pevAttacker, int iGib);
 	virtual int BloodColor(void)
 	{
 		return DONT_BLEED;
@@ -383,32 +379,32 @@ public:
 	}
 	virtual int GetToggleState(void)
 	{
-		return TS_AT_TOP;
+		return GetToggleState_();
 	}
-	virtual void AddPoints(int score, BOOL bAllowNegativeScore) {}
-	virtual void AddPointsToTeam(int score, BOOL bAllowNegativeScore) {}
+	virtual void AddPoints(int score, BOOL bAllowNegativeScore) {}		// __stdcall
+	virtual void AddPointsToTeam(int score, BOOL bAllowNegativeScore) {}	// __stdcall
 	virtual BOOL AddPlayerItem(CBasePlayerItem *pItem)
 	{
 		return FALSE;
 	}
-	virtual BOOL RemovePlayerItem(CBasePlayerItem *pItem)
+	virtual BOOL RemovePlayerItem(CBasePlayerItem *pItem)			// __stdcall
 	{
 		return FALSE;
 	}
-	virtual int GiveAmmo(int iAmount, char *szName, int iMax)
+	virtual int GiveAmmo(int iAmount, char *szName, int iMax)		// __stdcall
 	{
 		return -1;
 	}
 	virtual float GetDelay(void)
 	{
-		return 0.0f;
+		return GetDelay_();
 	}
 	virtual int IsMoving(void)
 	{
 		return (pev->velocity != g_vecZero);
 	}
 	virtual void OverrideReset(void) {}
-	NOBODY virtual int DamageDecal(int bitsDamageType);
+	virtual int DamageDecal(int bitsDamageType);
 	virtual void SetToggleState(int state) {}
 	virtual void StartSneaking(void) {}
 	virtual void StopSneaking(void) {}
@@ -430,13 +426,13 @@ public:
 	}
 	virtual BOOL ReflectGauss(void)
 	{
-		return (IsBSPModel() && pev->takedamage == 0.0f);
+		return (IsBSPModel() && pev->takedamage == DAMAGE_NO);
 	}
 	virtual BOOL HasTarget(string_t targetname)
 	{
 		return FStrEq(STRING(targetname),STRING(pev->targetname));
 	}
-	NOBODY virtual BOOL IsInWorld(void);
+	virtual BOOL IsInWorld(void);
 	virtual BOOL IsPlayer(void)
 	{
 		return FALSE;
@@ -449,25 +445,25 @@ public:
 	{
 		return "";
 	}
-	NOBODY virtual CBaseEntity *GetNextTarget(void);
+	virtual CBaseEntity *GetNextTarget(void);
 	virtual void Think(void)
 	{
-		if(m_pfnThink)
+		if (m_pfnThink)
 			(this->*m_pfnThink)();
 	}
 	virtual void Touch(CBaseEntity *pOther)
 	{
-		if(m_pfnTouch)
+		if (m_pfnTouch)
 			(this->*m_pfnTouch)(pOther);
 	}
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType = USE_OFF, float value = 0.0f)
 	{
-		if(m_pfnUse)
+		if (m_pfnUse)
 			(this->*m_pfnUse)(pActivator, pCaller, useType, value);
 	}
 	virtual void Blocked(CBaseEntity *pOther)
 	{
-		if(m_pfnBlocked)
+		if (m_pfnBlocked)
 			(this->*m_pfnBlocked)(pOther);
 	}
 	virtual CBaseEntity *Respawn(void)
@@ -493,12 +489,13 @@ public:
 	}
 	virtual Vector BodyTarget(const Vector &posSrc)
 	{
-		return Center();
+		return BodyTarget_(posSrc);
 	}
 	virtual int Illumination(void)
 	{
 		return GETENTITYILLUM(ENT(pev));
 	}
+
 	NOBODY virtual BOOL FVisible(CBaseEntity *pEntity);
 	NOBODY virtual BOOL FVisible(Vector &vecOrigin);
 
@@ -506,78 +503,101 @@ public:
 
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
+	void SetObjectCollisionBox_(void);
+	void DeathNotice_(entvars_t *pevChild) { }
+	void TraceAttack_(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType);
+	int TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
+	int TakeHealth_(float flHealth, int bitsDamageType);
+	void Killed_(entvars_t *pevAttacker, int iGib);
+	void TraceBleed_(float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType);
+	int GetToggleState_(void)
+	{
+		return TS_AT_TOP;
+	}
+	float GetDelay_(void)
+	{
+		return 0.0f;
+	}
+	int DamageDecal_(int bitsDamageType);
+	BOOL IsInWorld_(void);
+	CBaseEntity *GetNextTarget_(void);
+	Vector BodyTarget_(const Vector &posSrc)
+	{
+		return Center();
+	}
+	BOOL FVisible_(CBaseEntity *pEntity);
+	BOOL FVisible_(Vector &vecOrigin);
 
 #endif // HOOK_GAMEDLL
 
 public:
-	void *operator new(size_t stAllocateBlock,entvars_t *pevnew)
+	void *operator new(size_t stAllocateBlock, entvars_t *pevnew)
 	{
 		return ALLOC_PRIVATE(ENT(pevnew), stAllocateBlock);
 	}
-	// TODO: it is not declared in linux or the compiler this erease
-//#ifdef _WIN32
 	void operator delete(void *pMem, entvars_t *pev)
 	{
 		pev->flags |= FL_KILLME;
 	}
-//#endif
 	void UpdateOnRemove(void);
 	void EXPORT SUB_Remove(void);
 	void EXPORT SUB_DoNothing(void);
-	NOBODY void EXPORT SUB_StartFadeOut(void);
-	NOBODY void EXPORT SUB_FadeOut(void);
-	NOBODY void EXPORT SUB_CallUseToggle(void)
+	void EXPORT SUB_StartFadeOut(void);
+	void EXPORT SUB_FadeOut(void);
+	void EXPORT SUB_CallUseToggle(void)
 	{
-		Use(this,this,USE_TOGGLE,0);
+		Use(this, this, USE_TOGGLE, 0);
 	}
 	NOBODY int ShouldToggle(USE_TYPE useType, BOOL currentState);
 	NOBODY void FireBullets(ULONG cShots, Vector vecSrc, Vector vecDirShooting, Vector vecSpread, float flDistance, int iBulletType, int iTracerFreq = 4, int iDamage = 0, entvars_t *pevAttacker = NULL);
 	Vector FireBullets3(Vector vecSrc, Vector vecDirShooting, float vecSpread, float flDistance, int iPenetration, int iBulletType, int iDamage, float flRangeModifier, entvars_t *pevAttacker, bool bPistol, int shared_rand = 0);
 	void SUB_UseTargets(CBaseEntity *pActivator, USE_TYPE useType, float value);
-	NOBODY int Intersects(CBaseEntity *pOther);
-	NOXREF void MakeDormant(void);
+	int Intersects(CBaseEntity *pOther);
+	void MakeDormant(void);
 	int IsDormant(void);
 	BOOL IsLockedByMaster(void)
 	{
 		return FALSE;
 	}
 public:
-	INLINEBODY static CBaseEntity *Instance(edict_t *pent)
+	static CBaseEntity *Instance(edict_t *pent)
 	{
 		return (CBaseEntity *)GET_PRIVATE(pent ? pent : ENT(0));
 	}
-	INLINEBODY static CBaseEntity *Instance(entvars_t *pevit)
+	static CBaseEntity *Instance(entvars_t *pev)
 	{
-		return Instance(ENT(pevit));
+		return Instance(ENT(pev));
 	}
-	INLINEBODY static CBaseEntity *Instance(int offset)
+	static CBaseEntity *Instance(int offset)
 	{
 		return Instance(ENT(offset));
 	}
-	INLINEBODY CBaseMonster *GetMonsterPointer(entvars_t *pevMonster)
+	CBaseMonster *GetMonsterPointer(entvars_t *pevMonster)
 	{
 		CBaseEntity *pEntity = Instance(pevMonster);
-		if(pEntity)
+		if (pEntity != NULL)
+		{
 			return pEntity->MyMonsterPointer();
+		}
 		return NULL;
 	}
-	INLINEBODY CBaseMonster *GetMonsterPointer(edict_t *pentMonster)
+	CBaseMonster *GetMonsterPointer(edict_t *pentMonster)
 	{
 		CBaseEntity *pEntity = Instance(pentMonster);
-		if(pEntity)
+		if (pEntity)
 			return pEntity->MyMonsterPointer();
 		return NULL;
 	}
 	static CBaseEntity *Create(char *szName, const Vector &vecOrigin, const Vector &vecAngles, edict_t *pentOwner = NULL);
-	INLINEBODY edict_t *edict(void)
+	edict_t *edict(void)
 	{
 		return ENT(pev);
 	}
-	INLINEBODY EOFFSET eoffset(void)
+	EOFFSET eoffset(void)
 	{
 		return OFFSET(pev);
 	}
-	INLINEBODY int entindex(void)
+	int entindex(void)
 	{
 		return ENTINDEX(edict());
 	}
@@ -586,13 +606,7 @@ public:
 	CBaseEntity *m_pGoalEnt;
 	CBaseEntity *m_pLink;
 
-#ifndef HOOK_GAMEDLL
-
-	static TYPEDESCRIPTION m_SaveData[5];
-#else
-	static TYPEDESCRIPTION (*m_SaveData)[5];
-
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[5];
 
 	void (CBaseEntity::*m_pfnThink)(void);
 	//int m_pfnThink_Flag;
@@ -633,21 +647,6 @@ public:
 	int m_iSwing;
 	bool has_disconnected;
 
-#ifdef HOOK_GAMEDLL
-
-	void TraceAttack_(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType);
-	int TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
-	int TakeHealth_(float flHealth, int bitsDamageType);
-	void Killed_(entvars_t *pevAttacker, int iGib);
-	void TraceBleed_(float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType);
-	int DamageDecal_(int bitsDamageType);
-	BOOL IsInWorld_(void);
-	CBaseEntity *GetNextTarget_(void);
-	BOOL FVisible_(CBaseEntity *pEntity);
-	BOOL FVisible_(Vector &vecOrigin);
-
-#endif // HOOK_GAMEDLL
-
 };/* size: 152, cachelines: 3, members: 35 */
 
 /* <48d2a5> ../cstrike/dlls/cbase.h:273 */
@@ -667,7 +666,10 @@ class CPointEntity: public CBaseEntity
 {
 public:
 	NOBODY virtual void Spawn(void);
-	NOBODY virtual int ObjectCaps(void);
+	NOBODY virtual int ObjectCaps(void)
+	{
+		return ObjectCaps_();
+	}
 
 #ifdef HOOK_GAMEDLL
 
@@ -713,15 +715,9 @@ public:
 
 public:
 	NOBODY void EXPORT Register(void);
+
 public:
-
-#ifndef HOOK_GAMEDLL
-
-	static TYPEDESCRIPTION m_SaveData[4];
-#else
-	static TYPEDESCRIPTION (*m_SaveData)[4];
-
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[4];
 
 	EHANDLE m_rgEntities[MS_MAX_TARGETS];
 	int m_rgTriggered[MS_MAX_TARGETS];
@@ -750,16 +746,7 @@ public:
 	void SUB_UseTargets(CBaseEntity *pActivator, USE_TYPE useType, float value);
 	void EXPORT DelayThink(void);
 public:
-
-#ifndef HOOK_GAMEDLL
-
-	static TYPEDESCRIPTION m_SaveData[2];
-
-#else // HOOK_GAMEDLL
-
-	static TYPEDESCRIPTION (*m_SaveData)[2];
-
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[2];
 
 	float m_flDelay;
 	int m_iszKillTarget;
@@ -772,44 +759,38 @@ class CBaseAnimating: public CBaseDelay
 public:
 	NOBODY virtual int Save(CSave &save);
 	NOBODY virtual int Restore(CRestore &restore);
-	virtual void HandleAnimEvent(MonsterEvent_t *pEvent) { }
+	virtual void HandleAnimEvent(MonsterEvent_t *pEvent) {}
 
 #ifdef HOOK_GAMEDLL
 
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
-	void HandleAnimEvent_(MonsterEvent_t *pEvent);
 
 #endif // HOOK_GAMEDLL
 
 public:
-	NOBODY float StudioFrameAdvance(float flInterval = 0.0f);
+	float StudioFrameAdvance(float flInterval = 0.0f);
 	BOOL GetSequenceFlags(void);
 	int LookupActivity(int activity);
-	NOBODY int LookupActivityHeaviest(int activity);
+	int LookupActivityHeaviest(int activity);
 	int LookupSequence(const char *label);
 	void ResetSequenceInfo(void);
-	NOBODY void DispatchAnimEvents(float flFutureInterval = 0.1f);
-	NOBODY float SetBoneController(int iController, float flValue);
-	NOBODY void InitBoneControllers(void);
-	NOBODY float SetBlending(int iBlender, float flValue);
-	NOBODY void GetBonePosition(int iBone, Vector &origin, Vector &angles);
+	void DispatchAnimEvents(float flFutureInterval = 0.1f);
+	float SetBoneController(int iController, float flValue);
+	void InitBoneControllers(void);
+
+	NOXREF float SetBlending(int iBlender, float flValue);
+	NOXREF void GetBonePosition(int iBone, Vector &origin, Vector &angles);
 	NOXREF void GetAutomovement(Vector &origin, Vector &angles, float flInterval = 0.1f);
-	NOBODY int FindTransition(int iEndingSequence, int iGoalSequence, int *piDir);
-	NOBODY void GetAttachment(int iAttachment, Vector &origin, Vector &angles);
-	NOBODY void SetBodygroup(int iGroup, int iValue);
-	NOBODY int GetBodygroup(int iGroup);
-	NOBODY int ExtractBbox(int sequence, float *mins, float *maxs);
-	NOBODY void SetSequenceBox(void);
+	NOXREF int FindTransition(int iEndingSequence, int iGoalSequence, int *piDir);
+	NOXREF void GetAttachment(int iAttachment, Vector &origin, Vector &angles);
+	NOXREF void SetBodygroup(int iGroup, int iValue);
+	NOXREF int GetBodygroup(int iGroup);
+
+	int ExtractBbox(int sequence, float *mins, float *maxs);
+	void SetSequenceBox(void);
 public:
-
-#ifndef HOOK_GAMEDLL
-
-	static TYPEDESCRIPTION m_SaveData[5];
-#else
-	static TYPEDESCRIPTION (*m_SaveData)[5];
-
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[5];
 
 	float m_flFrameRate;
 	float m_flGroundSpeed;
@@ -824,8 +805,8 @@ class CBaseToggle: public CBaseAnimating
 {
 public:
 	virtual void KeyValue(KeyValueData *pkvd);
-	NOBODY virtual int Save(CSave &save);
-	NOBODY virtual int Restore(CRestore &restore);
+	virtual int Save(CSave &save);
+	virtual int Restore(CRestore &restore);
 	virtual int GetToggleState(void)
 	{
 		return m_toggle_state;
@@ -854,14 +835,7 @@ public:
 	NOBODY static float AxisDelta(int flags, Vector &angle1, Vector &angle2);
 
 public:
-
-#ifndef HOOK_GAMEDLL
-
-	static TYPEDESCRIPTION m_SaveData[19];
-#else
-	static TYPEDESCRIPTION (*m_SaveData)[19];
-
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[19];
 
 	TOGGLE_STATE m_toggle_state;
 	float m_flActivateFinished;
@@ -918,16 +892,11 @@ public:
 	int Restore_(CRestore &restore);
 	int ObjectCaps_(void)
 	{
-		if(pev->takedamage == 0.0f)
+		if (pev->takedamage == DAMAGE_NO)
 			return FCAP_IMPULSE_USE;
 
-		return (CBaseToggle:: ObjectCaps() & ~FCAP_ACROSS_TRANSITION);
+		return (CBaseToggle::ObjectCaps() & ~FCAP_ACROSS_TRANSITION);
 	}
-
-
-
-
-
 
 #endif // HOOK_GAMEDLL
 
@@ -947,14 +916,7 @@ public:
 	NOBODY BUTTON_CODE ButtonResponseToTouch(void);
 
 public:
-
-#ifndef HOOK_GAMEDLL
-
-	static TYPEDESCRIPTION m_SaveData[8];
-#else
-	static TYPEDESCRIPTION (*m_SaveData)[8];
-
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[8];
 
 	BOOL m_fStayPushed;
 	BOOL m_fRotating;
@@ -971,9 +933,9 @@ public:
 class CWorld: public CBaseEntity
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual void KeyValue(KeyValueData *pkvd);
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual void KeyValue(KeyValueData *pkvd);
 
 #ifdef HOOK_GAMEDLL
 
@@ -989,24 +951,43 @@ public:
 class CDecal: public CBaseEntity
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void KeyValue(KeyValueData *);
+	virtual void Spawn(void);
+	virtual void KeyValue(KeyValueData *);
+
+#ifdef HOOK_GAMEDLL
+
+	void Spawn_(void);
+	void KeyValue_(KeyValueData *);
+
+#endif // HOOK_GAMEDLL
+
 public:
-	NOBODY void StaticDecal(void);
-	NOBODY void TriggerDecal(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	void EXPORT StaticDecal(void);
+	void EXPORT TriggerDecal(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 };/* size: 152, cachelines: 3, members: 1 */
+
+// Body queue class here.... It's really just CBaseEntity
 
 /* <1d9fd1> ../cstrike/dlls/world.cpp:207 */
 class CCorpse: public CBaseEntity
 {
-	// TODO: back to private
 public:
 	/* <1dabe0> ../cstrike/dlls/world.cpp:209 */
-	virtual int ObjectCaps(void)//_ZN7CCorpse10ObjectCapsEv
+	virtual int ObjectCaps(void)
+	{
+		ObjectCaps_();
+	}
+
+#ifdef HOOK_GAMEDLL
+
+	int ObjectCaps_(void)
 	{
 		return FCAP_DONT_SAVE;
 	}
+
+#endif // HOOK_GAMEDLL
+
 };/* size: 152, cachelines: 3, members: 1 */
 
 /* <170b59> ../cstrike/dlls/sound.cpp:117 */
@@ -1037,14 +1018,7 @@ public:
 	NOBODY void InitModulationParms(void);
 
 public:
-
-#ifndef HOOK_GAMEDLL
-
-	static TYPEDESCRIPTION m_SaveData[4];
-#else
-	static TYPEDESCRIPTION (*m_SaveData)[4];
-
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[4];
 
 	float m_flAttenuation;
 	dynpitchvol_t m_dpv;
@@ -1071,14 +1045,7 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-
-#ifndef HOOK_GAMEDLL
-
-	static TYPEDESCRIPTION m_SaveData[2];
-#else
-	static TYPEDESCRIPTION (*m_SaveData)[2];
-
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[2];
 
 	float m_flRadius;
 	float m_flRoomtype;
@@ -1109,28 +1076,28 @@ public:
 	NOBODY void EXPORT ToggleUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 	NOBODY void EXPORT SpeakerThink(void);
 public:
-
-#ifndef HOOK_GAMEDLL
-
-	static TYPEDESCRIPTION m_SaveData[1];
-#else
-	static TYPEDESCRIPTION (*m_SaveData)[1];
-
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[1];
 
 	int m_preset;
+
 };/* size: 156, cachelines: 3, members: 3 */
 
-template <class T> T *GetClassPtr(T *a)
+template <class T>
+T *GetClassPtr(T *a)
 {
 	entvars_t *pev = (entvars_t *)a;
-	if(!pev)
+	if (!pev)
 		pev = VARS(CREATE_ENTITY());
 	a = (T *)GET_PRIVATE(ENT(pev));
-	if(!a)
+	if (!a)
 	{
 		a = new(pev) T;
 		a->pev = pev;
+
+#if defined(_WIN32) && !defined(REGAMEDLL_UNIT_TESTS)
+		VirtualTableInit((void *)a, stripClass(typeid(T).name()));
+#endif // _WIN32 && HOOK_GAMEDLL
+
 	}
 	return a;
 }
@@ -1139,54 +1106,30 @@ int CaseInsensitiveHash(const char *string, int iBounds);
 void EmptyEntityHashTable(void);
 void AddEntityHashValue(entvars_t *pev, const char *value, hash_types_e fieldType);
 void RemoveEntityHashValue(entvars_t *pev, const char *value, hash_types_e fieldType);
-NOBODY void printEntities(void);
+void printEntities(void);
 edict_t *CREATE_NAMED_ENTITY(string_t iClass);
 void REMOVE_ENTITY(edict_t *e);
-//NOBODY void CONSOLE_ECHO(char *pszMsg, ...);	// already declared bot_util.cpp
-NOBODY void loopPerformance(void);
+void CONSOLE_ECHO_(char *pszMsg, ...);
+void loopPerformance(void);
 
 extern "C" C_EXPORT int GetEntityAPI(DLL_FUNCTIONS *pFunctionTable, int interfaceVersion);
 NOXREF extern "C" C_EXPORT int GetEntityAPI2(DLL_FUNCTIONS *pFunctionTable, int *interfaceVersion);
 extern "C" C_EXPORT int GetNewDLLFunctions(NEW_DLL_FUNCTIONS *pFunctionTable, int *interfaceVersion);
 
-NOBODY int DispatchSpawn(edict_t *pent);
+int DispatchSpawn(edict_t *pent);
 void DispatchKeyValue(edict_t *pentKeyvalue, KeyValueData *pkvd);
 void DispatchTouch(edict_t *pentTouched, edict_t *pentOther);
-NOBODY void DispatchUse(edict_t *pentUsed, edict_t *pentOther);
-NOBODY void DispatchThink(edict_t *pent);
-NOBODY void DispatchBlocked(edict_t *pentBlocked, edict_t *pentOther);
-NOBODY void DispatchSave(edict_t *pent, SAVERESTOREDATA *pSaveData);
-NOBODY int DispatchRestore(edict_t *pent, SAVERESTOREDATA *pSaveData, int globalEntity);
+void DispatchUse(edict_t *pentUsed, edict_t *pentOther);
+void DispatchThink(edict_t *pent);
+void DispatchBlocked(edict_t *pentBlocked, edict_t *pentOther);
+void DispatchSave(edict_t *pent, SAVERESTOREDATA *pSaveData);
+int DispatchRestore(edict_t *pent, SAVERESTOREDATA *pSaveData, int globalEntity);
 CBaseEntity *FindGlobalEntity(string_t classname, string_t globalname);
-NOBODY void DispatchObjectCollsionBox(edict_t *pent);
-NOBODY void SaveWriteFields(SAVERESTOREDATA *pSaveData, const char *pname, void *pBaseData, TYPEDESCRIPTION *pFields, int fieldCount);
-NOBODY void SaveReadFields(SAVERESTOREDATA *pSaveData, const char *pname, void *pBaseData, TYPEDESCRIPTION *pFields, int fieldCount);
-NOBODY void SetObjectCollisionBox(entvars_t *pev);
-NOBODY void OnFreeEntPrivateData(edict_t *pEnt);
-
-NOBODY void CopyToBodyQue(entvars_t *pev);
-NOBODY void ClearBodyQue(void);
-NOBODY void SaveGlobalState(SAVERESTOREDATA *pSaveData);
-NOBODY void RestoreGlobalState(SAVERESTOREDATA *pSaveData);
-NOBODY void ResetGlobalState(void);
-
-/* extern "C" */
-
-//extern "C" _DLLEXPORT void ambient_generic(entvars_t *pev);
-//extern "C" _DLLEXPORT void env_sound(entvars_t *pev);
-//extern "C" _DLLEXPORT void speaker(entvars_t *pev);
-
-//extern "C" _DLLEXPORT void infodecal(entvars_t *pev);
-//extern "C" _DLLEXPORT void worldspawn(entvars_t *pev);
-//extern "C" _DLLEXPORT void bodyque(entvars_t *pev);
-
-//extern "C" void infodecal(entvars_t *pev);
-//extern "C" void worldspawn(entvars_t *pev);
-//extern "C" void bodyque(entvars_t *pev);
-
-//NOBODY void infodecal(entvars_t *pev);
-//NOBODY void worldspawn(entvars_t *pev);
-//NOBODY void bodyque(entvars_t *pev);
+void DispatchObjectCollsionBox(edict_t *pent);
+void SaveWriteFields(SAVERESTOREDATA *pSaveData, const char *pname, void *pBaseData, TYPEDESCRIPTION *pFields, int fieldCount);
+void SaveReadFields(SAVERESTOREDATA *pSaveData, const char *pname, void *pBaseData, TYPEDESCRIPTION *pFields, int fieldCount);
+void SetObjectCollisionBox(entvars_t *pev);
+void OnFreeEntPrivateData(edict_t *pEnt);
 
 #ifdef HOOK_GAMEDLL
 
@@ -1196,9 +1139,13 @@ typedef BOOL (CBaseEntity::*FVISIBLE_VECTOR)(Vector &);
 typedef void (CGrenade::*EXPLODE_VECTOR)(Vector, Vector);
 typedef void (CGrenade::*EXPLODE_TRACERESULT)(TraceResult *, int);
 
+typedef CBaseEntity *(CBaseEntity::*CBASE_ISTANCE_EDICT)(edict_t *);
+typedef CBaseEntity *(CBaseEntity::*CBASE_ISTANCE_ENTVARS)(entvars_t *);
+typedef CBaseEntity *(CBaseEntity::*CBASE_ISTANCE_INT)(int);
+
 #endif // HOOK_GAMEDLL
 
 //Refs
-extern int (*pDispatchSpawn)(edict_t *);
+extern void (*pCGib__SpawnHeadGib)(void);
 
 #endif // CBASE_H

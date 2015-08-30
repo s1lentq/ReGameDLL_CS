@@ -35,6 +35,7 @@
 #define UNDEFINED_COUNT		0xFFFF
 #define MAX_PLACES_PER_MAP	64
 #define UNDEFINED_SUBJECT	(-1)
+#define COUNT_MANY		4
 
 class CCSBot;
 class BotChatterInterface;
@@ -200,7 +201,7 @@ public:
 	NOBODY ~BotPhrase(void);
 
 	NOBODY void InitVoiceBank(int bankIndex);
-	NOBODY char *GetSpeakable(int bankIndex, float *duration = NULL) const;
+	char *GetSpeakable(int bankIndex, float *duration = NULL) const;
 
 	void ClearCriteria(void) const;
 	void SetPlaceCriteria(PlaceCriteria place) const;
@@ -227,7 +228,8 @@ public:
 		return m_isPlace;
 	}
 	NOBODY void Randomize(void);
-private:
+//private:
+public:
 	friend class BotPhraseManager;
 
 	char *m_name;
@@ -236,8 +238,22 @@ private:
 	GameEventType m_radioEvent;
 	bool m_isImportant;
 
+#if defined(_WIN32) && defined(HOOK_GAMEDLL)
+	int unknown_padding;
+#endif // HOOK_GAMEDLL
+
 	mutable BotVoiceBankVector m_voiceBank;
+
+#if defined(_WIN32) && defined(HOOK_GAMEDLL)
+	int unknown_padding2;
+#endif // HOOK_GAMEDLL
+
 	std::vector< int > m_count;
+
+#if defined(_WIN32) && defined(HOOK_GAMEDLL)
+	int unknown_padding3;
+#endif // HOOK_GAMEDLL
+
 	mutable std::vector< int > m_index;
 
 	int m_numVoiceBanks;
@@ -278,7 +294,7 @@ public:
 	NOBODY bool Initialize(const char *filename, int bankIndex);
 
 	// invoked when round resets
-	NOBODY void OnRoundRestart(void);
+	void OnRoundRestart(void);
 
 	// invoked when map changes
 	NOBODY void OnMapChange(void);
@@ -346,7 +362,7 @@ public:
 /* <2fea95> ../cstrike/dlls/bot/cs_bot_chatter.h:298 */
 inline int BotPhraseManager::FindPlaceIndex(Place where) const
 {
-	for(int i = 0; i < m_placeCount; i++)
+	for (int i = 0; i < m_placeCount; i++)
 	{
 		if (m_placeStatementHistory[i].placeID == where)
 			return i;
@@ -650,10 +666,12 @@ inline BotStatement *BotChatterInterface::GetStatement(void) const
 #ifdef HOOK_GAMEDLL
 
 #define TheBotPhrases (*pTheBotPhrases)
+#define g_pSelectedZombieSpawn (*pg_pSelectedZombieSpawn)
 
 #endif // HOOK_GAMEDLL
 
 extern BotPhraseManager *TheBotPhrases;
+extern CBaseEntity *g_pSelectedZombieSpawn;
 
 /* <5c4dcf> ../cstrike/dlls/bot/cs_bot_chatter.h:604 */
 inline void BotChatterInterface::Say(const char *phraseName, float lifetime, float delay)
@@ -679,5 +697,8 @@ typedef const BotPhraseManager *(BotPhraseManager::*GET_PLACE_NAME)(const char *
 typedef const BotPhraseManager *(BotPhraseManager::*GET_PLACE_PLACE)(PlaceCriteria place) const;
 
 #endif // HOOK_GAMEDLL
+
+// refs
+extern void (*pBotPhrase__Randomize)(void);
 
 #endif // CS_BOT_CHATTER_H

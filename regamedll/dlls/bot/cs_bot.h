@@ -36,19 +36,22 @@
 #include "bot/cs_bot_manager.h"
 #include "bot/cs_bot_chatter.h"
 
+#define CSBOT_VERSION_MAJOR		1
+#define CSBOT_VERSION_MINOR		50
+
 #define FLAG_PROGRESS_DRAW		0x0	// draw status bar progress
 #define FLAG_PROGRESS_START		0x1	// init status bar progress
 #define FLAG_PROGRESS_HIDE		0x2	// hide status bar progress
 
 #ifdef HOOK_GAMEDLL
 
-#define navAreaCount (*pnavAreaCount)
-#define currentIndex (*pcurrentIndex)
+#define _navAreaCount (*pnavAreaCount)
+#define _currentIndex (*pcurrentIndex)
 
 #endif // HOOK_GAMEDLL
 
-extern int navAreaCount;
-extern int currentIndex;
+extern int _navAreaCount;
+extern int _currentIndex;
 
 /* <3327a8> ../cstrike/dlls/bot/cs_bot.h:44 */
 class BotState
@@ -121,6 +124,7 @@ protected:
 		JUMP,
 		NUM_ATTACK_STATES
 	} m_dodgeState;
+
 	float m_nextDodgeStateTimestamp;
 	CountdownTimer m_repathTimer;
 	float m_scopeTimestamp;
@@ -402,7 +406,7 @@ public:
 	NOBODY virtual bool Initialize(const BotProfile *profile);
 
 	NOBODY virtual void SpawnBot(void);
-	NOBODY virtual void Upkeep(void);
+	virtual void Upkeep(void);
 
 	NOBODY virtual void Update(void);
 	NOBODY virtual void Walk(void);
@@ -415,6 +419,7 @@ public:
 	NOBODY virtual bool IsVisible(CBasePlayer *player, bool testFOV = false, unsigned char *visParts = NULL) const;
 
 	virtual bool IsEnemyPartVisible(VisiblePartType part) const;
+
 #ifdef HOOK_GAMEDLL
 
 	bool Initialize_(const BotProfile *profile);
@@ -436,7 +441,7 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	NOBODY void Disconnect(void);
+	void Disconnect(void);
 	float GetCombatRange(void) const
 	{
 		return m_combatRange; 
@@ -630,7 +635,7 @@ public:
 		return m_morale;
 	}
 	NOBODY void IncreaseMorale(void);
-	NOBODY void DecreaseMorale(void);
+	void DecreaseMorale(void);
 	bool IsNoiseHeard(void) const
 	{
 		if (m_noiseTimestamp <= 0.0f)
@@ -671,7 +676,7 @@ public:
 	NOBODY void StartVoiceFeedback(float duration);
 	bool IsUsingVoice(void) const
 	{
-		return (m_voiceFeedbackEndTimestamp > gpGlobals->time);
+		return (m_voiceFeedbackEndTimestamp != 0.0f);	//return (m_voiceFeedbackEndTimestamp > gpGlobals->time);
 	}
 	void SetEnemy(CBasePlayer *enemy);
 	CBasePlayer *GetEnemy(void)
@@ -680,7 +685,7 @@ public:
 	}
 	int GetNearbyEnemyCount(void) const
 	{
-		return min( GetEnemiesRemaining(), m_nearbyEnemyCount );
+		return _min(GetEnemiesRemaining(), m_nearbyEnemyCount);
 	}
 	unsigned int GetEnemyPlace(void) const
 	{
@@ -693,7 +698,7 @@ public:
 	}
 	int GetNearbyFriendCount(void) const
 	{
-		return min( GetFriendsRemaining(), m_nearbyFriendCount );
+		return _min(GetFriendsRemaining(), m_nearbyFriendCount);
 	}
 	CBasePlayer *GetClosestVisibleFriend(void) const
 	{
@@ -950,7 +955,7 @@ public:
 	NOBODY CBasePlayer *FindMostDangerousThreat(void);
 	NOBODY void RespondToRadioCommands(void);
 	NOBODY bool IsRadioCommand(GameEventType event);
-	NOBODY void EndVoiceFeedback(bool force);
+	void EndVoiceFeedback(bool force = true);
 	NOBODY CNavNode *AddNode(const Vector *destPos, const Vector *normal, NavDirType dir, CNavNode *source);
 	NOBODY void StartLearnProcess(void);
 	NOBODY void UpdateLearnProcess(void);
@@ -963,7 +968,7 @@ public:
 	NOBODY bool AnalyzeBetaStep(void);
 	NOBODY void StartSaveProcess(void);
 	NOBODY void UpdateSaveProcess(void);
-	NOBODY void StartNormalProcess(void);
+	void StartNormalProcess(void);
 	NOBODY void BotTouch(CBaseEntity *other);
 private:
 	friend class CCSBotManager;
@@ -1297,7 +1302,6 @@ private:
 
 };/* size: 8, cachelines: 1, members: 2 */
 
-
 /* <5a0af3> ../cstrike/dlls/bot/cs_bot.h:1114 */
 class PathCost
 {
@@ -1396,7 +1400,84 @@ public:
 private:
 	CCSBot *m_bot;
 	RouteType m_route;
-};
+
+};/* size: 8, cachelines: 1, members: 2 */
+
+/* <568fae> ../cstrike/dlls/bot/states/cs_bot_follow.cpp:95 */
+class FollowTargetCollector
+{
+public:
+	FollowTargetCollector(CBasePlayer *player)
+	{
+		m_player = player;
+
+		Vector playerVel = player->pev->velocity;
+
+		m_forward.x = playerVel.x;
+		m_forward.y = playerVel.y;
+
+		float speed = m_forward.NormalizeInPlace();
+
+		Vector playerOrigin = player->pev->origin;
+
+		const float walkSpeed = 100.0f;
+		if (speed < walkSpeed)
+		{
+			m_cutoff.x = playerOrigin.x;
+			m_cutoff.y = playerOrigin.y;
+
+			m_forward.x = 0.0f;
+			m_forward.y = 0.0f;
+		}
+		else
+		{
+			const float k = 1.5f; // 2.0f;
+			float trimSpeed = (speed < 200.0f) ? speed : 200.0f;
+
+			m_cutoff.x = playerOrigin.x + k * trimSpeed * m_forward.x;
+			m_cutoff.y = playerOrigin.y + k * trimSpeed * m_forward.y;
+		}
+
+		m_targetAreaCount = 0;
+	}
+
+	enum { MAX_TARGET_AREAS = 128 };
+
+	/* <568dc3> ../cstrike/dlls/bot/states/cs_bot_follow.cpp:124 */
+	bool operator()(CNavArea *area)
+	{
+		if (m_targetAreaCount >= MAX_TARGET_AREAS)
+			return false;
+		
+		// only use two-way connections
+		if (!area->GetParent() || area->IsConnected(area->GetParent(), NUM_DIRECTIONS))
+		{
+			if (m_forward.IsZero())
+			{
+				m_targetArea[ m_targetAreaCount++ ] = area;
+			}
+			else
+			{
+				// collect areas in the direction of the player's forward motion
+				Vector2D to(((*area->GetCenter()).x - m_cutoff.x), (*area->GetCenter()).y - m_cutoff.y);
+				to.NormalizeInPlace();
+
+				//if (DotProduct( to, m_forward ) > 0.7071f)
+				if ((to.x * m_forward.x + to.y * m_forward.y) > 0.7071f)
+					m_targetArea[ m_targetAreaCount++ ] = area;
+			}
+		}
+
+		return (m_targetAreaCount < MAX_TARGET_AREAS);
+	}
+
+	CBasePlayer *m_player;
+	Vector2D m_forward;
+	Vector2D m_cutoff;
+	CNavArea *m_targetArea[ MAX_TARGET_AREAS ];
+	int m_targetAreaCount;
+
+};/* size: 536, cachelines: 9, members: 5 */
 
 #ifdef HOOK_GAMEDLL
 
@@ -1412,7 +1493,7 @@ typedef CSGameState *(CCSBot::*GETGAMESTATE_NOTCONST)(void);
 #endif // HOOK_GAMEDLL
 
 NOBODY void InstallBotControl(void);
-NOBODY void Bot_ServerCommand(void);
+void Bot_ServerCommand(void);
 void Bot_RegisterCvars(void);
 NOBODY int GetBotFollowCount(CBasePlayer *leader);
 NOBODY const Vector *FindNearbyRetreatSpot(CCSBot *me, float maxRange);

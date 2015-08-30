@@ -26,16 +26,15 @@
 *
 */
 
-#include "mathlib.h"
 #include "extdll.h"
 
 #include "h_export.h"
-//#include "schedule.h"
+#include "schedule.h"
 #include "archtypes.h"
+#include "scriptevent.h"
 #include "enginecallback.h"
 //#include "entity_state.h"
 #include "nodes.h"
-#include "saverestore.h"
 #include "screenfade.h"
 #include "utlvector.h"
 
@@ -46,6 +45,7 @@
 
 // Globals vars
 #include "globals.h"
+#include "saverestore.h"
 
 // GameInit
 #include "game.h"
@@ -61,7 +61,9 @@
 #include "shake.h"
 #include "util.h"
 #include "decals.h"
+#include "hltv.h"
 #include "cbase.h"
+#include "world.h"
 
 #include "sound.h"
 #include "basemonster.h"
@@ -115,10 +117,9 @@
 // Hostage
 #include "hostage/hostage.h"
 #include "hostage/hostage_localnav.h"
-#include "hostage/hostage_states.h"
-#include "hostage/hostage_improv.h"
 
 #include "airtank.h"
+#include "h_ai.h"
 #include "h_cycler.h"
 #include "h_battery.h"
 

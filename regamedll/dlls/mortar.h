@@ -36,12 +36,14 @@
 class CFuncMortarField: public CBaseToggle
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual void KeyValue(KeyValueData *pkvd);
-	NOBODY virtual int Save(CSave &save);
-	NOBODY virtual int Restore(CRestore &restore);
-	NOBODY virtual int ObjectCaps(void)
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual void KeyValue(KeyValueData *pkvd);
+	virtual int Save(CSave &save);
+	virtual int Restore(CRestore &restore);
+
+	// Bmodels don't go across transitions
+	virtual int ObjectCaps(void)
 	{
 		return ObjectCaps_();
 	}
@@ -61,14 +63,10 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	NOBODY void EXPORT FieldUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	void EXPORT FieldUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 public:
-#ifndef HOOK_GAMEDLL
-	static TYPEDESCRIPTION m_SaveData[6];
-#else // HOOK_GAMEDLL
-	static TYPEDESCRIPTION (*m_SaveData)[6];
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[6];
 
 public:
 	int m_iszXController;
@@ -84,8 +82,8 @@ public:
 class CMortar: public CGrenade
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
+	virtual void Spawn(void);
+	virtual void Precache(void);
 
 #ifdef HOOK_GAMEDLL
 
@@ -94,10 +92,16 @@ public:
 
 #endif // HOOK_GAMEDLL
 
-	NOBODY void EXPORT MortarExplode(void);
+	void EXPORT MortarExplode(void);
+
 public:
 	int m_spriteTexture;
 
 };/* size: 504, cachelines: 8, members: 2 */
+
+
+// linked objects
+C_DLLEXPORT void func_mortar_field(entvars_t *pev);
+C_DLLEXPORT void monster_mortar(entvars_t *pev);
 
 #endif // MORTAR_H

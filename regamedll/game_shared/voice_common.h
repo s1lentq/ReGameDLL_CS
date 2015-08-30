@@ -38,6 +38,6 @@
 #define VOICE_MAX_PLAYERS		32
 #define VOICE_MAX_PLAYERS_DW		((VOICE_MAX_PLAYERS / 32) + !!(VOICE_MAX_PLAYERS & 31))
 
-typedef CBitVec<VOICE_MAX_PLAYERS> CPlayerBitVec;
+typedef CBitVec< VOICE_MAX_PLAYERS > CPlayerBitVec;
 
 #endif // VOICE_COMMON_H

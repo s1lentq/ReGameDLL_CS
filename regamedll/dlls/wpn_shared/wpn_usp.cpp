@@ -37,18 +37,18 @@ enum usp_shield_e
 LINK_ENTITY_TO_CLASS(weapon_usp, CUSP);
 
 /* <2bad55> ../cstrike/dlls/wpn_shared/wpn_usp.cpp:70 */
-void CUSP::Spawn_(void)
+void CUSP::__MAKE_VHOOK(Spawn)(void)
 {
 	Precache();
 	m_iId = WEAPON_USP;
-	SET_MODEL(ENT(pev),"models/w_usp.mdl");
+	SET_MODEL(ENT(pev), "models/w_usp.mdl");
 	m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
 	m_iDefaultAmmo = 12;//TODO: Default clip USP_MAX_CLIP
 	m_flAccuracy = 0.92f;
 	FallInit();
 }
 
-void CUSP::Precache_(void)
+void CUSP::__MAKE_VHOOK(Precache)(void)
 {
 	PRECACHE_MODEL("models/v_usp.mdl");
 	PRECACHE_MODEL("models/w_usp.mdl");
@@ -69,7 +69,7 @@ void CUSP::Precache_(void)
 }
 
 /* <2bacfb> ../cstrike/dlls/wpn_shared/wpn_usp.cpp:107 */
-int CUSP::GetItemInfo_(ItemInfo *p)
+int CUSP::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 {
 	p->pszAmmo1 = "45ACP";
 	p->iMaxAmmo1 = MAX_AMMO_45ACP;
@@ -88,7 +88,7 @@ int CUSP::GetItemInfo_(ItemInfo *p)
 }
 
 /* <2bad2e> ../cstrike/dlls/wpn_shared/wpn_usp.cpp:124 */
-BOOL CUSP::Deploy_(void)
+BOOL CUSP::__MAKE_VHOOK(Deploy)(void)
 {
 	m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
 	m_flAccuracy = 0.92f;
@@ -106,13 +106,13 @@ BOOL CUSP::Deploy_(void)
 }
 
 /* <2bae77> ../cstrike/dlls/wpn_shared/wpn_usp.cpp:147 */
-NOBODY void CUSP::SecondaryAttack_(void)
+NOBODY void CUSP::__MAKE_VHOOK(SecondaryAttack)(void)
 {
 //	SecondaryAttack(CUSP *const this);  //   147
 }
 
 /* <2bb000> ../cstrike/dlls/wpn_shared/wpn_usp.cpp:173 */
-NOBODY void CUSP::PrimaryAttack_(void)
+NOBODY void CUSP::__MAKE_VHOOK(PrimaryAttack)(void)
 {
 //	Length2D(const Vector *const this);  //   179
 //	Length2D(const Vector *const this);  //   190
@@ -122,9 +122,9 @@ NOBODY void CUSP::PrimaryAttack_(void)
 UNTESTED void CUSP::USPFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 {
 	int flag;
-	//int iDamage;;//unused
+	//int iDamage;//unused
 	//Vector vecAiming;//unused
-	//Vector vecSrc;;//unused
+	//Vector vecSrc;//unused
 	Vector vecDir;
 
 	flCycleTime -= 0.075f;
@@ -182,7 +182,9 @@ UNTESTED void CUSP::USPFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 	PLAYBACK_EVENT_FULL(flag, m_pPlayer->edict(), m_usFireUSP, 0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y, (int)(m_pPlayer->pev->punchangle.x * 100.0f), 0, m_iClip == 0, (int)(m_iWeaponState & WPNSTATE_USP_SILENCED));
 
 	if (!m_iClip && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
+	{
 		m_pPlayer->SetSuitUpdate("!HEV_AMO0", 0, 0);
+	}
 
 	m_flTimeWeaponIdle = 2.0f;
 	m_pPlayer->pev->punchangle.x -= 2.0f;
@@ -190,7 +192,7 @@ UNTESTED void CUSP::USPFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 }
 
 /* <2bae19> ../cstrike/dlls/wpn_shared/wpn_usp.cpp:297 */
-void CUSP::Reload_(void)
+void CUSP::__MAKE_VHOOK(Reload)(void)
 {
 	if (m_pPlayer->ammo_45acp <= 0)
 		return;
@@ -211,7 +213,7 @@ void CUSP::Reload_(void)
 }
 
 /* <2b9c2a> ../cstrike/dlls/wpn_shared/wpn_usp.cpp:318 */
-void CUSP::WeaponIdle_(void)
+void CUSP::__MAKE_VHOOK(WeaponIdle)(void)
 {
 	ResetEmptySound();
 	m_pPlayer->GetAutoaimVector(0.173648);

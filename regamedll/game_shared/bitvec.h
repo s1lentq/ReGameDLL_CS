@@ -95,7 +95,7 @@ inline CBitVecAccessor::CBitVecAccessor(uint32 *pDWords, int iBit)
 /* <2d37d7> ../game_shared/bitvec.h:80 */
 inline void CBitVecAccessor::operator=(int val)
 {
-	if(val)
+	if (val)
 		m_pDWords[m_iBit >> 5] |= (1 << (m_iBit & 31));
 	else
 		m_pDWords[m_iBit >> 5] &= ~(uint32)(1 << (m_iBit & 31));
@@ -118,7 +118,7 @@ inline int CBitVec<NUM_BITS>::GetNumBits()
 template<int NUM_BITS>
 inline CBitVec<NUM_BITS>::CBitVec()
 {
-	for(int i = 0; i < NUM_DWORDS; i++)
+	for (int i = 0; i < NUM_DWORDS; i++)
 		m_DWords[i] = 0;
 }
 
@@ -126,7 +126,7 @@ inline CBitVec<NUM_BITS>::CBitVec()
 template<int NUM_BITS>
 inline void CBitVec<NUM_BITS>::Init(int val)
 {
-	for(int i = 0; i < GetNumBits(); i++)
+	for (int i = 0; i < GetNumBits(); i++)
 	{
 		(*this)[i] = val;
 	}
@@ -152,8 +152,8 @@ inline CBitVecAccessor CBitVec<NUM_BITS>::operator[](int i)
 template<int NUM_BITS>
 inline bool CBitVec<NUM_BITS>::operator==(CBitVec<NUM_BITS> const &other)
 {
-	for(int i = 0; i < NUM_DWORDS; i++)
-		if(m_DWords[i] != other.m_DWords[i])
+	for (int i = 0; i < NUM_DWORDS; i++)
+		if (m_DWords[i] != other.m_DWords[i])
 			return false;
 
 	return true;

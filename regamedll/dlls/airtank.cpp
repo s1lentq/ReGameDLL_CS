@@ -12,15 +12,9 @@ TYPEDESCRIPTION CAirtank::m_SaveData[] =
 
 #else
 
-TYPEDESCRIPTION (*CAirtank::m_SaveData)[1];
+TYPEDESCRIPTION (*CAirtank::pm_SaveData)[1];
 
 #endif // HOOK_GAMEDLL
-
-/* <4fc9> ../cstrike/dlls/airtank.cpp:29 */
-int CAirtank::BloodColor_(void)
-{
-	return DONT_BLEED;
-}
 
 /* <5329> ../cstrike/dlls/airtank.cpp:41 */
 LINK_ENTITY_TO_CLASS(item_airtank, CAirtank);
@@ -29,48 +23,77 @@ LINK_ENTITY_TO_CLASS(item_airtank, CAirtank);
 IMPLEMENT_SAVERESTORE(CAirtank, CGrenade);
 
 /* <50dd> ../cstrike/dlls/airtank.cpp:50 */
-void CAirtank::Spawn_(void)
+void CAirtank::__MAKE_VHOOK(Spawn)(void)
 {
-//	Vector(Vector::Spawn(//		float X,
-//		float Y,
-//		float Z);  //    58
-//	Vector(Vector *const this,
-//		float X,
-//		float Y,
-//		float Z);  //    58
+	Precache();
+
+	// motor
+	pev->movetype = MOVETYPE_FLY;
+	pev->solid = SOLID_BBOX;
+
+	SET_MODEL(ENT(pev), "models/w_oxygen.mdl");
+	UTIL_SetSize(pev, Vector(-16, -16, 0), Vector(16, 16, 36));
+	UTIL_SetOrigin(pev, pev->origin);
+
+	SetTouch(&CAirtank::TankTouch);
+	SetThink(&CAirtank::TankThink);
+
+	pev->flags |= FL_MONSTER;
+	pev->takedamage = DAMAGE_YES;
+	pev->health = 20;
+	pev->dmg = 50;
+	m_state = 1;
 }
 
 /* <4fef> ../cstrike/dlls/airtank.cpp:71 */
-void CAirtank::Precache_(void)
+void CAirtank::__MAKE_VHOOK(Precache)(void)
 {
+	PRECACHE_MODEL("models/w_oxygen.mdl");
+	PRECACHE_SOUND("doors/aliendoor3.wav");
 }
 
 /* <503d> ../cstrike/dlls/airtank.cpp:78 */
-void CAirtank::Killed_(entvars_t *pevAttacker, int iGib)
+void CAirtank::__MAKE_VHOOK(Killed)(entvars_t *pevAttacker, int iGib)
 {
-//	Vector(Vector *const this,
-//		float X,
-//		float Y,
-//		float Z);  //    84
-//	Vector(Vector *const this,
-//		const Vector &v);  //    84
+	pev->owner = ENT(pevAttacker);
+
+	// UNDONE: this should make a big bubble cloud, not an explosion
+	Explode(pev->origin, Vector(0, 0, -1));
 }
 
 /* <5016> ../cstrike/dlls/airtank.cpp:88 */
 void CAirtank::TankThink(void)
 {
+	// Fire trigger
+	m_state = 1;
+	SUB_UseTargets(this, USE_TOGGLE, 0);
 }
 
 /* <525d> ../cstrike/dlls/airtank.cpp:96 */
 void CAirtank::TankTouch(CBaseEntity *pOther)
 {
-//	TankTouch(CAirtank *const this,
-//			class CBaseEntity *pOther);  //    96
-//	EMIT_SOUND(edict_t *entity,
-//			int channel,
-//			const char *sample,
-//			float volume,
-//			float attenuation);  //   104
+	if (!pOther->IsPlayer())
+	{
+		return;
+	}
+
+	if (!m_state)
+	{
+		// "no oxygen" sound
+		EMIT_SOUND(ENT(pev), CHAN_BODY, "player/pl_swim2.wav", VOL_NORM, ATTN_NORM);
+		return;
+	}
+
+	// give player 12 more seconds of air
+	pOther->pev->air_finished = gpGlobals->time + 12;
+
+	// suit recharge sound
+	EMIT_SOUND(ENT(pev), CHAN_VOICE, "doors/aliendoor3.wav", VOL_NORM, ATTN_NORM);
+
+	// recharge airtank in 30 seconds
+	pev->nextthink = gpGlobals->time + 30;
+	m_state = 0;
+	SUB_UseTargets(this, USE_TOGGLE, 1);
 }
 
 #ifdef HOOK_GAMEDLL
@@ -98,11 +121,6 @@ int CAirtank::Restore(CRestore &restore)
 void CAirtank::Killed(entvars_t *pevAttacker, int iGib)
 {
 	Killed_(pevAttacker, iGib);
-}
-
-int CAirtank::BloodColor(void)
-{
-	return BloodColor_();
 }
 
 #endif // HOOK_GAMEDLL

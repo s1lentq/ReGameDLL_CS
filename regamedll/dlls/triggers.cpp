@@ -61,13 +61,13 @@ TYPEDESCRIPTION CTriggerCamera::m_SaveData[] =
 
 #else
 
-TYPEDESCRIPTION (*CFrictionModifier::m_SaveData)[1];
-TYPEDESCRIPTION (*CAutoTrigger::m_SaveData)[2];
-TYPEDESCRIPTION (*CTriggerRelay::m_SaveData)[1];
-TYPEDESCRIPTION (*CMultiManager::m_SaveData)[5];
-TYPEDESCRIPTION (*CChangeLevel::m_SaveData)[4];
-TYPEDESCRIPTION (*CTriggerChangeTarget::m_SaveData)[1];
-TYPEDESCRIPTION (*CTriggerCamera::m_SaveData)[13];
+TYPEDESCRIPTION (*CFrictionModifier::pm_SaveData)[1];
+TYPEDESCRIPTION (*CAutoTrigger::pm_SaveData)[2];
+TYPEDESCRIPTION (*CTriggerRelay::pm_SaveData)[1];
+TYPEDESCRIPTION (*CMultiManager::pm_SaveData)[5];
+TYPEDESCRIPTION (*CChangeLevel::pm_SaveData)[4];
+TYPEDESCRIPTION (*CTriggerChangeTarget::pm_SaveData)[1];
+TYPEDESCRIPTION (*CTriggerCamera::pm_SaveData)[13];
 
 #endif // HOOK_GAMEDLL
 
@@ -78,7 +78,7 @@ LINK_ENTITY_TO_CLASS(func_friction, CFrictionModifier);
 IMPLEMENT_SAVERESTORE(CFrictionModifier, CBaseEntity);
 
 /* <19fa7d> ../cstrike/dlls/triggers.cpp:72 */
-NOBODY void CFrictionModifier::Spawn_(void)
+NOBODY void CFrictionModifier::__MAKE_VHOOK(Spawn)(void)
 {
 }
 
@@ -88,7 +88,7 @@ NOBODY void CFrictionModifier::ChangeFriction(CBaseEntity *pOther)
 }
 
 /* <1a1c39> ../cstrike/dlls/triggers.cpp:91 */
-NOBODY void CFrictionModifier::KeyValue_(KeyValueData *pkvd)
+NOBODY void CFrictionModifier::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 }
 
@@ -99,7 +99,7 @@ LINK_ENTITY_TO_CLASS(trigger_auto, CAutoTrigger);
 IMPLEMENT_SAVERESTORE(CAutoTrigger, CBaseDelay);
 
 /* <1a1b64> ../cstrike/dlls/triggers.cpp:136 */
-NOBODY void CAutoTrigger::KeyValue_(KeyValueData *pkvd)
+NOBODY void CAutoTrigger::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 //	FStrEq(const char *sz1,
 //		const char *sz2);  //   138
@@ -114,17 +114,17 @@ NOBODY void CAutoTrigger::KeyValue_(KeyValueData *pkvd)
 }
 
 /* <19fb05> ../cstrike/dlls/triggers.cpp:165 */
-NOBODY void CAutoTrigger::Spawn_(void)
+NOBODY void CAutoTrigger::__MAKE_VHOOK(Spawn)(void)
 {
 }
 
 /* <19fb2d> ../cstrike/dlls/triggers.cpp:171 */
-NOBODY void CAutoTrigger::Precache_(void)
+NOBODY void CAutoTrigger::__MAKE_VHOOK(Precache)(void)
 {
 }
 
 /* <19d48c> ../cstrike/dlls/triggers.cpp:177 */
-NOBODY void CAutoTrigger::Think_(void)
+NOBODY void CAutoTrigger::__MAKE_VHOOK(Think)(void)
 {
 }
 
@@ -135,7 +135,7 @@ LINK_ENTITY_TO_CLASS(trigger_relay, CTriggerRelay);
 IMPLEMENT_SAVERESTORE(CTriggerRelay, CBaseDelay);
 
 /* <1a1abc> ../cstrike/dlls/triggers.cpp:216 */
-NOBODY void CTriggerRelay::KeyValue_(KeyValueData *pkvd)
+NOBODY void CTriggerRelay::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 //	FStrEq(const char *sz1,
 //		const char *sz2);  //   218
@@ -144,12 +144,12 @@ NOBODY void CTriggerRelay::KeyValue_(KeyValueData *pkvd)
 }
 
 /* <19fb7e> ../cstrike/dlls/triggers.cpp:240 */
-NOBODY void CTriggerRelay::Spawn_(void)
+NOBODY void CTriggerRelay::__MAKE_VHOOK(Spawn)(void)
 {
 }
 
 /* <1a01d7> ../cstrike/dlls/triggers.cpp:247 */
-NOBODY void CTriggerRelay::Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+NOBODY void CTriggerRelay::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 }
 
@@ -160,7 +160,7 @@ LINK_ENTITY_TO_CLASS(multi_manager, CMultiManager);
 IMPLEMENT_SAVERESTORE(CMultiManager, CBaseToggle);
 
 /* <1a19ed> ../cstrike/dlls/triggers.cpp:318 */
-NOBODY void CMultiManager::KeyValue_(KeyValueData *pkvd)
+NOBODY void CMultiManager::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 //	FStrEq(const char *sz1,
 //		const char *sz2);  //   325
@@ -173,7 +173,7 @@ NOBODY void CMultiManager::KeyValue_(KeyValueData *pkvd)
 }
 
 /* <19fbce> ../cstrike/dlls/triggers.cpp:347 */
-NOBODY void CMultiManager::Spawn_(void)
+NOBODY void CMultiManager::__MAKE_VHOOK(Spawn)(void)
 {
 //	{
 //		int swapped;                                          //   355
@@ -188,7 +188,7 @@ NOBODY void CMultiManager::Spawn_(void)
 }
 
 /* <1a03e5> ../cstrike/dlls/triggers.cpp:377 */
-NOBODY void CMultiManager::Restart_(void)
+NOBODY void CMultiManager::__MAKE_VHOOK(Restart)(void)
 {
 //	{
 //		int i;                                                //   379
@@ -206,7 +206,7 @@ NOBODY void CMultiManager::Restart_(void)
 }
 
 /* <1a1402> ../cstrike/dlls/triggers.cpp:420 */
-NOBODY BOOL CMultiManager::HasTarget_(string_t targetname)
+NOBODY BOOL CMultiManager::__MAKE_VHOOK(HasTarget)(string_t targetname)
 {
 //	{
 //		int i;                                                //   422
@@ -230,12 +230,12 @@ NOBODY CMultiManager *CMultiManager::Clone(void)
 	CMultiManager *pMulti = GetClassPtr((CMultiManager *)NULL);
 	edict_t *pEdict = pMulti->pev->pContainingEntity;
 
-	memcpy(pMulti->pev, pev, sizeof(*pev));
+	Q_memcpy(pMulti->pev, pev, sizeof(*pev));
 	pMulti->pev->pContainingEntity = pEdict;
 	pMulti->pev->spawnflags |= SF_MULTIMAN_CLONE;
 	pMulti->m_cTargets = m_cTargets;
-	memcpy(pMulti->m_iTargetName, m_iTargetName, sizeof(m_iTargetName));
-	memcpy(pMulti->m_flTargetDelay, m_flTargetDelay, sizeof(m_flTargetDelay));
+	Q_memcpy(pMulti->m_iTargetName, m_iTargetName, sizeof(m_iTargetName));
+	Q_memcpy(pMulti->m_flTargetDelay, m_flTargetDelay, sizeof(m_flTargetDelay));
 	return pMulti;
 }
 
@@ -252,12 +252,12 @@ NOBODY void CMultiManager::ManagerUse(CBaseEntity *pActivator, CBaseEntity *pCal
 LINK_ENTITY_TO_CLASS(env_render, CRenderFxManager);
 
 /* <19fc52> ../cstrike/dlls/triggers.cpp:535 */
-NOBODY void CRenderFxManager::Spawn_(void)
+NOBODY void CRenderFxManager::__MAKE_VHOOK(Spawn)(void)
 {
 }
 
 /* <1a0c95> ../cstrike/dlls/triggers.cpp:540 */
-NOBODY void CRenderFxManager::Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+NOBODY void CRenderFxManager::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 //	Use(class CRenderFxManager *const this,
 //		class CBaseEntity *pActivator,
@@ -277,7 +277,7 @@ NOBODY void CBaseTrigger::InitTrigger(void)
 }
 
 /* <1a17cf> ../cstrike/dlls/triggers.cpp:608 */
-NOBODY void CBaseTrigger::KeyValue_(KeyValueData *pkvd)
+NOBODY void CBaseTrigger::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 //	FStrEq(const char *sz1,
 //		const char *sz2);  //   610
@@ -296,18 +296,18 @@ LINK_ENTITY_TO_CLASS(trigger_hurt, CTriggerHurt);
 LINK_ENTITY_TO_CLASS(trigger_monsterjump, CTriggerMonsterJump);
 
 /* <1a2fdc> ../cstrike/dlls/triggers.cpp:652 */
-NOBODY void CTriggerMonsterJump::Spawn_(void)
+NOBODY void CTriggerMonsterJump::__MAKE_VHOOK(Spawn)(void)
 {
 //	Spawn(class CTriggerMonsterJump *const this);  //   652
 }
 
 /* <1a00e4> ../cstrike/dlls/triggers.cpp:671 */
-NOBODY void CTriggerMonsterJump::Think_(void)
+NOBODY void CTriggerMonsterJump::__MAKE_VHOOK(Think)(void)
 {
 }
 
 /* <19fca2> ../cstrike/dlls/triggers.cpp:678 */
-NOBODY void CTriggerMonsterJump::Touch_(CBaseEntity *pOther)
+NOBODY void CTriggerMonsterJump::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 {
 //	{
 //		entvars_t *pevOther;                                 //   680
@@ -320,18 +320,18 @@ NOBODY void CTriggerMonsterJump::Touch_(CBaseEntity *pOther)
 LINK_ENTITY_TO_CLASS(trigger_cdaudio, CTriggerCDAudio);
 
 /* <1a2382> ../cstrike/dlls/triggers.cpp:721 */
-NOBODY void CTriggerCDAudio::Touch_(CBaseEntity *pOther)
+NOBODY void CTriggerCDAudio::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 {
 //	PlayTrack(class CTriggerCDAudio *const this);  //   728
 }
 
 /* <1a2fb4> ../cstrike/dlls/triggers.cpp:731 */
-NOBODY void CTriggerCDAudio::Spawn_(void)
+NOBODY void CTriggerCDAudio::__MAKE_VHOOK(Spawn)(void)
 {
 }
 
 /* <1a2288> ../cstrike/dlls/triggers.cpp:736 */
-NOBODY void CTriggerCDAudio::Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+NOBODY void CTriggerCDAudio::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 //	PlayTrack(class CTriggerCDAudio *const this);  //   738
 }
@@ -357,7 +357,7 @@ NOBODY void CTriggerCDAudio::PlayTrack(void)
 LINK_ENTITY_TO_CLASS(target_cdaudio, CTargetCDAudio);
 
 /* <1a170f> ../cstrike/dlls/triggers.cpp:796 */
-NOBODY void CTargetCDAudio::KeyValue_(KeyValueData *pkvd)
+NOBODY void CTargetCDAudio::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 //	FStrEq(const char *sz1,
 //		const char *sz2);  //   798
@@ -368,19 +368,19 @@ NOBODY void CTargetCDAudio::KeyValue_(KeyValueData *pkvd)
 }
 
 /* <1a066a> ../cstrike/dlls/triggers.cpp:807 */
-NOBODY void CTargetCDAudio::Spawn_(void)
+NOBODY void CTargetCDAudio::__MAKE_VHOOK(Spawn)(void)
 {
 //	Spawn(class CTargetCDAudio *const this);  //   807
 }
 
 /* <1a2175> ../cstrike/dlls/triggers.cpp:816 */
-NOBODY void CTargetCDAudio::Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+NOBODY void CTargetCDAudio::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 //	Play(class CTargetCDAudio *const this);  //   818
 }
 
 /* <1a2465> ../cstrike/dlls/triggers.cpp:822 */
-NOBODY void CTargetCDAudio::Think_(void)
+NOBODY void CTargetCDAudio::__MAKE_VHOOK(Think)(void)
 {
 //	{
 //		edict_t *pClient;                                    //   824
@@ -398,7 +398,7 @@ NOBODY void CTargetCDAudio::Play(void)
 }
 
 /* <1a2f8b> ../cstrike/dlls/triggers.cpp:853 */
-NOBODY void CTriggerHurt::Spawn_(void)
+NOBODY void CTriggerHurt::__MAKE_VHOOK(Spawn)(void)
 {
 }
 
@@ -427,7 +427,7 @@ NOBODY void CBaseTrigger::HurtTouch(CBaseEntity *pOther)
 LINK_ENTITY_TO_CLASS(trigger_multiple, CTriggerMultiple);
 
 /* <1a2f67> ../cstrike/dlls/triggers.cpp:1089 */
-NOBODY void CTriggerMultiple::Spawn_(void)
+NOBODY void CTriggerMultiple::__MAKE_VHOOK(Spawn)(void)
 {
 }
 
@@ -435,7 +435,7 @@ NOBODY void CTriggerMultiple::Spawn_(void)
 LINK_ENTITY_TO_CLASS(trigger_once, CTriggerOnce);
 
 /* <1a301c> ../cstrike/dlls/triggers.cpp:1136 */
-NOBODY void CTriggerOnce::Spawn_(void)
+NOBODY void CTriggerOnce::__MAKE_VHOOK(Spawn)(void)
 {
 //	Spawn(class CTriggerMultiple *const this);  //  1140
 }
@@ -479,7 +479,7 @@ NOBODY void CBaseTrigger::CounterUse(CBaseEntity *pActivator, CBaseEntity *pCall
 LINK_ENTITY_TO_CLASS(trigger_counter, CTriggerCounter);
 
 /* <19fd42> ../cstrike/dlls/triggers.cpp:1280 */
-NOBODY void CTriggerCounter::Spawn_(void)
+NOBODY void CTriggerCounter::__MAKE_VHOOK(Spawn)(void)
 {
 }
 
@@ -487,7 +487,7 @@ NOBODY void CTriggerCounter::Spawn_(void)
 LINK_ENTITY_TO_CLASS(trigger_transition, CTriggerVolume);
 
 /* <19fd6a> ../cstrike/dlls/triggers.cpp:1302 */
-NOBODY void CTriggerVolume::Spawn_(void)
+NOBODY void CTriggerVolume::__MAKE_VHOOK(Spawn)(void)
 {
 }
 
@@ -495,19 +495,19 @@ NOBODY void CTriggerVolume::Spawn_(void)
 LINK_ENTITY_TO_CLASS(fireanddie, CFireAndDie);
 
 /* <1a0618> ../cstrike/dlls/triggers.cpp:1323 */
-NOBODY void CFireAndDie::Spawn_(void)
+NOBODY void CFireAndDie::__MAKE_VHOOK(Spawn)(void)
 {
 //	MAKE_STRING_CLASS(const char *str,
 //				entvars_t *pev);  //  1325
 }
 
 /* <19fdbb> ../cstrike/dlls/triggers.cpp:1330 */
-NOBODY void CFireAndDie::Precache_(void)
+NOBODY void CFireAndDie::__MAKE_VHOOK(Precache)(void)
 {
 }
 
 /* <1a01ae> ../cstrike/dlls/triggers.cpp:1337 */
-NOBODY void CFireAndDie::Think_(void)
+NOBODY void CFireAndDie::__MAKE_VHOOK(Think)(void)
 {
 }
 
@@ -518,7 +518,7 @@ LINK_ENTITY_TO_CLASS(trigger_changelevel, CChangeLevel);
 IMPLEMENT_SAVERESTORE(CChangeLevel, CBaseTrigger);
 
 /* <1a1d4a> ../cstrike/dlls/triggers.cpp:1388 */
-NOBODY void CChangeLevel::KeyValue_(KeyValueData *pkvd)
+NOBODY void CChangeLevel::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 //	FStrEq(const char *sz1,
 //		const char *sz2);  //  1390
@@ -527,7 +527,7 @@ NOBODY void CChangeLevel::KeyValue_(KeyValueData *pkvd)
 }
 
 /* <1a2f25> ../cstrike/dlls/triggers.cpp:1423 */
-NOBODY void CChangeLevel::Spawn_(void)
+NOBODY void CChangeLevel::__MAKE_VHOOK(Spawn)(void)
 {
 }
 
@@ -545,7 +545,7 @@ NOBODY void CChangeLevel::ExecuteChangeLevel(void)
 }
 
 /* <1a3b43> ../cstrike/dlls/triggers.cpp:1456 */
-NOXREF edict_t *CChangeLevel::FindLandmark(const char *pLandmarkName)
+edict_t *CChangeLevel::FindLandmark(const char *pLandmarkName)
 {
 	edict_t	*pentLandmark = FIND_ENTITY_BY_STRING(NULL, "targetname", pLandmarkName);
 	while (!FNullEnt(pentLandmark))
@@ -556,6 +556,7 @@ NOXREF edict_t *CChangeLevel::FindLandmark(const char *pLandmarkName)
 		else
 			pentLandmark = FIND_ENTITY_BY_STRING(pentLandmark, "targetname", pLandmarkName);
 	}
+
 	ALERT(at_error, "Can't find landmark %s\n", pLandmarkName);
 	return NULL;
 }
@@ -595,12 +596,34 @@ NOBODY void CChangeLevel::TouchChangeLevel(CBaseEntity *pOther)
 //			class CBaseEntity *pActivator);  //  1550
 }
 
+// Add a transition to the list, but ignore duplicates 
+// (a designer may have placed multiple trigger_changelevels with the same landmark)
+
 /* <1a3ff8> ../cstrike/dlls/triggers.cpp:1556 */
-NOBODY int CChangeLevel::AddTransitionToList(LEVELLIST *pLevelList, int listCount, const char *pMapName, const char *pLandmarkName, edict_t *pentLandmark)
+int CChangeLevel::AddTransitionToList(LEVELLIST *pLevelList, int listCount, const char *pMapName, const char *pLandmarkName, edict_t *pentLandmark)
 {
-//	{
-//		int i;                                                //  1558
-//	} 
+	int i;
+
+	if (!pLevelList || !pMapName || !pLandmarkName || !pentLandmark)
+	{
+		return 0;
+	}
+
+	for (i = 0; i < listCount; i++)
+	{
+		if (pLevelList[i].pentLandmark == pentLandmark && Q_strcmp(pLevelList[i].mapName, pMapName) == 0)
+		{
+			return 0;
+		}
+	}
+
+	Q_strcpy(pLevelList[ listCount ].mapName, pMapName);
+	Q_strcpy(pLevelList[ listCount ].landmarkName, pLandmarkName);
+
+	pLevelList[ listCount ].pentLandmark = pentLandmark;
+	pLevelList[ listCount ].vecLandmarkOrigin = VARS(pentLandmark)->origin;
+
+	return 1;
 }
 
 /* <1a44ba> ../cstrike/dlls/triggers.cpp:1576 */
@@ -610,16 +633,57 @@ NOBODY int BuildChangeList(LEVELLIST *pLevelList, int maxList)
 }
 
 /* <1a4075> ../cstrike/dlls/triggers.cpp:1582 */
-NOBODY int CChangeLevel::InTransitionVolume(CBaseEntity *pEntity, char *pVolumeName)
+int CChangeLevel::InTransitionVolume(CBaseEntity *pEntity, char *pVolumeName)
 {
-//	{
-//		edict_t *pentVolume;                                 //  1584
-//		int inVolume;                                         //  1597
-//	} 
+	edict_t	*pentVolume;
+
+	if (pEntity->ObjectCaps() & FCAP_FORCE_TRANSITION)
+	{
+		return 1;
+	}
+
+	// If you're following another entity, follow it through the transition (weapons follow the player)
+	if (pEntity->pev->movetype == MOVETYPE_FOLLOW)
+	{
+		if (pEntity->pev->aiment != NULL)
+		{
+			pEntity = CBaseEntity::Instance(pEntity->pev->aiment);
+		}
+	}
+
+	// Unless we find a trigger_transition, everything is in the volume
+	int inVolume = 1;
+
+	pentVolume = FIND_ENTITY_BY_TARGETNAME(NULL, pVolumeName);
+	while (!FNullEnt(pentVolume))
+	{
+		CBaseEntity *pVolume = CBaseEntity::Instance(pentVolume);
+
+		if (pVolume && FClassnameIs(pVolume->pev, "trigger_transition"))
+		{
+			// It touches one, it's in the volume
+			if (pVolume->Intersects(pEntity))
+				return 1;
+			else
+			{
+				// Found a trigger_transition, but I don't intersect it -- if I don't find another, don't go!
+				inVolume = 0;
+			}
+		}
+
+		pentVolume = FIND_ENTITY_BY_TARGETNAME(pentVolume, pVolumeName);
+	}
+
+	return inVolume;
 }
 
+// This has grown into a complicated beast
+// Can we make this more elegant?
+// This builds the list of all transitions on this level and which entities are in their PVS's and can / should
+// be moved across.
+
 /* <1a40b1> ../cstrike/dlls/triggers.cpp:1625 */
-NOBODY int CChangeLevel::ChangeList(LEVELLIST *pLevelList, int maxList)
+int CChangeLevel::ChangeList(LEVELLIST *pLevelList, int maxList)
 {
 	edict_t	*pentChangelevel, *pentLandmark;
 	int i, count = 0;
@@ -634,7 +698,7 @@ NOBODY int CChangeLevel::ChangeList(LEVELLIST *pLevelList, int maxList)
 	{
 		CChangeLevel *pTrigger = GetClassPtr((CChangeLevel *)VARS(pentChangelevel));
 
-		if (pTrigger)
+		if (pTrigger != NULL)
 		{
 			// Find the corresponding landmark
 			pentLandmark = FindLandmark(pTrigger->m_szLandmarkName);
@@ -645,11 +709,13 @@ NOBODY int CChangeLevel::ChangeList(LEVELLIST *pLevelList, int maxList)
 				{
 					count++;
 
+					// FULL!!
 					if (count >= maxList)
 						break;
 				}
 			}
 		}
+
 		pentChangelevel = FIND_ENTITY_BY_STRING(pentChangelevel, "classname", "trigger_changelevel");
 	}
 
@@ -692,7 +758,9 @@ NOBODY int CChangeLevel::ChangeList(LEVELLIST *pLevelList, int maxList)
 							entityCount++;
 
 							if (entityCount > MAX_ENTITY)
+							{
 								ALERT( at_error, "Too many entities across a transition!" );
+							}
 						}
 					}
 				}
@@ -735,17 +803,17 @@ NOBODY void NextLevel(void)
 LINK_ENTITY_TO_CLASS(func_ladder, CLadder);
 
 /* <1a1937> ../cstrike/dlls/triggers.cpp:1763 */
-NOBODY void CLadder::KeyValue_(KeyValueData *pkvd)
+NOBODY void CLadder::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 }
 
 /* <19fe6c> ../cstrike/dlls/triggers.cpp:1772 */
-NOBODY void CLadder::Precache_(void)
+NOBODY void CLadder::__MAKE_VHOOK(Precache)(void)
 {
 }
 
 /* <19fe95> ../cstrike/dlls/triggers.cpp:1786 */
-NOBODY void CLadder::Spawn_(void)
+NOBODY void CLadder::__MAKE_VHOOK(Spawn)(void)
 {
 }
 
@@ -753,19 +821,19 @@ NOBODY void CLadder::Spawn_(void)
 LINK_ENTITY_TO_CLASS(trigger_push, CTriggerPush);
 
 /* <1a18ff> ../cstrike/dlls/triggers.cpp:1807 */
-NOBODY void CTriggerPush::KeyValue_(KeyValueData *pkvd)
+NOBODY void CTriggerPush::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 }
 
 /* <1a2eda> ../cstrike/dlls/triggers.cpp:1817 */
-NOBODY void CTriggerPush::Spawn_(void)
+NOBODY void CTriggerPush::__MAKE_VHOOK(Spawn)(void)
 {
 //	operator==(const class Vector *const this,
 //			const class Vector  &const v);  //  1819
 }
 
 /* <1a023c> ../cstrike/dlls/triggers.cpp:1835 */
-NOBODY void CTriggerPush::Touch_(CBaseEntity *pOther)
+NOBODY void CTriggerPush::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 {
 //	{
 //		entvars_t *pevToucher;                               //  1837
@@ -802,7 +870,7 @@ NOBODY void CBaseTrigger::TeleportTouch(CBaseEntity *pOther)
 LINK_ENTITY_TO_CLASS(trigger_teleport, CTriggerTeleport);
 
 /* <1a2eb1> ../cstrike/dlls/triggers.cpp:1942 */
-NOBODY void CTriggerTeleport::Spawn_(void)
+NOBODY void CTriggerTeleport::__MAKE_VHOOK(Spawn)(void)
 {
 }
 
@@ -813,7 +881,7 @@ LINK_ENTITY_TO_CLASS(info_teleport_destination, CPointEntity);
 LINK_ENTITY_TO_CLASS(func_buyzone, CBuyZone);
 
 /* <1a2e71> ../cstrike/dlls/triggers.cpp:1973 */
-NOBODY void CBuyZone::Spawn_(void)
+NOBODY void CBuyZone::__MAKE_VHOOK(Spawn)(void)
 {
 //	Spawn(class CBuyZone *const this);  //  1973
 }
@@ -832,7 +900,7 @@ NOBODY void CBuyZone::BuyTouch(CBaseEntity *pOther)
 LINK_ENTITY_TO_CLASS(func_bomb_target, CBombTarget);
 
 /* <1a2e48> ../cstrike/dlls/triggers.cpp:2019 */
-NOBODY void CBombTarget::Spawn_(void)
+NOBODY void CBombTarget::__MAKE_VHOOK(Spawn)(void)
 {
 }
 
@@ -855,7 +923,7 @@ NOBODY void CBombTarget::BombTargetUse(CBaseEntity *pActivator, CBaseEntity *pCa
 LINK_ENTITY_TO_CLASS(func_hostage_rescue, CHostageRescue);
 
 /* <1a2e1f> ../cstrike/dlls/triggers.cpp:2067 */
-NOBODY void CHostageRescue::Spawn_(void)
+NOBODY void CHostageRescue::__MAKE_VHOOK(Spawn)(void)
 {
 }
 
@@ -870,7 +938,7 @@ NOBODY void CHostageRescue::HostageRescueTouch(CBaseEntity *pOther)
 LINK_ENTITY_TO_CLASS(func_escapezone, CEscapeZone);
 
 /* <1a2df6> ../cstrike/dlls/triggers.cpp:2108 */
-NOBODY void CEscapeZone::Spawn_(void)
+NOBODY void CEscapeZone::__MAKE_VHOOK(Spawn)(void)
 {
 }
 
@@ -890,7 +958,7 @@ NOBODY void CEscapeZone::EscapeTouch(CBaseEntity *pOther)
 LINK_ENTITY_TO_CLASS(func_vip_safetyzone, CVIP_SafetyZone);
 
 /* <1a2dcd> ../cstrike/dlls/triggers.cpp:2166 */
-NOBODY void CVIP_SafetyZone::Spawn_(void)
+NOBODY void CVIP_SafetyZone::__MAKE_VHOOK(Spawn)(void)
 {
 }
 
@@ -910,7 +978,7 @@ NOBODY void CVIP_SafetyZone::VIP_SafetyTouch(CBaseEntity *pOther)
 LINK_ENTITY_TO_CLASS(trigger_autosave, CTriggerSave);
 
 /* <1a2d8e> ../cstrike/dlls/triggers.cpp:2206 */
-NOBODY void CTriggerSave::Spawn_(void)
+NOBODY void CTriggerSave::__MAKE_VHOOK(Spawn)(void)
 {
 	//Spawn(class CTriggerSave *const this);  //  2206
 }
@@ -936,7 +1004,7 @@ NOBODY void CTriggerEndSection::EndSectionUse(CBaseEntity *pActivator, CBaseEnti
 }
 
 /* <1a2d4f> ../cstrike/dlls/triggers.cpp:2260 */
-NOBODY void CTriggerEndSection::Spawn_(void)
+NOBODY void CTriggerEndSection::__MAKE_VHOOK(Spawn)(void)
 {
 //	Spawn(class CTriggerEndSection *const this);  //  2260
 }
@@ -949,7 +1017,7 @@ NOBODY void CTriggerEndSection::EndSectionTouch(CBaseEntity *pOther)
 }
 
 /* <1a196f> ../cstrike/dlls/triggers.cpp:2291 */
-NOBODY void CTriggerEndSection::KeyValue_(KeyValueData *pkvd)
+NOBODY void CTriggerEndSection::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 //	FStrEq(const char *sz1,
 //		const char *sz2);  //  2293
@@ -961,7 +1029,7 @@ NOBODY void CTriggerEndSection::KeyValue_(KeyValueData *pkvd)
 LINK_ENTITY_TO_CLASS(trigger_gravity, CTriggerGravity);
 
 /* <1a2d26> ../cstrike/dlls/triggers.cpp:2313 */
-NOBODY void CTriggerGravity::Spawn_(void)
+NOBODY void CTriggerGravity::__MAKE_VHOOK(Spawn)(void)
 {
 }
 
@@ -977,7 +1045,7 @@ LINK_ENTITY_TO_CLASS(trigger_changetarget, CTriggerChangeTarget);
 IMPLEMENT_SAVERESTORE(CTriggerChangeTarget, CBaseDelay);
 
 /* <1a1691> ../cstrike/dlls/triggers.cpp:2360 */
-NOBODY void CTriggerChangeTarget::KeyValue_(KeyValueData *pkvd)
+NOBODY void CTriggerChangeTarget::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 //	FStrEq(const char *sz1,
 //		const char *sz2);  //  2362
@@ -986,12 +1054,12 @@ NOBODY void CTriggerChangeTarget::KeyValue_(KeyValueData *pkvd)
 }
 
 /* <19ff1f> ../cstrike/dlls/triggers.cpp:2371 */
-NOBODY void CTriggerChangeTarget::Spawn_(void)
+NOBODY void CTriggerChangeTarget::__MAKE_VHOOK(Spawn)(void)
 {
 }
 
 /* <1a010d> ../cstrike/dlls/triggers.cpp:2376 */
-NOBODY void CTriggerChangeTarget::Use_(CBaseEntity *pActivator, class CBaseEntity *pCaller, USE_TYPE useType, float value)
+NOBODY void CTriggerChangeTarget::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 //	{ 
 //		class CBaseEntity *pTarget;                          //  2378
@@ -1008,12 +1076,12 @@ LINK_ENTITY_TO_CLASS(trigger_camera, CTriggerCamera);
 IMPLEMENT_SAVERESTORE(CTriggerCamera, CBaseDelay);
 
 /* <19ff6f> ../cstrike/dlls/triggers.cpp:2447 */
-NOBODY void CTriggerCamera::Spawn_(void)
+NOBODY void CTriggerCamera::__MAKE_VHOOK(Spawn)(void)
 {
 }
 
 /* <1a1537> ../cstrike/dlls/triggers.cpp:2462 */
-NOBODY void CTriggerCamera::KeyValue_(KeyValueData *pkvd)
+NOBODY void CTriggerCamera::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 //	FStrEq(const char *sz1,
 //		const char *sz2);  //  2464
@@ -1025,7 +1093,7 @@ NOBODY void CTriggerCamera::KeyValue_(KeyValueData *pkvd)
 }
 
 /* <1a55e4> ../cstrike/dlls/triggers.cpp:2490 */
-NOBODY void CTriggerCamera::Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+NOBODY void CTriggerCamera::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 //	Use(CTriggerCamera *const this,
 //		class CBaseEntity *pActivator,
@@ -1081,7 +1149,7 @@ LINK_ENTITY_TO_CLASS(env_rain, CWeather);
 LINK_ENTITY_TO_CLASS(func_rain, CWeather);
 
 /* <1a1477> ../cstrike/dlls/triggers.cpp:2716 */
-NOBODY void CClientFog::KeyValue_(KeyValueData *pkvd)
+NOBODY void CClientFog::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 //	FStrEq(const char *sz1,
 //		const char *sz2);  //  2718
@@ -1092,7 +1160,7 @@ NOBODY void CClientFog::KeyValue_(KeyValueData *pkvd)
 }
 
 /* <19ff97> ../cstrike/dlls/triggers.cpp:2735 */
-NOBODY void CClientFog::Spawn_(void)
+NOBODY void CClientFog::__MAKE_VHOOK(Spawn)(void)
 {
 }
 
@@ -1359,6 +1427,21 @@ void CTriggerPush::KeyValue(KeyValueData *pkvd)
 void CTriggerPush::Touch(CBaseEntity *pOther)
 {
 	Touch_(pOther);
+}
+
+void CTriggerTeleport::Spawn(void)
+{
+	Spawn_();
+}
+
+void CBuyZone::Spawn(void)
+{
+	Spawn_();
+}
+
+void CBombTarget::Spawn(void)
+{
+	Spawn_();
 }
 
 void CHostageRescue::Spawn(void)

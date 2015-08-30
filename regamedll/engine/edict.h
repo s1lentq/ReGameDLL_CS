@@ -32,7 +32,7 @@
 #pragma once
 #endif
 
-#define	MAX_ENT_LEAFS	48
+#define MAX_ENT_LEAFS	48
 
 #include "progdefs.h"
 

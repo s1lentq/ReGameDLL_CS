@@ -39,7 +39,7 @@
 inline unsigned int ComputeSimpleChecksum(const unsigned char *dataPointer, int dataLength)
 {
 	unsigned int checksum = 0;
-	for(int i = 1; i <= dataLength; i++)
+	for (int i = 1; i <= dataLength; i++)
 	{
 		checksum += (*dataPointer) * i;
 		++dataPointer;

@@ -62,11 +62,13 @@ void CCSBot::SetAimOffset(float accuracy)
 	if (accuracy < 1.0f)
 	{
 		// if we moved our view, reset our "focus" mechanism
-		if (IsViewMoving( 100 ))
+		if (IsViewMoving(100.0f))
+		{
 			m_aimSpreadTimestamp = gpGlobals->time;
+		}
 
 		// focusTime is the time it takes for a bot to "focus in" for very good aim, from 2 to 5 seconds
-		const float focusTime = max( 5.0f * (1.0f - accuracy), 2.0f );
+		const float focusTime = _max(5.0f * (1.0f - accuracy), 2.0f);
 
 		float focusInterval = gpGlobals->time - m_aimSpreadTimestamp;
 		float focusAccuracy = focusInterval / focusTime;
@@ -77,7 +79,7 @@ void CCSBot::SetAimOffset(float accuracy)
 		if (focusAccuracy > maxFocusAccuracy)
 			focusAccuracy = maxFocusAccuracy;
 
-		accuracy = max( accuracy, focusAccuracy );
+		accuracy = _max(accuracy, focusAccuracy);
 	}
 
 	PrintIfWatched("Accuracy = %4.3f\n", accuracy);
@@ -327,7 +329,7 @@ void CCSBot::ThrowGrenade(const Vector *target)
 		SetLookAt("GrenadeThrow", target, PRIORITY_UNINTERRUPTABLE, 3.0f, false, angleTolerance);
 
 		m_isWaitingToTossGrenade = true;
-		m_tossGrenadeTimer.Start( 3.0f );
+		m_tossGrenadeTimer.Start(3.0f);
 	}
 }
 
@@ -422,7 +424,7 @@ NOBODY void CCSBot::SilencerCheck(void)
 }
 
 /* <3eb1a9> ../cstrike/dlls/bot/cs_bot_weapon.cpp:926 */
-NOBODY void CCSBot::OnTouchingWeapon_(CWeaponBox *box)
+NOBODY void CCSBot::__MAKE_VHOOK(OnTouchingWeapon)(CWeaponBox *box)
 {
 //	{
 //		class CBasePlayerItem *droppedGun;                   //   929

@@ -326,7 +326,7 @@ inline float DWordSwapAsm<float>(float f)
 #endif
 
 #ifdef _SGI_SOURCE
-#define	VALVE_BIG_ENDIAN 1
+#define VALVE_BIG_ENDIAN 1
 #endif
 
 #if defined(VALVE_LITTLE_ENDIAN)

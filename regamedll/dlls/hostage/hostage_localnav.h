@@ -32,10 +32,12 @@
 #pragma once
 #endif
 
-#define PATH_TRAVERSABLE_EMPTY 0
-#define PATH_TRAVERSABLE_SLOPE 1
-#define PATH_TRAVERSABLE_STEP 2
-#define PATH_TRAVERSABLE_STEPJUMPABLE 3
+#define NODE_INVALID_EMPTY		-1
+
+#define PATH_TRAVERSABLE_EMPTY		0
+#define PATH_TRAVERSABLE_SLOPE		1
+#define PATH_TRAVERSABLE_STEP		2
+#define PATH_TRAVERSABLE_STEPJUMPABLE	3
 
 typedef int node_index_t;
 
@@ -48,6 +50,7 @@ typedef struct localnode_s
 	byte bDepth;
 	BOOL fSearched;
 	node_index_t nindexParent;
+
 } localnode_t;
 /* size: 32, cachelines: 1, members: 6 */
 
@@ -80,8 +83,8 @@ public:
 			m_pTargetEnt = NULL;
 	}
 
-	NOBODY node_index_t FindPath(Vector &vecStart, Vector &vecDest, float flTargetRadius, int fNoMonsters);
-	NOBODY int SetupPathNodes(node_index_t nindex, Vector *vecNodes, int fNoMonsters);
+	node_index_t FindPath(Vector &vecStart, Vector &vecDest, float flTargetRadius, int fNoMonsters);
+	int SetupPathNodes(node_index_t nindex, Vector *vecNodes, int fNoMonsters);
 	NOBODY int GetFurthestTraversableNode(Vector &vecStartingLoc, Vector *vecNodes, int nTotalNodes, int fNoMonsters);
 	int PathTraversable(Vector &vecSource, Vector &vecDest, int fNoMonsters);
 	BOOL PathClear(Vector &vecOrigin, Vector &vecDest, int fNoMonsters, TraceResult &tr);
@@ -90,36 +93,36 @@ public:
 		TraceResult tr;
 		return PathClear(vecSource, vecDest, fNoMonsters, tr);
 	}
-	NOXREF node_index_t AddNode(node_index_t nindexParent, Vector &vecLoc, int offsetX, int offsetY, byte bDepth);
-	NOXREF localnode_t *GetNode(node_index_t nindex);
-	NOXREF node_index_t NodeExists(int offsetX, int offsetY);
-	NOBODY void AddPathNodes(node_index_t nindexSource, int fNoMonsters);
-	NOBODY void AddPathNode(node_index_t nindexSource, int offsetX, int offsetY, int fNoMonsters);
-	NOBODY node_index_t GetBestNode(Vector &vecOrigin, Vector &vecDest);
+	node_index_t AddNode(node_index_t nindexParent, Vector &vecLoc, int offsetX = 0, int offsetY = 0, byte bDepth = 0);
+	localnode_t *GetNode(node_index_t nindex);
+	node_index_t NodeExists(int offsetX, int offsetY);
+	void AddPathNodes(node_index_t nindexSource, int fNoMonsters);
+	void AddPathNode(node_index_t nindexSource, int offsetX, int offsetY, int fNoMonsters);
+	node_index_t GetBestNode(Vector &vecOrigin, Vector &vecDest);
 	BOOL SlopeTraversable(Vector &vecSource, Vector &vecDest, int fNoMonsters, TraceResult &tr);
 	NOBODY BOOL LadderTraversable(Vector &vecSource, Vector &vecDest, int fNoMonsters, TraceResult &tr);
 	BOOL StepTraversable(Vector &vecSource, Vector &vecDest, int fNoMonsters, TraceResult &tr);
 	BOOL StepJumpable(Vector &vecSource, Vector &vecDest, int fNoMonsters, TraceResult &tr);
-	NOBODY node_index_t FindDirectPath(Vector &vecStart, Vector &vecDest, float flTargetRadius, int fNoMonsters);
+	node_index_t FindDirectPath(Vector &vecStart, Vector &vecDest, float flTargetRadius, int fNoMonsters);
 	NOBODY BOOL LadderHit(Vector &vecSource, Vector &vecDest, TraceResult &tr);
 
 	NOBODY static void Think(void);
 	NOBODY static void RequestNav(CHostage *pCaller);
 	static void Reset(void);
-	NOBODY static void HostagePrethink(void);
+	static void HostagePrethink(void);
 
 #ifndef HOOK_GAMEDLL
 private:
 #endif // HOOK_GAMEDLL
 
 	static float s_flStepSize;
-	static EHANDLE _queue[ MAX_HOSTAGES ];
+	static EHANDLE _queue[ MAX_HOSTAGES_NAV ];
 	static int qptr;
 	static int tot_inqueue;
 	static float nodeval;
 	static float flNextCvarCheck;
 	static float flLastThinkTime;
-	static EHANDLE hostages[ MAX_HOSTAGES ];
+	static EHANDLE hostages[ MAX_HOSTAGES_NAV ];
 	static int tot_hostages;
 
 #ifdef HOOK_GAMEDLL

@@ -51,22 +51,23 @@ extern bool UseBotArgs;
 class BotProfile;
 
 /* <36c175> ../game_shared/bot/bot.h:36 */
-template <class T>T *CreateBot(const BotProfile *profile)
+template <class T>
+T *CreateBot(const BotProfile *profile)
 {
 	edict_t *pentBot;
 	if (UTIL_ClientsInGame() >= gpGlobals->maxClients)
 	{
-		CONSOLE_ECHO( "Unable to create bot: Server is full (%d/%d clients).\n", UTIL_ClientsInGame(), gpGlobals->maxClients );
+		CONSOLE_ECHO( "Unable to create bot: Server is full (%d/%d clients).\n", UTIL_ClientsInGame(), gpGlobals->maxClients);
 		return NULL;
 	}
 
 	char netname[64];
-	UTIL_ConstructBotNetName(netname, 64, profile);
-	pentBot = CREATE_FAK_CLIENT( netname );
+	UTIL_ConstructBotNetName(netname, sizeof(netname), profile);
+	pentBot = CREATE_FAKE_CLIENT(netname);
 
 	if (FNullEnt(pentBot))
 	{
-		CONSOLE_ECHO( "Unable to create bot: pfnCreateFakeClient() returned null.\n" );
+		CONSOLE_ECHO("Unable to create bot: pfnCreateFakeClient() returned null.\n");
 		return NULL;
 	}
 	else
@@ -75,6 +76,7 @@ template <class T>T *CreateBot(const BotProfile *profile)
 		FREE_PRIVATE(pentBot);
 		pBot = GetClassPtr((T *)VARS(pentBot));
 		pBot->Initialize(profile);
+
 		return pBot;
 	}
 }
@@ -270,7 +272,9 @@ public:
 	{
 		return m_profile;
 	}
+#ifndef HOOK_GAMEDLL
 protected:
+#endif // HOOK_GAMEDLL
 	// Do a "client command" - useful for invoking menu choices, etc.
 	void ClientCommand(const char *cmd, const char *arg1 = NULL, const char *arg2 = NULL, const char *arg3 = NULL);
 
@@ -327,7 +331,7 @@ private:
 /* <48f61d> ../game_shared/bot/bot.h:253 */
 inline void CBot::SetModel(const char *modelName)
 {
-	SET_CLIENT_KEY_VALUE(entindex(), GET_USERINFO(edict()), "model", (char *)modelName);
+	SET_CLIENT_KEY_VALUE(entindex(), GET_INFO_BUFFER(edict()), "model", (char *)modelName);
 }
 
 /* <48e98a> ../game_shared/bot/bot.h:259 */

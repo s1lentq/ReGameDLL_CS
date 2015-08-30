@@ -41,9 +41,11 @@ public:
 	virtual BOOL AddAmmo(CBaseEntity *pOther);
 
 #ifdef HOOK_GAMEDLL
+
 	void Spawn_(void);
 	void Precache_(void);
 	BOOL AddAmmo_(CBaseEntity *pOther);
+
 #endif // HOOK_GAMEDLL
 
 };/* size: 152, cachelines: 3, members: 1 */
@@ -57,9 +59,11 @@ public:
 	virtual BOOL AddAmmo(CBaseEntity *pOther);
 
 #ifdef HOOK_GAMEDLL
+
 	void Spawn_(void);
 	void Precache_(void);
 	BOOL AddAmmo_(CBaseEntity *pOther);
+
 #endif // HOOK_GAMEDLL
 
 };/* size: 152, cachelines: 3, members: 1 */
@@ -73,9 +77,11 @@ public:
 	virtual BOOL AddAmmo(CBaseEntity *pOther);
 
 #ifdef HOOK_GAMEDLL
+
 	void Spawn_(void);
 	void Precache_(void);
 	BOOL AddAmmo_(CBaseEntity *pOther);
+
 #endif // HOOK_GAMEDLL
 
 };/* size: 152, cachelines: 3, members: 1 */
@@ -89,9 +95,11 @@ public:
 	virtual BOOL AddAmmo(CBaseEntity *pOther);
 
 #ifdef HOOK_GAMEDLL
+
 	void Spawn_(void);
 	void Precache_(void);
 	BOOL AddAmmo_(CBaseEntity *pOther);
+
 #endif // HOOK_GAMEDLL
 
 };/* size: 152, cachelines: 3, members: 1 */
@@ -105,9 +113,11 @@ public:
 	virtual BOOL AddAmmo(CBaseEntity *pOther);
 
 #ifdef HOOK_GAMEDLL
+
 	void Spawn_(void);
 	void Precache_(void);
 	BOOL AddAmmo_(CBaseEntity *pOther);
+
 #endif // HOOK_GAMEDLL
 
 };/* size: 152, cachelines: 3, members: 1 */
@@ -121,9 +131,11 @@ public:
 	virtual BOOL AddAmmo(CBaseEntity *pOther);
 
 #ifdef HOOK_GAMEDLL
+
 	void Spawn_(void);
 	void Precache_(void);
 	BOOL AddAmmo_(CBaseEntity *pOther);
+
 #endif // HOOK_GAMEDLL
 
 };/* size: 152, cachelines: 3, members: 1 */
@@ -137,9 +149,11 @@ public:
 	virtual BOOL AddAmmo(CBaseEntity *pOther);
 
 #ifdef HOOK_GAMEDLL
+
 	void Spawn_(void);
 	void Precache_(void);
 	BOOL AddAmmo_(CBaseEntity *pOther);
+
 #endif // HOOK_GAMEDLL
 
 };/* size: 152, cachelines: 3, members: 1 */
@@ -153,9 +167,11 @@ public:
 	virtual BOOL AddAmmo(CBaseEntity *pOther);
 
 #ifdef HOOK_GAMEDLL
+
 	void Spawn_(void);
 	void Precache_(void);
 	BOOL AddAmmo_(CBaseEntity *pOther);
+
 #endif // HOOK_GAMEDLL
 
 };/* size: 152, cachelines: 3, members: 1 */
@@ -169,9 +185,11 @@ public:
 	virtual BOOL AddAmmo(CBaseEntity *pOther);
 
 #ifdef HOOK_GAMEDLL
+
 	void Spawn_(void);
 	void Precache_(void);
 	BOOL AddAmmo_(CBaseEntity *pOther);
+
 #endif // HOOK_GAMEDLL
 
 };/* size: 152, cachelines: 3, members: 1 */
@@ -185,11 +203,24 @@ public:
 	virtual BOOL AddAmmo(CBaseEntity *pOther);
 
 #ifdef HOOK_GAMEDLL
+
 	void Spawn_(void);
 	void Precache_(void);
 	BOOL AddAmmo_(CBaseEntity *pOther);
+
 #endif // HOOK_GAMEDLL
 
 };/* size: 152, cachelines: 3, members: 1 */
+
+C_DLLEXPORT void ammo_9mm(entvars_t *pev);		// C9MMAmmo
+C_DLLEXPORT void ammo_buckshot(entvars_t *pev);		// CBuckShotAmmo
+C_DLLEXPORT void ammo_556nato(entvars_t *pev);		// C556NatoAmmo
+C_DLLEXPORT void ammo_556natobox(entvars_t *pev);	// C556NatoBoxAmmo
+C_DLLEXPORT void ammo_762nato(entvars_t *pev);		// C762NatoAmmo
+C_DLLEXPORT void ammo_45acp(entvars_t *pev);		// C45ACPAmmo
+C_DLLEXPORT void ammo_50ae(entvars_t *pev);		// C50AEAmmo
+C_DLLEXPORT void ammo_338magnum(entvars_t *pev);	// C338MagnumAmmo
+C_DLLEXPORT void ammo_57mm(entvars_t *pev);		// C57MMAmmo
+C_DLLEXPORT void ammo_357sig(entvars_t *pev);		// C357SIGAmmo
 
 #endif // AMMO_H

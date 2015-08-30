@@ -43,12 +43,14 @@ public:
 		return (m_fileData) ? true : false;
 	}
 	bool Read(void *data, int length);
+
 private:
 	byte *m_fileData;
 	int m_fileDataLength;
 
 	byte *m_cursor;
 	int m_bytesLeft;
+
 };/* size: 16, cachelines: 1, members: 4 */
 
 /* <4eb7b4> ../game_shared/steam_util.h:29 */
@@ -73,7 +75,7 @@ inline bool SteamFile::Read(void *data, int length)
 		return false;
 
 	byte *readCursor = static_cast<byte *>(data);
-	for(int i = 0; i < length; i++)
+	for (int i = 0; i < length; i++)
 	{
 		*readCursor++ = *m_cursor++;
 		--m_bytesLeft;

@@ -46,33 +46,9 @@ public:
 	NOBODY virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
 	NOBODY virtual void Think(void);
 	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-public:
-	NOBODY void Animate(float frames);
-	inline int ShouldAnimate(void)
-	{
-		return m_animate && m_maxFrame > 1.0;
-	}
-public:
-
-#ifndef HOOK_GAMEDLL
-
-	static TYPEDESCRIPTION m_SaveData[3];
-#else
-	static TYPEDESCRIPTION (*m_SaveData)[3];
-
-#endif // HOOK_GAMEDLL
-
-	int m_animate;
-	float m_lastTime;
-	float m_maxFrame;
-	int m_renderfx;
-	int m_rendermode;
-	float m_renderamt;
-	vec3_t m_rendercolor;
 
 #ifdef HOOK_GAMEDLL
 
-public:
 	NOBODY void Spawn_(void);
 	NOBODY void Restart_(void);
 	NOBODY int Save_(CSave &save);
@@ -82,6 +58,24 @@ public:
 	NOBODY void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #endif // HOOK_GAMEDLL
+
+public:
+	NOBODY void Animate(float frames);
+	inline int ShouldAnimate(void)
+	{
+		return m_animate && m_maxFrame > 1.0;
+	}
+
+public:
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[3];
+
+	int m_animate;
+	float m_lastTime;
+	float m_maxFrame;
+	int m_renderfx;
+	int m_rendermode;
+	float m_renderamt;
+	vec3_t m_rendercolor;
 
 };/* size: 188, cachelines: 3, members: 9 */
 
@@ -102,18 +96,6 @@ public:
 	}
 	NOBODY virtual void Think(void);
 	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-public:
-	void GenericCyclerSpawn(char *szModel, Vector vecMin, Vector vecMax);
-public:
-#ifndef HOOK_GAMEDLL
-
-	static TYPEDESCRIPTION m_SaveData[1];
-#else
-	static TYPEDESCRIPTION (*m_SaveData)[1];
-
-#endif // HOOK_GAMEDLL
-
-	int m_animate;
 
 #ifdef HOOK_GAMEDLL
 
@@ -125,6 +107,14 @@ public:
 	NOBODY void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #endif // HOOK_GAMEDLL
+
+public:
+	void GenericCyclerSpawn(char *szModel, Vector vecMin, Vector vecMax);
+
+public:
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[1];
+
+	int m_animate;
 
 };/* size: 408, cachelines: 7, members: 3 */
 
@@ -172,9 +162,6 @@ public:
 	}
 	NOBODY virtual void PrimaryAttack(void);
 	NOBODY virtual void SecondaryAttack(void);
-public:
-	int m_iszModel;
-	int m_iModel;
 
 #ifdef HOOK_GAMEDLL
 
@@ -186,6 +173,10 @@ public:
 
 #endif // HOOK_GAMEDLL
 
+public:
+	int m_iszModel;
+	int m_iModel;
+
 };/* size: 344, cachelines: 6, members: 3 */
 
 class CWreckage: public CBaseMonster
@@ -195,16 +186,6 @@ class CWreckage: public CBaseMonster
 	NOBODY virtual int Save(CSave &save);
 	NOBODY virtual int Restore(CRestore &restore);
 	NOBODY virtual void Think(void);
-public:
-#ifndef HOOK_GAMEDLL
-
-	static TYPEDESCRIPTION m_SaveData[1];
-#else
-	static TYPEDESCRIPTION (*m_SaveData)[1];
-
-#endif // HOOK_GAMEDLL
-
-	int m_flStartTime;
 
 #ifdef HOOK_GAMEDLL
 
@@ -215,6 +196,11 @@ public:
 	NOBODY void Think_(void);
 
 #endif // HOOK_GAMEDLL
+
+public:
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[1];
+
+	int m_flStartTime;
 
 };/* size: 408, cachelines: 7, members: 3 */
 

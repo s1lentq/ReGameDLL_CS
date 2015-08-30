@@ -32,6 +32,11 @@
 #pragma once
 #endif
 
+#define bits_NODE_LAND		(1 << 0)	// Land node, so nudge if necessary.
+#define bits_NODE_AIR		(1 << 1)	// Air node, don't nudge.
+#define bits_NODE_WATER		(1 << 2)	// Water node, don't nudge.
+#define bits_NODE_GROUP_REALM	(bits_NODE_LAND | bits_NODE_AIR | bits_NODE_WATER)
+
 class CBaseEntity;
 
 class CLink
@@ -44,14 +49,14 @@ public:
 class CGraph
 {
 public:
-	NOBODY void InitGraph(void);
-	NOBODY int AllocNodes(void);
-	NOBODY int CheckNODFile(char *szMapName);
-	NOBODY int FLoadGraph(char *szMapName);
-	NOBODY int FSetGraphPointers(void);
-	NOBODY void ShowNodeConnections(int iNode);
-	NOBODY int FindNearestNode(const Vector &vecOrigin, CBaseEntity *pEntity);
-	NOBODY int FindNearestNode(const Vector &vecOrigin, int afNodeTypes);
+	void InitGraph(void);
+	int AllocNodes(void);
+	int CheckNODFile(char *szMapName);
+	int FLoadGraph(char *szMapName);
+	int FSetGraphPointers(void);
+	void ShowNodeConnections(int iNode);
+	int FindNearestNode(const Vector &vecOrigin, CBaseEntity *pEntity);
+	int FindNearestNode(const Vector &vecOrigin, int afNodeTypes);
 public:
 	BOOL m_fGraphPresent;
 	BOOL m_fGraphPointersSet;

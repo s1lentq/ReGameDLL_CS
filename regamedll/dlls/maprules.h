@@ -76,11 +76,7 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-#ifndef HOOK_GAMEDLL
-	static TYPEDESCRIPTION m_SaveData[1];
-#else // HOOK_GAMEDLL
-	static TYPEDESCRIPTION (*m_SaveData)[1];
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[1];
 
 	void SetMaster(int iszMaster)
 	{
@@ -88,6 +84,7 @@ public:
 	}
 protected:
 	BOOL CanFireForActivator(CBaseEntity *pActivator);
+
 private:
 	string_t m_iszMaster;
 
@@ -202,12 +199,10 @@ public:
 	{
 		return STRING(pev->message);
 	}
+
 public:
-#ifndef HOOK_GAMEDLL
-	static TYPEDESCRIPTION m_SaveData[1];
-#else // HOOK_GAMEDLL
-	static TYPEDESCRIPTION (*m_SaveData)[1];
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[1];
+
 private:
 	hudtextparms_t m_textParms;
 
@@ -218,7 +213,10 @@ class CGameTeamMaster: public CRulePointEntity
 {
 public:
 	NOBODY virtual void KeyValue(KeyValueData *pkvd);
-	NOBODY virtual int ObjectCaps(void);
+	NOBODY virtual int ObjectCaps(void)
+	{
+		return ObjectCaps_();
+	}
 	NOBODY virtual BOOL IsTriggered(CBaseEntity *pActivator);
 	NOBODY virtual const char *TeamID(void);
 	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
@@ -226,7 +224,10 @@ public:
 #ifdef HOOK_GAMEDLL
 
 	void KeyValue_(KeyValueData *pkvd);
-	int ObjectCaps_(void);
+	int ObjectCaps_(void)
+	{
+		return CRulePointEntity::ObjectCaps() | FCAP_MASTER;
+	}
 	BOOL IsTriggered_(CBaseEntity *pActivator);
 	const char *TeamID_(void);
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
@@ -279,10 +280,10 @@ public:
 class CGamePlayerZone: public CRuleBrushEntity
 {
 public:
-	void KeyValue(KeyValueData *pkvd);
-	int Save(CSave &save);
-	int Restore(CRestore &restore);
-	void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	NOBODY virtual void KeyValue(KeyValueData *pkvd);
+	NOBODY virtual int Save(CSave &save);
+	NOBODY virtual int Restore(CRestore &restore);
+	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
 
@@ -294,11 +295,7 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-#ifndef HOOK_GAMEDLL
-	static TYPEDESCRIPTION m_SaveData[4];
-#else // HOOK_GAMEDLL
-	static TYPEDESCRIPTION (*m_SaveData)[4];
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[4];
 
 private:
 	string_t m_iszInTarget;
@@ -443,7 +440,7 @@ public:
 class CGamePlayerTeam: public CRulePointEntity
 {
 public:
-	void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
 

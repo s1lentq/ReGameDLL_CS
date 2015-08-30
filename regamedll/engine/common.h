@@ -37,8 +37,6 @@
 #include "FileSystem.h"
 #include "info.h"
 
-#define COM_TOKEN_LEN	1024
-
 // Don't allow overflow
 #define SIZEBUF_CHECK_OVERFLOW		0
 #define SIZEBUF_ALLOW_OVERFLOW		BIT(0)
@@ -104,6 +102,7 @@ typedef struct incomingtransfer_s
 #define Q_strncmp strncmp
 //#define Q_strcasecmp _stricmp		// Use Q_stricmp
 //#define Q_strncasecmp _strnicmp	// Use Q_strnicmp
+#define Q_strdup _strdup
 #define Q_stricmp _stricmp
 #define Q_strnicmp _strnicmp
 #define Q_strstr strstr

@@ -32,6 +32,8 @@
 #pragma once
 #endif
 
+class CHostageImprov;
+
 /* <46f85d> ../cstrike/dlls/hostage/hostage_states.h:16 */
 class HostageState: public SimpleState<CHostageImprov *>, public IImprovEvent
 {
@@ -63,8 +65,8 @@ public:
 	}
 
 	void UpdateStationaryAnimation(CHostageImprov *improv) { };
-};/* size: 16, cachelines: 1, members: 2 */
 
+};/* size: 16, cachelines: 1, members: 2 */
 
 /* <46fccf> ../cstrike/dlls/hostage/hostage_states.h:38 */
 class HostageIdleState: public HostageState
@@ -218,8 +220,14 @@ public:
 	}
 	virtual void UpdateStationaryAnimation(CHostageImprov *improv);
 public:
-	void SetLeader(CBaseEntity *leader);
-	CBaseEntity *GetLeader(void);
+	void SetLeader(CBaseEntity *leader)
+	{
+		m_leader = leader;
+	}
+	CBaseEntity *GetLeader(void)
+	{
+		return m_leader;
+	}
 private:
 	EHANDLE m_leader;
 	Vector m_lastLeaderPos;

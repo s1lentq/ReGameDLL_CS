@@ -17,8 +17,10 @@ public:
 	bool bIsZero;
 	bool disableAllHooks;
 	char testRecordingFileName[260];
+	char testConfigFileName[260];
 	TestPlayerMode testPlayerMode;
 
+	void parseFromConfigFile(void);
 	void parseFromCommandLine(const char *cmdLine);
 };
 

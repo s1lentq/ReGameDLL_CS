@@ -14,53 +14,87 @@ CHalfLifeMultiplay *g_pGameRules;
 #endif //HOOK_GAMEDLL
 
 /* <ad93d> ../cstrike/dlls/gamerules.cpp:36 */
-BOOL CGameRules::CanHaveAmmo_(CBasePlayer *pPlayer, const char *pszAmmoName, int iMaxCarry)
+BOOL CGameRules::__MAKE_VHOOK(CanHaveAmmo)(CBasePlayer *pPlayer, const char *pszAmmoName, int iMaxCarry)
 {
-	if (pszAmmoName)
+	int iAmmoIndex;
+
+	if (pszAmmoName != NULL)
 	{
-		int iAmmoIndex = pPlayer->GetAmmoIndex(pszAmmoName);
+		iAmmoIndex = pPlayer->GetAmmoIndex(pszAmmoName);
 
 		if (iAmmoIndex > -1)
 		{
 			if (pPlayer->AmmoInventory(iAmmoIndex) < iMaxCarry)
+			{
+				// player has room for more of this type of ammo
 				return TRUE;
+			}
 		}
 	}
+
 	return FALSE;
 }
 
 /* <ad89d> ../cstrike/dlls/gamerules.cpp:59 */
-NOBODY edict_t *CGameRules::GetPlayerSpawnSpot_(CBasePlayer *pPlayer)
+edict_t *CGameRules::__MAKE_VHOOK(GetPlayerSpawnSpot)(CBasePlayer *pPlayer)
 {
-//	{
-//		edict_t *pentSpawnSpot;                              //    61
-//		VARS(edict_t *pent);  //    66
-//		VARS(edict_t *pent);  //    63
-//		operator+(const Vector *const this,
-//				const Vector &v);  //    63
-//	}
+	edict_t *pentSpawnSpot = EntSelectSpawnPoint(pPlayer);
+
+	pPlayer->pev->origin = VARS(pentSpawnSpot)->origin;// + Vector(0, 0, 1);
+	pPlayer->pev->origin.z += 1;
+
+	pPlayer->pev->v_angle = g_vecZero;
+	pPlayer->pev->velocity = g_vecZero;
+	pPlayer->pev->angles = VARS(pentSpawnSpot)->angles;
+	pPlayer->pev->punchangle = g_vecZero;
+	pPlayer->pev->fixangle = 1;
+
+	return pentSpawnSpot;
 }
 
 /* <ad9a3> ../cstrike/dlls/gamerules.cpp:75 */
-NOBODY BOOL CGameRules::CanHavePlayerItem_(CBasePlayer *pPlayer, CBasePlayerItem *pWeapon)
+BOOL CGameRules::__MAKE_VHOOK(CanHavePlayerItem)(CBasePlayer *pPlayer, CBasePlayerItem *pWeapon)
 {
-	/*if (pPlayer->pev->deadflag != DEAD_NO)
+	// only living players can have items
+	if (pPlayer->pev->deadflag != DEAD_NO)
+	{
 		return FALSE;
+	}
 
 	CCSBotManager *ctrl = TheCSBots();
-	if (!pPlayer->AddPlayerItem(pWeapon) ||	ctrl->IsWeaponUseable(pWeapon))
+
+	if (pPlayer->IsBot() && !ctrl->IsWeaponUseable(pWeapon))
 	{
-		// TODO: check it
-		if (pWeapon->pszAmmo1() && CanHaveAmmo(pPlayer,pWeapon->pszAmmo1(),pWeapon->iMaxAmmo1()) || !pPlayer->HasPlayerItem(pWeapon))
+		return FALSE;
+	}
+
+	if (pWeapon->pszAmmo1())
+	{
+		if (!CanHaveAmmo(pPlayer, pWeapon->pszAmmo1(), pWeapon->iMaxAmmo1()))
 		{
-			return TRUE;
+			// we can't carry anymore ammo for this gun. We can only 
+			// have the gun if we aren't already carrying one of this type
+			if (pPlayer->HasPlayerItem(pWeapon))
+			{
+				return FALSE;
+			}
 		}
-	}*/
-	return FALSE;
+	}
+	else
+	{
+		// weapon doesn't use ammo, don't take another if you already have it.
+		if (pPlayer->HasPlayerItem(pWeapon))
+		{
+			return FALSE;
+		}
+	}
+
+	// note: will fall through to here if GetItemInfo doesn't fill the struct!
+	return TRUE;
 }
 
 /* <ad85d> ../cstrike/dlls/gamerules.cpp:119 */
-void CGameRules::RefreshSkillData_(void)
+void CGameRules::__MAKE_VHOOK(RefreshSkillData)(void)
 {
 	int iSkill = (int)CVAR_GET_FLOAT("skill");
 
@@ -82,16 +116,33 @@ void CGameRules::RefreshSkillData_(void)
 	gSkillData.healthkitCapacity = 15;
 }
 
+void (*pInstallGameRules)(void);
+
 /* <ada23> ../cstrike/dlls/gamerules.cpp:157 */
-NOBODY CGameRules *InstallGameRules(void)
+NOBODY __declspec(naked) CGameRules *InstallGameRules(void)
 {
+	__asm
+	{
+		jmp pInstallGameRules
+	}
+#if 0
+	SERVER_COMMAND("exec game.cfg\n");
+	SERVER_EXECUTE();
+
+	if (!gpGlobals->deathmatch)
+	{
+		return new CHalfLifeTraining;
+	}
+
+	return new CHalfLifeMultiplay;
+#endif
 }
 
 #ifdef HOOK_GAMEDLL
 
-BOOL CGameRules::CanHaveAmmo(CBasePlayer *pPlayer, const char *pszAmmoName, int iMaxCarry)
+void CGameRules::RefreshSkillData(void)
 {
-	return CanHaveAmmo_(pPlayer,pszAmmoName,iMaxCarry);
+	RefreshSkillData_();
 }
 
 edict_t *CGameRules::GetPlayerSpawnSpot(CBasePlayer *pPlayer)
@@ -101,12 +152,12 @@ edict_t *CGameRules::GetPlayerSpawnSpot(CBasePlayer *pPlayer)
 
 BOOL CGameRules::CanHavePlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pWeapon)
 {
-	return CanHavePlayerItem_(pPlayer,pWeapon);
+	return CanHavePlayerItem_(pPlayer, pWeapon);
 }
 
-void CGameRules::RefreshSkillData(void)
+BOOL CGameRules::CanHaveAmmo(CBasePlayer *pPlayer, const char *pszAmmoName, int iMaxCarry)
 {
-	RefreshSkillData_();
+	return CanHaveAmmo_(pPlayer, pszAmmoName, iMaxCarry);
 }
 
 #endif // HOOK_GAMEDLL

@@ -6,10 +6,12 @@
 #ifndef HOOK_GAMEDLL
 
 BotPhraseManager *TheBotPhrases = NULL;
+CBaseEntity *g_pSelectedZombieSpawn = NULL;
 
 #else // HOOK_GAMEDLL
 
 BotPhraseManager *TheBotPhrases;
+CBaseEntity *g_pSelectedZombieSpawn;
 
 #endif // HOOK_GAMEDLL
 
@@ -186,18 +188,99 @@ NOBODY void BotPhrase::InitVoiceBank(int bankIndex)
 }
 
 /* <303917> ../cstrike/dlls/bot/cs_bot_chatter.cpp:340 */
-NOBODY char *BotPhrase::GetSpeakable(int bankIndex, float *duration) const
+char *BotPhrase::GetSpeakable(int bankIndex, float *duration) const
 {
-//	{
-//		int start;                                            //   351
-//	}
+	if (bankIndex < 0 || bankIndex >= m_numVoiceBanks || m_count[bankIndex] == 0)
+	{
+		if (duration)
+			*duration = 0.0f;
+
+		return NULL;
+	}
+
+	// find phrase that meets the current criteria
+	int start = m_index[ bankIndex ];
+	while (true)
+	{
+		BotSpeakableVector *speakables = m_voiceBank[ bankIndex ];
+		int &index = m_index[ bankIndex ];
+
+#ifdef HOOK_GAMEDLL
+		// TODO: temporary fix of std::vector padding
+		*(byte *)&speakables += 4;
+#endif // HOOK_GAMEDLL
+
+		const BotSpeakable *speak = (*speakables)[index++];
+
+		if (m_index[ bankIndex ] >= m_count[ bankIndex ])
+			m_index[ bankIndex ] = 0;
+
+		// check place criteria
+		// if this speakable has a place criteria, it must match to be used
+		// speakables with Place of ANY will match any place
+		// speakables with a specific Place will only be used if Place matches
+		// speakables with Place of UNDEFINED only match Place of UNDEFINED
+		if (speak->m_place == ANY_PLACE || speak->m_place == m_placeCriteria)
+		{
+			// check count criteria
+			// if this speakable has a count criteria, it must match to be used
+			// if this speakable does not have a count criteria, we dont care what the count is set to
+			if (speak->m_count == UNDEFINED_COUNT || speak->m_count == _min(m_countCriteria, COUNT_MANY))
+			{
+				if (duration)
+					*duration = speak->m_duration;
+
+				return speak->m_phrase;
+			}
+		}
+
+		// check if we exhausted all speakables
+		if (m_index[bankIndex] == start)
+		{
+			if (duration)
+				*duration = 0.0f;
+
+			return NULL;
+		}
+	}
+
+	return NULL;
 }
 
+void (*pBotPhrase__Randomize)(void);
+
 /* <30395a> ../cstrike/dlls/bot/cs_bot_chatter.cpp:395 */
-NOBODY void BotPhrase::Randomize(void)
+NOBODY void __declspec(naked) BotPhrase::Randomize(void)
 {
+	__asm
+	{
+		jmp pBotPhrase__Randomize
+	}
+
+//	UNTESTED
+//
+//	for (unsigned int i = 0; i < m_voiceBank.size(); i++)
 //	{
-//		int i;                                                //   397
+//		BotSpeakableVector *speakables = m_voiceBank[i];
+//
+//#ifdef HOOK_GAMEDLL
+//		// TODO: temporary fix of std::vector padding
+//		*(byte *)&speakables += 4;
+//#endif // HOOK_GAMEDLL
+//
+//		BotSpeakable *firstElem = speakables->front();
+//		int nSize = speakables->size();
+//	
+//		for (unsigned int index = 1; index < nSize; index++)
+//		{
+//			// TODO: check it, need hook std rand
+//			int randIndex = (rand() % nSize);
+//
+//			BotSpeakable *speakable = (*speakables)[ randIndex ];
+//
+//			(*speakables)[ randIndex ] = (*speakables)[ index ];
+//			(*speakables)[ index ] = speakable;
+//		}
 //	}
 }
 
@@ -215,16 +298,22 @@ NOBODY void BotPhraseManager::OnMapChange(void)
 }
 
 /* <303c70> ../cstrike/dlls/bot/cs_bot_chatter.cpp:425 */
-NOBODY void BotPhraseManager::OnRoundRestart(void)
+void BotPhraseManager::OnRoundRestart(void)
 {
-//	{
-//		const_iterator iter;                                  //   431
-//		end(list<BotPhrase*, std::allocator<BotPhrase*>> *const this);  //   433
-//		Randomize(BotPhrase *const this);  //   434
-//		operator++(_List_const_iterator<BotPhrase*> *const this);  //   433
-//		Randomize(BotPhrase *const this);  //   437
-//		operator++(_List_const_iterator<BotPhrase*> *const this);  //   436
-//	}
+	// effectively reset all interval timers
+	m_placeCount = 0;
+	BotPhraseList::const_iterator iter;
+
+	// shuffle all the speakables
+	for (iter = m_placeList.begin(); iter != m_placeList.end(); ++iter)
+	{
+		(*iter)->Randomize();
+	}
+
+	for (iter = m_list.begin(); iter != m_list.end(); ++iter)
+	{
+		(*iter)->Randomize();
+	}
 }
 
 /* <30c1fc> ../cstrike/dlls/bot/cs_bot_chatter.cpp:443 */

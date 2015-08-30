@@ -32,6 +32,19 @@
 #pragma once
 #endif
 
+#ifdef HOOK_GAMEDLL
+
+// probably gamedll compiled with flag /fpmath:fasted,
+// so we need to use type double, otherwise will be the test failed
+
+typedef double float_precision;
+
+#else // HOOK_GAMEDLL
+
+typedef float float_precision;
+
+#endif // HOOK_GAMEDLL
+
 /* <42b7f> ../common/mathlib.h:3 */
 typedef float vec_t;
 
@@ -54,12 +67,20 @@ typedef union DLONG_u
 
 #define M_PI			3.14159265358979323846
 
-#ifndef max
-#define max(a,b) (((a) > (b)) ? (a) : (b))
+//#ifndef max
+//#define max(a,b) (((a) > (b)) ? (a) : (b))
+//#endif
+//
+//#ifndef min
+//#define min(a,b) (((a) < (b)) ? (a) : (b))
+//#endif
+
+#ifndef _max
+#define _max(a,b) (((a) > (b)) ? (a) : (b))
 #endif
 
-#ifndef min
-#define min(a,b) (((a) < (b)) ? (a) : (b))
+#ifndef _min
+#define _min(a,b) (((a) < (b)) ? (a) : (b))
 #endif
 
 #define clamp(val, min, max) (((val) > (max)) ? (max) : (((val) < (min)) ? (min) : (val)))

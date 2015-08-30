@@ -16,7 +16,7 @@ TYPEDESCRIPTION CWallHealth::m_SaveData[] =
 
 #else
 
-TYPEDESCRIPTION (*CWallHealth::m_SaveData)[5];
+TYPEDESCRIPTION (*CWallHealth::pm_SaveData)[5];
 
 #endif // HOOK_GAMEDLL
 
@@ -24,7 +24,7 @@ TYPEDESCRIPTION (*CWallHealth::m_SaveData)[5];
 LINK_ENTITY_TO_CLASS(item_healthkit, CHealthKit);
 
 /* <d5e25> ../cstrike/dlls/healthkit.cpp:55 */
-void CHealthKit::Spawn_(void)
+void CHealthKit::__MAKE_VHOOK(Spawn)(void)
 {
 	Precache();
 	SET_MODEL(ENT(pev), "models/w_medkit.mdl");
@@ -33,14 +33,14 @@ void CHealthKit::Spawn_(void)
 }
 
 /* <d5d8a> ../cstrike/dlls/healthkit.cpp:63 */
-void CHealthKit::Precache_(void)
+void CHealthKit::__MAKE_VHOOK(Precache)(void)
 {
 	PRECACHE_MODEL("models/w_medkit.mdl");
 	PRECACHE_SOUND("items/smallmedkit1.wav");
 }
 
 /* <d5fb9> ../cstrike/dlls/healthkit.cpp:69 */
-BOOL CHealthKit::MyTouch_(CBasePlayer *pPlayer)
+BOOL CHealthKit::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
 {
 	if (pPlayer->TakeHealth(gSkillData.healthkitCapacity, DMG_GENERIC))
 	{
@@ -68,7 +68,7 @@ IMPLEMENT_SAVERESTORE(CWallHealth, CBaseEntity);
 LINK_ENTITY_TO_CLASS(func_healthcharger, CWallHealth);
 
 /* <d60ed> ../cstrike/dlls/healthkit.cpp:135 */
-void CWallHealth::KeyValue_(KeyValueData *pkvd)
+void CWallHealth::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "style") || FStrEq(pkvd->szKeyName, "height") || FStrEq(pkvd->szKeyName, "value1") || FStrEq(pkvd->szKeyName, "value2") || FStrEq(pkvd->szKeyName, "value3"))
 	{
@@ -76,7 +76,7 @@ void CWallHealth::KeyValue_(KeyValueData *pkvd)
 	}
 	else if (FStrEq(pkvd->szKeyName, "dmdelay"))
 	{
-		m_iReactivate = atoi(pkvd->szValue);
+		m_iReactivate = Q_atoi(pkvd->szValue);
 		pkvd->fHandled = TRUE;
 	}
 	else
@@ -84,7 +84,7 @@ void CWallHealth::KeyValue_(KeyValueData *pkvd)
 }
 
 /* <d5dfe> ../cstrike/dlls/healthkit.cpp:154 */
-void CWallHealth::Spawn_(void)
+void CWallHealth::__MAKE_VHOOK(Spawn)(void)
 {
 	Precache();
 
@@ -102,7 +102,7 @@ void CWallHealth::Spawn_(void)
 }
 
 /* <d5dd7> ../cstrike/dlls/healthkit.cpp:169 */
-void CWallHealth::Precache_(void)
+void CWallHealth::__MAKE_VHOOK(Precache)(void)
 {
 	PRECACHE_SOUND("items/medshot4.wav");
 	PRECACHE_SOUND("items/medshotno1.wav");
@@ -110,7 +110,7 @@ void CWallHealth::Precache_(void)
 }
 
 /* <d622e> ../cstrike/dlls/healthkit.cpp:177 */
-void CWallHealth::Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CWallHealth::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	// Make sure that we have a caller
 	if (!pActivator)

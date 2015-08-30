@@ -15,14 +15,17 @@ NOBODY void CCSBot::StartVoiceFeedback(float duration)
 }
 
 /* <3a3a32> ../cstrike/dlls/bot/cs_bot_radio.cpp:241 */
-NOBODY void CCSBot::EndVoiceFeedback(bool force)
+void CCSBot::EndVoiceFeedback(bool force)
 {
-//	MESSAGE_BEGIN(int msg_dest,
-//			int msg_type,
-//			const float *pOrigin,
-//			edict_t *ed);  //   249
-//	edict(CBaseEntity *const this);  //   251
-//	ENTINDEX(edict_t *pEdict);  //   251
+	if (!force && !m_voiceFeedbackEndTimestamp)
+		return;
+
+	m_voiceFeedbackEndTimestamp = 0;
+
+	MESSAGE_BEGIN(MSG_ALL, gmsgBotVoice);
+		WRITE_BYTE(0);
+		WRITE_BYTE(ENTINDEX(edict()));
+	MESSAGE_END();
 }
 
 /* <3a3bcd> ../cstrike/dlls/bot/cs_bot_radio.cpp:259 */

@@ -32,14 +32,23 @@
 #pragma once
 #endif
 
-#define MAX_NODES 100
-#define MAX_HOSTAGES 20
+#include "hostage/hostage_improv.h"
 
-#define HOSTAGE_STEPSIZE 26.0
+#define MAX_NODES			100
+#define MAX_HOSTAGES			12
+#define MAX_HOSTAGES_NAV		20
+
+#define HOSTAGE_STEPSIZE		26.0
+#define HOSTAGE_STEPSIZE_DEFAULT	18.0
+
+#define VEC_HOSTAGE_VIEW		Vector(0, 0, 12)
+#define VEC_HOSTAGE_HULL_MIN		Vector(-10, -10, 0)
+#define VEC_HOSTAGE_HULL_MAX		Vector(10, 10, 62)
 
 class CHostage;
 class CLocalNav;
 class CHostageImprov;
+class CHostageManager;
 
 enum HostageChatterType
 {
@@ -67,6 +76,22 @@ enum HostageChatterType
 	NUM_HOSTAGE_CHATTER_TYPES,
 };
 
+#ifdef HOOK_GAMEDLL
+
+#define g_pHostages (*pg_pHostages)
+#define g_iHostageNumber (*pg_iHostageNumber)
+
+#define cv_hostage_debug (*pcv_hostage_debug)
+#define cv_hostage_stop (*pcv_hostage_stop)
+
+#endif // HOOK_GAMEDLL
+
+extern CHostageManager *g_pHostages;
+extern int g_iHostageNumber;
+
+extern cvar_t cv_hostage_debug;
+extern cvar_t cv_hostage_stop;
+
 /* <4858e5> ../cstrike/dlls/hostage/hostage.h:32 */
 class CHostage: public CBaseMonster
 {
@@ -86,10 +111,11 @@ public:
 	NOBODY virtual void Touch(CBaseEntity *pOther);
 	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
+public:
 	NOBODY void EXPORT IdleThink(void);
 	NOBODY void Remove(void);
-	NOBODY void RePosition(void);
-	NOBODY void SetActivity(int act);
+	void RePosition(void);
+	void SetActivity(int act);
 	NOBODY int GetActivity(void);
 	NOBODY float GetModifiedDamage(float flDamage, int nHitGroup);
 	NOBODY void SetFlinchActivity(void);
@@ -109,14 +135,35 @@ public:
 	NOBODY void Wiggle(void);
 	void PreThink(void);
 
-	NOBODY bool IsFollowingSomeone(void);//
-	NOBODY CBaseEntity *GetLeader(void);//
+	NOBODY bool IsFollowingSomeone(void)
+	{
+		UNTESTED
+		return m_improv->IsFollowing(NULL);
+	}
+	NOBODY CBaseEntity *GetLeader(void)
+	{
+		UNTESTED
+		if (m_improv != NULL)
+		{
+			return m_improv->GetFollowLeader();
+		}
+
+		return NULL;
+	}
 	NOBODY bool IsFollowing(const CBaseEntity *entity)
 	{
 		return (entity == m_hTargetEnt && m_State == FOLLOW);
 	}
-	NOBODY bool IsValid(void);//
-	NOBODY bool IsDead(void);//
+	NOBODY bool IsValid(void)
+	{
+		UNTESTED
+		return (pev->takedamage == DAMAGE_YES);
+	}
+	NOBODY bool IsDead(void)
+	{
+		UNTESTED
+		return (pev->deadflag == DEAD_DEAD);
+	}
 	NOBODY bool IsAtHome(void);//
 	NOBODY const Vector *GetHomePosition(void);//
 	
@@ -162,7 +209,7 @@ public:
 	state m_State;
 	Vector m_vStart;
 	Vector m_vStartAngles;
-	Vector m_vPathToFollow[ MAX_HOSTAGES ];
+	Vector m_vPathToFollow[20];
 	int m_iWaypoint;
 	CBasePlayer *m_target;
 	CLocalNav *m_LocalNav;
@@ -222,16 +269,17 @@ private:
 
 };/* size: 5628, cachelines: 88, members: 1 */
 
+/* <45b018> ../cstrike/dlls/hostage/hostage.h:247 */
 class CHostageManager
 {
 public:
 	CHostageManager(void);
 
-	NOBODY void ServerActivate(void);
-	void ServerDeactivate(void) { };
+	void ServerActivate(void);
+	void ServerDeactivate(void);
 
-	NOBODY void RestartRound(void);
-	NOBODY void AddHostage(CHostage *hostage);
+	void RestartRound(void);
+	void AddHostage(CHostage *hostage);
 	SimpleChatter *GetChatter(void)
 	{
 		return &m_chatter;
@@ -261,22 +309,65 @@ public:
 		return close;
 	}
 
+	template<
+		typename T
+	>
+	bool ForEachHostage(T &func)
+	{
+		UNTESTED
+
+		for (int i = 0; i < m_hostageCount; i++)
+		{
+			CHostage *pHostage = m_hostage[ i ];
+
+			if (pHostage->deadflag != DEAD_NO || pHostage->takedamage != DAMAGE_YES)
+				continue;
+
+			if (!pHostage->m_improv)
+				break;
+
+			if (func(pHostage))
+				return true;
+		}
+		return false;
+	}
+
 private:
-	CHostage *m_hostage[12];
+	CHostage *m_hostage[ MAX_HOSTAGES ];
 	int m_hostageCount;
 	SimpleChatter m_chatter;
 
 };/* size: 5680, cachelines: 89, members: 3 */
 
-#ifdef HOOK_GAMEDLL
 
-#define g_pHostages (*pg_pHostages)
+///* <470134> ../cstrike/dlls/hostage/hostage.h:293 */
+//inline void CHostageManager::ForEachHostage<KeepPersonalSpace>(KeepPersonalSpace &func)
+//{
+////	{
+////		int i;                                                //   295
+////	}
+//}
+//
+///* <46fbe8> ../cstrike/dlls/hostage/hostage.h:293 */
+//inline void CHostageManager::ForEachHostage<CheckAhead>(CheckAhead &func)
+//{
+////	{
+////		int i;                                                //   295
+////	}
+//}
+//
+///* <46fb04> ../cstrike/dlls/hostage/hostage.h:293 */
+//inline void CHostageManager::ForEachHostage<CheckWayFunctor>(CheckWayFunctor &func)
+//{
+////	{
+////		int i;                                                //   295
+////	}
+//}
 
-#endif // HOOK_GAMEDLL
-
-extern CHostageManager *g_pHostages;
-
-NOBODY void Hostage_RegisterCVars(void);
+void Hostage_RegisterCVars(void);
 NOBODY void InstallHostageManager(void);
+
+// refs
+extern void (*pCHostage__IdleThink)(void);
 
 #endif // HOSTAGE_H

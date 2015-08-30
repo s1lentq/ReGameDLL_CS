@@ -87,11 +87,8 @@ public:
 	NOBODY CPathTrack *GetNext(void);
 	NOBODY CPathTrack *GetPrevious(void);
 
-#ifndef HOOK_GAMEDLL
-	static TYPEDESCRIPTION m_SaveData[5];
-#else // HOOK_GAMEDLL
-	static TYPEDESCRIPTION (*m_SaveData)[5];
-#endif // HOOK_GAMEDLL
+public:
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[5];
 
 	float m_length;
 	string_t m_altName;
@@ -111,7 +108,10 @@ public:
 	NOBODY virtual void KeyValue(KeyValueData* pkvd);
 	NOBODY virtual int Save(CSave &save);
 	NOBODY virtual int Restore(CRestore &restore);
-	NOBODY virtual int ObjectCaps(void);
+	NOBODY virtual int ObjectCaps(void)
+	{
+		return ObjectCaps_();
+	}
 	NOBODY virtual void OverrideReset(void);
 	NOBODY virtual BOOL OnControls(entvars_t *pev);
 	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
@@ -154,11 +154,8 @@ public:
 
 	NOBODY static CFuncTrackTrain *Instance(edict_t *pent);
 
-#ifndef HOOK_GAMEDLL
-	static TYPEDESCRIPTION m_SaveData[12];
-#else // HOOK_GAMEDLL
-	static TYPEDESCRIPTION (*m_SaveData)[12];
-#endif // HOOK_GAMEDLL
+public:
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[12];
 
 	CPathTrack *m_ppath;
 	float m_length;
@@ -187,7 +184,7 @@ class CFuncVehicle: public CBaseEntity
 {
 public:
 	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
+	virtual void Precache(void);
 	NOBODY virtual void Restart(void);
 	NOBODY virtual void KeyValue(KeyValueData *pkvd);
 	NOBODY virtual int Save(CSave &save);
@@ -196,9 +193,9 @@ public:
 	{
 		return ObjectCaps_();
 	}
-	NOBODY virtual int Classify(void);
+	virtual int Classify(void);
 	NOBODY virtual void OverrideReset(void);
-	NOBODY virtual BOOL OnControls(entvars_t *pev);
+	virtual BOOL OnControls(entvars_t *pev);
 	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 	NOBODY virtual void Blocked(CBaseEntity *pOther);
 
@@ -245,13 +242,9 @@ public:
 public:
 	NOBODY static CFuncVehicle *Instance(edict_t *pent);
 
-#ifndef HOOK_GAMEDLL
-	static TYPEDESCRIPTION m_SaveData[12];
-#else // HOOK_GAMEDLL
-	static TYPEDESCRIPTION (*m_SaveData)[12];
-#endif // HOOK_GAMEDLL
-
 public:
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[12];
+
 	CPathTrack *m_ppath;
 	float m_length;
 	float m_width;

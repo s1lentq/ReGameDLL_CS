@@ -7,24 +7,24 @@
 
 float CLocalNav::s_flStepSize;
 int CLocalNav::qptr;
-EHANDLE CLocalNav::_queue[ MAX_HOSTAGES ];
+EHANDLE CLocalNav::_queue[ MAX_HOSTAGES_NAV ];
 int CLocalNav::tot_inqueue;
 float CLocalNav::nodeval;
 float CLocalNav::flNextCvarCheck;
 float CLocalNav::flLastThinkTime;
-EHANDLE CLocalNav::hostages[ MAX_HOSTAGES ];
+EHANDLE CLocalNav::hostages[ MAX_HOSTAGES_NAV ];
 int CLocalNav::tot_hostages;
 
 #else
 
 float (*CLocalNav::ps_flStepSize);
 int (*CLocalNav::pqptr);
-EHANDLE (*CLocalNav::pqueue)[ MAX_HOSTAGES ];
+EHANDLE (*CLocalNav::pqueue)[ MAX_HOSTAGES_NAV ];
 int (*CLocalNav::ptot_inqueue);
 float (*CLocalNav::pnodeval);
 float (*CLocalNav::pflNextCvarCheck);
 float (*CLocalNav::pflLastThinkTime);
-EHANDLE (*CLocalNav::phostages)[ MAX_HOSTAGES ];
+EHANDLE (*CLocalNav::phostages)[ MAX_HOSTAGES_NAV ];
 int (*CLocalNav::ptot_hostages);
 
 #endif // HOOK_GAMEDLL
@@ -41,7 +41,7 @@ NOBODY CLocalNav::~CLocalNav(void)
 }
 
 /* <485b91> ../cstrike/dlls/hostage/hostage_localnav.cpp:74 */
-NOXREF node_index_t CLocalNav::AddNode(node_index_t nindexParent, Vector &vecLoc, int offsetX, int offsetY, byte bDepth)
+node_index_t CLocalNav::AddNode(node_index_t nindexParent, Vector &vecLoc, int offsetX, int offsetY, byte bDepth)
 {
 	localnode_t *nodeNew;
 
@@ -61,101 +61,211 @@ NOXREF node_index_t CLocalNav::AddNode(node_index_t nindexParent, Vector &vecLoc
 }
 
 /* <485570> ../cstrike/dlls/hostage/hostage_localnav.cpp:94 */
-NOXREF localnode_t *CLocalNav::GetNode(node_index_t nindex)
+localnode_t *CLocalNav::GetNode(node_index_t nindex)
 {
 	return &m_nodeArr[ nindex ];
 }
 
 /* <485c01> ../cstrike/dlls/hostage/hostage_localnav.cpp:100 */
-NOXREF node_index_t CLocalNav::NodeExists(int offsetX, int offsetY)
+node_index_t CLocalNav::NodeExists(int offsetX, int offsetY)
 {
-	node_index_t nindexCurrent;
+	node_index_t nindexCurrent = NODE_INVALID_EMPTY;
 	localnode_t *nodeCurrent;
 
-	for (nindexCurrent = m_nindexAvailableNode - 1; nindexCurrent != 0; nindexCurrent--)
+	for (nindexCurrent = m_nindexAvailableNode - 1; nindexCurrent != NODE_INVALID_EMPTY; nindexCurrent--)
 	{
 		nodeCurrent = GetNode(nindexCurrent);
 
 		if (nodeCurrent->offsetX == offsetX && nodeCurrent->offsetY == offsetY)
-			return nindexCurrent;
+		{
+			break;
+		}
 	}
-	return -1;
+
+	return nindexCurrent;
 }
 
 /* <486d46> ../cstrike/dlls/hostage/hostage_localnav.cpp:123 */
-NOBODY void CLocalNav::AddPathNodes(node_index_t nindexSource, int fNoMonsters)
+void CLocalNav::AddPathNodes(node_index_t nindexSource, int fNoMonsters)
 {
+	AddPathNode(nindexSource, 1, 0, fNoMonsters);
+	AddPathNode(nindexSource, -1, 0, fNoMonsters);
+	AddPathNode(nindexSource, 0, 1, fNoMonsters);
+	AddPathNode(nindexSource, 0, -1, fNoMonsters);
+	AddPathNode(nindexSource, 1, 1, fNoMonsters);
+	AddPathNode(nindexSource, 1, -1, fNoMonsters);
+	AddPathNode(nindexSource, -1, 1, fNoMonsters);
+	AddPathNode(nindexSource, -1, -1, fNoMonsters);
 }
 
 /* <486adb> ../cstrike/dlls/hostage/hostage_localnav.cpp:138 */
-NOBODY void CLocalNav::AddPathNode(node_index_t nindexSource, int offsetX, int offsetY, int fNoMonsters)
+void CLocalNav::AddPathNode(node_index_t nindexSource, int offsetX, int offsetY, int fNoMonsters)
 {
-//	{
-//		int bDepth;                                           //   140
-//		Vector vecSource;                               //   141
-//		Vector vecDest;                                 //   142
-//		int offsetXAbs;                                       //   143
-//		int offsetYAbs;                                       //   144
-//		{
-//			localnode_t *nodeSource;                     //   156
-//			localnode_t *nodeCurrent;                    //   157
-//			node_index_t nindexCurrent;                   //   158
-//			GetNode(CLocalNav *const this,
-//				node_index_t nindex);  //   160
-//			NodeExists(CLocalNav *const this,
-//					int offsetX,
-//					int offsetY);  //   166
-//			operator+(const Vector *const this,
-//					const Vector &v);  //   170
-//			operator*(const Vector *const this,
-//					float fl);  //   170
-//		}
-//		operator+(const Vector *const this,
-//				const Vector &v);  //   149
-//		operator*(const Vector *const this,
-//				float fl);  //   149
-//		AddNode(CLocalNav *const this,
-//			node_index_t nindexParent,
-//			Vector &vecLoc,
-//			int offsetX,
-//			int offsetY,
-//			byte bDepth);  //   200
-//	}
+	int bDepth;
+	Vector vecSource, vecDest;
+	int offsetXAbs, offsetYAbs;
+
+	if (nindexSource == -1)
+	{
+		bDepth = 1;
+
+		offsetXAbs = offsetX;
+		offsetYAbs = offsetY;
+
+		vecSource = m_vecStartingLoc;
+		vecDest = vecSource + Vector(((float_precision)offsetX * HOSTAGE_STEPSIZE), ((float_precision)offsetY * HOSTAGE_STEPSIZE), 0);
+	}
+	else
+	{
+		localnode_t *nodeSource;
+		localnode_t *nodeCurrent;
+		node_index_t nindexCurrent;
+
+		nodeCurrent = GetNode(nindexSource);
+		offsetXAbs = offsetX + nodeCurrent->offsetX;
+		offsetYAbs = offsetY + nodeCurrent->offsetY;
+		nodeSource = GetNode(m_nindexAvailableNode);
+
+		// if there exists a node, then to ignore adding a the new node
+		if (NodeExists(offsetXAbs, offsetYAbs) != NODE_INVALID_EMPTY)
+		{
+			return;
+		}
+
+		vecSource = nodeCurrent->vecLoc;
+		vecDest = vecSource + Vector(((float_precision)offsetX * HOSTAGE_STEPSIZE), ((float_precision)offsetY * HOSTAGE_STEPSIZE), 0);
+
+		if (m_nindexAvailableNode)
+		{
+			nindexCurrent = m_nindexAvailableNode;
+
+			do
+			{
+				nodeSource--;
+				nindexCurrent--;
+
+				offsetX = (nodeSource->offsetX - offsetXAbs);
+
+				if (offsetX >= 0)
+				{
+					if (offsetX > 1)
+					{
+						continue;
+					}
+				}
+				else
+				{
+					if (-offsetX > 1)
+					{
+						continue;
+					}
+				}
+
+				offsetY = (nodeSource->offsetY - offsetYAbs);
+
+				if (offsetY >= 0)
+				{
+					if (offsetY > 1)
+					{
+						continue;
+					}
+				}
+				else
+				{
+					if (-offsetY > 1)
+					{
+						continue;
+					}
+				}
+
+				if (PathTraversable(nodeSource->vecLoc, vecDest, fNoMonsters) != PATH_TRAVERSABLE_EMPTY)
+				{
+					nodeCurrent = nodeSource;
+					nindexSource = nindexCurrent;
+				}
+			}
+			while (nindexCurrent);
+		}
+
+		vecSource = nodeCurrent->vecLoc;
+		bDepth = ((int)nodeCurrent->bDepth) + 1;
+	}
+
+	if (PathTraversable(vecSource, vecDest, fNoMonsters) != PATH_TRAVERSABLE_EMPTY)
+	{
+		AddNode(nindexSource, vecDest, offsetXAbs, offsetYAbs, bDepth);
+	}
 }
 
 /* <485c63> ../cstrike/dlls/hostage/hostage_localnav.cpp:205 */
-NOBODY node_index_t CLocalNav::GetBestNode(Vector &vecOrigin, Vector &vecDest)
+node_index_t CLocalNav::GetBestNode(Vector &vecOrigin, Vector &vecDest)
 {
-//	{
-//		node_index_t nindexCurrent;                           //   207
-//		localnode_t *nodeCurrent;                            //   208
-//		node_index_t nindexBest;                              //   209
-//		float flBestVal;                                      //   210
-//		{
-//			float flCurrentVal;                           //   220
-//			float flDistFromStart;                        //   221
-//			float flDistToDest;                           //   222
-//			float flZDiff;                                //   223
-//			operator-(const Vector *const this,
-//					const Vector &v);  //   235
-//			Length(const Vector *const this);  //   235
-//		}
-//	}
+	node_index_t nindexCurrent;
+	localnode_t *nodeCurrent;
+	node_index_t nindexBest;
+	float flBestVal;
+
+	nindexBest = -1;
+	nindexCurrent = 0;
+	flBestVal = 1000000.0;
+
+	while (nindexCurrent < m_nindexAvailableNode)
+	{
+		nodeCurrent = GetNode(nindexCurrent);
+
+		if (!nodeCurrent->fSearched)
+		{
+			float_precision flCurrentVal;
+			float_precision flDistFromStart;
+
+			float flDistToDest;
+			float_precision flZDiff = -1.0;
+
+			flDistFromStart = LenghtSubtract
+				<float_precision, float_precision,
+				float_precision, float_precision>(vecDest, nodeCurrent->vecLoc);
+
+			flDistToDest = nodeCurrent->vecLoc.z - vecDest.z;
+			if (flDistToDest >= 0.0)
+			{
+				flZDiff = 1.0;
+			}
+
+			if ((flDistToDest * flZDiff) <= s_flStepSize)
+				flZDiff = 1.0;
+			else
+				flZDiff = 1.25;
+
+			flCurrentVal = flZDiff * (((float_precision)nodeCurrent->bDepth * HOSTAGE_STEPSIZE) + flDistFromStart);
+			if (flCurrentVal < flBestVal)
+			{
+				flBestVal = flCurrentVal;
+				nindexBest = nindexCurrent;
+			}
+		}
+
+		nindexCurrent++;
+	}
+
+	return nindexBest;
 }
 
 /* <485d79> ../cstrike/dlls/hostage/hostage_localnav.cpp:263 */
-NOBODY int CLocalNav::SetupPathNodes(node_index_t nindex, Vector *vecNodes, int fNoMonsters)
+int CLocalNav::SetupPathNodes(node_index_t nindex, Vector *vecNodes, int fNoMonsters)
 {
-//	{
-//		node_index_t nCurrentIndex;                           //   265
-//		int nNodeCount;                                       //   266
-//		{
-//			localnode_t *nodeCurrent;                    //   273
-//			Vector vecCurrentLoc;                   //   274
-//			GetNode(CLocalNav *const this,
-//				node_index_t nindex);  //   276
-//		}
-//	}
+	node_index_t nCurrentIndex = nindex;
+	int nNodeCount = 0;
+
+	while (nCurrentIndex != -1)
+	{
+		localnode_t *nodeCurrent = GetNode(nCurrentIndex);
+		Vector vecCurrentLoc = nodeCurrent->vecLoc;
+		vecNodes[ nNodeCount++ ] = vecCurrentLoc;
+
+		nCurrentIndex = nodeCurrent->nindexParent;
+	}
+
+	return nNodeCount;
 }
 
 /* <486a56> ../cstrike/dlls/hostage/hostage_localnav.cpp:290 */
@@ -167,44 +277,31 @@ NOBODY int CLocalNav::GetFurthestTraversableNode(Vector &vecStartingLoc, Vector 
 }
 
 /* <486d8d> ../cstrike/dlls/hostage/hostage_localnav.cpp:304 */
-NOBODY node_index_t CLocalNav::FindPath(Vector &vecStart, Vector &vecDest, float flTargetRadius, int fNoMonsters)
+node_index_t CLocalNav::FindPath(Vector &vecStart, Vector &vecDest, float flTargetRadius, int fNoMonsters)
 {
-//	{
-//		node_index_t nIndexBest;                              //   306
-//		{
-//			localnode_t *node;                           //   325
-//			Vector vecNodeLoc;                      //   326
-//			float flDistToDest;                           //   327
-//			GetNode(CLocalNav *const this,
-//				node_index_t nindex);  //   329
-//			operator-(const Vector *const this,
-//					const Vector &v);  //   332
-//			Length2D(const Vector *const this);  //   332
-//		}
-//	}
-
-	int nIndexBest;
-	localnode_t *node;
-	Vector vecNodeLoc;
-	float flDistToDest;
-
-	nIndexBest = FindDirectPath(vecStart, vecDest, flTargetRadius, fNoMonsters); // TODO: Reverse me!
+	node_index_t nIndexBest = FindDirectPath(vecStart, vecDest, flTargetRadius, fNoMonsters);
 
 	if (nIndexBest != -1)
+	{
 		return nIndexBest;
+	}
+
+	localnode_t *node;
+	Vector vecNodeLoc;
+	float_precision flDistToDest;
 
 	m_vecStartingLoc = vecStart;
 	m_nindexAvailableNode = 0;
-	AddPathNodes(-1, fNoMonsters);
 
-	vecNodeLoc = vecStart;
-	nIndexBest = GetBestNode(vecNodeLoc, vecDest); // TODO: Reverse me!
+	AddPathNodes(-1, fNoMonsters);
+	nIndexBest = GetBestNode(vecStart, vecDest);
 
 	while (nIndexBest != -1)
 	{
 		node = GetNode(nIndexBest);
-		vecNodeLoc = node->vecLoc;
 		node->fSearched = TRUE;
+
+		vecNodeLoc = node->vecLoc;
 		flDistToDest = (vecDest - node->vecLoc).Length2D();
 
 		if (flDistToDest <= flTargetRadius)
@@ -213,14 +310,15 @@ NOBODY node_index_t CLocalNav::FindPath(Vector &vecStart, Vector &vecDest, float
 		if (flDistToDest <= HOSTAGE_STEPSIZE)
 			break;
 
-		if ((flDistToDest - flTargetRadius) > (MAX_NODES - m_nindexAvailableNode) * HOSTAGE_STEPSIZE || m_nindexAvailableNode == MAX_NODES)
+		if (((flDistToDest - flTargetRadius) > ((MAX_NODES - m_nindexAvailableNode) * HOSTAGE_STEPSIZE))
+			|| m_nindexAvailableNode == MAX_NODES)
 		{
 			nIndexBest = -1;
 			break;
 		}
 
-		AddPathNodes(nIndexBest, fNoMonsters); // TODO: Reverse me!
-		nIndexBest = GetBestNode(vecNodeLoc, vecDest); // TODO: Reverse me!
+		AddPathNodes(nIndexBest, fNoMonsters);
+		nIndexBest = GetBestNode(vecNodeLoc, vecDest);
 	}
 
 	if (m_nindexAvailableNode <= 10)
@@ -277,66 +375,37 @@ NOBODY node_index_t CLocalNav::FindPath(Vector &vecStart, Vector &vecDest, float
 }
 
 /* <4867dc> ../cstrike/dlls/hostage/hostage_localnav.cpp:413 */
-NOBODY node_index_t CLocalNav::FindDirectPath(Vector &vecStart, Vector &vecDest, float flTargetRadius, int fNoMonsters)
+node_index_t CLocalNav::FindDirectPath(Vector &vecStart, Vector &vecDest, float flTargetRadius, int fNoMonsters)
 {
-//	{
-//		Vector vecActualDest;                           //   415
-//		Vector vecPathDir;                              //   416
-//		Vector vecNodeLoc;                              //   417
-//		node_index_t nindexLast;                              //   418
-//		operator-(const Vector *const this,
-//				const Vector &v);  //   420
-//		Normalize(const Vector *const this);  //   420
-//		operator*(const Vector *const this,
-//				float fl);  //   422
-//		operator-(const Vector *const this,
-//				const Vector &v);  //   422
-//		operator-(const Vector *const this,
-//				const Vector &v);  //   432
-//		Length2D(const Vector *const this);  //   432
-//		{
-//			node_index_t nindexCurrent;                   //   434
-//			AddNode(CLocalNav *const this,
-//				node_index_t nindexParent,
-//				Vector &vecLoc,
-//				int offsetX,
-//				int offsetY,
-//				byte bDepth);  //   438
-//			operator*(const Vector *const this,
-//					float fl);  //   436
-//			operator+(const Vector *const this,
-//					const Vector &v);  //   436
-//		}
-//	}
-
 	Vector vecActualDest;
 	Vector vecPathDir;
 	Vector vecNodeLoc;
 	node_index_t nindexLast;
 
-	vecPathDir = (vecDest - vecStart).Normalize();
+	vecPathDir = NormalizeSubtract<float_precision, float, float, float_precision>(vecStart, vecDest);
 	vecActualDest = vecDest - (vecPathDir * flTargetRadius);
 
-	if (!PathTraversable(vecStart, vecActualDest, fNoMonsters)) // TODO: Reverse me!
+	if (PathTraversable(vecStart, vecActualDest, fNoMonsters) == PATH_TRAVERSABLE_EMPTY)
+	{
 		return -1;
+	}
 
-	m_nindexAvailableNode = 0;
 	nindexLast = -1;
 	vecNodeLoc = vecStart;
+	m_nindexAvailableNode = 0;
 
 	while ((vecNodeLoc - vecActualDest).Length2D() >= HOSTAGE_STEPSIZE)
 	{
+		node_index_t nindexCurrent = nindexLast;
+
 		vecNodeLoc = vecNodeLoc + (vecPathDir * HOSTAGE_STEPSIZE);
-		nindexLast = AddNode(nindexLast, vecNodeLoc, 0, 0, 0); // TODO: Reverse me!
+		nindexLast = AddNode(nindexCurrent, vecNodeLoc);
 
 		if (nindexLast == -1)
 			break;
 	}
 
 	return nindexLast;
-
-
-
 }
 
 /* <485e40> ../cstrike/dlls/hostage/hostage_localnav.cpp:449 */
@@ -347,7 +416,7 @@ BOOL CLocalNav::PathClear(Vector &vecOrigin, Vector &vecDest, int fNoMonsters, T
 	if (tr.fStartSolid)
 		return FALSE;
 
-	if (tr.flFraction == 1.0)
+	if (tr.flFraction == 1.0f)
 		return TRUE;
 
 	if (tr.pHit == m_pTargetEnt)
@@ -365,13 +434,13 @@ int CLocalNav::PathTraversable(Vector &vecSource, Vector &vecDest, int fNoMonste
 	Vector vecSrcTmp;
 	Vector vecDestTmp;
 	Vector vecDir;
-	double flTotal;
+	float_precision flTotal;
 	int retval = PATH_TRAVERSABLE_EMPTY;
 
 	vecSrcTmp = vecSource;
 	vecDestTmp = vecDest - vecSource;
 
-	vecDir = vecDestTmp.Normalize();
+	vecDir = vecDestTmp.NormalizePrecision();
 	vecDir.z = 0;
 
 	flTotal = vecDestTmp.Length2D();
@@ -380,13 +449,14 @@ int CLocalNav::PathTraversable(Vector &vecSource, Vector &vecDest, int fNoMonste
 	{
 		if (flTotal >= s_flStepSize)
 		{
-#ifdef HOOK_GAMEDLL
-			vecDestTmp.x = vecSrcTmp.x + (vecDir.x * s_flStepSize);
-			vecDestTmp.y = vecSrcTmp.y + (float)(vecDir.y * s_flStepSize);
-			vecDestTmp.z = vecSrcTmp.z + (vecDir.z * s_flStepSize);
-#else
+#ifndef HOOK_GAMEDLL
 			vecDestTmp = vecSrcTmp + (vecDir * s_flStepSize);
+#else
+			vecDestTmp[0] = vecSrcTmp[0] + (vecDir[0] * s_flStepSize);
+			vecDestTmp[1] = vecSrcTmp[1] + (float)(vecDir[1] * s_flStepSize);
+			vecDestTmp[2] = vecSrcTmp[2] + (vecDir[2] * s_flStepSize);
 #endif // HOOK_GAMEDLL
+
 		}
 		else
 			vecDestTmp = vecDest;
@@ -398,17 +468,23 @@ int CLocalNav::PathTraversable(Vector &vecSource, Vector &vecDest, int fNoMonste
 			vecDestTmp = tr.vecEndPos;
 
 			if (retval == PATH_TRAVERSABLE_EMPTY)
+			{
 				retval = PATH_TRAVERSABLE_SLOPE;
+			}
 		}
 		else
 		{
 			if (tr.fStartSolid)
+			{
 				return PATH_TRAVERSABLE_EMPTY;
+			}
 
 			if (tr.pHit && !fNoMonsters && tr.pHit->v.classname)
 			{
 				if (FClassnameIs(tr.pHit, "hostage_entity"))
+				{
 					return PATH_TRAVERSABLE_EMPTY;
+				}
 			}
 
 			vecSrcTmp = tr.vecEndPos;
@@ -418,31 +494,43 @@ int CLocalNav::PathTraversable(Vector &vecSource, Vector &vecDest, int fNoMonste
 				if (StepTraversable(vecSrcTmp, vecDestTmp, fNoMonsters, tr))
 				{
 					if (retval == PATH_TRAVERSABLE_EMPTY)
+					{
 						retval = PATH_TRAVERSABLE_STEP;
+					}
 				}
 				else
 				{
 					if (!StepJumpable(vecSrcTmp, vecDestTmp, fNoMonsters, tr))
+					{
 						return PATH_TRAVERSABLE_EMPTY;
+					}
 
 					if (retval == PATH_TRAVERSABLE_EMPTY)
+					{
 						retval = PATH_TRAVERSABLE_STEPJUMPABLE;
+					}
 				}
 			}
 			else
 			{
 				if (!SlopeTraversable(vecSrcTmp, vecDestTmp, fNoMonsters, tr))
+				{
 					return PATH_TRAVERSABLE_EMPTY;
+				}
 
 				if (retval == PATH_TRAVERSABLE_EMPTY)
+				{
 					retval = PATH_TRAVERSABLE_SLOPE;
+				}
 			}
 		}
 
 		Vector vecDropDest = vecDestTmp - Vector(0, 0, 300);
 
 		if (PathClear(vecDestTmp, vecDropDest, fNoMonsters, tr))
+		{
 			return PATH_TRAVERSABLE_EMPTY;
+		}
 
 		if (!tr.fStartSolid)
 			vecDestTmp = tr.vecEndPos;
@@ -474,7 +562,7 @@ BOOL CLocalNav::SlopeTraversable(Vector &vecSource, Vector &vecDest, int fNoMons
 	vecDown = vecDest - vecSource;
 
 	vecAngles = UTIL_VecToAngles(tr.vecPlaneNormal);
-	vecSlopeEnd.z = vecDown.Length2D() * tan((double)((90.0 - vecAngles.x) * (M_PI / 180))) + vecSource.z;
+	vecSlopeEnd.z = vecDown.Length2D() * tan((float_precision)((90.0 - vecAngles.x) * (M_PI / 180))) + vecSource.z;
 
 	if (!PathClear(vecSource, vecSlopeEnd, fNoMonsters, tr))
 	{
@@ -700,36 +788,26 @@ NOBODY BOOL CLocalNav::LadderHit(Vector &vecSource, Vector &vecDest, TraceResult
 /* <487eeb> ../cstrike/dlls/hostage/hostage_localnav.cpp:851 */
 void CLocalNav::Think(void)
 {
-//	{
-//		float flElapsedTime;                                  //   853
-//		class EHANDLE hCallback;                              //   854
-//		cvar_t *sv_stepsize;                                 //   855
-//		{
-//			class CHostage *pHostage;                    //   909
-//			GetClassPtr<CHostage>(CHostage *a);  //   911
-//		}
-//	}
-
-	EHANDLE hostage;
+	EHANDLE hCallback;
 	static cvar_t *sv_stepsize = NULL;
 
-	if (flNextCvarCheck <= gpGlobals->time)
+	if (gpGlobals->time >= flNextCvarCheck)
 	{
-		if (sv_stepsize)
-		{
-			flNextCvarCheck = gpGlobals->time + 1;
+		if (sv_stepsize != NULL)
 			s_flStepSize = sv_stepsize->value;
-		}
 		else
 		{
 			sv_stepsize = CVAR_GET_POINTER("sv_stepsize");
-			flNextCvarCheck = gpGlobals->time + 1;
-			s_flStepSize = s_flStepSize ? sv_stepsize->value : 18;
+			s_flStepSize = s_flStepSize ? sv_stepsize->value : HOSTAGE_STEPSIZE_DEFAULT;
 		}
+
+		flNextCvarCheck = gpGlobals->time + 1;
 	}
 
 	HostagePrethink();
-	nodeval -= (gpGlobals->time - flLastThinkTime) * 250;
+
+	float flElapsedTime = gpGlobals->time - flLastThinkTime;
+	nodeval -= flElapsedTime * 250;
 	flLastThinkTime = gpGlobals->time;
 
 	if (nodeval < 0)
@@ -740,37 +818,34 @@ void CLocalNav::Think(void)
 
 	if (tot_inqueue)
 	{
-#ifndef REGAMEDLL_FIXES
-		hostage = NULL;
-#endif // REGAMEDLL_FIXES
-		hostage = _queue[ qptr ];
+		hCallback = _queue[ qptr ];
 
-		if (!hostage)
+		if (!hCallback)
 		{
 			while (tot_inqueue > 0)
 			{
-				if (++qptr == MAX_HOSTAGES)
+				if (++qptr == MAX_HOSTAGES_NAV)
 					qptr = 0;
 
 				tot_inqueue--;
 				if (!tot_inqueue)
 				{
-					hostage = NULL;
+					hCallback = NULL;
 					break;
 				}
 
-				hostage = _queue[ qptr ];
+				hCallback = _queue[ qptr ];
 
-				if (hostage)
+				if (hCallback)
 					break;
 			}
 		}
 
-		if (hostage)
+		if (hCallback)
 		{
-			CHostage *pHostage = GetClassPtr((CHostage *)hostage->pev);
+			CHostage *pHostage = GetClassPtr((CHostage *)hCallback->pev);
 
-			if (++qptr == MAX_HOSTAGES)
+			if (++qptr == MAX_HOSTAGES_NAV)
 				qptr = 0;
 
 			tot_inqueue--;
@@ -812,6 +887,8 @@ void CLocalNav::HostagePrethink(void)
 	for (int iCount = 0; iCount < tot_hostages; iCount++)
 	{
 		if (hostages[ iCount ] != NULL)
+		{
 			GetClassPtr((CHostage *)hostages[ iCount ]->pev)->PreThink();
+		}
 	}
 }

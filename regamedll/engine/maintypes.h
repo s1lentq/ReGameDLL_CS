@@ -52,6 +52,7 @@
 
 typedef unsigned int string_t;		// from engine's pr_comp.h;
 typedef int EOFFSET;
+typedef int BOOL;
 
 #ifndef __cplusplus
 	typedef enum { false, true }	qboolean;

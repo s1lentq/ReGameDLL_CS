@@ -5,17 +5,18 @@
 */
 #ifndef HOOK_GAMEDLL
 
-//cvar_t cv_hostage_stop = { "hostage_stop", "0", FCVAR_SERVER };
-//cvar_t cv_hostage_debug = { "hostage_debug", "0", FCVAR_SERVER };
+cvar_t cv_hostage_stop = { "hostage_stop", "0", FCVAR_SERVER, 0.0f, NULL };
+cvar_t cv_hostage_debug = { "hostage_debug", "0", FCVAR_SERVER, 0.0f, NULL };
 
 #else
 
-//cvar_t cv_hostage_debug;
-//cvar_t cv_hostage_stop;
+cvar_t cv_hostage_debug;
+cvar_t cv_hostage_stop;
 
 #endif // HOOK_GAMEDLL
 
 CHostageManager *g_pHostages;
+int g_iHostageNumber;
 
 /* <45c3fa> ../cstrike/dlls/hostage/hostage.cpp:47 */
 LINK_ENTITY_TO_CLASS(hostage_entity, CHostage);
@@ -24,7 +25,7 @@ LINK_ENTITY_TO_CLASS(hostage_entity, CHostage);
 LINK_ENTITY_TO_CLASS(monster_scientist, CHostage);
 
 /* <45c228> ../cstrike/dlls/hostage/hostage.cpp:54 */
-NOBODY void CHostage::Spawn_(void)
+NOBODY void CHostage::__MAKE_VHOOK(Spawn)(void)
 {
 //	MAKE_STRING_CLASS(const char *str,
 //				entvars_t *pev);  //    61
@@ -43,7 +44,7 @@ NOBODY void CHostage::Spawn_(void)
 }
 
 /* <45bf91> ../cstrike/dlls/hostage/hostage.cpp:137 */
-NOBODY void CHostage::Precache_(void)
+NOBODY void CHostage::__MAKE_VHOOK(Precache)(void)
 {
 //	{
 //		int which;                                            //   141
@@ -51,18 +52,39 @@ NOBODY void CHostage::Precache_(void)
 }
 
 /* <45c5ac> ../cstrike/dlls/hostage/hostage.cpp:179 */
-NOBODY void CHostage::SetActivity(int act)
+void CHostage::SetActivity(int act)
 {
-//	{
-//		int sequence;                                         //   181
-//	}
-//	SetActivity(CHostage *const this,
-//			int act);  //   179
+	if (m_Activity != act)
+	{
+		int sequence = LookupActivity(act);
+
+		if (sequence != -1)
+		{
+			if (pev->sequence != sequence)
+			{
+				if ((m_Activity != ACT_WALK && m_Activity != ACT_RUN) || (act != ACT_WALK && act != ACT_RUN))
+				{
+					pev->frame = 0;
+				}
+
+				pev->sequence = sequence;
+			}
+
+			m_Activity = act;
+			ResetSequenceInfo();
+		}
+	}
 }
 
+void (*pCHostage__IdleThink)(void);
+
 /* <45f194> ../cstrike/dlls/hostage/hostage.cpp:204 */
-NOBODY void CHostage::IdleThink(void)
+NOBODY void __declspec(naked) CHostage::IdleThink(void)
 {
+	__asm
+	{
+		jmp pCHostage__IdleThink
+	}
 //	{
 //		float const upkeepRate;                                //   220
 //		float flInterval;                                     //   224
@@ -134,22 +156,46 @@ NOBODY void CHostage::Remove(void)
 }
 
 /* <45c624> ../cstrike/dlls/hostage/hostage.cpp:426 */
-NOBODY void CHostage::RePosition(void)
+void CHostage::RePosition(void)
 {
-//	Vector(Vector::RePosition(//		float X,
-//		float Y,
-//		float Z);  //   449
-//	Vector(Vector *const this,
-//		float X,
-//		float Y,
-//		float Z);  //   449
-//	edict(CBaseEntity *const this);  //   451
-//	SetActivity(CHostage *const this,
-//			int act);  //   453
+	pev->health = pev->max_health;
+	pev->movetype = MOVETYPE_STEP;
+	pev->solid = SOLID_SLIDEBOX;
+	pev->takedamage = DAMAGE_YES;
+	pev->deadflag = DEAD_NO;
+	pev->velocity = Vector(0, 0, 0);
+	pev->angles = m_vStartAngles;
+	pev->effects &= ~EF_NODRAW;
+
+	m_hTargetEnt = NULL;
+	m_hStoppedTargetEnt = NULL;
+
+	m_bTouched = FALSE;
+	m_bRescueMe = FALSE;
+
+	m_flNextRadarTime = 0;
+	m_vOldPos = Vector(9999, 9999, 9999);
+
+	UTIL_SetOrigin(pev, m_vStart);
+	UTIL_SetSize(pev, VEC_HOSTAGE_HULL_MIN, VEC_HOSTAGE_HULL_MAX);
+
+	DROP_TO_FLOOR(edict());
+	SetActivity(ACT_IDLE);
+
+	SetThink(&CHostage::IdleThink);
+	pev->nextthink = gpGlobals->time + RANDOM_FLOAT(0.1, 0.2);
+
+	m_fHasPath = FALSE;
+	nTargetNode = -1;
+
+	m_flLastPathCheck = -1;
+	m_flPathAcquired = -1;
+	m_flPathCheckInterval = 0.1f;
+	m_flNextFullThink = gpGlobals->time + RANDOM_FLOAT(0.1, 0.2);
 }
 
 /* <45ee7f> ../cstrike/dlls/hostage/hostage.cpp:469 */
-NOBODY int CHostage::TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
+NOBODY int CHostage::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
 //	{
 //		float flActualDamage;                                 //   471
@@ -239,7 +285,7 @@ NOBODY void CHostage::ApplyHostagePenalty(CBasePlayer *pAttacker)
 }
 
 /* <45cfd6> ../cstrike/dlls/hostage/hostage.cpp:740 */
-NOBODY void CHostage::Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+NOBODY void CHostage::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 //	{
 //		class CBasePlayer *pPlayer;                          //   742
@@ -289,12 +335,12 @@ NOBODY void CHostage::GiveCTTouchBonus(CBasePlayer *pPlayer)
 }
 
 /* <45bf69> ../cstrike/dlls/hostage/hostage.cpp:869 */
-NOBODY int CHostage::ObjectCaps_(void)
+NOBODY int CHostage::__MAKE_VHOOK(ObjectCaps)(void)
 {
 }
 
 /* <45c0e3> ../cstrike/dlls/hostage/hostage.cpp:876 */
-NOBODY void CHostage::Touch_(CBaseEntity *pOther)
+NOBODY void CHostage::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 {
 //	{
 //		class Vector2D vPush;                                 //   901
@@ -394,67 +440,58 @@ NOBODY BOOL CHostage::IsOnLadder(void)
 }
 
 /* <45d727> ../cstrike/dlls/hostage/hostage.cpp:1106 */
-NOBODY void CHostage::NavReady(void)
+void CHostage::NavReady(void)
 {
-//	{
-//		class CBaseEntity *pFollowing;                       //  1108
-//		Vector vecDest;                                 //  1109
-//		float flRadius;                                       //  1110
-//		node_index_t nindexPath;                              //  1111
-//		GetClassPtr<CBaseEntity>(CBaseEntity *a);  //  1118
-//		{
-//			TraceResult tr;                               //  1123
-//			Vector vecDropDest;                     //  1124
-//			edict(CBaseEntity *const this);  //  1129
-//		}
-//		SetTargetEnt(CLocalNav *const this,
-//				class CBaseEntity *pTarget);  //  1142
-//	}
-
 	CBaseEntity *pFollowing;
 	Vector vecDest;
 	float flRadius = 40.0;
 
-	node_index_t nindexPath;
-
 	if (!m_hTargetEnt)
+	{
 		return;
+	}
 
 	pFollowing = GetClassPtr((CBaseEntity *)m_hTargetEnt->pev);
 	vecDest = pFollowing->pev->origin;
-
+	
 	if (!(pFollowing->pev->flags & FL_ONGROUND))
 	{
 		TraceResult tr;
-		Vector vecDropDest = pFollowing->pev->origin - Vector(0, 0, 300);
-
+		Vector vecDropDest = (pFollowing->pev->origin - Vector(0, 0, 300));
 		UTIL_TraceHull(vecDest, vecDropDest, ignore_monsters, human_hull, pFollowing->edict(), &tr);
 
-		if (tr.fStartSolid || tr.flFraction == 1.0)
+		if (tr.fStartSolid || tr.flFraction == 1.0f)
+		{
 			return;
+		}
 
 		vecDest = tr.vecEndPos;
 	}
 
 	vecDest.z += pFollowing->pev->mins.z;
 	m_LocalNav->SetTargetEnt(pFollowing);
-	nindexPath = m_LocalNav->FindPath(pev->origin, vecDest, flRadius, 1);// TODO: Reverse me
 
-	if (nindexPath != -1)
+	node_index_t nindexPath = m_LocalNav->FindPath(pev->origin, vecDest, flRadius, 1);
+	if (nindexPath == -1)
+	{
+		if (!m_fHasPath)
+		{
+			m_flPathCheckInterval += 0.1;
+
+			if (m_flPathCheckInterval >= 0.5f)
+			{
+				m_flPathCheckInterval = 0.5f;
+			}
+		}
+	}
+	else
 	{
 		m_fHasPath = TRUE;
 		nTargetNode = -1;
+		m_flPathAcquired = gpGlobals->time;
 		m_flPathCheckInterval = 0.5;
 
-		m_flPathAcquired = gpGlobals->time;
-		m_nPathNodes = m_LocalNav->SetupPathNodes(nindexPath, vecNodes, 1);// TODO: Reverse me
-	}
-	else if (!m_fHasPath)
-	{
-		m_flPathCheckInterval += 0.1;
-
-		if (m_flPathCheckInterval >= 0.5f)
-			m_flPathCheckInterval = 0.5;
+		m_nPathNodes = m_LocalNav->SetupPathNodes(nindexPath, vecNodes, 1);
 	}
 }
 
@@ -543,14 +580,20 @@ void CHostage::PreThink(void)
 	float flRaisedDist;
 	float flInterval;
 
-	if (m_improv)
+	if (m_improv != NULL)
+	{
 		return;
+	}
 
 	if (!(pev->flags & FL_ONGROUND))
+	{
 		return;
+	}
 
 	if (pev->velocity.Length2D() < 1)
+	{
 		return;
+	}
 
 	vecSrc = pev->origin;
 
@@ -565,8 +608,10 @@ void CHostage::PreThink(void)
 
 	TRACE_MONSTER_HULL(edict(), vecSrc, vecDest, dont_ignore_monsters, edict(), &tr);
 
-	if (tr.fStartSolid || tr.flFraction == 1.0 || tr.vecPlaneNormal.z > 0.7)
+	if (tr.fStartSolid || tr.flFraction == 1.0f || tr.vecPlaneNormal.z > 0.7f)
+	{
 		return;
+	}
 
 	flOrigDist = (tr.vecEndPos - pev->origin).Length2D();
 	vecSrc.z += flInterval;
@@ -576,7 +621,9 @@ void CHostage::PreThink(void)
 	TRACE_MONSTER_HULL(edict(), vecSrc, vecDest, dont_ignore_monsters, edict(), &tr);
 
 	if (tr.fStartSolid)
+	{
 		return;
+	}
 
 	vecSrc = tr.vecEndPos;
 	vecDest = tr.vecEndPos;
@@ -584,8 +631,10 @@ void CHostage::PreThink(void)
 
 	TRACE_MONSTER_HULL(edict(), vecSrc, vecDest, dont_ignore_monsters, edict(), &tr);
 
-	if (tr.vecPlaneNormal.z < 0.7)
+	if (tr.vecPlaneNormal.z < 0.7f)
+	{
 		return;
+	}
 
 	flRaisedDist = (tr.vecEndPos - pev->origin).Length2D();
 
@@ -600,8 +649,10 @@ void CHostage::PreThink(void)
 }
 
 /* <45e24e> ../cstrike/dlls/hostage/hostage.cpp:1421 */
-NOBODY void Hostage_RegisterCVars(void)
+void Hostage_RegisterCVars(void)
 {
+	CVAR_REGISTER(&cv_hostage_debug);
+	CVAR_REGISTER(&cv_hostage_stop);
 }
 
 /* <45e2a6> ../cstrike/dlls/hostage/hostage.cpp:1430 */
@@ -615,32 +666,196 @@ NOBODY void InstallHostageManager(void)
 /* <45e375> ../cstrike/dlls/hostage/hostage.cpp:1443 */
 NOBODY CHostageManager::CHostageManager(void)
 {
-	memset(&m_chatter, 0, sizeof(m_chatter));
+	Q_memset(&m_chatter, 0, sizeof(m_chatter));
 	m_hostageCount = 0;
 
 //	SimpleChatter(SimpleChatter *const this);  //  1443
 }
 
 /* <45e39b> ../cstrike/dlls/hostage/hostage.cpp:1456 */
-NOBODY void CHostageManager::ServerActivate(void)
+void CHostageManager::ServerActivate(void)
 {
+	m_hostageCount = 0;
 
+	CBaseEntity *pEntity = NULL;
+	while ((pEntity = UTIL_FindEntityByClassname(pEntity, "hostage_entity")) != NULL)
+	{
+		AddHostage((CHostage *)pEntity);
+	}
+
+	if (UTIL_IsGame("czero"))
+	{
+		m_chatter.AddSound(HOSTAGE_CHATTER_START_FOLLOW, "hostage/huse/getouttahere.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_START_FOLLOW, "hostage/huse/illfollow.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_START_FOLLOW, "hostage/huse/letsdoit.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_START_FOLLOW, "hostage/huse/letsgo.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_START_FOLLOW, "hostage/huse/letshurry.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_START_FOLLOW, "hostage/huse/letsmove.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_START_FOLLOW, "hostage/huse/okletsgo.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_START_FOLLOW, "hostage/huse/youlead.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_STOP_FOLLOW, "hostage/hunuse/comeback.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_STOP_FOLLOW, "hostage/hunuse/dontleaveme.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_STOP_FOLLOW, "hostage/hunuse/illstayhere.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_STOP_FOLLOW, "hostage/hunuse/notleaveme.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_STOP_FOLLOW, "hostage/hunuse/yeahillstay.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_INTIMIDATED, "hostage/hseenbyt/donthurtme1.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_INTIMIDATED, "hostage/hseenbyt/donthurtme2.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_INTIMIDATED, "hostage/hseenbyt/dontkill.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_INTIMIDATED, "hostage/hseenbyt/endpeace.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_INTIMIDATED, "hostage/hseenbyt/nevernegotiate.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_INTIMIDATED, "hostage/hseenbyt/nottellanything.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_INTIMIDATED, "hostage/hseenbyt/surrender.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_INTIMIDATED, "hostage/hseenbyt/whatdoyou.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_INTIMIDATED, "hostage/hseenbyt/whyareyou.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_RETREAT, "hostage/hseenbyt/donthurtme1.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_RETREAT, "hostage/hseenbyt/donthurtme2.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_RETREAT, "hostage/hseenbyt/dontkill.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_RETREAT, "hostage/hseenbyt/dontkill.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_RETREAT, "hostage/hretreat/illgoback1.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_RETREAT, "hostage/hretreat/illgoback2.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_RETREAT, "hostage/hretreat/okokgoing.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_RETREAT, "hostage/hretreat/okokgoing2.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_RETREAT, "hostage/hretreat/sorry1.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_RETREAT, "hostage/hretreat/sorry2.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_RETREAT, "hostage/hretreat/sorry3.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_PAIN, "hostage/hpain/hpain1.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_PAIN, "hostage/hpain/hpain2.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_PAIN, "hostage/hpain/hpain3.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_PAIN, "hostage/hpain/hpain4.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_PAIN, "hostage/hpain/hpain5.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_PAIN, "hostage/hpain/hpain6.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_SCARED_OF_GUNFIRE, "hostage/hreactions/awwcrap1.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_SCARED_OF_GUNFIRE, "hostage/hreactions/awwcrap2.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_SCARED_OF_GUNFIRE, "hostage/hreactions/getdown1.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_SCARED_OF_GUNFIRE, "hostage/hreactions/getdown2.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_SCARED_OF_GUNFIRE, "hostage/hreactions/getdown3.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_SCARED_OF_GUNFIRE, "hostage/hreactions/lookout1.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_SCARED_OF_GUNFIRE, "hostage/hreactions/lookout2.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_SCARED_OF_GUNFIRE, "hostage/hreactions/lookshooting1.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_SCARED_OF_GUNFIRE, "hostage/hreactions/lookshooting2.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_SCARED_OF_GUNFIRE, "hostage/hreactions/lookshooting3.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_SCARED_OF_GUNFIRE, "hostage/hreactions/ohgod1.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_SCARED_OF_GUNFIRE, "hostage/hreactions/ohgod2.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_SCARED_OF_MURDER, "hostage/hreactions/awwcrap1.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_SCARED_OF_MURDER, "hostage/hreactions/awwcrap2.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_SCARED_OF_MURDER, "hostage/hreactions/deargod1.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_SCARED_OF_MURDER, "hostage/hreactions/deargod2.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_SCARED_OF_MURDER, "hostage/hreactions/deargod3.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_SCARED_OF_MURDER, "hostage/hreactions/ohgod1.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_SCARED_OF_MURDER, "hostage/hreactions/ohgod2.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_SCARED_OF_MURDER, "hostage/hreactions/ohno1.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_SCARED_OF_MURDER, "hostage/hreactions/ohno2.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_SCARED_OF_MURDER, "hostage/hreactions/awww2.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_SCARED_OF_MURDER, "hostage/hreactions/awww4.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_LOOK_OUT, "hostage/hreactions/awwcrap1.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_LOOK_OUT, "hostage/hreactions/awwcrap2.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_LOOK_OUT, "hostage/hreactions/lookout1.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_LOOK_OUT, "hostage/hreactions/lookout2.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_PLEASE_RESCUE_ME, "hostage/hseenbyct/areyousave.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_PLEASE_RESCUE_ME, "hostage/hseenbyct/getmeoutta1.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_PLEASE_RESCUE_ME, "hostage/hseenbyct/getmeoutta2.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_PLEASE_RESCUE_ME, "hostage/hseenbyct/imahostage.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_PLEASE_RESCUE_ME, "hostage/hseenbyct/rescueme1.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_PLEASE_RESCUE_ME, "hostage/hseenbyct/rescueme2.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_PLEASE_RESCUE_ME, "hostage/hseenbyct/theyregonna.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_IMPATIENT_FOR_RESCUE, "hostage/hseenbyct/areyousave.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_IMPATIENT_FOR_RESCUE, "hostage/hseenbyct/getmeoutta1.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_IMPATIENT_FOR_RESCUE, "hostage/hseenbyct/getmeoutta2.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_IMPATIENT_FOR_RESCUE, "hostage/hseenbyct/rescueme1.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_IMPATIENT_FOR_RESCUE, "hostage/hseenbyct/rescueme2.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_SEE_RESCUE_ZONE, "hostage/hseezone/almostouttahere.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_SEE_RESCUE_ZONE, "hostage/hseezone/almostthere.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_SEE_RESCUE_ZONE, "hostage/hseezone/keepgoing.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_SEE_RESCUE_ZONE, "hostage/hseezone/notfar.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_CTS_WIN, "hostage/hctwin/alldead.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_CTS_WIN, "hostage/hctwin/goodnews.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_CTS_WIN, "hostage/hctwin/outtahere.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_CTS_WIN, "hostage/hctwin/over1.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_CTS_WIN, "hostage/hctwin/over2.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_CTS_WIN, "hostage/hctwin/over3.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_CTS_WIN, "hostage/hctwin/over4.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_CTS_WIN, "hostage/hctwin/over5.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_CTS_WIN, "hostage/hctwin/relief.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_TERRORISTS_WIN, "hostage/htwin/doomed.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_TERRORISTS_WIN, "hostage/htwin/godno.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_TERRORISTS_WIN, "hostage/htwin/nowwhat.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_TERRORISTS_WIN, "hostage/htwin/ohman.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_TERRORISTS_WIN, "hostage/htwin/ohno.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_RESCUED, "hostage/hrescued/finally.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_RESCUED, "hostage/hrescued/finallysafe.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_RESCUED, "hostage/hrescued/thankyou.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_RESCUED, "hostage/hrescued/wemadeit1.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_RESCUED, "hostage/hrescued/wemadeit2.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_RESCUED, "hostage/hrescued/wemadeit3.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_WARN_NEARBY, "hostage/hwarn/becareful1.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_WARN_NEARBY, "hostage/hwarn/becareful2.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_WARN_NEARBY, "hostage/hwarn/stillaround1.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_WARN_NEARBY, "hostage/hwarn/stillaround2.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_WARN_SPOTTED, "hostage/hwarn/lookout1.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_WARN_SPOTTED, "hostage/hwarn/lookout2.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_WARN_SPOTTED, "hostage/hwarn/overthere1.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_WARN_SPOTTED, "hostage/hwarn/overthere2.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_CALL_TO_RESCUER, "hostage/hwavect/helpme1.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_CALL_TO_RESCUER, "hostage/hwavect/helpme2.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_CALL_TO_RESCUER, "hostage/hwavect/hey1.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_CALL_TO_RESCUER, "hostage/hwavect/hey2.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_CALL_TO_RESCUER, "hostage/hwavect/overhere1.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_COUGH, "hostage/hsmoke/cough1.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_COUGH, "hostage/hsmoke/cough2.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_COUGH, "hostage/hsmoke/cough3.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_COUGH, "hostage/hsmoke/cough4.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_COUGH, "hostage/hsmoke/cough5.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_COUGH, "hostage/hsmoke/cough6.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_BLINDED, "hostage/hflash/cantsee.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_BLINDED, "hostage/hflash/myeyes.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_SAW_HE_GRENADE, "hostage/hgrenade/grenade1.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_SAW_HE_GRENADE, "hostage/hgrenade/grenade2.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_SAW_HE_GRENADE, "hostage/hgrenade/run.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_SAW_HE_GRENADE, "hostage/hgrenade/watchout.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_DEATH_CRY, "hostage/hdie/hdeath1.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_DEATH_CRY, "hostage/hdie/hdeath2.wav");
+		m_chatter.AddSound(HOSTAGE_CHATTER_DEATH_CRY, "hostage/hdie/hdeath3.wav");
+	}
+}
+
+/* <45e3a2> ../cstrike/dlls/hostage/hostage.cpp:1624 */
+void CHostageManager::ServerDeactivate(void)
+{
+	;
 }
 
 /* <45e3f7> ../cstrike/dlls/hostage/hostage.cpp:1631 */
-NOBODY void CHostageManager::RestartRound(void)
+void CHostageManager::RestartRound(void)
 {
-//	{
-//		int i;                                                //  1634
-//	}
+	for (int i = 0; i < m_hostageCount; i++)
+	{
+		if (m_hostage[ i ]->m_improv != NULL)
+		{
+			m_hostage[ i ]->m_improv->OnReset();
+		}
+	}
 }
 
 /* <45e43d> ../cstrike/dlls/hostage/hostage.cpp:1640 */
-NOBODY void CHostageManager::AddHostage(CHostage *hostage)
+void CHostageManager::AddHostage(CHostage *hostage)
 {
-//	{
-//		int i;                                                //  1646
-//	}
+	if (m_hostageCount >= MAX_HOSTAGES)
+		return;
+
+	int i;
+	for (i = 0; i < m_hostageCount; i++)
+	{
+		if (m_hostage[i] == hostage)
+		{
+			break;
+		}
+	}
+
+	if (i == m_hostageCount)
+	{
+		m_hostage[m_hostageCount] = hostage;
+		m_hostageCount++;
+	}
 }
 
 /* <45e47f> ../cstrike/dlls/hostage/hostage.cpp:1657 */
@@ -683,38 +898,56 @@ void CHostageManager::OnEvent(GameEventType event, CBaseEntity *entity, CBaseEnt
 	{
 		CHostageImprov *improv = m_hostage[ i ]->m_improv;
 
-		if (improv)
+		if (improv != NULL)
+		{
 			improv->OnGameEvent(event, entity, other);
+		}
 	}
 }
 
 /* <45e6b8> ../cstrike/dlls/hostage/hostage.cpp:1726 */
-NOBODY SimpleChatter::SimpleChatter(void)
+SimpleChatter::SimpleChatter(void)
 {
-//	{
-//		int i;                                                //  1728
-//	}
+	for (int i = 0; i < ARRAYSIZE(m_chatter); i++)
+	{
+		m_chatter[i].count = 0;
+		m_chatter[i].index = 0;
+		m_chatter[i].needsShuffle = false;
+	}
 }
 
 /* <45e6f0> ../cstrike/dlls/hostage/hostage.cpp:1737 */
-NOBODY SimpleChatter::~SimpleChatter(void)
+SimpleChatter::~SimpleChatter(void)
 {
-//	{
-//		int i;                                                //  1739
-//		{
-//			int f;                                        //  1741
-//		}
-//	}
+	for (int i = 0; i < ARRAYSIZE(m_chatter); i++)
+	{
+		for (int f = 0; f < m_chatter[i].count; f++)
+		{
+			if (m_chatter[i].file[f].filename)
+			{
+				delete[] m_chatter[i].file[f].filename;
+			}
+		}
+	}
 }
 
 /* <45e736> ../cstrike/dlls/hostage/hostage.cpp:1752 */
-NOBODY void SimpleChatter::AddSound(HostageChatterType type, char *filename)
+void SimpleChatter::AddSound(HostageChatterType type, char *filename)
 {
-//	{
-//		class ChatterSet *chatter;                           //  1754
-//		char actualFilename;                                  //  1758
-//		CloneString(const char *str);  //  1756
-//	}
+	ChatterSet *chatter;
+	char actualFilename[128];
+
+	chatter = &m_chatter[ type ];
+
+	Q_snprintf(actualFilename, sizeof(actualFilename), "sound\\%s", filename);
+
+	chatter->file[ chatter->count ].filename = CloneString(filename);
+	chatter->file[ chatter->count ].duration = (double)GET_APPROX_WAVE_PLAY_LEN(actualFilename) / 1000.0;
+
+	chatter->needsShuffle = true;
+	chatter->count++;
+
+	PRECACHE_SOUND(filename);
 }
 
 /* <45e8c7> ../cstrike/dlls/hostage/hostage.cpp:1773 */

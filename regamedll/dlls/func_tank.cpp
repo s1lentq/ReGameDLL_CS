@@ -48,14 +48,14 @@ TYPEDESCRIPTION CFuncTankControls::m_SaveData[] =
 
 #else
 
-TYPEDESCRIPTION (*CFuncTank::m_SaveData)[26];
-TYPEDESCRIPTION (*CFuncTankLaser::m_SaveData)[2];
-TYPEDESCRIPTION (*CFuncTankControls::m_SaveData)[1];
+TYPEDESCRIPTION (*CFuncTank::pm_SaveData)[26];
+TYPEDESCRIPTION (*CFuncTankLaser::pm_SaveData)[2];
+TYPEDESCRIPTION (*CFuncTankControls::pm_SaveData)[1];
 
 #endif // HOOK_GAMEDLL
 
 /* <8ea25> ../cstrike/dlls/func_tank.cpp:177 */
-NOBODY void CFuncTank::Spawn_(void)
+NOBODY void CFuncTank::__MAKE_VHOOK(Spawn)(void)
 {
 //	IsActive(CFuncTank *const this);  //   188
 //	BarrelPosition(CFuncTank *const this);  //   191
@@ -65,13 +65,13 @@ NOBODY void CFuncTank::Spawn_(void)
 IMPLEMENT_SAVERESTORE(CFuncTank, CBaseEntity);
 
 /* <8d64d> ../cstrike/dlls/func_tank.cpp:202 */
-NOBODY void CFuncTank::Precache_(void)
+NOBODY void CFuncTank::__MAKE_VHOOK(Precache)(void)
 {
 //	Precache(CFuncTank *const this);  //   202
 }
 
 /* <8e19e> ../cstrike/dlls/func_tank.cpp:214 */
-NOBODY void CFuncTank::KeyValue_(KeyValueData *pkvd)
+NOBODY void CFuncTank::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 //	FStrEq(const char *sz1,
 //		const char *sz2);  //   226
@@ -131,7 +131,7 @@ NOBODY void CFuncTank::KeyValue_(KeyValueData *pkvd)
 }
 
 /* <8dca8> ../cstrike/dlls/func_tank.cpp:329 */
-NOBODY BOOL CFuncTank::OnControls_(entvars_t *pevTest)
+NOBODY BOOL CFuncTank::__MAKE_VHOOK(OnControls)(entvars_t *pevTest)
 {
 //	{
 //		Vector offset;                                  //   334
@@ -165,7 +165,7 @@ NOBODY void CFuncTank::ControllerPostFrame(void)
 }
 
 /* <8ee12> ../cstrike/dlls/func_tank.cpp:424 */
-NOBODY void CFuncTank::Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+NOBODY void CFuncTank::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 //	IsActive(CFuncTank *const this);  //   448
 //	IsActive(CFuncTank *const this);  //   451
@@ -186,7 +186,7 @@ NOBODY BOOL CFuncTank::InRange(float range)
 }
 
 /* <8f717> ../cstrike/dlls/func_tank.cpp:477 */
-NOBODY void CFuncTank::Think_(void)
+NOBODY void CFuncTank::__MAKE_VHOOK(Think)(void)
 {
 //	fabs(double __x);  //   482
 //	fabs(double __x);  //   482
@@ -268,7 +268,7 @@ NOBODY void CFuncTank::AdjustAnglesForBarrel(Vector &angles, float distance)
 }
 
 /* <8d4ad> ../cstrike/dlls/func_tank.cpp:656 */
-NOBODY void CFuncTank::Fire_(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker)
+NOBODY void CFuncTank::__MAKE_VHOOK(Fire)(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker)
 {
 //	{
 //		class CSprite *pSprite;                              //   662
@@ -347,7 +347,7 @@ NOBODY void CFuncTank::StopRotSound(void)
 LINK_ENTITY_TO_CLASS(func_tank, CFuncTankGun);
 
 /* <8c3d5> ../cstrike/dlls/func_tank.cpp:726 */
-NOBODY void CFuncTankGun::Fire_(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker)
+NOBODY void CFuncTankGun::__MAKE_VHOOK(Fire)(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker)
 {
 //	{
 //		int i;                                                //   728
@@ -368,14 +368,14 @@ LINK_ENTITY_TO_CLASS(func_tanklaser, CFuncTankLaser);
 IMPLEMENT_SAVERESTORE(CFuncTankLaser, CFuncTank);
 
 /* <8deed> ../cstrike/dlls/func_tank.cpp:795 */
-NOBODY void CFuncTankLaser::Activate_(void)
+NOBODY void CFuncTankLaser::__MAKE_VHOOK(Activate)(void)
 {
 //	GetLaser(CFuncTankLaser *const this);  //   797
 //	Activate(CFuncTankLaser *const this);  //   795
 }
 
 /* <8e8ca> ../cstrike/dlls/func_tank.cpp:809 */
-NOBODY void CFuncTankLaser::KeyValue_(KeyValueData *pkvd)
+NOBODY void CFuncTankLaser::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 //	FStrEq(const char *sz1,
 //		const char *sz2);  //   811
@@ -402,12 +402,12 @@ NOBODY CLaser *CFuncTankLaser::GetLaser(void)
 }
 
 /* <8f809> ../cstrike/dlls/func_tank.cpp:845 */
-NOBODY void CFuncTankLaser::Think_(void)
+NOBODY void CFuncTankLaser::__MAKE_VHOOK(Think)(void)
 {
 }
 
 /* <8df51> ../cstrike/dlls/func_tank.cpp:854 */
-NOBODY void CFuncTankLaser::Fire_(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker)
+NOBODY void CFuncTankLaser::__MAKE_VHOOK(Fire)(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker)
 {
 //	{
 //		int i;                                                //   856
@@ -427,13 +427,13 @@ NOBODY void CFuncTankLaser::Fire_(const Vector &barrelEnd, const Vector &forward
 LINK_ENTITY_TO_CLASS(func_tankrocket, CFuncTankRocket);
 
 /* <8e736> ../cstrike/dlls/func_tank.cpp:895 */
-NOBODY void CFuncTankRocket::Precache_(void)
+NOBODY void CFuncTankRocket::__MAKE_VHOOK(Precache)(void)
 {
 //	Precache(CFuncTank *const this);  //   898
 }
 
 /* <8d7b6> ../cstrike/dlls/func_tank.cpp:903 */
-NOBODY void CFuncTankRocket::Fire_(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker)
+NOBODY void CFuncTankRocket::__MAKE_VHOOK(Fire)(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker)
 {
 //	{
 //		int i;                                                //   905
@@ -454,7 +454,7 @@ NOBODY void CFuncTankRocket::Fire_(const Vector &barrelEnd, const Vector &forwar
 LINK_ENTITY_TO_CLASS(func_tankmortar, CFuncTankMortar);
 
 /* <8e790> ../cstrike/dlls/func_tank.cpp:933 */
-NOBODY void CFuncTankMortar::KeyValue_(KeyValueData *pkvd)
+NOBODY void CFuncTankMortar::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 //	FStrEq(const char *sz1,
 //		const char *sz2);  //   935
@@ -465,7 +465,7 @@ NOBODY void CFuncTankMortar::KeyValue_(KeyValueData *pkvd)
 }
 
 /* <8dbfa> ../cstrike/dlls/func_tank.cpp:945 */
-NOBODY void CFuncTankMortar::Fire_(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker)
+NOBODY void CFuncTankMortar::__MAKE_VHOOK(Fire)(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker)
 {
 //	{
 //		int bulletCount;                                      //   949
@@ -485,19 +485,13 @@ LINK_ENTITY_TO_CLASS(func_tankcontrols, CFuncTankControls);
 /* <8d71d> ../cstrike/dlls/func_tank.cpp:995 */
 IMPLEMENT_SAVERESTORE(CFuncTankControls, CBaseEntity);
 
-/* <8d2ea> ../cstrike/dlls/func_tank.cpp:997 */
-NOBODY int CFuncTankControls::ObjectCaps_(void)
-{
-	return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | FCAP_IMPULSE_USE;
-}
-
 /* <8d310> ../cstrike/dlls/func_tank.cpp:1003 */
-NOBODY void CFuncTankControls::Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+NOBODY void CFuncTankControls::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 }
 
 /* <8d39a> ../cstrike/dlls/func_tank.cpp:1012 */
-NOBODY void CFuncTankControls::Think_(void)
+NOBODY void CFuncTankControls::__MAKE_VHOOK(Think)(void)
 {
 //	{
 //		edict_t *pTarget;                                    //  1014
@@ -510,7 +504,7 @@ NOBODY void CFuncTankControls::Think_(void)
 }
 
 /* <8d373> ../cstrike/dlls/func_tank.cpp:1030 */
-NOBODY void CFuncTankControls::Spawn_(void)
+NOBODY void CFuncTankControls::__MAKE_VHOOK(Spawn)(void)
 {
 }
 
@@ -561,10 +555,10 @@ void CFuncTank::Fire(const Vector &barrelEnd, const Vector &forward, entvars_t *
 	Fire_(barrelEnd, forward, pevAttacker);
 }
 
-//void CFuncTank::Fire(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker)
-//{
-//	Fire_(barrelEnd, forward, pevAttacker);
-//}
+void CFuncTankGun::Fire(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker)
+{
+	Fire_(barrelEnd, forward, pevAttacker);
+}
 
 void CFuncTankLaser::KeyValue(KeyValueData *pkvd)
 {
@@ -629,11 +623,6 @@ int CFuncTankControls::Save(CSave &save)
 int CFuncTankControls::Restore(CRestore &restore)
 {
 	return Restore_(restore);
-}
-
-int CFuncTankControls::ObjectCaps(void)
-{
-	return ObjectCaps_();
 }
 
 void CFuncTankControls::Think(void)

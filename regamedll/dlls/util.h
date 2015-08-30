@@ -35,8 +35,13 @@
 #include "activity.h"
 
 #define _LOG_TRACE\
-	static int iNum = 0;\
-	printf2(__FUNCTION__":: iNum - %d", iNum++);
+	static int iNumPassed = 0;\
+	printf2(__FUNCTION__":: iNumPassed - %d", iNumPassed++);
+
+#define _LOG_TRACE2\
+	static int iNumPassedt = 0;\
+	printf2(__FUNCTION__":: iNumPassed - %d", iNumPassedt++);\
+	_logf(__FUNCTION__":: iNumPassed - %d", iNumPassedt++);
 
 // Makes these more explicit, and easier to find
 #ifdef HOOK_GAMEDLL
@@ -50,6 +55,9 @@
 #define DLL_GLOBAL
 
 #endif // HOOK_GAMEDLL
+
+#define eoNullEntity		0	// Testing the three types of "entity" for nullity
+#define iStringNull		0	// Testing strings for nullity
 
 #define cchMapNameMost		32
 
@@ -65,6 +73,13 @@ extern globalvars_t *gpGlobals;
 
 #define STRING(offset)		((const char *)(gpGlobals->pStringBase + (unsigned int)(offset)))
 #define MAKE_STRING(str)	((uint64_t)(str) - (uint64_t)(STRING(0)))
+
+// Dot products for view cone checking
+
+#define VIEW_FIELD_FULL		-1.0		// +-180 degrees
+#define VIEW_FIELD_WIDE		-0.7		// +-135 degrees 0.1 // +-85 degrees, used for full FOV checks
+#define VIEW_FIELD_NARROW	0.7		// +-45 degrees, more narrow check used to set up ranged attacks
+#define VIEW_FIELD_ULTRA_NARROW	0.9		// +-25 degrees, more narrow check used to set up ranged attacks
 
 #define SND_SPAWNING		(1<<8)		// duplicated in protocol.h we're spawing, used in some cases for ambients
 #define SND_STOP		(1<<5)		// duplicated in protocol.h stop sound
@@ -86,7 +101,7 @@ extern globalvars_t *gpGlobals;
 #define SVC_CDTRACK		32
 #define SVC_WEAPONANIM		35
 #define SVC_ROOMTYPE		37
-#define	SVC_DIRECTOR		51
+#define SVC_DIRECTOR		51
 
 #define VEC_HULL_MIN_Z		Vector(0, 0, -36)
 #define VEC_DUCK_HULL_MIN_Z	Vector(0, 0, -18)
@@ -94,39 +109,53 @@ extern globalvars_t *gpGlobals;
 #define VEC_HULL_MIN		Vector(-16, -16, -36)
 #define VEC_HULL_MAX		Vector(16, 16, 36)
 
+#define VEC_VIEW		Vector(0, 0, 17)
+
 #define VEC_DUCK_HULL_MIN	Vector(-16, -16, -18)
 #define VEC_DUCK_HULL_MAX	Vector(16, 16, 32)
 #define VEC_DUCK_VIEW		Vector(0, 0, 12)
 
-#ifndef HOOK_GAMEDLL
+#define PLAYBACK_EVENT(flags, who, index)\
+		PLAYBACK_EVENT_FULL(flags, who, index, 0, (float *)&g_vecZero, (float *)&g_vecZero, 0.0, 0.0, 0, 0, 0, 0)
 
-#define LINK_ENTITY_TO_CLASS(mapClassName,DLLClassName)\
-	extern "C" _DLLEXPORT void mapClassName(entvars_t *pev);\
+#define PLAYBACK_EVENT_DELAY(flags, who, index, delay)\
+		PLAYBACK_EVENT_FULL(flags, who, index, delay, (float *)&g_vecZero, (float *)&g_vecZero, 0.0, 0.0, 0, 0, 0, 0)
+
+#ifdef HOOK_GAMEDLL
+
+// prefix _
+#define __MAKE_VHOOK(fname)\
+	fname##_
+#else
+
+#define __MAKE_VHOOK(fname)\
+	fname
+
+#endif // HOOK_GAMEDLL
+
+#define LINK_ENTITY_TO_CLASS(mapClassName, DLLClassName)\
+	C_DLLEXPORT void mapClassName(entvars_t *pev);\
 	void mapClassName(entvars_t *pev)\
 	{\
 		GetClassPtr((DLLClassName *)pev);\
 	}
-#else // HOOK_GAMEDLL
-
-// NOTE: There is no need to link the objects with HOOK_GAMEDLL
-#define LINK_ENTITY_TO_CLASS(mapClassName, DLLClassName)
-
-#endif // HOOK_GAMEDLL
 
 typedef enum
 {
 	ignore_monsters = 1,
 	dont_ignore_monsters = 0,
 	missile = 2
+
 } IGNORE_MONSTERS;
 
 typedef enum
 {
 	ignore_glass = 1,
 	dont_ignore_glass = 0
+
 } IGNORE_GLASS;
 
-typedef enum
+enum
 {
 	point_hull = 0,
 	human_hull = 1,
@@ -145,6 +174,7 @@ typedef enum
 	MONSTERSTATE_SCRIPT,
 	MONSTERSTATE_PLAYDEAD,
 	MONSTERSTATE_DEAD
+
 } MONSTERSTATE;
 
 typedef struct hudtextparms_s
@@ -159,6 +189,7 @@ typedef struct hudtextparms_s
 	float holdTime;
 	float fxTime;
 	int channel;
+
 } hudtextparms_t;
 /* size: 40, cachelines: 1, members: 16 */
 
@@ -170,6 +201,7 @@ public:
 private:
 	int m_oldgroupmask;
 	int m_oldgroupop;
+
 };/* size: 8, cachelines: 1, members: 2 */
 
 /* <5da42> ../cstrike/dlls/util.h:67 */
@@ -217,7 +249,7 @@ inline EOFFSET OFFSET(const entvars_t *pev)
 /* <4631> ../cstrike/dlls/util.h:180 */
 inline entvars_t *VARS(edict_t *pent)
 {
-	if(!pent)
+	if (!pent)
 		return NULL;
 
 	return &pent->v;
@@ -268,7 +300,7 @@ inline BOOL FNullEnt(const edict_t *pent)
 /* <1c1cb> ../cstrike/dlls/util.h:203 */
 inline BOOL FStringNull(int iString)
 {
-	return (iString == 0);
+	return (iString == iStringNull);
 }
 
 /* <42e8> ../cstrike/dlls/util.h:246 */
@@ -329,13 +361,8 @@ extern int g_groupmask;
 extern int g_groupop;
 extern const int gSizes[18];
 
-//extern "C" _DLLEXPORT void func_recharge(entvars_t *pev);
-//extern "C" _DLLEXPORT void cycler_prdroid(entvars_t *pev);
-//extern "C" _DLLEXPORT void cycler(entvars_t *pev);
-//extern "C" _DLLEXPORT void cycler_sprite(entvars_t *pev);
-//extern "C" _DLLEXPORT void cycler_weapon(entvars_t *pev);
-//extern "C" _DLLEXPORT void cycler_wreckage(entvars_t *pev);
-
+unsigned int U_Random(void);
+void U_Srand(unsigned int seed);
 int UTIL_SharedRandomLong(unsigned int seed, int low, int high);
 float UTIL_SharedRandomFloat(unsigned int seed, float low, float high);
 NOXREF void UTIL_ParametricRocket(entvars_t *pev, Vector vecOrigin, Vector vecAngles, edict_t *owner);
@@ -369,7 +396,7 @@ void UTIL_ScreenFadeAll(const Vector &color, float fadeTime, float fadeHold, int
 void UTIL_ScreenFade(CBaseEntity *pEntity, const Vector &color, float fadeTime, float fadeHold = 0.0f, int alpha = 0, int flags = 0);
 void UTIL_HudMessage(CBaseEntity *pEntity, const hudtextparms_t &textparms, const char *pMessage);
 void UTIL_HudMessageAll(const hudtextparms_t &textparms, const char *pMessage);
-void UTIL_ClientPrintAll(int msg_dest, const char *msg_name, const char *param1, const char *param2, const char *param3, const char *param4);
+void UTIL_ClientPrintAll(int msg_dest, const char *msg_name, const char *param1 = NULL, const char *param2 = NULL, const char *param3 = NULL, const char *param4 = NULL);
 void ClientPrint(entvars_t *client, int msg_dest, const char *msg_name, const char *param1 = NULL, const char *param2 = NULL, const char *param3 = NULL, const char *param4 = NULL);
 NOXREF void UTIL_SayText(const char *pText, CBaseEntity *pEntity);
 void UTIL_SayTextAll(const char *pText, CBaseEntity *pEntity);
@@ -377,9 +404,9 @@ char *UTIL_dtos1(int d);
 char *UTIL_dtos2(int d);
 NOXREF char *UTIL_dtos3(int d);
 NOXREF char *UTIL_dtos4(int d);
-void UTIL_ShowMessageArgs(const char *pString, CBaseEntity *pPlayer, CUtlVector<char*> *args, bool isHint);
-void UTIL_ShowMessage(const char *pString, CBaseEntity *pEntity, bool isHint);
-void UTIL_ShowMessageAll(const char *pString, bool isHint);
+void UTIL_ShowMessageArgs(const char *pString, CBaseEntity *pPlayer, CUtlVector<char*> *args, bool isHint = false);
+void UTIL_ShowMessage(const char *pString, CBaseEntity *pEntity, bool isHint = false);
+void UTIL_ShowMessageAll(const char *pString, bool isHint = false);
 void UTIL_TraceLine(const Vector &vecStart, const Vector &vecEnd, IGNORE_MONSTERS igmon, edict_t *pentIgnore, TraceResult *ptr);
 void UTIL_TraceLine(const Vector &vecStart, const Vector &vecEnd, IGNORE_MONSTERS igmon, IGNORE_GLASS ignoreGlass, edict_t *pentIgnore, TraceResult *ptr);
 void UTIL_TraceHull(const Vector &vecStart, const Vector &vecEnd, IGNORE_MONSTERS igmon, int hullNumber, edict_t *pentIgnore, TraceResult *ptr);
@@ -426,8 +453,6 @@ NOXREF int GetPlayerTeam(int index);
 bool UTIL_IsGame(const char *gameName);
 float UTIL_GetPlayerGaitYaw(int playerIndex);
 
-NOBODY void RadiusFlash(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int iClassIgnore, int bitsDamageType);
-
 /*
 * Declared for function overload
 */
@@ -453,7 +478,7 @@ typedef int (CSaveRestoreBuffer::*CSAVERESTOREBUFFER_POINTER)(const char *,const
 
 #endif // HOOK_GAMEDLL
 
-#if 1
+#if 0
 
 extern void *addr_orig;
 extern char patchByte[5];

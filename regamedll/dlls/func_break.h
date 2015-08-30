@@ -33,7 +33,7 @@
 #endif
 
 // this many shards spawned when breakable objects break;
-#define	NUM_SHARDS 6
+#define NUM_SHARDS 6
 
 typedef enum
 {
@@ -136,9 +136,9 @@ public:
 		pev->impulse = magnitude;
 	}
 
-	NOBODY static void MaterialSoundPrecache(Materials precacheMaterial);
-	NOBODY static void MaterialSoundRandom(edict_t *pEdict, Materials soundMaterial, float volume);
-	NOBODY static const char **MaterialSoundList(Materials precacheMaterial, int &soundCount);
+	static void MaterialSoundPrecache(Materials precacheMaterial);
+	static void MaterialSoundRandom(edict_t *pEdict, Materials soundMaterial, float volume);
+	static const char **MaterialSoundList(Materials precacheMaterial, int &soundCount);
 
 	static const char *pSoundsWood[3];
 	static const char *pSoundsFlesh[6];
@@ -147,11 +147,7 @@ public:
 	static const char *pSoundsConcrete[3];
 	static const char *pSpawnObjects[32];
 
-#ifndef HOOK_GAMEDLL
-	static TYPEDESCRIPTION m_SaveData[5];
-#else
-	static TYPEDESCRIPTION (*m_SaveData)[5];
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[5];
 
 public:
 	Materials m_Material;
@@ -207,11 +203,7 @@ public:
 	}
 
 public:
-#ifndef HOOK_GAMEDLL
-	static TYPEDESCRIPTION m_SaveData[2];
-#else
-	static TYPEDESCRIPTION (*m_SaveData)[2];
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[2];
 
 public:
 	static char *m_soundNames[3];

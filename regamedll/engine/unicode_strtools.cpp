@@ -28,28 +28,6 @@
 
 #include "precompiled.h"
 
-int __cdecl Q_IsUnprintableW(uchar16 c)
-{
-	switch (c)
-	{
-	case 0x202A:
-	case 0x202B:
-	case 0x202C:
-	case 0x202D:
-	case 0x202E:
-	case 0x206A:
-	case 0x206B:
-	case 0x206C:
-	case 0x206D:
-	case 0x206E:
-	case 0x206F:
-		return 1;
-
-	default:
-		return 0;
-	}
-}
-
 // Purpose: determine if a uchar32 represents a valid Unicode code point
 /* <f2fc1> ../engine/unicode_strtools.cpp:23 */
 bool Q_IsValidUChar32(uchar32 uVal)
@@ -60,18 +38,56 @@ bool Q_IsValidUChar32(uchar32 uVal)
 }
 
 /* <f38f8> ../engine/unicode_strtools.cpp:50 */
-NOBODY void Q_UTF32ToUChar32(const uchar32 *pUTF32, uchar32 &uVal, bool &bErr)
+int Q_UTF32ToUChar32(const uchar32 *pUTF32, uchar32 &uVal, bool &bErr)
 {
+	if (Q_IsValidUChar32(pUTF32[0]))
+	{
+		uVal = pUTF32[0];
+		bErr = false;
+		return 1;
+	}
+	else if (pUTF32[0] - 55296 >= 0x400 || (pUTF32[1] - 56320) >= 0x400)
+	{
+		uVal = 63;
+		bErr = true;
+		return 1;
+	}
+	else
+	{
+		uVal = pUTF32[1] + ((uchar32)(pUTF32[0] - 55287) << 10);
+		if (Q_IsValidUChar32(uVal))
+		{
+			bErr = false;
+		}
+		else
+		{
+			uVal = 63;
+			bErr = true;
+		}
+		return 2;
+	}
 }
 
 /* <f2fab> ../engine/unicode_strtools.cpp:57 */
-NOBODY void Q_UChar32ToUTF32Len(uchar32 uVal)
+int Q_UChar32ToUTF32Len(uchar32 uVal)
 {
+	return (uVal > 0xFFFF) ? 2 : 1;
 }
 
 /* <f330f> ../engine/unicode_strtools.cpp:62 */
-NOBODY void Q_UChar32ToUTF32(uchar32 uVal, uchar32 *pUTF32)
+int Q_UChar32ToUTF32(uchar32 uVal, uchar32 *pUTF32)
 {
+	if (uVal <= 0xFFFF)
+	{
+		pUTF32[0] = uVal;
+		return 1;
+	}
+	else
+	{
+		pUTF32[1] = uVal & 0x3FF | 0xDC00;
+		pUTF32[0] = ((uVal - 0x10000) >> 10) | 0xD800;
+		return 2;
+	}
 }
 
 /* <f4344> ../engine/unicode_strtools.cpp:70 */
@@ -250,8 +266,9 @@ int Q_UTF8ToUTF16(const char *pUTF8, uchar16 *pUTF16, int cubDestSizeInBytes, ES
 }
 
 /* <f3822> ../engine/unicode_strtools.cpp:254 */
-NOBODY int Q_UTF8ToUTF32(const char *pUTF8, uchar32 *pUTF32, int cubDestSizeInBytes, EStringConvertErrorPolicy ePolicy)
+int Q_UTF8ToUTF32(const char *pUTF8, uchar32 *pUTF32, int cubDestSizeInBytes, EStringConvertErrorPolicy ePolicy)
 {
+	return Q_UnicodeConvertT<char, uchar32, true, Q_UTF8ToUChar32, Q_UChar32ToUTF32Len, Q_UChar32ToUTF32>(pUTF8, pUTF32, cubDestSizeInBytes, ePolicy);
 }
 
 /* <f3d09> ../engine/unicode_strtools.cpp:262 */
@@ -261,31 +278,26 @@ int Q_UTF16ToUTF8(const uchar16 *pUTF16, char *pUTF8, int cubDestSizeInBytes, ES
 }
 
 /* <f3f0d> ../engine/unicode_strtools.cpp:270 */
-NOBODY int Q_UTF16ToUTF32(const uchar16 *pUTF16, uchar32 *pUTF32, int cubDestSizeInBytes, EStringConvertErrorPolicy ePolicy)
+NOXREF int Q_UTF16ToUTF32(const uchar16 *pUTF16, uchar32 *pUTF32, int cubDestSizeInBytes, EStringConvertErrorPolicy ePolicy)
 {
-//	Q_UnicodeConvertT<short unsigned int, uchar16, true, (* Q_UTF16ToUChar32), (* {anonymous}::Q_UChar32ToUTF32Len), (* {anonymous}::Q_UChar32ToUTF32)>(const short unsigned int *pIn,
-//																int nInChars,
-//																uchar16 *pOut,
-//																int nOutBytes,
-//																enum EStringConvertErrorPolicy ePolicy);  //   272
+	return Q_UnicodeConvertT<uchar16, uchar32, true, Q_UTF16ToUChar32, Q_UChar32ToUTF32Len, Q_UChar32ToUTF32>(pUTF16, pUTF32, cubDestSizeInBytes, ePolicy);
 }
 
 /* <f38aa> ../engine/unicode_strtools.cpp:278 */
-NOBODY int Q_UTF32ToUTF8(const uchar32 *pUTF32, char *pUTF8, int cubDestSizeInBytes, EStringConvertErrorPolicy ePolicy)
+int Q_UTF32ToUTF8(const uchar32 *pUTF32, char *pUTF8, int cubDestSizeInBytes, EStringConvertErrorPolicy ePolicy)
 {
+	return Q_UnicodeConvertT<uchar32, char, true, Q_UTF32ToUChar32, Q_UChar32ToUTF8Len, Q_UChar32ToUTF8>(pUTF32, pUTF8, cubDestSizeInBytes, ePolicy);
 }
 
 /* <f404a> ../engine/unicode_strtools.cpp:286 */
-NOBODY int Q_UTF32ToUTF16(const uchar32 *pUTF32, uchar16 *pUTF16, int cubDestSizeInBytes, EStringConvertErrorPolicy ePolicy)
+NOXREF int Q_UTF32ToUTF16(const uchar32 *pUTF32, uchar16 *pUTF16, int cubDestSizeInBytes, EStringConvertErrorPolicy ePolicy)
 {
-//	Q_UnicodeConvertT<uchar16, short unsigned int, true, (* {anonymous}::Q_UTF32ToUChar32), (* Q_UChar32ToUTF16Len), (* Q_UChar32ToUTF16)>(const uchar16 *pIn,
-//																int nInChars,
-//																short unsigned int *pOut,
-//																int nOutBytes,
-//																enum EStringConvertErrorPolicy ePolicy);  //   288
+	return Q_UnicodeConvertT<uchar32, uchar16, true, Q_UTF32ToUChar32, Q_UChar32ToUTF16Len, Q_UChar32ToUTF16>(pUTF32, pUTF16, cubDestSizeInBytes, ePolicy);
 }
+
 // Decode one character from a UTF-8 encoded string. Treats 6-byte CESU-8 sequences
 // as a single character, as if they were a correctly-encoded 4-byte UTF-8 sequence.
+
 /* <f4251> ../engine/unicode_strtools.cpp:346 */
 int Q_UTF8ToUChar32(const char *pUTF8_, uchar32 &uValueOut, bool &bErrorOut)
 {
@@ -377,19 +389,25 @@ qboolean Q_UnicodeValidate(const char *pUTF8)
 }
 
 /* <f4665> ../engine/unicode_strtools.cpp:442 */
-NOBODY int Q_UnicodeLength(const char *pUTF8)
+NOXREF int Q_UnicodeLength(const char *pUTF8)
 {
-//	{
-//		int nChars;                                           //   444
-//		{
-//			bool bError;                                  //   447
-//			uchar32 uVal;                                 //   448
-//		}
-//	}
+	int nChars = 0;
+
+	while (*pUTF8)
+	{
+		bool bError;
+		uchar32 uVal;
+
+		pUTF8 += Q_UTF8ToUChar32(pUTF8, uVal, bError);
+
+		++nChars;
+	}
+
+	return nChars;
 }
 
 /* <f46d1> ../engine/unicode_strtools.cpp:459 */
-char *Q_UnicodeAdvance(char *pUTF8, int nChars)
+NOXREF char *Q_UnicodeAdvance(char *pUTF8, int nChars)
 {
 	uchar32 uVal = 0;
 	bool bError = false;
@@ -410,7 +428,7 @@ char *Q_UnicodeAdvance(char *pUTF8, int nChars)
 // characters in this set are removed from the beginning and/or end of strings
 // by Q_AggressiveStripPrecedingAndTrailingWhitespaceW()
 /* <f4737> ../engine/unicode_strtools.cpp:479 */
-NOBODY qboolean Q_IsMeanSpaceW(uchar16 wch)
+qboolean Q_IsMeanSpaceW(uchar16 wch)
 {
 	bool bIsMean = false;
 
@@ -448,11 +466,28 @@ NOBODY qboolean Q_IsMeanSpaceW(uchar16 wch)
 }
 
 /* <f37f5> ../engine/unicode_strtools.cpp:566 */
-NOBODY qboolean Q_IsDeprecatedW(uchar16 wch)
+qboolean Q_IsDeprecatedW(uchar16 wch)
 {
-//	{
-//		qboolean bIsDeprecated;                               //   568
-//	}
+	qboolean bIsDeprecated = FALSE;
+
+	switch (wch)
+	{
+	case 0x202A:
+	case 0x202B:
+	case 0x202C:
+	case 0x202D:
+	case 0x202E:
+	case 0x206A:
+	case 0x206B:
+	case 0x206C:
+	case 0x206D:
+	case 0x206E:
+	case 0x206F:
+		bIsDeprecated = TRUE;
+		break;
+	}
+
+	return bIsDeprecated;
 }
 
 // Purpose: strips trailing whitespace; returns pointer inside string just past
@@ -461,6 +496,7 @@ NOBODY qboolean Q_IsDeprecatedW(uchar16 wch)
 // bAggresive = true causes this function to also check for "mean" spaces,
 // which we don't want in persona names or chat strings as they're disruptive
 // to the user experience.
+
 /* <f47bc> ../engine/unicode_strtools.cpp:600 */
 static uchar16 *StripWhitespaceWorker(uchar16 *pwch, int cchLength, bool *pbStrippedWhitespace)
 {
@@ -497,10 +533,10 @@ uchar16 *StripUnprintableWorker(uchar16 *pwch, bool *pbStrippedAny)
 	uchar16 *pwchDest = pwch;
 	*pbStrippedAny = 0;
 
-	while(*pwchSource)
+	while (*pwchSource)
 	{
 		uchar16 cc = *pwchSource;
-		if (*pwchSource >= 0x20u && !Q_IsUnprintableW(cc) && cc != 0x2026)
+		if (*pwchSource >= 0x20u && !Q_IsDeprecatedW(cc) && cc != 0x2026)
 		{
 			*pwchDest = cc;
 			++pwchDest;
@@ -524,18 +560,23 @@ qboolean Q_StripUnprintableAndSpace(char *pch)
 	uchar16 *pwch_alloced = (uchar16*)malloc(cubDest);
 	bStrippedAny = false;
 	bStrippedWhitespace = false;
+
+	// TODO: here is used Q_UTF8ToUTF32, and not this Q_UTF8ToUTF16
 	int cwch = (unsigned int)Q_UTF8ToUTF16(pch, (uchar16 *)pwch_alloced, cubDest, _STRINGCONVERTFLAG_ASSERT) >> 1;
 	uchar16 * pwch = StripUnprintableWorker(pwch_alloced, &bStrippedAny);
 	pwch = StripWhitespaceWorker(pwch, cwch - 1, &bStrippedWhitespace);
 	if (bStrippedWhitespace || bStrippedAny)
+	{
+		// TODO:: here is used Q_UTF32ToUTF8
 		Q_UTF16ToUTF8(pwch, pch, cch, STRINGCONVERT_ASSERT_REPLACE);
+	}
 
 	free(pwch_alloced);
 	return bStrippedAny;
 }
 
 /* <f4a0d> ../engine/unicode_strtools.cpp:717 */
-qboolean V_UTF8ToUChar32(const char *pUTF8_, uchar32 *uValueOut)
+NOXREF qboolean V_UTF8ToUChar32(const char *pUTF8_, uchar32 *uValueOut)
 {
 	bool bError = false;
 	Q_UTF8ToUChar32(pUTF8_, *uValueOut, bError);
@@ -543,7 +584,7 @@ qboolean V_UTF8ToUChar32(const char *pUTF8_, uchar32 *uValueOut)
 }
 
 /* <f4a63> ../engine/unicode_strtools.cpp:724 */
-int Q_UnicodeRepair(char *pUTF8)
+NOXREF int Q_UnicodeRepair(char *pUTF8)
 {
 	return Q_UnicodeConvertT<char, char, true, Q_UTF8ToUChar32, Q_UChar32ToUTF8Len, Q_UChar32ToUTF8>(pUTF8, pUTF8, 65535, STRINGCONVERT_SKIP);
 }

@@ -175,16 +175,6 @@ typedef struct mleaf_s
 	byte ambient_sound_level[ NUM_AMBIENTS ];
 } mleaf_t;
 
-#ifdef CUSTOM_H
-
-void da(void)
-{
-	;
-}
-
-#endif// TI_LOX
-
-
 struct msurface_s
 {
 	int visframe;			// should be drawn when node is crossed
@@ -309,8 +299,8 @@ typedef struct auxvert_s
 	float fv[3];		// viewspace x, y
 } auxvert_t;
 
-#define	MAX_INFO_STRING		256
-#define	MAX_SCOREBOARDNAME	32
+#define MAX_INFO_STRING		256
+#define MAX_SCOREBOARDNAME	32
 
 typedef struct player_info_s
 {

@@ -29,7 +29,7 @@ const float smokeRadius = 115.0f;		///< for smoke grenades
 /* <49f6d7> ../game_shared/bot/bot_manager.cpp:58 */
 NOBODY GameEventType NameToGameEvent(const char *name)
 {
-	/*for(int i=0; GameEventName[i]; ++i)
+	/*for (int i=0; GameEventName[i]; ++i)
 		if (!Q_stricmp(GameEventName[i], name))
 			return static_cast<GameEventType>(i);*/
 
@@ -58,7 +58,7 @@ void CBotManager::StartFrame_(void)
 		Vector edge, lastEdge;
 
 		ActiveGrenadeList::iterator iter = m_activeGrenadeList.begin();
-		while(iter != m_activeGrenadeList.end())
+		while (iter != m_activeGrenadeList.end())
 		{
 			ActiveGrenade *ag = *iter;
 
@@ -78,7 +78,7 @@ void CBotManager::StartFrame_(void)
 
 			lastEdge = Vector(smokeRadius + pos->x, pos->y, pos->z);
 			float angle;
-			for(angle = 0.0f; angle <= 180.0f; angle += 22.5f)
+			for (angle = 0.0f; angle <= 180.0f; angle += 22.5f)
 			{
 				edge.x = smokeRadius * BotCOS(angle) + pos->x;
 				edge.y = pos->y;
@@ -90,7 +90,7 @@ void CBotManager::StartFrame_(void)
 			}
 
 			lastEdge = Vector(pos->x, smokeRadius + pos->y, pos->z);
-			for(angle = 0.0f; angle <= 180.0f; angle += 22.5f)
+			for (angle = 0.0f; angle <= 180.0f; angle += 22.5f)
 			{
 				edge.x = pos->x;
 				edge.y = smokeRadius * BotCOS(angle) + pos->y;
@@ -121,11 +121,11 @@ void CBotManager::StartFrame_(void)
 }
 
 /* <49f7a6> ../game_shared/bot/bot_manager.cpp:205 */
-NOBODY const char *CBotManager::GetNavMapFilename(void) const
+const char *CBotManager::GetNavMapFilename(void) const
 {
-	//static char filename[256];
-	//Q_sprintf(filename, "maps\\%s.nav", STRING(gpGlobals->mapname));
-	//return filename;
+	static char filename[256];
+	Q_sprintf(filename, "maps\\%s.nav", STRING(gpGlobals->mapname));
+	return filename;
 }
 
 /* <49f17b> ../game_shared/bot/bot_manager.cpp:219 */
@@ -174,7 +174,7 @@ void CBotManager::AddGrenade(int type, CGrenade *grenade)
 /* <49f95a> ../game_shared/bot/bot_manager.cpp:267 */
 void CBotManager::RemoveGrenade(CGrenade *grenade)
 {
-	for(ActiveGrenadeList::iterator iter = m_activeGrenadeList.begin(); iter != m_activeGrenadeList.end(); ++iter)
+	for (ActiveGrenadeList::iterator iter = m_activeGrenadeList.begin(); iter != m_activeGrenadeList.end(); ++iter)
 	{
 		ActiveGrenade *ag = *iter;
 
@@ -241,7 +241,7 @@ bool CBotManager::IsInsideSmokeCloud(const Vector *pos)
 }
 
 /* <49fd8b> ../game_shared/bot/bot_manager.cpp:355 */
-NOBODY bool CBotManager::IsLineBlockedBySmoke(const Vector *from, const Vector *to)
+bool CBotManager::IsLineBlockedBySmoke(const Vector *from, const Vector *to)
 {
 	const float smokeRadiusSq = smokeRadius * smokeRadius;
 
@@ -253,7 +253,7 @@ NOBODY bool CBotManager::IsLineBlockedBySmoke(const Vector *from, const Vector *
 	float sightLength = sightDir.NormalizeInPlace();
 
 	ActiveGrenadeList::iterator iter = m_activeGrenadeList.begin();
-	while(iter != m_activeGrenadeList.end())
+	while (iter != m_activeGrenadeList.end())
 	{
 		ActiveGrenade *ag = *iter;
 

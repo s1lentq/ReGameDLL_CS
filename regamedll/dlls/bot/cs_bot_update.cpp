@@ -1,16 +1,11 @@
 #include "precompiled.h"
 
 /* <3c635f> ../cstrike/dlls/bot/cs_bot_update.cpp:26 */
-void CCSBot::Upkeep_(void)
+void CCSBot::__MAKE_VHOOK(Upkeep)(void)
 {
-#ifndef HOOK_GAMEDLL
-	if (CCSBotManager::pm_isLearningMap || !IsAlive())
+	if (IMPLEMENT_ARRAY_CLASS(CCSBotManager, m_isLearningMap) || !IsAlive())
 		return;
-#else
-	if ((*CCSBotManager::pm_isLearningMap) || !IsAlive())
-		return;
-#endif // HOOK_GAMEDLL
-	
+
 	if (m_isRapidFiring)
 		TogglePrimaryAttack();
 
@@ -37,7 +32,7 @@ void CCSBot::Upkeep_(void)
 				if (IsUsingAWP() || IsUsingShotgun() || IsUsingMachinegun() || GetProfile()->GetSkill() < 0.8f
 					|| (IsActiveWeaponRecoilHigh() && !IsUsingPistol() && !IsUsingSniperRifle()))
 				{
-					if (IsEnemyPartVisible( CHEST ))
+					if (IsEnemyPartVisible(CHEST))
 					{
 						// No headshots in this game, go for the chest.
 						aimBlocked = true;
@@ -47,13 +42,13 @@ void CCSBot::Upkeep_(void)
 				if (aimBlocked)
 					m_aimSpot.z -= feetOffset * 0.25f;
 
-				else if (!IsEnemyPartVisible( HEAD ))
+				else if (!IsEnemyPartVisible(HEAD))
 				{
-					if (IsEnemyPartVisible( CHEST ))
+					if (IsEnemyPartVisible(CHEST))
 					{
 						m_aimSpot.z -= feetOffset * 0.5f;
 					}
-					else if (IsEnemyPartVisible( LEFT_SIDE ))
+					else if (IsEnemyPartVisible(LEFT_SIDE))
 					{
 						Vector2D to = (m_enemy->pev->origin - pev->origin).Make2D();
 						to.NormalizeInPlace();
@@ -62,7 +57,7 @@ void CCSBot::Upkeep_(void)
 						m_aimSpot.y += to.x * 16.0f;
 						m_aimSpot.z -= feetOffset * 0.5f;
 					}
-					else if (IsEnemyPartVisible( RIGHT_SIDE ))
+					else if (IsEnemyPartVisible(RIGHT_SIDE))
 					{
 						Vector2D to = (m_enemy->pev->origin - pev->origin).Make2D();
 						to.NormalizeInPlace();
@@ -96,7 +91,7 @@ void CCSBot::Upkeep_(void)
 		{
 			// dont look at spots just in front of our face - it causes erratic view rotation
 			const float tooCloseRange = 100.0f;
-			if ((m_lookAtSpot - pev->origin).IsLengthLessThan( tooCloseRange ))
+			if ((m_lookAtSpot - pev->origin).IsLengthLessThan(tooCloseRange))
 				m_lookAtSpotState = NOT_LOOKING_AT_SPOT;
 		}
 
@@ -339,59 +334,3 @@ void CCSBot::Update(void)
 }
 
 #endif // HOOK_GAMEDLL
-
-
-
-
-
-
-
-
-
-
-				//m_aimSpot = m_enemy->pev->origin;
-
-				//if (GetProfile()->GetSkill() > 0.5f)
-				//{
-				//	const float k = 3.0f;
-				//	m_aimSpot = (m_enemy->pev->velocity - pev->velocity) * g_flBotCommandInterval * k + m_enemy->pev->origin;
-				//	//printf2(__FUNCTION__":: iNum - %d | %f", iNum++, GetProfile()->GetSkill());
-				//}
-
-				//if (IsUsingAWP() || IsUsingShotgun() || IsUsingMachinegun() || GetProfile()->GetSkill() < 0.8f || (IsActiveWeaponRecoilHigh() && !IsUsingPistol() && !IsUsingSniperRifle()))
-				//{
-				//	if (IsEnemyPartVisible( CHEST ))
-				//	{
-				//		m_aimSpot.z -= feetOffset * 0.25f;
-				//		goto LABEL_41;
-				//	}
-				//}
-
-				//if (IsEnemyPartVisible( CHEST ))
-				//{
-				//	m_aimSpot.z -= feetOffset * 0.5f;
-				//}
-				//else if (IsEnemyPartVisible( HEAD ))
-				//{
-				//	//goto LABEL_41;
-				//}
-				//else if (IsEnemyPartVisible( LEFT_SIDE ))
-				//{
-				//	Vector2D to = (m_enemy->pev->origin - pev->origin).Make2D();
-				//	to.NormalizeInPlace();
-
-				//	m_aimSpot.x -= to.y * 16.0f;
-				//	m_aimSpot.y += to.x * 16.0f;
-				//	m_aimSpot.z -= feetOffset * 0.5f;
-				//}
-				//else if (IsEnemyPartVisible( RIGHT_SIDE ))
-				//{
-				//	Vector2D to = (m_enemy->pev->origin - pev->origin).Make2D();
-				//	to.NormalizeInPlace();
-
-				//	m_aimSpot.x += to.y * 16.0f;
-				//	m_aimSpot.y -= to.x * 16.0f;
-				//	m_aimSpot.z -= feetOffset * 0.5f;
-				//}
-				//else // FEET
-				//	m_aimSpot.z -= (feetOffset + feetOffset);

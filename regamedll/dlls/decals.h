@@ -82,7 +82,9 @@ typedef struct
 {
 	char *name;
 	int index;
+
 } DLL_DECALLIST;
+/* size: 8, cachelines: 1, members: 2 */
 
 #ifdef HOOK_GAMEDLL
 

@@ -48,8 +48,9 @@ NOBODY bool BotProfile::HasPistolPreference(void) const
 }
 
 /* <4a7b5e> ../game_shared/bot/bot_profile.cpp:112 */
-NOBODY bool BotProfile::IsValidForTeam(BotProfileTeamType team) const
+bool BotProfile::IsValidForTeam(BotProfileTeamType team) const
 {
+	return (team == BOT_TEAM_ANY || m_teams == BOT_TEAM_ANY || team == m_teams);
 }
 
 /* <4a7bb2> ../game_shared/bot/bot_profile.cpp:122 */
@@ -180,8 +181,14 @@ NOBODY void BotProfileManager::Reset(void)
 }
 
 /* <4a7fdf> ../game_shared/bot/bot_profile.cpp:579 */
-NOBODY const char *BotProfileManager::GetCustomSkin(int index)
+const char *BotProfileManager::GetCustomSkin(int index)
 {
+	if (index < FirstCustomSkin || index > LastCustomSkin)
+	{
+		return NULL;
+	}
+
+	return m_skins[ index - FirstCustomSkin ];
 }
 
 /* <4a8019> ../game_shared/bot/bot_profile.cpp:593 */
@@ -192,7 +199,7 @@ const char *BotProfileManager::GetCustomSkinFname(int index)
 		return NULL;
 	}
 
-	return m_skinModelnames[ index - FirstCustomSkin ];
+	return m_skinFilenames[ index - FirstCustomSkin ];	//return m_skinModelnames[ index - FirstCustomSkin ];
 }
 
 /* <4a8053> ../game_shared/bot/bot_profile.cpp:607 */
@@ -202,7 +209,8 @@ const char *BotProfileManager::GetCustomSkinModelname(int index)
 	{
 		return NULL;
 	}
-	return m_skins[ index - FirstCustomSkin ];
+
+	return m_skinModelnames[ index - FirstCustomSkin ];	//return m_skins[ index - FirstCustomSkin ];
 }
 
 /* <4a80db> ../game_shared/bot/bot_profile.cpp:621 */
@@ -234,27 +242,36 @@ NOBODY int BotProfileManager::FindVoiceBankIndex(const char *filename)
 }
 
 /* <4a8177> ../game_shared/bot/bot_profile.cpp:669 */
-NOBODY const BotProfile *BotProfileManager::GetRandomProfile(BotDifficultyType difficulty, BotProfileTeamType team) const
+const BotProfile *BotProfileManager::GetRandomProfile(BotDifficultyType difficulty, BotProfileTeamType team) const
 {
-//	{
-//		const_iterator iter;                                  //   674
-//		int validCount;                                       //   677
-//		int which;                                            //   690
-//		operator++(_List_const_iterator<BotProfile*> *const this);  //   678
-//		{
-//			const class BotProfile *profile;            //   680
-//			IsDifficulty(const class BotProfile *const this,
-//					enum BotDifficultyType diff);  //   682
-//			IsValidForTeam(const class BotProfile *const this,
-//					enum BotProfileTeamType team);  //   682
-//		}
-//		operator++(_List_const_iterator<BotProfile*> *const this);  //   691
-//		{
-//			const class BotProfile *profile;            //   693
-//			IsDifficulty(const class BotProfile *const this,
-//					enum BotDifficultyType diff);  //   695
-//			IsValidForTeam(const class BotProfile *const this,
-//					enum BotProfileTeamType team);  //   695
-//		}
-//	}
+	BotProfileList::const_iterator iter;
+
+	// count up valid profiles
+	int validCount = 0;
+	for (iter = m_profileList.begin(); iter != m_profileList.end(); ++iter)
+	{
+		const BotProfile *profile = (*iter);
+
+		if (profile->IsDifficulty(difficulty) && !UTIL_IsNameTaken(profile->GetName()) && profile->IsValidForTeam(team))
+			++validCount;
+	}
+
+	if (validCount == 0)
+		return NULL;
+
+	// select one at random
+	int which = RANDOM_LONG(0, validCount - 1);
+
+	for (iter = m_profileList.begin(); iter != m_profileList.end(); ++iter)
+	{
+		const BotProfile *profile = (*iter);
+
+		if (profile->IsDifficulty(difficulty) && !UTIL_IsNameTaken(profile->GetName()) && profile->IsValidForTeam(team))
+		{
+			if (which-- == 0)
+				return profile;
+		}
+	}
+
+	return NULL;
 }

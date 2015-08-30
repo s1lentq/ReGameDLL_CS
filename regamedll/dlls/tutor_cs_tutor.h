@@ -43,17 +43,18 @@ enum TutorMessageClass
 
 enum TutorMessageType
 {
-	TUTORMESSAGETYPE_DEFAULT = (1<<0),
-	TUTORMESSAGETYPE_FRIEND_DEATH = (1<<1),
-	TUTORMESSAGETYPE_ENEMY_DEATH = (1<<2),
-	TUTORMESSAGETYPE_SCENARIO = (1<<3),
-	TUTORMESSAGETYPE_BUY = (1<<4),
-	TUTORMESSAGETYPE_CAREER = (1<<5),
-	TUTORMESSAGETYPE_HINT = (1<<6),
-	TUTORMESSAGETYPE_INGAME_HINT = (1<<7),
-	TUTORMESSAGETYPE_END_GAME = (1<<8),
+	TUTORMESSAGETYPE_DEFAULT	= (1 << 0),	// icon info  | color green
+	TUTORMESSAGETYPE_FRIEND_DEATH	= (1 << 1),	// icon skull | color red
+	TUTORMESSAGETYPE_ENEMY_DEATH	= (1 << 2),	// icon skull | color blue
+	TUTORMESSAGETYPE_SCENARIO	= (1 << 3),	// icon info  | color yellow
+	TUTORMESSAGETYPE_BUY		= (1 << 4),	// icon info  | color green
+	TUTORMESSAGETYPE_CAREER		= (1 << 5),	// icon info  | color green
+	TUTORMESSAGETYPE_HINT		= (1 << 6),	// icon info  | color green
+	TUTORMESSAGETYPE_INGAME_HINT	= (1 << 7),	// icon info  | color green
+	TUTORMESSAGETYPE_END_GAME	= (1 << 8),	// icon info  | color yellow
+
 	TUTORMESSAGETYPE_LAST,
-	TUTORMESSAGETYPE_ALL = 511
+	TUTORMESSAGETYPE_ALL		= (1 << 9) - 1
 };
 
 enum TutorMessageInterruptFlag
@@ -237,15 +238,15 @@ enum TutorMessageID
 	HINT_51,
 	HINT_52,
 	HINT_53,
-	HINT_BOMB_START,
-	HINT_60 = 139,
-	HINT_61,
+	HINT_BOMB_START	= 139,
+	HINT_60	= 139,
+	HINT_61 = 140,
 	HINT_BOMB_END = 140,
-	HINT_HOSTAGE_START,
+	HINT_HOSTAGE_START = 141,
 	HINT_70 = 141,
 	HINT_71,
 	HINT_72,
-	HINT_73,
+	HINT_73 = 144,
 	HINT_HOSTAGE_END = 144,
 	HINT_END,
 	INGAME_HINT_BEGIN,
@@ -256,7 +257,8 @@ enum TutorMessageID
 };
 
 //typedef map<std::basic_string<char, std::char_traits<char>, std::allocator<char> >, TutorMessage*, std::less<std::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::pair<const std::basic_string<char, std::char_traits<char>, std::allocator<char> >, TutorMessage*> > > TutorMessageMap;
-typedef std::map<TutorMessage *, TutorMessage *> TutorMessageMap;
+typedef std::map<std::string, TutorMessage *> TutorMessageMap;
+typedef TutorMessageMap::iterator TutorMessageMapIter;
 
 struct ClientCorpseStruct
 {
@@ -266,6 +268,7 @@ struct ClientCorpseStruct
 };/* size: 16, cachelines: 1, members: 2 */
 
 typedef std::vector<ClientCorpseStruct *> ClientCorpseList;
+typedef ClientCorpseList::iterator ClientCorpseListIter;
 
 class CCSTutor: public CBaseTutor
 {
@@ -287,19 +290,19 @@ public:
 	virtual void HandleShotFired(Vector source, Vector target);
 	virtual TutorMessage *GetTutorMessageDefinition(int messageID);
 
-	void CreateAndAddEventToList(TutorMessageID mid, CBaseEntity *entity, CBaseEntity *other);
-	TutorMessageEvent *CreateTutorMessageEvent(TutorMessageID mid, CBaseEntity *entity, CBaseEntity *other);
+	void CreateAndAddEventToList(TutorMessageID mid, CBaseEntity *entity = NULL, CBaseEntity *other = NULL);
+	TutorMessageEvent *CreateTutorMessageEvent(TutorMessageID mid, CBaseEntity *entity = NULL, CBaseEntity *other = NULL);
 	void AddToEventList(TutorMessageEvent *event);
 	void DeleteEventFromEventList(TutorMessageEvent *event);
 	void ClearEventList(void);
-	void ClearCurrentEvent(bool closeWindow, bool processDeathsForEvent);
+	void ClearCurrentEvent(bool closeWindow = true, bool processDeathsForEvent = true);
 	void DeleteEvent(TutorMessageEvent *event);
 	bool ShouldShowMessageEvent(TutorMessageEvent *event, float time);
-	bool ShouldUpdateCurrentMessage(TutorMessageID messageID);
+	NOXREF bool ShouldUpdateCurrentMessage(TutorMessageID messageID);
 	void ComputeDisplayTimesForMessage(void);
 	void UpdateCurrentMessage(TutorMessageEvent *event);
 	void ConstructMessageAndDisplay(void);
-	void LookupHotKey(TutorMessageID mid, int paramNum, wchar_t *buf, int buflen);
+	NOXREF void LookupHotKey(TutorMessageID mid, int paramNum, wchar_t *buf, int buflen);
 	void CheckForWindowClose(float time);
 	void CheckForContentUpdate(void);
 	bool HasCurrentWindowBeenActiveLongEnough(float time);
@@ -309,7 +312,7 @@ public:
 	void ProcessShownDeathsForEvent(TutorMessageEvent *event);
 	void TransferDeathEvents(TutorMessageEvent *oldEvent, TutorMessageEvent *newEvent);
 	TutorMessageEvent *GetTutorMessageUpdateEvent(void);
-	bool GetDuplicateMessagesFromEventList(const TutorMessageEvent *&event1, const TutorMessageEvent *&event2);
+	bool GetDuplicateMessagesFromEventList(TutorMessageEvent *&event1, TutorMessageEvent *&event2);
 	bool IsBombMap(void);
 	bool IsHostageMap(void);
 public:
@@ -318,10 +321,10 @@ public:
 	void HandleWeaponReloaded(CBaseEntity *entity, CBaseEntity *other);
 	void HandlePlayerDied(CBaseEntity *entity, CBaseEntity *other);
 	void HandlePlayerSpawned(CBaseEntity *entity, CBaseEntity *other);
-	void HandleClientCorpseSpawned(CBaseEntity *entity, CBaseEntity *other);
+	NOXREF void HandleClientCorpseSpawned(CBaseEntity *entity, CBaseEntity *other);
 	void HandlePlayerTookDamage(CBaseEntity *entity, CBaseEntity *other);
 	void HandlePlayerBlindedByFlashbang(CBaseEntity *entity, CBaseEntity *other);
-	void HandleBuyTimeStart(CBaseEntity *entity, CBaseEntity *other);
+	NOXREF void HandleBuyTimeStart(CBaseEntity *entity, CBaseEntity *other);
 	void HandlePlayerLeftBuyZone(CBaseEntity *entity, CBaseEntity *other);
 	void HandleBombPlanted(CBaseEntity *entity, CBaseEntity *other);
 	void HandleRoundStart(CBaseEntity *entity, CBaseEntity *other);
@@ -383,13 +386,13 @@ public:
 	void CheckHintMessages(float time);
 	void CheckInGameHintMessages(float time);
 	void CheckExamineMessages(float time);
-	void CheckForNeedToReload(bool isPassiveCheck);
+	void CheckForNeedToReload(bool isPassiveCheck = false);
 	bool CanLocalPlayerBuyStuff(void);
 	void CheckBuyZoneMessages(void);
 	bool IsBombPlantedInBombsite(CBaseEntity *bombTarget);
 	void ReadTutorMessageFile(void);
 	void ApplyPersistentDecay(void);
-	CBaseEntity *GetEntityForMessageID(int messageID, CBaseEntity *last);
+	CBaseEntity *GetEntityForMessageID(int messageID, CBaseEntity *last = NULL);
 	void ResetPlayerDeathInfo(void);
 	void ConstructRecentDeathsList(TeamName team, char *buf, int buflen, TutorMessageEvent *event);
 
@@ -406,16 +409,7 @@ public:
 
 private:
 	float m_nextViewableCheckTime;
-	TutorMessageMap m_messageMap;			// Win: 16 | Lin - 20
-
-#ifdef HOOK_GAMEDLL
-#ifdef _WIN32
-	int padding1[2];
-#else
-	int padding1[4];
-#endif // _WIN32
-#endif // HOOK_GAMEDLL
-
+	TutorMessageMap m_messageMap;
 	TutorMessageID m_currentlyShownMessageID;
 	float m_currentlyShownMessageCloseTime;
 	float m_currentlyShownMessageStartTime;
@@ -424,13 +418,7 @@ private:
 	TutorMessageEvent *m_lastScenarioEvent;
 	TutorMessageID m_lastHintShown;
 	TutorMessageID m_lastInGameHintShown;
-
-	ClientCorpseList m_clientCorpseList;		// Win: 16 | Lin - 12
-
-#if defined(HOOK_GAMEDLL) && defined(_WIN32)
-	int padding2;
-#endif // HOOK_GAMEDLL
-
+	ClientCorpseList m_clientCorpseList;
 	int m_messageTypeMask;
 	bool m_haveSpawned;
 	PlayerDeathStruct m_playerDeathInfo[32];
@@ -443,10 +431,22 @@ private:
 
 #endif // HOOK_GAMEDLL
 
-extern const char *TutorIdentifierList[150];
+extern const char *TutorIdentifierList[ TUTOR_NUM_MESSAGES ];
 
-NOBODY void ParseMessageParameters(const char *&messageData, TutorMessage *ret);
-NOBODY TutorMessage *ConstructTutorMessage(const char *&messageData, TutorMessage *defaults);
-NOBODY void ReadDefaultValues(const char *&messageData, TutorMessage *defaults);
+void ParseMessageParameters(char *&messageData, TutorMessage *ret);
+TutorMessage *ConstructTutorMessage(char *&messageData, TutorMessage *defaults);
+void ReadDefaultValues(char *&messageData, TutorMessage *defaults);
+
+// custom operator
+inline TutorMessageID operator++(TutorMessageID &e, int)
+{
+	if (e == TUTOR_NUM_MESSAGES)
+	{
+		return YOU_FIRED_A_SHOT;
+	}
+
+	const int i = static_cast<int>(e);
+	return e = static_cast<TutorMessageID>(i + 1);
+}
 
 #endif // TUTOR_CS_TUTOR_H

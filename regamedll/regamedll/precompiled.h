@@ -18,12 +18,13 @@
 #include "MemPool.h"
 #include "engine.h"
 
-#include "dlls.h"
-#include "basetypes.h"
-
 #ifdef HOOK_GAMEDLL
 #include "hooker.h"
 #endif // HOOK_GAMEDLL
+
+#include "mathlib.h"
+#include "dlls.h"
+#include "basetypes.h"
 
 //valve libs stuff
 #include "tier0/platform.h"

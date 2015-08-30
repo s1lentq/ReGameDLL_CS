@@ -32,47 +32,46 @@
 #pragma once
 #endif
 
-#define MAX_ENTITYARRAY 64
+#define MAX_ENTITY_ARRAY	64
 
 #ifndef HOOK_GAMEDLL
 
-#define IMPLEMENT_SAVERESTORE(derivedClass,baseClass)\
-	int derivedClass::Save(CSave &save)\
-	{\
-		if(!baseClass::Save(save))\
-			return 0;\
-		return save.WriteFields(#derivedClass, this, m_SaveData, ARRAYSIZE(m_SaveData));\
-	}\
-	int derivedClass::Restore(CRestore &restore)\
-	{\
-		if(!baseClass::Restore(restore))\
-			return 0;\
-		return restore.ReadFields(#derivedClass, this, m_SaveData, ARRAYSIZE(m_SaveData));\
-	}
+#define IMPLEMENT_ARRAY(var)\
+	var
+
+#define IMPLEMENT_ARRAY_CLASS(baseClass,var)\
+	baseClass::var
 
 #else // HOOK_GAMEDLL
+
+#define IMPLEMENT_ARRAY(var)\
+	(*p##var)
+
+#define IMPLEMENT_ARRAY_CLASS(baseClass,var)\
+	(*baseClass::p##var)
+
+#endif // HOOK_GAMEDLL
 
 #define IMPLEMENT_SAVERESTORE(derivedClass, baseClass)\
 	int derivedClass::Save_(CSave &save)\
 	{\
-		if(!baseClass::Save(save))\
+		if (!baseClass::Save(save))\
 			return 0;\
-		return save.WriteFields(#derivedClass, this, (*m_SaveData), ARRAYSIZE(*m_SaveData));\
+		return save.WriteFields(#derivedClass, this, IMPLEMENT_ARRAY(m_SaveData), ARRAYSIZE(IMPLEMENT_ARRAY(m_SaveData)));\
 	}\
 	int derivedClass::Restore_(CRestore &restore)\
 	{\
-		if(!baseClass::Restore(restore))\
+		if (!baseClass::Restore(restore))\
 			return 0;\
-		return restore.ReadFields(#derivedClass, this, (*m_SaveData), ARRAYSIZE(*m_SaveData));\
+		return restore.ReadFields(#derivedClass, this, IMPLEMENT_ARRAY(m_SaveData), ARRAYSIZE(IMPLEMENT_ARRAY(m_SaveData)));\
 	}
-
-#endif // HOOK_GAMEDLL
 
 typedef enum
 {
 	GLOBAL_OFF,
 	GLOBAL_ON,
 	GLOBAL_DEAD
+
 } GLOBALESTATE;
 
 typedef struct globalentity_s
@@ -81,14 +80,18 @@ typedef struct globalentity_s
 	char levelName[32];
 	GLOBALESTATE state;
 	struct globalentity_s *pNext;
+
 } globalentity_t;
+/* size: 104, cachelines: 2, members: 4 */
 
 typedef struct
 {
 	unsigned short size;
 	unsigned short token;
 	char *pData;
+
 } HEADER;
+/* size: 8, cachelines: 1, members: 3 */
 
 class CBaseEntity;
 
@@ -111,7 +114,9 @@ public:
 	int EntityFlagsSet(int entityIndex, int flags);
 	edict_t *EntityFromIndex(int entityIndex);
 	unsigned short TokenHash(const char *pszToken);
+
 protected:
+
 	SAVERESTOREDATA *m_pdata;
 	void BufferRewind(int size);
 	unsigned int HashString(const char *pszToken);
@@ -197,32 +202,33 @@ private:
 private:
 	int m_global;
 	BOOL m_precache;
+
 };/* size: 12, cachelines: 1, members: 3 */
 
 /* <245f6> ../cstrike/dlls/saverestore.h:153 */
 class CGlobalState
 {
 public:
-	//TODO: it unused!
-	static TYPEDESCRIPTION m_SaveData[0];
+	CGlobalState(void);
 
-	NOBODY CGlobalState();
-	NOBODY void Reset(void);
-	NOBODY void ClearStates(void);
-	NOBODY void EntityAdd(string_t globalname, string_t mapName, GLOBALESTATE state);
+	void Reset(void);
+	void ClearStates(void);
+	void EntityAdd(string_t globalname, string_t mapName, GLOBALESTATE state);
 	void EntitySetState(string_t globalname, GLOBALESTATE state);
-	NOBODY void EntityUpdate(string_t globalname, string_t mapname);
-	NOBODY const globalentity_t *EntityFromTable(string_t globalname);
-	NOBODY GLOBALESTATE EntityGetState(string_t globalname);
-	INLINEBODY int EntityInTable(string_t globalname)
+	void EntityUpdate(string_t globalname, string_t mapname);
+	const globalentity_t *EntityFromTable(string_t globalname);
+	GLOBALESTATE EntityGetState(string_t globalname);
+	int EntityInTable(string_t globalname)
 	{
-		if(Find(globalname) != NULL)
+		if (Find(globalname) != NULL)
 			return 1;
 		return 0;
 	}
-	NOBODY int Save(CSave &save);
-	NOBODY int Restore(CRestore &restore);
-	NOBODY void DumpGlobals(void);
+	int Save(CSave &save);
+	int Restore(CRestore &restore);
+	void DumpGlobals(void);
+
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[1];
 
 #ifdef HOOK_GAMEDLL
 public:
@@ -230,16 +236,11 @@ public:
 private:
 #endif // HOOK_GAMEDLL
 	globalentity_t *Find(string_t globalname);
+
 private:
 	globalentity_t *m_pList;
 	int m_listCount;
 
 };/* size: 8, cachelines: 1, members: 3 */
-
-#ifdef HOOK_GAMEDLL
-#define gGlobalState (*pgGlobalState)
-#endif // HOOK_GAMEDLL
-
-extern CGlobalState gGlobalState;
 
 #endif // SAVERESTORE_H

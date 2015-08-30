@@ -60,8 +60,8 @@ extern cvar_t cv_tutor_message_minimum_display_time;
 extern cvar_t cv_tutor_message_character_display_time_coefficient;
 extern cvar_t cv_tutor_hint_interval_time;
 
-NOBODY void InstallTutor(bool start);
+void InstallTutor(bool start);
 void Tutor_RegisterCVars(void);
-NOBODY void MonitorTutorStatus(void);
+void MonitorTutorStatus(void);
 
 #endif // TUTOR_H

@@ -66,11 +66,12 @@
 #define cv_bot_chatter (*pcv_bot_chatter)
 #define cv_bot_profile_db (*pcv_bot_profile_db)
 
-#define m_flNextCVarCheck (*pm_flNextCVarCheck)
-#define m_isMapDataLoaded (*pm_isMapDataLoaded)
+//#define m_flNextCVarCheck (*pm_flNextCVarCheck)
+//#define m_isMapDataLoaded (*pm_isMapDataLoaded)
+//#define m_editCmd (*pm_editCmd)
 
-#define m_isLearningMap (*pm_isLearningMap)
-#define m_isAnalysisRequested (*pm_isAnalysisRequested)
+//#define m_isLearningMap (*pm_isLearningMap)
+//#define m_isAnalysisRequested (*pm_isAnalysisRequested)
 
 #endif // HOOK_GAMEDLL
 
@@ -111,20 +112,20 @@ class CCSBotManager: public CBotManager
 public:
 	CCSBotManager(void);
 public:
-	NOBODY virtual void ClientDisconnect(CBasePlayer *pPlayer);
-	NOBODY virtual BOOL ClientCommand(CBasePlayer *pPlayer, const char *pcmd);
+	virtual void ClientDisconnect(CBasePlayer *pPlayer);
+	virtual BOOL ClientCommand(CBasePlayer *pPlayer, const char *pcmd);
 
-	NOBODY virtual void ServerActivate(void);
-	NOBODY virtual void ServerDeactivate(void);
+	virtual void ServerActivate(void);
+	virtual void ServerDeactivate(void);
 
 	NOBODY virtual void ServerCommand(const char *pcmd);
-	NOBODY virtual void AddServerCommand(const char *cmd);
-	NOBODY virtual void AddServerCommands(void);
+	virtual void AddServerCommand(const char *cmd);
+	virtual void AddServerCommands(void);
 
-	NOBODY virtual void RestartRound(void);
+	virtual void RestartRound(void);
 	NOBODY virtual void StartFrame(void);
 
-	virtual void OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *other);
+	virtual void OnEvent(GameEventType event, CBaseEntity *entity = NULL, CBaseEntity *other = NULL);
 	NOBODY virtual unsigned int GetPlayerPriority(CBasePlayer *player) const;
 	NOBODY virtual bool IsImportantPlayer(CBasePlayer *player);
 
@@ -145,28 +146,28 @@ public:
 
 #endif // HOOK_GAMEDLL
 public:
-	NOBODY void ValidateMapData(void);
+	void ValidateMapData(void);
 	bool IsLearningMap(void)
 	{
-		return m_isLearningMap;
+		return IMPLEMENT_ARRAY(m_isLearningMap);
 	}
 	void SetLearningMapFlag(void)
 	{
-		m_isLearningMap = true;
+		IMPLEMENT_ARRAY(m_isLearningMap) = true;
 	}
 	bool IsAnalysisRequested(void)
 	{
-		return m_isAnalysisRequested;
+		return IMPLEMENT_ARRAY(m_isAnalysisRequested);
 	}
 	void RequestAnalysis(void)
 	{
-		m_isAnalysisRequested = true;
+		IMPLEMENT_ARRAY(m_isAnalysisRequested) = true;
 	}
 	void AckAnalysisRequest(void)
 	{
-		m_isAnalysisRequested = false;
+		IMPLEMENT_ARRAY(m_isAnalysisRequested) = false;
 	}
-	BotDifficultyType GetDifficultyLevel(void)
+	static BotDifficultyType GetDifficultyLevel(void)
 	{
 		if (cv_bot_difficulty.value < 0.9f)
 			return BOT_EASY;
@@ -202,6 +203,7 @@ public:
 		bool m_isLegacy;
 		int m_index;
 		Extent m_extent;
+
 	};/* size: 116, cachelines: 2, members: 7 */
 
 	const Zone *GetZone(int i) const
@@ -225,7 +227,7 @@ public:
 		if (startArea == NULL)
 			return NULL;
 
-		for(int i = 0; i < m_zoneCount; i++)
+		for (int i = 0; i < m_zoneCount; i++)
 		{
 			if (m_zone[i].m_areaCount == 0)
 				continue;
@@ -295,7 +297,7 @@ public:
 	NOBODY float GetRadioMessageTimestamp(GameEventType event, int teamID);
 	NOBODY float GetRadioMessageInterval(GameEventType event, int teamID);
 	NOBODY void SetRadioMessageTimestamp(GameEventType event, int teamID);
-	NOBODY void ResetRadioMessageTimestamps(void);
+	void ResetRadioMessageTimestamps(void);
 
 	// return the last time anyone has seen an enemy
 	float GetLastSeenEnemyTimestamp(void) const
@@ -355,7 +357,7 @@ public:
 	{
 		return friendlyfire.value != 0;
 	}
-	NOBODY bool IsWeaponUseable(CBasePlayerItem *item) const;
+	bool IsWeaponUseable(CBasePlayerItem *item) const;
 	bool IsDefenseRushing(void) const
 	{
 		return m_isDefenseRushing;
@@ -386,18 +388,18 @@ public:
 
 	NOBODY static void MonitorBotCVars(void);
 	NOBODY static void MaintainBotQuota(void);
-	NOBODY static bool AddBot(BotProfile *profile, BotProfileTeamType team);
-	NOBODY static bool BotAddCommand(BotProfileTeamType, bool isFromConsole);
+	NOBODY static bool AddBot(const BotProfile *profile, BotProfileTeamType team);
+	NOBODY static bool BotAddCommand(BotProfileTeamType team, bool isFromConsole = true);
 
 #ifndef HOOK_GAMEDLL
 private:
 #else
 public:
 #endif // HOOK_GAMEDLL
-	static float m_flNextCVarCheck;
-	static bool m_isMapDataLoaded;
-	static bool m_isLearningMap;
-	static bool m_isAnalysisRequested;
+	static float IMPLEMENT_ARRAY(m_flNextCVarCheck);
+	static bool IMPLEMENT_ARRAY(m_isMapDataLoaded);
+	static bool IMPLEMENT_ARRAY(m_isLearningMap);
+	static bool IMPLEMENT_ARRAY(m_isAnalysisRequested);
 #ifdef HOOK_GAMEDLL
 private:
 #endif // HOOK_GAMEDLL
@@ -417,7 +419,15 @@ private:
 	float m_roundStartTimestamp;
 	bool m_isDefenseRushing;
 
-	static NavEditCmdType m_editCmd;
+#ifndef HOOK_GAMEDLL
+private:
+#else
+public:
+#endif // HOOK_GAMEDLL
+	static NavEditCmdType IMPLEMENT_ARRAY(m_editCmd);
+#ifdef HOOK_GAMEDLL
+private:
+#endif // HOOK_GAMEDLL
 
 	unsigned int m_navPlace;
 	CountdownTimer m_respawnTimer;
@@ -439,7 +449,7 @@ inline CCSBotManager *TheCSBots(void)
 	return reinterpret_cast<CCSBotManager *>(TheBots);
 }
 
-NOBODY void PrintAllEntities(void);
+void PrintAllEntities(void);
 NOBODY void UTIL_DrawBox(Extent *extent, int lifetime, int red, int green, int blue);
 
 #ifdef HOOK_GAMEDLL
@@ -448,5 +458,8 @@ typedef const CCSBotManager::Zone *(CCSBotManager::*GET_ZONE_INT)(int) const;
 typedef const CCSBotManager::Zone *(CCSBotManager::*GET_ZONE_VECTOR)(const Vector *pos) const;
 
 #endif // HOOK_GAMEDLL
+
+// refs
+extern void (*pCCSBotManager__AddBot)(void);
 
 #endif // CS_BOT_MANAGER_H

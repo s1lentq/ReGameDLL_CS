@@ -3,14 +3,29 @@
 /* <3b3a2a> ../cstrike/dlls/bot/cs_bot_statemachine.cpp:16 */
 NOBODY void CCSBot::SetState(BotState *state)
 {
-//	StopAttacking(CCSBot *const this);  //    22
+	PrintIfWatched("SetState: %s -> %s\n", (m_state != NULL) ? m_state->GetName() : "NULL", state->GetName());
+
+	if (m_isAttacking)
+	{
+		StopAttacking();
+	}
+
+	if (m_state)
+	{
+		m_state->OnExit(this);
+	}
+
+	state->OnEnter(this);
+
+	m_state = state;
+	m_stateTimestamp = gpGlobals->time;
 }
 
 /* <3b3ab4> ../cstrike/dlls/bot/cs_bot_statemachine.cpp:34 */
 NOBODY void CCSBot::Idle(void)
 {
-//	SetTask(CCSBot::Idle(//		enum TaskType task,
-//		class CBaseEntity *entity);  //    36
+	SetTask(SEEK_AND_DESTROY);
+	SetState(&m_idleState);
 }
 
 /* <3b3afa> ../cstrike/dlls/bot/cs_bot_statemachine.cpp:41 */
@@ -159,20 +174,20 @@ NOBODY void CCSBot::Attack(CBasePlayer *victim)
 		return;
 
 	// change enemy
-	SetEnemy( victim );
+	SetEnemy(victim);
 
 	// Do not "re-enter" the attack state if we are already attacking
 	if (IsAttacking())
 		return;
 
 	if (IsAtHidingSpot())
-		m_attackState.SetCrouchAndHold( (RANDOM_FLOAT(0, 100) < 60.0f) != 0 );
+		m_attackState.SetCrouchAndHold((RANDOM_FLOAT(0, 100) < 60.0f) != 0);
 	else
-		m_attackState.SetCrouchAndHold( 0 );
+		m_attackState.SetCrouchAndHold(0);
 
 	PrintIfWatched("ATTACK BEGIN (reaction time = %g (+ update time), surprise time = %g, attack delay = %g)\n");
 	m_isAttacking = true;
-	m_attackState.OnEnter( this );// TODO: Reverse me
+	m_attackState.OnEnter(this);// TODO: Reverse me
 
 	// cheat a bit and give the bot the initial location of its victim
 	m_lastEnemyPosition = victim->pev->origin;
@@ -183,7 +198,7 @@ NOBODY void CCSBot::Attack(CBasePlayer *victim)
 	Vector toEnemy = victim->pev->origin - pev->origin;
 	Vector idealAngle;
 
-	idealAngle = UTIL_VecToAngles( toEnemy );
+	idealAngle = UTIL_VecToAngles(toEnemy);
 
 	float deltaYaw = (float)abs(m_lookYaw - idealAngle.y);
 
@@ -198,17 +213,25 @@ NOBODY void CCSBot::Attack(CBasePlayer *victim)
 	float turn = deltaYaw / 180.0f;
 	float accuracy = GetProfile()->GetSkill() / (1.0f + turn);
 
-	SetAimOffset( accuracy );
+	SetAimOffset(accuracy);
 
 	// define time when aim offset will automatically be updated
 	// longer time the more we had to turn (surprise)
-	m_aimOffsetTimestamp = gpGlobals->time + RANDOM_FLOAT( 0.25f + turn, 1.5f );
+	m_aimOffsetTimestamp = gpGlobals->time + RANDOM_FLOAT(0.25f + turn, 1.5f);
 }
 
 /* <3b4416> ../cstrike/dlls/bot/cs_bot_statemachine.cpp:366 */
 NOBODY void CCSBot::StopAttacking(void)
 {
-//	Idle(CCSBot *const this);  //   374
+	PrintIfWatched("ATTACK END\n");
+	m_attackState.OnExit(this);//TODO: Reverse me
+	m_isAttacking = false;
+
+	// if we are following someone, go to the Idle state after the attack to decide whether we still want to follow
+	if (IsFollowing())
+	{
+		Idle();
+	}
 }
 
 /* <3b447d> ../cstrike/dlls/bot/cs_bot_statemachine.cpp:378 */
@@ -230,7 +253,7 @@ NOBODY bool CCSBot::IsDefusingBomb(void) const
 /* <3b44ed> ../cstrike/dlls/bot/cs_bot_statemachine.cpp:411 */
 bool CCSBot::IsHiding(void) const
 {
-	return (m_state == static_cast<const BotState *>( &m_hideState ));
+	return (m_state == static_cast<const BotState *>(&m_hideState));
 }
 
 /* <3b450f> ../cstrike/dlls/bot/cs_bot_statemachine.cpp:423 */

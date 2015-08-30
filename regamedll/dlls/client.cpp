@@ -6,9 +6,9 @@
 */
 #ifndef HOOK_GAMEDLL
 
-//float g_flTimeLimit = 0;
-//float g_flResetTime = 0;
-//bool g_bClientPrintEnable = true;
+float g_flTimeLimit = 0;
+float g_flResetTime = 0;
+bool g_bClientPrintEnable = true;
 
 char *sPlayerModelFiles[] = 
 {
@@ -58,11 +58,13 @@ static entity_field_alias_t custom_entity_field_alias[] =
 	{ "animtime",	0 },
 }
 
+static int g_serveractive = 0;
+
 #else
 
-//float g_flTimeLimit;
-//float g_flResetTime;
-//bool g_bClientPrintEnable;
+float g_flTimeLimit;
+float g_flResetTime;
+bool g_bClientPrintEnable;
 
 char *sPlayerModelFiles[12];
 bool g_skipCareerInitialSpawn;
@@ -70,6 +72,7 @@ bool g_skipCareerInitialSpawn;
 entity_field_alias_t entity_field_alias[6];
 entity_field_alias_t player_field_alias[3];
 entity_field_alias_t custom_entity_field_alias[9];
+int g_serveractive;
 
 #endif // HOOK_GAMEDLL
 
@@ -78,51 +81,113 @@ unsigned short m_usResetDecals;
 unsigned short g_iShadowSprite;
 
 /* <47b45> ../cstrike/dlls/client.cpp:76 */
-NOBODY int CMD_ARGC_(void)
+int CMD_ARGC_(void)
 {
-//	{
-//		int i;                                                //    80
-//	}
+	if (!UseBotArgs)
+		return CMD_ARGC();
+
+	int i = 0;
+
+	while (BotArgs[i])
+		i++;
+
+	return i;
 }
 
 /* <47b84> ../cstrike/dlls/client.cpp:90 */
-NOBODY const char *CMD_ARGV_(int i)
+const char *CMD_ARGV_(int i)
 {
+	if (!UseBotArgs)
+		return CMD_ARGV(i);
+
+	if (i < 4)
+		return BotArgs[i];
+
+	return NULL;
 }
 
 /* <47eac> ../cstrike/dlls/client.cpp:180 */
-NOBODY void set_suicide_frame(entvars_t *pev)
+NOXREF void set_suicide_frame(entvars_t *pev)
 {
-//	FStrEq(const char *sz1,
-//		const char *sz2);  //   182
+	if (!FStrEq(STRING(pev->model), "models/player.mdl"))
+		return;
+
+	pev->solid = SOLID_NOT;
+	pev->movetype = MOVETYPE_TOSS;
+	pev->deadflag = DEAD_DEAD;
+	pev->nextthink = -1;
 }
 
 /* <47a58> ../cstrike/dlls/client.cpp:192 */
-NOBODY inline void TeamChangeUpdate(CBasePlayer *player, int team_id)
+void TeamChangeUpdate(CBasePlayer *player, int team_id)
 {
-//	{
-//		int t;                                                //   194
-//	}
+	MESSAGE_BEGIN(MSG_ALL, gmsgTeamInfo);
+		WRITE_BYTE(player->entindex());
+		switch (team_id)
+		{
+		case CT:
+			WRITE_STRING("CT");
+			break;
+		case TERRORIST:
+			WRITE_STRING("TERRORIST");
+			break;
+		case SPECTATOR:
+			WRITE_STRING("SPECTATOR");
+			break;
+		default:
+			WRITE_STRING("UNASSIGNED");
+			break;
+		}
+	MESSAGE_END();
+
+	if (team_id != UNASSIGNED)
+	{
+		player->SetScoreboardAttributes();
+	}
 }
 
 /* <4731f> ../cstrike/dlls/client.cpp:222 */
-NOBODY inline void BlinkAccount(CBasePlayer *player, int numBlinks)
+void BlinkAccount(CBasePlayer *player, int numBlinks)
 {
+	MESSAGE_BEGIN(MSG_ONE, gmsgBlinkAcct, NULL, player->pev);
+		WRITE_BYTE(numBlinks);
+	MESSAGE_END();
 }
 
 /* <47efd> ../cstrike/dlls/client.cpp:236 */
-NOBODY BOOL ClientConnect(edict_t *pEntity, const char *pszName, const char *pszAddress, char *szRejectReason)
+BOOL ClientConnect(edict_t *pEntity, const char *pszName, const char *pszAddress, char *szRejectReason)
 {
+	return g_pGameRules->ClientConnected(pEntity, pszName, pszAddress, szRejectReason);
 }
 
 /* <47f5b> ../cstrike/dlls/client.cpp:255 */
-NOBODY void ClientDisconnect(edict_t *pEntity)
+void ClientDisconnect(edict_t *pEntity)
 {
-//	{
-//		class CBasePlayer *pPlayer;                          //   257
-//		class CSound *pSound;                                //   276
-//		Instance(edict_t *pent);  //   257
-//	}
+	CBasePlayer *pPlayer = (CBasePlayer *)CBaseEntity::Instance(pEntity);
+
+	if (!g_fGameOver)
+	{
+		UTIL_ClientPrintAll(HUD_PRINTNOTIFY, "#Game_disconnected", STRING(pEntity->v.netname));
+		CSound *pSound = CSoundEnt::SoundPointerForIndex(CSoundEnt::ClientSoundIndex(pEntity));
+
+		if (pSound)
+			pSound->Reset();
+
+		pEntity->v.takedamage = DAMAGE_NO;
+		pEntity->v.solid = SOLID_NOT;
+		pEntity->v.flags = FL_DORMANT;
+
+		if (pPlayer)
+			pPlayer->SetThink(NULL);
+
+		UTIL_SetOrigin(&pEntity->v, pEntity->v.origin);
+		g_pGameRules->ClientDisconnected(pEntity);
+	}
+
+	if (pPlayer && pPlayer->IsBot())
+	{
+		TheBots->ClientDisconnect(pPlayer);
+	}
 }
 
 /* <4c477> ../cstrike/dlls/client.cpp:306 */
@@ -144,811 +209,3713 @@ void respawn(entvars_t *pev, BOOL fCopyCorpse)
 		g_skipCareerInitialSpawn = false;
 	}
 	else if (pev->deadflag > DEAD_NO)
+	{
 		SERVER_COMMAND("reload\n");
+	}
 }
 
 /* <48013> ../cstrike/dlls/client.cpp:347 */
-NOBODY void ClientKill(edict_t *pEntity)
+void ClientKill(edict_t *pEntity)
 {
-//	{
-//		entvars_t *pev;                                      //   349
-//		class CHalfLifeMultiplay *mp;                        //   350
-//		class CBasePlayer *pl;                               //   352
-//		Instance(entvars_t *pev);  //   352
-//		IsObserver(CBasePlayer *const this);  //   354
-//	}
+	entvars_t *pev = &pEntity->v;
+	CHalfLifeMultiplay *mp = g_pGameRules;
+	CBasePlayer *pl = (CBasePlayer *)CBasePlayer::Instance(pev);
+
+	if (pl->IsObserver())
+		return;
+
+	if (pl->m_iJoiningState != JOINED)
+		return;
+
+	if (gpGlobals->time >= pl->m_fNextSuicideTime)
+	{
+		pl->m_LastHitGroup = 0;
+		pl->m_fNextSuicideTime = gpGlobals->time + 1;
+		pEntity->v.health = 0;
+		pl->Killed(pev, GIB_NEVER);
+
+		if (mp->m_pVIP == pl)
+		{
+			mp->m_iConsecutiveVIP = 10;
+		}
+	}
 }
 
 /* <47a8a> ../cstrike/dlls/client.cpp:379 */
-NOBODY void ShowMenu(CBasePlayer *pPlayer, int bitsValidSlots, int nDisplayTime, BOOL fNeedMore, char *pszText)
+void ShowMenu(CBasePlayer *pPlayer, int bitsValidSlots, int nDisplayTime, BOOL fNeedMore, char *pszText)
 {
+	MESSAGE_BEGIN(MSG_ONE, gmsgShowMenu, NULL, pPlayer->pev);
+		WRITE_SHORT(bitsValidSlots);
+		WRITE_CHAR(nDisplayTime);
+		WRITE_BYTE(fNeedMore);
+		WRITE_STRING(pszText);
+	MESSAGE_END();
 }
 
 /* <4735f> ../cstrike/dlls/client.cpp:390 */
-NOBODY void ShowVGUIMenu(CBasePlayer *pPlayer, int MenuType, int BitMask, char *szOldMenu)
+void ShowVGUIMenu(CBasePlayer *pPlayer, int MenuType, int BitMask, char *szOldMenu)
 {
+	if (pPlayer->m_bVGUIMenus || MenuType > VGUI_Menu_Buy_Item)
+	{
+		MESSAGE_BEGIN(MSG_ONE, gmsgVGUIMenu, NULL, pPlayer->pev);
+		WRITE_BYTE(MenuType);
+		WRITE_SHORT(BitMask);
+		WRITE_CHAR(-1);
+		WRITE_BYTE(0);
+		WRITE_STRING(" ");
+		MESSAGE_END();
+	}
+	else
+		ShowMenu(pPlayer, BitMask, -1, 0, szOldMenu);
 }
 
 /* <4c3c5> ../cstrike/dlls/client.cpp:414 */
-NOBODY int CountTeams(void)
+NOXREF int CountTeams(void)
 {
-//	{
-//		int iNumCT;                                           //   416
-//		int iNumTerrorist;                                    //   416
-//		class CBaseEntity *pPlayer;                          //   421
-//		class CBasePlayer *player;                           //   422
-//		edict(CBaseEntity *const this);  //   425
-//		FNullEnt(const edict_t *pent);  //   425
-//	}
+	int iNumCT = 0, iNumTerrorist = 0;
+	CBaseEntity *pPlayer = NULL;
+
+	while ((pPlayer = UTIL_FindEntityByClassname(pPlayer, "player")) != NULL)
+	{
+		if (FNullEnt(pPlayer->edict()))
+			break;
+
+		CBasePlayer *player = GetClassPtr((CBasePlayer *)pPlayer->pev);
+
+		if (player->m_iTeam == UNASSIGNED)
+			continue;
+
+		if (player->pev->flags & FL_DORMANT)
+			continue;
+
+		if (player->m_iTeam == SPECTATOR)
+			continue;
+
+		if (player->m_iTeam == CT)
+			iNumCT++;
+
+		else if (player->m_iTeam == TERRORIST)
+			iNumTerrorist++;
+	}
+
+	return iNumCT - iNumTerrorist;
 }
 
 /* <4c2be> ../cstrike/dlls/client.cpp:443 */
-NOBODY void ListPlayers(CBasePlayer *current)
+void ListPlayers(CBasePlayer *current)
 {
-//	{
-//		class CBaseEntity *pPlayer;                          //   445
-//		class CBasePlayer *player;                           //   446
-//		char message;                                         //   447
-//		char cNumber;                                         //   448
-//		int iUserID;                                          //   449
-//		edict(CBaseEntity *const this);  //   454
-//		FNullEnt(const edict_t *pent);  //   454
-//		edict(CBaseEntity *const this);  //   460
-//	}
+	char message[120], cNumber[12];
+	Q_strcpy(message, "");
+
+	CBaseEntity *pPlayer = NULL;
+	while ((pPlayer = UTIL_FindEntityByClassname(pPlayer, "player")) != NULL)
+	{
+		if (FNullEnt(pPlayer->edict()))
+			break;
+
+		if (pPlayer->pev->flags & FL_DORMANT)
+			continue;
+
+		CBasePlayer *player = GetClassPtr((CBasePlayer *)pPlayer->pev);
+		int iUserID = GETPLAYERUSERID(ENT(player->pev));
+
+		Q_sprintf(cNumber, "%d", iUserID);
+		Q_strcpy(message, "\n");
+		Q_strcat(message, cNumber);
+		Q_strcat(message, " : ");
+		Q_strcat(message, STRING(player->pev->netname));
+
+		ClientPrint(current->pev, HUD_PRINTCONSOLE, message);
+	}
+
+	ClientPrint(current->pev, HUD_PRINTCONSOLE, "\n");
 }
 
 /* <4c200> ../cstrike/dlls/client.cpp:475 */
-NOBODY int CountTeamPlayers(int iTeam)
+int CountTeamPlayers(int iTeam)
 {
-//	{
-//		class CBaseEntity *pPlayer;                          //   477
-//		int i;                                                //   478
-//	}
+	CBaseEntity *pPlayer = NULL;
+	int i = 0;
+
+	while ((pPlayer = UTIL_FindEntityByClassname(pPlayer, "player")) != NULL)
+	{
+		if (FNullEnt(pPlayer->edict()))
+			break;
+
+		if (pPlayer->pev->flags & FL_DORMANT)
+			continue;
+
+		if (GetClassPtr((CBasePlayer *)pPlayer->pev)->m_iTeam == iTeam)
+			i++;
+	}
+
+	return i;
 }
 
 /* <4c4ef> ../cstrike/dlls/client.cpp:494 */
-NOBODY void ProcessKickVote(CBasePlayer *pVotingPlayer, CBasePlayer *pKickPlayer)
+void ProcessKickVote(CBasePlayer *pVotingPlayer, CBasePlayer *pKickPlayer)
 {
-//	{
-//		class CBaseEntity *pTempEntity;                      //   500
-//		class CBasePlayer *pTempPlayer;                      //   501
-//		int iValidVotes;                                      //   502
-//		int iVoteID;                                          //   503
-//		int iVotesNeeded;                                     //   504
-//		float fKickPercent;                                   //   505
-//		int iTeamCount;                                       //   507
-//		CountTeamPlayers(int iTeam);  //   507
-//		edict(CBaseEntity *const this);  //   560
-//		FNullEnt(const edict_t *pent);  //   560
-//		edict(CBaseEntity *const this);  //   517
-//		FNullEnt(const edict_t *pent);  //   517
-//	}
+	CBaseEntity *pTempEntity;
+	CBasePlayer *pTempPlayer;
+	int iValidVotes;
+	int iVoteID;
+	int iVotesNeeded;
+	float fKickPercent;
+
+	if (!pVotingPlayer || !pKickPlayer)
+		return;
+
+	int iTeamCount = CountTeamPlayers(pVotingPlayer->m_iTeam);
+
+	if (iTeamCount < 3)
+		return;
+
+	iValidVotes = 0;
+	pTempEntity = NULL;
+	iVoteID = pVotingPlayer->m_iCurrentKickVote;
+
+	while ((pTempEntity = UTIL_FindEntityByClassname(pTempEntity, "player")) != NULL)
+	{
+		if (FNullEnt(pTempEntity->edict()))
+			break;
+
+		pTempPlayer = GetClassPtr((CBasePlayer *)pTempEntity->pev);
+
+		if (!pTempPlayer || pTempPlayer->m_iTeam == UNASSIGNED)
+			continue;
+
+		if (pTempPlayer->m_iTeam == pVotingPlayer->m_iTeam && pTempPlayer->m_iCurrentKickVote == iVoteID)
+			iValidVotes++;
+	}
+
+	if (kick_percent.value < 0)
+		CVAR_SET_STRING("mp_kickpercent", "0.0");
+
+	else if (kick_percent.value > 1)
+		CVAR_SET_STRING("mp_kickpercent", "1.0");
+
+	iVotesNeeded = iValidVotes;
+	fKickPercent = (iTeamCount * kick_percent.value + 0.5);
+
+	if (iVotesNeeded >= (int)fKickPercent)
+	{
+		UTIL_ClientPrintAll(HUD_PRINTCENTER, "#Game_kicked", STRING(pKickPlayer->pev->netname));
+		SERVER_COMMAND(UTIL_VarArgs("kick # %d\n", iVoteID));
+		pTempEntity = NULL;
+
+		while ((pTempEntity = UTIL_FindEntityByClassname(pTempEntity, "player")) != NULL)
+		{
+			if (FNullEnt(pTempEntity->edict()))
+				break;
+
+			pTempPlayer = GetClassPtr((CBasePlayer *)pTempEntity->pev);
+
+			if (!pTempPlayer || pTempPlayer->m_iTeam == UNASSIGNED)
+				continue;
+
+			if (pTempPlayer->m_iTeam == pVotingPlayer->m_iTeam && pTempPlayer->m_iCurrentKickVote == iVoteID)
+				pTempPlayer->m_iCurrentKickVote = 0;
+		}
+	}
 }
 
 /* <48298> ../cstrike/dlls/client.cpp:580 */
-NOBODY TeamName SelectDefaultTeam(void)
+TeamName SelectDefaultTeam(void)
 {
-//	{
-//		enum TeamName team;                                   //   582
-//		class CHalfLifeMultiplay *mp;                        //   583
-//	}
+	TeamName team = UNASSIGNED;
+	CHalfLifeMultiplay *mp = g_pGameRules;
+
+	if (mp->m_iNumTerrorist < mp->m_iNumCT)
+		team = TERRORIST;
+	else if (mp->m_iNumTerrorist > mp->m_iNumCT)
+		team = CT;
+
+	else if (mp->m_iNumCTWins > mp->m_iNumTerroristWins)
+		team = TERRORIST;
+
+	else if (mp->m_iNumCTWins < mp->m_iNumTerroristWins)
+		team = CT;
+	else
+		team = RANDOM_LONG(0, 1) ? TERRORIST : CT;
+
+	if (mp->TeamFull(team))
+	{
+		if (team == TERRORIST)
+			team = CT;
+		else
+			team = TERRORIST;
+
+		if (mp->TeamFull(team))
+			return UNASSIGNED;
+	}
+
+	return team;
+
 }
 
 /* <473a3> ../cstrike/dlls/client.cpp:638 */
-NOBODY void CheckStartMoney(void)
+void CheckStartMoney(void)
 {
-//	{
-//		int money;                                            //   640
-//	}
+	int money = (int)startmoney.value;
+
+	if (money > 16000)
+		CVAR_SET_FLOAT("mp_startmoney", 16000);
+	else if (money < 800)
+		CVAR_SET_FLOAT("mp_startmoney", 800);
 }
 
 /* <4c084> ../cstrike/dlls/client.cpp:661 */
-NOBODY void ClientPutInServer(edict_t *pEntity)
+void ClientPutInServer(edict_t *pEntity)
 {
-//	{
-//		class CBasePlayer *pPlayer;                          //   663
-//		class CBaseEntity *Target;                           //   664
-//		Vector CamAngles;                               //   665
-//		class CHalfLifeMultiplay *mp;                        //   666
-//		entvars_t *pev;                                      //   668
-//		char sName;                                           //   777
-//		CheckStartMoney(void);  //   696
-//		{
-//			char *pApersand;                             //   781
-//		}
-//		operator-(const Vector *const this,
-//				const Vector &v);  //   761
-//		Normalize(const Vector *const this);  //   762
-//	}
+	entvars_t *pev = &pEntity->v;
+	CBasePlayer *pPlayer = GetClassPtr((CBasePlayer *)pev);
+	CHalfLifeMultiplay *mp = g_pGameRules;
+
+	pPlayer->SetCustomDecalFrames(-1);
+	pPlayer->SetPrefsFromUserinfo(GET_INFO_BUFFER(pEntity));
+
+	if (!mp->IsMultiplayer())
+	{
+		pPlayer->Spawn();
+		return;
+	}
+
+	pPlayer->m_bNotKilled = true;
+	pPlayer->m_iIgnoreGlobalChat = IGNOREMSG_NONE;
+	pPlayer->m_iTeamKills = 0;
+	pPlayer->m_bJustConnected = true;
+	pPlayer->Spawn();
+	pPlayer->m_bTeamChanged = false;
+	pPlayer->m_iNumSpawns = 0;
+
+	CheckStartMoney();
+
+	pPlayer->m_iAccount = (int)startmoney.value;
+	pPlayer->m_fGameHUDInitialized = FALSE;
+	pPlayer->m_flDisplayHistory &= ~DHF_ROUND_STARTED;
+	pPlayer->pev->flags |= FL_SPECTATOR;
+	pPlayer->pev->solid = SOLID_NOT;
+	pPlayer->pev->movetype = MOVETYPE_NOCLIP;
+	pPlayer->pev->effects = EF_NODRAW;
+	pPlayer->pev->effects |= EF_NOINTERP;
+	pPlayer->pev->takedamage = DAMAGE_NO;
+	pPlayer->pev->deadflag = DEAD_DEAD;
+	pPlayer->pev->velocity = g_vecZero;
+	pPlayer->pev->punchangle = g_vecZero;
+	pPlayer->m_iJoiningState = READINGLTEXT;
+	pPlayer->m_iTeam = UNASSIGNED;
+	pPlayer->pev->fixangle = 1;
+	pPlayer->m_iModelName = MODEL_URBAN;
+	pPlayer->m_bContextHelp = true;
+	pPlayer->m_bHasNightVision = false;
+	pPlayer->m_iHostagesKilled = 0;
+	pPlayer->m_iMapVote = 0;
+	pPlayer->m_iCurrentKickVote = 0;
+	pPlayer->m_fDeadTime = 0;
+	pPlayer->has_disconnected = false;
+	pPlayer->m_iMenu = Menu_OFF;
+	pPlayer->ClearAutoBuyData();
+	pPlayer->m_rebuyString = NULL;
+
+	SET_CLIENT_MAXSPEED(ENT(pPlayer->pev), 1);
+	SET_MODEL(ENT(pPlayer->pev), "models/player.mdl");
+
+	pPlayer->SetThink(NULL);
+
+	CBaseEntity *Target = UTIL_FindEntityByClassname(NULL, "trigger_camera");
+	pPlayer->m_pIntroCamera = Target;
+
+	if (mp && mp->m_bMapHasCameras == MAP_HAS_CAMERAS_INIT)
+	{
+		mp->m_bMapHasCameras = (Target != NULL);
+	}
+
+	if (pPlayer->m_pIntroCamera)
+		Target = UTIL_FindEntityByTargetname(NULL, STRING(pPlayer->m_pIntroCamera->pev->target));
+
+	if (pPlayer->m_pIntroCamera && Target)
+	{
+		Vector CamAngles = UTIL_VecToAngles((Target->pev->origin - pPlayer->m_pIntroCamera->pev->origin).Normalize());
+		CamAngles.x = -CamAngles.x;
+
+		UTIL_SetOrigin(pPlayer->pev, pPlayer->m_pIntroCamera->pev->origin);
+
+		pPlayer->pev->angles = CamAngles;
+		pPlayer->pev->v_angle = pPlayer->pev->angles;
+
+		pPlayer->m_fIntroCamTime = gpGlobals->time + 6;
+		pPlayer->pev->view_ofs = g_vecZero;
+	}
+	else
+	{
+		pPlayer->m_iTeam = CT;
+
+		if (mp)
+		{
+			mp->GetPlayerSpawnSpot(pPlayer);
+		}
+
+		pPlayer->m_iTeam = UNASSIGNED;
+		pPlayer->pev->v_angle = g_vecZero;
+		pPlayer->pev->angles = gpGlobals->v_forward;
+	}
+
+	TheBots->OnEvent(EVENT_PLAYER_CHANGED_TEAM, (CBaseEntity *)pPlayer);
+	pPlayer->m_iJoiningState = SHOWLTEXT;
+	
+	static char sName[128];
+	Q_strcpy(sName, STRING(pPlayer->pev->netname));
+
+	for (char *pApersand = sName; pApersand && *pApersand != '\0'; pApersand++)
+	{
+		if (*pApersand == '%')
+			*pApersand = ' ';
+	}
+
+	UTIL_ClientPrintAll(HUD_PRINTNOTIFY, "#Game_connected", (sName[0] != '\0') ? sName : "<unconnected>");
 }
 
 /* <478f7> ../cstrike/dlls/client.cpp:792 */
-NOBODY int Q_strlen_(const char *str)
+int Q_strlen_(const char *str)
 {
-//	{
-//		int count;                                            //   794
-//	}
+	int count = 0;
+	if (str && *str)
+	{
+		while (str[count++ + 1]);
+	}
+	return count;
 }
 
 /* <4bbff> ../cstrike/dlls/client.cpp:814 */
-NOBODY void Host_Say(edict_t *pEntity, int teamonly)
+void Host_Say(edict_t *pEntity, int teamonly)
 {
-//	{
-//		class CBasePlayer *client;                           //   816
-//		int j;                                                //   817
-//		char *p;                                             //   818
-//		char text;                                            //   819
-//		char szTemp;                                          //   820
-//		const char *cpSay;                                  //   821
-//		const char *cpSayTeam;                              //   822
-//		const char *pcmd;                                   //   823
-//		bool bSenderDead;                                     //   824
-//		entvars_t *pev;                                      //   827
-//		class CBasePlayer *player;                           //   828
-//		const char *placeName;                              //   913
-//		char *pszFormat;                                     //   933
-//		char *pszConsoleFormat;                              //   934
-//		bool consoleUsesPlaceName;                            //   935
-//		CMD_ARGV(int i);  //   823
-//		CMD_ARGC(void);  //   846
-//		CMD_ARGC(void);  //   853
-//		Q_strlen(const char *str);  //   910
-//		{
-//			Place playerPlace;                            //   916
-//			const BotPhraseList *placeList;             //   917
-//			int i;                                        //   918
-//			{
-//				const_iterator iter;                  //   921
-//				operator++(_List_const_iterator<BotPhrase*> *const this);  //   921
-//			}
-//		}
-//		{
-//			char *pAmpersand;                            //  1026
-//		}
-//		edict(CBaseEntity *const this);  //  1044
-//		FNullEnt(const edict_t *pent);  //  1044
-//		MESSAGE_BEGIN(int msg_dest,
-//				int msg_type,
-//				const float *pOrigin,
-//				entvars_t *ent);  //  1085
-//		ENTINDEX(edict_t *pEdict);  //  1086
-//		CMD_ARGC(void);  //   865
-//		MESSAGE_BEGIN(int msg_dest,
-//				int msg_type,
-//				const float *pOrigin,
-//				entvars_t *ent);  //  1101
-//		ENTINDEX(edict_t *pEdict);  //  1102
-//		{
-//			char *fullText;                              //  1115
-//		}
-//		{
-//			char *temp;                                  //  1129
-//			char *szTeam;                                //  1130
-//			char *deadText;                              //  1131
-//			edict(CBaseEntity *const this);  //  1156
-//			edict(CBaseEntity *const this);  //  1156
-//		}
-//	}
+	CBasePlayer *client;
+	int j;
+	char *p;
+	char text[128];
+	char szTemp[256];
+	const char *cpSay = "say";
+	const char *cpSayTeam = "say_team";
+	const char *pcmd = CMD_ARGV_(0);
+	bool bSenderDead = false;
+
+	entvars_t *pev = &pEntity->v;
+	CBasePlayer *player = GetClassPtr((CBasePlayer *)pev);
+
+	if (player->m_flLastTalk != 0.0f && gpGlobals->time - player->m_flLastTalk < 0.66f)
+		return;
+
+	player->m_flLastTalk = gpGlobals->time;
+
+	if (player->pev->deadflag != DEAD_NO)
+		bSenderDead = true;
+
+	// We can get a raw string now, without the "say " prepended
+	if (CMD_ARGC_() == 0)
+		return;
+
+	if (!Q_stricmp(pcmd, cpSay) || !Q_stricmp(pcmd, cpSayTeam))
+	{
+		if (CMD_ARGC_() >= 2)
+		{
+			p = (char *)CMD_ARGS();
+		}
+		else
+		{
+			// say with a blank message, nothing to do
+			return;
+		}
+	}
+	else // Raw text, need to prepend argv[0]
+	{
+		if (CMD_ARGC_() >= 2)
+		{
+			Q_sprintf(szTemp, "%s %s", (char *)pcmd, (char *)CMD_ARGS());
+		}
+		else
+		{
+			// Just a one word command, use the first word...sigh
+			Q_sprintf(szTemp, "%s", (char *)pcmd);
+		}
+
+		p = szTemp;
+	}
+
+	// remove quotes if present
+	if (*p == '"')
+	{
+		p++;
+		p[Q_strlen(p) - 1] = '\0';
+	}
+
+	// make sure the text has content
+	if (!p || !p[0] || !Q_UnicodeValidate(p))
+	{
+		// no character found, so say nothing
+		return;
+	}
+
+	Q_StripUnprintableAndSpace(p);
+
+	if (Q_strlen(p) <= 0)
+		return;
+
+	const char *placeName = NULL;
+	char *pszFormat = NULL;
+	char *pszConsoleFormat = NULL;
+	bool consoleUsesPlaceName = false;
+
+	if (teamonly)
+	{
+		if (player->m_iTeam == CT || player->m_iTeam == TERRORIST)
+		{
+			// search the place name where is located the player
+			Place playerPlace = TheNavAreaGrid.GetPlace(&player->pev->origin);
+			const BotPhraseList *placeList = TheBotPhrases->GetPlaceList();
+
+			for (BotPhraseList::const_iterator iter = placeList->begin(); iter != placeList->end(); ++iter)
+			{
+				if ((*iter)->GetID() == playerPlace)
+				{
+					placeName = (*iter)->GetName();
+					break;
+				}
+			}
+		}
+
+		if (player->m_iTeam == CT)
+		{
+			if (bSenderDead)
+			{
+				pszFormat = "#Cstrike_Chat_CT_Dead";
+				pszConsoleFormat = "*DEAD*(Counter-Terrorist) %s : %s";
+			}
+			else if (placeName != NULL)
+			{
+				pszFormat = "#Cstrike_Chat_CT_Loc";
+				pszConsoleFormat = "*(Counter-Terrorist) %s @ %s : %s";
+				consoleUsesPlaceName = true;
+			}
+			else
+			{
+				pszFormat = "#Cstrike_Chat_CT";
+				pszConsoleFormat = "(Counter-Terrorist) %s : %s";
+			}
+		}
+		else if (player->m_iTeam == TERRORIST)
+		{
+			if (bSenderDead)
+			{
+				pszFormat = "#Cstrike_Chat_T_Dead";
+				pszConsoleFormat = "*DEAD*(Terrorist) %s : %s";
+			}
+			else if (placeName != NULL)
+			{
+				pszFormat = "#Cstrike_Chat_T_Loc";
+				pszConsoleFormat = "(Terrorist) %s @ %s : %s";
+				consoleUsesPlaceName = true;
+			}
+			else
+			{
+				pszFormat = "#Cstrike_Chat_T";
+				pszConsoleFormat = "(Terrorist) %s : %s";
+			}
+		}
+		else
+		{
+			pszFormat = "#Cstrike_Chat_Spec";
+			pszConsoleFormat = "(Spectator) %s : %s";
+		}
+	}
+	else
+	{
+		if (bSenderDead)
+		{
+			if (player->m_iTeam == SPECTATOR)
+			{
+				pszFormat = "#Cstrike_Chat_AllSpec";
+				pszConsoleFormat = "*SPEC* %s : %s";
+			}
+			else
+			{
+				pszFormat = "#Cstrike_Chat_AllDead";
+				pszConsoleFormat = "*DEAD* %s : %s";
+			}
+		}
+		else
+		{
+			pszFormat = "#Cstrike_Chat_All";
+			pszConsoleFormat = "%s : %s";
+		}
+	}
+
+	text[0] = '\0';
+
+	// -3 for /n and null terminator
+	j = sizeof(text) - 3 - Q_strlen(text) - Q_strlen(pszFormat);
+
+	if (placeName != NULL)
+	{
+		j -= Q_strlen(placeName) + 1;
+	}
+
+	if ((signed int)Q_strlen(p) > j)
+		p[j] = 0;
+
+	for (char *pAmpersand = p; pAmpersand != NULL && *pAmpersand != '\0'; pAmpersand++)
+	{
+		if (pAmpersand[0] == '%')
+		{
+			if (pAmpersand[1] != 'l' && pAmpersand[1] != ' ' && pAmpersand[1] != '\0')
+			{
+				pAmpersand[0] = ' ';
+			}
+		}
+	}
+
+	Q_strcat(text, p);
+	Q_strcat(text, "\n");
+
+	// loop through all players
+	// Start with the first player.
+	// This may return the world in single player if the client types something between levels or during spawn
+	// so check it, or it will infinite loop
+
+	client = NULL;
+	while ((client = (CBasePlayer *)UTIL_FindEntityByClassname(client, "player")) != NULL)
+	{
+		if (FNullEnt(client->edict()))
+			break;
+
+		if (!client->pev)
+			continue;
+
+		if (client->edict() == pEntity)
+			continue;
+
+		// Not a client ? (should never be true)
+		if (!client->IsNetClient())
+			continue;
+
+		// can the receiver hear the sender? or has he muted him?
+		if (gpGlobals->deathmatch != 0.0f && g_pGameRules->m_VoiceGameMgr.PlayerHasBlockedPlayer(client, player))
+			continue;
+
+		if (teamonly && client->m_iTeam != player->m_iTeam)
+			continue;
+
+		if ((client->pev->deadflag != DEAD_NO && !bSenderDead) || (client->pev->deadflag == DEAD_NO && bSenderDead))
+		{
+			if (!(player->pev->flags & FL_PROXY))
+				continue;
+		}
+
+		if ((client->m_iIgnoreGlobalChat == IGNOREMSG_ENEMY && client->m_iTeam == player->m_iTeam)
+			|| client->m_iIgnoreGlobalChat == IGNOREMSG_NONE)
+		{
+			MESSAGE_BEGIN(MSG_ONE, gmsgSayText, NULL, client->pev);
+				WRITE_BYTE(ENTINDEX(pEntity));
+				WRITE_STRING(pszFormat);
+				WRITE_STRING("");
+				WRITE_STRING(text);
+
+				if (placeName != NULL)
+				{
+					WRITE_STRING(placeName);
+				}
+
+			MESSAGE_END();
+		}
+	}
+
+	char *fullText = p;
+
+	// print to the sending client
+	MESSAGE_BEGIN(MSG_ONE, gmsgSayText, NULL, &pEntity->v);
+		WRITE_BYTE(ENTINDEX(pEntity));
+		WRITE_STRING(pszFormat);
+		WRITE_STRING("");
+		WRITE_STRING(text);
+
+		if (placeName != NULL)
+		{
+			WRITE_STRING(placeName);
+		}
+
+	MESSAGE_END();
+
+	// echo to server console
+	if (pszConsoleFormat)
+	{
+		if (placeName && consoleUsesPlaceName)
+			SERVER_PRINT(UTIL_VarArgs(pszConsoleFormat, STRING(player->pev->netname), placeName, text));
+		else
+			SERVER_PRINT(UTIL_VarArgs(pszConsoleFormat, STRING(player->pev->netname), text));
+	}
+	else
+		SERVER_PRINT(text);
+
+	if (CVAR_GET_FLOAT("mp_logmessages") != 0)
+	{
+		char *temp;
+		char *szTeam = GetTeam(player->m_iTeam);
+		char *deadText = "";
+
+		if (teamonly)
+			temp = "say_team";
+		else
+			temp = "say";
+
+		if (player->m_iTeam != SPECTATOR && bSenderDead)
+		{
+			deadText = " (dead)";
+		}
+		
+		UTIL_LogPrintf
+		(
+			"\"%s<%i><%s><%s>\" %s \"%s\"%s\n",
+			STRING(player->pev->netname),
+			GETPLAYERUSERID(player->edict()),
+			GETPLAYERAUTHID(player->edict()),
+			szTeam,
+			temp,
+			fullText,
+			deadText
+		);
+	}
 }
 
 /* <4865e> ../cstrike/dlls/client.cpp:1160 */
-NOBODY inline void DropSecondary(CBasePlayer *pPlayer)
+void DropSecondary(CBasePlayer *pPlayer)
 {
-//	{
-//		class CBasePlayerWeapon *pWeapon;                    //  1166
-//	}
+	if (pPlayer->HasShield())
+	{
+		if (pPlayer->HasShield() && pPlayer->m_bShieldDrawn && pPlayer->m_pActiveItem != NULL)
+			((CBasePlayerWeapon *)pPlayer->m_pActiveItem)->SecondaryAttack();
+
+		pPlayer->m_bShieldDrawn = false;
+	}
+
+	CBasePlayerWeapon *pWeapon = (CBasePlayerWeapon *)pPlayer->m_rgpPlayerItems[ PISTOL_SLOT ];
+
+	if (pWeapon != NULL)
+	{
+		pPlayer->DropPlayerItem(STRING(pWeapon->pev->classname));
+	}
+
 }
 
 /* <473db> ../cstrike/dlls/client.cpp:1182 */
-NOBODY void DropPrimary(CBasePlayer *pPlayer)
+void DropPrimary(CBasePlayer *pPlayer)
 {
+	if (pPlayer->HasShield())
+	{
+		pPlayer->DropShield();
+		return;
+	}
+
+	if (pPlayer->m_rgpPlayerItems[ PRIMARY_WEAPON_SLOT ])
+	{
+		pPlayer->DropPlayerItem(STRING(pPlayer->m_rgpPlayerItems[ PRIMARY_WEAPON_SLOT ]->pev->classname));
+	}
 }
 
 /* <483a2> ../cstrike/dlls/client.cpp:1197 */
-NOBODY bool CanBuyThis(CBasePlayer *pPlayer, int iWeapon)
+bool CanBuyThis(CBasePlayer *pPlayer, int iWeapon)
 {
-//	{
-//		class CHalfLifeMultiplay *mp;                        //  1199
-//	}
+	CHalfLifeMultiplay *mp = g_pGameRules;
+
+	if (pPlayer->HasShield() && iWeapon == WEAPON_ELITE)
+	{
+		return false;
+	}
+
+	if (pPlayer->HasShield() && iWeapon == WEAPON_SHIELDGUN)
+	{
+		return false;
+	}
+
+	if (pPlayer->m_rgpPlayerItems[ PISTOL_SLOT ] != NULL && pPlayer->m_rgpPlayerItems[ PISTOL_SLOT ]->m_iId == WEAPON_ELITE && iWeapon == WEAPON_SHIELDGUN)
+	{
+		return false;
+	}
+
+	if (pPlayer->m_rgpPlayerItems[ PRIMARY_WEAPON_SLOT ] != NULL && pPlayer->m_rgpPlayerItems[ PRIMARY_WEAPON_SLOT ]->m_iId == iWeapon)
+	{
+		if (g_bClientPrintEnable)
+		{
+			ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Cstrike_Already_Own_Weapon");
+		}
+
+		return false;
+	}
+
+	if (pPlayer->m_rgpPlayerItems[ PISTOL_SLOT ] != NULL && pPlayer->m_rgpPlayerItems[ PISTOL_SLOT ]->m_iId == iWeapon)
+	{
+		if (g_bClientPrintEnable)
+		{
+			ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Cstrike_Already_Own_Weapon");
+		}
+
+		return false;
+	}
+
+	if (!CanBuyWeaponByMaptype(pPlayer->m_iTeam, (WeaponIdType)iWeapon, (mp->m_iMapHasVIPSafetyZone == MAP_HAVE_VIP_SAFETYZONE_YES)))
+	{
+		if (g_bClientPrintEnable)
+		{
+			ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Cannot_Buy_This");
+		}
+
+		return false;
+	}
+
+	return true;
 }
 
 /* <48696> ../cstrike/dlls/client.cpp:1247 */
-NOBODY void BuyPistol(CBasePlayer *pPlayer, int iSlot)
+void BuyPistol(CBasePlayer *pPlayer, int iSlot)
 {
-//	{
-//		int iWeapon;                                          //  1249
-//		int iWeaponPrice;                                     //  1250
-//		const char *pszWeapon;                              //  1251
-//		BlinkAccount(CBasePlayer *player,
-//				int numBlinks);  //  1320
-//		DropSecondary(CBasePlayer *pPlayer);  //  1305
-//	}
+	int iWeapon = 0;
+	int iWeaponPrice = 0;
+	const char *pszWeapon = NULL;
+
+	if (!pPlayer->CanPlayerBuy(true))
+	{
+		return;
+	}
+
+	if (iSlot < 1 || iSlot > 5)
+	{
+		return;
+	}
+
+	switch (iSlot)
+	{
+		case 1:
+		{
+			iWeapon = WEAPON_GLOCK18;
+			iWeaponPrice = GLOCK18_PRICE;
+			pszWeapon = "weapon_glock18";
+			break;
+		}
+		case 2:
+		{
+			iWeapon = WEAPON_USP;
+			iWeaponPrice = USP_PRICE;
+			pszWeapon = "weapon_usp";
+			break;
+		}
+		case 3:
+		{
+			iWeapon = WEAPON_P228;
+			iWeaponPrice = P228_PRICE;
+			pszWeapon = "weapon_p228";
+			break;
+		}
+		case 4:
+		{
+			iWeapon = WEAPON_DEAGLE;
+			iWeaponPrice = DEAGLE_PRICE;
+			pszWeapon = "weapon_deagle";
+			break;
+		}
+		case 5:
+		{
+			if (pPlayer->m_iTeam == CT)
+			{
+				iWeapon = WEAPON_FIVESEVEN;
+				iWeaponPrice = FIVESEVEN_PRICE;
+				pszWeapon = "weapon_fiveseven";
+			}
+			else
+			{
+				iWeapon = WEAPON_ELITE;
+				iWeaponPrice = ELITE_PRICE;
+				pszWeapon = "weapon_elite";
+			}
+
+			break;
+		}
+	}
+
+	if (!CanBuyThis(pPlayer, iWeapon))
+	{
+		return;
+	}
+
+	if (pPlayer->m_iAccount < iWeaponPrice)
+	{
+		if (g_bClientPrintEnable)
+		{
+			ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Not_Enough_Money");
+			BlinkAccount(pPlayer, 2);
+		}
+
+		return;
+	}
+
+	DropSecondary(pPlayer);
+
+	pPlayer->GiveNamedItem(pszWeapon);
+	pPlayer->AddAccount(-iWeaponPrice);
+
+	if (TheTutor)
+	{
+		TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, pPlayer);
+	}
 }
 
 /* <487b0> ../cstrike/dlls/client.cpp:1325 */
-NOBODY void BuyShotgun(CBasePlayer *pPlayer, int iSlot)
+void BuyShotgun(CBasePlayer *pPlayer, int iSlot)
 {
-//	{
-//		int iWeapon;                                          //  1327
-//		int iWeaponPrice;                                     //  1328
-//		const char *pszWeapon;                              //  1329
-//		BlinkAccount(CBasePlayer *player,
-//				int numBlinks);  //  1373
-//		DropPrimary(CBasePlayer *pPlayer);  //  1359
-//	}
+	int iWeapon = 0;
+	int iWeaponPrice = 0;
+	const char *pszWeapon = NULL;
+
+	if (!pPlayer->CanPlayerBuy(true))
+	{
+		return;
+	}
+
+	if (iSlot < 1 || iSlot > 2)
+	{
+		return;
+	}
+
+	switch (iSlot)
+	{
+		case 1:
+		{
+			iWeapon = WEAPON_M3;
+			iWeaponPrice = M3_PRICE;
+			pszWeapon = "weapon_m3";
+			break;
+		}
+		case 2:
+		{
+			iWeapon = WEAPON_XM1014;
+			iWeaponPrice = XM1014_PRICE;
+			pszWeapon = "weapon_xm1014";
+			break;
+		}
+	}
+
+	if (!CanBuyThis(pPlayer, iWeapon))
+	{
+		return;
+	}
+
+	if (pPlayer->m_iAccount < iWeaponPrice)
+	{
+		if (g_bClientPrintEnable)
+		{
+			ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Not_Enough_Money");
+			BlinkAccount(pPlayer, 2);
+		}
+
+		return;
+	}
+
+	DropPrimary(pPlayer);
+
+	pPlayer->GiveNamedItem(pszWeapon);
+	pPlayer->AddAccount(-iWeaponPrice);
+
+	if (TheTutor)
+	{
+		TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, pPlayer);
+	}
 }
 
 /* <488b5> ../cstrike/dlls/client.cpp:1378 */
-NOBODY void BuySubMachineGun(CBasePlayer *pPlayer, int iSlot)
+void BuySubMachineGun(CBasePlayer *pPlayer, int iSlot)
 {
-//	{
-//		int iWeapon;                                          //  1380
-//		int iWeaponPrice;                                     //  1381
-//		const char *pszWeapon;                              //  1382
-//		BlinkAccount(CBasePlayer *player,
-//				int numBlinks);  //  1445
-//		DropPrimary(CBasePlayer *pPlayer);  //  1431
-//	}
+	int iWeapon = 0;
+	int iWeaponPrice = 0;
+	const char *pszWeapon = NULL;
+
+	if (!pPlayer->CanPlayerBuy(true))
+	{
+		return;
+	}
+
+	if (iSlot < 1 || iSlot > 4)
+	{
+		return;
+	}
+
+	switch (iSlot)
+	{
+		case 1:
+		{
+			if (pPlayer->m_iTeam == CT)
+			{
+				iWeapon = WEAPON_TMP;
+				iWeaponPrice = TMP_PRICE;
+				pszWeapon = "weapon_tmp";
+			}
+			else
+			{
+				iWeapon = WEAPON_MAC10;
+				iWeaponPrice = MAC10_PRICE;
+				pszWeapon = "weapon_mac10";
+			}
+
+			break;
+		}
+		case 2:
+		{
+			iWeapon = WEAPON_MP5N;
+			iWeaponPrice = MP5NAVY_PRICE;
+			pszWeapon = "weapon_mp5navy";
+			break;
+		}
+		case 3:
+		{
+			iWeapon = WEAPON_UMP45;
+			iWeaponPrice = UMP45_PRICE;
+			pszWeapon = "weapon_mp5navy";
+			break;
+		}
+		case 4:
+		{
+			iWeapon = WEAPON_P90;
+			iWeaponPrice = P90_PRICE;
+			pszWeapon = "weapon_p90";
+			break;
+		}
+	}
+
+	if (!CanBuyThis(pPlayer, iWeapon))
+	{
+		return;
+	}
+
+	if (pPlayer->m_iAccount < iWeaponPrice)
+	{
+		if (g_bClientPrintEnable)
+		{
+			ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Not_Enough_Money");
+			BlinkAccount(pPlayer, 2);
+		}
+
+		return;
+	}
+
+	DropPrimary(pPlayer);
+
+	pPlayer->GiveNamedItem(pszWeapon);
+	pPlayer->AddAccount(-iWeaponPrice);
+
+	if (TheTutor)
+	{
+		TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, pPlayer);
+	}
 }
 
 /* <489bb> ../cstrike/dlls/client.cpp:1450 */
-NOBODY void BuyWeaponByWeaponID(CBasePlayer *pPlayer, WeaponIdType weaponID)
+void BuyWeaponByWeaponID(CBasePlayer *pPlayer, WeaponIdType weaponID)
 {
-//	{
-//		const class WeaponInfoStruct *info;                 //  1463
-//		BlinkAccount(CBasePlayer *player,
-//				int numBlinks);  //  1493
-//		DropPrimary(CBasePlayer *pPlayer);  //  1474
-//		DropSecondary(CBasePlayer *pPlayer);  //  1478
-//	}
+	if (!pPlayer->CanPlayerBuy(true))
+	{
+		return;
+	}
+
+	if (!CanBuyThis(pPlayer, weaponID))
+	{
+		return;
+	}
+
+	WeaponInfoStruct *info = GetWeaponInfo(weaponID);
+
+	if (!info || !info->entityName)
+	{
+		return;
+	}
+
+	if (pPlayer->m_iAccount < info->cost)
+	{
+		if (g_bClientPrintEnable)
+		{
+			ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Not_Enough_Money");
+			BlinkAccount(pPlayer, 2);
+		}
+
+		return;
+	}
+
+	if (IsPrimaryWeapon(weaponID))
+	{
+		DropPrimary(pPlayer);
+	}
+	else
+	{
+		DropSecondary(pPlayer);
+	}
+
+	pPlayer->GiveNamedItem(info->entityName);
+	pPlayer->AddAccount(-info->cost);
+
+	if (TheTutor)
+	{
+		TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, pPlayer);
+	}
 }
 
 /* <48adf> ../cstrike/dlls/client.cpp:1498 */
-NOBODY void BuyRifle(CBasePlayer *pPlayer, int iSlot)
+void BuyRifle(CBasePlayer *pPlayer, int iSlot)
 {
-//	{
-//		int iWeapon;                                          //  1500
-//		int iWeaponPrice;                                     //  1501
-//		bool bIsCT;                                           //  1502
-//		const char *pszWeapon;                              //  1503
-//		BlinkAccount(CBasePlayer *player,
-//				int numBlinks);  //  1624
-//		DropPrimary(CBasePlayer *pPlayer);  //  1610
-//	}
+	int iWeapon = 0;
+	int iWeaponPrice = 0;
+	bool bIsCT = false;
+	const char *pszWeapon = NULL;
+
+	if (!pPlayer->CanPlayerBuy(true))
+	{
+		return;
+	}
+
+	if (iSlot < 1 || iSlot > 6)
+	{
+		return;
+	}
+
+	if (pPlayer->m_iTeam == CT)
+		bIsCT = true;
+
+	switch (iSlot)
+	{
+		case 2:
+		{
+			if (bIsCT)
+			{
+				iWeapon = WEAPON_SCOUT;
+				iWeaponPrice = SCOUT_PRICE;
+				pszWeapon = "weapon_scout";
+			}
+			else
+			{
+				iWeapon = WEAPON_AK47;
+				iWeaponPrice = AK47_PRICE;
+				pszWeapon = "weapon_ak47";
+			}
+
+			break;
+		}
+		case 3:
+		{
+			if (bIsCT)
+			{
+				iWeapon = WEAPON_M4A1;
+				iWeaponPrice = M4A1_PRICE;
+				pszWeapon = "weapon_m4a1";
+			}
+			else
+			{
+				iWeapon = WEAPON_SCOUT;
+				iWeaponPrice = SCOUT_PRICE;
+				pszWeapon = "weapon_scout";
+			}
+
+			break;
+		}
+		case 4:
+		{
+			if (bIsCT)
+			{
+				iWeapon = WEAPON_AUG;
+				iWeaponPrice = AUG_PRICE;
+				pszWeapon = "weapon_aug";
+			}
+			else
+			{
+				iWeapon = WEAPON_SG552;
+				iWeaponPrice = SG552_PRICE;
+				pszWeapon = "weapon_sg552";
+			}
+
+			break;
+		}
+		case 5:
+		{
+			if (bIsCT)
+			{
+				iWeapon = WEAPON_SG550;
+				iWeaponPrice = SG550_PRICE;
+				pszWeapon = "weapon_sg550";
+			}
+			else
+			{
+				iWeapon = WEAPON_AWP;
+				iWeaponPrice = AWP_PRICE;
+				pszWeapon = "weapon_awp";
+			}
+
+			break;
+		}
+		case 6:
+		{
+			if (bIsCT)
+			{
+				iWeapon = WEAPON_AWP;
+				iWeaponPrice = AWP_PRICE;
+				pszWeapon = "weapon_awp";
+			}
+			else
+			{
+				iWeapon = WEAPON_G3SG1;
+				iWeaponPrice = G3SG1_PRICE;
+				pszWeapon = "weapon_g3sg1";
+			}
+
+			break;
+		}
+		default:
+		{
+			if (bIsCT)
+			{
+				iWeapon = WEAPON_FAMAS;
+				iWeaponPrice = FAMAS_PRICE;
+				pszWeapon = "weapon_famas";
+			}
+			else
+			{
+				iWeapon = WEAPON_GALIL;
+				iWeaponPrice = GALIL_PRICE;
+				pszWeapon = "weapon_galil";
+			}
+
+			break;
+		}
+	}
+
+	if (!CanBuyThis(pPlayer, iWeapon))
+	{
+		return;
+	}
+
+	if (pPlayer->m_iAccount < iWeaponPrice)
+	{
+		if (g_bClientPrintEnable)
+		{
+			ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Not_Enough_Money");
+			BlinkAccount(pPlayer, 2);
+		}
+
+		return;
+	}
+
+	DropPrimary(pPlayer);
+
+	pPlayer->GiveNamedItem(pszWeapon);
+	pPlayer->AddAccount(-iWeaponPrice);
+
+	if (TheTutor)
+	{
+		TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, pPlayer);
+	}
 }
 
 /* <48bf5> ../cstrike/dlls/client.cpp:1629 */
-NOBODY void BuyMachineGun(CBasePlayer *pPlayer, int iSlot)
+void BuyMachineGun(CBasePlayer *pPlayer, int iSlot)
 {
-//	{
-//		int iWeapon;                                          //  1631
-//		int iWeaponPrice;                                     //  1632
-//		const char *pszWeapon;                              //  1633
-//		BlinkAccount(CBasePlayer *player,
-//				int numBlinks);  //  1672
-//		DropPrimary(CBasePlayer *pPlayer);  //  1658
-//	}
+	int iWeapon = WEAPON_M249;
+	int iWeaponPrice = M249_PRICE;
+	const char *pszWeapon = "weapon_m249";
+
+	if (!pPlayer->CanPlayerBuy(true))
+	{
+		return;
+	}
+
+	if (iSlot != 1)
+	{
+		return;
+	}
+
+	if (!CanBuyThis(pPlayer, iWeapon))
+	{
+		return;
+	}
+
+	if (pPlayer->m_iAccount < iWeaponPrice)
+	{
+		if (g_bClientPrintEnable)
+		{
+			ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Not_Enough_Money");
+			BlinkAccount(pPlayer, 2);
+		}
+
+		return;
+	}
+
+	DropPrimary(pPlayer);
+
+	pPlayer->GiveNamedItem(pszWeapon);
+	pPlayer->AddAccount(-iWeaponPrice);
+
+	if (TheTutor)
+	{
+		TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, pPlayer);
+	}
 }
 
 /* <473f8> ../cstrike/dlls/client.cpp:1677 */
-NOBODY void BuyItem(CBasePlayer *pPlayer, int iSlot)
+void BuyItem(CBasePlayer *pPlayer, int iSlot)
 {
-//	{
-//		int iItem;                                            //  1679
-//		int iItemPrice;                                       //  1680
-//		const char *pszItem;                                //  1681
-//		{
-//			int fullArmor;                                //  1743
-//			int helmet;                                   //  1744
-//			int price;                                    //  1746
-//			int enoughMoney;                              //  1746
-//		}
-//	}
+	//int iItem = 0;
+	int iItemPrice = 0;
+	const char *pszItem = NULL;
+
+	if (!pPlayer->CanPlayerBuy(true))
+		return;
+
+	if (pPlayer->m_iTeam == CT)
+	{
+		if (iSlot < 1 || iSlot > 8)
+			return;
+	}
+	else
+	{
+		if (iSlot < 1 || iSlot > 6)
+			return;
+	}
+
+	int fullArmor = (pPlayer->pev->armorvalue >= 100);
+	int helmet = (pPlayer->m_iKevlar == ARMOR_TYPE_HELMET);
+	//int price;
+	int enoughMoney = 1;
+
+	switch (iSlot)
+	{
+		case MENU_SLOT_ITEM_VEST:
+		{
+			if (fullArmor)
+			{
+				if (g_bClientPrintEnable)
+				{
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Already_Have_Kevlar");
+				}
+
+				return;
+			}
+
+			if (pPlayer->m_iAccount >= KEVLAR_PRICE)
+			{
+				if (helmet)
+				{
+					if (g_bClientPrintEnable)
+					{
+						ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Already_Have_Helmet_Bought_Kevlar");
+					}
+				}
+
+				pszItem = "item_kevlar";
+				iItemPrice = KEVLAR_PRICE;
+			}
+			else
+				enoughMoney = 0;
+
+			break;
+		}
+		case MENU_SLOT_ITEM_VESTHELM:
+		{
+			if (fullArmor)
+			{
+				if (helmet)
+				{
+					if (g_bClientPrintEnable)
+					{
+						ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Already_Have_Kevlar_Helmet");
+					}
+
+					return;
+				}
+
+				if (pPlayer->m_iAccount >= HELMET_PRICE)
+				{
+					if (g_bClientPrintEnable)
+					{
+						ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Already_Have_Kevlar_Bought_Helmet");
+					}
+
+					pszItem = "item_assaultsuit";
+					iItemPrice = HELMET_PRICE;
+				}
+				else
+					enoughMoney = 0;
+
+				break;
+			}
+			else
+			{
+				if (helmet)
+				{
+					if (pPlayer->m_iAccount >= KEVLAR_PRICE)
+					{
+						if (g_bClientPrintEnable)
+						{
+							ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Already_Have_Helmet_Bought_Kevlar");
+						}
+
+						pszItem = "item_assaultsuit";
+						iItemPrice = KEVLAR_PRICE;
+					}
+					else
+						enoughMoney = 0;
+				}
+				else
+				{
+					if (pPlayer->m_iAccount >= ASSAULTSUIT_PRICE)
+					{
+						pszItem = "item_assaultsuit";
+						iItemPrice = ASSAULTSUIT_PRICE;
+					}
+					else
+						enoughMoney = 0;
+				}
+			}
+
+			break;
+		}
+		case MENU_SLOT_ITEM_FLASHGREN:
+		{
+			if (pPlayer->AmmoInventory(pPlayer->GetAmmoIndex("Flashbang")) >= 2)
+			{
+				if (g_bClientPrintEnable)
+				{
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Cannot_Carry_Anymore");
+				}
+
+				return;
+			}
+
+			if (pPlayer->m_iAccount >= FLASHBANG_PRICE)
+			{
+				pszItem = "weapon_flashbang";
+				iItemPrice = FLASHBANG_PRICE;
+
+			}
+			else
+				enoughMoney = 0;
+
+			break;
+		}
+		case MENU_SLOT_ITEM_HEGREN:
+		{
+			if (pPlayer->AmmoInventory(pPlayer->GetAmmoIndex("HEGrenade")) >= 1)
+			{
+				if (g_bClientPrintEnable)
+				{
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Cannot_Carry_Anymore");
+				}
+
+				return;
+			}
+
+			if (pPlayer->m_iAccount >= HEGRENADE_PRICE)
+			{
+				pszItem = "weapon_hegrenade";
+				iItemPrice = HEGRENADE_PRICE;
+			}
+			else
+				enoughMoney = 0;
+
+			break;
+		}
+		case MENU_SLOT_ITEM_SMOKEGREN:
+		{
+			if (pPlayer->AmmoInventory(pPlayer->GetAmmoIndex("SmokeGrenade")) >= 1)
+			{
+				if (g_bClientPrintEnable)
+				{
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Cannot_Carry_Anymore");
+				}
+
+				return;
+			}
+
+			if (pPlayer->m_iAccount >= SMOKEGRENADE_PRICE)
+			{
+				pszItem = "weapon_smokegrenade";
+				iItemPrice = SMOKEGRENADE_PRICE;
+			}
+			else
+				enoughMoney = 0;
+
+			break;
+		}
+		case MENU_SLOT_ITEM_NVG:
+		{
+			if (pPlayer->m_bHasNightVision)
+			{
+				if (g_bClientPrintEnable)
+				{
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Already_Have_One");
+				}
+
+				return;
+			}
+
+			if (pPlayer->m_iAccount >= NVG_PRICE)
+			{
+				if (!(pPlayer->m_flDisplayHistory & DHF_NIGHTVISION))
+				{
+					pPlayer->HintMessage("#Hint_use_nightvision");
+					pPlayer->m_flDisplayHistory |= DHF_NIGHTVISION;
+				}
+
+				EMIT_SOUND(ENT(pPlayer->pev), CHAN_ITEM, "items/equip_nvg.wav", VOL_NORM, ATTN_NORM);
+
+				pPlayer->m_bHasNightVision = true;
+				pPlayer->AddAccount(-NVG_PRICE);
+
+				SendItemStatus(pPlayer);
+			}
+			else
+				enoughMoney = 0;
+			
+			break;
+		}
+		case MENU_SLOT_ITEM_DEFUSEKIT:
+		{
+			if (pPlayer->m_iTeam != CT || !g_pGameRules->m_bMapHasBombTarget)
+			{
+				return;
+			}
+
+			if (pPlayer->m_bHasDefuser)
+			{
+				if (g_bClientPrintEnable)
+				{
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Already_Have_One");
+				}
+
+				return;
+			}
+
+			if (pPlayer->m_iAccount >= DEFUSEKIT_PRICE)
+			{
+				pPlayer->m_bHasDefuser = true;
+
+				MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, NULL, pPlayer->pev);
+					WRITE_BYTE(STATUSICON_SHOW);
+					WRITE_STRING("defuser");
+					WRITE_BYTE(0);
+					WRITE_BYTE(160);
+					WRITE_BYTE(0);
+				MESSAGE_END();
+
+				pPlayer->pev->body = 1;
+				pPlayer->AddAccount(-DEFUSEKIT_PRICE);
+
+				EMIT_SOUND(ENT(pPlayer->pev), CHAN_ITEM, "items/kevlar.wav", VOL_NORM, ATTN_NORM);
+				SendItemStatus(pPlayer);
+			}
+			else
+				enoughMoney = 0;
+
+			break;
+		}
+		case MENU_SLOT_ITEM_SHIELD:
+		{
+			if (!CanBuyThis(pPlayer, WEAPON_SHIELDGUN))
+			{
+				return;
+			}
+
+			if (pPlayer->m_iAccount >= SHIELDGUN_PRICE)
+			{
+				DropPrimary(pPlayer);
+
+				pPlayer->GiveShield(true);
+				pPlayer->AddAccount(-SHIELDGUN_PRICE);
+
+				EMIT_SOUND(ENT(pPlayer->pev), CHAN_ITEM, "items/gunpickup2.wav", VOL_NORM, ATTN_NORM);
+			}
+			else
+				enoughMoney = 0;
+
+			break;
+		}
+	}
+
+	if (!enoughMoney)
+	{
+		if (g_bClientPrintEnable)
+		{
+			ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Not_Enough_Money");
+			BlinkAccount(pPlayer, 2);
+		}
+
+		return;
+	}
+
+	if (pszItem != NULL)
+	{
+		pPlayer->GiveNamedItem(pszItem);
+		pPlayer->AddAccount(-iItemPrice);
+	}
+
+	if (TheTutor)
+	{
+		TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, pPlayer);
+	}
 }
 
 /* <48d40> ../cstrike/dlls/client.cpp:1998 */
-NOBODY void HandleMenu_ChooseAppearance(CBasePlayer *player, int slot)
+void HandleMenu_ChooseAppearance(CBasePlayer *player, int slot)
 {
-//	{
-//		class CHalfLifeMultiplay *mp;                        //  2000
-//		class  appearance;                                    //  2007
-//		int numSkins;                                         //  2009
-//		edict(CBaseEntity *const this);  //  2183
-//		entindex(CBaseEntity *const this);  //  2183
-//	}
+	CHalfLifeMultiplay *mp = g_pGameRules;
+	int numSkins = UTIL_IsGame("czero") ? CZ_NUM_SKIN : CS_NUM_SKIN;
+
+	struct
+	{
+		ModelName model_id;
+		char *model_name;
+		int model_name_index;
+		
+	} appearance;
+
+	Q_memset(&appearance, 0, sizeof(appearance));
+
+	if (player->m_iTeam == TERRORIST)
+	{
+		if ((slot > numSkins || slot < 1) && (!TheBotProfiles->GetCustomSkin(slot) || !player->IsBot()))
+		{
+			slot = RANDOM_LONG(1, numSkins);
+		}
+
+		switch (slot)
+		{
+		case 1:
+			appearance.model_id = MODEL_TERROR;
+			appearance.model_name = "terror";
+			break;
+		case 2:
+			appearance.model_id = MODEL_LEET;
+			appearance.model_name = "leet";
+			break;
+		case 3:
+			appearance.model_id = MODEL_ARCTIC;
+			appearance.model_name = "arctic";
+			break;
+		case 4:
+			appearance.model_id = MODEL_GUERILLA;
+			appearance.model_name = "guerilla";
+			break;
+		case 5:
+			if (UTIL_IsGame("czero"))
+			{
+				appearance.model_id = MODEL_MILITIA;
+				appearance.model_name = "militia";
+				break;
+			}
+		default:
+			if (TheBotProfiles->GetCustomSkinModelname(slot) && player->IsBot())
+			{
+				appearance.model_name = (char *)TheBotProfiles->GetCustomSkinModelname(slot);
+			}
+			else
+			{
+				appearance.model_id = MODEL_TERROR;
+				appearance.model_name = "terror";
+			}
+			break;
+		}
+
+		// default T model models/player/terror/terror.mdl
+		appearance.model_name_index = 8;
+
+	}
+	else if (player->m_iTeam == CT)
+	{
+		if ((slot > numSkins || slot < 1) && (!TheBotProfiles->GetCustomSkin(slot) || !player->IsBot()))
+		{
+			slot = RANDOM_LONG(1, numSkins);
+		}
+
+		switch (slot)
+		{
+		case 1:
+			appearance.model_id = MODEL_URBAN;
+			appearance.model_name = "urban";
+			break;
+		case 2:
+			appearance.model_id = MODEL_GSG9;
+			appearance.model_name = "gsg9";
+			break;
+		case 3:
+			appearance.model_id = MODEL_SAS;
+			appearance.model_name = "sas";
+			break;
+		case 4:
+			appearance.model_id = MODEL_GIGN;
+			appearance.model_name = "gign";
+			break;
+		case 5:
+			if (UTIL_IsGame("czero"))
+			{
+				appearance.model_id = MODEL_SPETSNAZ;
+				appearance.model_name = "spetsnaz";
+				break;
+			}
+		default:
+			if (TheBotProfiles->GetCustomSkinModelname(slot) && player->IsBot())
+			{
+				appearance.model_name = (char *)TheBotProfiles->GetCustomSkinModelname(slot);
+			}
+			else
+			{
+				appearance.model_id = MODEL_URBAN;
+				appearance.model_name = "urban";
+			}
+			break;
+		}
+
+		// default CT model models/player/urban/urban.mdl
+		appearance.model_name_index = 9;
+	}
+
+	player->m_iMenu = Menu_OFF;
+
+	if (player->m_iJoiningState != JOINED)
+	{
+		if (player->m_iJoiningState == PICKINGTEAM)
+		{
+			player->m_iJoiningState = GETINTOGAME;
+
+			if (mp->IsCareer())
+			{
+				if (!player->IsBot())
+				{
+					mp->CheckWinConditions();
+				}
+			}
+		}
+	}
+	else
+		mp->CheckWinConditions();
+
+	player->pev->body = 0;
+	player->m_iModelName = appearance.model_id;
+
+	SET_CLIENT_KEY_VALUE(player->entindex(), GET_INFO_BUFFER(player->edict()), "model", appearance.model_name);
+	player->SetNewPlayerModel(sPlayerModelFiles[ appearance.model_name_index ]);
+
+	if (mp->m_iMapHasVIPSafetyZone == MAP_VIP_SAFETYZONE_INIT)
+	{
+		if ((UTIL_FindEntityByClassname(NULL, "func_vip_safetyzone")) != NULL)
+			mp->m_iMapHasVIPSafetyZone = MAP_HAVE_VIP_SAFETYZONE_YES;
+		else
+			mp->m_iMapHasVIPSafetyZone = MAP_HAVE_VIP_SAFETYZONE_NO;
+	}
+
+	if (mp->m_iMapHasVIPSafetyZone == MAP_HAVE_VIP_SAFETYZONE_YES)
+	{
+		if (!mp->m_pVIP && player->m_iTeam == CT)
+		{
+			player->MakeVIP();
+		}
+	}
 }
 
 /* <48e4b> ../cstrike/dlls/client.cpp:2214 */
-NOBODY BOOL HandleMenu_ChooseTeam(CBasePlayer *player, int slot)
+BOOL HandleMenu_ChooseTeam(CBasePlayer *player, int slot)
 {
-//	{
-//		class CHalfLifeMultiplay *mp;                        //  2216
-//		enum TeamName team;                                   //  2217
-//		edict_t *pentSpawnSpot;                              //  2218
-//		int oldTeam;                                          //  2525
-//		char *szOldTeam;                                     //  2540
-//		char *szNewTeam;                                     //  2541
-//		edict(CBaseEntity *const this);  //  2235
-//		edict(CBaseEntity *const this);  //  2323
-//		edict(CBaseEntity *const this);  //  2323
-//		MESSAGE_BEGIN(int msg_dest,
-//				int msg_type,
-//				const float *pOrigin,
-//				entvars_t *ent);  //  2331
-//		TeamChangeUpdate(CBasePlayer *player,
-//				int team_id);  //  2349
-//		MESSAGE_BEGIN(int msg_dest,
-//				int msg_type,
-//				const float *pOrigin,
-//				edict_t *ed);  //  2336
-//		edict(CBaseEntity *const this);  //  2337
-//		ENTINDEX(edict_t *pEdict);  //  2337
-//		VARS(edict_t *pent);  //  2352
-//		Vector(Vector *const this,
-//			const Vector &v);  //  2352
-//		VARS(edict_t *pent);  //  2352
-//		Vector(Vector *const this,
-//			const Vector &v);  //  2352
-//		MESSAGE_BEGIN(int msg_dest,
-//				int msg_type,
-//				const float *pOrigin,
-//				edict_t *ed);  //  2355
-//		edict(CBaseEntity *const this);  //  2356
-//		ENTINDEX(edict_t *pEdict);  //  2356
-//		{
-//			bool madeRoom;                                //  2402
-//		}
-//		edict(CBaseEntity *const this);  //  2378
-//		{
-//			cvar_t humans_join_team;                      //  2435
-//			int humanTeam;                                //  2436
-//		}
-//		{
-//			bool isCZero;                                 //  2494
-//		}
-//		TeamChangeUpdate(CBasePlayer *player,
-//				int team_id);  //  2531
-//		edict(CBaseEntity *const this);  //  2548
-//		edict(CBaseEntity *const this);  //  2548
-//		edict(CBaseEntity *const this);  //  2371
-//		Vector(Vector *const this,
-//			float X,
-//			float Y,
-//			float Z);  //  2363
-//		CheckStartMoney(void);  //  2466
-//	}
+	CHalfLifeMultiplay *mp = g_pGameRules;
+	TeamName team = UNASSIGNED;
+	int oldTeam;
+	char *szOldTeam;
+	char *szNewTeam;
+	const char *szName;
+
+	if (player->m_bIsVIP)
+	{
+		if (player->pev->deadflag == DEAD_NO)
+		{
+			ClientPrint(player->pev, HUD_PRINTCENTER, "#Cannot_Switch_From_VIP");
+			CLIENT_COMMAND(ENT(player->pev), "slot10\n");
+
+			return TRUE;
+		}
+
+		if (g_pGameRules->IsVIPQueueEmpty())
+		{
+			ClientPrint(player->pev, HUD_PRINTCENTER, "#Cannot_Switch_From_VIP");
+			CLIENT_COMMAND(ENT(player->pev), "slot10\n");
+
+			return TRUE;
+		}
+	}
+
+	switch (slot)
+	{
+		case MENU_SLOT_TEAM_TERRORIST:
+			team = TERRORIST;
+			break;
+		case MENU_SLOT_TEAM_CT:
+			team = CT;
+			break;
+		case MENU_SLOT_TEAM_VIP:
+		{
+			if (mp->m_iMapHasVIPSafetyZone != MAP_HAVE_VIP_SAFETYZONE_YES || player->m_iTeam != CT)
+			{
+				return FALSE;
+			}
+
+			mp->AddToVIPQueue(player);
+			CLIENT_COMMAND(ENT(player->pev), "slot10\n");
+			return TRUE;
+		}
+		case MENU_SLOT_TEAM_RANDOM:
+		{
+			team = SelectDefaultTeam();
+
+			if (team == UNASSIGNED)
+			{
+				bool madeRoom = false;
+				if (cv_bot_auto_vacate.value > 0.0f && !player->IsBot())
+				{
+					team = (RANDOM_LONG(0, 1) == 0) ? TERRORIST : CT;
+
+					if (UTIL_KickBotFromTeam(team))
+						madeRoom = true;
+					else
+					{
+						if (team == CT)
+							team = TERRORIST;
+						else
+							team = CT;
+
+						if (UTIL_KickBotFromTeam(team))
+						{
+							madeRoom = true;
+						}
+					}
+				}
+
+				if (!madeRoom)
+				{
+					ClientPrint(player->pev, HUD_PRINTCENTER, "#All_Teams_Full");
+					return FALSE;
+				}
+			}
+			break;
+		}
+		case MENU_SLOT_TEAM_SPECT:
+		{
+			if (!allow_spectators.value)
+			{
+				if (!(player->pev->flags & FL_PROXY))
+				{
+					ClientPrint(player->pev, HUD_PRINTCENTER, "#Cannot_Be_Spectator");
+					CLIENT_COMMAND(ENT(player->pev), "slot10\n");
+
+					return FALSE;
+				}
+			}
+
+			if (player->m_iTeam == SPECTATOR)
+			{
+				return TRUE;
+			}
+
+			if (!mp->IsFreezePeriod())
+			{
+				if (player->pev->deadflag == DEAD_NO)
+				{
+					ClientPrint(player->pev, HUD_PRINTCENTER, "#Cannot_Be_Spectator");
+					CLIENT_COMMAND(ENT(player->pev), "slot10\n");
+
+					return FALSE;
+				}
+			}
+
+			if (player->m_iTeam != UNASSIGNED)
+			{
+				if (player->pev->deadflag == DEAD_NO)
+				{
+					ClientKill(player->edict());
+					player->pev->frags++;
+				}
+			}
+
+			player->RemoveAllItems(TRUE);
+			player->m_bHasC4 = false;
+
+			if (player->m_iTeam != SPECTATOR)
+			{
+				// notify other clients of player joined to team spectator
+				UTIL_LogPrintf
+				(
+					"\"%s<%i><%s><%s>\" joined team \"SPECTATOR\"\n",
+					STRING(player->pev->netname),
+					GETPLAYERUSERID(player->edict()),
+					GETPLAYERAUTHID(player->edict()),
+					GetTeam(player->m_iTeam)
+				);
+			}
+
+			player->m_iTeam = SPECTATOR;
+			player->m_iJoiningState = JOINED;
+			player->m_iAccount = 0;
+
+			MESSAGE_BEGIN(MSG_ONE, gmsgMoney, NULL, player->pev);
+				WRITE_LONG(player->m_iAccount);
+				WRITE_BYTE(0);
+			MESSAGE_END();
+
+			MESSAGE_BEGIN(MSG_BROADCAST, gmsgScoreInfo);
+				WRITE_BYTE(ENTINDEX(player->edict()));
+				WRITE_SHORT((int)player->pev->frags);
+				WRITE_SHORT(player->m_iDeaths);
+				WRITE_SHORT(0);
+				WRITE_SHORT(0);
+			MESSAGE_END();
+
+			player->m_pIntroCamera = NULL;
+			player->m_bTeamChanged = true;
+
+			TheBots->OnEvent(EVENT_PLAYER_CHANGED_TEAM, player);
+
+			TeamChangeUpdate(player, player->m_iTeam);
+
+			edict_t *pentSpawnSpot = mp->GetPlayerSpawnSpot(player);
+			player->StartObserver(VARS(pentSpawnSpot)->origin, VARS(pentSpawnSpot)->angles);
+
+			MESSAGE_BEGIN(MSG_ALL, gmsgSpectator);
+				WRITE_BYTE(ENTINDEX(player->edict()));
+				WRITE_BYTE(1);
+			MESSAGE_END();
+
+			if (fadetoblack.value)
+			{
+				UTIL_ScreenFade(player, Vector(0, 0, 0), 0.001, 0, 0, 0);
+			}
+
+			return TRUE;
+		}
+	}
+
+	if (mp->TeamFull(team) && (cv_bot_auto_vacate.value <= 0.0f || player->IsBot() || !UTIL_KickBotFromTeam(team)))
+	{
+		if (team == TERRORIST)
+			ClientPrint(player->pev, HUD_PRINTCENTER, "#Terrorists_Full");
+		else
+			ClientPrint(player->pev, HUD_PRINTCENTER, "#CTs_Full");
+
+		return FALSE;
+	}
+
+	if (mp->TeamStacked(team, player->m_iTeam))
+	{
+		if (team == TERRORIST)
+			ClientPrint(player->pev, HUD_PRINTCENTER, "#Too_Many_Terrorists");
+		else
+			ClientPrint(player->pev, HUD_PRINTCENTER, "#Too_Many_CTs");
+
+		return FALSE;
+	}
+
+	if (!player->IsBot() && team != SPECTATOR)
+	{
+		int humanTeam = UNASSIGNED;
+
+		if (!Q_stricmp(humans_join_team.string, "CT"))
+		{
+			humanTeam = CT;
+		}
+		else if (!Q_stricmp(humans_join_team.string, "T"))
+		{
+			humanTeam = TERRORIST;
+		}
+
+		if (humanTeam != UNASSIGNED && team != humanTeam)
+		{
+			if (team == TERRORIST)
+				ClientPrint(player->pev, HUD_PRINTCENTER, "#Humans_Join_Team_CT");
+			else
+				ClientPrint(player->pev, HUD_PRINTCENTER, "#Humans_Join_Team_T");
+
+			return FALSE;
+		}
+	}
+
+	if (player->m_bTeamChanged)
+	{
+		if (player->pev->deadflag != DEAD_NO)
+		{
+			ClientPrint(player->pev, HUD_PRINTCENTER, "#Only_1_Team_Change");
+
+			return FALSE;
+		}
+	}
+
+	if (player->m_iTeam == SPECTATOR && team != SPECTATOR)
+	{
+		player->m_bNotKilled = true;
+		player->m_iIgnoreGlobalChat = IGNOREMSG_NONE;
+		player->m_iTeamKills = 0;
+
+		CheckStartMoney();
+
+		player->m_iAccount = (int)startmoney.value;
+		player->pev->solid = SOLID_NOT;
+		player->pev->movetype = MOVETYPE_NOCLIP;
+		player->pev->effects = EF_NODRAW;
+		player->pev->effects |= EF_NOINTERP;
+		player->pev->takedamage = DAMAGE_NO;
+		player->pev->deadflag = DEAD_DEAD;
+		player->pev->velocity = g_vecZero;
+		player->pev->punchangle = g_vecZero;
+		player->m_bHasNightVision = false;
+		player->m_iHostagesKilled = 0;
+		player->m_fDeadTime = 0;
+		player->has_disconnected = false;
+		player->m_iJoiningState = GETINTOGAME;
+
+		SendItemStatus(player);
+		SET_CLIENT_MAXSPEED(ENT(player->pev), 1);
+		SET_MODEL(ENT(player->pev), "models/player.mdl");
+	}
+
+	if (!g_pGameRules->IsCareer())
+	{
+		bool isCZero = UTIL_IsGame("czero");
+
+		switch (team)
+		{
+		case CT:
+			if (isCZero)
+				ShowVGUIMenu(player, VGUI_Menu_Class_CT, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6), "#CT_Select");
+			else
+				ShowVGUIMenu(player, VGUI_Menu_Class_CT, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5), "#CT_Select");
+			break;
+
+		case TERRORIST:
+			if (isCZero)
+				ShowVGUIMenu(player, VGUI_Menu_Class_T, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6), "#Terrorist_Select");
+			else
+				ShowVGUIMenu(player, VGUI_Menu_Class_T, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5), "#Terrorist_Select");
+			break;
+		}
+	}
+
+	player->m_iMenu = Menu_ChooseAppearance;
+
+	if (player->pev->deadflag == DEAD_NO)
+	{
+		ClientKill(player->edict());
+	}
+
+	player->m_bTeamChanged = true;
+	oldTeam = player->m_iTeam;
+	player->m_iTeam = team;
+
+	TheBots->OnEvent(EVENT_PLAYER_CHANGED_TEAM, player);
+
+	TeamChangeUpdate(player, team);
+
+	if (player->pev->netname)
+	{
+		szName = STRING(player->pev->netname);
+
+		if (!szName[0])
+			szName = "<unconnected>";
+	}
+	else
+		szName = "<unconnected>";
+
+	szOldTeam = GetTeam(oldTeam);
+	szNewTeam = GetTeam(team);
+
+	UTIL_ClientPrintAll(HUD_PRINTNOTIFY, (team == TERRORIST) ? "#Game_join_terrorist" : "#Game_join_ct", szName);
+	UTIL_LogPrintf
+	(
+		"\"%s<%i><%s><%s>\" joined team \"%s\"\n",
+		STRING(player->pev->netname),
+		GETPLAYERUSERID(player->edict()),
+		GETPLAYERAUTHID(player->edict()),
+		szOldTeam,
+		szNewTeam
+	);
+
+	return TRUE;
 }
 
 /* <474a0> ../cstrike/dlls/client.cpp:2553 */
-NOBODY void Radio1(CBasePlayer *player, int slot)
+void Radio1(CBasePlayer *player, int slot)
 {
+	if (player->m_flRadioTime >= gpGlobals->time)
+	{
+		return;
+	}
+
+	if (player->m_iRadioMessages <= 0)
+	{
+		return;
+	}
+
+	player->m_iRadioMessages--;
+	player->m_flRadioTime = gpGlobals->time + 1.5f;
+
+	switch (slot)
+	{
+	case 1:
+		player->Radio("%!MRAD_COVERME", "#Cover_me");
+		break;
+	case 2:
+		player->Radio("%!MRAD_TAKEPOINT", "#You_take_the_point");
+		break;
+	case 3:
+		player->Radio("%!MRAD_POSITION", "#Hold_this_position");
+		break;
+	case 4:
+		player->Radio("%!MRAD_REGROUP", "#Regroup_team");
+		break;
+	case 5:
+		player->Radio("%!MRAD_FOLLOWME", "#Follow_me");
+		break;
+	case 6:
+		player->Radio("%!MRAD_HITASSIST", "#Taking_fire");
+		break;
+	}
+
+	TheBots->OnEvent((GameEventType)(EVENT_START_RADIO_1 + slot), player);
 }
 
 /* <474ca> ../cstrike/dlls/client.cpp:2596 */
-NOBODY void Radio2(CBasePlayer *player, int slot)
+void Radio2(CBasePlayer *player, int slot)
 {
+	if (player->m_flRadioTime >= gpGlobals->time)
+	{
+		return;
+	}
+
+	if (player->m_iRadioMessages <= 0)
+	{
+		return;
+	}
+
+	player->m_iRadioMessages--;
+	player->m_flRadioTime = gpGlobals->time + 1.5f;
+
+	switch (slot)
+	{
+	case 1:
+		player->Radio("%!MRAD_GO", "#Go_go_go");
+		break;
+	case 2:
+		player->Radio("%!MRAD_FALLBACK", "#Team_fall_back");
+		break;
+	case 3:
+		player->Radio("%!MRAD_STICKTOG", "#Stick_together_team");
+		break;
+	case 4:
+		player->Radio("%!MRAD_GETINPOS", "#Get_in_position_and_wait");
+		break;
+	case 5:
+		player->Radio("%!MRAD_STORMFRONT", "#Storm_the_front");
+		break;
+	case 6:
+		player->Radio("%!MRAD_REPORTIN", "#Report_in_team");
+		break;
+	}
+
+	TheBots->OnEvent((GameEventType)(EVENT_START_RADIO_2 + slot), player);
 }
 
 /* <474f4> ../cstrike/dlls/client.cpp:2639 */
-NOBODY void Radio3(CBasePlayer *player, int slot)
+void Radio3(CBasePlayer *player, int slot)
 {
+	if (player->m_flRadioTime >= gpGlobals->time)
+	{
+		return;
+	}
+
+	if (player->m_iRadioMessages <= 0)
+	{
+		return;
+	}
+
+	player->m_iRadioMessages--;
+	player->m_flRadioTime = gpGlobals->time + 1.5f;
+
+	switch (slot)
+	{
+	case 1:
+		if (RANDOM_LONG(0, 1))
+			player->Radio("%!MRAD_AFFIRM", "#Affirmative");
+		else
+			player->Radio("%!MRAD_ROGER", "#Roger_that");
+
+		break;
+	case 2:
+		player->Radio("%!MRAD_ENEMYSPOT", "#Enemy_spotted");
+		break;
+	case 3:
+		player->Radio("%!MRAD_BACKUP", "#Need_backup");
+		break;
+	case 4:
+		player->Radio("%!MRAD_CLEAR", "#Sector_clear");
+		break;
+	case 5:
+		player->Radio("%!MRAD_INPOS", "#In_position");
+		break;
+	case 6:
+		player->Radio("%!MRAD_REPRTINGIN", "#Reporting_in");
+		break;
+	case 7:
+		player->Radio("%!MRAD_BLOW", "#Get_out_of_there");
+		break;
+	case 8:
+		player->Radio("%!MRAD_NEGATIVE", "#Negative");
+		break;
+	case 9:
+		player->Radio("%!MRAD_ENEMYDOWN", "#Enemy_down");
+		break;
+	}
+
+	TheBots->OnEvent((GameEventType)(EVENT_START_RADIO_3 + slot), player);
 }
 
 /* <49402> ../cstrike/dlls/client.cpp:2698 */
-NOBODY bool BuyGunAmmo(CBasePlayer &player, CBasePlayerItem &weapon, bool bBlinkMoney)
+bool BuyGunAmmo(CBasePlayer *player, CBasePlayerItem *weapon, bool bBlinkMoney)
 {
-//	{
-//		int nAmmo;                                            //  2706
-//		int cost;                                             //  2719
-//		const char *classname;                              //  2720
-//		iMaxAmmo1(CBasePlayerItem *const this);  //  2713
-//		BlinkAccount(CBasePlayer *player,
-//				int numBlinks);  //  2873
-//	}
+	int cost;
+	const char *classname;
+
+	if (!player->CanPlayerBuy(true))
+	{
+		return false;
+	}
+
+	int nAmmo = weapon->PrimaryAmmoIndex();
+	if (nAmmo == -1)
+	{
+		return false;
+	}
+
+	if (player->m_rgAmmo[ nAmmo ] >= weapon->iMaxAmmo1())
+	{
+		return false;
+	}
+
+	switch (weapon->m_iId)
+	{
+	case WEAPON_AWP:
+		cost = AMMO_338MAG_PRICE;
+		classname = "ammo_338magnum";
+		break;
+	case WEAPON_SCOUT:
+	case WEAPON_G3SG1:
+	case WEAPON_AK47:
+		cost = AMMO_762MM_PRICE;
+		classname = "ammo_762nato";
+		break;
+	case WEAPON_XM1014:
+	case WEAPON_M3:
+		cost = AMMO_BUCKSHOT_PRICE;
+		classname = "ammo_buckshot";
+		break;
+	case WEAPON_MAC10:
+	case WEAPON_UMP45:
+	case WEAPON_USP:
+		cost = AMMO_45ACP_PRICE;
+		classname = "ammo_45acp";
+		break;
+	case WEAPON_M249:
+		cost = AMMO_556MM_PRICE;
+		classname = "ammo_556natobox";
+		break;
+	case WEAPON_FIVESEVEN:
+	case WEAPON_P90:
+		cost = AMMO_57MM_PRICE;
+		classname = "ammo_57mm";
+		break;
+	case WEAPON_ELITE:
+	case WEAPON_GLOCK18:
+	case WEAPON_MP5N:
+	case WEAPON_TMP:
+		cost = AMMO_9MM_PRICE;
+		classname = "ammo_9mm";
+		break;
+	case WEAPON_DEAGLE:
+		cost = AMMO_50AE_PRICE;
+		classname = "ammo_50ae";
+		break;
+	case WEAPON_P228:
+		cost = AMMO_357SIG_PRICE;
+		classname = "ammo_357sig";
+		break;
+	case WEAPON_AUG:
+	case WEAPON_SG550:
+	case WEAPON_GALIL:
+	case WEAPON_FAMAS:
+	case WEAPON_M4A1:
+	case WEAPON_SG552:
+		cost = AMMO_556MM_PRICE;
+		classname = "ammo_556nato";
+		break;
+	default:
+		ALERT(at_console, "Tried to buy ammo for an unrecognized gun\n");
+		return false;
+	}
+
+	if (player->m_iAccount >= cost)
+	{
+		player->GiveNamedItem(classname);
+		player->AddAccount(-cost);
+		return true;
+	}
+
+	if (bBlinkMoney)
+	{
+		if (g_bClientPrintEnable)
+		{
+			ClientPrint(player->pev, HUD_PRINTCENTER, "#Not_Enough_Money");
+			BlinkAccount(player, 2);
+		}
+	}
+
+	return false;
 }
 
 /* <4751e> ../cstrike/dlls/client.cpp:2884 */
-NOBODY bool BuyAmmo(CBasePlayer *player, int nSlot, bool bBlinkMoney)
+bool BuyAmmo(CBasePlayer *player, int nSlot, bool bBlinkMoney)
 {
-//	{
-//		class CBasePlayerItem *pItem;                        //  2901
-//	}
+	if (!player->CanPlayerBuy(true))
+	{
+		return false;
+	}
+
+	if (nSlot < PRIMARY_WEAPON_SLOT || nSlot > PISTOL_SLOT)
+	{
+		return false;
+	}
+
+	CBasePlayerItem *pItem = player->m_rgpPlayerItems[ nSlot ];
+
+	if (player->HasShield())
+	{
+		if (player->m_rgpPlayerItems[ PISTOL_SLOT ])
+			pItem = player->m_rgpPlayerItems[ PISTOL_SLOT ];
+	}
+
+	if (pItem != NULL)
+	{
+		while (BuyGunAmmo(player, pItem, bBlinkMoney))
+		{
+			pItem = pItem->m_pNext;
+
+			if (!pItem)
+			{
+				return true;
+			}
+		}
+	}
+
+	return false;
 }
 
 /* <4bb4a> ../cstrike/dlls/client.cpp:2933 */
-NOBODY CBaseEntity *EntityFromUserID(int userID)
+CBaseEntity *EntityFromUserID(int userID)
 {
-//	{
-//		class CBaseEntity *pTempEntity;                      //  2935
-//		class CBasePlayer *pTempPlayer;                      //  2936
-//		edict(CBaseEntity *const this);  //  2945
-//		edict(CBaseEntity *const this);  //  2939
-//		FNullEnt(const edict_t *pent);  //  2939
-//	}
+	CBaseEntity *pTempEntity = NULL;
+
+	while ((pTempEntity = UTIL_FindEntityByClassname(pTempEntity, "player")) != NULL)
+	{
+		if (FNullEnt(pTempEntity->edict()))
+			break;
+
+		CBasePlayer *pTempPlayer = GetClassPtr((CBasePlayer *)pTempEntity->pev);
+
+		if (pTempPlayer->m_iTeam != UNASSIGNED && userID == GETPLAYERUSERID(pTempEntity->edict()))
+		{
+			return pTempPlayer;
+		}
+	}
+
+	return NULL;
 }
 
 /* <4baa5> ../cstrike/dlls/client.cpp:2958 */
-NOBODY int CountPlayersInServer(void)
+NOXREF int CountPlayersInServer(void)
 {
-//	{
-//		int count;                                            //  2960
-//		class CBaseEntity *pTempEntity;                      //  2961
-//		class CBasePlayer *pTempPlayer;                      //  2962
-//		edict(CBaseEntity *const this);  //  2965
-//		FNullEnt(const edict_t *pent);  //  2965
-//	}
+	int count = 0;
+	CBaseEntity *pTempEntity = NULL;
+
+	while ((pTempEntity = UTIL_FindEntityByClassname(pTempEntity, "player")) != NULL)
+	{
+		if (FNullEnt(pTempEntity->edict()))
+			break;
+
+		CBasePlayer *pTempPlayer = GetClassPtr((CBasePlayer *)pTempEntity->pev);
+
+		if (pTempPlayer->m_iTeam != UNASSIGNED)
+		{
+			count++;
+		}
+	}
+
+	return count;
 }
 
 /* <4958c> ../cstrike/dlls/client.cpp:2983 */
-NOBODY BOOL HandleBuyAliasCommands(CBasePlayer *pPlayer, const char *pszCommand)
+BOOL HandleBuyAliasCommands(CBasePlayer *pPlayer, const char *pszCommand)
 {
-//	{
-//		BOOL bRetVal;                                         //  2985
-//		char *pszFailItem;                                   //  2986
-//		enum WeaponIdType weaponID;                           //  2988
-//		const char *weaponFailName;                         //  2989
-//		FStrEq(const char *sz1,
-//			const char *sz2);  //  3014
-//		FStrEq(const char *sz1,
-//			const char *sz2);  //  3030
-//		FStrEq(const char *sz1,
-//			const char *sz2);  //  3046
-//		FStrEq(const char *sz1,
-//			const char *sz2);  //  3051
-//		FStrEq(const char *sz1,
-//			const char *sz2);  //  3056
-//		FStrEq(const char *sz1,
-//			const char *sz2);  //  3061
-//		FStrEq(const char *sz1,
-//			const char *sz2);  //  3066
-//		FStrEq(const char *sz1,
-//			const char *sz2);  //  3071
-//		FStrEq(const char *sz1,
-//			const char *sz2);  //  3076
-//		BuyItem(CBasePlayer *pPlayer,
-//			int iSlot);  //  3081
-//		{
-//			class CHalfLifeMultiplay *mp;                //  2993
-//		}
-//		BuyAmmo(CBasePlayer *player,
-//			int nSlot,
-//			bool bBlinkMoney);  //  3020
-//		BuyAmmo(CBasePlayer *player,
-//			int nSlot,
-//			bool bBlinkMoney);  //  3036
-//		BuyItem(CBasePlayer *pPlayer,
-//			int iSlot);  //  3054
-//		BuyItem(CBasePlayer *pPlayer,
-//			int iSlot);  //  3049
-//		BuyItem(CBasePlayer *pPlayer,
-//			int iSlot);  //  3059
-//		BuyAmmo(CBasePlayer *player,
-//			int nSlot,
-//			bool bBlinkMoney);  //  3022
-//		BuyItem(CBasePlayer *pPlayer,
-//			int iSlot);  //  3074
-//		BuyAmmo(CBasePlayer *player,
-//			int nSlot,
-//			bool bBlinkMoney);  //  3038
-//		BuyItem(CBasePlayer *pPlayer,
-//			int iSlot);  //  3064
-//		BuyItem(CBasePlayer *pPlayer,
-//			int iSlot);  //  3069
-//		FStrEq(const char *sz1,
-//			const char *sz2);  //  3088
-//	}
+	BOOL bRetVal = FALSE;
+	//char *pszFailItem;
+
+	WeaponIdType weaponID = WEAPON_NONE;
+	const char *weaponFailName = BuyAliasToWeaponID(pszCommand, weaponID);
+
+	if (weaponID != WEAPON_NONE)
+	{
+		if (CanBuyWeaponByMaptype(pPlayer->m_iTeam, weaponID, (g_pGameRules->m_iMapHasVIPSafetyZone == MAP_HAVE_VIP_SAFETYZONE_YES)))
+		{
+			bRetVal = TRUE;
+			BuyWeaponByWeaponID(pPlayer, weaponID);
+		}
+		else if (weaponFailName != NULL)
+		{
+			bRetVal = TRUE;
+			if (g_bClientPrintEnable)
+			{
+				ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Alias_Not_Avail", weaponFailName);
+			}
+		}
+		else
+		{
+			bRetVal = TRUE;
+			if (g_bClientPrintEnable)
+			{
+				ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Cannot_Buy_This");
+			}
+		}
+	}
+	else
+	{
+		if (FStrEq(pszCommand, "primammo"))
+		{
+			bRetVal = TRUE;
+			if (BuyAmmo(pPlayer, PRIMARY_WEAPON_SLOT, true))
+			{
+				while (BuyAmmo(pPlayer, PRIMARY_WEAPON_SLOT, false))
+					;
+
+				if (TheTutor)
+				{
+					TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, pPlayer);
+				}
+			}
+		}
+		else if (FStrEq(pszCommand, "secammo"))
+		{
+			bRetVal = TRUE;
+			if (BuyAmmo(pPlayer, PISTOL_SLOT, true))
+			{
+				while (BuyAmmo(pPlayer, PISTOL_SLOT, false))
+					;
+
+				if (TheTutor)
+				{
+					TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, pPlayer);
+				}
+			}
+		}
+		else if (FStrEq(pszCommand, "vest"))
+		{
+			bRetVal = TRUE;
+			BuyItem(pPlayer, MENU_SLOT_ITEM_VEST);
+		}
+		else if (FStrEq(pszCommand, "vesthelm"))
+		{
+			bRetVal = TRUE;
+			BuyItem(pPlayer, MENU_SLOT_ITEM_VESTHELM);
+		}
+		else if (FStrEq(pszCommand, "flash"))
+		{
+			bRetVal = TRUE;
+			BuyItem(pPlayer, MENU_SLOT_ITEM_FLASHGREN);
+		}
+		else if (FStrEq(pszCommand, "hegren"))
+		{
+			bRetVal = TRUE;
+			BuyItem(pPlayer, MENU_SLOT_ITEM_HEGREN);
+		}
+		else if (FStrEq(pszCommand, "sgren"))
+		{
+			bRetVal = TRUE;
+			BuyItem(pPlayer, MENU_SLOT_ITEM_SMOKEGREN);
+		}
+		else if (FStrEq(pszCommand, "nvgs"))
+		{
+			bRetVal = TRUE;
+			BuyItem(pPlayer, MENU_SLOT_ITEM_NVG);
+		}
+		else if (FStrEq(pszCommand, "defuser"))
+		{
+			bRetVal = TRUE;
+			if (pPlayer->m_iTeam != CT)
+			{
+				if (g_bClientPrintEnable)
+				{
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Alias_Not_Avail", "#Bomb_Defusal_Kit");
+				}
+			}
+			else
+				BuyItem(pPlayer, MENU_SLOT_ITEM_DEFUSEKIT);
+		}
+		else if (FStrEq(pszCommand, "shield"))
+		{
+			bRetVal = TRUE;
+			if (pPlayer->m_iTeam != CT)
+			{
+				if (g_bClientPrintEnable)
+				{
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Alias_Not_Avail", "#TactShield_Desc");
+				}
+			}
+			else
+				BuyItem(pPlayer, MENU_SLOT_ITEM_SHIELD);
+		}
+	}
+
+	pPlayer->BuildRebuyStruct();
+	return bRetVal;
 }
 
 /* <49c3e> ../cstrike/dlls/client.cpp:3113 */
-NOBODY BOOL HandleRadioAliasCommands(CBasePlayer *pPlayer, const char *pszCommand)
+BOOL HandleRadioAliasCommands(CBasePlayer *pPlayer, const char *pszCommand)
 {
-//	{
-//		BOOL bRetVal;                                         //  3115
-//		FStrEq(const char *sz1,
-//			const char *sz2);  //  3118
-//		FStrEq(const char *sz1,
-//			const char *sz2);  //  3123
-//		FStrEq(const char *sz1,
-//			const char *sz2);  //  3128
-//		FStrEq(const char *sz1,
-//			const char *sz2);  //  3133
-//		FStrEq(const char *sz1,
-//			const char *sz2);  //  3138
-//		FStrEq(const char *sz1,
-//			const char *sz2);  //  3143
-//		FStrEq(const char *sz1,
-//			const char *sz2);  //  3149
-//		FStrEq(const char *sz1,
-//			const char *sz2);  //  3154
-//		FStrEq(const char *sz1,
-//			const char *sz2);  //  3159
-//		FStrEq(const char *sz1,
-//			const char *sz2);  //  3164
-//		FStrEq(const char *sz1,
-//			const char *sz2);  //  3169
-//		FStrEq(const char *sz1,
-//			const char *sz2);  //  3174
-//		FStrEq(const char *sz1,
-//			const char *sz2);  //  3180
-//		FStrEq(const char *sz1,
-//			const char *sz2);  //  3185
-//		FStrEq(const char *sz1,
-//			const char *sz2);  //  3190
-//		FStrEq(const char *sz1,
-//			const char *sz2);  //  3195
-//		FStrEq(const char *sz1,
-//			const char *sz2);  //  3200
-//		FStrEq(const char *sz1,
-//			const char *sz2);  //  3205
-//		FStrEq(const char *sz1,
-//			const char *sz2);  //  3210
-//		FStrEq(const char *sz1,
-//			const char *sz2);  //  3215
-//		FStrEq(const char *sz1,
-//			const char *sz2);  //  3220
-//		Radio3(CBasePlayer *player,
-//			int slot);  //  3223
-//		Radio1(CBasePlayer *player,
-//			int slot);  //  3121
-//		Radio1(CBasePlayer *player,
-//			int slot);  //  3131
-//		Radio2(CBasePlayer *player,
-//			int slot);  //  3152
-//		Radio1(CBasePlayer *player,
-//			int slot);  //  3126
-//		Radio1(CBasePlayer *player,
-//			int slot);  //  3136
-//		Radio1(CBasePlayer *player,
-//			int slot);  //  3141
-//		Radio1(CBasePlayer *player,
-//			int slot);  //  3146
-//		Radio3(CBasePlayer *player,
-//			int slot);  //  3183
-//		Radio2(CBasePlayer *player,
-//			int slot);  //  3157
-//		Radio2(CBasePlayer *player,
-//			int slot);  //  3162
-//		Radio2(CBasePlayer *player,
-//			int slot);  //  3167
-//		Radio2(CBasePlayer *player,
-//			int slot);  //  3172
-//		Radio2(CBasePlayer *player,
-//			int slot);  //  3177
-//		Radio3(CBasePlayer *player,
-//			int slot);  //  3188
-//		Radio3(CBasePlayer *player,
-//			int slot);  //  3193
-//		Radio3(CBasePlayer *player,
-//			int slot);  //  3198
-//		Radio3(CBasePlayer *player,
-//			int slot);  //  3203
-//		Radio3(CBasePlayer *player,
-//			int slot);  //  3208
-//		Radio3(CBasePlayer *player,
-//			int slot);  //  3213
-//		Radio3(CBasePlayer *player,
-//			int slot);  //  3218
-//	}
+	BOOL bRetVal = FALSE;
+
+	if (FStrEq(pszCommand, "coverme"))
+	{
+		bRetVal = TRUE;
+		Radio1(pPlayer, 1);
+	}
+	else if (FStrEq(pszCommand, "takepoint"))
+	{
+		bRetVal = TRUE;
+		Radio1(pPlayer, 2);
+	}
+	else if (FStrEq(pszCommand, "holdpos"))
+	{
+		bRetVal = TRUE;
+		Radio1(pPlayer, 3);
+	}
+	else if (FStrEq(pszCommand, "regroup"))
+	{
+		bRetVal = TRUE;
+		Radio1(pPlayer, 4);
+	}
+	else if (FStrEq(pszCommand, "followme"))
+	{
+		bRetVal = TRUE;
+		Radio1(pPlayer, 5);
+	}
+	else if (FStrEq(pszCommand, "takingfire"))
+	{
+		bRetVal = TRUE;
+		Radio1(pPlayer, 6);
+	}
+	else if (FStrEq(pszCommand, "go"))
+	{
+		bRetVal = TRUE;
+		Radio2(pPlayer, 1);
+	}
+	else if (FStrEq(pszCommand, "fallback"))
+	{
+		bRetVal = TRUE;
+		Radio2(pPlayer, 2);
+	}
+	else if (FStrEq(pszCommand, "sticktog"))
+	{
+		bRetVal = TRUE;
+		Radio2(pPlayer, 3);
+	}
+	else if (FStrEq(pszCommand, "getinpos"))
+	{
+		bRetVal = TRUE;
+		Radio2(pPlayer, 4);
+	}
+	else if (FStrEq(pszCommand, "stormfront"))
+	{
+		bRetVal = TRUE;
+		Radio2(pPlayer, 5);
+	}
+	else if (FStrEq(pszCommand, "report"))
+	{
+		bRetVal = TRUE;
+		Radio2(pPlayer, 6);
+	}
+	else if (FStrEq(pszCommand, "roger"))
+	{
+		bRetVal = TRUE;
+		Radio3(pPlayer, 1);
+	}
+	else if (FStrEq(pszCommand, "enemyspot"))
+	{
+		bRetVal = TRUE;
+		Radio3(pPlayer, 2);
+	}
+	else if (FStrEq(pszCommand, "needbackup"))
+	{
+		bRetVal = TRUE;
+		Radio3(pPlayer, 3);
+	}
+	else if (FStrEq(pszCommand, "sectorclear"))
+	{
+		bRetVal = TRUE;
+		Radio3(pPlayer, 4);
+	}
+	else if (FStrEq(pszCommand, "inposition"))
+	{
+		bRetVal = TRUE;
+		Radio3(pPlayer, 5);
+	}
+	else if (FStrEq(pszCommand, "reportingin"))
+	{
+		bRetVal = TRUE;
+		Radio3(pPlayer, 6);
+	}
+	else if (FStrEq(pszCommand, "getout"))
+	{
+		bRetVal = TRUE;
+		Radio3(pPlayer, 7);
+	}
+	else if (FStrEq(pszCommand, "negative"))
+	{
+		bRetVal = TRUE;
+		Radio3(pPlayer, 8);
+	}
+	else if (FStrEq(pszCommand, "enemydown"))
+	{
+		bRetVal = TRUE;
+		Radio3(pPlayer, 9);
+	}
+
+	return bRetVal;
 }
 
+// Use CMD_ARGV,  CMD_ARGV, and CMD_ARGC to get pointers the character string command.
+
 /* <4c6c1> ../cstrike/dlls/client.cpp:3234 */
-NOBODY void ClientCommand(edict_t *pEntity)
+void ClientCommand(edict_t *pEntity)
 {
-//	{
-//		const char *pcmd;                                   //  3236
-//		const char *pstr;                                   //  3237
-//		class CHalfLifeMultiplay *mp;                        //  3239
-//		entvars_t *pev;                                      //  3245
-//		class CBasePlayer *player;                           //  3246
-//		CMD_ARGV(int i);  //  3236
-//		FStrEq(const char *sz1,
-//			const char *sz2);  //  3248
-//		FStrEq(const char *sz1,
-//			const char *sz2);  //  3256
-//		FStrEq(const char *sz1,
-//			const char *sz2);  //  3264
-//		FStrEq(const char *sz1,
-//			const char *sz2);  //  3273
-//		{
-//			int iVoteID;                                  //  3294
-//			int iVoteFail;                                //  3295
-//			int iNumArgs;                                 //  3296
-//			const char *pszArg1;                        //  3297
-//			int iVoteLength;                              //  3298
-//			class CBaseEntity *pKickEntity;              //  3332
-//			class CBasePlayer *pKickPlayer;              //  3342
-//			CMD_ARGC(void);  //  3296
-//			CMD_ARGV(int i);  //  3297
-//			atoi(const char *__nptr);  //  3309
-//			CountTeamPlayers(int iTeam);  //  3326
-//		}
-//		FStrEq(const char *sz1,
-//			const char *sz2);  //  3363
-//		FStrEq(const char *sz1,
-//			const char *sz2);  //  3371
-//		{
-//			int iFailed;                                  //  3377
-//			int iVote;                                    //  3406
-//			CMD_ARGC(void);  //  3400
-//			CMD_ARGV(int i);  //  3406
-//			atoi(const char *__nptr);  //  3406
-//		}
-//		FStrEq(const char *sz1,
-//			const char *sz2);  //  3448
-//		{
-//			int iTimeRemaining;                           //  3454
-//			int iMinutes;                                 //  3458
-//			int iSeconds;                                 //  3458
-//			char secs;                                    //  3462
-//			char *temp;                                  //  3463
-//		}
-//		FStrEq(const char *sz1,
-//			const char *sz2);  //  3488
-//		FStrEq(const char *sz1,
-//			const char *sz2);  //  3496
-//		IsObserver(CBasePlayer *const this);  //  3930
-//		atoi(const char *__nptr);  //  3932
-//		IsObserver(CBasePlayer *const this);  //  3937
-//		{
-//			int slot;                                     //  3966
-//			atoi(const char *__nptr);  //  3966
-//		}
-//		{
-//			int i;                                        //  4037
-//			{
-//				class CBasePlayer *pObserver;        //  4039
-//				EMIT_SOUND(edict_t *entity,
-//						int channel,
-//						const char *sample,
-//						float volume,
-//						float attenuation);  //  4042
-//				MESSAGE_BEGIN(int msg_dest,
-//						int msg_type,
-//						const float *pOrigin,
-//						entvars_t *ent);  //  4043
-//			}
-//		}
-//		EMIT_SOUND(edict_t *entity,
-//				int channel,
-//				const char *sample,
-//				float volume,
-//				float attenuation);  //  4030
-//		MESSAGE_BEGIN(int msg_dest,
-//				int msg_type,
-//				const float *pOrigin,
-//				entvars_t *ent);  //  4031
-//		{
-//			int i;                                        //  4059
-//			{
-//				class CBasePlayer *pObserver;        //  4061
-//				EMIT_SOUND(edict_t *entity,
-//						int channel,
-//						const char *sample,
-//						float volume,
-//						float attenuation);  //  4064
-//				MESSAGE_BEGIN(int msg_dest,
-//						int msg_type,
-//						const float *pOrigin,
-//						entvars_t *ent);  //  4065
-//			}
-//		}
-//		EMIT_SOUND(edict_t *entity,
-//				int channel,
-//				const char *sample,
-//				float volume,
-//				float attenuation);  //  4052
-//		MESSAGE_BEGIN(int msg_dest,
-//				int msg_type,
-//				const float *pOrigin,
-//				entvars_t *ent);  //  4053
-//		strstr(const char *__haystack,
-//			const char *__needle);  //  4114
-//		{
-//			bool oldval;                                  //  4234
-//		}
-//		{
-//			bool oldval;                                  //  4246
-//		}
-//		{
-//			char command;                                 //  4270
-//		}
-//		{
-//			bool oldval;                                  //  4221
-//		}
-//		{
-//			bool oldval;                                  //  4210
-//			{
-//				int arg;                              //  4205
-//			}
-//		}
-//		{
-//			int slot;                                     //  3996
-//			atoi(const char *__nptr);  //  3996
-//		}
-//		{
-//			float val;                                    //  3925
-//			atof(const char *__nptr);  //  3925
-//			SetObserverAutoDirector(CBasePlayer *const this,
-//						bool val);  //  3926
-//		}
-//		{
-//			int mode;                                     //  3901
-//			atoi(const char *__nptr);  //  3901
-//			IsObserver(CBasePlayer *const this);  //  3903
-//			{
-//				int gmsgADStop;                       //  3918
-//				MESSAGE_BEGIN(int msg_dest,
-//						int msg_type,
-//						const float *pOrigin,
-//						entvars_t *ent);  //  3919
-//			}
-//		}
-//		{
-//			int slot;                                     //  3523
-//			atoi(const char *__nptr);  //  3523
-//		}
-//		MESSAGE_BEGIN(int msg_dest,
-//				int msg_type,
-//				const float *pOrigin,
-//				entvars_t *ent);  //  3504
-//	}
+	const char *pcmd = CMD_ARGV_(0);
+	const char *pstr = NULL;
+	CHalfLifeMultiplay *mp = g_pGameRules;
+
+	// Is the client spawned yet?
+	if (!pEntity->pvPrivateData)
+		return;
+
+	entvars_t *pev = &pEntity->v;
+	CBasePlayer *player = GetClassPtr((CBasePlayer *)pev);
+
+	if (FStrEq(pcmd, "say"))
+	{
+		if (gpGlobals->time >= player->m_flLastCommandTime[0])
+		{
+			player->m_flLastCommandTime[0] = gpGlobals->time + 0.3f;
+			Host_Say(pEntity, 0);
+		}
+	}
+	else if (FStrEq(pcmd, "say_team"))
+	{
+		if (gpGlobals->time >= player->m_flLastCommandTime[1])
+		{
+			player->m_flLastCommandTime[1] = gpGlobals->time + 0.3f;
+			Host_Say(pEntity, 1);
+		}
+	}
+	else if (FStrEq(pcmd, "fullupdate"))
+	{
+		if (gpGlobals->time >= player->m_flLastCommandTime[2])
+		{
+			player->m_flLastCommandTime[2] = gpGlobals->time + 0.6f;
+			player->ForceClientDllUpdate();
+		}
+	}
+	else if (FStrEq(pcmd, "vote"))
+	{
+		if (gpGlobals->time >= player->m_flLastCommandTime[3])
+		{
+			player->m_flLastCommandTime[3] = gpGlobals->time + 0.3f;
+
+			if (gpGlobals->time < player->m_flNextVoteTime)
+			{
+				ClientPrint(player->pev, HUD_PRINTCONSOLE, "#Wait_3_Seconds");
+				return;
+			}
+
+			player->m_flNextVoteTime = gpGlobals->time + 3;
+
+			if (player->m_iTeam != UNASSIGNED)
+			{
+				int iVoteID;
+				int iVoteFail = 0;
+				int iNumArgs = CMD_ARGC_();
+				const char *pszArg1 = CMD_ARGV_(1);
+				int iVoteLength = Q_strlen(pszArg1);
+
+				if (iNumArgs != 2 || iVoteLength <= 0 || iVoteLength > 6)
+				{
+					iVoteFail = 1;
+				}
+
+				iVoteID = Q_atoi(pszArg1);
+				if (iVoteID <= 0)
+				{
+					iVoteFail = 1;
+				}
+
+				if (iVoteFail)
+				{
+					ListPlayers(player);
+					ClientPrint(player->pev, HUD_PRINTCONSOLE, "#Game_vote_usage");
+					return;
+				}
+
+				if (CountTeamPlayers(player->m_iTeam) < 3)
+				{
+					ClientPrint(player->pev, HUD_PRINTCONSOLE, "#Cannot_Vote_With_Less_Than_Three");
+					return;
+				}
+
+				CBaseEntity *pKickEntity = EntityFromUserID(iVoteID);
+				if (pKickEntity != NULL)
+				{
+					CBasePlayer *pKickPlayer = GetClassPtr((CBasePlayer *)pKickEntity->pev);
+
+					if (pKickPlayer->m_iTeam != player->m_iTeam)
+					{
+						ClientPrint(player->pev, HUD_PRINTCONSOLE, "#Game_vote_players_on_your_team");
+						return;
+					}
+
+					if (pKickPlayer == player)
+					{
+						ClientPrint(player->pev, HUD_PRINTCONSOLE, "#Game_vote_not_yourself");
+						return;
+					}
+
+					ClientPrint(player->pev, HUD_PRINTCONSOLE, "#Game_vote_cast", UTIL_dtos1(iVoteID));
+					player->m_iCurrentKickVote = iVoteID;
+					ProcessKickVote(player, pKickPlayer);
+				}
+				else
+				{
+					ListPlayers(player);
+					ClientPrint(player->pev, HUD_PRINTCONSOLE, "#Game_vote_player_not_found", UTIL_dtos1(iVoteID));
+				}
+			}
+		}
+	}
+	else if (FStrEq(pcmd, "listmaps"))
+	{
+		if (gpGlobals->time >= player->m_flLastCommandTime[5])
+		{
+			player->m_flLastCommandTime[5] = gpGlobals->time + 0.3f;
+			mp->DisplayMaps(player, 0);
+		}
+	}
+	else if (FStrEq(pcmd, "votemap"))
+	{
+		if (gpGlobals->time >= player->m_flLastCommandTime[4])
+		{
+			player->m_flLastCommandTime[4] = gpGlobals->time + 0.3f;
+
+			if (gpGlobals->time < player->m_flNextVoteTime)
+			{
+				ClientPrint(player->pev, HUD_PRINTCONSOLE, "#Wait_3_Seconds");
+				return;
+			}
+
+			player->m_flNextVoteTime = gpGlobals->time + 3;
+
+			if (player->m_iTeam != UNASSIGNED)
+			{
+				if (gpGlobals->time < 180)
+				{
+					ClientPrint(player->pev, HUD_PRINTCONSOLE, "#Cannot_Vote_Map");
+					return;
+				}
+
+				int iFailed = 0;
+				int iNumArgs = CMD_ARGC_();
+				const char *pszArg1 = CMD_ARGV_(1);
+				int iVoteLength = Q_strlen(pszArg1);
+
+				if (iNumArgs != 2 || iVoteLength > 5)
+				{
+					iFailed = 1;
+				}
+
+				int iVoteID = Q_atoi(pszArg1);
+				if (iVoteID < 1 || iVoteID > MAX_VOTE_MAPS)
+				{
+					iFailed = 1;
+				}
+
+				if (iVoteID > GetMapCount())
+				{
+					iFailed = 1;
+				}
+
+				if (iFailed)
+				{
+					mp->DisplayMaps(player, 0);
+					ClientPrint(player->pev, HUD_PRINTCONSOLE, "#Game_votemap_usage");
+					return;
+				}
+				
+				if (CountTeamPlayers(player->m_iTeam) < 2)
+				{
+					ClientPrint(player->pev, HUD_PRINTCONSOLE, "#Cannot_Vote_Need_More_People");
+					return;
+				}
+
+				if (player->m_iMapVote)
+				{
+					mp->m_iMapVotes[ player->m_iMapVote ]--;
+
+					if (mp->m_iMapVotes[player->m_iMapVote] < 0)
+					{
+						mp->m_iMapVotes[player->m_iMapVote] = 0;
+					}
+				}
+
+				ClientPrint(player->pev, HUD_PRINTCONSOLE, "#Game_voted_for_map", UTIL_dtos1(iVoteID));
+				player->m_iMapVote = iVoteID;
+				mp->ProcessMapVote(player, iVoteID);
+			}
+		}
+	}
+	else if (FStrEq(pcmd, "timeleft"))
+	{
+		if (gpGlobals->time > player->m_iTimeCheckAllowed)
+		{
+			player->m_iTimeCheckAllowed = (int)(gpGlobals->time + 1);
+
+			if (!timelimit.value)
+			{
+				ClientPrint(player->pev, HUD_PRINTTALK, "#Game_no_timelimit");
+				return;
+			}
+
+			int iTimeRemaining = (int)(g_flTimeLimit - gpGlobals->time);
+
+			if (iTimeRemaining < 0)
+				iTimeRemaining = 0;
+
+			int iMinutes = (int)(iTimeRemaining % 60);
+			int iSeconds = (int)(iTimeRemaining / 60);
+
+			char secs[5];
+			char *temp = UTIL_dtos2(iMinutes);
+
+			if (iMinutes >= 10)
+			{
+				secs[0] = temp[0];
+				secs[1] = temp[1];
+				secs[2] = '\0';
+			}
+			else
+			{
+				secs[0] = '0';
+				secs[1] = temp[0];
+				secs[2] = '\0';
+			}
+
+			ClientPrint(player->pev, HUD_PRINTTALK, "#Game_timelimit", UTIL_dtos1(iSeconds), secs);
+		}
+	}
+	else if (FStrEq(pcmd, "listplayers"))
+	{
+		if (gpGlobals->time >= player->m_flLastCommandTime[6])
+		{
+			player->m_flLastCommandTime[6] = gpGlobals->time + 0.3f;
+			ListPlayers(player);
+		}
+	}
+	else if (FStrEq(pcmd, "client_buy_open"))
+	{
+		if (player->m_iMenu == Menu_OFF)
+		{
+			player->m_iMenu = Menu_ClientBuy;
+		}
+
+		if (player->m_signals.GetState() & SIGNAL_BUY)
+		{
+			if (TheTutor)
+			{
+				TheTutor->OnEvent(EVENT_TUTOR_BUY_MENU_OPENNED);
+			}
+		}
+		else
+		{
+			MESSAGE_BEGIN(MSG_ONE, gmsgBuyClose, NULL, player->pev);
+			MESSAGE_END();
+		}
+	}
+	else if (FStrEq(pcmd, "client_buy_close"))
+	{
+		if (player->m_iMenu == Menu_ClientBuy)
+		{
+			player->m_iMenu = Menu_OFF;
+		}
+	}
+	else if (FStrEq(pcmd, "menuselect"))
+	{
+		int slot = Q_atoi(CMD_ARGV_(1));
+
+		if (player->m_iJoiningState == JOINED || (player->m_iMenu != SPECTATOR && player->m_iMenu != TERRORIST))
+		{
+			if (slot == 10)
+			{
+				player->m_iMenu = Menu_OFF;
+			}
+		}
+
+		switch (player->m_iMenu)
+		{
+			case Menu_OFF:
+				break;
+
+			case Menu_ChooseTeam:
+			{
+				if (!player->m_bVGUIMenus && !HandleMenu_ChooseTeam(player, slot))
+				{
+					if (player->m_iJoiningState == JOINED)
+						ShowVGUIMenu(player, VGUI_Menu_Team, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_5 | MENU_KEY_0), "#IG_Team_Select");
+					else
+						ShowVGUIMenu(player, VGUI_Menu_Team, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_5), "#Team_Select");
+
+					player->m_iMenu = Menu_ChooseTeam;
+				}
+				break;
+			}
+			case Menu_IGChooseTeam:
+			{
+				if (!player->m_bVGUIMenus)
+				{
+					HandleMenu_ChooseTeam(player, slot);
+				}
+				break;
+			}
+			case Menu_ChooseAppearance:
+			{
+				if (!player->m_bVGUIMenus)
+				{
+					HandleMenu_ChooseAppearance(player, slot);
+				}
+				break;
+			}
+			case Menu_Buy:
+			{
+				if (!player->m_bVGUIMenus)
+				{
+					switch (slot)
+					{
+						case VGUI_MenuSlot_Buy_Pistol:
+						{
+							if (player->m_iTeam == CT)
+								ShowVGUIMenu(player, VGUI_Menu_Buy_Pistol, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_0), "#CT_BuyPistol");
+							else
+								ShowVGUIMenu(player, VGUI_Menu_Buy_Pistol, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_0), "#T_BuyPistol");
+
+							player->m_iMenu = Menu_BuyPistol;
+							break;
+						}
+						case VGUI_MenuSlot_Buy_ShotGun:
+						{
+							if (mp->m_iMapHasVIPSafetyZone == MAP_HAVE_VIP_SAFETYZONE_YES && player->m_iTeam == TERRORIST)
+								ShowVGUIMenu(player, VGUI_Menu_Buy_ShotGun, MENU_KEY_0, "#AS_BuyShotgun");
+							else
+								ShowVGUIMenu(player, VGUI_Menu_Buy_ShotGun, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_0), "#BuyShotgun");
+
+							player->m_iMenu = Menu_BuyShotgun;
+							break;
+						}
+						case VGUI_MenuSlot_Buy_SubMachineGun:
+						{
+							if (mp->m_iMapHasVIPSafetyZone == MAP_HAVE_VIP_SAFETYZONE_YES)
+							{
+								if (player->m_iTeam == CT)
+									ShowVGUIMenu(player, VGUI_Menu_Buy_SubMachineGun, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_0), "#AS_CT_BuySubMachineGun");
+								else
+									ShowVGUIMenu(player, VGUI_Menu_Buy_SubMachineGun, (MENU_KEY_1 | MENU_KEY_3 | MENU_KEY_0), "#AS_T_BuySubMachineGun");
+							}
+							else
+							{
+								if (player->m_iTeam == CT)
+									ShowVGUIMenu(player, VGUI_Menu_Buy_SubMachineGun, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_0), "#CT_BuySubMachineGun");
+								else
+									ShowVGUIMenu(player, VGUI_Menu_Buy_SubMachineGun, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_0), "#T_BuySubMachineGun");
+							}
+
+							player->m_iMenu = Menu_BuySubMachineGun;
+							break;
+						}
+						case VGUI_MenuSlot_Buy_Rifle:
+						{
+							if (mp->m_iMapHasVIPSafetyZone == MAP_HAVE_VIP_SAFETYZONE_YES)
+							{
+								if (player->m_iTeam == CT)
+									ShowVGUIMenu(player, VGUI_Menu_Buy_Rifle, (MENU_KEY_1 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_0), "#AS_CT_BuyRifle");
+								else
+									ShowVGUIMenu(player, VGUI_Menu_Buy_Rifle, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_5 | MENU_KEY_0), "#AS_T_BuyRifle");
+							}
+							else
+							{
+								if (player->m_iTeam == CT)
+									ShowVGUIMenu(player, VGUI_Menu_Buy_Rifle, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_0), "#CT_BuyRifle");
+								else
+									ShowVGUIMenu(player, VGUI_Menu_Buy_Rifle, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_0), "#T_BuyRifle");
+							}
+
+							player->m_iMenu = Menu_BuyRifle;
+							break;
+						}
+						case VGUI_MenuSlot_Buy_MachineGun:
+						{
+							if (mp->m_iMapHasVIPSafetyZone == MAP_HAVE_VIP_SAFETYZONE_YES && player->m_iTeam == TERRORIST)
+								ShowVGUIMenu(player, VGUI_Menu_Buy_MachineGun, MENU_KEY_0, "#AS_T_BuyMachineGun");
+							else
+								ShowVGUIMenu(player, VGUI_Menu_Buy_MachineGun, (MENU_KEY_1 | MENU_KEY_0), "#BuyMachineGun");
+
+							player->m_iMenu = Menu_BuyMachineGun;
+							break;
+						}
+						case VGUI_MenuSlot_Buy_PrimAmmo:
+						{
+							if (player->m_signals.GetState() & SIGNAL_BUY)
+							{
+								if (BuyAmmo(player, PRIMARY_WEAPON_SLOT, true))
+								{
+									while (BuyAmmo(player, PRIMARY_WEAPON_SLOT, false))
+										;
+
+									if (TheTutor)
+									{
+										TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, player);
+									}
+								}
+
+								player->BuildRebuyStruct();
+							}
+							break;
+						}
+						case VGUI_MenuSlot_Buy_SecAmmo:
+						{
+							if (player->m_signals.GetState() & SIGNAL_BUY)
+							{
+								if (BuyAmmo(player, PISTOL_SLOT, true))
+								{
+									while (BuyAmmo(player, PISTOL_SLOT, false))
+										;
+
+									if (TheTutor)
+									{
+										TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, player);
+									}
+								}
+
+								player->BuildRebuyStruct();
+							}
+						}
+						case VGUI_MenuSlot_Buy_Item:
+						{
+							if (player->m_signals.GetState() & SIGNAL_BUY)
+							{
+								if (mp->m_bMapHasBombTarget)
+								{
+									if (player->m_iTeam == CT)
+										ShowVGUIMenu(player, VGUI_Menu_Buy_Item, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_7 | MENU_KEY_8 | MENU_KEY_0), "#DCT_BuyItem");
+									else
+										ShowVGUIMenu(player, VGUI_Menu_Buy_Item, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_0), "#DT_BuyItem");
+								}
+								else
+								{
+									if (player->m_iTeam == CT)
+										ShowVGUIMenu(player, VGUI_Menu_Buy_Item, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_8 | MENU_KEY_0), "#CT_BuyItem");
+									else
+										ShowVGUIMenu(player, VGUI_Menu_Buy_Item, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_0), "#T_BuyItem");
+								}
+
+								player->m_iMenu = Menu_BuyItem;
+							}
+							break;
+						}
+					}
+				}
+				break;
+			}
+			case Menu_BuyPistol:
+			{
+				if (!player->m_bVGUIMenus)
+				{
+					BuyPistol(player, slot);
+				}
+				break;
+			}
+			case Menu_BuyShotgun:
+			{
+				if (!player->m_bVGUIMenus)
+				{
+					BuyShotgun(player, slot);
+				}
+				break;
+			}
+			case Menu_BuySubMachineGun:
+			{
+				if (!player->m_bVGUIMenus)
+				{
+					BuySubMachineGun(player, slot);
+				}
+				break;
+			}
+			case Menu_BuyRifle:
+			{
+				if (!player->m_bVGUIMenus)
+				{
+					BuyRifle(player, slot);
+				}
+				break;
+			}
+			case Menu_BuyMachineGun:
+			{
+				if (!player->m_bVGUIMenus)
+				{
+					BuyMachineGun(player, slot);
+				}
+				break;
+			}
+			case Menu_BuyItem:
+			{
+				if (!player->m_bVGUIMenus)
+				{
+					BuyItem(player, slot);
+				}
+				break;
+			}
+			case Menu_Radio1:
+			{
+				Radio1(player, slot);
+				break;
+			}
+			case Menu_Radio2:
+			{
+				Radio2(player, slot);
+				break;
+			}
+			case Menu_Radio3:
+			{
+				Radio3(player, slot);
+				break;
+			}
+			default:
+				ALERT(at_console, "ClientCommand(): Invalid menu selected\n");
+				break;
+		}
+	}
+	else if (FStrEq(pcmd, "chooseteam"))
+	{
+		if (player->m_iMenu == Menu_ChooseAppearance)
+		{
+			return;
+		}
+
+		if (player->m_bTeamChanged)
+		{
+			if (player->pev->deadflag != DEAD_NO)
+			{
+				ClientPrint(player->pev, HUD_PRINTCENTER, "#Only_1_Team_Change");
+				return;
+			}
+		}
+
+		if (!mp->IsCareer())
+		{
+			if (mp->m_iMapHasVIPSafetyZone == MAP_HAVE_VIP_SAFETYZONE_YES && player->m_iJoiningState == JOINED && player->m_iTeam == CT)
+			{
+				if (mp->IsFreezePeriod() || player->pev->deadflag != DEAD_NO)
+					ShowVGUIMenu(player, VGUI_Menu_Team, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_0), "#IG_VIP_Team_Select_Spect");
+				else
+					ShowVGUIMenu(player, VGUI_Menu_Team, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_5 | MENU_KEY_0), "#IG_VIP_Team_Select");
+			}
+			else
+			{
+				if (mp->IsFreezePeriod() || player->pev->deadflag != DEAD_NO)
+					ShowVGUIMenu(player, VGUI_Menu_Team, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_0), "#IG_Team_Select_Spect");
+				else
+					ShowVGUIMenu(player, VGUI_Menu_Team, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_5 | MENU_KEY_0), "#IG_Team_Select");
+			}
+
+			player->m_iMenu = Menu_ChooseTeam;
+		}
+	}
+	else if (FStrEq(pcmd, "showbriefing"))
+	{
+		if (player->m_iMenu == Menu_OFF)
+		{
+			if (g_szMapBriefingText[0] != '\0')
+			{
+				if (player->m_iTeam != UNASSIGNED && !(player->m_afPhysicsFlags & PFLAG_OBSERVER))
+				{
+					player->MenuPrint(g_szMapBriefingText);
+					player->m_bMissionBriefing = true;
+				}
+			}
+		}
+	}
+	else if (FStrEq(pcmd, "ignoremsg"))
+	{
+		if (player->m_iIgnoreGlobalChat == IGNOREMSG_NONE)
+		{
+			player->m_iIgnoreGlobalChat = IGNOREMSG_ENEMY;
+			ClientPrint(player->pev, HUD_PRINTCENTER, "#Ignore_Broadcast_Messages");
+		}
+		else if (player->m_iIgnoreGlobalChat == IGNOREMSG_ENEMY)
+		{
+			player->m_iIgnoreGlobalChat = IGNOREMSG_TEAM;
+			ClientPrint(player->pev, HUD_PRINTCENTER, "#Ignore_Broadcast_Team_Messages");
+		}
+		else if (player->m_iIgnoreGlobalChat == IGNOREMSG_TEAM)
+		{
+			player->m_iIgnoreGlobalChat = IGNOREMSG_NONE;
+			ClientPrint(player->pev, HUD_PRINTCENTER, "#Accept_All_Messages");
+		}
+	}
+	else if (FStrEq(pcmd, "ignorerad"))
+	{
+		player->m_bIgnoreRadio = !player->m_bIgnoreRadio;
+		ClientPrint(player->pev, HUD_PRINTCENTER, player->m_bIgnoreRadio ? "#Ignore_Radio" : "#Accept_Radio");
+	}
+	else if (FStrEq(pcmd, "become_vip"))
+	{
+		if (player->m_iJoiningState != JOINED || player->m_iTeam != CT)
+		{
+			ClientPrint(player->pev, HUD_PRINTCENTER, "#Command_Not_Available");
+			return;
+		}
+
+		mp->AddToVIPQueue(player);
+	}
+	else if (FStrEq(pcmd, "spectate") && (player->pev->flags & FL_PROXY)) // always allow proxies to become a spectator
+	{
+		// clients wants to become a spectator
+		HandleMenu_ChooseTeam(player, MENU_SLOT_TEAM_SPECT);
+	}
+	else if (FStrEq(pcmd, "specmode"))
+	{
+		// new spectator mode
+		int mode = Q_atoi(CMD_ARGV_(1));
+
+		if (player->IsObserver() && player->CanSwitchObserverModes())
+			player->Observer_SetMode(mode);
+		else
+			player->m_iObserverLastMode = mode;
+
+		if (mode == OBS_CHASE_FREE)
+		{
+			MESSAGE_BEGIN(MSG_ONE, gmsgADStop, NULL, player->pev);
+			MESSAGE_END();
+		}
+	}
+	else if (FStrEq(pcmd, "spec_set_ad"))
+	{
+		float val = Q_atof(CMD_ARGV_(1));
+		player->SetObserverAutoDirector(val > 0.0f);
+	}
+	else if (FStrEq(pcmd, "follownext"))
+	{
+		// follow next player
+		int arg = Q_atoi(CMD_ARGV_(1));
+
+		if (player->IsObserver() && player->CanSwitchObserverModes())
+		{
+			player->Observer_FindNextPlayer(arg != 0);
+		}
+	}
+	else if (FStrEq(pcmd, "follow"))
+	{
+		if (player->IsObserver() && player->CanSwitchObserverModes())
+		{
+			player->Observer_FindNextPlayer(false, CMD_ARGV_(1));
+		}
+	}
+	else
+	{
+		if (mp->ClientCommand_DeadOrAlive(GetClassPtr((CBasePlayer *)pev), pcmd))
+			return;
+
+		if (TheBots->ClientCommand(GetClassPtr((CBasePlayer *)pev), pcmd))
+			return;
+
+		if (FStrEq(pcmd, "mp_debug"))
+		{
+			UTIL_SetDprintfFlags(CMD_ARGV_(1));
+		}
+		else if (FStrEq(pcmd, "jointeam"))
+		{
+			if (player->m_iMenu == Menu_ChooseAppearance)
+			{
+				ClientPrint(player->pev, HUD_PRINTCENTER, "#Command_Not_Available");
+				return;
+			}
+
+			int slot = Q_atoi(CMD_ARGV_(1));
+			if (HandleMenu_ChooseTeam(player, slot))
+			{
+				if (slot == MENU_SLOT_TEAM_VIP || slot == MENU_SLOT_TEAM_SPECT || player->m_bIsVIP)
+				{
+					player->m_iMenu = Menu_OFF;
+				}
+				else
+					player->m_iMenu = Menu_ChooseAppearance;
+			}
+			else
+			{
+				if (player->m_iJoiningState == JOINED)
+					ShowVGUIMenu(player, VGUI_Menu_Team, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_5 | MENU_KEY_0), "#IG_Team_Select");
+				else
+					ShowVGUIMenu(player, VGUI_Menu_Team, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_5), "#Team_Select");
+
+				player->m_iMenu = Menu_ChooseTeam;
+			}
+		}
+		else if (FStrEq(pcmd, "joinclass"))
+		{
+			int slot = Q_atoi(CMD_ARGV_(1));
+
+			if (player->m_iMenu != Menu_ChooseAppearance)
+			{
+				ClientPrint(player->pev, HUD_PRINTCENTER, "#Command_Not_Available");
+				return;
+			}
+
+			HandleMenu_ChooseAppearance(player, slot);
+		}
+		else if (player->pev->deadflag == DEAD_NO)
+		{
+			if (FStrEq(pcmd, "nightvision"))
+			{
+				if (gpGlobals->time >= player->m_flLastCommandTime[7])
+				{
+					player->m_flLastCommandTime[7] = gpGlobals->time + 0.3f;
+
+					if (!player->m_bHasNightVision)
+						return;
+
+					if (player->m_bNightVisionOn)
+					{
+						EMIT_SOUND(ENT(player->pev), CHAN_ITEM, "items/nvg_off.wav", RANDOM_FLOAT(0.92, 1), ATTN_NORM);
+
+						MESSAGE_BEGIN(MSG_ONE, gmsgNVGToggle, NULL, player->pev);
+							WRITE_BYTE(0); // disable nightvision
+						MESSAGE_END();
+
+						player->m_bNightVisionOn = false;
+
+						for (int i = 1; i <= gpGlobals->maxClients; i++)
+						{
+							CBasePlayer *pObserver = (CBasePlayer *)UTIL_PlayerByIndex(i);
+
+							if (pObserver && pObserver->IsObservingPlayer(player))
+							{
+								EMIT_SOUND(ENT(pObserver->pev), CHAN_ITEM, "items/nvg_off.wav", RANDOM_FLOAT(0.92, 1), ATTN_NORM);
+
+								MESSAGE_BEGIN(MSG_ONE, gmsgNVGToggle, NULL, pObserver->pev);
+									WRITE_BYTE(0); // disable nightvision
+								MESSAGE_END();
+
+								pObserver->m_bNightVisionOn = false;
+							}
+						}
+					}
+					else
+					{
+						EMIT_SOUND(ENT(player->pev), CHAN_ITEM, "items/nvg_on.wav", RANDOM_FLOAT(0.92, 1), ATTN_NORM);
+
+						MESSAGE_BEGIN(MSG_ONE, gmsgNVGToggle, NULL, player->pev);
+							WRITE_BYTE(1); // enable nightvision
+						MESSAGE_END();
+
+						player->m_bNightVisionOn = true;
+
+						for (int i = 1; i <= gpGlobals->maxClients; i++)
+						{
+							CBasePlayer *pObserver = (CBasePlayer *)UTIL_PlayerByIndex(i);
+
+							if (pObserver && pObserver->IsObservingPlayer(player))
+							{
+								EMIT_SOUND(ENT(pObserver->pev), CHAN_ITEM, "items/nvg_on.wav", RANDOM_FLOAT(0.92, 1), ATTN_NORM);
+
+								MESSAGE_BEGIN(MSG_ONE, gmsgNVGToggle, NULL, pObserver->pev);
+									WRITE_BYTE(1);  // enable nightvision
+								MESSAGE_END();
+
+								pObserver->m_bNightVisionOn = true;
+							}
+						}
+					}
+				}
+			}
+			else if (FStrEq(pcmd, "radio1"))
+			{
+				ShowMenu(player, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_0), -1, FALSE, "#RadioA");
+				player->m_iMenu = Menu_Radio1;
+			}
+			else if (FStrEq(pcmd, "radio2"))
+			{
+				ShowMenu(player, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_0), -1, FALSE, "#RadioB");
+				player->m_iMenu = Menu_Radio2;
+				return;
+			}
+			else if (FStrEq(pcmd, "radio3"))
+			{
+				ShowMenu(player, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_7 | MENU_KEY_8 | MENU_KEY_9 | MENU_KEY_0), -1, FALSE, "#RadioC");
+				player->m_iMenu = Menu_Radio3;
+			}
+			else if (FStrEq(pcmd, "drop"))
+			{
+				// player is dropping an item.
+				if (player->HasShield())
+				{
+					if (player->m_pActiveItem && player->m_pActiveItem->m_iId == WEAPON_C4)
+					{
+						player->DropPlayerItem("weapon_c4");
+					}
+					else
+						player->DropShield();
+				}
+				else
+					player->DropPlayerItem(CMD_ARGV_(1));
+			}
+			else if (FStrEq(pcmd, "fov"))
+			{
+#if 0
+				if (g_flWeaponCheat && CMD_ARGC() > 1)
+					GetClassPtr((CBasePlayer *)pev)->m_iFOV = Q_atoi(CMD_ARGV(1));
+				else
+					CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("\"fov\" is \"%d\"\n", (int)GetClassPtr((CBasePlayer *)pev)->m_iFOV));
+#endif
+			}
+			else if (FStrEq(pcmd, "use"))
+			{
+				GetClassPtr((CBasePlayer *)pev)->SelectItem(CMD_ARGV_(1));
+			}
+			else if (((pstr = Q_strstr(pcmd, "weapon_")) != NULL) && (pstr == pcmd))
+			{
+				GetClassPtr((CBasePlayer *)pev)->SelectItem(pcmd);
+			}
+			else if (FStrEq(pcmd, "lastinv"))
+			{
+				GetClassPtr((CBasePlayer *)pev)->SelectLastItem();
+			}
+			else if (FStrEq(pcmd, "buyammo1"))
+			{
+				if (player->m_signals.GetState() & SIGNAL_BUY)
+				{
+					BuyAmmo(player, PRIMARY_WEAPON_SLOT, true);
+					player->BuildRebuyStruct();
+					if (TheTutor)
+					{
+						TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, player);
+					}
+				}
+			}
+			else if (FStrEq(pcmd, "buyammo2"))
+			{
+				if (player->m_signals.GetState() & SIGNAL_BUY)
+				{
+					BuyAmmo(player, PISTOL_SLOT, true);
+					player->BuildRebuyStruct();
+					if (TheTutor)
+					{
+						TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, player);
+					}
+				}
+			}
+			else if (FStrEq(pcmd, "buyequip"))
+			{
+				if (player->m_signals.GetState() & SIGNAL_BUY)
+				{
+					if (mp->m_bMapHasBombTarget)
+					{
+						if (player->m_iTeam == CT)
+							ShowVGUIMenu(player, VGUI_Menu_Buy_Item, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_7 | MENU_KEY_8 | MENU_KEY_0), "#DCT_BuyItem");
+						else
+							ShowVGUIMenu(player, VGUI_Menu_Buy_Item, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_0), "#DT_BuyItem");
+					}
+					else
+					{
+						if (player->m_iTeam == CT)
+							ShowVGUIMenu(player, VGUI_Menu_Buy_Item, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_8 | MENU_KEY_0), "#CT_BuyItem");
+						else
+							ShowVGUIMenu(player, VGUI_Menu_Buy_Item, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_0), "#T_BuyItem");
+					}
+
+					player->m_iMenu = Menu_BuyItem;
+				}
+			}
+			else if (FStrEq(pcmd, "buy"))
+			{
+				if (player->m_signals.GetState() & SIGNAL_BUY)
+				{
+					ShowVGUIMenu(player, VGUI_Menu_Buy, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_7 | MENU_KEY_8 | MENU_KEY_0), "#Buy");
+					player->m_iMenu = Menu_Buy;
+
+					if (TheBots)
+					{
+						TheBots->OnEvent(EVENT_TUTOR_BUY_MENU_OPENNED);
+					}
+				}
+			}
+			else if (FStrEq(pcmd, "cl_setautobuy"))
+			{
+				player->ClearAutoBuyData();
+
+				for (int i = 1; i < CMD_ARGC_(); i++)
+				{
+					player->AddAutoBuyData(CMD_ARGV_(i));
+				}
+
+				bool oldval = g_bClientPrintEnable;
+				g_bClientPrintEnable = false;
+				player->AutoBuy();
+				g_bClientPrintEnable = oldval;
+			}
+			else if (FStrEq(pcmd, "cl_setrebuy"))
+			{
+				if (CMD_ARGC_() == 2)
+				{
+					player->InitRebuyData(CMD_ARGV_(1));
+
+					bool oldval = g_bClientPrintEnable;
+					g_bClientPrintEnable = false;
+					player->Rebuy();
+					g_bClientPrintEnable = oldval;
+				}
+			}
+			else if (FStrEq(pcmd, "cl_autobuy"))
+			{
+				if (player->m_signals.GetState() & SIGNAL_BUY)
+				{
+					bool oldval = g_bClientPrintEnable;
+					g_bClientPrintEnable = false;
+					player->AutoBuy();
+					g_bClientPrintEnable = oldval;
+				}
+			}
+			else if (FStrEq(pcmd, "cl_rebuy"))
+			{
+				if (player->m_signals.GetState() & SIGNAL_BUY)
+				{
+					bool oldval = g_bClientPrintEnable;
+					g_bClientPrintEnable = false;
+					player->Rebuy();
+					g_bClientPrintEnable = oldval;
+				}
+			}
+			else if (FStrEq(pcmd, "smartradio"))
+			{
+				player->SmartRadio();
+			}
+			else
+			{
+				if (HandleBuyAliasCommands(player, pcmd))
+					return;
+
+				if (HandleRadioAliasCommands(player, pcmd))
+					return;
+
+				if (!g_pGameRules->ClientCommand(GetClassPtr((CBasePlayer *)pev), pcmd))
+				{
+					// tell the user they entered an unknown command
+					char command[128];
+
+					// check the length of the command (prevents crash)
+					// max total length is 192 ...and we're adding a string below ("Unknown command: %s\n")
+					Q_strncpy(command, pcmd, sizeof(command) - 1);
+					command[sizeof(command) - 1] = '\0';
+
+					// tell the user they entered an unknown command
+					ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, "#Game_unknown_command", command);
+				}
+			}
+		}
+	}
 }
 
 /* <4b959> ../cstrike/dlls/client.cpp:4282 */
-NOBODY void ClientUserInfoChanged(edict_t *pEntity, char *infobuffer)
+void ClientUserInfoChanged(edict_t *pEntity, char *infobuffer)
 {
-//	{
-//		class CBasePlayer *pPlayer;                          //  4288
-//		const char *szBufferName;                           //  4289
-//		int iClientIndex;                                     //  4290
-//		entindex(CBaseEntity *const this);  //  4290
-//		FStrEq(const char *sz1,
-//			const char *sz2);  //  4293
-//		{
-//			char szName;                                  //  4295
-//			{
-//				char *pPct;                          //  4300
-//			}
-//			MESSAGE_BEGIN(int msg_dest,
-//					int msg_type,
-//					const float *pOrigin,
-//					edict_t *ed);  //  4331
-//		}
-//	}
+	// Is the client spawned yet?
+	if (!pEntity->pvPrivateData)
+	{
+		return;
+	}
+
+	CBasePlayer *pPlayer = (CBasePlayer *)CBaseEntity::Instance(pEntity);
+
+	char *szBufferName = GET_KEY_VALUE(infobuffer, "name");
+	int iClientIndex = pPlayer->entindex();
+
+	// msg everyone if someone changes their name,  and it isn't the first time (changing no name to current name)
+	if (pEntity->v.netname && STRING(pEntity->v.netname)[0] != '\0' && !FStrEq(STRING(pEntity->v.netname), szBufferName))
+	{
+		char szName[32];
+		Q_snprintf(szName, sizeof(szName), "%s", szBufferName);
+
+		// First parse the name and remove any %'s
+		for (char *pPct = szName; pPct != NULL && *pPct != '\0'; pPct++)
+		{
+			// Replace it with a space
+			if (*pPct == '%' || *pPct == '&')
+				*pPct = ' ';
+		}
+
+		if (szName[0] == '#')
+			szName[0] = '*';
+
+		if (pPlayer->pev->deadflag != DEAD_NO)
+		{
+			pPlayer->m_bHasChangedName = true;
+			Q_snprintf(pPlayer->m_szNewName, sizeof(pPlayer->m_szNewName), "%s", szName);
+			ClientPrint(pPlayer->pev, HUD_PRINTTALK, "#Name_change_at_respawn");
+			SET_CLIENT_KEY_VALUE(iClientIndex, infobuffer, "name", (char *)STRING(pEntity->v.netname));
+		}
+		else
+		{
+			// Set the name
+			SET_CLIENT_KEY_VALUE(iClientIndex, infobuffer, "name", szName);
+
+			MESSAGE_BEGIN(MSG_BROADCAST, gmsgSayText);
+				WRITE_BYTE(iClientIndex);
+				WRITE_STRING("#Cstrike_Name_Change");
+				WRITE_STRING(STRING(pEntity->v.netname));
+				WRITE_STRING(szName);
+			MESSAGE_END();
+
+			UTIL_LogPrintf
+			(
+				"\"%s<%i><%s><%s>\" changed name to \"%s\"\n",
+				STRING(pEntity->v.netname),
+				GETPLAYERUSERID(pEntity),
+				GETPLAYERAUTHID(pEntity),
+				GetTeam(pPlayer->m_iTeam),
+				szName
+			);
+		}
+	}
+
+	g_pGameRules->ClientUserInfoChanged(GetClassPtr((CBasePlayer *)&pEntity->v), infobuffer);
 }
 
 /* <4a378> ../cstrike/dlls/client.cpp:4362 */
-NOBODY void ServerDeactivate(void)
+void ServerDeactivate(void)
 {
+	// It's possible that the engine will call this function more times than is necessary
+	//  Therefore, only run it one time for each call to ServerActivate 
+	if (g_serveractive != 1)
+	{
+		return;
+	}
+
+	g_serveractive = 0;
+
+	// Peform any shutdown operations here...
+	g_pGameRules->ServerDeactivate();
+	CLocalNav::Reset();
+	TheBots->ServerDeactivate();
+
+	if (g_pHostages)
+	{
+		g_pHostages->ServerDeactivate();
+	}
 }
 
 /* <4a392> ../cstrike/dlls/client.cpp:4400 */
-NOBODY void ServerActivate(edict_t *pEdictList, int edictCount, int clientMax)
+void ServerActivate(edict_t *pEdictList, int edictCount, int clientMax)
 {
-//	{
-//		int i;                                                //  4402
-//		class CBaseEntity *pClass;                           //  4403
-//	}
+	int i;
+	CBaseEntity *pClass;
+
+	// Every call to ServerActivate should be matched by a call to ServerDeactivate
+	g_serveractive = 1;
+	EmptyEntityHashTable();
+
+	// Clients have not been initialized yet
+	for (i = 0; i < edictCount; i++)
+	{
+		edict_t *pEdict = &pEdictList[i];
+
+		if (pEdict->free)
+			continue;
+
+		// Clients aren't necessarily initialized until ClientPutInServer()
+		if (i < clientMax || !pEdict->pvPrivateData)
+			continue;
+
+		pClass = CBaseEntity::Instance(pEdict);
+
+		// Activate this entity if it's got a class & isn't dormant
+		if (pClass && !(pClass->pev->flags & FL_DORMANT))
+		{
+			AddEntityHashValue(&pEdict->v, STRING(pEdict->v.classname), CLASSNAME);
+			pClass->Activate();
+		}
+		else
+			ALERT(at_console, "Can't instance %s\n", STRING(pEdict->v.classname));
+	}
+
+	// Link user messages here to make sure first client can get them...
+	LinkUserMessages();
+	WriteSigonMessages();
+
+	if (g_pGameRules)
+	{
+		g_pGameRules->CheckMapConditions();
+	}
+
+	TheBots->ServerActivate();
+
+	if (g_pHostages)
+	{
+		g_pHostages->ServerActivate();
+	}
 }
 
 /* <4a404> ../cstrike/dlls/client.cpp:4459 */
-NOBODY void PlayerPreThink(edict_t *pEntity)
-{
-//	{
-//		entvars_t *pev;                                      //  4461
-//		class CBasePlayer *pPlayer;                          //  4462
-//		GET_PRIVATE(edict_t *pent);  //  4462
-//	}
-}
-
-/* <4a47c> ../cstrike/dlls/client.cpp:4475 */
-NOBODY void PlayerPostThink(edict_t *pEntity)
+void PlayerPreThink(edict_t *pEntity)
 {
 	entvars_t *pev = &pEntity->v;
 	CBasePlayer *pPlayer = (CBasePlayer *)GET_PRIVATE(pEntity);
 
 	if (pPlayer)
+	{
+		pPlayer->PreThink();
+	}
+}
+
+/* <4a47c> ../cstrike/dlls/client.cpp:4475 */
+void PlayerPostThink(edict_t *pEntity)
+{
+	entvars_t *pev = &pEntity->v;
+	CBasePlayer *pPlayer = (CBasePlayer *)GET_PRIVATE(pEntity);
+
+	if (pPlayer)
+	{
 		pPlayer->PostThink();
+	}
 }
 
 /* <4a4f4> ../cstrike/dlls/client.cpp:4486 */
@@ -958,40 +3925,52 @@ void ParmsNewLevel(void)
 }
 
 /* <4a50d> ../cstrike/dlls/client.cpp:4491 */
-NOBODY void ParmsChangeLevel(void)
+void ParmsChangeLevel(void)
 {
-//	{
-//		SAVERESTOREDATA *pSaveData;                          //  4494
-//	}
+	// retrieve the pointer to the save data
+	SAVERESTOREDATA *pSaveData = (SAVERESTOREDATA *)gpGlobals->pSaveData;
+
+	if (pSaveData)
+	{
+		pSaveData->connectionCount = BuildChangeList(pSaveData->levelList, MAX_LEVEL_CONNECTIONS);
+	}
 }
 
 /* <4a548> ../cstrike/dlls/client.cpp:4504 */
-NOBODY void StartFrame(void)
+void StartFrame(void)
 {
-	if (g_pGameRules)
+	if (g_pGameRules != NULL)
+	{
 		g_pGameRules->Think();
+	}
 
 	if (g_fGameOver)
 		return;
 
 	CLocalNav::Think();
+
 	static cvar_t *skill = NULL;
-
 	if (!skill)
+	{
 		skill = CVAR_GET_POINTER("skill");
+	}
 
-	gpGlobals->teamplay = 1;
+	gpGlobals->teamplay = 1.0f;
 
-	if (skill)
-		g_iSkillLevel = skill->value;
+	if (skill != NULL)
+		g_iSkillLevel = (int)skill->value;
+
 	else
 		g_iSkillLevel = 0;
 
+	TheBots->StartFrame();
+
 	if (TheTutor)
+	{
 		TheTutor->StartFrame(gpGlobals->time);
+	}
 
 	++g_ulFrameCount;
-
 }
 
 /* <4a581> ../cstrike/dlls/client.cpp:4534 */
@@ -1493,7 +4472,7 @@ void SetupVisibility(edict_t *pViewEntity, edict_t *pClient, unsigned char **pvs
 		return;
 	}
 
-	CBasePlayer *pPlayer = reinterpret_cast< CBasePlayer * >(CBasePlayer::Instance( pClient ));
+	CBasePlayer *pPlayer = reinterpret_cast<CBasePlayer *>(CBasePlayer::Instance(pClient));
 
 	if (pPlayer->pev->iuser2 && pPlayer->m_hObserverTarget)
 	{
@@ -1516,18 +4495,18 @@ void SetupVisibility(edict_t *pViewEntity, edict_t *pClient, unsigned char **pvs
 }
 
 /* <4aa75> ../cstrike/dlls/client.cpp:5226 */
-NOXREF void ResetPlayerPVS(edict_t *client, int clientnum)
+void ResetPlayerPVS(edict_t *client, int clientnum)
 {
 	PLAYERPVSSTATUS *pvs = &g_PVSStatus[clientnum];
 
-	memset(pvs, 0, sizeof(*pvs));
+	Q_memset(pvs, 0, sizeof(*pvs));
 	pvs->headnode = client->headnode;
 	pvs->num_leafs = client->num_leafs;
-	memcpy(pvs->leafnums, client->leafnums, sizeof(pvs->leafnums));
+	Q_memcpy(pvs->leafnums, client->leafnums, sizeof(pvs->leafnums));
 }
 
 /* <4aae8> ../cstrike/dlls/client.cpp:5240 */
-NOXREF bool CheckPlayerPVSLeafChanged(edict_t *client, int clientnum)
+bool CheckPlayerPVSLeafChanged(edict_t *client, int clientnum)
 {
 	PLAYERPVSSTATUS *pvs = &g_PVSStatus[clientnum];
 	if (pvs->headnode != client->headnode || pvs->num_leafs != client->num_leafs)
@@ -1542,7 +4521,7 @@ NOXREF bool CheckPlayerPVSLeafChanged(edict_t *client, int clientnum)
 }
 
 /* <475e3> ../cstrike/dlls/client.cpp:5263 */
-NOXREF void MarkEntityInPVS(int clientnum, int entitynum, float time, bool inpvs)
+void MarkEntityInPVS(int clientnum, int entitynum, float time, bool inpvs)
 {
 	PLAYERPVSSTATUS *pvs;
 	ENTITYPVSSTATUS *es;
@@ -1557,7 +4536,7 @@ NOXREF void MarkEntityInPVS(int clientnum, int entitynum, float time, bool inpvs
 }
 
 /* <47581> ../cstrike/dlls/client.cpp:5275 */
-NOXREF bool CheckEntityRecentlyInPVS(int clientnum, int entitynum, float currenttime)
+bool CheckEntityRecentlyInPVS(int clientnum, int entitynum, float currenttime)
 {
 	PLAYERPVSSTATUS *pvs;
 	ENTITYPVSSTATUS *es;
@@ -1565,8 +4544,10 @@ NOXREF bool CheckEntityRecentlyInPVS(int clientnum, int entitynum, float current
 	pvs = &g_PVSStatus[clientnum];
 	es = &pvs->m_Status[entitynum];
 
-	if (es->m_fTimeEnteredPVS && es->m_fTimeEnteredPVS + 1.0 >= currenttime)
+	if (es->m_fTimeEnteredPVS && es->m_fTimeEnteredPVS + 1.0f >= currenttime)
+	{
 		return true;
+	}
 
 	return false;
 }
@@ -1627,7 +4608,7 @@ int AddToFullPack(struct entity_state_s *state, int e, edict_t *ent, edict_t *ho
 		UTIL_UnsetGroupTrace();
 	}
 
-	memset(state, 0, sizeof(*state));
+	Q_memset(state, 0, sizeof(*state));
 
 	state->number = e;
 	state->entityType = ENTITY_NORMAL;
@@ -1637,12 +4618,12 @@ int AddToFullPack(struct entity_state_s *state, int e, edict_t *ent, edict_t *ho
 
 	state->animtime = (int)(1000.0 * ent->v.animtime) / 1000.0;
 
-	memcpy(state->origin, ent->v.origin, sizeof(float) * 3);
-	memcpy(state->angles, ent->v.angles, sizeof(float) * 3);
-	memcpy(state->mins, ent->v.mins, sizeof(float) * 3);
-	memcpy(state->maxs, ent->v.maxs, sizeof(float) * 3);
-	memcpy(state->startpos, ent->v.startpos, sizeof(float) * 3);
-	memcpy(state->endpos, ent->v.endpos, sizeof(float) * 3);
+	Q_memcpy(state->origin, ent->v.origin, sizeof(float) * 3);
+	Q_memcpy(state->angles, ent->v.angles, sizeof(float) * 3);
+	Q_memcpy(state->mins, ent->v.mins, sizeof(float) * 3);
+	Q_memcpy(state->maxs, ent->v.maxs, sizeof(float) * 3);
+	Q_memcpy(state->startpos, ent->v.startpos, sizeof(float) * 3);
+	Q_memcpy(state->endpos, ent->v.endpos, sizeof(float) * 3);
 
 	state->impacttime = ent->v.impacttime;
 	state->starttime = ent->v.starttime;
@@ -1691,7 +4672,7 @@ int AddToFullPack(struct entity_state_s *state, int e, edict_t *ent, edict_t *ho
 
 	if (player)
 	{
-		memcpy(state->basevelocity, ent->v.basevelocity, sizeof(float) * 3);
+		Q_memcpy(state->basevelocity, ent->v.basevelocity, sizeof(float) * 3);
 
 		state->weaponmodel = MODEL_INDEX( STRING(ent->v.weaponmodel) );
 		state->gaitsequence = ent->v.gaitsequence;
@@ -1760,7 +4741,7 @@ void CreateBaseline(int player, int eindex, struct entity_state_s *baseline, str
 }
 
 /* <47d8a> ../cstrike/dlls/client.cpp:5586 */
-NOXREF void Entity_FieldInit(struct delta_s *pFields)
+void Entity_FieldInit(struct delta_s *pFields)
 {
 	entity_field_alias[ FIELD_ORIGIN0 ].field = DELTA_FINDFIELD(pFields, entity_field_alias[ FIELD_ORIGIN0 ].name);
 	entity_field_alias[ FIELD_ORIGIN1 ].field = DELTA_FINDFIELD(pFields, entity_field_alias[ FIELD_ORIGIN1 ].name);
@@ -1822,7 +4803,7 @@ void Entity_Encode(struct delta_s *pFields, const unsigned char *from, const uns
 }
 
 /* <47cb4> ../cstrike/dlls/client.cpp:5662 */
-NOXREF void Player_FieldInit(struct delta_s *pFields)
+void Player_FieldInit(struct delta_s *pFields)
 {
 	player_field_alias[ FIELD_ORIGIN0 ].field = DELTA_FINDFIELD(pFields, player_field_alias[ FIELD_ORIGIN0 ].name);
 	player_field_alias[ FIELD_ORIGIN1 ].field = DELTA_FINDFIELD(pFields, player_field_alias[ FIELD_ORIGIN1 ].name);
@@ -1945,12 +4926,14 @@ void RegisterEncoders(void)
 int GetWeaponData(edict_s *player, struct weapon_data_s *info)
 {
 	entvars_t *pev = &player->v;
-	CBasePlayer *pl = reinterpret_cast< CBasePlayer * >(CBasePlayer::Instance( pev ));
+	CBasePlayer *pl = reinterpret_cast<CBasePlayer *>(CBasePlayer::Instance(pev));
 
-	memset(info, 0, sizeof(weapon_data_t) * MAX_WEAPONS);
+	Q_memset(info, 0, sizeof(weapon_data_t) * MAX_WEAPONS);
 
 	if (!pl)
+	{
 		return 1;
+	}
 
 	for (int i = 0; i < MAX_ITEM_TYPES; i++)
 	{
@@ -1958,12 +4941,12 @@ int GetWeaponData(edict_s *player, struct weapon_data_s *info)
 
 		while (pPlayerItem != NULL)
 		{
-			CBasePlayerWeapon *gun = reinterpret_cast< CBasePlayerWeapon * >(pPlayerItem->GetWeaponPtr());
+			CBasePlayerWeapon *gun = reinterpret_cast<CBasePlayerWeapon *>(pPlayerItem->GetWeaponPtr());
 			
 			if (gun && gun->UseDecrement())
 			{
 				ItemInfo II;
-				memset(&II, 0, sizeof(II));
+				Q_memset(&II, 0, sizeof(II));
 				gun->GetItemInfo(&II);
 
 				if (II.iId >= 0 && II.iId < MAX_WEAPONS)
@@ -1972,10 +4955,10 @@ int GetWeaponData(edict_s *player, struct weapon_data_s *info)
 
 					item->m_iId = II.iId;
 					item->m_iClip = gun->m_iClip;
-					item->m_flTimeWeaponIdle = max(gun->m_flTimeWeaponIdle, -0.001);
-					item->m_flNextPrimaryAttack = max(gun->m_flNextPrimaryAttack, -0.001);
-					item->m_flNextSecondaryAttack = max(gun->m_flNextSecondaryAttack, -0.001);
-					item->m_flNextReload = max(gun->m_flNextReload, -0.001);
+					item->m_flTimeWeaponIdle = _max(gun->m_flTimeWeaponIdle, -0.001);
+					item->m_flNextPrimaryAttack = _max(gun->m_flNextPrimaryAttack, -0.001);
+					item->m_flNextSecondaryAttack = _max(gun->m_flNextSecondaryAttack, -0.001);
+					item->m_flNextReload = _max(gun->m_flNextReload, -0.001);
 					item->m_fInReload = gun->m_fInReload;
 					item->m_fInSpecialReload = gun->m_fInSpecialReload;
 					item->m_fInZoom = gun->m_iShotsFired;
@@ -1998,17 +4981,19 @@ int GetWeaponData(edict_s *player, struct weapon_data_s *info)
 void UpdateClientData(const struct edict_s *ent, int sendweapons, struct clientdata_s *cd)
 {
 	if (!ent || !ent->pvPrivateData)
+	{
 		return;
+	}
 
 	entvars_t *pevOrg = NULL;
 	entvars_t *pev = (entvars_t *)&ent->v;
-	CBasePlayer *pl = reinterpret_cast< CBasePlayer * >(CBasePlayer::Instance( pev ));
+	CBasePlayer *pl = reinterpret_cast<CBasePlayer *>(CBasePlayer::Instance(pev));
 
 	if (pl->pev->iuser1 == OBS_IN_EYE && pl->m_hObserverTarget)
 	{
 		pevOrg = pev;
 		pev = pl->m_hObserverTarget->pev;
-		pl = reinterpret_cast< CBasePlayer * >(CBasePlayer::Instance( pev ));
+		pl = reinterpret_cast<CBasePlayer *>(CBasePlayer::Instance(pev));
 	}
 
 	cd->flags = pev->flags;
@@ -2090,9 +5075,9 @@ void UpdateClientData(const struct edict_s *ent, int sendweapons, struct clientd
 		if (pl->m_pActiveItem != NULL)
 		{
 			ItemInfo II;
-			memset(&II, 0, sizeof(II));
+			Q_memset(&II, 0, sizeof(II));
 
-			CBasePlayerWeapon *gun = reinterpret_cast< CBasePlayerWeapon * >(pl->m_pActiveItem->GetWeaponPtr());
+			CBasePlayerWeapon *gun = reinterpret_cast<CBasePlayerWeapon *>(pl->m_pActiveItem->GetWeaponPtr());
 
 			if (gun != NULL && gun->UseDecrement() && gun->GetItemInfo(&II))
 			{
@@ -2117,13 +5102,17 @@ void UpdateClientData(const struct edict_s *ent, int sendweapons, struct clientd
 void CmdStart(const edict_t *player, const struct usercmd_s *cmd, unsigned int random_seed)
 {
 	entvars_t *pev = (entvars_t *)&player->v;
-	CBasePlayer *pl = reinterpret_cast< CBasePlayer * >(CBasePlayer::Instance( pev ));
+	CBasePlayer *pl = reinterpret_cast<CBasePlayer *>(CBasePlayer::Instance(pev));
 
 	if (!pl)
+	{
 		return;
+	}
 
 	if (pl->pev->groupinfo)
+	{
 		UTIL_SetGroupTrace(pl->pev->groupinfo, GROUP_OP_AND);
+	}
 
 	pl->random_seed = random_seed;
 }
@@ -2132,7 +5121,7 @@ void CmdStart(const edict_t *player, const struct usercmd_s *cmd, unsigned int r
 void CmdEnd(const edict_t *player)
 {
 	entvars_t *pev = (entvars_t *)&player->v;
-	CBasePlayer *pl = reinterpret_cast< CBasePlayer * >(CBasePlayer::Instance( pev ));
+	CBasePlayer *pl = reinterpret_cast<CBasePlayer *>(CBasePlayer::Instance(pev));
 
 	if (!pl)
 		return;
@@ -2174,20 +5163,20 @@ void CreateInstancedBaselines(void)
 	int iret = 0;
 	entity_state_t state;
 
-	memset(&state, 0, sizeof( state ));
+	Q_memset(&state, 0, sizeof(state));
 
 	// Create any additional baselines here for things like grendates, etc.
-	// iret = ENGINE_INSTANCE_BASELINE( pc->pev->classname, &state );
+	// iret = ENGINE_INSTANCE_BASELINE(pc->pev->classname, &state);
 
 	// Destroy objects.
-	// UTIL_Remove( pc );
+	// UTIL_Remove(pc);
 }
 
 /* <4b77c> ../cstrike/dlls/client.cpp:6179 */
 int InconsistentFile(const edict_t *player, const char *filename, char *disconnect_message)
 {
 	// Server doesn't care?
-	if (CVAR_GET_FLOAT( "mp_consistency" ) != 1)
+	if (CVAR_GET_FLOAT("mp_consistency") != 1)
 		return 0;
 
 	// Default behavior is to kick the player

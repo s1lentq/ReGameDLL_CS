@@ -140,13 +140,16 @@ typedef enum
 	ACT_WAVE,
 	ACT_YES,
 	ACT_NO,
+
 } Activity;
 
 typedef struct
 {
 	int type;
 	char *name;
+
 } activity_map_t;
+/* size: 8, cachelines: 1, members: 2 */
 
 extern activity_map_t activity_map[];
 

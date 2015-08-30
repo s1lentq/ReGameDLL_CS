@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-NOXREF void CBaseSpectator::SpectatorConnect(void)
+void CBaseSpectator::SpectatorConnect(void)
 {
 	pev->flags = FL_SPECTATOR;
 	pev->solid = SOLID_NOT;
@@ -74,20 +74,24 @@ void CBaseSpectator::SpectatorImpulseCommand(void)
 	pev->impulse = 0;
 }
 
-NOXREF void CBaseSpectator::SpectatorThink(void)
+void CBaseSpectator::SpectatorThink(void)
 {
 	if (!(pev->flags & FL_SPECTATOR))
+	{
 		pev->flags = FL_SPECTATOR;
+	}
 
 	pev->solid = SOLID_NOT;
 	pev->movetype = MOVETYPE_NOCLIP;
 
 	if (pev->impulse)
+	{
 		SpectatorImpulseCommand();
+	}
 }
 
 /* <17d297> ../cstrike/dlls/spectator.cpp:142 */
-NOXREF void CBaseSpectator::Spawn_(void)
+void CBaseSpectator::__MAKE_VHOOK(Spawn)(void)
 {
 	pev->flags = FL_SPECTATOR;
 	pev->solid = SOLID_NOT;

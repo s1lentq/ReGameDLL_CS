@@ -45,7 +45,7 @@ typedef struct
 /* size: 52, cachelines: 1, members: 3 */
 
 NOBODY BOOL FEnvSoundInRange(entvars_t *pev, entvars_t *pevTarget, float *pflRange);
-NOXREF void USENTENCEG_InitLRU(unsigned char *plru, int count);
+void USENTENCEG_InitLRU(unsigned char *plru, int count);
 int USENTENCEG_PickSequential(int isentenceg, char *szfound, int ipick, int freset);
 int USENTENCEG_Pick(int isentenceg, char *szfound);
 NOXREF int SENTENCEG_GetIndex(const char *szgroupname);

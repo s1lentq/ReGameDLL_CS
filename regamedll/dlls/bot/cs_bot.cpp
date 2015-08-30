@@ -19,19 +19,19 @@ NOBODY int GetBotFollowCount(CBasePlayer *leader)
 }
 
 /* <2e86df> ../cstrike/dlls/bot/cs_bot.cpp:62 */
-NOBODY void CCSBot::Walk_(void)
+NOBODY void CCSBot::__MAKE_VHOOK(Walk)(void)
 {
 //	IsElapsed(const class CountdownTimer *const this);  //    64
 //	Walk(CBot *const this);  //    66
 }
 
 /* <2e8732> ../cstrike/dlls/bot/cs_bot.cpp:80 */
-NOBODY bool CCSBot::Jump_(bool mustJump)
+NOBODY bool CCSBot::__MAKE_VHOOK(Jump)(bool mustJump)
 {
 }
 
 /* <2e8e39> ../cstrike/dlls/bot/cs_bot.cpp:97 */
-NOBODY int CCSBot::TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
+NOBODY int CCSBot::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
 //	{
 //		class CBaseEntity *attacker;                         //    99
@@ -57,7 +57,7 @@ NOBODY int CCSBot::TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, 
 }
 
 /* <2e8769> ../cstrike/dlls/bot/cs_bot.cpp:171 */
-NOBODY void CCSBot::Killed_(entvars_t *pevAttacker, int iGib)
+NOBODY void CCSBot::__MAKE_VHOOK(Killed)(entvars_t *pevAttacker, int iGib)
 {
 //	{
 //		float const deathDanger;                               //   178
@@ -335,8 +335,12 @@ NOBODY void CCSBot::IncreaseMorale(void)
 }
 
 /* <2e9824> ../cstrike/dlls/bot/cs_bot.cpp:845 */
-NOBODY void CCSBot::DecreaseMorale(void)
+void CCSBot::DecreaseMorale(void)
 {
+	if (m_morale > TERRIBLE)
+	{
+		m_morale = static_cast<MoraleType>(m_morale - 1);
+	}
 }
 
 /* <2e984c> ../cstrike/dlls/bot/cs_bot.cpp:857 */

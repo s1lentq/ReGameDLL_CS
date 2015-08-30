@@ -76,6 +76,14 @@ struct FunctionHook
 	const char		*symbolName;
 	size_t			handlerFunc;
 	int				symbolIndex;
+	bool			bIsHooked;
+};
+
+struct VirtualTableRef
+{
+	size_t			originalAddress;
+	const char		*symbolName;
+	size_t			size;
 };
 
 struct AddressRef
@@ -135,5 +143,13 @@ bool HIDDEN FindDataRef(Module *module, AddressRef *ref);
 #ifdef WIN32
 void FindAllCalls(Section* section, CFuncAddr** calls, uint32_t findRefsTo);
 #endif
+
+#if defined(_WIN32) && !defined(REGAMEDLL_UNIT_TESTS)
+
+const char *stripClass(const char *str);
+void VirtualTableInit(void *ptr, const char *baseClass = NULL);
+void HIDDEN GetAddressVtableByClassname(const char *szClassName, const int iOffset = 0, bool bCreate = true);
+
+#endif // _WIN32 && REGAMEDLL_UNIT_TESTS
 
 #endif // _MEMORY_H

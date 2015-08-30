@@ -32,6 +32,16 @@
 #pragma once
 #endif
 
+#pragma warning(disable : 4786)	// long STL names get truncated in browse info.
+
+#ifndef _WIN32
+#include <strings.h>
+#include <stdio.h>
+#endif // _WIN32
+
+#undef min
+#undef max
+
 #include <list>
 #include <vector>
 
@@ -93,14 +103,14 @@ public:
 	{
 		return m_weaponPreference[i];
 	}
-	const char *GetWeaponPreferenceAsString(int i) const;
+	NOBODY const char *GetWeaponPreferenceAsString(int i) const;
 	int GetWeaponPreferenceCount(void) const
 	{
 		return m_weaponPreferenceCount;
 	}
 
-	bool HasPrimaryPreference(void) const;
-	bool HasPistolPreference(void) const;
+	NOBODY bool HasPrimaryPreference(void) const;
+	NOBODY bool HasPistolPreference(void) const;
 
 	int GetCost(void) const
 	{
@@ -110,7 +120,7 @@ public:
 	{
 		return m_skin;
 	}
-	bool IsDifficulty(BotDifficultyType diff) const;
+	NOBODY bool IsDifficulty(BotDifficultyType diff) const;
 	int GetVoicePitch(void) const
 	{
 		return m_voicePitch;
@@ -133,7 +143,7 @@ public:
 		return m_prefersSilencer;
 	}
 	// TODO: it func private
-	void Inherit(const BotProfile *parent, const BotProfile *baseline);
+	NOBODY void Inherit(const BotProfile *parent, const BotProfile *baseline);
 
 private:
 
@@ -183,7 +193,7 @@ inline void BotProfile::Inherit(const BotProfile *parent, const BotProfile *base
 	if (parent->m_weaponPreferenceCount != baseline->m_weaponPreferenceCount)
 	{
 		m_weaponPreferenceCount = parent->m_weaponPreferenceCount;
-		for(int i = 0; i<parent->m_weaponPreferenceCount; i++)
+		for (int i = 0; i<parent->m_weaponPreferenceCount; i++)
 			m_weaponPreference[i] = parent->m_weaponPreference[i];
 	}
 
@@ -252,6 +262,10 @@ public:
 	int FindVoiceBankIndex(const char *filename);
 
 protected:
+
+#if defined(_WIN32) && defined(HOOK_GAMEDLL)
+	int unknown_padding1;
+#endif // HOOK_GAMEDLL
 
 	BotProfileList m_profileList;
 	VoiceBankList m_voiceBanks;

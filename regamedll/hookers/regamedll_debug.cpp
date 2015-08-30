@@ -65,6 +65,18 @@ void Regamedll_Debug_logStrDup(const char *s, void *ptr)
 	g_ReGameDLLDebugLog.flush();
 }
 
+#if defined(_WIN32) && !defined(REGAMEDLL_UNIT_TESTS)
+
+extern int nCountHook;
+
+void Regamedll_Game_Init(void)
+{
+	if (!g_ReGameDLLRuntimeConfig.disableAllHooks)
+		printf2("[Hooker]: The total number hooks of functions is - %d", nCountHook);
+}
+
+#endif // _WIN32 && REGAMEDLL_UNIT_TESTS
+
 void Regamedll_Debug_Init(void)
 {
 	//g_ReGameDLLDebugLog.exceptions(std::ios::badbit | std::ios::failbit);

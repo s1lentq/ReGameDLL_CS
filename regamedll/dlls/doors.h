@@ -32,19 +32,16 @@
 #pragma once
 #endif
 
-#define noiseMoving			noise1
-#define noiseArrived			noise2
-
 #define DOOR_SENTENCEWAIT		6
 #define DOOR_SOUNDWAIT			3
 #define BUTTON_SOUNDWAIT		0.5
 
 #define SF_DOOR_ROTATE_Y		0
-#define	SF_DOOR_START_OPEN		1
+#define SF_DOOR_START_OPEN		1
 #define SF_DOOR_ROTATE_BACKWARDS	2
 #define SF_DOOR_PASSABLE		8
 #define SF_DOOR_ONEWAY			16
-#define	SF_DOOR_NO_AUTO_RETURN		32
+#define SF_DOOR_NO_AUTO_RETURN		32
 #define SF_DOOR_ROTATE_Z		64
 #define SF_DOOR_ROTATE_X		128
 #define SF_DOOR_USE_ONLY		256		// door must be opened by player's use button.
@@ -91,11 +88,7 @@ public:
 #endif // HOOK_GAMEDLL
 	
 public:
-#ifndef HOOK_GAMEDLL
-	static TYPEDESCRIPTION m_SaveData[7];
-#else
-	static TYPEDESCRIPTION (*m_SaveData)[7];
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[7];
 
 public:
 	NOBODY void EXPORT DoorTouch(CBaseEntity *pOther);
@@ -166,11 +159,7 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-#ifndef HOOK_GAMEDLL
-	static TYPEDESCRIPTION m_SaveData[1];
-#else
-	static TYPEDESCRIPTION (*m_SaveData)[1];
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[1];
 
 public:
 	BYTE m_bMoveSnd;

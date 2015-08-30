@@ -39,13 +39,13 @@
 
 #ifndef _WIN32
 
-#ifndef max
-#define max(a,b) ((a) > (b) ? (a) : (b))
-#endif // max
+//#ifndef max
+//#define max(a,b) ((a) > (b) ? (a) : (b))
+//#endif // max
 
-#ifndef min
-#define min(a,b) ((a) < (b) ? (a) : (b))
-#endif // min
+//#ifndef min
+//#define min(a,b) ((a) < (b) ? (a) : (b))
+//#endif // min
 
 #endif // _WIN32
 
@@ -88,15 +88,15 @@ class CBotManager
 public:
 	CBotManager(void);
 
-	NOBODY virtual void ClientDisconnect(CBasePlayer *pPlayer) = 0;
-	NOBODY virtual BOOL ClientCommand(CBasePlayer *pPlayer, const char *pcmd) = 0;
+	virtual void ClientDisconnect(CBasePlayer *pPlayer) = 0;
+	virtual BOOL ClientCommand(CBasePlayer *pPlayer, const char *pcmd) = 0;
 
-	NOBODY virtual void ServerActivate(void) = 0;
-	NOBODY virtual void ServerDeactivate(void) = 0;
+	virtual void ServerActivate(void) = 0;
+	virtual void ServerDeactivate(void) = 0;
 
-	NOBODY virtual void ServerCommand(const char *pcmd) = 0;
-	NOBODY virtual void AddServerCommand(const char *cmd) = 0;
-	NOBODY virtual void AddServerCommands(void) = 0;
+	virtual void ServerCommand(const char *pcmd) = 0;
+	virtual void AddServerCommand(const char *cmd) = 0;
+	virtual void AddServerCommands(void) = 0;
 
 	virtual void RestartRound(void);
 	virtual void StartFrame(void);
@@ -106,23 +106,23 @@ public:
 	virtual void OnEvent(GameEventType event, CBaseEntity *entity = NULL, CBaseEntity *other = NULL);
 
 	// return priority of player (0 = max pri)
-	NOBODY virtual unsigned int GetPlayerPriority(CBasePlayer *player) const = 0;
+	virtual unsigned int GetPlayerPriority(CBasePlayer *player) const = 0;
 
 	// return the filename for this map's "nav" file
-	NOBODY const char *GetNavMapFilename(void) const;
+	const char *GetNavMapFilename(void) const;
 
 	// add an active grenade to the bot's awareness
-	NOBODY void AddGrenade(int type, CGrenade *grenade);
+	void AddGrenade(int type, CGrenade *grenade);
 
 	// the grenade entity in the world is going away
-	NOBODY void RemoveGrenade(CGrenade *grenade);
+	void RemoveGrenade(CGrenade *grenade);
 
 	// destroy any invalid active grenades
 	NOXREF void ValidateActiveGrenades(void);
-	NOBODY void DestroyAllGrenades(void);
+	void DestroyAllGrenades(void);
 
 	// return true if line intersects smoke volume
-	NOBODY bool IsLineBlockedBySmoke(const Vector *from, const Vector *to);
+	bool IsLineBlockedBySmoke(const Vector *from, const Vector *to);
 
 	// return true if position is inside a smoke cloud
 	bool IsInsideSmokeCloud(const Vector *pos);

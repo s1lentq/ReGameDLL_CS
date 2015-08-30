@@ -34,11 +34,6 @@
 
 #define COS_TABLE_SIZE 256
 
-#define CREATE_FAKE_CLIENT		(*g_engfuncs.pfnCreateFakeClient)
-#define GET_USERINFO			(*g_engfuncs.pfnGetInfoKeyBuffer)
-#define SET_KEY_VALUE			(*g_engfuncs.pfnSetKeyValue)
-#define SET_CLIENT_KEY_VALUE		(*g_engfuncs.pfnSetClientKeyValue)
-
 class CBasePlayer;
 class BotProfile;
 
@@ -142,16 +137,16 @@ private:
 /* <14ed68> ../game_shared/bot/bot_util.h:224 */
 inline bool IsEntityValid(CBaseEntity *entity)
 {
-	if(entity == NULL)
+	if (entity == NULL)
 		return false;
 
-	if(FNullEnt(entity->pev))
+	if (FNullEnt(entity->pev))
 		return false;
 
-	if(FStrEq(STRING(entity->pev->netname), ""))
+	if (FStrEq(STRING(entity->pev->netname), ""))
 		return false;
 
-	if(entity->pev->flags & FL_DORMANT)
+	if (entity->pev->flags & FL_DORMANT)
 		return false;
 
 	return true;
@@ -196,18 +191,18 @@ inline bool IsIntersecting2D(const Vector &startA, const Vector &endA, const Vec
 template <
 	typename Functor
 >
-INLINEBODY bool ForEachPlayer(Functor &func)
+bool ForEachPlayer(Functor &func)
 {
-	for(int i = 1; i <= gpGlobals->maxClients; i++)
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{
 		CBasePlayer *player = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
-		if(!IsEntityValid((CBaseEntity *)player))
+		if (!IsEntityValid((CBaseEntity *)player))
 			continue;
 
-		if(!player->IsPlayer())
+		if (!player->IsPlayer())
 			continue;
 
-		if(func(player) == false)
+		if (func(player) == false)
 			return false;
 	}
 	return true;
@@ -233,18 +228,18 @@ inline bool IsZombieGame(void)
 extern short s_iBeamSprite;
 extern float cosTable[COS_TABLE_SIZE];
 
-NOBODY bool UTIL_IsNameTaken(const char *name, bool ignoreHumans = false);
-NOBODY int UTIL_ClientsInGame(void);
-NOBODY int UTIL_ActivePlayersInGame(void);
-NOBODY int UTIL_HumansInGame(bool ignoreSpectators);
+bool UTIL_IsNameTaken(const char *name, bool ignoreHumans = false);
+int UTIL_ClientsInGame(void);
+int UTIL_ActivePlayersInGame(void);
+int UTIL_HumansInGame(bool ignoreSpectators);
 NOBODY int UTIL_HumansOnTeam(int teamID, bool isAlive = false);
 NOBODY int UTIL_BotsInGame(void);
-NOBODY bool UTIL_KickBotFromTeam(TeamName kickTeam);
+bool UTIL_KickBotFromTeam(TeamName kickTeam);
 NOBODY bool UTIL_IsTeamAllBots(int team);
 NOBODY CBasePlayer *UTIL_GetClosestPlayer(const Vector *pos, float *distance = NULL);
 NOBODY CBasePlayer *UTIL_GetClosestPlayer(const Vector *pos, int team, float *distance = NULL);
-NOBODY const char *UTIL_GetBotPrefix();
-NOBODY void UTIL_ConstructBotNetName(char *name, int nameLength, const BotProfile *profile);
+const char *UTIL_GetBotPrefix();
+void UTIL_ConstructBotNetName(char *name, int nameLength, const BotProfile *profile);
 NOBODY bool UTIL_IsVisibleToTeam(const Vector &spot, int team, float maxRange = -1.0f);
 CBasePlayer *UTIL_GetLocalPlayer(void);
 NOBODY Vector UTIL_ComputeOrigin(entvars_t *pevVars);

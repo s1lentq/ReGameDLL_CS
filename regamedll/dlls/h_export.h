@@ -48,6 +48,6 @@
 extern enginefuncs_t g_engfuncs;
 extern globalvars_t *gpGlobals;
 
-extern "C" _DLLEXPORT void WINAPI GiveFnptrsToDll(enginefuncs_t *pEnginefuncsTable,globalvars_t *pGlobals);
+C_DLLEXPORT void WINAPI GiveFnptrsToDll(enginefuncs_t *pEnginefuncsTable,globalvars_t *pGlobals);
 
 #endif // H_EXPORT_H

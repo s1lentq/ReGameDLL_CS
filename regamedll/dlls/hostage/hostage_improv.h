@@ -32,6 +32,11 @@
 #pragma once
 #endif
 
+#include "hostage/hostage_states.h"
+
+class CHostage;
+enum HostageChatterType;
+
 class CHostageImprov: public CImprov
 {
 public:
@@ -46,124 +51,248 @@ public:
 		//~CImprov();			//    49
 	};
 
-	virtual bool IsAlive(void) const;
-	virtual void MoveTo(const Vector &goal);
-	virtual void LookAt(const Vector &target);
-	virtual void ClearLookAt(void);
-	virtual void FaceTo(const Vector &goal);
-	virtual void ClearFaceTo(void);
-	virtual bool IsAtMoveGoal(float error = 20.0f) const;
-	virtual bool HasLookAt(void) const
-	{
-		return m_isLookingAt;
-	}
-	virtual bool HasFaceTo(void) const
-	{
-		return m_isFacingTo;
-	}
-	virtual bool IsAtFaceGoal(void) const;
-	virtual bool IsFriendInTheWay(const Vector &goalPos) const;
-	virtual bool IsFriendInTheWay(CBaseEntity *myFriend, const Vector &goalPos) const;
-	virtual void MoveForward(void)
-	{
-		m_moveFlags |= IN_FORWARD;
-	}
-	virtual void MoveBackward(void)
-	{
-		m_moveFlags |= IN_BACK;
-	}
-	virtual void StrafeLeft(void)
-	{
-		m_moveFlags |= IN_MOVELEFT;
-	}
-	virtual void StrafeRight(void)
-	{
-		m_moveFlags |= IN_MOVERIGHT;
-	}
-	virtual bool Jump(void);
-	virtual void Crouch(void);
-	virtual void StandUp(void);
-	virtual void TrackPath(const Vector &pathGoal, float deltaT);
-	virtual void StartLadder(const CNavLadder *ladder, NavTraverseType how, const Vector *approachPos, const Vector *departPos);
-	virtual bool TraverseLadder(const CNavLadder *ladder, NavTraverseType how, const Vector *approachPos, const Vector *departPos, float deltaT);
-	virtual bool GetSimpleGroundHeightWithFloor(const Vector *pos, float *height, Vector *normal = NULL);
-	virtual void Run(void);
-	virtual void Walk(void);
-	virtual void Stop(void);
-	virtual float GetMoveAngle(void) const
-	{
-		return m_moveAngle;
-	}
-	virtual float GetFaceAngle(void) const
-	{
-		return m_moveAngle;
-	}
-	virtual const Vector &GetFeet(void) const;
-	virtual const Vector &GetCentroid(void) const;
-	virtual const Vector &GetEyes(void) const;
-	virtual bool IsRunning(void) const
-	{
-		return (m_moveType == Running);
-	}
-	virtual bool IsWalking(void) const
-	{
-		return (m_moveType == Walking);
-	}
-	virtual bool IsStopped(void) const
-	{
-		return (m_moveType == Stopped);
-	}
-	virtual bool IsCrouching(void) const
-	{
-		return m_isCrouching;
-	}
-	virtual bool IsJumping(void) const
-	{
-		UNTESTED
-		return (m_jumpTimer.IsElapsed() == false);
-	}
-	virtual bool IsUsingLadder(void) const
-	{
-		return false;
-	}
-	virtual bool IsOnGround(void) const;
-	virtual bool IsMoving(void) const;
-	virtual bool CanRun(void) const
-	{
-		return true;
-	}
-	virtual bool CanCrouch(void) const
-	{
-		return true;
-	}
-	virtual bool CanJump(void) const
-	{
-		return true;
-	}
-	virtual bool IsVisible(const Vector &pos, bool testFOV = false) const;
-	virtual bool IsPlayerLookingAtMe(CBasePlayer *other, float cosTolerance = 0.95f) const;
-	virtual CBasePlayer *IsAnyPlayerLookingAtMe(int team = 0, float cosTolerance = 0.95f) const;
-	virtual CBasePlayer *GetClosestPlayerByTravelDistance(int team = 0, float *range = NULL) const;
-	virtual CNavArea *GetLastKnownArea(void) const
-	{
-		return m_lastKnownArea;
-	}
-	virtual void OnUpdate(float deltaT);
-	virtual void OnUpkeep(float deltaT);
-	virtual void OnReset(void);
-	virtual void OnMoveToSuccess(const Vector &goal)
+	NOBODY virtual void OnMoveToSuccess(const Vector &goal)
 	{
 		//if (m_behavior.IsState(NULL))
 		//	IImprovEvent::OnMoveToSuccess(goal);
 	}
-	virtual void OnMoveToFailure(const Vector &goal, MoveToFailureType reason);
-	virtual void OnInjury(float amount)
+	NOBODY virtual void OnMoveToFailure(const Vector &goal, MoveToFailureType reason);
+	NOBODY virtual void OnInjury(float amount)
 	{
 		//m_behavior.Update();
 		//m_lastInjuryTimer.Start();
 	}
-	virtual void OnGameEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *other);
-	virtual void OnTouch(CBaseEntity *other);
+	NOBODY virtual bool IsAlive(void) const;
+	NOBODY virtual void MoveTo(const Vector &goal);
+	NOBODY virtual void LookAt(const Vector &target);
+	NOBODY virtual void ClearLookAt(void);
+	NOBODY virtual void FaceTo(const Vector &goal);
+	NOBODY virtual void ClearFaceTo(void);
+	NOBODY virtual bool IsAtMoveGoal(float error = 20.0f) const;
+	NOBODY virtual bool HasLookAt(void) const
+	{
+		return m_isLookingAt;
+	}
+	NOBODY virtual bool HasFaceTo(void) const
+	{
+		return m_isFacingTo;
+	}
+	NOBODY virtual bool IsAtFaceGoal(void) const;
+	NOBODY virtual bool IsFriendInTheWay(const Vector &goalPos) const;
+	NOBODY virtual bool IsFriendInTheWay(CBaseEntity *myFriend, const Vector &goalPos) const;
+	NOBODY virtual void MoveForward(void)
+	{
+		m_moveFlags |= IN_FORWARD;
+	}
+	NOBODY virtual void MoveBackward(void)
+	{
+		m_moveFlags |= IN_BACK;
+	}
+	NOBODY virtual void StrafeLeft(void)
+	{
+		m_moveFlags |= IN_MOVELEFT;
+	}
+	NOBODY virtual void StrafeRight(void)
+	{
+		m_moveFlags |= IN_MOVERIGHT;
+	}
+	NOBODY virtual bool Jump(void);
+	NOBODY virtual void Crouch(void);
+	virtual void StandUp(void);
+	NOBODY virtual void TrackPath(const Vector &pathGoal, float deltaT);
+	NOBODY virtual void StartLadder(const CNavLadder *ladder, NavTraverseType how, const Vector *approachPos, const Vector *departPos);
+	NOBODY virtual bool TraverseLadder(const CNavLadder *ladder, NavTraverseType how, const Vector *approachPos, const Vector *departPos, float deltaT);
+	NOBODY virtual bool GetSimpleGroundHeightWithFloor(const Vector *pos, float *height, Vector *normal = NULL);
+	NOBODY virtual void Run(void);
+	NOBODY virtual void Walk(void);
+	NOBODY virtual void Stop(void);
+	NOBODY virtual float GetMoveAngle(void) const
+	{
+		return m_moveAngle;
+	}
+	NOBODY virtual float GetFaceAngle(void) const
+	{
+		return m_moveAngle;
+	}
+	NOBODY virtual const Vector &GetFeet(void) const;
+	NOBODY virtual const Vector &GetCentroid(void);
+	NOBODY virtual const Vector &GetEyes(void) const;
+	NOBODY virtual bool IsRunning(void) const
+	{
+		return (m_moveType == Running);
+	}
+	NOBODY virtual bool IsWalking(void) const
+	{
+		return (m_moveType == Walking);
+	}
+	NOBODY virtual bool IsStopped(void) const
+	{
+		return (m_moveType == Stopped);
+	}
+	NOBODY virtual bool IsCrouching(void) const
+	{
+		return m_isCrouching;
+	}
+	NOBODY virtual bool IsJumping(void) const
+	{
+		UNTESTED
+		return (m_jumpTimer.IsElapsed() == false);
+	}
+	NOBODY virtual bool IsUsingLadder(void) const
+	{
+		return false;
+	}
+	NOBODY virtual bool IsOnGround(void) const;
+	NOBODY virtual bool IsMoving(void) const;
+	NOBODY virtual bool CanRun(void) const
+	{
+		return true;
+	}
+	NOBODY virtual bool CanCrouch(void) const
+	{
+		return true;
+	}
+	NOBODY virtual bool CanJump(void) const
+	{
+		return true;
+	}
+	NOBODY virtual bool IsVisible(const Vector &pos, bool testFOV = false) const;
+	NOBODY virtual bool IsPlayerLookingAtMe(CBasePlayer *other, float cosTolerance = 0.95f) const;
+	NOBODY virtual CBasePlayer *IsAnyPlayerLookingAtMe(int team = 0, float cosTolerance = 0.95f) const;
+	NOBODY virtual CBasePlayer *GetClosestPlayerByTravelDistance(int team = 0, float *range = NULL) const;
+	NOBODY virtual CNavArea *GetLastKnownArea(void) const
+	{
+		return m_lastKnownArea;
+	}
+	NOBODY virtual void OnUpdate(float deltaT);
+	NOBODY virtual void OnUpkeep(float deltaT);
+	virtual void OnReset(void);
+	NOBODY virtual void OnGameEvent(GameEventType event, CBaseEntity *entity = NULL, CBaseEntity *other = NULL);
+	NOBODY virtual void OnTouch(CBaseEntity *other);
+
+#ifdef HOOK_GAMEDLL
+
+	void OnMoveToSuccess_(const Vector &goal)
+	{
+		//if (m_behavior.IsState(NULL))
+		//	IImprovEvent::OnMoveToSuccess(goal);
+	}
+	void OnMoveToFailure_(const Vector &goal, MoveToFailureType reason);
+	void OnInjury_(float amount)
+	{
+		//m_behavior.Update();
+		//m_lastInjuryTimer.Start();
+	}
+	bool IsAlive_(void) const;
+	void MoveTo_(const Vector &goal);
+	void LookAt_(const Vector &target);
+	void ClearLookAt_(void);
+	void FaceTo_(const Vector &goal);
+	void ClearFaceTo_(void);
+	bool IsAtMoveGoal_(float error = 20.0f) const;
+	bool HasLookAt_(void) const
+	{
+		return m_isLookingAt;
+	}
+	bool HasFaceTo_(void) const
+	{
+		return m_isFacingTo;
+	}
+	bool IsAtFaceGoal_(void) const;
+	bool IsFriendInTheWay_(const Vector &goalPos) const;
+	bool IsFriendInTheWay_(CBaseEntity *myFriend, const Vector &goalPos) const;
+	void MoveForward_(void)
+	{
+		m_moveFlags |= IN_FORWARD;
+	}
+	void MoveBackward_(void)
+	{
+		m_moveFlags |= IN_BACK;
+	}
+	void StrafeLeft_(void)
+	{
+		m_moveFlags |= IN_MOVELEFT;
+	}
+	void StrafeRight_(void)
+	{
+		m_moveFlags |= IN_MOVERIGHT;
+	}
+	bool Jump_(void);
+	void Crouch_(void);
+	void StandUp_(void);
+	void TrackPath_(const Vector &pathGoal, float deltaT);
+	void StartLadder_(const CNavLadder *ladder, NavTraverseType how, const Vector *approachPos, const Vector *departPos);
+	bool TraverseLadder_(const CNavLadder *ladder, NavTraverseType how, const Vector *approachPos, const Vector *departPos, float deltaT);
+	bool GetSimpleGroundHeightWithFloor_(const Vector *pos, float *height, Vector *normal = NULL);
+	void Run_(void);
+	void Walk_(void);
+	void Stop_(void);
+	float GetMoveAngle_(void) const
+	{
+		return m_moveAngle;
+	}
+	float GetFaceAngle_(void) const
+	{
+		return m_moveAngle;
+	}
+	const Vector &GetFeet_(void) const;
+	const Vector &GetCentroid_(void);
+	const Vector &GetEyes_(void) const;
+	bool IsRunning_(void) const
+	{
+		return (m_moveType == Running);
+	}
+	bool IsWalking_(void) const
+	{
+		return (m_moveType == Walking);
+	}
+	bool IsStopped_(void) const
+	{
+		return (m_moveType == Stopped);
+	}
+	bool IsCrouching_(void) const
+	{
+		return m_isCrouching;
+	}
+	bool IsJumping_(void) const
+	{
+		UNTESTED
+		return (m_jumpTimer.IsElapsed() == false);
+	}
+	bool IsUsingLadder_(void) const
+	{
+		return false;
+	}
+	bool IsOnGround_(void) const;
+	bool IsMoving_(void) const;
+	bool CanRun_(void) const
+	{
+		return true;
+	}
+	bool CanCrouch_(void) const
+	{
+		return true;
+	}
+	bool CanJump_(void) const
+	{
+		return true;
+	}
+	bool IsVisible_(const Vector &pos, bool testFOV = false) const;
+	bool IsPlayerLookingAtMe_(CBasePlayer *other, float cosTolerance = 0.95f) const;
+	CBasePlayer *IsAnyPlayerLookingAtMe_(int team = 0, float cosTolerance = 0.95f) const;
+	CBasePlayer *GetClosestPlayerByTravelDistance_(int team = 0, float *range = NULL) const;
+	CNavArea *GetLastKnownArea_(void) const
+	{
+		return m_lastKnownArea;
+	}
+	void OnUpdate_(float deltaT);
+	void OnUpkeep_(float deltaT);
+	void OnReset_(void);
+	void OnGameEvent_(GameEventType event, CBaseEntity *entity = NULL, CBaseEntity *other = NULL);
+	void OnTouch_(CBaseEntity *other);
+
+#endif // HOOK_GAMEDLL
+
 public:
 
 	enum MoveType
@@ -179,7 +308,10 @@ public:
 		SCARED,
 		TERRIFIED,
 	};
-
+	//{
+	//	UNTESTED
+	//	return m_behavior.IsState(&m_followState);
+	//}
 	void FaceOutwards(void);
 	bool IsFriendInTheWay(void);
 	void SetKnownGoodPosition(const Vector &pos);
@@ -198,17 +330,31 @@ public:
 	}
 	CNavPath *GetPath(void);
 	CNavPathFollower *GetPathFollower(void);
-	void Idle(void);
-	bool IsIdle(void);
+	void Idle(void)
+	{
+		m_behavior.SetState(&m_idleState);
+	}
+	bool IsIdle(void)
+	{
+		UNTESTED
+		return m_behavior.IsState(&m_idleState);
+	}
 	void Follow(CBasePlayer *leader);
-	bool IsFollowing(const CBaseEntity *leader);
+	bool IsFollowing(const CBaseEntity *leader = NULL)
+	{
+		UNTESTED
+		return m_behavior.IsState(&m_followState);
+	}
 	void Escape(void);
 	bool IsEscaping(void);
 	void Retreat(void);
 	bool IsRetreating(void);
 	bool IsAtHome(void);
 	bool CanSeeRescueZone(void);
-	CBaseEntity *GetFollowLeader(void);
+	CBaseEntity *GetFollowLeader(void)
+	{
+		return m_followState.GetLeader();
+	}
 	CBasePlayer *GetClosestVisiblePlayer(int team);
 	float GetTimeSinceLastSawPlayer(int team);
 	float GetTimeSinceLastInjury(void);
@@ -238,7 +384,10 @@ public:
 	void MoveTowards(const Vector &pos, float deltaT);
 	bool FaceTowards(const Vector &target, float deltaT);
 	float GetSpeed(void);
-	void SetMoveAngle(float angle);
+	void SetMoveAngle(float angle)
+	{
+		m_moveAngle = angle;
+	}
 	void Wiggle(void);
 	void ClearPath(void);
 	bool DiscontinuityJump(float ground, bool onlyJumpDown, bool mustJump);
@@ -370,9 +519,12 @@ class CheckAhead
 {
 public:
 	/* <47046f> ../cstrike/dlls/hostage/hostage_improv.cpp:525 */
-	bool operator()(class CheckAhead *, class CBaseEntity *)
+	bool operator()(CBaseEntity *entity)
 	{
-
+//		Vector to;                                      //   530
+//		float range;                                          //   531
+//		float const closeRange;                                //   533
+//		float const aheadTolerance;                            //   537
 	}
 	/* <46f597> ../cstrike/dlls/hostage/hostage_improv.cpp:546 */
 	bool IsBlocked(void)

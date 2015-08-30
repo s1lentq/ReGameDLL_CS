@@ -62,9 +62,9 @@ TYPEDESCRIPTION CSpeaker::m_SaveData[] =
 int fSentencesInit;
 int gcallsentences;
 
-TYPEDESCRIPTION (*CAmbientGeneric::m_SaveData)[4];
-TYPEDESCRIPTION (*CEnvSound::m_SaveData)[2];
-TYPEDESCRIPTION (*CSpeaker::m_SaveData)[1];
+TYPEDESCRIPTION (*CAmbientGeneric::pm_SaveData)[4];
+TYPEDESCRIPTION (*CEnvSound::pm_SaveData)[2];
+TYPEDESCRIPTION (*CSpeaker::pm_SaveData)[1];
 
 #endif // HOOK_GAMEDLL
 
@@ -257,7 +257,7 @@ NOBODY void CEnvSound::Spawn(void)
 // randomize list of sentence name indices
 
 /* <17093f> ../cstrike/dlls/sound.cpp:1084 */
-NOXREF void USENTENCEG_InitLRU(unsigned char *plru, int count)
+void USENTENCEG_InitLRU(unsigned char *plru, int count)
 {
 	int i, j, k;
 	unsigned char temp;
@@ -343,7 +343,7 @@ int USENTENCEG_Pick(int isentenceg, char *szfound)
 	unsigned char i;
 	unsigned char count;
 	char sznum[8];
-	unsigned char ipick;
+	unsigned char ipick = 0xFF;
 	BOOL ffound = FALSE;
 	
 	if (!fSentencesInit)
@@ -351,7 +351,7 @@ int USENTENCEG_Pick(int isentenceg, char *szfound)
 
 	if (isentenceg < 0)
 		return -1;
-
+	
 	szgroupname = rgsentenceg[isentenceg].szgroupname;
 	count = rgsentenceg[isentenceg].count;
 	plru = rgsentenceg[isentenceg].rgblru;
@@ -359,6 +359,7 @@ int USENTENCEG_Pick(int isentenceg, char *szfound)
 	while (!ffound)
 	{
 		for (i = 0; i < count; i++)
+		{
 			if (plru[i] != 0xFF)
 			{
 				ipick = plru[i];
@@ -366,18 +367,21 @@ int USENTENCEG_Pick(int isentenceg, char *szfound)
 				ffound = TRUE;
 				break;
 			}
+		}
 
-		if (!ffound)
-			USENTENCEG_InitLRU(plru, count);
-		else
+		if (ffound)
 		{
-			strcpy(szfound, "!");
-			strcat(szfound, szgroupname);
-			sprintf(sznum, "%d", ipick);
-			strcat(szfound, sznum);
+			Q_strcpy(szfound, "!");
+			Q_strcat(szfound, szgroupname);
+			Q_sprintf(sznum, "%d", ipick);
+			Q_strcat(szfound, sznum);
+
 			return ipick;
 		}
+		else
+			USENTENCEG_InitLRU(plru, count);
 	}
+
 	return -1;
 }
 
@@ -538,7 +542,7 @@ void SENTENCEG_Init(void)
 	{
 		// skip whitespace
 		i = 0;
-		while(buffer[i] && buffer[i] == ' ')
+		while (buffer[i] && buffer[i] == ' ')
 			i++;
 
 		if (!buffer[i])
@@ -565,8 +569,10 @@ void SENTENCEG_Init(void)
 		buffer[j] = 0;
 		const char *pString = buffer + i;
 
-		if (Q_strlen( pString ) >= CBSENTENCENAME_MAX)
-			ALERT( at_warning, "Sentence %s longer than %d letters\n", pString, CBSENTENCENAME_MAX - 1);
+		if (Q_strlen(pString) >= CBSENTENCENAME_MAX)
+		{
+			ALERT(at_warning, "Sentence %s longer than %d letters\n", pString, CBSENTENCENAME_MAX - 1);
+		}
 
 		Q_strcpy(gszallsentencenames[gcallsentences++], pString);
 
@@ -796,7 +802,7 @@ void TEXTURETYPE_Init(void)
 	{
 		// skip whitespace
 		i = 0;
-		while(buffer[i] && isspace(buffer[i]))
+		while (buffer[i] && isspace(buffer[i]))
 			i++;
 
 		if (!buffer[i])
@@ -810,7 +816,7 @@ void TEXTURETYPE_Init(void)
 		grgchTextureType[gcTextures] = toupper(buffer[i++]);
 
 		// skip whitespace
-		while(buffer[i] && isspace(buffer[i]))
+		while (buffer[i] && isspace(buffer[i]))
 			i++;
 
 		if (!buffer[i])
@@ -825,7 +831,7 @@ void TEXTURETYPE_Init(void)
 			continue;
 
 		// null-terminate name and save in sentences array
-		j = min(j, CBTEXTURENAMEMAX - 1 + i);
+		j = _min(j, CBTEXTURENAMEMAX - 1 + i);
 		buffer[j] = 0;
 		Q_strcpy(&(grgszTextureName[gcTextures++][0]), &(buffer[i]));
 	}
@@ -1034,7 +1040,6 @@ float TEXTURETYPE_PlaySound(TraceResult *ptr, Vector vecSrc, Vector vecEnd, int 
 	else if (chTextureType == CHAR_TEX_COMPUTER)
 	{
 		// play random spark if computer
-
 		if (ptr->flFraction != 1.0 && RANDOM_LONG(0, 1))
 		{
 			UTIL_Sparks(ptr->vecEndPos);
@@ -1044,12 +1049,12 @@ float TEXTURETYPE_PlaySound(TraceResult *ptr, Vector vecSrc, Vector vecEnd, int 
 
 			switch (RANDOM_LONG(0, 1))
 			{
-				case 0:
-					UTIL_EmitAmbientSound(ENT(0), ptr->vecEndPos, "buttons/spark5.wav", flVolume, ATTN_NORM, 0, 100);
-					break;
-				case 1:
-					UTIL_EmitAmbientSound(ENT(0), ptr->vecEndPos, "buttons/spark6.wav", flVolume, ATTN_NORM, 0, 100);
-					break;
+			case 0:
+				UTIL_EmitAmbientSound(ENT(0), ptr->vecEndPos, "buttons/spark5.wav", flVolume, ATTN_NORM, 0, 100);
+				break;
+			case 1:
+				UTIL_EmitAmbientSound(ENT(0), ptr->vecEndPos, "buttons/spark6.wav", flVolume, ATTN_NORM, 0, 100);
+				break;
 			}
 		}
 	}

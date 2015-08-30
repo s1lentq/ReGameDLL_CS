@@ -40,22 +40,25 @@ public:
 public:
 	virtual BOOL IsMultiplayer(void)
 	{
-		return FALSE;
+		return IsMultiplayer_();
 	}
-	NOBODY virtual BOOL IsDeathmatch(void);
+	virtual BOOL IsDeathmatch(void);
 	virtual void InitHUD(CBasePlayer *pl);
 	virtual void PlayerSpawn(CBasePlayer *pPlayer);
-	NOBODY virtual void PlayerThink(CBasePlayer *pPlayer);
-	NOBODY virtual BOOL FPlayerCanRespawn(CBasePlayer *pPlayer);
+	virtual void PlayerThink(CBasePlayer *pPlayer);
+	virtual BOOL FPlayerCanRespawn(CBasePlayer *pPlayer);
 	virtual edict_t *GetPlayerSpawnSpot(CBasePlayer *pPlayer);
-	NOBODY virtual void PlayerKilled(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor);
-	NOBODY virtual int ItemShouldRespawn(CItem *pItem);
-	NOBODY virtual void CheckMapConditions(void) {}
-	NOBODY virtual void CheckWinConditions(void);
+	virtual void PlayerKilled(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor);
+	virtual int ItemShouldRespawn(CItem *pItem);
+	virtual void CheckMapConditions(void) { }
+	virtual void CheckWinConditions(void);
 
 #ifdef HOOK_GAMEDLL
 
-	//BOOL IsMultiplayer_(void);
+	BOOL IsMultiplayer_(void)
+	{
+		return FALSE;
+	}
 	BOOL IsDeathmatch_(void);
 	void InitHUD_(CBasePlayer *pl);
 	void PlayerSpawn_(CBasePlayer *pPlayer);
@@ -64,36 +67,37 @@ public:
 	edict_t *GetPlayerSpawnSpot_(CBasePlayer *pPlayer);
 	void PlayerKilled_(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor);
 	int ItemShouldRespawn_(CItem *pItem);
-	//void CheckMapConditions_(void) {}
 	void CheckWinConditions_(void);
 
 #endif // HOOK_GAMEDLL
 
 public:
 	static void HostageDied(void);
-	NOBODY static bool PlayerCanBuy(CBasePlayer *pPlayer);
-private:
+	static bool PlayerCanBuy(CBasePlayer *pPlayer);
+
+//private:
 	float FillAccountTime;
 	float ServerRestartTime;
 	BOOL fInBuyArea;
 	BOOL fVisitedBuyArea;
 	bool fVGUIMenus;
+
 };/* size: 728, cachelines: 12, members: 6 */
 
 /* <18a1d5> ../cstrike/dlls/training_gamerules.cpp:252 */
 class CBaseGrenCatch: public CBaseEntity
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void KeyValue(KeyValueData *pkvd);
-	NOBODY virtual int Save(CSave &save);
-	NOBODY virtual int Restore(CRestore &restore);
-	NOBODY virtual int ObjectCaps(void)
+	virtual void Spawn(void);
+	virtual void KeyValue(KeyValueData *pkvd);
+	virtual int Save(CSave &save);
+	virtual int Restore(CRestore &restore);
+	virtual int ObjectCaps(void)
 	{
 		return ObjectCaps_();
 	}
-	NOBODY virtual void Think(void);
-	NOBODY virtual void Touch(CBaseEntity *pOther);
+	virtual void Think(void);
+	virtual void Touch(CBaseEntity *pOther);
 
 #ifdef HOOK_GAMEDLL
 
@@ -111,14 +115,8 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[5];
 
-#ifndef HOOK_GAMEDLL
-	static TYPEDESCRIPTION m_SaveData[5];
-#else
-	static TYPEDESCRIPTION (*m_SaveData)[5];
-#endif // HOOK_GAMEDLL
-
-public:
 	int m_NeedGrenadeType;
 	string_t sTriggerOnGrenade;
 	string_t sDisableOnGrenade;
@@ -131,11 +129,11 @@ public:
 class CFuncWeaponCheck: public CBaseEntity
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void KeyValue(KeyValueData *pkvd);
-	NOBODY virtual int Save(CSave &save);
-	NOBODY virtual int Restore(CRestore &restore);
-	NOBODY virtual void Touch(CBaseEntity *pOther);
+	virtual void Spawn(void);
+	virtual void KeyValue(KeyValueData *pkvd);
+	virtual int Save(CSave &save);
+	virtual int Restore(CRestore &restore);
+	virtual void Touch(CBaseEntity *pOther);
 
 #ifdef HOOK_GAMEDLL
 
@@ -148,12 +146,7 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-
-#ifndef HOOK_GAMEDLL
-	static TYPEDESCRIPTION m_SaveData[6];
-#else
-	static TYPEDESCRIPTION (*m_SaveData)[6];
-#endif // HOOK_GAMEDLL
+	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[6];
 
 private:
 	string_t sTriggerWithItems;
@@ -162,6 +155,11 @@ private:
 	unsigned int sItemName[32];
 	int iItemCount;
 	int iAnyWeapon;
+
 };/* size: 300, cachelines: 5, members: 8 */
 
-#endif //T RAINING_GAMERULES_H
+// linked objects
+C_DLLEXPORT void func_grencatch(entvars_t *pev);
+C_DLLEXPORT void func_weaponcheck(entvars_t *pev);
+
+#endif // TRAINING_GAMERULES_H

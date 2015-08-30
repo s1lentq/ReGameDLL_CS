@@ -59,31 +59,30 @@ enum EStringConvertErrorPolicy
 	STRINGCONVERT_ASSERT_FAIL = 6,
 };
 
-NOBODY bool Q_IsValidUChar32(uchar32 uVal);
-NOXREF NOBODY void Q_UTF32ToUChar32(const uchar32 *pUTF32, uchar32 &uVal, bool &bErr);
-NOXREF NOBODY void Q_UChar32ToUTF32Len(uchar32 uVal);
-NOXREF NOBODY void Q_UChar32ToUTF32(uchar32 uVal, uchar32 *pUTF32);
-NOXREF NOBODY int Q_UChar32ToUTF8Len(uchar32 uVal);
-NOXREF NOBODY int Q_UChar32ToUTF16Len(uchar32 uVal);
-NOXREF NOBODY int Q_UChar32ToUTF16(uchar32 uVal, uchar16 *pUTF16Out);
-NOXREF NOBODY int Q_UChar32ToUTF8(uchar32 uVal, char *pUTF8Out);
-NOXREF NOBODY int Q_UTF16ToUChar32(const uchar16 *pUTF16, uchar32 &uValueOut, bool &bErrorOut);
-NOXREF NOBODY int Q_UTF8ToUTF16(const char *pUTF8, uchar16 *pUTF16, int cubDestSizeInBytes, EStringConvertErrorPolicy ePolicy);
-NOXREF NOBODY int Q_UTF8ToUTF32(const char *pUTF8, uchar32 *pUTF32, int cubDestSizeInBytes, EStringConvertErrorPolicy ePolicy);
-NOXREF NOBODY int Q_UTF16ToUTF8(const uchar16 *pUTF16, char *pUTF8, int cubDestSizeInBytes, EStringConvertErrorPolicy ePolicy);
-NOXREF NOBODY int Q_UTF16ToUTF32(const uchar16 *pUTF16, uchar32 *pUTF32, int cubDestSizeInBytes, EStringConvertErrorPolicy ePolicy);
-NOXREF NOBODY int Q_UTF32ToUTF8(const uchar32 *pUTF32, char *pUTF8, int cubDestSizeInBytes, EStringConvertErrorPolicy ePolicy);
-NOXREF NOBODY int Q_UTF32ToUTF16(const uchar32 *pUTF32, uchar16 *pUTF16, int cubDestSizeInBytes, EStringConvertErrorPolicy ePolicy);
-NOBODY int Q_UTF8ToUChar32(const char *pUTF8_, uchar32 &uValueOut, bool &bErrorOut);
-NOBODY qboolean Q_UnicodeValidate(const char *pUTF8);
-NOXREF NOBODY int Q_UnicodeLength(const char *pUTF8);
-NOBODY char *Q_UnicodeAdvance(char *pUTF8, int nChars);
-NOXREF NOBODY qboolean Q_IsMeanSpaceW(uchar16 wch);
-NOXREF NOBODY qboolean Q_IsDeprecatedW(uchar16 wch);
-//NOXREF NOBODY uchar16 *StripWhitespaceWorker(uchar16 *pwch, int cchLength, bool *pbStrippedWhitespace);
-NOXREF NOBODY uchar16 *StripUnprintableWorker(uchar16 *pwch, bool *pbStrippedAny);
-NOBODY qboolean Q_StripUnprintableAndSpace(char *pch);
-NOBODY qboolean V_UTF8ToUChar32(const char *pUTF8_, uchar32 *uValueOut);
-NOBODY int Q_UnicodeRepair(char *pUTF8);
+bool Q_IsValidUChar32(uchar32 uVal);
+int Q_UTF32ToUChar32(const uchar32 *pUTF32, uchar32 &uVal, bool &bErr);
+int Q_UChar32ToUTF32Len(uchar32 uVal);
+int Q_UChar32ToUTF32(uchar32 uVal, uchar32 *pUTF32);
+int Q_UChar32ToUTF8Len(uchar32 uVal);
+int Q_UChar32ToUTF16Len(uchar32 uVal);
+int Q_UChar32ToUTF16(uchar32 uVal, uchar16 *pUTF16Out);
+int Q_UChar32ToUTF8(uchar32 uVal, char *pUTF8Out);
+int Q_UTF16ToUChar32(const uchar16 *pUTF16, uchar32 &uValueOut, bool &bErrorOut);
+int Q_UTF8ToUTF16(const char *pUTF8, uchar16 *pUTF16, int cubDestSizeInBytes, EStringConvertErrorPolicy ePolicy);
+int Q_UTF8ToUTF32(const char *pUTF8, uchar32 *pUTF32, int cubDestSizeInBytes, EStringConvertErrorPolicy ePolicy);
+int Q_UTF16ToUTF8(const uchar16 *pUTF16, char *pUTF8, int cubDestSizeInBytes, EStringConvertErrorPolicy ePolicy);
+NOXREF int Q_UTF16ToUTF32(const uchar16 *pUTF16, uchar32 *pUTF32, int cubDestSizeInBytes, EStringConvertErrorPolicy ePolicy);
+int Q_UTF32ToUTF8(const uchar32 *pUTF32, char *pUTF8, int cubDestSizeInBytes, EStringConvertErrorPolicy ePolicy);
+NOXREF int Q_UTF32ToUTF16(const uchar32 *pUTF32, uchar16 *pUTF16, int cubDestSizeInBytes, EStringConvertErrorPolicy ePolicy);
+int Q_UTF8ToUChar32(const char *pUTF8_, uchar32 &uValueOut, bool &bErrorOut);
+qboolean Q_UnicodeValidate(const char *pUTF8);
+NOXREF int Q_UnicodeLength(const char *pUTF8);
+NOXREF char *Q_UnicodeAdvance(char *pUTF8, int nChars);
+qboolean Q_IsMeanSpaceW(uchar16 wch);
+qboolean Q_IsDeprecatedW(uchar16 wch);
+uchar16 *StripUnprintableWorker(uchar16 *pwch, bool *pbStrippedAny);
+qboolean Q_StripUnprintableAndSpace(char *pch);
+NOXREF qboolean V_UTF8ToUChar32(const char *pUTF8_, uchar32 *uValueOut);
+NOXREF int Q_UnicodeRepair(char *pUTF8);
 
 #endif // UNICODE_STR_TOOLS_H

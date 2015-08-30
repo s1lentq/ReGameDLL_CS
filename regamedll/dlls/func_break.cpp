@@ -116,13 +116,13 @@ const char *(*CBreakable::ppSoundsGlass)[3];
 
 char *(*CPushable::pm_soundNames)[3];
 
-TYPEDESCRIPTION (*CBreakable::m_SaveData)[5];
-TYPEDESCRIPTION (*CPushable::m_SaveData)[2];
+TYPEDESCRIPTION (*CBreakable::pm_SaveData)[5];
+TYPEDESCRIPTION (*CPushable::pm_SaveData)[2];
 
 #endif // HOOK_GAMEDLL
 
 /* <85bf3> ../cstrike/dlls/func_break.cpp:76 */
-NOBODY void CBreakable::KeyValue_(KeyValueData *pkvd)
+NOBODY void CBreakable::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 //	FStrEq(const char *sz1,
 //		const char *sz2);  //    90
@@ -158,53 +158,92 @@ LINK_ENTITY_TO_CLASS(func_breakable, CBreakable);
 IMPLEMENT_SAVERESTORE(CBreakable, CBaseEntity);
 
 /* <85663> ../cstrike/dlls/func_break.cpp:157 */
-NOBODY void CBreakable::Spawn_(void)
+NOBODY void CBreakable::__MAKE_VHOOK(Spawn)(void)
 {
 }
 
 /* <8568a> ../cstrike/dlls/func_break.cpp:191 */
-NOBODY void CBreakable::Restart_(void)
+NOBODY void CBreakable::__MAKE_VHOOK(Restart)(void)
 {
 }
 
 /* <864f1> ../cstrike/dlls/func_break.cpp:260 */
-NOBODY const char **CBreakable::MaterialSoundList(Materials precacheMaterial, int &soundCount)
+const char **CBreakable::MaterialSoundList(Materials precacheMaterial, int &soundCount)
 {
-//	{
-//		const char ** pSoundList;                           //   262
-//	}
+	const char **pSoundList = NULL;
+
+	switch (precacheMaterial)
+	{
+		case matWood:
+		{
+			pSoundList = pSoundsWood;
+			soundCount = ARRAYSIZE(pSoundsWood);
+			break;
+		}
+		case matFlesh:
+		{
+			pSoundList = pSoundsFlesh;
+			soundCount = ARRAYSIZE(pSoundsFlesh);
+			break;
+		}
+		case matComputer:
+		case matUnbreakableGlass:
+		case matGlass:
+		{
+			pSoundList = pSoundsGlass;
+			soundCount = ARRAYSIZE(pSoundsGlass);
+			break;
+		}
+		case matMetal:
+		{
+			pSoundList = pSoundsMetal;
+			soundCount = ARRAYSIZE(pSoundsMetal);
+			break;
+		}
+		case matCinderBlock:
+		case matRocks:
+		{
+			pSoundList = pSoundsConcrete;
+			soundCount = ARRAYSIZE(pSoundsConcrete);
+			break;
+		}
+		case matCeilingTile:
+		case matNone:
+		default:
+			soundCount = 0;
+			break;
+	}
+	return pSoundList;
 }
 
 /* <86526> ../cstrike/dlls/func_break.cpp:303 */
-NOBODY void CBreakable::MaterialSoundPrecache(Materials precacheMaterial)
+void CBreakable::MaterialSoundPrecache(Materials precacheMaterial)
 {
-//	{
-//		const char ** pSoundList;                           //   305
-//		int i;                                                //   306
-//		int soundCount;                                       //   306
-//		MaterialSoundList(Materials precacheMaterial,
-//					int &soundCount);  //   308
-//	}
+	const char **pSoundList;
+	int i, soundCount = 0;
+
+	pSoundList = MaterialSoundList(precacheMaterial, soundCount);
+
+	for (i = 0; i < soundCount; i++)
+	{
+		PRECACHE_SOUND((char *)pSoundList[i]);
+	}
 }
 
 /* <86598> ../cstrike/dlls/func_break.cpp:316 */
-NOBODY void CBreakable::MaterialSoundRandom(edict_t *pEdict, Materials soundMaterial, float volume)
+void CBreakable::MaterialSoundRandom(edict_t *pEdict, Materials soundMaterial, float volume)
 {
-//	{
-//		const char ** pSoundList;                           //   318
-//		int soundCount;                                       //   319
-//		MaterialSoundList(Materials precacheMaterial,
-//					int &soundCount);  //   321
-//		EMIT_SOUND(edict_t *entity,
-//				int channel,
-//				const char *sample,
-//				float volume,
-//				float attenuation);  //   324
-//	}
+	int soundCount = 0;
+	const char **pSoundList = MaterialSoundList(soundMaterial, soundCount);
+
+	if (soundCount)
+	{
+		EMIT_SOUND(pEdict, CHAN_BODY, pSoundList[ RANDOM_LONG(0, soundCount - 1) ], volume, 1.0);
+	}
 }
 
 /* <8634b> ../cstrike/dlls/func_break.cpp:328 */
-NOBODY void CBreakable::Precache_(void)
+NOBODY void CBreakable::__MAKE_VHOOK(Precache)(void)
 {
 //	{
 //		const char *pGibName;                               //   330
@@ -235,7 +274,7 @@ NOBODY void CBreakable::BreakTouch(CBaseEntity *pOther)
 }
 
 /* <85f2d> ../cstrike/dlls/func_break.cpp:538 */
-NOBODY void CBreakable::Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+NOBODY void CBreakable::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 //	Use(CBreakable *const this,
 //		class CBaseEntity *pActivator,
@@ -245,7 +284,7 @@ NOBODY void CBreakable::Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_
 }
 
 /* <85964> ../cstrike/dlls/func_break.cpp:554 */
-NOBODY void CBreakable::TraceAttack_(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType)
+NOBODY void CBreakable::__MAKE_VHOOK(TraceAttack)(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType)
 {
 //	{
 //		float flVolume;                                       //   565
@@ -265,7 +304,7 @@ NOBODY void CBreakable::TraceAttack_(entvars_t *pevAttacker, float flDamage, Vec
 }
 
 /* <86719> ../cstrike/dlls/func_break.cpp:588 */
-NOBODY int CBreakable::TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
+NOBODY int CBreakable::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
 //	{
 //		Vector vecTemp;                                 //   590
@@ -331,7 +370,7 @@ NOBODY BOOL CBreakable::IsBreakable(void)
 }
 
 /* <85a99> ../cstrike/dlls/func_break.cpp:839 */
-NOBODY int CBreakable::DamageDecal_(int bitsDamageType)
+NOBODY int CBreakable::__MAKE_VHOOK(DamageDecal)(int bitsDamageType)
 {
 //	DamageDecal(CBreakable *const this,
 //			int bitsDamageType);  //   839
@@ -344,12 +383,12 @@ LINK_ENTITY_TO_CLASS(func_pushable, CPushable);
 IMPLEMENT_SAVERESTORE(CPushable, CBreakable);
 
 /* <856d7> ../cstrike/dlls/func_break.cpp:893 */
-NOBODY void CPushable::Spawn_(void)
+NOBODY void CPushable::__MAKE_VHOOK(Spawn)(void)
 {
 }
 
 /* <863eb> ../cstrike/dlls/func_break.cpp:920 */
-NOBODY void CPushable::Precache_(void)
+NOBODY void CPushable::__MAKE_VHOOK(Precache)(void)
 {
 //	{
 //		int i;                                                //   922
@@ -357,7 +396,7 @@ NOBODY void CPushable::Precache_(void)
 }
 
 /* <85fa3> ../cstrike/dlls/func_break.cpp:930 */
-NOBODY void CPushable::KeyValue_(KeyValueData *pkvd)
+NOBODY void CPushable::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 //	{
 //		int bbox;                                             //   934
@@ -374,7 +413,7 @@ NOBODY void CPushable::KeyValue_(KeyValueData *pkvd)
 }
 
 /* <86c0d> ../cstrike/dlls/func_break.cpp:969 */
-NOBODY void CPushable::Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+NOBODY void CPushable::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 //	Use(CPushable *const this,
 //		class CBaseEntity *pActivator,
@@ -386,7 +425,7 @@ NOBODY void CPushable::Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_T
 }
 
 /* <86b99> ../cstrike/dlls/func_break.cpp:983 */
-NOBODY void CPushable::Touch_(CBaseEntity *pOther)
+NOBODY void CPushable::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 {
 //	FClassnameIs(entvars_t *pev,
 //			const char *szClassname);  //   985
@@ -413,7 +452,7 @@ NOBODY void CPushable::Move(CBaseEntity *pOther, int push)
 }
 
 /* <868b0> ../cstrike/dlls/func_break.cpp:1061 */
-NOBODY int CPushable::TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
+NOBODY int CPushable::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
 //	TakeDamage(CPushable *const this,
 //			entvars_t *pevInflictor,

@@ -13,8 +13,8 @@ const float updateTimesliceDuration = 0.0;//TODO: what value?? check it.
 
 #endif // HOOK_GAMEDLL
 
-int navAreaCount;
-int currentIndex;
+int _navAreaCount;
+int _currentIndex;
 
 /* <343cbe> ../cstrike/dlls/bot/cs_bot_learn.cpp:95 */
 NOBODY inline class CNavNode *LadderEndSearch(CBaseEntity *entity, const Vector *pos, NavDirType mountDir)
@@ -194,8 +194,8 @@ void CCSBot::StartAnalyzeAlphaProcess(void)
 	m_processMode = PROCESS_ANALYZE_ALPHA;
 	m_analyzeIter = TheNavAreaList.begin();
 
-	navAreaCount = TheNavAreaList.size();
-	currentIndex = 0;
+	_navAreaCount = TheNavAreaList.size();
+	_currentIndex = 0;
 
 	ApproachAreaAnalysisPrep();
 	DestroyHidingSpots();
@@ -274,6 +274,7 @@ NOBODY void CCSBot::UpdateSaveProcess(void)
 }
 
 /* <344e24> ../cstrike/dlls/bot/cs_bot_learn.cpp:554 */
-NOBODY void CCSBot::StartNormalProcess(void)
+void CCSBot::StartNormalProcess(void)
 {
+	m_processMode = PROCESS_NORMAL;
 }
