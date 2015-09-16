@@ -42,10 +42,10 @@ NOXREF char *vstr(float *v);
 class CBaseMonster: public CBaseToggle
 {
 public:
-	NOBODY virtual void KeyValue(KeyValueData *pkvd);
+	virtual void KeyValue(KeyValueData *pkvd);
 	virtual void TraceAttack(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType);
-	NOBODY virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
-	NOBODY virtual int TakeHealth(float flHealth, int bitsDamageType);
+	virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
+	virtual int TakeHealth(float flHealth, int bitsDamageType);
 	virtual void Killed(entvars_t *pevAttacker, int iGib);
 	virtual int BloodColor(void)
 	{
@@ -58,20 +58,20 @@ public:
 	virtual float ChangeYaw(int speed);
 	virtual BOOL HasHumanGibs(void);
 	virtual BOOL HasAlienGibs(void);
-	NOBODY virtual void FadeMonster(void);
+	virtual void FadeMonster(void);
 	virtual void GibMonster(void);
-	NOBODY virtual Activity GetDeathActivity(void);
+	NOXREF virtual Activity GetDeathActivity(void);
 	virtual void BecomeDead(void);
 	virtual BOOL ShouldFadeOnDeath(void);
-	NOBODY virtual int IRelationship(CBaseEntity *pTarget);
+	virtual int IRelationship(CBaseEntity *pTarget);
 	virtual void PainSound(void) {}
-	NOBODY virtual void ResetMaxSpeed(void) {}
-	NOBODY virtual void ReportAIState(void) {}
+	virtual void ResetMaxSpeed(void) {}
+	virtual void ReportAIState(void) {}
 	virtual void MonsterInitDead(void);
-	NOBODY virtual void Look(int iDistance);
-	NOBODY virtual CBaseEntity *BestVisibleEnemy(void);
-	NOBODY virtual BOOL FInViewCone(CBaseEntity *pEntity);
-	NOBODY virtual BOOL FInViewCone(Vector *pOrigin);
+	virtual void Look(int iDistance);
+	virtual CBaseEntity *BestVisibleEnemy(void);
+	virtual BOOL FInViewCone(CBaseEntity *pEntity);
+	virtual BOOL FInViewCone(const Vector *pOrigin);
 
 #ifdef HOOK_GAMEDLL
 
@@ -101,13 +101,13 @@ public:
 	void Look_(int iDistance);
 	CBaseEntity *BestVisibleEnemy_(void);
 	BOOL FInViewCone_(CBaseEntity *pEntity);
-	BOOL FInViewCone_(Vector *pOrigin);
+	BOOL FInViewCone_(const Vector *pOrigin);
 
 #endif // HOOK_GAMEDLL
 
 public:
 	void MakeIdealYaw(Vector vecTarget);
-	NOBODY Activity GetSmallFlinchActivity(void);
+	NOXREF Activity GetSmallFlinchActivity(void);
 	BOOL ShouldGibMonster(int iGib);
 	void CallGibMonster(void);
 	BOOL FCheckAITrigger(void);
@@ -171,8 +171,8 @@ public:
 	{
 		pev->framerate = 0.0;
 	}
-	NOBODY void CorpseFallThink(void);
-	NOBODY CBaseEntity *CheckTraceHullAttack(float flDist, int iDamage, int iDmgType);
+	NOXREF void CorpseFallThink(void);
+	NOXREF CBaseEntity *CheckTraceHullAttack(float flDist, int iDamage, int iDmgType);
 	NOXREF void MakeDamageBloodDecal(int cCount, float flNoise, TraceResult *ptr, Vector &vecDir);
 	void MonsterUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 	{
@@ -206,7 +206,7 @@ typedef void (CBaseMonster::*RADIUSDAMAGE_ENTVARS)(entvars_t *, entvars_t *, flo
 typedef void (CBaseMonster::*RADIUSDAMAGE_VECTOR)(Vector, entvars_t *, entvars_t *, float, int, int);
 
 typedef BOOL (CBaseMonster::*FINVIEWCONE_ENTITY)(CBaseEntity *);
-typedef BOOL (CBaseMonster::*FINVIEWCONE_VECTOR)(Vector *);
+typedef BOOL (CBaseMonster::*FINVIEWCONE_VECTOR)(const Vector *);
 
 #endif // HOOK_GAMEDLL
 

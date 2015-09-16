@@ -123,6 +123,11 @@
 #define CHAT_INTERVAL			1.0f
 #define CSUITNOREPEAT			32
 
+#define AUTOAIM_2DEGREES		0.0348994967025
+#define AUTOAIM_5DEGREES		0.08715574274766
+#define AUTOAIM_8DEGREES		0.1391731009601
+#define AUTOAIM_10DEGREES		0.1736481776669
+
 //#define SOUND_FLASHLIGHT_ON	"items/flashlight1.wav"
 //#define SOUND_FLASHLIGHT_OFF	"items/flashlight1.wav"
 
@@ -708,7 +713,7 @@ public:
 	void ResetAutoaim(void);
 	Vector AutoaimDeflection(Vector &vecSrc, float flDist, float flDelta);
 	void ForceClientDllUpdate(void);
-	void DeathMessage(entvars_t *pevAttacker) { };
+	void DeathMessage(entvars_t *pevAttacker) {};
 	void SetCustomDecalFrames(int nFrames);
 	int GetCustomDecalFrames(void);
 	void InitStatusBar(void);
@@ -1169,8 +1174,8 @@ NOXREF CBaseEntity *FindZombieSpawn(CBaseEntity *player, bool forceSpawn);
 edict_t *EntSelectSpawnPoint(CBaseEntity *pPlayer);
 void SetScoreAttrib(CBasePlayer *dest, CBasePlayer *src);
 CBaseEntity *FindEntityForward(CBaseEntity *pMe);
-float GetPlayerPitch(const edict_t *pEdict);
-float GetPlayerYaw(const edict_t *pEdict);
+float_precision GetPlayerPitch(const edict_t *pEdict);
+float_precision GetPlayerYaw(const edict_t *pEdict);
 int GetPlayerGaitsequence(const edict_t *pEdict);
 const char *GetBuyStringForWeaponClass(int weaponClass);
 bool IsPrimaryWeaponClass(int classId);

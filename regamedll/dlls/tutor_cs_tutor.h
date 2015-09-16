@@ -33,7 +33,6 @@
 #endif
 
 #include <map>
-#include <vector>
 
 enum TutorMessageClass
 {

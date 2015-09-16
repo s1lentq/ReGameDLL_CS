@@ -134,7 +134,7 @@ public:
 public:
 	static void SpawnHeadGib(entvars_t *pevVictim);
 	static void SpawnRandomGibs(entvars_t *pevVictim, int cGibs, int human);
-	NOBODY static void SpawnStickyGibs(entvars_t *pevVictim, Vector vecOrigin, int cGibs);
+	NOXREF static void SpawnStickyGibs(entvars_t *pevVictim, Vector vecOrigin, int cGibs);
 public:
 	int m_bloodColor;
 	int m_cBloodDecals;

@@ -92,6 +92,7 @@ typedef struct physent_s
 	vec3_t vuser2;
 	vec3_t vuser3;
 	vec3_t vuser4;
+
 } physent_t;
 /* size: 224, cachelines: 4, members: 33 */
 
@@ -193,6 +194,7 @@ typedef struct playermove_s
 	void (*PM_PlaySound)(int channel, const char *sample, float volume, float attenuation, int fFlags, int pitch);
 	const char *(*PM_TraceTexture)(int ground, float *vstart, float *vend);
 	void (*PM_PlaybackEventFull)(int flags, int clientindex, unsigned short eventindex, float delay, float *origin, float *angles, float fparam1, float fparam2, int iparam1, int iparam2, int bparam1, int bparam2);
+
 } playermove_t;
 /* size: 325056, cachelines: 5079, members: 94 */
 

@@ -63,12 +63,14 @@ void CBaseMonster::MakeIdealYaw(Vector vecTarget)
 }
 
 /* <fc5a6> ../cstrike/dlls/mpstubb.cpp:49 */
-NOBODY void CBaseMonster::CorpseFallThink(void)
+NOXREF void CBaseMonster::CorpseFallThink(void)
 {
 	if (pev->flags & FL_ONGROUND)
 	{
 		SetThink(NULL);
 		SetSequenceBox();
+
+		// link into world.
 		UTIL_SetOrigin(pev, pev->origin);
 	}
 	else
@@ -117,50 +119,165 @@ void CBaseMonster::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 }
 
 /* <fc07d> ../cstrike/dlls/mpstubb.cpp:104 */
-NOBODY int CBaseMonster::__MAKE_VHOOK(IRelationship)(CBaseEntity *pTarget)
+int CBaseMonster::__MAKE_VHOOK(IRelationship)(CBaseEntity *pTarget)
 {
-//	{
-//		int const iEnemy;                                      //   106
-//	}
+	static int const iEnemy[14][14] =
+	{
+		//   NONE	MACH	 PLYR	 HPASS	 HMIL	 AMIL	 APASS	 AMONST	APREY	 APRED	 INSECT	PLRALY	PBWPN	ABWPN
+		{ R_NO,		R_NO,	R_NO,	R_NO,	R_NO,	R_NO,	R_NO,	R_NO,	R_NO,	R_NO,	R_NO,	R_NO,	R_NO,	R_NO	},	// NONE
+		{ R_NO,		R_NO,	R_DL,	R_DL,	R_NO,	R_DL,	R_DL,	R_DL,	R_DL,	R_DL,	R_NO,	R_DL,	R_DL,	R_DL	},	// MACHINE
+		{ R_NO,		R_DL,	R_NO,	R_NO,	R_DL,	R_DL,	R_DL,	R_DL,	R_DL,	R_DL,	R_NO,	R_NO,	R_DL,	R_DL	},	// PLAYER
+		{ R_NO,		R_NO,	R_AL,	R_AL,	R_HT,	R_FR,	R_NO,	R_HT,	R_DL,	R_FR,	R_NO,	R_AL,	R_NO,	R_NO	},	// HUMANPASSIVE
+		{ R_NO,		R_NO,	R_HT,	R_DL,	R_NO,	R_HT,	R_DL,	R_DL,	R_DL,	R_DL,	R_NO,	R_HT,	R_NO,	R_NO	},	// HUMANMILITAR
+		{ R_NO,		R_DL,	R_HT,	R_DL,	R_HT,	R_NO,	R_NO,	R_NO,	R_NO,	R_NO,	R_NO,	R_DL,	R_NO,	R_NO	},	// ALIENMILITAR
+		{ R_NO,		R_NO,	R_NO,	R_NO,	R_NO,	R_NO,	R_NO,	R_NO,	R_NO,	R_NO,	R_NO,	R_NO,	R_NO,	R_NO	},	// ALIENPASSIVE
+		{ R_NO,		R_DL,	R_DL,	R_DL,	R_DL,	R_NO,	R_NO,	R_NO,	R_NO,	R_NO,	R_NO,	R_DL,	R_NO,	R_NO	},	// ALIENMONSTER
+		{ R_NO,		R_NO,	R_DL,	R_DL,	R_DL,	R_NO,	R_NO,	R_NO,	R_NO,	R_FR,	R_NO,	R_DL,	R_NO,	R_NO	},	// ALIENPREY
+		{ R_NO,		R_NO,	R_DL,	R_DL,	R_DL,	R_NO,	R_NO,	R_NO,	R_HT,	R_DL,	R_NO,	R_DL,	R_NO,	R_NO	},	// ALIENPREDATO
+		{ R_FR,		R_FR,	R_FR,	R_FR,	R_FR,	R_NO,	R_FR,	R_FR,	R_FR,	R_FR,	R_NO,	R_FR,	R_NO,	R_NO	},	// INSECT
+		{ R_NO,		R_DL,	R_AL,	R_AL,	R_DL,	R_DL,	R_DL,	R_DL,	R_DL,	R_DL,	R_NO,	R_NO,	R_NO,	R_NO	},	// PLAYERALLY
+		{ R_NO,		R_NO,	R_DL,	R_DL,	R_DL,	R_DL,	R_DL,	R_DL,	R_DL,	R_DL,	R_NO,	R_DL,	R_NO,	R_DL	},	// PBIOWEAPON
+		{ R_NO,		R_NO,	R_DL,	R_DL,	R_DL,	R_AL,	R_NO,	R_DL,	R_DL,	R_NO,	R_NO,	R_DL,	R_DL,	R_NO	}	// ABIOWEAPON
+	};
+
+	return iEnemy[ Classify() ][ pTarget->Classify() ];
 }
+
+// Look - Base class monster function to find enemies or
+// food by sight. iDistance is distance (in units) that the
+// monster can see.
+//
+// Sets the sight bits of the m_afConditions mask to indicate
+// which types of entities were sighted.
+// Function also sets the Looker's m_pLink
+// to the head of a link list that contains all visible ents.
+// (linked via each ent's m_pLink field)
 
 /* <fc0e4> ../cstrike/dlls/mpstubb.cpp:140 */
-NOBODY void CBaseMonster::__MAKE_VHOOK(Look)(int iDistance)
+void CBaseMonster::__MAKE_VHOOK(Look)(int iDistance)
 {
-//	{
-//		int iSighted;                                         //   142
-//		class CBaseEntity *pSightEnt;                        //   149
-//		class CBaseEntity *pList;                            //   151
-//		Vector delta;                                   //   153
-//		int count;                                            //   156
-//		ClearConditions(CBaseMonster *const this,
-//				int iConditions);  //   145
-//		operator+(const Vector *const this,
-//				const Vector &v);  //   156
-//		operator-(const Vector *const this,
-//				const Vector &v);  //   156
-//		{
-//			int i;                                        //   157
-//		}
-//		SetConditions(CBaseMonster *const this,
-//				int iConditions);  //   207
-//	}
+	int iSighted = 0;
+
+	// DON'T let visibility information from last frame sit around!
+	ClearConditions(bits_COND_SEE_HATE | bits_COND_SEE_DISLIKE | bits_COND_SEE_ENEMY | bits_COND_SEE_FEAR | bits_COND_SEE_NEMESIS | bits_COND_SEE_CLIENT);
+
+	m_pLink = NULL;
+
+	// the current visible entity that we're dealing with
+	CBaseEntity *pSightEnt = NULL;
+	CBaseEntity *pList[100];
+
+	Vector delta = Vector(iDistance, iDistance, iDistance);
+
+	// Find only monsters/clients in box, NOT limited to PVS
+	int count = UTIL_EntitiesInBox(pList, ARRAYSIZE(pList), pev->origin - delta, pev->origin + delta, (FL_CLIENT | FL_MONSTER));
+	for (int i = 0; i < count; i++)
+	{
+		pSightEnt = pList[i];
+		if (pSightEnt != this && pSightEnt->pev->health > 0)
+		{
+			// the looker will want to consider this entity
+			// don't check anything else about an entity that can't be seen, or an entity that you don't care about.
+			if (IRelationship(pSightEnt) != R_NO && FInViewCone(pSightEnt) && !(pSightEnt->pev->flags & FL_NOTARGET) && FVisible(pSightEnt))
+			{
+				if (pSightEnt->IsPlayer())
+				{
+					// if we see a client, remember that (mostly for scripted AI)
+					iSighted |= bits_COND_SEE_CLIENT;
+				}
+
+				pSightEnt->m_pLink = m_pLink;
+				m_pLink = pSightEnt;
+
+				if (pSightEnt == m_hEnemy)
+				{
+					// we know this ent is visible, so if it also happens to be our enemy, store that now.
+					iSighted |= bits_COND_SEE_ENEMY;
+				}
+
+				// don't add the Enemy's relationship to the conditions. We only want to worry about conditions when
+				// we see monsters other than the Enemy.
+				switch (IRelationship (pSightEnt))
+				{
+				case R_NM:
+					iSighted |= bits_COND_SEE_NEMESIS;
+					break;
+				case R_HT:
+					iSighted |= bits_COND_SEE_HATE;
+					break;
+				case R_DL:
+					iSighted |= bits_COND_SEE_DISLIKE;
+					break;
+				case R_FR:
+					iSighted |= bits_COND_SEE_FEAR;
+					break;
+				case R_AL:
+					break;
+				default:
+					ALERT(at_aiconsole, "%s can't assess %s\n", STRING(pev->classname), STRING(pSightEnt->pev->classname));
+					break;
+				}
+			}
+		}
+	}
+
+	SetConditions(iSighted);
 }
 
+// BestVisibleEnemy - this functions searches the link
+// list whose head is the caller's m_pLink field, and returns
+// a pointer to the enemy entity in that list that is nearest the
+// caller.
+//
+// !!!UNDONE - currently, this only returns the closest enemy.
+// we'll want to consider distance, relationship, attack types, back turned, etc.
+
 /* <fc317> ../cstrike/dlls/mpstubb.cpp:220 */
-NOBODY CBaseEntity *CBaseMonster::__MAKE_VHOOK(BestVisibleEnemy)(void)
+CBaseEntity *CBaseMonster::__MAKE_VHOOK(BestVisibleEnemy)(void)
 {
-//	{
-//		class CBaseEntity *pReturn;                          //   222
-//		class CBaseEntity *pNextEnt;                         //   223
-//		int iNearest;                                         //   224
-//		int iDist;                                            //   225
-//		int iBestRelationship;                                //   226
-//		operator-(const Vector *const this,
-//				const Vector &v);  //   243
-//		Length(const Vector *const this);  //   243
-//		operator-(const Vector *const this,
-//				const Vector &v);  //   251
-//		Length(const Vector *const this);  //   251
-//	}
+	CBaseEntity *pReturn;
+	CBaseEntity *pNextEnt;
+	int iNearest;
+	int iDist;
+	int iBestRelationship;
+
+	// so first visible entity will become the closest.
+	iNearest = 8192;
+	pNextEnt = m_pLink;
+	pReturn = NULL;
+	iBestRelationship = R_NO;
+
+	while (pNextEnt != NULL)
+	{
+		if (pNextEnt->IsAlive())
+		{
+			if (IRelationship(pNextEnt) > iBestRelationship)
+			{
+				// this entity is disliked MORE than the entity that we
+				// currently think is the best visible enemy. No need to do
+				// a distance check, just get mad at this one for now.
+				iBestRelationship = IRelationship(pNextEnt);
+				iNearest = (pNextEnt->pev->origin - pev->origin).Length();
+				pReturn = pNextEnt;
+			}
+			else if (IRelationship(pNextEnt) == iBestRelationship)
+			{
+				// this entity is disliked just as much as the entity that
+				// we currently think is the best visible enemy, so we only
+				// get mad at it if it is closer.
+				iDist = (pNextEnt->pev->origin - pev->origin).Length();
+
+				if (iDist <= iNearest)
+				{
+					iNearest = iDist;
+					iBestRelationship = IRelationship(pNextEnt);
+					pReturn = pNextEnt;
+				}
+			}
+		}
+
+		pNextEnt = pNextEnt->m_pLink;
+	}
+
+	return pReturn;
 }

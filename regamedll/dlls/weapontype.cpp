@@ -237,6 +237,7 @@ WeaponIdType AliasToWeaponID(const char *alias)
 				return weaponAliasInfo[i].id;
 		}
 	}
+
 	return WEAPON_NONE;
 }
 
@@ -254,6 +255,7 @@ const char *BuyAliasToWeaponID(const char *alias, WeaponIdType &id)
 			}
 		}
 	}
+
 	id = WEAPON_NONE;
 	return NULL;
 }
@@ -266,6 +268,7 @@ const char *WeaponIDToAlias(int id)
 		if (weaponAliasInfo[i].id == id)
 			return weaponAliasInfo[i].alias;
 	}
+
 	return NULL;
 }
 
@@ -280,13 +283,14 @@ WeaponClassType AliasToWeaponClass(const char *alias)
 				return weaponClassAliasInfo[i].id;
 		}
 	}
+
 	return WEAPONCLASS_NONE;
 }
 
 /* <22ce5a> ../cstrike/dlls/weapontype.cpp:276 */
 WeaponClassType WeaponIDToWeaponClass(int id)
 {
-	return AliasToWeaponClass( WeaponIDToAlias(id) );
+	return AliasToWeaponClass(WeaponIDToAlias(id));
 }
 
 /* <22cee3> ../cstrike/dlls/weapontype.cpp:285 */
@@ -313,19 +317,18 @@ bool IsPrimaryWeapon(int id)
 	case WEAPON_AK47:
 	case WEAPON_P90:
 	case WEAPON_SHIELDGUN:
-	{
 		return true;
-	}
 	default:
 		break;
 	}
+
 	return false;
 }
 
 /* <22cf19> ../cstrike/dlls/weapontype.cpp:318 */
 NOXREF bool IsSecondaryWeapon(int id)
 {
-	switch(id)
+	switch (id)
 	{
 	case WEAPON_P228:
 	case WEAPON_ELITE:
@@ -337,6 +340,7 @@ NOXREF bool IsSecondaryWeapon(int id)
 	default:
 		break;
 	}
+
 	return false;
 }
 
@@ -348,6 +352,7 @@ WeaponInfoStruct *GetWeaponInfo(int weaponID)
 		if (weaponInfo[i].id == weaponID)
 			return &weaponInfo[i];
 	}
+
 	return NULL;
 }
 
@@ -474,5 +479,6 @@ bool CanBuyWeaponByMaptype(int playerTeam, WeaponIdType weaponID, bool useAssasi
 			}
 		}
 	}
+
 	return false;
 }

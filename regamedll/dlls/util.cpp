@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-#if 0
+#if 1
 
 void *addr_orig;
 char patchByte[5];
@@ -314,7 +314,7 @@ int UTIL_EntitiesInBox(CBaseEntity **pList, int listMax, const Vector &mins, con
 	edict_t *pEdict = INDEXENT(1);
 	CBaseEntity *pEntity;
 	int count = 0;
-	
+
 	if (!pEdict)
 		return 0;
 
@@ -1003,17 +1003,17 @@ float UTIL_Approach(float target, float value, float speed)
 		value += speed;
 	else if (delta < -speed)
 		value -= speed;
-	else 
+	else
 		value = target;
 	return value;
 }
 
 /* <1aedeb> ../cstrike/dlls/util.cpp:1190 */
-float UTIL_ApproachAngle(float target, float value, float speed)
+float_precision UTIL_ApproachAngle(float target, float value, float speed)
 {
 	target = UTIL_AngleMod(target);
 	value = UTIL_AngleMod(target);
-	
+
 	float delta = target - value;
 	if (speed < 0.0f)
 		speed = -speed;
@@ -1027,13 +1027,13 @@ float UTIL_ApproachAngle(float target, float value, float speed)
 		value += speed;
 	else if (delta < -speed)
 		value -= speed;
-	else 
+	else
 		value = target;
 	return value;
 }
 
 /* <1aeec5> ../cstrike/dlls/util.cpp:1217 */
-float UTIL_AngleDistance(float next, float cur)
+float_precision UTIL_AngleDistance(float next, float cur)
 {
 	float_precision delta;
 
@@ -1047,17 +1047,6 @@ float UTIL_AngleDistance(float next, float cur)
 
 	return delta;
 }
-
-/*float UTIL_AngleDistance(float next, float cur)
-{
-	//TODO: variable need double, or will testdemo to crashed
-	double delta = (double)(next - cur);
-	if (delta < -180.0f)
-		delta += 360.0f;
-	else if ( delta > 180.0f)
-		delta -= 360.0f;
-	return (float)delta;
-}*/
 
 /* <1aef1c> ../cstrike/dlls/util.cpp:1230 */
 float UTIL_SplineFraction(float value, float scale)
@@ -1148,7 +1137,7 @@ void UTIL_BloodStream(const Vector &origin, const Vector &direction, int color, 
 		WRITE_COORD(direction.y);
 		WRITE_COORD(direction.z);
 		WRITE_BYTE(color);
-		WRITE_BYTE(_min( amount, 255 ));
+		WRITE_BYTE(Q_min(amount, 255));
 	MESSAGE_END();
 }
 
@@ -1178,7 +1167,7 @@ void UTIL_BloodDrips(const Vector &origin, const Vector &direction, int color, i
 		WRITE_SHORT(g_sModelIndexBloodSpray);
 		WRITE_SHORT(g_sModelIndexBloodDrop);
 		WRITE_BYTE(color);
-		WRITE_BYTE(_min( _max( 3, amount / 10 ), 16 ));
+		WRITE_BYTE(Q_min(Q_max(3, amount / 10), 16));
 	MESSAGE_END();
 }
 
@@ -1704,7 +1693,7 @@ extern "C"
 
 		shift &= 0x1f;
 
-		while (shift--) 
+		while (shift--)
 		{
 			lobit = num & 1;
 			num >>= 1;
@@ -2433,28 +2422,35 @@ char UTIL_TextureHit(TraceResult *ptr, Vector vecSrc, Vector vecEnd)
 NOXREF int GetPlayerTeam(int index)
 {
 	CBasePlayer *pPlayer = (CBasePlayer *)UTIL_PlayerByIndex(index);
-	if (pPlayer)
+	if (pPlayer != NULL)
+	{
 		return pPlayer->m_iTeam;
+	}
+
 	return 0;
 }
 
 /* <1b5412> ../cstrike/dlls/util.cpp:2775 */
 bool UTIL_IsGame(const char *gameName)
 {
-	if (gameName)
+	if (gameName != NULL)
 	{
 		static char gameDir[256];
 		GET_GAME_DIR(gameDir);
 		return (Q_stricmp(gameDir, gameName) == 0);
 	}
+
 	return false;
 }
 
 /* <1b5470> ../cstrike/dlls/util.cpp:2802 */
-float UTIL_GetPlayerGaitYaw(int playerIndex)
+float_precision UTIL_GetPlayerGaitYaw(int playerIndex)
 {
 	CBasePlayer *pPlayer = (CBasePlayer *)UTIL_PlayerByIndex(playerIndex);
-	if (pPlayer)
+	if (pPlayer != NULL)
+	{
 		return pPlayer->m_flGaityaw;
-	return 0.0f;
+	}
+
+	return 0;
 }

@@ -134,7 +134,7 @@ void CCSBot::SetEnemy(CBasePlayer *enemy)
 {
 	if (m_enemy != enemy)
 	{
-		m_enemy = enemy; 
+		m_enemy = enemy;
 		m_currentEnemyAcquireTimestamp = gpGlobals->time;
 	}
 }
@@ -318,7 +318,7 @@ CCSBot::DispositionType CCSBot::GetDisposition(void) const
 {
 	if (!m_ignoreEnemiesTimer.IsElapsed())
 		return IGNORE_ENEMIES;
-	
+
 	return m_disposition;
 }
 

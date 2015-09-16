@@ -61,10 +61,10 @@
 class CRuleEntity: public CBaseEntity
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void KeyValue(KeyValueData *pkvd);
-	NOBODY virtual int Save(CSave &save);
-	NOBODY virtual int Restore(CRestore &restore);
+	virtual void Spawn(void);
+	virtual void KeyValue(KeyValueData *pkvd);
+	virtual int Save(CSave &save);
+	virtual int Restore(CRestore &restore);
 
 #ifdef HOOK_GAMEDLL
 
@@ -90,11 +90,13 @@ private:
 
 };/* size: 156, cachelines: 3, members: 3 */
 
+// CRulePointEntity -- base class for all rule "point" entities (not brushes)
+
 /* <ee010> ../cstrike/dlls/maprules.cpp:95 */
 class CRulePointEntity: public CRuleEntity
 {
 public:
-	NOBODY virtual void Spawn(void);
+	virtual void Spawn(void);
 
 #ifdef HOOK_GAMEDLL
 
@@ -103,12 +105,15 @@ public:
 #endif // HOOK_GAMEDLL
 
 };/* size: 156, cachelines: 3, members: 1 */
+
+// CRuleBrushEntity -- base class for all rule "brush" entities (not brushes)
+// Default behavior is to set up like a trigger, invisible, but keep the model for volume testing
 
 /* <ee209> ../cstrike/dlls/maprules.cpp:112 */
 class CRuleBrushEntity: public CRuleEntity
 {
 public:
-	NOBODY virtual void Spawn(void);
+	virtual void Spawn(void);
 
 #ifdef HOOK_GAMEDLL
 
@@ -118,13 +123,18 @@ public:
 
 };/* size: 156, cachelines: 3, members: 1 */
 
+// CGameScore / game_score	-- award points to player / team
+//	Points +/- total
+//	Flag: Allow negative scores			SF_SCORE_NEGATIVE
+//	Flag: Award points to team in teamplay		SF_SCORE_TEAM
+
 /* <ee086> ../cstrike/dlls/maprules.cpp:135 */
 class CGameScore: public CRulePointEntity
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void KeyValue(KeyValueData *pkvd);
-	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	virtual void Spawn(void);
+	virtual void KeyValue(KeyValueData *pkvd);
+	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
 
@@ -135,30 +145,32 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	NOBODY inline int Points(void)
+	inline int Points(void)
 	{
 		return (int)(pev->frags);
 	}
-	NOBODY inline BOOL AllowNegativeScore(void)
+	inline BOOL AllowNegativeScore(void)
 	{
 		return pev->spawnflags & SF_SCORE_NEGATIVE;
 	}
-	NOBODY inline BOOL AwardToTeam(void)
+	inline BOOL AwardToTeam(void)
 	{
 		return pev->spawnflags & SF_SCORE_TEAM;
 	}
-	NOBODY inline void SetPoints(int points)
+	inline void SetPoints(int points)
 	{
 		pev->frags = points;
 	}
 
 };/* size: 156, cachelines: 3, members: 1 */
 
+// CGameEnd / game_end	-- Ends the game in MP
+
 /* <ee0d3> ../cstrike/dlls/maprules.cpp:195 */
 class CGameEnd: public CRulePointEntity
 {
 public:
-	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
 
@@ -168,14 +180,17 @@ public:
 
 };/* size: 156, cachelines: 3, members: 1 */
 
+// CGameText / game_text	-- NON-Localized HUD Message (use env_message to display a titles.txt message)
+//	Flag: All players	SF_ENVTEXT_ALLPLAYERS
+
 /* <ee120> ../cstrike/dlls/maprules.cpp:223 */
 class CGameText: public CRulePointEntity
 {
 public:
-	NOBODY virtual void KeyValue(KeyValueData *pkvd);
-	NOBODY virtual int Save(CSave &save);
-	NOBODY virtual int Restore(CRestore &restore);
-	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	virtual void KeyValue(KeyValueData *pkvd);
+	virtual int Save(CSave &save);
+	virtual int Restore(CRestore &restore);
+	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
 
@@ -187,15 +202,15 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	NOBODY inline BOOL MessageToAll(void)
+	inline BOOL MessageToAll(void)
 	{
 		return (pev->spawnflags & SF_ENVTEXT_ALLPLAYERS) == SF_ENVTEXT_ALLPLAYERS;
 	}
-	NOBODY inline void MessageSet(const char *pMessage)
+	inline void MessageSet(const char *pMessage)
 	{
 		pev->message = ALLOC_STRING(pMessage);
 	}
-	NOBODY inline const char *MessageGet(void)
+	inline const char *MessageGet(void)
 	{
 		return STRING(pev->message);
 	}
@@ -208,25 +223,32 @@ private:
 
 };/* size: 196, cachelines: 4, members: 3 */
 
+// CGameTeamMaster / game_team_master -- "Masters" like multisource, but based on the team of the activator
+// Only allows mastered entity to fire if the team matches my team
+
+// team index (pulled from server team list "mp_teamlist"
+// Flag: Remove on Fire
+// Flag: Any team until set?		-- Any team can use this until the team is set (otherwise no teams can use it)
+
 /* <ee16d> ../cstrike/dlls/maprules.cpp:352 */
 class CGameTeamMaster: public CRulePointEntity
 {
 public:
-	NOBODY virtual void KeyValue(KeyValueData *pkvd);
-	NOBODY virtual int ObjectCaps(void)
+	virtual void KeyValue(KeyValueData *pkvd);
+	virtual int ObjectCaps(void)
 	{
 		return ObjectCaps_();
 	}
-	NOBODY virtual BOOL IsTriggered(CBaseEntity *pActivator);
-	NOBODY virtual const char *TeamID(void);
-	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	virtual BOOL IsTriggered(CBaseEntity *pActivator);
+	virtual const char *TeamID(void);
+	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
 
 	void KeyValue_(KeyValueData *pkvd);
 	int ObjectCaps_(void)
 	{
-		return CRulePointEntity::ObjectCaps() | FCAP_MASTER;
+		return (CRulePointEntity::ObjectCaps() | FCAP_MASTER);
 	}
 	BOOL IsTriggered_(CBaseEntity *pActivator);
 	const char *TeamID_(void);
@@ -253,11 +275,15 @@ public:
 
 };/* size: 164, cachelines: 3, members: 3 */
 
+// CGameTeamSet / game_team_set	-- Changes the team of the entity it targets to the activator's team
+// Flag: Fire once
+// Flag: Clear team		-- Sets the team to "NONE" instead of activator
+
 /* <ee1bb> ../cstrike/dlls/maprules.cpp:464 */
 class CGameTeamSet: public CRulePointEntity
 {
 public:
-	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
 
@@ -265,6 +291,7 @@ public:
 
 #endif // HOOK_GAMEDLL
 
+public:
 	inline BOOL RemoveOnFire(void)
 	{
 		return (pev->spawnflags & SF_TEAMSET_FIREONCE) == SF_TEAMSET_FIREONCE;
@@ -276,14 +303,17 @@ public:
 
 };/* size: 156, cachelines: 3, members: 1 */
 
+// CGamePlayerZone / game_player_zone -- players in the zone fire my target when I'm fired
+// Needs master?
+
 /* <ee229> ../cstrike/dlls/maprules.cpp:502 */
 class CGamePlayerZone: public CRuleBrushEntity
 {
 public:
-	NOBODY virtual void KeyValue(KeyValueData *pkvd);
-	NOBODY virtual int Save(CSave &save);
-	NOBODY virtual int Restore(CRestore &restore);
-	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	virtual void KeyValue(KeyValueData *pkvd);
+	virtual int Save(CSave &save);
+	virtual int Restore(CRestore &restore);
+	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
 
@@ -305,11 +335,14 @@ private:
 
 };/* size: 172, cachelines: 3, members: 6 */
 
+// CGamePlayerHurt / game_player_hurt	-- Damages the player who fires it
+// Flag: Fire once
+
 /* <ee277> ../cstrike/dlls/maprules.cpp:619 */
 class CGamePlayerHurt: public CRulePointEntity
 {
 public:
-	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
 
@@ -325,12 +358,16 @@ public:
 
 };/* size: 156, cachelines: 3, members: 1 */
 
+// CGameCounter / game_counter	-- Counts events and fires target
+// Flag: Fire once
+// Flag: Reset on Fire
+
 /* <ee2c5> ../cstrike/dlls/maprules.cpp:662 */
 class CGameCounter: public CRulePointEntity
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	virtual void Spawn(void);
+	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
 
@@ -385,11 +422,14 @@ private:
 
 };/* size: 156, cachelines: 3, members: 1 */
 
+// CGameCounterSet / game_counter_set	-- Sets the counter's value
+// Flag: Fire once
+
 /* <ee313> ../cstrike/dlls/maprules.cpp:738 */
 class CGameCounterSet: public CRulePointEntity
 {
 public:
-	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
 
@@ -405,13 +445,16 @@ public:
 
 };/* size: 156, cachelines: 3, members: 1 */
 
+// CGamePlayerEquip / game_playerequip	-- Sets the default player equipment
+// Flag: USE Only
+
 /* <ee361> ../cstrike/dlls/maprules.cpp:771 */
 class CGamePlayerEquip: public CRulePointEntity
 {
 public:
-	NOBODY virtual void KeyValue(KeyValueData *pkvd);
-	NOBODY virtual void Touch(CBaseEntity *pOther);
-	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	virtual void KeyValue(KeyValueData *pkvd);
+	virtual void Touch(CBaseEntity *pOther);
+	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
 
@@ -436,11 +479,16 @@ public:
 
 };/* size: 412, cachelines: 7, members: 3 */
 
+// CGamePlayerTeam / game_player_team	-- Changes the team of the player who fired it
+// Flag: Fire once
+// Flag: Kill Player
+// Flag: Gib Player
+
 /* <ee3af> ../cstrike/dlls/maprules.cpp:867 */
 class CGamePlayerTeam: public CRulePointEntity
 {
 public:
-	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
 
@@ -464,5 +512,18 @@ private:
 	const char *TargetTeamName(const char *pszTargetName);
 
 };/* size: 156, cachelines: 3, members: 1 */
+
+// linked objects
+C_DLLEXPORT void game_score(entvars_t *pev);
+C_DLLEXPORT void game_end(entvars_t *pev);
+C_DLLEXPORT void game_text(entvars_t *pev);
+C_DLLEXPORT void game_team_master(entvars_t *pev);
+C_DLLEXPORT void game_team_set(entvars_t *pev);
+C_DLLEXPORT void game_zone_player(entvars_t *pev);
+C_DLLEXPORT void game_player_hurt(entvars_t *pev);
+C_DLLEXPORT void game_counter(entvars_t *pev);
+C_DLLEXPORT void game_counter_set(entvars_t *pev);
+C_DLLEXPORT void game_player_equip(entvars_t *pev);
+C_DLLEXPORT void game_player_team(entvars_t *pev);
 
 #endif // MAPRULES_H

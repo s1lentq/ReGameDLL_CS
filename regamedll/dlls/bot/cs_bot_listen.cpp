@@ -29,7 +29,7 @@ NOBODY bool CCSBot::ShouldInvestigateNoise(float *retNoiseDist)
 }
 
 /* <354c8d> ../cstrike/dlls/bot/cs_bot_listen.cpp:104 */
-NOBODY bool CCSBot::CanHearNearbyEnemyGunfire( float range)
+NOBODY bool CCSBot::CanHearNearbyEnemyGunfire(float range)
 {
 //	{
 //		float gunfireDistSq;                                  //   125

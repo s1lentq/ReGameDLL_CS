@@ -129,7 +129,7 @@ NOBODY void CCSBot::ResetValues(void)
 	m_areaEnteredTimestamp = 0.0f;
 	m_currentArea = NULL;
 	m_lastKnownArea = NULL;
-	
+
 	m_avoidFriendTimer.Invalidate();
 
 	m_isFriendInTheWay = false;
@@ -241,7 +241,7 @@ NOBODY void CCSBot::ResetValues(void)
 
 	m_huntState.ClearHuntArea();
 
-	// adjust morale - if we died, our morale decreased, 
+	// adjust morale - if we died, our morale decreased,
 	// but if we live, no adjustement (round win/loss also adjusts morale
 	if (m_diedLastRound)
 	{

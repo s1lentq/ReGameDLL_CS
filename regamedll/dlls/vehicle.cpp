@@ -23,13 +23,28 @@ TYPEDESCRIPTION CFuncVehicle::m_SaveData[] =
 
 #else
 
-TYPEDESCRIPTION (*CFuncVehicle::pm_SaveData)[12];
+TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CFuncVehicle, m_SaveData)[12];
 
 #endif // HOOK_GAMEDLL
 
-/* <1bc835> ../cstrike/dlls/vehicle.cpp:20 */
-NOBODY void FixupAngles2(Vector &v)
+/* <1ba031> ../cstrike/dlls/vehicle.cpp:9 */
+float_precision Fix2(float angle)
 {
+	while (angle < 0)
+		angle += 360;
+
+	while (angle > 360)
+		angle -= 360;
+
+	return angle;
+}
+
+/* <1bc835> ../cstrike/dlls/vehicle.cpp:20 */
+void FixupAngles2(Vector &v)
+{
+	v.x = Fix2(v.x);
+	v.y = Fix2(v.y);
+	v.z = Fix2(v.z);
 }
 
 /* <1bb2f1> ../cstrike/dlls/vehicle.cpp:54 */
@@ -39,322 +54,694 @@ IMPLEMENT_SAVERESTORE(CFuncVehicle, CBaseEntity);
 LINK_ENTITY_TO_CLASS(func_vehicle, CFuncVehicle);
 
 /* <1bb408> ../cstrike/dlls/vehicle.cpp:57 */
-NOBODY void CFuncVehicle::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CFuncVehicle::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
-//	FStrEq(const char *sz1,
-//		const char *sz2);  //    59
-//	FStrEq(const char *sz1,
-//		const char *sz2);  //    64
-//	FStrEq(const char *sz1,
-//		const char *sz2);  //    69
-//	FStrEq(const char *sz1,
-//		const char *sz2);  //    74
-//	FStrEq(const char *sz1,
-//		const char *sz2);  //    79
-//	FStrEq(const char *sz1,
-//		const char *sz2);  //    84
-//	FStrEq(const char *sz1,
-//		const char *sz2);  //    90
-//	FStrEq(const char *sz1,
-//		const char *sz2);  //    95
-//	KeyValue(CBaseEntity *const this,
-//		KeyValueData *pkvd);  //   105
-//	atof(const char *__nptr);  //    61
-//	atof(const char *__nptr);  //    66
-//	atof(const char *__nptr);  //    76
-//	atoi(const char *__nptr);  //    97
-//	atof(const char *__nptr);  //    71
-//	atoi(const char *__nptr);  //    81
-//	atoi(const char *__nptr);  //    86
-//	atof(const char *__nptr);  //    92
+	if (FStrEq(pkvd->szKeyName, "length"))
+	{
+		m_length = Q_atof(pkvd->szValue);
+		pkvd->fHandled = TRUE;
+	}
+	else if (FStrEq(pkvd->szKeyName, "width"))
+	{
+		m_width = Q_atof(pkvd->szValue);
+		pkvd->fHandled = TRUE;
+	}
+	else if (FStrEq(pkvd->szKeyName, "height"))
+	{
+		m_height = Q_atof(pkvd->szValue);
+		pkvd->fHandled = TRUE;
+	}
+	else if (FStrEq(pkvd->szKeyName, "startspeed"))
+	{
+		m_startSpeed = Q_atof(pkvd->szValue);
+		pkvd->fHandled = TRUE;
+	}
+	else if (FStrEq(pkvd->szKeyName, "sounds"))
+	{
+		m_sounds = Q_atoi(pkvd->szValue);
+		pkvd->fHandled = TRUE;
+	}
+	else if (FStrEq(pkvd->szKeyName, "volume"))
+	{
+		m_flVolume = (float)Q_atoi(pkvd->szValue);
+		m_flVolume *= 0.1;
+
+		pkvd->fHandled = TRUE;
+	}
+	else if (FStrEq(pkvd->szKeyName, "bank"))
+	{
+		m_flBank = Q_atof(pkvd->szValue);
+		pkvd->fHandled = TRUE;
+	}
+	else if (FStrEq(pkvd->szKeyName, "acceleration"))
+	{
+		m_acceleration = Q_atoi(pkvd->szValue);
+
+		if (m_acceleration < 1)
+			m_acceleration = 1;
+
+		else if (m_acceleration > 10)
+			m_acceleration = 10;
+
+		pkvd->fHandled = TRUE;
+	}
+	else
+		CBaseEntity::KeyValue(pkvd);
 }
 
 /* <1bc059> ../cstrike/dlls/vehicle.cpp:109 */
-NOBODY void CFuncVehicle::NextThink(float thinkTime, BOOL alwaysThink)
+void CFuncVehicle::NextThink(float thinkTime, BOOL alwaysThink)
 {
+	if (alwaysThink)
+		pev->flags |= FL_ALWAYSTHINK;
+	else
+		pev->flags &= ~FL_ALWAYSTHINK;
+
+	pev->nextthink = thinkTime;
 }
 
 /* <1bb9d0> ../cstrike/dlls/vehicle.cpp:120 */
-NOBODY void CFuncVehicle::__MAKE_VHOOK(Blocked)(CBaseEntity *pOther)
+void CFuncVehicle::__MAKE_VHOOK(Blocked)(CBaseEntity *pOther)
 {
-//	{
-//		entvars_t *pevOther;                                 //   122
-//		Vector vFrontLeft;                              //   150
-//		Vector vFrontRight;                             //   150
-//		Vector vBackLeft;                               //   150
-//		Vector vBackRight;                              //   150
-//		Vector forward;                                 //   151
-//		Vector right;                                   //   152
-//		Vector vOrigin;                                 //   159
-//		float minx;                                           //   161
-//		float miny;                                           //   161
-//		float minz;                                           //   161
-//		float maxx;                                           //   162
-//		float maxy;                                           //   162
-//		float maxz;                                           //   162
-//		VARS(edict_t *pent);  //   125
-//		operator-(const Vector *const this,
-//				const Vector &v);  //   139
-//		Normalize(const Vector *const this);  //   139
-//		operator*(const Vector *const this,
-//				float fl);  //   139
-//		operator*(const Vector *const this,
-//				float fl);  //   143
-//		{
-//			float deltaSpeed;                             //   130
-//		}
-//		operator*(const Vector *const this,
-//				float fl);  //   151
-//		operator*(const Vector *const this,
-//				float fl);  //   151
-//		operator*(const Vector *const this,
-//				float fl);  //   152
-//		operator*(const Vector *const this,
-//				float fl);  //   152
-//		operator+(const Vector *const this,
-//				const Vector &v);  //   154
-//		operator-(const Vector *const this,
-//				const Vector &v);  //   154
-//		operator-(const Vector *const this,
-//				const Vector &v);  //   157
-//		operator+(const Vector *const this,
-//				const Vector &v);  //   157
-//		Vector(Vector *const this,
-//			const Vector &v);  //   159
-//	}
+	entvars_t *pevOther = pOther->pev;
+
+	if ((pevOther->flags & FL_ONGROUND) && VARS(pevOther->groundentity) == pev)
+	{
+		pevOther->velocity = pev->velocity;
+		return;
+	}
+
+	std::vector<int> da;
+
+	pevOther->velocity = (pevOther->origin - pev->origin).Normalize() * pev->dmg;
+	pevOther->velocity.z += 300;
+	pev->velocity = pev->velocity * 0.85;
+
+	ALERT(at_aiconsole, "TRAIN(%s): Blocked by %s (dmg:%.2f)\n", STRING(pev->targetname), STRING(pOther->pev->classname), pev->dmg);
+	UTIL_MakeVectors(pev->angles);
+
+	Vector forward, right, vOrigin;
+	Vector vFrontLeft = (gpGlobals->v_forward * -1) * (m_length * 0.5);
+	Vector vFrontRight = (gpGlobals->v_right * -1) * (m_width * 0.5);
+
+	Vector vBackLeft = pev->origin + vFrontLeft - vFrontRight;
+	Vector vBackRight = pev->origin - vFrontLeft + vFrontRight;
+
+	float minx = Q_min(vBackLeft.x, vBackRight.x);
+	float miny = Q_min(vBackLeft.y, vBackRight.y);
+	float maxx = Q_max(vBackLeft.x, vBackRight.x);
+	float maxy = Q_max(vBackLeft.y, vBackRight.y);
+
+	float minz = pev->origin.z;
+	float maxz = pev->origin.z + (2 * abs((int)(pev->mins.z - pev->maxs.z)));
+
+	if (pOther->pev->origin.x < minx
+		|| pOther->pev->origin.x > maxx
+		|| pOther->pev->origin.y < miny
+		|| pOther->pev->origin.y > maxy
+		|| pOther->pev->origin.z < pev->origin.z
+		|| pOther->pev->origin.z > maxz)
+	{
+		pOther->TakeDamage(pev, pev, 150, DMG_CRUSH);
+	}
 }
 
 /* <1bcf96> ../cstrike/dlls/vehicle.cpp:179 */
-NOBODY void CFuncVehicle::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CFuncVehicle::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
-//	StopSound(CFuncVehicle *const this);  //   197
-//	{
-//		float delta;                                          //   210
-//		float flSpeedRatio;                                   //   211
-//		StopSound(CFuncVehicle *const this);  //   207
-//	}
+	float delta = value;
+
+	if (useType != USE_SET)
+	{
+		if (ShouldToggle(useType, pev->speed != 0))
+		{
+			if (pev->speed == 0)
+			{
+				pev->speed = m_dir * m_speed;
+				Next();
+			}
+			else
+			{
+				pev->speed = 0;
+				pev->velocity = g_vecZero;
+				pev->avelocity = g_vecZero;
+
+				StopSound();
+				SetThink(NULL);
+			}
+		}
+
+		return;
+	}
+
+	if (delta < 10)
+	{
+		if (delta < 0)
+		{
+			if (pev->speed > 145)
+			{
+				StopSound();
+			}
+		}
+
+		float_precision flSpeedRatio = delta;
+
+		if (delta > 0)
+		{
+			flSpeedRatio = (float)(pev->speed / m_speed);
+
+			if (pev->speed < 0)		flSpeedRatio = m_acceleration * 0.0005 + flSpeedRatio + VEHICLE_SPEED0_ACCELERATION;
+			else if (pev->speed < 10)	flSpeedRatio = m_acceleration * 0.0006 + flSpeedRatio + VEHICLE_SPEED1_ACCELERATION;
+			else if (pev->speed < 20)	flSpeedRatio = m_acceleration * 0.0007 + flSpeedRatio + VEHICLE_SPEED2_ACCELERATION;
+			else if (pev->speed < 30)	flSpeedRatio = m_acceleration * 0.0007 + flSpeedRatio + VEHICLE_SPEED3_ACCELERATION;
+			else if (pev->speed < 45)	flSpeedRatio = m_acceleration * 0.0007 + flSpeedRatio + VEHICLE_SPEED4_ACCELERATION;
+			else if (pev->speed < 60)	flSpeedRatio = m_acceleration * 0.0008 + flSpeedRatio + VEHICLE_SPEED5_ACCELERATION;
+			else if (pev->speed < 80)	flSpeedRatio = m_acceleration * 0.0008 + flSpeedRatio + VEHICLE_SPEED6_ACCELERATION;
+			else if (pev->speed < 100)	flSpeedRatio = m_acceleration * 0.0009 + flSpeedRatio + VEHICLE_SPEED7_ACCELERATION;
+			else if (pev->speed < 150)	flSpeedRatio = m_acceleration * 0.0008 + flSpeedRatio + VEHICLE_SPEED8_ACCELERATION;
+			else if (pev->speed < 225)	flSpeedRatio = m_acceleration * 0.0007 + flSpeedRatio + VEHICLE_SPEED9_ACCELERATION;
+			else if (pev->speed < 300)	flSpeedRatio = m_acceleration * 0.0006 + flSpeedRatio + VEHICLE_SPEED10_ACCELERATION;
+			else if (pev->speed < 400)	flSpeedRatio = m_acceleration * 0.0005 + flSpeedRatio + VEHICLE_SPEED11_ACCELERATION;
+			else if (pev->speed < 550)	flSpeedRatio = m_acceleration * 0.0005 + flSpeedRatio + VEHICLE_SPEED12_ACCELERATION;
+			else if (pev->speed < 800)	flSpeedRatio = m_acceleration * 0.0005 + flSpeedRatio + VEHICLE_SPEED13_ACCELERATION;
+		}
+		else if (delta < 0)
+		{
+			flSpeedRatio = pev->speed / m_speed;
+
+										// TODO: fix float for test demo
+			if (flSpeedRatio > 0)					flSpeedRatio = (float)flSpeedRatio - 0.0125;
+			else if (flSpeedRatio <= 0 && flSpeedRatio > -0.05)	flSpeedRatio = (float)flSpeedRatio - 0.0075;
+			else if (flSpeedRatio <= 0.05 && flSpeedRatio > -0.1)	flSpeedRatio = (float)flSpeedRatio - 0.01;
+			else if (flSpeedRatio <= 0.15 && flSpeedRatio > -0.15)	flSpeedRatio = (float)flSpeedRatio - 0.0125;
+			else if (flSpeedRatio <= 0.15 && flSpeedRatio > -0.22)	flSpeedRatio = (float)flSpeedRatio - 0.01375;
+			else if (flSpeedRatio <= 0.22 && flSpeedRatio > -0.3)	flSpeedRatio = (float)flSpeedRatio - 0.0175;
+			else if (flSpeedRatio <= 0.3)				flSpeedRatio = (float)flSpeedRatio - 0.0125;
+		}
+
+		if (flSpeedRatio > 1)
+		{
+			flSpeedRatio = 1;
+		}
+		else if (flSpeedRatio < -0.35)
+		{
+			flSpeedRatio = -0.35;
+		}
+
+		pev->speed = flSpeedRatio * m_speed;
+		Next();
+		m_flAcceleratorDecay = gpGlobals->time + 0.25;
+
+	}
+	else if (m_flCanTurnNow < gpGlobals->time)
+	{
+		if (delta == 20)
+		{
+			m_iTurnAngle++;
+			m_flSteeringWheelDecay = gpGlobals->time + 0.075;
+
+			if (m_iTurnAngle > 8)
+			{
+				m_iTurnAngle = 8;
+			}
+		}
+		else if (delta == 30)
+		{
+			m_iTurnAngle--;
+			m_flSteeringWheelDecay = gpGlobals->time + 0.075;
+
+			if (m_iTurnAngle < -8)
+			{
+				m_iTurnAngle = -8;
+			}
+		}
+
+		m_flCanTurnNow = gpGlobals->time + 0.05;
+	}
 }
 
 /* <1bc0bd> ../cstrike/dlls/vehicle.cpp:303 */
-NOBODY void CFuncVehicle::StopSound(void)
+void CFuncVehicle::StopSound(void)
 {
-//	{
-//		short unsigned int us_encode;                         //   308
-//		short unsigned int us_sound;                          //   309
-//	}
+	if (m_soundPlaying && pev->noise)
+	{
+		unsigned short us_sound = ((unsigned short)m_sounds & 0x0007) << 12;
+		unsigned short us_encode = us_sound;
+
+		PLAYBACK_EVENT_FULL(FEV_RELIABLE | FEV_UPDATE, edict(), m_usAdjustPitch, 0, (float *)&g_vecZero, (float *)&g_vecZero, 0, 0, us_encode, 0, 1, 0);
+	}
+
+	m_soundPlaying = 0;
 }
 
 /* <1bb33d> ../cstrike/dlls/vehicle.cpp:324 */
-NOBODY void CFuncVehicle::UpdateSound(void)
+void CFuncVehicle::UpdateSound(void)
 {
-//	{
-//		float flpitch;                                        //   326
-//		{
-//			short unsigned int us_encode;                 //   355
-//			short unsigned int us_sound;                  //   356
-//			short unsigned int us_pitch;                  //   357
-//			short unsigned int us_volume;                 //   358
-//		}
-//	}
+	if (!pev->noise)
+		return;
+
+	float flpitch = VEHICLE_STARTPITCH + (abs((int)pev->speed) * (VEHICLE_MAXPITCH - VEHICLE_STARTPITCH) / VEHICLE_MAXSPEED);
+
+	if (flpitch > 200)
+		flpitch = 200;
+
+	if (!m_soundPlaying)
+	{
+		if (m_sounds < 5)
+		{
+			EMIT_SOUND_DYN(ENT(pev), CHAN_ITEM, "plats/vehicle_brake1.wav", m_flVolume, ATTN_NORM, 0, 100);
+		}
+
+		EMIT_SOUND_DYN(ENT(pev), CHAN_STATIC, (char *)STRING(pev->noise), m_flVolume, ATTN_NORM, 0, (int)flpitch);
+		m_soundPlaying = 1;
+	}
+	else
+	{
+		unsigned short us_sound = ((unsigned short)(m_sounds) & 0x0007) << 12;
+		unsigned short us_pitch = ((unsigned short)(flpitch / 10.0) & 0x003F) << 6;
+		unsigned short us_volume = ((unsigned short)(m_flVolume * 40) & 0x003F);
+		unsigned short us_encode = us_sound | us_pitch | us_volume;
+
+		PLAYBACK_EVENT_FULL(FEV_UPDATE, edict(), m_usAdjustPitch, 0.0, (float *)&g_vecZero, (float *)&g_vecZero, 0.0, 0.0, us_encode, 0, 0, 0);
+	}
 }
 
 /* <1bc12b> ../cstrike/dlls/vehicle.cpp:368 */
-NOBODY void CFuncVehicle::CheckTurning(void)
+void CFuncVehicle::CheckTurning(void)
 {
-//	{
-//		float maxspeed;                                       //   370
-//		TraceResult tr;                                       //   371
-//		bool bTurnIntoWall;                                   //   373
-//		operator*(const Vector *const this,
-//				float fl);  //   398
-//		operator+(const Vector *const this,
-//				const Vector &v);  //   398
-//		operator*(const Vector *const this,
-//				float fl);  //   387
-//		operator+(const Vector *const this,
-//				const Vector &v);  //   387
-//		operator*(const Vector *const this,
-//				float fl);  //   379
-//		operator-(const Vector *const this,
-//				const Vector &v);  //   379
-//		operator*(const Vector *const this,
-//				float fl);  //   406
-//		operator-(const Vector *const this,
-//				const Vector &v);  //   406
-//	}
+	float_precision maxspeed;
+	TraceResult tr;
+	bool bTurnIntoWall = false;
+
+	if (m_iTurnAngle < 0)
+	{
+		if (pev->speed > 0)
+		{
+			UTIL_TraceLine(m_vFrontRight, m_vFrontRight - (gpGlobals->v_right * 16.0), ignore_monsters, dont_ignore_glass, ENT(pev), &tr);
+		}
+		else if (pev->speed < 0)
+		{
+			UTIL_TraceLine(m_vBackLeft, m_vBackLeft + (gpGlobals->v_right * 16.0), ignore_monsters, dont_ignore_glass, ENT(pev), &tr);
+		}
+
+		if (tr.flFraction != 1.0f)
+		{
+			m_iTurnAngle = 1;
+		}
+	}
+	else if (m_iTurnAngle > 0)
+	{
+		if (pev->speed > 0)
+		{
+			UTIL_TraceLine(m_vFrontLeft, m_vFrontLeft + (gpGlobals->v_right * 16.0), ignore_monsters, dont_ignore_glass, ENT(pev), &tr);
+		}
+		else if (pev->speed < 0)
+		{
+			UTIL_TraceLine(m_vBackRight, m_vBackRight - (gpGlobals->v_right * 16.0), ignore_monsters, dont_ignore_glass, ENT(pev), &tr);
+		}
+
+		if (tr.flFraction != 1.0f)
+		{
+			m_iTurnAngle = -1;
+		}
+	}
+
+	if (pev->speed > 0)
+	{
+		int iCountTurn = abs(m_iTurnAngle);
+
+		if (iCountTurn > 4)
+		{
+			if (m_flTurnStartTime != -1)
+			{
+				float flTurnTime = gpGlobals->time - m_flTurnStartTime;
+
+				if (flTurnTime >= 0)		maxspeed = m_speed * 0.98;
+				else if (flTurnTime > 0.3)	maxspeed = m_speed * 0.95;
+				else if (flTurnTime > 0.6)	maxspeed = m_speed * 0.9;
+				else if (flTurnTime > 0.8)	maxspeed = m_speed * 0.8;
+				else if (flTurnTime > 1)	maxspeed = m_speed * 0.7;
+				else if (flTurnTime > 1.2)	maxspeed = m_speed * 0.5;
+				else				maxspeed = flTurnTime;
+			}
+			else
+			{
+				m_flTurnStartTime = gpGlobals->time;
+				maxspeed = m_speed;
+			}
+		}
+		else
+		{
+			m_flTurnStartTime = -1;
+
+			if (iCountTurn > 2)
+				maxspeed = m_speed * 0.9;
+			else
+				maxspeed = m_speed;
+		}
+
+		if (maxspeed < pev->speed)
+		{
+			pev->speed -= m_speed * 0.1;
+		}
+	}
 }
 
 /* <1bc358> ../cstrike/dlls/vehicle.cpp:466 */
-NOBODY void CFuncVehicle::CollisionDetection(void)
+void CFuncVehicle::CollisionDetection(void)
 {
-//	{
-//		TraceResult tr;                                       //   468
-//		bool bHitSomething;                                   //   469
-//		operator*(const Vector *const this,
-//				float fl);  //   533
-//		operator-(const Vector *const this,
-//				const Vector &v);  //   533
-//		operator*(const Vector *const this,
-//				float fl);  //   551
-//		operator-(const Vector *const this,
-//				const Vector &v);  //   551
-//		operator*(const Vector *const this,
-//				float fl);  //   569
-//		operator-(const Vector *const this,
-//				const Vector &v);  //   569
-//		DotProduct(Vector &a,
-//				const Vector &b);  //   573
-//		operator*(const Vector *const this,
-//				float fl);  //   573
-//		{
-//			class CBaseEntity *pHit;                     //   490
-//			DotProduct(Vector &a,
-//					const Vector &b);  //   479
-//			operator*(const Vector *const this,
-//					float fl);  //   479
-//			Instance(edict_t *pent);  //   490
-//		}
-//		operator*(const Vector *const this,
-//				float fl);  //   496
-//		operator+(const Vector *const this,
-//				const Vector &v);  //   496
-//		operator*(const Vector *const this,
-//				float fl);  //   514
-//		operator+(const Vector *const this,
-//				const Vector &v);  //   514
-//		DotProduct(Vector &a,
-//				const Vector &b);  //   517
-//		operator*(const Vector *const this,
-//				float fl);  //   517
-//		operator*(const Vector *const this,
-//				float fl);  //   475
-//		operator+(const Vector *const this,
-//				const Vector &v);  //   475
-//	}
+	TraceResult tr;
+	bool bHitSomething = false;
+
+	if (pev->speed < 0)
+	{
+		UTIL_TraceLine(m_vBackLeft, m_vBackLeft + (gpGlobals->v_forward * 16.0), ignore_monsters, dont_ignore_glass, ENT(pev), &tr);
+
+		if (tr.flFraction == 1.0f)
+		{
+			UTIL_TraceLine(m_vBackRight, m_vBackRight + (gpGlobals->v_forward * 16.0), ignore_monsters, dont_ignore_glass, ENT(pev), &tr);
+
+			if (tr.flFraction == 1.0f)
+			{
+				UTIL_TraceLine(m_vBack, m_vBack + (gpGlobals->v_forward * 16.0), ignore_monsters, dont_ignore_glass, ENT(pev), &tr);
+
+				if (tr.flFraction == 1.0f)
+				{
+					return;
+				}
+			}
+
+			if (DotProduct(gpGlobals->v_forward, tr.vecPlaneNormal * -1.0) < 0.7 && tr.vecPlaneNormal.z < 0.1)
+			{
+				m_vSurfaceNormal = tr.vecPlaneNormal;
+				m_vSurfaceNormal.z = 0;
+
+				pev->speed *= 0.99;
+			}
+			else if (tr.vecPlaneNormal.z < 0.65 || tr.fStartSolid)
+			{
+				pev->speed *= -1.0;
+			}
+			else
+			{
+				m_vSurfaceNormal = tr.vecPlaneNormal;
+			}
+		}
+		else
+		{
+			if (DotProduct(gpGlobals->v_forward, tr.vecPlaneNormal * -1.0) < 0.7 && tr.vecPlaneNormal.z < 0.1)
+			{
+				m_vSurfaceNormal = tr.vecPlaneNormal;
+				m_vSurfaceNormal.z = 0;
+
+				pev->speed *= 0.99;
+			}
+			else if (tr.vecPlaneNormal[2] < 0.65 || tr.fStartSolid)
+			{
+				pev->speed *= -1.0;
+			}
+			else
+			{
+				m_vSurfaceNormal = tr.vecPlaneNormal;
+			}
+
+			CBaseEntity *pHit = CBaseEntity::Instance(tr.pHit);
+
+			if (pHit && pHit->Classify() == CLASS_VEHICLE)
+			{
+				bHitSomething = true;
+				ALERT(at_console, "I hit another vehicle\n");
+			}
+		}
+	}
+	else if (pev->speed > 0)
+	{
+		UTIL_TraceLine(m_vFrontLeft, m_vFrontLeft - (gpGlobals->v_forward * 16.0), dont_ignore_monsters, dont_ignore_glass, ENT(pev), &tr);
+
+		if (tr.flFraction == 1.0f)
+		{
+			UTIL_TraceLine(m_vFrontRight, m_vFrontRight - (gpGlobals->v_forward * 16.0), ignore_monsters, dont_ignore_glass, ENT(pev), &tr);
+
+			if (tr.flFraction == 1.0f)
+			{
+				UTIL_TraceLine(m_vFront, m_vFront - (gpGlobals->v_forward * 16.0), ignore_monsters, dont_ignore_glass, ENT(pev), &tr);
+
+				if (tr.flFraction == 1.0f)
+				{
+					return;
+				}
+			}
+		}
+
+		if (DotProduct(gpGlobals->v_forward, tr.vecPlaneNormal * -1.0) > -0.7 && tr.vecPlaneNormal.z < 0.1)
+		{
+			m_vSurfaceNormal = tr.vecPlaneNormal;
+			m_vSurfaceNormal.z = 0;
+
+			pev->speed *= 0.99;
+		}
+		else if (tr.vecPlaneNormal.z < 0.65 || tr.fStartSolid)
+		{
+			pev->speed *= -1.0;
+		}
+		else
+		{
+			m_vSurfaceNormal = tr.vecPlaneNormal;
+		}
+	}
 }
 
 /* <1bc7aa> ../cstrike/dlls/vehicle.cpp:588 */
-NOBODY void CFuncVehicle::TerrainFollowing(void)
+void CFuncVehicle::TerrainFollowing(void)
 {
-//	{
-//		TraceResult tr;                                       //   590
-//		operator+(const Vector *const this,
-//				const Vector &v);  //   593
-//	}
+	TraceResult tr;
+	UTIL_TraceLine(pev->origin, pev->origin + Vector(0, 0, (m_height + 48) * -1), ignore_monsters, dont_ignore_glass, ENT(pev), &tr);
+
+	if (tr.flFraction != 1.0f)
+	{
+		m_vSurfaceNormal = tr.vecPlaneNormal;
+	}
+	else if (tr.fInWater)
+	{
+		m_vSurfaceNormal = Vector(0, 0, 1);
+	}
 }
 
 /* <1bc856> ../cstrike/dlls/vehicle.cpp:609 */
-NOBODY void CFuncVehicle::Next(void)
+void CFuncVehicle::Next(void)
 {
-//	{
-//		Vector vGravityVector;                          //   611
-//		Vector forward;                                 //   615
-//		Vector right;                                   //   616
-//		Vector up;                                      //   617
-//		float time;                                           //   633
-//		Vector(Vector *const this,
-//			const Vector &v);  //   611
-//		operator*(const Vector *const this,
-//				float fl);  //   615
-//		operator*(const Vector *const this,
-//				float fl);  //   615
-//		operator*(const Vector *const this,
-//				float fl);  //   616
-//		operator*(const Vector *const this,
-//				float fl);  //   616
-//		operator*(const Vector *const this,
-//				float fl);  //   617
-//		operator+(const Vector *const this,
-//				const Vector &v);  //   619
-//		operator-(const Vector *const this,
-//				const Vector &v);  //   619
-//		operator+(const Vector *const this,
-//				const Vector &v);  //   619
-//		operator+(const Vector *const this,
-//				const Vector &v);  //   620
-//		operator+(const Vector *const this,
-//				const Vector &v);  //   620
-//		operator+(const Vector *const this,
-//				const Vector &v);  //   620
-//		operator+(const Vector *const this,
-//				const Vector &v);  //   621
-//		operator+(const Vector *const this,
-//				const Vector &v);  //   621
-//		operator-(const Vector *const this,
-//				const Vector &v);  //   622
-//		operator-(const Vector *const this,
-//				const Vector &v);  //   622
-//		operator+(const Vector *const this,
-//				const Vector &v);  //   622
-//		operator-(const Vector *const this,
-//				const Vector &v);  //   623
-//		operator+(const Vector *const this,
-//				const Vector &v);  //   623
-//		operator+(const Vector *const this,
-//				const Vector &v);  //   623
-//		operator-(const Vector *const this,
-//				const Vector &v);  //   624
-//		operator+(const Vector *const this,
-//				const Vector &v);  //   624
-//		{
-//			Vector temp;                            //   737
-//			operator!=(const Vector *const this,
-//					const Vector &v);  //   678
-//			NextThink(CFuncVehicle *const this,
-//					float thinkTime,
-//					BOOL alwaysThink);  //   755
-//			{
-//				Vector vTargetAngle;            //   683
-//				Vector vAngle;                  //   683
-//				float vx;                             //   684
-//				float vy;                             //   684
-//				CrossProduct(Vector &a,
-//						const Vector &b);  //   680
-//				CrossProduct(Vector &a,
-//						const Vector &b);  //   681
-//				FixupAngles2(Vector &v);  //   693
-//				FixupAngles2(Vector &v);  //   694
-//			}
-//			operator!=(const Vector *const this,
-//					const Vector &v);  //   746
-//			Normalize(const Vector *const this);  //   748
-//			operator*(float fl,
-//					const Vector &v);  //   748
-//			operator*(const Vector *const this,
-//					float fl);  //   721
-//			{
-//				float flAirTime;                      //   725
-//			}
-//			operator*(const Vector *const this,
-//					float fl);  //   734
-//			operator+(const Vector *const this,
-//					const Vector &v);  //   752
-//			UpdateSound(CFuncVehicle *const this);  //   742
-//		}
-//	}
+	Vector vGravityVector, forward, right, up;
+	float time = 0.1;
+
+	vGravityVector = g_vecZero;
+	UTIL_MakeVectors(pev->angles);
+
+	forward = (gpGlobals->v_forward * -1) * (m_length * 0.5);
+	right = (gpGlobals->v_right * -1) * (m_width * 0.5);
+	up = gpGlobals->v_up * 16;
+
+	m_vFrontLeft = pev->origin + forward - right + up;
+	m_vFrontRight = pev->origin + forward + right + up;
+	m_vFront = pev->origin + forward + up;
+	m_vBackLeft = pev->origin - forward - right + up;
+	m_vBackRight = pev->origin - forward + right + up;
+	m_vBack = pev->origin - forward + up;
+	m_vSurfaceNormal = g_vecZero;
+
+	CheckTurning();
+
+	if (m_flSteeringWheelDecay < gpGlobals->time)
+	{
+		m_flSteeringWheelDecay = gpGlobals->time + 0.1;
+
+		if (m_iTurnAngle < 0)
+			m_iTurnAngle++;
+
+		else if (m_iTurnAngle > 0)
+			m_iTurnAngle--;
+	}
+
+	if (m_flAcceleratorDecay < gpGlobals->time)
+	{
+		m_flAcceleratorDecay = gpGlobals->time + 0.1;
+
+		if (pev->speed < 0)
+		{
+			pev->speed += 20;
+
+			if (pev->speed > 0)
+				pev->speed = 0;
+		}
+		else if (pev->speed > 0)
+		{
+			pev->speed -= 20;
+
+			if (pev->speed < 0)
+				pev->speed = 0;
+		}
+	}
+
+	if (pev->speed == 0)
+	{
+		m_iTurnAngle = 0;
+		pev->avelocity = g_vecZero;
+		pev->velocity = g_vecZero;
+
+		SetThink(&CFuncVehicle::Next);
+		NextThink(pev->ltime + time, TRUE);
+		return;
+	}
+
+	TerrainFollowing();
+	CollisionDetection();
+
+	Vector temp;
+	if (m_vSurfaceNormal != g_vecZero)
+	{
+		Vector vTargetAngle, vAngle;
+
+		float vx;
+		float_precision vy;
+
+		m_vVehicleDirection = CrossProduct(m_vSurfaceNormal, gpGlobals->v_forward);
+		m_vVehicleDirection = CrossProduct(m_vSurfaceNormal, m_vVehicleDirection);
+
+		vTargetAngle = UTIL_VecToAngles(m_vVehicleDirection);
+		vAngle = pev->angles;
+
+		vTargetAngle.y += 180;
+
+		if (m_iTurnAngle != 0)
+		{
+			vTargetAngle.y += m_iTurnAngle;
+		}
+
+		FixupAngles2(vTargetAngle);
+		FixupAngles2(vAngle);
+
+		vx = UTIL_AngleDistance(vTargetAngle.x, vAngle.x);
+		vy = UTIL_AngleDistance(vTargetAngle.y, vAngle.y);
+
+		if (vx > 10)
+			vx = 10;
+		else if (vx < -10)
+			vx = -10;
+
+		if (vy > 10)
+			vy = 10;
+		else if (vy < -10)
+			vy = -10;
+
+		pev->avelocity.y = (int)(vy * 10);
+		pev->avelocity.x = (int)(vx * 10);
+
+		m_flLaunchTime = -1;
+		m_flLastNormalZ = m_vSurfaceNormal.z;
+	}
+	else
+	{
+		if (m_flLaunchTime != -1)
+		{
+			vGravityVector.x = 0;
+			vGravityVector.y = 0;
+			vGravityVector.z = (gpGlobals->time - m_flLaunchTime) * -35;
+
+			if (vGravityVector.z < -400)
+			{
+				vGravityVector.z = -400;
+			}
+		}
+		else
+		{
+			m_flLaunchTime = gpGlobals->time;
+			vGravityVector = Vector(0, 0, 0);
+			pev->velocity = pev->velocity * 1.5;
+		}
+
+		m_vVehicleDirection = gpGlobals->v_forward * -1;
+	}
+
+	UTIL_VecToAngles(m_vVehicleDirection);
+
+	if (m_flUpdateSound < gpGlobals->time)
+	{
+		UpdateSound();
+		m_flUpdateSound = gpGlobals->time + 1.0;
+	}
+
+	if (m_vSurfaceNormal != g_vecZero)
+	{
+		pev->velocity = m_vVehicleDirection.Normalize() * pev->speed;
+	}
+	else
+	{
+		pev->velocity = pev->velocity + vGravityVector;
+	}
+
+	SetThink(&CFuncVehicle::Next);
+	NextThink(pev->ltime + time, TRUE);
 }
 
 /* <1bd087> ../cstrike/dlls/vehicle.cpp:764 */
-NOBODY void CFuncVehicle::DeadEnd(void)
+void CFuncVehicle::DeadEnd(void)
 {
-//	{
-//		class CPathTrack *pTrack;                            //   767
-//		class CPathTrack *pNext;                             //   767
-//	}
+	CPathTrack *pTrack = m_ppath;
+	ALERT(at_aiconsole, "TRAIN(%s): Dead end ", STRING(pev->targetname));
+
+	if (pTrack != NULL)
+	{
+		CPathTrack *pNext;
+
+		if (m_oldSpeed < 0)
+		{
+			do
+			{
+				pNext = pTrack->ValidPath(pTrack->GetPrevious(), TRUE);
+
+				if (pNext != NULL)
+				{
+					pTrack = pNext;
+				}
+			}
+			while (pNext != NULL);
+		}
+		else
+		{
+			do
+			{
+				pNext = pTrack->ValidPath(pTrack->GetNext(), TRUE);
+
+				if (pNext != NULL)
+				{
+					pTrack = pNext;
+				}
+			}
+			while (pNext != NULL);
+		}
+	}
+
+	pev->velocity = g_vecZero;
+	pev->avelocity = g_vecZero;
+
+	if (pTrack != NULL)
+	{
+		ALERT(at_aiconsole, "at %s\n", STRING(pTrack->pev->targetname));
+
+		if (!FStringNull(pTrack->pev->netname))
+		{
+			FireTargets(STRING(pTrack->pev->netname), this, this, USE_TOGGLE, 0);
+		}
+	}
+	else
+		ALERT(at_aiconsole, "\n");
 }
 
 /* <1bd0d4> ../cstrike/dlls/vehicle.cpp:810 */
-NOBODY void CFuncVehicle::SetControls(entvars_t *pevControls)
+void CFuncVehicle::SetControls(entvars_t *pevControls)
 {
-//	{
-//		Vector offset;                                  //   812
-//		operator-(const Vector *const this,
-//				const Vector &v);  //   812
-//		operator+(const Vector *const this,
-//				const Vector &v);  //   814
-//		operator+(const Vector *const this,
-//				const Vector &v);  //   815
-//	}
+	Vector offset = pevControls->origin - pev->oldorigin;
+	m_controlMins = pevControls->mins + offset;
+	m_controlMaxs = pevControls->maxs + offset;
 }
 
 /* <1bb1b2> ../cstrike/dlls/vehicle.cpp:819 */
@@ -377,66 +764,109 @@ BOOL CFuncVehicle::__MAKE_VHOOK(OnControls)(entvars_t *pevTest)
 }
 
 /* <1bb676> ../cstrike/dlls/vehicle.cpp:841 */
-NOBODY void CFuncVehicle::Find(void)
+void CFuncVehicle::Find(void)
 {
-//	{
-//		entvars_t *pevTarget;                                //   847
-//		Vector nextPos;                                 //   855
-//		Vector look;                                    //   858
-//		FIND_ENTITY_BY_TARGETNAME(edict_t *entStart,
-//						const char *pszName);  //   843
-//		FClassnameIs(entvars_t *pev,
-//				const char *szClassname);  //   848
-//		Vector(Vector *const this,
-//			const Vector &v);  //   855
-//		Vector(Vector *const this,
-//			const Vector &v);  //   858
-//		operator-(const Vector *const this,
-//				const Vector &v);  //   863
-//		NextThink(CFuncVehicle *const this,
-//				float thinkTime,
-//				BOOL alwaysThink);  //   870
-//		UpdateSound(CFuncVehicle *const this);  //   874
-//	}
+	m_ppath = CPathTrack::Instance(FIND_ENTITY_BY_TARGETNAME(NULL, STRING(pev->target)));
+
+	if (!m_ppath)
+		return;
+
+	entvars_t *pevTarget = m_ppath->pev;
+
+	if (!FClassnameIs(pevTarget, "path_track"))
+	{
+		ALERT(at_error, "func_track_train must be on a path of path_track\n");
+		m_ppath = NULL;
+		return;
+	}
+
+	Vector nextPos = pevTarget->origin;
+	nextPos.z += m_height;
+
+	Vector look = nextPos;
+	look.z -= m_height;
+	m_ppath->LookAhead(&look, m_length, 0);
+	look.z += m_height;
+
+	pev->angles = UTIL_VecToAngles(look - nextPos);
+	pev->angles.y += 180;
+
+	if (pev->spawnflags & SF_TRACKTRAIN_NOPITCH)
+	{
+		pev->angles.x = 0;
+	}
+
+	UTIL_SetOrigin(pev, nextPos);
+	NextThink(pev->ltime + 0.1, FALSE);
+	SetThink(&CFuncVehicle::Next);
+	pev->speed = m_startSpeed;
+	UpdateSound();
 }
 
 /* <1bb840> ../cstrike/dlls/vehicle.cpp:878 */
-NOBODY void CFuncVehicle::NearestPath(void)
+void CFuncVehicle::NearestPath(void)
 {
-//	{
-//		class CBaseEntity *pTrack;                           //   880
-//		class CBaseEntity *pNearest;                         //   881
-//		float dist;                                           //   882
-//		float closest;                                        //   882
-//		FClassnameIs(entvars_t *pev,
-//				const char *szClassname);  //   889
-//		operator-(const Vector *const this,
-//				const Vector &v);  //   891
-//		Length(const Vector *const this);  //   891
-//		operator-(const Vector *const this,
-//				const Vector &v);  //   912
-//		Length(const Vector *const this);  //   912
-//		operator-(const Vector *const this,
-//				const Vector &v);  //   912
-//		Length(const Vector *const this);  //   912
-//		NextThink(CFuncVehicle *const this,
-//				float thinkTime,
-//				BOOL alwaysThink);  //   920
-//	}
+	CBaseEntity *pTrack = NULL;
+	CBaseEntity *pNearest = NULL;
+	float_precision dist;
+	float closest = 1024;
+
+	while ((pTrack = UTIL_FindEntityInSphere(pTrack, pev->origin, 1024)) != NULL)
+	{
+		if (!(pTrack->pev->flags & (FL_CLIENT | FL_MONSTER)) && FClassnameIs(pTrack->pev, "path_track"))
+		{
+			dist = (pev->origin - pTrack->pev->origin).Length();
+
+			if (dist < closest)
+			{
+				closest = dist;
+				pNearest = pTrack;
+			}
+		}
+	}
+
+	if (!pNearest)
+	{
+		ALERT(at_console, "Can't find a nearby track !!!\n");
+		SetThink(NULL);
+		return;
+	}
+
+	ALERT(at_aiconsole, "TRAIN: %s, Nearest track is %s\n", STRING(pev->targetname), STRING(pNearest->pev->targetname));
+	pTrack = ((CPathTrack *)pNearest)->GetNext();
+
+	if (pTrack != NULL)
+	{
+		if ((pev->origin - pTrack->pev->origin).Length() < (pev->origin - pNearest->pev->origin).Length())
+		{
+			pNearest = pTrack;
+		}
+	}
+
+	m_ppath = reinterpret_cast<CPathTrack *>(pNearest);
+	if (pev->speed != 0)
+	{
+		NextThink(pev->ltime + 0.1, FALSE);
+		SetThink(&CFuncVehicle::Next);
+	}
 }
 
 /* <1bb00a> ../cstrike/dlls/vehicle.cpp:926 */
-NOBODY void CFuncVehicle::__MAKE_VHOOK(OverrideReset)(void)
+void CFuncVehicle::__MAKE_VHOOK(OverrideReset)(void)
 {
-//	NextThink(class CFuncVehicle *const this, float thinkTime, BOOL alwaysThink);  //   928
+	NextThink(pev->ltime + 0.1, FALSE);
+	SetThink(&CFuncVehicle::NearestPath);
 }
 
 /* <1bd198> ../cstrike/dlls/vehicle.cpp:933 */
-NOBODY CFuncVehicle *CFuncVehicle::Instance(edict_t *pent)
+CFuncVehicle *CFuncVehicle::Instance(edict_t *pent)
 {
-//	FClassnameIs(edict_t *pent,
-//			const char *szClassname);  //   935
-//	GET_PRIVATE(edict_t *pent);  //   936
+	if (FClassnameIs(pent, "func_vehicle"))
+	{
+		return (CFuncVehicle *)GET_PRIVATE(pent);
+	}
+
+	return NULL;
 }
 
 /* <1bb055> ../cstrike/dlls/vehicle.cpp:951 */
@@ -446,21 +876,80 @@ int CFuncVehicle::__MAKE_VHOOK(Classify)(void)
 }
 
 /* <1bb0ef> ../cstrike/dlls/vehicle.cpp:956 */
-NOBODY void CFuncVehicle::__MAKE_VHOOK(Spawn)(void)
+void CFuncVehicle::__MAKE_VHOOK(Spawn)(void)
 {
-//	NextThink(CFuncVehicle::Spawn(//			float thinkTime,
-//			BOOL alwaysThink);  //   999
+	if (pev->speed == 0)
+		m_speed = 165;
+	else
+		m_speed = pev->speed;
+
+	if (!m_sounds)
+		m_sounds = 3;
+
+	ALERT(at_console, "M_speed = %f\n", m_speed);
+
+	pev->speed = 0;
+	pev->velocity = g_vecZero;
+	pev->avelocity = g_vecZero;
+
+	pev->impulse = (int)m_speed;
+	m_acceleration = 5;
+
+	m_dir = 1;
+	m_flTurnStartTime = -1;
+
+	if (FStringNull(pev->target))
+	{
+		ALERT(at_console, "Vehicle with no target");
+	}
+
+	if (pev->spawnflags & SF_TRACKTRAIN_PASSABLE)
+		pev->solid = SOLID_NOT;
+	else
+		pev->solid = SOLID_BSP;
+
+	pev->movetype = MOVETYPE_PUSH;
+
+	SET_MODEL(ENT(pev), STRING(pev->model));
+	UTIL_SetSize(pev, pev->mins, pev->maxs);
+	UTIL_SetOrigin(pev, pev->origin);
+
+	pev->oldorigin = pev->origin;
+
+	m_controlMins = pev->mins;
+	m_controlMaxs = pev->maxs;
+	m_controlMaxs.z += 72;
+
+	NextThink(pev->ltime + 0.1, FALSE);
+	SetThink(&CFuncVehicle::Find);
+	Precache();
 }
 
 /* <1bb13e> ../cstrike/dlls/vehicle.cpp:1005 */
-NOBODY void CFuncVehicle::__MAKE_VHOOK(Restart)(void)
+void CFuncVehicle::__MAKE_VHOOK(Restart)(void)
 {
-//	STOP_SOUND(edict_t *entity,
-//			int channel,
-//			const char *sample);  //  1024
-//	NextThink(CFuncVehicle *const this,
-//			float thinkTime,
-//			BOOL alwaysThink);  //  1027
+	ALERT(at_console, "M_speed = %f\n", m_speed);
+
+	pev->speed = 0;
+	pev->velocity = g_vecZero;
+	pev->avelocity = g_vecZero;
+
+	pev->impulse = (int)m_speed;
+	m_flTurnStartTime = -1;
+	m_flUpdateSound = -1;
+	m_dir = 1;
+	m_pDriver = NULL;
+
+	if (FStringNull(pev->target))
+	{
+		ALERT(at_console, "Vehicle with no target");
+	}
+
+	UTIL_SetOrigin(pev, pev->oldorigin);
+	STOP_SOUND(ENT(pev), CHAN_STATIC, (char *)STRING(pev->noise));
+
+	NextThink(pev->ltime + 0.1, FALSE);
+	SetThink(&CFuncVehicle::Find);
 }
 
 /* <1bb07b> ../cstrike/dlls/vehicle.cpp:1032 */
@@ -507,26 +996,40 @@ void CFuncVehicle::__MAKE_VHOOK(Precache)(void)
 LINK_ENTITY_TO_CLASS(func_vehiclecontrols, CFuncVehicleControls);
 
 /* <1bbd36> ../cstrike/dlls/vehicle.cpp:1067 */
-NOBODY void CFuncVehicleControls::Find(void)
+void CFuncVehicleControls::Find(void)
 {
-//	{
-//		edict_t *pTarget;                                    //  1069
-//		class CFuncVehicle *pvehicle;                        //  1082
-//		Instance(edict_t *pent);  //  1082
-//		FIND_ENTITY_BY_TARGETNAME(edict_t *entStart,
-//						const char *pszName);  //  1073
-//		FNullEnt(const edict_t *pent);  //  1074
-//		FNullEnt(const edict_t *pent);  //  1076
-//		SetControls(CFuncVehicle *const this,
-//				entvars_t *pevControls);  //  1083
-//		FClassnameIs(edict_t *pent,
-//				const char *szClassname);  //  1074
-//	}
+	edict_t *pTarget = NULL;
+
+	do
+	{
+		pTarget = FIND_ENTITY_BY_TARGETNAME(pTarget, STRING(pev->target));
+	}
+	while (!FNullEnt(pTarget) && !FClassnameIs(pTarget, "func_vehicle"));
+
+	if (FNullEnt(pTarget))
+	{
+		ALERT(at_console, "No vehicle %s\n", STRING(pev->target));
+		return;
+	}
+
+	CFuncVehicle *pvehicle = CFuncVehicle::Instance(pTarget);
+
+	pvehicle->SetControls(pev);
+	UTIL_Remove(this);
 }
 
 /* <1bb0c8> ../cstrike/dlls/vehicle.cpp:1088 */
-NOBODY void CFuncVehicleControls::__MAKE_VHOOK(Spawn)(void)
+void CFuncVehicleControls::__MAKE_VHOOK(Spawn)(void)
 {
+	pev->solid = SOLID_NOT;
+	pev->movetype = MOVETYPE_NONE;
+	SET_MODEL(ENT(pev), STRING(pev->model));
+
+	UTIL_SetSize(pev, pev->mins, pev->maxs);
+	UTIL_SetOrigin(pev, pev->origin);
+
+	SetThink(&CFuncVehicleControls::Find);
+	pev->nextthink = gpGlobals->time;
 }
 
 #ifdef HOOK_GAMEDLL

@@ -19,46 +19,127 @@ void CGib::LimitVelocity(void)
 }
 
 /* <60320> ../cstrike/dlls/combat.cpp:63 */
-NOBODY void CGib::SpawnStickyGibs(entvars_t *pevVictim, Vector vecOrigin, int cGibs)
+NOXREF void CGib::SpawnStickyGibs(entvars_t *pevVictim, Vector vecOrigin, int cGibs)
 {
-//	{
-//		int i;                                                //    65
-//		{
-//			class CGib *pGib;                            //    75
-//			GetClassPtr<CGib>(CGib *a);  //    75
-//			operator*(const Vector *const this,
-//					float fl);  //    93
-//			operator*(const Vector *const this,
-//					float fl);  //   100
-//			Instance(entvars_t *pev);  //   106
-//			operator*(const Vector *const this,
-//					float fl);  //   110
-//			operator*(const Vector *const this,
-//					float fl);  //   118
-//			Vector(Vector *const this,
-//				float X,
-//				float Y,
-//				float Z);  //   124
-//			Vector(Vector *const this,
-//				float X,
-//				float Y,
-//				float Z);  //   124
-//			LimitVelocity(CGib *const this);  //   128
-//			operator*(const Vector *const this,
-//					float fl);  //   114
-//		} 
-//	} 
+	int i;
+
+	if (g_Language == LANGUAGE_GERMAN)
+	{
+		// no sticky gibs in germany right now!
+		return;
+	}
+
+	for (i = 0; i < cGibs; i++)
+	{
+		CGib *pGib = GetClassPtr((CGib *)NULL);
+
+		pGib->Spawn("models/stickygib.mdl");
+		pGib->pev->body = RANDOM_LONG(0, 2);
+
+		if (pevVictim)
+		{
+			pGib->pev->origin.x = vecOrigin.x + RANDOM_FLOAT(-3, 3);
+			pGib->pev->origin.y = vecOrigin.y + RANDOM_FLOAT(-3, 3);
+			pGib->pev->origin.z = vecOrigin.z + RANDOM_FLOAT(-3, 3);
+
+			// make the gib fly away from the attack vector
+			pGib->pev->velocity = g_vecAttackDir * -1;
+
+			// mix in some noise
+			pGib->pev->velocity.x += RANDOM_FLOAT(-0.15, 0.15);
+			pGib->pev->velocity.y += RANDOM_FLOAT(-0.15, 0.15);
+			pGib->pev->velocity.z += RANDOM_FLOAT(-0.15, 0.15);
+
+			pGib->pev->velocity = pGib->pev->velocity * 900;
+
+			pGib->pev->avelocity.x = RANDOM_FLOAT(250, 400);
+			pGib->pev->avelocity.y = RANDOM_FLOAT(250, 400);
+
+			// copy owner's blood color
+			pGib->m_bloodColor = (CBaseEntity::Instance(pevVictim))->BloodColor();
+
+			if (pevVictim->health > -50)
+			{
+				pGib->pev->velocity = pGib->pev->velocity * 0.7;
+			}
+			else if (pevVictim->health > -200)
+			{
+				pGib->pev->velocity = pGib->pev->velocity * 2;
+			}
+			else
+			{
+				pGib->pev->velocity = pGib->pev->velocity * 4;
+			}
+
+			pGib->pev->movetype = MOVETYPE_TOSS;
+			pGib->pev->solid = SOLID_BBOX;
+			UTIL_SetSize(pGib->pev, Vector (0, 0,0), Vector (0, 0, 0));
+			pGib->SetTouch(&CGib::StickyGibTouch);
+			pGib->SetThink(NULL);
+		}
+
+		pGib->LimitVelocity();
+	}
 }
 
-void (*pCGib__SpawnHeadGib)(void);
-
 /* <5ff7f> ../cstrike/dlls/combat.cpp:132 */
-void  __declspec(naked) CGib::SpawnHeadGib(entvars_t *pevVictim)
+void CGib::SpawnHeadGib(entvars_t *pevVictim)
 {
-	__asm
+	CGib *pGib = GetClassPtr((CGib *)NULL);
+
+	if (g_Language == LANGUAGE_GERMAN)
 	{
-		jmp pCGib__SpawnHeadGib
+		// throw one head
+		pGib->Spawn("models/germangibs.mdl");
+		pGib->pev->body = 0;
 	}
+	else
+	{
+		// throw one head
+		pGib->Spawn("models/hgibs.mdl");
+		pGib->pev->body = 0;
+	}
+
+	if (pevVictim)
+	{
+		pGib->pev->origin = pevVictim->origin + pevVictim->view_ofs;
+
+		edict_t *pentPlayer = FIND_CLIENT_IN_PVS(pGib->edict());
+
+		if (RANDOM_LONG(0, 100) <= 5 && pentPlayer != NULL)
+		{
+			// 5% chance head will be thrown at player's face.
+			entvars_t *pevPlayer = VARS(pentPlayer);
+
+			pGib->pev->velocity = ((pevPlayer->origin + pevPlayer->view_ofs) - pGib->pev->origin).Normalize() * 300;
+			pGib->pev->velocity.z += 100;
+		}
+		else
+		{
+			pGib->pev->velocity.z = RANDOM_FLOAT(200, 300);
+			pGib->pev->velocity.y = RANDOM_FLOAT(-100, 100);
+			pGib->pev->velocity.x = RANDOM_FLOAT(-100, 100);
+		}
+
+		pGib->pev->avelocity.x = RANDOM_FLOAT(100, 200);
+		pGib->pev->avelocity.y = RANDOM_FLOAT(100, 300);
+
+		// copy owner's blood color
+		pGib->m_bloodColor = (CBaseEntity::Instance(pevVictim))->BloodColor();
+
+		if (pevVictim->health > -50)
+		{
+			pGib->pev->velocity = pGib->pev->velocity * 0.7;
+		}
+		else if (pevVictim->health > -200)
+		{
+			pGib->pev->velocity = pGib->pev->velocity * 2;
+		}
+		else
+			pGib->pev->velocity = pGib->pev->velocity * 4;
+	}
+
+	pGib->LimitVelocity();
 }
 
 /* <606c8> ../cstrike/dlls/combat.cpp:190 */
@@ -218,40 +299,175 @@ void CBaseMonster::__MAKE_VHOOK(GibMonster)(void)
 	}
 }
 
+// GetDeathActivity - determines the best type of death
+// anim to play.
+
 /* <5f65e> ../cstrike/dlls/combat.cpp:355 */
-NOBODY Activity CBaseMonster::__MAKE_VHOOK(GetDeathActivity)(void)
+NOXREF Activity CBaseMonster::__MAKE_VHOOK(GetDeathActivity)(void)
 {
-//	{
-//		Activity deathActivity;                               //   357
-//		BOOL fTriedDirection;                                 //   358
-//		float flDot;                                          //   359
-//		TraceResult tr;                                       //   360
-//		class Vector vecSrc;                                  //   361
-//		operator*(const Vector *const this,
-//				float fl);  //   375
-//		DotProduct(const Vector  &a,
-//				const Vector  &b);  //   375
-//		edict(CBaseEntity *const this);  //   461
-//		operator*(const Vector *const this,
-//				float fl);  //   461
-//		operator-(const Vector *const this,
-//				const Vector  &v);  //   461
-//		edict(CBaseEntity *const this);  //   450
-//		operator*(const Vector *const this,
-//				float fl);  //   450
-//		operator+(const Vector *const this,
-//				const Vector  &v);  //   450
-//	} 
+	Activity deathActivity;
+	BOOL fTriedDirection;
+	float flDot;
+	TraceResult tr;
+	Vector vecSrc;
+
+	if (pev->deadflag != DEAD_NO)
+	{
+		// don't run this while dying.
+		return m_IdealActivity;
+	}
+
+	vecSrc = Center();
+
+	fTriedDirection = FALSE;
+
+	// in case we can't find any special deaths to do.
+	deathActivity = ACT_DIESIMPLE;
+
+	UTIL_MakeVectors(pev->angles);
+	flDot = DotProduct(gpGlobals->v_forward, g_vecAttackDir * -1);
+
+	switch (m_LastHitGroup)
+	{
+	case HITGROUP_HEAD:
+		// try to pick a region-specific death.
+		deathActivity = ACT_DIE_HEADSHOT;
+		break;
+	case HITGROUP_STOMACH:
+		deathActivity = ACT_DIE_GUTSHOT;
+		break;
+	case HITGROUP_GENERIC:
+		// try to pick a death based on attack direction
+		fTriedDirection = TRUE;
+
+		if (flDot > 0.3)
+		{
+			deathActivity = ACT_DIEFORWARD;
+		}
+		else if (flDot <= -0.3)
+		{
+			deathActivity = ACT_DIEBACKWARD;
+		}
+		break;
+
+	default:
+		// try to pick a death based on attack direction
+		fTriedDirection = TRUE;
+
+		if (flDot > 0.3)
+		{
+			deathActivity = ACT_DIEFORWARD;
+		}
+		else if (flDot <= -0.3)
+		{
+			deathActivity = ACT_DIEBACKWARD;
+		}
+		break;
+	}
+
+	// can we perform the prescribed death?
+	if (LookupActivity(deathActivity) == ACTIVITY_NOT_AVAILABLE)
+	{
+		// no! did we fail to perform a directional death?
+		if (fTriedDirection)
+		{
+			// if yes, we're out of options. Go simple.
+			deathActivity = ACT_DIESIMPLE;
+		}
+		else
+		{
+			// cannot perform the ideal region-specific death, so try a direction.
+			if (flDot > 0.3)
+			{
+				deathActivity = ACT_DIEFORWARD;
+			}
+			else if (flDot <= -0.3)
+			{
+				deathActivity = ACT_DIEBACKWARD;
+			}
+		}
+	}
+
+	if (LookupActivity(deathActivity) == ACTIVITY_NOT_AVAILABLE)
+	{
+		// if we're still invalid, simple is our only option.
+		deathActivity = ACT_DIESIMPLE;
+	}
+
+	if (deathActivity == ACT_DIEFORWARD)
+	{
+		// make sure there's room to fall forward
+		UTIL_TraceHull(vecSrc, vecSrc + gpGlobals->v_forward * 64, dont_ignore_monsters, head_hull, edict(), &tr);
+
+		if (tr.flFraction != 1.0f)
+		{
+			deathActivity = ACT_DIESIMPLE;
+		}
+	}
+
+	if (deathActivity == ACT_DIEBACKWARD)
+	{
+		// make sure there's room to fall backward
+		UTIL_TraceHull(vecSrc, vecSrc - gpGlobals->v_forward * 64, dont_ignore_monsters, head_hull, edict(), &tr);
+
+		if (tr.flFraction != 1.0f)
+		{
+			deathActivity = ACT_DIESIMPLE;
+		}
+	}
+
+	return deathActivity;
 }
 
+// GetSmallFlinchActivity - determines the best type of flinch
+// anim to play.
+
 /* <5f848> ../cstrike/dlls/combat.cpp:476 */
-NOBODY Activity CBaseMonster::GetSmallFlinchActivity(void)
+NOXREF Activity CBaseMonster::GetSmallFlinchActivity(void)
 {
-//	{ 
-//		Activity flinchActivity;                              //   478
-//		BOOL fTriedDirection;                                 //   479
-//		float flDot;                                          //   480
-//	} 
+	Activity flinchActivity;
+	BOOL fTriedDirection;
+	float flDot;
+
+	fTriedDirection = FALSE;
+	UTIL_MakeVectors(pev->angles);
+	flDot = DotProduct(gpGlobals->v_forward, g_vecAttackDir * -1);	// TODO: noxref
+
+	switch (m_LastHitGroup)
+	{
+	case HITGROUP_HEAD:
+		// pick a region-specific flinch
+		flinchActivity = ACT_FLINCH_HEAD;
+		break;
+	case HITGROUP_STOMACH:
+		flinchActivity = ACT_FLINCH_STOMACH;
+		break;
+	case HITGROUP_LEFTARM:
+		flinchActivity = ACT_FLINCH_LEFTARM;
+		break;
+	case HITGROUP_RIGHTARM:
+		flinchActivity = ACT_FLINCH_RIGHTARM;
+		break;
+	case HITGROUP_LEFTLEG:
+		flinchActivity = ACT_FLINCH_LEFTLEG;
+		break;
+	case HITGROUP_RIGHTLEG:
+		flinchActivity = ACT_FLINCH_RIGHTLEG;
+		break;
+	case HITGROUP_GENERIC:
+	default:
+		// just get a generic flinch.
+		flinchActivity = ACT_SMALL_FLINCH;
+		break;
+	}
+
+	// do we have a sequence for the ideal activity?
+	if (LookupActivity(flinchActivity) == ACTIVITY_NOT_AVAILABLE)
+	{
+		flinchActivity = ACT_SMALL_FLINCH;
+	}
+
+	return flinchActivity;
 }
 
 /* <5f8a6> ../cstrike/dlls/combat.cpp:525 */
@@ -260,7 +476,7 @@ void CBaseMonster::__MAKE_VHOOK(BecomeDead)(void)
 	// don't let autoaim aim at corpses.
 	pev->takedamage = DAMAGE_YES;
 
-	// give the corpse half of the monster's original maximum health. 
+	// give the corpse half of the monster's original maximum health.
 	pev->health = pev->max_health / 2;
 
 	// max_health now becomes a counter for how many blood decals the corpse can place.
@@ -274,7 +490,9 @@ void CBaseMonster::__MAKE_VHOOK(BecomeDead)(void)
 BOOL CBaseMonster::ShouldGibMonster(int iGib)
 {
 	if ((iGib == GIB_NORMAL && pev->health < GIB_HEALTH_VALUE) || (iGib == GIB_ALWAYS))
+	{
 		return TRUE;
+	}
 
 	return FALSE;
 }
@@ -368,7 +586,7 @@ void CBaseMonster::__MAKE_VHOOK(Killed)(entvars_t *pevAttacker, int iGib)
 		pev->health = 0;
 	}
 
-	//pev->enemy = ENT( pevAttacker );//why? (sjb)
+	//pev->enemy = ENT(pevAttacker);//why? (sjb)
 	m_IdealMonsterState = MONSTERSTATE_DEAD;
 }
 
@@ -450,7 +668,7 @@ void CGib::BounceGibTouch(CBaseEntity *pOther)
 		if (m_material != matNone && !RANDOM_LONG(0, 2))
 		{
 			float zvel = fabs(pev->velocity.z);
-			float volume = 0.8 * _min(1, zvel / 450);
+			float volume = 0.8 * Q_min(1.0f, zvel / 450);
 
 			CBreakable::MaterialSoundRandom(edict(), (Materials)m_material, volume);
 		}
@@ -580,7 +798,14 @@ int CBaseMonster::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *p
 
 		if (pInflictor)
 		{
+#if 0
 			vecDir = (pInflictor->Center() - Vector(0, 0, 10) - Center()).Normalize();
+#else
+			// TODO: fix test demo
+			vecDir = NormalizeSubtract<
+				float_precision, float, float_precision, float_precision
+				>(Center(), pInflictor->Center() - Vector(0, 0, 10));
+#endif
 			vecDir = g_vecAttackDir = vecDir.Normalize();
 		}
 	}
@@ -591,7 +816,9 @@ int CBaseMonster::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *p
 	if (IsPlayer())
 	{
 		if (pevInflictor)
+		{
 			pev->dmg_inflictor = ENT(pevInflictor);
+		}
 
 		pev->dmg_take += flTake;
 	}
@@ -629,15 +856,34 @@ int CBaseMonster::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *p
 					m_vecEnemyLKP = pevInflictor->origin;
 			}
 			else
-				m_vecEnemyLKP = pev->origin + (g_vecAttackDir * 64);
+			{
+				//m_vecEnemyLKP = pev->origin + (g_vecAttackDir * 64);
+
+				Vector v38;
+				float v37 = g_vecAttackDir[2] * 64.0;
+				v38[0] = g_vecAttackDir[0] * 64.0 + pev->origin[0];
+				v38[1] = g_vecAttackDir[1] * 64.0 + pev->origin[1];
+				double dbl_v29 = v37 + pev->origin[2];
+				float v30 = v38[1];
+
+				m_vecEnemyLKP[0] = v38[0];
+				v38[2] = dbl_v29;
+				float v32 = v38[2];
+				m_vecEnemyLKP[1] = v30;
+				m_vecEnemyLKP[2] = v32;
+			}
 
 			MakeIdealYaw(m_vecEnemyLKP);
 
 			if (flDamage > 20.0f)
+			{
 				SetConditions(bits_COND_LIGHT_DAMAGE);
+			}
 
 			if (flDamage >= 20.0f)
+			{
 				SetConditions(bits_COND_HEAVY_DAMAGE);
+			}
 		}
 	}
 
@@ -675,7 +921,7 @@ int CBaseMonster::DeadTakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker
 	}
 
 #endif
-	
+
 	// kill the corpse if enough damage was done to destroy the corpse and the damage is of a type that is allowed to destroy the corpse.
 	if (bitsDamageType & DMG_GIB_CORPSE)
 	{
@@ -720,7 +966,7 @@ void RadiusFlash(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker,
 		falloff = 1;
 
 	int bInWater = (UTIL_PointContents(vecSrc) == CONTENTS_WATER);
-	
+
 	vecSrc.z += 1;
 
 	while ((pEntity = UTIL_FindEntityInSphere(pEntity, vecSrc, 1500.0)) != NULL)
@@ -787,7 +1033,7 @@ void RadiusFlash(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker,
 			}
 
 			currentHoldTime = pPlayer->m_blindStartTime + pPlayer->m_blindHoldTime - gpGlobals->time;
-							
+
 			if (currentHoldTime > 0.0 && alpha == 255)
 				fadeHold += currentHoldTime;
 
@@ -813,7 +1059,9 @@ void RadiusFlash(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker,
 					continue;
 
 				if (!fadetoblack.value)
-					UTIL_ScreenFade(pPlayer, Vector(255, 255, 255), fadeTime, fadeHold, alpha, 0);
+				{
+					UTIL_ScreenFade(pObserver, Vector(255, 255, 255), fadeTime, fadeHold, alpha, 0);
+				}
 			}
 
 			pPlayer->Blind(fadeTime * 0.33, fadeHold, fadeTime, alpha);
@@ -1048,78 +1296,157 @@ NOXREF void CBaseMonster::RadiusDamage(Vector vecSrc, entvars_t *pevInflictor, e
 		RadiusDamage2(vecSrc, pevInflictor, pevAttacker, flDamage, iClassIgnore, bitsDamageType);
 }
 
+// CheckTraceHullAttack - expects a length to trace, amount
+// of damage to do, and damage type. Returns a pointer to
+// the damaged entity in case the monster wishes to do
+// other stuff to the victim (punchangle, etc)
+//
+// Used for many contact-range melee attacks. Bites, claws, etc.
+
 /* <61949> ../cstrike/dlls/combat.cpp:1454 */
-NOBODY CBaseEntity *CBaseMonster::CheckTraceHullAttack(float flDist, int iDamage, int iDmgType)
+NOXREF CBaseEntity *CBaseMonster::CheckTraceHullAttack(float flDist, int iDamage, int iDmgType)
 {
-//	{
-//		TraceResult tr;                                       //  1456
-//		class Vector vecStart;                                //  1463
-//		class Vector vecEnd;                                  //  1465
-//		Vector(Vector *const this,
-//			const Vector &v);  //  1463
-//		operator*(const Vector *const this,
-//				float fl);  //  1465
-//		operator+(const Vector *const this,
-//				const Vector &v);  //  1465
-//		{ 
-//			class CBaseEntity *pEntity;                  //  1471
-//			Instance(edict_t *pent);  //  1471
-//		} 
-//	}
+	TraceResult tr;
+
+	if (IsPlayer())
+		UTIL_MakeVectors(pev->angles);
+	else
+		UTIL_MakeAimVectors(pev->angles);
+
+	Vector vecStart = pev->origin;
+	vecStart.z += pev->size.z * 0.5;
+	Vector vecEnd = vecStart + (gpGlobals->v_forward * flDist);
+
+	UTIL_TraceHull(vecStart, vecEnd, dont_ignore_monsters, head_hull, ENT(pev), &tr);
+
+	if (tr.pHit)
+	{
+		CBaseEntity *pEntity = CBaseEntity::Instance(tr.pHit);
+
+		if (iDamage > 0)
+		{
+			pEntity->TakeDamage(pev, pev, iDamage, iDmgType);
+		}
+
+		return pEntity;
+	}
+
 	return NULL;
 }
 
+// FInViewCone - returns true is the passed ent is in
+// the caller's forward view cone. The dot product is performed
+// in 2d, making the view cone infinitely tall.
+
 /* <61ae6> ../cstrike/dlls/combat.cpp:1490 */
-NOBODY BOOL CBaseMonster::__MAKE_VHOOK(FInViewCone)(CBaseEntity *pEntity)
+BOOL CBaseMonster::__MAKE_VHOOK(FInViewCone)(CBaseEntity *pEntity)
 {
-//	{
-//		class Vector2D vec2LOS;                               //  1492
-//		float flDot;                                          //  1493
-//		operator-(const Vector *const this,
-//				const Vector &v);  //  1497
-//		Normalize(const class Vector2D *const this);  //  1498
-//		DotProduct(const class Vector2D  &a,
-//				const class Vector2D  &b);  //  1500
-//	}
-	return FALSE;
+	Vector2D vec2LOS;
+	float flDot;
+
+	UTIL_MakeVectors(pev->angles);
+
+	vec2LOS = (pEntity->pev->origin - pev->origin).Make2D();
+	vec2LOS = vec2LOS.Normalize();
+
+	flDot = DotProduct(vec2LOS, gpGlobals->v_forward.Make2D());
+
+	if (flDot > m_flFieldOfView)
+	{
+		return TRUE;
+	}
+	else
+	{
+		return FALSE;
+	}
 }
+
+// FInViewCone - returns true is the passed vector is in
+// the caller's forward view cone. The dot product is performed
+// in 2d, making the view cone infinitely tall.
 
 /* <61be6> ../cstrike/dlls/combat.cpp:1517 */
-NOBODY BOOL CBaseMonster::__MAKE_VHOOK(FInViewCone)(Vector *pOrigin)
+BOOL CBaseMonster::__MAKE_VHOOK(FInViewCone)(const Vector *pOrigin)
 {
-//	{
-//		class Vector2D vec2LOS;                               //  1519
-//		float flDot;                                          //  1520
-//		operator-(const Vector *const this,
-//				const Vector &v);  //  1524
-//		Normalize(const class Vector2D *const this);  //  1525
-//		DotProduct(const class Vector2D  &a,
-//				const class Vector2D  &b);  //  1527
-//	}
-	return FALSE;
+	Vector2D vec2LOS;
+	float flDot;
+
+	UTIL_MakeVectors(pev->angles);
+
+	vec2LOS = (*pOrigin - pev->origin).Make2D();
+	vec2LOS = vec2LOS.Normalize();
+
+	flDot = DotProduct(vec2LOS, gpGlobals->v_forward.Make2D());
+
+	if (flDot > m_flFieldOfView)
+	{
+		return TRUE;
+	}
+	else
+	{
+		return FALSE;
+	}
 }
+
+// FVisible - returns true if a line can be traced from
+// the caller's eyes to the target
 
 /* <5ecb4> ../cstrike/dlls/combat.cpp:1543 */
-NOBODY BOOL CBaseEntity::__MAKE_VHOOK(FVisible)(CBaseEntity *pEntity)
+BOOL CBaseEntity::__MAKE_VHOOK(FVisible)(CBaseEntity *pEntity)
 {
-//	{
-//		TraceResult tr;                                       //  1545
-//		class Vector vecLookerOrigin;                         //  1546
-//		class Vector vecTargetOrigin;                         //  1547
-//	} 
-//	FVisible(CBaseEntity *const this,
-//		class CBaseEntity *pEntity);  //  1543
-	return FALSE;
+	TraceResult tr;
+	Vector vecLookerOrigin;
+	Vector vecTargetOrigin;
+
+	if (pEntity->pev->flags & FL_NOTARGET)
+		return FALSE;
+
+	// don't look through water
+	if ((pev->waterlevel != 3 && pEntity->pev->waterlevel == 3) || (pev->waterlevel == 3 && pEntity->pev->waterlevel == 0))
+		return FALSE;
+
+	//look through the caller's 'eyes'
+	vecLookerOrigin = pev->origin + pev->view_ofs;
+	vecTargetOrigin = pEntity->EyePosition();
+
+	UTIL_TraceLine(vecLookerOrigin, vecTargetOrigin, ignore_monsters, ignore_glass, ENT(pev), &tr);
+
+	if (tr.flFraction != 1.0f)
+	{
+		// Line of sight is not established
+		return FALSE;
+	}
+	else
+	{
+		// line of sight is valid.
+		return TRUE;
+	}
 }
 
+// FVisible - returns true if a line can be traced from
+// the caller's eyes to the target vector
+
 /* <5e9bb> ../cstrike/dlls/combat.cpp:1576 */
-NOBODY BOOL CBaseEntity::__MAKE_VHOOK(FVisible)(Vector &vecOrigin)
+BOOL CBaseEntity::__MAKE_VHOOK(FVisible)(const Vector &vecOrigin)
 {
-//	{
-//		TraceResult tr;                                       //  1578
-//		class Vector vecLookerOrigin;                         //  1579
-//	}
-	return FALSE;
+	TraceResult tr;
+	Vector vecLookerOrigin;
+
+	//look through the caller's 'eyes'
+	vecLookerOrigin = EyePosition();
+
+	UTIL_TraceLine(vecLookerOrigin, vecOrigin, ignore_monsters, ignore_glass, ENT(pev), &tr);
+
+	if (tr.flFraction != 1.0f)
+	{
+		// Line of sight is not established
+		return FALSE;
+	}
+	else
+	{
+		// line of sight is valid.
+		return TRUE;
+	}
 }
 
 /* <5e872> ../cstrike/dlls/combat.cpp:1600 */
@@ -1188,111 +1515,148 @@ void CBaseMonster::__MAKE_VHOOK(TraceAttack)(entvars_t *pevAttacker, float flDam
 }
 
 /* <61df9> ../cstrike/dlls/combat.cpp:1704 */
-NOBODY void CBaseEntity::FireBullets(ULONG cShots, Vector vecSrc, Vector vecDirShooting, Vector vecSpread, float flDistance, int iBulletType, int iTracerFreq, int iDamage, entvars_t *pevAttacker)
+void CBaseEntity::FireBullets(ULONG cShots, Vector vecSrc, Vector vecDirShooting, Vector vecSpread, float flDistance, int iBulletType, int iTracerFreq, int iDamage, entvars_t *pevAttacker)
 {
-//	{
-//		int tracerCount;                                      //  1706
-//		int tracer;                                           //  1707
-//		TraceResult tr;                                       //  1708
-//		class Vector vecRight;                                //  1709
-//		class Vector vecUp;                                   //  1710
-//		bool m_bCreatedShotgunSpark;                          //  1711
-//		Vector(Vector *const this,
-//			const Vector &v);  //  1709
-//		Vector(Vector *const this,
-//			const Vector &v);  //  1710
-//		{
-//			ULONG iShot;                                  //  1722
-//			{
-//				int spark;                            //  1724
-//				float x;                              //  1727
-//				float y;                              //  1727
-//				float z;                              //  1727
-//				class Vector vecDir;                  //  1734
-//				class Vector vecEnd;                  //  1737
-//				operator*(float fl,
-//						const Vector &v);  //  1736
-//				operator*(float fl,
-//						const Vector &v);  //  1736
-//				operator+(const Vector *const this,
-//						const Vector &v);  //  1736
-//				operator+(const Vector *const this,
-//						const Vector &v);  //  1736
-//				operator*(const Vector *const this,
-//						float fl);  //  1739
-//				operator+(const Vector *const this,
-//						const Vector &v);  //  1739
-//				{
-//					class Vector vecTracerSrc;    //  1745
-//					operator*(const Vector *const this,
-//							float fl);  //  1749
-//					operator*(const Vector *const this,
-//							float fl);  //  1749
-//					operator+(const Vector *const this,
-//							const Vector &v);  //  1749
-//					operator+(const Vector *const this,
-//							const Vector &v);  //  1749
-//					operator+(const Vector *const this,
-//							const Vector &v);  //  1749
-//					MESSAGE_BEGIN(int msg_dest,
-//							int msg_type,
-//							const float *pOrigin,
-//							edict_t *ed);  //  1765
-//				} 
-//				{
-//					class CBaseEntity *pEntity;  //  1780
-//					Instance(edict_t *pent);  //  1780
-//					Vector(Vector *const this,
-//						const Vector &v);  //  1784
-//					Vector(Vector *const this,
-//						const Vector &v);  //  1786
-//					Vector(Vector *const this,
-//						const Vector &v);  //  1786
-//					{
-//						float flDamage;       //  1802
-//						Vector(Vector *const this,
-//							const Vector &v);  //  1793
-//						Vector(Vector *const this,
-//							const Vector &v);  //  1830
-//						Vector(Vector *const this,
-//							const Vector &v);  //  1822
-//						Vector(Vector *const this,
-//							const Vector &v);  //  1824
-//						Vector(Vector *const this,
-//							const Vector &v);  //  1824
-//						Vector(Vector *const this,
-//							const Vector &v);  //  1814
-//						Vector(Vector *const this,
-//							const Vector &v);  //  1816
-//						Vector(Vector *const this,
-//							const Vector &v);  //  1816
-//						Vector(Vector *const this,
-//							const Vector &v);  //  1806
-//						Vector(Vector *const this,
-//							const Vector &v);  //  1810
-//						Vector(Vector *const this,
-//							const Vector &v);  //  1797
-//						Vector(Vector *const this,
-//							const Vector &v);  //  1839
-//						Vector(Vector *const this,
-//							const Vector &v);  //  1840
-//						Vector(Vector *const this,
-//							const Vector &v);  //  1840
-//						FNullEnt(const edict_t *pent);  //  1842
-//						VARS(edict_t *pent);  //  1842
-//						Vector(Vector *const this,
-//							const Vector &v);  //  1833
-//						Vector(Vector *const this,
-//							const Vector &v);  //  1833
-//					} 
-//				} 
-//				Vector(Vector *const this,
-//					const Vector &v);  //  1851
-//				Vector(Vector *const this,
-//					const Vector &v);  //  1851
-//			} 
-//		} 
-//	} 
+	static int tracerCount;
+	int tracer;
+
+	TraceResult tr;
+	Vector vecRight, vecUp;
+	bool m_bCreatedShotgunSpark = true;
+
+	vecRight = gpGlobals->v_right;
+	vecUp = gpGlobals->v_up;
+
+	if (!pevAttacker)
+	{
+		// the default attacker is ourselves
+		pevAttacker = pev;
+	}
+
+	ClearMultiDamage();
+	gMultiDamage.type = (DMG_BULLET | DMG_NEVERGIB);
+
+	for (ULONG iShot = 1; iShot <= cShots; iShot++)
+	{
+		int spark = 0;
+
+		// get circular gaussian spread
+		float x, y, z;
+
+		do
+		{
+			x = RANDOM_FLOAT(-0.5, 0.5) + RANDOM_FLOAT(-0.5, 0.5);
+			y = RANDOM_FLOAT(-0.5, 0.5) + RANDOM_FLOAT(-0.5, 0.5);
+			z = x * x + y * y;
+		}
+		while (z > 1);
+
+		Vector vecDir, vecEnd;
+
+		vecDir = vecDirShooting + x * vecSpread.x * vecRight + y * vecSpread.y * vecUp;
+		vecEnd = vecSrc + vecDir * flDistance;
+
+		UTIL_TraceLine(vecSrc, vecEnd, dont_ignore_monsters, ENT(pev), &tr);
+		tracer = 0;
+
+		if (iTracerFreq != 0 && !(tracerCount++ % iTracerFreq))
+		{
+			Vector vecTracerSrc;
+
+			if (IsPlayer())
+			{
+				// adjust tracer position for player
+				vecTracerSrc = vecSrc + Vector(0, 0, -4) + gpGlobals->v_right * 2 + gpGlobals->v_forward * 16;
+			}
+			else
+			{
+				vecTracerSrc = vecSrc;
+			}
+
+			// guns that always trace also always decal
+			if (iTracerFreq != 1)
+				tracer = 1;
+
+			MESSAGE_BEGIN(MSG_PAS, SVC_TEMPENTITY, vecTracerSrc);
+				WRITE_BYTE(TE_TRACER);
+				WRITE_COORD(vecTracerSrc.x);
+				WRITE_COORD(vecTracerSrc.y);
+				WRITE_COORD(vecTracerSrc.z);
+				WRITE_COORD(tr.vecEndPos.x);
+				WRITE_COORD(tr.vecEndPos.y);
+				WRITE_COORD(tr.vecEndPos.z);
+			MESSAGE_END();
+		}
+
+		// do damage, paint decals
+		if (tr.flFraction != 1.0f)
+		{
+			CBaseEntity *pEntity = CBaseEntity::Instance(tr.pHit);
+
+			if (iDamage)
+			{
+				pEntity->TraceAttack(pevAttacker, iDamage, vecDir, &tr, DMG_BULLET | ((iDamage > 16) ? DMG_ALWAYSGIB : DMG_NEVERGIB));
+				TEXTURETYPE_PlaySound(&tr, vecSrc, vecEnd, iBulletType);
+				DecalGunshot(&tr, iBulletType, false, pev, false);
+			}
+			else
+			{
+				float flDamage;
+
+				switch (iBulletType)
+				{
+				case BULLET_PLAYER_MP5:
+					pEntity->TraceAttack(pevAttacker, gSkillData.plrDmgMP5, vecDir, &tr, DMG_BULLET);
+					break;
+				case BULLET_PLAYER_BUCKSHOT:
+					flDamage = ((1 - tr.flFraction) * 20);
+					pEntity->TraceAttack(pevAttacker, (int)flDamage, vecDir, &tr, DMG_BULLET);
+					break;
+				case BULLET_PLAYER_357:
+					pEntity->TraceAttack(pevAttacker, gSkillData.plrDmg357, vecDir, &tr, DMG_BULLET);
+					break;
+				case BULLET_MONSTER_9MM:
+					pEntity->TraceAttack(pevAttacker, gSkillData.monDmg9MM, vecDir, &tr, DMG_BULLET);
+					TEXTURETYPE_PlaySound(&tr, vecSrc, vecEnd, iBulletType);
+					DecalGunshot(&tr, iBulletType, false, pev, false);
+					break;
+				case BULLET_MONSTER_MP5:
+					pEntity->TraceAttack(pevAttacker, gSkillData.monDmgMP5, vecDir, &tr, DMG_BULLET);
+					TEXTURETYPE_PlaySound(&tr, vecSrc, vecEnd, iBulletType);
+					DecalGunshot(&tr, iBulletType, false, pev, false);
+					break;
+				case BULLET_MONSTER_12MM:
+					pEntity->TraceAttack(pevAttacker, gSkillData.monDmg12MM, vecDir, &tr, DMG_BULLET);
+
+					if (!tracer)
+					{
+						TEXTURETYPE_PlaySound(&tr, vecSrc, vecEnd, iBulletType);
+						DecalGunshot(&tr, iBulletType, false, pev, false);
+					}
+					break;
+				case BULLET_NONE:
+					flDamage = 50;
+					pEntity->TraceAttack(pevAttacker, flDamage, vecDir, &tr, DMG_CLUB);
+					TEXTURETYPE_PlaySound(&tr, vecSrc, vecEnd, iBulletType);
+
+					// only decal glass
+					if (!FNullEnt(tr.pHit) && VARS(tr.pHit)->rendermode != kRenderNormal)
+					{
+						UTIL_DecalTrace(&tr, DECAL_GLASSBREAK1 + RANDOM_LONG(0, 2));
+					}
+					break;
+				default:
+					pEntity->TraceAttack(pevAttacker, gSkillData.monDmg9MM, vecDir, &tr, DMG_BULLET);
+					break;
+				}
+			}
+		}
+
+		// make bullet trails
+		UTIL_BubbleTrail(vecSrc, tr.vecEndPos, (int)((flDistance * tr.flFraction) / 64));
+	}
+
+	ApplyMultiDamage(pev, pevAttacker);
 }
 
 /* <62693> ../cstrike/dlls/combat.cpp:1856 */
@@ -1307,99 +1671,72 @@ NOXREF char *vstr(float *v)
 	return string[ idx ];
 }
 
-Vector (*pFireBullets3)(Vector, Vector, float, float, int, int, int, float, entvars_t *, bool, int);
+// Go to the trouble of combining multiple pellets into a single damage call.
+// This version is used by Players, uses the random seed generator to sync client and server side shots.
 
 /* <62709> ../cstrike/dlls/combat.cpp:1869 */
-Vector __declspec(naked) CBaseEntity::FireBullets3(Vector vecSrc, Vector vecDirShooting, float vecSpread, float flDistance, int iPenetration, int iBulletType, int iDamage, float flRangeModifier, entvars_t *pevAttacker, bool bPistol, int shared_rand)
+Vector CBaseEntity::FireBullets3(Vector vecSrc, Vector vecDirShooting, float vecSpread, float flDistance, int iPenetration, int iBulletType, int iDamage, float flRangeModifier, entvars_t *pevAttacker, bool bPistol, int shared_rand)
 {
-	UNTESTED
-	//TODO: crash a test to czero
-
-	__asm
-	{
-		jmp pFireBullets3
-	}
-/*	int iOriginalPenetration = iPenetration;
+	int iOriginalPenetration = iPenetration;
 	int iPenetrationPower;
-
-	//int iSparksAmount;
-	int iCurrentDamage = iDamage;
-
 	float flPenetrationDistance;
+	int iCurrentDamage = iDamage;
 	float flCurrentDistance;
 
-	TraceResult tr;
-	TraceResult tr2;
-
-	CBaseEntity *pEntity;
-	Vector vecDir;
-	Vector vecEnd;
+	TraceResult tr, tr2;
+	Vector vecRight, vecUp;
 
 	bool bHitMetal = false;
+	int iSparksAmount = 1;
 
-	Vector vecRight = gpGlobals->v_right;
-	Vector vecUp = gpGlobals->v_up;
+	vecRight = gpGlobals->v_right;
+	vecUp = gpGlobals->v_up;
 
 	switch (iBulletType)
 	{
-		case BULLET_PLAYER_9MM:
-		{
-			iPenetrationPower = 21;
-			flPenetrationDistance = 800;
-			break;
-		}
-		case BULLET_PLAYER_45ACP:
-		{
-			iPenetrationPower = 15;
-			flPenetrationDistance = 500;
-			break;
-		}
-		case BULLET_PLAYER_50AE:
-		{
-			iPenetrationPower = 30;
-			flPenetrationDistance = 1000;
-			break;
-		}
-		case BULLET_PLAYER_762MM:
-		{
-			iPenetrationPower = 39;
-			flPenetrationDistance = 5000.0f;
-			break;
-		}
-		case BULLET_PLAYER_556MM:
-		{
-			iPenetrationPower = 35;
-			flPenetrationDistance = 4000;
-			break;
-		}
-		case BULLET_PLAYER_338MAG:
-		{
-			iPenetrationPower = 45;
-			flPenetrationDistance = 8000;
-			break;
-		}
-		case BULLET_PLAYER_57MM:
-		{
-			iPenetrationPower = 30;
-			flPenetrationDistance = 2000;
-			break;
-		}
-		case BULLET_PLAYER_357SIG:
-		{
-			iPenetrationPower = 25;
-			flPenetrationDistance = 800;
-			break;
-		}
-		default:
-		{
-			iPenetrationPower = 0;
-			flPenetrationDistance = 0;
-			break;
-		}
+	case BULLET_PLAYER_9MM:
+		iPenetrationPower = 21;
+		flPenetrationDistance = 800;
+		break;
+	case BULLET_PLAYER_45ACP:
+		iPenetrationPower = 15;
+		flPenetrationDistance = 500;
+		break;
+	case BULLET_PLAYER_50AE:
+		iPenetrationPower = 30;
+		flPenetrationDistance = 1000;
+		break;
+	case BULLET_PLAYER_762MM:
+		iPenetrationPower = 39;
+		flPenetrationDistance = 5000;
+		break;
+	case BULLET_PLAYER_556MM:
+		iPenetrationPower = 35;
+		flPenetrationDistance = 4000;
+		break;
+	case BULLET_PLAYER_338MAG:
+		iPenetrationPower = 45;
+		flPenetrationDistance = 8000;
+		break;
+	case BULLET_PLAYER_57MM:
+		iPenetrationPower = 30;
+		flPenetrationDistance = 2000;
+		break;
+	case BULLET_PLAYER_357SIG:
+		iPenetrationPower = 25;
+		flPenetrationDistance = 800;
+		break;
+	default:
+		iPenetrationPower = 0;
+		flPenetrationDistance = 0;
+		break;
 	}
 
 	if (!pevAttacker)
-		pevAttacker = pev; // the default attacker is ourselves
+	{
+		// the default attacker is ourselves
+		pevAttacker = pev;
+	}
 
 	gMultiDamage.type = (DMG_BULLET | DMG_NEVERGIB);
 
@@ -1423,6 +1760,9 @@ Vector __declspec(naked) CBaseEntity::FireBullets3(Vector vecSrc, Vector vecDirS
 		while (z > 1);
 	}
 
+	Vector vecDir, vecEnd;
+	Vector vecOldSrc, vecNewSrc;
+
 	vecDir = vecDirShooting + x * vecSpread * vecRight + y * vecSpread * vecUp;
 	vecEnd = vecSrc + vecDir * flDistance;
 
@@ -1433,96 +1773,97 @@ Vector __declspec(naked) CBaseEntity::FireBullets3(Vector vecSrc, Vector vecDirS
 		ClearMultiDamage();
 		UTIL_TraceLine(vecSrc, vecEnd, dont_ignore_monsters, ENT(pev), &tr);
 
-		if (tr.flFraction != 1)
-			TheBots->OnEvent(EVENT_BULLET_IMPACT, this, NULL);
-
-		switch (UTIL_TextureHit(&tr, vecSrc, vecEnd))
+		if (tr.flFraction != 1.0f)
 		{
-			case CHAR_TEX_METAL:
-			{
-				bHitMetal = true;
-				iPenetrationPower *= 0.15;
-				flDamageModifier = 0.2;
-				break;
-			}
-			case CHAR_TEX_CONCRETE:
-			{
-				iPenetrationPower *= 0.25;
-				break;
-			}
-			case CHAR_TEX_GRATE:
-			{
-				bHitMetal = true;
-				iPenetrationPower *= 0.5;
-				flDamageModifier = 0.4;
-				break;
-			}
-			case CHAR_TEX_VENT:
-			{
-				bHitMetal = true;
-				iPenetrationPower *= 0.5;
-				flDamageModifier = 0.45;
-				break;
-			}
-			case CHAR_TEX_TILE:
-			{
-				iPenetrationPower *= 0.65;
-				flDamageModifier = 0.3;
-				break;
-			}
-			case CHAR_TEX_COMPUTER:
-			{
-				bHitMetal = true;
-				iPenetrationPower *= 0.4;
-				flDamageModifier = 0.45;
-				break;
-			}
-			case CHAR_TEX_WOOD:
-			{
-				flDamageModifier = 0.6;
-				break;
-			}
-			default:
-				break;
+			TheBots->OnEvent(EVENT_BULLET_IMPACT, this, (CBaseEntity *)&tr.vecEndPos);
 		}
-		if (tr.flFraction != 1.0)
+
+		char cTextureType = UTIL_TextureHit(&tr, vecSrc, vecEnd);
+		bool bSparks = false;
+
+		switch (cTextureType)
 		{
-			pEntity = CBaseEntity::Instance(tr.pHit);
+		case CHAR_TEX_METAL:
+			bHitMetal = true;
+			bSparks = true;
+
+			iPenetrationPower *= 0.15;
+			flDamageModifier = 0.2;
+			break;
+		case CHAR_TEX_CONCRETE:
+			iPenetrationPower *= 0.25;
+			break;
+		case CHAR_TEX_GRATE:
+			bHitMetal = true;
+			bSparks = true;
+
+			iPenetrationPower *= 0.5;
+			flDamageModifier = 0.4;
+			break;
+		case CHAR_TEX_VENT:
+			bHitMetal = true;
+			bSparks = true;
+
+			iPenetrationPower *= 0.5;
+			flDamageModifier = 0.45;
+			break;
+		case CHAR_TEX_TILE:
+			iPenetrationPower *= 0.65;
+			flDamageModifier = 0.3;
+			break;
+		case CHAR_TEX_COMPUTER:
+			bHitMetal = true;
+			bSparks = true;
+
+			iPenetrationPower *= 0.4;
+			flDamageModifier = 0.45;
+			break;
+		case CHAR_TEX_WOOD:
+			flDamageModifier = 0.6;
+			break;
+		default:
+			break;
+		}
+		if (tr.flFraction != 1.0f)
+		{
+			CBaseEntity *pEntity = CBaseEntity::Instance(tr.pHit);
 			iPenetration--;
 
 			flCurrentDistance = tr.flFraction * flDistance;
 			iCurrentDamage *= pow(flRangeModifier, flCurrentDistance / 500);
 
 			if (flCurrentDistance > flPenetrationDistance)
+			{
 				iPenetration = 0;
+			}
 
 			if (tr.iHitgroup == HITGROUP_SHIELD)
 			{
-				if (RANDOM_LONG(0, 1))
-					EMIT_SOUND(pEntity->edict(), CHAN_VOICE, "weapons/ric_metal-1.wav", VOL_NORM, ATTN_NORM);
-				else
-					EMIT_SOUND(pEntity->edict(), CHAN_VOICE, "weapons/ric_metal-2.wav", VOL_NORM, ATTN_NORM);
-
+				EMIT_SOUND(pEntity->edict(), CHAN_VOICE, (RANDOM_LONG(0, 1) == 1) ? "weapons/ric_metal-1.wav" : "weapons/ric_metal-2.wav", VOL_NORM, ATTN_NORM);
 				UTIL_Sparks(tr.vecEndPos);
 
 				pEntity->pev->punchangle.x = iCurrentDamage * RANDOM_FLOAT(-0.15, 0.15);
 				pEntity->pev->punchangle.z = iCurrentDamage * RANDOM_FLOAT(-0.15, 0.15);
 
 				if (pEntity->pev->punchangle.x < 4)
-					pEntity->pev->punchangle.x = -4;//TODO:?? 4 ?
+				{
+					pEntity->pev->punchangle.x = -4;
+				}
 
 				if (pEntity->pev->punchangle.z < -5)
+				{
 					pEntity->pev->punchangle.z = -5;
-
+				}
 				else if (pEntity->pev->punchangle.z > 5)
+				{
 					pEntity->pev->punchangle.z = 5;
+				}
 
 				break;
 			}
 
 			float flDistanceModifier;
-			//if (VARS(tr.pHit)->solid != SOLID_BSP || !iPenetration)
-			if (pEntity->pev->solid != SOLID_BSP || !iPenetration)
+			if (VARS(tr.pHit)->solid != SOLID_BSP || !iPenetration)
 			{
 				iPenetrationPower = 42;
 				flDamageModifier = 0.75;
@@ -1532,12 +1873,12 @@ Vector __declspec(naked) CBaseEntity::FireBullets3(Vector vecSrc, Vector vecDirS
 				flDistanceModifier = 0.5;
 
 			DecalGunshot(&tr, iBulletType, (!bPistol && RANDOM_LONG(0, 3)), pev, bHitMetal);
-				
+
 			vecSrc = tr.vecEndPos + (vecDir * iPenetrationPower);
 			flDistance = (flDistance - flCurrentDistance) * flDistanceModifier;
 			vecEnd = vecSrc + (vecDir * flDistance);
 
-			pEntity->TraceAttack(pevAttacker, iCurrentDamage, vecDir, &tr, DMG_BULLET | DMG_NEVERGIB);
+			pEntity->TraceAttack(pevAttacker, iCurrentDamage, vecDir, &tr, (DMG_BULLET | DMG_NEVERGIB));
 			iCurrentDamage *= flDamageModifier;
 		}
 		else
@@ -1546,7 +1887,7 @@ Vector __declspec(naked) CBaseEntity::FireBullets3(Vector vecSrc, Vector vecDirS
 		ApplyMultiDamage(pev, pevAttacker);
 	}
 
-	return Vector(x * vecSpread, y * vecSpread, 0);*/
+	return Vector(x * vecSpread, y * vecSpread, 0);
 }
 
 /* <5eb17> ../cstrike/dlls/combat.cpp:2075 */
@@ -1561,7 +1902,7 @@ void CBaseEntity::__MAKE_VHOOK(TraceBleed)(float flDamage, Vector vecDir, TraceR
 	if (!(bitsDamageType & (DMG_CRUSH | DMG_BULLET | DMG_SLASH | DMG_BLAST | DMG_CLUB | DMG_MORTAR)))
 		return;
 
-	// make blood decal on the wall! 
+	// make blood decal on the wall!
 	TraceResult Bloodtr;
 	Vector vecTraceDir;
 	float flNoise;
@@ -1597,7 +1938,9 @@ void CBaseEntity::__MAKE_VHOOK(TraceBleed)(float flDamage, Vector vecDir, TraceR
 		if (Bloodtr.flFraction != 1.0f)
 		{
 			if (!RANDOM_LONG(0, 2))
+			{
 				UTIL_BloodDecalTrace(&Bloodtr, BloodColor());
+			}
 		}
 	}
 }
@@ -1605,9 +1948,9 @@ void CBaseEntity::__MAKE_VHOOK(TraceBleed)(float flDamage, Vector vecDir, TraceR
 /* <62e0e> ../cstrike/dlls/combat.cpp:2145 */
 NOXREF void CBaseMonster::MakeDamageBloodDecal(int cCount, float flNoise, TraceResult *ptr, Vector &vecDir)
 {
-	// make blood decal on the wall! 
+	// make blood decal on the wall!
 	TraceResult Bloodtr;
-	Vector vecTraceDir; 
+	Vector vecTraceDir;
 	int i;
 
 	if (!IsAlive())
@@ -1622,7 +1965,7 @@ NOXREF void CBaseMonster::MakeDamageBloodDecal(int cCount, float flNoise, TraceR
 			pev->max_health--;
 	}
 
-	for (i = 0 ; i < cCount ; i++)
+	for (i = 0; i < cCount; i++)
 	{
 		vecTraceDir = vecDir;
 
@@ -1750,7 +2093,7 @@ BOOL CBaseMonster::FInViewCone(CBaseEntity *pEntity)
 	return FInViewCone_(pEntity);
 }
 
-BOOL CBaseMonster::FInViewCone(Vector *pOrigin)
+BOOL CBaseMonster::FInViewCone(const Vector *pOrigin)
 {
 	return FInViewCone_(pOrigin);
 }

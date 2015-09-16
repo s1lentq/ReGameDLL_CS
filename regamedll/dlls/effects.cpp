@@ -200,14 +200,14 @@ void CBeam::__MAKE_VHOOK(Precache)(void)
 /* <762d8> ../cstrike/dlls/effects.cpp:182 */
 void CBeam::SetStartEntity(int entityIndex)
 {
-	pev->sequence = (entityIndex & 0x0FFF) | ((pev->sequence & 0xF000) << 12); 
+	pev->sequence = (entityIndex & 0x0FFF) | ((pev->sequence & 0xF000) << 12);
 	pev->owner = INDEXENT(entityIndex);
 }
 
 /* <76303> ../cstrike/dlls/effects.cpp:188 */
 void CBeam::SetEndEntity(int entityIndex)
 {
-	pev->skin = (entityIndex & 0x0FFF) | ((pev->skin & 0xF000) << 12); 
+	pev->skin = (entityIndex & 0x0FFF) | ((pev->skin & 0xF000) << 12);
 	pev->aiment = INDEXENT(entityIndex);
 }
 
@@ -327,13 +327,13 @@ void CBeam::RelinkBeam(void)
 	const Vector &startPos = GetStartPos();
 	const Vector &endPos = GetEndPos();
 
-	pev->mins.x = _min(startPos.x, endPos.x);
-	pev->mins.y = _min(startPos.y, endPos.y);
-	pev->mins.z = _min(startPos.z, endPos.z);
+	pev->mins.x = Q_min(startPos.x, endPos.x);
+	pev->mins.y = Q_min(startPos.y, endPos.y);
+	pev->mins.z = Q_min(startPos.z, endPos.z);
 
-	pev->maxs.x = _max(startPos.x, endPos.x);
-	pev->maxs.y = _max(startPos.y, endPos.y);
-	pev->maxs.z = _max(startPos.z, endPos.z);
+	pev->maxs.x = Q_max(startPos.x, endPos.x);
+	pev->maxs.y = Q_max(startPos.y, endPos.y);
+	pev->maxs.z = Q_max(startPos.z, endPos.z);
 
 	pev->mins = pev->mins - pev->origin;
 	pev->maxs = pev->maxs - pev->origin;
@@ -1018,7 +1018,9 @@ void CLaser::TurnOff(void)
 	pev->nextthink = 0;
 
 	if (m_pSprite)
+	{
 		m_pSprite->TurnOff();
+	}
 }
 
 /* <78804> ../cstrike/dlls/effects.cpp:1032 */
@@ -1027,7 +1029,9 @@ void CLaser::TurnOn(void)
 	pev->effects &= ~EF_NODRAW;
 
 	if (m_pSprite)
+	{
 		m_pSprite->TurnOn();
+	}
 
 	pev->dmgtime = gpGlobals->time;
 	pev->nextthink = gpGlobals->time;
@@ -1471,7 +1475,7 @@ void CGibShooter::ShootThink(void)
 
 	Vector vecShootDir;
 	vecShootDir = pev->movedir;
-	
+
 	float rnd_right = RANDOM_FLOAT(-1, 1);
 	float rnd_forward = RANDOM_FLOAT(-1, 1);
 	float rnd_up = RANDOM_FLOAT(-1, 1);
@@ -1533,7 +1537,7 @@ void CGibShooter::ShootThink(void)
 LINK_ENTITY_TO_CLASS(env_shooter, CEnvShooter);
 
 /* <749e7> ../cstrike/dlls/effects.cpp:1602 */
-NOBODY void CEnvShooter::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CEnvShooter::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "shootmodel"))
 	{
@@ -1545,7 +1549,7 @@ NOBODY void CEnvShooter::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		int iNoise = Q_atoi(pkvd->szValue);
 		pkvd->fHandled = TRUE;
 
-		switch(iNoise)
+		switch (iNoise)
 		{
 		case 0:
 			m_iGibMaterial = matGlass;

@@ -38,9 +38,9 @@ class CHostageImprov;
 class HostageState: public SimpleState<CHostageImprov *>, public IImprovEvent
 {
 public:
-	virtual ~HostageState(void) { };
+	virtual ~HostageState(void) {};
 
-	virtual void UpdateStationaryAnimation(CHostageImprov *improv) { };
+	virtual void UpdateStationaryAnimation(CHostageImprov *improv) {};
 
 };/* size: 12, cachelines: 1, members: 2 */
 
@@ -64,7 +64,7 @@ public:
 		Update();
 	}
 
-	void UpdateStationaryAnimation(CHostageImprov *improv) { };
+	void UpdateStationaryAnimation(CHostageImprov *improv) {};
 
 };/* size: 16, cachelines: 1, members: 2 */
 
@@ -72,7 +72,7 @@ public:
 class HostageIdleState: public HostageState
 {
 public:
-	virtual ~HostageIdleState(void) { };
+	virtual ~HostageIdleState(void) {};
 
 	virtual void OnEnter(CHostageImprov *improv);
 	virtual void OnUpdate(CHostageImprov *improv);
@@ -120,7 +120,7 @@ private:
 class HostageEscapeToCoverState: public HostageState
 {
 public:
-	virtual ~HostageEscapeToCoverState(void) { };
+	virtual ~HostageEscapeToCoverState(void) {};
 
 	virtual void OnEnter(CHostageImprov *improv);
 	virtual void OnUpdate(CHostageImprov *improv);
@@ -143,7 +143,7 @@ private:
 class HostageEscapeLookAroundState: public HostageState
 {
 public:
-	virtual ~HostageEscapeLookAroundState(void) { };
+	virtual ~HostageEscapeLookAroundState(void) {};
 
 	virtual void OnEnter(CHostageImprov *improv);
 	virtual void OnUpdate(CHostageImprov *improv);
@@ -162,7 +162,7 @@ private:
 class HostageEscapeState: public HostageState
 {
 public:
-	virtual ~HostageEscapeState(void) { };
+	virtual ~HostageEscapeState(void) {};
 
 	virtual void OnEnter(CHostageImprov *improv);
 	virtual void OnUpdate(CHostageImprov *improv);
@@ -193,7 +193,7 @@ private:
 class HostageRetreatState: public HostageState
 {
 public:
-	virtual ~HostageRetreatState(void) { };
+	virtual ~HostageRetreatState(void) {};
 
 	virtual void OnEnter(CHostageImprov *improv);
 	virtual void OnUpdate(CHostageImprov *improv);
@@ -209,7 +209,7 @@ public:
 class HostageFollowState: public HostageState
 {
 public:
-	virtual ~HostageFollowState(void) { };
+	virtual ~HostageFollowState(void) {};
 
 	virtual void OnEnter(CHostageImprov *improv);
 	virtual void OnUpdate(CHostageImprov *improv);
@@ -245,7 +245,7 @@ private:
 class HostageAnimateState: public HostageState
 {
 public:
-	virtual ~HostageAnimateState(void) { }
+	virtual ~HostageAnimateState(void) {}
 
 	virtual void OnEnter(CHostageImprov *improv);
 	virtual void OnUpdate(CHostageImprov *improv);
@@ -309,9 +309,7 @@ public:
 	bool IsDoneHolding(void);
 
 private:
-
 	enum { MAX_SEQUENCES = 8 };
-
 	struct SeqInfo m_sequence[ MAX_SEQUENCES ];
 	int m_sequenceCount;
 	int m_currentSequence;

@@ -68,7 +68,7 @@ static NEW_DLL_FUNCTIONS gNewDLLFunctions
 };
 
 // Global Savedata for Delay
-TYPEDESCRIPTION	CBaseEntity::m_SaveData[] = 
+TYPEDESCRIPTION	CBaseEntity::m_SaveData[] =
 {
 	DEFINE_FIELD(CBaseEntity, m_pGoalEnt, FIELD_CLASSPTR),
 	DEFINE_FIELD(CBaseEntity, m_pfnThink, FIELD_FUNCTION),	// UNDONE: Build table of these!!!
@@ -533,7 +533,7 @@ void DispatchUse(edict_t *pentUsed, edict_t *pentOther)
 {
 	CBaseEntity *pEntity = (CBaseEntity *)GET_PRIVATE(pentUsed);
 	CBaseEntity *pOther = (CBaseEntity *)GET_PRIVATE(pentOther);
-	
+
 	if (pEntity && !(pEntity->pev->flags & FL_KILLME))
 	{
 		pEntity->Use(pOther, pOther, USE_TOGGLE, 0);
@@ -550,7 +550,7 @@ void DispatchThink(edict_t *pent)
 		if ((pEntity->pev->flags & FL_DORMANT))
 		{
 			ALERT(at_error, "Dormant entity %s is thinking!!\n", STRING(pEntity->pev->classname));
-		}	
+		}
 		pEntity->Think();
 	}
 }
@@ -852,8 +852,8 @@ int CBaseEntity::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pe
 
 	// UNDONE: some entity types may be immune or resistant to some bitsDamageType
 	// if Attacker == Inflictor, the attack was a melee or other instant-hit attack.
-	// (that is, no actual entity projectile was involved in the attack so use the shooter's origin). 
-	if (pevAttacker == pevInflictor)	
+	// (that is, no actual entity projectile was involved in the attack so use the shooter's origin).
+	if (pevAttacker == pevInflictor)
 	{
 		vecTemp = pevInflictor->origin - (VecBModelOrigin(pev));
 	}
@@ -865,7 +865,7 @@ int CBaseEntity::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pe
 
 	// this global is still used for glass and other non-monster killables, along with decals.
 	g_vecAttackDir = vecTemp.Normalize();
-		
+
 	// save damage based on the target's armor level
 	// figure momentum add (don't let hurt brushes or other triggers move player)
 	if ((!FNullEnt(pevInflictor)) && (pev->movetype == MOVETYPE_WALK || pev->movetype == MOVETYPE_STEP) && (pevAttacker->solid != SOLID_TRIGGER))
@@ -874,8 +874,8 @@ int CBaseEntity::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pe
 		vecDir = vecDir.Normalize();
 
 		float_precision flForce = flDamage * ((32 * 32 * 72.0) / (pev->size.x * pev->size.y * pev->size.z)) * 5;
-		
-		if (flForce > 1000.0) 
+
+		if (flForce > 1000.0)
 			flForce = 1000.0;
 
 		pev->velocity = pev->velocity + vecDir * flForce;
@@ -967,7 +967,7 @@ void SetObjectCollisionBox(entvars_t *pev)
 		int i;
 
 		max = 0;
-		for (i = 0 ; i < 3 ; i++)
+		for (i = 0; i < 3; i++)
 		{
 			v = fabs((float_precision)((float *)pev->mins)[i]);
 			if (v > max)
@@ -1082,6 +1082,7 @@ int CBaseEntity::ShouldToggle(USE_TYPE useType, BOOL currentState)
 		if ((currentState && useType == USE_ON) || (!currentState && useType == USE_OFF))
 			return 0;
 	}
+
 	return 1;
 }
 
@@ -1189,7 +1190,7 @@ BOOL CBaseEntity::IsInWorld(void)
 
 CBaseEntity *CBaseEntity::GetNextTarget(void)
 {
-	return GetNextTarget();
+	return GetNextTarget_();
 }
 
 BOOL CBaseEntity::FVisible(CBaseEntity *pEntity)
@@ -1197,7 +1198,7 @@ BOOL CBaseEntity::FVisible(CBaseEntity *pEntity)
 	return FVisible_(pEntity);
 }
 
-BOOL CBaseEntity::FVisible(Vector &vecOrigin)
+BOOL CBaseEntity::FVisible(const Vector &vecOrigin)
 {
 	return FVisible_(vecOrigin);
 }

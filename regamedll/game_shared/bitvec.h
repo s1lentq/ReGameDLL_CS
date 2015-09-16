@@ -46,7 +46,7 @@ private:
 
 };/* size: 8, cachelines: 1, members: 2 */
 
-// CBitVec allows you to store a list of bits and do operations on them like they were 
+// CBitVec allows you to store a list of bits and do operations on them like they were
 // an atomic type
 template<int NUM_BITS>
 class CBitVec
@@ -136,13 +136,13 @@ inline void CBitVec<NUM_BITS>::Init(int val)
 template<int NUM_BITS>
 inline CBitVec<NUM_BITS> &CBitVec<NUM_BITS>::operator=(CBitVec<NUM_BITS> const &other)
 {
-	memcpy(m_DWords, other.m_DWords, sizeof(m_DWords));
+	Q_memcpy(m_DWords, other.m_DWords, sizeof(m_DWords));
 	return *this;
 }
 
 /* <2d3a41> ../game_shared/bitvec.h:133 */
 template<int NUM_BITS>
-inline CBitVecAccessor CBitVec<NUM_BITS>::operator[](int i)	
+inline CBitVecAccessor CBitVec<NUM_BITS>::operator[](int i)
 {
 	assert(i >= 0 && i < GetNumBits());
 	return CBitVecAccessor(m_DWords, i);
@@ -153,8 +153,10 @@ template<int NUM_BITS>
 inline bool CBitVec<NUM_BITS>::operator==(CBitVec<NUM_BITS> const &other)
 {
 	for (int i = 0; i < NUM_DWORDS; i++)
+	{
 		if (m_DWords[i] != other.m_DWords[i])
 			return false;
+	}
 
 	return true;
 }

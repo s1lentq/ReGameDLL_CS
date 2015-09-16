@@ -32,15 +32,37 @@
 #pragma once
 #endif
 
+#define SF_BUTTON_DONTMOVE		1
+#define SF_ROTBUTTON_NOTSOLID		1
+#define	SF_BUTTON_TOGGLE		32	// button stays pushed until reactivated
+#define	SF_BUTTON_SPARK_IF_OFF		64	// button sparks in OFF state
+#define SF_BUTTON_TOUCH_ONLY		256	// button only fires as a result of USE key.
+
+#define SF_GLOBAL_SET			1	// Set global state to initial state on spawn
+
+#define SF_MULTI_INIT			1
+
+// Make this button behave like a door (HACKHACK)
+// This will disable use and make the button solid
+// rotating buttons were made SOLID_NOT by default since their were some
+// collision problems with them...
+#define SF_MOMENTARY_DOOR		0x0001
+
+#define SF_SPARK_TOOGLE			32
+#define SF_SPARK_IF_OFF			64
+
+#define SF_BTARGET_USE			0x0001
+#define SF_BTARGET_ON			0x0002
+
 /* <249a3> ../cstrike/dlls/buttons.cpp:38 */
 class CEnvGlobal: public CPointEntity
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void KeyValue(KeyValueData *pkvd);
-	NOBODY virtual int Save(CSave &save);
-	NOBODY virtual int Restore(CRestore &restore);
-	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	virtual void Spawn(void);
+	virtual void KeyValue(KeyValueData *pkvd);
+	virtual int Save(CSave &save);
+	virtual int Restore(CRestore &restore);
+	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
 
@@ -66,10 +88,12 @@ public:
 class CRotButton: public CBaseButton
 {
 public:
-	NOBODY virtual void Spawn(void);
+	virtual void Spawn(void);
 
 #ifdef HOOK_GAMEDLL
+
 	void Spawn_(void);
+
 #endif // HOOK_GAMEDLL
 
 };/* size: 368, cachelines: 6, members: 1 */
@@ -78,12 +102,15 @@ public:
 class CMomentaryRotButton: public CBaseToggle
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void KeyValue(KeyValueData *pkvd);
-	NOBODY virtual int Save(CSave &save);
-	NOBODY virtual int Restore(CRestore &restore);
-	NOBODY virtual int ObjectCaps(void);
-	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	virtual void Spawn(void);
+	virtual void KeyValue(KeyValueData *pkvd);
+	virtual int Save(CSave &save);
+	virtual int Restore(CRestore &restore);
+	virtual int ObjectCaps(void)
+	{
+		return ObjectCaps_();
+	}
+	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
 
@@ -91,19 +118,29 @@ public:
 	void KeyValue_(KeyValueData *pkvd);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
-	int ObjectCaps_(void);
+	int ObjectCaps_(void)
+	{
+		int flags = CBaseToggle::ObjectCaps() & (~FCAP_ACROSS_TRANSITION);
+
+		if (pev->spawnflags & SF_MOMENTARY_DOOR)
+		{
+			return flags;
+		}
+
+		return (flags | FCAP_CONTINUOUS_USE);
+	}
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #endif // HOOK_GAMEDLL
 
 public:
-	NOBODY void EXPORT Off(void);
-	NOBODY void EXPORT Return(void);
-	NOBODY void UpdateSelf(float value);
-	NOBODY void UpdateSelfReturn(float value);
-	NOBODY void UpdateAllButtons(float value, int start);
-	NOBODY void PlaySound(void);
-	NOBODY void UpdateTarget(float value);
+	void EXPORT Off(void);
+	void EXPORT Return(void);
+	void UpdateSelf(float value);
+	void UpdateSelfReturn(float value);
+	void UpdateAllButtons(float value, int start);
+	void PlaySound(void);
+	void UpdateTarget(float value);
 public:
 	static CMomentaryRotButton *Instance(edict_t *pent)
 	{
@@ -127,11 +164,11 @@ public:
 class CEnvSpark: public CBaseEntity
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual void KeyValue(KeyValueData *pkvd);
-	NOBODY virtual int Save(CSave &save);
-	NOBODY virtual int Restore(CRestore &restore);
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual void KeyValue(KeyValueData *pkvd);
+	virtual int Save(CSave &save);
+	virtual int Restore(CRestore &restore);
 
 #ifdef HOOK_GAMEDLL
 
@@ -144,9 +181,9 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	NOBODY void EXPORT SparkThink(void);
-	NOBODY void EXPORT SparkStart(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-	NOBODY void EXPORT SparkStop(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	void EXPORT SparkThink(void);
+	void EXPORT SparkStart(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	void EXPORT SparkStop(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 public:
 	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[1];
@@ -160,10 +197,10 @@ public:
 class CButtonTarget: public CBaseEntity
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual int ObjectCaps(void);
-	NOBODY virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
-	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	virtual void Spawn(void);
+	virtual int ObjectCaps(void);
+	virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
+	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
 
@@ -176,7 +213,17 @@ public:
 
 };/* size: 152, cachelines: 3, members: 1 */
 
-NOBODY char *ButtonSound(int sound);
-NOBODY void DoSpark(entvars_t *pev, const Vector &location);
+char *ButtonSound(int sound);
+void DoSpark(entvars_t *pev, const Vector &location);
+
+// linked objects
+C_DLLEXPORT void env_global(entvars_t *pev);
+C_DLLEXPORT void multisource(entvars_t *pev);
+C_DLLEXPORT void func_button(entvars_t *pev);
+C_DLLEXPORT void func_rot_button(entvars_t *pev);
+C_DLLEXPORT void momentary_rot_button(entvars_t *pev);
+C_DLLEXPORT void env_spark(entvars_t *pev);
+C_DLLEXPORT void env_debris(entvars_t *pev);
+C_DLLEXPORT void button_target(entvars_t *pev);
 
 #endif // BUTTON_H

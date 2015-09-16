@@ -166,7 +166,7 @@ public:
 	}
 	NOBODY bool IsAtHome(void);//
 	NOBODY const Vector *GetHomePosition(void);//
-	
+
 #ifdef HOOK_GAMEDLL
 
 	void Spawn_(void);

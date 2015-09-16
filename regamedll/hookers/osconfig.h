@@ -184,7 +184,7 @@
 	#define HIDDEN __attribute__((visibility("hidden")))
 	#define _DLLEXPORT __attribute__((visibility("default")))
 	#define _DECL_NAKED __attribute__((naked))
-	#define C_DLLEXPORT extern "C"
+	#define C_DLLEXPORT extern "C" __attribute__((visibility("default")))
 
 	typedef int SOCKET;
 	#define INVALID_SOCKET (SOCKET)(~0)

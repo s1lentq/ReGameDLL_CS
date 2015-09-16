@@ -33,7 +33,6 @@
 #endif
 
 #include <list>
-//#include "nav.h"
 
 class CNavArea;
 
@@ -498,7 +497,7 @@ private:
 	friend class CCSBotManager;
 
 	void Initialize(void);
-	
+
 #ifdef HOOK_GAMEDLL
 public:
 #endif // HOOK_GAMEDLL

@@ -13,7 +13,7 @@ TYPEDESCRIPTION CLight::m_SaveData[] =
 
 #else
 
-TYPEDESCRIPTION (*CLight::pm_SaveData)[2];
+TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CLight, m_SaveData)[2];
 
 #endif // HOOK_GAMEDLL
 
@@ -40,11 +40,11 @@ void CLight::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 	}
 	else if (FStrEq(pkvd->szKeyName, "pattern"))
 	{
-		m_iszPattern = ALLOC_STRING( pkvd->szValue );
+		m_iszPattern = ALLOC_STRING(pkvd->szValue);
 		pkvd->fHandled = TRUE;
 	}
 	else
-		CPointEntity::KeyValue( pkvd );
+		CPointEntity::KeyValue(pkvd);
 }
 
 /* <e7b78> ../cstrike/dlls/lights.cpp:92 */
@@ -56,7 +56,7 @@ void CLight::__MAKE_VHOOK(Spawn)(void)
 		REMOVE_ENTITY(ENT(pev));
 		return;
 	}
-	
+
 	m_iStartedOff = (pev->spawnflags & SF_LIGHT_START_OFF) != 0;
 
 	if (m_iStyle >= 32)
@@ -65,7 +65,7 @@ void CLight::__MAKE_VHOOK(Spawn)(void)
 			LIGHT_STYLE(m_iStyle, "a");
 
 		else if (m_iszPattern)
-			LIGHT_STYLE(m_iStyle, (char *)STRING( m_iszPattern ));
+			LIGHT_STYLE(m_iStyle, (char *)STRING(m_iszPattern));
 		else
 			LIGHT_STYLE(m_iStyle, "m");
 	}
@@ -143,9 +143,9 @@ void CEnvLight::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		}
 
 		// simulate qrad direct, ambient,and gamma adjustments, as well as engine scaling
-		r = pow( r / 114.0, 0.6 ) * 264;
-		g = pow( g / 114.0, 0.6 ) * 264;
-		b = pow( b / 114.0, 0.6 ) * 264;
+		r = pow(r / 114.0, 0.6) * 264;
+		g = pow(g / 114.0, 0.6) * 264;
+		b = pow(b / 114.0, 0.6) * 264;
 
 		pkvd->fHandled = TRUE;
 
@@ -175,7 +175,7 @@ void CEnvLight::__MAKE_VHOOK(Spawn)(void)
 #endif // HOOK_GAMEDLL
 
 	char szVector[64];
-	UTIL_MakeAimVectors( pev->angles );
+	UTIL_MakeAimVectors(pev->angles);
 
 	Q_sprintf(szVector, "%f", gpGlobals->v_forward.x SPRINTF_OLD_STD_FIX);
 	CVAR_SET_STRING("sv_skyvec_x", szVector);

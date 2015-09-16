@@ -56,7 +56,7 @@
 
 // motion flags
 #define STUDIO_X		0x0001
-#define STUDIO_Y		0x0002	
+#define STUDIO_Y		0x0002
 #define STUDIO_Z		0x0004
 #define STUDIO_XR		0x0008
 #define STUDIO_YR		0x0010
@@ -85,7 +85,7 @@
 #define RAD_TO_STUDIO		(32768.0/M_PI)
 #define STUDIO_TO_RAD		(M_PI/32768.0)
 
-typedef struct 
+typedef struct
 {
 	int id;
 	int version;
@@ -93,16 +93,16 @@ typedef struct
 	int length;
 	vec3_t eyeposition;		// ideal eye position
 	vec3_t min;			// ideal movement hull size
-	vec3_t max;			
+	vec3_t max;
 	vec3_t bbmin;			// clipping bounding box
-	vec3_t bbmax;		
+	vec3_t bbmax;
 	int flags;
 	int numbones;			// bones
 	int boneindex;
 	int numbonecontrollers;		// bone controllers
 	int bonecontrollerindex;
 	int numhitboxes;		// complex bounding boxes
-	int hitboxindex;			
+	int hitboxindex;
 	int numseq;			// animation sequences
 	int seqindex;
 	int numseqgroups;		// demand loaded sequences
@@ -113,7 +113,7 @@ typedef struct
 	int numskinref;			// replaceable textures
 	int numskinfamilies;
 	int skinindex;
-	int numbodyparts;		
+	int numbodyparts;
 	int bodypartindex;
 	int numattachments;		// queryable attachable points
 	int attachmentindex;
@@ -127,7 +127,7 @@ typedef struct
 /* size: 244, cachelines: 4, members: 36 */
 
 // bones
-typedef struct 
+typedef struct
 {
 	char name[32];		// bone name for symbolic links
 	int parent;		// parent bone
@@ -139,7 +139,7 @@ typedef struct
 /* size: 112, cachelines: 2, members: 6 */
 
 // bone controllers
-typedef struct 
+typedef struct
 {
 	int bone;	// -1 == 0
 	int type;	// X, Y, Z, XR, YR, ZR, M
@@ -164,7 +164,7 @@ typedef struct
 typedef struct
 {
 	char label[32];			// sequence label
-	float fps;			// frames per second	
+	float fps;			// frames per second
 	int flags;			// looping/non-looping flags
 	int activity;
 	int actweight;
@@ -173,13 +173,13 @@ typedef struct
 	int numframes;			// number of frames per sequence
 	int numpivots;			// number of foot pivots
 	int pivotindex;
-	int motiontype;	
+	int motiontype;
 	int motionbone;
 	vec3_t linearmovement;
 	int automoveposindex;
 	int automoveangleindex;
 	vec3_t bbmin;			// per sequence bounding box
-	vec3_t bbmax;		
+	vec3_t bbmax;
 	int numblends;
 	int animindex;			// mstudioanim_t pointer relative to start of sequence group data
 					// [blend][bone][X, Y, Z, XR, YR, ZR]
@@ -202,7 +202,7 @@ typedef struct
 /* size: 12, cachelines: 1, members: 1 */
 
 // animation frames
-typedef union 
+typedef union
 {
 	struct
 	{

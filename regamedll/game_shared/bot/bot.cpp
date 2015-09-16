@@ -219,10 +219,12 @@ void CBot::ExecuteCommand_(void)
 	m_flPreviousCommandTime = gpGlobals->time;
 
 	if (IsCrouching())
+	{
 		m_buttonFlags |= IN_DUCK;
+	}
 
 	// Run the command
-	PLAYER_RUN_MOVE( edict(), pev->v_angle, m_forwardSpeed, m_strafeSpeed, m_verticalSpeed, m_buttonFlags, 0, adjustedMSec );
+	PLAYER_RUN_MOVE(edict(), pev->v_angle, m_forwardSpeed, m_strafeSpeed, m_verticalSpeed, m_buttonFlags, 0, adjustedMSec);
 }
 
 /* <4900fa> ../game_shared/bot/bot.cpp:362 */
@@ -417,7 +419,7 @@ bool ActiveGrenade::IsValid(void) const
 /* <490710> ../game_shared/bot/bot.cpp:622 */
 NOXREF const Vector *ActiveGrenade::GetPosition(void) const
 {
-	return &m_entity->pev->origin; 
+	return &m_entity->pev->origin;
 }
 
 #ifdef HOOK_GAMEDLL

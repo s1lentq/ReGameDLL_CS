@@ -278,7 +278,7 @@ inline void BotPhrase::SetPlaceCriteria(PlaceCriteria place) const
 }
 
 /* <2fea52> ../cstrike/dlls/bot/cs_bot_chatter.h:250 */
-inline void BotPhrase::SetCountCriteria( CountCriteria count ) const
+inline void BotPhrase::SetCountCriteria(CountCriteria count) const
 {
 	m_countCriteria = count;
 }
@@ -524,7 +524,7 @@ public:
 class BotChatterInterface
 {
 public:
-	BotChatterInterface(void) { };
+	BotChatterInterface(void) {};
 
 	NOBODY BotChatterInterface(CCSBot *me);
 	NOBODY ~BotChatterInterface();
@@ -650,8 +650,8 @@ inline BotChatterInterface::VerbosityType BotChatterInterface::GetVerbosity(void
 }
 
 /* <2fec4a> ../cstrike/dlls/bot/cs_bot_chatter.h:590 */
-inline bool BotChatterInterface::IsTalking(void) const	
-{ 
+inline bool BotChatterInterface::IsTalking(void) const
+{
 	if (m_statementList)
 		return m_statementList->IsSpeaking();
 	return false;

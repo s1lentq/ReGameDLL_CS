@@ -97,7 +97,7 @@ public:
 
 };/* size: 412, cachelines: 7, members: 4 */
 
-void ExplosionCreate(Vector &center, Vector &angles, edict_t *pOwner, int magnitude, BOOL doDamage);
+void ExplosionCreate(const Vector &center, Vector &angles, edict_t *pOwner, int magnitude, BOOL doDamage);
 
 // linked objects
 C_DLLEXPORT void spark_shower(entvars_t *pev);

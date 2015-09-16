@@ -46,7 +46,6 @@
 #define VEHICLE_SPEED11_ACCELERATION	0.001444444444444444
 #define VEHICLE_SPEED12_ACCELERATION	0.001200000000000000
 #define VEHICLE_SPEED13_ACCELERATION	0.000916666666666666
-#define VEHICLE_SPEED14_ACCELERATION	0.001444444444444444
 
 #define VEHICLE_STARTPITCH		60
 #define VEHICLE_MAXPITCH		200
@@ -56,8 +55,8 @@
 class CFuncVehicleControls: public CBaseEntity
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual int ObjectCaps(void)
+	virtual void Spawn(void);
+	virtual int ObjectCaps(void)
 	{
 		return ObjectCaps_();
 	}
@@ -73,10 +72,15 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	NOBODY void EXPORT Find(void);
+	void EXPORT Find(void);
 
 };/* size: 152, cachelines: 3, members: 1 */
 
-NOBODY void FixupAngles2(Vector &v);
+float_precision Fix2(float angle);
+void FixupAngles2(Vector &v);
+
+// linked objects
+C_DLLEXPORT void func_vehicle(entvars_t *pev);
+C_DLLEXPORT void func_vehiclecontrols(entvars_t *pev);
 
 #endif // VEHICLE_H

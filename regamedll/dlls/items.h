@@ -86,9 +86,9 @@ public:
 class CItemSuit: public CItem
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual BOOL MyTouch(CBasePlayer *pPlayer);
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual BOOL MyTouch(CBasePlayer *pPlayer);
 
 #ifdef HOOK_GAMEDLL
 
@@ -104,9 +104,9 @@ public:
 class CItemBattery: public CItem
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual BOOL MyTouch(CBasePlayer *pPlayer);
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual BOOL MyTouch(CBasePlayer *pPlayer);
 
 #ifdef HOOK_GAMEDLL
 
@@ -122,9 +122,9 @@ public:
 class CItemAntidote: public CItem
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual BOOL MyTouch(CBasePlayer *pPlayer);
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual BOOL MyTouch(CBasePlayer *pPlayer);
 
 #ifdef HOOK_GAMEDLL
 
@@ -140,9 +140,9 @@ public:
 class CItemSecurity: public CItem
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual BOOL MyTouch(CBasePlayer *pPlayer);
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual BOOL MyTouch(CBasePlayer *pPlayer);
 
 #ifdef HOOK_GAMEDLL
 
@@ -158,9 +158,9 @@ public:
 class CItemLongJump: public CItem
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual BOOL MyTouch(CBasePlayer *pPlayer);
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual BOOL MyTouch(CBasePlayer *pPlayer);
 
 #ifdef HOOK_GAMEDLL
 
@@ -176,9 +176,9 @@ public:
 class CItemKevlar: public CItem
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual BOOL MyTouch(CBasePlayer *pPlayer);
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual BOOL MyTouch(CBasePlayer *pPlayer);
 
 #ifdef HOOK_GAMEDLL
 
@@ -194,9 +194,9 @@ public:
 class CItemAssaultSuit: public CItem
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual BOOL MyTouch(CBasePlayer *pPlayer);
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual BOOL MyTouch(CBasePlayer *pPlayer);
 
 #ifdef HOOK_GAMEDLL
 
@@ -212,9 +212,9 @@ public:
 class CItemThighPack: public CItem
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual BOOL MyTouch(CBasePlayer *pPlayer);
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual BOOL MyTouch(CBasePlayer *pPlayer);
 
 #ifdef HOOK_GAMEDLL
 

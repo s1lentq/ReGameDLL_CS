@@ -54,12 +54,12 @@
 class CPathTrack: public CPointEntity
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void KeyValue(KeyValueData* pkvd);
-	NOBODY virtual int Save(CSave &save);
-	NOBODY virtual int Restore(CRestore &restore);
-	NOBODY virtual void Activate(void);
-	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	virtual void Spawn(void);
+	virtual void KeyValue(KeyValueData* pkvd);
+	virtual int Save(CSave &save);
+	virtual int Restore(CRestore &restore);
+	virtual void Activate(void);
+	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
 
@@ -72,20 +72,20 @@ public:
 
 #endif // HOOK_GAMEDLL
 
-	NOBODY void SetPrevious(CPathTrack *pprevious);
-	NOBODY void Link(void);
+	void SetPrevious(CPathTrack *pprevious);
+	void Link(void);
 
 	// Returns ppath if enabled, NULL otherwise
-	NOBODY CPathTrack *ValidPath(CPathTrack *ppath, int testFlag);
-	NOBODY void Project(CPathTrack *pstart, CPathTrack *pend, Vector *origin, float dist);
+	CPathTrack *ValidPath(CPathTrack *ppath, int testFlag);
+	void Project(CPathTrack *pstart, CPathTrack *pend, Vector *origin, float dist);
 
-	NOBODY static CPathTrack *Instance(edict_t *pent);
+	static CPathTrack *Instance(edict_t *pent);
 
-	NOBODY CPathTrack *LookAhead(Vector *origin, float dist, int move);
-	NOBODY CPathTrack *Nearest(Vector origin);
+	CPathTrack *LookAhead(Vector *origin, float dist, int move);
+	CPathTrack *Nearest(Vector origin);
 
-	NOBODY CPathTrack *GetNext(void);
-	NOBODY CPathTrack *GetPrevious(void);
+	CPathTrack *GetNext(void);
+	CPathTrack *GetPrevious(void);
 
 public:
 	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[5];
@@ -102,20 +102,20 @@ public:
 class CFuncTrackTrain: public CBaseEntity
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual void Restart(void);
-	NOBODY virtual void KeyValue(KeyValueData* pkvd);
-	NOBODY virtual int Save(CSave &save);
-	NOBODY virtual int Restore(CRestore &restore);
-	NOBODY virtual int ObjectCaps(void)
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual void Restart(void);
+	virtual void KeyValue(KeyValueData* pkvd);
+	virtual int Save(CSave &save);
+	virtual int Restore(CRestore &restore);
+	virtual int ObjectCaps(void)
 	{
 		return ObjectCaps_();
 	}
-	NOBODY virtual void OverrideReset(void);
-	NOBODY virtual BOOL OnControls(entvars_t *pev);
-	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-	NOBODY virtual void Blocked(CBaseEntity *pOther);
+	virtual void OverrideReset(void);
+	virtual BOOL OnControls(entvars_t *pev);
+	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	virtual void Blocked(CBaseEntity *pOther);
 
 #ifdef HOOK_GAMEDLL
 
@@ -137,22 +137,21 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
+	void EXPORT Next(void);
+	void EXPORT Find(void);
+	void EXPORT NearestPath(void);
+	void EXPORT DeadEnd(void);
 
-	NOBODY void EXPORT Next(void);
-	NOBODY void EXPORT Find(void);
-	NOBODY void EXPORT NearestPath(void);
-	NOBODY void EXPORT DeadEnd(void);
-
-	NOBODY void NextThink(float thinkTime, BOOL alwaysThink);
+	void NextThink(float thinkTime, BOOL alwaysThink);
 	void SetTrack(CPathTrack *track)
 	{
 		m_ppath = track->Nearest(pev->origin);
 	}
-	NOBODY void SetControls(entvars_t *pevControls);
-	NOBODY void StopSound(void);
-	NOBODY void UpdateSound(void);
+	void SetControls(entvars_t *pevControls);
+	void StopSound(void);
+	void UpdateSound(void);
 
-	NOBODY static CFuncTrackTrain *Instance(edict_t *pent);
+	static CFuncTrackTrain *Instance(edict_t *pent);
 
 public:
 	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[12];
@@ -183,21 +182,21 @@ private:
 class CFuncVehicle: public CBaseEntity
 {
 public:
-	NOBODY virtual void Spawn(void);
+	virtual void Spawn(void);
 	virtual void Precache(void);
-	NOBODY virtual void Restart(void);
-	NOBODY virtual void KeyValue(KeyValueData *pkvd);
-	NOBODY virtual int Save(CSave &save);
-	NOBODY virtual int Restore(CRestore &restore);
-	NOBODY virtual int ObjectCaps(void)
+	virtual void Restart(void);
+	virtual void KeyValue(KeyValueData *pkvd);
+	virtual int Save(CSave &save);
+	virtual int Restore(CRestore &restore);
+	virtual int ObjectCaps(void)
 	{
 		return ObjectCaps_();
 	}
 	virtual int Classify(void);
-	NOBODY virtual void OverrideReset(void);
+	virtual void OverrideReset(void);
 	virtual BOOL OnControls(entvars_t *pev);
-	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-	NOBODY virtual void Blocked(CBaseEntity *pOther);
+	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	virtual void Blocked(CBaseEntity *pOther);
 
 #ifdef HOOK_GAMEDLL
 
@@ -220,27 +219,27 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	NOBODY void EXPORT Next(void);
-	NOBODY void EXPORT Find(void);
-	NOBODY void EXPORT NearestPath(void);
-	NOBODY void EXPORT DeadEnd(void);
+	void EXPORT Next(void);
+	void EXPORT Find(void);
+	void EXPORT NearestPath(void);
+	void EXPORT DeadEnd(void);
 
-	NOBODY void NextThink(float thinkTime, BOOL alwaysThink);
-	NOBODY void CollisionDetection(void);
-	NOBODY void TerrainFollowing(void);
-	NOBODY void CheckTurning(void);
+	void NextThink(float thinkTime, BOOL alwaysThink);
+	void CollisionDetection(void);
+	void TerrainFollowing(void);
+	void CheckTurning(void);
 
-	NOBODY void SetTrack(CPathTrack *track)
+	void SetTrack(CPathTrack *track)
 	{
 		m_ppath = track->Nearest(pev->origin);
 	}
-	NOBODY void SetControls(entvars_t *pevControls);
-	
-	NOBODY void StopSound(void);
-	NOBODY void UpdateSound(void);
+	void SetControls(entvars_t *pevControls);
+
+	void StopSound(void);
+	void UpdateSound(void);
 
 public:
-	NOBODY static CFuncVehicle *Instance(edict_t *pent);
+	static CFuncVehicle *Instance(edict_t *pent);
 
 public:
 	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[12];
@@ -283,15 +282,7 @@ private:
 
 };/* size: 364, cachelines: 6, members: 35 */
 
-
-
-
-
-
-
-
-
-
-
+// linked objects
+C_DLLEXPORT void path_track(entvars_t *pev);
 
 #endif // TRAINS_H

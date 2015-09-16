@@ -37,7 +37,7 @@
 class CBasePlayer;
 
 #define MAX_WEAPONS			32
-#define MAX_NORMAL_BATTERY		100
+#define MAX_NORMAL_BATTERY		100.0f
 
 #define ITEM_FLAG_SELECTONEMPTY		1
 #define ITEM_FLAG_NOAUTORELOAD		2
@@ -70,6 +70,30 @@ class CBasePlayer;
 
 // spawn flags
 #define SF_DETONATE			0x0001	// Grenades flagged with this will be triggered when the owner calls detonateSatchelCharges
+
+// custom enum
+enum ArmouryItemPack
+{
+	ARMOURY_MP5NAVY,
+	ARMOURY_TMP,
+	ARMOURY_P90,
+	ARMOURY_MAC10,
+	ARMOURY_AK47,
+	ARMOURY_SG552,
+	ARMOURY_M4A1,
+	ARMOURY_AUG,
+	ARMOURY_SCOUT,
+	ARMOURY_G3SG1,
+	ARMOURY_AWP,
+	ARMOURY_M3,
+	ARMOURY_XM1014,
+	ARMOURY_M249,
+	ARMOURY_FLASHBANG,
+	ARMOURY_HEGRENADE,
+	ARMOURY_KEVLAR,
+	ARMOURY_ASSAULT,
+	ARMOURY_SMOKEGRENADE,
+};
 
 typedef struct
 {
@@ -118,17 +142,28 @@ typedef struct
 class CArmoury: public CBaseEntity
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual void Restart(void);
-	NOBODY virtual void KeyValue(KeyValueData *pkvd);
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual void Restart(void);
+	virtual void KeyValue(KeyValueData *pkvd);
+
+#ifdef HOOK_GAMEDLL
+
+	void Spawn_(void);
+	void Precache_(void);
+	void Restart_(void);
+	void KeyValue_(KeyValueData *pkvd);
+
+#endif // HOOK_GAMEDLL
+
 public:
-	NOBODY void EXPORT ArmouryTouch(CBaseEntity *pOther);
+	void EXPORT ArmouryTouch(CBaseEntity *pOther);
 public:
 	int m_iItem;
 	int m_iCount;
 	int m_iInitialCount;
 	bool m_bAlreadyCounted;
+
 };/* size: 168, cachelines: 3, members: 5 */
 
 /* <14ed46> ../cstrike/dlls/weapons.h:56 */
@@ -252,11 +287,11 @@ public:
 class CBasePlayerItem: public CBaseAnimating
 {
 public:
-	NOBODY virtual int Save(CSave &save);
-	NOBODY virtual int Restore(CRestore &restore);
-	NOBODY virtual void SetObjectCollisionBox(void);
-	NOBODY virtual CBaseEntity *Respawn(void);
-	NOXREF virtual int AddToPlayer(CBasePlayer *pPlayer);
+	virtual int Save(CSave &save);
+	virtual int Restore(CRestore &restore);
+	virtual void SetObjectCollisionBox(void);
+	virtual CBaseEntity *Respawn(void);
+	virtual int AddToPlayer(CBasePlayer *pPlayer);
 	virtual int AddDuplicate(CBasePlayerItem *pItem)
 	{
 		return FALSE;
@@ -294,7 +329,7 @@ public:
 	virtual void Drop(void);
 	virtual void Kill(void);
 
-	NOBODY virtual void AttachToPlayer(CBasePlayer *pPlayer);
+	virtual void AttachToPlayer(CBasePlayer *pPlayer);
 	virtual int PrimaryAmmoIndex(void)
 	{
 		return -1;
@@ -351,11 +386,11 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	NOBODY void EXPORT DestroyItem(void);
+	void EXPORT DestroyItem(void);
 	void EXPORT DefaultTouch(CBaseEntity *pOther);
 	void EXPORT FallThink(void);
 	void EXPORT Materialize(void);
-	NOBODY void EXPORT AttemptToMaterialize(void);
+	void EXPORT AttemptToMaterialize(void);
 
 	void FallInit(void);
 	void CheckRespawn(void);
@@ -412,21 +447,21 @@ public:
 class CBasePlayerWeapon: public CBasePlayerItem
 {
 public:
-	NOBODY virtual int Save(CSave &save);
-	NOBODY virtual int Restore(CRestore &restore);
+	virtual int Save(CSave &save);
+	virtual int Restore(CRestore &restore);
 
 	virtual int AddToPlayer(CBasePlayer *pPlayer);
 	virtual int AddDuplicate(CBasePlayerItem *pItem);
-	NOBODY virtual BOOL CanDeploy(void);
+	virtual BOOL CanDeploy(void);
 	virtual BOOL IsWeapon(void)
 	{
 		return TRUE;
 	}
-	NOBODY virtual void Holster(int skiplocal = 0);
+	virtual void Holster(int skiplocal = 0);
 	virtual void UpdateItemInfo(void) {};
-	NOBODY virtual void ItemPostFrame(void);
-	NOBODY virtual int PrimaryAmmoIndex(void);
-	NOBODY virtual int SecondaryAmmoIndex(void);
+	virtual void ItemPostFrame(void);
+	virtual int PrimaryAmmoIndex(void);
+	virtual int SecondaryAmmoIndex(void);
 	virtual int UpdateClientData(CBasePlayer *pPlayer);
 	virtual CBasePlayerItem *GetWeaponPtr(void)
 	{
@@ -441,13 +476,13 @@ public:
 	}
 	virtual BOOL PlayEmptySound(void);
 	virtual void ResetEmptySound(void);
-	virtual void SendWeaponAnim(int iAnim,int skiplocal = 0);
-	NOBODY virtual BOOL IsUseable(void);
-	virtual void PrimaryAttack(void) {}
-	virtual void SecondaryAttack(void) {}
-	virtual void Reload(void) {}
-	virtual void WeaponIdle(void) {}
-	NOBODY virtual void RetireWeapon(void);
+	virtual void SendWeaponAnim(int iAnim, int skiplocal = 0);
+	virtual BOOL IsUseable(void);
+	virtual void PrimaryAttack(void) {};
+	virtual void SecondaryAttack(void) {};
+	virtual void Reload(void) {};
+	virtual void WeaponIdle(void) {};
+	virtual void RetireWeapon(void);
 	virtual BOOL ShouldWeaponIdle(void)
 	{
 		return FALSE;
@@ -473,26 +508,26 @@ public:
 	int ExtractClipAmmo_(CBasePlayerWeapon *pWeapon);
 	BOOL PlayEmptySound_(void);
 	void ResetEmptySound_(void);
-	void SendWeaponAnim_(int iAnim,int skiplocal = 0);
+	void SendWeaponAnim_(int iAnim, int skiplocal = 0);
 	BOOL IsUseable_(void);
 	void RetireWeapon_(void);
 
 #endif // HOOK_GAMEDLL
 
 public:
-	BOOL AddPrimaryAmmo(int iCount,char *szName,int iMaxClip,int iMaxCarry);
-	NOXREF BOOL AddSecondaryAmmo(int iCount,char *szName,int iMaxCarry);
-	BOOL DefaultDeploy(char *szViewModel,char *szWeaponModel,int iAnim,char *szAnimExt,int skiplocal = 0);
-	int DefaultReload(int iClipSize,int iAnim,float fDelay);
-	NOBODY void FireRemaining(int &shotsFired,float &shootTime,BOOL isGlock18);
-	NOBODY void KickBack(float up_base,float lateral_base,float up_modifier,float lateral_modifier,float up_max,float lateral_max,int direction_change);
-	NOBODY void EjectBrassLate(void);
-	NOBODY void MakeBeam(void);
-	NOBODY void BeamUpdate(void);
+	BOOL AddPrimaryAmmo(int iCount, char *szName, int iMaxClip, int iMaxCarry);
+	BOOL AddSecondaryAmmo(int iCount, char *szName, int iMaxCarry);
+	BOOL DefaultDeploy(char *szViewModel, char *szWeaponModel, int iAnim, char *szAnimExt, int skiplocal = 0);
+	int DefaultReload(int iClipSize, int iAnim, float fDelay);
+	void FireRemaining(int &shotsFired, float &shootTime, BOOL isGlock18);
+	void KickBack(float up_base, float lateral_base, float up_modifier, float lateral_modifier, float up_max, float lateral_max, int direction_change);
+	void EjectBrassLate(void);
+	NOXREF void MakeBeam(void);
+	NOXREF void BeamUpdate(void);
 	void ReloadSound(void);
 	float GetNextAttackDelay(float delay);
 	float GetNextAttackDelay2(float delay);
-	NOBODY bool HasSecondaryAttack(void);
+	bool HasSecondaryAttack(void);
 	BOOL IsPistol(void)
 	{
 		return FALSE;
@@ -502,7 +537,6 @@ public:
 	bool ShieldSecondaryFire(int iUpAnim,int iDownAnim);
 
 public:
-
 	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[7];
 
 	int m_iPlayEmptySound;
@@ -553,16 +587,15 @@ public:
 		return TRUE;
 	}
 	virtual CBaseEntity *Respawn(void);
+
+#ifdef HOOK_GAMEDLL
+	void Spawn_(void);
+	CBaseEntity *Respawn_(void);
+#endif // HOOK_GAMEDLL
+
 public:
 	void EXPORT DefaultTouch(CBaseEntity *pOther);
 	void EXPORT Materialize(void);
-
-#ifdef HOOK_GAMEDLL
-public:
-	void Spawn_(void);
-	//NOBODY BOOL AddAmmo_(CBaseEntity *pOther);
-	CBaseEntity *Respawn_(void);
-#endif // HOOK_GAMEDLL
 
 };/* size: 152, cachelines: 3, members: 1 */
 
@@ -570,13 +603,13 @@ public:
 class CWeaponBox: public CBaseEntity
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual void KeyValue(KeyValueData *pkvd);
-	NOBODY virtual int Save(CSave &save);
-	NOBODY virtual int Restore(CRestore &restore);
-	NOBODY virtual void SetObjectCollisionBox(void);
-	NOBODY virtual void Touch(CBaseEntity *pOther);
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual void KeyValue(KeyValueData *pkvd);
+	virtual int Save(CSave &save);
+	virtual int Restore(CRestore &restore);
+	virtual void SetObjectCollisionBox(void);
+	virtual void Touch(CBaseEntity *pOther);
 
 #ifdef HOOK_GAMEDLL
 
@@ -617,7 +650,7 @@ class CUSP: public CBasePlayerWeapon
 {
 public:
 	virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
+	virtual void Precache(void);
 	virtual int GetItemInfo(ItemInfo *p);
 	virtual BOOL Deploy(void);
 	virtual float GetMaxSpeed(void)
@@ -628,8 +661,8 @@ public:
 	{
 		return PISTOL_SLOT;
 	}
-	NOBODY virtual void PrimaryAttack(void);
-	NOBODY virtual void SecondaryAttack(void);
+	virtual void PrimaryAttack(void);
+	virtual void SecondaryAttack(void);
 	virtual void Reload(void);
 	virtual void WeaponIdle(void);
 	virtual BOOL UseDecrement(void)
@@ -640,43 +673,28 @@ public:
 	{
 		return TRUE;
 	}
+
+#ifdef HOOK_GAMEDLL
+
+	void Spawn_(void);
+	void Precache_(void);
+	int GetItemInfo_(ItemInfo *p);
+	BOOL Deploy_(void);
+	void PrimaryAttack_(void);
+	void SecondaryAttack_(void);
+	void Reload_(void);
+	void WeaponIdle_(void);
+
+#endif // HOOK_GAMEDLL
+
 public:
-	//TOOD: this func changed access to private?!
-	UNTESTED void USPFire(float flSpread,float flCycleTime,BOOL fUseSemi);
+	void USPFire(float flSpread,float flCycleTime,BOOL fUseSemi);
 	NOXREF void MakeBeam(void);
 	NOXREF void BeamUpdate(void);
 public:
 	int m_iShell;
 private:
 	unsigned short m_usFireUSP;
-
-#ifdef HOOK_GAMEDLL
-public:
-	void Spawn_(void);
-	void Precache_(void);
-	int GetItemInfo_(ItemInfo *p);
-	BOOL Deploy_(void);
-	float GetMaxSpeed_(void)
-	{
-		return m_fMaxSpeed;
-	}
-	int iItemSlot_(void)
-	{
-		return PISTOL_SLOT;
-	}
-	NOBODY void PrimaryAttack_(void);
-	NOBODY void SecondaryAttack_(void);
-	void Reload_(void);
-	void WeaponIdle_(void);
-	BOOL UseDecrement_(void)
-	{
-		return TRUE;
-	}
-	BOOL IsPistol_(void)
-	{
-		return TRUE;
-	}
-#endif // HOOK_GAMEDLL
 
 };/* size: 344, cachelines: 6, members: 3 */
 
@@ -710,6 +728,7 @@ public:
 	int iShellOn;
 private:
 	unsigned short m_usFireMP5N;
+
 };/* size: 348, cachelines: 6, members: 4 */
 
 /* <2a553c> ../cstrike/dlls/weapons.h:624 */
@@ -766,6 +785,19 @@ public:
 	{
 		return TRUE;
 	}
+#ifdef HOOK_GAMEDLL
+
+	void Spawn_(void);
+	void Precache_(void);
+	int GetItemInfo_(ItemInfo *p);
+	BOOL Deploy_(void);
+	void PrimaryAttack_(void);
+	void SecondaryAttack_(void);
+	void Reload_(void);
+	void WeaponIdle_(void);
+
+#endif // HOOK_GAMEDLL
+
 public:
 	NOBODY void AK47Fire(float flSpread,float flCycleTime,BOOL fUseAutoAim);
 
@@ -813,29 +845,59 @@ private:
 class CAWP: public CBasePlayerWeapon
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual int GetItemInfo(ItemInfo *p);
-	NOBODY virtual BOOL Deploy(void);
-	NOBODY virtual float GetMaxSpeed(void);
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual int GetItemInfo(ItemInfo *p);
+	virtual BOOL Deploy(void);
+	virtual float GetMaxSpeed(void);
 	virtual int iItemSlot(void)
 	{
 		return PRIMARY_WEAPON_SLOT;
 	}
-	NOBODY virtual void PrimaryAttack(void);
-	NOBODY virtual void SecondaryAttack(void);
-	NOBODY virtual void Reload(void);
-	NOBODY virtual void WeaponIdle(void);
+	virtual void PrimaryAttack(void);
+	virtual void SecondaryAttack(void);
+	virtual void Reload(void);
+	virtual void WeaponIdle(void);
 	virtual BOOL UseDecrement(void)
+	{
+	#ifdef CLIENT_WEAPONS
+		return TRUE;
+	#else
+		return FALSE;
+	#endif
+	}
+
+#ifdef HOOK_GAMEDLL
+
+	void Spawn_(void);
+	void Precache_(void);
+	int GetItemInfo_(ItemInfo *p);
+	BOOL Deploy_(void);
+	float GetMaxSpeed_(void);
+	int iItemSlot_(void)
+	{
+		return PRIMARY_WEAPON_SLOT;
+	}
+	void PrimaryAttack_(void);
+	void SecondaryAttack_(void);
+	void Reload_(void);
+	void WeaponIdle_(void);
+	BOOL UseDecrement_(void)
 	{
 		return TRUE;
 	}
+
+#endif // HOOK_GAMEDLL
+
 public:
-	NOBODY void AWPFire(float flSpread,float flCycleTime,BOOL fUseAutoAim);
+	void AWPFire(float flSpread,float flCycleTime,BOOL fUseAutoAim);
+
 public:
 	int m_iShell;
+
 private:
 	unsigned short m_usFireAWP;
+
 };/* size: 344, cachelines: 6, members: 3 */
 
 /* <245949> ../cstrike/dlls/weapons.h:721 */
@@ -1260,10 +1322,7 @@ public:
 	NOBODY virtual void Precache(void);
 	NOBODY virtual int GetItemInfo(ItemInfo *p);
 	NOBODY virtual BOOL Deploy(void);
-	virtual float GetMaxSpeed(void)
-	{
-		return 245.0f;
-	}
+	virtual float GetMaxSpeed(void);
 	virtual int iItemSlot(void)
 	{
 		return PRIMARY_WEAPON_SLOT;
@@ -1275,6 +1334,20 @@ public:
 	{
 		return TRUE;
 	}
+
+#ifdef HOOK_GAMEDLL
+
+	void Spawn_(void);
+	void Precache_(void);
+	int GetItemInfo_(ItemInfo *p);
+	BOOL Deploy_(void);
+	float GetMaxSpeed_(void);
+	void PrimaryAttack_(void);
+	void Reload_(void);
+	void WeaponIdle_(void);
+
+#endif // HOOK_GAMEDLL
+
 public:
 	NOBODY void P90Fire(float flSpread,float flCycleTime,BOOL fUseAutoAim);
 public:
@@ -1307,10 +1380,13 @@ public:
 	}
 public:
 	NOBODY void SCOUTFire(float flSpread,float flCycleTime,BOOL fUseAutoAim);
+
 public:
 	int m_iShell;
+
 private:
 	unsigned short m_usFireScout;
+
 };/* size: 344, cachelines: 6, members: 3 */
 
 /* <2aa3d5> ../cstrike/dlls/weapons.h:1089 */
@@ -1666,16 +1742,21 @@ void ApplyMultiDamage(entvars_t *pevInflictor, entvars_t *pevAttacker);
 void AddMultiDamage(entvars_t *pevInflictor, CBaseEntity *pEntity, float flDamage, int bitsDamageType);
 void SpawnBlood(Vector vecSpot, int bloodColor, float flDamage);
 NOXREF int DamageDecal(CBaseEntity *pEntity, int bitsDamageType);
-NOXREF void DecalGunshot(TraceResult *pTrace, int iBulletType, bool ClientOnly, entvars_t *pShooter, bool bHitMetal);
-NOBODY void EjectBrass(Vector &vecOrigin, Vector &vecLeft, Vector &vecVelocity, float rotation, int model, int soundtype, int entityIndex);
-NOBODY void EjectBrass2(Vector &vecOrigin, Vector &vecVelocity, float rotation, int model, int soundtype, entvars_t *pev);
-NOXREF void AddAmmoNameToAmmoRegistry(const char *szAmmoname);
+void DecalGunshot(TraceResult *pTrace, int iBulletType, bool ClientOnly, entvars_t *pShooter, bool bHitMetal);
+void EjectBrass(const Vector &vecOrigin, const Vector &vecLeft, const Vector &vecVelocity, float rotation, int model, int soundtype, int entityIndex);
+NOXREF void EjectBrass2(const Vector &vecOrigin, const Vector &vecVelocity, float rotation, int model, int soundtype, entvars_t *pev);
+void AddAmmoNameToAmmoRegistry(const char *szAmmoname);
 void UTIL_PrecacheOtherWeapon(const char *szClassname);
 NOXREF void UTIL_PrecacheOtherWeapon2(const char *szClassname);
 void W_Precache(void);
-NOXREF BOOL CanAttack(float attack_time, float curtime, BOOL isPredicted);
+BOOL CanAttack(float attack_time, float curtime, BOOL isPredicted);
 
 // linked object
+C_DLLEXPORT void weapon_knife(entvars_t *pev);
 C_DLLEXPORT void weapon_usp(entvars_t *pev);
+C_DLLEXPORT void weapon_awp(entvars_t *pev);
+C_DLLEXPORT void armoury_entity(entvars_t *pev);
+C_DLLEXPORT void weaponbox(entvars_t *pev);
+C_DLLEXPORT void weapon_p90(entvars_t *pev);
 
 #endif // WEAPONS_H

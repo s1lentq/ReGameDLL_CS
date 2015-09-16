@@ -120,7 +120,7 @@ NOXREF void SharedSetQuoteChar(char c)
 /* <2d4de7> ../game_shared/shared_util.cpp:173 */
 NOBODY const char *SharedParse(const char *data)
 {
-//	
+//
 //skipwhite:                                                            //   185
 //	{
 //		int c;                                                //   175

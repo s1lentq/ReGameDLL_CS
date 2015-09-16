@@ -2,6 +2,36 @@
 
 std::ofstream g_ReGameDLLDebugLog;
 
+void Regamedll_Debug_logAlloc(size_t sz, void *ptr)
+{
+	g_ReGameDLLDebugLog << "malloc(" << sz << ") => " << std::hex << (size_t)ptr << "\n";
+	g_ReGameDLLDebugLog.flush();
+}
+
+void Regamedll_Debug_logRealloc(size_t sz, void *oldPtr, void *newPtr)
+{
+	g_ReGameDLLDebugLog << "realloc(" << std::hex << (size_t)oldPtr << ", " << sz << ") => " << std::hex << (size_t)newPtr << "\n";
+	g_ReGameDLLDebugLog.flush();
+}
+
+void Regamedll_Debug_logFree(void *ptr)
+{
+	g_ReGameDLLDebugLog << "free(" << std::hex << (size_t)ptr << ")\n";
+	g_ReGameDLLDebugLog.flush();
+}
+
+void Regamedll_Debug_logStrDup(const char *s, void *ptr)
+{
+	g_ReGameDLLDebugLog << "strdup(" << std::hex << (size_t)ptr << ") => " << s << "\n";
+	g_ReGameDLLDebugLog.flush();
+}
+
+void Regamedll_Debug_Init(void)
+{
+	//g_ReGameDLLDebugLog.exceptions(std::ios::badbit | std::ios::failbit);
+	//g_ReGameDLLDebugLog.open("d:\\REGAME_SERVER\\regamedll_debug.log", std::ios::out | std::ios::binary);
+}
+
 void _print_chat(class CBasePlayer *pPlayer, const char *fmt, ...)
 {
 	static char Dest[4096];
@@ -41,44 +71,17 @@ void _printf2(const char *fmt, ...)
 	SERVER_PRINT(Dest);
 }
 
-void Regamedll_Debug_logAlloc(size_t sz, void *ptr)
-{
-	g_ReGameDLLDebugLog << "malloc(" << sz << ") => " << std::hex << (size_t)ptr << "\n";
-	g_ReGameDLLDebugLog.flush();
-}
-
-void Regamedll_Debug_logRealloc(size_t sz, void *oldPtr, void *newPtr)
-{
-	g_ReGameDLLDebugLog << "realloc(" << std::hex << (size_t)oldPtr << ", " << sz << ") => " << std::hex << (size_t)newPtr << "\n";
-	g_ReGameDLLDebugLog.flush();
-}
-
-void Regamedll_Debug_logFree(void *ptr)
-{
-	g_ReGameDLLDebugLog << "free(" << std::hex << (size_t)ptr << ")\n";
-	g_ReGameDLLDebugLog.flush();
-}
-
-void Regamedll_Debug_logStrDup(const char *s, void *ptr)
-{
-	g_ReGameDLLDebugLog << "strdup(" << std::hex << (size_t)ptr << ") => " << s << "\n";
-	g_ReGameDLLDebugLog.flush();
-}
-
-#if defined(_WIN32) && !defined(REGAMEDLL_UNIT_TESTS)
-
+#if defined(HOOK_GAMEDLL) && !defined(REGAMEDLL_UNIT_TESTS)
 extern int nCountHook;
 
 void Regamedll_Game_Init(void)
 {
-	if (!g_ReGameDLLRuntimeConfig.disableAllHooks)
-		printf2("[Hooker]: The total number hooks of functions is - %d", nCountHook);
-}
+#ifdef _WIN32
+	if (g_ReGameDLLRuntimeConfig.disableAllHooks)
+		return;
+#endif // _WIN32
 
-#endif // _WIN32 && REGAMEDLL_UNIT_TESTS
-
-void Regamedll_Debug_Init(void)
-{
-	//g_ReGameDLLDebugLog.exceptions(std::ios::badbit | std::ios::failbit);
-	//g_ReGameDLLDebugLog.open("d:\\REGAME_SERVER\\regamedll_debug.log", std::ios::out | std::ios::binary);
+	_printf2("[Hooker]: The total number hooks of functions is - %d", nCountHook);
 }
+#endif // HOOK_GAMEDLL
+

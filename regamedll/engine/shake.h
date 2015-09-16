@@ -38,6 +38,7 @@ typedef struct
 	unsigned short amplitude;		// FIXED 4.12 amount of shake
 	unsigned short duration;		// FIXED 4.12 seconds duration
 	unsigned short frequency;		// FIXED 8.8 noise frequency (low frequency is a jerk,high frequency is a rumble)
+
 } ScreenShake;
 
 #define FFADE_IN		0x0000		// Just here so we don't pass 0 into the function
@@ -52,6 +53,7 @@ typedef struct
 	unsigned short holdTime;		// FIXED 4.12 seconds duration until reset (fade & hold)
 	short fadeFlags;			// flags
 	byte r,g,b,a;				// fade to color ( max alpha )
+
 } ScreenFade;
 
 #endif // SHAKE_H

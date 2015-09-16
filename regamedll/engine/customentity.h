@@ -38,7 +38,7 @@
 #define BEAMENT_ATTACHMENT(x)		(((x)>>12) & 0xF)
 
 // Beam types, encoded as a byte
-enum 
+enum
 {
 	BEAM_POINTS = 0,
 	BEAM_ENTPOINT,

@@ -36,7 +36,7 @@
 class CNullEntity: public CBaseEntity
 {
 public:
-	NOBODY virtual void Spawn(void);
+	virtual void Spawn(void);
 
 #ifdef HOOK_GAMEDLL
 
@@ -50,8 +50,8 @@ public:
 class CBaseDMStart: public CPointEntity
 {
 public:
-	NOBODY virtual void KeyValue(KeyValueData *pkvd);
-	NOBODY virtual BOOL IsTriggered(CBaseEntity *pEntity);
+	virtual void KeyValue(KeyValueData *pkvd);
+	virtual BOOL IsTriggered(CBaseEntity *pEntity);
 
 #ifdef HOOK_GAMEDLL
 
@@ -64,6 +64,16 @@ public:
 
 void FireTargets(const char *targetName, CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 void SetMovedir(entvars_t *pev);
-NOBODY BOOL FEntIsVisible(entvars_t *pev, entvars_t *pevTarget);
+NOXREF BOOL FEntIsVisible(entvars_t *pev, entvars_t *pevTarget);
+
+// linked objects
+C_DLLEXPORT void info_null(entvars_t *pev);
+C_DLLEXPORT void info_player_deathmatch(entvars_t *pev);
+C_DLLEXPORT void info_player_start(entvars_t *pev);
+C_DLLEXPORT void info_vip_start(entvars_t *pev);
+C_DLLEXPORT void info_landmark(entvars_t *pev);
+C_DLLEXPORT void info_hostage_rescue(entvars_t *pev);
+C_DLLEXPORT void info_bomb_target(entvars_t *pev);
+C_DLLEXPORT void DelayedUse(entvars_t *pev);
 
 #endif // SUBS_H

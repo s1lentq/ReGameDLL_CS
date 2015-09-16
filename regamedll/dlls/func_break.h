@@ -35,6 +35,15 @@
 // this many shards spawned when breakable objects break;
 #define NUM_SHARDS 6
 
+// func breakable
+#define SF_BREAK_TRIGGER_ONLY		1	// may only be broken by trigger
+#define	SF_BREAK_TOUCH			2	// can be 'crashed through' by running player (plate glass)
+#define SF_BREAK_PRESSURE		4	// can be broken by a player standing on it
+#define SF_BREAK_CROWBAR		256	// instant break if hit with crowbar
+
+// func_pushable (it's also func_breakable, so don't collide with those flags)
+#define SF_PUSH_BREAKABLE		128
+
 typedef enum
 {
 	expRandom = 0,
@@ -75,25 +84,25 @@ class CBreakable: public CBaseDelay
 {
 public:
 	// basic functions
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual void Restart(void);
-	NOBODY virtual void KeyValue(KeyValueData *pkvd);
-	NOBODY virtual int Save(CSave &save);
-	NOBODY virtual int Restore(CRestore &restore);
-	NOBODY virtual int ObjectCaps(void)
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual void Restart(void);
+	virtual void KeyValue(KeyValueData *pkvd);
+	virtual int Save(CSave &save);
+	virtual int Restore(CRestore &restore);
+	virtual int ObjectCaps(void)
 	{
 		return ObjectCaps_();
 	}
 
 	// To spark when hit
-	NOBODY virtual void TraceAttack(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType);
+	virtual void TraceAttack(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType);
 
 	// breakables use an overridden takedamage
-	NOBODY virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
+	virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
 
-	NOBODY virtual int DamageDecal(int bitsDamageType);
-	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	virtual int DamageDecal(int bitsDamageType);
+	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
 
@@ -115,14 +124,14 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	NOBODY void EXPORT BreakTouch(CBaseEntity *pOther);
-	NOBODY void DamageSound(void);
+	void EXPORT BreakTouch(CBaseEntity *pOther);
+	void DamageSound(void);
 
-	NOBODY BOOL IsBreakable(void);
-	NOBODY BOOL SparkWhenHit(void);
+	BOOL IsBreakable(void);
+	NOXREF BOOL SparkWhenHit(void);
 
-	NOBODY void EXPORT Die(void);
-	
+	void EXPORT Die(void);
+
 	inline BOOL Explodable(void)
 	{
 		return ExplosionMagnitude() > 0;
@@ -164,19 +173,19 @@ public:
 class CPushable: public CBreakable
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual void KeyValue(KeyValueData *pkvd);
-	NOBODY virtual int Save(CSave &save);
-	NOBODY virtual int Restore(CRestore &restore);
-	NOBODY virtual int ObjectCaps(void)
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual void KeyValue(KeyValueData *pkvd);
+	virtual int Save(CSave &save);
+	virtual int Restore(CRestore &restore);
+	virtual int ObjectCaps(void)
 	{
 		return ObjectCaps_();
 	}
-	NOBODY virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
-	NOBODY virtual void Touch(CBaseEntity *pOther);
-	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-	
+	virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
+	virtual void Touch(CBaseEntity *pOther);
+	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+
 #ifdef HOOK_GAMEDLL
 
 	void Spawn_(void);
@@ -195,8 +204,17 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	NOBODY void Move(CBaseEntity *pMover, int push);
-	NOBODY void EXPORT StopSound(void);
+	void Move(CBaseEntity *pMover, int push);
+	void EXPORT StopSound(void)
+	{
+#if 0
+		Vector dist = pev->oldorigin - pev->origin;
+		if (dist.Length() <= 0)
+		{
+			STOP_SOUND(ENT(pev), CHAN_WEAPON, m_soundNames[m_lastSound]);
+		}
+#endif
+	}
 	inline float MaxSpeed(void)
 	{
 		return m_maxSpeed;
@@ -213,5 +231,9 @@ public:
 	float m_soundTime;
 
 };/* size: 200, cachelines: 4, members: 6 */
+
+// linked objects
+C_DLLEXPORT void func_breakable(entvars_t *pev);
+C_DLLEXPORT void func_pushable(entvars_t *pev);
 
 #endif // FUNC_BREAK_H

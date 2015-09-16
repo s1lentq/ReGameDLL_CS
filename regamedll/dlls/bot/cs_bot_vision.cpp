@@ -6,7 +6,7 @@
 float StayOnLadderLine(CCSBot *me, const CNavLadder *ladder)
 {
 	// determine our facing
-	NavDirType faceDir = AngleToDirection( me->pev->v_angle.y );
+	NavDirType faceDir = AngleToDirection(me->pev->v_angle.y);
 	const float stiffness = 1.0f;
 
 	// move toward ladder mount point
@@ -61,11 +61,11 @@ void __declspec(naked) CCSBot::UpdateLookAngles(void)
 	//{
 	//	NavDirType faceDir = m_pathLadder->m_dir;
 	//	Vector to = m_pathLadder->m_top - pev->origin;
-	//	float idealYaw = UTIL_VecToYaw( to );
+	//	float idealYaw = UTIL_VecToYaw(to);
 
 	//	if (m_pathLadderFaceIn)
 	//	{
-	//		faceDir = OppositeDirection( faceDir );
+	//		faceDir = OppositeDirection(faceDir);
 	//	}
 
 	//	switch (m_pathLadderState)
@@ -73,7 +73,7 @@ void __declspec(naked) CCSBot::UpdateLookAngles(void)
 	//		case APPROACH_ASCENDING_LADDER:
 	//		{
 	//			Vector to = m_goalPosition - pev->origin;
-	//			if (to.IsLengthLessThan( lookAlongLadderRange ))
+	//			if (to.IsLengthLessThan(lookAlongLadderRange))
 	//				usePitch = -ladderPitch;
 	//			useYaw = idealYaw;
 	//			break;
@@ -81,7 +81,7 @@ void __declspec(naked) CCSBot::UpdateLookAngles(void)
 	//		case APPROACH_DESCENDING_LADDER:
 	//		{
 	//			Vector to = m_goalPosition - pev->origin;
-	//			if (to.IsLengthLessThan( lookAlongLadderRange ))
+	//			if (to.IsLengthLessThan(lookAlongLadderRange))
 	//				usePitch = ladderPitch;
 	//			useYaw = idealYaw;
 	//			break;
@@ -101,21 +101,21 @@ void __declspec(naked) CCSBot::UpdateLookAngles(void)
 	//		case MOUNT_ASCENDING_LADDER:
 	//		case ASCEND_LADDER:
 	//		{
-	//			useYaw = DirectionToAngle( faceDir ) + StayOnLadderLine(this, m_pathLadder);
+	//			useYaw = DirectionToAngle(faceDir) + StayOnLadderLine(this, m_pathLadder);
 	//			usePitch = -ladderPitch;
 	//			break;
 	//		}
 	//		case MOUNT_DESCENDING_LADDER:
 	//		case DESCEND_LADDER:
 	//		{
-	//			useYaw = DirectionToAngle( faceDir ) + StayOnLadderLine(this, m_pathLadder);
+	//			useYaw = DirectionToAngle(faceDir) + StayOnLadderLine(this, m_pathLadder);
 	//			usePitch = ladderPitch;
 	//			break;
 	//		}
 	//		case DISMOUNT_ASCENDING_LADDER:
 	//		case DISMOUNT_DESCENDING_LADDER:
 	//		{
-	//			useYaw = DirectionToAngle( faceDir );
+	//			useYaw = DirectionToAngle(faceDir);
 	//			break;
 	//		}
 	//	}
@@ -123,7 +123,7 @@ void __declspec(naked) CCSBot::UpdateLookAngles(void)
 
 	//// if almost at target angle, snap to it
 	//const float onTargetTolerance = 1.0f;
-	//float angleDiff = NormalizeAngle( useYaw - pev->v_angle.y );
+	//float angleDiff = NormalizeAngle(useYaw - pev->v_angle.y);
 
 	//if (angleDiff < onTargetTolerance && angleDiff > -onTargetTolerance)
 	//{
@@ -147,7 +147,7 @@ void __declspec(naked) CCSBot::UpdateLookAngles(void)
 	//	pev->v_angle.y += (deltaT * m_lookYawVel);
 	//}
 
-	//angleDiff = NormalizeAngle( usePitch - pev->v_angle.x );
+	//angleDiff = NormalizeAngle(usePitch - pev->v_angle.x);
 
 	//// simple angular spring/damper
 	//// double the stiffness since pitch is only +/- 90 and yaw is +/- 180
@@ -216,7 +216,7 @@ bool CCSBot::__MAKE_VHOOK(IsEnemyPartVisible)(VisiblePartType part) const
 void CCSBot::UpdateLookAt(void)
 {
 	Vector to = m_lookAtSpot - EyePosition();
-	Vector idealAngle = UTIL_VecToAngles( to );
+	Vector idealAngle = UTIL_VecToAngles(to);
 	idealAngle.x = 360.0f - idealAngle.x;
 
 	SetLookAngles(idealAngle.y, idealAngle.x);
@@ -234,7 +234,7 @@ void CCSBot::SetLookAt(const char *desc, const Vector *pos, PriorityType pri, fl
 
 	// if already looking at this spot, just extend the time
 	const float tolerance = 10.0f;
-	if (m_lookAtSpotState != NOT_LOOKING_AT_SPOT && VectorsAreEqual( pos, &m_lookAtSpot, tolerance ))
+	if (m_lookAtSpotState != NOT_LOOKING_AT_SPOT && VectorsAreEqual(pos, &m_lookAtSpot, tolerance))
 	{
 		m_lookAtSpotDuration = duration;
 
@@ -244,7 +244,7 @@ void CCSBot::SetLookAt(const char *desc, const Vector *pos, PriorityType pri, fl
 	else
 	{
 		// look at new spot
-		m_lookAtSpot = *pos; 
+		m_lookAtSpot = *pos;
 		m_lookAtSpotState = LOOK_TOWARDS_SPOT;
 		m_lookAtSpotDuration = duration;
 		m_lookAtSpotPriority = pri;

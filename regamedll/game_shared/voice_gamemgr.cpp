@@ -60,7 +60,7 @@ bool CVoiceGameMgr::Init(IVoiceGameMgrHelper *pHelper, int maxClients)
 
 	m_msgPlayerVoiceMask = REG_USER_MSG("VoiceMask", VOICE_MAX_PLAYERS_DW * 4 * 2);
 	m_msgRequestState = REG_USER_MSG("ReqState", 0);
-	
+
 	// register voice_serverdebug if it hasn't been registered already
 	if (!CVAR_GET_POINTER("voice_serverdebug"))
 		CVAR_REGISTER(&voice_serverdebug);
@@ -173,7 +173,7 @@ void CVoiceGameMgr::UpdateMasks(void)
 
 		if (!pEnt || !pEnt->IsPlayer())
 			continue;
-		
+
 		CBasePlayer *pPlayer = (CBasePlayer *)pEnt;
 		CPlayerBitVec gameRulesMask;
 

@@ -453,7 +453,7 @@ void CHostage::NavReady(void)
 
 	pFollowing = GetClassPtr((CBaseEntity *)m_hTargetEnt->pev);
 	vecDest = pFollowing->pev->origin;
-	
+
 	if (!(pFollowing->pev->flags & FL_ONGROUND))
 	{
 		TraceResult tr;

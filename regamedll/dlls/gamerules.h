@@ -56,7 +56,7 @@
 // longest the intermission can last, in seconds
 #define MAX_INTERMISSION_TIME		120
 
-// when we are within this close to running out of entities,  items 
+// when we are within this close to running out of entities,  items
 // marked with the ITEM_FLAG_LIMITINWORLD will delay their respawn
 #define ENTITY_INTOLERANCE		100
 
@@ -122,6 +122,7 @@ enum RewardAccount
 	REWARD_RESCUED_HOSTAGE		= 750,
 	REWARD_KILLED_ENEMY		= 300,
 	REWARD_KILLED_VIP		= 2500,
+	REWARD_VIP_HAVE_SELF_RESCUED	= 2500,
 
 };
 
@@ -137,7 +138,7 @@ enum InfoMapBuyParam
 	BUYING_EVERYONE = 0,
 	BUYING_ONLY_CTS,
 	BUYING_ONLY_TERRORISTS,
-	BUYING_NO_ONE,	
+	BUYING_NO_ONE,
 };
 
 enum
@@ -192,7 +193,7 @@ public:
 	virtual BOOL ClientConnected(edict_t *pEntity, const char *pszName, const char *pszAddress, char *szRejectReason) = 0;
 	virtual void InitHUD(CBasePlayer *pl) = 0;
 	virtual void ClientDisconnected(edict_t *pClient) = 0;
-	virtual void UpdateGameMode(CBasePlayer *pPlayer) {}
+	virtual void UpdateGameMode(CBasePlayer *pPlayer) {};
 	virtual float FlPlayerFallDamage(CBasePlayer *pPlayer) = 0;
 	virtual BOOL FPlayerCanTakeDamage(CBasePlayer *pPlayer, CBaseEntity *pAttacker)
 	{
@@ -219,7 +220,7 @@ public:
 	{
 		return ClientCommand_(pPlayer, pcmd);
 	}
-	virtual void ClientUserInfoChanged(CBasePlayer *pPlayer, char *infobuffer) {}
+	virtual void ClientUserInfoChanged(CBasePlayer *pPlayer, char *infobuffer) {};
 	virtual int IPointsForKill(CBasePlayer *pAttacker, CBasePlayer *pKilled) = 0;
 	virtual void PlayerKilled(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor) = 0;
 	virtual void DeathNotice(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pevInflictor) = 0;
@@ -260,7 +261,7 @@ public:
 	{
 		return IsValidTeam_(pTeamName);
 	}
-	virtual void ChangePlayerTeam(CBasePlayer *pPlayer, const char *pTeamName, BOOL bKill, BOOL bGib) {}
+	virtual void ChangePlayerTeam(CBasePlayer *pPlayer, const char *pTeamName, BOOL bKill, BOOL bGib) {};
 	virtual const char *SetDefaultPlayerTeam(CBasePlayer *pPlayer)
 	{
 		return SetDefaultPlayerTeam_(pPlayer);
@@ -270,13 +271,13 @@ public:
 		return PlayTextureSounds_();
 	}
 	virtual BOOL FAllowMonsters(void) = 0;
-	virtual void EndMultiplayerGame(void) {}
+	virtual void EndMultiplayerGame(void) {};
 	virtual BOOL IsFreezePeriod(void)
 	{
 		return IsFreezePeriod_();
 	}
-	virtual void ServerDeactivate(void) {}
-	virtual void CheckMapConditions(void) {}
+	virtual void ServerDeactivate(void) {};
+	virtual void CheckMapConditions(void) {};
 
 #ifdef HOOK_GAMEDLL
 

@@ -12,7 +12,7 @@ TYPEDESCRIPTION CAirtank::m_SaveData[] =
 
 #else
 
-TYPEDESCRIPTION (*CAirtank::pm_SaveData)[1];
+TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CAirtank, m_SaveData)[1];
 
 #endif // HOOK_GAMEDLL
 

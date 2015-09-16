@@ -64,7 +64,7 @@ public:
 	{
 		return m_next;
 	}
-	
+
 	// create a connection FROM this node TO the given node, in the given direction
 	void ConnectTo(CNavNode *node, NavDirType dir);
 	CNavNode *GetParent(void) const;
@@ -88,8 +88,8 @@ public:
 	// assign the given area to this node
 	void AssignArea(CNavArea *area);
 
-	// return associated area						
-	CNavArea *GetArea(void) const;							
+	// return associated area
+	CNavArea *GetArea(void) const;
 
 	void SetAttributes(unsigned char bits)
 	{

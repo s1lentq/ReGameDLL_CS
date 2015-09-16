@@ -43,7 +43,7 @@ const TaskInfo taskInfo[21];
 CCareerTask *CPreventDefuseTask::NewTask(const char *taskName, GameEventType event, const char *weaponName, int n, bool mustLive, bool crossRounds, int id, bool isComplete)
 {
 	CPreventDefuseTask *pNewTask = new CPreventDefuseTask(taskName, event, weaponName, n, mustLive, crossRounds, id, isComplete);
-	
+
 	pNewTask->m_bombPlantedThisRound = false;
 	pNewTask->m_defuseStartedThisRound = false;
 
@@ -54,7 +54,7 @@ CCareerTask *CPreventDefuseTask::NewTask(const char *taskName, GameEventType eve
 CPreventDefuseTask::CPreventDefuseTask(const char *taskName, GameEventType event, const char *weaponName, int n, bool mustLive, bool crossRounds, int id, bool isComplete)
 {
 	CCareerTask(taskName, event, weaponName, n, mustLive, crossRounds, id, isComplete);
-	
+
 	m_bombPlantedThisRound = false;
 	m_defuseStartedThisRound = false;
 }
@@ -202,7 +202,7 @@ void CCareerTask::OnWeaponKill(int weaponId, int weaponClassId, bool headshot, b
 		}
 
 		if (!hostages_)
-			return;	
+			return;
 	}
 
 	if (m_weaponId == WEAPON_SHIELDGUN)
@@ -365,7 +365,7 @@ void CCareerTask::__MAKE_VHOOK(OnEvent)(GameEventType event, CBasePlayer *pVicti
 	if (event == m_event && !m_mustLive && m_eventsSeen >= m_eventsNeeded && IsTaskCompletableThisRound())
 	{
 		CBasePlayer *player = UTIL_GetLocalPlayer();
-		EMIT_SOUND(ENT(player->pev), CHAN_VOICE, "events/task_complete.wav", VOL_NORM, ATTN_NORM); 
+		EMIT_SOUND(ENT(player->pev), CHAN_VOICE, "events/task_complete.wav", VOL_NORM, ATTN_NORM);
 
 		m_isComplete = true;
 		MESSAGE_BEGIN(MSG_ALL, gmsgCZCareer);
@@ -395,14 +395,14 @@ void CCareerTask::__MAKE_VHOOK(OnEvent)(GameEventType event, CBasePlayer *pVicti
 				m_eventsSeen = 0;
 				SendPartialNotification();
 				m_diedThisRound = true;
-			}		
+			}
 		}
 		else if (m_mustLive)
 		{
 			if (m_eventsSeen >= m_eventsNeeded && !m_diedThisRound && IsTaskCompletableThisRound())
 			{
 				CBasePlayer *player = UTIL_GetLocalPlayer();
-				EMIT_SOUND(ENT(player->pev), CHAN_VOICE, "events/task_complete.wav", VOL_NORM, ATTN_NORM); 
+				EMIT_SOUND(ENT(player->pev), CHAN_VOICE, "events/task_complete.wav", VOL_NORM, ATTN_NORM);
 
 				m_isComplete = true;
 				MESSAGE_BEGIN(MSG_ALL, gmsgCZCareer);
@@ -614,7 +614,7 @@ void CCareerTaskManager::HandleDeath(int team, CBasePlayer *pAttacker)
 
 	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{
-		CBasePlayer *pPlayer = (CBasePlayer *)UTIL_PlayerByIndex( i );
+		CBasePlayer *pPlayer = (CBasePlayer *)UTIL_PlayerByIndex(i);
 
 		if (pPlayer && pPlayer->m_iTeam == enemyTeam && pPlayer->IsAlive())
 			++numEnemies;

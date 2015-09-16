@@ -39,9 +39,6 @@
 #undef CREATE_NAMED_ENTITY
 #undef REMOVE_ENTITY
 
-//#define CAREER_MODE_DELETED_SCENE 1	// ??
-#define CAREER_MODE_CAMPAIGN 2
-
 #define FCAP_CUSTOMSAVE			0x00000001
 #define FCAP_ACROSS_TRANSITION		0x00000002
 #define FCAP_MUST_SPAWN			0x00000004
@@ -222,6 +219,7 @@ typedef enum
 	USE_ON,
 	USE_SET,
 	USE_TOGGLE,
+
 } USE_TYPE;
 
 typedef enum
@@ -298,37 +296,6 @@ private:
 
 };/* size: 8, cachelines: 1, members: 2 */
 
-typedef struct dynpitchvol
-{
-	int preset;
-	int pitchrun;
-	int pitchstart;
-	int spinup;
-	int spindown;
-	int volrun;
-	int volstart;
-	int fadein;
-	int fadeout;
-	int lfotype;
-	int lforate;
-	int lfomodpitch;
-	int lfomodvol;
-	int cspinup;
-	int cspincount;
-	int pitch;
-	int spinupsav;
-	int spindownsav;
-	int pitchfrac;
-	int vol;
-	int fadeinsav;
-	int fadeoutsav;
-	int volfrac;
-	int lfofrac;
-	int lfomult;
-
-} dynpitchvol_t;
-/* size: 100, cachelines: 2, members: 25 */
-
 /* <48e9c1> ../cstrike/dlls/cbase.h:166 */
 class CBaseEntity
 {
@@ -340,8 +307,8 @@ public:
 	{
 		pkvd->fHandled = FALSE;
 	}
-	NOBODY virtual int Save(CSave &save);
-	NOBODY virtual int Restore(CRestore &restore);
+	virtual int Save(CSave &save);
+	virtual int Restore(CRestore &restore);
 	virtual int ObjectCaps(void)
 	{
 		return FCAP_ACROSS_TRANSITION;
@@ -381,17 +348,17 @@ public:
 	{
 		return GetToggleState_();
 	}
-	virtual void AddPoints(int score, BOOL bAllowNegativeScore) {}		// __stdcall
-	virtual void AddPointsToTeam(int score, BOOL bAllowNegativeScore) {}	// __stdcall
+	virtual void AddPoints(int score, BOOL bAllowNegativeScore) {}
+	virtual void AddPointsToTeam(int score, BOOL bAllowNegativeScore) {}
 	virtual BOOL AddPlayerItem(CBasePlayerItem *pItem)
 	{
 		return FALSE;
 	}
-	virtual BOOL RemovePlayerItem(CBasePlayerItem *pItem)			// __stdcall
+	virtual BOOL RemovePlayerItem(CBasePlayerItem *pItem)
 	{
 		return FALSE;
 	}
-	virtual int GiveAmmo(int iAmount, char *szName, int iMax)		// __stdcall
+	virtual int GiveAmmo(int iAmount, char *szName, int iMax)
 	{
 		return -1;
 	}
@@ -449,22 +416,30 @@ public:
 	virtual void Think(void)
 	{
 		if (m_pfnThink)
+		{
 			(this->*m_pfnThink)();
+		}
 	}
 	virtual void Touch(CBaseEntity *pOther)
 	{
 		if (m_pfnTouch)
+		{
 			(this->*m_pfnTouch)(pOther);
+		}
 	}
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType = USE_OFF, float value = 0.0f)
 	{
 		if (m_pfnUse)
+		{
 			(this->*m_pfnUse)(pActivator, pCaller, useType, value);
+		}
 	}
 	virtual void Blocked(CBaseEntity *pOther)
 	{
 		if (m_pfnBlocked)
+		{
 			(this->*m_pfnBlocked)(pOther);
+		}
 	}
 	virtual CBaseEntity *Respawn(void)
 	{
@@ -496,15 +471,15 @@ public:
 		return GETENTITYILLUM(ENT(pev));
 	}
 
-	NOBODY virtual BOOL FVisible(CBaseEntity *pEntity);
-	NOBODY virtual BOOL FVisible(Vector &vecOrigin);
+	virtual BOOL FVisible(CBaseEntity *pEntity);
+	virtual BOOL FVisible(const Vector &vecOrigin);
 
 #ifdef HOOK_GAMEDLL
 
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
 	void SetObjectCollisionBox_(void);
-	void DeathNotice_(entvars_t *pevChild) { }
+	void DeathNotice_(entvars_t *pevChild) {}
 	void TraceAttack_(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType);
 	int TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
 	int TakeHealth_(float flHealth, int bitsDamageType);
@@ -526,7 +501,7 @@ public:
 		return Center();
 	}
 	BOOL FVisible_(CBaseEntity *pEntity);
-	BOOL FVisible_(Vector &vecOrigin);
+	BOOL FVisible_(const Vector &vecOrigin);
 
 #endif // HOOK_GAMEDLL
 
@@ -548,8 +523,8 @@ public:
 	{
 		Use(this, this, USE_TOGGLE, 0);
 	}
-	NOBODY int ShouldToggle(USE_TYPE useType, BOOL currentState);
-	NOBODY void FireBullets(ULONG cShots, Vector vecSrc, Vector vecDirShooting, Vector vecSpread, float flDistance, int iBulletType, int iTracerFreq = 4, int iDamage = 0, entvars_t *pevAttacker = NULL);
+	int ShouldToggle(USE_TYPE useType, BOOL currentState);
+	void FireBullets(ULONG cShots, Vector vecSrc, Vector vecDirShooting, Vector vecSpread, float flDistance, int iBulletType, int iTracerFreq = 4, int iDamage = 0, entvars_t *pevAttacker = NULL);
 	Vector FireBullets3(Vector vecSrc, Vector vecDirShooting, float vecSpread, float flDistance, int iPenetration, int iBulletType, int iDamage, float flRangeModifier, entvars_t *pevAttacker, bool bPistol, int shared_rand = 0);
 	void SUB_UseTargets(CBaseEntity *pActivator, USE_TYPE useType, float value);
 	int Intersects(CBaseEntity *pOther);
@@ -665,8 +640,8 @@ inline int FNullEnt(EHANDLE hent)
 class CPointEntity: public CBaseEntity
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual int ObjectCaps(void)
+	virtual void Spawn(void);
+	virtual int ObjectCaps(void)
 	{
 		return ObjectCaps_();
 	}
@@ -687,16 +662,16 @@ public:
 class CMultiSource: public CPointEntity
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void KeyValue(KeyValueData *pkvd);
-	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-	NOBODY virtual int ObjectCaps(void)
+	virtual void Spawn(void);
+	virtual void KeyValue(KeyValueData *pkvd);
+	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	virtual int ObjectCaps(void)
 	{
 		return ObjectCaps_();
 	}
-	NOBODY virtual BOOL IsTriggered(CBaseEntity *pActivator);
-	NOBODY virtual int Save(CSave &save);
-	NOBODY virtual int Restore(CRestore &restore);
+	virtual BOOL IsTriggered(CBaseEntity *pActivator);
+	virtual int Save(CSave &save);
+	virtual int Restore(CRestore &restore);
 
 #ifdef HOOK_GAMEDLL
 
@@ -714,7 +689,7 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	NOBODY void EXPORT Register(void);
+	void EXPORT Register(void);
 
 public:
 	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[4];
@@ -731,8 +706,8 @@ class CBaseDelay: public CBaseEntity
 {
 public:
 	virtual void KeyValue(KeyValueData *pkvd);
-	NOBODY virtual int Save(CSave &save);
-	NOBODY virtual int Restore(CRestore &restore);
+	virtual int Save(CSave &save);
+	virtual int Restore(CRestore &restore);
 
 #ifdef HOOK_GAMEDLL
 
@@ -757,8 +732,8 @@ public:
 class CBaseAnimating: public CBaseDelay
 {
 public:
-	NOBODY virtual int Save(CSave &save);
-	NOBODY virtual int Restore(CRestore &restore);
+	virtual int Save(CSave &save);
+	virtual int Restore(CRestore &restore);
 	virtual void HandleAnimEvent(MonsterEvent_t *pEvent) {}
 
 #ifdef HOOK_GAMEDLL
@@ -823,16 +798,16 @@ public:
 
 #endif // HOOK_GAMEDLL
 public:
-	NOBODY void LinearMove(Vector vecDest, float flSpeed);
-	NOBODY void EXPORT LinearMoveDone(void);
-	NOBODY void AngularMove(Vector vecDestAngle, float flSpeed);
-	NOBODY void EXPORT AngularMoveDone(void);
-	NOBODY BOOL IsLockedByMaster(void);
+	void LinearMove(Vector vecDest, float flSpeed);
+	void EXPORT LinearMoveDone(void);
+	void AngularMove(Vector vecDestAngle, float flSpeed);
+	void EXPORT AngularMoveDone(void);
+	NOXREF BOOL IsLockedByMaster(void);
 
 public:
-	NOBODY static float AxisValue(int flags, Vector &angles);
-	NOBODY static void AxisDir(entvars_t *pev);
-	NOBODY static float AxisDelta(int flags, Vector &angle1, Vector &angle2);
+	static float AxisValue(int flags, const Vector &angles);
+	static void AxisDir(entvars_t *pev);
+	static float AxisDelta(int flags, const Vector &angle1, const Vector &angle2);
 
 public:
 	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[19];
@@ -856,9 +831,12 @@ public:
 	Vector m_vecFinalAngle;
 	int m_bitsDamageInflict;
 	string_t m_sMaster;
+
 };/* size: 312, cachelines: 5, members: 21 */
 
 #include "basemonster.h"
+
+// Generic Button
 
 /* <24b19> ../cstrike/dlls/cbase.h:745 */
 class CBaseButton: public CBaseToggle
@@ -871,12 +849,12 @@ class CBaseButton: public CBaseToggle
 	};
 public:
 
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual void KeyValue(KeyValueData *pkvd);
-	NOBODY virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
-	NOBODY virtual int Save(CSave &save);
-	NOBODY virtual int Restore(CRestore &restore);
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual void KeyValue(KeyValueData *pkvd);
+	virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
+	virtual int Save(CSave &save);
+	virtual int Restore(CRestore &restore);
 	virtual int ObjectCaps(void)
 	{
 		return ObjectCaps_();
@@ -893,7 +871,9 @@ public:
 	int ObjectCaps_(void)
 	{
 		if (pev->takedamage == DAMAGE_NO)
+		{
 			return FCAP_IMPULSE_USE;
+		}
 
 		return (CBaseToggle::ObjectCaps() & ~FCAP_ACROSS_TRANSITION);
 	}
@@ -901,19 +881,19 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	NOBODY void RotSpawn(void);
-	NOBODY void ButtonActivate(void);
-	NOBODY void SparkSoundCache(void);
+	NOXREF void RotSpawn(void);
+	void ButtonActivate(void);
+	NOXREF void SparkSoundCache(void);
 
-	NOBODY void EXPORT ButtonShot(void);
-	NOBODY void EXPORT ButtonTouch(CBaseEntity *pOther);
-	NOBODY void EXPORT ButtonSpark(void);
-	NOBODY void EXPORT TriggerAndWait(void);
-	NOBODY void EXPORT ButtonReturn(void);
-	NOBODY void EXPORT ButtonBackHome(void);
-	NOBODY void EXPORT ButtonUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	NOXREF void EXPORT ButtonShot(void);
+	void EXPORT ButtonTouch(CBaseEntity *pOther);
+	void EXPORT ButtonSpark(void);
+	void EXPORT TriggerAndWait(void);
+	void EXPORT ButtonReturn(void);
+	void EXPORT ButtonBackHome(void);
+	void EXPORT ButtonUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
-	NOBODY BUTTON_CODE ButtonResponseToTouch(void);
+	BUTTON_CODE ButtonResponseToTouch(void);
 
 public:
 	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[8];
@@ -927,6 +907,7 @@ public:
 	BYTE m_bUnlockedSound;
 	BYTE m_bUnlockedSentence;
 	int m_sounds;
+
 };/* size: 368, cachelines: 6, members: 11 */
 
 /* <1da023> ../cstrike/dlls/cbase.h:861 */
@@ -990,97 +971,9 @@ public:
 
 };/* size: 152, cachelines: 3, members: 1 */
 
-/* <170b59> ../cstrike/dlls/sound.cpp:117 */
-class CAmbientGeneric: public CBaseEntity
-{
-public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual void Restart(void);
-	NOBODY virtual void KeyValue(KeyValueData *pkvd);
-	NOBODY virtual int Save(CSave &save);
-	NOBODY virtual int Restore(CRestore &restore);
-	virtual int ObjectCaps(void)
-	{
-		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION);
-	}
 
-#ifdef HOOK_GAMEDLL
 
-	int Save_(CSave &save);
-	int Restore_(CRestore &restore);
 
-#endif // HOOK_GAMEDLL
-
-public:
-	NOBODY void EXPORT ToggleUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-	NOBODY void EXPORT RampThink(void);
-	NOBODY void InitModulationParms(void);
-
-public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[4];
-
-	float m_flAttenuation;
-	dynpitchvol_t m_dpv;
-	BOOL m_fActive;
-	BOOL m_fLooping;
-
-};/* size: 264, cachelines: 5, members: 6 */
-
-/* <170bc2> ../cstrike/dlls/sound.cpp:875 */
-class CEnvSound: public CPointEntity
-{
-public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void KeyValue(KeyValueData *pkvd);
-	NOBODY virtual int Save(CSave &save);
-	NOBODY virtual int Restore(CRestore &restore);
-	NOBODY virtual void Think(void);
-
-#ifdef HOOK_GAMEDLL
-
-	int Save_(CSave &save);
-	int Restore_(CRestore &restore);
-
-#endif // HOOK_GAMEDLL
-
-public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[2];
-
-	float m_flRadius;
-	float m_flRoomtype;
-};/* size: 160, cachelines: 3, members: 4 */
-
-/* <170ced> ../cstrike/dlls/sound.cpp:1867 */
-class CSpeaker: public CBaseEntity
-{
-public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual void KeyValue(KeyValueData *pkvd);
-	NOBODY virtual int Save(CSave &save);
-	NOBODY virtual int Restore(CRestore &restore);
-	virtual int ObjectCaps(void)
-	{
-		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION);
-	}
-
-#ifdef HOOK_GAMEDLL
-
-	int Save_(CSave &save);
-	int Restore_(CRestore &restore);
-
-#endif // HOOK_GAMEDLL
-
-public:
-	NOBODY void EXPORT ToggleUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-	NOBODY void EXPORT SpeakerThink(void);
-public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[1];
-
-	int m_preset;
-
-};/* size: 156, cachelines: 3, members: 3 */
 
 template <class T>
 T *GetClassPtr(T *a)
@@ -1134,7 +1027,7 @@ void OnFreeEntPrivateData(edict_t *pEnt);
 #ifdef HOOK_GAMEDLL
 
 typedef BOOL (CBaseEntity::*FVISIBLE_ENTITY)(CBaseEntity *);
-typedef BOOL (CBaseEntity::*FVISIBLE_VECTOR)(Vector &);
+typedef BOOL (CBaseEntity::*FVISIBLE_VECTOR)(const Vector &);
 
 typedef void (CGrenade::*EXPLODE_VECTOR)(Vector, Vector);
 typedef void (CGrenade::*EXPLODE_TRACERESULT)(TraceResult *, int);
@@ -1144,8 +1037,5 @@ typedef CBaseEntity *(CBaseEntity::*CBASE_ISTANCE_ENTVARS)(entvars_t *);
 typedef CBaseEntity *(CBaseEntity::*CBASE_ISTANCE_INT)(int);
 
 #endif // HOOK_GAMEDLL
-
-//Refs
-extern void (*pCGib__SpawnHeadGib)(void);
 
 #endif // CBASE_H

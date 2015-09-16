@@ -220,9 +220,7 @@ public:
 	GLOBALESTATE EntityGetState(string_t globalname);
 	int EntityInTable(string_t globalname)
 	{
-		if (Find(globalname) != NULL)
-			return 1;
-		return 0;
+		return (Find(globalname) != NULL) ? 1 : 0;
 	}
 	int Save(CSave &save);
 	int Restore(CRestore &restore);

@@ -32,7 +32,8 @@
 #pragma once
 #endif
 
-#pragma warning(disable : 4786)	// long STL names get truncated in browse info.
+// long STL names get truncated in browse info.
+#pragma warning(disable : 4786)
 
 #ifndef _WIN32
 #include <strings.h>

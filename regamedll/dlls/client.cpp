@@ -10,7 +10,7 @@ float g_flTimeLimit = 0;
 float g_flResetTime = 0;
 bool g_bClientPrintEnable = true;
 
-char *sPlayerModelFiles[] = 
+char *sPlayerModelFiles[] =
 {
 	"models/player.mdl",
 	"models/player/leet/leet.mdl",
@@ -562,7 +562,7 @@ void ClientPutInServer(edict_t *pEntity)
 
 	TheBots->OnEvent(EVENT_PLAYER_CHANGED_TEAM, (CBaseEntity *)pPlayer);
 	pPlayer->m_iJoiningState = SHOWLTEXT;
-	
+
 	static char sName[128];
 	Q_strcpy(sName, STRING(pPlayer->pev->netname));
 
@@ -857,20 +857,11 @@ void Host_Say(edict_t *pEntity, int teamonly)
 
 	if (CVAR_GET_FLOAT("mp_logmessages") != 0)
 	{
-		char *temp;
+		const char *temp = teamonly ? "say_team" : "say";
+		const char *deadText = (player->m_iTeam != SPECTATOR && bSenderDead) ? " (dead)" : "";
+
 		char *szTeam = GetTeam(player->m_iTeam);
-		char *deadText = "";
 
-		if (teamonly)
-			temp = "say_team";
-		else
-			temp = "say";
-
-		if (player->m_iTeam != SPECTATOR && bSenderDead)
-		{
-			deadText = " (dead)";
-		}
-		
 		UTIL_LogPrintf
 		(
 			"\"%s<%i><%s><%s>\" %s \"%s\"%s\n",
@@ -891,7 +882,9 @@ void DropSecondary(CBasePlayer *pPlayer)
 	if (pPlayer->HasShield())
 	{
 		if (pPlayer->HasShield() && pPlayer->m_bShieldDrawn && pPlayer->m_pActiveItem != NULL)
+		{
 			((CBasePlayerWeapon *)pPlayer->m_pActiveItem)->SecondaryAttack();
+		}
 
 		pPlayer->m_bShieldDrawn = false;
 	}
@@ -1175,7 +1168,7 @@ void BuySubMachineGun(CBasePlayer *pPlayer, int iSlot)
 		{
 			iWeapon = WEAPON_UMP45;
 			iWeaponPrice = UMP45_PRICE;
-			pszWeapon = "weapon_mp5navy";
+			pszWeapon = "weapon_ump45";
 			break;
 		}
 		case 4:
@@ -1675,7 +1668,7 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 			}
 			else
 				enoughMoney = 0;
-			
+
 			break;
 		}
 		case MENU_SLOT_ITEM_DEFUSEKIT:
@@ -1775,7 +1768,7 @@ void HandleMenu_ChooseAppearance(CBasePlayer *player, int slot)
 		ModelName model_id;
 		char *model_name;
 		int model_name_index;
-		
+
 	} appearance;
 
 	Q_memset(&appearance, 0, sizeof(appearance));
@@ -2974,7 +2967,7 @@ void ClientCommand(edict_t *pEntity)
 					ClientPrint(player->pev, HUD_PRINTCONSOLE, "#Game_votemap_usage");
 					return;
 				}
-				
+
 				if (CountTeamPlayers(player->m_iTeam) < 2)
 				{
 					ClientPrint(player->pev, HUD_PRINTCONSOLE, "#Cannot_Vote_Need_More_People");
@@ -3824,7 +3817,7 @@ void ClientUserInfoChanged(edict_t *pEntity, char *infobuffer)
 void ServerDeactivate(void)
 {
 	// It's possible that the engine will call this function more times than is necessary
-	//  Therefore, only run it one time for each call to ServerActivate 
+	//  Therefore, only run it one time for each call to ServerActivate
 	if (g_serveractive != 1)
 	{
 		return;
@@ -4102,7 +4095,7 @@ void ClientPrecache(void)
 
 	for (i = FirstCustomSkin; i <= LastCustomSkin; i++)
 	{
-		const char *fname = TheBotProfiles->GetCustomSkinFname( i );
+		const char *fname = TheBotProfiles->GetCustomSkinFname(i);
 
 		if (!fname)
 			break;
@@ -4164,7 +4157,7 @@ void ClientPrecache(void)
 
 	for (i = FirstCustomSkin; i <= LastCustomSkin; i++)
 	{
-		const char *fname = TheBotProfiles->GetCustomSkinFname( i );
+		const char *fname = TheBotProfiles->GetCustomSkinFname(i);
 
 		if (!fname)
 			break;
@@ -4433,7 +4426,9 @@ void SpectatorConnect(edict_t *pEntity)
 	CBaseSpectator *pPlayer = (CBaseSpectator *)GET_PRIVATE(pEntity);
 
 	if (pPlayer)
+	{
 		pPlayer->SpectatorConnect();
+	}
 }
 
 /* <4a83d> ../cstrike/dlls/client.cpp:5095 */
@@ -4442,7 +4437,9 @@ void SpectatorDisconnect(edict_t *pEntity)
 	CBaseSpectator *pPlayer = (CBaseSpectator *)GET_PRIVATE(pEntity);
 
 	if (pPlayer)
+	{
 		pPlayer->SpectatorDisconnect();
+	}
 }
 
 /* <4a8b5> ../cstrike/dlls/client.cpp:5111 */
@@ -4451,7 +4448,9 @@ void SpectatorThink(edict_t *pEntity)
 	CBaseSpectator *pPlayer = (CBaseSpectator *)GET_PRIVATE(pEntity);
 
 	if (pPlayer)
+	{
 		pPlayer->SpectatorThink();
+	}
 }
 
 /* <4a92d> ../cstrike/dlls/client.cpp:5160 */
@@ -4665,7 +4664,7 @@ int AddToFullPack(struct entity_state_s *state, int e, edict_t *ent, edict_t *ho
 	if (ent->v.owner)
 	{
 		int owner = ENTINDEX(ent->v.owner);
-		
+
 		if (owner >= 1 && owner <= gpGlobals->maxClients)
 			state->owner = owner;
 	}
@@ -4674,7 +4673,7 @@ int AddToFullPack(struct entity_state_s *state, int e, edict_t *ent, edict_t *ho
 	{
 		Q_memcpy(state->basevelocity, ent->v.basevelocity, sizeof(float) * 3);
 
-		state->weaponmodel = MODEL_INDEX( STRING(ent->v.weaponmodel) );
+		state->weaponmodel = MODEL_INDEX(STRING(ent->v.weaponmodel));
 		state->gaitsequence = ent->v.gaitsequence;
 
 		state->spectator = (ent->v.flags & FL_SPECTATOR) ? TRUE : FALSE;
@@ -4810,7 +4809,7 @@ void Player_FieldInit(struct delta_s *pFields)
 	player_field_alias[ FIELD_ORIGIN2 ].field = DELTA_FINDFIELD(pFields, player_field_alias[ FIELD_ORIGIN2 ].name);
 }
 
-// Callback for sending entity_state_t for players info over network. 
+// Callback for sending entity_state_t for players info over network.
 
 /* <47cd1> ../cstrike/dlls/client.cpp:5676 */
 void Player_Encode(struct delta_s *pFields, const unsigned char *from, const unsigned char *to)
@@ -4942,7 +4941,7 @@ int GetWeaponData(edict_s *player, struct weapon_data_s *info)
 		while (pPlayerItem != NULL)
 		{
 			CBasePlayerWeapon *gun = reinterpret_cast<CBasePlayerWeapon *>(pPlayerItem->GetWeaponPtr());
-			
+
 			if (gun && gun->UseDecrement())
 			{
 				ItemInfo II;
@@ -4955,10 +4954,10 @@ int GetWeaponData(edict_s *player, struct weapon_data_s *info)
 
 					item->m_iId = II.iId;
 					item->m_iClip = gun->m_iClip;
-					item->m_flTimeWeaponIdle = _max(gun->m_flTimeWeaponIdle, -0.001);
-					item->m_flNextPrimaryAttack = _max(gun->m_flNextPrimaryAttack, -0.001);
-					item->m_flNextSecondaryAttack = _max(gun->m_flNextSecondaryAttack, -0.001);
-					item->m_flNextReload = _max(gun->m_flNextReload, -0.001);
+					item->m_flTimeWeaponIdle = Q_max(gun->m_flTimeWeaponIdle, -0.001f);
+					item->m_flNextPrimaryAttack = Q_max(gun->m_flNextPrimaryAttack, -0.001f);
+					item->m_flNextSecondaryAttack = Q_max(gun->m_flNextSecondaryAttack, -0.001f);
+					item->m_flNextReload = Q_max(gun->m_flNextReload, -0.001f);
 					item->m_fInReload = gun->m_fInReload;
 					item->m_fInSpecialReload = gun->m_fInSpecialReload;
 					item->m_fInZoom = gun->m_iShotsFired;
@@ -4998,7 +4997,7 @@ void UpdateClientData(const struct edict_s *ent, int sendweapons, struct clientd
 
 	cd->flags = pev->flags;
 	cd->health = pev->health;
-	cd->viewmodel = MODEL_INDEX( STRING(pev->viewmodel) );
+	cd->viewmodel = MODEL_INDEX(STRING(pev->viewmodel));
 	cd->waterlevel = pev->waterlevel;
 	cd->watertype = pev->watertype;
 	cd->weapons = pev->weapons;
@@ -5189,7 +5188,7 @@ int InconsistentFile(const edict_t *player, const char *filename, char *disconne
 // The game .dll should return 1 if lag compensation should be allowed ( could also just set
 // the sv_unlag cvar.
 // Most games right now should return 0, until client-side weapon prediction code is written
-// and tested for them ( note you can predict weapons, but not do lag compensation, too, 
+// and tested for them ( note you can predict weapons, but not do lag compensation, too,
 // if you want.
 
 /* <4b7cf> ../cstrike/dlls/client.cpp:6204 */

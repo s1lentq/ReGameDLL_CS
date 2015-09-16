@@ -166,10 +166,6 @@ const char *TutorIdentifierList[ TUTOR_NUM_MESSAGES ];
 
 #endif // HOOK_GAMEDLL
 
-//#ifdef HOOK_GAMEDLL
-//static TutorMessageMap m_messageMap_;
-//#endif // HOOK_GAMEDLL
-
 /* <212575> ../cstrike/dlls/tutor_cs_tutor.cpp:197 */
 CCSTutor::CCSTutor(void)
 {
@@ -217,7 +213,6 @@ CCSTutor::~CCSTutor(void)
 void ParseMessageParameters(char *&messageData, TutorMessage *ret)
 {
 	char *token;
-	static int iNumP = 0;
 
 	while (true)
 	{
@@ -423,10 +418,8 @@ void CCSTutor::ReadTutorMessageFile(void)
 	defaultMessage.m_minDisplayTimeOverride = 0;
 	defaultMessage.m_minRepeatInterval = 0;
 
-	int d = 0;
-	while (d < 200)
+	while (true)
 	{
-		d++;
 		messageData = MP_COM_Parse(messageData);
 
 		if (!messageData)
@@ -1195,7 +1188,7 @@ void CCSTutor::UpdateCurrentMessage(TutorMessageEvent *event)
 void CCSTutor::__MAKE_VHOOK(ShowTutorMessage)(TutorMessageEvent *event)
 {
 	TutorMessageID mid = static_cast<TutorMessageID>(event->GetID());
-	
+
 	if (mid < 0 || mid >= TUTOR_NUM_MESSAGES)
 	{
 		return;

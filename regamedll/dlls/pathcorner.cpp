@@ -19,10 +19,10 @@ TYPEDESCRIPTION CPathTrack::m_SaveData[] =
 	DEFINE_FIELD(CPathTrack, m_altName, FIELD_STRING),
 };
 
-#else // HOOK_GAMEDLL
+#else
 
-TYPEDESCRIPTION (*CPathCorner::pm_SaveData)[1];
-TYPEDESCRIPTION (*CPathTrack::pm_SaveData)[5];
+TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CPathCorner, m_SaveData)[1];
+TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CPathTrack, m_SaveData)[5];
 
 #endif // HOOK_GAMEDLL
 
@@ -33,19 +33,21 @@ LINK_ENTITY_TO_CLASS(path_corner, CPathCorner);
 IMPLEMENT_SAVERESTORE(CPathCorner, CPointEntity);
 
 /* <122697> ../cstrike/dlls/pathcorner.cpp:54 */
-NOBODY void CPathCorner::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CPathCorner::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
-//	FStrEq(const char *sz1,
-//		const char *sz2);  //    56
-//	KeyValue(CBaseEntity *const this,
-//		KeyValueData *pkvd);  //    62
-//	KeyValue(CPathCorner *const this,
-//		KeyValueData *pkvd);  //    54
+	if (FStrEq(pkvd->szKeyName, "wait"))
+	{
+		m_flWait = Q_atof(pkvd->szValue);
+		pkvd->fHandled = TRUE;
+	}
+	else
+		CPointEntity::KeyValue(pkvd);
 }
 
 /* <122325> ../cstrike/dlls/pathcorner.cpp:66 */
-NOBODY void CPathCorner::__MAKE_VHOOK(Spawn)(void)
+void CPathCorner::__MAKE_VHOOK(Spawn)(void)
 {
+	assert(("path_corner without a targetname", !FStringNull(pev->targetname)));
 }
 
 /* <12256a> ../cstrike/dlls/pathcorner.cpp:80 */
@@ -55,198 +57,326 @@ IMPLEMENT_SAVERESTORE(CPathTrack, CBaseEntity);
 LINK_ENTITY_TO_CLASS(path_track, CPathTrack);
 
 /* <122602> ../cstrike/dlls/pathcorner.cpp:86 */
-NOBODY void CPathTrack::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CPathTrack::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
-//	FStrEq(const char *sz1,
-//		const char *sz2);  //    88
-//	KeyValue(CBaseEntity *const this,
-//		KeyValueData *pkvd);  //    94
-//	KeyValue(CPathTrack *const this,
-//		KeyValueData *pkvd);  //    86
+	if (FStrEq(pkvd->szKeyName, "altpath"))
+	{
+		m_altName = ALLOC_STRING(pkvd->szValue);
+		pkvd->fHandled = TRUE;
+	}
+	else
+		CPointEntity::KeyValue(pkvd);
 }
 
 /* <122433> ../cstrike/dlls/pathcorner.cpp:97 */
-NOBODY void CPathTrack::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CPathTrack::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
-//	{
-//		int on;                                               //    99
-//	}
-//	Use(CPathTrack *const this,
-//		class CBaseEntity *pActivator,
-//		class CBaseEntity *pCaller,
-//		USE_TYPE useType,
-//		float value);  //    97
+	int on;
+
+	// Use toggles between two paths
+	if (m_paltpath)
+	{
+		on = !(pev->spawnflags & SF_PATH_ALTERNATE);
+
+		if (ShouldToggle(useType, on))
+		{
+			if (on)
+				pev->spawnflags |= SF_PATH_ALTERNATE;
+			else
+				pev->spawnflags &= ~SF_PATH_ALTERNATE;
+		}
+	}
+	else	// Use toggles between enabled/disabled
+	{
+		on = !(pev->spawnflags & SF_PATH_DISABLED);
+
+		if (ShouldToggle(useType, on))
+		{
+			if (on)
+				pev->spawnflags |= SF_PATH_DISABLED;
+			else
+				pev->spawnflags &= ~SF_PATH_DISABLED;
+		}
+	}
 }
 
 /* <122a12> ../cstrike/dlls/pathcorner.cpp:128 */
-NOBODY void CPathTrack::Link(void)
+void CPathTrack::Link(void)
 {
-//	{
-//		edict_t *pentTarget;                                 //   130
-//		FIND_ENTITY_BY_TARGETNAME(edict_t *entStart,
-//						const char *pszName);  //   151
-//		FNullEnt(const edict_t *pent);  //   152
-//		Instance(edict_t *pent);  //   154
-//		SetPrevious(CPathTrack *const this,
-//				class CPathTrack *pprev);  //   158
-//		FIND_ENTITY_BY_TARGETNAME(edict_t *entStart,
-//						const char *pszName);  //   134
-//		FNullEnt(const edict_t *pent);  //   135
-//		Instance(edict_t *pent);  //   137
-//		SetPrevious(CPathTrack *const this,
-//				class CPathTrack *pprev);  //   141
-//	}
+	edict_t *pentTarget;
+
+	if (!FStringNull(pev->target))
+	{
+		pentTarget = FIND_ENTITY_BY_TARGETNAME(NULL, STRING(pev->target));
+		if (!FNullEnt(pentTarget))
+		{
+			m_pnext = CPathTrack::Instance(pentTarget);
+
+			// If no next pointer, this is the end of a path
+			if (m_pnext != NULL)
+			{
+				m_pnext->SetPrevious(this);
+			}
+		}
+		else
+			ALERT(at_console, "Dead end link %s\n", STRING(pev->target));
+	}
+
+	// Find "alternate" path
+	if (!FStringNull(m_altName))
+	{
+		pentTarget = FIND_ENTITY_BY_TARGETNAME(NULL, STRING(m_altName));
+		if (!FNullEnt(pentTarget))
+		{
+			m_paltpath = CPathTrack::Instance(pentTarget);
+
+			// If no next pointer, this is the end of a path
+			if (m_paltpath != NULL)
+			{
+				m_paltpath->SetPrevious(this);
+			}
+		}
+	}
 }
 
 /* <12239a> ../cstrike/dlls/pathcorner.cpp:165 */
-NOBODY void CPathTrack::__MAKE_VHOOK(Spawn)(void)
+void CPathTrack::__MAKE_VHOOK(Spawn)(void)
 {
-//	Vector(Vector::Spawn(//		float X,
-//		float Y,
-//		float Z);  //   168
-//	Vector(Vector *const this,
-//		float X,
-//		float Y,
-//		float Z);  //   168
+	pev->solid = SOLID_TRIGGER;
+	UTIL_SetSize(pev, Vector(-8, -8, -8), Vector(8, 8, 8));
+
+	m_pnext = NULL;
+	m_pprevious = NULL;
 }
 
 /* <122c76> ../cstrike/dlls/pathcorner.cpp:180 */
-NOBODY void CPathTrack::__MAKE_VHOOK(Activate)(void)
+void CPathTrack::__MAKE_VHOOK(Activate)(void)
 {
+	// Link to next, and back-link
+	if (!FStringNull(pev->targetname))
+	{
+		Link();
+	}
 }
 
 /* <122c9c> ../cstrike/dlls/pathcorner.cpp:186 */
-NOBODY CPathTrack *CPathTrack::ValidPath(CPathTrack *ppath, int testFlag)
+CPathTrack *CPathTrack::ValidPath(CPathTrack *ppath, int testFlag)
 {
+	if (!ppath)
+		return NULL;
+
+	if (testFlag && (ppath->pev->spawnflags & SF_PATH_DISABLED))
+		return NULL;
+
+	return ppath;
 }
 
 /* <122745> ../cstrike/dlls/pathcorner.cpp:198 */
-NOBODY void CPathTrack::Project(CPathTrack *pstart, CPathTrack *pend, Vector *origin, float dist)
+void CPathTrack::Project(CPathTrack *pstart, CPathTrack *pend, Vector *origin, float dist)
 {
-//	{
-//		Vector dir;                                     //   202
-//		operator-(const Vector *const this,
-//				const Vector &v);  //   202
-//		Normalize(const Vector *const this);  //   203
-//		operator*(const Vector *const this,
-//				float fl);  //   204
-//		operator+(const Vector *const this,
-//				const Vector &v);  //   204
-//	}
+	if (pstart && pend)
+	{
+		Vector dir = (pend->pev->origin - pstart->pev->origin);
+		dir = dir.Normalize();
+
+		*origin = pend->pev->origin + dir * dist;
+	}
 }
 
 /* <122d0f> ../cstrike/dlls/pathcorner.cpp:208 */
-NOBODY CPathTrack *CPathTrack::GetNext(void)
+CPathTrack *CPathTrack::GetNext(void)
 {
+	if (m_paltpath && (pev->spawnflags & SF_PATH_ALTERNATE) && !(pev->spawnflags & SF_PATH_ALTREVERSE))
+	{
+		return m_paltpath;
+	}
+
+	return m_pnext;
 }
 
 /* <122d30> ../cstrike/dlls/pathcorner.cpp:218 */
-NOBODY CPathTrack *CPathTrack::GetPrevious(void)
+CPathTrack *CPathTrack::GetPrevious(void)
 {
+	if (m_paltpath && (pev->spawnflags & SF_PATH_ALTERNATE) && (pev->spawnflags & SF_PATH_ALTREVERSE))
+	{
+		return m_paltpath;
+	}
+
+	return m_pprevious;
 }
 
 /* <122d51> ../cstrike/dlls/pathcorner.cpp:228 */
-NOBODY void CPathTrack::SetPrevious(CPathTrack *pprev)
+void CPathTrack::SetPrevious(CPathTrack *pprev)
 {
-//	FStrEq(const char *sz1,
-//		const char *sz2);  //   231
+	// Only set previous if this isn't my alternate path
+	if (pprev && !FStrEq(STRING(pprev->pev->targetname), STRING(m_altName)))
+	{
+		m_pprevious = pprev;
+	}
 }
+
+// Assumes this is ALWAYS enabled
 
 /* <122d95> ../cstrike/dlls/pathcorner.cpp:237 */
-NOBODY CPathTrack *CPathTrack::LookAhead(Vector *origin, float dist, int move)
+CPathTrack *CPathTrack::LookAhead(Vector *origin, float dist, int move)
 {
-//	{
-//		class CPathTrack *pcurrent;                          //   239
-//		float originalDist;                                   //   240
-//		Vector currentPos;                              //   243
-//		Vector(Vector *const this,
-//			const Vector &v);  //   243
-//		{
-//			Vector dir;                             //   291
-//			float length;                                 //   292
-//			GetNext(CPathTrack *const this);  //   285
-//			ValidPath(CPathTrack *const this,
-//					class CPathTrack *ppath,
-//					int testFlag);  //   285
-//			GetNext(CPathTrack *const this);  //   291
-//			operator-(const Vector *const this,
-//					const Vector &v);  //   291
-//			Length(const Vector *const this);  //   292
-//			GetNext(CPathTrack *const this);  //   293
-//			GetNext(CPathTrack *const this);  //   293
-//			ValidPath(CPathTrack *const this,
-//					class CPathTrack *ppath,
-//					int testFlag);  //   293
-//			Project(CPathTrack *const this,
-//				class CPathTrack *pstart,
-//				class CPathTrack *pend,
-//				Vector *origin,
-//				float dist);  //   288
-//			GetNext(CPathTrack *const this);  //   307
-//			GetNext(CPathTrack *const this);  //   308
-//			operator*(const Vector *const this,
-//					float fl);  //   301
-//			operator+(const Vector *const this,
-//					const Vector &v);  //   301
-//			GetPrevious(CPathTrack *const this);  //   288
-//		}
-//		{
-//			Vector dir;                             //   250
-//			float length;                                 //   251
-//			operator-(const Vector *const this,
-//					const Vector &v);  //   250
-//			Length(const Vector *const this);  //   251
-//			GetPrevious(CPathTrack *const this);  //   254
-//			ValidPath(CPathTrack *const this,
-//					class CPathTrack *ppath,
-//					int testFlag);  //   254
-//			GetPrevious(CPathTrack *const this);  //   260
-//			GetPrevious(CPathTrack *const this);  //   275
-//			GetPrevious(CPathTrack *const this);  //   272
-//			ValidPath(CPathTrack *const this,
-//					class CPathTrack *ppath,
-//					int testFlag);  //   272
-//			operator*(const Vector *const this,
-//					float fl);  //   264
-//			operator+(const Vector *const this,
-//					const Vector &v);  //   264
-//			GetNext(CPathTrack *const this);  //   257
-//			Project(CPathTrack *const this,
-//				class CPathTrack *pstart,
-//				class CPathTrack *pend,
-//				Vector *origin,
-//				float dist);  //   257
-//		}
-//	}
+	CPathTrack *pcurrent;
+	float originalDist = dist;
+
+	pcurrent = this;
+	Vector currentPos = *origin;
+
+	// Travelling backwards through path
+	if (dist < 0)
+	{
+		dist = -dist;
+		while (dist > 0)
+		{
+			Vector dir = pcurrent->pev->origin - currentPos;
+			float_precision length = dir.Length();
+
+			if (!length)
+			{
+				// If there is no previous node, or it's disabled, return now.
+				if (!ValidPath(pcurrent->GetPrevious(), move))
+				{
+					if (!move)
+					{
+						Project(pcurrent->GetNext(), pcurrent, origin, dist);
+					}
+
+					return NULL;
+				}
+
+				pcurrent = pcurrent->GetPrevious();
+			}
+			// enough left in this path to move
+			else if (length > dist)
+			{
+				*origin = currentPos + (dir * ((float)(dist / length)));
+				return pcurrent;
+			}
+			else
+			{
+				dist -= length;
+				currentPos = pcurrent->pev->origin;
+				*origin = currentPos;
+
+				// If there is no previous node, or it's disabled, return now.
+				if (!ValidPath(pcurrent->GetPrevious(), move))
+				{
+					return NULL;
+				}
+
+				pcurrent = pcurrent->GetPrevious();
+			}
+		}
+
+		*origin = currentPos;
+		return pcurrent;
+	}
+	else
+	{
+		// #96 line
+		while (dist > 0)
+		{
+			// If there is no next node, or it's disabled, return now.
+			if (!ValidPath(pcurrent->GetNext(), move))
+			{
+				if (!move)
+				{
+					Project(pcurrent->GetPrevious(), pcurrent, origin, dist);
+				}
+
+				return NULL;
+			}
+
+			Vector dir = pcurrent->GetNext()->pev->origin - currentPos;
+			float_precision length = dir.Length();
+
+			if (!length  && !ValidPath(pcurrent->GetNext()->GetNext(), move))
+			{
+				// HACK -- up against a dead end
+				if (dist == originalDist)
+					return NULL;
+
+				return pcurrent;
+			}
+
+			// enough left in this path to move
+			if (length > dist)
+			{
+				*origin = currentPos + (dir * ((float)(dist / length)));
+				return pcurrent;
+			}
+			else
+			{
+				dist -= length;
+				currentPos = pcurrent->GetNext()->pev->origin;
+				pcurrent = pcurrent->GetNext();
+
+				*origin = currentPos;
+			}
+		}
+
+		*origin = currentPos;
+	}
+
+	return pcurrent;
 }
 
+// Assumes this is ALWAYS enabled
+
 /* <123220> ../cstrike/dlls/pathcorner.cpp:320 */
-NOBODY CPathTrack *CPathTrack::Nearest(Vector origin)
+CPathTrack *CPathTrack::Nearest(Vector origin)
 {
-//	{
-//		int deadCount;                                        //   322
-//		float minDist;                                        //   323
-//		float dist;                                           //   323
-//		Vector delta;                                   //   324
-//		class CPathTrack *ppath;                             //   325
-//		class CPathTrack *pnearest;                          //   325
-//		operator-(const Vector *const this,
-//				const Vector &v);  //   328
-//		Length(const Vector *const this);  //   330
-//		GetNext(CPathTrack *const this);  //   332
-//		GetNext(CPathTrack *const this);  //   352
-//		operator-(const Vector *const this,
-//				const Vector &v);  //   344
-//		Length(const Vector *const this);  //   346
-//	}
+	int deadCount;
+	float minDist, dist;
+	Vector delta;
+	CPathTrack *ppath, *pnearest;
+
+	delta = origin - pev->origin;
+	delta.z = 0;
+	minDist = delta.Length();
+	pnearest = this;
+	ppath = GetNext();
+
+	// Hey, I could use the old 2 racing pointers solution to this, but I'm lazy :)
+	deadCount = 0;
+	while (ppath != NULL && ppath != this)
+	{
+		deadCount++;
+		if (deadCount > 9999)
+		{
+			ALERT(at_error, "Bad sequence of path_tracks from %s", STRING(pev->targetname));
+			return NULL;
+		}
+
+		delta = origin - ppath->pev->origin;
+		delta.z = 0;
+		dist = delta.Length();
+
+		if (dist < minDist)
+		{
+			minDist = dist;
+			pnearest = ppath;
+		}
+
+		ppath = ppath->GetNext();
+	}
+
+	return pnearest;
 }
 
 /* <123375> ../cstrike/dlls/pathcorner.cpp:358 */
-NOBODY CPathTrack *CPathTrack::Instance(edict_t *pent)
+CPathTrack *CPathTrack::Instance(edict_t *pent)
 {
-//	FClassnameIs(edict_t *pent,
-//			const char *szClassname);  //   360
-//	GET_PRIVATE(edict_t *pent);  //   361
+	if (FClassnameIs(pent, "path_track"))
+	{
+		return (CPathTrack *)GET_PRIVATE(pent);
+	}
+
+	return NULL;
 }
 
 #ifdef HOOK_GAMEDLL

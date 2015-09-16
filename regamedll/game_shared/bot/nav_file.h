@@ -32,31 +32,14 @@
 #pragma once
 #endif
 
-#undef min
-#undef max
-
-#include <list>
-#include <vector>
-#include <algorithm>
-
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <assert.h>
-
-#ifndef _WIN32
-
-#include <unistd.h>
-
-#endif // _WIN32
-
 // The 'place directory' is used to save and load places from
-// nav files in a size-efficient manner that also allows for the 
+// nav files in a size-efficient manner that also allows for the
 // order of the place ID's to change without invalidating the
 // nav files.
 //
-// The place directory is stored in the nav file as a list of 
+// The place directory is stored in the nav file as a list of
 // place name strings.  Each nav area then contains an index
-// into that directory, or zero if no place has been assigned to 
+// into that directory, or zero if no place has been assigned to
 // that area.
 
 /* <4ecb57> ../game_shared/bot/nav_file.cpp:54 */
@@ -78,7 +61,9 @@ private:
 };
 
 #ifdef HOOK_GAMEDLL
+
 #define placeDirectory (*pplaceDirectory)
+
 #endif // HOOK_GAMEDLL
 
 extern PlaceDirectory placeDirectory;

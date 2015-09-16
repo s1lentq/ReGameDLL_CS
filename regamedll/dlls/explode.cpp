@@ -13,7 +13,7 @@ TYPEDESCRIPTION CEnvExplosion::m_SaveData[] =
 
 #else // HOOK_GAMEDLL
 
-TYPEDESCRIPTION (*CEnvExplosion::pm_SaveData)[2];
+TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CEnvExplosion, m_SaveData)[2];
 
 #endif // HOOK_GAMEDLL
 
@@ -221,7 +221,7 @@ void CEnvExplosion::Smoke(void)
 // HACKHACK -- create one of these and fake a keyvalue to get the right explosion setup
 
 /* <7f7f4> ../cstrike/dlls/explode.cpp:258 */
-void ExplosionCreate(Vector &center, Vector &angles, edict_t *pOwner, int magnitude, BOOL doDamage)
+void ExplosionCreate(const Vector &center, Vector &angles, edict_t *pOwner, int magnitude, BOOL doDamage)
 {
 	KeyValueData kvd;
 	char buf[128];

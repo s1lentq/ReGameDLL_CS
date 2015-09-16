@@ -56,7 +56,7 @@ typedef int BOOL;
 
 #ifndef __cplusplus
 	typedef enum { false, true }	qboolean;
-#else 
+#else
 	typedef int qboolean;
 #endif
 

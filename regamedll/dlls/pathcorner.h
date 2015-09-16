@@ -36,14 +36,15 @@
 class CPathCorner: public CPointEntity
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void KeyValue(KeyValueData *pkvd);
-	NOBODY virtual int Save(CSave &save);
-	NOBODY virtual int Restore(CRestore &restore);
-	NOBODY float GetDelay(void)
+	virtual void Spawn(void);
+	virtual void KeyValue(KeyValueData *pkvd);
+	virtual int Save(CSave &save);
+	virtual int Restore(CRestore &restore);
+	float GetDelay(void)
 	{
 		return GetDelay_();
 	}
+
 #ifdef HOOK_GAMEDLL
 
 	void Spawn_(void);
@@ -63,5 +64,8 @@ private:
 	float m_flWait;
 
 };/* size: 156, cachelines: 3, members: 3 */
+
+// linked objects
+C_DLLEXPORT void path_corner(entvars_t *pev);
 
 #endif // PATHCORNER_H

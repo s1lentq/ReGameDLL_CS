@@ -178,7 +178,7 @@ private:
 	PathSegment m_path[ MAX_PATH_SEGMENTS ];
 	int m_segmentCount;
 
-	// determine actual path positions 
+	// determine actual path positions
 	bool ComputePathPositions(void);
 
 	// utility function for when start and goal are in the same area
@@ -246,7 +246,7 @@ public:
 	{
 		m_isDebug = status;
 	}
-	// return true if improv is stuck 
+	// return true if improv is stuck
 	bool IsStuck(void) const
 	{
 		return m_stuckMonitor.IsStuck();

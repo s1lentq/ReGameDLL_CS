@@ -53,6 +53,9 @@
 extern int _navAreaCount;
 extern int _currentIndex;
 
+class CCSBot;
+class BotChatterInterface;
+
 /* <3327a8> ../cstrike/dlls/bot/cs_bot.h:44 */
 class BotState
 {
@@ -444,17 +447,17 @@ public:
 	void Disconnect(void);
 	float GetCombatRange(void) const
 	{
-		return m_combatRange; 
+		return m_combatRange;
 	}
 	NOBODY bool IsRogue(void)const;
 	void SetRogue(bool rogue)
-	{ 
+	{
 		m_isRogue = rogue;
 	}
 	NOBODY bool IsHurrying(void) const;
 	void Hurry(float duration)
 	{
-		m_hurryTimer.Start(duration); 
+		m_hurryTimer.Start(duration);
 	}
 	NOBODY bool IsSafe(void) const;
 	NOBODY bool IsWellPastSafe(void) const;
@@ -685,7 +688,7 @@ public:
 	}
 	int GetNearbyEnemyCount(void) const
 	{
-		return _min(GetEnemiesRemaining(), m_nearbyEnemyCount);
+		return Q_min(GetEnemiesRemaining(), m_nearbyEnemyCount);
 	}
 	unsigned int GetEnemyPlace(void) const
 	{
@@ -698,7 +701,7 @@ public:
 	}
 	int GetNearbyFriendCount(void) const
 	{
-		return _min(GetFriendsRemaining(), m_nearbyFriendCount);
+		return Q_min(GetFriendsRemaining(), m_nearbyFriendCount);
 	}
 	CBasePlayer *GetClosestVisibleFriend(void) const
 	{
@@ -1061,9 +1064,7 @@ private:
 	float m_pathLadderDismountTimestamp;
 	float m_pathLadderEnd;
 	float m_pathLadderTimestamp;
-
-	CountdownTimer m_mustRunTimer;
-
+	class CountdownTimer m_mustRunTimer;
 	CSGameState m_gameState;
 	byte m_hostageEscortCount;
 	float m_hostageEscortCountTimestamp;
@@ -1448,7 +1449,7 @@ public:
 	{
 		if (m_targetAreaCount >= MAX_TARGET_AREAS)
 			return false;
-		
+
 		// only use two-way connections
 		if (!area->GetParent() || area->IsConnected(area->GetParent(), NUM_DIRECTIONS))
 		{
@@ -1462,7 +1463,7 @@ public:
 				Vector2D to(((*area->GetCenter()).x - m_cutoff.x), (*area->GetCenter()).y - m_cutoff.y);
 				to.NormalizeInPlace();
 
-				//if (DotProduct( to, m_forward ) > 0.7071f)
+				//if (DotProduct(to, m_forward) > 0.7071f)
 				if ((to.x * m_forward.x + to.y * m_forward.y) > 0.7071f)
 					m_targetArea[ m_targetAreaCount++ ] = area;
 			}

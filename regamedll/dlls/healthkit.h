@@ -63,7 +63,7 @@ public:
 	{
 		return ObjectCaps_();
 	}
-	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
 
@@ -94,10 +94,5 @@ public:
 	float m_flSoundTime;
 
 };/* size: 332, cachelines: 6, members: 7 */
-
-
-
-
-
 
 #endif // HEALTKIT_H

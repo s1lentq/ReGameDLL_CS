@@ -1,9 +1,9 @@
 /***
 *
 *	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
-*	
-*	This product contains software technology licensed from Id 
-*	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
+*
+*	This product contains software technology licensed from Id
+*	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc.
 *	All Rights Reserved.
 *
 *   Use, distribution, and modification of this source code and/or resulting
@@ -15,7 +15,7 @@
 //
 //  cdll_int.h
 //
-// 4-23-98  
+// 4-23-98
 // JOHN:  client dll interface declarations
 //
 
@@ -159,7 +159,7 @@ typedef struct cl_enginefuncs_s
 	int							( *GetMaxClients )			( void );
 	void						( *Cvar_SetValue )			( char *cvar, float value );
 
-	int       					(*Cmd_Argc)					(void);	
+	int       					(*Cmd_Argc)					(void);
 	char						*( *Cmd_Argv )				( int arg );
 	void						( *Con_Printf )				( char *fmt, ... );
 	void						( *Con_DPrintf )			( char *fmt, ... );
@@ -211,7 +211,7 @@ typedef struct cl_enginefuncs_s
 	byte*						(*COM_LoadFile)				( char *path, int usehunk, int *pLength );
 	char*						(*COM_ParseFile)			( char *data, char *token );
 	void						(*COM_FreeFile)				( void *buffer );
-		
+
 	struct triangleapi_s		*pTriAPI;
 	struct efx_api_s			*pEfxAPI;
 	struct event_api_s			*pEventAPI;

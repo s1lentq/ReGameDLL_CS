@@ -428,7 +428,7 @@ void CHostageImprov::__MAKE_VHOOK(OnReset)(void)
 	m_moveFlags = 0;
 	m_moveType = Stopped;
 	m_moveLimit = Running;
-	
+
 	m_vel.x = 0;
 	m_vel.y = 0;
 

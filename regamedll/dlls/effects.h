@@ -153,7 +153,7 @@ public:
 	{
 		pev->renderamt = brightness;
 	}
-	void AnimateAndDie(float framerate)
+	void AnimateAndDie(float_precision framerate)
 	{
 		SetThink(&CSprite::AnimateUntilDead);
 		pev->framerate = framerate;
@@ -616,7 +616,7 @@ public:
 	int m_iBeam;
 
 	CBeam *m_pBeam[ MAX_BEAM ];
-	
+
 	float m_flBeamTime[ MAX_BEAM ];
 	float m_flStartTime;
 

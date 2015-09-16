@@ -76,7 +76,7 @@ NOXREF int PM_IsThereGrassTexture(void)
 {
 	int i;
 
-	for (i = 0 ; i < pm_gcTextures; i++)
+	for (i = 0; i < pm_gcTextures; i++)
 	{
 		if (pm_grgchTextureType[i] == CHAR_TEX_GRASS)
 			return 1;
@@ -163,7 +163,7 @@ void PM_InitTextureTypes(void)
 			continue;
 
 		// null-terminate name and save in sentences array
-		j = _min(j, CBTEXTURENAMEMAX - 1 + i);
+		j = Q_min(j, CBTEXTURENAMEMAX - 1 + i);
 		buffer[j] = '\0';
 
 		Q_strcpy(&(pm_grgszTextureName[pm_gcTextures++][0]), &(buffer[i]));
@@ -1073,7 +1073,7 @@ void PM_WalkMove(void)
 	// Now try going back down from the end point
 	//  press down the stepheight
 	VectorCopy(pmove->origin, dest);
-	dest[2] -= pmove->movevars->stepsize;	
+	dest[2] -= pmove->movevars->stepsize;
 
 	trace = pmove->PM_PlayerTrace(pmove->origin, dest, PM_NORMAL, -1);
 
@@ -1277,7 +1277,7 @@ void PM_WaterMove(void)
 		VectorScale(wishvel, pmove->maxspeed / wishspeed, wishvel);
 		wishspeed = pmove->maxspeed;
 	}
-	
+
 	// Slow us down a bit.
 	wishspeed *= 0.8;
 	VectorAdd(pmove->velocity, pmove->basevelocity, pmove->velocity);
@@ -1729,7 +1729,7 @@ void PM_SpectatorMove(void)
 		{
 			VectorCopy(vec3_origin, pmove->velocity)
 		}
-		
+
 		// accelerate
 		fmove = pmove->cmd.forwardmove;
 		smove = pmove->cmd.sidemove;
@@ -1879,7 +1879,7 @@ void PM_Duck(void)
 	{
 		pmove->oldbuttons &= ~IN_DUCK;
 	}
-	
+
 	if (pmove->dead || (!(pmove->cmd.buttons & IN_DUCK) && !pmove->bInDuck && !(pmove->flags & FL_DUCKING)))
 	{
 		return;
@@ -1898,7 +1898,7 @@ void PM_Duck(void)
 			pmove->bInDuck = true;
 		}
 
-		float_precision time = _max(0.0, (1.0 - pmove->flDuckTime / 1000.0));
+		float_precision time = Q_max(0.0, (1.0 - pmove->flDuckTime / 1000.0));
 
 		if (pmove->bInDuck)
 		{
@@ -2354,7 +2354,7 @@ void PM_PreventMegaBunnyJumping(void)
 	// Don't divide by zero
 	if (maxscaledspeed <= 0.0f)
 		return;
-	
+
 	spd = Length(pmove->velocity);
 
 	if (spd <= maxscaledspeed)
@@ -2453,11 +2453,11 @@ void PM_Jump(void)
 	pmove->onground = -1;
 
 	PM_PreventMegaBunnyJumping();
-	
+
 	float_precision fvel = Length(pmove->velocity);
 	float fvol = 1.0f;
 
-	if (fvel >= 150.0f) 
+	if (fvel >= 150.0f)
 	{
 		PM_PlayStepSound(PM_MapTextureTypeStepType(pmove->chtexturetype), fvol);
 	}
@@ -2539,14 +2539,14 @@ void PM_CheckWaterJump(void)
 
 		VectorMA(vecStart, 24, flatforward, vecEnd);
 		VectorMA(vec3_origin, -50, tr.plane.normal, pmove->movedir);
-		
+
 		tr = pmove->PM_PlayerTrace(vecStart, vecEnd, PM_NORMAL, -1);
 
 		if (tr.fraction == 1.0f)
 		{
 			pmove->waterjumptime = 2000.0f;
 			pmove->velocity[2] = 225.0f;
-			
+
 			pmove->oldbuttons |= IN_JUMP;
 			pmove->flags |= FL_WATERJUMP;
 		}
@@ -2663,10 +2663,10 @@ float PM_CalcRoll(vec_t *angles, vec_t *velocity, float rollangle, float rollspe
 void PM_DropPunchAngle(vec_t *punchangle)
 {
 	float_precision len;
-	
+
 	len = VectorNormalize(punchangle);
 	len -= (10.0 + len * 0.5) * pmove->frametime;
-	len = _max(len, 0.0);
+	len = Q_max(len, 0.0);
 	VectorScale(punchangle, len, punchangle);
 }
 
@@ -2683,18 +2683,18 @@ void PM_CheckParamters(void)
 
 	if (maxspeed != 0.0f)
 	{
-		pmove->maxspeed = _min(maxspeed, pmove->maxspeed);
+		pmove->maxspeed = Q_min(maxspeed, (float_precision)pmove->maxspeed);
 	}
 
 	if (spd != 0.0f && spd > (float_precision)pmove->maxspeed)
 	{
 		float_precision fRatio = pmove->maxspeed / spd;
-		
+
 		pmove->cmd.forwardmove *= fRatio;
 		pmove->cmd.sidemove *= fRatio;
 		pmove->cmd.upmove *= fRatio;
 	}
-	
+
 	if ((pmove->flags & (FL_FROZEN | FL_ONTRAIN)) || pmove->dead)
 	{
 		pmove->cmd.forwardmove = 0;
@@ -3130,7 +3130,7 @@ void PM_CreateStuckTable(void)
 	z = 0;
 
 	// Y moves
-	for (y = -2.0f ; y <= 2.0f ; y += 2.0)
+	for (y = -2.0f; y <= 2.0f; y += 2.0)
 	{
 		rgv3tStuckTable[idx][0] = x;
 		rgv3tStuckTable[idx][1] = y;
@@ -3143,7 +3143,7 @@ void PM_CreateStuckTable(void)
 	z = 0;
 
 	// X moves
-	for (x = -2.0f ; x <= 2.0f ; x += 2.0f)
+	for (x = -2.0f; x <= 2.0f; x += 2.0f)
 	{
 		rgv3tStuckTable[idx][0] = x;
 		rgv3tStuckTable[idx][1] = y;
@@ -3157,9 +3157,9 @@ void PM_CreateStuckTable(void)
 	{
 		z = zi[i];
 
-		for (x = -2.0f ; x <= 2.0f ; x += 2.0f)
+		for (x = -2.0f; x <= 2.0f; x += 2.0f)
 		{
-			for (y = -2.0f ; y <= 2.0f ; y += 2.0)
+			for (y = -2.0f; y <= 2.0f; y += 2.0)
 			{
 				rgv3tStuckTable[idx][0] = x;
 				rgv3tStuckTable[idx][1] = y;
@@ -3184,7 +3184,7 @@ void PM_Move(struct playermove_s *ppmove, int server)
 	pmove = ppmove;
 
 	PM_PlayerMove((server != 0) ? TRUE : FALSE);
-	
+
 	if (pmove->onground != -1)
 		pmove->flags |= FL_ONGROUND;
 	else

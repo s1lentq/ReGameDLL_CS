@@ -38,7 +38,7 @@
 class CCareerTask
 {
 public:
-	CCareerTask(void) { };
+	CCareerTask(void) {};
 	CCareerTask(const char *taskName, GameEventType event, const char *weaponName, int n, bool mustLive, bool crossRounds, int id, bool isComplete);
 public:
 	virtual void OnEvent(GameEventType event, CBasePlayer *pAttacker, CBasePlayer *pVictim);
@@ -82,7 +82,7 @@ public:
 	{
 		return m_weaponClassId;
 	}
-	bool IsValidFor(CBasePlayer *pPlayer)//!
+	bool IsValidFor(CBasePlayer *pPlayer)
 	{
 		return true;
 	}

@@ -39,7 +39,7 @@ class CNavLadder;
 class IImprovEvent
 {
 public:
-	virtual void OnMoveToSuccess(const Vector &goal) { }
+	virtual void OnMoveToSuccess(const Vector &goal) {};
 
 	enum MoveToFailureType
 	{
@@ -48,15 +48,15 @@ public:
 		FAIL_FELL_OFF,
 	};
 
-	virtual void OnMoveToFailure(const Vector &goal, MoveToFailureType reason) { }
-	virtual void OnInjury(float amount) { }
+	virtual void OnMoveToFailure(const Vector &goal, MoveToFailureType reason) {};
+	virtual void OnInjury(float amount) {};
 
 };/* size: 4, cachelines: 1, members: 1 */
 
 class CImprov: public IImprovEvent
 {
 public:
-	virtual ~CImprov(void) { }
+	virtual ~CImprov(void) {};
 
 	virtual bool IsAlive(void) const = 0;
 

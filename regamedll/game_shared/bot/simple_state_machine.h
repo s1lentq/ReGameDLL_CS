@@ -45,10 +45,10 @@ public:
 		m_parent = NULL;
 	}
 
-	virtual ~SimpleState() { };
-	virtual void OnEnter(T userData) { };		// when state is entered
-	virtual void OnUpdate(T userData) { };		// state behavior
-	virtual void OnExit(T userData) { };		// when state exited
+	virtual ~SimpleState() {};
+	virtual void OnEnter(T userData) {};		// when state is entered
+	virtual void OnUpdate(T userData) {};		// state behavior
+	virtual void OnExit(T userData) {};		// when state exited
 	virtual const char *GetName(void) const = 0;	// return state name
 
 	void SetParent(SimpleState<T> *parent)

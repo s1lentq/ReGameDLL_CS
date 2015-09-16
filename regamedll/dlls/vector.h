@@ -95,7 +95,7 @@ public:
 			return Vector2D(0, 0);
 
 		flLen = 1 / flLen;
-	
+
 #ifdef HOOK_GAMEDLL
 		return Vector2D((vec_t)(x * flLen), (vec_t)(y * flLen));
 #else
@@ -130,6 +130,7 @@ public:
 		return (x > -tolerance && x < tolerance &&
 			y > -tolerance && y < tolerance);
 	}
+
 };/* size: 8, cachelines: 1, members: 2 */
 
 inline float DotProduct(const Vector2D &a, const Vector2D &b)
@@ -226,7 +227,6 @@ public:
 		float_precision x1 = (float_precision)x;
 		float_precision y1 = (float_precision)y;
 		float_precision z1 = (float_precision)z;
-
 
 		return sqrt(x1 * x1 + y1 * y1 + z1 * z1);
 
@@ -356,7 +356,7 @@ template<
 	typename Z,
 	typename LenType
 >
-inline LenType LenghtSubtract(Vector vecStart, Vector vecDest)
+inline LenType LengthSubtract(Vector vecStart, Vector vecDest)
 {
 	X floatX = (vecDest.x - vecStart.x);
 	Y floatY = (vecDest.y - vecStart.y);

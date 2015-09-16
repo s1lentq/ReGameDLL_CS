@@ -221,7 +221,7 @@ node_index_t CLocalNav::GetBestNode(Vector &vecOrigin, Vector &vecDest)
 			float flDistToDest;
 			float_precision flZDiff = -1.0;
 
-			flDistFromStart = LenghtSubtract
+			flDistFromStart = LengthSubtract
 				<float_precision, float_precision,
 				float_precision, float_precision>(vecDest, nodeCurrent->vecLoc);
 

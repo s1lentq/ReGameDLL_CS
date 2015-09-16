@@ -69,7 +69,7 @@ void *CMemoryPool::Alloc(unsigned int amount)
 		return NULL;
 
 	_blocksAllocated++;
-	_peakAlloc = _max(_peakAlloc, _blocksAllocated);
+	_peakAlloc = Q_max(_peakAlloc, _blocksAllocated);
 
 	if (_blocksAllocated >= _numElements)
 		AddNewBlob();

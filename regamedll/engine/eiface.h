@@ -1,9 +1,9 @@
 /***
 *
 *	Copyright (c) 1999, Valve LLC. All rights reserved.
-*	
-*	This product contains software technology licensed from Id 
-*	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
+*
+*	This product contains software technology licensed from Id
+*	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc.
 *	All Rights Reserved.
 *
 *   Use, distribution, and modification of this source code and/or resulting
@@ -87,7 +87,7 @@ struct TraceResult
 };
 
 // CD audio status
-typedef struct 
+typedef struct
 {
 	int	fPlaying;// is sound playing right now?
 	int	fWasPlaying;// if not, CD is paused if WasPlaying is true.
@@ -188,8 +188,8 @@ typedef struct enginefuncs_s
 	const char *(*pfnNameForFunction)		( uint32 function );
 	void		(*pfnClientPrintf)			( edict_t* pEdict, PRINT_TYPE ptype, const char *szMsg ); // JOHN: engine callbacks so game DLL can print messages to individual clients
 	void		(*pfnServerPrint)			( const char *szMsg );
-	const char *(*pfnCmd_Args)				( void );		// these 3 added 
-	const char *(*pfnCmd_Argv)				( int argc );	// so game DLL can easily 
+	const char *(*pfnCmd_Args)				( void );		// these 3 added
+	const char *(*pfnCmd_Argv)				( int argc );	// so game DLL can easily
 	int			(*pfnCmd_Argc)				( void );		// access client 'cmd' strings
 	void		(*pfnGetAttachment)			(const edict_t *pEdict, int iAttachment, float *rgflOrigin, float *rgflAngles );
 	void		(*pfnCRC32_Init)			(CRC32_t *pulCRC);
@@ -270,7 +270,7 @@ typedef struct enginefuncs_s
 
 	// PSV: Added for CZ training map
 //	const char *(*pfnKeyNameForBinding)					( const char* pBinding );
-	
+
 	sequenceEntry_s*	(*pfnSequenceGet)				( const char* fileName, const char* entryName );
 	sentenceEntry_s*	(*pfnSequencePickSentence)		( const char* groupName, int pickMethod, int *picked );
 
@@ -325,7 +325,7 @@ typedef struct
 } LEVELLIST;
 #define MAX_LEVEL_CONNECTIONS	16		// These are encoded in the lower 16bits of ENTITYTABLE->flags
 
-typedef struct 
+typedef struct
 {
 	int			id;				// Ordinal ID of this entity (used for entity <--> pointer conversions)
 	edict_t	*pent;			// Pointer to the in-game entity
@@ -345,7 +345,7 @@ typedef struct
 typedef struct saverestore_s SAVERESTOREDATA;
 
 #ifdef _WIN32
-typedef 
+typedef
 #endif
 struct saverestore_s
 {
@@ -369,9 +369,9 @@ struct saverestore_s
 	float		time;
 	char		szCurrentMapName[32];	// To check global entities
 
-} 
+}
 #ifdef _WIN32
-SAVERESTOREDATA 
+SAVERESTOREDATA
 #endif
 ;
 
@@ -412,7 +412,7 @@ typedef enum _fieldtypes
 
 #define FTYPEDESC_GLOBAL			0x0001		// This field is masked for global entity save/restore
 
-typedef struct 
+typedef struct
 {
 	FIELDTYPE		fieldType;
 	char			*fieldName;
@@ -425,10 +425,10 @@ typedef struct
 #define ARRAYSIZE(p)		(sizeof(p)/sizeof(p[0]))
 #endif
 
-typedef struct 
+typedef struct
 {
 	// Initialize/shutdown the game (one-time call after loading of game .dll )
-	void			(*pfnGameInit)			( void );				
+	void			(*pfnGameInit)			( void );
 	int				(*pfnSpawn)				( edict_t *pent );
 	void			(*pfnThink)				( edict_t *pent );
 	void			(*pfnUse)				( edict_t *pentUsed, edict_t *pentOther );
@@ -447,7 +447,7 @@ typedef struct
 	void			(*pfnResetGlobalState)		( void );
 
 	qboolean		(*pfnClientConnect)		( edict_t *pEntity, const char *pszName, const char *pszAddress, char szRejectReason[ 128 ] );
-	
+
 	void			(*pfnClientDisconnect)	( edict_t *pEntity );
 	void			(*pfnClientKill)		( edict_t *pEntity );
 	void			(*pfnClientPutInServer)	( edict_t *pEntity );
@@ -465,10 +465,10 @@ typedef struct
 	void			(*pfnParmsChangeLevel)	( void );
 
 	 // Returns string describing current .dll.  E.g., TeamFotrress 2, Half-Life
-	const char     *(*pfnGetGameDescription)( void );     
+	const char     *(*pfnGetGameDescription)( void );
 
 	// Notify dll about a player customization.
-	void            (*pfnPlayerCustomization) ( edict_t *pEntity, customization_t *pCustom );  
+	void            (*pfnPlayerCustomization) ( edict_t *pEntity, customization_t *pCustom );
 
 	// Spectator funcs
 	void			(*pfnSpectatorConnect)		( edict_t *pEntity );
@@ -519,7 +519,7 @@ extern DLL_FUNCTIONS		gEntityInterface;
 
 typedef struct
 {
-	// Called right before the object's memory is freed. 
+	// Called right before the object's memory is freed.
 	// Calls its destructor.
 	void			(*pfnOnFreeEntPrivateData)(edict_t *pEnt);
 	void			(*pfnGameShutdown)(void);

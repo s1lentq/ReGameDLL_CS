@@ -225,7 +225,7 @@ char *BotPhrase::GetSpeakable(int bankIndex, float *duration) const
 			// check count criteria
 			// if this speakable has a count criteria, it must match to be used
 			// if this speakable does not have a count criteria, we dont care what the count is set to
-			if (speak->m_count == UNDEFINED_COUNT || speak->m_count == _min(m_countCriteria, COUNT_MANY))
+			if (speak->m_count == UNDEFINED_COUNT || speak->m_count == Q_min(m_countCriteria, (CountCriteria)COUNT_MANY))
 			{
 				if (duration)
 					*duration = speak->m_duration;
@@ -270,7 +270,7 @@ NOBODY void __declspec(naked) BotPhrase::Randomize(void)
 //
 //		BotSpeakable *firstElem = speakables->front();
 //		int nSize = speakables->size();
-//	
+//
 //		for (unsigned int index = 1; index < nSize; index++)
 //		{
 //			// TODO: check it, need hook std rand

@@ -36,6 +36,7 @@ typedef struct
 {
 	int event;
 	char *options;
+
 } MonsterEvent_t;
 
 #define EVENT_SPECIFIC				0

@@ -759,7 +759,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(GiveC4)(void)
 		for (int i = 1; i <= gpGlobals->maxClients; i++)
 		{
 			CBasePlayer *player = (CBasePlayer *)UTIL_PlayerByIndex(i);
-			
+
 			if (!player || FNullEnt(player->edict()))
 				continue;
 
@@ -1582,7 +1582,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(RestartRound)(void)
 	}
 
 	g_pGameRules->m_bBombDropped = FALSE;
-	
+
 	MESSAGE_BEGIN(MSG_SPEC, gmsgHLTV);
 		WRITE_BYTE(0);
 		WRITE_BYTE(100 | DRC_FLAG_FACEPLAYER);
@@ -1816,7 +1816,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(RestartRound)(void)
 
 		if (pPlayer->pev->flags == FL_DORMANT)
 			continue;
-		
+
 		CBasePlayer *player = GetClassPtr((CBasePlayer *)pPlayer->pev);
 
 		player->m_iNumSpawns = 0;
@@ -2293,7 +2293,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(Think)(void)
 				ALERT(at_console, "Changing maps...one team has won the specified number of rounds\n");
 
 				GoToIntermission();
-				return;			
+				return;
 			}
 		}
 	}
@@ -2317,7 +2317,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(Think)(void)
 
 				UTIL_LogPrintf("World triggered \"Round_Start\"\n");
 				m_bFreezePeriod = FALSE;
-						
+
 				switch (RANDOM_LONG(0, 3))
 				{
 				case 0:
@@ -2353,7 +2353,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(Think)(void)
 
 				m_iRoundTimeSecs = m_iRoundTime;
 				m_fRoundCount = gpGlobals->time;
-							
+
 				bCTPlayed = false;
 				bTPlayed = false;
 
@@ -2763,7 +2763,7 @@ void CHalfLifeMultiplay::CareerRestart(void)
 	{
 		m_fTeamCount = gpGlobals->time + 1.0f;
 	}
-	
+
 	// for reset everything
 	m_bCompleteReset = true;
 	m_fCareerRoundMenuTime = 0;
@@ -2936,7 +2936,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(InitHUD)(CBasePlayer *pl)
 	{
 		// FIXME:  Probably don't need to cast this just to read m_iDeaths
 		CBasePlayer *plr = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
-		
+
 		if (plr != NULL)
 		{
 			MESSAGE_BEGIN(MSG_ONE, gmsgScoreInfo, NULL, pl->edict());
@@ -3042,7 +3042,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(ClientDisconnected)(edict_t *pClient)
 	if (pClient != NULL)
 	{
 		CBasePlayer *pPlayer = reinterpret_cast<CBasePlayer *>(CBaseEntity::Instance(pClient));
-		
+
 		if (pPlayer != NULL)
 		{
 			pPlayer->has_disconnected = true;
@@ -3312,7 +3312,7 @@ int CHalfLifeMultiplay::__MAKE_VHOOK(IPointsForKill)(CBasePlayer *pAttacker, CBa
 void CHalfLifeMultiplay::__MAKE_VHOOK(PlayerKilled)(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor)
 {
 	DeathNotice(pVictim, pKiller, pInflictor);
-	
+
 	pVictim->m_afPhysicsFlags &= ~PFLAG_ONTRAIN;
 	pVictim->m_iDeaths++;
 	pVictim->m_bNotKilled = false;
@@ -3383,7 +3383,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(PlayerKilled)(CBasePlayer *pVictim, entvar
 		{
 			// if a player dies in a deathmatch game and the killer is a client, award the killer some points
 			pKiller->frags += IPointsForKill(peKiller, pVictim);
-			
+
 			if (pVictim->m_bIsVIP)
 			{
 				killer->HintMessage("#Hint_reward_for_killing_vip", TRUE);
@@ -3439,7 +3439,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(PlayerKilled)(CBasePlayer *pVictim, entvar
 	if (ep && ep->Classify() == CLASS_PLAYER)
 	{
 		CBasePlayer *PK = reinterpret_cast<CBasePlayer *>(ep);
-		
+
 		MESSAGE_BEGIN(MSG_ALL, gmsgScoreInfo);
 			WRITE_BYTE(ENTINDEX(PK->edict()));
 			WRITE_SHORT((int)PK->pev->frags);
@@ -3470,14 +3470,14 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(DeathNotice)(CBasePlayer *pVictim, entvars
 	if (pKiller->flags & FL_CLIENT)
 	{
 		killer_index = ENTINDEX(ENT(pKiller));
-		
+
 		if (pevInflictor)
 		{
 			if (pevInflictor == pKiller)
 			{
 				// If the inflictor is the killer,  then it must be their current weapon doing the damage
 				CBasePlayer *pPlayer = reinterpret_cast<CBasePlayer*>(CBaseEntity::Instance(pKiller));
-				
+
 				if (pPlayer && pPlayer->m_pActiveItem)
 				{
 					killer_weapon_name = pPlayer->m_pActiveItem->pszName();
@@ -3523,7 +3523,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(DeathNotice)(CBasePlayer *pVictim, entvars
 
 	else if (!Q_strcmp(killer_weapon_name, "gauss"))
 		killer_weapon_name = tau;
-	
+
 	if (pVictim->pev == pKiller)
 	{
 		// killed self
@@ -3614,7 +3614,7 @@ float CHalfLifeMultiplay::__MAKE_VHOOK(FlWeaponRespawnTime)(CBasePlayerItem *pWe
 	return gpGlobals->time + WEAPON_RESPAWN_TIME;
 }
 
-// FlWeaponRespawnTime - Returns 0 if the weapon can respawn 
+// FlWeaponRespawnTime - Returns 0 if the weapon can respawn
 // now,  otherwise it returns the time at which it can try
 // to spawn again.
 
@@ -3895,7 +3895,7 @@ void DestroyMapCycle(mapcycle_t *cycle)
 			delete p;
 			p = n;
 		}
-		
+
 		delete cycle->items;
 	}
 
@@ -4065,16 +4065,16 @@ int ReloadMapCycleFile(char *filename, mapcycle_t *cycle)
 					if (s && s[0] != '\0')
 					{
 						item->minplayers = Q_atoi(s);
-						item->minplayers = _max(item->minplayers, 0);
-						item->minplayers = _min(item->minplayers, gpGlobals->maxClients);
+						item->minplayers = Q_max(item->minplayers, 0);
+						item->minplayers = Q_min(item->minplayers, gpGlobals->maxClients);
 					}
 
 					s = GET_KEY_VALUE(szBuffer, "maxplayers");
 					if (s && s[0] != '\0')
 					{
 						item->maxplayers = Q_atoi(s);
-						item->maxplayers = _max(item->maxplayers, 0);
-						item->maxplayers = _min(item->maxplayers, gpGlobals->maxClients);
+						item->maxplayers = Q_max(item->maxplayers, 0);
+						item->maxplayers = Q_min(item->maxplayers, gpGlobals->maxClients);
 					}
 
 					// Remove keys
@@ -4157,7 +4157,7 @@ void ExtractCommandString(char *s, char *szCommand)
 
 	// work without stomping on each other
 	char *o;
-	
+
 	if (*s == '\\')
 		s++;
 

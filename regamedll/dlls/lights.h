@@ -72,13 +72,14 @@ class CEnvLight: public CLight
 public:
 	virtual void Spawn(void);
 	virtual void KeyValue(KeyValueData *pkvd);
-	
+
 #ifdef HOOK_GAMEDLL
 
 	void Spawn_(void);
 	void KeyValue_(KeyValueData *pkvd);
 
 #endif // HOOK_GAMEDLL
+
 };/* size: 164, cachelines: 3, members: 1 */
 
 #endif // LIGHT_H

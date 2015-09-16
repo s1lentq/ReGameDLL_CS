@@ -62,7 +62,7 @@ NOXREF void drawProgressMeter(float progress, char *title)
 {
 	MESSAGE_BEGIN(MSG_ALL, gmsgBotProgress);
 		WRITE_BYTE(FLAG_PROGRESS_DRAW);
-		WRITE_BYTE((int)progress);	
+		WRITE_BYTE((int)progress);
 		WRITE_STRING(title);
 	MESSAGE_END();
 }

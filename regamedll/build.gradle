@@ -209,8 +209,8 @@ class RegamedllSrc {
                 srcDirs "hookers"
                 include "**/*.cpp"
                 exclude "6153_hooker.cpp", "hooker.cpp", "main.cpp", "main_mp.cpp"
-                if (!GradleCppUtils.windows)
-			exclude "regamedll_debug.cpp"
+                // if (!GradleCppUtils.windows)
+		//	exclude "regamedll_debug.cpp"
             }
         }
     }
@@ -289,7 +289,7 @@ model {
     components {
         regamedll_hooker_gamedll(NativeLibrarySpec) {
             targetPlatform 'x86'
-            baseName 'FileSystem_Stdio'
+            baseName 'filesystem_stdio'
 
             sources {
                 RegamedllSrc.regamedll_pch(it)
@@ -337,7 +337,7 @@ model {
 
 task buildRelease {
     dependsOn binaries.withType(SharedLibraryBinarySpec).matching { SharedLibraryBinarySpec blib ->
-        blib.buildable && (blib.buildType.name == 'release'/* || blib.buildType.name == 'debug'*/) && !blib.name.contains('RegamedllFixes')
+        blib.buildable && (/*blib.buildType.name == 'release' || */blib.buildType.name == 'debug') && !blib.name.contains('RegamedllFixes')
     }
 }
 

@@ -1,5 +1,25 @@
 #include "precompiled.h"
 
+// STL uses exceptions, but we are not compiling with them - ignore warning
+#pragma warning(disable : 4530)
+
+// long STL names get truncated in browse info.
+#pragma warning(disable : 4786)
+
+#include <list>
+#include <vector>
+#include <algorithm>
+
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <assert.h>
+
+#ifdef _WIN32
+#include <io.h>
+#else
+#include <unistd.h>
+#endif // _WIN32
+
 /*
 * Globals initialization
 */
@@ -85,7 +105,7 @@ NOXREF FILE_GLOBAL void buildGoodSizedList(void)
 		if (extent->SizeX() < minSize || extent->SizeY() < minSize)
 			continue;
 
-		goodSizedAreaList.push_back( area );
+		goodSizedAreaList.push_back(area);
 	}
 }
 
@@ -247,7 +267,7 @@ NOBODY void CNavArea::OnDestroyNotify(CNavArea *dead)
 {
 	NavConnect con;
 	con.area = dead;
-	for(int d = 0; d < NUM_DIRECTIONS; ++d)
+	for (int d = 0; d < NUM_DIRECTIONS; ++d)
 		m_connect[ d ].remove(con);
 
 	m_overlapList.remove(dead);
@@ -1252,7 +1272,7 @@ float __declspec(naked) CNavArea::GetZ(const Vector *pos) const
 		u = 0.0f;
 	else if (u > 1.0f)
 		u = 1.0f;
-		
+
 	if (v < 0.0f)
 		v = 0.0f;
 	else if (v > 1.0f)
@@ -1260,7 +1280,7 @@ float __declspec(naked) CNavArea::GetZ(const Vector *pos) const
 
 	float northZ = m_extent.lo.z + u * (m_neZ - m_extent.lo.z);
 	float southZ = m_swZ + u * (m_extent.hi.z - m_swZ);
-	
+
 	return northZ + v * (southZ - northZ);
 */
 }
@@ -1384,7 +1404,7 @@ NOBODY void CNavArea::ComputePortal(const CNavArea *to, NavDirType dir, Vector *
 }
 
 /* <4cb0d7> ../game_shared/bot/nav_area.cpp:2378 */
-NOBODY void CNavArea::ComputeClosestPointInPortal(const CNavArea *to, NavDirType dir, const Vector *fromPos, Vector *closePos) const 
+NOBODY void CNavArea::ComputeClosestPointInPortal(const CNavArea *to, NavDirType dir, const Vector *fromPos, Vector *closePos) const
 {
 //	{
 //		float const margin;                                    //  2380
@@ -1561,7 +1581,7 @@ NOBODY void CNavArea::RemoveFromOpenList(void)
 		m_prevOpen->m_nextOpen = m_nextOpen;
 	else
 		IMPLEMENT_ARRAY(m_openList) = m_nextOpen;
-	
+
 	if (m_nextOpen)
 		m_nextOpen->m_prevOpen = m_prevOpen;
 
@@ -2667,6 +2687,7 @@ bool GetGroundHeight(const Vector *pos, float *height, Vector *normal)
 	{
 		float ground;
 		Vector normal;
+
 	} layer[MAX_GROUND_LAYERS];
 
 	int layerCount = 0;
@@ -2692,7 +2713,7 @@ bool GetGroundHeight(const Vector *pos, float *height, Vector *normal)
 				layer[layerCount].ground = result.vecEndPos.z;
 				layer[layerCount].normal = result.vecPlaneNormal;
 				++layerCount;
-						
+
 				if (layerCount == MAX_GROUND_LAYERS)
 					break;
 			}
@@ -2706,12 +2727,15 @@ bool GetGroundHeight(const Vector *pos, float *height, Vector *normal)
 	for (i = 0; i < layerCount - 1; ++i)
 	{
 		if (layer[i + 1].ground - layer[i].ground >= HalfHumanHeight)
-			break;		
+			break;
 	}
 
 	*height = layer[i].ground;
+
 	if (normal)
+	{
 		*normal = layer[i].normal;
+	}
 
 	return true;
 }
@@ -2822,7 +2846,7 @@ void CNavAreaGrid::Reset(void)
 	m_gridSizeY = 0;
 
 	// clear the hash table
-	for(int i = 0; i < HASH_TABLE_SIZE; i++)
+	for (int i = 0; i < HASH_TABLE_SIZE; i++)
 		m_hashTable[i] = NULL;
 
 	m_areaCount = 0;
@@ -3007,7 +3031,7 @@ NOBODY __declspec(naked) CNavArea *CNavAreaGrid::GetNearestNavArea(const Vector 
 			if (!anyZ)
 			{
 				TraceResult result;
-				UTIL_TraceLine( source, areaPos + Vector( 0, 0, HalfHumanHeight ), ignore_monsters, ignore_glass, NULL, &result );
+				UTIL_TraceLine(source, areaPos + Vector(0, 0, HalfHumanHeight), ignore_monsters, ignore_glass, NULL, &result);
 				if (result.flFraction != 1.0f)
 					continue;
 			}

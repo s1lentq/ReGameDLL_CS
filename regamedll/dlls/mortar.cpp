@@ -17,7 +17,7 @@ TYPEDESCRIPTION CFuncMortarField::m_SaveData[] =
 
 #else
 
-TYPEDESCRIPTION (*CFuncMortarField::pm_SaveData)[6];
+TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CFuncMortarField, m_SaveData)[6];
 
 #endif // HOOK_GAMEDLL
 

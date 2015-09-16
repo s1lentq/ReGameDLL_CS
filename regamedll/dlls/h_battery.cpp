@@ -16,7 +16,7 @@ TYPEDESCRIPTION CRecharge::m_SaveData[] =
 
 #else
 
-TYPEDESCRIPTION (*CRecharge::pm_SaveData)[5];
+TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CRecharge, m_SaveData)[5];
 
 #endif // HOOK_GAMEDLL
 
@@ -54,7 +54,8 @@ void CRecharge::__MAKE_VHOOK(Spawn)(void)
 	pev->solid = SOLID_BSP;
 	pev->movetype = MOVETYPE_PUSH;
 
-	UTIL_SetOrigin(pev, pev->origin);	// set size and link into world
+	// set size and link into world
+	UTIL_SetOrigin(pev, pev->origin);
 	UTIL_SetSize(pev, pev->mins, pev->maxs);
 	SET_MODEL(ENT(pev), STRING(pev->model));
 

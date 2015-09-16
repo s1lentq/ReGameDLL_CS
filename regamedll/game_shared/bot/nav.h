@@ -213,7 +213,7 @@ inline NavDirType DirectionLeft(NavDirType dir)
 /* <4c3061> ../game_shared/bot/nav.h:162 */
 inline NavDirType DirectionRight(NavDirType dir)
 {
-	switch(dir)
+	switch (dir)
 	{
 		case NORTH:
 			return EAST;
@@ -231,18 +231,18 @@ inline NavDirType DirectionRight(NavDirType dir)
 /* <3433a4> ../game_shared/bot/nav.h:176 */
 inline void AddDirectionVector(Vector *v, NavDirType dir, float amount)
 {
-	switch(dir)
+	switch (dir)
 	{
 		case NORTH:
 			v->y -= amount;
 			return;
-		case EAST: 
+		case EAST:
 			v->x += amount;
 			return;
 		case SOUTH:
 			v->y += amount;
 			return;
-		case WEST: 
+		case WEST:
 			v->x -= amount;
 			return;
 	}
@@ -251,7 +251,7 @@ inline void AddDirectionVector(Vector *v, NavDirType dir, float amount)
 /* <38c828> ../game_shared/bot/nav.h:188 */
 inline float DirectionToAngle(NavDirType dir)
 {
-	switch(dir)
+	switch (dir)
 	{
 		case NORTH:
 			return 270.0f;
@@ -332,7 +332,7 @@ inline float_precision NormalizeAngle(float_precision angle)
 {
 	while (angle < -180.0f)
 		angle += 360.0f;
-	
+
 	while (angle > 180.0f)
 		angle -= 360.0f;
 
@@ -344,7 +344,7 @@ inline float NormalizeAnglePositive(float angle)
 {
 	while (angle < 0.0f)
 		angle += 360.0f;
-	
+
 	while (angle >= 360.0f)
 		angle -= 360.0f;
 
@@ -368,7 +368,7 @@ inline float AngleDifference(float a, float b)
 /* <38cac9> ../game_shared/bot/nav.h:288 */
 inline bool AnglesAreEqual(float a, float b, float tolerance = 5.0f)
 {
-	if (abs( AngleDifference( a, b ) ) < tolerance)
+	if (abs(AngleDifference(a, b)) < tolerance)
 		return true;
 
 	return false;
@@ -411,7 +411,7 @@ inline bool IsWalkableTraceLineClear(Vector &from, Vector &to, unsigned int flag
 	{
 		UTIL_TraceLine(useFrom, to, ignore_monsters, ignore, &result);
 
-		if (result.flFraction != 1.0f && IsEntityWalkable( VARS( result.pHit ), flags ))
+		if (result.flFraction != 1.0f && IsEntityWalkable(VARS(result.pHit), flags))
 		{
 			ignore = result.pHit;
 

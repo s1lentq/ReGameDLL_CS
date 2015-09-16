@@ -1,7 +1,27 @@
 #include "precompiled.h"
 
-#pragma warning(disable : 4530)				// STL uses exceptions, but we are not compiling with them - ignore warning
-#pragma warning(disable : 4786)				// long STL names get truncated in browse info.
+// STL uses exceptions, but we are not compiling with them - ignore warning
+#pragma warning(disable : 4530)
+
+// long STL names get truncated in browse info.
+#pragma warning(disable : 4786)
+
+#undef min
+#undef max
+
+#include <list>
+#include <vector>
+#include <algorithm>
+
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <assert.h>
+
+#ifndef _WIN32
+
+#include <unistd.h>
+
+#endif // _WIN32
 
 /*
 * Globals initialization
@@ -42,6 +62,7 @@ PlaceDirectory::EntryType PlaceDirectory::GetEntry(Place place) const
 		assert(false && "PlaceDirectory::GetEntry failure");
 		return 0;
 	}
+
 	return 1 + (it - m_directory.begin());
 }
 
@@ -83,7 +104,7 @@ void PlaceDirectory::Save(int fd)
 	EntryType count = m_directory.size();
 	Q_write(fd, &count, sizeof(EntryType));
 
-	// store entries		
+	// store entries
 	std::vector<Place>::iterator it;
 	for (it = m_directory.begin(); it != m_directory.end(); ++it)
 	{
@@ -145,7 +166,7 @@ void CNavArea::Save(FILE *fp) const
 
 	static int base = 1;
 	fprintf(fp, "\n\ng %04dArea%s%s%s%s\n",
-		m_id, 
+		m_id,
 		(GetAttributes() & NAV_CROUCH) ? "CROUCH" : "",
 		(GetAttributes() & NAV_JUMP) ? "JUMP" : "",
 		(GetAttributes() & NAV_PRECISE) ? "PRECISE" : "",
@@ -209,7 +230,7 @@ NOBODY void CNavArea::Save(int fd, unsigned int version)
 	for (HidingSpotList::iterator iter = m_hidingSpotList.begin(); iter != m_hidingSpotList.end(); ++iter)
 	{
 		HidingSpot *spot = *iter;
-		
+
 		spot->Save(fd, version);
 
 		// overflow check
@@ -394,7 +415,7 @@ NOBODY void CNavArea::Load(SteamFile *file, unsigned int version)
 			HidingSpot *spot = new HidingSpot;
 
 			spot->Load(file, version);
-			
+
 			m_hidingSpotList.push_back(spot);
 		}
 	}
@@ -441,7 +462,7 @@ NOBODY void CNavArea::Load(SteamFile *file, unsigned int version)
 			// read list of spots along this path
 			unsigned char spotCount;
 			file->Read(&spotCount, sizeof(unsigned char));
-		
+
 			for (int s = 0; s < spotCount; ++s)
 			{
 				Vector pos;
@@ -470,9 +491,9 @@ NOBODY void CNavArea::Load(SteamFile *file, unsigned int version)
 		// read list of spots along this path
 		unsigned char spotCount;
 		file->Read(&spotCount, sizeof(unsigned char));
-	
+
 		SpotOrder order;
-		for( int s = 0; s < spotCount; ++s)
+		for (int s = 0; s < spotCount; ++s)
 		{
 			file->Read(&order.id, sizeof(unsigned int));
 
@@ -520,7 +541,7 @@ NOBODY NavErrorType CNavArea::PostLoad(void)
 				CONSOLE_ECHO("ERROR: Corrupt navigation data. Cannot connect Navigation Areas.\n");
 				error = NAV_CORRUPT_DATA;
 			}
-		}		
+		}
 	}
 
 	// resolve approach area IDs
@@ -615,14 +636,14 @@ NOBODY NavErrorType CNavArea::PostLoad(void)
 void COM_FixSlashes(char *pname)
 {
 #ifdef _WIN32
-	while (*pname) 
+	while (*pname)
 	{
 		if (*pname == '/')
 			*pname = '\\';
 		pname++;
 	}
 #else
-	while (*pname) 
+	while (*pname)
 	{
 		if (*pname == '\\')
 			*pname = '/';
@@ -778,7 +799,7 @@ NOBODY void LoadLocationFile(const char *filename)
 
 					CNavArea *area = TheNavAreaGrid.GetNavAreaByID(areaID);
 					unsigned int place = (locDirIndex > 0) ? directory[locDirIndex - 1] : UNDEFINED_PLACE;
-					
+
 					if (area)
 						area->SetPlace(place);
 				}
@@ -903,7 +924,7 @@ NOBODY NavErrorType __declspec(naked) LoadNavigationMap(void)
 	//result = navFile.Read(&version, sizeof(unsigned int));
 	//if (!result || version > 5)
 	//{
-	//	CONSOLE_ECHO( "ERROR: Unknown navigation file version.\n");
+	//	CONSOLE_ECHO("ERROR: Unknown navigation file version.\n");
 	//	return NAV_BAD_FILE_VERSION;
 	//}
 
@@ -958,7 +979,7 @@ NOBODY NavErrorType __declspec(naked) LoadNavigationMap(void)
 
 	//	// check validity of nav area
 	//	if (areaExtent->lo.x >= areaExtent->hi.x || areaExtent->lo.y >= areaExtent->hi.y)
-	//		CONSOLE_ECHO( "WARNING: Degenerate Navigation Area #%d at ( %g, %g, %g )\n", 
+	//		CONSOLE_ECHO("WARNING: Degenerate Navigation Area #%d at ( %g, %g, %g )\n",
 	//			area->GetID(), area->m_center.x, area->m_center.y, area->m_center.z);
 
 	//	if (areaExtent->lo.x < extent.lo.x)

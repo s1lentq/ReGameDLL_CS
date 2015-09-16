@@ -60,11 +60,11 @@
 class CSound
 {
 public:
-	NOBODY void Clear(void);
+	void Clear(void);
 	void Reset(void);
 
-	NOBODY BOOL FIsSound(void);
-	NOBODY BOOL FIsScent(void);
+	NOXREF BOOL FIsSound(void);
+	NOXREF BOOL FIsScent(void);
 
 public:
 	Vector m_vecOrigin;		// sound's location in space
@@ -85,13 +85,13 @@ class CSoundEnt: public CBaseEntity
 {
 public:
 
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual int ObjectCaps(void)
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual int ObjectCaps(void)
 	{
 		return ObjectCaps_();
 	}
-	NOBODY virtual void Think(void);
+	virtual void Think(void);
 
 #ifdef HOOK_GAMEDLL
 
@@ -113,10 +113,10 @@ public:
 	static void FreeSound(int iSound, int iPrevious);
 
 	// return the head of the active list
-	static int ActiveList(void);
+	NOXREF static int ActiveList(void);
 
 	// return the head of the free list
-	static int FreeList(void);
+	NOXREF static int FreeList(void);
 
 	// return a pointer for this index in the sound list
 	static CSound *SoundPointerForIndex(int iIndex);
@@ -146,5 +146,8 @@ private:
 #endif // HOOK_GAMEDLL
 
 extern CSoundEnt *pSoundEnt;
+
+// linked objects
+C_DLLEXPORT void soundent(entvars_t *pev);
 
 #endif // SOUNDENT_H

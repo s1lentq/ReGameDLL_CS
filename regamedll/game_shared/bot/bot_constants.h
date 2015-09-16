@@ -49,16 +49,20 @@ enum BotDifficultyType
 
 #ifdef DEFINE_DIFFICULTY_NAMES
 
-	char *BotDifficultyName[] = 
-	{
-		"EASY", "NORMAL", "HARD", "EXPERT", NULL
-	};
+char *BotDifficultyName[] =
+{
+	"EASY",
+	"NORMAL",
+	"HARD",
+	"EXPERT",
+
+	NULL
+};
 
 #else
 
-	extern char *BotDifficultyName[];
+extern char *BotDifficultyName[];
 
 #endif // DEFINE_DIFFICULTY_NAMES
-
 
 #endif // BOT_CONSTANTS_H

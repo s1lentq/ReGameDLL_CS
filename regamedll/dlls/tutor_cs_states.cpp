@@ -5,7 +5,7 @@
 */
 #ifndef HOOK_GAMEDLL
 
-char *const g_TutorStateStrings[20] = 
+char *const g_TutorStateStrings[20] =
 {
 	"#Cstrike_TutorState_Undefined",
 	"#Cstrike_TutorState_Looking_For_Hostage",

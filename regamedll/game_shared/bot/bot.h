@@ -57,7 +57,7 @@ T *CreateBot(const BotProfile *profile)
 	edict_t *pentBot;
 	if (UTIL_ClientsInGame() >= gpGlobals->maxClients)
 	{
-		CONSOLE_ECHO( "Unable to create bot: Server is full (%d/%d clients).\n", UTIL_ClientsInGame(), gpGlobals->maxClients);
+		CONSOLE_ECHO("Unable to create bot: Server is full (%d/%d clients).\n", UTIL_ClientsInGame(), gpGlobals->maxClients);
 		return NULL;
 	}
 
@@ -82,7 +82,7 @@ T *CreateBot(const BotProfile *profile)
 }
 
 // The base bot class from which bots for specific games are derived
-class CBot: public CBasePlayer 
+class CBot: public CBasePlayer
 {
 public:
 	// constructor initializes all values to zero
@@ -100,7 +100,7 @@ public:
 	{
 		CBasePlayer::Killed(pevAttacker, iGib);
 	}
-	NOBODY virtual void Think(void) { };
+	NOBODY virtual void Think(void) {};
 	virtual BOOL IsBot(void)
 	{
 		return true;
@@ -142,7 +142,7 @@ public:
 	NOBODY virtual void Reload(void);
 
 	// invoked when event occurs in the game (some events have NULL entities)
-	virtual void OnEvent(GameEventType event, CBaseEntity *entity = NULL, CBaseEntity *other = NULL) { };
+	virtual void OnEvent(GameEventType event, CBaseEntity *entity = NULL, CBaseEntity *other = NULL) {};
 
 	// return true if we can see the point
 	virtual bool IsVisible(const Vector *pos, bool testFOV = false) const = 0;
@@ -165,7 +165,7 @@ public:
 
 	// return true if player is facing towards us
 	NOBODY virtual bool IsPlayerFacingMe(CBasePlayer *other) const;
-	
+
 	// returns true if other player is pointing right at us
 	NOBODY virtual bool IsPlayerLookingAtMe(CBasePlayer *other) const;
 	virtual void ExecuteCommand(void);

@@ -567,14 +567,14 @@ NOBODY bool IsGameEventAudible(GameEventType event, CBaseEntity *entity, CBaseEn
 
 	const float ShortRange = 1000.0f;
 	const float NormalRange = 2000.0f;
-	switch(event)
+	switch (event)
 	{
 		case EVENT_WEAPON_FIRED:
 		{
 			if (player->m_pActiveItem == NULL)
 				return false;
 
-			switch(player->m_pActiveItem->m_iId)
+			switch (player->m_pActiveItem->m_iId)
 			{
 				case WEAPON_HEGRENADE:
 				case WEAPON_SMOKEGRENADE:

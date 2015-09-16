@@ -12,11 +12,11 @@ extern void Regamedll_Debug_logFree(void *ptr);
 extern void Regamedll_Debug_logStrDup(const char *s, void *ptr);
 extern void Regamedll_Debug_Init(void);
 
-#if defined(_WIN32) && !defined(REGAMEDLL_UNIT_TESTS)
+#endif // _WIN32
+
+#if defined(HOOK_GAMEDLL) && !defined(REGAMEDLL_UNIT_TESTS)
 extern void Regamedll_Game_Init(void);
-#endif // _WIN32 && REGAMEDLL_UNIT_TESTS
+#endif // HOOK_GAMEDLL
 
 extern void _printf2(const char *fmt, ...);
 extern void _print_chat(class CBasePlayer *pPlayer, const char *fmt, ...);
-
-#endif // _WIN32

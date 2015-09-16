@@ -155,7 +155,7 @@ int LookupActivityHeaviest(void *pmodel, entvars_t *pev, int activity)
 NOXREF void GetEyePosition(void *pmodel, float *vecEyePosition)
 {
 	studiohdr_t *pstudiohdr;
-	
+
 	pstudiohdr = (studiohdr_t *)pmodel;
 
 	if (!pstudiohdr)
@@ -163,7 +163,7 @@ NOXREF void GetEyePosition(void *pmodel, float *vecEyePosition)
 		ALERT(at_console, "GetEyePosition() Can't get pstudiohdr ptr!\n");
 		return;
 	}
-	
+
 	vecEyePosition[0] = pstudiohdr->eyeposition[0];
 	vecEyePosition[1] = pstudiohdr->eyeposition[1];
 	vecEyePosition[2] = pstudiohdr->eyeposition[2];
@@ -725,7 +725,7 @@ mstudioanim_t *StudioGetAnim(model_t *m_pSubModel, mstudioseqdesc_t *pseqdesc)
 	{
 		return (mstudioanim_t *)((byte *)g_pstudiohdr + pseqdesc->animindex);
 	}
-		
+
 	paSequences = (cache_user_t *)m_pSubModel->submodels;
 
 	if (paSequences == NULL)
@@ -803,7 +803,7 @@ void StudioCalcBoneAdj(float dadt, float *adj, const byte *pcontroller1, const b
 
 			value = (1.0 - value) * pbonecontroller[j].start + value * pbonecontroller[j].end;
 		}
-		switch(pbonecontroller[j].type & STUDIO_TYPES)
+		switch (pbonecontroller[j].type & STUDIO_TYPES)
 		{
 		case STUDIO_XR:
 		case STUDIO_YR:

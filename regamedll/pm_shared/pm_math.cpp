@@ -158,7 +158,7 @@ NOBODY void VectorTransform(const vec_t *in1, float *in2, vec_t *out)
 int VectorCompare(const vec_t *v1, const vec_t *v2)
 {
 	int i;
-	for (i = 0 ; i < 3 ; i++)
+	for (i = 0; i < 3; i++)
 	{
 		if (v1[i] != v2[i])
 			return 0;
@@ -217,7 +217,7 @@ float_precision Length(const vec_t *v)
 {
 	int i;
 	float_precision length = 0.0f;
-	
+
 	for (i = 0; i < 3; i++)
 		length += v[i] * v[i];
 
@@ -233,7 +233,7 @@ NOBODY float Distance(const vec_t *v1, const vec_t *v2)
 
 /* <2cec3c> ../cstrike/pm_shared/pm_math.c:332 */
 float_precision VectorNormalize(vec_t *v)
-{	
+{
 	float_precision length;
 	float_precision ilength;
 

@@ -1,6 +1,7 @@
 #include "precompiled.h"
 
-#pragma warning(disable : 4530)					// STL uses exceptions, but we are not compiling with them - ignore warning
+// STL uses exceptions, but we are not compiling with them - ignore warning
+#pragma warning(disable : 4530)
 
 //#define DEFINE_EVENT_NAMES
 
@@ -157,10 +158,14 @@ void CBotManager::OnEvent_(GameEventType event, CBaseEntity *entity, CBaseEntity
 	}
 
 	if (TheTutor)
+	{
 		TheTutor->OnEvent(event, entity, other);
+	}
 
 	if (g_pHostages)
+	{
 		g_pHostages->OnEvent(event, entity, other);
+	}
 }
 
 /* <49f7ff> ../game_shared/bot/bot_manager.cpp:257 */
@@ -233,7 +238,7 @@ bool CBotManager::IsInsideSmokeCloud(const Vector *pos)
 		{
 			const Vector *smokeOrigin = ag->GetDetonationPosition();
 
-			if ((*smokeOrigin - *pos).IsLengthLessThan( smokeRadius ))
+			if ((*smokeOrigin - *pos).IsLengthLessThan(smokeRadius))
 				return true;
 		}
 	}
@@ -313,12 +318,12 @@ bool CBotManager::IsLineBlockedBySmoke(const Vector *from, const Vector *to)
 						if (alongDist > 0.0f)
 						{
 							// ray goes thru 'close'
-							totalSmokedLength += halfSmokedLength + (close - *from).Length();						
+							totalSmokedLength += halfSmokedLength + (close - *from).Length();
 						}
 						else
 						{
 							// ray starts after 'close'
-							totalSmokedLength += halfSmokedLength - (close - *from).Length();						
+							totalSmokedLength += halfSmokedLength - (close - *from).Length();
 						}
 					}
 				}
@@ -332,7 +337,7 @@ bool CBotManager::IsLineBlockedBySmoke(const Vector *from, const Vector *to)
 					if (DotProduct(v, sightDir) > 0.0f)
 					{
 						// ray goes thru 'close'
-						totalSmokedLength += halfSmokedLength + (close - *to).Length();					
+						totalSmokedLength += halfSmokedLength + (close - *to).Length();
 					}
 					else
 					{
@@ -341,7 +346,7 @@ bool CBotManager::IsLineBlockedBySmoke(const Vector *from, const Vector *to)
 					}
 				}
 				else
-				{			
+				{
 					// 'from' and 'to' lie outside of the cloud - the line of sight completely crosses it
 					// determine the length of the chord that crosses the cloud
 

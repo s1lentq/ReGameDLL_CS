@@ -64,7 +64,11 @@
 #define CBSENTENCENAME_MAX	16
 #define CVOXFILESENTENCEMAX	1536	// max number of sentences in game. NOTE: this must match CVOXFILESENTENCEMAX in engine\sound.h!!!
 
+#ifdef CLIENT_WEAPONS
 #define WEAPON_TIMEBASED	0.0f
+#else
+#define WEAPON_TIMEBASED	gpGlobals->time
+#endif // CLIENT_WEAPONS
 
 #define GROUP_OP_AND		0
 #define GROUP_OP_NAND		1
@@ -102,6 +106,25 @@ extern globalvars_t *gpGlobals;
 #define SVC_WEAPONANIM		35
 #define SVC_ROOMTYPE		37
 #define SVC_DIRECTOR		51
+
+#define SF_TRIG_PUSH_ONCE		1
+
+// func_rotating
+#define SF_BRUSH_ROTATE_Y_AXIS		0
+#define SF_BRUSH_ROTATE_INSTANT		1
+#define SF_BRUSH_ROTATE_BACKWARDS	2
+#define SF_BRUSH_ROTATE_Z_AXIS		4
+#define SF_BRUSH_ROTATE_X_AXIS		8
+#define SF_PENDULUM_AUTO_RETURN		16
+#define	SF_PENDULUM_PASSABLE		32
+
+#define SF_BRUSH_ROTATE_SMALLRADIUS	128
+#define SF_BRUSH_ROTATE_MEDIUMRADIUS	256
+#define SF_BRUSH_ROTATE_LARGERADIUS	512
+
+#define SPAWNFLAG_NOMESSAGE		1
+#define SPAWNFLAG_NOTOUCH		1
+#define SPAWNFLAG_DROIDONLY		4
 
 #define VEC_HULL_MIN_Z		Vector(0, 0, -36)
 #define VEC_DUCK_HULL_MIN_Z	Vector(0, 0, -18)
@@ -417,8 +440,8 @@ float UTIL_VecToYaw(const Vector &vec);
 void UTIL_SetOrigin(entvars_t *pev, const Vector &vecOrigin);
 NOXREF void UTIL_ParticleEffect(const Vector &vecOrigin, const Vector &vecDirection, ULONG ulColor, ULONG ulCount);
 float UTIL_Approach(float target, float value, float speed);
-float UTIL_ApproachAngle(float target, float value, float speed);
-float UTIL_AngleDistance(float next, float cur);
+float_precision UTIL_ApproachAngle(float target, float value, float speed);
+float_precision UTIL_AngleDistance(float next, float cur);
 float UTIL_SplineFraction(float value, float scale);
 char *UTIL_VarArgs(char *format, ...);
 NOXREF Vector UTIL_GetAimVector(edict_t *pent, float flSpeed);
@@ -451,7 +474,7 @@ void EntvarsKeyvalue(entvars_t *pev, KeyValueData *pkvd);
 char UTIL_TextureHit(TraceResult *ptr, Vector vecSrc, Vector vecEnd);
 NOXREF int GetPlayerTeam(int index);
 bool UTIL_IsGame(const char *gameName);
-float UTIL_GetPlayerGaitYaw(int playerIndex);
+float_precision UTIL_GetPlayerGaitYaw(int playerIndex);
 
 /*
 * Declared for function overload
@@ -478,16 +501,12 @@ typedef int (CSaveRestoreBuffer::*CSAVERESTOREBUFFER_POINTER)(const char *,const
 
 #endif // HOOK_GAMEDLL
 
-#if 0
+#if 1
 
 extern void *addr_orig;
 extern char patchByte[5];
 extern char patchByteOriginal[5];
 
 #endif
-
-// Refs
-
-extern Vector (*pFireBullets3)(Vector, Vector, float, float, int, int, int, float, entvars_t *, bool, int);
 
 #endif // UTIL_H

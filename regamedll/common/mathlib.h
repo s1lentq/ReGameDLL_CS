@@ -67,23 +67,15 @@ typedef union DLONG_u
 
 #define M_PI			3.14159265358979323846
 
-//#ifndef max
-//#define max(a,b) (((a) > (b)) ? (a) : (b))
-//#endif
-//
-//#ifndef min
-//#define min(a,b) (((a) < (b)) ? (a) : (b))
-//#endif
+#define clamp(val, x, y) (((val) > (y)) ? (y) : (((val) < (x)) ? (x) : (val)))
 
-#ifndef _max
-#define _max(a,b) (((a) > (b)) ? (a) : (b))
-#endif
+#ifndef Q_max
+#define Q_max(a,b) ((a) > (b) ? (a) : (b))	// std::max(a, b)
+#endif // Q_max
 
-#ifndef _min
-#define _min(a,b) (((a) < (b)) ? (a) : (b))
-#endif
-
-#define clamp(val, min, max) (((val) > (max)) ? (max) : (((val) < (min)) ? (min) : (val)))
+#ifndef Q_min
+#define Q_min(a,b) ((a) < (b) ? (a) : (b))	// std::min(a, b)
+#endif // Q_min
 
 #define VectorSubtract(a,b,c) {(c)[0]=(a)[0]-(b)[0];(c)[1]=(a)[1]-(b)[1];(c)[2]=(a)[2]-(b)[2];}
 #define VectorAdd(a,b,c) {(c)[0]=(a)[0]+(b)[0];(c)[1]=(a)[1]+(b)[1];(c)[2]=(a)[2]+(b)[2];}

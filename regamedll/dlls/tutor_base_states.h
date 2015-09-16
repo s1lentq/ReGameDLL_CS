@@ -58,7 +58,7 @@ public:
 	virtual bool UpdateState(GameEventType event, CBaseEntity *entity, CBaseEntity *other) = 0;
 	virtual char *GetCurrentStateString(void) = 0;
 	virtual CBaseTutorState *ConstructNewState(int stateType) = 0;
-	
+
 public:
 	int GetCurrentStateType(void);
 

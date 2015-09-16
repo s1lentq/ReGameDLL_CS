@@ -328,7 +328,7 @@ void PrintAllEntities(void)
 
 		if (!edict || FStringNull(edict->v.classname))
 			continue;
-			
+
 		CONSOLE_ECHO("  %s\n", STRING(edict->v.classname));
 	}
 }
@@ -1043,7 +1043,7 @@ NOBODY bool __declspec(naked) CCSBotManager::AddBot(const BotProfile *profile, B
 	//if (pBot == NULL)
 	//{
 	//	return false;
-	//}	
+	//}
 
 	////int nJoinedTeam;
 	//ClientPutInServer(pBot->edict());
@@ -1162,6 +1162,7 @@ void CCSBotManager::__MAKE_VHOOK(OnEvent)(GameEventType event, CBaseEntity *enti
 	default:
 		break;
 	}
+
 	CBotManager::OnEvent(event, entity, other);
 }
 

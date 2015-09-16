@@ -32,6 +32,7 @@
 #pragma once
 #endif
 
+// STL uses exceptions, but we are not compiling with them - ignore warning
 #pragma warning(disable : 4530)
 
 #include <list>
@@ -59,7 +60,7 @@ public:
 
 	void OnEntityGone(void);
 	bool IsValid(void) const;
-	NOXREF bool IsEntity( CGrenade *grenade) const
+	NOXREF bool IsEntity(CGrenade *grenade) const
 	{
 		return (grenade == m_entity) ? true : false;
 	}

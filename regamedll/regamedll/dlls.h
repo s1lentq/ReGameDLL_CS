@@ -26,6 +26,7 @@
 *
 */
 
+#include "mathlib.h"
 #include "extdll.h"
 
 #include "h_export.h"
@@ -114,17 +115,16 @@
 #include "game_shared/bot/nav_file.h"
 #include "game_shared/bot/nav_path.h"
 
-// Hostage
-#include "hostage/hostage.h"
-#include "hostage/hostage_localnav.h"
-
 #include "airtank.h"
 #include "h_ai.h"
 #include "h_cycler.h"
 #include "h_battery.h"
 
+// Hostage
+#include "hostage/hostage.h"
+#include "hostage/hostage_localnav.h"
+
 #include "bot/cs_bot.h"
-#include "bot/cs_gamestate.h"
 
 // Tutor
 #include "tutor.h"

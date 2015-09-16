@@ -725,7 +725,7 @@ bool HIDDEN HookFunction(Module *module, FunctionHook *hook)
 	*(size_t *)&patch[1] = hook->handlerFunc - hook->originalAddress - 5;
 	patch[0] = 0xE9;
 
-#if 0
+#if 1
 	if (strcmp(hook->symbolName,"_ZNK9BotPhrase12GetSpeakableEiPf")==0)
 	{
 		addr_orig = (void *)hook->originalAddress;

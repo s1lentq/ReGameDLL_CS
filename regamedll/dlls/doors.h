@@ -52,19 +52,19 @@
 class CBaseDoor: public CBaseToggle
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual void Restart(void);
-	NOBODY virtual void KeyValue(KeyValueData *pkvd);
-	NOBODY virtual int Save(CSave &save);
-	NOBODY virtual int Restore(CRestore &restore);
-	NOBODY virtual int ObjectCaps(void)
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual void Restart(void);
+	virtual void KeyValue(KeyValueData *pkvd);
+	virtual int Save(CSave &save);
+	virtual int Restore(CRestore &restore);
+	virtual int ObjectCaps(void)
 	{
 		return ObjectCaps_();
 	}
-	NOBODY virtual void SetToggleState(int state);
-	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-	NOBODY virtual void Blocked(CBaseEntity *pOther);
+	virtual void SetToggleState(int state);
+	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	virtual void Blocked(CBaseEntity *pOther);
 
 #ifdef HOOK_GAMEDLL
 
@@ -86,26 +86,32 @@ public:
 	void Blocked_(CBaseEntity *pOther);
 
 #endif // HOOK_GAMEDLL
-	
+
 public:
 	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[7];
 
 public:
-	NOBODY void EXPORT DoorTouch(CBaseEntity *pOther);
-	NOBODY int DoorActivate(void);
-	NOBODY void EXPORT DoorGoUp(void);
-	NOBODY void EXPORT DoorGoDown(void);
-	NOBODY void EXPORT DoorHitTop(void);
-	NOBODY void EXPORT DoorHitBottom(void);
+	// used to selectivly override defaults
+	void EXPORT DoorTouch(CBaseEntity *pOther);
+	int DoorActivate(void);
+	void EXPORT DoorGoUp(void);
+	void EXPORT DoorGoDown(void);
+	void EXPORT DoorHitTop(void);
+	void EXPORT DoorHitBottom(void);
+
 public:
-	BYTE m_bHealthValue;
-	BYTE m_bMoveSnd;
-	BYTE m_bStopSnd;
-	locksound_t m_ls;
-	BYTE m_bLockedSound;
+	BYTE m_bHealthValue;		// some doors are medi-kit doors, they give players health
+
+	BYTE m_bMoveSnd;		// sound a door makes while moving
+	BYTE m_bStopSnd;		// sound a door makes when it stops
+
+	locksound_t m_ls;		// door lock sounds
+
+	BYTE m_bLockedSound;		// ordinals from entity selection
 	BYTE m_bLockedSentence;
 	BYTE m_bUnlockedSound;
 	BYTE m_bUnlockedSentence;
+
 	float m_lastBlockedTimestamp;
 
 };/* size: 360, cachelines: 6, members: 11 */
@@ -114,9 +120,9 @@ public:
 class CRotDoor: public CBaseDoor
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Restart(void);
-	NOBODY virtual void SetToggleState(int state);
+	virtual void Spawn(void);
+	virtual void Restart(void);
+	virtual void SetToggleState(int state);
 
 #ifdef HOOK_GAMEDLL
 
@@ -132,16 +138,16 @@ public:
 class CMomentaryDoor: public CBaseToggle
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual void KeyValue(KeyValueData *pkvd);
-	NOBODY virtual int Save(CSave &save);
-	NOBODY virtual int Restore(CRestore &restore);
-	NOBODY virtual int ObjectCaps(void)
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual void KeyValue(KeyValueData *pkvd);
+	virtual int Save(CSave &save);
+	virtual int Restore(CRestore &restore);
+	virtual int ObjectCaps(void)
 	{
 		return ObjectCaps_();
 	}
-	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
 
@@ -162,11 +168,16 @@ public:
 	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[1];
 
 public:
-	BYTE m_bMoveSnd;
+	BYTE m_bMoveSnd;	// sound a door makes while moving
 
 };/* size: 316, cachelines: 5, members: 3 */
 
+void PlayLockSounds(entvars_t *pev, locksound_t *pls, int flocked, int fbutton);
 
-NOBODY void PlayLockSounds(entvars_t *pev, locksound_t *pls, int flocked, int fbutton);
+// linked objects
+C_DLLEXPORT void func_door(entvars_t *pev);
+C_DLLEXPORT void func_water(entvars_t *pev);
+C_DLLEXPORT void func_door_rotating(entvars_t *pev);
+C_DLLEXPORT void momentary_door(entvars_t *pev);
 
 #endif // DOORS_H

@@ -16,7 +16,7 @@ TYPEDESCRIPTION CBaseAnimating::m_SaveData[] =
 
 #else
 
-TYPEDESCRIPTION (*CBaseAnimating::pm_SaveData)[5];
+TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CBaseAnimating, m_SaveData)[5];
 
 #endif // HOOK_GAMEDLL
 
@@ -187,7 +187,6 @@ NOXREF int CBaseAnimating::FindTransition(int iEndingSequence, int iGoalSequence
 	}
 
 	return ::FindTransition(pmodel, iEndingSequence, iGoalSequence, piDir);
-
 }
 
 /* <10a5d> ../cstrike/dlls/animating.cpp:234 */

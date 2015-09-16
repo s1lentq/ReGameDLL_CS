@@ -92,7 +92,7 @@ int Q_UChar32ToUTF32(uchar32 uVal, uchar32 *pUTF32)
 
 /* <f4344> ../engine/unicode_strtools.cpp:70 */
 template<
-	typename T_IN, 
+	typename T_IN,
 	typename T_OUT,
 	bool UNK,
 	qboolean(*IN_TO_UCHAR32)(const T_IN *pUTF8, uchar32 &uValueOut, bool &bErrorOut),
@@ -128,10 +128,10 @@ int Q_UnicodeConvertT(const T_IN *pIn, T_OUT *pOut, int nOutBytes, enum EStringC
 					pOut[0] = 0;
 					return 0;
 				}
-				
+
 			}
 		};
-		
+
 		pOut[nOut] = 0;
 	}
 	else
@@ -147,7 +147,7 @@ int Q_UnicodeConvertT(const T_IN *pIn, T_OUT *pOut, int nOutBytes, enum EStringC
 				if (ePolicy & STRINGCONVERT_SKIP)
 				{
 					nOut -= nOutElems;
-				} 
+				}
 				else if (ePolicy & STRINGCONVERT_FAIL)
 				{
 #ifndef REGAMEDLL_FIXES
@@ -156,7 +156,7 @@ int Q_UnicodeConvertT(const T_IN *pIn, T_OUT *pOut, int nOutBytes, enum EStringC
 #endif // REGAMEDLL_FIXES
 					return 0;
 				}
-				
+
 			}
 		}
 	}
@@ -204,7 +204,7 @@ int Q_UChar32ToUTF8(uchar32 uVal, char *pUTF8Out)
 	{
 		*pUTF8Out = uVal;
 		return 1;
-	} 
+	}
 	else if (uVal <= 0x7FF)
 	{
 		*pUTF8Out = (uVal >> 6) | 0xC0;
@@ -543,7 +543,7 @@ uchar16 *StripUnprintableWorker(uchar16 *pwch, bool *pbStrippedAny)
 		}
 		++pwchSource;
 	}
-	
+
 	*pwchDest = 0;
 	*pbStrippedAny = pwchSource != pwchDest;
 	return pwch;

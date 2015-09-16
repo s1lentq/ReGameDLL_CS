@@ -164,7 +164,7 @@ private:
 	CountdownTimer m_validateInterval;
 	bool m_allHostagesRescued;
 	bool m_haveSomeHostagesBeenTaken;
-	
+
 };/* size: 348, cachelines: 6, members: 19 */
 
 #endif // CS_GAMESTATE_H

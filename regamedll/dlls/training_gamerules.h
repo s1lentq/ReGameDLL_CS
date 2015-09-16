@@ -50,7 +50,7 @@ public:
 	virtual edict_t *GetPlayerSpawnSpot(CBasePlayer *pPlayer);
 	virtual void PlayerKilled(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor);
 	virtual int ItemShouldRespawn(CItem *pItem);
-	virtual void CheckMapConditions(void) { }
+	virtual void CheckMapConditions(void) {};
 	virtual void CheckWinConditions(void);
 
 #ifdef HOOK_GAMEDLL

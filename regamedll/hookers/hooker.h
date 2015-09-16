@@ -12,3 +12,11 @@ extern void *GetOriginalFuncAddrOrDie(const char *funcName);
 extern void *GetOriginalFuncAddrOrDefault(const char *funcName, void *def);
 extern void *GetFuncRefAddrOrDie(const char *funcName);
 extern void *GetFuncRefAddrOrDefault(const char *funcName, void *def);
+
+#if defined(HOOK_GAMEDLL) && !defined(REGAMEDLL_UNIT_TESTS)
+
+extern void Regamedll_Game_Init(void);
+extern void _printf2(const char *fmt, ...);
+extern void _print_chat(class CBasePlayer *pPlayer, const char *fmt, ...);
+
+#endif // HOOK_GAMEDLL

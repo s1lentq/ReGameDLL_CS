@@ -111,7 +111,7 @@ void CHalfLifeTraining::__MAKE_VHOOK(PlayerThink)(CBasePlayer *pPlayer)
 	pPlayer->m_iTeam = CT;
 	pPlayer->m_bCanShoot = true;
 	pPlayer->m_fLastMovement = gpGlobals->time;
-	
+
 	if (pPlayer->m_pActiveItem)
 		pPlayer->m_iHideHUD &= ~HIDEHUD_WEAPONS;
 	else
@@ -314,7 +314,7 @@ void CHalfLifeTraining::__MAKE_VHOOK(CheckWinConditions)(void)
 
 		CBaseEntity *pRescueArea;
 		CBaseEntity *pFirstRescueArea;
-		
+
 		pFirstRescueArea = CBaseEntity::Instance(FIND_ENTITY_BY_CLASSNAME(NULL, "func_hostage_rescue"));
 		pRescueArea = pFirstRescueArea;
 

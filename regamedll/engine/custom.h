@@ -1,9 +1,9 @@
 /***
 *
 *	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
-*	
-*	This product contains software technology licensed from Id 
-*	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
+*
+*	This product contains software technology licensed from Id
+*	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc.
 *	All Rights Reserved.
 *
 *   Use, distribution, and modification of this source code and/or resulting
@@ -82,7 +82,7 @@ typedef struct customization_s
 {
 	qboolean bInUse;     // Is this customization in use;
 	resource_t resource; // The resource_t for this customization
-	qboolean bTranslated; // Has the raw data been translated into a useable format?  
+	qboolean bTranslated; // Has the raw data been translated into a useable format?
 						   //  (e.g., raw decal .wad make into texture_t *)
 	int        nUserData1; // Customization specific data
 	int        nUserData2; // Customization specific data
@@ -96,8 +96,8 @@ typedef struct customization_s
 #define FCUST_IGNOREINIT	( 1<<2 )
 
 void		COM_ClearCustomizationList( struct customization_s *pHead, qboolean bCleanDecals);
-qboolean	COM_CreateCustomization( struct customization_s *pListHead, struct resource_s *pResource, int playernumber, int flags, 
-				struct customization_s **pCustomization, int *nLumps ); 
+qboolean	COM_CreateCustomization( struct customization_s *pListHead, struct resource_s *pResource, int playernumber, int flags,
+				struct customization_s **pCustomization, int *nLumps );
 int			COM_SizeofResourceList ( struct resource_s *pList, struct resourceinfo_s *ri );
 
 #endif // CUSTOM_H

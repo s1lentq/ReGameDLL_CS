@@ -16,7 +16,7 @@ TYPEDESCRIPTION CWallHealth::m_SaveData[] =
 
 #else
 
-TYPEDESCRIPTION (*CWallHealth::pm_SaveData)[5];
+TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CWallHealth, m_SaveData)[5];
 
 #endif // HOOK_GAMEDLL
 
@@ -45,7 +45,7 @@ BOOL CHealthKit::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
 	if (pPlayer->TakeHealth(gSkillData.healthkitCapacity, DMG_GENERIC))
 	{
 		MESSAGE_BEGIN(MSG_ONE, gmsgItemPickup, NULL, pPlayer->pev);
-			WRITE_STRING( STRING(pev->classname));
+			WRITE_STRING(STRING(pev->classname));
 		MESSAGE_END();
 
 		EMIT_SOUND(ENT(pPlayer->pev), CHAN_ITEM, "items/smallmedkit1.wav", VOL_NORM, ATTN_NORM);
@@ -98,7 +98,7 @@ void CWallHealth::__MAKE_VHOOK(Spawn)(void)
 	SET_MODEL(ENT(pev), STRING(pev->model));
 
 	m_iJuice = (int)gSkillData.healthchargerCapacity;
-	pev->frame = 0.0f;		
+	pev->frame = 0.0f;
 }
 
 /* <d5dd7> ../cstrike/dlls/healthkit.cpp:169 */
@@ -123,7 +123,7 @@ void CWallHealth::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCalle
 	// if there is no juice left, turn it off
 	if (m_iJuice <= 0)
 	{
-		pev->frame = 1.0f;			
+		pev->frame = 1.0f;
 		Off();
 	}
 
@@ -172,7 +172,7 @@ void CWallHealth::Recharge(void)
 {
 	EMIT_SOUND(ENT(pev), CHAN_ITEM, "items/medshot4.wav", VOL_NORM, ATTN_NORM);
 	m_iJuice = gSkillData.healthchargerCapacity;
-	pev->frame = 0.0f;			
+	pev->frame = 0.0f;
 	SetThink(&CWallHealth::SUB_DoNothing);
 }
 

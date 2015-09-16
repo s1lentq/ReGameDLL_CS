@@ -25,7 +25,7 @@ CBaseEntity *CBasePlayer::Observer_IsValidTarget(int iPlayerIndex, bool bSameTea
 		return NULL;
 
 	CBaseEntity *pEnt = UTIL_PlayerByIndex(iPlayerIndex);
-	
+
 	// Don't spec observers or players who haven't picked a class yet
 	if (!pEnt || pEnt == this || pEnt->has_disconnected || ((CBasePlayer *)pEnt)->IsObserver() || (pEnt->pev->effects & EF_NODRAW) || ((CBasePlayer *)pEnt)->m_iTeam == UNASSIGNED || (bSameTeam && ((CBasePlayer *)pEnt)->m_iTeam != m_iTeam))
 		return NULL;
@@ -167,7 +167,7 @@ void CBasePlayer::Observer_FindNextPlayer(bool bReverse, const char *name)
 			if (!name)
 				break;
 
-			pPlayer = (CBasePlayer *)UTIL_PlayerByIndex( ENTINDEX(m_hObserverTarget->edict()) );
+			pPlayer = (CBasePlayer *)UTIL_PlayerByIndex(ENTINDEX(m_hObserverTarget->edict()));
 
 			if (!Q_strcmp(name, STRING(pPlayer->pev->netname)))
 				break;
@@ -186,7 +186,7 @@ void CBasePlayer::Observer_FindNextPlayer(bool bReverse, const char *name)
 
 		MESSAGE_BEGIN(MSG_ONE, gmsgSpecHealth2, NULL, pev);
 			WRITE_BYTE((int)m_hObserverTarget->pev->health);
-			WRITE_BYTE( ENTINDEX(m_hObserverTarget->edict()) );
+			WRITE_BYTE(ENTINDEX(m_hObserverTarget->edict()));
 		MESSAGE_END();
 
 		// Store the target in pev so the physics DLL can get to it
@@ -489,7 +489,7 @@ void CBasePlayer::Observer_SetMode(int iMode)
 	if (pev->iuser1 == OBS_ROAMING)
 		pev->iuser2 = 0;
 	else
-		pev->iuser2 = ENTINDEX( m_hObserverTarget->edict() );
+		pev->iuser2 = ENTINDEX(m_hObserverTarget->edict());
 
 	// clear second target from death cam
 	pev->iuser3 = 0;

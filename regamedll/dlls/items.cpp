@@ -20,7 +20,7 @@ void CWorldItem::__MAKE_VHOOK(Spawn)(void)
 {
 	CBaseEntity *pEntity = NULL;
 
-	switch (m_iType) 
+	switch (m_iType)
 	{
 	case 41: // ITEM_HEALTHKIT
 		break;
@@ -54,7 +54,7 @@ void CItem::__MAKE_VHOOK(Spawn)(void)
 	pev->movetype = MOVETYPE_TOSS;
 	pev->solid = SOLID_TRIGGER;
 
-	UTIL_SetOrigin( pev, pev->origin );
+	UTIL_SetOrigin(pev, pev->origin);
 	UTIL_SetSize(pev, Vector(-16, -16, 0), Vector(16, 16, 16));
 
 	SetTouch(&CItem::ItemTouch);
@@ -179,7 +179,7 @@ BOOL CItemBattery::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
 		char szcharge[64];
 
 		pPlayer->pev->armorvalue += gSkillData.batteryCapacity;
-		pPlayer->pev->armorvalue = _min(pPlayer->pev->armorvalue, MAX_NORMAL_BATTERY);
+		pPlayer->pev->armorvalue = Q_min(pPlayer->pev->armorvalue, MAX_NORMAL_BATTERY);
 
 		EMIT_SOUND(pPlayer->edict(), CHAN_ITEM, "items/gunpickup2.wav", VOL_NORM, ATTN_NORM);
 
@@ -194,11 +194,11 @@ BOOL CItemBattery::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
 
 		if (pct > 0)
 			pct--;
-		
+
 		Q_sprintf(szcharge,"!HEV_%1dP", pct);
 		pPlayer->SetSuitUpdate(szcharge, FALSE, SUIT_NEXT_IN_30SEC);
 
-		return TRUE;		
+		return TRUE;
 	}
 	return FALSE;
 }

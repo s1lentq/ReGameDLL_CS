@@ -3,7 +3,7 @@
 skilldata_t gSkillData;
 
 // take the name of a cvar, tack a digit for the skill level
-// on, and return the value.of that Cvar 
+// on, and return the value.of that Cvar
 
 /* <16a558> ../cstrike/dlls/skill.cpp:30 */
 NOXREF float GetSkillCvar(char *pName)

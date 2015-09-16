@@ -160,7 +160,7 @@ void CDecal::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 	if (FStrEq(pkvd->szKeyName, "texture"))
 	{
 		pev->skin = DECAL_INDEX(pkvd->szValue);
-		
+
 		// Found
 		if (pev->skin >= 0)
 			return;
@@ -231,7 +231,7 @@ CGlobalState::CGlobalState(void)
 /* <1db63b> ../cstrike/dlls/world.cpp:299 */
 void CGlobalState::Reset(void)
 {
-	m_pList = NULL; 
+	m_pList = NULL;
 	m_listCount = 0;
 }
 
@@ -327,7 +327,7 @@ int CGlobalState::Save(CSave &save)
 {
 	int i;
 	globalentity_t *pEntity;
-	
+
 	if (!save.WriteFields("GLOBAL", this, IMPLEMENT_ARRAY(m_SaveData), ARRAYSIZE(IMPLEMENT_ARRAY(m_SaveData))))
 	{
 		return 0;
@@ -343,7 +343,7 @@ int CGlobalState::Save(CSave &save)
 
 		pEntity = pEntity->pNext;
 	}
-	
+
 	return 1;
 }
 
@@ -501,10 +501,10 @@ void CWorld::__MAKE_VHOOK(Precache)(void)
 
 	g_pGameRules = (CHalfLifeMultiplay *)InstallGameRules();
 
-	//!!!UNDONE why is there so much Spawn code in the Precache function? I'll just keep it here 
+	//!!!UNDONE why is there so much Spawn code in the Precache function? I'll just keep it here
 
 	///!!!LATER - do we want a sound ent in deathmatch? (sjb)
-	//pSoundEnt = CBaseEntity::Create( "soundent", g_vecZero, g_vecZero, edict() );
+	//pSoundEnt = CBaseEntity::Create("soundent", g_vecZero, g_vecZero, edict());
 	pSoundEnt = GetClassPtr((CSoundEnt *)NULL);
 	pSoundEnt->Spawn();
 

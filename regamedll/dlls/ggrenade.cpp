@@ -26,7 +26,7 @@ TYPEDESCRIPTION CGrenade::m_SaveData[] =
 
 #else // HOOK_GAMEDLL
 
-TYPEDESCRIPTION (*CGrenade::pm_SaveData)[15];
+TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CGrenade, m_SaveData)[15];
 
 #endif // HOOK_GAMEDLL
 
@@ -855,7 +855,9 @@ void CGrenade::__MAKE_VHOOK(Spawn)(void)
 	pev->movetype = MOVETYPE_BOUNCE;
 
 	if (pev->classname)
+	{
 		RemoveEntityHashValue(pev, STRING(pev->classname), CLASSNAME);
+	}
 
 	MAKE_STRING_CLASS("grenade", pev);
 	AddEntityHashValue(pev, STRING(pev->classname), CLASSNAME);
@@ -864,7 +866,7 @@ void CGrenade::__MAKE_VHOOK(Spawn)(void)
 	pev->solid = SOLID_BBOX;
 
 	SET_MODEL(ENT(pev), "models/grenade.mdl");
-	UTIL_SetSize(pev, Vector( 0, 0, 0), Vector(0, 0, 0));
+	UTIL_SetSize(pev, Vector(0, 0, 0), Vector(0, 0, 0));
 
 	pev->dmg = 30;
 	m_fRegisteredSound = FALSE;
@@ -1005,10 +1007,13 @@ void CGrenade::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, 
 
 	if (player->m_bHasDefuser)
 	{
-		UTIL_LogPrintf("\"%s<%i><%s><CT>\" triggered \"Begin_Bomb_Defuse_With_Kit\"\n",
+		UTIL_LogPrintf
+		(
+			"\"%s<%i><%s><CT>\" triggered \"Begin_Bomb_Defuse_With_Kit\"\n",
 			STRING(player->pev->netname),
 			GETPLAYERUSERID(player->edict()),
-			GETPLAYERAUTHID(player->edict()));
+			GETPLAYERAUTHID(player->edict())
+		);
 
 		ClientPrint(player->pev, HUD_PRINTCENTER, "#Defusing_Bomb_With_Defuse_Kit");
 		EMIT_SOUND(ENT(player->pev), CHAN_ITEM, "weapons/c4_disarm.wav", VOL_NORM, ATTN_NORM);

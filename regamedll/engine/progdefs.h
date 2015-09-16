@@ -33,7 +33,7 @@
 #endif
 
 typedef struct
-{	
+{
 	float time;
 	float frametime;
 	float force_retouch;
@@ -76,7 +76,7 @@ typedef struct entvars_s
 	Vector oldorigin;
 	Vector velocity;
 	Vector basevelocity;
-	Vector clbasevelocity;		// Base velocity that was passed in to server physics so 
+	Vector clbasevelocity;		// Base velocity that was passed in to server physics so
 					// client can predict conveyors correctly.  Server zeroes it, so we need to store here, too.
 	Vector movedir;
 	Vector angles;			// Model angles
@@ -98,7 +98,7 @@ typedef struct entvars_s
 	string_t model;
 	int viewmodel;			// player's viewmodel
 	int weaponmodel;		// what other players see
-	
+
 	Vector absmin;			// BB max translated to world coord
 	Vector absmax;			// BB max translated to world coord
 	Vector mins;			// local BB min
@@ -109,7 +109,7 @@ typedef struct entvars_s
 	float nextthink;
 	int movetype;
 	int solid;
-	int skin;			
+	int skin;
 	int body;			// sub-model selection for studiomodels
 	int effects;
 	float gravity;			// % of "normal" gravity
@@ -155,7 +155,7 @@ typedef struct entvars_s
 	float armorvalue;
 	int waterlevel;
 	int watertype;
-	
+
 	string_t target;
 	string_t targetname;
 	string_t netname;
@@ -165,17 +165,17 @@ typedef struct entvars_s
 	float dmg_save;
 	float dmg;
 	float dmgtime;
-	
+
 	string_t noise;
 	string_t noise1;
 	string_t noise2;
 	string_t noise3;
-	
+
 	float speed;
 	float air_finished;
 	float pain_finished;
 	float radsuit_finished;
-	
+
 	edict_t *pContainingEntity;
 
 	int playerclass;

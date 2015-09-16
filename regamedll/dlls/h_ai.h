@@ -32,8 +32,8 @@
 #pragma once
 #endif
 
-NOBODY BOOL FBoxVisible(entvars_t *pevLooker, entvars_t *pevTarget, Vector &vecTargetOrigin, float flSize);
-NOBODY Vector VecCheckToss(entvars_t *pev, Vector &vecSpot1, Vector vecSpot2, float flGravityAdj);
-NOBODY Vector VecCheckThrow(entvars_t *pev, Vector &vecSpot1, Vector vecSpot2, float flSpeed, float flGravityAdj);
+NOXREF BOOL FBoxVisible(entvars_t *pevLooker, entvars_t *pevTarget, Vector &vecTargetOrigin, float flSize);
+NOXREF Vector VecCheckToss(entvars_t *pev, const Vector &vecSpot1, Vector vecSpot2, float flGravityAdj);
+NOXREF Vector VecCheckThrow(entvars_t *pev, const Vector &vecSpot1, Vector vecSpot2, float flSpeed, float flGravityAdj);
 
 #endif // H_AI_H
