@@ -415,7 +415,7 @@ NOBODY bool CNavArea::IsConnected(const CNavArea *area, NavDirType dir) const
 	if (dir == NUM_DIRECTIONS)
 	{
 		// search all directions
-		for (int d = 0; d<NUM_DIRECTIONS; ++d)
+		for (int d = 0; d < NUM_DIRECTIONS; ++d)
 		{
 			for (iter = m_connect[ d ].begin(); iter != m_connect[ d ].end(); ++iter)
 			{
@@ -2037,7 +2037,7 @@ public:
 		if (m_count == 0)
 			return;
 
-		for (int j= i + 1; j < m_count; ++j)
+		for (int j = i + 1; j < m_count; ++j)
 			m_hidingSpot[j-1] = m_hidingSpot[j];
 
 		--m_count;
@@ -3062,7 +3062,9 @@ Place CNavAreaGrid::GetPlace(const Vector *pos) const
 	CNavArea *area = GetNearestNavArea(pos, true);
 
 	if (area)
+	{
 		return area->GetPlace();
+	}
 
 	return UNDEFINED_PLACE;
 }

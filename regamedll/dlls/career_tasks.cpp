@@ -32,7 +32,7 @@ const TaskInfo taskInfo[] =
 	{ NULL,				EVENT_INVALID,			&CCareerTask::NewTask }
 };
 
-#else // HOOK_GAMEDLL
+#else
 
 CCareerTaskManager *TheCareerTasks;
 const TaskInfo taskInfo[21];

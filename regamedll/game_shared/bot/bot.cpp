@@ -34,20 +34,20 @@ NOBODY CBot::CBot(void)
 }
 
 /* <48f6ef> ../game_shared/bot/bot.cpp:50 */
-bool CBot::Initialize_(const BotProfile *profile)
+bool CBot::__MAKE_VHOOK(Initialize)(const BotProfile *profile)
 {
 	m_profile = profile;
 	return true;
 }
 
 /* <48fbbd> ../game_shared/bot/bot.cpp:57 */
-NOBODY void CBot::Spawn_(void)
+NOBODY void CBot::__MAKE_VHOOK(Spawn)(void)
 {
 //	ResetCommand(CBot *const this);  //    80
 }
 
 /* <48fa37> ../game_shared/bot/bot.cpp:88 */
-NOBODY Vector CBot::GetAutoaimVector_(float flDelta)
+NOBODY Vector CBot::__MAKE_VHOOK(GetAutoaimVector)(float flDelta)
 {
 //	operator+(const Vector *const this,
 //			const Vector &v);  //    90
@@ -76,31 +76,31 @@ void CBot::BotThink(void)
 }
 
 /* <48f723> ../game_shared/bot/bot.cpp:119 */
-NOBODY void CBot::MoveForward_(void)
+NOBODY void CBot::__MAKE_VHOOK(MoveForward)(void)
 {
 //	GetMoveSpeed(CBot *const this);  //   121
 }
 
 /* <48f761> ../game_shared/bot/bot.cpp:130 */
-NOBODY void CBot::MoveBackward_(void)
+NOBODY void CBot::__MAKE_VHOOK(MoveBackward)(void)
 {
 //	GetMoveSpeed(CBot *const this);  //   132
 }
 
 /* <48f79f> ../game_shared/bot/bot.cpp:140 */
-NOBODY void CBot::StrafeLeft_(void)
+NOBODY void CBot::__MAKE_VHOOK(StrafeLeft)(void)
 {
 //	GetMoveSpeed(CBot *const this);  //   142
 }
 
 /* <48f7dd> ../game_shared/bot/bot.cpp:150 */
-NOBODY void CBot::StrafeRight_(void)
+NOBODY void CBot::__MAKE_VHOOK(StrafeRight)(void)
 {
 //	GetMoveSpeed(CBot *const this);  //   152
 }
 
 /* <48fe00> ../game_shared/bot/bot.cpp:160 */
-NOBODY bool CBot::Jump_(bool mustJump)
+NOBODY bool CBot::__MAKE_VHOOK(Jump)(bool mustJump)
 {
 //	{
 //		float const sanityInterval;                            //   173
@@ -114,7 +114,7 @@ NOBODY bool CBot::Jump_(bool mustJump)
 }
 
 /* <48f81b> ../game_shared/bot/bot.cpp:187 */
-NOBODY void CBot::ClearMovement_(void)
+NOBODY void CBot::__MAKE_VHOOK(ClearMovement)(void)
 {
 //	ResetCommand(CBot *const this);  //   189
 }
@@ -125,32 +125,32 @@ NOBODY bool CBot::IsJumping(void)
 }
 
 /* <48f859> ../game_shared/bot/bot.cpp:214 */
-NOBODY void CBot::Crouch_(void)
+NOBODY void CBot::__MAKE_VHOOK(Crouch)(void)
 {
 }
 
 /* <48f87f> ../game_shared/bot/bot.cpp:220 */
-NOBODY void CBot::StandUp_(void)
+NOBODY void CBot::__MAKE_VHOOK(StandUp)(void)
 {
 }
 
 /* <48f8a5> ../game_shared/bot/bot.cpp:227 */
-NOBODY void CBot::UseEnvironment_(void)
+NOBODY void CBot::__MAKE_VHOOK(UseEnvironment)(void)
 {
 }
 
 /* <48f8cb> ../game_shared/bot/bot.cpp:234 */
-NOBODY void CBot::PrimaryAttack_(void)
+NOBODY void CBot::__MAKE_VHOOK(PrimaryAttack)(void)
 {
 }
 
 /* <48f8f1> ../game_shared/bot/bot.cpp:240 */
-NOBODY void CBot::ClearPrimaryAttack_(void)
+NOBODY void CBot::__MAKE_VHOOK(ClearPrimaryAttack)(void)
 {
 }
 
 /* <48f917> ../game_shared/bot/bot.cpp:246 */
-void CBot::TogglePrimaryAttack_(void)
+void CBot::__MAKE_VHOOK(TogglePrimaryAttack)(void)
 {
 	if (m_buttonFlags & IN_ATTACK)
 		m_buttonFlags &= ~IN_ATTACK;
@@ -159,12 +159,12 @@ void CBot::TogglePrimaryAttack_(void)
 }
 
 /* <48f93d> ../game_shared/bot/bot.cpp:260 */
-NOBODY void CBot::SecondaryAttack_(void)
+NOBODY void CBot::__MAKE_VHOOK(SecondaryAttack)(void)
 {
 }
 
 /* <48f963> ../game_shared/bot/bot.cpp:266 */
-NOBODY void CBot::Reload_(void)
+NOBODY void CBot::__MAKE_VHOOK(Reload)(void)
 {
 }
 
@@ -204,7 +204,7 @@ bool CBot::IsUsingScope(void) const
 }
 
 /* <48f989> ../game_shared/bot/bot.cpp:338 */
-void CBot::ExecuteCommand_(void)
+void CBot::__MAKE_VHOOK(ExecuteCommand)(void)
 {
 	byte adjustedMSec;
 

@@ -81,7 +81,8 @@ void Regamedll_Game_Init(void)
 		return;
 #endif // _WIN32
 
-	_printf2("[Hooker]: The total number hooks of functions is - %d", nCountHook);
+	printf2("[Hooker]: The total number hooks of functions is - %d", nCountHook);
 }
+
 #endif // HOOK_GAMEDLL
 

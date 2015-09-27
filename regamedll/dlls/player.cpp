@@ -7069,6 +7069,7 @@ Vector CBasePlayer::__MAKE_VHOOK(GetAutoaimVector)(float flDelta)
 			m_lasty = m_vecAutoAim.y;
 		}
 	}
+
 	UTIL_MakeVectors(pev->v_angle + pev->punchangle + m_vecAutoAim);
 	return gpGlobals->v_forward;
 }

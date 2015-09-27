@@ -44,12 +44,12 @@ NOBODY CBotManager::CBotManager()
 }
 
 /* <49f586> ../game_shared/bot/bot_manager.cpp:78 */
-void CBotManager::RestartRound_(void)
+void CBotManager::__MAKE_VHOOK(RestartRound)(void)
 {
 	DestroyAllGrenades();
 }
 
-void CBotManager::StartFrame_(void)
+void CBotManager::__MAKE_VHOOK(StartFrame)(void)
 {
 	// debug smoke grenade visualization
 	if (cv_bot_debug.value == 5)
@@ -130,7 +130,7 @@ const char *CBotManager::GetNavMapFilename(void) const
 }
 
 /* <49f17b> ../game_shared/bot/bot_manager.cpp:219 */
-void CBotManager::OnEvent_(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
+void CBotManager::__MAKE_VHOOK(OnEvent)(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
 {
 	// propogate event to all bots
 	for (int i = 1; i <= gpGlobals->maxClients; i++)

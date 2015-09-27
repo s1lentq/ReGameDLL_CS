@@ -160,10 +160,8 @@ int HookGameDLL(size_t gameAddr, size_t engAddr)
 	{
 		if (!GetAddress(&g_GameDLLModule, (Address *)refData, g_BaseOffset))
 		{
-#if defined(_DEBUG) || !defined(_WIN32)
-			_logf(__FUNCTION__ ": symbol not found \"%s\", symbol index: %i\n", refData->symbolName, refData->symbolIndex);
+			_logf(__FUNCTION__ ": symbol not found \"%s\", symbol index: %i", refData->symbolName, refData->symbolIndex);
 			success = false;
-#endif // _DEBUG
 		}
 		refData++;
 	}
@@ -173,23 +171,20 @@ int HookGameDLL(size_t gameAddr, size_t engAddr)
 	{
 		if (!GetAddress(&g_GameDLLModule, (Address *)refFunc, g_BaseOffset))
 		{
-#if defined(_DEBUG) || !defined(_WIN32)
-			_logf(__FUNCTION__ ": symbol not found \"%s\", symbol index: %i\n", refFunc->symbolName, refFunc->symbolIndex);
+			_logf(__FUNCTION__ ": symbol not found \"%s\", symbol index: %i", refFunc->symbolName, refFunc->symbolIndex);
 			success = false;
-#endif // _DEBUG
 		}
 		refFunc++;
 	}
+
 
 	FunctionHook *hookFunc = g_FunctionHooks;
 	while (hookFunc->handlerFunc != NULL)
 	{
 		if (!GetAddress(&g_GameDLLModule, (Address*)hookFunc, g_BaseOffset))
 		{
-#if defined(_DEBUG) || !defined(_WIN32)
-			_logf(__FUNCTION__ ": symbol not found \"%s\", symbol index: %i\n", hookFunc->symbolName, hookFunc->symbolIndex);
+			_logf(__FUNCTION__ ": symbol not found \"%s\", symbol index: %i", hookFunc->symbolName, hookFunc->symbolIndex);
 			success = false;
-#endif // _DEBUG
 		}
 		hookFunc++;
 	}
@@ -199,19 +194,15 @@ int HookGameDLL(size_t gameAddr, size_t engAddr)
 	{
 		if (!GetAddress(&g_GameDLLModule, (Address *)refVtbl, g_BaseOffset))
 		{
-#if defined(_DEBUG) || !defined(_WIN32)
-			_logf(__FUNCTION__ ": symbol not found \"%s\"\n", refVtbl->symbolName);
+			_logf(__FUNCTION__ ": symbol not found \"%s\"", refVtbl->symbolName);
 			success = false;
-#endif // _DEBUG
 		}
 		refVtbl++;
 	}
 
 	if (!success)
 	{
-#if defined(_DEBUG) || !defined(_WIN32)
-		_logf(__FUNCTION__ ": failed to hook gamedll!\n");
-#endif // _DEBUG
+		_logf(__FUNCTION__ ": failed to hook gamedll!");
 		return (FALSE);
 	}
 

@@ -199,7 +199,7 @@ const char *BotProfileManager::GetCustomSkinFname(int index)
 		return NULL;
 	}
 
-	return m_skinFilenames[ index - FirstCustomSkin ];	//return m_skinModelnames[ index - FirstCustomSkin ];
+	return m_skinFilenames[ index - FirstCustomSkin ];
 }
 
 /* <4a8053> ../game_shared/bot/bot_profile.cpp:607 */
@@ -210,7 +210,7 @@ const char *BotProfileManager::GetCustomSkinModelname(int index)
 		return NULL;
 	}
 
-	return m_skinModelnames[ index - FirstCustomSkin ];	//return m_skins[ index - FirstCustomSkin ];
+	return m_skinModelnames[ index - FirstCustomSkin ];
 }
 
 /* <4a80db> ../game_shared/bot/bot_profile.cpp:621 */

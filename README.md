@@ -1,5 +1,5 @@
 # ReGameDLL_CS
-Reverse-engineered gamedll (mp.dll / Counter-Strike 1.6)
+Reverse-engineered gamedll (mp.dll / Counter-Strike)
 
 ## What is this?
 Regamedll_CS is a result of reverse engineering of original library mods HLDS (build 6153beta) using DWARF debug info embedded into linux version of HLDS, cs.so

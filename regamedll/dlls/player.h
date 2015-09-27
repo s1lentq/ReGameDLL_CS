@@ -730,7 +730,7 @@ public:
 	BOOL ShouldDoLargeFlinch(int nHitGroup, int nGunType);
 	void SetPrefsFromUserinfo(char *infobuffer);
 	void SendWeatherInfo(void);
-	void UpdateShieldCrosshair(bool);
+	void UpdateShieldCrosshair(bool draw);
 	bool HasShield(void);
 	bool IsProtectedByShield(void)
 	{

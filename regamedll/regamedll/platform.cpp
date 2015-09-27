@@ -4,8 +4,6 @@ IReGameDLLPlatform *CRegamedllPlatformHolder::m_Platform;
 
 void regamedll_log(const char *fmt, ...)
 {
-#ifdef _MSC_VER
-
 	va_list argptr;
 	static char data[8192];
 
@@ -22,15 +20,13 @@ void regamedll_log(const char *fmt, ...)
 	_write(fd, data, len);
 	_close(fd);
 
-#else // _WIN32
+#else
 
 	FILE *fd = fopen("regamedll.log", "at");
 	fprintf(fd, "%s", data);
 	fclose(fd);
 
 #endif // _WIN32
-
-#endif // _MSC_VER
 }
 
 void regamedll_syserror(const char *fmt, ...)

@@ -1114,15 +1114,15 @@ public:
 class CKnife: public CBasePlayerWeapon
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual int GetItemInfo(ItemInfo *p);
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual int GetItemInfo(ItemInfo *p);
 	virtual BOOL CanDrop(void)
 	{
 		return FALSE;
 	}
-	NOBODY virtual BOOL Deploy(void);
-	NOBODY virtual void Holster(int skiplocal);
+	virtual BOOL Deploy(void);
+	virtual void Holster(int skiplocal);
 	virtual float GetMaxSpeed(void)
 	{
 		return m_fMaxSpeed;
@@ -1131,27 +1131,45 @@ public:
 	{
 		return KNIFE_SLOT;
 	}
-	NOBODY virtual void PrimaryAttack(void);
-	NOBODY virtual void SecondaryAttack(void);
+	virtual void PrimaryAttack(void);
+	virtual void SecondaryAttack(void);
 	virtual BOOL UseDecrement(void)
 	{
 		return TRUE;
 	}
-	NOBODY virtual void WeaponIdle(void);
+	virtual void WeaponIdle(void);
+
+#ifdef HOOK_GAMEDLL
+
+	void Spawn_(void);
+	void Precache_(void);
+	int GetItemInfo_(ItemInfo *p);
+	BOOL Deploy_(void);
+	void Holster_(int skiplocal);
+	void PrimaryAttack_(void);
+	void SecondaryAttack_(void);
+	void WeaponIdle_(void);
+
+#endif // HOOK_GAMEDLL
+
 public:
-	NOBODY void EXPORT SwingAgain(void);
-	NOBODY void EXPORT Smack(void);
+	void EXPORT SwingAgain(void);
+	void EXPORT Smack(void);
+
 public:
-	NOBODY void WeaponAnimation(int iAnimation);
-	NOBODY int Stab(int fFirst);
-	NOBODY int Swing(int fFirst);
+	NOXREF void WeaponAnimation(int iAnimation);
+	int Stab(int fFirst);
+	int Swing(int fFirst);
+
 public:
-	NOBODY virtual bool ShieldSecondaryFire(int iUpAnim,int iDownAnim);
-	NOBODY virtual void SetPlayerShieldAnim(void);
-	NOBODY virtual void ResetPlayerShieldAnim(void);
+	virtual bool ShieldSecondaryFire(int iUpAnim,int iDownAnim);
+	virtual void SetPlayerShieldAnim(void);
+	virtual void ResetPlayerShieldAnim(void);
+
 public:
 	TraceResult m_trHit;
 	unsigned short m_usKnife;
+
 };/* size: 396, cachelines: 7, members: 3 */
 
 /* <275d5a> ../cstrike/dlls/weapons.h:910 */
@@ -1733,7 +1751,7 @@ extern int giAmmoIndex;
 extern short g_sModelIndexRadio;
 extern MULTIDAMAGE gMultiDamage;
 
-NOBODY void FindHullIntersection(Vector &vecSrc, TraceResult &tr, float *mins, float *maxs, edict_t *pEntity);
+void FindHullIntersection(Vector &vecSrc, TraceResult &tr, float *mins, float *maxs, edict_t *pEntity);
 void AnnounceFlashInterval(float interval, float offset = 0);
 
 int MaxAmmoCarry(int iszName);

@@ -109,6 +109,7 @@ int CaseInsensitiveHash(const char *string, int iBounds)
 			hash = *string + 2 * hash + ' ';
 		string++;
 	}
+
 	return (hash % iBounds);
 }
 
@@ -116,9 +117,7 @@ int CaseInsensitiveHash(const char *string, int iBounds)
 void EmptyEntityHashTable(void)
 {
 	int i;
-	hash_item_t *item;
-	hash_item_t *temp;
-	hash_item_t *free;
+	hash_item_t *item, *temp, *free;
 
 	for (i = 0; i < stringsHashTable.Count(); i++)
 	{
@@ -143,12 +142,8 @@ void EmptyEntityHashTable(void)
 void AddEntityHashValue(entvars_t *pev, const char *value, hash_types_e fieldType)
 {
 	int count;
-	hash_item_t *item;
-	hash_item_t *next;
-	hash_item_t *temp;
-	hash_item_t *newp;
-	int hash;
-	int pevIndex;
+	hash_item_t *item, *next, *temp, *newp;
+	int hash, pevIndex;
 	entvars_t *pevtemp;
 
 	if (fieldType != CLASSNAME)
@@ -164,7 +159,7 @@ void AddEntityHashValue(entvars_t *pev, const char *value, hash_types_e fieldTyp
 
 	while (item->pev)
 	{
-		if (!strcmp(STRING(item->pev->classname), STRING(pev->classname)))
+		if (!Q_strcmp(STRING(item->pev->classname), STRING(pev->classname)))
 			break;
 
 		hash = (hash + 1) % count;
@@ -238,7 +233,7 @@ void RemoveEntityHashValue(entvars_t *pev, const char *value, hash_types_e field
 
 	while (item->pev)
 	{
-		if (!strcmp(STRING(item->pev->classname), STRING(pev->classname)))
+		if (!Q_strcmp(STRING(item->pev->classname), STRING(pev->classname)))
 			break;
 
 		hash = (hash + 1) % count;
@@ -308,16 +303,21 @@ void printEntities(void)
 edict_t *CREATE_NAMED_ENTITY(string_t iClass)
 {
 	edict_t *named = g_engfuncs.pfnCreateNamedEntity(iClass);
-	if (named)
+	if (named != NULL)
+	{
 		AddEntityHashValue(&named->v, STRING(iClass), CLASSNAME);
+	}
+
 	return named;
 }
 
 /* <31249> ../cstrike/dlls/cbase.cpp:366 */
 void REMOVE_ENTITY(edict_t *e)
 {
-	if (e)
+	if (e != NULL)
+	{
 		(*g_engfuncs.pfnRemoveEntity)(e);
+	}
 }
 
 /* <30158> ../cstrike/dlls/cbase.cpp:375 */
@@ -425,6 +425,7 @@ extern "C" C_EXPORT int GetNewDLLFunctions(NEW_DLL_FUNCTIONS *pFunctionTable, in
 		*interfaceVersion = NEW_DLL_FUNCTIONS_VERSION;
 		return 0;
 	}
+
 	Q_memcpy(pFunctionTable, &gNewDLLFunctions, sizeof(NEW_DLL_FUNCTIONS));
 	return 1;
 }
@@ -446,7 +447,7 @@ int DispatchSpawn(edict_t *pent)
 		// that would touch too much code for me to do that right now.
 		pEntity = (CBaseEntity *)GET_PRIVATE(pent);
 
-		if (pEntity)
+		if (pEntity != NULL)
 		{
 			if (g_pGameRules && !g_pGameRules->IsAllowedToSpawn(pEntity))
 			{
@@ -461,7 +462,7 @@ int DispatchSpawn(edict_t *pent)
 		}
 
 		// Handle global stuff here
-		if (pEntity && pEntity->pev->globalname)
+		if (pEntity != NULL && pEntity->pev->globalname)
 		{
 			const globalentity_t *pGlobal = gGlobalState.EntityFromTable(pEntity->pev->globalname);
 
@@ -551,6 +552,7 @@ void DispatchThink(edict_t *pent)
 		{
 			ALERT(at_error, "Dormant entity %s is thinking!!\n", STRING(pEntity->pev->classname));
 		}
+
 		pEntity->Think();
 	}
 }
@@ -799,7 +801,7 @@ EHANDLE::operator CBaseEntity *(void)
 /* <31b30> ../cstrike/dlls/cbase.cpp:829 */
 CBaseEntity *EHANDLE::operator=(CBaseEntity *pEntity)
 {
-	if (pEntity)
+	if (pEntity != NULL)
 	{
 		m_pent = ENT(pEntity->pev);
 		if (m_pent)
@@ -810,6 +812,7 @@ CBaseEntity *EHANDLE::operator=(CBaseEntity *pEntity)
 		m_pent = NULL;
 		m_serialnumber = 0;
 	}
+
 	return pEntity;
 }
 
@@ -837,7 +840,9 @@ int CBaseEntity::__MAKE_VHOOK(TakeHealth)(float flHealth, int bitsDamageType)
 	pev->health += flHealth;
 
 	if (pev->health > pev->max_health)
+	{
 		pev->health = pev->max_health;
+	}
 
 	return 1;
 }

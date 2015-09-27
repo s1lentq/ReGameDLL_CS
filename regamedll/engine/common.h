@@ -80,12 +80,10 @@ typedef struct incomingtransfer_s
 
 #ifndef _WIN32
 #define _strlwr(p) for (int i = 0; p[i] != 0; i++) p[i] = tolower(p[i]);
-#endif
+#endif // _WIN32
 
-#ifdef _WIN32
 #define printf2 _printf2
 #define chatf _print_chat
-#endif // _WIN32
 
 #define Q_close _close
 #define Q_write _write

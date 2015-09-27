@@ -172,6 +172,7 @@ NOBODY int UTIL_HumansOnTeam(int teamID, bool isAlive)
 
 		iCount++;
 	}
+
 	return iCount;
 }
 
@@ -198,6 +199,7 @@ NOBODY int UTIL_BotsInGame(void)
 
 		iCount++;
 	}
+
 	return iCount;
 }
 
@@ -257,6 +259,7 @@ bool UTIL_KickBotFromTeam(TeamName kickTeam)
 			return true;
 		}
 	}
+
 	return false;
 }
 
@@ -285,6 +288,7 @@ NOBODY bool UTIL_IsTeamAllBots(int team)
 
 		++botCount;
 	}
+
 	return (botCount) ? true : false;
 }
 
@@ -407,6 +411,7 @@ NOBODY bool UTIL_IsVisibleToTeam(const Vector &spot, int team, float maxRange)
 		if (result.flFraction == 1.0f)
 			return true;
 	}
+
 	return false;
 }
 

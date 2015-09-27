@@ -43,7 +43,7 @@ size_t mfunc_ptr_cast(MFUNC f)
 #ifdef _WIN32
 extern const size_t g_BaseOffset = 0x01D00000;
 #else
-extern const size_t g_BaseOffset = NULL;
+extern const size_t g_BaseOffset = 0x00000000;
 #endif
 
 //#define Mem_Region
@@ -3211,29 +3211,29 @@ FunctionHook g_FunctionHooks[] =
 	//{ 0x0, "_ZN10CHEGrenade21ResetPlayerShieldAnimEv", mfunc_ptr_cast(&CHEGrenade::ResetPlayerShieldAnim) },
 //CKnife
 	//virtual func
-	//{ 0x0, "_ZN6CKnife5SpawnEv", mfunc_ptr_cast(&CKnife::Spawn) },
-	//{ 0x0, "_ZN6CKnife8PrecacheEv", mfunc_ptr_cast(&CKnife::Precache) },
-	//{ 0x0, "_ZN6CKnife11GetItemInfoEP8ItemInfo", mfunc_ptr_cast(&CKnife::GetItemInfo) },
-	//{ 0x0, "_ZN6CKnife7CanDropEv", mfunc_ptr_cast(&CKnife::CanDrop) },
-	//{ 0x0, "_ZN6CKnife6DeployEv", mfunc_ptr_cast(&CKnife::Deploy) },
-	//{ 0x0, "_ZN6CKnife7HolsterEi", mfunc_ptr_cast(&CKnife::Holster) },
-	//{ 0x0, "_ZN6CKnife11GetMaxSpeedEv", mfunc_ptr_cast(&CKnife::GetMaxSpeed) },
-	//{ 0x0, "_ZN6CKnife9iItemSlotEv", mfunc_ptr_cast(&CKnife::iItemSlot) },
-	//{ 0x0, "_ZN6CKnife13PrimaryAttackEv", mfunc_ptr_cast(&CKnife::PrimaryAttack) },
-	//{ 0x0, "_ZN6CKnife15SecondaryAttackEv", mfunc_ptr_cast(&CKnife::SecondaryAttack) },
-	//{ 0x0, "_ZN6CKnife12UseDecrementEv", mfunc_ptr_cast(&CKnife::UseDecrement) },
-	//{ 0x0, "_ZN6CKnife10WeaponIdleEv", mfunc_ptr_cast(&CKnife::WeaponIdle) },
+	{ 0x01D08500, "_ZN6CKnife5SpawnEv", mfunc_ptr_cast(&CKnife::Spawn_) },
+	{ 0x01D08550, "_ZN6CKnife8PrecacheEv", mfunc_ptr_cast(&CKnife::Precache_) },
+	{ 0x01D085F0, "_ZN6CKnife11GetItemInfoEP8ItemInfo", mfunc_ptr_cast(&CKnife::GetItemInfo_) },
+	//{ 0x01D09910, "_ZN6CKnife7CanDropEv", mfunc_ptr_cast(&CKnife::CanDrop_) },	// DEFAULT
+	{ 0x01D08640, "_ZN6CKnife6DeployEv", mfunc_ptr_cast(&CKnife::Deploy_) },
+	{ 0x01D08710, "_ZN6CKnife7HolsterEi", mfunc_ptr_cast(&CKnife::Holster_) },
+	//{ 0x01D09900, "_ZN6CKnife11GetMaxSpeedEv", mfunc_ptr_cast(&CKnife::GetMaxSpeed_) },	// DEFAULT
+	//{ 0x01D098F0, "_ZN6CKnife9iItemSlotEv", mfunc_ptr_cast(&CKnife::iItemSlot_) },	// DEFAULT
+	{ 0x01D08980, "_ZN6CKnife13PrimaryAttackEv", mfunc_ptr_cast(&CKnife::PrimaryAttack_) },
+	{ 0x01D08B50, "_ZN6CKnife15SecondaryAttackEv", mfunc_ptr_cast(&CKnife::SecondaryAttack_) },
+	//{ 0x01D09920, "_ZN6CKnife12UseDecrementEv", mfunc_ptr_cast(&CKnife::UseDecrement_) },	// DEFAULT
+	{ 0x01D08BB0, "_ZN6CKnife10WeaponIdleEv", mfunc_ptr_cast(&CKnife::WeaponIdle_) },
 	//non-virtual func
 	{ 0x01D084B0, "weapon_knife", (size_t)&weapon_knife },
-	//{ 0x0, "FindHullIntersection", (size_t)&FindHullIntersection },
-	//{ 0x0, "_ZN6CKnife10SwingAgainEv", mfunc_ptr_cast(&CKnife::SwingAgain) },
-	//{ 0x0, "_ZN6CKnife5SmackEv", mfunc_ptr_cast(&CKnife::Smack) },
-	//{ 0x0, "_ZN6CKnife15WeaponAnimationEi", mfunc_ptr_cast(&CKnife::WeaponAnimation) },
-	//{ 0x0, "_ZN6CKnife4StabEi", mfunc_ptr_cast(&CKnife::Stab) },
-	//{ 0x0, "_ZN6CKnife5SwingEi", mfunc_ptr_cast(&CKnife::Swing) },
-	//{ 0x0, "_ZN6CKnife19ShieldSecondaryFireEii", mfunc_ptr_cast(&CKnife::ShieldSecondaryFire) },
-	//{ 0x0, "_ZN6CKnife19SetPlayerShieldAnimEv", mfunc_ptr_cast(&CKnife::SetPlayerShieldAnim) },
-	//{ 0x0, "_ZN6CKnife21ResetPlayerShieldAnimEv", mfunc_ptr_cast(&CKnife::ResetPlayerShieldAnim) },
+	{ 0x01D08780, "FindHullIntersection", (size_t)&FindHullIntersection },
+	{ 0x01D08BA0, "_ZN6CKnife10SwingAgainEv", mfunc_ptr_cast(&CKnife::SwingAgain) },
+	{ 0x01D08B80, "_ZN6CKnife5SmackEv", mfunc_ptr_cast(&CKnife::Smack) },
+	//{ 0x01D08730, "_ZN6CKnife15WeaponAnimationEi", mfunc_ptr_cast(&CKnife::WeaponAnimation) },	// NOXREF
+	{ 0x01D09390, "_ZN6CKnife4StabEi", mfunc_ptr_cast(&CKnife::Stab) },
+	{ 0x01D08C30, "_ZN6CKnife5SwingEi", mfunc_ptr_cast(&CKnife::Swing) },
+	{ 0x01D08A20, "_ZN6CKnife19ShieldSecondaryFireEii", mfunc_ptr_cast(&CKnife::ShieldSecondaryFire) },
+	//{ 0x01D08990, "_ZN6CKnife19SetPlayerShieldAnimEv", mfunc_ptr_cast(&CKnife::SetPlayerShieldAnim) },	// NOXREF
+	//{ 0x01D089E0, "_ZN6CKnife21ResetPlayerShieldAnimEv", mfunc_ptr_cast(&CKnife::ResetPlayerShieldAnim) },	// NOXREF
 //CM249
 	//virtual func
 	//{ 0x0, "_ZN5CM2495SpawnEv", mfunc_ptr_cast(&CM249::Spawn) },
@@ -5330,7 +5330,6 @@ VirtualTableRef g_TableRefs[] =
 {
 	// Weapon shared
 	{ 0x01DF46BC, "CKnife",			CWEAPON_VIRTUAL_COUNT },
-	{ 0x01DF46BC, "CKnife",			CWEAPON_VIRTUAL_COUNT },
 	{ 0x01DF34E4, "CAWP",			CWEAPON_VIRTUAL_COUNT },
 	{ 0x01DF51AC, "CP90",			CWEAPON_VIRTUAL_COUNT },
 
@@ -5617,19 +5616,19 @@ AddressRef g_DataRefs[] =
 	{ 0x01E1F5B0, "rgdpvpreset", (size_t)&prgdpvpreset },
 	{ 0x01E75488, "fTextureTypeInit", (size_t)&pfTextureTypeInit },
 
-	{ 0x01E7548C, "gcTextures_1", (size_t)&pgcTextures },
-	{ 0x01E70C80, "grgszTextureName_1", (size_t)&pgrgszTextureName },
-	{ 0x01E75080, "grgchTextureType_1", (size_t)&pgrgchTextureType },
-	//implementation at PM_Shared
+	{ 0x01E7548C, "gcTextures", (size_t)&pgcTextures, 2 },
+	{ 0x01E70C80, "grgszTextureName", (size_t)&pgrgszTextureName, 2 },
+	{ 0x01E75080, "grgchTextureType", (size_t)&pgrgchTextureType, 2 },
 
-	{ 0x01E63B88, "grgszTextureName", (size_t)&ppm_grgszTextureName },
-	{ 0x01E67F88, "grgchTextureType", (size_t)&ppm_grgchTextureType },
+	//implementation at PM_Shared
+	{ 0x01E68390, "gcTextures", (size_t)&ppm_gcTextures, 1 },
+	{ 0x01E63B88, "grgszTextureName", (size_t)&ppm_grgszTextureName, 1 },
+	{ 0x01E67F88, "grgchTextureType", (size_t)&ppm_grgchTextureType, 1 },
+
 	{ 0x01E68388, "pm_shared_initialized", (size_t)&ppm_shared_initialized },
 	{ 0x01E63700, "rgv3tStuckTable", (size_t)&prgv3tStuckTable },
 	{ 0x01E63A88, "rgStuckLast", (size_t)&prgStuckLast },
 	{ 0x01E68394, "g_onladder", (size_t)&pg_onladder },
-
-	{ 0x01E68390, "gcTextures", (size_t)&ppm_gcTextures },
 
 	{ 0x01E6838C, "pmove", (size_t)&pg_ppmove },
 	{ 0x01E76578, "g_flWeaponCheat", (size_t)&pg_flWeaponCheat },

@@ -337,7 +337,7 @@ model {
 
 task buildRelease {
     dependsOn binaries.withType(SharedLibraryBinarySpec).matching { SharedLibraryBinarySpec blib ->
-        blib.buildable && (/*blib.buildType.name == 'release' || */blib.buildType.name == 'debug') && !blib.name.contains('RegamedllFixes')
+        blib.buildable && (blib.buildType.name == 'release' /*|| blib.buildType.name == 'debug'*/) && !blib.name.contains('RegamedllFixes')
     }
 }
 
