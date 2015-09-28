@@ -310,7 +310,7 @@ void CWeaponCycler::__MAKE_VHOOK(Spawn)(void)
 BOOL CWeaponCycler::__MAKE_VHOOK(Deploy)(void)
 {
 	m_pPlayer->pev->viewmodel = m_iszModel;
-	m_pPlayer->m_flNextAttack = WEAPON_TIMEBASED + 1.0;
+	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 1.0;
 
 	SendWeaponAnim(0);
 	m_iClip = 0;
@@ -321,7 +321,7 @@ BOOL CWeaponCycler::__MAKE_VHOOK(Deploy)(void)
 /* <ccaa3> ../cstrike/dlls/h_cycler.cpp:388 */
 void CWeaponCycler::__MAKE_VHOOK(Holster)(int skiplocal)
 {
-	m_pPlayer->m_flNextAttack = WEAPON_TIMEBASED + 0.5;
+	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5;
 }
 
 /* <ccad8> ../cstrike/dlls/h_cycler.cpp:394 */

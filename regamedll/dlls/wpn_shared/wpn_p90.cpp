@@ -58,10 +58,7 @@ int CP90::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	p->iMaxClip = P90_MAX_CLIP;
 	p->iSlot = 0;
 	p->iPosition = 8;
-
-	m_iId = WEAPON_P90;
-	p->iId = WEAPON_P90;
-
+	p->iId = m_iId = WEAPON_P90;
 	p->iFlags = 0;
 	p->iWeight = P90_WEIGHT;
 
@@ -100,9 +97,7 @@ void CP90::__MAKE_VHOOK(PrimaryAttack)(void)
 /* <296647> ../cstrike/dlls/wpn_shared/wpn_p90.cpp:120 */
 void CP90::P90Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 {
-	Vector vecAiming;
-	Vector vecSrc;
-	Vector vecDir;
+	Vector vecAiming, vecSrc, vecDir;
 	int flag;
 
 	m_bDelayFire = true;
@@ -186,7 +181,7 @@ void CP90::P90Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
 	}
 
-	m_flTimeWeaponIdle = WEAPON_TIMEBASED + 2.0;
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.0;
 
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
 	{
@@ -229,12 +224,12 @@ void CP90::__MAKE_VHOOK(WeaponIdle)(void)
 	ResetEmptySound();
 	m_pPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);
 
-	if (m_flTimeWeaponIdle > WEAPON_TIMEBASED)
+	if (m_flTimeWeaponIdle > UTIL_WeaponTimeBase())
 	{
 		return;
 	}
 
-	m_flTimeWeaponIdle = WEAPON_TIMEBASED + 20.0;
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20.0;
 	SendWeaponAnim(P90_IDLE1, UseDecrement() != FALSE);
 }
 

@@ -59,10 +59,7 @@ int CAWP::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	p->iMaxClip = AWP_MAX_CLIP;
 	p->iSlot = 0;
 	p->iPosition = 2;
-
-	m_iId = WEAPON_AWP;
-	p->iId = WEAPON_AWP;
-
+	p->iId = m_iId = WEAPON_AWP;
 	p->iFlags = 0;
 	p->iWeight = AWP_WEIGHT;
 
@@ -77,7 +74,7 @@ BOOL CAWP::__MAKE_VHOOK(Deploy)(void)
 		m_pPlayer->m_flNextAttack = GetNextAttackDelay(1.45);
 		m_flNextPrimaryAttack = m_pPlayer->m_flNextAttack;
 
-		m_flNextSecondaryAttack = WEAPON_TIMEBASED + 1.0;
+		m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 1.0;
 
 		return TRUE;
 	}
@@ -103,7 +100,7 @@ void CAWP::__MAKE_VHOOK(SecondaryAttack)(void)
 	m_pPlayer->ResetMaxSpeed();
 	EMIT_SOUND(m_pPlayer->edict(), CHAN_ITEM, "weapons/zoom.wav", 0.2, 2.4);
 
-	m_flNextSecondaryAttack = WEAPON_TIMEBASED + 0.3;
+	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.3;
 }
 
 /* <23fd53> ../cstrike/dlls/wpn_shared/wpn_awp.cpp:143 */
@@ -134,9 +131,7 @@ void CAWP::__MAKE_VHOOK(PrimaryAttack)(void)
 /* <23fe76> ../cstrike/dlls/wpn_shared/wpn_awp.cpp:157 */
 void CAWP::AWPFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 {
-	Vector vecAiming;
-	Vector vecSrc;
-	Vector vecDir;
+	Vector vecAiming, vecSrc, vecDir;
 	int flag;
 
 	if (m_pPlayer->pev->fov != DEFAULT_FOV)
@@ -194,7 +189,7 @@ void CAWP::AWPFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 		115,
 		0.99,
 		m_pPlayer->pev,
-		true,
+		true,			// TODO: why awp is have bPistol set true?
 		m_pPlayer->random_seed
 	);
 
@@ -228,7 +223,7 @@ void CAWP::AWPFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
 	}
 
-	m_flTimeWeaponIdle = WEAPON_TIMEBASED + 2.0;
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.0;
 	m_pPlayer->pev->punchangle.x -= 2;
 }
 
@@ -264,9 +259,9 @@ void CAWP::__MAKE_VHOOK(WeaponIdle)(void)
 	ResetEmptySound();
 	m_pPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);
 
-	if (m_flTimeWeaponIdle <= WEAPON_TIMEBASED && m_iClip)
+	if (m_flTimeWeaponIdle <= UTIL_WeaponTimeBase() && m_iClip)
 	{
-		m_flTimeWeaponIdle = WEAPON_TIMEBASED + 60;
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 60;
 		SendWeaponAnim(AWP_IDLE, UseDecrement() != FALSE);
 	}
 }

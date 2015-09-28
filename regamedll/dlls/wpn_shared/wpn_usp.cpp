@@ -77,19 +77,16 @@ void CUSP::__MAKE_VHOOK(Precache)(void)
 /* <2bacfb> ../cstrike/dlls/wpn_shared/wpn_usp.cpp:107 */
 int CUSP::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 {
+	p->pszName = STRING(pev->classname);
 	p->pszAmmo1 = "45ACP";
 	p->iMaxAmmo1 = MAX_AMMO_45ACP;
-	p->pszName = STRING(pev->classname);
 	p->pszAmmo2 = 0;
 	p->iMaxAmmo2 = -1;
 	p->iMaxClip = USP_MAX_CLIP;
 	p->iSlot = 1;
 	p->iPosition = 4;
 	p->iFlags = 0;
-
-	m_iId = WEAPON_USP;
-	p->iId = WEAPON_USP;
-
+	p->iId = m_iId = WEAPON_USP;
 	p->iWeight = USP_WEIGHT;
 
 	return 1;
@@ -138,10 +135,9 @@ void CUSP::__MAKE_VHOOK(SecondaryAttack)(void)
 		SendWeaponAnim(USP_ATTACH_SILENCER, UseDecrement() != FALSE);
 		Q_strcpy(m_pPlayer->m_szAnimExtention, "onehanded");
 	}
-	
-	m_flNextSecondaryAttack = WEAPON_TIMEBASED + 3.0;
-	m_flTimeWeaponIdle = WEAPON_TIMEBASED + 3.0;
 
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 3.0;
+	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 3.0;
 	m_flNextPrimaryAttack = GetNextAttackDelay(3.0);
 }
 
@@ -193,9 +189,7 @@ void CUSP::USPFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 {
 	int flag;
 	int iDamage;
-	Vector vecAiming;
-	Vector vecSrc;
-	Vector vecDir;
+	Vector vecAiming, vecSrc, vecDir;
 
 	flCycleTime -= 0.075;
 
@@ -300,7 +294,7 @@ void CUSP::USPFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, FALSE);
 	}
 	
-	m_flTimeWeaponIdle = WEAPON_TIMEBASED + 2;
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2;
 	m_pPlayer->pev->punchangle.x -= 2;
 	ResetPlayerShieldAnim();
 }
@@ -345,7 +339,7 @@ void CUSP::__MAKE_VHOOK(WeaponIdle)(void)
 
 	if (m_pPlayer->HasShield())
 	{
-		m_flTimeWeaponIdle = WEAPON_TIMEBASED + 20.0;
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20.0;
 
 		if (m_iWeaponState & WPNSTATE_SHIELD_DRAWN)
 		{
@@ -356,7 +350,7 @@ void CUSP::__MAKE_VHOOK(WeaponIdle)(void)
 	{
 		int iAnim = (~m_iWeaponState & WPNSTATE_USP_SILENCED) ? USP_UNSIL_IDLE: USP_IDLE;
 
-		m_flTimeWeaponIdle = WEAPON_TIMEBASED + 60.0;
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 60.0;
 		SendWeaponAnim(iAnim, UseDecrement());
 	}
 }

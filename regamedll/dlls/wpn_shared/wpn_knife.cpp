@@ -76,7 +76,10 @@ int CKnife::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	p->iSlot = 2;
 	p->iPosition = 1;
 	p->iId = WEAPON_KNIFE;
+
+	// TODO: it is not being used
 	//p->iFlags = 0;
+
 	p->iWeight = KNIFE_WEIGHT;
 
 	return 1;
@@ -104,7 +107,7 @@ BOOL CKnife::__MAKE_VHOOK(Deploy)(void)
 /* <27052b> ../cstrike/dlls/wpn_shared/wpn_knife.cpp:119 */
 void CKnife::__MAKE_VHOOK(Holster)(int skiplocal)
 {
-	m_pPlayer->m_flNextAttack = WEAPON_TIMEBASED + 0.5;
+	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5;
 }
 
 /* <270d70> ../cstrike/dlls/wpn_shared/wpn_knife.cpp:124 */
@@ -248,8 +251,8 @@ bool CKnife::ShieldSecondaryFire(int iUpAnim, int iDownAnim)
 	m_pPlayer->ResetMaxSpeed();
 
 	m_flNextPrimaryAttack = GetNextAttackDelay(0.4);
-	m_flNextSecondaryAttack = WEAPON_TIMEBASED + 0.4;
-	m_flTimeWeaponIdle = WEAPON_TIMEBASED + 0.6;
+	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.4;
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.6;
 	
 	return true;
 }
@@ -260,7 +263,7 @@ void CKnife::__MAKE_VHOOK(SecondaryAttack)(void)
 	if (!ShieldSecondaryFire(KNIFE_SHIELD_UP, KNIFE_SHIELD_DOWN))
 	{
 		Stab(TRUE);
-		pev->nextthink = WEAPON_TIMEBASED + 0.35;
+		pev->nextthink = UTIL_WeaponTimeBase() + 0.35;
 	}
 }
 
@@ -282,14 +285,14 @@ void CKnife::__MAKE_VHOOK(WeaponIdle)(void)
 	ResetEmptySound();
 	m_pPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);
 
-	if (m_flTimeWeaponIdle > WEAPON_TIMEBASED)
+	if (m_flTimeWeaponIdle > UTIL_WeaponTimeBase())
 	{
 		return;
 	}
 
 	if (!m_pPlayer->m_bShieldDrawn)
 	{
-		m_flTimeWeaponIdle = WEAPON_TIMEBASED + 20.0;
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20.0;
 		SendWeaponAnim(KNIFE_IDLE, UseDecrement() != FALSE);
 	}
 }
@@ -338,17 +341,17 @@ int CKnife::Swing(int fFirst)
 				}
 
 				m_flNextPrimaryAttack = GetNextAttackDelay(0.35);
-				m_flNextSecondaryAttack = WEAPON_TIMEBASED + 0.5;
+				m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.5;
 			}
 			else
 			{
 				SendWeaponAnim(KNIFE_SHIELD_ATTACKHIT, UseDecrement() != FALSE);
 
 				m_flNextPrimaryAttack = GetNextAttackDelay(1.0);
-				m_flNextSecondaryAttack = WEAPON_TIMEBASED + 1.2;
+				m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 1.2;
 			}
 
-			m_flTimeWeaponIdle = WEAPON_TIMEBASED + 2.0;
+			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.0;
 
 			if (RANDOM_LONG(0, 1))
 				EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_WEAPON, "weapons/knife_slash1.wav", VOL_NORM, ATTN_NORM, 0, 94);
@@ -371,17 +374,17 @@ int CKnife::Swing(int fFirst)
 			}
 
 			m_flNextPrimaryAttack = GetNextAttackDelay(0.4);
-			m_flNextSecondaryAttack = WEAPON_TIMEBASED + 0.5;
+			m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.5;
 		}
 		else
 		{
 			SendWeaponAnim(KNIFE_SHIELD_ATTACKHIT, UseDecrement() != FALSE);
 
 			m_flNextPrimaryAttack = GetNextAttackDelay(1.0);
-			m_flNextSecondaryAttack = WEAPON_TIMEBASED + 1.2;
+			m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 1.2;
 		}
 
-		m_flTimeWeaponIdle = WEAPON_TIMEBASED + 2.0;
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.0;
 
 		CBaseEntity *pEntity = CBaseEntity::Instance(tr.pHit);
 		SetPlayerShieldAnim();
@@ -389,7 +392,7 @@ int CKnife::Swing(int fFirst)
 		m_pPlayer->SetAnimation(PLAYER_ATTACK1);
 		ClearMultiDamage();
 
-		if (m_flNextPrimaryAttack + 0.4 < WEAPON_TIMEBASED)
+		if (m_flNextPrimaryAttack + 0.4 < UTIL_WeaponTimeBase())
 			pEntity->TraceAttack(m_pPlayer->pev, 20, gpGlobals->v_forward, &tr, (DMG_NEVERGIB | DMG_BULLET));
 		else
 			pEntity->TraceAttack(m_pPlayer->pev, 15, gpGlobals->v_forward, &tr, (DMG_NEVERGIB | DMG_BULLET));
@@ -435,7 +438,7 @@ int CKnife::Swing(int fFirst)
 			m_trHit = tr;
 			SetThink(&CKnife::Smack);
 
-			pev->nextthink = 0.2;
+			pev->nextthink = UTIL_WeaponTimeBase() + 0.2;
 			m_pPlayer->m_iWeaponVolume = (int)(flVol * KNIFE_WALLHIT_VOLUME);
 			
 			ResetPlayerShieldAnim();
@@ -488,7 +491,7 @@ int CKnife::Stab(int fFirst)
 			SendWeaponAnim(KNIFE_STABMISS, UseDecrement() != FALSE);
 
 			m_flNextPrimaryAttack = GetNextAttackDelay(1.0);
-			m_flNextSecondaryAttack = WEAPON_TIMEBASED + 1.0;
+			m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 1.0;
 
 			if (RANDOM_LONG(0, 1))
 				EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_WEAPON, "weapons/knife_slash1.wav", VOL_NORM, ATTN_NORM, 0, 94);
@@ -505,7 +508,7 @@ int CKnife::Stab(int fFirst)
 		SendWeaponAnim(KNIFE_STABHIT, UseDecrement() != FALSE);
 
 		m_flNextPrimaryAttack = GetNextAttackDelay(1.1);
-		m_flNextSecondaryAttack = WEAPON_TIMEBASED + 1.1;
+		m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 1.1;
 
 		CBaseEntity *pEntity = CBaseEntity::Instance(tr.pHit);
 
@@ -571,7 +574,7 @@ int CKnife::Stab(int fFirst)
 			m_pPlayer->m_iWeaponVolume = (int)(flVol * KNIFE_WALLHIT_VOLUME);
 			
 			SetThink(&CKnife::Smack);
-			pev->nextthink = 0.2;
+			pev->nextthink = UTIL_WeaponTimeBase() + 0.2;
 
 			ResetPlayerShieldAnim();
 		}

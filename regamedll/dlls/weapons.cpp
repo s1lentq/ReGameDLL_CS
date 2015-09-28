@@ -945,7 +945,7 @@ void CBasePlayerWeapon::__MAKE_VHOOK(ItemPostFrame)(void)
 		FireRemaining(m_iFamasShotsFired, m_flFamasShoot, FALSE);
 	}
 
-	if (m_flNextPrimaryAttack <= WEAPON_TIMEBASED)
+	if (m_flNextPrimaryAttack <= UTIL_WeaponTimeBase())
 	{
 		if (m_pPlayer->m_bResumeZoom)
 		{
@@ -977,11 +977,11 @@ void CBasePlayerWeapon::__MAKE_VHOOK(ItemPostFrame)(void)
 			SecondaryAttack();
 			m_pPlayer->pev->button &= ~IN_ATTACK2;
 			m_fInReload = FALSE;
-			m_pPlayer->m_flNextAttack = WEAPON_TIMEBASED;
+			m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase();
 		}
 	}
 
-	if (m_fInReload && m_pPlayer->m_flNextAttack <= WEAPON_TIMEBASED)
+	if (m_fInReload && m_pPlayer->m_flNextAttack <= UTIL_WeaponTimeBase())
 	{
 		// complete the reload.
 		int j = Q_min(iMaxClip() - m_iClip, m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]);
@@ -993,7 +993,7 @@ void CBasePlayerWeapon::__MAKE_VHOOK(ItemPostFrame)(void)
 		m_fInReload = FALSE;
 	}
 
-	if ((usableButtons & IN_ATTACK2) && CanAttack(m_flNextSecondaryAttack, WEAPON_TIMEBASED, UseDecrement()))
+	if ((usableButtons & IN_ATTACK2) && CanAttack(m_flNextSecondaryAttack, UTIL_WeaponTimeBase(), UseDecrement()))
 	{
 		if (pszAmmo2() && !m_pPlayer->m_rgAmmo[SecondaryAmmoIndex()])
 		{
@@ -1003,7 +1003,7 @@ void CBasePlayerWeapon::__MAKE_VHOOK(ItemPostFrame)(void)
 		SecondaryAttack();
 		m_pPlayer->pev->button &= ~IN_ATTACK2;
 	}
-	else if ((m_pPlayer->pev->button & IN_ATTACK) && CanAttack(m_flNextPrimaryAttack, WEAPON_TIMEBASED, UseDecrement()))
+	else if ((m_pPlayer->pev->button & IN_ATTACK) && CanAttack(m_flNextPrimaryAttack, UTIL_WeaponTimeBase(), UseDecrement()))
 	{
 		if ((m_iClip == 0 && pszAmmo1()) || (iMaxClip() == WEAPON_NOCLIP && !m_pPlayer->m_rgAmmo[PrimaryAmmoIndex()]))
 		{
@@ -1017,7 +1017,7 @@ void CBasePlayerWeapon::__MAKE_VHOOK(ItemPostFrame)(void)
 			PrimaryAttack();
 		}
 	}
-	else if ((m_pPlayer->pev->button & IN_RELOAD) && iMaxClip() != WEAPON_NOCLIP && !m_fInReload && m_flNextPrimaryAttack < WEAPON_TIMEBASED)
+	else if ((m_pPlayer->pev->button & IN_RELOAD) && iMaxClip() != WEAPON_NOCLIP && !m_fInReload && m_flNextPrimaryAttack < UTIL_WeaponTimeBase())
 	{
 		if (m_flFamasShoot == 0 && m_flGlock18Shoot == 0)
 		{
@@ -1056,13 +1056,13 @@ void CBasePlayerWeapon::__MAKE_VHOOK(ItemPostFrame)(void)
 		else
 			m_iShotsFired = 0;
 
-		if (!IsUseable() && m_flNextPrimaryAttack < WEAPON_TIMEBASED)
+		if (!IsUseable() && m_flNextPrimaryAttack < UTIL_WeaponTimeBase())
 		{
 #if 0
 			// weapon isn't useable, switch.
 			if (!(iFlags() & ITEM_FLAG_NOAUTOSWITCHEMPTY) && g_pGameRules->GetNextBestWeapon(m_pPlayer, this))
 			{
-				m_flNextPrimaryAttack = WEAPON_TIMEBASED + 0.3;
+				m_flNextPrimaryAttack = UTIL_WeaponTimeBase() + 0.3;
 				return;
 			}
 #endif
@@ -1072,7 +1072,7 @@ void CBasePlayerWeapon::__MAKE_VHOOK(ItemPostFrame)(void)
 			if (!(m_iWeaponState & WPNSTATE_SHIELD_DRAWN))
 			{
 				// weapon is useable. Reload if empty and weapon has waited as long as it has to after firing
-				if (!m_iClip && !(iFlags() & ITEM_FLAG_NOAUTORELOAD) && m_flNextPrimaryAttack < WEAPON_TIMEBASED)
+				if (!m_iClip && !(iFlags() & ITEM_FLAG_NOAUTORELOAD) && m_flNextPrimaryAttack < UTIL_WeaponTimeBase())
 				{
 					if (m_flFamasShoot == 0 && m_flGlock18Shoot == 0)
 					{
@@ -1636,9 +1636,9 @@ float CBasePlayerWeapon::GetNextAttackDelay(float delay)
 		flCreep = flTimeBetweenFires - m_flPrevPrimaryAttack;
 	}
 
-	float flNextAttack = WEAPON_TIMEBASED + delay - flCreep;
+	float flNextAttack = UTIL_WeaponTimeBase() + delay - flCreep;
 #else
-	float flNextAttack = WEAPON_TIMEBASED + delay;
+	float flNextAttack = UTIL_WeaponTimeBase() + delay;
 #endif // REGAMEDLL_BUILD_6153
 
 	// save the last fire time
@@ -1646,7 +1646,7 @@ float CBasePlayerWeapon::GetNextAttackDelay(float delay)
 
 	// we need to remember what the m_flNextPrimaryAttack time is set to for each shot,
 	// store it as m_flPrevPrimaryAttack.
-	m_flPrevPrimaryAttack = flNextAttack - WEAPON_TIMEBASED;
+	m_flPrevPrimaryAttack = flNextAttack - UTIL_WeaponTimeBase();
 
 	return flNextAttack;
 }

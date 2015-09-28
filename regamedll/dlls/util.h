@@ -64,12 +64,6 @@
 #define CBSENTENCENAME_MAX	16
 #define CVOXFILESENTENCEMAX	1536	// max number of sentences in game. NOTE: this must match CVOXFILESENTENCEMAX in engine\sound.h!!!
 
-#ifdef CLIENT_WEAPONS
-#define WEAPON_TIMEBASED	0.0f
-#else
-#define WEAPON_TIMEBASED	gpGlobals->time
-#endif // CLIENT_WEAPONS
-
 #define GROUP_OP_AND		0
 #define GROUP_OP_NAND		1
 
@@ -384,6 +378,7 @@ extern int g_groupmask;
 extern int g_groupop;
 extern const int gSizes[18];
 
+float UTIL_WeaponTimeBase(void);
 unsigned int U_Random(void);
 void U_Srand(unsigned int seed);
 int UTIL_SharedRandomLong(unsigned int seed, int low, int high);

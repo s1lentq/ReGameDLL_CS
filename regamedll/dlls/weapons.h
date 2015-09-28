@@ -904,33 +904,45 @@ private:
 class CC4: public CBasePlayerWeapon
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual void KeyValue(KeyValueData *pkvd);
-	NOBODY virtual void Use(CBaseEntity *pActivator,CBaseEntity *pCaller,USE_TYPE useType,float value);
-	NOBODY virtual int GetItemInfo(ItemInfo *p);
-	NOBODY virtual BOOL Deploy(void);
-	NOBODY virtual void Holster(int skiplocal);
-	virtual float GetMaxSpeed(void)
-	{
-		return 250.0f;
-	}
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual void KeyValue(KeyValueData *pkvd);
+	virtual void Use(CBaseEntity *pActivator,CBaseEntity *pCaller,USE_TYPE useType,float value);
+	virtual int GetItemInfo(ItemInfo *p);
+	virtual BOOL Deploy(void);
+	virtual void Holster(int skiplocal);
+	virtual float GetMaxSpeed(void);
 	virtual int iItemSlot(void)
 	{
 		return C4_SLOT;
 	}
-	NOBODY virtual void PrimaryAttack(void);
-	NOBODY virtual void WeaponIdle(void);
+	virtual void PrimaryAttack(void);
+	virtual void WeaponIdle(void);
 	virtual BOOL UseDecrement(void)
 	{
 		return TRUE;
 	}
+#ifdef HOOK_GAMEDLL
+
+	void Spawn_(void);
+	void Precache_(void);
+	void KeyValue_(KeyValueData *pkvd);
+	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	int GetItemInfo_(ItemInfo *p);
+	BOOL Deploy_(void);
+	void Holster_(int skiplocal);
+	void PrimaryAttack_(void);
+	void WeaponIdle_(void);
+
+#endif // HOOK_GAMEDLL
+
 public:
 	bool m_bStartedArming;
 	bool m_bBombPlacedAnimation;
 	float m_fArmedTime;
 private:
 	bool m_bHasShield;
+
 };/* size: 348, cachelines: 6, members: 5 */
 
 /* <24afee> ../cstrike/dlls/weapons.h:750 */
@@ -1041,10 +1053,10 @@ private:
 class CGLOCK18: public CBasePlayerWeapon
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual int GetItemInfo(ItemInfo *p);
-	NOBODY virtual BOOL Deploy(void);
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual int GetItemInfo(ItemInfo *p);
+	virtual BOOL Deploy(void);
 	virtual float GetMaxSpeed(void)
 	{
 		return m_fMaxSpeed;
@@ -1053,10 +1065,10 @@ public:
 	{
 		return PISTOL_SLOT;
 	}
-	NOBODY virtual void PrimaryAttack(void);
-	NOBODY virtual void SecondaryAttack(void);
-	NOBODY virtual void Reload(void);
-	NOBODY virtual void WeaponIdle(void);
+	virtual void PrimaryAttack(void);
+	virtual void SecondaryAttack(void);
+	virtual void Reload(void);
+	virtual void WeaponIdle(void);
 	virtual BOOL UseDecrement(void)
 	{
 		return TRUE;
@@ -1065,11 +1077,26 @@ public:
 	{
 		return TRUE;
 	}
+#ifdef HOOK_GAMEDLL
+
+	void Spawn_(void);
+	void Precache_(void);
+	int GetItemInfo_(ItemInfo *p);
+	BOOL Deploy_(void);
+	void PrimaryAttack_(void);
+	void SecondaryAttack_(void);
+	void Reload_(void);
+	void WeaponIdle_(void);
+
+#endif // HOOK_GAMEDLL
+
 public:
-	NOBODY void GLOCK18Fire(float flSpread, float flCycleTime, BOOL bFireBurst);
+	void GLOCK18Fire(float flSpread, float flCycleTime, BOOL bFireBurst);
+
 public:
 	int m_iShell;
 	bool m_bBurstFire;
+
 };/* size: 344, cachelines: 6, members: 3 */
 
 /* <26a48a> ../cstrike/dlls/weapons.h:852 */
@@ -1772,9 +1799,12 @@ BOOL CanAttack(float attack_time, float curtime, BOOL isPredicted);
 // linked object
 C_DLLEXPORT void weapon_knife(entvars_t *pev);
 C_DLLEXPORT void weapon_usp(entvars_t *pev);
+C_DLLEXPORT void weapon_glock18(entvars_t *pev);
+C_DLLEXPORT void weapon_c4(entvars_t *pev);
 C_DLLEXPORT void weapon_awp(entvars_t *pev);
+C_DLLEXPORT void weapon_p90(entvars_t *pev);
+
 C_DLLEXPORT void armoury_entity(entvars_t *pev);
 C_DLLEXPORT void weaponbox(entvars_t *pev);
-C_DLLEXPORT void weapon_p90(entvars_t *pev);
 
 #endif // WEAPONS_H

@@ -150,6 +150,15 @@ const int gSizes[18];
 
 #endif //HOOK_GAMEDLL
 
+float UTIL_WeaponTimeBase(void)
+{
+#ifdef CLIENT_WEAPONS
+	return 0.0;
+#else
+	return gpGlobals->time;
+#endif // CLIENT_WEAPONS
+}
+
 /* <1ac4be> ../cstrike/dlls/util.cpp:59 */
 unsigned int U_Random(void)
 {

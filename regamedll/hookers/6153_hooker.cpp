@@ -3104,20 +3104,20 @@ FunctionHook g_FunctionHooks[] =
 	{ 0x01D02BF0, "_ZN4CAWP7AWPFireEffi", mfunc_ptr_cast(&CAWP::AWPFire) },
 //CC4
 	//virtual func
-	//{ 0x0, "_ZN3CC45SpawnEv", mfunc_ptr_cast(&CC4::Spawn) },
-	//{ 0x0, "_ZN3CC48PrecacheEv", mfunc_ptr_cast(&CC4::Precache) },
-	//{ 0x0, "_ZN3CC48KeyValueEP14KeyValueData_s", mfunc_ptr_cast(&CC4::KeyValue) },
-	//{ 0x0, "_ZN3CC43UseEP11CBaseEntityS1_8USE_TYPEf", mfunc_ptr_cast(&CC4::Use) },
-	//{ 0x0, "_ZN3CC411GetItemInfoEP8ItemInfo", mfunc_ptr_cast(&CC4::GetItemInfo) },
-	//{ 0x0, "_ZN3CC46DeployEv", mfunc_ptr_cast(&CC4::Deploy) },
-	//{ 0x0, "_ZN3CC47HolsterEi", mfunc_ptr_cast(&CC4::Holster) },
-	//{ 0x0, "_ZN3CC411GetMaxSpeedEv", mfunc_ptr_cast(&CC4::GetMaxSpeed) },
-	//{ 0x0, "_ZN3CC49iItemSlotEv", mfunc_ptr_cast(&CC4::iItemSlot) },
-	//{ 0x0, "_ZN3CC413PrimaryAttackEv", mfunc_ptr_cast(&CC4::PrimaryAttack) },
-	//{ 0x0, "_ZN3CC410WeaponIdleEv", mfunc_ptr_cast(&CC4::WeaponIdle) },
-	//{ 0x0, "_ZN3CC412UseDecrementEv", mfunc_ptr_cast(&CC4::UseDecrement) },
+	{ 0x01D03030, "_ZN3CC45SpawnEv", mfunc_ptr_cast(&CC4::Spawn_) },
+	{ 0x01D030F0, "_ZN3CC48PrecacheEv", mfunc_ptr_cast(&CC4::Precache_) },
+	{ 0x01D03840, "_ZN3CC48KeyValueEP14KeyValueData_s", mfunc_ptr_cast(&CC4::KeyValue_) },
+	{ 0x01D03900, "_ZN3CC43UseEP11CBaseEntityS1_8USE_TYPEf", mfunc_ptr_cast(&CC4::Use_) },
+	{ 0x01D03120, "_ZN3CC411GetItemInfoEP8ItemInfo", mfunc_ptr_cast(&CC4::GetItemInfo_) },
+	{ 0x01D03190, "_ZN3CC46DeployEv", mfunc_ptr_cast(&CC4::Deploy_) },
+	{ 0x01D03200, "_ZN3CC47HolsterEi", mfunc_ptr_cast(&CC4::Holster_) },
+	//{ 0x01D03A80, "_ZN3CC411GetMaxSpeedEv", mfunc_ptr_cast(&CC4::GetMaxSpeed_) },		// DEFAULT
+	//{ 0x01D03A70, "_ZN3CC49iItemSlotEv", mfunc_ptr_cast(&CC4::iItemSlot_) },		// DEFAULT
+	{ 0x01D03280, "_ZN3CC413PrimaryAttackEv", mfunc_ptr_cast(&CC4::PrimaryAttack_) },
+	{ 0x01D03750, "_ZN3CC410WeaponIdleEv", mfunc_ptr_cast(&CC4::WeaponIdle_) },
+	//{ 0x01D03A90, "_ZN3CC412UseDecrementEv", mfunc_ptr_cast(&CC4::UseDecrement_) },		// DEFAULT
 	//non-virtual func
-	//{ 0x0, "weapon_c4", (size_t)&weapon_c4 },
+	{ 0x01D02FE0, "weapon_c4", (size_t)&weapon_c4 },
 //CDEAGLE
 	//virtual func
 	//{ 0x0, "_ZN7CDEAGLE5SpawnEv", mfunc_ptr_cast(&CDEAGLE::Spawn) },
@@ -3174,21 +3174,21 @@ FunctionHook g_FunctionHooks[] =
 	//{ 0x0, "_ZN6CG3SG19G3SG1FireEffi", mfunc_ptr_cast(&CG3SG1::G3SG1Fire) },
 //CGLOCK18
 	//virtual func
-	//{ 0x0, "_ZN8CGLOCK185SpawnEv", mfunc_ptr_cast(&CGLOCK18::Spawn) },
-	//{ 0x0, "_ZN8CGLOCK188PrecacheEv", mfunc_ptr_cast(&CGLOCK18::Precache) },
-	//{ 0x0, "_ZN8CGLOCK1811GetItemInfoEP8ItemInfo", mfunc_ptr_cast(&CGLOCK18::GetItemInfo) },
-	//{ 0x0, "_ZN8CGLOCK186DeployEv", mfunc_ptr_cast(&CGLOCK18::Deploy) },
-	//{ 0x0, "_ZN8CGLOCK1811GetMaxSpeedEv", mfunc_ptr_cast(&CGLOCK18::GetMaxSpeed) },
-	//{ 0x0, "_ZN8CGLOCK189iItemSlotEv", mfunc_ptr_cast(&CGLOCK18::iItemSlot) },
-	//{ 0x0, "_ZN8CGLOCK1813PrimaryAttackEv", mfunc_ptr_cast(&CGLOCK18::PrimaryAttack) },
-	//{ 0x0, "_ZN8CGLOCK1815SecondaryAttackEv", mfunc_ptr_cast(&CGLOCK18::SecondaryAttack) },
-	//{ 0x0, "_ZN8CGLOCK186ReloadEv", mfunc_ptr_cast(&CGLOCK18::Reload) },
-	//{ 0x0, "_ZN8CGLOCK1810WeaponIdleEv", mfunc_ptr_cast(&CGLOCK18::WeaponIdle) },
-	//{ 0x0, "_ZN8CGLOCK1812UseDecrementEv", mfunc_ptr_cast(&CGLOCK18::UseDecrement) },
-	//{ 0x0, "_ZN8CGLOCK188IsPistolEv", mfunc_ptr_cast(&CGLOCK18::IsPistol) },
+	{ 0x01D071E0, "_ZN8CGLOCK185SpawnEv", mfunc_ptr_cast(&CGLOCK18::Spawn_) },
+	{ 0x01D07250, "_ZN8CGLOCK188PrecacheEv", mfunc_ptr_cast(&CGLOCK18::Precache_) },
+	{ 0x01D07310, "_ZN8CGLOCK1811GetItemInfoEP8ItemInfo", mfunc_ptr_cast(&CGLOCK18::GetItemInfo_) },
+	{ 0x01D07380, "_ZN8CGLOCK186DeployEv", mfunc_ptr_cast(&CGLOCK18::Deploy_) },
+	//{ 0x01D07B10, "_ZN8CGLOCK1811GetMaxSpeedEv", mfunc_ptr_cast(&CGLOCK18::GetMaxSpeed_) },	// DEFAULT
+	//{ 0x01D07B00, "_ZN8CGLOCK189iItemSlotEv", mfunc_ptr_cast(&CGLOCK18::iItemSlot_) },	// DEFAULT
+	{ 0x01D07510, "_ZN8CGLOCK1813PrimaryAttackEv", mfunc_ptr_cast(&CGLOCK18::PrimaryAttack_) },
+	{ 0x01D07480, "_ZN8CGLOCK1815SecondaryAttackEv", mfunc_ptr_cast(&CGLOCK18::SecondaryAttack_) },
+	{ 0x01D07980, "_ZN8CGLOCK186ReloadEv", mfunc_ptr_cast(&CGLOCK18::Reload_) },
+	{ 0x01D079F0, "_ZN8CGLOCK1810WeaponIdleEv", mfunc_ptr_cast(&CGLOCK18::WeaponIdle_) },
+	//{ 0x01D07B20, "_ZN8CGLOCK1812UseDecrementEv", mfunc_ptr_cast(&CGLOCK18::UseDecrement_) },	// DEFAULT
+	//{ 0x01D07B30, "_ZN8CGLOCK188IsPistolEv", mfunc_ptr_cast(&CGLOCK18::IsPistol_) },	// DEFAULT
 	//non-virtual func
-	//{ 0x0, "weapon_glock18", (size_t)&weapon_glock18 },
-	//{ 0x0, "_ZN6CG3SG19G3SG1FireEffi", mfunc_ptr_cast(&CG3SG1::GLOCK18Fire) },
+	{ 0x01D07190, "weapon_glock18", (size_t)&weapon_glock18 },
+	{ 0x01D07670, "_ZN8CGLOCK1811GLOCK18FireEffi", mfunc_ptr_cast(&CGLOCK18::GLOCK18Fire) },
 //CHEGrenade
 	//virtual func
 	//{ 0x0, "_ZN10CHEGrenade5SpawnEv", mfunc_ptr_cast(&CHEGrenade::Spawn) },
@@ -5332,6 +5332,11 @@ VirtualTableRef g_TableRefs[] =
 	{ 0x01DF46BC, "CKnife",			CWEAPON_VIRTUAL_COUNT },
 	{ 0x01DF34E4, "CAWP",			CWEAPON_VIRTUAL_COUNT },
 	{ 0x01DF51AC, "CP90",			CWEAPON_VIRTUAL_COUNT },
+	{ 0x01DF4394, "CGLOCK18",		95 },
+	{ 0x01DF5C6C, "CUSP",			95 },
+	{ 0x01DF368C, "CC4",			CWEAPON_VIRTUAL_COUNT },
+
+	{ 0x01DFD984, "CWShield",		CBASE_VIRTUAL_COUNT },
 
 	// CBaseEntity
 	{ 0x01DF8A94, "CGib",			CBASE_VIRTUAL_COUNT },
@@ -5513,10 +5518,6 @@ VirtualTableRef g_TableRefs[] =
 	{ 0x01E00FDC, "CCSTutorUndefinedState",		3 },
 	{ 0x01E01000, "CCSTutorBuyMenuState",		3 },
 	{ 0x01E01010, "CCSTutorWaitingForStartState",	3 },
-
-	// Weapons vtable
-	{ 0x01DF5C6C, "CUSP",			95 },
-	{ 0x01DFD984, "CWShield",		CBASE_VIRTUAL_COUNT },
 
 	{ NULL, NULL }	// BaseClass__for_vtbl
 };
