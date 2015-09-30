@@ -621,9 +621,11 @@ NOXREF CBasePlayer *CBasePlayer::GetNextRadioRecipient(CBasePlayer *pStartPlayer
 /* <15edd2> ../cstrike/dlls/player.cpp:705 */
 void CBasePlayer::Radio(const char *msg_id, const char *msg_verbose, short pitch, bool showIcon)
 {
+	// Spectators don't say radio messages.
 	if (!IsPlayer())
 		return;
 
+	// Neither do dead guys.
 	if (pev->deadflag != DEAD_NO && !IsBot())
 		return;
 
@@ -636,70 +638,85 @@ void CBasePlayer::Radio(const char *msg_id, const char *msg_verbose, short pitch
 		BOOL bSend = FALSE;
 		CBasePlayer *pPlayer = GetClassPtr((CBasePlayer *)pEntity->pev);
 
-		if (pEntity->IsPlayer())
+		if (pPlayer == NULL)
+			continue;
+
+		// are we a regular player? (not spectator)
+		if (pPlayer->IsPlayer())
 		{
-			if (pEntity->IsDormant())
+			if (pPlayer->IsDormant())
 				continue;
 
-			if (pEntity && pPlayer->m_iTeam == m_iTeam)
+			// is this player on our team? (even dead players hear our radio calls)
+			if (pPlayer->m_iTeam == m_iTeam)
 				bSend = TRUE;
 		}
-		else if (pEntity)
+		// this means we're a spectator
+		else
 		{
-			int iSpecMode = IsObserver();
+			// do this when spectator mode is in
+			int iSpecMode = pPlayer->IsObserver();
 
 			if (iSpecMode != OBS_CHASE_LOCKED && iSpecMode != OBS_CHASE_FREE && iSpecMode != OBS_IN_EYE)
 				continue;
 
-			if (!FNullEnt(m_hObserverTarget))
+			if (!FNullEnt(pPlayer->m_hObserverTarget))
 				continue;
 
 			CBasePlayer *pTarget = (CBasePlayer *)CBaseEntity::Instance(pPlayer->m_hObserverTarget->pev);
 
 			if (pTarget && pTarget->m_iTeam == m_iTeam)
+			{
 				bSend = TRUE;
+			}
 		}
 
-		if (!bSend || pPlayer->m_bIgnoreRadio)
-			continue;
-
-		MESSAGE_BEGIN(MSG_ONE, gmsgSendAudio, NULL, pEntity->pev);
-			WRITE_BYTE(ENTINDEX(edict()));
-			WRITE_STRING(msg_id);
-			WRITE_SHORT(pitch);
-		MESSAGE_END();
-
-		if (msg_verbose)
+		if (bSend)
 		{
-			// search the place name where is located the player
-			const char *placeName = NULL;
-			Place playerPlace = TheNavAreaGrid.GetPlace(&pev->origin);
-			const BotPhraseList *placeList = TheBotPhrases->GetPlaceList();
-
-			for (BotPhraseList::const_iterator iter = placeList->begin(); iter != placeList->end(); ++iter)
+			// ignorerad command
+			if (!pPlayer->m_bIgnoreRadio)
 			{
-				if ((*iter)->GetID() == playerPlace)
+				MESSAGE_BEGIN(MSG_ONE, gmsgSendAudio, NULL, pEntity->pev);
+					WRITE_BYTE(ENTINDEX(edict()));
+					WRITE_STRING(msg_id);
+					WRITE_SHORT(pitch);
+				MESSAGE_END();
+
+				// radio message icon
+				if (msg_verbose != NULL)
 				{
-					placeName = (*iter)->GetName();
-					break;
+					// search the place name where is located the player
+					const char *placeName = NULL;
+					Place playerPlace = TheNavAreaGrid.GetPlace(&pev->origin);
+					const BotPhraseList *placeList = TheBotPhrases->GetPlaceList();
+
+					for (BotPhraseList::const_iterator iter = placeList->begin(); iter != placeList->end(); ++iter)
+					{
+						if ((*iter)->GetID() == playerPlace)
+						{
+							placeName = (*iter)->GetName();
+							break;
+						}
+					}
+
+					if (placeName != NULL)
+						ClientPrint(pEntity->pev, HUD_PRINTRADIO, NumAsString(entindex()), "#Game_radio_location", STRING(pev->netname), placeName, msg_verbose);
+					else
+						ClientPrint(pEntity->pev, HUD_PRINTRADIO, NumAsString(entindex()), "#Game_radio", STRING(pev->netname), msg_verbose);
+				}
+
+				if (showIcon)
+				{
+					// put an icon over this guys head to show that he used the radio
+					MESSAGE_BEGIN(MSG_ONE, SVC_TEMPENTITY, NULL, pEntity->pev);
+						WRITE_BYTE(TE_PLAYERATTACHMENT);
+						WRITE_BYTE(ENTINDEX(edict()));	// byte	(entity index of player)
+						WRITE_COORD(35); // coord (vertical offset) ( attachment origin.z = player origin.z + vertical offset)
+						WRITE_SHORT(g_sModelIndexRadio); // short (model index) of tempent
+						WRITE_SHORT(15); // short (life * 10 ) e.g. 40 = 4 seconds
+					MESSAGE_END();
 				}
 			}
-
-			if (placeName != NULL)
-				ClientPrint(pEntity->pev, HUD_PRINTRADIO, NumAsString(entindex()), "#Game_radio_location", STRING(pev->netname), placeName, msg_verbose);
-			else
-				ClientPrint(pEntity->pev, HUD_PRINTRADIO, NumAsString(entindex()), "#Game_radio", STRING(pev->netname), msg_verbose);
-		}
-
-		if (showIcon)
-		{
-			MESSAGE_BEGIN(MSG_ONE, SVC_TEMPENTITY, NULL, pEntity->pev);
-				WRITE_BYTE(TE_PLAYERATTACHMENT);
-				WRITE_BYTE(ENTINDEX(edict()));
-				WRITE_COORD(35); // vertical offset
-				WRITE_SHORT(g_sModelIndexRadio); // model index
-				WRITE_SHORT(15); // life
-			MESSAGE_END();
 		}
 	}
 }
@@ -838,18 +855,21 @@ void CBasePlayer::__MAKE_VHOOK(TraceAttack)(entvars_t *pevAttacker, float flDama
 	bool bShouldBleed = true;
 	bool bShouldSpark = false;
 	bool bHitShield = IsHittingShield(vecDir, ptr);
+
 	CBasePlayer *pAttacker = (CBasePlayer *)CBasePlayer::Instance(pevAttacker);
 
-	if (CVAR_GET_FLOAT("mp_friendlyfire") == 0 && m_iTeam == pAttacker->m_iTeam)
+	if (m_iTeam == pAttacker->m_iTeam && CVAR_GET_FLOAT("mp_friendlyfire") == 0)
 		bShouldBleed = false;
 
 	if (pev->takedamage == DAMAGE_NO)
 		return;
 
 	m_LastHitGroup = ptr->iHitgroup;
+
 	if (bHitShield)
 	{
 		flDamage = 0;
+		bShouldBleed = false;
 
 		if (RANDOM_LONG(0, 1))
 			EMIT_SOUND(ENT(pev), CHAN_VOICE, "weapons/ric_metal-1.wav", VOL_NORM, ATTN_NORM);
@@ -921,7 +941,7 @@ void CBasePlayer::__MAKE_VHOOK(TraceAttack)(entvars_t *pevAttacker, float flDama
 			}
 			case HITGROUP_STOMACH:
 			{
-				flDamage = flDamage * 1.25;
+				flDamage *= 1.25;
 
 				if (m_iKevlar != ARMOR_TYPE_EMPTY)
 					bShouldBleed = false;
@@ -955,10 +975,11 @@ void CBasePlayer::__MAKE_VHOOK(TraceAttack)(entvars_t *pevAttacker, float flDama
 	if (bShouldBleed)
 	{
 		BloodSplat(ptr->vecEndPos, vecDir, ptr->iHitgroup, flDamage * 5);
-		SpawnBlood(ptr->vecEndPos, BloodColor(), flDamage);	// a little surface blood.
+		SpawnBlood(ptr->vecEndPos, BloodColor(), flDamage);			// a little surface blood.
 		TraceBleed(flDamage, vecDir, ptr, bitsDamageType);
 	}
-	else if (ptr->iHitgroup == HITGROUP_HEAD && bShouldSpark == true)
+	// they hit a helmet
+	else if (ptr->iHitgroup == HITGROUP_HEAD && bShouldSpark)
 	{
 		MESSAGE_BEGIN(MSG_PVS, SVC_TEMPENTITY, ptr->vecEndPos);
 			WRITE_BYTE(TE_STREAK_SPLASH);
@@ -3140,6 +3161,7 @@ void CBasePlayer::AddAccount(int amount, bool bTrackChange)
 	else if (m_iAccount > 16000)
 		m_iAccount = 16000;
 
+	// Send money update to HUD
 	MESSAGE_BEGIN(MSG_ONE, gmsgMoney, NULL, pev);
 		WRITE_LONG(m_iAccount);
 		WRITE_BYTE(bTrackChange);
@@ -3627,6 +3649,7 @@ void CBasePlayer::__MAKE_VHOOK(RoundRespawn)(void)
 {
 	m_canSwitchObserverModes = true;
 
+	// teamkill punishment..
 	if (m_bJustKilledTeammate && CVAR_GET_FLOAT("mp_tkpunish"))
 	{
 		m_bJustKilledTeammate = false;
@@ -4098,19 +4121,26 @@ void CBasePlayer::__MAKE_VHOOK(AddPointsToTeam)(int score, BOOL bAllowNegativeSc
 bool CBasePlayer::CanPlayerBuy(bool display)
 {
 	CHalfLifeMultiplay *mp = g_pGameRules;
-	int buyTime;
 
 	if (!mp->IsMultiplayer())
 	{
 		return CHalfLifeTraining::PlayerCanBuy(this);
 	}
 
-	if (pev->deadflag != DEAD_NO || !(m_signals.GetState() & SIGNAL_BUY))
+	// is the player alive?
+	if (pev->deadflag != DEAD_NO)
 	{
 		return false;
 	}
 
-	buyTime = (int)(CVAR_GET_FLOAT("mp_buytime") * 60);
+	// is the player in a buy zone?
+	if (!(m_signals.GetState() & SIGNAL_BUY))
+	{
+		return false;
+	}
+
+	int buyTime = (int)(CVAR_GET_FLOAT("mp_buytime") * 60);
+
 	if (buyTime < 15)
 	{
 		buyTime = 15;
@@ -4123,30 +4153,37 @@ bool CBasePlayer::CanPlayerBuy(bool display)
 		{
 			ClientPrint(pev, HUD_PRINTCENTER, "#Cant_buy", UTIL_dtos1(buyTime));
 		}
+
 		return false;
 	}
+
 	if (m_bIsVIP)
 	{
 		if (display)
 		{
 			ClientPrint(pev, HUD_PRINTCENTER, "#VIP_cant_buy");
 		}
+
 		return false;
 	}
+
 	if (mp->m_bCTCantBuy && m_iTeam == CT)
 	{
 		if (display)
 		{
 			ClientPrint(pev, HUD_PRINTCENTER, "#CT_cant_buy");
 		}
+
 		return false;
 	}
+
 	if (mp->m_bTCantBuy && m_iTeam == TERRORIST)
 	{
 		if (display)
 		{
 			ClientPrint(pev, HUD_PRINTCENTER, "#Terrorist_cant_buy");
 		}
+
 		return false;
 	}
 
@@ -4156,27 +4193,32 @@ bool CBasePlayer::CanPlayerBuy(bool display)
 /* <15f9ac> ../cstrike/dlls/player.cpp:4717 */
 void CBasePlayer::__MAKE_VHOOK(PreThink)(void)
 {
-	int buttonsChanged = (pev->button ^ m_afButtonLast);
+	// These buttons have changed this frame
+	int buttonsChanged = (m_afButtonLast ^ pev->button);
 
-	if (pev->button != m_afButtonLast)
+	//this means the player has pressed or released a key
+	if (buttonsChanged)
 		m_fLastMovement = gpGlobals->time;
 
-	m_afButtonPressed = (buttonsChanged & pev->button); // The changed ones still down are "pressed"
-	m_afButtonReleased = (buttonsChanged & (~pev->button)); // The ones not down are "released"
+	// Debounced button codes for pressed/released
+	// UNDONE: Do we need auto-repeat?
+	m_afButtonPressed = (buttonsChanged & pev->button);		// The changed ones still down are "pressed"
+	m_afButtonReleased = (buttonsChanged & (~pev->button));		// The ones not down are "released"
 
+	// Hint messages should be updated even if the game is over
 	m_hintMessageQueue.Update(this);
 	g_pGameRules->PlayerThink(this);
 
 	if (g_fGameOver)
 	{
+		// intermission or finale
 		return;
 	}
 
 	if (m_iJoiningState != JOINED)
-	{
 		JoiningThink();
-	}
 
+	// Mission Briefing text, remove it when the player hits an important button
 	if (m_bMissionBriefing)
 	{
 		if (m_afButtonPressed & (IN_ATTACK | IN_ATTACK2))
@@ -4187,12 +4229,15 @@ void CBasePlayer::__MAKE_VHOOK(PreThink)(void)
 		}
 	}
 
+	// is this still used?
 	UTIL_MakeVectors(pev->v_angle);
+
 	ItemPreFrame();
 	WaterMove();
 
 	if (pev->flags & FL_ONGROUND)
 	{
+		// Slow down the player based on the velocity modifier
 		if (m_flVelocityModifier < 1.0f)
 		{
 			float_precision modvel = m_flVelocityModifier + 0.01;
@@ -4207,19 +4252,25 @@ void CBasePlayer::__MAKE_VHOOK(PreThink)(void)
 
 	if (m_flIdleCheckTime <= (double)gpGlobals->time || m_flIdleCheckTime == 0.0f)
 	{
+		// check every 5 seconds
 		m_flIdleCheckTime = gpGlobals->time + 5.0;
 
-		double v25 = gpGlobals->time - m_fLastMovement;
+		float_precision flLastMove = gpGlobals->time - m_fLastMovement;
 
-		if (v25 > g_pGameRules->m_fMaxIdlePeriod)
+		//check if this player has been inactive for 2 rounds straight
+		if (flLastMove > g_pGameRules->m_fMaxIdlePeriod)
 		{
 			if (!IsBot() && CVAR_GET_FLOAT("mp_autokick") != 0.0f)
 			{
-				UTIL_LogPrintf("\"%s<%i><%s><%s>\" triggered \"Game_idle_kick\" (auto)\n",
+				// Log the kick
+				UTIL_LogPrintf
+				(
+					"\"%s<%i><%s><%s>\" triggered \"Game_idle_kick\" (auto)\n",
 					STRING(pev->netname),
 					GETPLAYERUSERID(edict()),
 					GETPLAYERAUTHID(edict()),
-					GetTeam(m_iTeam));
+					GetTeam(m_iTeam)
+				);
 
 				UTIL_ClientPrintAll(HUD_PRINTCONSOLE, "#Game_idle_kick", STRING(pev->netname));
 				SERVER_COMMAND(UTIL_VarArgs("kick \"%s\"\n", STRING(pev->netname)));
@@ -4235,6 +4286,7 @@ void CBasePlayer::__MAKE_VHOOK(PreThink)(void)
 
 	// JOHN: checks if new client data (for HUD and view control) needs to be sent to the client
 	UpdateClientData();
+
 	CheckTimeBasedDamage();
 	CheckSuitUpdate();
 
@@ -4259,12 +4311,16 @@ void CBasePlayer::__MAKE_VHOOK(PreThink)(void)
 		return;
 	}
 
+	// new code to determine if a player is on a train or not
 	CBaseEntity *pGroundEntity = Instance(pev->groundentity);
-
 	if (pGroundEntity && pGroundEntity->Classify() == CLASS_VEHICLE)
+	{
 		pev->iuser4 = 1;
+	}
 	else
+	{
 		pev->iuser4 = 0;
+	}
 
 	// Train speed control
 	if (m_afPhysicsFlags & PFLAG_ONTRAIN)
@@ -4284,9 +4340,8 @@ void CBasePlayer::__MAKE_VHOOK(PreThink)(void)
 
 			if (!pTrain || !(pTrain->ObjectCaps() & FCAP_DIRECTIONAL_USE) || !pTrain->OnControls(pev))
 			{
-				m_iTrain = (TRAIN_NEW | TRAIN_OFF);
 				m_afPhysicsFlags &= ~PFLAG_ONTRAIN;
-
+				m_iTrain = (TRAIN_NEW | TRAIN_OFF);
 				((CFuncVehicle *)pTrain)->m_pDriver = NULL;
 				return;
 			}
@@ -4294,9 +4349,8 @@ void CBasePlayer::__MAKE_VHOOK(PreThink)(void)
 		else if (!(pev->flags & FL_ONGROUND) || (pTrain->pev->spawnflags & SF_TRACKTRAIN_NOCONTROL))
 		{
 			// Turn off the train if you jump, strafe, or the train controls go dead
-			m_iTrain = (TRAIN_NEW | TRAIN_OFF);
 			m_afPhysicsFlags &= ~PFLAG_ONTRAIN;
-
+			m_iTrain = (TRAIN_NEW | TRAIN_OFF);
 			((CFuncVehicle *)pTrain)->m_pDriver = NULL;
 			return;
 		}
@@ -4373,6 +4427,9 @@ void CBasePlayer::__MAKE_VHOOK(PreThink)(void)
 		m_flFallVelocity = -pev->velocity.z;
 	}
 
+	//!!!HACKHACK!!! Can't be hit by traceline when not animating?
+	//StudioFrameAdvance();
+
 	// Clear out ladder pointer
 	m_hEnemy = NULL;
 
@@ -4381,9 +4438,9 @@ void CBasePlayer::__MAKE_VHOOK(PreThink)(void)
 		pev->velocity = g_vecZero;
 	}
 
-	if (!(m_flDisplayHistory & DHF_ROUND_STARTED) && CanPlayerBuy())
+	if (!(m_flDisplayHistory & DHF_ROUND_STARTED) && CanPlayerBuy(false))
 	{
-		HintMessage("#Hint_press_buy_to_purchase");
+		HintMessage("#Hint_press_buy_to_purchase", FALSE);
 		m_flDisplayHistory |= DHF_ROUND_STARTED;
 	}
 
@@ -4898,14 +4955,18 @@ edict_t *EntSelectSpawnPoint(CBaseEntity *pPlayer)
 	{
 		pSpot = UTIL_FindEntityByClassname(NULL, "info_vip_start");
 
+		// skip over the null point
 		if (!FNullEnt(pSpot))
+		{
 			goto ReturnSpot;
+		}
 
 		goto CTSpawn;
 	}
 	else if (g_pGameRules->IsDeathmatch() && ((CBasePlayer *)pPlayer)->m_iTeam == CT)
 	{
 CTSpawn:
+		// Find the next spawn spot.
 		pSpot = UTIL_FindEntityByClassname(g_pLastCTSpawn, "info_player_start");
 
 		// skip over the null point
@@ -4950,9 +5011,11 @@ CTSpawn:
 				if (ent->IsPlayer() && ent->edict() != player)
 					ent->TakeDamage(VARS(INDEXENT(0)), VARS(INDEXENT(0)), 200, DMG_GENERIC);
 			}
+
 			goto ReturnSpot;
 		}
 	}
+	// The terrorist spawn points
 	else if (g_pGameRules->IsDeathmatch() && ((CBasePlayer *)pPlayer)->m_iTeam == TERRORIST)
 	{
 		pSpot = UTIL_FindEntityByClassname(g_pLastTerroristSpawn, "info_player_deathmatch");
@@ -5068,7 +5131,7 @@ void CBasePlayer::__MAKE_VHOOK(Spawn)(void)
 	m_progressStart = 0;
 	m_progressEnd = 0;
 
-	if (pev->classname)
+	if (!FStringNull(pev->classname))
 	{
 		RemoveEntityHashValue(pev, STRING(pev->classname), CLASSNAME);
 	}
@@ -5320,14 +5383,14 @@ void CBasePlayer::__MAKE_VHOOK(Spawn)(void)
 		}
 	}
 
-	m_lastx = 0;
-	m_lasty = 0;
+	m_lastx = m_lasty = 0;
 
 	g_pGameRules->PlayerSpawn(this);
 
 	m_bNotKilled = true;
 	m_bIsDefusing = false;
 
+	// Get rid of the progress bar...
 	SetProgressBarTime(0);
 	ResetMaxSpeed();
 
@@ -6979,19 +7042,33 @@ void CBasePlayer::EnableControl(BOOL fControl)
 /* <151142> ../cstrike/dlls/player.cpp:8387 */
 void CBasePlayer::__MAKE_VHOOK(ResetMaxSpeed)(void)
 {
-	float speed = 240.0f;
+	float speed;
 
 	if (IsObserver())
-		speed = 900.0f;
-
+	{
+		// Player gets speed bonus in observer mode
+		speed = 900;
+	}
 	else if (g_pGameRules->IsMultiplayer() && g_pGameRules->IsFreezePeriod())
-		speed = 1.0f;
-
-	else if (m_bIsVIP)
-		speed = 227.0f;
-
-	else if (m_pActiveItem)
+	{
+		// Player should not move during the freeze period
+		speed = 1;
+	}
+	// VIP is slow due to the armour he's wearing
+	else if (m_bIsVIP != NULL)
+	{
+		speed = 227;
+	}
+	else if (m_pActiveItem != NULL)
+	{
+		// Get player speed from selected weapon
 		speed = m_pActiveItem->GetMaxSpeed();
+	}
+	else
+	{
+		// No active item, set the player's speed to default
+		speed = 240;
+	}
 
 	pev->maxspeed = speed;
 }

@@ -34,34 +34,34 @@
 
 #include "game_shared/voice_gamemgr.h"
 
-#define COM_TOKEN_LEN			1500
+#define COM_TOKEN_LEN				1500
 
-#define MAX_RULE_BUFFER			1024
-#define MAX_VOTE_MAPS			100
-#define MAX_VIP_QUEUES			5
+#define MAX_RULE_BUFFER				1024
+#define MAX_VOTE_MAPS				100
+#define MAX_VIP_QUEUES				5
 
-#define MAX_BOMB_RADIUS			2048
+#define MAX_BOMB_RADIUS				2048
 
-#define MAP_VIP_SAFETYZONE_INIT		0	// initial
-#define MAP_HAVE_VIP_SAFETYZONE_YES	1	// on map have of vip safety zone
-#define MAP_HAVE_VIP_SAFETYZONE_NO	2	// there is no safety zone
+#define MAP_VIP_SAFETYZONE_UNINITIALIZED	0	// uninitialized
+#define MAP_HAVE_VIP_SAFETYZONE_YES		1	// has VIP safety zone
+#define MAP_HAVE_VIP_SAFETYZONE_NO		2	// does not have VIP safetyzone
 
-#define MAP_HAS_CAMERAS_INIT		2	// initial
-#define MAP_HAS_CAMERAS_YES		1	// on map have of camera's
+#define MAP_HAS_CAMERAS_INIT			2	// initial
+#define MAP_HAS_CAMERAS_YES			1	// on map have of camera's
 
-#define ITEM_RESPAWN_TIME		30
-#define WEAPON_RESPAWN_TIME		20
-#define AMMO_RESPAWN_TIME		20
+#define ITEM_RESPAWN_TIME			30
+#define WEAPON_RESPAWN_TIME			20
+#define AMMO_RESPAWN_TIME			20
 
 // longest the intermission can last, in seconds
-#define MAX_INTERMISSION_TIME		120
+#define MAX_INTERMISSION_TIME			120
 
 // when we are within this close to running out of entities,  items
 // marked with the ITEM_FLAG_LIMITINWORLD will delay their respawn
-#define ENTITY_INTOLERANCE		100
+#define ENTITY_INTOLERANCE			100
 
-#define MAX_MOTD_CHUNK			60
-#define MAX_MOTD_LENGTH			1536 // (MAX_MOTD_CHUNK * 4)
+#define MAX_MOTD_CHUNK				60
+#define MAX_MOTD_LENGTH				1536 // (MAX_MOTD_CHUNK * 4)
 
 // custom enum
 enum
@@ -72,6 +72,7 @@ enum
 };
 
 // custom enum
+// used for EndRoundMessage() logged messages
 enum ScenarionEventEndRound
 {
 	ROUND_TARGET_BOMB = 1,
@@ -272,6 +273,8 @@ public:
 	}
 	virtual BOOL FAllowMonsters(void) = 0;
 	virtual void EndMultiplayerGame(void) {};
+
+	// Stuff that is shared between client and server.
 	virtual BOOL IsFreezePeriod(void)
 	{
 		return IsFreezePeriod_();
@@ -489,6 +492,8 @@ public:
 	virtual void ClientUserInfoChanged(CBasePlayer *pPlayer, char *infobuffer);
 	virtual int IPointsForKill(CBasePlayer *pAttacker, CBasePlayer *pKilled);
 	virtual void PlayerKilled(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor);
+
+	// Death notices
 	virtual void DeathNotice(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor);
 	virtual BOOL CanHavePlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pWeapon);
 	virtual void PlayerGotWeapon(CBasePlayer *pPlayer, CBasePlayerItem *pWeapon);
@@ -525,7 +530,12 @@ public:
 	}
 	virtual void ServerDeactivate(void);
 	virtual void CheckMapConditions(void);
+
+	// Recreate all the map entities from the map data (preserving their indices),
+	// then remove everything else except the players.
+	// Also get rid of all world decals.
 	virtual void CleanUpMap(void);
+
 	virtual void RestartRound(void);
 	virtual void CheckWinConditions(void);
 	virtual void RemoveGuns(void);
@@ -608,6 +618,36 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
+	// Checks if it still needs players to start a round, or if it has enough players to start rounds.
+	// Starts a round and returns true if there are enough players.
+	bool NeededPlayersCheck(bool &bNeededPlayers);
+
+	// Setup counts for m_iNumTerrorist, m_iNumCT, m_iNumSpawnableTerrorist, m_iNumSpawnableCT, etc.
+	void InitializePlayerCounts(int &NumAliveTerrorist, int &NumAliveCT, int &NumDeadTerrorist, int &NumDeadCT);
+
+	// Check to see if the round is over for the various game types. Terminates the round
+	// and returns true if the round should end.
+	bool PrisonRoundEndCheck(int NumAliveTerrorist, int NumAliveCT, int NumDeadTerrorist, int NumDeadCT, bool bNeededPlayers);
+	bool BombRoundEndCheck(bool bNeededPlayers);
+	bool HostageRescueRoundEndCheck(bool bNeededPlayers);
+	bool VIPRoundEndCheck(bool bNeededPlayers);
+
+	// Check to see if the teams exterminated each other. Ends the round and returns true if so.
+	bool TeamExterminationCheck(int NumAliveTerrorist, int NumAliveCT, int NumDeadTerrorist, int NumDeadCT, bool bNeededPlayers);
+	void TerminateRound(float tmDelay, int iWinStatus);
+
+	// Check various conditions to end the map.
+	bool CheckGameOver(void);
+	bool CheckTimeLimit(void);
+	bool CheckMaxRounds(void);
+	bool CheckWinLimit(void);
+
+	void CheckFreezePeriodExpired(void);
+	void CheckRoundTimeExpired(void);
+
+	void CheckLevelInitialized(void);
+	void CheckRestartRound(void);
+
 	BOOL IsCareer(void);
 	void QueueCareerRoundEndMenu(float tmDelay, int iWinStatus);
 	void SetCareerMatchLimit(int minWins, int winDifference);
@@ -633,17 +673,23 @@ public:
 	BOOL TeamStacked(int newTeam_id, int curTeam_id);
 	bool IsVIPQueueEmpty(void);
 	bool AddToVIPQueue(CBasePlayer *toAdd);
+
+	// VIP FUNCTIONS
 	void PickNextVIP(void);
 	void StackVIPQueue(void);
 	void ResetCurrentVIP(void);
+
 	void BalanceTeams(void);
 	void SwapAllPlayers(void);
 	void UpdateTeamScores(void);
 	void DisplayMaps(CBasePlayer *player, int iVote);
 	void ResetAllMapVotes(void);
 	void ProcessMapVote(CBasePlayer *player, int iVote);
+
+	// BOMB MAP FUNCTIONS
 	BOOL IsThereABomber(void);
 	BOOL IsThereABomb(void);
+
 	bool IsMatchStarted(void)
 	{
 		return (m_fTeamCount != 0.0f || m_fCareerRoundMenuTime != 0.0f || m_fCareerMatchMenuTime != 0.0f);
@@ -657,57 +703,64 @@ private:
 
 public:
 	CVoiceGameMgr m_VoiceGameMgr;
-	float m_fTeamCount;
+	float m_fTeamCount;				// m_flRestartRoundTime, the global time when the round is supposed to end, if this is not 0
 	float m_flCheckWinConditions;
 	float m_fRoundCount;
-	int m_iRoundTime;
+	int m_iRoundTime;				// (From mp_roundtime) - How many seconds long this round is.
 	int m_iRoundTimeSecs;
-	int m_iIntroRoundTime;
-	float m_fIntroRoundCount;
+	int m_iIntroRoundTime;				// (From mp_freezetime) - How many seconds long the intro round (when players are frozen) is.
+	float m_fIntroRoundCount;			// The global time when the intro round ends and the real one starts
+							// wrote the original "m_flRoundTime" comment for this variable).
 	int m_iAccountTerrorist;
 	int m_iAccountCT;
-	int m_iNumTerrorist;
-	int m_iNumCT;
+	int m_iNumTerrorist;				// The number of terrorists on the team (this is generated at the end of a round)
+	int m_iNumCT;					// The number of CTs on the team (this is generated at the end of a round)
 	int m_iNumSpawnableTerrorist;
 	int m_iNumSpawnableCT;
-	int m_iSpawnPointCount_Terrorist;
-	int m_iSpawnPointCount_CT;
+	int m_iSpawnPointCount_Terrorist;		// Number of Terrorist spawn points
+	int m_iSpawnPointCount_CT;			// Number of CT spawn points
 	int m_iHostagesRescued;
 	int m_iHostagesTouched;
-	int m_iRoundWinStatus;
+	int m_iRoundWinStatus;				// 1 == CT's won last round, 2 == Terrorists did, 3 == Draw, no winner
+
 	short m_iNumCTWins;
 	short m_iNumTerroristWins;
-	bool m_bTargetBombed;
-	bool m_bBombDefused;
+
+	bool m_bTargetBombed;				// whether or not the bomb has been bombed
+	bool m_bBombDefused;				// whether or not the bomb has been defused
+
 	bool m_bMapHasBombTarget;
 	bool m_bMapHasBombZone;
 	bool m_bMapHasBuyZone;
 	bool m_bMapHasRescueZone;
 	bool m_bMapHasEscapeZone;
-	int m_iMapHasVIPSafetyZone;
+
+	int m_iMapHasVIPSafetyZone;			// 0 = uninitialized;   1 = has VIP safety zone;   2 = DOES not have VIP safetyzone
 	int m_bMapHasCameras;
 	int m_iC4Timer;
-	int m_iC4Guy;
-	int m_iLoserBonus;
-	int m_iNumConsecutiveCTLoses;
-	int m_iNumConsecutiveTerroristLoses;
-	float m_fMaxIdlePeriod;
+	int m_iC4Guy;					// The current Terrorist who has the C4.
+	int m_iLoserBonus;				// the amount of money the losing team gets. This scales up as they lose more rounds in a row
+	int m_iNumConsecutiveCTLoses;			// the number of rounds the CTs have lost in a row.
+	int m_iNumConsecutiveTerroristLoses;		// the number of rounds the Terrorists have lost in a row.
+
+	float m_fMaxIdlePeriod;				// For the idle kick functionality. This is tha max amount of time that the player has to be idle before being kicked
+
 	int m_iLimitTeams;
 	bool m_bLevelInitialized;
 	bool m_bRoundTerminating;
-	bool m_bCompleteReset;
+	bool m_bCompleteReset;				// Set to TRUE to have the scores reset next time round restarts
 	float m_flRequiredEscapeRatio;
 	int m_iNumEscapers;
 	int m_iHaveEscaped;
 	bool m_bCTCantBuy;
-	bool m_bTCantBuy;
+	bool m_bTCantBuy;				// Who can and can't buy.
 	float m_flBombRadius;
 	int m_iConsecutiveVIP;
 	int m_iTotalGunCount;
 	int m_iTotalGrenadeCount;
 	int m_iTotalArmourCount;
-	int m_iUnBalancedRounds;
-	int m_iNumEscapeRounds;
+	int m_iUnBalancedRounds;			// keeps track of the # of consecutive rounds that have gone by where one team outnumbers the other team by more than 2
+	int m_iNumEscapeRounds;				// keeps track of the # of consecutive rounds of escape played.. Teams will be swapped after 8 rounds
 	int m_iMapVotes[ MAX_VOTE_MAPS ];
 	int m_iLastPick;
 	int m_iMaxMapTime;

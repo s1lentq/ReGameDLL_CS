@@ -214,6 +214,8 @@ void respawn(entvars_t *pev, BOOL fCopyCorpse)
 	}
 }
 
+// Suicide...
+
 /* <48013> ../cstrike/dlls/client.cpp:347 */
 void ClientKill(edict_t *pEntity)
 {
@@ -227,17 +229,22 @@ void ClientKill(edict_t *pEntity)
 	if (pl->m_iJoiningState != JOINED)
 		return;
 
-	if (gpGlobals->time >= pl->m_fNextSuicideTime)
-	{
-		pl->m_LastHitGroup = 0;
-		pl->m_fNextSuicideTime = gpGlobals->time + 1;
-		pEntity->v.health = 0;
-		pl->Killed(pev, GIB_NEVER);
+	// prevent suiciding too often
+	if (pl->m_fNextSuicideTime > gpGlobals->time)
+		return;
 
-		if (mp->m_pVIP == pl)
-		{
-			mp->m_iConsecutiveVIP = 10;
-		}
+	pl->m_LastHitGroup = 0;
+
+	// don't let them suicide for 5 seconds after suiciding
+	pl->m_fNextSuicideTime = gpGlobals->time + 1;
+
+	// have the player kill themself
+	pEntity->v.health = 0;
+	pl->Killed(pev, GIB_NEVER);
+
+	if (mp->m_pVIP == pl)
+	{
+		mp->m_iConsecutiveVIP = 10;
 	}
 }
 
@@ -426,27 +433,52 @@ TeamName SelectDefaultTeam(void)
 	CHalfLifeMultiplay *mp = g_pGameRules;
 
 	if (mp->m_iNumTerrorist < mp->m_iNumCT)
+	{
 		team = TERRORIST;
+	}
 	else if (mp->m_iNumTerrorist > mp->m_iNumCT)
+	{
 		team = CT;
-
-	else if (mp->m_iNumCTWins > mp->m_iNumTerroristWins)
+	}
+	// Choose the team that's losing
+	else if (mp->m_iNumTerroristWins < mp->m_iNumCTWins)
+	{
 		team = TERRORIST;
-
+	}
 	else if (mp->m_iNumCTWins < mp->m_iNumTerroristWins)
+	{
 		team = CT;
+	}
 	else
-		team = RANDOM_LONG(0, 1) ? TERRORIST : CT;
+	{
+		// Teams and scores are equal, pick a random team
+		if (RANDOM_LONG(0, 1) == 0)
+		{
+			team = CT;
+		}
+		else
+		{
+			team = TERRORIST;
+		}
+	}
 
 	if (mp->TeamFull(team))
 	{
+		// Pick the opposite team
 		if (team == TERRORIST)
+		{
 			team = CT;
+		}
 		else
+		{
 			team = TERRORIST;
+		}
 
+		// No choices left
 		if (mp->TeamFull(team))
+		{
 			return UNASSIGNED;
+		}
 	}
 
 	return team;
@@ -1873,23 +1905,23 @@ void HandleMenu_ChooseAppearance(CBasePlayer *player, int slot)
 
 	player->m_iMenu = Menu_OFF;
 
-	if (player->m_iJoiningState != JOINED)
+	// Reset the player's state
+	if (player->m_iJoiningState == JOINED)
 	{
-		if (player->m_iJoiningState == PICKINGTEAM)
-		{
-			player->m_iJoiningState = GETINTOGAME;
+		mp->CheckWinConditions();
+	}
+	else if (player->m_iJoiningState == PICKINGTEAM)
+	{
+		player->m_iJoiningState = GETINTOGAME;
 
-			if (mp->IsCareer())
+		if (mp->IsCareer())
+		{
+			if (!player->IsBot())
 			{
-				if (!player->IsBot())
-				{
-					mp->CheckWinConditions();
-				}
+				mp->CheckWinConditions();
 			}
 		}
 	}
-	else
-		mp->CheckWinConditions();
 
 	player->pev->body = 0;
 	player->m_iModelName = appearance.model_id;
@@ -1897,7 +1929,7 @@ void HandleMenu_ChooseAppearance(CBasePlayer *player, int slot)
 	SET_CLIENT_KEY_VALUE(player->entindex(), GET_INFO_BUFFER(player->edict()), "model", appearance.model_name);
 	player->SetNewPlayerModel(sPlayerModelFiles[ appearance.model_name_index ]);
 
-	if (mp->m_iMapHasVIPSafetyZone == MAP_VIP_SAFETYZONE_INIT)
+	if (mp->m_iMapHasVIPSafetyZone == MAP_VIP_SAFETYZONE_UNINITIALIZED)
 	{
 		if ((UTIL_FindEntityByClassname(NULL, "func_vip_safetyzone")) != NULL)
 			mp->m_iMapHasVIPSafetyZone = MAP_HAVE_VIP_SAFETYZONE_YES;
@@ -1914,15 +1946,21 @@ void HandleMenu_ChooseAppearance(CBasePlayer *player, int slot)
 	}
 }
 
+// returns true if the selection has been handled and the player's menu
+// can be closed...false if the menu should be displayed again
+
 /* <48e4b> ../cstrike/dlls/client.cpp:2214 */
 BOOL HandleMenu_ChooseTeam(CBasePlayer *player, int slot)
 {
 	CHalfLifeMultiplay *mp = g_pGameRules;
-	TeamName team = UNASSIGNED;
+
 	int oldTeam;
 	char *szOldTeam;
 	char *szNewTeam;
-	const char *szName;
+
+	// If this player is a VIP, don't allow him to switch teams/appearances unless the following conditions are met :
+	// a) There is another TEAM_CT player who is in the queue to be a VIP
+	// b) This player is dead
 
 	if (player->m_bIsVIP)
 	{
@@ -1933,8 +1971,7 @@ BOOL HandleMenu_ChooseTeam(CBasePlayer *player, int slot)
 
 			return TRUE;
 		}
-
-		if (g_pGameRules->IsVIPQueueEmpty())
+		else if (g_pGameRules->IsVIPQueueEmpty())
 		{
 			ClientPrint(player->pev, HUD_PRINTCENTER, "#Cannot_Switch_From_VIP");
 			CLIENT_COMMAND(ENT(player->pev), "slot10\n");
@@ -1943,96 +1980,82 @@ BOOL HandleMenu_ChooseTeam(CBasePlayer *player, int slot)
 		}
 	}
 
+	TeamName team = UNASSIGNED;
+
 	switch (slot)
 	{
-		case MENU_SLOT_TEAM_TERRORIST:
-			team = TERRORIST;
-			break;
-		case MENU_SLOT_TEAM_CT:
-			team = CT;
-			break;
-		case MENU_SLOT_TEAM_VIP:
+	case MENU_SLOT_TEAM_TERRORIST:
+		team = TERRORIST;
+		break;
+	case MENU_SLOT_TEAM_CT:
+		team = CT;
+		break;
+	case MENU_SLOT_TEAM_VIP:
+	{
+		if (mp->m_iMapHasVIPSafetyZone != MAP_HAVE_VIP_SAFETYZONE_YES || player->m_iTeam != CT)
 		{
-			if (mp->m_iMapHasVIPSafetyZone != MAP_HAVE_VIP_SAFETYZONE_YES || player->m_iTeam != CT)
-			{
-				return FALSE;
-			}
-
-			mp->AddToVIPQueue(player);
-			CLIENT_COMMAND(ENT(player->pev), "slot10\n");
-			return TRUE;
+			return FALSE;
 		}
-		case MENU_SLOT_TEAM_RANDOM:
+
+		mp->AddToVIPQueue(player);
+		CLIENT_COMMAND(ENT(player->pev), "slot10\n");
+		return TRUE;
+	}
+	case MENU_SLOT_TEAM_RANDOM:
+	{
+		// Attempt to auto-select a team
+		team = SelectDefaultTeam();
+
+		if (team == UNASSIGNED)
 		{
-			team = SelectDefaultTeam();
-
-			if (team == UNASSIGNED)
+			if (cv_bot_auto_vacate.value > 0.0f && !player->IsBot())
 			{
-				bool madeRoom = false;
-				if (cv_bot_auto_vacate.value > 0.0f && !player->IsBot())
+				team = (RANDOM_LONG(0, 1) == 0) ? TERRORIST : CT;
+
+				if (!UTIL_KickBotFromTeam(team))
 				{
-					team = (RANDOM_LONG(0, 1) == 0) ? TERRORIST : CT;
+					// no bots on that team, try the other
+					team = (team == CT) ? TERRORIST : CT;
 
-					if (UTIL_KickBotFromTeam(team))
-						madeRoom = true;
-					else
+					if (!UTIL_KickBotFromTeam(team))
 					{
-						if (team == CT)
-							team = TERRORIST;
-						else
-							team = CT;
-
-						if (UTIL_KickBotFromTeam(team))
-						{
-							madeRoom = true;
-						}
+						// couldn't kick any bots, fail
+						team = UNASSIGNED;
 					}
 				}
-
-				if (!madeRoom)
-				{
-					ClientPrint(player->pev, HUD_PRINTCENTER, "#All_Teams_Full");
-					return FALSE;
-				}
 			}
-			break;
 		}
-		case MENU_SLOT_TEAM_SPECT:
+
+		break;
+	}
+	case MENU_SLOT_TEAM_SPECT:
+	{
+		// Prevent this is the cvar is set
+		// spectator proxy
+		if (!allow_spectators.value && !(player->pev->flags & FL_PROXY))
 		{
-			if (!allow_spectators.value)
+			ClientPrint(player->pev, HUD_PRINTCENTER, "#Cannot_Be_Spectator");
+			CLIENT_COMMAND(ENT(player->pev), "slot10\n");
+
+			return FALSE;
+		}
+
+		// are we already a spectator?
+		if (player->m_iTeam == SPECTATOR)
+		{
+			return TRUE;
+		}
+
+		// Only spectate if we are in the freeze period or dead.
+		// This is done here just in case.
+		if (mp->IsFreezePeriod() || player->pev->deadflag != DEAD_NO)
+		{
+			if (player->m_iTeam != UNASSIGNED && player->pev->deadflag == DEAD_NO)
 			{
-				if (!(player->pev->flags & FL_PROXY))
-				{
-					ClientPrint(player->pev, HUD_PRINTCENTER, "#Cannot_Be_Spectator");
-					CLIENT_COMMAND(ENT(player->pev), "slot10\n");
+				ClientKill(player->edict());
 
-					return FALSE;
-				}
-			}
-
-			if (player->m_iTeam == SPECTATOR)
-			{
-				return TRUE;
-			}
-
-			if (!mp->IsFreezePeriod())
-			{
-				if (player->pev->deadflag == DEAD_NO)
-				{
-					ClientPrint(player->pev, HUD_PRINTCENTER, "#Cannot_Be_Spectator");
-					CLIENT_COMMAND(ENT(player->pev), "slot10\n");
-
-					return FALSE;
-				}
-			}
-
-			if (player->m_iTeam != UNASSIGNED)
-			{
-				if (player->pev->deadflag == DEAD_NO)
-				{
-					ClientKill(player->edict());
-					player->pev->frags++;
-				}
+				// add 1 to frags to balance out the 1 subtracted for killing yourself
+				player->pev->frags++;
 			}
 
 			player->RemoveAllItems(TRUE);
@@ -2053,6 +2076,8 @@ BOOL HandleMenu_ChooseTeam(CBasePlayer *player, int slot)
 
 			player->m_iTeam = SPECTATOR;
 			player->m_iJoiningState = JOINED;
+
+			// Reset money
 			player->m_iAccount = 0;
 
 			MESSAGE_BEGIN(MSG_ONE, gmsgMoney, NULL, player->pev);
@@ -2083,36 +2108,60 @@ BOOL HandleMenu_ChooseTeam(CBasePlayer *player, int slot)
 				WRITE_BYTE(1);
 			MESSAGE_END();
 
+			// do we have fadetoblack on? (need to fade their screen back in)
 			if (fadetoblack.value)
 			{
-				UTIL_ScreenFade(player, Vector(0, 0, 0), 0.001, 0, 0, 0);
+				UTIL_ScreenFade(player, Vector(0, 0, 0), 0.001, 0, 0, FFADE_IN);
 			}
 
 			return TRUE;
 		}
-	}
-
-	if (mp->TeamFull(team) && (cv_bot_auto_vacate.value <= 0.0f || player->IsBot() || !UTIL_KickBotFromTeam(team)))
-	{
-		if (team == TERRORIST)
-			ClientPrint(player->pev, HUD_PRINTCENTER, "#Terrorists_Full");
 		else
-			ClientPrint(player->pev, HUD_PRINTCENTER, "#CTs_Full");
+		{
+			ClientPrint(player->pev, HUD_PRINTCENTER, "#Cannot_Be_Spectator");
+			CLIENT_COMMAND(ENT(player->pev), "slot10\n");
 
+			return FALSE;
+		}
+
+		break;
+	}
+	default:
 		return FALSE;
 	}
 
+	// If the code gets this far, the team is not TEAM_UNASSIGNED
+	// Player is switching to a new team (It is possible to switch to the
+	// same team just to choose a new appearance)
+
+	if (mp->TeamFull(team))
+	{
+		// The specified team is full
+		// attempt to kick a bot to make room for this player
+
+		bool madeRoom = false;
+		if (cv_bot_auto_vacate.value > 0 && !player->IsBot())
+		{
+			if (UTIL_KickBotFromTeam(team))
+				madeRoom = true;
+		}
+
+		if (!madeRoom)
+		{
+			ClientPrint(player->pev, HUD_PRINTCENTER, (team == TERRORIST) ? "#Terrorists_Full" : "#CTs_Full");
+			return FALSE;
+		}
+	}
+
+	// players are allowed to change to their own team so they can just change their model
 	if (mp->TeamStacked(team, player->m_iTeam))
 	{
-		if (team == TERRORIST)
-			ClientPrint(player->pev, HUD_PRINTCENTER, "#Too_Many_Terrorists");
-		else
-			ClientPrint(player->pev, HUD_PRINTCENTER, "#Too_Many_CTs");
-
+		// The specified team is full
+		ClientPrint(player->pev, HUD_PRINTCENTER, (team == TERRORIST) ? "#Too_Many_Terrorists" : "#Too_Many_CTs");
 		return FALSE;
 	}
 
-	if (!player->IsBot() && team != SPECTATOR)
+	if (team != SPECTATOR && !player->IsBot())
 	{
 		int humanTeam = UNASSIGNED;
 
@@ -2127,11 +2176,7 @@ BOOL HandleMenu_ChooseTeam(CBasePlayer *player, int slot)
 
 		if (humanTeam != UNASSIGNED && team != humanTeam)
 		{
-			if (team == TERRORIST)
-				ClientPrint(player->pev, HUD_PRINTCENTER, "#Humans_Join_Team_CT");
-			else
-				ClientPrint(player->pev, HUD_PRINTCENTER, "#Humans_Join_Team_T");
-
+			ClientPrint(player->pev, HUD_PRINTCENTER, (team == TERRORIST) ? "#Humans_Join_Team_CT" : "#Humans_Join_Team_T");
 			return FALSE;
 		}
 	}
@@ -2141,20 +2186,22 @@ BOOL HandleMenu_ChooseTeam(CBasePlayer *player, int slot)
 		if (player->pev->deadflag != DEAD_NO)
 		{
 			ClientPrint(player->pev, HUD_PRINTCENTER, "#Only_1_Team_Change");
-
 			return FALSE;
 		}
 	}
 
 	if (player->m_iTeam == SPECTATOR && team != SPECTATOR)
 	{
+		// If they're switching into spectator, setup spectator properties..
 		player->m_bNotKilled = true;
 		player->m_iIgnoreGlobalChat = IGNOREMSG_NONE;
 		player->m_iTeamKills = 0;
 
 		CheckStartMoney();
 
+		// all players start with "mp_startmoney" bucks
 		player->m_iAccount = (int)startmoney.value;
+
 		player->pev->solid = SOLID_NOT;
 		player->pev->movetype = MOVETYPE_NOCLIP;
 		player->pev->effects = EF_NODRAW;
@@ -2163,10 +2210,12 @@ BOOL HandleMenu_ChooseTeam(CBasePlayer *player, int slot)
 		player->pev->deadflag = DEAD_DEAD;
 		player->pev->velocity = g_vecZero;
 		player->pev->punchangle = g_vecZero;
+
 		player->m_bHasNightVision = false;
 		player->m_iHostagesKilled = 0;
 		player->m_fDeadTime = 0;
 		player->has_disconnected = false;
+
 		player->m_iJoiningState = GETINTOGAME;
 
 		SendItemStatus(player);
@@ -2198,11 +2247,15 @@ BOOL HandleMenu_ChooseTeam(CBasePlayer *player, int slot)
 
 	player->m_iMenu = Menu_ChooseAppearance;
 
+	// Show the appropriate Choose Appearance menu
+	// This must come before ClientKill() for CheckWinConditions() to function properly
+
 	if (player->pev->deadflag == DEAD_NO)
 	{
 		ClientKill(player->edict());
 	}
 
+	// Switch their actual team...
 	player->m_bTeamChanged = true;
 	oldTeam = player->m_iTeam;
 	player->m_iTeam = team;
@@ -2211,20 +2264,17 @@ BOOL HandleMenu_ChooseTeam(CBasePlayer *player, int slot)
 
 	TeamChangeUpdate(player, team);
 
-	if (player->pev->netname)
-	{
-		szName = STRING(player->pev->netname);
-
-		if (!szName[0])
-			szName = "<unconnected>";
-	}
-	else
-		szName = "<unconnected>";
-
 	szOldTeam = GetTeam(oldTeam);
 	szNewTeam = GetTeam(team);
 
-	UTIL_ClientPrintAll(HUD_PRINTNOTIFY, (team == TERRORIST) ? "#Game_join_terrorist" : "#Game_join_ct", szName);
+	// Notify others that this player has joined a new team
+	UTIL_ClientPrintAll
+	(
+		HUD_PRINTNOTIFY,
+		(team == TERRORIST) ? "#Game_join_terrorist" : "#Game_join_ct",
+		(STRING(player->pev->netname) && STRING(player->pev->netname)[0] != 0) ? STRING(player->pev->netname) : "<unconnected>"
+	);
+
 	UTIL_LogPrintf
 	(
 		"\"%s<%i><%s><%s>\" joined team \"%s\"\n",
@@ -2385,12 +2435,14 @@ bool BuyGunAmmo(CBasePlayer *player, CBasePlayerItem *weapon, bool bBlinkMoney)
 		return false;
 	}
 
+	// Ensure that the weapon uses ammo
 	int nAmmo = weapon->PrimaryAmmoIndex();
 	if (nAmmo == -1)
 	{
 		return false;
 	}
 
+	// Can only buy if the player does not already have full ammo
 	if (player->m_rgAmmo[ nAmmo ] >= weapon->iMaxAmmo1())
 	{
 		return false;
@@ -2457,6 +2509,7 @@ bool BuyGunAmmo(CBasePlayer *player, CBasePlayerItem *weapon, bool bBlinkMoney)
 		return false;
 	}
 
+	// Purchase the ammo if the player has enough money
 	if (player->m_iAccount >= cost)
 	{
 		player->GiveNamedItem(classname);
@@ -2468,6 +2521,7 @@ bool BuyGunAmmo(CBasePlayer *player, CBasePlayerItem *weapon, bool bBlinkMoney)
 	{
 		if (g_bClientPrintEnable)
 		{
+			// Not enough money.. let the player know
 			ClientPrint(player->pev, HUD_PRINTCENTER, "#Not_Enough_Money");
 			BlinkAccount(player, 2);
 		}
@@ -2488,6 +2542,11 @@ bool BuyAmmo(CBasePlayer *player, int nSlot, bool bBlinkMoney)
 	{
 		return false;
 	}
+
+	// Buy one ammo clip for all weapons in the given slot
+	//
+	//  nSlot == 1 : Primary weapons
+	//  nSlot == 2 : Secondary weapons
 
 	CBasePlayerItem *pItem = player->m_rgpPlayerItems[ nSlot ];
 
@@ -2556,17 +2615,24 @@ NOXREF int CountPlayersInServer(void)
 	return count;
 }
 
+// Handles the special "buy" alias commands we're creating to accommodate the buy
+// scripts players use (now that we've rearranged the buy menus and broken the scripts)
+// ** Returns TRUE if we've handled the command **
+
 /* <4958c> ../cstrike/dlls/client.cpp:2983 */
 BOOL HandleBuyAliasCommands(CBasePlayer *pPlayer, const char *pszCommand)
 {
+	// Let them buy it if it's got a weapon data string.
 	BOOL bRetVal = FALSE;
-	//char *pszFailItem;
+	const char *pszFailItem = NULL;
 
 	WeaponIdType weaponID = WEAPON_NONE;
 	const char *weaponFailName = BuyAliasToWeaponID(pszCommand, weaponID);
 
 	if (weaponID != WEAPON_NONE)
 	{
+		// Ok, we have weapon info ID.
+		// assasination maps have a specific set of weapons that can be used in them.
 		if (CanBuyWeaponByMaptype(pPlayer->m_iTeam, weaponID, (g_pGameRules->m_iMapHasVIPSafetyZone == MAP_HAVE_VIP_SAFETYZONE_YES)))
 		{
 			bRetVal = TRUE;
@@ -2591,34 +2657,45 @@ BOOL HandleBuyAliasCommands(CBasePlayer *pPlayer, const char *pszCommand)
 	}
 	else
 	{
+		// primary ammo
 		if (FStrEq(pszCommand, "primammo"))
 		{
 			bRetVal = TRUE;
+
+			// Buy as much primary ammo as possible
+			// Blink money only if player doesn't have enough for the
+			// first clip
 			if (BuyAmmo(pPlayer, PRIMARY_WEAPON_SLOT, true))
 			{
 				while (BuyAmmo(pPlayer, PRIMARY_WEAPON_SLOT, false))
 					;
 
-				if (TheTutor)
+				if (TheTutor != NULL)
 				{
 					TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, pPlayer);
 				}
 			}
 		}
+		// secondary ammo
 		else if (FStrEq(pszCommand, "secammo"))
 		{
 			bRetVal = TRUE;
+
+			// Buy as much secondary ammo as possible
+			// Blink money only if player doesn't have enough for the
+			// first clip
 			if (BuyAmmo(pPlayer, PISTOL_SLOT, true))
 			{
 				while (BuyAmmo(pPlayer, PISTOL_SLOT, false))
 					;
 
-				if (TheTutor)
+				if (TheTutor != NULL)
 				{
 					TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, pPlayer);
 				}
 			}
 		}
+		// equipment
 		else if (FStrEq(pszCommand, "vest"))
 		{
 			bRetVal = TRUE;
@@ -2652,29 +2729,34 @@ BOOL HandleBuyAliasCommands(CBasePlayer *pPlayer, const char *pszCommand)
 		else if (FStrEq(pszCommand, "defuser"))
 		{
 			bRetVal = TRUE;
-			if (pPlayer->m_iTeam != CT)
+			if (pPlayer->m_iTeam == CT)
 			{
-				if (g_bClientPrintEnable)
-				{
-					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Alias_Not_Avail", "#Bomb_Defusal_Kit");
-				}
+				BuyItem(pPlayer, MENU_SLOT_ITEM_DEFUSEKIT);
 			}
 			else
-				BuyItem(pPlayer, MENU_SLOT_ITEM_DEFUSEKIT);
+			{
+				// fail gracefully
+				pszFailItem = "#Bomb_Defusal_Kit";
+			}
 		}
 		else if (FStrEq(pszCommand, "shield"))
 		{
 			bRetVal = TRUE;
-			if (pPlayer->m_iTeam != CT)
+			if (pPlayer->m_iTeam == CT)
 			{
-				if (g_bClientPrintEnable)
-				{
-					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Alias_Not_Avail", "#TactShield_Desc");
-				}
+				BuyItem(pPlayer, MENU_SLOT_ITEM_SHIELD);
 			}
 			else
-				BuyItem(pPlayer, MENU_SLOT_ITEM_SHIELD);
+			{
+				// fail gracefully
+				pszFailItem = "#TactShield_Desc";
+			}
 		}
+	}
+
+	if (g_bClientPrintEnable && pszFailItem != NULL)
+	{
+		ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Alias_Not_Avail", pszFailItem);
 	}
 
 	pPlayer->BuildRebuyStruct();
