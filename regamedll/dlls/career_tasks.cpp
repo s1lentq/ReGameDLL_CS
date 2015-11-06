@@ -414,11 +414,11 @@ void CCareerTask::__MAKE_VHOOK(OnEvent)(GameEventType event, CBasePlayer *pVicti
 
 				if (m_event == EVENT_ROUND_WIN && !Q_strcmp(m_name, "winfast"))
 				{
-					TheCareerTasks->SetFinishedTaskTime((signed __int64)(TheCareerTasks->GetRoundElapsedTime()));
+					TheCareerTasks->SetFinishedTaskTime((int)TheCareerTasks->GetRoundElapsedTime());
 					UTIL_GetLocalPlayer()->SyncRoundTimer();
 				}
 
-				if (TheTutor)
+				if (TheTutor != NULL)
 				{
 					TheTutor->OnEvent(EVENT_CAREER_TASK_DONE);
 				}
@@ -614,7 +614,7 @@ void CCareerTaskManager::HandleDeath(int team, CBasePlayer *pAttacker)
 
 	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{
-		CBasePlayer *pPlayer = (CBasePlayer *)UTIL_PlayerByIndex(i);
+		CBasePlayer *pPlayer = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
 		if (pPlayer && pPlayer->m_iTeam == enemyTeam && pPlayer->IsAlive())
 			++numEnemies;

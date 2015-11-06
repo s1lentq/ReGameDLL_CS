@@ -687,7 +687,6 @@ int DispatchRestore(edict_t *pent, SAVERESTOREDATA *pSaveData, int globalEntity)
 
 				return 0;
 			}
-
 		}
 
 		if (pEntity->ObjectCaps() & FCAP_MUST_SPAWN)

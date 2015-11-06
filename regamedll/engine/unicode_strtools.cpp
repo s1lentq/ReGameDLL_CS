@@ -1,35 +1,37 @@
 /*
 *
-*   This program is free software; you can redistribute it and/or modify it
-*   under the terms of the GNU General Public License as published by the
-*   Free Software Foundation; either version 2 of the License, or (at
-*   your option) any later version.
+*    This program is free software; you can redistribute it and/or modify it
+*    under the terms of the GNU General Public License as published by the
+*    Free Software Foundation; either version 2 of the License, or (at
+*    your option) any later version.
 *
-*   This program is distributed in the hope that it will be useful, but
-*   WITHOUT ANY WARRANTY; without even the implied warranty of
-*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-*   General Public License for more details.
+*    This program is distributed in the hope that it will be useful, but
+*    WITHOUT ANY WARRANTY; without even the implied warranty of
+*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+*    General Public License for more details.
 *
-*   You should have received a copy of the GNU General Public License
-*   along with this program; if not, write to the Free Software Foundation,
-*   Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*    You should have received a copy of the GNU General Public License
+*    along with this program; if not, write to the Free Software Foundation,
+*    Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 *
-*   In addition, as a special exception, the author gives permission to
-*   link the code of this program with the Half-Life Game Engine ("HL
-*   Engine") and Modified Game Libraries ("MODs") developed by Valve,
-*   L.L.C ("Valve").  You must obey the GNU General Public License in all
-*   respects for all of the code used other than the HL Engine and MODs
-*   from Valve.  If you modify this file, you may extend this exception
-*   to your version of the file, but you are not obligated to do so.  If
-*   you do not wish to do so, delete this exception statement from your
-*   version.
+*    In addition, as a special exception, the author gives permission to
+*    link the code of this program with the Half-Life Game Engine ("HL
+*    Engine") and Modified Game Libraries ("MODs") developed by Valve,
+*    L.L.C ("Valve").  You must obey the GNU General Public License in all
+*    respects for all of the code used other than the HL Engine and MODs
+*    from Valve.  If you modify this file, you may extend this exception
+*    to your version of the file, but you are not obligated to do so.  If
+*    you do not wish to do so, delete this exception statement from your
+*    version.
 *
 */
 
 #include "precompiled.h"
 
-// Purpose: determine if a uchar32 represents a valid Unicode code point
 /* <f2fc1> ../engine/unicode_strtools.cpp:23 */
+//-----------------------------------------------------------------------------
+// Purpose: determine if a uchar32 represents a valid Unicode code point
+//-----------------------------------------------------------------------------
 bool Q_IsValidUChar32(uchar32 uVal)
 {
 	// Values > 0x10FFFF are explicitly invalid; ditto for UTF-16 surrogate halves,
@@ -99,7 +101,7 @@ template<
 	int(UCHAR32_TO_OUT_LEN)(uchar32 uVal),
 	int(UCHAR32_TO_OUT)(uchar32 uVal, T_OUT *pUTF8Out)
 >
-int Q_UnicodeConvertT(const T_IN *pIn, T_OUT *pOut, int nOutBytes, enum EStringConvertErrorPolicy ePolicy)
+int Q_UnicodeConvertT(const T_IN *pIn, T_OUT *pOut, int nOutBytes, EStringConvertErrorPolicy ePolicy)
 {
 	int nOut = 0;
 	if (pOut)
@@ -130,7 +132,7 @@ int Q_UnicodeConvertT(const T_IN *pIn, T_OUT *pOut, int nOutBytes, enum EStringC
 				}
 
 			}
-		};
+		}
 
 		pOut[nOut] = 0;
 	}
@@ -295,17 +297,16 @@ NOXREF int Q_UTF32ToUTF16(const uchar32 *pUTF32, uchar16 *pUTF16, int cubDestSiz
 	return Q_UnicodeConvertT<uchar32, uchar16, true, Q_UTF32ToUChar32, Q_UChar32ToUTF16Len, Q_UChar32ToUTF16>(pUTF32, pUTF16, cubDestSizeInBytes, ePolicy);
 }
 
+/* <f4251> ../engine/unicode_strtools.cpp:346 */
 // Decode one character from a UTF-8 encoded string. Treats 6-byte CESU-8 sequences
 // as a single character, as if they were a correctly-encoded 4-byte UTF-8 sequence.
-
-/* <f4251> ../engine/unicode_strtools.cpp:346 */
 int Q_UTF8ToUChar32(const char *pUTF8_, uchar32 &uValueOut, bool &bErrorOut)
 {
-	const uint8_t *pUTF8 = (const uint8_t *)pUTF8_;
+	const uint8 *pUTF8 = (const uint8 *)pUTF8_;
 
 	int nBytes = 1;
-	uint32_t uValue = pUTF8[0];
-	uint32_t uMinValue = 0;
+	uint32 uValue = pUTF8[0];
+	uint32 uMinValue = 0;
 
 	// 0....... single byte
 	if (uValue < 0x80)
@@ -361,17 +362,19 @@ decodeError:
 decodeFinishedMaybeCESU8:
 	// Do we have a full UTF-16 surrogate pair that's been UTF-8 encoded afterwards?
 	// That is, do we have 0xD800-0xDBFF followed by 0xDC00-0xDFFF? If so, decode it all.
-	if ((uValue - 0xD800u) < 0x400u && pUTF8[3] == 0xED && (uint8_t)(pUTF8[4] - 0xB0) < 0x10 && (pUTF8[5] & 0xC0) == 0x80)
+	if ((uValue - 0xD800u) < 0x400u && pUTF8[3] == 0xED && (uint8)(pUTF8[4] - 0xB0) < 0x10 && (pUTF8[5] & 0xC0) == 0x80)
 	{
-		uValue = 0x10000 + ((uValue - 0xD800u) << 10) + ((uint8_t)(pUTF8[4] - 0xB0) << 6) + pUTF8[5] - 0x80;
+		uValue = 0x10000 + ((uValue - 0xD800u) << 10) + ((uint8)(pUTF8[4] - 0xB0) << 6) + pUTF8[5] - 0x80;
 		nBytes = 6;
 		uMinValue = 0x10000;
 	}
 	goto decodeFinished;
 }
 
-// Purpose: Returns false if UTF-8 string contains invalid sequences.
 /* <f45fd> ../engine/unicode_strtools.cpp:423 */
+//-----------------------------------------------------------------------------
+// Purpose: Returns false if UTF-8 string contains invalid sequences.
+//-----------------------------------------------------------------------------
 qboolean Q_UnicodeValidate(const char *pUTF8)
 {
 	bool bError = false;
@@ -421,43 +424,45 @@ NOXREF char *Q_UnicodeAdvance(char *pUTF8, int nChars)
 	return pUTF8;
 }
 
-// Purpose: returns true if a wide character is a "mean" space; that is,
-// if it is technically a space or punctuation, but causes disruptive
-// behavior when used in names, web pages, chat windows, etc.
-//
-// characters in this set are removed from the beginning and/or end of strings
-// by Q_AggressiveStripPrecedingAndTrailingWhitespaceW()
 /* <f4737> ../engine/unicode_strtools.cpp:479 */
-qboolean Q_IsMeanSpaceW(uchar16 wch)
+//-----------------------------------------------------------------------------
+// Purpose: returns true if a wide character is a "mean" space; that is,
+//			if it is technically a space or punctuation, but causes disruptive
+//			behavior when used in names, web pages, chat windows, etc.
+//
+//			characters in this set are removed from the beginning and/or end of strings
+//			by Q_AggressiveStripPrecedingAndTrailingWhitespaceW() 
+//-----------------------------------------------------------------------------
+bool Q_IsMeanSpaceW(uchar32 wch)
 {
 	bool bIsMean = false;
 
 	switch (wch)
 	{
-	case 0x0082:	  // BREAK PERMITTED HERE
-	case 0x0083:	  // NO BREAK PERMITTED HERE
-	case 0x00A0:	  // NO-BREAK SPACE
-	case 0x034F:   // COMBINING GRAPHEME JOINER
-	case 0x2000:   // EN QUAD
-	case 0x2001:   // EM QUAD
-	case 0x2002:   // EN SPACE
-	case 0x2003:   // EM SPACE
-	case 0x2004:   // THICK SPACE
-	case 0x2005:   // MID SPACE
-	case 0x2006:   // SIX SPACE
-	case 0x2007:   // figure space
-	case 0x2008:   // PUNCTUATION SPACE
-	case 0x2009:   // THIN SPACE
-	case 0x200A:   // HAIR SPACE
-	case 0x200B:   // ZERO-WIDTH SPACE
-	case 0x200C:   // ZERO-WIDTH NON-JOINER
-	case 0x200D:   // ZERO WIDTH JOINER
-	case 0x2028:   // LINE SEPARATOR
-	case 0x2029:   // PARAGRAPH SEPARATOR
-	case 0x202F:   // NARROW NO-BREAK SPACE
-	case 0x2060:   // word joiner
-	case 0xFEFF:   // ZERO-WIDTH NO BREAK SPACE
-	case 0xFFFC:   // OBJECT REPLACEMENT CHARACTER
+	case 0x0082:	// BREAK PERMITTED HERE
+	case 0x0083:	// NO BREAK PERMITTED HERE
+	case 0x00A0:	// NO-BREAK SPACE
+	case 0x034F:	// COMBINING GRAPHEME JOINER
+	case 0x2000:	// EN QUAD
+	case 0x2001:	// EM QUAD
+	case 0x2002:	// EN SPACE
+	case 0x2003:	// EM SPACE
+	case 0x2004:	// THICK SPACE
+	case 0x2005:	// MID SPACE
+	case 0x2006:	// SIX SPACE
+	case 0x2007:	// figure space
+	case 0x2008:	// PUNCTUATION SPACE
+	case 0x2009:	// THIN SPACE
+	case 0x200A:	// HAIR SPACE
+	case 0x200B:	// ZERO-WIDTH SPACE
+	case 0x200C:	// ZERO-WIDTH NON-JOINER
+	case 0x200D:	// ZERO WIDTH JOINER
+	case 0x2028:	// LINE SEPARATOR
+	case 0x2029:	// PARAGRAPH SEPARATOR
+	case 0x202F:	// NARROW NO-BREAK SPACE
+	case 0x2060:	// word joiner
+	case 0xFEFF:	// ZERO-WIDTH NO BREAK SPACE
+	case 0xFFFC:	// OBJECT REPLACEMENT CHARACTER
 		bIsMean = true;
 		break;
 	}
@@ -466,9 +471,9 @@ qboolean Q_IsMeanSpaceW(uchar16 wch)
 }
 
 /* <f37f5> ../engine/unicode_strtools.cpp:566 */
-qboolean Q_IsDeprecatedW(uchar16 wch)
+bool Q_IsDeprecatedW(uchar16 wch)
 {
-	qboolean bIsDeprecated = FALSE;
+	bool bIsDeprecated = false;
 
 	switch (wch)
 	{
@@ -483,21 +488,22 @@ qboolean Q_IsDeprecatedW(uchar16 wch)
 	case 0x206D:
 	case 0x206E:
 	case 0x206F:
-		bIsDeprecated = TRUE;
+		bIsDeprecated = true;
 		break;
 	}
 
 	return bIsDeprecated;
 }
 
+/* <f47bc> ../engine/unicode_strtools.cpp:600 */
+//-----------------------------------------------------------------------------
 // Purpose: strips trailing whitespace; returns pointer inside string just past
 // any leading whitespace.
 //
 // bAggresive = true causes this function to also check for "mean" spaces,
 // which we don't want in persona names or chat strings as they're disruptive
 // to the user experience.
-
-/* <f47bc> ../engine/unicode_strtools.cpp:600 */
+//-----------------------------------------------------------------------------
 static uchar16 *StripWhitespaceWorker(uchar16 *pwch, int cchLength, bool *pbStrippedWhitespace)
 {
 	// walk backwards from the end of the string, killing any whitespace
@@ -554,20 +560,19 @@ qboolean Q_StripUnprintableAndSpace(char *pch)
 {
 	bool bStrippedAny;
 	bool bStrippedWhitespace;
-
 	int cch = Q_strlen(pch);
 	int cubDest = (cch + 1) * sizeof(uchar16);
-	uchar16 *pwch_alloced = (uchar16*)malloc(cubDest);
+	uchar16 *pwch_alloced = (uchar16 *)malloc(cubDest);
 	bStrippedAny = false;
 	bStrippedWhitespace = false;
 
-	// TODO: here is used Q_UTF8ToUTF32, and not this Q_UTF8ToUTF16
+	// TODO: here is using Q_UTF8ToUTF32 by DWARF
 	int cwch = (unsigned int)Q_UTF8ToUTF16(pch, (uchar16 *)pwch_alloced, cubDest, _STRINGCONVERTFLAG_ASSERT) >> 1;
-	uchar16 * pwch = StripUnprintableWorker(pwch_alloced, &bStrippedAny);
+	uchar16 *pwch = StripUnprintableWorker(pwch_alloced, &bStrippedAny);
 	pwch = StripWhitespaceWorker(pwch, cwch - 1, &bStrippedWhitespace);
 	if (bStrippedWhitespace || bStrippedAny)
 	{
-		// TODO:: here is used Q_UTF32ToUTF8
+		// TODO: here is using Q_UTF32ToUTF8 by DWARF
 		Q_UTF16ToUTF8(pwch, pch, cch, STRINGCONVERT_ASSERT_REPLACE);
 	}
 

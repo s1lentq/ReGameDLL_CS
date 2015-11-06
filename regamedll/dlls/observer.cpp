@@ -1,7 +1,7 @@
 #include "precompiled.h"
 
 /* <11c190> ../cstrike/dlls/observer.cpp:36 */
-NOXREF int GetForceCamera(void)
+int GetForceCamera(void)
 {
 	int retVal;
 
@@ -49,7 +49,7 @@ void UpdateClientEffects(CBasePlayer *pObserver, int oldMode)
 
 		if (pObserver->m_hObserverTarget->IsPlayer())
 		{
-			CBasePlayer *pPlayer = (CBasePlayer *)UTIL_PlayerByIndex(ENTINDEX(pObserver->m_hObserverTarget->edict()));
+			CBasePlayer *pPlayer = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(ENTINDEX(pObserver->m_hObserverTarget->edict())));
 
 			if (pPlayer)
 			{
@@ -167,7 +167,7 @@ void CBasePlayer::Observer_FindNextPlayer(bool bReverse, const char *name)
 			if (!name)
 				break;
 
-			pPlayer = (CBasePlayer *)UTIL_PlayerByIndex(ENTINDEX(m_hObserverTarget->edict()));
+			pPlayer = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(ENTINDEX(m_hObserverTarget->edict())));
 
 			if (!Q_strcmp(name, STRING(pPlayer->pev->netname)))
 				break;
@@ -273,7 +273,7 @@ void CBasePlayer::Observer_CheckTarget(void)
 		if (m_hObserverTarget)
 		{
 			int iPlayerIndex = ENTINDEX(m_hObserverTarget->edict());
-			CBasePlayer *target = (CBasePlayer *)UTIL_PlayerByIndex(iPlayerIndex);
+			CBasePlayer *target = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(iPlayerIndex));
 
 			// check taget
 			if (!target || target->pev->deadflag == DEAD_RESPAWNABLE || (target->pev->effects & EF_NODRAW))
@@ -310,7 +310,7 @@ void CBasePlayer::Observer_CheckProperties(void)
 	// try to find a traget if we have no current one
 	if (pev->iuser1 == OBS_IN_EYE && m_hObserverTarget != NULL)
 	{
-		CBasePlayer *target = (CBasePlayer *)UTIL_PlayerByIndex(ENTINDEX(m_hObserverTarget->edict()));
+		CBasePlayer *target = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(ENTINDEX(m_hObserverTarget->edict())));
 
 		if (!target)
 			return;

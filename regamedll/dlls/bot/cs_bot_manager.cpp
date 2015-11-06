@@ -370,7 +370,7 @@ void CCSBotManager::__MAKE_VHOOK(ServerCommand)(const char *pcmd)
 
 		for (int iIndex = 1; iIndex <= gpGlobals->maxClients; iIndex++)
 		{
-			CBasePlayer *pPlayer = (CBasePlayer *)UTIL_PlayerByIndex(iIndex);
+			CBasePlayer *pPlayer = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(iIndex));
 
 			if (pPlayer == NULL)
 				continue;
@@ -402,7 +402,7 @@ void CCSBotManager::__MAKE_VHOOK(ServerCommand)(const char *pcmd)
 
 		for (int iIndex = 1; iIndex <= gpGlobals->maxClients; iIndex++)
 		{
-			CBasePlayer *pPlayer = (CBasePlayer *)UTIL_PlayerByIndex(iIndex);
+			CBasePlayer *pPlayer = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(iIndex));
 
 			if (pPlayer == NULL)
 				continue;

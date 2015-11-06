@@ -36,7 +36,7 @@
 #define CAMERA_MODE_SPEC_ONLY_TEAM		1
 #define CAMERA_MODE_SPEC_ONLY_FRIST_PERSON	2
 
-NOXREF int GetForceCamera(void);
+int GetForceCamera(void);
 void UpdateClientEffects(CBasePlayer *pObserver, int oldMode);
 
 #endif // OBSERVER_H

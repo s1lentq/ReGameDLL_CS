@@ -1889,7 +1889,7 @@ void CEscapeZone::EscapeTouch(CBaseEntity *pOther)
 
 			for (int i = 1; i <= gpGlobals->maxClients; i++)
 			{
-				CBasePlayer *pPlayer = (CBasePlayer *)UTIL_PlayerByIndex(i);
+				CBasePlayer *pPlayer = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
 				if (pPlayer == NULL || FNullEnt(pPlayer->pev))
 					continue;

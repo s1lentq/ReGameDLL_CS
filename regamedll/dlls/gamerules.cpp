@@ -40,8 +40,13 @@ edict_t *CGameRules::__MAKE_VHOOK(GetPlayerSpawnSpot)(CBasePlayer *pPlayer)
 {
 	edict_t *pentSpawnSpot = EntSelectSpawnPoint(pPlayer);
 
-	pPlayer->pev->origin = VARS(pentSpawnSpot)->origin;// + Vector(0, 0, 1);
+#if HOOK_GAMEDLL
+	// TODO: fix test demo
+	pPlayer->pev->origin = VARS(pentSpawnSpot)->origin;
 	pPlayer->pev->origin.z += 1;
+#else
+	pPlayer->pev->origin = VARS(pentSpawnSpot)->origin + Vector(0, 0, 1);
+#endif // HOOK_GAMEDLL
 
 	pPlayer->pev->v_angle = g_vecZero;
 	pPlayer->pev->velocity = g_vecZero;

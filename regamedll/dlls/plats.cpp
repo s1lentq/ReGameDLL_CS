@@ -1249,8 +1249,6 @@ void CFuncTrackTrain::Next(void)
 
 	if (m_flBank != 0)
 	{
-		double dbl_v33 = m_flBank;
-
 		if (pev->avelocity.y < -5)
 		{
 			pev->avelocity.z = UTIL_AngleDistance(UTIL_ApproachAngle(-m_flBank, pev->angles.z, m_flBank * 2), pev->angles.z);

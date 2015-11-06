@@ -52,7 +52,7 @@ void CHalfLifeTraining::__MAKE_VHOOK(InitHUD)(CBasePlayer *pl)
 /* <18bcff> ../cstrike/dlls/training_gamerules.cpp:29 */
 void CHalfLifeTraining::HostageDied(void)
 {
-	CBasePlayer *pPlayer = (CBasePlayer *)UTIL_PlayerByIndex(1);
+	CBasePlayer *pPlayer = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(1));
 
 	if (pPlayer)
 	{

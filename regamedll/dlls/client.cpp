@@ -3601,7 +3601,7 @@ void ClientCommand(edict_t *pEntity)
 
 						for (int i = 1; i <= gpGlobals->maxClients; i++)
 						{
-							CBasePlayer *pObserver = (CBasePlayer *)UTIL_PlayerByIndex(i);
+							CBasePlayer *pObserver = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
 							if (pObserver && pObserver->IsObservingPlayer(player))
 							{
@@ -3627,7 +3627,7 @@ void ClientCommand(edict_t *pEntity)
 
 						for (int i = 1; i <= gpGlobals->maxClients; i++)
 						{
-							CBasePlayer *pObserver = (CBasePlayer *)UTIL_PlayerByIndex(i);
+							CBasePlayer *pObserver = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
 							if (pObserver && pObserver->IsObservingPlayer(player))
 							{
@@ -3664,7 +3664,7 @@ void ClientCommand(edict_t *pEntity)
 				// player is dropping an item.
 				if (player->HasShield())
 				{
-					if (player->m_pActiveItem && player->m_pActiveItem->m_iId == WEAPON_C4)
+					if (player->m_pActiveItem != NULL && player->m_pActiveItem->m_iId == WEAPON_C4)
 					{
 						player->DropPlayerItem("weapon_c4");
 					}

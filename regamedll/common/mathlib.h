@@ -67,15 +67,14 @@ typedef union DLONG_u
 
 #define M_PI			3.14159265358979323846
 
-#define clamp(val, x, y) (((val) > (y)) ? (y) : (((val) < (x)) ? (x) : (val)))
+template <typename T>
+T Q_min(T a, T b)		{ return (a < b) ? a : b; }
 
-#ifndef Q_max
-#define Q_max(a,b) ((a) > (b) ? (a) : (b))	// std::max(a, b)
-#endif // Q_max
+template <typename T>
+T Q_max(T a, T b)		{ return (a > b) ? a : b; }
 
-#ifndef Q_min
-#define Q_min(a,b) ((a) < (b) ? (a) : (b))	// std::min(a, b)
-#endif // Q_min
+template <typename T>
+T clamp(T a, T min, T max)	{ return (a > max) ? max : (a < min) ? min : a; }
 
 #define VectorSubtract(a,b,c) {(c)[0]=(a)[0]-(b)[0];(c)[1]=(a)[1]-(b)[1];(c)[2]=(a)[2]-(b)[2];}
 #define VectorAdd(a,b,c) {(c)[0]=(a)[0]+(b)[0];(c)[1]=(a)[1]+(b)[1];(c)[2]=(a)[2]+(b)[2];}

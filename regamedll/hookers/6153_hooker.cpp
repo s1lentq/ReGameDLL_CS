@@ -782,8 +782,8 @@ FunctionHook g_FunctionHooks[] =
 	{ 0x01DAD280, "_ZN11CBasePlayer7AutoBuyEv", mfunc_ptr_cast(&CBasePlayer::AutoBuy) },
 	{ 0x01DAD0D0, "_ZN11CBasePlayer13ClientCommandEPKcS1_S1_S1_", mfunc_ptr_cast(&CBasePlayer::ClientCommand) },
 	{ 0x01DADD00, "_ZN11CBasePlayer23PrioritizeAutoBuyStringEPcPKc", mfunc_ptr_cast(&CBasePlayer::PrioritizeAutoBuyString) },
-	//{ 0x01DAD590, "_ZN11CBasePlayer27PickPrimaryCareerTaskWeaponEv", mfunc_ptr_cast(&CBasePlayer::PickPrimaryCareerTaskWeapon) },
-	//{ 0x01DAD930, "_ZN11CBasePlayer29PickSecondaryCareerTaskWeaponEv", mfunc_ptr_cast(&CBasePlayer::PickSecondaryCareerTaskWeapon) },
+	{ 0x01DAD590, "_ZN11CBasePlayer27PickPrimaryCareerTaskWeaponEv", mfunc_ptr_cast(&CBasePlayer::PickPrimaryCareerTaskWeapon) },
+	{ 0x01DAD930, "_ZN11CBasePlayer29PickSecondaryCareerTaskWeaponEv", mfunc_ptr_cast(&CBasePlayer::PickSecondaryCareerTaskWeapon) },
 	//{ 0x01DADC60, "_ZN11CBasePlayer25PickFlashKillWeaponStringEv", mfunc_ptr_cast(&CBasePlayer::PickFlashKillWeaponString) },	// NOXREF
 	//{ 0x01DADCC0, "_ZN11CBasePlayer27PickGrenadeKillWeaponStringEv", mfunc_ptr_cast(&CBasePlayer::PickGrenadeKillWeaponString) },	// NOXREF
 	//{ 0x01DADF70, "_ZN11CBasePlayer27ShouldExecuteAutoBuyCommandEPK17AutoBuyInfoStructbb", mfunc_ptr_cast(&CBasePlayer::ShouldExecuteAutoBuyCommand) },		// NOXREF
@@ -5534,8 +5534,6 @@ AddressRef g_FunctionRefs[] =
 	{ 0x01D2D9B0, "_ZN6CCSBot6UpdateEv", (size_t)&pCCSBot__Update },
 	{ 0x01D5B350, "_Z16QuaternionMatrixPfPA4_f", (size_t)&pQuaternionMatrix },
 
-	{ 0x01DAD590, "_ZN11CBasePlayer27PickPrimaryCareerTaskWeaponEv", (size_t)&pCBasePlayer__PickPrimaryCareerTaskWeapon },
-	{ 0x01DAD930, "_ZN11CBasePlayer29PickSecondaryCareerTaskWeaponEv", (size_t)&pCBasePlayer__PickSecondaryCareerTaskWeapon },
 	{ 0x01D46310, "_Z17LoadNavigationMapv", (size_t)&pLoadNavigationMap },
 	{ 0x01D19C70, "_ZN9BotPhrase9RandomizeEv", (size_t)&pBotPhrase__Randomize },
 

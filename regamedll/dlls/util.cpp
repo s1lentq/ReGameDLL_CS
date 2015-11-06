@@ -574,9 +574,10 @@ CBaseEntity *UTIL_PlayerByIndex(int playerIndex)
 	if (playerIndex > 0 && playerIndex <= gpGlobals->maxClients)
 	{
 		edict_t *pPlayerEdict = INDEXENT(playerIndex);
-		if (pPlayerEdict && !pPlayerEdict->free)
+		if (pPlayerEdict != NULL && !pPlayerEdict->free)
 			pPlayer = CBaseEntity::Instance(pPlayerEdict);
 	}
+
 	return pPlayer;
 }
 
@@ -2430,7 +2431,7 @@ char UTIL_TextureHit(TraceResult *ptr, Vector vecSrc, Vector vecEnd)
 /* <1b5330> ../cstrike/dlls/util.cpp:2767 */
 NOXREF int GetPlayerTeam(int index)
 {
-	CBasePlayer *pPlayer = (CBasePlayer *)UTIL_PlayerByIndex(index);
+	CBasePlayer *pPlayer = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(index));
 	if (pPlayer != NULL)
 	{
 		return pPlayer->m_iTeam;
@@ -2455,7 +2456,7 @@ bool UTIL_IsGame(const char *gameName)
 /* <1b5470> ../cstrike/dlls/util.cpp:2802 */
 float_precision UTIL_GetPlayerGaitYaw(int playerIndex)
 {
-	CBasePlayer *pPlayer = (CBasePlayer *)UTIL_PlayerByIndex(playerIndex);
+	CBasePlayer *pPlayer = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(playerIndex));
 	if (pPlayer != NULL)
 	{
 		return pPlayer->m_flGaityaw;

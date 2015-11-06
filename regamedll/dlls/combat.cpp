@@ -1053,7 +1053,7 @@ void RadiusFlash(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker,
 
 			for (int i = 1; i <= gpGlobals->maxClients; i++)
 			{
-				CBasePlayer *pObserver = (CBasePlayer *)UTIL_PlayerByIndex(i);
+				CBasePlayer *pObserver = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
 				if (!pObserver || !pObserver->IsObservingPlayer(pPlayer))
 					continue;

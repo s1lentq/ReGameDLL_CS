@@ -128,8 +128,8 @@
 #define AUTOAIM_8DEGREES		0.1391731009601
 #define AUTOAIM_10DEGREES		0.1736481776669
 
-//#define SOUND_FLASHLIGHT_ON	"items/flashlight1.wav"
-//#define SOUND_FLASHLIGHT_OFF	"items/flashlight1.wav"
+#define SOUND_FLASHLIGHT_ON		"items/flashlight1.wav"
+#define SOUND_FLASHLIGHT_OFF		"items/flashlight1.wav"
 
 typedef enum
 {
@@ -740,6 +740,7 @@ public:
 	void DropShield(bool bDeploy = true);
 	void GiveShield(bool bDeploy = true);
 	bool IsHittingShield(Vector &vecDirection, TraceResult *ptr);
+	bool SelectSpawnSpot(const char *pEntClassName, CBaseEntity* &pSpot);
 	bool IsReloading(void)
 	{
 		if (m_pActiveItem && ((CBasePlayerWeapon *)m_pActiveItem)->m_fInReload)
@@ -768,8 +769,8 @@ public:
 	void AutoBuy(void);
 	void ClientCommand(const char *cmd, const char *arg1 = NULL, const char *arg2 = NULL, const char *arg3 = NULL);
 	void PrioritizeAutoBuyString(char *autobuyString, const char *priorityString);
-	NOBODY const char *PickPrimaryCareerTaskWeapon(void);
-	NOBODY const char *PickSecondaryCareerTaskWeapon(void);
+	const char *PickPrimaryCareerTaskWeapon(void);
+	const char *PickSecondaryCareerTaskWeapon(void);
 	const char *PickFlashKillWeaponString(void);
 	const char *PickGrenadeKillWeaponString(void);
 	bool ShouldExecuteAutoBuyCommand(AutoBuyInfoStruct *commandInfo, bool boughtPrimary, bool boughtSecondary);
@@ -1184,9 +1185,5 @@ bool IsSecondaryWeaponClass(int classId);
 bool IsSecondaryWeaponId(int id);
 const char *GetWeaponAliasFromName(const char *weaponName);
 bool CurrentWeaponSatisfies(CBasePlayerWeapon *pWeapon, int id, int classId);
-
-// refs
-extern void (*pCBasePlayer__PickPrimaryCareerTaskWeapon)(void);
-extern void (*pCBasePlayer__PickSecondaryCareerTaskWeapon)(void);
 
 #endif // PLAYER_H

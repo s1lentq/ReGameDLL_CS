@@ -229,7 +229,7 @@ WeaponInfoStruct weaponInfo[27];
 /* <22cd2a> ../cstrike/dlls/weapontype.cpp:208 */
 WeaponIdType AliasToWeaponID(const char *alias)
 {
-	if (alias)
+	if (alias != NULL)
 	{
 		for (int i = 0; weaponAliasInfo[i].alias != NULL; i++)
 		{
@@ -275,7 +275,7 @@ const char *WeaponIDToAlias(int id)
 /* <22cdfe> ../cstrike/dlls/weapontype.cpp:259 */
 WeaponClassType AliasToWeaponClass(const char *alias)
 {
-	if (alias)
+	if (alias != NULL)
 	{
 		for (int i = 0; weaponClassAliasInfo[i].alias != NULL; i++)
 		{

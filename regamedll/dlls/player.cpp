@@ -1199,7 +1199,7 @@ int CBasePlayer::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pe
 			{
 				for (int i = 1; i <= gpGlobals->maxClients; i++)
 				{
-					CBasePlayer *pPlayer = (CBasePlayer *)UTIL_PlayerByIndex(i);
+					CBasePlayer *pPlayer = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
 					if (!pPlayer)
 						continue;
@@ -1239,7 +1239,7 @@ int CBasePlayer::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pe
 
 		for (int i = 1; i <= gpGlobals->maxClients; i++)
 		{
-			CBasePlayer *pPlayer = (CBasePlayer *)UTIL_PlayerByIndex(i);
+			CBasePlayer *pPlayer = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
 			if (!pPlayer || pPlayer->m_hObserverTarget != this)
 				continue;
@@ -1421,7 +1421,7 @@ int CBasePlayer::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pe
 		{
 			for (int i = 1; i <= gpGlobals->maxClients; i++)
 			{
-				CBasePlayer *pPlayer = (CBasePlayer *)UTIL_PlayerByIndex(i);
+				CBasePlayer *pPlayer = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
 				if (!pPlayer)
 					continue;
@@ -1461,7 +1461,7 @@ int CBasePlayer::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pe
 
 	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{
-		CBasePlayer *pPlayer = (CBasePlayer *)UTIL_PlayerByIndex(i);
+		CBasePlayer *pPlayer = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
 		if (!pPlayer)
 			continue;
@@ -1486,28 +1486,28 @@ int CBasePlayer::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pe
 /* <1516a0> ../cstrike/dlls/player.cpp:1706 */
 void packPlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 {
-	if (pItem)
+	if (pItem == NULL)
+		return;
+
+	const char *modelName = GetCSModelName(pItem->m_iId);
+	if (modelName != NULL)
 	{
-		const char *modelName = GetCSModelName(pItem->m_iId);
-		if (modelName)
+		CWeaponBox *pWeaponBox = (CWeaponBox *)CBaseEntity::Create("weaponbox", pPlayer->pev->origin, pPlayer->pev->angles, ENT(pPlayer->pev));
+
+		pWeaponBox->pev->angles.x = 0;
+		pWeaponBox->pev->angles.z = 0;
+
+		pWeaponBox->pev->velocity = pPlayer->pev->velocity * 0.75;
+
+		pWeaponBox->SetThink(&CWeaponBox::Kill);
+		pWeaponBox->pev->nextthink = gpGlobals->time + 300;
+		pWeaponBox->PackWeapon(pItem);
+
+		if (packAmmo)
 		{
-			CWeaponBox *pWeaponBox = (CWeaponBox *)CBaseEntity::Create("weaponbox", pPlayer->pev->origin, pPlayer->pev->angles, ENT(pPlayer->pev));
-
-			pWeaponBox->pev->angles.x = 0;
-			pWeaponBox->pev->angles.z = 0;
-
-			pWeaponBox->pev->velocity = pPlayer->pev->velocity * 0.75;
-
-			pWeaponBox->SetThink(&CWeaponBox::Kill);
-			pWeaponBox->pev->nextthink = gpGlobals->time + 300;
-			pWeaponBox->PackWeapon(pItem);
-
-			if (packAmmo)
-			{
-				pWeaponBox->PackAmmo(MAKE_STRING(IMPLEMENT_ARRAY_CLASS(CBasePlayerItem, ItemInfoArray)[ pItem->m_iId ].pszAmmo1), pPlayer->m_rgAmmo[pItem->PrimaryAmmoIndex()]);
-			}
-			SET_MODEL(ENT(pWeaponBox->pev), modelName);
+			pWeaponBox->PackAmmo(MAKE_STRING(IMPLEMENT_ARRAY_CLASS(CBasePlayerItem, ItemInfoArray)[pItem->m_iId].pszAmmo1), pPlayer->m_rgAmmo[pItem->PrimaryAmmoIndex()]);
 		}
+		SET_MODEL(ENT(pWeaponBox->pev), modelName);
 	}
 }
 
@@ -2001,7 +2001,7 @@ void CBasePlayer::__MAKE_VHOOK(Killed)(entvars_t *pevAttacker, int iGib)
 
 			for (int i = 1; i <= gpGlobals->maxClients; i++)
 			{
-				CBasePlayer *pPlayer = (CBasePlayer *)UTIL_PlayerByIndex(i);
+				CBasePlayer *pPlayer = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
 				if (!pPlayer)
 					continue;
@@ -2029,7 +2029,7 @@ void CBasePlayer::__MAKE_VHOOK(Killed)(entvars_t *pevAttacker, int iGib)
 
 	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
-		CBasePlayer *pObserver = (CBasePlayer *)UTIL_PlayerByIndex(i);
+		CBasePlayer *pObserver = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
 		if (!pObserver)
 			continue;
@@ -3567,6 +3567,8 @@ void CBasePlayer::PlayerDeathThink(void)
 	if (m_iJoiningState != JOINED)
 		return;
 
+	// If the anim is done playing, go to the next state (waiting for a keypress to 
+	// either respawn the guy or put him into observer mode).
 	if (pev->flags & FL_ONGROUND)
 	{
 		float flForward = pev->velocity.Length() - 20;
@@ -3599,6 +3601,7 @@ void CBasePlayer::PlayerDeathThink(void)
 
 	if (pev->deadflag == DEAD_DYING)
 	{
+		// Used for a timer.
 		m_fDeadTime = gpGlobals->time;
 		pev->deadflag = DEAD_DEAD;
 	}
@@ -3615,14 +3618,18 @@ void CBasePlayer::PlayerDeathThink(void)
 	{
 		if (gpGlobals->time > m_fDeadTime + 3.0 && !(m_afPhysicsFlags & PFLAG_OBSERVER))
 		{
+			// Send message to everybody to spawn a corpse.
 			SpawnClientSideCorpse();
-			StartDeathCam(); // go to dead camera.
+
+			// go to dead camera.
+			StartDeathCam();
 		}
 	}
 
 	// wait for all buttons released
 	if (pev->deadflag == DEAD_DEAD && m_iTeam != UNASSIGNED && m_iTeam != SPECTATOR)
 	{
+		// wait for any button down,  or mp_forcerespawn is set and the respawn time is up
 		if (fAnyButtonDown)
 			return;
 
@@ -3638,6 +3645,7 @@ void CBasePlayer::PlayerDeathThink(void)
 	}
 	else if (pev->deadflag == DEAD_RESPAWNABLE)
 	{
+		// don't copy a corpse if we're in deathcam.
 		respawn(pev, FALSE);
 		pev->button = 0;
 		pev->nextthink = -1;
@@ -3683,6 +3691,9 @@ void CBasePlayer::__MAKE_VHOOK(RoundRespawn)(void)
 	m_lastLocation[0] = '\0';
 }
 
+// StartDeathCam - find an intermission spot and send the
+// player off into observer mode
+
 /* <155577> ../cstrike/dlls/player.cpp:4172 */
 void CBasePlayer::StartDeathCam(void)
 {
@@ -3694,7 +3705,7 @@ void CBasePlayer::StartDeathCam(void)
 
 	StartObserver(pev->origin, pev->angles);
 
-	if (TheBots)
+	if (TheBots != NULL)
 	{
 		TheBots->OnEvent(EVENT_DEATH_CAMERA_START, this);
 	}
@@ -3710,10 +3721,10 @@ void CBasePlayer::StartObserver(Vector vecPosition, Vector vecViewAngle)
 	MESSAGE_END();
 
 	// Holster weapon immediately, to allow it to cleanup
-	if (m_pActiveItem)
+	if (m_pActiveItem != NULL)
 		m_pActiveItem->Holster();
 
-	if (m_pTank)
+	if (m_pTank != NULL)
 	{
 		m_pTank->Use(this, this);
 		m_pTank = NULL;
@@ -3737,6 +3748,7 @@ void CBasePlayer::StartObserver(Vector vecPosition, Vector vecViewAngle)
 	m_afPhysicsFlags |= PFLAG_OBSERVER;
 
 	pev->effects = EF_NODRAW;
+	// set position and viewangle
 	pev->view_ofs = g_vecZero;
 
 	pev->angles = pev->v_angle = vecViewAngle;
@@ -3948,6 +3960,7 @@ void CBasePlayer::PlayerUse(void)
 	{
 		if (!useNewHostages || CanSeeUseable(this, pObject))
 		{
+			//!!!UNDONE: traceline here to prevent +USEing buttons through walls
 			int caps = pObject->ObjectCaps();
 
 			if (m_afButtonPressed & IN_USE)
@@ -4058,7 +4071,7 @@ NOXREF void FixPlayerCrouchStuck(edict_t *pPlayer)
 		UTIL_TraceHull(pPlayer->v.origin, pPlayer->v.origin, dont_ignore_monsters, head_hull, pPlayer, &trace);
 
 		if (trace.fStartSolid)
-			pPlayer->v.origin.z ++;
+			pPlayer->v.origin.z++;
 		else
 			break;
 	}
@@ -4071,6 +4084,8 @@ void CBasePlayer::__MAKE_VHOOK(Duck)(void)
 		SetAnimation(PLAYER_WALK);
 }
 
+// ID's player as such.
+
 /* <150f8f> ../cstrike/dlls/player.cpp:4591 */
 int CBasePlayer::__MAKE_VHOOK(Classify)(void)
 {
@@ -4080,13 +4095,18 @@ int CBasePlayer::__MAKE_VHOOK(Classify)(void)
 /* <150fb7> ../cstrike/dlls/player.cpp:4597 */
 void CBasePlayer::__MAKE_VHOOK(AddPoints)(int score, BOOL bAllowNegativeScore)
 {
+	// Positive score always adds
 	if (score < 0 && !bAllowNegativeScore)
 	{
+		// Can't go more negative
 		if (pev->frags < 0)
 			return;
 
 		if (-score > pev->frags)
+		{
+			// Sum will be 0
 			score = -pev->frags;
+		}
 	}
 
 	pev->frags += score;
@@ -4107,12 +4127,14 @@ void CBasePlayer::__MAKE_VHOOK(AddPointsToTeam)(int score, BOOL bAllowNegativeSc
 
 	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{
-		CBasePlayer *pPlayer = (CBasePlayer *)UTIL_PlayerByIndex(i);
+		CBasePlayer *pPlayer = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
-		if (pPlayer && i != index)
+		if (pPlayer != NULL && i != index)
 		{
 			if (g_pGameRules->PlayerRelationship(this, pPlayer) == GR_TEAMMATE)
+			{
 				pPlayer->AddPoints(score, bAllowNegativeScore);
+			}
 		}
 	}
 }
@@ -4461,11 +4483,12 @@ void CBasePlayer::CheckTimeBasedDamage(void)
 {
 	int i;
 	BYTE bDuration = 0;
-	//static float gtbdPrev = 0.0;
+	static float gtbdPrev = 0.0;
 
 	if (!(m_bitsDamageType & DMG_TIMEBASED))
 		return;
 
+	// only check for time based damage approx. every 2 seconds
 	if (abs((int64_t)(gpGlobals->time - m_tbdPrev)) < 2.0f)
 		return;
 
@@ -4473,6 +4496,7 @@ void CBasePlayer::CheckTimeBasedDamage(void)
 
 	for (i = 0; i < CDMG_TIMEBASED; i++)
 	{
+		// make sure bit is set for damage type
 		if (m_bitsDamageType & (DMG_PARALYZE << i))
 		{
 			switch (i)
@@ -4492,13 +4516,16 @@ void CBasePlayer::CheckTimeBasedDamage(void)
 			}
 			case itbd_DrownRecover:
 			{
+				// NOTE: this hack is actually used to RESTORE health
+				// after the player has been drowning and finally takes a breath
 				if (m_idrowndmg > m_idrownrestored)
 				{
 					int idif = Q_min(m_idrowndmg - m_idrownrestored, 10);
+
 					TakeHealth(idif, DMG_GENERIC);
 					m_idrownrestored += idif;
 				}
-
+				// get up to 5*10 = 50 points back
 				bDuration = 4;
 				break;
 			}
@@ -4550,11 +4577,16 @@ void CBasePlayer::CheckTimeBasedDamage(void)
 /* <156112> ../cstrike/dlls/player.cpp:5312 */
 void CBasePlayer::UpdateGeigerCounter(void)
 {
+	BYTE range;
+
+	// delay per update ie: don't flood net with these msgs
 	if (gpGlobals->time < m_flgeigerDelay)
 		return;
 
 	m_flgeigerDelay = gpGlobals->time + 0.25;
-	BYTE range = (byte)(m_flgeigerRange * 0.25);
+
+	// send range to radition source to client
+	range = (byte)(m_flgeigerRange / 4.0);//* 0.25);		// TODO: ACHECK!
 
 	if (range != m_igeigerRangePrev)
 	{
@@ -4565,8 +4597,11 @@ void CBasePlayer::UpdateGeigerCounter(void)
 		MESSAGE_END();
 	}
 
+	// reset counter and semaphore
 	if (!RANDOM_LONG(0, 3))
+	{
 		m_flgeigerRange = 1000.0;
+	}
 }
 
 /* <156189> ../cstrike/dlls/player.cpp:5352 */
@@ -4627,6 +4662,12 @@ void CBasePlayer::CheckSuitUpdate(void)
 	}
 }
 
+// add sentence to suit playlist queue. if fgroup is true, then
+// name is a sentence group (HEV_AA), otherwise name is a specific
+// sentence name ie: !HEV_AA0.  If iNoRepeat is specified in
+// seconds, then we won't repeat playback of this word or sentence
+// for at least that number of seconds.
+
 /* <156201> ../cstrike/dlls/player.cpp:5414 */
 void CBasePlayer::SetSuitUpdate(char *name, int fgroup, int iNoRepeatTime)
 {
@@ -4636,8 +4677,11 @@ void CBasePlayer::SetSuitUpdate(char *name, int fgroup, int iNoRepeatTime)
 /* <15623f> ../cstrike/dlls/player.cpp:5519 */
 void CBasePlayer::CheckPowerups(entvars_t *pev)
 {
-	if (pev->health > 0.0f)
-		pev->modelindex = m_modelIndexPlayer;
+	if (pev->health <= 0.0f)
+		return;
+
+	// don't use eyes
+	pev->modelindex = m_modelIndexPlayer;
 }
 
 /* <15626b> ../cstrike/dlls/player.cpp:5531 */
@@ -4669,6 +4713,7 @@ void CBasePlayer::UpdatePlayerSound(void)
 
 	// now calculate the best target volume for the sound. If the player's weapon
 	// is louder than his body/movement, use the weapon volume, else, use the body volume.
+	// now figure out how loud the player's movement is.
 
 	if (pev->flags & FL_ONGROUND)
 	{
@@ -4676,6 +4721,8 @@ void CBasePlayer::UpdatePlayerSound(void)
 
 		// clamp the noise that can be made by the body, in case a push trigger,
 		// weapon recoil, or anything shoves the player abnormally fast.
+		// NOTE: 512 units is a pretty large radius for a sound made by the player's body.
+		// then again, I think some materials are pretty loud.
 		if (iBodyVolume> 512)
 		{
 			iBodyVolume = 512;
@@ -4688,6 +4735,7 @@ void CBasePlayer::UpdatePlayerSound(void)
 
 	if (pev->button & IN_JUMP)
 	{
+		// Jumping is a little louder.
 		iBodyVolume += 100;
 	}
 
@@ -4738,7 +4786,7 @@ void CBasePlayer::UpdatePlayerSound(void)
 		m_iExtraSoundTypes = 0;
 	}
 
-	if (pSound)
+	if (pSound != NULL)
 	{
 		pSound->m_vecOrigin = pev->origin;
 		pSound->m_iVolume = iVolume;
@@ -4889,6 +4937,8 @@ pt_end:
 	StudioProcessGait();
 }
 
+// checks if the spot is clear of players
+
 /* <14e39d> ../cstrike/dlls/player.cpp:5837 */
 BOOL IsSpawnPointValid(CBaseEntity *pPlayer, CBaseEntity *pSpot)
 {
@@ -4899,6 +4949,7 @@ BOOL IsSpawnPointValid(CBaseEntity *pPlayer, CBaseEntity *pSpot)
 
 	while ((ent = UTIL_FindEntityInSphere(ent, pSpot->pev->origin, 64)) != NULL)
 	{
+		// if ent is a client, don't spawn on 'em
 		if (ent->IsPlayer() && ent != pPlayer)
 			return FALSE;
 	}
@@ -4932,6 +4983,63 @@ NOXREF CBaseEntity *FindZombieSpawn(CBaseEntity *player, bool forceSpawn)
 	return NULL;
 }
 
+bool CBasePlayer::SelectSpawnSpot(const char *pEntClassName, CBaseEntity *&pSpot)
+{
+	edict_t *player = edict();
+
+	// Find the next spawn spot.
+	pSpot = UTIL_FindEntityByClassname(pSpot, pEntClassName);
+
+	// skip over the null point
+	if (FNullEnt(pSpot))
+	{
+		pSpot = UTIL_FindEntityByClassname(pSpot, pEntClassName);
+	}
+
+	CBaseEntity *pFirstSpot = pSpot;
+
+	do
+	{
+		if (pSpot != NULL)
+		{
+			// check if pSpot is valid
+			if (IsSpawnPointValid(this, pSpot))
+			{
+				if (pSpot->pev->origin == Vector(0, 0, 0))
+				{
+					pSpot = UTIL_FindEntityByClassname(pSpot, pEntClassName);
+					continue;
+				}
+
+				// if so, go to pSpot
+				return true;
+			}
+		}
+
+		// increment pSpot
+		pSpot = UTIL_FindEntityByClassname(pSpot, pEntClassName);
+	}
+	// loop if we're not back to the start
+	while (pSpot != pFirstSpot);
+
+	// we haven't found a place to spawn yet,  so kill any guy at the first spawn point and spawn there
+	if (!FNullEnt(pSpot))
+	{
+		CBaseEntity *ent = NULL;
+		while ((ent = UTIL_FindEntityInSphere(ent, pSpot->pev->origin, 64)) != NULL)
+		{
+			// if ent is a client, kill em (unless they are ourselves)
+			if (ent->IsPlayer() && ent->edict() != player)
+				ent->TakeDamage(VARS(INDEXENT(0)), VARS(INDEXENT(0)), 200, DMG_GENERIC);
+		}
+
+		// if so, go to pSpot
+		return true;
+	}
+
+	return false;
+}
+
 /* <15645f> ../cstrike/dlls/player.cpp:6060 */
 edict_t *EntSelectSpawnPoint(CBaseEntity *pPlayer)
 {
@@ -4951,6 +5059,7 @@ edict_t *EntSelectSpawnPoint(CBaseEntity *pPlayer)
 		if (!FNullEnt(pSpot))
 			goto ReturnSpot;
 	}
+	// VIP spawn point
 	else if (g_pGameRules->IsDeathmatch() && ((CBasePlayer *)pPlayer)->m_bIsVIP)
 	{
 		pSpot = UTIL_FindEntityByClassname(NULL, "info_vip_start");
@@ -4963,103 +5072,24 @@ edict_t *EntSelectSpawnPoint(CBaseEntity *pPlayer)
 
 		goto CTSpawn;
 	}
+	// the counter-terrorist spawns at "info_player_start"
 	else if (g_pGameRules->IsDeathmatch() && ((CBasePlayer *)pPlayer)->m_iTeam == CT)
 	{
 CTSpawn:
-		// Find the next spawn spot.
-		pSpot = UTIL_FindEntityByClassname(g_pLastCTSpawn, "info_player_start");
+		pSpot = g_pLastCTSpawn;
 
-		// skip over the null point
-		if (FNullEnt(pSpot))
+		if (((CBasePlayer *)pPlayer)->SelectSpawnSpot("info_player_start", pSpot))
 		{
-			pSpot = UTIL_FindEntityByClassname(pSpot, "info_player_start");
-		}
-
-		CBaseEntity *pFirstSpot = pSpot;
-
-		do
-		{
-			if (pSpot)
-			{
-				// check if pSpot is valid
-				if (IsSpawnPointValid(pPlayer, pSpot))
-				{
-					if (pSpot->pev->origin == Vector(0, 0, 0))
-					{
-						pSpot = UTIL_FindEntityByClassname(pSpot, "info_player_start");
-						continue;
-					}
-
-					// if so, go to pSpot
-					goto ReturnSpot;
-				}
-			}
-
-			// increment pSpot
-			pSpot = UTIL_FindEntityByClassname(pSpot, "info_player_start");
-		}
-		// loop if we're not back to the start
-		while (pSpot != pFirstSpot);
-
-		// we haven't found a place to spawn yet,  so kill any guy at the first spawn point and spawn there
-		if (!FNullEnt(pSpot))
-		{
-			CBaseEntity *ent = NULL;
-			while ((ent = UTIL_FindEntityInSphere(ent, pSpot->pev->origin, 64)) != NULL)
-			{
-				// if ent is a client, kill em (unless they are ourselves)
-				if (ent->IsPlayer() && ent->edict() != player)
-					ent->TakeDamage(VARS(INDEXENT(0)), VARS(INDEXENT(0)), 200, DMG_GENERIC);
-			}
-
 			goto ReturnSpot;
 		}
 	}
 	// The terrorist spawn points
 	else if (g_pGameRules->IsDeathmatch() && ((CBasePlayer *)pPlayer)->m_iTeam == TERRORIST)
 	{
-		pSpot = UTIL_FindEntityByClassname(g_pLastTerroristSpawn, "info_player_deathmatch");
+		pSpot = g_pLastTerroristSpawn;
 
-		// skip over the null point
-		if (FNullEnt(pSpot))
-			pSpot = UTIL_FindEntityByClassname(pSpot, "info_player_deathmatch");
-
-		CBaseEntity *pFirstSpot = pSpot;
-
-		do
+		if (((CBasePlayer *)pPlayer)->SelectSpawnSpot("info_player_deathmatch", pSpot))
 		{
-			if (pSpot)
-			{
-				// check if pSpot is valid
-				if (IsSpawnPointValid(pPlayer, pSpot))
-				{
-					if (pSpot->pev->origin == Vector(0, 0, 0))
-					{
-						pSpot = UTIL_FindEntityByClassname(pSpot, "info_player_deathmatch");
-						continue;
-					}
-
-					// if so, go to pSpot
-					goto ReturnSpot;
-				}
-			}
-
-			// increment pSpot
-			pSpot = UTIL_FindEntityByClassname(pSpot, "info_player_deathmatch");
-		}
-		// loop if we're not back to the start
-		while (pSpot != pFirstSpot);
-
-		// we haven't found a place to spawn yet,  so kill any guy at the first spawn point and spawn there
-		if (!FNullEnt(pSpot))
-		{
-			CBaseEntity *ent = NULL;
-			while ((ent = UTIL_FindEntityInSphere(ent, pSpot->pev->origin, 64)) != NULL)
-			{
-				// if ent is a client, kill em (unless they are ourselves)
-				if (ent->IsPlayer() && ent->edict() != player)
-					ent->TakeDamage(VARS(INDEXENT(0)), VARS(INDEXENT(0)), 200, DMG_GENERIC);
-			}
 			goto ReturnSpot;
 		}
 	}
@@ -5205,9 +5235,9 @@ void CBasePlayer::__MAKE_VHOOK(Spawn)(void)
 	SET_VIEW(ENT(pev), ENT(pev));
 
 	m_hObserverTarget = NULL;
-	pev->iuser1 = 0;
-	pev->iuser2 = 0;
-	pev->iuser3 = 0;
+	pev->iuser1 =
+		pev->iuser2 =
+		pev->iuser3 = 0;
 
 	m_flLastFired = -15;
 	m_bHeadshotKilled = false;
@@ -5316,6 +5346,7 @@ void CBasePlayer::__MAKE_VHOOK(Spawn)(void)
 
 	if (!pev->modelindex)
 	{
+		// get rid of the dependency on m_modelIndexPlayer.
 		SET_MODEL(ENT(pev), "models/player.mdl");
 		m_modelIndexPlayer = pev->modelindex;
 	}
@@ -5327,6 +5358,7 @@ void CBasePlayer::__MAKE_VHOOK(Spawn)(void)
 	else
 		UTIL_SetSize(pev, VEC_HULL_MIN, VEC_HULL_MAX);
 
+	// Override what CBasePlayer set for the view offset.
 	pev->view_ofs = VEC_VIEW;
 	Precache();
 
@@ -5371,7 +5403,7 @@ void CBasePlayer::__MAKE_VHOOK(Spawn)(void)
 
 	for (i = 1; i <= gpGlobals->maxClients; i++)
 	{
-		CBasePlayer *pObserver = (CBasePlayer *)UTIL_PlayerByIndex(i);
+		CBasePlayer *pObserver = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
 		if (pObserver && pObserver->IsObservingPlayer(this))
 		{
@@ -5450,7 +5482,7 @@ void CBasePlayer::__MAKE_VHOOK(Spawn)(void)
 	UTIL_ScreenFade(this, Vector(0, 0, 0), 0.001);
 	SyncRoundTimer();
 
-	if (TheBots)
+	if (TheBots != NULL)
 	{
 		TheBots->OnEvent(EVENT_PLAYER_SPAWNED, this);
 	}
@@ -5525,12 +5557,14 @@ void CBasePlayer::SetScoreboardAttributes(CBasePlayer *destination)
 
 	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{
-		CBasePlayer *player = (CBasePlayer *)UTIL_PlayerByIndex(i);
+		CBasePlayer *player = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
-		if (player && !FNullEnt(player->edict()))
+		if (player != NULL && !FNullEnt(player->edict()))
 			SetScoreboardAttributes(player);
 	}
 }
+
+// Marks everything as new so the player will resend this to the hud.
 
 /* <156e88> ../cstrike/dlls/player.cpp:6712 */
 NOXREF void CBasePlayer::RenewItems(void)
@@ -5547,20 +5581,26 @@ int CBasePlayer::__MAKE_VHOOK(Restore)(CRestore &restore)
 	int status = restore.ReadFields("PLAYER", this, IMPLEMENT_ARRAY_CLASS(CBasePlayer, m_playerSaveData), ARRAYSIZE(IMPLEMENT_ARRAY_CLASS(CBasePlayer, m_playerSaveData)));
 	SAVERESTOREDATA *pSaveData = (SAVERESTOREDATA *)gpGlobals->pSaveData;
 
+	// landmark isn't present.
 	if (!pSaveData->fUseLandmark)
 	{
 		ALERT(at_console, "No Landmark:%s\n", pSaveData->szLandmarkName);
 
+		// default to normal spawn
 		edict_t *pentSpawnSpot = EntSelectSpawnPoint(this);
 
 		pev->origin = VARS(pentSpawnSpot)->origin + Vector(0, 0, 1);
 		pev->angles = VARS(pentSpawnSpot)->angles;
 	}
 
+	// Clear out roll
 	pev->v_angle.z = 0;
 	pev->angles = pev->v_angle;
+
+	// turn this way immediately
 	pev->fixangle = 1;
 
+	// Copied from spawn() for now
 	m_bloodColor = BLOOD_COLOR_RED;
 	m_modelIndexPlayer = pev->modelindex;
 
@@ -5633,7 +5673,7 @@ NOXREF void CBasePlayer::SelectNextItem(int iItem)
 
 	ResetAutoaim();
 
-	if (m_pActiveItem)
+	if (m_pActiveItem != NULL)
 	{
 		m_pActiveItem->Holster();
 	}
@@ -5648,7 +5688,7 @@ NOXREF void CBasePlayer::SelectNextItem(int iItem)
 	m_pLastItem = m_pActiveItem;
 	m_pActiveItem = pItem;
 
-	if (m_pActiveItem)
+	if (m_pActiveItem != NULL)
 	{
 		UpdateShieldCrosshair(true);
 
@@ -5683,7 +5723,7 @@ void CBasePlayer::SelectItem(const char *pstr)
 				pItem = pItem->m_pNext;
 			}
 
-			if (pItem)
+			if (pItem != NULL)
 			{
 				break;
 			}
@@ -5698,7 +5738,7 @@ void CBasePlayer::SelectItem(const char *pstr)
 	ResetAutoaim();
 
 	// FIX, this needs to queue them up and delay
-	if (m_pActiveItem)
+	if (m_pActiveItem != NULL)
 	{
 		m_pActiveItem->Holster();
 	}
@@ -5706,7 +5746,7 @@ void CBasePlayer::SelectItem(const char *pstr)
 	m_pLastItem = m_pActiveItem;
 	m_pActiveItem = pItem;
 
-	if (m_pActiveItem)
+	if (m_pActiveItem != NULL)
 	{
 		CBasePlayerWeapon *pWeapon = (CBasePlayerWeapon *)m_pActiveItem;
 		pWeapon->m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
@@ -5732,7 +5772,7 @@ void CBasePlayer::SelectLastItem(void)
 		for (int i = 1; i < MAX_ITEMS; i++)
 		{
 			CBasePlayerItem *pItem = m_rgpPlayerItems[i];
-			if (pItem && pItem != m_pActiveItem)
+			if (pItem != NULL && pItem != m_pActiveItem)
 			{
 				m_pLastItem = pItem;
 				break;
@@ -5752,7 +5792,7 @@ void CBasePlayer::SelectLastItem(void)
 	{
 		CBasePlayerWeapon *pWeapon = (CBasePlayerWeapon *)m_pActiveItem;
 
-		if (m_pActiveItem)
+		if (m_pActiveItem != NULL)
 			pWeapon->m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
 
 		m_bShieldDrawn = false;
@@ -5778,9 +5818,10 @@ BOOL CBasePlayer::HasWeapons(void)
 {
 	for (int i = 0; i < MAX_ITEM_TYPES; i++)
 	{
-		if (m_rgpPlayerItems[i])
+		if (m_rgpPlayerItems[i] != NULL)
 			return TRUE;
 	}
+
 	return FALSE;
 }
 
@@ -5904,11 +5945,12 @@ CBaseEntity *FindEntityForward(CBaseEntity *pMe)
 	UTIL_MakeVectors(pMe->pev->v_angle);
 	UTIL_TraceLine(pMe->pev->origin + pMe->pev->view_ofs, pMe->pev->origin + pMe->pev->view_ofs + gpGlobals->v_forward * 8192, dont_ignore_monsters, pMe->edict(), &tr);
 
-	if (tr.flFraction != 1.0 && !FNullEnt(tr.pHit))
+	if (tr.flFraction != 1.0f && !FNullEnt(tr.pHit))
 	{
 		CBaseEntity *pHit = CBaseEntity::Instance(tr.pHit);
 		return pHit;
 	}
+
 	return NULL;
 }
 
@@ -5926,7 +5968,7 @@ void CBasePlayer::FlashlightTurnOn(void)
 
 	if (pev->weapons & (1 << WEAPON_SUIT))
 	{
-		EMIT_SOUND(ENT(pev), CHAN_ITEM, "items/flashlight1.wav", VOL_NORM, ATTN_NORM);
+		EMIT_SOUND(ENT(pev), CHAN_ITEM, SOUND_FLASHLIGHT_ON, VOL_NORM, ATTN_NORM);
 
 		pev->effects |= EF_DIMLIGHT;
 
@@ -5942,7 +5984,7 @@ void CBasePlayer::FlashlightTurnOn(void)
 /* <157816> ../cstrike/dlls/player.cpp:7157 */
 void CBasePlayer::FlashlightTurnOff(void)
 {
-	EMIT_SOUND(ENT(pev), CHAN_ITEM, "items/flashlight1.wav", VOL_NORM, ATTN_NORM);
+	EMIT_SOUND(ENT(pev), CHAN_ITEM, SOUND_FLASHLIGHT_OFF, VOL_NORM, ATTN_NORM);
 
 	pev->effects &= ~EF_DIMLIGHT;
 	MESSAGE_BEGIN(MSG_ONE, gmsgFlashlight, NULL, pev);
@@ -6134,12 +6176,12 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 			Vector end = start + gpGlobals->v_forward * 1024;
 			UTIL_TraceLine(start, end, ignore_monsters, edict(), &tr);
 
-			if (tr.pHit)
+			if (tr.pHit != NULL)
 				pWorld = tr.pHit;
 
 			const char *pszTextureName = TRACE_TEXTURE(pWorld, start, end);
 
-			if (pszTextureName)
+			if (pszTextureName != NULL)
 				ALERT(at_console, "Texture: %s\n", pszTextureName);
 
 			break;
@@ -6180,7 +6222,7 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 			// remove creature.
 			pEntity = FindEntityForward(this);
 
-			if (pEntity && pEntity->pev->takedamage != DAMAGE_NO)
+			if (pEntity != NULL && pEntity->pev->takedamage != DAMAGE_NO)
 			{
 				pEntity->SetThink(&CBaseEntity::SUB_Remove);
 			}
@@ -6353,6 +6395,7 @@ BOOL CBasePlayer::__MAKE_VHOOK(AddPlayerItem)(CBasePlayerItem *pItem)
 
 		pInsert = pInsert->m_pNext;
 	}
+
 	if (pItem->AddToPlayer(this))
 	{
 		g_pGameRules->PlayerGotWeapon(this, pItem);
@@ -6675,27 +6718,9 @@ void CBasePlayer::__MAKE_VHOOK(UpdateClientData)(void)
 			{
 				CClientFog *pFog = (CClientFog *)pEntity;
 
-				int r = pFog->pev->rendercolor[0];
-				int g = pFog->pev->rendercolor[1];
-				int b = pFog->pev->rendercolor[2];
-
-				if (r > 255)
-					r = 255;
-
-				else if (r < 0)
-					r = 0;
-
-				if (g > 255)
-					g = 255;
-
-				else if (g < 0)
-					g = 0;
-
-				if (b > 255)
-					b = 255;
-
-				else if (b < 0)
-					b = 0;
+				int r = clamp((int)pFog->pev->rendercolor[0], 0, 255);
+				int g = clamp((int)pFog->pev->rendercolor[1], 0, 255);
+				int b = clamp((int)pFog->pev->rendercolor[2], 0, 255);
 
 				union
 				{
@@ -6805,7 +6830,7 @@ void CBasePlayer::__MAKE_VHOOK(UpdateClientData)(void)
 
 	if ((int)pev->health != m_iClientHealth)
 	{
-		int iHealth = clamp(pev->health, 0, 255);
+		int iHealth = clamp((int)pev->health, 0, 255);
 
 		if (pev->health > 0.0f && pev->health <= 1.0f)
 			iHealth = 1;
@@ -8548,7 +8573,6 @@ void CBasePlayer::AutoBuy(void)
 		ParseAutoBuyString(c, boughtPrimary, boughtSecondary);
 	}
 
-	// TODO: Reverse me
 	c = PickPrimaryCareerTaskWeapon();
 
 	if (c != NULL)
@@ -8559,7 +8583,6 @@ void CBasePlayer::AutoBuy(void)
 		ParseAutoBuyString(prioritizedString, boughtPrimary, boughtSecondary);
 	}
 
-	// TODO: Reverse me
 	c = PickSecondaryCareerTaskWeapon();
 
 	if (c != NULL)
@@ -8579,8 +8602,10 @@ void CBasePlayer::AutoBuy(void)
 		ParseAutoBuyString(c, boughtPrimary, boughtSecondary);
 	}
 
-	if (TheTutor)
+	if (TheTutor != NULL)
+	{
 		TheTutor->OnEvent(EVENT_PLAYER_LEFT_BUY_ZONE);
+	}
 }
 
 /* <14ea4e> ../cstrike/dlls/player.cpp:10556 */
@@ -8595,7 +8620,7 @@ bool IsPrimaryWeaponId(int id)
 	int classId = WEAPONCLASS_NONE;
 	const char *alias = WeaponIDToAlias(id);
 
-	if (alias)
+	if (alias != NULL)
 	{
 		classId = AliasToWeaponClass(alias);
 	}
@@ -8615,7 +8640,7 @@ bool IsSecondaryWeaponId(int id)
 	int classId = WEAPONCLASS_NONE;
 	const char *alias = WeaponIDToAlias(id);
 
-	if (alias)
+	if (alias != NULL)
 	{
 		classId = AliasToWeaponClass(alias);
 	}
@@ -8651,99 +8676,169 @@ bool CurrentWeaponSatisfies(CBasePlayerWeapon *pWeapon, int id, int classId)
 	return false;
 }
 
-void (*pCBasePlayer__PickPrimaryCareerTaskWeapon)(void);
-
 /* <15b1eb> ../cstrike/dlls/player.cpp:10623 */
-NOBODY const char __declspec(naked) *CBasePlayer::PickPrimaryCareerTaskWeapon(void)
+const char *CBasePlayer::PickPrimaryCareerTaskWeapon(void)
 {
-	__asm
+	const int BufLen = 256;
+	static char buf[BufLen];
+	CBasePlayerWeapon *primary;
+	std::vector<CCareerTask *> taskVector;
+
+	if (TheCareerTasks == NULL)
 	{
-		jmp pCBasePlayer__PickPrimaryCareerTaskWeapon
+		return NULL;
 	}
-//	{
-//		intconst BufLen;                                      // 10625
-//		char buf;                                             // 10626
-//		class CBasePlayerWeapon *primary;                    // 10632
-//		class vector<CCareerTask*, std::allocator<CCareerTask*> > taskVector;               // 10634
-//		CareerTaskListIt it;                                  // 10635
-//		vector(vector<CCareerTask*, std::allocator<CCareerTask*> > *const this);  // 10634
-//		{
-//			class CCareerTask *pTask;                    // 10638
-//			push_back(vector<CCareerTask*, std::allocator<CCareerTask*> > *const this,
-//					const value_type  &__x);  // 10656
-//			IsPrimaryWeaponId(int id);  // 10644
-//			CurrentWeaponSatisfies(CBasePlayerWeapon *pWeapon,
-//						int id,
-//						int classId);  // 10647
-//			IsPrimaryWeaponId(int id);  // 10649
-//			GetBuyStringForWeaponClass(int weaponClass);  // 10652
-//		}
-//		operator++(_List_iterator<CCareerTask*> *const this);  // 10636
-//		{
-//			int taskNum;                                  // 10664
-//			class CCareerTask *temp;                     // 10666
-//			operator[](vector<CCareerTask*, std::allocator<CCareerTask*> > *const this,
-//					size_type __n);  // 10667
-//		}
-//		{
-//			int i;                                        // 10673
-//			{
-//				class CCareerTask *pTask;            // 10675
-//				IsPrimaryWeaponId(int id);  // 10676
-//				GetBuyStringForWeaponClass(int weaponClass);  // 10682
-//			}
-//			size(const class vector<CCareerTask*, std::allocator<CCareerTask*> > *const this);  // 10673
-//		}
-//		~vector(vector<CCareerTask*, std::allocator<CCareerTask*> > *const this,
-//			intconst __in_chrg);  // 10634
-//	}
+
+	buf[0] = '\0';
+	primary = reinterpret_cast<CBasePlayerWeapon *>(m_rgpPlayerItems[PRIMARY_WEAPON_SLOT]);
+
+	for (CareerTaskListIt it = TheCareerTasks->GetTasks()->begin(); it != TheCareerTasks->GetTasks()->end(); ++it)
+	{
+		CCareerTask *pTask = (*it);
+
+		if (pTask->IsComplete() || pTask->GetWeaponId() == WEAPON_HEGRENADE)
+			continue;
+
+		if (!IsPrimaryWeaponId(pTask->GetWeaponId()))
+		{
+			if (!IsPrimaryWeaponClass(pTask->GetWeaponClassId()))
+			{
+				continue;
+			}
+		}
+
+		if (primary != NULL)
+		{
+			if (CurrentWeaponSatisfies(primary, pTask->GetWeaponId(), pTask->GetWeaponClassId()))
+			{
+				if (IsPrimaryWeaponId(pTask->GetWeaponId()))
+				{
+					return WeaponIDToAlias(pTask->GetWeaponId());
+				}
+				else
+				{
+					return GetBuyStringForWeaponClass(pTask->GetWeaponClassId());
+				}
+			}
+		}
+
+		taskVector.push_back(pTask);
+	}
+
+	int taskNum = taskVector.size();
+
+	if (taskNum > 1)
+	{
+		// randomize names weapons of list
+		int rand = RANDOM_LONG(0, taskNum - 1);
+
+		CCareerTask *temp = taskVector[0];
+
+		taskVector[0] = taskVector[rand];
+		taskVector[rand] = temp;
+	}
+
+	if (!taskNum)
+	{
+		return NULL;
+	}
+
+	for (int i = 0; i < taskNum; i++)
+	{
+		CCareerTask *pTask = taskVector[i];
+
+		if (IsPrimaryWeaponId(pTask->GetWeaponId()))
+			Q_strncat(buf, WeaponIDToAlias(pTask->GetWeaponId()), sizeof(buf));
+		else
+			Q_strncat(buf, GetBuyStringForWeaponClass(pTask->GetWeaponClassId()), sizeof(buf));
+
+		Q_strncat(buf, " ", sizeof(buf));
+	}
+
+	return buf;
 }
 
-void (*pCBasePlayer__PickSecondaryCareerTaskWeapon)(void);
-
 /* <15b5d7> ../cstrike/dlls/player.cpp:10690 */
-NOBODY const char __declspec(naked) *CBasePlayer::PickSecondaryCareerTaskWeapon(void)
+const char *CBasePlayer::PickSecondaryCareerTaskWeapon(void)
 {
-	__asm
+	const int BufLen = 256;
+	static char buf[BufLen];
+	CBasePlayerWeapon *secondary;
+	std::vector<CCareerTask *> taskVector;
+
+	if (TheCareerTasks == NULL)
 	{
-		jmp pCBasePlayer__PickSecondaryCareerTaskWeapon
+		return NULL;
 	}
-//	{
-//		intconst BufLen;                                      // 10692
-//		char buf;                                             // 10693
-//		class CBasePlayerWeapon *secondary;                  // 10699
-//		class vector<CCareerTask*, std::allocator<CCareerTask*> > taskVector;               // 10701
-//		CareerTaskListIt it;                                  // 10702
-//		vector(vector<CCareerTask*, std::allocator<CCareerTask*> > *const this);  // 10701
-//		{
-//			class CCareerTask *pTask;                    // 10705
-//			IsSecondaryWeaponId(int id);  // 10711
-//			CurrentWeaponSatisfies(CBasePlayerWeapon *pWeapon,
-//						int id,
-//						int classId);  // 10714
-//			push_back(vector<CCareerTask*, std::allocator<CCareerTask*> > *const this,
-//					const value_type  &__x);  // 10723
-//			IsSecondaryWeaponId(int id);  // 10716
-//			GetBuyStringForWeaponClass(int weaponClass);  // 10719
-//		}
-//		operator++(_List_iterator<CCareerTask*> *const this);  // 10703
-//		{
-//			int taskNum;                                  // 10731
-//			class CCareerTask *temp;                     // 10733
-//			operator[](vector<CCareerTask*, std::allocator<CCareerTask*> > *const this,
-//					size_type __n);  // 10734
-//		}
-//		{
-//			int i;                                        // 10740
-//			{
-//				class CCareerTask *pTask;            // 10742
-//				IsSecondaryWeaponId(int id);  // 10743
-//			}
-//			size(const class vector<CCareerTask*, std::allocator<CCareerTask*> > *const this);  // 10740
-//		}
-//		~vector(vector<CCareerTask*, std::allocator<CCareerTask*> > *const this,
-//			intconst __in_chrg);  // 10701
-//	}
+
+	secondary = reinterpret_cast<CBasePlayerWeapon *>(m_rgpPlayerItems[PISTOL_SLOT]);
+
+	for (CareerTaskListIt it = TheCareerTasks->GetTasks()->begin(); it != TheCareerTasks->GetTasks()->end(); ++it)
+	{
+		CCareerTask *pTask = (*it);
+
+		if (pTask->IsComplete() || pTask->GetWeaponId() == WEAPON_HEGRENADE)
+			continue;
+
+		if (!IsSecondaryWeaponId(pTask->GetWeaponId()))
+		{
+			if (!IsSecondaryWeaponClass(pTask->GetWeaponClassId()))
+			{
+				continue;
+			}
+		}
+
+		if (secondary != NULL)
+		{
+			if (CurrentWeaponSatisfies(secondary, pTask->GetWeaponId(), pTask->GetWeaponClassId()))
+			{
+				if (IsSecondaryWeaponId(pTask->GetWeaponId()))
+				{
+					return WeaponIDToAlias(pTask->GetWeaponId());
+				}
+				else
+				{
+					return GetBuyStringForWeaponClass(pTask->GetWeaponClassId());
+				}
+			}
+		}
+
+		taskVector.push_back(pTask);
+	}
+
+	int taskNum = taskVector.size();
+
+	if (taskNum > 1)
+	{
+		// randomize names weapons of list
+		int rand = RANDOM_LONG(0, taskNum - 1);
+
+		CCareerTask *temp = taskVector[0];
+
+		taskVector[0] = taskVector[rand];
+		taskVector[rand] = temp;
+	}
+
+	if (!taskNum)
+	{
+		return NULL;
+	}
+
+	buf[0] = '\0';
+
+	for (int i = 0; i < taskNum; i++)
+	{
+		CCareerTask *pTask = taskVector[i];
+
+		if (IsSecondaryWeaponId(pTask->GetWeaponId()))
+			Q_strncat(buf, WeaponIDToAlias(pTask->GetWeaponId()), sizeof(buf));
+		else
+			Q_strncat(buf, GetBuyStringForWeaponClass(pTask->GetWeaponClassId()), sizeof(buf));
+
+		Q_strncat(buf, " ", sizeof(buf));
+	}
+
+	return buf;
 }
 
 /* <15b9ea> ../cstrike/dlls/player.cpp:10759 */
@@ -9244,7 +9339,7 @@ void CBasePlayer::UpdateLocation(bool forceUpdate)
 
 	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{
-		CBasePlayer *player = (CBasePlayer *)UTIL_PlayerByIndex(i);
+		CBasePlayer *player = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
 		if (!player)
 			continue;

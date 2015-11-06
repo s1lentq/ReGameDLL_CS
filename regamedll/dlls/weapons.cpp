@@ -49,14 +49,14 @@ const char *g_pModelNameLaser;
 
 #endif // HOOK_GAMEDLL
 
-short g_sModelIndexLaser;
-short g_sModelIndexLaserDot;
-short g_sModelIndexFireball;
-short g_sModelIndexSmoke;
-short g_sModelIndexWExplosion;
-short g_sModelIndexBubbles;
-short g_sModelIndexBloodDrop;
-short g_sModelIndexBloodSpray;
+short g_sModelIndexLaser;		// holds the index for the laser beam
+short g_sModelIndexLaserDot;		// holds the index for the laser beam dot
+short g_sModelIndexFireball;		// holds the index for the fireball
+short g_sModelIndexSmoke;		// holds the index for the smoke cloud
+short g_sModelIndexWExplosion;		// holds the index for the underwater explosion
+short g_sModelIndexBubbles;		// holds the index for the bubbles model
+short g_sModelIndexBloodDrop;		// holds the sprite index for the initial blood
+short g_sModelIndexBloodSpray;		// holds the sprite index for splattered blood
 short g_sModelIndexSmokePuff;
 short g_sModelIndexFireball2;
 short g_sModelIndexFireball3;

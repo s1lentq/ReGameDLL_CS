@@ -107,7 +107,7 @@ void CBotManager::__MAKE_VHOOK(StartFrame)(void)
 	// Process each active bot
 	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
-		CBasePlayer *pPlayer = (CBasePlayer *)UTIL_PlayerByIndex(i);
+		CBasePlayer *pPlayer = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
 		if (!pPlayer)
 			continue;
