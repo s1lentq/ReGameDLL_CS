@@ -1,6 +1,12 @@
 #include "precompiled.h"
 
 #define USP_MAX_SPEED		250
+
+#define USP_DAMAGE		34
+#define USP_DAMAGE_SIL		30
+
+#define USP_RANGE_MODIFER	0.79
+
 #define USP_RELOAD_TIME		2.7
 
 enum usp_e
@@ -49,7 +55,7 @@ void CUSP::__MAKE_VHOOK(Spawn)(void)
 
 	m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
 	m_iDefaultAmmo = USP_DEFAULT_GIVE;
-	m_flAccuracy = 0.92f;
+	m_flAccuracy = 0.92;
 
 	FallInit();
 }
@@ -78,7 +84,11 @@ void CUSP::__MAKE_VHOOK(Precache)(void)
 int CUSP::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
+#ifdef REGAMEDLL_FIXES
+	p->pszAmmo1 = "45acp";
+#else
 	p->pszAmmo1 = "45ACP";
+#endif // REGAMEDLL_FIXES
 	p->iMaxAmmo1 = MAX_AMMO_45ACP;
 	p->pszAmmo2 = 0;
 	p->iMaxAmmo2 = -1;
@@ -230,15 +240,14 @@ void CUSP::USPFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 		return;
 	}
 
-	m_flNextSecondaryAttack = GetNextAttackDelay(flCycleTime);
-	m_flNextPrimaryAttack = m_flNextSecondaryAttack;
+	m_flNextPrimaryAttack = m_flNextSecondaryAttack = GetNextAttackDelay(flCycleTime);
 
 	m_iClip--;
 	SetPlayerShieldAnim();
 
 	m_pPlayer->SetAnimation(PLAYER_ATTACK1);
-	m_pPlayer->m_iWeaponVolume = 2048;
-	m_pPlayer->m_iWeaponFlash = 128;
+	m_pPlayer->m_iWeaponVolume = BIG_EXPLOSION_VOLUME;
+	m_pPlayer->m_iWeaponFlash = DIM_GUN_FLASH;
 
 	UTIL_MakeVectors(m_pPlayer->pev->v_angle + m_pPlayer->pev->punchangle);
 
@@ -248,24 +257,11 @@ void CUSP::USPFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 	}
 
 	vecSrc = m_pPlayer->GetGunPosition();
-	vecDir = gpGlobals->v_forward;
+	vecAiming = gpGlobals->v_forward;
 
-	iDamage = (m_iWeaponState & WPNSTATE_USP_SILENCED) ? 30 : 34;
-	
-	vecAiming = m_pPlayer->FireBullets3
-	(
-		vecSrc,
-		vecDir,
-		flSpread,
-		4096.0,
-		1,
-		BULLET_PLAYER_45ACP,
-		iDamage,
-		0.79,
-		m_pPlayer->pev,
-		true,
-		m_pPlayer->random_seed
-	);
+	iDamage = (m_iWeaponState & WPNSTATE_USP_SILENCED) ? USP_DAMAGE_SIL : USP_DAMAGE;
+
+	vecDir = m_pPlayer->FireBullets3(vecSrc, vecAiming, flSpread, 4096, 1, BULLET_PLAYER_45ACP, iDamage, USP_RANGE_MODIFER, m_pPlayer->pev, true, m_pPlayer->random_seed);
 
 #ifdef CLIENT_WEAPONS
 	flag = FEV_NOTHOST;
@@ -273,21 +269,8 @@ void CUSP::USPFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 	flag = 0;
 #endif // CLIENT_WEAPONS
 
-	PLAYBACK_EVENT_FULL
-	(
-		flag,
-		ENT(m_pPlayer->pev),
-		m_usFireUSP,
-		0,
-		(float *)&g_vecZero,
-		(float *)&g_vecZero,
-		vecAiming.x,
-		vecAiming.y,
-		(int)(m_pPlayer->pev->punchangle.x * 100),
-		0,
-		m_iClip == 0,
-		(m_iWeaponState & WPNSTATE_USP_SILENCED)
-	);
+	PLAYBACK_EVENT_FULL(flag, m_pPlayer->edict(), m_usFireUSP, 0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y,
+		(int)(m_pPlayer->pev->punchangle.x * 100), 0, m_iClip == 0, (m_iWeaponState & WPNSTATE_USP_SILENCED));
 
 	if (!m_iClip && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
 	{
@@ -377,14 +360,14 @@ BOOL CUSP::Deploy(void)
 	return Deploy_();
 }
 
-void CUSP::SecondaryAttack(void)
-{
-	SecondaryAttack_();
-}
-
 void CUSP::PrimaryAttack(void)
 {
 	PrimaryAttack_();
+}
+
+void CUSP::SecondaryAttack(void)
+{
+	SecondaryAttack_();
 }
 
 void CUSP::Reload(void)

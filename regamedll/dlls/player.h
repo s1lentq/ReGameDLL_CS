@@ -807,7 +807,6 @@ public:
 	}
 
 public:
-
 	enum { MaxLocationLen = 32 };
 
 	int random_seed;

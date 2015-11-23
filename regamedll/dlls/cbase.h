@@ -181,11 +181,10 @@
 	#define C_EXPORT
 #endif
 
-typedef enum
+enum hash_types_e
 {
 	CLASSNAME
-
-} hash_types_e;
+};
 
 typedef struct hash_item_s
 {
@@ -230,6 +229,7 @@ typedef enum
 
 } TRAIN_CODE;
 
+// Things that toggle (buttons/triggers/doors) need this
 typedef enum
 {
 	TS_AT_TOP,

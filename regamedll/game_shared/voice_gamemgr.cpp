@@ -205,8 +205,7 @@ void CVoiceGameMgr::UpdateMasks(void)
 			g_SentBanMasks[ iClient ] = g_BanMasks[ iClient ];
 
 			MESSAGE_BEGIN(MSG_ONE, m_msgPlayerVoiceMask, NULL, pPlayer->pev);
-				int dw;
-				for (dw = 0; dw < VOICE_MAX_PLAYERS_DW; dw++)
+				for (int dw = 0; dw < VOICE_MAX_PLAYERS_DW; dw++)
 				{
 					WRITE_LONG(gameRulesMask.GetDWord(dw));
 					WRITE_LONG(g_BanMasks[ iClient ].GetDWord(dw));

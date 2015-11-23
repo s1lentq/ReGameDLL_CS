@@ -4689,7 +4689,7 @@ int AddToFullPack(struct entity_state_s *state, int e, edict_t *ent, edict_t *ho
 		UTIL_UnsetGroupTrace();
 	}
 
-	Q_memset(state, 0, sizeof(*state));
+	Q_memset(state, 0, sizeof(entity_state_t));
 
 	state->number = e;
 	state->entityType = ENTITY_NORMAL;

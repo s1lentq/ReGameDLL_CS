@@ -580,10 +580,21 @@ CBaseEntity *UTIL_PlayerByIndex(int playerIndex)
 
 	return pPlayer;
 }
-
+extern bool bActivateGo;
 /* <1abab0> ../cstrike/dlls/util.cpp:728 */
 void UTIL_MakeVectors(const Vector &vecAngles)
 {
+
+	/*if (bActivateGo)
+	{
+		static int iNum = 0;
+
+		_logf("#%d. vecAngles: (%.12f, %.12f, %.12f)", iNum, 
+			vecAngles[0], vecAngles[1], vecAngles[2]);
+
+		//_logf("\n\n");
+		iNum++;
+	}*/
 	MAKE_VECTORS(vecAngles);
 }
 

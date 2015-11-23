@@ -953,7 +953,7 @@ void CTriggerMultiple::__MAKE_VHOOK(Spawn)(void)
 
 	//if (pev->health > 0)
 	//{
-	//	if (FBitSet(pev->spawnflags, SPAWNFLAG_NOTOUCH))
+	//	if (pev->spawnflags & SPAWNFLAG_NOTOUCH)
 	//	{
 	//		ALERT(at_error, "trigger_multiple spawn: health and notouch don't make sense");
 	//	}
@@ -2337,7 +2337,7 @@ void CTriggerCamera::Move(void)
 		{
 			FireTargets(STRING(m_pentPath->pev->message), this, this, USE_TOGGLE, 0);
 
-			if (m_pentPath->pev->spawnflags, SF_CORNER_FIREONCE)
+			if (m_pentPath->pev->spawnflags & SF_CORNER_FIREONCE)
 			{
 				m_pentPath->pev->message = 0;
 			}

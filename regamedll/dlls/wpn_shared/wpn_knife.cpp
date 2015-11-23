@@ -2,6 +2,7 @@
 
 #define KNIFE_BODYHIT_VOLUME		128
 #define KNIFE_WALLHIT_VOLUME		512
+
 #define KNIFE_MAX_SPEED			250
 #define KNIFE_MAX_SPEED_SHIELD		180
 
@@ -249,7 +250,7 @@ bool CKnife::ShieldSecondaryFire(int iUpAnim, int iDownAnim)
 		m_pPlayer->m_bShieldDrawn = true;
 	}
 
-	m_pPlayer->UpdateShieldCrosshair((m_iWeaponState & WPNSTATE_SHIELD_DRAWN) == 0);
+	m_pPlayer->UpdateShieldCrosshair((m_iWeaponState & WPNSTATE_SHIELD_DRAWN) != WPNSTATE_SHIELD_DRAWN);
 	m_pPlayer->ResetMaxSpeed();
 
 	m_flNextPrimaryAttack = GetNextAttackDelay(0.4);

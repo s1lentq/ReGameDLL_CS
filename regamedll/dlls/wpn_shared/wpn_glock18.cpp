@@ -1,6 +1,10 @@
 #include "precompiled.h"
 
 #define GLOCK18_MAX_SPEED		250
+
+#define GLOCK18_DAMAGE			25
+#define GLOCK18_RANGE_MODIFER		0.75
+
 #define GLOCK18_RELOAD_TIME		2.2
 
 enum glock18_e
@@ -249,22 +253,9 @@ void CGLOCK18::GLOCK18Fire(float flSpread, float flCycleTime, BOOL bFireBurst)
 	m_pPlayer->m_iWeaponFlash = NORMAL_GUN_FLASH;
 
 	vecSrc = m_pPlayer->GetGunPosition();
-	vecDir = gpGlobals->v_forward;
+	vecAiming = gpGlobals->v_forward;
 
-	vecAiming = m_pPlayer->FireBullets3
-	(
-		vecSrc,
-		vecDir,
-		flSpread,
-		8192,
-		1,
-		BULLET_PLAYER_9MM,
-		25,
-		0.75,
-		m_pPlayer->pev,
-		true,
-		m_pPlayer->random_seed
-	);
+	vecDir = m_pPlayer->FireBullets3(vecSrc, vecAiming, flSpread, 8192, 1, BULLET_PLAYER_9MM, GLOCK18_DAMAGE, GLOCK18_RANGE_MODIFER, m_pPlayer->pev, true, m_pPlayer->random_seed);
 
 #ifdef CLIENT_WEAPONS
 	flag = FEV_NOTHOST;
@@ -272,21 +263,8 @@ void CGLOCK18::GLOCK18Fire(float flSpread, float flCycleTime, BOOL bFireBurst)
 	flag = 0;
 #endif // CLIENT_WEAPONS
 
-	PLAYBACK_EVENT_FULL
-	(
-		flag,
-		m_pPlayer->edict(),
-		m_usFireGlock18,
-		0,
-		(float *)&g_vecZero,
-		(float *)&g_vecZero,
-		vecAiming.x,
-		vecAiming.y,
-		(int)(m_pPlayer->pev->punchangle.x * 100),
-		(int)(m_pPlayer->pev->punchangle.y * 100),
-		m_iClip == 0,
-		FALSE
-	);
+	PLAYBACK_EVENT_FULL(flag, m_pPlayer->edict(), m_usFireGlock18, 0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y,
+		(int)(m_pPlayer->pev->punchangle.x * 100), (int)(m_pPlayer->pev->punchangle.y * 100), m_iClip == 0, FALSE);
 
 	m_flNextPrimaryAttack = m_flNextSecondaryAttack = GetNextAttackDelay(flCycleTime);
 

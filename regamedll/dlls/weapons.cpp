@@ -665,16 +665,16 @@ void CBasePlayerItem::DefaultTouch(CBaseEntity *pOther)
 /* <1d3371> ../cstrike/dlls/weapons.cpp:678 */
 void CBasePlayerWeapon::SetPlayerShieldAnim(void)
 {
-	if (m_pPlayer->HasShield())
+	if (!m_pPlayer->HasShield())
+		return;
+
+	if (m_iWeaponState & WPNSTATE_SHIELD_DRAWN)
 	{
-		if (m_iWeaponState & WPNSTATE_SHIELD_DRAWN)
-		{
-			Q_strcpy(m_pPlayer->m_szAnimExtention, "shield");
-		}
-		else
-		{
-			Q_strcpy(m_pPlayer->m_szAnimExtention, "shieldgun");
-		}
+		Q_strcpy(m_pPlayer->m_szAnimExtention, "shield");
+	}
+	else
+	{
+		Q_strcpy(m_pPlayer->m_szAnimExtention, "shieldgun");
 	}
 }
 
@@ -704,16 +704,8 @@ void CBasePlayerWeapon::EjectBrassLate(void)
 	vecShellVelocity = (m_pPlayer->pev->velocity + vecRight + vecUp) + gpGlobals->v_forward * 25;
 	soundType = (m_iId == WEAPON_XM1014 || m_iId == WEAPON_M3) ? 2 : 1;
 
-	EjectBrass
-	(
-		pev->origin + m_pPlayer->pev->view_ofs + gpGlobals->v_up * -9 + gpGlobals->v_forward * 16,
-		gpGlobals->v_right * -9,
-		vecShellVelocity,
-		pev->angles.y,
-		m_iShellId,
-		soundType,
-		ENTINDEX(ENT(m_pPlayer->pev))
-	);
+	EjectBrass(pev->origin + m_pPlayer->pev->view_ofs + gpGlobals->v_up * -9 + gpGlobals->v_forward * 16, gpGlobals->v_right * -9,
+		vecShellVelocity, pev->angles.y, m_iShellId, soundType, m_pPlayer->entindex());
 }
 
 /* <1d372a> ../cstrike/dlls/weapons.cpp:717 */
@@ -739,7 +731,7 @@ bool CBasePlayerWeapon::ShieldSecondaryFire(int iUpAnim, int iDownAnim)
 		m_pPlayer->m_bShieldDrawn = true;
 	}
 
-	m_pPlayer->UpdateShieldCrosshair((m_iWeaponState & WPNSTATE_SHIELD_DRAWN) == 0);
+	m_pPlayer->UpdateShieldCrosshair((m_iWeaponState & WPNSTATE_SHIELD_DRAWN) != WPNSTATE_SHIELD_DRAWN);
 	m_pPlayer->ResetMaxSpeed();
 
 	m_flNextSecondaryAttack = 0.4f;
@@ -824,21 +816,8 @@ void CBasePlayerWeapon::FireRemaining(int &shotsFired, float &shootTime, BOOL bI
 		vecDir = m_pPlayer->FireBullets3(vecSrc, gpGlobals->v_forward, 0.05, 8192, 1, BULLET_PLAYER_9MM, 18, 0.9, m_pPlayer->pev, true, m_pPlayer->random_seed);
 		m_pPlayer->ammo_9mm--;
 
-		PLAYBACK_EVENT_FULL
-		(
-			flag,
-			ENT(m_pPlayer->pev),
-			m_usFireGlock18,
-			0,
-			(float *)&g_vecZero,
-			(float *)&g_vecZero,
-			vecDir.x,
-			vecDir.y,
-			(int)(m_pPlayer->pev->punchangle.x * 10000.0),
-			(int)(m_pPlayer->pev->punchangle.y * 10000.0),
-			m_iClip == 0,
-			0
-		);
+		PLAYBACK_EVENT_FULL(flag, m_pPlayer->edict(), m_usFireGlock18, 0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y,
+			(int)(m_pPlayer->pev->punchangle.x * 10000), (int)(m_pPlayer->pev->punchangle.y * 10000), m_iClip == 0, FALSE);
 	}
 	else
 	{
@@ -846,21 +825,8 @@ void CBasePlayerWeapon::FireRemaining(int &shotsFired, float &shootTime, BOOL bI
 		vecDir = m_pPlayer->FireBullets3(vecSrc, gpGlobals->v_forward, m_fBurstSpread, 8192, 2, BULLET_PLAYER_556MM, 30, 0.96, m_pPlayer->pev, false, m_pPlayer->random_seed);
 		m_pPlayer->ammo_556nato--;
 
-		PLAYBACK_EVENT_FULL
-		(
-			flag,
-			ENT(m_pPlayer->pev),
-			m_usFireFamas,
-			0,
-			(float *)&g_vecZero,
-			(float *)&g_vecZero,
-			vecDir.x,
-			vecDir.y,
-			(int)(m_pPlayer->pev->punchangle.x * 10000000.0),
-			(int)(m_pPlayer->pev->punchangle.y * 10000000.0),
-			0,
-			0
-		);
+		PLAYBACK_EVENT_FULL(flag, m_pPlayer->edict(), m_usFireFamas, 0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y,
+			(int)(m_pPlayer->pev->punchangle.x * 10000000), (int)(m_pPlayer->pev->punchangle.y * 10000000), FALSE, FALSE);
 	}
 
 	m_pPlayer->pev->effects |= EF_MUZZLEFLASH;
@@ -1819,13 +1785,10 @@ void CWeaponBox::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 				else
 					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Got_bomb");
 
-				UTIL_LogPrintf
-				(
-					"\"%s<%i><%s><TERRORIST>\" triggered \"Got_The_Bomb\"\n",
+				UTIL_LogPrintf("\"%s<%i><%s><TERRORIST>\" triggered \"Got_The_Bomb\"\n",
 					STRING(pPlayer->pev->netname),
 					GETPLAYERUSERID(pPlayer->edict()),
-					GETPLAYERAUTHID(pPlayer->edict())
-				);
+					GETPLAYERAUTHID(pPlayer->edict()));
 
 				g_pGameRules->m_bBombDropped = FALSE;
 

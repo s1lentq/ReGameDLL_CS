@@ -294,7 +294,7 @@ bool CCSBot::IsUsingPistol(void)
 			break;
 		}
 
-		// TODO: check it, from  the dwarf should be used function IsPistol
+		// TODO: check it, from the dwarf should be used function IsPistol
 //	{
 //		class CBasePlayerWeapon *gun;                        //   640
 //		IsPistol(CBasePlayerWeapon *const this);  //   642

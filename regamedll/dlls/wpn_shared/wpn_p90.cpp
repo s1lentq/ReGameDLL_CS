@@ -1,6 +1,10 @@
 #include "precompiled.h"
 
 #define P90_MAX_SPEED		245
+
+#define P90_DAMAGE		21
+#define P90_RANGE_MODIFER	0.885
+
 #define P90_RELOAD_TIME		3.4
 
 enum p90_e
@@ -135,22 +139,9 @@ void CP90::P90Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	m_pPlayer->m_iWeaponFlash = DIM_GUN_FLASH;
 
 	vecSrc = m_pPlayer->GetGunPosition();
-	vecDir = gpGlobals->v_forward;
+	vecAiming = gpGlobals->v_forward;
 
-	vecAiming = m_pPlayer->FireBullets3
-	(
-		vecSrc,
-		vecDir,
-		flSpread,
-		8192,
-		1,
-		BULLET_PLAYER_57MM,
-		21,
-		0.885,
-		m_pPlayer->pev,
-		false,
-		m_pPlayer->random_seed
-	);
+	vecDir = m_pPlayer->FireBullets3(vecSrc, vecAiming, flSpread, 8192, 1, BULLET_PLAYER_57MM, P90_DAMAGE, P90_RANGE_MODIFER, m_pPlayer->pev, false, m_pPlayer->random_seed);
 
 #ifdef CLIENT_WEAPONS
 	flag = FEV_NOTHOST;
@@ -158,21 +149,8 @@ void CP90::P90Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	flag = 0;
 #endif // CLIENT_WEAPONS
 
-	PLAYBACK_EVENT_FULL
-	(
-		flag,
-		m_pPlayer->edict(),
-		m_usFireP90,
-		0,
-		(float *)&g_vecZero,
-		(float *)&g_vecZero,
-		vecAiming.x,
-		vecAiming.y,
-		(int)(m_pPlayer->pev->punchangle.x * 100),
-		(int)(m_pPlayer->pev->punchangle.y * 100),
-		5,
-		FALSE
-	);
+	PLAYBACK_EVENT_FULL(flag, m_pPlayer->edict(), m_usFireP90, 0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y,
+		(int)(m_pPlayer->pev->punchangle.x * 100), (int)(m_pPlayer->pev->punchangle.y * 100), 5, FALSE);
 
 	m_flNextPrimaryAttack = m_flNextSecondaryAttack = GetNextAttackDelay(flCycleTime);
 

@@ -95,16 +95,15 @@ enum ArmouryItemPack
 	ARMOURY_SMOKEGRENADE,
 };
 
-typedef struct
+struct BuyInfo
 {
 	WeaponType type;
 	bool preferred;
 	char *buyAlias;
 
-} BuyInfo;
-/* size: 12, cachelines: 1, members: 3 */
+};/* size: 12, cachelines: 1, members: 3 */
 
-typedef struct
+struct ItemInfo
 {
 	int iSlot;
 	int iPosition;
@@ -118,25 +117,22 @@ typedef struct
 	int iFlags;
 	int iWeight;
 
-} ItemInfo;
-/* size: 44, cachelines: 1, members: 11 */
+};/* size: 44, cachelines: 1, members: 11 */
 
-typedef struct
+struct AmmoInfo
 {
 	const char *pszName;
 	int iId;
 
-} AmmoInfo;
-/* size: 8, cachelines: 1, members: 2 */
+};/* size: 8, cachelines: 1, members: 2 */
 
-typedef struct
+struct MULTIDAMAGE
 {
 	CBaseEntity *pEntity;
 	float amount;
 	int type;
 
-} MULTIDAMAGE;
-/* size: 12, cachelines: 1, members: 3 */
+};/* size: 12, cachelines: 1, members: 3 */
 
 /* <1d04c6> ../cstrike/dlls/weapons.cpp:2156 */
 class CArmoury: public CBaseEntity
@@ -175,14 +171,14 @@ public:
 	virtual int Restore(CRestore &restore);
 	virtual int ObjectCaps(void)
 	{
-		return ObjectCaps_();
+		return m_bIsC4 ? FCAP_CONTINUOUS_USE : 0;
 	}
-	virtual void Killed(entvars_t *pevAttacker,int iGib);
+	virtual void Killed(entvars_t *pevAttacker, int iGib);
 	virtual int BloodColor(void)
 	{
-		return BloodColor_();
+		return DONT_BLEED;
 	}
-	virtual void Use(CBaseEntity *pActivator,CBaseEntity *pCaller,USE_TYPE useType,float value);
+	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 	virtual void BounceSound(void);
 
 #ifdef HOOK_GAMEDLL
@@ -190,27 +186,18 @@ public:
 	void Spawn_(void);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
-	int ObjectCaps_(void)
-	{
-		return m_bIsC4 ? FCAP_CONTINUOUS_USE : 0;
-	}
 	void Killed_(entvars_t *pevAttacker, int iGib);
-	int BloodColor_(void)
-	{
-		return DONT_BLEED;
-	}
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 	void BounceSound_(void);
 
 #endif // HOOK_GAMEDLL
 
 public:
-	typedef enum
+	enum SATCHELCODE
 	{
 		SATCHEL_DETONATE,
 		SATCHEL_RELEASE
-
-	} SATCHELCODE;
+	};
 public:
 	static CGrenade *ShootTimed(entvars_t *pevOwner, Vector vecStart, Vector vecVelocity, float time);
 	static CGrenade *ShootTimed2(entvars_t *pevOwner, Vector vecStart, Vector vecVelocity, float time, int iTeam, unsigned short usEvent);
@@ -275,13 +262,6 @@ public:
 	BOOL m_fRegisteredSound;
 
 };/* size: 500, cachelines: 8, members: 26 */
-
-#ifdef HOOK_GAMEDLL
-
-//#define ItemInfoArray (*pItemInfoArray)
-//#define AmmoInfoArray (*pAmmoInfoArray)
-
-#endif // HOOK_GAMEDLL
 
 /* <2c9f2c> ../cstrike/dlls/weapons.h:238 */
 class CBasePlayerItem: public CBaseAnimating
@@ -362,26 +342,10 @@ public:
 	void SetObjectCollisionBox_(void);
 	CBaseEntity *Respawn_(void);
 	int AddToPlayer_(CBasePlayer *pPlayer);
-	//int AddDuplicate_(CBasePlayerItem *pItem);
-	//int GetItemInfo_(ItemInfo *p);
-	//BOOL CanDeploy_(void);
-	//BOOL CanDrop_(void);
-	//BOOL Deploy_(void);
-	//BOOL IsWeapon_(void);
-	//BOOL CanHolster_(void);
 	void Holster_(int skiplocal);
-	//void UpdateItemInfo_(void);
-	//void ItemPreFrame_(void);
-	//void ItemPostFrame_(void);
 	void Drop_(void);
 	void Kill_(void);
 	void AttachToPlayer_(CBasePlayer *pPlayer);
-	//int PrimaryAmmoIndex_(void);
-	//int SecondaryAmmoIndex_(void);
-	//int UpdateClientData_(CBasePlayer *pPlayer);
-	//CBasePlayerItem *GetWeaponPtr_(void);
-	//float GetMaxSpeed_(void);
-	//int iItemSlot_(void);
 
 #endif // HOOK_GAMEDLL
 
@@ -534,7 +498,7 @@ public:
 	}
 	void SetPlayerShieldAnim(void);
 	void ResetPlayerShieldAnim(void);
-	bool ShieldSecondaryFire(int iUpAnim,int iDownAnim);
+	bool ShieldSecondaryFire(int iUpAnim, int iDownAnim);
 
 public:
 	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[7];
@@ -589,8 +553,10 @@ public:
 	virtual CBaseEntity *Respawn(void);
 
 #ifdef HOOK_GAMEDLL
+
 	void Spawn_(void);
 	CBaseEntity *Respawn_(void);
+
 #endif // HOOK_GAMEDLL
 
 public:
@@ -625,7 +591,7 @@ public:
 
 public:
 	BOOL IsEmpty(void);
-	int GiveAmmo(int iCount,char *szName,int iMax,int *pIndex = NULL);
+	int GiveAmmo(int iCount, char *szName, int iMax, int *pIndex = NULL);
 
 	void EXPORT Kill(void);
 	void EXPORT BombThink(void);
@@ -688,11 +654,13 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	void USPFire(float flSpread,float flCycleTime,BOOL fUseSemi);
+	void USPFire(float flSpread, float flCycleTime, BOOL fUseSemi);
 	NOXREF void MakeBeam(void);
 	NOXREF void BeamUpdate(void);
+
 public:
 	int m_iShell;
+
 private:
 	unsigned short m_usFireUSP;
 
@@ -702,11 +670,11 @@ private:
 class CMP5N: public CBasePlayerWeapon
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual int GetItemInfo(ItemInfo *p);
-	NOBODY virtual BOOL Deploy(void);
-	NOBODY virtual float GetMaxSpeed(void)
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual int GetItemInfo(ItemInfo *p);
+	virtual BOOL Deploy(void);
+	virtual float GetMaxSpeed(void)
 	{
 		return 250.0f;
 	}
@@ -714,18 +682,33 @@ public:
 	{
 		return PRIMARY_WEAPON_SLOT;
 	}
-	NOBODY virtual void PrimaryAttack(void);
-	NOBODY virtual void Reload(void);
-	NOBODY virtual void WeaponIdle(void);
-	NOBODY BOOL UseDecrement(void)
+	virtual void PrimaryAttack(void);
+	virtual void Reload(void);
+	virtual void WeaponIdle(void);
+	BOOL UseDecrement(void)
 	{
 		return TRUE;
 	}
+
+#ifdef HOOK_GAMEDLL
+
+	void Spawn_(void);
+	void Precache_(void);
+	int GetItemInfo_(ItemInfo *p);
+	BOOL Deploy_(void);
+	void PrimaryAttack_(void);
+	void Reload_(void);
+	void WeaponIdle_(void);
+
+#endif // HOOK_GAMEDLL
+
 public:
-	NOBODY void MP5NFire(float flSpread,float flCycleTime,BOOL fUseAutoAim);
+	void MP5NFire(float flSpread, float flCycleTime, BOOL fUseAutoAim);
+
 public:
 	int m_iShell;
 	int iShellOn;
+
 private:
 	unsigned short m_usFireMP5N;
 
@@ -735,40 +718,58 @@ private:
 class CSG552: public CBasePlayerWeapon
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual int GetItemInfo(ItemInfo *p);
-	NOBODY virtual BOOL Deploy(void);
-	NOBODY virtual float GetMaxSpeed(void);
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual int GetItemInfo(ItemInfo *p);
+	virtual BOOL Deploy(void);
+	virtual float GetMaxSpeed(void);
 	virtual int iItemSlot(void)
 	{
 		return PRIMARY_WEAPON_SLOT;
 	}
-	NOBODY virtual void PrimaryAttack(void);
-	NOBODY virtual void SecondaryAttack(void);
-	NOBODY virtual void Reload(void);
-	NOBODY virtual void WeaponIdle(void);
-	BOOL virtual UseDecrement(void)
+	virtual void PrimaryAttack(void);
+	virtual void SecondaryAttack(void);
+	virtual void Reload(void);
+	virtual void WeaponIdle(void);
+	virtual BOOL UseDecrement(void)
 	{
 		return TRUE;
 	}
+
+#ifdef HOOK_GAMEDLL
+
+	void Spawn_(void);
+	void Precache_(void);
+	int GetItemInfo_(ItemInfo *p);
+	BOOL Deploy_(void);
+	float GetMaxSpeed_(void);
+	void PrimaryAttack_(void);
+	void SecondaryAttack_(void);
+	void Reload_(void);
+	void WeaponIdle_(void);
+
+#endif // HOOK_GAMEDLL
+
 public:
-	NOBODY void SG552Fire(float flSpread,float flCycleTime,BOOL fUseAutoAim);
+	void SG552Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim);
+
 public:
 	int m_iShell;
 	int iShellOn;
+
 private:
 	unsigned short m_usFireSG552;
+
 };/* size: 348, cachelines: 6, members: 4 */
 
 /* <234730> ../cstrike/dlls/weapons.h:648 */
 class CAK47: public CBasePlayerWeapon
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual int GetItemInfo(ItemInfo *p);
-	NOBODY virtual BOOL Deploy(void);
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual int GetItemInfo(ItemInfo *p);
+	virtual BOOL Deploy(void);
 	virtual float GetMaxSpeed(void)
 	{
 		return 221.0f;
@@ -777,14 +778,15 @@ public:
 	{
 		return PRIMARY_WEAPON_SLOT;
 	}
-	NOBODY virtual void PrimaryAttack(void);
-	NOBODY virtual void SecondaryAttack(void);
-	NOBODY virtual void Reload(void);
-	NOBODY virtual void WeaponIdle(void);
+	virtual void PrimaryAttack(void);
+	virtual void SecondaryAttack(void);
+	virtual void Reload(void);
+	virtual void WeaponIdle(void);
 	virtual BOOL UseDecrement(void)
 	{
 		return TRUE;
 	}
+
 #ifdef HOOK_GAMEDLL
 
 	void Spawn_(void);
@@ -799,23 +801,25 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	NOBODY void AK47Fire(float flSpread,float flCycleTime,BOOL fUseAutoAim);
+	void AK47Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim);
 
 public:
 	int m_iShell;
 	int iShellOn;
+
 private:
 	unsigned short m_usFireAK47;
+
 };/* size: 348, cachelines: 6, members: 4 */
 
 /* <239b82> ../cstrike/dlls/weapons.h:672 */
 class CAUG: public CBasePlayerWeapon
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual int GetItemInfo(ItemInfo *p);
-	NOBODY virtual BOOL Deploy(void);
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual int GetItemInfo(ItemInfo *p);
+	virtual BOOL Deploy(void);
 	virtual float GetMaxSpeed(void)
 	{
 		return 240.0f;
@@ -824,21 +828,38 @@ public:
 	{
 		return PRIMARY_WEAPON_SLOT;
 	}
-	NOBODY virtual void PrimaryAttack(void);
-	NOBODY virtual void SecondaryAttack(void);
-	NOBODY virtual void Reload(void);
-	NOBODY virtual void WeaponIdle(void);
+	virtual void PrimaryAttack(void);
+	virtual void SecondaryAttack(void);
+	virtual void Reload(void);
+	virtual void WeaponIdle(void);
 	virtual BOOL UseDecrement(void)
 	{
 		return TRUE;
 	}
+
+#ifdef HOOK_GAMEDLL
+
+	void Spawn_(void);
+	void Precache_(void);
+	int GetItemInfo_(ItemInfo *p);
+	BOOL Deploy_(void);
+	void PrimaryAttack_(void);
+	void SecondaryAttack_(void);
+	void Reload_(void);
+	void WeaponIdle_(void);
+
+#endif // HOOK_GAMEDLL
+
 public:
-	void AUGFire(float flSpread,float flCycleTime,BOOL fUseAutoAim);
+	void AUGFire(float flSpread, float flCycleTime, BOOL fUseAutoAim);
+
 public:
 	int m_iShell;
 	int iShellOn;
+
 private:
 	unsigned short m_usFireAug;
+
 };/* size: 348, cachelines: 6, members: 4 */
 
 /* <23ef02> ../cstrike/dlls/weapons.h:697 */
@@ -874,23 +895,15 @@ public:
 	int GetItemInfo_(ItemInfo *p);
 	BOOL Deploy_(void);
 	float GetMaxSpeed_(void);
-	int iItemSlot_(void)
-	{
-		return PRIMARY_WEAPON_SLOT;
-	}
 	void PrimaryAttack_(void);
 	void SecondaryAttack_(void);
 	void Reload_(void);
 	void WeaponIdle_(void);
-	BOOL UseDecrement_(void)
-	{
-		return TRUE;
-	}
 
 #endif // HOOK_GAMEDLL
 
 public:
-	void AWPFire(float flSpread,float flCycleTime,BOOL fUseAutoAim);
+	void AWPFire(float flSpread, float flCycleTime, BOOL fUseAutoAim);
 
 public:
 	int m_iShell;
@@ -907,7 +920,7 @@ public:
 	virtual void Spawn(void);
 	virtual void Precache(void);
 	virtual void KeyValue(KeyValueData *pkvd);
-	virtual void Use(CBaseEntity *pActivator,CBaseEntity *pCaller,USE_TYPE useType,float value);
+	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 	virtual int GetItemInfo(ItemInfo *p);
 	virtual BOOL Deploy(void);
 	virtual void Holster(int skiplocal);
@@ -922,6 +935,7 @@ public:
 	{
 		return TRUE;
 	}
+
 #ifdef HOOK_GAMEDLL
 
 	void Spawn_(void);
@@ -949,10 +963,10 @@ private:
 class CDEAGLE: public CBasePlayerWeapon
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual int GetItemInfo(ItemInfo *p);
-	NOBODY virtual BOOL Deploy(void);
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual int GetItemInfo(ItemInfo *p);
+	virtual BOOL Deploy(void);
 	virtual float GetMaxSpeed(void)
 	{
 		return m_fMaxSpeed;
@@ -961,10 +975,10 @@ public:
 	{
 		return PISTOL_SLOT;
 	}
-	NOBODY virtual void PrimaryAttack(void);
-	NOBODY virtual void SecondaryAttack(void);
-	NOBODY virtual void Reload(void);
-	NOBODY virtual void WeaponIdle(void);
+	virtual void PrimaryAttack(void);
+	virtual void SecondaryAttack(void);
+	virtual void Reload(void);
+	virtual void WeaponIdle(void);
 	virtual BOOL UseDecrement(void)
 	{
 		return TRUE;
@@ -973,28 +987,45 @@ public:
 	{
 		return TRUE;
 	}
+
+#ifdef HOOK_GAMEDLL
+
+	void Spawn_(void);
+	void Precache_(void);
+	int GetItemInfo_(ItemInfo *p);
+	BOOL Deploy_(void);
+	void PrimaryAttack_(void);
+	void SecondaryAttack_(void);
+	void Reload_(void);
+	void WeaponIdle_(void);
+
+#endif // HOOK_GAMEDLL
+
 public:
-	NOBODY void DEAGLEFire(float flSpread, float flCycleTime, BOOL fUseSemi);
+	void DEAGLEFire(float flSpread, float flCycleTime, BOOL fUseSemi);
+
 public:
 	int m_iShell;
+
 private:
 	unsigned short m_usFireDeagle;
+
 };/* size: 344, cachelines: 6, members: 3 */
 
 /* <25ab17> ../cstrike/dlls/weapons.h:778 */
 class CFlashbang: public CBasePlayerWeapon
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual int GetItemInfo(ItemInfo *p);
-	NOBODY virtual BOOL CanDeploy(void);
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual int GetItemInfo(ItemInfo *p);
+	virtual BOOL CanDeploy(void);
 	virtual BOOL CanDrop(void)
 	{
 		return FALSE;
 	}
-	NOBODY virtual BOOL Deploy(void);
-	NOBODY virtual void Holster(int skiplocal);
+	virtual BOOL Deploy(void);
+	virtual void Holster(int skiplocal);
 	virtual float GetMaxSpeed(void)
 	{
 		return m_fMaxSpeed;
@@ -1003,50 +1034,89 @@ public:
 	{
 		return GRENADE_SLOT;
 	}
-	NOBODY virtual void PrimaryAttack(void);
-	NOBODY virtual void SecondaryAttack(void);
-	NOBODY virtual void WeaponIdle(void);
+	virtual void PrimaryAttack(void);
+	virtual void SecondaryAttack(void);
+	virtual void WeaponIdle(void);
 	virtual BOOL UseDecrement(void)
 	{
 		return TRUE;
 	}
 	virtual BOOL IsPistol(void)
 	{
+#ifdef REGAMEDLL_FIXES
+		return FALSE;
+#else
+		// TODO: why the object flashbang is IsPistol?
 		return TRUE;
+#endif // REGAMEDLL_FIXES
 	}
+
+#ifdef HOOK_GAMEDLL
+
+	void Spawn_(void);
+	void Precache_(void);
+	int GetItemInfo_(ItemInfo *p);
+	BOOL CanDeploy_(void);
+	BOOL Deploy_(void);
+	void Holster_(int skiplocal);
+	void PrimaryAttack_(void);
+	void SecondaryAttack_(void);
+	void WeaponIdle_(void);
+
+#endif // HOOK_GAMEDLL
+
 public:
-	NOBODY bool ShieldSecondaryFire(int iUpAnim,int iDownAnim);
-	NOBODY void SetPlayerShieldAnim(void);
-	NOBODY void ResetPlayerShieldAnim(void);
+	bool ShieldSecondaryFire(int iUpAnim, int iDownAnim);
+	void SetPlayerShieldAnim(void);
+	void ResetPlayerShieldAnim(void);
+
 };/* size: 336, cachelines: 6, members: 1 */
 
 /* <26006d> ../cstrike/dlls/weapons.h:803 */
 class CG3SG1: public CBasePlayerWeapon
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual int GetItemInfo(ItemInfo *p);
-	NOBODY virtual BOOL Deploy(void);
-	NOBODY virtual float GetMaxSpeed(void);
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual int GetItemInfo(ItemInfo *p);
+	virtual BOOL Deploy(void);
+	virtual float GetMaxSpeed(void);
 	virtual int iItemSlot(void)
 	{
 		return PRIMARY_WEAPON_SLOT;
 	}
-	NOBODY virtual void PrimaryAttack(void);
-	NOBODY virtual void SecondaryAttack(void);
-	NOBODY virtual void Reload(void);
-	NOBODY virtual void WeaponIdle(void);
+	virtual void PrimaryAttack(void);
+	virtual void SecondaryAttack(void);
+	virtual void Reload(void);
+	virtual void WeaponIdle(void);
 	virtual BOOL UseDecrement(void)
 	{
 		return TRUE;
 	}
+
+#ifdef HOOK_GAMEDLL
+
+	void Spawn_(void);
+	void Precache_(void);
+	int GetItemInfo_(ItemInfo *p);
+	BOOL Deploy_(void);
+	float GetMaxSpeed_(void);
+	void PrimaryAttack_(void);
+	void SecondaryAttack_(void);
+	void Reload_(void);
+	void WeaponIdle_(void);
+
+#endif // HOOK_GAMEDLL
+
 public:
-	NOBODY void G3SG1Fire(float flSpread,float flCycleTime,BOOL fUseAutoAim);
+	void G3SG1Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim);
+
 public:
 	int m_iShell;
+
 private:
 	unsigned short m_usFireG3SG1;
+
 };/* size: 344, cachelines: 6, members: 3 */
 
 /* <2655b2> ../cstrike/dlls/weapons.h:828 */
@@ -1077,6 +1147,7 @@ public:
 	{
 		return TRUE;
 	}
+
 #ifdef HOOK_GAMEDLL
 
 	void Spawn_(void);
@@ -1103,16 +1174,16 @@ public:
 class CHEGrenade: public CBasePlayerWeapon
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual int GetItemInfo(ItemInfo *p);
-	NOBODY virtual BOOL CanDeploy(void);
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual int GetItemInfo(ItemInfo *p);
+	virtual BOOL CanDeploy(void);
 	virtual BOOL CanDrop(void)
 	{
 		return FALSE;
 	}
-	NOBODY virtual BOOL Deploy(void);
-	NOBODY virtual void Holster(int skiplocal);
+	virtual BOOL Deploy(void);
+	virtual void Holster(int skiplocal);
 	virtual float GetMaxSpeed(void)
 	{
 		return m_fMaxSpeed;
@@ -1121,20 +1192,36 @@ public:
 	{
 		return GRENADE_SLOT;
 	}
-	NOBODY virtual void PrimaryAttack(void);
-	NOBODY virtual void SecondaryAttack(void);
-	NOBODY virtual void WeaponIdle(void);
+	virtual void PrimaryAttack(void);
+	virtual void SecondaryAttack(void);
+	virtual void WeaponIdle(void);
 	virtual BOOL UseDecrement(void)
 	{
 		return TRUE;
 	}
+
+#ifdef HOOK_GAMEDLL
+
+	void Spawn_(void);
+	void Precache_(void);
+	int GetItemInfo_(ItemInfo *p);
+	BOOL CanDeploy_(void);
+	BOOL Deploy_(void);
+	void Holster_(int skiplocal);
+	void PrimaryAttack_(void);
+	void SecondaryAttack_(void);
+	void WeaponIdle_(void);
+
+#endif // HOOK_GAMEDLL
+
 public:
-	NOBODY bool ShieldSecondaryFire(int iUpAnim,int iDownAnim);
-	NOBODY void SetPlayerShieldAnim(void);
-	NOBODY void ResetPlayerShieldAnim(void);
+	bool ShieldSecondaryFire(int iUpAnim, int iDownAnim);
+	void SetPlayerShieldAnim(void);
+	void ResetPlayerShieldAnim(void);
 
 public:
 	unsigned short m_usCreateExplosion;
+
 };/* size: 340, cachelines: 6, members: 2 */
 
 /* <26f804> ../cstrike/dlls/weapons.h:878 */
@@ -1189,7 +1276,7 @@ public:
 	int Swing(int fFirst);
 
 public:
-	virtual bool ShieldSecondaryFire(int iUpAnim,int iDownAnim);
+	virtual bool ShieldSecondaryFire(int iUpAnim, int iDownAnim);
 	virtual void SetPlayerShieldAnim(void);
 	virtual void ResetPlayerShieldAnim(void);
 
@@ -1203,10 +1290,10 @@ public:
 class CM249: public CBasePlayerWeapon
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual int GetItemInfo(ItemInfo *p);
-	NOBODY virtual BOOL Deploy(void);
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual int GetItemInfo(ItemInfo *p);
+	virtual BOOL Deploy(void);
 	virtual float GetMaxSpeed(void)
 	{
 		return 220.0f;
@@ -1215,30 +1302,46 @@ public:
 	{
 		return PRIMARY_WEAPON_SLOT;
 	}
-	NOBODY virtual void PrimaryAttack(void);
-	NOBODY virtual void Reload(void);
-	NOBODY virtual void WeaponIdle(void);
+	virtual void PrimaryAttack(void);
+	virtual void Reload(void);
+	virtual void WeaponIdle(void);
 	BOOL UseDecrement(void)
 	{
 		return TRUE;
 	}
+
+#ifdef HOOK_GAMEDLL
+
+	void Spawn_(void);
+	void Precache_(void);
+	int GetItemInfo_(ItemInfo *p);
+	BOOL Deploy_(void);
+	void PrimaryAttack_(void);
+	void Reload_(void);
+	void WeaponIdle_(void);
+
+#endif // HOOK_GAMEDLL
+
 public:
-	NOBODY void M249Fire(float flSpread,float flCycleTime,BOOL fUseAutoAim);
+	void M249Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim);
+
 public:
 	int m_iShell;
 	int iShellOn;
+
 private:
 	unsigned short m_usFireM249;
+
 };/* size: 348, cachelines: 6, members: 4 */
 
 /* <27b175> ../cstrike/dlls/weapons.h:934 */
 class CM3: public CBasePlayerWeapon
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual int GetItemInfo(ItemInfo *p);
-	NOBODY virtual BOOL Deploy(void);
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual int GetItemInfo(ItemInfo *p);
+	virtual BOOL Deploy(void);
 	virtual float GetMaxSpeed(void)
 	{
 		return 230.0f;
@@ -1247,58 +1350,91 @@ public:
 	{
 		return PRIMARY_WEAPON_SLOT;
 	}
-	NOBODY virtual void PrimaryAttack(void);
-	NOBODY virtual void Reload(void);
-	NOBODY virtual void WeaponIdle(void);
+	virtual void PrimaryAttack(void);
+	virtual void Reload(void);
+	virtual void WeaponIdle(void);
 	virtual BOOL UseDecrement(void)
 	{
 		return TRUE;
 	}
+
+#ifdef HOOK_GAMEDLL
+
+	void Spawn_(void);
+	void Precache_(void);
+	int GetItemInfo_(ItemInfo *p);
+	BOOL Deploy_(void);
+	void PrimaryAttack_(void);
+	void Reload_(void);
+	void WeaponIdle_(void);
+
+#endif // HOOK_GAMEDLL
+
 public:
 	int m_iShell;
 	float m_flPumpTime;
+
 private:
 	unsigned short m_usFireM3;
+
 };/* size: 348, cachelines: 6, members: 4 */
 
 /* <280488> ../cstrike/dlls/weapons.h:961 */
 class CM4A1: public CBasePlayerWeapon
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual int GetItemInfo(ItemInfo *p);
-	NOBODY virtual BOOL Deploy(void);
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual int GetItemInfo(ItemInfo *p);
+	virtual BOOL Deploy(void);
 	virtual float GetMaxSpeed(void);
 	virtual int iItemSlot(void)
 	{
 		return PRIMARY_WEAPON_SLOT;
 	}
-	NOBODY virtual void PrimaryAttack(void);
-	NOBODY virtual void SecondaryAttack(void);
-	NOBODY virtual void Reload(void);
-	NOBODY virtual void WeaponIdle(void);
+	virtual void PrimaryAttack(void);
+	virtual void SecondaryAttack(void);
+	virtual void Reload(void);
+	virtual void WeaponIdle(void);
 	virtual BOOL UseDecrement(void)
 	{
 		return TRUE;
 	}
+
+#ifdef HOOK_GAMEDLL
+
+	void Spawn_(void);
+	void Precache_(void);
+	int GetItemInfo_(ItemInfo *p);
+	BOOL Deploy_(void);
+	float GetMaxSpeed_(void);
+	void PrimaryAttack_(void);
+	void SecondaryAttack_(void);
+	void Reload_(void);
+	void WeaponIdle_(void);
+
+#endif // HOOK_GAMEDLL
+
 public:
-	NOBODY void M4A1Fire(float flSpread,float flCycleTime,BOOL fUseAutoAim);
+	void M4A1Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim);
+
 public:
 	int m_iShell;
 	int iShellOn;
+
 private:
 	unsigned short m_usFireM4A1;
+
 };/* size: 348, cachelines: 6, members: 4 */
 
 /* <285993> ../cstrike/dlls/weapons.h:987 */
 class CMAC10: public CBasePlayerWeapon
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual int GetItemInfo(ItemInfo *p);
-	NOBODY virtual BOOL Deploy(void);
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual int GetItemInfo(ItemInfo *p);
+	virtual BOOL Deploy(void);
 	virtual float GetMaxSpeed(void)
 	{
 		return 250.0f;
@@ -1307,30 +1443,46 @@ public:
 	{
 		return PRIMARY_WEAPON_SLOT;
 	}
-	NOBODY virtual void PrimaryAttack(void);
-	NOBODY virtual void Reload(void);
-	NOBODY virtual void WeaponIdle(void);
+	virtual void PrimaryAttack(void);
+	virtual void Reload(void);
+	virtual void WeaponIdle(void);
 	virtual BOOL UseDecrement(void)
 	{
 		return TRUE;
 	}
+
+#ifdef HOOK_GAMEDLL
+
+	void Spawn_(void);
+	void Precache_(void);
+	int GetItemInfo_(ItemInfo *p);
+	BOOL Deploy_(void);
+	void PrimaryAttack_(void);
+	void Reload_(void);
+	void WeaponIdle_(void);
+
+#endif // HOOK_GAMEDLL
+
 public:
-	NOBODY void MAC10Fire(float flSpread,float flCycleTime,BOOL fUseAutoAim);
+	void MAC10Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim);
+
 public:
 	int m_iShell;
 	int iShellOn;
+
 private:
 	unsigned short m_usFireMAC10;
+
 };/* size: 348, cachelines: 6, members: 4 */
 
 /* <2902c1> ../cstrike/dlls/weapons.h:1011 */
 class CP228: public CBasePlayerWeapon
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual int GetItemInfo(ItemInfo *p);
-	NOBODY virtual BOOL Deploy(void);
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual int GetItemInfo(ItemInfo *p);
+	virtual BOOL Deploy(void);
 	virtual float GetMaxSpeed(void)
 	{
 		return m_fMaxSpeed;
@@ -1339,10 +1491,10 @@ public:
 	{
 		return PISTOL_SLOT;
 	}
-	NOBODY virtual void PrimaryAttack(void);
-	NOBODY virtual void SecondaryAttack(void);
-	NOBODY virtual void Reload(void);
-	NOBODY virtual void WeaponIdle(void);
+	virtual void PrimaryAttack(void);
+	virtual void SecondaryAttack(void);
+	virtual void Reload(void);
+	virtual void WeaponIdle(void);
 	virtual BOOL UseDecrement(void)
 	{
 		return TRUE;
@@ -1351,30 +1503,49 @@ public:
 	{
 		return TRUE;
 	}
+
+#ifdef HOOK_GAMEDLL
+
+	void Spawn_(void);
+	void Precache_(void);
+	int GetItemInfo_(ItemInfo *p);
+	BOOL Deploy_(void);
+	void PrimaryAttack_(void);
+	void SecondaryAttack_(void);
+	void Reload_(void);
+	void WeaponIdle_(void);
+
+#endif // HOOK_GAMEDLL
+
 public:
-	NOBODY void P228Fire(float flSpread,float flCycleTime,BOOL fUseSemi);
+	void P228Fire(float flSpread, float flCycleTime, BOOL fUseSemi);
+	NOXREF void MakeBeam(void);
+	NOXREF void BeamUpdate(void);
+
 public:
 	int m_iShell;
+
 private:
 	unsigned short m_usFireP228;
+
 };/* size: 344, cachelines: 6, members: 3 */
 
 /* <295740> ../cstrike/dlls/weapons.h:1039 */
 class CP90: public CBasePlayerWeapon
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual int GetItemInfo(ItemInfo *p);
-	NOBODY virtual BOOL Deploy(void);
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual int GetItemInfo(ItemInfo *p);
+	virtual BOOL Deploy(void);
 	virtual float GetMaxSpeed(void);
 	virtual int iItemSlot(void)
 	{
 		return PRIMARY_WEAPON_SLOT;
 	}
-	NOBODY virtual void PrimaryAttack(void);
-	NOBODY virtual void Reload(void);
-	NOBODY virtual void WeaponIdle(void);
+	virtual void PrimaryAttack(void);
+	virtual void Reload(void);
+	virtual void WeaponIdle(void);
 	virtual BOOL UseDecrement(void)
 	{
 		return TRUE;
@@ -1394,37 +1565,55 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	NOBODY void P90Fire(float flSpread,float flCycleTime,BOOL fUseAutoAim);
+	void P90Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim);
+
 public:
 	int m_iShell;
 	int iShellOn;
+
 private:
 	unsigned short m_usFireP90;
+
 };/* size: 348, cachelines: 6, members: 4 */
 
 /* <29abe0> ../cstrike/dlls/weapons.h:1063 */
 class CSCOUT: public CBasePlayerWeapon
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual int GetItemInfo(ItemInfo *p);
-	NOBODY virtual BOOL Deploy(void);
-	NOBODY virtual float GetMaxSpeed(void);
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual int GetItemInfo(ItemInfo *p);
+	virtual BOOL Deploy(void);
+	virtual float GetMaxSpeed(void);
 	virtual int iItemSlot(void)
 	{
 		return PRIMARY_WEAPON_SLOT;
 	}
-	NOBODY virtual void PrimaryAttack(void);
-	NOBODY virtual void SecondaryAttack(void);
-	NOBODY virtual void Reload(void);
-	NOBODY virtual void WeaponIdle(void);
+	virtual void PrimaryAttack(void);
+	virtual void SecondaryAttack(void);
+	virtual void Reload(void);
+	virtual void WeaponIdle(void);
 	virtual BOOL UseDecrement(void)
 	{
 		return TRUE;
 	}
+
+#ifdef HOOK_GAMEDLL
+
+	void Spawn_(void);
+	void Precache_(void);
+	int GetItemInfo_(ItemInfo *p);
+	BOOL Deploy_(void);
+	float GetMaxSpeed_(void);
+	void PrimaryAttack_(void);
+	void SecondaryAttack_(void);
+	void Reload_(void);
+	void WeaponIdle_(void);
+
+#endif // HOOK_GAMEDLL
+
 public:
-	NOBODY void SCOUTFire(float flSpread,float flCycleTime,BOOL fUseAutoAim);
+	void SCOUTFire(float flSpread, float flCycleTime, BOOL fUseAutoAim);
 
 public:
 	int m_iShell;
@@ -1438,16 +1627,16 @@ private:
 class CSmokeGrenade: public CBasePlayerWeapon
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual int GetItemInfo(ItemInfo *p);
-	NOBODY virtual BOOL CanDeploy(void);
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual int GetItemInfo(ItemInfo *p);
+	virtual BOOL CanDeploy(void);
 	virtual BOOL CanDrop(void)
 	{
 		return FALSE;
 	}
-	NOBODY virtual BOOL Deploy(void);
-	NOBODY virtual void Holster(int skiplocal);
+	virtual BOOL Deploy(void);
+	virtual void Holster(int skiplocal);
 	virtual float GetMaxSpeed(void)
 	{
 		return m_fMaxSpeed;
@@ -1456,29 +1645,46 @@ public:
 	{
 		return GRENADE_SLOT;
 	}
-	NOBODY virtual void PrimaryAttack(void);
-	NOBODY virtual void SecondaryAttack(void);
-	NOBODY virtual void WeaponIdle(void);
+	virtual void PrimaryAttack(void);
+	virtual void SecondaryAttack(void);
+	virtual void WeaponIdle(void);
 	virtual BOOL UseDecrement(void)
 	{
 		return TRUE;
 	}
+
+#ifdef HOOK_GAMEDLL
+
+	void Spawn_(void);
+	void Precache_(void);
+	int GetItemInfo_(ItemInfo *p);
+	BOOL CanDeploy_(void);
+	BOOL Deploy_(void);
+	void Holster_(int skiplocal);
+	void PrimaryAttack_(void);
+	void SecondaryAttack_(void);
+	void WeaponIdle_(void);
+
+#endif // HOOK_GAMEDLL
+
 public:
-	NOBODY bool ShieldSecondaryFire(int iUpAnim,int iDownAnim);
-	NOBODY void SetPlayerShieldAnim(void);
-	NOBODY void ResetPlayerShieldAnim(void);
+	bool ShieldSecondaryFire(int iUpAnim, int iDownAnim);
+	void SetPlayerShieldAnim(void);
+	void ResetPlayerShieldAnim(void);
+
 public:
 	unsigned short m_usCreateSmoke;
+
 };/* size: 340, cachelines: 6, members: 2 */
 
 /* <2af8c3> ../cstrike/dlls/weapons.h:1116 */
 class CTMP: public CBasePlayerWeapon
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual int GetItemInfo(ItemInfo *p);
-	NOBODY virtual BOOL Deploy(void);
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual int GetItemInfo(ItemInfo *p);
+	virtual BOOL Deploy(void);
 	virtual float GetMaxSpeed(void)
 	{
 		return 250.0f;
@@ -1487,30 +1693,46 @@ public:
 	{
 		return PRIMARY_WEAPON_SLOT;
 	}
-	NOBODY virtual void PrimaryAttack(void);
-	NOBODY virtual void Reload(void);
-	NOBODY virtual void WeaponIdle(void);
+	virtual void PrimaryAttack(void);
+	virtual void Reload(void);
+	virtual void WeaponIdle(void);
 	virtual BOOL UseDecrement(void)
 	{
 		return TRUE;
 	}
+
+#ifdef HOOK_GAMEDLL
+
+	void Spawn_(void);
+	void Precache_(void);
+	int GetItemInfo_(ItemInfo *p);
+	BOOL Deploy_(void);
+	void PrimaryAttack_(void);
+	void Reload_(void);
+	void WeaponIdle_(void);
+
+#endif // HOOK_GAMEDLL
+
 public:
-	NOBODY void TMPFire(float flSpread,float flCycleTime,BOOL fUseAutoAim);
+	void TMPFire(float flSpread, float flCycleTime, BOOL fUseAutoAim);
+
 public:
 	int m_iShell;
 	int iShellOn;
+
 private:
 	unsigned short m_usFireTMP;
+
 };/* size: 348, cachelines: 6, members: 4 */
 
 /* <2c9fce> ../cstrike/dlls/weapons.h:1141 */
 class CXM1014: public CBasePlayerWeapon
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual int GetItemInfo(ItemInfo *p);
-	NOBODY virtual BOOL Deploy(void);
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual int GetItemInfo(ItemInfo *p);
+	virtual BOOL Deploy(void);
 	virtual float GetMaxSpeed(void)
 	{
 		return 240.0f;
@@ -1519,28 +1741,43 @@ public:
 	{
 		return PRIMARY_WEAPON_SLOT;
 	}
-	NOBODY virtual void PrimaryAttack(void);
-	NOBODY virtual void Reload(void);
-	NOBODY virtual void WeaponIdle(void);
+	virtual void PrimaryAttack(void);
+	virtual void Reload(void);
+	virtual void WeaponIdle(void);
 	virtual BOOL UseDecrement(void)
 	{
 		return TRUE;
 	}
+
+#ifdef HOOK_GAMEDLL
+
+	void Spawn_(void);
+	void Precache_(void);
+	int GetItemInfo_(ItemInfo *p);
+	BOOL Deploy_(void);
+	void PrimaryAttack_(void);
+	void Reload_(void);
+	void WeaponIdle_(void);
+
+#endif // HOOK_GAMEDLL
+
 public:
 	int m_iShell;
 	float m_flPumpTime;
+
 private:
 	unsigned short m_usFireXM1014;
+
 };/* size: 348, cachelines: 6, members: 4 */
 
 /* <2503f9> ../cstrike/dlls/weapons.h:1167 */
 class CELITE: public CBasePlayerWeapon
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual int GetItemInfo(ItemInfo *p);
-	NOBODY virtual BOOL Deploy(void);
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual int GetItemInfo(ItemInfo *p);
+	virtual BOOL Deploy(void);
 	virtual float GetMaxSpeed(void)
 	{
 		return 250.0f;
@@ -1549,9 +1786,9 @@ public:
 	{
 		return PISTOL_SLOT;
 	}
-	NOBODY virtual void PrimaryAttack(void);
-	NOBODY virtual void Reload(void);
-	NOBODY virtual void WeaponIdle(void);
+	virtual void PrimaryAttack(void);
+	virtual void Reload(void);
+	virtual void WeaponIdle(void);
 	virtual BOOL UseDecrement(void)
 	{
 		return TRUE;
@@ -1560,22 +1797,37 @@ public:
 	{
 		return TRUE;
 	}
+
+#ifdef HOOK_GAMEDLL
+
+	void Spawn_(void);
+	void Precache_(void);
+	int GetItemInfo_(ItemInfo *p);
+	BOOL Deploy_(void);
+	void PrimaryAttack_(void);
+	void Reload_(void);
+	void WeaponIdle_(void);
+
+#endif // HOOK_GAMEDLL
+
 public:
-	NOBODY void ELITEFire(float flSpread,float flCycleTime,BOOL fUseSemi);
+	void ELITEFire(float flSpread, float flCycleTime, BOOL fUseSemi);
+
 public:
 	int m_iShell;
 	unsigned short m_usFireELITE_LEFT;
 	unsigned short m_usFireELITE_RIGHT;
+
 };/* size: 344, cachelines: 6, members: 4 */
 
 /* <255b29> ../cstrike/dlls/weapons.h:1192 */
 class CFiveSeven: public CBasePlayerWeapon
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual int GetItemInfo(ItemInfo *p);
-	NOBODY virtual BOOL Deploy(void);
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual int GetItemInfo(ItemInfo *p);
+	virtual BOOL Deploy(void);
 	virtual float GetMaxSpeed(void)
 	{
 		return m_fMaxSpeed;
@@ -1584,10 +1836,10 @@ public:
 	{
 		return PISTOL_SLOT;
 	}
-	NOBODY virtual void PrimaryAttack(void);
-	NOBODY virtual void SecondaryAttack(void);
-	NOBODY virtual void Reload(void);
-	NOBODY virtual void WeaponIdle(void);
+	virtual void PrimaryAttack(void);
+	virtual void SecondaryAttack(void);
+	virtual void Reload(void);
+	virtual void WeaponIdle(void);
 	virtual BOOL UseDecrement(void)
 	{
 		return TRUE;
@@ -1596,24 +1848,41 @@ public:
 	{
 		return TRUE;
 	}
+
+#ifdef HOOK_GAMEDLL
+
+	void Spawn_(void);
+	void Precache_(void);
+	int GetItemInfo_(ItemInfo *p);
+	BOOL Deploy_(void);
+	void PrimaryAttack_(void);
+	void SecondaryAttack_(void);
+	void Reload_(void);
+	void WeaponIdle_(void);
+
+#endif // HOOK_GAMEDLL
+
 public:
-	NOBODY void FiveSevenFire(float flSpread,float flCycleTime,BOOL fUseSemi);
+	void FiveSevenFire(float flSpread, float flCycleTime, BOOL fUseSemi);
 	NOXREF void MakeBeam(void);
 	NOXREF void BeamUpdate(void);
+
 public:
 	int m_iShell;
+
 private:
 	unsigned short m_usFireFiveSeven;
+
 };/* size: 344, cachelines: 6, members: 3 */
 
 /* <2b4cf9> ../cstrike/dlls/weapons.h:1219 */
 class CUMP45: public CBasePlayerWeapon
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual int GetItemInfo(ItemInfo *p);
-	NOBODY virtual BOOL Deploy(void);
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual int GetItemInfo(ItemInfo *p);
+	virtual BOOL Deploy(void);
 	virtual float GetMaxSpeed(void)
 	{
 		return 250.0f;
@@ -1622,59 +1891,93 @@ public:
 	{
 		return PRIMARY_WEAPON_SLOT;
 	}
-	NOBODY virtual void PrimaryAttack(void);
-	NOBODY virtual void Reload(void);
-	NOBODY virtual void WeaponIdle(void);
+	virtual void PrimaryAttack(void);
+	virtual void Reload(void);
+	virtual void WeaponIdle(void);
 	virtual BOOL UseDecrement(void)
 	{
 		return TRUE;
 	}
+
+#ifdef HOOK_GAMEDLL
+
+	void Spawn_(void);
+	void Precache_(void);
+	int GetItemInfo_(ItemInfo *p);
+	BOOL Deploy_(void);
+	void PrimaryAttack_(void);
+	void Reload_(void);
+	void WeaponIdle_(void);
+
+#endif // HOOK_GAMEDLL
+
 public:
-	NOBODY void UMP45Fire(float flSpread,float flCycleTime,BOOL fUseAutoAim);
+	void UMP45Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim);
+
 public:
 	int m_iShell;
 	int iShellOn;
+
 private:
 	unsigned short m_usFireUMP45;
+
 };/* size: 348, cachelines: 6, members: 4 */
 
 /* <2a00b3> ../cstrike/dlls/weapons.h:1244 */
 class CSG550: public CBasePlayerWeapon
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual int GetItemInfo(ItemInfo *p);
-	NOBODY virtual BOOL Deploy(void);
-	NOBODY virtual float GetMaxSpeed(void);
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual int GetItemInfo(ItemInfo *p);
+	virtual BOOL Deploy(void);
+	virtual float GetMaxSpeed(void);
 	virtual int iItemSlot(void)
 	{
 		return PRIMARY_WEAPON_SLOT;
 	}
-	NOBODY virtual void PrimaryAttack(void);
-	NOBODY virtual void SecondaryAttack(void);
-	NOBODY virtual void Reload(void);
-	NOBODY virtual void WeaponIdle(void);
+	virtual void PrimaryAttack(void);
+	virtual void SecondaryAttack(void);
+	virtual void Reload(void);
+	virtual void WeaponIdle(void);
 	virtual BOOL UseDecrement(void)
 	{
 		return TRUE;
 	}
+
+#ifdef HOOK_GAMEDLL
+
+	void Spawn_(void);
+	void Precache_(void);
+	int GetItemInfo_(ItemInfo *p);
+	BOOL Deploy_(void);
+	float GetMaxSpeed_(void);
+	void PrimaryAttack_(void);
+	void SecondaryAttack_(void);
+	void Reload_(void);
+	void WeaponIdle_(void);
+
+#endif // HOOK_GAMEDLL
+
 public:
-	NOBODY void SG550Fire(float flSpread,float flCycleTime,BOOL fUseAutoAim);
+	void SG550Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim);
+
 public:
 	int m_iShell;
+
 private:
 	unsigned short m_usFireSG550;
+
 };/* size: 344, cachelines: 6, members: 3 */
 
 /* <2c4bb9> ../cstrike/dlls/weapons.h:1269 */
 class CGalil: public CBasePlayerWeapon
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual int GetItemInfo(ItemInfo *p);
-	NOBODY virtual BOOL Deploy(void);
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual int GetItemInfo(ItemInfo *p);
+	virtual BOOL Deploy(void);
 	virtual float GetMaxSpeed(void)
 	{
 		return 240.0f;
@@ -1683,31 +1986,48 @@ public:
 	{
 		return PRIMARY_WEAPON_SLOT;
 	}
-	NOBODY virtual void PrimaryAttack(void);
-	NOBODY virtual void SecondaryAttack(void);
-	NOBODY virtual void Reload(void);
-	NOBODY virtual void WeaponIdle(void);
+	virtual void PrimaryAttack(void);
+	virtual void SecondaryAttack(void);
+	virtual void Reload(void);
+	virtual void WeaponIdle(void);
 	virtual BOOL UseDecrement(void)
 	{
 		return TRUE;
 	}
+
+#ifdef HOOK_GAMEDLL
+
+	void Spawn_(void);
+	void Precache_(void);
+	int GetItemInfo_(ItemInfo *p);
+	BOOL Deploy_(void);
+	void PrimaryAttack_(void);
+	void SecondaryAttack_(void);
+	void Reload_(void);
+	void WeaponIdle_(void);
+
+#endif // HOOK_GAMEDLL
+
 public:
-	NOBODY void GalilFire(float flSpread,float flCycleTime,BOOL fUseAutoAim);
+	void GalilFire(float flSpread, float flCycleTime, BOOL fUseAutoAim);
+
 public:
 	int m_iShell;
 	int iShellOn;
+
 private:
 	unsigned short m_usFireGalil;
+
 };/* size: 348, cachelines: 6, members: 4 */
 
 /* <2bf676> ../cstrike/dlls/weapons.h:1293 */
 class CFamas: public CBasePlayerWeapon
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual int GetItemInfo(ItemInfo *p);
-	NOBODY virtual BOOL Deploy(void);
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual int GetItemInfo(ItemInfo *p);
+	virtual BOOL Deploy(void);
 	virtual float GetMaxSpeed(void)
 	{
 		return 240.0f;
@@ -1716,19 +2036,35 @@ public:
 	{
 		return PRIMARY_WEAPON_SLOT;
 	}
-	NOBODY virtual void PrimaryAttack(void);
-	NOBODY virtual void SecondaryAttack(void);
-	NOBODY virtual void Reload(void);
-	NOBODY virtual void WeaponIdle(void);
+	virtual void PrimaryAttack(void);
+	virtual void SecondaryAttack(void);
+	virtual void Reload(void);
+	virtual void WeaponIdle(void);
 	virtual BOOL UseDecrement(void)
 	{
 		return TRUE;
 	}
+
+#ifdef HOOK_GAMEDLL
+
+	void Spawn_(void);
+	void Precache_(void);
+	int GetItemInfo_(ItemInfo *p);
+	BOOL Deploy_(void);
+	void PrimaryAttack_(void);
+	void SecondaryAttack_(void);
+	void Reload_(void);
+	void WeaponIdle_(void);
+
+#endif // HOOK_GAMEDLL
+
 public:
-	NOBODY void FamasFire(float flSpread,float flCycleTime,BOOL fUseAutoAim,BOOL bFireBurst);
+	void FamasFire(float flSpread, float flCycleTime, BOOL fUseAutoAim, BOOL bFireBurst);
+
 public:
 	int m_iShell;
 	int iShellOn;
+
 };/* size: 344, cachelines: 6, members: 3 */
 
 #ifdef HOOK_GAMEDLL
@@ -1796,15 +2132,40 @@ NOXREF void UTIL_PrecacheOtherWeapon2(const char *szClassname);
 void W_Precache(void);
 BOOL CanAttack(float attack_time, float curtime, BOOL isPredicted);
 
+#ifdef HOOK_GAMEDLL
 // linked object
 C_DLLEXPORT void weapon_knife(entvars_t *pev);
-C_DLLEXPORT void weapon_usp(entvars_t *pev);
 C_DLLEXPORT void weapon_glock18(entvars_t *pev);
 C_DLLEXPORT void weapon_c4(entvars_t *pev);
+C_DLLEXPORT void weapon_usp(entvars_t *pev);
+C_DLLEXPORT void weapon_smokegrenade(entvars_t *pev);
+C_DLLEXPORT void weapon_m4a1(entvars_t *pev);
+C_DLLEXPORT void weapon_hegrenade(entvars_t *pev);
+C_DLLEXPORT void weapon_flashbang(entvars_t *pev);
+C_DLLEXPORT void weapon_famas(entvars_t *pev);
+C_DLLEXPORT void weapon_elite(entvars_t *pev);
+C_DLLEXPORT void weapon_fiveseven(entvars_t *pev);
+C_DLLEXPORT void weapon_p228(entvars_t *pev);
+C_DLLEXPORT void weapon_xm1014(entvars_t *pev);
+C_DLLEXPORT void weapon_g3sg1(entvars_t *pev);
+C_DLLEXPORT void weapon_sg550(entvars_t *pev);
+C_DLLEXPORT void weapon_deagle(entvars_t *pev);
 C_DLLEXPORT void weapon_awp(entvars_t *pev);
+C_DLLEXPORT void weapon_scout(entvars_t *pev);
+C_DLLEXPORT void weapon_sg552(entvars_t *pev);
+C_DLLEXPORT void weapon_m3(entvars_t *pev);
+C_DLLEXPORT void weapon_aug(entvars_t *pev);
+C_DLLEXPORT void weapon_galil(entvars_t *pev);
+C_DLLEXPORT void weapon_ak47(entvars_t *pev);
+C_DLLEXPORT void weapon_m249(entvars_t *pev);
 C_DLLEXPORT void weapon_p90(entvars_t *pev);
+C_DLLEXPORT void weapon_mac10(entvars_t *pev);
+C_DLLEXPORT void weapon_ump45(entvars_t *pev);
+C_DLLEXPORT void weapon_mp5navy(entvars_t *pev);
+C_DLLEXPORT void weapon_tmp(entvars_t *pev);
 
 C_DLLEXPORT void armoury_entity(entvars_t *pev);
 C_DLLEXPORT void weaponbox(entvars_t *pev);
+#endif // HOOK_GAMEDLL
 
 #endif // WEAPONS_H

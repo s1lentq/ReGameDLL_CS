@@ -65,7 +65,7 @@ int CC4::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	p->iPosition = 3;
 	p->iId = m_iId = WEAPON_C4;
 	p->iWeight = C4_WEIGHT;
-	p->iFlags = (ITEM_FLAG_LIMITINWORLD | ITEM_FLAG_EXHAUSTIBLE);
+	p->iFlags = ITEM_FLAG_LIMITINWORLD | ITEM_FLAG_EXHAUSTIBLE;
 
 	return 1;
 }

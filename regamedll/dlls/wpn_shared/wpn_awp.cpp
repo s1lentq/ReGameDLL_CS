@@ -2,6 +2,10 @@
 
 #define AWP_MAX_SPEED		210
 #define AWP_MAX_SPEED_ZOOM	150
+
+#define AWP_DAMAGE		115
+#define AWP_RANGE_MODIFER	0.99
+
 #define AWP_RELOAD_TIME		2.5
 
 enum awp_e
@@ -158,7 +162,7 @@ void CAWP::AWPFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 
 		if (TheBots != NULL)
 		{
-			TheBots->OnEvent(EVENT_WEAPON_FIRED_ON_EMPTY, m_pPlayer, 0);
+			TheBots->OnEvent(EVENT_WEAPON_FIRED_ON_EMPTY, m_pPlayer);
 		}
 
 		return;
@@ -176,22 +180,9 @@ void CAWP::AWPFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	m_pPlayer->m_iWeaponFlash = NORMAL_GUN_FLASH;
 
 	vecSrc = m_pPlayer->GetGunPosition();
-	vecDir = gpGlobals->v_forward;
+	vecAiming = gpGlobals->v_forward;
 
-	vecAiming = m_pPlayer->FireBullets3
-	(
-		vecSrc,
-		vecDir,
-		flSpread,
-		8192.0,
-		3,
-		BULLET_PLAYER_338MAG,
-		115,
-		0.99,
-		m_pPlayer->pev,
-		true,			// TODO: why awp is have bPistol set true?
-		m_pPlayer->random_seed
-	);
+	vecDir = m_pPlayer->FireBullets3(vecSrc, vecAiming, flSpread, 8192, 3, BULLET_PLAYER_338MAG, AWP_DAMAGE, AWP_RANGE_MODIFER, m_pPlayer->pev, true, m_pPlayer->random_seed);
 
 #ifdef CLIENT_WEAPONS
 	flag = FEV_NOTHOST;
@@ -199,47 +190,29 @@ void CAWP::AWPFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	flag = 0;
 #endif // CLIENT_WEAPONS
 
-	PLAYBACK_EVENT_FULL
-	(
-		flag,
-		ENT(m_pPlayer->pev),
-		m_usFireAWP,
-		0,
-		(float *)&g_vecZero,
-		(float *)&g_vecZero,
-		vecAiming.x,
-		vecAiming.y,
-		(int)(m_pPlayer->pev->punchangle.x * 100),
-		(int)(m_pPlayer->pev->punchangle.x * 100),
-		FALSE,
-		FALSE
-	);
+	PLAYBACK_EVENT_FULL(flag, m_pPlayer->edict(), m_usFireAWP, 0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y,
+		(int)(m_pPlayer->pev->punchangle.x * 100), (int)(m_pPlayer->pev->punchangle.x * 100), FALSE, FALSE);
 
-	m_flNextSecondaryAttack = GetNextAttackDelay(flCycleTime);
-	m_flNextPrimaryAttack = m_flNextSecondaryAttack;
+	m_flNextPrimaryAttack = m_flNextSecondaryAttack = GetNextAttackDelay(flCycleTime);
 
 	if (!m_iClip && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
 	{
 		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
 	}
 
-	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.0;
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2;
 	m_pPlayer->pev->punchangle.x -= 2;
 }
 
 /* <23fbc1> ../cstrike/dlls/wpn_shared/wpn_awp.cpp:239 */
 void CAWP::__MAKE_VHOOK(Reload)(void)
 {
-	int iResult;
-
 	if (m_pPlayer->ammo_338mag <= 0)
 	{
 		return;
 	}
 
-	iResult = DefaultReload(AWP_MAX_CLIP, AWP_RELOAD, AWP_RELOAD_TIME);
-
-	if (iResult)
+	if (DefaultReload(AWP_MAX_CLIP, AWP_RELOAD, AWP_RELOAD_TIME))
 	{
 		m_pPlayer->SetAnimation(PLAYER_RELOAD);
 

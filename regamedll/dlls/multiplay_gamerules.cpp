@@ -1775,7 +1775,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(RestartRound)(void)
 		for (int i = 1; i <= gpGlobals->maxClients; i++)
 		{
 			CBasePlayer *plr = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
-			
+
 			if (plr && !FNullEnt(plr->pev))
 				plr->Reset();
 		}

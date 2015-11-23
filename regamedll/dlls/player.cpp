@@ -856,10 +856,13 @@ void CBasePlayer::__MAKE_VHOOK(TraceAttack)(entvars_t *pevAttacker, float flDama
 	bool bShouldSpark = false;
 	bool bHitShield = IsHittingShield(vecDir, ptr);
 
-	CBasePlayer *pAttacker = (CBasePlayer *)CBasePlayer::Instance(pevAttacker);
+	CBasePlayer *pAttacker = (CBasePlayer *)CBaseEntity::Instance(pevAttacker);
 
-	if (m_iTeam == pAttacker->m_iTeam && CVAR_GET_FLOAT("mp_friendlyfire") == 0)
-		bShouldBleed = false;
+	if (pAttacker->IsPlayer())	// REGAMEDLL_FIXES
+	{
+		if (m_iTeam == pAttacker->m_iTeam && CVAR_GET_FLOAT("mp_friendlyfire") == 0)
+			bShouldBleed = false;
+	}
 
 	if (pev->takedamage == DAMAGE_NO)
 		return;
@@ -9388,34 +9391,34 @@ int CBasePlayer::Classify(void)
 	return Classify_();
 }
 
-void CBasePlayer::TraceAttack(entvars_t *pevAttacker,float flDamage,Vector vecDir,TraceResult *ptr,int bitsDamageType)
+void CBasePlayer::TraceAttack(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType)
 {
-	TraceAttack_(pevAttacker,flDamage,vecDir,ptr,bitsDamageType);
+	TraceAttack_(pevAttacker, flDamage, vecDir, ptr, bitsDamageType);
 }
 
-int CBasePlayer::TakeDamage(entvars_t *pevInflictor,entvars_t *pevAttacker,float flDamage,int bitsDamageType)
+int CBasePlayer::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
-	return TakeDamage_(pevInflictor,pevAttacker,flDamage,bitsDamageType);
+	return TakeDamage_(pevInflictor, pevAttacker, flDamage, bitsDamageType);
 }
 
-int CBasePlayer::TakeHealth(float flHealth,int bitsDamageType)
+int CBasePlayer::TakeHealth(float flHealth, int bitsDamageType)
 {
-	return TakeHealth_(flHealth,bitsDamageType);
+	return TakeHealth_(flHealth, bitsDamageType);
 }
 
-void CBasePlayer::Killed(entvars_t *pevAttacker,int iGib)
+void CBasePlayer::Killed(entvars_t *pevAttacker, int iGib)
 {
-	Killed_(pevAttacker,iGib);
+	Killed_(pevAttacker, iGib);
 }
 
-void CBasePlayer::AddPoints(int score,BOOL bAllowNegativeScore)
+void CBasePlayer::AddPoints(int score, BOOL bAllowNegativeScore)
 {
-	AddPoints_(score,bAllowNegativeScore);
+	AddPoints_(score, bAllowNegativeScore);
 }
 
-void CBasePlayer::AddPointsToTeam(int score,BOOL bAllowNegativeScore)
+void CBasePlayer::AddPointsToTeam(int score, BOOL bAllowNegativeScore)
 {
-	AddPointsToTeam_(score,bAllowNegativeScore);
+	AddPointsToTeam_(score, bAllowNegativeScore);
 }
 
 BOOL CBasePlayer::AddPlayerItem(CBasePlayerItem *pItem)
@@ -9428,9 +9431,9 @@ BOOL CBasePlayer::RemovePlayerItem(CBasePlayerItem *pItem)
 	return RemovePlayerItem_(pItem);
 }
 
-int CBasePlayer::GiveAmmo(int iAmount,char *szName,int iMax)
+int CBasePlayer::GiveAmmo(int iAmount, char *szName, int iMax)
 {
-	return GiveAmmo_(iAmount,szName,iMax);
+	return GiveAmmo_(iAmount, szName, iMax);
 }
 
 const char *CBasePlayer::TeamID(void)
@@ -9498,9 +9501,9 @@ Vector CBasePlayer::GetAutoaimVector(float flDelta)
 	return GetAutoaimVector_(flDelta);
 }
 
-void CBasePlayer::Blind(float flUntilTime,float flHoldTime,float flFadeTime,int iAlpha)
+void CBasePlayer::Blind(float flUntilTime, float flHoldTime, float flFadeTime, int iAlpha)
 {
-	Blind_(flUntilTime,flHoldTime,flFadeTime,iAlpha);
+	Blind_(flUntilTime, flHoldTime, flFadeTime, iAlpha);
 }
 
 void CStripWeapons::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)

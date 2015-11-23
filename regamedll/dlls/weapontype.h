@@ -159,7 +159,7 @@ enum ClipGiveDefault
 	FAMAS_DEFAULT_GIVE		= 25,
 	USP_DEFAULT_GIVE		= 12,
 	AWP_DEFAULT_GIVE		= 10,
-	MP5N_DEFAULT_GIVE		= 30,
+	MP5NAVY_DEFAULT_GIVE		= 30,
 	M249_DEFAULT_GIVE		= 100,
 	M3_DEFAULT_GIVE			= 8,
 	M4A1_DEFAULT_GIVE		= 30,
@@ -205,8 +205,8 @@ enum WeightWeapon
 {
 	P228_WEIGHT		= 5,
 	GLOCK18_WEIGHT		= 5,
-	SCOUT_WEIGHT		= 20,
-	HEGRENADE_WEIGHT	= 1,
+	SCOUT_WEIGHT		= 30,
+	HEGRENADE_WEIGHT	= 2,
 	XM1014_WEIGHT		= 20,
 	C4_WEIGHT		= 3,
 	MAC10_WEIGHT		= 25,
@@ -217,20 +217,20 @@ enum WeightWeapon
 	UMP45_WEIGHT		= 25,
 	SG550_WEIGHT		= 20,
 	GALIL_WEIGHT		= 25,
-	FAMAS_WEIGHT		= 75,//
-	USP_WEIGHT		= 5,//
-	AWP_WEIGHT		= 30,//
-	MP5N_WEIGHT		= 25,
+	FAMAS_WEIGHT		= 75,
+	USP_WEIGHT		= 5,
+	AWP_WEIGHT		= 30,
+	MP5NAVY_WEIGHT		= 25,
 	M249_WEIGHT		= 25,
 	M3_WEIGHT		= 20,
 	M4A1_WEIGHT		= 25,
-	TMP_WEIGHT		= 30,
+	TMP_WEIGHT		= 25,
 	G3SG1_WEIGHT		= 20,
 	FLASHBANG_WEIGHT	= 1,
 	DEAGLE_WEIGHT		= 7,
 	SG552_WEIGHT		= 25,
 	AK47_WEIGHT		= 25,
-	P90_WEIGHT		= 26,//
+	P90_WEIGHT		= 26,
 	KNIFE_WEIGHT		= 0,
 };
 
@@ -246,6 +246,11 @@ enum MaxAmmoType
 	MAX_AMMO_338MAGNUM	= 30,
 	MAX_AMMO_57MM		= 100,
 	MAX_AMMO_357SIG		= 52,
+
+	// custom
+	MAX_AMMO_SMOKEGRENADE	= 1,
+	MAX_AMMO_HEGRENADE	= 1,
+	MAX_AMMO_FLASHBANG	= 2,
 };
 
 enum AmmoType
@@ -316,17 +321,24 @@ enum shieldgun_e
 	SHIELDGUN_DOWN,
 };
 
-typedef enum
+//custom
+enum shieldgren_e
+{
+	SHIELDREN_IDLE = 4,
+	SHIELDREN_UP,
+	SHIELDREN_DOWN
+};
+
+enum InventorySlotType
 {
 	PRIMARY_WEAPON_SLOT = 1,
 	PISTOL_SLOT,
 	KNIFE_SLOT,
 	GRENADE_SLOT,
 	C4_SLOT,
+};
 
-} InventorySlotType;
-
-typedef enum
+enum WeaponType
 {
 	PISTOL = 0,
 	SHOTGUN,
@@ -336,10 +348,9 @@ typedef enum
 	SNIPER_RIFLE,
 	GRENADE,
 	NUM_WEAPON_TYPES,
-
-} WeaponType;
-
-typedef enum
+};
+ 
+enum Bullet
 {
 	BULLET_NONE = 0,
 	BULLET_PLAYER_9MM,
@@ -357,44 +368,35 @@ typedef enum
 	BULLET_PLAYER_50AE,
 	BULLET_PLAYER_57MM,
 	BULLET_PLAYER_357SIG,
+};
 
-} Bullet;
-
-typedef struct
+struct AutoBuyInfoStruct
 {
 	AutoBuyClassType m_class;
 	char *m_command;
 	char *m_classname;
+};/* size: 12, cachelines: 1, members: 3 */
 
-} AutoBuyInfoStruct;
-/* size: 12, cachelines: 1, members: 3 */
-
-typedef struct
+struct WeaponAliasInfo
 {
 	char *alias;
 	WeaponIdType id;
+};/* size: 8, cachelines: 1, members: 2 */
 
-} WeaponAliasInfo;
-/* size: 8, cachelines: 1, members: 2 */
-
-typedef struct
+struct WeaponBuyAliasInfo
 {
 	char *alias;
 	WeaponIdType id;
 	char *failName;
+};/* size: 12, cachelines: 1, members: 3 */
 
-} WeaponBuyAliasInfo;
-/* size: 12, cachelines: 1, members: 3 */
-
-typedef struct
+struct WeaponClassAliasInfo
 {
 	char *alias;
 	WeaponClassType id;
+};/* size: 8, cachelines: 1, members: 2 */
 
-} WeaponClassAliasInfo;
-/* size: 8, cachelines: 1, members: 2 */
-
-typedef struct
+struct WeaponInfoStruct
 {
 	int id;
 	int cost;
@@ -404,9 +406,7 @@ typedef struct
 	int maxRounds;
 	int ammoType;
 	char *entityName;
-
-} WeaponInfoStruct;
-/* size: 32, cachelines: 1, members: 8 */
+};/* size: 32, cachelines: 1, members: 8 */
 
 #ifdef HOOK_GAMEDLL
 
