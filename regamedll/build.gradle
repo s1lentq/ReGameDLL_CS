@@ -183,7 +183,7 @@ void setupToolchain(NativeBinarySpec b)
 
 	if (!unitTestExecutable && !mpLib)
 	{
-		cfg.singleDefines 'HOOK_GAMEDLL'
+		cfg.singleDefines 'HOOK_GAMEDLL', 'CSTRIKE'
 	}
 
 	if (unitTestExecutable)

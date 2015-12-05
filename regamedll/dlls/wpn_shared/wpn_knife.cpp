@@ -129,7 +129,7 @@ NOXREF void CKnife::WeaponAnimation(int iAnimation)
 		m_usKnife,
 		0,
 		(float *)&g_vecZero,
-		(float*)&g_vecZero,
+		(float *)&g_vecZero,
 		0,
 		0,
 		iAnimation,

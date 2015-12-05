@@ -1221,9 +1221,9 @@ void SV_StudioSetupBones(model_t *pModel, float frame, int sequence, const vec_t
 
 	VectorCopy(angles, temp_angles);
 
-	if (pEdict)
+	if (pEdict != NULL)
 	{
-		temp_angles[1] = UTIL_GetPlayerGaitYaw(g_engfuncs.pfnIndexOfEdict(pEdict));
+		temp_angles[1] = UTIL_GetPlayerGaitYaw(ENTINDEX(pEdict));
 
 		if (temp_angles[1] < 0)
 			temp_angles[1] += 360.0f;
