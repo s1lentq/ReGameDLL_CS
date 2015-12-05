@@ -12,15 +12,24 @@ At the moment, the work of reverse engineering continues
 </ul>
 
 ## How can use it?
-At this stage we are working on the reverse engineering cs.so, so temporarily used library with hooks.
-<ol>
-<li>
-You should rename your original a file in the root HLDS filesystem_stdio.dll/so to filesystem_stdio2.dll/so
-</li>
-<li>
-Put a compiled binary a file filesystem_stdio.dll/so in the root HLDS
-</li>
-</ol>
+At the moment there is a workable CS 1.6
+Regamedll_CS is fully compatible with official mod CS 1.6 by Valve. All you have to do is to download binaries and replace original mo.dll/cs.so
+
+Compiled binaries are available here: http://nexus.rehlds.org/nexus/content/repositories/regamedll-snapshots/regamedll/regamedll/0.2-SNAPSHOT/
+
+Archive's bin directory contains 2 subdirectories, 'bugfixed' and 'pure'
+<ul>
+<li>'pure' version is designed to work exactly as official mod CS</li>
+<li>'bugfixed' version contains some fixes and improvements</li>
+</ul>
+
+<b>Warning!</b> Regamedll_CS is not binary compatible with original hlds since it's compiled with compilers other than ones used for original mod CS. This means that plugins that do binary code analysis (Orpheu for example) probably will not work with Regamedll_CS.
+
+## Current status
+<ul>
+<li> Counter-Strike 1.6 - 100%</li>
+<li> Counter-Strike: Condition Zero - 35%</li>
+</ul>
 
 ## Build instructions
 There are several software requirements for building rehlds:
