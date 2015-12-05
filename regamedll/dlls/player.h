@@ -33,7 +33,6 @@
 #endif
 
 #include "hintmessage.h"
-//#include "weapons.h"
 
 #define MAX_BUFFER_MENU			175//?
 #define MAX_BUFFER_MENU_BRIEFING	50
@@ -430,16 +429,12 @@ public:
 	virtual void Think(void);
 	virtual int ObjectCaps(void)
 	{
-		return ObjectCaps_();
+		return FCAP_DONT_SAVE;
 	}
 
 #ifdef HOOK_GAMEDLL
 
 	void Think_(void);
-	int ObjectCaps_(void)
-	{
-		return FCAP_DONT_SAVE;
-	}
 
 #endif // HOOK_GAMEDLL
 
@@ -461,14 +456,13 @@ public:
 class CBasePlayer: public CBaseMonster
 {
 public:
-
 	virtual void Spawn(void);
 	virtual void Precache(void);
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
 	virtual int ObjectCaps(void)
 	{
-		return ObjectCaps_();
+		return (CBaseMonster::ObjectCaps() & ~FCAP_ACROSS_TRANSITION);
 	}
 	virtual int Classify(void);
 	virtual void TraceAttack(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType);
@@ -482,38 +476,38 @@ public:
 	virtual int GiveAmmo(int iAmount, char *szName, int iMax);
 	virtual void StartSneaking(void)
 	{
-		StartSneaking_();
+		m_tSneaking = gpGlobals->time - 1;
 	}
 	virtual void StopSneaking(void)
 	{
-		StopSneaking_();
+		m_tSneaking = gpGlobals->time + 30;
 	}
 	virtual BOOL IsSneaking(void)
 	{
-		return IsSneaking_();
+		return m_tSneaking <= gpGlobals->time;
 	}
 	virtual BOOL IsAlive(void)
 	{
-		return IsAlive_();
+		return (pev->deadflag == DEAD_NO && pev->health > 0.0f);
 	}
 	virtual BOOL IsPlayer(void)
 	{
-		return IsPlayer_();
+		return (pev->flags & FL_SPECTATOR) != FL_SPECTATOR;
 	}
 	virtual BOOL IsNetClient(void)
 	{
-		return IsNetClient_();
+		return TRUE;
 	}
 	virtual const char *TeamID(void);
 	virtual BOOL FBecomeProne(void);
 	virtual Vector BodyTarget(const Vector &posSrc)
 	{
-		return BodyTarget_(posSrc);
+		return Center() + pev->view_ofs * RANDOM_FLOAT(0.5, 1.1);
 	}
 	virtual int Illumination(void);
 	virtual BOOL ShouldFadeOnDeath(void)
 	{
-		return ShouldFadeOnDeath_();
+		return FALSE;
 	}
 	virtual void ResetMaxSpeed(void);
 	virtual void Jump(void);
@@ -523,7 +517,7 @@ public:
 	virtual Vector GetGunPosition(void);
 	virtual BOOL IsBot(void)
 	{
-		return IsBot_();
+		return FALSE;
 	}
 	virtual void UpdateClientData(void);
 	virtual void ImpulseCommands(void);
@@ -532,7 +526,7 @@ public:
 	virtual void Blind(float flUntilTime, float flHoldTime, float flFadeTime, int iAlpha);
 	virtual void OnTouchingWeapon(CWeaponBox *pWeapon)
 	{
-		OnTouchingWeapon_(pWeapon);
+		;
 	}
 
 #ifdef HOOK_GAMEDLL
@@ -541,10 +535,6 @@ public:
 	void Precache_(void);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
-	int ObjectCaps_(void)
-	{
-		return (CBaseMonster::ObjectCaps() & ~FCAP_ACROSS_TRANSITION);
-	}
 	int Classify_(void);
 	void TraceAttack_(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType);
 	int TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
@@ -555,60 +545,20 @@ public:
 	BOOL AddPlayerItem_(CBasePlayerItem *pItem);
 	BOOL RemovePlayerItem_(CBasePlayerItem *pItem);
 	int GiveAmmo_(int iAmount,char *szName,int iMax);
-	void StartSneaking_(void)
-	{
-		m_tSneaking = gpGlobals->time - 1;
-	}
-	void StopSneaking_(void)
-	{
-		m_tSneaking = gpGlobals->time + 30;
-	}
-	BOOL IsSneaking_(void)
-	{
-		return m_tSneaking <= gpGlobals->time;
-	}
-	BOOL IsAlive_(void)
-	{
-		return (pev->deadflag == DEAD_NO && pev->health > 0.0f);
-	}
-	BOOL IsPlayer_(void)
-	{
-		return (pev->flags & FL_SPECTATOR) != FL_SPECTATOR;
-	}
-	BOOL IsNetClient_(void)
-	{
-		return TRUE;
-	}
 	const char *TeamID_(void);
 	BOOL FBecomeProne_(void);
-	Vector BodyTarget_(const Vector &posSrc)
-	{
-		return Center() + pev->view_ofs * RANDOM_FLOAT(0.5, 1.1);
-	}
 	int Illumination_(void);
-	BOOL ShouldFadeOnDeath_(void)
-	{
-		return FALSE;
-	}
 	void ResetMaxSpeed_(void);
 	void Jump_(void);
 	void Duck_(void);
 	void PreThink_(void);
 	void PostThink_(void);
 	Vector GetGunPosition_(void);
-	BOOL IsBot_(void)
-	{
-		return FALSE;
-	}
 	void UpdateClientData_(void);
 	void ImpulseCommands_(void);
 	void RoundRespawn_(void);
 	Vector GetAutoaimVector_(float flDelta);
 	void Blind_(float flUntilTime, float flHoldTime, float flFadeTime, int iAlpha);
-	void OnTouchingWeapon_(CWeaponBox *pWeapon)
-	{
-		;
-	}
 
 #endif // HOOK_GAMEDLL
 
@@ -699,7 +649,7 @@ public:
 	void HostageUsed(void);
 	void JoiningThink(void);
 	void RemoveLevelText(void);
-	void WINAPI_HOOK MenuPrint(const char *msg);
+	void MenuPrint(const char *msg);
 	void ResetMenu(void);
 	void SyncRoundTimer(void);
 	void CheckSuitUpdate(void);
@@ -743,7 +693,7 @@ public:
 	bool SelectSpawnSpot(const char *pEntClassName, CBaseEntity* &pSpot);
 	bool IsReloading(void)
 	{
-		if (m_pActiveItem && ((CBasePlayerWeapon *)m_pActiveItem)->m_fInReload)
+		if (m_pActiveItem != NULL && ((CBasePlayerWeapon *)m_pActiveItem)->m_fInReload)
 			return true;
 
 		return false;
@@ -962,10 +912,8 @@ public:
 
 	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_playerSaveData)[40];
 
-//TOOD: check out!
-//protected:
-
-	int m_modelIndexPlayer;//++1964
+/*protected:*/
+	int m_modelIndexPlayer;
 	char m_szAnimExtention[32];
 	int m_iGaitsequence;
 
@@ -1132,6 +1080,8 @@ extern int gmsgBrass;
 extern int gmsgFog;
 extern int gmsgShowTimer;
 
+#ifdef HOOK_GAMEDLL
+
 // linked objects
 C_DLLEXPORT void player(entvars_t *pev);
 C_DLLEXPORT void weapon_shield(entvars_t *pev);
@@ -1139,6 +1089,8 @@ C_DLLEXPORT void info_intermission(entvars_t *pev);
 C_DLLEXPORT void player_loadsaved(entvars_t *pev);
 C_DLLEXPORT void player_weaponstrip(entvars_t *pev);
 C_DLLEXPORT void monster_hevsuit_dead(entvars_t *pev);
+
+#endif // HOOK_GAMEDLL
 
 void OLD_CheckBuyZone(CBasePlayer *player);
 void OLD_CheckBombTarget(CBasePlayer *player);

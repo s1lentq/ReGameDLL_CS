@@ -89,7 +89,7 @@ public:
 	virtual void Precache(void);
 	virtual int ObjectCaps(void)
 	{
-		return ObjectCaps_();
+		return FCAP_DONT_SAVE;
 	}
 	virtual void Think(void);
 
@@ -97,10 +97,6 @@ public:
 
 	void Spawn_(void);
 	void Precache_(void);
-	int ObjectCaps_(void)
-	{
-		return FCAP_DONT_SAVE;
-	}
 	void Think_(void);
 
 #endif // HOOK_GAMEDLL
@@ -147,7 +143,11 @@ private:
 
 extern CSoundEnt *pSoundEnt;
 
+#ifdef HOOK_GAMEDLL
+
 // linked objects
 C_DLLEXPORT void soundent(entvars_t *pev);
+
+#endif // HOOK_GAMEDLL
 
 #endif // SOUNDENT_H

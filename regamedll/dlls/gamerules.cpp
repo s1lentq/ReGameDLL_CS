@@ -68,7 +68,7 @@ BOOL CGameRules::__MAKE_VHOOK(CanHavePlayerItem)(CBasePlayer *pPlayer, CBasePlay
 
 	CCSBotManager *ctrl = TheCSBots();
 
-	if (pPlayer->IsBot() && !ctrl->IsWeaponUseable(pWeapon))
+	if (pPlayer->IsBot() && ctrl != NULL && !ctrl->IsWeaponUseable(pWeapon))
 	{
 		return FALSE;
 	}
@@ -124,24 +124,26 @@ void CGameRules::__MAKE_VHOOK(RefreshSkillData)(void)
 void (*pInstallGameRules)(void);
 
 /* <ada23> ../cstrike/dlls/gamerules.cpp:157 */
+#ifdef HOOK_GAMEDLL
 NOBODY __declspec(naked) CGameRules *InstallGameRules(void)
 {
 	__asm
 	{
 		jmp pInstallGameRules
 	}
-#if 0
+}
+#else
+CGameRules *InstallGameRules(void)
+{
 	SERVER_COMMAND("exec game.cfg\n");
 	SERVER_EXECUTE();
 
 	if (!gpGlobals->deathmatch)
-	{
 		return new CHalfLifeTraining;
-	}
 
 	return new CHalfLifeMultiplay;
-#endif
 }
+#endif // HOOK_GAMEDLL
 
 #ifdef HOOK_GAMEDLL
 

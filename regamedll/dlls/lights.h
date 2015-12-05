@@ -59,7 +59,6 @@ public:
 	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[2];
 
 private:
-
 	int m_iStyle;
 	int m_iszPattern;
 	BOOL m_iStartedOff;

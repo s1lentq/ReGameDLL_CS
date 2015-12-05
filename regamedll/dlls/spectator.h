@@ -42,13 +42,12 @@ public:
 	void SpectatorThink(void);
 
 #ifdef HOOK_GAMEDLL
+
 	void Spawn_(void);
+
 #endif // HOOK_GAMEDLL
 
-#ifndef HOOK_GAMEDLL
 private:
-#endif // HOOK_GAMEDLL
-
 	void SpectatorImpulseCommand(void);
 
 };/* size: 152, cachelines: 3, members: 1 */

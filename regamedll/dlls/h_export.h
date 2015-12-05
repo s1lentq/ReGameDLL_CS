@@ -32,12 +32,6 @@
 #pragma once
 #endif
 
-#ifdef _WIN32
-	// WINAPI
-#else
-	#define WINAPI		/* */
-#endif // _WIN32
-
 #ifdef HOOK_GAMEDLL
 
 #define g_engfuncs (*pg_engfuncs)
@@ -48,6 +42,10 @@
 extern enginefuncs_t g_engfuncs;
 extern globalvars_t *gpGlobals;
 
+#ifdef HOOK_GAMEDLL
+
 C_DLLEXPORT void WINAPI GiveFnptrsToDll(enginefuncs_t *pEnginefuncsTable,globalvars_t *pGlobals);
+
+#endif // HOOK_GAMEDLL
 
 #endif // H_EXPORT_H

@@ -1,22 +1,7 @@
 #include "precompiled.h"
 
-#if 1
-
-void *addr_orig;
-char patchByte[5];
-char patchByteOriginal[5];
-
-//static DWORD oldProtection;
-///VirtualProtect(addr_orig,5,PAGE_EXECUTE_READWRITE,&oldProtection);
-//memcpy(addr_orig,patchByteOriginal,5);
-//pWeaponUSP(a);
-//int seedad = pUTIL_SharedRandomLong(seed,low,high);
-//memcpy(addr_orig,patchByte,5);
-
-#endif
-
 unsigned int glSeed;
-CUtlVector< hash_item_t > stringsHashTable;
+CUtlVector<hash_item_t> stringsHashTable;
 
 /*
 * Globals initialization
@@ -580,21 +565,10 @@ CBaseEntity *UTIL_PlayerByIndex(int playerIndex)
 
 	return pPlayer;
 }
-extern bool bActivateGo;
+
 /* <1abab0> ../cstrike/dlls/util.cpp:728 */
 void UTIL_MakeVectors(const Vector &vecAngles)
 {
-
-	/*if (bActivateGo)
-	{
-		static int iNum = 0;
-
-		_logf("#%d. vecAngles: (%.12f, %.12f, %.12f)", iNum, 
-			vecAngles[0], vecAngles[1], vecAngles[2]);
-
-		//_logf("\n\n");
-		iNum++;
-	}*/
 	MAKE_VECTORS(vecAngles);
 }
 
@@ -2454,12 +2428,14 @@ NOXREF int GetPlayerTeam(int index)
 /* <1b5412> ../cstrike/dlls/util.cpp:2775 */
 bool UTIL_IsGame(const char *gameName)
 {
+#ifndef CSTRIKE
 	if (gameName != NULL)
 	{
 		static char gameDir[256];
 		GET_GAME_DIR(gameDir);
 		return (Q_stricmp(gameDir, gameName) == 0);
 	}
+#endif // CSTRIKE
 
 	return false;
 }

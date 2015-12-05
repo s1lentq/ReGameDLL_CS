@@ -199,7 +199,7 @@ void CHEGrenade::__MAKE_VHOOK(WeaponIdle)(void)
 		else
 			angThrow.x = -10 + angThrow.x * ((90 + 10) / 90.0);
 
-		float_precision flVel = (90.0 - angThrow.x) * 6.0;
+		float flVel = (90.0 - angThrow.x) * 6.0;
 
 		if (flVel > 750.0f)
 			flVel = 750.0f;
@@ -256,7 +256,7 @@ void CHEGrenade::__MAKE_VHOOK(WeaponIdle)(void)
 	{
 		if (m_pPlayer->HasShield())
 		{
-			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20.0;
+			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20;
 
 			if (m_iWeaponState & WPNSTATE_SHIELD_DRAWN)
 			{
@@ -271,7 +271,6 @@ void CHEGrenade::__MAKE_VHOOK(WeaponIdle)(void)
 			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + RANDOM_FLOAT(10, 15);
 		}
 	}
-
 }
 
 /* <26b021> ../cstrike/dlls/wpn_shared/wpn_hegrenade.cpp:303 */

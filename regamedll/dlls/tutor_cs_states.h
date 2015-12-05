@@ -72,7 +72,6 @@ public:
 	virtual char *GetCurrentStateString(void);
 
 #ifdef HOOK_GAMEDLL
-public:
 
 	bool UpdateState_(GameEventType event, CBaseEntity *entity, CBaseEntity *other);
 	char *GetCurrentStateString_(void);
@@ -80,10 +79,7 @@ public:
 
 #endif // HOOK_GAMEDLL
 
-#ifndef HOOK_GAMEDLL
 protected:
-#endif // HOOK_GAMEDLL
-
 	virtual CBaseTutorState *ConstructNewState(int stateType);
 
 };/* size: 8, cachelines: 1, members: 1 */
@@ -157,7 +153,9 @@ protected:
 };/* size: 8, cachelines: 1, members: 1 */
 
 #ifdef HOOK_GAMEDLL
+
 #define g_TutorStateStrings (*pg_TutorStateStrings)
+
 #endif // HOOK_GAMEDLL
 
 extern char *const g_TutorStateStrings[20];

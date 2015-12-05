@@ -45,7 +45,7 @@ public:
 	// Bmodels don't go across transitions
 	virtual int ObjectCaps(void)
 	{
-		return ObjectCaps_();
+		return CBaseToggle::ObjectCaps() & ~FCAP_ACROSS_TRANSITION;
 	}
 
 #ifdef HOOK_GAMEDLL
@@ -55,10 +55,6 @@ public:
 	void KeyValue_(KeyValueData *pkvd);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
-	int ObjectCaps_(void)
-	{
-		return CBaseToggle::ObjectCaps() & ~FCAP_ACROSS_TRANSITION;
-	}
 
 #endif // HOOK_GAMEDLL
 
@@ -99,9 +95,12 @@ public:
 
 };/* size: 504, cachelines: 8, members: 2 */
 
+#if HOOK_GAMEDLL
 
 // linked objects
 C_DLLEXPORT void func_mortar_field(entvars_t *pev);
 C_DLLEXPORT void monster_mortar(entvars_t *pev);
+
+#endif // HOOK_GAMEDLL
 
 #endif // MORTAR_H

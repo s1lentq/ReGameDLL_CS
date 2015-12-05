@@ -373,7 +373,7 @@ void CCareerTask::__MAKE_VHOOK(OnEvent)(GameEventType event, CBasePlayer *pVicti
 			WRITE_BYTE(m_id);
 		MESSAGE_END();
 
-		if (TheTutor)
+		if (TheTutor != NULL)
 		{
 			TheTutor->OnEvent(EVENT_CAREER_TASK_DONE);
 		}

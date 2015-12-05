@@ -144,7 +144,7 @@ bool HIDDEN FindDataRef(Module *module, AddressRef *ref);
 void FindAllCalls(Section* section, CFuncAddr** calls, uint32_t findRefsTo);
 #endif
 
-#if defined(_WIN32) && !defined(REGAMEDLL_UNIT_TESTS)
+#if defined(HOOK_GAMEDLL) && defined(_WIN32) && !defined(REGAMEDLL_UNIT_TESTS)
 
 const char *stripClass(const char *str);
 void VirtualTableInit(void *ptr, const char *baseClass = NULL);

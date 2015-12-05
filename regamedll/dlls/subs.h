@@ -66,6 +66,8 @@ void FireTargets(const char *targetName, CBaseEntity *pActivator, CBaseEntity *p
 void SetMovedir(entvars_t *pev);
 NOXREF BOOL FEntIsVisible(entvars_t *pev, entvars_t *pevTarget);
 
+#ifdef HOOK_GAMEDLL
+
 // linked objects
 C_DLLEXPORT void info_null(entvars_t *pev);
 C_DLLEXPORT void info_player_deathmatch(entvars_t *pev);
@@ -75,5 +77,7 @@ C_DLLEXPORT void info_landmark(entvars_t *pev);
 C_DLLEXPORT void info_hostage_rescue(entvars_t *pev);
 C_DLLEXPORT void info_bomb_target(entvars_t *pev);
 C_DLLEXPORT void DelayedUse(entvars_t *pev);
+
+#endif // HOOK_GAMEDLL
 
 #endif // SUBS_H

@@ -32,6 +32,8 @@
 #pragma once
 #endif
 
+#ifdef HOOK_GAMEDLL
+
 #define s_tutorDisabledThisGame (*ps_tutorDisabledThisGame)
 #define s_nextCvarCheckTime (*ps_nextCvarCheckTime)
 
@@ -45,6 +47,8 @@
 #define cv_tutor_message_minimum_display_time (*pcv_tutor_message_minimum_display_time)
 #define cv_tutor_message_character_display_time_coefficient (*pcv_tutor_message_character_display_time_coefficient)
 #define cv_tutor_hint_interval_time (*pcv_tutor_hint_interval_time)
+
+#endif // HOOK_GAMEDLL
 
 extern bool s_tutorDisabledThisGame;
 extern float s_nextCvarCheckTime;

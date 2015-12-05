@@ -79,7 +79,11 @@ public:
 	virtual int Restore(CRestore &restore);
 	virtual int ObjectCaps(void)
 	{
-		return ObjectCaps_();
+		int flags = 0;
+		if (pev->spawnflags & SF_SPRITE_TEMPORARY)
+			flags = FCAP_DONT_SAVE;
+
+		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | flags;
 	}
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
@@ -90,14 +94,6 @@ public:
 	void Restart_(void);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
-	int ObjectCaps_(void)
-	{
-		int flags = 0;
-		if (pev->spawnflags & SF_SPRITE_TEMPORARY)
-			flags = FCAP_DONT_SAVE;
-
-		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | flags;
-	}
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #endif // HOOK_GAMEDLL
@@ -181,29 +177,21 @@ public:
 	virtual void Precache(void);
 	virtual int ObjectCaps(void)
 	{
-		return ObjectCaps_();
-	}
-	virtual Vector Center(void)
-	{
-		return Center_();
-	}
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_(void);
-	void Precache_(void);
-	int ObjectCaps_(void)
-	{
 		int flags = 0;
 		if (pev->spawnflags & SF_BEAM_TEMPORARY)
 			flags = FCAP_DONT_SAVE;
 
 		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | flags;
 	}
-	Vector Center_(void)
+	virtual Vector Center(void)
 	{
 		return (GetStartPos() + GetEndPos()) * 0.5;
 	}
+
+#ifdef HOOK_GAMEDLL
+
+	void Spawn_(void);
+	void Precache_(void);
 
 #endif // HOOK_GAMEDLL
 
@@ -388,7 +376,7 @@ public:
 	virtual int Restore(CRestore &restore);
 	virtual int ObjectCaps(void)
 	{
-		return ObjectCaps_();
+		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION);
 	}
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
@@ -399,10 +387,6 @@ public:
 	void KeyValue_(KeyValueData *pkvd);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
-	int ObjectCaps_(void)
-	{
-		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION);
-	}
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #endif // HOOK_GAMEDLL
@@ -640,22 +624,22 @@ public:
 
 public:
 	/* <7205b> ../cstrike/dlls/effects.cpp:1776 */
-	inline int Color(void)
+	int Color(void)
 	{
 		return pev->impulse;
 	}
 	/* <72079> ../cstrike/dlls/effects.cpp:1777 */
-	inline float BloodAmount(void)
+	float BloodAmount(void)
 	{
 		return pev->dmg;
 	}
 	/* <72092> ../cstrike/dlls/effects.cpp:1779 */
-	inline void SetColor(int color)
+	void SetColor(int color)
 	{
 		pev->impulse = color;
 	}
 	/* <720b7> ../cstrike/dlls/effects.cpp:1780 */
-	inline void SetBloodAmount(float amount)
+	void SetBloodAmount(float amount)
 	{
 		pev->dmg = amount;
 	}
@@ -684,42 +668,42 @@ public:
 
 public:
 	/* <7210f> ../cstrike/dlls/effects.cpp:1893 */
-	inline float Amplitude(void)
+	float Amplitude(void)
 	{
 		return pev->scale;
 	}
 	/* <7212d> ../cstrike/dlls/effects.cpp:1894 */
-	inline float Frequency(void)
+	float Frequency(void)
 	{
 		return pev->dmg_save;
 	}
 	/* <72146> ../cstrike/dlls/effects.cpp:1895 */
-	inline float Duration(void)
+	float Duration(void)
 	{
 		return pev->dmg_take;
 	}
 	/* <7215f> ../cstrike/dlls/effects.cpp:1896 */
-	inline float Radius(void)
+	float Radius(void)
 	{
 		return pev->dmg;
 	}
 	/* <72178> ../cstrike/dlls/effects.cpp:1898 */
-	inline void SetAmplitude(float amplitude)
+	void SetAmplitude(float amplitude)
 	{
 		pev->scale = amplitude;
 	}
 	/* <7219d> ../cstrike/dlls/effects.cpp:1899 */
-	inline void SetFrequency(float frequency)
+	void SetFrequency(float frequency)
 	{
 		pev->dmg_save = frequency;
 	}
 	/* <721c2> ../cstrike/dlls/effects.cpp:1900 */
-	inline void SetDuration(float duration)
+	void SetDuration(float duration)
 	{
 		pev->dmg_take = duration;
 	}
 	/* <721e7> ../cstrike/dlls/effects.cpp:1901 */
-	inline void SetRadius(float radius)
+	void SetRadius(float radius)
 	{
 		pev->dmg = radius;
 	}
@@ -744,22 +728,22 @@ public:
 
 public:
 	/* <72231> ../cstrike/dlls/effects.cpp:1971 */
-	inline float Duration(void)
+	float Duration(void)
 	{
 		return pev->dmg_take;
 	}
 	/* <7224f> ../cstrike/dlls/effects.cpp:1972 */
-	inline float HoldTime(void)
+	float HoldTime(void)
 	{
 		return pev->dmg_save;
 	}
 	/* <72268> ../cstrike/dlls/effects.cpp:1974 */
-	inline void SetDuration(float duration)
+	void SetDuration(float duration)
 	{
 		pev->dmg_take = duration;
 	}
 	/* <7228d> ../cstrike/dlls/effects.cpp:1975 */
-	inline void SetHoldTime(float hold)
+	void SetHoldTime(float hold)
 	{
 		pev->dmg_save = hold;
 	}
@@ -847,6 +831,8 @@ public:
 
 int IsPointEntity(CBaseEntity *pEnt);
 
+#ifdef HOOK_GAMEDLL
+
 // linked objects
 C_DLLEXPORT void info_target(entvars_t *pev);
 C_DLLEXPORT void env_bubbles(entvars_t *pev);
@@ -867,5 +853,7 @@ C_DLLEXPORT void env_message(entvars_t *pev);
 C_DLLEXPORT void env_funnel(entvars_t *pev);
 C_DLLEXPORT void env_beverage(entvars_t *pev);
 C_DLLEXPORT void item_sodacan(entvars_t *pev);
+
+#endif // HOOK_GAMEDLL
 
 #endif // EFFECTS_H

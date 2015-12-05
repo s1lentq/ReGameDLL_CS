@@ -42,7 +42,7 @@ public:
 	virtual int Restore(CRestore &restore);
 	virtual int ObjectCaps(void)
 	{
-		return ObjectCaps_();
+		return ((CBaseToggle::ObjectCaps()|FCAP_CONTINUOUS_USE) & ~FCAP_ACROSS_TRANSITION);
 	}
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
@@ -53,10 +53,6 @@ public:
 	void KeyValue_(KeyValueData *pkvd);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
-	int ObjectCaps_(void)
-	{
-		return ((CBaseToggle::ObjectCaps()|FCAP_CONTINUOUS_USE) & ~FCAP_ACROSS_TRANSITION);
-	}
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #endif // HOOK_GAMEDLL

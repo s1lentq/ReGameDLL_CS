@@ -37,7 +37,7 @@ float s_nextCvarCheckTime;
 /* <1dfdbc> ../cstrike/dlls/tutor.cpp:32 */
 void InstallTutor(bool start)
 {
-	if (TheTutor)
+	if (TheTutor != NULL)
 	{
 		delete TheTutor;
 		TheTutor = NULL;

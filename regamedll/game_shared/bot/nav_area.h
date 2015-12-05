@@ -806,14 +806,15 @@ bool NavAreaBuildPath(CNavArea *startArea, CNavArea *goalArea, const Vector *goa
 	float initCost = costFunc(startArea, NULL, NULL);
 	if (initCost < 0.0f)
 		return false;
+
 	startArea->SetCostSoFar(initCost);
 
 	startArea->AddToOpenList();
 
 	if (closestArea)
 		*closestArea = startArea;
-	float closestAreaDist = startArea->GetTotalCost();
 
+	float closestAreaDist = startArea->GetTotalCost();
 	while (!CNavArea::IsOpenListEmpty())
 	{
 		CNavArea *area = CNavArea::PopOpenList();
@@ -841,8 +842,8 @@ bool NavAreaBuildPath(CNavArea *startArea, CNavArea *goalArea, const Vector *goa
 			BEHIND,
 			NUM_TOP_DIRECTIONS
 		};
-		int ladderTopDir;
 
+		int ladderTopDir;
 		while (true)
 		{
 			CNavArea *newArea;
@@ -960,8 +961,10 @@ bool NavAreaBuildPath(CNavArea *startArea, CNavArea *goalArea, const Vector *goa
 					newArea->AddToOpenList();
 			}
 		}
+
 		area->AddToClosedList();
 	}
+
 	return false;
 }
 
@@ -1068,10 +1071,13 @@ void SearchSurroundingAreas(CNavArea *startArea, const Vector *startPos, Functor
 
 	while (!CNavArea::IsOpenListEmpty())
 	{
-
+		// get next area to check
 		CNavArea *area = CNavArea::PopOpenList();
+
+		// invoke functor on area
 		if (func(area))
 		{
+			// explore adjacent floor areas
 			for (int dir = 0; dir < NUM_DIRECTIONS; ++dir)
 			{
 				int count = area->GetAdjacentCount((NavDirType)dir);
@@ -1082,23 +1088,31 @@ void SearchSurroundingAreas(CNavArea *startArea, const Vector *startPos, Functor
 				}
 			}
 
+			// explore adjacent areas connected by ladders
 			NavLadderList::const_iterator ladderIt;
+
+			// check up ladders
 			const NavLadderList *ladderList = area->GetLadderList(LADDER_UP);
 			if (ladderList)
 			{
 				for (ladderIt = ladderList->begin(); ladderIt != ladderList->end(); ++ladderIt)
 				{
 					const CNavLadder *ladder = *ladderIt;
+
+					// cannot use this ladder if the ladder bottom is hanging above our head
 					if (ladder->m_isDangling)
 					{
 						continue;
 					}
 
+					// do not use BEHIND connection, as its very hard to get to when going up a ladder
 					AddAreaToOpenList(ladder->m_topForwardArea, area, startPos, maxRange);
 					AddAreaToOpenList(ladder->m_topLeftArea, area, startPos, maxRange);
 					AddAreaToOpenList(ladder->m_topRightArea, area, startPos, maxRange);
 				}
 			}
+
+			// check down ladders
 			ladderList = area->GetLadderList(LADDER_DOWN);
 			if (ladderList)
 			{
@@ -1210,8 +1224,8 @@ typedef const Vector *(FIND_SPOT_CBASE)(CBaseEntity *, const Vector *, CNavArea 
 typedef void (CNavArea::*SAVE_FD)(int fd, unsigned int version);
 typedef void (CNavArea::*SAVE_FILE)(FILE *fp);
 
-typedef void (CNavArea::*OVERLAP_VECTOR)(Vector *pos);
-typedef void (CNavArea::*OVERLAP_CNAV)(CNavArea *area);
+typedef bool (CNavArea::*OVERLAP_VECTOR)(const Vector *pos) const;
+typedef bool (CNavArea::*OVERLAP_CNAV)(const CNavArea *area) const;
 
 typedef float (CNavArea::*GETZ_VECTOR)(const Vector *pos) const;
 typedef float (CNavArea::*GETZ_TWO_FLOAT)(float x, float y) const;
@@ -1274,14 +1288,14 @@ NOBODY void ClassifySniperSpot(HidingSpot *spot);
 NOBODY void DestroyHidingSpots(void);
 NOBODY void EditNavAreas(NavEditCmdType cmd);
 bool GetGroundHeight(const Vector *pos, float *height, Vector *normal = NULL);
-NOBODY bool GetSimpleGroundHeight(const Vector *pos, float *height, Vector *normal = NULL);
+bool GetSimpleGroundHeight(const Vector *pos, float *height, Vector *normal = NULL);
 NOBODY inline bool IsAreaVisible(const Vector *pos, const CNavArea *area);
 NOBODY CNavArea *GetMarkedArea(void);
 void EditNavAreasReset(void);
 NOBODY void DrawHidingSpots(const CNavArea *area);
 NOBODY void IncreaseDangerNearby(int teamID, float amount, CNavArea *startArea, const Vector *pos, float maxRadius);
 NOBODY void DrawDanger(void);
-NOBODY bool IsSpotOccupied(CBaseEntity *me, const Vector *pos);
+bool IsSpotOccupied(CBaseEntity *me, const Vector *pos);
 NOBODY const Vector *FindNearbyHidingSpot(CBaseEntity *me, const Vector *pos, CNavArea *startArea, float maxRange = 1000.0f, bool isSniper = false, bool useNearest = false);
 NOBODY const Vector *FindNearbyRetreatSpot(CBaseEntity *me, const Vector *start, CNavArea *startArea, float maxRange = 1000.0f, int avoidTeam = 0, bool useCrouchAreas = true);
 NOBODY bool IsCrossingLineOfFire(const Vector &start, const Vector &finish, CBaseEntity *ignore = NULL, int ignoreTeam = 0);
@@ -1292,7 +1306,7 @@ void CleanupApproachAreaAnalysisPrep(void);
 void DestroyLadders(void);
 NOBODY void DestroyNavigationMap(void);
 NOBODY void StripNavigationAreas(void);
-NOBODY inline CNavArea *FindFirstAreaInDirection(const Vector *start, NavDirType dir, float range, float beneathLimit, CBaseEntity *traceIgnore, Vector *closePos);
+inline CNavArea *FindFirstAreaInDirection(const Vector *start, NavDirType dir, float range, float beneathLimit, CBaseEntity *traceIgnore, Vector *closePos);
 NOBODY inline bool testJumpDown(const Vector *fromPos, const Vector *toPos);
 NOBODY inline CNavArea *findJumpDownArea(const Vector *fromPos, NavDirType dir);
 NOBODY void ConnectGeneratedAreas(void);

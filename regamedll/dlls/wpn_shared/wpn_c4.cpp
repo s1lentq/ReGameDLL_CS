@@ -188,10 +188,12 @@ void CC4::__MAKE_VHOOK(PrimaryAttack)(void)
 					MESSAGE_END();
 
 					UTIL_ClientPrintAll(HUD_PRINTCENTER, "#Bomb_Planted");
+					if (TheBots != NULL)
+					{
+						TheBots->OnEvent(EVENT_BOMB_PLANTED, m_pPlayer, pBomb);
+					}
 
-					TheBots->OnEvent(EVENT_BOMB_PLANTED, m_pPlayer, pBomb);
-
-					if (g_pGameRules->IsCareer() && !m_pPlayer->IsBot())
+					if (TheCareerTasks != NULL && g_pGameRules->IsCareer() && !m_pPlayer->IsBot())
 					{
 						TheCareerTasks->HandleEvent(EVENT_BOMB_PLANTED, m_pPlayer);
 					}

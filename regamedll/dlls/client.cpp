@@ -26,7 +26,7 @@ char *sPlayerModelFiles[] =
 	"models/player/militia/militia.mdl"	// CZ
 };
 
-bool g_skipCareerInitialSpawn;
+bool g_skipCareerInitialSpawn = false;
 
 static entity_field_alias_t entity_field_alias[] =
 {
@@ -43,7 +43,7 @@ static entity_field_alias_t player_field_alias[] =
 	{ "origin[0]",	0 },
 	{ "origin[1]",	0 },
 	{ "origin[2]",	0 },
-}
+};
 
 static entity_field_alias_t custom_entity_field_alias[] =
 {
@@ -56,7 +56,7 @@ static entity_field_alias_t custom_entity_field_alias[] =
 	{ "skin",	0 },
 	{ "sequence",	0 },
 	{ "animtime",	0 },
-}
+};
 
 static int g_serveractive = 0;
 
@@ -184,7 +184,7 @@ void ClientDisconnect(edict_t *pEntity)
 		g_pGameRules->ClientDisconnected(pEntity);
 	}
 
-	if (pPlayer && pPlayer->IsBot())
+	if (TheBots != NULL && pPlayer && pPlayer->IsBot())
 	{
 		TheBots->ClientDisconnect(pPlayer);
 	}
@@ -592,7 +592,11 @@ void ClientPutInServer(edict_t *pEntity)
 		pPlayer->pev->angles = gpGlobals->v_forward;
 	}
 
-	TheBots->OnEvent(EVENT_PLAYER_CHANGED_TEAM, (CBaseEntity *)pPlayer);
+	if (TheBots != NULL)
+	{
+		TheBots->OnEvent(EVENT_PLAYER_CHANGED_TEAM, (CBaseEntity *)pPlayer);
+	}
+
 	pPlayer->m_iJoiningState = SHOWLTEXT;
 
 	static char sName[128];
@@ -1085,7 +1089,7 @@ void BuyPistol(CBasePlayer *pPlayer, int iSlot)
 	pPlayer->GiveNamedItem(pszWeapon);
 	pPlayer->AddAccount(-iWeaponPrice);
 
-	if (TheTutor)
+	if (TheTutor != NULL)
 	{
 		TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, pPlayer);
 	}
@@ -1147,7 +1151,7 @@ void BuyShotgun(CBasePlayer *pPlayer, int iSlot)
 	pPlayer->GiveNamedItem(pszWeapon);
 	pPlayer->AddAccount(-iWeaponPrice);
 
-	if (TheTutor)
+	if (TheTutor != NULL)
 	{
 		TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, pPlayer);
 	}
@@ -1233,7 +1237,7 @@ void BuySubMachineGun(CBasePlayer *pPlayer, int iSlot)
 	pPlayer->GiveNamedItem(pszWeapon);
 	pPlayer->AddAccount(-iWeaponPrice);
 
-	if (TheTutor)
+	if (TheTutor != NULL)
 	{
 		TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, pPlayer);
 	}
@@ -1282,7 +1286,7 @@ void BuyWeaponByWeaponID(CBasePlayer *pPlayer, WeaponIdType weaponID)
 	pPlayer->GiveNamedItem(info->entityName);
 	pPlayer->AddAccount(-info->cost);
 
-	if (TheTutor)
+	if (TheTutor != NULL)
 	{
 		TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, pPlayer);
 	}
@@ -1436,7 +1440,7 @@ void BuyRifle(CBasePlayer *pPlayer, int iSlot)
 	pPlayer->GiveNamedItem(pszWeapon);
 	pPlayer->AddAccount(-iWeaponPrice);
 
-	if (TheTutor)
+	if (TheTutor != NULL)
 	{
 		TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, pPlayer);
 	}
@@ -1480,7 +1484,7 @@ void BuyMachineGun(CBasePlayer *pPlayer, int iSlot)
 	pPlayer->GiveNamedItem(pszWeapon);
 	pPlayer->AddAccount(-iWeaponPrice);
 
-	if (TheTutor)
+	if (TheTutor != NULL)
 	{
 		TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, pPlayer);
 	}
@@ -1783,7 +1787,7 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 		pPlayer->AddAccount(-iItemPrice);
 	}
 
-	if (TheTutor)
+	if (TheTutor != NULL)
 	{
 		TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, pPlayer);
 	}
@@ -2096,7 +2100,10 @@ BOOL HandleMenu_ChooseTeam(CBasePlayer *player, int slot)
 			player->m_pIntroCamera = NULL;
 			player->m_bTeamChanged = true;
 
-			TheBots->OnEvent(EVENT_PLAYER_CHANGED_TEAM, player);
+			if (TheBots != NULL)
+			{
+				TheBots->OnEvent(EVENT_PLAYER_CHANGED_TEAM, player);
+			}
 
 			TeamChangeUpdate(player, player->m_iTeam);
 
@@ -2260,7 +2267,10 @@ BOOL HandleMenu_ChooseTeam(CBasePlayer *player, int slot)
 	oldTeam = player->m_iTeam;
 	player->m_iTeam = team;
 
-	TheBots->OnEvent(EVENT_PLAYER_CHANGED_TEAM, player);
+	if (TheBots != NULL)
+	{
+		TheBots->OnEvent(EVENT_PLAYER_CHANGED_TEAM, player);
+	}
 
 	TeamChangeUpdate(player, team);
 
@@ -2326,7 +2336,10 @@ void Radio1(CBasePlayer *player, int slot)
 		break;
 	}
 
-	TheBots->OnEvent((GameEventType)(EVENT_START_RADIO_1 + slot), player);
+	if (TheBots != NULL)
+	{
+		TheBots->OnEvent((GameEventType)(EVENT_START_RADIO_1 + slot), player);
+	}
 }
 
 /* <474ca> ../cstrike/dlls/client.cpp:2596 */
@@ -2367,7 +2380,10 @@ void Radio2(CBasePlayer *player, int slot)
 		break;
 	}
 
-	TheBots->OnEvent((GameEventType)(EVENT_START_RADIO_2 + slot), player);
+	if (TheBots != NULL)
+	{
+		TheBots->OnEvent((GameEventType)(EVENT_START_RADIO_2 + slot), player);
+	}
 }
 
 /* <474f4> ../cstrike/dlls/client.cpp:2639 */
@@ -2421,7 +2437,10 @@ void Radio3(CBasePlayer *player, int slot)
 		break;
 	}
 
-	TheBots->OnEvent((GameEventType)(EVENT_START_RADIO_3 + slot), player);
+	if (TheBots != NULL)
+	{
+		TheBots->OnEvent((GameEventType)(EVENT_START_RADIO_3 + slot), player);
+	}
 }
 
 /* <49402> ../cstrike/dlls/client.cpp:2698 */
@@ -3128,7 +3147,7 @@ void ClientCommand(edict_t *pEntity)
 
 		if (player->m_signals.GetState() & SIGNAL_BUY)
 		{
-			if (TheTutor)
+			if (TheTutor != NULL)
 			{
 				TheTutor->OnEvent(EVENT_TUTOR_BUY_MENU_OPENNED);
 			}
@@ -3277,7 +3296,7 @@ void ClientCommand(edict_t *pEntity)
 									while (BuyAmmo(player, PRIMARY_WEAPON_SLOT, false))
 										;
 
-									if (TheTutor)
+									if (TheTutor != NULL)
 									{
 										TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, player);
 									}
@@ -3296,7 +3315,7 @@ void ClientCommand(edict_t *pEntity)
 									while (BuyAmmo(player, PISTOL_SLOT, false))
 										;
 
-									if (TheTutor)
+									if (TheTutor != NULL)
 									{
 										TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, player);
 									}
@@ -3531,8 +3550,11 @@ void ClientCommand(edict_t *pEntity)
 		if (mp->ClientCommand_DeadOrAlive(GetClassPtr((CBasePlayer *)pev), pcmd))
 			return;
 
-		if (TheBots->ClientCommand(GetClassPtr((CBasePlayer *)pev), pcmd))
-			return;
+		if (TheBots != NULL)
+		{
+			if (TheBots->ClientCommand(GetClassPtr((CBasePlayer *)pev), pcmd))
+				return;
+		}
 
 		if (FStrEq(pcmd, "mp_debug"))
 		{
@@ -3701,7 +3723,8 @@ void ClientCommand(edict_t *pEntity)
 				{
 					BuyAmmo(player, PRIMARY_WEAPON_SLOT, true);
 					player->BuildRebuyStruct();
-					if (TheTutor)
+
+					if (TheTutor != NULL)
 					{
 						TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, player);
 					}
@@ -3713,7 +3736,8 @@ void ClientCommand(edict_t *pEntity)
 				{
 					BuyAmmo(player, PISTOL_SLOT, true);
 					player->BuildRebuyStruct();
-					if (TheTutor)
+
+					if (TheTutor != NULL)
 					{
 						TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, player);
 					}
@@ -3748,7 +3772,7 @@ void ClientCommand(edict_t *pEntity)
 					ShowVGUIMenu(player, VGUI_Menu_Buy, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_7 | MENU_KEY_8 | MENU_KEY_0), "#Buy");
 					player->m_iMenu = Menu_Buy;
 
-					if (TheBots)
+					if (TheBots != NULL)
 					{
 						TheBots->OnEvent(EVENT_TUTOR_BUY_MENU_OPENNED);
 					}
@@ -3910,9 +3934,13 @@ void ServerDeactivate(void)
 	// Peform any shutdown operations here...
 	g_pGameRules->ServerDeactivate();
 	CLocalNav::Reset();
-	TheBots->ServerDeactivate();
 
-	if (g_pHostages)
+	if (TheBots != NULL)
+	{
+		TheBots->ServerDeactivate();
+	}
+
+	if (g_pHostages != NULL)
 	{
 		g_pHostages->ServerDeactivate();
 	}
@@ -3956,14 +3984,17 @@ void ServerActivate(edict_t *pEdictList, int edictCount, int clientMax)
 	LinkUserMessages();
 	WriteSigonMessages();
 
-	if (g_pGameRules)
+	if (g_pGameRules != NULL)
 	{
 		g_pGameRules->CheckMapConditions();
 	}
 
-	TheBots->ServerActivate();
+	if (TheBots != NULL)
+	{
+		TheBots->ServerActivate();
+	}
 
-	if (g_pHostages)
+	if (g_pHostages != NULL)
 	{
 		g_pHostages->ServerActivate();
 	}
@@ -4038,9 +4069,12 @@ void StartFrame(void)
 	else
 		g_iSkillLevel = 0;
 
-	TheBots->StartFrame();
+	if (TheBots != NULL)
+	{
+		TheBots->StartFrame();
+	}
 
-	if (TheTutor)
+	if (TheTutor != NULL)
 	{
 		TheTutor->StartFrame(gpGlobals->time);
 	}
@@ -4175,14 +4209,17 @@ void ClientPrecache(void)
 	for (i = 0; i < numPlayerModels; i++)
 		PRECACHE_MODEL(sPlayerModelFiles[i]);
 
-	for (i = FirstCustomSkin; i <= LastCustomSkin; i++)
+	if (isCZero)
 	{
-		const char *fname = TheBotProfiles->GetCustomSkinFname(i);
+		for (i = FirstCustomSkin; i <= LastCustomSkin; i++)
+		{
+			const char *fname = TheBotProfiles->GetCustomSkinFname(i);
 
-		if (!fname)
-			break;
+			if (!fname)
+				break;
 
-		PRECACHE_MODEL((char *)fname);
+			PRECACHE_MODEL((char *)fname);
+		}
 	}
 
 	PRECACHE_MODEL("models/p_ak47.mdl");
@@ -4237,14 +4274,17 @@ void ClientPrecache(void)
 	for (i = 0; i < numPlayerModels; i++)
 		ENGINE_FORCE_UNMODIFIED(force_model_specifybounds, (float *)&vMin, (float *)&vMax, sPlayerModelFiles[i]);
 
-	for (i = FirstCustomSkin; i <= LastCustomSkin; i++)
+	if (isCZero)
 	{
-		const char *fname = TheBotProfiles->GetCustomSkinFname(i);
+		for (i = FirstCustomSkin; i <= LastCustomSkin; i++)
+		{
+			const char *fname = TheBotProfiles->GetCustomSkinFname(i);
 
-		if (!fname)
-			break;
+			if (!fname)
+				break;
 
-		ENGINE_FORCE_UNMODIFIED(force_model_specifybounds_if_avail, (float *)&vMin, (float *)&vMax, fname);
+			ENGINE_FORCE_UNMODIFIED(force_model_specifybounds_if_avail, (float *)&vMin, (float *)&vMax, fname);
+		}
 	}
 
 	ENGINE_FORCE_UNMODIFIED(force_exactfile, (float *)&temp, (float *)&temp, "sprites/black_smoke1.spr");

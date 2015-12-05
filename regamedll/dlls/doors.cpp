@@ -538,7 +538,10 @@ void CBaseDoor::DoorGoUp(void)
 				EMIT_SOUND(ENT(pev), CHAN_STATIC, (char *)STRING(pev->noiseMoving), VOL_NORM, ATTN_NORM);
 			}
 
-			TheBots->OnEvent(EVENT_DOOR, m_hActivator);
+			if (TheBots != NULL)
+			{
+				TheBots->OnEvent(EVENT_DOOR, m_hActivator);
+			}
 		}
 	}
 
@@ -689,7 +692,10 @@ void CBaseDoor::DoorGoDown(void)
 				EMIT_SOUND(ENT(pev), CHAN_STATIC, (char *)STRING(pev->noiseMoving), VOL_NORM, ATTN_NORM);
 			}
 
-			TheBots->OnEvent(EVENT_DOOR, m_hActivator);
+			if (TheBots != NULL)
+			{
+				TheBots->OnEvent(EVENT_DOOR, m_hActivator);
+			}
 		}
 	}
 

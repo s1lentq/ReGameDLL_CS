@@ -157,12 +157,12 @@ void CBotManager::__MAKE_VHOOK(OnEvent)(GameEventType event, CBaseEntity *entity
 		bot->OnEvent(event, entity, other);
 	}
 
-	if (TheTutor)
+	if (TheTutor != NULL)
 	{
 		TheTutor->OnEvent(event, entity, other);
 	}
 
-	if (g_pHostages)
+	if (g_pHostages != NULL)
 	{
 		g_pHostages->OnEvent(event, entity, other);
 	}

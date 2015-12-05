@@ -7,37 +7,47 @@
 
 float CLocalNav::s_flStepSize;
 int CLocalNav::qptr;
-EHANDLE CLocalNav::_queue[ MAX_HOSTAGES_NAV ];
+EHANDLE CLocalNav::_queue[MAX_HOSTAGES_NAV];
 int CLocalNav::tot_inqueue;
 float CLocalNav::nodeval;
 float CLocalNav::flNextCvarCheck;
 float CLocalNav::flLastThinkTime;
-EHANDLE CLocalNav::hostages[ MAX_HOSTAGES_NAV ];
+EHANDLE CLocalNav::hostages[MAX_HOSTAGES_NAV];
 int CLocalNav::tot_hostages;
 
 #else
 
 float (*CLocalNav::ps_flStepSize);
 int (*CLocalNav::pqptr);
-EHANDLE (*CLocalNav::pqueue)[ MAX_HOSTAGES_NAV ];
+EHANDLE (*CLocalNav::pqueue)[MAX_HOSTAGES_NAV];
 int (*CLocalNav::ptot_inqueue);
 float (*CLocalNav::pnodeval);
 float (*CLocalNav::pflNextCvarCheck);
 float (*CLocalNav::pflLastThinkTime);
-EHANDLE (*CLocalNav::phostages)[ MAX_HOSTAGES_NAV ];
+EHANDLE (*CLocalNav::phostages)[MAX_HOSTAGES_NAV];
 int (*CLocalNav::ptot_hostages);
 
 #endif // HOOK_GAMEDLL
 
 /* <485b67> ../cstrike/dlls/hostage/hostage_localnav.cpp:45 */
-NOBODY CLocalNav::CLocalNav(CHostage *pOwner)
+CLocalNav::CLocalNav(CHostage *pOwner)
 {
+	m_pOwner = pOwner;
+	m_pTargetEnt = NULL;
+	m_nodeArr = new localnode_t[MAX_NODES];
+
+	if (tot_hostages >= MAX_HOSTAGES_NAV)
+	{
+		return;
+	}
+
+	hostages[tot_hostages++] = pOwner;
 }
 
 /* <485b09> ../cstrike/dlls/hostage/hostage_localnav.cpp:68 */
-NOBODY CLocalNav::~CLocalNav(void)
+CLocalNav::~CLocalNav(void)
 {
-//	~CLocalNav(CLocalNav::~CLocalNav(//			int const __in_chrg);  //    71
+	delete m_nodeArr;
 }
 
 /* <485b91> ../cstrike/dlls/hostage/hostage_localnav.cpp:74 */
@@ -269,11 +279,18 @@ int CLocalNav::SetupPathNodes(node_index_t nindex, Vector *vecNodes, int fNoMons
 }
 
 /* <486a56> ../cstrike/dlls/hostage/hostage_localnav.cpp:290 */
-NOBODY int CLocalNav::GetFurthestTraversableNode(Vector &vecStartingLoc, Vector *vecNodes, int nTotalNodes, int fNoMonsters)
+int CLocalNav::GetFurthestTraversableNode(Vector &vecStartingLoc, Vector *vecNodes, int nTotalNodes, int fNoMonsters)
 {
-//	{
-//		int nCount;                                           //   292
-//	}
+	int nCount = 0;
+	while (nCount < nTotalNodes)
+	{
+		if (PathTraversable(vecStartingLoc, vecNodes[nCount], fNoMonsters) != PATH_TRAVERSABLE_EMPTY)
+			return nCount;
+
+		nCount++;
+	}
+
+	return -1;
 }
 
 /* <486d8d> ../cstrike/dlls/hostage/hostage_localnav.cpp:304 */
@@ -424,6 +441,7 @@ BOOL CLocalNav::PathClear(Vector &vecOrigin, Vector &vecDest, int fNoMonsters, T
 		m_fTargetEntHit = TRUE;
 		return TRUE;
 	}
+
 	return FALSE;
 }
 
@@ -452,6 +470,7 @@ int CLocalNav::PathTraversable(Vector &vecSource, Vector &vecDest, int fNoMonste
 #ifndef HOOK_GAMEDLL
 			vecDestTmp = vecSrcTmp + (vecDir * s_flStepSize);
 #else
+			// fix test demo
 			vecDestTmp[0] = vecSrcTmp[0] + (vecDir[0] * s_flStepSize);
 			vecDestTmp[1] = vecSrcTmp[1] + (float)(vecDir[1] * s_flStepSize);
 			vecDestTmp[2] = vecSrcTmp[2] + (vecDir[2] * s_flStepSize);
@@ -592,20 +611,28 @@ BOOL CLocalNav::SlopeTraversable(Vector &vecSource, Vector &vecDest, int fNoMons
 }
 
 /* <487085> ../cstrike/dlls/hostage/hostage_localnav.cpp:635 */
-NOBODY BOOL CLocalNav::LadderTraversable(Vector &vecSource, Vector &vecDest, int fNoMonsters, TraceResult &tr)
+BOOL CLocalNav::LadderTraversable(Vector &vecSource, Vector &vecDest, int fNoMonsters, TraceResult &tr)
 {
-//	{
-//		Vector vecLadderStart;                          //   637
-//		Vector vecLadderDest;                           //   638
-//		PathClear(CLocalNav *const this,
-//				Vector &vecOrigin,
-//				Vector &vecDest,
-//				int fNoMonsters,
-//				TraceResult &tr);  //   646
-//		operator-(const Vector *const this,
-//				const Vector &v);  //   651
-//		Length(const Vector *const this);  //   651
-//	}
+	Vector vecStepStart;
+	Vector vecStepDest;
+
+	vecStepStart = tr.vecEndPos;
+	vecStepDest = vecStepStart;
+	vecStepDest.z += HOSTAGE_STEPSIZE;
+
+	if (!PathClear(vecStepStart, vecStepDest, fNoMonsters, tr))
+	{
+		if (tr.fStartSolid)
+			return FALSE;
+
+		if ((tr.vecEndPos - vecStepStart).Length() < 1)
+			return FALSE;
+	}
+
+	vecStepStart = tr.vecEndPos;
+	vecDest.z = tr.vecEndPos.z;
+
+	return PathTraversable(vecStepStart, vecDest, fNoMonsters);
 }
 
 /* <4871ef> ../cstrike/dlls/hostage/hostage_localnav.cpp:662 */
@@ -707,82 +734,44 @@ BOOL CLocalNav::StepJumpable(Vector &vecSource, Vector &vecDest, int fNoMonsters
 }
 
 /* <487588> ../cstrike/dlls/hostage/hostage_localnav.cpp:824 */
-NOBODY BOOL CLocalNav::LadderHit(Vector &vecSource, Vector &vecDest, TraceResult &tr)
+BOOL CLocalNav::LadderHit(Vector &vecSource, Vector &vecDest, TraceResult &tr)
 {
-//	{
-//		Vector vecFwd;                                  //   826
-//		Vector vecRight;                                //   827
-//		Vector vecUp;                                   //   828
-//		operator-(const Vector *const this);  //   832
-//		UTIL_MakeVectorsPrivate(Vector &vecAngles,
-//					float *p_vForward,
-//					float *p_vRight,
-//					float *p_vUp);  //   832
-//		operator*(const Vector *const this,
-//				float fl);  //   834
-//		operator*(const Vector *const this,
-//				float fl);  //   834
-//		operator+(const Vector *const this,
-//				const Vector &v);  //   834
-//		operator+(const Vector *const this,
-//				const Vector &v);  //   834
-//		operator*(const Vector *const this,
-//				float fl);  //   836
-//		operator+(const Vector *const this,
-//				const Vector &v);  //   836
-//		operator*(const Vector *const this,
-//				float fl);  //   836
-//		operator-(const Vector *const this,
-//				const Vector &v);  //   836
-//		operator*(const Vector *const this,
-//				float fl);  //   838
-//		operator*(const Vector *const this,
-//				float fl);  //   838
-//		operator*(const Vector *const this,
-//				float fl);  //   838
-//		operator+(const Vector *const this,
-//				const Vector &v);  //   838
-//		operator+(const Vector *const this,
-//				const Vector &v);  //   838
-//		operator+(const Vector *const this,
-//				const Vector &v);  //   838
-//		operator*(const Vector *const this,
-//				float fl);  //   840
-//		operator*(const Vector *const this,
-//				float fl);  //   840
-//		operator+(const Vector *const this,
-//				const Vector &v);  //   840
-//		operator*(const Vector *const this,
-//				float fl);  //   840
-//		operator-(const Vector *const this,
-//				const Vector &v);  //   840
-//		operator+(const Vector *const this,
-//				const Vector &v);  //   840
-//		operator*(const Vector *const this,
-//				float fl);  //   842
-//		operator*(const Vector *const this,
-//				float fl);  //   842
-//		operator+(const Vector *const this,
-//				const Vector &v);  //   842
-//		operator+(const Vector *const this,
-//				const Vector &v);  //   842
-//		operator*(const Vector *const this,
-//				float fl);  //   842
-//		operator-(const Vector *const this,
-//				const Vector &v);  //   842
-//		operator*(const Vector *const this,
-//				float fl);  //   844
-//		operator+(const Vector *const this,
-//				const Vector &v);  //   844
-//		operator*(const Vector *const this,
-//				float fl);  //   844
-//		operator-(const Vector *const this,
-//				const Vector &v);  //   844
-//		operator*(const Vector *const this,
-//				float fl);  //   844
-//		operator-(const Vector *const this,
-//				const Vector &v);  //   844
-//	}
+	Vector vecFwd, vecRight, vecUp;
+	Vector vecAngles, vecOrigin;
+
+	vecAngles = UTIL_VecToAngles(-tr.vecPlaneNormal);
+	UTIL_MakeVectorsPrivate(vecAngles, vecFwd, vecRight, vecUp);
+	vecOrigin = tr.vecEndPos + (vecFwd * 15) + (vecUp * 36);
+
+	if (UTIL_PointContents(vecOrigin) == CONTENTS_LADDER)
+		return true;
+
+	vecOrigin = tr.vecEndPos + (vecFwd * 15) - (vecUp * 36);
+
+	if (UTIL_PointContents(vecOrigin) == CONTENTS_LADDER)
+		return true;
+
+	vecOrigin = tr.vecEndPos + (vecFwd * 15) + (vecRight * 16) + (vecUp * 36);
+
+	if (UTIL_PointContents(vecOrigin) == CONTENTS_LADDER)
+		return true;
+
+	vecOrigin = tr.vecEndPos + (vecFwd * 15) - (vecRight * 16) + (vecUp * 36);
+
+	if (UTIL_PointContents(vecOrigin) == CONTENTS_LADDER)
+		return true;
+
+	vecOrigin = tr.vecEndPos + (vecFwd * 15) + (vecRight * 16) - (vecUp * 36);
+
+	if (UTIL_PointContents(vecOrigin) == CONTENTS_LADDER)
+		return true;
+
+	vecOrigin = tr.vecEndPos + (vecFwd * 15) - (vecRight * 16) + (vecUp * 36);
+
+	if (UTIL_PointContents(vecOrigin) == CONTENTS_LADDER)
+		return true;
+
+	return false;
 }
 
 /* <487eeb> ../cstrike/dlls/hostage/hostage_localnav.cpp:851 */
@@ -818,7 +807,7 @@ void CLocalNav::Think(void)
 
 	if (tot_inqueue)
 	{
-		hCallback = _queue[ qptr ];
+		hCallback = _queue[qptr];
 
 		if (!hCallback)
 		{
@@ -834,7 +823,7 @@ void CLocalNav::Think(void)
 					break;
 				}
 
-				hCallback = _queue[ qptr ];
+				hCallback = _queue[qptr];
 
 				if (hCallback)
 					break;
@@ -857,17 +846,33 @@ void CLocalNav::Think(void)
 /* <487ccd> ../cstrike/dlls/hostage/hostage_localnav.cpp:922 */
 void CLocalNav::RequestNav(CHostage *pCaller)
 {
-//	{
-//		int curr;                                             //   932
-//		int found;                                            //   933
-//		{
-//			int i;                                        //   934
-//			{
-//				class CHostage *pQueueItem;          //   936
-//				GetClassPtr<CHostage>(CHostage *a);  //   938
-//			}
-//		}
-//	}
+	int curr = qptr;
+	int found = 0;
+
+	if (nodeval <= 17 && !tot_inqueue)
+	{
+		pCaller->NavReady();
+		return;
+	}
+
+	if (tot_inqueue >= MAX_HOSTAGES_NAV)
+	{
+		return;
+	}
+
+	for (int i = 0; i < tot_inqueue; i++)
+	{
+		CHostage *pQueueItem = GetClassPtr((CHostage *)_queue[curr]->pev);
+
+		if (pQueueItem == pCaller)
+			return;
+
+		if (++curr == MAX_HOSTAGES_NAV)
+			curr = 0;
+	}
+
+	_queue[curr] = pCaller;
+	tot_inqueue++;
 }
 
 /* <487e03> ../cstrike/dlls/hostage/hostage_localnav.cpp:964 */

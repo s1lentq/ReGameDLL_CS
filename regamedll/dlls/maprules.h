@@ -145,19 +145,19 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	inline int Points(void)
+	int Points(void)
 	{
 		return (int)(pev->frags);
 	}
-	inline BOOL AllowNegativeScore(void)
+	BOOL AllowNegativeScore(void)
 	{
 		return pev->spawnflags & SF_SCORE_NEGATIVE;
 	}
-	inline BOOL AwardToTeam(void)
+	BOOL AwardToTeam(void)
 	{
 		return pev->spawnflags & SF_SCORE_TEAM;
 	}
-	inline void SetPoints(int points)
+	void SetPoints(int points)
 	{
 		pev->frags = points;
 	}
@@ -202,15 +202,15 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	inline BOOL MessageToAll(void)
+	BOOL MessageToAll(void)
 	{
 		return (pev->spawnflags & SF_ENVTEXT_ALLPLAYERS) == SF_ENVTEXT_ALLPLAYERS;
 	}
-	inline void MessageSet(const char *pMessage)
+	void MessageSet(const char *pMessage)
 	{
 		pev->message = ALLOC_STRING(pMessage);
 	}
-	inline const char *MessageGet(void)
+	const char *MessageGet(void)
 	{
 		return STRING(pev->message);
 	}
@@ -237,7 +237,7 @@ public:
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual int ObjectCaps(void)
 	{
-		return ObjectCaps_();
+		return (CRulePointEntity::ObjectCaps() | FCAP_MASTER);
 	}
 	virtual BOOL IsTriggered(CBaseEntity *pActivator);
 	virtual const char *TeamID(void);
@@ -246,10 +246,6 @@ public:
 #ifdef HOOK_GAMEDLL
 
 	void KeyValue_(KeyValueData *pkvd);
-	int ObjectCaps_(void)
-	{
-		return (CRulePointEntity::ObjectCaps() | FCAP_MASTER);
-	}
 	BOOL IsTriggered_(CBaseEntity *pActivator);
 	const char *TeamID_(void);
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
@@ -257,11 +253,11 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	inline BOOL RemoveOnFire(void)
+	BOOL RemoveOnFire(void)
 	{
 		return (pev->spawnflags & SF_TEAMMASTER_FIREONCE) == SF_TEAMMASTER_FIREONCE;
 	}
-	inline BOOL AnyTeam(void)
+	BOOL AnyTeam(void)
 	{
 		return (pev->spawnflags & SF_TEAMMASTER_ANYTEAM) == SF_TEAMMASTER_ANYTEAM;
 	}
@@ -292,11 +288,11 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	inline BOOL RemoveOnFire(void)
+	BOOL RemoveOnFire(void)
 	{
 		return (pev->spawnflags & SF_TEAMSET_FIREONCE) == SF_TEAMSET_FIREONCE;
 	}
-	inline BOOL ShouldClearTeam(void)
+	BOOL ShouldClearTeam(void)
 	{
 		return (pev->spawnflags & SF_TEAMSET_CLEARTEAM) == SF_TEAMSET_CLEARTEAM;
 	}
@@ -351,7 +347,7 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	inline BOOL RemoveOnFire(void)
+	BOOL RemoveOnFire(void)
 	{
 		return (pev->spawnflags & SF_PKILL_FIREONCE) == SF_PKILL_FIREONCE;
 	}
@@ -377,45 +373,45 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	inline BOOL RemoveOnFire(void)
+	BOOL RemoveOnFire(void)
 	{
 		return (pev->spawnflags & SF_GAMECOUNT_FIREONCE) == SF_GAMECOUNT_FIREONCE;
 	}
-	inline BOOL ResetOnFire(void)
+	BOOL ResetOnFire(void)
 	{
 		return (pev->spawnflags & SF_GAMECOUNT_RESET) == SF_GAMECOUNT_RESET;
 	}
-	inline void CountUp(void)
+	void CountUp(void)
 	{
 		pev->frags++;
 	}
-	inline void CountDown(void)
+	void CountDown(void)
 	{
 		pev->frags--;
 	}
-	inline void ResetCount(void)
+	void ResetCount(void)
 	{
 		pev->frags = pev->dmg;
 	}
-	inline int CountValue(void)
+	int CountValue(void)
 	{
 		return (int)(pev->frags);
 	}
-	inline int LimitValue(void)
+	int LimitValue(void)
 	{
 		return (int)(pev->health);
 	}
-	inline BOOL HitLimit(void)
+	BOOL HitLimit(void)
 	{
 		return CountValue() == LimitValue();
 	}
 
 private:
-	inline void SetCountValue(int value)
+	void SetCountValue(int value)
 	{
 		pev->frags = value;
 	}
-	inline void SetInitialValue(int value)
+	void SetInitialValue(int value)
 	{
 		pev->dmg = value;
 	}
@@ -438,7 +434,7 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	inline BOOL RemoveOnFire(void)
+	BOOL RemoveOnFire(void)
 	{
 		return (pev->spawnflags & SF_GAMECOUNTSET_FIREONCE) == SF_GAMECOUNTSET_FIREONCE;
 	}
@@ -465,7 +461,7 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	inline BOOL UseOnly(void)
+	BOOL UseOnly(void)
 	{
 		return (pev->spawnflags & SF_PLAYEREQUIP_USEONLY) == SF_PLAYEREQUIP_USEONLY;
 	}
@@ -497,21 +493,23 @@ public:
 #endif // HOOK_GAMEDLL
 
 private:
-	inline BOOL RemoveOnFire(void)
+	BOOL RemoveOnFire(void)
 	{
 		return (pev->spawnflags & SF_PTEAM_FIREONCE) == SF_PTEAM_FIREONCE;
 	}
-	inline BOOL ShouldKillPlayer(void)
+	BOOL ShouldKillPlayer(void)
 	{
 		return (pev->spawnflags & SF_PTEAM_KILL) == SF_PTEAM_KILL;
 	}
-	inline BOOL ShouldGibPlayer(void)
+	BOOL ShouldGibPlayer(void)
 	{
 		return (pev->spawnflags & SF_PTEAM_GIB) == SF_PTEAM_GIB;
 	}
 	const char *TargetTeamName(const char *pszTargetName);
 
 };/* size: 156, cachelines: 3, members: 1 */
+
+#ifdef HOOK_GAMEDLL
 
 // linked objects
 C_DLLEXPORT void game_score(entvars_t *pev);
@@ -525,5 +523,7 @@ C_DLLEXPORT void game_counter(entvars_t *pev);
 C_DLLEXPORT void game_counter_set(entvars_t *pev);
 C_DLLEXPORT void game_player_equip(entvars_t *pev);
 C_DLLEXPORT void game_player_team(entvars_t *pev);
+
+#endif // HOOK_GAMEDLL
 
 #endif // MAPRULES_H

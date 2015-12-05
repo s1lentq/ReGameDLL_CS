@@ -180,7 +180,9 @@ private:
 
 	// determine actual path positions
 	bool ComputePathPositions(void);
-
+#ifdef HOOK_GAMEDLL
+public:
+#endif // HOOK_GAMEDLL
 	// utility function for when start and goal are in the same area
 	bool BuildTrivialPath(const Vector *start, const Vector *goal);
 
@@ -207,7 +209,7 @@ public:
 		return m_isStuck ? m_stuckTimer.GetElapsedTime() : 0.0f;
 	}
 
-private:
+/*private:*/
 	bool m_isStuck;			// if true, we are stuck
 	Vector m_stuckSpot;		// the location where we became stuck
 	IntervalTimer m_stuckTimer;	// how long we have been stuck

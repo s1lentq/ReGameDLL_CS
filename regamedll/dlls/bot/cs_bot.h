@@ -449,7 +449,7 @@ public:
 	{
 		return m_combatRange;
 	}
-	NOBODY bool IsRogue(void)const;
+	bool IsRogue(void)const;
 	void SetRogue(bool rogue)
 	{
 		m_isRogue = rogue;
@@ -469,7 +469,7 @@ public:
 		return m_safeTime;
 	}
 	NOBODY bool IsUnhealthy(void);
-	NOBODY void Idle(void);
+	void Idle(void);
 
 	NOBODY void Hide(CNavArea *searchFromArea = NULL, float duration = -1.0f, float hideRange = 750.0f, bool holdPosition = false);
 	NOBODY void Hide(const Vector *hidingSpot = NULL, float duration = -1.0f, bool holdPosition = false);
@@ -483,7 +483,7 @@ public:
 	NOBODY bool IsHunting(void) const;
 	NOBODY void Attack(CBasePlayer *victim);
 	NOBODY void FireWeaponAtEnemy(void);
-	NOBODY void StopAttacking(void);
+	void StopAttacking(void);
 	bool IsAttacking(void) const;
 	NOBODY void MoveTo(const Vector *pos, RouteType route = SAFEST_ROUTE);
 	NOBODY bool IsMovingTo(void) const;
@@ -498,13 +498,13 @@ public:
 		return false;
 	}
 	NOBODY void DefuseBomb(void);
-	NOBODY bool IsDefusingBomb(void) const;
+	bool IsDefusingBomb(void) const;
 	NOBODY bool CanSeePlantedBomb(void) const;
 	NOBODY void EscapeFromBomb(void);
 	NOBODY bool IsEscapingFromBomb(void) const;
 	NOBODY void RescueHostages(void);
 	NOBODY void UseEntity(CBaseEntity *entity);
-	NOBODY bool IsBuying(void) const;
+	bool IsBuying(void) const;
 	NOBODY void Panic(CBasePlayer *enemy);
 	NOBODY void Follow(CBasePlayer *player);
 	NOBODY void ContinueFollowing(void);
@@ -571,7 +571,7 @@ public:
 		return GetGameState()->IsAtPlantedBombsite();
 	}
 	NOBODY bool GuardRandomZone(float range = 500.0f);
-	NOBODY bool IsBusy(void) const;
+	bool IsBusy(void) const;
 
 	enum TaskType
 	{
@@ -884,7 +884,7 @@ public:
 	bool IsUsingSniperRifle(void);
 	bool IsUsingAWP(void);
 	NOBODY bool IsSniper(void);
-	NOBODY bool IsSniping(void);
+	bool IsSniping(void) const;
 	bool IsUsingShotgun(void);
 	bool IsUsingMachinegun(void);
 	void ThrowGrenade(const Vector *target);
@@ -926,7 +926,7 @@ public:
 	NOBODY void BotDeathThink(void);
 	NOBODY CBasePlayer *FindNearbyPlayer(void);
 	void AdjustSafeTime(void);
-	NOBODY void SetState(BotState *state);
+	void SetState(BotState *state);
 	NOBODY void MoveTowardsPosition(const Vector *pos);
 	NOBODY void MoveAwayFromPosition(const Vector *pos);
 	NOBODY void StrafeAwayFromPosition(const Vector *pos);
@@ -1312,11 +1312,13 @@ public:
 		m_bot = bot;
 		m_route = route;
 	}
-	float operator() (CNavArea *area, CNavArea *fromArea, const CNavLadder *ladder)
+	float operator()(CNavArea *area, CNavArea *fromArea, const CNavLadder *ladder)
 	{
 		/*#define NAV_MESH_JUMP 0x0002
+
 		float baseDangerFactor = 100.0f;
 		float dangerFactor = (1.0f - (0.95f * m_bot->GetProfile()->GetAggression())) * baseDangerFactor;
+
 		if (fromArea == NULL)
 		{
 			if (m_route == FASTEST_ROUTE)
@@ -1396,8 +1398,10 @@ public:
 			}
 			return cost;
 		}*/
+
 		return 0.0f;
 	}
+
 private:
 	CCSBot *m_bot;
 	RouteType m_route;
@@ -1510,5 +1514,6 @@ float StayOnLadderLine(CCSBot *me, const CNavLadder *ladder);
 
 extern void (*pCCSBot__UpdateLookAngles)(void);
 extern void (*pCCSBot__Update)(void);
+extern void (*pCCSBot__ResetValues)(void);
 
 #endif // CS_BOT_H

@@ -9,6 +9,11 @@
 #ifndef HOOK_GAMEDLL
 
 int giPrecacheGrunt = 0;
+int gmsgWeapPickup = 0;
+int gmsgHudText = 0;
+int gmsgHudTextArgs = 0;
+int gmsgShake = 0;
+int gmsgFade = 0;
 int gmsgFlashlight = 0;
 int gmsgFlashBattery = 0;
 int gmsgResetHUD = 0;
@@ -186,7 +191,7 @@ char *CDeadHEV::m_szPoses[] =
 	"deadtable"
 };
 
-#else //HOOK_GAMEDLL
+#else // HOOK_GAMEDLL
 
 int giPrecacheGrunt;
 int gmsgWeapPickup;
@@ -687,18 +692,20 @@ void CBasePlayer::Radio(const char *msg_id, const char *msg_verbose, short pitch
 				{
 					// search the place name where is located the player
 					const char *placeName = NULL;
-					Place playerPlace = TheNavAreaGrid.GetPlace(&pev->origin);
-					const BotPhraseList *placeList = TheBotPhrases->GetPlaceList();
-
-					for (BotPhraseList::const_iterator iter = placeList->begin(); iter != placeList->end(); ++iter)
+					if (TheBotPhrases != NULL)
 					{
-						if ((*iter)->GetID() == playerPlace)
+						Place playerPlace = TheNavAreaGrid.GetPlace(&pev->origin);
+						const BotPhraseList *placeList = TheBotPhrases->GetPlaceList();
+
+						for (BotPhraseList::const_iterator iter = placeList->begin(); iter != placeList->end(); ++iter)
 						{
-							placeName = (*iter)->GetName();
-							break;
+							if ((*iter)->GetID() == playerPlace)
+							{
+								placeName = (*iter)->GetName();
+								break;
+							}
 						}
 					}
-
 					if (placeName != NULL)
 						ClientPrint(pEntity->pev, HUD_PRINTRADIO, NumAsString(entindex()), "#Game_radio_location", STRING(pev->netname), placeName, msg_verbose);
 					else
@@ -1195,8 +1202,10 @@ int CBasePlayer::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pe
 		{
 			CHalfLifeMultiplay *mp = g_pGameRules;
 
-			if (TheBots)
+			if (TheBots != NULL)
+			{
 				TheBots->OnEvent(EVENT_PLAYER_TOOK_DAMAGE, this, pAttack);
+			}
 
 			if (mp->IsCareer())
 			{
@@ -1211,7 +1220,10 @@ int CBasePlayer::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pe
 
 					if (killedByHumanPlayer)
 					{
-						TheCareerTasks->HandleEnemyInjury(GetWeaponName(pevInflictor, pevAttacker), pPlayer->HasShield(), pPlayer);
+						if (TheCareerTasks != NULL)
+						{
+							TheCareerTasks->HandleEnemyInjury(GetWeaponName(pevInflictor, pevAttacker), pPlayer->HasShield(), pPlayer);
+						}
 					}
 				}
 			}
@@ -1415,7 +1427,7 @@ int CBasePlayer::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pe
 	{
 		CHalfLifeMultiplay *mp = g_pGameRules;
 
-		if (TheBots)
+		if (TheBots != NULL)
 		{
 			TheBots->OnEvent(EVENT_PLAYER_TOOK_DAMAGE, this, pAttack);
 		}
@@ -1433,7 +1445,10 @@ int CBasePlayer::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pe
 
 				if (killedByHumanPlayer)
 				{
-					TheCareerTasks->HandleEnemyInjury(GetWeaponName(pevInflictor, pevAttacker), pPlayer->HasShield(), pPlayer);
+					if (TheCareerTasks != NULL)
+					{
+						TheCareerTasks->HandleEnemyInjury(GetWeaponName(pevInflictor, pevAttacker), pPlayer->HasShield(), pPlayer);
+					}
 				}
 			}
 		}
@@ -1976,18 +1991,24 @@ void CBasePlayer::__MAKE_VHOOK(Killed)(entvars_t *pevAttacker, int iGib)
 
 	CBaseEntity *pAttackerEntity = CBaseEntity::Instance(pevAttacker);
 
-	TheBots->OnEvent(EVENT_PLAYER_DIED, this, pAttackerEntity);
-
+	if (TheBots != NULL)
+	{
+		TheBots->OnEvent(EVENT_PLAYER_DIED, this, pAttackerEntity);
+	}
 	if (g_pGameRules->IsCareer())
 	{
 		bool killerHasShield = false;
 		bool wasBlind = false;
 
-		if (!IsBot())
+		if (TheCareerTasks != NULL)
 		{
-			TheCareerTasks->HandleEvent(EVENT_DIE, NULL, this);
+			if (!IsBot())
+			{
+				TheCareerTasks->HandleEvent(EVENT_DIE, NULL, this);
+			}
+
+			TheCareerTasks->HandleDeath(m_iTeam, this);
 		}
-		TheCareerTasks->HandleDeath(m_iTeam, this);
 
 		if (!m_bKilledByBomb)
 		{
@@ -2013,7 +2034,10 @@ void CBasePlayer::__MAKE_VHOOK(Killed)(entvars_t *pevAttacker, int iGib)
 
 				if (killedByHumanPlayer)
 				{
-					TheCareerTasks->HandleEnemyKill(wasBlind, GetWeaponName(g_pevLastInflictor, pevAttacker), m_bHeadshotKilled, killerHasShield, this, pPlayer);
+					if (TheCareerTasks != NULL)
+					{
+						TheCareerTasks->HandleEnemyKill(wasBlind, GetWeaponName(g_pevLastInflictor, pevAttacker), m_bHeadshotKilled, killerHasShield, this, pPlayer);
+					}
 				}
 			}
 		}
@@ -2318,7 +2342,10 @@ void CBasePlayer::SetAnimation(PLAYER_ANIM playerAnim)
 			else
 			{
 				m_IdealActivity = ACT_HOP;
-				TheBots->OnEvent(EVENT_PLAYER_JUMPED, this);
+				if (TheBots != NULL)
+				{
+					TheBots->OnEvent(EVENT_PLAYER_JUMPED, this);
+				}
 			}
 			break;
 		}
@@ -2343,7 +2370,10 @@ void CBasePlayer::SetAnimation(PLAYER_ANIM playerAnim)
 			else
 			{
 				m_IdealActivity = ACT_RANGE_ATTACK1;
-				TheBots->OnEvent(EVENT_WEAPON_FIRED, this);
+				if (TheBots != NULL)
+				{
+					TheBots->OnEvent(EVENT_WEAPON_FIRED, this);
+				}
 			}
 			break;
 		}
@@ -2354,7 +2384,10 @@ void CBasePlayer::SetAnimation(PLAYER_ANIM playerAnim)
 			else
 			{
 				m_IdealActivity = ACT_RANGE_ATTACK2;
-				TheBots->OnEvent(EVENT_WEAPON_FIRED, this);
+				if (TheBots != NULL)
+				{
+					TheBots->OnEvent(EVENT_WEAPON_FIRED, this);
+				}
 			}
 			break;
 		}
@@ -2365,7 +2398,10 @@ void CBasePlayer::SetAnimation(PLAYER_ANIM playerAnim)
 			else
 			{
 				m_IdealActivity = ACT_RELOAD;
-				TheBots->OnEvent(EVENT_WEAPON_RELOADED, this);
+				if (TheBots != NULL)
+				{
+					TheBots->OnEvent(EVENT_WEAPON_RELOADED, this);
+				}
 			}
 			break;
 		}
@@ -2564,7 +2600,12 @@ void CBasePlayer::SetAnimation(PLAYER_ANIM playerAnim)
 						//TODO: maybe away used variable 'speed'?
 						//if (speed > 150.0f)
 						if (pev->velocity.Length2D() > 150.0f)
-							TheBots->OnEvent(EVENT_PLAYER_FOOTSTEP, this);
+						{
+							if (TheBots != NULL)
+							{
+								TheBots->OnEvent(EVENT_PLAYER_FOOTSTEP, this);
+							}
+						}
 					}
 				}
 			}
@@ -3215,7 +3256,7 @@ void CBasePlayer::SyncRoundTimer(void)
 		MESSAGE_END();
 	}
 
-	if (mp->IsCareer())
+	if (TheCareerTasks != NULL && mp->IsCareer())
 	{
 		int remaining = 0;
 		bool shouldCountDown = false;
@@ -3275,7 +3316,7 @@ void ShowMenu2(CBasePlayer *pPlayer, int bitsValidSlots, int nDisplayTime, int f
 }
 
 /* <154e29> ../cstrike/dlls/player.cpp:3721 */
-void WINAPI_HOOK CBasePlayer::MenuPrint(const char *msg)
+void CBasePlayer::MenuPrint(const char *msg)
 {
 	const char *msg_portion = msg;
 	char sbuf[MAX_BUFFER_MENU_BRIEFING + 1];
@@ -4861,7 +4902,10 @@ void CBasePlayer::__MAKE_VHOOK(PostThink)(void)
 					m_LastHitGroup = HITGROUP_GENERIC;
 					TakeDamage(VARS(eoNullEntity), VARS(eoNullEntity), flFallDamage, DMG_FALL);
 					pev->punchangle.x = 0;
-					TheBots->OnEvent(EVENT_PLAYER_LANDED_FROM_HEIGHT, this);
+					if (TheBots != NULL)
+					{
+						TheBots->OnEvent(EVENT_PLAYER_LANDED_FROM_HEIGHT, this);
+					}
 				}
 			}
 		}
@@ -6808,7 +6852,6 @@ void CBasePlayer::__MAKE_VHOOK(UpdateClientData)(void)
 	if (m_iFOV != m_iClientFOV)
 	{
 		// cache FOV change at end of function, so weapon updates can see that FOV has changed
-
 		pev->fov = m_iFOV;
 
 		MESSAGE_BEGIN(MSG_ONE, gmsgSetFOV, NULL, pev);
@@ -6867,7 +6910,7 @@ void CBasePlayer::__MAKE_VHOOK(UpdateClientData)(void)
 		// causes screen to flash, and pain compass to show direction of damage
 		edict_t *other = pev->dmg_inflictor;
 
-		if (other)
+		if (other != NULL)
 		{
 			CBaseEntity *pEntity = CBaseEntity::Instance(other);
 
@@ -7258,7 +7301,7 @@ void CBasePlayer::UpdateStatusBar(void)
 		if (!FNullEnt(tr.pHit))
 		{
 			CBaseEntity *pEntity = CBaseEntity::Instance(tr.pHit);
-			bool isVisiblePlayer = (!TheBots->IsLineBlockedBySmoke(&pev->origin, &pEntity->pev->origin) && pEntity->Classify() == CLASS_PLAYER);
+			bool isVisiblePlayer = (TheBots != NULL && !TheBots->IsLineBlockedBySmoke(&pev->origin, &pEntity->pev->origin) && pEntity->Classify() == CLASS_PLAYER);
 
 			if (gpGlobals->time >= m_blindUntilTime && isVisiblePlayer)
 			{
@@ -7485,8 +7528,11 @@ void CBasePlayer::DropPlayerItem(const char *pszItemName)
 				pWeaponBox->SetThink(&CWeaponBox::BombThink);
 				pWeaponBox->pev->nextthink = gpGlobals->time + 1;
 
-				TheCSBots()->SetLooseBomb(pWeaponBox);
-				TheCSBots()->OnEvent(EVENT_BOMB_DROPPED);
+				if (TheBots != NULL)
+				{
+					TheCSBots()->SetLooseBomb(pWeaponBox);
+					TheCSBots()->OnEvent(EVENT_BOMB_DROPPED);
+				}
 			}
 
 			if (pWeapon->iFlags() & ITEM_FLAG_EXHAUSTIBLE)
@@ -7649,7 +7695,10 @@ void CBasePlayer::SwitchTeam(void)
 	}
 	MESSAGE_END();
 
-	TheBots->OnEvent(EVENT_PLAYER_CHANGED_TEAM, this);
+	if (TheBots != NULL)
+	{
+		TheBots->OnEvent(EVENT_PLAYER_CHANGED_TEAM, this);
+	}
 
 	UpdateLocation(true);
 
@@ -8074,7 +8123,7 @@ void CBasePlayer::CalculateYawBlend(void)
 	float dt;
 	float maxyaw = 255.0f;
 
-	float_precision flYaw;
+	float_precision flYaw;		// view direction relative to movement
 	float_precision blend_yaw;
 
 	dt = gpGlobals->frametime;
@@ -8087,6 +8136,7 @@ void CBasePlayer::CalculateYawBlend(void)
 
 	StudioEstimateGait();
 
+	// calc side to side turning
 	flYaw = fmod((float_precision)(pev->angles.y - m_flGaityaw), 360);
 
 	if (flYaw < -180)
@@ -8149,11 +8199,13 @@ void CBasePlayer::StudioProcessGait(void)
 
 	pseqdesc = (mstudioseqdesc_t *)((byte *)pstudiohdr + pstudiohdr->seqindex) + pev->gaitsequence;
 
+	// calc gait frame
 	if (pseqdesc->linearmovement.x > 0.0f)
 		m_flGaitframe += (m_flGaitMovement / pseqdesc->linearmovement.x) * pseqdesc->numframes;
 	else
 		m_flGaitframe += pev->framerate * pseqdesc->fps * dt;
 
+	// do modulo
 	m_flGaitframe -= (int)(m_flGaitframe / pseqdesc->numframes) * pseqdesc->numframes;
 
 	if (m_flGaitframe < 0)
@@ -8847,6 +8899,9 @@ const char *CBasePlayer::PickSecondaryCareerTaskWeapon(void)
 /* <15b9ea> ../cstrike/dlls/player.cpp:10759 */
 const char *CBasePlayer::PickFlashKillWeaponString(void)
 {
+	if (TheCareerTasks == NULL)
+		return NULL;
+
 	bool foundOne = false;
 
 	for (CareerTaskListIt it = TheCareerTasks->GetTasks()->begin(); it != TheCareerTasks->GetTasks()->end(); ++it)
@@ -8869,6 +8924,9 @@ const char *CBasePlayer::PickFlashKillWeaponString(void)
 /* <15baa1> ../cstrike/dlls/player.cpp:10787 */
 const char *CBasePlayer::PickGrenadeKillWeaponString(void)
 {
+	if (TheCareerTasks == NULL)
+		return NULL;
+
 	bool foundOne = false;
 
 	for (CareerTaskListIt it = TheCareerTasks->GetTasks()->begin(); it != TheCareerTasks->GetTasks()->end(); ++it)
@@ -9164,8 +9222,10 @@ void CBasePlayer::Rebuy(void)
 
 	m_bIsInRebuy = false;
 
-	if (TheTutor)
+	if (TheTutor != NULL)
+	{
 		TheTutor->OnEvent(EVENT_PLAYER_LEFT_BUY_ZONE);
+	}
 }
 
 /* <15c96a> ../cstrike/dlls/player.cpp:11200 */

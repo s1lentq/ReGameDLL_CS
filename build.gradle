@@ -8,38 +8,36 @@ group = 'regamedll'
 apply plugin: 'idea'
 
 idea {
-    project {
-        languageLevel = 'JDK_1_7'
-    }
+	project {
+		languageLevel = 'JDK_1_7'
+	}
 }
 
 def gitInfo = GitVersioner.versionForDir(project.rootDir)
 if (!gitInfo) {
-   throw new RuntimeException('Running outside git repository')
+	throw new RuntimeException('Running outside git repository')
 }
-
-
 
 RegamedllVersionInfo versionInfo
 if (gitInfo.tag && gitInfo.tag[0] == 'v') {
-    def m = gitInfo.tag =~ /^v(\d+)\.(\d+)(\.(\d+))?$/
-    if (!m.find()) {
-        throw new RuntimeException("Invalid git version tag name ${gitInfo.tag}")
-    }
+	def m = gitInfo.tag =~ /^v(\d+)\.(\d+)(\.(\d+))?$/
+	if (!m.find()) {
+		throw new RuntimeException("Invalid git version tag name ${gitInfo.tag}")
+	}
 
-    versionInfo = new RegamedllVersionInfo(
-            majorVersion: m.group(1) as int,
-            minorVersion: m.group(2) as int,
-            maintenanceVersion: m.group(4) ? (m.group(4) as int) : null,
-            lastCommitDate: gitInfo.lastCommitDate
-    )
+	versionInfo = new RegamedllVersionInfo(
+		majorVersion: m.group(1) as int,
+		minorVersion: m.group(2) as int,
+		maintenanceVersion: m.group(4) ? (m.group(4) as int) : null,
+		lastCommitDate: gitInfo.lastCommitDate
+	)
 } else {
-    versionInfo = new RegamedllVersionInfo(
-            majorVersion: project.majorVersion as int,
-            minorVersion: project.minorVersion as int,
-            suffix: 'SNAPSHOT',
-            lastCommitDate: gitInfo.lastCommitDate
-   )
+	versionInfo = new RegamedllVersionInfo(
+		majorVersion: project.majorVersion as int,
+		minorVersion: project.minorVersion as int,
+		suffix: 'SNAPSHOT',
+		lastCommitDate: gitInfo.lastCommitDate
+	)
 }
 
 project.ext.regamedllVersionInfo = versionInfo
@@ -48,5 +46,5 @@ project.version = versionInfo.asMavenVersion()
 apply from: 'publish.gradle'
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.4'
+	gradleVersion = '2.4'
 }

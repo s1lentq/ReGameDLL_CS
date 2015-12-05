@@ -5,7 +5,7 @@
 */
 #ifndef HOOK_GAMEDLL
 
-const float updateTimesliceDuration;
+const float updateTimesliceDuration = 0.0f;
 
 #else
 
@@ -98,6 +98,14 @@ NOBODY void CCSBot::StartLearnProcess(void)
 //		SnapToGrid(Vector *pos);  //   193
 //		StartNormalProcess(CCSBot *const this);  //   199
 //	}
+
+	Vector pos;
+	Vector normal;
+
+	startProgressMeter("#CZero_LearningMap");
+	drawProgressMeter(0, "#CZero_LearningMap");
+
+
 }
 
 /* <343d37> ../cstrike/dlls/bot/cs_bot_learn.cpp:217 */

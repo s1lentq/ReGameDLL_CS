@@ -39,7 +39,6 @@ class HostageState: public SimpleState<CHostageImprov *>, public IImprovEvent
 {
 public:
 	virtual ~HostageState(void) {};
-
 	virtual void UpdateStationaryAnimation(CHostageImprov *improv) {};
 
 };/* size: 12, cachelines: 1, members: 2 */
@@ -50,21 +49,32 @@ class HostageStateMachine: public SimpleStateMachine<CHostageImprov *, HostageSt
 public:
 	virtual void OnMoveToSuccess(const Vector &goal)
 	{
-		//TODO: UNTESTED
-		//Update();
+		if (m_state != NULL)
+		{
+			m_state->OnMoveToSuccess(goal);
+		}
 	}
 	virtual void OnMoveToFailure(const Vector &goal, MoveToFailureType reason)
 	{
-		//TODO: UNTESTED
-		Update();
+		if (m_state != NULL)
+		{
+			m_state->OnMoveToFailure(goal, reason);
+		}
 	}
 	virtual void OnInjury(float amount)
 	{
-		//TODO: UNTESTED
-		Update();
+		if (m_state != NULL)
+		{
+			m_state->OnInjury(amount);
+		}
 	}
-
-	void UpdateStationaryAnimation(CHostageImprov *improv) {};
+	void UpdateStationaryAnimation(CHostageImprov *improv)
+	{
+		if (m_state != NULL)
+		{
+			m_state->UpdateStationaryAnimation(improv);
+		}
+	}
 
 };/* size: 16, cachelines: 1, members: 2 */
 
@@ -95,6 +105,16 @@ public:
 		m_fleeTimer.Invalidate();
 		m_mustFlee = true;
 	}
+
+#ifdef HOOK_GAMEDLL
+
+	void OnEnter_(CHostageImprov *improv);
+	void OnUpdate_(CHostageImprov *improv);
+	void OnExit_(CHostageImprov *improv);
+	void UpdateStationaryAnimation_(CHostageImprov *improv);
+
+#endif // HOOK_GAMEDLL
+
 private:
 	CountdownTimer m_waveTimer;
 	CountdownTimer m_fleeTimer;
@@ -203,6 +223,18 @@ public:
 		return "Retreat";
 	}
 
+#ifdef HOOK_GAMEDLL
+
+	void OnEnter_(CHostageImprov *improv);
+	void OnUpdate_(CHostageImprov *improv);
+	void OnExit_(CHostageImprov *improv);
+	const char *GetName_(void) const
+	{
+		return GetName();
+	}
+
+#endif // HOOK_GAMEDLL
+
 };/* size: 12, cachelines: 1, members: 1 */
 
 /* <46fd1e> ../cstrike/dlls/hostage/hostage_states.h:149 */
@@ -219,6 +251,7 @@ public:
 		return "Follow";
 	}
 	virtual void UpdateStationaryAnimation(CHostageImprov *improv);
+
 public:
 	void SetLeader(CBaseEntity *leader)
 	{
@@ -254,6 +287,15 @@ public:
 	{
 		return "Animate";
 	}
+
+#ifdef HOOK_GAMEDLL
+
+	void OnEnter_(CHostageImprov *improv);
+	void OnUpdate_(CHostageImprov *improv);
+	void OnExit_(CHostageImprov *improv);
+
+#endif // HOOK_GAMEDLL
+
 public:
 	struct SeqInfo
 	{
@@ -284,13 +326,12 @@ public:
 	};
 
 	void Reset(void);
-	void AddSequence(CHostageImprov *improv, const char *seqName, float holdTime, float rate);
-	void AddSequence(CHostageImprov *improv, int activity, float holdTime, float rate);
+	void AddSequence(CHostageImprov *improv, const char *seqName, float holdTime = -1.0f, float rate = 1.0f);
+	void AddSequence(CHostageImprov *improv, int activity, float holdTime = -1.0f, float rate = 1.0f);
 
 	bool IsBusy(void)
 	{
-		// TODO: i'm unsure
-		return (GetPerformance() != None);
+		return (m_sequenceCount > 0);
 	}
 	bool IsPlaying(CHostageImprov *improv, const char *seqName);
 	int GetCurrentSequenceID(void)

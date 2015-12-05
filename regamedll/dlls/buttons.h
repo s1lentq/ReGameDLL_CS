@@ -108,18 +108,6 @@ public:
 	virtual int Restore(CRestore &restore);
 	virtual int ObjectCaps(void)
 	{
-		return ObjectCaps_();
-	}
-	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_(void);
-	void KeyValue_(KeyValueData *pkvd);
-	int Save_(CSave &save);
-	int Restore_(CRestore &restore);
-	int ObjectCaps_(void)
-	{
 		int flags = CBaseToggle::ObjectCaps() & (~FCAP_ACROSS_TRANSITION);
 
 		if (pev->spawnflags & SF_MOMENTARY_DOOR)
@@ -129,6 +117,14 @@ public:
 
 		return (flags | FCAP_CONTINUOUS_USE);
 	}
+	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+
+#ifdef HOOK_GAMEDLL
+
+	void Spawn_(void);
+	void KeyValue_(KeyValueData *pkvd);
+	int Save_(CSave &save);
+	int Restore_(CRestore &restore);
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #endif // HOOK_GAMEDLL
@@ -216,6 +212,8 @@ public:
 char *ButtonSound(int sound);
 void DoSpark(entvars_t *pev, const Vector &location);
 
+#ifdef HOOK_GAMEDLL
+
 // linked objects
 C_DLLEXPORT void env_global(entvars_t *pev);
 C_DLLEXPORT void multisource(entvars_t *pev);
@@ -225,5 +223,7 @@ C_DLLEXPORT void momentary_rot_button(entvars_t *pev);
 C_DLLEXPORT void env_spark(entvars_t *pev);
 C_DLLEXPORT void env_debris(entvars_t *pev);
 C_DLLEXPORT void button_target(entvars_t *pev);
+
+#endif // HOOK_GAMEDLL
 
 #endif // BUTTON_H

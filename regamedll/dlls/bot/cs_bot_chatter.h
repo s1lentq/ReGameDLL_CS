@@ -686,7 +686,7 @@ inline void BotChatterInterface::Say(const char *phraseName, float lifetime, flo
 	AddStatement(say);*/
 }
 
-NOBODY const Vector *GetRandomSpotAtPlace(Place place);
+const Vector *GetRandomSpotAtPlace(Place place);
 
 #ifdef HOOK_GAMEDLL
 

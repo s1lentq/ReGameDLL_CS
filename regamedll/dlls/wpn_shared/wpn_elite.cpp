@@ -123,7 +123,12 @@ void CELITE::ELITEFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 	Vector vecSrc;
 	Vector vecDir;
 
+#ifdef REGAMEDLL_FIXES
+	flCycleTime -= 0.078;
+#else
 	flCycleTime -= 0.125;
+#endif // REGAMEDLL_FIXES
+
 	m_iShotsFired++;
 
 	if (m_iShotsFired > 1)

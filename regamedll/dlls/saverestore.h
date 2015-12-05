@@ -53,13 +53,13 @@
 #endif // HOOK_GAMEDLL
 
 #define IMPLEMENT_SAVERESTORE(derivedClass, baseClass)\
-	int derivedClass::Save_(CSave &save)\
+	int derivedClass::__MAKE_VHOOK(Save)(CSave &save)\
 	{\
 		if (!baseClass::Save(save))\
 			return 0;\
 		return save.WriteFields(#derivedClass, this, IMPLEMENT_ARRAY(m_SaveData), ARRAYSIZE(IMPLEMENT_ARRAY(m_SaveData)));\
 	}\
-	int derivedClass::Restore_(CRestore &restore)\
+	int derivedClass::__MAKE_VHOOK(Restore)(CRestore &restore)\
 	{\
 		if (!baseClass::Restore(restore))\
 			return 0;\
@@ -173,25 +173,20 @@ public:
 	short ReadShort(void);
 	int ReadNamedInt(const char *pName);
 	char *ReadNamedString(const char *pName);
-	inline int Empty(void)
+	int Empty(void)
 	{
 		return (m_pdata == NULL || ((m_pdata->pCurrentData - m_pdata->pBaseData) >= m_pdata->bufferSize));
 	}
-	inline void SetGlobalMode(int global)
+	void SetGlobalMode(int global)
 	{
 		m_global = global;
 	}
-	inline void PrecacheMode(BOOL mode)
+	void PrecacheMode(BOOL mode)
 	{
 		m_precache = mode;
 	}
 
-#ifdef HOOK_GAMEDLL
-public:
-#else
 private:
-#endif // HOOK_GAMEDLL
-
 	char *BufferPointer(void);
 	void BufferReadBytes(char *pOutput, int size);
 	void BufferSkipBytes(int bytes);
@@ -220,7 +215,7 @@ public:
 	GLOBALESTATE EntityGetState(string_t globalname);
 	int EntityInTable(string_t globalname)
 	{
-		return (Find(globalname) != NULL) ? 1 : 0;
+		return (Find(globalname) != NULL) ? TRUE : FALSE;
 	}
 	int Save(CSave &save);
 	int Restore(CRestore &restore);
@@ -228,14 +223,9 @@ public:
 
 	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[1];
 
-#ifdef HOOK_GAMEDLL
-public:
-#else
 private:
-#endif // HOOK_GAMEDLL
 	globalentity_t *Find(string_t globalname);
 
-private:
 	globalentity_t *m_pList;
 	int m_listCount;
 

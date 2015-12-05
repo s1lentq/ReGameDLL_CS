@@ -44,7 +44,7 @@ public:
 	virtual void Killed(entvars_t *pevAttacker, int iGib);
 	virtual int BloodColor(void)
 	{
-		return BloodColor_();
+		return DONT_BLEED;
 	}
 public:
 	void EXPORT TankThink(void);
@@ -59,7 +59,7 @@ public:
 	void Killed_(entvars_t *pevAttacker, int iGib);
 	int BloodColor_(void)
 	{
-		return DONT_BLEED;
+		return BloodColor();
 	}
 
 #endif // HOOK_GAMEDLL

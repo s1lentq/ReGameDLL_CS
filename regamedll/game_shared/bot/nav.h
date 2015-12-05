@@ -179,14 +179,14 @@ inline NavDirType OppositeDirection(NavDirType dir)
 {
 	switch (dir)
 	{
-		case NORTH:
-			return SOUTH;
-		case EAST:
-			return WEST;
-		case SOUTH:
-			return NORTH;
-		case WEST:
-			return EAST;
+	case NORTH:
+		return SOUTH;
+	case EAST:
+		return WEST;
+	case SOUTH:
+		return NORTH;
+	case WEST:
+		return EAST;
 	}
 
 	return NORTH;
@@ -197,14 +197,14 @@ inline NavDirType DirectionLeft(NavDirType dir)
 {
 	switch (dir)
 	{
-		case NORTH:
-			return WEST;
-		case SOUTH:
-			return EAST;
-		case EAST:
-			return NORTH;
-		case WEST:
-			return SOUTH;
+	case NORTH:
+		return WEST;
+	case SOUTH:
+		return EAST;
+	case EAST:
+		return NORTH;
+	case WEST:
+		return SOUTH;
 	}
 
 	return NORTH;
@@ -215,14 +215,14 @@ inline NavDirType DirectionRight(NavDirType dir)
 {
 	switch (dir)
 	{
-		case NORTH:
-			return EAST;
-		case SOUTH:
-			return WEST;
-		case EAST:
-			return SOUTH;
-		case WEST:
-			return NORTH;
+	case NORTH:
+		return EAST;
+	case SOUTH:
+		return WEST;
+	case EAST:
+		return SOUTH;
+	case WEST:
+		return NORTH;
 	}
 
 	return NORTH;
@@ -233,18 +233,18 @@ inline void AddDirectionVector(Vector *v, NavDirType dir, float amount)
 {
 	switch (dir)
 	{
-		case NORTH:
-			v->y -= amount;
-			return;
-		case EAST:
-			v->x += amount;
-			return;
-		case SOUTH:
-			v->y += amount;
-			return;
-		case WEST:
-			v->x -= amount;
-			return;
+	case NORTH:
+		v->y -= amount;
+		return;
+	case EAST:
+		v->x += amount;
+		return;
+	case SOUTH:
+		v->y += amount;
+		return;
+	case WEST:
+		v->x -= amount;
+		return;
 	}
 }
 
@@ -253,14 +253,14 @@ inline float DirectionToAngle(NavDirType dir)
 {
 	switch (dir)
 	{
-		case NORTH:
-			return 270.0f;
-		case EAST:
-			return 0.0f;
-		case SOUTH:
-			return 90.0f;
-		case WEST:
-			return 180.0f;
+	case NORTH:
+		return 270.0f;
+	case EAST:
+		return 0.0f;
+	case SOUTH:
+		return 90.0f;
+	case WEST:
+		return 180.0f;
 	}
 
 	return 0.0f;
@@ -292,22 +292,22 @@ inline void DirectionToVector2D(NavDirType dir, Vector2D *v)
 {
 	switch (dir)
 	{
-		case NORTH:
-			v->x =  0.0f;
-			v->y = -1.0f;
-			break;
-		case SOUTH:
-			v->x =  0.0f;
-			v->y =  1.0f;
-			break;
-		case EAST:
-			v->x =  1.0f;
-			v->y =  0.0f;
-			break;
-		case WEST:
-			v->x = -1.0f;
-			v->y =  0.0f;
-			break;
+	case NORTH:
+		v->x =  0.0f;
+		v->y = -1.0f;
+		break;
+	case SOUTH:
+		v->x =  0.0f;
+		v->y =  1.0f;
+		break;
+	case EAST:
+		v->x =  1.0f;
+		v->y =  0.0f;
+		break;
+	case WEST:
+		v->x = -1.0f;
+		v->y =  0.0f;
+		break;
 	}
 }
 

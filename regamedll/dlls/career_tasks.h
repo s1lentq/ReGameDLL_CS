@@ -45,17 +45,13 @@ public:
 	virtual void Reset(void);
 	virtual bool IsTaskCompletableThisRound(void)
 	{
-		return IsTaskCompletableThisRound_();
+		return true;
 	}
 
 #ifdef HOOK_GAMEDLL
 
 	void OnEvent_(GameEventType event, CBasePlayer *pAttacker, CBasePlayer *pVictim);
 	void Reset_(void);
-	bool IsTaskCompletableThisRound_(void)
-	{
-		return true;
-	}
 
 #endif // HOOK_GAMEDLL
 
@@ -192,17 +188,13 @@ public:
 	virtual void Reset(void);
 	virtual bool IsTaskCompletableThisRound(void)
 	{
-		return IsTaskCompletableThisRound_();
+		return m_bombPlantedThisRound && !m_defuseStartedThisRound;
 	}
 
 #ifdef HOOK_GAMEDLL
 
 	void OnEvent_(GameEventType event, CBasePlayer *pAttacker, CBasePlayer *pVictim);
 	void Reset_(void);
-	bool IsTaskCompletableThisRound_(void)
-	{
-		return m_bombPlantedThisRound && !m_defuseStartedThisRound;
-	}
 
 #endif // HOOK_GAMEDLL
 

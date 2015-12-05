@@ -54,7 +54,7 @@ void CHalfLifeTraining::HostageDied(void)
 {
 	CBasePlayer *pPlayer = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(1));
 
-	if (pPlayer)
+	if (pPlayer != NULL)
 	{
 		pPlayer->pev->radsuit_finished = gpGlobals->time + 3;
 	}
@@ -205,7 +205,10 @@ void CHalfLifeTraining::__MAKE_VHOOK(PlayerThink)(CBasePlayer *pPlayer)
 	pPlayer->pev->scale = pPlayer->m_iAccount;
 	pPlayer->pev->ideal_yaw = pPlayer->m_bHasDefuser;
 
-	TheBots->OnEvent(EVENT_PLAYER_CHANGED_TEAM, pPlayer);
+	if (TheBots != NULL)
+	{
+		TheBots->OnEvent(EVENT_PLAYER_CHANGED_TEAM, pPlayer);
+	}
 }
 
 /* <18b79c> ../cstrike/dlls/training_gamerules.cpp:151 */

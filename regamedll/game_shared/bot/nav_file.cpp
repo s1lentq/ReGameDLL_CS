@@ -888,137 +888,138 @@ NOBODY NavErrorType __declspec(naked) LoadNavigationMap(void)
 	{
 		jmp pLoadNavigationMap
 	}
+/*
+	// since the navigation map is destroyed on map change,
+	// if it exists it has already been loaded for this map
+	if (!TheNavAreaList.empty())
+		return NAV_OK;
 
-	//// since the navigation map is destroyed on map change,
-	//// if it exists it has already been loaded for this map
-	//if (!TheNavAreaList.empty())
-	//	return NAV_OK;
+	// nav filename is derived from map filename
+	char filename[256];
+	Q_sprintf(filename, "maps\\%s.nav", STRING(gpGlobals->mapname));
 
-	//// nav filename is derived from map filename
-	//char filename[256];
-	//Q_sprintf(filename, "maps\\%s.nav", STRING(gpGlobals->mapname));
+	// free previous navigation map data
+	DestroyNavigationMap();
+	placeDirectory.Reset();
 
-	//// free previous navigation map data
-	//DestroyNavigationMap();
-	//placeDirectory.Reset();
+	IMPLEMENT_ARRAY_CLASS(CNavArea, m_nextID) = 1;
 
-	//IMPLEMENT_ARRAY_CLASS(CNavArea, m_nextID) = 1;
+	SteamFile navFile(filename);
 
-	//SteamFile navFile(filename);
+	if (!navFile.IsValid())
+		return NAV_CANT_ACCESS_FILE;
 
-	//if (!navFile.IsValid())
-	//	return NAV_CANT_ACCESS_FILE;
+	// check magic number
+	bool result;
+	unsigned int magic;
+	result = navFile.Read(&magic, sizeof(unsigned int));
+	if (!result || magic != NAV_MAGIC_NUMBER)
+	{
+		CONSOLE_ECHO("ERROR: Invalid navigation file '%s'.\n", filename);
+		return NAV_INVALID_FILE;
+	}
 
-	//// check magic number
-	//bool result;
-	//unsigned int magic;
-	//result = navFile.Read(&magic, sizeof(unsigned int));
-	//if (!result || magic != NAV_MAGIC_NUMBER)
-	//{
-	//	CONSOLE_ECHO("ERROR: Invalid navigation file '%s'.\n", filename);
-	//	return NAV_INVALID_FILE;
-	//}
+	// read file version number
+	unsigned int version;
+	result = navFile.Read(&version, sizeof(unsigned int));
+	if (!result || version > 5)
+	{
+		CONSOLE_ECHO("ERROR: Unknown navigation file version.\n");
+		return NAV_BAD_FILE_VERSION;
+	}
 
-	//// read file version number
-	//unsigned int version;
-	//result = navFile.Read(&version, sizeof(unsigned int));
-	//if (!result || version > 5)
-	//{
-	//	CONSOLE_ECHO("ERROR: Unknown navigation file version.\n");
-	//	return NAV_BAD_FILE_VERSION;
-	//}
+	if (version >= 4)
+	{
+		// get size of source bsp file and verify that the bsp hasn't changed
+		unsigned int saveBspSize;
+		navFile.Read(&saveBspSize, sizeof(unsigned int));
 
-	//if (version >= 4)
-	//{
-	//	// get size of source bsp file and verify that the bsp hasn't changed
-	//	unsigned int saveBspSize;
-	//	navFile.Read(&saveBspSize, sizeof(unsigned int));
+		// verify size
+		char *bspFilename = GetBspFilename(filename);
+		if (bspFilename == NULL)
+			return NAV_INVALID_FILE;
 
-	//	// verify size
-	//	char *bspFilename = GetBspFilename(filename);
-	//	if (bspFilename == NULL)
-	//		return NAV_INVALID_FILE;
+		unsigned int bspSize = (unsigned int)GET_FILE_SIZE(bspFilename);
 
-	//	unsigned int bspSize = (unsigned int)GET_FILE_SIZE(bspFilename);
+		if (bspSize != saveBspSize)
+		{
+			// this nav file is out of date for this bsp file
+			char *msg = "*** WARNING ***\nThe AI navigation data is from a different version of this map.\nThe CPU players will likely not perform well.\n";
+			HintMessageToAllPlayers(msg);
+			CONSOLE_ECHO("\n-----------------\n");
+			CONSOLE_ECHO(msg);
+			CONSOLE_ECHO("-----------------\n\n");
+		}
+	}
 
-	//	if (bspSize != saveBspSize)
-	//	{
-	//		// this nav file is out of date for this bsp file
-	//		char *msg = "*** WARNING ***\nThe AI navigation data is from a different version of this map.\nThe CPU players will likely not perform well.\n";
-	//		HintMessageToAllPlayers(msg);
-	//		CONSOLE_ECHO("\n-----------------\n");
-	//		CONSOLE_ECHO(msg);
-	//		CONSOLE_ECHO("-----------------\n\n");
-	//	}
-	//}
+	// load Place directory
+	if (version >= 5)
+	{
+		placeDirectory.Load(&navFile);
+	}
 
-	//// load Place directory
-	//if (version >= 5)
-	//{
-	//	placeDirectory.Load(&navFile);
-	//}
+	// get number of areas
+	unsigned int count;
+	result = navFile.Read(&count, sizeof(unsigned int));
 
-	//// get number of areas
-	//unsigned int count;
-	//result = navFile.Read(&count, sizeof(unsigned int));
+	Extent extent;
+	extent.lo.x = 9999999999.9f;
+	extent.lo.y = 9999999999.9f;
+	extent.hi.x = -9999999999.9f;
+	extent.hi.y = -9999999999.9f;
 
-	//Extent extent;
-	//extent.lo.x = 9999999999.9f;
-	//extent.lo.y = 9999999999.9f;
-	//extent.hi.x = -9999999999.9f;
-	//extent.hi.y = -9999999999.9f;
+	// load the areas and compute total extent
+	for (unsigned int i = 0; i < count; i++)
+	{
+		CNavArea *area = new CNavArea;
+		area->Load(&navFile, version);
+		TheNavAreaList.push_back(area);
 
-	//// load the areas and compute total extent
-	//for (unsigned int i = 0; i < count; i++)
-	//{
-	//	CNavArea *area = new CNavArea;
-	//	area->Load(&navFile, version);
-	//	TheNavAreaList.push_back(area);
+		const Extent *areaExtent = area->GetExtent();
 
-	//	const Extent *areaExtent = area->GetExtent();
+		// check validity of nav area
+		if (areaExtent->lo.x >= areaExtent->hi.x || areaExtent->lo.y >= areaExtent->hi.y)
+			CONSOLE_ECHO("WARNING: Degenerate Navigation Area #%d at ( %g, %g, %g )\n",
+				area->GetID(), area->m_center.x, area->m_center.y, area->m_center.z);
 
-	//	// check validity of nav area
-	//	if (areaExtent->lo.x >= areaExtent->hi.x || areaExtent->lo.y >= areaExtent->hi.y)
-	//		CONSOLE_ECHO("WARNING: Degenerate Navigation Area #%d at ( %g, %g, %g )\n",
-	//			area->GetID(), area->m_center.x, area->m_center.y, area->m_center.z);
+		if (areaExtent->lo.x < extent.lo.x)
+			extent.lo.x = areaExtent->lo.x;
 
-	//	if (areaExtent->lo.x < extent.lo.x)
-	//		extent.lo.x = areaExtent->lo.x;
+		if (areaExtent->lo.y < extent.lo.y)
+			extent.lo.y = areaExtent->lo.y;
 
-	//	if (areaExtent->lo.y < extent.lo.y)
-	//		extent.lo.y = areaExtent->lo.y;
+		if (areaExtent->hi.x > extent.hi.x)
+			extent.hi.x = areaExtent->hi.x;
 
-	//	if (areaExtent->hi.x > extent.hi.x)
-	//		extent.hi.x = areaExtent->hi.x;
+		if (areaExtent->hi.y > extent.hi.y)
+			extent.hi.y = areaExtent->hi.y;
+	}
 
-	//	if (areaExtent->hi.y > extent.hi.y)
-	//		extent.hi.y = areaExtent->hi.y;
-	//}
+	// add the areas to the grid
+	TheNavAreaGrid.Initialize(extent.lo.x, extent.hi.x, extent.lo.y, extent.hi.y);
 
-	//// add the areas to the grid
-	//TheNavAreaGrid.Initialize(extent.lo.x, extent.hi.x, extent.lo.y, extent.hi.y);
+	NavAreaList::iterator iter;
+	for (iter = TheNavAreaList.begin(); iter != TheNavAreaList.end(); ++iter)
+		TheNavAreaGrid.AddNavArea(*iter);
 
-	//NavAreaList::iterator iter;
-	//for (iter = TheNavAreaList.begin(); iter != TheNavAreaList.end(); ++iter)
-	//	TheNavAreaGrid.AddNavArea(*iter);
+	// allow areas to connect to each other, etc
+	for (iter = TheNavAreaList.begin(); iter != TheNavAreaList.end(); ++iter)
+	{
+		CNavArea *area = *iter;
+		area->PostLoad();
+	}
 
-	//// allow areas to connect to each other, etc
-	//for (iter = TheNavAreaList.begin(); iter != TheNavAreaList.end(); ++iter)
-	//{
-	//	CNavArea *area = *iter;
-	//	area->PostLoad();
-	//}
+	// load legacy location file (Places)
+	if (version < 5)
+	{
+		LoadLocationFile(filename);
+	}
 
-	//// load legacy location file (Places)
-	//if (version < 5)
-	//{
-	//	LoadLocationFile(filename);
-	//}
+	//
+	// Set up all the ladders
+	//
+	BuildLadders();
 
-	////
-	//// Set up all the ladders
-	////
-	//BuildLadders();
-
-	//return NAV_OK;
+	return NAV_OK;
+*/
 }

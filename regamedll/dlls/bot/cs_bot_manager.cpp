@@ -30,7 +30,7 @@ cvar_t cv_bot_allow_grenades = { "bot_allow_grenades", "1", FCVAR_SERVER, 0.0f, 
 cvar_t cv_bot_allow_snipers = { "bot_allow_snipers", "1", FCVAR_SERVER, 0.0f, NULL };
 cvar_t cv_bot_allow_shield = { "bot_allow_shield", "1", FCVAR_SERVER, 0.0f, NULL };
 cvar_t cv_bot_join_team = { "bot_join_team", "any", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_join_after_player = { &unk_1EF09A, "1", FCVAR_SERVER, 0.0f, NULL };
+cvar_t cv_bot_join_after_player = { "bot_join_after_player", "1", FCVAR_SERVER, 0.0f, NULL };
 cvar_t cv_bot_auto_vacate = { "bot_auto_vacate", "1", FCVAR_SERVER, 0.0f, NULL };
 cvar_t cv_bot_zombie = { "bot_zombie", "0", FCVAR_SERVER, 0.0f, NULL };
 cvar_t cv_bot_defer_to_human = { "bot_defer_to_human", "0", FCVAR_SERVER, 0.0f, NULL };
@@ -223,7 +223,7 @@ void CCSBotManager::__MAKE_VHOOK(ServerActivate)(void)
 	m_bServerActive = true;
 	AddServerCommands();
 
-	TheBotPhrases->m_placeCount = 0;
+	TheBotPhrases->OnMapChange();
 }
 
 /* <36afcd> ../cstrike/dlls/bot/cs_bot_manager.cpp:369 */
@@ -822,7 +822,6 @@ void CCSBotManager::ValidateMapData(void)
 
 	IMPLEMENT_ARRAY(m_isMapDataLoaded) = true;
 
-	// TODO: Reverse me
 	if (LoadNavigationMap())
 	{
 		CONSOLE_ECHO("Failed to load navigation map.\n");
@@ -1085,22 +1084,26 @@ NOBODY const CCSBotManager::Zone *CCSBotManager::GetZone(const Vector *pos) cons
 //	}
 }
 
+// Return the closest zone to the given position
+
 /* <36bbfd> ../cstrike/dlls/bot/cs_bot_manager.cpp:1392 */
-NOBODY const CCSBotManager::Zone *CCSBotManager::GetClosestZone(const Vector *pos) const
+const CCSBotManager::Zone *CCSBotManager::GetClosestZone(const Vector *pos) const
 {
-//	{
-//		const class Zone *close;                            //  1394
-//		float closeRangeSq;                                   //  1395
-//		{
-//			int z;                                        //  1397
-//			{
-//				float rangeSq;                        //  1399
-//				operator-(const Vector *const this,
-//						const Vector &v);  //  1399
-//				LengthSquared(const Vector *const this);  //  1399
-//			}
-//		}
-//	}
+	const Zone *close = NULL;
+	float closeRangeSq = 1e9f;
+
+	for (int z = 0; z < m_zoneCount; z++)
+	{
+		float rangeSq = (m_zone[z].m_center - (*pos)).LengthSquared();
+
+		if (rangeSq < closeRangeSq)
+		{
+			closeRangeSq = rangeSq;
+			close = &m_zone[z];
+		}
+	}
+
+	return close;
 }
 
 /* <36bcc9> ../cstrike/dlls/bot/cs_bot_manager.cpp:1415 */

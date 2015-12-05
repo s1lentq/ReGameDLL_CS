@@ -96,10 +96,8 @@ int CaseInsensitiveHash(const char *string, int iBounds)
 {
 	unsigned int hash = 0;
 
-	if (!string[0])
-	{
+	if (!*string)
 		return 0;
-	}
 
 	while (*string)
 	{
@@ -107,6 +105,7 @@ int CaseInsensitiveHash(const char *string, int iBounds)
 			hash = *string + 2 * hash;
 		else
 			hash = *string + 2 * hash + ' ';
+
 		string++;
 	}
 
@@ -394,7 +393,6 @@ C_DLLEXPORT int GetEntityAPI(DLL_FUNCTIONS *pFunctionTable, int interfaceVersion
 
 	Q_memcpy(pFunctionTable, &gFunctionTable, sizeof(DLL_FUNCTIONS));
 	stringsHashTable.AddMultipleToTail(2048);
-
 	for (int i = 0; i < stringsHashTable.Count(); i++)
 	{
 		stringsHashTable[i].next = NULL;
@@ -405,7 +403,7 @@ C_DLLEXPORT int GetEntityAPI(DLL_FUNCTIONS *pFunctionTable, int interfaceVersion
 }
 
 /* <3161a> ../cstrike/dlls/cbase.cpp:471 */
-NOXREF extern "C" C_EXPORT int GetEntityAPI2(DLL_FUNCTIONS *pFunctionTable, int *interfaceVersion)
+NOXREF int GetEntityAPI2(DLL_FUNCTIONS *pFunctionTable, int *interfaceVersion)
 {
 	if (!pFunctionTable || *interfaceVersion != INTERFACE_VERSION)
 	{
@@ -418,7 +416,7 @@ NOXREF extern "C" C_EXPORT int GetEntityAPI2(DLL_FUNCTIONS *pFunctionTable, int 
 }
 
 /* <3165b> ../cstrike/dlls/cbase.cpp:485 */
-extern "C" C_EXPORT int GetNewDLLFunctions(NEW_DLL_FUNCTIONS *pFunctionTable, int *interfaceVersion)
+C_DLLEXPORT int GetNewDLLFunctions(NEW_DLL_FUNCTIONS *pFunctionTable, int *interfaceVersion)
 {
 	if (!pFunctionTable || *interfaceVersion != NEW_DLL_FUNCTIONS_VERSION)
 	{
@@ -548,7 +546,7 @@ void DispatchThink(edict_t *pent)
 
 	if (pEntity != NULL)
 	{
-		if ((pEntity->pev->flags & FL_DORMANT))
+		if (pEntity->pev->flags & FL_DORMANT)
 		{
 			ALERT(at_error, "Dormant entity %s is thinking!!\n", STRING(pEntity->pev->classname));
 		}

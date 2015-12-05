@@ -212,15 +212,20 @@ public:
 
 };/* size: 152, cachelines: 3, members: 1 */
 
-C_DLLEXPORT void ammo_9mm(entvars_t *pev);		// C9MMAmmo
-C_DLLEXPORT void ammo_buckshot(entvars_t *pev);		// CBuckShotAmmo
-C_DLLEXPORT void ammo_556nato(entvars_t *pev);		// C556NatoAmmo
-C_DLLEXPORT void ammo_556natobox(entvars_t *pev);	// C556NatoBoxAmmo
-C_DLLEXPORT void ammo_762nato(entvars_t *pev);		// C762NatoAmmo
-C_DLLEXPORT void ammo_45acp(entvars_t *pev);		// C45ACPAmmo
-C_DLLEXPORT void ammo_50ae(entvars_t *pev);		// C50AEAmmo
-C_DLLEXPORT void ammo_338magnum(entvars_t *pev);	// C338MagnumAmmo
-C_DLLEXPORT void ammo_57mm(entvars_t *pev);		// C57MMAmmo
-C_DLLEXPORT void ammo_357sig(entvars_t *pev);		// C357SIGAmmo
+#ifdef HOOK_GAMEDLL
+
+// linked objects
+C_DLLEXPORT void ammo_9mm(entvars_t *pev);
+C_DLLEXPORT void ammo_buckshot(entvars_t *pev);
+C_DLLEXPORT void ammo_556nato(entvars_t *pev);
+C_DLLEXPORT void ammo_556natobox(entvars_t *pev);
+C_DLLEXPORT void ammo_762nato(entvars_t *pev);
+C_DLLEXPORT void ammo_45acp(entvars_t *pev);
+C_DLLEXPORT void ammo_50ae(entvars_t *pev);
+C_DLLEXPORT void ammo_338magnum(entvars_t *pev);
+C_DLLEXPORT void ammo_57mm(entvars_t *pev);
+C_DLLEXPORT void ammo_357sig(entvars_t *pev);
+
+#endif // HOOK_GAMEDLL
 
 #endif // AMMO_H

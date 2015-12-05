@@ -143,14 +143,19 @@
 
 #ifdef HOOK_GAMEDLL
 	#define WINAPI_HOOK __stdcall
+#else
+	#define WINAPI_HOOK	/**/
 #endif // HOOK_GAMEDLL
 
 	#define STDCALL __stdcall
 	#define HIDDEN
 
-	#define _DLLEXPORT __declspec(dllexport)
-	#define _DECL_NAKED __declspec(naked)
-	#define C_DLLEXPORT extern "C" __declspec(dllexport)
+	// Attributes to specify an "exported" function, visible from outside the
+	// DLL.
+	#undef DLLEXPORT
+	#define DLLEXPORT	__declspec(dllexport)
+	// WINAPI should be provided in the windows compiler headers.
+	// It's usually defined to something like "__stdcall".
 
 	typedef int socklen_t;
 	#define SOCKET_FIONBIO(s, m) ioctlsocket(s, FIONBIO, (u_long*)&m)
@@ -182,9 +187,10 @@
 	#define CDECL __attribute__ ((cdecl))
 	#define STDCALL __attribute__ ((stdcall))
 	#define HIDDEN __attribute__((visibility("hidden")))
-	#define _DLLEXPORT __attribute__((visibility("default")))
-	#define _DECL_NAKED __attribute__((naked))
-	#define C_DLLEXPORT extern "C" __attribute__((visibility("default")))
+
+	#undef DLLEXPORT
+	#define DLLEXPORT	__attribute__((visibility("default")))
+	#define WINAPI		/* */
 
 	typedef int SOCKET;
 	#define INVALID_SOCKET (SOCKET)(~0)
@@ -207,6 +213,15 @@
 	#endif
 #endif // _WIN32
 
+// Simplified macro for declaring/defining exported DLL functions.  They
+// need to be 'extern "C"' so that the C++ compiler enforces parameter
+// type-matching, rather than considering routines with mis-matched
+// arguments/types to be overloaded functions...
+//
+// AFAIK, this is os-independent, but it's included here in osdep.h where
+// DLLEXPORT is defined, for convenience.
+#define C_DLLEXPORT extern "C" DLLEXPORT
+
 #ifdef _WIN32
 	static const bool __isWindows = true;
 	static const bool __isLinux = false;
@@ -216,7 +231,6 @@
 #endif
 
 extern void regamedll_log(const char *fmt, ...);
-
 extern void regamedll_syserror(const char *fmt, ...);
 
 #endif // OSCONFIG_H

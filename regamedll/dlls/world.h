@@ -49,10 +49,14 @@ void SaveGlobalState(SAVERESTOREDATA *pSaveData);
 void RestoreGlobalState(SAVERESTOREDATA *pSaveData);
 void ResetGlobalState(void);
 
+#ifdef HOOK_GAMEDLL
+
 // linked object
 C_DLLEXPORT void infodecal(entvars_t *pev);
 C_DLLEXPORT void bodyque(entvars_t *pev);
 C_DLLEXPORT void worldspawn(entvars_t *pev);
+
+#endif // HOOK_GAMEDLL
 
 extern edict_t *g_pBodyQueueHead;
 extern CGlobalState gGlobalState;

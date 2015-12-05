@@ -211,7 +211,7 @@ public:
 		return &m_zone[i];
 	}
 	NOBODY const Zone *GetZone(const Vector *pos) const;
-	NOBODY const Zone *GetClosestZone(const Vector *pos) const;
+	const Zone *GetClosestZone(const Vector *pos) const;
 	const Zone *GetClosestZone(const CBaseEntity *entity) const
 	{
 		return GetClosestZone(&entity->pev->origin);
@@ -456,6 +456,9 @@ NOBODY void UTIL_DrawBox(Extent *extent, int lifetime, int red, int green, int b
 
 typedef const CCSBotManager::Zone *(CCSBotManager::*GET_ZONE_INT)(int) const;
 typedef const CCSBotManager::Zone *(CCSBotManager::*GET_ZONE_VECTOR)(const Vector *pos) const;
+
+typedef const CCSBotManager::Zone *(CCSBotManager::*GET_CLOSEST_ZONE_ENT)(const CBaseEntity *entity) const;
+typedef const CCSBotManager::Zone *(CCSBotManager::*GET_CLOSEST_ZONE_VECTOR)(const Vector *pos) const;
 
 #endif // HOOK_GAMEDLL
 

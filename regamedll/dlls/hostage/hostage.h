@@ -32,6 +32,7 @@
 #pragma once
 #endif
 
+// Improved the hostages from CZero
 #include "hostage/hostage_improv.h"
 
 #define MAX_NODES			100
@@ -44,6 +45,8 @@
 #define VEC_HOSTAGE_VIEW		Vector(0, 0, 12)
 #define VEC_HOSTAGE_HULL_MIN		Vector(-10, -10, 0)
 #define VEC_HOSTAGE_HULL_MAX		Vector(10, 10, 62)
+
+#define VEC_HOSTAGE_CROUCH		Vector(10, 10, 30)
 
 class CHostage;
 class CLocalNav;
@@ -96,76 +99,20 @@ extern cvar_t cv_hostage_stop;
 class CHostage: public CBaseMonster
 {
 public:
-	NOBODY virtual void Spawn(void);
-	NOBODY virtual void Precache(void);
-	NOBODY virtual int ObjectCaps(void);
+	virtual void Spawn(void);
+	virtual void Precache(void);
+	virtual int ObjectCaps(void);
 	virtual int Classify(void)
 	{
 		return CLASS_HUMAN_PASSIVE;
 	}
-	NOBODY virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
+	virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
 	virtual int BloodColor(void)
 	{
 		return BLOOD_COLOR_RED;
 	}
-	NOBODY virtual void Touch(CBaseEntity *pOther);
-	NOBODY virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-public:
-	NOBODY void EXPORT IdleThink(void);
-	NOBODY void Remove(void);
-	void RePosition(void);
-	void SetActivity(int act);
-	NOBODY int GetActivity(void);
-	NOBODY float GetModifiedDamage(float flDamage, int nHitGroup);
-	NOBODY void SetFlinchActivity(void);
-	NOBODY void SetDeathActivity(void);
-	NOBODY void PlayPainSound(void);
-	NOBODY void PlayFollowRescueSound(void);
-	NOBODY void AnnounceDeath(CBasePlayer *pAttacker);
-	NOBODY void ApplyHostagePenalty(CBasePlayer *pAttacker);
-	NOBODY void GiveCTTouchBonus(CBasePlayer *pPlayer);
-	NOBODY void SendHostagePositionMsg(void);
-	NOBODY void SendHostageEventMsg(void);
-	NOBODY void DoFollow(void);
-	NOBODY BOOL IsOnLadder(void);
-	NOBODY void PointAt(const Vector &vecLoc);
-	NOBODY void MoveToward(const Vector &vecLoc);
-	void NavReady(void);
-	NOBODY void Wiggle(void);
-	void PreThink(void);
-
-	NOBODY bool IsFollowingSomeone(void)
-	{
-		UNTESTED
-		return m_improv->IsFollowing(NULL);
-	}
-	NOBODY CBaseEntity *GetLeader(void)
-	{
-		UNTESTED
-		if (m_improv != NULL)
-		{
-			return m_improv->GetFollowLeader();
-		}
-
-		return NULL;
-	}
-	NOBODY bool IsFollowing(const CBaseEntity *entity)
-	{
-		return (entity == m_hTargetEnt && m_State == FOLLOW);
-	}
-	NOBODY bool IsValid(void)
-	{
-		UNTESTED
-		return (pev->takedamage == DAMAGE_YES);
-	}
-	NOBODY bool IsDead(void)
-	{
-		UNTESTED
-		return (pev->deadflag == DEAD_DEAD);
-	}
-	NOBODY bool IsAtHome(void);//
-	NOBODY const Vector *GetHomePosition(void);//
+	virtual void Touch(CBaseEntity *pOther);
+	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
 
@@ -177,6 +124,68 @@ public:
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #endif // HOOK_GAMEDLL
+
+public:
+	void EXPORT IdleThink(void);
+	void EXPORT Remove(void);
+	void RePosition(void);
+	void SetActivity(int act);
+	int GetActivity(void)
+	{
+		return m_Activity;
+	}
+	float GetModifiedDamage(float flDamage, int nHitGroup);
+	void SetFlinchActivity(void);
+	void SetDeathActivity(void);
+	void PlayPainSound(void);
+	void PlayFollowRescueSound(void);
+	void AnnounceDeath(CBasePlayer *pAttacker);
+	void ApplyHostagePenalty(CBasePlayer *pAttacker);
+	void GiveCTTouchBonus(CBasePlayer *pPlayer);
+	void SendHostagePositionMsg(void);
+	void SendHostageEventMsg(void);
+	void DoFollow(void);
+	BOOL IsOnLadder(void);
+	void PointAt(const Vector &vecLoc);
+	void MoveToward(const Vector &vecLoc);
+	void NavReady(void);
+	void Wiggle(void);
+	void PreThink(void);
+
+	bool IsFollowingSomeone(void)
+	{
+		UNTESTED
+		return m_improv->IsFollowing();
+	}
+	CBaseEntity *GetLeader(void)
+	{
+		UNTESTED
+		if (m_improv != NULL)
+		{
+			return m_improv->GetFollowLeader();
+		}
+
+		return NULL;
+	}
+	bool IsFollowing(const CBaseEntity *entity)
+	{
+		return (entity == m_hTargetEnt && m_State == FOLLOW);
+	}
+	bool IsValid(void)
+	{
+		UNTESTED
+		return (pev->takedamage == DAMAGE_YES);
+	}
+	bool IsDead(void)
+	{
+		UNTESTED
+		return (pev->deadflag == DEAD_DEAD);
+	}
+	bool IsAtHome(void)
+	{
+		return (pev->origin - m_vStart).IsLengthGreaterThan(20) != true;
+	}
+	NOBODY const Vector *GetHomePosition(void);
 
 public:
 	enum state
@@ -247,7 +256,7 @@ public:
 
 	struct ChatterSet
 	{
-		struct SoundFile file[32];
+		SoundFile file[32];
 		int count;
 		int index;
 		bool needsShuffle;
@@ -284,17 +293,18 @@ public:
 	{
 		return &m_chatter;
 	}
-	NOBODY bool IsNearbyHostageTalking(CHostageImprov *improv);
-	NOBODY bool IsNearbyHostageJumping(CHostageImprov *improv);
-	NOBODY void OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *other);
-	UNTESTED inline CHostage *GetClosestHostage(const Vector &pos, float *resultRange = NULL)
+	bool IsNearbyHostageTalking(CHostageImprov *improv);
+	bool IsNearbyHostageJumping(CHostageImprov *improv);
+	void OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *other);
+	inline CHostage *GetClosestHostage(const Vector &pos, float *resultRange = NULL)
 	{
-		float closeRange = 100000000.0f;
+		float range;
+		float closeRange = 1e8f;
 		CHostage *close = NULL;
 
 		for (int i = 0; i < m_hostageCount; i++)
 		{
-			float range = (m_hostage[ i ]->pev->origin - pos).Length();
+			range = (m_hostage[ i ]->pev->origin - pos).Length();
 
 			if (range < closeRange)
 			{
@@ -309,9 +319,7 @@ public:
 		return close;
 	}
 
-	template<
-		typename T
-	>
+	template<typename T>
 	bool ForEachHostage(T &func)
 	{
 		UNTESTED
@@ -364,10 +372,18 @@ private:
 ////	}
 //}
 
+#ifdef HOOK_GAMEDLL
+
+// linked object
+C_DLLEXPORT void hostage_entity(entvars_t *pev);
+C_DLLEXPORT void monster_scientist(entvars_t *pev);
+
+#endif // HOOK_GAMEDLL
+
 void Hostage_RegisterCVars(void);
-NOBODY void InstallHostageManager(void);
+void InstallHostageManager(void);
 
 // refs
-extern void (*pCHostage__IdleThink)(void);
+extern void (CBaseEntity::*pCHostage__IdleThink)(void);
 
 #endif // HOSTAGE_H

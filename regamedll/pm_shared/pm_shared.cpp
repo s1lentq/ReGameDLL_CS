@@ -29,7 +29,7 @@
 
 static int pm_shared_initialized = 0;
 
-static vec_t rgv3tStuckTable[54][3];
+static vec3_t rgv3tStuckTable[54];
 static int rgStuckLast[MAX_CLIENTS][2];
 
 static int pm_gcTextures = 0;
@@ -2666,7 +2666,11 @@ void PM_DropPunchAngle(vec_t *punchangle)
 
 	len = VectorNormalize(punchangle);
 	len -= (10.0 + len * 0.5) * pmove->frametime;
+#ifdef HOOK_GAMEDLL
 	len = Q_max(len, 0.0);
+#else
+	len = Q_max(len, 0.0f);
+#endif // HOOK_GAMEDLL
 	VectorScale(punchangle, len, punchangle);
 }
 
@@ -3172,9 +3176,9 @@ void PM_CreateStuckTable(void)
 }
 
 // This module implements the shared player physics code between any particular game and
-// the engine.  The same PM_Move routine is built into the game .dll and the client .dll and is
-// invoked by each side as appropriate.  There should be no distinction, internally, between server
-// and client.  This will ensure that prediction behaves appropriately.
+// the engine. The same PM_Move routine is built into the game .dll and the client .dll and is
+// invoked by each side as appropriate. There should be no distinction, internally, between server
+// and client. This will ensure that prediction behaves appropriately.
 
 /* <2ce182> ../cstrike/pm_shared/pm_shared.c:3596 */
 void PM_Move(struct playermove_s *ppmove, int server)

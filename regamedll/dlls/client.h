@@ -126,8 +126,6 @@ typedef struct
 
 extern PLAYERPVSSTATUS g_PVSStatus[32];
 
-#ifdef HOOK_GAMEDLL
-
 extern float g_flTimeLimit;// exported
 extern float g_flResetTime;
 extern bool g_bClientPrintEnable;
@@ -139,8 +137,6 @@ extern entity_field_alias_t entity_field_alias[6];
 extern entity_field_alias_t player_field_alias[3];
 extern entity_field_alias_t custom_entity_field_alias[9];
 extern int g_serveractive;
-
-#endif // HOOK_GAMEDLL
 
 extern unsigned short m_usResetDecals;
 extern unsigned short g_iShadowSprite;

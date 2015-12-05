@@ -1066,7 +1066,7 @@ void RadiusFlash(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker,
 
 			pPlayer->Blind(fadeTime * 0.33, fadeHold, fadeTime, alpha);
 
-			if (TheBots)
+			if (TheBots != NULL)
 			{
 				TheBots->OnEvent(EVENT_PLAYER_BLINDED_BY_FLASHBANG, pPlayer);
 			}
@@ -1773,7 +1773,7 @@ Vector CBaseEntity::FireBullets3(Vector vecSrc, Vector vecDirShooting, float vec
 		ClearMultiDamage();
 		UTIL_TraceLine(vecSrc, vecEnd, dont_ignore_monsters, ENT(pev), &tr);
 
-		if (tr.flFraction != 1.0f)
+		if (TheBots != NULL && tr.flFraction != 1.0f)
 		{
 			TheBots->OnEvent(EVENT_BULLET_IMPACT, this, (CBaseEntity *)&tr.vecEndPos);
 		}

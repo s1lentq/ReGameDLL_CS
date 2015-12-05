@@ -40,7 +40,7 @@ public:
 public:
 	virtual BOOL IsMultiplayer(void)
 	{
-		return IsMultiplayer_();
+		return FALSE;
 	}
 	virtual BOOL IsDeathmatch(void);
 	virtual void InitHUD(CBasePlayer *pl);
@@ -55,10 +55,6 @@ public:
 
 #ifdef HOOK_GAMEDLL
 
-	BOOL IsMultiplayer_(void)
-	{
-		return FALSE;
-	}
 	BOOL IsDeathmatch_(void);
 	void InitHUD_(CBasePlayer *pl);
 	void PlayerSpawn_(CBasePlayer *pPlayer);
@@ -75,7 +71,6 @@ public:
 	static void HostageDied(void);
 	static bool PlayerCanBuy(CBasePlayer *pPlayer);
 
-//private:
 	float FillAccountTime;
 	float ServerRestartTime;
 	BOOL fInBuyArea;
@@ -94,7 +89,7 @@ public:
 	virtual int Restore(CRestore &restore);
 	virtual int ObjectCaps(void)
 	{
-		return ObjectCaps_();
+		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION);
 	}
 	virtual void Think(void);
 	virtual void Touch(CBaseEntity *pOther);
@@ -105,10 +100,6 @@ public:
 	void KeyValue_(KeyValueData *pkvd);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
-	int ObjectCaps_(void)
-	{
-		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION);
-	}
 	void Think_(void);
 	void Touch_(CBaseEntity *pOther);
 
@@ -158,8 +149,12 @@ private:
 
 };/* size: 300, cachelines: 5, members: 8 */
 
+#ifdef HOOK_GAMEDLL
+
 // linked objects
 C_DLLEXPORT void func_grencatch(entvars_t *pev);
 C_DLLEXPORT void func_weaponcheck(entvars_t *pev);
+
+#endif // HOOK_GAMEDLL
 
 #endif // TRAINING_GAMERULES_H

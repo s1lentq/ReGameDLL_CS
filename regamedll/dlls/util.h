@@ -279,7 +279,7 @@ inline entvars_t *VARS(EOFFSET eoffset)
 }
 
 /* <2ee03> ../cstrike/dlls/util.h:189 */
-inline int ENTINDEX(edict_t *pEdict)
+inline int ENTINDEX(const edict_t *pEdict)
 {
 	return (*g_engfuncs.pfnIndexOfEdict)(pEdict);
 }
@@ -495,13 +495,5 @@ typedef int (CSaveRestoreBuffer::*CSAVERESTOREBUFFER_VOID)(const char *,const Ve
 typedef int (CSaveRestoreBuffer::*CSAVERESTOREBUFFER_POINTER)(const char *,const float *,int);
 
 #endif // HOOK_GAMEDLL
-
-#if 1
-
-extern void *addr_orig;
-extern char patchByte[5];
-extern char patchByteOriginal[5];
-
-#endif
 
 #endif // UTIL_H

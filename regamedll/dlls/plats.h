@@ -56,13 +56,13 @@ public:
 	virtual int Restore(CRestore &restore);
 	virtual int ObjectCaps(void)
 	{
-		return ObjectCaps_();
+		return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION;
 	}
 
 	// This is done to fix spawn flag collisions between this class and a derived class
 	virtual BOOL IsTogglePlat(void)
 	{
-		return IsTogglePlat_();
+		return (pev->spawnflags & SF_PLAT_TOGGLE) != 0;
 	}
 
 #ifdef HOOK_GAMEDLL
@@ -71,14 +71,6 @@ public:
 	void KeyValue_(KeyValueData *pkvd);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
-	int ObjectCaps_(void)
-	{
-		return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION;
-	}
-	BOOL IsTogglePlat_(void)
-	{
-		return (pev->spawnflags & SF_PLAT_TOGGLE) != 0;
-	}
 
 #endif // HOOK_GAMEDLL
 
@@ -131,16 +123,12 @@ class CPlatTrigger: public CBaseEntity
 public:
 	virtual int ObjectCaps(void)
 	{
-		return ObjectCaps_();
+		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | FCAP_DONT_SAVE;
 	}
 	virtual void Touch(CBaseEntity *pOther);
 
 #ifdef HOOK_GAMEDLL
 
-	int ObjectCaps_(void)
-	{
-		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | FCAP_DONT_SAVE;
-	}
 	void Touch_(CBaseEntity *pOther);
 
 #endif // HOOK_GAMEDLL
@@ -244,16 +232,12 @@ public:
 	virtual void Spawn(void);
 	virtual int ObjectCaps(void)
 	{
-		return ObjectCaps_();
+		return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION;
 	}
 
 #ifdef HOOK_GAMEDLL
 
 	void Spawn_(void);
-	int ObjectCaps_(void)
-	{
-		return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION;
-	}
 
 #endif // HOOK_GAMEDLL
 
@@ -355,7 +339,6 @@ public:
 
 #endif // HOOK_GAMEDLL
 
-
 };/* size: 380, cachelines: 6, members: 1 */
 
 /* <12caec> ../cstrike/dlls/plats.cpp:2136 */
@@ -367,22 +350,22 @@ public:
 	virtual int Restore(CRestore &restore);
 	virtual int ObjectCaps(void)
 	{
-		return ObjectCaps_();
+		return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION;
 	}
 	virtual void Activate(void);
 	virtual int Classify(void)
 	{
-		return Classify_();
+		return CLASS_MACHINE;
 	}
 	virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
 	virtual int BloodColor(void)
 	{
-		return BloodColor_();
+		return DONT_BLEED;
 	}
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 	virtual Vector BodyTarget(const Vector &posSrc)
 	{
-		return BodyTarget_(posSrc);
+		return pev->origin;
 	}
 
 #ifdef HOOK_GAMEDLL
@@ -390,25 +373,9 @@ public:
 	void Spawn_(void);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
-	int ObjectCaps_(void)
-	{
-		return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION;
-	}
 	void Activate_(void);
-	int Classify_(void)
-	{
-		return CLASS_MACHINE;
-	}
 	int TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
-	int BloodColor_(void)
-	{
-		return DONT_BLEED;
-	}
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-	Vector BodyTarget_(const Vector &posSrc)
-	{
-		return pev->origin;
-	}
 
 #endif // HOOK_GAMEDLL
 
@@ -430,6 +397,8 @@ void PlatSpawnInsideTrigger(entvars_t *pevPlatform);
 //float Fix(float angle);
 void FixupAngles(Vector &v);
 
+#ifdef HOOK_GAMEDLL
+
 // linked objects
 C_DLLEXPORT void func_plat(entvars_t *pev);
 C_DLLEXPORT void func_platrot(entvars_t *pev);
@@ -439,5 +408,7 @@ C_DLLEXPORT void func_traincontrols(entvars_t *pev);
 C_DLLEXPORT void func_trackchange(entvars_t *pev);
 C_DLLEXPORT void func_trackautochange(entvars_t *pev);
 C_DLLEXPORT void func_guntarget(entvars_t *pev);
+
+#endif // HOOK_GAMEDLL
 
 #endif // PLATS_H

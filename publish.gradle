@@ -2,139 +2,139 @@ import org.doomedsociety.gradlecpp.GradleCppUtils
 import org.apache.commons.io.FilenameUtils
 
 void _copyFileToDir(String from, String to) {
-    def dst = new File(project.file(to), FilenameUtils.getName(from))
-    GradleCppUtils.copyFile(project.file(from), dst, false)
+   	 def dst = new File(project.file(to), FilenameUtils.getName(from))
+	GradleCppUtils.copyFile(project.file(from), dst, false)
 }
 
 void _copyFile(String from, String to) {
-    GradleCppUtils.copyFile(project.file(from), project.file(to), false)
+	GradleCppUtils.copyFile(project.file(from), project.file(to), false)
 }
 
 task publishPrepareFiles {
-    //dependsOn ':flightrec/decoder:uberjar'
-    doLast {
-        def pubRootDir = project.file('publish/publishRoot')
-        if (pubRootDir.exists()) {
-            if (!pubRootDir.deleteDir()) {
-                throw new RuntimeException("Failed to delete ${pubRootDir}")
-            }
-        }
+	//dependsOn ':flightrec/decoder:uberjar'
+	doLast {
+		def pubRootDir = project.file('publish/publishRoot')
+		if (pubRootDir.exists()) {
+			if (!pubRootDir.deleteDir()) {
+				throw new RuntimeException("Failed to delete ${pubRootDir}")
+			}
+		}
 
-        pubRootDir.mkdirs()
+		pubRootDir.mkdirs()
 
-        //hookers binaries
-        project.file('publish/publishRoot/bin/hookers').mkdirs()
-        _copyFileToDir('publish/releaseRegamedllNofixes/filesystem_stdio.dll', 'publish/publishRoot/bin/hookers/')
-        _copyFileToDir('publish/releaseRegamedllNofixes/filesystem_stdio.pdb', 'publish/publishRoot/bin/hookers/')
-        _copyFile('publish/releaseRegamedllNofixes/libfilesystem_stdio.so', 'publish/publishRoot/bin/hookers/filesystem_stdio.so')
+		// hookers binaries
+		//project.file('publish/publishRoot/bin/hookers').mkdirs()
+		//_copyFileToDir('publish/releaseRegamedllNofixes/filesystem_stdio.dll', 'publish/publishRoot/bin/hookers/')
+		//_copyFileToDir('publish/releaseRegamedllNofixes/filesystem_stdio.pdb', 'publish/publishRoot/bin/hookers/')
+		//_copyFile('publish/releaseRegamedllNofixes/libfilesystem_stdio.so', 'publish/publishRoot/bin/hookers/filesystem_stdio.so')
 
-        //bugfixed binaries
-        //project.file('publish/publishRoot/bin/bugfixed').mkdirs()
-        //_copyFileToDir('publish/releaseRegamedllFixes/mp.dll', 'publish/publishRoot/bin/bugfixed/')
-        //_copyFileToDir('publish/releaseRegamedllFixes/mp.pdb', 'publish/publishRoot/bin/bugfixed/')
-        //_copyFile('publish/releaseRegamedllFixes/libcs.so', 'publish/publishRoot/bin/bugfixed/cs.so')
+		//bugfixed binaries
+		project.file('publish/publishRoot/bin/bugfixed').mkdirs()
+		_copyFileToDir('publish/releaseRegamedllFixes/mp.dll', 'publish/publishRoot/bin/bugfixed/')
+		_copyFileToDir('publish/releaseRegamedllFixes/mp.pdb', 'publish/publishRoot/bin/bugfixed/')
+		_copyFile('publish/releaseRegamedllFixes/libcs.so', 'publish/publishRoot/bin/bugfixed/cs.so')
 
-        //pure binaries
-        //project.file('publish/publishRoot/bin/pure').mkdirs()
-        //_copyFileToDir('publish/releaseRegamedllNofixes/mp.dll', 'publish/publishRoot/bin/pure/')
-        //_copyFileToDir('publish/releaseRegamedllNofixes/mp.pdb', 'publish/publishRoot/bin/pure/')
-        //_copyFile('publish/releaseRegamedllNofixes/libcs.so', 'publish/publishRoot/bin/pure/cs.so')
+		//pure binaries
+		project.file('publish/publishRoot/bin/pure').mkdirs()
+		_copyFileToDir('publish/releaseRegamedllNofixes/mp.dll', 'publish/publishRoot/bin/pure/')
+		_copyFileToDir('publish/releaseRegamedllNofixes/mp.pdb', 'publish/publishRoot/bin/pure/')
+		_copyFile('publish/releaseRegamedllNofixes/libcs.so', 'publish/publishRoot/bin/pure/cs.so')
 
-        //hlsdk
-        //project.file('publish/publishRoot/hlsdk').mkdirs()
-        //copy {
-        //    from 'regamedll/common'
-        //    into 'publish/publishRoot/hlsdk/common'
-        //}
-        //copy {
-        //    from 'regamedll/dlls'
-        //    into 'publish/publishRoot/hlsdk/dlls'
-        //}
-        //copy {
-        //    from 'regamedll/pm_shared'
-        //    into 'publish/publishRoot/hlsdk/pm_shared'
-        //}
-        //copy {
-        //    from 'regamedll/public'
-        //    into 'publish/publishRoot/hlsdk/public'
-        //    include 'interface.h', 'interface.cpp', 'FileSystem.h'
-        //}
+		//hlsdk
+		//project.file('publish/publishRoot/hlsdk').mkdirs()
+		//copy {
+		//	from 'regamedll/common'
+		//	into 'publish/publishRoot/hlsdk/common'
+		//}
+		//copy {
+		//	from 'regamedll/dlls'
+		//	into 'publish/publishRoot/hlsdk/dlls'
+		//}
+		//copy {
+		//	from 'regamedll/pm_shared'
+		//	into 'publish/publishRoot/hlsdk/pm_shared'
+		//}
+		//copy {
+		//	from 'regamedll/public'
+		//	into 'publish/publishRoot/hlsdk/public'
+		//	include 'interface.h', 'interface.cpp', 'FileSystem.h'
+		//}
 
-    }
+	}
 }
 
 task publishPackage(type: Zip, dependsOn: 'publishPrepareFiles') {
-    baseName = "regamedll-dist-${project.version}"
-    destinationDir file('publish')
-    from 'publish/publishRoot'
+	baseName = "regamedll-dist-${project.version}"
+	destinationDir file('publish')
+	from 'publish/publishRoot'
 }
 
 publishing {
-    publications {
-        maven(MavenPublication) {
-            version project.version
-            artifact publishPackage
+	publications {
+		maven(MavenPublication) {
+			version project.version
+			artifact publishPackage
 
-            pom.withXml {
-                asNode().children().last() + {
-                    resolveStrategy = DELEGATE_FIRST
-                    name project.name
-                    description project.description
-                    //url github
-                    //scm {
-                    //    url "${github}.git"
-                    //    connection "scm:git:${github}.git"
-                    //}
-                    /*
-                    licenses {
-                        license {
-                            name 'The Apache Software License, Version 2.0'
-                            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                            distribution 'repo'
-                        }
-                    }
-                    developers {
-                        developer {
-                            id 'dreamstalker'
-                            name 'dreamstalker'
-                        }
-                    }
-                    */
-                }
-            }
-        }
-    }
+			pom.withXml {
+				asNode().children().last() + {
+					resolveStrategy = DELEGATE_FIRST
+					name project.name
+					description project.description
+					//url github
+					//scm {
+					//    url "${github}.git"
+					//    connection "scm:git:${github}.git"
+					//}
+					/*
+					licenses {
+					license {
+					name 'The Apache Software License, Version 2.0'
+					url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+					distribution 'repo'
+					}
+					}
+					developers {
+					developer {
+					id 'dreamstalker'
+					name 'dreamstalker'
+					}
+					}
+					*/
+				}
+			}
+		}
+	}
 }
 
 Properties repoCreds = new Properties()
 project.ext.repoCreds = repoCreds
 if (file('repo_creds.properties').exists()) {
-    println 'Loading maven repo credentials'
-    file('repo_creds.properties').withReader('UTF-8', { Reader r ->
-        repoCreds.load(r)
-    })
+	println 'Loading maven repo credentials'
+	file('repo_creds.properties').withReader('UTF-8', { Reader r ->
+		repoCreds.load(r)
+	})
 }
 
 publishing {
-    repositories {
-        maven {
-            if (project.version.contains('SNAPSHOT')) {
-                url "http://nexus.rehlds.org/nexus/content/repositories/regamedll-snapshots/"
-            } else {
-                url "http://nexus.rehlds.org/nexus/content/repositories/regamedll-releases/"
-            }
-            credentials {
-                username repoCreds.getProperty('username')
-                password repoCreds.getProperty('password')
-            }
-        }
-    }
+	repositories {
+		maven {
+			if (project.version.contains('SNAPSHOT')) {
+				url "http://nexus.rehlds.org/nexus/content/repositories/regamedll-snapshots/"
+			} else {
+				url "http://nexus.rehlds.org/nexus/content/repositories/regamedll-releases/"
+			}
+			credentials {
+				username repoCreds.getProperty('username')
+				password repoCreds.getProperty('password')
+			}
+		}
+	}
 }
 
 task doPublish {
-    dependsOn 'publishPackage'
-    if (repoCreds.getProperty('username') && repoCreds.getProperty('password')) {
-        dependsOn 'publish'
-        //dependsOn ':flightrec/decoder_api:publish'
-    }
+	dependsOn 'publishPackage'
+	if (repoCreds.getProperty('username') && repoCreds.getProperty('password')) {
+		dependsOn 'publish'
+		//dependsOn ':flightrec/decoder_api:publish'
+	}
 }

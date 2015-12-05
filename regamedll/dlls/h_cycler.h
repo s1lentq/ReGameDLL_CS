@@ -41,7 +41,7 @@ public:
 	virtual int Restore(CRestore &restore);
 	virtual int ObjectCaps(void)
 	{
-		return ObjectCaps_();
+		return (CBaseEntity::ObjectCaps() | FCAP_IMPULSE_USE);
 	}
 	virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
 
@@ -58,10 +58,6 @@ public:
 	void Spawn_(void);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
-	int ObjectCaps_(void)
-	{
-		return (CBaseEntity::ObjectCaps() | FCAP_IMPULSE_USE);
-	}
 	int TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
 	void Think_(void);
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
@@ -120,7 +116,7 @@ public:
 	virtual int Restore(CRestore &restore);
 	virtual int ObjectCaps(void)
 	{
-		return ObjectCaps_();
+		return (CBaseEntity::ObjectCaps() | FCAP_DONT_SAVE | FCAP_IMPULSE_USE);
 	}
 	virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
 	virtual void Think(void);
@@ -132,10 +128,6 @@ public:
 	void Restart_(void);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
-	int ObjectCaps_(void)
-	{
-		return (CBaseEntity::ObjectCaps() | FCAP_DONT_SAVE | FCAP_IMPULSE_USE);
-	}
 	int TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
 	void Think_(void);
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
@@ -226,11 +218,15 @@ public:
 
 };/* size: 408, cachelines: 7, members: 3 */
 
+#ifdef HOOK_GAMEDLL
+
 // linked objects
 C_DLLEXPORT void cycler(entvars_t *pev);
 C_DLLEXPORT void cycler_prdroid(entvars_t *pev);
 C_DLLEXPORT void cycler_sprite(entvars_t *pev);
 C_DLLEXPORT void cycler_weapon(entvars_t *pev);
 C_DLLEXPORT void cycler_wreckage(entvars_t *pev);
+
+#endif // HOOK_GAMEDLL
 
 #endif // H_CYCLER_H

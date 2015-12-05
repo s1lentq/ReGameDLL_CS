@@ -94,8 +94,6 @@ void CMP5N::__MAKE_VHOOK(PrimaryAttack)(void)
 /* <28bcc0> ../cstrike/dlls/wpn_shared/wpn_mp5navy.cpp:117 */
 void CMP5N::MP5NFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 {
-	_LOG_TRACE
-
 	Vector vecAiming, vecSrc, vecDir;
 	int flag;
 

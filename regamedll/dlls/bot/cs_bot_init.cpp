@@ -107,9 +107,16 @@ NOBODY bool CCSBot::__MAKE_VHOOK(Initialize)(const BotProfile *profile)
 	return true;
 }
 
+void (*pCCSBot__ResetValues)(void);
+
 /* <3341dc> ../cstrike/dlls/bot/cs_bot_init.cpp:167 */
-NOBODY void CCSBot::ResetValues(void)
+NOBODY void __declspec(naked) CCSBot::ResetValues(void)
 {
+	__asm
+	{
+		jmp pCCSBot__ResetValues
+	}
+/*
 	m_chatter.Reset();//TODO: Reverse me
 	m_gameState.Reset();//TODO: Reverse me
 
@@ -261,15 +268,27 @@ NOBODY void CCSBot::ResetValues(void)
 	// start in idle state
 	StopAttacking();//TODO: Reverse me
 	Idle();//TODO: Reverse me
+*/
 }
 
 /* <3342e4> ../cstrike/dlls/bot/cs_bot_init.cpp:336 */
 NOBODY void CCSBot::__MAKE_VHOOK(SpawnBot)(void)
 {
-//	{
-//		class CCSBotManager *ctrl;                           //   338
-//		SetLearningMapFlag(CCSBotManager *const this);  //   357
-//	}
+	CCSBotManager *ctrl = TheCSBots();
+
+	ctrl->ValidateMapData();
+	ResetValues();
+
+	Q_strcpy(m_name, STRING(pev->netname));
+
+	SetState(&m_buyState);
+	SetTouch(&CCSBot::BotTouch);
+
+	if (!TheNavAreaList.empty() && !ctrl->IsLearningMap())
+	{
+		ctrl->SetLearningMapFlag();
+		StartLearnProcess();
+	}
 }
 
 /* <3338f7> ../cstrike/dlls/bot/cs_bot_init.cpp:366 */

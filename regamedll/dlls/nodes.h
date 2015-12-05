@@ -67,14 +67,10 @@ public:
 
 #ifdef HOOK_GAMEDLL
 
+#define WorldGraph (*pWorldGraph)
+
 typedef int (CGraph::*FIND_NEAREST_NODE_ENTITY)(const Vector &, CBaseEntity *);
 typedef int (CGraph::*FIND_NEAREST_NODE_INT)(const Vector &, int);
-
-#endif // HOOK_GAMEDLL
-
-#ifdef HOOK_GAMEDLL
-
-#define WorldGraph (*pWorldGraph)
 
 #endif //HOOK_GAMEDLL
 

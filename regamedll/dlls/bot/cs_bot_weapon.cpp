@@ -176,9 +176,15 @@ NOBODY bool CCSBot::IsSniper(void)
 //	}
 }
 
+// Return true if we are actively sniping (moving to sniper spot or settled in)
+
 /* <3ea4c1> ../cstrike/dlls/bot/cs_bot_weapon.cpp:405 */
-NOBODY bool CCSBot::IsSniping(void)
+bool CCSBot::IsSniping(void) const
 {
+	if (GetTask() == MOVE_TO_SNIPER_SPOT || GetTask() == SNIPING)
+		return true;
+
+	return false;
 }
 
 /* <3ea4e8> ../cstrike/dlls/bot/cs_bot_weapon.cpp:417 */

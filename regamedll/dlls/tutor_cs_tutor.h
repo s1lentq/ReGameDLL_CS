@@ -255,7 +255,6 @@ enum TutorMessageID
 	TUTOR_NUM_MESSAGES
 };
 
-//typedef map<std::basic_string<char, std::char_traits<char>, std::allocator<char> >, TutorMessage*, std::less<std::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::pair<const std::basic_string<char, std::char_traits<char>, std::allocator<char> >, TutorMessage*> > > TutorMessageMap;
 typedef std::map<std::string, TutorMessage *> TutorMessageMap;
 typedef TutorMessageMap::iterator TutorMessageMapIter;
 

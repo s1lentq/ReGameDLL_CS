@@ -77,7 +77,7 @@ public:
 	virtual int Restore(CRestore &restore);
 	virtual int ObjectCaps(void)
 	{
-		return ObjectCaps_();
+		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION);
 	}
 
 #ifdef HOOK_GAMEDLL
@@ -86,10 +86,6 @@ public:
 	void KeyValue_(KeyValueData *pkvd);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
-	int ObjectCaps_(void)
-	{
-		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION);
-	}
 
 #endif // HOOK_GAMEDLL
 
@@ -117,7 +113,7 @@ public:
 	virtual int Restore(CRestore &restore);
 	virtual int ObjectCaps(void)
 	{
-		return ObjectCaps_();
+		return (CBaseDelay::ObjectCaps() & ~FCAP_ACROSS_TRANSITION);
 	}
 	virtual void Think(void);
 
@@ -128,10 +124,6 @@ public:
 	void KeyValue_(KeyValueData *pkvd);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
-	int ObjectCaps_(void)
-	{
-		return (CBaseDelay::ObjectCaps() & ~FCAP_ACROSS_TRANSITION);
-	}
 	void Think_(void);
 
 #endif // HOOK_GAMEDLL
@@ -154,7 +146,7 @@ public:
 	virtual int Restore(CRestore &restore);
 	virtual int ObjectCaps(void)
 	{
-		return ObjectCaps_();
+		return (CBaseDelay::ObjectCaps() & ~FCAP_ACROSS_TRANSITION);
 	}
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
@@ -164,10 +156,6 @@ public:
 	void KeyValue_(KeyValueData *pkvd);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
-	int ObjectCaps_(void)
-	{
-		return (CBaseDelay::ObjectCaps() & ~FCAP_ACROSS_TRANSITION);
-	}
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #endif // HOOK_GAMEDLL
@@ -195,7 +183,7 @@ public:
 	virtual int Restore(CRestore &restore);
 	virtual int ObjectCaps(void)
 	{
-		return ObjectCaps_();
+		return (CBaseToggle::ObjectCaps() & ~FCAP_ACROSS_TRANSITION);
 	}
 	virtual BOOL HasTarget(string_t targetname);
 
@@ -206,10 +194,6 @@ public:
 	void KeyValue_(KeyValueData *pkvd);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
-	int ObjectCaps_(void)
-	{
-		return (CBaseToggle::ObjectCaps() & ~FCAP_ACROSS_TRANSITION);
-	}
 	BOOL HasTarget_(string_t targetname);
 
 #endif // HOOK_GAMEDLL
@@ -220,7 +204,7 @@ public:
 
 private:
 	/* <19dfe1> ../cstrike/dlls/triggers.cpp:293 */
-	inline BOOL IsClone(void)
+	BOOL IsClone(void)
 	{
 		if (pev->spawnflags & SF_MULTIMAN_CLONE)
 		{
@@ -230,7 +214,7 @@ private:
 		return FALSE;
 	}
 	/* <19e4f3> ../cstrike/dlls/triggers.cpp:294 */
-	inline BOOL ShouldClone(void)
+	BOOL ShouldClone(void)
 	{
 		if (IsClone())
 		{
@@ -286,16 +270,12 @@ public:
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual int ObjectCaps(void)
 	{
-		return ObjectCaps_();
+		return (CBaseToggle::ObjectCaps() & ~FCAP_ACROSS_TRANSITION);
 	}
 
 #ifdef HOOK_GAMEDLL
 
 	void KeyValue_(KeyValueData *pkvd);
-	int ObjectCaps_(void)
-	{
-		return (CBaseToggle::ObjectCaps() & ~FCAP_ACROSS_TRANSITION);
-	}
 
 #endif // HOOK_GAMEDLL
 
@@ -498,7 +478,7 @@ public:
 	virtual void Precache(void);
 	virtual int ObjectCaps(void)	// Always go across transitions
 	{
-		return ObjectCaps_();
+		return (CBaseDelay::ObjectCaps() | FCAP_FORCE_TRANSITION);
 	}
 	virtual void Think(void);
 
@@ -506,10 +486,6 @@ public:
 
 	void Spawn_(void);
 	void Precache_(void);
-	int ObjectCaps_(void)
-	{
-		return (CBaseDelay::ObjectCaps() | FCAP_FORCE_TRANSITION);
-	}
 	void Think_(void);
 
 #endif // HOOK_GAMEDLL
@@ -756,7 +732,7 @@ public:
 	virtual int Restore(CRestore &restore);
 	virtual int ObjectCaps(void)
 	{
-		return ObjectCaps_();
+		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION);
 	}
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
@@ -766,10 +742,6 @@ public:
 	void KeyValue_(KeyValueData *pkvd);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
-	int ObjectCaps_(void)
-	{
-		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION);
-	}
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #endif // HOOK_GAMEDLL
@@ -792,7 +764,7 @@ public:
 	virtual int Restore(CRestore &restore);
 	virtual int ObjectCaps(void)
 	{
-		return ObjectCaps_();
+		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION);
 	}
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
@@ -802,10 +774,6 @@ public:
 	void KeyValue_(KeyValueData *pkvd);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
-	int ObjectCaps_(void)
-	{
-		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION);
-	}
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #endif // HOOK_GAMEDLL

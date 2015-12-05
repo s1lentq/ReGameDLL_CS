@@ -725,7 +725,7 @@ bool HIDDEN HookFunction(Module *module, FunctionHook *hook)
 	*(size_t *)&patch[1] = hook->handlerFunc - hook->originalAddress - 5;
 	patch[0] = 0xE9;
 
-#if 1
+#if 0
 	if (strcmp(hook->symbolName,"_ZNK9BotPhrase12GetSpeakableEiPf")==0)
 	{
 		addr_orig = (void *)hook->originalAddress;
@@ -820,7 +820,7 @@ const char *stripClass(const char *str)
 	return &string[ curlen ];
 }
 
-#if defined(_WIN32) && !defined(REGAMEDLL_UNIT_TESTS)
+#if defined(HOOK_GAMEDLL) && defined(_WIN32) && !defined(REGAMEDLL_UNIT_TESTS)
 
 void VirtualTableInit(void *ptr, const char *baseClass)
 {

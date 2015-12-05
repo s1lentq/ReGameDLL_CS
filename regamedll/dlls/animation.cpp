@@ -692,25 +692,20 @@ void QuaternionSlerp(vec_t *p, vec_t *q, float t, vec_t *qt)
 	}
 }
 
-void (*pQuaternionMatrix)(vec_t *quaternion, float matrix[3][4]);
-
 /* <15cd0> ../cstrike/dlls/animation.cpp:700 */
-NOBODY void __declspec(naked) QuaternionMatrix(vec_t *quaternion, float matrix[3][4])
+void QuaternionMatrix(vec_t *quaternion, float (*matrix)[4])
 {
-	UNTESTED
-	__asm
-	{
-		jmp pQuaternionMatrix
-	}
+	matrix[0][0] = 1.0 - 2.0 * quaternion[1] * quaternion[1] - 2.0 * quaternion[2] * quaternion[2];
+	matrix[1][0] = 2.0 * quaternion[0] * quaternion[1] + 2.0 * quaternion[3] * quaternion[2];
+	matrix[2][0] = 2.0 * quaternion[0] * quaternion[2] - 2.0 * quaternion[3] * quaternion[1];
 
-	//matrix[0][0] = 1.0 - 2.0 * quaternion[1] * quaternion[1] - 2.0 * quaternion[2] * quaternion[2];
-	//matrix[1][1] = 2.0 * quaternion[2] * quaternion[3] + quaternion[0] * quaternion[1];
-	//matrix[2][2] = 2.0 * quaternion[2] * quaternion[0] - 2.0 * quaternion[3] * quaternion[1];
-	//matrix[0][1] = 2.0 * quaternion[0] * quaternion[1] - 2.0 * quaternion[2] * quaternion[3];
-	//matrix[1][2] = 1.0 - 2.0 * quaternion[0] * quaternion[0] - 2.0 * quaternion[2] * quaternion[2];
-	//matrix[3][0] = 2.0 * quaternion[2] * quaternion[1] + quaternion[0] * quaternion[3];
-	//matrix[0][2] = 2.0 * quaternion[2] * quaternion[0] + quaternion[3] * quaternion[1];
-	//matrix[2][0] = 2.0 * quaternion[2] * quaternion[1] - 2.0 * quaternion[0] * quaternion[3];
+	matrix[0][1] = 2.0 * quaternion[0] * quaternion[1] - 2.0 * quaternion[3] * quaternion[2];
+	matrix[1][1] = 1.0 - 2.0 * quaternion[0] * quaternion[0] - 2.0 * quaternion[2] * quaternion[2];
+	matrix[2][1] = 2.0 * quaternion[1] * quaternion[2] + 2.0 * quaternion[3] * quaternion[0];
+
+	matrix[0][2] = 2.0 * quaternion[0] * quaternion[2] + 2.0 * quaternion[3] * quaternion[1];
+	matrix[1][2] = 2.0 * quaternion[1] * quaternion[2] - 2.0 * quaternion[3] * quaternion[0];
+	matrix[2][2] = 1.0 - 2.0 * quaternion[0] * quaternion[0] - 2.0 * quaternion[1] * quaternion[1];
 }
 
 /* <15d12> ../cstrike/dlls/animation.cpp:715 */
@@ -743,11 +738,11 @@ mstudioanim_t *StudioGetAnim(model_t *m_pSubModel, mstudioseqdesc_t *pseqdesc)
 }
 
 /* <15d90> ../cstrike/dlls/animation.cpp:749 */
-NOXREF mstudioanim_t *LookupAnimation(studiohdr_t *pstudiohdr, model_s *model, mstudioseqdesc_t *pseqdesc, int index)
+mstudioanim_t *LookupAnimation(model_t *model, mstudioseqdesc_t *pseqdesc, int index)
 {
 	mstudioanim_t *panim = StudioGetAnim(model, pseqdesc);
 	if (index >= 0 && index <= (pseqdesc->numblends - 1))
-		panim += index * pstudiohdr->numbones;
+		panim += index * g_pstudiohdr->numbones;
 
 	return panim;
 }
@@ -774,11 +769,11 @@ void StudioCalcBoneAdj(float dadt, float *adj, const byte *pcontroller1, const b
 					int a, b;
 					a = (pcontroller1[j] + 128) % 256;
 					b = (pcontroller2[j] + 128) % 256;
-					value = ((a * dadt) + (b * (1 - dadt)) - 128) * (360.0/256.0) + pbonecontroller[j].start;
+					value = ((a * dadt) + (b * (1 - dadt)) - 128) * (360.0 / 256.0) + pbonecontroller[j].start;
 				}
 				else
 				{
-					value = ((pcontroller1[i] * dadt + (pcontroller2[i]) * (1.0 - dadt))) * (360.0/256.0) + pbonecontroller[j].start;
+					value = ((pcontroller1[i] * dadt + (pcontroller2[i]) * (1.0 - dadt))) * (360.0 / 256.0) + pbonecontroller[j].start;
 				}
 			}
 			else
@@ -986,7 +981,7 @@ void StudioSlerpBones(vec4_t *q1, float pos1[][3], vec4_t *q2, float pos2[][3], 
 }
 
 /* <160de> ../cstrike/dlls/animation.cpp:994 */
-NOXREF void StudioCalcRotations(mstudiobone_t *pbones, int *chain, int chainlength, float *adj, float pos[128][3], vec4_t *q, mstudioseqdesc_t *pseqdesc, mstudioanim_t *panim, float f, float s)
+void StudioCalcRotations(mstudiobone_t *pbones, int *chain, int chainlength, float *adj, float pos[128][3], vec4_t *q, mstudioseqdesc_t *pseqdesc, mstudioanim_t *panim, float f, float s)
 {
 	int i;
 	int j;
@@ -995,8 +990,8 @@ NOXREF void StudioCalcRotations(mstudiobone_t *pbones, int *chain, int chainleng
 	{
 		j = chain[i];
 
-		StudioCalcBoneQuaterion((int)f, s, &pbones[ j ], &panim[ j ], adj, &(*q)[j]);
-		StudioCalcBonePosition((int)f, s, &pbones[ j ], &panim[ j ], adj, pos[j]);
+		StudioCalcBoneQuaterion((int)f, s, &pbones[j], &panim[j], adj, q[j]);
+		StudioCalcBonePosition((int)f, s, &pbones[j], &panim[j], adj, pos[j]);
 	}
 }
 
@@ -1019,275 +1014,239 @@ void ConcatTransforms(float in1[3][4], float in2[3][4], float out[3][4])
 	out[2][3] = in1[2][0] * in2[0][3] + in1[2][1] * in2[1][3] + in1[2][2] * in2[2][3] + in1[2][3];
 }
 
-/* <16247> ../cstrike/dlls/animation.cpp:1115 */
-NOBODY void SV_StudioSetupBones(struct model_s *pModel, float frame, int sequence, const vec_t *angles, const vec_t *origin, const byte *pcontroller, const byte *pblending, int iBone, const edict_t *pEdict)
+float_precision StudioEstimateFrame(float frame, mstudioseqdesc_t *pseqdesc)
 {
-//	{
-//		int i;                                                //  1117
-//		int j;                                                //  1117
-//		float f;                                              //  1118
-//		float subframe;                                       //  1118
-//		float adj;                                            //  1119
-//		mstudiobone_t *pbones;                               //  1120
-//		mstudioseqdesc_t *pseqdesc;                          //  1121
-//		mstudioanim_t *panim;                                //  1122
-//		float pos;                                            //  1124
-//		float bonematrix;                                     //  1125
-//		float q;                                              //  1126
-//		float pos3;                                           //  1127
-//		float q2;                                             //  1128
-//		int chain;                                            //  1130
-//		int chainlength;                                      //  1131
-//		vec3_t temp_angles;                                   //  1354
-//		StudioCalcBoneAdj(float dadt,
-//					float *adj,
-//					const byte *pcontroller1,
-//					const byte *pcontroller2,
-//					byte mouthopen);  //  1175
-//		{
-//			float b;                                      //  1295
-//		}
-//		{
-//			float pos3;                                   //  1186
-//			float q3;                                     //  1187
-//			float pos4;                                   //  1188
-//			float q4;                                     //  1189
-//			float s;                                      //  1191
-//			float t;                                      //  1192
-//			LookupAnimation(studiohdr_t *pstudiohdr,
-//					model_s *model,
-//					mstudioseqdesc_t *pseqdesc,
-//					int index);  //  1236
-//			StudioCalcRotations(mstudiobone_t *pbones,
-//						int *chain,
-//						int chainlength,
-//						float *adj,
-//						float *pos,
-//						vec4_t *q,
-//						mstudioseqdesc_t *pseqdesc,
-//						mstudioanim_t *panim,
-//						float f,
-//						float s);  //  1237
-//			LookupAnimation(studiohdr_t *pstudiohdr,
-//					model_s *model,
-//					mstudioseqdesc_t *pseqdesc,
-//					int index);  //  1238
-//			StudioCalcRotations(mstudiobone_t *pbones,
-//						int *chain,
-//						int chainlength,
-//						float *adj,
-//						float *pos,
-//						vec4_t *q,
-//						mstudioseqdesc_t *pseqdesc,
-//						mstudioanim_t *panim,
-//						float f,
-//						float s);  //  1239
-//			LookupAnimation(studiohdr_t *pstudiohdr,
-//					model_s *model,
-//					mstudioseqdesc_t *pseqdesc,
-//					int index);  //  1240
-//			StudioCalcRotations(mstudiobone_t *pbones,
-//						int *chain,
-//						int chainlength,
-//						float *adj,
-//						float *pos,
-//						vec4_t *q,
-//						mstudioseqdesc_t *pseqdesc,
-//						mstudioanim_t *panim,
-//						float f,
-//						float s);  //  1241
-//			LookupAnimation(studiohdr_t *pstudiohdr,
-//					model_s *model,
-//					mstudioseqdesc_t *pseqdesc,
-//					int index);  //  1242
-//			StudioCalcRotations(mstudiobone_t *pbones,
-//						int *chain,
-//						int chainlength,
-//						float *adj,
-//						float *pos,
-//						vec4_t *q,
-//						mstudioseqdesc_t *pseqdesc,
-//						mstudioanim_t *panim,
-//						float f,
-//						float s);  //  1243
-//			LookupAnimation(studiohdr_t *pstudiohdr,
-//					model_s *model,
-//					mstudioseqdesc_t *pseqdesc,
-//					int index);  //  1257
-//			StudioCalcRotations(mstudiobone_t *pbones,
-//						int *chain,
-//						int chainlength,
-//						float *adj,
-//						float *pos,
-//						vec4_t *q,
-//						mstudioseqdesc_t *pseqdesc,
-//						mstudioanim_t *panim,
-//						float f,
-//						float s);  //  1258
-//			LookupAnimation(studiohdr_t *pstudiohdr,
-//					model_s *model,
-//					mstudioseqdesc_t *pseqdesc,
-//					int index);  //  1259
-//			StudioCalcRotations(mstudiobone_t *pbones,
-//						int *chain,
-//						int chainlength,
-//						float *adj,
-//						float *pos,
-//						vec4_t *q,
-//						mstudioseqdesc_t *pseqdesc,
-//						mstudioanim_t *panim,
-//						float f,
-//						float s);  //  1260
-//			LookupAnimation(studiohdr_t *pstudiohdr,
-//					model_s *model,
-//					mstudioseqdesc_t *pseqdesc,
-//					int index);  //  1261
-//			StudioCalcRotations(mstudiobone_t *pbones,
-//						int *chain,
-//						int chainlength,
-//						float *adj,
-//						float *pos,
-//						vec4_t *q,
-//						mstudioseqdesc_t *pseqdesc,
-//						mstudioanim_t *panim,
-//						float f,
-//						float s);  //  1262
-//			LookupAnimation(studiohdr_t *pstudiohdr,
-//					model_s *model,
-//					mstudioseqdesc_t *pseqdesc,
-//					int index);  //  1263
-//			StudioCalcRotations(mstudiobone_t *pbones,
-//						int *chain,
-//						int chainlength,
-//						float *adj,
-//						float *pos,
-//						vec4_t *q,
-//						mstudioseqdesc_t *pseqdesc,
-//						mstudioanim_t *panim,
-//						float f,
-//						float s);  //  1264
-//			LookupAnimation(studiohdr_t *pstudiohdr,
-//					model_s *model,
-//					mstudioseqdesc_t *pseqdesc,
-//					int index);  //  1272
-//			StudioCalcRotations(mstudiobone_t *pbones,
-//						int *chain,
-//						int chainlength,
-//						float *adj,
-//						float *pos,
-//						vec4_t *q,
-//						mstudioseqdesc_t *pseqdesc,
-//						mstudioanim_t *panim,
-//						float f,
-//						float s);  //  1273
-//			LookupAnimation(studiohdr_t *pstudiohdr,
-//					model_s *model,
-//					mstudioseqdesc_t *pseqdesc,
-//					int index);  //  1274
-//			StudioCalcRotations(mstudiobone_t *pbones,
-//						int *chain,
-//						int chainlength,
-//						float *adj,
-//						float *pos,
-//						vec4_t *q,
-//						mstudioseqdesc_t *pseqdesc,
-//						mstudioanim_t *panim,
-//						float f,
-//						float s);  //  1275
-//			LookupAnimation(studiohdr_t *pstudiohdr,
-//					model_s *model,
-//					mstudioseqdesc_t *pseqdesc,
-//					int index);  //  1276
-//			StudioCalcRotations(mstudiobone_t *pbones,
-//						int *chain,
-//						int chainlength,
-//						float *adj,
-//						float *pos,
-//						vec4_t *q,
-//						mstudioseqdesc_t *pseqdesc,
-//						mstudioanim_t *panim,
-//						float f,
-//						float s);  //  1277
-//			LookupAnimation(studiohdr_t *pstudiohdr,
-//					model_s *model,
-//					mstudioseqdesc_t *pseqdesc,
-//					int index);  //  1278
-//			StudioCalcRotations(mstudiobone_t *pbones,
-//						int *chain,
-//						int chainlength,
-//						float *adj,
-//						float *pos,
-//						vec4_t *q,
-//						mstudioseqdesc_t *pseqdesc,
-//						mstudioanim_t *panim,
-//						float f,
-//						float s);  //  1279
-//			StudioCalcRotations(mstudiobone_t *pbones,
-//						int *chain,
-//						int chainlength,
-//						float *adj,
-//						float *pos,
-//						vec4_t *q,
-//						mstudioseqdesc_t *pseqdesc,
-//						mstudioanim_t *panim,
-//						float f,
-//						float s);  //  1222
-//			LookupAnimation(studiohdr_t *pstudiohdr,
-//					model_s *model,
-//					mstudioseqdesc_t *pseqdesc,
-//					int index);  //  1223
-//			StudioCalcRotations(mstudiobone_t *pbones,
-//						int *chain,
-//						int chainlength,
-//						float *adj,
-//						float *pos,
-//						vec4_t *q,
-//						mstudioseqdesc_t *pseqdesc,
-//						mstudioanim_t *panim,
-//						float f,
-//						float s);  //  1224
-//			LookupAnimation(studiohdr_t *pstudiohdr,
-//					model_s *model,
-//					mstudioseqdesc_t *pseqdesc,
-//					int index);  //  1225
-//			StudioCalcRotations(mstudiobone_t *pbones,
-//						int *chain,
-//						int chainlength,
-//						float *adj,
-//						float *pos,
-//						vec4_t *q,
-//						mstudioseqdesc_t *pseqdesc,
-//						mstudioanim_t *panim,
-//						float f,
-//						float s);  //  1226
-//			LookupAnimation(studiohdr_t *pstudiohdr,
-//					model_s *model,
-//					mstudioseqdesc_t *pseqdesc,
-//					int index);  //  1227
-//			StudioCalcRotations(mstudiobone_t *pbones,
-//						int *chain,
-//						int chainlength,
-//						float *adj,
-//						float *pos,
-//						vec4_t *q,
-//						mstudioseqdesc_t *pseqdesc,
-//						mstudioanim_t *panim,
-//						float f,
-//						float s);  //  1228
-//		}
-//		{
-//			int copy;                                     //  1323
-//			int gaitsequence;                             //  1324
-//			StudioCalcRotations(mstudiobone_t *pbones,
-//						int *chain,
-//						int chainlength,
-//						float *adj,
-//						float *pos,
-//						vec4_t *q,
-//						mstudioseqdesc_t *pseqdesc,
-//						mstudioanim_t *panim,
-//						float f,
-//						float s);  //  1333
-//		}
-//	}
+	if (pseqdesc->numframes <= 1)
+		return 0;
+
+	return (float_precision)(pseqdesc->numframes - 1) * frame / 256;
+}
+
+/* <16247> ../cstrike/dlls/animation.cpp:1115 */
+void SV_StudioSetupBones(model_t *pModel, float frame, int sequence, const vec_t *angles, const vec_t *origin, const byte *pcontroller, const byte *pblending, int iBone, const edict_t *pEdict)
+{
+	int i, j;
+	float_precision f;
+	float subframe;
+	float adj[MAXSTUDIOCONTROLLERS];
+	mstudiobone_t *pbones;
+	mstudioseqdesc_t *pseqdesc;
+	mstudioanim_t *panim;
+	float bonematrix[3][4];
+	int chain[MAXSTUDIOBONES];
+	int chainlength;
+	vec3_t temp_angles;
+	
+	static float pos[MAXSTUDIOBONES][3], pos2[MAXSTUDIOBONES][3];
+	static float q[MAXSTUDIOBONES][4], q2[MAXSTUDIOBONES][4];
+
+	g_pstudiohdr = (studiohdr_t *)IEngineStudio.Mod_Extradata(pModel);
+
+	// Bound sequence number
+	if (sequence < 0 || sequence >= g_pstudiohdr->numseq)
+		sequence = 0;
+
+	pbones = (mstudiobone_t *)((byte *)g_pstudiohdr + g_pstudiohdr->boneindex);
+	pseqdesc = (mstudioseqdesc_t *)((byte *)g_pstudiohdr + g_pstudiohdr->seqindex) + sequence;
+	panim = StudioGetAnim(pModel, pseqdesc);
+
+	if (iBone < -1 || iBone >= g_pstudiohdr->numbones)
+		iBone = 0;
+
+	if (iBone == -1)
+	{
+		chainlength = g_pstudiohdr->numbones;
+
+		for (i = 0; i < chainlength; i++)
+			chain[(chainlength - i) - 1] = i;
+	}
+	else
+	{
+		chainlength = 0;
+
+		for (i = iBone; i != -1; i = pbones[i].parent)
+			chain[chainlength++] = i;
+	}
+
+	f = StudioEstimateFrame(frame, pseqdesc);
+	subframe = (int)f;
+	f -= subframe;
+
+	StudioCalcBoneAdj(0, adj, pcontroller, pcontroller, 0);
+	StudioCalcRotations(pbones, chain, chainlength, adj, pos, q, pseqdesc, panim, subframe, f);
+
+	if (pseqdesc->numblends != 9)
+	{
+		if (pseqdesc->numblends > 1)
+		{
+			float b = (float_precision)pblending[0] / 255.0f;
+			
+			pseqdesc = (mstudioseqdesc_t *)((byte *)g_pstudiohdr + g_pstudiohdr->seqindex) + sequence;
+			panim = StudioGetAnim(pModel, pseqdesc);
+			panim += g_pstudiohdr->numbones;
+
+			StudioCalcRotations(pbones, chain, chainlength, adj, pos2, q2, pseqdesc, panim, subframe, f);
+			StudioSlerpBones(q, pos, q2, pos2, b);
+		}
+	}
+	// This game knows how to do nine way blending
+	else
+	{
+		static float pos3[MAXSTUDIOBONES][3], pos4[MAXSTUDIOBONES][3];
+		static float q3[MAXSTUDIOBONES][4], q4[MAXSTUDIOBONES][4];
+		
+		float_precision s, t;
+
+		s = GetPlayerYaw(pEdict);
+		t = GetPlayerPitch(pEdict);
+
+		// Blending is 0-127 == Left to Middle, 128 to 255 == Middle to right
+		if (s <= 127.0f)
+		{
+			// Scale 0-127 blending up to 0-255
+			s = (s * 2.0f);
+
+			if (t <= 127.0f)
+			{
+				t = (t * 2.0f);
+
+				StudioCalcRotations(pbones, chain, chainlength, adj, pos, q, pseqdesc, panim, subframe, f);
+
+				panim = LookupAnimation(pModel, pseqdesc, 1);
+				StudioCalcRotations(pbones, chain, chainlength, adj, pos2, q2, pseqdesc, panim, subframe, f);
+
+				panim = LookupAnimation(pModel, pseqdesc, 3);
+				StudioCalcRotations(pbones, chain, chainlength, adj, pos3, q3, pseqdesc, panim, subframe, f);
+
+				panim = LookupAnimation(pModel, pseqdesc, 4);
+				StudioCalcRotations(pbones, chain, chainlength, adj, pos4, q4, pseqdesc, panim, subframe, f);
+			}
+			else
+			{
+				t = 2.0f * (t - 127.0f);
+
+				panim = LookupAnimation(pModel, pseqdesc, 3);
+				StudioCalcRotations(pbones, chain, chainlength, adj, pos, q, pseqdesc, panim, subframe, f);
+
+				panim = LookupAnimation(pModel, pseqdesc, 4);
+				StudioCalcRotations(pbones, chain, chainlength, adj, pos2, q2, pseqdesc, panim, subframe, f);
+
+				panim = LookupAnimation(pModel, pseqdesc, 6);
+				StudioCalcRotations(pbones, chain, chainlength, adj, pos3, q3, pseqdesc, panim, subframe, f);
+
+				panim = LookupAnimation(pModel, pseqdesc, 7);
+				StudioCalcRotations(pbones, chain, chainlength, adj, pos4, q4, pseqdesc, panim, subframe, f);
+			}
+		}
+		else
+		{
+			// Scale 127-255 blending up to 0-255
+			s = 2.0f * (s - 127.0f);
+
+			if (t <= 127.0f)
+			{
+				t = (t * 2.0f);
+
+				panim = LookupAnimation(pModel, pseqdesc, 1);
+				StudioCalcRotations(pbones, chain, chainlength, adj, pos, q, pseqdesc, panim, subframe, f);
+
+				panim = LookupAnimation(pModel, pseqdesc, 2);
+				StudioCalcRotations(pbones, chain, chainlength, adj, pos2, q2, pseqdesc, panim, subframe, f);
+
+				panim = LookupAnimation(pModel, pseqdesc, 4);
+				StudioCalcRotations(pbones, chain, chainlength, adj, pos3, q3, pseqdesc, panim, subframe, f);
+
+				panim = LookupAnimation(pModel, pseqdesc, 5);
+				StudioCalcRotations(pbones, chain, chainlength, adj, pos4, q4, pseqdesc, panim, subframe, f);
+			}
+			else
+			{
+				t = 2.0f * (t - 127.0f);
+
+				panim = LookupAnimation(pModel, pseqdesc, 4);
+				StudioCalcRotations(pbones, chain, chainlength, adj, pos, q, pseqdesc, panim, subframe, f);
+
+				panim = LookupAnimation(pModel, pseqdesc, 5);
+				StudioCalcRotations(pbones, chain, chainlength, adj, pos2, q2, pseqdesc, panim, subframe, f);
+
+				panim = LookupAnimation(pModel, pseqdesc, 7);
+				StudioCalcRotations(pbones, chain, chainlength, adj, pos3, q3, pseqdesc, panim, subframe, f);
+
+				panim = LookupAnimation(pModel, pseqdesc, 8);
+				StudioCalcRotations(pbones, chain, chainlength, adj, pos4, q4, pseqdesc, panim, subframe, f);
+			}
+		}
+
+		// Normalize interpolant
+		s /= 255.0f;
+		t /= 255.0f;
+
+		// Spherically interpolate the bones
+		StudioSlerpBones(q, pos, q2, pos2, s);
+		StudioSlerpBones(q3, pos3, q4, pos4, s);
+		StudioSlerpBones(q, pos, q3, pos3, t);
+	}
+
+	if (pseqdesc->numblends == 9 && sequence < ANIM_FIRST_DEATH_SEQUENCE && sequence != ANIM_SWIM_1 && sequence != ANIM_SWIM_2)
+	{
+		int copy = 1;
+		int gaitsequence = GetPlayerGaitsequence(pEdict);	// calc gait animation
+
+		if (gaitsequence < 0 || gaitsequence >= g_pstudiohdr->numseq)
+			gaitsequence = 0;
+
+		pseqdesc = (mstudioseqdesc_t *)((byte *)g_pstudiohdr + g_pstudiohdr->seqindex) + gaitsequence;
+
+		panim = StudioGetAnim(pModel, pseqdesc);
+		StudioCalcRotations(pbones, chain, chainlength, adj, pos2, q2, pseqdesc, panim, 0, 0);
+
+		for (i = 0; i < g_pstudiohdr->numbones; i++)
+		{
+			if (!Q_strcmp(pbones[i].name, "Bip01 Spine"))
+			{
+				copy = 0;
+			}
+			else if (!Q_strcmp(pbones[pbones[i].parent].name, "Bip01 Pelvis"))
+			{
+				copy = 1;
+			}
+
+			if (copy)
+			{
+				Q_memcpy(pos[i], pos2[i], sizeof(pos[i]));
+				Q_memcpy(q[i], q2[i], sizeof(q[i]));
+			}
+		}
+	}
+
+	VectorCopy(angles, temp_angles);
+
+	if (pEdict)
+	{
+		temp_angles[1] = UTIL_GetPlayerGaitYaw(g_engfuncs.pfnIndexOfEdict(pEdict));
+
+		if (temp_angles[1] < 0)
+			temp_angles[1] += 360.0f;
+	}
+
+	AngleMatrix(temp_angles, (*g_pRotationMatrix));
+
+	(*g_pRotationMatrix)[0][3] = origin[0];
+	(*g_pRotationMatrix)[1][3] = origin[1];
+	(*g_pRotationMatrix)[2][3] = origin[2];
+
+	for (i = chainlength - 1; i >= 0; i--)
+	{
+		j = chain[i];
+		QuaternionMatrix(q[j], bonematrix);
+
+		bonematrix[0][3] = pos[j][0];
+		bonematrix[1][3] = pos[j][1];
+		bonematrix[2][3] = pos[j][2];
+
+		if (pbones[j].parent == -1)
+			ConcatTransforms((*g_pRotationMatrix), bonematrix, (*g_pBoneTransform)[j]);
+		else
+			ConcatTransforms((*g_pBoneTransform)[pbones[j].parent], bonematrix, (*g_pBoneTransform)[j]);
+	}
 }

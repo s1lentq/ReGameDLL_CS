@@ -56,6 +56,8 @@ typedef struct localnode_s
 
 #ifdef HOOK_GAMEDLL
 
+#define s_flStepSize_LocalNav (*m_LocalNav->ps_flStepSize)
+
 #define flNextCvarCheck (*pflNextCvarCheck)
 #define s_flStepSize (*ps_flStepSize)
 #define flLastThinkTime (*pflLastThinkTime)
@@ -65,6 +67,10 @@ typedef struct localnode_s
 #define qptr (*pqptr)
 #define _queue (*pqueue)
 #define hostages (*phostages)
+
+#else
+
+#define s_flStepSize_LocalNav m_LocalNav->s_flStepSize
 
 #endif // HOOK_GAMEDLL
 
@@ -85,7 +91,7 @@ public:
 
 	node_index_t FindPath(Vector &vecStart, Vector &vecDest, float flTargetRadius, int fNoMonsters);
 	int SetupPathNodes(node_index_t nindex, Vector *vecNodes, int fNoMonsters);
-	NOBODY int GetFurthestTraversableNode(Vector &vecStartingLoc, Vector *vecNodes, int nTotalNodes, int fNoMonsters);
+	int GetFurthestTraversableNode(Vector &vecStartingLoc, Vector *vecNodes, int nTotalNodes, int fNoMonsters);
 	int PathTraversable(Vector &vecSource, Vector &vecDest, int fNoMonsters);
 	BOOL PathClear(Vector &vecOrigin, Vector &vecDest, int fNoMonsters, TraceResult &tr);
 	BOOL PathClear(Vector &vecSource, Vector &vecDest, BOOL fNoMonsters)
@@ -100,22 +106,22 @@ public:
 	void AddPathNode(node_index_t nindexSource, int offsetX, int offsetY, int fNoMonsters);
 	node_index_t GetBestNode(Vector &vecOrigin, Vector &vecDest);
 	BOOL SlopeTraversable(Vector &vecSource, Vector &vecDest, int fNoMonsters, TraceResult &tr);
-	NOBODY BOOL LadderTraversable(Vector &vecSource, Vector &vecDest, int fNoMonsters, TraceResult &tr);
+	BOOL LadderTraversable(Vector &vecSource, Vector &vecDest, int fNoMonsters, TraceResult &tr);
 	BOOL StepTraversable(Vector &vecSource, Vector &vecDest, int fNoMonsters, TraceResult &tr);
 	BOOL StepJumpable(Vector &vecSource, Vector &vecDest, int fNoMonsters, TraceResult &tr);
 	node_index_t FindDirectPath(Vector &vecStart, Vector &vecDest, float flTargetRadius, int fNoMonsters);
-	NOBODY BOOL LadderHit(Vector &vecSource, Vector &vecDest, TraceResult &tr);
+	BOOL LadderHit(Vector &vecSource, Vector &vecDest, TraceResult &tr);
 
-	NOBODY static void Think(void);
-	NOBODY static void RequestNav(CHostage *pCaller);
+	static void Think(void);
+	static void RequestNav(CHostage *pCaller);
 	static void Reset(void);
 	static void HostagePrethink(void);
+	static float s_flStepSize;
 
 #ifndef HOOK_GAMEDLL
 private:
 #endif // HOOK_GAMEDLL
 
-	static float s_flStepSize;
 	static EHANDLE _queue[ MAX_HOSTAGES_NAV ];
 	static int qptr;
 	static int tot_inqueue;

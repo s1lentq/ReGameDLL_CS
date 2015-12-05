@@ -42,7 +42,7 @@ public:
 	virtual int Restore(CRestore &restore);
 	float GetDelay(void)
 	{
-		return GetDelay_();
+		return m_flWait;
 	}
 
 #ifdef HOOK_GAMEDLL
@@ -51,10 +51,7 @@ public:
 	void KeyValue_(KeyValueData *pkvd);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
-	float GetDelay_(void)
-	{
-		return m_flWait;
-	}
+
 #endif // HOOK_GAMEDLL
 
 public:
@@ -65,7 +62,11 @@ private:
 
 };/* size: 156, cachelines: 3, members: 3 */
 
+#ifdef HOOK_GAMEDLL
+
 // linked objects
 C_DLLEXPORT void path_corner(entvars_t *pev);
+
+#endif // HOOK_GAMEDLL
 
 #endif // PATHCORNER_H

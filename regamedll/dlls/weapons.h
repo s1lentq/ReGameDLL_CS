@@ -1043,12 +1043,12 @@ public:
 	}
 	virtual BOOL IsPistol(void)
 	{
-#ifdef REGAMEDLL_FIXES
+	#ifdef REGAMEDLL_FIXES
 		return FALSE;
-#else
+	#else
 		// TODO: why the object flashbang is IsPistol?
 		return TRUE;
-#endif // REGAMEDLL_FIXES
+	#endif // REGAMEDLL_FIXES
 	}
 
 #ifdef HOOK_GAMEDLL
@@ -2133,6 +2133,7 @@ void W_Precache(void);
 BOOL CanAttack(float attack_time, float curtime, BOOL isPredicted);
 
 #ifdef HOOK_GAMEDLL
+
 // linked object
 C_DLLEXPORT void weapon_knife(entvars_t *pev);
 C_DLLEXPORT void weapon_glock18(entvars_t *pev);
@@ -2166,6 +2167,7 @@ C_DLLEXPORT void weapon_tmp(entvars_t *pev);
 
 C_DLLEXPORT void armoury_entity(entvars_t *pev);
 C_DLLEXPORT void weaponbox(entvars_t *pev);
+
 #endif // HOOK_GAMEDLL
 
 #endif // WEAPONS_H

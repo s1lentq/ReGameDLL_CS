@@ -45,7 +45,7 @@
 #define gDisplayTitle (*pgDisplayTitle)
 #define g_fGameOver (*pg_fGameOver)
 
-#endif //HOOK_GAMEDLL
+#endif // HOOK_GAMEDLL
 
 extern const Vector g_vecZero;
 extern int g_Language;
@@ -58,4 +58,4 @@ extern int g_iSkillLevel;
 extern int gDisplayTitle;
 extern BOOL g_fGameOver;
 
-#endif // NODES_H
+#endif // GLOBALS_H

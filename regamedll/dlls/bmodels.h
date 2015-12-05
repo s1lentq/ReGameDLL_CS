@@ -62,17 +62,13 @@ public:
 	// Bmodels don't go across transitions
 	virtual int ObjectCaps(void)
 	{
-		return ObjectCaps_();
+		return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION;
 	}
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
 
 	void Spawn_(void);
-	int ObjectCaps_(void)
-	{
-		return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION;
-	}
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #endif // HOOK_GAMEDLL
@@ -129,17 +125,13 @@ public:
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual int ObjectCaps(void)
 	{
-		return ObjectCaps_();
+		return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION;
 	}
 
 #ifdef HOOK_GAMEDLL
 
 	void Spawn_(void);
 	void KeyValue_(KeyValueData *pkvd);
-	int ObjectCaps_(void)
-	{
-		return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION;
-	}
 
 #endif // HOOK_GAMEDLL
 
@@ -189,7 +181,7 @@ public:
 	virtual int Restore(CRestore &restore);
 	virtual int ObjectCaps(void)
 	{
-		return ObjectCaps_();
+		return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION;
 	}
 	virtual void Blocked(CBaseEntity *pOther);
 
@@ -200,10 +192,6 @@ public:
 	void KeyValue_(KeyValueData *pkvd);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
-	int ObjectCaps_(void)
-	{
-		return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION;
-	}
 	void Blocked_(CBaseEntity *pOther);
 
 #endif // HOOK_GAMEDLL
@@ -238,7 +226,7 @@ public:
 	virtual int Restore(CRestore &restore);
 	virtual int ObjectCaps(void)
 	{
-		return ObjectCaps_();
+		return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION;
 	}
 	virtual void Touch(CBaseEntity *pOther);
 	virtual void Blocked(CBaseEntity *pOther);
@@ -249,10 +237,6 @@ public:
 	void KeyValue_(KeyValueData *pkvd);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
-	int ObjectCaps_(void)
-	{
-		return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION;
-	}
 	void Touch_(CBaseEntity *pOther);
 	void Blocked_(CBaseEntity *pOther);
 
@@ -283,6 +267,8 @@ public:
 
 Vector VecBModelOrigin(entvars_t *pevBModel);
 
+#ifdef HOOK_GAMEDLL
+
 // linked objects
 C_DLLEXPORT void func_wall(entvars_t *pev);
 C_DLLEXPORT void func_wall_toggle(entvars_t *pev);
@@ -291,5 +277,7 @@ C_DLLEXPORT void func_illusionary(entvars_t *pev);
 C_DLLEXPORT void func_monsterclip(entvars_t *pev);
 C_DLLEXPORT void func_rotating(entvars_t *pev);
 C_DLLEXPORT void func_pendulum(entvars_t *pev);
+
+#endif // HOOK_GAMEDLL
 
 #endif // BMODELS_H

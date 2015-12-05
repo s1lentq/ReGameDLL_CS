@@ -110,7 +110,7 @@ public:
 	virtual int Restore(CRestore &restore);
 	virtual int ObjectCaps(void)
 	{
-		return ObjectCaps_();
+		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | FCAP_DIRECTIONAL_USE;
 	}
 	virtual void OverrideReset(void);
 	virtual BOOL OnControls(entvars_t *pev);
@@ -125,10 +125,6 @@ public:
 	void KeyValue_(KeyValueData* pkvd);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
-	int ObjectCaps_(void)
-	{
-		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | FCAP_DIRECTIONAL_USE;
-	}
 	void OverrideReset_(void);
 	BOOL OnControls_(entvars_t *pev);
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
@@ -190,7 +186,7 @@ public:
 	virtual int Restore(CRestore &restore);
 	virtual int ObjectCaps(void)
 	{
-		return ObjectCaps_();
+		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | FCAP_DIRECTIONAL_USE;
 	}
 	virtual int Classify(void);
 	virtual void OverrideReset(void);
@@ -206,10 +202,6 @@ public:
 	void KeyValue_(KeyValueData *pkvd);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
-	int ObjectCaps_(void)
-	{
-		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | FCAP_DIRECTIONAL_USE;
-	}
 	int Classify_(void);
 	void OverrideReset_(void);
 	BOOL OnControls_(entvars_t *pev);
@@ -282,7 +274,11 @@ private:
 
 };/* size: 364, cachelines: 6, members: 35 */
 
+#ifdef HOOK_GAMEDLL
+
 // linked objects
 C_DLLEXPORT void path_track(entvars_t *pev);
+
+#endif // HOOK_GAMEDLL
 
 #endif // TRAINS_H

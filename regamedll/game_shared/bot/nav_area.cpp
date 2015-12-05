@@ -705,19 +705,43 @@ NOBODY void StripNavigationAreas(void)
 }
 
 /* <4d1b9c> ../game_shared/bot/nav_area.cpp:1057 */
-NOBODY inline CNavArea *FindFirstAreaInDirection(const Vector *start, NavDirType dir, float range, float beneathLimit, CBaseEntity *traceIgnore, Vector *closePos)
+inline CNavArea *FindFirstAreaInDirection(const Vector *start, NavDirType dir, float range, float beneathLimit, CBaseEntity *traceIgnore = NULL, Vector *closePos = NULL)
 {
-//	{
-//		class CNavArea *area;                                //  1059
-//		Vector pos;                                     //  1061
-//		int end;                                              //  1063
-//		{
-//			int i;                                        //  1065
-//			{
-//				TraceResult result;                   //  1070
-//			}
-//		}
-//	}
+	CNavArea *area = NULL;
+	Vector pos = *start;
+	int end = (int)((range / GenerationStepSize) + 0.5f);
+
+	for (int i = 1; i <= end; i++)
+	{
+		AddDirectionVector(&pos, dir, GenerationStepSize);
+
+		// make sure we dont look thru the wall
+		TraceResult result;
+
+		if (traceIgnore)
+			UTIL_TraceLine(*start, pos, ignore_monsters, ENT(traceIgnore->pev), &result);
+		else
+			UTIL_TraceLine(*start, pos, ignore_monsters, NULL, &result);
+
+		if (result.flFraction != 1.0f)
+			break;
+
+		area = TheNavAreaGrid.GetNavArea(&pos, beneathLimit);
+
+		if (area != NULL)
+		{
+			if (closePos)
+			{
+				closePos->x = pos.x;
+				closePos->y = pos.y;
+				closePos->z = area->GetZ(pos.x, pos.y);
+			}
+
+			break;
+		}
+	}
+
+	return area;
 }
 
 /* <4c3de4> ../game_shared/bot/nav_area.cpp:1102 */
@@ -1009,125 +1033,212 @@ NOBODY int BuildArea(CNavNode *node, int width, int height)
 /* <4d3581> ../game_shared/bot/nav_area.cpp:1645 */
 NOBODY void BuildLadders(void)
 {
-//	{
-//		TraceResult result;                                   //  1650
-//		class CBaseEntity *entity;                           //  1651
-//		DestroyLadders(void);  //  1648
-//		edict(CBaseEntity *const this);  //  1652
-//		FNullEnt(const edict_t *pent);  //  1652
-//		{
-//			class CNavLadder *ladder;                    //  1654
-//			float xSize;                                  //  1666
-//			float ySize;                                  //  1667
-//			Vector along;                           //  1698
-//			float length;                                 //  1699
-//			Vector on;                              //  1700
-//			Vector out;                             //  1700
-//			float const minLadderClearance;                //  1701
-//			float const inc;                               //  1704
-//			float t;                                      //  1705
-//			float const nearLadderRange;                   //  1746
-//			Vector center;                          //  1753
-//			float topZ;                                   //  1813
-//			bool topAdjusted;                             //  1814
-//			class CNavArea *topAreaList;                 //  1815
-//			{
-//				Vector from;                    //  1685
-//				Vector to;                      //  1686
-//				operator+(const Vector *const this,
-//						const Vector &v);  //  1685
-//				operator+(const Vector *const this,
-//						const Vector &v);  //  1686
-//			}
-//			{
-//				Vector from;                    //  1672
-//				Vector to;                      //  1673
-//				operator+(const Vector *const this,
-//						const Vector &v);  //  1672
-//				operator+(const Vector *const this,
-//						const Vector &v);  //  1673
-//			}
-//			CNavLadder(CNavLadder *const this);  //  1654
-//			operator-(const Vector *const this,
-//					const Vector &v);  //  1698
-//			NormalizeInPlace(Vector *const this);  //  1699
-//			AddDirectionVector(Vector *v,
-//						enum NavDirType dir,
-//						float amount);  //  1711
-//			operator*(float fl,
-//					const Vector &v);  //  1708
-//			operator+(const Vector *const this,
-//					const Vector &v);  //  1708
-//			operator-(const Vector *const this,
-//					const Vector &v);  //  1741
-//			Length(const Vector *const this);  //  1741
-//			DirectionToVector2D(NavDirType dir,
-//						class Vector2D *v);  //  1743
-//			operator+(const Vector *const this,
-//					const Vector &v);  //  1753
-//			AddDirectionVector(Vector *v,
-//						enum NavDirType dir,
-//						float amount);  //  1754
-//			AddLadderUp(CNavArea *const this,
-//					class CNavLadder *ladder);  //  1764
-//			operator+(const Vector *const this,
-//					const Vector &v);  //  1772
-//			AddDirectionVector(Vector *v,
-//						enum NavDirType dir,
-//						float amount);  //  1773
-//			FindFirstAreaInDirection(const Vector *start,
-//						enum NavDirType dir,
-//						float range,
-//						float beneathLimit,
-//						class CBaseEntity *traceIgnore,
-//						Vector *closePos);  //  1776
-//			FindFirstAreaInDirection(const Vector *start,
-//						enum NavDirType dir,
-//						float range,
-//						float beneathLimit,
-//						class CBaseEntity *traceIgnore,
-//						Vector *closePos);  //  1781
-//			FindFirstAreaInDirection(const Vector *start,
-//						enum NavDirType dir,
-//						float range,
-//						float beneathLimit,
-//						class CBaseEntity *traceIgnore,
-//						Vector *closePos);  //  1786
-//			FindFirstAreaInDirection(const Vector *start,
-//						enum NavDirType dir,
-//						float range,
-//						float beneathLimit,
-//						class CBaseEntity *traceIgnore,
-//						Vector *closePos);  //  1791
-//			AddLadderDown(CNavArea *const this,
-//					class CNavLadder *ladder);  //  1801
-//			AddLadderDown(CNavArea *const this,
-//					class CNavLadder *ladder);  //  1804
-//			AddLadderDown(CNavArea *const this,
-//					class CNavLadder *ladder);  //  1807
-//			AddLadderDown(CNavArea *const this,
-//					class CNavLadder *ladder);  //  1810
-//			{
-//				int a;                                //  1821
-//				{
-//					class CNavArea *topArea;     //  1823
-//					Vector close;           //  1827
-//				}
-//			}
-//			{
-//				Vector bottomSpot;              //  1846
-//			}
-//			push_back(list<CNavLadder*, std::allocator<CNavLadder*>> *const this,
-//					const value_type &__x);  //  1853
-//			AddDirectionVector(Vector *v,
-//						enum NavDirType dir,
-//						float amount);  //  1729
-//			operator*(float fl,
-//					const Vector &v);  //  1726
-//			operator-(const Vector *const this,
-//					const Vector &v);  //  1726
-//		}
-//	}
+	// remove any left-over ladders
+	DestroyLadders();
+
+	TraceResult result;
+	CBaseEntity *entity = UTIL_FindEntityByClassname(NULL, "func_ladder");
+	while (entity && !FNullEnt(entity->edict()))
+	{
+		CNavLadder *ladder = new CNavLadder;
+
+		// compute top & bottom of ladder
+		ladder->m_top.x = (entity->pev->absmin.x + entity->pev->absmax.x) / 2.0f;
+		ladder->m_top.y = (entity->pev->absmin.y + entity->pev->absmax.y) / 2.0f;
+		ladder->m_top.z = entity->pev->absmax.z;
+
+		ladder->m_bottom.x = ladder->m_top.x;
+		ladder->m_bottom.y = ladder->m_top.y;
+		ladder->m_bottom.z = entity->pev->absmin.z;
+
+		// determine facing - assumes "normal" runged ladder
+		float xSize = entity->pev->absmax.x - entity->pev->absmin.x;
+		float ySize = entity->pev->absmax.y - entity->pev->absmin.y;
+
+		if (xSize > ySize)
+		{
+			// ladder is facing north or south - determine which way
+			// "pull in" traceline from bottom and top in case ladder abuts floor and/or ceiling
+			Vector from = ladder->m_bottom + Vector(0.0f, GenerationStepSize, GenerationStepSize);
+			Vector to = ladder->m_top + Vector(0.0f, GenerationStepSize, -GenerationStepSize);
+
+			UTIL_TraceLine(from, to, ignore_monsters, ENT(entity->pev), &result);
+
+			if (result.flFraction != 1.0f || result.fStartSolid)
+				ladder->m_dir = NORTH;
+			else
+				ladder->m_dir = SOUTH;
+		}
+		else
+		{
+			// ladder is facing east or west - determine which way
+			Vector from = ladder->m_bottom + Vector(GenerationStepSize, 0.0f, GenerationStepSize);
+			Vector to = ladder->m_top + Vector(GenerationStepSize, 0.0f, -GenerationStepSize);
+
+			UTIL_TraceLine(from, to, ignore_monsters, ENT(entity->pev), &result);
+
+			if (result.flFraction != 1.0f || result.fStartSolid)
+				ladder->m_dir = WEST;
+			else
+				ladder->m_dir = EAST;
+		}
+
+		// adjust top and bottom of ladder to make sure they are reachable
+		// (cs_office has a crate right in front of the base of a ladder)
+		Vector along = ladder->m_top - ladder->m_bottom;
+		float length = along.NormalizeInPlace();
+
+		Vector on, out;
+		const float minLadderClearance = 32.0f;
+
+		// adjust bottom to bypass blockages
+		const float inc = 10.0f;
+		float t;
+
+		for (t = 0.0f; t <= length; t += inc)
+		{
+			on = ladder->m_bottom + t * along;
+
+			out = on;
+			AddDirectionVector(&out, ladder->m_dir, minLadderClearance);
+			UTIL_TraceLine(on, out, ignore_monsters, ENT(entity->pev), &result);
+
+			if (result.flFraction == 1.0f && !result.fStartSolid)
+			{
+				// found viable ladder bottom
+				ladder->m_bottom = on;
+				break;
+			}
+		}
+
+		// adjust top to bypass blockages
+		for (t = 0.0f; t <= length; t += inc)
+		{
+			on = ladder->m_top - t * along;
+
+			out = on;
+			AddDirectionVector(&out, ladder->m_dir, minLadderClearance);
+			UTIL_TraceLine(on, out, ignore_monsters, ENT(entity->pev), &result);
+
+			if (result.flFraction == 1.0f && !result.fStartSolid)
+			{
+				// found viable ladder top
+				ladder->m_top = on;
+				break;
+			}
+		}
+
+		ladder->m_length = (ladder->m_top - ladder->m_bottom).Length();
+		DirectionToVector2D(ladder->m_dir, &ladder->m_dirVector);
+
+		ladder->m_entity = entity;
+		const float nearLadderRange = 75.0f;
+
+		// Find naviagtion area at bottom of ladder
+		// get approximate postion of player on ladder
+
+		Vector center = ladder->m_bottom + Vector(0, 0, GenerationStepSize);
+		AddDirectionVector(&center, ladder->m_dir, HalfHumanWidth);
+
+		ladder->m_bottomArea = TheNavAreaGrid.GetNearestNavArea(&center, true);
+		if (!ladder->m_bottomArea)
+		{
+			ALERT(at_console, "ERROR: Unconnected ladder bottom at (%g, %g, %g)\n", ladder->m_bottom.x, ladder->m_bottom.y, ladder->m_bottom.z);
+		}
+		else
+		{
+			// store reference to ladder in the area
+			ladder->m_bottomArea->AddLadderUp(ladder);
+		}
+
+		// Find adjacent navigation areas at the top of the ladder
+		// get approximate postion of player on ladder
+
+		center = ladder->m_top + Vector(0, 0, GenerationStepSize);
+		AddDirectionVector(&center, ladder->m_dir, HalfHumanWidth);
+
+		// find "ahead" area
+		ladder->m_topForwardArea = FindFirstAreaInDirection(&center, OppositeDirection(ladder->m_dir), nearLadderRange, 120.0f, entity);
+		if (ladder->m_topForwardArea == ladder->m_bottomArea)
+			ladder->m_topForwardArea = NULL;
+
+		// find "left" area
+		ladder->m_topLeftArea = FindFirstAreaInDirection(&center, DirectionLeft(ladder->m_dir), nearLadderRange, 120.0f, entity);
+		if (ladder->m_topLeftArea == ladder->m_bottomArea)
+			ladder->m_topLeftArea = NULL;
+
+		// find "right" area
+		ladder->m_topRightArea = FindFirstAreaInDirection(&center, DirectionRight(ladder->m_dir), nearLadderRange, 120.0f, entity);
+		if (ladder->m_topRightArea == ladder->m_bottomArea)
+			ladder->m_topRightArea = NULL;
+
+		// find "behind" area - must look farther, since ladder is against the wall away from this area
+		ladder->m_topBehindArea = FindFirstAreaInDirection(&center, ladder->m_dir, 2.0f * nearLadderRange, 120.0f, entity);
+		if (ladder->m_topBehindArea == ladder->m_bottomArea)
+			ladder->m_topBehindArea = NULL;
+
+		// can't include behind area, since it is not used when going up a ladder
+		if (!ladder->m_topForwardArea && !ladder->m_topLeftArea && !ladder->m_topRightArea)
+			ALERT(at_console, "ERROR: Unconnected ladder top at (%g, %g, %g)\n", ladder->m_top.x, ladder->m_top.y, ladder->m_top.z);
+
+		// store reference to ladder in the area(s)
+		if (ladder->m_topForwardArea)
+			ladder->m_topForwardArea->AddLadderDown(ladder);
+
+		if (ladder->m_topLeftArea)
+			ladder->m_topLeftArea->AddLadderDown(ladder);
+
+		if (ladder->m_topRightArea)
+			ladder->m_topRightArea->AddLadderDown(ladder);
+
+		if (ladder->m_topBehindArea)
+			ladder->m_topBehindArea->AddLadderDown(ladder);
+
+		// adjust top of ladder to highest connected area
+		float topZ = -99999.9f;
+		bool topAdjusted = false;
+
+		CNavArea *topAreaList[4];
+		topAreaList[0] = ladder->m_topForwardArea;
+		topAreaList[1] = ladder->m_topLeftArea;
+		topAreaList[2] = ladder->m_topRightArea;
+		topAreaList[3] = ladder->m_topBehindArea;
+
+		for (int a = 0; a < 4; ++a)
+		{
+			CNavArea *topArea = topAreaList[a];
+			if (topArea == NULL)
+				continue;
+
+			Vector close;
+			topArea->GetClosestPointOnArea(&ladder->m_top, &close);
+			if (topZ < close.z)
+			{
+				topZ = close.z;
+				topAdjusted = true;
+			}
+		}
+
+		if (topAdjusted)
+			ladder->m_top.z = topZ;
+
+		//
+		// Determine whether this ladder is "dangling" or not
+		// "Dangling" ladders are too high to go up
+		//
+		ladder->m_isDangling = false;
+		if (ladder->m_bottomArea)
+		{
+			Vector bottomSpot;
+			ladder->m_bottomArea->GetClosestPointOnArea(&ladder->m_bottom, &bottomSpot);
+			if (ladder->m_bottom.z - bottomSpot.z > HumanHeight)
+				ladder->m_isDangling = true;
+		}
+
+		// add ladder to global list
+		TheNavLadderList.push_back(ladder);
+		entity = UTIL_FindEntityByClassname(entity, "func_ladder");
+	}
 }
 
 /* <4c85c3> ../game_shared/bot/nav_area.cpp:1864 */
@@ -1179,13 +1290,12 @@ NOBODY void GenerateNavigationAreaMesh(void)
 }
 
 /* <4c86fa> ../game_shared/bot/nav_area.cpp:1975 */
-NOBODY bool CNavArea::IsOverlapping(const Vector *pos) const
+bool CNavArea::IsOverlapping(const Vector *pos) const
 {
-	if (pos->x >= m_extent.lo.x && pos->x <= m_extent.hi.x &&
-		pos->y >= m_extent.lo.y && pos->y <= m_extent.hi.y)
-		return true;
-
-	return false;
+	return (pos->x >= m_extent.lo.x
+		&& pos->x <= m_extent.hi.x
+		&& pos->y >= m_extent.lo.y
+		&& pos->y <= m_extent.hi.y);
 }
 
 /* <4c8726> ../game_shared/bot/nav_area.cpp:1988 */
@@ -1967,19 +2077,29 @@ NOBODY void DrawDanger(void)
 }
 
 /* <4ce523> ../game_shared/bot/nav_area.cpp:3356 */
-NOBODY bool IsSpotOccupied(CBaseEntity *me, const Vector *pos)
+bool IsSpotOccupied(CBaseEntity *me, const Vector *pos)
 {
-//	{
-//		float const closeRange;                                //  3358
-//		float range;                                          //  3361
-//		class CBasePlayer *player;                           //  3362
-//		{
-//			class CHostage *hostage;                     //  3373
-//			GetClosestHostage(CHostageManager *const this,
-//						const Vector &pos,
-//						float *resultRange);  //  3373
-//		}
-//	}
+	const float closeRange = 75.0f;
+
+	// is there a player in this spot
+	float range;
+	CBasePlayer *player = UTIL_GetClosestPlayer(pos, &range);
+
+	if (player != me)
+	{
+		if (player && range < closeRange)
+			return true;
+	}
+
+	// is there is a hostage in this spot
+	if (g_pHostages != NULL)
+	{
+		CHostage *hostage = g_pHostages->GetClosestHostage(*pos, &range);
+		if (hostage != NULL && hostage != me && range < closeRange)
+			return true;
+	}
+
+	return false;
 }
 
 /* <4c118b> ../game_shared/bot/nav_area.cpp:3385 */
@@ -2038,7 +2158,7 @@ public:
 			return;
 
 		for (int j = i + 1; j < m_count; ++j)
-			m_hidingSpot[j-1] = m_hidingSpot[j];
+			m_hidingSpot[j - 1] = m_hidingSpot[j];
 
 		--m_count;
 	}
@@ -2212,20 +2332,26 @@ const Vector *FindNearbyRetreatSpot(CBaseEntity *me, const Vector *start, CNavAr
 	if (startArea == NULL)
 		return NULL;
 
+	// collect hiding spots with decent "cover"
 	CollectHidingSpotsFunctor collector(me, start, maxRange, HidingSpot::IN_COVER, UNDEFINED_PLACE, useCrouchAreas);
 	SearchSurroundingAreas(startArea, start, collector, maxRange);
 
 	if (collector.m_count == 0)
 		return NULL;
 
+	// find the closest unoccupied hiding spot that crosses the least lines of fire and has the best cover
 	for (int i = 0; i < collector.m_count; ++i)
 	{
+		// check if we would have to cross a line of fire to reach this hiding spot
 		if (IsCrossingLineOfFire(*start, *collector.m_hidingSpot[i], me))
 		{
 			collector.RemoveSpot(i);
+			// back up a step, so iteration won't skip a spot
 			--i;
 			continue;
 		}
+
+		// check if there is someone on the avoidTeam near this hiding spot
 		if (avoidTeam)
 		{
 			float range;
@@ -2234,7 +2360,10 @@ const Vector *FindNearbyRetreatSpot(CBaseEntity *me, const Vector *start, CNavAr
 				const float dangerRange = 150.0f;
 				if (range < dangerRange)
 				{
+					// there is an avoidable player too near this spot - remove it
 					collector.RemoveSpot(i);
+
+					// back up a step, so iteration won't skip a spot
 					--i;
 					continue;
 				}
@@ -2245,6 +2374,7 @@ const Vector *FindNearbyRetreatSpot(CBaseEntity *me, const Vector *start, CNavAr
 	if (collector.m_count <= 0)
 		return NULL;
 
+	// all remaining spots are ok - pick one at random
 	int which = RANDOM_LONG(0, collector.m_count - 1);
 	return collector.m_hidingSpot[which];
 }
@@ -2740,13 +2870,33 @@ bool GetGroundHeight(const Vector *pos, float *height, Vector *normal)
 	return true;
 }
 
+// Return the "simple" ground height below this point in "height".
+// This function is much faster, but less tolerant. Make sure the give position is "well behaved".
+// Return false if position is invalid (outside of map, in a solid area, etc).
+
 /* <4cf4d2> ../game_shared/bot/nav_area.cpp:4724 */
-NOBODY bool GetSimpleGroundHeight(const Vector *pos, float *height, Vector *normal)
+bool GetSimpleGroundHeight(const Vector *pos, float *height, Vector *normal)
 {
-//	{
-//		Vector to;                                      //  4726
-//		TraceResult result;                                   //  4731
-//	}
+	Vector to;
+	to.x = pos->x;
+	to.y = pos->y;
+	to.z = pos->z - 9999.9f;
+
+	TraceResult result;
+
+	UTIL_TraceLine(*pos, to, ignore_monsters, dont_ignore_glass, NULL, &result);
+
+	if (result.fStartSolid)
+		return false;
+
+	*height = result.vecEndPos.z;
+
+	if (normal != NULL)
+	{
+		*normal = result.vecPlaneNormal;
+	}
+
+	return true;
 }
 
 /* <4c0912> ../game_shared/bot/nav_area.cpp:4757 */

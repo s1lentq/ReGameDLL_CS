@@ -61,7 +61,7 @@ public:
 	// Bmodels don't go across transitions
 	virtual int ObjectCaps(void)
 	{
-		return ObjectCaps_();
+		return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION;
 	}
 	virtual BOOL OnControls(entvars_t *pevTest);
 	virtual void Think(void);
@@ -79,10 +79,6 @@ public:
 	void KeyValue_(KeyValueData *pkvd);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
-	int ObjectCaps_(void)
-	{
-		return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION;
-	}
 	BOOL OnControls_(entvars_t *pevTest);
 	void Think_(void);
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
@@ -95,23 +91,23 @@ public:
 	void StartRotSound(void);
 	void StopRotSound(void);
 
-	inline BOOL IsActive(void)
+	BOOL IsActive(void)
 	{
 		return (pev->spawnflags & SF_TANK_ACTIVE) == SF_TANK_ACTIVE;
 	}
-	inline void TankActivate(void)
+	void TankActivate(void)
 	{
 		pev->spawnflags |= SF_TANK_ACTIVE;
 		pev->nextthink = pev->ltime + 0.1f;
 		m_fireLast = 0.0f;
 	}
-	inline void TankDeactivate(void)
+	void TankDeactivate(void)
 	{
 		pev->spawnflags &= ~SF_TANK_ACTIVE;
 		m_fireLast = 0.0f;
 		StopRotSound();
 	}
-	inline BOOL CanFire(void)
+	BOOL CanFire(void)
 	{
 		return (gpGlobals->time - m_lastSightTime) < m_persist;
 	}
@@ -262,7 +258,7 @@ public:
 	virtual int Restore(CRestore &restore);
 	virtual int ObjectCaps(void)
 	{
-		return ObjectCaps_();
+		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | FCAP_IMPULSE_USE;
 	}
 	virtual void Think(void);
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
@@ -272,10 +268,6 @@ public:
 	void Spawn_(void);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
-	int ObjectCaps_(void)
-	{
-		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | FCAP_IMPULSE_USE;
-	}
 	void Think_(void);
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
@@ -296,11 +288,15 @@ extern Vector gTankSpread[5];
 
 #endif // HOOK_GAMEDLL
 
+#ifdef HOOK_GAMEDLL
+
 // linked objects
 C_DLLEXPORT void func_tank(entvars_t *pev);
 C_DLLEXPORT void func_tanklaser(entvars_t *pev);
 C_DLLEXPORT void func_tankrocket(entvars_t *pev);
 C_DLLEXPORT void func_tankmortar(entvars_t *pev);
 C_DLLEXPORT void func_tankcontrols(entvars_t *pev);
+
+#endif // HOOK_GAMEDLL
 
 #endif // FUNC_TANK_H

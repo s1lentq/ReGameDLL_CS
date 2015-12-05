@@ -319,10 +319,7 @@ public:
 	{
 		return CLASS_NONE;
 	}
-	virtual void DeathNotice(entvars_t *pevChild)
-	{
-		return DeathNotice_(pevChild);
-	}
+	virtual void DeathNotice(entvars_t *pevChild) {}
 	virtual void TraceAttack(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType);
 	virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
 	virtual int TakeHealth(float flHealth, int bitsDamageType);
@@ -346,7 +343,7 @@ public:
 	}
 	virtual int GetToggleState(void)
 	{
-		return GetToggleState_();
+		return TS_AT_TOP;
 	}
 	virtual void AddPoints(int score, BOOL bAllowNegativeScore) {}
 	virtual void AddPointsToTeam(int score, BOOL bAllowNegativeScore) {}
@@ -364,7 +361,7 @@ public:
 	}
 	virtual float GetDelay(void)
 	{
-		return GetDelay_();
+		return 0.0f;
 	}
 	virtual int IsMoving(void)
 	{
@@ -464,7 +461,7 @@ public:
 	}
 	virtual Vector BodyTarget(const Vector &posSrc)
 	{
-		return BodyTarget_(posSrc);
+		return Center();
 	}
 	virtual int Illumination(void)
 	{
@@ -479,27 +476,14 @@ public:
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
 	void SetObjectCollisionBox_(void);
-	void DeathNotice_(entvars_t *pevChild) {}
 	void TraceAttack_(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType);
 	int TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
 	int TakeHealth_(float flHealth, int bitsDamageType);
 	void Killed_(entvars_t *pevAttacker, int iGib);
 	void TraceBleed_(float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType);
-	int GetToggleState_(void)
-	{
-		return TS_AT_TOP;
-	}
-	float GetDelay_(void)
-	{
-		return 0.0f;
-	}
 	int DamageDecal_(int bitsDamageType);
 	BOOL IsInWorld_(void);
 	CBaseEntity *GetNextTarget_(void);
-	Vector BodyTarget_(const Vector &posSrc)
-	{
-		return Center();
-	}
 	BOOL FVisible_(CBaseEntity *pEntity);
 	BOOL FVisible_(const Vector &vecOrigin);
 
@@ -643,16 +627,12 @@ public:
 	virtual void Spawn(void);
 	virtual int ObjectCaps(void)
 	{
-		return ObjectCaps_();
+		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION);
 	}
 
 #ifdef HOOK_GAMEDLL
 
 	void Spawn_(void);
-	int ObjectCaps_(void)
-	{
-		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION);
-	}
 
 #endif // HOOK_GAMEDLL
 
@@ -667,7 +647,7 @@ public:
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 	virtual int ObjectCaps(void)
 	{
-		return ObjectCaps_();
+		return (CPointEntity::ObjectCaps() | FCAP_MASTER);
 	}
 	virtual BOOL IsTriggered(CBaseEntity *pActivator);
 	virtual int Save(CSave &save);
@@ -678,10 +658,6 @@ public:
 	void Spawn_(void);
 	void KeyValue_(KeyValueData *pkvd);
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-	int ObjectCaps_(void)
-	{
-		return (CPointEntity::ObjectCaps() | FCAP_MASTER);
-	}
 	BOOL IsTriggered_(CBaseEntity *pActivator);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
@@ -797,6 +773,7 @@ public:
 	int Restore_(CRestore &restore);
 
 #endif // HOOK_GAMEDLL
+
 public:
 	void LinearMove(Vector vecDest, float flSpeed);
 	void EXPORT LinearMoveDone(void);
@@ -857,7 +834,12 @@ public:
 	virtual int Restore(CRestore &restore);
 	virtual int ObjectCaps(void)
 	{
-		return ObjectCaps_();
+		if (pev->takedamage == DAMAGE_NO)
+		{
+			return FCAP_IMPULSE_USE;
+		}
+
+		return (CBaseToggle::ObjectCaps() & ~FCAP_ACROSS_TRANSITION);
 	}
 
 #ifdef HOOK_GAMEDLL
@@ -868,15 +850,6 @@ public:
 	int TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
-	int ObjectCaps_(void)
-	{
-		if (pev->takedamage == DAMAGE_NO)
-		{
-			return FCAP_IMPULSE_USE;
-		}
-
-		return (CBaseToggle::ObjectCaps() & ~FCAP_ACROSS_TRANSITION);
-	}
 
 #endif // HOOK_GAMEDLL
 
@@ -957,23 +930,10 @@ public:
 	/* <1dabe0> ../cstrike/dlls/world.cpp:209 */
 	virtual int ObjectCaps(void)
 	{
-		ObjectCaps_();
-	}
-
-#ifdef HOOK_GAMEDLL
-
-	int ObjectCaps_(void)
-	{
 		return FCAP_DONT_SAVE;
 	}
 
-#endif // HOOK_GAMEDLL
-
 };/* size: 152, cachelines: 3, members: 1 */
-
-
-
-
 
 template <class T>
 T *GetClassPtr(T *a)
@@ -987,7 +947,7 @@ T *GetClassPtr(T *a)
 		a = new(pev) T;
 		a->pev = pev;
 
-#if defined(_WIN32) && !defined(REGAMEDLL_UNIT_TESTS)
+#if defined(HOOK_GAMEDLL) && defined(_WIN32) && !defined(REGAMEDLL_UNIT_TESTS)
 		VirtualTableInit((void *)a, stripClass(typeid(T).name()));
 #endif // _WIN32 && HOOK_GAMEDLL
 
@@ -1005,9 +965,9 @@ void REMOVE_ENTITY(edict_t *e);
 void CONSOLE_ECHO_(char *pszMsg, ...);
 void loopPerformance(void);
 
-extern "C" C_EXPORT int GetEntityAPI(DLL_FUNCTIONS *pFunctionTable, int interfaceVersion);
-NOXREF extern "C" C_EXPORT int GetEntityAPI2(DLL_FUNCTIONS *pFunctionTable, int *interfaceVersion);
-extern "C" C_EXPORT int GetNewDLLFunctions(NEW_DLL_FUNCTIONS *pFunctionTable, int *interfaceVersion);
+C_DLLEXPORT int GetEntityAPI(DLL_FUNCTIONS *pFunctionTable, int interfaceVersion);
+NOXREF int GetEntityAPI2(DLL_FUNCTIONS *pFunctionTable, int *interfaceVersion);
+C_DLLEXPORT int GetNewDLLFunctions(NEW_DLL_FUNCTIONS *pFunctionTable, int *interfaceVersion);
 
 int DispatchSpawn(edict_t *pent);
 void DispatchKeyValue(edict_t *pentKeyvalue, KeyValueData *pkvd);

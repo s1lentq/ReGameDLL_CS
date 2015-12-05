@@ -292,11 +292,14 @@ NOBODY bool UTIL_IsTeamAllBots(int team)
 	return (botCount) ? true : false;
 }
 
+// Return the closest active player to the given position.
+// If 'distance' is non-NULL, the distance to the closest player is returned in it.
+
 /* <4ad86a> ../game_shared/bot/bot_util.cpp:343 */
-NOBODY extern CBasePlayer *UTIL_GetClosestPlayer(const Vector *pos, float *distance)
+/*extern*/ CBasePlayer *UTIL_GetClosestPlayer(const Vector *pos, float *distance)
 {
 	CBasePlayer *closePlayer = NULL;
-	float closeDistSq = 999999999999.9f;
+	float closeDistSq = 1.0e12f;	// 999999999999.9f
 
 	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{
@@ -312,7 +315,7 @@ NOBODY extern CBasePlayer *UTIL_GetClosestPlayer(const Vector *pos, float *dista
 		if (distSq < closeDistSq)
 		{
 			closeDistSq = distSq;
-			closePlayer = static_cast<CBasePlayer *>(player);
+			closePlayer = player;
 		}
 	}
 
@@ -322,8 +325,11 @@ NOBODY extern CBasePlayer *UTIL_GetClosestPlayer(const Vector *pos, float *dista
 	return closePlayer;
 }
 
+// Return the closest active player on the given team to the given position.
+// If 'distance' is non-NULL, the distance to the closest player is returned in it.
+
 /* <4ad86a> ../game_shared/bot/bot_util.cpp:343 */
-NOBODY extern CBasePlayer *UTIL_GetClosestPlayer(const Vector *pos, int team, float *distance)
+NOBODY /*extern*/ CBasePlayer *UTIL_GetClosestPlayer(const Vector *pos, int team, float *distance)
 {
 	CBasePlayer *closePlayer = NULL;
 	float closeDistSq = 999999999999.9f;
@@ -345,7 +351,7 @@ NOBODY extern CBasePlayer *UTIL_GetClosestPlayer(const Vector *pos, int team, fl
 		if (distSq < closeDistSq)
 		{
 			closeDistSq = distSq;
-			closePlayer = static_cast<CBasePlayer *>(player);
+			closePlayer = player;
 		}
 	}
 
@@ -366,7 +372,7 @@ void UTIL_ConstructBotNetName(char *name, int nameLength, const BotProfile *prof
 {
 	if (profile == NULL)
 	{
-		name[0] = 0;
+		name[0] = '\0';
 		return;
 	}
 
@@ -563,128 +569,134 @@ float BotSIN(float angle)
 	return cosTable[ i ];
 }
 
+// Determine if this event is audible, and if so, return its audible range and priority
+
 /* <4ae2c5> ../game_shared/bot/bot_util.cpp:694 */
-NOBODY bool IsGameEventAudible(GameEventType event, CBaseEntity *entity, CBaseEntity *other, float *range, PriorityType *priority, bool *isHostile)
+bool IsGameEventAudible(GameEventType event, CBaseEntity *entity, CBaseEntity *other, float *range, PriorityType *priority, bool *isHostile)
 {
 	CBasePlayer *player = static_cast<CBasePlayer *>(entity);
+
 	if (entity == NULL || !player->IsPlayer())
 		player = NULL;
 
 	const float ShortRange = 1000.0f;
 	const float NormalRange = 2000.0f;
+
 	switch (event)
 	{
-		case EVENT_WEAPON_FIRED:
+	/// TODO: Check weapon type (knives are pretty quiet)
+	/// TODO: Use actual volume, account for silencers, etc.
+	case EVENT_WEAPON_FIRED:
+	{
+		if (player->m_pActiveItem == NULL)
+			return false;
+
+		switch (player->m_pActiveItem->m_iId)
 		{
-			if (player->m_pActiveItem == NULL)
-				return false;
-
-			switch (player->m_pActiveItem->m_iId)
-			{
-				case WEAPON_HEGRENADE:
-				case WEAPON_SMOKEGRENADE:
-				case WEAPON_FLASHBANG:
-				case WEAPON_SHIELDGUN:
-				case WEAPON_C4:
-					return false;
-				case WEAPON_KNIFE:
-				case WEAPON_TMP:
-					*range = ShortRange;
-					break;
-				case WEAPON_M4A1:
-				{
-					CBasePlayerWeapon *pWeapon = static_cast<CBasePlayerWeapon *>(player->m_pActiveItem);
-					if (pWeapon->m_iWeaponState & WPNSTATE_M4A1_SILENCED)
-					{
-						*range = ShortRange;
-					}
-					else
-					{
-						*range = NormalRange;
-					}
-					break;
-				}
-				case WEAPON_USP:
-				{
-					CBasePlayerWeapon *pWeapon = static_cast<CBasePlayerWeapon *>(player->m_pActiveItem);
-					if (pWeapon->m_iWeaponState & WPNSTATE_M4A1_SILENCED)
-					{
-						*range = ShortRange;
-					}
-					else
-					{
-						*range = NormalRange;
-					}
-					break;
-				}
-				case WEAPON_AWP:
-					*range = 99999.0f;
-					break;
-				default:
-					*range = NormalRange;
-					break;
-			}
-			*priority = PRIORITY_HIGH;
-			*isHostile = true;
-			return true;
+		// silent "firing"
+		case WEAPON_HEGRENADE:
+		case WEAPON_SMOKEGRENADE:
+		case WEAPON_FLASHBANG:
+		case WEAPON_SHIELDGUN:
+		case WEAPON_C4:
+			return false;
+		// quiet
+		case WEAPON_KNIFE:
+		case WEAPON_TMP:
+			*range = ShortRange;
+			break;
+		// M4A1 - check for silencer
+		case WEAPON_M4A1:
+		{
+			CBasePlayerWeapon *pWeapon = static_cast<CBasePlayerWeapon *>(player->m_pActiveItem);
+			if (pWeapon->m_iWeaponState & WPNSTATE_M4A1_SILENCED)
+				*range = ShortRange;
+			else
+				*range = NormalRange;
+			break;
 		}
-		case EVENT_HE_GRENADE_EXPLODED:
+		// USP - check for silencer
+		case WEAPON_USP:
+		{
+			CBasePlayerWeapon *pWeapon = static_cast<CBasePlayerWeapon *>(player->m_pActiveItem);
+			if (pWeapon->m_iWeaponState & WPNSTATE_USP_SILENCED)
+				*range = ShortRange;
+			else
+				*range = NormalRange;
+			break;
+		}
+		// loud
+		case WEAPON_AWP:
 			*range = 99999.0f;
-			*priority = PRIORITY_HIGH;
-			*isHostile = true;
-			return true;
+			break;
+		// normal
+		default:
+			*range = NormalRange;
+			break;
+		}
 
-		case EVENT_FLASHBANG_GRENADE_EXPLODED:
-			*range = 1000.0f;
-			*priority = PRIORITY_LOW;
-			*isHostile = true;
-			return true;
-
-		case EVENT_SMOKE_GRENADE_EXPLODED:
-			*range = 1000.0f;
-			*priority = PRIORITY_LOW;
-			*isHostile = true;
-			return true;
-
-		case EVENT_GRENADE_BOUNCED:
-			*range = 500.0f;
-			*priority = PRIORITY_LOW;
-			*isHostile = true;
-			return true;
-
-		case EVENT_BREAK_GLASS:
-		case EVENT_BREAK_WOOD:
-		case EVENT_BREAK_METAL:
-		case EVENT_BREAK_FLESH:
-		case EVENT_BREAK_CONCRETE:
-			*range = 1100.0f;
-			*priority = PRIORITY_MEDIUM;
-			*isHostile = true;
-			return true;
-
-		case EVENT_DOOR:
-			*range = 1100.0f;
-			*priority = PRIORITY_MEDIUM;
-			*isHostile = false;
-			return true;
-
-		case EVENT_WEAPON_FIRED_ON_EMPTY:
-		case EVENT_PLAYER_FOOTSTEP:
-		case EVENT_WEAPON_RELOADED:
-		case EVENT_WEAPON_ZOOMED:
-		case EVENT_PLAYER_LANDED_FROM_HEIGHT:
-			*range = 1100.0f;
-			*priority = PRIORITY_LOW;
-			*isHostile = false;
-			return true;
-
-		case EVENT_HOSTAGE_USED:
-		case EVENT_HOSTAGE_CALLED_FOR_HELP:
-			*range = 1200.0f;
-			*priority = PRIORITY_MEDIUM;
-			*isHostile = false;
-			return true;
+		*priority = PRIORITY_HIGH;
+		*isHostile = true;
+		return true;
 	}
+	case EVENT_HE_GRENADE_EXPLODED:
+		*range = 99999.0f;
+		*priority = PRIORITY_HIGH;
+		*isHostile = true;
+		return true;
+
+	case EVENT_FLASHBANG_GRENADE_EXPLODED:
+		*range = 1000.0f;
+		*priority = PRIORITY_LOW;
+		*isHostile = true;
+		return true;
+
+	case EVENT_SMOKE_GRENADE_EXPLODED:
+		*range = 1000.0f;
+		*priority = PRIORITY_LOW;
+		*isHostile = true;
+		return true;
+
+	case EVENT_GRENADE_BOUNCED:
+		*range = 500.0f;
+		*priority = PRIORITY_LOW;
+		*isHostile = true;
+		return true;
+
+	case EVENT_BREAK_GLASS:
+	case EVENT_BREAK_WOOD:
+	case EVENT_BREAK_METAL:
+	case EVENT_BREAK_FLESH:
+	case EVENT_BREAK_CONCRETE:
+		*range = 1100.0f;
+		*priority = PRIORITY_MEDIUM;
+		*isHostile = true;
+		return true;
+
+	case EVENT_DOOR:
+		*range = 1100.0f;
+		*priority = PRIORITY_MEDIUM;
+		*isHostile = false;
+		return true;
+
+	case EVENT_WEAPON_FIRED_ON_EMPTY:
+	case EVENT_PLAYER_FOOTSTEP:
+	case EVENT_WEAPON_RELOADED:
+	case EVENT_WEAPON_ZOOMED:
+	case EVENT_PLAYER_LANDED_FROM_HEIGHT:
+		*range = 1100.0f;
+		*priority = PRIORITY_LOW;
+		*isHostile = false;
+		return true;
+
+	case EVENT_HOSTAGE_USED:
+	case EVENT_HOSTAGE_CALLED_FOR_HELP:
+		*range = 1200.0f;
+		*priority = PRIORITY_MEDIUM;
+		*isHostile = false;
+		return true;
+	}
+
 	return false;
 }
 

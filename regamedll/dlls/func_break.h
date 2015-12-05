@@ -92,7 +92,7 @@ public:
 	virtual int Restore(CRestore &restore);
 	virtual int ObjectCaps(void)
 	{
-		return ObjectCaps_();
+		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION);
 	}
 
 	// To spark when hit
@@ -112,10 +112,6 @@ public:
 	void KeyValue_(KeyValueData *pkvd);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
-	int ObjectCaps_(void)
-	{
-		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION);
-	}
 	void TraceAttack_(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType);
 	int TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
 	int DamageDecal_(int bitsDamageType);
@@ -132,15 +128,15 @@ public:
 
 	void EXPORT Die(void);
 
-	inline BOOL Explodable(void)
+	BOOL Explodable(void)
 	{
 		return ExplosionMagnitude() > 0;
 	}
-	inline int ExplosionMagnitude(void)
+	int ExplosionMagnitude(void)
 	{
 		return pev->impulse;
 	}
-	inline void ExplosionSetMagnitude(int magnitude)
+	void ExplosionSetMagnitude(int magnitude)
 	{
 		pev->impulse = magnitude;
 	}
@@ -180,7 +176,7 @@ public:
 	virtual int Restore(CRestore &restore);
 	virtual int ObjectCaps(void)
 	{
-		return ObjectCaps_();
+		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | FCAP_CONTINUOUS_USE;
 	}
 	virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
 	virtual void Touch(CBaseEntity *pOther);
@@ -193,10 +189,6 @@ public:
 	void KeyValue_(KeyValueData *pkvd);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
-	int ObjectCaps_(void)
-	{
-		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | FCAP_CONTINUOUS_USE;
-	}
 	int TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
 	void Touch_(CBaseEntity *pOther);
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
@@ -215,7 +207,7 @@ public:
 		}
 #endif
 	}
-	inline float MaxSpeed(void)
+	float MaxSpeed(void)
 	{
 		return m_maxSpeed;
 	}
@@ -232,8 +224,12 @@ public:
 
 };/* size: 200, cachelines: 4, members: 6 */
 
+#ifdef HOOK_GAMEDLL
+
 // linked objects
 C_DLLEXPORT void func_breakable(entvars_t *pev);
 C_DLLEXPORT void func_pushable(entvars_t *pev);
+
+#endif // HOOK_GAMEDLL
 
 #endif // FUNC_BREAK_H

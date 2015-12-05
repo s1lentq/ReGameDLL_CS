@@ -3,7 +3,9 @@
 /* <3c635f> ../cstrike/dlls/bot/cs_bot_update.cpp:26 */
 void CCSBot::__MAKE_VHOOK(Upkeep)(void)
 {
-	if (IMPLEMENT_ARRAY_CLASS(CCSBotManager, m_isLearningMap) || !IsAlive())
+	CCSBotManager *ctrl = TheCSBots();
+
+	if (ctrl->IsLearningMap() || !IsAlive())
 		return;
 
 	if (m_isRapidFiring)
@@ -145,7 +147,7 @@ void CCSBot::__MAKE_VHOOK(Upkeep)(void)
 void (*pCCSBot__Update)(void);
 
 /* <3c6e1e> ../cstrike/dlls/bot/cs_bot_update.cpp:208 */
-void __declspec(naked) CCSBot::Update_(void)
+void __declspec(naked) CCSBot::__MAKE_VHOOK(Update)(void)
 {
 	__asm
 	{

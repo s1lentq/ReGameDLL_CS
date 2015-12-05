@@ -62,13 +62,14 @@ TEST(StructOffsets, ReversingChecks, 5000)
 	REPEAT_SIZEOF_PRINT(CCareerTaskManager);
 	REPEAT_SIZEOF_PRINT(CCareerTask);
 	REPEAT_SIZEOF_PRINT(CPreventDefuseTask);
-	
+
 	// offset the members
 	REPEAT_OFFSETOF_PRINT(CBaseEntity, pev);
 	REPEAT_OFFSETOF_PRINT(CBaseEntity, has_disconnected);
 	//REPEAT_OFFSETOF_PRINT(CPreventDefuseTask, m_bombPlantedThisRound);
 	//REPEAT_OFFSETOF_PRINT(CPreventDefuseTask, m_defuseStartedThisRound);
 
+#ifdef HOOK_GAMEDLL
 	// assert
 	CHECK_CLASS_SIZE(CNavArea, 0x238u, 0x214u);
 
@@ -81,7 +82,7 @@ TEST(StructOffsets, ReversingChecks, 5000)
 
 	CHECK_CLASS_SIZE(BotPhraseManager, 0x21Cu, 0x214u);
 	CHECK_CLASS_SIZE(BotPhrase, 0x50, 0x44);
-	
+
 	CHECK_CLASS_SIZE(CHalfLifeMultiplay, 0x2D0u, 0x2C4u);
 	CHECK_CLASS_SIZE(CHalfLifeTraining, 0x2E8u, 0x2D8u);
 	CHECK_CLASS_SIZE(CGib, 0x98, 0xA8);
@@ -102,6 +103,7 @@ TEST(StructOffsets, ReversingChecks, 5000)
 	//CHECK_CLASS_SIZE(HostageStateMachine, 0x10, 0x10);
 	//CHECK_CLASS_SIZE(HostageFollowState, 0x4C, 0x4C);
 	//CHECK_CLASS_SIZE(CCSBot, 0x2CA0, 0x2CA0);
+#endif // HOOK_GAMEDLL
 }
 
 #pragma warning( pop )

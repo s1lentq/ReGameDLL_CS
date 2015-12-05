@@ -31,9 +31,15 @@ NOBODY void AttackState::OnEnter(CCSBot *me)
 /* <51a140> ../cstrike/dlls/bot/states/cs_bot_attack.cpp:135 */
 NOBODY void AttackState::StopAttacking(CCSBot *me)
 {
-	me->m_isAttacking = false;
-//	StopAttacking(AttackState *const this,
-//			class CCSBot *me);  //   135
+	if (me->m_task == CCSBot::SNIPING)
+	{
+		// stay in our hiding spot
+		me->Hide(me->GetLastKnownArea(), -1.0f, 50.0f);
+	}
+	else
+	{
+		me->StopAttacking();
+	}
 }
 
 /* <51997e> ../cstrike/dlls/bot/states/cs_bot_attack.cpp:152 */

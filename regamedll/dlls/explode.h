@@ -46,7 +46,7 @@ public:
 	virtual void Spawn(void);
 	virtual int ObjectCaps(void)
 	{
-		return ObjectCaps_();
+		return FCAP_DONT_SAVE;
 	}
 	virtual void Think(void);
 	virtual void Touch(CBaseEntity *pOther);
@@ -54,10 +54,6 @@ public:
 #ifdef HOOK_GAMEDLL
 
 	void Spawn_(void);
-	int ObjectCaps_(void)
-	{
-		return FCAP_DONT_SAVE;
-	}
 	void Think_(void);
 	void Touch_(CBaseEntity *pOther);
 
@@ -99,8 +95,12 @@ public:
 
 void ExplosionCreate(const Vector &center, Vector &angles, edict_t *pOwner, int magnitude, BOOL doDamage);
 
+#ifdef HOOK_GAMEDLL
+
 // linked objects
 C_DLLEXPORT void spark_shower(entvars_t *pev);
 C_DLLEXPORT void env_explosion(entvars_t *pev);
+
+#endif // HOOK_GAMEDLL
 
 #endif // EXPLODE_H

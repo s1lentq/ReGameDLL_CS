@@ -55,35 +55,35 @@ public:
 	void EXPORT LoadThink(void);
 
 public:
-	inline float Duration(void)
+	float Duration(void)
 	{
 		return pev->dmg_take;
 	}
-	inline float HoldTime(void)
+	float HoldTime(void)
 	{
 		return pev->dmg_save;
 	}
-	inline float MessageTime(void)
+	float MessageTime(void)
 	{
 		return m_messageTime;
 	}
-	inline float LoadTime(void)
+	float LoadTime(void)
 	{
 		return m_loadTime;
 	}
-	inline void SetDuration(float duration)
+	void SetDuration(float duration)
 	{
 		pev->dmg_take = duration;
 	}
-	inline void SetHoldTime(float hold)
+	void SetHoldTime(float hold)
 	{
 		pev->dmg_save = hold;
 	}
-	inline void SetMessageTime(float time)
+	void SetMessageTime(float time)
 	{
 		m_messageTime = time;
 	}
-	inline void SetLoadTime(float time)
+	void SetLoadTime(float time)
 	{
 		m_loadTime = time;
 	}

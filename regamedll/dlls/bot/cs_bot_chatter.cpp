@@ -16,21 +16,34 @@ CBaseEntity *g_pSelectedZombieSpawn;
 #endif // HOOK_GAMEDLL
 
 /* <303469> ../cstrike/dlls/bot/cs_bot_chatter.cpp:32 */
-NOBODY const Vector *GetRandomSpotAtPlace(Place place)
+const Vector *GetRandomSpotAtPlace(Place place)
 {
-//	{
-//		int count;                                            //    34
-//		iterator iter;                                        //    35
-//		int which;                                            //    46
-//		{
-//			class CNavArea *area;                        //    38
-//		}
-//		operator++(_List_iterator<CNavArea*> *const this);  //    36
-//		operator++(_List_iterator<CNavArea*> *const this);  //    47
-//		{
-//			class CNavArea *area;                        //    49
-//		}
-//	}
+	int count = 0;
+	NavAreaList::iterator iter;
+	int which;
+
+	for (iter = TheNavAreaList.begin(); iter != TheNavAreaList.end(); ++iter)
+	{
+		CNavArea *area = (*iter);
+
+		if (area->GetPlace() == place)
+			++count;
+	}
+
+	if (count == 0)
+		return NULL;
+
+	which = RANDOM_LONG(0, count - 1);
+
+	for (iter = TheNavAreaList.begin(); iter != TheNavAreaList.end(); ++iter)
+	{
+		CNavArea *area = (*iter);
+
+		if (area->GetPlace() == place && which == 0)
+			return area->GetCenter();
+	}
+
+	return NULL;
 }
 
 /* <303541> ../cstrike/dlls/bot/cs_bot_chatter.cpp:62 */
@@ -71,6 +84,8 @@ NOBODY void BotBombStatusMeme::Interpret(CCSBot *sender, CCSBot *receiver) const
 //			class CCSBot *receiver);  //   137
 }
 
+// A teammate has asked that we follow him
+
 /* <302c87> ../cstrike/dlls/bot/cs_bot_chatter.cpp:167 */
 NOBODY void BotFollowMeme::Interpret(CCSBot *sender, CCSBot *receiver) const
 {
@@ -82,6 +97,28 @@ NOBODY void BotFollowMeme::Interpret(CCSBot *sender, CCSBot *receiver) const
 //	Interpret(const class BotFollowMeme *const this,
 //			class CCSBot *sender,
 //			class CCSBot *receiver);  //   167
+
+	if (receiver->IsRogue())
+		return;
+
+	// if we're busy, ignore
+	if (receiver->IsBusy())
+		return;
+
+	PathCost pathCost(receiver);
+	float travelDistance = NavAreaTravelDistance(receiver->GetLastKnownArea(), TheNavAreaGrid.GetNearestNavArea(&sender->pev->origin), pathCost);
+	if (travelDistance < 0.0f)
+		return;
+
+	const float tooFar = 1000.0f;
+	if (travelDistance > tooFar)
+		return;
+
+	// begin following
+	receiver->Follow(sender);
+
+	// acknowledge
+	receiver->GetChatter()->Say("CoveringFriend");
 }
 
 /* <302759> ../cstrike/dlls/bot/cs_bot_chatter.cpp:200 */
@@ -295,6 +332,7 @@ NOBODY BotPhraseManager::BotPhraseManager(void)
 /* <303c45> ../cstrike/dlls/bot/cs_bot_chatter.cpp:417 */
 NOBODY void BotPhraseManager::OnMapChange(void)
 {
+	m_placeCount = 0;
 }
 
 /* <303c70> ../cstrike/dlls/bot/cs_bot_chatter.cpp:425 */

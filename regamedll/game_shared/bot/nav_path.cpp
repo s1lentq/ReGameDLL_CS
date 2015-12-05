@@ -1,7 +1,7 @@
 #include "precompiled.h"
 
 /* <505025> ../game_shared/bot/nav_path.cpp:24 */
-bool CNavPath::ComputePathPositions(void)
+NOBODY bool CNavPath::ComputePathPositions(void)
 {
 //	{
 //		int i;                                                //    34
@@ -52,7 +52,7 @@ bool CNavPath::ComputePathPositions(void)
 }
 
 /* <50525f> ../game_shared/bot/nav_path.cpp:148 */
-bool CNavPath::IsAtEnd(const Vector &pos) const
+NOBODY bool CNavPath::IsAtEnd(const Vector &pos) const
 {
 //	{
 //		float const epsilon;                                   //   153
@@ -64,7 +64,7 @@ bool CNavPath::IsAtEnd(const Vector &pos) const
 }
 
 /* <5052f6> ../game_shared/bot/nav_path.cpp:161 */
-float CNavPath::GetLength(void) const
+NOBODY float CNavPath::GetLength(void) const
 {
 //	{
 //		float length;                                         //   163
@@ -78,7 +78,7 @@ float CNavPath::GetLength(void) const
 }
 
 /* <50537f> ../game_shared/bot/nav_path.cpp:177 */
-bool CNavPath::GetPointAlongPath(float distAlong, Vector *pointOnPath) const
+NOBODY bool CNavPath::GetPointAlongPath(float distAlong, Vector *pointOnPath) const
 {
 //	{
 //		float lengthSoFar;                                    //   188
@@ -102,7 +102,7 @@ bool CNavPath::GetPointAlongPath(float distAlong, Vector *pointOnPath) const
 }
 
 /* <5054da> ../game_shared/bot/nav_path.cpp:218 */
-int CNavPath::GetSegmentIndexAlongPath(float distAlong) const
+NOBODY int CNavPath::GetSegmentIndexAlongPath(float distAlong) const
 {
 //	{
 //		float lengthSoFar;                                    //   228
@@ -117,7 +117,7 @@ int CNavPath::GetSegmentIndexAlongPath(float distAlong) const
 }
 
 /* <50557e> ../game_shared/bot/nav_path.cpp:250 */
-bool CNavPath::FindClosestPointOnPath(const Vector *worldPos, int startIndex, int endIndex, Vector *close) const
+NOBODY bool CNavPath::FindClosestPointOnPath(const Vector *worldPos, int startIndex, int endIndex, Vector *close) const
 {
 //	{
 //		Vector along;                                   //   255
@@ -149,17 +149,42 @@ bool CNavPath::FindClosestPointOnPath(const Vector *worldPos, int startIndex, in
 //	}
 }
 
+// Build trivial path when start and goal are in the same nav area
+
 /* <5057df> ../game_shared/bot/nav_path.cpp:305 */
 bool CNavPath::BuildTrivialPath(const Vector *start, const Vector *goal)
 {
-//	{
-//		class CNavArea *startArea;                           //   309
-//		class CNavArea *goalArea;                            //   313
-//	}
+	m_segmentCount = 0;
+
+	CNavArea *startArea = TheNavAreaGrid.GetNearestNavArea(start);
+	if (startArea == NULL)
+		return false;
+
+	CNavArea *goalArea = TheNavAreaGrid.GetNearestNavArea(goal);
+	if (goalArea == NULL)
+		return false;
+
+	m_segmentCount = 2;
+
+	m_path[0].area = startArea;
+	m_path[0].pos.x = start->x;
+	m_path[0].pos.y = start->y;
+	m_path[0].pos.z = startArea->GetZ(start);
+	m_path[0].ladder = NULL;
+	m_path[0].how = NUM_TRAVERSE_TYPES;
+
+	m_path[1].area = goalArea;
+	m_path[1].pos.x = goal->x;
+	m_path[1].pos.y = goal->y;
+	m_path[1].pos.z = goalArea->GetZ(goal);
+	m_path[1].ladder = NULL;
+	m_path[1].how = NUM_TRAVERSE_TYPES;
+
+	return true;
 }
 
 /* <505853> ../game_shared/bot/nav_path.cpp:340 */
-void CNavPath::Draw(void)
+NOBODY void CNavPath::Draw(void)
 {
 //	{
 //		int i;                                                //   345
@@ -171,7 +196,7 @@ void CNavPath::Draw(void)
 }
 
 /* <505931> ../game_shared/bot/nav_path.cpp:357 */
-int CNavPath::FindNextOccludedNode(int anchor)
+NOBODY int CNavPath::FindNextOccludedNode(int anchor)
 {
 //	{
 //		int lastVisible;                                      //   359
@@ -205,24 +230,24 @@ int CNavPath::FindNextOccludedNode(int anchor)
 }
 
 /* <505c26> ../game_shared/bot/nav_path.cpp:396 */
-void CNavPath::Optimize(void)
+NOBODY void CNavPath::Optimize(void)
 {
 }
 
 /* <505c6d> ../game_shared/bot/nav_path.cpp:436 */
-CNavPathFollower::CNavPathFollower(void)
+NOBODY CNavPathFollower::CNavPathFollower(void)
 {
 //	CStuckMonitor(CStuckMonitor *const this);  //   436
 }
 
 /* <505cce> ../game_shared/bot/nav_path.cpp:447 */
-void CNavPathFollower::Reset(void)
+NOBODY void CNavPathFollower::Reset(void)
 {
 //	Reset(CStuckMonitor *const this);  //   452
 }
 
 /* <507c31> ../game_shared/bot/nav_path.cpp:459 */
-void CNavPathFollower::Update(float deltaT, bool avoidObstacles)
+NOBODY void CNavPathFollower::Update(float deltaT, bool avoidObstacles)
 {
 //	{
 //		const class PathSegment *node;                      //   464
@@ -295,7 +320,7 @@ void CNavPathFollower::Update(float deltaT, bool avoidObstacles)
 }
 
 /* <505d18> ../game_shared/bot/nav_path.cpp:662 */
-int CNavPathFollower::FindOurPositionOnPath(Vector *close, bool local) const
+NOBODY int CNavPathFollower::FindOurPositionOnPath(Vector *close, bool local) const
 {
 //	{
 //		Vector along;                                   //   667
@@ -349,7 +374,7 @@ int CNavPathFollower::FindOurPositionOnPath(Vector *close, bool local) const
 }
 
 /* <506248> ../game_shared/bot/nav_path.cpp:750 */
-int CNavPathFollower::FindPathPoint(float aheadRange, Vector *point, int *prevIndex)
+NOBODY int CNavPathFollower::FindPathPoint(float aheadRange, Vector *point, int *prevIndex)
 {
 //	{
 //		int afterIndex;                                       //   753
@@ -502,7 +527,7 @@ int CNavPathFollower::FindPathPoint(float aheadRange, Vector *point, int *prevIn
 }
 
 /* <507004> ../game_shared/bot/nav_path.cpp:1000 */
-void CNavPathFollower::FeelerReflexAdjustment(Vector *goalPosition, float height)
+NOBODY void CNavPathFollower::FeelerReflexAdjustment(Vector *goalPosition, float height)
 {
 //	{
 //		Vector dir;                                     //  1006
@@ -573,18 +598,18 @@ void CNavPathFollower::FeelerReflexAdjustment(Vector *goalPosition, float height
 }
 
 /* <507a31> ../game_shared/bot/nav_path.cpp:1098 */
-CStuckMonitor::CStuckMonitor(void)
+NOBODY CStuckMonitor::CStuckMonitor(void)
 {
 //	IntervalTimer(IntervalTimer *const this);  //  1098
 }
 
 /* <507a73> ../game_shared/bot/nav_path.cpp:1108 */
-void CStuckMonitor::Reset(void)
+NOBODY void CStuckMonitor::Reset(void)
 {
 }
 
 /* <507a96> ../game_shared/bot/nav_path.cpp:1119 */
-void CStuckMonitor::Update(CImprov *improv)
+NOBODY void CStuckMonitor::Update(CImprov *improv)
 {
 //	{
 //		float const unstuckRange;                              //  1124

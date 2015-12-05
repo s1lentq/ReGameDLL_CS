@@ -58,16 +58,12 @@ public:
 	virtual void Spawn(void);
 	virtual int ObjectCaps(void)
 	{
-		return ObjectCaps_();
+		return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION;
 	}
 
 #ifdef HOOK_GAMEDLL
 
 	void Spawn_(void);
-	int ObjectCaps_(void)
-	{
-		return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION;
-	}
 
 #endif // HOOK_GAMEDLL
 
@@ -79,8 +75,12 @@ public:
 float_precision Fix2(float angle);
 void FixupAngles2(Vector &v);
 
+#ifdef HOOK_GAMEDLL
+
 // linked objects
 C_DLLEXPORT void func_vehicle(entvars_t *pev);
 C_DLLEXPORT void func_vehiclecontrols(entvars_t *pev);
+
+#endif // HOOK_GAMEDLL
 
 #endif // VEHICLE_H

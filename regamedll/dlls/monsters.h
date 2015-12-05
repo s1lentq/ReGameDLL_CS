@@ -116,14 +116,8 @@ class CGib: public CBaseEntity
 public:
 	virtual int ObjectCaps(void)
 	{
-		return ObjectCaps_();
-	}
-#ifdef HOOK_GAMEDLL
-	int ObjectCaps_(void)
-	{
 		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | FCAP_DONT_SAVE;
 	}
-#endif // HOOK_GAMEDLL
 
 public:
 	void Spawn(const char *szGibModel);

@@ -67,7 +67,10 @@ void CGrenade::Explode(TraceResult *pTrace, int bitsDamageType)
 	else
 		pevOwner = NULL;
 
-	TheBots->OnEvent(EVENT_FLASHBANG_GRENADE_EXPLODED, CBaseEntity::Instance(pev->owner), (CBaseEntity *)&pev->origin);
+	if (TheBots != NULL)
+	{
+		TheBots->OnEvent(EVENT_FLASHBANG_GRENADE_EXPLODED, CBaseEntity::Instance(pev->owner), (CBaseEntity *)&pev->origin);
+	}
 
 	// can't traceline attack owner if this is set
 	pev->owner = NULL;
@@ -118,7 +121,10 @@ void CGrenade::Explode2(TraceResult *pTrace, int bitsDamageType)
 
 	if (mp->IsCareer())
 	{
-		TheCareerTasks->LatchRoundEndMessage();
+		if (TheCareerTasks != NULL)
+		{
+			TheCareerTasks->LatchRoundEndMessage();
+		}
 	}
 
 	m_bJustBlew = true;
@@ -185,7 +191,10 @@ void CGrenade::Explode2(TraceResult *pTrace, int bitsDamageType)
 
 	if (mp->IsCareer())
 	{
-		TheCareerTasks->UnlatchRoundEndMessage();
+		if (TheCareerTasks != NULL)
+		{
+			TheCareerTasks->UnlatchRoundEndMessage();
+		}
 	}
 
 	// tell director about it
@@ -271,7 +280,10 @@ void CGrenade::Explode3(TraceResult *pTrace, int bitsDamageType)
 	else
 		pevOwner = NULL;
 
-	TheBots->OnEvent(EVENT_HE_GRENADE_EXPLODED, CBaseEntity::Instance(pev->owner));
+	if (TheBots != NULL)
+	{
+		TheBots->OnEvent(EVENT_HE_GRENADE_EXPLODED, CBaseEntity::Instance(pev->owner));
+	}
 
 	pev->owner = NULL;
 	RadiusDamage(pev, pevOwner, pev->dmg, CLASS_NONE, bitsDamageType);
@@ -508,7 +520,11 @@ void CGrenade::SG_Smoke(void)
 	else
 	{
 		pev->effects |= EF_NODRAW;
-		TheBots->RemoveGrenade(this);
+
+		if (TheBots != NULL)
+		{
+			TheBots->RemoveGrenade(this);
+		}
 		UTIL_Remove(this);
 	}
 }
@@ -559,8 +575,11 @@ void CGrenade::SG_Detonate(void)
 
 	UTIL_TraceLine(vecSpot, vecSpot + Vector(0, 0, -40), ignore_monsters, ENT(pev), &tr);
 
-	TheBots->OnEvent(EVENT_SMOKE_GRENADE_EXPLODED, CBaseEntity::Instance(pev->owner));
-	TheBots->AddGrenade(WEAPON_SMOKEGRENADE, this);
+	if (TheBots != NULL)
+	{
+		TheBots->OnEvent(EVENT_SMOKE_GRENADE_EXPLODED, CBaseEntity::Instance(pev->owner));
+		TheBots->AddGrenade(WEAPON_SMOKEGRENADE, this);
+	}
 
 	EMIT_SOUND(ENT(pev), CHAN_WEAPON, "weapons/sg_explode.wav", VOL_NORM, ATTN_NORM);
 
@@ -914,22 +933,10 @@ CGrenade *CGrenade::ShootTimed2(entvars_t *pevOwner, Vector vecStart, Vector vec
 
 	return pGrenade;
 }
-extern bool bActivateGo;
+
 /* <b9dd0> ../cstrike/dlls/ggrenade.cpp:1069 */
 CGrenade *CGrenade::ShootTimed(entvars_t *pevOwner, Vector vecStart, Vector vecVelocity, float time)
 {
-	/*if (bActivateGo)
-	{
-		static int iNum = 0;
-
-		_logf("#%d. vecStart: (%.12f, %.12f, %.12f) | vecVelocity: (%.12f, %.12f, %.12f)", iNum,
-			vecStart[0], vecStart[1], vecStart[2],
-			vecVelocity[0], vecVelocity[1], vecVelocity[2]);
-
-		//_logf("\n\n");
-		iNum++;
-	}*/
-
 	CGrenade *pGrenade = GetClassPtr((CGrenade *)NULL);
 	pGrenade->Spawn();
 
@@ -989,11 +996,17 @@ void CGrenade::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, 
 	}
 
 	SET_CLIENT_MAXSPEED(player->edict(), 1);
-	TheBots->OnEvent(EVENT_BOMB_DEFUSING, pActivator);
 
+	if (TheBots != NULL)
+	{
+		TheBots->OnEvent(EVENT_BOMB_DEFUSING, pActivator);
+	}
 	if (g_pGameRules->IsCareer())
 	{
-		TheCareerTasks->HandleEvent(EVENT_BOMB_DEFUSING);
+		if (TheCareerTasks != NULL)
+		{
+			TheCareerTasks->HandleEvent(EVENT_BOMB_DEFUSING);
+		}
 	}
 
 	if (player->m_bHasDefuser)
@@ -1203,7 +1216,10 @@ void CGrenade::C4Think(void)
 		m_flNextBeep = gpGlobals->time + 1.4;
 		EMIT_SOUND(ENT(pev), CHAN_VOICE, m_sBeepName, VOL_NORM, m_fAttenu);
 
-		TheBots->OnEvent(EVENT_BOMB_BEEP, this);
+		if (TheBots != NULL)
+		{
+			TheBots->OnEvent(EVENT_BOMB_BEEP, this);
+		}
 	}
 
 	if (gpGlobals->time >= m_flNextBlink)
@@ -1224,7 +1240,10 @@ void CGrenade::C4Think(void)
 
 	if (gpGlobals->time >= m_flC4Blow)
 	{
-		TheBots->OnEvent(EVENT_BOMB_EXPLODED);
+		if (TheBots != NULL)
+		{
+			TheBots->OnEvent(EVENT_BOMB_EXPLODED);
+		}
 
 		MESSAGE_BEGIN(MSG_ALL, gmsgScenarioIcon);
 			WRITE_BYTE(0);
@@ -1280,7 +1299,10 @@ void CGrenade::C4Think(void)
 				m_bStartDefuse = false;
 				m_flDefuseCountDown = 0;
 
-				TheBots->OnEvent(EVENT_BOMB_DEFUSE_ABORTED);
+				if (TheBots != NULL)
+				{
+					TheBots->OnEvent(EVENT_BOMB_DEFUSE_ABORTED);
+				}
 			}
 		}
 		else
@@ -1288,7 +1310,11 @@ void CGrenade::C4Think(void)
 			if (pPlayer != NULL && m_pBombDefuser->pev->deadflag == DEAD_NO)
 			{
 				Broadcast("BOMBDEF");
-				TheBots->OnEvent(EVENT_BOMB_DEFUSED, (CBaseEntity *)m_pBombDefuser);
+
+				if (TheBots != NULL)
+				{
+					TheBots->OnEvent(EVENT_BOMB_DEFUSED, (CBaseEntity *)m_pBombDefuser);
+				}
 
 				MESSAGE_BEGIN(MSG_SPEC, SVC_DIRECTOR);
 					WRITE_BYTE(9);
@@ -1316,9 +1342,9 @@ void CGrenade::C4Think(void)
 					WRITE_BYTE(0);
 				MESSAGE_END();
 
-				if (g_pGameRules->IsCareer())
+				if (g_pGameRules->IsCareer() && !pPlayer->IsBot())
 				{
-					if (!pPlayer->IsBot())
+					if (TheCareerTasks != NULL)
 					{
 						TheCareerTasks->HandleEvent(EVENT_BOMB_DEFUSED, pPlayer);
 					}
@@ -1347,7 +1373,10 @@ void CGrenade::C4Think(void)
 				m_bStartDefuse = false;
 				m_pBombDefuser = NULL;
 
-				TheBots->OnEvent(EVENT_BOMB_DEFUSE_ABORTED);
+				if (TheBots != NULL)
+				{
+					TheBots->OnEvent(EVENT_BOMB_DEFUSE_ABORTED);
+				}
 			}
 		}
 	}

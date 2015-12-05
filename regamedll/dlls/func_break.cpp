@@ -708,9 +708,12 @@ void CBreakable::Die(void)
 			break;
 		}
 		cFlag = BREAK_GLASS;
-		TheBots->OnEvent(EVENT_BREAK_GLASS, this);
-		break;
 
+		if (TheBots != NULL)
+		{
+			TheBots->OnEvent(EVENT_BREAK_GLASS, this);
+		}
+		break;
 	case matWood:
 		switch (RANDOM_LONG(0, 1))
 		{
@@ -720,7 +723,11 @@ void CBreakable::Die(void)
 			break;
 		}
 		cFlag = BREAK_WOOD;
-		TheBots->OnEvent(EVENT_BREAK_WOOD, this);
+
+		if (TheBots != NULL)
+		{
+			TheBots->OnEvent(EVENT_BREAK_WOOD, this);
+		}
 		break;
 
 	case matMetal:
@@ -733,7 +740,11 @@ void CBreakable::Die(void)
 			break;
 		}
 		cFlag = BREAK_METAL;
-		TheBots->OnEvent(EVENT_BREAK_METAL, this);
+
+		if (TheBots != NULL)
+		{
+			TheBots->OnEvent(EVENT_BREAK_METAL, this);
+		}
 		break;
 
 	case matFlesh:
@@ -745,7 +756,11 @@ void CBreakable::Die(void)
 			break;
 		}
 		cFlag = BREAK_FLESH;
-		TheBots->OnEvent(EVENT_BREAK_FLESH, this);
+
+		if (TheBots != NULL)
+		{
+			TheBots->OnEvent(EVENT_BREAK_FLESH, this);
+		}
 		break;
 
 	case matCinderBlock:
@@ -758,7 +773,11 @@ void CBreakable::Die(void)
 			break;
 		}
 		cFlag = BREAK_CONCRETE;
-		TheBots->OnEvent(EVENT_BREAK_CONCRETE, this);
+
+		if (TheBots != NULL)
+		{
+			TheBots->OnEvent(EVENT_BREAK_CONCRETE, this);
+		}
 		break;
 
 	case matCeilingTile:

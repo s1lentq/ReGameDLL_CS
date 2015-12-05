@@ -250,18 +250,10 @@ void CM4A1::M4A1Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 /* <28110b> ../cstrike/dlls/wpn_shared/wpn_m4a1.cpp:257 */
 void CM4A1::__MAKE_VHOOK(Reload)(void)
 {
-	int iResult;
 	if (m_pPlayer->ammo_556nato <= 0)
 		return;
 
-	if ((m_iWeaponState & WPNSTATE_M4A1_SILENCED) == WPNSTATE_M4A1_SILENCED)
-	{
-		iResult = DefaultReload(M4A1_MAX_CLIP, M4A1_RELOAD, M4A1_RELOAD_TIME);
-	}
-	else
-		iResult = DefaultReload(M4A1_MAX_CLIP, M4A1_UNSIL_RELOAD, M4A1_RELOAD_TIME);
-
-	if (iResult)
+	if (DefaultReload(M4A1_MAX_CLIP, ((m_iWeaponState & WPNSTATE_M4A1_SILENCED) == WPNSTATE_M4A1_SILENCED) ? M4A1_RELOAD : M4A1_UNSIL_RELOAD, M4A1_RELOAD_TIME))
 	{
 		m_pPlayer->SetAnimation(PLAYER_RELOAD);
 

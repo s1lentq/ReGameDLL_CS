@@ -108,8 +108,19 @@ NOBODY void CCSBot::BotTouch(CBaseEntity *other)
 }
 
 /* <2e89e3> ../cstrike/dlls/bot/cs_bot.cpp:335 */
-NOBODY bool CCSBot::IsBusy(void) const
+bool CCSBot::IsBusy(void) const
 {
+	if (IsAttacking() || 
+		IsBuying() ||
+		IsDefusingBomb() || 
+		GetTask() == PLANT_BOMB ||
+		GetTask() == RESCUE_HOSTAGES ||
+		IsSniping())
+	{
+		return true;
+	}
+
+	return false;
 }
 
 /* <2e8a0c> ../cstrike/dlls/bot/cs_bot.cpp:351 */
@@ -344,18 +355,25 @@ void CCSBot::DecreaseMorale(void)
 }
 
 /* <2e984c> ../cstrike/dlls/bot/cs_bot.cpp:857 */
-NOBODY bool CCSBot::IsRogue(void) const
+bool CCSBot::IsRogue(void) const
 {
-//	{
-//		class CCSBotManager *ctrl;                           //   859
-//		AllowRogues(const class CCSBotManager *const this);  //   860
-//		IsElapsed(const class CountdownTimer *const this);  //   864
-//		{
-//			float const rogueChance;                       //   869
-//			Start(CountdownTimer *const this,
-//				float duration);  //   866
-//		}
-//	}
+	CCSBotManager *ctrl = TheCSBots();
+
+	if (!ctrl->AllowRogues())
+		return false;
+
+	// periodically re-evaluate our rogue status
+	if (m_rogueTimer.IsElapsed())
+	{
+		m_rogueTimer.Start(RANDOM_FLOAT(10, 30));
+
+		// our chance of going rogue is inversely proportional to our teamwork attribute
+		const float rogueChance = 100.0f * (1.0f - GetProfile()->GetTeamwork());
+
+		m_isRogue = (RANDOM_FLOAT(0, 100) < rogueChance);
+	}
+
+	return m_isRogue; 
 }
 
 /* <2e98f1> ../cstrike/dlls/bot/cs_bot.cpp:882 */

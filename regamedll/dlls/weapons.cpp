@@ -1767,7 +1767,7 @@ void CWeaponBox::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 			CCSBotManager *ctrl = TheCSBots();
 
 			if ((pPlayer->HasShield() && pItem->m_iId == WEAPON_ELITE)
-				|| (pPlayer->IsBot() && !ctrl->IsWeaponUseable(pItem)))
+				|| (pPlayer->IsBot() && (ctrl != NULL && !ctrl->IsWeaponUseable(pItem))))
 			{
 				return;
 			}
@@ -1832,9 +1832,15 @@ void CWeaponBox::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 				}
 
 				CCSBotManager *csBots = TheCSBots();
+				if (csBots != NULL)
+				{
+					csBots->SetLooseBomb(NULL);
+				}
 
-				csBots->SetLooseBomb(NULL);
-				TheBots->OnEvent(EVENT_BOMB_PICKED_UP, pPlayer);
+				if (TheBots != NULL)
+				{
+					TheBots->OnEvent(EVENT_BOMB_PICKED_UP, pPlayer);
+				}
 			}
 
 			if (i >= PRIMARY_WEAPON_SLOT && i <= PISTOL_SLOT && pPlayer->m_rgpPlayerItems[i] != NULL)

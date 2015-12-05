@@ -60,7 +60,10 @@ public:
 	virtual int Restore(CRestore &restore);
 	virtual int ObjectCaps(void)
 	{
-		return ObjectCaps_();
+		if (pev->spawnflags & SF_ITEM_USE_ONLY)
+			return (CBaseToggle::ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | FCAP_IMPULSE_USE;
+		else
+			return (CBaseToggle::ObjectCaps() & ~FCAP_ACROSS_TRANSITION);
 	}
 	virtual void SetToggleState(int state);
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
@@ -74,13 +77,6 @@ public:
 	void KeyValue_(KeyValueData *pkvd);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
-	int ObjectCaps_(void)
-	{
-		if (pev->spawnflags & SF_ITEM_USE_ONLY)
-			return (CBaseToggle::ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | FCAP_IMPULSE_USE;
-		else
-			return (CBaseToggle::ObjectCaps() & ~FCAP_ACROSS_TRANSITION);
-	}
 	void SetToggleState_(int state);
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 	void Blocked_(CBaseEntity *pOther);
@@ -145,7 +141,7 @@ public:
 	virtual int Restore(CRestore &restore);
 	virtual int ObjectCaps(void)
 	{
-		return ObjectCaps_();
+		return CBaseToggle::ObjectCaps() & ~FCAP_ACROSS_TRANSITION;
 	}
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
@@ -156,10 +152,6 @@ public:
 	void KeyValue_(KeyValueData *pkvd);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
-	int ObjectCaps_(void)
-	{
-		return CBaseToggle::ObjectCaps() & ~FCAP_ACROSS_TRANSITION;
-	}
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #endif // HOOK_GAMEDLL
@@ -174,10 +166,14 @@ public:
 
 void PlayLockSounds(entvars_t *pev, locksound_t *pls, int flocked, int fbutton);
 
+#ifdef HOOK_GAMEDLL
+
 // linked objects
 C_DLLEXPORT void func_door(entvars_t *pev);
 C_DLLEXPORT void func_water(entvars_t *pev);
 C_DLLEXPORT void func_door_rotating(entvars_t *pev);
 C_DLLEXPORT void momentary_door(entvars_t *pev);
+
+#endif // HOOK_GAMEDLL
 
 #endif // DOORS_H

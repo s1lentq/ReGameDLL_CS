@@ -184,12 +184,12 @@ public:
 	virtual BOOL IsDeathmatch(void) = 0;
 	virtual BOOL IsTeamplay(void)
 	{
-		return IsTeamplay_();
+		return FALSE;
 	}
 	virtual BOOL IsCoOp(void) = 0;
 	virtual const char *GetGameDescription(void)
 	{
-		return GetGameDescription_();
+		return "Counter-Strike";
 	}
 	virtual BOOL ClientConnected(edict_t *pEntity, const char *pszName, const char *pszAddress, char *szRejectReason) = 0;
 	virtual void InitHUD(CBasePlayer *pl) = 0;
@@ -198,11 +198,11 @@ public:
 	virtual float FlPlayerFallDamage(CBasePlayer *pPlayer) = 0;
 	virtual BOOL FPlayerCanTakeDamage(CBasePlayer *pPlayer, CBaseEntity *pAttacker)
 	{
-		return FPlayerCanTakeDamage_(pPlayer, pAttacker);
+		return TRUE;
 	}
 	virtual BOOL ShouldAutoAim(CBasePlayer *pPlayer, edict_t *target)
 	{
-		return ShouldAutoAim_(pPlayer, target);
+		return TRUE;
 	}
 	virtual void PlayerSpawn(CBasePlayer *pPlayer) = 0;
 	virtual void PlayerThink(CBasePlayer *pPlayer) = 0;
@@ -211,15 +211,15 @@ public:
 	virtual edict_t *GetPlayerSpawnSpot(CBasePlayer *pPlayer);
 	virtual BOOL AllowAutoTargetCrosshair(void)
 	{
-		return AllowAutoTargetCrosshair_();
+		return TRUE;
 	}
 	virtual BOOL ClientCommand_DeadOrAlive(CBasePlayer *pPlayer, const char *pcmd)
 	{
-		return ClientCommand_DeadOrAlive_(pPlayer, pcmd);
+		return FALSE;
 	}
 	virtual BOOL ClientCommand(CBasePlayer *pPlayer, const char *pcmd)
 	{
-		return ClientCommand_(pPlayer, pcmd);
+		return FALSE;
 	}
 	virtual void ClientUserInfoChanged(CBasePlayer *pPlayer, char *infobuffer) {};
 	virtual int IPointsForKill(CBasePlayer *pAttacker, CBasePlayer *pKilled) = 0;
@@ -244,7 +244,7 @@ public:
 	virtual float FlHealthChargerRechargeTime(void) = 0;
 	virtual float FlHEVChargerRechargeTime(void)
 	{
-		return FlHEVChargerRechargeTime_();
+		return 0.0f;
 	}
 	virtual int DeadPlayerWeapons(CBasePlayer *pPlayer) = 0;
 	virtual int DeadPlayerAmmo(CBasePlayer *pPlayer) = 0;
@@ -252,24 +252,24 @@ public:
 	virtual int PlayerRelationship(CBasePlayer *pPlayer, CBaseEntity *pTarget) = 0;
 	virtual int GetTeamIndex(const char *pTeamName)
 	{
-		return GetTeamIndex_(pTeamName);
+		return -1;
 	}
 	virtual const char *GetIndexedTeamName(int teamIndex)
 	{
-		return GetIndexedTeamName_(teamIndex);
+		return "";
 	}
 	virtual BOOL IsValidTeam(const char *pTeamName)
 	{
-		return IsValidTeam_(pTeamName);
+		return TRUE;
 	}
 	virtual void ChangePlayerTeam(CBasePlayer *pPlayer, const char *pTeamName, BOOL bKill, BOOL bGib) {};
 	virtual const char *SetDefaultPlayerTeam(CBasePlayer *pPlayer)
 	{
-		return SetDefaultPlayerTeam_(pPlayer);
+		return "";
 	}
 	virtual BOOL PlayTextureSounds(void)
 	{
-		return PlayTextureSounds_();
+		return TRUE;
 	}
 	virtual BOOL FAllowMonsters(void) = 0;
 	virtual void EndMultiplayerGame(void) {};
@@ -277,7 +277,7 @@ public:
 	// Stuff that is shared between client and server.
 	virtual BOOL IsFreezePeriod(void)
 	{
-		return IsFreezePeriod_();
+		return m_bFreezePeriod;
 	}
 	virtual void ServerDeactivate(void) {};
 	virtual void CheckMapConditions(void) {};
@@ -285,65 +285,9 @@ public:
 #ifdef HOOK_GAMEDLL
 
 	void RefreshSkillData_(void);
-	BOOL IsTeamplay_(void)
-	{
-		return FALSE;
-	}
-	const char *GetGameDescription_(void)
-	{
-		return "Counter-Strike";
-	}
-	BOOL FPlayerCanTakeDamage_(CBasePlayer *pPlayer, CBaseEntity *pAttacker)
-	{
-		return TRUE;
-	}
-	BOOL ShouldAutoAim_(CBasePlayer *pPlayer, edict_t *target)
-	{
-		return TRUE;
-	}
 	edict_t *GetPlayerSpawnSpot_(CBasePlayer *pPlayer);
-	BOOL AllowAutoTargetCrosshair_(void)
-	{
-		return TRUE;
-	}
-	BOOL ClientCommand_DeadOrAlive_(CBasePlayer *pPlayer, const char *pcmd)
-	{
-		return FALSE;
-	}
-	BOOL ClientCommand_(CBasePlayer *pPlayer, const char *pcmd)
-	{
-		return FALSE;
-	}
 	BOOL CanHavePlayerItem_(CBasePlayer *pPlayer, CBasePlayerItem *pItem);
 	BOOL CanHaveAmmo_(CBasePlayer *pPlayer, const char *pszAmmoName, int iMaxCarry);
-	float FlHEVChargerRechargeTime_(void)
-	{
-		return 0.0f;
-	}
-	int GetTeamIndex_(const char *pTeamName)
-	{
-		return -1;
-	}
-	const char *GetIndexedTeamName_(int teamIndex)
-	{
-		return "";
-	}
-	BOOL IsValidTeam_(const char *pTeamName)
-	{
-		return TRUE;
-	}
-	const char *SetDefaultPlayerTeam_(CBasePlayer *pPlayer)
-	{
-		return "";
-	}
-	BOOL PlayTextureSounds_(void)
-	{
-		return TRUE;
-	}
-	BOOL IsFreezePeriod_(void)
-	{
-		return m_bFreezePeriod;
-	}
 
 #endif // HOOK_GAMEDLL
 
@@ -364,7 +308,7 @@ public:
 	virtual BOOL FAllowFlashlight(void)
 	{
 		return TRUE;
-	};
+	}
 	virtual BOOL FShouldSwitchWeapon(CBasePlayer *pPlayer, CBasePlayerItem *pWeapon);
 	virtual BOOL GetNextBestWeapon(CBasePlayer *pPlayer, CBasePlayerItem *pCurrentWeapon);
 	virtual BOOL IsMultiplayer(void);
@@ -411,10 +355,6 @@ public:
 
 	void Think_(void);
 	BOOL IsAllowedToSpawn_(CBaseEntity *pEntity);
-	BOOL FAllowFlashlight_(void)
-	{
-		return TRUE;
-	};
 	BOOL FShouldSwitchWeapon_(CBasePlayer *pPlayer, CBasePlayerItem *pWeapon);
 	BOOL GetNextBestWeapon_(CBasePlayer *pPlayer, CBasePlayerItem *pCurrentWeapon);
 	BOOL IsMultiplayer_(void);
@@ -450,10 +390,6 @@ public:
 	float FlHealthChargerRechargeTime_(void);
 	int DeadPlayerWeapons_(CBasePlayer *pPlayer);
 	int DeadPlayerAmmo_(CBasePlayer *pPlayer);
-	const char *GetTeamID_(CBaseEntity *pEntity)
-	{
-		return "";
-	};
 	int PlayerRelationship_(CBasePlayer *pPlayer, CBaseEntity *pTarget);
 	BOOL FAllowMonsters_(void);
 
@@ -516,17 +452,17 @@ public:
 	virtual int DeadPlayerAmmo(CBasePlayer *pPlayer);
 	virtual const char *GetTeamID(CBaseEntity *pEntity)
 	{
-		return GetTeamID_(pEntity);
+		return "";
 	}
 	virtual int PlayerRelationship(CBasePlayer *pPlayer, CBaseEntity *pTarget);
 	virtual BOOL PlayTextureSounds(void)
 	{
-		return PlayTextureSounds_();
+		return FALSE;
 	}
 	virtual BOOL FAllowMonsters(void);
 	virtual void EndMultiplayerGame(void)
 	{
-		EndMultiplayerGame_();
+		GoToIntermission();
 	}
 	virtual void ServerDeactivate(void);
 	virtual void CheckMapConditions(void);
@@ -591,20 +527,8 @@ public:
 	float FlHEVChargerRechargeTime_(void);
 	int DeadPlayerWeapons_(CBasePlayer *pPlayer);
 	int DeadPlayerAmmo_(CBasePlayer *pPlayer);
-	const char *GetTeamID_(CBaseEntity *pEntity)
-	{
-		return "";
-	}
 	int PlayerRelationship_(CBasePlayer *pPlayer, CBaseEntity *pTarget);
-	BOOL PlayTextureSounds_(void)
-	{
-		return FALSE;
-	}
 	BOOL FAllowMonsters_(void);
-	void EndMultiplayerGame_(void)
-	{
-		GoToIntermission();
-	}
 	void ServerDeactivate_(void);
 	void CheckMapConditions_(void);
 	void CleanUpMap_(void);
@@ -796,6 +720,7 @@ typedef struct mapcycle_item_s
 	int minplayers;
 	int maxplayers;
 	char rulebuffer[MAX_RULE_BUFFER];
+
 } mapcycle_item_t;
 /* size: 1068, cachelines: 17, members: 5 */
 
@@ -888,7 +813,11 @@ int GetMapCount(void);
 // refs
 extern void (*pInstallGameRules)(void);
 
+#ifdef HOOK_GAMEDLL
+
 // linked objects
 C_DLLEXPORT void info_map_parameters(entvars_t *pev);
+
+#endif // HOOK_GAMEDLL
 
 #endif // GAMERULES_H

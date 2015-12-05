@@ -49,11 +49,11 @@ public:
 	virtual void Killed(entvars_t *pevAttacker, int iGib);
 	virtual int BloodColor(void)
 	{
-		return BloodColor_();
+		return m_bloodColor;
 	}
 	virtual BOOL IsAlive(void)
 	{
-		return IsAlive_();
+		return (pev->deadflag != DEAD_DEAD);
 	}
 	virtual float ChangeYaw(int speed);
 	virtual BOOL HasHumanGibs(void);
@@ -80,14 +80,6 @@ public:
 	int TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
 	int TakeHealth_(float flHealth, int bitsDamageType);
 	void Killed_(entvars_t *pevAttacker, int iGib);
-	int BloodColor_(void)
-	{
-		return m_bloodColor;
-	}
-	BOOL IsAlive_(void)
-	{
-		return (pev->deadflag != DEAD_DEAD);
-	}
 	float ChangeYaw_(int speed);
 	BOOL HasHumanGibs_(void);
 	BOOL HasAlienGibs_(void);

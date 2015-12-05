@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-CBaseTutor *TheTutor;
+CBaseTutor *TheTutor = NULL;
 
 /* <1f545d> ../cstrike/dlls/tutor_base_tutor.cpp:22 */
 TutorMessageEvent::TutorMessageEvent(int mid, int duplicateID, float time, float lifetime, int priority)

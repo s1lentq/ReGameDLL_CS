@@ -1,7 +1,7 @@
 #include "precompiled.h"
 
 /* <3b3a2a> ../cstrike/dlls/bot/cs_bot_statemachine.cpp:16 */
-NOBODY void CCSBot::SetState(BotState *state)
+void CCSBot::SetState(BotState *state)
 {
 	PrintIfWatched("SetState: %s -> %s\n", (m_state != NULL) ? m_state->GetName() : "NULL", state->GetName());
 
@@ -22,7 +22,7 @@ NOBODY void CCSBot::SetState(BotState *state)
 }
 
 /* <3b3ab4> ../cstrike/dlls/bot/cs_bot_statemachine.cpp:34 */
-NOBODY void CCSBot::Idle(void)
+void CCSBot::Idle(void)
 {
 	SetTask(SEEK_AND_DESTROY);
 	SetState(&m_idleState);
@@ -221,7 +221,7 @@ NOBODY void CCSBot::Attack(CBasePlayer *victim)
 }
 
 /* <3b4416> ../cstrike/dlls/bot/cs_bot_statemachine.cpp:366 */
-NOBODY void CCSBot::StopAttacking(void)
+void CCSBot::StopAttacking(void)
 {
 	PrintIfWatched("ATTACK END\n");
 	m_attackState.OnExit(this);//TODO: Reverse me
@@ -246,14 +246,21 @@ NOBODY bool CCSBot::IsEscapingFromBomb(void) const
 }
 
 /* <3b44c6> ../cstrike/dlls/bot/cs_bot_statemachine.cpp:399 */
-NOBODY bool CCSBot::IsDefusingBomb(void) const
+bool CCSBot::IsDefusingBomb(void) const
 {
+	if (m_state == static_cast<const BotState *>(&m_defuseBombState))
+		return true;
+
+	return false;
 }
 
 /* <3b44ed> ../cstrike/dlls/bot/cs_bot_statemachine.cpp:411 */
 bool CCSBot::IsHiding(void) const
 {
-	return (m_state == static_cast<const BotState *>(&m_hideState));
+	if (m_state == static_cast<const BotState *>(&m_hideState))
+		return true;
+
+	return false;
 }
 
 /* <3b450f> ../cstrike/dlls/bot/cs_bot_statemachine.cpp:423 */
@@ -276,8 +283,12 @@ NOBODY bool CCSBot::IsMovingTo(void) const
 }
 
 /* <3b4598> ../cstrike/dlls/bot/cs_bot_statemachine.cpp:460 */
-NOBODY bool CCSBot::IsBuying(void) const
+bool CCSBot::IsBuying(void) const
 {
+	if (m_state == static_cast<const BotState *>(&m_buyState))
+		return true;
+
+	return false;
 }
 
 /* <3b45bf> ../cstrike/dlls/bot/cs_bot_statemachine.cpp:472 */
