@@ -172,7 +172,7 @@ void setupToolchain(NativeBinarySpec b)
 			'_close' : 'close',
 		])
 
-		cfg.compilerOptions.args '-Qoption,cpp,--treat_func_as_string_literal_cpp', '-g'
+		cfg.compilerOptions.args '-Qoption,cpp,--treat_func_as_string_literal_cpp', '-g', '-no-opt-class-analysis'
 		cfg.projectLibpath(project, '/lib/linux32')
 		cfg.extraLibs 'dl', 'm', 'stdc++', 'steam_api'
 	}
