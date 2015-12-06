@@ -1,22 +1,5 @@
 #include "precompiled.h"
 
-#define G3SG1_MAX_SPEED		210
-#define G3SG1_MAX_SPEED_ZOOM	150
-
-#define G3SG1_DAMAGE		80
-#define G3SG1_RANGE_MODIFER	0.98
-
-#define G3SG1_RELOAD_TIME	3.5
-
-enum g3sg1_e
-{
-	G3SG1_IDLE,
-	G3SG1_SHOOT,
-	G3SG1_SHOOT2,
-	G3SG1_RELOAD,
-	G3SG1_DRAW
-};
-
 /* <260ef4> ../cstrike/dlls/wpn_shared/wpn_g3sg1.cpp:48 */
 LINK_ENTITY_TO_CLASS(weapon_g3sg1, CG3SG1);
 

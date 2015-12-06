@@ -1,5 +1,4 @@
 #include "precompiled.h"
-#include "talkmonster.h"
 
 #ifndef HOOK_GAMEDLL
 

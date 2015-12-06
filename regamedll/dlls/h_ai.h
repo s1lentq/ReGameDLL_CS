@@ -32,6 +32,9 @@
 #pragma once
 #endif
 
+#define NUM_LATERAL_CHECKS		13	// how many checks are made on each side of a monster looking for lateral cover
+#define NUM_LATERAL_LOS_CHECKS		6	// how many checks are made on each side of a monster looking for lateral cover
+
 NOXREF BOOL FBoxVisible(entvars_t *pevLooker, entvars_t *pevTarget, Vector &vecTargetOrigin, float flSize);
 NOXREF Vector VecCheckToss(entvars_t *pev, const Vector &vecSpot1, Vector vecSpot2, float flGravityAdj);
 NOXREF Vector VecCheckThrow(entvars_t *pev, const Vector &vecSpot1, Vector vecSpot2, float flSpeed, float flGravityAdj);

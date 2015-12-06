@@ -1,22 +1,5 @@
 #include "precompiled.h"
 
-#define MP5N_MAX_SPEED			250
-
-#define MP5N_DAMAGE			26
-#define MP5N_RANGE_MODIFER		0.84
-
-#define MP5N_RELOAD_TIME		2.63
-
-enum mp5n_e
-{
-	MP5N_IDLE1,
-	MP5N_RELOAD,
-	MP5N_DRAW,
-	MP5N_SHOOT1,
-	MP5N_SHOOT2,
-	MP5N_SHOOT3
-};
-
 /* <28bbf6> ../cstrike/dlls/wpn_shared/wpn_mp5navy.cpp:50 */
 LINK_ENTITY_TO_CLASS(weapon_mp5navy, CMP5N);
 

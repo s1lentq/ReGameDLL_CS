@@ -1,22 +1,5 @@
 #include "precompiled.h"
 
-#define SCOUT_MAX_SPEED			260
-#define SCOUT_MAX_SPEED_ZOOM		220
-
-#define SCOUT_DAMAGE			75
-#define SCOUT_RANGE_MODIFER		0.98
-
-#define SCOUT_RELOAD_TIME		2
-
-enum scout_e
-{
-	SCOUT_IDLE,
-	SCOUT_SHOOT,
-	SCOUT_SHOOT2,
-	SCOUT_RELOAD,
-	SCOUT_DRAW
-};
-
 /* <29ba7b> ../cstrike/dlls/wpn_shared/wpn_scout.cpp:48 */
 LINK_ENTITY_TO_CLASS(weapon_scout, CSCOUT);
 

@@ -1118,6 +1118,9 @@
     <ClInclude Include="..\dlls\scriptevent.h">
       <Filter>dlls</Filter>
     </ClInclude>
+    <ClInclude Include="..\dlls\wpn_shared.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\linux\appversion.sh">

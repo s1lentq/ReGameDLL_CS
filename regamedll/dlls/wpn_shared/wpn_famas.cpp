@@ -1,23 +1,5 @@
 #include "precompiled.h"
 
-enum famas_e
-{
-	FAMAS_IDLE1,
-	FAMAS_RELOAD,
-	FAMAS_DRAW,
-	FAMAS_SHOOT1,
-	FAMAS_SHOOT2,
-	FAMAS_SHOOT3
-};
-
-#define FAMAS_MAX_SPEED		240
-#define FAMAS_RELOAD_TIME	3.3
-
-#define FAMAS_DAMAGE		30
-#define FAMAS_DAMAGE_BURST	34
-
-#define FAMAS_RANGE_MODIFER	0.96
-
 /* <2c0549> ../cstrike/dlls/wpn_shared/wpn_famas.cpp:50 */
 LINK_ENTITY_TO_CLASS(weapon_famas, CFamas);
 

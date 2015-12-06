@@ -1,22 +1,5 @@
 #include "precompiled.h"
 
-#define TMP_MAX_SPEED			250
-
-#define TMP_DAMAGE			20
-#define TMP_RANGE_MODIFER		0.85
-
-#define TMP_RELOAD_TIME			2.12
-
-enum tmp_e
-{
-	TMP_IDLE1,
-	TMP_RELOAD,
-	TMP_DRAW,
-	TMP_SHOOT1,
-	TMP_SHOOT2,
-	TMP_SHOOT3
-};
-
 /* <2b06f0> ../cstrike/dlls/wpn_shared/wpn_tmp.cpp:50 */
 LINK_ENTITY_TO_CLASS(weapon_tmp, CTMP);
 

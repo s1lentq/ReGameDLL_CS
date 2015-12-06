@@ -1,22 +1,5 @@
 #include "precompiled.h"
 
-#define FIVESEVEN_MAX_SPEED		250
-
-#define FIVESEVEN_DAMAGE		20
-#define FIVESEVEN_RANGE_MODIFER		0.885
-
-#define FIVESEVEN_RELOAD_TIME		2.7
-
-enum fiveseven_e
-{
-	FIVESEVEN_IDLE,
-	FIVESEVEN_SHOOT1,
-	FIVESEVEN_SHOOT2,
-	FIVESEVEN_SHOOT_EMPTY,
-	FIVESEVEN_RELOAD,
-	FIVESEVEN_DRAW
-};
-
 /* <25698d> ../cstrike/dlls/wpn_shared/wpn_fiveseven.cpp:49 */
 LINK_ENTITY_TO_CLASS(weapon_fiveseven, CFiveSeven);
 

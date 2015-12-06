@@ -1,22 +1,5 @@
 #include "precompiled.h"
 
-#define UMP45_MAX_SPEED			250
-
-#define UMP45_DAMAGE			30
-#define UMP45_RANGE_MODIFER		0.82
-
-#define UMP45_RELOAD_TIME		3.5
-
-enum ump45_e
-{
-	UMP45_IDLE1,
-	UMP45_RELOAD,
-	UMP45_DRAW,
-	UMP45_SHOOT1,
-	UMP45_SHOOT2,
-	UMP45_SHOOT3
-};
-
 /* <2b5b26> ../cstrike/dlls/wpn_shared/wpn_ump45.cpp:50 */
 LINK_ENTITY_TO_CLASS(weapon_ump45, CUMP45);
 

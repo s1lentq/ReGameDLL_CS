@@ -1,22 +1,5 @@
 #include "precompiled.h"
 
-#define GALIL_MAX_SPEED			240
-
-#define GALIL_DAMAGE			30
-#define GALIL_RANGE_MODIFER		0.98
-
-#define GALIL_RELOAD_TIME		2.45
-
-enum galil_e
-{
-	GALIL_IDLE1,
-	GALIL_RELOAD,
-	GALIL_DRAW,
-	GALIL_SHOOT1,
-	GALIL_SHOOT2,
-	GALIL_SHOOT3
-};
-
 /* <2c5a1c> ../cstrike/dlls/wpn_shared/wpn_galil.cpp:50 */
 LINK_ENTITY_TO_CLASS(weapon_galil, CGalil);
 

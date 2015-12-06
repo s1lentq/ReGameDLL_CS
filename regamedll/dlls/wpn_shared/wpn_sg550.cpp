@@ -1,22 +1,5 @@
 #include "precompiled.h"
 
-#define SG550_MAX_SPEED			210
-#define SG550_MAX_SPEED_ZOOM		150
-
-#define SG550_DAMAGE			70
-#define SG550_RANGE_MODIFER		0.98
-
-#define SG550_RELOAD_TIME		3.35
-
-enum sg550_e
-{
-	SG550_IDLE,
-	SG550_SHOOT,
-	SG550_SHOOT2,
-	SG550_RELOAD,
-	SG550_DRAW
-};
-
 /* <2a0f39> ../cstrike/dlls/wpn_shared/wpn_sg550.cpp:48 */
 LINK_ENTITY_TO_CLASS(weapon_sg550, CSG550);
 

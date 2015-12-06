@@ -1,17 +1,5 @@
 #include "precompiled.h"
 
-#define C4_MAX_AMMO		1
-#define C4_MAX_SPEED		250.0
-#define C4_ARMING_ON_TIME	3.0
-
-enum c4_e
-{
-	C4_IDLE1,
-	C4_DRAW,
-	C4_DROP,
-	C4_ARM
-};
-
 /* <246a03> ../cstrike/dlls/wpn_shared/wpn_c4.cpp:48 */
 LINK_ENTITY_TO_CLASS(weapon_c4, CC4);
 

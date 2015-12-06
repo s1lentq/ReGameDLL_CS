@@ -1,20 +1,5 @@
 #include "precompiled.h"
 
-#define M3_MAX_SPEED		230
-#define M3_CONE_VECTOR		Vector(0.0675, 0.0675, 0.0)	// special shotgun spreads
-
-enum m3_e
-{
-	M3_IDLE,
-	M3_FIRE1,
-	M3_FIRE2,
-	M3_RELOAD,
-	M3_PUMP,
-	M3_START_RELOAD,
-	M3_DRAW,
-	M3_HOLSTER
-};
-
 /* <27bf59> ../cstrike/dlls/wpn_shared/wpn_m3.cpp:52 */
 LINK_ENTITY_TO_CLASS(weapon_m3, CM3);
 

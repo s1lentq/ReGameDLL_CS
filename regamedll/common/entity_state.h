@@ -110,7 +110,7 @@ struct entity_state_s
 
 };/* size: 340, cachelines: 6, members: 62 */
 
-struct clientdata_s
+typedef struct clientdata_s
 {
 	Vector origin;
 	Vector velocity;
