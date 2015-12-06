@@ -1,16 +1,5 @@
 #include "precompiled.h"
 
-#define FLASHBANG_MAX_SPEED		250
-#define FLASHBANG_MAX_SPEED_SHIELD	180
-
-enum flashbang_e
-{
-	FLASHBANG_IDLE,
-	FLASHBANG_PULLPIN,
-	FLASHBANG_THROW,
-	FLASHBANG_DRAW
-};
-
 /* <25ba9b> ../cstrike/dlls/wpn_shared/wpn_flashbang.cpp:37 */
 LINK_ENTITY_TO_CLASS(weapon_flashbang, CFlashbang);
 

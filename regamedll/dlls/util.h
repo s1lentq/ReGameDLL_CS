@@ -89,6 +89,10 @@ extern globalvars_t *gpGlobals;
 #define BLOOD_COLOR_YELLOW	(byte)195
 #define BLOOD_COLOR_GREEN	BLOOD_COLOR_YELLOW
 
+#define GERMAN_GIB_COUNT	4
+#define HUMAN_GIB_COUNT		6
+#define ALIEN_GIB_COUNT		4
+
 #define LANGUAGE_ENGLISH	0
 #define LANGUAGE_GERMAN		1
 #define LANGUAGE_FRENCH		2

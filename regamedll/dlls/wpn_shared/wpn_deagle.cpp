@@ -1,22 +1,5 @@
 #include "precompiled.h"
 
-#define DEAGLE_MAX_SPEED	250
-
-#define DEAGLE_DAMAGE		54
-#define DEAGLE_RANGE_MODIFER	0.81
-
-#define DEAGLE_RELOAD_TIME	2.2
-
-enum deagle_e
-{
-	DEAGLE_IDLE1,
-	DEAGLE_SHOOT1,
-	DEAGLE_SHOOT2,
-	DEAGLE_SHOOT_EMPTY,
-	DEAGLE_RELOAD,
-	DEAGLE_DRAW
-};
-
 /* <24be52> ../cstrike/dlls/wpn_shared/wpn_deagle.cpp:49 */
 LINK_ENTITY_TO_CLASS(weapon_deagle, CDEAGLE);
 

@@ -1,27 +1,5 @@
 #include "precompiled.h"
 
-#define WJ_HEIGHT				8
-#define	STOP_EPSILON				0.1
-#define MAX_CLIMB_SPEED				200
-#define PLAYER_DUCKING_MULTIPLIER		0.333
-#define PM_CHECKSTUCK_MINTIME			0.05	// Don't check again too quickly.
-
-// Ducking time
-#define TIME_TO_DUCK				0.4
-#define STUCK_MOVEUP				1
-
-#define PM_VEC_DUCK_HULL_MIN			-18
-#define PM_VEC_HULL_MIN				-36
-#define PM_VEC_DUCK_VIEW			12
-#define PM_VEC_VIEW				17
-
-#define PM_PLAYER_MAX_SAFE_FALL_SPEED		580	// approx 20 feet
-#define PM_PLAYER_MIN_BOUNCE_SPEED		350
-#define PM_PLAYER_FALL_PUNCH_THRESHHOLD		250	// won't punch player's screen/make scrape noise unless player falling at least this fast.
-
-// Only allow bunny jumping up to 1.2x server / player maxspeed setting
-#define BUNNYJUMP_MAX_SPEED_FACTOR		1.2f
-
 /*
 * Globals initialization
 */

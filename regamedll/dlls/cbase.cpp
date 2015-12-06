@@ -1,5 +1,4 @@
 #include "precompiled.h"
-#include "game_shared/perf_counter.h"
 
 /*
 * Globals initialization

@@ -1,19 +1,5 @@
 #include "precompiled.h"
 
-#define XM1014_MAX_SPEED	240
-#define XM1014_CONE_VECTOR	Vector(0.0725, 0.0725, 0.0)	// special shotgun spreads
-
-enum xm1014_e
-{
-	XM1014_IDLE,
-	XM1014_FIRE1,
-	XM1014_FIRE2,
-	XM1014_RELOAD,
-	XM1014_PUMP,
-	XM1014_START_RELOAD,
-	XM1014_DRAW
-};
-
 /* <2cadb2> ../cstrike/dlls/wpn_shared/wpn_xm1014.cpp:51 */
 LINK_ENTITY_TO_CLASS(weapon_xm1014, CXM1014);
 

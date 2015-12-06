@@ -270,6 +270,9 @@ struct WeaponStruct
 
 };/* size: 20, cachelines: 1, members: 5 */
 
+#define DEFINE_WEAPON(m_wpnid, m_cost, m_slotnum, m_acost)\
+	{ m_wpnid, m_cost, 3, m_slotnum, m_acost }
+
 #ifdef HOOK_GAMEDLL
 
 #define m_szPoses (*pm_szPoses)

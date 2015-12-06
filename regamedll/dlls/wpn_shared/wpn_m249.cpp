@@ -1,21 +1,5 @@
 #include "precompiled.h"
 
-#define M249_MAX_SPEED			220
-
-#define M249_DAMAGE			32
-#define M249_RANGE_MODIFER		0.97
-
-#define M249_RELOAD_TIME		4.7
-
-enum m249_e
-{
-	M249_IDLE1,
-	M249_SHOOT1,
-	M249_SHOOT2,
-	M249_RELOAD,
-	M249_DRAW
-};
-
 /* <276bbd> ../cstrike/dlls/wpn_shared/wpn_m249.cpp:49 */
 LINK_ENTITY_TO_CLASS(weapon_m249, CM249);
 

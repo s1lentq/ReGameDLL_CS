@@ -1,9 +1,5 @@
 #include "precompiled.h"
 
-#define GERMAN_GIB_COUNT	4
-#define HUMAN_GIB_COUNT		6
-#define ALIEN_GIB_COUNT		4
-
 /* <5f4cb> ../cstrike/dlls/combat.cpp:52 */
 void CGib::LimitVelocity(void)
 {

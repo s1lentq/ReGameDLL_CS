@@ -34,7 +34,7 @@
 #include "archtypes.h"
 #include "scriptevent.h"
 #include "enginecallback.h"
-//#include "entity_state.h"
+#include "entity_state.h"
 #include "nodes.h"
 #include "screenfade.h"
 #include "utlvector.h"
@@ -94,6 +94,9 @@
 #include "pathcorner.h"
 #include "plats.h"
 #include "buttons.h"
+
+// weapon shared
+#include "wpn_shared.h"
 
 // CSBOT and Nav
 #include "game_shared/bot/bot_util.h"

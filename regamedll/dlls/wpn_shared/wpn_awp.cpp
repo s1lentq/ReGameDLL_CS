@@ -1,23 +1,5 @@
 #include "precompiled.h"
 
-#define AWP_MAX_SPEED		210
-#define AWP_MAX_SPEED_ZOOM	150
-
-#define AWP_DAMAGE		115
-#define AWP_RANGE_MODIFER	0.99
-
-#define AWP_RELOAD_TIME		2.5
-
-enum awp_e
-{
-	AWP_IDLE,
-	AWP_SHOOT,
-	AWP_SHOOT2,
-	AWP_SHOOT3,
-	AWP_RELOAD,
-	AWP_DRAW,
-};
-
 /* <23fdac> ../cstrike/dlls/wpn_shared/wpn_awp.cpp:50 */
 LINK_ENTITY_TO_CLASS(weapon_awp, CAWP);
 

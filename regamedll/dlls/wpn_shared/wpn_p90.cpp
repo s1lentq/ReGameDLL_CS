@@ -1,22 +1,5 @@
 #include "precompiled.h"
 
-#define P90_MAX_SPEED		245
-
-#define P90_DAMAGE		21
-#define P90_RANGE_MODIFER	0.885
-
-#define P90_RELOAD_TIME		3.4
-
-enum p90_e
-{
-	P90_IDLE1,
-	P90_RELOAD,
-	P90_DRAW,
-	P90_SHOOT1,
-	P90_SHOOT2,
-	P90_SHOOT3
-};
-
 /* <29657d> ../cstrike/dlls/wpn_shared/wpn_p90.cpp:49 */
 LINK_ENTITY_TO_CLASS(weapon_p90, CP90);
 

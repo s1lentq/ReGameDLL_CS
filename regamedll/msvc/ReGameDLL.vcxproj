@@ -830,6 +830,7 @@
     <ClInclude Include="..\dlls\weapons.h" />
     <ClInclude Include="..\dlls\weapontype.h" />
     <ClInclude Include="..\dlls\world.h" />
+    <ClInclude Include="..\dlls\wpn_shared.h" />
     <ClInclude Include="..\engine\cdll_int.h" />
     <ClInclude Include="..\engine\cmd.h" />
     <ClInclude Include="..\engine\common.h" />

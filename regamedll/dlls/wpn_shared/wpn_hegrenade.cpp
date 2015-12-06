@@ -1,16 +1,5 @@
 #include "precompiled.h"
 
-#define HEGRENADE_MAX_SPEED		250
-#define HEGRENADE_MAX_SPEED_SHIELD	180
-
-enum hegrenade_e
-{
-	HEGRENADE_IDLE,
-	HEGRENADE_PULLPIN,
-	HEGRENADE_THROW,
-	HEGRENADE_DRAW
-};
-
 /* <26b3cd> ../cstrike/dlls/wpn_shared/wpn_hegrenade.cpp:38 */
 LINK_ENTITY_TO_CLASS(weapon_hegrenade, CHEGrenade);
 

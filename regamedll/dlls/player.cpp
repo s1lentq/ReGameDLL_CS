@@ -1,8 +1,5 @@
 #include "precompiled.h"
 
-#define DEFINE_WEAPON(m_wpnid, m_cost, m_slotnum, m_acost)\
-	{ m_wpnid, m_cost, 3, m_slotnum, m_acost }
-
 /*
 * Globals initialization
 */

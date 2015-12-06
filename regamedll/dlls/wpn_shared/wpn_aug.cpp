@@ -1,22 +1,5 @@
 #include "precompiled.h"
 
-#define AUG_MAX_SPEED			240
-
-#define AUG_DAMAGE			32
-#define AUG_RANGE_MODIFER		0.96
-
-#define AUG_RELOAD_TIME			3.3
-
-enum aug_e
-{
-	AUG_IDLE1,
-	AUG_RELOAD,
-	AUG_DRAW,
-	AUG_SHOOT1,
-	AUG_SHOOT2,
-	AUG_SHOOT3
-};
-
 /* <23a81f> ../cstrike/dlls/wpn_shared/wpn_aug.cpp:50 */
 LINK_ENTITY_TO_CLASS(weapon_aug, CAUG);
 

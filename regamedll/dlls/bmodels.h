@@ -43,6 +43,10 @@
 #define SF_CONVEYOR_VISUAL	0x0001
 #define SF_CONVEYOR_NOTSOLID	0x0002
 
+#define SF_WORLD_DARK		0x0001		// Fade from black at startup
+#define SF_WORLD_TITLE		0x0002		// Display game title at startup
+#define SF_WORLD_FORCETEAM	0x0004		// Force teams
+
 #define FANPITCHMIN		30
 #define FANPITCHMAX		100
 

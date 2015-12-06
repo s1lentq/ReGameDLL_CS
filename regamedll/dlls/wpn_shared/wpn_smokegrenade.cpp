@@ -1,16 +1,5 @@
 #include "precompiled.h"
 
-#define SMOKEGRENADE_MAX_SPEED		250
-#define SMOKEGRENADE_MAX_SPEED_SHIELD	180
-
-enum smokegrenade_e
-{
-	SMOKEGRENADE_IDLE,
-	SMOKEGRENADE_PINPULL,
-	SMOKEGRENADE_THROW,
-	SMOKEGRENADE_DRAW
-};
-
 /* <2ab333> ../cstrike/dlls/wpn_shared/wpn_smokegrenade.cpp:38 */
 LINK_ENTITY_TO_CLASS(weapon_smokegrenade, CSmokeGrenade);
 

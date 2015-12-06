@@ -1,5 +1,4 @@
 #include "precompiled.h"
-#include "entity_state.h"
 
 /*
 * Globals initialization

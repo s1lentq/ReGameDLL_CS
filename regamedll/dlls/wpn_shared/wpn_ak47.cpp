@@ -1,22 +1,5 @@
 #include "precompiled.h"
 
-#define AK47_MAX_SPEED			221
-
-#define AK47_DAMAGE			36
-#define AK47_RANGE_MODIFER		0.98
-
-#define AK47_RELOAD_TIME		2.45
-
-enum ak47_e
-{
-	AK47_IDLE1,
-	AK47_RELOAD,
-	AK47_DRAW,
-	AK47_SHOOT1,
-	AK47_SHOOT2,
-	AK47_SHOOT3
-};
-
 /* <23556d> ../cstrike/dlls/wpn_shared/wpn_ak47.cpp:50 */
 LINK_ENTITY_TO_CLASS(weapon_ak47, CAK47);
 

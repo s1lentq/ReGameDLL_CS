@@ -35,6 +35,7 @@
 #include "monsterevent.h"
 
 #include <utlvector.h>
+#include "game_shared/perf_counter.h"
 
 #undef CREATE_NAMED_ENTITY
 #undef REMOVE_ENTITY

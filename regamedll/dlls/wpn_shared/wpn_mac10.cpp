@@ -1,22 +1,5 @@
 #include "precompiled.h"
 
-#define MAC10_MAX_SPEED			250
-
-#define MAC10_DAMAGE			29
-#define MAC10_RANGE_MODIFER		0.82
-
-#define MAC10_RELOAD_TIME		3.15
-
-enum mac10_e
-{
-	MAC10_IDLE1,
-	MAC10_RELOAD,
-	MAC10_DRAW,
-	MAC10_SHOOT1,
-	MAC10_SHOOT2,
-	MAC10_SHOOT3
-};
-
 /* <2867c0> ../cstrike/dlls/wpn_shared/wpn_mac10.cpp:50 */
 LINK_ENTITY_TO_CLASS(weapon_mac10, CMAC10);
 
