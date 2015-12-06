@@ -1779,7 +1779,7 @@ void CBasePlayer::SetProgressBarTime2(int time, float timeElapsed)
 
 		if (player->IsObserver() == OBS_IN_EYE && player->pev->iuser2 == myIndex)
 		{
-			MESSAGE_BEGIN(MSG_ONE, gmsgBarTime, NULL, player->pev);
+			MESSAGE_BEGIN(MSG_ONE, gmsgBarTime2, NULL, player->pev);
 				WRITE_SHORT(time);
 				WRITE_SHORT(iTimeElapsed);
 			MESSAGE_END();

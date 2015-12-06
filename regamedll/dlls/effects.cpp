@@ -1128,7 +1128,7 @@ void CBombGlow::__MAKE_VHOOK(Spawn)(void)
 {
 #ifdef REGAMEDLL_FIXES
 	PRECACHE_MODEL("sprites/flare1.spr");
-#endif // REGAMEDLLFIXES
+#endif // REGAMEDLL_FIXES
 
 	pev->solid = SOLID_NOT;
 	pev->movetype = MOVETYPE_NONE;
