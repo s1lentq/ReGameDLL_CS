@@ -32,6 +32,17 @@
 #pragma once
 #endif
 
+#ifdef HOOK_GAMEDLL
+
+//#define Opposite (*pOpposite)
+//#define m_list (*pm_list)
+//#define NodeMapExtent (*pNodeMapExtent)
+
+#endif // HOOK_GAMEDLL
+
+//extern NavDirType Opposite[ NUM_DIRECTIONS ];
+//extern Extent NodeMapExtent;
+
 class CNavNode
 {
 public:
@@ -54,11 +65,11 @@ public:
 
 	static CNavNode *GetFirst(void)
 	{
-		return IMPLEMENT_ARRAY(m_list);
+		return IMPL(m_list);
 	}
 	static unsigned int GetListLength(void)
 	{
-		return m_listLength;
+		return IMPL(m_listLength);
 	}
 	CNavNode *GetNext(void)
 	{
@@ -112,8 +123,8 @@ private:
 #ifdef HOOK_GAMEDLL
 public:
 #endif // HOOK_GAMEDLL
-	static CNavNode *IMPLEMENT_ARRAY(m_list);		// the master list of all nodes for this map
-	static unsigned int m_listLength;
+	static CNavNode *IMPL(m_list);		// the master list of all nodes for this map
+	static unsigned int IMPL(m_listLength);
 #ifdef HOOK_GAMEDLL
 private:
 #endif // HOOK_GAMEDLL
@@ -172,19 +183,5 @@ inline CNavArea *CNavNode::GetArea(void) const
 {
 	return m_area;
 }
-
-#ifdef HOOK_GAMEDLL
-
-//#define Opposite (*pOpposite)
-//#define m_list (*pm_list)
-//#define m_listLength (*pm_listLength)
-//#define NodeMapExtent (*pNodeMapExtent)
-
-#endif // HOOK_GAMEDLL
-
-//extern NavDirType Opposite[ NUM_DIRECTIONS ];
-//extern CNavNode *CNavNode::m_list;
-//extern unsigned int CNavNode::m_listLength;
-//extern Extent NodeMapExtent;
 
 #endif // NAV_NODE_H

@@ -36,10 +36,31 @@
 
 class CNavArea;
 
-enum
-{
-	MAX_BLOCKED_AREAS = 256
-};
+enum { MAX_BLOCKED_AREAS = 256 };
+
+#ifdef HOOK_GAMEDLL
+
+#define TheNavLadderList (*pTheNavLadderList)
+#define TheHidingSpotList (*pTheHidingSpotList)
+#define TheNavAreaList (*pTheNavAreaList)
+#define TheNavAreaGrid (*pTheNavAreaGrid)
+
+#define lastDrawTimestamp (*plastDrawTimestamp)
+#define goodSizedAreaList (*pgoodSizedAreaList)
+#define markedArea (*pmarkedArea)
+#define lastSelectedArea (*plastSelectedArea)
+#define markedCorner (*pmarkedCorner)
+#define isCreatingNavArea (*pisCreatingNavArea)
+#define isAnchored (*pisAnchored)
+#define anchor (*panchor)
+#define isPlaceMode (*pisPlaceMode)
+#define isPlacePainting (*pisPlacePainting)
+#define editTimestamp (*peditTimestamp)
+
+#define BlockedID (*pBlockedID)
+#define BlockedIDCount (*pBlockedIDCount)
+
+#endif // HOOK_GAMEDLL
 
 void DestroyHidingSpots(void);
 NOBODY void StripNavigationAreas(void);
@@ -207,15 +228,15 @@ public:
 	}
 	void Mark(void)
 	{
-		m_marker = IMPLEMENT_ARRAY(m_masterMarker);
+		m_marker = IMPL(m_masterMarker);
 	}
 	bool IsMarked(void) const
 	{
-		return (m_marker == IMPLEMENT_ARRAY(m_masterMarker)) ? true : false;
+		return (m_marker == IMPL(m_masterMarker)) ? true : false;
 	}
 	static void ChangeMasterMarker(void)
 	{
-		IMPLEMENT_ARRAY(m_masterMarker)++;
+		IMPL(m_masterMarker)++;
 	}
 
 private:
@@ -229,8 +250,8 @@ private:
 #ifdef HOOK_GAMEDLL
 public:
 #endif // HOOK_GAMEDLL
-	static unsigned int IMPLEMENT_ARRAY(m_nextID);
-	static unsigned int IMPLEMENT_ARRAY(m_masterMarker);
+	static unsigned int IMPL(m_nextID);
+	static unsigned int IMPL(m_masterMarker);
 
 };/* size: 24, cachelines: 1, members: 6 */
 
@@ -401,17 +422,17 @@ public:
 	void ComputeApproachAreas(void);
 	static void MakeNewMarker(void)
 	{
-		IMPLEMENT_ARRAY(m_masterMarker)++;
-		if (IMPLEMENT_ARRAY(m_masterMarker) == 0)
-			IMPLEMENT_ARRAY(m_masterMarker) = 1;
+		IMPL(m_masterMarker)++;
+		if (IMPL(m_masterMarker) == 0)
+			IMPL(m_masterMarker) = 1;
 	}
 	void Mark(void)
 	{
-		m_marker = IMPLEMENT_ARRAY(m_masterMarker);
+		m_marker = IMPL(m_masterMarker);
 	}
 	BOOL IsMarked(void) const
 	{
-		return (m_marker == IMPLEMENT_ARRAY(m_masterMarker)) ? true : false;
+		return (m_marker == IMPL(m_masterMarker)) ? true : false;
 	}
 	void SetParent(CNavArea *parent, NavTraverseType how = NUM_TRAVERSE_TYPES)
 	{
@@ -505,8 +526,8 @@ private:
 #ifdef HOOK_GAMEDLL
 public:
 #endif // HOOK_GAMEDLL
-	static bool IMPLEMENT_ARRAY(m_isReset);
-	static unsigned int IMPLEMENT_ARRAY(m_nextID);
+	static bool IMPL(m_isReset);
+	static unsigned int IMPL(m_nextID);
 
 #ifdef HOOK_GAMEDLL
 private:
@@ -542,7 +563,7 @@ public:
 #ifdef HOOK_GAMEDLL
 public:
 #endif // HOOK_GAMEDLL
-	static unsigned int IMPLEMENT_ARRAY(m_masterMarker);
+	static unsigned int IMPL(m_masterMarker);
 
 #ifdef HOOK_GAMEDLL
 private:
@@ -557,7 +578,7 @@ private:
 #ifdef HOOK_GAMEDLL
 public:
 #endif // HOOK_GAMEDLL
-	static CNavArea *IMPLEMENT_ARRAY(m_openList);
+	static CNavArea *IMPL(m_openList);
 
 #ifdef HOOK_GAMEDLL
 private:
@@ -602,13 +623,13 @@ inline CNavArea *CNavArea::GetAdjacentArea(NavDirType dir, int i) const
 /* <5a01dc> ../game_shared/bot/nav_area.h:435 */
 inline bool CNavArea::IsOpen(void) const
 {
-	return (m_openMarker == IMPLEMENT_ARRAY(m_masterMarker)) ? true : false;
+	return (m_openMarker == IMPL(m_masterMarker)) ? true : false;
 }
 
 /* <5a0a62> ../game_shared/bot/nav_area.h:440 */
 inline bool CNavArea::IsOpenListEmpty(void)
 {
-	return (IMPLEMENT_ARRAY(m_openList) != NULL) ? false : true;
+	return (IMPL(m_openList) != NULL) ? false : true;
 }
 
 /* <5a1483> ../game_shared/bot/nav_area.h:445 */
@@ -622,9 +643,9 @@ inline CNavArea *CNavArea::PopOpenList(void)
 		return area;
 	}
 #else
-	if (IMPLEMENT_ARRAY(m_openList))
+	if (IMPL(m_openList))
 	{
-		CNavArea *area = IMPLEMENT_ARRAY(m_openList);
+		CNavArea *area = IMPL(m_openList);
 		area->RemoveFromOpenList();
 		return area;
 	}
@@ -1216,30 +1237,6 @@ typedef void (HidingSpot::*CNAV_AREA_NAVNODE)(CNavNode *nwNode, class CNavNode *
 
 #endif // HOOK_GAMEDLL
 
-#ifdef HOOK_GAMEDLL
-
-#define TheNavLadderList (*pTheNavLadderList)
-#define TheHidingSpotList (*pTheHidingSpotList)
-#define TheNavAreaList (*pTheNavAreaList)
-#define TheNavAreaGrid (*pTheNavAreaGrid)
-
-#define lastDrawTimestamp (*plastDrawTimestamp)
-#define goodSizedAreaList (*pgoodSizedAreaList)
-#define markedArea (*pmarkedArea)
-#define lastSelectedArea (*plastSelectedArea)
-#define markedCorner (*pmarkedCorner)
-#define isCreatingNavArea (*pisCreatingNavArea)
-//#define isAnchored (*pisAnchored)
-//#define anchor (*panchor)
-//#define isPlaceMode (*pisPlaceMode)
-#define isPlacePainting (*pisPlacePainting)
-#define editTimestamp (*peditTimestamp)
-
-#define BlockedID (*pBlockedID)
-#define BlockedIDCount (*pBlockedIDCount)
-
-#endif // HOOK_GAMEDLL
-
 extern NavLadderList TheNavLadderList;
 extern HidingSpotList TheHidingSpotList;
 extern NavAreaList TheNavAreaList;
@@ -1250,9 +1247,9 @@ extern CNavArea *markedArea;
 extern CNavArea *lastSelectedArea;
 extern NavCornerType markedCorner;
 extern bool isCreatingNavArea;
-//extern bool isAnchored;
-//extern Vector anchor;
-//extern bool isPlaceMode;
+extern bool isAnchored;
+extern Vector anchor;
+extern bool isPlaceMode;
 extern bool isPlacePainting;
 extern float editTimestamp;
 
@@ -1301,6 +1298,5 @@ NOBODY void GenerateNavigationAreaMesh(void);
 extern float (*pGetZ__Vector)(const Vector *pos);
 extern CNavArea *(*pGetNearestNavArea)(const Vector *pos, bool anyZ);
 extern CNavArea *(*pGetNavArea)(const Vector *pos, float beneathLimit);
-extern void (*pDestroyNavigationMap)(void);
 
 #endif // NAV_AREA_H

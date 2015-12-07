@@ -32,7 +32,13 @@
 #pragma once
 #endif
 
-#define COS_TABLE_SIZE 256
+#define COS_TABLE_SIZE		256
+
+#define RAD_TO_DEG(deg)		((deg) * 180.0 / M_PI)
+#define DEG_TO_RAD(rad)		((rad) * M_PI / 180.0)
+
+#define SIGN(num)		(((num) < 0) ? -1 : 1)
+#define ABS(num)		(SIGN(num) * (num))
 
 class CBasePlayer;
 class BotProfile;

@@ -36,6 +36,7 @@
 
 #ifndef HOOK_GAMEDLL
 
+#define IMPL IMPLEMENT_ARRAY
 #define IMPLEMENT_ARRAY(var)\
 	var
 
@@ -44,6 +45,7 @@
 
 #else // HOOK_GAMEDLL
 
+#define IMPL IMPLEMENT_ARRAY
 #define IMPLEMENT_ARRAY(var)\
 	(*p##var)
 

@@ -8,7 +8,7 @@
 //NavDirType Opposite[ NUM_DIRECTIONS ] = { SOUTH, WEST, NORTH, EAST };
 
 CNavNode *CNavNode::m_list = NULL;
-//unsigned int CNavNode::m_listLength = 0;
+unsigned int CNavNode::m_listLength = 0;
 
 //Extent NodeMapExtent;
 
@@ -17,7 +17,7 @@ CNavNode *CNavNode::m_list = NULL;
 //NavDirType Opposite[ NUM_DIRECTIONS ];
 
 CNavNode *IMPLEMENT_ARRAY_CLASS(CNavNode, m_list);
-//unsigned int CNavNode::m_listLength;
+unsigned int IMPLEMENT_ARRAY_CLASS(CNavNode, m_listLength);
 
 //Extent NodeMapExtent;
 
