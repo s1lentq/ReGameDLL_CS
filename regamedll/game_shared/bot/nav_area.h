@@ -99,7 +99,7 @@ union NavConnect
 	}
 };
 
-typedef std::list<NavConnect> NavConnectList;
+typedef std::STD_LIST<NavConnect> NavConnectList;
 
 enum LadderDirectionType
 {
@@ -159,7 +159,7 @@ public:
 
 };/* size: 68, cachelines: 2, members: 12 */
 
-typedef std::list<CNavLadder *> NavLadderList;
+typedef std::STD_LIST<CNavLadder *> NavLadderList;
 
 class HidingSpot
 {
@@ -234,7 +234,7 @@ public:
 
 };/* size: 24, cachelines: 1, members: 6 */
 
-typedef std::list<HidingSpot *> HidingSpotList;
+typedef std::STD_LIST<HidingSpot *> HidingSpotList;
 
 /* <4ec0bd> ../game_shared/bot/nav_area.h:164 */
 struct SpotOrder
@@ -248,7 +248,7 @@ struct SpotOrder
 
 };/* size: 8, cachelines: 1, members: 2 */
 
-typedef std::list<SpotOrder> SpotOrderList;
+typedef std::STD_LIST<SpotOrder> SpotOrderList;
 
 /* <4c3a51> ../game_shared/bot/nav_area.h:179 */
 struct SpotEncounter
@@ -262,8 +262,8 @@ struct SpotEncounter
 
 };/* size: 48, cachelines: 1, members: 6 */
 
-typedef std::list<SpotEncounter> SpotEncounterList;
-typedef std::list<CNavArea *> NavAreaList;
+typedef std::STD_LIST<SpotEncounter> SpotEncounterList;
+typedef std::STD_LIST<CNavArea *> NavAreaList;
 
 class CNavArea
 {
@@ -473,7 +473,11 @@ public:
 		m_ladder[LADDER_DOWN].push_back(ladder);
 	}
 
+#ifdef HOOK_GAMEDLL
+public:
+#else
 private:
+#endif // HOOK_GAMEDLL
 	bool IsHidingSpotCollision(const Vector *pos) const;
 	void AddSpotEncounters(const CNavArea *from, NavDirType fromDir, const CNavArea *to, NavDirType toDir);
 	void Strip(void);
@@ -523,15 +527,8 @@ private:
 	float m_danger[MAX_AREA_TEAMS];
 	float m_dangerTimestamp[MAX_AREA_TEAMS];
 
-#if defined(_WIN32) && defined(HOOK_GAMEDLL)
-	int unknown_padding1;
-#endif // HOOK_GAMEDLL
-
 	HidingSpotList m_hidingSpotList;
 
-#if defined(_WIN32) && defined(HOOK_GAMEDLL)
-	int unknown_padding2;
-#endif // HOOK_GAMEDLL
 #ifdef HOOK_GAMEDLL
 public:
 #endif // HOOK_GAMEDLL
@@ -570,30 +567,9 @@ private:
 	CNavArea *m_prevOpen;
 	unsigned int m_openMarker;
 
-#if defined(_WIN32) && defined(HOOK_GAMEDLL)
-	int unknown_padding3;
-#endif // HOOK_GAMEDLL
 	NavConnectList m_connect[ NUM_DIRECTIONS ];
-
-#if defined(_WIN32) && defined(HOOK_GAMEDLL)
-	int unknown_padding4;
-	int unknown_padding5;
-
-	int unknown_padding6;
-	int unknown_padding7;
-#endif // HOOK_GAMEDLL
-
 	NavLadderList m_ladder[ NUM_LADDER_DIRECTIONS ];
-
-#if defined(_WIN32) && defined(HOOK_GAMEDLL)
-	int unknown_padding8;
-#endif // HOOK_GAMEDLL
-
 	CNavNode *m_node[ NUM_CORNERS ];
-
-#if defined(_WIN32) && defined(HOOK_GAMEDLL)
-	int unknown_padding9;
-#endif // HOOK_GAMEDLL
 
 	NavAreaList m_overlapList;
 

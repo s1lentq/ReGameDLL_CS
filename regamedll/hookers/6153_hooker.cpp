@@ -6025,7 +6025,7 @@ AddressRef g_DataRefs[] =
 	{ 0x01E11EF8, "cv_hostage_stop", (size_t)&pcv_hostage_stop },
 
 	//{ 0x0, "_ZL14placeDirectory", (size_t)&pplaceDirectory },
-	{ 0x01E2A0E8, "TheNavLadderList", (size_t)&pTheNavLadderList },
+	{ 0x01E2A0E4, "TheNavLadderList", (size_t)&pTheNavLadderList },
 	{ 0x01E2A0F4, "TheHidingSpotList", (size_t)&pTheHidingSpotList },
 	{ 0x01E14C5C, "sPlayerModelFiles", (size_t)&psPlayerModelFiles },
 	{ 0x01E5D6F0, "g_flTimeLimit", (size_t)&pg_flTimeLimit },
@@ -6042,9 +6042,8 @@ AddressRef g_DataRefs[] =
 	{ 0x01E5D718, "_ZL14g_serveractive", (size_t)&pg_serveractive },
 
 	{ 0x01E2A0AC, "_ZL17goodSizedAreaList", (size_t)&pgoodSizedAreaList },
-	{ 0x01E2A0DC, "TheNavAreaList", (size_t)&pTheNavAreaList },
+	{ 0x01E2A0D8, "TheNavAreaList", (size_t)&pTheNavAreaList },
 	{ 0x01E29888, "TheNavAreaGrid", (size_t)&pTheNavAreaGrid },
-
 	{ 0x01E2A250, "_ZN8CNavNode6m_listE", mfunc_ptr_cast(&CNavNode::pm_list) },
 	//{ 0x0, "_ZN8CNavArea8m_nextIDE", mfunc_ptr_cast(&CNavArea::m_nextID) },
 	{ 0x01E11584, "_ZN8CNavArea14m_masterMarkerE", mfunc_ptr_cast(&CNavArea::pm_masterMarker) },

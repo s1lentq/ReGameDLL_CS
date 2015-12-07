@@ -242,11 +242,6 @@ char *BotPhrase::GetSpeakable(int bankIndex, float *duration) const
 		BotSpeakableVector *speakables = m_voiceBank[ bankIndex ];
 		int &index = m_index[ bankIndex ];
 
-#ifdef HOOK_GAMEDLL
-		// TODO: temporary fix of std::vector padding
-		*(byte *)&speakables += 4;
-#endif // HOOK_GAMEDLL
-
 		const BotSpeakable *speak = (*speakables)[index++];
 
 		if (m_index[ bankIndex ] >= m_count[ bankIndex ])

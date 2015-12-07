@@ -216,9 +216,7 @@ public:
 	{
 		return GetClosestZone(&entity->pev->origin);
 	}
-	template<
-		typename CostFunctor
-	>
+	template<typename CostFunctor>
 	const Zone *GetClosestZone(CNavArea *startArea, CostFunctor costFunc, float *travelDistance = NULL) const
 	{
 		const Zone *closeZone = NULL;

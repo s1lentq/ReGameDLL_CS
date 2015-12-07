@@ -46,10 +46,16 @@
 // Makes these more explicit, and easier to find
 #ifdef HOOK_GAMEDLL
 
+#define STD_LIST list_vs6		// use STL containers of the old version from Visual Studio 6.0 sp6
+#define STD_VECTOR vector_vs6
+
 #define FILE_GLOBAL static
 #define DLL_GLOBAL
 
 #else
+
+#define STD_LIST list
+#define STD_VECTOR vector
 
 #define FILE_GLOBAL
 #define DLL_GLOBAL

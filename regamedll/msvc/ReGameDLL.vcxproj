@@ -866,6 +866,7 @@
     <ClInclude Include="..\hookers\memory.h" />
     <ClInclude Include="..\hookers\osconfig.h" />
     <ClInclude Include="..\hookers\regamedll_debug.h" />
+    <ClInclude Include="..\hookers\stl\use_ansi.h" />
     <ClInclude Include="..\pm_shared\pm_debug.h" />
     <ClInclude Include="..\pm_shared\pm_defs.h" />
     <ClInclude Include="..\pm_shared\pm_info.h" />
@@ -926,6 +927,15 @@
     <ClInclude Include="..\version\version.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\hookers\stl\iosfwd" />
+    <None Include="..\hookers\stl\iterator" />
+    <None Include="..\hookers\stl\list" />
+    <None Include="..\hookers\stl\memory" />
+    <None Include="..\hookers\stl\utility" />
+    <None Include="..\hookers\stl\vector" />
+    <None Include="..\hookers\stl\xmemory" />
+    <None Include="..\hookers\stl\xstddef" />
+    <None Include="..\hookers\stl\xutility" />
     <None Include="..\linux\appversion.sh">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Play|Win32'">true</ExcludedFromBuild>
@@ -1144,9 +1154,7 @@
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>IF EXIST "$(ProjectDir)PostBuild.bat" (CALL "$(ProjectDir)PostBuild.bat" "$(TargetDir)" "$(TargetName)" "$(TargetExt)" "$(ProjectDir)")
-
-IF EXIST "$(ProjectDir)START_VIP.bat" (CALL "$(ProjectDir)START_VIP.bat")</Command>
+      <Command>IF EXIST "$(ProjectDir)PostBuild.bat" (CALL "$(ProjectDir)PostBuild.bat" "$(TargetDir)" "$(TargetName)" "$(TargetExt)" "$(ProjectDir)")</Command>
       <Message>Automatic deployment script</Message>
     </PostBuildEvent>
     <CustomBuildStep>

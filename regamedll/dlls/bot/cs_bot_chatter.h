@@ -191,8 +191,8 @@ public:
 
 };/* size: 16, cachelines: 1, members: 4 */
 
-typedef std::vector<BotSpeakable *> BotSpeakableVector;
-typedef std::vector<BotSpeakableVector *> BotVoiceBankVector;
+typedef std::STD_VECTOR<BotSpeakable *> BotSpeakableVector;
+typedef std::STD_VECTOR<BotSpeakableVector *> BotVoiceBankVector;
 
 class BotPhrase
 {
@@ -237,32 +237,16 @@ public:
 	bool m_isPlace;
 	GameEventType m_radioEvent;
 	bool m_isImportant;
-
-#if defined(_WIN32) && defined(HOOK_GAMEDLL)
-	int unknown_padding;
-#endif // HOOK_GAMEDLL
-
 	mutable BotVoiceBankVector m_voiceBank;
-
-#if defined(_WIN32) && defined(HOOK_GAMEDLL)
-	int unknown_padding2;
-#endif // HOOK_GAMEDLL
-
-	std::vector< int > m_count;
-
-#if defined(_WIN32) && defined(HOOK_GAMEDLL)
-	int unknown_padding3;
-#endif // HOOK_GAMEDLL
-
-	mutable std::vector< int > m_index;
-
+	std::STD_VECTOR<int> m_count;
+	mutable std::STD_VECTOR< int > m_index;
 	int m_numVoiceBanks;
 	mutable PlaceCriteria m_placeCriteria;
 	mutable CountCriteria m_countCriteria;
 
 };/* size: 68, cachelines: 2, members: 11 */
 
-typedef std::list<BotPhrase *> BotPhraseList;
+typedef std::STD_LIST<BotPhrase *> BotPhraseList;
 
 /* <2fea0e> ../cstrike/dlls/bot/cs_bot_chatter.h:239 */
 inline void BotPhrase::ClearCriteria(void) const
@@ -329,22 +313,8 @@ public:
 
 	int FindPlaceIndex(Place where) const;
 
-#if defined(_WIN32) && defined(HOOK_GAMEDLL)
-	// The member m_placeList on Windows must be with offset +4
-	// on Linux : +0
-	int unknown_padding1;
-
-#endif // HOOK_GAMEDLL
-
 	// master list of all phrase collections
 	BotPhraseList m_list;
-
-#if defined(_WIN32) && defined(HOOK_GAMEDLL)
-	// The member m_placeList on Windows must be with offset +16
-	// on Linux : +8
-	int unknown_padding2;
-
-#endif // HOOK_GAMEDLL
 
 	// master list of all Place phrases
 	BotPhraseList m_placeList;
@@ -354,6 +324,7 @@ public:
 		Place placeID;
 		IntervalTimer timer;
 	};
+
 	mutable PlaceTimeInfo m_placeStatementHistory[ MAX_PLACES_PER_MAP ];
 	mutable int m_placeCount;
 

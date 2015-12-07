@@ -79,6 +79,9 @@
     <Filter Include="dlls\hostage\states">
       <UniqueIdentifier>{d1cb44c6-0982-4410-a099-0b3666ace636}</UniqueIdentifier>
     </Filter>
+    <Filter Include="hookers\stl">
+      <UniqueIdentifier>{e0c6021c-de51-464f-b971-89942190e545}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\hookers\memory.cpp">
@@ -1121,6 +1124,9 @@
     <ClInclude Include="..\dlls\wpn_shared.h">
       <Filter>dlls</Filter>
     </ClInclude>
+    <ClInclude Include="..\hookers\stl\use_ansi.h">
+      <Filter>hookers\stl</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\linux\appversion.sh">
@@ -1128,6 +1134,33 @@
     </None>
     <None Include="..\linux\Makefile">
       <Filter>linux</Filter>
+    </None>
+    <None Include="..\hookers\stl\iosfwd">
+      <Filter>hookers\stl</Filter>
+    </None>
+    <None Include="..\hookers\stl\iterator">
+      <Filter>hookers\stl</Filter>
+    </None>
+    <None Include="..\hookers\stl\list">
+      <Filter>hookers\stl</Filter>
+    </None>
+    <None Include="..\hookers\stl\memory">
+      <Filter>hookers\stl</Filter>
+    </None>
+    <None Include="..\hookers\stl\utility">
+      <Filter>hookers\stl</Filter>
+    </None>
+    <None Include="..\hookers\stl\vector">
+      <Filter>hookers\stl</Filter>
+    </None>
+    <None Include="..\hookers\stl\xmemory">
+      <Filter>hookers\stl</Filter>
+    </None>
+    <None Include="..\hookers\stl\xstddef">
+      <Filter>hookers\stl</Filter>
+    </None>
+    <None Include="..\hookers\stl\xutility">
+      <Filter>hookers\stl</Filter>
     </None>
   </ItemGroup>
 </Project>

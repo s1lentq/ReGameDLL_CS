@@ -20,6 +20,11 @@
 
 #ifdef HOOK_GAMEDLL
 #include "hooker.h"
+
+// STL containers Visual Studio 6.0
+#include "stl/vector"
+#include "stl/list"
+
 #endif // HOOK_GAMEDLL
 
 #include "dlls.h"
@@ -35,7 +40,6 @@
 #include "utlsymbol.h"
 
 //testsuite
-
 #include "testsuite/testsuite.h"
 #include "testsuite/funccalls.h"
 #include "testsuite/recorder.h"

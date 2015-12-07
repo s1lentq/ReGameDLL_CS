@@ -356,23 +356,17 @@ NOBODY void CNavArea::MergeAdjacentConnections(CNavArea *adjArea)
 /* <4c760a> ../game_shared/bot/nav_area.cpp:486 */
 NOBODY void CNavArea::AssignNodes(CNavArea *area)
 {
-//	{
-//		class CNavNode *horizLast;                           //   488
-//		{
-//			class CNavNode *vertNode;                    //   490
-//			{
-//				class CNavNode *horizNode;           //   492
-//				AssignArea(CNavNode *const this,
-//						class CNavArea *area);  //   494
-//				GetConnectedNode(const class CNavNode *const this,
-//						enum NavDirType dir);  //   492
-//			}
-//			GetConnectedNode(const class CNavNode *const this,
-//					enum NavDirType dir);  //   490
-//			GetConnectedNode(const class CNavNode *const this,
-//					enum NavDirType dir);  //   497
-//		}
-//	}
+	CNavNode *horizLast = m_node[ NORTH_EAST ];
+
+	for (CNavNode *vertNode = m_node[ NORTH_WEST ]; vertNode != m_node[ SOUTH_WEST ]; vertNode = vertNode->GetConnectedNode(SOUTH))
+	{
+		for (CNavNode *horizNode = vertNode; horizNode != horizLast; horizNode = horizNode->GetConnectedNode(EAST))
+		{
+			horizNode->AssignArea(area);
+		}
+
+		horizLast = horizLast->GetConnectedNode(SOUTH);
+	}
 }
 
 /* <4d690e> ../game_shared/bot/nav_area.cpp:507 */
