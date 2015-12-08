@@ -17,7 +17,7 @@ TYPEDESCRIPTION CFuncMortarField::m_SaveData[] =
 
 #else
 
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CFuncMortarField, m_SaveData)[6];
+TYPEDESCRIPTION IMPL_CLASS(CFuncMortarField, m_SaveData)[6];
 
 #endif // HOOK_GAMEDLL
 
@@ -94,44 +94,44 @@ void CFuncMortarField::FieldUse(CBaseEntity *pActivator, CBaseEntity *pCaller, U
 
 	switch (m_fControl)
 	{
-		// random
-		case 0:
-			break;
-		// Trigger Activator
-		case 1:
+	// random
+	case 0:
+		break;
+	// Trigger Activator
+	case 1:
+	{
+		if (pActivator != NULL)
 		{
-			if (pActivator != NULL)
-			{
-				vecStart.x = pActivator->pev->origin.x;
-				vecStart.y = pActivator->pev->origin.y;
-			}
-			break;
+			vecStart.x = pActivator->pev->origin.x;
+			vecStart.y = pActivator->pev->origin.y;
 		}
-		// table
-		case 2:
+		break;
+	}
+	// table
+	case 2:
+	{
+		CBaseEntity *pController;
+
+		if (!FStringNull(m_iszXController))
 		{
-			CBaseEntity *pController;
+			pController = UTIL_FindEntityByTargetname(NULL, STRING(m_iszXController));
 
-			if (!FStringNull(m_iszXController))
+			if (pController != NULL)
 			{
-				pController = UTIL_FindEntityByTargetname(NULL, STRING(m_iszXController));
-
-				if (pController != NULL)
-				{
-					vecStart.x = pev->mins.x + pController->pev->ideal_yaw * pev->size.x;
-				}
+				vecStart.x = pev->mins.x + pController->pev->ideal_yaw * pev->size.x;
 			}
-			if (!FStringNull(m_iszYController))
-			{
-				pController = UTIL_FindEntityByTargetname(NULL, STRING(m_iszYController));
-
-				if (pController != NULL)
-				{
-					vecStart.y = pev->mins.y + pController->pev->ideal_yaw * pev->size.y;
-				}
-			}
-			break;
 		}
+		if (!FStringNull(m_iszYController))
+		{
+			pController = UTIL_FindEntityByTargetname(NULL, STRING(m_iszYController));
+
+			if (pController != NULL)
+			{
+				vecStart.y = pev->mins.y + pController->pev->ideal_yaw * pev->size.y;
+			}
+		}
+		break;
+	}
 	}
 
 	int pitch = RANDOM_LONG(95, 124);

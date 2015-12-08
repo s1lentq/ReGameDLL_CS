@@ -71,7 +71,7 @@ TYPEDESCRIPTION gGlobalEntitySaveData[] =
 
 DLL_DECALLIST gDecals[42];
 
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CGlobalState, m_SaveData)[1];
+TYPEDESCRIPTION IMPL_CLASS(CGlobalState, m_SaveData)[1];
 TYPEDESCRIPTION gGlobalEntitySaveData[3];
 
 #endif // HOOK_GAMEDLL
@@ -324,7 +324,7 @@ int CGlobalState::Save(CSave &save)
 	int i;
 	globalentity_t *pEntity;
 
-	if (!save.WriteFields("GLOBAL", this, IMPLEMENT_ARRAY(m_SaveData), ARRAYSIZE(IMPLEMENT_ARRAY(m_SaveData))))
+	if (!save.WriteFields("GLOBAL", this, IMPL(m_SaveData), ARRAYSIZE(IMPL(m_SaveData))))
 	{
 		return 0;
 	}
@@ -351,7 +351,7 @@ int CGlobalState::Restore(CRestore &restore)
 
 	ClearStates();
 
-	if (!restore.ReadFields("GLOBAL", this, IMPLEMENT_ARRAY(m_SaveData), ARRAYSIZE(IMPLEMENT_ARRAY(m_SaveData))))
+	if (!restore.ReadFields("GLOBAL", this, IMPL(m_SaveData), ARRAYSIZE(IMPL(m_SaveData))))
 	{
 		return 0;
 	}
@@ -403,21 +403,21 @@ void CGlobalState::ClearStates(void)
 }
 
 /* <1dbc13> ../cstrike/dlls/world.cpp:466 */
-void SaveGlobalState(SAVERESTOREDATA *pSaveData)
+void EXT_FUNC SaveGlobalState(SAVERESTOREDATA *pSaveData)
 {
 	CSave saveHelper(pSaveData);
 	gGlobalState.Save(saveHelper);
 }
 
 /* <1dbcde> ../cstrike/dlls/world.cpp:473 */
-void RestoreGlobalState(SAVERESTOREDATA *pSaveData)
+void EXT_FUNC RestoreGlobalState(SAVERESTOREDATA *pSaveData)
 {
 	CRestore restoreHelper(pSaveData);
 	gGlobalState.Restore(restoreHelper);
 }
 
 /* <1dbe72> ../cstrike/dlls/world.cpp:480 */
-void ResetGlobalState(void)
+void EXT_FUNC ResetGlobalState(void)
 {
 	gGlobalState.ClearStates();
 

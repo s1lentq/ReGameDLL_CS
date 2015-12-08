@@ -40,9 +40,6 @@
     <Filter Include="dlls">
       <UniqueIdentifier>{73fb61d4-c4ca-4159-8967-0e98666e1d4d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="public\tier0">
-      <UniqueIdentifier>{57885e8e-0086-47a7-8dc8-7706a51e1067}</UniqueIdentifier>
-    </Filter>
     <Filter Include="game_shared">
       <UniqueIdentifier>{1d2d9bb7-4ba0-4fe6-a0d9-6fae9f96ec3c}</UniqueIdentifier>
     </Filter>
@@ -82,6 +79,12 @@
     <Filter Include="hookers\stl">
       <UniqueIdentifier>{e0c6021c-de51-464f-b971-89942190e545}</UniqueIdentifier>
     </Filter>
+    <Filter Include="public\regamedll">
+      <UniqueIdentifier>{8f5a4004-ab6b-4802-a23b-091948576ad0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="public\tier0">
+      <UniqueIdentifier>{00d15c50-66d7-4210-9239-e8cd8fb9f052}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\hookers\memory.cpp">
@@ -98,15 +101,6 @@
     </ClCompile>
     <ClCompile Include="..\regamedll\precompiled.cpp">
       <Filter>regamedll</Filter>
-    </ClCompile>
-    <ClCompile Include="..\public\tier0\dbg.cpp">
-      <Filter>public\tier0</Filter>
-    </ClCompile>
-    <ClCompile Include="..\public\tier0\platform_linux.cpp">
-      <Filter>public\tier0</Filter>
-    </ClCompile>
-    <ClCompile Include="..\public\tier0\platform_win32.cpp">
-      <Filter>public\tier0</Filter>
     </ClCompile>
     <ClCompile Include="..\dlls\h_export.cpp">
       <Filter>dlls</Filter>
@@ -564,6 +558,18 @@
     <ClCompile Include="..\dlls\lights.cpp">
       <Filter>dlls</Filter>
     </ClCompile>
+    <ClCompile Include="..\regamedll\hookchains_impl.cpp">
+      <Filter>regamedll</Filter>
+    </ClCompile>
+    <ClCompile Include="..\regamedll\regamedll_api_impl.cpp">
+      <Filter>regamedll</Filter>
+    </ClCompile>
+    <ClCompile Include="..\regamedll\regamedll_interfaces_impl.cpp">
+      <Filter>regamedll</Filter>
+    </ClCompile>
+    <ClCompile Include="..\public\tier0\dbg.cpp">
+      <Filter>public\tier0</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\hookers\memory.h">
@@ -667,27 +673,6 @@
     </ClInclude>
     <ClInclude Include="..\dlls\weapons.h">
       <Filter>dlls</Filter>
-    </ClInclude>
-    <ClInclude Include="..\public\tier0\dbg.h">
-      <Filter>public\tier0</Filter>
-    </ClInclude>
-    <ClInclude Include="..\public\tier0\fasttimer.h">
-      <Filter>public\tier0</Filter>
-    </ClInclude>
-    <ClInclude Include="..\public\tier0\mem.h">
-      <Filter>public\tier0</Filter>
-    </ClInclude>
-    <ClInclude Include="..\public\tier0\memalloc.h">
-      <Filter>public\tier0</Filter>
-    </ClInclude>
-    <ClInclude Include="..\public\tier0\memdbgoff.h">
-      <Filter>public\tier0</Filter>
-    </ClInclude>
-    <ClInclude Include="..\public\tier0\memdbgon.h">
-      <Filter>public\tier0</Filter>
-    </ClInclude>
-    <ClInclude Include="..\public\tier0\platform.h">
-      <Filter>public\tier0</Filter>
     </ClInclude>
     <ClInclude Include="..\regamedll\platform.h">
       <Filter>regamedll</Filter>
@@ -1126,6 +1111,30 @@
     </ClInclude>
     <ClInclude Include="..\hookers\stl\use_ansi.h">
       <Filter>hookers\stl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\regamedll\hookchains_impl.h">
+      <Filter>regamedll</Filter>
+    </ClInclude>
+    <ClInclude Include="..\regamedll\regamedll_api_impl.h">
+      <Filter>regamedll</Filter>
+    </ClInclude>
+    <ClInclude Include="..\regamedll\regamedll_interfaces_impl.h">
+      <Filter>regamedll</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\regamedll\hookchains.h">
+      <Filter>public\regamedll</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\regamedll\regamedll_api.h">
+      <Filter>public\regamedll</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\regamedll\regamedll_interfaces.h">
+      <Filter>public\regamedll</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\tier0\dbg.h">
+      <Filter>public\tier0</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\tier0\platform.h">
+      <Filter>public\tier0</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

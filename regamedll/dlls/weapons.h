@@ -234,7 +234,7 @@ public:
 	void EXPORT C4Think(void);
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[15];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[15];
 
 	bool m_bStartDefuse;
 	bool m_bIsC4;
@@ -301,14 +301,11 @@ public:
 		return TRUE;
 	}
 	virtual void Holster(int skiplocal = 0);
-
 	virtual void UpdateItemInfo(void) {}
 	virtual void ItemPreFrame(void) {}
 	virtual void ItemPostFrame(void) {}
-
 	virtual void Drop(void);
 	virtual void Kill(void);
-
 	virtual void AttachToPlayer(CBasePlayer *pPlayer);
 	virtual int PrimaryAmmoIndex(void)
 	{
@@ -361,45 +358,45 @@ public:
 public:
 	inline int iItemPosition(void)
 	{
-		return IMPLEMENT_ARRAY(ItemInfoArray)[ m_iId ].iPosition;
+		return IMPL(ItemInfoArray)[ m_iId ].iPosition;
 	}
 	inline const char *pszAmmo1(void)
 	{
-		return IMPLEMENT_ARRAY(ItemInfoArray)[ m_iId ].pszAmmo1;
+		return IMPL(ItemInfoArray)[ m_iId ].pszAmmo1;
 	}
 	inline int iMaxAmmo1(void)
 	{
-		return IMPLEMENT_ARRAY(ItemInfoArray)[ m_iId ].iMaxAmmo1;
+		return IMPL(ItemInfoArray)[ m_iId ].iMaxAmmo1;
 	}
 	inline const char *pszAmmo2(void)
 	{
-		return IMPLEMENT_ARRAY(ItemInfoArray)[ m_iId ].pszAmmo2;
+		return IMPL(ItemInfoArray)[ m_iId ].pszAmmo2;
 	}
 	inline int iMaxAmmo2(void)
 	{
-		return IMPLEMENT_ARRAY(ItemInfoArray)[ m_iId ].iMaxAmmo2;
+		return IMPL(ItemInfoArray)[ m_iId ].iMaxAmmo2;
 	}
 	inline const char *pszName(void)
 	{
-		return IMPLEMENT_ARRAY(ItemInfoArray)[ m_iId ].pszName;
+		return IMPL(ItemInfoArray)[ m_iId ].pszName;
 	}
 	inline int iMaxClip(void)
 	{
-		return IMPLEMENT_ARRAY(ItemInfoArray)[ m_iId ].iMaxClip;
+		return IMPL(ItemInfoArray)[ m_iId ].iMaxClip;
 	}
 	inline int iWeight(void)
 	{
-		return IMPLEMENT_ARRAY(ItemInfoArray)[ m_iId ].iWeight;
+		return IMPL(ItemInfoArray)[ m_iId ].iWeight;
 	}
 	inline int iFlags(void)
 	{
-		return IMPLEMENT_ARRAY(ItemInfoArray)[ m_iId ].iFlags;
+		return IMPL(ItemInfoArray)[ m_iId ].iFlags;
 	}
 public:
 
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[3];
-	static ItemInfo IMPLEMENT_ARRAY(ItemInfoArray)[32];
-	static AmmoInfo IMPLEMENT_ARRAY(AmmoInfoArray)[32];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[3];
+	static ItemInfo IMPL(ItemInfoArray)[32];
+	static AmmoInfo IMPL(AmmoInfoArray)[32];
 
 	CBasePlayer *m_pPlayer;
 	CBasePlayerItem *m_pNext;
@@ -501,7 +498,7 @@ public:
 	bool ShieldSecondaryFire(int iUpAnim, int iDownAnim);
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[7];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[7];
 
 	int m_iPlayEmptySound;
 	int m_fFireOnEmpty;
@@ -601,7 +598,7 @@ public:
 	BOOL PackAmmo(int iszName, int iCount);
 public:
 
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[4];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[4];
 
 	CBasePlayerItem *m_rgpPlayerItems[ MAX_ITEM_TYPES ];
 	int m_rgiszAmmo[ MAX_AMMO_SLOTS ];
@@ -633,7 +630,11 @@ public:
 	virtual void WeaponIdle(void);
 	virtual BOOL UseDecrement(void)
 	{
+	#ifdef CLIENT_WEAPONS
 		return TRUE;
+	#else
+		return FALSE;
+	#endif
 	}
 	virtual BOOL IsPistol(void)
 	{
@@ -676,7 +677,7 @@ public:
 	virtual BOOL Deploy(void);
 	virtual float GetMaxSpeed(void)
 	{
-		return 250.0f;
+		return MP5N_MAX_SPEED;
 	}
 	int iItemSlot(void)
 	{
@@ -685,9 +686,13 @@ public:
 	virtual void PrimaryAttack(void);
 	virtual void Reload(void);
 	virtual void WeaponIdle(void);
-	BOOL UseDecrement(void)
+	virtual BOOL UseDecrement(void)
 	{
+	#ifdef CLIENT_WEAPONS
 		return TRUE;
+	#else
+		return FALSE;
+	#endif
 	}
 
 #ifdef HOOK_GAMEDLL
@@ -733,7 +738,11 @@ public:
 	virtual void WeaponIdle(void);
 	virtual BOOL UseDecrement(void)
 	{
+	#ifdef CLIENT_WEAPONS
 		return TRUE;
+	#else
+		return FALSE;
+	#endif
 	}
 
 #ifdef HOOK_GAMEDLL
@@ -772,7 +781,7 @@ public:
 	virtual BOOL Deploy(void);
 	virtual float GetMaxSpeed(void)
 	{
-		return 221.0f;
+		return AK47_MAX_SPEED;
 	}
 	virtual int iItemSlot(void)
 	{
@@ -784,7 +793,11 @@ public:
 	virtual void WeaponIdle(void);
 	virtual BOOL UseDecrement(void)
 	{
+	#ifdef CLIENT_WEAPONS
 		return TRUE;
+	#else
+		return FALSE;
+	#endif
 	}
 
 #ifdef HOOK_GAMEDLL
@@ -822,7 +835,7 @@ public:
 	virtual BOOL Deploy(void);
 	virtual float GetMaxSpeed(void)
 	{
-		return 240.0f;
+		return AUG_MAX_SPEED;
 	}
 	virtual int iItemSlot(void)
 	{
@@ -834,7 +847,11 @@ public:
 	virtual void WeaponIdle(void);
 	virtual BOOL UseDecrement(void)
 	{
+	#ifdef CLIENT_WEAPONS
 		return TRUE;
+	#else
+		return FALSE;
+	#endif
 	}
 
 #ifdef HOOK_GAMEDLL
@@ -933,7 +950,11 @@ public:
 	virtual void WeaponIdle(void);
 	virtual BOOL UseDecrement(void)
 	{
+	#ifdef CLIENT_WEAPONS
 		return TRUE;
+	#else
+		return FALSE;
+	#endif
 	}
 
 #ifdef HOOK_GAMEDLL
@@ -945,6 +966,7 @@ public:
 	int GetItemInfo_(ItemInfo *p);
 	BOOL Deploy_(void);
 	void Holster_(int skiplocal);
+	float GetMaxSpeed_(void);
 	void PrimaryAttack_(void);
 	void WeaponIdle_(void);
 
@@ -981,7 +1003,11 @@ public:
 	virtual void WeaponIdle(void);
 	virtual BOOL UseDecrement(void)
 	{
+	#ifdef CLIENT_WEAPONS
 		return TRUE;
+	#else
+		return FALSE;
+	#endif
 	}
 	virtual BOOL IsPistol(void)
 	{
@@ -1039,7 +1065,11 @@ public:
 	virtual void WeaponIdle(void);
 	virtual BOOL UseDecrement(void)
 	{
+	#ifdef CLIENT_WEAPONS
 		return TRUE;
+	#else
+		return FALSE;
+	#endif
 	}
 	virtual BOOL IsPistol(void)
 	{
@@ -1091,7 +1121,11 @@ public:
 	virtual void WeaponIdle(void);
 	virtual BOOL UseDecrement(void)
 	{
+	#ifdef CLIENT_WEAPONS
 		return TRUE;
+	#else
+		return FALSE;
+	#endif
 	}
 
 #ifdef HOOK_GAMEDLL
@@ -1141,7 +1175,11 @@ public:
 	virtual void WeaponIdle(void);
 	virtual BOOL UseDecrement(void)
 	{
+	#ifdef CLIENT_WEAPONS
 		return TRUE;
+	#else
+		return FALSE;
+	#endif
 	}
 	virtual BOOL IsPistol(void)
 	{
@@ -1197,7 +1235,11 @@ public:
 	virtual void WeaponIdle(void);
 	virtual BOOL UseDecrement(void)
 	{
+	#ifdef CLIENT_WEAPONS
 		return TRUE;
+	#else
+		return FALSE;
+	#endif
 	}
 
 #ifdef HOOK_GAMEDLL
@@ -1249,7 +1291,11 @@ public:
 	virtual void SecondaryAttack(void);
 	virtual BOOL UseDecrement(void)
 	{
+	#ifdef CLIENT_WEAPONS
 		return TRUE;
+	#else
+		return FALSE;
+	#endif
 	}
 	virtual void WeaponIdle(void);
 
@@ -1296,7 +1342,7 @@ public:
 	virtual BOOL Deploy(void);
 	virtual float GetMaxSpeed(void)
 	{
-		return 220.0f;
+		return M249_MAX_SPEED;
 	}
 	virtual int iItemSlot(void)
 	{
@@ -1305,9 +1351,13 @@ public:
 	virtual void PrimaryAttack(void);
 	virtual void Reload(void);
 	virtual void WeaponIdle(void);
-	BOOL UseDecrement(void)
+	virtual BOOL UseDecrement(void)
 	{
+	#ifdef CLIENT_WEAPONS
 		return TRUE;
+	#else
+		return FALSE;
+	#endif
 	}
 
 #ifdef HOOK_GAMEDLL
@@ -1344,7 +1394,7 @@ public:
 	virtual BOOL Deploy(void);
 	virtual float GetMaxSpeed(void)
 	{
-		return 230.0f;
+		return M3_MAX_SPEED;
 	}
 	virtual int iItemSlot(void)
 	{
@@ -1355,7 +1405,11 @@ public:
 	virtual void WeaponIdle(void);
 	virtual BOOL UseDecrement(void)
 	{
+	#ifdef CLIENT_WEAPONS
 		return TRUE;
+	#else
+		return FALSE;
+	#endif
 	}
 
 #ifdef HOOK_GAMEDLL
@@ -1398,7 +1452,11 @@ public:
 	virtual void WeaponIdle(void);
 	virtual BOOL UseDecrement(void)
 	{
+	#ifdef CLIENT_WEAPONS
 		return TRUE;
+	#else
+		return FALSE;
+	#endif
 	}
 
 #ifdef HOOK_GAMEDLL
@@ -1437,7 +1495,7 @@ public:
 	virtual BOOL Deploy(void);
 	virtual float GetMaxSpeed(void)
 	{
-		return 250.0f;
+		return MAC10_MAX_SPEED;
 	}
 	virtual int iItemSlot(void)
 	{
@@ -1448,7 +1506,11 @@ public:
 	virtual void WeaponIdle(void);
 	virtual BOOL UseDecrement(void)
 	{
+	#ifdef CLIENT_WEAPONS
 		return TRUE;
+	#else
+		return FALSE;
+	#endif
 	}
 
 #ifdef HOOK_GAMEDLL
@@ -1497,7 +1559,11 @@ public:
 	virtual void WeaponIdle(void);
 	virtual BOOL UseDecrement(void)
 	{
+	#ifdef CLIENT_WEAPONS
 		return TRUE;
+	#else
+		return FALSE;
+	#endif
 	}
 	virtual BOOL IsPistol(void)
 	{
@@ -1548,7 +1614,11 @@ public:
 	virtual void WeaponIdle(void);
 	virtual BOOL UseDecrement(void)
 	{
+	#ifdef CLIENT_WEAPONS
 		return TRUE;
+	#else
+		return FALSE;
+	#endif
 	}
 
 #ifdef HOOK_GAMEDLL
@@ -1595,7 +1665,11 @@ public:
 	virtual void WeaponIdle(void);
 	virtual BOOL UseDecrement(void)
 	{
+	#ifdef CLIENT_WEAPONS
 		return TRUE;
+	#else
+		return FALSE;
+	#endif
 	}
 
 #ifdef HOOK_GAMEDLL
@@ -1650,7 +1724,11 @@ public:
 	virtual void WeaponIdle(void);
 	virtual BOOL UseDecrement(void)
 	{
+	#ifdef CLIENT_WEAPONS
 		return TRUE;
+	#else
+		return FALSE;
+	#endif
 	}
 
 #ifdef HOOK_GAMEDLL
@@ -1687,7 +1765,7 @@ public:
 	virtual BOOL Deploy(void);
 	virtual float GetMaxSpeed(void)
 	{
-		return 250.0f;
+		return TMP_MAX_SPEED;
 	}
 	virtual int iItemSlot(void)
 	{
@@ -1698,7 +1776,11 @@ public:
 	virtual void WeaponIdle(void);
 	virtual BOOL UseDecrement(void)
 	{
+	#ifdef CLIENT_WEAPONS
 		return TRUE;
+	#else
+		return FALSE;
+	#endif
 	}
 
 #ifdef HOOK_GAMEDLL
@@ -1735,7 +1817,7 @@ public:
 	virtual BOOL Deploy(void);
 	virtual float GetMaxSpeed(void)
 	{
-		return 240.0f;
+		return XM1014_MAX_SPEED;
 	}
 	virtual int iItemSlot(void)
 	{
@@ -1746,7 +1828,11 @@ public:
 	virtual void WeaponIdle(void);
 	virtual BOOL UseDecrement(void)
 	{
+	#ifdef CLIENT_WEAPONS
 		return TRUE;
+	#else
+		return FALSE;
+	#endif
 	}
 
 #ifdef HOOK_GAMEDLL
@@ -1780,7 +1866,7 @@ public:
 	virtual BOOL Deploy(void);
 	virtual float GetMaxSpeed(void)
 	{
-		return 250.0f;
+		return ELITE_MAX_SPEED;
 	}
 	virtual int iItemSlot(void)
 	{
@@ -1791,7 +1877,11 @@ public:
 	virtual void WeaponIdle(void);
 	virtual BOOL UseDecrement(void)
 	{
+	#ifdef CLIENT_WEAPONS
 		return TRUE;
+	#else
+		return FALSE;
+	#endif
 	}
 	virtual BOOL IsPistol(void)
 	{
@@ -1842,7 +1932,11 @@ public:
 	virtual void WeaponIdle(void);
 	virtual BOOL UseDecrement(void)
 	{
+	#ifdef CLIENT_WEAPONS
 		return TRUE;
+	#else
+		return FALSE;
+	#endif
 	}
 	virtual BOOL IsPistol(void)
 	{
@@ -1885,7 +1979,7 @@ public:
 	virtual BOOL Deploy(void);
 	virtual float GetMaxSpeed(void)
 	{
-		return 250.0f;
+		return UMP45_MAX_SPEED;
 	}
 	virtual int iItemSlot(void)
 	{
@@ -1896,7 +1990,11 @@ public:
 	virtual void WeaponIdle(void);
 	virtual BOOL UseDecrement(void)
 	{
+	#ifdef CLIENT_WEAPONS
 		return TRUE;
+	#else
+		return FALSE;
+	#endif
 	}
 
 #ifdef HOOK_GAMEDLL
@@ -1942,7 +2040,11 @@ public:
 	virtual void WeaponIdle(void);
 	virtual BOOL UseDecrement(void)
 	{
+	#ifdef CLIENT_WEAPONS
 		return TRUE;
+	#else
+		return FALSE;
+	#endif
 	}
 
 #ifdef HOOK_GAMEDLL
@@ -1980,7 +2082,7 @@ public:
 	virtual BOOL Deploy(void);
 	virtual float GetMaxSpeed(void)
 	{
-		return 240.0f;
+		return GALIL_MAX_SPEED;
 	}
 	virtual int iItemSlot(void)
 	{
@@ -1992,7 +2094,11 @@ public:
 	virtual void WeaponIdle(void);
 	virtual BOOL UseDecrement(void)
 	{
+	#ifdef CLIENT_WEAPONS
 		return TRUE;
+	#else
+		return FALSE;
+	#endif
 	}
 
 #ifdef HOOK_GAMEDLL
@@ -2030,7 +2136,7 @@ public:
 	virtual BOOL Deploy(void);
 	virtual float GetMaxSpeed(void)
 	{
-		return 240.0f;
+		return FAMAS_MAX_SPEED;
 	}
 	virtual int iItemSlot(void)
 	{
@@ -2042,7 +2148,11 @@ public:
 	virtual void WeaponIdle(void);
 	virtual BOOL UseDecrement(void)
 	{
+	#ifdef CLIENT_WEAPONS
 		return TRUE;
+	#else
+		return FALSE;
+	#endif
 	}
 
 #ifdef HOOK_GAMEDLL

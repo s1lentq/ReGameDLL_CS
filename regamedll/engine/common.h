@@ -111,6 +111,7 @@ typedef struct incomingtransfer_s
 #define Q_snprintf _snprintf
 #define Q_atoi atoi
 #define Q_atof atof
+#define Q_memmove memmove
 //#define Q_strtoull strtoull
 //#define Q_FileNameCmp FileNameCmp
 #define Q_vsnprintf _vsnprintf

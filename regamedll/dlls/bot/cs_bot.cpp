@@ -468,13 +468,11 @@ NOBODY const Vector *FindNearbyRetreatSpot(CCSBot *me, float maxRange)
 }
 
 /* <2eaa1d> ../cstrike/dlls/bot/cs_bot.cpp:1116 */
-NOBODY float CCSBot::GetRangeToFarthestEscortedHostage(void)
+float CCSBot::GetRangeToFarthestEscortedHostage(void)
 {
-//	{
-//		class FarthestHostage away;                           //  1118
-//		ForEachHostage<FarthestHostage>(const class CHostageManager *const this,
-//						class FarthestHostage &func);  //  1120
-//	}
+	FarthestHostage away(this);
+	g_pHostages->ForEachHostage(away);
+	return away.m_farRange;
 }
 
 #ifdef HOOK_GAMEDLL

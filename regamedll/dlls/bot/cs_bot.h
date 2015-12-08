@@ -1247,7 +1247,7 @@ public:
 			if (IsSpotOccupied(m_me, spot->GetPosition()))
 			{
 				// player is in hiding spot
-				/// @todo Check if player is moving or sitting still
+				// TODO: Check if player is moving or sitting still
 				continue;
 			}
 
@@ -1283,21 +1283,34 @@ private:
 class FarthestHostage
 {
 public:
-	FarthestHostage(CCSBot *me)//, float range)
+	FarthestHostage(const CCSBot *me)
 	{
 		m_me = me;
-		//m_farRange = range;
+		m_farRange = -1.0;
 	}
 	bool operator()(CHostage *hostage)
 	{
-		//TODO: untested
+		if (hostage->pev->takedamage != DAMAGE_YES)
+			return true;
 
-		if (!hostage->IsFollowing(m_me))
-			return false;
+		if (hostage->m_improv != NULL)
+		{
+			if (!hostage->IsFollowingSomeone() || m_me != hostage->GetLeader())
+				return true;
+		}
+		else if (!hostage->IsFollowing(m_me))
+			return true;
+
+		float range = (hostage->Center() - m_me->pev->origin).Length();
+
+		if (range > m_farRange)
+		{
+			m_farRange = range;
+		}
 
 		return true;
 	}
-private:
+
 	const CCSBot *m_me;
 	float m_farRange;
 

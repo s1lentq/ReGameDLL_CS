@@ -155,7 +155,7 @@ void PM_InitTextureTypes(void)
 }
 
 /* <2cc7c5> ../cstrike/pm_shared/pm_shared.c:283 */
-char PM_FindTextureType(char *name)
+char EXT_FUNC PM_FindTextureType(char *name)
 {
 	int left, right, pivot;
 	int val;
@@ -506,13 +506,13 @@ void PM_UpdateStepSound(void)
 			}
 		}
 
-		if (pmove->flags & FL_DUCKING || fLadder)
+		if ((pmove->flags & FL_DUCKING) || fLadder)
 		{
 			pmove->flTimeStepSound += 100; // slower step time if ducking
 
 			// play the sound
 			// 35% volume if ducking
-			if (pmove->flags & FL_DUCKING && pmove->flDuckTime < 950.0)
+			if ((pmove->flags & FL_DUCKING) && pmove->flDuckTime < 950.0)
 			{
 				fvol *= 0.35;
 			}
@@ -3159,7 +3159,7 @@ void PM_CreateStuckTable(void)
 // and client. This will ensure that prediction behaves appropriately.
 
 /* <2ce182> ../cstrike/pm_shared/pm_shared.c:3596 */
-void PM_Move(struct playermove_s *ppmove, int server)
+void EXT_FUNC PM_Move(struct playermove_s *ppmove, int server)
 {
 	assert(pm_shared_initialized);
 
@@ -3201,7 +3201,7 @@ NOXREF int PM_GetPhysEntInfo(int ent)
 }
 
 /* <2ce21b> ../cstrike/pm_shared/pm_shared.c:3638 */
-void PM_Init(struct playermove_s *ppmove)
+void EXT_FUNC PM_Init(struct playermove_s *ppmove)
 {
 	assert(!pm_shared_initialized);
 

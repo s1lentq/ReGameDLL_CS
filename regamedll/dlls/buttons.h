@@ -75,7 +75,7 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[3];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[3];
 
 public:
 	string_t m_globalstate;
@@ -144,7 +144,7 @@ public:
 	}
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[6];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[6];
 
 public:
 	int m_lastUsed;
@@ -182,7 +182,7 @@ public:
 	void EXPORT SparkStop(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[1];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[1];
 
 public:
 	float m_flDelay;

@@ -40,6 +40,7 @@
 #define IMPLEMENT_ARRAY(var)\
 	var
 
+#define IMPL_CLASS IMPLEMENT_ARRAY_CLASS
 #define IMPLEMENT_ARRAY_CLASS(baseClass,var)\
 	baseClass::var
 
@@ -49,6 +50,7 @@
 #define IMPLEMENT_ARRAY(var)\
 	(*p##var)
 
+#define IMPL_CLASS IMPLEMENT_ARRAY_CLASS
 #define IMPLEMENT_ARRAY_CLASS(baseClass,var)\
 	(*baseClass::p##var)
 

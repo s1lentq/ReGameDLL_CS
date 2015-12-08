@@ -121,8 +121,8 @@ public:
 		float_precision flLen = Length();
 		if (flLen > 0.0)
 		{
-			x /= (vec_t)flLen;
-			y /= (vec_t)flLen;
+			x = (vec_t)(1 / flLen * x);
+			y = (vec_t)(1 / flLen * y);
 		}
 		else
 		{

@@ -32,30 +32,30 @@
 #pragma once
 #endif
 
-#define MAX_EQUIP 32
-#define SF_SCORE_NEGATIVE 0x0001
-#define SF_SCORE_TEAM 0x0002
+#define MAX_EQUIP			32
+#define SF_SCORE_NEGATIVE		0x0001
+#define SF_SCORE_TEAM			0x0002
 
-#define SF_ENVTEXT_ALLPLAYERS 0x0001
+#define SF_ENVTEXT_ALLPLAYERS		0x0001
 
-#define SF_TEAMMASTER_FIREONCE 0x0001
-#define SF_TEAMMASTER_ANYTEAM 0x0002
+#define SF_TEAMMASTER_FIREONCE		0x0001
+#define SF_TEAMMASTER_ANYTEAM		0x0002
 
-#define SF_TEAMSET_FIREONCE 0x0001
-#define SF_TEAMSET_CLEARTEAM 0x0002
+#define SF_TEAMSET_FIREONCE		0x0001
+#define SF_TEAMSET_CLEARTEAM		0x0002
 
-#define SF_PKILL_FIREONCE 0x0001
+#define SF_PKILL_FIREONCE		0x0001
 
-#define SF_GAMECOUNT_FIREONCE 0x0001
-#define SF_GAMECOUNT_RESET 0x0002
+#define SF_GAMECOUNT_FIREONCE		0x0001
+#define SF_GAMECOUNT_RESET		0x0002
 
-#define SF_GAMECOUNTSET_FIREONCE 0x0001
+#define SF_GAMECOUNTSET_FIREONCE	0x0001
 
-#define SF_PLAYEREQUIP_USEONLY 0x0001
+#define SF_PLAYEREQUIP_USEONLY		0x0001
 
-#define SF_PTEAM_FIREONCE 0x0001
-#define SF_PTEAM_KILL 0x0002
-#define SF_PTEAM_GIB 0x0004
+#define SF_PTEAM_FIREONCE		0x0001
+#define SF_PTEAM_KILL			0x0002
+#define SF_PTEAM_GIB			0x0004
 
 /* <edff5> ../cstrike/dlls/maprules.cpp:34 */
 class CRuleEntity: public CBaseEntity
@@ -76,7 +76,7 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[1];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[1];
 
 	void SetMaster(int iszMaster)
 	{
@@ -216,7 +216,7 @@ public:
 	}
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[1];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[1];
 
 private:
 	hudtextparms_t m_textParms;
@@ -321,7 +321,7 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[4];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[4];
 
 private:
 	string_t m_iszInTarget;

@@ -89,7 +89,7 @@ public:
 	}
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[2];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[2];
 
 public:
 	float m_messageTime;

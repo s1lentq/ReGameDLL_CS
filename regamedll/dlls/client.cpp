@@ -75,7 +75,7 @@ int g_serveractive;
 
 #endif // HOOK_GAMEDLL
 
-PLAYERPVSSTATUS g_PVSStatus[32];
+PLAYERPVSSTATUS g_PVSStatus[MAX_CLIENTS];
 unsigned short m_usResetDecals;
 unsigned short g_iShadowSprite;
 
@@ -154,13 +154,13 @@ void BlinkAccount(CBasePlayer *player, int numBlinks)
 }
 
 /* <47efd> ../cstrike/dlls/client.cpp:236 */
-BOOL ClientConnect(edict_t *pEntity, const char *pszName, const char *pszAddress, char *szRejectReason)
+BOOL EXT_FUNC ClientConnect(edict_t *pEntity, const char *pszName, const char *pszAddress, char *szRejectReason)
 {
 	return g_pGameRules->ClientConnected(pEntity, pszName, pszAddress, szRejectReason);
 }
 
 /* <47f5b> ../cstrike/dlls/client.cpp:255 */
-void ClientDisconnect(edict_t *pEntity)
+void EXT_FUNC ClientDisconnect(edict_t *pEntity)
 {
 	CBasePlayer *pPlayer = (CBasePlayer *)CBaseEntity::Instance(pEntity);
 
@@ -216,7 +216,7 @@ void respawn(entvars_t *pev, BOOL fCopyCorpse)
 // Suicide...
 
 /* <48013> ../cstrike/dlls/client.cpp:347 */
-void ClientKill(edict_t *pEntity)
+void EXT_FUNC ClientKill(edict_t *pEntity)
 {
 	entvars_t *pev = &pEntity->v;
 	CHalfLifeMultiplay *mp = g_pGameRules;
@@ -496,7 +496,7 @@ void CheckStartMoney(void)
 }
 
 /* <4c084> ../cstrike/dlls/client.cpp:661 */
-void ClientPutInServer(edict_t *pEntity)
+void EXT_FUNC ClientPutInServer(edict_t *pEntity)
 {
 	entvars_t *pev = &pEntity->v;
 	CBasePlayer *pPlayer = GetClassPtr((CBasePlayer *)pev);
@@ -2898,7 +2898,7 @@ BOOL HandleRadioAliasCommands(CBasePlayer *pPlayer, const char *pszCommand)
 // Use CMD_ARGV,  CMD_ARGV, and CMD_ARGC to get pointers the character string command.
 
 /* <4c6c1> ../cstrike/dlls/client.cpp:3234 */
-void ClientCommand(edict_t *pEntity)
+void EXT_FUNC ClientCommand(edict_t *pEntity)
 {
 	const char *pcmd = CMD_ARGV_(0);
 	const char *pstr = NULL;
@@ -3854,7 +3854,7 @@ void ClientCommand(edict_t *pEntity)
 }
 
 /* <4b959> ../cstrike/dlls/client.cpp:4282 */
-void ClientUserInfoChanged(edict_t *pEntity, char *infobuffer)
+void EXT_FUNC ClientUserInfoChanged(edict_t *pEntity, char *infobuffer)
 {
 	// Is the client spawned yet?
 	if (!pEntity->pvPrivateData)
@@ -3919,7 +3919,7 @@ void ClientUserInfoChanged(edict_t *pEntity, char *infobuffer)
 }
 
 /* <4a378> ../cstrike/dlls/client.cpp:4362 */
-void ServerDeactivate(void)
+void EXT_FUNC ServerDeactivate(void)
 {
 	// It's possible that the engine will call this function more times than is necessary
 	//  Therefore, only run it one time for each call to ServerActivate
@@ -3946,7 +3946,7 @@ void ServerDeactivate(void)
 }
 
 /* <4a392> ../cstrike/dlls/client.cpp:4400 */
-void ServerActivate(edict_t *pEdictList, int edictCount, int clientMax)
+void EXT_FUNC ServerActivate(edict_t *pEdictList, int edictCount, int clientMax)
 {
 	int i;
 	CBaseEntity *pClass;
@@ -4000,7 +4000,7 @@ void ServerActivate(edict_t *pEdictList, int edictCount, int clientMax)
 }
 
 /* <4a404> ../cstrike/dlls/client.cpp:4459 */
-void PlayerPreThink(edict_t *pEntity)
+void EXT_FUNC PlayerPreThink(edict_t *pEntity)
 {
 	entvars_t *pev = &pEntity->v;
 	CBasePlayer *pPlayer = (CBasePlayer *)GET_PRIVATE(pEntity);
@@ -4012,7 +4012,7 @@ void PlayerPreThink(edict_t *pEntity)
 }
 
 /* <4a47c> ../cstrike/dlls/client.cpp:4475 */
-void PlayerPostThink(edict_t *pEntity)
+void EXT_FUNC PlayerPostThink(edict_t *pEntity)
 {
 	entvars_t *pev = &pEntity->v;
 	CBasePlayer *pPlayer = (CBasePlayer *)GET_PRIVATE(pEntity);
@@ -4024,13 +4024,13 @@ void PlayerPostThink(edict_t *pEntity)
 }
 
 /* <4a4f4> ../cstrike/dlls/client.cpp:4486 */
-void ParmsNewLevel(void)
+void EXT_FUNC ParmsNewLevel(void)
 {
 	;
 }
 
 /* <4a50d> ../cstrike/dlls/client.cpp:4491 */
-void ParmsChangeLevel(void)
+void EXT_FUNC ParmsChangeLevel(void)
 {
 	// retrieve the pointer to the save data
 	SAVERESTOREDATA *pSaveData = (SAVERESTOREDATA *)gpGlobals->pSaveData;
@@ -4042,7 +4042,7 @@ void ParmsChangeLevel(void)
 }
 
 /* <4a548> ../cstrike/dlls/client.cpp:4504 */
-void StartFrame(void)
+void EXT_FUNC StartFrame(void)
 {
 	if (g_pGameRules != NULL)
 	{
@@ -4495,7 +4495,7 @@ void ClientPrecache(void)
 }
 
 /* <4a6e5> ../cstrike/dlls/client.cpp:4996 */
-const char *GetGameDescription(void)
+const char *EXT_FUNC GetGameDescription(void)
 {
 	if (UTIL_IsGame("czero"))
 		return "Condition Zero";
@@ -4504,13 +4504,13 @@ const char *GetGameDescription(void)
 }
 
 /* <4a703> ../cstrike/dlls/client.cpp:5022 */
-void Sys_Error(const char *error_string)
+void EXT_FUNC Sys_Error(const char *error_string)
 {
 	;
 }
 
 /* <4a731> ../cstrike/dlls/client.cpp:5039 */
-void PlayerCustomization(edict_t *pEntity, customization_t *pCust)
+void EXT_FUNC PlayerCustomization(edict_t *pEntity, customization_t *pCust)
 {
 	CBasePlayer *pPlayer = (CBasePlayer *)GET_PRIVATE(pEntity);
 
@@ -4528,21 +4528,21 @@ void PlayerCustomization(edict_t *pEntity, customization_t *pCust)
 
 	switch (pCust->resource.type)
 	{
-		case t_decal:
-			pPlayer->SetCustomDecalFrames(pCust->nUserData2);
-			break;
-		case t_sound:
-		case t_skin:
-		case t_model:
-			break;
-		default:
-			ALERT(at_console, "PlayerCustomization:  Unknown customization type!\n");
-			break;
+	case t_decal:
+		pPlayer->SetCustomDecalFrames(pCust->nUserData2);
+		break;
+	case t_sound:
+	case t_skin:
+	case t_model:
+		break;
+	default:
+		ALERT(at_console, "PlayerCustomization:  Unknown customization type!\n");
+		break;
 	}
 }
 
 /* <4a7b9> ../cstrike/dlls/client.cpp:5079 */
-void SpectatorConnect(edict_t *pEntity)
+void EXT_FUNC SpectatorConnect(edict_t *pEntity)
 {
 	CBaseSpectator *pPlayer = (CBaseSpectator *)GET_PRIVATE(pEntity);
 
@@ -4553,7 +4553,7 @@ void SpectatorConnect(edict_t *pEntity)
 }
 
 /* <4a83d> ../cstrike/dlls/client.cpp:5095 */
-void SpectatorDisconnect(edict_t *pEntity)
+void EXT_FUNC SpectatorDisconnect(edict_t *pEntity)
 {
 	CBaseSpectator *pPlayer = (CBaseSpectator *)GET_PRIVATE(pEntity);
 
@@ -4564,7 +4564,7 @@ void SpectatorDisconnect(edict_t *pEntity)
 }
 
 /* <4a8b5> ../cstrike/dlls/client.cpp:5111 */
-void SpectatorThink(edict_t *pEntity)
+void EXT_FUNC SpectatorThink(edict_t *pEntity)
 {
 	CBaseSpectator *pPlayer = (CBaseSpectator *)GET_PRIVATE(pEntity);
 
@@ -4575,7 +4575,7 @@ void SpectatorThink(edict_t *pEntity)
 }
 
 /* <4a92d> ../cstrike/dlls/client.cpp:5160 */
-void SetupVisibility(edict_t *pViewEntity, edict_t *pClient, unsigned char **pvs, unsigned char **pas)
+void EXT_FUNC SetupVisibility(edict_t *pViewEntity, edict_t *pClient, unsigned char **pvs, unsigned char **pas)
 {
 	edict_t *pView = pClient;
 
@@ -4673,7 +4673,7 @@ bool CheckEntityRecentlyInPVS(int clientnum, int entitynum, float currenttime)
 }
 
 /* <4ac57> ../cstrike/dlls/client.cpp:5312 */
-int AddToFullPack(struct entity_state_s *state, int e, edict_t *ent, edict_t *host, int hostflags, int player, unsigned char *pSet)
+int EXT_FUNC AddToFullPack(struct entity_state_s *state, int e, edict_t *ent, edict_t *host, int hostflags, int player, unsigned char *pSet)
 {
 	if ((ent->v.effects & EF_NODRAW) == EF_NODRAW && ent != host)
 		return 0;
@@ -4813,7 +4813,7 @@ int AddToFullPack(struct entity_state_s *state, int e, edict_t *ent, edict_t *ho
 // Creates baselines used for network encoding, especially for player data since players are not spawned until connect time.
 
 /* <4aef3> ../cstrike/dlls/client.cpp:5516 */
-void CreateBaseline(int player, int eindex, struct entity_state_s *baseline, struct edict_s *entity, int playermodelindex, Vector player_mins, Vector player_maxs)
+void EXT_FUNC CreateBaseline(int player, int eindex, struct entity_state_s *baseline, struct edict_s *entity, int playermodelindex, Vector player_mins, Vector player_maxs)
 {
 	baseline->origin = entity->v.origin;
 	baseline->angles = entity->v.angles;
@@ -5035,7 +5035,7 @@ void Custom_Encode(struct delta_s *pFields, const unsigned char *from, const uns
 }
 
 /* <4b08a> ../cstrike/dlls/client.cpp:5811 */
-void RegisterEncoders(void)
+void EXT_FUNC RegisterEncoders(void)
 {
 	DELTA_ADDENCODER("Entity_Encode", Entity_Encode);
 	DELTA_ADDENCODER("Custom_Encode", Custom_Encode);
@@ -5043,7 +5043,7 @@ void RegisterEncoders(void)
 }
 
 /* <4b0a4> ../cstrike/dlls/client.cpp:5818 */
-int GetWeaponData(edict_s *player, struct weapon_data_s *info)
+int EXT_FUNC GetWeaponData(edict_s *player, struct weapon_data_s *info)
 {
 	entvars_t *pev = &player->v;
 	CBasePlayer *pl = reinterpret_cast<CBasePlayer *>(CBasePlayer::Instance(pev));
@@ -5098,7 +5098,7 @@ int GetWeaponData(edict_s *player, struct weapon_data_s *info)
 }
 
 /* <4b1fd> ../cstrike/dlls/client.cpp:5889 */
-void UpdateClientData(const struct edict_s *ent, int sendweapons, struct clientdata_s *cd)
+void EXT_FUNC UpdateClientData(const struct edict_s *ent, int sendweapons, struct clientdata_s *cd)
 {
 	if (!ent || !ent->pvPrivateData)
 	{
@@ -5219,7 +5219,7 @@ void UpdateClientData(const struct edict_s *ent, int sendweapons, struct clientd
 }
 
 /* <4b3ee> ../cstrike/dlls/client.cpp:6050 */
-void CmdStart(const edict_t *player, const struct usercmd_s *cmd, unsigned int random_seed)
+void EXT_FUNC CmdStart(const edict_t *player, const struct usercmd_s *cmd, unsigned int random_seed)
 {
 	entvars_t *pev = (entvars_t *)&player->v;
 	CBasePlayer *pl = reinterpret_cast<CBasePlayer *>(CBasePlayer::Instance(pev));
@@ -5238,7 +5238,7 @@ void CmdStart(const edict_t *player, const struct usercmd_s *cmd, unsigned int r
 }
 
 /* <4b4eb> ../cstrike/dlls/client.cpp:6074 */
-void CmdEnd(const edict_t *player)
+void EXT_FUNC CmdEnd(const edict_t *player)
 {
 	entvars_t *pev = (entvars_t *)&player->v;
 	CBasePlayer *pl = reinterpret_cast<CBasePlayer *>(CBasePlayer::Instance(pev));
@@ -5254,7 +5254,7 @@ void CmdEnd(const edict_t *player)
 }
 
 /* <4b644> ../cstrike/dlls/client.cpp:6101 */
-int ConnectionlessPacket(const struct netadr_s *net_from, const char *args, char *response_buffer, int *response_buffer_size)
+int EXT_FUNC ConnectionlessPacket(const struct netadr_s *net_from, const char *args, char *response_buffer, int *response_buffer_size)
 {
 	// Parse stuff from args
 	int max_buffer_size = *response_buffer_size;
@@ -5269,7 +5269,7 @@ int ConnectionlessPacket(const struct netadr_s *net_from, const char *args, char
 }
 
 /* <4b6c2> ../cstrike/dlls/client.cpp:6122 */
-int GetHullBounds(int hullnumber, float *mins, float *maxs)
+int EXT_FUNC GetHullBounds(int hullnumber, float *mins, float *maxs)
 {
 	return hullnumber < 3;
 }
@@ -5278,7 +5278,7 @@ int GetHullBounds(int hullnumber, float *mins, float *maxs)
 // to be created during play ( e.g., grenades, ammo packs, projectiles, corpses, etc. )
 
 /* <4b733> ../cstrike/dlls/client.cpp:6156 */
-void CreateInstancedBaselines(void)
+void EXT_FUNC CreateInstancedBaselines(void)
 {
 	int iret = 0;
 	entity_state_t state;
@@ -5293,7 +5293,7 @@ void CreateInstancedBaselines(void)
 }
 
 /* <4b77c> ../cstrike/dlls/client.cpp:6179 */
-int InconsistentFile(const edict_t *player, const char *filename, char *disconnect_message)
+int EXT_FUNC InconsistentFile(const edict_t *player, const char *filename, char *disconnect_message)
 {
 	// Server doesn't care?
 	if (CVAR_GET_FLOAT("mp_consistency") != 1)
@@ -5313,7 +5313,7 @@ int InconsistentFile(const edict_t *player, const char *filename, char *disconne
 // if you want.
 
 /* <4b7cf> ../cstrike/dlls/client.cpp:6204 */
-int AllowLagCompensation(void)
+int EXT_FUNC AllowLagCompensation(void)
 {
 	return 1;
 }

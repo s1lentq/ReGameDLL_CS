@@ -62,7 +62,7 @@ public:
 	void EXPORT Recharge(void);
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[5];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[5];
 
 	float m_flNextCharge;
 	int m_iReactivate;

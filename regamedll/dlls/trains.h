@@ -88,7 +88,7 @@ public:
 	CPathTrack *GetPrevious(void);
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[5];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[5];
 
 	float m_length;
 	string_t m_altName;
@@ -150,7 +150,7 @@ public:
 	static CFuncTrackTrain *Instance(edict_t *pent);
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[12];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[12];
 
 	CPathTrack *m_ppath;
 	float m_length;
@@ -234,7 +234,7 @@ public:
 	static CFuncVehicle *Instance(edict_t *pent);
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[12];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[12];
 
 	CPathTrack *m_ppath;
 	float m_length;

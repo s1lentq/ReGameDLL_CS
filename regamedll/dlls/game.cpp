@@ -404,7 +404,7 @@ cvar_t sk_scientist_heal3;
 #endif // HOOK_GAMEDLL
 
 /* <9c900> ../cstrike/dlls/game.cpp:500 */
-void GameDLLInit(void)
+void EXT_FUNC GameDLLInit(void)
 {
 	g_psv_gravity = CVAR_GET_POINTER("sv_gravity");
 	g_psv_aim = CVAR_GET_POINTER("sv_aim");

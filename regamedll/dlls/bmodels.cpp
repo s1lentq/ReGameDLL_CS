@@ -28,8 +28,8 @@ TYPEDESCRIPTION CPendulum::m_SaveData[] =
 
 #else
 
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CFuncRotating, m_SaveData)[5];
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CPendulum, m_SaveData)[8];
+TYPEDESCRIPTION IMPL_CLASS(CFuncRotating, m_SaveData)[5];
+TYPEDESCRIPTION IMPL_CLASS(CPendulum, m_SaveData)[8];
 
 #endif // HOOK_GAMEDLL
 

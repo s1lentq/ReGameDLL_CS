@@ -892,7 +892,7 @@ bool NavAreaBuildPath(CNavArea *startArea, CNavArea *goalArea, const Vector *goa
 
 				if (ladderUp)
 				{
-					ladder = *ladderIter;
+					ladder = (*ladderIter);
 					if (ladder->m_isDangling)
 					{
 						++ladderIter;

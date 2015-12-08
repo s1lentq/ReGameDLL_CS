@@ -139,7 +139,7 @@ void CHostage::__MAKE_VHOOK(Precache)(void)
 		default:
 			break;
 		}
-		
+
 		m_whichModel = static_cast<ModelType>(which);
 
 		if (++which > 3)
@@ -216,7 +216,7 @@ void CHostage::IdleThink(void)
 
 		m_improv = NULL;
 	}
-	
+
 	pev->nextthink = gpGlobals->time + giveUpTime;
 
 	flInterval = StudioFrameAdvance(0);
@@ -654,7 +654,7 @@ void CHostage::SetDeathActivity(void)
 void CHostage::AnnounceDeath(CBasePlayer *pAttacker)
 {
 	ClientPrint(pAttacker->pev, HUD_PRINTCENTER, "#Killed_Hostage");
-	
+
 	if (!(pAttacker->m_flDisplayHistory & DHF_HOSTAGE_KILLED))
 	{
 		pAttacker->HintMessage("#Hint_lost_money");
@@ -713,7 +713,7 @@ void CHostage::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, 
 		return;
 
 	CBasePlayer *pPlayer = (CBasePlayer *)pActivator;
-	
+
 	if (pPlayer->m_iTeam != CT)
 	{
 		if (!(pPlayer->m_flDisplayHistory & DHF_HOSTAGE_CTMOVE))
@@ -810,7 +810,7 @@ void CHostage::GiveCTTouchBonus(CBasePlayer *pPlayer)
 /* <45bf69> ../cstrike/dlls/hostage/hostage.cpp:869 */
 int CHostage::__MAKE_VHOOK(ObjectCaps)(void)
 {
-	return CBaseMonster::ObjectCaps() | FCAP_MUST_SPAWN | FCAP_ONOFF_USE;
+	return (CBaseMonster::ObjectCaps() | FCAP_MUST_SPAWN | FCAP_ONOFF_USE);
 }
 
 /* <45c0e3> ../cstrike/dlls/hostage/hostage.cpp:876 */
@@ -1621,7 +1621,7 @@ char *SimpleChatter::GetSound(HostageChatterType type, float *duration)
 
 /* <45ea1b> ../cstrike/dlls/hostage/hostage.cpp:1818 */
 float SimpleChatter::PlaySound(CBaseEntity *entity, HostageChatterType type)
-{	
+{
 	CHostage *hostage;
 	float duration;
 	char *sound;

@@ -80,7 +80,7 @@ public:
 	void EXPORT Off(void);
 	void EXPORT Recharge(void);
 
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[5];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[5];
 
 public:
 	float m_flNextCharge;

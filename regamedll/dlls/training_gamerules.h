@@ -106,7 +106,7 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[5];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[5];
 
 	int m_NeedGrenadeType;
 	string_t sTriggerOnGrenade;
@@ -137,7 +137,7 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[6];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[6];
 
 private:
 	string_t sTriggerWithItems;

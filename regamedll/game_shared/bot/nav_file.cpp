@@ -165,13 +165,9 @@ void CNavArea::Save(FILE *fp) const
 	fprintf(fp, "v  %f %f %f\n", m_extent.lo.x, m_extent.hi.y, m_swZ);
 
 	static int base = 1;
-	fprintf(fp, "\n\ng %04dArea%s%s%s%s\n",
-		m_id,
-		(GetAttributes() & NAV_CROUCH) ? "CROUCH" : "",
-		(GetAttributes() & NAV_JUMP) ? "JUMP" : "",
-		(GetAttributes() & NAV_PRECISE) ? "PRECISE" : "",
-		(GetAttributes() & NAV_NO_JUMP) ? "NO_JUMP" : ""
-	);
+	fprintf(fp, "\n\ng %04dArea%s%s%s%s\n", m_id,
+			(GetAttributes() & NAV_CROUCH) ? "CROUCH" : "", (GetAttributes() & NAV_JUMP) ? "JUMP" : "",
+			(GetAttributes() & NAV_PRECISE) ? "PRECISE" : "", (GetAttributes() & NAV_NO_JUMP) ? "NO_JUMP" : "");
 
 	fprintf(fp, "f %d %d %d %d\n\n", base, base + 1, base + 2, base + 3);
 	base += 4;
@@ -209,9 +205,7 @@ NOBODY void CNavArea::Save(int fd, unsigned int version)
 		}
 	}
 
-	//
 	// Store hiding spots for this area
-	//
 	unsigned char count;
 	if (m_hidingSpotList.size() > 255)
 	{
@@ -238,10 +232,7 @@ NOBODY void CNavArea::Save(int fd, unsigned int version)
 			break;
 	}
 
-	//
 	// Save the approach areas for this area
-	//
-
 	// save number of approach areas
 	Q_write(fd, &m_approachCount, sizeof(unsigned char));
 	if (cv_bot_debug.value > 0.0f)
@@ -274,9 +265,7 @@ NOBODY void CNavArea::Save(int fd, unsigned int version)
 		Q_write(fd, &type, sizeof(unsigned char));
 	}
 
-	//
 	// Save encounter spots for this area
-	//
 	{
 		// save number of encounter paths for this area
 		unsigned int count = m_spotEncounterList.size();
@@ -350,8 +339,8 @@ NOBODY void CNavArea::Load(SteamFile *file, unsigned int version)
 	file->Read(&m_id, sizeof(unsigned int));
 
 	// update nextID to avoid collisions
-	if (m_id >= IMPLEMENT_ARRAY(m_nextID))
-		IMPLEMENT_ARRAY(m_nextID) = m_id + 1;
+	if (m_id >= IMPL(m_nextID))
+		IMPL(m_nextID) = m_id + 1;
 
 	// load attribute flags
 	file->Read(&m_attributeFlags, sizeof(unsigned char));
@@ -384,10 +373,7 @@ NOBODY void CNavArea::Load(SteamFile *file, unsigned int version)
 		}
 	}
 
-	//
 	// Load hiding spots
-	//
-
 	// load number of hiding spots
 	unsigned char hidingSpotCount;
 	file->Read(&hidingSpotCount, sizeof(unsigned char));
@@ -420,9 +406,7 @@ NOBODY void CNavArea::Load(SteamFile *file, unsigned int version)
 		}
 	}
 
-	//
 	// Load number of approach areas
-	//
 	file->Read(&m_approachCount, sizeof(unsigned char));
 
 	// load approach area info (IDs)
@@ -440,9 +424,7 @@ NOBODY void CNavArea::Load(SteamFile *file, unsigned int version)
 		m_approach[a].hereToNextHow = (NavTraverseType)type;
 	}
 
-	//
 	// Load encounter paths for this area
-	//
 	unsigned int count;
 	file->Read(&count, sizeof(unsigned int));
 
@@ -511,9 +493,7 @@ NOBODY void CNavArea::Load(SteamFile *file, unsigned int version)
 	if (version < 5)
 		return;
 
-	//
 	// Load Place data
-	//
 	PlaceDirectory::EntryType entry;
 	file->Read(&entry, sizeof(entry));
 
@@ -616,7 +596,7 @@ NOBODY NavErrorType CNavArea::PostLoad(void)
 	}
 
 	// build overlap list
-	/// @todo Optimize this
+	// TODO: Optimize this
 	for (NavAreaList::iterator oiter = TheNavAreaList.begin(); oiter != TheNavAreaList.end(); ++oiter)
 	{
 		CNavArea *area = *oiter;
@@ -658,9 +638,7 @@ NOBODY bool SaveNavigationMap(const char *filename)
 	if (filename == NULL)
 		return false;
 
-	//
 	// Store the NAV file
-	//
 	COM_FixSlashes(const_cast<char *>(filename));
 
 #ifdef WIN32
@@ -697,9 +675,7 @@ NOBODY bool SaveNavigationMap(const char *filename)
 
 	Q_write(fd, &bspSize, sizeof(unsigned int));
 
-	//
 	// Build a directory of the Places in this map
-	//
 	placeDirectory.Reset();
 
 	NavAreaList::iterator it;
@@ -716,10 +692,7 @@ NOBODY bool SaveNavigationMap(const char *filename)
 
 	placeDirectory.Save(fd);
 
-	//
 	// Store navigation areas
-	//
-
 	// store number of areas
 	unsigned int count = TheNavAreaList.size();
 	Q_write(fd, &count, sizeof(unsigned int));
@@ -902,7 +875,7 @@ NOBODY NavErrorType __declspec(naked) LoadNavigationMap(void)
 	DestroyNavigationMap();
 	placeDirectory.Reset();
 
-	IMPLEMENT_ARRAY_CLASS(CNavArea, m_nextID) = 1;
+	IMPL_CLASS(CNavArea, m_nextID) = 1;
 
 	SteamFile navFile(filename);
 
@@ -1015,9 +988,7 @@ NOBODY NavErrorType __declspec(naked) LoadNavigationMap(void)
 		LoadLocationFile(filename);
 	}
 
-	//
 	// Set up all the ladders
-	//
 	BuildLadders();
 
 	return NAV_OK;

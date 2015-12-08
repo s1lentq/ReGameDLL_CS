@@ -320,24 +320,20 @@ public:
 	}
 
 	template<typename T>
-	bool ForEachHostage(T &func)
+	bool ForEachHostage(T &func) const
 	{
-		UNTESTED
-
 		for (int i = 0; i < m_hostageCount; i++)
 		{
 			CHostage *pHostage = m_hostage[ i ];
 
-			if (pHostage->deadflag != DEAD_NO || pHostage->takedamage != DAMAGE_YES)
+			if (pHostage->pev->deadflag == DEAD_DEAD)
 				continue;
 
-			if (!pHostage->m_improv)
-				break;
-
-			if (func(pHostage))
-				return true;
+			if (func(pHostage) == false)
+				return false;
 		}
-		return false;
+
+		return true;
 	}
 
 private:

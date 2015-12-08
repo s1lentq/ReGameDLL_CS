@@ -56,7 +56,6 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-
 	static CCareerTask *NewTask(const char *taskName, GameEventType event, const char *weaponName, int n, bool mustLive, bool crossRounds, int id, bool isComplete);
 
 	void OnWeaponKill(int weaponId, int weaponClassId, bool headshot, bool killerHasShield, CBasePlayer *pAttacker, CBasePlayer *pVictim);

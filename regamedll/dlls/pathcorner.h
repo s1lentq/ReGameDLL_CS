@@ -55,7 +55,7 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[1];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[1];
 
 private:
 	float m_flWait;

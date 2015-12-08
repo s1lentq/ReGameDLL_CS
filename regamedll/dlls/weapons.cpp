@@ -38,12 +38,12 @@ const char *g_pModelNameLaser = "sprites/laserbeam.spr";
 
 #else // HOOK_GAMEDLL
 
-ItemInfo IMPLEMENT_ARRAY_CLASS(CBasePlayerItem, ItemInfoArray)[32];
-AmmoInfo IMPLEMENT_ARRAY_CLASS(CBasePlayerItem, AmmoInfoArray)[32];
+ItemInfo IMPL_CLASS(CBasePlayerItem, ItemInfoArray)[32];
+AmmoInfo IMPL_CLASS(CBasePlayerItem, AmmoInfoArray)[32];
 
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CBasePlayerItem, m_SaveData)[3];
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CBasePlayerWeapon, m_SaveData)[7];
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CWeaponBox, m_SaveData)[4];
+TYPEDESCRIPTION IMPL_CLASS(CBasePlayerItem, m_SaveData)[3];
+TYPEDESCRIPTION IMPL_CLASS(CBasePlayerWeapon, m_SaveData)[7];
+TYPEDESCRIPTION IMPL_CLASS(CWeaponBox, m_SaveData)[4];
 
 const char *g_pModelNameLaser;
 
@@ -80,7 +80,7 @@ int MaxAmmoCarry(int iszName)
 {
 	for (int i = 0; i < MAX_WEAPONS; i++)
 	{
-		ItemInfo *info = &IMPLEMENT_ARRAY_CLASS(CBasePlayerItem, ItemInfoArray)[ i ];
+		ItemInfo *info = &IMPL_CLASS(CBasePlayerItem, ItemInfoArray)[ i ];
 
 		if (info->pszAmmo1 && !Q_strcmp(STRING(iszName), info->pszAmmo1))
 		{
@@ -231,10 +231,10 @@ void AddAmmoNameToAmmoRegistry(const char *szAmmoname)
 	// make sure it's not already in the registry
 	for (int i = 0; i < MAX_AMMO_SLOTS; i++)
 	{
-		if (!IMPLEMENT_ARRAY_CLASS(CBasePlayerItem, AmmoInfoArray)[ i ].pszName)
+		if (!IMPL_CLASS(CBasePlayerItem, AmmoInfoArray)[ i ].pszName)
 			continue;
 
-		if (!Q_stricmp(IMPLEMENT_ARRAY_CLASS(CBasePlayerItem, AmmoInfoArray)[ i ].pszName, szAmmoname))
+		if (!Q_stricmp(IMPL_CLASS(CBasePlayerItem, AmmoInfoArray)[ i ].pszName, szAmmoname))
 		{
 			// ammo already in registry, just quite
 			return;
@@ -249,10 +249,10 @@ void AddAmmoNameToAmmoRegistry(const char *szAmmoname)
 		giAmmoIndex = 0;
 	}
 
-	IMPLEMENT_ARRAY_CLASS(CBasePlayerItem, AmmoInfoArray)[ giAmmoIndex ].pszName = szAmmoname;
+	IMPL_CLASS(CBasePlayerItem, AmmoInfoArray)[ giAmmoIndex ].pszName = szAmmoname;
 
 	// yes, this info is redundant
-	IMPLEMENT_ARRAY_CLASS(CBasePlayerItem, AmmoInfoArray)[ giAmmoIndex ].iId = giAmmoIndex;
+	IMPL_CLASS(CBasePlayerItem, AmmoInfoArray)[ giAmmoIndex ].iId = giAmmoIndex;
 }
 
 // Precaches the weapon and queues the weapon info for sending to clients
@@ -278,7 +278,7 @@ void UTIL_PrecacheOtherWeapon(const char *szClassname)
 		pEntity->Precache();
 		if (((CBasePlayerItem *)pEntity)->GetItemInfo(&II))
 		{
-			IMPLEMENT_ARRAY_CLASS(CBasePlayerItem, ItemInfoArray)[ II.iId ] = II;
+			IMPL_CLASS(CBasePlayerItem, ItemInfoArray)[ II.iId ] = II;
 
 			if (II.pszAmmo1 != NULL && *II.pszAmmo1 != '\0')
 			{
@@ -317,7 +317,7 @@ NOXREF void UTIL_PrecacheOtherWeapon2(const char *szClassname)
 
 		if (((CBasePlayerItem *)pEntity)->GetItemInfo(&II))
 		{
-			IMPLEMENT_ARRAY_CLASS(CBasePlayerItem, ItemInfoArray)[ II.iId ] = II;
+			IMPL_CLASS(CBasePlayerItem, ItemInfoArray)[ II.iId ] = II;
 
 			if (II.pszAmmo1 != NULL && *II.pszAmmo1 != '\0')
 			{
@@ -339,8 +339,8 @@ NOXREF void UTIL_PrecacheOtherWeapon2(const char *szClassname)
 /* <1d3191> ../cstrike/dlls/weapons.cpp:345 */
 void W_Precache(void)
 {
-	Q_memset(IMPLEMENT_ARRAY_CLASS(CBasePlayerItem, ItemInfoArray), 0, ARRAYSIZE(IMPLEMENT_ARRAY_CLASS(CBasePlayerItem, ItemInfoArray)));
-	Q_memset(IMPLEMENT_ARRAY_CLASS(CBasePlayerItem, AmmoInfoArray), 0, ARRAYSIZE(IMPLEMENT_ARRAY_CLASS(CBasePlayerItem, AmmoInfoArray)));
+	Q_memset(IMPL_CLASS(CBasePlayerItem, ItemInfoArray), 0, ARRAYSIZE(IMPL_CLASS(CBasePlayerItem, ItemInfoArray)));
+	Q_memset(IMPL_CLASS(CBasePlayerItem, AmmoInfoArray), 0, ARRAYSIZE(IMPL_CLASS(CBasePlayerItem, AmmoInfoArray)));
 	giAmmoIndex = 0;
 
 	// custom items...
@@ -2317,51 +2317,51 @@ void CArmoury::ArmouryTouch(CBaseEntity *pOther)
 	{
 		switch (m_iItem)
 		{
-			case ARMOURY_FLASHBANG:
-			{
-				if (p->AmmoInventory(p->GetAmmoIndex("Flashbang")) >= 2)
-					return;
+		case ARMOURY_FLASHBANG:
+		{
+			if (p->AmmoInventory(p->GetAmmoIndex("Flashbang")) >= 2)
+				return;
 
-				p->GiveNamedItem("weapon_flashbang");
-				m_iCount--;
-				break;
-			}
-			case ARMOURY_HEGRENADE:
-			{
-				if (p->AmmoInventory(p->GetAmmoIndex("HEGrenade")) >= 1)
-					return;
+			p->GiveNamedItem("weapon_flashbang");
+			m_iCount--;
+			break;
+		}
+		case ARMOURY_HEGRENADE:
+		{
+			if (p->AmmoInventory(p->GetAmmoIndex("HEGrenade")) >= 1)
+				return;
 
-				p->GiveNamedItem("weapon_hegrenade");
-				m_iCount--;
-				break;
-			}
-			case ARMOURY_KEVLAR:
-			{
-				if (p->m_iKevlar == ARMOR_TYPE_KEVLAR)
-					return;
+			p->GiveNamedItem("weapon_hegrenade");
+			m_iCount--;
+			break;
+		}
+		case ARMOURY_KEVLAR:
+		{
+			if (p->m_iKevlar == ARMOR_TYPE_KEVLAR)
+				return;
 
-				p->GiveNamedItem("item_kevlar");
-				m_iCount--;
-				break;
-			}
-			case ARMOURY_ASSAULT:
-			{
-				if (p->m_iKevlar == ARMOR_TYPE_HELMET)
-					return;
+			p->GiveNamedItem("item_kevlar");
+			m_iCount--;
+			break;
+		}
+		case ARMOURY_ASSAULT:
+		{
+			if (p->m_iKevlar == ARMOR_TYPE_HELMET)
+				return;
 
-				p->GiveNamedItem("item_assaultsuit");
-				m_iCount--;
-				break;
-			}
-			case ARMOURY_SMOKEGRENADE:
-			{
-				if (p->AmmoInventory(p->GetAmmoIndex("SmokeGrenade")) >= 1)
-					return;
+			p->GiveNamedItem("item_assaultsuit");
+			m_iCount--;
+			break;
+		}
+		case ARMOURY_SMOKEGRENADE:
+		{
+			if (p->AmmoInventory(p->GetAmmoIndex("SmokeGrenade")) >= 1)
+				return;
 
-				p->GiveNamedItem("weapon_smokegrenade");
-				m_iCount--;
-				break;
-			}
+			p->GiveNamedItem("weapon_smokegrenade");
+			m_iCount--;
+			break;
+		}
 		}
 	}
 

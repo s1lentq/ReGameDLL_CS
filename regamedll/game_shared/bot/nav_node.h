@@ -85,7 +85,7 @@ public:
 	BOOL IsBiLinked(NavDirType dir) const;		// node is bidirectionally linked to another node in the given direction
 	BOOL IsClosedCell(void) const;			// node is the NW corner of a bi-linked quad of nodes
 
-	// @todo Should pass in area that is covering
+	// TODO: Should pass in area that is covering
 	void Cover(void)
 	{
 		m_isCovered = true;

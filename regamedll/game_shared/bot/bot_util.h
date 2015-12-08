@@ -211,9 +211,7 @@ inline bool IsIntersecting2D(const Vector &startA, const Vector &endA, const Vec
 // If functor returns false, stop iteration and return false.
 
 /* <4700e1> ../game_shared/bot/bot_util.h:294 */
-template <
-	typename Functor
->
+template <typename Functor>
 bool ForEachPlayer(Functor &func)
 {
 	for (int i = 1; i <= gpGlobals->maxClients; i++)
@@ -228,6 +226,7 @@ bool ForEachPlayer(Functor &func)
 		if (func(player) == false)
 			return false;
 	}
+
 	return true;
 }
 

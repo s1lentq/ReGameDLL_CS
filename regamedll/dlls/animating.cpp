@@ -16,7 +16,7 @@ TYPEDESCRIPTION CBaseAnimating::m_SaveData[] =
 
 #else
 
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CBaseAnimating, m_SaveData)[5];
+TYPEDESCRIPTION IMPL_CLASS(CBaseAnimating, m_SaveData)[5];
 
 #endif // HOOK_GAMEDLL
 

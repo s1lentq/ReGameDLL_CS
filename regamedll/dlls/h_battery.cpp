@@ -16,7 +16,7 @@ TYPEDESCRIPTION CRecharge::m_SaveData[] =
 
 #else
 
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CRecharge, m_SaveData)[5];
+TYPEDESCRIPTION IMPL_CLASS(CRecharge, m_SaveData)[5];
 
 #endif // HOOK_GAMEDLL
 

@@ -7,61 +7,61 @@
 
 static DLL_FUNCTIONS gFunctionTable =
 {
-	GameDLLInit,
-	DispatchSpawn,
-	DispatchThink,
-	DispatchUse,
-	DispatchTouch,
-	DispatchBlocked,
-	DispatchKeyValue,
-	DispatchSave,
-	DispatchRestore,
-	DispatchObjectCollsionBox,
-	SaveWriteFields,
-	SaveReadFields,
-	SaveGlobalState,
-	RestoreGlobalState,
-	ResetGlobalState,
-	ClientConnect,
-	ClientDisconnect,
-	ClientKill,
-	ClientPutInServer,
-	ClientCommand,
-	ClientUserInfoChanged,
-	ServerActivate,
-	ServerDeactivate,
-	PlayerPreThink,
-	PlayerPostThink,
-	StartFrame,
-	ParmsNewLevel,
-	ParmsChangeLevel,
-	GetGameDescription,
-	PlayerCustomization,
-	SpectatorConnect,
-	SpectatorDisconnect,
-	SpectatorThink,
-	Sys_Error,
-	PM_Move,
-	PM_Init,
-	PM_FindTextureType,
-	SetupVisibility,
-	UpdateClientData,
-	AddToFullPack,
-	CreateBaseline,
-	RegisterEncoders,
-	GetWeaponData,
-	CmdStart,
-	CmdEnd,
-	ConnectionlessPacket,
-	GetHullBounds,
-	CreateInstancedBaselines,
-	InconsistentFile,
-	AllowLagCompensation
+	&GameDLLInit,
+	&DispatchSpawn,
+	&DispatchThink,
+	&DispatchUse,
+	&DispatchTouch,
+	&DispatchBlocked,
+	&DispatchKeyValue,
+	&DispatchSave,
+	&DispatchRestore,
+	&DispatchObjectCollsionBox,
+	&SaveWriteFields,
+	&SaveReadFields,
+	&SaveGlobalState,
+	&RestoreGlobalState,
+	&ResetGlobalState,
+	&ClientConnect,
+	&ClientDisconnect,
+	&ClientKill,
+	&ClientPutInServer,
+	&ClientCommand,
+	&ClientUserInfoChanged,
+	&ServerActivate,
+	&ServerDeactivate,
+	&PlayerPreThink,
+	&PlayerPostThink,
+	&StartFrame,
+	&ParmsNewLevel,
+	&ParmsChangeLevel,
+	&GetGameDescription,
+	&PlayerCustomization,
+	&SpectatorConnect,
+	&SpectatorDisconnect,
+	&SpectatorThink,
+	&Sys_Error,
+	&PM_Move,
+	&PM_Init,
+	&PM_FindTextureType,
+	&SetupVisibility,
+	&UpdateClientData,
+	&AddToFullPack,
+	&CreateBaseline,
+	&RegisterEncoders,
+	&GetWeaponData,
+	&CmdStart,
+	&CmdEnd,
+	&ConnectionlessPacket,
+	&GetHullBounds,
+	&CreateInstancedBaselines,
+	&InconsistentFile,
+	&AllowLagCompensation
 };
 
 static NEW_DLL_FUNCTIONS gNewDLLFunctions
 {
-	OnFreeEntPrivateData,
+	&OnFreeEntPrivateData,
 	NULL,
 	NULL
 };
@@ -83,7 +83,7 @@ BOOL gTouchDisabled = FALSE;
 
 DLL_FUNCTIONS gFunctionTable;
 NEW_DLL_FUNCTIONS gNewDLLFunctions;
-TYPEDESCRIPTION	IMPLEMENT_ARRAY_CLASS(CBaseEntity, m_SaveData)[5];
+TYPEDESCRIPTION	IMPL_CLASS(CBaseEntity, m_SaveData)[5];
 
 CMemoryPool hashItemMemPool;
 BOOL gTouchDisabled;
@@ -428,7 +428,7 @@ C_DLLEXPORT int GetNewDLLFunctions(NEW_DLL_FUNCTIONS *pFunctionTable, int *inter
 }
 
 /* <30ab0> ../cstrike/dlls/cbase.cpp:498 */
-int DispatchSpawn(edict_t *pent)
+int EXT_FUNC DispatchSpawn(edict_t *pent)
 {
 	CBaseEntity *pEntity = (CBaseEntity *)GET_PRIVATE(pent);
 
@@ -489,7 +489,7 @@ int DispatchSpawn(edict_t *pent)
 }
 
 /* <2e8a0> ../cstrike/dlls/cbase.cpp:549 */
-void DispatchKeyValue(edict_t *pentKeyvalue, KeyValueData *pkvd)
+void EXT_FUNC DispatchKeyValue(edict_t *pentKeyvalue, KeyValueData *pkvd)
 {
 	if (!pkvd || !pentKeyvalue)
 		return;
@@ -514,7 +514,7 @@ void DispatchKeyValue(edict_t *pentKeyvalue, KeyValueData *pkvd)
 // while it builds the graph
 
 /* <2e7db> ../cstrike/dlls/cbase.cpp:574 */
-void DispatchTouch(edict_t *pentTouched, edict_t *pentOther)
+void EXT_FUNC DispatchTouch(edict_t *pentTouched, edict_t *pentOther)
 {
 	if (gTouchDisabled)
 		return;
@@ -527,7 +527,7 @@ void DispatchTouch(edict_t *pentTouched, edict_t *pentOther)
 }
 
 /* <2fa9b> ../cstrike/dlls/cbase.cpp:587 */
-void DispatchUse(edict_t *pentUsed, edict_t *pentOther)
+void EXT_FUNC DispatchUse(edict_t *pentUsed, edict_t *pentOther)
 {
 	CBaseEntity *pEntity = (CBaseEntity *)GET_PRIVATE(pentUsed);
 	CBaseEntity *pOther = (CBaseEntity *)GET_PRIVATE(pentOther);
@@ -539,7 +539,7 @@ void DispatchUse(edict_t *pentUsed, edict_t *pentOther)
 }
 
 /* <2fb2f> ../cstrike/dlls/cbase.cpp:596 */
-void DispatchThink(edict_t *pent)
+void EXT_FUNC DispatchThink(edict_t *pent)
 {
 	CBaseEntity *pEntity = (CBaseEntity *)GET_PRIVATE(pent);
 
@@ -555,7 +555,7 @@ void DispatchThink(edict_t *pent)
 }
 
 /* <2fb89> ../cstrike/dlls/cbase.cpp:612 */
-void DispatchBlocked(edict_t *pentBlocked, edict_t *pentOther)
+void EXT_FUNC DispatchBlocked(edict_t *pentBlocked, edict_t *pentOther)
 {
 	CBaseEntity *pEntity = (CBaseEntity *)GET_PRIVATE(pentBlocked);
 	CBaseEntity *pOther = (CBaseEntity *)GET_PRIVATE(pentOther);
@@ -567,7 +567,7 @@ void DispatchBlocked(edict_t *pentBlocked, edict_t *pentOther)
 }
 
 /* <2ff56> ../cstrike/dlls/cbase.cpp:621 */
-void DispatchSave(edict_t *pent, SAVERESTOREDATA *pSaveData)
+void EXT_FUNC DispatchSave(edict_t *pent, SAVERESTOREDATA *pSaveData)
 {
 	CBaseEntity *pEntity = (CBaseEntity *)GET_PRIVATE(pent);
 
@@ -627,7 +627,7 @@ CBaseEntity *FindGlobalEntity(string_t classname, string_t globalname)
 }
 
 /* <3179c> ../cstrike/dlls/cbase.cpp:673 */
-int DispatchRestore(edict_t *pent, SAVERESTOREDATA *pSaveData, int globalEntity)
+int EXT_FUNC DispatchRestore(edict_t *pent, SAVERESTOREDATA *pSaveData, int globalEntity)
 {
 	CBaseEntity *pEntity = (CBaseEntity *)GET_PRIVATE(pent);
 
@@ -742,7 +742,7 @@ int DispatchRestore(edict_t *pent, SAVERESTOREDATA *pSaveData, int globalEntity)
 }
 
 /* <2fdcd> ../cstrike/dlls/cbase.cpp:776 */
-void DispatchObjectCollsionBox(edict_t *pent)
+void EXT_FUNC DispatchObjectCollsionBox(edict_t *pent)
 {
 	CBaseEntity *pEntity = (CBaseEntity *)GET_PRIVATE(pent);
 
@@ -756,14 +756,14 @@ void DispatchObjectCollsionBox(edict_t *pent)
 }
 
 /* <2fe94> ../cstrike/dlls/cbase.cpp:788 */
-void SaveWriteFields(SAVERESTOREDATA *pSaveData, const char *pname, void *pBaseData, TYPEDESCRIPTION *pFields, int fieldCount)
+void EXT_FUNC SaveWriteFields(SAVERESTOREDATA *pSaveData, const char *pname, void *pBaseData, TYPEDESCRIPTION *pFields, int fieldCount)
 {
 	CSave saveHelper(pSaveData);
 	saveHelper.WriteFields(pname, pBaseData, pFields, fieldCount);
 }
 
 /* <30047> ../cstrike/dlls/cbase.cpp:795 */
-void SaveReadFields(SAVERESTOREDATA *pSaveData, const char *pname, void *pBaseData, TYPEDESCRIPTION *pFields, int fieldCount)
+void EXT_FUNC SaveReadFields(SAVERESTOREDATA *pSaveData, const char *pname, void *pBaseData, TYPEDESCRIPTION *pFields, int fieldCount)
 {
 	CRestore restoreHelper(pSaveData);
 	restoreHelper.ReadFields(pname, pBaseData, pFields, fieldCount);
@@ -922,7 +922,7 @@ int CBaseEntity::__MAKE_VHOOK(Save)(CSave &save)
 {
 	if (save.WriteEntVars("ENTVARS", pev))
 	{
-		return save.WriteFields("BASE", this, IMPLEMENT_ARRAY(m_SaveData), ARRAYSIZE(IMPLEMENT_ARRAY(m_SaveData)));
+		return save.WriteFields("BASE", this, IMPL(m_SaveData), ARRAYSIZE(IMPL(m_SaveData)));
 	}
 
 	return 0;
@@ -937,7 +937,7 @@ int CBaseEntity::__MAKE_VHOOK(Restore)(CRestore &restore)
 
 	if (status)
 	{
-		status = restore.ReadFields("BASE", this, IMPLEMENT_ARRAY(m_SaveData), ARRAYSIZE(IMPLEMENT_ARRAY(m_SaveData)));
+		status = restore.ReadFields("BASE", this, IMPL(m_SaveData), ARRAYSIZE(IMPL(m_SaveData)));
 	}
 
 	if (pev->modelindex != 0 && !FStringNull(pev->model))

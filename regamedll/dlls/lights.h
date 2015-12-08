@@ -56,7 +56,7 @@ public:
 
 #endif // HOOK_GAMEDLL
 
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[2];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[2];
 
 private:
 	int m_iStyle;

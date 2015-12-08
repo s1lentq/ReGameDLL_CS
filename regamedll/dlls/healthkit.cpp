@@ -16,7 +16,7 @@ TYPEDESCRIPTION CWallHealth::m_SaveData[] =
 
 #else
 
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CWallHealth, m_SaveData)[5];
+TYPEDESCRIPTION IMPL_CLASS(CWallHealth, m_SaveData)[5];
 
 #endif // HOOK_GAMEDLL
 

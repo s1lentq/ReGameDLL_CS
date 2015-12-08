@@ -57,9 +57,9 @@ static Vector gTankSpread[] =
 
 #else
 
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CFuncTank, m_SaveData)[26];
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CFuncTankLaser, m_SaveData)[2];
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CFuncTankControls, m_SaveData)[1];
+TYPEDESCRIPTION IMPL_CLASS(CFuncTank, m_SaveData)[26];
+TYPEDESCRIPTION IMPL_CLASS(CFuncTankLaser, m_SaveData)[2];
+TYPEDESCRIPTION IMPL_CLASS(CFuncTankControls, m_SaveData)[1];
 Vector gTankSpread[5];
 
 #endif // HOOK_GAMEDLL

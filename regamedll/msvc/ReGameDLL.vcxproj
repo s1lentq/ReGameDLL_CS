@@ -643,17 +643,8 @@
     <ClCompile Include="..\public\interface.cpp" />
     <ClCompile Include="..\public\MemPool.cpp" />
     <ClCompile Include="..\public\tier0\dbg.cpp" />
-    <ClCompile Include="..\public\tier0\platform_linux.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Play|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Play|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug MP|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug MP Play|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\public\tier0\platform_win32.cpp" />
     <ClCompile Include="..\public\utlsymbol.cpp" />
+    <ClCompile Include="..\regamedll\hookchains_impl.cpp" />
     <ClCompile Include="..\regamedll\mem.cpp" />
     <ClCompile Include="..\regamedll\platform.cpp" />
     <ClCompile Include="..\regamedll\precompiled.cpp">
@@ -673,6 +664,8 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Tests|Win32'">precompiled.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="..\regamedll\RegameDLLRuntimeConfig.cpp" />
+    <ClCompile Include="..\regamedll\regamedll_api_impl.cpp" />
+    <ClCompile Include="..\regamedll\regamedll_interfaces_impl.cpp" />
     <ClCompile Include="..\regamedll\sse_mathfun.cpp" />
     <ClCompile Include="..\testsuite\demoplayer.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug MP|Win32'">true</ExcludedFromBuild>
@@ -881,6 +874,9 @@
     <ClInclude Include="..\public\interface.h" />
     <ClInclude Include="..\public\MemPool.h" />
     <ClInclude Include="..\public\protected_things.h" />
+    <ClInclude Include="..\public\regamedll\hookchains.h" />
+    <ClInclude Include="..\public\regamedll\regamedll_api.h" />
+    <ClInclude Include="..\public\regamedll\regamedll_interfaces.h" />
     <ClInclude Include="..\public\steam\isteamapps.h" />
     <ClInclude Include="..\public\steam\isteambilling.h" />
     <ClInclude Include="..\public\steam\isteamclient.h" />
@@ -904,21 +900,19 @@
     <ClInclude Include="..\public\steam\steam_api.h" />
     <ClInclude Include="..\public\steam\steam_gameserver.h" />
     <ClInclude Include="..\public\tier0\dbg.h" />
-    <ClInclude Include="..\public\tier0\fasttimer.h" />
-    <ClInclude Include="..\public\tier0\mem.h" />
-    <ClInclude Include="..\public\tier0\memalloc.h" />
-    <ClInclude Include="..\public\tier0\memdbgoff.h" />
-    <ClInclude Include="..\public\tier0\memdbgon.h" />
     <ClInclude Include="..\public\tier0\platform.h" />
     <ClInclude Include="..\public\utlmemory.h" />
     <ClInclude Include="..\public\utlrbtree.h" />
     <ClInclude Include="..\public\utlsymbol.h" />
     <ClInclude Include="..\public\utlvector.h" />
     <ClInclude Include="..\regamedll\dlls.h" />
+    <ClInclude Include="..\regamedll\hookchains_impl.h" />
     <ClInclude Include="..\regamedll\mem.h" />
     <ClInclude Include="..\regamedll\platform.h" />
     <ClInclude Include="..\regamedll\precompiled.h" />
     <ClInclude Include="..\regamedll\RegameDLLRuntimeConfig.h" />
+    <ClInclude Include="..\regamedll\regamedll_api_impl.h" />
+    <ClInclude Include="..\regamedll\regamedll_interfaces_impl.h" />
     <ClInclude Include="..\regamedll\sse_mathfun.h" />
     <ClInclude Include="..\testsuite\demoplayer.h" />
     <ClInclude Include="..\testsuite\funccalls.h" />
@@ -1097,11 +1091,11 @@
       <Message>Setup version from SVN revision</Message>
     </PreBuildEvent>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir)\..\;$(ProjectDir)\..\hookers\;$(ProjectDir)\..\common;$(ProjectDir)\..\dlls;$(ProjectDir)\..\engine;$(ProjectDir)\..\public;$(ProjectDir)\..\pm_shared;$(ProjectDir)\..\regamedll\;$(ProjectDir)\..\testsuite\;$(VCInstallDir)UnitTest\include;$(SolutionDir)..\dep\bzip2\include\;$(SolutionDir)..\dep\cppunitlite\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\;$(ProjectDir)\..\hookers\;$(ProjectDir)\..\common;$(ProjectDir)\..\dlls;$(ProjectDir)\..\engine;$(ProjectDir)\..\public;$(ProjectDir)\..\public\regamedll;$(ProjectDir)\..\pm_shared;$(ProjectDir)\..\regamedll\;$(ProjectDir)\..\testsuite\;$(VCInstallDir)UnitTest\include;$(SolutionDir)..\dep\bzip2\include\;$(SolutionDir)..\dep\cppunitlite\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>HOOK_GAMEDLL;REGAMEDLL_FIXES;REGAMEDLL_CHECKS;CLIENT_WEAPONS;USE_BREAKPAD_HANDLER;DEDICATED;_CRT_SECURE_NO_WARNINGS;_DEBUG;_ITERATOR_DEBUG_LEVEL=0;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>HOOK_GAMEDLL;REGAMEDLL_SELF;REGAMEDLL_FIXES;REGAMEDLL_CHECKS;CLIENT_WEAPONS;USE_BREAKPAD_HANDLER;DEDICATED;_CRT_SECURE_NO_WARNINGS;_DEBUG;_ITERATOR_DEBUG_LEVEL=0;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <FloatingPointModel>Precise</FloatingPointModel>
       <AdditionalOptions>/arch:IA32 %(AdditionalOptions)</AdditionalOptions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -1134,11 +1128,11 @@
       <Message>Setup version from SVN revision</Message>
     </PreBuildEvent>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir)\..\;$(ProjectDir)\..\hookers\;$(ProjectDir)\..\common;$(ProjectDir)\..\dlls;$(ProjectDir)\..\engine;$(ProjectDir)\..\public;$(ProjectDir)\..\pm_shared;$(ProjectDir)\..\regamedll\;$(ProjectDir)\..\testsuite\;$(VCInstallDir)UnitTest\include;$(SolutionDir)..\dep\bzip2\include\;$(SolutionDir)..\dep\cppunitlite\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\;$(ProjectDir)\..\hookers\;$(ProjectDir)\..\common;$(ProjectDir)\..\dlls;$(ProjectDir)\..\engine;$(ProjectDir)\..\public;$(ProjectDir)\..\public\regamedll;$(ProjectDir)\..\pm_shared;$(ProjectDir)\..\regamedll\;$(ProjectDir)\..\testsuite\;$(VCInstallDir)UnitTest\include;$(SolutionDir)..\dep\bzip2\include\;$(SolutionDir)..\dep\cppunitlite\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>HOOK_GAMEDLL;REGAMEDLL_CHECKS;CLIENT_WEAPONS;USE_BREAKPAD_HANDLER;DEDICATED;_CRT_SECURE_NO_WARNINGS;_DEBUG;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>HOOK_GAMEDLL;REGAMEDLL_SELF;REGAMEDLL_CHECKS;CLIENT_WEAPONS;USE_BREAKPAD_HANDLER;DEDICATED;_CRT_SECURE_NO_WARNINGS;_DEBUG;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <FloatingPointModel>Precise</FloatingPointModel>
       <AdditionalOptions>/arch:IA32 %(AdditionalOptions)</AdditionalOptions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -1170,11 +1164,11 @@
       <Message>Setup version from SVN revision</Message>
     </PreBuildEvent>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir)\..\;$(ProjectDir)\..\hookers\;$(ProjectDir)\..\common;$(ProjectDir)\..\dlls;$(ProjectDir)\..\engine;$(ProjectDir)\..\public;$(ProjectDir)\..\pm_shared;$(ProjectDir)\..\regamedll\;$(ProjectDir)\..\testsuite\;$(VCInstallDir)UnitTest\include;$(SolutionDir)..\dep\bzip2\include\;$(SolutionDir)..\dep\cppunitlite\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\;$(ProjectDir)\..\hookers\;$(ProjectDir)\..\common;$(ProjectDir)\..\dlls;$(ProjectDir)\..\engine;$(ProjectDir)\..\public;$(ProjectDir)\..\public\regamedll;$(ProjectDir)\..\pm_shared;$(ProjectDir)\..\regamedll\;$(ProjectDir)\..\testsuite\;$(VCInstallDir)UnitTest\include;$(SolutionDir)..\dep\bzip2\include\;$(SolutionDir)..\dep\cppunitlite\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>CSTRIKE;REGAMEDLL_CHECKS;CLIENT_WEAPONS;USE_BREAKPAD_HANDLER;DEDICATED;_CRT_SECURE_NO_WARNINGS;_DEBUG;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CSTRIKE;REGAMEDLL_SELF;REGAMEDLL_CHECKS;CLIENT_WEAPONS;USE_BREAKPAD_HANDLER;DEDICATED;_CRT_SECURE_NO_WARNINGS;_DEBUG;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <FloatingPointModel>Precise</FloatingPointModel>
       <AdditionalOptions>/arch:IA32 %(AdditionalOptions)</AdditionalOptions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -1206,11 +1200,11 @@
       <Message>Setup version from SVN revision</Message>
     </PreBuildEvent>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir)\..\;$(ProjectDir)\..\hookers\;$(ProjectDir)\..\common;$(ProjectDir)\..\dlls;$(ProjectDir)\..\engine;$(ProjectDir)\..\public;$(ProjectDir)\..\pm_shared;$(ProjectDir)\..\regamedll\;$(ProjectDir)\..\testsuite\;$(VCInstallDir)UnitTest\include;$(SolutionDir)..\dep\bzip2\include\;$(SolutionDir)..\dep\cppunitlite\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\;$(ProjectDir)\..\hookers\;$(ProjectDir)\..\common;$(ProjectDir)\..\dlls;$(ProjectDir)\..\engine;$(ProjectDir)\..\public;$(ProjectDir)\..\public\regamedll;$(ProjectDir)\..\pm_shared;$(ProjectDir)\..\regamedll\;$(ProjectDir)\..\testsuite\;$(VCInstallDir)UnitTest\include;$(SolutionDir)..\dep\bzip2\include\;$(SolutionDir)..\dep\cppunitlite\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>REGAMEDLL_CHECKS;CLIENT_WEAPONS;USE_BREAKPAD_HANDLER;DEDICATED;_CRT_SECURE_NO_WARNINGS;_DEBUG;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>REGAMEDLL_SELF;REGAMEDLL_CHECKS;CLIENT_WEAPONS;USE_BREAKPAD_HANDLER;DEDICATED;_CRT_SECURE_NO_WARNINGS;_DEBUG;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <FloatingPointModel>Precise</FloatingPointModel>
       <AdditionalOptions>/arch:IA32 %(AdditionalOptions)</AdditionalOptions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -1242,11 +1236,11 @@
       <Message>Setup version from SVN revision</Message>
     </PreBuildEvent>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir)\..\;$(ProjectDir)\..\hookers\;$(ProjectDir)\..\common;$(ProjectDir)\..\dlls;$(ProjectDir)\..\engine;$(ProjectDir)\..\public;$(ProjectDir)\..\pm_shared;$(ProjectDir)\..\regamedll\;$(ProjectDir)\..\testsuite\;$(VCInstallDir)UnitTest\include;$(SolutionDir)..\dep\bzip2\include\;$(SolutionDir)..\dep\cppunitlite\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\;$(ProjectDir)\..\hookers\;$(ProjectDir)\..\common;$(ProjectDir)\..\dlls;$(ProjectDir)\..\engine;$(ProjectDir)\..\public;$(ProjectDir)\..\public\regamedll;$(ProjectDir)\..\pm_shared;$(ProjectDir)\..\regamedll\;$(ProjectDir)\..\testsuite\;$(VCInstallDir)UnitTest\include;$(SolutionDir)..\dep\bzip2\include\;$(SolutionDir)..\dep\cppunitlite\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>REGAMEDLL_FIXES;DEDICATED;REGAMEDLL_SELF;HOOK_GAMEDLL;_BUILD_FROM_IDE;USE_BREAKPAD_HANDLER;DEDICATED;_CRT_SECURE_NO_WARNINGS;_ITERATOR_DEBUG_LEVEL=0;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>REGAMEDLL_SELF;REGAMEDLL_FIXES;DEDICATED;REGAMEDLL_SELF;HOOK_GAMEDLL;_BUILD_FROM_IDE;USE_BREAKPAD_HANDLER;DEDICATED;_CRT_SECURE_NO_WARNINGS;_ITERATOR_DEBUG_LEVEL=0;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>precompiled.h</PrecompiledHeaderFile>
@@ -1278,13 +1272,13 @@
       <Message>Setup version from SVN revision</Message>
     </PreBuildEvent>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir)\..\;$(ProjectDir)\..\hookers\;$(ProjectDir)\..\common;$(ProjectDir)\..\dlls;$(ProjectDir)\..\engine;$(ProjectDir)\..\public;$(ProjectDir)\..\pm_shared;$(ProjectDir)\..\regamedll\;$(ProjectDir)\..\testsuite\;$(VCInstallDir)UnitTest\include;$(SolutionDir)..\dep\bzip2\include\;$(SolutionDir)..\dep\cppunitlite\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\;$(ProjectDir)\..\hookers\;$(ProjectDir)\..\common;$(ProjectDir)\..\dlls;$(ProjectDir)\..\engine;$(ProjectDir)\..\public;$(ProjectDir)\..\public\regamedll;$(ProjectDir)\..\pm_shared;$(ProjectDir)\..\regamedll\;$(ProjectDir)\..\testsuite\;$(VCInstallDir)UnitTest\include;$(SolutionDir)..\dep\bzip2\include\;$(SolutionDir)..\dep\cppunitlite\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>HOOK_GAMEDLL;REGAMEDLL_FIXES;REGAMEDLL_CHECKS;CLIENT_WEAPONS;USE_BREAKPAD_HANDLER;DEDICATED;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>HOOK_GAMEDLL;REGAMEDLL_SELF;REGAMEDLL_FIXES;REGAMEDLL_CHECKS;CLIENT_WEAPONS;USE_BREAKPAD_HANDLER;DEDICATED;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <AdditionalOptions>/arch:IA32 %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -1317,13 +1311,13 @@
       <Message>Setup version from SVN revision</Message>
     </PreBuildEvent>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir)\..\;$(ProjectDir)\..\hookers\;$(ProjectDir)\..\common;$(ProjectDir)\..\dlls;$(ProjectDir)\..\engine;$(ProjectDir)\..\public;$(ProjectDir)\..\pm_shared;$(ProjectDir)\..\regamedll\;$(ProjectDir)\..\testsuite\;$(VCInstallDir)UnitTest\include;$(SolutionDir)..\dep\bzip2\include\;$(SolutionDir)..\dep\cppunitlite\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\;$(ProjectDir)\..\hookers\;$(ProjectDir)\..\common;$(ProjectDir)\..\dlls;$(ProjectDir)\..\engine;$(ProjectDir)\..\public;$(ProjectDir)\..\public\regamedll;$(ProjectDir)\..\pm_shared;$(ProjectDir)\..\regamedll\;$(ProjectDir)\..\testsuite\;$(VCInstallDir)UnitTest\include;$(SolutionDir)..\dep\bzip2\include\;$(SolutionDir)..\dep\cppunitlite\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>HOOK_GAMEDLL;REGAMEDLL_CHECKS;CLIENT_WEAPONS;USE_BREAKPAD_HANDLER;DEDICATED;_CRT_SECURE_NO_WARNINGS;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>REGAMEDLL_SELF;HOOK_GAMEDLL;REGAMEDLL_CHECKS;CLIENT_WEAPONS;USE_BREAKPAD_HANDLER;DEDICATED;_CRT_SECURE_NO_WARNINGS;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <AdditionalOptions>/arch:IA32 %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeader>Use</PrecompiledHeader>

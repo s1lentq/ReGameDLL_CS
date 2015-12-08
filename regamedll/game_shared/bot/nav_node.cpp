@@ -16,8 +16,8 @@ unsigned int CNavNode::m_listLength = 0;
 
 //NavDirType Opposite[ NUM_DIRECTIONS ];
 
-CNavNode *IMPLEMENT_ARRAY_CLASS(CNavNode, m_list);
-unsigned int IMPLEMENT_ARRAY_CLASS(CNavNode, m_listLength);
+CNavNode *IMPL_CLASS(CNavNode, m_list);
+unsigned int IMPL_CLASS(CNavNode, m_listLength);
 
 //Extent NodeMapExtent;
 

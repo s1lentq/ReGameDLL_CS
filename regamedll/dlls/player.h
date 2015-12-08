@@ -758,7 +758,6 @@ public:
 		//m_musicState = INTENSE;
 		//m_intenseTimestamp = gpGlobals->time;
 	}
-
 public:
 	enum { MaxLocationLen = 32 };
 
@@ -913,7 +912,7 @@ public:
 	float m_flNextDecalTime;
 	char m_szTeamName[ TEAM_NAME_LENGTH ];
 
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_playerSaveData)[40];
+	static TYPEDESCRIPTION IMPL(m_playerSaveData)[40];
 
 /*protected:*/
 	int m_modelIndexPlayer;

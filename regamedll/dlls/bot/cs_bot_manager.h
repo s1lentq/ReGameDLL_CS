@@ -149,23 +149,23 @@ public:
 	void ValidateMapData(void);
 	bool IsLearningMap(void)
 	{
-		return IMPLEMENT_ARRAY(m_isLearningMap);
+		return IMPL(m_isLearningMap);
 	}
 	void SetLearningMapFlag(void)
 	{
-		IMPLEMENT_ARRAY(m_isLearningMap) = true;
+		IMPL(m_isLearningMap) = true;
 	}
 	bool IsAnalysisRequested(void)
 	{
-		return IMPLEMENT_ARRAY(m_isAnalysisRequested);
+		return IMPL(m_isAnalysisRequested);
 	}
 	void RequestAnalysis(void)
 	{
-		IMPLEMENT_ARRAY(m_isAnalysisRequested) = true;
+		IMPL(m_isAnalysisRequested) = true;
 	}
 	void AckAnalysisRequest(void)
 	{
-		IMPLEMENT_ARRAY(m_isAnalysisRequested) = false;
+		IMPL(m_isAnalysisRequested) = false;
 	}
 	static BotDifficultyType GetDifficultyLevel(void)
 	{
@@ -394,10 +394,10 @@ private:
 #else
 public:
 #endif // HOOK_GAMEDLL
-	static float IMPLEMENT_ARRAY(m_flNextCVarCheck);
-	static bool IMPLEMENT_ARRAY(m_isMapDataLoaded);
-	static bool IMPLEMENT_ARRAY(m_isLearningMap);
-	static bool IMPLEMENT_ARRAY(m_isAnalysisRequested);
+	static float IMPL(m_flNextCVarCheck);
+	static bool IMPL(m_isMapDataLoaded);
+	static bool IMPL(m_isLearningMap);
+	static bool IMPL(m_isAnalysisRequested);
 #ifdef HOOK_GAMEDLL
 private:
 #endif // HOOK_GAMEDLL
@@ -422,7 +422,7 @@ private:
 #else
 public:
 #endif // HOOK_GAMEDLL
-	static NavEditCmdType IMPLEMENT_ARRAY(m_editCmd);
+	static NavEditCmdType IMPL(m_editCmd);
 #ifdef HOOK_GAMEDLL
 private:
 #endif // HOOK_GAMEDLL

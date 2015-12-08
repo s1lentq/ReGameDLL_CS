@@ -85,7 +85,7 @@ public:
 	void EXPORT Smoke(void);
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[2];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[2];
 
 public:
 	int m_iMagnitude;

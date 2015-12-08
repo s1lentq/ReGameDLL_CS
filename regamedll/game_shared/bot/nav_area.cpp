@@ -62,18 +62,18 @@ FILE_GLOBAL int BlockedIDCount = 0;
 
 #else // HOOK_GAMEDLL
 
-unsigned int IMPLEMENT_ARRAY_CLASS(CNavArea, m_nextID);
-unsigned int IMPLEMENT_ARRAY_CLASS(CNavArea, m_masterMarker);
+unsigned int IMPL_CLASS(CNavArea, m_nextID);
+unsigned int IMPL_CLASS(CNavArea, m_masterMarker);
 
-unsigned int IMPLEMENT_ARRAY_CLASS(HidingSpot, m_nextID);
-unsigned int IMPLEMENT_ARRAY_CLASS(HidingSpot, m_masterMarker);
+unsigned int IMPL_CLASS(HidingSpot, m_nextID);
+unsigned int IMPL_CLASS(HidingSpot, m_masterMarker);
 
 NavLadderList TheNavLadderList;
 HidingSpotList TheHidingSpotList;
 NavAreaList TheNavAreaList;
 CNavAreaGrid TheNavAreaGrid;
-CNavArea *IMPLEMENT_ARRAY_CLASS(CNavArea, m_openList);
-bool IMPLEMENT_ARRAY_CLASS(CNavArea, m_isReset);
+CNavArea *IMPL_CLASS(CNavArea, m_openList);
+bool IMPL_CLASS(CNavArea, m_isReset);
 
 float lastDrawTimestamp;
 NavAreaList goodSizedAreaList;
@@ -121,7 +121,7 @@ void DestroyHidingSpots(void)
 		area->m_hidingSpotList.clear();
 	}
 
-	IMPLEMENT_ARRAY_CLASS(HidingSpot, m_nextID) = 0;
+	IMPL_CLASS(HidingSpot, m_nextID) = 0;
 
 	// free all the HidingSpots
 	for (HidingSpotList::iterator iter = TheHidingSpotList.begin(); iter != TheHidingSpotList.end(); iter++)
@@ -314,9 +314,7 @@ CNavArea::~CNavArea(void)
 {
 	// if we are resetting the system, don't bother cleaning up - all areas are being destroyed
 	if (IMPL(m_isReset))
-	{
 		return;
-	}
 
 	// tell the other areas we are going away
 	NavAreaList::iterator iter;
@@ -621,7 +619,7 @@ bool CNavArea::SplitEdit(bool splitAlongX, float splitEdge, CNavArea **outAlpha,
 
 // Return true if given area is connected in given direction
 // if dir == NUM_DIRECTIONS, check all directions (direction is unknown)
-// @todo Formalize "asymmetric" flag on connections
+// TODO: Formalize "asymmetric" flag on connections
 
 /* <4c7708> ../game_shared/bot/nav_area.cpp:615 */
 bool CNavArea::IsConnected(const CNavArea *area, NavDirType dir) const
@@ -676,7 +674,7 @@ bool CNavArea::IsConnected(const CNavArea *area, NavDirType dir) const
 }
 
 // Compute change in height from this area to given area
-// @todo This is approximate for now
+// TODO: This is approximate for now
 
 /* <4c89fd> ../game_shared/bot/nav_area.cpp:674 */
 float CNavArea::ComputeHeightChange(const CNavArea *area)
@@ -993,7 +991,7 @@ void DestroyLadders(void)
 /* <4d6733> ../game_shared/bot/nav_area.cpp:994 */
 void DestroyNavigationMap(void)
 {
-	IMPLEMENT_ARRAY_CLASS(CNavArea, m_isReset) = true;
+	IMPL_CLASS(CNavArea, m_isReset) = true;
 
 	// remove each element of the list and delete them
 	while (!TheNavAreaList.empty())
@@ -1003,8 +1001,7 @@ void DestroyNavigationMap(void)
 		delete area;
 	}
 
-	//TheNavAreaList.clear();
-	IMPLEMENT_ARRAY_CLASS(CNavArea, m_isReset) = false;
+	IMPL_CLASS(CNavArea, m_isReset) = false;
 
 	// destroy ladder representations
 	DestroyLadders();
@@ -1014,13 +1011,13 @@ void DestroyNavigationMap(void)
 
 	// destroy navigation nodes created during map learning
 	CNavNode *node, *next;
-	for (node = IMPLEMENT_ARRAY_CLASS(CNavNode, m_list); node; node = next)
+	for (node = IMPL_CLASS(CNavNode, m_list); node; node = next)
 	{
 		next = node->m_next;
 		delete node;
 	}
 
-	IMPLEMENT_ARRAY_CLASS(CNavNode, m_list) = NULL;
+	IMPL_CLASS(CNavNode, m_list) = NULL;
 
 	// reset the grid
 	TheNavAreaGrid.Reset();
@@ -1193,13 +1190,13 @@ void ConnectGeneratedAreas(void)
 
 		// south edge - this edge's nodes are actually part of adjacent areas
 		// move one node north, and scan west to east
-		/// @todo This allows one-node-wide areas - do we want this?
+		// TODO: This allows one-node-wide areas - do we want this?
 		node = area->m_node[ SOUTH_WEST ];
 		node = node->GetConnectedNode(NORTH);
 		if (node)
 		{
 			CNavNode *end = area->m_node[ SOUTH_EAST ]->GetConnectedNode(NORTH);
-			/// @todo Figure out why cs_backalley gets a NULL node in here...
+			// TODO: Figure out why cs_backalley gets a NULL node in here...
 			for (; node && node != end; node = node->GetConnectedNode(EAST))
 			{
 				CNavNode *adj = node->GetConnectedNode(SOUTH);
@@ -1603,7 +1600,7 @@ int BuildArea(CNavNode *node, int width, int height)
 
 	if (!nwNode || !neNode || !seNode || !swNode)
 	{
-		CONSOLE_ECHO("ERROR: BuildArea - NULL node.\n");
+		CONSOLE_ECHO("ERROR: BuildArea - NULL node. (%p)(%p)(%p)(%p)\n", nwNode, neNode, seNode, swNode);
 		return -1;
 	}
 
@@ -2636,7 +2633,7 @@ void CNavArea::AddToOpenList(void)
 }
 
 // A smaller value has been found, update this area on the open list
-// @todo "bubbling" does unnecessary work, since the order of all other nodes will be unchanged - only this node is altered
+// TODO: "bubbling" does unnecessary work, since the order of all other nodes will be unchanged - only this node is altered
 
 /* <4cbd73> ../game_shared/bot/nav_area.cpp:2685 */
 void CNavArea::UpdateOnOpenList(void)
@@ -2671,7 +2668,7 @@ void CNavArea::RemoveFromOpenList(void)
 	if (m_prevOpen)
 		m_prevOpen->m_nextOpen = m_nextOpen;
 	else
-		IMPLEMENT_ARRAY(m_openList) = m_nextOpen;
+		IMPL(m_openList) = m_nextOpen;
 
 	if (m_nextOpen)
 		m_nextOpen->m_prevOpen = m_prevOpen;
@@ -3361,7 +3358,7 @@ public:
 			if (IsSpotOccupied(m_me, spot->GetPosition()))
 			{
 				// player is in hiding spot
-				/// @todo Check if player is moving or sitting still
+				// TODO: Check if player is moving or sitting still
 				continue;
 			}
 
@@ -3404,7 +3401,7 @@ public:
 
 // Do a breadth-first search to find a nearby hiding spot and return it.
 // Don't pick a hiding spot that a Player is currently occupying.
-// @todo Clean up this mess
+// TODO: Clean up this mess
 
 /* <4d1806> ../game_shared/bot/nav_area.cpp:3477 */
 const Vector *FindNearbyHidingSpot(CBaseEntity *me, const Vector *pos, CNavArea *startArea, float maxRange, bool isSniper, bool useNearest)
@@ -3617,7 +3614,7 @@ const Vector *FindNearbyRetreatSpot(CBaseEntity *me, const Vector *start, CNavAr
 }
 
 // Return number of players with given teamID in this area (teamID == 0 means any/all)
-// @todo Keep pointers to contained Players to make this a zero-time query
+// TODO: Keep pointers to contained Players to make this a zero-time query
 
 /* <4ce934> ../game_shared/bot/nav_area.cpp:3707 */
 int CNavArea::GetPlayerCount(int teamID, CBasePlayer *ignore) const
@@ -4642,7 +4639,7 @@ public:
 
 // Can we see this area?
 // For now, if we can see any corner, we can see the area
-// @todo Need to check LOS to more than the corners for large and/or long areas
+// TODO: Need to check LOS to more than the corners for large and/or long areas
 
 /* <4c4182> ../game_shared/bot/nav_area.cpp:4791 */
 inline bool IsAreaVisible(const Vector *pos, const CNavArea *area)
@@ -4673,8 +4670,6 @@ inline bool IsAreaVisible(const Vector *pos, const CNavArea *area)
 /* <4cf54c> ../game_shared/bot/nav_area.cpp:4817 */
 void CNavArea::ComputeApproachAreas(void)
 {
-	_LOG_TRACE
-
 	m_approachCount = 0;
 
 	if (cv_bot_quicksave.value > 0.0f)

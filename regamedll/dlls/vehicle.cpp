@@ -23,7 +23,7 @@ TYPEDESCRIPTION CFuncVehicle::m_SaveData[] =
 
 #else
 
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CFuncVehicle, m_SaveData)[12];
+TYPEDESCRIPTION IMPL_CLASS(CFuncVehicle, m_SaveData)[12];
 
 #endif // HOOK_GAMEDLL
 
@@ -960,30 +960,12 @@ void CFuncVehicle::__MAKE_VHOOK(Precache)(void)
 
 	switch (m_sounds)
 	{
-		case 1:
-			PRECACHE_SOUND("plats/vehicle1.wav");
-			pev->noise = MAKE_STRING("plats/vehicle1.wav");
-			break;
-		case 2:
-			PRECACHE_SOUND("plats/vehicle2.wav");
-			pev->noise = MAKE_STRING("plats/vehicle2.wav");
-			break;
-		case 3:
-			PRECACHE_SOUND("plats/vehicle3.wav");
-			pev->noise = MAKE_STRING("plats/vehicle3.wav");
-			break;
-		case 4:
-			PRECACHE_SOUND("plats/vehicle4.wav");
-			pev->noise = MAKE_STRING("plats/vehicle4.wav");
-			break;
-		case 5:
-			PRECACHE_SOUND("plats/vehicle6.wav");
-			pev->noise = MAKE_STRING("plats/vehicle6.wav");
-			break;
-		case 6:
-			PRECACHE_SOUND("plats/vehicle7.wav");
-			pev->noise = MAKE_STRING("plats/vehicle7.wav");
-			break;
+	case 1: PRECACHE_SOUND("plats/vehicle1.wav");pev->noise = MAKE_STRING("plats/vehicle1.wav"); break;
+	case 2: PRECACHE_SOUND("plats/vehicle2.wav");pev->noise = MAKE_STRING("plats/vehicle2.wav"); break;
+	case 3: PRECACHE_SOUND("plats/vehicle3.wav");pev->noise = MAKE_STRING("plats/vehicle3.wav"); break;
+	case 4: PRECACHE_SOUND("plats/vehicle4.wav");pev->noise = MAKE_STRING("plats/vehicle4.wav"); break;
+	case 5: PRECACHE_SOUND("plats/vehicle6.wav");pev->noise = MAKE_STRING("plats/vehicle6.wav"); break;
+	case 6: PRECACHE_SOUND("plats/vehicle7.wav");pev->noise = MAKE_STRING("plats/vehicle7.wav"); break;
 	}
 
 	PRECACHE_SOUND("plats/vehicle_brake1.wav");

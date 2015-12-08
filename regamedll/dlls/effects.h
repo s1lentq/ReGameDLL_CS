@@ -160,7 +160,7 @@ public:
 	void EXPORT AnimateUntilDead(void);
 	static CSprite *SpriteCreate(const char *pSpriteName, const Vector &origin, BOOL animate);
 
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[2];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[2];
 
 private:
 
@@ -356,7 +356,7 @@ public:
 	void EXPORT StrikeThink(void);
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[3];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[3];
 
 public:
 	CSprite *m_pSprite;
@@ -395,7 +395,7 @@ public:
 	void EXPORT FizzThink(void);
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[3];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[3];
 
 public:
 	int m_density;
@@ -447,7 +447,7 @@ public:
 	void BeamUpdateVars(void);
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[13];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[13];
 
 public:
 	int m_active;
@@ -486,7 +486,7 @@ public:
 
 	void Animate(float frames);
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[2];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[2];
 
 public:
 	float m_lastTime;
@@ -542,7 +542,7 @@ public:
 public:
 	void EXPORT ShootThink(void);
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[7];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[7];
 
 public:
 	int m_iGibs;

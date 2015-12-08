@@ -57,21 +57,22 @@ public:
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
 	void Killed_(entvars_t *pevAttacker, int iGib);
-	int BloodColor_(void)
-	{
-		return BloodColor();
-	}
 
 #endif // HOOK_GAMEDLL
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[1];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[1];
 
 private:
 	int m_state;
 
 };
 
+#ifdef HOOK_GAMEDLL
+
+// linked objects
 C_DLLEXPORT void item_airtank(entvars_t *pev);
+
+#endif // HOOK_GAMEDLL
 
 #endif // AIRTANK_H

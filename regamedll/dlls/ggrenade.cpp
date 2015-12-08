@@ -26,7 +26,7 @@ TYPEDESCRIPTION CGrenade::m_SaveData[] =
 
 #else // HOOK_GAMEDLL
 
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CGrenade, m_SaveData)[15];
+TYPEDESCRIPTION IMPL_CLASS(CGrenade, m_SaveData)[15];
 
 #endif // HOOK_GAMEDLL
 

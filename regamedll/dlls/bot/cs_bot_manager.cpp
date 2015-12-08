@@ -123,7 +123,7 @@ void CCSBotManager::__MAKE_VHOOK(RestartRound)(void)
 	m_bombDefuser = NULL;
 	m_earliestBombPlantTimestamp = gpGlobals->time + RANDOM_FLOAT(10, 30);
 
-	IMPLEMENT_ARRAY(m_editCmd) = EDIT_NONE;
+	IMPL(m_editCmd) = EDIT_NONE;
 
 	ResetRadioMessageTimestamps();
 	m_lastSeenEnemyTimestamp = -9999.9f;
@@ -209,7 +209,7 @@ NOBODY bool CCSBotManager::IsOnOffense(CBasePlayer *player) const
 void CCSBotManager::__MAKE_VHOOK(ServerActivate)(void)
 {
 	DestroyNavigationMap();
-	IMPLEMENT_ARRAY(m_isMapDataLoaded) = false;
+	IMPL(m_isMapDataLoaded) = false;
 
 	m_zoneCount = 0;
 	m_gameScenario = SCENARIO_DEATHMATCH;
@@ -217,8 +217,8 @@ void CCSBotManager::__MAKE_VHOOK(ServerActivate)(void)
 	ValidateMapData();
 	RestartRound();
 
-	IMPLEMENT_ARRAY(m_isLearningMap) = false;
-	IMPLEMENT_ARRAY(m_isAnalysisRequested) = false;
+	IMPL(m_isLearningMap) = false;
+	IMPL(m_isAnalysisRequested) = false;
 
 	m_bServerActive = true;
 	AddServerCommands();
@@ -480,59 +480,59 @@ void CCSBotManager::__MAKE_VHOOK(ServerCommand)(const char *pcmd)
 	}
 	else if (FStrEq(pcmd, "bot_nav_delete"))
 	{
-		IMPLEMENT_ARRAY_CLASS(CCSBotManager, m_editCmd) = EDIT_DELETE;
+		IMPL_CLASS(CCSBotManager, m_editCmd) = EDIT_DELETE;
 	}
 	else if (FStrEq(pcmd, "bot_nav_split"))
 	{
-		IMPLEMENT_ARRAY_CLASS(CCSBotManager, m_editCmd) = EDIT_SPLIT;
+		IMPL_CLASS(CCSBotManager, m_editCmd) = EDIT_SPLIT;
 	}
 	else if (FStrEq(pcmd, "bot_nav_merge"))
 	{
-		IMPLEMENT_ARRAY_CLASS(CCSBotManager, m_editCmd) = EDIT_MERGE;
+		IMPL_CLASS(CCSBotManager, m_editCmd) = EDIT_MERGE;
 	}
 	else if (FStrEq(pcmd, "bot_nav_mark"))
 	{
-		IMPLEMENT_ARRAY_CLASS(CCSBotManager, m_editCmd) = EDIT_MARK;
+		IMPL_CLASS(CCSBotManager, m_editCmd) = EDIT_MARK;
 	}
 	else if (FStrEq(pcmd, "bot_nav_begin_area"))
 	{
-		IMPLEMENT_ARRAY_CLASS(CCSBotManager, m_editCmd) = EDIT_BEGIN_AREA;
+		IMPL_CLASS(CCSBotManager, m_editCmd) = EDIT_BEGIN_AREA;
 	}
 	else if (FStrEq(pcmd, "bot_nav_end_area"))
 	{
-		IMPLEMENT_ARRAY_CLASS(CCSBotManager, m_editCmd) = EDIT_END_AREA;
+		IMPL_CLASS(CCSBotManager, m_editCmd) = EDIT_END_AREA;
 	}
 	else if (FStrEq(pcmd, "bot_nav_connect"))
 	{
-		IMPLEMENT_ARRAY_CLASS(CCSBotManager, m_editCmd) = EDIT_CONNECT;
+		IMPL_CLASS(CCSBotManager, m_editCmd) = EDIT_CONNECT;
 	}
 	else if (FStrEq(pcmd, "bot_nav_disconnect"))
 	{
-		IMPLEMENT_ARRAY_CLASS(CCSBotManager, m_editCmd) = EDIT_DISCONNECT;
+		IMPL_CLASS(CCSBotManager, m_editCmd) = EDIT_DISCONNECT;
 	}
 	else if (FStrEq(pcmd, "bot_nav_splice"))
 	{
-		IMPLEMENT_ARRAY_CLASS(CCSBotManager, m_editCmd) = EDIT_SPLICE;
+		IMPL_CLASS(CCSBotManager, m_editCmd) = EDIT_SPLICE;
 	}
 	else if (FStrEq(pcmd, "bot_nav_crouch"))
 	{
-		IMPLEMENT_ARRAY_CLASS(CCSBotManager, m_editCmd) = EDIT_ATTRIB_CROUCH;
+		IMPL_CLASS(CCSBotManager, m_editCmd) = EDIT_ATTRIB_CROUCH;
 	}
 	else if (FStrEq(pcmd, "bot_nav_jump"))
 	{
-		IMPLEMENT_ARRAY_CLASS(CCSBotManager, m_editCmd) = EDIT_ATTRIB_JUMP;
+		IMPL_CLASS(CCSBotManager, m_editCmd) = EDIT_ATTRIB_JUMP;
 	}
 	else if (FStrEq(pcmd, "bot_nav_precise"))
 	{
-		IMPLEMENT_ARRAY_CLASS(CCSBotManager, m_editCmd) = EDIT_ATTRIB_PRECISE;
+		IMPL_CLASS(CCSBotManager, m_editCmd) = EDIT_ATTRIB_PRECISE;
 	}
 	else if (FStrEq(pcmd, "bot_nav_no_jump"))
 	{
-		IMPLEMENT_ARRAY_CLASS(CCSBotManager, m_editCmd) = EDIT_ATTRIB_NO_JUMP;
+		IMPL_CLASS(CCSBotManager, m_editCmd) = EDIT_ATTRIB_NO_JUMP;
 	}
 	else if (FStrEq(pcmd, "bot_nav_analyze"))
 	{
-		IMPLEMENT_ARRAY_CLASS(CCSBotManager, m_isAnalysisRequested) = true;
+		IMPL_CLASS(CCSBotManager, m_isAnalysisRequested) = true;
 	}
 	else if (FStrEq(pcmd, "bot_nav_strip"))
 	{
@@ -611,19 +611,19 @@ void CCSBotManager::__MAKE_VHOOK(ServerCommand)(const char *pcmd)
 	}
 	else if (FStrEq(pcmd, "bot_nav_toggle_place_mode"))
 	{
-		IMPLEMENT_ARRAY_CLASS(CCSBotManager, m_editCmd) = EDIT_TOGGLE_PLACE_MODE;
+		IMPL_CLASS(CCSBotManager, m_editCmd) = EDIT_TOGGLE_PLACE_MODE;
 	}
 	else if (FStrEq(pcmd, "bot_nav_place_floodfill"))
 	{
-		IMPLEMENT_ARRAY_CLASS(CCSBotManager, m_editCmd) = EDIT_PLACE_FLOODFILL;
+		IMPL_CLASS(CCSBotManager, m_editCmd) = EDIT_PLACE_FLOODFILL;
 	}
 	else if (FStrEq(pcmd, "bot_nav_place_pick"))
 	{
-		IMPLEMENT_ARRAY_CLASS(CCSBotManager, m_editCmd) = EDIT_PLACE_PICK;
+		IMPL_CLASS(CCSBotManager, m_editCmd) = EDIT_PLACE_PICK;
 	}
 	else if (FStrEq(pcmd, "bot_nav_toggle_place_painting"))
 	{
-		IMPLEMENT_ARRAY_CLASS(CCSBotManager, m_editCmd) = EDIT_TOGGLE_PLACE_PAINTING;
+		IMPL_CLASS(CCSBotManager, m_editCmd) = EDIT_TOGGLE_PLACE_PAINTING;
 	}
 	else if (FStrEq(pcmd, "bot_goto_mark"))
 	{
@@ -683,23 +683,23 @@ void CCSBotManager::__MAKE_VHOOK(ServerCommand)(const char *pcmd)
 	}
 	else if (FStrEq(pcmd, "bot_nav_mark_unnamed"))
 	{
-		IMPLEMENT_ARRAY_CLASS(CCSBotManager, m_editCmd) = EDIT_MARK_UNNAMED;
+		IMPL_CLASS(CCSBotManager, m_editCmd) = EDIT_MARK_UNNAMED;
 	}
 	else if (FStrEq(pcmd, "bot_nav_warp"))
 	{
-		IMPLEMENT_ARRAY_CLASS(CCSBotManager, m_editCmd) = EDIT_WARP_TO_MARK;
+		IMPL_CLASS(CCSBotManager, m_editCmd) = EDIT_WARP_TO_MARK;
 	}
 	else if (FStrEq(pcmd, "bot_nav_corner_select"))
 	{
-		IMPLEMENT_ARRAY_CLASS(CCSBotManager, m_editCmd) = EDIT_SELECT_CORNER;
+		IMPL_CLASS(CCSBotManager, m_editCmd) = EDIT_SELECT_CORNER;
 	}
 	else if (FStrEq(pcmd, "bot_nav_corner_raise"))
 	{
-		IMPLEMENT_ARRAY_CLASS(CCSBotManager, m_editCmd) = EDIT_RAISE_CORNER;
+		IMPL_CLASS(CCSBotManager, m_editCmd) = EDIT_RAISE_CORNER;
 	}
 	else if (FStrEq(pcmd, "bot_nav_corner_lower"))
 	{
-		IMPLEMENT_ARRAY_CLASS(CCSBotManager, m_editCmd) = EDIT_LOWER_CORNER;
+		IMPL_CLASS(CCSBotManager, m_editCmd) = EDIT_LOWER_CORNER;
 	}
 	else if (FStrEq(pcmd, "bot_nav_check_consistency"))
 	{
@@ -716,7 +716,7 @@ void CCSBotManager::__MAKE_VHOOK(ServerCommand)(const char *pcmd)
 /* <36c3c2> ../cstrike/dlls/bot/cs_bot_manager.cpp:903 */
 NOBODY bool CCSBotManager::BotAddCommand(BotProfileTeamType team, bool isFromConsole)
 {
-	if (IMPLEMENT_ARRAY(m_isLearningMap) || ENG_CHECK_PARM("-nobots", NULL))
+	if (IMPL(m_isLearningMap) || ENG_CHECK_PARM("-nobots", NULL))
 		return false;
 
 	const BotProfile *profile = NULL;
@@ -815,12 +815,12 @@ NOBODY void CCSBotManager::MonitorBotCVars(void)
 /* <36b780> ../cstrike/dlls/bot/cs_bot_manager.cpp:1109 */
 void CCSBotManager::ValidateMapData(void)
 {
-	if (IMPLEMENT_ARRAY(m_isMapDataLoaded) || !UTIL_IsGame("czero"))
+	if (IMPL(m_isMapDataLoaded) || !UTIL_IsGame("czero"))
 	{
 		return;
 	}
 
-	IMPLEMENT_ARRAY(m_isMapDataLoaded) = true;
+	IMPL(m_isMapDataLoaded) = true;
 
 	if (LoadNavigationMap())
 	{

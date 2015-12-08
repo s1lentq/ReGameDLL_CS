@@ -332,7 +332,7 @@ NOBODY bool UTIL_IsTeamAllBots(int team)
 NOBODY /*extern*/ CBasePlayer *UTIL_GetClosestPlayer(const Vector *pos, int team, float *distance)
 {
 	CBasePlayer *closePlayer = NULL;
-	float closeDistSq = 999999999999.9f;
+	float closeDistSq = 1.0e12f;	// 999999999999.9f
 
 	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{

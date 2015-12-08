@@ -29,7 +29,7 @@ void regamedll_log(const char *fmt, ...)
 #endif // _WIN32
 }
 
-void regamedll_syserror(const char *fmt, ...)
+void __declspec(noreturn) regamedll_syserror(const char *fmt, ...)
 {
 	va_list argptr;
 	static char string[8192];
@@ -44,12 +44,11 @@ void regamedll_syserror(const char *fmt, ...)
 	fprintf(fl, "%s\n", string);
 	fclose(fl);
 
-#ifdef _WIN32
+#if defined(HOOK_GAMEDLL) && defined(_WIN32)
 	printf2(__FUNCTION__ ":: demo failed");
 #endif // _WIN32
 
 	//TerminateProcess(GetCurrentProcess(), 1);
-
 	*((int *)NULL) = 0;
 	while (true);
 }

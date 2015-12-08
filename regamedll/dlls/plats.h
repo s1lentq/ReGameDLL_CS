@@ -75,7 +75,7 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[3];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[3];
 
 public:
 	BYTE m_bMoveSnd;
@@ -171,7 +171,7 @@ public:
 	void RotMove(Vector &destAngle, float time);
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[2];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[2];
 
 public:
 	Vector m_end;
@@ -214,7 +214,7 @@ public:
 	void EXPORT Next(void);
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[3];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[3];
 
 public:
 	Vector m_vStartPosition;
@@ -308,7 +308,7 @@ public:
 	}
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[9];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[9];
 
 public:
 	CPathTrack *m_trackTop;
@@ -350,7 +350,7 @@ public:
 	virtual int Restore(CRestore &restore);
 	virtual int ObjectCaps(void)
 	{
-		return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION;
+		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION);
 	}
 	virtual void Activate(void);
 	virtual int Classify(void)
@@ -386,7 +386,7 @@ public:
 	void Stop(void);
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[1];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[1];
 
 private:
 	BOOL m_on;

@@ -33,9 +33,7 @@
 #endif
 
 // Encapsulation of a finite-state-machine state
-template<
-	typename T
->
+template<typename T>
 /* <5c4388> ../game_shared/bot/simple_state_machine.h:21 */
 class SimpleState
 {
@@ -65,10 +63,7 @@ private:
 };
 
 // Encapsulation of a finite state machine
-template<
-	typename T,
-	typename S
->
+template<typename T, typename S>
 /* <5c4bab> ../game_shared/bot/simple_state_machine.h:68 */
 class SimpleStateMachine
 {

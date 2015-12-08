@@ -13,7 +13,7 @@ TYPEDESCRIPTION CEnvExplosion::m_SaveData[] =
 
 #else // HOOK_GAMEDLL
 
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CEnvExplosion, m_SaveData)[2];
+TYPEDESCRIPTION IMPL_CLASS(CEnvExplosion, m_SaveData)[2];
 
 #endif // HOOK_GAMEDLL
 

@@ -69,9 +69,9 @@ dynpitchvol_t rgdpvpreset[CDPVPRESETMAX];
 int fSentencesInit;
 int gcallsentences;
 
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CAmbientGeneric, m_SaveData)[4];
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CEnvSound, m_SaveData)[2];
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CSpeaker, m_SaveData)[1];
+TYPEDESCRIPTION IMPL_CLASS(CAmbientGeneric, m_SaveData)[4];
+TYPEDESCRIPTION IMPL_CLASS(CEnvSound, m_SaveData)[2];
+TYPEDESCRIPTION IMPL_CLASS(CSpeaker, m_SaveData)[1];
 
 #endif // HOOK_GAMEDLL
 

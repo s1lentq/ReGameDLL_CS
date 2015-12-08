@@ -44,7 +44,7 @@ extern globalvars_t *gpGlobals;
 
 #ifdef HOOK_GAMEDLL
 
-C_DLLEXPORT void WINAPI GiveFnptrsToDll(enginefuncs_t *pEnginefuncsTable,globalvars_t *pGlobals);
+C_DLLEXPORT void WINAPI GiveFnptrsToDll(enginefuncs_t *pEnginefuncsTable, globalvars_t *pGlobals);
 
 #endif // HOOK_GAMEDLL
 

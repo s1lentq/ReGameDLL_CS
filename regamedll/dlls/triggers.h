@@ -63,10 +63,10 @@
 #define SF_CAMERA_PLAYER_TAKECONTROL		4
 
 // Flags to indicate masking off various render parameters that are normally copied to the targets
-#define SF_RENDER_MASKFX	(1<<0)
-#define SF_RENDER_MASKAMT	(1<<1)
-#define SF_RENDER_MASKMODE	(1<<2)
-#define SF_RENDER_MASKCOLOR	(1<<3)
+#define SF_RENDER_MASKFX	(1 << 0)
+#define SF_RENDER_MASKAMT	(1 << 1)
+#define SF_RENDER_MASKMODE	(1 << 2)
+#define SF_RENDER_MASKCOLOR	(1 << 3)
 
 class CFrictionModifier: public CBaseEntity
 {
@@ -93,7 +93,7 @@ public:
 	void EXPORT ChangeFriction(CBaseEntity *pOther);
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[1];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[1];
 
 	float m_frictionFraction;
 
@@ -129,7 +129,7 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[2];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[2];
 
 	int m_globalstate;
 	USE_TYPE triggerType;
@@ -161,7 +161,7 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[1];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[1];
 
 	USE_TYPE triggerType;
 
@@ -231,7 +231,7 @@ private:
 	CMultiManager *Clone(void);
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[5];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[5];
 
 	int m_cTargets;//312
 	int m_index;
@@ -526,7 +526,7 @@ public:
 	static int InTransitionVolume(CBaseEntity *pEntity, char *pVolumeName);
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[4];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[4];
 
 	char m_szMapName[ cchMapNameMost ];		// trigger_changelevel only:  next map
 	char m_szLandmarkName[ cchMapNameMost ];	// trigger_changelevel only:  landmark on next map
@@ -747,7 +747,7 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[1];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[1];
 
 private:
 	int m_iszNewTarget;
@@ -783,7 +783,7 @@ public:
 	void Move(void);
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[13];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[13];
 
 	EHANDLE m_hPlayer;
 	EHANDLE m_hTarget;

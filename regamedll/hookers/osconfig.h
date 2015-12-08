@@ -149,6 +149,9 @@
 
 	#define STDCALL __stdcall
 	#define HIDDEN
+	#define NOINLINE __declspec(noinline)
+	#define ALIGN16 __declspec(align(16))
+	#define FORCE_STACK_ALIGN
 
 	// Attributes to specify an "exported" function, visible from outside the
 	// DLL.
@@ -187,6 +190,9 @@
 	#define CDECL __attribute__ ((cdecl))
 	#define STDCALL __attribute__ ((stdcall))
 	#define HIDDEN __attribute__((visibility("hidden")))
+	#define NOINLINE __attribute__((noinline))
+	#define ALIGN16 __attribute__((aligned(16)))
+	#define FORCE_STACK_ALIGN __attribute__((force_align_arg_pointer))
 
 	#undef DLLEXPORT
 	#define DLLEXPORT	__attribute__((visibility("default")))
@@ -230,7 +236,9 @@
 	static const bool __isLinux = true;
 #endif
 
+#define EXT_FUNC /*FORCE_STACK_ALIGN*/
+
 extern void regamedll_log(const char *fmt, ...);
-extern void regamedll_syserror(const char *fmt, ...);
+extern void __declspec(noreturn) regamedll_syserror(const char *fmt, ...);
 
 #endif // OSCONFIG_H

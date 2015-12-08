@@ -84,7 +84,7 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[7];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[7];
 
 public:
 	// used to selectivly override defaults
@@ -157,7 +157,7 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[1];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[1];
 
 public:
 	BYTE m_bMoveSnd;	// sound a door makes while moving

@@ -161,7 +161,7 @@ extern globalvars_t *gpGlobals;
 #endif // HOOK_GAMEDLL
 
 #define LINK_ENTITY_TO_CLASS(mapClassName, DLLClassName)\
-	C_DLLEXPORT void mapClassName(entvars_t *pev);\
+	C_DLLEXPORT void EXT_FUNC mapClassName(entvars_t *pev);\
 	void mapClassName(entvars_t *pev)\
 	{\
 		GetClassPtr((DLLClassName *)pev);\
@@ -203,6 +203,16 @@ typedef enum
 	MONSTERSTATE_DEAD
 
 } MONSTERSTATE;
+
+// Things that toggle (buttons/triggers/doors) need this
+typedef enum
+{
+	TS_AT_TOP,
+	TS_AT_BOTTOM,
+	TS_GOING_UP,
+	TS_GOING_DOWN,
+
+} TOGGLE_STATE;
 
 typedef struct hudtextparms_s
 {

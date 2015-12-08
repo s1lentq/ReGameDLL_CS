@@ -336,7 +336,7 @@ void CC4::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_T
 }
 
 /* <2463cc> ../cstrike/dlls/weapons.h:732 */
-float CC4::GetMaxSpeed(void)
+float CC4::__MAKE_VHOOK(GetMaxSpeed)(void)
 {
 	return C4_MAX_SPEED;
 }
@@ -376,6 +376,11 @@ BOOL CC4::Deploy(void)
 void CC4::Holster(int skiplocal)
 {
 	Holster_(skiplocal);
+}
+
+float CC4::GetMaxSpeed(void)
+{
+	return GetMaxSpeed_();
 }
 
 void CC4::PrimaryAttack(void)

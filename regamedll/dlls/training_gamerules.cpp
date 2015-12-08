@@ -26,8 +26,8 @@ TYPEDESCRIPTION CBaseGrenCatch::m_SaveData[] =
 
 #else
 
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CFuncWeaponCheck, m_SaveData)[6];
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CBaseGrenCatch, m_SaveData)[5];
+TYPEDESCRIPTION IMPL_CLASS(CFuncWeaponCheck, m_SaveData)[6];
+TYPEDESCRIPTION IMPL_CLASS(CBaseGrenCatch, m_SaveData)[5];
 
 #endif // HOOK_GAMEDLL
 

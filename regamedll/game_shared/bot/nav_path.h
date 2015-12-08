@@ -91,9 +91,7 @@ public:
 	void Optimize(void);
 
 	// Compute shortest path from 'start' to 'goal' via A* algorithm
-	template<
-		typename CostFunctor
-	>
+	template<typename CostFunctor>
 	bool Compute(const Vector *start, const Vector *goal, CostFunctor &costFunc)
 	{
 		Invalidate();
@@ -209,7 +207,7 @@ public:
 		return m_isStuck ? m_stuckTimer.GetElapsedTime() : 0.0f;
 	}
 
-/*private:*/
+private:
 	bool m_isStuck;			// if true, we are stuck
 	Vector m_stuckSpot;		// the location where we became stuck
 	IntervalTimer m_stuckTimer;	// how long we have been stuck

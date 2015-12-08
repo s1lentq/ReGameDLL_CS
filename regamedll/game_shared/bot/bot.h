@@ -282,8 +282,8 @@ protected:
 	const BotProfile *m_profile;
 private:
 
-	NOXREF void ResetCommand(void);
-	NOXREF byte ThrottledMsec(void) const;
+	void ResetCommand(void);
+	byte ThrottledMsec(void) const;
 
 	// returns current movement speed (for walk/run)
 	float GetMoveSpeed(void);

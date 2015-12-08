@@ -51,6 +51,9 @@
 // GameInit
 #include "game.h"
 
+// weapon shared
+#include "wpn_shared.h"
+
 //PM
 #include "pm_shared/pm_defs.h"
 #include "pm_shared/pm_materials.h"
@@ -94,9 +97,6 @@
 #include "pathcorner.h"
 #include "plats.h"
 #include "buttons.h"
-
-// weapon shared
-#include "wpn_shared.h"
 
 // CSBOT and Nav
 #include "game_shared/bot/bot_util.h"

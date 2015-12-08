@@ -275,8 +275,8 @@ int gmsgShowTimer;
 BOOL gInitHUD;
 cvar_t *sv_aim;
 
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CRevertSaved, m_SaveData)[2];
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CBasePlayer, m_playerSaveData)[40];
+TYPEDESCRIPTION IMPL_CLASS(CRevertSaved, m_SaveData)[2];
+TYPEDESCRIPTION IMPL_CLASS(CBasePlayer, m_playerSaveData)[40];
 WeaponStruct g_weaponStruct[ MAX_WEAPONS ];
 char *(*CDeadHEV::pm_szPoses)[4];
 
@@ -395,7 +395,7 @@ void WriteSigonMessages(void)
 {
 	for (int i = 0; i < MAX_WEAPONS; i++)
 	{
-		ItemInfo &II = IMPLEMENT_ARRAY_CLASS(CBasePlayerItem, ItemInfoArray)[i];
+		ItemInfo &II = IMPL_CLASS(CBasePlayerItem, ItemInfoArray)[i];
 
 		if (!II.iId)
 			continue;
@@ -1520,7 +1520,7 @@ void packPlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 
 		if (packAmmo)
 		{
-			pWeaponBox->PackAmmo(MAKE_STRING(IMPLEMENT_ARRAY_CLASS(CBasePlayerItem, ItemInfoArray)[pItem->m_iId].pszAmmo1), pPlayer->m_rgAmmo[pItem->PrimaryAmmoIndex()]);
+			pWeaponBox->PackAmmo(MAKE_STRING(IMPL_CLASS(CBasePlayerItem, ItemInfoArray)[pItem->m_iId].pszAmmo1), pPlayer->m_rgAmmo[pItem->PrimaryAmmoIndex()]);
 		}
 		SET_MODEL(ENT(pWeaponBox->pev), modelName);
 	}
@@ -5587,7 +5587,7 @@ int CBasePlayer::__MAKE_VHOOK(Save)(CSave &save)
 	if (!CBaseMonster::Save(save))
 		return 0;
 
-	return save.WriteFields("PLAYER", this, IMPLEMENT_ARRAY_CLASS(CBasePlayer, m_playerSaveData), ARRAYSIZE(IMPLEMENT_ARRAY_CLASS(CBasePlayer, m_playerSaveData)));
+	return save.WriteFields("PLAYER", this, IMPL_CLASS(CBasePlayer, m_playerSaveData), ARRAYSIZE(IMPL_CLASS(CBasePlayer, m_playerSaveData)));
 }
 
 /* <153355> ../cstrike/dlls/player.cpp:6685 */
@@ -5622,7 +5622,7 @@ int CBasePlayer::__MAKE_VHOOK(Restore)(CRestore &restore)
 	if (!CBaseMonster::Restore(restore))
 		return 0;
 
-	int status = restore.ReadFields("PLAYER", this, IMPLEMENT_ARRAY_CLASS(CBasePlayer, m_playerSaveData), ARRAYSIZE(IMPLEMENT_ARRAY_CLASS(CBasePlayer, m_playerSaveData)));
+	int status = restore.ReadFields("PLAYER", this, IMPL_CLASS(CBasePlayer, m_playerSaveData), ARRAYSIZE(IMPL_CLASS(CBasePlayer, m_playerSaveData)));
 	SAVERESTOREDATA *pSaveData = (SAVERESTOREDATA *)gpGlobals->pSaveData;
 
 	// landmark isn't present.
@@ -6622,10 +6622,10 @@ int CBasePlayer::GetAmmoIndex(const char *psz)
 
 	for (int i = 1; i < MAX_AMMO_SLOTS; i++)
 	{
-		if (!IMPLEMENT_ARRAY_CLASS(CBasePlayerItem, AmmoInfoArray)[ i ].pszName)
+		if (!IMPL_CLASS(CBasePlayerItem, AmmoInfoArray)[ i ].pszName)
 			continue;
 
-		if (!Q_stricmp(psz, IMPLEMENT_ARRAY_CLASS(CBasePlayerItem, AmmoInfoArray)[ i ].pszName))
+		if (!Q_stricmp(psz, IMPL_CLASS(CBasePlayerItem, AmmoInfoArray)[ i ].pszName))
 			return i;
 	}
 	return -1;

@@ -553,7 +553,7 @@ CBaseEntity *UTIL_FindEntityGeneric(const char *szWhatever, const Vector &vecSrc
 }
 
 /* <1ad347> ../cstrike/dlls/util.cpp:711 */
-CBaseEntity *UTIL_PlayerByIndex(int playerIndex)
+CBaseEntity *EXT_FUNC UTIL_PlayerByIndex(int playerIndex)
 {
 	CBaseEntity *pPlayer = NULL;
 	if (playerIndex > 0 && playerIndex <= gpGlobals->maxClients)
@@ -1343,10 +1343,6 @@ void UTIL_StringToVector(float *pVector, const char *pString)
 
 	Q_strcpy(tempString, pString);
 
-#ifdef GAMEDLL_FIXES
-	tempString[127] = 0;
-#endif // GAMEDLL_FIXES
-
 	pstr = tempString;
 	pfront = tempString;
 
@@ -1698,7 +1694,7 @@ extern "C"
 		return num;
 	}
 }
-#endif
+#endif // _WIN32
 
 /* <1b04b5> ../cstrike/dlls/util.cpp:1971 */
 unsigned int CSaveRestoreBuffer::HashString(const char *pszToken)
@@ -1726,12 +1722,13 @@ unsigned short CSaveRestoreBuffer::TokenHash(const char *pszToken)
 			return index;
 		}
 	}
+
 	ALERT(at_error, "CSaveRestoreBuffer :: TokenHash() is COMPLETELY FULL!");
 	return 0;
 }
 
 /* <1b06a5> ../cstrike/dlls/util.cpp:2020 */
-NOXREF void CSave::WriteData(const char *pname, int size, const char *pdata)
+void CSave::WriteData(const char *pname, int size, const char *pdata)
 {
 	BufferField(pname, size, pdata);
 }
@@ -1743,19 +1740,19 @@ NOXREF void CSave::WriteShort(const char *pname, const short *data, int count)
 }
 
 /* <1b0a7b> ../cstrike/dlls/util.cpp:2032 */
-NOXREF void CSave::WriteInt(const char *pname, const int *data, int count)
+void CSave::WriteInt(const char *pname, const int *data, int count)
 {
 	BufferField(pname, sizeof(int) * count, (const char *)data);
 }
 
 /* <1b0c77> ../cstrike/dlls/util.cpp:2038 */
-NOXREF void CSave::WriteFloat(const char *pname, const float *data, int count)
+void CSave::WriteFloat(const char *pname, const float *data, int count)
 {
 	BufferField(pname, sizeof(float) * count, (const char *)data);
 }
 
 /* <1b0ea5> ../cstrike/dlls/util.cpp:2044 */
-NOXREF void CSave::WriteTime(const char *pname, const float *data, int count)
+void CSave::WriteTime(const char *pname, const float *data, int count)
 {
 	int i;
 	BufferHeader(pname, sizeof(float) * count);
@@ -1779,7 +1776,7 @@ NOXREF void CSave::WriteString(const char *pname, const char *pdata)
 }
 
 /* <1b121f> ../cstrike/dlls/util.cpp:2076 */
-NOXREF void CSave::WriteString(const char *pname, const int *stringId, int count)
+void CSave::WriteString(const char *pname, const int *stringId, int count)
 {
 	int i;
 	int size = 0;
@@ -1796,13 +1793,13 @@ NOXREF void CSave::WriteString(const char *pname, const int *stringId, int count
 }
 
 /* <1b1480> ../cstrike/dlls/util.cpp:2099 */
-NOXREF void CSave::WriteVector(const char *pname, const Vector &value)
+void CSave::WriteVector(const char *pname, const Vector &value)
 {
 	WriteVector(pname, &value.x, 1);
 }
 
 /* <1b1630> ../cstrike/dlls/util.cpp:2105 */
-NOXREF void CSave::WriteVector(const char *pname, const float *value, int count)
+void CSave::WriteVector(const char *pname, const float *value, int count)
 {
 	BufferHeader(pname, sizeof(float) * 3 * count);
 	BufferData((const char *)value, sizeof(float) * 3 * count);
@@ -1820,7 +1817,7 @@ NOXREF void CSave::WritePositionVector(const char *pname, const Vector &value)
 }
 
 /* <1b1bde> ../cstrike/dlls/util.cpp:2126 */
-NOXREF void CSave::WritePositionVector(const char *pname, const float *value, int count)
+void CSave::WritePositionVector(const char *pname, const float *value, int count)
 {
 	BufferHeader(pname, sizeof(float) * 3 * count);
 	for (int i = 0; i < count; i++)
@@ -1836,7 +1833,7 @@ NOXREF void CSave::WritePositionVector(const char *pname, const float *value, in
 }
 
 /* <1b2ca4> ../cstrike/dlls/util.cpp:2145 */
-NOXREF void CSave::WriteFunction(const char *pname, void **data, int count)
+void CSave::WriteFunction(const char *pname, void **data, int count)
 {
 	const char *functionName = NAME_FOR_FUNCTION((uint32)*data);
 
@@ -2009,7 +2006,7 @@ NOXREF void CSave::BufferString(char *pdata, int len)
 }
 
 /* <1b3f5d> ../cstrike/dlls/util.cpp:2333 */
-NOXREF int CSave::DataEmpty(const char *pdata, int size)
+int CSave::DataEmpty(const char *pdata, int size)
 {
 	for (int i = 0; i < size; i++)
 	{
@@ -2264,7 +2261,7 @@ int CRestore::ReadFields(const char *pname, void *pBaseData, TYPEDESCRIPTION *pF
 }
 
 /* <1b46b1> ../cstrike/dlls/util.cpp:2595 */
-NOXREF void CRestore::BufferReadHeader(HEADER *pheader)
+void CRestore::BufferReadHeader(HEADER *pheader)
 {
 	pheader->size = ReadShort();
 	pheader->token = ReadShort();
@@ -2274,7 +2271,7 @@ NOXREF void CRestore::BufferReadHeader(HEADER *pheader)
 }
 
 /* <1b4654> ../cstrike/dlls/util.cpp:2605 */
-NOXREF short CRestore::ReadShort(void)
+short CRestore::ReadShort(void)
 {
 	short tmp = 0;
 	BufferReadBytes((char *)&tmp, sizeof(short));
@@ -2282,7 +2279,7 @@ NOXREF short CRestore::ReadShort(void)
 }
 
 /* <1b45f5> ../cstrike/dlls/util.cpp:2614 */
-NOXREF int CRestore::ReadInt(void)
+int CRestore::ReadInt(void)
 {
 	int tmp = 0;
 	BufferReadBytes((char *)&tmp, sizeof(int));
@@ -2306,7 +2303,7 @@ NOXREF char *CRestore::ReadNamedString(const char *pName)
 }
 
 /* <1b453a> ../cstrike/dlls/util.cpp:2644 */
-NOXREF char *CRestore::BufferPointer(void)
+char *CRestore::BufferPointer(void)
 {
 	if (!m_pdata)
 		return NULL;
@@ -2335,7 +2332,7 @@ void CRestore::BufferReadBytes(char *pOutput, int size)
 }
 
 /* <1b5092> ../cstrike/dlls/util.cpp:2673 */
-NOXREF void CRestore::BufferSkipBytes(int bytes)
+void CRestore::BufferSkipBytes(int bytes)
 {
 	BufferReadBytes(NULL, bytes);
 }

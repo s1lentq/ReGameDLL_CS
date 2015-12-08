@@ -23,8 +23,8 @@ TYPEDESCRIPTION CMomentaryDoor::m_SaveData[] =
 
 #else
 
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CBaseDoor, m_SaveData)[7];
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CMomentaryDoor, m_SaveData)[1];
+TYPEDESCRIPTION IMPL_CLASS(CBaseDoor, m_SaveData)[7];
+TYPEDESCRIPTION IMPL_CLASS(CMomentaryDoor, m_SaveData)[1];
 
 #endif // HOOK_GAMEDLL
 
@@ -408,29 +408,29 @@ void CBaseDoor::__MAKE_VHOOK(Precache)(void)
 	// get sentence group names, for doors which are directly 'touched' to open
 	switch (m_bLockedSentence)
 	{
-		case 1: m_ls.sLockedSentence = ALLOC_STRING("NA"); break;	// access denied
-		case 2: m_ls.sLockedSentence = ALLOC_STRING("ND"); break;	// security lockout
-		case 3: m_ls.sLockedSentence = ALLOC_STRING("NF"); break;	// blast door
-		case 4: m_ls.sLockedSentence = ALLOC_STRING("NFIRE"); break;	// fire door
-		case 5: m_ls.sLockedSentence = ALLOC_STRING("NCHEM"); break;	// chemical door
-		case 6: m_ls.sLockedSentence = ALLOC_STRING("NRAD"); break;	// radiation door
-		case 7: m_ls.sLockedSentence = ALLOC_STRING("NCON"); break;	// gen containment
-		case 8: m_ls.sLockedSentence = ALLOC_STRING("NH"); break;	// maintenance door
-		case 9: m_ls.sLockedSentence = ALLOC_STRING("NG"); break;	// broken door
-		default: m_ls.sLockedSentence = 0; break;
+	case 1: m_ls.sLockedSentence = ALLOC_STRING("NA"); break;	// access denied
+	case 2: m_ls.sLockedSentence = ALLOC_STRING("ND"); break;	// security lockout
+	case 3: m_ls.sLockedSentence = ALLOC_STRING("NF"); break;	// blast door
+	case 4: m_ls.sLockedSentence = ALLOC_STRING("NFIRE"); break;	// fire door
+	case 5: m_ls.sLockedSentence = ALLOC_STRING("NCHEM"); break;	// chemical door
+	case 6: m_ls.sLockedSentence = ALLOC_STRING("NRAD"); break;	// radiation door
+	case 7: m_ls.sLockedSentence = ALLOC_STRING("NCON"); break;	// gen containment
+	case 8: m_ls.sLockedSentence = ALLOC_STRING("NH"); break;	// maintenance door
+	case 9: m_ls.sLockedSentence = ALLOC_STRING("NG"); break;	// broken door
+	default: m_ls.sLockedSentence = 0; break;
 	}
 
 	switch (m_bUnlockedSentence)
 	{
-		case 1: m_ls.sUnlockedSentence = ALLOC_STRING("EA"); break;	// access granted
-		case 2: m_ls.sUnlockedSentence = ALLOC_STRING("ED"); break;	// security door
-		case 3: m_ls.sUnlockedSentence = ALLOC_STRING("EF"); break;	// blast door
-		case 4: m_ls.sUnlockedSentence = ALLOC_STRING("EFIRE"); break;	// fire door
-		case 5: m_ls.sUnlockedSentence = ALLOC_STRING("ECHEM"); break;	// chemical door
-		case 6: m_ls.sUnlockedSentence = ALLOC_STRING("ERAD"); break;	// radiation door
-		case 7: m_ls.sUnlockedSentence = ALLOC_STRING("ECON"); break;	// gen containment
-		case 8: m_ls.sUnlockedSentence = ALLOC_STRING("EH"); break;	// maintenance door
-		default: m_ls.sUnlockedSentence = 0; break;
+	case 1: m_ls.sUnlockedSentence = ALLOC_STRING("EA"); break;	// access granted
+	case 2: m_ls.sUnlockedSentence = ALLOC_STRING("ED"); break;	// security door
+	case 3: m_ls.sUnlockedSentence = ALLOC_STRING("EF"); break;	// blast door
+	case 4: m_ls.sUnlockedSentence = ALLOC_STRING("EFIRE"); break;	// fire door
+	case 5: m_ls.sUnlockedSentence = ALLOC_STRING("ECHEM"); break;	// chemical door
+	case 6: m_ls.sUnlockedSentence = ALLOC_STRING("ERAD"); break;	// radiation door
+	case 7: m_ls.sUnlockedSentence = ALLOC_STRING("ECON"); break;	// gen containment
+	case 8: m_ls.sUnlockedSentence = ALLOC_STRING("EH"); break;	// maintenance door
+	default: m_ls.sUnlockedSentence = 0; break;
 	}
 }
 

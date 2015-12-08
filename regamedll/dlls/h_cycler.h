@@ -68,7 +68,7 @@ public:
 	void GenericCyclerSpawn(char *szModel, Vector vecMin, Vector vecMax);
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[1];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[1];
 
 	int m_animate;
 
@@ -142,7 +142,7 @@ public:
 	}
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[3];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[3];
 
 	int m_animate;
 	float m_lastTime;
@@ -212,7 +212,7 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[1];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[1];
 
 	int m_flStartTime;
 

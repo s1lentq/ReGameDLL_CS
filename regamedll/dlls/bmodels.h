@@ -209,7 +209,7 @@ public:
 	void RampPitchVol(int fUp);
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[5];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[5];
 
 public:
 	float m_flFanFriction;
@@ -254,7 +254,7 @@ public:
 	// this touch func makes the pendulum a rope
 	void EXPORT RopeTouch(CBaseEntity *pOther);
 
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[8];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[8];
 
 public:
 	float m_accel;		// Acceleration

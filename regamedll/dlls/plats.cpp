@@ -61,12 +61,12 @@ TYPEDESCRIPTION CGunTarget::m_SaveData[] =
 
 #else
 
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CBasePlatTrain, m_SaveData)[3];
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CFuncPlatRot, m_SaveData)[2];
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CFuncTrain, m_SaveData)[3];
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CFuncTrackTrain, m_SaveData)[12];
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CFuncTrackChange, m_SaveData)[9];
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CGunTarget, m_SaveData)[1];
+TYPEDESCRIPTION IMPL_CLASS(CBasePlatTrain, m_SaveData)[3];
+TYPEDESCRIPTION IMPL_CLASS(CFuncPlatRot, m_SaveData)[2];
+TYPEDESCRIPTION IMPL_CLASS(CFuncTrain, m_SaveData)[3];
+TYPEDESCRIPTION IMPL_CLASS(CFuncTrackTrain, m_SaveData)[12];
+TYPEDESCRIPTION IMPL_CLASS(CFuncTrackChange, m_SaveData)[9];
+TYPEDESCRIPTION IMPL_CLASS(CGunTarget, m_SaveData)[1];
 
 #endif // HOOK_GAMEDLL
 
@@ -1621,12 +1621,12 @@ void CFuncTrackTrain::__MAKE_VHOOK(Precache)(void)
 		// no sound
 		pev->noise = 0;
 		break;
-	case 1: PRECACHE_SOUND("plats/ttrain1.wav"); pev->noise = MAKE_STRING("plats/ttrain1.wav");break;
-	case 2: PRECACHE_SOUND("plats/ttrain2.wav"); pev->noise = MAKE_STRING("plats/ttrain2.wav");break;
-	case 3: PRECACHE_SOUND("plats/ttrain3.wav"); pev->noise = MAKE_STRING("plats/ttrain3.wav");break;
-	case 4: PRECACHE_SOUND("plats/ttrain4.wav"); pev->noise = MAKE_STRING("plats/ttrain4.wav");break;
-	case 5: PRECACHE_SOUND("plats/ttrain6.wav"); pev->noise = MAKE_STRING("plats/ttrain6.wav");break;
-	case 6: PRECACHE_SOUND("plats/ttrain7.wav"); pev->noise = MAKE_STRING("plats/ttrain7.wav");break;
+	case 1: PRECACHE_SOUND("plats/ttrain1.wav"); pev->noise = MAKE_STRING("plats/ttrain1.wav"); break;
+	case 2: PRECACHE_SOUND("plats/ttrain2.wav"); pev->noise = MAKE_STRING("plats/ttrain2.wav"); break;
+	case 3: PRECACHE_SOUND("plats/ttrain3.wav"); pev->noise = MAKE_STRING("plats/ttrain3.wav"); break;
+	case 4: PRECACHE_SOUND("plats/ttrain4.wav"); pev->noise = MAKE_STRING("plats/ttrain4.wav"); break;
+	case 5: PRECACHE_SOUND("plats/ttrain6.wav"); pev->noise = MAKE_STRING("plats/ttrain6.wav"); break;
+	case 6: PRECACHE_SOUND("plats/ttrain7.wav"); pev->noise = MAKE_STRING("plats/ttrain7.wav"); break;
 	}
 
 	PRECACHE_SOUND("plats/ttrain_brake1.wav");

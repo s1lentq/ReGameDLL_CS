@@ -228,7 +228,7 @@ void CBot::__MAKE_VHOOK(ExecuteCommand)(void)
 }
 
 /* <4900fa> ../game_shared/bot/bot.cpp:362 */
-NOXREF void CBot::ResetCommand(void)
+void CBot::ResetCommand(void)
 {
 	m_forwardSpeed = 0.0f;
 	m_strafeSpeed = 0.0f;
@@ -237,7 +237,7 @@ NOXREF void CBot::ResetCommand(void)
 }
 
 /* <49011b> ../game_shared/bot/bot.cpp:372 */
-NOXREF byte CBot::ThrottledMsec(void) const
+byte CBot::ThrottledMsec(void) const
 {
 	int iNewMsec;
 

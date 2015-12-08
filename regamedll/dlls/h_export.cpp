@@ -9,7 +9,7 @@ globalvars_t *gpGlobals;
 // do some setup operations here.
 
 /* <d0737> ../cstrike/dlls/h_export.cpp:58 */
-C_DLLEXPORT void WINAPI GiveFnptrsToDll(enginefuncs_t *pEnginefuncsTable,globalvars_t *pGlobals)
+C_DLLEXPORT void WINAPI GiveFnptrsToDll(enginefuncs_t *pEnginefuncsTable, globalvars_t *pGlobals)
 {
 	Q_memcpy(&g_engfuncs, pEnginefuncsTable, sizeof(enginefuncs_t));
 	gpGlobals = pGlobals;

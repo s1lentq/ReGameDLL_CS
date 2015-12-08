@@ -35,48 +35,54 @@
 enum GameEventType
 {
 	EVENT_INVALID = 0,
-	EVENT_WEAPON_FIRED,
-	EVENT_WEAPON_FIRED_ON_EMPTY,
-	EVENT_WEAPON_RELOADED,
-	EVENT_HE_GRENADE_EXPLODED,
-	EVENT_FLASHBANG_GRENADE_EXPLODED,
-	EVENT_SMOKE_GRENADE_EXPLODED,
+	EVENT_WEAPON_FIRED,			// tell bots the player is attack (argumens: 1 = attacker, 2 = NULL)
+	EVENT_WEAPON_FIRED_ON_EMPTY,		// tell bots the player is attack without clip ammo (argumens: 1 = attacker, 2 = NULL)
+	EVENT_WEAPON_RELOADED,			// tell bots the player is reloading his weapon (argumens: 1 = reloader, 2 = NULL)
+
+	EVENT_HE_GRENADE_EXPLODED,		// tell bots the HE grenade is exploded (argumens: 1 = grenade thrower, 2 = NULL)
+	EVENT_FLASHBANG_GRENADE_EXPLODED,	// tell bots the flashbang grenade is exploded (argumens: 1 = grenade thrower, 2 = explosion origin)
+	EVENT_SMOKE_GRENADE_EXPLODED,		// tell bots the smoke grenade is exploded (argumens: 1 = grenade thrower, 2 = NULL)
 	EVENT_GRENADE_BOUNCED,
+
 	EVENT_BEING_SHOT_AT,
-	EVENT_PLAYER_BLINDED_BY_FLASHBANG,
-	EVENT_PLAYER_FOOTSTEP,
-	EVENT_PLAYER_JUMPED,
-	EVENT_PLAYER_DIED,
-	EVENT_PLAYER_LANDED_FROM_HEIGHT,
-	EVENT_PLAYER_TOOK_DAMAGE,
-	EVENT_HOSTAGE_DAMAGED,
-	EVENT_HOSTAGE_KILLED,
-	EVENT_DOOR,
-	EVENT_BREAK_GLASS,
-	EVENT_BREAK_WOOD,
-	EVENT_BREAK_METAL,
-	EVENT_BREAK_FLESH,
-	EVENT_BREAK_CONCRETE,
-	EVENT_BOMB_PLANTED,
-	EVENT_BOMB_DROPPED,
-	EVENT_BOMB_PICKED_UP,
-	EVENT_BOMB_BEEP,
-	EVENT_BOMB_DEFUSING,
-	EVENT_BOMB_DEFUSE_ABORTED,
-	EVENT_BOMB_DEFUSED,
-	EVENT_BOMB_EXPLODED,
-	EVENT_HOSTAGE_USED,
-	EVENT_HOSTAGE_RESCUED,
-	EVENT_ALL_HOSTAGES_RESCUED,
-	EVENT_VIP_ESCAPED,
-	EVENT_VIP_ASSASSINATED,
-	EVENT_TERRORISTS_WIN,
-	EVENT_CTS_WIN,
-	EVENT_ROUND_DRAW,
-	EVENT_ROUND_WIN,
-	EVENT_ROUND_LOSS,
-	EVENT_ROUND_START,
-	EVENT_PLAYER_SPAWNED,
+	EVENT_PLAYER_BLINDED_BY_FLASHBANG,	// tell bots the player is flashed (argumens: 1 = flashed player, 2 = NULL)
+	EVENT_PLAYER_FOOTSTEP,			// tell bots the player is running (argumens: 1 = runner, 2 = NULL)
+	EVENT_PLAYER_JUMPED,			// tell bots the player is jumped (argumens: 1 = jumper, 2 = NULL)
+	EVENT_PLAYER_DIED,			// tell bots the player is killed (argumens: 1 = victim, 2 = killer)
+	EVENT_PLAYER_LANDED_FROM_HEIGHT,	// tell bots the player is fell with some damage (argumens: 1 = felled player, 2 = NULL)
+	EVENT_PLAYER_TOOK_DAMAGE,		// tell bots the player is take damage (argumens: 1 = victim, 2 = attacker)
+	EVENT_HOSTAGE_DAMAGED,			// tell bots the player has injured a hostage (argumens: 1 = hostage, 2 = injurer)
+	EVENT_HOSTAGE_KILLED,			// tell bots the player has killed a hostage (argumens: 1 = hostage, 2 = killer)
+
+	EVENT_DOOR,				// tell bots the door is moving (argumens: 1 = door, 2 = NULL)
+	EVENT_BREAK_GLASS,			// tell bots the glass has break (argumens: 1 = glass, 2 = NULL)
+	EVENT_BREAK_WOOD,			// tell bots the wood has break (argumens: 1 = wood, 2 = NULL)
+	EVENT_BREAK_METAL,			// tell bots the metal/computer has break (argumens: 1 = metal/computer, 2 = NULL)
+	EVENT_BREAK_FLESH,			// tell bots the flesh has break (argumens: 1 = flesh, 2 = NULL)
+	EVENT_BREAK_CONCRETE,			// tell bots the concrete has break (argumens: 1 = concrete, 2 = NULL)
+
+	EVENT_BOMB_PLANTED,			// tell bots the bomb has been planted (argumens: 1 = planter, 2 = NULL)
+	EVENT_BOMB_DROPPED,			// tell bots the bomb has been dropped (argumens: 1 = NULL, 2 = NULL)
+	EVENT_BOMB_PICKED_UP,			// let the bots hear the bomb pickup (argumens: 1 = player that pickup c4, 2 = NULL)
+	EVENT_BOMB_BEEP,			// let the bots hear the bomb beeping (argumens: 1 = c4, 2 = NULL)
+	EVENT_BOMB_DEFUSING,			// tell the bots someone has started defusing (argumens: 1 = defuser, 2 = NULL)
+	EVENT_BOMB_DEFUSE_ABORTED,		// tell the bots someone has aborted defusing (argumens: 1 = NULL, 2 = NULL)
+	EVENT_BOMB_DEFUSED,			// tell the bots the bomb is defused (argumens: 1 = defuser, 2 = NULL)
+	EVENT_BOMB_EXPLODED,			// let the bots hear the bomb exploding (argumens: 1 = NULL, 2 = NULL)
+
+	EVENT_HOSTAGE_USED,			// tell bots the hostage is used (argumens: 1 = user, 2 = NULL)
+	EVENT_HOSTAGE_RESCUED,			// tell bots the hostage is rescued (argumens: 1 = rescuer (CBasePlayer *), 2 = hostage (CHostage *))
+	EVENT_ALL_HOSTAGES_RESCUED,		// tell bots the all hostages are rescued (argumens: 1 = NULL, 2 = NULL)
+
+	EVENT_VIP_ESCAPED,			// tell bots the VIP is escaped (argumens: 1 = NULL, 2 = NULL)
+	EVENT_VIP_ASSASSINATED,			// tell bots the VIP is assassinated (argumens: 1 = NULL, 2 = NULL)
+	EVENT_TERRORISTS_WIN,			// tell bots the terrorists won the round (argumens: 1 = NULL, 2 = NULL)
+	EVENT_CTS_WIN,				// tell bots the CTs won the round (argumens: 1 = NULL, 2 = NULL)
+	EVENT_ROUND_DRAW,			// tell bots the round was a draw (argumens: 1 = NULL, 2 = NULL)
+	EVENT_ROUND_WIN,			// tell carreer the round was a win (argumens: 1 = NULL, 2 = NULL)
+	EVENT_ROUND_LOSS,			// tell carreer the round was a loss (argumens: 1 = NULL, 2 = NULL)
+	EVENT_ROUND_START,			// tell bots the round was started (when freeze period is expired) (argumens: 1 = NULL, 2 = NULL)
+	EVENT_PLAYER_SPAWNED,			// tell bots the player is spawned (argumens: 1 = spawned player, 2 = NULL)
 	EVENT_CLIENT_CORPSE_SPAWNED,
 	EVENT_BUY_TIME_START,
 	EVENT_PLAYER_LEFT_BUY_ZONE,
@@ -98,6 +104,7 @@ enum GameEventType
 	EVENT_TUTOR_NEED_TO_BUY_DEFUSE_KIT,
 	EVENT_TUTOR_NEED_TO_BUY_GRENADE,
 	EVENT_CAREER_TASK_DONE,
+
 	EVENT_START_RADIO_1,
 	EVENT_RADIO_COVER_ME,
 	EVENT_RADIO_YOU_TAKE_THE_POINT,
@@ -123,12 +130,13 @@ enum GameEventType
 	EVENT_RADIO_NEGATIVE,
 	EVENT_RADIO_ENEMY_DOWN,
 	EVENT_END_RADIO,
-	EVENT_NEW_MATCH,
-	EVENT_PLAYER_CHANGED_TEAM,
-	EVENT_BULLET_IMPACT,
-	EVENT_GAME_COMMENCE,
-	EVENT_WEAPON_ZOOMED,
-	EVENT_HOSTAGE_CALLED_FOR_HELP,
+
+	EVENT_NEW_MATCH,			// tell bots the game is new (argumens: 1 = NULL, 2 = NULL)
+	EVENT_PLAYER_CHANGED_TEAM,		// tell bots the player is switch his team (also called from ClientPutInServer()) (argumens: 1 = switcher, 2 = NULL)
+	EVENT_BULLET_IMPACT,			// tell bots the player is shoot at wall (argumens: 1 = shooter, 2 = shoot trace end position)
+	EVENT_GAME_COMMENCE,			// tell bots the game is commencing (argumens: 1 = NULL, 2 = NULL)
+	EVENT_WEAPON_ZOOMED,			// tell bots the player is switch weapon zoom (argumens: 1 = zoom switcher, 2 = NULL)
+	EVENT_HOSTAGE_CALLED_FOR_HELP,		// tell bots the hostage is talking (argumens: 1 = listener, 2 = NULL)
 	NUM_GAME_EVENTS,
 };
 

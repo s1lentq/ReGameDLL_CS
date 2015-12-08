@@ -299,7 +299,7 @@ void CBaseMonster::__MAKE_VHOOK(GibMonster)(void)
 // anim to play.
 
 /* <5f65e> ../cstrike/dlls/combat.cpp:355 */
-NOXREF Activity CBaseMonster::__MAKE_VHOOK(GetDeathActivity)(void)
+Activity CBaseMonster::__MAKE_VHOOK(GetDeathActivity)(void)
 {
 	Activity deathActivity;
 	BOOL fTriedDirection;

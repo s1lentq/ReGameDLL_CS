@@ -66,18 +66,18 @@
 #define R_NM						3	// (NEMESIS)  A monster Will ALWAYS attack its nemsis, no matter what
 
 #define MEMORY_CLEAR					0
-#define bits_MEMORY_PROVOKED				(1<<0)	// right now only used for houndeyes.
-#define bits_MEMORY_INCOVER				(1<<1)	// monster knows it is in a covered position.
-#define bits_MEMORY_SUSPICIOUS				(1<<2)	// Ally is suspicious of the player, and will move to provoked more easily
-#define bits_MEMORY_PATH_FINISHED			(1<<3)	// Finished monster path (just used by big momma for now)
-#define bits_MEMORY_ON_PATH				(1<<4)	// Moving on a path
-#define bits_MEMORY_MOVE_FAILED				(1<<5)	// Movement has already failed
-#define bits_MEMORY_FLINCHED				(1<<6)	// Has already flinched
-#define bits_MEMORY_KILLED				(1<<7)	// HACKHACK -- remember that I've already called my Killed()
-#define bits_MEMORY_CUSTOM4				(1<<28)	// Monster-specific memory
-#define bits_MEMORY_CUSTOM3				(1<<29)	// Monster-specific memory
-#define bits_MEMORY_CUSTOM2				(1<<30)	// Monster-specific memory
-#define bits_MEMORY_CUSTOM1				(1<<31)	// Monster-specific memory
+#define bits_MEMORY_PROVOKED				(1 << 0)	// right now only used for houndeyes.
+#define bits_MEMORY_INCOVER				(1 << 1)	// monster knows it is in a covered position.
+#define bits_MEMORY_SUSPICIOUS				(1 << 2)	// Ally is suspicious of the player, and will move to provoked more easily
+#define bits_MEMORY_PATH_FINISHED			(1 << 3)	// Finished monster path (just used by big momma for now)
+#define bits_MEMORY_ON_PATH				(1 << 4)	// Moving on a path
+#define bits_MEMORY_MOVE_FAILED				(1 << 5)	// Movement has already failed
+#define bits_MEMORY_FLINCHED				(1 << 6)	// Has already flinched
+#define bits_MEMORY_KILLED				(1 << 7)	// HACKHACK -- remember that I've already called my Killed()
+#define bits_MEMORY_CUSTOM4				(1 << 28)	// Monster-specific memory
+#define bits_MEMORY_CUSTOM3				(1 << 29)	// Monster-specific memory
+#define bits_MEMORY_CUSTOM2				(1 << 30)	// Monster-specific memory
+#define bits_MEMORY_CUSTOM1				(1 << 31)	// Monster-specific memory
 
 //TODO: unused?
 enum

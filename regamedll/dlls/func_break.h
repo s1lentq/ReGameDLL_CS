@@ -152,7 +152,7 @@ public:
 	static const char *pSoundsConcrete[3];
 	static const char *pSpawnObjects[32];
 
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[5];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[5];
 
 public:
 	Materials m_Material;
@@ -213,7 +213,7 @@ public:
 	}
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[2];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[2];
 
 public:
 	static char *m_soundNames[3];

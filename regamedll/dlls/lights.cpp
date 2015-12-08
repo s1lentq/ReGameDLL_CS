@@ -13,7 +13,7 @@ TYPEDESCRIPTION CLight::m_SaveData[] =
 
 #else
 
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CLight, m_SaveData)[2];
+TYPEDESCRIPTION IMPL_CLASS(CLight, m_SaveData)[2];
 
 #endif // HOOK_GAMEDLL
 

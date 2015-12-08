@@ -32,11 +32,11 @@
 #pragma once
 #endif
 
-//#pragma warning(disable:4244)		// int or float down-conversion
-//#pragma warning(disable:4305)		// int or float data truncation
-//#pragma warning(disable:4201)		// nameless struct/union
-//#pragma warning(disable:4514)		// unreferenced inline function removed
-//#pragma warning(disable:4100)		// unreferenced formal parameter
+#pragma warning(disable:4244)		// int or float down-conversion
+#pragma warning(disable:4305)		// int or float data truncation
+#pragma warning(disable:4201)		// nameless struct/union
+#pragma warning(disable:4514)		// unreferenced inline function removed
+#pragma warning(disable:4100)		// unreferenced formal parameter
 
 #include "archtypes.h"
 

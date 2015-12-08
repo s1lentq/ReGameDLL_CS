@@ -5,7 +5,7 @@
 #endif
 
 #include "utlmemory.h"
-#include "tier0/platform.h"
+//#include "tier0/platform.h"
 
 template< class T >
 class CUtlVector

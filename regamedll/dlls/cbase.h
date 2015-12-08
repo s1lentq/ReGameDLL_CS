@@ -177,10 +177,10 @@
 #define MS_MAX_TARGETS		32
 
 #ifdef _WIN32
-	#define C_EXPORT _declspec(dllexport)
+	#define EXPORT _declspec(dllexport)
 #else
-	#define C_EXPORT
-#endif
+	#define EXPORT /**/
+#endif // _WIN32
 
 enum hash_types_e
 {
@@ -229,16 +229,6 @@ typedef enum
 	TRAIN_FOLLOWING
 
 } TRAIN_CODE;
-
-// Things that toggle (buttons/triggers/doors) need this
-typedef enum
-{
-	TS_AT_TOP,
-	TS_AT_BOTTOM,
-	TS_GOING_UP,
-	TS_GOING_DOWN,
-
-} TOGGLE_STATE;
 
 class CGrenade;
 class CBaseEntity;
@@ -566,7 +556,7 @@ public:
 	CBaseEntity *m_pGoalEnt;
 	CBaseEntity *m_pLink;
 
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[5];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[5];
 
 	void (CBaseEntity::*m_pfnThink)(void);
 	//int m_pfnThink_Flag;
@@ -669,7 +659,7 @@ public:
 	void EXPORT Register(void);
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[4];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[4];
 
 	EHANDLE m_rgEntities[MS_MAX_TARGETS];
 	int m_rgTriggered[MS_MAX_TARGETS];
@@ -698,7 +688,7 @@ public:
 	void SUB_UseTargets(CBaseEntity *pActivator, USE_TYPE useType, float value);
 	void EXPORT DelayThink(void);
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[2];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[2];
 
 	float m_flDelay;
 	int m_iszKillTarget;
@@ -742,7 +732,7 @@ public:
 	int ExtractBbox(int sequence, float *mins, float *maxs);
 	void SetSequenceBox(void);
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[5];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[5];
 
 	float m_flFrameRate;
 	float m_flGroundSpeed;
@@ -788,7 +778,7 @@ public:
 	static float AxisDelta(int flags, const Vector &angle1, const Vector &angle2);
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[19];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[19];
 
 	TOGGLE_STATE m_toggle_state;
 	float m_flActivateFinished;
@@ -870,7 +860,7 @@ public:
 	BUTTON_CODE ButtonResponseToTouch(void);
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[8];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[8];
 
 	BOOL m_fStayPushed;
 	BOOL m_fRotating;

@@ -68,13 +68,13 @@ FILE_GLOBAL char st_szNextSpot[cchMapNameMost];
 
 #else
 
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CFrictionModifier, m_SaveData)[1];
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CAutoTrigger, m_SaveData)[2];
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CTriggerRelay, m_SaveData)[1];
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CMultiManager, m_SaveData)[5];
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CChangeLevel, m_SaveData)[4];
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CTriggerChangeTarget, m_SaveData)[1];
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CTriggerCamera, m_SaveData)[13];
+TYPEDESCRIPTION IMPL_CLASS(CFrictionModifier, m_SaveData)[1];
+TYPEDESCRIPTION IMPL_CLASS(CAutoTrigger, m_SaveData)[2];
+TYPEDESCRIPTION IMPL_CLASS(CTriggerRelay, m_SaveData)[1];
+TYPEDESCRIPTION IMPL_CLASS(CMultiManager, m_SaveData)[5];
+TYPEDESCRIPTION IMPL_CLASS(CChangeLevel, m_SaveData)[4];
+TYPEDESCRIPTION IMPL_CLASS(CTriggerChangeTarget, m_SaveData)[1];
+TYPEDESCRIPTION IMPL_CLASS(CTriggerCamera, m_SaveData)[13];
 
 char st_szNextMap[cchMapNameMost];
 char st_szNextSpot[cchMapNameMost];

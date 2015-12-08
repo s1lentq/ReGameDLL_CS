@@ -140,7 +140,7 @@ public:
 	void InitModulationParms(void);
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[4];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[4];
 
 	float m_flAttenuation;	// attenuation value
 	dynpitchvol_t m_dpv;
@@ -170,7 +170,7 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[2];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[2];
 
 	float m_flRadius;
 	float m_flRoomtype;
@@ -205,7 +205,7 @@ public:
 	void EXPORT ToggleUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 	void EXPORT SpeakerThink(void);
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[1];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[1];
 
 	int m_preset;		// preset number
 
