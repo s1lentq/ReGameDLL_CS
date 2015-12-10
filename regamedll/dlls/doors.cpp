@@ -595,7 +595,7 @@ void CBaseDoor::DoorGoUp(void)
 				{
 					if (toActivator.x <= hiX)
 					{
-						if (toActivator.y > loY)
+						if (toActivator.y < loY)
 							sign = (momentArmX > 0) ? 1 : -1;
 						else if (toActivator.y > hiY)
 							sign = (momentArmX < 0) ? 1 : -1;
