@@ -7298,7 +7298,7 @@ void CBasePlayer::UpdateStatusBar(void)
 		if (!FNullEnt(tr.pHit))
 		{
 			CBaseEntity *pEntity = CBaseEntity::Instance(tr.pHit);
-			bool isVisiblePlayer = (TheBots != NULL && !TheBots->IsLineBlockedBySmoke(&pev->origin, &pEntity->pev->origin) && pEntity->Classify() == CLASS_PLAYER);
+			bool isVisiblePlayer = ((TheBots == NULL || !TheBots->IsLineBlockedBySmoke(&pev->origin, &pEntity->pev->origin)) && pEntity->Classify() == CLASS_PLAYER);
 
 			if (gpGlobals->time >= m_blindUntilTime && isVisiblePlayer)
 			{
@@ -7371,7 +7371,6 @@ void CBasePlayer::UpdateStatusBar(void)
 	else if (m_flStatusBarDisappearDelay > gpGlobals->time)
 	{
 		// hold the values for a short amount of time after viewing the object
-
 		newSBarState[ SBAR_ID_TARGETTYPE ] = m_izSBarState[ SBAR_ID_TARGETTYPE ];
 		newSBarState[ SBAR_ID_TARGETNAME ] = m_izSBarState[ SBAR_ID_TARGETNAME ];
 		newSBarState[ SBAR_ID_TARGETHEALTH ] = m_izSBarState[ SBAR_ID_TARGETHEALTH ];
