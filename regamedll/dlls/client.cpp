@@ -702,7 +702,7 @@ void Host_Say(edict_t *pEntity, int teamonly)
 
 	if (teamonly)
 	{
-		if (player->m_iTeam == CT || player->m_iTeam == TERRORIST)
+		if (UTIL_IsGame("czero") && (player->m_iTeam == CT || player->m_iTeam == TERRORIST))
 		{
 			// search the place name where is located the player
 			Place playerPlace = TheNavAreaGrid.GetPlace(&player->pev->origin);
