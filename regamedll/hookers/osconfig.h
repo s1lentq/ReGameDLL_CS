@@ -236,7 +236,7 @@
 	static const bool __isLinux = true;
 #endif
 
-#define EXT_FUNC /*FORCE_STACK_ALIGN*/
+#define EXT_FUNC FORCE_STACK_ALIGN
 
 extern void regamedll_log(const char *fmt, ...);
 extern void __declspec(noreturn) regamedll_syserror(const char *fmt, ...);
