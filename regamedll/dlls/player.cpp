@@ -5482,22 +5482,22 @@ void CBasePlayer::__MAKE_VHOOK(Spawn)(void)
 	SetScoreboardAttributes();
 
 	MESSAGE_BEGIN(MSG_ALL, gmsgTeamInfo);
-	WRITE_BYTE(entindex());
-	switch (m_iTeam)
-	{
-	case CT:
-		WRITE_STRING("CT");
-		break;
-	case TERRORIST:
-		WRITE_STRING("TERRORIST");
-		break;
-	case SPECTATOR:
-		WRITE_STRING("SPECTATOR");
-		break;
-	default:
-		WRITE_STRING("UNASSIGNED");
-		break;
-	}
+		WRITE_BYTE(entindex());
+		switch (m_iTeam)
+		{
+		case CT:
+			WRITE_STRING("CT");
+			break;
+		case TERRORIST:
+			WRITE_STRING("TERRORIST");
+			break;
+		case SPECTATOR:
+			WRITE_STRING("SPECTATOR");
+			break;
+		default:
+			WRITE_STRING("UNASSIGNED");
+			break;
+		}
 	MESSAGE_END();
 
 	UpdateLocation(true);
@@ -7673,22 +7673,22 @@ void CBasePlayer::SwitchTeam(void)
 	}
 
 	MESSAGE_BEGIN(MSG_ALL, gmsgTeamInfo);
-	WRITE_BYTE(entindex());
-	switch (m_iTeam)
-	{
-	case CT:
-		WRITE_STRING("CT");
-		break;
-	case TERRORIST:
-		WRITE_STRING("TERRORIST");
-		break;
-	case SPECTATOR:
-		WRITE_STRING("SPECTATOR");
-		break;
-	default:
-		WRITE_STRING("UNASSIGNED");
-		break;
-	}
+		WRITE_BYTE(entindex());
+		switch (m_iTeam)
+		{
+		case CT:
+			WRITE_STRING("CT");
+			break;
+		case TERRORIST:
+			WRITE_STRING("TERRORIST");
+			break;
+		case SPECTATOR:
+			WRITE_STRING("SPECTATOR");
+			break;
+		default:
+			WRITE_STRING("UNASSIGNED");
+			break;
+		}
 	MESSAGE_END();
 
 	if (TheBots != NULL)
@@ -9022,28 +9022,24 @@ void CBasePlayer::ParseAutoBuyString(const char *string, bool &boughtPrimary, bo
 	{
 		int i = 0;
 
-		while (*c && (*c != ' ') && i < sizeof(command))
+		while (*c && (*c != ' ') && i < sizeof(command) - 1)
 		{
-			command[i] = *c;
-			++c;
-			++i;
+			command[i++] = *c++;
 		}
 
 		if (*c == ' ')
 			++c;
 
-		command[i] = 0;
+		command[i] = '\0';
 		i = 0;
 
-		while (command[i] != 0)
+		while (command[i] != '\0')
 		{
-			if (command[i] == ' ')
+			if (command[++i] == ' ')
 			{
-				command[i] = 0;
+				command[i] = '\0';
 				break;
 			}
-
-			++i;
 		}
 
 		if (!Q_strlen(command))
