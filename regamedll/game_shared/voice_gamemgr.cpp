@@ -171,7 +171,11 @@ void CVoiceGameMgr::UpdateMasks(void)
 	{
 		CBaseEntity *pEnt = UTIL_PlayerByIndex(iClient + 1);
 
-		if (!pEnt || !pEnt->IsPlayer())
+		if (!pEnt
+#ifndef REGAMEDLL_FIXES
+			|| !pEnt->IsPlayer()
+#endif	// REGAMEDLL_FIXES
+		)
 			continue;
 
 		CBasePlayer *pPlayer = (CBasePlayer *)pEnt;
