@@ -57,7 +57,7 @@ bool UTIL_IsNameTaken(const char *name, bool ignoreHumans)
 int UTIL_ClientsInGame(void)
 {
 	int iCount = 0;
-	for (int iIndex = 1; iIndex <= gpGlobals->maxClients; iIndex++)
+	for (int iIndex = 1; iIndex <= gpGlobals->maxClients; ++iIndex)
 	{
 		CBaseEntity *pPlayer = UTIL_PlayerByIndex(iIndex);
 
@@ -70,8 +70,9 @@ int UTIL_ClientsInGame(void)
 		if (FStrEq(STRING(pPlayer->pev->netname), ""))
 			continue;
 
-		iCount++;
+		++iCount;
 	}
+
 	return iCount;
 }
 
@@ -79,7 +80,7 @@ int UTIL_ClientsInGame(void)
 int UTIL_ActivePlayersInGame(void)
 {
 	int iCount = 0;
-	for (int iIndex = 1; iIndex <= gpGlobals->maxClients; iIndex++)
+	for (int iIndex = 1; iIndex <= gpGlobals->maxClients; ++iIndex)
 	{
 		CBaseEntity *entity = UTIL_PlayerByIndex(iIndex);
 
@@ -101,7 +102,7 @@ int UTIL_ActivePlayersInGame(void)
 		if (player->m_iJoiningState != JOINED)
 			continue;
 
-		iCount++;
+		++iCount;
 	}
 
 	return iCount;
@@ -112,7 +113,7 @@ int UTIL_HumansInGame(bool ignoreSpectators)
 {
 	int iCount = 0;
 
-	for (int iIndex = 1; iIndex <= gpGlobals->maxClients; iIndex++)
+	for (int iIndex = 1; iIndex <= gpGlobals->maxClients; ++iIndex)
 	{
 		CBaseEntity *entity = UTIL_PlayerByIndex(iIndex);
 
@@ -136,7 +137,7 @@ int UTIL_HumansInGame(bool ignoreSpectators)
 		if (ignoreSpectators && player->m_iJoiningState != JOINED)
 			continue;
 
-		iCount++;
+		++iCount;
 	}
 
 	return iCount;
@@ -146,7 +147,7 @@ int UTIL_HumansInGame(bool ignoreSpectators)
 NOBODY int UTIL_HumansOnTeam(int teamID, bool isAlive)
 {
 	int iCount = 0;
-	for (int iIndex = 1; iIndex <= gpGlobals->maxClients; iIndex++)
+	for (int iIndex = 1; iIndex <= gpGlobals->maxClients; ++iIndex)
 	{
 		CBaseEntity *entity = UTIL_PlayerByIndex(iIndex);
 
@@ -170,7 +171,7 @@ NOBODY int UTIL_HumansOnTeam(int teamID, bool isAlive)
 		if (isAlive && !player->IsAlive())
 			continue;
 
-		iCount++;
+		++iCount;
 	}
 
 	return iCount;
@@ -181,7 +182,7 @@ NOBODY int UTIL_BotsInGame(void)
 {
 	int iCount = 0;
 
-	for (int iIndex = 1; iIndex <= gpGlobals->maxClients; iIndex++)
+	for (int iIndex = 1; iIndex <= gpGlobals->maxClients; ++iIndex)
 	{
 		CBasePlayer *pPlayer = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(iIndex));
 
@@ -197,7 +198,7 @@ NOBODY int UTIL_BotsInGame(void)
 		if (!pPlayer->IsBot())
 			continue;
 
-		iCount++;
+		++iCount;
 	}
 
 	return iCount;
@@ -267,7 +268,7 @@ bool UTIL_KickBotFromTeam(TeamName kickTeam)
 NOBODY bool UTIL_IsTeamAllBots(int team)
 {
 	int botCount = 0;
-	for (int i=1; i <= gpGlobals->maxClients; ++i)
+	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
 		CBasePlayer *player = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
@@ -301,7 +302,7 @@ NOBODY bool UTIL_IsTeamAllBots(int team)
 	CBasePlayer *closePlayer = NULL;
 	float closeDistSq = 1.0e12f;	// 999999999999.9f
 
-	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
 		CBasePlayer *player = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
@@ -334,7 +335,7 @@ NOBODY /*extern*/ CBasePlayer *UTIL_GetClosestPlayer(const Vector *pos, int team
 	CBasePlayer *closePlayer = NULL;
 	float closeDistSq = 1.0e12f;	// 999999999999.9f
 
-	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
 		CBasePlayer *player = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
@@ -546,7 +547,7 @@ void BotPrecache(void)
 /* <4ae1b1> ../game_shared/bot/bot_util.cpp:666 */
 void InitBotTrig(void)
 {
-	for (int i = 0; i < COS_TABLE_SIZE; i++)
+	for (int i = 0; i < COS_TABLE_SIZE; ++i)
 	{
 		float_precision angle = 2.0f * M_PI * (float)i / (float)(COS_TABLE_SIZE - 1);
 		cosTable[i] = cos(angle);

@@ -49,31 +49,23 @@ class HostageStateMachine: public SimpleStateMachine<CHostageImprov *, HostageSt
 public:
 	virtual void OnMoveToSuccess(const Vector &goal)
 	{
-		if (m_state != NULL)
-		{
+		if (m_state)
 			m_state->OnMoveToSuccess(goal);
-		}
 	}
 	virtual void OnMoveToFailure(const Vector &goal, MoveToFailureType reason)
 	{
-		if (m_state != NULL)
-		{
+		if (m_state)
 			m_state->OnMoveToFailure(goal, reason);
-		}
 	}
 	virtual void OnInjury(float amount)
 	{
-		if (m_state != NULL)
-		{
+		if (m_state)
 			m_state->OnInjury(amount);
-		}
 	}
 	void UpdateStationaryAnimation(CHostageImprov *improv)
 	{
-		if (m_state != NULL)
-		{
+		if (m_state)
 			m_state->UpdateStationaryAnimation(improv);
-		}
 	}
 
 };/* size: 16, cachelines: 1, members: 2 */
@@ -100,7 +92,7 @@ public:
 	{
 		m_moveState = MoveFailed;
 	}
-	virtual void OnInjury(float amount)
+	virtual void OnInjury(float amount = -1.0f)
 	{
 		m_fleeTimer.Invalidate();
 		m_mustFlee = true;
@@ -150,8 +142,22 @@ public:
 		return "Escape:ToCover";
 	}
 	virtual void OnMoveToFailure(const Vector &goal, MoveToFailureType reason);
+
+#ifdef HOOK_GAMEDLL
+
+	void OnEnter_(CHostageImprov *improv);
+	void OnUpdate_(CHostageImprov *improv);
+	void OnExit_(CHostageImprov *improv);
+	void OnMoveToFailure_(const Vector &goal, MoveToFailureType reason);
+
+#endif // HOOK_GAMEDLL
+
 public:
-	void SetRescueGoal(const Vector &rescueGoal);
+	void SetRescueGoal(const Vector &rescueGoal)
+	{
+		m_rescueGoal = rescueGoal;
+	}
+
 private:
 	Vector m_rescueGoal;
 	Vector m_spot;
@@ -173,6 +179,14 @@ public:
 		return "Escape:LookAround";
 	}
 
+#ifdef HOOK_GAMEDLL
+
+	void OnEnter_(CHostageImprov *improv);
+	void OnUpdate_(CHostageImprov *improv);
+	void OnExit_(CHostageImprov *improv);
+
+#endif // HOOK_GAMEDLL
+
 private:
 	CountdownTimer m_timer;
 
@@ -193,13 +207,27 @@ public:
 	}
 	virtual void OnMoveToFailure(const Vector &goal, MoveToFailureType reason)
 	{
-		//TODO: i'm unsure
-		if (m_behavior.IsState(this))
-			IImprovEvent::OnMoveToFailure(goal, reason);
+		m_behavior.OnMoveToFailure(goal, reason);
 	}
+
+#ifdef HOOK_GAMEDLL
+
+	void OnEnter_(CHostageImprov *improv);
+	void OnUpdate_(CHostageImprov *improv);
+	void OnExit_(CHostageImprov *improv);
+
+#endif // HOOK_GAMEDLL
+
 public:
-	void ToCover(void);
-	void LookAround(void);
+	void ToCover(void)
+	{
+		m_behavior.SetState(&m_toCoverState);
+	}
+	void LookAround(void)
+	{
+		m_behavior.SetState(&m_lookAroundState);
+	}
+
 private:
 	HostageEscapeToCoverState m_toCoverState;
 	HostageEscapeLookAroundState m_lookAroundState;
@@ -252,17 +280,27 @@ public:
 	}
 	virtual void UpdateStationaryAnimation(CHostageImprov *improv);
 
+#ifdef HOOK_GAMEDLL
+
+	void OnEnter_(CHostageImprov *improv);
+	void OnUpdate_(CHostageImprov *improv);
+	void OnExit_(CHostageImprov *improv);
+	void UpdateStationaryAnimation_(CHostageImprov *improv);
+
+#endif // HOOK_GAMEDLL
+
 public:
 	void SetLeader(CBaseEntity *leader)
 	{
 		m_leader = leader;
 	}
-	CBaseEntity *GetLeader(void)
+	CBaseEntity *GetLeader(void) const
 	{
 		return m_leader;
 	}
+
 private:
-	EHANDLE m_leader;
+	mutable EHANDLE m_leader;
 	Vector m_lastLeaderPos;
 	bool m_isWaiting;
 	float m_stopRange;
@@ -329,16 +367,16 @@ public:
 	void AddSequence(CHostageImprov *improv, const char *seqName, float holdTime = -1.0f, float rate = 1.0f);
 	void AddSequence(CHostageImprov *improv, int activity, float holdTime = -1.0f, float rate = 1.0f);
 
-	bool IsBusy(void)
+	bool IsBusy(void) const
 	{
 		return (m_sequenceCount > 0);
 	}
-	bool IsPlaying(CHostageImprov *improv, const char *seqName);
+	NOXREF bool IsPlaying(CHostageImprov *improv, const char *seqName) const;
 	int GetCurrentSequenceID(void)
 	{
 		return m_currentSequence;
 	}
-	PerformanceType GetPerformance(void)
+	PerformanceType GetPerformance(void) const
 	{
 		return m_performance;
 	}

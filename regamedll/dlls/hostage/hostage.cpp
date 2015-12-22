@@ -192,7 +192,7 @@ void CHostage::SetActivity(int act)
 void CHostage::IdleThink(void)
 {
 	float flInterval;
-	const float upkeepRate = 0.3f;
+	const float upkeepRate = 0.03f;
 	const float giveUpTime = (1 / 30.0f);
 	float const updateRate = 0.1f;
 
@@ -240,7 +240,7 @@ void CHostage::IdleThink(void)
 		return;
 	}
 
-	if (m_hTargetEnt != NULL && (m_bStuck && gpGlobals->time - m_flStuckTime > 5.0 || m_hTargetEnt->pev->deadflag != DEAD_NO))
+	if (m_hTargetEnt != NULL && (m_bStuck && gpGlobals->time - m_flStuckTime > 5.0f || m_hTargetEnt->pev->deadflag != DEAD_NO))
 	{
 		m_State = STAND;
 		m_hTargetEnt = NULL;
@@ -325,8 +325,8 @@ void CHostage::IdleThink(void)
 				MESSAGE_BEGIN(MSG_SPEC, SVC_DIRECTOR);
 					WRITE_BYTE(9);
 					WRITE_BYTE(DRC_CMD_EVENT);
-					WRITE_SHORT((player != NULL) ? player->entindex() : 0);
-					WRITE_SHORT(player->entindex());
+					WRITE_SHORT(player != NULL ? player->entindex() : 0);
+					WRITE_SHORT(entindex());
 					WRITE_LONG(15);
 				MESSAGE_END();
 
@@ -840,7 +840,7 @@ void CHostage::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 
 	vPush = (pev->origin - pOther->pev->origin).Make2D();
 
-#ifndef HOOK_GAMEDLL
+#ifndef PLAY_GAMEDLL
 	vPush = vPush.Normalize() * pushForce;
 
 	pev->velocity.x += vPush.x;
@@ -848,7 +848,7 @@ void CHostage::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 #else
 	// TODO: fix test demo
 	pev->velocity = pev->velocity + NormalizeMulScalar<float_precision, float_precision, float>(vPush, pushForce);
-#endif // HOOK_GAMEDLL
+#endif // PLAY_GAMEDLL
 }
 
 /* <45dd66> ../cstrike/dlls/hostage/hostage.cpp:910 */
@@ -1173,14 +1173,14 @@ void CHostage::Wiggle(void)
 		}
 	}
 
-#ifndef HOOK_GAMEDLL
+#ifndef PLAY_GAMEDLL
 	vec = vec + Vector(RANDOM_FLOAT(-3, 3), RANDOM_FLOAT(-3, 3), 0);
 #else
 	// TODO: fix test demo
 	vec.y = vec.y + RANDOM_FLOAT(-3.0, 3.0);
 	vec.x = vec.x + RANDOM_FLOAT(-3.0, 3.0);
 
-#endif // HOOK_GAMEDLL
+#endif // PLAY_GAMEDLL
 
 	pev->velocity = pev->velocity + (vec.Normalize() * 100);
 }

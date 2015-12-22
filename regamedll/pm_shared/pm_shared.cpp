@@ -2644,7 +2644,7 @@ void PM_DropPunchAngle(vec_t *punchangle)
 
 	len = VectorNormalize(punchangle);
 	len -= (10.0 + len * 0.5) * pmove->frametime;
-#ifdef HOOK_GAMEDLL
+#ifdef PLAY_GAMEDLL
 	len = Q_max(len, 0.0);
 #else
 	len = Q_max(len, 0.0f);

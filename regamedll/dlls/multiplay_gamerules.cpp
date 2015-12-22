@@ -552,7 +552,10 @@ CHalfLifeMultiplay::CHalfLifeMultiplay(void)
 	m_fRoundCount = 0;
 	m_fIntroRoundCount = 0;
 
+#ifndef CSTRIKE
 	InstallBotControl();
+#endif // CSTRIKE
+
 	InstallHostageManager();
 
 	m_bSkipSpawn = m_bInCareerGame;
@@ -1938,12 +1941,12 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(RestartRound)(void)
 	}
 
 	// check if the losing team is in a losing streak & that the loser bonus hasen't maxed out.
-	if(m_iNumConsecutiveTerroristLoses > 1 && m_iLoserBonus < REWARD_LOSER_BONUS_MAX)
+	if (m_iNumConsecutiveTerroristLoses > 1 && m_iLoserBonus < REWARD_LOSER_BONUS_MAX)
 	{
 		// help out the team in the losing streak
 		m_iLoserBonus += REWARD_LOSER_BONUS_ADD;
 	}
-	else if(m_iNumConsecutiveCTLoses > 1 && m_iLoserBonus < REWARD_LOSER_BONUS_MAX)
+	else if (m_iNumConsecutiveCTLoses > 1 && m_iLoserBonus < REWARD_LOSER_BONUS_MAX)
 	{
 		// help out the team in the losing streak
 		m_iLoserBonus += REWARD_LOSER_BONUS_ADD;

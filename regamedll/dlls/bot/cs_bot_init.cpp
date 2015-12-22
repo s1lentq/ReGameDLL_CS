@@ -3,8 +3,12 @@
 /* <333bca> ../cstrike/dlls/bot/cs_bot_init.cpp:57 */
 NOBODY void InstallBotControl(void)
 {
-//	~CBotManager(CBotManager *const this,
-//			int const __in_chrg);  //    60
+	if (TheBots != NULL)
+	{
+		delete TheBots;
+	}
+
+	TheBots = new CCSBotManager;
 }
 
 /* <333cb3> ../cstrike/dlls/bot/cs_bot_init.cpp:68 */

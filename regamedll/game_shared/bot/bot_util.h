@@ -97,7 +97,7 @@ public:
 	{
 		return (gpGlobals->time - m_timestamp > duration) ? true : false;
 	}
-private:
+/*private:*/
 	float m_timestamp;
 
 };/* size: 4, cachelines: 1, members: 1 */

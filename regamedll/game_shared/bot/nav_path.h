@@ -66,9 +66,9 @@ public:
 		return m_path[ m_segmentCount - 1 ].pos;
 	}
 
-	bool IsAtEnd(const Vector &pos) const;					// return true if position is at the end of the path
-	float GetLength(void) const;						// return length of path from start to finish
-	bool GetPointAlongPath(float distAlong, Vector *pointOnPath) const;	// return point a given distance along the path - if distance is out of path bounds, point is clamped to start/end
+	bool IsAtEnd(const Vector &pos) const;						// return true if position is at the end of the path
+	float GetLength(void) const;							// return length of path from start to finish
+	NOXREF bool GetPointAlongPath(float distAlong, Vector *pointOnPath) const;	// return point a given distance along the path - if distance is out of path bounds, point is clamped to start/end
 
 	/// return the node index closest to the given distance along the path without going over - returns (-1) if error
 	int GetSegmentIndexAlongPath(float distAlong) const;
@@ -86,7 +86,7 @@ public:
 	void Draw(void);
 
 	/// compute closest point on path to given point
-	bool FindClosestPointOnPath(const Vector *worldPos, int startIndex, int endIndex, Vector *close) const;
+	NOXREF bool FindClosestPointOnPath(const Vector *worldPos, int startIndex, int endIndex, Vector *close) const;
 
 	void Optimize(void);
 
@@ -176,16 +176,16 @@ private:
 	PathSegment m_path[ MAX_PATH_SEGMENTS ];
 	int m_segmentCount;
 
-	// determine actual path positions
-	bool ComputePathPositions(void);
 #ifdef HOOK_GAMEDLL
 public:
 #endif // HOOK_GAMEDLL
+	// determine actual path positions
+	bool ComputePathPositions(void);
 	// utility function for when start and goal are in the same area
 	bool BuildTrivialPath(const Vector *start, const Vector *goal);
 
 	// used by Optimize()
-	int FindNextOccludedNode(int anchor);
+	int FindNextOccludedNode(int anchor_);
 
 };/* size: 6148, cachelines: 97, members: 2 */
 
@@ -263,7 +263,11 @@ public:
 	// adjust goal position if "feelers" are touched
 	void FeelerReflexAdjustment(Vector *goalPosition, float height = -1.0f);
 
+#ifdef HOOK_GAMEDLL
+public:
+#else
 private:
+#endif // HOOK_GAMEDLL
 	int FindOurPositionOnPath(Vector *close, bool local) const;		// return the closest point to our current position on current path
 	int FindPathPoint(float aheadRange, Vector *point, int *prevIndex);	// compute a point a fixed distance ahead along our path.
 

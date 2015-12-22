@@ -2069,17 +2069,8 @@ bool CNavArea::IsCoplanar(const CNavArea *area) const
 // NOTE: pos->z is not used.
 
 /* <4c8963> ../game_shared/bot/nav_area.cpp:2114 */
-float (*pGetZ__Vector)(const Vector *pos);
-
-float __declspec(naked) CNavArea::GetZ(const Vector *pos) const
+float CNavArea::GetZ(const Vector *pos) const
 {
-	__asm
-	{
-		jmp pGetZ__Vector
-	}
-	UNTESTED
-		// Crash
-/*
 	float dx = m_extent.hi.x - m_extent.lo.x;
 	float dy = m_extent.hi.y - m_extent.lo.y;
 
@@ -2105,7 +2096,6 @@ float __declspec(naked) CNavArea::GetZ(const Vector *pos) const
 	float southZ = m_swZ + u * (m_extent.hi.z - m_swZ);
 
 	return northZ + v * (southZ - northZ);
-*/
 }
 
 /* <4caa36> ../game_shared/bot/nav_area.cpp:2143 */
@@ -3462,9 +3452,13 @@ const Vector *FindNearbyHidingSpot(CBaseEntity *me, const Vector *pos, CNavArea 
 	}
 
 	// select a hiding spot at random
-	int which = RANDOM_LONG(0, collector.m_count-1);
+	int which = RANDOM_LONG(0, collector.m_count - 1);
 	return collector.m_hidingSpot[ which ];
 }
+
+// Return true if moving from "start" to "finish" will cross a player's line of fire
+// The path from "start" to "finish" is assumed to be a straight line
+// "start" and "finish" are assumed to be points on the ground
 
 /* <4c3feb> ../game_shared/bot/nav_area.cpp:3591 */
 bool IsCrossingLineOfFire(const Vector &start, const Vector &finish, CBaseEntity *ignore, int ignoreTeam)
@@ -4925,49 +4919,43 @@ void CNavAreaGrid::RemoveNavArea(CNavArea *area)
 	--m_areaCount;
 }
 
-CNavArea *(*pGetNavArea)(const Vector *pos, float beneathLimit);
-
 // Given a position, return the nav area that IsOverlapping and is *immediately* beneath it
 
 /* <4cff5e> ../game_shared/bot/nav_area.cpp:5080 */
-CNavArea __declspec(naked) *CNavAreaGrid::GetNavArea(const Vector *pos, float beneathLimit) const
+CNavArea *CNavAreaGrid::GetNavArea(const Vector *pos, float beneathLimit) const
 {
-	__asm
-	{
-		jmp pGetNavArea
-	}
-
-	UNTESTED
-	//TODO: Crash NavAreaList::iterator iter = list->begin()
-/*
 	if (m_grid == NULL)
 		return NULL;
 
+	// get list in cell that contains position
 	int x = WorldToGridX(pos->x);
 	int y = WorldToGridY(pos->y);
-
 	NavAreaList *list = &m_grid[x + y * m_gridSizeX];
 
+	// search cell list to find correct area
 	CNavArea *use = NULL;
-	float useZ = -100000000.0f;
+	float useZ = -99999999.9f;
 	Vector testPos = *pos + Vector(0, 0, 5);
-
-	if (list == NULL)
-		return NULL;
 
 	for (NavAreaList::iterator iter = list->begin(); iter != list->end(); ++iter)
 	{
 		CNavArea *area = *iter;
 
+		// check if position is within 2D boundaries of this area
 		if (area->IsOverlapping(&testPos))
 		{
+			// project position onto area to get Z
 			float z = area->GetZ(&testPos);
+
+			// if area is above us, skip it
 			if (z > testPos.z)
 				continue;
 
+			// if area is too far below us, skip it
 			if (z < pos->z - beneathLimit)
 				continue;
 
+			// if area is higher than the one we have, use this instead
 			if (z > useZ)
 			{
 				use = area;
@@ -4975,36 +4963,29 @@ CNavArea __declspec(naked) *CNavAreaGrid::GetNavArea(const Vector *pos, float be
 			}
 		}
 	}
-	return use;
-*/
-}
 
-CNavArea *(*pGetNearestNavArea)(const Vector *pos, bool anyZ);
+	return use;
+}
 
 // Given a position in the world, return the nav area that is closest
 // and at the same height, or beneath it.
 // Used to find initial area if we start off of the mesh.
 
 /* <4d33b4> ../game_shared/bot/nav_area.cpp:5133 */
-NOBODY __declspec(naked) CNavArea *CNavAreaGrid::GetNearestNavArea(const Vector *pos, bool anyZ) const
+CNavArea *CNavAreaGrid::GetNearestNavArea(const Vector *pos, bool anyZ) const
 {
-	__asm
-	{
-		jmp pGetNearestNavArea
-	}
-	//TODO: UNTESTED
-	// Result: Crashed TheNavAreaList.begin()
-
-/*	if (m_grid == NULL)
+	if (m_grid == NULL)
 		return NULL;
 
 	CNavArea *close = NULL;
 	float closeDistSq = 100000000.0f;
 
+	// quick check
 	close = GetNavArea(pos);
 	if (close)
 		return close;
 
+	// ensure source position is well behaved
 	Vector source;
 	source.x = pos->x;
 	source.y = pos->y;
@@ -5014,6 +4995,9 @@ NOBODY __declspec(naked) CNavArea *CNavAreaGrid::GetNearestNavArea(const Vector 
 
 	source.z += HalfHumanHeight;
 
+	// TODO: Step incrementally using grid for speed
+
+	// find closest nav area
 	for (NavAreaList::iterator iter = TheNavAreaList.begin(); iter != TheNavAreaList.end(); ++iter)
 	{
 		CNavArea *area = *iter;
@@ -5022,8 +5006,11 @@ NOBODY __declspec(naked) CNavArea *CNavAreaGrid::GetNearestNavArea(const Vector 
 		area->GetClosestPointOnArea(&source, &areaPos);
 
 		float distSq = (areaPos - source).LengthSquared();
+
+		// keep the closest area
 		if (distSq < closeDistSq)
 		{
+			// check LOS to area
 			if (!anyZ)
 			{
 				TraceResult result;
@@ -5035,8 +5022,8 @@ NOBODY __declspec(naked) CNavArea *CNavAreaGrid::GetNearestNavArea(const Vector 
 			close = area;
 		}
 	}
+
 	return close;
-*/
 }
 
 // Given an ID, return the associated area
@@ -5063,7 +5050,7 @@ Place CNavAreaGrid::GetPlace(const Vector *pos) const
 {
 	CNavArea *area = GetNearestNavArea(pos, true);
 
-	if (area)
+	if (area != NULL)
 	{
 		return area->GetPlace();
 	}

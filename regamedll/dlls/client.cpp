@@ -2271,7 +2271,7 @@ BOOL HandleMenu_ChooseTeam(CBasePlayer *player, int slot)
 		TheBots->OnEvent(EVENT_PLAYER_CHANGED_TEAM, player);
 	}
 
-	TeamChangeUpdate(player, team);
+	TeamChangeUpdate(player, player->m_iTeam);
 
 	szOldTeam = GetTeam(oldTeam);
 	szNewTeam = GetTeam(team);

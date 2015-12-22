@@ -142,7 +142,6 @@ void PlaceDirectory::Load(SteamFile *file)
 char *GetBspFilename(const char *navFilename)
 {
 	static char bspFilename[256];
-
 	Q_sprintf(bspFilename, "maps\\%s.bsp", STRING(gpGlobals->mapname));
 
 	int len = Q_strlen(bspFilename);
@@ -174,7 +173,7 @@ void CNavArea::Save(FILE *fp) const
 }
 
 /* <4f09b8> ../game_shared/bot/nav_file.cpp:212 */
-NOBODY void CNavArea::Save(int fd, unsigned int version)
+void CNavArea::Save(int fd, unsigned int version)
 {
 	// save ID
 	Q_write(fd, &m_id, sizeof(unsigned int));
@@ -235,8 +234,11 @@ NOBODY void CNavArea::Save(int fd, unsigned int version)
 	// Save the approach areas for this area
 	// save number of approach areas
 	Q_write(fd, &m_approachCount, sizeof(unsigned char));
+
 	if (cv_bot_debug.value > 0.0f)
+	{
 		CONSOLE_ECHO("  m_approachCount = %d\n", m_approachCount);
+	}
 
 	// save approach area info
 	unsigned char type;
@@ -333,7 +335,7 @@ NOBODY void CNavArea::Save(int fd, unsigned int version)
 }
 
 /* <4ee669> ../game_shared/bot/nav_file.cpp:379 */
-NOBODY void CNavArea::Load(SteamFile *file, unsigned int version)
+void CNavArea::Load(SteamFile *file, unsigned int version)
 {
 	// load ID
 	file->Read(&m_id, sizeof(unsigned int));
@@ -395,7 +397,7 @@ NOBODY void CNavArea::Load(SteamFile *file, unsigned int version)
 	else
 	{
 		// load HidingSpot objects for this area
-		for (int h=0; h<hidingSpotCount; ++h)
+		for (int h = 0; h < hidingSpotCount; ++h)
 		{
 			// create new hiding spot and put on master list
 			HidingSpot *spot = new HidingSpot;
@@ -455,7 +457,7 @@ NOBODY void CNavArea::Load(SteamFile *file, unsigned int version)
 		return;
 	}
 
-	for (unsigned int e = 0; e<count; ++e)
+	for (unsigned int e = 0; e < count; ++e)
 	{
 		SpotEncounter encounter;
 
@@ -502,7 +504,7 @@ NOBODY void CNavArea::Load(SteamFile *file, unsigned int version)
 }
 
 /* <4f029e> ../game_shared/bot/nav_file.cpp:562 */
-NOBODY NavErrorType CNavArea::PostLoad(void)
+NavErrorType CNavArea::PostLoad(void)
 {
 	NavErrorType error = NAV_OK;
 
@@ -611,9 +613,10 @@ NOBODY NavErrorType CNavArea::PostLoad(void)
 	return error;
 }
 
+// Changes all '/' characters into '\' characters, in place.
 
 /* <4edbe0> ../game_shared/bot/nav_file.cpp:680 */
-void COM_FixSlashes(char *pname)
+inline void COM_FixSlashes(char *pname)
 {
 #ifdef _WIN32
 	while (*pname)
@@ -632,8 +635,10 @@ void COM_FixSlashes(char *pname)
 #endif // _WIN32
 }
 
+// Store AI navigation data to a file
+
 /* <4f3e47> ../game_shared/bot/nav_file.cpp:702 */
-NOBODY bool SaveNavigationMap(const char *filename)
+bool SaveNavigationMap(const char *filename)
 {
 	if (filename == NULL)
 		return false;
@@ -723,8 +728,11 @@ NOBODY bool SaveNavigationMap(const char *filename)
 	return true;
 }
 
+// Load place map
+// This is legacy code - Places are stored directly in the nav file now
+
 /* <4f169d> ../game_shared/bot/nav_file.cpp:811 */
-NOBODY void LoadLocationFile(const char *filename)
+void LoadLocationFile(const char *filename)
 {
 	char locFilename[256];
 	Q_strcpy(locFilename, filename);
@@ -783,8 +791,10 @@ NOBODY void LoadLocationFile(const char *filename)
 	}
 }
 
+// Performs a lightweight sanity-check of the specified map's nav mesh
+
 /* <4f05c5> ../game_shared/bot/nav_file.cpp:876 */
-NOBODY void SanityCheckNavigationMap(const char *mapName)
+void SanityCheckNavigationMap(const char *mapName)
 {
 	if (!mapName)
 	{
@@ -849,19 +859,13 @@ NOBODY void SanityCheckNavigationMap(const char *mapName)
 			return;
 		}
 	}
+
 	CONSOLE_ECHO("navigation file %s passes the sanity check.\n", navFilename);
 }
 
-void (*pLoadNavigationMap)(void);
-
 /* <4f19c7> ../game_shared/bot/nav_file.cpp:947 */
-NOBODY NavErrorType __declspec(naked) LoadNavigationMap(void)
+NavErrorType LoadNavigationMap(void)
 {
-	__asm
-	{
-		jmp pLoadNavigationMap
-	}
-/*
 	// since the navigation map is destroyed on map change,
 	// if it exists it has already been loaded for this map
 	if (!TheNavAreaList.empty())
@@ -992,5 +996,4 @@ NOBODY NavErrorType __declspec(naked) LoadNavigationMap(void)
 	BuildLadders();
 
 	return NAV_OK;
-*/
 }

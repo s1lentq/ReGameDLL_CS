@@ -740,7 +740,7 @@ bool HIDDEN HookFunction(Module *module, FunctionHook *hook)
 	//int seedad = pUTIL_SharedRandomLong(seed,low,high);
 	//memcpy(addr_orig,patchByte,5);
 
-	if (strcmp(hook->symbolName,"_ZNK14CHostageImprov16IsFriendInTheWayEv")==0)
+	if (strcmp(hook->symbolName,"_ZN25HostageEscapeToCoverState15OnMoveToFailureERK6VectorN12IImprovEvent17MoveToFailureTypeE")==0)
 	{
 		addr_orig = (void *)hook->originalAddress;
 

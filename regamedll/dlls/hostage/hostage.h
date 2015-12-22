@@ -154,12 +154,10 @@ public:
 
 	bool IsFollowingSomeone(void)
 	{
-		UNTESTED
 		return m_improv->IsFollowing();
 	}
 	CBaseEntity *GetLeader(void)
 	{
-		UNTESTED
 		if (m_improv != NULL)
 		{
 			return m_improv->GetFollowLeader();
@@ -173,19 +171,20 @@ public:
 	}
 	bool IsValid(void)
 	{
-		UNTESTED
 		return (pev->takedamage == DAMAGE_YES);
 	}
 	bool IsDead(void)
 	{
-		UNTESTED
 		return (pev->deadflag == DEAD_DEAD);
 	}
 	bool IsAtHome(void)
 	{
 		return (pev->origin - m_vStart).IsLengthGreaterThan(20) != true;
 	}
-	NOBODY const Vector *GetHomePosition(void);
+	const Vector *GetHomePosition(void)
+	{
+		return &m_vStart;
+	}
 
 public:
 	enum state
@@ -243,7 +242,6 @@ public:
 class SimpleChatter
 {
 public:
-
 	SimpleChatter(void);
 	~SimpleChatter(void);
 

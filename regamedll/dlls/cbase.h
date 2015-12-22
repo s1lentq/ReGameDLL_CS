@@ -718,7 +718,7 @@ public:
 	int LookupSequence(const char *label);
 	void ResetSequenceInfo(void);
 	void DispatchAnimEvents(float flFutureInterval = 0.1f);
-	float SetBoneController(int iController, float flValue);
+	float SetBoneController(int iController, float flValue = 0.0f);
 	void InitBoneControllers(void);
 
 	NOXREF float SetBlending(int iBlender, float flValue);

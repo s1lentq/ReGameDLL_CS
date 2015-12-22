@@ -32,7 +32,7 @@
 #pragma once
 #endif
 
-#ifdef HOOK_GAMEDLL
+#ifdef PLAY_GAMEDLL
 
 // probably gamedll compiled with flag /fpmath:fasted,
 // so we need to use type double, otherwise will be the test failed
@@ -43,7 +43,7 @@ typedef double float_precision;
 
 typedef float float_precision;
 
-#endif // HOOK_GAMEDLL
+#endif // PLAY_GAMEDLL
 
 /* <42b7f> ../common/mathlib.h:3 */
 typedef float vec_t;

@@ -467,14 +467,14 @@ int CLocalNav::PathTraversable(Vector &vecSource, Vector &vecDest, int fNoMonste
 	{
 		if (flTotal >= s_flStepSize)
 		{
-#ifndef HOOK_GAMEDLL
+#ifndef PLAY_GAMEDLL
 			vecDestTmp = vecSrcTmp + (vecDir * s_flStepSize);
 #else
-			// fix test demo
+			// TODO: fix test demo
 			vecDestTmp[0] = vecSrcTmp[0] + (vecDir[0] * s_flStepSize);
 			vecDestTmp[1] = vecSrcTmp[1] + (float)(vecDir[1] * s_flStepSize);
 			vecDestTmp[2] = vecSrcTmp[2] + (vecDir[2] * s_flStepSize);
-#endif // HOOK_GAMEDLL
+#endif // PLAY_GAMEDLL
 
 		}
 		else

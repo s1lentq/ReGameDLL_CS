@@ -1,105 +1,242 @@
 #include "precompiled.h"
 
 /* <4205b1> ../cstrike/dlls/hostage/states/hostage_escape.cpp:12 */
-void HostageEscapeToCoverState::OnEnter(CHostageImprov *improv)
+void HostageEscapeToCoverState::__MAKE_VHOOK(OnEnter)(CHostageImprov *improv)
 {
-//	{
-//		class CNavPath path;                                  //    18
-//		class HostagePathCost pathCost;                       //    19
-//		Invalidate(CNavPath *const this);  //    14
-//		CNavPath(CNavPath *const this);  //    18
-//		Compute<HostagePathCost>(CNavPath *const this,
-//					const Vector *start,
-//					const Vector *goal,
-//					class HostagePathCost &costFunc);  //    20
-//		{
-//			float const moveRange;                         //    23
-//			int idx;                                      //    24
-//			{
-//				Vector pathPos;                 //    32
-//				float const hidingRange;               //    34
-//				const Vector *spot;           //    35
-//				operator[](CNavPath *const this,
-//						int i);  //    32
-//				Vector(Vector *const this,
-//					const Vector &v);  //    32
-//			}
-//		}
-//	}
+	CNavPath path;
+	HostagePathCost pathCost;
+
+	improv->GetPath()->Invalidate();
+	m_canEscape = false;
+
+	if (!path.Compute(&improv->GetFeet(), &m_rescueGoal, pathCost))
+		return;
+
+	const float moveRange = 500.0f;
+	int idx = path.GetSegmentIndexAlongPath(moveRange);
+
+	if (idx < 0)
+		return;
+
+	if (idx < path.GetSegmentCount() - 1)
+		++idx;
+
+	Vector pathPos = path[idx]->pos;
+	const float hidingRange = 450.0f;
+	const Vector *spot = FindNearbyHidingSpot(improv->GetEntity(), &pathPos, TheNavAreaGrid.GetNearestNavArea(&pathPos), hidingRange);
+
+	if (spot == NULL)
+		spot = &pathPos;
+
+	m_spot = *spot;
+
+	improv->Run();
+	improv->MoveTo(m_spot);
+
+	m_canEscape = true;
 }
 
 /* <41fd51> ../cstrike/dlls/hostage/states/hostage_escape.cpp:52 */
-void HostageEscapeToCoverState::OnUpdate(CHostageImprov *improv)
+void HostageEscapeToCoverState::__MAKE_VHOOK(OnUpdate)(CHostageImprov *improv)
 {
-//	Idle(CHostageImprov *const this);  //    57
-//	OnUpdate(HostageEscapeToCoverState *const this,
-//		class CHostageImprov *improv);  //    52
+	if (!m_canEscape)
+	{
+		improv->Idle();
+		return;
+	}
+
+	if (IsSpotOccupied(improv->GetEntity(), &m_spot))
+	{
+		const float emergencyHidingRange = 300.0f;
+		const Vector *spot = FindNearbyHidingSpot(improv->GetEntity(), &improv->GetFeet(), improv->GetLastKnownArea(), emergencyHidingRange);
+
+		if (spot == NULL)
+		{
+			HostageEscapeState *escape = (HostageEscapeState *)GetParent();
+			escape->LookAround();
+			return;
+		}
+
+		m_spot = *spot;
+		improv->MoveTo(m_spot);
+	}
+
+	if (improv->IsAtMoveGoal())
+	{
+		HostageEscapeState *escape = (HostageEscapeState *)GetParent();
+		escape->LookAround();
+		return;
+	}
 }
 
 /* <41f65f> ../cstrike/dlls/hostage/states/hostage_escape.cpp:95 */
-void HostageEscapeToCoverState::OnExit(CHostageImprov *improv)
+void HostageEscapeToCoverState::__MAKE_VHOOK(OnExit)(CHostageImprov *improv)
 {
+	;
 }
 
 /* <41faaf> ../cstrike/dlls/hostage/states/hostage_escape.cpp:100 */
-void HostageEscapeToCoverState::OnMoveToFailure(const Vector &goal, MoveToFailureType reason)
+void HostageEscapeToCoverState::__MAKE_VHOOK(OnMoveToFailure)(const Vector &goal, MoveToFailureType reason)
 {
-//	{
-//		class HostageEscapeState *escape;                    //   103
-//		LookAround(HostageEscapeState *const this);  //   104
-//	}
+#ifndef HOOK_GAMEDLL
+	HostageEscapeState *escape = (HostageEscapeState *)GetParent();
+#else
+	// TODO: why this - 1? Hacks?
+	// need investigation
+	HostageEscapeState *escape = (HostageEscapeState *)*((int *)this - 1);
+#endif // HOOK_GAMEDLL
+
+	escape->LookAround();
 }
 
 /* <41fa2f> ../cstrike/dlls/hostage/states/hostage_escape.cpp:110 */
-void HostageEscapeLookAroundState::OnEnter(CHostageImprov *improv)
+void HostageEscapeLookAroundState::__MAKE_VHOOK(OnEnter)(CHostageImprov *improv)
 {
-//	Start(CountdownTimer *const this,
-//		float duration);  //   112
+	m_timer.Start(RANDOM_FLOAT(5, 10));
+
+	improv->Stop();
+	improv->FaceOutwards();
 }
 
 /* <41fc67> ../cstrike/dlls/hostage/states/hostage_escape.cpp:119 */
-void HostageEscapeLookAroundState::OnUpdate(CHostageImprov *improv)
+void HostageEscapeLookAroundState::__MAKE_VHOOK(OnUpdate)(CHostageImprov *improv)
 {
-//	IsElapsed(const class CountdownTimer *const this);  //   123
-//	OnUpdate(HostageEscapeLookAroundState *const this,
-//		class CHostageImprov *improv);  //   119
+	improv->UpdateIdleActivity(ACT_IDLE_SNEAKY, ACT_IDLE_SNEAKY_FIDGET);
+
+	if (m_timer.IsElapsed())
+	{
+		HostageEscapeState *escape = (HostageEscapeState *)GetParent();
+		escape->ToCover();
+	}
 }
 
 /* <41f693> ../cstrike/dlls/hostage/states/hostage_escape.cpp:133 */
-void HostageEscapeLookAroundState::OnExit(CHostageImprov *improv)
+void HostageEscapeLookAroundState::__MAKE_VHOOK(OnExit)(CHostageImprov *improv)
 {
+	improv->ClearFaceTo();
 }
 
 /* <41fb6b> ../cstrike/dlls/hostage/states/hostage_escape.cpp:145 */
-void HostageEscapeState::OnEnter(CHostageImprov *improv)
+void HostageEscapeState::__MAKE_VHOOK(OnEnter)(CHostageImprov *improv)
 {
-//	{
-//		class CCSBotManager *ctrl;                           //   148
-//		const class Zone *zone;                             //   149
-//		GetRandomZone(const class CCSBotManager *const this);  //   149
-//		SetRescueGoal(HostageEscapeToCoverState *const this,
-//				const Vector &rescueGoal);  //   153
-//		SetState(SimpleStateMachine<CHostageImprov*, HostageState> *const this,
-//			class HostageState *newState);  //   156
-//		Reset(SimpleStateMachine<CHostageImprov*, HostageState> *const this,
-//			class CHostageImprov *userData);  //   155
-//	}
+	CCSBotManager *ctrl = TheCSBots();
+	const CCSBotManager::Zone *zone = ctrl->GetRandomZone();
+
+	if (zone != NULL)
+	{
+		m_toCoverState.SetRescueGoal(zone->m_center);
+
+		m_behavior.Reset(improv);
+		m_behavior.SetState(&m_toCoverState);
+	}
+
+	m_canEscape = true;
 }
 
 /* <41fe8e> ../cstrike/dlls/hostage/states/hostage_escape.cpp:167 */
-void HostageEscapeState::OnUpdate(CHostageImprov *improv)
+void HostageEscapeState::__MAKE_VHOOK(OnUpdate)(CHostageImprov *improv)
 {
-//	{
-//		class CBasePlayer *player;                           //   192
-//		{
-//			float const farRange;                          //   198
-//		}
-//	}
-//	OnUpdate(HostageEscapeState *const this,
-//		class CHostageImprov *improv);  //   167
+	if (!m_canEscape || (improv->IsScared() && improv->GetScareIntensity() == CHostageImprov::TERRIFIED))
+	{
+		improv->Stop();
+		improv->Idle();
+		return;
+	}
+
+	if (m_runTimer.IsElapsed())
+		improv->Walk();
+	else
+		improv->Run();
+
+	CBasePlayer *player = improv->GetClosestVisiblePlayer(UNASSIGNED);
+
+	if (player != NULL)
+	{
+		if (player->m_iTeam != TERRORIST)
+		{
+			improv->Stop();
+			improv->Idle();
+			return;
+		}
+
+		const float farRange = 750.0f;
+		if ((player->pev->origin - improv->GetCentroid().IsLengthGreaterThan(farRange)))
+		{
+			improv->Frighten(CHostageImprov::NERVOUS);
+
+			m_runTimer.Start(RANDOM_FLOAT(3, 6));
+			m_behavior.SetState(&m_toCoverState);
+		}
+		else
+		{
+			improv->Frighten(CHostageImprov::SCARED);
+			improv->Stop();
+			improv->Idle();
+			return;
+		}
+	}
+	else
+	{
+		m_behavior.Update();
+	}
 }
 
 /* <41f6c7> ../cstrike/dlls/hostage/states/hostage_escape.cpp:230 */
+void HostageEscapeState::__MAKE_VHOOK(OnExit)(CHostageImprov *improv)
+{
+	improv->Run();
+}
+
+#ifdef HOOK_GAMEDLL
+
+void HostageEscapeToCoverState::OnEnter(CHostageImprov *improv)
+{
+	OnEnter_(improv);
+}
+
+void HostageEscapeToCoverState::OnUpdate(CHostageImprov *improv)
+{
+	OnUpdate_(improv);
+}
+
+void HostageEscapeToCoverState::OnExit(CHostageImprov *improv)
+{
+	OnExit_(improv);
+}
+
+void HostageEscapeToCoverState::OnMoveToFailure(const Vector &goal, MoveToFailureType reason)
+{
+	OnMoveToFailure_(goal, reason);
+}
+
+void HostageEscapeLookAroundState::OnEnter(CHostageImprov *improv)
+{
+	OnEnter_(improv);
+}
+
+void HostageEscapeLookAroundState::OnUpdate(CHostageImprov *improv)
+{
+	OnUpdate_(improv);
+}
+
+void HostageEscapeLookAroundState::OnExit(CHostageImprov *improv)
+{
+	OnExit_(improv);
+}
+
+void HostageEscapeState::OnEnter(CHostageImprov *improv)
+{
+	OnEnter_(improv);
+}
+
+void HostageEscapeState::OnUpdate(CHostageImprov *improv)
+{
+	OnUpdate_(improv);
+}
+
 void HostageEscapeState::OnExit(CHostageImprov *improv)
 {
+	OnExit_(improv);
 }
+
+#endif // HOOK_GAMEDLL

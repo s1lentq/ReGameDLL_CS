@@ -36,19 +36,6 @@
 #pragma warning(disable : 4530)
 
 #include <list>
-#include "game_shared/GameEvent.h"
-
-#ifndef _WIN32
-
-//#ifndef max
-//#define max(a,b) ((a) > (b) ? (a) : (b))
-//#endif // max
-
-//#ifndef min
-//#define min(a,b) ((a) < (b) ? (a) : (b))
-//#endif // min
-
-#endif // _WIN32
 
 class CNavArea;
 class CGrenade;
@@ -82,7 +69,7 @@ private:
 
 };/* size: 24, cachelines: 1, members: 4 */
 
-typedef std::list<ActiveGrenade *> ActiveGrenadeList;
+typedef std::STD_LIST<ActiveGrenade *> ActiveGrenadeList;
 
 class CBotManager
 {
@@ -138,16 +125,11 @@ public:
 
 private:
 
-#if defined(_WIN32) && defined(HOOK_GAMEDLL)
-	// The member m_activeGrenadeList on Windows must be with offset +8
-	// on Linux : +4
-
-	int unknown_padding;
-#endif // HOOK_GAMEDLL
-
 	// the list of active grenades the bots are aware of
 	ActiveGrenadeList m_activeGrenadeList;
 //
 };/* size: 12, cachelines: 1, members: 2 */
+
+GameEventType NameToGameEvent(const char *name);
 
 #endif // BOT_MANAGER_H

@@ -87,19 +87,13 @@ void HostageAnimateState::__MAKE_VHOOK(OnEnter)(CHostageImprov *improv)
 	;
 }
 
-/* <410d79> ../cstrike/dlls/hostage/states/hostage_animate.cpp:139 */
-void HostageAnimateState::__MAKE_VHOOK(OnExit)(CHostageImprov *improv)
-{
-	;
-}
-
 /* <410fb2> ../cstrike/dlls/hostage/states/hostage_animate.cpp:108 */
 void HostageAnimateState::__MAKE_VHOOK(OnUpdate)(CHostageImprov *improv)
 {
 	if (m_sequenceCount <= 0)
 		return;
 
-	if (!improv->m_hostage->m_fSequenceFinished && m_sequence[m_currentSequence].seqID >= 0)
+	if (!improv->GetEntity()->m_fSequenceFinished && m_sequence[m_currentSequence].seqID >= 0)
 		return;
 
 	if (m_sequence[m_currentSequence].holdTime >= 0)
@@ -120,13 +114,24 @@ void HostageAnimateState::__MAKE_VHOOK(OnUpdate)(CHostageImprov *improv)
 	StartSequence(improv, &m_sequence[m_currentSequence]);
 }
 
-/* <4112d1> ../cstrike/dlls/hostage/states/hostage_animate.cpp:147 */
-bool HostageAnimateState::IsPlaying(CHostageImprov *improv, const char *seqName)
+/* <410d79> ../cstrike/dlls/hostage/states/hostage_animate.cpp:139 */
+void HostageAnimateState::__MAKE_VHOOK(OnExit)(CHostageImprov *improv)
 {
-//	{
-//		class CHostage *hostage;                             //   152
-//		int id;                                               //   154
-//	}
+	;
+}
+
+/* <4112d1> ../cstrike/dlls/hostage/states/hostage_animate.cpp:147 */
+NOXREF bool HostageAnimateState::IsPlaying(CHostageImprov *improv, const char *seqName) const
+{
+	int id = 0;
+	CHostage *hostage = improv->GetEntity();
+
+	if (m_sequenceCount > 0)
+	{
+		id = m_sequence[m_currentSequence].seqID;
+	}
+
+	return LookupSequence(hostage, seqName) == id;
 }
 
 #ifdef HOOK_GAMEDLL

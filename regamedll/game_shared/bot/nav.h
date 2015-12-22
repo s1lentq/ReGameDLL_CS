@@ -400,6 +400,7 @@ inline bool IsEntityWalkable(entvars_t *entity, unsigned int flags)
 }
 
 // Check LOS, ignoring any entities that we can walk through
+
 /* <38d33d> ../game_shared/bot/nav.h:330 */
 inline bool IsWalkableTraceLineClear(Vector &from, Vector &to, unsigned int flags = 0)
 {

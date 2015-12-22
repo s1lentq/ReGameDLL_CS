@@ -34,14 +34,11 @@
 
 #ifdef HOOK_GAMEDLL
 
-//#define Opposite (*pOpposite)
-//#define m_list (*pm_list)
-//#define NodeMapExtent (*pNodeMapExtent)
+#define Opposite (*pOpposite)
 
 #endif // HOOK_GAMEDLL
 
-//extern NavDirType Opposite[ NUM_DIRECTIONS ];
-//extern Extent NodeMapExtent;
+extern NavDirType Opposite[ NUM_DIRECTIONS ];
 
 class CNavNode
 {

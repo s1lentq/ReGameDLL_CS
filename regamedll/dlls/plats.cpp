@@ -1195,14 +1195,14 @@ void CFuncTrackTrain::Next(void)
 	CPathTrack *pnext = m_ppath->LookAhead(&nextPos, pev->speed * 0.1, 1);
 	nextPos.z += m_height;
 
-#if 0
+#ifndef PLAY_GAMEDLL
 	pev->velocity = (nextPos - pev->origin) * 10;
 #else
 	// TODO: fix test demo
 	pev->velocity.x = ((float_precision)(nextPos.x - pev->origin.x) * 10.0f);
 	pev->velocity.y = ((float_precision)(nextPos.y - pev->origin.y) * 10.0f);
 	pev->velocity.z = ((nextPos.z - pev->origin.z) * 10.0f);
-#endif
+#endif // PLAY_GAMEDLL
 
 	Vector nextFront = pev->origin;
 	nextFront.z -= m_height;
@@ -1223,7 +1223,7 @@ void CFuncTrackTrain::Next(void)
 	angles.y += fixAngleY;
 
 	// !!!  All of this crap has to be done to make the angles not wrap around, revisit this.
-#if 0
+#ifndef PLAY_GAMEDLL
 	FixupAngles(angles);
 	FixupAngles(pev->angles);
 #else
@@ -1232,7 +1232,8 @@ void CFuncTrackTrain::Next(void)
 	angles.z = Fix(angles.z);
 
 	FixupAngles(pev->angles);
-#endif
+#endif // PLAY_GAMEDLL
+
 	if (!pnext || (delta.x == 0 && delta.y == 0))
 		angles = pev->angles;
 

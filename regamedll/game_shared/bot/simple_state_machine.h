@@ -33,8 +33,9 @@
 #endif
 
 // Encapsulation of a finite-state-machine state
-template<typename T>
+
 /* <5c4388> ../game_shared/bot/simple_state_machine.h:21 */
+template<typename T>
 class SimpleState
 {
 public:
@@ -57,14 +58,16 @@ public:
 	{
 		return m_parent;
 	}
+
 private:
 	// the parent state that contains this state
 	SimpleState<T> *m_parent;
 };
 
 // Encapsulation of a finite state machine
-template<typename T, typename S>
+
 /* <5c4bab> ../game_shared/bot/simple_state_machine.h:68 */
+template<typename T, typename S>
 class SimpleStateMachine
 {
 public:

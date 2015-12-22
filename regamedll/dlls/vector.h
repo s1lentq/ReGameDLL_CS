@@ -51,7 +51,7 @@ public:
 	{
 		return Vector2D(x - v.x, y - v.y);
 	}
-#ifdef HOOK_GAMEDLL
+#ifdef PLAY_GAMEDLL
 	Vector2D operator*(float_precision fl) const
 	{
 		return Vector2D((vec_t)(x * fl), (vec_t)(y * fl));
@@ -77,7 +77,7 @@ public:
 	{
 		return Vector2D(x / fl, y / fl);
 	}
-#endif // HOOK_GAMEDLL
+#endif // PLAY_GAMEDLL
 	float_precision Length(void) const
 	{
 		return sqrt((float_precision)(x * x + y * y));
@@ -102,11 +102,11 @@ public:
 
 		flLen = 1 / flLen;
 
-#ifdef HOOK_GAMEDLL
+#ifdef PLAY_GAMEDLL
 		return Vector2D((vec_t)(x * flLen), (vec_t)(y * flLen));
 #else
 		return Vector2D(x * flLen, y * flLen);
-#endif // HOOK_GAMEDLL
+#endif // PLAY_GAMEDLL
 	}
 	bool IsLengthLessThan(float length) const
 	{
@@ -139,7 +139,7 @@ public:
 
 };/* size: 8, cachelines: 1, members: 2 */
 
-inline float DotProduct(const Vector2D &a, const Vector2D &b)
+inline float_precision DotProduct(const Vector2D &a, const Vector2D &b)
 {
 	return (a.x * b.x + a.y * b.y);
 }
@@ -193,7 +193,7 @@ public:
 	{
 		return Vector(x - v.x, y - v.y, z - v.z);
 	}
-#ifdef HOOK_GAMEDLL
+#ifdef PLAY_GAMEDLL
 	Vector operator*(float_precision fl) const
 	{
 		return Vector((vec_t)(x * fl), (vec_t)(y * fl), (vec_t)(z * fl));
@@ -219,7 +219,7 @@ public:
 	{
 		return Vector(x / fl, y / fl, z / fl);
 	}
-#endif // HOOK_GAMEDLL
+#endif // PLAY_GAMEDLL
 	void CopyToArray(float *rgfl) const
 	{
 		rgfl[0] = x;
@@ -236,7 +236,7 @@ public:
 
 		//return sqrt((float_precision)(x * x + y * y + z * z));
 	}
-	float LengthSquared(void) const
+	float_precision LengthSquared(void) const
 	{
 		return (x * x + y * y + z * z);
 	}
@@ -248,7 +248,7 @@ public:
 	{
 		return &x;
 	}
-#ifndef HOOK_GAMEDLL
+#ifndef PLAY_GAMEDLL
 	Vector Normalize(void)
 	{
 		float flLen = Length();
@@ -268,11 +268,11 @@ public:
 		vec_t fTemp = (vec_t)(1 / flLen);
 		return Vector(x * fTemp, y * fTemp, z * fTemp);
 	}
-#endif // HOOK_GAMEDLL
+#endif // PLAY_GAMEDLL
 	// for out precision normalize
 	Vector NormalizePrecision(void)
 	{
-#ifndef HOOK_GAMEDLL
+#ifndef PLAY_GAMEDLL
 		return Normalize();
 #else
 		float_precision flLen = Length();
@@ -281,7 +281,7 @@ public:
 
 		flLen = 1 / flLen;
 		return Vector((vec_t)(x * flLen), (vec_t)(y * flLen), (vec_t)(z * flLen));
-#endif // HOOK_GAMEDLL
+#endif // PLAY_GAMEDLL
 	}
 	Vector2D Make2D(void) const
 	{
@@ -302,7 +302,7 @@ public:
 	{
 		return (LengthSquared() > length * length);
 	}
-#ifdef HOOK_GAMEDLL
+#ifdef PLAY_GAMEDLL
 	float_precision NormalizeInPlace(void)
 	{
 		float_precision flLen = Length();
@@ -322,7 +322,27 @@ public:
 
 		return flLen;
 	}
-#else // HOOK_GAMEDLL
+	template<typename T>
+	float_precision NormalizeInPlace(void)
+	{
+		T flLen = Length();
+
+		if (flLen > 0)
+		{
+			x = (vec_t)(1 / flLen * x);
+			y = (vec_t)(1 / flLen * y);
+			z = (vec_t)(1 / flLen * z);
+		}
+		else
+		{
+			x = 0;
+			y = 0;
+			z = 1;
+		}
+
+		return flLen;
+	}
+#else // PLAY_GAMEDLL
 	float NormalizeInPlace(void)
 	{
 		float flLen = Length();
@@ -340,7 +360,7 @@ public:
 		}
 		return flLen;
 	}
-#endif // HOOK_GAMEDLL
+#endif // PLAY_GAMEDLL
 	bool IsZero(float tolerance = 0.01f) const
 	{
 		return (x > -tolerance && x < tolerance &&
@@ -360,6 +380,11 @@ inline Vector operator*(float fl, const Vector &v)
 inline float_precision DotProduct(const Vector &a, const Vector &b)
 {
 	return (a.x * b.x + a.y * b.y + a.z * b.z);
+}
+
+inline float_precision DotProduct2D(const Vector &a, const Vector &b)
+{
+	return (a.x * b.x + a.y * b.y);
 }
 
 /* <1ba548> ../cstrike/dlls/vector.h:186 */
@@ -401,7 +426,7 @@ inline Vector NormalizeSubtract(Vector vecStart, Vector vecDest)
 {
 	Vector dir;
 
-#ifdef HOOK_GAMEDLL
+#ifdef PLAY_GAMEDLL
 
 	X floatX = (vecDest.x - vecStart.x);
 	Y floatY = (vecDest.y - vecStart.y);
@@ -423,17 +448,13 @@ inline Vector NormalizeSubtract(Vector vecStart, Vector vecDest)
 	}
 #else
 	dir = (vecDest - vecStart).Normalize();
-#endif // HOOK_GAMEDLL
+#endif // PLAY_GAMEDLL
 
 	return dir;
 }
 
-#ifdef HOOK_GAMEDLL
-template<
-	typename X,
-	typename Y,
-	typename LenType
->
+#ifdef PLAY_GAMEDLL
+template<typename X, typename Y, typename LenType>
 inline Vector NormalizeMulScalar(Vector2D vec, float scalar)
 {
 	LenType flLen;
@@ -457,6 +478,6 @@ inline Vector NormalizeMulScalar(Vector2D vec, float scalar)
 
 	return Vector((vec_t)(floatX * scalar), (vec_t)(floatY * scalar), 0);
 }
-#endif // HOOK_GAMEDLL
+#endif // PLAY_GAMEDLL
 
 #endif // VECTOR_H

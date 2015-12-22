@@ -794,14 +794,14 @@ int CBaseMonster::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *p
 
 		if (pInflictor)
 		{
-#if 0
+#ifndef PLAY_GAMEDLL
 			vecDir = (pInflictor->Center() - Vector(0, 0, 10) - Center()).Normalize();
 #else
 			// TODO: fix test demo
 			vecDir = NormalizeSubtract<
 				float_precision, float, float_precision, float_precision
 				>(Center(), pInflictor->Center() - Vector(0, 0, 10));
-#endif
+#endif // PLAY_GAMEDLL
 			vecDir = g_vecAttackDir = vecDir.Normalize();
 		}
 	}

@@ -1,47 +1,143 @@
 #include "precompiled.h"
 
+/*
+* Globals initialization
+*/
+#ifndef HOOK_GAMEDLL
+
+const char *GameEventName[NUM_GAME_EVENTS + 1] =
+{
+	"EVENT_INVALID",
+	"EVENT_WEAPON_FIRED",
+	"EVENT_WEAPON_FIRED_ON_EMPTY",
+	"EVENT_WEAPON_RELOADED",
+	"EVENT_HE_GRENADE_EXPLODED",
+	"EVENT_FLASHBANG_GRENADE_EXPLODED",
+	"EVENT_SMOKE_GRENADE_EXPLODED",
+	"EVENT_GRENADE_BOUNCED",
+	"EVENT_BEING_SHOT_AT",
+	"EVENT_PLAYER_BLINDED_BY_FLASHBANG",
+	"EVENT_PLAYER_FOOTSTEP",
+	"EVENT_PLAYER_JUMPED",
+	"EVENT_PLAYER_DIED",
+	"EVENT_PLAYER_LANDED_FROM_HEIGHT",
+	"EVENT_PLAYER_TOOK_DAMAGE",
+	"EVENT_HOSTAGE_DAMAGED",
+	"EVENT_HOSTAGE_KILLED",
+	"EVENT_DOOR",
+	"EVENT_BREAK_GLASS",
+	"EVENT_BREAK_WOOD",
+	"EVENT_BREAK_METAL",
+	"EVENT_BREAK_FLESH",
+	"EVENT_BREAK_CONCRETE",
+	"EVENT_BOMB_PLANTED",
+	"EVENT_BOMB_DROPPED",
+	"EVENT_BOMB_PICKED_UP",
+	"EVENT_BOMB_BEEP",
+	"EVENT_BOMB_DEFUSING",
+	"EVENT_BOMB_DEFUSE_ABORTED",
+	"EVENT_BOMB_DEFUSED",
+	"EVENT_BOMB_EXPLODED",
+	"EVENT_HOSTAGE_USED",
+	"EVENT_HOSTAGE_RESCUED",
+	"EVENT_ALL_HOSTAGES_RESCUED",
+	"EVENT_VIP_ESCAPED",
+	"EVENT_VIP_ASSASSINATED",
+	"EVENT_TERRORISTS_WIN",
+	"EVENT_CTS_WIN",
+	"EVENT_ROUND_DRAW",
+	"EVENT_ROUND_WIN",
+	"EVENT_ROUND_LOSS",
+	"EVENT_ROUND_START",
+	"EVENT_PLAYER_SPAWNED",
+	"EVENT_CLIENT_CORPSE_SPAWNED",
+	"EVENT_BUY_TIME_START",
+	"EVENT_PLAYER_LEFT_BUY_ZONE",
+	"EVENT_DEATH_CAMERA_START",
+	"EVENT_KILL_ALL",
+	"EVENT_ROUND_TIME",
+	"EVENT_DIE",
+	"EVENT_KILL",
+	"EVENT_HEADSHOT",
+	"EVENT_KILL_FLASHBANGED",
+	"EVENT_TUTOR_BUY_MENU_OPENNED",
+	"EVENT_TUTOR_AUTOBUY",
+	"EVENT_PLAYER_BOUGHT_SOMETHING",
+	"EVENT_TUTOR_NOT_BUYING_ANYTHING",
+	"EVENT_TUTOR_NEED_TO_BUY_PRIMARY_WEAPON",
+	"EVENT_TUTOR_NEED_TO_BUY_PRIMARY_AMMO",
+	"EVENT_TUTOR_NEED_TO_BUY_SECONDARY_AMMO",
+	"EVENT_TUTOR_NEED_TO_BUY_ARMOR",
+	"EVENT_TUTOR_NEED_TO_BUY_DEFUSE_KIT",
+	"EVENT_TUTOR_NEED_TO_BUY_GRENADE",
+	"EVENT_CAREER_TASK_DONE",
+	"EVENT_START_RADIO_1",
+	"EVENT_RADIO_COVER_ME",
+	"EVENT_RADIO_YOU_TAKE_THE_POINT",
+	"EVENT_RADIO_HOLD_THIS_POSITION",
+	"EVENT_RADIO_REGROUP_TEAM",
+	"EVENT_RADIO_FOLLOW_ME",
+	"EVENT_RADIO_TAKING_FIRE",
+	"EVENT_START_RADIO_2",
+	"EVENT_RADIO_GO_GO_GO",
+	"EVENT_RADIO_TEAM_FALL_BACK",
+	"EVENT_RADIO_STICK_TOGETHER_TEAM",
+	"EVENT_RADIO_GET_IN_POSITION_AND_WAIT",
+	"EVENT_RADIO_STORM_THE_FRONT",
+	"EVENT_RADIO_REPORT_IN_TEAM",
+	"EVENT_START_RADIO_3",
+	"EVENT_RADIO_AFFIRMATIVE",
+	"EVENT_RADIO_ENEMY_SPOTTED",
+	"EVENT_RADIO_NEED_BACKUP",
+	"EVENT_RADIO_SECTOR_CLEAR",
+	"EVENT_RADIO_IN_POSITION",
+	"EVENT_RADIO_REPORTING_IN",
+	"EVENT_RADIO_GET_OUT_OF_THERE",
+	"EVENT_RADIO_NEGATIVE",
+	"EVENT_RADIO_ENEMY_DOWN",
+	"EVENT_END_RADIO",
+	"EVENT_NEW_MATCH",
+	"EVENT_PLAYER_CHANGED_TEAM",
+	"EVENT_BULLET_IMPACT",
+	"EVENT_GAME_COMMENCE",
+	"EVENT_WEAPON_ZOOMED",
+	"EVENT_HOSTAGE_CALLED_FOR_HELP",
+	NULL,
+};
+
+#else
+
+const char *GameEventName[ NUM_GAME_EVENTS + 1 ];
+
+#endif // HOOK_GAMEDLL
+
 // STL uses exceptions, but we are not compiling with them - ignore warning
 #pragma warning(disable : 4530)
 
-//#define DEFINE_EVENT_NAMES
+const float smokeRadius = 115.0f;		// for smoke grenades
 
-/*#include "extdll.h"
-#include "util.h"
-#include "cbase.h"
-#include "weapons.h"
-#include "soundent.h"
-#include "gamerules.h"
-#include "player.h"
-#include "client.h"
-#include "game_shared/perf_counter.h"
-
-#include "bot.h"
-#include "bot_manager.h"
-#include "nav_area.h"
-#include "bot_util.h"
-#include "hostage.h"
-
-#include "tutor.h"*/
-
-//#define CHECK_PERFORMANCE
-
-const float smokeRadius = 115.0f;		///< for smoke grenades
+// Convert name to GameEventType
+// TODO: Find more appropriate place for this function
 
 /* <49f6d7> ../game_shared/bot/bot_manager.cpp:58 */
-NOBODY GameEventType NameToGameEvent(const char *name)
+GameEventType NameToGameEvent(const char *name)
 {
-	/*for (int i=0; GameEventName[i]; ++i)
+	for (int i = 0; GameEventName[i] != NULL; ++i)
+	{
 		if (!Q_stricmp(GameEventName[i], name))
-			return static_cast<GameEventType>(i);*/
+			return static_cast<GameEventType>(i);
+	}
 
 	return EVENT_INVALID;
 }
 
 /* <49f733> ../game_shared/bot/bot_manager.cpp:69 */
-NOBODY CBotManager::CBotManager()
+CBotManager::CBotManager()
 {
-	//InitBotTrig();
+	InitBotTrig();
 }
+
+// Invoked when the round is restarting
 
 /* <49f586> ../game_shared/bot/bot_manager.cpp:78 */
 void CBotManager::__MAKE_VHOOK(RestartRound)(void)
@@ -49,13 +145,14 @@ void CBotManager::__MAKE_VHOOK(RestartRound)(void)
 	DestroyAllGrenades();
 }
 
+// Invoked at the start of each frame
+
+/* <49a21c> ../game_shared/bot/bot_manager.cpp:85 */
 void CBotManager::__MAKE_VHOOK(StartFrame)(void)
 {
 	// debug smoke grenade visualization
 	if (cv_bot_debug.value == 5)
 	{
-		UNTESTED
-
 		Vector edge, lastEdge;
 
 		ActiveGrenadeList::iterator iter = m_activeGrenadeList.begin();
@@ -115,11 +212,12 @@ void CBotManager::__MAKE_VHOOK(StartFrame)(void)
 		if (pPlayer->IsBot() && IsEntityValid(pPlayer))
 		{
 			CBot *pBot = static_cast<CBot *>(pPlayer);
-
 			pBot->BotThink();
 		}
 	}
 }
+
+// Return the filename for this map's "nav map" file
 
 /* <49f7a6> ../game_shared/bot/bot_manager.cpp:205 */
 const char *CBotManager::GetNavMapFilename(void) const
@@ -128,6 +226,10 @@ const char *CBotManager::GetNavMapFilename(void) const
 	Q_sprintf(filename, "maps\\%s.nav", STRING(gpGlobals->mapname));
 	return filename;
 }
+
+// Invoked when given player does given event (some events have NULL player).
+// Events are propogated to all bots.
+// TODO: This has become the game-wide event dispatcher. We should restructure this.
 
 /* <49f17b> ../game_shared/bot/bot_manager.cpp:219 */
 void CBotManager::__MAKE_VHOOK(OnEvent)(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
@@ -168,6 +270,8 @@ void CBotManager::__MAKE_VHOOK(OnEvent)(GameEventType event, CBaseEntity *entity
 	}
 }
 
+// Add an active grenade to the bot's awareness
+
 /* <49f7ff> ../game_shared/bot/bot_manager.cpp:257 */
 void CBotManager::AddGrenade(int type, CGrenade *grenade)
 {
@@ -175,6 +279,8 @@ void CBotManager::AddGrenade(int type, CGrenade *grenade)
 
 	m_activeGrenadeList.push_back(ag);
 }
+
+// The grenade entity in the world is going away
 
 /* <49f95a> ../game_shared/bot/bot_manager.cpp:267 */
 void CBotManager::RemoveGrenade(CGrenade *grenade)
@@ -190,6 +296,8 @@ void CBotManager::RemoveGrenade(CGrenade *grenade)
 		}
 	}
 }
+
+// Destroy any invalid active grenades
 
 /* <49f9fc> ../game_shared/bot/bot_manager.cpp:285 */
 NOXREF void CBotManager::ValidateActiveGrenades(void)
@@ -210,13 +318,15 @@ NOXREF void CBotManager::ValidateActiveGrenades(void)
 }
 
 /* <49faf3> ../game_shared/bot/bot_manager.cpp:305 */
-NOXREF void CBotManager::DestroyAllGrenades(void)
+void CBotManager::DestroyAllGrenades(void)
 {
 	for (ActiveGrenadeList::iterator iter = m_activeGrenadeList.begin(); iter != m_activeGrenadeList.end(); iter++)
 		delete *iter;
 
 	m_activeGrenadeList.clear();
 }
+
+// Return true if position is inside a smoke cloud
 
 /* <49fc24> ../game_shared/bot/bot_manager.cpp:317 */
 bool CBotManager::IsInsideSmokeCloud(const Vector *pos)
@@ -225,6 +335,8 @@ bool CBotManager::IsInsideSmokeCloud(const Vector *pos)
 	while (iter != m_activeGrenadeList.end())
 	{
 		ActiveGrenade *ag = *iter;
+
+		// lazy validation
 		if (!ag->IsValid())
 		{
 			delete ag;
@@ -242,8 +354,14 @@ bool CBotManager::IsInsideSmokeCloud(const Vector *pos)
 				return true;
 		}
 	}
+
 	return false;
 }
+
+// Return true if line intersects smoke volume
+// Determine the length of the line of sight covered by each smoke cloud,
+// and sum them (overlap is additive for obstruction).
+// If the overlap exceeds the threshold, the bot can't see through.
 
 /* <49fd8b> ../game_shared/bot/bot_manager.cpp:355 */
 bool CBotManager::IsLineBlockedBySmoke(const Vector *from, const Vector *to)
@@ -262,6 +380,7 @@ bool CBotManager::IsLineBlockedBySmoke(const Vector *from, const Vector *to)
 	{
 		ActiveGrenade *ag = *iter;
 
+		// lazy validation
 		if (!ag->IsValid())
 		{
 			delete ag;
@@ -357,7 +476,10 @@ bool CBotManager::IsLineBlockedBySmoke(const Vector *from, const Vector *to)
 		}
 	}
 
+	// define how much smoke a bot can see thru
 	const float maxSmokedLength = 0.7f * smokeRadius;
+
+	// return true if the total length of smoke-covered line-of-sight is too much
 	return (totalSmokedLength > maxSmokedLength);
 }
 
