@@ -170,6 +170,7 @@ void setupToolchain(NativeBinarySpec b)
 			'_vsnprintf': 'vsnprintf',
 			'_write' : 'write',
 			'_close' : 'close',
+			'_vsnwprintf' : 'vsnwprintf'
 		])
 
 		cfg.linkerOptions.args '-no-opt-class-analysis'
@@ -182,12 +183,16 @@ void setupToolchain(NativeBinarySpec b)
 		cfg.linkerOptions.definitionFile = "${projectDir}\\msvc\\mp.def";
 	}
 
-	if (!unitTestExecutable && !mpLib)
+	if (!unitTestExecutable)
 	{
-		cfg.singleDefines 'HOOK_GAMEDLL', 'CSTRIKE'
-	}
+		cfg.singleDefines 'CSTRIKE'
 
-	if (unitTestExecutable)
+		if (!mpLib)
+		{
+			cfg.singleDefines 'HOOK_GAMEDLL'
+		}
+	}
+	else
 	{
 		cfg.singleDefines 'REGAMEDLL_UNIT_TESTS'
 	}
