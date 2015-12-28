@@ -489,10 +489,21 @@ void CheckStartMoney(void)
 {
 	int money = (int)startmoney.value;
 
+#ifndef REGAMEDLL_ADD
 	if (money > 16000)
 		CVAR_SET_FLOAT("mp_startmoney", 16000);
 	else if (money < 800)
 		CVAR_SET_FLOAT("mp_startmoney", 800);
+#else
+	int max_money = (int)maxmoney.value;
+	int min_money = (int)minmoney.value;
+
+	if (money > max_money)
+		CVAR_SET_FLOAT("mp_startmoney", max_money);
+	else if (money < min_money)
+		CVAR_SET_FLOAT("mp_startmoney", min_money);
+#endif // REGAMEDLL_ADD
+
 }
 
 /* <4c084> ../cstrike/dlls/client.cpp:661 */
@@ -3322,6 +3333,7 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 
 								player->BuildRebuyStruct();
 							}
+							break;
 						}
 						case VGUI_MenuSlot_Buy_Item:
 						{

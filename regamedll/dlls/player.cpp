@@ -901,81 +901,81 @@ void CBasePlayer::__MAKE_VHOOK(TraceAttack)(entvars_t *pevAttacker, float flDama
 	{
 		switch (ptr->iHitgroup)
 		{
-			case HITGROUP_GENERIC:
-				break;
+		case HITGROUP_GENERIC:
+			break;
 
-			case HITGROUP_HEAD:
+		case HITGROUP_HEAD:
+		{
+			if (m_iKevlar == ARMOR_TYPE_HELMET)
 			{
-				if (m_iKevlar == ARMOR_TYPE_HELMET)
-				{
-					bShouldBleed = false;
-					bShouldSpark = true;
-				}
-
-				flDamage *= 4;
-				if (bShouldBleed)
-				{
-					pev->punchangle.x = flDamage * -0.5;
-
-					if (pev->punchangle.x < -12)
-						pev->punchangle.x = -12;
-
-					pev->punchangle.z = flDamage * RANDOM_FLOAT(-1, 1);
-
-					if (pev->punchangle.z < -9)
-						pev->punchangle.z = -9;
-
-					else if (pev->punchangle.z > 9)
-						pev->punchangle.z = 9;
-				}
-				break;
+				bShouldBleed = false;
+				bShouldSpark = true;
 			}
-			case HITGROUP_CHEST:
+
+			flDamage *= 4;
+			if (bShouldBleed)
 			{
-				flDamage *= 1;
+				pev->punchangle.x = flDamage * -0.5;
 
-				if (m_iKevlar != ARMOR_TYPE_EMPTY)
-					bShouldBleed = false;
+				if (pev->punchangle.x < -12)
+					pev->punchangle.x = -12;
 
-				else if (bShouldBleed)
-				{
-					pev->punchangle.x = flDamage * -0.1;
+				pev->punchangle.z = flDamage * RANDOM_FLOAT(-1, 1);
 
-					if (pev->punchangle.x < -4)
-						pev->punchangle.x = -4;
-				}
-				break;
+				if (pev->punchangle.z < -9)
+					pev->punchangle.z = -9;
+
+				else if (pev->punchangle.z > 9)
+					pev->punchangle.z = 9;
 			}
-			case HITGROUP_STOMACH:
+			break;
+		}
+		case HITGROUP_CHEST:
+		{
+			flDamage *= 1;
+
+			if (m_iKevlar != ARMOR_TYPE_EMPTY)
+				bShouldBleed = false;
+
+			else if (bShouldBleed)
 			{
-				flDamage *= 1.25;
+				pev->punchangle.x = flDamage * -0.1;
 
-				if (m_iKevlar != ARMOR_TYPE_EMPTY)
-					bShouldBleed = false;
-
-				else if (bShouldBleed)
-				{
-					pev->punchangle.x = flDamage * -0.1;
-
-					if (pev->punchangle.x < -4)
-						pev->punchangle.x = -4;
-				}
-				break;
+				if (pev->punchangle.x < -4)
+					pev->punchangle.x = -4;
 			}
-			case HITGROUP_LEFTARM:
-			case HITGROUP_RIGHTARM:
+			break;
+		}
+		case HITGROUP_STOMACH:
+		{
+			flDamage *= 1.25;
+
+			if (m_iKevlar != ARMOR_TYPE_EMPTY)
+				bShouldBleed = false;
+
+			else if (bShouldBleed)
 			{
-				if (m_iKevlar != ARMOR_TYPE_EMPTY)
-					bShouldBleed = false;
+				pev->punchangle.x = flDamage * -0.1;
 
-				break;
+				if (pev->punchangle.x < -4)
+					pev->punchangle.x = -4;
 			}
-			case HITGROUP_LEFTLEG:
-			case HITGROUP_RIGHTLEG:
-			{
-				flDamage *= 0.75;
-				break;
-			}
+			break;
+		}
+		case HITGROUP_LEFTARM:
+		case HITGROUP_RIGHTARM:
+		{
+			if (m_iKevlar != ARMOR_TYPE_EMPTY)
+				bShouldBleed = false;
+
+			break;
+		}
+		case HITGROUP_LEFTLEG:
+		case HITGROUP_RIGHTLEG:
+		{
+			flDamage *= 0.75;
+			break;
+		}
 		}
 	}
 
@@ -1130,7 +1130,10 @@ int CBasePlayer::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pe
 				{
 					if (pGrenade->m_iTeam == m_iTeam)
 						teamAttack = TRUE;
-
+#ifdef REGAMEDLL_ADD
+					if (friendlyfire.string[0] == '2')
+						teamAttack = FALSE;
+#endif // REGAMEDLL_ADD
 					pAttack = reinterpret_cast<CBasePlayer *>(CBasePlayer::Instance(pevAttacker));
 				}
 				else if (pGrenade->m_iTeam == m_iTeam && (&edict()->v != pevAttacker))
@@ -1288,7 +1291,13 @@ int CBasePlayer::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pe
 	{
 		pAttack = GetClassPtr((CBasePlayer *)pevAttacker);
 
-		if (pAttack != this && pAttack->m_iTeam == m_iTeam)
+		bool bAttackFFA = false;
+#ifdef REGAMEDLL_ADD
+		if (friendlyfire.string[0] == '2')
+			bAttackFFA = true;
+#endif // REGAMEDLL_ADD
+
+		if (pAttack != this && pAttack->m_iTeam == m_iTeam && !bAttackFFA)
 		{
 			// TODO: this->m_flDisplayHistory!!
 			if (!(m_flDisplayHistory & DHF_FRIEND_INJURED))
@@ -1318,7 +1327,7 @@ int CBasePlayer::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pe
 			}
 		}
 
-		if (pAttack->m_iTeam == m_iTeam)
+		if (pAttack->m_iTeam == m_iTeam && bAttackFFA)
 			flDamage *= 0.35;
 
 		iGunType = pAttack->m_pActiveItem->m_iId;
@@ -2256,7 +2265,6 @@ void CBasePlayer::__MAKE_VHOOK(Killed)(entvars_t *pevAttacker, int iGib)
 	}
 
 	m_bIsDefusing = false;
-
 	BuyZoneIcon_Clear(this);
 
 	SetThink(&CBasePlayer::PlayerDeathThink);
@@ -3196,11 +3204,23 @@ void CBasePlayer::AddAccount(int amount, bool bTrackChange)
 {
 	m_iAccount += amount;
 
+#ifndef REGAMEDLL_ADD
 	if (m_iAccount < 0)
 		m_iAccount = 0;
 
 	else if (m_iAccount > 16000)
 		m_iAccount = 16000;
+
+#else
+	int mmoney = (int)maxmoney.value;
+
+	if (m_iAccount < 0)
+		m_iAccount = 0;
+
+	else if (m_iAccount > mmoney)
+		m_iAccount = mmoney;
+
+#endif // REGAMEDLL_ADD
 
 	// Send money update to HUD
 	MESSAGE_BEGIN(MSG_ONE, gmsgMoney, NULL, pev);

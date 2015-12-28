@@ -403,6 +403,14 @@ cvar_t sk_scientist_heal3;
 
 #endif // HOOK_GAMEDLL
 
+#ifdef REGAMEDLL_ADD
+
+cvar_t maxmoney = { "mp_maxmoney", "16000", FCVAR_SERVER, 0.0f, NULL };
+cvar_t minmoney = { "mp_minmoney", "800", FCVAR_SERVER, 0.0f, NULL };
+cvar_t round_infinite = { "mp_round_infinite", "0", FCVAR_SERVER, 0.0f, NULL };
+
+#endif // REGAMEDLL_ADD
+
 /* <9c900> ../cstrike/dlls/game.cpp:500 */
 void EXT_FUNC GameDLLInit(void)
 {
@@ -492,6 +500,14 @@ void EXT_FUNC GameDLLInit(void)
 	CVAR_REGISTER(&sk_scientist_heal1);
 	CVAR_REGISTER(&sk_scientist_heal2);
 	CVAR_REGISTER(&sk_scientist_heal3);
+
+#ifdef REGAMEDLL_ADD
+
+	CVAR_REGISTER(&maxmoney);
+	CVAR_REGISTER(&minmoney);
+	CVAR_REGISTER(&round_infinite);
+
+#endif // REGAMEDLL_ADD
 
 	Bot_RegisterCvars();
 	Tutor_RegisterCVars();

@@ -374,6 +374,7 @@ void ReadMultiplayCvars(CHalfLifeMultiplay *mp)
 	mp->m_iIntroRoundTime = (int)CVAR_GET_FLOAT("mp_freezetime");
 	mp->m_iLimitTeams = (int)CVAR_GET_FLOAT("mp_limitteams");
 
+#ifndef REGAMEDLL_ADD
 	if (mp->m_iRoundTime > 540)
 	{
 		CVAR_SET_FLOAT("mp_roundtime", 9);
@@ -384,6 +385,20 @@ void ReadMultiplayCvars(CHalfLifeMultiplay *mp)
 		CVAR_SET_FLOAT("mp_roundtime", 1);
 		mp->m_iRoundTime = 60;
 	}
+#else
+	// a limit of 500 minutes because
+	// if you do more minutes would be a bug in the HUD RoundTime in the form 00:00
+	if (mp->m_iRoundTime > 30000)
+	{
+		CVAR_SET_FLOAT("mp_roundtime", 500);
+		mp->m_iRoundTime = 30000;
+	}
+	else if (mp->m_iRoundTime < 0)
+	{
+		CVAR_SET_FLOAT("mp_roundtime", 0);
+		mp->m_iRoundTime = 0;
+	}
+#endif // REGAMEDLL_ADD
 
 	if (mp->m_iIntroRoundTime > 60)
 	{
@@ -1021,6 +1036,11 @@ void CHalfLifeMultiplay::QueueCareerRoundEndMenu(float tmDelay, int iWinStatus)
 /* <117750> ../cstrike/dlls/multiplay_gamerules.cpp:1084 */
 void CHalfLifeMultiplay::__MAKE_VHOOK(CheckWinConditions)(void)
 {
+#ifdef REGAMEDLL_ADD
+	if (round_infinite.string[0] == '1')
+		return;
+#endif // REGAMEDLL_ADD
+
 	// If a winner has already been determined and game of started.. then get the heck out of here
 	if (m_bFirstConnected && m_iRoundWinStatus != 0)
 	{
@@ -2817,6 +2837,11 @@ void CHalfLifeMultiplay::CheckFreezePeriodExpired(void)
 
 void CHalfLifeMultiplay::CheckRoundTimeExpired(void)
 {
+#ifdef REGAMEDLL_ADD
+	if (round_infinite.string[0] == '1')
+		return;
+#endif // REGAMEDLL_ADD
+
 	if (!HasRoundTimeExpired())
 		return;
 
@@ -3672,8 +3697,14 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(PlayerKilled)(CBasePlayer *pVictim, entvar
 	{
 		// if a player dies in a deathmatch game and the killer is a client, award the killer some points
 		CBasePlayer *killer = GetClassPtr((CBasePlayer *)pKiller);
+		bool killedByFFA = false;
 
-		if (killer->m_iTeam == pVictim->m_iTeam)
+#ifdef REGAMEDLL_ADD
+		if (friendlyfire.string[0] == '2')
+			killedByFFA = true;
+#endif // REGAMEDLL_ADD
+
+		if (killer->m_iTeam == pVictim->m_iTeam && !killedByFFA)
 		{
 			// if a player dies by from teammate
 			pKiller->frags -= IPointsForKill(peKiller, pVictim);

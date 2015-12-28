@@ -221,6 +221,14 @@ extern cvar_t sk_scientist_heal1;
 extern cvar_t sk_scientist_heal2;
 extern cvar_t sk_scientist_heal3;
 
+#ifdef REGAMEDLL_ADD
+
+extern cvar_t maxmoney;
+extern cvar_t minmoney;
+extern cvar_t round_infinite;
+
+#endif // REGAMEDLL_ADD
+
 void GameDLLInit(void);
 
 #endif // GAME_H
