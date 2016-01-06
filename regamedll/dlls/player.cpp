@@ -1330,10 +1330,11 @@ int CBasePlayer::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pe
 		if (pAttack->m_iTeam == m_iTeam && bAttackFFA)
 			flDamage *= 0.35;
 
-		iGunType = pAttack->m_pActiveItem->m_iId;
 
 		if (pAttack->m_pActiveItem)
 		{
+			iGunType = pAttack->m_pActiveItem->m_iId;
+
 			flRatio += flShieldRatio;
 			switch (iGunType)
 			{
