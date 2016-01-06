@@ -1327,7 +1327,7 @@ int CBasePlayer::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pe
 			}
 		}
 
-		if (pAttack->m_iTeam == m_iTeam && bAttackFFA)
+		if (pAttack->m_iTeam == m_iTeam && !bAttackFFA)
 			flDamage *= 0.35;
 
 
