@@ -578,8 +578,8 @@ public:
 		return pev->iuser1;
 	}
 	NOXREF void PlantC4(void);
-	void Radio(const char *msg_id, const char *msg_verbose, short pitch = 100, bool showIcon = true);
-	NOXREF CBasePlayer *GetNextRadioRecipient(CBasePlayer *pStartPlayer);
+	void Radio(const char *msg_id, const char *msg_verbose = NULL, short pitch = 100, bool showIcon = true);
+	CBasePlayer *GetNextRadioRecipient(CBasePlayer *pStartPlayer);
 	void SmartRadio(void);
 	NOXREF void ThrowWeapon(char *pszItemName);
 	NOXREF void ThrowPrimary(void);

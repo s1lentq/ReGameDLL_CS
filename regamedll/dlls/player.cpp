@@ -574,7 +574,7 @@ void CBasePlayer::SetPlayerModel(BOOL HasC4)
 }
 
 /* <15f129> ../cstrike/dlls/player.cpp:659 */
-NOXREF CBasePlayer *CBasePlayer::GetNextRadioRecipient(CBasePlayer *pStartPlayer)
+CBasePlayer *CBasePlayer::GetNextRadioRecipient(CBasePlayer *pStartPlayer)
 {
 	CBaseEntity *pEntity = (CBaseEntity *)pStartPlayer;
 	while ((pEntity = UTIL_FindEntityByClassname(pEntity, "player")) != NULL)
@@ -709,6 +709,7 @@ void CBasePlayer::Radio(const char *msg_id, const char *msg_verbose, short pitch
 						ClientPrint(pEntity->pev, HUD_PRINTRADIO, NumAsString(entindex()), "#Game_radio", STRING(pev->netname), msg_verbose);
 				}
 
+				// icon over the head for teammates
 				if (showIcon)
 				{
 					// put an icon over this guys head to show that he used the radio
@@ -1297,17 +1298,26 @@ int CBasePlayer::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pe
 			bAttackFFA = true;
 #endif // REGAMEDLL_ADD
 
+		// warn about team attacks
 		if (pAttack != this && pAttack->m_iTeam == m_iTeam && !bAttackFFA)
 		{
+#ifndef REGAMEDLL_FIXES
 			// TODO: this->m_flDisplayHistory!!
 			if (!(m_flDisplayHistory & DHF_FRIEND_INJURED))
 			{
 				m_flDisplayHistory |= DHF_FRIEND_INJURED;
 				pAttack->HintMessage("#Hint_try_not_to_injure_teammates");
 			}
+#else
+			if (!(pAttack->m_flDisplayHistory & DHF_FRIEND_INJURED))
+			{
+				pAttack->m_flDisplayHistory |= DHF_FRIEND_INJURED;
+				pAttack->HintMessage("#Hint_try_not_to_injure_teammates");
+			}
+#endif // REGAMEDLL_FIXES
 
 			teamAttack = TRUE;
-			if (gpGlobals->time > pAttack->m_flLastAttackedTeammate + 0.6)
+			if (gpGlobals->time > pAttack->m_flLastAttackedTeammate + 0.6f)
 			{
 				CBaseEntity *pBasePlayer = NULL;
 				while ((pBasePlayer = UTIL_FindEntityByClassname(pBasePlayer, "player")) != NULL)
@@ -1327,15 +1337,17 @@ int CBasePlayer::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pe
 			}
 		}
 
-		if (pAttack->m_iTeam == m_iTeam && bAttackFFA)
+		if (pAttack->m_iTeam == m_iTeam && !bAttackFFA)
+		{
+			// bullets hurt teammates less
 			flDamage *= 0.35;
-
+		}
 
 		if (pAttack->m_pActiveItem)
 		{
 			iGunType = pAttack->m_pActiveItem->m_iId;
-
 			flRatio += flShieldRatio;
+
 			switch (iGunType)
 			{
 			case WEAPON_AUG:
@@ -2024,7 +2036,8 @@ void CBasePlayer::__MAKE_VHOOK(Killed)(entvars_t *pevAttacker, int iGib)
 			if (pAttacker->HasShield())
 				killerHasShield = true;
 
-			CCSBot *pBot = reinterpret_cast<CCSBot *>(this);
+			CCSBot *pBot = static_cast<CCSBot *>(this);
+
 			if (pBot->IsBot() && pBot->IsBlind())
 			{
 				wasBlind = true;
@@ -3044,7 +3057,7 @@ void CWShield::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 	if (pPlayer->pev->deadflag != DEAD_NO)
 		return;
 
-	if (m_hEntToIgnoreTouchesFrom != NULL && pPlayer == (CBasePlayer *)((CBaseEntity *)m_hEntToIgnoreTouchesFrom))
+	if (m_hEntToIgnoreTouchesFrom != NULL && pPlayer == (CBasePlayer *)m_hEntToIgnoreTouchesFrom)
 	{
 		if (m_flTimeToIgnoreTouches > gpGlobals->time)
 			return;
@@ -4282,7 +4295,9 @@ void CBasePlayer::__MAKE_VHOOK(PreThink)(void)
 
 	//this means the player has pressed or released a key
 	if (buttonsChanged)
+	{
 		m_fLastMovement = gpGlobals->time;
+	}
 
 	// Debounced button codes for pressed/released
 	// UNDONE: Do we need auto-repeat?
@@ -7547,6 +7562,7 @@ void CBasePlayer::DropPlayerItem(const char *pszItemName)
 
 				if (TheBots != NULL)
 				{
+					// tell the bots about the dropped bomb
 					TheCSBots()->SetLooseBomb(pWeaponBox);
 					TheCSBots()->OnEvent(EVENT_BOMB_DROPPED);
 				}
@@ -8963,6 +8979,8 @@ const char *CBasePlayer::PickGrenadeKillWeaponString(void)
 	return NULL;
 }
 
+// PostAutoBuyCommandProcessing - reorders the tokens in autobuyString based on the order of tokens in the priorityString.
+
 /* <15bb0c> ../cstrike/dlls/player.cpp:10816 */
 void CBasePlayer::PrioritizeAutoBuyString(char *autobuyString, const char *priorityString)
 {
@@ -8979,22 +8997,28 @@ void CBasePlayer::PrioritizeAutoBuyString(char *autobuyString, const char *prior
 	{
 		int i = 0;
 
+		// get the next token from the priority string.
 		while (*priorityChar != '\0' && *priorityChar != ' ')
 		{
 			priorityToken[ i++ ] = *priorityChar;
-			priorityChar++;
+			++priorityChar;
 		}
 
-		priorityToken[i] = 0;
+		priorityToken[i] = '\0';
 
+		// skip spaces
 		while (*priorityChar == ' ')
-			priorityChar++;
+			++priorityChar;
 
-		if (!Q_strlen(priorityToken))
+		if (Q_strlen(priorityToken) == 0)
+		{
 			continue;
+		}
 
+		// see if the priority token is in the autobuy string.
+		// if  it is, copy that token to the new string and blank out
+		// that token in the autobuy string.
 		char *autoBuyPosition = Q_strstr(autobuyString, priorityToken);
-
 		if (autoBuyPosition != NULL)
 		{
 			while (*autoBuyPosition != '\0' && *autoBuyPosition != ' ')
@@ -9010,23 +9034,28 @@ void CBasePlayer::PrioritizeAutoBuyString(char *autobuyString, const char *prior
 		}
 	}
 
+	// now just copy anything left in the autobuyString to the new string in the order it's in already.
 	char *autobuyPosition = autobuyString;
-
 	while (*autobuyPosition != '\0')
 	{
+		// skip spaces
 		while (*autobuyPosition == ' ')
-			autobuyPosition++;
+			++autobuyPosition;
 
+		// copy the token over to the new string.
 		while (*autobuyPosition != '\0' && *autobuyPosition != ' ')
 		{
 			newString[ newStringPos++ ] = *autobuyPosition;
-			autobuyPosition++;
+			++autobuyPosition;
 		}
 
+		// add a space at the end.
 		newString[ newStringPos++ ] = ' ';
 	}
 
-	newString[ newStringPos ] = 0;
+	// terminate the string.  Trailing spaces shouldn't matter.
+	newString[ newStringPos ] = '\0';
+
 	Q_sprintf(autobuyString, "%s", newString);
 }
 
@@ -9039,37 +9068,51 @@ void CBasePlayer::ParseAutoBuyString(const char *string, bool &boughtPrimary, bo
 	if (!string || !string[0])
 		return;
 
+	// loop through the string of commands, trying each one in turn.
 	while (*c)
 	{
 		int i = 0;
 
+		// copy the next word into the command buffer.
 		while (*c && (*c != ' ') && i < sizeof(command) - 1)
 		{
 			command[i++] = *c++;
 		}
 
 		if (*c == ' ')
+		{
+			// skip the space.
 			++c;
+		}
 
+		// terminate the string.
 		command[i] = '\0';
-		i = 0;
 
+		// clear out any spaces.
+		i = 0;
 		while (command[i] != '\0')
 		{
-			if (command[++i] == ' ')
+			if (command[i] == ' ')
 			{
 				command[i] = '\0';
 				break;
 			}
+			++i;
 		}
 
-		if (!Q_strlen(command))
+		// make sure we actually have a command.
+		if (Q_strlen(command) == 0)
+		{
 			continue;
+		}
 
 		AutoBuyInfoStruct *commandInfo = GetAutoBuyCommandInfo(command);
+
 		if (ShouldExecuteAutoBuyCommand(commandInfo, boughtPrimary, boughtSecondary))
 		{
 			ClientCommand(commandInfo->m_command);
+
+			// check to see if we actually bought a primary or secondary weapon this time.
 			PostAutoBuyCommandProcessing(commandInfo, boughtPrimary, boughtSecondary);
 		}
 	}
@@ -9079,13 +9122,21 @@ void CBasePlayer::ParseAutoBuyString(const char *string, bool &boughtPrimary, bo
 bool CBasePlayer::ShouldExecuteAutoBuyCommand(AutoBuyInfoStruct *commandInfo, bool boughtPrimary, bool boughtSecondary)
 {
 	if (!commandInfo)
+	{
 		return false;
+	}
 
-	if (boughtPrimary && (commandInfo->m_class & AUTOBUYCLASS_PRIMARY) != 0 && !(commandInfo->m_class & AUTOBUYCLASS_AMMO))
+	if (boughtPrimary && (commandInfo->m_class & AUTOBUYCLASS_PRIMARY) != 0 && (commandInfo->m_class & AUTOBUYCLASS_AMMO) == 0)
+	{
+		// this is a primary weapon and we already have one.
 		return false;
+	}
 
-	if (boughtSecondary && (commandInfo->m_class & AUTOBUYCLASS_SECONDARY) != 0 && !(commandInfo->m_class & AUTOBUYCLASS_AMMO))
+	if (boughtSecondary && (commandInfo->m_class & AUTOBUYCLASS_SECONDARY) != 0 && (commandInfo->m_class & AUTOBUYCLASS_AMMO) == 0)
+	{
+		// this is a secondary weapon and we already have one.
 		return false;
+	}
 
 	return true;
 }
@@ -9097,6 +9148,7 @@ AutoBuyInfoStruct *CBasePlayer::GetAutoBuyCommandInfo(const char *command)
 	AutoBuyInfoStruct *ret = NULL;
 	AutoBuyInfoStruct *temp = NULL;
 
+	// loop through all the commands till we find the one that matches.
 	while (ret == NULL)
 	{
 		temp = &(g_autoBuyInfo[ i ]);
@@ -9116,66 +9168,85 @@ AutoBuyInfoStruct *CBasePlayer::GetAutoBuyCommandInfo(const char *command)
 /* <15bc49> ../cstrike/dlls/player.cpp:11000 */
 void CBasePlayer::PostAutoBuyCommandProcessing(AutoBuyInfoStruct *commandInfo, bool &boughtPrimary, bool &boughtSecondary)
 {
+	if (commandInfo == NULL)
+	{
+		return;
+	}
+
 	CBasePlayerWeapon *primary = (CBasePlayerWeapon *)m_rgpPlayerItems[ PRIMARY_WEAPON_SLOT ];
 	CBasePlayerWeapon *secondary = (CBasePlayerWeapon *)m_rgpPlayerItems[ PISTOL_SLOT ];
 
-	if (!commandInfo)
-		return;
-
-	if (primary != NULL && !Q_stricmp(STRING(primary->pev->classname), commandInfo->m_classname))
+	if (primary != NULL && (Q_stricmp(STRING(primary->pev->classname), commandInfo->m_classname) == 0))
+	{
+		// I just bought the gun I was trying to buy.
 		boughtPrimary = true;
-
-	else if (commandInfo->m_class & AUTOBUYCLASS_SHIELD && HasShield())
+	}
+	else if (primary == NULL && ((commandInfo->m_class & AUTOBUYCLASS_SHIELD) == AUTOBUYCLASS_SHIELD) && HasShield())
+	{
+		// the shield is a primary weapon even though it isn't a "real" weapon.
 		boughtPrimary = true;
-
-	else if (secondary != NULL && !Q_stricmp(STRING(secondary->pev->classname), commandInfo->m_classname))
+	}
+	else if (secondary != NULL && (Q_stricmp(STRING(secondary->pev->classname), commandInfo->m_classname) == 0))
+	{
+		// I just bought the pistol I was trying to buy.
 		boughtSecondary = true;
+	}
 }
 
 /* <15c0b4> ../cstrike/dlls/player.cpp:11027 */
 void CBasePlayer::BuildRebuyStruct(void)
 {
-	int iAmmoIndex;
-
 	if (m_bIsInRebuy)
+	{
+		// if we are in the middle of a rebuy, we don't want to update the buy struct.
 		return;
+	}
 
 	CBasePlayerWeapon *primary = (CBasePlayerWeapon *)m_rgpPlayerItems[ PRIMARY_WEAPON_SLOT ];
 	CBasePlayerWeapon *secondary = (CBasePlayerWeapon *)m_rgpPlayerItems[ PISTOL_SLOT ];
 
-	if (primary != NULL)
+	// do the primary weapon/ammo stuff.
+	if (primary == NULL)
+	{
+		// count a shieldgun as a primary.
+		if (HasShield())
+		{
+			m_rebuyStruct.m_primaryWeapon = WEAPON_SHIELDGUN;
+			m_rebuyStruct.m_primaryAmmo = 0;			// shields don't have ammo.
+		}
+		else
+		{
+			m_rebuyStruct.m_primaryWeapon = 0;	// if we don't have a shield and we don't have a primary weapon, we got nuthin.
+			m_rebuyStruct.m_primaryAmmo = 0;	// can't have ammo if we don't have a gun right?
+		}
+	}
+	else
 	{
 		m_rebuyStruct.m_primaryWeapon = primary->m_iId;
 		m_rebuyStruct.m_primaryAmmo = m_rgAmmo[ primary->m_iPrimaryAmmoType ];
 	}
-	else
+
+	// do the secondary weapon/ammo stuff.
+	if (secondary == NULL)
 	{
-		m_rebuyStruct.m_primaryAmmo = 0;
-
-		if (HasShield())
-			m_rebuyStruct.m_primaryWeapon = WEAPON_SHIELDGUN;
-		else
-			m_rebuyStruct.m_primaryWeapon = 0;
+		m_rebuyStruct.m_secondaryWeapon = 0;
+		m_rebuyStruct.m_secondaryAmmo = 0;	// can't have ammo if we don't have a gun right?
 	}
-
-	if (secondary != NULL)
+	else
 	{
 		m_rebuyStruct.m_secondaryWeapon = secondary->m_iId;
 		m_rebuyStruct.m_secondaryAmmo = m_rgAmmo[ secondary->m_iPrimaryAmmoType ];
 	}
-	else
-	{
-		m_rebuyStruct.m_secondaryWeapon = 0;
-		m_rebuyStruct.m_secondaryAmmo = 0;
-	}
 
-	iAmmoIndex = GetAmmoIndex("HEGrenade");
+	// HE Grenade
+	int iAmmoIndex = GetAmmoIndex("HEGrenade");
 
 	if (iAmmoIndex != -1)
 		m_rebuyStruct.m_heGrenade = m_rgAmmo[ iAmmoIndex ];
 	else
 		m_rebuyStruct.m_heGrenade = 0;
 
+	// flashbang
 	iAmmoIndex = GetAmmoIndex("Flashbang");
 
 	if (iAmmoIndex != -1)
@@ -9183,6 +9254,7 @@ void CBasePlayer::BuildRebuyStruct(void)
 	else
 		m_rebuyStruct.m_flashbang = 0;
 
+	// smokegrenade
 	iAmmoIndex = GetAmmoIndex("SmokeGrenade");
 
 	if (iAmmoIndex != -1)
@@ -9190,9 +9262,9 @@ void CBasePlayer::BuildRebuyStruct(void)
 	else
 		m_rebuyStruct.m_smokeGrenade = 0;
 
-	m_rebuyStruct.m_defuser = m_bHasDefuser;
-	m_rebuyStruct.m_nightVision = m_bHasNightVision;
-	m_rebuyStruct.m_armor = m_iKevlar;
+	m_rebuyStruct.m_defuser = m_bHasDefuser;		// defuser
+	m_rebuyStruct.m_nightVision = m_bHasNightVision;	// night vision
+	m_rebuyStruct.m_armor = m_iKevlar;			// check for armor.
 }
 
 /* <15c37d> ../cstrike/dlls/player.cpp:11134 */
@@ -9235,6 +9307,8 @@ void CBasePlayer::Rebuy(void)
 
 	m_bIsInRebuy = false;
 
+	// after we're done buying, the user is done with their equipment purchasing experience.
+	// so we are effectively out of the buy zone.
 	if (TheTutor != NULL)
 	{
 		TheTutor->OnEvent(EVENT_PLAYER_LEFT_BUY_ZONE);
@@ -9242,7 +9316,7 @@ void CBasePlayer::Rebuy(void)
 }
 
 /* <15c96a> ../cstrike/dlls/player.cpp:11200 */
-NOXREF void CBasePlayer::RebuyPrimaryWeapon(void)
+void CBasePlayer::RebuyPrimaryWeapon(void)
 {
 	if (!m_rgpPlayerItems[ PRIMARY_WEAPON_SLOT ])
 	{
@@ -9257,19 +9331,20 @@ NOXREF void CBasePlayer::RebuyPrimaryWeapon(void)
 }
 
 /* <15c9e4> ../cstrike/dlls/player.cpp:11217 */
-NOXREF void CBasePlayer::RebuyPrimaryAmmo(void)
+void CBasePlayer::RebuyPrimaryAmmo(void)
 {
 	CBasePlayerWeapon *primary = (CBasePlayerWeapon *)m_rgpPlayerItems[ PRIMARY_WEAPON_SLOT ];
 
 	if (primary != NULL)
 	{
+		// if we had more ammo before than we have now, buy more.
 		if (m_rebuyStruct.m_primaryAmmo > m_rgAmmo[ primary->m_iPrimaryAmmoType ])
 			ClientCommand("primammo");
 	}
 }
 
 /* <15ca68> ../cstrike/dlls/player.cpp:11233 */
-NOXREF void CBasePlayer::RebuySecondaryWeapon(void)
+void CBasePlayer::RebuySecondaryWeapon(void)
 {
 	if (m_rebuyStruct.m_secondaryWeapon)
 	{
@@ -9281,7 +9356,7 @@ NOXREF void CBasePlayer::RebuySecondaryWeapon(void)
 }
 
 /* <15cae2> ../cstrike/dlls/player.cpp:11245 */
-NOXREF void CBasePlayer::RebuySecondaryAmmo(void)
+void CBasePlayer::RebuySecondaryAmmo(void)
 {
 	CBasePlayerWeapon *secondary = (CBasePlayerWeapon *)m_rgpPlayerItems[ PISTOL_SLOT ];
 
@@ -9293,7 +9368,7 @@ NOXREF void CBasePlayer::RebuySecondaryAmmo(void)
 }
 
 /* <15cb66> ../cstrike/dlls/player.cpp:11259 */
-NOXREF void CBasePlayer::RebuyHEGrenade(void)
+void CBasePlayer::RebuyHEGrenade(void)
 {
 	int iAmmoIndex = GetAmmoIndex("HEGrenade");
 
@@ -9307,7 +9382,7 @@ NOXREF void CBasePlayer::RebuyHEGrenade(void)
 }
 
 /* <15cc3f> ../cstrike/dlls/player.cpp:11279 */
-NOXREF void CBasePlayer::RebuyFlashbang(void)
+void CBasePlayer::RebuyFlashbang(void)
 {
 	int iAmmoIndex = GetAmmoIndex("Flashbang");
 
@@ -9321,7 +9396,7 @@ NOXREF void CBasePlayer::RebuyFlashbang(void)
 }
 
 /* <15cd18> ../cstrike/dlls/player.cpp:11299 */
-NOXREF void CBasePlayer::RebuySmokeGrenade(void)
+void CBasePlayer::RebuySmokeGrenade(void)
 {
 	int iAmmoIndex = GetAmmoIndex("SmokeGrenade");
 
@@ -9337,20 +9412,20 @@ NOXREF void CBasePlayer::RebuySmokeGrenade(void)
 /* <15cdf1> ../cstrike/dlls/player.cpp:11319 */
 void CBasePlayer::RebuyDefuser(void)
 {
-	if (m_rebuyStruct.m_defuser)
+	// If we don't have a defuser, and we want one, buy it!
+	if (m_rebuyStruct.m_defuser && !m_bHasDefuser)
 	{
-		if (!m_bHasDefuser)
-			ClientCommand("defuser");
+		ClientCommand("defuser");
 	}
 }
 
 /* <15ce59> ../cstrike/dlls/player.cpp:11330 */
 void CBasePlayer::RebuyNightVision(void)
 {
-	if (m_rebuyStruct.m_nightVision)
+	// If we don't have night vision and we want one, buy it!
+	if (m_rebuyStruct.m_nightVision && !m_bHasNightVision)
 	{
-		if (!m_bHasNightVision)
-			ClientCommand("nvgs");
+		ClientCommand("nvgs");
 	}
 }
 
