@@ -1410,8 +1410,7 @@ bool CHalfLifeMultiplay::BombRoundEndCheck(bool bNeededPlayers)
 
 bool CHalfLifeMultiplay::TeamExterminationCheck(int NumAliveTerrorist, int NumAliveCT, int NumDeadTerrorist, int NumDeadCT, bool bNeededPlayers)
 {
-	if ((m_iNumCT > 0 && m_iNumSpawnableCT > 0)
-		&& (m_iNumTerrorist > 0 && m_iNumSpawnableTerrorist > 0))
+	if ((m_iNumCT > 0 && m_iNumSpawnableCT > 0) && (m_iNumTerrorist > 0 && m_iNumSpawnableTerrorist > 0))
 	{
 		if (!NumAliveTerrorist && NumDeadTerrorist && NumAliveCT > 0)
 		{
@@ -1451,13 +1450,12 @@ bool CHalfLifeMultiplay::TeamExterminationCheck(int NumAliveTerrorist, int NumAl
 					QueueCareerRoundEndMenu(5, WINSTATUS_CTS);
 				}
 
+				return true;
 			}
-
-			return true;
 		}
 
 		// Terrorists WON
-		if (NumAliveCT == 0 && NumDeadCT != 0)
+		else if (NumAliveCT == 0 && NumDeadCT != 0)
 		{
 			Broadcast("terwin");
 			m_iAccountTerrorist += m_bMapHasBombTarget ? REWARD_BOMB_EXPLODED : REWARD_TERRORISTS_WIN;
@@ -2197,7 +2195,7 @@ BOOL CHalfLifeMultiplay::TeamStacked(int newTeam_id, int curTeam_id)
 /* <114e2b> ../cstrike/dlls/multiplay_gamerules.cpp:2214 */
 void CHalfLifeMultiplay::StackVIPQueue(void)
 {
-	for (int i = 0; i < MAX_VIP_QUEUES - 2; i++)
+	for (int i = MAX_VIP_QUEUES - 2; i > 0; --i)
 	{
 		if (VIPQueue[i - 1])
 		{
@@ -2214,7 +2212,6 @@ void CHalfLifeMultiplay::StackVIPQueue(void)
 			VIPQueue[i + 1] = NULL;
 		}
 	}
-
 }
 
 /* <114e63> ../cstrike/dlls/multiplay_gamerules.cpp:2232 */
