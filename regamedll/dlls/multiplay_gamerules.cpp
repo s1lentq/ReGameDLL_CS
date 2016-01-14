@@ -1412,7 +1412,7 @@ bool CHalfLifeMultiplay::TeamExterminationCheck(int NumAliveTerrorist, int NumAl
 {
 	if ((m_iNumCT > 0 && m_iNumSpawnableCT > 0) && (m_iNumTerrorist > 0 && m_iNumSpawnableTerrorist > 0))
 	{
-		if (!NumAliveTerrorist && NumDeadTerrorist && NumAliveCT > 0)
+		if (NumAliveTerrorist == 0 && NumDeadTerrorist != 0 && NumAliveCT > 0)
 		{
 			CBaseEntity *temp = NULL;
 			bool nowin = false;
@@ -3023,7 +3023,7 @@ bool CHalfLifeMultiplay::IsBombPlanted(void)
 	{
 		CGrenade *bomb = NULL;
 
-		if ((bomb = (CGrenade *)UTIL_FindEntityByClassname(bomb, "grenade")) != NULL)
+		while ((bomb = (CGrenade *)UTIL_FindEntityByClassname(bomb, "grenade")) != NULL)
 		{
 			if (bomb->m_bIsC4)
 			{
@@ -3038,7 +3038,7 @@ bool CHalfLifeMultiplay::IsBombPlanted(void)
 /* <115229> ../cstrike/dlls/multiplay_gamerules.cpp:2971 */
 void CHalfLifeMultiplay::MarkLivingPlayersOnTeamAsNotReceivingMoneyNextRound(int iTeam)
 {
-	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
 		CBasePlayer *player = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
