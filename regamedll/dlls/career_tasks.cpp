@@ -184,17 +184,12 @@ void CCareerTask::OnWeaponKill(int weaponId, int weaponClassId, bool headshot, b
 
 		while ((hostageEntity = UTIL_FindEntityByClassname(hostageEntity, "hostage_entity")) != NULL)
 		{
-			CHostage *hostage = (CHostage *)hostageEntity;
-
-			if (!hostage || hostage->pev->takedamage != DAMAGE_YES)
+			if (hostageEntity->pev->takedamage != DAMAGE_YES)
 				continue;
 
-			if (hostage->m_improv)
-			{
-				if (!hostage->IsFollowingSomeone())
-					continue;
-			}
-			else if (!hostage->m_hTargetEnt || hostage->m_State != CHostage::FOLLOW)
+			CHostage *hostage = static_cast<CHostage *>(hostageEntity);
+			
+			if (!hostage->IsFollowingSomeone())
 				continue;
 
 			if (hostage->IsValid() && hostage->m_target == pAttacker)
@@ -274,19 +269,10 @@ void CCareerTask::__MAKE_VHOOK(OnEvent)(GameEventType event, CBasePlayer *pVicti
 				if (hostageEntity->pev->takedamage != DAMAGE_YES)
 					continue;
 
-				CHostage *hostage = reinterpret_cast<CHostage *>(hostageEntity);
+				CHostage *hostage = static_cast<CHostage *>(hostageEntity);
 
-				if (hostage->m_improv)
-				{
-					if (!hostage->IsFollowingSomeone())
-					{
-						continue;
-					}
-				}
-				else if (hostage->m_hTargetEnt == NULL || hostage->m_State != CHostage::FOLLOW)
-				{
+				if (!hostage->IsFollowingSomeone())
 					continue;
-				}
 
 				if (hostage->IsValid() && hostage->m_target == pAttacker)
 					++hostages_;

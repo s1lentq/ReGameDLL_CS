@@ -119,7 +119,7 @@ int LookupActivity(void *pmodel, entvars_t *pev, int activity)
 		}
 	}
 
-	return ACTIVITY_NOT_AVAILABLE;
+	return ACT_INVALID;
 }
 
 /* <1539a> ../cstrike/dlls/animation.cpp:149 */
@@ -134,7 +134,7 @@ int LookupActivityHeaviest(void *pmodel, entvars_t *pev, int activity)
 
 	mstudioseqdesc_t *pseqdesc = (mstudioseqdesc_t *)((byte *)pstudiohdr + pstudiohdr->seqindex);
 	int weight = 0;
-	int seq = ACTIVITY_NOT_AVAILABLE;
+	int seq = ACT_INVALID;
 
 	for (int i = 0; i < pstudiohdr->numseq; i++)
 	{
@@ -179,13 +179,16 @@ int LookupSequence(void *pmodel, const char *label)
 		return 0;
 	}
 
+	// Look up by sequence name.
 	mstudioseqdesc_t *pseqdesc = (mstudioseqdesc_t *)((byte *)pstudiohdr + pstudiohdr->seqindex);
 	for (int i = 0; i < pstudiohdr->numseq; i++)
 	{
 		if (!Q_stricmp(pseqdesc[i].label, label))
 			return i;
 	}
-	return -1;
+
+	// Not found
+	return ACT_INVALID;
 }
 
 /* <1518c> ../cstrike/dlls/animation.cpp:215 */

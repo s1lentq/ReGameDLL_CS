@@ -6,7 +6,7 @@ NOBODY bool HasDefaultPistol(CCSBot *me)
 }
 
 /* <5299e4> ../cstrike/dlls/bot/states/cs_bot_buy.cpp:37 */
-NOBODY void BuyState::OnEnter(CCSBot *me)
+NOBODY void BuyState::__MAKE_VHOOK(OnEnter)(CCSBot *me)
 {
 //	{
 //		class CCSBotManager *ctrl;                           //    48
@@ -27,7 +27,7 @@ NOBODY inline WeaponType GetWeaponType(const char *alias)
 }
 
 /* <529753> ../cstrike/dlls/bot/states/cs_bot_buy.cpp:241 */
-NOBODY void BuyState::OnUpdate(CCSBot *me)
+NOBODY void BuyState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 {
 //	{
 //		bool inBuyZone;                                       //   273
@@ -84,6 +84,25 @@ NOBODY void BuyState::OnUpdate(CCSBot *me)
 }
 
 /* <5296f1> ../cstrike/dlls/bot/states/cs_bot_buy.cpp:529 */
-NOBODY void BuyState::OnExit(CCSBot *me)
+NOBODY void BuyState::__MAKE_VHOOK(OnExit)(CCSBot *me)
 {
 }
+
+#ifdef HOOK_GAMEDLL
+
+void BuyState::OnEnter(CCSBot *me)
+{
+	OnEnter_(me);
+}
+
+void BuyState::OnUpdate(CCSBot *me)
+{
+	OnUpdate_(me);
+}
+
+void BuyState::OnExit(CCSBot *me)
+{
+	OnExit_(me);
+}
+
+#endif // HOOK_GAMEDLL

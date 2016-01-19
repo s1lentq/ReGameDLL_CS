@@ -1,7 +1,7 @@
 #include "precompiled.h"
 
 /* <5c4e91> ../cstrike/dlls/bot/states/cs_bot_move_to.cpp:21 */
-NOBODY void MoveToState::OnEnter(CCSBot *me)
+NOBODY void MoveToState::__MAKE_VHOOK(OnEnter)(CCSBot *me)
 {
 //	{
 //		enum RouteType route;                                 //    30
@@ -9,7 +9,7 @@ NOBODY void MoveToState::OnEnter(CCSBot *me)
 }
 
 /* <5c4edf> ../cstrike/dlls/bot/states/cs_bot_move_to.cpp:55 */
-NOBODY void MoveToState::OnUpdate(CCSBot *me)
+NOBODY void MoveToState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 {
 //	{
 //		class CCSBotManager *ctrl;                           //    76
@@ -82,6 +82,25 @@ NOBODY void MoveToState::OnUpdate(CCSBot *me)
 }
 
 /* <5c4e54> ../cstrike/dlls/bot/states/cs_bot_move_to.cpp:320 */
-NOBODY void MoveToState::OnExit(CCSBot *me)
+NOBODY void MoveToState::__MAKE_VHOOK(OnExit)(CCSBot *me)
 {
 }
+
+#ifdef HOOK_GAMEDLL
+
+void MoveToState::OnEnter(CCSBot *me)
+{
+	OnEnter_(me);
+}
+
+void MoveToState::OnUpdate(CCSBot *me)
+{
+	OnUpdate_(me);
+}
+
+void MoveToState::OnExit(CCSBot *me)
+{
+	OnExit_(me);
+}
+
+#endif // HOOK_GAMEDLL

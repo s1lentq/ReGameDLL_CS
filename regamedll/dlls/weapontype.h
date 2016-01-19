@@ -70,6 +70,7 @@ enum WeaponIdType
 
 enum AutoBuyClassType
 {
+	AUTOBUYCLASS_NONE		= 0,
 	AUTOBUYCLASS_PRIMARY		= (1 << 0),
 	AUTOBUYCLASS_SECONDARY		= (1 << 1),
 	AUTOBUYCLASS_AMMO		= (1 << 2),

@@ -28,7 +28,7 @@ Archive's bin directory contains 2 subdirectories, 'bugfixed' and 'pure'
 ## Current status
 <ul>
 <li> Counter-Strike 1.6 - 100%</li>
-<li> Counter-Strike: Condition Zero - 63%</li>
+<li> Counter-Strike: Condition Zero - 90%</li>
 </ul>
 
 ## Build instructions

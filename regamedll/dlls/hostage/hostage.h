@@ -95,13 +95,15 @@ extern int g_iHostageNumber;
 extern cvar_t cv_hostage_debug;
 extern cvar_t cv_hostage_stop;
 
+// A Counter-Strike Hostage Simple
+
 /* <4858e5> ../cstrike/dlls/hostage/hostage.h:32 */
 class CHostage: public CBaseMonster
 {
 public:
 	virtual void Spawn(void);
 	virtual void Precache(void);
-	virtual int ObjectCaps(void);
+	virtual int ObjectCaps(void);		// make hostage "useable"
 	virtual int Classify(void)
 	{
 		return CLASS_HUMAN_PASSIVE;
@@ -152,22 +154,34 @@ public:
 	void Wiggle(void);
 	void PreThink(void);
 
+	// queries
 	bool IsFollowingSomeone(void)
 	{
-		return m_improv->IsFollowing();
+		return IsFollowing();
 	}
-	CBaseEntity *GetLeader(void)
+	CBaseEntity *GetLeader(void)				// return our leader, or NULL
 	{
 		if (m_improv != NULL)
 		{
 			return m_improv->GetFollowLeader();
 		}
 
-		return NULL;
+		return m_hTargetEnt;
 	}
-	bool IsFollowing(const CBaseEntity *entity)
+	bool IsFollowing(const CBaseEntity *entity = NULL)
 	{
-		return (entity == m_hTargetEnt && m_State == FOLLOW);
+		if (m_improv != NULL)
+		{
+			return m_improv->IsFollowing();
+		}
+
+		if (entity == NULL && m_hTargetEnt == NULL || (entity != NULL && m_hTargetEnt != entity))
+			return false;
+
+		if (m_State != FOLLOW)
+			return false;
+
+		return true;
 	}
 	bool IsValid(void)
 	{
@@ -187,24 +201,6 @@ public:
 	}
 
 public:
-	enum state
-	{
-		FOLLOW = 0,
-		STAND,
-		DUCK,
-		SCARED,
-		IDLE,
-		FOLLOWPATH,
-	};
-
-	enum ModelType
-	{
-		REGULAR_GUY = 0,
-		OLD_GUY,
-		BLACK_GUY,
-		GOOFY_GUY,
-	};
-
 	int m_Activity;
 	BOOL m_bTouched;
 	BOOL m_bRescueMe;
@@ -214,7 +210,8 @@ public:
 	int m_iModel;
 	int m_iSkin;
 	float m_flNextRadarTime;
-	state m_State;
+	enum state { FOLLOW, STAND, DUCK, SCARED, IDLE, FOLLOWPATH }
+	m_State;
 	Vector m_vStart;
 	Vector m_vStartAngles;
 	Vector m_vPathToFollow[20];
@@ -235,7 +232,9 @@ public:
 	BOOL m_bStuck;
 	float m_flStuckTime;
 	CHostageImprov *m_improv;
-	ModelType m_whichModel;
+
+	enum ModelType { REGULAR_GUY, OLD_GUY, BLACK_GUY, GOOFY_GUY }
+	m_whichModel;
 
 };/* size: 1988, cachelines: 32, members: 32 */
 
@@ -294,6 +293,25 @@ public:
 	bool IsNearbyHostageTalking(CHostageImprov *improv);
 	bool IsNearbyHostageJumping(CHostageImprov *improv);
 	void OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *other);
+
+	// Iterate over all active hostages in the game, invoking functor on each.
+	// If functor returns false, stop iteration and return false.
+	template<typename Functor>
+	inline bool ForEachHostage(Functor &func) const
+	{
+		for (int i = 0; i < m_hostageCount; i++)
+		{
+			CHostage *hostage = m_hostage[i];
+
+			if (hostage == NULL || hostage->pev->deadflag == DEAD_DEAD)
+				continue;
+
+			if (func(hostage) == false)
+				return false;
+		}
+
+		return true;
+	}
 	inline CHostage *GetClosestHostage(const Vector &pos, float *resultRange = NULL)
 	{
 		float range;
@@ -317,23 +335,6 @@ public:
 		return close;
 	}
 
-	template<typename T>
-	bool ForEachHostage(T &func) const
-	{
-		for (int i = 0; i < m_hostageCount; i++)
-		{
-			CHostage *pHostage = m_hostage[ i ];
-
-			if (pHostage->pev->deadflag == DEAD_DEAD)
-				continue;
-
-			if (func(pHostage) == false)
-				return false;
-		}
-
-		return true;
-	}
-
 private:
 	CHostage *m_hostage[ MAX_HOSTAGES ];
 	int m_hostageCount;
@@ -341,43 +342,18 @@ private:
 
 };/* size: 5680, cachelines: 89, members: 3 */
 
-
-///* <470134> ../cstrike/dlls/hostage/hostage.h:293 */
-//inline void CHostageManager::ForEachHostage<KeepPersonalSpace>(KeepPersonalSpace &func)
-//{
-////	{
-////		int i;                                                //   295
-////	}
-//}
-//
-///* <46fbe8> ../cstrike/dlls/hostage/hostage.h:293 */
-//inline void CHostageManager::ForEachHostage<CheckAhead>(CheckAhead &func)
-//{
-////	{
-////		int i;                                                //   295
-////	}
-//}
-//
-///* <46fb04> ../cstrike/dlls/hostage/hostage.h:293 */
-//inline void CHostageManager::ForEachHostage<CheckWayFunctor>(CheckWayFunctor &func)
-//{
-////	{
-////		int i;                                                //   295
-////	}
-//}
-
 #ifdef HOOK_GAMEDLL
 
 // linked object
 C_DLLEXPORT void hostage_entity(entvars_t *pev);
 C_DLLEXPORT void monster_scientist(entvars_t *pev);
 
+// refs
+extern void (CBaseEntity::*pCHostage__IdleThink)(void);
+
 #endif // HOOK_GAMEDLL
 
 void Hostage_RegisterCVars(void);
 void InstallHostageManager(void);
-
-// refs
-extern void (CBaseEntity::*pCHostage__IdleThink)(void);
 
 #endif // HOSTAGE_H

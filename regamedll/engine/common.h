@@ -115,6 +115,7 @@ typedef struct incomingtransfer_s
 //#define Q_strtoull strtoull
 //#define Q_FileNameCmp FileNameCmp
 #define Q_vsnprintf _vsnprintf
+#define Q_vsnwprintf _vsnwprintf
 #else // Q_functions
 void Q_strcpy(char *dest, const char *src);
 int Q_strlen(const char *str);

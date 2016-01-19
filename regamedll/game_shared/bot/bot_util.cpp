@@ -144,7 +144,7 @@ int UTIL_HumansInGame(bool ignoreSpectators)
 }
 
 /* <4ad507> ../game_shared/bot/bot_util.cpp:174 */
-NOBODY int UTIL_HumansOnTeam(int teamID, bool isAlive)
+int UTIL_HumansOnTeam(int teamID, bool isAlive)
 {
 	int iCount = 0;
 	for (int iIndex = 1; iIndex <= gpGlobals->maxClients; ++iIndex)
@@ -178,7 +178,7 @@ NOBODY int UTIL_HumansOnTeam(int teamID, bool isAlive)
 }
 
 /* <4ad5db> ../game_shared/bot/bot_util.cpp:210 */
-NOBODY int UTIL_BotsInGame(void)
+int UTIL_BotsInGame(void)
 {
 	int iCount = 0;
 
@@ -265,7 +265,7 @@ bool UTIL_KickBotFromTeam(TeamName kickTeam)
 }
 
 /* <4ad7ad> ../game_shared/bot/bot_util.cpp:305 */
-NOBODY bool UTIL_IsTeamAllBots(int team)
+bool UTIL_IsTeamAllBots(int team)
 {
 	int botCount = 0;
 	for (int i = 1; i <= gpGlobals->maxClients; ++i)
@@ -330,7 +330,7 @@ NOBODY bool UTIL_IsTeamAllBots(int team)
 // If 'distance' is non-NULL, the distance to the closest player is returned in it.
 
 /* <4ad86a> ../game_shared/bot/bot_util.cpp:343 */
-NOBODY /*extern*/ CBasePlayer *UTIL_GetClosestPlayer(const Vector *pos, int team, float *distance)
+/*extern*/ CBasePlayer *UTIL_GetClosestPlayer(const Vector *pos, int team, float *distance)
 {
 	CBasePlayer *closePlayer = NULL;
 	float closeDistSq = 1.0e12f;	// 999999999999.9f
@@ -388,7 +388,7 @@ void UTIL_ConstructBotNetName(char *name, int nameLength, const BotProfile *prof
 }
 
 /* <4adb6c> ../game_shared/bot/bot_util.cpp:440 */
-NOBODY bool UTIL_IsVisibleToTeam(const Vector &spot, int team, float maxRange)
+bool UTIL_IsVisibleToTeam(const Vector &spot, int team, float maxRange)
 {
 	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
@@ -432,26 +432,26 @@ CBasePlayer *UTIL_GetLocalPlayer(void)
 }
 
 /* <4adcab> ../game_shared/bot/bot_util.cpp:491 */
-NOBODY Vector UTIL_ComputeOrigin(entvars_t *pevVars)
+NOXREF Vector UTIL_ComputeOrigin(entvars_t *pevVars)
 {
-	if ((pevVars->origin.x == 0.0) && (pevVars->origin.y == 0.0) && (pevVars->origin.z == 0.0))
-		return (pevVars->absmax + pevVars->absmin) *0.5;
+	if (pevVars->origin.x == 0.0f && pevVars->origin.y == 0.0f && pevVars->origin.z == 0.0f)
+		return (pevVars->absmax + pevVars->absmin) * 0.5f;
 	else
 		return pevVars->origin;
 }
 
-NOBODY Vector UTIL_ComputeOrigin(CBaseEntity *pEntity)
+NOXREF Vector UTIL_ComputeOrigin(CBaseEntity *pEntity)
 {
 	return UTIL_ComputeOrigin(pEntity->pev);
 }
 
-NOBODY Vector UTIL_ComputeOrigin(edict_t *pentEdict)
+NOXREF Vector UTIL_ComputeOrigin(edict_t *pentEdict)
 {
 	return UTIL_ComputeOrigin(VARS(pentEdict));
 }
 
 /* <4adf8a> ../game_shared/bot/bot_util.cpp:513 */
-NOBODY void UTIL_DrawBeamFromEnt(int iIndex, Vector vecEnd, int iLifetime, byte bRed, byte bGreen, byte bBlue)
+NOXREF void UTIL_DrawBeamFromEnt(int iIndex, Vector vecEnd, int iLifetime, byte bRed, byte bGreen, byte bBlue)
 {
 	MESSAGE_BEGIN(MSG_PVS, SVC_TEMPENTITY, vecEnd);
 		WRITE_BYTE(TE_BEAMENTPOINT);
@@ -474,7 +474,7 @@ NOBODY void UTIL_DrawBeamFromEnt(int iIndex, Vector vecEnd, int iLifetime, byte 
 }
 
 /* <4ae02e> ../game_shared/bot/bot_util.cpp:537 */
-NOBODY void UTIL_DrawBeamPoints(Vector vecStart, Vector vecEnd, int iLifetime, byte bRed, byte bGreen, byte bBlue)
+void UTIL_DrawBeamPoints(Vector vecStart, Vector vecEnd, int iLifetime, byte bRed, byte bGreen, byte bBlue)
 {
 	MESSAGE_BEGIN(MSG_PVS, SVC_TEMPENTITY, vecStart);
 		WRITE_BYTE(TE_BEAMPOINTS);
@@ -585,8 +585,8 @@ bool IsGameEventAudible(GameEventType event, CBaseEntity *entity, CBaseEntity *o
 
 	switch (event)
 	{
-	/// TODO: Check weapon type (knives are pretty quiet)
-	/// TODO: Use actual volume, account for silencers, etc.
+	// TODO: Check weapon type (knives are pretty quiet)
+	// TODO: Use actual volume, account for silencers, etc.
 	case EVENT_WEAPON_FIRED:
 	{
 		if (player->m_pActiveItem == NULL)

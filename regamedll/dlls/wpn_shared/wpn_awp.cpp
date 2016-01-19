@@ -129,6 +129,7 @@ void CAWP::AWPFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 		m_pPlayer->m_iFOV = DEFAULT_FOV;
 		m_pPlayer->pev->fov = DEFAULT_FOV;
 	}
+	// If we are not zoomed in, the bullet diverts more.
 	else
 	{
 		flSpread += 0.08;
@@ -224,7 +225,11 @@ void CAWP::__MAKE_VHOOK(WeaponIdle)(void)
 /* <23fa86> ../cstrike/dlls/wpn_shared/wpn_awp.cpp:283 */
 float CAWP::__MAKE_VHOOK(GetMaxSpeed)(void)
 {
-	return m_pPlayer->m_iFOV == DEFAULT_FOV ? AWP_MAX_SPEED : AWP_MAX_SPEED_ZOOM;
+	if (m_pPlayer->m_iFOV == DEFAULT_FOV)
+		return AWP_MAX_SPEED;
+
+	// Slower speed when zoomed in.
+	return AWP_MAX_SPEED_ZOOM;
 }
 
 #ifdef HOOK_GAMEDLL

@@ -175,6 +175,7 @@ void CGLOCK18::GLOCK18Fire(float flSpread, float flCycleTime, BOOL bFireBurst)
 
 	if (m_flLastFire)
 	{
+		// Mark the time of this shot and determine the accuracy modifier based on the last shot fired...
 		m_flAccuracy -= (0.325 - (gpGlobals->time - m_flLastFire)) * 0.275;
 
 		if (m_flAccuracy > 0.9)
@@ -208,10 +209,13 @@ void CGLOCK18::GLOCK18Fire(float flSpread, float flCycleTime, BOOL bFireBurst)
 	m_iClip--;
 
 	m_pPlayer->pev->effects |= EF_MUZZLEFLASH;
+
+	// player "shoot" animation
 	m_pPlayer->SetAnimation(PLAYER_ATTACK1);
 
 	UTIL_MakeVectors(m_pPlayer->pev->v_angle + m_pPlayer->pev->punchangle);
 
+	// non-silenced
 	m_pPlayer->m_iWeaponVolume = NORMAL_GUN_VOLUME;
 	m_pPlayer->m_iWeaponFlash = NORMAL_GUN_FLASH;
 
@@ -233,6 +237,7 @@ void CGLOCK18::GLOCK18Fire(float flSpread, float flCycleTime, BOOL bFireBurst)
 
 	if (!m_iClip && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
 	{
+		// HEV suit - indicate out of ammo condition
 		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, FALSE);
 	}
 	
@@ -240,6 +245,7 @@ void CGLOCK18::GLOCK18Fire(float flSpread, float flCycleTime, BOOL bFireBurst)
 
 	if (bFireBurst)
 	{
+		// Fire off the next two rounds
 		m_iGlock18ShotsFired++;
 		m_flGlock18Shoot = gpGlobals->time + 0.1;
 	}
@@ -294,6 +300,7 @@ void CGLOCK18::__MAKE_VHOOK(WeaponIdle)(void)
 			SendWeaponAnim(GLOCK18_SHIELD_IDLE, UseDecrement() != FALSE);
 		}
 	}
+	// only idle if the slid isn't back
 	else if (m_iClip)
 	{
 		flRand = RANDOM_FLOAT(0, 1);

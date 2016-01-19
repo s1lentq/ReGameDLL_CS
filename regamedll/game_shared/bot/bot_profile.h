@@ -83,71 +83,27 @@ public:
 		m_voiceBank = 0;
 		m_prefersSilencer = false;
 	}
-
-	const char *GetName(void) const
-	{
-		return m_name;
-	}
-	float GetAggression(void) const
-	{
-		return m_aggression;
-	}
-	float GetSkill(void) const
-	{
-		return m_skill;
-	}
-	float GetTeamwork(void) const
-	{
-		return m_teamwork;
-	}
-	int GetWeaponPreference(int i)
-	{
-		return m_weaponPreference[i];
-	}
-	NOBODY const char *GetWeaponPreferenceAsString(int i) const;
-	int GetWeaponPreferenceCount(void) const
-	{
-		return m_weaponPreferenceCount;
-	}
-
-	NOBODY bool HasPrimaryPreference(void) const;
-	NOBODY bool HasPistolPreference(void) const;
-
-	int GetCost(void) const
-	{
-		return m_cost;
-	}
-	int GetSkin(void) const
-	{
-		return m_skin;
-	}
-	NOBODY bool IsDifficulty(BotDifficultyType diff) const;
-	int GetVoicePitch(void) const
-	{
-		return m_voicePitch;
-	}
-	float GetReactionTime(void) const
-	{
-		return m_reactionTime;
-	}
-	float GetAttackDelay(void) const
-	{
-		return m_attackDelay;
-	}
-	int GetVoiceBank(void) const
-	{
-		return m_voiceBank;
-	}
+	const char *GetName(void) const { return m_name; }
+	float GetAggression(void) const { return m_aggression; }
+	float GetSkill(void) const { return m_skill; }
+	float GetTeamwork(void) const { return m_teamwork; }
+	int GetWeaponPreference(int i) const { return m_weaponPreference[i]; }
+	const char *GetWeaponPreferenceAsString(int i) const;
+	int GetWeaponPreferenceCount(void) const { return m_weaponPreferenceCount; }
+	bool HasPrimaryPreference(void) const;
+	bool HasPistolPreference(void) const;
+	int GetCost(void) const { return m_cost; }
+	int GetSkin(void) const { return m_skin; }
+	bool IsDifficulty(BotDifficultyType diff) const;
+	int GetVoicePitch(void) const { return m_voicePitch; }
+	float GetReactionTime(void) const { return m_reactionTime; }
+	float GetAttackDelay(void) const { return m_attackDelay; }
+	int GetVoiceBank(void) const { return m_voiceBank; }
 	bool IsValidForTeam(BotProfileTeamType team) const;
-	bool PrefersSilencer(void) const
-	{
-		return m_prefersSilencer;
-	}
-	// TODO: it func private
-	NOBODY void Inherit(const BotProfile *parent, const BotProfile *baseline);
+	bool PrefersSilencer(void) const { return m_prefersSilencer; }
 
 private:
-
+	void Inherit(const BotProfile *parent, const BotProfile *baseline);
 	friend class BotProfileManager;
 
 	char *m_name;
@@ -223,7 +179,7 @@ inline void BotProfile::Inherit(const BotProfile *parent, const BotProfile *base
 		m_voiceBank = parent->m_voiceBank;
 }
 
-typedef std::list<BotProfile *> BotProfileList;
+typedef std::STD_LIST<BotProfile *> BotProfileList;
 
 /* <36a051> ../game_shared/bot/bot_profile.h:180 */
 class BotProfileManager
@@ -238,8 +194,10 @@ public:
 	const BotProfile *GetProfile(const char *name, BotProfileTeamType team) const
 	{
 		for (BotProfileList::const_iterator iter = m_profileList.begin(); iter != m_profileList.end(); ++iter)
+		{
 			if (!Q_stricmp(name, (*iter)->GetName()) && (*iter)->IsValidForTeam(team))
 				return *iter;
+		}
 
 		return NULL;
 	}
@@ -254,7 +212,7 @@ public:
 	const char *GetCustomSkinFname(int index);
 	int GetCustomSkinIndex(const char *name, const char *filename = NULL);
 
-	typedef std::vector<char *> VoiceBankList;
+	typedef std::STD_VECTOR<char *> VoiceBankList;
 
 	const VoiceBankList *GetVoiceBanks() const
 	{
@@ -263,11 +221,6 @@ public:
 	int FindVoiceBankIndex(const char *filename);
 
 protected:
-
-#if defined(_WIN32) && defined(HOOK_GAMEDLL)
-	int unknown_padding1;
-#endif // HOOK_GAMEDLL
-
 	BotProfileList m_profileList;
 	VoiceBankList m_voiceBanks;
 

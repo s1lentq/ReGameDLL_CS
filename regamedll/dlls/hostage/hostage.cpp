@@ -253,17 +253,13 @@ void CHostage::IdleThink(void)
 
 		if (m_improv != NULL)
 		{
-			if (IsFollowingSomeone())
-			{
+			if (m_improv->IsFollowing())
 				player = (CBasePlayer *)m_improv->GetFollowLeader();
-			}
 		}
 		else
-		{
 			player = GetClassPtr((CBasePlayer *)m_hTargetEnt->pev);
-		}
 
-		if (!player || player->m_iTeam == CT)
+		if (player == NULL || player->m_iTeam == CT)
 		{
 			if (!g_pGameRules->m_bMapHasRescueZone)
 			{
@@ -924,18 +920,7 @@ void CHostage::DoFollow(void)
 	}
 	else if (pev->takedamage == DAMAGE_YES)
 	{
-		if (m_improv != NULL)
-		{
-			if (IsFollowingSomeone())
-			{
-				if (!m_bStuck && flDistToDest > 200)
-				{
-					m_bStuck = TRUE;
-					m_flStuckTime = gpGlobals->time;
-				}
-			}
-		}
-		else if (m_hTargetEnt != NULL && m_State == FOLLOW)
+		if (IsFollowingSomeone())
 		{
 			if (!m_bStuck && flDistToDest > 200)
 			{
@@ -1498,7 +1483,6 @@ bool CHostageManager::IsNearbyHostageJumping(CHostageImprov *improv)
 {
 	for (int i = 0; i < m_hostageCount; i++)
 	{
-		const float closeRange = 500.0f;
 		const CHostageImprov *other = m_hostage[i]->m_improv;
 
 		if (other == NULL)
@@ -1506,7 +1490,8 @@ bool CHostageManager::IsNearbyHostageJumping(CHostageImprov *improv)
 
 		if (!other->IsAlive() || other == improv)
 			continue;
-
+		
+		const float closeRange = 500.0f;
 		if (!(improv->GetCentroid() - other->GetCentroid()).IsLengthGreaterThan(closeRange) && other->IsJumping())
 		{
 			return true;

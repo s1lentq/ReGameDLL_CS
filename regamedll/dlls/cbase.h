@@ -277,7 +277,7 @@ public:
 
 	operator int();
 	operator CBaseEntity*();
-	operator CBasePlayer*()	{ return (CBasePlayer *)GET_PRIVATE(Get()); }		// custom
+	operator CBasePlayer*()	{ return static_cast<CBasePlayer *>(GET_PRIVATE(Get())); }		// custom
 
 	CBaseEntity *operator=(CBaseEntity *pEntity);
 	CBaseEntity *operator->();

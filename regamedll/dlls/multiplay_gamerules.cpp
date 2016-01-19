@@ -448,7 +448,7 @@ CHalfLifeMultiplay::CHalfLifeMultiplay(void)
 	m_iAccountCT = 0;
 	m_iAccountTerrorist = 0;
 	m_iHostagesRescued = 0;
-	m_iRoundWinStatus = 0;
+	m_iRoundWinStatus = WINNER_NONE;
 	m_iNumCTWins = 0;
 	m_iNumTerroristWins = 0;
 	m_pVIP = NULL;
@@ -949,7 +949,7 @@ void CHalfLifeMultiplay::QueueCareerRoundEndMenu(float tmDelay, int iWinStatus)
 		{
 			numHostagesInMap++;
 
-			CHostage *pHostage = reinterpret_cast<CHostage *>(hostage);
+			CHostage *pHostage = static_cast<CHostage *>(hostage);
 
 			if (pHostage->pev->takedamage != DAMAGE_YES)
 			{
@@ -958,17 +958,8 @@ void CHalfLifeMultiplay::QueueCareerRoundEndMenu(float tmDelay, int iWinStatus)
 
 			CBasePlayer *pLeader = NULL;
 
-			if (pHostage->m_improv != NULL)
-			{
-				if (pHostage->IsFollowingSomeone())
-				{
-					pLeader = reinterpret_cast<CBasePlayer *>(pHostage->GetLeader());
-				}
-			}
-			else if (pHostage->m_hTargetEnt != NULL && pHostage->m_State == CHostage::FOLLOW)
-			{
-				pLeader = (CBasePlayer *)((CBaseEntity *)pHostage->m_hTargetEnt);
-			}
+			if (pHostage->IsFollowingSomeone())
+				pLeader = static_cast<CBasePlayer *>(pHostage->GetLeader());
 
 			if (pLeader == NULL)
 			{
@@ -1042,7 +1033,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(CheckWinConditions)(void)
 #endif // REGAMEDLL_ADD
 
 	// If a winner has already been determined and game of started.. then get the heck out of here
-	if (m_bFirstConnected && m_iRoundWinStatus != 0)
+	if (m_bFirstConnected && m_iRoundWinStatus != WINNER_NONE)
 	{
 		return;
 	}
@@ -2091,7 +2082,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(RestartRound)(void)
 	m_iAccountTerrorist = m_iAccountCT = 0;
 	m_iHostagesRescued = 0;
 	m_iHostagesTouched = 0;
-	m_iRoundWinStatus = 0;
+	m_iRoundWinStatus = WINNER_NONE;
 	m_bTargetBombed = m_bBombDefused = false;
 	m_bLevelInitialized = false;
 	m_bCompleteReset = false;
@@ -3000,7 +2991,7 @@ void CHalfLifeMultiplay::CheckRestartRound(void)
 bool CHalfLifeMultiplay::HasRoundTimeExpired(void)
 {
 	// We haven't completed other objectives, so go for this!.
-	if (TimeRemaining() > 0 || m_iRoundWinStatus != 0)
+	if (TimeRemaining() > 0 || m_iRoundWinStatus != WINNER_NONE)
 	{
 		return false;
 	}

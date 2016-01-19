@@ -38,21 +38,21 @@
 class CHostage;
 enum HostageChatterType;
 
+// A Counter-Strike Hostage improved
 class CHostageImprov: public CImprov
 {
 public:
 	CHostageImprov(CBaseEntity *entity);
 	~CHostageImprov(void) {};
 
-	virtual void OnMoveToSuccess(const Vector &goal)
-	{
-		m_behavior.OnMoveToSuccess(goal);
-	}
+	// invoked when an improv reaches its MoveTo goal
+	virtual void OnMoveToSuccess(const Vector &goal) { m_behavior.OnMoveToSuccess(goal); }
+
+	// invoked when an improv fails to reach a MoveTo goal
 	virtual void OnMoveToFailure(const Vector &goal, MoveToFailureType reason);
 	virtual void OnInjury(float amount)
 	{
 		m_behavior.OnInjury(amount);
-
 		m_lastInjuryTimer.Start();
 		Frighten(TERRIFIED);
 	}
@@ -63,122 +63,58 @@ public:
 	virtual void FaceTo(const Vector &goal);
 	virtual void ClearFaceTo(void);
 	virtual bool IsAtMoveGoal(float error = 20.0f) const;
-	virtual bool HasLookAt(void) const
-	{
-		return m_isLookingAt;
-	}
-	virtual bool HasFaceTo(void) const
-	{
-		return m_isFacingTo;
-	}
+	virtual bool HasLookAt(void) const { return m_isLookingAt; }
+	virtual bool HasFaceTo(void) const { return m_isFacingTo; }
 	virtual bool IsAtFaceGoal(void) const;
 	virtual bool IsFriendInTheWay(const Vector &goalPos) const;
 	virtual bool IsFriendInTheWay(CBaseEntity *myFriend, const Vector &goalPos) const;
-	virtual void MoveForward(void)
-	{
-		m_moveFlags |= IN_FORWARD;
-	}
-	virtual void MoveBackward(void)
-	{
-		m_moveFlags |= IN_BACK;
-	}
-	virtual void StrafeLeft(void)
-	{
-		m_moveFlags |= IN_MOVELEFT;
-	}
-	virtual void StrafeRight(void)
-	{
-		m_moveFlags |= IN_MOVERIGHT;
-	}
+	virtual void MoveForward(void) { m_moveFlags |= IN_FORWARD; }
+	virtual void MoveBackward(void) { m_moveFlags |= IN_BACK; }
+	virtual void StrafeLeft(void) { m_moveFlags |= IN_MOVELEFT; }
+	virtual void StrafeRight(void) { m_moveFlags |= IN_MOVERIGHT; }
 
 	#define HOSTAGE_MUST_JUMP true
 	virtual bool Jump(void);
 
 	virtual void Crouch(void);
 	virtual void StandUp(void);
-	virtual void TrackPath(const Vector &pathGoal, float deltaT);
+	virtual void TrackPath(const Vector &pathGoal, float deltaT);												// move along path by following "pathGoal"
 	virtual void StartLadder(const CNavLadder *ladder, NavTraverseType how, const Vector *approachPos, const Vector *departPos);
 	virtual bool TraverseLadder(const CNavLadder *ladder, NavTraverseType how, const Vector *approachPos, const Vector *departPos, float deltaT);
 	virtual bool GetSimpleGroundHeightWithFloor(const Vector *pos, float *height, Vector *normal = NULL);
 	virtual void Run(void);
 	virtual void Walk(void);
 	virtual void Stop(void);
-	virtual float GetMoveAngle(void) const
-	{
-		return m_moveAngle;
-	}
-	virtual float GetFaceAngle(void) const
-	{
-		return m_moveAngle;
-	}
+	virtual float GetMoveAngle(void) const { return m_moveAngle; }
+	virtual float GetFaceAngle(void) const { return m_moveAngle; }
 	virtual const Vector &GetFeet(void) const;
 	virtual const Vector &GetCentroid(void) const;
 	virtual const Vector &GetEyes(void) const;
-	virtual bool IsRunning(void) const
-	{
-		return (m_moveType == Running);
-	}
-	virtual bool IsWalking(void) const
-	{
-		return (m_moveType == Walking);
-	}
-	virtual bool IsStopped(void) const
-	{
-		return (m_moveType == Stopped);
-	}
-	virtual bool IsCrouching(void) const
-	{
-		return m_isCrouching;
-	}
-	virtual bool IsJumping(void) const
-	{
-		return (m_jumpTimer.IsElapsed() == false);
-	}
-	virtual bool IsUsingLadder(void) const
-	{
-		return false;
-	}
+	virtual bool IsRunning(void) const { return (m_moveType == Running); }
+	virtual bool IsWalking(void) const { return (m_moveType == Walking); }
+	virtual bool IsStopped(void) const { return (m_moveType == Stopped); }
+	virtual bool IsCrouching(void) const { return m_isCrouching; }
+	virtual bool IsJumping(void) const { return (m_jumpTimer.IsElapsed() == false); }
+	virtual bool IsUsingLadder(void) const { return false; }
 	virtual bool IsOnGround(void) const;
 	virtual bool IsMoving(void) const;
-	virtual bool CanRun(void) const
-	{
-		return true;
-	}
-	virtual bool CanCrouch(void) const
-	{
-		return true;
-	}
-	virtual bool CanJump(void) const
-	{
-		return true;
-	}
-	virtual bool IsVisible(const Vector &pos, bool testFOV = false) const;
+	virtual bool CanRun(void) const { return true; }
+	virtual bool CanCrouch(void) const { return true; }
+	virtual bool CanJump(void) const { return true; }
+	virtual bool IsVisible(const Vector &pos, bool testFOV = false) const;						// return true if hostage can see position
 	virtual bool IsPlayerLookingAtMe(CBasePlayer *other, float cosTolerance = 0.95f) const;
 	virtual CBasePlayer *IsAnyPlayerLookingAtMe(int team = 0, float cosTolerance = 0.95f) const;
 	virtual CBasePlayer *GetClosestPlayerByTravelDistance(int team = 0, float *range = NULL) const;
-	virtual CNavArea *GetLastKnownArea(void) const
-	{
-		return m_lastKnownArea;
-	}
+	virtual CNavArea *GetLastKnownArea(void) const { return m_lastKnownArea; }
 	virtual void OnUpdate(float deltaT);
 	virtual void OnUpkeep(float deltaT);
 	virtual void OnReset(void);
 	virtual void OnGameEvent(GameEventType event, CBaseEntity *entity = NULL, CBaseEntity *other = NULL);
-	virtual void OnTouch(CBaseEntity *other);
+	virtual void OnTouch(CBaseEntity *other);									// in contact with "other"
 
 #ifdef HOOK_GAMEDLL
 
-	void OnMoveToSuccess_(const Vector &goal)
-	{
-		//if (m_behavior.IsState(NULL))
-		//	IImprovEvent::OnMoveToSuccess(goal);
-	}
 	void OnMoveToFailure_(const Vector &goal, MoveToFailureType reason);
-	void OnInjury_(float amount)
-	{
-		//m_behavior.Update();
-		//m_lastInjuryTimer.Start();
-	}
 	bool IsAlive_(void) const;
 	void MoveTo_(const Vector &goal);
 	void LookAt_(const Vector &target);
@@ -217,27 +153,13 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	enum MoveType
-	{
-		Stopped = 0,
-		Walking,
-		Running,
-	};
-
-	enum ScareType
-	{
-		NERVOUS = 0,
-		SCARED,
-		TERRIFIED,
-	};
+	enum MoveType { Stopped, Walking, Running };
+	enum ScareType { NERVOUS, SCARED, TERRIFIED };
 
 	void FaceOutwards(void);
 	bool IsFriendInTheWay(void) const;
 	void SetKnownGoodPosition(const Vector &pos);
-	const Vector &GetKnownGoodPosition(void) const
-	{
-		return m_knownGoodPos;
-	}
+	const Vector &GetKnownGoodPosition(void) const { return m_knownGoodPos; }
 	void ResetToKnownGoodPosition(void);
 	void ResetJump(void)
 	{
@@ -253,7 +175,7 @@ public:
 			m_hasJumpedIntoAir = true;
 		}
 	}
-	void ApplyForce(Vector force);
+	void ApplyForce(Vector force);					// apply a force to the hostage
 #ifdef PLAY_GAMEDLL
 	void ApplyForce2(float_precision x, float_precision y)
 	{
@@ -261,62 +183,32 @@ public:
 		m_vel.y += y;
 	}
 #endif // PLAY_GAMEDLL
-	const Vector GetActualVelocity(void) const
-	{
-		return m_actualVel;
-	}
-	void SetMoveLimit(MoveType limit)
-	{
-		m_moveLimit = limit;
-	}
-	MoveType GetMoveLimit(void) const
-	{
-		return m_moveLimit;
-	}
-	CNavPath *GetPath(void)
-	{
-		return &m_path;
-	}
+	const Vector GetActualVelocity(void) const { return m_actualVel; }
+	void SetMoveLimit(MoveType limit) { m_moveLimit = limit; }
+	MoveType GetMoveLimit(void) const { return m_moveLimit; }
+	CNavPath *GetPath(void) { return &m_path; }
 	CNavPathFollower *GetPathFollower(void);
-	void Idle(void)
-	{
-		m_behavior.SetState(&m_idleState);
-	}
-	bool IsIdle(void) const
-	{
-		return m_behavior.IsState(&m_idleState);
-	}
-	void Follow(CBasePlayer *leader)
-	{
-		m_followState.SetLeader(leader);
-		m_behavior.SetState(&m_followState);
-	}
-	bool IsFollowing(const CBaseEntity *leader = NULL) const
-	{
-		return m_behavior.IsState(&m_followState);
-	}
-	void Escape(void)
-	{
-		m_behavior.SetState(&m_escapeState);
-	}
-	bool IsEscaping(void) const
-	{
-		return m_behavior.IsState(&m_escapeState);
-	}
-	void Retreat(void)
-	{
-		m_behavior.SetState(&m_retreatState);
-	}
-	bool IsRetreating(void) const
-	{
-		return m_behavior.IsState(&m_retreatState);
-	}
+
+	// hostage states
+	// stand idle
+	void Idle(void) { m_behavior.SetState(&m_idleState); }
+	bool IsIdle(void) const { return m_behavior.IsState(&m_idleState); }
+
+	// begin following "leader"
+	void Follow(CBasePlayer *leader) { m_followState.SetLeader(leader); m_behavior.SetState(&m_followState); }
+	bool IsFollowing(const CBaseEntity *leader = NULL) const { return m_behavior.IsState(&m_followState); }
+
+	// Escape
+	void Escape(void) { m_behavior.SetState(&m_escapeState); }
+	bool IsEscaping(void) const { return m_behavior.IsState(&m_escapeState); }
+
+	// Retreat
+	void Retreat(void) { m_behavior.SetState(&m_retreatState); }
+	bool IsRetreating(void) const { return m_behavior.IsState(&m_retreatState); }
+
 	bool IsAtHome(void) const;
 	bool CanSeeRescueZone(void) const;
-	CBaseEntity *GetFollowLeader(void) const
-	{
-		return m_followState.GetLeader();
-	}
+	CBaseEntity *GetFollowLeader(void) const { return m_followState.GetLeader(); }
 	CBasePlayer *GetClosestVisiblePlayer(int team);
 	float GetTimeSinceLastSawPlayer(int team);
 	float GetTimeSinceLastInjury(void);
@@ -324,25 +216,13 @@ public:
 	bool IsTerroristNearby(void);
 	void Frighten(ScareType scare);
 	bool IsScared(void) const;
-	ScareType GetScareIntensity(void) const
-	{
-		return m_scareIntensity;
-	}
-	bool IsIgnoringTerrorists(void) const
-	{
-		m_ignoreTerroristTimer.IsElapsed();
-	}
-	float GetAggression(void) const
-	{
-		return m_aggression;
-	}
+	ScareType GetScareIntensity(void) const { return m_scareIntensity; }
+	bool IsIgnoringTerrorists(void) const { m_ignoreTerroristTimer.IsElapsed(); }
+	float GetAggression(void) const { return m_aggression; }
 	void Chatter(HostageChatterType sayType, bool mustSpeak = true);
 	void DelayedChatter(float delayTime, HostageChatterType sayType, bool mustSpeak = false);
 	NOXREF void UpdateDelayedChatter(void);
-	bool IsTalking(void) const
-	{
-		return m_talkingTimer.IsElapsed();
-	}
+	bool IsTalking(void) const { return m_talkingTimer.IsElapsed(); }
 	void UpdateGrenadeReactions(void);
 	void Afraid(void);
 	void Wave(void);
@@ -352,20 +232,14 @@ public:
 	void Flinch(Activity activity);
 	void UpdateIdleActivity(Activity activity, Activity fidget);
 	void UpdateStationaryAnimation(void);
-	CHostage *GetEntity(void) const
-	{
-		return m_hostage;
-	}
+	CHostage *GetEntity(void) const { return m_hostage; }
 	void CheckForNearbyTerrorists(void);
 	void UpdatePosition(float);
 	void MoveTowards(const Vector &pos, float deltaT);
-	bool FaceTowards(const Vector &target, float deltaT);
+	bool FaceTowards(const Vector &target, float deltaT);	// rotate body to face towards "target"
 	float GetSpeed(void);
-	void SetMoveAngle(float angle)
-	{
-		m_moveAngle = angle;
-	}
-	void Wiggle(void);
+	void SetMoveAngle(float angle) { m_moveAngle = angle; }
+	void Wiggle(void);					// attempt to wiggle-out of begin stuck
 	void ClearPath(void);
 
 	#define HOSTAGE_ONLY_JUMP_DOWN true
@@ -378,7 +252,7 @@ public:
 
 private:
 	CHostage *m_hostage;
-	CNavArea *m_lastKnownArea;
+	CNavArea *m_lastKnownArea;	// last area we were in
 	mutable Vector m_centroid;
 	mutable Vector m_eye;
 	HostageStateMachine m_behavior;
@@ -423,25 +297,27 @@ private:
 	bool m_isLookingAt;
 	Vector m_faceGoal;
 	bool m_isFacingTo;
-	CNavPath m_path;
+	CNavPath m_path;			// current path to follow
 	CNavPathFollower m_follower;
 	Vector m_lastPosition;
 	MoveType m_moveType;
 	MoveType m_moveLimit;
-	bool m_isCrouching;
+	bool m_isCrouching;			// true if hostage is crouching
 	CountdownTimer m_minCrouchTimer;
 	float m_moveAngle;
 	NavRelativeDirType m_wiggleDirection;
-	CountdownTimer m_wiggleTimer;
+
+	CountdownTimer m_wiggleTimer;		// for wiggling
 	CountdownTimer m_wiggleJumpTimer;
 	CountdownTimer m_inhibitObstacleAvoidance;
-	CountdownTimer m_jumpTimer;
+	CountdownTimer m_jumpTimer;		// if zero, we can jump
+
 	bool m_hasJumped;
 	bool m_hasJumpedIntoAir;
 	Vector m_jumpTarget;
 	CountdownTimer m_clearPathTimer;
 	bool m_traversingLadder;
-	EHANDLE m_visiblePlayer[32];
+	EHANDLE m_visiblePlayer[ MAX_CLIENTS ];
 	int m_visiblePlayerCount;
 	CountdownTimer m_visionTimer;
 
@@ -475,6 +351,9 @@ public:
 
 }; /* size: 20, cachelines: 1, members: 3 */
 
+// Functor used with NavAreaBuildPath() for building Hostage paths.
+// Once we hook up crouching and ladders, this can be removed and ShortestPathCost() can be used instead.
+
 /* <46f426> ../cstrike/dlls/hostage/hostage_improv.h:400 */
 class HostagePathCost
 {
@@ -496,9 +375,12 @@ public:
 				const float ladderCost = 10.0f;
 				return ladder->m_length * ladderCost + fromArea->GetCostSoFar();
 			}
-
-			dist = (*area->GetCenter() - *fromArea->GetCenter()).Length();
-			float cost = fromArea->GetCostSoFar() + dist;
+			else
+			{
+				dist = (*area->GetCenter() - *fromArea->GetCenter()).Length();
+			}
+			
+			float cost = dist + fromArea->GetCostSoFar();
 
 			// if this is a "crouch" area, add penalty
 			if (area->GetAttributes() & NAV_CROUCH)
@@ -594,12 +476,8 @@ public:
 	CheckAhead(const CHostageImprov *me)
 	{
 		m_me = me;
-
+		m_dir = Vector(BotCOS(me->GetMoveAngle()), BotSIN(me->GetMoveAngle()), 0.0f);
 		m_isBlocked = false;
-
-		m_dir.x = BotCOS(me->GetMoveAngle());
-		m_dir.y = BotSIN(me->GetMoveAngle());
-		m_dir.z = 0;
 	}
 	/* <47046f> ../cstrike/dlls/hostage/hostage_improv.cpp:525 */
 	bool operator()(CBaseEntity *entity)

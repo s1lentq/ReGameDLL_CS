@@ -3631,7 +3631,7 @@ int CNavArea::GetPlayerCount(int teamID, CBasePlayer *ignore) const
 		if (!player->IsAlive())
 			continue;
 
-		if (teamID == 0 || player->m_iTeam == teamID)
+		if (teamID == UNASSIGNED || player->m_iTeam == teamID)
 			if (Contains(&player->pev->origin))
 				++count;
 	}
@@ -3697,7 +3697,7 @@ void CNavArea::DrawConnectedAreas(void)
 	if (player == NULL)
 		return;
 
-	CCSBotManager *ctrl = static_cast<CCSBotManager *>(TheBots);
+	CCSBotManager *ctrl = TheCSBots();
 	const float maxRange = 500.0f;
 
 	// draw self
@@ -3868,10 +3868,9 @@ public:
 	{
 		m_initialPlace = area->GetPlace();
 	}
-
 	bool operator()(CNavArea *area)
 	{
-		CCSBotManager *ctrl = static_cast<CCSBotManager *>(TheBots);
+		CCSBotManager *ctrl = TheCSBots();
 
 		if (area->GetPlace() != m_initialPlace)
 			return false;
@@ -3891,8 +3890,7 @@ private:
 /* <4d76ef> ../game_shared/bot/nav_area.cpp:4002 */
 void EditNavAreas(NavEditCmdType cmd)
 {
-	CCSBotManager *ctrl = static_cast<CCSBotManager *>(TheBots);
-
+	CCSBotManager *ctrl = TheCSBots();
 	CBasePlayer *player = UTIL_GetLocalPlayer();
 	if (player == NULL)
 		return;
@@ -3911,7 +3909,6 @@ void EditNavAreas(NavEditCmdType cmd)
 		doDraw = true;
 		lastDrawTimestamp = drawTimestamp;
 	}
-
 
 	const float maxRange = 1000.0f;
 	int beamTime = 1;
@@ -4034,7 +4031,7 @@ void EditNavAreas(NavEditCmdType cmd)
 		// find the area the player is pointing at
 		CNavArea *area = TheNavAreaGrid.GetNearestNavArea(&result.vecEndPos);
 
-		if (area)
+		if (area != NULL)
 		{
 			// if area changed, print its ID
 			if (area != lastSelectedArea)
@@ -4048,10 +4045,10 @@ void EditNavAreas(NavEditCmdType cmd)
 				if (area->GetPlace())
 				{
 					const char *name = TheBotPhrases->IDToName(area->GetPlace());
-					if (name)
-						strcpy(locName, name);
+					if (name != NULL)
+						Q_strcpy(locName, name);
 					else
-						strcpy(locName, "ERROR");
+						Q_strcpy(locName, "ERROR");
 				}
 				else
 				{
@@ -4064,14 +4061,14 @@ void EditNavAreas(NavEditCmdType cmd)
 				}
 				else
 				{
-					sprintf(attrib, "%s%s%s%s",
+					Q_sprintf(attrib, "%s%s%s%s",
 						(area->GetAttributes() & NAV_CROUCH) ? "CROUCH " : "",
 						(area->GetAttributes() & NAV_JUMP) ? "JUMP " : "",
 						(area->GetAttributes() & NAV_PRECISE) ? "PRECISE " : "",
 						(area->GetAttributes() & NAV_NO_JUMP) ? "NO_JUMP " : "");
 				}
 
-				sprintf(buffer, "Area #%d %s %s\n", area->GetID(), locName, attrib);
+				Q_sprintf(buffer, "Area #%d %s %s\n", area->GetID(), locName, attrib);
 				UTIL_SayTextAll(buffer, player);
 
 				// do "place painting"
@@ -4255,7 +4252,7 @@ void EditNavAreas(NavEditCmdType cmd)
 							connected += markedArea->GetAdjacentCount(WEST);
 
 							char buffer[80];
-							sprintf(buffer, "Marked Area is connected to %d other Areas\n", connected);
+							Q_sprintf(buffer, "Marked Area is connected to %d other Areas\n", connected);
 							UTIL_SayTextAll(buffer, player);
 						}
 						break;
@@ -4302,7 +4299,7 @@ void EditNavAreas(NavEditCmdType cmd)
 								}
 
 								char buffer[80];
-								sprintf(buffer, "Marked Area is connected to %d other Areas - there are %d total unnamed areas\n", connected, totalUnnamedAreas);
+								Q_sprintf(buffer, "Marked Area is connected to %d other Areas - there are %d total unnamed areas\n", connected, totalUnnamedAreas);
 								UTIL_SayTextAll(buffer, player);
 							}
 						}

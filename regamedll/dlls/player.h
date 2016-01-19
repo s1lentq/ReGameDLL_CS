@@ -463,10 +463,7 @@ public:
 	virtual void Precache(void);
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
-	virtual int ObjectCaps(void)
-	{
-		return (CBaseMonster::ObjectCaps() & ~FCAP_ACROSS_TRANSITION);
-	}
+	virtual int ObjectCaps(void) { return (CBaseMonster::ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
 	virtual int Classify(void);
 	virtual void TraceAttack(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType);
 	virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
@@ -477,60 +474,30 @@ public:
 	virtual BOOL AddPlayerItem(CBasePlayerItem *pItem);
 	virtual BOOL RemovePlayerItem(CBasePlayerItem *pItem);
 	virtual int GiveAmmo(int iAmount, char *szName, int iMax);
-	virtual void StartSneaking(void)
-	{
-		m_tSneaking = gpGlobals->time - 1;
-	}
-	virtual void StopSneaking(void)
-	{
-		m_tSneaking = gpGlobals->time + 30;
-	}
-	virtual BOOL IsSneaking(void)
-	{
-		return m_tSneaking <= gpGlobals->time;
-	}
-	virtual BOOL IsAlive(void)
-	{
-		return (pev->deadflag == DEAD_NO && pev->health > 0.0f);
-	}
-	virtual BOOL IsPlayer(void)
-	{
-		return (pev->flags & FL_SPECTATOR) != FL_SPECTATOR;
-	}
-	virtual BOOL IsNetClient(void)
-	{
-		return TRUE;
-	}
+	virtual void StartSneaking(void) { m_tSneaking = gpGlobals->time - 1; }
+	virtual void StopSneaking(void) { m_tSneaking = gpGlobals->time + 30; }
+	virtual BOOL IsSneaking(void) { return m_tSneaking <= gpGlobals->time; }
+	virtual BOOL IsAlive(void) { return (pev->deadflag == DEAD_NO && pev->health > 0.0f); }
+	virtual BOOL IsPlayer(void) { return (pev->flags & FL_SPECTATOR) != FL_SPECTATOR; }
+	virtual BOOL IsNetClient(void) { return TRUE; }
 	virtual const char *TeamID(void);
 	virtual BOOL FBecomeProne(void);
-	virtual Vector BodyTarget(const Vector &posSrc)
-	{
-		return Center() + pev->view_ofs * RANDOM_FLOAT(0.5, 1.1);
-	}
+	virtual Vector BodyTarget(const Vector &posSrc) { return Center() + pev->view_ofs * RANDOM_FLOAT(0.5, 1.1); }
 	virtual int Illumination(void);
-	virtual BOOL ShouldFadeOnDeath(void)
-	{
-		return FALSE;
-	}
+	virtual BOOL ShouldFadeOnDeath(void) { return FALSE; }
 	virtual void ResetMaxSpeed(void);
 	virtual void Jump(void);
 	virtual void Duck(void);
 	virtual void PreThink(void);
 	virtual void PostThink(void);
 	virtual Vector GetGunPosition(void);
-	virtual BOOL IsBot(void)
-	{
-		return FALSE;
-	}
+	virtual BOOL IsBot(void) { return FALSE; }
 	virtual void UpdateClientData(void);
 	virtual void ImpulseCommands(void);
 	virtual void RoundRespawn(void);
 	virtual Vector GetAutoaimVector(float flDelta);
 	virtual void Blind(float flUntilTime, float flHoldTime, float flFadeTime, int iAlpha);
-	virtual void OnTouchingWeapon(CWeaponBox *pWeapon)
-	{
-		;
-	}
+	virtual void OnTouchingWeapon(CWeaponBox *pWeapon) { }
 
 #ifdef HOOK_GAMEDLL
 
@@ -573,10 +540,7 @@ public:
 	void Observer_SetMode(int iMode);
 	void Observer_CheckTarget(void);
 	void Observer_CheckProperties(void);
-	int IsObserver(void)
-	{
-		return pev->iuser1;
-	}
+	int IsObserver(void) { return pev->iuser1; }
 	NOXREF void PlantC4(void);
 	void Radio(const char *msg_id, const char *msg_verbose = NULL, short pitch = 100, bool showIcon = true);
 	CBasePlayer *GetNextRadioRecipient(CBasePlayer *pStartPlayer);
@@ -623,10 +587,7 @@ public:
 	void UpdatePlayerSound(void);
 	void DeathSound(void);
 	void SetAnimation(PLAYER_ANIM playerAnim);
-	NOXREF void SetWeaponAnimType(const char *szExtention)
-	{
-		Q_strcpy(m_szAnimExtention, szExtention);
-	}
+	NOXREF void SetWeaponAnimType(const char *szExtention) { Q_strcpy(m_szAnimExtention, szExtention); }
 	void CheatImpulseCommands(int iImpulse);
 	void StartDeathCam(void);
 	void StartObserver(Vector vecPosition, Vector vecViewAngle);
@@ -685,10 +646,7 @@ public:
 	void SendWeatherInfo(void);
 	void UpdateShieldCrosshair(bool draw);
 	bool HasShield(void);
-	bool IsProtectedByShield(void)
-	{
-		return HasShield() && m_bShieldDrawn;
-	}
+	bool IsProtectedByShield(void) { return HasShield() && m_bShieldDrawn; }
 	void RemoveShield(void);
 	void DropShield(bool bDeploy = true);
 	void GiveShield(bool bDeploy = true);
@@ -696,27 +654,17 @@ public:
 	bool SelectSpawnSpot(const char *pEntClassName, CBaseEntity* &pSpot);
 	bool IsReloading(void)
 	{
-		if (m_pActiveItem != NULL && ((CBasePlayerWeapon *)m_pActiveItem)->m_fInReload)
+		CBasePlayerWeapon *weapon = static_cast<CBasePlayerWeapon *>(m_pActiveItem);
+
+		if (weapon != NULL && weapon->m_fInReload)
 			return true;
 
 		return false;
 	}
-	bool IsBlind(void)
-	{
-		return (m_blindUntilTime > gpGlobals->time);
-	}
-	bool IsAutoFollowAllowed(void)
-	{
-		return (gpGlobals->time > m_allowAutoFollowTime);
-	}
-	void InhibitAutoFollow(float duration)
-	{
-		m_allowAutoFollowTime = duration;
-	}
-	void AllowAutoFollow(void)
-	{
-		m_allowAutoFollowTime = 0;
-	}
+	bool IsBlind(void) const { return (m_blindUntilTime > gpGlobals->time); }
+	bool IsAutoFollowAllowed(void) const { return (gpGlobals->time > m_allowAutoFollowTime); }
+	void InhibitAutoFollow(float duration) { m_allowAutoFollowTime = gpGlobals->time + duration; }
+	void AllowAutoFollow(void) { m_allowAutoFollowTime = 0; }
 	void ClearAutoBuyData(void);
 	void AddAutoBuyData(const char *str);
 	void AutoBuy(void);
@@ -744,15 +692,9 @@ public:
 	void RebuyNightVision(void);
 	void RebuyArmor(void);
 	void UpdateLocation(bool forceUpdate = false);
-	void SetObserverAutoDirector(bool val)
-	{
-		m_bObserverAutoDirector = val;
-	}
+	void SetObserverAutoDirector(bool val) { m_bObserverAutoDirector = val; }
 	bool IsObservingPlayer(CBasePlayer *pPlayer);
-	bool CanSwitchObserverModes(void)
-	{
-		return m_canSwitchObserverModes;
-	}
+	bool CanSwitchObserverModes(void) const { return m_canSwitchObserverModes; }
 	NOXREF void Intense(void)
 	{
 		//m_musicState = INTENSE;

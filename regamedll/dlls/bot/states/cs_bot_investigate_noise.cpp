@@ -7,14 +7,14 @@ NOBODY void InvestigateNoiseState::AttendCurrentNoise(CCSBot *me)
 }
 
 /* <5b2f37> ../cstrike/dlls/bot/states/cs_bot_investigate_noise.cpp:38 */
-NOBODY void InvestigateNoiseState::OnEnter(CCSBot *me)
+NOBODY void InvestigateNoiseState::__MAKE_VHOOK(OnEnter)(CCSBot *me)
 {
 //	AttendCurrentNoise(InvestigateNoiseState *const this,
 //				class CCSBot *me);  //    40
 }
 
 /* <5b2fa2> ../cstrike/dlls/bot/states/cs_bot_investigate_noise.cpp:47 */
-NOBODY void InvestigateNoiseState::OnUpdate(CCSBot *me)
+NOBODY void InvestigateNoiseState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 {
 //	{
 //		float newNoiseDist;                                   //    50
@@ -40,6 +40,25 @@ NOBODY void InvestigateNoiseState::OnUpdate(CCSBot *me)
 }
 
 /* <5b2e95> ../cstrike/dlls/bot/states/cs_bot_investigate_noise.cpp:129 */
-NOBODY void InvestigateNoiseState::OnExit(CCSBot *me)
+NOBODY void InvestigateNoiseState::__MAKE_VHOOK(OnExit)(CCSBot *me)
 {
 }
+
+#ifdef HOOK_GAMEDLL
+
+void InvestigateNoiseState::OnEnter(CCSBot *me)
+{
+	OnEnter_(me);
+}
+
+void InvestigateNoiseState::OnUpdate(CCSBot *me)
+{
+	OnUpdate_(me);
+}
+
+void InvestigateNoiseState::OnExit(CCSBot *me)
+{
+	OnExit_(me);
+}
+
+#endif // HOOK_GAMEDLL

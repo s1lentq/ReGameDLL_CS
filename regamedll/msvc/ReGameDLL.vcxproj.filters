@@ -1136,6 +1136,9 @@
     <ClInclude Include="..\public\tier0\platform.h">
       <Filter>public\tier0</Filter>
     </ClInclude>
+    <ClInclude Include="..\game_shared\bot\bot_constants.h">
+      <Filter>game_shared\bot</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\linux\appversion.sh">

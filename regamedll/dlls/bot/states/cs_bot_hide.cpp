@@ -1,13 +1,13 @@
 #include "precompiled.h"
 
 /* <57c261> ../cstrike/dlls/bot/states/cs_bot_hide.cpp:22 */
-NOBODY void HideState::OnEnter(CCSBot *me)
+NOBODY void HideState::__MAKE_VHOOK(OnEnter)(CCSBot *me)
 {
 //	GetFollowLeader(CCSBot *const this);  //    50
 }
 
 /* <57c35e> ../cstrike/dlls/bot/states/cs_bot_hide.cpp:59 */
-NOBODY void HideState::OnUpdate(CCSBot *me)
+NOBODY void HideState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 {
 //	{
 //		class CCSBotManager *ctrl;                           //    61
@@ -110,7 +110,7 @@ NOBODY void HideState::OnUpdate(CCSBot *me)
 }
 
 /* <57c2c8> ../cstrike/dlls/bot/states/cs_bot_hide.cpp:450 */
-NOBODY void HideState::OnExit(CCSBot *me)
+NOBODY void HideState::__MAKE_VHOOK(OnExit)(CCSBot *me)
 {
 //	ClearLookAt(CCSBot *const this);  //   456
 //	ClearApproachPoints(CCSBot *const this);  //   457
@@ -118,3 +118,22 @@ NOBODY void HideState::OnExit(CCSBot *me)
 //	OnExit(HideState *const this,
 //		class CCSBot *me);  //   450
 }
+
+#ifdef HOOK_GAMEDLL
+
+void HideState::OnEnter(CCSBot *me)
+{
+	OnEnter_(me);
+}
+
+void HideState::OnUpdate(CCSBot *me)
+{
+	OnUpdate_(me);
+}
+
+void HideState::OnExit(CCSBot *me)
+{
+	OnExit_(me);
+}
+
+#endif // HOOK_GAMEDLL

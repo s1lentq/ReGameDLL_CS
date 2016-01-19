@@ -1,7 +1,7 @@
 #include "precompiled.h"
 
 /* <56918b> ../cstrike/dlls/bot/states/cs_bot_follow.cpp:16 */
-NOBODY void FollowState::OnEnter(CCSBot *me)
+NOBODY void FollowState::__MAKE_VHOOK(OnEnter)(CCSBot *me)
 {
 //	DestroyPath(CCSBot *const this);  //    20
 //	Invalidate(CountdownTimer *const this);  //    33
@@ -27,7 +27,7 @@ NOBODY void FollowState::ComputeLeaderMotionState(float leaderSpeed)
 }
 
 /* <569368> ../cstrike/dlls/bot/states/cs_bot_follow.cpp:164 */
-NOBODY void FollowState::OnUpdate(CCSBot *me)
+NOBODY void FollowState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 {
 //	{
 //		float leaderSpeed;                                    //   194
@@ -98,6 +98,25 @@ NOBODY void FollowState::OnUpdate(CCSBot *me)
 }
 
 /* <569231> ../cstrike/dlls/bot/states/cs_bot_follow.cpp:353 */
-NOBODY void FollowState::OnExit(CCSBot *me)
+NOBODY void FollowState::__MAKE_VHOOK(OnExit)(CCSBot *me)
 {
 }
+
+#ifdef HOOK_GAMEDLL
+
+void FollowState::OnEnter(CCSBot *me)
+{
+	OnEnter_(me);
+}
+
+void FollowState::OnUpdate(CCSBot *me)
+{
+	OnUpdate_(me);
+}
+
+void FollowState::OnExit(CCSBot *me)
+{
+	OnExit_(me);
+}
+
+#endif // HOOK_GAMEDLL

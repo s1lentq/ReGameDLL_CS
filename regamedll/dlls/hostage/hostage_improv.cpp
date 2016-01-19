@@ -275,7 +275,7 @@ void CHostageImprov::FaceOutwards(void)
 	float farthestRange = 0.0f;
 	int farthest = 0;
 
-	Vector corner[] =
+	static Vector corner[] =
 	{
 		Vector(-1000, 1000, 0),
 		Vector(1000, 1000, 0),
@@ -935,7 +935,7 @@ void CHostageImprov::UpdatePosition(float deltaT)
 
 		while (yaw < -180.0f)
 			yaw += 360.0f;
-
+		
 		while (pitch > 180.0f)
 			pitch -= 360.0f;
 
@@ -1536,7 +1536,7 @@ CBasePlayer *CHostageImprov::GetClosestVisiblePlayer(int team)
 
 	for (int i = 0; i < m_visiblePlayerCount; i++)
 	{
-		CBasePlayer *player = (CBasePlayer *)((CBaseEntity *)m_visiblePlayer[i]);
+		CBasePlayer *player = (CBasePlayer *)m_visiblePlayer[i];
 
 		if (player == NULL || (team > 0 && player->m_iTeam != team))
 			continue;
@@ -1784,6 +1784,8 @@ void CHostageImprov::Wave(void)
 	m_animateState.AddSequence(this, ACT_WAVE);
 }
 
+// Invoked when an improv fails to reach a MoveTo goal
+
 /* <474938> ../cstrike/dlls/hostage/hostage_improv.cpp:2375 */
 void CHostageImprov::__MAKE_VHOOK(OnMoveToFailure)(const Vector &goal, MoveToFailureType reason)
 {
@@ -1798,12 +1800,6 @@ void CHostageImprov::__MAKE_VHOOK(OnMoveToFailure)(const Vector &goal, MoveToFai
 /* <4763d7> ../cstrike/dlls/hostage/hostage_improv.cpp:2391 */
 void CHostageImprov::Wiggle(void)
 {
-	Vector dir;
-	Vector lat;
-
-	const float force = 15.0f;
-	const float minStuckJumpTime = 0.5f;
-
 	// for wiggling
 	if (m_wiggleTimer.IsElapsed())
 	{
@@ -1811,45 +1807,34 @@ void CHostageImprov::Wiggle(void)
 		m_wiggleTimer.Start(RANDOM_FLOAT(0.3, 0.5));
 	}
 
-	lat.x = BotCOS(m_moveAngle);
-	lat.y = BotSIN(m_moveAngle);
-	lat.z = 0;
+	const float force = 15.0f;
+	Vector dir(BotCOS(m_moveAngle), BotSIN(m_moveAngle), 0.0f);
+	Vector lat(-dir.y, dir.x, 0.0f);
 
 	switch (m_wiggleDirection)
 	{
 	case FORWARD:
-		dir.x = lat.x;
-		dir.y = lat.y;
-
 		ApplyForce(dir * force);
 		break;
-	case RIGHT:
-		dir.x = -lat.y;
-		dir.y = lat.x;
-
-		ApplyForce(dir * -force);
-		break;
 	case BACKWARD:
-		dir.x = lat.x;
-		dir.y = lat.y;
-
 		ApplyForce(dir * -force);
 		break;
 	case LEFT:
-		dir.x = -lat.y;
-		dir.y = lat.x;
-
-		ApplyForce(dir * force);
+		ApplyForce(lat * force);
+		break;
+	case RIGHT:
+		ApplyForce(lat * -force);
 		break;
 	default:
 		break;
 	}
 
+	const float minStuckJumpTime = 0.5f;
 	if (m_follower.GetStuckDuration() > minStuckJumpTime && m_wiggleJumpTimer.IsElapsed())
 	{
 		if (Jump())
 		{
-			m_wiggleJumpTimer.Start(RANDOM_FLOAT(0.75, 1.2));
+			m_wiggleJumpTimer.Start(RANDOM_FLOAT(0.75f, 1.2f));
 		}
 	}
 }

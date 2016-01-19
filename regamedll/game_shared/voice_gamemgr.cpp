@@ -131,7 +131,7 @@ bool CVoiceGameMgr::ClientCommand(CBasePlayer *pPlayer, const char *cmd)
 	bool bBan = Q_stricmp(cmd, "vban") == 0;
 	if (bBan && CMD_ARGC() >= 2)
 	{
-		for (int i = 1; i < CMD_ARGC(); i++)
+		for (int i = 1; i < CMD_ARGC(); ++i)
 		{
 			uint32 mask = 0;
 			sscanf(CMD_ARGV(i), "%x", &mask);
@@ -145,6 +145,8 @@ bool CVoiceGameMgr::ClientCommand(CBasePlayer *pPlayer, const char *cmd)
 				VoiceServerDebug("CVoiceGameMgr::ClientCommand: invalid index (%d)\n", i);
 		}
 
+		// Force it to update the masks now.
+		//UpdateMasks();
 		return true;
 	}
 	else if (Q_stricmp(cmd, "VModEnable") == 0 && CMD_ARGC() >= 2)
@@ -153,7 +155,7 @@ bool CVoiceGameMgr::ClientCommand(CBasePlayer *pPlayer, const char *cmd)
 
 		g_PlayerModEnable[ playerClientIndex ] = !!Q_atoi(CMD_ARGV(1));
 		g_bWantModEnable[ playerClientIndex ] = false;
-
+		//UpdateMasks();
 		return true;
 	}
 
@@ -167,7 +169,7 @@ void CVoiceGameMgr::UpdateMasks(void)
 
 	bool bAllTalk = !!(sv_alltalk.value);
 
-	for (int iClient = 0; iClient < m_nMaxPlayers; iClient++)
+	for (int iClient = 0; iClient < m_nMaxPlayers; ++iClient)
 	{
 		CBaseEntity *pEnt = UTIL_PlayerByIndex(iClient + 1);
 
@@ -191,7 +193,7 @@ void CVoiceGameMgr::UpdateMasks(void)
 		if (g_PlayerModEnable[ iClient ])
 		{
 			// Build a mask of who they can hear based on the game rules.
-			for (int iOtherClient = 0; iOtherClient < m_nMaxPlayers; iOtherClient++)
+			for (int iOtherClient = 0; iOtherClient < m_nMaxPlayers; ++iOtherClient)
 			{
 				CBaseEntity *pEnt = UTIL_PlayerByIndex(iOtherClient + 1);
 
@@ -209,7 +211,7 @@ void CVoiceGameMgr::UpdateMasks(void)
 			g_SentBanMasks[ iClient ] = g_BanMasks[ iClient ];
 
 			MESSAGE_BEGIN(MSG_ONE, m_msgPlayerVoiceMask, NULL, pPlayer->pev);
-				for (int dw = 0; dw < VOICE_MAX_PLAYERS_DW; dw++)
+				for (int dw = 0; dw < VOICE_MAX_PLAYERS_DW; ++dw)
 				{
 					WRITE_LONG(gameRulesMask.GetDWord(dw));
 					WRITE_LONG(g_BanMasks[ iClient ].GetDWord(dw));
@@ -218,7 +220,7 @@ void CVoiceGameMgr::UpdateMasks(void)
 		}
 
 		// Tell the engine.
-		for (int iOtherClient = 0; iOtherClient < m_nMaxPlayers; iOtherClient++)
+		for (int iOtherClient = 0; iOtherClient < m_nMaxPlayers; ++iOtherClient)
 		{
 			bool bCanHear = gameRulesMask[ iOtherClient ] && !g_BanMasks[ iClient ][ iOtherClient ];
 			SET_CLIENT_LISTENING(iClient + 1, iOtherClient + 1, bCanHear);

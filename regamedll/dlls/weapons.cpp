@@ -587,7 +587,7 @@ void CBasePlayerItem::CheckRespawn(void)
 	}
 }
 
-// Respawn- this item is already in the world, but it is
+// Respawn - this item is already in the world, but it is
 // invisible and intangible. Make it visible and tangible.
 
 /* <1d1e09> ../cstrike/dlls/weapons.cpp:616 */
@@ -620,6 +620,9 @@ CBaseEntity *CBasePlayerItem::__MAKE_VHOOK(Respawn)(void)
 	return pNewWeapon;
 }
 
+// whats going on here is that if the player drops this weapon, they shouldn't take it back themselves
+// for a little while. But if they throw it at someone else, the other player should get it immediately.
+
 /* <1d26f0> ../cstrike/dlls/weapons.cpp:642 */
 void CBasePlayerItem::DefaultTouch(CBaseEntity *pOther)
 {
@@ -629,7 +632,7 @@ void CBasePlayerItem::DefaultTouch(CBaseEntity *pOther)
 		return;
 	}
 
-	CBasePlayer *pPlayer = reinterpret_cast<CBasePlayer *>(pOther);
+	CBasePlayer *pPlayer = static_cast<CBasePlayer *>(pOther);
 
 	if (pPlayer->m_bIsVIP
 		&& m_iId != WEAPON_USP
@@ -789,6 +792,8 @@ void CBasePlayerWeapon::KickBack(float up_base, float lateral_base, float up_mod
 /* <1d242e> ../cstrike/dlls/weapons.cpp:792 */
 void CBasePlayerWeapon::FireRemaining(int &shotsFired, float &shootTime, BOOL bIsGlock)
 {
+	float nexttime = 0.1f;
+
 	m_iClip--;
 
 	if (m_iClip < 0)
@@ -831,16 +836,15 @@ void CBasePlayerWeapon::FireRemaining(int &shotsFired, float &shootTime, BOOL bI
 
 	m_pPlayer->pev->effects |= EF_MUZZLEFLASH;
 	m_pPlayer->SetAnimation(PLAYER_ATTACK1);
-	shotsFired++;
 
-	float nexttime = 0;
+	shotsFired++;
 
 	if (shotsFired != 3)
 	{
-		nexttime = gpGlobals->time + 0.1f;
+		shootTime = gpGlobals->time + nexttime;
 	}
-
-	shootTime = nexttime;
+	else
+		shootTime = 0;
 }
 
 /* <1d389e> ../cstrike/dlls/weapons.cpp:876 */
@@ -911,6 +915,8 @@ void CBasePlayerWeapon::__MAKE_VHOOK(ItemPostFrame)(void)
 		FireRemaining(m_iFamasShotsFired, m_flFamasShoot, FALSE);
 	}
 
+	// Return zoom level back to previous zoom level before we fired a shot.
+	// This is used only for the AWP and Scout
 	if (m_flNextPrimaryAttack <= UTIL_WeaponTimeBase())
 	{
 		if (m_pPlayer->m_bResumeZoom)
@@ -920,6 +926,7 @@ void CBasePlayerWeapon::__MAKE_VHOOK(ItemPostFrame)(void)
 
 			if (m_pPlayer->m_iFOV == m_pPlayer->m_iLastZoom)
 			{
+				// return the fade level in zoom.
 				m_pPlayer->m_bResumeZoom = false;
 			}
 		}
@@ -978,6 +985,8 @@ void CBasePlayerWeapon::__MAKE_VHOOK(ItemPostFrame)(void)
 
 		m_pPlayer->TabulateAmmo();
 
+		// Can't shoot during the freeze period
+		// Always allow firing in single player
 		if ((m_pPlayer->m_bCanShoot && g_pGameRules->IsMultiplayer() && !g_pGameRules->IsFreezePeriod() && !m_pPlayer->m_bIsDefusing) || !g_pGameRules->IsMultiplayer())
 		{
 			PrimaryAttack();
@@ -985,6 +994,7 @@ void CBasePlayerWeapon::__MAKE_VHOOK(ItemPostFrame)(void)
 	}
 	else if ((m_pPlayer->pev->button & IN_RELOAD) && iMaxClip() != WEAPON_NOCLIP && !m_fInReload && m_flNextPrimaryAttack < UTIL_WeaponTimeBase())
 	{
+		// reload when reload is pressed, or if no buttons are down and weapon is empty.
 		if (m_flFamasShoot == 0 && m_flGlock18Shoot == 0)
 		{
 			if (!(m_iWeaponState & WPNSTATE_SHIELD_DRAWN))
@@ -997,6 +1007,9 @@ void CBasePlayerWeapon::__MAKE_VHOOK(ItemPostFrame)(void)
 	else if (!(usableButtons & (IN_ATTACK | IN_ATTACK2)))
 	{
 		// no fire buttons down
+
+		// The following code prevents the player from tapping the firebutton repeatedly 
+		// to simulate full auto and retaining the single shot accuracy of single fire
 		if (m_bDelayFire)
 		{
 			m_bDelayFire = false;
@@ -1011,16 +1024,19 @@ void CBasePlayerWeapon::__MAKE_VHOOK(ItemPostFrame)(void)
 
 		m_fFireOnEmpty = FALSE;
 
-		if (m_iId != WEAPON_USP && m_iId != WEAPON_GLOCK18 && m_iId != WEAPON_P228 && m_iId != WEAPON_DEAGLE && m_iId != WEAPON_ELITE && m_iId != WEAPON_FIVESEVEN)
+		// if it's a pistol then set the shots fired to 0 after the player releases a button
+		if (IsSecondaryWeapon(m_iId))
+		{
+			m_iShotsFired = 0;
+		}
+		else
 		{
 			if (m_iShotsFired > 0 && m_flDecreaseShotsFired < gpGlobals->time)
 			{
+				m_flDecreaseShotsFired = gpGlobals->time + 0.0225f;
 				m_iShotsFired--;
-				m_flDecreaseShotsFired = gpGlobals->time + 0.0225;
 			}
 		}
-		else
-			m_iShotsFired = 0;
 
 		if (!IsUseable() && m_flNextPrimaryAttack < UTIL_WeaponTimeBase())
 		{

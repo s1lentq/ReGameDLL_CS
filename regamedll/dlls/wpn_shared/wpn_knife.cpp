@@ -93,35 +93,26 @@ NOXREF void CKnife::WeaponAnimation(int iAnimation)
 	flag = 0;
 #endif // CLIENT_WEAPONS
 
-	PLAYBACK_EVENT_FULL
-	(
-		flag,
-		m_pPlayer->edict(),
-		m_usKnife,
-		0,
-		(float *)&g_vecZero,
-		(float *)&g_vecZero,
-		0,
-		0,
-		iAnimation,
-		2,		// param noxref
-		3,		// param noxref
-		4		// param noxref
-	);
+	PLAYBACK_EVENT_FULL(flag, m_pPlayer->edict(), m_usKnife,
+		0.0, (float *)&g_vecZero, (float *)&g_vecZero,
+		0.0,
+		0.0,
+		iAnimation, 2, 3, 4);
 }
 
 /* <26f852> ../cstrike/dlls/wpn_shared/wpn_knife.cpp:140 */
-void FindHullIntersection(Vector &vecSrc, TraceResult &tr, float *mins, float *maxs, edict_t *pEntity)
+void FindHullIntersection(const Vector &vecSrc, TraceResult &tr, float *mins, float *maxs, edict_t *pEntity)
 {
 	int i, j, k;
 	float distance;
 	float *minmaxs[2] = { mins, maxs };
 	TraceResult tmpTrace;
-	Vector vecHullEnd, vecEnd;
+	Vector vecHullEnd = tr.vecEndPos;
+	Vector vecEnd;
 
 	distance = 1e6f;
 
-	vecHullEnd = vecSrc + ((tr.vecEndPos - vecSrc) * 2);
+	vecHullEnd = vecSrc + ((vecHullEnd - vecSrc) * 2);
 	UTIL_TraceLine(vecSrc, vecHullEnd, dont_ignore_monsters, pEntity, &tmpTrace);
 
 	if (tmpTrace.flFraction < 1.0f)
@@ -130,11 +121,11 @@ void FindHullIntersection(Vector &vecSrc, TraceResult &tr, float *mins, float *m
 		return;
 	}
 
-	for (i = 0; i < 2; i++)
+	for (i = 0; i < 2; ++i)
 	{
-		for (j = 0; j < 2; j++)
+		for (j = 0; j < 2; ++j)
 		{
-			for (k = 0; k < 2; k++)
+			for (k = 0; k < 2; ++k)
 			{
 				vecEnd.x = vecHullEnd.x + minmaxs[i][0];
 				vecEnd.y = vecHullEnd.y + minmaxs[j][1];
@@ -326,10 +317,10 @@ int CKnife::Swing(int fFirst)
 				SendWeaponAnim(KNIFE_SHIELD_ATTACKHIT, UseDecrement() != FALSE);
 
 				m_flNextPrimaryAttack = GetNextAttackDelay(1.0);
-				m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 1.2;
+				m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 1.2f;
 			}
 
-			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.0;
+			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.0f;
 
 			// play wiff or swish sound
 			if (RANDOM_LONG(0, 1))
@@ -355,17 +346,17 @@ int CKnife::Swing(int fFirst)
 			}
 
 			m_flNextPrimaryAttack = GetNextAttackDelay(0.4);
-			m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.5;
+			m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.5f;
 		}
 		else
 		{
 			SendWeaponAnim(KNIFE_SHIELD_ATTACKHIT, UseDecrement() != FALSE);
 
 			m_flNextPrimaryAttack = GetNextAttackDelay(1.0);
-			m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 1.2;
+			m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 1.2f;
 		}
 
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.0;
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.0f;
 
 		// play thwack, smack, or dong sound
 		float flVol = 1.0f;
@@ -378,7 +369,7 @@ int CKnife::Swing(int fFirst)
 		m_pPlayer->SetAnimation(PLAYER_ATTACK1);
 		ClearMultiDamage();
 
-		if (m_flNextPrimaryAttack + 0.4 < UTIL_WeaponTimeBase())
+		if (m_flNextPrimaryAttack + 0.4f < UTIL_WeaponTimeBase())
 			pEntity->TraceAttack(m_pPlayer->pev, 20, gpGlobals->v_forward, &tr, (DMG_NEVERGIB | DMG_BULLET));
 		else
 			pEntity->TraceAttack(m_pPlayer->pev, 15, gpGlobals->v_forward, &tr, (DMG_NEVERGIB | DMG_BULLET));
@@ -429,7 +420,7 @@ int CKnife::Swing(int fFirst)
 			m_trHit = tr;
 			SetThink(&CKnife::Smack);
 
-			pev->nextthink = UTIL_WeaponTimeBase() + 0.2;
+			pev->nextthink = UTIL_WeaponTimeBase() + 0.2f;
 			m_pPlayer->m_iWeaponVolume = (int)(flVol * KNIFE_WALLHIT_VOLUME);
 
 			ResetPlayerShieldAnim();

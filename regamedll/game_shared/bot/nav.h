@@ -36,7 +36,7 @@
 #pragma warning(disable : 4530)
 
 // to help identify nav files
-#define NAV_MAGIC_NUMBER 0xFEEDFACE
+#define NAV_MAGIC_NUMBER	0xFEEDFACE
 
 // A place is a named group of navigation areas
 typedef unsigned int Place;
@@ -47,6 +47,7 @@ typedef unsigned int Place;
 
 #define WALK_THRU_DOORS		0x01
 #define WALK_THRU_BREAKABLES	0x02
+#define WALK_THRU_EVERYTHING	(WALK_THRU_DOORS | WALK_THRU_BREAKABLES)
 
 //class CNavArea;
 //class CNavNode;
@@ -141,24 +142,13 @@ struct Extent
 	Vector lo;
 	Vector hi;
 
-	UNTESTED float SizeX(void) const
-	{
-		return hi.x - lo.x;
-	}
-	UNTESTED float SizeY(void) const
-	{
-		return hi.y - lo.y;
-	}
-	UNTESTED float SizeZ(void) const
-	{
-		return hi.z - lo.z;
-	}
-	UNTESTED float Area(void) const
-	{
-		return SizeX() * SizeY();
-	}
+	float SizeX(void) const		{ return hi.x - lo.x; }
+	float SizeY(void) const		{ return hi.y - lo.y;}
+	float SizeZ(void) const		{ return hi.z - lo.z; }
+	float Area(void) const		{ return SizeX() * SizeY(); }
+
 	// return true if 'pos' is inside of this extent
-	UNTESTED bool Contains(const Vector *pos) const
+	bool Contains(const Vector *pos) const
 	{
 		return (pos->x >= lo.x && pos->x <= hi.x &&
 			pos->y >= lo.y && pos->y <= hi.y &&
@@ -236,11 +226,11 @@ inline void AddDirectionVector(Vector *v, NavDirType dir, float amount)
 	case NORTH:
 		v->y -= amount;
 		return;
-	case EAST:
-		v->x += amount;
-		return;
 	case SOUTH:
 		v->y += amount;
+		return;
+	case EAST:
+		v->x += amount;
 		return;
 	case WEST:
 		v->x -= amount;
@@ -267,7 +257,7 @@ inline float DirectionToAngle(NavDirType dir)
 }
 
 /* <3d8335> ../game_shared/bot/nav.h:202 */
-inline NavDirType AngleToDirection(float angle)
+inline NavDirType AngleToDirection(float_precision angle)
 {
 	while (angle < 0.0f)
 		angle += 360.0f;
@@ -327,6 +317,13 @@ inline void SnapToGrid(float *value)
 	*value = c * GenerationStepSize;
 }
 
+// custom
+inline float SnapToGrid(float v)
+{
+	int c = v / GenerationStepSize;
+	return c;
+}
+
 /* <14ea2f> ../game_shared/bot/nav.h:251 */
 inline float_precision NormalizeAngle(float_precision angle)
 {
@@ -368,7 +365,7 @@ inline float AngleDifference(float a, float b)
 /* <38cac9> ../game_shared/bot/nav.h:288 */
 inline bool AnglesAreEqual(float a, float b, float tolerance = 5.0f)
 {
-	if (abs(AngleDifference(a, b)) < tolerance)
+	if (abs(int64(AngleDifference(a, b))) < tolerance)
 		return true;
 
 	return false;

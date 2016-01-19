@@ -79,24 +79,11 @@ public:
 	virtual void OnEnter(CHostageImprov *improv);
 	virtual void OnUpdate(CHostageImprov *improv);
 	virtual void OnExit(CHostageImprov *improv);
-	virtual const char *GetName(void) const
-	{
-		return "Idle";
-	}
+	virtual const char *GetName(void) const { return "Idle"; }
 	virtual void UpdateStationaryAnimation(CHostageImprov *improv);
-	virtual void OnMoveToSuccess(const Vector &goal)
-	{
-		m_moveState = MoveDone;
-	}
-	virtual void OnMoveToFailure(const Vector &goal, MoveToFailureType reason)
-	{
-		m_moveState = MoveFailed;
-	}
-	virtual void OnInjury(float amount = -1.0f)
-	{
-		m_fleeTimer.Invalidate();
-		m_mustFlee = true;
-	}
+	virtual void OnMoveToSuccess(const Vector &goal) { m_moveState = MoveDone; }
+	virtual void OnMoveToFailure(const Vector &goal, MoveToFailureType reason) { m_moveState = MoveFailed; }
+	virtual void OnInjury(float amount = -1.0f) { m_fleeTimer.Invalidate(); m_mustFlee = true; }
 
 #ifdef HOOK_GAMEDLL
 
@@ -137,10 +124,7 @@ public:
 	virtual void OnEnter(CHostageImprov *improv);
 	virtual void OnUpdate(CHostageImprov *improv);
 	virtual void OnExit(CHostageImprov *improv);
-	virtual const char *GetName(void) const
-	{
-		return "Escape:ToCover";
-	}
+	virtual const char *GetName(void) const { return "Escape:ToCover"; }
 	virtual void OnMoveToFailure(const Vector &goal, MoveToFailureType reason);
 
 #ifdef HOOK_GAMEDLL
@@ -153,10 +137,7 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	void SetRescueGoal(const Vector &rescueGoal)
-	{
-		m_rescueGoal = rescueGoal;
-	}
+	void SetRescueGoal(const Vector &rescueGoal) { m_rescueGoal = rescueGoal; }
 
 private:
 	Vector m_rescueGoal;
@@ -174,10 +155,7 @@ public:
 	virtual void OnEnter(CHostageImprov *improv);
 	virtual void OnUpdate(CHostageImprov *improv);
 	virtual void OnExit(CHostageImprov *improv);
-	virtual const char *GetName(void) const
-	{
-		return "Escape:LookAround";
-	}
+	virtual const char *GetName(void) const { return "Escape:LookAround"; }
 
 #ifdef HOOK_GAMEDLL
 
@@ -201,14 +179,8 @@ public:
 	virtual void OnEnter(CHostageImprov *improv);
 	virtual void OnUpdate(CHostageImprov *improv);
 	virtual void OnExit(CHostageImprov *improv);
-	virtual const char *GetName(void) const
-	{
-		return "Escape";
-	}
-	virtual void OnMoveToFailure(const Vector &goal, MoveToFailureType reason)
-	{
-		m_behavior.OnMoveToFailure(goal, reason);
-	}
+	virtual const char *GetName(void) const { return "Escape"; }
+	virtual void OnMoveToFailure(const Vector &goal, MoveToFailureType reason) { m_behavior.OnMoveToFailure(goal, reason); }
 
 #ifdef HOOK_GAMEDLL
 
@@ -219,14 +191,8 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	void ToCover(void)
-	{
-		m_behavior.SetState(&m_toCoverState);
-	}
-	void LookAround(void)
-	{
-		m_behavior.SetState(&m_lookAroundState);
-	}
+	void ToCover(void) { m_behavior.SetState(&m_toCoverState); }
+	void LookAround(void) { m_behavior.SetState(&m_lookAroundState); }
 
 private:
 	HostageEscapeToCoverState m_toCoverState;
@@ -246,20 +212,13 @@ public:
 	virtual void OnEnter(CHostageImprov *improv);
 	virtual void OnUpdate(CHostageImprov *improv);
 	virtual void OnExit(CHostageImprov *improv);
-	virtual const char *GetName(void) const
-	{
-		return "Retreat";
-	}
+	virtual const char *GetName(void) const { return "Retreat"; }
 
 #ifdef HOOK_GAMEDLL
 
 	void OnEnter_(CHostageImprov *improv);
 	void OnUpdate_(CHostageImprov *improv);
 	void OnExit_(CHostageImprov *improv);
-	const char *GetName_(void) const
-	{
-		return GetName();
-	}
 
 #endif // HOOK_GAMEDLL
 
@@ -274,10 +233,7 @@ public:
 	virtual void OnEnter(CHostageImprov *improv);
 	virtual void OnUpdate(CHostageImprov *improv);
 	virtual void OnExit(CHostageImprov *improv);
-	virtual const char *GetName(void) const
-	{
-		return "Follow";
-	}
+	virtual const char *GetName(void) const { return "Follow"; }
 	virtual void UpdateStationaryAnimation(CHostageImprov *improv);
 
 #ifdef HOOK_GAMEDLL
@@ -290,14 +246,8 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	void SetLeader(CBaseEntity *leader)
-	{
-		m_leader = leader;
-	}
-	CBaseEntity *GetLeader(void) const
-	{
-		return m_leader;
-	}
+	void SetLeader(CBaseEntity *leader) { m_leader = leader; }
+	CBaseEntity *GetLeader(void) const { return m_leader; }
 
 private:
 	mutable EHANDLE m_leader;
@@ -321,10 +271,7 @@ public:
 	virtual void OnEnter(CHostageImprov *improv);
 	virtual void OnUpdate(CHostageImprov *improv);
 	virtual void OnExit(CHostageImprov *improv);
-	virtual const char *GetName(void) const
-	{
-		return "Animate";
-	}
+	virtual const char *GetName(void) const { return "Animate"; }
 
 #ifdef HOOK_GAMEDLL
 
@@ -340,8 +287,7 @@ public:
 		int seqID;
 		float holdTime;
 		float rate;
-
-	};/* size: 12, cachelines: 1, members: 3 */
+	};
 
 	enum PerformanceType
 	{

@@ -32,11 +32,15 @@
 #pragma once
 #endif
 
+// We'll define our own version of this, because everyone else does.
+// This needs to stay in sync with MAX_CLIENTS, but there's no header with the #define.
 #define BOT_MAX_CLIENTS		32
 
+// version number is MAJOR.MINOR
 #define BOT_VERSION_MAJOR	1
 #define BOT_VERSION_MINOR	50
 
+// Difficulty levels
 enum BotDifficultyType
 {
 	BOT_EASY = 0,
@@ -47,22 +51,12 @@ enum BotDifficultyType
 	NUM_DIFFICULTY_LEVELS
 };
 
-#ifdef DEFINE_DIFFICULTY_NAMES
+#ifdef HOOK_GAMEDLL
 
-char *BotDifficultyName[] =
-{
-	"EASY",
-	"NORMAL",
-	"HARD",
-	"EXPERT",
+#define BotDifficultyName (*pBotDifficultyName)
 
-	NULL
-};
+#endif // HOOK_GAMEDLL
 
-#else
-
-extern char *BotDifficultyName[];
-
-#endif // DEFINE_DIFFICULTY_NAMES
+extern char *BotDifficultyName[5];
 
 #endif // BOT_CONSTANTS_H

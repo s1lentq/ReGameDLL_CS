@@ -64,6 +64,9 @@
 #define MAX_MOTD_LENGTH				1536 // (MAX_MOTD_CHUNK * 4)
 
 // custom enum
+#define	WINNER_NONE			0
+#define WINNER_DRAW			1
+
 enum
 {
 	WINSTATUS_CTS = 1,
@@ -187,10 +190,7 @@ public:
 		return FALSE;
 	}
 	virtual BOOL IsCoOp(void) = 0;
-	virtual const char *GetGameDescription(void)
-	{
-		return "Counter-Strike";
-	}
+	virtual const char *GetGameDescription(void) { return "Counter-Strike"; }	// this is the game name that gets seen in the server browser
 	virtual BOOL ClientConnected(edict_t *pEntity, const char *pszName, const char *pszAddress, char *szRejectReason) = 0;
 	virtual void InitHUD(CBasePlayer *pl) = 0;
 	virtual void ClientDisconnected(edict_t *pClient) = 0;
@@ -473,6 +473,8 @@ public:
 	virtual void CleanUpMap(void);
 
 	virtual void RestartRound(void);
+
+	// check if the scenario has been won/lost
 	virtual void CheckWinConditions(void);
 	virtual void RemoveGuns(void);
 	virtual void GiveC4(void);

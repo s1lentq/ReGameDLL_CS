@@ -1,7 +1,7 @@
 #include "precompiled.h"
 
 /* <58e6e0> ../cstrike/dlls/bot/states/cs_bot_hunt.cpp:18 */
-NOBODY void HuntState::OnEnter(CCSBot *me)
+NOBODY void HuntState::__MAKE_VHOOK(OnEnter)(CCSBot *me)
 {
 //	SetTask(CCSBot *const this,
 //		enum TaskType task,
@@ -10,7 +10,7 @@ NOBODY void HuntState::OnEnter(CCSBot *me)
 }
 
 /* <58e452> ../cstrike/dlls/bot/states/cs_bot_hunt.cpp:38 */
-NOBODY void HuntState::OnUpdate(CCSBot *me)
+NOBODY void HuntState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 {
 //	{
 //		class CCSBotManager *ctrl;                           //    40
@@ -58,6 +58,25 @@ NOBODY void HuntState::OnUpdate(CCSBot *me)
 }
 
 /* <58e418> ../cstrike/dlls/bot/states/cs_bot_hunt.cpp:211 */
-NOBODY void HuntState::OnExit(CCSBot *me)
+NOBODY void HuntState::__MAKE_VHOOK(OnExit)(CCSBot *me)
 {
 }
+
+#ifdef HOOK_GAMEDLL
+
+void HuntState::OnEnter(CCSBot *me)
+{
+	OnEnter_(me);
+}
+
+void HuntState::OnUpdate(CCSBot *me)
+{
+	OnUpdate_(me);
+}
+
+void HuntState::OnExit(CCSBot *me)
+{
+	OnExit_(me);
+}
+
+#endif // HOOK_GAMEDLL

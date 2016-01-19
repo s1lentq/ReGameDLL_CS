@@ -1,7 +1,7 @@
 #include "precompiled.h"
 
 /* <519735> ../cstrike/dlls/bot/states/cs_bot_attack.cpp:16 */
-NOBODY void AttackState::OnEnter(CCSBot *me)
+NOBODY void AttackState::__MAKE_VHOOK(OnEnter)(CCSBot *me)
 {
 //	{
 //		class CBasePlayer *enemy;                            //    18
@@ -43,7 +43,7 @@ NOBODY void AttackState::StopAttacking(CCSBot *me)
 }
 
 /* <51997e> ../cstrike/dlls/bot/states/cs_bot_attack.cpp:152 */
-NOBODY void AttackState::OnUpdate(CCSBot *me)
+NOBODY void AttackState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 {
 //	{
 //		class CBasePlayerWeapon *weapon;                     //   161
@@ -149,7 +149,7 @@ NOBODY void AttackState::OnUpdate(CCSBot *me)
 }
 
 /* <5198d4> ../cstrike/dlls/bot/states/cs_bot_attack.cpp:578 */
-NOBODY void AttackState::OnExit(CCSBot *me)
+NOBODY void AttackState::__MAKE_VHOOK(OnExit)(CCSBot *me)
 {
 //	ForgetNoise(CCSBot *const this);  //   585
 //	PopPostureContext(CBot *const this);  //   589
@@ -157,3 +157,22 @@ NOBODY void AttackState::OnExit(CCSBot *me)
 //	StopRapidFire(CCSBot *const this);  //   597
 //	ClearSurpriseDelay(CCSBot *const this);  //   598
 }
+
+#ifdef HOOK_GAMEDLL
+
+void AttackState::OnEnter(CCSBot *me)
+{
+	OnEnter_(me);
+}
+
+void AttackState::OnUpdate(CCSBot *me)
+{
+	OnUpdate_(me);
+}
+
+void AttackState::OnExit(CCSBot *me)
+{
+	OnExit_(me);
+}
+
+#endif // HOOK_GAMEDLL

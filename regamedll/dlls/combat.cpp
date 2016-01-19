@@ -362,7 +362,7 @@ Activity CBaseMonster::__MAKE_VHOOK(GetDeathActivity)(void)
 	}
 
 	// can we perform the prescribed death?
-	if (LookupActivity(deathActivity) == ACTIVITY_NOT_AVAILABLE)
+	if (LookupActivity(deathActivity) == ACT_INVALID)
 	{
 		// no! did we fail to perform a directional death?
 		if (fTriedDirection)
@@ -384,7 +384,7 @@ Activity CBaseMonster::__MAKE_VHOOK(GetDeathActivity)(void)
 		}
 	}
 
-	if (LookupActivity(deathActivity) == ACTIVITY_NOT_AVAILABLE)
+	if (LookupActivity(deathActivity) == ACT_INVALID)
 	{
 		// if we're still invalid, simple is our only option.
 		deathActivity = ACT_DIESIMPLE;
@@ -458,7 +458,7 @@ NOXREF Activity CBaseMonster::GetSmallFlinchActivity(void)
 	}
 
 	// do we have a sequence for the ideal activity?
-	if (LookupActivity(flinchActivity) == ACTIVITY_NOT_AVAILABLE)
+	if (LookupActivity(flinchActivity) == ACT_INVALID)
 	{
 		flinchActivity = ACT_SMALL_FLINCH;
 	}

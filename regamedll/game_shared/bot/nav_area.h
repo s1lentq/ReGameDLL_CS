@@ -125,7 +125,6 @@ enum LadderDirectionType
 	NUM_LADDER_DIRECTIONS
 };
 
-
 /* <4c2fda> ../game_shared/bot/nav_area.h:63 */
 class CNavLadder
 {
@@ -232,10 +231,12 @@ public:
 	}
 	static void ChangeMasterMarker(void)
 	{
-		IMPL(m_masterMarker)++;
+		++IMPL(m_masterMarker);
 	}
 
+#ifndef HOOK_GAMEDLL
 private:
+#endif // HOOK_GAMEDLL
 	friend void DestroyHidingSpots(void);
 
 	Vector m_pos;
@@ -243,9 +244,6 @@ private:
 	unsigned int m_marker;
 	unsigned char m_flags;
 
-#ifdef HOOK_GAMEDLL
-public:
-#endif // HOOK_GAMEDLL
 	static unsigned int IMPL(m_nextID);
 	static unsigned int IMPL(m_masterMarker);
 
@@ -303,77 +301,45 @@ public:
 	void Load(SteamFile *file, unsigned int version);
 	NavErrorType PostLoad(void);
 
-	unsigned int GetID(void) const
-	{
-		return m_id;
-	}
-	void SetAttributes(unsigned char bits)
-	{
-		m_attributeFlags = bits;
-	}
-	unsigned char GetAttributes(void) const
-	{
-		return m_attributeFlags;
-	}
-	void SetPlace(Place place)						// set place descriptor
-	{
-		m_place = place;
-	}
-	Place GetPlace(void) const						// get place descriptor
-	{
-		return m_place;
-	}
+	unsigned int GetID(void) const			{ return m_id; }
+	void SetAttributes(unsigned char bits)		{ m_attributeFlags = bits; }
+	unsigned char GetAttributes(void) const		{ return m_attributeFlags; }
+	void SetPlace(Place place)			{ m_place = place; }			// set place descriptor
+	Place GetPlace(void) const			{ return m_place; }			// get place descriptor
 
-	bool IsOverlapping(const Vector *pos) const;				// return true if 'pos' is within 2D extents of area
-	bool IsOverlapping(const CNavArea *area) const;				// return true if 'area' overlaps our 2D extents
-	bool IsOverlappingX(const CNavArea *area) const;			// return true if 'area' overlaps our X extent
-	bool IsOverlappingY(const CNavArea *area) const;			// return true if 'area' overlaps our Y extent
-	int GetPlayerCount(int teamID = 0, CBasePlayer *ignore = NULL) const;	// return number of players with given teamID in this area (teamID == 0 means any/all)
-	float GetZ(const Vector *pos) const;					// return Z of area at (x,y) of 'pos'
-	float GetZ(float x, float y) const;					// return Z of area at (x,y) of 'pos'
-	bool Contains(const Vector *pos) const;					// return true if given point is on or above this area, but no others
-	bool IsCoplanar(const CNavArea *area) const;				// return true if this area and given area are approximately co-planar
-	void GetClosestPointOnArea(const Vector *pos, Vector *close) const;	// return closest point to 'pos' on this area - returned point in 'close'
-	float GetDistanceSquaredToPoint(const Vector *pos) const;		// return shortest distance between point and this area
-	bool IsDegenerate(void) const;						// return true if this area is badly formed
-	bool IsEdge(NavDirType dir) const;					// return true if there are no bi-directional links on the given side
-	int GetAdjacentCount(NavDirType dir) const				// return number of connected areas in given direction
-	{
-		return m_connect[dir].size();
-	}
-	CNavArea *GetAdjacentArea(NavDirType dir, int i) const;			// return the i'th adjacent area in the given direction
+	bool IsOverlapping(const Vector *pos) const;						// return true if 'pos' is within 2D extents of area
+	bool IsOverlapping(const CNavArea *area) const;						// return true if 'area' overlaps our 2D extents
+	bool IsOverlappingX(const CNavArea *area) const;					// return true if 'area' overlaps our X extent
+	bool IsOverlappingY(const CNavArea *area) const;					// return true if 'area' overlaps our Y extent
+	int GetPlayerCount(int teamID = 0, CBasePlayer *ignore = NULL) const;			// return number of players with given teamID in this area (teamID == 0 means any/all)
+	float GetZ(const Vector *pos) const;							// return Z of area at (x,y) of 'pos'
+	float GetZ(float x, float y) const;							// return Z of area at (x,y) of 'pos'
+	bool Contains(const Vector *pos) const;							// return true if given point is on or above this area, but no others
+	bool IsCoplanar(const CNavArea *area) const;						// return true if this area and given area are approximately co-planar
+	void GetClosestPointOnArea(const Vector *pos, Vector *close) const;			// return closest point to 'pos' on this area - returned point in 'close'
+	float GetDistanceSquaredToPoint(const Vector *pos) const;				// return shortest distance between point and this area
+	bool IsDegenerate(void) const;								// return true if this area is badly formed
+	bool IsEdge(NavDirType dir) const;							// return true if there are no bi-directional links on the given side
+	int GetAdjacentCount(NavDirType dir) const	{ return m_connect[dir].size(); }	// return number of connected areas in given direction
+	CNavArea *GetAdjacentArea(NavDirType dir, int i) const;					// return the i'th adjacent area in the given direction
 	CNavArea *GetRandomAdjacentArea(NavDirType dir) const;
-	const NavConnectList *GetAdjacentList(NavDirType dir) const
-	{
-		return &m_connect[dir];
-	}
-	bool IsConnected(const CNavArea *area, NavDirType dir) const;		// return true if given area is connected in given direction
-	float ComputeHeightChange(const CNavArea *area);			// compute change in height from this area to given area
+	const NavConnectList *GetAdjacentList(NavDirType dir) const { return &m_connect[dir]; }
+	bool IsConnected(const CNavArea *area, NavDirType dir) const;				// return true if given area is connected in given direction
+	float ComputeHeightChange(const CNavArea *area);					// compute change in height from this area to given area
 
-	const NavLadderList *GetLadderList(LadderDirectionType dir) const
-	{
-		return &m_ladder[dir];
-	}
+	const NavLadderList *GetLadderList(LadderDirectionType dir) const { return &m_ladder[dir]; }
 
 	void ComputePortal(const CNavArea *to, NavDirType dir, Vector *center, float *halfWidth) const;				// compute portal to adjacent area
 	void ComputeClosestPointInPortal(const CNavArea *to, NavDirType dir, const Vector *fromPos, Vector *closePos) const;	// compute closest point within the "portal" between to adjacent areas
 	NavDirType ComputeDirection(Vector *point) const;									// return direction from this area to the given point
 
 	// for hunting algorithm
-	void SetClearedTimestamp(int teamID)					// set this area's "clear" timestamp to now
-	{
-		m_clearedTimestamp[teamID] = gpGlobals->time;
-	}
-	float GetClearedTimestamp(int teamID)					// get time this area was marked "clear"
-	{
-		return m_clearedTimestamp[teamID];
-	}
+	void SetClearedTimestamp(int teamID) { m_clearedTimestamp[teamID] = gpGlobals->time; }	// set this area's "clear" timestamp to now
+	float GetClearedTimestamp(int teamID) { return m_clearedTimestamp[teamID]; }		// get time this area was marked "clear"
 
 	// hiding spots
-	const HidingSpotList *GetHidingSpotList(void) const
-	{
-		return &m_hidingSpotList;
-	}
+	const HidingSpotList *GetHidingSpotList(void) const { return &m_hidingSpotList; }
+
 	void ComputeHidingSpots(void);						// analyze local area neighborhood to find "hiding spots" in this area - for map learning
 	void ComputeSniperSpots(void);						// analyze local area neighborhood to find "sniper spots" in this area - for map learning
 
@@ -383,22 +349,12 @@ public:
 	// danger
 	void IncreaseDanger(int teamID, float amount);					// increase the danger of this area for the given team
 	float GetDanger(int teamID);							// return the danger of this area (decays over time)
-	float GetSizeX(void) const
-	{
-		return m_extent.hi.x - m_extent.lo.x;
-	}
-	float GetSizeY(void) const
-	{
-		return m_extent.hi.y - m_extent.lo.y;
-	}
-	const Extent *GetExtent(void) const
-	{
-		return &m_extent;
-	}
-	const Vector *GetCenter(void) const
-	{
-		return &m_center;
-	}
+
+	float GetSizeX(void) const { return m_extent.hi.x - m_extent.lo.x; }
+	float GetSizeY(void) const { return m_extent.hi.y - m_extent.lo.y; }
+
+	const Extent *GetExtent(void) const { return &m_extent; }
+	const Vector *GetCenter(void) const { return &m_center; }
 	const Vector *GetCorner(NavCornerType corner) const;
 
 	// approach areas
@@ -411,44 +367,22 @@ public:
 		NavTraverseType hereToNextHow;
 	};
 
-	const ApproachInfo *GetApproachInfo(int i) const
-	{
-		return &m_approach[i];
-	}
-	int GetApproachInfoCount(void) const
-	{
-		return m_approachCount;
-	}
-	void ComputeApproachAreas(void);		// determine the set of "approach areas" - for map learning
+	const ApproachInfo *GetApproachInfo(int i) const { return &m_approach[i]; }
+	int GetApproachInfoCount(void) const { return m_approachCount; }
+	void ComputeApproachAreas(void);						// determine the set of "approach areas" - for map learning
 
 	// A* pathfinding algorithm
 	static void MakeNewMarker(void)
 	{
-		IMPL(m_masterMarker)++;
+		++IMPL(m_masterMarker);
 		if (IMPL(m_masterMarker) == 0)
 			IMPL(m_masterMarker) = 1;
 	}
-	void Mark(void)
-	{
-		m_marker = IMPL(m_masterMarker);
-	}
-	BOOL IsMarked(void) const
-	{
-		return (m_marker == IMPL(m_masterMarker)) ? true : false;
-	}
-	void SetParent(CNavArea *parent, NavTraverseType how = NUM_TRAVERSE_TYPES)
-	{
-		m_parent = parent;
-		m_parentHow = how;
-	}
-	CNavArea *GetParent(void) const
-	{
-		return m_parent;
-	}
-	NavTraverseType GetParentHow(void) const
-	{
-		return m_parentHow;
-	}
+	void Mark(void) { m_marker = IMPL(m_masterMarker); }
+	BOOL IsMarked(void) const { return (m_marker == IMPL(m_masterMarker)) ? true : false; }
+	void SetParent(CNavArea *parent, NavTraverseType how = NUM_TRAVERSE_TYPES) { m_parent = parent; m_parentHow = how; }
+	CNavArea *GetParent(void) const { return m_parent; }
+	NavTraverseType GetParentHow(void) const { return m_parentHow; }
 
 	bool IsOpen(void) const;		// true if on "open list"
 	void AddToOpenList(void);		// add to open list in decreasing value order
@@ -463,22 +397,10 @@ public:
 
 	static void ClearSearchLists(void);	// clears the open and closed lists for a new search
 
-	void SetTotalCost(float value)
-	{
-		m_totalCost = value;
-	}
-	float GetTotalCost(void) const
-	{
-		return m_totalCost;
-	}
-	void SetCostSoFar(float value)
-	{
-		m_costSoFar = value;
-	}
-	float GetCostSoFar(void) const
-	{
-		return m_costSoFar;
-	}
+	void SetTotalCost(float value) { m_totalCost = value; }
+	float GetTotalCost(void) const { return m_totalCost; }
+	void SetCostSoFar(float value) { m_costSoFar = value; }
+	float GetCostSoFar(void) const { return m_costSoFar; }
 
 	// editing
 	void Draw(byte red, byte green, byte blue, int duration = 50);							// draw area for debugging & editing
@@ -490,18 +412,10 @@ public:
 	void RaiseCorner(NavCornerType corner, int amount);								// raise/lower a corner (or all corners if corner == NUM_CORNERS)
 
 	// ladders
-	void AddLadderUp(CNavLadder *ladder)
-	{
-		m_ladder[LADDER_UP].push_back(ladder);
-	}
-	void AddLadderDown(CNavLadder *ladder)
-	{
-		m_ladder[LADDER_DOWN].push_back(ladder);
-	}
+	void AddLadderUp(CNavLadder *ladder) { m_ladder[LADDER_UP].push_back(ladder); }
+	void AddLadderDown(CNavLadder *ladder) { m_ladder[LADDER_DOWN].push_back(ladder); }
 
-#ifdef HOOK_GAMEDLL
-public:
-#else
+#ifndef HOOK_GAMEDLL
 private:
 #endif // HOOK_GAMEDLL
 	friend void ConnectGeneratedAreas(void);
@@ -602,6 +516,7 @@ inline CNavArea *CNavArea::GetAdjacentArea(NavDirType dir, int i) const
 			return (*iter).area;
 		--i;
 	}
+
 	return NULL;
 }
 
@@ -1151,7 +1066,7 @@ void SearchSurroundingAreas(CNavArea *startArea, const Vector *startPos, Functor
 
 			// check up ladders
 			const NavLadderList *ladderList = area->GetLadderList(LADDER_UP);
-			if (ladderList)
+			if (ladderList != NULL)
 			{
 				for (ladderIt = ladderList->begin(); ladderIt != ladderList->end(); ++ladderIt)
 				{
@@ -1172,7 +1087,7 @@ void SearchSurroundingAreas(CNavArea *startArea, const Vector *startPos, Functor
 
 			// check down ladders
 			ladderList = area->GetLadderList(LADDER_DOWN);
-			if (ladderList)
+			if (ladderList != NULL)
 			{
 				for (ladderIt = ladderList->begin(); ladderIt != ladderList->end(); ++ladderIt)
 				{
@@ -1185,23 +1100,26 @@ void SearchSurroundingAreas(CNavArea *startArea, const Vector *startPos, Functor
 }
 
 // Apply the functor to all navigation areas
+// If functor returns false, stop processing and return false.
 
 /* <4c4137> ../game_shared/bot/nav_area.h:1109 */
 template <typename Functor>
-void ForAllAreas(Functor &func)
+bool ForAllAreas(Functor &func)
 {
 	NavAreaList::iterator iter;
 	for (iter = TheNavAreaList.begin(); iter != TheNavAreaList.end(); ++iter)
 	{
 		CNavArea *area = *iter;
-		func(area);
+		if (func(area) == false)
+			return false;
 	}
+
+	return true;
 }
 
 // Fuctor that returns lowest cost for farthest away areas
 // For use with FindMinimumCostArea()
-
-class FarAwayFunctor NOXREF
+NOXREF class FarAwayFunctor
 {
 public:
 	float operator()(CNavArea *area, CNavArea *fromArea, const CNavLadder *ladder)
@@ -1209,7 +1127,7 @@ public:
 		if (area == fromArea)
 			return 9999999.9f;
 
-		return 1.0f/(*fromArea->GetCenter() - *area->GetCenter()).Length();
+		return 1.0f / (*fromArea->GetCenter() - *area->GetCenter()).Length();
 	}
 };
 
@@ -1275,9 +1193,11 @@ CNavArea *FindMinimumCostArea(CNavArea *startArea, CostFunctor &costFunc)
 		{
 			// replace most expensive cost if this is cheaper
 			int expensive = 0;
-			for (int i = 1; i < NUM_CHEAP_AREAS; i++)
+			for (int i = 1; i < NUM_CHEAP_AREAS; ++i)
+			{
 				if (cheapAreaSet[i].cost > cheapAreaSet[expensive].cost)
 					expensive = i;
+			}
 
 			if (cheapAreaSet[expensive].cost > cost)
 			{
@@ -1299,8 +1219,10 @@ CNavArea *FindMinimumCostArea(CNavArea *startArea, CostFunctor &costFunc)
 
 		NavAreaList::iterator iter;
 		for (iter = TheNavAreaList.begin(); iter != TheNavAreaList.end(); ++iter)
+		{
 			if (which-- == 0)
 				break;
+		}
 
 		return *iter;
 	}
@@ -1385,10 +1307,5 @@ int BuildArea(CNavNode *node, int width, int height);
 void BuildLadders(void);
 void MarkJumpAreas(void);
 void GenerateNavigationAreaMesh(void);
-
-//refs
-extern float (*pGetZ__Vector)(const Vector *pos);
-extern CNavArea *(*pGetNearestNavArea)(const Vector *pos, bool anyZ);
-extern CNavArea *(*pGetNavArea)(const Vector *pos, float beneathLimit);
 
 #endif // NAV_AREA_H

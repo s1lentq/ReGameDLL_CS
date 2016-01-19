@@ -1,5 +1,7 @@
 #include "precompiled.h"
 
+// Lightweight maintenance, invoked frequently
+
 /* <3c635f> ../cstrike/dlls/bot/cs_bot_update.cpp:26 */
 void CCSBot::__MAKE_VHOOK(Upkeep)(void)
 {
@@ -11,10 +13,12 @@ void CCSBot::__MAKE_VHOOK(Upkeep)(void)
 	if (m_isRapidFiring)
 		TogglePrimaryAttack();
 
+	// aiming must be smooth - update often
 	if (IsAimingAtEnemy())
 	{
 		UpdateAimOffset();
 
+		// aim at enemy, if he's still alive
 		if (m_enemy != NULL)
 		{
 			float feetOffset = pev->origin.z - GetFeetZ();
@@ -30,13 +34,14 @@ void CCSBot::__MAKE_VHOOK(Upkeep)(void)
 					m_aimSpot = m_enemy->pev->origin;
 
 				bool aimBlocked = false;
+				const float sharpshooter = 0.8f;
 
-				if (IsUsingAWP() || IsUsingShotgun() || IsUsingMachinegun() || GetProfile()->GetSkill() < 0.8f
+				if (IsUsingAWP() || IsUsingShotgun() || IsUsingMachinegun() || GetProfile()->GetSkill() < sharpshooter
 					|| (IsActiveWeaponRecoilHigh() && !IsUsingPistol() && !IsUsingSniperRifle()))
 				{
 					if (IsEnemyPartVisible(CHEST))
 					{
-						// No headshots in this game, go for the chest.
+						// No headshots, go for the chest.
 						aimBlocked = true;
 					}
 				}
@@ -130,11 +135,12 @@ void CCSBot::__MAKE_VHOOK(Upkeep)(void)
 		}
 
 		float driftAmplitude = 2.0f;
-		const float sharpshooter = 0.5f;
 
 		// have view "drift" very slowly, so view looks "alive"
 		if (IsUsingSniperRifle() && IsUsingScope())
-			driftAmplitude = sharpshooter;
+		{
+			driftAmplitude = 0.5f;
+		}
 
 		m_lookYaw += driftAmplitude * BotCOS(33.0f * gpGlobals->time);
 		m_lookPitch += driftAmplitude * BotSIN(13.0f * gpGlobals->time);
@@ -147,7 +153,7 @@ void CCSBot::__MAKE_VHOOK(Upkeep)(void)
 void (*pCCSBot__Update)(void);
 
 /* <3c6e1e> ../cstrike/dlls/bot/cs_bot_update.cpp:208 */
-void __declspec(naked) CCSBot::__MAKE_VHOOK(Update)(void)
+NOBODY void __declspec(naked) CCSBot::__MAKE_VHOOK(Update)(void)
 {
 	__asm
 	{
@@ -325,6 +331,12 @@ void __declspec(naked) CCSBot::__MAKE_VHOOK(Update)(void)
 }
 
 #ifdef HOOK_GAMEDLL
+
+// NavAreaBuildPath<PathCost> hook
+bool NavAreaBuildPath__PathCost__wrapper(CNavArea *startArea, CNavArea *goalArea, const Vector *goalPos, PathCost &costFunc, CNavArea **closestArea)
+{
+	return NavAreaBuildPath(startArea, goalArea, goalPos, costFunc, closestArea);
+}
 
 void CCSBot::Upkeep(void)
 {

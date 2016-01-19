@@ -838,6 +838,7 @@
     <ClInclude Include="..\extra\IDA structures\goldsource.h" />
     <ClInclude Include="..\game_shared\bitvec.h" />
     <ClInclude Include="..\game_shared\bot\bot.h" />
+    <ClInclude Include="..\game_shared\bot\bot_constants.h" />
     <ClInclude Include="..\game_shared\bot\bot_manager.h" />
     <ClInclude Include="..\game_shared\bot\bot_profile.h" />
     <ClInclude Include="..\game_shared\bot\bot_util.h" />
@@ -1168,7 +1169,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>CSTRIKE;REGAMEDLL_SELF;REGAMEDLL_CHECKS;CLIENT_WEAPONS;USE_BREAKPAD_HANDLER;DEDICATED;_CRT_SECURE_NO_WARNINGS;_DEBUG;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CSTRIKE;REGAMEDLL_ADD;REGAMEDLL_FIXES;REGAMEDLL_SELF;REGAMEDLL_CHECKS;CLIENT_WEAPONS;USE_BREAKPAD_HANDLER;DEDICATED;_CRT_SECURE_NO_WARNINGS;_DEBUG;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <FloatingPointModel>Precise</FloatingPointModel>
       <AdditionalOptions>/arch:IA32 %(AdditionalOptions)</AdditionalOptions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -1204,7 +1205,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>REGAMEDLL_SELF;PLAY_GAMEDLL;REGAMEDLL_CHECKS;CLIENT_WEAPONS;USE_BREAKPAD_HANDLER;DEDICATED;_CRT_SECURE_NO_WARNINGS;_DEBUG;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CSTRIKE;REGAMEDLL_SELF;PLAY_GAMEDLL;REGAMEDLL_CHECKS;CLIENT_WEAPONS;USE_BREAKPAD_HANDLER;DEDICATED;_CRT_SECURE_NO_WARNINGS;_DEBUG;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <FloatingPointModel>Precise</FloatingPointModel>
       <AdditionalOptions>/arch:IA32 %(AdditionalOptions)</AdditionalOptions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>

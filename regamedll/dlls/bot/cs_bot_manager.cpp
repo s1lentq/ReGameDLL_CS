@@ -7,109 +7,111 @@
 
 CBotManager *TheBots = NULL;
 
-cvar_t cv_bot_traceview = { "bot_traceview", "0", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_stop = { "bot_stop", "0", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_show_nav = { "bot_show_nav", "0", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_show_danger = { "bot_show_danger", "0", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_nav_edit = { "bot_nav_edit", "0", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_nav_zdraw = { "bot_nav_zdraw", "4", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_walk = { "bot_walk", "0", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_difficulty = { "bot_difficulty", "0", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_debug = { "bot_debug", "0", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_quicksave = { "bot_quicksave", "0", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_quota = { "bot_quota", "0", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_quota_match = { "bot_quota_match", "0", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_prefix = { "bot_prefix", "", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_allow_rogues = { "bot_allow_rogues", "1", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_allow_pistols = { "bot_allow_pistols", "1", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_allow_shotguns = { "bot_allow_shotguns", "1", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_allow_sub_machine_guns = { "bot_allow_sub_machine_guns", "1", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_allow_rifles = { "bot_allow_rifles", "1", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_allow_machine_guns = { "bot_allow_machine_guns", "1", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_allow_grenades = { "bot_allow_grenades", "1", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_allow_snipers = { "bot_allow_snipers", "1", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_allow_shield = { "bot_allow_shield", "1", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_join_team = { "bot_join_team", "any", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_join_after_player = { "bot_join_after_player", "1", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_auto_vacate = { "bot_auto_vacate", "1", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_zombie = { "bot_zombie", "0", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_defer_to_human = { "bot_defer_to_human", "0", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_chatter = { "bot_chatter", "normal", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_profile_db = { "bot_profile_db", "BotProfile.db", FCVAR_SERVER, 0.0f, NULL };
-
-float CCSBotManager::m_flNextCVarCheck;
-bool CCSBotManager::m_isMapDataLoaded;
-bool CCSBotManager::m_isLearningMap;
-bool CCSBotManager::m_isAnalysisRequested;
-NavEditCmdType CCSBotManager::m_editCmd;
+float CCSBotManager::m_flNextCVarCheck = 0.0f;
+bool CCSBotManager::m_isMapDataLoaded = false;
+bool CCSBotManager::m_isLearningMap = false;
+bool CCSBotManager::m_isAnalysisRequested = false;
+NavEditCmdType CCSBotManager::m_editCmd = EDIT_NONE;
 
 #else // HOOK_GAMEDLL
 
 CBotManager *TheBots;
 
-cvar_t cv_bot_traceview;
-cvar_t cv_bot_stop;
-cvar_t cv_bot_show_nav;
-cvar_t cv_bot_show_danger;
-cvar_t cv_bot_nav_edit;
-cvar_t cv_bot_nav_zdraw;
-cvar_t cv_bot_walk;
-cvar_t cv_bot_difficulty;
-cvar_t cv_bot_debug;
-cvar_t cv_bot_quicksave;
-cvar_t cv_bot_quota;
-cvar_t cv_bot_quota_match;
-cvar_t cv_bot_prefix;
-cvar_t cv_bot_allow_rogues;
-cvar_t cv_bot_allow_pistols;
-cvar_t cv_bot_allow_shotguns;
-cvar_t cv_bot_allow_sub_machine_guns;
-cvar_t cv_bot_allow_rifles;
-cvar_t cv_bot_allow_machine_guns;
-cvar_t cv_bot_allow_grenades;
-cvar_t cv_bot_allow_snipers;
-cvar_t cv_bot_allow_shield;
-cvar_t cv_bot_join_team;
-cvar_t cv_bot_join_after_player;
-cvar_t cv_bot_auto_vacate;
-cvar_t cv_bot_zombie;
-cvar_t cv_bot_defer_to_human;
-cvar_t cv_bot_chatter;
-cvar_t cv_bot_profile_db;
-
-float (*CCSBotManager::pm_flNextCVarCheck);
-bool (*CCSBotManager::pm_isMapDataLoaded);
-bool (*CCSBotManager::pm_isLearningMap);
-bool (*CCSBotManager::pm_isAnalysisRequested);
-NavEditCmdType (*CCSBotManager::pm_editCmd);
+float IMPL_CLASS(CCSBotManager, m_flNextCVarCheck);
+bool IMPL_CLASS(CCSBotManager, m_isMapDataLoaded);
+bool IMPL_CLASS(CCSBotManager, m_isLearningMap);
+bool IMPL_CLASS(CCSBotManager, m_isAnalysisRequested);
+NavEditCmdType IMPL_CLASS(CCSBotManager, m_editCmd);
 
 #endif // HOOK_GAMEDLL
 
-/* <36b3b4> ../cstrike/dlls/bot/cs_bot_manager.cpp:45 */
-NOBODY CCSBotManager::CCSBotManager(void)
+// Determine whether bots can be used or not
+inline bool AreBotsAllowed()
 {
-//	{
-//		const char *filename;                               //    66
-//		int dataLength;                                       //    76
-//		char *dataPointer;                                   //    77
-//		const VoiceBankList *pVoiceBanks;                   //   100
-//		SetLooseBomb(CCSBotManager *const this,
-//				class CBaseEntity *bomb);  //    49
-//		{
-//			const char *dataFile;                       //    84
-//			const char *token;                          //    85
-//			{
-//				char *clone;                         //    90
-//				CloneString(const char *str);  //    90
-//			}
-//		}
-//		{
-//			int i;                                        //   101
-//			size(const class vector<char*, std::allocator<char*>> *const this);  //   101
-//		}
-//	}
-//	CountdownTimer(CountdownTimer *const this);  //    45
+	// If they pass in -nobots, don't allow bots.  This is for people who host servers, to
+	// allow them to disallow bots to enforce CPU limits.
+	int nobots = ENG_CHECK_PARM("-nobots", NULL);
+	if (nobots)
+	{
+		return false;
+	}
+
+	return true;
 }
+
+/* <36b3b4> ../cstrike/dlls/bot/cs_bot_manager.cpp:45 */
+CCSBotManager::CCSBotManager(void)
+{
+	IMPL(m_flNextCVarCheck) = 0.0f;
+
+	m_zoneCount = 0;
+	SetLooseBomb(NULL);
+
+	m_isBombPlanted = false;
+	m_bombDefuser = NULL;
+	
+	IMPL(m_isLearningMap) = false;
+	IMPL(m_isAnalysisRequested) = false;
+	IMPL(m_editCmd) = EDIT_NONE;
+
+	m_navPlace = false;
+	m_roundStartTimestamp = 0.0f;
+
+	m_bServerActive = false;
+
+	TheBotPhrases = new BotPhraseManager;				// TODO: Reverse me!
+	// load the database of bot radio chatter
+	TheBotPhrases->Initialize("BotChatter.db", 0);
+
+	TheBotProfiles = new BotProfileManager;
+	// make sure default voice bank is first
+	TheBotProfiles->FindVoiceBankIndex("BotChatter.db");
+
+	const char *filename;
+	if (IS_CAREER_MATCH())
+	{
+		filename = "MissionPacks/BotPackList.db";
+	}
+	else
+	{
+		filename = "BotPackList.db";
+	}
+
+	// read in the list of bot profile DBs
+	int dataLength;
+	char *dataPointer = (char *)LOAD_FILE_FOR_ME((char *)filename, &dataLength);
+
+	if (dataPointer == NULL)
+	{
+		TheBotProfiles->Init("BotProfile.db");
+	}
+	else
+	{
+		const char *dataFile = SharedParse(dataPointer);
+		const char *token;
+
+		while (dataFile != NULL)
+		{
+			token = SharedGetToken();
+			char *clone = CloneString(token);
+			TheBotProfiles->Init(clone);
+			delete[] clone;
+			dataFile = SharedParse(dataFile);
+		}
+
+		FREE_FILE(dataPointer);
+	}
+
+	// Now that we've parsed all the profiles, we have a list of the voice banks they're using.
+	// Go back and parse the custom voice speakables.
+	const BotProfileManager::VoiceBankList *pVoiceBanks = TheBotProfiles->GetVoiceBanks();
+	for (uint32 i = 1; i < pVoiceBanks->size(); ++i)
+	{
+		TheBotPhrases->Initialize((*pVoiceBanks)[i], i);
+	}
+}
+
+// Invoked when a new round begins
 
 /* <36b22a> ../cstrike/dlls/bot/cs_bot_manager.cpp:111 */
 void CCSBotManager::__MAKE_VHOOK(RestartRound)(void)
@@ -119,19 +121,20 @@ void CCSBotManager::__MAKE_VHOOK(RestartRound)(void)
 
 	SetLooseBomb(NULL);
 	m_isBombPlanted = false;
-
+	m_earliestBombPlantTimestamp = gpGlobals->time + RANDOM_FLOAT(10.0f, 30.0f);
 	m_bombDefuser = NULL;
-	m_earliestBombPlantTimestamp = gpGlobals->time + RANDOM_FLOAT(10, 30);
 
 	IMPL(m_editCmd) = EDIT_NONE;
 
 	ResetRadioMessageTimestamps();
+
 	m_lastSeenEnemyTimestamp = -9999.9f;
+
 	m_roundStartTimestamp = gpGlobals->time + CVAR_GET_FLOAT("mp_freezetime");
 
 	// randomly decide if defensive team wants to "rush" as a whole
 	const float defenseRushChance = 33.3f;	// 25.0f;
-	m_isDefenseRushing = (RANDOM_FLOAT(0, 100) <= defenseRushChance) ? true : false;
+	m_isDefenseRushing = (RANDOM_FLOAT(0.0f, 100.0f) <= defenseRushChance) ? true : false;
 
 	TheBotPhrases->OnRoundRestart();
 
@@ -141,28 +144,78 @@ void CCSBotManager::__MAKE_VHOOK(RestartRound)(void)
 }
 
 /* <36aebc> ../cstrike/dlls/bot/cs_bot_manager.cpp:142 */
-NOBODY void UTIL_DrawBox(Extent *extent, int lifetime, int red, int green, int blue)
+void UTIL_DrawBox(Extent *extent, int lifetime, int red, int green, int blue)
 {
-//	{
-//		Vector v;                                       //   144
-//		int const edge;                                        //   154
-//		Vector from;                                    //   165
-//		Vector to;                                      //   165
-//		bool restart;                                         //   166
-//		{
-//			int i;                                        //   167
-//			{
-//				int index;                            //   178
-//			}
-//		}
-//	}
+	Vector v[8];
+	v[0].x = extent->lo.x; v[0].y = extent->lo.y; v[0].z = extent->lo.z;
+	v[1].x = extent->hi.x; v[1].y = extent->lo.y; v[1].z = extent->lo.z;
+	v[2].x = extent->hi.x; v[2].y = extent->hi.y; v[2].z = extent->lo.z;
+	v[3].x = extent->lo.x; v[3].y = extent->hi.y; v[3].z = extent->lo.z;
+	v[4].x = extent->lo.x; v[4].y = extent->lo.y; v[4].z = extent->hi.z;
+	v[5].x = extent->hi.x; v[5].y = extent->lo.y; v[5].z = extent->hi.z;
+	v[6].x = extent->hi.x; v[6].y = extent->hi.y; v[6].z = extent->hi.z;
+	v[7].x = extent->lo.x; v[7].y = extent->hi.y; v[7].z = extent->hi.z;
+
+	static int edge[] =
+	{
+		1, 2, 3, 4, -1,
+		5, 6, 7, 8, -5,
+		1, -5,
+		2, -6,
+		3, -7,
+		4, -8,
+		0	// end iterator
+	};
+
+	Vector from, to;
+	bool restart = true;
+
+	for (int i = 0; edge[i] != 0; ++i)
+	{
+		if (restart)
+		{
+			to = v[ edge[i] - 1 ];
+			restart = false;
+			continue;
+		}
+
+		from = to;
+
+		int index = edge[i];
+		if (index < 0)
+		{
+			restart = true;
+			index = -index;
+		}
+
+		to = v[ index - 1 ];
+
+		UTIL_DrawBeamPoints(from, to, lifetime, red, green, blue);
+		UTIL_DrawBeamPoints(to, from, lifetime, red, green, blue);
+	}
 }
+
+// Called each frame
 
 /* <36b13d> ../cstrike/dlls/bot/cs_bot_manager.cpp:195 */
-NOBODY void CCSBotManager::__MAKE_VHOOK(StartFrame)(void)
+void CCSBotManager::__MAKE_VHOOK(StartFrame)(void)
 {
+	// EXTEND
+	CBotManager::StartFrame();
+	MonitorBotCVars();
 
+	// debug zone extent visualization
+	if (cv_bot_debug.value == 5.0f)
+	{
+		for (int z = 0; z < m_zoneCount; ++z)
+		{
+			Zone *zone = &m_zone[z];
+			UTIL_DrawBox(&zone->m_extent, 1, 255, 100, 0);
+		}
+	}
 }
+
+// Return true if the bot can use this weapon
 
 /* <36b62a> ../cstrike/dlls/bot/cs_bot_manager.cpp:276 */
 bool CCSBotManager::IsWeaponUseable(CBasePlayerItem *item) const
@@ -172,38 +225,59 @@ bool CCSBotManager::IsWeaponUseable(CBasePlayerItem *item) const
 		return false;
 	}
 
-	if (item->m_iId != WEAPON_C4)
-	{
-		int weaponClass = WeaponIDToWeaponClass(item->m_iId);
+	if (item->m_iId == WEAPON_C4)
+		return true;
 
-		if ((!AllowShotguns() && weaponClass == WEAPONCLASS_SHOTGUN)
-			|| (!AllowMachineGuns() && weaponClass == WEAPONCLASS_MACHINEGUN)
-			|| (!AllowRifles() && weaponClass == WEAPONCLASS_RIFLE)
-			//|| (!AllowShotguns() && weaponClass == WEAPONCLASS_SHOTGUN) // TODO: already is checked shotguns!
-			|| (!AllowSnipers() && weaponClass == WEAPONCLASS_SNIPERRIFLE)
-			|| (!AllowSubMachineGuns() && weaponClass == WEAPONCLASS_SUBMACHINEGUN)
-			|| (!AllowTacticalShield() && item->m_iId == WEAPON_SHIELDGUN)
-			|| (!AllowPistols() && weaponClass == WEAPONCLASS_PISTOL)
-			|| (!AllowGrenades() && weaponClass == WEAPONCLASS_GRENADE))
-		{
-			return false;
-		}
+	int weaponClass = WeaponIDToWeaponClass(item->m_iId);
+
+	if ((!AllowShotguns() && weaponClass == WEAPONCLASS_SHOTGUN)
+		|| (!AllowMachineGuns() && weaponClass == WEAPONCLASS_MACHINEGUN)
+		|| (!AllowRifles() && weaponClass == WEAPONCLASS_RIFLE)
+#ifndef REGAMEDLL_FIXES
+		// TODO: already is checked shotguns!
+		|| (!AllowShotguns() && weaponClass == WEAPONCLASS_SHOTGUN)
+#endif // REGAMEDLL_FIXES
+		|| (!AllowSnipers() && weaponClass == WEAPONCLASS_SNIPERRIFLE)
+		|| (!AllowSubMachineGuns() && weaponClass == WEAPONCLASS_SUBMACHINEGUN)
+		|| (!AllowTacticalShield() && item->m_iId == WEAPON_SHIELDGUN)
+		|| (!AllowPistols() && weaponClass == WEAPONCLASS_PISTOL)
+		|| (!AllowGrenades() && weaponClass == WEAPONCLASS_GRENADE))
+	{
+		return false;
 	}
 
 	return true;
 }
 
+// Return true if this player is on "defense"
+
 /* <36b68c> ../cstrike/dlls/bot/cs_bot_manager.cpp:306 */
-NOBODY bool CCSBotManager::IsOnDefense(CBasePlayer *player) const
+bool CCSBotManager::IsOnDefense(CBasePlayer *player) const
 {
+	switch (GetScenario())
+	{
+		case SCENARIO_DEFUSE_BOMB:
+			return (player->m_iTeam == CT);
+
+		case SCENARIO_RESCUE_HOSTAGES:
+			return (player->m_iTeam == TERRORIST);
+
+		case SCENARIO_ESCORT_VIP:
+			return (player->m_iTeam == TERRORIST);
+	}
+
+	return false;
 }
 
+// Return true if this player is on "offense"
+
 /* <36b6b8> ../cstrike/dlls/bot/cs_bot_manager.cpp:327 */
-NOBODY bool CCSBotManager::IsOnOffense(CBasePlayer *player) const
+bool CCSBotManager::IsOnOffense(CBasePlayer *player) const
 {
-//	IsOnDefense(const class CCSBotManager *const this,
-//			const class CBasePlayer *player);  //   329
+	return !IsOnDefense(player);
 }
+
+// Invoked when a map has just been loaded
 
 /* <36a3b6> ../cstrike/dlls/bot/cs_bot_manager.cpp:331 */
 void CCSBotManager::__MAKE_VHOOK(ServerActivate)(void)
@@ -301,28 +375,33 @@ void CCSBotManager::__MAKE_VHOOK(ServerDeactivate)(void)
 /* <36b5fa> ../cstrike/dlls/bot/cs_bot_manager.cpp:415 */
 void CCSBotManager::__MAKE_VHOOK(ClientDisconnect)(CBasePlayer *pPlayer)
 {
-	if (!pPlayer || !pPlayer->IsBot())
-		return;
+	if (pPlayer != NULL && pPlayer->IsBot())
+	{
+		entvars_t *temp = VARS(pPlayer->edict());
+		CCSBot *pBot = static_cast<CCSBot *>(pPlayer);
 
-	CCSBot *pBot = static_cast<CCSBot *>(pPlayer);
-	entvars_t *temp = VARS(pPlayer->edict());
+		if (pBot != NULL)
+		{
+			pBot->Disconnect();
+		}
 
-	pBot->Disconnect();
+		if (!FStringNull(pPlayer->pev->classname))
+		{
+			RemoveEntityHashValue(pPlayer->pev, STRING(pPlayer->pev->classname), CLASSNAME);
+		}
 
-	if (pPlayer->pev->classname)
-		RemoveEntityHashValue(pPlayer->pev, STRING(pPlayer->pev->classname), CLASSNAME);
+		FREE_PRIVATE(pPlayer->edict());
 
-	FREE_PRIVATE(pPlayer->edict());
-
-	CBasePlayer *player = GetClassPtr((CBasePlayer *)temp);
-	AddEntityHashValue(player->pev, STRING(player->pev->classname), CLASSNAME);
-	player->pev->flags = FL_DORMANT;
+		CBasePlayer *player = GetClassPtr((CBasePlayer *)temp);
+		AddEntityHashValue(player->pev, STRING(player->pev->classname), CLASSNAME);
+		player->pev->flags = FL_DORMANT;
+	}
 }
 
 /* <36b714> ../cstrike/dlls/bot/cs_bot_manager.cpp:464 */
 void PrintAllEntities(void)
 {
-	for (int i = 1; i < gpGlobals->maxEntities; i++)
+	for (int i = 1; i < gpGlobals->maxEntities; ++i)
 	{
 		edict_t *edict = INDEXENT(i);
 
@@ -350,15 +429,15 @@ void CCSBotManager::__MAKE_VHOOK(ServerCommand)(const char *pcmd)
 	}
 	else if (FStrEq(pcmd, "bot_add"))
 	{
-		BotAddCommand(BOT_TEAM_ANY);
+		BotAddCommand(BOT_TEAM_ANY, FROM_CONSOLE);
 	}
 	else if (FStrEq(pcmd, "bot_add_t"))
 	{
-		BotAddCommand(BOT_TEAM_T);
+		BotAddCommand(BOT_TEAM_T, FROM_CONSOLE);
 	}
 	else if (FStrEq(pcmd, "bot_add_ct"))
 	{
-		BotAddCommand(BOT_TEAM_CT);
+		BotAddCommand(BOT_TEAM_CT, FROM_CONSOLE);
 	}
 	else if (FStrEq(pcmd, "bot_kill"))
 	{
@@ -368,9 +447,9 @@ void CCSBotManager::__MAKE_VHOOK(ServerCommand)(const char *pcmd)
 		else
 			killThemAll = false;
 
-		for (int iIndex = 1; iIndex <= gpGlobals->maxClients; iIndex++)
+		for (int iIndex = 1; iIndex <= gpGlobals->maxClients; ++iIndex)
 		{
-			CBasePlayer *pPlayer = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(iIndex));
+			CBasePlayer *pPlayer = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(iIndex));
 
 			if (pPlayer == NULL)
 				continue;
@@ -400,9 +479,9 @@ void CCSBotManager::__MAKE_VHOOK(ServerCommand)(const char *pcmd)
 		else
 			kickThemAll = false;
 
-		for (int iIndex = 1; iIndex <= gpGlobals->maxClients; iIndex++)
+		for (int iIndex = 1; iIndex <= gpGlobals->maxClients; ++iIndex)
 		{
-			CBasePlayer *pPlayer = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(iIndex));
+			CBasePlayer *pPlayer = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(iIndex));
 
 			if (pPlayer == NULL)
 				continue;
@@ -419,8 +498,10 @@ void CCSBotManager::__MAKE_VHOOK(ServerCommand)(const char *pcmd)
 			{
 				if (kickThemAll || FStrEq(name, msg))
 				{
+					// adjust bot quota so kicked bot is not immediately added back in
+					int newQuota = cv_bot_quota.value - 1;
 					SERVER_COMMAND(UTIL_VarArgs("kick \"%s\"\n", name));
-					CVAR_SET_FLOAT("bot_quota", cv_bot_quota.value - 1);
+					CVAR_SET_FLOAT("bot_quota", clamp(newQuota, 0, (int)cv_bot_quota.value));
 				}
 			}
 		}
@@ -480,63 +561,63 @@ void CCSBotManager::__MAKE_VHOOK(ServerCommand)(const char *pcmd)
 	}
 	else if (FStrEq(pcmd, "bot_nav_delete"))
 	{
-		IMPL_CLASS(CCSBotManager, m_editCmd) = EDIT_DELETE;
+		IMPL(m_editCmd) = EDIT_DELETE;
 	}
 	else if (FStrEq(pcmd, "bot_nav_split"))
 	{
-		IMPL_CLASS(CCSBotManager, m_editCmd) = EDIT_SPLIT;
+		IMPL(m_editCmd) = EDIT_SPLIT;
 	}
 	else if (FStrEq(pcmd, "bot_nav_merge"))
 	{
-		IMPL_CLASS(CCSBotManager, m_editCmd) = EDIT_MERGE;
+		IMPL(m_editCmd) = EDIT_MERGE;
 	}
 	else if (FStrEq(pcmd, "bot_nav_mark"))
 	{
-		IMPL_CLASS(CCSBotManager, m_editCmd) = EDIT_MARK;
+		IMPL(m_editCmd) = EDIT_MARK;
 	}
 	else if (FStrEq(pcmd, "bot_nav_begin_area"))
 	{
-		IMPL_CLASS(CCSBotManager, m_editCmd) = EDIT_BEGIN_AREA;
+		IMPL(m_editCmd) = EDIT_BEGIN_AREA;
 	}
 	else if (FStrEq(pcmd, "bot_nav_end_area"))
 	{
-		IMPL_CLASS(CCSBotManager, m_editCmd) = EDIT_END_AREA;
+		IMPL(m_editCmd) = EDIT_END_AREA;
 	}
 	else if (FStrEq(pcmd, "bot_nav_connect"))
 	{
-		IMPL_CLASS(CCSBotManager, m_editCmd) = EDIT_CONNECT;
+		IMPL(m_editCmd) = EDIT_CONNECT;
 	}
 	else if (FStrEq(pcmd, "bot_nav_disconnect"))
 	{
-		IMPL_CLASS(CCSBotManager, m_editCmd) = EDIT_DISCONNECT;
+		IMPL(m_editCmd) = EDIT_DISCONNECT;
 	}
 	else if (FStrEq(pcmd, "bot_nav_splice"))
 	{
-		IMPL_CLASS(CCSBotManager, m_editCmd) = EDIT_SPLICE;
+		IMPL(m_editCmd) = EDIT_SPLICE;
 	}
 	else if (FStrEq(pcmd, "bot_nav_crouch"))
 	{
-		IMPL_CLASS(CCSBotManager, m_editCmd) = EDIT_ATTRIB_CROUCH;
+		IMPL(m_editCmd) = EDIT_ATTRIB_CROUCH;
 	}
 	else if (FStrEq(pcmd, "bot_nav_jump"))
 	{
-		IMPL_CLASS(CCSBotManager, m_editCmd) = EDIT_ATTRIB_JUMP;
+		IMPL(m_editCmd) = EDIT_ATTRIB_JUMP;
 	}
 	else if (FStrEq(pcmd, "bot_nav_precise"))
 	{
-		IMPL_CLASS(CCSBotManager, m_editCmd) = EDIT_ATTRIB_PRECISE;
+		IMPL(m_editCmd) = EDIT_ATTRIB_PRECISE;
 	}
 	else if (FStrEq(pcmd, "bot_nav_no_jump"))
 	{
-		IMPL_CLASS(CCSBotManager, m_editCmd) = EDIT_ATTRIB_NO_JUMP;
+		IMPL(m_editCmd) = EDIT_ATTRIB_NO_JUMP;
 	}
 	else if (FStrEq(pcmd, "bot_nav_analyze"))
 	{
-		IMPL_CLASS(CCSBotManager, m_isAnalysisRequested) = true;
+		IMPL(m_isAnalysisRequested) = true;
 	}
 	else if (FStrEq(pcmd, "bot_nav_strip"))
 	{
-		StripNavigationAreas();// TODO: reverse me
+		StripNavigationAreas();
 	}
 	else if (FStrEq(pcmd, "bot_nav_save"))
 	{
@@ -545,7 +626,7 @@ void CCSBotManager::__MAKE_VHOOK(ServerCommand)(const char *pcmd)
 
 		Q_strcat(buffer, CBotManager::GetNavMapFilename());
 
-		if (SaveNavigationMap(buffer))// TODO: reverse me
+		if (SaveNavigationMap(buffer))
 			CONSOLE_ECHO("Navigation map '%s' saved.\n", buffer);
 		else
 			CONSOLE_ECHO("ERROR: Cannot save navigation map '%s'.\n", buffer);
@@ -558,10 +639,10 @@ void CCSBotManager::__MAKE_VHOOK(ServerCommand)(const char *pcmd)
 	{
 		if (CMD_ARGC() == 1)
 		{
+			// no arguments = list all available places
 			int i = 0;
 			const BotPhraseList *placeList = TheBotPhrases->GetPlaceList();
-
-			for (BotPhraseList::const_iterator iter = placeList->begin(); iter != placeList->end(); ++iter, i++)
+			for (BotPhraseList::const_iterator iter = placeList->begin(); iter != placeList->end(); ++iter, ++i)
 			{
 				if ((*iter)->GetID() == GetNavPlace())
 					CONSOLE_ECHO("--> %-26s", (*iter)->GetName());
@@ -575,34 +656,38 @@ void CCSBotManager::__MAKE_VHOOK(ServerCommand)(const char *pcmd)
 		}
 		else
 		{
+			// single argument = set current place
 			const BotPhraseList *placeList = TheBotPhrases->GetPlaceList();
 			const BotPhrase *found = NULL;
 			bool isAmbiguous = false;
-
 			for (BotPhraseList::const_iterator iter = placeList->begin(); iter != placeList->end(); ++iter)
 			{
 				if (!Q_strnicmp((*iter)->GetName(), msg, Q_strlen(msg)))
 				{
+					// check for exact match in case of subsets of other strings
 					if (!Q_strcmp((*iter)->GetName(), msg))
 					{
 						found = (*iter);
+						isAmbiguous = false;
 						break;
 					}
 
 					if (found != NULL)
+					{
 						isAmbiguous = true;
+					}
 					else
+					{
 						found = (*iter);
+					}
 				}
 			}
 
 			if (isAmbiguous)
 			{
 				CONSOLE_ECHO("Ambiguous\n");
-				return;
 			}
-
-			if (found != NULL)
+			else
 			{
 				CONSOLE_ECHO("Current place set to '%s'\n", found->GetName());
 				m_navPlace = found->GetID();
@@ -611,24 +696,24 @@ void CCSBotManager::__MAKE_VHOOK(ServerCommand)(const char *pcmd)
 	}
 	else if (FStrEq(pcmd, "bot_nav_toggle_place_mode"))
 	{
-		IMPL_CLASS(CCSBotManager, m_editCmd) = EDIT_TOGGLE_PLACE_MODE;
+		IMPL(m_editCmd) = EDIT_TOGGLE_PLACE_MODE;
 	}
 	else if (FStrEq(pcmd, "bot_nav_place_floodfill"))
 	{
-		IMPL_CLASS(CCSBotManager, m_editCmd) = EDIT_PLACE_FLOODFILL;
+		IMPL(m_editCmd) = EDIT_PLACE_FLOODFILL;
 	}
 	else if (FStrEq(pcmd, "bot_nav_place_pick"))
 	{
-		IMPL_CLASS(CCSBotManager, m_editCmd) = EDIT_PLACE_PICK;
+		IMPL(m_editCmd) = EDIT_PLACE_PICK;
 	}
 	else if (FStrEq(pcmd, "bot_nav_toggle_place_painting"))
 	{
-		IMPL_CLASS(CCSBotManager, m_editCmd) = EDIT_TOGGLE_PLACE_PAINTING;
+		IMPL(m_editCmd) = EDIT_TOGGLE_PLACE_PAINTING;
 	}
 	else if (FStrEq(pcmd, "bot_goto_mark"))
 	{
 		// tell the first bot we find to go to our marked area
-		CNavArea *area = GetMarkedArea();// TODO: reverse me
+		CNavArea *area = GetMarkedArea();
 		if (area != NULL)
 		{
 			CBaseEntity *pEntity = NULL;
@@ -644,9 +729,13 @@ void CCSBotManager::__MAKE_VHOOK(ServerCommand)(const char *pcmd)
 
 				if (playerOrBot->IsBot())
 				{
-					CCSBot *bot = reinterpret_cast<CCSBot *>(playerOrBot);
-					bot->MoveTo(&area->m_center, FASTEST_ROUTE);// TODO: reverse me
-					return;
+					CCSBot *bot = static_cast<CCSBot *>(playerOrBot);
+					if (bot != NULL)
+					{
+						bot->MoveTo(&area->m_center, FASTEST_ROUTE);
+					}
+
+					break;
 				}
 			}
 		}
@@ -671,7 +760,6 @@ void CCSBotManager::__MAKE_VHOOK(ServerCommand)(const char *pcmd)
 
 			for (SpotEncounterList::iterator siter = area->m_spotEncounterList.begin(); siter != area->m_spotEncounterList.end(); ++siter)
 			{
-				// TODO: Fix me, this is crashed in HOOK_GAMEDLL
 				SpotEncounter se = (*siter);
 
 				encounterMem += sizeof(SpotEncounter);
@@ -683,23 +771,23 @@ void CCSBotManager::__MAKE_VHOOK(ServerCommand)(const char *pcmd)
 	}
 	else if (FStrEq(pcmd, "bot_nav_mark_unnamed"))
 	{
-		IMPL_CLASS(CCSBotManager, m_editCmd) = EDIT_MARK_UNNAMED;
+		IMPL(m_editCmd) = EDIT_MARK_UNNAMED;
 	}
 	else if (FStrEq(pcmd, "bot_nav_warp"))
 	{
-		IMPL_CLASS(CCSBotManager, m_editCmd) = EDIT_WARP_TO_MARK;
+		IMPL(m_editCmd) = EDIT_WARP_TO_MARK;
 	}
 	else if (FStrEq(pcmd, "bot_nav_corner_select"))
 	{
-		IMPL_CLASS(CCSBotManager, m_editCmd) = EDIT_SELECT_CORNER;
+		IMPL(m_editCmd) = EDIT_SELECT_CORNER;
 	}
 	else if (FStrEq(pcmd, "bot_nav_corner_raise"))
 	{
-		IMPL_CLASS(CCSBotManager, m_editCmd) = EDIT_RAISE_CORNER;
+		IMPL(m_editCmd) = EDIT_RAISE_CORNER;
 	}
 	else if (FStrEq(pcmd, "bot_nav_corner_lower"))
 	{
-		IMPL_CLASS(CCSBotManager, m_editCmd) = EDIT_LOWER_CORNER;
+		IMPL(m_editCmd) = EDIT_LOWER_CORNER;
 	}
 	else if (FStrEq(pcmd, "bot_nav_check_consistency"))
 	{
@@ -709,23 +797,42 @@ void CCSBotManager::__MAKE_VHOOK(ServerCommand)(const char *pcmd)
 			return;
 		}
 
-		SanityCheckNavigationMap(msg);// TODO: reverse me
+		SanityCheckNavigationMap(msg);
 	}
 }
 
-/* <36c3c2> ../cstrike/dlls/bot/cs_bot_manager.cpp:903 */
-NOBODY bool CCSBotManager::BotAddCommand(BotProfileTeamType team, bool isFromConsole)
+/* <36b6e1> ../cstrike/dlls/bot/cs_bot_manager.cpp:896 */
+BOOL CCSBotManager::__MAKE_VHOOK(ClientCommand)(CBasePlayer *pPlayer, const char *pcmd)
 {
-	if (IMPL(m_isLearningMap) || ENG_CHECK_PARM("-nobots", NULL))
+#ifndef REGAMEDLL_FIXES
+	if (pPlayer && UTIL_GetLocalPlayer())
+	{
+		UTIL_GetLocalPlayer();
+	}
+#endif // REGAMEDLL_FIXES
+
+	return FALSE;
+}
+
+// Process the "bot_add" console command
+
+/* <36c3c2> ../cstrike/dlls/bot/cs_bot_manager.cpp:903 */
+bool CCSBotManager::BotAddCommand(BotProfileTeamType team, bool isFromConsole)
+{
+	// dont allow bots to join if the Navigation Area is being generated
+	if (IMPL(m_isLearningMap))
+		return false;
+
+	if (!AreBotsAllowed())
 		return false;
 
 	const BotProfile *profile = NULL;
 
 	if (!isFromConsole || CMD_ARGC() < 2)
 	{
+		// if team not specified, check cv_bot_join_team cvar for preference
 		if (team == BOT_TEAM_ANY)
 		{
-			// if team not specified, check cv_bot_join_team cvar for preference
 			if (!Q_stricmp(cv_bot_join_team.string, "T"))
 				team = BOT_TEAM_T;
 
@@ -758,7 +865,7 @@ NOBODY bool CCSBotManager::BotAddCommand(BotProfileTeamType team, bool isFromCon
 		bool ignoreHumans = false;
 		CHalfLifeMultiplay *mp = g_pGameRules;
 
-		if (mp && mp->IsCareer())
+		if (mp != NULL && mp->IsCareer())
 			ignoreHumans = true;
 
 		if (UTIL_IsNameTaken(CMD_ARGV(1), ignoreHumans))
@@ -776,7 +883,7 @@ NOBODY bool CCSBotManager::BotAddCommand(BotProfileTeamType team, bool isFromCon
 	}
 
 	// create the bot
-	if (CCSBotManager::AddBot(profile, team))	// TODO: Reverse me
+	if (AddBot(profile, team))
 	{
 		if (isFromConsole)
 		{
@@ -788,37 +895,178 @@ NOBODY bool CCSBotManager::BotAddCommand(BotProfileTeamType team, bool isFromCon
 	return true;
 }
 
+// Keep a minimum quota of bots in the game
+
 /* <36d10f> ../cstrike/dlls/bot/cs_bot_manager.cpp:979 */
-NOBODY void CCSBotManager::MaintainBotQuota(void)
+void CCSBotManager::MaintainBotQuota(void)
 {
-//	{
-//		int totalHumansInGame;                                //   984
-//		int humanPlayersInGame;                               //   985
-//		class CHalfLifeMultiplay *mp;                        //   991
-//		int desiredBotCount;                                  //   993
-//		BotAddCommand(BotProfileTeamType team,
-//				bool isFromConsole);  //  1017
-//		{
-//			enum TeamName kickTeam;                       //  1027
-//		}
-//		{
-//			bool humansAreCTs;                            //  1067
-//		}
-//	}
+	if (IMPL(m_isLearningMap))
+		return;
+
+	CHalfLifeMultiplay *mp = g_pGameRules;
+	int totalHumansInGame = UTIL_HumansInGame();
+	int humanPlayersInGame = UTIL_HumansInGame(IGNORE_SPECTATORS);
+
+	// don't add bots until local player has been registered, to make sure he's player ID #1
+	if (!IS_DEDICATED_SERVER() && totalHumansInGame == 0)
+		return;
+
+	int desiredBotCount = (int)cv_bot_quota.value;
+	int botsInGame = UTIL_BotsInGame();
+
+	if (cv_bot_quota_match.value > 0.0)
+	{
+		desiredBotCount = (int)(humanPlayersInGame * cv_bot_quota_match.value);
+	}
+
+	// wait for a player to join, if necessary
+	if (cv_bot_join_after_player.value > 0.0)
+	{
+		if (humanPlayersInGame == 0)
+			desiredBotCount = 0;
+	}
+
+	// if bots will auto-vacate, we need to keep one slot open to allow players to join
+	if (cv_bot_auto_vacate.value > 0.0)
+		desiredBotCount = Q_min(desiredBotCount, gpGlobals->maxClients - (totalHumansInGame + 1));
+	else
+		desiredBotCount = Q_min(desiredBotCount, gpGlobals->maxClients - totalHumansInGame);
+
+	// add bots if necessary
+	if (desiredBotCount > botsInGame)
+	{
+		// don't try to add a bot if all teams are full
+		if (!mp->TeamFull(TERRORIST) || !mp->TeamFull(CT))
+			BotAddCommand(BOT_TEAM_ANY);
+	}
+	else if (desiredBotCount < botsInGame)
+	{
+		// kick a bot to maintain quota
+
+		// first remove any unassigned bots
+		if (UTIL_KickBotFromTeam(UNASSIGNED))
+			return;
+
+		TeamName kickTeam;
+
+		// remove from the team that has more players
+		if (mp->m_iNumTerrorist > mp->m_iNumCT)
+		{
+			kickTeam = TERRORIST;
+		}
+		else if (mp->m_iNumTerrorist < mp->m_iNumCT)
+		{
+			kickTeam = CT;
+		}
+		// remove from the team that's winning
+		else if (mp->m_iNumTerroristWins > mp->m_iNumCTWins)
+		{
+			kickTeam = TERRORIST;
+		}
+		else if (mp->m_iNumCTWins > mp->m_iNumTerroristWins)
+		{
+			kickTeam = CT;
+		}
+		else
+		{
+			// teams and scores are equal, pick a team at random
+			kickTeam = (RANDOM_LONG(0, 1) == 0) ? CT : TERRORIST;
+		}
+
+		// attempt to kick a bot from the given team
+		if (UTIL_KickBotFromTeam(kickTeam))
+			return;
+
+		// if there were no bots on the team, kick a bot from the other team
+		if (kickTeam == TERRORIST)
+			UTIL_KickBotFromTeam(CT);
+		else
+			UTIL_KickBotFromTeam(TERRORIST);
+	}
+	else
+	{
+		if (mp != NULL && !mp->IsCareer())
+			return;
+
+		bool humansAreCTs = (Q_strcmp(humans_join_team.string, "CT") == 0);
+
+		if (humansAreCTs)
+		{
+			if (mp->m_iNumCT <= 6)
+				return;
+
+			UTIL_KickBotFromTeam(CT);
+		}
+		else
+		{
+			if (mp->m_iNumTerrorist <= 6)
+				return;
+
+			UTIL_KickBotFromTeam(TERRORIST);
+		}
+
+		CVAR_SET_FLOAT("bot_quota", cv_bot_quota.value - 1.0f);
+	}
 }
 
 /* <36d1dd> ../cstrike/dlls/bot/cs_bot_manager.cpp:1086 */
-NOBODY void CCSBotManager::MonitorBotCVars(void)
+void CCSBotManager::MonitorBotCVars(void)
 {
+	if (cv_bot_nav_edit.value != 0.0f)
+	{
+		EditNavAreas(IMPL(m_editCmd));
+		IMPL(m_editCmd) = EDIT_NONE;
+	}
+
+	if (gpGlobals->time >= IMPL(m_flNextCVarCheck))
+	{
+		if (cv_bot_show_danger.value != 0.0f)
+			DrawDanger();
+
+		MaintainBotQuota();
+		IMPL(m_flNextCVarCheck) = gpGlobals->time + 0.3f;
+	}
 }
+
+// Collect all nav areas that overlap the given zone
+class CollectOverlappingAreas
+{
+public:
+	CollectOverlappingAreas(CCSBotManager::Zone *zone)
+	{
+		m_zone = zone;
+		zone->m_areaCount = 0;
+	}
+	bool operator()(CNavArea *area)
+	{
+		const Extent *areaExtent = area->GetExtent();
+
+		if (areaExtent->hi.x >= m_zone->m_extent.lo.x && areaExtent->lo.x <= m_zone->m_extent.hi.x
+			&& areaExtent->hi.y >= m_zone->m_extent.lo.y && areaExtent->lo.y <= m_zone->m_extent.hi.y
+			&& areaExtent->hi.z >= m_zone->m_extent.lo.z && areaExtent->lo.z <= m_zone->m_extent.hi.z)
+		{
+			// area overlaps m_zone
+			m_zone->m_area[ m_zone->m_areaCount++ ] = area;
+			if (m_zone->m_areaCount == CCSBotManager::MAX_ZONE_NAV_AREAS)
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+private:
+	CCSBotManager::Zone *m_zone;
+};
+
+// Search the map entities to determine the game scenario and define important zones.
 
 /* <36b780> ../cstrike/dlls/bot/cs_bot_manager.cpp:1109 */
 void CCSBotManager::ValidateMapData(void)
 {
 	if (IMPL(m_isMapDataLoaded) || !UTIL_IsGame("czero"))
-	{
 		return;
-	}
 
 	IMPL(m_isMapDataLoaded) = true;
 
@@ -838,8 +1086,7 @@ void CCSBotManager::ValidateMapData(void)
 
 	CBaseEntity *entity = NULL;
 	int i;
-
-	for (i = 1; i < gpGlobals->maxEntities; i++)
+	for (i = 1; i < gpGlobals->maxEntities; ++i)
 	{
 		entity = CBaseEntity::Instance(INDEXENT(i));
 
@@ -851,31 +1098,27 @@ void CCSBotManager::ValidateMapData(void)
 
 		if (FClassnameIs(entity->pev, "func_bomb_target"))
 		{
+			m_gameScenario = SCENARIO_DEFUSE_BOMB;
 			found = true;
 			isLegacy = false;
-
-			m_gameScenario = SCENARIO_DEFUSE_BOMB;
 		}
 		else if (FClassnameIs(entity->pev, "info_bomb_target"))
 		{
+			m_gameScenario = SCENARIO_DEFUSE_BOMB;
 			found = true;
 			isLegacy = true;
-
-			m_gameScenario = SCENARIO_DEFUSE_BOMB;
 		}
 		else if (FClassnameIs(entity->pev, "func_hostage_rescue"))
 		{
+			m_gameScenario = SCENARIO_RESCUE_HOSTAGES;
 			found = true;
 			isLegacy = false;
-
-			m_gameScenario = SCENARIO_RESCUE_HOSTAGES;
 		}
 		else if (FClassnameIs(entity->pev, "info_hostage_rescue"))
 		{
+			m_gameScenario = SCENARIO_RESCUE_HOSTAGES;
 			found = true;
 			isLegacy = true;
-
-			m_gameScenario = SCENARIO_RESCUE_HOSTAGES;
 		}
 		else if (FClassnameIs(entity->pev, "hostage_entity"))
 		{
@@ -886,26 +1129,19 @@ void CCSBotManager::ValidateMapData(void)
 		}
 		else if (FClassnameIs(entity->pev, "func_vip_safetyzone"))
 		{
+			m_gameScenario = SCENARIO_ESCORT_VIP;
 			found = true;
 			isLegacy = false;
-
-			m_gameScenario = SCENARIO_ESCORT_VIP;
 		}
 
 		if (found)
 		{
 			if (m_zoneCount < MAX_ZONES)
 			{
-				if (isLegacy)
-					m_zone[ m_zoneCount ].m_center = entity->pev->origin;
-				else
-					m_zone[ m_zoneCount ].m_center = (entity->pev->absmax + entity->pev->absmin) / 2.0f;
-
+				m_zone[ m_zoneCount ].m_center = (isLegacy) ? entity->pev->origin : (entity->pev->absmax + entity->pev->absmin) / 2.0f;
 				m_zone[ m_zoneCount ].m_isLegacy = isLegacy;
 				m_zone[ m_zoneCount ].m_index = m_zoneCount;
-				m_zone[ m_zoneCount ].m_entity = entity;
-
-				++m_zoneCount;
+				m_zone[ m_zoneCount++ ].m_entity = entity;
 			}
 			else
 				CONSOLE_ECHO("Warning: Too many zones, some will be ignored.\n");
@@ -928,9 +1164,7 @@ void CCSBotManager::ValidateMapData(void)
 				m_zone[ m_zoneCount ].m_center = entity->pev->origin;
 				m_zone[ m_zoneCount ].m_isLegacy = true;
 				m_zone[ m_zoneCount ].m_index = m_zoneCount;
-				m_zone[ m_zoneCount ].m_entity = entity;
-
-				++m_zoneCount;
+				m_zone[ m_zoneCount++ ].m_entity = entity;
 			}
 			else
 				CONSOLE_ECHO("Warning: Too many zones, some will be ignored.\n");
@@ -938,18 +1172,16 @@ void CCSBotManager::ValidateMapData(void)
 	}
 
 	// Collect nav areas that overlap each zone
-	for (i = 0; i < m_zoneCount; i++)
+	for (i = 0; i < m_zoneCount; ++i)
 	{
 		Zone *zone = &m_zone[i];
 
 		if (zone->m_isLegacy)
 		{
 			const float legacyRange = 256.0f;
-
 			zone->m_extent.lo.x = zone->m_center.x - legacyRange;
 			zone->m_extent.lo.y = zone->m_center.y - legacyRange;
 			zone->m_extent.lo.z = zone->m_center.z - legacyRange;
-
 			zone->m_extent.hi.x = zone->m_center.x + legacyRange;
 			zone->m_extent.hi.y = zone->m_center.y + legacyRange;
 			zone->m_extent.hi.z = zone->m_center.z + legacyRange;
@@ -962,30 +1194,12 @@ void CCSBotManager::ValidateMapData(void)
 
 		// ensure Z overlap
 		const float zFudge = 50.0f;
-
-		zone->m_areaCount = 0;
 		zone->m_extent.lo.z -= zFudge;
 		zone->m_extent.hi.z += zFudge;
 
 		// build a list of nav areas that overlap this zone
-		for (NavAreaList::iterator iter = TheNavAreaList.begin(); iter != TheNavAreaList.end(); ++iter)
-		{
-			CNavArea *area = (*iter);
-			const Extent *areaExtent = area->GetExtent();
-
-			if (areaExtent->hi.x >= zone->m_extent.lo.x && areaExtent->lo.x <= zone->m_extent.hi.x
-				&& areaExtent->hi.y >= zone->m_extent.lo.y && areaExtent->lo.y <= zone->m_extent.hi.y
-				&& areaExtent->hi.z >= zone->m_extent.lo.z && areaExtent->lo.z <= zone->m_extent.hi.z)
-			{
-				// area overlaps zone
-				zone->m_area[ zone->m_areaCount++ ] = area;
-
-				if (zone->m_areaCount == MAX_ZONE_NAV_AREAS)
-				{
-					break;
-				}
-			}
-		}
+		CollectOverlappingAreas collector(zone);
+		ForAllAreas(collector);
 	}
 }
 
@@ -994,94 +1208,102 @@ void (*pCCSBotManager__AddBot)(void);
 /* <36c2b2> ../cstrike/dlls/bot/cs_bot_manager.cpp:1278 */
 NOBODY bool __declspec(naked) CCSBotManager::AddBot(const BotProfile *profile, BotProfileTeamType team)
 {
+#if 1
 	__asm
 	{
 		jmp pCCSBotManager__AddBot
 	}
+#else
+	if (!UTIL_IsGame("czero"))
+		return false;
 
-	//if (!UTIL_IsGame("czero"))
-	//	return false;
+	CHalfLifeMultiplay *mp = g_pGameRules;
 
-	//CHalfLifeMultiplay *mp = g_pGameRules;
+	int nTeamSlot = UNASSIGNED;
+	
+	if (team == BOT_TEAM_ANY)
+	{
+		// if team not specified, check cv_bot_join_team cvar for preference
+		if (!Q_stricmp(cv_bot_join_team.string, "T"))
+			nTeamSlot = TERRORIST;
 
-	//int nTeamSlot = UNASSIGNED;
-	//
-	//if (team == BOT_TEAM_ANY)
-	//{
-	//	// if team not specified, check cv_bot_join_team cvar for preference
-	//	if (!Q_stricmp(cv_bot_join_team.string, "T"))
-	//		nTeamSlot = TERRORIST;
+		else if (!Q_stricmp(cv_bot_join_team.string, "CT"))
+			nTeamSlot = CT;
+	}
+	else if (team == BOT_TEAM_CT)
+		nTeamSlot = CT;
 
-	//	else if (!Q_stricmp(cv_bot_join_team.string, "CT"))
-	//		nTeamSlot = CT;
-	//}
-	//else if (team == BOT_TEAM_CT)
-	//	nTeamSlot = CT;
+	else if (team == BOT_TEAM_T)
+		nTeamSlot = TERRORIST;
 
-	//else if (team == BOT_TEAM_T)
-	//	nTeamSlot = TERRORIST;
+	if (nTeamSlot == UNASSIGNED)
+	{
+		nTeamSlot = SelectDefaultTeam();
+	}
 
-	//if (nTeamSlot == UNASSIGNED)
-	//{
-	//	nTeamSlot = SelectDefaultTeam();
-	//}
+	if (nTeamSlot == UNASSIGNED || mp->TeamFull(nTeamSlot))
+	{
+		CONSOLE_ECHO("Could not add bot to the game: Team is full\n");
+		return false;
+	}
 
-	//if (nTeamSlot == UNASSIGNED || mp->TeamFull(nTeamSlot))
-	//{
-	//	CONSOLE_ECHO("Could not add bot to the game: Team is full\n");
-	//	return false;
-	//}
+	if (mp->TeamStacked(nTeamSlot, UNASSIGNED))
+	{
+		CONSOLE_ECHO("Could not add bot to the game: Team is stacked (to disable this check, set mp_limitteams and mp_autoteambalance to zero and restart the round).\n");
+		return false;
+	}
 
-	//if (mp->TeamStacked(nTeamSlot, UNASSIGNED))
-	//{
-	//	CONSOLE_ECHO("Could not add bot to the game: Team is stacked (to disable this check, set mp_limitteams and mp_autoteambalance to zero and restart the round).\n");
-	//	return false;
-	//}
+	CCSBot *pBot = CreateBot<CCSBot>(profile);
+	if (pBot == NULL)
+	{
+		return false;
+	}
 
-	//CCSBot *pBot = CreateBot<CCSBot>(profile);
-	//if (pBot == NULL)
-	//{
-	//	return false;
-	//}
+	//int nJoinedTeam;
+	ClientPutInServer(pBot->edict());
+	SET_CLIENT_KEY_VALUE(pBot->entindex(), GET_INFO_BUFFER(pBot->edict()), "*bot", "1");
 
-	////int nJoinedTeam;
-	//ClientPutInServer(pBot->edict());
-	//SET_CLIENT_KEY_VALUE(pBot->entindex(), GET_INFO_BUFFER(pBot->edict()), "*bot", "1");
+	pBot->m_iMenu = Menu_ChooseTeam;
+	pBot->m_iJoiningState = PICKINGTEAM;
 
-	//pBot->m_iMenu = Menu_ChooseTeam;
-	//pBot->m_iJoiningState = PICKINGTEAM;
+	if (HandleMenu_ChooseTeam(pBot, nTeamSlot))
+	{
+		int skin = profile->GetSkin();
 
-	//if (HandleMenu_ChooseTeam(pBot, nTeamSlot))//TODO: Reverse me
-	//{
-	//	int skin = profile->GetSkin();
+		if (!skin)
+			skin = 6;// MODEL_GIGN?
 
-	//	if (!skin)
-	//		skin = 6;// MODEL_GIGN?
+		HandleMenu_ChooseAppearance(pBot, skin);
 
-	//	HandleMenu_ChooseAppearance(pBot, skin);//TODO: Reverse me
+		if (IS_DEDICATED_SERVER())
+		{
+			UTIL_DPrintf("Added bot %s to server\n", STRING(pBot->pev->netname));
+		}
 
-	//	if (IS_DEDICATED_SERVER())
-	//	{
-	//		UTIL_DPrintf("Added bot %s to server\n", STRING(pBot->pev->netname));
-	//	}
+		return true;
+	}
 
-	//	return true;
-	//}
+	SERVER_COMMAND(UTIL_VarArgs("kick \"%s\"\n", STRING(pBot->pev->netname)));
+	CONSOLE_ECHO("Could not add bot to the game.\n");
 
-	//SERVER_COMMAND(UTIL_VarArgs("kick \"%s\"\n", STRING(pBot->pev->netname)));
-	//CONSOLE_ECHO("Could not add bot to the game.\n");
-
-	//return false;
+	return false;
+#endif
 }
 
+// Return the zone that contains the given position
+
 /* <36bb90> ../cstrike/dlls/bot/cs_bot_manager.cpp:1375 */
-NOBODY const CCSBotManager::Zone *CCSBotManager::GetZone(const Vector *pos) const
+const CCSBotManager::Zone *CCSBotManager::GetZone(const Vector *pos) const
 {
-//	{
-//		int z;                                                //  1377
-//		Contains(const class Extent *const this,
-//			const Vector *pos);  //  1379
-//	}
+	for (int z = 0; z < m_zoneCount; ++z)
+	{
+		if (m_zone[z].m_extent.Contains(pos))
+		{
+			return &m_zone[z];
+		}
+	}
+
+	return NULL;
 }
 
 // Return the closest zone to the given position
@@ -1092,7 +1314,7 @@ const CCSBotManager::Zone *CCSBotManager::GetClosestZone(const Vector *pos) cons
 	const Zone *close = NULL;
 	float closeRangeSq = 1e9f;
 
-	for (int z = 0; z < m_zoneCount; z++)
+	for (int z = 0; z < m_zoneCount; ++z)
 	{
 		float rangeSq = (m_zone[z].m_center - (*pos)).LengthSquared();
 
@@ -1106,26 +1328,56 @@ const CCSBotManager::Zone *CCSBotManager::GetClosestZone(const Vector *pos) cons
 	return close;
 }
 
+// Return a random position inside the given zone
+
 /* <36bcc9> ../cstrike/dlls/bot/cs_bot_manager.cpp:1415 */
-NOBODY const Vector *CCSBotManager::GetRandomPositionInZone(const Zone *zone) const
+const Vector *CCSBotManager::GetRandomPositionInZone(const Zone *zone) const
 {
-//	{
-//		Vector pos;                                     //  1417
-//		int a;                                                //  1426
-//		class CNavArea *area;                                //  1427
-//		{
-//			const class Extent *areaExtent;             //  1439
-//			class Extent overlap;                         //  1440
-//		}
-//	}
+	static Vector pos;
+
+	if (zone == NULL)
+		return NULL;
+
+	if (zone->m_areaCount == 0)
+		return NULL;
+
+	// pick a random overlapping area
+	CNavArea *area = GetRandomAreaInZone(zone);
+
+	// pick a location inside both the nav area and the zone
+	// TODO: Randomize this
+	if (zone->m_isLegacy)
+	{
+		// TODO: It is possible that the radius might not overlap this area at all...
+		area->GetClosestPointOnArea(&zone->m_center, &pos);
+	}
+	else
+	{
+		const Extent &areaExtent = *area->GetExtent();
+		Extent overlap;
+		overlap.lo.x = Q_max(areaExtent.lo.x, zone->m_extent.lo.x);
+		overlap.lo.y = Q_max(areaExtent.lo.y, zone->m_extent.lo.y);
+		overlap.hi.x = Q_min(areaExtent.hi.x, zone->m_extent.hi.x);
+		overlap.hi.y = Q_min(areaExtent.hi.y, zone->m_extent.hi.y);
+
+		pos.x = (overlap.lo.x + overlap.hi.x) / 2.0f;
+		pos.y = (overlap.lo.y + overlap.hi.y) / 2.0f;
+		pos.z = area->GetZ(&pos);
+	}
+
+	return &pos;
 }
 
+// Return a random area inside the given zone
+
 /* <36bd64> ../cstrike/dlls/bot/cs_bot_manager.cpp:1458 */
-NOBODY CNavArea *CCSBotManager::GetRandomAreaInZone(const Zone *zone) const
+CNavArea *CCSBotManager::GetRandomAreaInZone(const Zone *zone) const
 {
-//	{
-//		int a;                                                //  1466
-//	}
+	// TODO: improvement is needed
+	if (!zone->m_areaCount)
+		return NULL;
+
+	return zone->m_area[ RANDOM_LONG(0, zone->m_areaCount - 1) ];
 }
 
 /* <36b02d> ../cstrike/dlls/bot/cs_bot_manager.cpp:1477 */
@@ -1169,22 +1421,12 @@ void CCSBotManager::__MAKE_VHOOK(OnEvent)(GameEventType event, CBaseEntity *enti
 	CBotManager::OnEvent(event, entity, other);
 }
 
-BOOL CCSBotManager::__MAKE_VHOOK(ClientCommand)(CBasePlayer *pPlayer, const char *pcmd)
-{
-	// TODO: rly?
-#ifndef REGAMEDLL_FIXES
-	if (pPlayer && UTIL_GetLocalPlayer())
-	{
-		UTIL_GetLocalPlayer();
-	}
-#endif // REGAMEDLL_FIXES
-
-	return FALSE;
-}
+// Get the time remaining before the planted bomb explodes
 
 /* <36bdb3> ../cstrike/dlls/bot/cs_bot_manager.cpp:1541 */
-NOBODY float CCSBotManager::GetBombTimeLeft(void) const
+float CCSBotManager::GetBombTimeLeft(void) const
 {
+	return (g_pGameRules->m_iC4Timer - (gpGlobals->time - m_bombPlantTimestamp));
 }
 
 /* <36bddb> ../cstrike/dlls/bot/cs_bot_manager.cpp:1547 */
@@ -1193,43 +1435,139 @@ void CCSBotManager::SetLooseBomb(CBaseEntity *bomb)
 	m_looseBomb = bomb;
 
 	if (bomb)
+	{
 		m_looseBombArea = TheNavAreaGrid.GetNearestNavArea(&bomb->pev->origin);
+	}
 	else
+	{
 		m_looseBombArea = NULL;
+	}
 }
+
+// Return true if player is important to scenario (VIP, bomb carrier, etc)
 
 /* <36b14d> ../cstrike/dlls/bot/cs_bot_manager.cpp:1565 */
-NOBODY bool CCSBotManager::__MAKE_VHOOK(IsImportantPlayer)(CBasePlayer *player)
+bool CCSBotManager::__MAKE_VHOOK(IsImportantPlayer)(CBasePlayer *player) const
 {
-//	IsImportantPlayer(const class CCSBotManager *const this,
-//				class CBasePlayer *player);  //  1565
+	switch (GetScenario())
+	{
+		case SCENARIO_DEFUSE_BOMB:
+		{
+			if (player->m_iTeam == TERRORIST && player->IsBombGuy())
+				return true;
+
+			// TODO: TEAM_CT's defusing the bomb are important
+			return false;
+		}
+		case SCENARIO_ESCORT_VIP:
+		{
+			if (player->m_iTeam == CT && player->m_bIsVIP)
+				return true;
+
+			return false;
+		}
+		case SCENARIO_RESCUE_HOSTAGES:
+		{
+			// TODO: TEAM_CT's escorting hostages are important
+			return false;
+		}
+	}
+
+	// everyone is equally important in a deathmatch
+	return false;
 }
+
+// Return priority of player (0 = max pri)
 
 /* <36b1a7> ../cstrike/dlls/bot/cs_bot_manager.cpp:1602 */
-NOBODY unsigned int CCSBotManager::__MAKE_VHOOK(GetPlayerPriority)(CBasePlayer *player) const
+unsigned int CCSBotManager::__MAKE_VHOOK(GetPlayerPriority)(CBasePlayer *player) const
 {
-//	{
-//		unsigned int const lowestPriority;                     //  1604
-//		class CCSBot *bot;                                   //  1613
-//	}
-//	GetPlayerPriority(const class CCSBotManager *const this,
-//				class CBasePlayer *player);  //  1602
+	const unsigned int lowestPriority = 0xFFFFFFFF;
+
+	if (!player->IsPlayer())
+		return lowestPriority;
+
+	// human players have highest priority
+	if (!player->IsBot())
+		return 0;
+
+	CCSBot *bot = dynamic_cast<CCSBot *>(player);
+
+	if (!bot)
+		return 0;
+
+	// bots doing something important for the current scenario have high priority
+	switch (GetScenario())
+	{
+		case SCENARIO_DEFUSE_BOMB:
+		{
+			// the bomb carrier has high priority
+			if (bot->m_iTeam == TERRORIST && bot->m_bHasC4)
+				return 1;
+
+			break;
+		}
+		case SCENARIO_ESCORT_VIP:
+		{
+			// the VIP has high priority
+			if (bot->m_iTeam == CT && bot->m_bIsVIP)
+				return 1;
+
+			break;
+		}
+		case SCENARIO_RESCUE_HOSTAGES:
+		{
+			// TEAM_CT's rescuing hostages have high priority
+			if (bot->m_iTeam == CT && bot->GetHostageEscortCount())
+				return 1;
+
+			break;
+		}
+	}
+
+	// everyone else is ranked by their unique ID (which cannot be zero)
+	return 1 + bot->GetID();
 }
+
+// Return the last time the given radio message was sent for given team
+// 'teamID' can be TEAM_CT or TEAM_TERRORIST
 
 /* <36be2e> ../cstrike/dlls/bot/cs_bot_manager.cpp:1655 */
-NOBODY float CCSBotManager::GetRadioMessageTimestamp(GameEventType event, int teamID)
+float CCSBotManager::GetRadioMessageTimestamp(GameEventType event, int teamID) const
 {
+	if (event <= EVENT_START_RADIO_1 || event >= EVENT_END_RADIO)
+		return 0.0f;
+
+	int i = (teamID == TERRORIST) ? 0 : 1;
+	return m_radioMsgTimestamp[ event - EVENT_START_RADIO_1 ][ i ];
 }
+
+// Return the interval since the last time this message was sent
 
 /* <36be76> ../cstrike/dlls/bot/cs_bot_manager.cpp:1667 */
-NOBODY float CCSBotManager::GetRadioMessageInterval(GameEventType event, int teamID)
+float CCSBotManager::GetRadioMessageInterval(GameEventType event, int teamID) const
 {
+	if (event <= EVENT_START_RADIO_1 || event >= EVENT_END_RADIO)
+		return 99999999.9f;
+
+	int i = (teamID == TERRORIST) ? 0 : 1;
+	return gpGlobals->time - m_radioMsgTimestamp[ event - EVENT_START_RADIO_1 ][ i ];
 }
 
+// Set the given radio message timestamp.
+// 'teamID' can be TEAM_CT or TEAM_TERRORIST
+
 /* <36bebe> ../cstrike/dlls/bot/cs_bot_manager.cpp:1680 */
-NOBODY void CCSBotManager::SetRadioMessageTimestamp(GameEventType event, int teamID)
+void CCSBotManager::SetRadioMessageTimestamp(GameEventType event, int teamID)
 {
+	if (event <= EVENT_START_RADIO_1 || event >= EVENT_END_RADIO)
+		return;
+
+	int i = (teamID == TERRORIST) ? 0 : 1;
+	m_radioMsgTimestamp[ event - 1 ][ i ] = gpGlobals->time;
 }
+
+// Reset all radio message timestamps
 
 /* <36bf06> ../cstrike/dlls/bot/cs_bot_manager.cpp:1690 */
 void CCSBotManager::ResetRadioMessageTimestamps(void)
@@ -1300,7 +1638,7 @@ unsigned int CCSBotManager::GetPlayerPriority(CBasePlayer *player) const
 	return GetPlayerPriority_(player);
 }
 
-bool CCSBotManager::IsImportantPlayer(CBasePlayer *player)
+bool CCSBotManager::IsImportantPlayer(CBasePlayer *player) const
 {
 	return IsImportantPlayer_(player);
 }

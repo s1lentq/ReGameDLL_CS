@@ -489,10 +489,7 @@ public:
 	float GetNextAttackDelay(float delay);
 	float GetNextAttackDelay2(float delay);
 	bool HasSecondaryAttack(void);
-	BOOL IsPistol(void)
-	{
-		return FALSE;
-	}
+	BOOL IsPistol(void) { return (m_iId == WEAPON_USP || m_iId == WEAPON_GLOCK18 || m_iId == WEAPON_P228 || m_iId == WEAPON_DEAGLE || m_iId == WEAPON_ELITE || m_iId == WEAPON_FIVESEVEN); }
 	void SetPlayerShieldAnim(void);
 	void ResetPlayerShieldAnim(void);
 	bool ShieldSecondaryFire(int iUpAnim, int iDownAnim);
@@ -523,8 +520,8 @@ public:
 	int m_iShotsFired;
 	Vector m_vVecAiming;
 	string_t model_name;
-	float m_flGlock18Shoot;
-	int m_iGlock18ShotsFired;
+	float m_flGlock18Shoot;				// time to shoot the remaining bullets of the glock18 burst fire
+	int m_iGlock18ShotsFired;			// used to keep track of the shots fired during the Glock18 burst fire mode.
 	float m_flFamasShoot;
 	int m_iFamasShotsFired;
 	float m_fBurstSpread;
@@ -2224,7 +2221,7 @@ extern int giAmmoIndex;
 extern short g_sModelIndexRadio;
 extern MULTIDAMAGE gMultiDamage;
 
-void FindHullIntersection(Vector &vecSrc, TraceResult &tr, float *mins, float *maxs, edict_t *pEntity);
+void FindHullIntersection(const Vector &vecSrc, TraceResult &tr, float *mins, float *maxs, edict_t *pEntity);
 void AnnounceFlashInterval(float interval, float offset = 0);
 
 int MaxAmmoCarry(int iszName);

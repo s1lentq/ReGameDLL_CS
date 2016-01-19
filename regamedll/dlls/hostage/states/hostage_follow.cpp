@@ -137,7 +137,7 @@ void HostageFollowState::__MAKE_VHOOK(OnUpdate)(CHostageImprov *improv)
 		bool makeWay = false;
 		const float cosTolerance = 0.99f;
 
-		if (improv->IsPlayerLookingAtMe((CBasePlayer *)((CBaseEntity *)m_leader), cosTolerance))
+		if (improv->IsPlayerLookingAtMe((CBasePlayer *)m_leader, cosTolerance))
 		{
 			if (!m_makeWayTimer.HasStarted())
 			{

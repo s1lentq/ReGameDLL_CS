@@ -2271,7 +2271,7 @@ void CTriggerCamera::FollowTarget(void)
 		if (m_hPlayer->IsAlive())
 		{
 			SET_VIEW(m_hPlayer->edict(), m_hPlayer->edict());
-			((CBasePlayer *)((CBaseEntity *)m_hPlayer))->EnableControl(TRUE);
+			((CBasePlayer *)m_hPlayer)->EnableControl(TRUE);
 		}
 
 		SUB_UseTargets(this, USE_TOGGLE, 0);

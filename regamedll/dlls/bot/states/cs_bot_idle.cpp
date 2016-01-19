@@ -1,7 +1,7 @@
 #include "precompiled.h"
 
 /* <5a12ee> ../cstrike/dlls/bot/states/cs_bot_idle.cpp:26 */
-NOBODY void IdleState::OnEnter(CCSBot *me)
+NOBODY void IdleState::__MAKE_VHOOK(OnEnter)(CCSBot *me)
 {
 //	DestroyPath(CCSBot *const this);  //    28
 //	SetTask(CCSBot *const this,
@@ -10,7 +10,7 @@ NOBODY void IdleState::OnEnter(CCSBot *me)
 }
 
 /* <5a0c66> ../cstrike/dlls/bot/states/cs_bot_idle.cpp:46 */
-NOBODY void IdleState::OnUpdate(CCSBot *me)
+NOBODY void IdleState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 {
 //	{
 //		class CCSBotManager *ctrl;                           //    59
@@ -154,3 +154,17 @@ NOBODY void IdleState::OnUpdate(CCSBot *me)
 //		}
 //	}
 }
+
+#ifdef HOOK_GAMEDLL
+
+void IdleState::OnEnter(CCSBot *me)
+{
+	OnEnter_(me);
+}
+
+void IdleState::OnUpdate(CCSBot *me)
+{
+	OnUpdate_(me);
+}
+
+#endif // HOOK_GAMEDLL

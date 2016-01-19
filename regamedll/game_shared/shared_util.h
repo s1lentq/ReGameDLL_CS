@@ -32,6 +32,11 @@
 #pragma once
 #endif
 
+#ifndef _WIN32
+#include <string.h>
+#include <wchar.h>
+#endif // _WIN32
+
 #ifdef HOOK_GAMEDLL
 
 #define s_shared_token (*ps_shared_token)
@@ -42,16 +47,18 @@
 extern char s_shared_token[ 1500 ];
 extern char s_shared_quote;
 
-NOBODY uchar32 *SharedWVarArgs(uchar32 *format, ...);
+NOXREF wchar_t *SharedWVarArgs(wchar_t *format, ...);
 char *SharedVarArgs(char *format, ...);
 char *BufPrintf(char *buf, int &len, const char *fmt, ...);
-NOBODY uchar32 *BufWPrintf(uchar32 *buf, int &len, const uchar32 *fmt, ...);
-NOBODY const uchar32 *NumAsWString(int val);
+NOXREF wchar_t *BufWPrintf(wchar_t *buf, int &len, const wchar_t *fmt, ...);
+NOXREF const wchar_t *NumAsWString(int val);
 const char *NumAsString(int val);
 char *SharedGetToken(void);
 NOXREF void SharedSetQuoteChar(char c);
-NOBODY const char *SharedParse(const char *data);
-NOBODY bool SharedTokenWaiting(const char *buffer);
+const char *SharedParse(const char *data);
+NOXREF bool SharedTokenWaiting(const char *buffer);
+
+// Simple utility function to allocate memory and duplicate a string
 
 /* <db469> ../game_shared/shared_util.h:46 */
 inline char *CloneString(const char *str)
@@ -62,20 +69,26 @@ inline char *CloneString(const char *str)
 		cloneStr[0] = '\0';
 		return cloneStr;
 	}
+
 	char *cloneStr = new char [Q_strlen(str) + 1];
 	Q_strcpy(cloneStr, str);
 	return cloneStr;
 }
 
-#ifdef _WIN32
+// Simple utility function to allocate memory and duplicate a wide string
 
 inline wchar_t *CloneWString(const wchar_t *str)
 {
+	if (!str)
+	{
+		wchar_t *cloneStr = new wchar_t[1];
+		cloneStr[0] = L'\0';
+		return cloneStr;
+	}
+
 	wchar_t *cloneStr = new wchar_t [wcslen(str) + 1];
 	wcscpy(cloneStr, str);
 	return cloneStr;
 }
-
-#endif // _WIN32
 
 #endif // SHARED_UTIL

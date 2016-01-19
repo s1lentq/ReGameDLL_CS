@@ -711,6 +711,7 @@ void Host_Say(edict_t *pEntity, int teamonly)
 	char *pszConsoleFormat = NULL;
 	bool consoleUsesPlaceName = false;
 
+	// team only
 	if (teamonly)
 	{
 		if (UTIL_IsGame("czero") && (player->m_iTeam == CT || player->m_iTeam == TERRORIST))
@@ -773,6 +774,7 @@ void Host_Say(edict_t *pEntity, int teamonly)
 			pszConsoleFormat = "(Spectator) %s : %s";
 		}
 	}
+	// everyone
 	else
 	{
 		if (bSenderDead)
@@ -2006,14 +2008,17 @@ BOOL HandleMenu_ChooseTeam(CBasePlayer *player, int slot)
 		break;
 	case MENU_SLOT_TEAM_VIP:
 	{
-		if (mp->m_iMapHasVIPSafetyZone != MAP_HAVE_VIP_SAFETYZONE_YES || player->m_iTeam != CT)
+		if (mp->m_iMapHasVIPSafetyZone == MAP_HAVE_VIP_SAFETYZONE_YES && player->m_iTeam == CT)
+		{
+			mp->AddToVIPQueue(player);
+			CLIENT_COMMAND(ENT(player->pev), "slot10\n");
+			return TRUE;
+		}
+		else
 		{
 			return FALSE;
 		}
-
-		mp->AddToVIPQueue(player);
-		CLIENT_COMMAND(ENT(player->pev), "slot10\n");
-		return TRUE;
+		break;
 	}
 	case MENU_SLOT_TEAM_RANDOM:
 	{
@@ -2198,6 +2203,7 @@ BOOL HandleMenu_ChooseTeam(CBasePlayer *player, int slot)
 		}
 	}
 
+	// If we already died and changed teams once, deny
 	if (player->m_bTeamChanged)
 	{
 		if (player->pev->deadflag != DEAD_NO)
@@ -4504,6 +4510,20 @@ void ClientPrecache(void)
 	PRECACHE_GENERIC("sprites/scope_arc_sw.tga");
 
 	m_usResetDecals = g_engfuncs.pfnPrecacheEvent(1, "events/decal_reset.sc");
+
+	/*Vector temp = g_vecZero;
+	ENGINE_FORCE_UNMODIFIED(force_exactfile, (float *)&temp, (float *)&temp, "sprites/scope_arc.tga");
+	ENGINE_FORCE_UNMODIFIED(force_exactfile, (float *)&temp, (float *)&temp, "sprites/scope_arc_nw.tga");
+	ENGINE_FORCE_UNMODIFIED(force_exactfile, (float *)&temp, (float *)&temp, "sprites/scope_arc_ne.tga");
+	ENGINE_FORCE_UNMODIFIED(force_exactfile, (float *)&temp, (float *)&temp, "sprites/scope_arc_sw.tga");
+
+
+	PRECACHE_GENERIC("sprites/scope_arc.tga");
+	PRECACHE_GENERIC("sprites/scope_arc_nw.tga");
+	PRECACHE_GENERIC("sprites/scope_arc_ne.tga");
+	PRECACHE_GENERIC("sprites/scope_arc_sw.tga");
+
+	m_usResetDecals = g_engfuncs.pfnPrecacheEvent(1, "events/decal_reset.sc");*/
 }
 
 /* <4a6e5> ../cstrike/dlls/client.cpp:4996 */
