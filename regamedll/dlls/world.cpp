@@ -465,13 +465,9 @@ void CWorld::__MAKE_VHOOK(Spawn)(void)
 #endif // REGAMEDLL_FIXES
 
 			PRECACHE_GENERIC(UTIL_VarArgs("maps/default.txt"));
-			FREE_FILE(pFile);
 		}
 
-		if (pFile != NULL)
-		{
-			FREE_FILE(pFile);
-		}
+		FREE_FILE(pFile);
 	}
 }
 
