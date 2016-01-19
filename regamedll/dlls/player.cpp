@@ -4236,12 +4236,12 @@ bool CBasePlayer::CanPlayerBuy(bool display)
 		return false;
 	}
 
-	int buyTime = (int)(CVAR_GET_FLOAT("mp_buytime") * 60);
+	int buyTime = (int)(CVAR_GET_FLOAT("mp_buytime") * 60.0f);
 
-	if (buyTime < 15)
+	if (buyTime < MIN_BUY_TIME)
 	{
-		buyTime = 15;
-		CVAR_SET_FLOAT("mp_buytime", 1 / (60 / 15));
+		buyTime = MIN_BUY_TIME;
+		CVAR_SET_FLOAT("mp_buytime", (MIN_BUY_TIME / 60.0f));
 	}
 
 	if (gpGlobals->time - mp->m_fRoundCount > buyTime)

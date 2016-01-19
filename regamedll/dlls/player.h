@@ -34,7 +34,9 @@
 
 #include "hintmessage.h"
 
-#define MAX_BUFFER_MENU			175//?
+#define MIN_BUY_TIME			15	// the minimum threshold values for cvar mp_buytime 15 sec's
+
+#define MAX_BUFFER_MENU			175
 #define MAX_BUFFER_MENU_BRIEFING	50
 
 #define MAX_PLAYER_NAME_LENGTH		32
