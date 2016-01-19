@@ -199,7 +199,7 @@ void setupToolchain(NativeBinarySpec b)
 
 	if (regamedllFixes)
 	{
-		cfg.singleDefines 'REGAMEDLL_FIXES', 'REGAMEDLL_CHECKS', 'REGAMEDLL_ADD'
+		cfg.singleDefines 'REGAMEDLL_FIXES', 'REGAMEDLL_CHECKS', 'REGAMEDLL_ADD', 'NDEBUG'
 	}
 
 	ToolchainConfigUtils.apply(project, cfg, b)
