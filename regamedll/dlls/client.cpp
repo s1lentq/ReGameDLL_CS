@@ -496,12 +496,11 @@ void CheckStartMoney(void)
 		CVAR_SET_FLOAT("mp_startmoney", 800);
 #else
 	int max_money = (int)maxmoney.value;
-	int min_money = (int)minmoney.value;
 
 	if (money > max_money)
 		CVAR_SET_FLOAT("mp_startmoney", max_money);
-	else if (money < min_money)
-		CVAR_SET_FLOAT("mp_startmoney", min_money);
+	else if (money < 0)
+		CVAR_SET_FLOAT("mp_startmoney", 0);
 #endif // REGAMEDLL_ADD
 
 }

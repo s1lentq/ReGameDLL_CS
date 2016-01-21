@@ -40,6 +40,12 @@ task publishPrepareFiles {
 		_copyFileToDir('publish/releaseRegamedllNofixes/mp.pdb', 'publish/publishRoot/bin/pure/')
 		_copyFile('publish/releaseRegamedllNofixes/libcs.so', 'publish/publishRoot/bin/pure/cs.so')
 
+		//copy files from folder dist
+		copy {
+			from('dist')
+			into 'publish/publishRoot'
+		}
+
 		//hlsdk
 		//project.file('publish/publishRoot/hlsdk').mkdirs()
 		//copy {
