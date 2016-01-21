@@ -11,10 +11,13 @@
 \#define VERSION_MINOR ${verInfo.minorVersion}
 
 \#define APP_VERSION_D ${verInfo.format('.', '-', true)}
-\#define APP_VERSION_STRD "${verInfo.format('.', '-', true)}"
+\#define APP_VERSION_C ${verInfo.majorVersion},${verInfo.minorVersion},0,${verInfo.countCommit}
 
+\#define APP_VERSION_STRD "${verInfo.majorVersion}.${verInfo.minorVersion}.${verInfo.countCommit}"
+\#define APP_VERSION_STRD_RC "${verInfo.majorVersion}.${verInfo.minorVersion}.${verInfo.countCommit}"
 #set ( $commitYMD = $_DateTimeFormat.forPattern('yyyy-MM-dd').print($verInfo.lastCommitDate) )
 
 \#define APP_VERSION_YMD_STR "${commitYMD}"
+\#define APP_VERSION APP_VERSION_STRD
 
 #endif //__APPVERSION_H__

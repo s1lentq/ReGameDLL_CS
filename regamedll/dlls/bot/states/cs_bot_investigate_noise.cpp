@@ -1,5 +1,7 @@
 #include "precompiled.h"
 
+// Move towards currently heard noise
+
 /* <5b3114> ../cstrike/dlls/bot/states/cs_bot_investigate_noise.cpp:17 */
 NOBODY void InvestigateNoiseState::AttendCurrentNoise(CCSBot *me)
 {

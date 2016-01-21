@@ -29,6 +29,7 @@ if (gitInfo.tag && gitInfo.tag[0] == 'v') {
 		majorVersion: m.group(1) as int,
 		minorVersion: m.group(2) as int,
 		maintenanceVersion: m.group(4) ? (m.group(4) as int) : null,
+		countCommit: gitInfo.countCommit,
 		lastCommitDate: gitInfo.lastCommitDate
 	)
 } else {
@@ -36,6 +37,7 @@ if (gitInfo.tag && gitInfo.tag[0] == 'v') {
 		majorVersion: project.majorVersion as int,
 		minorVersion: project.minorVersion as int,
 		suffix: 'SNAPSHOT',
+		countCommit: gitInfo.countCommit,
 		lastCommitDate: gitInfo.lastCommitDate
 	)
 }

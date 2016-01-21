@@ -405,11 +405,21 @@ cvar_t sk_scientist_heal3;
 
 #ifdef REGAMEDLL_ADD
 
+cvar_t game_version = { "game_version", APP_VERSION_STRD, FCVAR_SERVER, 0.0f, NULL };
 cvar_t maxmoney = { "mp_maxmoney", "16000", FCVAR_SERVER, 0.0f, NULL };
-cvar_t minmoney = { "mp_minmoney", "800", FCVAR_SERVER, 0.0f, NULL };
 cvar_t round_infinite = { "mp_round_infinite", "0", FCVAR_SERVER, 0.0f, NULL };
 
 #endif // REGAMEDLL_ADD
+
+void GameDLL_Version_f(void)
+{
+	if (Q_stricmp(CMD_ARGV(1), "version") != 0)
+		return;
+
+	// print version
+	CONSOLE_ECHO("ReGameDLL build: " __TIME__ " " __DATE__ " (" APP_VERSION_STRD ")\n");
+	CONSOLE_ECHO("ReGameDLL API version %i.%i\n", REGAMEDLL_API_VERSION_MAJOR, REGAMEDLL_API_VERSION_MINOR);
+}
 
 /* <9c900> ../cstrike/dlls/game.cpp:500 */
 void EXT_FUNC GameDLLInit(void)
@@ -503,9 +513,15 @@ void EXT_FUNC GameDLLInit(void)
 
 #ifdef REGAMEDLL_ADD
 
+	ADD_SERVER_COMMAND("game", GameDLL_Version_f);
+
+	CVAR_REGISTER(&game_version);
 	CVAR_REGISTER(&maxmoney);
-	CVAR_REGISTER(&minmoney);
 	CVAR_REGISTER(&round_infinite);
+
+	// print version
+	CONSOLE_ECHO("ReGameDLL build: " __TIME__ " " __DATE__ " (" APP_VERSION_STRD ")\n");
+	CONSOLE_ECHO("ReGameDLL API version %i.%i\n", REGAMEDLL_API_VERSION_MAJOR, REGAMEDLL_API_VERSION_MINOR);
 
 #endif // REGAMEDLL_ADD
 
