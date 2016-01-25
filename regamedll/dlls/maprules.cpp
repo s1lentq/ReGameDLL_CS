@@ -249,7 +249,7 @@ void CGameTeamMaster::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 	{
 		int type = Q_atoi(pkvd->szValue);
 
-		switch(type)
+		switch (type)
 		{
 		case 0:
 			triggerType = USE_OFF;
@@ -398,9 +398,9 @@ void CGamePlayerZone::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pC
 
 	CBaseEntity *pPlayer = NULL;
 
-	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
-		pPlayer = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+		pPlayer = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
 		if (pPlayer)
 		{
@@ -417,7 +417,7 @@ void CGamePlayerZone::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pC
 
 			if (trace.fStartSolid)
 			{
-				playersInCount++;
+				++playersInCount;
 				if (!FStringNull(m_iszInTarget))
 				{
 					FireTargets(STRING(m_iszInTarget), pPlayer, pActivator, useType, value);
@@ -425,7 +425,7 @@ void CGamePlayerZone::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pC
 			}
 			else
 			{
-				playersOutCount++;
+				++playersOutCount;
 				if (!FStringNull(m_iszOutTarget))
 				{
 					FireTargets(STRING(m_iszOutTarget), pPlayer, pActivator, useType, value);
@@ -547,7 +547,7 @@ void CGamePlayerEquip::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 
 	if (!pkvd->fHandled)
 	{
-		for (int i = 0; i < MAX_EQUIP; i++)
+		for (int i = 0; i < MAX_EQUIP; ++i)
 		{
 			if (FStringNull(m_weaponNames[i]))
 			{
@@ -590,12 +590,12 @@ void CGamePlayerEquip::EquipPlayer(CBaseEntity *pEntity)
 	if (!pPlayer)
 		return;
 
-	for (int i = 0; i < MAX_EQUIP; i++)
+	for (int i = 0; i < MAX_EQUIP; ++i)
 	{
 		if (FStringNull(m_weaponNames[i]))
 			break;
 
-		for (int j = 0; j < m_weaponCount[i]; j++)
+		for (int j = 0; j < m_weaponCount[i]; ++j)
 		{
  			pPlayer->GiveNamedItem(STRING(m_weaponNames[i]));
 		}

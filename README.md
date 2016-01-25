@@ -12,7 +12,6 @@ At the moment, the work of reverse engineering continues
 </ul>
 
 ## How can use it?
-At the moment there is a workable CS 1.6
 Regamedll_CS is fully compatible with official mod CS 1.6 by Valve. All you have to do is to download binaries and replace original mo.dll/cs.so
 
 Compiled binaries are available here: http://nexus.rehlds.org/nexus/content/repositories/regamedll-snapshots/regamedll/regamedll/0.2-SNAPSHOT/
@@ -28,7 +27,7 @@ Archive's bin directory contains 2 subdirectories, 'bugfixed' and 'pure'
 ## Current status
 <ul>
 <li> Counter-Strike 1.6 - 100%</li>
-<li> Counter-Strike: Condition Zero - 90%</li>
+<li> Counter-Strike: Condition Zero - 100%</li>
 </ul>
 
 ## Build instructions

@@ -483,7 +483,7 @@ void CCareerTaskManager::AddTask(const char *taskName, const char *weaponName, i
 {
 	++m_nextId;
 
-	for (int i = 0; i < ARRAYSIZE(taskInfo); i++)
+	for (int i = 0; i < ARRAYSIZE(taskInfo); ++i)
 	{
 		const TaskInfo *pTaskInfo = &taskInfo[ i ];
 
@@ -598,9 +598,9 @@ void CCareerTaskManager::HandleDeath(int team, CBasePlayer *pAttacker)
 	if (enemyTeam != team)
 		return;
 
-	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
-		CBasePlayer *pPlayer = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+		CBasePlayer *pPlayer = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
 		if (pPlayer && pPlayer->m_iTeam == enemyTeam && pPlayer->IsAlive())
 			++numEnemies;

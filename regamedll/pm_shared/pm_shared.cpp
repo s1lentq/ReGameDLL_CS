@@ -54,7 +54,7 @@ NOXREF int PM_IsThereGrassTexture(void)
 {
 	int i;
 
-	for (i = 0; i < pm_gcTextures; i++)
+	for (i = 0; i < pm_gcTextures; ++i)
 	{
 		if (pm_grgchTextureType[i] == CHAR_TEX_GRASS)
 			return 1;
@@ -69,7 +69,7 @@ void PM_SortTextures(void)
 	// Bubble sort, yuck, but this only occurs at startup and it's only 512 elements...
 	int i, j;
 
-	for (i = 0; i < pm_gcTextures; i++)
+	for (i = 0; i < pm_gcTextures; ++i)
 	{
 		for (j = i + 1; j < pm_gcTextures; j++)
 		{
@@ -113,7 +113,7 @@ void PM_InitTextureTypes(void)
 		// skip whitespace
 		i = 0;
 		while (buffer[i] && isspace(buffer[i]))
-			i++;
+			++i;
 
 		if (!buffer[i])
 			continue;
@@ -127,7 +127,7 @@ void PM_InitTextureTypes(void)
 
 		// skip whitespace
 		while (buffer[i] && isspace(buffer[i]))
-			i++;
+			++i;
 
 		if (!buffer[i])
 			continue;
@@ -528,7 +528,7 @@ void PM_UpdateStepSound(void)
 qboolean PM_AddToTouched(pmtrace_t tr, vec_t *impactvelocity)
 {
 	int i;
-	for (i = 0; i < pmove->numtouch; i++)
+	for (i = 0; i < pmove->numtouch; ++i)
 	{
 		if (pmove->touchindex[i].ent == tr.ent)
 			break;
@@ -557,7 +557,7 @@ void PM_CheckVelocity(void)
 	int i;
 
 	// bound velocity
-	for (i = 0; i < 3; i++)
+	for (i = 0; i < 3; ++i)
 	{
 		// See if it's bogus.
 		if (IS_NAN(pmove->velocity[i]))
@@ -620,7 +620,7 @@ int PM_ClipVelocity(vec_t *in, vec_t *normal, vec_t *out, float overbounce)
 	// Scale by overbounce factor.
 	backoff = DotProduct(in, normal) * overbounce;
 
-	for (i = 0; i < 3; i++)
+	for (i = 0; i < 3; ++i)
 	{
 		change = in[i] - normal[i] * backoff;
 		out[i] = change;
@@ -710,7 +710,7 @@ int PM_FlyMove(void)
 
 		// Assume we can move all the way from the current origin to the
 		// end point.
-		for (i = 0; i < 3; i++)
+		for (i = 0; i < 3; ++i)
 		{
 			float_precision flScale = time_left * pmove->velocity[i];
 
@@ -794,7 +794,7 @@ int PM_FlyMove(void)
 		// relfect player velocity
 		if (numplanes == 1 && pmove->movetype == MOVETYPE_WALK && (pmove->onground == -1 || pmove->friction != 1))
 		{
-			for (i = 0; i < numplanes; i++)
+			for (i = 0; i < numplanes; ++i)
 			{
 				if (planes[i][2] > 0.7f)
 				{
@@ -811,7 +811,7 @@ int PM_FlyMove(void)
 		}
 		else
 		{
-			for (i = 0; i < numplanes; i++)
+			for (i = 0; i < numplanes; ++i)
 			{
 				PM_ClipVelocity(original_velocity, planes[i], pmove->velocity, 1);
 
@@ -891,7 +891,7 @@ void PM_Accelerate(vec_t *wishdir, float_precision wishspeed, float accel)
 		accelspeed = addspeed;
 
 	// Adjust velocity.
-	for (i = 0; i < 3; i++)
+	for (i = 0; i < 3; ++i)
 	{
 		pmove->velocity[i] += accelspeed * wishdir[i];
 	}
@@ -941,7 +941,7 @@ void PM_WalkMove(void)
 	VectorNormalize(pmove->right);
 
 	// Determine x and y parts of velocity
-	for (i = 0; i < 2; i++)
+	for (i = 0; i < 2; ++i)
 	{
 		wishvel[i] = pmove->forward[i] * fmove + pmove->right[i] * smove;
 	}
@@ -1208,7 +1208,7 @@ void PM_AirAccelerate(vec_t *wishdir, float wishspeed, float accel)
 		accelspeed = addspeed;
 
 	// Adjust pmove vel.
-	for (i = 0; i < 3; i++)
+	for (i = 0; i < 3; ++i)
 	{
 		pmove->velocity[i] += accelspeed * wishdir[i];
 	}
@@ -1228,7 +1228,7 @@ void PM_WaterMove(void)
 	float newspeed, addspeed;
 
 	// user intentions
-	for (i = 0; i < 3; i++)
+	for (i = 0; i < 3; ++i)
 	{
 		wishvel[i] = (pmove->forward[i] * pmove->cmd.forwardmove) + (pmove->cmd.sidemove * pmove->right[i]);
 	}
@@ -1296,7 +1296,7 @@ void PM_WaterMove(void)
 			accelspeed = addspeed;
 		}
 
-		for (i = 0; i < 3; i++)
+		for (i = 0; i < 3; ++i)
 		{
 			pmove->velocity[i] += accelspeed * wishvel[i];
 		}
@@ -1344,7 +1344,7 @@ void PM_AirMove(void)
 	VectorNormalize(pmove->right);
 
 	// Determine x and y parts of velocity
-	for (i = 0; i < 2; i++)
+	for (i = 0; i < 2; ++i)
 	{
 		wishvel[i] = pmove->forward[i] * fmove + pmove->right[i] * smove;
 	}
@@ -1715,7 +1715,7 @@ void PM_SpectatorMove(void)
 		VectorNormalize(pmove->forward);
 		VectorNormalize(pmove->right);
 
-		for (i = 0; i < 3; i++)
+		for (i = 0; i < 3; ++i)
 		{
 			wishvel[i] = pmove->forward[i] * fmove + pmove->right[i] * smove;
 		}
@@ -1746,7 +1746,7 @@ void PM_SpectatorMove(void)
 			accelspeed = addspeed;
 		}
 
-		for (i = 0; i < 3; i++)
+		for (i = 0; i < 3; ++i)
 		{
 			pmove->velocity[i] += accelspeed * wishdir[i];
 		}
@@ -1823,7 +1823,7 @@ void PM_FixPlayerCrouchStuck(int direction)
 
 	VectorCopy(pmove->origin, test);
 
-	for (i = 0; i < 36; i++)
+	for (i = 0; i < 36; ++i)
 	{
 		pmove->origin[2] += direction;
 		hitent = pmove->PM_TestPlayerPosition(pmove->origin, NULL);
@@ -2087,7 +2087,7 @@ physent_t *PM_Ladder(void)
 	int num;
 	vec3_t test;
 
-	for (i = 0; i < pmove->nummoveent; i++)
+	for (i = 0; i < pmove->nummoveent; ++i)
 	{
 		pe = &pmove->moveents[i];
 
@@ -2298,7 +2298,7 @@ void PM_NoClip(void)
 	VectorNormalize(pmove->right);
 
 	// Determine x and y parts of velocity
-	for (i = 0; i < 3; i++)
+	for (i = 0; i < 3; ++i)
 	{
 		wishvel[i] = pmove->forward[i] * fmove + pmove->right[i] * smove;
 	}
@@ -3096,7 +3096,7 @@ void PM_CreateStuckTable(void)
 	zi[1] = 1.0f;
 	zi[2] = 6.0f;
 
-	for (i = 0; i < 3; i++)
+	for (i = 0; i < 3; ++i)
 	{
 		// Z moves
 		z = zi[i];
@@ -3135,7 +3135,7 @@ void PM_CreateStuckTable(void)
 	}
 
 	// Remaining multi axis nudges.
-	for (i = 0; i < 3; i++)
+	for (i = 0; i < 3; ++i)
 	{
 		z = zi[i];
 

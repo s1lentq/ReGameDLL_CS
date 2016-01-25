@@ -330,7 +330,7 @@ int CGlobalState::Save(CSave &save)
 	}
 
 	pEntity = m_pList;
-	for (i = 0; i < m_listCount && pEntity != NULL; i++)
+	for (i = 0; i < m_listCount && pEntity != NULL; ++i)
 	{
 		if (!save.WriteFields("GENT", pEntity, gGlobalEntitySaveData, ARRAYSIZE(gGlobalEntitySaveData)))
 		{
@@ -362,7 +362,7 @@ int CGlobalState::Restore(CRestore &restore)
 	// Clear loaded data
 	m_listCount = 0;
 
-	for (i = 0; i < listCount; i++)
+	for (i = 0; i < listCount; ++i)
 	{
 		if (!restore.ReadFields("GENT", &tmpEntity, gGlobalEntitySaveData, ARRAYSIZE(gGlobalEntitySaveData)))
 		{
@@ -605,7 +605,7 @@ void CWorld::__MAKE_VHOOK(Precache)(void)
 	// 63 testing
 	LIGHT_STYLE(63, "a");
 
-	for (int i = 0; i < ARRAYSIZE(gDecals); i++)
+	for (int i = 0; i < ARRAYSIZE(gDecals); ++i)
 		gDecals[i].index = DECAL_INDEX(gDecals[i].name);
 
 	// init the WorldGraph.

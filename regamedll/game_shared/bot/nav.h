@@ -318,10 +318,10 @@ inline void SnapToGrid(float *value)
 }
 
 // custom
-inline float SnapToGrid(float v)
+inline float SnapToGrid(float value)
 {
-	int c = v / GenerationStepSize;
-	return c;
+	int c = value / GenerationStepSize;
+	return c * GenerationStepSize;
 }
 
 /* <14ea2f> ../game_shared/bot/nav.h:251 */

@@ -74,6 +74,7 @@ void CCSBot::RespondToRadioCommands(void)
 		return;
 	}
 
+	CCSBotManager *ctrl = TheCSBots();
 	CBasePlayer *player = m_radioSubject;
 	if (player == NULL)
 		return;
@@ -141,7 +142,7 @@ void CCSBot::RespondToRadioCommands(void)
 		}
 		case EVENT_RADIO_GET_OUT_OF_THERE:
 		{
-			if (TheCSBots()->IsBombPlanted())
+			if (ctrl->IsBombPlanted())
 			{
 				EscapeFromBomb();
 				player->InhibitAutoFollow(inhibitAutoFollowDuration);
@@ -153,11 +154,11 @@ void CCSBot::RespondToRadioCommands(void)
 		{
 			// if this is a defusal scenario, and the bomb is planted,
 			// and a human player cleared a bombsite, check it off our list too
-			if (TheCSBots()->GetScenario() == CCSBotManager::SCENARIO_DEFUSE_BOMB)
+			if (ctrl->GetScenario() == CCSBotManager::SCENARIO_DEFUSE_BOMB)
 			{
-				if (m_iTeam == CT && TheCSBots()->IsBombPlanted())
+				if (m_iTeam == CT && ctrl->IsBombPlanted())
 				{
-					const CCSBotManager::Zone *zone = TheCSBots()->GetClosestZone(player);
+					const CCSBotManager::Zone *zone = ctrl->GetClosestZone(player);
 
 					if (zone != NULL)
 					{

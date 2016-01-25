@@ -95,14 +95,6 @@ enum ArmouryItemPack
 	ARMOURY_SMOKEGRENADE,
 };
 
-struct BuyInfo
-{
-	WeaponType type;
-	bool preferred;
-	char *buyAlias;
-
-};/* size: 12, cachelines: 1, members: 3 */
-
 struct ItemInfo
 {
 	int iSlot;

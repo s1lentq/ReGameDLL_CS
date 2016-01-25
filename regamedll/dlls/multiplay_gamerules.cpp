@@ -21,14 +21,14 @@ CHalfLifeMultiplay *g_pMPGameRules = NULL;
 /* <1153e2> ../cstrike/dlls/multiplay_gamerules.cpp:92 */
 bool IsBotSpeaking(void)
 {
-	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
-		CBasePlayer *pPlayer = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+		CBasePlayer *pPlayer = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
 		if (pPlayer == NULL || !pPlayer->IsBot())
 			continue;
 
-		CCSBot *pBot = reinterpret_cast<CCSBot *>(pPlayer);
+		CCSBot *pBot = static_cast<CCSBot *>(pPlayer);
 
 		if (pBot->IsUsingVoice())
 			return true;
@@ -51,9 +51,9 @@ void SV_Continue_f(void)
 			WRITE_STRING("GOGOGO");
 		MESSAGE_END();
 
-		for (int i = 1; i <= gpGlobals->maxClients; i++)
+		for (int i = 1; i <= gpGlobals->maxClients; ++i)
 		{
-			CBasePlayer *pPlayer = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+			CBasePlayer *pPlayer = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
 			if (pPlayer && !pPlayer->IsBot())
 			{
@@ -99,9 +99,9 @@ void SV_Career_EndRound_f(void)
 	{
 		SERVER_COMMAND("kill\n");
 
-		for (int i = 1; i <= gpGlobals->maxClients; i++)
+		for (int i = 1; i <= gpGlobals->maxClients; ++i)
 		{
-			CBasePlayer *player = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+			CBasePlayer *player = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
 			if (!player || FNullEnt(player->pev))
 				continue;
@@ -804,9 +804,9 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(GiveC4)(void)
 
 	if (giveToHumans)
 	{
-		for (int i = 1; i <= gpGlobals->maxClients; i++)
+		for (int i = 1; i <= gpGlobals->maxClients; ++i)
 		{
-			CBasePlayer *player = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+			CBasePlayer *player = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
 			if (!player || FNullEnt(player->edict()))
 				continue;
@@ -1164,7 +1164,7 @@ bool CHalfLifeMultiplay::NeededPlayersCheck(bool &bNeededPlayers)
 	{
 		if (IsCareer())
 		{
-			CBasePlayer *player = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(gpGlobals->maxClients));
+			CBasePlayer *player = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(gpGlobals->maxClients));
 
 			if (!player || !player->IsBot())
 			{
@@ -1410,7 +1410,7 @@ bool CHalfLifeMultiplay::TeamExterminationCheck(int NumAliveTerrorist, int NumAl
 
 			while ((temp = UTIL_FindEntityByClassname(temp, "grenade")) != NULL)
 			{
-				CGrenade *C4 = reinterpret_cast<CGrenade *>(temp);
+				CGrenade *C4 = static_cast<CGrenade *>(temp);
 
 				if (C4->m_bIsC4 && !C4->m_bJustBlew)
 				{
@@ -1632,7 +1632,7 @@ void CHalfLifeMultiplay::BalanceTeams(void)
 	int iHighestUserID = 0;
 	CBasePlayer *toSwap = NULL;
 
-	for (int i = 1; i <= iNumToSwap; i++)
+	for (int i = 1; i <= iNumToSwap; ++i)
 	{
 		iHighestUserID = 0;
 		toSwap = NULL;
@@ -1808,9 +1808,9 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(RestartRound)(void)
 		UpdateTeamScores();
 
 		// Reset the player stats
-		for (int i = 1; i <= gpGlobals->maxClients; i++)
+		for (int i = 1; i <= gpGlobals->maxClients; ++i)
 		{
-			CBasePlayer *plr = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+			CBasePlayer *plr = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
 			if (plr && !FNullEnt(plr->pev))
 				plr->Reset();
@@ -1908,7 +1908,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(RestartRound)(void)
 		if (acct_tmp >= 2000)
 			break;
 
-		CHostage *temp = reinterpret_cast<CHostage *>(hostage);
+		CHostage *temp = static_cast<CHostage *>(hostage);
 
 		if (hostage->pev->solid != SOLID_NOT)
 		{
@@ -2208,7 +2208,7 @@ void CHalfLifeMultiplay::StackVIPQueue(void)
 /* <114e63> ../cstrike/dlls/multiplay_gamerules.cpp:2232 */
 bool CHalfLifeMultiplay::IsVIPQueueEmpty(void)
 {
-	for (int i = 0; i < MAX_VIP_QUEUES; i++)
+	for (int i = 0; i < MAX_VIP_QUEUES; ++i)
 	{
 		CBasePlayer *toCheck = VIPQueue[i];
 
@@ -2225,7 +2225,7 @@ bool CHalfLifeMultiplay::IsVIPQueueEmpty(void)
 /* <114eea> ../cstrike/dlls/multiplay_gamerules.cpp:2257 */
 bool CHalfLifeMultiplay::AddToVIPQueue(CBasePlayer *toAdd)
 {
-	for (int i = 0; i < MAX_VIP_QUEUES; i++)
+	for (int i = 0; i < MAX_VIP_QUEUES; ++i)
 	{
 		CBasePlayer *toCheck = VIPQueue[i];
 
@@ -2317,7 +2317,7 @@ void CHalfLifeMultiplay::PickNextVIP(void)
 			ResetCurrentVIP();
 		}
 
-		for (int i = 0; i < MAX_VIP_QUEUES; i++)
+		for (int i = 0; i < MAX_VIP_QUEUES; ++i)
 		{
 			if (VIPQueue[i] != NULL)
 			{
@@ -2528,9 +2528,9 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(Think)(void)
 
 					m_bFreezePeriod = TRUE;
 
-					for (int i = 1; i <= gpGlobals->maxClients; i++)
+					for (int i = 1; i <= gpGlobals->maxClients; ++i)
 					{
-						CBasePlayer *pPlayer = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+						CBasePlayer *pPlayer = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
 						if (pPlayer != NULL && !pPlayer->IsBot())
 						{
@@ -2780,9 +2780,9 @@ void CHalfLifeMultiplay::CheckFreezePeriodExpired(void)
 		TheCareerTasks->HandleEvent(EVENT_ROUND_START);
 	}
 
-	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
-		CBasePlayer *plr = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+		CBasePlayer *plr = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
 		if (!plr || plr->pev->flags == FL_DORMANT)
 		{
@@ -3031,7 +3031,7 @@ void CHalfLifeMultiplay::MarkLivingPlayersOnTeamAsNotReceivingMoneyNextRound(int
 {
 	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
-		CBasePlayer *player = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+		CBasePlayer *player = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
 		if (!player || FNullEnt(player->pev))
 			continue;
@@ -3068,9 +3068,9 @@ void CHalfLifeMultiplay::CareerRestart(void)
 
 	m_bSkipSpawn = false;
 
-	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
-		CBasePlayer *player = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+		CBasePlayer *player = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
 		if (!player || FNullEnt(player->pev))
 			continue;
@@ -3138,7 +3138,7 @@ BOOL CHalfLifeMultiplay::__MAKE_VHOOK(GetNextBestWeapon)(CBasePlayer *pPlayer, C
 	iBestWeight = -1; // no weapon lower than -1 can be autoswitched to
 	pBest = NULL;
 
-	for (i = 0; i < MAX_ITEM_TYPES; i++)
+	for (i = 0; i < MAX_ITEM_TYPES; ++i)
 	{
 		pCheck = pPlayer->m_rgpPlayerItems[i];
 
@@ -3252,10 +3252,10 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(InitHUD)(CBasePlayer *pl)
 		SendMOTDToClient(pl->edict());
 
 	// loop through all active players and send their score info to the new client
-	for (i = 1; i <= gpGlobals->maxClients; i++)
+	for (i = 1; i <= gpGlobals->maxClients; ++i)
 	{
 		// FIXME: Probably don't need to cast this just to read m_iDeaths
-		CBasePlayer *plr = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+		CBasePlayer *plr = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
 		if (plr != NULL)
 		{
@@ -3295,9 +3295,9 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(InitHUD)(CBasePlayer *pl)
 		MESSAGE_END();
 	}
 
-	for (i = 1; i <= gpGlobals->maxClients; i++)
+	for (i = 1; i <= gpGlobals->maxClients; ++i)
 	{
-		CBasePlayer *plr = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+		CBasePlayer *plr = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
 		if (plr != NULL)
 		{
@@ -3361,7 +3361,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(ClientDisconnected)(edict_t *pClient)
 {
 	if (pClient != NULL)
 	{
-		CBasePlayer *pPlayer = reinterpret_cast<CBasePlayer *>(CBaseEntity::Instance(pClient));
+		CBasePlayer *pPlayer = static_cast<CBasePlayer *>(CBaseEntity::Instance(pClient));
 
 		if (pPlayer != NULL)
 		{
@@ -3505,7 +3505,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(PlayerThink)(CBasePlayer *pPlayer)
 
 	if (pPlayer->m_pActiveItem && pPlayer->m_pActiveItem->IsWeapon())
 	{
-		CBasePlayerWeapon *pWeapon = reinterpret_cast<CBasePlayerWeapon *>(pPlayer->m_pActiveItem->GetWeaponPtr());
+		CBasePlayerWeapon *pWeapon = static_cast<CBasePlayerWeapon *>(pPlayer->m_pActiveItem->GetWeaponPtr());
 
 		if (pWeapon->m_iWeaponState & WPNSTATE_SHIELD_DRAWN)
 		{
@@ -3660,16 +3660,16 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(PlayerKilled)(CBasePlayer *pVictim, entvar
 
 	if (ktmp && ktmp->Classify() == CLASS_PLAYER)
 	{
-		peKiller = reinterpret_cast<CBasePlayer *>(ktmp);
+		peKiller = static_cast<CBasePlayer *>(ktmp);
 	}
 	else if (ktmp && ktmp->Classify() == CLASS_VEHICLE)
 	{
-		CBasePlayer *pDriver = reinterpret_cast<CBasePlayer *>(((CFuncVehicle *)ktmp)->m_pDriver);
+		CBasePlayer *pDriver = static_cast<CBasePlayer *>(((CFuncVehicle *)ktmp)->m_pDriver);
 
 		if (pDriver != NULL)
 		{
 			pKiller = pDriver->pev;
-			peKiller = reinterpret_cast<CBasePlayer *>(pDriver);
+			peKiller = static_cast<CBasePlayer *>(pDriver);
 		}
 	}
 
@@ -3781,7 +3781,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(PlayerKilled)(CBasePlayer *pVictim, entvar
 
 	if (ep && ep->Classify() == CLASS_PLAYER)
 	{
-		CBasePlayer *PK = reinterpret_cast<CBasePlayer *>(ep);
+		CBasePlayer *PK = static_cast<CBasePlayer *>(ep);
 
 		MESSAGE_BEGIN(MSG_ALL, gmsgScoreInfo);
 			WRITE_BYTE(ENTINDEX(PK->edict()));
@@ -3820,7 +3820,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(DeathNotice)(CBasePlayer *pVictim, entvars
 			if (pevInflictor == pKiller)
 			{
 				// If the inflictor is the killer, then it must be their current weapon doing the damage
-				CBasePlayer *pPlayer = reinterpret_cast<CBasePlayer*>(CBaseEntity::Instance(pKiller));
+				CBasePlayer *pPlayer = static_cast<CBasePlayer*>(CBaseEntity::Instance(pKiller));
 
 				if (pPlayer && pPlayer->m_pActiveItem)
 				{
@@ -3887,7 +3887,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(DeathNotice)(CBasePlayer *pVictim, entvars
 	}
 	else if (pKiller->flags & FL_CLIENT)
 	{
-		CBasePlayer *pPlayer = reinterpret_cast<CBasePlayer *>(CBaseEntity::Instance(pKiller));
+		CBasePlayer *pPlayer = static_cast<CBasePlayer *>(CBaseEntity::Instance(pKiller));
 
 		char *VictimTeam = GetTeam(pVictim->m_iTeam);
 		char *KillerTeam = GetTeam(pPlayer->m_iTeam);
@@ -4470,7 +4470,7 @@ int CountPlayers(void)
 {
 	int num = 0;
 
-	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
 		CBaseEntity *pEnt = UTIL_PlayerByIndex(i);
 

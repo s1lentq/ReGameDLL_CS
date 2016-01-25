@@ -139,7 +139,7 @@ void CFuncMortarField::FieldUse(CBaseEntity *pActivator, CBaseEntity *pCaller, U
 	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "weapons/mortar.wav", VOL_NORM, ATTN_NONE, 0, pitch);
 
 	float t = 2.5;
-	for (int i = 0; i < m_iCount; i++)
+	for (int i = 0; i < m_iCount; ++i)
 	{
 		Vector vecSpot = vecStart;
 		vecSpot.x += RANDOM_FLOAT(-m_flSpread, m_flSpread);

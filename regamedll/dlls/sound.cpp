@@ -1058,11 +1058,11 @@ void USENTENCEG_InitLRU(unsigned char *plru, int count)
 	if (count > CSENTENCE_LRU_MAX)
 		count = CSENTENCE_LRU_MAX;
 
-	for (i = 0; i < count; i++)
+	for (i = 0; i < count; ++i)
 		plru[i] = (unsigned char)i;
 
 	// randomize array
-	for (i = 0; i < (count * 4); i++)
+	for (i = 0; i < (count * 4); ++i)
 	{
 		j = RANDOM_LONG(0, count - 1);
 		k = RANDOM_LONG(0, count - 1);
@@ -1148,7 +1148,7 @@ int USENTENCEG_Pick(int isentenceg, char *szfound)
 
 	while (!ffound)
 	{
-		for (i = 0; i < count; i++)
+		for (i = 0; i < count; ++i)
 		{
 			if (plru[i] != 0xFF)
 			{
@@ -1194,7 +1194,7 @@ int SENTENCEG_GetIndex(const char *szgroupname)
 		if (!Q_strcmp(szgroupname, rgsentenceg[i].szgroupname))
 			return i;
 
-		i++;
+		++i;
 	}
 
 	return -1;
@@ -1339,7 +1339,7 @@ void SENTENCEG_Init(void)
 		// skip whitespace
 		i = 0;
 		while (buffer[i] && buffer[i] == ' ')
-			i++;
+			++i;
 
 		if (!buffer[i])
 			continue;
@@ -1428,7 +1428,7 @@ void SENTENCEG_Init(void)
 	while (rgsentenceg[i].count && i < CSENTENCEG_MAX)
 	{
 		USENTENCEG_InitLRU(&(rgsentenceg[i].rgblru[0]), rgsentenceg[i].count);
-		i++;
+		++i;
 	}
 }
 
@@ -1442,7 +1442,7 @@ int SENTENCEG_Lookup(const char *sample, char *sentencenum)
 
 	// this is a sentence name; lookup sentence number
 	// and give to engine as string.
-	for (i = 0; i < gcallsentences; i++)
+	for (i = 0; i < gcallsentences; ++i)
 	{
 		if (!Q_stricmp(gszallsentencenames[i], sample + 1))
 		{
@@ -1552,7 +1552,7 @@ char *memfgets(byte *pMemFile, int fileSize, int &filePos, char *pBuffer, int bu
 	{
 		if (pMemFile[i] == '\n')
 			stop = 1;
-		i++;
+		++i;
 	}
 
 	// If we actually advanced the pointer, copy it over
@@ -1604,7 +1604,7 @@ void TEXTURETYPE_Init(void)
 		// skip whitespace
 		i = 0;
 		while (buffer[i] && isspace(buffer[i]))
-			i++;
+			++i;
 
 		if (!buffer[i])
 			continue;
@@ -1618,7 +1618,7 @@ void TEXTURETYPE_Init(void)
 
 		// skip whitespace
 		while (buffer[i] && isspace(buffer[i]))
-			i++;
+			++i;
 
 		if (!buffer[i])
 			continue;
@@ -1653,7 +1653,7 @@ char TEXTURETYPE_Find(char *name)
 {
 	// CONSIDER: pre-sort texture names and perform faster binary search here
 
-	for (int i = 0; i < gcTextures; i++)
+	for (int i = 0; i < gcTextures; ++i)
 	{
 		if (!Q_strnicmp(name, &(grgszTextureName[ i ][0]), CBTEXTURENAMEMAX - 1))
 			return (grgchTextureType[ i ]);

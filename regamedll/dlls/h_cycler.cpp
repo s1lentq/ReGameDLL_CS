@@ -216,7 +216,7 @@ void CCyclerSprite::__MAKE_VHOOK(Spawn)(void)
 	m_rendermode = pev->rendermode;
 	m_renderamt = pev->renderamt;
 
-	for (int i = 0; i < ARRAYSIZE(pev->rendercolor); i++)
+	for (int i = 0; i < ARRAYSIZE(pev->rendercolor); ++i)
 	{
 		pev->rendercolor[i] = m_rendercolor[i];
 	}
@@ -239,7 +239,7 @@ void CCyclerSprite::__MAKE_VHOOK(Restart)(void)
 	pev->rendermode = m_rendermode;
 	pev->renderamt = m_renderamt;
 
-	for (int i = 0; i < ARRAYSIZE(pev->rendercolor); i++)
+	for (int i = 0; i < ARRAYSIZE(pev->rendercolor); ++i)
 	{
 		pev->rendercolor[i] = m_rendercolor[i];
 	}

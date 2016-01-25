@@ -860,7 +860,7 @@ void CLocalNav::RequestNav(CHostage *pCaller)
 		return;
 	}
 
-	for (int i = 0; i < tot_inqueue; i++)
+	for (int i = 0; i < tot_inqueue; ++i)
 	{
 		CHostage *pQueueItem = GetClassPtr((CHostage *)_queue[curr]->pev);
 

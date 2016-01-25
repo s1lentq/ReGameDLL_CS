@@ -322,7 +322,7 @@ void CBreakable::MaterialSoundPrecache(Materials precacheMaterial)
 
 	pSoundList = MaterialSoundList(precacheMaterial, soundCount);
 
-	for (i = 0; i < soundCount; i++)
+	for (i = 0; i < soundCount; ++i)
 	{
 		PRECACHE_SOUND((char *)pSoundList[i]);
 	}
@@ -834,7 +834,7 @@ void CBreakable::Die(void)
 
 	if (count)
 	{
-		for (int i = 0; i < count; i++)
+		for (int i = 0; i < count; ++i)
 		{
 			pList[i]->pev->flags &= ~FL_ONGROUND;
 			pList[i]->pev->groundentity = NULL;
@@ -917,7 +917,7 @@ void CPushable::__MAKE_VHOOK(Spawn)(void)
 /* <863eb> ../cstrike/dlls/func_break.cpp:920 */
 void CPushable::__MAKE_VHOOK(Precache)(void)
 {
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < 3; ++i)
 	{
 		PRECACHE_SOUND(m_soundNames[i]);
 	}

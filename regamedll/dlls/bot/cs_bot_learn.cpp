@@ -2,8 +2,8 @@
 
 const float updateTimesliceDuration = 0.5f;
 
-int _navAreaCount;
-int _currentIndex;
+int _navAreaCount = 0;
+int _currentIndex = 0;
 
 /* <343cbe> ../cstrike/dlls/bot/cs_bot_learn.cpp:95 */
 inline CNavNode *LadderEndSearch(CBaseEntity *entity, const Vector *pos, NavDirType mountDir)
@@ -163,7 +163,6 @@ void CCSBot::StartLearnProcess(void)
 	{
 		CONSOLE_ECHO("ERROR: Start position invalid\n\n");
 		m_processMode = PROCESS_NORMAL;
-
 		return;
 	}
 
@@ -181,7 +180,6 @@ void CCSBot::StartLearnProcess(void)
 /* <343d37> ../cstrike/dlls/bot/cs_bot_learn.cpp:217 */
 bool CCSBot::LearnStep(void)
 {
-	UNTESTED
 	// take a step
 	while (true)
 	{
@@ -361,12 +359,12 @@ bool CCSBot::LearnStep(void)
 void CCSBot::UpdateLearnProcess(void)
 {
 	float startTime = g_engfuncs.pfnTime();
-	while (g_engfuncs.pfnTime() - startTime >= updateTimesliceDuration)
+	while (g_engfuncs.pfnTime() - startTime < updateTimesliceDuration)
 	{
 		if (LearnStep() == false)
 		{
 			StartAnalyzeAlphaProcess();
-			break;
+			return;
 		}
 	}
 }
@@ -390,12 +388,11 @@ void CCSBot::StartAnalyzeAlphaProcess(void)
 /* <34396c> ../cstrike/dlls/bot/cs_bot_learn.cpp:427 */
 bool CCSBot::AnalyzeAlphaStep(void)
 {
+	++_currentIndex;
 	if (m_analyzeIter == TheNavAreaList.end())
 		return false;
 
 	CNavArea *area = (*m_analyzeIter);
-
-	++_currentIndex;
 	area->ComputeHidingSpots();
 	area->ComputeApproachAreas();
 	++m_analyzeIter;
@@ -407,20 +404,19 @@ bool CCSBot::AnalyzeAlphaStep(void)
 void CCSBot::UpdateAnalyzeAlphaProcess(void)
 {
 	float startTime = g_engfuncs.pfnTime();
-	float progress = _currentIndex / _navAreaCount * 50.0f;
-
-	while (AnalyzeAlphaStep())
+	while (g_engfuncs.pfnTime() - startTime < updateTimesliceDuration)
 	{
-		if (g_engfuncs.pfnTime() - startTime >= updateTimesliceDuration)
+		if (AnalyzeAlphaStep() == false)
 		{
-			drawProgressMeter(progress, "#CZero_AnalyzingHidingSpots");
+			drawProgressMeter(50, "#CZero_AnalyzingHidingSpots");
+			CleanupApproachAreaAnalysisPrep();
+			StartAnalyzeBetaProcess();
 			return;
 		}
 	}
 
-	drawProgressMeter(50, "#CZero_AnalyzingHidingSpots");
-	CleanupApproachAreaAnalysisPrep();
-	StartAnalyzeBetaProcess();
+	float progress = _currentIndex / _navAreaCount * 50.0f;
+	drawProgressMeter(progress, "#CZero_AnalyzingHidingSpots");
 }
 
 /* <344aed> ../cstrike/dlls/bot/cs_bot_learn.cpp:467 */
@@ -436,12 +432,11 @@ void CCSBot::StartAnalyzeBetaProcess(void)
 /* <3437c8> ../cstrike/dlls/bot/cs_bot_learn.cpp:479 */
 bool CCSBot::AnalyzeBetaStep(void)
 {
+	++_currentIndex;
 	if (m_analyzeIter == TheNavAreaList.end())
 		return false;
 
 	CNavArea *area = (*m_analyzeIter);
-
-	++_currentIndex;
 	area->ComputeSpotEncounters();
 	area->ComputeSniperSpots();
 	++m_analyzeIter;
@@ -453,19 +448,18 @@ bool CCSBot::AnalyzeBetaStep(void)
 void CCSBot::UpdateAnalyzeBetaProcess(void)
 {
 	float startTime = g_engfuncs.pfnTime();
-	float progress = (_currentIndex / _navAreaCount + 1.0f) * 50.0f;
-
-	while (AnalyzeBetaStep())
+	while (g_engfuncs.pfnTime() - startTime < updateTimesliceDuration)
 	{
-		if (g_engfuncs.pfnTime() - startTime >= updateTimesliceDuration)
+		if (AnalyzeBetaStep() == false)
 		{
-			drawProgressMeter(progress, "#CZero_AnalyzingApproachPoints");
+			drawProgressMeter(100, "#CZero_AnalyzingApproachPoints");
+			StartSaveProcess();
 			return;
 		}
 	}
 
-	drawProgressMeter(100, "#CZero_AnalyzingApproachPoints");
-	StartSaveProcess();
+	float progress = ((_currentIndex / _navAreaCount) + 1.0f) * 50.0f;
+	drawProgressMeter(progress, "#CZero_AnalyzingApproachPoints");
 }
 
 /* <344d1f> ../cstrike/dlls/bot/cs_bot_learn.cpp:517 */
@@ -482,7 +476,8 @@ void CCSBot::UpdateSaveProcess(void)
 	char cmd[128];
 
 	GET_GAME_DIR(filename);
-	filename[Q_strlen(filename)] = '\\';
+
+	Q_strcat(filename, "\\");
 	Q_strcat(filename, TheBots->GetNavMapFilename());
 
 	HintMessageToAllPlayers("Saving...");

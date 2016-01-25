@@ -189,7 +189,7 @@ void CEnvExplosion::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCal
 	{
 		int sparkCount = RANDOM_LONG(0, 3);
 
-		for (int i = 0; i < sparkCount; i++)
+		for (int i = 0; i < sparkCount; ++i)
 		{
 			Create("spark_shower", pev->origin, tr.vecPlaneNormal, NULL);
 		}

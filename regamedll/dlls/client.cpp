@@ -88,7 +88,7 @@ int CMD_ARGC_(void)
 	int i = 0;
 
 	while (BotArgs[i])
-		i++;
+		++i;
 
 	return i;
 }
@@ -352,7 +352,7 @@ int CountTeamPlayers(int iTeam)
 			continue;
 
 		if (GetClassPtr((CBasePlayer *)pPlayer->pev)->m_iTeam == iTeam)
-			i++;
+			++i;
 	}
 
 	return i;
@@ -3637,7 +3637,7 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 
 						player->m_bNightVisionOn = false;
 
-						for (int i = 1; i <= gpGlobals->maxClients; i++)
+						for (int i = 1; i <= gpGlobals->maxClients; ++i)
 						{
 							CBasePlayer *pObserver = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
@@ -3663,7 +3663,7 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 
 						player->m_bNightVisionOn = true;
 
-						for (int i = 1; i <= gpGlobals->maxClients; i++)
+						for (int i = 1; i <= gpGlobals->maxClients; ++i)
 						{
 							CBasePlayer *pObserver = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
@@ -3798,7 +3798,7 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 			{
 				player->ClearAutoBuyData();
 
-				for (int i = 1; i < CMD_ARGC_(); i++)
+				for (int i = 1; i < CMD_ARGC_(); ++i)
 				{
 					player->AddAutoBuyData(CMD_ARGV_(i));
 				}
@@ -3973,7 +3973,7 @@ void EXT_FUNC ServerActivate(edict_t *pEdictList, int edictCount, int clientMax)
 	EmptyEntityHashTable();
 
 	// Clients have not been initialized yet
-	for (i = 0; i < edictCount; i++)
+	for (i = 0; i < edictCount; ++i)
 	{
 		edict_t *pEdict = &pEdictList[i];
 
@@ -4222,12 +4222,12 @@ void ClientPrecache(void)
 	else
 		numPlayerModels = ARRAYSIZE(sPlayerModelFiles) - 2;
 
-	for (i = 0; i < numPlayerModels; i++)
+	for (i = 0; i < numPlayerModels; ++i)
 		PRECACHE_MODEL(sPlayerModelFiles[i]);
 
 	if (isCZero)
 	{
-		for (i = FirstCustomSkin; i <= LastCustomSkin; i++)
+		for (i = FirstCustomSkin; i <= LastCustomSkin; ++i)
 		{
 			const char *fname = TheBotProfiles->GetCustomSkinFname(i);
 
@@ -4287,12 +4287,12 @@ void ClientPrecache(void)
 	Vector vMin = Vector(-38, -24, -41);
 	Vector vMax = Vector(38, 24, 41);
 
-	for (i = 0; i < numPlayerModels; i++)
+	for (i = 0; i < numPlayerModels; ++i)
 		ENGINE_FORCE_UNMODIFIED(force_model_specifybounds, (float *)&vMin, (float *)&vMax, sPlayerModelFiles[i]);
 
 	if (isCZero)
 	{
-		for (i = FirstCustomSkin; i <= LastCustomSkin; i++)
+		for (i = FirstCustomSkin; i <= LastCustomSkin; ++i)
 		{
 			const char *fname = TheBotProfiles->GetCustomSkinFname(i);
 
@@ -4663,7 +4663,7 @@ bool CheckPlayerPVSLeafChanged(edict_t *client, int clientnum)
 	if (pvs->headnode != client->headnode || pvs->num_leafs != client->num_leafs)
 		return true;
 
-	for (int i = 0; i < pvs->num_leafs; i++)
+	for (int i = 0; i < pvs->num_leafs; ++i)
 	{
 		if (client->leafnums[i] != pvs->leafnums[i])
 			return true;
@@ -4794,10 +4794,10 @@ int EXT_FUNC AddToFullPack(struct entity_state_s *state, int e, edict_t *ent, ed
 	state->framerate = ent->v.framerate;
 	state->body = ent->v.body;
 
-	for (i = 0; i < 4; i++)
+	for (i = 0; i < 4; ++i)
 		state->controller[i] = ent->v.controller[i];
 
-	for (i = 0; i < 2; i++)
+	for (i = 0; i < 2; ++i)
 		state->blending[i] = ent->v.blending[i];
 
 	state->rendermode = ent->v.rendermode;
@@ -5086,7 +5086,7 @@ int EXT_FUNC GetWeaponData(edict_s *player, struct weapon_data_s *info)
 		return 1;
 	}
 
-	for (int i = 0; i < MAX_ITEM_TYPES; i++)
+	for (int i = 0; i < MAX_ITEM_TYPES; ++i)
 	{
 		CBasePlayerItem *pPlayerItem = pl->m_rgpPlayerItems[i];
 

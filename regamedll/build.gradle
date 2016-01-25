@@ -185,7 +185,7 @@ void setupToolchain(NativeBinarySpec b)
 
 	if (!unitTestExecutable)
 	{
-		cfg.singleDefines 'CSTRIKE'
+		//cfg.singleDefines 'CSTRIKE'
 
 		if (!mpLib)
 		{

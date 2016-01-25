@@ -72,7 +72,7 @@ int LookupActivity(void *pmodel, entvars_t *pev, int activity)
 
 	pseqdesc = (mstudioseqdesc_t *)((byte *)pstudiohdr + pstudiohdr->seqindex);
 
-	for (i = 0; i < pstudiohdr->numseq; i++)
+	for (i = 0; i < pstudiohdr->numseq; ++i)
 	{
 		if (pseqdesc[i].activity == activity)
 		{
@@ -87,7 +87,7 @@ int LookupActivity(void *pmodel, entvars_t *pev, int activity)
 		{
 			int which = RANDOM_LONG(0, weightTotal - 1);
 
-			for (i = 0; i < pstudiohdr->numseq; i++)
+			for (i = 0; i < pstudiohdr->numseq; ++i)
 			{
 				if (pseqdesc[i].activity == activity)
 				{
@@ -104,7 +104,7 @@ int LookupActivity(void *pmodel, entvars_t *pev, int activity)
 		{
 			select = RANDOM_LONG(0, activitySequenceCount - 1);
 
-			for (i = 0; i < pstudiohdr->numseq; i++)
+			for (i = 0; i < pstudiohdr->numseq; ++i)
 			{
 				if (pseqdesc[i].activity == activity)
 				{
@@ -136,7 +136,7 @@ int LookupActivityHeaviest(void *pmodel, entvars_t *pev, int activity)
 	int weight = 0;
 	int seq = ACT_INVALID;
 
-	for (int i = 0; i < pstudiohdr->numseq; i++)
+	for (int i = 0; i < pstudiohdr->numseq; ++i)
 	{
 		if (pseqdesc[i].activity == activity)
 		{
@@ -181,7 +181,7 @@ int LookupSequence(void *pmodel, const char *label)
 
 	// Look up by sequence name.
 	mstudioseqdesc_t *pseqdesc = (mstudioseqdesc_t *)((byte *)pstudiohdr + pstudiohdr->seqindex);
-	for (int i = 0; i < pstudiohdr->numseq; i++)
+	for (int i = 0; i < pstudiohdr->numseq; ++i)
 	{
 		if (!Q_stricmp(pseqdesc[i].label, label))
 			return i;
@@ -218,7 +218,7 @@ NOXREF void SequencePrecache(void *pmodel, const char *pSequenceName)
 		mstudioseqdesc_t *pseqdesc = (mstudioseqdesc_t *)((byte *)pstudiohdr + pstudiohdr->seqindex) + index;
 		mstudioevent_t *pevent = (mstudioevent_t *)((byte *)pstudiohdr + pseqdesc->eventindex);
 
-		for (int i = 0; i < pseqdesc->numevents; i++)
+		for (int i = 0; i < pseqdesc->numevents; ++i)
 		{
 			// Don't send client-side events to the server AI
 			if (pevent[i].event >= EVENT_CLIENT)
@@ -486,7 +486,7 @@ int FindTransition(void *pmodel, int iEndingAnim, int iGoalAnim, int *piDir)
 	}
 
 	// look for someone going
-	for (int i = 0; i < pstudiohdr->numseq; i++)
+	for (int i = 0; i < pstudiohdr->numseq; ++i)
 	{
 		if (pseqdesc[i].entrynode == iEndNode && pseqdesc[i].exitnode == iInternNode)
 		{
@@ -645,7 +645,7 @@ void QuaternionSlerp(vec_t *p, vec_t *q, float t, vec_t *qt)
 	float_precision a = 0;
 	float_precision b = 0;
 
-	for (i = 0; i < 4; i++)
+	for (i = 0; i < 4; ++i)
 	{
 		a += (p[i] - q[i]) * (p[i] - q[i]);
 		b += (p[i] + q[i]) * (p[i] + q[i]);
@@ -653,7 +653,7 @@ void QuaternionSlerp(vec_t *p, vec_t *q, float t, vec_t *qt)
 
 	if (a > b)
 	{
-		for (i = 0; i < 4; i++)
+		for (i = 0; i < 4; ++i)
 			q[i] = -q[i];
 	}
 
@@ -677,7 +677,7 @@ void QuaternionSlerp(vec_t *p, vec_t *q, float t, vec_t *qt)
 			sclp = 1.0 - t;
 		}
 
-		for (i = 0; i < 4; i++)
+		for (i = 0; i < 4; ++i)
 			qt[i] = sclp * p[i] + sclq * q[i];
 	}
 	else
@@ -690,7 +690,7 @@ void QuaternionSlerp(vec_t *p, vec_t *q, float t, vec_t *qt)
 		sclp = sin((1.0 - t) * 0.5 * M_PI);
 		sclq = sin(t * 0.5 * M_PI);
 
-		for (i = 0; i < 3; i++)
+		for (i = 0; i < 3; ++i)
 			qt[i] = sclp * p[i] + sclq * qt[i];
 	}
 }
@@ -968,7 +968,7 @@ void StudioSlerpBones(vec4_t *q1, float pos1[][3], vec4_t *q2, float pos2[][3], 
 
 	s1 = 1.0 - s;
 
-	for (i = 0; i < g_pstudiohdr->numbones; i++)
+	for (i = 0; i < g_pstudiohdr->numbones; ++i)
 	{
 		QuaternionSlerp(q1[i], q2[i], s, q3);
 
@@ -1060,7 +1060,7 @@ void SV_StudioSetupBones(model_t *pModel, float frame, int sequence, const vec_t
 	{
 		chainlength = g_pstudiohdr->numbones;
 
-		for (i = 0; i < chainlength; i++)
+		for (i = 0; i < chainlength; ++i)
 			chain[(chainlength - i) - 1] = i;
 	}
 	else
@@ -1203,7 +1203,7 @@ void SV_StudioSetupBones(model_t *pModel, float frame, int sequence, const vec_t
 		panim = StudioGetAnim(pModel, pseqdesc);
 		StudioCalcRotations(pbones, chain, chainlength, adj, pos2, q2, pseqdesc, panim, 0, 0);
 
-		for (i = 0; i < g_pstudiohdr->numbones; i++)
+		for (i = 0; i < g_pstudiohdr->numbones; ++i)
 		{
 			if (!Q_strcmp(pbones[i].name, "Bip01 Spine"))
 			{

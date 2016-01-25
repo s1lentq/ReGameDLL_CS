@@ -381,7 +381,7 @@ private:
 /* <2fea95> ../cstrike/dlls/bot/cs_bot_chatter.h:298 */
 inline int BotPhraseManager::FindPlaceIndex(Place where) const
 {
-	for (int i = 0; i < m_placeCount; i++)
+	for (int i = 0; i < m_placeCount; ++i)
 	{
 		if (m_placeStatementHistory[i].placeID == where)
 			return i;
@@ -596,8 +596,9 @@ public:
 	NOXREF void GuardingLooseBomb(CBaseEntity *bomb);
 	void RequestBombLocation(void);
 
-	void GuardingHostages(Place place, bool isPlan);
-	void GuardingHostageEscapeZone(bool isPlan);
+	#define IS_PLAN true
+	void GuardingHostages(Place place, bool isPlan = false);
+	void GuardingHostageEscapeZone(bool isPlan = false);
 	void HostagesBeingTaken(void);
 	void HostagesTaken(void);
 	void TalkingToHostages(void);

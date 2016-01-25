@@ -78,7 +78,7 @@ MULTIDAMAGE gMultiDamage;
 /* <1d018e> ../cstrike/dlls/weapons.cpp:82 */
 int MaxAmmoCarry(int iszName)
 {
-	for (int i = 0; i < MAX_WEAPONS; i++)
+	for (int i = 0; i < MAX_WEAPONS; ++i)
 	{
 		ItemInfo *info = &IMPL_CLASS(CBasePlayerItem, ItemInfoArray)[ i ];
 
@@ -229,7 +229,7 @@ NOXREF void EjectBrass2(const Vector &vecOrigin, const Vector &vecVelocity, floa
 void AddAmmoNameToAmmoRegistry(const char *szAmmoname)
 {
 	// make sure it's not already in the registry
-	for (int i = 0; i < MAX_AMMO_SLOTS; i++)
+	for (int i = 0; i < MAX_AMMO_SLOTS; ++i)
 	{
 		if (!IMPL_CLASS(CBasePlayerItem, AmmoInfoArray)[ i ].pszName)
 			continue;
@@ -1716,7 +1716,7 @@ void CWeaponBox::Kill(void)
 	int i;
 
 	// destroy the weapons
-	for (i = 0; i < MAX_ITEM_TYPES; i++)
+	for (i = 0; i < MAX_ITEM_TYPES; ++i)
 	{
 		pWeapon = m_rgpPlayerItems[i];
 
@@ -1768,7 +1768,7 @@ void CWeaponBox::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 	// go through my weapons and try to give the usable ones to the player.
 	// it's important the the player be given ammo first, so the weapons code doesn't refuse
 	// to deploy a better weapon that the player may pick up because he has no ammo for it.
-	for (int i = 0; i < MAX_ITEM_TYPES; i++)
+	for (int i = 0; i < MAX_ITEM_TYPES; ++i)
 	{
 		if (!m_rgpPlayerItems[i])
 		{
@@ -2035,7 +2035,7 @@ int CWeaponBox::GiveAmmo(int iCount, char *szName, int iMax, int *pIndex)
 {
 	int i;
 
-	for (i = 1; i < MAX_AMMO_SLOTS && !FStringNull(m_rgiszAmmo[i]); i++)
+	for (i = 1; i < MAX_AMMO_SLOTS && !FStringNull(m_rgiszAmmo[i]); ++i)
 	{
 		if (!Q_stricmp(szName, STRING(m_rgiszAmmo[i])))
 		{
@@ -2096,7 +2096,7 @@ BOOL CWeaponBox::IsEmpty(void)
 {
 	int i;
 
-	for (i = 0; i < MAX_ITEM_TYPES; i++)
+	for (i = 0; i < MAX_ITEM_TYPES; ++i)
 	{
 		if (m_rgpPlayerItems[i])
 		{
@@ -2104,7 +2104,7 @@ BOOL CWeaponBox::IsEmpty(void)
 		}
 	}
 
-	for (i = 0; i < MAX_AMMO_SLOTS; i++)
+	for (i = 0; i < MAX_AMMO_SLOTS; ++i)
 	{
 		if (m_rgiszAmmo[i])
 		{

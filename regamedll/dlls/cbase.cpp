@@ -117,7 +117,7 @@ void EmptyEntityHashTable(void)
 	int i;
 	hash_item_t *item, *temp, *free;
 
-	for (i = 0; i < stringsHashTable.Count(); i++)
+	for (i = 0; i < stringsHashTable.Count(); ++i)
 	{
 		item = &stringsHashTable[i];
 		temp = item->next;
@@ -281,7 +281,7 @@ void RemoveEntityHashValue(entvars_t *pev, const char *value, hash_types_e field
 /* <31125> ../cstrike/dlls/cbase.cpp:337 */
 void printEntities(void)
 {
-	for (int i = 0; i < stringsHashTable.Count(); i++)
+	for (int i = 0; i < stringsHashTable.Count(); ++i)
 	{
 		hash_item_t *item = &stringsHashTable[i];
 
@@ -342,7 +342,7 @@ void loopPerformance(void)
 
 	start = loopCounter.GetCurTime();
 
-	for (i = 0; i < 100; i++)
+	for (i = 0; i < 100; ++i)
 	{
 		CBaseEntity *pSpot;
 		for (pSpot = UTIL_FindEntityByString_Old(NULL, "classname", "info_player_start"); pSpot != NULL; pSpot = UTIL_FindEntityByString_Old(pSpot, "classname", "info_player_start"))
@@ -364,7 +364,7 @@ void loopPerformance(void)
 	// check time new search loop
 	start = loopCounter.GetCurTime();
 
-	for (i = 0; i < 100; i++)
+	for (i = 0; i < 100; ++i)
 	{
 		CBaseEntity *pSpot;
 		for (pSpot = UTIL_FindEntityByString(NULL, "classname", "info_player_start"); pSpot != NULL; pSpot = UTIL_FindEntityByString(pSpot, "classname", "info_player_start"))
@@ -392,7 +392,7 @@ C_DLLEXPORT int GetEntityAPI(DLL_FUNCTIONS *pFunctionTable, int interfaceVersion
 
 	Q_memcpy(pFunctionTable, &gFunctionTable, sizeof(DLL_FUNCTIONS));
 	stringsHashTable.AddMultipleToTail(2048);
-	for (int i = 0; i < stringsHashTable.Count(); i++)
+	for (int i = 0; i < stringsHashTable.Count(); ++i)
 	{
 		stringsHashTable[i].next = NULL;
 	}
@@ -968,7 +968,7 @@ void SetObjectCollisionBox(entvars_t *pev)
 		int i;
 
 		max = 0;
-		for (i = 0; i < 3; i++)
+		for (i = 0; i < 3; ++i)
 		{
 			v = fabs((float_precision)((float *)pev->mins)[i]);
 			if (v > max)
@@ -982,7 +982,7 @@ void SetObjectCollisionBox(entvars_t *pev)
 				max = v;
 			}
 		}
-		for (i = 0; i < 3; i++)
+		for (i = 0; i < 3; ++i)
 		{
 			((float *)pev->absmin)[i] = ((float *)pev->origin)[i] - max;
 			((float *)pev->absmax)[i] = ((float *)pev->origin)[i] + max;

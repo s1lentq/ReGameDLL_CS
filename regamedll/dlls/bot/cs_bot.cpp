@@ -675,7 +675,7 @@ CBasePlayer *CCSBot::GetImportantEnemy(bool checkVisibility) const
 	CBasePlayer *nearEnemy = NULL;
 	float nearDist = 999999999.9f;
 
-	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
 		CBaseEntity *entity = UTIL_PlayerByIndex(i);
 

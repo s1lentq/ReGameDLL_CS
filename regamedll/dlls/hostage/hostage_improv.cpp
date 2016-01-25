@@ -1534,7 +1534,7 @@ CBasePlayer *CHostageImprov::GetClosestVisiblePlayer(int team)
 	CBasePlayer *close = NULL;
 	float closeRangeSq = 1e8f;
 
-	for (int i = 0; i < m_visiblePlayerCount; i++)
+	for (int i = 0; i < m_visiblePlayerCount; ++i)
 	{
 		CBasePlayer *player = (CBasePlayer *)m_visiblePlayer[i];
 
@@ -1936,18 +1936,6 @@ void CHostageImprov::UpdateStationaryAnimation(void)
 }
 
 #ifdef HOOK_GAMEDLL
-
-// NavAreaBuildPath<HostagePathCost> hook
-bool NavAreaBuildPath__HostagePathCost__wrapper(CNavArea *startArea, CNavArea *goalArea, const Vector *goalPos, class HostagePathCost &costFunc, CNavArea **closestArea)
-{
-	return NavAreaBuildPath(startArea, goalArea, goalPos, costFunc, closestArea);
-}
-
-// NavAreaBuildPath<ShortestPathCost> hook
-bool NavAreaBuildPath__ShortestPathCost__wrapper(CNavArea *startArea, CNavArea *goalArea, const Vector *goalPos, class ShortestPathCost &costFunc, CNavArea **closestArea)
-{
-	return NavAreaBuildPath(startArea, goalArea, goalPos, costFunc, closestArea);
-}
 
 void CHostageImprov::OnMoveToFailure(const Vector &goal, MoveToFailureType reason)
 {

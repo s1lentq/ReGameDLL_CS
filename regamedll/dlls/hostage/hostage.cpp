@@ -1148,7 +1148,7 @@ void CHostage::Wiggle(void)
 		Vector(-50, -50, 0)
 	};
 
-	for (int i = 0; i < ARRAYSIZE(wiggle_directions); i++)
+	for (int i = 0; i < ARRAYSIZE(wiggle_directions); ++i)
 	{
 		Vector dest = pev->origin + wiggle_directions[i];
 
@@ -1424,7 +1424,7 @@ void CHostageManager::ServerDeactivate(void)
 /* <45e3f7> ../cstrike/dlls/hostage/hostage.cpp:1631 */
 void CHostageManager::RestartRound(void)
 {
-	for (int i = 0; i < m_hostageCount; i++)
+	for (int i = 0; i < m_hostageCount; ++i)
 	{
 		if (m_hostage[i]->m_improv != NULL)
 		{
@@ -1440,7 +1440,7 @@ void CHostageManager::AddHostage(CHostage *hostage)
 		return;
 
 	int i;
-	for (i = 0; i < m_hostageCount; i++)
+	for (i = 0; i < m_hostageCount; ++i)
 	{
 		if (m_hostage[i] == hostage)
 		{
@@ -1458,7 +1458,7 @@ void CHostageManager::AddHostage(CHostage *hostage)
 /* <45e47f> ../cstrike/dlls/hostage/hostage.cpp:1657 */
 bool CHostageManager::IsNearbyHostageTalking(CHostageImprov *improv)
 {
-	for (int i = 0; i < m_hostageCount; i++)
+	for (int i = 0; i < m_hostageCount; ++i)
 	{
 		const float closeRange = 500.0f;
 		const CHostageImprov *other = m_hostage[i]->m_improv;
@@ -1481,7 +1481,7 @@ bool CHostageManager::IsNearbyHostageTalking(CHostageImprov *improv)
 /* <45e57b> ../cstrike/dlls/hostage/hostage.cpp:1689 */
 bool CHostageManager::IsNearbyHostageJumping(CHostageImprov *improv)
 {
-	for (int i = 0; i < m_hostageCount; i++)
+	for (int i = 0; i < m_hostageCount; ++i)
 	{
 		const CHostageImprov *other = m_hostage[i]->m_improv;
 
@@ -1504,7 +1504,7 @@ bool CHostageManager::IsNearbyHostageJumping(CHostageImprov *improv)
 /* <45e642> ../cstrike/dlls/hostage/hostage.cpp:1716 */
 void CHostageManager::OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
 {
-	for (int i = 0; i < m_hostageCount; i++)
+	for (int i = 0; i < m_hostageCount; ++i)
 	{
 		CHostageImprov *improv = m_hostage[ i ]->m_improv;
 
@@ -1518,7 +1518,7 @@ void CHostageManager::OnEvent(GameEventType event, CBaseEntity *entity, CBaseEnt
 /* <45e6b8> ../cstrike/dlls/hostage/hostage.cpp:1726 */
 SimpleChatter::SimpleChatter(void)
 {
-	for (int i = 0; i < ARRAYSIZE(m_chatter); i++)
+	for (int i = 0; i < ARRAYSIZE(m_chatter); ++i)
 	{
 		m_chatter[i].count = 0;
 		m_chatter[i].index = 0;
@@ -1529,7 +1529,7 @@ SimpleChatter::SimpleChatter(void)
 /* <45e6f0> ../cstrike/dlls/hostage/hostage.cpp:1737 */
 SimpleChatter::~SimpleChatter(void)
 {
-	for (int i = 0; i < ARRAYSIZE(m_chatter); i++)
+	for (int i = 0; i < ARRAYSIZE(m_chatter); ++i)
 	{
 		for (int f = 0; f < m_chatter[i].count; f++)
 		{
@@ -1566,7 +1566,7 @@ void SimpleChatter::Shuffle(ChatterSet *chatter)
 	if (!chatter->needsShuffle)
 		return;
 
-	for (int i = 1; i < chatter->count; i++)
+	for (int i = 1; i < chatter->count; ++i)
 	{
 		for (int j = i; j < chatter->count; j++)
 		{

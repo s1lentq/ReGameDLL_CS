@@ -113,7 +113,7 @@ void CBaseEntity::UpdateOnRemove(void)
 	{
 		// this entity was a LinkEnt in the world node graph, so we must remove it from
 		// the graph since we are removing it from the world.
-		for (i = 0; i < WorldGraph.m_cLinks; i++)
+		for (i = 0; i < WorldGraph.m_cLinks; ++i)
 		{
 			if (WorldGraph.m_pLinkPool[i].m_pLinkEnt == pev)
 			{

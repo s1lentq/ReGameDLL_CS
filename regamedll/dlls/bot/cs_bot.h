@@ -39,6 +39,9 @@
 #define CSBOT_VERSION_MAJOR		1
 #define CSBOT_VERSION_MINOR		50
 
+#define PRIMARY_WEAPON_BUY_COUNT	13
+#define SECONDARY_WEAPON_BUY_COUNT	3
+
 #define FLAG_PROGRESS_DRAW		0x0	// draw status bar progress
 #define FLAG_PROGRESS_START		0x1	// init status bar progress
 #define FLAG_PROGRESS_HIDE		0x2	// hide status bar progress
@@ -55,10 +58,22 @@
 #define _navAreaCount (*pnavAreaCount)
 #define _currentIndex (*pcurrentIndex)
 
+#define primaryWeaponBuyInfoCT (*pprimaryWeaponBuyInfoCT)
+#define secondaryWeaponBuyInfoCT (*psecondaryWeaponBuyInfoCT)
+
+#define primaryWeaponBuyInfoT (*pprimaryWeaponBuyInfoT)
+#define secondaryWeaponBuyInfoT (*psecondaryWeaponBuyInfoT)
+
 #endif // HOOK_GAMEDLL
 
 extern int _navAreaCount;
 extern int _currentIndex;
+
+extern struct BuyInfo primaryWeaponBuyInfoCT[ PRIMARY_WEAPON_BUY_COUNT ];
+extern struct BuyInfo secondaryWeaponBuyInfoCT[ SECONDARY_WEAPON_BUY_COUNT ];
+
+extern struct BuyInfo primaryWeaponBuyInfoT[ PRIMARY_WEAPON_BUY_COUNT ];
+extern struct BuyInfo secondaryWeaponBuyInfoT[ SECONDARY_WEAPON_BUY_COUNT ];
 
 class CCSBot;
 class BotChatterInterface;
@@ -78,8 +93,8 @@ public:
 class IdleState: public BotState
 {
 public:
-	NOBODY virtual void OnEnter(CCSBot *me);
-	NOBODY virtual void OnUpdate(CCSBot *me);
+	virtual void OnEnter(CCSBot *me);
+	virtual void OnUpdate(CCSBot *me);
 	virtual const char *GetName(void) const { return "Idle"; }
 
 #ifdef HOOK_GAMEDLL
@@ -95,9 +110,9 @@ public:
 class HuntState: public BotState
 {
 public:
-	NOBODY virtual void OnEnter(CCSBot *me);
-	NOBODY virtual void OnUpdate(CCSBot *me);
-	NOBODY virtual void OnExit(CCSBot *me);
+	virtual void OnEnter(CCSBot *me);
+	virtual void OnUpdate(CCSBot *me);
+	virtual void OnExit(CCSBot *me);
 	virtual const char *GetName(void) const { return "Hunt"; }
 
 #ifdef HOOK_GAMEDLL
@@ -118,9 +133,9 @@ private:
 class AttackState: public BotState
 {
 public:
-	NOBODY virtual void OnEnter(CCSBot *me);
-	NOBODY virtual void OnUpdate(CCSBot *me);
-	NOBODY virtual void OnExit(CCSBot *me);
+	virtual void OnEnter(CCSBot *me);
+	virtual void OnUpdate(CCSBot *me);
+	virtual void OnExit(CCSBot *me);
 	virtual const char *GetName(void) const { return "Attack"; }
 
 #ifdef HOOK_GAMEDLL
@@ -166,9 +181,9 @@ protected:
 class InvestigateNoiseState: public BotState
 {
 public:
-	NOBODY virtual void OnEnter(CCSBot *me);
-	NOBODY virtual void OnUpdate(CCSBot *me);
-	NOBODY virtual void OnExit(CCSBot *me);
+	virtual void OnEnter(CCSBot *me);
+	virtual void OnUpdate(CCSBot *me);
+	virtual void OnExit(CCSBot *me);
 	virtual const char *GetName(void) const { return "InvestigateNoise"; }
 
 #ifdef HOOK_GAMEDLL
@@ -180,7 +195,7 @@ public:
 #endif // HOOK_GAMEDLL
 
 private:
-	NOBODY void AttendCurrentNoise(CCSBot *me);
+	void AttendCurrentNoise(CCSBot *me);
 	Vector m_checkNoisePosition;
 
 };/* size: 16, cachelines: 1, members: 2 */
@@ -189,9 +204,9 @@ private:
 class BuyState: public BotState
 {
 public:
-	NOBODY virtual void OnEnter(CCSBot *me);
-	NOBODY virtual void OnUpdate(CCSBot *me);
-	NOBODY virtual void OnExit(CCSBot *me);
+	virtual void OnEnter(CCSBot *me);
+	virtual void OnUpdate(CCSBot *me);
+	virtual void OnExit(CCSBot *me);
 	virtual const char *GetName(void) const { return "Buy"; }
 
 #ifdef HOOK_GAMEDLL
@@ -219,9 +234,9 @@ private:
 class MoveToState: public BotState
 {
 public:
-	NOBODY virtual void OnEnter(CCSBot *me);
-	NOBODY virtual void OnUpdate(CCSBot *me);
-	NOBODY virtual void OnExit(CCSBot *me);
+	virtual void OnEnter(CCSBot *me);
+	virtual void OnUpdate(CCSBot *me);
+	virtual void OnExit(CCSBot *me);
 	virtual const char *GetName(void) const { return "MoveTo"; }
 
 #ifdef HOOK_GAMEDLL
@@ -283,9 +298,9 @@ public:
 class DefuseBombState: public BotState
 {
 public:
-	NOBODY virtual void OnEnter(CCSBot *me);
-	NOBODY virtual void OnUpdate(CCSBot *me);
-	NOBODY virtual void OnExit(CCSBot *me);
+	virtual void OnEnter(CCSBot *me);
+	virtual void OnUpdate(CCSBot *me);
+	virtual void OnExit(CCSBot *me);
 	virtual const char *GetName(void) const { return "DefuseBomb"; }
 
 #ifdef HOOK_GAMEDLL
@@ -302,9 +317,9 @@ public:
 class HideState: public BotState
 {
 public:
-	NOBODY virtual void OnEnter(CCSBot *me);
-	NOBODY virtual void OnUpdate(CCSBot *me);
-	NOBODY virtual void OnExit(CCSBot *me);
+	virtual void OnEnter(CCSBot *me);
+	virtual void OnUpdate(CCSBot *me);
+	virtual void OnExit(CCSBot *me);
 	virtual const char *GetName(void) const { return "Hide"; }
 
 #ifdef HOOK_GAMEDLL
@@ -348,9 +363,9 @@ private:
 class EscapeFromBombState: public BotState
 {
 public:
-	NOBODY virtual void OnEnter(CCSBot *me);
-	NOBODY virtual void OnUpdate(CCSBot *me);
-	NOBODY virtual void OnExit(CCSBot *me);
+	virtual void OnEnter(CCSBot *me);
+	virtual void OnUpdate(CCSBot *me);
+	virtual void OnExit(CCSBot *me);
 	virtual const char *GetName(void) const { return "EscapeFromBomb"; }
 
 #ifdef HOOK_GAMEDLL
@@ -367,9 +382,9 @@ public:
 class FollowState: public BotState
 {
 public:
-	NOBODY virtual void OnEnter(CCSBot *me);
-	NOBODY virtual void OnUpdate(CCSBot *me);
-	NOBODY virtual void OnExit(CCSBot *me);
+	virtual void OnEnter(CCSBot *me);
+	virtual void OnUpdate(CCSBot *me);
+	virtual void OnExit(CCSBot *me);
 	virtual const char *GetName(void) const { return "Follow"; }
 
 #ifdef HOOK_GAMEDLL
@@ -383,7 +398,7 @@ public:
 	void SetLeader(CBaseEntity *leader) { m_leader = leader; }
 
 private:
-	NOBODY void ComputeLeaderMotionState(float leaderSpeed);
+	void ComputeLeaderMotionState(float leaderSpeed);
 
 	EHANDLE m_leader;
 	Vector m_lastLeaderPos;
@@ -456,12 +471,12 @@ public:
 	virtual void SpawnBot(void);												// (EXTEND) spawn the bot into the game
 
 	virtual void Upkeep(void);												// lightweight maintenance, invoked frequently
-	NOBODY virtual void Update(void);											// heavyweight algorithms, invoked less often
+	virtual void Update(void);												// heavyweight algorithms, invoked less often
 
 	virtual void Walk(void);
 	virtual bool Jump(bool mustJump = false);										// returns true if jump was started
 
-	NOBODY virtual void OnEvent(GameEventType event, CBaseEntity *entity = NULL, CBaseEntity *other = NULL);		// invoked when event occurs in the game (some events have NULL entity)
+	virtual void OnEvent(GameEventType event, CBaseEntity *entity = NULL, CBaseEntity *other = NULL);			// invoked when event occurs in the game (some events have NULL entity)
 
 	#define CHECK_FOV true
 	virtual bool IsVisible(const Vector *pos, bool testFOV = false) const;							// return true if we can see the point
@@ -642,7 +657,7 @@ public:
 
 	// listening for noises
 	bool IsNoiseHeard(void) const;								// return true if we have heard a noise
-	bool ShouldInvestigateNoise(float *retNoiseDist);
+	bool ShouldInvestigateNoise(float *retNoiseDist = NULL);
 	void InvestigateNoise(void);								// investigate recent enemy noise
 	const Vector *GetNoisePosition(void) const;						// return position of last heard noise, or NULL if none heard
 	CNavArea *GetNoiseArea(void) const;							// return area where noise was heard
@@ -1117,6 +1132,8 @@ private:
 	GameEventType m_lastRadioCommand;			// last radio command we recieved
 	void RespondToRadioCommands(void);
 	bool IsRadioCommand(GameEventType event) const;		// returns true if the radio message is an order to do something
+
+	#define NO_FORCE false
 	void EndVoiceFeedback(bool force = true);
 	float m_lastRadioRecievedTimestamp;			// time we recieved a radio message
 	float m_lastRadioSentTimestamp;				// time when we send a radio message
@@ -1275,8 +1292,7 @@ inline const CSGameState *CCSBot::GetGameState(void) const
 /* <5c4ce8> ../cstrike/dlls/bot/cs_bot.h:397 */
 inline bool CCSBot::IsAtBombsite(void)
 {
-	UNTESTED
-	return GetGameState()->IsAtPlantedBombsite();
+	return (m_signals.GetState() & SIGNAL_BOMB) == SIGNAL_BOMB;
 }
 
 /* <5a07c3> ../cstrike/dlls/bot/cs_bot.h:453 */
@@ -1344,8 +1360,7 @@ inline BotChatterInterface *CCSBot::GetChatter(void)
 /* <111238> ../cstrike/dlls/bot/cs_bot.h:508 */
 inline bool CCSBot::IsUsingVoice(void) const
 {
-	UNTESTED
-	return (m_voiceFeedbackEndTimestamp != 0.0f);	//return (m_voiceFeedbackEndTimestamp > gpGlobals->time);
+	return (m_voiceFeedbackEndTimestamp != 0.0f);
 }
 
 /* <519493> ../cstrike/dlls/bot/cs_bot.h:513 */
@@ -1927,32 +1942,27 @@ public:
 	FollowTargetCollector(CBasePlayer *player)
 	{
 		m_player = player;
-
-		Vector playerVel = player->pev->velocity;
-
-		m_forward.x = playerVel.x;
-		m_forward.y = playerVel.y;
+		m_forward.x = player->pev->velocity.x;
+		m_forward.y = player->pev->velocity.y;
 
 		float speed = m_forward.NormalizeInPlace();
-
-		Vector playerOrigin = player->pev->origin;
 
 		const float walkSpeed = 100.0f;
 		if (speed < walkSpeed)
 		{
-			m_cutoff.x = playerOrigin.x;
-			m_cutoff.y = playerOrigin.y;
+			m_cutoff.x = player->pev->origin.x;
+			m_cutoff.y = player->pev->origin.y;
 
 			m_forward.x = 0.0f;
 			m_forward.y = 0.0f;
 		}
 		else
 		{
-			const float k = 1.5f; // 2.0f;
-			float trimSpeed = (speed < 200.0f) ? speed : 200.0f;
+			const float k = 1.5f;
+			float_precision trimSpeed = (speed < 200.0f) ? speed : 200.0f;
 
-			m_cutoff.x = playerOrigin.x + k * trimSpeed * m_forward.x;
-			m_cutoff.y = playerOrigin.y + k * trimSpeed * m_forward.y;
+			m_cutoff.x = player->pev->origin.x + k * trimSpeed * m_forward.x;
+			m_cutoff.y = player->pev->origin.y + k * trimSpeed * m_forward.y;
 		}
 
 		m_targetAreaCount = 0;
@@ -2008,11 +2018,20 @@ typedef void (CCSBot::*HIDE_VECTOR)(const Vector *, float, bool);
 typedef const CSGameState *(CCSBot::*GETGAMESTATE_CONST)(void) const;
 typedef CSGameState *(CCSBot::*GETGAMESTATE_NOTCONST)(void);
 
-bool NavAreaBuildPath__PathCost__wrapper(CNavArea *startArea, CNavArea *goalArea, const Vector *goalPos, PathCost &costFunc, CNavArea **closestArea = NULL);
-// refs
+// NavAreaBuildPath<PathCost> hook
+inline bool NavAreaBuildPath__PathCost__wrapper(CNavArea *startArea, CNavArea *goalArea, const Vector *goalPos, PathCost &costFunc, CNavArea **closestArea)
+{
+	return NavAreaBuildPath(startArea, goalArea, goalPos, costFunc, closestArea);
+}
 
+// NavAreaTravelDistance<PathCost> hook
+inline float_precision NavAreaTravelDistance__PathCost__wrapper(CNavArea *startArea, CNavArea *endArea, PathCost &costFunc)
+{
+	return NavAreaTravelDistance(startArea, endArea, costFunc);
+}
+
+// refs
 extern void (*pCCSBot__UpdateLookAngles)(void);
-extern void (*pCCSBot__Update)(void);
 
 #endif // HOOK_GAMEDLL
 

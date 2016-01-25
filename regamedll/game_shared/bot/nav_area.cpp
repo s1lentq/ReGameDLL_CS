@@ -1053,7 +1053,7 @@ inline CNavArea *FindFirstAreaInDirection(const Vector *start, NavDirType dir, f
 	Vector pos = *start;
 	int end = (int)((range / GenerationStepSize) + 0.5f);
 
-	for (int i = 1; i <= end; i++)
+	for (int i = 1; i <= end; ++i)
 	{
 		AddDirectionVector(&pos, dir, GenerationStepSize);
 
@@ -1872,7 +1872,7 @@ void GenerateNavigationAreaMesh(void)
 
 	while (uncoveredNodes > 0)
 	{
-		for (CNavNode *node = CNavNode::GetFirst(); node; node = node->GetNext())
+		for (CNavNode *node = CNavNode::GetFirst(); node != NULL; node = node->GetNext())
 		{
 			if (node->IsCovered())
 				continue;
@@ -2260,7 +2260,7 @@ CNavArea *CNavArea::GetRandomAdjacentArea(NavDirType dir) const
 		if (i == which)
 			return (*iter).area;
 
-		i++;
+		++i;
 	}
 
 	return NULL;
@@ -2556,7 +2556,7 @@ void CNavArea::DrawMarkedCorner(NavCornerType corner, byte red, byte green, byte
 	se.x -= border;
 	se.y -= border;
 
-	switch(corner)
+	switch (corner)
 	{
 	case NORTH_WEST:
 		UTIL_DrawBeamPoints(nw + Vector(0, 0, 10), nw, duration, red, green, blue);
@@ -2684,7 +2684,7 @@ const Vector *CNavArea::GetCorner(NavCornerType corner) const
 {
 	static Vector pos;
 
-	switch(corner)
+	switch (corner)
 	{
 	case NORTH_WEST:
 		return &m_extent.lo;
@@ -2824,7 +2824,7 @@ void CNavArea::ComputeHidingSpots(void)
 			}
 		}
 
-		switch(d)
+		switch (d)
 		{
 		case NORTH:
 			if (extent.lo - m_extent.lo.x >= cornerSize)
@@ -3742,7 +3742,6 @@ void CNavArea::DrawConnectedAreas(void)
 		NavDirType dir = (NavDirType)dirSet[i];
 
 		int count = GetAdjacentCount(dir);
-
 		for (int a = 0; a < count; ++a)
 		{
 			CNavArea *adj = GetAdjacentArea(dir, a);
@@ -3787,7 +3786,7 @@ void CNavArea::DrawConnectedAreas(void)
 				float size = 5.0f;
 				ComputePortal(adj, dir, &hookPos, &halfWidth);
 
-				switch(dir)
+				switch (dir)
 				{
 					case NORTH:
 						from = hookPos + Vector(0.0f, size, 0.0f);
@@ -4086,7 +4085,7 @@ void EditNavAreas(NavEditCmdType cmd)
 			{
 				area->DrawConnectedAreas();
 
-				switch(cmd)
+				switch (cmd)
 				{
 					case EDIT_TOGGLE_PLACE_MODE:
 						EMIT_SOUND_DYN(ENT(UTIL_GetLocalPlayer()->pev), CHAN_ITEM, "buttons/blip1.wav", 1, ATTN_NORM, 0, 100);
@@ -4790,25 +4789,24 @@ CNavAreaGrid::CNavAreaGrid(void) : m_cellSize(300.0f)
 /* <4c4a70> ../game_shared/bot/nav_area.cpp:4953 */
 CNavAreaGrid::~CNavAreaGrid(void)
 {
-	delete [] m_grid;
+	delete[] m_grid;
 	m_grid = NULL;
 }
+
+// Clear the grid
 
 /* <4cf837> ../game_shared/bot/nav_area.cpp:4962 */
 void CNavAreaGrid::Reset(void)
 {
 	if (m_grid)
-	{
-		// TODO: FIX ME
-		//delete[] m_grid;
-	}
+		delete[] m_grid;
 
 	m_grid = NULL;
 	m_gridSizeX = 0;
 	m_gridSizeY = 0;
 
 	// clear the hash table
-	for (int i = 0; i < HASH_TABLE_SIZE; i++)
+	for (int i = 0; i < HASH_TABLE_SIZE; ++i)
 		m_hashTable[i] = NULL;
 
 	m_areaCount = 0;
@@ -4816,6 +4814,8 @@ void CNavAreaGrid::Reset(void)
 	// reset static vars
 	EditNavAreasReset();
 }
+
+// Allocate the grid and define its extents
 
 /* <4cf984> ../game_shared/bot/nav_area.cpp:4983 */
 void CNavAreaGrid::Initialize(float minX, float maxX, float minY, float maxY)
@@ -4826,8 +4826,8 @@ void CNavAreaGrid::Initialize(float minX, float maxX, float minY, float maxY)
 	m_minX = minX;
 	m_minY = minY;
 
-	m_gridSizeX = ((maxX - minX) / m_cellSize) + 1;
-	m_gridSizeY = ((maxY - minY) / m_cellSize) + 1;
+	m_gridSizeX = (int)((maxX - minX) / m_cellSize + 1);
+	m_gridSizeY = (int)((maxY - minY) / m_cellSize + 1);
 
 	m_grid = new NavAreaList[ m_gridSizeX * m_gridSizeY ];
 }
@@ -4846,8 +4846,10 @@ void CNavAreaGrid::AddNavArea(CNavArea *area)
 	int hiY = WorldToGridY(extent->hi.y);
 
 	for (int y = loY; y <= hiY; ++y)
+	{
 		for (int x = loX; x <= hiX; ++x)
 			m_grid[ x + y*m_gridSizeX ].push_back(const_cast<CNavArea *>(area));
+	}
 
 	// add to hash table
 	int key = ComputeHashKey(area->GetID());

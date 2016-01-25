@@ -129,7 +129,7 @@ void PlaceDirectory::Load(SteamFile *file)
 	// read each entry
 	char placeName[256];
 	unsigned short len;
-	for (int i = 0; i < count; i++)
+	for (int i = 0; i < count; ++i)
 	{
 		file->Read(&len, sizeof(unsigned short));
 		file->Read(placeName, len);
@@ -190,7 +190,7 @@ void CNavArea::Save(int fd, unsigned int version)
 
 	// save connections to adjacent areas
 	// in the enum order NORTH, EAST, SOUTH, WEST
-	for (int d = 0; d < NUM_DIRECTIONS; d++)
+	for (int d = 0; d < NUM_DIRECTIONS; ++d)
 	{
 		// save number of connections for this direction
 		unsigned int count = m_connect[d].size();
@@ -360,13 +360,13 @@ void CNavArea::Load(SteamFile *file, unsigned int version)
 
 	// load connections (IDs) to adjacent areas
 	// in the enum order NORTH, EAST, SOUTH, WEST
-	for (int d = 0; d < NUM_DIRECTIONS; d++)
+	for (int d = 0; d < NUM_DIRECTIONS; ++d)
 	{
 		// load number of connections for this direction
 		unsigned int count;
 		file->Read(&count, sizeof(unsigned int));
 
-		for (unsigned int i = 0; i<count; ++i)
+		for (unsigned int i = 0; i < count; ++i)
 		{
 			NavConnect connect;
 			file->Read(&connect.id, sizeof(unsigned int));
@@ -509,7 +509,7 @@ NavErrorType CNavArea::PostLoad(void)
 	NavErrorType error = NAV_OK;
 
 	// connect areas together
-	for (int d = 0; d < NUM_DIRECTIONS; d++)
+	for (int d = 0; d < NUM_DIRECTIONS; ++d)
 	{
 		NavConnectList::iterator iter;
 		for (iter = m_connect[d].begin(); iter != m_connect[d].end(); ++iter)
@@ -946,7 +946,7 @@ NavErrorType LoadNavigationMap(void)
 	extent.hi.y = -9999999999.9f;
 
 	// load the areas and compute total extent
-	for (unsigned int i = 0; i < count; i++)
+	for (unsigned int i = 0; i < count; ++i)
 	{
 		CNavArea *area = new CNavArea;
 		area->Load(&navFile, version);

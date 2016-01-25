@@ -1203,17 +1203,10 @@ void CCSBotManager::ValidateMapData(void)
 	}
 }
 
-void (*pCCSBotManager__AddBot)(void);
-
 /* <36c2b2> ../cstrike/dlls/bot/cs_bot_manager.cpp:1278 */
-NOBODY bool __declspec(naked) CCSBotManager::AddBot(const BotProfile *profile, BotProfileTeamType team)
+#ifndef HOOK_GAMEDLL
+bool CCSBotManager::AddBot(const BotProfile *profile, BotProfileTeamType team)
 {
-#if 1
-	__asm
-	{
-		jmp pCCSBotManager__AddBot
-	}
-#else
 	if (!UTIL_IsGame("czero"))
 		return false;
 
@@ -1287,8 +1280,8 @@ NOBODY bool __declspec(naked) CCSBotManager::AddBot(const BotProfile *profile, B
 	CONSOLE_ECHO("Could not add bot to the game.\n");
 
 	return false;
-#endif
 }
+#endif // HOOK_GAMEDLL
 
 // Return the zone that contains the given position
 
@@ -1582,6 +1575,13 @@ void CCSBotManager::ResetRadioMessageTimestamps(void)
 }
 
 #ifdef HOOK_GAMEDLL
+
+void (*pCCSBotManager__AddBot)(void);
+
+bool __declspec(naked) CCSBotManager::AddBot(const BotProfile *profile, BotProfileTeamType team)
+{
+	__asm { jmp pCCSBotManager__AddBot }
+}
 
 void CCSBotManager::ClientDisconnect(CBasePlayer *pPlayer)
 {

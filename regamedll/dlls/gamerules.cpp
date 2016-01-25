@@ -123,18 +123,7 @@ void CGameRules::__MAKE_VHOOK(RefreshSkillData)(void)
 	gSkillData.healthkitCapacity = 15;
 }
 
-void (*pInstallGameRules)(void);
-
 /* <ada23> ../cstrike/dlls/gamerules.cpp:157 */
-#ifdef HOOK_GAMEDLL
-NOBODY __declspec(naked) CGameRules *InstallGameRules(void)
-{
-	__asm
-	{
-		jmp pInstallGameRules
-	}
-}
-#else
 CGameRules *InstallGameRules(void)
 {
 	SERVER_COMMAND("exec game.cfg\n");
@@ -145,7 +134,6 @@ CGameRules *InstallGameRules(void)
 
 	return new CHalfLifeMultiplay;
 }
-#endif // HOOK_GAMEDLL
 
 #ifdef HOOK_GAMEDLL
 

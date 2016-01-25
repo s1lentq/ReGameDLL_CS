@@ -338,22 +338,10 @@ enum InventorySlotType
 	GRENADE_SLOT,
 	C4_SLOT,
 };
-
-enum WeaponType
-{
-	PISTOL = 0,
-	SHOTGUN,
-	SUB_MACHINE_GUN,
-	RIFLE,
-	MACHINE_GUN,
-	SNIPER_RIFLE,
-	GRENADE,
-	NUM_WEAPON_TYPES,
-};
  
 enum Bullet
 {
-	BULLET_NONE = 0,
+	BULLET_NONE,
 	BULLET_PLAYER_9MM,
 	BULLET_PLAYER_MP5,
 	BULLET_PLAYER_357,
@@ -376,26 +364,26 @@ struct AutoBuyInfoStruct
 	AutoBuyClassType m_class;
 	char *m_command;
 	char *m_classname;
-};/* size: 12, cachelines: 1, members: 3 */
+};
 
 struct WeaponAliasInfo
 {
 	char *alias;
 	WeaponIdType id;
-};/* size: 8, cachelines: 1, members: 2 */
+};
 
 struct WeaponBuyAliasInfo
 {
 	char *alias;
 	WeaponIdType id;
 	char *failName;
-};/* size: 12, cachelines: 1, members: 3 */
+};
 
 struct WeaponClassAliasInfo
 {
 	char *alias;
 	WeaponClassType id;
-};/* size: 8, cachelines: 1, members: 2 */
+};
 
 struct WeaponInfoStruct
 {

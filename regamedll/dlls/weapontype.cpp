@@ -247,7 +247,7 @@ const char *BuyAliasToWeaponID(const char *alias, WeaponIdType &id)
 {
 	if (alias)
 	{
-		for (int i = 0; weaponBuyAliasInfo[i].alias != NULL; i++)
+		for (int i = 0; weaponBuyAliasInfo[i].alias != NULL; ++i)
 		{
 			if (!Q_stricmp(weaponBuyAliasInfo[i].alias, alias))
 			{
@@ -266,7 +266,7 @@ const char *BuyAliasToWeaponID(const char *alias, WeaponIdType &id)
 /* <22cd03> ../cstrike/dlls/weapontype.cpp:246 */
 const char *WeaponIDToAlias(int id)
 {
-	for (int i = 0; weaponAliasInfo[i].alias != NULL; i++)
+	for (int i = 0; weaponAliasInfo[i].alias != NULL; ++i)
 	{
 		if (weaponAliasInfo[i].id == id)
 			return weaponAliasInfo[i].alias;
@@ -280,7 +280,7 @@ WeaponClassType AliasToWeaponClass(const char *alias)
 {
 	if (alias != NULL)
 	{
-		for (int i = 0; weaponClassAliasInfo[i].alias != NULL; i++)
+		for (int i = 0; weaponClassAliasInfo[i].alias != NULL; ++i)
 		{
 			if (!Q_stricmp(weaponClassAliasInfo[i].alias, alias))
 				return weaponClassAliasInfo[i].id;
@@ -354,7 +354,7 @@ NOXREF bool IsSecondaryWeapon(int id)
 /* <22cf48> ../cstrike/dlls/weapontype.cpp:426 */
 WeaponInfoStruct *GetWeaponInfo(int weaponID)
 {
-	for (int i = 0; weaponInfo[i].id != 0; i++)
+	for (int i = 0; weaponInfo[i].id != 0; ++i)
 	{
 		if (weaponInfo[i].id == weaponID)
 			return &weaponInfo[i];
@@ -372,63 +372,7 @@ bool CanBuyWeaponByMaptype(int playerTeam, WeaponIdType weaponID, bool useAssasi
 		{
 			switch (weaponID)
 			{
-				case WEAPON_P228:
-				case WEAPON_XM1014:
-				case WEAPON_AUG:
-				case WEAPON_FIVESEVEN:
-				case WEAPON_UMP45:
-				case WEAPON_SG550:
-				case WEAPON_FAMAS:
-				case WEAPON_USP:
-				case WEAPON_GLOCK18:
-				case WEAPON_MP5N:
-				case WEAPON_M249:
-				case WEAPON_M3:
-				case WEAPON_M4A1:
-				case WEAPON_TMP:
-				case WEAPON_DEAGLE:
-				case WEAPON_P90:
-				case WEAPON_SHIELDGUN:
-				{
-					return true;
-				}
-				default:
-				{
-					return false;
-				}
-			}
-		}
-		else if (playerTeam == TERRORIST)
-		{
-			switch (weaponID)
-			{
-				case WEAPON_P228:
-				case WEAPON_MAC10:
-				case WEAPON_ELITE:
-				case WEAPON_UMP45:
-				case WEAPON_GALIL:
-				case WEAPON_USP:
-				case WEAPON_GLOCK18:
-				case WEAPON_AWP:
-				case WEAPON_DEAGLE:
-				case WEAPON_AK47:
-				{
-					return true;
-				}
-				default:
-				{
-					return false;
-				}
-			}
-		}
-		return false;
-	}
-	if (playerTeam == CT)
-	{
-		switch (weaponID)
-		{
 			case WEAPON_P228:
-			case WEAPON_SCOUT:
 			case WEAPON_XM1014:
 			case WEAPON_AUG:
 			case WEAPON_FIVESEVEN:
@@ -437,7 +381,6 @@ bool CanBuyWeaponByMaptype(int playerTeam, WeaponIdType weaponID, bool useAssasi
 			case WEAPON_FAMAS:
 			case WEAPON_USP:
 			case WEAPON_GLOCK18:
-			case WEAPON_AWP:
 			case WEAPON_MP5N:
 			case WEAPON_M249:
 			case WEAPON_M3:
@@ -446,22 +389,16 @@ bool CanBuyWeaponByMaptype(int playerTeam, WeaponIdType weaponID, bool useAssasi
 			case WEAPON_DEAGLE:
 			case WEAPON_P90:
 			case WEAPON_SHIELDGUN:
-			{
 				return true;
-			}
 			default:
-			{
 				return false;
 			}
 		}
-	}
-	else if (playerTeam == TERRORIST)
-	{
-		switch (weaponID)
+		else if (playerTeam == TERRORIST)
 		{
+			switch (weaponID)
+			{
 			case WEAPON_P228:
-			case WEAPON_SCOUT:
-			case WEAPON_XM1014:
 			case WEAPON_MAC10:
 			case WEAPON_ELITE:
 			case WEAPON_UMP45:
@@ -469,21 +406,69 @@ bool CanBuyWeaponByMaptype(int playerTeam, WeaponIdType weaponID, bool useAssasi
 			case WEAPON_USP:
 			case WEAPON_GLOCK18:
 			case WEAPON_AWP:
-			case WEAPON_MP5N:
-			case WEAPON_M249:
-			case WEAPON_M3:
-			case WEAPON_G3SG1:
 			case WEAPON_DEAGLE:
-			case WEAPON_SG552:
 			case WEAPON_AK47:
-			case WEAPON_P90:
-			{
 				return true;
-			}
 			default:
-			{
 				return false;
 			}
+		}
+
+		return false;
+	}
+	if (playerTeam == CT)
+	{
+		switch (weaponID)
+		{
+		case WEAPON_P228:
+		case WEAPON_SCOUT:
+		case WEAPON_XM1014:
+		case WEAPON_AUG:
+		case WEAPON_FIVESEVEN:
+		case WEAPON_UMP45:
+		case WEAPON_SG550:
+		case WEAPON_FAMAS:
+		case WEAPON_USP:
+		case WEAPON_GLOCK18:
+		case WEAPON_AWP:
+		case WEAPON_MP5N:
+		case WEAPON_M249:
+		case WEAPON_M3:
+		case WEAPON_M4A1:
+		case WEAPON_TMP:
+		case WEAPON_DEAGLE:
+		case WEAPON_P90:
+		case WEAPON_SHIELDGUN:
+			return true;
+		default:
+			return false;
+		}
+	}
+	else if (playerTeam == TERRORIST)
+	{
+		switch (weaponID)
+		{
+		case WEAPON_P228:
+		case WEAPON_SCOUT:
+		case WEAPON_XM1014:
+		case WEAPON_MAC10:
+		case WEAPON_ELITE:
+		case WEAPON_UMP45:
+		case WEAPON_GALIL:
+		case WEAPON_USP:
+		case WEAPON_GLOCK18:
+		case WEAPON_AWP:
+		case WEAPON_MP5N:
+		case WEAPON_M249:
+		case WEAPON_M3:
+		case WEAPON_G3SG1:
+		case WEAPON_DEAGLE:
+		case WEAPON_SG552:
+		case WEAPON_AK47:
+		case WEAPON_P90:
+			return true;
+		default:
+			return false;
 		}
 	}
 

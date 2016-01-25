@@ -171,7 +171,7 @@ void CBaseMonster::__MAKE_VHOOK(Look)(int iDistance)
 
 	// Find only monsters/clients in box, NOT limited to PVS
 	int count = UTIL_EntitiesInBox(pList, ARRAYSIZE(pList), pev->origin - delta, pev->origin + delta, (FL_CLIENT | FL_MONSTER));
-	for (int i = 0; i < count; i++)
+	for (int i = 0; i < count; ++i)
 	{
 		pSightEnt = pList[i];
 		if (pSightEnt != this && pSightEnt->pev->health > 0)

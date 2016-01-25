@@ -696,9 +696,9 @@ void CFuncTankGun::__MAKE_VHOOK(Fire)(const Vector &barrelEnd, const Vector &for
 
 		if (bulletCount > 0)
 		{
-			for (i = 0; i < bulletCount; i++)
+			for (i = 0; i < bulletCount; ++i)
 			{
-				switch(m_bulletType)
+				switch (m_bulletType)
 				{
 				case TANK_BULLET_9MM:
 					FireBullets(1, barrelEnd, forward, gTankSpread[m_spread], 4096, BULLET_MONSTER_9MM, 1, m_iBulletDamage, pevAttacker);
@@ -807,14 +807,14 @@ void CFuncTankLaser::__MAKE_VHOOK(Fire)(const Vector &barrelEnd, const Vector &f
 
 		if (bulletCount)
 		{
-			for (i = 0; i < bulletCount; i++)
+			for (i = 0; i < bulletCount; ++i)
 			{
 				m_pLaser->pev->origin = barrelEnd;
 				TankTrace(barrelEnd, forward, gTankSpread[m_spread], tr);
 
 				m_laserTime = gpGlobals->time;
 				m_pLaser->TurnOn();
-				m_pLaser->pev->dmgtime = gpGlobals->time - 1.0;
+				m_pLaser->pev->dmgtime = gpGlobals->time - 1.0f;
 				m_pLaser->FireAtPoint(tr);
 				m_pLaser->pev->nextthink = 0;
 			}
@@ -849,7 +849,7 @@ void CFuncTankRocket::__MAKE_VHOOK(Fire)(const Vector &barrelEnd, const Vector &
 
 		if (bulletCount > 0)
 		{
-			for (i = 0; i < bulletCount; i++)
+			for (i = 0; i < bulletCount; ++i)
 			{
 				CBaseEntity *pRocket = CBaseEntity::Create("rpg_rocket", barrelEnd, pev->angles, edict());
 			}

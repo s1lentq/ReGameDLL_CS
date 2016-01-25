@@ -1655,7 +1655,7 @@ void CTestEffect::TestThink(void)
 
 	if (t < 3.0)
 	{
-		for (i = 0; i < m_iBeam; i++)
+		for (i = 0; i < m_iBeam; ++i)
 		{
 			t = (gpGlobals->time - m_flBeamTime[i]) / (3 + m_flStartTime - m_flBeamTime[i]);
 			m_pBeam[i]->SetBrightness(255 * t);
@@ -1664,7 +1664,7 @@ void CTestEffect::TestThink(void)
 	}
 	else
 	{
-		for (i = 0; i < m_iBeam; i++)
+		for (i = 0; i < m_iBeam; ++i)
 		{
 			UTIL_Remove(m_pBeam[i]);
 		}

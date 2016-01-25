@@ -25,7 +25,7 @@ NOXREF void CGib::SpawnStickyGibs(entvars_t *pevVictim, Vector vecOrigin, int cG
 		return;
 	}
 
-	for (i = 0; i < cGibs; i++)
+	for (i = 0; i < cGibs; ++i)
 	{
 		CGib *pGib = GetClassPtr((CGib *)NULL);
 
@@ -1047,7 +1047,7 @@ void RadiusFlash(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker,
 
 			UTIL_ScreenFade(pPlayer, Vector(255, 255, 255), fadeTime, fadeHold, alpha, 0);
 
-			for (int i = 1; i <= gpGlobals->maxClients; i++)
+			for (int i = 1; i <= gpGlobals->maxClients; ++i)
 			{
 				CBasePlayer *pObserver = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
@@ -1921,7 +1921,7 @@ void CBaseEntity::__MAKE_VHOOK(TraceBleed)(float flDamage, Vector vecDir, TraceR
 		cCount = 4;
 	}
 
-	for (i = 0; i < cCount; i++)
+	for (i = 0; i < cCount; ++i)
 	{
 		// trace in the opposite direction the shot came from (the direction the shot is going)
 		vecTraceDir = vecDir * -1.0f;
@@ -1961,7 +1961,7 @@ NOXREF void CBaseMonster::MakeDamageBloodDecal(int cCount, float flNoise, TraceR
 			pev->max_health--;
 	}
 
-	for (i = 0; i < cCount; i++)
+	for (i = 0; i < cCount; ++i)
 	{
 		vecTraceDir = vecDir;
 

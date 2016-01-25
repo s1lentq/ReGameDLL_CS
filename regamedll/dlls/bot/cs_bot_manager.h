@@ -36,13 +36,6 @@
 
 #define TheBots (*pTheBots)
 
-//#define m_flNextCVarCheck (*pm_flNextCVarCheck)
-//#define m_isMapDataLoaded (*pm_isMapDataLoaded)
-//#define m_editCmd (*pm_editCmd)
-
-//#define m_isLearningMap (*pm_isLearningMap)
-//#define m_isAnalysisRequested (*pm_isAnalysisRequested)
-
 #endif // HOOK_GAMEDLL
 
 extern CBotManager *TheBots;
@@ -122,8 +115,8 @@ public:
 
 	// "zones"
 	// depending on the game mode, these are bomb zones, rescue zones, etc.
-	enum { MAX_ZONES = 4 };								// max # of zones in a map
-	enum { MAX_ZONE_NAV_AREAS = 16 };						// max # of nav areas in a zone
+	enum { MAX_ZONES = 4 };						// max # of zones in a map
+	enum { MAX_ZONE_NAV_AREAS = 16 };				// max # of nav areas in a zone
 	struct Zone
 	{
 		CBaseEntity *m_entity;					// the map entity
@@ -133,8 +126,7 @@ public:
 		bool m_isLegacy;					// if true, use pev->origin and 256 unit radius as zone
 		int m_index;
 		Extent m_extent;
-
-	};/* size: 116, cachelines: 2, members: 7 */
+	};
 
 	const Zone *GetZone(int i) const				{ return &m_zone[i]; }
 	const Zone *GetZone(const Vector *pos) const;										// return the zone that contains the given position
@@ -160,13 +152,10 @@ public:
 			if (m_zone[i].m_areaCount == 0)
 				continue;
 
-			if (m_zone[i].m_isBlocked)
-				continue;
-
 			// just use the first overlapping nav area as a reasonable approximation
-			float dist = NavAreaTravelDistance(startArea, m_zone[i].m_area[0], costFunc);
+			float_precision dist = NavAreaTravelDistance(startArea, m_zone[i].m_area[0], costFunc);
 
-			if (dist >= 0.0f && dist < closeDist)
+			if (/*dist >= 0.0f && */dist < closeDist)
 			{
 				closeZone = &m_zone[i];
 				closeDist = dist;

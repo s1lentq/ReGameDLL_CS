@@ -27,7 +27,7 @@ NOXREF BOOL FBoxVisible(entvars_t *pevLooker, entvars_t *pevTarget, Vector &vecT
 	//look through the monster's 'eyes'
 	Vector vecLookerOrigin = pevLooker->origin + pevLooker->view_ofs;
 
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < 5; ++i)
 	{
 		Vector vecTarget = pevTarget->origin;
 

@@ -3075,105 +3075,90 @@ void CCSTutor::CheckExamineMessages(float time)
 	CBasePlayer *localPlayer = UTIL_GetLocalPlayer();
 
 	if (localPlayer == NULL)
-	{
 		return;
-	}
 
 	for (int i = 0; i < TUTOR_NUM_MESSAGES; ++i)
 	{
-		//bool sawOne = false;
-
 		TutorMessage *message = GetTutorMessageDefinition(i);
 
 		if (message == NULL || message->m_class != TUTORMESSAGECLASS_EXAMINE)
-		{
 			continue;
-		}
 
-		CBaseEntity *entity = GetEntityForMessageID(i);
-
-		if (entity == NULL)
-		{
-			message->m_examineStartTime = -1.0f;
-			continue;
-		}
-
+		CBaseEntity *entity = NULL;
 		bool isPlayerLooking = false;
 
-		if (i == YOU_SEE_FRIEND_CORPSE || i == YOU_SEE_ENEMY_CORPSE)
+		while ((entity = GetEntityForMessageID(i, entity)) != NULL)
 		{
-			if (IsPlayerLookingAtPosition((Vector *)entity, localPlayer))
+			if (i == YOU_SEE_FRIEND_CORPSE || i == YOU_SEE_ENEMY_CORPSE)
+			{
+				if (IsPlayerLookingAtPosition((Vector *)entity, localPlayer))
+				{
+					isPlayerLooking = true;
+					break;
+				}
+			}
+			else if (i == YOU_SEE_HOSTAGE_CT_EXAMINE || i == YOU_SEE_FRIEND || i == YOU_SEE_ENEMY)
+			{
+				if (IsPlayerLookingAtEntity(entity, localPlayer))
+				{
+					isPlayerLooking = true;
+					break;
+				}
+			}
+			else if (IsPlayerLookingAtPosition(&entity->pev->origin, localPlayer))
 			{
 				isPlayerLooking = true;
+				break;
 			}
 		}
-		else if (i == YOU_SEE_HOSTAGE_CT_EXAMINE || i == YOU_SEE_FRIEND || i == YOU_SEE_ENEMY)
+
+		if (isPlayerLooking)
 		{
-			if (IsPlayerLookingAtEntity(entity, localPlayer))
+			if (message->m_examineStartTime == -1.0f)
+				continue;
+
+			if (time - message->m_examineStartTime <= cv_tutor_examine_time.value)
+				continue;
+
+			bool validEntity = false;
+			if (i == YOU_SEE_FRIEND)
 			{
-				isPlayerLooking = true;
+				CBasePlayer *player = static_cast<CBasePlayer *>(entity);
+
+				if (player->IsPlayer() && player->IsAlive() && player->m_iTeam == localPlayer->m_iTeam)
+					validEntity = true;
 			}
-		}
-		else if (IsPlayerLookingAtPosition(&entity->pev->origin, localPlayer))
-		{
-			isPlayerLooking = true;
+			else if (i == YOU_SEE_ENEMY)
+			{
+				CBasePlayer *player = static_cast<CBasePlayer *>(entity);
+
+				if (player->IsPlayer() && player->IsAlive() && player->m_iTeam == localPlayer->m_iTeam)
+				{
+					if ((player->m_iTeam != CT || localPlayer->m_iTeam == TERRORIST) && (player->m_iTeam != TERRORIST || localPlayer->m_iTeam == CT))
+						validEntity = true;
+				}
+			}
+			else if (i == YOU_SEE_HOSTAGE_CT_EXAMINE)
+			{
+				CHostage *hostage = static_cast<CHostage *>(entity);
+
+				if (entity->pev->takedamage == DAMAGE_YES)
+				{
+					if (!hostage->IsFollowingSomeone())
+						validEntity = true;
+				}
+
+				if (!hostage->IsValid() || !validEntity)
+					continue;
+			}
+
+			if (validEntity)
+			{
+				CreateAndAddEventToList((TutorMessageID)i, entity);
+			}
 		}
 		else
-			isPlayerLooking = false;
-
-		entity = GetEntityForMessageID(i, entity);
-
-		if (!isPlayerLooking)
-		{
-			if (entity == NULL)
-			{
-				message->m_examineStartTime = -1.0f;
-				continue;
-			}
-		}
-
-		if (message->m_examineStartTime == -1.0f || (time - message->m_examineStartTime <= cv_tutor_examine_time.value))
-		{
-			continue;
-		}
-
-		bool validEntity = false;
-
-		if (i == YOU_SEE_FRIEND)
-		{
-			CBasePlayer *player = static_cast<CBasePlayer *>(entity);
-
-			if (player->IsPlayer() && player->IsAlive() && player->m_iTeam == localPlayer->m_iTeam)
-				validEntity = true;
-		}
-		else if (i == YOU_SEE_ENEMY)
-		{
-			CBasePlayer *player = static_cast<CBasePlayer *>(entity);
-
-			if (player->IsPlayer() && player->IsAlive() && player->m_iTeam == localPlayer->m_iTeam)
-			{
-				if ((player->m_iTeam != CT || localPlayer->m_iTeam == TERRORIST) && (player->m_iTeam != TERRORIST || localPlayer->m_iTeam == CT))
-					validEntity = true;
-			}
-		}
-		else if (i == YOU_SEE_HOSTAGE_CT_EXAMINE)
-		{
-			CHostage *hostage = static_cast<CHostage *>(entity);
-
-			if (entity->pev->takedamage == DAMAGE_YES)
-			{
-				if (!hostage->IsFollowingSomeone())
-					validEntity = true;
-			}
-
-			if (!hostage->IsValid() || !validEntity)
-				continue;
-		}
-
-		if (validEntity)
-		{
-			CreateAndAddEventToList((TutorMessageID)i, entity);
-		}
+			message->m_examineStartTime = -1.0f;
 	}
 }
 

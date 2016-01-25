@@ -239,7 +239,7 @@ void CBaseAnimating::SetSequenceBox(void)
 		Vector rmax(-9999, -9999, -9999);
 
 		Vector base, transformed;
-		for (int i = 0; i <= 1; i++)
+		for (int i = 0; i <= 1; ++i)
 		{
 			base.x = bounds[i].x;
 			for (int j = 0; j <= 1; j++)

@@ -276,7 +276,7 @@ void CMultiManager::__MAKE_VHOOK(Spawn)(void)
 	while (swapped)
 	{
 		swapped = 0;
-		for (int i = 1; i < m_cTargets; i++)
+		for (int i = 1; i < m_cTargets; ++i)
 		{
 			if (m_flTargetDelay[i] < m_flTargetDelay[i - 1])
 			{
@@ -299,7 +299,7 @@ void CMultiManager::__MAKE_VHOOK(Restart)(void)
 {
 	edict_t *pentTarget = NULL;
 
-	for (int i = 0; i < m_cTargets; i++)
+	for (int i = 0; i < m_cTargets; ++i)
 	{
 		const char *name = STRING(m_iTargetName[i]);
 
@@ -334,7 +334,7 @@ void CMultiManager::__MAKE_VHOOK(Restart)(void)
 /* <1a1402> ../cstrike/dlls/triggers.cpp:420 */
 BOOL CMultiManager::__MAKE_VHOOK(HasTarget)(string_t targetname)
 {
-	for (int i = 0; i < m_cTargets; i++)
+	for (int i = 0; i < m_cTargets; ++i)
 	{
 		if (FStrEq(STRING(targetname), STRING(m_iTargetName[i])))
 		{
@@ -1363,7 +1363,7 @@ int CChangeLevel::AddTransitionToList(LEVELLIST *pLevelList, int listCount, cons
 		return 0;
 	}
 
-	for (i = 0; i < listCount; i++)
+	for (i = 0; i < listCount; ++i)
 	{
 		if (pLevelList[i].pentLandmark == pentLandmark && Q_strcmp(pLevelList[i].mapName, pMapName) == 0)
 		{
@@ -1477,7 +1477,7 @@ int CChangeLevel::ChangeList(LEVELLIST *pLevelList, int maxList)
 	{
 		CSave saveHelper((SAVERESTOREDATA *)gpGlobals->pSaveData);
 
-		for (i = 0; i < count; i++)
+		for (i = 0; i < count; ++i)
 		{
 			int j, entityCount = 0;
 			CBaseEntity *pEntList[ MAX_ENTITY ];
@@ -1788,7 +1788,7 @@ void CBuyZone::BuyTouch(CBaseEntity *pOther)
 	if (!pOther->IsPlayer())
 		return;
 
-	CBasePlayer *p = reinterpret_cast<CBasePlayer *>(pOther);
+	CBasePlayer *p = static_cast<CBasePlayer *>(pOther);
 
 	if (pev->team == UNASSIGNED || pev->team == p->m_iTeam)
 	{
@@ -1814,7 +1814,7 @@ void CBombTarget::BombTargetTouch(CBaseEntity *pOther)
 	if (!pOther->IsPlayer())
 		return;
 
-	CBasePlayer *p = reinterpret_cast<CBasePlayer *>(pOther);
+	CBasePlayer *p = static_cast<CBasePlayer *>(pOther);
 
 	if (p->m_bHasC4)
 	{
@@ -1869,7 +1869,7 @@ void CEscapeZone::EscapeTouch(CBaseEntity *pOther)
 	if (!pOther->IsPlayer())
 		return;
 
-	CBasePlayer *p = reinterpret_cast<CBasePlayer *>(pOther);
+	CBasePlayer *p = static_cast<CBasePlayer *>(pOther);
 
 	switch (p->m_iTeam)
 	{
@@ -1887,9 +1887,9 @@ void CEscapeZone::EscapeTouch(CBaseEntity *pOther)
 				GETPLAYERAUTHID(p->edict())
 			);
 
-			for (int i = 1; i <= gpGlobals->maxClients; i++)
+			for (int i = 1; i <= gpGlobals->maxClients; ++i)
 			{
-				CBasePlayer *pPlayer = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+				CBasePlayer *pPlayer = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
 				if (pPlayer == NULL || FNullEnt(pPlayer->pev))
 					continue;
@@ -1923,7 +1923,7 @@ void CVIP_SafetyZone::VIP_SafetyTouch(CBaseEntity *pOther)
 	if (!pOther->IsPlayer())
 		return;
 
-	CBasePlayer *p = reinterpret_cast<CBasePlayer *>(pOther);
+	CBasePlayer *p = static_cast<CBasePlayer *>(pOther);
 	p->m_signals.Signal(SIGNAL_VIPSAFETY);
 
 	if (p->m_bIsVIP)

@@ -19,8 +19,6 @@ CBaseEntity *g_pSelectedZombieSpawn;
 CountdownTimer IMPL_CLASS(BotChatterInterface, m_encourageTimer);
 IntervalTimer IMPL_CLASS(BotChatterInterface, m_radioSilenceInterval)[ 2 ];
 
-void (*pBotPhrase__Randomize)(void);
-
 #endif // HOOK_GAMEDLL
 
 /* <303469> ../cstrike/dlls/bot/cs_bot_chatter.cpp:32 */
@@ -388,20 +386,10 @@ char *BotPhrase::GetSpeakable(int bankIndex, float *duration) const
 // Randomly shuffle the speakable order
 
 /* <30395a> ../cstrike/dlls/bot/cs_bot_chatter.cpp:395 */
-#ifdef HOOK_GAMEDLL
-void __declspec(naked) BotPhrase::Randomize(void)
-{
-	// you can not hook this function, because it uses the rand() function
-	// which does not allow us to carry out tests because different results at the output.
-	__asm
-	{
-		jmp pBotPhrase__Randomize
-	}
-}
-#else
+#ifndef HOOK_GAMEDLL
 void BotPhrase::Randomize(void)
 {
-	for (uint32 i = 0; i < m_voiceBank.size(); i++)
+	for (uint32 i = 0; i < m_voiceBank.size(); ++i)
 	{
 		std::random_shuffle(m_voiceBank[i]->begin(), m_voiceBank[i]->end());
 	}
@@ -1617,7 +1605,6 @@ void BotChatterInterface::Update(void)
 			if (say->IsRedundant(friendSay))
 			{
 				// thie statement is redundant - destroy it
-				//m_me->PrintIfWatched("Teammate said what I was going to say - shutting up.\n");
 				m_me->PrintIfWatched("Teammate said what I was going to say - shutting up.\n");
 				RemoveStatement(say);
 			}
@@ -2414,6 +2401,14 @@ void BotChatterInterface::FriendlyFire(void)
 }
 
 #ifdef HOOK_GAMEDLL
+
+void (*pBotPhrase__Randomize)(void);
+void __declspec(naked) BotPhrase::Randomize(void)
+{
+	// you can not hook this function, because it uses the rand() function
+	// which does not allow us to carry out tests because different results at the output.
+	__asm { jmp pBotPhrase__Randomize }
+}
 
 void BotAllHostagesGoneMeme::Interpret(CCSBot *sender, CCSBot *receiver) const
 {

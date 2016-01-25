@@ -72,7 +72,7 @@ void PrintDebugFlags(void)
 	theDebugBuffer[0] = '\0';
 	tmp = BufPrintf(theDebugBuffer, remainder, "mp_debug:\n");
 
-	for (int i = 0; i < NUM_LEVELS - 1; i++)
+	for (int i = 0; i < NUM_LEVELS - 1; ++i)
 	{
 		DebugOutputLevel level = outputLevel[i];
 
@@ -87,7 +87,7 @@ void SetDebugFlag(const char *flagStr, bool state)
 	if (flagStr != NULL)
 	{
 		DebugOutputType flag;
-		for (int i = 0; i < ARRAYSIZE(outputLevel); i++)
+		for (int i = 0; i < ARRAYSIZE(outputLevel); ++i)
 		{
 			DebugOutputLevel level = outputLevel[ i ];
 
@@ -115,7 +115,7 @@ void PrintDebugFlag(const char *flagStr)
 	if (flagStr != NULL)
 	{
 		DebugOutputType flag;
-		for (int i = 0; i < ARRAYSIZE(outputLevel); i++)
+		for (int i = 0; i < ARRAYSIZE(outputLevel); ++i)
 		{
 			DebugOutputLevel level = outputLevel[ i ];
 

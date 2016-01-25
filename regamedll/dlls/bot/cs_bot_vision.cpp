@@ -1036,10 +1036,7 @@ void CCSBot::__MAKE_VHOOK(Blind)(float duration, float holdTime, float fadeTime,
 void (*pCCSBot__UpdateLookAngles)(void);
 void __declspec(naked) CCSBot::UpdateLookAngles(void)
 {
-	__asm
-	{
-		jmp pCCSBot__UpdateLookAngles
-	}
+	__asm { jmp pCCSBot__UpdateLookAngles }
 }
 
 void CCSBot::Blind(float duration, float holdTime, float fadeTime, int alpha)

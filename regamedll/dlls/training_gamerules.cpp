@@ -501,7 +501,7 @@ void CFuncWeaponCheck::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 		return;
 
 	CBasePlayer *pPlayer = (CBasePlayer *)pOther;
-	for (int i = 1; i <= iItemCount; i++)
+	for (int i = 1; i <= iItemCount; ++i)
 	{
 		if (iAnyWeapon)
 		{

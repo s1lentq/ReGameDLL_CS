@@ -50,7 +50,7 @@
 
 #define PLAYER_FATAL_FALL_SPEED		1100.0f
 #define PLAYER_MAX_SAFE_FALL_SPEED	500.0f
-#define PLAYER_SEARCH_RADIUS		64.0f
+#define PLAYER_USE_RADIUS		64.0f
 
 #define ARMOR_RATIO			0.5 // Armor Takes 50% of the damage
 #define ARMOR_BONUS			0.5 // Each Point of Armor is work 1/x points of health

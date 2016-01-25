@@ -513,8 +513,17 @@ private:
 
 #ifdef HOOK_GAMEDLL
 
-bool NavAreaBuildPath__HostagePathCost__wrapper(CNavArea *startArea, CNavArea *goalArea, const Vector *goalPos, class HostagePathCost &costFunc, CNavArea **closestArea = NULL);
-bool NavAreaBuildPath__ShortestPathCost__wrapper(CNavArea *startArea, CNavArea *goalArea, const Vector *goalPos, class ShortestPathCost &costFunc, CNavArea **closestArea = NULL);
+// NavAreaBuildPath<HostagePathCost> hook
+inline bool NavAreaBuildPath__HostagePathCost__wrapper(CNavArea *startArea, CNavArea *goalArea, const Vector *goalPos, class HostagePathCost &costFunc, CNavArea **closestArea)
+{
+	return NavAreaBuildPath(startArea, goalArea, goalPos, costFunc, closestArea);
+}
+
+// NavAreaBuildPath<ShortestPathCost> hook
+inline bool NavAreaBuildPath__ShortestPathCost__wrapper(CNavArea *startArea, CNavArea *goalArea, const Vector *goalPos, class ShortestPathCost &costFunc, CNavArea **closestArea)
+{
+	return NavAreaBuildPath(startArea, goalArea, goalPos, costFunc, closestArea);
+}
 
 typedef bool (CHostageImprov::*IS_FRIEND_IN_THE_WAY_VECTOR)(const Vector &) const;
 typedef bool (CHostageImprov::*IS_FRIEND_IN_THE_WAY_CBASE)(CBaseEntity *, const Vector &) const;

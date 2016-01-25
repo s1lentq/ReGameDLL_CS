@@ -27,6 +27,7 @@ Global
 		Debug MP|Win32 = Debug MP|Win32
 		Debug Play|Win32 = Debug Play|Win32
 		Debug|Win32 = Debug|Win32
+		Release MP|Win32 = Release MP|Win32
 		Release Play|Win32 = Release Play|Win32
 		Release|Win32 = Release|Win32
 		Tests|Win32 = Tests|Win32
@@ -40,6 +41,8 @@ Global
 		{70A2B904-B7DB-4C48-8DE0-AF567360D572}.Debug Play|Win32.Build.0 = Debug Play|Win32
 		{70A2B904-B7DB-4C48-8DE0-AF567360D572}.Debug|Win32.ActiveCfg = Debug|Win32
 		{70A2B904-B7DB-4C48-8DE0-AF567360D572}.Debug|Win32.Build.0 = Debug|Win32
+		{70A2B904-B7DB-4C48-8DE0-AF567360D572}.Release MP|Win32.ActiveCfg = Release MP|Win32
+		{70A2B904-B7DB-4C48-8DE0-AF567360D572}.Release MP|Win32.Build.0 = Release MP|Win32
 		{70A2B904-B7DB-4C48-8DE0-AF567360D572}.Release Play|Win32.ActiveCfg = Release Play|Win32
 		{70A2B904-B7DB-4C48-8DE0-AF567360D572}.Release Play|Win32.Build.0 = Release Play|Win32
 		{70A2B904-B7DB-4C48-8DE0-AF567360D572}.Release|Win32.ActiveCfg = Release|Win32
@@ -54,6 +57,8 @@ Global
 		{CEB94F7C-E459-4673-AABB-36E2074396C0}.Debug Play|Win32.Build.0 = Debug|Win32
 		{CEB94F7C-E459-4673-AABB-36E2074396C0}.Debug|Win32.ActiveCfg = Debug|Win32
 		{CEB94F7C-E459-4673-AABB-36E2074396C0}.Debug|Win32.Build.0 = Debug|Win32
+		{CEB94F7C-E459-4673-AABB-36E2074396C0}.Release MP|Win32.ActiveCfg = Release MP|Win32
+		{CEB94F7C-E459-4673-AABB-36E2074396C0}.Release MP|Win32.Build.0 = Release MP|Win32
 		{CEB94F7C-E459-4673-AABB-36E2074396C0}.Release Play|Win32.ActiveCfg = Release|Win32
 		{CEB94F7C-E459-4673-AABB-36E2074396C0}.Release Play|Win32.Build.0 = Release|Win32
 		{CEB94F7C-E459-4673-AABB-36E2074396C0}.Release|Win32.ActiveCfg = Release|Win32
@@ -68,6 +73,8 @@ Global
 		{792DF067-9904-4579-99B9-46C17277ADE3}.Debug Play|Win32.Build.0 = Debug|Win32
 		{792DF067-9904-4579-99B9-46C17277ADE3}.Debug|Win32.ActiveCfg = Debug|Win32
 		{792DF067-9904-4579-99B9-46C17277ADE3}.Debug|Win32.Build.0 = Debug|Win32
+		{792DF067-9904-4579-99B9-46C17277ADE3}.Release MP|Win32.ActiveCfg = Release MP|Win32
+		{792DF067-9904-4579-99B9-46C17277ADE3}.Release MP|Win32.Build.0 = Release MP|Win32
 		{792DF067-9904-4579-99B9-46C17277ADE3}.Release Play|Win32.ActiveCfg = Release|Win32
 		{792DF067-9904-4579-99B9-46C17277ADE3}.Release Play|Win32.Build.0 = Release|Win32
 		{792DF067-9904-4579-99B9-46C17277ADE3}.Release|Win32.ActiveCfg = Release|Win32

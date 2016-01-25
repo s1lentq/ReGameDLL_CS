@@ -812,9 +812,6 @@ int CountPlayers(void);
 void ExtractCommandString(char *s, char *szCommand);
 int GetMapCount(void);
 
-// refs
-extern void (*pInstallGameRules)(void);
-
 #ifdef HOOK_GAMEDLL
 
 // linked objects

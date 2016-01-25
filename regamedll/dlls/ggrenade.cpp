@@ -100,7 +100,7 @@ void CGrenade::Explode(TraceResult *pTrace, int bitsDamageType)
 	{
 		int sparkCount = RANDOM_LONG(0, 3);
 
-		for (int i = 0; i < sparkCount; i++)
+		for (int i = 0; i < sparkCount; ++i)
 			Create("spark_shower", pev->origin, pTrace->vecPlaneNormal, NULL);
 	}
 }
@@ -234,7 +234,7 @@ void CGrenade::Explode2(TraceResult *pTrace, int bitsDamageType)
 	{
 		int sparkCount = RANDOM_LONG(0, 3);
 
-		for (int i = 0; i < sparkCount; i++)
+		for (int i = 0; i < sparkCount; ++i)
 			Create("spark_shower", pev->origin, pTrace->vecPlaneNormal, NULL);
 	}
 }
@@ -313,7 +313,7 @@ void CGrenade::Explode3(TraceResult *pTrace, int bitsDamageType)
 	pev->nextthink = gpGlobals->time + 0.55;
 	int sparkCount = RANDOM_LONG(0, 3);
 
-	for (int i = 0; i < sparkCount; i++)
+	for (int i = 0; i < sparkCount; ++i)
 		Create("spark_shower", pev->origin, pTrace->vecPlaneNormal, NULL);
 }
 
@@ -362,7 +362,7 @@ NOXREF void CGrenade::SG_Explode(TraceResult *pTrace, int bitsDamageType)
 	{
 		int sparkCount = RANDOM_LONG(0, 3);
 
-		for (int i = 0; i < sparkCount; i++)
+		for (int i = 0; i < sparkCount; ++i)
 			Create("spark_shower", pev->origin, pTrace->vecPlaneNormal, NULL);
 	}
 }

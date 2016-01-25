@@ -9,7 +9,7 @@ CHintMessage::CHintMessage(const char *hintString, bool isHint, CUtlVector<const
 
 	if (args)
 	{
-		for (int i = 0; i < args->Count(); i++)
+		for (int i = 0; i < args->Count(); ++i)
 			m_args.AddToTail(CloneString((*args)[i]));
 	}
 }
