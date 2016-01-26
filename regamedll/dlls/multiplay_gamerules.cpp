@@ -1030,7 +1030,48 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(CheckWinConditions)(void)
 #ifdef REGAMEDLL_ADD
 	if (round_infinite.string[0] == '1')
 		return;
-#endif // REGAMEDLL_ADD
+
+	// If a winner has already been determined and game of started.. then get the heck out of here
+	if (m_bFirstConnected && m_iRoundWinStatus != WINNER_NONE)
+	{
+		return;
+	}
+
+	// Initialize the player counts..
+	int NumDeadCT, NumDeadTerrorist, NumAliveTerrorist, NumAliveCT;
+	InitializePlayerCounts(NumAliveTerrorist, NumAliveCT, NumDeadTerrorist, NumDeadCT);
+
+	// other player's check
+	bool bNeededPlayers = false;
+
+	// round end block flags
+	int endBlockFlags = UTIL_ReadFlags(round_infinite.string);
+
+	if (!(endBlockFlags & ROUNDENDBLOCK_NEEDEDPLAYERS) && NeededPlayersCheck(bNeededPlayers))
+		return;
+
+	// Assasination/VIP scenarion check
+	if (!(endBlockFlags & ROUNDENDBLOCK_VIPROUND) && VIPRoundEndCheck(bNeededPlayers))
+		return;
+
+	// Prison escape check
+	if (!(endBlockFlags & ROUNDENDBLOCK_PRISONROUND) && PrisonRoundEndCheck(NumAliveTerrorist, NumAliveCT, NumDeadTerrorist, NumDeadCT, bNeededPlayers))
+		return;
+
+	// Bomb check
+	if (!(endBlockFlags & ROUNDENDBLOCK_BOMBROUND) && BombRoundEndCheck(bNeededPlayers))
+		return;
+
+	// Team Extermination check
+	// CounterTerrorists won by virture of elimination
+	if (!(endBlockFlags & ROUNDENDBLOCK_TEAMEXTERMINATION) && TeamExterminationCheck(NumAliveTerrorist, NumAliveCT, NumDeadTerrorist, NumDeadCT, bNeededPlayers))
+		return;
+
+	// Hostage rescue check
+	if (!(endBlockFlags & ROUNDENDBLOCK_HOSTAGERESCUE) && HostageRescueRoundEndCheck(bNeededPlayers))
+		return;
+
+#else
 
 	// If a winner has already been determined and game of started.. then get the heck out of here
 	if (m_bFirstConnected && m_iRoundWinStatus != WINNER_NONE)
@@ -1067,6 +1108,8 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(CheckWinConditions)(void)
 	// Hostage rescue check
 	if (HostageRescueRoundEndCheck(bNeededPlayers))
 		return;
+
+#endif // REGAMEDLL_ADD
 }
 
 void CHalfLifeMultiplay::InitializePlayerCounts(int &NumAliveTerrorist, int &NumAliveCT, int &NumDeadTerrorist, int &NumDeadCT)
@@ -2826,7 +2869,7 @@ void CHalfLifeMultiplay::CheckFreezePeriodExpired(void)
 void CHalfLifeMultiplay::CheckRoundTimeExpired(void)
 {
 #ifdef REGAMEDLL_ADD
-	if (round_infinite.string[0] == '1')
+	if (round_infinite.string[0] == '1' || UTIL_ReadFlags(round_infinite.string) & ROUNDENDBLOCK_TIMER)
 		return;
 #endif // REGAMEDLL_ADD
 
