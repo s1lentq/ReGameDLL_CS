@@ -140,12 +140,12 @@ FunctionHook g_FunctionHooks[] =
 	{ 0x01DB6710, "PM_Init", (size_t)&PM_Init },
 	{ 0x01DB1020, "PM_FindTextureType", (size_t)&PM_FindTextureType },
 //pm_debug
-	//{ 0x0, "PM_ShowClipBox", (size_t)&PM_ShowClipBox },
-	//{ 0x0, "PM_ParticleLine", (size_t)&PM_ParticleLine },
-	//{ 0x0, "PM_DrawRectangle", (size_t)&PM_DrawRectangle },
-	//{ 0x0, "PM_DrawPhysEntBBox", (size_t)&PM_DrawPhysEntBBox },
-	//{ 0x0, "PM_DrawBBox", (size_t)&PM_DrawBBox },
-	//{ 0x0, "PM_ViewEntity", (size_t)&PM_ViewEntity },
+	//{ 0x01DAEEE0, "PM_ShowClipBox", (size_t)&PM_ShowClipBox },			// NOXREF
+	//{ 0x01DAEEF0, "PM_ParticleLine", (size_t)&PM_ParticleLine },			// NOXREF
+	//{ 0x01DAEFC0, "PM_DrawRectangle", (size_t)&PM_DrawRectangle },		// NOXREF
+	//{ 0x01DAF290, "PM_DrawPhysEntBBox", (size_t)&PM_DrawPhysEntBBox },		// NOXREF
+	//{ 0x01DAFB50, "PM_DrawBBox", (size_t)&PM_DrawBBox },				// NOXREF
+	//{ 0x01DAFF20, "PM_ViewEntity", (size_t)&PM_ViewEntity },			// NOXREF
 //pm_shared
 	//{ 0x01DB0AB0, "PM_SwapTextures", (size_t)&PM_SwapTextures },	// NOXREF
 	//{ 0x01DB0B30, "PM_IsThereGrassTexture", (size_t)&PM_IsThereGrassTexture },	// NOXREF
@@ -203,28 +203,28 @@ FunctionHook g_FunctionHooks[] =
 //pm_math
 	//{ 0x0, "anglemod", (size_t)&anglemod },
 	{ 0x01DB0000, "AngleVectors", (size_t)&AngleVectors },
-	//{ 0x0, "AngleVectorsTranspose", (size_t)&AngleVectorsTranspose },
+	//{ 0x01DB0100, "AngleVectorsTranspose", (size_t)&AngleVectorsTranspose },	// NOXREF
 	{ 0x01DB0200, "AngleMatrix", (size_t)&AngleMatrix },
-	//{ 0x0, "AngleIMatrix", (size_t)&AngleIMatrix },
-	//{ 0x0, "NormalizeAngles", (size_t)&NormalizeAngles },
-	//{ 0x0, "InterpolateAngles", (size_t)&InterpolateAngles },
-	//{ 0x0, "AngleBetweenVectors", (size_t)&AngleBetweenVectors },
-	//{ 0x0, "VectorTransform", (size_t)&VectorTransform },
+	//{ 0x01DB02D0, "AngleIMatrix", (size_t)&AngleIMatrix },			// NOXREF
+	//{ 0x01DB03A0, "NormalizeAngles", (size_t)&NormalizeAngles },			// NOXREF
+	//{ 0x01DB03F0, "InterpolateAngles", (size_t)&InterpolateAngles },		// NOXREF
+	//{ 0x01DB0510, "AngleBetweenVectors", (size_t)&AngleBetweenVectors },		// NOXREF
+	//{ 0x01DB05B0, "VectorTransform", (size_t)&VectorTransform },			// NOXREF
 	{ 0x01DB0610, "VectorCompare", (size_t)&VectorCompare },
 	{ 0x01DB0640, "VectorMA", (size_t)&VectorMA },
-	//{ 0x01DB0680, "_DotProduct", (size_t)&_DotProduct },	// NOXREF
-	//{ 0x01DB06A0, "_VectorSubtract", (size_t)&_VectorSubtract },	// NOXREF
-	//{ 0x01DB06D0, "_VectorAdd", (size_t)&_VectorAdd },	// NOXREF
-	//{ 0x01DB0700, "_VectorCopy", (size_t)&_VectorCopy },	// NOXREF
-	//{ 0x01DB0720, "CrossProduct", (size_t)&_CrossProduct },	// NOXREF
+	//{ 0x01DB0680, "_DotProduct", (size_t)&_DotProduct },			// NOXREF
+	//{ 0x01DB06A0, "_VectorSubtract", (size_t)&_VectorSubtract },		// NOXREF
+	//{ 0x01DB06D0, "_VectorAdd", (size_t)&_VectorAdd },			// NOXREF
+	//{ 0x01DB0700, "_VectorCopy", (size_t)&_VectorCopy },			// NOXREF
+	//{ 0x01DB0720, "CrossProduct", (size_t)&_CrossProduct },		// NOXREF
 	{ 0x01DB0760, "Length", (size_t)&Length },
-	//{ 0x0, "Distance", (size_t)&Distance },
+	//{ 0x01DB0780, "Distance", (size_t)&Distance },			// NOXREF
 	{ 0x01DB07D0, "VectorNormalize", (size_t)&VectorNormalize },
-	//{ 0x0, "VectorInverse", (size_t)&VectorInverse },
+	//{ 0x01DB0820, "VectorInverse", (size_t)&VectorInverse },
 	{ 0x01DB0840, "VectorScale", (size_t)&VectorScale },
-	//{ 0x0, "Q_log2", (size_t)&Q_log2 },
-	//{ 0x0, "VectorMatrix", (size_t)&VectorMatrix },
-	//{ 0x0, "VectorAngles", (size_t)&VectorAngles },
+	//{ 0x01DB0870, "Q_log2", (size_t)&Q_log2 },
+	//{ 0x01DB0880, "VectorMatrix", (size_t)&VectorMatrix },
+	//{ 0x01DB09D0, "VectorAngles", (size_t)&VectorAngles },
 
 #endif // PM_Shared_Region
 

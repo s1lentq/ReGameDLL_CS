@@ -1,5 +1,10 @@
 #include "precompiled.h"
 
+#undef vec3_t
+
+// Expand debugging BBOX particle hulls by this many units.
+#define BOX_GAP 0.0f
+
 static int PM_boxpnt[6][4] =
 {
 	{ 0, 4, 6, 2 }, // +X
@@ -11,73 +16,233 @@ static int PM_boxpnt[6][4] =
 };
 
 /* <2d0110> ../cstrike/pm_shared/pm_debug.c:43 */
-NOBODY void PM_ShowClipBox(void)
+void PM_ShowClipBox(void)
 {
+#ifdef _DEBUG
+	if (!pmove->runfuncs)
+		return;
+
+	// More debugging, draw the particle bbox for player and for the entity we are looking directly at.
+	// aslo prints entity info to the console overlay.
+	if (!pmove->server)
+		return;
+
+	// Draw entity in center of view
+	// Also draws the normal to the clip plane that intersects our movement ray. Leaves a particle
+	// trail at the intersection point.
+	PM_ViewEntity();
+
+	// Show our BBOX in particles.
+ 	//PM_DrawBBox(pmove->player_mins[pmove->usehull], pmove->player_maxs[pmove->usehull], pmove->origin, 132, 0.1);
+/*
+	{
+		int i;
+		for (i = 0; i < pmove->numphysent; i++)
+		{
+			if (pmove->physents[ i ].info >= 1 && pmove->physents[ i ].info <= 4)
+			{
+			 	PM_DrawBBox(pmove->player_mins[pmove->usehull], pmove->player_maxs[pmove->usehull], pmove->physents[i].origin, 132, 0.1);
+			}
+		}
+	}
+*/
+#endif // _DEBUG
 }
 
 /* <2d0012> ../cstrike/pm_shared/pm_debug.c:82 */
-NOBODY void PM_ParticleLine(vec3_t start, vec3_t end, int pcolor, float life, float vert)
+void PM_ParticleLine(vec3_t start, vec3_t end, int pcolor, float life, float vert)
 {
-//	float linestep;                                               //    84
-//	float curdist;                                                //    85
-//	float len;                                                    //    86
-//	vec3_t curpos;                                                //    87
-//	vec3_t diff;                                                  //    88
-//	int i;                                                        //    89
+	float linestep = 2.0f;
+	float curdist;
+	float len;
+	vec3_t curpos;
+	vec3_t diff;
+	int i;
+	// Determine distance;
+
+	VectorSubtract(end, start, diff);
+
+	len = VectorNormalize(diff);
+
+	curdist = 0;
+	while (curdist <= len)
+	{
+		for (i = 0; i < 3; ++i)
+			curpos[i] = start[i] + curdist * diff[i];
+
+		pmove->PM_Particle(curpos, pcolor, life, 0, vert);
+		curdist += linestep;
+	}
 }
 
 /* <2d0197> ../cstrike/pm_shared/pm_debug.c:114 */
-NOBODY void PM_DrawRectangle(vec3_t tl, vec3_t bl, vec3_t tr, vec3_t br, int pcolor, float life)
+void PM_DrawRectangle(vec3_t tl, vec3_t bl, vec3_t tr, vec3_t br, int pcolor, float life)
 {
+	PM_ParticleLine(tl, bl, pcolor, life, 0);
+	PM_ParticleLine(bl, br, pcolor, life, 0);
+	PM_ParticleLine(br, tr, pcolor, life, 0);
+	PM_ParticleLine(tr, tl, pcolor, life, 0);
 }
 
 /* <2cff57> ../cstrike/pm_shared/pm_debug.c:128 */
-NOBODY void PM_DrawPhysEntBBox(int num, int pcolor, float life)
+void PM_DrawPhysEntBBox(int num, int pcolor, float life)
 {
-//	physent_t *pe;                                               //   130
-//	vec3_t org;                                                   //   131
-//	int j;                                                        //   132
-//	vec3_t tmp;                                                   //   133
-//	vec_t p;                                                      //   134
-//	float gap;                                                    //   135
-//	vec3_t modelmins;                                             //   136
-//	vec3_t modelmaxs;                                             //   136
-//	{
-//		vec3_t forward;                                       //   161
-//		vec3_t right;                                         //   161
-//		vec3_t up;                                            //   161
-//	}
+	physent_t *pe;
+	vec3_t org;
+	int j;
+	vec3_t tmp;
+	vec3_t p[8];
+	float gap = BOX_GAP;
+	vec3_t modelmins, modelmaxs;
+
+	if (num >= pmove->numphysent || num <= 0)
+		return;
+
+	pe = &pmove->physents[num];
+
+	if (pe->model)
+	{
+		VectorCopy(pe->origin, org);
+
+		pmove->PM_GetModelBounds(pe->model, modelmins, modelmaxs);
+		for (j = 0; j < 8; ++j)
+		{
+			tmp[0] = (j & 1) ? modelmins[0] - gap : modelmaxs[0] + gap;
+			tmp[1] = (j & 2) ? modelmins[1] - gap : modelmaxs[1] + gap;
+			tmp[2] = (j & 4) ? modelmins[2] - gap : modelmaxs[2] + gap;
+
+			VectorCopy(tmp, p[j]);
+		}
+
+		// If the bbox should be rotated, do that
+		if (pe->angles[0] || pe->angles[1] || pe->angles[2])
+		{
+			vec3_t forward, right, up;
+
+			AngleVectorsTranspose(pe->angles, forward, right, up);
+			for (j = 0; j < 8; ++j)
+			{
+				VectorCopy(p[j], tmp);
+				p[j][0] = DotProduct(tmp, forward);
+				p[j][1] = DotProduct(tmp, right);
+				p[j][2] = DotProduct(tmp, up);
+			}
+		}
+
+		// Offset by entity origin, if any.
+		for (j = 0; j < 8; ++j)
+			VectorAdd(p[j], org, p[j]);
+
+		for (j = 0; j < 6; ++j)
+		{
+			PM_DrawRectangle(
+				p[PM_boxpnt[j][1]],
+				p[PM_boxpnt[j][0]],
+				p[PM_boxpnt[j][2]],
+				p[PM_boxpnt[j][3]],
+				pcolor, life);
+		}
+	}
+	else
+	{
+		for (j = 0; j < 8; ++j)
+		{
+			tmp[0] = (j & 1) ? pe->mins[0] : pe->maxs[0];
+			tmp[1] = (j & 2) ? pe->mins[1] : pe->maxs[1];
+			tmp[2] = (j & 4) ? pe->mins[2] : pe->maxs[2];
+
+			VectorAdd(tmp, pe->origin, tmp);
+			VectorCopy(tmp, p[j]);
+		}
+
+		for (j = 0; j < 6; ++j)
+		{
+			PM_DrawRectangle(
+				p[PM_boxpnt[j][1]],
+				p[PM_boxpnt[j][0]],
+				p[PM_boxpnt[j][2]],
+				p[PM_boxpnt[j][3]],
+				pcolor, life);
+		}
+	}
 }
 
 /* <2d030c> ../cstrike/pm_shared/pm_debug.c:218 */
-NOBODY void PM_DrawBBox(vec3_t mins, vec3_t maxs, vec3_t origin, int pcolor, float life)
+void PM_DrawBBox(vec3_t mins, vec3_t maxs, vec3_t origin, int pcolor, float life)
 {
-//	int j;                                                        //   220
-//	vec3_t tmp;                                                   //   222
-//	vec_t p;                                                      //   223
-//	float gap;                                                    //   224
-//	PM_DrawRectangle(vec3_t tl,
-//			vec3_t bl,
-//			vec3_t tr,
-//			vec3_t br,
-//			int pcolor,
-//			float life);  //   238
+	int j;
+
+	vec3_t tmp;
+	vec3_t p[8];
+	float gap = BOX_GAP;
+
+	for (j = 0; j < 8; ++j)
+	{
+		tmp[0] = (j & 1) ? mins[0] - gap : maxs[0] + gap;
+		tmp[1] = (j & 2) ? mins[1] - gap : maxs[1] + gap;
+		tmp[2] = (j & 4) ? mins[2] - gap : maxs[2] + gap;
+
+		VectorAdd(tmp, origin, tmp);
+		VectorCopy(tmp, p[j]);
+	}
+
+	for (j = 0; j < 6; ++j)
+	{
+		PM_DrawRectangle(
+			p[PM_boxpnt[j][1]],
+			p[PM_boxpnt[j][0]],
+			p[PM_boxpnt[j][2]],
+			p[PM_boxpnt[j][3]],
+			pcolor, life);
+	}
 }
 
+// Shows a particle trail from player to entity in crosshair.
+// Shows particles at that entities bbox
+// Tries to shoot a ray out by about 128 units.
+
 /* <2d03e9> ../cstrike/pm_shared/pm_debug.c:260 */
-NOBODY void PM_ViewEntity(void)
+void PM_ViewEntity(void)
 {
-//	vec3_t forward;                                               //   262
-//	vec3_t right;                                                 //   262
-//	vec3_t up;                                                    //   262
-//	float raydist;                                                //   263
-//	vec3_t origin;                                                //   264
-//	vec3_t end;                                                   //   265
-//	int i;                                                        //   266
-//	pmtrace_t trace;                                              //   267
-//	int pcolor;                                                   //   268
-//	float fup;                                                    //   269
-//	PM_DrawPhysEntBBox(int num,
-//				int pcolor,
-//				float life);  //   294
+	vec3_t forward, right, up;
+	float raydist = 256.0f;
+	vec3_t origin;
+	vec3_t end;
+	int i;
+	pmtrace_t trace;
+	int pcolor = 77;
+	float fup;
+
+#if 0
+	if (!pm_showclip.value)
+		return;
+#endif
+
+	// Determine movement angles
+	AngleVectors(pmove->angles, forward, right, up);
+
+	VectorCopy(pmove->origin, origin);
+
+	fup = 0.5 * (pmove->_player_mins[pmove->usehull][2] + pmove->_player_maxs[pmove->usehull][2]);
+	fup += pmove->view_ofs[2];
+	fup -= 4;
+
+	for (i = 0; i < 3; i++)
+	{
+		end[i] = origin[i] + raydist * forward[i];
+	}
+
+	trace = pmove->PM_PlayerTrace(origin, end, PM_STUDIO_BOX, -1);
+
+	// Not the world
+	if (trace.ent > 0)
+	{
+		pcolor = 111;
+	}
+
+	// Draw the hull or bbox.
+	if (trace.ent > 0)
+	{
+		PM_DrawPhysEntBBox(trace.ent, pcolor, 0.3f);
+	}
 }

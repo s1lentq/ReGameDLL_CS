@@ -220,11 +220,11 @@ public:
 	void SetNavPlace(unsigned int place)		{ m_navPlace = place; }
 
 	enum SkillType { LOW, AVERAGE, HIGH, RANDOM };
-	NOXREF NOBODY const char *GetRandomBotName(SkillType skill);
+	NOXREF const char *GetRandomBotName(SkillType skill);
 
 	static void MonitorBotCVars(void);
 	static void MaintainBotQuota(void);
-	NOBODY static bool AddBot(const BotProfile *profile, BotProfileTeamType team);
+	static bool AddBot(const BotProfile *profile, BotProfileTeamType team);
 
 	#define FROM_CONSOLE true
 	static bool BotAddCommand(BotProfileTeamType team, bool isFromConsole = false);			// process the "bot_add" console command

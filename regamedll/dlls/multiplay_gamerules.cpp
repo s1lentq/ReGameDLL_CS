@@ -342,24 +342,11 @@ void EndRoundMessage(const char *sentence, int event)
 	{
 		if (teamTriggered)
 		{
-			UTIL_LogPrintf
-			(
-				"Team \"%s\" triggered \"%s\" (CT \"%i\") (T \"%i\")\n",
-				team,
-				message,
-				mp->m_iNumCTWins,
-				mp->m_iNumTerroristWins
-			);
+			UTIL_LogPrintf("Team \"%s\" triggered \"%s\" (CT \"%i\") (T \"%i\")\n", team, message, mp->m_iNumCTWins, mp->m_iNumTerroristWins);
 		}
 		else
 		{
-			UTIL_LogPrintf
-			(
-				"World triggered \"%s\" (CT \"%i\") (T \"%i\")\n",
-				message,
-				mp->m_iNumCTWins,
-				mp->m_iNumTerroristWins
-			);
+			UTIL_LogPrintf("World triggered \"%s\" (CT \"%i\") (T \"%i\")\n", message, mp->m_iNumCTWins, mp->m_iNumTerroristWins);
 		}
 	}
 
@@ -437,7 +424,6 @@ void ReadMultiplayCvars(CHalfLifeMultiplay *mp)
 /* <11492c> ../cstrike/dlls/multiplay_gamerules.cpp:479 */
 CHalfLifeMultiplay::CHalfLifeMultiplay(void)
 {
-	UNTESTED
 	m_VoiceGameMgr.Init(&g_GameMgrHelper, gpGlobals->maxClients);
 	RefreshSkillData();
 
@@ -512,7 +498,7 @@ CHalfLifeMultiplay::CHalfLifeMultiplay(void)
 	m_bMapHasRescueZone = false;
 	m_iStoredSpectValue = (int)allow_spectators.value;
 
-	for (int j = 0; j < MAX_VIP_QUEUES; j++)
+	for (int j = 0; j < MAX_VIP_QUEUES; ++j)
 	{
 		VIPQueue[j] = NULL;
 	}
@@ -860,14 +846,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(GiveC4)(void)
 			player->HintMessage("#Hint_you_have_the_bomb", FALSE, TRUE);
 
 			// Log this information
-			UTIL_LogPrintf
-			(
-				"\"%s<%i><%s><TERRORIST>\" triggered \"Spawned_With_The_Bomb\"\n",
-				STRING(player->pev->netname),
-				GETPLAYERUSERID(player->edict()),
-				GETPLAYERAUTHID(player->edict())
-			);
-
+			UTIL_LogPrintf("\"%s<%i><%s><TERRORIST>\" triggered \"Spawned_With_The_Bomb\"\n", STRING(player->pev->netname), GETPLAYERUSERID(player->edict()), GETPLAYERAUTHID(player->edict()));
 			m_bBombDropped = FALSE;
 		}
 	}
@@ -903,14 +882,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(GiveC4)(void)
 			player->HintMessage("#Hint_you_have_the_bomb", FALSE, TRUE);
 
 			// Log this information
-			UTIL_LogPrintf
-			(
-				"\"%s<%i><%s><TERRORIST>\" triggered \"Spawned_With_The_Bomb\"\n",
-				STRING(player->pev->netname),
-				GETPLAYERUSERID(player->edict()),
-				GETPLAYERAUTHID(player->edict())
-			);
-
+			UTIL_LogPrintf("\"%s<%i><%s><TERRORIST>\" triggered \"Spawned_With_The_Bomb\"\n", STRING(player->pev->netname), GETPLAYERUSERID(player->edict()), GETPLAYERAUTHID(player->edict()));
 			m_bBombDropped = FALSE;
 			return;
 		}
@@ -2546,9 +2518,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(Think)(void)
 							pPlayer->m_iHideHUD |= HIDEHUD_ALL;
 							m_fTeamCount = gpGlobals->time + 100000.0;
 
-							UTIL_LogPrintf("Career Round %d %d %d %d\n", m_iRoundWinStatus, m_iNumCTWins,
-								m_iNumTerroristWins, TheCareerTasks->AreAllTasksComplete());
-
+							UTIL_LogPrintf("Career Round %d %d %d %d\n", m_iRoundWinStatus, m_iNumCTWins, m_iNumTerroristWins, TheCareerTasks->AreAllTasksComplete());
 							break;
 						}
 					}
@@ -2624,7 +2594,6 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(Think)(void)
 			MESSAGE_END();
 
 			UTIL_LogPrintf("Career Match %d %d %d %d\n", m_iRoundWinStatus, m_iNumCTWins, m_iNumTerroristWins, TheCareerTasks->AreAllTasksComplete());
-
 			SERVER_COMMAND("setpause\n");
 		}
 	}
@@ -2959,19 +2928,8 @@ void CHalfLifeMultiplay::CheckRestartRound(void)
 
 		// log the restart
 		UTIL_LogPrintf("World triggered \"Restart_Round_(%i_%s)\"\n", iRestartDelay, (iRestartDelay == 1) ? "second" : "seconds");
-		UTIL_LogPrintf
-		(
-			"Team \"CT\" scored \"%i\" with \"%i\" players\n",
-			m_iNumCTWins,
-			m_iNumCT
-		);
-
-		UTIL_LogPrintf
-		(
-			"Team \"TERRORIST\" scored \"%i\" with \"%i\" players\n",
-			m_iNumTerroristWins,
-			m_iNumTerrorist
-		);
+		UTIL_LogPrintf("Team \"CT\" scored \"%i\" with \"%i\" players\n", m_iNumCTWins, m_iNumCT);
+		UTIL_LogPrintf("Team \"TERRORIST\" scored \"%i\" with \"%i\" players\n", m_iNumTerroristWins, m_iNumTerrorist);
 
 		// let the players know
 		UTIL_ClientPrintAll(HUD_PRINTCENTER, "#Game_will_restart_in", UTIL_dtos1(iRestartDelay), (iRestartDelay == 1) ? "SECOND" : "SECONDS");
@@ -3211,13 +3169,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(InitHUD)(CBasePlayer *pl)
 	int i;
 
 	// notify other clients of player joining the game
-	UTIL_LogPrintf
-	(
-		"\"%s<%i><%s><>\" entered the game\n",
-		STRING(pl->pev->netname),
-		GETPLAYERUSERID(pl->edict()),
-		GETPLAYERAUTHID(pl->edict())
-	);
+	UTIL_LogPrintf("\"%s<%i><%s><>\" entered the game\n", STRING(pl->pev->netname), GETPLAYERUSERID(pl->edict()), GETPLAYERAUTHID(pl->edict()));
 
 	UpdateGameMode(pl);
 
@@ -3417,14 +3369,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(ClientDisconnected)(edict_t *pClient)
 			char *team = GetTeam(pPlayer->m_iTeam);
 
 			FireTargets("game_playerleave", pPlayer, pPlayer, USE_TOGGLE, 0);
-			UTIL_LogPrintf
-			(
-				"\"%s<%i><%s><%s>\" disconnected\n",
-				STRING(pPlayer->pev->netname),
-				GETPLAYERUSERID(pPlayer->edict()),
-				GETPLAYERAUTHID(pPlayer->edict()),
-				team
-			);
+			UTIL_LogPrintf("\"%s<%i><%s><%s>\" disconnected\n", STRING(pPlayer->pev->netname), GETPLAYERUSERID(pPlayer->edict()), GETPLAYERAUTHID(pPlayer->edict()), team);
 
 			// destroy all of the players weapons and items
 			pPlayer->RemoveAllItems(TRUE);
@@ -3740,13 +3685,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(PlayerKilled)(CBasePlayer *pVictim, entvar
 					WRITE_LONG(DRC_FLAG_PRIO_MASK | DRC_FLAG_DRAMATIC | DRC_FLAG_FINAL);
 				MESSAGE_END();
 
-				UTIL_LogPrintf
-				(
-					"\"%s<%i><%s><TERRORIST>\" triggered \"Assassinated_The_VIP\"\n",
-					STRING(killer->pev->netname),
-					GETPLAYERUSERID(killer->edict()),
-					GETPLAYERAUTHID(killer->edict())
-				);
+				UTIL_LogPrintf("\"%s<%i><%s><TERRORIST>\" triggered \"Assassinated_The_VIP\"\n", STRING(killer->pev->netname), GETPLAYERUSERID(killer->edict()), GETPLAYERAUTHID(killer->edict()));
 			}
 			else
 				killer->AddAccount(REWARD_KILLED_ENEMY);
@@ -3874,16 +3813,8 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(DeathNotice)(CBasePlayer *pVictim, entvars
 	{
 		// killed self
 		char *team = GetTeam(pVictim->m_iTeam);
-
-		UTIL_LogPrintf
-		(
-			"\"%s<%i><%s><%s>\" committed suicide with \"%s\"\n",
-			STRING(pVictim->pev->netname),
-			GETPLAYERUSERID(pVictim->edict()),
-			GETPLAYERAUTHID(pVictim->edict()),
-			team,
-			killer_weapon_name
-		);
+		UTIL_LogPrintf("\"%s<%i><%s><%s>\" committed suicide with \"%s\"\n", STRING(pVictim->pev->netname), GETPLAYERUSERID(pVictim->edict()),
+			GETPLAYERAUTHID(pVictim->edict()), team, killer_weapon_name);
 	}
 	else if (pKiller->flags & FL_CLIENT)
 	{
@@ -3892,34 +3823,15 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(DeathNotice)(CBasePlayer *pVictim, entvars
 		char *VictimTeam = GetTeam(pVictim->m_iTeam);
 		char *KillerTeam = GetTeam(pPlayer->m_iTeam);
 
-		UTIL_LogPrintf
-		(
-			"\"%s<%i><%s><%s>\" killed \"%s<%i><%s><%s>\" with \"%s\"\n",
-			STRING(pKiller->netname),
-			GETPLAYERUSERID(ENT(pKiller)),
-			GETPLAYERAUTHID(ENT(pKiller)),
-			KillerTeam,
-			STRING(pVictim->pev->netname),
-			GETPLAYERUSERID(pVictim->edict()),
-			GETPLAYERAUTHID(pVictim->edict()),
-			VictimTeam,
-			killer_weapon_name
-		);
+		UTIL_LogPrintf("\"%s<%i><%s><%s>\" killed \"%s<%i><%s><%s>\" with \"%s\"\n", STRING(pKiller->netname), GETPLAYERUSERID(ENT(pKiller)), GETPLAYERAUTHID(ENT(pKiller)),
+			KillerTeam, STRING(pVictim->pev->netname), GETPLAYERUSERID(pVictim->edict()), GETPLAYERAUTHID(pVictim->edict()), VictimTeam, killer_weapon_name);
 	}
 	else
 	{
 		// killed by the world
 		char *team = GetTeam(pVictim->m_iTeam);
-
-		UTIL_LogPrintf
-		(
-			"\"%s<%i><%s><%s>\" committed suicide with \"%s\" (world)\n",
-			STRING(pVictim->pev->netname),
-			GETPLAYERUSERID(pVictim->edict()),
-			GETPLAYERAUTHID(pVictim->edict()),
-			team,
-			killer_weapon_name
-		);
+		UTIL_LogPrintf("\"%s<%i><%s><%s>\" committed suicide with \"%s\" (world)\n", STRING(pVictim->pev->netname), GETPLAYERUSERID(pVictim->edict()),
+			GETPLAYERAUTHID(pVictim->edict()), team, killer_weapon_name);
 	}
 
 	CheckWinConditions();

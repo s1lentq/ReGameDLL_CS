@@ -16,7 +16,7 @@ int nanmask;
 #endif // HOOK_GAMEDLL
 
 /* <2ce436> ../cstrike/pm_shared/pm_math.c:35 */
-NOBODY float anglemod(float a)
+float anglemod(float a)
 {
 	a = (360.0 / 65536) * ((int)(a  *(65536 / 360.0)) & 65535);
 	return a;
@@ -63,15 +63,39 @@ void AngleVectors(const vec_t *angles, vec_t *forward, vec_t *right, vec_t *up)
 }
 
 /* <2ce521> ../cstrike/pm_shared/pm_math.c:76 */
-NOBODY void AngleVectorsTranspose(const vec_t *angles, vec_t *forward, vec_t *right, vec_t *up)
+void AngleVectorsTranspose(const vec_t *angles, vec_t *forward, vec_t *right, vec_t *up)
 {
-//	float angle;                                                  //    78
-//	float sr;                                                     //    79
-//	float sp;                                                     //    79
-//	float sy;                                                     //    79
-//	float cr;                                                     //    79
-//	float cp;                                                     //    79
-//	float cy;                                                     //    79
+	float angle;
+	float sr, sp, sy, cr, cp, cy;
+
+	angle = angles[YAW] * (M_PI * 2 / 360);
+	sy = sin(angle);
+	cy = cos(angle);
+	angle = angles[PITCH] * (M_PI * 2 / 360);
+	sp = sin(angle);
+	cp = cos(angle);
+	angle = angles[ROLL] * (M_PI * 2 / 360);
+	sr = sin(angle);
+	cr = cos(angle);
+
+	if (forward)
+	{
+		forward[0] = cp * cy;
+		forward[1] = (sr * sp * cy + cr * -sy);
+		forward[2] = (cr * sp * cy + -sr * -sy);
+	}
+	if (right)
+	{
+		right[0] = cp * sy;
+		right[1] = (sr * sp * sy + cr * cy);
+		right[2] = (cr * sp * sy + -sr * cy);
+	}
+	if (up)
+	{
+		up[0] = -sp;
+		up[1] = sr * cp;
+		up[2] = cr * cp;
+	}
 }
 
 /* <2ce5d0> ../cstrike/pm_shared/pm_math.c:112 */
@@ -110,48 +134,111 @@ void AngleMatrix(const vec_t *angles, float (*matrix)[4])
 }
 
 /* <2ce67b> ../cstrike/pm_shared/pm_math.c:142 */
-NOBODY void AngleIMatrix(const vec_t *angles, float (*matrix)[4])
+void AngleIMatrix(const vec_t *angles, float (*matrix)[4])
 {
-//	float angle;                                                  //   144
-//	float sr;                                                     //   145
-//	float sp;                                                     //   145
-//	float sy;                                                     //   145
-//	float cr;                                                     //   145
-//	float cp;                                                     //   145
-//	float cy;                                                     //   145
+	float angle;
+	float sr, sp, sy, cr, cp, cy;
+
+	angle = angles[YAW] * (M_PI * 2 / 360);
+	sy = sin(angle);
+	cy = cos(angle);
+	angle = angles[PITCH] * (M_PI * 2 / 360);
+	sp = sin(angle);
+	cp = cos(angle);
+	angle = angles[ROLL] * (M_PI * 2 / 360);
+	sr = sin(angle);
+	cr = cos(angle);
+
+	// matrix = (YAW * PITCH) * ROLL
+	matrix[0][0] = cp * cy;
+	matrix[0][1] = cp * sy;
+	matrix[0][2] = -sp;
+	matrix[1][0] = sr * sp * cy + cr * -sy;
+	matrix[1][1] = sr * sp * sy + cr * cy;
+	matrix[1][2] = sr * cp;
+	matrix[2][0] = (cr * sp * cy + -sr * -sy);
+	matrix[2][1] = (cr * sp * sy + -sr * cy);
+	matrix[2][2] = cr * cp;
+	matrix[0][3] = 0.0;
+	matrix[1][3] = 0.0;
+	matrix[2][3] = 0.0;
 }
 
 /* <2ce710> ../cstrike/pm_shared/pm_math.c:172 */
-NOBODY void NormalizeAngles(float *angles)
+void NormalizeAngles(float *angles)
 {
-//	int i;                                                        //   174
+	int i;
+	// Normalize angles
+	for (i = 0; i < 3; ++i)
+	{
+		if (angles[i] > 180.0)
+		{
+			angles[i] -= 360.0;
+		}
+		else if (angles[i] < -180.0)
+		{
+			angles[i] += 360.0;
+		}
+	}
 }
 
+// Interpolate Euler angles.
+// FIXME:  Use Quaternions to avoid discontinuities
+// Frac is 0.0 to 1.0 (i.e., should probably be clamped, but doesn't have to be)
+
 /* <2ce75f> ../cstrike/pm_shared/pm_math.c:198 */
-NOBODY void InterpolateAngles(float *start, float *end, float *output, float frac)
+void InterpolateAngles(float *start, float *end, float *output, float frac)
 {
-//	int i;                                                        //   200
-//	float ang1;                                                   //   201
-//	float ang2;                                                   //   201
-//	float d;                                                      //   202
-//	NormalizeAngles(float *angles);  //   204
-//	NormalizeAngles(float *angles);  //   205
-//	NormalizeAngles(float *angles);  //   225
+	int i;
+	float ang1, ang2;
+	float d;
+
+	NormalizeAngles(start);
+	NormalizeAngles(end);
+
+	for (i = 0; i < 3; ++i)
+	{
+		ang1 = start[i];
+		ang2 = end[i];
+
+		d = ang2 - ang1;
+		if (d > 180)
+		{
+			d -= 360;
+		}
+		else if (d < -180)
+		{
+			d += 360;
+		}
+
+		output[i] = ang1 + d * frac;
+	}
+
+	NormalizeAngles(output);
 }
 
 /* <2ce893> ../cstrike/pm_shared/pm_math.c:235 */
-NOBODY float AngleBetweenVectors(const vec_t *v1, const vec_t *v2)
+float AngleBetweenVectors(const vec_t *v1, const vec_t *v2)
 {
-//	float angle;                                                  //   237
-//	float l1;                                                     //   238
-//	float l2;                                                     //   239
-//	Length(const vec_t *v);  //   238
-//	Length(const vec_t *v);  //   239
+	float angle;
+	float l1 = Length(v1);
+	float l2 = Length(v2);
+
+	if (!l1 || !l2)
+		return 0.0f;
+
+	angle = acos(DotProduct(v1, v2)) / (l1 * l2);
+	angle = (angle * 180.0f) / M_PI;
+
+	return angle;
 }
 
 /* <2ce953> ../cstrike/pm_shared/pm_math.c:251 */
-NOBODY void VectorTransform(const vec_t *in1, float *in2, vec_t *out)
+void VectorTransform(const vec_t *in1, float (*in2)[4], vec_t *out)
 {
+	out[0] = _DotProduct(in1, in2[0]) + in2[0][3];
+	out[1] = _DotProduct(in1, in2[1]) + in2[1][3];
+	out[2] = _DotProduct(in1, in2[2]) + in2[2][3];
 }
 
 /* <2ce996> ../cstrike/pm_shared/pm_math.c:259 */
@@ -175,7 +262,7 @@ void VectorMA(const vec_t *veca, float scale, const vec_t *vecb, vec_t *vecc)
 }
 
 /* <2cea34> ../cstrike/pm_shared/pm_math.c:278 */
-float_precision _DotProduct(vec_t *v1, vec_t *v2)
+float_precision _DotProduct(const vec_t *v1, const vec_t *v2)
 {
 	return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
 }
@@ -225,10 +312,11 @@ float_precision Length(const vec_t *v)
 }
 
 /* <2cebc2> ../cstrike/pm_shared/pm_math.c:325 */
-NOBODY float Distance(const vec_t *v1, const vec_t *v2)
+float Distance(const vec_t *v1, const vec_t *v2)
 {
-//	vec_t *d;                                                     //   327
-//	Length(const vec_t *v);  //   329
+	vec_t d[3];
+	VectorSubtract(v2, v1, d);
+	return Length(d);
 }
 
 /* <2cec3c> ../cstrike/pm_shared/pm_math.c:332 */
@@ -252,8 +340,11 @@ float_precision VectorNormalize(vec_t *v)
 }
 
 /* <2ceca2> ../cstrike/pm_shared/pm_math.c:351 */
-NOBODY void VectorInverse(vec_t *v)
+void VectorInverse(vec_t *v)
 {
+	v[0] = -v[0];
+	v[1] = -v[1];
+	v[2] = -v[2];
 }
 
 /* <2cecc9> ../cstrike/pm_shared/pm_math.c:358 */
@@ -265,7 +356,7 @@ void VectorScale(const vec_t *in, vec_t scale, vec_t *out)
 }
 
 /* <2ced0f> ../cstrike/pm_shared/pm_math.c:366 */
-NOBODY int Q_log2(int val)
+int Q_log2(int val)
 {
 	int answer = 0;
 	while (val >>= 1)
@@ -275,23 +366,55 @@ NOBODY int Q_log2(int val)
 }
 
 /* <2ced4d> ../cstrike/pm_shared/pm_math.c:374 */
-NOBODY void VectorMatrix(vec_t *forward, vec_t *right, vec_t *up)
+void VectorMatrix(vec_t *forward, vec_t *right, vec_t *up)
 {
-//	vec3_t *tmp;                                                   //   376
-//	CrossProduct(const vec_t *v1,
-//			const vec_t *v2,
-//			vec_t *cross);  //   390
-//	VectorNormalize(vec_t *v);  //   391
-//	CrossProduct(const vec_t *v1,
-//			const vec_t *v2,
-//			vec_t *cross);  //   392
-//	VectorNormalize(vec_t *v);  //   393
+	vec_t tmp[3];
+
+	if (forward[0] == 0 && forward[1] == 0)
+	{
+		right[0] = 1;
+		right[1] = 0;
+		right[2] = 0;
+
+		up[0] = -forward[2];
+		up[1] = 0;
+		up[2] = 0;
+		return;
+	}
+
+	tmp[0] = 0; tmp[1] = 0; tmp[2] = 1.0;
+	_CrossProduct(forward, tmp, right);
+	VectorNormalize(right);
+	_CrossProduct(right, forward, up);
+	VectorNormalize(up);
 }
 
 /* <2cee68> ../cstrike/pm_shared/pm_math.c:398 */
-NOBODY void VectorAngles(const vec_t *forward, vec_t *angles)
+void VectorAngles(const vec_t *forward, vec_t *angles)
 {
-//	float tmp;                                                    //   400
-//	float yaw;                                                    //   400
-//	float pitch;                                                  //   400
+	float tmp, yaw, pitch;
+
+	if (forward[1] == 0 && forward[0] == 0)
+	{
+		yaw = 0;
+		if (forward[2] > 0)
+			pitch = 90;
+		else
+			pitch = 270;
+	}
+	else
+	{
+		yaw = (atan2(forward[1], forward[0]) * 180 / M_PI);
+		if (yaw < 0)
+			yaw += 360;
+
+		tmp = sqrt (forward[0]*forward[0] + forward[1]*forward[1]);
+		pitch = (atan2(forward[2], tmp) * 180 / M_PI);
+		if (pitch < 0)
+			pitch += 360;
+	}
+
+	angles[0] = pitch;
+	angles[1] = yaw;
+	angles[2] = 0;
 }

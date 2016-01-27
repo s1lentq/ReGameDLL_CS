@@ -48,32 +48,32 @@ extern int nanmask;
 
 #define IS_NAN(x)	((*reinterpret_cast<int *>(&(x)) & nanmask) == nanmask)
 
-NOBODY float anglemod(float a);
+float anglemod(float a);
 void AngleVectors(const vec_t *angles, vec_t *forward, vec_t *right, vec_t *up);
-NOBODY void AngleVectorsTranspose(const vec_t *angles, vec_t *forward, vec_t *right, vec_t *up);
+void AngleVectorsTranspose(const vec_t *angles, vec_t *forward, vec_t *right, vec_t *up);
 void AngleMatrix(const vec_t *angles, float (*matrix)[4]);
-NOBODY void AngleIMatrix(const vec_t *angles, float (*matrix)[4]);
-NOBODY void NormalizeAngles(float *angles);
-NOBODY void InterpolateAngles(float *start, float *end, float *output, float frac);
-NOBODY float AngleBetweenVectors(const vec_t *v1, const vec_t *v2);
-NOBODY void VectorTransform(const vec_t *in1, float *in2, vec_t *out);
+void AngleIMatrix(const vec_t *angles, float (*matrix)[4]);
+void NormalizeAngles(float *angles);
+void InterpolateAngles(float *start, float *end, float *output, float frac);
+float AngleBetweenVectors(const vec_t *v1, const vec_t *v2);
+void VectorTransform(const vec_t *in1, float *in2, vec_t *out);
 int VectorCompare(const vec_t *v1, const vec_t *v2);
 void VectorMA(const vec_t *veca, float scale, const vec_t *vecb, vec_t *vecc);
 
-float_precision _DotProduct(vec_t *v1, vec_t *v2);
+float_precision _DotProduct(const vec_t *v1, const vec_t *v2);
 void _VectorSubtract(vec_t *veca, vec_t *vecb, vec_t *out);
 void _VectorAdd(vec_t *veca, vec_t *vecb, vec_t *out);
 void _VectorCopy(vec_t *in, vec_t *out);
 void _CrossProduct(const vec_t *v1, const vec_t *v2, vec_t *cross);
 
 float_precision Length(const vec_t *v);
-NOBODY float Distance(const vec_t *v1, const vec_t *v2);
+float Distance(const vec_t *v1, const vec_t *v2);
 float_precision VectorNormalize(vec_t *v);
 
-NOBODY void VectorInverse(vec_t *v);
-NOBODY void VectorScale(const vec_t *in, vec_t scale, vec_t *out);
-NOBODY int Q_log2(int val);
-NOBODY void VectorMatrix(vec_t *forward, vec_t *right, vec_t *up);
-NOBODY void VectorAngles(const vec_t *forward, vec_t *angles);
+void VectorInverse(vec_t *v);
+void VectorScale(const vec_t *in, vec_t scale, vec_t *out);
+int Q_log2(int val);
+void VectorMatrix(vec_t *forward, vec_t *right, vec_t *up);
+void VectorAngles(const vec_t *forward, vec_t *angles);
 
 #endif // PM_MATH_H

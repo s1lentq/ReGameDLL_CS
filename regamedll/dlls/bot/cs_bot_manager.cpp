@@ -59,7 +59,7 @@ CCSBotManager::CCSBotManager(void)
 
 	m_bServerActive = false;
 
-	TheBotPhrases = new BotPhraseManager;				// TODO: Reverse me!
+	TheBotPhrases = new BotPhraseManager;
 	// load the database of bot radio chatter
 	TheBotPhrases->Initialize("BotChatter.db", 0);
 
