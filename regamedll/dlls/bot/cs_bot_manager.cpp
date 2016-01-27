@@ -622,8 +622,7 @@ void CCSBotManager::__MAKE_VHOOK(ServerCommand)(const char *pcmd)
 	else if (FStrEq(pcmd, "bot_nav_save"))
 	{
 		GET_GAME_DIR(buffer);
-		buffer[ Q_strlen(buffer) ] = '\\';
-
+		Q_strcat(buffer, "\\");
 		Q_strcat(buffer, CBotManager::GetNavMapFilename());
 
 		if (SaveNavigationMap(buffer))
