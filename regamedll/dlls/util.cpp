@@ -2463,3 +2463,12 @@ float_precision UTIL_GetPlayerGaitYaw(int playerIndex)
 
 	return 0;
 }
+
+int UTIL_ReadFlags(const char *c)
+{
+	int flags = 0;
+	while (*c)
+		flags |= (1 << (*c++ - 'a'));
+	
+	return flags;
+}

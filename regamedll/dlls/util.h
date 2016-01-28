@@ -490,6 +490,7 @@ char UTIL_TextureHit(TraceResult *ptr, Vector vecSrc, Vector vecEnd);
 NOXREF int GetPlayerTeam(int index);
 bool UTIL_IsGame(const char *gameName);
 float_precision UTIL_GetPlayerGaitYaw(int playerIndex);
+int UTIL_ReadFlags(const char *c);
 
 /*
 * Declared for function overload

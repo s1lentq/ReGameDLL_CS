@@ -996,6 +996,8 @@ void CHalfLifeMultiplay::QueueCareerRoundEndMenu(float tmDelay, int iWinStatus)
 	}
 }
 
+// Check if the scenario has been won/lost.
+
 /* <117750> ../cstrike/dlls/multiplay_gamerules.cpp:1084 */
 void CHalfLifeMultiplay::__MAKE_VHOOK(CheckWinConditions)(void)
 {
@@ -1010,35 +1012,44 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(CheckWinConditions)(void)
 		return;
 	}
 
+#ifdef REGAMEDLL_ADD
+	int scenarioFlags = UTIL_ReadFlags(round_infinite.string);
+#else
+	// the icc compiler will cut out all of the code which refers to it
+	int scenarioFlags = 0;
+#endif // REGAMEDLL_ADD
+
 	// Initialize the player counts..
 	int NumDeadCT, NumDeadTerrorist, NumAliveTerrorist, NumAliveCT;
 	InitializePlayerCounts(NumAliveTerrorist, NumAliveCT, NumDeadTerrorist, NumDeadCT);
 
 	// other player's check
 	bool bNeededPlayers = false;
-	if (NeededPlayersCheck(bNeededPlayers))
+	if (!(scenarioFlags & SCENARIO_BLOCK_NEED_PLAYERS) && NeededPlayersCheck(bNeededPlayers))
 		return;
 
 	// Assasination/VIP scenarion check
-	if (VIPRoundEndCheck(bNeededPlayers))
+	if (!(scenarioFlags & SCENARIO_BLOCK_VIP_ESCAPRE) && VIPRoundEndCheck(bNeededPlayers))
 		return;
 
 	// Prison escape check
-	if (PrisonRoundEndCheck(NumAliveTerrorist, NumAliveCT, NumDeadTerrorist, NumDeadCT, bNeededPlayers))
+	if (!(scenarioFlags & SCENARIO_BLOCK_PRISON_ESCAPRE) && PrisonRoundEndCheck(NumAliveTerrorist, NumAliveCT, NumDeadTerrorist, NumDeadCT, bNeededPlayers))
 		return;
 
 	// Bomb check
-	if (BombRoundEndCheck(bNeededPlayers))
+	if (!(scenarioFlags & SCENARIO_BLOCK_BOMB) && BombRoundEndCheck(bNeededPlayers))
 		return;
 
 	// Team Extermination check
 	// CounterTerrorists won by virture of elimination
-	if (TeamExterminationCheck(NumAliveTerrorist, NumAliveCT, NumDeadTerrorist, NumDeadCT, bNeededPlayers))
+	if (!(scenarioFlags & SCENARIO_BLOCK_TEAM_EXTERMINATION) && TeamExterminationCheck(NumAliveTerrorist, NumAliveCT, NumDeadTerrorist, NumDeadCT, bNeededPlayers))
 		return;
 
 	// Hostage rescue check
-	if (HostageRescueRoundEndCheck(bNeededPlayers))
+	if (!(scenarioFlags & SCENARIO_BLOCK_HOSTAGE_RESCUE) && HostageRescueRoundEndCheck(bNeededPlayers))
 		return;
+
+	// scenario not won - still in progress
 }
 
 void CHalfLifeMultiplay::InitializePlayerCounts(int &NumAliveTerrorist, int &NumAliveCT, int &NumDeadTerrorist, int &NumDeadCT)
@@ -1048,6 +1059,8 @@ void CHalfLifeMultiplay::InitializePlayerCounts(int &NumAliveTerrorist, int &Num
 	m_iHaveEscaped = 0;
 
 	// initialize count dead/alive players
+
+	// Count how many dead players there are on each team.
 	CBaseEntity *pPlayer = NULL;
 	while ((pPlayer = UTIL_FindEntityByClassname(pPlayer, "player")) != NULL)
 	{
@@ -1191,6 +1204,8 @@ bool CHalfLifeMultiplay::VIPRoundEndCheck(bool bNeededPlayers)
 			MESSAGE_END();
 
 			EndRoundMessage("#VIP_Escaped", ROUND_VIP_ESCAPED);
+
+			// tell the bots the VIP got out
 			if (TheBots != NULL)
 			{
 				TheBots->OnEvent(EVENT_VIP_ESCAPED);
@@ -1218,6 +1233,8 @@ bool CHalfLifeMultiplay::VIPRoundEndCheck(bool bNeededPlayers)
 			}
 
 			EndRoundMessage("#VIP_Assassinated", ROUND_VIP_ASSASSINATED);
+
+			// tell the bots the VIP was killed
 			if (TheBots != NULL)
 			{
 				TheBots->OnEvent(EVENT_VIP_ASSASSINATED);
@@ -1489,6 +1506,8 @@ bool CHalfLifeMultiplay::HostageRescueRoundEndCheck(bool bNeededPlayers)
 			}
 
 			EndRoundMessage("#All_Hostages_Rescued", ROUND_ALL_HOSTAGES_RESCUED);
+
+			// tell the bots all the hostages have been rescued
 			if (TheBots != NULL)
 			{
 				TheBots->OnEvent(EVENT_ALL_HOSTAGES_RESCUED);
@@ -1637,6 +1656,7 @@ void CHalfLifeMultiplay::BalanceTeams(void)
 /* <113158> ../cstrike/dlls/multiplay_gamerules.cpp:1608 */
 void CHalfLifeMultiplay::__MAKE_VHOOK(CheckMapConditions)(void)
 {
+	// Check to see if this map has a bomb target in it
 	if (UTIL_FindEntityByClassname(NULL, "func_bomb_target"))
 	{
 		m_bMapHasBombTarget = true;
@@ -2618,7 +2638,7 @@ bool CHalfLifeMultiplay::CheckGameOver(void)
 		// check to see if we should change levels now
 		if (m_flIntermissionEndTime < gpGlobals->time && !IsCareer())
 		{
-			if (!UTIL_HumansInGame(false)		// if only bots, just change immediately
+			if (!UTIL_HumansInGame()		// if only bots, just change immediately
 				|| m_iEndIntermissionButtonHit		// check that someone has pressed a key, or the max intermission time is over
 				|| ((m_flIntermissionStartTime + MAX_INTERMISSION_TIME) < gpGlobals->time))
 			{
@@ -2762,12 +2782,12 @@ void CHalfLifeMultiplay::CheckFreezePeriodExpired(void)
 		{
 			if (plr->m_iTeam == CT && !bCTPlayed)
 			{
-				plr->Radio(CT_sentence, NULL);
+				plr->Radio(CT_sentence);
 				bCTPlayed = true;
 			}
 			else if (plr->m_iTeam == TERRORIST && !bTPlayed)
 			{
-				plr->Radio(T_sentence, NULL);
+				plr->Radio(T_sentence);
 				bTPlayed = true;
 			}
 
@@ -2795,7 +2815,7 @@ void CHalfLifeMultiplay::CheckFreezePeriodExpired(void)
 void CHalfLifeMultiplay::CheckRoundTimeExpired(void)
 {
 #ifdef REGAMEDLL_ADD
-	if (round_infinite.string[0] == '1')
+	if (round_infinite.string[0] == '1' || (UTIL_ReadFlags(round_infinite.string) & SCENARIO_BLOCK_TIME_EXPRIRED))
 		return;
 #endif // REGAMEDLL_ADD
 
@@ -2954,9 +2974,11 @@ bool CHalfLifeMultiplay::HasRoundTimeExpired(void)
 		return false;
 	}
 
+	// If the bomb is planted, don't let the round timer end the round.
+	// keep going until the bomb explodes or is defused
 	if (!IsBombPlanted())
 	{
-		if (cv_bot_nav_edit.value == 0.0f || IS_DEDICATED_SERVER() || UTIL_HumansInGame(false) != 1)
+		if (cv_bot_nav_edit.value == 0.0f || IS_DEDICATED_SERVER() || UTIL_HumansInGame() != 1)
 		{
 			return true;
 		}
@@ -2983,6 +3005,9 @@ bool CHalfLifeMultiplay::IsBombPlanted(void)
 
 	return false;
 }
+
+// living players on the given team need to be marked as not receiving any money
+// next round.
 
 /* <115229> ../cstrike/dlls/multiplay_gamerules.cpp:2971 */
 void CHalfLifeMultiplay::MarkLivingPlayersOnTeamAsNotReceivingMoneyNextRound(int iTeam)
@@ -3761,7 +3786,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(DeathNotice)(CBasePlayer *pVictim, entvars
 				// If the inflictor is the killer, then it must be their current weapon doing the damage
 				CBasePlayer *pPlayer = static_cast<CBasePlayer*>(CBaseEntity::Instance(pKiller));
 
-				if (pPlayer && pPlayer->m_pActiveItem)
+				if (pPlayer && pPlayer->m_pActiveItem != NULL)
 				{
 					killer_weapon_name = pPlayer->m_pActiveItem->pszName();
 				}
@@ -4011,6 +4036,7 @@ int CHalfLifeMultiplay::__MAKE_VHOOK(DeadPlayerAmmo)(CBasePlayer *pPlayer)
 /* <1131d6> ../cstrike/dlls/multiplay_gamerules.cpp:4096 */
 edict_t *CHalfLifeMultiplay::__MAKE_VHOOK(GetPlayerSpawnSpot)(CBasePlayer *pPlayer)
 {
+	// gat valid spawn point
 	edict_t *pentSpawnSpot = CGameRules::GetPlayerSpawnSpot(pPlayer);
 
 	if (IsMultiplayer())
