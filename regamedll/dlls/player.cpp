@@ -3878,9 +3878,9 @@ bool CanSeeUseable(CBasePlayer *me, CBaseEntity *entity)
 
 	if (FClassnameIs(entity->pev, "hostage_entity"))
 	{
-		Vector chest	= entity->pev->origin + Vector(0, 0, 36);
-		Vector head	= entity->pev->origin + Vector(0, 0, 72 * 0.9);
-		Vector knees	= entity->pev->origin + Vector(0, 0, 18);
+		Vector chest	= entity->pev->origin + Vector(0, 0, HalfHumanHeight);
+		Vector head	= entity->pev->origin + Vector(0, 0, HumanHeight * 0.9);
+		Vector knees	= entity->pev->origin + Vector(0, 0, StepHeight);
 
 		UTIL_TraceLine(eye, chest, ignore_monsters, ignore_glass, me->edict(), &result);
 		if (result.flFraction < 1.0f)
@@ -7065,7 +7065,13 @@ void CBasePlayer::__MAKE_VHOOK(UpdateClientData)(void)
 
 	if (pev->deadflag == DEAD_NO && gpGlobals->time > m_tmNextRadarUpdate)
 	{
+		Vector vecOrigin = pev->origin;
 		m_tmNextRadarUpdate = gpGlobals->time + 1.0f;
+
+#ifdef REGAMEDLL_ADD
+		if (friendlyfire.string[0] == '2')
+			vecOrigin = g_vecZero;
+#endif // REGAMEDLL_ADD
 
 		if ((pev->origin - m_vLastOrigin).Length() >= 64)
 		{
@@ -7088,9 +7094,9 @@ void CBasePlayer::__MAKE_VHOOK(UpdateClientData)(void)
 				{
 					MESSAGE_BEGIN(MSG_ONE, gmsgRadar, NULL, pPlayer->pev);
 						WRITE_BYTE(entindex());
-						WRITE_COORD(pev->origin.x);
-						WRITE_COORD(pev->origin.y);
-						WRITE_COORD(pev->origin.z);
+						WRITE_COORD(vecOrigin.x);
+						WRITE_COORD(vecOrigin.y);
+						WRITE_COORD(vecOrigin.z);
 					MESSAGE_END();
 				}
 			}

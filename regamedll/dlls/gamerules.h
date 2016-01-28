@@ -189,50 +189,32 @@ class CItem;
 class CGameRules
 {
 public:
-	virtual void RefreshSkillData(void);
-	virtual void Think(void) = 0;
+	virtual void RefreshSkillData();
+	virtual void Think() = 0;
 	virtual BOOL IsAllowedToSpawn(CBaseEntity *pEntity) = 0;
-	virtual BOOL FAllowFlashlight(void) = 0;
+	virtual BOOL FAllowFlashlight() = 0;
 	virtual BOOL FShouldSwitchWeapon(CBasePlayer *pPlayer, CBasePlayerItem *pWeapon) = 0;
 	virtual BOOL GetNextBestWeapon(CBasePlayer *pPlayer, CBasePlayerItem *pCurrentWeapon) = 0;
-	virtual BOOL IsMultiplayer(void) = 0;
-	virtual BOOL IsDeathmatch(void) = 0;
-	virtual BOOL IsTeamplay(void)
-	{
-		return FALSE;
-	}
-	virtual BOOL IsCoOp(void) = 0;
-	virtual const char *GetGameDescription(void) { return "Counter-Strike"; }	// this is the game name that gets seen in the server browser
+	virtual BOOL IsMultiplayer() = 0;
+	virtual BOOL IsDeathmatch() = 0;
+	virtual BOOL IsTeamplay() { return FALSE; }
+	virtual BOOL IsCoOp() = 0;
+	virtual const char *GetGameDescription() { return "Counter-Strike"; }	// this is the game name that gets seen in the server browser
 	virtual BOOL ClientConnected(edict_t *pEntity, const char *pszName, const char *pszAddress, char *szRejectReason) = 0;
 	virtual void InitHUD(CBasePlayer *pl) = 0;
 	virtual void ClientDisconnected(edict_t *pClient) = 0;
 	virtual void UpdateGameMode(CBasePlayer *pPlayer) {};
 	virtual float FlPlayerFallDamage(CBasePlayer *pPlayer) = 0;
-	virtual BOOL FPlayerCanTakeDamage(CBasePlayer *pPlayer, CBaseEntity *pAttacker)
-	{
-		return TRUE;
-	}
-	virtual BOOL ShouldAutoAim(CBasePlayer *pPlayer, edict_t *target)
-	{
-		return TRUE;
-	}
+	virtual BOOL FPlayerCanTakeDamage(CBasePlayer *pPlayer, CBaseEntity *pAttacker) { return TRUE; }
+	virtual BOOL ShouldAutoAim(CBasePlayer *pPlayer, edict_t *target) { return TRUE; }
 	virtual void PlayerSpawn(CBasePlayer *pPlayer) = 0;
 	virtual void PlayerThink(CBasePlayer *pPlayer) = 0;
 	virtual BOOL FPlayerCanRespawn(CBasePlayer *pPlayer) = 0;
 	virtual float FlPlayerSpawnTime(CBasePlayer *pPlayer) = 0;
 	virtual edict_t *GetPlayerSpawnSpot(CBasePlayer *pPlayer);
-	virtual BOOL AllowAutoTargetCrosshair(void)
-	{
-		return TRUE;
-	}
-	virtual BOOL ClientCommand_DeadOrAlive(CBasePlayer *pPlayer, const char *pcmd)
-	{
-		return FALSE;
-	}
-	virtual BOOL ClientCommand(CBasePlayer *pPlayer, const char *pcmd)
-	{
-		return FALSE;
-	}
+	virtual BOOL AllowAutoTargetCrosshair() { return TRUE; }
+	virtual BOOL ClientCommand_DeadOrAlive(CBasePlayer *pPlayer, const char *pcmd) { return FALSE; }
+	virtual BOOL ClientCommand(CBasePlayer *pPlayer, const char *pcmd) { return FALSE; }
 	virtual void ClientUserInfoChanged(CBasePlayer *pPlayer, char *infobuffer) {};
 	virtual int IPointsForKill(CBasePlayer *pAttacker, CBasePlayer *pKilled) = 0;
 	virtual void PlayerKilled(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor) = 0;
@@ -253,50 +235,29 @@ public:
 	virtual int AmmoShouldRespawn(CBasePlayerAmmo *pAmmo) = 0;
 	virtual float FlAmmoRespawnTime(CBasePlayerAmmo *pAmmo) = 0;
 	virtual Vector VecAmmoRespawnSpot(CBasePlayerAmmo *pAmmo) = 0;
-	virtual float FlHealthChargerRechargeTime(void) = 0;
-	virtual float FlHEVChargerRechargeTime(void)
-	{
-		return 0.0f;
-	}
+	virtual float FlHealthChargerRechargeTime() = 0;
+	virtual float FlHEVChargerRechargeTime() { return 0.0f; }
 	virtual int DeadPlayerWeapons(CBasePlayer *pPlayer) = 0;
 	virtual int DeadPlayerAmmo(CBasePlayer *pPlayer) = 0;
 	virtual const char *GetTeamID(CBaseEntity *pEntity) = 0;
 	virtual int PlayerRelationship(CBasePlayer *pPlayer, CBaseEntity *pTarget) = 0;
-	virtual int GetTeamIndex(const char *pTeamName)
-	{
-		return -1;
-	}
-	virtual const char *GetIndexedTeamName(int teamIndex)
-	{
-		return "";
-	}
-	virtual BOOL IsValidTeam(const char *pTeamName)
-	{
-		return TRUE;
-	}
+	virtual int GetTeamIndex(const char *pTeamName) { return -1; }
+	virtual const char *GetIndexedTeamName(int teamIndex) { return ""; }
+	virtual BOOL IsValidTeam(const char *pTeamName) { return TRUE; }
 	virtual void ChangePlayerTeam(CBasePlayer *pPlayer, const char *pTeamName, BOOL bKill, BOOL bGib) {};
-	virtual const char *SetDefaultPlayerTeam(CBasePlayer *pPlayer)
-	{
-		return "";
-	}
-	virtual BOOL PlayTextureSounds(void)
-	{
-		return TRUE;
-	}
-	virtual BOOL FAllowMonsters(void) = 0;
-	virtual void EndMultiplayerGame(void) {};
+	virtual const char *SetDefaultPlayerTeam(CBasePlayer *pPlayer) { return ""; }
+	virtual BOOL PlayTextureSounds() { return TRUE; }
+	virtual BOOL FAllowMonsters() = 0;
+	virtual void EndMultiplayerGame() {};
 
 	// Stuff that is shared between client and server.
-	virtual BOOL IsFreezePeriod(void)
-	{
-		return m_bFreezePeriod;
-	}
-	virtual void ServerDeactivate(void) {};
-	virtual void CheckMapConditions(void) {};
+	virtual BOOL IsFreezePeriod() { return m_bFreezePeriod; }
+	virtual void ServerDeactivate() {};
+	virtual void CheckMapConditions() {};
 
 #ifdef HOOK_GAMEDLL
 
-	void RefreshSkillData_(void);
+	void RefreshSkillData_();
 	edict_t *GetPlayerSpawnSpot_(CBasePlayer *pPlayer);
 	BOOL CanHavePlayerItem_(CBasePlayer *pPlayer, CBasePlayerItem *pItem);
 	BOOL CanHaveAmmo_(CBasePlayer *pPlayer, const char *pszAmmoName, int iMaxCarry);
@@ -313,19 +274,16 @@ public:
 class CHalfLifeRules: public CGameRules
 {
 public:
-	CHalfLifeRules(void);
+	CHalfLifeRules();
 
-	virtual void Think(void);
+	virtual void Think();
 	virtual BOOL IsAllowedToSpawn(CBaseEntity *pEntity);
-	virtual BOOL FAllowFlashlight(void)
-	{
-		return TRUE;
-	}
+	virtual BOOL FAllowFlashlight() { return TRUE; }
 	virtual BOOL FShouldSwitchWeapon(CBasePlayer *pPlayer, CBasePlayerItem *pWeapon);
 	virtual BOOL GetNextBestWeapon(CBasePlayer *pPlayer, CBasePlayerItem *pCurrentWeapon);
-	virtual BOOL IsMultiplayer(void);
-	virtual BOOL IsDeathmatch(void);
-	virtual BOOL IsCoOp(void);
+	virtual BOOL IsMultiplayer();
+	virtual BOOL IsDeathmatch();
+	virtual BOOL IsCoOp();
 	virtual BOOL ClientConnected(edict_t *pEntity, const char *pszName, const char *pszAddress, char szRejectReason[128]);
 	virtual void InitHUD(CBasePlayer *pl);
 	virtual void ClientDisconnected(edict_t *pClient);
@@ -335,7 +293,7 @@ public:
 	virtual BOOL FPlayerCanRespawn(CBasePlayer *pPlayer);
 	virtual float FlPlayerSpawnTime(CBasePlayer *pPlayer);
 	virtual edict_t *GetPlayerSpawnSpot(CBasePlayer *pPlayer);
-	virtual BOOL AllowAutoTargetCrosshair(void);
+	virtual BOOL AllowAutoTargetCrosshair();
 	virtual int IPointsForKill(CBasePlayer *pAttacker, CBasePlayer *pKilled);
 	virtual void PlayerKilled(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor);
 	virtual void DeathNotice(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor);
@@ -353,25 +311,22 @@ public:
 	virtual int AmmoShouldRespawn(CBasePlayerAmmo *pAmmo);
 	virtual float FlAmmoRespawnTime(CBasePlayerAmmo *pAmmo);
 	virtual Vector VecAmmoRespawnSpot(CBasePlayerAmmo *pAmmo);
-	virtual float FlHealthChargerRechargeTime(void);
+	virtual float FlHealthChargerRechargeTime();
 	virtual int DeadPlayerWeapons(CBasePlayer *pPlayer);
 	virtual int DeadPlayerAmmo(CBasePlayer *pPlayer);
-	virtual const char *GetTeamID(CBaseEntity *pEntity)
-	{
-		return "";
-	};
+	virtual const char *GetTeamID(CBaseEntity *pEntity) { return ""; };
 	virtual int PlayerRelationship(CBasePlayer *pPlayer, CBaseEntity *pTarget);
-	virtual BOOL FAllowMonsters(void);
+	virtual BOOL FAllowMonsters();
 
 #ifdef HOOK_GAMEDLL
 
-	void Think_(void);
+	void Think_();
 	BOOL IsAllowedToSpawn_(CBaseEntity *pEntity);
 	BOOL FShouldSwitchWeapon_(CBasePlayer *pPlayer, CBasePlayerItem *pWeapon);
 	BOOL GetNextBestWeapon_(CBasePlayer *pPlayer, CBasePlayerItem *pCurrentWeapon);
-	BOOL IsMultiplayer_(void);
-	BOOL IsDeathmatch_(void);
-	BOOL IsCoOp_(void);
+	BOOL IsMultiplayer_();
+	BOOL IsDeathmatch_();
+	BOOL IsCoOp_();
 	BOOL ClientConnected_(edict_t *pEntity, const char *pszName, const char *pszAddress, char szRejectReason[128]);
 	void InitHUD_(CBasePlayer *pl);
 	void ClientDisconnected_(edict_t *pClient);
@@ -381,7 +336,7 @@ public:
 	BOOL FPlayerCanRespawn_(CBasePlayer *pPlayer);
 	float FlPlayerSpawnTime_(CBasePlayer *pPlayer);
 	edict_t *GetPlayerSpawnSpot_(CBasePlayer *pPlayer);
-	BOOL AllowAutoTargetCrosshair_(void);
+	BOOL AllowAutoTargetCrosshair_();
 	int IPointsForKill_(CBasePlayer *pAttacker, CBasePlayer *pKilled);
 	void PlayerKilled_(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor);
 	void DeathNotice_(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor);
@@ -399,11 +354,11 @@ public:
 	int AmmoShouldRespawn_(CBasePlayerAmmo *pAmmo);
 	float FlAmmoRespawnTime_(CBasePlayerAmmo *pAmmo);
 	Vector VecAmmoRespawnSpot_(CBasePlayerAmmo *pAmmo);
-	float FlHealthChargerRechargeTime_(void);
+	float FlHealthChargerRechargeTime_();
 	int DeadPlayerWeapons_(CBasePlayer *pPlayer);
 	int DeadPlayerAmmo_(CBasePlayer *pPlayer);
 	int PlayerRelationship_(CBasePlayer *pPlayer, CBaseEntity *pTarget);
-	BOOL FAllowMonsters_(void);
+	BOOL FAllowMonsters_();
 
 #endif // HOOK_GAMEDLL
 
@@ -412,17 +367,17 @@ public:
 class CHalfLifeMultiplay: public CGameRules
 {
 public:
-	CHalfLifeMultiplay(void);
+	CHalfLifeMultiplay();
 public:
-	virtual void RefreshSkillData(void);
-	virtual void Think(void);
+	virtual void RefreshSkillData();
+	virtual void Think();
 	virtual BOOL IsAllowedToSpawn(CBaseEntity *pEntity);
-	virtual BOOL FAllowFlashlight(void);
+	virtual BOOL FAllowFlashlight();
 	virtual BOOL FShouldSwitchWeapon(CBasePlayer *pPlayer, CBasePlayerItem *pWeapon);
 	virtual BOOL GetNextBestWeapon(CBasePlayer *pPlayer, CBasePlayerItem *pCurrentWeapon);
-	virtual BOOL IsMultiplayer(void);
-	virtual BOOL IsDeathmatch(void);
-	virtual BOOL IsCoOp(void);
+	virtual BOOL IsMultiplayer();
+	virtual BOOL IsDeathmatch();
+	virtual BOOL IsCoOp();
 	virtual BOOL ClientConnected(edict_t *pEntity, const char *pszName, const char *pszAddress, char szRejectReason[128]);
 	virtual void InitHUD(CBasePlayer *pl);
 	virtual void ClientDisconnected(edict_t *pClient);
@@ -434,7 +389,7 @@ public:
 	virtual BOOL FPlayerCanRespawn(CBasePlayer *pPlayer);
 	virtual float FlPlayerSpawnTime(CBasePlayer *pPlayer);
 	virtual edict_t *GetPlayerSpawnSpot(CBasePlayer *pPlayer);
-	virtual BOOL AllowAutoTargetCrosshair(void);
+	virtual BOOL AllowAutoTargetCrosshair();
 	virtual BOOL ClientCommand_DeadOrAlive(CBasePlayer *pPlayer, const char *pcmd);
 	virtual BOOL ClientCommand(CBasePlayer *pPlayer, const char *pcmd);
 	virtual void ClientUserInfoChanged(CBasePlayer *pPlayer, char *infobuffer);
@@ -458,52 +413,43 @@ public:
 	virtual int AmmoShouldRespawn(CBasePlayerAmmo *pAmmo);
 	virtual float FlAmmoRespawnTime(CBasePlayerAmmo *pAmmo);
 	virtual Vector VecAmmoRespawnSpot(CBasePlayerAmmo *pAmmo);
-	virtual float FlHealthChargerRechargeTime(void);
-	virtual float FlHEVChargerRechargeTime(void);
+	virtual float FlHealthChargerRechargeTime();
+	virtual float FlHEVChargerRechargeTime();
 	virtual int DeadPlayerWeapons(CBasePlayer *pPlayer);
 	virtual int DeadPlayerAmmo(CBasePlayer *pPlayer);
-	virtual const char *GetTeamID(CBaseEntity *pEntity)
-	{
-		return "";
-	}
+	virtual const char *GetTeamID(CBaseEntity *pEntity) { return ""; }
 	virtual int PlayerRelationship(CBasePlayer *pPlayer, CBaseEntity *pTarget);
-	virtual BOOL PlayTextureSounds(void)
-	{
-		return FALSE;
-	}
-	virtual BOOL FAllowMonsters(void);
-	virtual void EndMultiplayerGame(void)
-	{
-		GoToIntermission();
-	}
-	virtual void ServerDeactivate(void);
-	virtual void CheckMapConditions(void);
+	virtual BOOL PlayTextureSounds() { return FALSE;}
+	virtual BOOL FAllowMonsters();
+	virtual void EndMultiplayerGame() { GoToIntermission();}
+	virtual void ServerDeactivate();
+	virtual void CheckMapConditions();
 
 	// Recreate all the map entities from the map data (preserving their indices),
 	// then remove everything else except the players.
 	// Also get rid of all world decals.
-	virtual void CleanUpMap(void);
+	virtual void CleanUpMap();
 
-	virtual void RestartRound(void);
+	virtual void RestartRound();
 
 	// check if the scenario has been won/lost
-	virtual void CheckWinConditions(void);
-	virtual void RemoveGuns(void);
-	virtual void GiveC4(void);
-	virtual void ChangeLevel(void);
-	virtual void GoToIntermission(void);
+	virtual void CheckWinConditions();
+	virtual void RemoveGuns();
+	virtual void GiveC4();
+	virtual void ChangeLevel();
+	virtual void GoToIntermission();
 
 #ifdef HOOK_GAMEDLL
 
-	void RefreshSkillData_(void);
-	void Think_(void);
+	void RefreshSkillData_();
+	void Think_();
 	BOOL IsAllowedToSpawn_(CBaseEntity *pEntity);
-	BOOL FAllowFlashlight_(void);
+	BOOL FAllowFlashlight_();
 	BOOL FShouldSwitchWeapon_(CBasePlayer *pPlayer, CBasePlayerItem *pWeapon);
 	BOOL GetNextBestWeapon_(CBasePlayer *pPlayer, CBasePlayerItem *pCurrentWeapon);
-	BOOL IsMultiplayer_(void);
-	BOOL IsDeathmatch_(void);
-	BOOL IsCoOp_(void);
+	BOOL IsMultiplayer_();
+	BOOL IsDeathmatch_();
+	BOOL IsCoOp_();
 	BOOL ClientConnected_(edict_t *pEntity, const char *pszName, const char *pszAddress, char szRejectReason[128]);
 	void InitHUD_(CBasePlayer *pl);
 	void ClientDisconnected_(edict_t *pClient);
@@ -515,7 +461,7 @@ public:
 	BOOL FPlayerCanRespawn_(CBasePlayer *pPlayer);
 	float FlPlayerSpawnTime_(CBasePlayer *pPlayer);
 	edict_t *GetPlayerSpawnSpot_(CBasePlayer *pPlayer);
-	BOOL AllowAutoTargetCrosshair_(void);
+	BOOL AllowAutoTargetCrosshair_();
 	BOOL ClientCommand_DeadOrAlive_(CBasePlayer *pPlayer, const char *pcmd);
 	BOOL ClientCommand_(CBasePlayer *pPlayer, const char *pcmd);
 	void ClientUserInfoChanged_(CBasePlayer *pPlayer, char *infobuffer);
@@ -537,21 +483,21 @@ public:
 	int AmmoShouldRespawn_(CBasePlayerAmmo *pAmmo);
 	float FlAmmoRespawnTime_(CBasePlayerAmmo *pAmmo);
 	Vector VecAmmoRespawnSpot_(CBasePlayerAmmo *pAmmo);
-	float FlHealthChargerRechargeTime_(void);
-	float FlHEVChargerRechargeTime_(void);
+	float FlHealthChargerRechargeTime_();
+	float FlHEVChargerRechargeTime_();
 	int DeadPlayerWeapons_(CBasePlayer *pPlayer);
 	int DeadPlayerAmmo_(CBasePlayer *pPlayer);
 	int PlayerRelationship_(CBasePlayer *pPlayer, CBaseEntity *pTarget);
-	BOOL FAllowMonsters_(void);
-	void ServerDeactivate_(void);
-	void CheckMapConditions_(void);
-	void CleanUpMap_(void);
-	void RestartRound_(void);
-	void CheckWinConditions_(void);
-	void RemoveGuns_(void);
-	void GiveC4_(void);
-	void ChangeLevel_(void);
-	void GoToIntermission_(void);
+	BOOL FAllowMonsters_();
+	void ServerDeactivate_();
+	void CheckMapConditions_();
+	void CleanUpMap_();
+	void RestartRound_();
+	void CheckWinConditions_();
+	void RemoveGuns_();
+	void GiveC4_();
+	void ChangeLevel_();
+	void GoToIntermission_();
 
 #endif // HOOK_GAMEDLL
 
@@ -575,68 +521,53 @@ public:
 	void TerminateRound(float tmDelay, int iWinStatus);
 
 	// Check various conditions to end the map.
-	bool CheckGameOver(void);
-	bool CheckTimeLimit(void);
-	bool CheckMaxRounds(void);
-	bool CheckWinLimit(void);
+	bool CheckGameOver();
+	bool CheckTimeLimit();
+	bool CheckMaxRounds();
+	bool CheckWinLimit();
 
-	void CheckFreezePeriodExpired(void);
-	void CheckRoundTimeExpired(void);
+	void CheckFreezePeriodExpired();
+	void CheckRoundTimeExpired();
 
-	void CheckLevelInitialized(void);
-	void CheckRestartRound(void);
+	void CheckLevelInitialized();
+	void CheckRestartRound();
 
-	BOOL IsCareer(void);
+	BOOL IsCareer();
 	void QueueCareerRoundEndMenu(float tmDelay, int iWinStatus);
 	void SetCareerMatchLimit(int minWins, int winDifference);
-	bool IsInCareerRound(void);
-	void CareerRestart(void);
-	bool ShouldSkipSpawn(void)
-	{
-		return m_bSkipSpawn;
-	}
-	void MarkSpawnSkipped(void)
-	{
-		m_bSkipSpawn = false;
-	}
-	NOXREF void PlayerJoinedTeam(CBasePlayer *pPlayer)
-	{
-		;
-	}
-	float TimeRemaining(void)
-	{
-		return m_iRoundTimeSecs - gpGlobals->time + m_fRoundCount;
-	}
+	bool IsInCareerRound();
+	void CareerRestart();
+	bool ShouldSkipSpawn() const { return m_bSkipSpawn; }
+	void MarkSpawnSkipped() { m_bSkipSpawn = false; }
+	NOXREF void PlayerJoinedTeam(CBasePlayer *pPlayer) { }
+	float TimeRemaining() { return m_iRoundTimeSecs - gpGlobals->time + m_fRoundCount; }
 	BOOL TeamFull(int team_id);
 	BOOL TeamStacked(int newTeam_id, int curTeam_id);
-	bool IsVIPQueueEmpty(void);
+	bool IsVIPQueueEmpty();
 	bool AddToVIPQueue(CBasePlayer *toAdd);
 
 	// VIP FUNCTIONS
-	void PickNextVIP(void);
-	void StackVIPQueue(void);
-	void ResetCurrentVIP(void);
+	void PickNextVIP();
+	void StackVIPQueue();
+	void ResetCurrentVIP();
 
-	void BalanceTeams(void);
-	void SwapAllPlayers(void);
-	void UpdateTeamScores(void);
+	void BalanceTeams();
+	void SwapAllPlayers();
+	void UpdateTeamScores();
 	void DisplayMaps(CBasePlayer *player, int iVote);
-	void ResetAllMapVotes(void);
+	void ResetAllMapVotes();
 	void ProcessMapVote(CBasePlayer *player, int iVote);
 
 	// BOMB MAP FUNCTIONS
-	BOOL IsThereABomber(void);
-	BOOL IsThereABomb(void);
+	BOOL IsThereABomber();
+	BOOL IsThereABomb();
 
-	bool IsMatchStarted(void)
-	{
-		return (m_fTeamCount != 0.0f || m_fCareerRoundMenuTime != 0.0f || m_fCareerMatchMenuTime != 0.0f);
-	}
+	bool IsMatchStarted() { return (m_fTeamCount != 0.0f || m_fCareerRoundMenuTime != 0.0f || m_fCareerMatchMenuTime != 0.0f); }
 	void SendMOTDToClient(edict_t *client);
 
 private:
-	bool HasRoundTimeExpired(void);
-	bool IsBombPlanted(void);
+	bool HasRoundTimeExpired();
+	bool IsBombPlanted();
 	void MarkLivingPlayersOnTeamAsNotReceivingMoneyNextRound(int iTeam);
 
 public:
@@ -750,12 +681,12 @@ typedef struct mapcycle_s
 class CMapInfo: public CPointEntity
 {
 public:
-	virtual void Spawn(void);
+	virtual void Spawn();
 	virtual void KeyValue(KeyValueData *pkvd);
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
+	void Spawn_();
 	void KeyValue_(KeyValueData *pkvd);
 
 #endif // HOOK_GAMEDLL
@@ -796,33 +727,33 @@ extern cvar_t *sv_clienttrace;
 extern CHalfLifeMultiplay *g_pMPGameRules;
 extern char mp_com_token[ COM_TOKEN_LEN ];
 
-CGameRules *InstallGameRules(void);
+CGameRules *InstallGameRules();
 
 /*
 * Multiplay gamerules
 */
 
-bool IsBotSpeaking(void);
-void SV_Continue_f(void);
-void SV_Tutor_Toggle_f(void);
-void SV_Career_Restart_f(void);
-void SV_Career_EndRound_f(void);
-void SV_CareerAddTask_f(void);
-void SV_CareerMatchLimit_f(void);
+bool IsBotSpeaking();
+void SV_Continue_f();
+void SV_Tutor_Toggle_f();
+void SV_Career_Restart_f();
+void SV_Career_EndRound_f();
+void SV_CareerAddTask_f();
+void SV_CareerMatchLimit_f();
 void Broadcast(const char *sentence);
 char *GetTeam(int teamNo);
 void EndRoundMessage(const char *sentence, int event);
 void ReadMultiplayCvars(CHalfLifeMultiplay *mp);
 void DestroyMapCycle(mapcycle_t *cycle);
 
-char *MP_COM_GetToken(void);
+char *MP_COM_GetToken();
 char *MP_COM_Parse(char *data);
 int MP_COM_TokenWaiting(char *buffer);
 
 int ReloadMapCycleFile(char *filename, mapcycle_t *cycle);
-int CountPlayers(void);
+int CountPlayers();
 void ExtractCommandString(char *s, char *szCommand);
-int GetMapCount(void);
+int GetMapCount();
 
 #ifdef HOOK_GAMEDLL
 
