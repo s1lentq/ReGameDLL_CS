@@ -2463,3 +2463,16 @@ float_precision UTIL_GetPlayerGaitYaw(int playerIndex)
 
 	return 0;
 }
+
+#ifdef REGAMEDLL_ADD
+/* Snippet from amxmodx */
+int UTIL_ReadFlags(const char* c)
+{
+	int flags = 0;
+
+	while (*c)
+		flags |= (1 << (*c++ - 'a'));
+
+	return flags;
+}
+#endif // REGAMEDLL_ADD

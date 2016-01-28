@@ -516,4 +516,8 @@ typedef int (CSaveRestoreBuffer::*CSAVERESTOREBUFFER_POINTER)(const char *,const
 
 #endif // HOOK_GAMEDLL
 
+#ifdef REGAMEDLL_ADD
+int UTIL_ReadFlags(const char* c);
+#endif // REGAMEDLL
+
 #endif // UTIL_H

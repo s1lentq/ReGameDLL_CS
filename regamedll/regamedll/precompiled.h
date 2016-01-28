@@ -48,3 +48,7 @@
 #include "regamedll_interfaces_impl.h"
 #include "regamedll_api.h"
 #include "regamedll_api_impl.h"
+
+#ifdef REGAMEDLL_ADD
+#include "regamedll_add.h"
+#endif // REGAMEDLL_ADD
