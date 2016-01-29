@@ -570,6 +570,9 @@
     <ClCompile Include="..\public\tier0\dbg.cpp">
       <Filter>public\tier0</Filter>
     </ClCompile>
+    <ClCompile Include="..\regamedll\classes_dummy.cpp">
+      <Filter>regamedll</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\hookers\memory.h">

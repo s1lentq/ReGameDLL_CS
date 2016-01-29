@@ -226,6 +226,7 @@ class RegamedllSrc {
 					exclude "tier0/platform_linux.cpp"
 				} else {
 					exclude "tier0/platform_win32.cpp"
+					exclude "classes_dummy.cpp"
 				}
 
 				//exclude "interface.cpp"
