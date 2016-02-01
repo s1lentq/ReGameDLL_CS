@@ -29,7 +29,9 @@ class RegamedllVersionInfo {
 		return sb.toString()
 	}
 	String asVersion() {
-		sprintf("%i.%i.%i", majorVersion, minorVersion, countCommit)
+		StringBuilder sb = new StringBuilder()
+		sb.append(majorVersion).append('.' + minorVersion).append('.' + countCommit);
+		return sb;
 	}
 	String asMavenVersion() {
 		format('.', '-', true)
