@@ -61,6 +61,8 @@
 #define PLAYER_DUCKING_MULTIPLIER		0.333
 #define PM_CHECKSTUCK_MINTIME			0.05	// Don't check again too quickly.
 
+#define PLAYER_LONGJUMP_SPEED			350.0f	// how fast we longjump
+
 // Ducking time
 #define TIME_TO_DUCK				0.4
 #define STUCK_MOVEUP				1

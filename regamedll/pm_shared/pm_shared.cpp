@@ -2440,11 +2440,41 @@ void PM_Jump(void)
 		PM_PlayStepSound(PM_MapTextureTypeStepType(pmove->chtexturetype), fvol);
 	}
 
-	pmove->velocity[2] = sqrt((float_precision)(2 * 800 * 45));
+#ifdef REGAMEDLL_ADD
+	// See if user can super long jump?
+	bool cansuperjump = (pmove->PM_Info_ValueForKey(pmove->physinfo, "slj")[0] == '1');
+
+	// Acclerate upward
+	// If we are ducking...
+	if (pmove->bInDuck || (pmove->flags & FL_DUCKING))
+	{
+		// Adjust for super long jump module
+		// UNDONE -- note this should be based on forward angles, not current velocity.
+		if (cansuperjump && (pmove->cmd.buttons & IN_DUCK) && pmove->flDuckTime > 0 && Length(pmove->velocity) > 50)
+		{
+			pmove->punchangle[0] = -5.0f;
+
+			for (int i  = 0; i < 2; ++i)
+			{
+				pmove->velocity[i] = pmove->forward[i] * PLAYER_LONGJUMP_SPEED * 1.6f;
+			}
+
+			pmove->velocity[2] = sqrt(2 * 800 * 56.0f);
+		}
+		else
+		{
+			pmove->velocity[2] = sqrt(2 * 800 * 45.0f);
+		}
+	}
+	else
+#endif // REGAMEDLL_ADD
+	{
+		pmove->velocity[2] = sqrt((float_precision)(2 * 800 * 45.0f));
+	}
 
 	if (pmove->fuser2 > 0.0f)
 	{
-		float_precision flRatio = (100 - pmove->fuser2 * 0.001 * 19) * 0.01;
+		float_precision flRatio = (100 - pmove->fuser2 * 0.001f * 19.0f) * 0.01f;
 		pmove->velocity[2] *= flRatio;
 	}
 
