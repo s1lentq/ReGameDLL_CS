@@ -244,7 +244,6 @@ void CBreakable::__MAKE_VHOOK(Restart)(void)
 	else
 		pev->takedamage = DAMAGE_YES;
 
-	pev->deadflag = DEAD_NO;
 	pev->health = m_flHealth;
 	pev->effects &= ~EF_NODRAW;
 	m_angle = pev->angles.y;
@@ -508,11 +507,11 @@ void CBreakable::BreakTouch(CBaseEntity *pOther)
 		UTIL_MakeVectors(pev->angles);
 
 		g_vecAttackDir = gpGlobals->v_forward;
-
+#ifndef REGAMEDLL_FIXES
 		pev->takedamage = DAMAGE_NO;
 		pev->deadflag = DEAD_DEAD;
 		pev->effects = EF_NODRAW;
-
+#endif // REGAMEDLL_FIXES
 		Die();
 	}
 
@@ -561,11 +560,11 @@ void CBreakable::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller
 		pev->angles.y = m_angle;
 		UTIL_MakeVectors(pev->angles);
 		g_vecAttackDir = gpGlobals->v_forward;
-
+#ifndef REGAMEDLL_FIXES
 		pev->takedamage = DAMAGE_NO;
 		pev->deadflag = DEAD_DEAD;
 		pev->effects = EF_NODRAW;
-
+#endif // REGAMEDLL_FIXES
 		Die();
 	}
 }
@@ -654,9 +653,11 @@ int CBreakable::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pev
 
 	if (pev->health <= 0)
 	{
-		pev->takedamage = 0;
+#ifndef REGAMEDLL_FIXES
+		pev->takedamage = DAMAGE_NO;
 		pev->deadflag = DEAD_DEAD;
 		pev->effects = EF_NODRAW;
+#endif // REGAMEDLL_FIXES
 		Die();
 
 		if (m_flDelay == 0)
@@ -684,6 +685,12 @@ void CBreakable::Die(void)
 	char cFlag = 0;
 	int pitch;
 	float fvol;
+
+#ifdef REGAMEDLL_FIXES
+	pev->takedamage = DAMAGE_NO;
+	pev->deadflag = DEAD_DEAD;
+	pev->effects = EF_NODRAW;
+#endif // REGAMEDLL_FIXES
 
 	pitch = 95 + RANDOM_LONG(0, 29);
 
