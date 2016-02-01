@@ -2272,6 +2272,7 @@ void CTriggerCamera::FollowTarget(void)
 		{
 			SET_VIEW(m_hPlayer->edict(), m_hPlayer->edict());
 			((CBasePlayer *)m_hPlayer)->EnableControl(TRUE);
+			((CBasePlayer *)m_hPlayer)->ResetMaxSpeed();
 		}
 
 		SUB_UseTargets(this, USE_TOGGLE, 0);
