@@ -146,7 +146,6 @@ typedef struct
 	char *name;
 
 } activity_map_t;
-/* size: 8, cachelines: 1, members: 2 */
 
 extern activity_map_t activity_map[];
 

@@ -265,22 +265,3 @@ void FollowState::__MAKE_VHOOK(OnExit)(CCSBot *me)
 {
 	;
 }
-
-#ifdef HOOK_GAMEDLL
-
-void FollowState::OnEnter(CCSBot *me)
-{
-	OnEnter_(me);
-}
-
-void FollowState::OnUpdate(CCSBot *me)
-{
-	OnUpdate_(me);
-}
-
-void FollowState::OnExit(CCSBot *me)
-{
-	OnExit_(me);
-}
-
-#endif // HOOK_GAMEDLL

@@ -15,7 +15,7 @@ void InvestigateNoiseState::AttendCurrentNoise(CCSBot *me)
 	if (me->IsWellPastSafe() && me->HasNotSeenEnemyForLongTime() && me->GetNoisePriority() != PRIORITY_HIGH)
 		me->GetChatter()->HeardNoise(me->GetNoisePosition());
 
-	// figure out how to get to the noise		
+	// figure out how to get to the noise
 	me->PrintIfWatched("Attending to noise...\n");
 	me->ComputePath(me->GetNoiseArea(), &m_checkNoisePosition, SAFEST_ROUTE);
 
@@ -115,22 +115,3 @@ void InvestigateNoiseState::__MAKE_VHOOK(OnExit)(CCSBot *me)
 	// reset to run mode in case we were sneaking about
 	me->Run();
 }
-
-#ifdef HOOK_GAMEDLL
-
-void InvestigateNoiseState::OnEnter(CCSBot *me)
-{
-	OnEnter_(me);
-}
-
-void InvestigateNoiseState::OnUpdate(CCSBot *me)
-{
-	OnUpdate_(me);
-}
-
-void InvestigateNoiseState::OnExit(CCSBot *me)
-{
-	OnExit_(me);
-}
-
-#endif // HOOK_GAMEDLL

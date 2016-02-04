@@ -382,12 +382,3 @@ void CCSBot::__MAKE_VHOOK(OnEvent)(GameEventType event, CBaseEntity *entity, CBa
 		m_noiseTimestamp = gpGlobals->time;
 	}
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CCSBot::OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
-{
-	OnEvent_(event, entity, other);
-}
-
-#endif // HOOK_GAMEDLL

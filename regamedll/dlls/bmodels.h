@@ -61,55 +61,52 @@
 class CFuncWall: public CBaseEntity
 {
 public:
-	virtual void Spawn(void);
+	virtual void Spawn();
 
 	// Bmodels don't go across transitions
-	virtual int ObjectCaps(void)
-	{
-		return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION;
-	}
+	virtual int ObjectCaps() { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
+	void Spawn_();
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #endif // HOOK_GAMEDLL
 
-};/* size: 152, cachelines: 3, members: 1 */
+};
 
 /* <1c4e1> ../cstrike/dlls/bmodels.cpp:86 */
 class CFuncWallToggle: public CFuncWall
 {
 public:
-	virtual void Spawn(void);
+	virtual void Spawn();
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
+	void Spawn_();
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #endif // HOOK_GAMEDLL
 
 public:
-	void TurnOff(void);
-	void TurnOn(void);
-	BOOL IsOn(void);
+	void TurnOff();
+	void TurnOn();
+	BOOL IsOn();
 
-};/* size: 152, cachelines: 3, members: 1 */
+};
 
 /* <1c52e> ../cstrike/dlls/bmodels.cpp:147 */
 class CFuncConveyor: public CFuncWall
 {
 public:
-	virtual void Spawn(void);
+	virtual void Spawn();
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
+	void Spawn_();
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #endif // HOOK_GAMEDLL
@@ -117,7 +114,7 @@ public:
 public:
 	void UpdateSpeed(float speed);
 
-};/* size: 152, cachelines: 3, members: 1 */
+};
 
 // A simple entity that looks solid but lets you walk through it.
 
@@ -125,16 +122,13 @@ public:
 class CFuncIllusionary: public CBaseToggle
 {
 public:
-	virtual void Spawn(void);
+	virtual void Spawn();
 	virtual void KeyValue(KeyValueData *pkvd);
-	virtual int ObjectCaps(void)
-	{
-		return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION;
-	}
+	virtual int ObjectCaps() { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
+	void Spawn_();
 	void KeyValue_(KeyValueData *pkvd);
 
 #endif // HOOK_GAMEDLL
@@ -142,7 +136,7 @@ public:
 public:
 	void EXPORT SloshTouch(CBaseEntity *pOther);
 
-};/* size: 312, cachelines: 5, members: 1 */
+};
 
 // Monster only clip brush
 //
@@ -156,43 +150,37 @@ public:
 class CFuncMonsterClip: public CFuncWall
 {
 public:
-	virtual void Spawn(void);
+	virtual void Spawn();
 
 	// Clear out func_wall's use function
-	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-	{
-		;
-	}
+	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value) {}
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
+	void Spawn_();
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #endif // HOOK_GAMEDLL
 
-};/* size: 152, cachelines: 3, members: 1 */
+};
 
 /* <1c6fa> ../cstrike/dlls/bmodels.cpp:274 */
 class CFuncRotating: public CBaseEntity
 {
 public:
 	// basic functions
-	virtual void Spawn(void);
-	virtual void Precache(void);
+	virtual void Spawn();
+	virtual void Precache();
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
-	virtual int ObjectCaps(void)
-	{
-		return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION;
-	}
+	virtual int ObjectCaps() { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 	virtual void Blocked(CBaseEntity *pOther);
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Precache_(void);
+	void Spawn_();
+	void Precache_();
 	void KeyValue_(KeyValueData *pkvd);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
@@ -201,11 +189,11 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	void EXPORT SpinUp(void);
-	void EXPORT SpinDown(void);
+	void EXPORT SpinUp();
+	void EXPORT SpinDown();
 	void EXPORT HurtTouch(CBaseEntity *pOther);
 	void EXPORT RotatingUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-	void EXPORT Rotate(void);
+	void EXPORT Rotate();
 	void RampPitchVol(int fUp);
 
 public:
@@ -217,27 +205,23 @@ public:
 	float m_flVolume;
 	float m_pitch;
 	int m_sounds;
-
-};/* size: 172, cachelines: 3, members: 7 */
+};
 
 /* <1c748> ../cstrike/dlls/bmodels.cpp:720 */
 class CPendulum: public CBaseEntity
 {
 public:
-	virtual void Spawn(void);
+	virtual void Spawn();
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
-	virtual int ObjectCaps(void)
-	{
-		return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION;
-	}
+	virtual int ObjectCaps() { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 	virtual void Touch(CBaseEntity *pOther);
 	virtual void Blocked(CBaseEntity *pOther);
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
+	void Spawn_();
 	void KeyValue_(KeyValueData *pkvd);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
@@ -247,9 +231,9 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	void EXPORT Swing(void);
+	void EXPORT Swing();
 	void EXPORT PendulumUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-	void EXPORT Stop(void);
+	void EXPORT Stop();
 
 	// this touch func makes the pendulum a rope
 	void EXPORT RopeTouch(CBaseEntity *pOther);
@@ -266,22 +250,8 @@ public:
 
 	Vector m_center;
 	Vector m_start;
-
-};/* size: 200, cachelines: 4, members: 10 */
+};
 
 Vector VecBModelOrigin(entvars_t *pevBModel);
-
-#ifdef HOOK_GAMEDLL
-
-// linked objects
-C_DLLEXPORT void func_wall(entvars_t *pev);
-C_DLLEXPORT void func_wall_toggle(entvars_t *pev);
-C_DLLEXPORT void func_conveyor(entvars_t *pev);
-C_DLLEXPORT void func_illusionary(entvars_t *pev);
-C_DLLEXPORT void func_monsterclip(entvars_t *pev);
-C_DLLEXPORT void func_rotating(entvars_t *pev);
-C_DLLEXPORT void func_pendulum(entvars_t *pev);
-
-#endif // HOOK_GAMEDLL
 
 #endif // BMODELS_H

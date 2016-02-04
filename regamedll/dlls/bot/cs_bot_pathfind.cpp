@@ -3,7 +3,7 @@
 // Determine actual path positions bot will move between along the path
 
 /* <38db02> ../cstrike/dlls/bot/cs_bot_pathfind.cpp:30 */
-bool CCSBot::ComputePathPositions(void)
+bool CCSBot::ComputePathPositions()
 {
 	if (m_pathLength == 0)
 		return false;
@@ -127,7 +127,7 @@ bool CCSBot::ComputePathPositions(void)
 // If next step of path uses a ladder, prepare to traverse it
 
 /* <38d424> ../cstrike/dlls/bot/cs_bot_pathfind.cpp:155 */
-void CCSBot::SetupLadderMovement(void)
+void CCSBot::SetupLadderMovement()
 {
 	if (m_pathIndex < 1 || m_pathLength == 0)
 		return;
@@ -149,7 +149,7 @@ void CCSBot::SetupLadderMovement(void)
 			m_pathLadderFaceIn = true;
 			PrintIfWatched("APPROACH_ASCENDING_LADDER\n");
 			m_goalPosition = m_pathLadder->m_bottom;
-			
+
 			AddDirectionVector(&m_goalPosition, m_pathLadder->m_dir, HalfHumanWidth * 2.0f);
 			m_lookAheadAngle = DirectionToAngle(OppositeDirection(m_pathLadder->m_dir));
 		}
@@ -223,7 +223,7 @@ void CCSBot::ComputeLadderEndpoint(bool isAscending)
 // TODO: Need Push() and Pop() for run/walk context to keep ladder speed contained.
 
 /* <38de76> ../cstrike/dlls/bot/cs_bot_pathfind.cpp:248 */
-bool CCSBot::UpdateLadderMovement(void)
+bool CCSBot::UpdateLadderMovement()
 {
 	if (m_pathLadder == NULL)
 		return false;
@@ -1047,7 +1047,7 @@ void CCSBot::SetPathIndex(int newIndex)
 // Return true if nearing a jump in the path
 
 /* <38cafc> ../cstrike/dlls/bot/cs_bot_pathfind.cpp:1077 */
-bool CCSBot::IsNearJump(void) const
+bool CCSBot::IsNearJump() const
 {
 	if (m_pathIndex == 0 || m_pathIndex >= m_pathLength)
 		return false;
@@ -1614,7 +1614,7 @@ bool CCSBot::ComputePath(CNavArea *goalArea, const Vector *goal, RouteType route
 	m_repathTimer.Start(RANDOM_FLOAT(0.4f, 0.6f));
 
 	DestroyPath();
-	
+
 	CNavArea *startArea = m_lastKnownArea;
 	if (startArea == NULL)
 		return false;
@@ -1733,7 +1733,7 @@ bool CCSBot::ComputePath(CNavArea *goalArea, const Vector *goal, RouteType route
 // Return estimated distance left to travel along path
 
 /* <390ef6> ../cstrike/dlls/bot/cs_bot_pathfind.cpp:1798 */
-float CCSBot::GetPathDistanceRemaining(void) const
+float CCSBot::GetPathDistanceRemaining() const
 {
 	if (!HasPath())
 		return -1.0f;
@@ -1755,7 +1755,7 @@ float CCSBot::GetPathDistanceRemaining(void) const
 // Draw a portion of our current path for debugging.
 
 /* <390fb1> ../cstrike/dlls/bot/cs_bot_pathfind.cpp:1821 */
-void CCSBot::DrawPath(void)
+void CCSBot::DrawPath()
 {
 	if (!HasPath())
 		return;

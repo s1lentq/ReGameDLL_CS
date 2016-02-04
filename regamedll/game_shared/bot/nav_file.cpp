@@ -18,26 +18,13 @@
 #include <assert.h>
 
 #ifndef _WIN32
-
 #include <unistd.h>
-
 #endif // _WIN32
-
-/*
-* Globals initialization
-*/
-#ifndef HOOK_GAMEDLL
-
-static PlaceDirectory placeDirectory;
-
-#else // HOOK_GAMEDLL
 
 PlaceDirectory placeDirectory;
 
-#endif // HOOK_GAMEDLL
-
 /* <4edbfc> ../game_shared/bot/nav_file.cpp:60 */
-void PlaceDirectory::Reset(void)
+void PlaceDirectory::Reset()
 {
 	m_directory.clear();
 }
@@ -504,7 +491,7 @@ void CNavArea::Load(SteamFile *file, unsigned int version)
 }
 
 /* <4f029e> ../game_shared/bot/nav_file.cpp:562 */
-NavErrorType CNavArea::PostLoad(void)
+NavErrorType CNavArea::PostLoad()
 {
 	NavErrorType error = NAV_OK;
 
@@ -864,7 +851,7 @@ void SanityCheckNavigationMap(const char *mapName)
 }
 
 /* <4f19c7> ../game_shared/bot/nav_file.cpp:947 */
-NavErrorType LoadNavigationMap(void)
+NavErrorType LoadNavigationMap()
 {
 	// since the navigation map is destroyed on map change,
 	// if it exists it has already been loaded for this map

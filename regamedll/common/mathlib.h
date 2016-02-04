@@ -55,7 +55,7 @@ typedef vec_t vec3_t[3];
 typedef vec_t vec4_t[4];
 
 /* <42bac> ../common/mathlib.h:18 */
-typedef int fixed16_t; /* size: 4 */
+typedef int fixed16_t;
 
 /* <42bb7> ../common/mathlib.h:60 */
 typedef union DLONG_u

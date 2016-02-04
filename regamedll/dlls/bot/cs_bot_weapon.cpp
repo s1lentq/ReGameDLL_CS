@@ -4,7 +4,7 @@
 // NOTE: Aiming our weapon is handled in RunBotUpkeep()
 
 /* <3eb434> ../cstrike/dlls/bot/cs_bot_weapon.cpp:17 */
-void CCSBot::FireWeaponAtEnemy(void)
+void CCSBot::FireWeaponAtEnemy()
 {
 	CBasePlayer *enemy = GetEnemy();
 	if (enemy == NULL)
@@ -195,7 +195,7 @@ void CCSBot::SetAimOffset(float accuracy)
 // Wiggle aim error based on GetProfile()->GetSkill()
 
 /* <3ea224> ../cstrike/dlls/bot/cs_bot_weapon.cpp:252 */
-void CCSBot::UpdateAimOffset(void)
+void CCSBot::UpdateAimOffset()
 {
 	if (gpGlobals->time >= m_aimOffsetTimestamp)
 	{
@@ -287,7 +287,7 @@ bool isSniperRifle(CBasePlayerItem *item)
 }
 
 /* <3ea3ab> ../cstrike/dlls/bot/cs_bot_weapon.cpp:342 */
-bool CCSBot::IsUsingAWP(void) const
+bool CCSBot::IsUsingAWP() const
 {
 	CBasePlayerWeapon *weapon = GetActiveWeapon();
 
@@ -300,7 +300,7 @@ bool CCSBot::IsUsingAWP(void) const
 // Returns true if we are using a weapon with a removable silencer
 
 /* <3ea3ce> ../cstrike/dlls/bot/cs_bot_weapon.cpp:357 */
-bool CCSBot::DoesActiveWeaponHaveSilencer(void) const
+bool CCSBot::DoesActiveWeaponHaveSilencer() const
 {
 	CBasePlayerWeapon *weapon = GetActiveWeapon();
 
@@ -316,7 +316,7 @@ bool CCSBot::DoesActiveWeaponHaveSilencer(void) const
 // Return true if we are using a sniper rifle
 
 /* <3ea3f1> ../cstrike/dlls/bot/cs_bot_weapon.cpp:375 */
-bool CCSBot::IsUsingSniperRifle(void) const
+bool CCSBot::IsUsingSniperRifle() const
 {
 	CBasePlayerWeapon *weapon = GetActiveWeapon();
 
@@ -329,7 +329,7 @@ bool CCSBot::IsUsingSniperRifle(void) const
 // Return true if we have a sniper rifle in our inventory
 
 /* <3ea462> ../cstrike/dlls/bot/cs_bot_weapon.cpp:387 */
-bool CCSBot::IsSniper(void) const
+bool CCSBot::IsSniper() const
 {
 	for (int i = 0; i < MAX_ITEM_TYPES; ++i)
 	{
@@ -350,7 +350,7 @@ bool CCSBot::IsSniper(void) const
 // Return true if we are actively sniping (moving to sniper spot or settled in)
 
 /* <3ea4c1> ../cstrike/dlls/bot/cs_bot_weapon.cpp:405 */
-bool CCSBot::IsSniping(void) const
+bool CCSBot::IsSniping() const
 {
 	if (GetTask() == MOVE_TO_SNIPER_SPOT || GetTask() == SNIPING)
 		return true;
@@ -361,7 +361,7 @@ bool CCSBot::IsSniping(void) const
 // Return true if we are using a shotgun
 
 /* <3ea4e8> ../cstrike/dlls/bot/cs_bot_weapon.cpp:417 */
-bool CCSBot::IsUsingShotgun(void) const
+bool CCSBot::IsUsingShotgun() const
 {
 	CBasePlayerWeapon *weapon = GetActiveWeapon();
 
@@ -377,7 +377,7 @@ bool CCSBot::IsUsingShotgun(void) const
 // Returns true if using the big 'ol machinegun
 
 /* <3ea50f> ../cstrike/dlls/bot/cs_bot_weapon.cpp:437 */
-bool CCSBot::IsUsingMachinegun(void) const
+bool CCSBot::IsUsingMachinegun() const
 {
 	CBasePlayerWeapon *weapon = GetActiveWeapon();
 
@@ -390,7 +390,7 @@ bool CCSBot::IsUsingMachinegun(void) const
 // Return true if primary weapon doesn't exist or is totally out of ammo
 
 /* <3ea532> ../cstrike/dlls/bot/cs_bot_weapon.cpp:449 */
-bool CCSBot::IsPrimaryWeaponEmpty(void) const
+bool CCSBot::IsPrimaryWeaponEmpty() const
 {
 	CBasePlayerWeapon *weapon = static_cast<CBasePlayerWeapon *>(m_rgpPlayerItems[ PRIMARY_WEAPON_SLOT ]);
 
@@ -407,13 +407,13 @@ bool CCSBot::IsPrimaryWeaponEmpty(void) const
 // Return true if pistol doesn't exist or is totally out of ammo
 
 /* <3ea578> ../cstrike/dlls/bot/cs_bot_weapon.cpp:467 */
-bool CCSBot::IsPistolEmpty(void) const
+bool CCSBot::IsPistolEmpty() const
 {
 	CBasePlayerWeapon *weapon = static_cast<CBasePlayerWeapon *>(m_rgpPlayerItems[ PISTOL_SLOT ]);
 
 	if (weapon == NULL)
 		return true;
-	
+
 	// check if gun has any ammo left
 	if (HasAnyAmmo(weapon))
 	{
@@ -490,7 +490,7 @@ void CCSBot::EquipBestWeapon(bool mustEquip)
 // Equip our pistol
 
 /* <3ea7fe> ../cstrike/dlls/bot/cs_bot_weapon.cpp:557 */
-void CCSBot::EquipPistol(void)
+void CCSBot::EquipPistol()
 {
 	// throttle how often equipping is allowed
 	if (m_equipTimer.GetElapsedTime() < minEquipInterval)
@@ -506,7 +506,7 @@ void CCSBot::EquipPistol(void)
 // Equip the knife
 
 /* <3ea91a> ../cstrike/dlls/bot/cs_bot_weapon.cpp:575 */
-void CCSBot::EquipKnife(void)
+void CCSBot::EquipKnife()
 {
 	if (!IsUsingKnife())
 	{
@@ -521,7 +521,7 @@ void CCSBot::EquipKnife(void)
 // Return true if we have a grenade in our inventory
 
 /* <3ea98b> ../cstrike/dlls/bot/cs_bot_weapon.cpp:589 */
-bool CCSBot::HasGrenade(void) const
+bool CCSBot::HasGrenade() const
 {
 	CBasePlayerWeapon *grenade = static_cast<CBasePlayerWeapon *>(m_rgpPlayerItems[ GRENADE_SLOT ]);
 	return grenade != NULL;
@@ -546,7 +546,7 @@ bool CCSBot::EquipGrenade(bool noSmoke)
 		if (grenade != NULL)
 		{
 			if (noSmoke && grenade->m_iId == WEAPON_SMOKEGRENADE)
-				return false;	
+				return false;
 
 			SelectItem(STRING(grenade->pev->classname));
 			return true;
@@ -559,7 +559,7 @@ bool CCSBot::EquipGrenade(bool noSmoke)
 // Returns true if we have knife equipped
 
 /* <3eaa8c> ../cstrike/dlls/bot/cs_bot_weapon.cpp:624 */
-bool CCSBot::IsUsingKnife(void) const
+bool CCSBot::IsUsingKnife() const
 {
 	CBasePlayerWeapon *weapon = GetActiveWeapon();
 
@@ -572,7 +572,7 @@ bool CCSBot::IsUsingKnife(void) const
 // Returns true if we have pistol equipped
 
 /* <3eaac2> ../cstrike/dlls/bot/cs_bot_weapon.cpp:638 */
-bool CCSBot::IsUsingPistol(void) const
+bool CCSBot::IsUsingPistol() const
 {
 	CBasePlayerWeapon *weapon = GetActiveWeapon();
 
@@ -585,7 +585,7 @@ bool CCSBot::IsUsingPistol(void) const
 // Returns true if we have a grenade equipped
 
 /* <3eab09> ../cstrike/dlls/bot/cs_bot_weapon.cpp:652 */
-bool CCSBot::IsUsingGrenade(void) const
+bool CCSBot::IsUsingGrenade() const
 {
 	CBasePlayerWeapon *weapon = GetActiveWeapon();
 
@@ -601,7 +601,7 @@ bool CCSBot::IsUsingGrenade(void) const
 }
 
 /* <3eab3f> ../cstrike/dlls/bot/cs_bot_weapon.cpp:672 */
-bool CCSBot::IsUsingHEGrenade(void) const
+bool CCSBot::IsUsingHEGrenade() const
 {
 	CBasePlayerWeapon *weapon = GetActiveWeapon();
 
@@ -674,7 +674,7 @@ bool CCSBot::FindGrenadeTossPathTarget(Vector *pos)
 	// check +X
 	check = visibleSpot + Vector(999.9f, 0, 0);
 	UTIL_TraceLine(visibleSpot, check, dont_ignore_monsters, ignore_glass, ENT(pev), &result);
-	
+
 	if (result.flFraction < 1.0f)
 	{
 		float range = result.vecEndPos.x - visibleSpot.x;
@@ -730,7 +730,7 @@ bool CCSBot::FindGrenadeTossPathTarget(Vector *pos)
 // Reload our weapon if we must
 
 /* <3eaf22> ../cstrike/dlls/bot/cs_bot_weapon.cpp:810 */
-void CCSBot::ReloadCheck(void)
+void CCSBot::ReloadCheck()
 {
 	const float safeReloadWaitTime = 3.0f;
 	const float reloadAmmoRatio = 0.6f;
@@ -804,7 +804,7 @@ void CCSBot::ReloadCheck(void)
 // Silence/unsilence our weapon if we must
 
 /* <3eb0ac> ../cstrike/dlls/bot/cs_bot_weapon.cpp:885 */
-void CCSBot::SilencerCheck(void)
+void CCSBot::SilencerCheck()
 {
 	// longer than reload check because reloading should take precedence
 	const float safeSilencerWaitTime = 3.5f;
@@ -838,7 +838,7 @@ void CCSBot::SilencerCheck(void)
 			return;
 
 		// equip silencer if we want to and we don't have a shield.
-		if (isSilencerOn != (GetProfile()->PrefersSilencer() || GetProfile()->GetSkill() > 0.7f) && !HasShield())	
+		if (isSilencerOn != (GetProfile()->PrefersSilencer() || GetProfile()->GetSkill() > 0.7f) && !HasShield())
 #endif // REGAMEDLL_FIXES
 		{
 			PrintIfWatched("%s silencer!\n", (isSilencerOn) ? "Unequipping" : "Equipping");
@@ -898,7 +898,7 @@ void CCSBot::__MAKE_VHOOK(OnTouchingWeapon)(CWeaponBox *box)
 // TODO: Check more rays for safety.
 
 /* <3eb277> ../cstrike/dlls/bot/cs_bot_weapon.cpp:977 */
-bool CCSBot::IsFriendInLineOfFire(void)
+bool CCSBot::IsFriendInLineOfFire()
 {
 	UTIL_MakeVectors(pev->punchangle + pev->v_angle);
 
@@ -930,7 +930,7 @@ bool CCSBot::IsFriendInLineOfFire(void)
 // TODO: Re-use this computation with IsFriendInLineOfFire()
 
 /* <3eb84d> ../cstrike/dlls/bot/cs_bot_weapon.cpp:1009 */
-float CCSBot::ComputeWeaponSightRange(void)
+float CCSBot::ComputeWeaponSightRange()
 {
 	UTIL_MakeVectors(pev->punchangle + pev->v_angle);
 
@@ -944,12 +944,3 @@ float CCSBot::ComputeWeaponSightRange(void)
 
 	return (GetGunPosition() - result.vecEndPos).Length();
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CCSBot::OnTouchingWeapon(CWeaponBox *box)
-{
-	OnTouchingWeapon_(box);
-}
-
-#endif // HOOK_GAMEDLL

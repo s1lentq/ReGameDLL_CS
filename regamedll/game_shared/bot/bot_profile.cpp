@@ -7,16 +7,7 @@
 #ifndef HOOK_GAMEDLL
 
 BotProfileManager *TheBotProfiles = NULL;
-
-char *BotDifficultyName[] =
-{
-	"EASY", "NORMAL", "HARD", "EXPERT", NULL
-};
-
-#else // HOOK_GAMEDLL
-
-BotProfileManager *TheBotProfiles;
-char *BotDifficultyName[5];
+char *BotDifficultyName[] = { "EASY", "NORMAL", "HARD", "EXPERT", NULL };
 
 #endif // HOOK_GAMEDLL
 
@@ -43,7 +34,7 @@ const char *BotProfile::GetWeaponPreferenceAsString(int i) const
 // Return true if this profile has a primary weapon preference
 
 /* <4a7acd> ../game_shared/bot/bot_profile.cpp:78 */
-bool BotProfile::HasPrimaryPreference(void) const
+bool BotProfile::HasPrimaryPreference() const
 {
 	for (int i = 0; i < m_weaponPreferenceCount; ++i)
 	{
@@ -63,7 +54,7 @@ bool BotProfile::HasPrimaryPreference(void) const
 // Return true if this profile has a pistol weapon preference
 
 /* <4a7b22> ../game_shared/bot/bot_profile.cpp:99 */
-bool BotProfile::HasPistolPreference(void) const
+bool BotProfile::HasPistolPreference() const
 {
 	for (int i = 0; i < m_weaponPreferenceCount; ++i)
 	{
@@ -83,7 +74,7 @@ bool BotProfile::IsValidForTeam(BotProfileTeamType team) const
 }
 
 /* <4a7bb2> ../game_shared/bot/bot_profile.cpp:122 */
-BotProfileManager::BotProfileManager(void)
+BotProfileManager::BotProfileManager()
 {
 	m_nextSkin = 0;
 	for (int i = 0; i < NumCustomSkins; ++i)
@@ -105,7 +96,7 @@ void BotProfileManager::Init(const char *filename, unsigned int *checksum)
 
 	if (dataFile == NULL)
 	{
-		if (UTIL_IsGame("czero"))
+		if (g_bIsCzeroGame)
 		{
 			CONSOLE_ECHO("WARNING: Cannot access bot profile database '%s'\n", filename);
 		}
@@ -256,7 +247,7 @@ void BotProfileManager::Init(const char *filename, unsigned int *checksum)
 			{
 				char *c = Q_strchr(token, '+');
 				if (c)
-					*c = '\000';
+					*c = '\0';
 
 				// find the given template name
 				for (BotProfileList::iterator iter = templateList.begin(); iter != templateList.end(); ++iter)
@@ -439,7 +430,7 @@ void BotProfileManager::Init(const char *filename, unsigned int *checksum)
 				{
 					char *c = Q_strchr(token, '+');
 					if (c)
-						*c = '\000';
+						*c = '\0';
 
 					for (int i = 0; i < NUM_DIFFICULTY_LEVELS; ++i)
 					{
@@ -497,7 +488,7 @@ void BotProfileManager::Init(const char *filename, unsigned int *checksum)
 }
 
 /* <4a7dfd> ../game_shared/bot/bot_profile.cpp:532 */
-BotProfileManager::~BotProfileManager(void)
+BotProfileManager::~BotProfileManager()
 {
 	Reset();
 
@@ -510,7 +501,7 @@ BotProfileManager::~BotProfileManager(void)
 // Free all bot profiles
 
 /* <4a7c76> ../game_shared/bot/bot_profile.cpp:548 */
-void BotProfileManager::Reset(void)
+void BotProfileManager::Reset()
 {
 	for (BotProfileList::iterator iter = m_profileList.begin(); iter != m_profileList.end(); ++iter)
 		delete *iter;

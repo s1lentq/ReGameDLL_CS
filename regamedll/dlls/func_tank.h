@@ -52,73 +52,61 @@ enum TANKBULLET
 class CFuncTank: public CBaseEntity
 {
 public:
-	virtual void Spawn(void);
-	virtual void Precache(void);
+	virtual void Spawn();
+	virtual void Precache();
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
 
 	// Bmodels don't go across transitions
-	virtual int ObjectCaps(void)
-	{
-		return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION;
-	}
+	virtual int ObjectCaps() { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 	virtual BOOL OnControls(entvars_t *pevTest);
-	virtual void Think(void);
+	virtual void Think();
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 	virtual void Fire(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker);
-	virtual Vector UpdateTargetPosition(CBaseEntity *pTarget)
-	{
-		return pTarget->BodyTarget(pev->origin);
-	}
+	virtual Vector UpdateTargetPosition(CBaseEntity *pTarget) { return pTarget->BodyTarget(pev->origin); }
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Precache_(void);
+	void Spawn_();
+	void Precache_();
 	void KeyValue_(KeyValueData *pkvd);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
 	BOOL OnControls_(entvars_t *pevTest);
-	void Think_(void);
+	void Think_();
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 	void Fire_(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker);
 
 #endif // HOOK_GAMEDLL
 
 public:
-	void TrackTarget(void);
-	void StartRotSound(void);
-	void StopRotSound(void);
+	void TrackTarget();
+	void StartRotSound();
+	void StopRotSound();
 
-	BOOL IsActive(void)
-	{
-		return (pev->spawnflags & SF_TANK_ACTIVE) == SF_TANK_ACTIVE;
-	}
-	void TankActivate(void)
+	BOOL IsActive() const { return (pev->spawnflags & SF_TANK_ACTIVE) == SF_TANK_ACTIVE; }
+	void TankActivate()
 	{
 		pev->spawnflags |= SF_TANK_ACTIVE;
 		pev->nextthink = pev->ltime + 0.1f;
 		m_fireLast = 0.0f;
 	}
-	void TankDeactivate(void)
+	void TankDeactivate()
 	{
 		pev->spawnflags &= ~SF_TANK_ACTIVE;
 		m_fireLast = 0.0f;
 		StopRotSound();
 	}
-	BOOL CanFire(void)
-	{
-		return (gpGlobals->time - m_lastSightTime) < m_persist;
-	}
 
+	BOOL CanFire() const { return (gpGlobals->time - m_lastSightTime) < m_persist; }
 	BOOL InRange(float range);
 
 	// Acquire a target.  pPlayer is a player in the PVS
 	edict_t *FindTarget(edict_t *pPlayer);
 	void TankTrace(const Vector &vecStart, const Vector &vecForward, const Vector &vecSpread, TraceResult &tr);
 
-	Vector BarrelPosition(void)
+	Vector BarrelPosition()
 	{
 		Vector forward, right, up;
 		UTIL_MakeVectorsPrivate(pev->angles, forward, right, up);
@@ -127,8 +115,8 @@ public:
 
 	void AdjustAnglesForBarrel(Vector &angles, float distance);
 	BOOL StartControl(CBasePlayer *pController);
-	void StopControl(void);
-	void ControllerPostFrame(void);
+	void StopControl();
+	void ControllerPostFrame();
 
 public:
 	static TYPEDESCRIPTION IMPL(m_SaveData)[26];
@@ -167,8 +155,7 @@ protected:
 	Vector m_sightOrigin;		// Last sight of target
 	int m_spread;			// firing spread
 	int m_iszMaster;		// Master entity (game_team_master or multisource)
-
-};/* size: 280, cachelines: 5, members: 28 */
+};
 
 /* <8c79a> ../cstrike/dlls/func_tank.cpp:719 */
 class CFuncTankGun: public CFuncTank
@@ -182,7 +169,7 @@ public:
 
 #endif // HOOK_GAMEDLL
 
-};/* size: 280, cachelines: 5, members: 1 */
+};
 
 /* <8c7e8> ../cstrike/dlls/func_tank.cpp:768 */
 class CFuncTankLaser: public CFuncTank
@@ -191,8 +178,8 @@ public:
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
-	virtual void Activate(void);
-	virtual void Think(void);
+	virtual void Activate();
+	virtual void Think();
 	virtual void Fire(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker);
 
 #ifdef HOOK_GAMEDLL
@@ -200,13 +187,13 @@ public:
 	void KeyValue_(KeyValueData *pkvd);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
-	void Activate_(void);
-	void Think_(void);
+	void Activate_();
+	void Think_();
 	void Fire_(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker);
 
 #endif // HOOK_GAMEDLL
 
-	CLaser *GetLaser(void);
+	CLaser *GetLaser();
 
 public:
 	static TYPEDESCRIPTION IMPL(m_SaveData)[2];
@@ -214,24 +201,23 @@ public:
 private:
 	CLaser *m_pLaser;
 	float m_laserTime;
-
-};/* size: 288, cachelines: 5, members: 4 */
+};
 
 /* <8c836> ../cstrike/dlls/func_tank.cpp:887 */
 class CFuncTankRocket: public CFuncTank
 {
 public:
-	virtual void Precache(void);
+	virtual void Precache();
 	virtual void Fire(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker);
 
 #ifdef HOOK_GAMEDLL
 
-	void Precache_(void);
+	void Precache_();
 	void Fire_(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker);
 
 #endif // HOOK_GAMEDLL
 
-};/* size: 280, cachelines: 5, members: 1 */
+};
 
 /* <8c884> ../cstrike/dlls/func_tank.cpp:924 */
 class CFuncTankMortar: public CFuncTank
@@ -247,28 +233,25 @@ public:
 
 #endif // HOOK_GAMEDLL
 
-};/* size: 280, cachelines: 5, members: 1 */
+};
 
 /* <8c8d2> ../cstrike/dlls/func_tank.cpp:974 */
 class CFuncTankControls: public CBaseEntity
 {
 public:
-	virtual void Spawn(void);
+	virtual void Spawn();
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
-	virtual int ObjectCaps(void)
-	{
-		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | FCAP_IMPULSE_USE;
-	}
-	virtual void Think(void);
+	virtual int ObjectCaps() { return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | FCAP_IMPULSE_USE; }
+	virtual void Think();
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
+	void Spawn_();
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
-	void Think_(void);
+	void Think_();
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #endif // HOOK_GAMEDLL
@@ -276,27 +259,7 @@ public:
 public:
 	static TYPEDESCRIPTION IMPL(m_SaveData)[1];
 
-public:
 	CFuncTank *m_pTank;
-
-};/* size: 156, cachelines: 3, members: 3 */
-
-#ifdef HOOK_GAMEDLL
-
-#define gTankSpread (*pgTankSpread)
-extern Vector gTankSpread[5];
-
-#endif // HOOK_GAMEDLL
-
-#ifdef HOOK_GAMEDLL
-
-// linked objects
-C_DLLEXPORT void func_tank(entvars_t *pev);
-C_DLLEXPORT void func_tanklaser(entvars_t *pev);
-C_DLLEXPORT void func_tankrocket(entvars_t *pev);
-C_DLLEXPORT void func_tankmortar(entvars_t *pev);
-C_DLLEXPORT void func_tankcontrols(entvars_t *pev);
-
-#endif // HOOK_GAMEDLL
+};
 
 #endif // FUNC_TANK_H

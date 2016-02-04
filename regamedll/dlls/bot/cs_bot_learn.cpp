@@ -98,7 +98,7 @@ CNavNode *CCSBot::AddNode(const Vector *destPos, const Vector *normal, NavDirTyp
 		{
 			floor = *destPos + Vector(x, y, 5.0f);
 			ceiling = *destPos + Vector(x, y, 72.0f - epsilon);
-			
+
 			UTIL_TraceLine(floor, ceiling, ignore_monsters, dont_ignore_glass, ENT(pev), &result);
 
 			if (result.flFraction != 1.0f)
@@ -139,7 +139,7 @@ void startProgressMeter(const char *title)
 }
 
 /* <3435a8> ../cstrike/dlls/bot/cs_bot_learn.cpp:167 */
-void hideProgressMeter(void)
+void hideProgressMeter()
 {
 	MESSAGE_BEGIN(MSG_ALL, gmsgBotProgress);
 		WRITE_BYTE(FLAG_PROGRESS_HIDE);
@@ -147,7 +147,7 @@ void hideProgressMeter(void)
 }
 
 /* <343b63> ../cstrike/dlls/bot/cs_bot_learn.cpp:182 */
-void CCSBot::StartLearnProcess(void)
+void CCSBot::StartLearnProcess()
 {
 	startProgressMeter("#CZero_LearningMap");
 	drawProgressMeter(0, "#CZero_LearningMap");
@@ -155,7 +155,7 @@ void CCSBot::StartLearnProcess(void)
 
 	Vector normal;
 	Vector pos = pev->origin;
-	
+
 	SnapToGrid(&pos.x);
 	SnapToGrid(&pos.y);
 
@@ -178,7 +178,7 @@ void CCSBot::StartLearnProcess(void)
 // Returns true if sampling needs to continue, or false if done.
 
 /* <343d37> ../cstrike/dlls/bot/cs_bot_learn.cpp:217 */
-bool CCSBot::LearnStep(void)
+bool CCSBot::LearnStep()
 {
 	// take a step
 	while (true)
@@ -356,7 +356,7 @@ bool CCSBot::LearnStep(void)
 }
 
 /* <34489e> ../cstrike/dlls/bot/cs_bot_learn.cpp:392 */
-void CCSBot::UpdateLearnProcess(void)
+void CCSBot::UpdateLearnProcess()
 {
 	float startTime = g_engfuncs.pfnTime();
 	while (g_engfuncs.pfnTime() - startTime < updateTimesliceDuration)
@@ -370,7 +370,7 @@ void CCSBot::UpdateLearnProcess(void)
 }
 
 /* <344750> ../cstrike/dlls/bot/cs_bot_learn.cpp:409 */
-void CCSBot::StartAnalyzeAlphaProcess(void)
+void CCSBot::StartAnalyzeAlphaProcess()
 {
 	m_processMode = PROCESS_ANALYZE_ALPHA;
 	m_analyzeIter = TheNavAreaList.begin();
@@ -386,7 +386,7 @@ void CCSBot::StartAnalyzeAlphaProcess(void)
 }
 
 /* <34396c> ../cstrike/dlls/bot/cs_bot_learn.cpp:427 */
-bool CCSBot::AnalyzeAlphaStep(void)
+bool CCSBot::AnalyzeAlphaStep()
 {
 	++_currentIndex;
 	if (m_analyzeIter == TheNavAreaList.end())
@@ -401,7 +401,7 @@ bool CCSBot::AnalyzeAlphaStep(void)
 }
 
 /* <3448de> ../cstrike/dlls/bot/cs_bot_learn.cpp:443 */
-void CCSBot::UpdateAnalyzeAlphaProcess(void)
+void CCSBot::UpdateAnalyzeAlphaProcess()
 {
 	float startTime = g_engfuncs.pfnTime();
 	while (g_engfuncs.pfnTime() - startTime < updateTimesliceDuration)
@@ -420,7 +420,7 @@ void CCSBot::UpdateAnalyzeAlphaProcess(void)
 }
 
 /* <344aed> ../cstrike/dlls/bot/cs_bot_learn.cpp:467 */
-void CCSBot::StartAnalyzeBetaProcess(void)
+void CCSBot::StartAnalyzeBetaProcess()
 {
 	m_processMode = PROCESS_ANALYZE_BETA;
 	m_analyzeIter = TheNavAreaList.begin();
@@ -430,7 +430,7 @@ void CCSBot::StartAnalyzeBetaProcess(void)
 }
 
 /* <3437c8> ../cstrike/dlls/bot/cs_bot_learn.cpp:479 */
-bool CCSBot::AnalyzeBetaStep(void)
+bool CCSBot::AnalyzeBetaStep()
 {
 	++_currentIndex;
 	if (m_analyzeIter == TheNavAreaList.end())
@@ -445,7 +445,7 @@ bool CCSBot::AnalyzeBetaStep(void)
 }
 
 /* <344b8d> ../cstrike/dlls/bot/cs_bot_learn.cpp:495 */
-void CCSBot::UpdateAnalyzeBetaProcess(void)
+void CCSBot::UpdateAnalyzeBetaProcess()
 {
 	float startTime = g_engfuncs.pfnTime();
 	while (g_engfuncs.pfnTime() - startTime < updateTimesliceDuration)
@@ -463,13 +463,13 @@ void CCSBot::UpdateAnalyzeBetaProcess(void)
 }
 
 /* <344d1f> ../cstrike/dlls/bot/cs_bot_learn.cpp:517 */
-void CCSBot::StartSaveProcess(void)
+void CCSBot::StartSaveProcess()
 {
 	m_processMode = PROCESS_SAVE;
 }
 
 /* <344d41> ../cstrike/dlls/bot/cs_bot_learn.cpp:527 */
-void CCSBot::UpdateSaveProcess(void)
+void CCSBot::UpdateSaveProcess()
 {
 	char filename[256];
 	char msg[256];
@@ -494,7 +494,7 @@ void CCSBot::UpdateSaveProcess(void)
 }
 
 /* <344e24> ../cstrike/dlls/bot/cs_bot_learn.cpp:554 */
-void CCSBot::StartNormalProcess(void)
+void CCSBot::StartNormalProcess()
 {
 	m_processMode = PROCESS_NORMAL;
 }

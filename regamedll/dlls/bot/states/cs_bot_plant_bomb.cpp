@@ -58,22 +58,3 @@ void PlantBombState::__MAKE_VHOOK(OnExit)(CCSBot *me)
 	me->SetDisposition(CCSBot::ENGAGE_AND_INVESTIGATE);
 	me->ClearLookAt();
 }
-
-#ifdef HOOK_GAMEDLL
-
-void PlantBombState::OnEnter(CCSBot *me)
-{
-	OnEnter_(me);
-}
-
-void PlantBombState::OnUpdate(CCSBot *me)
-{
-	OnUpdate_(me);
-}
-
-void PlantBombState::OnExit(CCSBot *me)
-{
-	OnExit_(me);
-}
-
-#endif // HOOK_GAMEDLL

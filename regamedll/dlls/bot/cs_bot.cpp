@@ -29,7 +29,7 @@ int GetBotFollowCount(CBasePlayer *leader)
  			continue;
 
 		CCSBot *bot = dynamic_cast<CCSBot *>(player);
-		if (bot && bot->GetFollowLeader() == leader)
+		if (bot != NULL && bot->GetFollowLeader() == leader)
 			++count;
 	}
 
@@ -39,7 +39,7 @@ int GetBotFollowCount(CBasePlayer *leader)
 // Change movement speed to walking
 
 /* <2e86df> ../cstrike/dlls/bot/cs_bot.cpp:62 */
-void CCSBot::__MAKE_VHOOK(Walk)(void)
+void CCSBot::__MAKE_VHOOK(Walk)()
 {
 	if (m_mustRunTimer.IsElapsed())
 	{
@@ -96,7 +96,7 @@ int CCSBot::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAtta
 		float lastAttackedTimestamp = m_attackedTimestamp;
 
 		// keep track of our last attacker
-		m_attacker = reinterpret_cast<CBasePlayer *>(attacker);
+		m_attacker = static_cast<CBasePlayer *>(attacker);
 		m_attackedTimestamp = gpGlobals->time;
 
 		// no longer safe
@@ -297,7 +297,7 @@ void CCSBot::BotTouch(CBaseEntity *other)
 }
 
 /* <2e89e3> ../cstrike/dlls/bot/cs_bot.cpp:335 */
-bool CCSBot::IsBusy(void) const
+bool CCSBot::IsBusy() const
 {
 	if (IsAttacking() || 
 		IsBuying() ||
@@ -313,13 +313,13 @@ bool CCSBot::IsBusy(void) const
 }
 
 /* <2e8a0c> ../cstrike/dlls/bot/cs_bot.cpp:351 */
-void CCSBot::BotDeathThink(void)
+void CCSBot::BotDeathThink()
 {
 	;
 }
 
 /* <2e8a34> ../cstrike/dlls/bot/cs_bot.cpp:358 */
-CBasePlayer *CCSBot::FindNearbyPlayer(void)
+CBasePlayer *CCSBot::FindNearbyPlayer()
 {
 	CBaseEntity *pEntity = NULL;
 	Vector vecSrc = pev->origin;
@@ -356,7 +356,7 @@ void CCSBot::SetEnemy(CBasePlayer *enemy)
 // Return false if off mesh.
 
 /* <2e8af6> ../cstrike/dlls/bot/cs_bot.cpp:400 */
-bool CCSBot::StayOnNavMesh(void)
+bool CCSBot::StayOnNavMesh()
 {
 	if (m_currentArea != NULL)
 		return true;
@@ -466,7 +466,7 @@ void CCSBot::Panic(CBasePlayer *enemy)
 }
 
 /* <2e9047> ../cstrike/dlls/bot/cs_bot.cpp:527 */
-bool CCSBot::IsDoingScenario(void) const
+bool CCSBot::IsDoingScenario() const
 {
 	if (cv_bot_defer_to_human.value <= 0.0f)
 		return true;
@@ -477,7 +477,7 @@ bool CCSBot::IsDoingScenario(void) const
 // Return true if we noticed the bomb on the ground or on the radar (for T's only)
 
 /* <2e9070> ../cstrike/dlls/bot/cs_bot.cpp:544 */
-bool CCSBot::NoticeLooseBomb(void) const
+bool CCSBot::NoticeLooseBomb() const
 {
 	CCSBotManager *ctrl = TheCSBots();
 
@@ -498,7 +498,7 @@ bool CCSBot::NoticeLooseBomb(void) const
 // Return true if can see the bomb lying on the ground
 
 /* <2e90d4> ../cstrike/dlls/bot/cs_bot.cpp:566 */
-bool CCSBot::CanSeeLooseBomb(void) const
+bool CCSBot::CanSeeLooseBomb() const
 {
 	CCSBotManager *ctrl = TheCSBots();
 
@@ -519,7 +519,7 @@ bool CCSBot::CanSeeLooseBomb(void) const
 // Return true if can see the planted bomb
 
 /* <2e9140> ../cstrike/dlls/bot/cs_bot.cpp:588 */
-bool CCSBot::CanSeePlantedBomb(void) const
+bool CCSBot::CanSeePlantedBomb() const
 {
 	CCSBotManager *ctrl = TheCSBots();
 
@@ -540,7 +540,7 @@ bool CCSBot::CanSeePlantedBomb(void) const
 // Return last enemy that hurt us
 
 /* <2e918e> ../cstrike/dlls/bot/cs_bot.cpp:610 */
-CBasePlayer *CCSBot::GetAttacker(void) const
+CBasePlayer *CCSBot::GetAttacker() const
 {
 	if (m_attacker != NULL && m_attacker->IsAlive())
 		return m_attacker;
@@ -551,7 +551,7 @@ CBasePlayer *CCSBot::GetAttacker(void) const
 // Immediately jump off of our ladder, if we're on one
 
 /* <2e91b7> ../cstrike/dlls/bot/cs_bot.cpp:622 */
-void CCSBot::GetOffLadder(void)
+void CCSBot::GetOffLadder()
 {
 	if (IsUsingLadder())
 	{
@@ -618,7 +618,7 @@ void CCSBot::SetHidingSpotCheckTimestamp(HidingSpot *spot)
 // Periodic check of hostage count in case we lost some
 
 /* <2e92b8> ../cstrike/dlls/bot/cs_bot.cpp:693 */
-void CCSBot::UpdateHostageEscortCount(void)
+void CCSBot::UpdateHostageEscortCount()
 {
 	const float updateInterval = 1.0f;
 	if (m_hostageEscortCount == 0 || gpGlobals->time - m_hostageEscortCountTimestamp < updateInterval)
@@ -648,7 +648,7 @@ void CCSBot::UpdateHostageEscortCount(void)
 // Return true if we are outnumbered by enemies
 
 /* <2e940d> ../cstrike/dlls/bot/cs_bot.cpp:722 */
-bool CCSBot::IsOutnumbered(void) const
+bool CCSBot::IsOutnumbered() const
 {
 	return (GetNearbyFriendCount() < GetNearbyEnemyCount() - 1) ? true : false;
 }
@@ -656,7 +656,7 @@ bool CCSBot::IsOutnumbered(void) const
 // Return number of enemies we are outnumbered by
 
 /* <2e94a0> ../cstrike/dlls/bot/cs_bot.cpp:731 */
-int CCSBot::OutnumberedCount(void) const
+int CCSBot::OutnumberedCount() const
 {
 	if (IsOutnumbered())
 	{
@@ -739,7 +739,7 @@ void CCSBot::SetDisposition(DispositionType disposition)
 // Return our current disposition
 
 /* <2e9762> ../cstrike/dlls/bot/cs_bot.cpp:814 */
-CCSBot::DispositionType CCSBot::GetDisposition(void) const
+CCSBot::DispositionType CCSBot::GetDisposition() const
 {
 	if (!m_ignoreEnemiesTimer.IsElapsed())
 		return IGNORE_ENEMIES;
@@ -758,7 +758,7 @@ void CCSBot::IgnoreEnemies(float duration)
 // Increase morale one step
 
 /* <2e97fc> ../cstrike/dlls/bot/cs_bot.cpp:835 */
-void CCSBot::IncreaseMorale(void)
+void CCSBot::IncreaseMorale()
 {
 	if (m_morale < EXCELLENT)
 	{
@@ -769,7 +769,7 @@ void CCSBot::IncreaseMorale(void)
 // Decrease morale one step
 
 /* <2e9824> ../cstrike/dlls/bot/cs_bot.cpp:845 */
-void CCSBot::DecreaseMorale(void)
+void CCSBot::DecreaseMorale()
 {
 	if (m_morale > TERRIBLE)
 	{
@@ -781,7 +781,7 @@ void CCSBot::DecreaseMorale(void)
 // TODO: Account for morale
 
 /* <2e984c> ../cstrike/dlls/bot/cs_bot.cpp:857 */
-bool CCSBot::IsRogue(void) const
+bool CCSBot::IsRogue() const
 {
 	CCSBotManager *ctrl = TheCSBots();
 
@@ -805,7 +805,7 @@ bool CCSBot::IsRogue(void) const
 // Return true if we are in a hurry
 
 /* <2e98f1> ../cstrike/dlls/bot/cs_bot.cpp:882 */
-bool CCSBot::IsHurrying(void) const
+bool CCSBot::IsHurrying() const
 {
 	if (!m_hurryTimer.IsElapsed())
 		return true;
@@ -828,7 +828,7 @@ bool CCSBot::IsHurrying(void) const
 // Return true if it is the early, "safe", part of the round
 
 /* <2e9942> ../cstrike/dlls/bot/cs_bot.cpp:906 */
-bool CCSBot::IsSafe(void) const
+bool CCSBot::IsSafe() const
 {
 	CCSBotManager *ctrl = TheCSBots();
 
@@ -841,7 +841,7 @@ bool CCSBot::IsSafe(void) const
 // Return true if it is well past the early, "safe", part of the round
 
 /* <2e9987> ../cstrike/dlls/bot/cs_bot.cpp:920 */
-bool CCSBot::IsWellPastSafe(void) const
+bool CCSBot::IsWellPastSafe() const
 {
 	CCSBotManager *ctrl = TheCSBots();
 
@@ -854,7 +854,7 @@ bool CCSBot::IsWellPastSafe(void) const
 // Return true if we were in the safe time last update, but not now
 
 /* <2e99d8> ../cstrike/dlls/bot/cs_bot.cpp:934 */
-bool CCSBot::IsEndOfSafeTime(void) const
+bool CCSBot::IsEndOfSafeTime() const
 {
 	return m_wasSafe && !IsSafe();
 }
@@ -862,7 +862,7 @@ bool CCSBot::IsEndOfSafeTime(void) const
 // Return the amount of "safe time" we have left
 
 /* <2e9a3e> ../cstrike/dlls/bot/cs_bot.cpp:943 */
-float CCSBot::GetSafeTimeRemaining(void) const
+float CCSBot::GetSafeTimeRemaining() const
 {
 	CCSBotManager *ctrl = TheCSBots();
 
@@ -872,7 +872,7 @@ float CCSBot::GetSafeTimeRemaining(void) const
 // Called when enemy seen to adjust safe time for this round
 
 /* <2e9a8f> ../cstrike/dlls/bot/cs_bot.cpp:954 */
-void CCSBot::AdjustSafeTime(void)
+void CCSBot::AdjustSafeTime()
 {
 	CCSBotManager *ctrl = TheCSBots();
 
@@ -887,7 +887,7 @@ void CCSBot::AdjustSafeTime(void)
 // Return true if we haven't seen an enemy for "a long time"
 
 /* <2e9ad0> ../cstrike/dlls/bot/cs_bot.cpp:970 */
-bool CCSBot::HasNotSeenEnemyForLongTime(void) const
+bool CCSBot::HasNotSeenEnemyForLongTime() const
 {
 	const float longTime = 30.0f;
 	return (GetTimeSinceLastSawEnemy() > longTime);
@@ -940,7 +940,7 @@ const Vector *FindNearbyRetreatSpot(CCSBot *me, float maxRange)
 // Return -1 if no hostage is following us.
 
 /* <2eaa1d> ../cstrike/dlls/bot/cs_bot.cpp:1116 */
-float CCSBot::GetRangeToFarthestEscortedHostage(void) const
+float CCSBot::GetRangeToFarthestEscortedHostage() const
 {
 	FarthestHostage away(this);
 
@@ -948,27 +948,3 @@ float CCSBot::GetRangeToFarthestEscortedHostage(void) const
 
 	return away.m_farRange;
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CCSBot::Walk(void)
-{
-	Walk_();
-}
-
-bool CCSBot::Jump(bool mustJump)
-{
-	return Jump_(mustJump);
-}
-
-int CCSBot::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
-{
-	return TakeDamage_(pevInflictor, pevAttacker, flDamage, bitsDamageType);
-}
-
-void CCSBot::Killed(entvars_t *pevAttacker, int iGib)
-{
-	Killed_(pevAttacker, iGib);
-}
-
-#endif // HOOK_GAMEDLL

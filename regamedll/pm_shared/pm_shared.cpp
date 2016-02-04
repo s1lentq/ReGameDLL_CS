@@ -5,31 +5,17 @@
 */
 #ifndef HOOK_GAMEDLL
 
-static int pm_shared_initialized = 0;
-
-static vec3_t rgv3tStuckTable[54];
-static int rgStuckLast[MAX_CLIENTS][2];
-
-static int pm_gcTextures = 0;
-static char pm_grgszTextureName[1024][17];
-static char pm_grgchTextureType[1024];
-
-playermove_t *pmove = NULL;
-int g_onladder = 0;
-
-#else // HOOK_GAMEDLL
-
-int pm_shared_initialized;
+int pm_shared_initialized = 0;
 
 vec3_t rgv3tStuckTable[54];
 int rgStuckLast[MAX_CLIENTS][2];
 
-int pm_gcTextures;
-char pm_grgszTextureName[CTEXTURESMAX][CBTEXTURENAMEMAX];
-char pm_grgchTextureType[CTEXTURESMAX];
+int pm_gcTextures = 0;
+char pm_grgszTextureName[1024][17];
+char pm_grgchTextureType[1024];
 
-playermove_t *pmove;
-int g_onladder;
+playermove_t *pmove = NULL;
+int g_onladder = 0;
 
 #endif // HOOK_GAMEDLL
 
@@ -50,7 +36,7 @@ void PM_SwapTextures(int i, int j)
 }
 
 /* <2cc691> ../cstrike/pm_shared/pm_shared.c:180 */
-NOXREF int PM_IsThereGrassTexture(void)
+NOXREF int PM_IsThereGrassTexture()
 {
 	int i;
 
@@ -64,7 +50,7 @@ NOXREF int PM_IsThereGrassTexture(void)
 }
 
 /* <2cc6bb> ../cstrike/pm_shared/pm_shared.c:193 */
-void PM_SortTextures(void)
+void PM_SortTextures()
 {
 	// Bubble sort, yuck, but this only occurs at startup and it's only 512 elements...
 	int i, j;
@@ -83,7 +69,7 @@ void PM_SortTextures(void)
 }
 
 /* <2cc720> ../cstrike/pm_shared/pm_shared.c:213 */
-void PM_InitTextureTypes(void)
+void PM_InitTextureTypes()
 {
 	char buffer[512];
 	int i, j;
@@ -360,7 +346,7 @@ int PM_MapTextureTypeStepType(char chTextureType)
 }
 
 /* <2cc8af> ../cstrike/pm_shared/pm_shared.c:512 */
-void PM_CatagorizeTextureType(void)
+void PM_CatagorizeTextureType()
 {
 	vec3_t start, end;
 	const char *pTextureName;
@@ -395,7 +381,7 @@ void PM_CatagorizeTextureType(void)
 }
 
 /* <2cc93c> ../cstrike/pm_shared/pm_shared.c:546 */
-void PM_UpdateStepSound(void)
+void PM_UpdateStepSound()
 {
 	float fvol;
 	vec3_t knee;
@@ -552,7 +538,7 @@ qboolean PM_AddToTouched(pmtrace_t tr, vec_t *impactvelocity)
 }
 
 /* <2cca88> ../cstrike/pm_shared/pm_shared.c:707 */
-void PM_CheckVelocity(void)
+void PM_CheckVelocity()
 {
 	int i;
 
@@ -637,7 +623,7 @@ int PM_ClipVelocity(vec_t *in, vec_t *normal, vec_t *out, float overbounce)
 }
 
 /* <2ccc93> ../cstrike/pm_shared/pm_shared.c:784 */
-void PM_AddCorrectGravity(void)
+void PM_AddCorrectGravity()
 {
 	float_precision ent_gravity;
 
@@ -660,7 +646,7 @@ void PM_AddCorrectGravity(void)
 }
 
 /* <2cc482> ../cstrike/pm_shared/pm_shared.c:806 */
-void PM_FixupGravityVelocity(void)
+void PM_FixupGravityVelocity()
 {
 	float_precision ent_gravity;
 
@@ -678,7 +664,7 @@ void PM_FixupGravityVelocity(void)
 }
 
 /* <2ccd08> ../cstrike/pm_shared/pm_shared.c:831 */
-int PM_FlyMove(void)
+int PM_FlyMove()
 {
 	int bumpcount, numbumps;
 	vec3_t dir;
@@ -754,7 +740,7 @@ int PM_FlyMove(void)
 
 		// Save entity that blocked us (since fraction was < 1.0)
 		// for contact
-		// Add it if it's not already in the list!!!
+		// Add it if it's not already in the list
 		PM_AddToTouched(trace, pmove->velocity);
 
 		// If the plane we hit has a high z component in the normal, then
@@ -900,7 +886,7 @@ void PM_Accelerate(vec_t *wishdir, float_precision wishspeed, float accel)
 // Only used by players.  Moves along the ground when player is a MOVETYPE_WALK.
 
 /* <2cceaf> ../cstrike/pm_shared/pm_shared.c:1071 */
-void PM_WalkMove(void)
+void PM_WalkMove()
 {
 	int clip;
 	int oldonground;
@@ -1090,7 +1076,7 @@ usedown:
 // Handles both ground friction and water friction
 
 /* <2ccffb> ../cstrike/pm_shared/pm_shared.c:1249 */
-void PM_Friction(void)
+void PM_Friction()
 {
 	float *vel;
 	float speed;
@@ -1215,7 +1201,7 @@ void PM_AirAccelerate(vec_t *wishdir, float wishspeed, float accel)
 }
 
 /* <2cd14b> ../cstrike/pm_shared/pm_shared.c:1368 */
-void PM_WaterMove(void)
+void PM_WaterMove()
 {
 	int i;
 	vec3_t wishvel;
@@ -1323,7 +1309,7 @@ void PM_WaterMove(void)
 }
 
 /* <2cd220> ../cstrike/pm_shared/pm_shared.c:1464 */
-void PM_AirMove(void)
+void PM_AirMove()
 {
 	int i;
 	vec3_t wishvel;
@@ -1372,7 +1358,7 @@ void PM_AirMove(void)
 }
 
 /* <2cc586> ../cstrike/pm_shared/pm_shared.c:1510 */
-qboolean PM_InWater(void)
+qboolean PM_InWater()
 {
 	return (pmove->waterlevel > 1);
 }
@@ -1380,7 +1366,7 @@ qboolean PM_InWater(void)
 // Sets pmove->waterlevel and pmove->watertype values.
 
 /* <2cd2a7> ../cstrike/pm_shared/pm_shared.c:1522 */
-qboolean PM_CheckWater(void)
+qboolean PM_CheckWater()
 {
 	vec3_t point;
 	int cont;
@@ -1451,7 +1437,7 @@ qboolean PM_CheckWater(void)
 }
 
 /* <2cd33a> ../cstrike/pm_shared/pm_shared.c:1593 */
-void PM_CatagorizePosition(void)
+void PM_CatagorizePosition()
 {
 	vec3_t point;
 	pmtrace_t tr;
@@ -1542,7 +1528,7 @@ void PM_ResetStuckOffsets(int nIndex, int server)
 // allow for the cut precision of the net coordinates
 
 /* <2cd3cf> ../cstrike/pm_shared/pm_shared.c:1681 */
-int PM_CheckStuck(void)
+int PM_CheckStuck()
 {
 	vec3_t base;
 	vec3_t offset;
@@ -1662,7 +1648,7 @@ int PM_CheckStuck(void)
 }
 
 /* <2cd61f> ../cstrike/pm_shared/pm_shared.c:1807 */
-void PM_SpectatorMove(void)
+void PM_SpectatorMove()
 {
 	float_precision speed, drop, friction;
 	float_precision control, newspeed;
@@ -1839,7 +1825,7 @@ void PM_FixPlayerCrouchStuck(int direction)
 }
 
 /* <2cd7cd> ../cstrike/pm_shared/pm_shared.c:1983 */
-void PM_Duck(void)
+void PM_Duck()
 {
 	float_precision duckFraction;
 
@@ -2079,7 +2065,7 @@ void PM_LadderMove(physent_t *pLadder)
 }
 
 /* <2cda06> ../cstrike/pm_shared/pm_shared.c:2457 */
-physent_t *PM_Ladder(void)
+physent_t *PM_Ladder()
 {
 	int i;
 	physent_t *pe;
@@ -2113,7 +2099,7 @@ physent_t *PM_Ladder(void)
 }
 
 /* <2cda77> ../cstrike/pm_shared/pm_shared.c:2491 */
-void PM_WaterJump(void)
+void PM_WaterJump()
 {
 	if (pmove->waterjumptime > 10000)
 	{
@@ -2138,7 +2124,7 @@ void PM_WaterJump(void)
 }
 
 /* <2cda8d> ../cstrike/pm_shared/pm_shared.c:2519 */
-void PM_AddGravity(void)
+void PM_AddGravity()
 {
 	float ent_gravity;
 
@@ -2178,7 +2164,7 @@ pmtrace_t PM_PushEntity(vec_t *push)
 }
 
 /* <2cdb13> ../cstrike/pm_shared/pm_shared.c:2569 */
-void PM_Physics_Toss(void)
+void PM_Physics_Toss()
 {
 	pmtrace_t trace;
 	vec3_t move;
@@ -2284,7 +2270,7 @@ void PM_Physics_Toss(void)
 }
 
 /* <2cdba2> ../cstrike/pm_shared/pm_shared.c:2674 */
-void PM_NoClip(void)
+void PM_NoClip()
 {
 	int i;
 	vec3_t wishvel;
@@ -2318,7 +2304,7 @@ void PM_NoClip(void)
 //  movement logic does.
 
 /* <2ccab0> ../cstrike/pm_shared/pm_shared.c:2711 */
-void PM_PreventMegaBunnyJumping(void)
+void PM_PreventMegaBunnyJumping()
 {
 	// Current player speed
 	float_precision spd;
@@ -2346,7 +2332,7 @@ void PM_PreventMegaBunnyJumping(void)
 }
 
 /* <2cc541> ../cstrike/pm_shared/pm_shared.c:2741 */
-void PM_Jump(void)
+void PM_Jump()
 {
 	if (pmove->dead)
 	{
@@ -2469,12 +2455,14 @@ void PM_Jump(void)
 	else
 #endif // REGAMEDLL_ADD
 	{
-		pmove->velocity[2] = sqrt((float_precision)(2 * 800 * 45.0f));
+		// NOTE: don't do it in .f (float)
+		pmove->velocity[2] = sqrt(2.0 * 800.0f * 45.0f);
 	}
 
 	if (pmove->fuser2 > 0.0f)
 	{
-		float_precision flRatio = (100 - pmove->fuser2 * 0.001f * 19.0f) * 0.01f;
+		// NOTE: don't do it in .f (float)
+		float_precision flRatio = (100.0 - pmove->fuser2 * 0.001 * 19.0) * 0.01;
 		pmove->velocity[2] *= flRatio;
 	}
 
@@ -2489,7 +2477,7 @@ void PM_Jump(void)
 }
 
 /* <2cdc4b> ../cstrike/pm_shared/pm_shared.c:2869 */
-void PM_CheckWaterJump(void)
+void PM_CheckWaterJump()
 {
 	vec3_t vecStart, vecEnd;
 	vec3_t flatforward;
@@ -2565,7 +2553,7 @@ void PM_CheckWaterJump(void)
 }
 
 /* <2cdcd3> ../cstrike/pm_shared/pm_shared.c:2933 */
-void PM_CheckFalling(void)
+void PM_CheckFalling()
 {
 	if (pmove->onground != -1 && !pmove->dead && pmove->flFallVelocity >= PM_PLAYER_FALL_PUNCH_THRESHHOLD)
 	{
@@ -2614,7 +2602,7 @@ void PM_CheckFalling(void)
 }
 
 /* <2cdd60> ../cstrike/pm_shared/pm_shared.c:2988 */
-void PM_PlayWaterSounds(void)
+void PM_PlayWaterSounds()
 {
 	// Did we enter or leave water?
 	if (pmove->oldwaterlevel != 0)
@@ -2678,12 +2666,12 @@ void PM_DropPunchAngle(vec_t *punchangle)
 	len = Q_max(len, 0.0);
 #else
 	len = Q_max(len, 0.0f);
-#endif // HOOK_GAMEDLL
+#endif // PLAY_GAMEDLL
 	VectorScale(punchangle, len, punchangle);
 }
 
 /* <2cdeb8> ../cstrike/pm_shared/pm_shared.c:3069 */
-void PM_CheckParamters(void)
+void PM_CheckParamters()
 {
 	float spd;
 	float_precision maxspeed;
@@ -2746,7 +2734,7 @@ void PM_CheckParamters(void)
 }
 
 /* <2cdfc3> ../cstrike/pm_shared/pm_shared.c:3136 */
-void PM_ReduceTimers(void)
+void PM_ReduceTimers()
 {
 	if (pmove->flTimeStepSound > 0)
 	{
@@ -2790,7 +2778,7 @@ void PM_ReduceTimers(void)
 }
 
 /* <2cc577> ../cstrike/pm_shared/pm_shared.c:3203 */
-qboolean PM_ShouldDoSpectMode(void)
+qboolean PM_ShouldDoSpectMode()
 {
 	return (pmove->iuser3 <= 0 || pmove->deadflag == DEAD_DEAD);
 }
@@ -3052,7 +3040,7 @@ void PM_PlayerMove(qboolean server)
 }
 
 /* <2ce101> ../cstrike/pm_shared/pm_shared.c:3479 */
-void PM_CreateStuckTable(void)
+void PM_CreateStuckTable()
 {
 	float x, y, z;
 

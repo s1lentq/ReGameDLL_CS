@@ -37,23 +37,13 @@
 #include <wchar.h>
 #endif // _WIN32
 
-#ifdef HOOK_GAMEDLL
-
-#define s_shared_token (*ps_shared_token)
-#define s_shared_quote (*ps_shared_quote)
-
-#endif // HOOK_GAMEDLL
-
-extern char s_shared_token[ 1500 ];
-extern char s_shared_quote;
-
 NOXREF wchar_t *SharedWVarArgs(wchar_t *format, ...);
 char *SharedVarArgs(char *format, ...);
 char *BufPrintf(char *buf, int &len, const char *fmt, ...);
 NOXREF wchar_t *BufWPrintf(wchar_t *buf, int &len, const wchar_t *fmt, ...);
 NOXREF const wchar_t *NumAsWString(int val);
 const char *NumAsString(int val);
-char *SharedGetToken(void);
+char *SharedGetToken();
 NOXREF void SharedSetQuoteChar(char c);
 const char *SharedParse(const char *data);
 NOXREF bool SharedTokenWaiting(const char *buffer);

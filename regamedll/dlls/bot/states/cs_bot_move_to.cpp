@@ -300,22 +300,3 @@ void MoveToState::__MAKE_VHOOK(OnExit)(CCSBot *me)
 	me->SetDisposition(CCSBot::ENGAGE_AND_INVESTIGATE);
 	//me->StopAiming();
 }
-
-#ifdef HOOK_GAMEDLL
-
-void MoveToState::OnEnter(CCSBot *me)
-{
-	OnEnter_(me);
-}
-
-void MoveToState::OnUpdate(CCSBot *me)
-{
-	OnUpdate_(me);
-}
-
-void MoveToState::OnExit(CCSBot *me)
-{
-	OnExit_(me);
-}
-
-#endif // HOOK_GAMEDLL

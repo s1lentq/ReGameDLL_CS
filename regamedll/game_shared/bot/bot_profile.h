@@ -66,7 +66,7 @@ enum BotProfileTeamType
 class BotProfile
 {
 public:
-	BotProfile(void)
+	BotProfile()
 	{
 		m_name = NULL;
 		m_aggression = 0.0f;
@@ -83,24 +83,24 @@ public:
 		m_voiceBank = 0;
 		m_prefersSilencer = false;
 	}
-	const char *GetName(void) const { return m_name; }
-	float GetAggression(void) const { return m_aggression; }
-	float GetSkill(void) const { return m_skill; }
-	float GetTeamwork(void) const { return m_teamwork; }
+	const char *GetName() const { return m_name; }
+	float GetAggression() const { return m_aggression; }
+	float GetSkill() const { return m_skill; }
+	float GetTeamwork() const { return m_teamwork; }
 	int GetWeaponPreference(int i) const { return m_weaponPreference[i]; }
 	const char *GetWeaponPreferenceAsString(int i) const;
-	int GetWeaponPreferenceCount(void) const { return m_weaponPreferenceCount; }
-	bool HasPrimaryPreference(void) const;
-	bool HasPistolPreference(void) const;
-	int GetCost(void) const { return m_cost; }
-	int GetSkin(void) const { return m_skin; }
+	int GetWeaponPreferenceCount() const { return m_weaponPreferenceCount; }
+	bool HasPrimaryPreference() const;
+	bool HasPistolPreference() const;
+	int GetCost() const { return m_cost; }
+	int GetSkin() const { return m_skin; }
 	bool IsDifficulty(BotDifficultyType diff) const;
-	int GetVoicePitch(void) const { return m_voicePitch; }
-	float GetReactionTime(void) const { return m_reactionTime; }
-	float GetAttackDelay(void) const { return m_attackDelay; }
-	int GetVoiceBank(void) const { return m_voiceBank; }
+	int GetVoicePitch() const { return m_voicePitch; }
+	float GetReactionTime() const { return m_reactionTime; }
+	float GetAttackDelay() const { return m_attackDelay; }
+	int GetVoiceBank() const { return m_voiceBank; }
 	bool IsValidForTeam(BotProfileTeamType team) const;
-	bool PrefersSilencer(void) const { return m_prefersSilencer; }
+	bool PrefersSilencer() const { return m_prefersSilencer; }
 
 private:
 	void Inherit(const BotProfile *parent, const BotProfile *baseline);
@@ -126,8 +126,7 @@ private:
 	enum BotProfileTeamType m_teams;
 	bool m_prefersSilencer;
 	int m_voiceBank;
-
-}; /* size: 120, cachelines: 2, members: 15 */
+};
 
 /* <4a666f> ../game_shared/bot/bot_profile.h:115 */
 inline bool BotProfile::IsDifficulty(BotDifficultyType diff) const
@@ -185,11 +184,11 @@ typedef std::STD_LIST<BotProfile *> BotProfileList;
 class BotProfileManager
 {
 public:
-	BotProfileManager(void);
-	~BotProfileManager(void);
+	BotProfileManager();
+	~BotProfileManager();
 
 	void Init(const char *filename, unsigned int *checksum = NULL);
-	void Reset(void);
+	void Reset();
 
 	const BotProfile *GetProfile(const char *name, BotProfileTeamType team) const
 	{
@@ -201,10 +200,7 @@ public:
 
 		return NULL;
 	}
-	const BotProfileList *GetProfileList(void) const
-	{
-		return &m_profileList;
-	}
+	const BotProfileList *GetProfileList() const { return &m_profileList; }
 	const BotProfile *GetRandomProfile(BotDifficultyType difficulty, BotProfileTeamType team) const;
 
 	const char *GetCustomSkin(int index);
@@ -214,10 +210,7 @@ public:
 
 	typedef std::STD_VECTOR<char *> VoiceBankList;
 
-	const VoiceBankList *GetVoiceBanks() const
-	{
-		return &m_voiceBanks;
-	}
+	const VoiceBankList *GetVoiceBanks() const { return &m_voiceBanks; }
 	int FindVoiceBankIndex(const char *filename);
 
 protected:
@@ -228,14 +221,7 @@ protected:
 	char *m_skinModelnames[NumCustomSkins];
 	char *m_skinFilenames[NumCustomSkins];
 	int m_nextSkin;
-
-};/* size: 1224, cachelines: 20, members: 6 */
-
-#ifdef HOOK_GAMEDLL
-
-#define TheBotProfiles (*pTheBotProfiles)
-
-#endif // HOOK_GAMEDLL
+};
 
 extern BotProfileManager *TheBotProfiles;
 

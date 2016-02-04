@@ -140,12 +140,6 @@ enum GameEventType
 	NUM_GAME_EVENTS,
 };
 
-#ifdef HOOK_GAMEDLL
-
-#define GameEventName (*pGameEventName)
-
-#endif // HOOK_GAMEDLL
-
 extern const char *GameEventName[ NUM_GAME_EVENTS + 1 ];
 
 #endif // GAME_EVENT_H

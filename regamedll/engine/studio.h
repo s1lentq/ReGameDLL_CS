@@ -123,8 +123,8 @@ typedef struct
 	int soundgroupindex;
 	int numtransitions;		// animation node to animation node transition graph
 	int transitionindex;
+
 } studiohdr_t;
-/* size: 244, cachelines: 4, members: 36 */
 
 // bones
 typedef struct
@@ -135,8 +135,8 @@ typedef struct
 	int bonecontroller[6];	// bone controller index, -1 == none
 	float value[6];		// default DoF values
 	float scale[6];		// scale for delta DoF values
+
 } mstudiobone_t;
-/* size: 112, cachelines: 2, members: 6 */
 
 // bone controllers
 typedef struct
@@ -147,8 +147,8 @@ typedef struct
 	float end;
 	int rest;	// byte index value at rest
 	int index;	// 0-3 user set controller, 4 mouth
+
 } mstudiobonecontroller_t;
-/* size: 24, cachelines: 1, members: 6 */
 
 // demand loaded sequence groups
 typedef struct
@@ -157,8 +157,8 @@ typedef struct
 	char name[64];		// file name
 	int32_t unused1;	// cache index pointer
 	int unused2;		// hack for group 0
+
 } mstudioseqgroup_t;
-/* size: 104, cachelines: 2, members: 4 */
 
 // sequence descriptions
 typedef struct
@@ -192,14 +192,14 @@ typedef struct
 	int exitnode;			// transition node at exit
 	int nodeflags;			// transition rules
 	int nextseq;			// auto advancing sequences
+
 } mstudioseqdesc_t;
-/* size: 176, cachelines: 3, members: 28 */
 
 typedef struct
 {
 	unsigned short offset[6];
+
 } mstudioanim_t;
-/* size: 12, cachelines: 1, members: 1 */
 
 // animation frames
 typedef union
@@ -210,6 +210,7 @@ typedef union
 		byte total;
 	} num;
 	short int value;
+
 } mstudioanimvalue_t;
 
 // body part index
@@ -219,7 +220,7 @@ typedef struct
 	int nummodels;
 	int base;
 	int modelindex; // index into models array
+
 } mstudiobodyparts_t;
-/* size: 76, cachelines: 2, members: 4 */
 
 #endif // STUDIO_H

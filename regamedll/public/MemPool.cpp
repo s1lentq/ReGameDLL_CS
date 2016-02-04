@@ -15,14 +15,14 @@ CMemoryPool::CMemoryPool(int blockSize, int numElements)
 }
 
 /* <3fe967> ../public/MemPool.cpp:52 */
-CMemoryPool::~CMemoryPool(void)
+CMemoryPool::~CMemoryPool()
 {
-	for (int i = 0; i < _numBlobs; i++)
+	for (int i = 0; i < _numBlobs; ++i)
 		free(_memBlob[i]);
 }
 
 /* <3fe99c> ../public/MemPool.cpp:109 */
-void CMemoryPool::AddNewBlob(void)
+void CMemoryPool::AddNewBlob()
 {
 	int sizeMultiplier = pow(2.0, _numBlobs);
 	int nElements = _blocksPerBlob * sizeMultiplier;
@@ -43,7 +43,7 @@ void CMemoryPool::AddNewBlob(void)
 #endif // _WIN32
 
 	void **newBlob = (void **)_headOfFreeList;
-	for (int j = 0; j < nElements - 1; j++)
+	for (int j = 0; j < nElements - 1; ++j)
 	{
 		newBlob[0] = (char *)newBlob + _blockSize;
 		newBlob = (void **)newBlob[0];
@@ -52,7 +52,7 @@ void CMemoryPool::AddNewBlob(void)
 	newBlob[0] = NULL;
 
 	_numElements += nElements;
-	_numBlobs++;
+	++_numBlobs;
 
 #ifdef _WIN32
 	if (_numBlobs >= MAX_BLOBS - 1)
@@ -68,7 +68,7 @@ void *CMemoryPool::Alloc(unsigned int amount)
 	if (amount > (unsigned int)_blockSize)
 		return NULL;
 
-	_blocksAllocated++;
+	++_blocksAllocated;
 	_peakAlloc = Q_max(_peakAlloc, _blocksAllocated);
 
 	if (_blocksAllocated >= _numElements)
@@ -94,7 +94,7 @@ void CMemoryPool::Free(void *memblock)
 	Q_memset(memblock, 0xDD, _blockSize);
 #endif // _DEBUG
 
-	_blocksAllocated--;
+	--_blocksAllocated;
 	*((void **)memblock) = _headOfFreeList;
 	_headOfFreeList = memblock;
 }

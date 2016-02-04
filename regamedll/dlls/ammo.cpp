@@ -1,7 +1,7 @@
 #include "precompiled.h"
 
 /* <a6c7> ../cstrike/dlls/ammo.cpp:16 */
-void C9MMAmmo::__MAKE_VHOOK(Spawn)(void)
+void C9MMAmmo::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
 	SET_MODEL(ENT(pev), "models/w_9mmclip.mdl");
@@ -9,7 +9,7 @@ void C9MMAmmo::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <a3e2> ../cstrike/dlls/ammo.cpp:22 */
-void C9MMAmmo::__MAKE_VHOOK(Precache)(void)
+void C9MMAmmo::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/w_9mmclip.mdl");
 	PRECACHE_SOUND("items/9mmclip1.wav");
@@ -31,7 +31,7 @@ BOOL C9MMAmmo::__MAKE_VHOOK(AddAmmo)(CBaseEntity *pOther)
 LINK_ENTITY_TO_CLASS(ammo_9mm, C9MMAmmo);
 
 /* <a6a0> ../cstrike/dlls/ammo.cpp:42 */
-void CBuckShotAmmo::__MAKE_VHOOK(Spawn)(void)
+void CBuckShotAmmo::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
 	SET_MODEL(ENT(pev), "models/w_shotbox.mdl");
@@ -39,7 +39,7 @@ void CBuckShotAmmo::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <a409> ../cstrike/dlls/ammo.cpp:48 */
-void CBuckShotAmmo::__MAKE_VHOOK(Precache)(void)
+void CBuckShotAmmo::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/w_shotbox.mdl");
 	PRECACHE_SOUND("items/9mmclip1.wav");
@@ -61,7 +61,7 @@ BOOL CBuckShotAmmo::__MAKE_VHOOK(AddAmmo)(CBaseEntity *pOther)
 LINK_ENTITY_TO_CLASS(ammo_buckshot, CBuckShotAmmo);
 
 /* <a679> ../cstrike/dlls/ammo.cpp:69 */
-void C556NatoAmmo::__MAKE_VHOOK(Spawn)(void)
+void C556NatoAmmo::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
 	SET_MODEL(ENT(pev), "models/w_9mmclip.mdl");
@@ -69,7 +69,7 @@ void C556NatoAmmo::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <a430> ../cstrike/dlls/ammo.cpp:75 */
-void C556NatoAmmo::__MAKE_VHOOK(Precache)(void)
+void C556NatoAmmo::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/w_9mmclip.mdl");
 	PRECACHE_SOUND("items/9mmclip1.wav");
@@ -91,7 +91,7 @@ BOOL C556NatoAmmo::__MAKE_VHOOK(AddAmmo)(CBaseEntity *pOther)
 LINK_ENTITY_TO_CLASS(ammo_556nato, C556NatoAmmo);
 
 /* <a652> ../cstrike/dlls/ammo.cpp:95 */
-void C556NatoBoxAmmo::__MAKE_VHOOK(Spawn)(void)
+void C556NatoBoxAmmo::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
 	SET_MODEL(ENT(pev), "models/w_9mmclip.mdl");
@@ -99,7 +99,7 @@ void C556NatoBoxAmmo::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <a457> ../cstrike/dlls/ammo.cpp:101 */
-void C556NatoBoxAmmo::__MAKE_VHOOK(Precache)(void)
+void C556NatoBoxAmmo::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/w_9mmclip.mdl");
 	PRECACHE_SOUND("items/9mmclip1.wav");
@@ -121,7 +121,7 @@ BOOL C556NatoBoxAmmo::__MAKE_VHOOK(AddAmmo)(CBaseEntity *pOther)
 LINK_ENTITY_TO_CLASS(ammo_556natobox, C556NatoBoxAmmo);
 
 /* <a62b> ../cstrike/dlls/ammo.cpp:121 */
-void C762NatoAmmo::__MAKE_VHOOK(Spawn)(void)
+void C762NatoAmmo::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
 	SET_MODEL(ENT(pev), "models/w_9mmclip.mdl");
@@ -129,7 +129,7 @@ void C762NatoAmmo::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <a47e> ../cstrike/dlls/ammo.cpp:127 */
-void C762NatoAmmo::__MAKE_VHOOK(Precache)(void)
+void C762NatoAmmo::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/w_9mmclip.mdl");
 	PRECACHE_SOUND("items/9mmclip1.wav");
@@ -151,7 +151,7 @@ BOOL C762NatoAmmo::__MAKE_VHOOK(AddAmmo)(CBaseEntity *pOther)
 LINK_ENTITY_TO_CLASS(ammo_762nato, C762NatoAmmo);
 
 /* <a604> ../cstrike/dlls/ammo.cpp:147 */
-void C45ACPAmmo::__MAKE_VHOOK(Spawn)(void)
+void C45ACPAmmo::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
 	SET_MODEL(ENT(pev), "models/w_9mmclip.mdl");
@@ -159,7 +159,7 @@ void C45ACPAmmo::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <a4a5> ../cstrike/dlls/ammo.cpp:153 */
-void C45ACPAmmo::__MAKE_VHOOK(Precache)(void)
+void C45ACPAmmo::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/w_9mmclip.mdl");
 	PRECACHE_SOUND("items/9mmclip1.wav");
@@ -181,7 +181,7 @@ BOOL C45ACPAmmo::__MAKE_VHOOK(AddAmmo)(CBaseEntity *pOther)
 LINK_ENTITY_TO_CLASS(ammo_45acp, C45ACPAmmo);
 
 /* <a5dd> ../cstrike/dlls/ammo.cpp:173 */
-void C50AEAmmo::__MAKE_VHOOK(Spawn)(void)
+void C50AEAmmo::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
 	SET_MODEL(ENT(pev), "models/w_9mmclip.mdl");
@@ -189,7 +189,7 @@ void C50AEAmmo::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <a4cc> ../cstrike/dlls/ammo.cpp:179 */
-void C50AEAmmo::__MAKE_VHOOK(Precache)(void)
+void C50AEAmmo::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/w_9mmclip.mdl");
 	PRECACHE_SOUND("items/9mmclip1.wav");
@@ -211,7 +211,7 @@ BOOL C50AEAmmo::__MAKE_VHOOK(AddAmmo)(CBaseEntity *pOther)
 LINK_ENTITY_TO_CLASS(ammo_50ae, C50AEAmmo);
 
 /* <a5b6> ../cstrike/dlls/ammo.cpp:199 */
-void C338MagnumAmmo::__MAKE_VHOOK(Spawn)(void)
+void C338MagnumAmmo::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
 	SET_MODEL(ENT(pev), "models/w_9mmclip.mdl");
@@ -219,7 +219,7 @@ void C338MagnumAmmo::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <a4f3> ../cstrike/dlls/ammo.cpp:205 */
-void C338MagnumAmmo::__MAKE_VHOOK(Precache)(void)
+void C338MagnumAmmo::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/w_9mmclip.mdl");
 	PRECACHE_SOUND("items/9mmclip1.wav");
@@ -241,7 +241,7 @@ BOOL C338MagnumAmmo::__MAKE_VHOOK(AddAmmo)(CBaseEntity *pOther)
 LINK_ENTITY_TO_CLASS(ammo_338magnum, C338MagnumAmmo);
 
 /* <a58f> ../cstrike/dlls/ammo.cpp:226 */
-void C57MMAmmo::__MAKE_VHOOK(Spawn)(void)
+void C57MMAmmo::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
 	SET_MODEL(ENT(pev), "models/w_9mmclip.mdl");
@@ -249,7 +249,7 @@ void C57MMAmmo::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <a51a> ../cstrike/dlls/ammo.cpp:232 */
-void C57MMAmmo::__MAKE_VHOOK(Precache)(void)
+void C57MMAmmo::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/w_9mmclip.mdl");
 	PRECACHE_SOUND("items/9mmclip1.wav");
@@ -271,7 +271,7 @@ BOOL C57MMAmmo::__MAKE_VHOOK(AddAmmo)(CBaseEntity *pOther)
 LINK_ENTITY_TO_CLASS(ammo_57mm, C57MMAmmo);
 
 /* <a568> ../cstrike/dlls/ammo.cpp:251 */
-void C357SIGAmmo::__MAKE_VHOOK(Spawn)(void)
+void C357SIGAmmo::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
 	SET_MODEL(ENT(pev), "models/w_9mmclip.mdl");
@@ -279,7 +279,7 @@ void C357SIGAmmo::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <a541> ../cstrike/dlls/ammo.cpp:257 */
-void C357SIGAmmo::__MAKE_VHOOK(Precache)(void)
+void C357SIGAmmo::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/w_9mmclip.mdl");
 	PRECACHE_SOUND("items/9mmclip1.wav");
@@ -299,157 +299,3 @@ BOOL C357SIGAmmo::__MAKE_VHOOK(AddAmmo)(CBaseEntity *pOther)
 
 /* <b403> ../cstrike/dlls/ammo.cpp:272 */
 LINK_ENTITY_TO_CLASS(ammo_357sig, C357SIGAmmo);
-
-#ifdef HOOK_GAMEDLL
-
-void C9MMAmmo::Spawn(void)
-{
-	Spawn_();
-}
-
-void C9MMAmmo::Precache(void)
-{
-	Precache_();
-}
-
-BOOL C9MMAmmo::AddAmmo(CBaseEntity *pOther)
-{
-	return AddAmmo_(pOther);
-}
-
-void CBuckShotAmmo::Spawn(void)
-{
-	Spawn_();
-}
-
-void CBuckShotAmmo::Precache(void)
-{
-	Precache_();
-}
-
-BOOL CBuckShotAmmo::AddAmmo(CBaseEntity *pOther)
-{
-	return AddAmmo_(pOther);
-}
-
-void C556NatoAmmo::Spawn(void)
-{
-	Spawn_();
-}
-
-void C556NatoAmmo::Precache(void)
-{
-	Precache_();
-}
-
-BOOL C556NatoAmmo::AddAmmo(CBaseEntity *pOther)
-{
-	return AddAmmo_(pOther);
-}
-
-void C556NatoBoxAmmo::Spawn(void)
-{
-	Spawn_();
-}
-
-void C556NatoBoxAmmo::Precache(void)
-{
-	Precache_();
-}
-
-BOOL C556NatoBoxAmmo::AddAmmo(CBaseEntity *pOther)
-{
-	return AddAmmo_(pOther);
-}
-
-void C762NatoAmmo::Spawn(void)
-{
-	Spawn_();
-}
-
-void C762NatoAmmo::Precache(void)
-{
-	Precache_();
-}
-
-BOOL C762NatoAmmo::AddAmmo(CBaseEntity *pOther)
-{
-	return AddAmmo_(pOther);
-}
-
-void C45ACPAmmo::Spawn(void)
-{
-	Spawn_();
-}
-
-void C45ACPAmmo::Precache(void)
-{
-	Precache_();
-}
-
-BOOL C45ACPAmmo::AddAmmo(CBaseEntity *pOther)
-{
-	return AddAmmo_(pOther);
-}
-
-void C50AEAmmo::Spawn(void)
-{
-	Spawn_();
-}
-
-void C50AEAmmo::Precache(void)
-{
-	Precache_();
-}
-
-BOOL C50AEAmmo::AddAmmo(CBaseEntity *pOther)
-{
-	return AddAmmo_(pOther);
-}
-
-void C338MagnumAmmo::Spawn(void)
-{
-	Spawn_();
-}
-
-void C338MagnumAmmo::Precache(void)
-{
-	Precache_();
-}
-
-BOOL C338MagnumAmmo::AddAmmo(CBaseEntity *pOther)
-{
-	return AddAmmo_(pOther);
-}
-
-void C57MMAmmo::Spawn(void)
-{
-	Spawn_();
-}
-
-void C57MMAmmo::Precache(void)
-{
-	Precache_();
-}
-
-BOOL C57MMAmmo::AddAmmo(CBaseEntity *pOther)
-{
-	return AddAmmo_(pOther);
-}
-
-void C357SIGAmmo::Spawn(void)
-{
-	Spawn_();
-}
-
-void C357SIGAmmo::Precache(void)
-{
-	Precache_();
-}
-
-BOOL C357SIGAmmo::AddAmmo(CBaseEntity *pOther)
-{
-	return AddAmmo_(pOther);
-}
-
-#endif // HOOK_GAMEDLL

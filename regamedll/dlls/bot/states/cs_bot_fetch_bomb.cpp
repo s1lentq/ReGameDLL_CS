@@ -50,17 +50,3 @@ void FetchBombState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 	if (me->UpdatePathMovement() != CCSBot::PROGRESSING)
 		me->Idle();
 }
-
-#ifdef HOOK_GAMEDLL
-
-void FetchBombState::OnEnter(CCSBot *me)
-{
-	OnEnter_(me);
-}
-
-void FetchBombState::OnUpdate(CCSBot *me)
-{
-	OnUpdate_(me);
-}
-
-#endif // HOOK_GAMEDLL

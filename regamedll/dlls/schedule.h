@@ -240,7 +240,7 @@ typedef enum
 	TASK_REMEMBER,
 	TASK_FORGET,
 	TASK_WAIT_FOR_MOVEMENT,		// wait until MovementIsComplete()
-	LAST_COMMON_TASK,		// LEAVE THIS AT THE BOTTOM!! (sjb)
+	LAST_COMMON_TASK,		// LEAVE THIS AT THE BOTTOM (sjb)
 
 } SHARED_TASKS;
 
@@ -286,7 +286,7 @@ struct Schedule_t
 };
 
 // an array of waypoints makes up the monster's route.
-// !!!LATER- this declaration doesn't belong in this file.
+// LATER - this declaration doesn't belong in this file.
 struct WayPoint_t
 {
 	Vector vecLocation;

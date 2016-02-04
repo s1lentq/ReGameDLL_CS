@@ -18,16 +18,10 @@ DebugOutputLevel outputLevel[ NUM_LEVELS ] =
 unsigned int theDebugOutputTypes;
 static char theDebugBuffer[ DebugBufferSize ];
 
-#else // HOOK_GAMEDLL
-
-DebugOutputLevel outputLevel[ NUM_LEVELS ];
-unsigned int theDebugOutputTypes;
-char theDebugBuffer[ DebugBufferSize ];
-
 #endif // HOOK_GAMEDLL
 
 /* <22fe8b> ../cstrike/dlls/debug.cpp:39 */
-bool IsDeveloper(void)
+bool IsDeveloper()
 {
 	return (CVAR_GET_FLOAT("developer") > 0.0);
 }
@@ -64,7 +58,7 @@ void UTIL_DPrintf(char *pszMsg, ...)
 }
 
 /* <22fe97> ../cstrike/dlls/debug.cpp:78 */
-void PrintDebugFlags(void)
+void PrintDebugFlags()
 {
 	char *tmp;
 	int remainder = DebugBufferSize;

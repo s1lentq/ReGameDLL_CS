@@ -15,10 +15,6 @@ TYPEDESCRIPTION CFuncMortarField::m_SaveData[] =
 	DEFINE_FIELD(CFuncMortarField, m_fControl, FIELD_INTEGER),
 };
 
-#else
-
-TYPEDESCRIPTION IMPL_CLASS(CFuncMortarField, m_SaveData)[6];
-
 #endif // HOOK_GAMEDLL
 
 /* <f6ee7> ../cstrike/dlls/mortar.cpp:56 */
@@ -60,7 +56,7 @@ void CFuncMortarField::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 // Drop bombs from above
 
 /* <f694a> ../cstrike/dlls/mortar.cpp:102 */
-void CFuncMortarField::__MAKE_VHOOK(Spawn)(void)
+void CFuncMortarField::__MAKE_VHOOK(Spawn)()
 {
 	pev->solid = SOLID_NOT;
 
@@ -74,7 +70,7 @@ void CFuncMortarField::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <f6971> ../cstrike/dlls/mortar.cpp:113 */
-void CFuncMortarField::__MAKE_VHOOK(Precache)(void)
+void CFuncMortarField::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_SOUND("weapons/mortar.wav");
 	PRECACHE_SOUND("weapons/mortarhit.wav");
@@ -169,7 +165,7 @@ void CFuncMortarField::FieldUse(CBaseEntity *pActivator, CBaseEntity *pCaller, U
 LINK_ENTITY_TO_CLASS(monster_mortar, CMortar);
 
 /* <f6998> ../cstrike/dlls/mortar.cpp:205 */
-void CMortar::__MAKE_VHOOK(Spawn)(void)
+void CMortar::__MAKE_VHOOK(Spawn)()
 {
 	pev->movetype = MOVETYPE_NONE;
 	pev->solid = SOLID_NOT;
@@ -181,13 +177,13 @@ void CMortar::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <f69be> ../cstrike/dlls/mortar.cpp:221 */
-void CMortar::__MAKE_VHOOK(Precache)(void)
+void CMortar::__MAKE_VHOOK(Precache)()
 {
 	m_spriteTexture = PRECACHE_MODEL("sprites/lgtning.spr");
 }
 
 /* <f69e5> ../cstrike/dlls/mortar.cpp:226 */
-void CMortar::MortarExplode(void)
+void CMortar::MortarExplode()
 {
 	// mortar beam
 	MESSAGE_BEGIN(MSG_BROADCAST, SVC_TEMPENTITY);
@@ -217,42 +213,3 @@ void CMortar::MortarExplode(void)
 	Explode(&tr, (DMG_BLAST | DMG_MORTAR));
 	UTIL_ScreenShake(tr.vecEndPos, 25.0, 150.0, 1.0, 750);
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CFuncMortarField::Spawn(void)
-{
-	Spawn_();
-}
-
-void CFuncMortarField::Precache(void)
-{
-	Precache_();
-}
-
-void CFuncMortarField::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-int CFuncMortarField::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CFuncMortarField::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-void CMortar::Spawn(void)
-{
-	Spawn_();
-}
-
-void CMortar::Precache(void)
-{
-	Precache_();
-}
-
-#endif // HOOK_GAMEDLL

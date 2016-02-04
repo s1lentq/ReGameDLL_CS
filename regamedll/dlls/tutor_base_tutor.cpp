@@ -17,7 +17,7 @@ TutorMessageEvent::TutorMessageEvent(int mid, int duplicateID, float time, float
 }
 
 /* <1f4d07> ../cstrike/dlls/tutor_base_tutor.cpp:34 */
-TutorMessageEvent::~TutorMessageEvent(void)
+TutorMessageEvent::~TutorMessageEvent()
 {
 	;
 }
@@ -29,7 +29,7 @@ bool TutorMessageEvent::IsActive(float time)
 }
 
 /* <1f54da> ../cstrike/dlls/tutor_base_tutor.cpp:48 */
-int TutorMessageEvent::GetPriority(void)
+int TutorMessageEvent::GetPriority()
 {
 	return m_priority;
 }
@@ -47,13 +47,13 @@ void TutorMessageEvent::SetActivationTime(float time)
 }
 
 /* <1f5568> ../cstrike/dlls/tutor_base_tutor.cpp:63 */
-int TutorMessageEvent::GetID(void)
+int TutorMessageEvent::GetID()
 {
 	return m_messageID;
 }
 
 /* <1f5589> ../cstrike/dlls/tutor_base_tutor.cpp:68 */
-int TutorMessageEvent::GetDuplicateID(void)
+int TutorMessageEvent::GetDuplicateID()
 {
 	return m_duplicateID;
 }
@@ -65,7 +65,7 @@ void TutorMessageEvent::SetNext(TutorMessageEvent *next)
 }
 
 /* <1f55e3> ../cstrike/dlls/tutor_base_tutor.cpp:78 */
-TutorMessageEvent *TutorMessageEvent::GetNext(void)
+TutorMessageEvent *TutorMessageEvent::GetNext()
 {
 	return m_next;
 }
@@ -127,13 +127,13 @@ char *TutorMessageEvent::GetNextParameter(char *buf, int buflen)
 }
 
 /* <1f569e> ../cstrike/dlls/tutor_base_tutor.cpp:136 */
-int TutorMessageEvent::GetNumParameters(void)
+int TutorMessageEvent::GetNumParameters()
 {
 	return m_numParameters;
 }
 
 /* <1f56d8> ../cstrike/dlls/tutor_base_tutor.cpp:144 */
-CBaseTutor::CBaseTutor(void)
+CBaseTutor::CBaseTutor()
 {
 	m_eventList = NULL;
 	m_deadAirStartTime = 0;
@@ -141,7 +141,7 @@ CBaseTutor::CBaseTutor(void)
 }
 
 /* <1f4d28> ../cstrike/dlls/tutor_base_tutor.cpp:152 */
-CBaseTutor::~CBaseTutor(void)
+CBaseTutor::~CBaseTutor()
 {
 	TutorMessageEvent *event = m_eventList;
 
@@ -196,7 +196,7 @@ void CBaseTutor::DisplayMessageToPlayer(CBasePlayer *player, int id, const char 
 		WRITE_STRING(szMessage);
 		WRITE_BYTE(numArgs);
 
-		for (int arg = 0; arg < numArgs; arg++)
+		for (int arg = 0; arg < numArgs; ++arg)
 		{
 			char *str = event->GetNextParameter(param, sizeof(param));
 
@@ -252,7 +252,7 @@ NOXREF void CBaseTutor::DrawLineToEntity(CBasePlayer *player, int entindex, int 
 }
 
 /* <1f5b4f> ../cstrike/dlls/tutor_base_tutor.cpp:275 */
-void CBaseTutor::DisplayNewStateDescriptionToPlayer(void)
+void CBaseTutor::DisplayNewStateDescriptionToPlayer()
 {
 	CBasePlayer *localPlayer = UTIL_GetLocalPlayer();
 
@@ -272,7 +272,7 @@ void CBaseTutor::DisplayNewStateDescriptionToPlayer(void)
 }
 
 /* <1f5bb4> ../cstrike/dlls/tutor_base_tutor.cpp:293 */
-void CBaseTutor::CloseCurrentWindow(void)
+void CBaseTutor::CloseCurrentWindow()
 {
 	CBasePlayer *localPlayer = (CBasePlayer *)UTIL_GetLocalPlayer();
 
@@ -449,32 +449,3 @@ bool CBaseTutor::DoMessagesHaveSameID(int id1, int id2)
 
 	return false;
 }
-
-#ifdef HOOK_GAMEDLL
-
-bool CBaseTutor::IsEntityInViewOfPlayer(CBaseEntity *entity, CBasePlayer *player)
-{
-	return IsEntityInViewOfPlayer_(entity, player);
-}
-
-bool CBaseTutor::IsBombsiteInViewOfPlayer(CBaseEntity *entity, CBasePlayer *player)
-{
-	return IsBombsiteInViewOfPlayer_(entity, player);
-}
-
-bool CBaseTutor::IsEntityInBombsite(CBaseEntity *bombsite, CBaseEntity *entity)
-{
-	return IsEntityInBombsite_(bombsite, entity);
-}
-
-bool CBaseTutor::IsPlayerLookingAtPosition(Vector *origin, CBasePlayer *player)
-{
-	return IsPlayerLookingAtPosition_(origin, player);
-}
-
-bool CBaseTutor::IsPlayerLookingAtEntity(CBaseEntity *entity, CBasePlayer *player)
-{
-	return IsPlayerLookingAtEntity_(entity, player);
-}
-
-#endif // HOOK_GAMEDLL

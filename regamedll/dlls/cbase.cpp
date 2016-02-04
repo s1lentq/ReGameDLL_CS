@@ -70,7 +70,7 @@ static NEW_DLL_FUNCTIONS gNewDLLFunctions
 TYPEDESCRIPTION	CBaseEntity::m_SaveData[] =
 {
 	DEFINE_FIELD(CBaseEntity, m_pGoalEnt, FIELD_CLASSPTR),
-	DEFINE_FIELD(CBaseEntity, m_pfnThink, FIELD_FUNCTION),	// UNDONE: Build table of these!!!
+	DEFINE_FIELD(CBaseEntity, m_pfnThink, FIELD_FUNCTION),	// UNDONE: Build table of these!
 	DEFINE_FIELD(CBaseEntity, m_pfnTouch, FIELD_FUNCTION),
 	DEFINE_FIELD(CBaseEntity, m_pfnUse, FIELD_FUNCTION),
 	DEFINE_FIELD(CBaseEntity, m_pfnBlocked, FIELD_FUNCTION),
@@ -78,15 +78,6 @@ TYPEDESCRIPTION	CBaseEntity::m_SaveData[] =
 
 CMemoryPool hashItemMemPool(sizeof(hash_item_t), 64);
 BOOL gTouchDisabled = FALSE;
-
-#else // HOOK_GAMEDLL
-
-DLL_FUNCTIONS gFunctionTable;
-NEW_DLL_FUNCTIONS gNewDLLFunctions;
-TYPEDESCRIPTION	IMPL_CLASS(CBaseEntity, m_SaveData)[5];
-
-CMemoryPool hashItemMemPool;
-BOOL gTouchDisabled;
 
 #endif // HOOK_GAMEDLL
 
@@ -112,7 +103,7 @@ int CaseInsensitiveHash(const char *string, int iBounds)
 }
 
 /* <30d81> ../cstrike/dlls/cbase.cpp:136 */
-void EmptyEntityHashTable(void)
+void EmptyEntityHashTable()
 {
 	int i;
 	hash_item_t *item, *temp, *free;
@@ -279,7 +270,7 @@ void RemoveEntityHashValue(entvars_t *pev, const char *value, hash_types_e field
 }
 
 /* <31125> ../cstrike/dlls/cbase.cpp:337 */
-void printEntities(void)
+void printEntities()
 {
 	for (int i = 0; i < stringsHashTable.Count(); ++i)
 	{
@@ -332,7 +323,7 @@ void CONSOLE_ECHO_(char *pszMsg, ...)
 }
 
 /* <31273> ../cstrike/dlls/cbase.cpp:386 */
-void loopPerformance(void)
+void loopPerformance()
 {
 	CPerformanceCounter loopCounter;
 	loopCounter.InitializePerformanceCounter();
@@ -770,7 +761,7 @@ void EXT_FUNC SaveReadFields(SAVERESTOREDATA *pSaveData, const char *pname, void
 }
 
 /* <31a74> ../cstrike/dlls/cbase.cpp:802 */
-edict_t *EHANDLE::Get(void)
+edict_t *EHANDLE::Get()
 {
 	if (!m_pent || m_pent->serialnumber != m_serialnumber)
 		return NULL;
@@ -789,7 +780,7 @@ edict_t *EHANDLE::Set(edict_t *pent)
 }
 
 /* <31ace> ../cstrike/dlls/cbase.cpp:823 */
-EHANDLE::operator CBaseEntity *(void)
+EHANDLE::operator CBaseEntity *()
 {
 	return (CBaseEntity *)GET_PRIVATE(Get());
 }
@@ -813,13 +804,13 @@ CBaseEntity *EHANDLE::operator=(CBaseEntity *pEntity)
 }
 
 /* <31b69> ../cstrike/dlls/cbase.cpp:845 */
-EHANDLE::operator int(void)
+EHANDLE::operator int()
 {
 	return Get() != NULL;
 }
 
 /* <31bac> ../cstrike/dlls/cbase.cpp:850 */
-CBaseEntity *EHANDLE::operator->(void)
+CBaseEntity *EHANDLE::operator->()
 {
 	return (CBaseEntity *)GET_PRIVATE(Get());
 }
@@ -902,7 +893,7 @@ void CBaseEntity::__MAKE_VHOOK(Killed)(entvars_t *pevAttacker, int iGib)
 }
 
 /* <2fc1c> ../cstrike/dlls/cbase.cpp:935 */
-CBaseEntity *CBaseEntity::__MAKE_VHOOK(GetNextTarget)(void)
+CBaseEntity *CBaseEntity::__MAKE_VHOOK(GetNextTarget)()
 {
 	if (FStringNull(pev->target))
 		return NULL;
@@ -1004,7 +995,7 @@ void SetObjectCollisionBox(entvars_t *pev)
 }
 
 /* <2fe2a> ../cstrike/dlls/cbase.cpp:1030 */
-void CBaseEntity::__MAKE_VHOOK(SetObjectCollisionBox)(void)
+void CBaseEntity::__MAKE_VHOOK(SetObjectCollisionBox)()
 {
 	::SetObjectCollisionBox(pev);
 }
@@ -1023,7 +1014,7 @@ int CBaseEntity::Intersects(CBaseEntity *pOther)
 }
 
 /* <31c43> ../cstrike/dlls/cbase.cpp:1048 */
-void CBaseEntity::MakeDormant(void)
+void CBaseEntity::MakeDormant()
 {
 	pev->flags |= FL_DORMANT;
 
@@ -1044,13 +1035,13 @@ void CBaseEntity::MakeDormant(void)
 }
 
 /* <31c66> ../cstrike/dlls/cbase.cpp:1064 */
-int CBaseEntity::IsDormant(void)
+int CBaseEntity::IsDormant()
 {
 	return (pev->flags & FL_DORMANT) == FL_DORMANT;
 }
 
 /* <30221> ../cstrike/dlls/cbase.cpp:1069 */
-BOOL CBaseEntity::__MAKE_VHOOK(IsInWorld)(void)
+BOOL CBaseEntity::__MAKE_VHOOK(IsInWorld)()
 {
 	// position
 	if (pev->origin.x >= 4096.0 || pev->origin.y >= 4096.0 || pev->origin.z >= 4096.0)
@@ -1136,72 +1127,3 @@ void OnFreeEntPrivateData(edict_t *pEnt)
 	pEntity->UpdateOnRemove();
 	RemoveEntityHashValue(pEntity->pev, STRING(pEntity->pev->classname), CLASSNAME);
 }
-
-#ifdef HOOK_GAMEDLL
-
-int CBaseEntity::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CBaseEntity::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-void CBaseEntity::SetObjectCollisionBox(void)
-{
-	SetObjectCollisionBox_();
-}
-
-void CBaseEntity::TraceAttack(entvars_t *pevAttacker,float flDamage,Vector vecDir,TraceResult *ptr,int bitsDamageType)
-{
-	TraceAttack_(pevAttacker,flDamage,vecDir,ptr,bitsDamageType);
-}
-
-int CBaseEntity::TakeDamage(entvars_t *pevInflictor,entvars_t *pevAttacker,float flDamage,int bitsDamageType)
-{
-	return TakeDamage_(pevInflictor,pevAttacker,flDamage,bitsDamageType);
-}
-
-int CBaseEntity::TakeHealth(float flHealth,int bitsDamageType)
-{
-	return TakeHealth_(flHealth, bitsDamageType);
-}
-
-void CBaseEntity::Killed(entvars_t *pevAttacker,int iGib)
-{
-	Killed_(pevAttacker,iGib);
-}
-
-void CBaseEntity::TraceBleed(float flDamage,Vector vecDir,TraceResult *ptr,int bitsDamageType)
-{
-	TraceBleed_(flDamage,vecDir,ptr,bitsDamageType);
-}
-
-int CBaseEntity::DamageDecal(int bitsDamageType)
-{
-	return DamageDecal_(bitsDamageType);
-}
-
-BOOL CBaseEntity::IsInWorld(void)
-{
-	return IsInWorld_();
-}
-
-CBaseEntity *CBaseEntity::GetNextTarget(void)
-{
-	return GetNextTarget_();
-}
-
-BOOL CBaseEntity::FVisible(CBaseEntity *pEntity)
-{
-	return FVisible_(pEntity);
-}
-
-BOOL CBaseEntity::FVisible(const Vector &vecOrigin)
-{
-	return FVisible_(vecOrigin);
-}
-
-#endif // HOOK_GAMEDLL

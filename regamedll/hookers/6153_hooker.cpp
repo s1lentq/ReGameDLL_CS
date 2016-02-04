@@ -2215,10 +2215,10 @@ FunctionHook g_FunctionHooks[] =
 	//virtual func
 	//{ 0x01DD1750, "_ZN7CCorpse10ObjectCapsEv", mfunc_ptr_cast(&CCorpse::ObjectCaps_) },		// DEFAULT
 	//non-virtual func
-	{ 0x01DD1420, "_ZN6CDecal5SpawnEv", mfunc_ptr_cast(&CDecal::Spawn_) },
-	{ 0x01DD15C0, "_ZN6CDecal11StaticDecalEv", mfunc_ptr_cast(&CDecal::StaticDecal) },
-	{ 0x01DD1490, "_ZN6CDecal12TriggerDecalEP11CBaseEntityS1_8USE_TYPEf", mfunc_ptr_cast(&CDecal::TriggerDecal) },
-	{ 0x01DD1690, "_ZN6CDecal8KeyValueEP14KeyValueData_s", mfunc_ptr_cast(&CDecal::KeyValue_) },
+	//{ 0x01DD1420, "_ZN6CDecal5SpawnEv", mfunc_ptr_cast(&CDecal::Spawn_) },						// DEFAULT
+	//{ 0x01DD15C0, "_ZN6CDecal11StaticDecalEv", mfunc_ptr_cast(&CDecal::StaticDecal) },					// DEFAULT
+	//{ 0x01DD1490, "_ZN6CDecal12TriggerDecalEP11CBaseEntityS1_8USE_TYPEf", mfunc_ptr_cast(&CDecal::TriggerDecal) },	// DEFAULT
+	//{ 0x01DD1690, "_ZN6CDecal8KeyValueEP14KeyValueData_s", mfunc_ptr_cast(&CDecal::KeyValue_) },				// DEFAULT
 	//{ 0x01DD1760, "_Z13CopyToBodyQueP9entvars_s", (size_t)&CopyToBodyQue },	// PURE
 	//{ 0x01DD1770, "_Z12ClearBodyQuev", (size_t)&ClearBodyQue },	// NOXREF
 	//{ 0x01DD1780, "_ZN12CGlobalStateC2Ev", mfunc_ptr_cast(&CGlobalState__CGlobalState) },
@@ -2399,8 +2399,8 @@ FunctionHook g_FunctionHooks[] =
 	{ 0x01DC3D30, "_Z20UTIL_ShowMessageArgsPKcP11CBaseEntityP10CUtlVectorIPcEb", (size_t)&UTIL_ShowMessageArgs },
 	{ 0x01DC3E20, "_Z16UTIL_ShowMessagePKcP11CBaseEntityb", (size_t)&UTIL_ShowMessage },
 	{ 0x01DC3E80, "_Z19UTIL_ShowMessageAllPKcb", (size_t)&UTIL_ShowMessageAll },
-	{ 0x01DC3F30, "_Z14UTIL_TraceLineRK6VectorS1_15IGNORE_MONSTERS12IGNORE_GLASSP7edict_sP11TraceResult", mfunc_ptr_cast<UTIL_TRACELINE_IGNORE_GLASS>(&UTIL_TraceLine) },
-	{ 0x01DC3F70, "_Z14UTIL_TraceLineRK6VectorS1_15IGNORE_MONSTERSP7edict_sP11TraceResult", mfunc_ptr_cast<UTIL_TRACELINE_IGNORE>(&UTIL_TraceLine) },
+	{ 0x01DC3F30, "_Z14UTIL_TraceLineRK6VectorS1_15IGNORE_MONSTERS12IGNORE_GLASSP7edict_sP11TraceResult", mfunc_ptr_cast<void (*)(const Vector &, const Vector &, IGNORE_MONSTERS, IGNORE_GLASS, edict_t *, TraceResult *)>(&UTIL_TraceLine) },
+	{ 0x01DC3F70, "_Z14UTIL_TraceLineRK6VectorS1_15IGNORE_MONSTERSP7edict_sP11TraceResult", mfunc_ptr_cast<void (*)(const Vector &, const Vector &, IGNORE_MONSTERS, edict_t *, TraceResult *)>(&UTIL_TraceLine) },
 	{ 0x01DC3F90, "_Z14UTIL_TraceHullRK6VectorS1_15IGNORE_MONSTERSiP7edict_sP11TraceResult", (size_t)&UTIL_TraceHull },
 	{ 0x01DC3FB0, "_Z15UTIL_TraceModelRK6VectorS1_iP7edict_sP11TraceResult", (size_t)&UTIL_TraceModel },
 	//{ 0x01DC3FC0, "_Z19UTIL_GetGlobalTracev", (size_t)&UTIL_GetGlobalTrace },	// NOXREF
@@ -3629,26 +3629,27 @@ FunctionHook g_FunctionHooks[] =
 
 #ifndef CUtlSymbol_Region
 
-	//{ 0x0, "_ZN10CUtlSymbolC2EPKc", mfunc_ptr_cast(&CUtlSymbol::CUtlSymbol) },
-	//{ 0x0, "_ZN10CUtlSymbol10InitializeEv", mfunc_ptr_cast(&CUtlSymbol::Initialize) },
-	//{ 0x0, "_ZN10CUtlSymbol9CurrTableEv", mfunc_ptr_cast(&CUtlSymbol::CurrTable) },
-	//{ 0x0, "_ZNK10CUtlSymbol6StringEv", mfunc_ptr_cast(&CUtlSymbol::String) },
+	//{ 0x01DC81F0, "_ZN10CUtlSymbolC2EPKc", mfunc_ptr_cast(&CUtlSymbol::CUtlSymbol) },
+	//{ 0x01DC80D0, "_ZN10CUtlSymbol10InitializeEv", mfunc_ptr_cast(&CUtlSymbol::Initialize) },
+	//{ 0x01DC8160, "_ZN10CUtlSymbol9CurrTableEv", mfunc_ptr_cast(&CUtlSymbol::CurrTable) },
+	//{ 0x01DC82A0, "_ZNK10CUtlSymbol6StringEv", mfunc_ptr_cast(&CUtlSymbol::String) },
+	//{ 0x01DC82E0, "_ZNK10CUtlSymboleqEPKc", mfunc_ptr_cast(&CUtlSymbol::operator==) },
 	//{ 0x01DC8390, "_ZN15CUtlSymbolTable7SymLessERKjS1_", mfunc_ptr_cast(&CUtlSymbolTable::SymLess) },
 	//{ 0x01DC8410, "_ZN15CUtlSymbolTable8SymLessiERKjS1_", mfunc_ptr_cast(&CUtlSymbolTable::SymLessi) },
 	//{ 0x01DC8460, "_ZN15CUtlSymbolTableC2Eiib", mfunc_ptr_cast(&CUtlSymbolTable::CUtlSymbolTable) },	// NOXREF
 	//{ 0x01DC84D0, "_ZN15CUtlSymbolTableD2Ev", mfunc_ptr_cast(&CUtlSymbolTable::~CUtlSymbolTable) },	// NOXREF
 	//{ 0x01DC8540, "_ZN15CUtlSymbolTable4FindEPKc", mfunc_ptr_cast(&CUtlSymbolTable::Find) },	// NOXREF
-	//{ 0x0, "_ZNK15CUtlSymbolTable6StringE10CUtlSymbol", mfunc_ptr_cast(&CUtlSymbolTable::String) },
-	//{ 0x0, "_ZN15CUtlSymbolTable9RemoveAllEv", mfunc_ptr_cast(&CUtlSymbolTable::RemoveAll) },
-	//{ 0x0, "_ZN15CUtlSymbolTable9AddStringEPKc", mfunc_ptr_cast(&CUtlSymbolTable::AddString) },
+	//{ 0x01DC87D0, "_ZNK15CUtlSymbolTable6StringE10CUtlSymbol", mfunc_ptr_cast(&CUtlSymbolTable::String) },
+	//{ 0x01DC8800, "_ZN15CUtlSymbolTable9RemoveAllEv", mfunc_ptr_cast(&CUtlSymbolTable::RemoveAll) },
+	//{ 0x01DC8680, "_ZN15CUtlSymbolTable9AddStringEPKc", mfunc_ptr_cast(&CUtlSymbolTable::AddString) },
 
 #endif // CUtlSymbol_Region
 
 #ifndef Debug_Region
 
 	//{ 0x0, "", (size_t)&IsDeveloper },	// NOXREF
-	//{ 0x01D732D0, "_Z12UTIL_DPrintf15DebugOutputTypePcz", mfunc_ptr_cast<DPrintf_Flag>(&UTIL_DPrintf) },	// NOXREF
-	{ 0x01D73320, "_Z12UTIL_DPrintfPcz", mfunc_ptr_cast<DPrintf_MSG>(&UTIL_DPrintf) },
+	//{ 0x01D732D0, "_Z12UTIL_DPrintf15DebugOutputTypePcz", mfunc_ptr_cast<void (*)(DebugOutputType outputType, char *pszMsg, ...)>(&UTIL_DPrintf) },	// NOXREF
+	{ 0x01D73320, "_Z12UTIL_DPrintfPcz", mfunc_ptr_cast<void (*)(char *pszMsg, ...)>(&UTIL_DPrintf) },
 	//{ 0x01D73360, "_Z20UTIL_SetDprintfFlagsPKc", (size_t)&PrintDebugFlags },	// NOXREF
 	//{ 0x0, "_ZL12SetDebugFlagPKcb", (size_t)&SetDebugFlag },	// NOXREF
 	//{ 0x0, "_Z14PrintDebugFlagPKc", (size_t)&PrintDebugFlag },	// NOXREF
@@ -3702,10 +3703,10 @@ FunctionHook g_FunctionHooks[] =
 	//{ 0x0, "_ZN13CCSBotManager18AckAnalysisRequestEv", mfunc_ptr_cast(&CCSBotManager::AckAnalysisRequest) },
 	//{ 0x0, "_ZN13CCSBotManager18GetDifficultyLevelEv", mfunc_ptr_cast(&CCSBotManager::BotDifficultyType GetDifficultyLevel) },
 	//{ 0x0, "_ZNK13CCSBotManager11GetScenarioEv", mfunc_ptr_cast(&CCSBotManager::GameScenarioType GetScenario) },
-	//{ 0x0, "_ZNK13CCSBotManager7GetZoneEi", mfunc_ptr_cast<GET_ZONE_INT>(&CCSBotManager::GetZone) },	// NOXREF
-	{ 0x01D25530, "_ZNK13CCSBotManager7GetZoneEPK6Vector", mfunc_ptr_cast<GET_ZONE_VECTOR>(&CCSBotManager::GetZone) },
-	{ 0x01D255C0, "_ZNK13CCSBotManager14GetClosestZoneEPK6Vector", mfunc_ptr_cast<GET_CLOSEST_ZONE_VECTOR>(&CCSBotManager::GetClosestZone) },
-	//{ 0x0, "_ZNK13CCSBotManager14GetClosestZoneEPK11CBaseEntity", mfunc_ptr_cast<GET_CLOSEST_ZONE_ENT>(&CCSBotManager::GetClosestZone) },
+	//{ 0x0, "_ZNK13CCSBotManager7GetZoneEi", mfunc_ptr_cast<const CCSBotManager::Zone *(CCSBotManager::*)(int) const>(&CCSBotManager::GetZone) },	// NOXREF
+	{ 0x01D25530, "_ZNK13CCSBotManager7GetZoneEPK6Vector", mfunc_ptr_cast<const CCSBotManager::Zone *(CCSBotManager::*)(const Vector *pos) const>(&CCSBotManager::GetZone) },
+	{ 0x01D255C0, "_ZNK13CCSBotManager14GetClosestZoneEPK6Vector", mfunc_ptr_cast<const CCSBotManager::Zone *(CCSBotManager::*)(const Vector *pos) const>(&CCSBotManager::GetClosestZone) },
+	//{ 0x0, "_ZNK13CCSBotManager14GetClosestZoneEPK11CBaseEntity", mfunc_ptr_cast<const CCSBotManager::Zone *(CCSBotManager::*)(const CBaseEntity *entity) const>(&CCSBotManager::GetClosestZone) },
 	//{ 0x0, "_ZNK13CCSBotManager12GetZoneCountEv", mfunc_ptr_cast(&CCSBotManager::GetZoneCount) },
 	{ 0x01D25630, "_ZNK13CCSBotManager23GetRandomPositionInZoneEPKNS_4ZoneE", mfunc_ptr_cast(&CCSBotManager::GetRandomPositionInZone) },
 	{ 0x01D25750, "_ZNK13CCSBotManager19GetRandomAreaInZoneEPKNS_4ZoneE", mfunc_ptr_cast(&CCSBotManager::GetRandomAreaInZone) },
@@ -4299,8 +4300,8 @@ FunctionHook g_FunctionHooks[] =
 	//{ 0x01D1A830, "_ZNK16BotPhraseManager8NameToIDEPKc", mfunc_ptr_cast(&BotPhraseManager::NameToID) },
 	//{ 0x01D1A8A0, "_ZNK16BotPhraseManager8IDToNameEj", mfunc_ptr_cast(&BotPhraseManager::IDToName) },
 	{ 0x01D1A8F0, "_ZNK16BotPhraseManager9GetPhraseEPKc", mfunc_ptr_cast(&BotPhraseManager::GetPhrase) },
-	//{ 0x01D1A940, "_ZNK16BotPhraseManager8GetPlaceEPKc", mfunc_ptr_cast<GET_PLACE_NAME>(&BotPhraseManager::GetPlace) },	// NOXREF
-	{ 0x01D1A990, "_ZNK16BotPhraseManager8GetPlaceEj", mfunc_ptr_cast<GET_PLACE_PLACE>(&BotPhraseManager::GetPlace) },
+	//{ 0x01D1A940, "_ZNK16BotPhraseManager8GetPlaceEPKc", mfunc_ptr_cast<const BotPhrase *(BotPhraseManager::*)(const char *name) const>(&BotPhraseManager::GetPlace) },	// NOXREF
+	{ 0x01D1A990, "_ZNK16BotPhraseManager8GetPlaceEj", mfunc_ptr_cast<const BotPhrase *(BotPhraseManager::*)(PlaceCriteria place) const>(&BotPhraseManager::GetPlace) },
 	//{ 0x0, "_ZNK16BotPhraseManager12GetPlaceListEv", mfunc_ptr_cast(&BotPhraseManager::GetPlaceList) },
 	//{ 0x0, "_ZNK16BotPhraseManager25GetPlaceStatementIntervalEj", mfunc_ptr_cast(&BotPhraseManager::GetPlaceStatementInterval) },
 	//{ 0x0, "_ZN16BotPhraseManager27ResetPlaceStatementIntervalEj", mfunc_ptr_cast(&BotPhraseManager::ResetPlaceStatementInterval) },
@@ -4324,8 +4325,8 @@ FunctionHook g_FunctionHooks[] =
 	//{ 0x0, "_ZNK12BotStatement10GetSubjectEv", mfunc_ptr_cast(&BotStatement::GetSubject) },					// NOXREF
 	//{ 0x01D1AC90, "_ZNK12BotStatement10IsObsoleteEv", mfunc_ptr_cast(&BotStatement::IsObsolete) },				// NOXREF
 	{ 0x01D1ACD0, "_ZN12BotStatement7ConvertEPKS_", mfunc_ptr_cast(&BotStatement::Convert) },
-	{ 0x01D1ADC0, "_ZN12BotStatement12AppendPhraseEPK9BotPhrase", mfunc_ptr_cast<APPEND_PHRASE_BOTPHRASE>(&BotStatement::AppendPhrase) },
-	//{ 0x01D1ADF0, "_ZN12BotStatement12AppendPhraseENS_11ContextTypeE", mfunc_ptr_cast<APPEND_PHRASE_CONTEXT>(&BotStatement::AppendPhrase) },		// NOXREF
+	{ 0x01D1ADC0, "_ZN12BotStatement12AppendPhraseEPK9BotPhrase", mfunc_ptr_cast<void (BotStatement::*)(const BotPhrase *)>(&BotStatement::AppendPhrase) },
+	//{ 0x01D1ADF0, "_ZN12BotStatement12AppendPhraseENS_11ContextTypeE", mfunc_ptr_cast<void (BotStatement::*APPEND_PHRASE_CONTEXT)(BotStatement::ContextType)>(&BotStatement::AppendPhrase) },		// NOXREF
 	{ 0x01D1AE20, "_ZN12BotStatement6UpdateEv", mfunc_ptr_cast(&BotStatement::Update) },
 	{ 0x01D1B2A0, "_ZNK12BotStatement8GetPlaceEv", mfunc_ptr_cast(&BotStatement::GetPlace) },					// NOXREF
 	//{ 0x01D1B2E0, "_ZNK12BotStatement8HasCountEv", mfunc_ptr_cast(&BotStatement::HasCount) },					// NOXREF
@@ -4789,8 +4790,9 @@ FunctionHook g_FunctionHooks[] =
 	{ 0x01D290C0, "_ZN6Vector16NormalizeInPlaceEv", mfunc_ptr_cast(&Vector::NormalizeInPlace) },
 
 #ifdef _WIN32
-
+	
 	{ 0x01D12570, "", mfunc_ptr_cast(&Vector::Length) },
+	{ 0x01D9C290, "", mfunc_ptr_cast(&Vector::Length2D) },
 	{ 0x01D4EA30, "", mfunc_ptr_cast(&Vector::Normalize) },
 	{ 0x01DCB800, "", mfunc_ptr_cast(&Vector::operator==) },
 	{ 0x01D130D0, "", mfunc_ptr_cast(&Vector::IsLengthLessThan) },
@@ -4812,9 +4814,9 @@ FunctionHook g_FunctionHooks[] =
 	{ 0x01D46310, "_Z17LoadNavigationMapv", (size_t)&LoadNavigationMap },
 //IImprovEvent
 	//virtual func
-	//{ 0x0, "_ZN12IImprovEvent15OnMoveToSuccessERK6Vector", mfunc_ptr_cast(&IImprovEvent::OnMoveToSuccess) },
-	//{ 0x0, "_ZN12IImprovEvent15OnMoveToFailureERK6VectorNS_17MoveToFailureTypeE", mfunc_ptr_cast(&IImprovEvent::OnMoveToFailure) },
-	//{ 0x0, "_ZN12IImprovEvent8OnInjuryEf", mfunc_ptr_cast(&IImprovEvent::OnInjury) },
+	//{ 0x01D56970, "_ZN12IImprovEvent15OnMoveToSuccessERK6Vector", mfunc_ptr_cast(&IImprovEvent::OnMoveToSuccess_) },
+	//{ 0x01D56980, "_ZN12IImprovEvent15OnMoveToFailureERK6VectorNS_17MoveToFailureTypeE", mfunc_ptr_cast(&IImprovEvent::OnMoveToFailure_) },
+	//{ 0x01D56990, "_ZN12IImprovEvent8OnInjuryEf", mfunc_ptr_cast(&IImprovEvent::OnInjury_) },
 //CImprov
 	//virtual func
 	//{ 0x0, "_ZNK7CImprov7IsAliveEv", mfunc_ptr_cast(&CImprov::IsAlive) },
@@ -5196,11 +5198,11 @@ FunctionHook g_FunctionHooks[] =
 	{ 0x01D4B3A0, "_ZN16HostageIdleState7OnEnterEP14CHostageImprov", mfunc_ptr_cast(&HostageIdleState::OnEnter_) },
 	{ 0x01D4B3C0, "_ZN16HostageIdleState8OnUpdateEP14CHostageImprov", mfunc_ptr_cast(&HostageIdleState::OnUpdate_) },
 	{ 0x01D4BBB0, "_ZN16HostageIdleState6OnExitEP14CHostageImprov", mfunc_ptr_cast(&HostageIdleState::OnExit_) },
-	//{ 0x0, "_ZNK16HostageIdleState7GetNameEv", mfunc_ptr_cast(&HostageIdleState::GetName_) },			// DEFAULT
+	//{ 0x01D56A30, "_ZNK16HostageIdleState7GetNameEv", mfunc_ptr_cast(&HostageIdleState::GetName_) },			// DEFAULT
 	{ 0x01D4BBD0, "_ZN16HostageIdleState25UpdateStationaryAnimationEP14CHostageImprov", mfunc_ptr_cast(&HostageIdleState::UpdateStationaryAnimation_) },
-	//{ 0x0, "_ZN16HostageIdleState15OnMoveToSuccessERK6Vector", mfunc_ptr_cast(&HostageIdleState::OnMoveToSuccess_) },	// DEFAULT
-	//{ 0x0, "_ZN16HostageIdleState15OnMoveToFailureERK6VectorN12IImprovEvent17MoveToFailureTypeE", mfunc_ptr_cast(&HostageIdleState::OnMoveToFailure_) },	// DEFAULT
-	//{ 0x0, "_ZN16HostageIdleState8OnInjuryEf", mfunc_ptr_cast(&HostageIdleState::OnInjury_) },	// DEFAULT
+	//{ 0x01D56A40, "_ZN16HostageIdleState15OnMoveToSuccessERK6Vector", mfunc_ptr_cast(&HostageIdleState::OnMoveToSuccess_) },	// DEFAULT
+	//{ 0x01D56A50, "_ZN16HostageIdleState15OnMoveToFailureERK6VectorN12IImprovEvent17MoveToFailureTypeE", mfunc_ptr_cast(&HostageIdleState::OnMoveToFailure_) },	// DEFAULT
+	//{ 0x01D56A60, "_ZN16HostageIdleState8OnInjuryEf", mfunc_ptr_cast(&HostageIdleState::OnInjury_) },	// DEFAULT
 //HostageStateMachine
 	//virtual func
 	//{ 0x01D569D0, "_ZN19HostageStateMachine15OnMoveToSuccessERK6Vector", mfunc_ptr_cast(&HostageStateMachine::OnMoveToSuccess) },
@@ -5222,14 +5224,14 @@ FunctionHook g_FunctionHooks[] =
 	{ 0x01D4A5E0, "_ZN28HostageEscapeLookAroundState7OnEnterEP14CHostageImprov", mfunc_ptr_cast(&HostageEscapeLookAroundState::OnEnter_) },
 	{ 0x01D4A620, "_ZN28HostageEscapeLookAroundState8OnUpdateEP14CHostageImprov", mfunc_ptr_cast(&HostageEscapeLookAroundState::OnUpdate_) },
 	{ 0x01D4A680, "_ZN28HostageEscapeLookAroundState6OnExitEP14CHostageImprov", mfunc_ptr_cast(&HostageEscapeLookAroundState::OnExit_) },
-	//{ 0x0, "_ZNK28HostageEscapeLookAroundState7GetNameEv", mfunc_ptr_cast(&HostageEscapeLookAroundState::GetName_) },
+	//{ 0x01D56B40, "_ZNK28HostageEscapeLookAroundState7GetNameEv", mfunc_ptr_cast(&HostageEscapeLookAroundState::GetName_) },
 //HostageEscapeState
 	//virtual func
 	{ 0x01D4A690, "_ZN18HostageEscapeState7OnEnterEP14CHostageImprov", mfunc_ptr_cast(&HostageEscapeState::OnEnter_) },
 	{ 0x01D4A720, "_ZN18HostageEscapeState8OnUpdateEP14CHostageImprov", mfunc_ptr_cast(&HostageEscapeState::OnUpdate_) },
 	{ 0x01D4A880, "_ZN18HostageEscapeState6OnExitEP14CHostageImprov", mfunc_ptr_cast(&HostageEscapeState::OnExit_) },
 	//{ 0x01D56A80, "_ZNK18HostageEscapeState7GetNameEv", mfunc_ptr_cast(&HostageEscapeState::GetName_) },
-	//{ 0x0, "_ZN18HostageEscapeState15OnMoveToFailureERK6VectorN12IImprovEvent17MoveToFailureTypeE", mfunc_ptr_cast(&HostageEscapeState::OnMoveToFailure_) },	// NOXREF
+	//{ 0x01D56A70, "_ZN18HostageEscapeState15OnMoveToFailureERK6VectorN12IImprovEvent17MoveToFailureTypeE", mfunc_ptr_cast(&HostageEscapeState::OnMoveToFailure_) },	// NOXREF
 	//non-virtual func
 	//{ 0x0, "_ZN18HostageEscapeState7ToCoverEv", mfunc_ptr_cast(&HostageEscapeState::ToCover) },
 	//{ 0x0, "_ZN18HostageEscapeState10LookAroundEv", mfunc_ptr_cast(&HostageEscapeState::LookAround) },
@@ -5422,7 +5424,7 @@ VirtualTableRef g_TableRefs[] =
 	{ 0x01DF6FE4, "HostageStateMachine",		4 },
 	{ 0x01DF6FC8, "HostageIdleState",		4 },
 	{ 0x01DF6F9C, "HostageEscapeState",		6 },
-	{ 0x01DF6F70, "HostageRetreatState",		4 },
+	{ 0x01DF6F70, "HostageRetreatState",		6 },
 	{ 0x01DF6F44, "HostageFollowState",		4 },
 	{ 0x01DF7180, "HostageEscapeToCoverState",	4 },
 	{ 0x01DF6F18, "HostageAnimateState",		4 },
@@ -6123,7 +6125,6 @@ AddressRef g_DataRefs[] =
 
 	{ 0x01E2A104, "lastDrawTimestamp", (size_t)&plastDrawTimestamp },
 	{ 0x01E2A118, "_ZL13editTimestamp", (size_t)&peditTimestamp },
-	//{ 0x0, "goodSizedAreaList", (size_t)&pgoodSizedAreaList },
 	{ 0x01E2A10C, "_ZL10markedArea", (size_t)&pmarkedArea },
 	{ 0x01E2A110, "_ZL16lastSelectedArea", (size_t)&plastSelectedArea },
 	{ 0x01E1158C, "_ZL12markedCorner", (size_t)&pmarkedCorner },
@@ -6160,11 +6161,11 @@ AddressRef g_DataRefs[] =
 	{ 0x01E2DAA8, "g_pstudiohdr", (size_t)&pg_pstudiohdr },
 	{ 0x01E2F8C0, "g_pRotationMatrix", (size_t)&pg_pRotationMatrix },
 	{ 0x01E2F8B0, "g_pBoneTransform", (size_t)&pg_pBoneTransform },
-	{ 0x01E2F8BC, "omega", (size_t)&pomega },
-	{ 0x01E312E0, "cosom", (size_t)&pcosom },
-	{ 0x01E306C8, "sinom", (size_t)&psinom },
-	{ 0x01E2F8B4, "sclp", (size_t)&psclp },
-	{ 0x01E2F8B8, "sclq", (size_t)&psclq },
+	//{ 0x01E2F8BC, "omega", (size_t)&pomega },	// LOCAL
+	//{ 0x01E312E0, "cosom", (size_t)&pcosom },	// LOCAL
+	//{ 0x01E306C8, "sinom", (size_t)&psinom },	// LOCAL
+	//{ 0x01E2F8B4, "sclp", (size_t)&psclp },	// LOCAL
+	//{ 0x01E2F8B8, "sclq", (size_t)&psclq },	// LOCAL
 
 	{ 0x01E0DF70, "primaryWeaponBuyInfoCT", (size_t)&pprimaryWeaponBuyInfoCT },
 	{ 0x01E0E00C, "secondaryWeaponBuyInfoCT", (size_t)&psecondaryWeaponBuyInfoCT },

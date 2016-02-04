@@ -4,9 +4,10 @@
 LINK_ENTITY_TO_CLASS(weapon_g3sg1, CG3SG1);
 
 /* <260ca2> ../cstrike/dlls/wpn_shared/wpn_g3sg1.cpp:50 */
-void CG3SG1::__MAKE_VHOOK(Spawn)(void)
+void CG3SG1::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
+
 	m_iId = WEAPON_G3SG1;
 	SET_MODEL(edict(), "models/w_g3sg1.mdl");
 
@@ -17,7 +18,7 @@ void CG3SG1::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <260b97> ../cstrike/dlls/wpn_shared/wpn_g3sg1.cpp:63 */
-void CG3SG1::__MAKE_VHOOK(Precache)(void)
+void CG3SG1::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/v_g3sg1.mdl");
 	PRECACHE_MODEL("models/w_g3sg1.mdl");
@@ -51,14 +52,14 @@ int CG3SG1::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 }
 
 /* <260c7b> ../cstrike/dlls/wpn_shared/wpn_g3sg1.cpp:96 */
-BOOL CG3SG1::__MAKE_VHOOK(Deploy)(void)
+BOOL CG3SG1::__MAKE_VHOOK(Deploy)()
 {
-	m_flAccuracy = 0.2;
+	m_flAccuracy = 0.2f;
 	return DefaultDeploy("models/v_g3sg1.mdl", "models/p_g3sg1.mdl", G3SG1_DRAW, "mp5", UseDecrement() != FALSE);
 }
 
 /* <260c17> ../cstrike/dlls/wpn_shared/wpn_g3sg1.cpp:102 */
-void CG3SG1::__MAKE_VHOOK(SecondaryAttack)(void)
+void CG3SG1::__MAKE_VHOOK(SecondaryAttack)()
 {
 	switch (m_pPlayer->m_iFOV)
 	{
@@ -80,11 +81,11 @@ void CG3SG1::__MAKE_VHOOK(SecondaryAttack)(void)
 	}
 
 	EMIT_SOUND(m_pPlayer->edict(), CHAN_ITEM, "weapons/zoom.wav", 0.2, 2.4);
-	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.3;
+	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.3f;
 }
 
 /* <260eaa> ../cstrike/dlls/wpn_shared/wpn_g3sg1.cpp:133 */
-void CG3SG1::__MAKE_VHOOK(PrimaryAttack)(void)
+void CG3SG1::__MAKE_VHOOK(PrimaryAttack)()
 {
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
 	{
@@ -112,21 +113,21 @@ void CG3SG1::G3SG1Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 
 	if (m_pPlayer->pev->fov == DEFAULT_FOV)
 	{
-		flSpread += 0.025;
+		flSpread += 0.025f;
 	}
 
 	if (m_flLastFire)
 	{
-		m_flAccuracy = (gpGlobals->time - m_flLastFire) * 0.3 + 0.55;
+		m_flAccuracy = (gpGlobals->time - m_flLastFire) * 0.3f + 0.55f;
 
-		if (m_flAccuracy > 0.98)
+		if (m_flAccuracy > 0.98f)
 		{
-			m_flAccuracy = 0.98;
+			m_flAccuracy = 0.98f;
 		}
 	}
 	else
 	{
-		m_flAccuracy = 0.98;
+		m_flAccuracy = 0.98f;
 	}
 
 	m_flLastFire = gpGlobals->time;
@@ -147,8 +148,7 @@ void CG3SG1::G3SG1Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 		return;
 	}
 
-	m_iClip--;
-
+	--m_iClip;
 	m_pPlayer->pev->effects |= EF_MUZZLEFLASH;
 	m_pPlayer->SetAnimation(PLAYER_ATTACK1);
 
@@ -178,23 +178,21 @@ void CG3SG1::G3SG1Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
 	}
 
-	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.8;
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.8f;
 
-	m_pPlayer->pev->punchangle.x -= UTIL_SharedRandomFloat(m_pPlayer->random_seed + 4, 0.75, 1.75) + m_pPlayer->pev->punchangle.x * 0.25;
+	m_pPlayer->pev->punchangle.x -= UTIL_SharedRandomFloat(m_pPlayer->random_seed + 4, 0.75, 1.75) + m_pPlayer->pev->punchangle.x * 0.25f;
 	m_pPlayer->pev->punchangle.y += UTIL_SharedRandomFloat(m_pPlayer->random_seed + 5, -0.75, 0.75);
 }
 
 /* <260d53> ../cstrike/dlls/wpn_shared/wpn_g3sg1.cpp:234 */
-void CG3SG1::__MAKE_VHOOK(Reload)(void)
+void CG3SG1::__MAKE_VHOOK(Reload)()
 {
 	if (m_pPlayer->ammo_762nato <= 0)
-	{
 		return;
-	}
 
 	if (DefaultReload(G3SG1_MAX_CLIP, G3SG1_RELOAD, G3SG1_RELOAD_TIME))
 	{
-		m_flAccuracy = 0.2;
+		m_flAccuracy = 0.2f;
 		m_pPlayer->SetAnimation(PLAYER_RELOAD);
 
 		if (m_pPlayer->pev->fov != DEFAULT_FOV)
@@ -206,7 +204,7 @@ void CG3SG1::__MAKE_VHOOK(Reload)(void)
 }
 
 /* <260d18> ../cstrike/dlls/wpn_shared/wpn_g3sg1.cpp:260 */
-void CG3SG1::__MAKE_VHOOK(WeaponIdle)(void)
+void CG3SG1::__MAKE_VHOOK(WeaponIdle)()
 {
 	ResetEmptySound();
 	m_pPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);
@@ -215,63 +213,14 @@ void CG3SG1::__MAKE_VHOOK(WeaponIdle)(void)
 	{
 		if (m_iClip)
 		{
-			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 60;
+			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 60.0f;
 			SendWeaponAnim(G3SG1_IDLE, UseDecrement() != FALSE);
 		}
 	}
 }
 
 /* <260bf1> ../cstrike/dlls/wpn_shared/wpn_g3sg1.cpp:277 */
-float CG3SG1::__MAKE_VHOOK(GetMaxSpeed)(void)
+float CG3SG1::__MAKE_VHOOK(GetMaxSpeed)()
 {
 	return (m_pPlayer->m_iFOV == DEFAULT_FOV) ? G3SG1_MAX_SPEED : G3SG1_MAX_SPEED_ZOOM;
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CG3SG1::Spawn(void)
-{
-	Spawn_();
-}
-
-void CG3SG1::Precache(void)
-{
-	Precache_();
-}
-
-int CG3SG1::GetItemInfo(ItemInfo *p)
-{
-	return GetItemInfo_(p);
-}
-
-BOOL CG3SG1::Deploy(void)
-{
-	return Deploy_();
-}
-
-float CG3SG1::GetMaxSpeed(void)
-{
-	return GetMaxSpeed_();
-}
-
-void CG3SG1::PrimaryAttack(void)
-{
-	PrimaryAttack_();
-}
-
-void CG3SG1::SecondaryAttack(void)
-{
-	SecondaryAttack_();
-}
-
-void CG3SG1::Reload(void)
-{
-	Reload_();
-}
-
-void CG3SG1::WeaponIdle(void)
-{
-	WeaponIdle_();
-}
-
-#endif // HOOK_GAMEDLL

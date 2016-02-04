@@ -3,7 +3,7 @@
 CGraph WorldGraph;
 
 /* <fc409> ../cstrike/dlls/mpstubb.cpp:32 */
-void CGraph::InitGraph(void)
+void CGraph::InitGraph()
 {
 	;
 }
@@ -15,7 +15,7 @@ int CGraph::FLoadGraph(char *szMapName)
 }
 
 /* <fc46c> ../cstrike/dlls/mpstubb.cpp:34 */
-int CGraph::AllocNodes(void)
+int CGraph::AllocNodes()
 {
 	return 0;
 }
@@ -27,7 +27,7 @@ int CGraph::CheckNODFile(char *szMapName)
 }
 
 /* <fc4ca> ../cstrike/dlls/mpstubb.cpp:36 */
-int CGraph::FSetGraphPointers(void)
+int CGraph::FSetGraphPointers()
 {
 	return 0;
 }
@@ -63,7 +63,7 @@ void CBaseMonster::MakeIdealYaw(Vector vecTarget)
 }
 
 /* <fc5a6> ../cstrike/dlls/mpstubb.cpp:49 */
-NOXREF void CBaseMonster::CorpseFallThink(void)
+NOXREF void CBaseMonster::CorpseFallThink()
 {
 	if (pev->flags & FL_ONGROUND)
 	{
@@ -78,7 +78,7 @@ NOXREF void CBaseMonster::CorpseFallThink(void)
 }
 
 /* <fc2a1> ../cstrike/dlls/mpstubb.cpp:62 */
-void CBaseMonster::__MAKE_VHOOK(MonsterInitDead)(void)
+void CBaseMonster::__MAKE_VHOOK(MonsterInitDead)()
 {
 	InitBoneControllers();
 
@@ -101,13 +101,13 @@ void CBaseMonster::__MAKE_VHOOK(MonsterInitDead)(void)
 }
 
 /* <fc057> ../cstrike/dlls/mpstubb.cpp:89 */
-BOOL CBaseMonster::__MAKE_VHOOK(ShouldFadeOnDeath)(void)
+BOOL CBaseMonster::__MAKE_VHOOK(ShouldFadeOnDeath)()
 {
 	return FALSE;
 }
 
 /* <fc5cd> ../cstrike/dlls/mpstubb.cpp:94 */
-BOOL CBaseMonster::FCheckAITrigger(void)
+BOOL CBaseMonster::FCheckAITrigger()
 {
 	return FALSE;
 }
@@ -229,11 +229,11 @@ void CBaseMonster::__MAKE_VHOOK(Look)(int iDistance)
 // a pointer to the enemy entity in that list that is nearest the
 // caller.
 //
-// !!!UNDONE - currently, this only returns the closest enemy.
+// UNDONE: currently, this only returns the closest enemy.
 // we'll want to consider distance, relationship, attack types, back turned, etc.
 
 /* <fc317> ../cstrike/dlls/mpstubb.cpp:220 */
-CBaseEntity *CBaseMonster::__MAKE_VHOOK(BestVisibleEnemy)(void)
+CBaseEntity *CBaseMonster::__MAKE_VHOOK(BestVisibleEnemy)()
 {
 	CBaseEntity *pReturn;
 	CBaseEntity *pNextEnt;

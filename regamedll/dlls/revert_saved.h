@@ -51,50 +51,25 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	void EXPORT MessageThink(void);
-	void EXPORT LoadThink(void);
+	void EXPORT MessageThink();
+	void EXPORT LoadThink();
 
 public:
-	float Duration(void)
-	{
-		return pev->dmg_take;
-	}
-	float HoldTime(void)
-	{
-		return pev->dmg_save;
-	}
-	float MessageTime(void)
-	{
-		return m_messageTime;
-	}
-	float LoadTime(void)
-	{
-		return m_loadTime;
-	}
-	void SetDuration(float duration)
-	{
-		pev->dmg_take = duration;
-	}
-	void SetHoldTime(float hold)
-	{
-		pev->dmg_save = hold;
-	}
-	void SetMessageTime(float time)
-	{
-		m_messageTime = time;
-	}
-	void SetLoadTime(float time)
-	{
-		m_loadTime = time;
-	}
+	float Duration() const		{ return pev->dmg_take; }
+	float HoldTime() const		{ return pev->dmg_save; }
+	float MessageTime() const	{ return m_messageTime; }
+	float LoadTime() const		{ return m_loadTime; }
+
+	void SetDuration(float duration)	{ pev->dmg_take = duration; }
+	void SetHoldTime(float hold)		{ pev->dmg_save = hold; }
+	void SetMessageTime(float time)		{ m_messageTime = time; }
+	void SetLoadTime(float time)		{ m_loadTime = time; }
 
 public:
 	static TYPEDESCRIPTION IMPL(m_SaveData)[2];
 
-public:
 	float m_messageTime;
 	float m_loadTime;
-
-};/* size: 160, cachelines: 3, members: 4 */
+};
 
 #endif // REVERT_SAVED_H

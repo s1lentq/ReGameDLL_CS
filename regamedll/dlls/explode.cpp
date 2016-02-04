@@ -11,17 +11,13 @@ TYPEDESCRIPTION CEnvExplosion::m_SaveData[] =
 	DEFINE_FIELD(CEnvExplosion, m_spriteScale, FIELD_INTEGER),
 };
 
-#else // HOOK_GAMEDLL
-
-TYPEDESCRIPTION IMPL_CLASS(CEnvExplosion, m_SaveData)[2];
-
 #endif // HOOK_GAMEDLL
 
 /* <7f660> ../cstrike/dlls/explode.cpp:37 */
 LINK_ENTITY_TO_CLASS(spark_shower, CShower);
 
 /* <7f49c> ../cstrike/dlls/explode.cpp:39 */
-void CShower::__MAKE_VHOOK(Spawn)(void)
+void CShower::__MAKE_VHOOK(Spawn)()
 {
 	pev->velocity = RANDOM_FLOAT(200, 300) * pev->angles;
 	pev->velocity.x += RANDOM_FLOAT(-100, 100);
@@ -47,7 +43,7 @@ void CShower::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <7f475> ../cstrike/dlls/explode.cpp:61 */
-void CShower::__MAKE_VHOOK(Think)(void)
+void CShower::__MAKE_VHOOK(Think)()
 {
 	UTIL_Sparks(pev->origin);
 
@@ -94,7 +90,7 @@ void CEnvExplosion::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 }
 
 /* <7f1a5> ../cstrike/dlls/explode.cpp:120 */
-void CEnvExplosion::__MAKE_VHOOK(Spawn)(void)
+void CEnvExplosion::__MAKE_VHOOK(Spawn)()
 {
 	pev->solid = SOLID_NOT;
 	pev->effects = EF_NODRAW;
@@ -197,7 +193,7 @@ void CEnvExplosion::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCal
 }
 
 /* <7f1e1> ../cstrike/dlls/explode.cpp:235 */
-void CEnvExplosion::Smoke(void)
+void CEnvExplosion::Smoke()
 {
 	if (!(pev->spawnflags & SF_ENVEXPLOSION_NOSMOKE))
 	{
@@ -243,47 +239,3 @@ void ExplosionCreate(const Vector &center, Vector &angles, edict_t *pOwner, int 
 	pExplosion->Spawn();
 	pExplosion->Use(NULL, NULL, USE_TOGGLE, 0);
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CShower::Spawn(void)
-{
-	Spawn_();
-}
-
-void CShower::Think(void)
-{
-	Think_();
-}
-
-void CShower::Touch(CBaseEntity *pOther)
-{
-	Touch_(pOther);
-}
-
-void CEnvExplosion::Spawn(void)
-{
-	Spawn_();
-}
-
-void CEnvExplosion::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-int CEnvExplosion::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CEnvExplosion::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-void CEnvExplosion::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	Use_(pActivator, pCaller, useType, value);
-}
-
-#endif // HOOK_GAMEDLL

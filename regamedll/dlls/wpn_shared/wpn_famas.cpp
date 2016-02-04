@@ -4,9 +4,10 @@
 LINK_ENTITY_TO_CLASS(weapon_famas, CFamas);
 
 /* <2c0284> ../cstrike/dlls/wpn_shared/wpn_famas.cpp:52 */
-void CFamas::__MAKE_VHOOK(Spawn)(void)
+void CFamas::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
+
 	m_iId = WEAPON_FAMAS;
 	SET_MODEL(edict(), "models/w_famas.mdl");
 
@@ -18,7 +19,7 @@ void CFamas::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <2c01dc> ../cstrike/dlls/wpn_shared/wpn_famas.cpp:66 */
-void CFamas::__MAKE_VHOOK(Precache)(void)
+void CFamas::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/v_famas.mdl");
 	PRECACHE_MODEL("models/w_famas.mdl");
@@ -55,12 +56,12 @@ int CFamas::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 }
 
 /* <2c025d> ../cstrike/dlls/wpn_shared/wpn_famas.cpp:102 */
-BOOL CFamas::__MAKE_VHOOK(Deploy)(void)
+BOOL CFamas::__MAKE_VHOOK(Deploy)()
 {
 	m_iShotsFired = 0;
 	m_iFamasShotsFired = 0;
 	m_flFamasShoot = 0;
-	m_flAccuracy = 0.2;
+	m_flAccuracy = 0.2f;
 	
 	iShellOn = 1;
 
@@ -68,7 +69,7 @@ BOOL CFamas::__MAKE_VHOOK(Deploy)(void)
 }
 
 /* <2c0236> ../cstrike/dlls/wpn_shared/wpn_famas.cpp:114 */
-void CFamas::__MAKE_VHOOK(SecondaryAttack)(void)
+void CFamas::__MAKE_VHOOK(SecondaryAttack)()
 {
 	if (m_iWeaponState & WPNSTATE_FAMAS_BURST_MODE)
 	{
@@ -81,11 +82,11 @@ void CFamas::__MAKE_VHOOK(SecondaryAttack)(void)
 		m_iWeaponState |= WPNSTATE_FAMAS_BURST_MODE;
 	}
 
-	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.3;
+	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.3f;
 }
 
 /* <2c04fe> ../cstrike/dlls/wpn_shared/wpn_famas.cpp:129 */
-void CFamas::__MAKE_VHOOK(PrimaryAttack)(void)
+void CFamas::__MAKE_VHOOK(PrimaryAttack)()
 {
 	if (m_pPlayer->pev->waterlevel == 3)
 	{
@@ -120,20 +121,20 @@ void CFamas::FamasFire(float flSpread, float flCycleTime, BOOL fUseAutoAim, BOOL
 	if (bFireBurst)
 	{
 		m_iFamasShotsFired = 0;
-		flCycleTime = 0.55;
+		flCycleTime = 0.55f;
 	}
 	else
 	{
-		flSpread += 0.01;
+		flSpread += 0.01f;
 	}
 
 	m_bDelayFire = true;
-	m_iShotsFired++;
+	++m_iShotsFired;
 
-	m_flAccuracy = (m_iShotsFired * m_iShotsFired * m_iShotsFired / 215) + 0.3;
+	m_flAccuracy = (m_iShotsFired * m_iShotsFired * m_iShotsFired / 215) + 0.3f;
 
-	if (m_flAccuracy > 1)
-		m_flAccuracy = 1;
+	if (m_flAccuracy > 1.0f)
+		m_flAccuracy = 1.0f;
 
 	if (m_iClip <= 0)
 	{
@@ -151,8 +152,7 @@ void CFamas::FamasFire(float flSpread, float flCycleTime, BOOL fUseAutoAim, BOOL
 		return;
 	}
 
-	m_iClip--;
-
+	--m_iClip;
 	m_pPlayer->pev->effects |= EF_MUZZLEFLASH;
 	m_pPlayer->SetAnimation(PLAYER_ATTACK1);
 
@@ -183,7 +183,7 @@ void CFamas::FamasFire(float flSpread, float flCycleTime, BOOL fUseAutoAim, BOOL
 		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
 	}
 
-	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.1;
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.1f;
 
 	if (m_pPlayer->pev->velocity.Length2D() > 0)
 	{
@@ -204,19 +204,17 @@ void CFamas::FamasFire(float flSpread, float flCycleTime, BOOL fUseAutoAim, BOOL
 
 	if (bFireBurst)
 	{
-		m_iFamasShotsFired++;
+		++m_iFamasShotsFired;
 		m_fBurstSpread = flSpread;
-		m_flFamasShoot = gpGlobals->time + 0.05;
+		m_flFamasShoot = gpGlobals->time + 0.05f;
 	}
 }
 
 /* <2c0336> ../cstrike/dlls/wpn_shared/wpn_famas.cpp:262 */
-void CFamas::__MAKE_VHOOK(Reload)(void)
+void CFamas::__MAKE_VHOOK(Reload)()
 {
 	if (m_pPlayer->ammo_556nato <= 0)
-	{
 		return;
-	}
 
 	if (DefaultReload(FAMAS_MAX_CLIP, FAMAS_RELOAD, FAMAS_RELOAD_TIME))
 	{
@@ -234,58 +232,14 @@ void CFamas::__MAKE_VHOOK(Reload)(void)
 }
 
 /* <2c02fa> ../cstrike/dlls/wpn_shared/wpn_famas.cpp:284 */
-void CFamas::__MAKE_VHOOK(WeaponIdle)(void)
+void CFamas::__MAKE_VHOOK(WeaponIdle)()
 {
 	ResetEmptySound();
 	m_pPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);
 
 	if (m_flTimeWeaponIdle <= UTIL_WeaponTimeBase())
 	{
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20.0;
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20.0f;
 		SendWeaponAnim(FAMAS_IDLE1, UseDecrement() != FALSE);
 	}
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CFamas::Spawn(void)
-{
-	Spawn_();
-}
-
-void CFamas::Precache(void)
-{
-	Precache_();
-}
-
-int CFamas::GetItemInfo(ItemInfo *p)
-{
-	return GetItemInfo_(p);
-}
-
-BOOL CFamas::Deploy(void)
-{
-	return Deploy_();
-}
-
-void CFamas::PrimaryAttack(void)
-{
-	PrimaryAttack_();
-}
-
-void CFamas::SecondaryAttack(void)
-{
-	SecondaryAttack_();
-}
-
-void CFamas::Reload(void)
-{
-	Reload_();
-}
-
-void CFamas::WeaponIdle(void)
-{
-	WeaponIdle_();
-}
-
-#endif // HOOK_GAMEDLL

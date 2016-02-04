@@ -200,22 +200,3 @@ void HuntState::__MAKE_VHOOK(OnExit)(CCSBot *me)
 {
 	;
 }
-
-#ifdef HOOK_GAMEDLL
-
-void HuntState::OnEnter(CCSBot *me)
-{
-	OnEnter_(me);
-}
-
-void HuntState::OnUpdate(CCSBot *me)
-{
-	OnUpdate_(me);
-}
-
-void HuntState::OnExit(CCSBot *me)
-{
-	OnExit_(me);
-}
-
-#endif // HOOK_GAMEDLL

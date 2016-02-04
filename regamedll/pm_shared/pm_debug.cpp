@@ -5,7 +5,7 @@
 // Expand debugging BBOX particle hulls by this many units.
 #define BOX_GAP 0.0f
 
-static int PM_boxpnt[6][4] =
+int PM_boxpnt[6][4] =
 {
 	{ 0, 4, 6, 2 }, // +X
 	{ 0, 1, 5, 4 }, // +Y
@@ -16,7 +16,7 @@ static int PM_boxpnt[6][4] =
 };
 
 /* <2d0110> ../cstrike/pm_shared/pm_debug.c:43 */
-void PM_ShowClipBox(void)
+void PM_ShowClipBox()
 {
 #ifdef _DEBUG
 	if (!pmove->runfuncs)
@@ -202,7 +202,7 @@ void PM_DrawBBox(vec3_t mins, vec3_t maxs, vec3_t origin, int pcolor, float life
 // Tries to shoot a ray out by about 128 units.
 
 /* <2d03e9> ../cstrike/pm_shared/pm_debug.c:260 */
-void PM_ViewEntity(void)
+void PM_ViewEntity()
 {
 	vec3_t forward, right, up;
 	float raydist = 256.0f;

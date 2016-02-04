@@ -4,21 +4,22 @@
 LINK_ENTITY_TO_CLASS(weapon_ak47, CAK47);
 
 /* <235327> ../cstrike/dlls/wpn_shared/wpn_ak47.cpp:52 */
-void CAK47::__MAKE_VHOOK(Spawn)(void)
+void CAK47::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
+
 	m_iId = WEAPON_AK47;
 	SET_MODEL(edict(), "models/w_ak47.mdl");
 
 	m_iDefaultAmmo = AK47_DEFAULT_GIVE;
-	m_flAccuracy = 0.2;
+	m_flAccuracy = 0.2f;
 	m_iShotsFired = 0;
 
 	FallInit();
 }
 
 /* <235280> ../cstrike/dlls/wpn_shared/wpn_ak47.cpp:66 */
-void CAK47::__MAKE_VHOOK(Precache)(void)
+void CAK47::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/v_ak47.mdl");
 	PRECACHE_MODEL("models/w_ak47.mdl");
@@ -52,9 +53,9 @@ int CAK47::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 }
 
 /* <235300> ../cstrike/dlls/wpn_shared/wpn_ak47.cpp:99 */
-BOOL CAK47::__MAKE_VHOOK(Deploy)(void)
+BOOL CAK47::__MAKE_VHOOK(Deploy)()
 {
-	m_flAccuracy = 0.2;
+	m_flAccuracy = 0.2f;
 	m_iShotsFired = 0;
 	iShellOn = 1;
 
@@ -62,13 +63,13 @@ BOOL CAK47::__MAKE_VHOOK(Deploy)(void)
 }
 
 /* <2352da> ../cstrike/dlls/wpn_shared/wpn_ak47.cpp:108 */
-void CAK47::__MAKE_VHOOK(SecondaryAttack)(void)
+void CAK47::__MAKE_VHOOK(SecondaryAttack)()
 {
 	;
 }
 
 /* <235523> ../cstrike/dlls/wpn_shared/wpn_ak47.cpp:112 */
-void CAK47::__MAKE_VHOOK(PrimaryAttack)(void)
+void CAK47::__MAKE_VHOOK(PrimaryAttack)()
 {
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
 	{
@@ -91,12 +92,12 @@ void CAK47::AK47Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	int flag;
 
 	m_bDelayFire = true;
-	m_iShotsFired++;
+	++m_iShotsFired;
 
-	m_flAccuracy = ((m_iShotsFired * m_iShotsFired * m_iShotsFired) / 200) + 0.35;
+	m_flAccuracy = ((m_iShotsFired * m_iShotsFired * m_iShotsFired) / 200) + 0.35f;
 
-	if (m_flAccuracy > 1.25)
-		m_flAccuracy = 1.25;
+	if (m_flAccuracy > 1.25f)
+		m_flAccuracy = 1.25f;
 
 	if (m_iClip <= 0)
 	{
@@ -114,7 +115,7 @@ void CAK47::AK47Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 		return;
 	}
 
-	m_iClip--;
+	--m_iClip;
 	m_pPlayer->pev->effects |= EF_MUZZLEFLASH;
 	m_pPlayer->SetAnimation(PLAYER_ATTACK1);
 
@@ -145,7 +146,7 @@ void CAK47::AK47Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
 	}
 
-	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.9;
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.9f;
 
 	if (m_pPlayer->pev->velocity.Length2D() > 0)
 	{
@@ -166,79 +167,33 @@ void CAK47::AK47Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 }
 
 /* <2353d8> ../cstrike/dlls/wpn_shared/wpn_ak47.cpp:204 */
-void CAK47::__MAKE_VHOOK(Reload)(void)
+void CAK47::__MAKE_VHOOK(Reload)()
 {
 #ifdef REGAMEDLL_FIXES
 	// to prevent reload if not enough ammo
 	if (m_pPlayer->ammo_762nato <= 0)
-	{
 		return;
-	}
 #endif // REGAMEDLL_FIXES
 
 	if (DefaultReload(AK47_MAX_CLIP, AK47_RELOAD, AK47_RELOAD_TIME))
 	{
 		m_pPlayer->SetAnimation(PLAYER_RELOAD);
 
-		m_flAccuracy = 0.2;
+		m_flAccuracy = 0.2f;
 		m_iShotsFired = 0;
 		m_bDelayFire = false;
 	}
 }
 
 /* <23539d> ../cstrike/dlls/wpn_shared/wpn_ak47.cpp:219 */
-void CAK47::__MAKE_VHOOK(WeaponIdle)(void)
+void CAK47::__MAKE_VHOOK(WeaponIdle)()
 {
 	ResetEmptySound();
 	m_pPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);
 
 	if (m_flTimeWeaponIdle <= UTIL_WeaponTimeBase())
 	{
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20;
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20.0f;
 		SendWeaponAnim(AK47_IDLE1, UseDecrement() != FALSE);
 	}
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CAK47::Spawn(void)
-{
-	Spawn_();
-}
-
-void CAK47::Precache(void)
-{
-	Precache_();
-}
-
-int CAK47::GetItemInfo(ItemInfo *p)
-{
-	return GetItemInfo_(p);
-}
-
-BOOL CAK47::Deploy(void)
-{
-	return Deploy_();
-}
-
-void CAK47::PrimaryAttack(void)
-{
-	PrimaryAttack_();
-}
-
-void CAK47::SecondaryAttack(void)
-{
-	SecondaryAttack_();
-}
-
-void CAK47::Reload(void)
-{
-	Reload_();
-}
-
-void CAK47::WeaponIdle(void)
-{
-	WeaponIdle_();
-}
-
-#endif // HOOK_GAMEDLL

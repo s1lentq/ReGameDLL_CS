@@ -45,22 +45,3 @@ void EscapeFromBombState::__MAKE_VHOOK(OnExit)(CCSBot *me)
 {
 	me->EquipBestWeapon();
 }
-
-#ifdef HOOK_GAMEDLL
-
-void EscapeFromBombState::OnEnter(CCSBot *me)
-{
-	OnEnter_(me);
-}
-
-void EscapeFromBombState::OnUpdate(CCSBot *me)
-{
-	OnUpdate_(me);
-}
-
-void EscapeFromBombState::OnExit(CCSBot *me)
-{
-	OnExit_(me);
-}
-
-#endif // HOOK_GAMEDLL

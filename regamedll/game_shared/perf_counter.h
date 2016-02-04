@@ -58,21 +58,20 @@
 class CPerformanceCounter
 {
 public:
-	CPerformanceCounter(void);
+	CPerformanceCounter();
 
-	void InitializePerformanceCounter(void);
-	double GetCurTime(void);
+	void InitializePerformanceCounter();
+	double GetCurTime();
 
 private:
 	int m_iLowShift;
 	double m_flPerfCounterFreq;
 	double m_flCurrentTime;
 	double m_flLastCurrentTime;
-
-};/* size: 28, cachelines: 1, members: 4 */
+};
 
 /* <2ebfc> ../game_shared/perf_counter.h:61 */
-inline CPerformanceCounter::CPerformanceCounter(void) :
+inline CPerformanceCounter::CPerformanceCounter() :
 	m_iLowShift(0),
 	m_flPerfCounterFreq(0),
 	m_flCurrentTime(0),
@@ -82,7 +81,7 @@ inline CPerformanceCounter::CPerformanceCounter(void) :
 }
 
 /* <2ebdd> ../game_shared/perf_counter.h:69 */
-inline void CPerformanceCounter::InitializePerformanceCounter(void)
+inline void CPerformanceCounter::InitializePerformanceCounter()
 {
 #ifdef _WIN32
 
@@ -110,7 +109,7 @@ inline void CPerformanceCounter::InitializePerformanceCounter(void)
 }
 
 /* <2ec16> ../game_shared/perf_counter.h:97 */
-inline double CPerformanceCounter::GetCurTime(void)
+inline double CPerformanceCounter::GetCurTime()
 {
 #ifdef _WIN32
 

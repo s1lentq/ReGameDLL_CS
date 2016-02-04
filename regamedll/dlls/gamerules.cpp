@@ -7,10 +7,6 @@
 
 CHalfLifeMultiplay *g_pGameRules = NULL;
 
-#else //HOOK_GAMEDLL
-
-CHalfLifeMultiplay *g_pGameRules;
-
 #endif //HOOK_GAMEDLL
 
 /* <ad93d> ../cstrike/dlls/gamerules.cpp:36 */
@@ -101,7 +97,7 @@ BOOL CGameRules::__MAKE_VHOOK(CanHavePlayerItem)(CBasePlayer *pPlayer, CBasePlay
 }
 
 /* <ad85d> ../cstrike/dlls/gamerules.cpp:119 */
-void CGameRules::__MAKE_VHOOK(RefreshSkillData)(void)
+void CGameRules::__MAKE_VHOOK(RefreshSkillData)()
 {
 	int iSkill = (int)CVAR_GET_FLOAT("skill");
 
@@ -124,7 +120,7 @@ void CGameRules::__MAKE_VHOOK(RefreshSkillData)(void)
 }
 
 /* <ada23> ../cstrike/dlls/gamerules.cpp:157 */
-CGameRules *InstallGameRules(void)
+CGameRules *InstallGameRules()
 {
 	SERVER_COMMAND("exec game.cfg\n");
 	SERVER_EXECUTE();
@@ -134,27 +130,3 @@ CGameRules *InstallGameRules(void)
 
 	return new CHalfLifeMultiplay;
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CGameRules::RefreshSkillData(void)
-{
-	RefreshSkillData_();
-}
-
-edict_t *CGameRules::GetPlayerSpawnSpot(CBasePlayer *pPlayer)
-{
-	return GetPlayerSpawnSpot_(pPlayer);
-}
-
-BOOL CGameRules::CanHavePlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pWeapon)
-{
-	return CanHavePlayerItem_(pPlayer, pWeapon);
-}
-
-BOOL CGameRules::CanHaveAmmo(CBasePlayer *pPlayer, const char *pszAmmoName, int iMaxCarry)
-{
-	return CanHaveAmmo_(pPlayer, pszAmmoName, iMaxCarry);
-}
-
-#endif // HOOK_GAMEDLL

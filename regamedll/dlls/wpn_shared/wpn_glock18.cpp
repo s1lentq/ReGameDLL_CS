@@ -4,9 +4,10 @@
 LINK_ENTITY_TO_CLASS(weapon_glock18, CGLOCK18);
 
 /* <26611a> ../cstrike/dlls/wpn_shared/wpn_glock18.cpp:70 */
-void CGLOCK18::__MAKE_VHOOK(Spawn)(void)
+void CGLOCK18::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
+
 	m_iId = WEAPON_GLOCK18;
 	SET_MODEL(edict(), "models/w_glock18.mdl");
 
@@ -16,13 +17,13 @@ void CGLOCK18::__MAKE_VHOOK(Spawn)(void)
 
 	m_iGlock18ShotsFired = 0;
 	m_flGlock18Shoot = 0;
-	m_flAccuracy = 0.9;
+	m_flAccuracy = 0.9f;
 
 	FallInit();
 }
 
 /* <2660c0> ../cstrike/dlls/wpn_shared/wpn_glock18.cpp:88 */
-void CGLOCK18::__MAKE_VHOOK(Precache)(void)
+void CGLOCK18::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/v_glock18.mdl");
 	PRECACHE_MODEL("models/w_glock18.mdl");
@@ -61,14 +62,14 @@ int CGLOCK18::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 }
 
 /* <266281> ../cstrike/dlls/wpn_shared/wpn_glock18.cpp:129 */
-BOOL CGLOCK18::__MAKE_VHOOK(Deploy)(void)
+BOOL CGLOCK18::__MAKE_VHOOK(Deploy)()
 {
 	m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
 
 	m_bBurstFire = false;
 	m_iGlock18ShotsFired = 0;
 	m_flGlock18Shoot = 0;
-	m_flAccuracy = 0.9;
+	m_flAccuracy = 0.9f;
 	m_fMaxSpeed = GLOCK18_MAX_SPEED;
 
 	m_pPlayer->m_bShieldDrawn = false;
@@ -87,7 +88,7 @@ BOOL CGLOCK18::__MAKE_VHOOK(Deploy)(void)
 }
 
 /* <266246> ../cstrike/dlls/wpn_shared/wpn_glock18.cpp:156 */
-void CGLOCK18::__MAKE_VHOOK(SecondaryAttack)(void)
+void CGLOCK18::__MAKE_VHOOK(SecondaryAttack)()
 {
 	if (ShieldSecondaryFire(GLOCK18_SHIELD_UP, GLOCK18_SHIELD_DOWN))
 	{
@@ -105,11 +106,11 @@ void CGLOCK18::__MAKE_VHOOK(SecondaryAttack)(void)
 		m_iWeaponState |= WPNSTATE_GLOCK18_BURST_MODE;
 	}
 	
-	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.3;
+	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.3f;
 }
 
 /* <2664c3> ../cstrike/dlls/wpn_shared/wpn_glock18.cpp:175 */
-void CGLOCK18::__MAKE_VHOOK(PrimaryAttack)(void)
+void CGLOCK18::__MAKE_VHOOK(PrimaryAttack)()
 {
 	if (m_iWeaponState & WPNSTATE_GLOCK18_BURST_MODE)
 	{
@@ -163,28 +164,26 @@ void CGLOCK18::GLOCK18Fire(float flSpread, float flCycleTime, BOOL bFireBurst)
 	}
 	else
 	{
-		m_iShotsFired++;
-
-		if (m_iShotsFired > 1)
+		if (++m_iShotsFired > 1)
 		{
 			return;
 		}
 
-		flCycleTime -= 0.05;
+		flCycleTime -= 0.05f;
 	}
 
 	if (m_flLastFire)
 	{
 		// Mark the time of this shot and determine the accuracy modifier based on the last shot fired...
-		m_flAccuracy -= (0.325 - (gpGlobals->time - m_flLastFire)) * 0.275;
+		m_flAccuracy -= (0.325f - (gpGlobals->time - m_flLastFire)) * 0.275f;
 
-		if (m_flAccuracy > 0.9)
+		if (m_flAccuracy > 0.9f)
 		{
-			m_flAccuracy = 0.9;
+			m_flAccuracy = 0.9f;
 		}
-		else if (m_flAccuracy < 0.6)
+		else if (m_flAccuracy < 0.6f)
 		{
-			m_flAccuracy = 0.6;
+			m_flAccuracy = 0.6f;
 		}
 	}
 
@@ -206,8 +205,7 @@ void CGLOCK18::GLOCK18Fire(float flSpread, float flCycleTime, BOOL bFireBurst)
 		return;
 	}
 
-	m_iClip--;
-
+	--m_iClip;
 	m_pPlayer->pev->effects |= EF_MUZZLEFLASH;
 
 	// player "shoot" animation
@@ -241,27 +239,24 @@ void CGLOCK18::GLOCK18Fire(float flSpread, float flCycleTime, BOOL bFireBurst)
 		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, FALSE);
 	}
 	
-	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.5;
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.5f;
 
 	if (bFireBurst)
 	{
 		// Fire off the next two rounds
-		m_iGlock18ShotsFired++;
-		m_flGlock18Shoot = gpGlobals->time + 0.1;
+		++m_iGlock18ShotsFired;
+		m_flGlock18Shoot = gpGlobals->time + 0.1f;
 	}
 
 	ResetPlayerShieldAnim();
 }
 
 /* <2661e8> ../cstrike/dlls/wpn_shared/wpn_glock18.cpp:307 */
-void CGLOCK18::__MAKE_VHOOK(Reload)(void)
+void CGLOCK18::__MAKE_VHOOK(Reload)()
 {
 	int iResult;
-
 	if (m_pPlayer->ammo_9mm <= 0)
-	{
 		return;
-	}
 
 	if (m_pPlayer->HasShield())
 		iResult = GLOCK18_SHIELD_RELOAD;
@@ -278,7 +273,7 @@ void CGLOCK18::__MAKE_VHOOK(Reload)(void)
 }
 
 /* <266190> ../cstrike/dlls/wpn_shared/wpn_glock18.cpp:329 */
-void CGLOCK18::__MAKE_VHOOK(WeaponIdle)(void)
+void CGLOCK18::__MAKE_VHOOK(WeaponIdle)()
 {
 	int iAnim;
 	float flRand;
@@ -293,7 +288,7 @@ void CGLOCK18::__MAKE_VHOOK(WeaponIdle)(void)
 
 	if (m_pPlayer->HasShield())
 	{
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20.0;
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20.0f;
 
 		if (m_iWeaponState & WPNSTATE_SHIELD_DRAWN)
 		{
@@ -305,66 +300,22 @@ void CGLOCK18::__MAKE_VHOOK(WeaponIdle)(void)
 	{
 		flRand = RANDOM_FLOAT(0, 1);
 
-		if (flRand <= 0.3)
+		if (flRand <= 0.3f)
 		{
 			iAnim = GLOCK18_IDLE3;
-			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 3.0625;
+			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 3.0625f;
 		}
-		else if (flRand <= 0.6)
+		else if (flRand <= 0.6f)
 		{
 			iAnim = GLOCK18_IDLE1;
-			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 3.75;
+			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 3.75f;
 		}
 		else
 		{
 			iAnim = GLOCK18_IDLE2;
-			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.5;
+			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.5f;
 		}
 
 		SendWeaponAnim(iAnim, UseDecrement() != FALSE);
 	}
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CGLOCK18::Spawn(void)
-{
-	Spawn_();
-}
-
-void CGLOCK18::Precache(void)
-{
-	Precache_();
-}
-
-int CGLOCK18::GetItemInfo(ItemInfo *p)
-{
-	return GetItemInfo_(p);
-}
-
-BOOL CGLOCK18::Deploy(void)
-{
-	return Deploy_();
-}
-
-void CGLOCK18::PrimaryAttack(void)
-{
-	PrimaryAttack_();
-}
-
-void CGLOCK18::SecondaryAttack(void)
-{
-	SecondaryAttack_();
-}
-
-void CGLOCK18::Reload(void)
-{
-	Reload_();
-}
-
-void CGLOCK18::WeaponIdle(void)
-{
-	WeaponIdle_();
-}
-
-#endif // HOOK_GAMEDLL

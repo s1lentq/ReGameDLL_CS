@@ -36,17 +36,12 @@ TYPEDESCRIPTION CBaseToggle::m_SaveData[] =
 	DEFINE_FIELD(CBaseToggle, m_bitsDamageInflict, FIELD_INTEGER),	// damage type inflicted
 };
 
-#else // HOOK_GAMEDLL
-
-TYPEDESCRIPTION IMPL_CLASS(CBaseDelay, m_SaveData)[2];
-TYPEDESCRIPTION IMPL_CLASS(CBaseToggle, m_SaveData)[19];
-
 #endif // HOOK_GAMEDLL
 
 // Landmark class
 
 /* <1832bc> ../cstrike/dlls/subs.cpp:38 */
-void CPointEntity::__MAKE_VHOOK(Spawn)(void)
+void CPointEntity::__MAKE_VHOOK(Spawn)()
 {
 	pev->solid = SOLID_NOT;
 }
@@ -54,7 +49,7 @@ void CPointEntity::__MAKE_VHOOK(Spawn)(void)
 // Null Entity, remove on startup
 
 /* <183417> ../cstrike/dlls/subs.cpp:53 */
-void CNullEntity::__MAKE_VHOOK(Spawn)(void)
+void CNullEntity::__MAKE_VHOOK(Spawn)()
 {
 	REMOVE_ENTITY(ENT(pev));
 }
@@ -105,7 +100,7 @@ BOOL CBaseDMStart::__MAKE_VHOOK(IsTriggered)(CBaseEntity *pEntity)
 // This updates global tables that need to know about entities being removed
 
 /* <183f03> ../cstrike/dlls/subs.cpp:98 */
-void CBaseEntity::UpdateOnRemove(void)
+void CBaseEntity::UpdateOnRemove()
 {
 	int i;
 
@@ -132,7 +127,7 @@ void CBaseEntity::UpdateOnRemove(void)
 // Convenient way to delay removing oneself
 
 /* <183f38> ../cstrike/dlls/subs.cpp:120 */
-void CBaseEntity::SUB_Remove(void)
+void CBaseEntity::SUB_Remove()
 {
 	UpdateOnRemove();
 	if (pev->health > 0)
@@ -148,7 +143,7 @@ void CBaseEntity::SUB_Remove(void)
 // Convenient way to explicitly do nothing (passed to functions that require a method)
 
 /* <183f8a> ../cstrike/dlls/subs.cpp:135 */
-void CBaseEntity::SUB_DoNothing(void)
+void CBaseEntity::SUB_DoNothing()
 {
 	;
 }
@@ -317,7 +312,7 @@ void SetMovedir(entvars_t *pev)
 }
 
 /* <184158> ../cstrike/dlls/subs.cpp:357 */
-void CBaseDelay::DelayThink(void)
+void CBaseDelay::DelayThink()
 {
 	CBaseEntity *pActivator = NULL;
 
@@ -397,7 +392,7 @@ void CBaseToggle::LinearMove(Vector vecDest, float flSpeed)
 // After moving, set origin to exact final destination, call "move done" function
 
 /* <18337e> ../cstrike/dlls/subs.cpp:465 */
-void CBaseToggle::LinearMoveDone(void)
+void CBaseToggle::LinearMoveDone()
 {
 	UTIL_SetOrigin(pev, m_vecFinalDest);
 	pev->velocity = g_vecZero;
@@ -410,7 +405,7 @@ void CBaseToggle::LinearMoveDone(void)
 }
 
 /* <184855> ../cstrike/dlls/subs.cpp:474 */
-NOXREF BOOL CBaseToggle::IsLockedByMaster(void)
+NOXREF BOOL CBaseToggle::IsLockedByMaster()
 {
 	if (!FStringNull(m_sMaster) && !UTIL_IsMasterTriggered(m_sMaster, m_hActivator))
 		return TRUE;
@@ -454,7 +449,7 @@ void CBaseToggle::AngularMove(Vector vecDestAngle, float flSpeed)
 // After rotating, set angle to exact final angle, call "move done" function
 
 /* <1832fb> ../cstrike/dlls/subs.cpp:525 */
-void CBaseToggle::AngularMoveDone(void)
+void CBaseToggle::AngularMoveDone()
 {
 	pev->angles = m_vecFinalAngle;
 	pev->avelocity = g_vecZero;
@@ -534,57 +529,3 @@ NOXREF BOOL FEntIsVisible(entvars_t *pev, entvars_t *pevTarget)
 
 	return FALSE;
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CNullEntity::Spawn(void)
-{
-	Spawn_();
-}
-
-void CPointEntity::Spawn(void)
-{
-	Spawn_();
-}
-
-void CBaseDelay::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-int CBaseDelay::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CBaseDelay::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-void CBaseToggle::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-int CBaseToggle::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CBaseToggle::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-void CBaseDMStart::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-BOOL CBaseDMStart::IsTriggered(CBaseEntity *pEntity)
-{
-	return IsTriggered_(pEntity);
-}
-
-#endif // HOOK_GAMEDLL

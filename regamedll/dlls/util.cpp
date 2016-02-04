@@ -123,19 +123,9 @@ int g_groupop = 0;
 
 const int gSizes[18] = { 4, 4, 4, 4, 4, 4, 4, 12, 12, 4, 4, 4, 4, 2, 1, 4, 4, 4 };
 
-#else // HOOK_GAMEDLL
-
-unsigned int seed_table[256];
-TYPEDESCRIPTION gEntvarsDescription[86];
-
-int g_groupop;
-int g_groupmask;
-
-const int gSizes[18];
-
 #endif // HOOK_GAMEDLL
 
-float UTIL_WeaponTimeBase(void)
+float UTIL_WeaponTimeBase()
 {
 #ifdef CLIENT_WEAPONS
 	return 0.0;
@@ -145,7 +135,7 @@ float UTIL_WeaponTimeBase(void)
 }
 
 /* <1ac4be> ../cstrike/dlls/util.cpp:59 */
-unsigned int U_Random(void)
+unsigned int U_Random()
 {
 	glSeed *= 69069;
 	glSeed += seed_table[glSeed & 0xFF] + 1;
@@ -224,7 +214,7 @@ void UTIL_SetGroupTrace(int groupmask, int op)
 }
 
 /* <1ac8bf> ../cstrike/dlls/util.cpp:168 */
-void UTIL_UnsetGroupTrace(void)
+void UTIL_UnsetGroupTrace()
 {
 	g_groupmask = 0;
 	g_groupop = 0;
@@ -245,7 +235,7 @@ NOXREF UTIL_GroupTrace::UTIL_GroupTrace(int groupmask, int op)
 }
 
 /* <1ac963> ../cstrike/dlls/util.cpp:188 */
-NOXREF UTIL_GroupTrace::~UTIL_GroupTrace(void)
+NOXREF UTIL_GroupTrace::~UTIL_GroupTrace()
 {
 	g_groupmask = m_oldgroupmask;
 	g_groupop = m_oldgroupop;
@@ -948,7 +938,7 @@ void UTIL_TraceModel(const Vector &vecStart, const Vector &vecEnd, int hullNumbe
 }
 
 /* <1aec01> ../cstrike/dlls/util.cpp:1132 */
-NOXREF TraceResult UTIL_GetGlobalTrace(void)
+NOXREF TraceResult UTIL_GetGlobalTrace()
 {
 	TraceResult tr;
 
@@ -1173,7 +1163,7 @@ void UTIL_BloodDrips(const Vector &origin, const Vector &direction, int color, i
 }
 
 /* <1af310> ../cstrike/dlls/util.cpp:1356 */
-Vector UTIL_RandomBloodVector(void)
+Vector UTIL_RandomBloodVector()
 {
 	Vector direction;
 	direction.x = RANDOM_FLOAT(-1, 1);
@@ -1584,7 +1574,7 @@ void UTIL_StripToken(const char *pKey, char *pDest)
 }
 
 /* <1b003a> ../cstrike/dlls/util.cpp:1847 */
-CSaveRestoreBuffer::CSaveRestoreBuffer(void)
+CSaveRestoreBuffer::CSaveRestoreBuffer()
 {
 	m_pdata = NULL;
 }
@@ -1596,7 +1586,7 @@ CSaveRestoreBuffer::CSaveRestoreBuffer(SAVERESTOREDATA *pdata)
 }
 
 /* <1b00d4> ../cstrike/dlls/util.cpp:1859 */
-CSaveRestoreBuffer::~CSaveRestoreBuffer(void)
+CSaveRestoreBuffer::~CSaveRestoreBuffer()
 {
 	;
 }
@@ -2284,7 +2274,7 @@ void CRestore::BufferReadHeader(HEADER *pheader)
 }
 
 /* <1b4654> ../cstrike/dlls/util.cpp:2605 */
-short CRestore::ReadShort(void)
+short CRestore::ReadShort()
 {
 	short tmp = 0;
 	BufferReadBytes((char *)&tmp, sizeof(short));
@@ -2292,7 +2282,7 @@ short CRestore::ReadShort(void)
 }
 
 /* <1b45f5> ../cstrike/dlls/util.cpp:2614 */
-int CRestore::ReadInt(void)
+int CRestore::ReadInt()
 {
 	int tmp = 0;
 	BufferReadBytes((char *)&tmp, sizeof(int));
@@ -2316,7 +2306,7 @@ NOXREF char *CRestore::ReadNamedString(const char *pName)
 }
 
 /* <1b453a> ../cstrike/dlls/util.cpp:2644 */
-char *CRestore::BufferPointer(void)
+char *CRestore::BufferPointer()
 {
 	if (!m_pdata)
 		return NULL;
@@ -2351,7 +2341,7 @@ void CRestore::BufferSkipBytes(int bytes)
 }
 
 /* <1b50bc> ../cstrike/dlls/util.cpp:2678 */
-NOXREF int CRestore::BufferSkipZString(void)
+NOXREF int CRestore::BufferSkipZString()
 {
 	if (!m_pdata)
 		return 0;
@@ -2467,8 +2457,16 @@ float_precision UTIL_GetPlayerGaitYaw(int playerIndex)
 int UTIL_ReadFlags(const char *c)
 {
 	int flags = 0;
+
 	while (*c)
-		flags |= (1 << (*c++ - 'a'));
-	
+	{
+		if (*c >= 'a' && *c <= 'z')
+		{
+			flags |= (1 << (*c - 'a'));
+		}
+
+		*c++;
+	}
+
 	return flags;
 }

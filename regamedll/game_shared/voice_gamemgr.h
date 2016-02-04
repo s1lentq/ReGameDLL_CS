@@ -36,45 +36,22 @@
 
 #include "voice_common.h"
 
-#ifdef HOOK_GAMEDLL
-
-#define voice_serverdebug (*pvoice_serverdebug)
-#define sv_alltalk (*psv_alltalk)
-
-#define g_PlayerModEnable (*pg_PlayerModEnable)
-#define g_BanMasks (*pg_BanMasks)
-#define g_SentGameRulesMasks (*pg_SentGameRulesMasks)
-#define g_SentBanMasks (*pg_SentBanMasks)
-#define g_bWantModEnable (*pg_bWantModEnable)
-
-#endif // HOOK_GAMEDLL
-
-extern cvar_t voice_serverdebug;
-extern cvar_t sv_alltalk;
-
-extern CPlayerBitVec g_PlayerModEnable;
-extern CBitVec< VOICE_MAX_PLAYERS > g_BanMasks[ VOICE_MAX_PLAYERS ];
-extern CBitVec< VOICE_MAX_PLAYERS > g_SentGameRulesMasks[ VOICE_MAX_PLAYERS ];
-extern CBitVec< VOICE_MAX_PLAYERS > g_SentBanMasks[ VOICE_MAX_PLAYERS ];
-extern CPlayerBitVec g_bWantModEnable;
-
 /* <111716> ../game_shared/voice_gamemgr.h:23 */
 class IVoiceGameMgrHelper
 {
 public:
 	virtual ~IVoiceGameMgrHelper() {}
 	virtual bool CanPlayerHearPlayer(CBasePlayer *pListener, CBasePlayer *pTalker) = 0;
-
-};/* size: 4, cachelines: 1, members: 1 */
+};
 
 class CVoiceGameMgr
 {
 public:
-	CVoiceGameMgr(void);
-	virtual ~CVoiceGameMgr(void);
+	CVoiceGameMgr();
+	virtual ~CVoiceGameMgr();
 
 	bool Init(IVoiceGameMgrHelper *pHelper, int maxClients);
-	NOXREF void SetHelper(IVoiceGameMgrHelper *pHelper);
+	void SetHelper(IVoiceGameMgrHelper *pHelper);
 	void Update(double frametime);
 	void ClientConnected(edict_t *pEdict);
 	bool ClientCommand(CBasePlayer *pPlayer, const char *cmd);
@@ -84,7 +61,7 @@ public:
 private:
 #endif // HOOK_GAMEDLL
 
-	void UpdateMasks(void);
+	void UpdateMasks();
 
 private:
 	int m_msgPlayerVoiceMask;
@@ -92,8 +69,7 @@ private:
 	IVoiceGameMgrHelper *m_pHelper;
 	int m_nMaxPlayers;
 	double m_UpdateInterval;
-
-};/* size: 28, cachelines: 1, members: 6 */
+};
 
 void VoiceServerDebug(const char *pFmt, ...);
 

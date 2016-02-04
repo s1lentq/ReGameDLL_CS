@@ -65,99 +65,86 @@ enum TutorStateType
 class CCSTutorStateSystem: public CBaseTutorStateSystem
 {
 public:
-	CCSTutorStateSystem(void);
+	CCSTutorStateSystem();
 
-	virtual ~CCSTutorStateSystem(void);
+	virtual ~CCSTutorStateSystem();
 	virtual bool UpdateState(GameEventType event, CBaseEntity *entity, CBaseEntity *other);
-	virtual char *GetCurrentStateString(void);
+	virtual char *GetCurrentStateString();
 
 #ifdef HOOK_GAMEDLL
 
 	bool UpdateState_(GameEventType event, CBaseEntity *entity, CBaseEntity *other);
-	char *GetCurrentStateString_(void);
+	char *GetCurrentStateString_();
 	CBaseTutorState *ConstructNewState_(int stateType);
 
 #endif // HOOK_GAMEDLL
 
 protected:
 	virtual CBaseTutorState *ConstructNewState(int stateType);
-
-};/* size: 8, cachelines: 1, members: 1 */
+};
 
 /* <22bfcb> ../cstrike/dlls/tutor_cs_states.cpp:141 */
 class CCSTutorUndefinedState: public CBaseTutorState
 {
 public:
-	CCSTutorUndefinedState(void);
+	CCSTutorUndefinedState();
 
-	virtual ~CCSTutorUndefinedState(void);
+	virtual ~CCSTutorUndefinedState();
 	virtual int CheckForStateTransition(GameEventType event, CBaseEntity *entity, CBaseEntity *other);
-	virtual char *GetStateString(void);
+	virtual char *GetStateString();
 
 #ifdef HOOK_GAMEDLL
 
 	int CheckForStateTransition_(GameEventType event, CBaseEntity *entity, CBaseEntity *other);
-	char *GetStateString_(void);
+	char *GetStateString_();
 
 #endif // HOOK_GAMEDLL
 
 protected:
 	int HandlePlayerSpawned(CBaseEntity *entity, CBaseEntity *other);
-
-};/* size: 8, cachelines: 1, members: 1 */
+};
 
 /* <22c03e> ../cstrike/dlls/tutor_cs_states.cpp:198 */
 class CCSTutorWaitingForStartState: public CBaseTutorState
 {
 public:
-	CCSTutorWaitingForStartState(void);
+	CCSTutorWaitingForStartState();
 
-	virtual ~CCSTutorWaitingForStartState(void);
+	virtual ~CCSTutorWaitingForStartState();
 	virtual int CheckForStateTransition(GameEventType event, CBaseEntity *entity, CBaseEntity *other);
-	virtual char *GetStateString(void);
+	virtual char *GetStateString();
 
 #ifdef HOOK_GAMEDLL
 
 	int CheckForStateTransition_(GameEventType event, CBaseEntity *entity, CBaseEntity *other);
-	char *GetStateString_(void);
+	char *GetStateString_();
 
 #endif // HOOK_GAMEDLL
 
 protected:
-
 	int HandlePlayerSpawned(CBaseEntity *entity, CBaseEntity *other);
 	int HandleBuyTimeStart(CBaseEntity *entity, CBaseEntity *other);
-
-};/* size: 8, cachelines: 1, members: 1 */
+};
 
 /* <22c0e2> ../cstrike/dlls/tutor_cs_states.cpp:266 */
 class CCSTutorBuyMenuState: public CBaseTutorState
 {
 public:
-	CCSTutorBuyMenuState(void);
+	CCSTutorBuyMenuState();
 
-	virtual ~CCSTutorBuyMenuState(void);
+	virtual ~CCSTutorBuyMenuState();
 	virtual int CheckForStateTransition(GameEventType event, CBaseEntity *entity, CBaseEntity *other);
-	virtual char *GetStateString(void);
+	virtual char *GetStateString();
 
 #ifdef HOOK_GAMEDLL
 
 	int CheckForStateTransition_(GameEventType event, CBaseEntity *entity, CBaseEntity *other);
-	char *GetStateString_(void);
+	char *GetStateString_();
 
 #endif // HOOK_GAMEDLL
 
 protected:
 	int HandleRoundStart(CBaseEntity *entity, CBaseEntity *other);
-
-};/* size: 8, cachelines: 1, members: 1 */
-
-#ifdef HOOK_GAMEDLL
-
-#define g_TutorStateStrings (*pg_TutorStateStrings)
-
-#endif // HOOK_GAMEDLL
-
-extern char *const g_TutorStateStrings[20];
+};
 
 #endif // TUTOR_CS_STATES_H

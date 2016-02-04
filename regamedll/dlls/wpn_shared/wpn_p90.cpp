@@ -4,14 +4,15 @@
 LINK_ENTITY_TO_CLASS(weapon_p90, CP90);
 
 /* <296337> ../cstrike/dlls/wpn_shared/wpn_p90.cpp:51 */
-void CP90::__MAKE_VHOOK(Spawn)(void)
+void CP90::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
+
 	m_iId = WEAPON_P90;
 	SET_MODEL(edict(), "models/w_p90.mdl");
 
 	m_iDefaultAmmo = P90_DEFAULT_GIVE;
-	m_flAccuracy = 0.2;
+	m_flAccuracy = 0.2f;
 	m_iShotsFired = 0;
 	m_bDelayFire = false;
 
@@ -19,7 +20,7 @@ void CP90::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <2962b6> ../cstrike/dlls/wpn_shared/wpn_p90.cpp:66 */
-void CP90::__MAKE_VHOOK(Precache)(void)
+void CP90::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/v_p90.mdl");
 	PRECACHE_MODEL("models/w_p90.mdl");
@@ -53,11 +54,11 @@ int CP90::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 }
 
 /* <296310> ../cstrike/dlls/wpn_shared/wpn_p90.cpp:100 */
-BOOL CP90::__MAKE_VHOOK(Deploy)(void)
+BOOL CP90::__MAKE_VHOOK(Deploy)()
 {
 	m_iShotsFired = 0;
 	m_bDelayFire = false;
-	m_flAccuracy = 0.2;
+	m_flAccuracy = 0.2f;
 
 	iShellOn = 1;
 
@@ -65,7 +66,7 @@ BOOL CP90::__MAKE_VHOOK(Deploy)(void)
 }
 
 /* <296533> ../cstrike/dlls/wpn_shared/wpn_p90.cpp:110 */
-void CP90::__MAKE_VHOOK(PrimaryAttack)(void)
+void CP90::__MAKE_VHOOK(PrimaryAttack)()
 {
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
 	{
@@ -88,9 +89,9 @@ void CP90::P90Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	int flag;
 
 	m_bDelayFire = true;
-	m_iShotsFired++;
+	++m_iShotsFired;
 
-	m_flAccuracy = (m_iShotsFired * m_iShotsFired / 175) + 0.45;
+	m_flAccuracy = (m_iShotsFired * m_iShotsFired / 175) + 0.45f;
 
 	if (m_flAccuracy > 1)
 		m_flAccuracy = 1;
@@ -111,8 +112,7 @@ void CP90::P90Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 		return;
 	}
 
-	m_iClip--;
-
+	--m_iClip;
 	m_pPlayer->pev->effects |= EF_MUZZLEFLASH;
 	m_pPlayer->SetAnimation(PLAYER_ATTACK1);
 
@@ -142,7 +142,7 @@ void CP90::P90Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
 	}
 
-	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.0;
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.0f;
 
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
 	{
@@ -163,24 +163,22 @@ void CP90::P90Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 }
 
 /* <2963e8> ../cstrike/dlls/wpn_shared/wpn_p90.cpp:202 */
-void CP90::__MAKE_VHOOK(Reload)(void)
+void CP90::__MAKE_VHOOK(Reload)()
 {
 	if (m_pPlayer->ammo_57mm <= 0)
-	{
 		return;
-	}
 
 	if (DefaultReload(P90_MAX_CLIP, P90_RELOAD, P90_RELOAD_TIME))
 	{
 		m_pPlayer->SetAnimation(PLAYER_RELOAD);
 
-		m_flAccuracy = 0.2;
+		m_flAccuracy = 0.2f;
 		m_iShotsFired = 0;
 	}
 }
 
 /* <2963ad> ../cstrike/dlls/wpn_shared/wpn_p90.cpp:216 */
-void CP90::__MAKE_VHOOK(WeaponIdle)(void)
+void CP90::__MAKE_VHOOK(WeaponIdle)()
 {
 	ResetEmptySound();
 	m_pPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);
@@ -190,56 +188,12 @@ void CP90::__MAKE_VHOOK(WeaponIdle)(void)
 		return;
 	}
 
-	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20.0;
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20.0f;
 	SendWeaponAnim(P90_IDLE1, UseDecrement() != FALSE);
 }
 
 /* <29626a> ../cstrike/dlls/weapons.h:1052 */
-float CP90::__MAKE_VHOOK(GetMaxSpeed)(void)
+float CP90::__MAKE_VHOOK(GetMaxSpeed)()
 {
 	return P90_MAX_SPEED;
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CP90::Spawn(void)
-{
-	Spawn_();
-}
-
-void CP90::Precache(void)
-{
-	Precache_();
-}
-
-int CP90::GetItemInfo(ItemInfo *p)
-{
-	return GetItemInfo_(p);
-}
-
-BOOL CP90::Deploy(void)
-{
-	return Deploy_();
-}
-
-void CP90::PrimaryAttack(void)
-{
-	PrimaryAttack_();
-}
-
-void CP90::Reload(void)
-{
-	Reload_();
-}
-
-void CP90::WeaponIdle(void)
-{
-	WeaponIdle_();
-}
-
-float CP90::GetMaxSpeed(void)
-{
-	return GetMaxSpeed_();
-}
-
-#endif // HOOK_GAMEDLL

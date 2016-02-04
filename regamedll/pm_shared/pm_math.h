@@ -36,13 +36,6 @@
 #define YAW	1	// left/right
 #define ROLL	2	// fall over
 
-#ifdef HOOK_GAMEDLL
-
-#define vec3_origin (*pvec3_origin)
-#define nanmask (*pnanmask)
-
-#endif // HOOK_GAMEDLL
-
 extern vec3_t vec3_origin;
 extern int nanmask;
 

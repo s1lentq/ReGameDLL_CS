@@ -14,7 +14,7 @@ TYPEDESCRIPTION CEnvGlobal::m_SaveData[] =
 
 TYPEDESCRIPTION CMultiSource::m_SaveData[] =
 {
-	//!!!BUGBUG FIX
+	// BUGBUG FIX
 	DEFINE_ARRAY(CMultiSource, m_rgEntities, FIELD_EHANDLE, MS_MAX_TARGETS),
 	DEFINE_ARRAY(CMultiSource, m_rgTriggered, FIELD_INTEGER, MS_MAX_TARGETS),
 	DEFINE_FIELD(CMultiSource, m_iTotal, FIELD_INTEGER),
@@ -50,14 +50,6 @@ TYPEDESCRIPTION CEnvSpark::m_SaveData[] =
 	DEFINE_FIELD(CEnvSpark, m_flDelay, FIELD_FLOAT),
 };
 
-#else
-
-TYPEDESCRIPTION IMPL_CLASS(CEnvGlobal, m_SaveData)[3];
-TYPEDESCRIPTION IMPL_CLASS(CMultiSource, m_SaveData)[4];
-TYPEDESCRIPTION IMPL_CLASS(CBaseButton, m_SaveData)[8];
-TYPEDESCRIPTION IMPL_CLASS(CMomentaryRotButton, m_SaveData)[6];
-TYPEDESCRIPTION IMPL_CLASS(CEnvSpark, m_SaveData)[1];
-
 #endif // HOOK_GAMEDLL
 
 /* <260d6> ../cstrike/dlls/buttons.cpp:62 */
@@ -89,7 +81,7 @@ void CEnvGlobal::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 }
 
 /* <26486> ../cstrike/dlls/buttons.cpp:80 */
-void CEnvGlobal::__MAKE_VHOOK(Spawn)(void)
+void CEnvGlobal::__MAKE_VHOOK(Spawn)()
 {
 	if (!m_globalstate)
 	{
@@ -177,7 +169,7 @@ void CMultiSource::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 }
 
 /* <256e2> ../cstrike/dlls/buttons.cpp:168 */
-void CMultiSource::__MAKE_VHOOK(Spawn)(void)
+void CMultiSource::__MAKE_VHOOK(Spawn)()
 {
 	// set up think for later registration
 	pev->solid = SOLID_NOT;
@@ -256,7 +248,7 @@ BOOL CMultiSource::__MAKE_VHOOK(IsTriggered)(CBaseEntity *)
 }
 
 /* <25d5a> ../cstrike/dlls/buttons.cpp:236 */
-void CMultiSource::Register(void)
+void CMultiSource::Register()
 {
 	edict_t *pentTarget = NULL;
 
@@ -300,7 +292,7 @@ void CMultiSource::Register(void)
 IMPLEMENT_SAVERESTORE(CBaseButton, CBaseToggle);
 
 /* <25709> ../cstrike/dlls/buttons.cpp:289 */
-void CBaseButton::__MAKE_VHOOK(Precache)(void)
+void CBaseButton::__MAKE_VHOOK(Precache)()
 {
 	char *pszSound;
 
@@ -459,7 +451,7 @@ int CBaseButton::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pe
 LINK_ENTITY_TO_CLASS(func_button, CBaseButton);
 
 /* <25c2c> ../cstrike/dlls/buttons.cpp:442 */
-void CBaseButton::__MAKE_VHOOK(Spawn)(void)
+void CBaseButton::__MAKE_VHOOK(Spawn)()
 {
 	char  *pszSound;
 
@@ -596,7 +588,7 @@ void DoSpark(entvars_t *pev, const Vector &location)
 }
 
 /* <277fa> ../cstrike/dlls/buttons.cpp:568 */
-void CBaseButton::ButtonSpark(void)
+void CBaseButton::ButtonSpark()
 {
 	SetThink(&CBaseButton::ButtonSpark);
 
@@ -631,7 +623,7 @@ void CBaseButton::ButtonUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_T
 }
 
 /* <27821> ../cstrike/dlls/buttons.cpp:603 */
-CBaseButton::BUTTON_CODE CBaseButton::ButtonResponseToTouch(void)
+CBaseButton::BUTTON_CODE CBaseButton::ButtonResponseToTouch()
 {
 	// Ignore touches if button is moving, or pushed-in and waiting to auto-come-out.
 	if (m_toggle_state == TS_GOING_UP || m_toggle_state == TS_GOING_DOWN || (m_toggle_state == TS_AT_TOP && !m_fStayPushed && !(pev->spawnflags & SF_BUTTON_TOGGLE)))
@@ -693,7 +685,7 @@ void CBaseButton::ButtonTouch(CBaseEntity *pOther)
 // Starts the button moving "in/up".
 
 /* <27843> ../cstrike/dlls/buttons.cpp:664 */
-void CBaseButton::ButtonActivate(void)
+void CBaseButton::ButtonActivate()
 {
 	EMIT_SOUND(ENT(pev), CHAN_VOICE, (char *)STRING(pev->noise), VOL_NORM, ATTN_NORM);
 
@@ -726,7 +718,7 @@ void CBaseButton::ButtonActivate(void)
 // Button has reached the "in/up" position.  Activate its "targets", and pause before "popping out".
 
 /* <263dd> ../cstrike/dlls/buttons.cpp:693 */
-void CBaseButton::TriggerAndWait(void)
+void CBaseButton::TriggerAndWait()
 {
 	assert(m_toggle_state == TS_GOING_UP);
 
@@ -762,7 +754,7 @@ void CBaseButton::TriggerAndWait(void)
 // Starts the button moving "out/down".
 
 /* <25bb7> ../cstrike/dlls/buttons.cpp:730 */
-void CBaseButton::ButtonReturn(void)
+void CBaseButton::ButtonReturn()
 {
 	assert(m_toggle_state == TS_AT_TOP);
 	m_toggle_state = TS_GOING_DOWN;
@@ -784,7 +776,7 @@ void CBaseButton::ButtonReturn(void)
 // Button has returned to start state. Quiesce it.
 
 /* <26658> ../cstrike/dlls/buttons.cpp:748 */
-void CBaseButton::ButtonBackHome(void)
+void CBaseButton::ButtonBackHome()
 {
 	assert(m_toggle_state == TS_GOING_DOWN);
 	m_toggle_state = TS_AT_BOTTOM;
@@ -842,7 +834,7 @@ void CBaseButton::ButtonBackHome(void)
 LINK_ENTITY_TO_CLASS(func_rot_button, CRotButton);
 
 /* <25a06> ../cstrike/dlls/buttons.cpp:808 */
-void CRotButton::__MAKE_VHOOK(Spawn)(void)
+void CRotButton::__MAKE_VHOOK(Spawn)()
 {
 	char *pszSound;
 
@@ -913,7 +905,7 @@ IMPLEMENT_SAVERESTORE(CMomentaryRotButton, CBaseToggle);
 LINK_ENTITY_TO_CLASS(momentary_rot_button, CMomentaryRotButton);
 
 /* <25acc> ../cstrike/dlls/buttons.cpp:922 */
-void CMomentaryRotButton::__MAKE_VHOOK(Spawn)(void)
+void CMomentaryRotButton::__MAKE_VHOOK(Spawn)()
 {
 	CBaseToggle::AxisDir(pev);
 
@@ -971,7 +963,7 @@ void CMomentaryRotButton::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 }
 
 /* <27a57> ../cstrike/dlls/buttons.cpp:974 */
-void CMomentaryRotButton::PlaySound(void)
+void CMomentaryRotButton::PlaySound()
 {
 	EMIT_SOUND(ENT(pev), CHAN_VOICE, (char *)STRING(pev->noise), VOL_NORM, ATTN_NORM);
 }
@@ -1091,7 +1083,7 @@ void CMomentaryRotButton::UpdateTarget(float value)
 }
 
 /* <25f88> ../cstrike/dlls/buttons.cpp:1072 */
-void CMomentaryRotButton::Off(void)
+void CMomentaryRotButton::Off()
 {
 	pev->avelocity = g_vecZero;
 	m_lastUsed = 0;
@@ -1107,7 +1099,7 @@ void CMomentaryRotButton::Off(void)
 }
 
 /* <27d60> ../cstrike/dlls/buttons.cpp:1086 */
-void CMomentaryRotButton::Return(void)
+void CMomentaryRotButton::Return()
 {
 	float value = CBaseToggle::AxisDelta(pev->spawnflags, pev->angles, m_start) / m_flMoveDistance;
 
@@ -1147,7 +1139,7 @@ LINK_ENTITY_TO_CLASS(env_spark, CEnvSpark);
 LINK_ENTITY_TO_CLASS(env_debris, CEnvSpark);
 
 /* <257b7> ../cstrike/dlls/buttons.cpp:1146 */
-void CEnvSpark::__MAKE_VHOOK(Spawn)(void)
+void CEnvSpark::__MAKE_VHOOK(Spawn)()
 {
 	SetThink(NULL);
 	SetUse(NULL);
@@ -1181,7 +1173,7 @@ void CEnvSpark::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <257de> ../cstrike/dlls/buttons.cpp:1173 */
-void CEnvSpark::__MAKE_VHOOK(Precache)(void)
+void CEnvSpark::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_SOUND("buttons/spark1.wav");
 	PRECACHE_SOUND("buttons/spark2.wav");
@@ -1211,7 +1203,7 @@ void CEnvSpark::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 }
 
 /* <277d3> ../cstrike/dlls/buttons.cpp:1201 */
-void CEnvSpark::SparkThink(void)
+void CEnvSpark::SparkThink()
 {
 	pev->nextthink = gpGlobals->time + 0.1 + RANDOM_FLOAT(0, m_flDelay);
 	DoSpark(pev, pev->origin);
@@ -1236,7 +1228,7 @@ void CEnvSpark::SparkStop(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYP
 LINK_ENTITY_TO_CLASS(button_target, CButtonTarget);
 
 /* <258ca> ../cstrike/dlls/buttons.cpp:1235 */
-void CButtonTarget::__MAKE_VHOOK(Spawn)(void)
+void CButtonTarget::__MAKE_VHOOK(Spawn)()
 {
 	pev->movetype = MOVETYPE_PUSH;
 	pev->solid = SOLID_BSP;
@@ -1267,7 +1259,7 @@ void CButtonTarget::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCal
 }
 
 /* <258f1> ../cstrike/dlls/buttons.cpp:1258 */
-int CButtonTarget::__MAKE_VHOOK(ObjectCaps)(void)
+int CButtonTarget::__MAKE_VHOOK(ObjectCaps)()
 {
 	int caps = CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION;
 
@@ -1281,170 +1273,5 @@ int CButtonTarget::__MAKE_VHOOK(ObjectCaps)(void)
 int CButtonTarget::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
 	Use(Instance(pevAttacker), this, USE_TOGGLE, 0);
-
 	return 1;
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CBaseButton::Spawn(void)
-{
-	Spawn_();
-}
-
-void CBaseButton::Precache(void)
-{
-	Precache_();
-}
-
-void CBaseButton::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-int CBaseButton::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
-{
-	return TakeDamage_(pevInflictor, pevAttacker, flDamage, bitsDamageType);
-}
-
-int CBaseButton::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CBaseButton::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-void CEnvGlobal::Spawn(void)
-{
-	Spawn_();
-}
-
-void CEnvGlobal::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-int CEnvGlobal::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CEnvGlobal::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-void CEnvGlobal::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	Use_(pActivator, pCaller, useType, value);
-}
-
-void CMultiSource::Spawn(void)
-{
-	Spawn_();
-}
-
-void CMultiSource::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-void CMultiSource::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	Use_(pActivator, pCaller, useType, value);
-}
-
-BOOL CMultiSource::IsTriggered(CBaseEntity *pActivator)
-{
-	return IsTriggered_(pActivator);
-}
-
-int CMultiSource::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CMultiSource::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-void CRotButton::Spawn(void)
-{
-	Spawn_();
-}
-
-void CMomentaryRotButton::Spawn(void)
-{
-	Spawn_();
-}
-
-void CMomentaryRotButton::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-int CMomentaryRotButton::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CMomentaryRotButton::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-void CMomentaryRotButton::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	Use_(pActivator, pCaller, useType, value);
-}
-
-void CEnvSpark::Spawn(void)
-{
-	Spawn_();
-}
-
-void CEnvSpark::Precache(void)
-{
-	Precache_();
-}
-
-void CEnvSpark::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-int CEnvSpark::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CEnvSpark::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-void CButtonTarget::Spawn(void)
-{
-	Spawn_();
-}
-
-int CButtonTarget::ObjectCaps(void)
-{
-	return ObjectCaps_();
-}
-
-int CButtonTarget::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
-{
-	return TakeDamage_(pevInflictor, pevAttacker, flDamage, bitsDamageType);
-}
-
-void CButtonTarget::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	Use_(pActivator, pCaller, useType, value);
-}
-
-#endif // HOOK_GAMEDLL

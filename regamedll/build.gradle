@@ -46,7 +46,6 @@ dependencies {
 
 }
 
-project.ext.dep_bzip2 = project(':dep/bzip2')
 project.ext.dep_cppunitlite = project(':dep/cppunitlite')
 
 void createIntergrationTestTask(NativeBinarySpec b) {
@@ -118,16 +117,13 @@ void setupToolchain(NativeBinarySpec b)
 	boolean regamedllFixes = b.flavor.name.contains('regamedllFixes')
 
 	ToolchainConfig cfg = rootProject.createToolchainConfig(b)
-
 	cfg.projectInclude(project, '', '/engine', '/common', '/dlls', '/game_shared', '/pm_shared', '/regamedll', '/testsuite', '/hookers', '/public', '/public/regamedll')
-	cfg.projectInclude(dep_bzip2, '/include')
 
 	if (unitTestExecutable)
 	{
 		cfg.projectInclude(dep_cppunitlite, '/include')
 		b.lib LazyNativeDepSet.create(dep_cppunitlite, 'cppunitlite', b.buildType.name, true)
 	}
-	b.lib LazyNativeDepSet.create(dep_bzip2, 'bzip2', b.buildType.name, true)
 
 	cfg.singleDefines 'USE_BREAKPAD_HANDLER', 'DEDICATED', 'REGAMEDLL_SELF', 'CLIENT_WEAPONS'
 
@@ -155,7 +151,8 @@ void setupToolchain(NativeBinarySpec b)
 		cfg.projectLibpath(project, '/lib')
 		cfg.extraLibs 'steam_api.lib', 'psapi.lib', 'ws2_32.lib', 'kernel32.lib', 'user32.lib', 'advapi32.lib'
 	}
-	else if (cfg instanceof GccToolchainConfig) {
+	else if (cfg instanceof GccToolchainConfig)
+	{
 		cfg.compilerOptions.pchConfig = new GccToolchainConfig.PrecompilerHeaderOptions(
 			enabled: true,
 			pchSourceSet: 'regamedll_pch'
@@ -179,7 +176,8 @@ void setupToolchain(NativeBinarySpec b)
 		cfg.extraLibs 'dl', 'm', 'stdc++', 'steam_api'
 	}
 
-	if (mpLib && GradleCppUtils.windows && !unitTestExecutable) {
+	if (mpLib && GradleCppUtils.windows && !unitTestExecutable)
+	{
 		cfg.linkerOptions.definitionFile = "${projectDir}\\msvc\\mp.def";
 	}
 
@@ -221,6 +219,7 @@ class RegamedllSrc {
 
 				include "**/*.cpp"
 				exclude "precompiled.cpp"
+				exclude "tier0/dbg.cpp", "utlsymbol.cpp", "utlbuffer.cpp"
 
 				if (GradleCppUtils.windows) {
 					exclude "tier0/platform_linux.cpp"
@@ -228,16 +227,12 @@ class RegamedllSrc {
 					exclude "tier0/platform_win32.cpp"
 					exclude "classes_dummy.cpp"
 				}
-
-				//exclude "interface.cpp"
 			}
 
 			source {
 				srcDirs "hookers"
 				include "**/*.cpp"
-				exclude "6153_hooker.cpp", "hooker.cpp", "main.cpp", "main_mp.cpp"
-				// if (!GradleCppUtils.windows)
-					//	exclude "regamedll_debug.cpp"
+				exclude "6153_hooker.cpp", "hooker.cpp", "main.cpp", "main_mp.cpp", "hooker_impl.cpp"
 			}
 		}
 	}
@@ -255,7 +250,7 @@ class RegamedllSrc {
 		h.regamedll_hooker_src(CppSourceSet) {
 			source {
 				srcDirs "hookers"
-				include "6153_hooker.cpp", "hooker.cpp"
+				include "6153_hooker.cpp", "hooker.cpp", "hooker_impl.cpp"
 			}
 		}
 	}

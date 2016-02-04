@@ -75,9 +75,6 @@ typedef struct incomingtransfer_s
 	qboolean custom;
 } incomingtransfer_t;
 
-//#define Q_functions
-#ifndef Q_functions
-
 #ifndef _WIN32
 #define _strlwr(p) for (int i = 0; p[i] != 0; i++) p[i] = tolower(p[i]);
 #endif // _WIN32
@@ -116,28 +113,5 @@ typedef struct incomingtransfer_s
 //#define Q_FileNameCmp FileNameCmp
 #define Q_vsnprintf _vsnprintf
 #define Q_vsnwprintf _vsnwprintf
-#else // Q_functions
-void Q_strcpy(char *dest, const char *src);
-int Q_strlen(const char *str);
-NOBODY void Q_memset(void *dest, int fill, int count);
-NOBODY void Q_memcpy(void *dest, const void *src, int count);
-NOBODY int Q_memcmp(void *m1, void *m2, int count);
-NOBODY void Q_strncpy(char *dest, const char *src, int count);
-NOBODY char *Q_strrchr(char *s, char c);
-NOBODY void Q_strcat(char *dest, char *src);
-NOBODY int Q_strcmp(const char *s1, const char *s2);
-NOBODY int Q_strncmp(const char *s1, const char *s2, int count);
-NOBODY int Q_strncasecmp(const char *s1, const char *s2, int n);
-NOBODY int Q_strcasecmp(const char *s1, const char *s2);
-NOBODY int Q_stricmp(const char *s1, const char *s2);
-NOBODY int Q_strnicmp(const char *s1, const char *s2, int n);
-NOBODY int Q_atoi(const char *str);
-NOBODY float Q_atof(const char *str);
-NOBODY char *Q_strlwr(char *src);
-NOBODY int Q_FileNameCmp(char *file1, char *file2);
-NOBODY char *Q_strstr(const char *s1, const char *search);
-NOBODY uint64 Q_strtoull(char *str);
-
-#endif // Q_functions
 
 #endif // COMMON_H

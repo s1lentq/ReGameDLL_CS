@@ -20,7 +20,6 @@
 // STL containers Visual Studio 6.0
 #include "stl/vector"
 #include "stl/list"
-
 #endif // HOOK_GAMEDLL
 
 //valve libs stuff
@@ -31,17 +30,12 @@
 #include "basetypes.h"
 
 #include "interface.h"
-#include "utlbuffer.h"
-#include "utlrbtree.h"
-#include "utlsymbol.h"
 
 //testsuite
 #include "testsuite/testsuite.h"
 #include "testsuite/funccalls.h"
 #include "testsuite/recorder.h"
 #include "testsuite/demoplayer.h"
-
-#include "bzip2/bzlib.h"
 
 #include "hookchains_impl.h"
 #include "regamedll_interfaces.h"

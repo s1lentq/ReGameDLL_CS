@@ -4,21 +4,22 @@
 LINK_ENTITY_TO_CLASS(weapon_sg552, CSG552);
 
 /* <2a60cb> ../cstrike/dlls/wpn_shared/wpn_sg552.cpp:52 */
-void CSG552::__MAKE_VHOOK(Spawn)(void)
+void CSG552::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
+
 	m_iId = WEAPON_SG552;
 	SET_MODEL(edict(), "models/w_sg552.mdl");
 
 	m_iDefaultAmmo = SG552_DEFAULT_GIVE;
-	m_flAccuracy = 0.2;
+	m_flAccuracy = 0.2f;
 	m_iShotsFired = 0;
 
 	FallInit();
 }
 
 /* <2a5ffe> ../cstrike/dlls/wpn_shared/wpn_sg552.cpp:66 */
-void CSG552::__MAKE_VHOOK(Precache)(void)
+void CSG552::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/v_sg552.mdl");
 	PRECACHE_MODEL("models/w_sg552.mdl");
@@ -52,9 +53,9 @@ int CSG552::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 }
 
 /* <2a60a4> ../cstrike/dlls/wpn_shared/wpn_sg552.cpp:100 */
-BOOL CSG552::__MAKE_VHOOK(Deploy)(void)
+BOOL CSG552::__MAKE_VHOOK(Deploy)()
 {
-	m_flAccuracy = 0.2;
+	m_flAccuracy = 0.2f;
 	m_iShotsFired = 0;
 	iShellOn = 1;
 
@@ -62,18 +63,18 @@ BOOL CSG552::__MAKE_VHOOK(Deploy)(void)
 }
 
 /* <2a6058> ../cstrike/dlls/wpn_shared/wpn_sg552.cpp:109 */
-void CSG552::__MAKE_VHOOK(SecondaryAttack)(void)
+void CSG552::__MAKE_VHOOK(SecondaryAttack)()
 {
 	if (m_pPlayer->m_iFOV == DEFAULT_FOV)
 		m_pPlayer->pev->fov = m_pPlayer->m_iFOV = 55;
 	else
 		m_pPlayer->pev->fov = m_pPlayer->m_iFOV = 90;
 
-	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.3;
+	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.3f;
 }
 
 /* <2a63eb> ../cstrike/dlls/wpn_shared/wpn_sg552.cpp:130 */
-void CSG552::__MAKE_VHOOK(PrimaryAttack)(void)
+void CSG552::__MAKE_VHOOK(PrimaryAttack)()
 {
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
 	{
@@ -102,10 +103,10 @@ void CSG552::SG552Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	m_bDelayFire = true;
 	m_iShotsFired++;
 
-	m_flAccuracy = ((m_iShotsFired * m_iShotsFired * m_iShotsFired) / 220) + 0.3;
+	m_flAccuracy = ((m_iShotsFired * m_iShotsFired * m_iShotsFired) / 220) + 0.3f;
 
-	if (m_flAccuracy > 1)
-		m_flAccuracy = 1;
+	if (m_flAccuracy > 1.0f)
+		m_flAccuracy = 1.0f;
 
 	if (m_iClip <= 0)
 	{
@@ -154,7 +155,7 @@ void CSG552::SG552Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
 	}
 
-	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2;
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.0f;
 
 	if (m_pPlayer->pev->velocity.Length2D() > 0)
 	{
@@ -175,12 +176,10 @@ void CSG552::SG552Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 }
 
 /* <2a617c> ../cstrike/dlls/wpn_shared/wpn_sg552.cpp:225 */
-void CSG552::__MAKE_VHOOK(Reload)(void)
+void CSG552::__MAKE_VHOOK(Reload)()
 {
 	if (m_pPlayer->ammo_556nato <= 0)
-	{
 		return;
-	}
 
 	if (DefaultReload(SG552_MAX_CLIP, SG552_RELOAD, SG552_RELOAD_TIME))
 	{
@@ -190,14 +189,14 @@ void CSG552::__MAKE_VHOOK(Reload)(void)
 		}
 
 		m_pPlayer->SetAnimation(PLAYER_RELOAD);
-		m_flAccuracy = 0.2;
+		m_flAccuracy = 0.2f;
 		m_iShotsFired = 0;
 		m_bDelayFire = false;
 	}
 }
 
 /* <2a6141> ../cstrike/dlls/wpn_shared/wpn_sg552.cpp:244 */
-void CSG552::__MAKE_VHOOK(WeaponIdle)(void)
+void CSG552::__MAKE_VHOOK(WeaponIdle)()
 {
 	ResetEmptySound();
 	m_pPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);
@@ -207,61 +206,15 @@ void CSG552::__MAKE_VHOOK(WeaponIdle)(void)
 		return;
 	}
 
-	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20;
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20.0f;
 	SendWeaponAnim(SG552_IDLE1, UseDecrement() != FALSE);
 }
 
 /* <2a607e> ../cstrike/dlls/wpn_shared/wpn_sg552.cpp:259 */
-float CSG552::__MAKE_VHOOK(GetMaxSpeed)(void)
+float CSG552::__MAKE_VHOOK(GetMaxSpeed)()
 {
-	return (m_pPlayer->m_iFOV == DEFAULT_FOV) ? SG552_MAX_SPEED : SG552_MAX_SPEED_ZOOM;
+	if (m_pPlayer->m_iFOV == DEFAULT_FOV)
+		return SG552_MAX_SPEED;
+
+	return SG552_MAX_SPEED_ZOOM;
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CSG552::Spawn(void)
-{
-	Spawn_();
-}
-
-void CSG552::Precache(void)
-{
-	Precache_();
-}
-
-int CSG552::GetItemInfo(ItemInfo *p)
-{
-	return GetItemInfo_(p);
-}
-
-BOOL CSG552::Deploy(void)
-{
-	return Deploy_();
-}
-
-float CSG552::GetMaxSpeed(void)
-{
-	return GetMaxSpeed_();
-}
-
-void CSG552::PrimaryAttack(void)
-{
-	PrimaryAttack_();
-}
-
-void CSG552::SecondaryAttack(void)
-{
-	SecondaryAttack_();
-}
-
-void CSG552::Reload(void)
-{
-	Reload_();
-}
-
-void CSG552::WeaponIdle(void)
-{
-	WeaponIdle_();
-}
-
-#endif // HOOK_GAMEDLL

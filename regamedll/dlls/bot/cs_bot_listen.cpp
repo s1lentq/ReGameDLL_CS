@@ -110,7 +110,7 @@ bool CCSBot::CanHearNearbyEnemyGunfire(float range) const
 // NOTE: Dont use IsVisible(), because smoke shouldnt cause us to not look toward noises
 
 /* <354e7b> ../cstrike/dlls/bot/cs_bot_listen.cpp:141 */
-bool CCSBot::CanSeeNoisePosition(void) const
+bool CCSBot::CanSeeNoisePosition() const
 {
 	TraceResult result;
 	UTIL_TraceLine(GetEyePosition(), m_noisePosition + Vector(0, 0, HalfHumanHeight), ignore_monsters, ignore_glass, ENT(pev), &result);
@@ -128,7 +128,7 @@ bool CCSBot::CanSeeNoisePosition(void) const
 // Assumes m_noisePosition is valid.
 
 /* <354f48> ../cstrike/dlls/bot/cs_bot_listen.cpp:160 */
-bool CCSBot::UpdateLookAtNoise(void)
+bool CCSBot::UpdateLookAtNoise()
 {
 	// make sure a noise exists
 	if (!IsNoiseHeard() || gpGlobals->time - m_noiseTimestamp > 0.5f)
@@ -162,7 +162,7 @@ bool CCSBot::UpdateLookAtNoise(void)
 
 		int nearIdx = -1;
 		float nearRangeSq = 9.9999998e10f;
-		
+
 		for (int i = 0; i < m_approachPointCount; ++i)
 		{
 			float distanceSq = (m_approachPoint[i] - m_noisePosition).LengthSquared();

@@ -215,14 +215,6 @@ WeaponInfoStruct weaponInfo[] =
 	{ 0,			0,			0,			0,			0,			0,			-1,			NULL }
 };
 
-#else // HOOK_GAMEDLL
-
-AutoBuyInfoStruct g_autoBuyInfo[35];
-WeaponAliasInfo weaponAliasInfo[39];
-WeaponBuyAliasInfo weaponBuyAliasInfo[43];
-WeaponClassAliasInfo weaponClassAliasInfo[46];
-WeaponInfoStruct weaponInfo[27];
-
 #endif // HOOK_GAMEDLL
 
 // Given an alias, return the associated weapon ID
@@ -333,7 +325,7 @@ bool IsPrimaryWeapon(int id)
 // Return true if given weapon ID is a secondary weapon
 
 /* <22cf19> ../cstrike/dlls/weapontype.cpp:318 */
-NOXREF bool IsSecondaryWeapon(int id)
+bool IsSecondaryWeapon(int id)
 {
 	switch (id)
 	{

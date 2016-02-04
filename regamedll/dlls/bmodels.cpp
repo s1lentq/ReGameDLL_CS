@@ -26,11 +26,6 @@ TYPEDESCRIPTION CPendulum::m_SaveData[] =
 	DEFINE_FIELD(CPendulum, m_start, FIELD_VECTOR),
 };
 
-#else
-
-TYPEDESCRIPTION IMPL_CLASS(CFuncRotating, m_SaveData)[5];
-TYPEDESCRIPTION IMPL_CLASS(CPendulum, m_SaveData)[8];
-
 #endif // HOOK_GAMEDLL
 
 // BModelOrigin - calculates origin of a bmodel from absmin/size because all bmodel origins are 0 0 0
@@ -45,7 +40,7 @@ Vector VecBModelOrigin(entvars_t *pevBModel)
 LINK_ENTITY_TO_CLASS(func_wall, CFuncWall);
 
 /* <1d193> ../cstrike/dlls/bmodels.cpp:65 */
-void CFuncWall::__MAKE_VHOOK(Spawn)(void)
+void CFuncWall::__MAKE_VHOOK(Spawn)()
 {
 	pev->angles = g_vecZero;
 
@@ -72,7 +67,7 @@ void CFuncWall::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller,
 LINK_ENTITY_TO_CLASS(func_wall_toggle, CFuncWallToggle);
 
 /* <1e28f> ../cstrike/dlls/bmodels.cpp:98 */
-void CFuncWallToggle::__MAKE_VHOOK(Spawn)(void)
+void CFuncWallToggle::__MAKE_VHOOK(Spawn)()
 {
 	CFuncWall::Spawn();
 
@@ -83,7 +78,7 @@ void CFuncWallToggle::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <1e518> ../cstrike/dlls/bmodels.cpp:106 */
-void CFuncWallToggle::TurnOff(void)
+void CFuncWallToggle::TurnOff()
 {
 	pev->solid = SOLID_NOT;
 	pev->effects |= EF_NODRAW;
@@ -91,7 +86,7 @@ void CFuncWallToggle::TurnOff(void)
 }
 
 /* <1e53a> ../cstrike/dlls/bmodels.cpp:114 */
-void CFuncWallToggle::TurnOn(void)
+void CFuncWallToggle::TurnOn()
 {
 	pev->solid = SOLID_BSP;
 	pev->effects &= ~EF_NODRAW;
@@ -99,7 +94,7 @@ void CFuncWallToggle::TurnOn(void)
 }
 
 /* <1e55c> ../cstrike/dlls/bmodels.cpp:122 */
-BOOL CFuncWallToggle::IsOn(void)
+BOOL CFuncWallToggle::IsOn()
 {
 	if (pev->solid == SOLID_NOT)
 	{
@@ -127,7 +122,7 @@ void CFuncWallToggle::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pC
 LINK_ENTITY_TO_CLASS(func_conveyor, CFuncConveyor);
 
 /* <1e1c3> ../cstrike/dlls/bmodels.cpp:156 */
-void CFuncConveyor::__MAKE_VHOOK(Spawn)(void)
+void CFuncConveyor::__MAKE_VHOOK(Spawn)()
 {
 	SetMovedir(pev);
 	CFuncWall::Spawn();
@@ -192,7 +187,7 @@ void CFuncIllusionary::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 }
 
 /* <1d1db> ../cstrike/dlls/bmodels.cpp:230 */
-void CFuncIllusionary::__MAKE_VHOOK(Spawn)(void)
+void CFuncIllusionary::__MAKE_VHOOK(Spawn)()
 {
 	pev->angles = g_vecZero;
 	pev->movetype = MOVETYPE_NONE;
@@ -212,7 +207,7 @@ void CFuncIllusionary::__MAKE_VHOOK(Spawn)(void)
 LINK_ENTITY_TO_CLASS(func_monsterclip, CFuncMonsterClip);
 
 /* <1e24f> ../cstrike/dlls/bmodels.cpp:264 */
-void CFuncMonsterClip::__MAKE_VHOOK(Spawn)(void)
+void CFuncMonsterClip::__MAKE_VHOOK(Spawn)()
 {
 	CFuncWall::Spawn();
 
@@ -282,7 +277,7 @@ void CFuncRotating::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 // REVERSE will cause the it to rotate in the opposite direction.
 
 /* <1d5c4> ../cstrike/dlls/bmodels.cpp:362 */
-void CFuncRotating::__MAKE_VHOOK(Spawn)(void)
+void CFuncRotating::__MAKE_VHOOK(Spawn)()
 {
 	// set final pitch.  Must not be PITCH_NORM, since we
 	// plan on pitch shifting later.
@@ -381,7 +376,7 @@ void CFuncRotating::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <1d28a> ../cstrike/dlls/bmodels.cpp:447 */
-void CFuncRotating::__MAKE_VHOOK(Precache)(void)
+void CFuncRotating::__MAKE_VHOOK(Precache)()
 {
 	char *szSoundFile = (char *)STRING(pev->message);
 
@@ -513,7 +508,7 @@ void CFuncRotating::RampPitchVol(int fUp)
 // SpinUp - accelerates a non-moving func_rotating up to it's speed
 
 /* <1ea74> ../cstrike/dlls/bmodels.cpp:585 */
-void CFuncRotating::SpinUp(void)
+void CFuncRotating::SpinUp()
 {
 	//rotational velocity
 	Vector vecAVel;
@@ -543,7 +538,7 @@ void CFuncRotating::SpinUp(void)
 }
 
 /* <1e9c3> ../cstrike/dlls/bmodels.cpp:615 */
-void CFuncRotating::SpinDown(void)
+void CFuncRotating::SpinDown()
 {
 	//rotational velocity
 	Vector vecAVel;
@@ -585,7 +580,7 @@ void CFuncRotating::SpinDown(void)
 }
 
 /* <1d304> ../cstrike/dlls/bmodels.cpp:653 */
-void CFuncRotating::Rotate(void)
+void CFuncRotating::Rotate()
 {
 	pev->nextthink = pev->ltime + 10;
 }
@@ -669,7 +664,7 @@ void CPendulum::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 }
 
 /* <1d9c7> ../cstrike/dlls/bmodels.cpp:782 */
-void CPendulum::__MAKE_VHOOK(Spawn)(void)
+void CPendulum::__MAKE_VHOOK(Spawn)()
 {
 	// set the axis of rotation
 	CBaseToggle::AxisDir(pev);
@@ -747,7 +742,7 @@ void CPendulum::PendulumUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_T
 }
 
 /* <1d381> ../cstrike/dlls/bmodels.cpp:852 */
-void CPendulum::Stop(void)
+void CPendulum::Stop()
 {
 	pev->angles = m_start;
 	pev->speed = 0;
@@ -762,7 +757,7 @@ void CPendulum::__MAKE_VHOOK(Blocked)(CBaseEntity *pOther)
 }
 
 /* <1d533> ../cstrike/dlls/bmodels.cpp:867 */
-void CPendulum::Swing(void)
+void CPendulum::Swing()
 {
 	float delta, dt;
 
@@ -859,112 +854,3 @@ void CPendulum::RopeTouch(CBaseEntity *pOther)
 	pevOther->velocity = g_vecZero;
 	pevOther->movetype = MOVETYPE_NONE;
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CFuncWall::Spawn(void)
-{
-	Spawn_();
-}
-
-void CFuncWall::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	Use_(pActivator, pCaller, useType, value);
-}
-
-void CFuncWallToggle::Spawn(void)
-{
-	Spawn_();
-}
-
-void CFuncWallToggle::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	Use_(pActivator, pCaller, useType, value);
-}
-
-void CFuncConveyor::Spawn(void)
-{
-	Spawn_();
-}
-
-void CFuncConveyor::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	Use_(pActivator, pCaller, useType, value);
-}
-
-void CFuncIllusionary::Spawn(void)
-{
-	Spawn_();
-}
-
-void CFuncIllusionary::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-void CFuncMonsterClip::Spawn(void)
-{
-	Spawn_();
-}
-
-void CFuncRotating::Spawn(void)
-{
-	Spawn_();
-}
-
-void CFuncRotating::Precache(void)
-{
-	Precache_();
-}
-
-void CFuncRotating::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-int CFuncRotating::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CFuncRotating::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-void CFuncRotating::Blocked(CBaseEntity *pOther)
-{
-	Blocked_(pOther);
-}
-
-void CPendulum::Spawn(void)
-{
-	Spawn_();
-}
-
-void CPendulum::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-int CPendulum::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CPendulum::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-void CPendulum::Touch(CBaseEntity *pOther)
-{
-	Touch_(pOther);
-}
-
-void CPendulum::Blocked(CBaseEntity *pOther)
-{
-	Blocked_(pOther);
-}
-
-#endif // HOOK_GAMEDLL

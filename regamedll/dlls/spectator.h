@@ -35,21 +35,21 @@
 class CBaseSpectator: public CBaseEntity
 {
 public:
-	virtual void Spawn(void);
+	virtual void Spawn();
+
 public:
-	void SpectatorConnect(void);
-	void SpectatorDisconnect(void);
-	void SpectatorThink(void);
+	void SpectatorConnect();
+	void SpectatorDisconnect();
+	void SpectatorThink();
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
+	void Spawn_();
 
 #endif // HOOK_GAMEDLL
 
 private:
-	void SpectatorImpulseCommand(void);
-
-};/* size: 152, cachelines: 3, members: 1 */
+	void SpectatorImpulseCommand();
+};
 
 #endif // SPECTATOR_H

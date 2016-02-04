@@ -59,15 +59,6 @@ TYPEDESCRIPTION CGunTarget::m_SaveData[] =
 	DEFINE_FIELD(CGunTarget, m_on, FIELD_BOOLEAN),
 };
 
-#else
-
-TYPEDESCRIPTION IMPL_CLASS(CBasePlatTrain, m_SaveData)[3];
-TYPEDESCRIPTION IMPL_CLASS(CFuncPlatRot, m_SaveData)[2];
-TYPEDESCRIPTION IMPL_CLASS(CFuncTrain, m_SaveData)[3];
-TYPEDESCRIPTION IMPL_CLASS(CFuncTrackTrain, m_SaveData)[12];
-TYPEDESCRIPTION IMPL_CLASS(CFuncTrackChange, m_SaveData)[9];
-TYPEDESCRIPTION IMPL_CLASS(CGunTarget, m_SaveData)[1];
-
 #endif // HOOK_GAMEDLL
 
 /* <12e11a> ../cstrike/dlls/plats.cpp:59 */
@@ -119,7 +110,7 @@ void CBasePlatTrain::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 #define noiseArrived noise1
 
 /* <12d675> ../cstrike/dlls/plats.cpp:105 */
-void CBasePlatTrain::__MAKE_VHOOK(Precache)(void)
+void CBasePlatTrain::__MAKE_VHOOK(Precache)()
 {
 	// set the plat's "in-motion" sound
 	switch (m_bMoveSnd)
@@ -230,19 +221,19 @@ void CBasePlatTrain::__MAKE_VHOOK(Precache)(void)
 }
 
 /* <12d69c> ../cstrike/dlls/plats.cpp:235 */
-void CFuncPlat::CallGoDown(void)
+void CFuncPlat::CallGoDown()
 {
 	GoDown();
 }
 
 /* <12d6c2> ../cstrike/dlls/plats.cpp:236 */
-void CFuncPlat::CallHitTop(void)
+void CFuncPlat::CallHitTop()
 {
 	HitTop();
 }
 
 /* <12d6e8> ../cstrike/dlls/plats.cpp:237 */
-void CFuncPlat::CallHitBottom(void)
+void CFuncPlat::CallHitBottom()
 {
 	HitBottom();
 }
@@ -269,7 +260,7 @@ LINK_ENTITY_TO_CLASS(func_plat, CFuncPlat);
 // 2) chain slow
 
 /* <130730> ../cstrike/dlls/plats.cpp:275 */
-void CFuncPlat::Setup(void)
+void CFuncPlat::Setup()
 {
 	if (m_flTLength == 0)
 		m_flTLength = 80;
@@ -311,7 +302,7 @@ void CFuncPlat::Setup(void)
 }
 
 /* <13088e> ../cstrike/dlls/plats.cpp:309 */
-void CFuncPlat::__MAKE_VHOOK(Precache)(void)
+void CFuncPlat::__MAKE_VHOOK(Precache)()
 {
 	CBasePlatTrain::Precache();
 
@@ -323,7 +314,7 @@ void CFuncPlat::__MAKE_VHOOK(Precache)(void)
 }
 
 /* <130757> ../cstrike/dlls/plats.cpp:319 */
-void CFuncPlat::__MAKE_VHOOK(Spawn)(void)
+void CFuncPlat::__MAKE_VHOOK(Spawn)()
 {
 	Setup();
 	Precache();
@@ -446,7 +437,7 @@ void CFuncPlat::PlatUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE 
 // Platform is at top, now starts moving down.
 
 /* <12e49b> ../cstrike/dlls/plats.cpp:431 */
-void CFuncPlat::__MAKE_VHOOK(GoDown)(void)
+void CFuncPlat::__MAKE_VHOOK(GoDown)()
 {
 	if (pev->noiseMovement)
 	{
@@ -463,7 +454,7 @@ void CFuncPlat::__MAKE_VHOOK(GoDown)(void)
 // Platform has hit bottom.  Stops and waits forever.
 
 /* <12f381> ../cstrike/dlls/plats.cpp:446 */
-void CFuncPlat::__MAKE_VHOOK(HitBottom)(void)
+void CFuncPlat::__MAKE_VHOOK(HitBottom)()
 {
 	if (pev->noiseMovement)
 	{
@@ -483,7 +474,7 @@ void CFuncPlat::__MAKE_VHOOK(HitBottom)(void)
 // Platform is at bottom, now starts moving up
 
 /* <12e52d> ../cstrike/dlls/plats.cpp:462 */
-void CFuncPlat::__MAKE_VHOOK(GoUp)(void)
+void CFuncPlat::__MAKE_VHOOK(GoUp)()
 {
 	if (pev->noiseMovement)
 	{
@@ -500,7 +491,7 @@ void CFuncPlat::__MAKE_VHOOK(GoUp)(void)
 // Platform has hit top.  Pauses, then starts back down again.
 
 /* <12f452> ../cstrike/dlls/plats.cpp:477 */
-void CFuncPlat::__MAKE_VHOOK(HitTop)(void)
+void CFuncPlat::__MAKE_VHOOK(HitTop)()
 {
 	if (pev->noiseMovement)
 	{
@@ -557,7 +548,7 @@ LINK_ENTITY_TO_CLASS(func_platrot, CFuncPlatRot);
 IMPLEMENT_SAVERESTORE(CFuncPlatRot, CFuncPlat);
 
 /* <130b48> ../cstrike/dlls/plats.cpp:543 */
-void CFuncPlatRot::SetupRotation(void)
+void CFuncPlatRot::SetupRotation()
 {
 	// This plat rotates too!
 	if (m_vecFinalAngle.x != 0)
@@ -580,14 +571,14 @@ void CFuncPlatRot::SetupRotation(void)
 }
 
 /* <130bc4> ../cstrike/dlls/plats.cpp:563 */
-void CFuncPlatRot::__MAKE_VHOOK(Spawn)(void)
+void CFuncPlatRot::__MAKE_VHOOK(Spawn)()
 {
 	CFuncPlat::Spawn();
 	SetupRotation();
 }
 
 /* <12fe63> ../cstrike/dlls/plats.cpp:569 */
-void CFuncPlatRot::__MAKE_VHOOK(GoDown)(void)
+void CFuncPlatRot::__MAKE_VHOOK(GoDown)()
 {
 	CFuncPlat::GoDown();
 	RotMove(m_start, pev->nextthink - pev->ltime);
@@ -596,7 +587,7 @@ void CFuncPlatRot::__MAKE_VHOOK(GoDown)(void)
 // Platform has hit bottom.  Stops and waits forever.
 
 /* <12f430> ../cstrike/dlls/plats.cpp:579 */
-void CFuncPlatRot::__MAKE_VHOOK(HitBottom)(void)
+void CFuncPlatRot::__MAKE_VHOOK(HitBottom)()
 {
 	CFuncPlat::HitBottom();
 	pev->avelocity = g_vecZero;
@@ -606,7 +597,7 @@ void CFuncPlatRot::__MAKE_VHOOK(HitBottom)(void)
 // Platform is at bottom, now starts moving up
 
 /* <12fdad> ../cstrike/dlls/plats.cpp:590 */
-void CFuncPlatRot::__MAKE_VHOOK(GoUp)(void)
+void CFuncPlatRot::__MAKE_VHOOK(GoUp)()
 {
 	CFuncPlat::GoUp();
 	RotMove(m_end, pev->nextthink - pev->ltime);
@@ -615,7 +606,7 @@ void CFuncPlatRot::__MAKE_VHOOK(GoUp)(void)
 // Platform has hit top.  Pauses, then starts back down again.
 
 /* <12f502> ../cstrike/dlls/plats.cpp:600 */
-void CFuncPlatRot::__MAKE_VHOOK(HitTop)(void)
+void CFuncPlatRot::__MAKE_VHOOK(HitTop)()
 {
 	CFuncPlat::HitTop();
 	pev->avelocity = g_vecZero;
@@ -697,7 +688,7 @@ void CFuncTrain::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller
 }
 
 /* <12f914> ../cstrike/dlls/plats.cpp:713 */
-void CFuncTrain::Wait(void)
+void CFuncTrain::Wait()
 {
 	if (m_pevCurrentTarget != NULL)
 	{
@@ -755,7 +746,7 @@ void CFuncTrain::Wait(void)
 // Train next - path corner needs to change to next target
 
 /* <12f6a8> ../cstrike/dlls/plats.cpp:760 */
-void CFuncTrain::Next(void)
+void CFuncTrain::Next()
 {
 	CBaseEntity *pTarg;
 
@@ -829,7 +820,7 @@ void CFuncTrain::Next(void)
 }
 
 /* <12e1fd> ../cstrike/dlls/plats.cpp:818 */
-void CFuncTrain::__MAKE_VHOOK(Activate)(void)
+void CFuncTrain::__MAKE_VHOOK(Activate)()
 {
 	// Not yet active, so teleport to first target
 	if (!m_activated)
@@ -866,7 +857,7 @@ void CFuncTrain::__MAKE_VHOOK(Activate)(void)
 // 1) ratchet metal
 
 /* <12dcad> ../cstrike/dlls/plats.cpp:852 */
-void CFuncTrain::__MAKE_VHOOK(Spawn)(void)
+void CFuncTrain::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
 
@@ -902,7 +893,7 @@ void CFuncTrain::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <12dab7> ../cstrike/dlls/plats.cpp:886 */
-void CFuncTrain::__MAKE_VHOOK(Restart)(void)
+void CFuncTrain::__MAKE_VHOOK(Restart)()
 {
 	if (pev->speed == 0)
 		pev->speed = 100;
@@ -922,13 +913,13 @@ void CFuncTrain::__MAKE_VHOOK(Restart)(void)
 }
 
 /* <12d734> ../cstrike/dlls/plats.cpp:907 */
-void CFuncTrain::__MAKE_VHOOK(Precache)(void)
+void CFuncTrain::__MAKE_VHOOK(Precache)()
 {
 	CBasePlatTrain::Precache();
 }
 
 /* <12e166> ../cstrike/dlls/plats.cpp:913 */
-void CFuncTrain::__MAKE_VHOOK(OverrideReset)(void)
+void CFuncTrain::__MAKE_VHOOK(OverrideReset)()
 {
 	CBaseEntity *pTarg;
 
@@ -1113,7 +1104,7 @@ void FixupAngles(Vector &v)
 }
 
 /* <130eb3> ../cstrike/dlls/plats.cpp:1104 */
-void CFuncTrackTrain::StopSound(void)
+void CFuncTrackTrain::StopSound()
 {
 	// if sound playing, stop it
 	if (m_soundPlaying && pev->noise)
@@ -1131,7 +1122,7 @@ void CFuncTrackTrain::StopSound(void)
 }
 
 /* <12e31d> ../cstrike/dlls/plats.cpp:1130 */
-void CFuncTrackTrain::UpdateSound(void)
+void CFuncTrackTrain::UpdateSound()
 {
 	float flpitch;
 
@@ -1169,7 +1160,7 @@ void CFuncTrackTrain::UpdateSound(void)
 }
 
 /* <130f1c> ../cstrike/dlls/plats.cpp:1171 */
-void CFuncTrackTrain::Next(void)
+void CFuncTrackTrain::Next()
 {
 	float time = 0.5;
 
@@ -1222,7 +1213,7 @@ void CFuncTrackTrain::Next(void)
 	// The train actually points west
 	angles.y += fixAngleY;
 
-	// !!!  All of this crap has to be done to make the angles not wrap around, revisit this.
+	// TODO: All of this crap has to be done to make the angles not wrap around, revisit this.
 #ifndef PLAY_GAMEDLL
 	FixupAngles(angles);
 	FixupAngles(pev->angles);
@@ -1336,7 +1327,7 @@ void CFuncTrackTrain::Next(void)
 }
 
 /* <12de16> ../cstrike/dlls/plats.cpp:1308 */
-void CFuncTrackTrain::DeadEnd(void)
+void CFuncTrackTrain::DeadEnd()
 {
 	// Fire the dead-end target if there is one
 	CPathTrack *pTrack, *pNext;
@@ -1427,7 +1418,7 @@ BOOL CFuncTrackTrain::__MAKE_VHOOK(OnControls)(entvars_t *pevTest)
 }
 
 /* <12e636> ../cstrike/dlls/plats.cpp:1385 */
-void CFuncTrackTrain::Find(void)
+void CFuncTrackTrain::Find()
 {
 	m_ppath = CPathTrack::Instance(FIND_ENTITY_BY_TARGETNAME(NULL, STRING(pev->target)));
 
@@ -1471,7 +1462,7 @@ void CFuncTrackTrain::Find(void)
 }
 
 /* <12ecdd> ../cstrike/dlls/plats.cpp:1422 */
-void CFuncTrackTrain::NearestPath(void)
+void CFuncTrackTrain::NearestPath()
 {
 	CBaseEntity *pTrack = NULL;
 	CBaseEntity *pNearest = NULL;
@@ -1515,7 +1506,7 @@ void CFuncTrackTrain::NearestPath(void)
 		}
 	}
 
-	m_ppath = reinterpret_cast<CPathTrack *>(pNearest);
+	m_ppath = static_cast<CPathTrack *>(pNearest);
 
 	if (pev->speed != 0)
 	{
@@ -1525,7 +1516,7 @@ void CFuncTrackTrain::NearestPath(void)
 }
 
 /* <12d75a> ../cstrike/dlls/plats.cpp:1470 */
-void CFuncTrackTrain::__MAKE_VHOOK(OverrideReset)(void)
+void CFuncTrackTrain::__MAKE_VHOOK(OverrideReset)()
 {
 	NextThink(pev->ltime + 0.1, FALSE);
 	SetThink(&CFuncTrackTrain::NearestPath);
@@ -1543,7 +1534,7 @@ CFuncTrackTrain *CFuncTrackTrain::Instance(edict_t *pent)
 }
 
 /* <12dcd4> ../cstrike/dlls/plats.cpp:1495 */
-void CFuncTrackTrain::__MAKE_VHOOK(Spawn)(void)
+void CFuncTrackTrain::__MAKE_VHOOK(Spawn)()
 {
 	if (pev->speed == 0)
 		m_speed = 165;
@@ -1590,7 +1581,7 @@ void CFuncTrackTrain::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <12dbdf> ../cstrike/dlls/plats.cpp:1539 */
-void CFuncTrackTrain::__MAKE_VHOOK(Restart)(void)
+void CFuncTrackTrain::__MAKE_VHOOK(Restart)()
 {
 	ALERT(at_console, "M_speed = %f\n", m_speed);
 
@@ -1611,7 +1602,7 @@ void CFuncTrackTrain::__MAKE_VHOOK(Restart)(void)
 }
 
 /* <12d7a5> ../cstrike/dlls/plats.cpp:1562 */
-void CFuncTrackTrain::__MAKE_VHOOK(Precache)(void)
+void CFuncTrackTrain::__MAKE_VHOOK(Precache)()
 {
 	if (m_flVolume == 0.0)
 		m_flVolume = 1.0;
@@ -1640,7 +1631,7 @@ void CFuncTrackTrain::__MAKE_VHOOK(Precache)(void)
 LINK_ENTITY_TO_CLASS(func_traincontrols, CFuncTrainControls);
 
 /* <12fb10> ../cstrike/dlls/plats.cpp:1598 */
-void CFuncTrainControls::Find(void)
+void CFuncTrainControls::Find()
 {
 	edict_t *pTarget = NULL;
 
@@ -1662,7 +1653,7 @@ void CFuncTrainControls::Find(void)
 }
 
 /* <12dc86> ../cstrike/dlls/plats.cpp:1619 */
-void CFuncTrainControls::__MAKE_VHOOK(Spawn)(void)
+void CFuncTrainControls::__MAKE_VHOOK(Spawn)()
 {
 	pev->solid = SOLID_NOT;
 	pev->movetype = MOVETYPE_NONE;
@@ -1676,7 +1667,7 @@ void CFuncTrainControls::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <12d7f2> ../cstrike/dlls/plats.cpp:1673 */
-BOOL CFuncTrackChange::__MAKE_VHOOK(IsTogglePlat)(void)
+BOOL CFuncTrackChange::__MAKE_VHOOK(IsTogglePlat)()
 {
 	return TRUE;
 }
@@ -1688,7 +1679,7 @@ LINK_ENTITY_TO_CLASS(func_trackchange, CFuncTrackChange);
 IMPLEMENT_SAVERESTORE(CFuncTrackChange, CFuncPlatRot);
 
 /* <130c1d> ../cstrike/dlls/plats.cpp:1715 */
-void CFuncTrackChange::__MAKE_VHOOK(Spawn)(void)
+void CFuncTrackChange::__MAKE_VHOOK(Spawn)()
 {
 	Setup();
 	if (pev->spawnflags & SF_TRACK_DONT_MOVE)
@@ -1720,7 +1711,7 @@ void CFuncTrackChange::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <130a3b> ../cstrike/dlls/plats.cpp:1744 */
-void CFuncTrackChange::__MAKE_VHOOK(Precache)(void)
+void CFuncTrackChange::__MAKE_VHOOK(Precache)()
 {
 	// Can't trigger sound
 	PRECACHE_SOUND("buttons/button11.wav");
@@ -1765,14 +1756,14 @@ void CFuncTrackChange::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 }
 
 /* <12d84d> ../cstrike/dlls/plats.cpp:1782 */
-void CFuncTrackChange::__MAKE_VHOOK(OverrideReset)(void)
+void CFuncTrackChange::__MAKE_VHOOK(OverrideReset)()
 {
 	pev->nextthink = pev->ltime + 1.0;
 	SetThink(&CFuncTrackChange::Find);
 }
 
 /* <12ff19> ../cstrike/dlls/plats.cpp:1788 */
-void CFuncTrackChange::Find(void)
+void CFuncTrackChange::Find()
 {
 	// Find track entities
 	edict_t *target;
@@ -1877,7 +1868,7 @@ void CFuncTrackChange::UpdateTrain(Vector &dest)
 }
 
 /* <131ade> ../cstrike/dlls/plats.cpp:1883 */
-void CFuncTrackChange::__MAKE_VHOOK(GoDown)(void)
+void CFuncTrackChange::__MAKE_VHOOK(GoDown)()
 {
 	if (m_code == TRAIN_BLOCKING)
 		return;
@@ -1912,7 +1903,7 @@ void CFuncTrackChange::__MAKE_VHOOK(GoDown)(void)
 // Platform is at bottom, now starts moving up
 
 /* <1319f9> ../cstrike/dlls/plats.cpp:1919 */
-void CFuncTrackChange::__MAKE_VHOOK(GoUp)(void)
+void CFuncTrackChange::__MAKE_VHOOK(GoUp)()
 {
 	if (m_code == TRAIN_BLOCKING)
 		return;
@@ -2005,7 +1996,7 @@ void CFuncTrackChange::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *p
 // Platform has hit bottom.  Stops and waits forever.
 
 /* <12f618> ../cstrike/dlls/plats.cpp:2005 */
-void CFuncTrackChange::__MAKE_VHOOK(HitBottom)(void)
+void CFuncTrackChange::__MAKE_VHOOK(HitBottom)()
 {
 	CFuncPlatRot::HitBottom();
 	if (m_code == TRAIN_FOLLOWING)
@@ -2023,7 +2014,7 @@ void CFuncTrackChange::__MAKE_VHOOK(HitBottom)(void)
 // Platform has hit bottom.  Stops and waits forever.
 
 /* <12f588> ../cstrike/dlls/plats.cpp:2025 */
-void CFuncTrackChange::__MAKE_VHOOK(HitTop)(void)
+void CFuncTrackChange::__MAKE_VHOOK(HitTop)()
 {
 	CFuncPlatRot::HitTop();
 	if (m_code == TRAIN_FOLLOWING)
@@ -2142,7 +2133,7 @@ LINK_ENTITY_TO_CLASS(func_guntarget, CGunTarget);
 IMPLEMENT_SAVERESTORE(CGunTarget, CBaseMonster);
 
 /* <12dbb8> ../cstrike/dlls/plats.cpp:2173 */
-void CGunTarget::__MAKE_VHOOK(Spawn)(void)
+void CGunTarget::__MAKE_VHOOK(Spawn)()
 {
 	pev->solid = SOLID_BSP;
 	pev->movetype = MOVETYPE_PUSH;
@@ -2170,7 +2161,7 @@ void CGunTarget::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <12dade> ../cstrike/dlls/plats.cpp:2199 */
-void CGunTarget::__MAKE_VHOOK(Activate)(void)
+void CGunTarget::__MAKE_VHOOK(Activate)()
 {
 	CBaseEntity *pTarg;
 
@@ -2185,13 +2176,13 @@ void CGunTarget::__MAKE_VHOOK(Activate)(void)
 }
 
 /* <12d947> ../cstrike/dlls/plats.cpp:2213 */
-void CGunTarget::Start(void)
+void CGunTarget::Start()
 {
 	Use(this, this, USE_ON, 0);
 }
 
 /* <12d96e> ../cstrike/dlls/plats.cpp:2219 */
-void CGunTarget::Next(void)
+void CGunTarget::Next()
 {
 	SetThink(NULL);
 
@@ -2209,7 +2200,7 @@ void CGunTarget::Next(void)
 }
 
 /* <12da61> ../cstrike/dlls/plats.cpp:2236 */
-void CGunTarget::Wait(void)
+void CGunTarget::Wait()
 {
 	CBaseEntity *pTarget = m_hTargetEnt;
 
@@ -2247,7 +2238,7 @@ void CGunTarget::Wait(void)
 }
 
 /* <131d5d> ../cstrike/dlls/plats.cpp:2269 */
-void CGunTarget::Stop(void)
+void CGunTarget::Stop()
 {
 	pev->velocity = g_vecZero;
 	pev->nextthink = 0;
@@ -2297,317 +2288,3 @@ void CGunTarget::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller
 		Next();
 	}
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CBasePlatTrain::Precache(void)
-{
-	Precache_();
-}
-
-void CBasePlatTrain::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-int CBasePlatTrain::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CBasePlatTrain::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-void CFuncPlat::Spawn(void)
-{
-	Spawn_();
-}
-
-void CFuncPlat::Precache(void)
-{
-	Precache_();
-}
-
-void CFuncPlat::Blocked(CBaseEntity *pOther)
-{
-	Blocked_(pOther);
-}
-
-void CFuncPlat::GoUp(void)
-{
-	GoUp_();
-}
-
-void CFuncPlat::GoDown(void)
-{
-	GoDown_();
-}
-
-void CFuncPlat::HitTop(void)
-{
-	HitTop_();
-}
-
-void CFuncPlat::HitBottom(void)
-{
-	HitBottom_();
-}
-
-void CPlatTrigger::Touch(CBaseEntity *pOther)
-{
-	Touch_(pOther);
-}
-
-void CFuncPlatRot::Spawn(void)
-{
-	Spawn_();
-}
-
-int CFuncPlatRot::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CFuncPlatRot::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-void CFuncPlatRot::GoUp(void)
-{
-	GoUp_();
-}
-
-void CFuncPlatRot::GoDown(void)
-{
-	GoDown_();
-}
-
-void CFuncPlatRot::HitTop(void)
-{
-	HitTop_();
-}
-
-void CFuncPlatRot::HitBottom(void)
-{
-	HitBottom_();
-}
-
-void CFuncTrain::Spawn(void)
-{
-	Spawn_();
-}
-
-void CFuncTrain::Precache(void)
-{
-	Precache_();
-}
-
-void CFuncTrain::Restart(void)
-{
-	Restart_();
-}
-
-void CFuncTrain::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-int CFuncTrain::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CFuncTrain::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-void CFuncTrain::Activate(void)
-{
-	Activate_();
-}
-
-void CFuncTrain::OverrideReset(void)
-{
-	OverrideReset_();
-}
-
-void CFuncTrain::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	Use_(pActivator, pCaller, useType, value);
-}
-
-void CFuncTrain::Blocked(CBaseEntity *pOther)
-{
-	Blocked_(pOther);
-}
-
-void CFuncTrackTrain::Spawn(void)
-{
-	Spawn_();
-}
-
-void CFuncTrackTrain::Precache(void)
-{
-	Precache_();
-}
-
-void CFuncTrackTrain::Restart(void)
-{
-	Restart_();
-}
-
-void CFuncTrackTrain::KeyValue(KeyValueData* pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-int CFuncTrackTrain::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CFuncTrackTrain::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-void CFuncTrackTrain::OverrideReset(void)
-{
-	OverrideReset_();
-}
-
-BOOL CFuncTrackTrain::OnControls(entvars_t *pev)
-{
-	return OnControls_(pev);
-}
-
-void CFuncTrackTrain::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	Use_(pActivator, pCaller, useType, value);
-}
-
-void CFuncTrackTrain::Blocked(CBaseEntity *pOther)
-{
-	Blocked_(pOther);
-}
-
-void CFuncTrainControls::Spawn(void)
-{
-	Spawn_();
-}
-
-void CFuncTrackChange::Spawn(void)
-{
-	Spawn_();
-}
-
-void CFuncTrackChange::Precache(void)
-{
-	Precache_();
-}
-
-void CFuncTrackChange::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-int CFuncTrackChange::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CFuncTrackChange::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-void CFuncTrackChange::OverrideReset(void)
-{
-	OverrideReset_();
-}
-
-void CFuncTrackChange::Touch(CBaseEntity *pOther)
-{
-	Touch_(pOther);
-}
-
-void CFuncTrackChange::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	Use_(pActivator, pCaller, useType, value);
-}
-
-BOOL CFuncTrackChange::IsTogglePlat(void)
-{
-	return IsTogglePlat_();
-}
-
-void CFuncTrackChange::GoUp(void)
-{
-	GoUp_();
-}
-
-void CFuncTrackChange::GoDown(void)
-{
-	GoDown_();
-}
-
-void CFuncTrackChange::HitBottom(void)
-{
-	HitBottom_();
-}
-
-void CFuncTrackChange::HitTop(void)
-{
-	HitTop_();
-}
-
-void CFuncTrackChange::UpdateAutoTargets(int toggleState)
-{
-	UpdateAutoTargets_(toggleState);
-}
-
-void CFuncTrackAuto::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	Use_(pActivator, pCaller, useType, value);
-}
-
-void CFuncTrackAuto::UpdateAutoTargets(int toggleState)
-{
-	UpdateAutoTargets_(toggleState);
-}
-
-void CGunTarget::Spawn(void)
-{
-	Spawn_();
-}
-
-int CGunTarget::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CGunTarget::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-void CGunTarget::Activate(void)
-{
-	Activate_();
-}
-
-int CGunTarget::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
-{
-	return TakeDamage_(pevInflictor, pevAttacker, flDamage, bitsDamageType);
-}
-
-void CGunTarget::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	Use_(pActivator, pCaller, useType, value);
-}
-
-#endif // HOOK_GAMEDLL

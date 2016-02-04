@@ -322,7 +322,7 @@ enum shieldgun_e
 	SHIELDGUN_DOWN,
 };
 
-//custom
+// custom
 enum shieldgren_e
 {
 	SHIELDREN_IDLE = 4,
@@ -395,23 +395,9 @@ struct WeaponInfoStruct
 	int maxRounds;
 	int ammoType;
 	char *entityName;
-};/* size: 32, cachelines: 1, members: 8 */
-
-#ifdef HOOK_GAMEDLL
-
-#define g_autoBuyInfo (*pg_autoBuyInfo)
-#define weaponAliasInfo (*pweaponAliasInfo)
-#define weaponBuyAliasInfo (*pweaponBuyAliasInfo)
-#define weaponClassAliasInfo (*pweaponClassAliasInfo)
-#define weaponInfo (*pweaponInfo)
-
-#endif // HOOK_GAMEDLL
+};
 
 extern AutoBuyInfoStruct g_autoBuyInfo[35];
-extern WeaponAliasInfo weaponAliasInfo[39];
-extern WeaponBuyAliasInfo weaponBuyAliasInfo[43];
-extern WeaponClassAliasInfo weaponClassAliasInfo[46];
-extern WeaponInfoStruct weaponInfo[27];
 
 // WeaponType
 WeaponIdType AliasToWeaponID(const char *alias);
@@ -420,7 +406,7 @@ const char *WeaponIDToAlias(int id);
 WeaponClassType AliasToWeaponClass(const char *alias);
 WeaponClassType WeaponIDToWeaponClass(int id);
 bool IsPrimaryWeapon(int id);
-NOXREF bool IsSecondaryWeapon(int id);
+bool IsSecondaryWeapon(int id);
 WeaponInfoStruct *GetWeaponInfo(int weaponID);
 bool CanBuyWeaponByMaptype(int playerTeam, WeaponIdType weaponID, bool useAssasinationRestrictions);
 

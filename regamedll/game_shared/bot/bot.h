@@ -32,25 +32,7 @@
 #pragma once
 #endif
 
-#ifdef HOOK_GAMEDLL
-
-#define g_flBotCommandInterval (*pg_flBotCommandInterval)
-#define g_flBotFullThinkInterval (*pg_flBotFullThinkInterval)
-
-#define BotArgs (*pBotArgs)
-#define UseBotArgs (*pUseBotArgs)
-
-#endif // HOOK_GAMEDLL
-
-extern float g_flBotCommandInterval;
-extern float g_flBotFullThinkInterval;
-
-extern const char *BotArgs[4];
-extern bool UseBotArgs;
-
 class BotProfile;
-
-extern bool AreBotsAllowed();
 
 /* <36c175> ../game_shared/bot/bot.h:36 */
 template <class T>
@@ -88,9 +70,9 @@ class CBot: public CBasePlayer
 {
 public:
 	// constructor initializes all values to zero
-	CBot(void);
+	CBot();
 
-	virtual void Spawn(void);
+	virtual void Spawn();
 
 	// invoked when injured by something
 	virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
@@ -102,44 +84,44 @@ public:
 	{
 		CBasePlayer::Killed(pevAttacker, iGib);
 	}
-	virtual void Think(void) {};
-	virtual BOOL IsBot(void) { return true; }
+	virtual void Think() {};
+	virtual BOOL IsBot() { return true; }
 	virtual Vector GetAutoaimVector(float flDelta);
 	// invoked when in contact with a CWeaponBox
 	virtual void OnTouchingWeapon(CWeaponBox *box) {}
 	virtual bool Initialize(const BotProfile *profile);
 
-	virtual void SpawnBot(void) = 0;
+	virtual void SpawnBot() = 0;
 
 	// lightweight maintenance, invoked frequently
-	virtual void Upkeep(void) = 0;
+	virtual void Upkeep() = 0;
 
 	// heavyweight algorithms, invoked less often
-	virtual void Update(void) = 0;
+	virtual void Update() = 0;
 
-	virtual void Run(void);
-	virtual void Walk(void);
-	virtual void Crouch(void);
-	virtual void StandUp(void);
-	virtual void MoveForward(void);
-	virtual void MoveBackward(void);
-	virtual void StrafeLeft(void);
-	virtual void StrafeRight(void);
+	virtual void Run();
+	virtual void Walk();
+	virtual void Crouch();
+	virtual void StandUp();
+	virtual void MoveForward();
+	virtual void MoveBackward();
+	virtual void StrafeLeft();
+	virtual void StrafeRight();
 
 	// returns true if jump was started
 	#define MUST_JUMP true
 	virtual bool Jump(bool mustJump = false);
 
 	// zero any MoveForward(), Jump(), etc
-	virtual void ClearMovement(void);
+	virtual void ClearMovement();
 
 	// Weapon interface
-	virtual void UseEnvironment(void);
-	virtual void PrimaryAttack(void);
-	virtual void ClearPrimaryAttack(void);
-	virtual void TogglePrimaryAttack(void);
-	virtual void SecondaryAttack(void);
-	virtual void Reload(void);
+	virtual void UseEnvironment();
+	virtual void PrimaryAttack();
+	virtual void ClearPrimaryAttack();
+	virtual void TogglePrimaryAttack();
+	virtual void SecondaryAttack();
+	virtual void Reload();
 
 	// invoked when event occurs in the game (some events have NULL entities)
 	virtual void OnEvent(GameEventType event, CBaseEntity *entity = NULL, CBaseEntity *other = NULL) {};
@@ -168,81 +150,81 @@ public:
 
 	// returns true if other player is pointing right at us
 	virtual bool IsPlayerLookingAtMe(CBasePlayer *other) const;
-	virtual void ExecuteCommand(void);
+	virtual void ExecuteCommand();
 	virtual void SetModel(const char *modelName);
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
+	void Spawn_();
 	Vector GetAutoaimVector_(float flDelta);
 	bool Initialize_(const BotProfile *profile);
-	void Crouch_(void);
-	void StandUp_(void);
-	void MoveForward_(void);
-	void MoveBackward_(void);
-	void StrafeLeft_(void);
-	void StrafeRight_(void);
+	void Crouch_();
+	void StandUp_();
+	void MoveForward_();
+	void MoveBackward_();
+	void StrafeLeft_();
+	void StrafeRight_();
 	bool Jump_(bool mustJump = false);
-	void ClearMovement_(void);
-	void UseEnvironment_(void);
-	void PrimaryAttack_(void);
-	void ClearPrimaryAttack_(void);
-	void TogglePrimaryAttack_(void);
-	void SecondaryAttack_(void);
+	void ClearMovement_();
+	void UseEnvironment_();
+	void PrimaryAttack_();
+	void ClearPrimaryAttack_();
+	void TogglePrimaryAttack_();
+	void SecondaryAttack_();
 	bool IsPlayerFacingMe_(CBasePlayer *other) const;
 	bool IsPlayerLookingAtMe_(CBasePlayer *other) const;
-	void Reload_(void);
-	void ExecuteCommand_(void);
+	void Reload_();
+	void ExecuteCommand_();
 	void SetModel_(const char *modelName);
 
 #endif // HOOK_GAMEDLL
 
 public:
-	unsigned int GetID(void) const		{ return m_id; }
-	bool IsRunning(void) const		{ return m_isRunning; }
-	bool IsCrouching(void) const		{ return m_isCrouching; }
+	unsigned int GetID() const 	{ return m_id; }
+	bool IsRunning() const		{ return m_isRunning; }
+	bool IsCrouching() const	{ return m_isCrouching; }
 
 	// push the current posture context onto the top of the stack
-	void PushPostureContext(void);
+	void PushPostureContext();
 
 	// restore the posture context to the next context on the stack
-	void PopPostureContext(void);
-	bool IsJumping(void);
+	void PopPostureContext();
+	bool IsJumping();
 
 	// return time last jump began
-	float GetJumpTimestamp(void) const	{ return m_jumpTimestamp; }
+	float GetJumpTimestamp() const { return m_jumpTimestamp; }
 	// returns ratio of ammo left to max ammo (1 = full clip, 0 = empty)
-	float GetActiveWeaponAmmoRatio(void) const;
+	float GetActiveWeaponAmmoRatio() const;
 
 	// return true if active weapon has any empty clip
-	bool IsActiveWeaponClipEmpty(void) const;
+	bool IsActiveWeaponClipEmpty() const;
 
 	// return true if active weapon has no ammo at all
-	bool IsActiveWeaponOutOfAmmo(void) const;
+	bool IsActiveWeaponOutOfAmmo() const;
 
 	// is the weapon in the middle of a reload
-	bool IsActiveWeaponReloading(void) const;
+	bool IsActiveWeaponReloading() const;
 
 	// return true if active weapon's bullet spray has become large and inaccurate
-	bool IsActiveWeaponRecoilHigh(void) const;
+	bool IsActiveWeaponRecoilHigh() const;
 
 	// return the weapon the bot is currently using
-	CBasePlayerWeapon *GetActiveWeapon(void) const;
+	CBasePlayerWeapon *GetActiveWeapon() const;
 
 	// return true if looking thru weapon's scope
-	bool IsUsingScope(void) const;
+	bool IsUsingScope() const;
 
 	// returns TRUE if given entity is our enemy
 	bool IsEnemy(CBaseEntity *ent) const;
 
 	// return number of enemies left alive
-	int GetEnemiesRemaining(void) const;
+	int GetEnemiesRemaining() const;
 
 	// return number of friends left alive
-	int GetFriendsRemaining(void) const;
+	int GetFriendsRemaining() const;
 
 	// return true if local player is observing this bot
-	bool IsLocalPlayerWatchingMe(void) const;
+	bool IsLocalPlayerWatchingMe() const;
 
 	// output message to console
 	NOXREF void Print(char *format,...) const;
@@ -250,13 +232,13 @@ public:
 	// output message to console if we are being watched by the local player
 	void PrintIfWatched(char *format,...) const;
 
-	void BotThink(void);
-	bool IsNetClient(void) const		{ return false; }
+	void BotThink();
+	bool IsNetClient() const { return false; }
 	int Save(CSave &save) const;
 	int Restore(CRestore &restor) const;
 
 	// return our personality profile
-	const BotProfile *GetProfile(void) const	{ return m_profile; }
+	const BotProfile *GetProfile() const { return m_profile; }
 
 #ifndef HOOK_GAMEDLL
 protected:
@@ -268,11 +250,11 @@ protected:
 	const BotProfile *m_profile;
 
 private:
-	void ResetCommand(void);
-	byte ThrottledMsec(void) const;
+	void ResetCommand();
+	byte ThrottledMsec() const;
 
 	// returns current movement speed (for walk/run)
-	float GetMoveSpeed(void);
+	float GetMoveSpeed();
 
 	// unique bot ID
 	unsigned int m_id;
@@ -311,8 +293,7 @@ private:
 
 	// index of top of stack
 	int m_postureStackIndex;
-
-};/* size: 2564, cachelines: 41, members: 15 */
+};
 
 /* <48f61d> ../game_shared/bot/bot.h:253 */
 inline void CBot::__MAKE_VHOOK(SetModel)(const char *modelName)
@@ -321,7 +302,7 @@ inline void CBot::__MAKE_VHOOK(SetModel)(const char *modelName)
 }
 
 /* <48e98a> ../game_shared/bot/bot.h:259 */
-inline float CBot::GetMoveSpeed(void)
+inline float CBot::GetMoveSpeed()
 {
 	if (m_isRunning || m_isCrouching)
 		return pev->maxspeed;
@@ -330,25 +311,25 @@ inline float CBot::GetMoveSpeed(void)
 }
 
 /* <48f6a3> ../game_shared/bot/bot.h:269 */
-inline void CBot::Run(void)
+inline void CBot::Run()
 {
 	m_isRunning = true;
 }
 
 /* <48f6c9> ../game_shared/bot/bot.h:275 */
-inline void CBot::Walk(void)
+inline void CBot::Walk()
 {
 	m_isRunning = false;
 }
 
 /* <5d3ed6> ../game_shared/bot/bot.h:281 */
-inline CBasePlayerWeapon *CBot::GetActiveWeapon(void) const
+inline CBasePlayerWeapon *CBot::GetActiveWeapon() const
 {
 	return static_cast<CBasePlayerWeapon *>(m_pActiveItem);
 }
 
 /* <5c4d70> ../game_shared/bot/bot.h:287 */
-inline bool CBot::IsActiveWeaponReloading(void) const
+inline bool CBot::IsActiveWeaponReloading() const
 {
 	CBasePlayerWeapon *weapon = GetActiveWeapon();
 	if (weapon == NULL)
@@ -358,7 +339,7 @@ inline bool CBot::IsActiveWeaponReloading(void) const
 }
 
 /* <3c5c5c> ../game_shared/bot/bot.h:297 */
-inline bool CBot::IsActiveWeaponRecoilHigh(void) const
+inline bool CBot::IsActiveWeaponRecoilHigh() const
 {
 	CBasePlayerWeapon *gun = GetActiveWeapon();
 	if (gun != NULL)
@@ -370,7 +351,7 @@ inline bool CBot::IsActiveWeaponRecoilHigh(void) const
 }
 
 /* <5194b2> ../game_shared/bot/bot.h:308 */
-inline void CBot::PushPostureContext(void)
+inline void CBot::PushPostureContext()
 {
 	if (m_postureStackIndex == MAX_POSTURE_STACK)
 	{
@@ -385,7 +366,7 @@ inline void CBot::PushPostureContext(void)
 }
 
 /* <519534> ../game_shared/bot/bot.h:323 */
-inline void CBot::PopPostureContext(void)
+inline void CBot::PopPostureContext()
 {
 	if (m_postureStackIndex == 0)
 	{
@@ -435,26 +416,14 @@ inline bool CBot::__MAKE_VHOOK(IsPlayerLookingAtMe)(CBasePlayer *other) const
 	return false;
 }
 
-#ifdef HOOK_GAMEDLL
+extern float g_flBotCommandInterval;
+extern float g_flBotFullThinkInterval;
 
-typedef bool (CBot::*IS_VISIBLE_VECTOR)(const Vector *, bool) const;
-typedef bool (CBot::*IS_VISIBLE_CBASE_PLAYER)(CBasePlayer *, bool, unsigned char *) const;
+extern const char *BotArgs[4];
+extern bool UseBotArgs;
 
-inline bool CBot::IsPlayerFacingMe(CBasePlayer *other) const
-{
-	return IsPlayerFacingMe_(other);
-}
+class BotProfile;
 
-inline bool CBot::IsPlayerLookingAtMe(CBasePlayer *other) const
-{
-	return IsPlayerLookingAtMe_(other);
-}
-
-inline void CBot::SetModel(const char *modelName)
-{
-	SetModel_(modelName);
-}
-
-#endif // HOOK_GAMEDLL
+extern bool AreBotsAllowed();
 
 #endif // BOT_H

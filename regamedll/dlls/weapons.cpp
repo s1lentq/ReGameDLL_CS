@@ -36,17 +36,6 @@ TYPEDESCRIPTION CWeaponBox::m_SaveData[] =
 
 const char *g_pModelNameLaser = "sprites/laserbeam.spr";
 
-#else // HOOK_GAMEDLL
-
-ItemInfo IMPL_CLASS(CBasePlayerItem, ItemInfoArray)[32];
-AmmoInfo IMPL_CLASS(CBasePlayerItem, AmmoInfoArray)[32];
-
-TYPEDESCRIPTION IMPL_CLASS(CBasePlayerItem, m_SaveData)[3];
-TYPEDESCRIPTION IMPL_CLASS(CBasePlayerWeapon, m_SaveData)[7];
-TYPEDESCRIPTION IMPL_CLASS(CWeaponBox, m_SaveData)[4];
-
-const char *g_pModelNameLaser;
-
 #endif // HOOK_GAMEDLL
 
 short g_sModelIndexLaser;		// holds the index for the laser beam
@@ -100,7 +89,7 @@ int MaxAmmoCarry(int iszName)
 // ClearMultiDamage - resets the global multi damage accumulator
 
 /* <1d2a29> ../cstrike/dlls/weapons.cpp:110 */
-void ClearMultiDamage(void)
+void ClearMultiDamage()
 {
 	gMultiDamage.pEntity = NULL;
 	gMultiDamage.amount = 0;
@@ -171,7 +160,7 @@ void DecalGunshot(TraceResult *pTrace, int iBulletType, bool ClientOnly, entvars
 void EjectBrass(const Vector &vecOrigin, const Vector &vecLeft, const Vector &vecVelocity, float rotation, int model, int soundtype, int entityIndex)
 {
 	//CBaseEntity *ent = UTIL_PlayerByIndex(entityIndex);	// unused
-	bool useNewBehavior = UTIL_IsGame("czero");
+	bool useNewBehavior = g_bIsCzeroGame;
 
 	MESSAGE_BEGIN(MSG_PVS, gmsgBrass, vecOrigin);
 		if (!useNewBehavior)
@@ -337,7 +326,7 @@ NOXREF void UTIL_PrecacheOtherWeapon2(const char *szClassname)
 // called by worldspawn
 
 /* <1d3191> ../cstrike/dlls/weapons.cpp:345 */
-void W_Precache(void)
+void W_Precache()
 {
 	Q_memset(IMPL_CLASS(CBasePlayerItem, ItemInfoArray), 0, ARRAYSIZE(IMPL_CLASS(CBasePlayerItem, ItemInfoArray)));
 	Q_memset(IMPL_CLASS(CBasePlayerItem, AmmoInfoArray), 0, ARRAYSIZE(IMPL_CLASS(CBasePlayerItem, AmmoInfoArray)));
@@ -464,7 +453,7 @@ IMPLEMENT_SAVERESTORE(CBasePlayerItem, CBaseAnimating);
 IMPLEMENT_SAVERESTORE(CBasePlayerWeapon, CBasePlayerItem);
 
 /* <1d1730> ../cstrike/dlls/weapons.cpp:475 */
-void CBasePlayerItem::__MAKE_VHOOK(SetObjectCollisionBox)(void)
+void CBasePlayerItem::__MAKE_VHOOK(SetObjectCollisionBox)()
 {
 	pev->absmin = pev->origin + Vector(-24, -24, 0);
 	pev->absmax = pev->origin + Vector(24, 24, 16);
@@ -473,7 +462,7 @@ void CBasePlayerItem::__MAKE_VHOOK(SetObjectCollisionBox)(void)
 // Sets up movetype, size, solidtype for a new weapon.
 
 /* <1d31ab> ../cstrike/dlls/weapons.cpp:485 */
-void CBasePlayerItem::FallInit(void)
+void CBasePlayerItem::FallInit()
 {
 	pev->movetype = MOVETYPE_TOSS;
 	pev->solid = SOLID_BBOX;
@@ -496,7 +485,7 @@ void CBasePlayerItem::FallInit(void)
 // player get it.
 
 /* <1d32bc> ../cstrike/dlls/weapons.cpp:506 */
-void CBasePlayerItem::FallThink(void)
+void CBasePlayerItem::FallThink()
 {
 	pev->nextthink = gpGlobals->time + 0.1f;
 
@@ -521,7 +510,7 @@ void CBasePlayerItem::FallThink(void)
 // Materialize - make a CBasePlayerItem visible and tangible
 
 /* <1d3252> ../cstrike/dlls/weapons.cpp:531 */
-void CBasePlayerItem::Materialize(void)
+void CBasePlayerItem::Materialize()
 {
 	if (pev->effects & EF_NODRAW)
 	{
@@ -559,7 +548,7 @@ void CBasePlayerItem::Materialize(void)
 // should it do so now or wait longer?
 
 /* <1d327b> ../cstrike/dlls/weapons.cpp:567 */
-void CBasePlayerItem::AttemptToMaterialize(void)
+void CBasePlayerItem::AttemptToMaterialize()
 {
 	float time = g_pGameRules->FlWeaponTryRespawn(this);
 
@@ -576,7 +565,7 @@ void CBasePlayerItem::AttemptToMaterialize(void)
 // it respawn?
 
 /* <1d3348> ../cstrike/dlls/weapons.cpp:584 */
-void CBasePlayerItem::CheckRespawn(void)
+void CBasePlayerItem::CheckRespawn()
 {
 	switch (g_pGameRules->WeaponShouldRespawn(this))
 	{
@@ -591,7 +580,7 @@ void CBasePlayerItem::CheckRespawn(void)
 // invisible and intangible. Make it visible and tangible.
 
 /* <1d1e09> ../cstrike/dlls/weapons.cpp:616 */
-CBaseEntity *CBasePlayerItem::__MAKE_VHOOK(Respawn)(void)
+CBaseEntity *CBasePlayerItem::__MAKE_VHOOK(Respawn)()
 {
 	// make a copy of this weapon that is invisible and inaccessible to players (no touch function). The weapon spawn/respawn code
 	// will decide when to make the weapon visible and touchable.
@@ -666,7 +655,7 @@ void CBasePlayerItem::DefaultTouch(CBaseEntity *pOther)
 }
 
 /* <1d3371> ../cstrike/dlls/weapons.cpp:678 */
-void CBasePlayerWeapon::SetPlayerShieldAnim(void)
+void CBasePlayerWeapon::SetPlayerShieldAnim()
 {
 	if (!m_pPlayer->HasShield())
 		return;
@@ -682,7 +671,7 @@ void CBasePlayerWeapon::SetPlayerShieldAnim(void)
 }
 
 /* <1d339a> ../cstrike/dlls/weapons.cpp:689 */
-void CBasePlayerWeapon::ResetPlayerShieldAnim(void)
+void CBasePlayerWeapon::ResetPlayerShieldAnim()
 {
 	if (m_pPlayer->HasShield())
 	{
@@ -694,7 +683,7 @@ void CBasePlayerWeapon::ResetPlayerShieldAnim(void)
 }
 
 /* <1d33c3> ../cstrike/dlls/weapons.cpp:699 */
-void CBasePlayerWeapon::EjectBrassLate(void)
+void CBasePlayerWeapon::EjectBrassLate()
 {
 	int soundType;
 	Vector vecUp, vecRight, vecShellVelocity;
@@ -819,7 +808,7 @@ void CBasePlayerWeapon::FireRemaining(int &shotsFired, float &shootTime, BOOL bI
 	if (bIsGlock)
 	{
 		vecDir = m_pPlayer->FireBullets3(vecSrc, gpGlobals->v_forward, 0.05, 8192, 1, BULLET_PLAYER_9MM, 18, 0.9, m_pPlayer->pev, true, m_pPlayer->random_seed);
-		m_pPlayer->ammo_9mm--;
+		--m_pPlayer->ammo_9mm;
 
 		PLAYBACK_EVENT_FULL(flag, m_pPlayer->edict(), m_usFireGlock18, 0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y,
 			(int)(m_pPlayer->pev->punchangle.x * 10000), (int)(m_pPlayer->pev->punchangle.y * 10000), m_iClip == 0, FALSE);
@@ -828,7 +817,7 @@ void CBasePlayerWeapon::FireRemaining(int &shotsFired, float &shootTime, BOOL bI
 	{
 
 		vecDir = m_pPlayer->FireBullets3(vecSrc, gpGlobals->v_forward, m_fBurstSpread, 8192, 2, BULLET_PLAYER_556MM, 30, 0.96, m_pPlayer->pev, false, m_pPlayer->random_seed);
-		m_pPlayer->ammo_556nato--;
+		--m_pPlayer->ammo_556nato;
 
 		PLAYBACK_EVENT_FULL(flag, m_pPlayer->edict(), m_usFireFamas, 0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y,
 			(int)(m_pPlayer->pev->punchangle.x * 10000000), (int)(m_pPlayer->pev->punchangle.y * 10000000), FALSE, FALSE);
@@ -865,7 +854,7 @@ BOOL CanAttack(float attack_time, float curtime, BOOL isPredicted)
 }
 
 /* <1d38f0> ../cstrike/dlls/weapons.cpp:890 */
-bool CBasePlayerWeapon::HasSecondaryAttack(void)
+bool CBasePlayerWeapon::HasSecondaryAttack()
 {
 	if (m_pPlayer->HasShield())
 	{
@@ -897,7 +886,7 @@ bool CBasePlayerWeapon::HasSecondaryAttack(void)
 }
 
 /* <1d3919> ../cstrike/dlls/weapons.cpp:915 */
-void CBasePlayerWeapon::__MAKE_VHOOK(ItemPostFrame)(void)
+void CBasePlayerWeapon::__MAKE_VHOOK(ItemPostFrame)()
 {
 	int usableButtons = m_pPlayer->pev->button;
 
@@ -1008,7 +997,7 @@ void CBasePlayerWeapon::__MAKE_VHOOK(ItemPostFrame)(void)
 	{
 		// no fire buttons down
 
-		// The following code prevents the player from tapping the firebutton repeatedly 
+		// The following code prevents the player from tapping the firebutton repeatedly
 		// to simulate full auto and retaining the single shot accuracy of single fire
 		if (m_bDelayFire)
 		{
@@ -1077,7 +1066,7 @@ void CBasePlayerWeapon::__MAKE_VHOOK(ItemPostFrame)(void)
 }
 
 /* <1d3aac> ../cstrike/dlls/weapons.cpp:1069 */
-void CBasePlayerItem::DestroyItem(void)
+void CBasePlayerItem::DestroyItem()
 {
 	if (m_pPlayer != NULL)
 	{
@@ -1101,7 +1090,7 @@ int CBasePlayerItem::__MAKE_VHOOK(AddToPlayer)(CBasePlayer *pPlayer)
 }
 
 /* <1d183d> ../cstrike/dlls/weapons.cpp:1092 */
-void CBasePlayerItem::__MAKE_VHOOK(Drop)(void)
+void CBasePlayerItem::__MAKE_VHOOK(Drop)()
 {
 	SetTouch(NULL);
 	SetThink(&CBaseEntity::SUB_Remove);
@@ -1109,7 +1098,7 @@ void CBasePlayerItem::__MAKE_VHOOK(Drop)(void)
 }
 
 /* <1d1866> ../cstrike/dlls/weapons.cpp:1099 */
-void CBasePlayerItem::__MAKE_VHOOK(Kill)(void)
+void CBasePlayerItem::__MAKE_VHOOK(Kill)()
 {
 	SetTouch(NULL);
 	SetThink(&CBaseEntity::SUB_Remove);
@@ -1298,7 +1287,7 @@ BOOL CBasePlayerWeapon::AddSecondaryAmmo(int iCount, char *szName, int iMax)
 // weapon?, etc)
 
 /* <1d19ba> ../cstrike/dlls/weapons.cpp:1287 */
-BOOL CBasePlayerWeapon::__MAKE_VHOOK(IsUseable)(void)
+BOOL CBasePlayerWeapon::__MAKE_VHOOK(IsUseable)()
 {
 	if (m_iClip <= 0)
 	{
@@ -1313,7 +1302,7 @@ BOOL CBasePlayerWeapon::__MAKE_VHOOK(IsUseable)(void)
 }
 
 /* <1d19f4> ../cstrike/dlls/weapons.cpp:1301 */
-BOOL CBasePlayerWeapon::__MAKE_VHOOK(CanDeploy)(void)
+BOOL CBasePlayerWeapon::__MAKE_VHOOK(CanDeploy)()
 {
 	return TRUE;
 }
@@ -1345,7 +1334,7 @@ BOOL CBasePlayerWeapon::DefaultDeploy(char *szViewModel, char *szWeaponModel, in
 }
 
 /* <1d3df3> ../cstrike/dlls/weapons.cpp:1333 */
-void CBasePlayerWeapon::ReloadSound(void)
+void CBasePlayerWeapon::ReloadSound()
 {
 	Vector newVector;
 	Vector origin;
@@ -1403,7 +1392,7 @@ int CBasePlayerWeapon::DefaultReload(int iClipSize, int iAnim, float fDelay)
 }
 
 /* <1d2607> ../cstrike/dlls/weapons.cpp:1389 */
-BOOL CBasePlayerWeapon::__MAKE_VHOOK(PlayEmptySound)(void)
+BOOL CBasePlayerWeapon::__MAKE_VHOOK(PlayEmptySound)()
 {
 	if (m_iPlayEmptySound)
 	{
@@ -1427,19 +1416,19 @@ BOOL CBasePlayerWeapon::__MAKE_VHOOK(PlayEmptySound)(void)
 }
 
 /* <1d1a1c> ../cstrike/dlls/weapons.cpp:1414 */
-void CBasePlayerWeapon::__MAKE_VHOOK(ResetEmptySound)(void)
+void CBasePlayerWeapon::__MAKE_VHOOK(ResetEmptySound)()
 {
 	m_iPlayEmptySound = 1;
 }
 
 /* <1d1a44> ../cstrike/dlls/weapons.cpp:1421 */
-int CBasePlayerWeapon::__MAKE_VHOOK(PrimaryAmmoIndex)(void)
+int CBasePlayerWeapon::__MAKE_VHOOK(PrimaryAmmoIndex)()
 {
 	return m_iPrimaryAmmoType;
 }
 
 /* <1d1a6c> ../cstrike/dlls/weapons.cpp:1428 */
-int CBasePlayerWeapon::__MAKE_VHOOK(SecondaryAmmoIndex)(void)
+int CBasePlayerWeapon::__MAKE_VHOOK(SecondaryAmmoIndex)()
 {
 	return -1;
 }
@@ -1454,7 +1443,7 @@ void CBasePlayerWeapon::__MAKE_VHOOK(Holster)(int skiplocal)
 }
 
 /* <1d20fb> ../cstrike/dlls/weapons.cpp:1440 */
-void CBasePlayerAmmo::__MAKE_VHOOK(Spawn)(void)
+void CBasePlayerAmmo::__MAKE_VHOOK(Spawn)()
 {
 	pev->movetype = MOVETYPE_TOSS;
 	pev->solid = SOLID_TRIGGER;
@@ -1471,7 +1460,7 @@ void CBasePlayerAmmo::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <1d1d10> ../cstrike/dlls/weapons.cpp:1458 */
-CBaseEntity *CBasePlayerAmmo::__MAKE_VHOOK(Respawn)(void)
+CBaseEntity *CBasePlayerAmmo::__MAKE_VHOOK(Respawn)()
 {
 	pev->effects |= EF_NODRAW;
 	SetTouch(NULL);
@@ -1486,7 +1475,7 @@ CBaseEntity *CBasePlayerAmmo::__MAKE_VHOOK(Respawn)(void)
 }
 
 /* <1d1de0> ../cstrike/dlls/weapons.cpp:1471 */
-void CBasePlayerAmmo::Materialize(void)
+void CBasePlayerAmmo::Materialize()
 {
 	if (pev->effects & EF_NODRAW)
 	{
@@ -1581,7 +1570,7 @@ int CBasePlayerWeapon::__MAKE_VHOOK(ExtractClipAmmo)(CBasePlayerWeapon *pWeapon)
 // RetireWeapon - no more ammo for this gun, put it away.
 
 /* <1d1b2e> ../cstrike/dlls/weapons.cpp:1567 */
-void CBasePlayerWeapon::__MAKE_VHOOK(RetireWeapon)(void)
+void CBasePlayerWeapon::__MAKE_VHOOK(RetireWeapon)()
 {
 	// first, no viewmodel at all.
 	m_pPlayer->pev->viewmodel = iStringNull;
@@ -1640,7 +1629,7 @@ LINK_ENTITY_TO_CLASS(weaponbox, CWeaponBox);
 IMPLEMENT_SAVERESTORE(CWeaponBox, CBaseEntity);
 
 /* <1d1b57> ../cstrike/dlls/weapons.cpp:1629 */
-void CWeaponBox::__MAKE_VHOOK(Precache)(void)
+void CWeaponBox::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/w_weaponbox.mdl");
 }
@@ -1662,7 +1651,7 @@ void CWeaponBox::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 }
 
 /* <1d48ba> ../cstrike/dlls/weapons.cpp:1652 */
-void CWeaponBox::BombThink(void)
+void CWeaponBox::BombThink()
 {
 	if (!m_bIsBomb)
 		return;
@@ -1693,7 +1682,7 @@ void CWeaponBox::BombThink(void)
 }
 
 /* <1d1ce7> ../cstrike/dlls/weapons.cpp:1687 */
-void CWeaponBox::__MAKE_VHOOK(Spawn)(void)
+void CWeaponBox::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
 
@@ -1710,7 +1699,7 @@ void CWeaponBox::__MAKE_VHOOK(Spawn)(void)
 // box from the world.
 
 /* <1d40c4> ../cstrike/dlls/weapons.cpp:1704 */
-void CWeaponBox::Kill(void)
+void CWeaponBox::Kill()
 {
 	CBasePlayerItem *pWeapon;
 	int i;
@@ -1755,7 +1744,7 @@ void CWeaponBox::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 		return;
 	}
 
-	CBasePlayer *pPlayer = reinterpret_cast<CBasePlayer *>(pOther);
+	CBasePlayer *pPlayer = static_cast<CBasePlayer *>(pOther);
 
 	if (pPlayer->m_bIsVIP || pPlayer->m_bShieldDrawn)
 		return;
@@ -1867,7 +1856,7 @@ void CWeaponBox::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 			{
 				if (m_rgpPlayerItems[i]->IsWeapon() && m_rgpPlayerItems[i])
 				{
-					CBasePlayerWeapon *pGrenade = reinterpret_cast<CBasePlayerWeapon *>(m_rgpPlayerItems[i]);
+					CBasePlayerWeapon *pGrenade = static_cast<CBasePlayerWeapon *>(m_rgpPlayerItems[i]);
 					int playerGrenades = pPlayer->m_rgAmmo[pGrenade->m_iPrimaryAmmoType];
 					int maxGrenades = 0;
 					const char *grenadeName = NULL;
@@ -2092,7 +2081,7 @@ BOOL CWeaponBox::HasWeapon(CBasePlayerItem *pCheckItem)
 // CWeaponBox::IsEmpty - is there anything in this box?
 
 /* <1d4354> ../cstrike/dlls/weapons.cpp:2119 */
-BOOL CWeaponBox::IsEmpty(void)
+BOOL CWeaponBox::IsEmpty()
 {
 	int i;
 
@@ -2117,14 +2106,14 @@ BOOL CWeaponBox::IsEmpty(void)
 }
 
 /* <1d1b7f> ../cstrike/dlls/weapons.cpp:2145 */
-void CWeaponBox::__MAKE_VHOOK(SetObjectCollisionBox)(void)
+void CWeaponBox::__MAKE_VHOOK(SetObjectCollisionBox)()
 {
 	pev->absmin = pev->origin + Vector(-16, -16, 0);
 	pev->absmax = pev->origin + Vector(16, 16, 16);
 }
 
 /* <1d1d39> ../cstrike/dlls/weapons.cpp:2167 */
-void CArmoury::__MAKE_VHOOK(Spawn)(void)
+void CArmoury::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
 	pev->movetype = MOVETYPE_TOSS;
@@ -2168,7 +2157,7 @@ void CArmoury::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <1d1bfb> ../cstrike/dlls/weapons.cpp:2207 */
-void CArmoury::__MAKE_VHOOK(Restart)(void)
+void CArmoury::__MAKE_VHOOK(Restart)()
 {
 	CHalfLifeMultiplay *mp = g_pGameRules;
 
@@ -2224,7 +2213,7 @@ void CArmoury::__MAKE_VHOOK(Restart)(void)
 }
 
 /* <1d1ee9> ../cstrike/dlls/weapons.cpp:2268 */
-void CArmoury::__MAKE_VHOOK(Precache)(void)
+void CArmoury::__MAKE_VHOOK(Precache)()
 {
 	switch (m_iItem)
 	{
@@ -2257,7 +2246,7 @@ void CArmoury::ArmouryTouch(CBaseEntity *pOther)
 	if (!pOther->IsPlayer())
 		return;
 
-	CBasePlayer *p = reinterpret_cast<CBasePlayer *>(pOther);
+	CBasePlayer *p = static_cast<CBasePlayer *>(pOther);
 
 	if (p->m_bIsVIP)
 		return;
@@ -2406,202 +2395,3 @@ void CArmoury::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 
 /* <1d4392> ../cstrike/dlls/weapons.cpp:2368 */
 LINK_ENTITY_TO_CLASS(armoury_entity, CArmoury);
-
-#ifdef HOOK_GAMEDLL
-
-void CArmoury::Spawn(void)
-{
-	Spawn_();
-}
-
-void CArmoury::Precache(void)
-{
-	Precache_();
-}
-
-void CArmoury::Restart(void)
-{
-	Restart_();
-}
-
-void CArmoury::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-void CBasePlayerAmmo::Spawn(void)
-{
-	Spawn_();
-}
-
-CBaseEntity *CBasePlayerAmmo::Respawn(void)
-{
-	return Respawn_();
-}
-
-int CBasePlayerWeapon::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CBasePlayerWeapon::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-int CBasePlayerWeapon::AddToPlayer(CBasePlayer *pPlayer)
-{
-	return AddToPlayer_(pPlayer);
-}
-
-int CBasePlayerWeapon::AddDuplicate(CBasePlayerItem *pItem)
-{
-	return AddDuplicate_(pItem);
-}
-
-BOOL CBasePlayerWeapon::CanDeploy(void)
-{
-	return CanDeploy_();
-}
-
-void CBasePlayerWeapon::Holster(int skiplocal)
-{
-	Holster_(skiplocal);
-}
-
-void CBasePlayerWeapon::ItemPostFrame(void)
-{
-	ItemPostFrame_();
-}
-
-int CBasePlayerWeapon::PrimaryAmmoIndex(void)
-{
-	return PrimaryAmmoIndex_();
-}
-
-int CBasePlayerWeapon::SecondaryAmmoIndex(void)
-{
-	return SecondaryAmmoIndex_();
-}
-
-int CBasePlayerWeapon::UpdateClientData(CBasePlayer *pPlayer)
-{
-	return UpdateClientData_(pPlayer);
-}
-
-int CBasePlayerWeapon::ExtractAmmo(CBasePlayerWeapon *pWeapon)
-{
-	return ExtractAmmo_(pWeapon);
-}
-
-int CBasePlayerWeapon::ExtractClipAmmo(CBasePlayerWeapon *pWeapon)
-{
-	return ExtractClipAmmo_(pWeapon);
-}
-
-BOOL CBasePlayerWeapon::PlayEmptySound(void)
-{
-	return PlayEmptySound_();
-}
-
-void CBasePlayerWeapon::ResetEmptySound(void)
-{
-	ResetEmptySound_();
-}
-
-void CBasePlayerWeapon::SendWeaponAnim(int iAnim,int skiplocal)
-{
-	SendWeaponAnim_(iAnim,skiplocal);
-}
-
-BOOL CBasePlayerWeapon::IsUseable(void)
-{
-	return IsUseable_();
-}
-
-void CBasePlayerWeapon::RetireWeapon(void)
-{
-	RetireWeapon_();
-}
-
-int CBasePlayerItem::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CBasePlayerItem::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-void CBasePlayerItem::SetObjectCollisionBox(void)
-{
-	SetObjectCollisionBox_();
-}
-
-CBaseEntity *CBasePlayerItem::Respawn(void)
-{
-	return Respawn_();
-}
-
-int CBasePlayerItem::AddToPlayer(CBasePlayer *pPlayer)
-{
-	return AddToPlayer_(pPlayer);
-}
-
-void CBasePlayerItem::Holster(int skiplocal)
-{
-	Holster_(skiplocal);
-}
-
-void CBasePlayerItem::Drop(void)
-{
-	Drop_();
-}
-
-void CBasePlayerItem::Kill(void)
-{
-	Kill_();
-}
-
-void CBasePlayerItem::AttachToPlayer(CBasePlayer *pPlayer)
-{
-	AttachToPlayer_(pPlayer);
-}
-
-void CWeaponBox::Spawn(void)
-{
-	Spawn_();
-}
-
-void CWeaponBox::Precache(void)
-{
-	Precache_();
-}
-
-void CWeaponBox::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-int CWeaponBox::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CWeaponBox::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-void CWeaponBox::SetObjectCollisionBox(void)
-{
-	SetObjectCollisionBox_();
-}
-
-void CWeaponBox::Touch(CBaseEntity *pOther)
-{
-	Touch_(pOther);
-}
-
-#endif // HOOK_GAMEDLL

@@ -66,22 +66,3 @@ void DefuseBombState::__MAKE_VHOOK(OnExit)(CCSBot *me)
 	me->SetDisposition(CCSBot::ENGAGE_AND_INVESTIGATE);
 	me->ClearLookAt();
 }
-
-#ifdef HOOK_GAMEDLL
-
-void DefuseBombState::OnEnter(CCSBot *me)
-{
-	OnEnter_(me);
-}
-
-void DefuseBombState::OnUpdate(CCSBot *me)
-{
-	OnUpdate_(me);
-}
-
-void DefuseBombState::OnExit(CCSBot *me)
-{
-	OnExit_(me);
-}
-
-#endif // HOOK_GAMEDLL

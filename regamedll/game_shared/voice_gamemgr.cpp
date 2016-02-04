@@ -8,11 +8,6 @@
 cvar_t voice_serverdebug = { "voice_serverdebug", "0", 0, 0.0f, NULL };
 cvar_t sv_alltalk = { "sv_alltalk", "0", FCVAR_SERVER, 0.0f, NULL };
 
-#else
-
-cvar_t voice_serverdebug;
-cvar_t sv_alltalk;
-
 #endif // HOOK_GAMEDLL
 
 CPlayerBitVec g_PlayerModEnable;
@@ -38,14 +33,14 @@ void VoiceServerDebug(const char *pFmt, ...)
 }
 
 /* <2d3cd1> ../game_shared/voice_gamemgr.cpp:89 */
-CVoiceGameMgr::CVoiceGameMgr(void)
+CVoiceGameMgr::CVoiceGameMgr()
 {
 	m_UpdateInterval = 0;
 	m_nMaxPlayers = 0;
 }
 
 /* <2d3c98> ../game_shared/voice_gamemgr.cpp:96 */
-CVoiceGameMgr::~CVoiceGameMgr(void)
+CVoiceGameMgr::~CVoiceGameMgr()
 {
 	;
 }
@@ -72,7 +67,7 @@ bool CVoiceGameMgr::Init(IVoiceGameMgrHelper *pHelper, int maxClients)
 }
 
 /* <2d3d4e> ../game_shared/voice_gamemgr.cpp:123 */
-NOXREF void CVoiceGameMgr::SetHelper(IVoiceGameMgrHelper *pHelper)
+void CVoiceGameMgr::SetHelper(IVoiceGameMgrHelper *pHelper)
 {
 	m_pHelper = pHelper;
 }
@@ -163,7 +158,7 @@ bool CVoiceGameMgr::ClientCommand(CBasePlayer *pPlayer, const char *cmd)
 }
 
 /* <2d416b> ../game_shared/voice_gamemgr.cpp:215 */
-void CVoiceGameMgr::UpdateMasks(void)
+void CVoiceGameMgr::UpdateMasks()
 {
 	m_UpdateInterval = 0;
 

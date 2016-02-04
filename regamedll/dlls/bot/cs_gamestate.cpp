@@ -19,7 +19,7 @@ CSGameState::CSGameState(CCSBot *owner)
 	for (int i = 0; i < MAX_HOSTAGES; ++i)
 	{
 		HostageInfo *info = &m_hostage[i];
-		
+
 		info->hostage = NULL;
 		info->knownPos = Vector(0, 0, 0);
 		info->isValid = false;
@@ -31,7 +31,7 @@ CSGameState::CSGameState(CCSBot *owner)
 // Reset at round start
 
 /* <3fd4f4> ../cstrike/dlls/bot/cs_gamestate.cpp:55 */
-void CSGameState::Reset(void)
+void CSGameState::Reset()
 {
 	int i;
 	CCSBotManager *ctrl = TheCSBots();
@@ -105,7 +105,7 @@ void CSGameState::OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity 
 // True if round has been won or lost (but not yet reset)
 
 /* <3fcf9c> ../cstrike/dlls/bot/cs_gamestate.cpp:144 */
-bool CSGameState::IsRoundOver(void) const
+bool CSGameState::IsRoundOver() const
 {
 	return m_isRoundOver;
 }
@@ -131,13 +131,13 @@ void CSGameState::UpdateLooseBomb(const Vector *pos)
 }
 
 /* <3fd06e> ../cstrike/dlls/bot/cs_gamestate.cpp:170 */
-float CSGameState::TimeSinceLastSawLooseBomb(void) const
+float CSGameState::TimeSinceLastSawLooseBomb() const
 {
 	return m_lastSawLooseBomb.GetElapsedTime();
 }
 
 /* <3fd0f4> ../cstrike/dlls/bot/cs_gamestate.cpp:176 */
-bool CSGameState::IsLooseBombLocationKnown(void) const
+bool CSGameState::IsLooseBombLocationKnown() const
 {
 	if (m_bombState != LOOSE)
 		return false;
@@ -156,13 +156,13 @@ void CSGameState::UpdateBomber(const Vector *pos)
 }
 
 /* <3fd1b1> ../cstrike/dlls/bot/cs_gamestate.cpp:195 */
-float CSGameState::TimeSinceLastSawBomber(void) const
+float CSGameState::TimeSinceLastSawBomber() const
 {
 	return m_lastSawBomber.GetElapsedTime();
 }
 
 /* <3fd237> ../cstrike/dlls/bot/cs_gamestate.cpp:201 */
-bool CSGameState::IsPlantedBombLocationKnown(void) const
+bool CSGameState::IsPlantedBombLocationKnown() const
 {
 	if (m_bombState != PLANTED)
 		return false;
@@ -173,7 +173,7 @@ bool CSGameState::IsPlantedBombLocationKnown(void) const
 // Return the zone index of the planted bombsite, or UNKNOWN
 
 /* <3fd25a> ../cstrike/dlls/bot/cs_gamestate.cpp:213 */
-int CSGameState::GetPlantedBombsite(void) const
+int CSGameState::GetPlantedBombsite() const
 {
 	if (m_bombState != PLANTED)
 		return UNKNOWN;
@@ -184,7 +184,7 @@ int CSGameState::GetPlantedBombsite(void) const
 // Return true if we are currently in the bombsite where the bomb is planted
 
 /* <3fd284> ../cstrike/dlls/bot/cs_gamestate.cpp:225 */
-bool CSGameState::IsAtPlantedBombsite(void) const
+bool CSGameState::IsAtPlantedBombsite() const
 {
 	if (m_bombState != PLANTED)
 		return false;
@@ -203,7 +203,7 @@ bool CSGameState::IsAtPlantedBombsite(void) const
 // Return the zone index of the next bombsite to search
 
 /* <3fd2d2> ../cstrike/dlls/bot/cs_gamestate.cpp:246 */
-int CSGameState::GetNextBombsiteToSearch(void)
+int CSGameState::GetNextBombsiteToSearch()
 {
 	if (m_bombsiteCount <= 0)
 		return 0;
@@ -234,7 +234,7 @@ int CSGameState::GetNextBombsiteToSearch(void)
 // or NULL if we don't know where the bomb is
 
 /* <3fd32c> ../cstrike/dlls/bot/cs_gamestate.cpp:277 */
-const Vector *CSGameState::GetBombPosition(void) const
+const Vector *CSGameState::GetBombPosition() const
 {
 	switch (m_bombState)
 	{
@@ -315,7 +315,7 @@ bool CSGameState::IsBombsiteClear(int zoneIndex) const
 }
 
 /* <3fd4b0> ../cstrike/dlls/bot/cs_gamestate.cpp:367 */
-void CSGameState::InitializeHostageInfo(void)
+void CSGameState::InitializeHostageInfo()
 {
 	m_hostageCount = 0;
 	m_allHostagesRescued = 0;
@@ -340,7 +340,7 @@ void CSGameState::InitializeHostageInfo(void)
 }
 
 // Return the closest free and live hostage
-// If we are a CT this information is perfect. 
+// If we are a CT this information is perfect.
 // Otherwise, this is based on our individual memory of the game state.
 // If NULL is returned, we don't think there are any hostages left, or we dont know where they are.
 // NOTE: a T can remember a hostage who has died.  knowPos will be filled in, but NULL will be
@@ -414,7 +414,7 @@ CHostage *CSGameState::GetNearestFreeHostage(Vector *knowPos) const
 // Return the location of a "free" hostage, or NULL if we dont know of any
 
 /* <3fdbd3> ../cstrike/dlls/bot/cs_gamestate.cpp:461 */
-const Vector *CSGameState::GetRandomFreeHostagePosition(void)
+const Vector *CSGameState::GetRandomFreeHostagePosition()
 {
 	// TODO: use static?
 	const Vector *freePos[MAX_HOSTAGES];
@@ -462,12 +462,12 @@ const Vector *CSGameState::GetRandomFreeHostagePosition(void)
 // Return status of any changes (a hostage died or was moved)
 
 /* <3fdcd2> ../cstrike/dlls/bot/cs_gamestate.cpp:509 */
-CSGameState::ValidateStatusType CSGameState::ValidateHostagePositions(void)
+CSGameState::ValidateStatusType CSGameState::ValidateHostagePositions()
 {
 	// limit how often we validate
 	if (!m_validateInterval.IsElapsed())
 		return NO_CHANGE;
-	
+
 	const float validateInterval = 0.5f;
 	m_validateInterval.Start(validateInterval);
 
@@ -580,14 +580,14 @@ CSGameState::ValidateStatusType CSGameState::ValidateHostagePositions(void)
 // Since we can actually see any hostage we return, we know its actual position
 
 /* <3fdef7> ../cstrike/dlls/bot/cs_gamestate.cpp:626 */
-CHostage *CSGameState::GetNearestVisibleFreeHostage(void) const
+CHostage *CSGameState::GetNearestVisibleFreeHostage() const
 {
 	CHostage *close = NULL;
 	float closeRangeSq = 999999999.9f;
 	float rangeSq;
 
 	Vector pos;
-	
+
 	for (int i = 0; i < m_hostageCount; ++i)
 	{
 		const HostageInfo *info = &m_hostage[i];
@@ -623,7 +623,7 @@ CHostage *CSGameState::GetNearestVisibleFreeHostage(void) const
 // Return true if there are no free hostages
 
 /* <3fe064> ../cstrike/dlls/bot/cs_gamestate.cpp:668 */
-bool CSGameState::AreAllHostagesBeingRescued(void) const
+bool CSGameState::AreAllHostagesBeingRescued() const
 {
 	// if the hostages have all been rescued, they are not being rescued any longer
 	if (m_allHostagesRescued)
@@ -666,7 +666,7 @@ bool CSGameState::AreAllHostagesBeingRescued(void) const
 // All hostages have been rescued or are dead
 
 /* <3fe148> ../cstrike/dlls/bot/cs_gamestate.cpp:712 */
-bool CSGameState::AreAllHostagesGone(void) const
+bool CSGameState::AreAllHostagesGone() const
 {
 	if (m_allHostagesRescued)
 		return true;
@@ -695,7 +695,7 @@ bool CSGameState::AreAllHostagesGone(void) const
 // Someone told us all the hostages are gone
 
 /* <3fe1a2> ../cstrike/dlls/bot/cs_gamestate.cpp:742 */
-void CSGameState::AllHostagesGone(void)
+void CSGameState::AllHostagesGone()
 {
 	for (int i = 0; i < m_hostageCount; ++i)
 		m_hostage[i].isValid = false;

@@ -1,7 +1,7 @@
 #include "precompiled.h"
 
 /* <4110a1> ../cstrike/dlls/hostage/states/hostage_animate.cpp:13 */
-void HostageAnimateState::Reset(void)
+void HostageAnimateState::Reset()
 {
 	m_sequenceCount = 0;
 	m_performance = None;
@@ -68,7 +68,7 @@ void HostageAnimateState::AddSequence(CHostageImprov *improv, int activity, floa
 }
 
 /* <41127f> ../cstrike/dlls/hostage/states/hostage_animate.cpp:81 */
-bool HostageAnimateState::IsDoneHolding(void)
+bool HostageAnimateState::IsDoneHolding()
 {
 	if (m_sequence[m_currentSequence].holdTime < 0)
 		return true;
@@ -133,22 +133,3 @@ NOXREF bool HostageAnimateState::IsPlaying(CHostageImprov *improv, const char *s
 
 	return LookupSequence(hostage, seqName) == id;
 }
-
-#ifdef HOOK_GAMEDLL
-
-void HostageAnimateState::OnEnter(CHostageImprov *improv)
-{
-	OnEnter_(improv);
-}
-
-void HostageAnimateState::OnUpdate(CHostageImprov *improv)
-{
-	OnUpdate_(improv);
-}
-
-void HostageAnimateState::OnExit(CHostageImprov *improv)
-{
-	OnExit_(improv);
-}
-
-#endif // HOOK_GAMEDLL

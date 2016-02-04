@@ -573,6 +573,9 @@
     <ClCompile Include="..\regamedll\classes_dummy.cpp">
       <Filter>regamedll</Filter>
     </ClCompile>
+    <ClCompile Include="..\hookers\hooker_impl.cpp">
+      <Filter>hookers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\hookers\memory.h">
@@ -1141,6 +1144,9 @@
     </ClInclude>
     <ClInclude Include="..\game_shared\bot\bot_constants.h">
       <Filter>game_shared\bot</Filter>
+    </ClInclude>
+    <ClInclude Include="..\hookers\hooker_impl.h">
+      <Filter>hookers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

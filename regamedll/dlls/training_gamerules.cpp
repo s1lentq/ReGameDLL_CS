@@ -24,21 +24,16 @@ TYPEDESCRIPTION CBaseGrenCatch::m_SaveData[] =
 	DEFINE_FIELD(CBaseGrenCatch, sDisableOnGrenade, FIELD_STRING),
 };
 
-#else
-
-TYPEDESCRIPTION IMPL_CLASS(CFuncWeaponCheck, m_SaveData)[6];
-TYPEDESCRIPTION IMPL_CLASS(CBaseGrenCatch, m_SaveData)[5];
-
 #endif // HOOK_GAMEDLL
 
 /* <18bcc4> ../cstrike/dlls/training_gamerules.cpp:23 */
-CHalfLifeTraining::CHalfLifeTraining(void)
+CHalfLifeTraining::CHalfLifeTraining()
 {
 	PRECACHE_MODEL("models/w_weaponbox.mdl");
 }
 
 /* <18ae1b> ../cstrike/dlls/training_gamerules.cpp:27 */
-BOOL CHalfLifeTraining::__MAKE_VHOOK(IsDeathmatch)(void)
+BOOL CHalfLifeTraining::__MAKE_VHOOK(IsDeathmatch)()
 {
 	return FALSE;
 }
@@ -50,9 +45,9 @@ void CHalfLifeTraining::__MAKE_VHOOK(InitHUD)(CBasePlayer *pl)
 }
 
 /* <18bcff> ../cstrike/dlls/training_gamerules.cpp:29 */
-void CHalfLifeTraining::HostageDied(void)
+void CHalfLifeTraining::HostageDied()
 {
-	CBasePlayer *pPlayer = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(1));
+	CBasePlayer *pPlayer = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(1));
 
 	if (pPlayer != NULL)
 	{
@@ -268,7 +263,7 @@ void CHalfLifeTraining::__MAKE_VHOOK(PlayerKilled)(CBasePlayer *pVictim, entvars
 }
 
 /* <18b0fb> ../cstrike/dlls/training_gamerules.cpp:202 */
-void CHalfLifeTraining::__MAKE_VHOOK(CheckWinConditions)(void)
+void CHalfLifeTraining::__MAKE_VHOOK(CheckWinConditions)()
 {
 	CBaseEntity *pHostage = NULL;
 
@@ -352,7 +347,7 @@ IMPLEMENT_SAVERESTORE(CBaseGrenCatch, CBaseEntity);
 LINK_ENTITY_TO_CLASS(func_grencatch, CBaseGrenCatch);
 
 /* <18af02> ../cstrike/dlls/training_gamerules.cpp:284 */
-void CBaseGrenCatch::__MAKE_VHOOK(Spawn)(void)
+void CBaseGrenCatch::__MAKE_VHOOK(Spawn)()
 {
 	pev->solid = SOLID_TRIGGER;
 	pev->flags |= FL_WORLDBRUSH;
@@ -377,7 +372,7 @@ void CBaseGrenCatch::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 }
 
 /* <18b835> ../cstrike/dlls/training_gamerules.cpp:300 */
-void CBaseGrenCatch::__MAKE_VHOOK(Think)(void)
+void CBaseGrenCatch::__MAKE_VHOOK(Think)()
 {
 	CGrenade *pGrenade;
 	bool m_fSmokeTouchingLastFrame;
@@ -472,7 +467,7 @@ void CBaseGrenCatch::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 }
 
 /* <18af29> ../cstrike/dlls/training_gamerules.cpp:400 */
-void CFuncWeaponCheck::__MAKE_VHOOK(Spawn)(void)
+void CFuncWeaponCheck::__MAKE_VHOOK(Spawn)()
 {
 	pev->dmgtime = 0;
 	pev->solid = SOLID_TRIGGER;
@@ -575,107 +570,3 @@ void CFuncWeaponCheck::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 	else
 		CBaseEntity::KeyValue(pkvd);
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CBaseGrenCatch::Spawn(void)
-{
-	Spawn_();
-}
-
-void CBaseGrenCatch::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-int CBaseGrenCatch::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CBaseGrenCatch::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-void CBaseGrenCatch::Think(void)
-{
-	Think_();
-}
-
-void CBaseGrenCatch::Touch(CBaseEntity *pOther)
-{
-	Touch_(pOther);
-}
-
-void CFuncWeaponCheck::Spawn(void)
-{
-	Spawn_();
-}
-
-void CFuncWeaponCheck::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-int CFuncWeaponCheck::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CFuncWeaponCheck::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-void CFuncWeaponCheck::Touch(CBaseEntity *pOther)
-{
-	Touch_(pOther);
-}
-
-BOOL CHalfLifeTraining::IsDeathmatch(void)
-{
-	return IsDeathmatch_();
-}
-
-void CHalfLifeTraining::InitHUD(CBasePlayer *pl)
-{
-	InitHUD_(pl);
-}
-
-void CHalfLifeTraining::PlayerSpawn(CBasePlayer *pPlayer)
-{
-	PlayerSpawn_(pPlayer);
-}
-
-void CHalfLifeTraining::PlayerThink(CBasePlayer *pPlayer)
-{
-	PlayerThink_(pPlayer);
-}
-
-BOOL CHalfLifeTraining::FPlayerCanRespawn(CBasePlayer *pPlayer)
-{
-	return FPlayerCanRespawn_(pPlayer);
-}
-
-edict_t *CHalfLifeTraining::GetPlayerSpawnSpot(CBasePlayer *pPlayer)
-{
-	return GetPlayerSpawnSpot_(pPlayer);
-}
-
-void CHalfLifeTraining::PlayerKilled(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor)
-{
-	PlayerKilled_(pVictim, pKiller, pInflictor);
-}
-
-int CHalfLifeTraining::ItemShouldRespawn(CItem *pItem)
-{
-	return ItemShouldRespawn_(pItem);
-}
-
-void CHalfLifeTraining::CheckWinConditions(void)
-{
-	CheckWinConditions_();
-}
-
-#endif // HOOK_GAMEDLL

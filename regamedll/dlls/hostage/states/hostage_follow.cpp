@@ -208,27 +208,3 @@ void HostageFollowState::__MAKE_VHOOK(UpdateStationaryAnimation)(CHostageImprov 
 	else
 		improv->UpdateIdleActivity(ACT_FOLLOW_IDLE, ACT_FOLLOW_IDLE_FIDGET);
 }
-
-#ifdef HOOK_GAMEDLL
-
-void HostageFollowState::OnEnter(CHostageImprov *improv)
-{
-	OnEnter_(improv);
-}
-
-void HostageFollowState::OnUpdate(CHostageImprov *improv)
-{
-	OnUpdate_(improv);
-}
-
-void HostageFollowState::OnExit(CHostageImprov *improv)
-{
-	OnExit_(improv);
-}
-
-void HostageFollowState::UpdateStationaryAnimation(CHostageImprov *improv)
-{
-	UpdateStationaryAnimation_(improv);
-}
-
-#endif // HOOK_GAMEDLL

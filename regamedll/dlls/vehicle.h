@@ -55,32 +55,20 @@
 class CFuncVehicleControls: public CBaseEntity
 {
 public:
-	virtual void Spawn(void);
-	virtual int ObjectCaps(void)
-	{
-		return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION;
-	}
+	virtual void Spawn();
+	virtual int ObjectCaps() { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
+	void Spawn_();
 
 #endif // HOOK_GAMEDLL
 
 public:
-	void EXPORT Find(void);
-
-};/* size: 152, cachelines: 3, members: 1 */
+	void EXPORT Find();
+};
 
 float_precision Fix2(float angle);
 void FixupAngles2(Vector &v);
-
-#ifdef HOOK_GAMEDLL
-
-// linked objects
-C_DLLEXPORT void func_vehicle(entvars_t *pev);
-C_DLLEXPORT void func_vehiclecontrols(entvars_t *pev);
-
-#endif // HOOK_GAMEDLL
 
 #endif // VEHICLE_H

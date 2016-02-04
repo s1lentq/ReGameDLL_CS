@@ -37,20 +37,15 @@ class CMemoryPool
 {
 public:
 	CMemoryPool(int blockSize, int numElements);
-	~CMemoryPool(void);
-public:
+	~CMemoryPool();
+
 	void *Alloc(unsigned int amount);
 	void Free(void *memblock);
-	int Count(void)
-	{
-		return _blocksAllocated;
-	}
-	void AddNewBlob(void);
+	int Count() { return _blocksAllocated; }
+	void AddNewBlob();
+
 public:
-	enum
-	{
-		MAX_BLOBS = 16
-	};
+	enum { MAX_BLOBS = 16 };
 
 	int _blockSize;
 	int _blocksPerBlob;
@@ -60,7 +55,6 @@ public:
 	int _numBlobs;
 	int _peakAlloc;
 	int _blocksAllocated;
-
-};/* size: 92, cachelines: 2, members: 8 */
+};
 
 #endif	// MEMPOOL_H

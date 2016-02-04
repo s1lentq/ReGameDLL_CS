@@ -52,7 +52,7 @@ void HostageEscapeToCoverState::__MAKE_VHOOK(OnUpdate)(CHostageImprov *improv)
 
 		if (spot == NULL)
 		{
-			HostageEscapeState *escape = (HostageEscapeState *)GetParent();
+			HostageEscapeState *escape = static_cast<HostageEscapeState *>(GetParent());
 			escape->LookAround();
 			return;
 		}
@@ -63,7 +63,7 @@ void HostageEscapeToCoverState::__MAKE_VHOOK(OnUpdate)(CHostageImprov *improv)
 
 	if (improv->IsAtMoveGoal())
 	{
-		HostageEscapeState *escape = (HostageEscapeState *)GetParent();
+		HostageEscapeState *escape = static_cast<HostageEscapeState *>(GetParent());
 		escape->LookAround();
 		return;
 	}
@@ -76,18 +76,13 @@ void HostageEscapeToCoverState::__MAKE_VHOOK(OnExit)(CHostageImprov *improv)
 }
 
 /* <41faaf> ../cstrike/dlls/hostage/states/hostage_escape.cpp:100 */
+#ifndef HOOK_GAMEDLL
 void HostageEscapeToCoverState::__MAKE_VHOOK(OnMoveToFailure)(const Vector &goal, MoveToFailureType reason)
 {
-#ifndef HOOK_GAMEDLL
-	HostageEscapeState *escape = (HostageEscapeState *)GetParent();
-#else
-	// TODO: why this - 1? Hacks?
-	// need investigation
-	HostageEscapeState *escape = (HostageEscapeState *)*((int *)this - 1);
-#endif // HOOK_GAMEDLL
-
+	HostageEscapeState *escape = static_cast<HostageEscapeState *>(GetParent());
 	escape->LookAround();
 }
+#endif // HOOK_GAMEDLL
 
 /* <41fa2f> ../cstrike/dlls/hostage/states/hostage_escape.cpp:110 */
 void HostageEscapeLookAroundState::__MAKE_VHOOK(OnEnter)(CHostageImprov *improv)
@@ -105,7 +100,7 @@ void HostageEscapeLookAroundState::__MAKE_VHOOK(OnUpdate)(CHostageImprov *improv
 
 	if (m_timer.IsElapsed())
 	{
-		HostageEscapeState *escape = (HostageEscapeState *)GetParent();
+		HostageEscapeState *escape = static_cast<HostageEscapeState *>(GetParent());
 		escape->ToCover();
 	}
 }
@@ -186,57 +181,3 @@ void HostageEscapeState::__MAKE_VHOOK(OnExit)(CHostageImprov *improv)
 {
 	improv->Run();
 }
-
-#ifdef HOOK_GAMEDLL
-
-void HostageEscapeToCoverState::OnEnter(CHostageImprov *improv)
-{
-	OnEnter_(improv);
-}
-
-void HostageEscapeToCoverState::OnUpdate(CHostageImprov *improv)
-{
-	OnUpdate_(improv);
-}
-
-void HostageEscapeToCoverState::OnExit(CHostageImprov *improv)
-{
-	OnExit_(improv);
-}
-
-void HostageEscapeToCoverState::OnMoveToFailure(const Vector &goal, MoveToFailureType reason)
-{
-	OnMoveToFailure_(goal, reason);
-}
-
-void HostageEscapeLookAroundState::OnEnter(CHostageImprov *improv)
-{
-	OnEnter_(improv);
-}
-
-void HostageEscapeLookAroundState::OnUpdate(CHostageImprov *improv)
-{
-	OnUpdate_(improv);
-}
-
-void HostageEscapeLookAroundState::OnExit(CHostageImprov *improv)
-{
-	OnExit_(improv);
-}
-
-void HostageEscapeState::OnEnter(CHostageImprov *improv)
-{
-	OnEnter_(improv);
-}
-
-void HostageEscapeState::OnUpdate(CHostageImprov *improv)
-{
-	OnUpdate_(improv);
-}
-
-void HostageEscapeState::OnExit(CHostageImprov *improv)
-{
-	OnExit_(improv);
-}
-
-#endif // HOOK_GAMEDLL

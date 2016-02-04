@@ -3,7 +3,7 @@
 // Reset the stuck-checker.
 
 /* <37c284> ../cstrike/dlls/bot/cs_bot_nav.cpp:16 */
-void CCSBot::ResetStuckMonitor(void)
+void CCSBot::ResetStuckMonitor()
 {
 	if (m_isStuck)
 	{
@@ -26,7 +26,7 @@ void CCSBot::ResetStuckMonitor(void)
 // Test if we have become stuck
 
 /* <37c2a6> ../cstrike/dlls/bot/cs_bot_nav.cpp:37 */
-void CCSBot::StuckCheck(void)
+void CCSBot::StuckCheck()
 {
 	if (m_isStuck)
 	{
@@ -160,7 +160,7 @@ bool CCSBot::GetSimpleGroundHeightWithFloor(const Vector *pos, float *height, Ve
 }
 
 /* <37c4b8> ../cstrike/dlls/bot/cs_bot_nav.cpp:172 */
-Place CCSBot::GetPlace(void) const
+Place CCSBot::GetPlace() const
 {
 	if (m_lastKnownArea != NULL)
 		return m_lastKnownArea->GetPlace();
@@ -319,7 +319,7 @@ void CCSBot::StrafeAwayFromPosition(const Vector *pos)
 // For getting un-stuck
 
 /* <37cc52> ../cstrike/dlls/bot/cs_bot_nav.cpp:338 */
-void CCSBot::Wiggle(void)
+void CCSBot::Wiggle()
 {
 	if (IsCrouching())
 	{
@@ -363,7 +363,7 @@ void CCSBot::Wiggle(void)
 // Determine approach points from eye position and approach areas of current area
 
 /* <37cc94> ../cstrike/dlls/bot/cs_bot_nav.cpp:383 */
-void CCSBot::ComputeApproachPoints(void)
+void CCSBot::ComputeApproachPoints()
 {
 	m_approachPointCount = 0;
 
@@ -408,7 +408,7 @@ void CCSBot::ComputeApproachPoints(void)
 }
 
 /* <37cd67> ../cstrike/dlls/bot/cs_bot_nav.cpp:422 */
-void CCSBot::DrawApproachPoints(void)
+void CCSBot::DrawApproachPoints()
 {
 	for (int i = 0; i < m_approachPointCount; ++i)
 	{

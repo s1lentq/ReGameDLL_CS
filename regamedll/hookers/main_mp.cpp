@@ -39,11 +39,8 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 		g_ReGameDLLRuntimeConfig.parseFromCommandLine(GetCommandLineA());
 
 		Module hlds_exe;
-		if (!GetModuleHandle("hl.exe"))
+		if (FindModuleByName("hlds.exe", &hlds_exe))
 		{
-			if (!FindModuleByName("hlds.exe", &hlds_exe))
-				return (FALSE);
-
 			TestSuite_Init(NULL, &hlds_exe, NULL);
 		}
 #endif // _WIN32

@@ -346,11 +346,11 @@ void HideState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 		toSpot.y = m_hidingSpot.y - me->pev->origin.y;
 		toSpot.z = m_hidingSpot.z - me->GetFeetZ(); // use feet location
 		float dist = toSpot.Length();
-		
+
 		const float crouchDist = 200.0f;
 		if (dist < crouchDist)
 			me->Crouch();
-		
+
 		const float atDist = 20.0f;
 		if (dist < atDist)
 		{
@@ -435,22 +435,3 @@ void HideState::__MAKE_VHOOK(OnExit)(CCSBot *me)
 	if (me->HasShield() && me->IsProtectedByShield())
 		me->SecondaryAttack();
 }
-
-#ifdef HOOK_GAMEDLL
-
-void HideState::OnEnter(CCSBot *me)
-{
-	OnEnter_(me);
-}
-
-void HideState::OnUpdate(CCSBot *me)
-{
-	OnUpdate_(me);
-}
-
-void HideState::OnExit(CCSBot *me)
-{
-	OnExit_(me);
-}
-
-#endif // HOOK_GAMEDLL

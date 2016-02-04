@@ -36,7 +36,7 @@
 class CPlane
 {
 public:
-	CPlane(void);
+	CPlane();
 
 	NOXREF void InitializePlane(const Vector &vecNormal, const Vector &vecPoint);
 	NOXREF BOOL PointInFront(const Vector &vecPoint);
@@ -45,7 +45,6 @@ private:
 	Vector m_vecNormal;
 	float m_flDist;
 	BOOL m_fInitialized;
-
-};/* size: 20, cachelines: 1, members: 3 */
+};
 
 #endif // PLANE_H

@@ -11,68 +11,68 @@ class CDummyWeaponClass:
 	public CXM1014
 {
 public:
-	virtual void Precache(void) {};
+	virtual void Precache() {};
 	virtual int Save(CSave &save) { return 0; };
 	virtual int Restore(CRestore &restore) { return 0; };
 	virtual int AddToPlayer(CBasePlayer *pPlayer) { return 0; };
 	virtual int AddDuplicate(CBasePlayerItem *pItem) { return 0; };
-	virtual BOOL CanDeploy(void) { return FALSE; };
-	virtual BOOL IsWeapon(void) { return TRUE; }
+	virtual BOOL CanDeploy() { return FALSE; };
+	virtual BOOL IsWeapon() { return TRUE; }
 	virtual void Holster(int skiplocal = 0) {};
-	virtual void UpdateItemInfo(void) {};
-	virtual void ItemPostFrame(void) {};
-	virtual int PrimaryAmmoIndex(void) { return 0; };
-	virtual int SecondaryAmmoIndex(void) { return 0; };
+	virtual void UpdateItemInfo() {};
+	virtual void ItemPostFrame() {};
+	virtual int PrimaryAmmoIndex() { return 0; };
+	virtual int SecondaryAmmoIndex() { return 0; };
 	virtual int UpdateClientData(CBasePlayer *pPlayer) { return 0; };
-	virtual CBasePlayerItem *GetWeaponPtr(void) { return NULL; }
+	virtual CBasePlayerItem *GetWeaponPtr() { return NULL; }
 	virtual int ExtractAmmo(CBasePlayerWeapon *pWeapon) { return 0; };
 	virtual int ExtractClipAmmo(CBasePlayerWeapon *pWeapon) { return 0; };
-	virtual int AddWeapon(void) { return 0; }
-	virtual BOOL PlayEmptySound(void) { return FALSE; };
-	virtual void ResetEmptySound(void) {};
+	virtual int AddWeapon() { return 0; }
+	virtual BOOL PlayEmptySound() { return FALSE; };
+	virtual void ResetEmptySound() {};
 	virtual void SendWeaponAnim(int iAnim, int skiplocal = 0) {};
-	virtual BOOL IsUseable(void) { return FALSE; };
-	virtual void PrimaryAttack(void) {};
-	virtual void SecondaryAttack(void) {};
-	virtual void Reload(void) {};
-	virtual void WeaponIdle(void) {};
-	virtual void RetireWeapon(void) {};
-	virtual BOOL ShouldWeaponIdle(void) { return FALSE; }
-	virtual BOOL UseDecrement(void) { return FALSE; }
+	virtual BOOL IsUseable() { return FALSE; };
+	virtual void PrimaryAttack() {};
+	virtual void SecondaryAttack() {};
+	virtual void Reload() {};
+	virtual void WeaponIdle() {};
+	virtual void RetireWeapon() {};
+	virtual BOOL ShouldWeaponIdle() { return FALSE; }
+	virtual BOOL UseDecrement() { return FALSE; }
 };
 
 class CDummyWeaponClassExtra:
 	public CDummyWeaponClass
 {
 public:
-	virtual void Precache(void) {};
+	virtual void Precache() {};
 	virtual int Save(CSave &save) { return 0; };
 	virtual int Restore(CRestore &restore) { return 0; };
 	virtual int AddToPlayer(CBasePlayer *pPlayer) { return 0; };
 	virtual int AddDuplicate(CBasePlayerItem *pItem) { return 0; };
-	virtual BOOL CanDeploy(void) { return FALSE; };
-	virtual BOOL IsWeapon(void) { return TRUE; }
+	virtual BOOL CanDeploy() { return FALSE; };
+	virtual BOOL IsWeapon() { return TRUE; }
 	virtual void Holster(int skiplocal = 0) {};
-	virtual void UpdateItemInfo(void) {};
-	virtual void ItemPostFrame(void) {};
-	virtual int PrimaryAmmoIndex(void) { return 0; };
-	virtual int SecondaryAmmoIndex(void) { return 0; };
+	virtual void UpdateItemInfo() {};
+	virtual void ItemPostFrame() {};
+	virtual int PrimaryAmmoIndex() { return 0; };
+	virtual int SecondaryAmmoIndex() { return 0; };
 	virtual int UpdateClientData(CBasePlayer *pPlayer) { return 0; };
-	virtual CBasePlayerItem *GetWeaponPtr(void) { return NULL; }
+	virtual CBasePlayerItem *GetWeaponPtr() { return NULL; }
 	virtual int ExtractAmmo(CBasePlayerWeapon *pWeapon) { return 0; };
 	virtual int ExtractClipAmmo(CBasePlayerWeapon *pWeapon) { return 0; };
-	virtual int AddWeapon(void) { return 0; }
-	virtual BOOL PlayEmptySound(void) { return FALSE; };
-	virtual void ResetEmptySound(void) {};
+	virtual int AddWeapon() { return 0; }
+	virtual BOOL PlayEmptySound() { return FALSE; };
+	virtual void ResetEmptySound() {};
 	virtual void SendWeaponAnim(int iAnim, int skiplocal = 0) {};
-	virtual BOOL IsUseable(void) { return FALSE; };
-	virtual void PrimaryAttack(void) {};
-	virtual void SecondaryAttack(void) {};
-	virtual void Reload(void) {};
-	virtual void WeaponIdle(void) {};
-	virtual void RetireWeapon(void) {};
-	virtual BOOL ShouldWeaponIdle(void) { return FALSE; }
-	virtual BOOL UseDecrement(void) { return FALSE; }
+	virtual BOOL IsUseable() { return FALSE; };
+	virtual void PrimaryAttack() {};
+	virtual void SecondaryAttack() {};
+	virtual void Reload() {};
+	virtual void WeaponIdle() {};
+	virtual void RetireWeapon() {};
+	virtual BOOL ShouldWeaponIdle() { return FALSE; }
+	virtual BOOL UseDecrement() { return FALSE; }
 };
 
 volatile CDummyWeaponClass *g_pDummyWeaponClass = &CDummyWeaponClass();

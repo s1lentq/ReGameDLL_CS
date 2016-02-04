@@ -49,9 +49,6 @@ typedef unsigned int Place;
 #define WALK_THRU_BREAKABLES	0x02
 #define WALK_THRU_EVERYTHING	(WALK_THRU_DOORS | WALK_THRU_BREAKABLES)
 
-//class CNavArea;
-//class CNavNode;
-
 enum NavErrorType
 {
 	NAV_OK,
@@ -142,10 +139,10 @@ struct Extent
 	Vector lo;
 	Vector hi;
 
-	float SizeX(void) const		{ return hi.x - lo.x; }
-	float SizeY(void) const		{ return hi.y - lo.y;}
-	float SizeZ(void) const		{ return hi.z - lo.z; }
-	float Area(void) const		{ return SizeX() * SizeY(); }
+	float SizeX() const		{ return hi.x - lo.x; }
+	float SizeY() const		{ return hi.y - lo.y;}
+	float SizeZ() const		{ return hi.z - lo.z; }
+	float Area() const		{ return SizeX() * SizeY(); }
 
 	// return true if 'pos' is inside of this extent
 	bool Contains(const Vector *pos) const
@@ -154,15 +151,13 @@ struct Extent
 			pos->y >= lo.y && pos->y <= hi.y &&
 			pos->z >= lo.z && pos->z <= hi.z);
 	}
-
-};/* size: 24, cachelines: 1, members: 2 */
+};
 
 struct Ray
 {
 	Vector from;
 	Vector to;
-
-};/* size: 24, cachelines: 1, members: 2 */
+};
 
 /* <34358b> ../game_shared/bot/nav.h:134 */
 inline NavDirType OppositeDirection(NavDirType dir)

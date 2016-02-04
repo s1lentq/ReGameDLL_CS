@@ -4,9 +4,10 @@
 LINK_ENTITY_TO_CLASS(weapon_m3, CM3);
 
 /* <27be6d> ../cstrike/dlls/wpn_shared/wpn_m3.cpp:54 */
-void CM3::__MAKE_VHOOK(Spawn)(void)
+void CM3::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
+
 	m_iId = WEAPON_M3;
 	SET_MODEL(edict(), "models/w_m3.mdl");
 
@@ -16,7 +17,7 @@ void CM3::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <27bc83> ../cstrike/dlls/wpn_shared/wpn_m3.cpp:66 */
-void CM3::__MAKE_VHOOK(Precache)(void)
+void CM3::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/v_m3.mdl");
 	PRECACHE_MODEL("models/w_m3.mdl");
@@ -51,13 +52,13 @@ int CM3::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 }
 
 /* <27be46> ../cstrike/dlls/wpn_shared/wpn_m3.cpp:103 */
-BOOL CM3::__MAKE_VHOOK(Deploy)(void)
+BOOL CM3::__MAKE_VHOOK(Deploy)()
 {
 	return DefaultDeploy("models/v_m3.mdl", "models/p_m3.mdl", M3_DRAW, "shotgun", UseDecrement() != FALSE);
 }
 
 /* <27bcdd> ../cstrike/dlls/wpn_shared/wpn_m3.cpp:109 */
-void CM3::__MAKE_VHOOK(PrimaryAttack)(void)
+void CM3::__MAKE_VHOOK(PrimaryAttack)()
 {
 	Vector vecAiming, vecSrc, vecDir;
 	int flag;
@@ -90,7 +91,7 @@ void CM3::__MAKE_VHOOK(PrimaryAttack)(void)
 
 	m_pPlayer->m_iWeaponVolume = LOUD_GUN_VOLUME;
 	m_pPlayer->m_iWeaponFlash = BRIGHT_GUN_FLASH;
-	m_iClip--;
+	--m_iClip;
 
 	m_pPlayer->pev->effects |= EF_MUZZLEFLASH;
 	// player "shoot" animation
@@ -118,15 +119,15 @@ void CM3::__MAKE_VHOOK(PrimaryAttack)(void)
 	}
 
 	if (m_iClip != 0)
-		m_flPumpTime = UTIL_WeaponTimeBase() + 0.5;
+		m_flPumpTime = UTIL_WeaponTimeBase() + 0.5f;
 
 	m_flNextPrimaryAttack = GetNextAttackDelay(0.875);
-	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.875;
+	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.875f;
 
 	if (m_iClip != 0)
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.5;
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.5f;
 	else
-		m_flTimeWeaponIdle = 0.875;
+		m_flTimeWeaponIdle = 0.875f;
 
 	m_fInSpecialReload = 0;
 
@@ -135,11 +136,11 @@ void CM3::__MAKE_VHOOK(PrimaryAttack)(void)
 	else
 		m_pPlayer->pev->punchangle.x -= UTIL_SharedRandomLong(m_pPlayer->random_seed + 1, 8, 11);
 
-	m_pPlayer->m_flEjectBrass = gpGlobals->time + 0.45;
+	m_pPlayer->m_flEjectBrass = gpGlobals->time + 0.45f;
 }
 
 /* <27bf1e> ../cstrike/dlls/wpn_shared/wpn_m3.cpp:182 */
-void CM3::__MAKE_VHOOK(Reload)(void)
+void CM3::__MAKE_VHOOK(Reload)()
 {
 	if (m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0 || m_iClip == M3_MAX_CLIP)
 		return;
@@ -155,10 +156,10 @@ void CM3::__MAKE_VHOOK(Reload)(void)
 		SendWeaponAnim(M3_START_RELOAD, UseDecrement() != FALSE);
 
 		m_fInSpecialReload = 1;
-		m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.55;
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.55;
+		m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.55f;
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.55f;
 		m_flNextPrimaryAttack = GetNextAttackDelay(0.55);
-		m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.55;
+		m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.55f;
 	}
 	else if (m_fInSpecialReload == 1)
 	{
@@ -169,20 +170,20 @@ void CM3::__MAKE_VHOOK(Reload)(void)
 		m_fInSpecialReload = 2;
 		SendWeaponAnim(M3_RELOAD, UseDecrement());
 
-		m_flNextReload = UTIL_WeaponTimeBase() + 0.45;
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.45;
+		m_flNextReload = UTIL_WeaponTimeBase() + 0.45f;
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.45f;
 	}
 	else
 	{
-		m_iClip++;
-		m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]--;
-		m_pPlayer->ammo_buckshot--;
+		++m_iClip;
+		--m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType];
+		--m_pPlayer->ammo_buckshot;
 		m_fInSpecialReload = 1;
 	}
 }
 
 /* <27bee3> ../cstrike/dlls/wpn_shared/wpn_m3.cpp:228 */
-void CM3::__MAKE_VHOOK(WeaponIdle)(void)
+void CM3::__MAKE_VHOOK(WeaponIdle)()
 {
 	ResetEmptySound();
 	m_pPlayer->GetAutoaimVector(AUTOAIM_5DEGREES);
@@ -210,7 +211,7 @@ void CM3::__MAKE_VHOOK(WeaponIdle)(void)
 				SendWeaponAnim(M3_PUMP, UseDecrement() != FALSE);
 
 				m_fInSpecialReload = 0;
-				m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.5;
+				m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.5f;
 			}
 		}
 		else
@@ -219,42 +220,3 @@ void CM3::__MAKE_VHOOK(WeaponIdle)(void)
 		}
 	}
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CM3::Spawn(void)
-{
-	Spawn_();
-}
-
-void CM3::Precache(void)
-{
-	Precache_();
-}
-
-int CM3::GetItemInfo(ItemInfo *p)
-{
-	return GetItemInfo_(p);
-}
-
-BOOL CM3::Deploy(void)
-{
-	return Deploy_();
-}
-
-void CM3::PrimaryAttack(void)
-{
-	PrimaryAttack_();
-}
-
-void CM3::Reload(void)
-{
-	Reload_();
-}
-
-void CM3::WeaponIdle(void)
-{
-	WeaponIdle_();
-}
-
-#endif // HOOK_GAMEDLL

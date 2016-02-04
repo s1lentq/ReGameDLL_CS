@@ -43,36 +43,26 @@ class CLink
 {
 public:
 	entvars_t *m_pLinkEnt;
-
-};/* size: 4, cachelines: 1, members: 1 */
+};
 
 class CGraph
 {
 public:
-	void InitGraph(void);
-	int AllocNodes(void);
+	void InitGraph();
+	int AllocNodes();
 	int CheckNODFile(char *szMapName);
 	int FLoadGraph(char *szMapName);
-	int FSetGraphPointers(void);
+	int FSetGraphPointers();
 	void ShowNodeConnections(int iNode);
 	int FindNearestNode(const Vector &vecOrigin, CBaseEntity *pEntity);
 	int FindNearestNode(const Vector &vecOrigin, int afNodeTypes);
+
 public:
 	BOOL m_fGraphPresent;
 	BOOL m_fGraphPointersSet;
 	int m_cLinks;
 	CLink *m_pLinkPool;
-
-};/* size: 16, cachelines: 1, members: 4 */
-
-#ifdef HOOK_GAMEDLL
-
-#define WorldGraph (*pWorldGraph)
-
-typedef int (CGraph::*FIND_NEAREST_NODE_ENTITY)(const Vector &, CBaseEntity *);
-typedef int (CGraph::*FIND_NEAREST_NODE_INT)(const Vector &, int);
-
-#endif //HOOK_GAMEDLL
+};
 
 extern CGraph WorldGraph;
 

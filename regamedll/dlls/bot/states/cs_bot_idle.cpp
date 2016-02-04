@@ -754,17 +754,3 @@ void IdleState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 	// if we have nothing special to do, go hunting for enemies
 	me->Hunt();
 }
-
-#ifdef HOOK_GAMEDLL
-
-void IdleState::OnEnter(CCSBot *me)
-{
-	OnEnter_(me);
-}
-
-void IdleState::OnUpdate(CCSBot *me)
-{
-	OnUpdate_(me);
-}
-
-#endif // HOOK_GAMEDLL

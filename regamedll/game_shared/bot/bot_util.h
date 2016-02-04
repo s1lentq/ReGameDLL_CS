@@ -54,51 +54,21 @@ enum PriorityType
 class IntervalTimer
 {
 public:
-	IntervalTimer(void)
-	{
-		m_timestamp = -1.0f;
-	}
-	/* <4c1587> ../game_shared/bot/bot_util.h:136 */
-	void Reset(void)
-	{
-		m_timestamp = gpGlobals->time;
-	}
-	/* <5c4948> ../game_shared/bot/bot_util.h:141 */
-	void Start(void)
-	{
-		m_timestamp = gpGlobals->time;
-	}
-	/* <568aac> ../game_shared/bot/bot_util.h:146 */
-	void Invalidate(void)
-	{
-		m_timestamp = -1.0f;
-	}
-	/* <5687b3> ../game_shared/bot/bot_util.h:151 */
-	bool HasStarted(void) const
-	{
-		return (m_timestamp > 0.0f);
-	}
+	IntervalTimer()		{ m_timestamp = -1.0f; }
+	void Reset()		{ m_timestamp = gpGlobals->time; }
+	void Start()		{ m_timestamp = gpGlobals->time; }
+	void Invalidate()	{ m_timestamp = -1.0f; }
+
+	bool HasStarted() const { return (m_timestamp > 0.0f); }
+
 	// if not started, elapsed time is very large
-	/* <5687d1> ../game_shared/bot/bot_util.h:157 */
-	float GetElapsedTime(void) const
-	{
-		return (HasStarted()) ? (gpGlobals->time - m_timestamp) : 99999.9f;
-	}
-	/* <2ff607> ../game_shared/bot/bot_util.h:162 */
-	bool IsLessThen(float duration) const
-	{
-		return (gpGlobals->time - m_timestamp < duration) ? true : false;
-	}
-	/* <0> (null):0 */
-	bool IsGreaterThen(float duration) const
-	{
-		return (gpGlobals->time - m_timestamp > duration) ? true : false;
-	}
+	float GetElapsedTime() const			{ return (HasStarted()) ? (gpGlobals->time - m_timestamp) : 99999.9f; }
+	bool IsLessThen(float duration) const		{ return (gpGlobals->time - m_timestamp < duration) ? true : false; }
+	bool IsGreaterThen(float duration) const	{ return (gpGlobals->time - m_timestamp > duration) ? true : false; }
 
 private:
 	float m_timestamp;
-
-};/* size: 4, cachelines: 1, members: 1 */
+};
 
 // Simple class for counting down a short interval of time
 
@@ -106,43 +76,19 @@ private:
 class CountdownTimer
 {
 public:
-	CountdownTimer(void)
-	{
-		m_timestamp = -1.0f;
-		m_duration = 0.0f;
-	}
-	/* <569025> ../game_shared/bot/bot_util.h:189 */
-	void Reset(void)
-	{
-		m_timestamp = gpGlobals->time + m_duration;
-	}
-	/* <568aca> ../game_shared/bot/bot_util.h:194 */
-	void Start(float duration)
-	{
-		m_timestamp = gpGlobals->time + duration;
-		m_duration = duration;
-	}
-	/* <5687b3> ../game_shared/bot/bot_util.h:151 */
-	bool HasStarted(void) const
-	{
-		return (m_timestamp > 0.0f);
-	}
-	/* <5c4621> ../game_shared/bot/bot_util.h:200 */
-	void Invalidate(void)
-	{
-		m_timestamp = -1.0f;
-	}
-	/* <5c463f> ../game_shared/bot/bot_util.h:210 */
-	bool IsElapsed(void) const
-	{
-		return (gpGlobals->time > m_timestamp);
-	}
+	CountdownTimer()	{ m_timestamp = -1.0f; m_duration = 0.0f; }
+	void Reset()		{ m_timestamp = gpGlobals->time + m_duration; }
+
+	void Start(float duration)	{ m_timestamp = gpGlobals->time + duration; m_duration = duration; }
+	bool HasStarted() const		{ return (m_timestamp > 0.0f); }
+
+	void Invalidate()	{ m_timestamp = -1.0f; }
+	bool IsElapsed() const	{ return (gpGlobals->time > m_timestamp); }
 
 private:
 	float m_duration;
 	float m_timestamp;
-
-};/* size: 8, cachelines: 1, members: 2 */
+};
 
 // Return true if the given entity is valid
 
@@ -205,6 +151,7 @@ inline bool IsIntersecting2D(const Vector &startA, const Vector &endA, const Vec
 	{
 		*result = startA + s * (endA - startA);
 	}
+
 	return true;
 }
 
@@ -234,7 +181,7 @@ bool ForEachPlayer(Functor &func)
 // For zombie game
 
 /* <b59bf> ../game_shared/bot/bot_util.h:317 */
-inline bool IsZombieGame(void)
+inline bool IsZombieGame()
 {
 #ifdef TERRORSTRIKE
 	return true;
@@ -242,46 +189,6 @@ inline bool IsZombieGame(void)
 	return false;
 #endif // TERRORSTRIKE
 }
-
-#ifdef HOOK_GAMEDLL
-
-#define s_iBeamSprite (*ps_iBeamSprite)
-#define cosTable (*pcosTable)
-
-#define cv_bot_traceview (*pcv_bot_traceview)
-#define cv_bot_stop (*pcv_bot_stop)
-#define cv_bot_show_nav (*pcv_bot_show_nav)
-#define cv_bot_show_danger (*pcv_bot_show_danger)
-#define cv_bot_nav_edit (*pcv_bot_nav_edit)
-#define cv_bot_nav_zdraw (*pcv_bot_nav_zdraw)
-#define cv_bot_walk (*pcv_bot_walk)
-#define cv_bot_difficulty (*pcv_bot_difficulty)
-#define cv_bot_debug (*pcv_bot_debug)
-#define cv_bot_quicksave (*pcv_bot_quicksave)
-#define cv_bot_quota (*pcv_bot_quota)
-#define cv_bot_quota_match (*pcv_bot_quota_match)
-#define cv_bot_prefix (*pcv_bot_prefix)
-#define cv_bot_allow_rogues (*pcv_bot_allow_rogues)
-#define cv_bot_allow_pistols (*pcv_bot_allow_pistols)
-#define cv_bot_allow_shotguns (*pcv_bot_allow_shotguns)
-#define cv_bot_allow_sub_machine_guns (*pcv_bot_allow_sub_machine_guns)
-#define cv_bot_allow_rifles (*pcv_bot_allow_rifles)
-#define cv_bot_allow_machine_guns (*pcv_bot_allow_machine_guns)
-#define cv_bot_allow_grenades (*pcv_bot_allow_grenades)
-#define cv_bot_allow_snipers (*pcv_bot_allow_snipers)
-#define cv_bot_allow_shield (*pcv_bot_allow_shield)
-#define cv_bot_join_team (*pcv_bot_join_team)
-#define cv_bot_join_after_player (*pcv_bot_join_after_player)
-#define cv_bot_auto_vacate (*pcv_bot_auto_vacate)
-#define cv_bot_zombie (*pcv_bot_zombie)
-#define cv_bot_defer_to_human (*pcv_bot_defer_to_human)
-#define cv_bot_chatter (*pcv_bot_chatter)
-#define cv_bot_profile_db (*pcv_bot_profile_db)
-
-#endif // HOOK_GAMEDLL
-
-extern short s_iBeamSprite;
-extern float cosTable[COS_TABLE_SIZE];
 
 extern cvar_t cv_bot_traceview;
 extern cvar_t cv_bot_stop;
@@ -320,9 +227,9 @@ int UTIL_HumansOnTeam(int teamID, bool isAlive = false);
 int UTIL_HumansInGame(bool ignoreSpectators = false);
 
 bool UTIL_IsNameTaken(const char *name, bool ignoreHumans = false);
-int UTIL_ClientsInGame(void);
-int UTIL_ActivePlayersInGame(void);
-int UTIL_BotsInGame(void);
+int UTIL_ClientsInGame();
+int UTIL_ActivePlayersInGame();
+int UTIL_BotsInGame();
 bool UTIL_KickBotFromTeam(TeamName kickTeam);
 bool UTIL_IsTeamAllBots(int team);
 CBasePlayer *UTIL_GetClosestPlayer(const Vector *pos, float *distance = NULL);
@@ -330,7 +237,7 @@ CBasePlayer *UTIL_GetClosestPlayer(const Vector *pos, int team, float *distance 
 const char *UTIL_GetBotPrefix();
 void UTIL_ConstructBotNetName(char *name, int nameLength, const BotProfile *profile);
 bool UTIL_IsVisibleToTeam(const Vector &spot, int team, float maxRange = -1.0f);
-CBasePlayer *UTIL_GetLocalPlayer(void);
+CBasePlayer *UTIL_GetLocalPlayer();
 NOXREF Vector UTIL_ComputeOrigin(entvars_t *pevVars);
 NOXREF Vector UTIL_ComputeOrigin(CBaseEntity *pEntity);
 NOXREF Vector UTIL_ComputeOrigin(edict_t *pentEdict);
@@ -342,22 +249,11 @@ void UTIL_DrawBeamPoints(Vector vecStart, Vector vecEnd, int iLifetime, byte bRe
 void CONSOLE_ECHO(char *pszMsg, ...);
 void CONSOLE_ECHO_LOGGED(char *pszMsg, ...);
 
-void BotPrecache(void);
-void InitBotTrig(void);
+void BotPrecache();
+void InitBotTrig();
 float BotCOS(float angle);
 float BotSIN(float angle);
 bool IsGameEventAudible(enum GameEventType event, CBaseEntity *entity, CBaseEntity *other, float *range, PriorityType *priority, bool *isHostile);
 void HintMessageToAllPlayers(const char *message);
-
-#ifdef HOOK_GAMEDLL
-
-typedef CBasePlayer *(*UTIL_GETCLOSE_PLAYER)(const Vector *pos, float *distance);
-typedef CBasePlayer *(*UTIL_GETCLOSE_TEAM)(const Vector *pos, int team, float *distance);
-
-typedef Vector (*UTIL_CUMPUTE_ENTVARS)(entvars_t *pevVars);
-typedef Vector (*UTIL_CUMPUTE_CBASE)(CBaseEntity *pEntity);
-typedef Vector (*UTIL_CUMPUTE_EDICT)(edict_t *pentEdict);
-
-#endif // HOOK_GAMEDLL
 
 #endif // BOT_UTIL_H

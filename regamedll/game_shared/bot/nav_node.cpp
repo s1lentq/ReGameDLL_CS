@@ -10,13 +10,6 @@ NavDirType Opposite[ NUM_DIRECTIONS ] = { SOUTH, WEST, NORTH, EAST };
 CNavNode *CNavNode::m_list = NULL;
 unsigned int CNavNode::m_listLength = 0;
 
-#else // HOOK_GAMEDLL
-
-NavDirType Opposite[ NUM_DIRECTIONS ];
-
-CNavNode *IMPL_CLASS(CNavNode, m_list);
-unsigned int IMPL_CLASS(CNavNode, m_listLength);
-
 #endif // HOOK_GAMEDLL
 
 //NOXREF Extent NodeMapExtent;
@@ -75,7 +68,7 @@ const CNavNode *CNavNode::GetNode(const Vector *pos)
 	return NULL;
 }
 
-// Return true if this node is bidirectionally linked to 
+// Return true if this node is bidirectionally linked to
 // another node in the given direction
 
 /* <4f7af2> ../game_shared/bot/nav_node.cpp:86 */
@@ -91,7 +84,7 @@ BOOL CNavNode::IsBiLinked(NavDirType dir) const
 // that are all bidirectionally linked
 
 /* <4f7b1c> ../game_shared/bot/nav_node.cpp:100 */
-BOOL CNavNode::IsClosedCell(void) const
+BOOL CNavNode::IsClosedCell() const
 {
 	if (IsBiLinked( SOUTH ) && IsBiLinked( EAST ) && m_to[ EAST ]->IsBiLinked( SOUTH ) && m_to[ SOUTH ]->IsBiLinked( EAST )
 		&& m_to[ EAST ]->m_to[ SOUTH ] == m_to[ SOUTH ]->m_to[ EAST ])

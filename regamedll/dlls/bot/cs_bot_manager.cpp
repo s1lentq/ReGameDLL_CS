@@ -13,16 +13,6 @@ bool CCSBotManager::m_isLearningMap = false;
 bool CCSBotManager::m_isAnalysisRequested = false;
 NavEditCmdType CCSBotManager::m_editCmd = EDIT_NONE;
 
-#else // HOOK_GAMEDLL
-
-CBotManager *TheBots;
-
-float IMPL_CLASS(CCSBotManager, m_flNextCVarCheck);
-bool IMPL_CLASS(CCSBotManager, m_isMapDataLoaded);
-bool IMPL_CLASS(CCSBotManager, m_isLearningMap);
-bool IMPL_CLASS(CCSBotManager, m_isAnalysisRequested);
-NavEditCmdType IMPL_CLASS(CCSBotManager, m_editCmd);
-
 #endif // HOOK_GAMEDLL
 
 // Determine whether bots can be used or not
@@ -40,7 +30,7 @@ inline bool AreBotsAllowed()
 }
 
 /* <36b3b4> ../cstrike/dlls/bot/cs_bot_manager.cpp:45 */
-CCSBotManager::CCSBotManager(void)
+CCSBotManager::CCSBotManager()
 {
 	IMPL(m_flNextCVarCheck) = 0.0f;
 
@@ -49,7 +39,7 @@ CCSBotManager::CCSBotManager(void)
 
 	m_isBombPlanted = false;
 	m_bombDefuser = NULL;
-	
+
 	IMPL(m_isLearningMap) = false;
 	IMPL(m_isAnalysisRequested) = false;
 	IMPL(m_editCmd) = EDIT_NONE;
@@ -114,7 +104,7 @@ CCSBotManager::CCSBotManager(void)
 // Invoked when a new round begins
 
 /* <36b22a> ../cstrike/dlls/bot/cs_bot_manager.cpp:111 */
-void CCSBotManager::__MAKE_VHOOK(RestartRound)(void)
+void CCSBotManager::__MAKE_VHOOK(RestartRound)()
 {
 	// extend
 	CBotManager::RestartRound();
@@ -198,7 +188,7 @@ void UTIL_DrawBox(Extent *extent, int lifetime, int red, int green, int blue)
 // Called each frame
 
 /* <36b13d> ../cstrike/dlls/bot/cs_bot_manager.cpp:195 */
-void CCSBotManager::__MAKE_VHOOK(StartFrame)(void)
+void CCSBotManager::__MAKE_VHOOK(StartFrame)()
 {
 	// EXTEND
 	CBotManager::StartFrame();
@@ -280,7 +270,7 @@ bool CCSBotManager::IsOnOffense(CBasePlayer *player) const
 // Invoked when a map has just been loaded
 
 /* <36a3b6> ../cstrike/dlls/bot/cs_bot_manager.cpp:331 */
-void CCSBotManager::__MAKE_VHOOK(ServerActivate)(void)
+void CCSBotManager::__MAKE_VHOOK(ServerActivate)()
 {
 	DestroyNavigationMap();
 	IMPL(m_isMapDataLoaded) = false;
@@ -311,7 +301,7 @@ void CCSBotManager::__MAKE_VHOOK(AddServerCommand)(const char *cmd)
 }
 
 /* <36b0e0> ../cstrike/dlls/bot/cs_bot_manager.cpp:375 */
-void CCSBotManager::__MAKE_VHOOK(AddServerCommands)(void)
+void CCSBotManager::__MAKE_VHOOK(AddServerCommands)()
 {
 	static bool fFirstTime = true;
 
@@ -320,7 +310,7 @@ void CCSBotManager::__MAKE_VHOOK(AddServerCommands)(void)
 
 	fFirstTime = false;
 
-	if (UTIL_IsGame("czero"))
+	if (g_bIsCzeroGame)
 	{
 		AddServerCommand("bot_about");
 		AddServerCommand("bot_add");
@@ -367,7 +357,7 @@ void CCSBotManager::__MAKE_VHOOK(AddServerCommands)(void)
 }
 
 /* <36b2ac> ../cstrike/dlls/bot/cs_bot_manager.cpp:413 */
-void CCSBotManager::__MAKE_VHOOK(ServerDeactivate)(void)
+void CCSBotManager::__MAKE_VHOOK(ServerDeactivate)()
 {
 	m_bServerActive = false;
 }
@@ -399,7 +389,7 @@ void CCSBotManager::__MAKE_VHOOK(ClientDisconnect)(CBasePlayer *pPlayer)
 }
 
 /* <36b714> ../cstrike/dlls/bot/cs_bot_manager.cpp:464 */
-void PrintAllEntities(void)
+void PrintAllEntities()
 {
 	for (int i = 1; i < gpGlobals->maxEntities; ++i)
 	{
@@ -415,7 +405,7 @@ void PrintAllEntities(void)
 /* <36ace2> ../cstrike/dlls/bot/cs_bot_manager.cpp:484 */
 void CCSBotManager::__MAKE_VHOOK(ServerCommand)(const char *pcmd)
 {
-	if (!m_bServerActive || !UTIL_IsGame("czero"))
+	if (!m_bServerActive || !g_bIsCzeroGame)
 		return;
 
 	char buffer[400];
@@ -897,7 +887,7 @@ bool CCSBotManager::BotAddCommand(BotProfileTeamType team, bool isFromConsole)
 // Keep a minimum quota of bots in the game
 
 /* <36d10f> ../cstrike/dlls/bot/cs_bot_manager.cpp:979 */
-void CCSBotManager::MaintainBotQuota(void)
+void CCSBotManager::MaintainBotQuota()
 {
 	if (IMPL(m_isLearningMap))
 		return;
@@ -1009,7 +999,7 @@ void CCSBotManager::MaintainBotQuota(void)
 }
 
 /* <36d1dd> ../cstrike/dlls/bot/cs_bot_manager.cpp:1086 */
-void CCSBotManager::MonitorBotCVars(void)
+void CCSBotManager::MonitorBotCVars()
 {
 	if (cv_bot_nav_edit.value != 0.0f)
 	{
@@ -1062,9 +1052,9 @@ private:
 // Search the map entities to determine the game scenario and define important zones.
 
 /* <36b780> ../cstrike/dlls/bot/cs_bot_manager.cpp:1109 */
-void CCSBotManager::ValidateMapData(void)
+void CCSBotManager::ValidateMapData()
 {
-	if (IMPL(m_isMapDataLoaded) || !UTIL_IsGame("czero"))
+	if (IMPL(m_isMapDataLoaded) || !g_bIsCzeroGame)
 		return;
 
 	IMPL(m_isMapDataLoaded) = true;
@@ -1206,13 +1196,13 @@ void CCSBotManager::ValidateMapData(void)
 #ifndef HOOK_GAMEDLL
 bool CCSBotManager::AddBot(const BotProfile *profile, BotProfileTeamType team)
 {
-	if (!UTIL_IsGame("czero"))
+	if (!g_bIsCzeroGame)
 		return false;
 
 	CHalfLifeMultiplay *mp = g_pGameRules;
 
 	int nTeamSlot = UNASSIGNED;
-	
+
 	if (team == BOT_TEAM_ANY)
 	{
 		// if team not specified, check cv_bot_join_team cvar for preference
@@ -1416,7 +1406,7 @@ void CCSBotManager::__MAKE_VHOOK(OnEvent)(GameEventType event, CBaseEntity *enti
 // Get the time remaining before the planted bomb explodes
 
 /* <36bdb3> ../cstrike/dlls/bot/cs_bot_manager.cpp:1541 */
-float CCSBotManager::GetBombTimeLeft(void) const
+float CCSBotManager::GetBombTimeLeft() const
 {
 	return (g_pGameRules->m_iC4Timer - (gpGlobals->time - m_bombPlantTimestamp));
 }
@@ -1562,84 +1552,13 @@ void CCSBotManager::SetRadioMessageTimestamp(GameEventType event, int teamID)
 // Reset all radio message timestamps
 
 /* <36bf06> ../cstrike/dlls/bot/cs_bot_manager.cpp:1690 */
-void CCSBotManager::ResetRadioMessageTimestamps(void)
+void CCSBotManager::ResetRadioMessageTimestamps()
 {
-	for (int t = 0; t < ARRAYSIZE(m_radioMsgTimestamp[0]); t++)
+	for (int t = 0; t < ARRAYSIZE(m_radioMsgTimestamp[0]); ++t)
 	{
-		for (int m = 0; m < ARRAYSIZE(m_radioMsgTimestamp); m++)
+		for (int m = 0; m < ARRAYSIZE(m_radioMsgTimestamp); ++m)
 		{
 			m_radioMsgTimestamp[m][t] = 0.0f;
 		}
 	}
 }
-
-#ifdef HOOK_GAMEDLL
-
-void (*pCCSBotManager__AddBot)(void);
-
-bool __declspec(naked) CCSBotManager::AddBot(const BotProfile *profile, BotProfileTeamType team)
-{
-	__asm { jmp pCCSBotManager__AddBot }
-}
-
-void CCSBotManager::ClientDisconnect(CBasePlayer *pPlayer)
-{
-	ClientDisconnect_(pPlayer);
-}
-
-BOOL CCSBotManager::ClientCommand(CBasePlayer *pPlayer, const char *pcmd)
-{
-	return ClientCommand_(pPlayer, pcmd);
-}
-
-void CCSBotManager::ServerActivate(void)
-{
-	ServerActivate_();
-}
-
-void CCSBotManager::ServerDeactivate(void)
-{
-	ServerDeactivate_();
-}
-
-void CCSBotManager::ServerCommand(const char *pcmd)
-{
-	ServerCommand_(pcmd);
-}
-
-void CCSBotManager::AddServerCommand(const char *cmd)
-{
-	AddServerCommand_(cmd);
-}
-
-void CCSBotManager::AddServerCommands(void)
-{
-	AddServerCommands_();
-}
-
-void CCSBotManager::RestartRound(void)
-{
-	RestartRound_();
-}
-
-void CCSBotManager::StartFrame(void)
-{
-	StartFrame_();
-}
-
-void CCSBotManager::OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
-{
-	OnEvent_(event, entity, other);
-}
-
-unsigned int CCSBotManager::GetPlayerPriority(CBasePlayer *player) const
-{
-	return GetPlayerPriority_(player);
-}
-
-bool CCSBotManager::IsImportantPlayer(CBasePlayer *player) const
-{
-	return IsImportantPlayer_(player);
-}
-
-#endif // HOOK_GAMEDLL

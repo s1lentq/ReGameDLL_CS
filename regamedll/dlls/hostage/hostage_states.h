@@ -38,10 +38,9 @@ class CHostageImprov;
 class HostageState: public SimpleState<CHostageImprov *>, public IImprovEvent
 {
 public:
-	virtual ~HostageState(void) {};
+	virtual ~HostageState() {};
 	virtual void UpdateStationaryAnimation(CHostageImprov *improv) {};
-
-};/* size: 12, cachelines: 1, members: 2 */
+};
 
 /* <46f922> ../cstrike/dlls/hostage/hostage_states.h:26 */
 class HostageStateMachine: public SimpleStateMachine<CHostageImprov *, HostageState>, public IImprovEvent
@@ -67,19 +66,18 @@ public:
 		if (m_state)
 			m_state->UpdateStationaryAnimation(improv);
 	}
-
-};/* size: 16, cachelines: 1, members: 2 */
+};
 
 /* <46fccf> ../cstrike/dlls/hostage/hostage_states.h:38 */
 class HostageIdleState: public HostageState
 {
 public:
-	virtual ~HostageIdleState(void) {};
+	virtual ~HostageIdleState() {};
 
 	virtual void OnEnter(CHostageImprov *improv);
 	virtual void OnUpdate(CHostageImprov *improv);
 	virtual void OnExit(CHostageImprov *improv);
-	virtual const char *GetName(void) const { return "Idle"; }
+	virtual const char *GetName() const { return "Idle"; }
 	virtual void UpdateStationaryAnimation(CHostageImprov *improv);
 	virtual void OnMoveToSuccess(const Vector &goal) { m_moveState = MoveDone; }
 	virtual void OnMoveToFailure(const Vector &goal, MoveToFailureType reason) { m_moveState = MoveFailed; }
@@ -112,19 +110,18 @@ private:
 	} m_moveState;
 
 	bool m_mustFlee;
-
-};/* size: 72, cachelines: 2, members: 10 */
+};
 
 /* <46f8ec> ../cstrike/dlls/hostage/hostage_states.h:71 */
 class HostageEscapeToCoverState: public HostageState
 {
 public:
-	virtual ~HostageEscapeToCoverState(void) {};
+	virtual ~HostageEscapeToCoverState() {};
 
 	virtual void OnEnter(CHostageImprov *improv);
 	virtual void OnUpdate(CHostageImprov *improv);
 	virtual void OnExit(CHostageImprov *improv);
-	virtual const char *GetName(void) const { return "Escape:ToCover"; }
+	virtual const char *GetName() const { return "Escape:ToCover"; }
 	virtual void OnMoveToFailure(const Vector &goal, MoveToFailureType reason);
 
 #ifdef HOOK_GAMEDLL
@@ -143,19 +140,18 @@ private:
 	Vector m_rescueGoal;
 	Vector m_spot;
 	bool m_canEscape;
-
-};/* size: 40, cachelines: 1, members: 4 */
+};
 
 /* <46f907> ../cstrike/dlls/hostage/hostage_states.h:92 */
 class HostageEscapeLookAroundState: public HostageState
 {
 public:
-	virtual ~HostageEscapeLookAroundState(void) {};
+	virtual ~HostageEscapeLookAroundState() {};
 
 	virtual void OnEnter(CHostageImprov *improv);
 	virtual void OnUpdate(CHostageImprov *improv);
 	virtual void OnExit(CHostageImprov *improv);
-	virtual const char *GetName(void) const { return "Escape:LookAround"; }
+	virtual const char *GetName() const { return "Escape:LookAround"; }
 
 #ifdef HOOK_GAMEDLL
 
@@ -167,19 +163,23 @@ public:
 
 private:
 	CountdownTimer m_timer;
-
-};/* size: 20, cachelines: 1, members: 2 */
+};
 
 /* <46fcea> ../cstrike/dlls/hostage/hostage_states.h:109 */
 class HostageEscapeState: public HostageState
 {
 public:
-	virtual ~HostageEscapeState(void) {};
+	HostageEscapeState()
+	{
+		m_toCoverState.SetParent(this);
+		m_lookAroundState.SetParent(this);
+	}
+	virtual ~HostageEscapeState() {};
 
 	virtual void OnEnter(CHostageImprov *improv);
 	virtual void OnUpdate(CHostageImprov *improv);
 	virtual void OnExit(CHostageImprov *improv);
-	virtual const char *GetName(void) const { return "Escape"; }
+	virtual const char *GetName() const { return "Escape"; }
 	virtual void OnMoveToFailure(const Vector &goal, MoveToFailureType reason) { m_behavior.OnMoveToFailure(goal, reason); }
 
 #ifdef HOOK_GAMEDLL
@@ -191,8 +191,8 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	void ToCover(void) { m_behavior.SetState(&m_toCoverState); }
-	void LookAround(void) { m_behavior.SetState(&m_lookAroundState); }
+	void ToCover() { m_behavior.SetState(&m_toCoverState); }
+	void LookAround() { m_behavior.SetState(&m_lookAroundState); }
 
 private:
 	HostageEscapeToCoverState m_toCoverState;
@@ -200,19 +200,18 @@ private:
 	HostageStateMachine m_behavior;
 	bool m_canEscape;
 	CountdownTimer m_runTimer;
-
-};/* size: 100, cachelines: 2, members: 6 */
+};
 
 /* <46fd03> ../cstrike/dlls/hostage/hostage_states.h:138 */
 class HostageRetreatState: public HostageState
 {
 public:
-	virtual ~HostageRetreatState(void) {};
+	virtual ~HostageRetreatState() {};
 
 	virtual void OnEnter(CHostageImprov *improv);
 	virtual void OnUpdate(CHostageImprov *improv);
 	virtual void OnExit(CHostageImprov *improv);
-	virtual const char *GetName(void) const { return "Retreat"; }
+	virtual const char *GetName() const { return "Retreat"; }
 
 #ifdef HOOK_GAMEDLL
 
@@ -222,18 +221,18 @@ public:
 
 #endif // HOOK_GAMEDLL
 
-};/* size: 12, cachelines: 1, members: 1 */
+};
 
 /* <46fd1e> ../cstrike/dlls/hostage/hostage_states.h:149 */
 class HostageFollowState: public HostageState
 {
 public:
-	virtual ~HostageFollowState(void) {};
+	virtual ~HostageFollowState() {};
 
 	virtual void OnEnter(CHostageImprov *improv);
 	virtual void OnUpdate(CHostageImprov *improv);
 	virtual void OnExit(CHostageImprov *improv);
-	virtual const char *GetName(void) const { return "Follow"; }
+	virtual const char *GetName() const { return "Follow"; }
 	virtual void UpdateStationaryAnimation(CHostageImprov *improv);
 
 #ifdef HOOK_GAMEDLL
@@ -247,7 +246,7 @@ public:
 
 public:
 	void SetLeader(CBaseEntity *leader) { m_leader = leader; }
-	CBaseEntity *GetLeader(void) const { return m_leader; }
+	CBaseEntity *GetLeader() const { return m_leader; }
 
 private:
 	mutable EHANDLE m_leader;
@@ -259,19 +258,18 @@ private:
 	CountdownTimer m_repathTimer;
 	bool m_isWaitingForFriend;
 	CountdownTimer m_waitForFriendTimer;
-
-};/* size: 76, cachelines: 2, members: 10 */
+};
 
 /* <46fd39> ../cstrike/dlls/hostage/hostage_states.h:186 */
 class HostageAnimateState: public HostageState
 {
 public:
-	virtual ~HostageAnimateState(void) {}
+	virtual ~HostageAnimateState() {}
 
 	virtual void OnEnter(CHostageImprov *improv);
 	virtual void OnUpdate(CHostageImprov *improv);
 	virtual void OnExit(CHostageImprov *improv);
-	virtual const char *GetName(void) const { return "Animate"; }
+	virtual const char *GetName() const { return "Animate"; }
 
 #ifdef HOOK_GAMEDLL
 
@@ -309,30 +307,18 @@ public:
 		Flinching,
 	};
 
-	void Reset(void);
+	void Reset();
 	void AddSequence(CHostageImprov *improv, const char *seqName, float holdTime = -1.0f, float rate = 1.0f);
 	void AddSequence(CHostageImprov *improv, int activity, float holdTime = -1.0f, float rate = 1.0f);
 
-	bool IsBusy(void) const
-	{
-		return (m_sequenceCount > 0);
-	}
+	bool IsBusy() const { return (m_sequenceCount > 0); }
 	NOXREF bool IsPlaying(CHostageImprov *improv, const char *seqName) const;
-	int GetCurrentSequenceID(void)
-	{
-		return m_currentSequence;
-	}
-	PerformanceType GetPerformance(void) const
-	{
-		return m_performance;
-	}
-	void SetPerformance(PerformanceType performance)
-	{
-		m_performance = performance;
-	}
+	int GetCurrentSequenceID() { return m_currentSequence; }
+	PerformanceType GetPerformance() const { return m_performance; }
+	void SetPerformance(PerformanceType performance) { m_performance = performance; }
 	void StartSequence(CHostageImprov *improv, const SeqInfo *seqInfo);
-	bool IsDoneHolding(void);
-
+	bool IsDoneHolding();
+	
 private:
 	enum { MAX_SEQUENCES = 8 };
 	struct SeqInfo m_sequence[ MAX_SEQUENCES ];
@@ -341,14 +327,6 @@ private:
 	enum PerformanceType m_performance;
 	bool m_isHolding;
 	CountdownTimer m_holdTimer;
-
-};/* size: 132, cachelines: 3, members: 7 */
-
-#ifdef HOOK_GAMEDLL
-
-typedef void (HostageAnimateState::*ADD_SEQUENCE_NAME)(CHostageImprov *, const char *, float, float);
-typedef void (HostageAnimateState::*ADD_SEQUENCE_NUMBER)(CHostageImprov *, int, float, float);
-
-#endif // HOOK_GAMEDLL
+};
 
 #endif // HOSTAGE_STATES_H

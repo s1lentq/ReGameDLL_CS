@@ -15,18 +15,10 @@ float g_flBotFullThinkInterval = 1.0 / 10.0;
 const char *BotArgs[4] = { NULL };
 bool UseBotArgs = false;
 
-#else // HOOK_GAMEDLL
-
-float g_flBotCommandInterval;
-float g_flBotFullThinkInterval;
-
-const char *BotArgs[4];
-bool UseBotArgs;
-
 #endif // HOOK_GAMEDLL
 
 /* <48fed0> ../game_shared/bot/bot.cpp:28 */
-CBot::CBot(void)
+CBot::CBot()
 {
 	// the profile will be attached after this instance is constructed
 	m_profile = NULL;
@@ -52,7 +44,7 @@ bool CBot::__MAKE_VHOOK(Initialize)(const BotProfile *profile)
 }
 
 /* <48fbbd> ../game_shared/bot/bot.cpp:57 */
-void CBot::__MAKE_VHOOK(Spawn)(void)
+void CBot::__MAKE_VHOOK(Spawn)()
 {
 	// Let CBasePlayer set some things up
 	CBasePlayer::Spawn();
@@ -89,7 +81,7 @@ Vector CBot::__MAKE_VHOOK(GetAutoaimVector)(float flDelta)
 }
 
 /* <48ffa8> ../game_shared/bot/bot.cpp:97 */
-void CBot::BotThink(void)
+void CBot::BotThink()
 {
 	if (gpGlobals->time >= m_flNextBotThink)
 	{
@@ -109,7 +101,7 @@ void CBot::BotThink(void)
 }
 
 /* <48f723> ../game_shared/bot/bot.cpp:119 */
-void CBot::__MAKE_VHOOK(MoveForward)(void)
+void CBot::__MAKE_VHOOK(MoveForward)()
 {
 	m_forwardSpeed = GetMoveSpeed();
 	m_buttonFlags |= IN_FORWARD;
@@ -119,7 +111,7 @@ void CBot::__MAKE_VHOOK(MoveForward)(void)
 }
 
 /* <48f761> ../game_shared/bot/bot.cpp:130 */
-void CBot::__MAKE_VHOOK(MoveBackward)(void)
+void CBot::__MAKE_VHOOK(MoveBackward)()
 {
 	m_forwardSpeed = -GetMoveSpeed();
 	m_buttonFlags |= IN_BACK;
@@ -129,7 +121,7 @@ void CBot::__MAKE_VHOOK(MoveBackward)(void)
 }
 
 /* <48f79f> ../game_shared/bot/bot.cpp:140 */
-void CBot::__MAKE_VHOOK(StrafeLeft)(void)
+void CBot::__MAKE_VHOOK(StrafeLeft)()
 {
 	m_strafeSpeed = -GetMoveSpeed();
 	m_buttonFlags |= IN_MOVELEFT;
@@ -139,7 +131,7 @@ void CBot::__MAKE_VHOOK(StrafeLeft)(void)
 }
 
 /* <48f7dd> ../game_shared/bot/bot.cpp:150 */
-void CBot::__MAKE_VHOOK(StrafeRight)(void)
+void CBot::__MAKE_VHOOK(StrafeRight)()
 {
 	m_strafeSpeed = GetMoveSpeed();
 	m_buttonFlags |= IN_MOVERIGHT;
@@ -175,7 +167,7 @@ bool CBot::__MAKE_VHOOK(Jump)(bool mustJump)
 // Zero any MoveForward(), Jump(), etc
 
 /* <48f81b> ../game_shared/bot/bot.cpp:187 */
-void CBot::__MAKE_VHOOK(ClearMovement)(void)
+void CBot::__MAKE_VHOOK(ClearMovement)()
 {
 	ResetCommand();
 }
@@ -183,7 +175,7 @@ void CBot::__MAKE_VHOOK(ClearMovement)(void)
 // Returns true if we are in the midst of a jump
 
 /* <48ffe7> ../game_shared/bot/bot.cpp:196 */
-bool CBot::IsJumping(void)
+bool CBot::IsJumping()
 {
 	// if long time after last jump, we can't be jumping
 	if (gpGlobals->time - m_jumpTimestamp > 3.0f)
@@ -201,37 +193,37 @@ bool CBot::IsJumping(void)
 }
 
 /* <48f859> ../game_shared/bot/bot.cpp:214 */
-void CBot::__MAKE_VHOOK(Crouch)(void)
+void CBot::__MAKE_VHOOK(Crouch)()
 {
 	m_isCrouching = true;
 }
 
 /* <48f87f> ../game_shared/bot/bot.cpp:220 */
-void CBot::__MAKE_VHOOK(StandUp)(void)
+void CBot::__MAKE_VHOOK(StandUp)()
 {
 	m_isCrouching = false;
 }
 
 /* <48f8a5> ../game_shared/bot/bot.cpp:227 */
-void CBot::__MAKE_VHOOK(UseEnvironment)(void)
+void CBot::__MAKE_VHOOK(UseEnvironment)()
 {
 	m_buttonFlags |= IN_USE;
 }
 
 /* <48f8cb> ../game_shared/bot/bot.cpp:234 */
-void CBot::__MAKE_VHOOK(PrimaryAttack)(void)
+void CBot::__MAKE_VHOOK(PrimaryAttack)()
 {
 	m_buttonFlags |= IN_ATTACK;
 }
 
 /* <48f8f1> ../game_shared/bot/bot.cpp:240 */
-void CBot::__MAKE_VHOOK(ClearPrimaryAttack)(void)
+void CBot::__MAKE_VHOOK(ClearPrimaryAttack)()
 {
 	m_buttonFlags &= ~IN_ATTACK;
 }
 
 /* <48f917> ../game_shared/bot/bot.cpp:246 */
-void CBot::__MAKE_VHOOK(TogglePrimaryAttack)(void)
+void CBot::__MAKE_VHOOK(TogglePrimaryAttack)()
 {
 	if (m_buttonFlags & IN_ATTACK)
 		m_buttonFlags &= ~IN_ATTACK;
@@ -240,13 +232,13 @@ void CBot::__MAKE_VHOOK(TogglePrimaryAttack)(void)
 }
 
 /* <48f93d> ../game_shared/bot/bot.cpp:260 */
-void CBot::__MAKE_VHOOK(SecondaryAttack)(void)
+void CBot::__MAKE_VHOOK(SecondaryAttack)()
 {
 	m_buttonFlags |= IN_ATTACK2;
 }
 
 /* <48f963> ../game_shared/bot/bot.cpp:266 */
-void CBot::__MAKE_VHOOK(Reload)(void)
+void CBot::__MAKE_VHOOK(Reload)()
 {
 	m_buttonFlags |= IN_RELOAD;
 }
@@ -254,7 +246,7 @@ void CBot::__MAKE_VHOOK(Reload)(void)
 // Returns ratio of ammo left to max ammo (1 = full clip, 0 = empty)
 
 /* <490008> ../game_shared/bot/bot.cpp:275 */
-float CBot::GetActiveWeaponAmmoRatio(void) const
+float CBot::GetActiveWeaponAmmoRatio() const
 {
 	CBasePlayerWeapon *weapon = GetActiveWeapon();
 
@@ -271,7 +263,7 @@ float CBot::GetActiveWeaponAmmoRatio(void) const
 // Return true if active weapon has an empty clip
 
 /* <490058> ../game_shared/bot/bot.cpp:293 */
-bool CBot::IsActiveWeaponClipEmpty(void) const
+bool CBot::IsActiveWeaponClipEmpty() const
 {
 	CBasePlayerWeapon *weapon = GetActiveWeapon();
 
@@ -284,7 +276,7 @@ bool CBot::IsActiveWeaponClipEmpty(void) const
 // Return true if active weapon has no ammo at all
 
 /* <490096> ../game_shared/bot/bot.cpp:307 */
-bool CBot::IsActiveWeaponOutOfAmmo(void) const
+bool CBot::IsActiveWeaponOutOfAmmo() const
 {
 	CBasePlayerWeapon *gun = GetActiveWeapon();
 
@@ -303,7 +295,7 @@ bool CBot::IsActiveWeaponOutOfAmmo(void) const
 // Return true if looking thru weapon's scope
 
 /* <4900d4> ../game_shared/bot/bot.cpp:327 */
-bool CBot::IsUsingScope(void) const
+bool CBot::IsUsingScope() const
 {
 	// if our field of view is less than 90, we're looking thru a scope (maybe only true for CS...)
 	if (m_iFOV < 90.0f)
@@ -313,7 +305,7 @@ bool CBot::IsUsingScope(void) const
 }
 
 /* <48f989> ../game_shared/bot/bot.cpp:338 */
-void CBot::__MAKE_VHOOK(ExecuteCommand)(void)
+void CBot::__MAKE_VHOOK(ExecuteCommand)()
 {
 	byte adjustedMSec;
 
@@ -337,7 +329,7 @@ void CBot::__MAKE_VHOOK(ExecuteCommand)(void)
 }
 
 /* <4900fa> ../game_shared/bot/bot.cpp:362 */
-void CBot::ResetCommand(void)
+void CBot::ResetCommand()
 {
 	m_forwardSpeed = 0.0f;
 	m_strafeSpeed = 0.0f;
@@ -346,7 +338,7 @@ void CBot::ResetCommand(void)
 }
 
 /* <49011b> ../game_shared/bot/bot.cpp:372 */
-byte CBot::ThrottledMsec(void) const
+byte CBot::ThrottledMsec() const
 {
 	int iNewMsec;
 
@@ -402,7 +394,7 @@ bool CBot::IsEnemy(CBaseEntity *ent) const
 // Return number of enemies left alive
 
 /* <49021a> ../game_shared/bot/bot.cpp:434 */
-int CBot::GetEnemiesRemaining(void) const
+int CBot::GetEnemiesRemaining() const
 {
 	int count = 0;
 
@@ -434,7 +426,7 @@ int CBot::GetEnemiesRemaining(void) const
 // Return number of friends left alive
 
 /* <490338> ../game_shared/bot/bot.cpp:467 */
-int CBot::GetFriendsRemaining(void) const
+int CBot::GetFriendsRemaining() const
 {
 	int count = 0;
 
@@ -467,7 +459,7 @@ int CBot::GetFriendsRemaining(void) const
 }
 
 /* <490489> ../game_shared/bot/bot.cpp:503 */
-bool CBot::IsLocalPlayerWatchingMe(void) const
+bool CBot::IsLocalPlayerWatchingMe() const
 {
 	// avoid crash during spawn
 	if (pev == NULL)
@@ -551,7 +543,7 @@ ActiveGrenade::ActiveGrenade(int weaponID, CGrenade *grenadeEntity)
 }
 
 /* <49069d> ../game_shared/bot/bot.cpp:597 */
-void ActiveGrenade::OnEntityGone(void)
+void ActiveGrenade::OnEntityGone()
 {
 	if (m_id == WEAPON_SMOKEGRENADE)
 	{
@@ -564,7 +556,7 @@ void ActiveGrenade::OnEntityGone(void)
 }
 
 /* <4906e1> ../game_shared/bot/bot.cpp:610 */
-bool ActiveGrenade::IsValid(void) const
+bool ActiveGrenade::IsValid() const
 {
 	if (!m_entity)
 	{
@@ -575,101 +567,7 @@ bool ActiveGrenade::IsValid(void) const
 }
 
 /* <490710> ../game_shared/bot/bot.cpp:622 */
-const Vector *ActiveGrenade::GetPosition(void) const
+const Vector *ActiveGrenade::GetPosition() const
 {
 	return &m_entity->pev->origin;
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CBot::Spawn(void)
-{
-	Spawn_();
-}
-
-Vector CBot::GetAutoaimVector(float flDelta)
-{
-	return GetAutoaimVector_(flDelta);
-}
-
-bool CBot::Initialize(const BotProfile *profile)
-{
-	return Initialize_(profile);
-}
-
-void CBot::Crouch(void)
-{
-	Crouch_();
-}
-
-void CBot::StandUp(void)
-{
-	StandUp_();
-}
-
-void CBot::MoveForward(void)
-{
-	MoveForward_();
-}
-
-void CBot::MoveBackward(void)
-{
-	MoveBackward_();
-}
-
-void CBot::StrafeLeft(void)
-{
-	StrafeLeft_();
-}
-
-void CBot::StrafeRight(void)
-{
-	StrafeRight_();
-}
-
-bool CBot::Jump(bool mustJump)
-{
-	return Jump_(mustJump);
-}
-
-void CBot::ClearMovement(void)
-{
-	ClearMovement_();
-}
-
-void CBot::UseEnvironment(void)
-{
-	UseEnvironment_();
-}
-
-void CBot::PrimaryAttack(void)
-{
-	PrimaryAttack_();
-}
-
-void CBot::ClearPrimaryAttack(void)
-{
-	ClearPrimaryAttack_();
-}
-
-void CBot::TogglePrimaryAttack(void)
-{
-	TogglePrimaryAttack_();
-}
-
-void CBot::SecondaryAttack(void)
-{
-	SecondaryAttack_();
-}
-
-void CBot::Reload(void)
-{
-	Reload_();
-}
-
-void CBot::ExecuteCommand(void)
-{
-	ExecuteCommand_();
-}
-
-#endif // HOOK_GAMEDLL

@@ -28,20 +28,17 @@ char *const g_TutorStateStrings[20] =
 	"#Cstrike_TutorState_Buy_Time",
 	"#Cstrike_TutorState_Waiting_For_Start"
 };
-#else
-
-char *const g_TutorStateStrings[20];
 
 #endif // HOOK_GAMEDLL
 
 /* <22bf8e> ../cstrike/dlls/tutor_cs_states.cpp:53 */
-CCSTutorStateSystem::CCSTutorStateSystem(void)
+CCSTutorStateSystem::CCSTutorStateSystem()
 {
 	m_currentState = new CCSTutorUndefinedState;
 }
 
 /* <22bd56> ../cstrike/dlls/tutor_cs_states.cpp:58 */
-CCSTutorStateSystem::~CCSTutorStateSystem(void)
+CCSTutorStateSystem::~CCSTutorStateSystem()
 {
 	if (m_currentState != NULL)
 	{
@@ -80,7 +77,7 @@ bool CCSTutorStateSystem::__MAKE_VHOOK(UpdateState)(GameEventType event, CBaseEn
 }
 
 /* <22b96f> ../cstrike/dlls/tutor_cs_states.cpp:108 */
-char *CCSTutorStateSystem::__MAKE_VHOOK(GetCurrentStateString)(void)
+char *CCSTutorStateSystem::__MAKE_VHOOK(GetCurrentStateString)()
 {
 	if (m_currentState != NULL)
 	{
@@ -115,13 +112,13 @@ CBaseTutorState *CCSTutorStateSystem::__MAKE_VHOOK(ConstructNewState)(int stateT
 }
 
 /* <22bfcb> ../cstrike/dlls/tutor_cs_states.cpp:141 */
-CCSTutorUndefinedState::CCSTutorUndefinedState(void)
+CCSTutorUndefinedState::CCSTutorUndefinedState()
 {
 	m_type = 0;
 }
 
 /* <22bb33> ../cstrike/dlls/tutor_cs_states.cpp:146 */
-CCSTutorUndefinedState::~CCSTutorUndefinedState(void)
+CCSTutorUndefinedState::~CCSTutorUndefinedState()
 {
 	;
 }
@@ -129,14 +126,12 @@ CCSTutorUndefinedState::~CCSTutorUndefinedState(void)
 /* <22bdd8> ../cstrike/dlls/tutor_cs_states.cpp:150 */
 int CCSTutorUndefinedState::__MAKE_VHOOK(CheckForStateTransition)(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
 {
-	int ret = 0;
-
 	if (event == EVENT_PLAYER_SPAWNED)
 	{
-		ret = HandlePlayerSpawned(entity, other);
+		return HandlePlayerSpawned(entity, other);
 	}
 
-	return ret;
+	return 0;
 }
 
 /* <22bfed> ../cstrike/dlls/tutor_cs_states.cpp:163 */
@@ -146,7 +141,7 @@ int CCSTutorUndefinedState::HandlePlayerSpawned(CBaseEntity *entity, CBaseEntity
 
 	if (localPlayer != NULL)
 	{
-		CBasePlayer *player = reinterpret_cast<CBasePlayer *>(entity);
+		CBasePlayer *player = static_cast<CBasePlayer *>(entity);
 
 		if (player != NULL && player->IsPlayer() && player == localPlayer)
 		{
@@ -159,19 +154,19 @@ int CCSTutorUndefinedState::HandlePlayerSpawned(CBaseEntity *entity, CBaseEntity
 }
 
 /* <22b995> ../cstrike/dlls/tutor_cs_states.cpp:190 */
-char *CCSTutorUndefinedState::__MAKE_VHOOK(GetStateString)(void)
+char *CCSTutorUndefinedState::__MAKE_VHOOK(GetStateString)()
 {
 	return NULL;
 }
 
 /* <22c03e> ../cstrike/dlls/tutor_cs_states.cpp:198 */
-CCSTutorWaitingForStartState::CCSTutorWaitingForStartState(void)
+CCSTutorWaitingForStartState::CCSTutorWaitingForStartState()
 {
 	m_type = (TUTORMESSAGETYPE_ENEMY_DEATH | TUTORMESSAGETYPE_BUY);
 }
 
 /* <22bab6> ../cstrike/dlls/tutor_cs_states.cpp:203 */
-CCSTutorWaitingForStartState::~CCSTutorWaitingForStartState(void)
+CCSTutorWaitingForStartState::~CCSTutorWaitingForStartState()
 {
 	;
 }
@@ -179,23 +174,19 @@ CCSTutorWaitingForStartState::~CCSTutorWaitingForStartState(void)
 /* <22beca> ../cstrike/dlls/tutor_cs_states.cpp:207 */
 int CCSTutorWaitingForStartState::__MAKE_VHOOK(CheckForStateTransition)(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
 {
-	int ret = 0;
-
 	switch (event)
 	{
 	case EVENT_PLAYER_SPAWNED:
-		ret = HandlePlayerSpawned(entity, other);
-		break;
+		return HandlePlayerSpawned(entity, other);
 	case EVENT_BUY_TIME_START:
-		ret = HandleBuyTimeStart(entity, other);
-		break;
+		return HandleBuyTimeStart(entity, other);
 	}
 
-	return ret;
+	return 0;
 }
 
 /* <22b9bb> ../cstrike/dlls/tutor_cs_states.cpp:224 */
-char *CCSTutorWaitingForStartState::__MAKE_VHOOK(GetStateString)(void)
+char *CCSTutorWaitingForStartState::__MAKE_VHOOK(GetStateString)()
 {
 	return g_TutorStateStrings[m_type];
 }
@@ -207,7 +198,7 @@ int CCSTutorWaitingForStartState::HandlePlayerSpawned(CBaseEntity *entity, CBase
 
 	if (localPlayer != NULL)
 	{
-		CBasePlayer *player = reinterpret_cast<CBasePlayer *>(entity);
+		CBasePlayer *player = static_cast<CBasePlayer *>(entity);
 
 		if (player != NULL && player->IsPlayer() && player == localPlayer)
 		{
@@ -226,13 +217,13 @@ int CCSTutorWaitingForStartState::HandleBuyTimeStart(CBaseEntity *entity, CBaseE
 }
 
 /* <22c0e2> ../cstrike/dlls/tutor_cs_states.cpp:266 */
-CCSTutorBuyMenuState::CCSTutorBuyMenuState(void)
+CCSTutorBuyMenuState::CCSTutorBuyMenuState()
 {
 	m_type = (TUTORMESSAGETYPE_DEFAULT | TUTORMESSAGETYPE_FRIEND_DEATH | TUTORMESSAGETYPE_BUY);
 }
 
 /* <22ba5a> ../cstrike/dlls/tutor_cs_states.cpp:271 */
-CCSTutorBuyMenuState::~CCSTutorBuyMenuState(void)
+CCSTutorBuyMenuState::~CCSTutorBuyMenuState()
 {
 	;
 }
@@ -249,7 +240,7 @@ int CCSTutorBuyMenuState::__MAKE_VHOOK(CheckForStateTransition)(GameEventType ev
 }
 
 /* <22ba34> ../cstrike/dlls/tutor_cs_states.cpp:288 */
-char *CCSTutorBuyMenuState::__MAKE_VHOOK(GetStateString)(void)
+char *CCSTutorBuyMenuState::__MAKE_VHOOK(GetStateString)()
 {
 	return g_TutorStateStrings[m_type];
 }
@@ -259,52 +250,3 @@ int CCSTutorBuyMenuState::HandleRoundStart(CBaseEntity *entity, CBaseEntity *oth
 {
 	return TUTOR_STATE_FLAG_1;
 }
-
-#ifdef HOOK_GAMEDLL
-
-bool CCSTutorStateSystem::UpdateState(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
-{
-	return UpdateState_(event, entity, other);
-}
-
-char *CCSTutorStateSystem::GetCurrentStateString(void)
-{
-	return GetCurrentStateString_();
-}
-
-CBaseTutorState *CCSTutorStateSystem::ConstructNewState(int stateType)
-{
-	return ConstructNewState_(stateType);
-}
-
-int CCSTutorUndefinedState::CheckForStateTransition(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
-{
-	return CheckForStateTransition_(event, entity, other);
-}
-
-char *CCSTutorUndefinedState::GetStateString(void)
-{
-	return GetStateString_();
-}
-
-int CCSTutorWaitingForStartState::CheckForStateTransition(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
-{
-	return CheckForStateTransition_(event, entity, other);
-}
-
-char *CCSTutorWaitingForStartState::GetStateString(void)
-{
-	return GetStateString_();
-}
-
-int CCSTutorBuyMenuState::CheckForStateTransition(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
-{
-	return CheckForStateTransition_(event, entity, other);
-}
-
-char *CCSTutorBuyMenuState::GetStateString(void)
-{
-	return GetStateString_();
-}
-
-#endif // HOOK_GAMEDLL

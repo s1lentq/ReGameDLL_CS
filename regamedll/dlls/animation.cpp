@@ -11,10 +11,6 @@ sv_blending_interface_t svBlending =
 	SV_StudioSetupBones
 };
 
-#else
-
-sv_blending_interface_t svBlending;
-
 #endif // HOOK_GAMEDLL
 
 server_studio_api_t IEngineStudio;
@@ -22,12 +18,6 @@ studiohdr_t *g_pstudiohdr;
 
 float (*g_pRotationMatrix)[3][4];
 float (*g_pBoneTransform)[128][3][4];
-
-float omega;
-float cosom;
-float sinom;
-float sclp;
-float sclq;
 
 /* <1523e> ../cstrike/dlls/animation.cpp:57 */
 int ExtractBbox(void *pmodel, int sequence, float *mins, float *maxs)
@@ -657,7 +647,8 @@ void QuaternionSlerp(vec_t *p, vec_t *q, float t, vec_t *qt)
 			q[i] = -q[i];
 	}
 
-	cosom = (p[0] * q[0] + p[1] * q[1] + p[2] * q[2] + p[3] * q[3]);
+	float sclp, sclq;
+	float cosom = (p[0] * q[0] + p[1] * q[1] + p[2] * q[2] + p[3] * q[3]);
 
 	if ((1.0 + cosom) > 0.00000001)
 	{
@@ -665,8 +656,8 @@ void QuaternionSlerp(vec_t *p, vec_t *q, float t, vec_t *qt)
 		{
 			float_precision cosomega = acos((float_precision)cosom);
 
-			omega = cosomega;
-			sinom = sin(cosomega);
+			float omega = cosomega;
+			float sinom = sin(cosomega);
 
 			sclp = sin((1.0 - t) * omega) / sinom;
 			sclq = sin((float_precision)(omega * t)) / sinom;
@@ -1040,8 +1031,8 @@ void SV_StudioSetupBones(model_t *pModel, float frame, int sequence, const vec_t
 	int chainlength;
 	vec3_t temp_angles;
 	
-	static float pos[MAXSTUDIOBONES][3], pos2[MAXSTUDIOBONES][3];
-	static float q[MAXSTUDIOBONES][4], q2[MAXSTUDIOBONES][4];
+	/*static */float pos[MAXSTUDIOBONES][3], pos2[MAXSTUDIOBONES][3];
+	/*static */float q[MAXSTUDIOBONES][4], q2[MAXSTUDIOBONES][4];
 
 	g_pstudiohdr = (studiohdr_t *)IEngineStudio.Mod_Extradata(pModel);
 
@@ -1074,7 +1065,7 @@ void SV_StudioSetupBones(model_t *pModel, float frame, int sequence, const vec_t
 	f = StudioEstimateFrame(frame, pseqdesc);
 	subframe = (int)f;
 	f -= subframe;
-
+	
 	StudioCalcBoneAdj(0, adj, pcontroller, pcontroller, 0);
 	StudioCalcRotations(pbones, chain, chainlength, adj, pos, q, pseqdesc, panim, subframe, f);
 
@@ -1095,8 +1086,8 @@ void SV_StudioSetupBones(model_t *pModel, float frame, int sequence, const vec_t
 	// This game knows how to do nine way blending
 	else
 	{
-		static float pos3[MAXSTUDIOBONES][3], pos4[MAXSTUDIOBONES][3];
-		static float q3[MAXSTUDIOBONES][4], q4[MAXSTUDIOBONES][4];
+		/*static */float pos3[MAXSTUDIOBONES][3], pos4[MAXSTUDIOBONES][3];
+		/*static */float q3[MAXSTUDIOBONES][4], q4[MAXSTUDIOBONES][4];
 		
 		float_precision s, t;
 

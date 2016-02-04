@@ -59,6 +59,5 @@ typedef struct weapon_data_s
 	float fuser4;
 
 } weapon_data_t;
-/* size: 88, cachelines: 2, members: 22 */
 
 #endif // WEAPONINFO_H

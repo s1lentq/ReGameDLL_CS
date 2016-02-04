@@ -3,7 +3,7 @@
 // Lightweight maintenance, invoked frequently
 
 /* <3c635f> ../cstrike/dlls/bot/cs_bot_update.cpp:26 */
-void CCSBot::__MAKE_VHOOK(Upkeep)(void)
+void CCSBot::__MAKE_VHOOK(Upkeep)()
 {
 	CCSBotManager *ctrl = TheCSBots();
 
@@ -153,7 +153,7 @@ void CCSBot::__MAKE_VHOOK(Upkeep)(void)
 // Heavyweight processing, invoked less often
 
 /* <3c6e1e> ../cstrike/dlls/bot/cs_bot_update.cpp:208 */
-void CCSBot::__MAKE_VHOOK(Update)(void)
+void CCSBot::__MAKE_VHOOK(Update)()
 {
 	CCSBotManager *ctrl = TheCSBots();
 
@@ -175,7 +175,7 @@ void CCSBot::__MAKE_VHOOK(Update)(void)
 	// need to allow bots to finish their chatter even if they are dead
 	GetChatter()->Update();
 
-	if (m_voiceFeedbackEndTimestamp != 0.0f 
+	if (m_voiceFeedbackEndTimestamp != 0.0f
 		&& (m_voiceFeedbackEndTimestamp <= gpGlobals->time || gpGlobals->time < m_voiceFeedbackStartTimestamp))
 	{
 		EndVoiceFeedback(NO_FORCE);
@@ -745,17 +745,3 @@ void CCSBot::__MAKE_VHOOK(Update)(void)
 	// remember our prior safe time status
 	m_wasSafe = IsSafe();
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CCSBot::Upkeep(void)
-{
-	Upkeep_();
-}
-
-void CCSBot::Update(void)
-{
-	Update_();
-}
-
-#endif // HOOK_GAMEDLL

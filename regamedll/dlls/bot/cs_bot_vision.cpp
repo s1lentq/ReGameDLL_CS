@@ -31,7 +31,7 @@ float StayOnLadderLine(CCSBot *me, const CNavLadder *ladder)
 
 /* <3d882c> ../cstrike/dlls/bot/cs_bot_vision.cpp:48 */
 #ifndef HOOK_GAMEDLL
-void CCSBot::UpdateLookAngles(void)
+void CCSBot::UpdateLookAngles()
 {
 	const float deltaT = g_flBotCommandInterval;
 	float maxAccel;
@@ -293,7 +293,7 @@ bool CCSBot::__MAKE_VHOOK(IsEnemyPartVisible)(VisiblePartType part) const
 }
 
 /* <3d8f0d> ../cstrike/dlls/bot/cs_bot_vision.cpp:331 */
-void CCSBot::UpdateLookAt(void)
+void CCSBot::UpdateLookAt()
 {
 	Vector to = m_lookAtSpot - EyePosition();
 	Vector idealAngle = UTIL_VecToAngles(to);
@@ -348,7 +348,7 @@ void CCSBot::InhibitLookAround(float duration)
 // Update enounter spot timestamps, etc
 
 /* <3d90d3> ../cstrike/dlls/bot/cs_bot_vision.cpp:392 */
-void CCSBot::UpdatePeripheralVision(void)
+void CCSBot::UpdatePeripheralVision()
 {
 	// if we update at 10Hz, this ensures we test once every three
 	const float peripheralUpdateInterval = 0.29f;
@@ -653,7 +653,7 @@ bool CCSBot::BendLineOfSight(const Vector *eye, const Vector *point, Vector *ben
 }
 
 /* <3d99e8> ../cstrike/dlls/bot/cs_bot_vision.cpp:707 */
-CBasePlayer *CCSBot::FindMostDangerousThreat(void)
+CBasePlayer *CCSBot::FindMostDangerousThreat()
 {
 	// maximum number of simulataneously attendable threats
 	enum { MAX_THREATS = 16 };
@@ -909,7 +909,7 @@ CBasePlayer *CCSBot::FindMostDangerousThreat(void)
 // Update our reaction time queue
 
 /* <3d9f7d> ../cstrike/dlls/bot/cs_bot_vision.cpp:960 */
-void CCSBot::UpdateReactionQueue(void)
+void CCSBot::UpdateReactionQueue()
 {
 	// zombies dont see any threats
 	if (cv_bot_zombie.value > 0.0f)
@@ -961,7 +961,7 @@ void CCSBot::UpdateReactionQueue(void)
 // Return the most dangerous threat we are "conscious" of
 
 /* <3da052> ../cstrike/dlls/bot/cs_bot_vision.cpp:1013 */
-CBasePlayer *CCSBot::GetRecognizedEnemy(void)
+CBasePlayer *CCSBot::GetRecognizedEnemy()
 {
 	if (m_enemyQueueAttendIndex >= m_enemyQueueCount)
 		return NULL;
@@ -972,7 +972,7 @@ CBasePlayer *CCSBot::GetRecognizedEnemy(void)
 // Return true if the enemy we are "conscious" of is reloading
 
 /* <3da075> ../cstrike/dlls/bot/cs_bot_vision.cpp:1025 */
-bool CCSBot::IsRecognizedEnemyReloading(void)
+bool CCSBot::IsRecognizedEnemyReloading()
 {
 	if (m_enemyQueueAttendIndex >= m_enemyQueueCount)
 		return false;
@@ -983,7 +983,7 @@ bool CCSBot::IsRecognizedEnemyReloading(void)
 // Return true if the enemy we are "conscious" of is hiding behind a shield
 
 /* <3da09d> ../cstrike/dlls/bot/cs_bot_vision.cpp:1037 */
-bool CCSBot::IsRecognizedEnemyProtectedByShield(void)
+bool CCSBot::IsRecognizedEnemyProtectedByShield()
 {
 	if (m_enemyQueueAttendIndex >= m_enemyQueueCount)
 		return false;
@@ -994,7 +994,7 @@ bool CCSBot::IsRecognizedEnemyProtectedByShield(void)
 // Return distance to closest enemy we are "conscious" of
 
 /* <3da0c5> ../cstrike/dlls/bot/cs_bot_vision.cpp:1049 */
-float CCSBot::GetRangeToNearestRecognizedEnemy(void)
+float CCSBot::GetRangeToNearestRecognizedEnemy()
 {
 	const CBasePlayer *enemy = GetRecognizedEnemy();
 
@@ -1030,33 +1030,3 @@ void CCSBot::__MAKE_VHOOK(Blind)(float duration, float holdTime, float fadeTime,
 	// no longer safe
 	AdjustSafeTime();
 }
-
-#ifdef HOOK_GAMEDLL
-
-void (*pCCSBot__UpdateLookAngles)(void);
-void __declspec(naked) CCSBot::UpdateLookAngles(void)
-{
-	__asm { jmp pCCSBot__UpdateLookAngles }
-}
-
-void CCSBot::Blind(float duration, float holdTime, float fadeTime, int alpha)
-{
-	Blind_(duration, holdTime, fadeTime, alpha);
-}
-
-bool CCSBot::IsVisible(const Vector *pos, bool testFOV) const
-{
-	return IsVisible_(pos, testFOV);
-}
-
-bool CCSBot::IsVisible(CBasePlayer *player, bool testFOV, unsigned char *visParts) const
-{
-	return IsVisible_(player, testFOV, visParts);
-}
-
-bool CCSBot::IsEnemyPartVisible(VisiblePartType part) const
-{
-	return IsEnemyPartVisible_(part);
-}
-
-#endif // HOOK_GAMEDLL

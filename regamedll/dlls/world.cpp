@@ -67,20 +67,25 @@ TYPEDESCRIPTION gGlobalEntitySaveData[] =
 	DEFINE_FIELD(globalentity_t, state, FIELD_INTEGER)
 };
 
-#else // HOOK_GAMEDLL
-
-DLL_DECALLIST gDecals[42];
-
-TYPEDESCRIPTION IMPL_CLASS(CGlobalState, m_SaveData)[1];
-TYPEDESCRIPTION gGlobalEntitySaveData[3];
-
 #endif // HOOK_GAMEDLL
+
+/* <1d9f84> ../cstrike/dlls/world.cpp:111 */
+class CDecal: public CBaseEntity
+{
+public:
+	virtual void Spawn();
+	virtual void KeyValue(KeyValueData *pkvd);
+
+public:
+	void EXPORT StaticDecal();
+	void EXPORT TriggerDecal(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+};
 
 /* <1db42b> ../cstrike/dlls/world.cpp:120 */
 LINK_ENTITY_TO_CLASS(infodecal, CDecal);
 
 /* <1db00a> ../cstrike/dlls/world.cpp:123 */
-void CDecal::__MAKE_VHOOK(Spawn)(void)
+void CDecal::Spawn()
 {
 	if (pev->skin < 0 || (gpGlobals->deathmatch != 0.0f && (pev->spawnflags & SF_DECAL_NOTINDEATHMATCH)))
 	{
@@ -132,7 +137,7 @@ void CDecal::TriggerDecal(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYP
 }
 
 /* <1daee2> ../cstrike/dlls/world.cpp:171 */
-void CDecal::StaticDecal(void)
+void CDecal::StaticDecal()
 {
 	TraceResult trace;
 	int entityIndex, modelIndex;
@@ -142,16 +147,16 @@ void CDecal::StaticDecal(void)
 	entityIndex = (short)ENTINDEX(trace.pHit);
 
 	if (entityIndex)
-		modelIndex = (int)VARS(trace.pHit)->modelindex;
+		modelIndex = VARS(trace.pHit)->modelindex;
 	else
 		modelIndex = 0;
 
-	STATIC_DECAL(pev->origin, (int)pev->skin, entityIndex, modelIndex);
+	STATIC_DECAL(pev->origin, pev->skin, entityIndex, modelIndex);
 	SUB_Remove();
 }
 
 /* <1db068> ../cstrike/dlls/world.cpp:190 */
-void CDecal::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CDecal::KeyValue(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "texture"))
 	{
@@ -167,11 +172,20 @@ void CDecal::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CBaseEntity::KeyValue(pkvd);
 }
 
+// Body queue class here.... It's really just CBaseEntity
+
+/* <1d9fd1> ../cstrike/dlls/world.cpp:207 */
+class CCorpse: public CBaseEntity
+{
+public:
+	virtual int ObjectCaps() { return FCAP_DONT_SAVE; }
+};
+
 /* <1db4f5> ../cstrike/dlls/world.cpp:212 */
 LINK_ENTITY_TO_CLASS(bodyque, CCorpse);
 
 /* <1da107> ../cstrike/dlls/world.cpp:214 */
-static void InitBodyQue(void)
+static void InitBodyQue()
 {
 	g_pBodyQueueHead = NULL;
 }
@@ -213,19 +227,19 @@ void CopyToBodyQue(entvars_t *pev)
 }
 
 /* <1db5e9> ../cstrike/dlls/world.cpp:275 */
-void ClearBodyQue(void)
+void ClearBodyQue()
 {
 	;
 }
 
 /* <1db601> ../cstrike/dlls/world.cpp:294 */
-CGlobalState::CGlobalState(void)
+CGlobalState::CGlobalState()
 {
 	Reset();
 }
 
 /* <1db63b> ../cstrike/dlls/world.cpp:299 */
-void CGlobalState::Reset(void)
+void CGlobalState::Reset()
 {
 	m_pList = NULL;
 	m_listCount = 0;
@@ -254,7 +268,7 @@ globalentity_t *CGlobalState::Find(string_t globalname)
 // This is available all the time now on impulse 104, remove later
 
 /* <1db703> ../cstrike/dlls/world.cpp:329 */
-void CGlobalState::DumpGlobals(void)
+void CGlobalState::DumpGlobals()
 {
 	static char *estates[] = { "Off", "On", "Dead" };
 	globalentity_t *pTest;
@@ -387,7 +401,7 @@ void CGlobalState::EntityUpdate(string_t globalname, string_t mapname)
 }
 
 /* <1dbbae> ../cstrike/dlls/world.cpp:453 */
-void CGlobalState::ClearStates(void)
+void CGlobalState::ClearStates()
 {
 	globalentity_t *pFree = m_pList;
 
@@ -417,7 +431,7 @@ void EXT_FUNC RestoreGlobalState(SAVERESTOREDATA *pSaveData)
 }
 
 /* <1dbe72> ../cstrike/dlls/world.cpp:480 */
-void EXT_FUNC ResetGlobalState(void)
+void EXT_FUNC ResetGlobalState()
 {
 	gGlobalState.ClearStates();
 
@@ -429,7 +443,7 @@ void EXT_FUNC ResetGlobalState(void)
 LINK_ENTITY_TO_CLASS(worldspawn, CWorld);
 
 /* <1dad1d> ../cstrike/dlls/world.cpp:502 */
-void CWorld::__MAKE_VHOOK(Spawn)(void)
+void CWorld::__MAKE_VHOOK(Spawn)()
 {
 	EmptyEntityHashTable();
 	g_fGameOver = FALSE;
@@ -472,7 +486,7 @@ void CWorld::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <1dac06> ../cstrike/dlls/world.cpp:542 */
-void CWorld::__MAKE_VHOOK(Precache)(void)
+void CWorld::__MAKE_VHOOK(Precache)()
 {
 	g_pLastSpawn = NULL;
 	g_pLastCTSpawn = NULL;
@@ -493,9 +507,9 @@ void CWorld::__MAKE_VHOOK(Precache)(void)
 
 	g_pGameRules = (CHalfLifeMultiplay *)InstallGameRules();
 
-	//!!!UNDONE why is there so much Spawn code in the Precache function? I'll just keep it here
+	// UNDONE why is there so much Spawn code in the Precache function? I'll just keep it here
 
-	///!!!LATER - do we want a sound ent in deathmatch? (sjb)
+	// LATER - do we want a sound ent in deathmatch? (sjb)
 	//pSoundEnt = CBaseEntity::Create("soundent", g_vecZero, g_vecZero, edict());
 	pSoundEnt = GetClassPtr((CSoundEnt *)NULL);
 	pSoundEnt->Spawn();
@@ -526,7 +540,7 @@ void CWorld::__MAKE_VHOOK(Precache)(void)
 	// clears sound channels
 	PRECACHE_SOUND("common/null.wav");
 
-	//!!! temporary sound for respawning weapons.
+	// temporary sound for respawning weapons.
 	PRECACHE_SOUND("items/suitchargeok1.wav");
 
 	// player picks up a gun.
@@ -734,32 +748,3 @@ void CWorld::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 	else
 		CBaseEntity::KeyValue(pkvd);
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CDecal::Spawn(void)
-{
-	Spawn_();
-}
-
-void CDecal::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-void CWorld::Spawn(void)
-{
-	Spawn_();
-}
-
-void CWorld::Precache(void)
-{
-	Precache_();
-}
-
-void CWorld::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-#endif // HOOK_GAMEDLL

@@ -47,22 +47,3 @@ void UseEntityState::__MAKE_VHOOK(OnExit)(CCSBot *me)
 	me->ClearLookAt();
 	me->ResetStuckMonitor();
 }
-
-#ifdef HOOK_GAMEDLL
-
-void UseEntityState::OnEnter(CCSBot *me)
-{
-	OnEnter_(me);
-}
-
-void UseEntityState::OnUpdate(CCSBot *me)
-{
-	OnUpdate_(me);
-}
-
-void UseEntityState::OnExit(CCSBot *me)
-{
-	OnExit_(me);
-}
-
-#endif // HOOK_GAMEDLL

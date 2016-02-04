@@ -36,22 +36,19 @@
 class CFuncMortarField: public CBaseToggle
 {
 public:
-	virtual void Spawn(void);
-	virtual void Precache(void);
+	virtual void Spawn();
+	virtual void Precache();
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
 
 	// Bmodels don't go across transitions
-	virtual int ObjectCaps(void)
-	{
-		return CBaseToggle::ObjectCaps() & ~FCAP_ACROSS_TRANSITION;
-	}
+	virtual int ObjectCaps() { return CBaseToggle::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Precache_(void);
+	void Spawn_();
+	void Precache_();
 	void KeyValue_(KeyValueData *pkvd);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
@@ -71,36 +68,26 @@ public:
 	float m_flDelay;
 	int m_iCount;
 	int m_fControl;
-
-};/* size: 336, cachelines: 6, members: 8 */
+};
 
 /* <f5f11> ../cstrike/dlls/mortar.cpp:192 */
 class CMortar: public CGrenade
 {
 public:
-	virtual void Spawn(void);
-	virtual void Precache(void);
+	virtual void Spawn();
+	virtual void Precache();
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Precache_(void);
+	void Spawn_();
+	void Precache_();
 
 #endif // HOOK_GAMEDLL
 
-	void EXPORT MortarExplode(void);
+	void EXPORT MortarExplode();
 
 public:
 	int m_spriteTexture;
-
-};/* size: 504, cachelines: 8, members: 2 */
-
-#if HOOK_GAMEDLL
-
-// linked objects
-C_DLLEXPORT void func_mortar_field(entvars_t *pev);
-C_DLLEXPORT void monster_mortar(entvars_t *pev);
-
-#endif // HOOK_GAMEDLL
+};
 
 #endif // MORTAR_H

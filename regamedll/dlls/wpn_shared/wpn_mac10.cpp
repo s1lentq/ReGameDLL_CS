@@ -4,21 +4,22 @@
 LINK_ENTITY_TO_CLASS(weapon_mac10, CMAC10);
 
 /* <28658a> ../cstrike/dlls/wpn_shared/wpn_mac10.cpp:52 */
-void CMAC10::__MAKE_VHOOK(Spawn)(void)
+void CMAC10::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
+
 	m_iId = WEAPON_MAC10;
 	SET_MODEL(edict(), "models/w_mac10.mdl");
 
 	m_iDefaultAmmo = MAC10_DEFAULT_GIVE;
-	m_flAccuracy = 0.15;
+	m_flAccuracy = 0.15f;
 	m_bDelayFire = false;
 
 	FallInit();
 }
 
 /* <286509> ../cstrike/dlls/wpn_shared/wpn_mac10.cpp:66 */
-void CMAC10::__MAKE_VHOOK(Precache)(void)
+void CMAC10::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/v_mac10.mdl");
 	PRECACHE_MODEL("models/w_mac10.mdl");
@@ -51,9 +52,9 @@ int CMAC10::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 }
 
 /* <286563> ../cstrike/dlls/wpn_shared/wpn_mac10.cpp:99 */
-BOOL CMAC10::__MAKE_VHOOK(Deploy)(void)
+BOOL CMAC10::__MAKE_VHOOK(Deploy)()
 {
-	m_flAccuracy = 0.15;
+	m_flAccuracy = 0.15f;
 	iShellOn = 1;
 	m_bDelayFire = false;
 
@@ -61,7 +62,7 @@ BOOL CMAC10::__MAKE_VHOOK(Deploy)(void)
 }
 
 /* <286786> ../cstrike/dlls/wpn_shared/wpn_mac10.cpp:108 */
-void CMAC10::__MAKE_VHOOK(PrimaryAttack)(void)
+void CMAC10::__MAKE_VHOOK(PrimaryAttack)()
 {
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
 	{
@@ -80,12 +81,12 @@ void CMAC10::MAC10Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	int flag;
 
 	m_bDelayFire = true;
-	m_iShotsFired++;
+	++m_iShotsFired;
 
-	m_flAccuracy = ((m_iShotsFired * m_iShotsFired * m_iShotsFired) / 200) + 0.6;
+	m_flAccuracy = ((m_iShotsFired * m_iShotsFired * m_iShotsFired) / 200) + 0.6f;
 
-	if (m_flAccuracy > 1.65)
-		m_flAccuracy = 1.65;
+	if (m_flAccuracy > 1.65f)
+		m_flAccuracy = 1.65f;
 
 	if (m_iClip <= 0)
 	{
@@ -103,7 +104,7 @@ void CMAC10::MAC10Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 		return;
 	}
 
-	m_iClip--;
+	--m_iClip;
 	m_pPlayer->pev->effects |= EF_MUZZLEFLASH;
 	m_pPlayer->SetAnimation(PLAYER_ATTACK1);
 
@@ -134,7 +135,7 @@ void CMAC10::MAC10Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
 	}
 
-	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2;
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.0f;
 
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
 	{
@@ -155,12 +156,10 @@ void CMAC10::MAC10Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 }
 
 /* <28663b> ../cstrike/dlls/wpn_shared/wpn_mac10.cpp:199 */
-void CMAC10::__MAKE_VHOOK(Reload)(void)
+void CMAC10::__MAKE_VHOOK(Reload)()
 {
 	if (m_pPlayer->ammo_45acp <= 0)
-	{
 		return;
-	}
 
 	if (DefaultReload(MAC10_MAX_CLIP, MAC10_RELOAD, MAC10_RELOAD_TIME))
 	{
@@ -172,7 +171,7 @@ void CMAC10::__MAKE_VHOOK(Reload)(void)
 }
 
 /* <286600> ../cstrike/dlls/wpn_shared/wpn_mac10.cpp:213 */
-void CMAC10::__MAKE_VHOOK(WeaponIdle)(void)
+void CMAC10::__MAKE_VHOOK(WeaponIdle)()
 {
 	ResetEmptySound();
 	m_pPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);
@@ -182,45 +181,6 @@ void CMAC10::__MAKE_VHOOK(WeaponIdle)(void)
 		return;
 	}
 
-	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20;
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20.0f;
 	SendWeaponAnim(MAC10_IDLE1, UseDecrement() != FALSE);
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CMAC10::Spawn(void)
-{
-	Spawn_();
-}
-
-void CMAC10::Precache(void)
-{
-	Precache_();
-}
-
-int CMAC10::GetItemInfo(ItemInfo *p)
-{
-	return GetItemInfo_(p);
-}
-
-BOOL CMAC10::Deploy(void)
-{
-	return Deploy_();
-}
-
-void CMAC10::PrimaryAttack(void)
-{
-	PrimaryAttack_();
-}
-
-void CMAC10::Reload(void)
-{
-	Reload_();
-}
-
-void CMAC10::WeaponIdle(void)
-{
-	WeaponIdle_();
-}
-
-#endif // HOOK_GAMEDLL

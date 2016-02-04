@@ -21,10 +21,6 @@ TYPEDESCRIPTION CFuncVehicle::m_SaveData[] =
 	DEFINE_FIELD(CFuncVehicle, m_oldSpeed, FIELD_FLOAT),
 };
 
-#else
-
-TYPEDESCRIPTION IMPL_CLASS(CFuncVehicle, m_SaveData)[12];
-
 #endif // HOOK_GAMEDLL
 
 /* <1ba031> ../cstrike/dlls/vehicle.cpp:9 */
@@ -281,7 +277,7 @@ void CFuncVehicle::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCall
 }
 
 /* <1bc0bd> ../cstrike/dlls/vehicle.cpp:303 */
-void CFuncVehicle::StopSound(void)
+void CFuncVehicle::StopSound()
 {
 	if (m_soundPlaying && pev->noise)
 	{
@@ -295,7 +291,7 @@ void CFuncVehicle::StopSound(void)
 }
 
 /* <1bb33d> ../cstrike/dlls/vehicle.cpp:324 */
-void CFuncVehicle::UpdateSound(void)
+void CFuncVehicle::UpdateSound()
 {
 	if (!pev->noise)
 		return;
@@ -327,7 +323,7 @@ void CFuncVehicle::UpdateSound(void)
 }
 
 /* <1bc12b> ../cstrike/dlls/vehicle.cpp:368 */
-void CFuncVehicle::CheckTurning(void)
+void CFuncVehicle::CheckTurning()
 {
 	float_precision maxspeed;
 	TraceResult tr;
@@ -408,7 +404,7 @@ void CFuncVehicle::CheckTurning(void)
 }
 
 /* <1bc358> ../cstrike/dlls/vehicle.cpp:466 */
-void CFuncVehicle::CollisionDetection(void)
+void CFuncVehicle::CollisionDetection()
 {
 	TraceResult tr;
 	bool bHitSomething = false;
@@ -512,7 +508,7 @@ void CFuncVehicle::CollisionDetection(void)
 }
 
 /* <1bc7aa> ../cstrike/dlls/vehicle.cpp:588 */
-void CFuncVehicle::TerrainFollowing(void)
+void CFuncVehicle::TerrainFollowing()
 {
 	TraceResult tr;
 	UTIL_TraceLine(pev->origin, pev->origin + Vector(0, 0, (m_height + 48) * -1), ignore_monsters, dont_ignore_glass, ENT(pev), &tr);
@@ -528,7 +524,7 @@ void CFuncVehicle::TerrainFollowing(void)
 }
 
 /* <1bc856> ../cstrike/dlls/vehicle.cpp:609 */
-void CFuncVehicle::Next(void)
+void CFuncVehicle::Next()
 {
 	Vector vGravityVector, forward, right, up;
 	float time = 0.1;
@@ -683,7 +679,7 @@ void CFuncVehicle::Next(void)
 }
 
 /* <1bd087> ../cstrike/dlls/vehicle.cpp:764 */
-void CFuncVehicle::DeadEnd(void)
+void CFuncVehicle::DeadEnd()
 {
 	CPathTrack *pTrack = m_ppath;
 	ALERT(at_aiconsole, "TRAIN(%s): Dead end ", STRING(pev->targetname));
@@ -764,7 +760,7 @@ BOOL CFuncVehicle::__MAKE_VHOOK(OnControls)(entvars_t *pevTest)
 }
 
 /* <1bb676> ../cstrike/dlls/vehicle.cpp:841 */
-void CFuncVehicle::Find(void)
+void CFuncVehicle::Find()
 {
 	m_ppath = CPathTrack::Instance(FIND_ENTITY_BY_TARGETNAME(NULL, STRING(pev->target)));
 
@@ -804,7 +800,7 @@ void CFuncVehicle::Find(void)
 }
 
 /* <1bb840> ../cstrike/dlls/vehicle.cpp:878 */
-void CFuncVehicle::NearestPath(void)
+void CFuncVehicle::NearestPath()
 {
 	CBaseEntity *pTrack = NULL;
 	CBaseEntity *pNearest = NULL;
@@ -843,7 +839,7 @@ void CFuncVehicle::NearestPath(void)
 		}
 	}
 
-	m_ppath = reinterpret_cast<CPathTrack *>(pNearest);
+	m_ppath = static_cast<CPathTrack *>(pNearest);
 	if (pev->speed != 0)
 	{
 		NextThink(pev->ltime + 0.1, FALSE);
@@ -852,7 +848,7 @@ void CFuncVehicle::NearestPath(void)
 }
 
 /* <1bb00a> ../cstrike/dlls/vehicle.cpp:926 */
-void CFuncVehicle::__MAKE_VHOOK(OverrideReset)(void)
+void CFuncVehicle::__MAKE_VHOOK(OverrideReset)()
 {
 	NextThink(pev->ltime + 0.1, FALSE);
 	SetThink(&CFuncVehicle::NearestPath);
@@ -870,13 +866,13 @@ CFuncVehicle *CFuncVehicle::Instance(edict_t *pent)
 }
 
 /* <1bb055> ../cstrike/dlls/vehicle.cpp:951 */
-int CFuncVehicle::__MAKE_VHOOK(Classify)(void)
+int CFuncVehicle::__MAKE_VHOOK(Classify)()
 {
 	return CLASS_VEHICLE;
 }
 
 /* <1bb0ef> ../cstrike/dlls/vehicle.cpp:956 */
-void CFuncVehicle::__MAKE_VHOOK(Spawn)(void)
+void CFuncVehicle::__MAKE_VHOOK(Spawn)()
 {
 	if (pev->speed == 0)
 		m_speed = 165;
@@ -926,7 +922,7 @@ void CFuncVehicle::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <1bb13e> ../cstrike/dlls/vehicle.cpp:1005 */
-void CFuncVehicle::__MAKE_VHOOK(Restart)(void)
+void CFuncVehicle::__MAKE_VHOOK(Restart)()
 {
 	ALERT(at_console, "M_speed = %f\n", m_speed);
 
@@ -953,7 +949,7 @@ void CFuncVehicle::__MAKE_VHOOK(Restart)(void)
 }
 
 /* <1bb07b> ../cstrike/dlls/vehicle.cpp:1032 */
-void CFuncVehicle::__MAKE_VHOOK(Precache)(void)
+void CFuncVehicle::__MAKE_VHOOK(Precache)()
 {
 	if (m_flVolume == 0.0f)
 		m_flVolume = 1.0f;
@@ -978,7 +974,7 @@ void CFuncVehicle::__MAKE_VHOOK(Precache)(void)
 LINK_ENTITY_TO_CLASS(func_vehiclecontrols, CFuncVehicleControls);
 
 /* <1bbd36> ../cstrike/dlls/vehicle.cpp:1067 */
-void CFuncVehicleControls::Find(void)
+void CFuncVehicleControls::Find()
 {
 	edict_t *pTarget = NULL;
 
@@ -1001,7 +997,7 @@ void CFuncVehicleControls::Find(void)
 }
 
 /* <1bb0c8> ../cstrike/dlls/vehicle.cpp:1088 */
-void CFuncVehicleControls::__MAKE_VHOOK(Spawn)(void)
+void CFuncVehicleControls::__MAKE_VHOOK(Spawn)()
 {
 	pev->solid = SOLID_NOT;
 	pev->movetype = MOVETYPE_NONE;
@@ -1013,67 +1009,3 @@ void CFuncVehicleControls::__MAKE_VHOOK(Spawn)(void)
 	SetThink(&CFuncVehicleControls::Find);
 	pev->nextthink = gpGlobals->time;
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CFuncVehicle::Spawn(void)
-{
-	Spawn_();
-}
-
-void CFuncVehicle::Precache(void)
-{
-	Precache_();
-}
-
-void CFuncVehicle::Restart(void)
-{
-	Restart_();
-}
-
-void CFuncVehicle::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-int CFuncVehicle::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CFuncVehicle::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-int CFuncVehicle::Classify(void)
-{
-	return Classify_();
-}
-
-void CFuncVehicle::OverrideReset(void)
-{
-	OverrideReset_();
-}
-
-BOOL CFuncVehicle::OnControls(entvars_t *pev)
-{
-	return OnControls_(pev);
-}
-
-void CFuncVehicle::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	Use_(pActivator, pCaller, useType, value);
-}
-
-void CFuncVehicle::Blocked(CBaseEntity *pOther)
-{
-	Blocked_(pOther);
-}
-
-void CFuncVehicleControls::Spawn(void)
-{
-	Spawn_();
-}
-
-#endif // HOOK_GAMEDLL

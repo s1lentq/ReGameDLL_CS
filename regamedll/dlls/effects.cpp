@@ -59,15 +59,6 @@ TYPEDESCRIPTION CGibShooter::m_SaveData[] =
 	DEFINE_FIELD(CGibShooter, m_flGibLife, FIELD_FLOAT),
 };
 
-#else
-
-TYPEDESCRIPTION IMPL_CLASS(CBubbling, m_SaveData)[3];
-TYPEDESCRIPTION IMPL_CLASS(CLightning, m_SaveData)[13];
-TYPEDESCRIPTION IMPL_CLASS(CLaser, m_SaveData)[3];
-TYPEDESCRIPTION IMPL_CLASS(CGlow, m_SaveData)[2];
-TYPEDESCRIPTION IMPL_CLASS(CSprite, m_SaveData)[2];
-TYPEDESCRIPTION IMPL_CLASS(CGibShooter, m_SaveData)[7];
-
 #endif // HOOK_GAMEDLL
 
 /* <76042> ../cstrike/dlls/effects.cpp:33 */
@@ -80,7 +71,7 @@ LINK_ENTITY_TO_CLASS(env_bubbles, CBubbling);
 IMPLEMENT_SAVERESTORE(CBubbling, CBaseEntity);
 
 /* <7344d> ../cstrike/dlls/effects.cpp:73 */
-void CBubbling::__MAKE_VHOOK(Spawn)(void)
+void CBubbling::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
 	SET_MODEL(ENT(pev), STRING(pev->model));	// Set size
@@ -94,7 +85,7 @@ void CBubbling::__MAKE_VHOOK(Spawn)(void)
 
 	int speed = (pev->speed > 0) ? pev->speed : -pev->speed;
 
-	// HACKHACK!!! - Speed in rendercolor
+	// HACKHACK: Speed in rendercolor
 	pev->rendercolor.x = (speed >> 8);
 	pev->rendercolor.y = (speed & 255);
 	pev->rendercolor.z = (pev->speed < 0) ? 1 : 0;
@@ -103,7 +94,7 @@ void CBubbling::__MAKE_VHOOK(Spawn)(void)
 	{
 		SetThink(&CBubbling::FizzThink);
 
-		pev->nextthink = gpGlobals->time + 2.0;
+		pev->nextthink = gpGlobals->time + 2.0f;
 		m_state = 1;
 	}
 	else
@@ -111,7 +102,7 @@ void CBubbling::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <73489> ../cstrike/dlls/effects.cpp:99 */
-void CBubbling::__MAKE_VHOOK(Precache)(void)
+void CBubbling::__MAKE_VHOOK(Precache)()
 {
 	// Precache bubble sprite
 	m_bubbleModel = PRECACHE_MODEL("sprites/bubble.spr");
@@ -126,7 +117,7 @@ void CBubbling::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller,
 	if (m_state)
 	{
 		SetThink(&CBubbling::FizzThink);
-		pev->nextthink = gpGlobals->time + 0.1;
+		pev->nextthink = gpGlobals->time + 0.1f;
 	}
 	else
 	{
@@ -158,7 +149,7 @@ void CBubbling::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 }
 
 /* <73d03> ../cstrike/dlls/effects.cpp:145 */
-void CBubbling::FizzThink(void)
+void CBubbling::FizzThink()
 {
 	MESSAGE_BEGIN(MSG_PAS, SVC_TEMPENTITY, VecBModelOrigin(pev));
 		WRITE_BYTE(TE_FIZZ);
@@ -168,16 +159,16 @@ void CBubbling::FizzThink(void)
 	MESSAGE_END();
 
 	if (m_frequency > 19)
-		pev->nextthink = gpGlobals->time + 0.5;
+		pev->nextthink = gpGlobals->time + 0.5f;
 	else
-		pev->nextthink = gpGlobals->time + 2.5 - (0.1 * m_frequency);
+		pev->nextthink = gpGlobals->time + 2.5f - (0.1f * m_frequency);
 }
 
 /* <7620c> ../cstrike/dlls/effects.cpp:166 */
 LINK_ENTITY_TO_CLASS(beam, CBeam);
 
 /* <734b0> ../cstrike/dlls/effects.cpp:168 */
-void CBeam::__MAKE_VHOOK(Spawn)(void)
+void CBeam::__MAKE_VHOOK(Spawn)()
 {
 	// Remove model & collisions
 	pev->solid = SOLID_NOT;
@@ -185,7 +176,7 @@ void CBeam::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <734d6> ../cstrike/dlls/effects.cpp:174 */
-void CBeam::__MAKE_VHOOK(Precache)(void)
+void CBeam::__MAKE_VHOOK(Precache)()
 {
 	if (pev->owner)
 	{
@@ -212,7 +203,7 @@ void CBeam::SetEndEntity(int entityIndex)
 }
 
 /* <7632e> ../cstrike/dlls/effects.cpp:196 */
-const Vector &CBeam::GetStartPos(void)
+const Vector &CBeam::GetStartPos()
 {
 	if (GetType() == BEAM_ENTS)
 	{
@@ -224,7 +215,7 @@ const Vector &CBeam::GetStartPos(void)
 }
 
 /* <7639a> ../cstrike/dlls/effects.cpp:207 */
-const Vector &CBeam::GetEndPos(void)
+const Vector &CBeam::GetEndPos()
 {
 	int type = GetType();
 	if (type == BEAM_POINTS || type == BEAM_HOSE)
@@ -233,7 +224,7 @@ const Vector &CBeam::GetEndPos(void)
 	}
 
 	edict_t *pent = INDEXENT(GetEndEntity());
-	if (pent)
+	if (pent != NULL)
 	{
 		return pent->v.origin;
 	}
@@ -322,7 +313,7 @@ void CBeam::EntsInit(int startIndex, int endIndex)
 }
 
 /* <7663a> ../cstrike/dlls/effects.cpp:294 */
-void CBeam::RelinkBeam(void)
+void CBeam::RelinkBeam()
 {
 	const Vector &startPos = GetStartPos();
 	const Vector &endPos = GetEndPos();
@@ -401,7 +392,7 @@ LINK_ENTITY_TO_CLASS(env_beam, CLightning);
 IMPLEMENT_SAVERESTORE(CLightning, CBeam);
 
 /* <744b2> ../cstrike/dlls/effects.cpp:444 */
-void CLightning::__MAKE_VHOOK(Spawn)(void)
+void CLightning::__MAKE_VHOOK(Spawn)()
 {
 	if (FStringNull(m_iszSpriteName))
 	{
@@ -453,14 +444,14 @@ void CLightning::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <7357f> ../cstrike/dlls/effects.cpp:493 */
-void CLightning::__MAKE_VHOOK(Precache)(void)
+void CLightning::__MAKE_VHOOK(Precache)()
 {
 	m_spriteTexture = PRECACHE_MODEL((char *)STRING(m_iszSpriteName));
 	CBeam::Precache();
 }
 
 /* <786a1> ../cstrike/dlls/effects.cpp:500 */
-void CLightning::__MAKE_VHOOK(Activate)(void)
+void CLightning::__MAKE_VHOOK(Activate)()
 {
 	if (ServerSide())
 		BeamUpdateVars();
@@ -585,11 +576,12 @@ int IsPointEntity(CBaseEntity *pEnt)
 	{
 		return 1;
 	}
+
 	return 0;
 }
 
 /* <77f64> ../cstrike/dlls/effects.cpp:625 */
-void CLightning::StrikeThink(void)
+void CLightning::StrikeThink()
 {
 	if (m_life != 0.0f)
 	{
@@ -598,6 +590,7 @@ void CLightning::StrikeThink(void)
 		else
 			pev->nextthink = gpGlobals->time + m_life + m_restrike;
 	}
+
 	m_active = 1;
 
 	if (FStringNull(m_iszEndEntity))
@@ -729,9 +722,9 @@ void CBeam::BeamDamage(TraceResult *ptr)
 }
 
 /* <777dd> ../cstrike/dlls/effects.cpp:753 */
-void CLightning::DamageThink(void)
+void CLightning::DamageThink()
 {
-	pev->nextthink = gpGlobals->time + 0.1;
+	pev->nextthink = gpGlobals->time + 0.1f;
 
 	TraceResult tr;
 	UTIL_TraceLine(GetStartPos(), GetEndPos(), dont_ignore_monsters, NULL, &tr);
@@ -766,7 +759,7 @@ void CLightning::Zap(const Vector &vecSrc, const Vector &vecDest)
 }
 
 /* <77b45> ../cstrike/dlls/effects.cpp:789 */
-void CLightning::RandomArea(void)
+void CLightning::RandomArea()
 {
 	for (int iLoops = 0; iLoops < 10; iLoops++)
 	{
@@ -811,9 +804,7 @@ void CLightning::RandomArea(void)
 /* <77de8> ../cstrike/dlls/effects.cpp:831 */
 void CLightning::RandomPoint(Vector &vecSrc)
 {
-	int iLoops = 0;
-
-	for (iLoops = 0; iLoops < 10; iLoops++)
+	for (int iLoops = 0; iLoops < 10; iLoops++)
 	{
 		Vector vecDir1 = Vector(RANDOM_FLOAT(-1, 1), RANDOM_FLOAT(-1, 1), RANDOM_FLOAT(-1, 1));
 		vecDir1 = vecDir1.Normalize();
@@ -833,7 +824,7 @@ void CLightning::RandomPoint(Vector &vecSrc)
 }
 
 /* <78313> ../cstrike/dlls/effects.cpp:855 */
-void CLightning::BeamUpdateVars(void)
+void CLightning::BeamUpdateVars()
 {
 	int beamType;
 	int pointStart, pointEnd;
@@ -913,7 +904,7 @@ LINK_ENTITY_TO_CLASS(env_laser, CLaser);
 IMPLEMENT_SAVERESTORE(CLaser, CBeam);
 
 /* <76b3f> ../cstrike/dlls/effects.cpp:931 */
-void CLaser::__MAKE_VHOOK(Spawn)(void)
+void CLaser::__MAKE_VHOOK(Spawn)()
 {
 	if (FStringNull(pev->model))
 	{
@@ -945,7 +936,7 @@ void CLaser::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <73d82> ../cstrike/dlls/effects.cpp:960 */
-void CLaser::__MAKE_VHOOK(Precache)(void)
+void CLaser::__MAKE_VHOOK(Precache)()
 {
 	pev->modelindex = PRECACHE_MODEL((char *)STRING(pev->model));
 
@@ -1003,7 +994,7 @@ void CLaser::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 }
 
 /* <787a8> ../cstrike/dlls/effects.cpp:1015 */
-int CLaser::IsOn(void)
+int CLaser::IsOn()
 {
 	if (pev->effects & EF_NODRAW)
 		return 0;
@@ -1012,7 +1003,7 @@ int CLaser::IsOn(void)
 }
 
 /* <787c9> ../cstrike/dlls/effects.cpp:1023 */
-void CLaser::TurnOff(void)
+void CLaser::TurnOff()
 {
 	pev->effects |= EF_NODRAW;
 	pev->nextthink = 0;
@@ -1024,7 +1015,7 @@ void CLaser::TurnOff(void)
 }
 
 /* <78804> ../cstrike/dlls/effects.cpp:1032 */
-void CLaser::TurnOn(void)
+void CLaser::TurnOn()
 {
 	pev->effects &= ~EF_NODRAW;
 
@@ -1064,7 +1055,7 @@ void CLaser::FireAtPoint(TraceResult &tr)
 }
 
 /* <778f6> ../cstrike/dlls/effects.cpp:1069 */
-void CLaser::StrikeThink(void)
+void CLaser::StrikeThink()
 {
 	CBaseEntity *pEnd = RandomTargetname(STRING(pev->message));
 
@@ -1084,7 +1075,7 @@ LINK_ENTITY_TO_CLASS(env_glow, CGlow);
 IMPLEMENT_SAVERESTORE(CGlow, CPointEntity);
 
 /* <735a6> ../cstrike/dlls/effects.cpp:1109 */
-void CGlow::__MAKE_VHOOK(Spawn)(void)
+void CGlow::__MAKE_VHOOK(Spawn)()
 {
 	pev->solid = SOLID_NOT;
 	pev->movetype = MOVETYPE_NONE;
@@ -1105,7 +1096,7 @@ void CGlow::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <74606> ../cstrike/dlls/effects.cpp:1127 */
-void CGlow::__MAKE_VHOOK(Think)(void)
+void CGlow::__MAKE_VHOOK(Think)()
 {
 	Animate(pev->framerate * (gpGlobals->time - m_lastTime));
 
@@ -1124,7 +1115,7 @@ void CGlow::Animate(float frames)
 LINK_ENTITY_TO_CLASS(env_bombglow, CBombGlow);
 
 /* <735cd> ../cstrike/dlls/effects.cpp:1161 */
-void CBombGlow::__MAKE_VHOOK(Spawn)(void)
+void CBombGlow::__MAKE_VHOOK(Spawn)()
 {
 #ifdef REGAMEDLL_FIXES
 	PRECACHE_MODEL("sprites/flare1.spr");
@@ -1134,7 +1125,7 @@ void CBombGlow::__MAKE_VHOOK(Spawn)(void)
 	pev->movetype = MOVETYPE_NONE;
 	pev->effects = 0;
 	pev->frame = 0;
-	pev->nextthink = gpGlobals->time + 0.05;
+	pev->nextthink = gpGlobals->time + 0.05f;
 	pev->rendermode = kRenderGlow;
 	pev->rendercolor.x = 255;
 	pev->rendercolor.y = 15;
@@ -1148,7 +1139,7 @@ void CBombGlow::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <73a40> ../cstrike/dlls/effects.cpp:1184 */
-void CBombGlow::__MAKE_VHOOK(Think)(void)
+void CBombGlow::__MAKE_VHOOK(Think)()
 {
 	if (!m_bSetModel)
 	{
@@ -1182,7 +1173,7 @@ LINK_ENTITY_TO_CLASS(env_sprite, CSprite);
 IMPLEMENT_SAVERESTORE(CSprite, CPointEntity);
 
 /* <75dc8> ../cstrike/dlls/effects.cpp:1236 */
-void CSprite::__MAKE_VHOOK(Spawn)(void)
+void CSprite::__MAKE_VHOOK(Spawn)()
 {
 	pev->solid = SOLID_NOT;
 	pev->movetype = MOVETYPE_NONE;
@@ -1207,7 +1198,7 @@ void CSprite::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <75d55> ../cstrike/dlls/effects.cpp:1260 */
-void CSprite::__MAKE_VHOOK(Restart)(void)
+void CSprite::__MAKE_VHOOK(Restart)()
 {
 	pev->solid = SOLID_NOT;
 	pev->movetype = MOVETYPE_NONE;
@@ -1221,7 +1212,7 @@ void CSprite::__MAKE_VHOOK(Restart)(void)
 }
 
 /* <74436> ../cstrike/dlls/effects.cpp:1273 */
-void CSprite::__MAKE_VHOOK(Precache)(void)
+void CSprite::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL((char *)STRING(pev->model));
 
@@ -1268,15 +1259,15 @@ CSprite *CSprite::SpriteCreate(const char *pSpriteName, const Vector &origin, BO
 }
 
 /* <75679> ../cstrike/dlls/effects.cpp:1310 */
-void CSprite::AnimateThink(void)
+void CSprite::AnimateThink()
 {
 	Animate(pev->framerate * (gpGlobals->time - m_lastTime));
-	pev->nextthink = gpGlobals->time + 0.1;
+	pev->nextthink = gpGlobals->time + 0.1f;
 	m_lastTime = gpGlobals->time;
 }
 
 /* <78d6b> ../cstrike/dlls/effects.cpp:1318 */
-void CSprite::AnimateUntilDead(void)
+void CSprite::AnimateUntilDead()
 {
 	if (gpGlobals->time > pev->dmgtime)
 	{
@@ -1301,7 +1292,7 @@ NOXREF void CSprite::Expand(float scaleSpeed, float fadeSpeed)
 }
 
 /* <73e2e> ../cstrike/dlls/effects.cpp:1340 */
-void CSprite::ExpandThink(void)
+void CSprite::ExpandThink()
 {
 	float frametime = gpGlobals->time - m_lastTime;
 
@@ -1336,14 +1327,14 @@ void CSprite::Animate(float frames)
 }
 
 /* <78e73> ../cstrike/dlls/effects.cpp:1376 */
-void CSprite::TurnOff(void)
+void CSprite::TurnOff()
 {
 	pev->effects = EF_NODRAW;
 	pev->nextthink = 0;
 }
 
 /* <78e94> ../cstrike/dlls/effects.cpp:1383 */
-void CSprite::TurnOn(void)
+void CSprite::TurnOn()
 {
 	pev->effects = 0;
 
@@ -1378,7 +1369,7 @@ IMPLEMENT_SAVERESTORE(CGibShooter, CBaseDelay);
 LINK_ENTITY_TO_CLASS(gibshooter, CGibShooter);
 
 /* <73dbb> ../cstrike/dlls/effects.cpp:1452 */
-void CGibShooter::__MAKE_VHOOK(Precache)(void)
+void CGibShooter::__MAKE_VHOOK(Precache)()
 {
 	if (g_Language == LANGUAGE_GERMAN)
 	{
@@ -1425,7 +1416,7 @@ void CGibShooter::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCalle
 }
 
 /* <73cb5> ../cstrike/dlls/effects.cpp:1499 */
-void CGibShooter::__MAKE_VHOOK(Spawn)(void)
+void CGibShooter::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
 
@@ -1439,7 +1430,7 @@ void CGibShooter::__MAKE_VHOOK(Spawn)(void)
 
 	if (m_flGibLife == 0.0f)
 	{
-		m_flGibLife = 25;
+		m_flGibLife = 25.0f;
 	}
 
 	SetMovedir(pev);
@@ -1447,7 +1438,7 @@ void CGibShooter::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <744ff> ../cstrike/dlls/effects.cpp:1521 */
-CGib *CGibShooter::__MAKE_VHOOK(CreateGib)(void)
+CGib *CGibShooter::__MAKE_VHOOK(CreateGib)()
 {
 	if (CVAR_GET_FLOAT("violence_hgibs") == 0)
 		return NULL;
@@ -1469,7 +1460,7 @@ CGib *CGibShooter::__MAKE_VHOOK(CreateGib)(void)
 }
 
 /* <75751> ../cstrike/dlls/effects.cpp:1541 */
-void CGibShooter::ShootThink(void)
+void CGibShooter::ShootThink()
 {
 	pev->nextthink = m_flDelay + gpGlobals->time;
 
@@ -1566,7 +1557,6 @@ void CEnvShooter::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		case 4:
 			m_iGibMaterial = matRocks;
 			break;
-
 		default:
 		case -1:
 			m_iGibMaterial = matNone;
@@ -1578,14 +1568,14 @@ void CEnvShooter::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 }
 
 /* <73cdc> ../cstrike/dlls/effects.cpp:1644 */
-void CEnvShooter::__MAKE_VHOOK(Precache)(void)
+void CEnvShooter::__MAKE_VHOOK(Precache)()
 {
 	m_iGibModelIndex = PRECACHE_MODEL((char *)STRING(pev->model));
 	CBreakable::MaterialSoundPrecache((Materials)m_iGibMaterial);
 }
 
 /* <7464b> ../cstrike/dlls/effects.cpp:1651 */
-CGib *CEnvShooter::__MAKE_VHOOK(CreateGib)(void)
+CGib *CEnvShooter::__MAKE_VHOOK(CreateGib)()
 {
 	CGib *pGib = GetClassPtr((CGib *)NULL);
 
@@ -1614,19 +1604,19 @@ CGib *CEnvShooter::__MAKE_VHOOK(CreateGib)(void)
 LINK_ENTITY_TO_CLASS(test_effect, CTestEffect);
 
 /* <73656> ../cstrike/dlls/effects.cpp:1698 */
-void CTestEffect::__MAKE_VHOOK(Spawn)(void)
+void CTestEffect::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
 }
 
 /* <7367c> ../cstrike/dlls/effects.cpp:1703 */
-void CTestEffect::__MAKE_VHOOK(Precache)(void)
+void CTestEffect::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("sprites/lgtning.spr");
 }
 
 /* <76e39> ../cstrike/dlls/effects.cpp:1708 */
-void CTestEffect::TestThink(void)
+void CTestEffect::TestThink()
 {
 	int i;
 	float t = (gpGlobals->time - m_flStartTime);
@@ -1688,7 +1678,7 @@ void CTestEffect::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCalle
 LINK_ENTITY_TO_CLASS(env_blood, CBlood);
 
 /* <73c8f> ../cstrike/dlls/effects.cpp:1797 */
-void CBlood::__MAKE_VHOOK(Spawn)(void)
+void CBlood::__MAKE_VHOOK(Spawn)()
 {
 	pev->solid = SOLID_NOT;
 	pev->movetype = MOVETYPE_NONE;
@@ -1726,7 +1716,7 @@ void CBlood::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 }
 
 /* <791f7> ../cstrike/dlls/effects.cpp:1834 */
-Vector CBlood::Direction(void)
+Vector CBlood::Direction()
 {
 	if (pev->spawnflags & SF_BLOOD_RANDOM)
 		return UTIL_RandomBloodVector();
@@ -1746,7 +1736,7 @@ Vector CBlood::BloodPosition(CBaseEntity *pActivator)
 		else
 			pPlayer = INDEXENT(1);
 
-		if (pPlayer)
+		if (pPlayer != NULL)
 		{
 			return (pPlayer->v.origin + pPlayer->v.view_ofs) + Vector(RANDOM_FLOAT(-10, 10), RANDOM_FLOAT(-10, 10), RANDOM_FLOAT(-10, 10));
 		}
@@ -1782,7 +1772,7 @@ void CBlood::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, US
 LINK_ENTITY_TO_CLASS(env_shake, CShake);
 
 /* <73705> ../cstrike/dlls/effects.cpp:1919 */
-void CShake::__MAKE_VHOOK(Spawn)(void)
+void CShake::__MAKE_VHOOK(Spawn)()
 {
 	pev->solid = SOLID_NOT;
 	pev->movetype = MOVETYPE_NONE;
@@ -1830,7 +1820,7 @@ void CShake::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, US
 LINK_ENTITY_TO_CLASS(env_fade, CFade);
 
 /* <7372b> ../cstrike/dlls/effects.cpp:1987 */
-void CFade::__MAKE_VHOOK(Spawn)(void)
+void CFade::__MAKE_VHOOK(Spawn)()
 {
 	pev->solid = SOLID_NOT;
 	pev->movetype = MOVETYPE_NONE;
@@ -1883,7 +1873,7 @@ void CFade::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE
 LINK_ENTITY_TO_CLASS(env_message, CMessage);
 
 /* <73751> ../cstrike/dlls/effects.cpp:2051 */
-void CMessage::__MAKE_VHOOK(Spawn)(void)
+void CMessage::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
 
@@ -1913,11 +1903,11 @@ void CMessage::__MAKE_VHOOK(Spawn)(void)
 
 	// No volume, use normal
 	if (pev->scale <= 0.0f)
-		pev->scale = 1.0;
+		pev->scale = 1.0f;
 }
 
 /* <73df7> ../cstrike/dlls/effects.cpp:2085 */
-void CMessage::__MAKE_VHOOK(Precache)(void)
+void CMessage::__MAKE_VHOOK(Precache)()
 {
 	if (pev->noise)
 	{
@@ -1935,7 +1925,7 @@ void CMessage::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 	}
 	else if (FStrEq(pkvd->szKeyName, "messagevolume"))
 	{
-		pev->scale = Q_atof(pkvd->szValue) * 0.1;
+		pev->scale = Q_atof(pkvd->szValue) * 0.1f;
 		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "messageattenuation"))
@@ -1963,9 +1953,10 @@ void CMessage::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, 
 			pPlayer = CBaseEntity::Instance(INDEXENT(1));
 		}
 
-		if (pPlayer)
+		if (pPlayer != NULL)
 			UTIL_ShowMessage(STRING(pev->message), pPlayer);
 	}
+
 	if (pev->noise)
 	{
 		EMIT_SOUND(edict(), CHAN_BODY, STRING(pev->noise), pev->scale, pev->speed);
@@ -1980,7 +1971,7 @@ void CMessage::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, 
 LINK_ENTITY_TO_CLASS(env_funnel, CEnvFunnel);
 
 /* <73778> ../cstrike/dlls/effects.cpp:2155 */
-void CEnvFunnel::__MAKE_VHOOK(Precache)(void)
+void CEnvFunnel::__MAKE_VHOOK(Precache)()
 {
 	m_iSprite = PRECACHE_MODEL("sprites/flare6.spr");
 }
@@ -2013,7 +2004,7 @@ void CEnvFunnel::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller
 }
 
 /* <7382b> ../cstrike/dlls/effects.cpp:2187 */
-void CEnvFunnel::__MAKE_VHOOK(Spawn)(void)
+void CEnvFunnel::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
 	pev->solid = SOLID_NOT;
@@ -2021,7 +2012,7 @@ void CEnvFunnel::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <73852> ../cstrike/dlls/effects.cpp:2207 */
-void CEnvBeverage::__MAKE_VHOOK(Precache)(void)
+void CEnvBeverage::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/can.mdl");
 	PRECACHE_SOUND("weapons/g_bounce3.wav");
@@ -2054,7 +2045,7 @@ void CEnvBeverage::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCall
 }
 
 /* <73879> ../cstrike/dlls/effects.cpp:2242 */
-void CEnvBeverage::__MAKE_VHOOK(Spawn)(void)
+void CEnvBeverage::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
 	pev->solid = SOLID_NOT;
@@ -2063,12 +2054,12 @@ void CEnvBeverage::__MAKE_VHOOK(Spawn)(void)
 
 	if (pev->health == 0.0f)
 	{
-		pev->health = 10;
+		pev->health = 10.0f;
 	}
 }
 
 /* <738a0> ../cstrike/dlls/effects.cpp:2267 */
-void CItemSoda::__MAKE_VHOOK(Precache)(void)
+void CItemSoda::__MAKE_VHOOK(Precache)()
 {
 	;
 }
@@ -2077,7 +2068,7 @@ void CItemSoda::__MAKE_VHOOK(Precache)(void)
 LINK_ENTITY_TO_CLASS(item_sodacan, CItemSoda);
 
 /* <738c6> ../cstrike/dlls/effects.cpp:2273 */
-void CItemSoda::__MAKE_VHOOK(Spawn)(void)
+void CItemSoda::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
 	pev->solid = SOLID_NOT;
@@ -2091,7 +2082,7 @@ void CItemSoda::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <73961> ../cstrike/dlls/effects.cpp:2286 */
-void CItemSoda::CanThink(void)
+void CItemSoda::CanThink()
 {
 	EMIT_SOUND(ENT(pev), CHAN_WEAPON, "weapons/g_bounce3.wav", VOL_NORM, ATTN_NORM);
 
@@ -2127,337 +2118,3 @@ void CItemSoda::CanTouch(CBaseEntity *pOther)
 	SetThink(&CItemSoda::SUB_Remove);
 	pev->nextthink = gpGlobals->time;
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CBombGlow::Spawn(void)
-{
-	Spawn_();
-}
-
-void CBombGlow::Think(void)
-{
-	Think_();
-}
-
-void CSprite::Spawn(void)
-{
-	Spawn_();
-}
-
-void CSprite::Precache(void)
-{
-	Precache_();
-}
-
-void CSprite::Restart(void)
-{
-	Restart_();
-}
-
-int CSprite::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CSprite::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-void CSprite::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	Use_(pActivator, pCaller, useType, value);
-}
-
-void CBeam::Spawn(void)
-{
-	Spawn_();
-}
-
-void CBeam::Precache(void)
-{
-	Precache_();
-}
-
-void CLaser::Spawn(void)
-{
-	Spawn_();
-}
-
-void CLaser::Precache(void)
-{
-	Precache_();
-}
-
-void CLaser::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-int CLaser::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CLaser::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-void CLaser::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	Use_(pActivator, pCaller, useType, value);
-}
-
-void CBubbling::Spawn(void)
-{
-	Spawn_();
-}
-
-void CBubbling::Precache(void)
-{
-	Precache_();
-}
-
-void CBubbling::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-int CBubbling::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CBubbling::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-void CBubbling::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	Use_(pActivator, pCaller, useType, value);
-}
-
-void CLightning::Spawn(void)
-{
-	Spawn_();
-}
-
-void CLightning::Precache(void)
-{
-	Precache_();
-}
-
-void CLightning::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-int CLightning::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CLightning::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-void CLightning::Activate(void)
-{
-	Activate_();
-}
-
-void CGlow::Spawn(void)
-{
-	Spawn_();
-}
-
-int CGlow::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CGlow::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-void CGlow::Think(void)
-{
-	Think_();
-}
-
-void CGibShooter::Spawn(void)
-{
-	Spawn_();
-}
-
-void CGibShooter::Precache(void)
-{
-	Precache_();
-}
-
-void CGibShooter::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-int CGibShooter::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CGibShooter::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-void CGibShooter::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	Use_(pActivator, pCaller, useType, value);
-}
-
-CGib *CGibShooter::CreateGib(void)
-{
-	return CreateGib_();
-}
-
-void CEnvShooter::Precache(void)
-{
-	Precache_();
-}
-
-void CEnvShooter::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-CGib *CEnvShooter::CreateGib(void)
-{
-	return CreateGib_();
-}
-
-void CTestEffect::Spawn(void)
-{
-	Spawn_();
-}
-
-void CTestEffect::Precache(void)
-{
-	Precache_();
-}
-
-void CTestEffect::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	Use_(pActivator, pCaller, useType, value);
-}
-
-void CBlood::Spawn(void)
-{
-	Spawn_();
-}
-
-void CBlood::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-void CBlood::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	Use_(pActivator, pCaller, useType, value);
-}
-
-void CShake::Spawn(void)
-{
-	Spawn_();
-}
-
-void CShake::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-void CShake::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	Use_(pActivator, pCaller, useType, value);
-}
-
-void CFade::Spawn(void)
-{
-	Spawn_();
-}
-
-void CFade::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-void CFade::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	Use_(pActivator, pCaller, useType, value);
-}
-
-void CMessage::Spawn(void)
-{
-	Spawn_();
-}
-
-void CMessage::Precache(void)
-{
-	Precache_();
-}
-
-void CMessage::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-void CMessage::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	Use_(pActivator, pCaller, useType, value);
-}
-
-void CEnvFunnel::Spawn(void)
-{
-	Spawn_();
-}
-
-void CEnvFunnel::Precache(void)
-{
-	Precache_();
-}
-
-void CEnvFunnel::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	Use_(pActivator, pCaller, useType, value);
-}
-
-void CEnvBeverage::Spawn(void)
-{
-	Spawn_();
-}
-
-void CEnvBeverage::Precache(void)
-{
-	Precache_();
-}
-
-void CEnvBeverage::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	Use_(pActivator, pCaller, useType, value);
-}
-
-void CItemSoda::Spawn(void)
-{
-	Spawn_();
-}
-
-void CItemSoda::Precache(void)
-{
-	Precache_();
-}
-
-#endif // HOOK_GAMEDLL

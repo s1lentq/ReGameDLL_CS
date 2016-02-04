@@ -5,13 +5,8 @@
 */
 #ifndef HOOK_GAMEDLL
 
-static char s_shared_token[ 1500 ];
-static char s_shared_quote = '\"';
-
-#else
-
-char s_shared_token[ 1500 ];
-char s_shared_quote;
+char s_shared_token[ COM_TOKEN_LEN ];
+char s_shared_quote = '\"';
 
 #endif // HOOK_GAMEDLL
 
@@ -92,7 +87,7 @@ NOXREF const wchar_t *NumAsWString(int val)
 	const int NumBuffers = 4;
 	static wchar_t string[NumBuffers][BufLen];
 	static int curstring = 0;
-	
+
 	curstring = (curstring + 1) % NumBuffers;
 
 	int len = BufLen;
@@ -120,7 +115,7 @@ const char *NumAsString(int val)
 // Returns the token parsed by SharedParse()
 
 /* <2d4da4> ../game_shared/shared_util.cpp:155 */
-char *SharedGetToken(void)
+char *SharedGetToken()
 {
 	return s_shared_token;
 }

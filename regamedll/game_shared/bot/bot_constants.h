@@ -51,12 +51,4 @@ enum BotDifficultyType
 	NUM_DIFFICULTY_LEVELS
 };
 
-#ifdef HOOK_GAMEDLL
-
-#define BotDifficultyName (*pBotDifficultyName)
-
-#endif // HOOK_GAMEDLL
-
-extern char *BotDifficultyName[5];
-
 #endif // BOT_CONSTANTS_H

@@ -35,42 +35,10 @@ cvar_t cv_bot_defer_to_human = { "bot_defer_to_human", "0", FCVAR_SERVER, 0.0f, 
 cvar_t cv_bot_chatter = { "bot_chatter", "normal", FCVAR_SERVER, 0.0f, NULL };
 cvar_t cv_bot_profile_db = { "bot_profile_db", "BotProfile.db", FCVAR_SERVER, 0.0f, NULL };
 
-#else // HOOK_GAMEDLL
-
-cvar_t cv_bot_traceview;
-cvar_t cv_bot_stop;
-cvar_t cv_bot_show_nav;
-cvar_t cv_bot_show_danger;
-cvar_t cv_bot_nav_edit;
-cvar_t cv_bot_nav_zdraw;
-cvar_t cv_bot_walk;
-cvar_t cv_bot_difficulty;
-cvar_t cv_bot_debug;
-cvar_t cv_bot_quicksave;
-cvar_t cv_bot_quota;
-cvar_t cv_bot_quota_match;
-cvar_t cv_bot_prefix;
-cvar_t cv_bot_allow_rogues;
-cvar_t cv_bot_allow_pistols;
-cvar_t cv_bot_allow_shotguns;
-cvar_t cv_bot_allow_sub_machine_guns;
-cvar_t cv_bot_allow_rifles;
-cvar_t cv_bot_allow_machine_guns;
-cvar_t cv_bot_allow_grenades;
-cvar_t cv_bot_allow_snipers;
-cvar_t cv_bot_allow_shield;
-cvar_t cv_bot_join_team;
-cvar_t cv_bot_join_after_player;
-cvar_t cv_bot_auto_vacate;
-cvar_t cv_bot_zombie;
-cvar_t cv_bot_defer_to_human;
-cvar_t cv_bot_chatter;
-cvar_t cv_bot_profile_db;
-
 #endif // HOOK_GAMEDLL
 
 /* <333bca> ../cstrike/dlls/bot/cs_bot_init.cpp:57 */
-void InstallBotControl(void)
+void InstallBotControl()
 {
 	if (TheBots != NULL)
 	{
@@ -83,7 +51,7 @@ void InstallBotControl(void)
 // Engine callback for custom server commands
 
 /* <333cb3> ../cstrike/dlls/bot/cs_bot_init.cpp:68 */
-void Bot_ServerCommand(void)
+void Bot_ServerCommand()
 {
 	if (TheBots != NULL)
 	{
@@ -93,46 +61,46 @@ void Bot_ServerCommand(void)
 }
 
 /* <333cec> ../cstrike/dlls/bot/cs_bot_init.cpp:81 */
-void Bot_RegisterCvars(void)
+void Bot_RegisterCvars()
 {
-	if (UTIL_IsGame("czero"))
-	{
-		CVAR_REGISTER(&cv_bot_traceview);
-		CVAR_REGISTER(&cv_bot_stop);
-		CVAR_REGISTER(&cv_bot_show_nav);
-		CVAR_REGISTER(&cv_bot_show_danger);
-		CVAR_REGISTER(&cv_bot_nav_edit);
-		CVAR_REGISTER(&cv_bot_nav_zdraw);
-		CVAR_REGISTER(&cv_bot_walk);
-		CVAR_REGISTER(&cv_bot_difficulty);
-		CVAR_REGISTER(&cv_bot_debug);
-		CVAR_REGISTER(&cv_bot_quicksave);
-		CVAR_REGISTER(&cv_bot_quota);
-		CVAR_REGISTER(&cv_bot_quota_match);
-		CVAR_REGISTER(&cv_bot_prefix);
-		CVAR_REGISTER(&cv_bot_allow_rogues);
-		CVAR_REGISTER(&cv_bot_allow_pistols);
-		CVAR_REGISTER(&cv_bot_allow_shotguns);
-		CVAR_REGISTER(&cv_bot_allow_sub_machine_guns);
-		CVAR_REGISTER(&cv_bot_allow_rifles);
-		CVAR_REGISTER(&cv_bot_allow_machine_guns);
-		CVAR_REGISTER(&cv_bot_allow_grenades);
-		CVAR_REGISTER(&cv_bot_allow_snipers);
-		CVAR_REGISTER(&cv_bot_allow_shield);
-		CVAR_REGISTER(&cv_bot_join_team);
-		CVAR_REGISTER(&cv_bot_join_after_player);
-		CVAR_REGISTER(&cv_bot_auto_vacate);
-		CVAR_REGISTER(&cv_bot_zombie);
-		CVAR_REGISTER(&cv_bot_defer_to_human);
-		CVAR_REGISTER(&cv_bot_chatter);
-		CVAR_REGISTER(&cv_bot_profile_db);
-	}
+	if (!g_bIsCzeroGame)
+		return;
+
+	CVAR_REGISTER(&cv_bot_traceview);
+	CVAR_REGISTER(&cv_bot_stop);
+	CVAR_REGISTER(&cv_bot_show_nav);
+	CVAR_REGISTER(&cv_bot_show_danger);
+	CVAR_REGISTER(&cv_bot_nav_edit);
+	CVAR_REGISTER(&cv_bot_nav_zdraw);
+	CVAR_REGISTER(&cv_bot_walk);
+	CVAR_REGISTER(&cv_bot_difficulty);
+	CVAR_REGISTER(&cv_bot_debug);
+	CVAR_REGISTER(&cv_bot_quicksave);
+	CVAR_REGISTER(&cv_bot_quota);
+	CVAR_REGISTER(&cv_bot_quota_match);
+	CVAR_REGISTER(&cv_bot_prefix);
+	CVAR_REGISTER(&cv_bot_allow_rogues);
+	CVAR_REGISTER(&cv_bot_allow_pistols);
+	CVAR_REGISTER(&cv_bot_allow_shotguns);
+	CVAR_REGISTER(&cv_bot_allow_sub_machine_guns);
+	CVAR_REGISTER(&cv_bot_allow_rifles);
+	CVAR_REGISTER(&cv_bot_allow_machine_guns);
+	CVAR_REGISTER(&cv_bot_allow_grenades);
+	CVAR_REGISTER(&cv_bot_allow_snipers);
+	CVAR_REGISTER(&cv_bot_allow_shield);
+	CVAR_REGISTER(&cv_bot_join_team);
+	CVAR_REGISTER(&cv_bot_join_after_player);
+	CVAR_REGISTER(&cv_bot_auto_vacate);
+	CVAR_REGISTER(&cv_bot_zombie);
+	CVAR_REGISTER(&cv_bot_defer_to_human);
+	CVAR_REGISTER(&cv_bot_chatter);
+	CVAR_REGISTER(&cv_bot_profile_db);
 }
 
 // Constructor
 
 /* <333d1e> ../cstrike/dlls/bot/cs_bot_init.cpp:129 */
-CCSBot::CCSBot(void) : m_chatter(this), m_gameState(this)
+CCSBot::CCSBot() : m_chatter(this), m_gameState(this)
 {
 	;
 }
@@ -148,7 +116,7 @@ bool CCSBot::__MAKE_VHOOK(Initialize)(const BotProfile *profile)
 	// CS bot initialization
 	m_diedLastRound = false;
 	m_morale = POSITIVE;		// starting a new round makes everyone a little happy
-	
+
 	m_combatRange = RANDOM_FLOAT(325, 425);
 
 	m_navNodeList = NULL;
@@ -157,7 +125,7 @@ bool CCSBot::__MAKE_VHOOK(Initialize)(const BotProfile *profile)
 	// set initial safe time guess for this map
 	m_safeTime = 15.0f + 5.0f * GetProfile()->GetAggression();
 
-	m_name[0] = '\000';
+	m_name[0] = '\0';
 
 	ResetValues();
 	StartNormalProcess();
@@ -168,7 +136,7 @@ bool CCSBot::__MAKE_VHOOK(Initialize)(const BotProfile *profile)
 // Reset internal data to initial state
 
 /* <3341dc> ../cstrike/dlls/bot/cs_bot_init.cpp:167 */
-void CCSBot::ResetValues(void)
+void CCSBot::ResetValues()
 {
 	m_chatter.Reset();
 	m_gameState.Reset();
@@ -325,7 +293,7 @@ void CCSBot::ResetValues(void)
 // NOTE: For some reason, this can be called twice when a bot is added.
 
 /* <3342e4> ../cstrike/dlls/bot/cs_bot_init.cpp:336 */
-void CCSBot::__MAKE_VHOOK(SpawnBot)(void)
+void CCSBot::__MAKE_VHOOK(SpawnBot)()
 {
 	CCSBotManager *ctrl = TheCSBots();
 
@@ -345,7 +313,7 @@ void CCSBot::__MAKE_VHOOK(SpawnBot)(void)
 }
 
 /* <3338f7> ../cstrike/dlls/bot/cs_bot_init.cpp:366 */
-void CCSBot::__MAKE_VHOOK(RoundRespawn)(void)
+void CCSBot::__MAKE_VHOOK(RoundRespawn)()
 {
 	// do the normal player spawn process
 	CBasePlayer::RoundRespawn();
@@ -353,7 +321,7 @@ void CCSBot::__MAKE_VHOOK(RoundRespawn)(void)
 }
 
 /* <334332> ../cstrike/dlls/bot/cs_bot_init.cpp:378 */
-void CCSBot::Disconnect(void)
+void CCSBot::Disconnect()
 {
 	EndVoiceFeedback();
 
@@ -362,22 +330,3 @@ void CCSBot::Disconnect(void)
 		hideProgressMeter();
 	}
 }
-
-#ifdef HOOK_GAMEDLL
-
-bool CCSBot::Initialize(const BotProfile *profile)
-{
-	return Initialize_(profile);
-}
-
-void CCSBot::SpawnBot(void)
-{
-	SpawnBot_();
-}
-
-void CCSBot::RoundRespawn(void)
-{
-	RoundRespawn_();
-}
-
-#endif // HOOK_GAMEDLL

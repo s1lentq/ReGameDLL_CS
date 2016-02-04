@@ -36,196 +36,180 @@
 class C9MMAmmo: public CBasePlayerAmmo
 {
 public:
-	virtual void Spawn(void);
-	virtual void Precache(void);
+	virtual void Spawn();
+	virtual void Precache();
 	virtual BOOL AddAmmo(CBaseEntity *pOther);
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Precache_(void);
+	void Spawn_();
+	void Precache_();
 	BOOL AddAmmo_(CBaseEntity *pOther);
 
 #endif // HOOK_GAMEDLL
 
-};/* size: 152, cachelines: 3, members: 1 */
+};
 
 /* <97df> ../cstrike/dlls/ammo.cpp:40 */
 class CBuckShotAmmo: public CBasePlayerAmmo
 {
 public:
-	virtual void Spawn(void);
-	virtual void Precache(void);
+	virtual void Spawn();
+	virtual void Precache();
 	virtual BOOL AddAmmo(CBaseEntity *pOther);
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Precache_(void);
+	void Spawn_();
+	void Precache_();
 	BOOL AddAmmo_(CBaseEntity *pOther);
 
 #endif // HOOK_GAMEDLL
 
-};/* size: 152, cachelines: 3, members: 1 */
+};
 
 /* <982c> ../cstrike/dlls/ammo.cpp:67 */
 class C556NatoAmmo: public CBasePlayerAmmo
 {
 public:
-	virtual void Spawn(void);
-	virtual void Precache(void);
+	virtual void Spawn();
+	virtual void Precache();
 	virtual BOOL AddAmmo(CBaseEntity *pOther);
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Precache_(void);
+	void Spawn_();
+	void Precache_();
 	BOOL AddAmmo_(CBaseEntity *pOther);
 
 #endif // HOOK_GAMEDLL
 
-};/* size: 152, cachelines: 3, members: 1 */
+};
 
 /* <9879> ../cstrike/dlls/ammo.cpp:93 */
 class C556NatoBoxAmmo: public CBasePlayerAmmo
 {
 public:
-	virtual void Spawn(void);
-	virtual void Precache(void);
+	virtual void Spawn();
+	virtual void Precache();
 	virtual BOOL AddAmmo(CBaseEntity *pOther);
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Precache_(void);
+	void Spawn_();
+	void Precache_();
 	BOOL AddAmmo_(CBaseEntity *pOther);
 
 #endif // HOOK_GAMEDLL
 
-};/* size: 152, cachelines: 3, members: 1 */
+};
 
 /* <98c6> ../cstrike/dlls/ammo.cpp:119 */
 class C762NatoAmmo: public CBasePlayerAmmo
 {
 public:
-	virtual void Spawn(void);
-	virtual void Precache(void);
+	virtual void Spawn();
+	virtual void Precache();
 	virtual BOOL AddAmmo(CBaseEntity *pOther);
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Precache_(void);
+	void Spawn_();
+	void Precache_();
 	BOOL AddAmmo_(CBaseEntity *pOther);
 
 #endif // HOOK_GAMEDLL
 
-};/* size: 152, cachelines: 3, members: 1 */
+};
 
 /* <9913> ../cstrike/dlls/ammo.cpp:145 */
 class C45ACPAmmo: public CBasePlayerAmmo
 {
 public:
-	virtual void Spawn(void);
-	virtual void Precache(void);
+	virtual void Spawn();
+	virtual void Precache();
 	virtual BOOL AddAmmo(CBaseEntity *pOther);
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Precache_(void);
+	void Spawn_();
+	void Precache_();
 	BOOL AddAmmo_(CBaseEntity *pOther);
 
 #endif // HOOK_GAMEDLL
 
-};/* size: 152, cachelines: 3, members: 1 */
+};
 
 /* <9960> ../cstrike/dlls/ammo.cpp:171 */
 class C50AEAmmo: public CBasePlayerAmmo
 {
 public:
-	virtual void Spawn(void);
-	virtual void Precache(void);
+	virtual void Spawn();
+	virtual void Precache();
 	virtual BOOL AddAmmo(CBaseEntity *pOther);
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Precache_(void);
+	void Spawn_();
+	void Precache_();
 	BOOL AddAmmo_(CBaseEntity *pOther);
 
 #endif // HOOK_GAMEDLL
 
-};/* size: 152, cachelines: 3, members: 1 */
+};
 
 /* <99ad> ../cstrike/dlls/ammo.cpp:197 */
 class C338MagnumAmmo: public CBasePlayerAmmo
 {
 public:
-	virtual void Spawn(void);
-	virtual void Precache(void);
+	virtual void Spawn();
+	virtual void Precache();
 	virtual BOOL AddAmmo(CBaseEntity *pOther);
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Precache_(void);
+	void Spawn_();
+	void Precache_();
 	BOOL AddAmmo_(CBaseEntity *pOther);
 
 #endif // HOOK_GAMEDLL
 
-};/* size: 152, cachelines: 3, members: 1 */
+};
 
 /* <99fa> ../cstrike/dlls/ammo.cpp:224 */
 class C57MMAmmo: public CBasePlayerAmmo
 {
 public:
-	virtual void Spawn(void);
-	virtual void Precache(void);
+	virtual void Spawn();
+	virtual void Precache();
 	virtual BOOL AddAmmo(CBaseEntity *pOther);
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Precache_(void);
+	void Spawn_();
+	void Precache_();
 	BOOL AddAmmo_(CBaseEntity *pOther);
 
 #endif // HOOK_GAMEDLL
 
-};/* size: 152, cachelines: 3, members: 1 */
+};
 
 /* <9a47> ../cstrike/dlls/ammo.cpp:249 */
 class C357SIGAmmo: public CBasePlayerAmmo
 {
 public:
-	virtual void Spawn(void);
-	virtual void Precache(void);
+	virtual void Spawn();
+	virtual void Precache();
 	virtual BOOL AddAmmo(CBaseEntity *pOther);
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Precache_(void);
+	void Spawn_();
+	void Precache_();
 	BOOL AddAmmo_(CBaseEntity *pOther);
 
 #endif // HOOK_GAMEDLL
 
-};/* size: 152, cachelines: 3, members: 1 */
-
-#ifdef HOOK_GAMEDLL
-
-// linked objects
-C_DLLEXPORT void ammo_9mm(entvars_t *pev);
-C_DLLEXPORT void ammo_buckshot(entvars_t *pev);
-C_DLLEXPORT void ammo_556nato(entvars_t *pev);
-C_DLLEXPORT void ammo_556natobox(entvars_t *pev);
-C_DLLEXPORT void ammo_762nato(entvars_t *pev);
-C_DLLEXPORT void ammo_45acp(entvars_t *pev);
-C_DLLEXPORT void ammo_50ae(entvars_t *pev);
-C_DLLEXPORT void ammo_338magnum(entvars_t *pev);
-C_DLLEXPORT void ammo_57mm(entvars_t *pev);
-C_DLLEXPORT void ammo_357sig(entvars_t *pev);
-
-#endif // HOOK_GAMEDLL
+};
 
 #endif // AMMO_H

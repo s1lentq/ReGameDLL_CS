@@ -20,7 +20,7 @@ bool CCSBot::IsRadioCommand(GameEventType event) const
 // Respond to radio commands from HUMAN players
 
 /* <3a36e0> ../cstrike/dlls/bot/cs_bot_radio.cpp:37 */
-void CCSBot::RespondToRadioCommands(void)
+void CCSBot::RespondToRadioCommands()
 {
 	// bots use the chatter system to respond to each other
 	if (m_radioSubject != NULL && m_radioSubject->IsPlayer())
@@ -309,7 +309,7 @@ void CCSBot::SendRadioMessage(GameEventType event)
 	m_lastRadioSentTimestamp = gpGlobals->time;
 
 	char slot[2];
-	slot[1] = '\000';
+	slot[1] = '\0';
 
 	if (event > EVENT_START_RADIO_1 && event < EVENT_START_RADIO_2)
 	{
@@ -329,7 +329,7 @@ void CCSBot::SendRadioMessage(GameEventType event)
 		ClientCommand("radio3");
 		//Radio3(this, event - EVENT_START_RADIO_3);
 	}
-	
+
 	ClientCommand("menuselect", slot);
 	ClientCommand("menuselect", "10");
 }

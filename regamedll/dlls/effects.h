@@ -72,12 +72,12 @@
 class CSprite: public CPointEntity
 {
 public:
-	virtual void Spawn(void);
-	virtual void Precache(void);
-	virtual void Restart(void);
+	virtual void Spawn();
+	virtual void Precache();
+	virtual void Restart();
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
-	virtual int ObjectCaps(void)
+	virtual int ObjectCaps()
 	{
 		int flags = 0;
 		if (pev->spawnflags & SF_SPRITE_TEMPORARY)
@@ -89,9 +89,9 @@ public:
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Precache_(void);
-	void Restart_(void);
+	void Spawn_();
+	void Precache_();
+	void Restart_();
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
@@ -99,8 +99,8 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	void EXPORT AnimateThink(void);
-	void EXPORT ExpandThink(void);
+	void EXPORT AnimateThink();
+	void EXPORT ExpandThink();
 
 	void Animate(float frames);
 	NOXREF void Expand(float scaleSpeed, float fadeSpeed);
@@ -108,7 +108,7 @@ public:
 
 	void SetAttachment(edict_t *pEntity, int attachment)
 	{
-		if (pEntity)
+		if (pEntity != NULL)
 		{
 			pev->skin = ENTINDEX(pEntity);
 			pev->body = attachment;
@@ -116,12 +116,11 @@ public:
 			pev->movetype = MOVETYPE_FOLLOW;
 		}
 	}
-	void TurnOff(void);
-	void TurnOn(void);
-	float Frames(void)
-	{
-		return m_maxFrame;
-	}
+
+	void TurnOff();
+	void TurnOn();
+
+	float Frames() const { return m_maxFrame; }
 	void SetTransparency(int rendermode, int r, int g, int b, int a, int fx)
 	{
 		pev->rendermode = rendermode;
@@ -131,24 +130,12 @@ public:
 		pev->renderamt = a;
 		pev->renderfx = fx;
 	}
-	void SetTexture(int spriteIndex)
-	{
-		pev->modelindex = spriteIndex;
-	}
-	void SetScale(float scale)
-	{
-		pev->scale = scale;
-	}
-	void SetColor(int r, int g, int b)
-	{
-		pev->rendercolor.x = r;
-		pev->rendercolor.y = g;
-		pev->rendercolor.z = b;
-	}
-	void SetBrightness(int brightness)
-	{
-		pev->renderamt = brightness;
-	}
+
+	void SetTexture(int spriteIndex)	{ pev->modelindex = spriteIndex; }
+	void SetScale(float scale)		{ pev->scale = scale; }
+	void SetColor(int r, int g, int b)	{ pev->rendercolor.x = r; pev->rendercolor.y = g; pev->rendercolor.z = b; }
+	void SetBrightness(int brightness)	{ pev->renderamt = brightness; }
+
 	void AnimateAndDie(float_precision framerate)
 	{
 		SetThink(&CSprite::AnimateUntilDead);
@@ -157,25 +144,23 @@ public:
 		pev->nextthink = gpGlobals->time;
 	}
 
-	void EXPORT AnimateUntilDead(void);
+	void EXPORT AnimateUntilDead();
 	static CSprite *SpriteCreate(const char *pSpriteName, const Vector &origin, BOOL animate);
 
 	static TYPEDESCRIPTION IMPL(m_SaveData)[2];
 
 private:
-
 	float m_lastTime;
 	float m_maxFrame;
-
-};/* size: 160, cachelines: 3, members: 4 */
+};
 
 /* <723cb> ../cstrike/dlls/effects.h:105 */
 class CBeam: public CBaseEntity
 {
 public:
-	virtual void Spawn(void);
-	virtual void Precache(void);
-	virtual int ObjectCaps(void)
+	virtual void Spawn();
+	virtual void Precache();
+	virtual int ObjectCaps()
 	{
 		int flags = 0;
 		if (pev->spawnflags & SF_BEAM_TEMPORARY)
@@ -183,123 +168,51 @@ public:
 
 		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | flags;
 	}
-	virtual Vector Center(void)
-	{
-		return (GetStartPos() + GetEndPos()) * 0.5;
-	}
+	virtual Vector Center() { return (GetStartPos() + GetEndPos()) * 0.5f; }
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Precache_(void);
+	void Spawn_();
+	void Precache_();
 
 #endif // HOOK_GAMEDLL
 
 public:
 	void EXPORT TriggerTouch(CBaseEntity *pOther);
 
-	void SetType(int type)
-	{
-		pev->rendermode = (pev->rendermode & 0xF0) | (type & 0x0F);
-	}
-	void SetFlags(int flags)
-	{
-		pev->rendermode = (pev->rendermode & 0x0F) | (flags & 0xF0);
-	}
-	void SetStartPos(const Vector &pos)
-	{
-		pev->origin = pos;
-	}
-	void SetEndPos(const Vector &pos)
-	{
-		pev->angles = pos;
-	}
+	void SetType(int type)			{ pev->rendermode = (pev->rendermode & 0xF0) | (type & 0x0F); }
+	void SetFlags(int flags)		{ pev->rendermode = (pev->rendermode & 0x0F) | (flags & 0xF0); }
+	void SetStartPos(const Vector &pos)	{ pev->origin = pos; }
+	void SetEndPos(const Vector &pos)	{ pev->angles = pos; }
+
 	void SetStartEntity(int entityIndex);
 	void SetEndEntity(int entityIndex);
-	void SetStartAttachment(int attachment)
-	{
-		pev->sequence = (pev->sequence & 0x0FFF) | ((attachment & 0xF) << 12);
-	}
-	void SetEndAttachment(int attachment)
-	{
-		pev->skin = (pev->skin & 0x0FFF) | ((attachment & 0xF) << 12);
-	}
-	void SetTexture(int spriteIndex)
-	{
-		pev->modelindex = spriteIndex;
-	}
-	void SetWidth(int width)
-	{
-		pev->scale = width;
-	}
-	void SetNoise(int amplitude)
-	{
-		pev->body = amplitude;
-	}
-	void SetColor(int r, int g, int b)
-	{
-		pev->rendercolor.x = r;
-		pev->rendercolor.y = g;
-		pev->rendercolor.z = b;
-	}
-	void SetBrightness(int brightness)
-	{
-		pev->renderamt = brightness;
-	}
-	void SetFrame(float frame)
-	{
-		pev->frame = frame;
-	}
-	void SetScrollRate(int speed)
-	{
-		pev->animtime = speed;
-	}
-	int GetType(void)
-	{
-		return pev->rendermode & 0x0F;
-	}
-	int GetFlags(void)
-	{
-		return pev->rendermode & 0xF0;
-	}
-	int GetStartEntity(void)
-	{
-		return pev->sequence & 0xFFF;
-	}
-	int GetEndEntity(void)
-	{
-		return pev->skin & 0xFFF;
-	}
 
-	const Vector &GetStartPos(void);
-	const Vector &GetEndPos(void);
+	void SetStartAttachment(int attachment)	{ pev->sequence = (pev->sequence & 0x0FFF) | ((attachment & 0xF) << 12); }
+	void SetEndAttachment(int attachment)	{ pev->skin = (pev->skin & 0x0FFF) | ((attachment & 0xF) << 12); }
+	void SetTexture(int spriteIndex)	{ pev->modelindex = spriteIndex; }
+	void SetWidth(int width)		{ pev->scale = width; }
+	void SetNoise(int amplitude)		{ pev->body = amplitude; }
+	void SetColor(int r, int g, int b)	{ pev->rendercolor.x = r; pev->rendercolor.y = g; pev->rendercolor.z = b; }
+	void SetBrightness(int brightness)	{ pev->renderamt = brightness;}
+	void SetFrame(float frame)		{ pev->frame = frame; }
+	void SetScrollRate(int speed)		{ pev->animtime = speed; }
+	int GetType() const			{ return pev->rendermode & 0x0F; }
+	int GetFlags() const			{ return pev->rendermode & 0xF0; }
+	int GetStartEntity() const		{ return pev->sequence & 0xFFF; }
+	int GetEndEntity() const		{ return pev->skin & 0xFFF; }
 
-	int GetTexture(void)
-	{
-		return pev->modelindex;
-	}
-	int GetWidth(void)
-	{
-		return pev->scale;
-	}
-	int GetNoise(void)
-	{
-		return pev->body;
-	}
-	int GetBrightness(void)
-	{
-		return pev->renderamt;
-	}
-	int GetFrame(void)
-	{
-		return pev->frame;
-	}
-	int GetScrollRate(void)
-	{
-		return pev->animtime;
-	}
+	const Vector &GetStartPos();
+	const Vector &GetEndPos();
 
-	void RelinkBeam(void);
+	int GetTexture() const			{ return pev->modelindex; }
+	int GetWidth() const			{ return pev->scale; }
+	int GetNoise() const			{ return pev->body; }
+	int GetBrightness() const		{ return pev->renderamt; }
+	int GetFrame() const			{ return pev->frame; }
+	int GetScrollRate() const		{ return pev->animtime; }
+
+	void RelinkBeam();
 	void DoSparks(const Vector &start, const Vector &end);
 	CBaseEntity *RandomTargetname(const char *szName);
 	void BeamDamage(TraceResult *ptr);
@@ -322,15 +235,14 @@ public:
 		pev->dmgtime = gpGlobals->time - 1;
 		BeamDamage(ptr);
 	}
-
-};/* size: 152, cachelines: 3, members: 1 */
+};
 
 /* <72402> ../cstrike/dlls/effects.h:188 */
 class CLaser: public CBeam
 {
 public:
-	virtual void Spawn(void);
-	virtual void Precache(void);
+	virtual void Spawn();
+	virtual void Precache();
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
@@ -338,8 +250,8 @@ public:
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Precache_(void);
+	void Spawn_();
+	void Precache_();
 	void KeyValue_(KeyValueData *pkvd);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
@@ -348,42 +260,37 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	void TurnOn(void);
-	void TurnOff(void);
-	int IsOn(void);
+	void TurnOn();
+	void TurnOff();
+	int IsOn();
 
 	void FireAtPoint(TraceResult &point);
-	void EXPORT StrikeThink(void);
+	void EXPORT StrikeThink();
 
 public:
 	static TYPEDESCRIPTION IMPL(m_SaveData)[3];
 
-public:
 	CSprite *m_pSprite;
 	int m_iszSpriteName;
 	Vector m_firePosition;
-
-};/* size: 172, cachelines: 3, members: 5 */
+};
 
 /* <7237e> ../cstrike/dlls/effects.cpp:36 */
 class CBubbling: public CBaseEntity
 {
 public:
-	virtual void Spawn(void);
-	virtual void Precache(void);
+	virtual void Spawn();
+	virtual void Precache();
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
-	virtual int ObjectCaps(void)
-	{
-		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION);
-	}
+	virtual int ObjectCaps() { return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Precache_(void);
+	void Spawn_();
+	void Precache_();
 	void KeyValue_(KeyValueData *pkvd);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
@@ -392,64 +299,60 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	void EXPORT FizzThink(void);
+	void EXPORT FizzThink();
 
 public:
 	static TYPEDESCRIPTION IMPL(m_SaveData)[3];
 
-public:
 	int m_density;
 	int m_frequency;
 	int m_bubbleModel;
 	int m_state;
-
-}; /* size: 168, cachelines: 3, members: 6 */
+};
 
 /* <723e6> ../cstrike/dlls/effects.cpp:357 */
 class CLightning: public CBeam
 {
 public:
-	virtual void Spawn(void);
-	virtual void Precache(void);
+	virtual void Spawn();
+	virtual void Precache();
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
-	virtual void Activate(void);
+	virtual void Activate();
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Precache_(void);
+	void Spawn_();
+	void Precache_();
 	void KeyValue_(KeyValueData *pkvd);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
-	void Activate_(void);
+	void Activate_();
 
 #endif // HOOK_GAMEDLL
 
 public:
-	void EXPORT StrikeThink(void);
-	void EXPORT DamageThink(void);
-	void RandomArea(void);
+	void EXPORT StrikeThink();
+	void EXPORT DamageThink();
+	void RandomArea();
 	void RandomPoint(Vector &vecSrc);
 	void Zap(const Vector &vecSrc, const Vector &vecDest);
 	void EXPORT StrikeUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 	void EXPORT ToggleUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
-	/* <71e17> ../cstrike/dlls/effects.cpp:373 */
-	inline BOOL ServerSide(void)
+	inline BOOL ServerSide() const
 	{
 		if (!m_life && !(pev->spawnflags & SF_BEAM_RING))
 			return TRUE;
 
 		return FALSE;
 	}
-	void BeamUpdateVars(void);
+	void BeamUpdateVars();
 
 public:
 	static TYPEDESCRIPTION IMPL(m_SaveData)[13];
 
-public:
 	int m_active;
 	int m_iszStartEntity;
 	int m_iszEndEntity;
@@ -463,48 +366,46 @@ public:
 	int m_iszSpriteName;
 	int m_frameStart;
 	float m_radius;
-
-}; /* size: 204, cachelines: 4, members: 15 */
+};
 
 /* <7244f> ../cstrike/dlls/effects.cpp:1085 */
 class CGlow: public CPointEntity
 {
 public:
-	virtual void Spawn(void);
+	virtual void Spawn();
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
-	virtual void Think(void);
+	virtual void Think();
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
+	void Spawn_();
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
-	void Think_(void);
+	void Think_();
 
 #endif // HOOK_GAMEDLL
 
 	void Animate(float frames);
+
 public:
 	static TYPEDESCRIPTION IMPL(m_SaveData)[2];
 
-public:
 	float m_lastTime;
 	float m_maxFrame;
-
-};/* size: 160, cachelines: 3, members: 4 */
+};
 
 /* <724b8> ../cstrike/dlls/effects.cpp:1146 */
 class CBombGlow: public CSprite
 {
 public:
-	virtual void Spawn(void);
-	virtual void Think(void);
+	virtual void Spawn();
+	virtual void Think();
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Think_(void);
+	void Spawn_();
+	void Think_();
 
 #endif // HOOK_GAMEDLL
 
@@ -512,39 +413,38 @@ public:
 	float m_lastTime;
 	float m_tmBeepPeriod;
 	bool m_bSetModel;
-
-};/* size: 172, cachelines: 3, members: 4 */
+};
 
 /* <72581> ../cstrike/dlls/effects.cpp:1413 */
 class CGibShooter: public CBaseDelay
 {
 public:
-	virtual void Spawn(void);
-	virtual void Precache(void);
+	virtual void Spawn();
+	virtual void Precache();
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-	virtual CGib *CreateGib(void);
+	virtual CGib *CreateGib();
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Precache_(void);
+	void Spawn_();
+	void Precache_();
 	void KeyValue_(KeyValueData *pkvd);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-	CGib *CreateGib_(void);
+	CGib *CreateGib_();
 
 #endif // HOOK_GAMEDLL
 
 public:
-	void EXPORT ShootThink(void);
+	void EXPORT ShootThink();
+
 public:
 	static TYPEDESCRIPTION IMPL(m_SaveData)[7];
 
-public:
 	int m_iGibs;
 	int m_iGibCapacity;
 	int m_iGibMaterial;
@@ -553,26 +453,25 @@ public:
 	float m_flGibVelocity;
 	float m_flVariance;
 	float m_flGibLife;
-
-};/* size: 188, cachelines: 3, members: 9 */
+};
 
 /* <725ef> ../cstrike/dlls/effects.cpp:1592 */
 class CEnvShooter: public CGibShooter
 {
 public:
-	virtual void Precache(void);
+	virtual void Precache();
 	virtual void KeyValue(KeyValueData *pkvd);
-	virtual CGib *CreateGib(void);
+	virtual CGib *CreateGib();
 
 #ifdef HOOK_GAMEDLL
 
-	void Precache_(void);
+	void Precache_();
 	void KeyValue_(KeyValueData *pkvd);
-	CGib *CreateGib_(void);
+	CGib *CreateGib_();
 
 #endif // HOOK_GAMEDLL
 
-};/* size: 188, cachelines: 3, members: 1 */
+};
 
 #define MAX_BEAM 24
 
@@ -580,20 +479,20 @@ public:
 class CTestEffect: public CBaseDelay
 {
 public:
-	virtual void Spawn(void);
-	virtual void Precache(void);
+	virtual void Spawn();
+	virtual void Precache();
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Precache_(void);
+	void Spawn_();
+	void Precache_();
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #endif // HOOK_GAMEDLL
 
 public:
-	void EXPORT TestThink(void);
+	void EXPORT TestThink();
 
 public:
 	int m_iLoop;
@@ -603,257 +502,165 @@ public:
 
 	float m_flBeamTime[ MAX_BEAM ];
 	float m_flStartTime;
-
-};/* size: 364, cachelines: 6, members: 6 */
+};
 
 /* <72690> ../cstrike/dlls/effects.cpp:1769 */
 class CBlood: public CPointEntity
 {
 public:
-	virtual void Spawn(void);
+	virtual void Spawn();
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
+	void Spawn_();
 	void KeyValue_(KeyValueData *pkvd);
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #endif // HOOK_GAMEDLL
 
 public:
-	/* <7205b> ../cstrike/dlls/effects.cpp:1776 */
-	int Color(void)
-	{
-		return pev->impulse;
-	}
-	/* <72079> ../cstrike/dlls/effects.cpp:1777 */
-	float BloodAmount(void)
-	{
-		return pev->dmg;
-	}
-	/* <72092> ../cstrike/dlls/effects.cpp:1779 */
-	void SetColor(int color)
-	{
-		pev->impulse = color;
-	}
-	/* <720b7> ../cstrike/dlls/effects.cpp:1780 */
-	void SetBloodAmount(float amount)
-	{
-		pev->dmg = amount;
-	}
+	int Color() const			{ return pev->impulse; }
+	float BloodAmount() const		{ return pev->dmg; }
+
+	void SetColor(int color)		{ pev->impulse = color; }
+	void SetBloodAmount(float amount)	{ pev->dmg = amount; }
 
 public:
-	Vector Direction(void);
+	Vector Direction();
 	Vector BloodPosition(CBaseEntity *pActivator);
-
-};/* size: 152, cachelines: 3, members: 1 */
+};
 
 /* <726de> ../cstrike/dlls/effects.cpp:1886 */
 class CShake: public CPointEntity
 {
 public:
-	virtual void Spawn(void);
+	virtual void Spawn();
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
+	void Spawn_();
 	void KeyValue_(KeyValueData *pkvd);
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #endif // HOOK_GAMEDLL
 
 public:
-	/* <7210f> ../cstrike/dlls/effects.cpp:1893 */
-	float Amplitude(void)
-	{
-		return pev->scale;
-	}
-	/* <7212d> ../cstrike/dlls/effects.cpp:1894 */
-	float Frequency(void)
-	{
-		return pev->dmg_save;
-	}
-	/* <72146> ../cstrike/dlls/effects.cpp:1895 */
-	float Duration(void)
-	{
-		return pev->dmg_take;
-	}
-	/* <7215f> ../cstrike/dlls/effects.cpp:1896 */
-	float Radius(void)
-	{
-		return pev->dmg;
-	}
-	/* <72178> ../cstrike/dlls/effects.cpp:1898 */
-	void SetAmplitude(float amplitude)
-	{
-		pev->scale = amplitude;
-	}
-	/* <7219d> ../cstrike/dlls/effects.cpp:1899 */
-	void SetFrequency(float frequency)
-	{
-		pev->dmg_save = frequency;
-	}
-	/* <721c2> ../cstrike/dlls/effects.cpp:1900 */
-	void SetDuration(float duration)
-	{
-		pev->dmg_take = duration;
-	}
-	/* <721e7> ../cstrike/dlls/effects.cpp:1901 */
-	void SetRadius(float radius)
-	{
-		pev->dmg = radius;
-	}
+	float Amplitude() const			{ return pev->scale; }
+	float Frequency() const			{ return pev->dmg_save; }
+	float Duration() const			{ return pev->dmg_take; }
+	float Radius() const			{ return pev->dmg; }
 
-};/* size: 152, cachelines: 3, members: 1 */
+	void SetAmplitude(float amplitude)	{ pev->scale = amplitude; }
+	void SetFrequency(float frequency)	{ pev->dmg_save = frequency; }
+	void SetDuration(float duration)	{ pev->dmg_take = duration; }
+	void SetRadius(float radius)		{ pev->dmg = radius; }
+};
 
 /* <7272c> ../cstrike/dlls/effects.cpp:1964 */
 class CFade: public CPointEntity
 {
 public:
-	virtual void Spawn(void);
+	virtual void Spawn();
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
+	void Spawn_();
 	void KeyValue_(KeyValueData *pkvd);
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #endif // HOOK_GAMEDLL
 
 public:
-	/* <72231> ../cstrike/dlls/effects.cpp:1971 */
-	float Duration(void)
-	{
-		return pev->dmg_take;
-	}
-	/* <7224f> ../cstrike/dlls/effects.cpp:1972 */
-	float HoldTime(void)
-	{
-		return pev->dmg_save;
-	}
-	/* <72268> ../cstrike/dlls/effects.cpp:1974 */
-	void SetDuration(float duration)
-	{
-		pev->dmg_take = duration;
-	}
-	/* <7228d> ../cstrike/dlls/effects.cpp:1975 */
-	void SetHoldTime(float hold)
-	{
-		pev->dmg_save = hold;
-	}
+	float Duration() const { return pev->dmg_take; }
+	float HoldTime() const { return pev->dmg_save; }
 
-};/* size: 152, cachelines: 3, members: 1 */
+	void SetDuration(float duration)	{ pev->dmg_take = duration; }
+	void SetHoldTime(float hold)		{ pev->dmg_save = hold; }
+};
 
 /* <7277a> ../cstrike/dlls/effects.cpp:2038 */
 class CMessage: public CPointEntity
 {
 public:
-	virtual void Spawn(void);
-	virtual void Precache(void);
+	virtual void Spawn();
+	virtual void Precache();
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Precache_(void);
+	void Spawn_();
+	void Precache_();
 	void KeyValue_(KeyValueData *pkvd);
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #endif // HOOK_GAMEDLL
 
-};/* size: 152, cachelines: 3, members: 1 */
+};
 
 /* <727c8> ../cstrike/dlls/effects.cpp:2145 */
 class CEnvFunnel: public CBaseDelay
 {
 public:
-	virtual void Spawn(void);
-	virtual void Precache(void);
+	virtual void Spawn();
+	virtual void Precache();
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Precache_(void);
+	void Spawn_();
+	void Precache_();
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #endif // HOOK_GAMEDLL
 
 public:
 	int m_iSprite;
-
-};/* size: 164, cachelines: 3, members: 2 */
+};
 
 /* <7281b> ../cstrike/dlls/effects.cpp:2199 */
 class CEnvBeverage: public CBaseDelay
 {
 public:
-	virtual void Spawn(void);
-	virtual void Precache(void);
+	virtual void Spawn();
+	virtual void Precache();
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Precache_(void);
+	void Spawn_();
+	void Precache_();
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #endif // HOOK_GAMEDLL
 
-};/* size: 160, cachelines: 3, members: 1 */
+};
 
 /* <72869> ../cstrike/dlls/effects.cpp:2258 */
 class CItemSoda: public CBaseEntity
 {
 public:
-	virtual void Spawn(void);
-	virtual void Precache(void);
+	virtual void Spawn();
+	virtual void Precache();
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Precache_(void);
+	void Spawn_();
+	void Precache_();
 
 #endif // HOOK_GAMEDLL
 
 public:
-	void EXPORT CanThink(void);
+	void EXPORT CanThink();
 	void EXPORT CanTouch(CBaseEntity *pOther);
-
-};/* size: 152, cachelines: 3, members: 1 */
+};
 
 int IsPointEntity(CBaseEntity *pEnt);
-
-#ifdef HOOK_GAMEDLL
-
-// linked objects
-C_DLLEXPORT void info_target(entvars_t *pev);
-C_DLLEXPORT void env_bubbles(entvars_t *pev);
-C_DLLEXPORT void beam(entvars_t *pev);
-C_DLLEXPORT void env_lightning(entvars_t *pev);
-C_DLLEXPORT void env_beam(entvars_t *pev);
-C_DLLEXPORT void env_laser(entvars_t *pev);
-C_DLLEXPORT void env_glow(entvars_t *pev);
-C_DLLEXPORT void env_bombglow(entvars_t *pev);
-C_DLLEXPORT void env_sprite(entvars_t *pev);
-C_DLLEXPORT void gibshooter(entvars_t *pev);
-C_DLLEXPORT void env_shooter(entvars_t *pev);
-C_DLLEXPORT void test_effect(entvars_t *pev);
-C_DLLEXPORT void env_blood(entvars_t *pev);
-C_DLLEXPORT void env_shake(entvars_t *pev);
-C_DLLEXPORT void env_fade(entvars_t *pev);
-C_DLLEXPORT void env_message(entvars_t *pev);
-C_DLLEXPORT void env_funnel(entvars_t *pev);
-C_DLLEXPORT void env_beverage(entvars_t *pev);
-C_DLLEXPORT void item_sodacan(entvars_t *pev);
-
-#endif // HOOK_GAMEDLL
 
 #endif // EFFECTS_H

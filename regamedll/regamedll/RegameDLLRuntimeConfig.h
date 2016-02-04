@@ -20,7 +20,7 @@ public:
 	char testConfigFileName[260];
 	TestPlayerMode testPlayerMode;
 
-	void parseFromConfigFile(void);
+	void parseFromConfigFile();
 	void parseFromCommandLine(const char *cmdLine);
 };
 

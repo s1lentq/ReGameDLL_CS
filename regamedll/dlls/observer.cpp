@@ -38,8 +38,7 @@ CBaseEntity *CBasePlayer::Observer_IsValidTarget(int iPlayerIndex, bool bSameTea
 	if (iPlayerIndex > gpGlobals->maxClients || iPlayerIndex < 1)
 		return NULL;
 
-	CBasePlayer *pEnt = (CBasePlayer *)UTIL_PlayerByIndex(iPlayerIndex);
-
+	CBasePlayer *pEnt = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(iPlayerIndex));
 	return g_ReGameHookchains.m_Observer_IsValidTarget.callChain(Observer_IsValidTarget_api, this, pEnt, iPlayerIndex, bSameTeam);
 }
 
@@ -59,7 +58,7 @@ void UpdateClientEffects(CBasePlayer *pObserver, int oldMode)
 
 		if (pObserver->m_hObserverTarget->IsPlayer())
 		{
-			CBasePlayer *pPlayer = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(ENTINDEX(pObserver->m_hObserverTarget->edict())));
+			CBasePlayer *pPlayer = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(pObserver->m_hObserverTarget->entindex()));
 
 			if (pPlayer)
 			{
@@ -177,7 +176,7 @@ void CBasePlayer::Observer_FindNextPlayer(bool bReverse, const char *name)
 			if (!name)
 				break;
 
-			pPlayer = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(ENTINDEX(m_hObserverTarget->edict())));
+			pPlayer = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(m_hObserverTarget->entindex()));
 
 			if (!Q_strcmp(name, STRING(pPlayer->pev->netname)))
 				break;
@@ -210,7 +209,7 @@ void CBasePlayer::Observer_FindNextPlayer(bool bReverse, const char *name)
 // Handle buttons in observer mode
 
 /* <11c9ac> ../cstrike/dlls/observer.cpp:254 */
-void CBasePlayer::Observer_HandleButtons(void)
+void CBasePlayer::Observer_HandleButtons()
 {
 	// Slow down mouse clicks
 	if (m_flNextObserverInput > gpGlobals->time)
@@ -260,7 +259,7 @@ void CBasePlayer::Observer_HandleButtons(void)
 }
 
 /* <11c9d3> ../cstrike/dlls/observer.cpp:304 */
-void CBasePlayer::Observer_CheckTarget(void)
+void CBasePlayer::Observer_CheckTarget()
 {
 	if (pev->iuser1 == OBS_ROAMING && !m_bWasFollowing)
 		return;
@@ -283,7 +282,7 @@ void CBasePlayer::Observer_CheckTarget(void)
 		if (m_hObserverTarget)
 		{
 			int iPlayerIndex = ENTINDEX(m_hObserverTarget->edict());
-			CBasePlayer *target = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(iPlayerIndex));
+			CBasePlayer *target = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(iPlayerIndex));
 
 			// check taget
 			if (!target || target->pev->deadflag == DEAD_RESPAWNABLE || (target->pev->effects & EF_NODRAW))
@@ -315,12 +314,12 @@ void CBasePlayer::Observer_CheckTarget(void)
 }
 
 /* <11cb26> ../cstrike/dlls/observer.cpp:380 */
-void CBasePlayer::Observer_CheckProperties(void)
+void CBasePlayer::Observer_CheckProperties()
 {
 	// try to find a traget if we have no current one
 	if (pev->iuser1 == OBS_IN_EYE && m_hObserverTarget != NULL)
 	{
-		CBasePlayer *target = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(ENTINDEX(m_hObserverTarget->edict())));
+		CBasePlayer *target = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(m_hObserverTarget->entindex()));
 
 		if (!target)
 			return;

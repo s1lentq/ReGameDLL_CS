@@ -37,23 +37,21 @@ class CAirtank: public CGrenade
 {
 
 public:
-	virtual void Spawn(void);
-	virtual void Precache(void);
+	virtual void Spawn();
+	virtual void Precache();
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
 	virtual void Killed(entvars_t *pevAttacker, int iGib);
-	virtual int BloodColor(void)
-	{
-		return DONT_BLEED;
-	}
+	virtual int BloodColor() { return DONT_BLEED; }
+
 public:
-	void EXPORT TankThink(void);
+	void EXPORT TankThink();
 	void EXPORT TankTouch(CBaseEntity *pOther);
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Precache_(void);
+	void Spawn_();
+	void Precache_();
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
 	void Killed_(entvars_t *pevAttacker, int iGib);
@@ -65,14 +63,6 @@ public:
 
 private:
 	int m_state;
-
 };
-
-#ifdef HOOK_GAMEDLL
-
-// linked objects
-C_DLLEXPORT void item_airtank(entvars_t *pev);
-
-#endif // HOOK_GAMEDLL
 
 #endif // AIRTANK_H

@@ -10,10 +10,6 @@ TYPEDESCRIPTION CAirtank::m_SaveData[] =
 	DEFINE_FIELD(CAirtank, m_state, FIELD_INTEGER)
 };
 
-#else
-
-TYPEDESCRIPTION IMPL_CLASS(CAirtank, m_SaveData)[1];
-
 #endif // HOOK_GAMEDLL
 
 /* <5329> ../cstrike/dlls/airtank.cpp:41 */
@@ -23,7 +19,7 @@ LINK_ENTITY_TO_CLASS(item_airtank, CAirtank);
 IMPLEMENT_SAVERESTORE(CAirtank, CGrenade);
 
 /* <50dd> ../cstrike/dlls/airtank.cpp:50 */
-void CAirtank::__MAKE_VHOOK(Spawn)(void)
+void CAirtank::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
 
@@ -46,7 +42,7 @@ void CAirtank::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <4fef> ../cstrike/dlls/airtank.cpp:71 */
-void CAirtank::__MAKE_VHOOK(Precache)(void)
+void CAirtank::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/w_oxygen.mdl");
 	PRECACHE_SOUND("doors/aliendoor3.wav");
@@ -62,7 +58,7 @@ void CAirtank::__MAKE_VHOOK(Killed)(entvars_t *pevAttacker, int iGib)
 }
 
 /* <5016> ../cstrike/dlls/airtank.cpp:88 */
-void CAirtank::TankThink(void)
+void CAirtank::TankThink()
 {
 	// Fire trigger
 	m_state = 1;
@@ -85,42 +81,13 @@ void CAirtank::TankTouch(CBaseEntity *pOther)
 	}
 
 	// give player 12 more seconds of air
-	pOther->pev->air_finished = gpGlobals->time + 12;
+	pOther->pev->air_finished = gpGlobals->time + 12.0f;
 
 	// suit recharge sound
 	EMIT_SOUND(ENT(pev), CHAN_VOICE, "doors/aliendoor3.wav", VOL_NORM, ATTN_NORM);
 
 	// recharge airtank in 30 seconds
-	pev->nextthink = gpGlobals->time + 30;
+	pev->nextthink = gpGlobals->time + 30.0f;
 	m_state = 0;
 	SUB_UseTargets(this, USE_TOGGLE, 1);
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CAirtank::Spawn(void)
-{
-	Spawn_();
-}
-
-void CAirtank::Precache(void)
-{
-	Precache_();
-}
-
-int CAirtank::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CAirtank::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-void CAirtank::Killed(entvars_t *pevAttacker, int iGib)
-{
-	Killed_(pevAttacker, iGib);
-}
-
-#endif // HOOK_GAMEDLL

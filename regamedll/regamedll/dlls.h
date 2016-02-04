@@ -29,6 +29,11 @@
 #include "mathlib.h"
 #include "extdll.h"
 
+// declared virtual function's and globals for hooks
+#ifdef HOOK_GAMEDLL
+#include "hooker_impl.h"
+#endif // HOOK_GAMEDLL
+
 #include "h_export.h"
 #include "schedule.h"
 #include "archtypes.h"

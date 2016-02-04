@@ -505,7 +505,7 @@ void AttackState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 					next = RANDOM_LONG(0, NUM_ATTACK_STATES - 2);
 			}
 			while (!m_firstDodge && next == m_dodgeState);
-	
+
 			m_dodgeState = (DodgeStateType)next;
 			m_nextDodgeStateTimestamp = gpGlobals->time + RANDOM_FLOAT(0.3f, 1.0f);
 			m_firstDodge = false;
@@ -562,22 +562,3 @@ void AttackState::__MAKE_VHOOK(OnExit)(CCSBot *me)
 	me->StopRapidFire();
 	me->ClearSurpriseDelay();
 }
-
-#ifdef HOOK_GAMEDLL
-
-void AttackState::OnEnter(CCSBot *me)
-{
-	OnEnter_(me);
-}
-
-void AttackState::OnUpdate(CCSBot *me)
-{
-	OnUpdate_(me);
-}
-
-void AttackState::OnExit(CCSBot *me)
-{
-	OnExit_(me);
-}
-
-#endif // HOOK_GAMEDLL

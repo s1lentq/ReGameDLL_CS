@@ -4,9 +4,10 @@
 LINK_ENTITY_TO_CLASS(weapon_scout, CSCOUT);
 
 /* <29b7ee> ../cstrike/dlls/wpn_shared/wpn_scout.cpp:50 */
-void CSCOUT::__MAKE_VHOOK(Spawn)(void)
+void CSCOUT::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
+
 	m_iId = WEAPON_SCOUT;
 	SET_MODEL(edict(), "models/w_scout.mdl");
 
@@ -16,7 +17,7 @@ void CSCOUT::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <29b70a> ../cstrike/dlls/wpn_shared/wpn_scout.cpp:62 */
-void CSCOUT::__MAKE_VHOOK(Precache)(void)
+void CSCOUT::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/v_scout.mdl");
 	PRECACHE_MODEL("models/w_scout.mdl");
@@ -50,12 +51,12 @@ int CSCOUT::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 }
 
 /* <29b8f7> ../cstrike/dlls/wpn_shared/wpn_scout.cpp:96 */
-BOOL CSCOUT::__MAKE_VHOOK(Deploy)(void)
+BOOL CSCOUT::__MAKE_VHOOK(Deploy)()
 {
 	if (DefaultDeploy("models/v_scout.mdl", "models/p_scout.mdl", SCOUT_DRAW, "rifle", UseDecrement() != FALSE))
 	{
 		m_flNextPrimaryAttack = m_pPlayer->m_flNextAttack = GetNextAttackDelay(1.25);
-		m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 1;
+		m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 1.0f;
 
 		return TRUE;
 	}
@@ -64,7 +65,7 @@ BOOL CSCOUT::__MAKE_VHOOK(Deploy)(void)
 }
 
 /* <29b78a> ../cstrike/dlls/wpn_shared/wpn_scout.cpp:109 */
-void CSCOUT::__MAKE_VHOOK(SecondaryAttack)(void)
+void CSCOUT::__MAKE_VHOOK(SecondaryAttack)()
 {
 	switch (m_pPlayer->m_iFOV)
 	{
@@ -89,7 +90,7 @@ void CSCOUT::__MAKE_VHOOK(SecondaryAttack)(void)
 }
 
 /* <29ba31> ../cstrike/dlls/wpn_shared/wpn_scout.cpp:140 */
-void CSCOUT::__MAKE_VHOOK(PrimaryAttack)(void)
+void CSCOUT::__MAKE_VHOOK(PrimaryAttack)()
 {
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
 	{
@@ -122,13 +123,10 @@ void CSCOUT::SCOUTFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 
 		// reset a fov
 		m_pPlayer->m_iFOV = DEFAULT_FOV;
-#ifdef REGAMEDLL_FIXES
-		m_pPlayer->pev->fov = DEFAULT_FOV;
-#endif // REGAMEDLL_FIXES
 	}
 	else
 	{
-		flSpread += 0.025;
+		flSpread += 0.025f;
 	}
 
 	if (m_iClip <= 0)
@@ -147,12 +145,12 @@ void CSCOUT::SCOUTFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 		return;
 	}
 
-	m_iClip--;
+	--m_iClip;
 	m_pPlayer->SetAnimation(PLAYER_ATTACK1);
 
 	UTIL_MakeVectors(m_pPlayer->pev->v_angle + m_pPlayer->pev->punchangle);
 
-	m_pPlayer->m_flEjectBrass = gpGlobals->time + 0.56;
+	m_pPlayer->m_flEjectBrass = gpGlobals->time + 0.56f;
 	m_pPlayer->m_iWeaponVolume = BIG_EXPLOSION_VOLUME;
 	m_pPlayer->m_iWeaponFlash = NORMAL_GUN_FLASH;
 
@@ -177,19 +175,17 @@ void CSCOUT::SCOUTFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
 	}
 
-	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.8;
-	m_pPlayer->pev->punchangle.x -= 2;
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.8f;
+	m_pPlayer->pev->punchangle.x -= 2.0f;
 }
 
 /* <29b89e> ../cstrike/dlls/wpn_shared/wpn_scout.cpp:232 */
-void CSCOUT::__MAKE_VHOOK(Reload)(void)
+void CSCOUT::__MAKE_VHOOK(Reload)()
 {
 #ifdef REGAMEDLL_FIXES
 	// to prevent reload if not enough ammo
 	if (m_pPlayer->ammo_762nato <= 0)
-	{
 		return;
-	}
 #endif // REGAMEDLL_FIXES
 
 	if (DefaultReload(SCOUT_MAX_CLIP, SCOUT_RELOAD, SCOUT_RELOAD_TIME))
@@ -205,7 +201,7 @@ void CSCOUT::__MAKE_VHOOK(Reload)(void)
 }
 
 /* <29b864> ../cstrike/dlls/wpn_shared/wpn_scout.cpp:250 */
-void CSCOUT::__MAKE_VHOOK(WeaponIdle)(void)
+void CSCOUT::__MAKE_VHOOK(WeaponIdle)()
 {
 	ResetEmptySound();
 	m_pPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);
@@ -217,62 +213,13 @@ void CSCOUT::__MAKE_VHOOK(WeaponIdle)(void)
 
 	if (m_iClip)
 	{
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 60;
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 60.0f;
 		SendWeaponAnim(SCOUT_IDLE, UseDecrement() != FALSE);
 	}
 }
 
 /* <29b764> ../cstrike/dlls/wpn_shared/wpn_scout.cpp:267 */
-float CSCOUT::__MAKE_VHOOK(GetMaxSpeed)(void)
+float CSCOUT::__MAKE_VHOOK(GetMaxSpeed)()
 {
 	return (m_pPlayer->m_iFOV == DEFAULT_FOV) ? SCOUT_MAX_SPEED : SCOUT_MAX_SPEED_ZOOM;
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CSCOUT::Spawn(void)
-{
-	Spawn_();
-}
-
-void CSCOUT::Precache(void)
-{
-	Precache_();
-}
-
-int CSCOUT::GetItemInfo(ItemInfo *p)
-{
-	return GetItemInfo_(p);
-}
-
-BOOL CSCOUT::Deploy(void)
-{
-	return Deploy_();
-}
-
-float CSCOUT::GetMaxSpeed(void)
-{
-	return GetMaxSpeed_();
-}
-
-void CSCOUT::PrimaryAttack(void)
-{
-	PrimaryAttack_();
-}
-
-void CSCOUT::SecondaryAttack(void)
-{
-	SecondaryAttack_();
-}
-
-void CSCOUT::Reload(void)
-{
-	Reload_();
-}
-
-void CSCOUT::WeaponIdle(void)
-{
-	WeaponIdle_();
-}
-
-#endif // HOOK_GAMEDLL

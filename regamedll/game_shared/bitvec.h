@@ -43,8 +43,7 @@ public:
 private:
 	uint32 *m_pDWords;
 	int m_iBit;
-
-};/* size: 8, cachelines: 1, members: 2 */
+};
 
 // CBitVec allows you to store a list of bits and do operations on them like they were
 // an atomic type
@@ -52,7 +51,7 @@ template<int NUM_BITS>
 class CBitVec
 {
 public:
-	CBitVec(void);
+	CBitVec();
 
 	// Set all values to the specified value (0 or 1..)
 	void Init(int val = 0);
@@ -66,10 +65,7 @@ public:
 	bool operator!=(CBitVec<NUM_BITS> const &other);
 
 	// Get underlying dword representations of the bits.
-	int GetNumDWords()
-	{
-		return NUM_DWORDS;
-	}
+	int GetNumDWords() { return NUM_DWORDS; }
 	uint32 GetDWord(int i);
 	void SetDWord(int i, uint32 val);
 	int GetNumBits();
@@ -82,8 +78,7 @@ private:
 	};
 
 	unsigned int m_DWords[ NUM_DWORDS ];
-
-};/* size: 4, cachelines: 1, members: 1 */
+};
 
 /* <2d39f8> ../game_shared/bitvec.h:73 */
 inline CBitVecAccessor::CBitVecAccessor(uint32 *pDWords, int iBit)
@@ -118,7 +113,7 @@ inline int CBitVec<NUM_BITS>::GetNumBits()
 template<int NUM_BITS>
 inline CBitVec<NUM_BITS>::CBitVec()
 {
-	for (int i = 0; i < NUM_DWORDS; i++)
+	for (int i = 0; i < NUM_DWORDS; ++i)
 		m_DWords[i] = 0;
 }
 
@@ -126,7 +121,7 @@ inline CBitVec<NUM_BITS>::CBitVec()
 template<int NUM_BITS>
 inline void CBitVec<NUM_BITS>::Init(int val)
 {
-	for (int i = 0; i < GetNumBits(); i++)
+	for (int i = 0; i < GetNumBits(); ++i)
 	{
 		(*this)[i] = val;
 	}
@@ -152,7 +147,7 @@ inline CBitVecAccessor CBitVec<NUM_BITS>::operator[](int i)
 template<int NUM_BITS>
 inline bool CBitVec<NUM_BITS>::operator==(CBitVec<NUM_BITS> const &other)
 {
-	for (int i = 0; i < NUM_DWORDS; i++)
+	for (int i = 0; i < NUM_DWORDS; ++i)
 	{
 		if (m_DWords[i] != other.m_DWords[i])
 			return false;

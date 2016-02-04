@@ -8,11 +8,6 @@
 vec3_t vec3_origin = {0, 0, 0};
 int nanmask = 255<<23;
 
-#else
-
-vec3_t vec3_origin;
-int nanmask;
-
 #endif // HOOK_GAMEDLL
 
 /* <2ce436> ../cstrike/pm_shared/pm_math.c:35 */
@@ -250,6 +245,7 @@ int VectorCompare(const vec_t *v1, const vec_t *v2)
 		if (v1[i] != v2[i])
 			return 0;
 	}
+
 	return 1;
 }
 
@@ -360,7 +356,7 @@ int Q_log2(int val)
 {
 	int answer = 0;
 	while (val >>= 1)
-		answer++;
+		++answer;
 
 	return answer;
 }
@@ -382,7 +378,10 @@ void VectorMatrix(vec_t *forward, vec_t *right, vec_t *up)
 		return;
 	}
 
-	tmp[0] = 0; tmp[1] = 0; tmp[2] = 1.0;
+	tmp[0] = 0;
+	tmp[1] = 0;
+	tmp[2] = 1.0f;
+
 	_CrossProduct(forward, tmp, right);
 	VectorNormalize(right);
 	_CrossProduct(right, forward, up);
@@ -408,7 +407,7 @@ void VectorAngles(const vec_t *forward, vec_t *angles)
 		if (yaw < 0)
 			yaw += 360;
 
-		tmp = sqrt (forward[0]*forward[0] + forward[1]*forward[1]);
+		tmp = sqrt (forward[0] * forward[0] + forward[1] * forward[1]);
 		pitch = (atan2(forward[2], tmp) * 180 / M_PI);
 		if (pitch < 0)
 			pitch += 360;

@@ -38,8 +38,8 @@
 class CLight: public CPointEntity
 {
 public:
-	virtual void Spawn(void);
-	virtual void Restart(void);
+	virtual void Spawn();
+	virtual void Restart();
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
 	virtual void KeyValue(KeyValueData *pkvd);
@@ -47,8 +47,8 @@ public:
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Restart_(void);
+	void Spawn_();
+	void Restart_();
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
 	void KeyValue_(KeyValueData *pkvd);
@@ -62,23 +62,22 @@ private:
 	int m_iStyle;
 	int m_iszPattern;
 	BOOL m_iStartedOff;
-
-};/* size: 164, cachelines: 3, members: 5 */
+};
 
 /* <e7111> ../cstrike/dlls/lights.cpp:168 */
 class CEnvLight: public CLight
 {
 public:
-	virtual void Spawn(void);
+	virtual void Spawn();
 	virtual void KeyValue(KeyValueData *pkvd);
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
+	void Spawn_();
 	void KeyValue_(KeyValueData *pkvd);
 
 #endif // HOOK_GAMEDLL
 
-};/* size: 164, cachelines: 3, members: 1 */
+};
 
 #endif // LIGHT_H

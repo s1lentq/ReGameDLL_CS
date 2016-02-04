@@ -4,21 +4,22 @@
 LINK_ENTITY_TO_CLASS(weapon_ump45, CUMP45);
 
 /* <2b58f0> ../cstrike/dlls/wpn_shared/wpn_ump45.cpp:52 */
-void CUMP45::__MAKE_VHOOK(Spawn)(void)
+void CUMP45::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
+
 	m_iId = WEAPON_UMP45;
 	SET_MODEL(edict(), "models/w_ump45.mdl");
 
 	m_iDefaultAmmo = UMP45_DEFAULT_GIVE;
-	m_flAccuracy = 0;
+	m_flAccuracy = 0.0f;
 	m_bDelayFire = false;
 
 	FallInit();
 }
 
 /* <2b586f> ../cstrike/dlls/wpn_shared/wpn_ump45.cpp:66 */
-void CUMP45::__MAKE_VHOOK(Precache)(void)
+void CUMP45::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/v_ump45.mdl");
 	PRECACHE_MODEL("models/w_ump45.mdl");
@@ -55,9 +56,9 @@ int CUMP45::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 }
 
 /* <2b58c9> ../cstrike/dlls/wpn_shared/wpn_ump45.cpp:99 */
-BOOL CUMP45::__MAKE_VHOOK(Deploy)(void)
+BOOL CUMP45::__MAKE_VHOOK(Deploy)()
 {
-	m_flAccuracy = 0;
+	m_flAccuracy = 0.0f;
 	m_bDelayFire = false;
 	iShellOn = 1;
 
@@ -65,7 +66,7 @@ BOOL CUMP45::__MAKE_VHOOK(Deploy)(void)
 }
 
 /* <2b5aec> ../cstrike/dlls/wpn_shared/wpn_ump45.cpp:108 */
-void CUMP45::__MAKE_VHOOK(PrimaryAttack)(void)
+void CUMP45::__MAKE_VHOOK(PrimaryAttack)()
 {
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
 	{
@@ -84,12 +85,12 @@ void CUMP45::UMP45Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	int flag;
 
 	m_bDelayFire = true;
-	m_iShotsFired++;
+	++m_iShotsFired;
 
-	m_flAccuracy = ((m_iShotsFired * m_iShotsFired) / 120) + 0.5;
+	m_flAccuracy = ((m_iShotsFired * m_iShotsFired) / 210) + 0.5f;
 
-	if (m_flAccuracy > 1)
-		m_flAccuracy = 1;
+	if (m_flAccuracy > 1.0f)
+		m_flAccuracy = 1.0f;
 
 	if (m_iClip <= 0)
 	{
@@ -107,7 +108,7 @@ void CUMP45::UMP45Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 		return;
 	}
 
-	m_iClip--;
+	--m_iClip;
 	m_pPlayer->pev->effects |= EF_MUZZLEFLASH;
 	m_pPlayer->SetAnimation(PLAYER_ATTACK1);
 
@@ -138,7 +139,7 @@ void CUMP45::UMP45Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
 	}
 
-	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2;
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.0f;
 
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
 	{
@@ -159,24 +160,22 @@ void CUMP45::UMP45Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 }
 
 /* <2b59a1> ../cstrike/dlls/wpn_shared/wpn_ump45.cpp:200 */
-void CUMP45::__MAKE_VHOOK(Reload)(void)
+void CUMP45::__MAKE_VHOOK(Reload)()
 {
 	if (m_pPlayer->ammo_45acp <= 0)
-	{
 		return;
-	}
 
 	if (DefaultReload(UMP45_MAX_CLIP, UMP45_RELOAD, UMP45_RELOAD_TIME))
 	{
 		m_pPlayer->SetAnimation(PLAYER_RELOAD);
 
-		m_flAccuracy = 0;
+		m_flAccuracy = 0.0f;
 		m_iShotsFired = 0;
 	}
 }
 
 /* <2b5966> ../cstrike/dlls/wpn_shared/wpn_ump45.cpp:214 */
-void CUMP45::__MAKE_VHOOK(WeaponIdle)(void)
+void CUMP45::__MAKE_VHOOK(WeaponIdle)()
 {
 	ResetEmptySound();
 	m_pPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);
@@ -186,45 +185,6 @@ void CUMP45::__MAKE_VHOOK(WeaponIdle)(void)
 		return;
 	}
 
-	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20;
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20.0f;
 	SendWeaponAnim(UMP45_IDLE1, UseDecrement() != FALSE);
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CUMP45::Spawn(void)
-{
-	Spawn_();
-}
-
-void CUMP45::Precache(void)
-{
-	Precache_();
-}
-
-int CUMP45::GetItemInfo(ItemInfo *p)
-{
-	return GetItemInfo_(p);
-}
-
-BOOL CUMP45::Deploy(void)
-{
-	return Deploy_();
-}
-
-void CUMP45::PrimaryAttack(void)
-{
-	PrimaryAttack_();
-}
-
-void CUMP45::Reload(void)
-{
-	Reload_();
-}
-
-void CUMP45::WeaponIdle(void)
-{
-	WeaponIdle_();
-}
-
-#endif // HOOK_GAMEDLL

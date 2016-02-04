@@ -5,12 +5,7 @@
 */
 #ifndef HOOK_GAMEDLL
 
-static short s_iBeamSprite = 0;
-static float cosTable[ COS_TABLE_SIZE ];
-
-#else
-
-short s_iBeamSprite;
+short s_iBeamSprite = 0;
 float cosTable[ COS_TABLE_SIZE ];
 
 #endif // HOOK_GAMEDLL
@@ -35,7 +30,7 @@ bool UTIL_IsNameTaken(const char *name, bool ignoreHumans)
 		{
 			// bots can have prefixes so we need to check the name
 			// against the profile name instead.
-			CBot *bot = reinterpret_cast<CBot *>(player);
+			CBot *bot = static_cast<CBot *>(player);
 			if (FStrEq(name, bot->GetProfile()->GetName()))
 			{
 				return true;
@@ -50,11 +45,12 @@ bool UTIL_IsNameTaken(const char *name, bool ignoreHumans)
 			}
 		}
 	}
+
 	return false;
 }
 
 /* <4ad2da> ../game_shared/bot/bot_util.cpp:66 */
-int UTIL_ClientsInGame(void)
+int UTIL_ClientsInGame()
 {
 	int iCount = 0;
 	for (int iIndex = 1; iIndex <= gpGlobals->maxClients; ++iIndex)
@@ -77,7 +73,7 @@ int UTIL_ClientsInGame(void)
 }
 
 /* <4ad385> ../game_shared/bot/bot_util.cpp:93 */
-int UTIL_ActivePlayersInGame(void)
+int UTIL_ActivePlayersInGame()
 {
 	int iCount = 0;
 	for (int iIndex = 1; iIndex <= gpGlobals->maxClients; ++iIndex)
@@ -178,7 +174,7 @@ int UTIL_HumansOnTeam(int teamID, bool isAlive)
 }
 
 /* <4ad5db> ../game_shared/bot/bot_util.cpp:210 */
-int UTIL_BotsInGame(void)
+int UTIL_BotsInGame()
 {
 	int iCount = 0;
 
@@ -423,7 +419,7 @@ bool UTIL_IsVisibleToTeam(const Vector &spot, int team, float maxRange)
 }
 
 /* <4adc8e> ../game_shared/bot/bot_util.cpp:479 */
-CBasePlayer *UTIL_GetLocalPlayer(void)
+CBasePlayer *UTIL_GetLocalPlayer()
 {
 	if (!IS_DEDICATED_SERVER())
 		return static_cast<CBasePlayer *>(UTIL_PlayerByIndex(1));
@@ -526,7 +522,7 @@ void CONSOLE_ECHO_LOGGED(char *pszMsg, ...)
 }
 
 /* <4ae198> ../game_shared/bot/bot_util.cpp:592 */
-void BotPrecache(void)
+void BotPrecache()
 {
 	s_iBeamSprite = PRECACHE_MODEL("sprites/smoke.spr");
 
@@ -545,7 +541,7 @@ void BotPrecache(void)
 }
 
 /* <4ae1b1> ../game_shared/bot/bot_util.cpp:666 */
-void InitBotTrig(void)
+void InitBotTrig()
 {
 	for (int i = 0; i < COS_TABLE_SIZE; ++i)
 	{

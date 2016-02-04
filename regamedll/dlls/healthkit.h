@@ -36,39 +36,36 @@
 class CHealthKit: public CItem
 {
 public:
-	virtual void Spawn(void);
-	virtual void Precache(void);
+	virtual void Spawn();
+	virtual void Precache();
 	virtual BOOL MyTouch(CBasePlayer *pPlayer);
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Precache_(void);
+	void Spawn_();
+	void Precache_();
 	BOOL MyTouch_(CBasePlayer *pPlayer);
 
 #endif // HOOK_GAMEDLL
 
-};/* size: 152, cachelines: 3, members: 1 */
+};
 
 /* <d5342> ../cstrike/dlls/healthkit.cpp:99 */
 class CWallHealth: public CBaseToggle
 {
 public:
-	virtual void Spawn(void);
-	virtual void Precache(void);
+	virtual void Spawn();
+	virtual void Precache();
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
-	virtual int ObjectCaps(void)
-	{
-		return (CBaseToggle::ObjectCaps() | FCAP_CONTINUOUS_USE) & ~FCAP_ACROSS_TRANSITION;
-	}
+	virtual int ObjectCaps() { return (CBaseToggle::ObjectCaps() | FCAP_CONTINUOUS_USE) & ~FCAP_ACROSS_TRANSITION; }
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Precache_(void);
+	void Spawn_();
+	void Precache_();
 	void KeyValue_(KeyValueData *pkvd);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
@@ -77,18 +74,16 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	void EXPORT Off(void);
-	void EXPORT Recharge(void);
+	void EXPORT Off();
+	void EXPORT Recharge();
 
 	static TYPEDESCRIPTION IMPL(m_SaveData)[5];
 
-public:
 	float m_flNextCharge;
 	int m_iReactivate;
 	int m_iJuice;
 	int m_iOn;
 	float m_flSoundTime;
-
-};/* size: 332, cachelines: 6, members: 7 */
+};
 
 #endif // HEALTKIT_H

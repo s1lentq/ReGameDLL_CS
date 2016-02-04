@@ -4,9 +4,10 @@
 LINK_ENTITY_TO_CLASS(weapon_galil, CGalil);
 
 /* <2c57b0> ../cstrike/dlls/wpn_shared/wpn_galil.cpp:52 */
-void CGalil::__MAKE_VHOOK(Spawn)(void)
+void CGalil::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
+
 	m_iId = WEAPON_GALIL;
 	SET_MODEL(edict(), "models/w_galil.mdl");
 
@@ -16,7 +17,7 @@ void CGalil::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <2c5709> ../cstrike/dlls/wpn_shared/wpn_galil.cpp:65 */
-void CGalil::__MAKE_VHOOK(Precache)(void)
+void CGalil::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/v_galil.mdl");
 	PRECACHE_MODEL("models/w_galil.mdl");
@@ -50,9 +51,9 @@ int CGalil::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 }
 
 /* <2c5789> ../cstrike/dlls/wpn_shared/wpn_galil.cpp:98 */
-BOOL CGalil::__MAKE_VHOOK(Deploy)(void)
+BOOL CGalil::__MAKE_VHOOK(Deploy)()
 {
-	m_flAccuracy = 0.2;
+	m_flAccuracy = 0.2f;
 	m_iShotsFired = 0;
 	iShellOn = 1;
 
@@ -60,13 +61,13 @@ BOOL CGalil::__MAKE_VHOOK(Deploy)(void)
 }
 
 /* <2c5763> ../cstrike/dlls/wpn_shared/wpn_galil.cpp:107 */
-void CGalil::__MAKE_VHOOK(SecondaryAttack)(void)
+void CGalil::__MAKE_VHOOK(SecondaryAttack)()
 {
 	;
 }
 
 /* <2c59d2> ../cstrike/dlls/wpn_shared/wpn_galil.cpp:111 */
-void CGalil::__MAKE_VHOOK(PrimaryAttack)(void)
+void CGalil::__MAKE_VHOOK(PrimaryAttack)()
 {
 	if (m_pPlayer->pev->waterlevel == 3)
 	{
@@ -96,12 +97,12 @@ void CGalil::GalilFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	int flag;
 
 	m_bDelayFire = true;
-	m_iShotsFired++;
+	++m_iShotsFired;
 
-	m_flAccuracy = ((m_iShotsFired * m_iShotsFired * m_iShotsFired) / 200) + 0.35;
+	m_flAccuracy = ((m_iShotsFired * m_iShotsFired * m_iShotsFired) / 200) + 0.35f;
 
-	if (m_flAccuracy > 1.25)
-		m_flAccuracy = 1.25;
+	if (m_flAccuracy > 1.25f)
+		m_flAccuracy = 1.25f;
 
 	if (m_iClip <= 0)
 	{
@@ -119,7 +120,7 @@ void CGalil::GalilFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 		return;
 	}
 
-	m_iClip--;
+	--m_iClip;
 	m_pPlayer->pev->effects |= EF_MUZZLEFLASH;
 	m_pPlayer->SetAnimation(PLAYER_ATTACK1);
 
@@ -150,7 +151,7 @@ void CGalil::GalilFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
 	}
 
-	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.28;
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.28f;
 
 	if (m_pPlayer->pev->velocity.Length2D() > 0)
 	{
@@ -171,79 +172,33 @@ void CGalil::GalilFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 }
 
 /* <2c5861> ../cstrike/dlls/wpn_shared/wpn_galil.cpp:210 */
-void CGalil::__MAKE_VHOOK(Reload)(void)
+void CGalil::__MAKE_VHOOK(Reload)()
 {
 #ifdef REGAMEDLL_FIXES
 	// to prevent reload if not enough ammo
 	if (m_pPlayer->ammo_556nato <= 0)
-	{
 		return;
-	}
 #endif // REGAMEDLL_FIXES
 
 	if (DefaultReload(GALIL_MAX_CLIP, GALIL_RELOAD, GALIL_RELOAD_TIME))
 	{
 		m_pPlayer->SetAnimation(PLAYER_RELOAD);
 
-		m_flAccuracy = 0.2;
+		m_flAccuracy = 0.2f;
 		m_iShotsFired = 0;
 		m_bDelayFire = false;
 	}
 }
 
 /* <2c5826> ../cstrike/dlls/wpn_shared/wpn_galil.cpp:232 */
-void CGalil::__MAKE_VHOOK(WeaponIdle)(void)
+void CGalil::__MAKE_VHOOK(WeaponIdle)()
 {
 	ResetEmptySound();
 	m_pPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);
 
 	if (m_flTimeWeaponIdle <= UTIL_WeaponTimeBase())
 	{
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20;
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20.0f;
 		SendWeaponAnim(GALIL_IDLE1, UseDecrement() != FALSE);
 	}
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CGalil::Spawn(void)
-{
-	Spawn_();
-}
-
-void CGalil::Precache(void)
-{
-	Precache_();
-}
-
-int CGalil::GetItemInfo(ItemInfo *p)
-{
-	return GetItemInfo_(p);
-}
-
-BOOL CGalil::Deploy(void)
-{
-	return Deploy_();
-}
-
-void CGalil::PrimaryAttack(void)
-{
-	PrimaryAttack_();
-}
-
-void CGalil::SecondaryAttack(void)
-{
-	SecondaryAttack_();
-}
-
-void CGalil::Reload(void)
-{
-	Reload_();
-}
-
-void CGalil::WeaponIdle(void)
-{
-	WeaponIdle_();
-}
-
-#endif // HOOK_GAMEDLL

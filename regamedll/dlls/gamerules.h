@@ -265,11 +265,9 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	//int **_vptr.CGameRules;
 	BOOL m_bFreezePeriod;
 	BOOL m_bBombDropped;
-
-};/* size: 12, cachelines: 1, members: 3 */
+};
 
 class CHalfLifeRules: public CGameRules
 {
@@ -361,8 +359,7 @@ public:
 	BOOL FAllowMonsters_();
 
 #endif // HOOK_GAMEDLL
-
-};/* size: 12, cachelines: 1, members: 1 */
+};
 
 class CHalfLifeMultiplay: public CGameRules
 {
@@ -654,9 +651,8 @@ protected:
 	int m_iCareerMatchWins;
 	int m_iRoundWinDifference;
 	float m_fCareerMatchMenuTime;
-	bool m_bSkipSpawn;//712
-
-};/* size: 708, cachelines: 12, members: 76 */
+	bool m_bSkipSpawn;
+};
 
 typedef struct mapcycle_item_s
 {
@@ -667,7 +663,6 @@ typedef struct mapcycle_item_s
 	char rulebuffer[MAX_RULE_BUFFER];
 
 } mapcycle_item_t;
-/* size: 1068, cachelines: 17, members: 5 */
 
 typedef struct mapcycle_s
 {
@@ -675,7 +670,6 @@ typedef struct mapcycle_s
 	struct mapcycle_item_s *next_item;
 
 } mapcycle_t;
-/* size: 8, cachelines: 1, members: 2 */
 
 /* <11192b> ../cstrike/dlls/multiplay_gamerules.cpp:257 */
 class CMapInfo: public CPointEntity
@@ -694,8 +688,7 @@ public:
 public:
 	int m_iBuyingStatus;
 	float m_flBombRadius;
-
-};/* size: 160, cachelines: 3, members: 3 */
+};
 
 /* <111732> ../cstrike/dlls/multiplay_gamerules.cpp:292 */
 class CCStrikeGameMgrHelper: public IVoiceGameMgrHelper
@@ -709,29 +702,11 @@ public:
 
 #endif // HOOK_GAMEDLL
 
-};/* size: 4, cachelines: 1, members: 1 */
-
-#ifdef HOOK_GAMEDLL
-
-#define g_pGameRules (*pg_pGameRules)
-#define g_GameMgrHelper (*pg_GameMgrHelper)
-#define sv_clienttrace (*psv_clienttrace)
-#define g_pMPGameRules (*pg_pMPGameRules)
-#define mp_com_token (*pmp_com_token)
-
-#endif // HOOK_GAMEDLL
+};
 
 extern CHalfLifeMultiplay *g_pGameRules;
-extern CCStrikeGameMgrHelper g_GameMgrHelper;
-extern cvar_t *sv_clienttrace;
-extern CHalfLifeMultiplay *g_pMPGameRules;
-extern char mp_com_token[ COM_TOKEN_LEN ];
 
 CGameRules *InstallGameRules();
-
-/*
-* Multiplay gamerules
-*/
 
 bool IsBotSpeaking();
 void SV_Continue_f();
@@ -754,12 +729,5 @@ int ReloadMapCycleFile(char *filename, mapcycle_t *cycle);
 int CountPlayers();
 void ExtractCommandString(char *s, char *szCommand);
 int GetMapCount();
-
-#ifdef HOOK_GAMEDLL
-
-// linked objects
-C_DLLEXPORT void info_map_parameters(entvars_t *pev);
-
-#endif // HOOK_GAMEDLL
 
 #endif // GAMERULES_H

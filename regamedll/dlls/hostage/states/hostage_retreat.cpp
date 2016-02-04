@@ -44,22 +44,3 @@ void HostageRetreatState::__MAKE_VHOOK(OnExit)(CHostageImprov *improv)
 {
 	;
 }
-
-#ifdef HOOK_GAMEDLL
-
-void HostageRetreatState::OnEnter(CHostageImprov *improv)
-{
-	OnEnter_(improv);
-}
-
-void HostageRetreatState::OnUpdate(CHostageImprov *improv)
-{
-	OnUpdate_(improv);
-}
-
-void HostageRetreatState::OnExit(CHostageImprov *improv)
-{
-	OnExit_(improv);
-}
-
-#endif // HOOK_GAMEDLL

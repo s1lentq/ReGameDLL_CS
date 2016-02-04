@@ -4,9 +4,10 @@
 LINK_ENTITY_TO_CLASS(weapon_knife, CKnife);
 
 /* <270586> ../cstrike/dlls/wpn_shared/wpn_knife.cpp:53 */
-void CKnife::__MAKE_VHOOK(Spawn)(void)
+void CKnife::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
+
 	m_iId = WEAPON_KNIFE;
 	SET_MODEL(edict(), "models/w_knife.mdl");
 
@@ -17,7 +18,7 @@ void CKnife::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <2704d2> ../cstrike/dlls/wpn_shared/wpn_knife.cpp:66 */
-void CKnife::__MAKE_VHOOK(Precache)(void)
+void CKnife::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/v_knife.mdl");
 	PRECACHE_MODEL("models/shield/v_shield_knife.mdl");
@@ -58,7 +59,7 @@ int CKnife::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 }
 
 /* <2707c0> ../cstrike/dlls/wpn_shared/wpn_knife.cpp:102 */
-BOOL CKnife::__MAKE_VHOOK(Deploy)(void)
+BOOL CKnife::__MAKE_VHOOK(Deploy)()
 {
 	EMIT_SOUND(m_pPlayer->edict(), CHAN_ITEM, "weapons/knife_deploy1.wav", 0.3, 2.4);
 
@@ -79,7 +80,7 @@ BOOL CKnife::__MAKE_VHOOK(Deploy)(void)
 /* <27052b> ../cstrike/dlls/wpn_shared/wpn_knife.cpp:119 */
 void CKnife::__MAKE_VHOOK(Holster)(int skiplocal)
 {
-	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5;
+	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5f;
 }
 
 /* <270d70> ../cstrike/dlls/wpn_shared/wpn_knife.cpp:124 */
@@ -149,13 +150,13 @@ void FindHullIntersection(const Vector &vecSrc, TraceResult &tr, float *mins, fl
 }
 
 /* <2714ba> ../cstrike/dlls/wpn_shared/wpn_knife.cpp:185 */
-void CKnife::__MAKE_VHOOK(PrimaryAttack)(void)
+void CKnife::__MAKE_VHOOK(PrimaryAttack)()
 {
 	Swing(TRUE);
 }
 
 /* <270f18> ../cstrike/dlls/wpn_shared/wpn_knife.cpp:190 */
-void CKnife::SetPlayerShieldAnim(void)
+void CKnife::SetPlayerShieldAnim()
 {
 	if (!m_pPlayer->HasShield())
 		return;
@@ -171,7 +172,7 @@ void CKnife::SetPlayerShieldAnim(void)
 }
 
 /* <270f53> ../cstrike/dlls/wpn_shared/wpn_knife.cpp:201 */
-void CKnife::ResetPlayerShieldAnim(void)
+void CKnife::ResetPlayerShieldAnim()
 {
 	if (!m_pPlayer->HasShield())
 		return;
@@ -216,36 +217,36 @@ bool CKnife::ShieldSecondaryFire(int iUpAnim, int iDownAnim)
 	m_pPlayer->ResetMaxSpeed();
 
 	m_flNextPrimaryAttack = GetNextAttackDelay(0.4);
-	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.4;
-	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.6;
+	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.4f;
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.6f;
 
 	return true;
 }
 
 /* <270826> ../cstrike/dlls/wpn_shared/wpn_knife.cpp:245 */
-void CKnife::__MAKE_VHOOK(SecondaryAttack)(void)
+void CKnife::__MAKE_VHOOK(SecondaryAttack)()
 {
 	if (!ShieldSecondaryFire(KNIFE_SHIELD_UP, KNIFE_SHIELD_DOWN))
 	{
 		Stab(TRUE);
-		pev->nextthink = UTIL_WeaponTimeBase() + 0.35;
+		pev->nextthink = UTIL_WeaponTimeBase() + 0.35f;
 	}
 }
 
 /* <27055f> ../cstrike/dlls/wpn_shared/wpn_knife.cpp:254 */
-void CKnife::Smack(void)
+void CKnife::Smack()
 {
 	DecalGunshot(&m_trHit, BULLET_PLAYER_CROWBAR, false, m_pPlayer->pev, false);
 }
 
 /* <271493> ../cstrike/dlls/wpn_shared/wpn_knife.cpp:260 */
-void CKnife::SwingAgain(void)
+void CKnife::SwingAgain()
 {
 	Swing(FALSE);
 }
 
 /* <2705fc> ../cstrike/dlls/wpn_shared/wpn_knife.cpp:265 */
-void CKnife::__MAKE_VHOOK(WeaponIdle)(void)
+void CKnife::__MAKE_VHOOK(WeaponIdle)()
 {
 	ResetEmptySound();
 	m_pPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);
@@ -256,7 +257,7 @@ void CKnife::__MAKE_VHOOK(WeaponIdle)(void)
 	if (m_pPlayer->m_bShieldDrawn)
 		return;
 
-	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20.0;
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20.0f;
 
 	// only idle if the slid isn't back
 	SendWeaponAnim(KNIFE_IDLE, UseDecrement() != FALSE);
@@ -272,7 +273,7 @@ int CKnife::Swing(int fFirst)
 	UTIL_MakeVectors(m_pPlayer->pev->v_angle);
 
 	vecSrc = m_pPlayer->GetGunPosition();
-	vecEnd = vecSrc + gpGlobals->v_forward * 48;
+	vecEnd = vecSrc + gpGlobals->v_forward * 48.0f;
 
 	UTIL_TraceLine(vecSrc, vecEnd, dont_ignore_monsters, m_pPlayer->edict(), &tr);
 
@@ -310,7 +311,7 @@ int CKnife::Swing(int fFirst)
 
 				// miss
 				m_flNextPrimaryAttack = GetNextAttackDelay(0.35);
-				m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.5;
+				m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.5f;
 			}
 			else
 			{
@@ -445,7 +446,7 @@ int CKnife::Stab(int fFirst)
 	UTIL_MakeVectors(m_pPlayer->pev->v_angle);
 
 	vecSrc = m_pPlayer->GetGunPosition();
-	vecEnd = vecSrc + gpGlobals->v_forward * 32;
+	vecEnd = vecSrc + gpGlobals->v_forward * 32.0f;
 
 	UTIL_TraceLine(vecSrc, vecEnd, dont_ignore_monsters, m_pPlayer->edict(), &tr);
 
@@ -476,7 +477,7 @@ int CKnife::Stab(int fFirst)
 			SendWeaponAnim(KNIFE_STABMISS, UseDecrement() != FALSE);
 
 			m_flNextPrimaryAttack = GetNextAttackDelay(1.0);
-			m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 1.0;
+			m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 1.0f;
 
 			// play wiff or swish sound
 			if (RANDOM_LONG(0, 1))
@@ -496,7 +497,7 @@ int CKnife::Stab(int fFirst)
 		SendWeaponAnim(KNIFE_STABHIT, UseDecrement() != FALSE);
 
 		m_flNextPrimaryAttack = GetNextAttackDelay(1.1);
-		m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 1.1;
+		m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 1.1f;
 
 		// play thwack, smack, or dong sound
 		float flVol = 1.0f;
@@ -525,7 +526,7 @@ int CKnife::Stab(int fFirst)
 			//Triple the damage if we are stabbing them in the back.
 			if (flDot > 0.80f)
 			{
-				flDamage *= 3.0;
+				flDamage *= 3.0f;
 			}
 		}
 
@@ -572,7 +573,7 @@ int CKnife::Stab(int fFirst)
 			m_pPlayer->m_iWeaponVolume = (int)(flVol * KNIFE_WALLHIT_VOLUME);
 
 			SetThink(&CKnife::Smack);
-			pev->nextthink = UTIL_WeaponTimeBase() + 0.2;
+			pev->nextthink = UTIL_WeaponTimeBase() + 0.2f;
 
 			ResetPlayerShieldAnim();
 		}
@@ -585,47 +586,3 @@ int CKnife::Stab(int fFirst)
 
 	return fDidHit;
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CKnife::Spawn(void)
-{
-	Spawn_();
-}
-
-void CKnife::Precache(void)
-{
-	Precache_();
-}
-
-int CKnife::GetItemInfo(ItemInfo *p)
-{
-	return GetItemInfo_(p);
-}
-
-BOOL CKnife::Deploy(void)
-{
-	return Deploy_();
-}
-
-void CKnife::Holster(int skiplocal)
-{
-	Holster_(skiplocal);
-}
-
-void CKnife::PrimaryAttack(void)
-{
-	PrimaryAttack_();
-}
-
-void CKnife::SecondaryAttack(void)
-{
-	SecondaryAttack_();
-}
-
-void CKnife::WeaponIdle(void)
-{
-	WeaponIdle_();
-}
-
-#endif // HOOK_GAMEDLL

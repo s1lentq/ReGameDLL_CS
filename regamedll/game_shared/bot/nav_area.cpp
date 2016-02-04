@@ -20,6 +20,8 @@
 #include <unistd.h>
 #endif // _WIN32
 
+enum { MAX_BLOCKED_AREAS = 256 };
+
 /*
 * Globals initialization
 */
@@ -41,59 +43,29 @@ CNavAreaGrid TheNavAreaGrid;
 CNavArea *CNavArea::m_openList = NULL;
 bool CNavArea::m_isReset = false;
 
-FILE_GLOBAL float lastDrawTimestamp = 0.0f;
-FILE_GLOBAL NavAreaList goodSizedAreaList;
-
-FILE_GLOBAL CNavArea *markedArea = NULL;
-FILE_GLOBAL CNavArea *lastSelectedArea = NULL;
-FILE_GLOBAL NavCornerType markedCorner = NUM_CORNERS;
-
-FILE_GLOBAL bool isCreatingNavArea = false;
-FILE_GLOBAL bool isAnchored = false;
-FILE_GLOBAL Vector anchor;
-
-FILE_GLOBAL bool isPlaceMode = false;
-FILE_GLOBAL bool isPlacePainting = false;
-
-FILE_GLOBAL float editTimestamp = 0.0f;
-
-FILE_GLOBAL unsigned int BlockedID[ MAX_BLOCKED_AREAS ];
-FILE_GLOBAL int BlockedIDCount = 0;
-
-#else // HOOK_GAMEDLL
-
-unsigned int IMPL_CLASS(CNavArea, m_nextID);
-unsigned int IMPL_CLASS(CNavArea, m_masterMarker);
-
-unsigned int IMPL_CLASS(HidingSpot, m_nextID);
-unsigned int IMPL_CLASS(HidingSpot, m_masterMarker);
-
-NavLadderList TheNavLadderList;
-HidingSpotList TheHidingSpotList;
-NavAreaList TheNavAreaList;
-CNavAreaGrid TheNavAreaGrid;
-CNavArea *IMPL_CLASS(CNavArea, m_openList);
-bool IMPL_CLASS(CNavArea, m_isReset);
-
-float lastDrawTimestamp;
+float lastDrawTimestamp = 0.0f;
 NavAreaList goodSizedAreaList;
-CNavArea *markedArea;
-CNavArea *lastSelectedArea;
-NavCornerType markedCorner;
-bool isCreatingNavArea;
-bool isAnchored;
+
+CNavArea *markedArea = NULL;
+CNavArea *lastSelectedArea = NULL;
+NavCornerType markedCorner = NUM_CORNERS;
+
+bool isCreatingNavArea = false;
+bool isAnchored = false;
 Vector anchor;
-bool isPlaceMode;
-bool isPlacePainting;
-float editTimestamp;
+
+bool isPlaceMode = false;
+bool isPlacePainting = false;
+
+float editTimestamp = 0.0f;
 
 unsigned int BlockedID[ MAX_BLOCKED_AREAS ];
-int BlockedIDCount;
+int BlockedIDCount = 0;
 
 #endif // HOOK_GAMEDLL
 
 /* <4c31b5> ../game_shared/bot/nav_area.cpp:63 */
-NOXREF FILE_GLOBAL void buildGoodSizedList(void)
+NOXREF void buildGoodSizedList()
 {
 	const float minSize = 200.0f;
 
@@ -112,7 +84,7 @@ NOXREF FILE_GLOBAL void buildGoodSizedList(void)
 }
 
 /* <4c5551> ../game_shared/bot/nav_area.cpp:87 */
-void DestroyHidingSpots(void)
+void DestroyHidingSpots()
 {
 	// remove all hiding spot references from the nav areas
 	for (NavAreaList::iterator areaIter = TheNavAreaList.begin(); areaIter != TheNavAreaList.end(); areaIter++)
@@ -133,7 +105,7 @@ void DestroyHidingSpots(void)
 // For use when loading from a file
 
 /* <4c578e> ../game_shared/bot/nav_area.cpp:109 */
-HidingSpot::HidingSpot(void)
+HidingSpot::HidingSpot()
 {
 	m_pos = Vector(0, 0, 0);
 	m_id = 0;
@@ -193,7 +165,7 @@ HidingSpot *GetHidingSpotByID(unsigned int id)
 // To keep constructors consistent
 
 /* <4c5c30> ../game_shared/bot/nav_area.cpp:169 */
-void CNavArea::Initialize(void)
+void CNavArea::Initialize()
 {
 	m_marker = 0;
 	m_parent = NULL;
@@ -220,7 +192,7 @@ void CNavArea::Initialize(void)
 // Constructor used during normal runtime
 
 /* <4c5c82> ../game_shared/bot/nav_area.cpp:198 */
-CNavArea::CNavArea(void)
+CNavArea::CNavArea()
 {
 	Initialize();
 }
@@ -310,7 +282,7 @@ CNavArea::CNavArea(CNavNode *nwNode, class CNavNode *neNode, class CNavNode *seN
 // Destructor
 
 /* <4d58d7> ../game_shared/bot/nav_area.cpp:295 */
-CNavArea::~CNavArea(void)
+CNavArea::~CNavArea()
 {
 	// if we are resetting the system, don't bother cleaning up - all areas are being destroyed
 	if (IMPL(m_isReset))
@@ -961,14 +933,14 @@ bool CNavArea::MergeEdit(CNavArea *adj)
 }
 
 /* <4c78a9> ../game_shared/bot/nav_area.cpp:964 */
-void ApproachAreaAnalysisPrep(void)
+void ApproachAreaAnalysisPrep()
 {
 	// collect "good-sized" areas for computing approach areas
 	buildGoodSizedList();
 }
 
 /* <4c7a37> ../game_shared/bot/nav_area.cpp:971 */
-void CleanupApproachAreaAnalysisPrep(void)
+void CleanupApproachAreaAnalysisPrep()
 {
 	goodSizedAreaList.clear();
 }
@@ -976,7 +948,7 @@ void CleanupApproachAreaAnalysisPrep(void)
 // Destroy ladder representations
 
 /* <4c7b18> ../game_shared/bot/nav_area.cpp:980 */
-void DestroyLadders(void)
+void DestroyLadders()
 {
 	while (!TheNavLadderList.empty())
 	{
@@ -989,7 +961,7 @@ void DestroyLadders(void)
 // Free navigation map data
 
 /* <4d6733> ../game_shared/bot/nav_area.cpp:994 */
-void DestroyNavigationMap(void)
+void DestroyNavigationMap()
 {
 	IMPL_CLASS(CNavArea, m_isReset) = true;
 
@@ -1026,7 +998,7 @@ void DestroyNavigationMap(void)
 // Strip the "analyzed" data out of all navigation areas
 
 /* <4c7c70> ../game_shared/bot/nav_area.cpp:1031 */
-void StripNavigationAreas(void)
+void StripNavigationAreas()
 {
 	for (NavAreaList::iterator iter = TheNavAreaList.begin(); iter != TheNavAreaList.end(); ++iter)
 	{
@@ -1038,7 +1010,7 @@ void StripNavigationAreas(void)
 // Remove "analyzed" data from nav area
 
 /* <4c7e9a> ../game_shared/bot/nav_area.cpp:1046 */
-void CNavArea::Strip(void)
+void CNavArea::Strip()
 {
 	m_approachCount = 0;
 	m_spotEncounterList.clear();	// memory leak
@@ -1142,7 +1114,7 @@ inline CNavArea *findJumpDownArea(const Vector *fromPos, NavDirType dir)
 // Define connections between adjacent generated areas
 
 /* <4d1c46> ../game_shared/bot/nav_area.cpp:1157 */
-void ConnectGeneratedAreas(void)
+void ConnectGeneratedAreas()
 {
 	CONSOLE_ECHO("  Connecting navigation areas...\n");
 
@@ -1243,7 +1215,7 @@ void ConnectGeneratedAreas(void)
 // Areas can only be merged if their attributes match.
 
 /* <4d922b> ../game_shared/bot/nav_area.cpp:1259 */
-void MergeGeneratedAreas(void)
+void MergeGeneratedAreas()
 {
 	CONSOLE_ECHO("  Merging navigation areas...\n");
 
@@ -1451,7 +1423,7 @@ void SplitY(CNavArea *area)
 // Split any long, thin, areas into roughly square chunks.
 
 /* <4d7207> ../game_shared/bot/nav_area.cpp:1474 */
-void SquareUpAreas(void)
+void SquareUpAreas()
 {
 	NavAreaList::iterator iter = TheNavAreaList.begin();
 
@@ -1618,7 +1590,7 @@ int BuildArea(CNavNode *node, int width, int height)
 // For each ladder in the map, create a navigation representation of it.
 
 /* <4d3581> ../game_shared/bot/nav_area.cpp:1645 */
-void BuildLadders(void)
+void BuildLadders()
 {
 	// remove any left-over ladders
 	DestroyLadders();
@@ -1830,7 +1802,7 @@ void BuildLadders(void)
 // This currently relies on jump areas having extreme slope.
 
 /* <4c85c3> ../game_shared/bot/nav_area.cpp:1864 */
-void MarkJumpAreas(void)
+void MarkJumpAreas()
 {
 	for (NavAreaList::iterator iter = TheNavAreaList.begin(); iter != TheNavAreaList.end(); ++iter)
 	{
@@ -1863,7 +1835,7 @@ void MarkJumpAreas(void)
 // with the fewest, largest, rectangles.
 
 /* <4d943a> ../game_shared/bot/nav_area.cpp:1899 */
-void GenerateNavigationAreaMesh(void)
+void GenerateNavigationAreaMesh()
 {
 	// haven't yet seen a map use larger than 30...
 	int tryWidth = 50;
@@ -2576,7 +2548,7 @@ void CNavArea::DrawMarkedCorner(NavCornerType corner, byte red, byte green, byte
 // Add to open list in decreasing value order
 
 /* <4cbb32> ../game_shared/bot/nav_area.cpp:2634 */
-void CNavArea::AddToOpenList(void)
+void CNavArea::AddToOpenList()
 {
 	// mark as being on open list for quick check
 	m_openMarker = IMPL(m_masterMarker);
@@ -2626,7 +2598,7 @@ void CNavArea::AddToOpenList(void)
 // TODO: "bubbling" does unnecessary work, since the order of all other nodes will be unchanged - only this node is altered
 
 /* <4cbd73> ../game_shared/bot/nav_area.cpp:2685 */
-void CNavArea::UpdateOnOpenList(void)
+void CNavArea::UpdateOnOpenList()
 {
 	// since value can only decrease, bubble this area up from current spot
 	while (m_prevOpen && this->GetTotalCost() < m_prevOpen->GetTotalCost())
@@ -2653,7 +2625,7 @@ void CNavArea::UpdateOnOpenList(void)
 }
 
 /* <4cbdbc> ../game_shared/bot/nav_area.cpp:2713 */
-void CNavArea::RemoveFromOpenList(void)
+void CNavArea::RemoveFromOpenList()
 {
 	if (m_prevOpen)
 		m_prevOpen->m_nextOpen = m_nextOpen;
@@ -2670,7 +2642,7 @@ void CNavArea::RemoveFromOpenList(void)
 // Clears the open and closed lists for a new search
 
 /* <4cbddf> ../game_shared/bot/nav_area.cpp:2731 */
-void CNavArea::ClearSearchLists(void)
+void CNavArea::ClearSearchLists()
 {
 	CNavArea::MakeNewMarker();
 	IMPL(m_openList) = NULL;
@@ -2768,7 +2740,7 @@ bool IsHidingSpotInCover(const Vector *spot)
 // Analyze local area neighborhood to find "hiding spots" for this area
 
 /* <4cc054> ../game_shared/bot/nav_area.cpp:2834 */
-void CNavArea::ComputeHidingSpots(void)
+void CNavArea::ComputeHidingSpots()
 {
 	struct
 	{
@@ -2980,7 +2952,7 @@ void ClassifySniperSpot(HidingSpot *spot)
 // Analyze local area neighborhood to find "sniper spots" for this area
 
 /* <4ccf19> ../game_shared/bot/nav_area.cpp:3049 */
-void CNavArea::ComputeSniperSpots(void)
+void CNavArea::ComputeSniperSpots()
 {
 	if (cv_bot_quicksave.value > 0.0f)
 		return;
@@ -3120,7 +3092,7 @@ void CNavArea::AddSpotEncounters(const class CNavArea *from, NavDirType fromDir,
 // for each possible path thru a nav area.
 
 /* <4cd99c> ../game_shared/bot/nav_area.cpp:3192 */
-void CNavArea::ComputeSpotEncounters(void)
+void CNavArea::ComputeSpotEncounters()
 {
 	m_spotEncounterList.clear();
 
@@ -3155,7 +3127,7 @@ void CNavArea::ComputeSpotEncounters(void)
 // Decay the danger values
 
 /* <4cdca9> ../game_shared/bot/nav_area.cpp:3228 */
-void CNavArea::DecayDanger(void)
+void CNavArea::DecayDanger()
 {
 	// one kill == 1.0, which we will forget about in two minutes
 	const float decayRate = 1.0f / 120.0f;
@@ -3244,7 +3216,7 @@ void IncreaseDangerNearby(int teamID, float amount, class CNavArea *startArea, c
 // Show danger levels for debugging
 
 /* <4ce2c4> ../game_shared/bot/nav_area.cpp:3321 */
-void DrawDanger(void)
+void DrawDanger()
 {
 	for (NavAreaList::iterator iter = TheNavAreaList.begin(); iter != TheNavAreaList.end(); ++iter)
 	{
@@ -3640,13 +3612,13 @@ int CNavArea::GetPlayerCount(int teamID, CBasePlayer *ignore) const
 }
 
 /* <4cea33> ../game_shared/bot/nav_area.cpp:3749 */
-CNavArea *GetMarkedArea(void)
+CNavArea *GetMarkedArea()
 {
 	return markedArea;
 }
 
 /* <4c2a8c> ../game_shared/bot/nav_area.cpp:3757 */
-void EditNavAreasReset(void)
+void EditNavAreasReset()
 {
 	markedArea = NULL;
 	lastSelectedArea = NULL;
@@ -3691,7 +3663,7 @@ void DrawHidingSpots(const class CNavArea *area)
 // Draw ourselves and adjacent areas
 
 /* <4cebe7> ../game_shared/bot/nav_area.cpp:3802 */
-void CNavArea::DrawConnectedAreas(void)
+void CNavArea::DrawConnectedAreas()
 {
 	CBasePlayer *player = UTIL_GetLocalPlayer();
 	if (player == NULL)
@@ -3881,8 +3853,7 @@ public:
 
 private:
 	unsigned int m_initialPlace;
-
-};/* size: 4, cachelines: 1, members: 1 */
+};
 
 // Draw navigation areas and edit them
 
@@ -4051,12 +4022,12 @@ void EditNavAreas(NavEditCmdType cmd)
 				}
 				else
 				{
-					locName[0] = '\000';
+					locName[0] = '\0';
 				}
 
 				if (isPlaceMode)
 				{
-					attrib[0] = '\000';
+					attrib[0] = '\0';
 				}
 				else
 				{
@@ -4658,7 +4629,7 @@ inline bool IsAreaVisible(const Vector *pos, const CNavArea *area)
 // move into/out of our local neighborhood of areas.
 
 /* <4cf54c> ../game_shared/bot/nav_area.cpp:4817 */
-void CNavArea::ComputeApproachAreas(void)
+void CNavArea::ComputeApproachAreas()
 {
 	m_approachCount = 0;
 
@@ -4780,14 +4751,14 @@ void CNavArea::ComputeApproachAreas(void)
 }
 
 /* <4cf961> ../game_shared/bot/nav_area.cpp:4947 */
-CNavAreaGrid::CNavAreaGrid(void) : m_cellSize(300.0f)
+CNavAreaGrid::CNavAreaGrid() : m_cellSize(300.0f)
 {
 	m_grid = NULL;
 	Reset();
 }
 
 /* <4c4a70> ../game_shared/bot/nav_area.cpp:4953 */
-CNavAreaGrid::~CNavAreaGrid(void)
+CNavAreaGrid::~CNavAreaGrid()
 {
 	delete[] m_grid;
 	m_grid = NULL;
@@ -4796,7 +4767,7 @@ CNavAreaGrid::~CNavAreaGrid(void)
 // Clear the grid
 
 /* <4cf837> ../game_shared/bot/nav_area.cpp:4962 */
-void CNavAreaGrid::Reset(void)
+void CNavAreaGrid::Reset()
 {
 	if (m_grid)
 		delete[] m_grid;

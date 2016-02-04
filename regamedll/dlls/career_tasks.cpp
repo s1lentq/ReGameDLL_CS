@@ -32,11 +32,6 @@ const TaskInfo taskInfo[] =
 	{ NULL,				EVENT_INVALID,			&CCareerTask::NewTask }
 };
 
-#else
-
-CCareerTaskManager *TheCareerTasks;
-const TaskInfo taskInfo[21];
-
 #endif // HOOK_GAMEDLL
 
 /* <1ef647> ../cstrike/dlls/career_tasks.cpp:133 */
@@ -60,7 +55,7 @@ CPreventDefuseTask::CPreventDefuseTask(const char *taskName, GameEventType event
 }
 
 /* <1ef296> ../cstrike/dlls/career_tasks.cpp:147 */
-void CPreventDefuseTask::__MAKE_VHOOK(Reset)(void)
+void CPreventDefuseTask::__MAKE_VHOOK(Reset)()
 {
 	m_bombPlantedThisRound = false;
 	m_defuseStartedThisRound = false;
@@ -135,7 +130,7 @@ CCareerTask::CCareerTask(const char *taskName, GameEventType event, const char *
 }
 
 /* <1ef211> ../cstrike/dlls/career_tasks.cpp:240 */
-void CCareerTask::__MAKE_VHOOK(Reset)(void)
+void CCareerTask::__MAKE_VHOOK(Reset)()
 {
 	m_eventsSeen = 0;
 	m_isComplete = false;
@@ -153,7 +148,7 @@ void CCareerTask::__MAKE_VHOOK(Reset)(void)
 }
 
 /* <1ef74c> ../cstrike/dlls/career_tasks.cpp:256 */
-void CCareerTask::SendPartialNotification(void)
+void CCareerTask::SendPartialNotification()
 {
 	MESSAGE_BEGIN(MSG_ALL, gmsgCZCareer);
 		WRITE_STRING("TASKPART");
@@ -188,7 +183,7 @@ void CCareerTask::OnWeaponKill(int weaponId, int weaponClassId, bool headshot, b
 				continue;
 
 			CHostage *hostage = static_cast<CHostage *>(hostageEntity);
-			
+
 			if (!hostage->IsFollowingSomeone())
 				continue;
 
@@ -422,7 +417,7 @@ void CCareerTask::__MAKE_VHOOK(OnEvent)(GameEventType event, CBasePlayer *pVicti
 }
 
 /* <1efeed> ../cstrike/dlls/career_tasks.cpp:623 */
-void CCareerTaskManager::Create(void)
+void CCareerTaskManager::Create()
 {
 	if (TheCareerTasks != NULL)
 	{
@@ -434,7 +429,7 @@ void CCareerTaskManager::Create(void)
 }
 
 /* <1eff77> ../cstrike/dlls/career_tasks.cpp:636 */
-CCareerTaskManager::CCareerTaskManager(void)
+CCareerTaskManager::CCareerTaskManager()
 {
 	m_taskTime = 0;
 	Reset();
@@ -613,7 +608,7 @@ void CCareerTaskManager::HandleDeath(int team, CBasePlayer *pAttacker)
 }
 
 /* <1f0a5d> ../cstrike/dlls/career_tasks.cpp:805 */
-bool CCareerTaskManager::AreAllTasksComplete(void)
+bool CCareerTaskManager::AreAllTasksComplete()
 {
 	for (CareerTaskListIt it = m_tasks.begin(); it != m_tasks.end(); ++it)
 	{
@@ -625,7 +620,7 @@ bool CCareerTaskManager::AreAllTasksComplete(void)
 }
 
 /* <1f0abc> ../cstrike/dlls/career_tasks.cpp:818 */
-int CCareerTaskManager::GetNumRemainingTasks(void)
+int CCareerTaskManager::GetNumRemainingTasks()
 {
 	int ret = 0;
 	for (CareerTaskListIt it = m_tasks.begin(); it != m_tasks.end(); ++it)
@@ -638,44 +633,20 @@ int CCareerTaskManager::GetNumRemainingTasks(void)
 }
 
 /* <1f0b33> ../cstrike/dlls/career_tasks.cpp:832 */
-float CCareerTaskManager::GetRoundElapsedTime(void)
+float CCareerTaskManager::GetRoundElapsedTime()
 {
 	return (gpGlobals->time - m_roundStartTime);
 }
 
 /* <1f0b56> ../cstrike/dlls/career_tasks.cpp:838 */
-void CCareerTaskManager::LatchRoundEndMessage(void)
+void CCareerTaskManager::LatchRoundEndMessage()
 {
 	m_shouldLatchRoundEndMessage = true;
 }
 
 /* <1f0b81> ../cstrike/dlls/career_tasks.cpp:844 */
-void CCareerTaskManager::UnlatchRoundEndMessage(void)
+void CCareerTaskManager::UnlatchRoundEndMessage()
 {
 	m_shouldLatchRoundEndMessage = false;
 	HandleEvent(m_roundEndMessage);
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CCareerTask::OnEvent(GameEventType event, CBasePlayer *pAttacker, CBasePlayer *pVictim)
-{
-	OnEvent_(event, pAttacker, pVictim);
-}
-
-void CCareerTask::Reset(void)
-{
-	Reset_();
-}
-
-void CPreventDefuseTask::OnEvent(GameEventType event, CBasePlayer *pAttacker, CBasePlayer *pVictim)
-{
-	OnEvent_(event, pAttacker, pVictim);
-}
-
-void CPreventDefuseTask::Reset(void)
-{
-	Reset_();
-}
-
-#endif // HOOK_GAMEDLL

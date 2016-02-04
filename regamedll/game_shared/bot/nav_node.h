@@ -32,14 +32,6 @@
 #pragma once
 #endif
 
-#ifdef HOOK_GAMEDLL
-
-#define Opposite (*pOpposite)
-
-#endif // HOOK_GAMEDLL
-
-extern NavDirType Opposite[ NUM_DIRECTIONS ];
-
 class CNavNode
 {
 public:
@@ -50,66 +42,37 @@ public:
 
 	// get navigation node connected in given direction, or NULL if cant go that way
 	CNavNode *GetConnectedNode(NavDirType dir) const;
-	const Vector *GetPosition(void) const;
-	const Vector *GetNormal(void) const
-	{
-		return &m_normal;
-	}
-	unsigned int GetID(void) const
-	{
-		return m_id;
-	}
+	const Vector *GetPosition() const;
+	const Vector *GetNormal() const { return &m_normal; }
+	unsigned int GetID() const { return m_id; }
 
-	static CNavNode *GetFirst(void)
-	{
-		return IMPL(m_list);
-	}
-	static unsigned int GetListLength(void)
-	{
-		return IMPL(m_listLength);
-	}
-	CNavNode *GetNext(void)
-	{
-		return m_next;
-	}
+	static CNavNode *GetFirst() { return IMPL(m_list); }
+	static unsigned int GetListLength() { return IMPL(m_listLength); }
+
+	CNavNode *GetNext() { return m_next; }
 
 	// create a connection FROM this node TO the given node, in the given direction
 	void ConnectTo(CNavNode *node, NavDirType dir);
-	CNavNode *GetParent(void) const;
+	CNavNode *GetParent() const;
 
 	void MarkAsVisited(NavDirType dir);		// mark the given direction as having been visited
 	BOOL HasVisited(NavDirType dir);		// return TRUE if the given direction has already been searched
 	BOOL IsBiLinked(NavDirType dir) const;		// node is bidirectionally linked to another node in the given direction
-	BOOL IsClosedCell(void) const;			// node is the NW corner of a bi-linked quad of nodes
+	BOOL IsClosedCell() const;			// node is the NW corner of a bi-linked quad of nodes
 
-	// TODO: Should pass in area that is covering
-	void Cover(void)
-	{
-		m_isCovered = true;
-	}
-	// return true if this node has been covered by an area
-	BOOL IsCovered(void) const
-	{
-		return m_isCovered;
-	}
+	void Cover() { m_isCovered = true; }		// TODO: Should pass in area that is covering
+	BOOL IsCovered() const { return m_isCovered; }	// return true if this node has been covered by an area
 
-	// assign the given area to this node
-	void AssignArea(CNavArea *area);
+	void AssignArea(CNavArea *area);		// assign the given area to this node
+	CNavArea *GetArea() const;			// return associated area
 
-	// return associated area
-	CNavArea *GetArea(void) const;
+	void SetAttributes(unsigned char bits) { m_attributeFlags = bits; }
+	unsigned char GetAttributes() const { return m_attributeFlags; }
 
-	void SetAttributes(unsigned char bits)
-	{
-		m_attributeFlags = bits;
-	}
-	unsigned char GetAttributes(void) const
-	{
-		return m_attributeFlags;
-	}
-
+#ifndef HOOK_GAMEDLL
 private:
-	friend void DestroyNavigationMap(void);
+#endif // HOOK_GAMEDLL
+	friend void DestroyNavigationMap();
 
 	Vector m_pos;				// position of this node in the world
 	Vector m_normal;			// surface normal at this location
@@ -117,14 +80,9 @@ private:
 	unsigned int m_id;			// unique ID of this node
 	unsigned char m_attributeFlags;		// set of attribute bit flags (see NavAttributeType)
 
-#ifdef HOOK_GAMEDLL
-public:
-#endif // HOOK_GAMEDLL
 	static CNavNode *IMPL(m_list);		// the master list of all nodes for this map
 	static unsigned int IMPL(m_listLength);
-#ifdef HOOK_GAMEDLL
-private:
-#endif // HOOK_GAMEDLL
+
 	CNavNode *m_next;			// next link in master list
 
 	// below are only needed when generating
@@ -133,8 +91,7 @@ private:
 	CNavNode *m_parent;			// the node prior to this in the search, which we pop back to when this node's search is done (a stack)
 	BOOL m_isCovered;			// true when this node is "covered" by a CNavArea
 	CNavArea *m_area;			// the area this node is contained within
-
-};/* size: 68, cachelines: 2, members: 12 */
+};
 
 /* <4c0577> ../game_shared/bot/nav_node.h:74 */
 inline CNavNode *CNavNode::GetConnectedNode(NavDirType dir) const
@@ -143,13 +100,13 @@ inline CNavNode *CNavNode::GetConnectedNode(NavDirType dir) const
 }
 
 /* <4c05ba> ../game_shared/bot/nav_node.h:79 */
-inline const Vector *CNavNode::GetPosition(void) const
+inline const Vector *CNavNode::GetPosition() const
 {
 	return &m_pos;
 }
 
 /* <3434df> ../game_shared/bot/nav_node.h:84 */
-inline CNavNode *CNavNode::GetParent(void) const
+inline CNavNode *CNavNode::GetParent() const
 {
 	return m_parent;
 }
@@ -176,7 +133,7 @@ inline void CNavNode::AssignArea(CNavArea *area)
 }
 
 /* <4bfdde> ../game_shared/bot/nav_node.h:107 */
-inline CNavArea *CNavNode::GetArea(void) const
+inline CNavArea *CNavNode::GetArea() const
 {
 	return m_area;
 }

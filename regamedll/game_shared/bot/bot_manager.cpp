@@ -105,10 +105,6 @@ const char *GameEventName[NUM_GAME_EVENTS + 1] =
 	NULL,
 };
 
-#else
-
-const char *GameEventName[ NUM_GAME_EVENTS + 1 ];
-
 #endif // HOOK_GAMEDLL
 
 // STL uses exceptions, but we are not compiling with them - ignore warning
@@ -140,7 +136,7 @@ CBotManager::CBotManager()
 // Invoked when the round is restarting
 
 /* <49f586> ../game_shared/bot/bot_manager.cpp:78 */
-void CBotManager::__MAKE_VHOOK(RestartRound)(void)
+void CBotManager::__MAKE_VHOOK(RestartRound)()
 {
 	DestroyAllGrenades();
 }
@@ -148,7 +144,7 @@ void CBotManager::__MAKE_VHOOK(RestartRound)(void)
 // Invoked at the start of each frame
 
 /* <49a21c> ../game_shared/bot/bot_manager.cpp:85 */
-void CBotManager::__MAKE_VHOOK(StartFrame)(void)
+void CBotManager::__MAKE_VHOOK(StartFrame)()
 {
 	// debug smoke grenade visualization
 	if (cv_bot_debug.value == 5)
@@ -204,7 +200,7 @@ void CBotManager::__MAKE_VHOOK(StartFrame)(void)
 	// Process each active bot
 	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
-		CBasePlayer *pPlayer = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+		CBasePlayer *pPlayer = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
 		if (!pPlayer)
 			continue;
@@ -220,7 +216,7 @@ void CBotManager::__MAKE_VHOOK(StartFrame)(void)
 // Return the filename for this map's "nav map" file
 
 /* <49f7a6> ../game_shared/bot/bot_manager.cpp:205 */
-const char *CBotManager::GetNavMapFilename(void) const
+const char *CBotManager::GetNavMapFilename() const
 {
 	static char filename[256];
 	Q_sprintf(filename, "maps\\%s.nav", STRING(gpGlobals->mapname));
@@ -300,7 +296,7 @@ void CBotManager::RemoveGrenade(CGrenade *grenade)
 // Destroy any invalid active grenades
 
 /* <49f9fc> ../game_shared/bot/bot_manager.cpp:285 */
-NOXREF void CBotManager::ValidateActiveGrenades(void)
+NOXREF void CBotManager::ValidateActiveGrenades()
 {
 	ActiveGrenadeList::iterator iter = m_activeGrenadeList.begin();
 	while (iter != m_activeGrenadeList.end())
@@ -318,7 +314,7 @@ NOXREF void CBotManager::ValidateActiveGrenades(void)
 }
 
 /* <49faf3> ../game_shared/bot/bot_manager.cpp:305 */
-void CBotManager::DestroyAllGrenades(void)
+void CBotManager::DestroyAllGrenades()
 {
 	for (ActiveGrenadeList::iterator iter = m_activeGrenadeList.begin(); iter != m_activeGrenadeList.end(); iter++)
 		delete *iter;
@@ -482,23 +478,3 @@ bool CBotManager::IsLineBlockedBySmoke(const Vector *from, const Vector *to)
 	// return true if the total length of smoke-covered line-of-sight is too much
 	return (totalSmokedLength > maxSmokedLength);
 }
-
-
-#ifdef HOOK_GAMEDLL
-
-void CBotManager::RestartRound(void)
-{
-	RestartRound_();
-}
-
-void CBotManager::StartFrame(void)
-{
-	StartFrame_();
-}
-
-void CBotManager::OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
-{
-	return OnEvent_(event, entity, other);
-}
-
-#endif // HOOK_GAMEDLL

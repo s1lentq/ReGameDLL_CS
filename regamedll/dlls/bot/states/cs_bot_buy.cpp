@@ -4,7 +4,7 @@
 bool HasDefaultPistol(CCSBot *me)
 {
 	CBasePlayerWeapon *pistol = static_cast<CBasePlayerWeapon *>(me->m_rgpPlayerItems[ PISTOL_SLOT ]);
-	
+
 	if (pistol == NULL)
 		return false;
 
@@ -283,7 +283,7 @@ void BuyState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 				++m_prefIndex;
 				m_prefRetries = 0;
 				return;
-			}	
+			}
 
 			int weaponPreference = me->GetProfile()->GetWeaponPreference(m_prefIndex);
 
@@ -357,9 +357,9 @@ void BuyState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 			// bail out so we dont waste money on other equipment
 			// unless everything we prefer has been disallowed, then buy at random
 			if (isPreferredAllDisallowed == false)
-				return;			
+				return;
 		}
-		
+
 		// if we have no preferred primary weapon (or everything we want is disallowed), buy at random
 		if (!me->m_bHasPrimary && (isPreferredAllDisallowed || !me->GetProfile()->HasPrimaryPreference()))
 		{
@@ -521,22 +521,3 @@ void BuyState::__MAKE_VHOOK(OnExit)(CCSBot *me)
 	me->ResetStuckMonitor();
 	me->EquipBestWeapon();
 }
-
-#ifdef HOOK_GAMEDLL
-
-void BuyState::OnEnter(CCSBot *me)
-{
-	OnEnter_(me);
-}
-
-void BuyState::OnUpdate(CCSBot *me)
-{
-	OnUpdate_(me);
-}
-
-void BuyState::OnExit(CCSBot *me)
-{
-	OnExit_(me);
-}
-
-#endif // HOOK_GAMEDLL

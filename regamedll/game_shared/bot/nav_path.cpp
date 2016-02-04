@@ -3,7 +3,7 @@
 // Determine actual path positions
 
 /* <505025> ../game_shared/bot/nav_path.cpp:24 */
-bool CNavPath::ComputePathPositions(void)
+bool CNavPath::ComputePathPositions()
 {
 	if (m_segmentCount == 0)
 		return false;
@@ -138,7 +138,7 @@ bool CNavPath::IsAtEnd(const Vector &pos) const
 // Return length of path from start to finish
 
 /* <5052f6> ../game_shared/bot/nav_path.cpp:161 */
-float CNavPath::GetLength(void) const
+float CNavPath::GetLength() const
 {
 	float length = 0.0f;
 	for (int i = 1; i < GetSegmentCount(); ++i)
@@ -310,7 +310,7 @@ bool CNavPath::BuildTrivialPath(const Vector *start, const Vector *goal)
 // Draw the path for debugging
 
 /* <505853> ../game_shared/bot/nav_path.cpp:340 */
-void CNavPath::Draw(void)
+void CNavPath::Draw()
 {
 	if (!IsValid())
 		return;
@@ -363,7 +363,7 @@ int CNavPath::FindNextOccludedNode(int anchor_)
 // Smooth out path, removing redundant nodes
 
 /* <505c26> ../game_shared/bot/nav_path.cpp:396 */
-void CNavPath::Optimize(void)
+void CNavPath::Optimize()
 {
 	// DONT USE THIS: Optimizing the path results in cutting thru obstacles
 #if 0
@@ -396,7 +396,7 @@ void CNavPath::Optimize(void)
 }
 
 /* <505c6d> ../game_shared/bot/nav_path.cpp:436 */
-CNavPathFollower::CNavPathFollower(void)
+CNavPathFollower::CNavPathFollower()
 {
 	m_improv = NULL;
 	m_path = NULL;
@@ -408,7 +408,7 @@ CNavPathFollower::CNavPathFollower(void)
 }
 
 /* <505cce> ../game_shared/bot/nav_path.cpp:447 */
-void CNavPathFollower::Reset(void)
+void CNavPathFollower::Reset()
 {
 	m_segmentIndex = 1;
 	m_isLadderStarted = false;
@@ -1038,7 +1038,7 @@ void CNavPathFollower::FeelerReflexAdjustment(Vector *goalPosition, float height
 // Reset the stuck-checker
 
 /* <507a31> ../game_shared/bot/nav_path.cpp:1098 */
-CStuckMonitor::CStuckMonitor(void)
+CStuckMonitor::CStuckMonitor()
 {
 	m_isStuck = false;
 	m_avgVelIndex = 0;
@@ -1048,7 +1048,7 @@ CStuckMonitor::CStuckMonitor(void)
 // Reset the stuck-checker
 
 /* <507a73> ../game_shared/bot/nav_path.cpp:1108 */
-void CStuckMonitor::Reset(void)
+void CStuckMonitor::Reset()
 {
 	m_isStuck = false;
 	m_avgVelIndex = 0;

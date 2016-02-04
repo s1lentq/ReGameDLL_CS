@@ -4,7 +4,7 @@
 LINK_ENTITY_TO_CLASS(weapon_c4, CC4);
 
 /* <2469b9> ../cstrike/dlls/wpn_shared/wpn_c4.cpp:50 */
-void CC4::__MAKE_VHOOK(Spawn)(void)
+void CC4::__MAKE_VHOOK(Spawn)()
 {
 	SET_MODEL(edict(), "models/w_backpack.mdl");
 
@@ -28,11 +28,11 @@ void CC4::__MAKE_VHOOK(Spawn)(void)
 
 	FallInit();
 	SetThink(&CBasePlayerItem::FallThink);
-	pev->nextthink = UTIL_WeaponTimeBase() + 0.1;
+	pev->nextthink = UTIL_WeaponTimeBase() + 0.1f;
 }
 
 /* <246418> ../cstrike/dlls/wpn_shared/wpn_c4.cpp:80 */
-void CC4::__MAKE_VHOOK(Precache)(void)
+void CC4::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/v_c4.mdl");
 	PRECACHE_MODEL("models/w_backpack.mdl");
@@ -59,7 +59,7 @@ int CC4::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 }
 
 /* <2466d5> ../cstrike/dlls/wpn_shared/wpn_c4.cpp:105 */
-BOOL CC4::__MAKE_VHOOK(Deploy)(void)
+BOOL CC4::__MAKE_VHOOK(Deploy)()
 {
 	pev->body = 0;
 
@@ -95,7 +95,7 @@ void CC4::__MAKE_VHOOK(Holster)(int skiplocal)
 }
 
 /* <2464e8> ../cstrike/dlls/wpn_shared/wpn_c4.cpp:152 */
-void CC4::__MAKE_VHOOK(PrimaryAttack)(void)
+void CC4::__MAKE_VHOOK(PrimaryAttack)()
 {
 	BOOL PlaceBomb;
 
@@ -205,7 +205,7 @@ void CC4::__MAKE_VHOOK(PrimaryAttack)(void)
 
 					// No more c4!
 					m_pPlayer->SetBombIcon(FALSE);
-					m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]--;
+					--m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType];
 
 					if (!m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType])
 					{
@@ -257,7 +257,7 @@ void CC4::__MAKE_VHOOK(PrimaryAttack)(void)
 }
 
 /* <2464c1> ../cstrike/dlls/wpn_shared/wpn_c4.cpp:358 */
-void CC4::__MAKE_VHOOK(WeaponIdle)(void)
+void CC4::__MAKE_VHOOK(WeaponIdle)()
 {
 	if (m_bStartedArming)
 	{
@@ -322,7 +322,7 @@ void CC4::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_T
 		return;
 	}
 
-	CBasePlayer *pPlayer = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(1));
+	CBasePlayer *pPlayer = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(1));
 
 	if (pPlayer != NULL)
 	{
@@ -355,61 +355,7 @@ void CC4::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_T
 }
 
 /* <2463cc> ../cstrike/dlls/weapons.h:732 */
-float CC4::__MAKE_VHOOK(GetMaxSpeed)(void)
+float CC4::__MAKE_VHOOK(GetMaxSpeed)()
 {
 	return C4_MAX_SPEED;
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CC4::Spawn(void)
-{
-	Spawn_();
-}
-
-void CC4::Precache(void)
-{
-	Precache_();
-}
-
-void CC4::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-void CC4::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	Use_(pActivator, pCaller, useType, value);
-}
-
-int CC4::GetItemInfo(ItemInfo *p)
-{
-	return GetItemInfo_(p);
-}
-
-BOOL CC4::Deploy(void)
-{
-	return Deploy_();
-}
-
-void CC4::Holster(int skiplocal)
-{
-	Holster_(skiplocal);
-}
-
-float CC4::GetMaxSpeed(void)
-{
-	return GetMaxSpeed_();
-}
-
-void CC4::PrimaryAttack(void)
-{
-	PrimaryAttack_();
-}
-
-void CC4::WeaponIdle(void)
-{
-	WeaponIdle_();
-}
-
-#endif // HOOK_GAMEDLL

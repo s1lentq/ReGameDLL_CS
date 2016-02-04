@@ -63,16 +63,6 @@ TYPEDESCRIPTION CSpeaker::m_SaveData[] =
 	DEFINE_FIELD(CSpeaker, m_preset, FIELD_INTEGER),
 };
 
-#else
-
-dynpitchvol_t rgdpvpreset[CDPVPRESETMAX];
-int fSentencesInit;
-int gcallsentences;
-
-TYPEDESCRIPTION IMPL_CLASS(CAmbientGeneric, m_SaveData)[4];
-TYPEDESCRIPTION IMPL_CLASS(CEnvSound, m_SaveData)[2];
-TYPEDESCRIPTION IMPL_CLASS(CSpeaker, m_SaveData)[1];
-
 #endif // HOOK_GAMEDLL
 
 // time delay until it's ok to speak: used so that two NPCs don't talk at once
@@ -99,7 +89,7 @@ IMPLEMENT_SAVERESTORE(CAmbientGeneric, CBaseEntity);
 // 80  : "Large Radius"
 
 /* <1718ea> ../cstrike/dlls/sound.cpp:160 */
-void CAmbientGeneric::__MAKE_VHOOK(Spawn)(void)
+void CAmbientGeneric::__MAKE_VHOOK(Spawn)()
 {
 	if (pev->spawnflags & AMBIENT_SOUND_EVERYWHERE)
 	{
@@ -157,7 +147,7 @@ void CAmbientGeneric::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <1724f8> ../cstrike/dlls/sound.cpp:223 */
-void CAmbientGeneric::__MAKE_VHOOK(Restart)(void)
+void CAmbientGeneric::__MAKE_VHOOK(Restart)()
 {
 	if (pev->spawnflags & AMBIENT_SOUND_EVERYWHERE)
 	{
@@ -207,7 +197,7 @@ void CAmbientGeneric::__MAKE_VHOOK(Restart)(void)
 
 	UTIL_EmitAmbientSound(ENT(pev), pev->origin, szSoundFile, 0, 0, SND_STOP, 0);
 	InitModulationParms();
-	pev->nextthink = gpGlobals->time + 0.1;
+	pev->nextthink = gpGlobals->time + 0.1f;
 
 	if (!(pev->spawnflags & AMBIENT_SOUND_NOT_LOOPING))
 	{
@@ -219,12 +209,12 @@ void CAmbientGeneric::__MAKE_VHOOK(Restart)(void)
 
 	if (m_fActive)
 	{
-		UTIL_EmitAmbientSound(ENT(pev), pev->origin, szSoundFile, (m_dpv.vol * 0.01), m_flAttenuation, 0, m_dpv.pitch);
+		UTIL_EmitAmbientSound(ENT(pev), pev->origin, szSoundFile, (m_dpv.vol * 0.01f), m_flAttenuation, 0, m_dpv.pitch);
 	}
 }
 
 /* <1724bb> ../cstrike/dlls/sound.cpp:296 */
-void CAmbientGeneric::__MAKE_VHOOK(Precache)(void)
+void CAmbientGeneric::__MAKE_VHOOK(Precache)()
 {
 	char *szSoundFile = (char *)STRING(pev->message);
 
@@ -261,7 +251,7 @@ void CAmbientGeneric::__MAKE_VHOOK(Precache)(void)
 // with lfo if active.
 
 /* <171973> ../cstrike/dlls/sound.cpp:328 */
-void CAmbientGeneric::RampThink(void)
+void CAmbientGeneric::RampThink()
 {
 	char *szSoundFile = (char *)STRING(pev->message);
 	int pitch = m_dpv.pitch;
@@ -467,7 +457,7 @@ void CAmbientGeneric::RampThink(void)
 	}
 
 	// update ramps at 5hz
-	pev->nextthink = gpGlobals->time + 0.2;
+	pev->nextthink = gpGlobals->time + 0.2f;
 	return;
 }
 
@@ -475,7 +465,7 @@ void CAmbientGeneric::RampThink(void)
 // play a new sound
 
 /* <1723db> ../cstrike/dlls/sound.cpp:521 */
-void CAmbientGeneric::InitModulationParms(void)
+void CAmbientGeneric::InitModulationParms()
 {
 	int pitchinc;
 
@@ -594,11 +584,11 @@ void CAmbientGeneric::ToggleUse(CBaseEntity *pActivator, CBaseEntity *pCaller, U
 	{
 		fraction = value;
 
-		if (fraction > 1.0)
-			fraction = 1.0;
+		if (fraction > 1.0f)
+			fraction = 1.0f;
 
-		if (fraction < 0.0)
-			fraction = 0.01;
+		if (fraction < 0.0f)
+			fraction = 0.01f;
 
 		m_dpv.pitch = fraction * 255;
 		UTIL_EmitAmbientSound(ENT(pev), pev->origin, szSoundFile, 0, 0, SND_CHANGE_PITCH, m_dpv.pitch);
@@ -630,7 +620,7 @@ void CAmbientGeneric::ToggleUse(CBaseEntity *pActivator, CBaseEntity *pCaller, U
 				{
 					m_dpv.pitchrun = 255;
 				}
-				pev->nextthink = gpGlobals->time + 0.1;
+				pev->nextthink = gpGlobals->time + 0.1f;
 			}
 		}
 		else
@@ -647,7 +637,7 @@ void CAmbientGeneric::ToggleUse(CBaseEntity *pActivator, CBaseEntity *pCaller, U
 
 				m_dpv.fadeout = m_dpv.fadeoutsav;
 				m_dpv.fadein = 0;
-				pev->nextthink = gpGlobals->time + 0.1;
+				pev->nextthink = gpGlobals->time + 0.1f;
 			}
 			else
 				UTIL_EmitAmbientSound(ENT(pev), pev->origin, szSoundFile, 0, 0, SND_STOP, 0);
@@ -942,7 +932,7 @@ BOOL FEnvSoundInRange(entvars_t *pev, entvars_t *pevTarget, float *pflRange)
 // CONSIDER: if player in water state, autoset roomtype to 14,15 or 16.
 
 /* <17428e> ../cstrike/dlls/sound.cpp:960 */
-void CEnvSound::__MAKE_VHOOK(Think)(void)
+void CEnvSound::__MAKE_VHOOK(Think)()
 {
 	// get pointer to client if visible; FIND_CLIENT_IN_PVS will
 	// cycle through visible clients on consecutive calls.
@@ -1026,11 +1016,11 @@ void CEnvSound::__MAKE_VHOOK(Think)(void)
 	// not in range. do nothing, fall through to think_fast...
 
 env_sound_Think_fast:
-	pev->nextthink = gpGlobals->time + 0.25;
+	pev->nextthink = gpGlobals->time + 0.25f;
 	return;
 
 env_sound_Think_slow:
-	pev->nextthink = gpGlobals->time + 0.75;
+	pev->nextthink = gpGlobals->time + 0.75f;
 	return;
 }
 
@@ -1038,7 +1028,7 @@ env_sound_Think_slow:
 // when player moves in range and sight.
 
 /* <171926> ../cstrike/dlls/sound.cpp:1053 */
-void CEnvSound::__MAKE_VHOOK(Spawn)(void)
+void CEnvSound::__MAKE_VHOOK(Spawn)()
 {
 	// spread think times
 	pev->nextthink = gpGlobals->time + RANDOM_FLOAT(0.0, 0.5);
@@ -1214,7 +1204,7 @@ int SENTENCEG_PlayRndI(edict_t *entity, int isentenceg, float volume, float atte
 	if (!fSentencesInit)
 		return -1;
 
-	name[0] = 0;
+	name[0] = '\0';
 
 	ipick = USENTENCEG_Pick(isentenceg, name);
 	if (ipick > 0 && name)
@@ -1309,7 +1299,7 @@ NOXREF void SENTENCEG_Stop(edict_t *entity, int isentenceg, int ipick)
 // first call and is ignored subsequently.
 
 /* <1734e4> ../cstrike/dlls/sound.cpp:1334 */
-void SENTENCEG_Init(void)
+void SENTENCEG_Init()
 {
 	char buffer[512];
 	char szgroup[64];
@@ -1487,7 +1477,7 @@ void EMIT_SOUND_SUIT(edict_t *entity, const char *sample)
 	if (RANDOM_LONG(0, 1))
 		pitch = RANDOM_LONG(0, 6) + 98;
 
-	if (fvol > 0.05)
+	if (fvol > 0.05f)
 		EMIT_SOUND_DYN(entity, CHAN_STATIC, sample, fvol, ATTN_NORM, 0, pitch);
 }
 
@@ -1503,7 +1493,7 @@ void EMIT_GROUPID_SUIT(edict_t *entity, int isentenceg)
 	if (RANDOM_LONG(0, 1))
 		pitch = RANDOM_LONG(0, 6) + 98;
 
-	if (fvol > 0.05)
+	if (fvol > 0.05f)
 	{
 		SENTENCEG_PlayRndI(entity, isentenceg, fvol, ATTN_NORM, 0, pitch);
 	}
@@ -1522,7 +1512,7 @@ NOXREF void EMIT_GROUPNAME_SUIT(edict_t *entity, const char *groupname)
 	if (RANDOM_LONG(0, 1))
 		pitch = RANDOM_LONG(0, 6) + 98;
 
-	if (fvol > 0.05)
+	if (fvol > 0.05f)
 	{
 		SENTENCEG_PlayRndSz(entity, groupname, fvol, ATTN_NORM, 0, pitch);
 	}
@@ -1577,7 +1567,7 @@ char *memfgets(byte *pMemFile, int fileSize, int &filePos, char *pBuffer, int bu
 }
 
 /* <173cc2> ../cstrike/dlls/sound.cpp:1610 */
-void TEXTURETYPE_Init(void)
+void TEXTURETYPE_Init()
 {
 	char buffer[512];
 	int i, j;
@@ -1721,7 +1711,7 @@ float TEXTURETYPE_PlaySound(TraceResult *ptr, Vector vecSrc, Vector vecEnd, int 
 
 			// '}}'
 			Q_strcpy(szbuffer, pTextureName);
-			szbuffer[CBTEXTURENAMEMAX - 1] = 0;
+			szbuffer[CBTEXTURENAMEMAX - 1] = '\0';
 
 			// get texture type
 			chTextureType = TEXTURETYPE_Find(szbuffer);
@@ -1845,7 +1835,7 @@ float TEXTURETYPE_PlaySound(TraceResult *ptr, Vector vecSrc, Vector vecEnd, int 
 	else if (chTextureType == CHAR_TEX_COMPUTER)
 	{
 		// play random spark if computer
-		if (ptr->flFraction != 1.0 && RANDOM_LONG(0, 1))
+		if (ptr->flFraction != 1.0f && RANDOM_LONG(0, 1))
 		{
 			UTIL_Sparks(ptr->vecEndPos);
 
@@ -1879,14 +1869,14 @@ IMPLEMENT_SAVERESTORE(CSpeaker, CBaseEntity);
 // ambient_generic - general-purpose user-defined static sound
 
 /* <171c6b> ../cstrike/dlls/sound.cpp:1896 */
-void CSpeaker::__MAKE_VHOOK(Spawn)(void)
+void CSpeaker::__MAKE_VHOOK(Spawn)()
 {
 	char *szSoundFile = (char *)STRING(pev->message);
 
 	if (!m_preset && (FStringNull(pev->message) || Q_strlen(szSoundFile) < 1))
 	{
 		ALERT(at_error, "SPEAKER with no Level/Sentence! at: %f, %f, %f\n", pev->origin.x, pev->origin.y, pev->origin.z);
-		pev->nextthink = gpGlobals->time + 0.1;
+		pev->nextthink = gpGlobals->time + 0.1f;
 		SetThink(&CSpeaker::SUB_Remove);
 		return;
 	}
@@ -1895,7 +1885,7 @@ void CSpeaker::__MAKE_VHOOK(Spawn)(void)
 	pev->movetype = MOVETYPE_NONE;
 
 	SetThink(&CSpeaker::SpeakerThink);
-	pev->nextthink = 0.0;
+	pev->nextthink = 0.0f;
 
 	// allow on/off switching via 'use' function.
 	SetUse(&CSpeaker::ToggleUse);
@@ -1904,7 +1894,7 @@ void CSpeaker::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <171a16> ../cstrike/dlls/sound.cpp:1924 */
-void CSpeaker::__MAKE_VHOOK(Precache)(void)
+void CSpeaker::__MAKE_VHOOK(Precache)()
 {
 	if (!(pev->spawnflags & SPEAKER_START_SILENT))
 	{
@@ -1914,11 +1904,11 @@ void CSpeaker::__MAKE_VHOOK(Precache)(void)
 }
 
 /* <172b7a> ../cstrike/dlls/sound.cpp:1930 */
-void CSpeaker::SpeakerThink(void)
+void CSpeaker::SpeakerThink()
 {
 	char *szSoundFile = NULL;
-	float flvolume = pev->health * 0.1;
-	float flattenuation = 0.3;
+	float flvolume = pev->health * 0.1f;
+	float flattenuation = 0.3f;
 	int flags = 0;
 	int pitch = 100;
 
@@ -1965,7 +1955,7 @@ void CSpeaker::SpeakerThink(void)
 		UTIL_EmitAmbientSound(ENT(pev), pev->origin, szSoundFile, flvolume, flattenuation, flags, pitch);
 
 		// shut off and reset
-		pev->nextthink = 0.0;
+		pev->nextthink = 0.0f;
 	}
 	else
 	{
@@ -1977,10 +1967,10 @@ void CSpeaker::SpeakerThink(void)
 		}
 
 		// set next announcement time for random 5 to 10 minute delay
-		pev->nextthink = gpGlobals->time + RANDOM_FLOAT(ANNOUNCE_MINUTES_MIN * 60.0, ANNOUNCE_MINUTES_MAX * 60.0);
+		pev->nextthink = gpGlobals->time + RANDOM_FLOAT(ANNOUNCE_MINUTES_MIN * 60.0f, ANNOUNCE_MINUTES_MAX * 60.0f);
 
 		// time delay until it's ok to speak: used so that two NPCs don't talk at once
-		CTalkMonster::g_talkWaitTime = gpGlobals->time + 5;
+		CTalkMonster::g_talkWaitTime = gpGlobals->time + 5.0f;
 	}
 
 	return;
@@ -1991,7 +1981,7 @@ void CSpeaker::SpeakerThink(void)
 /* <171a4e> ../cstrike/dlls/sound.cpp:1997 */
 void CSpeaker::ToggleUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
-	int fActive = (pev->nextthink > 0.0);
+	int fActive = (pev->nextthink > 0.0f);
 
 	// fActive is TRUE only if an announcement is pending
 	if (useType != USE_TOGGLE)
@@ -2007,7 +1997,7 @@ void CSpeaker::ToggleUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE
 	if (useType == USE_ON)
 	{
 		// turn on announcements
-		pev->nextthink = gpGlobals->time + 0.1;
+		pev->nextthink = gpGlobals->time + 0.1f;
 		return;
 	}
 
@@ -2028,7 +2018,7 @@ void CSpeaker::ToggleUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE
 	else
 	{
 		// turn on announcements
-		pev->nextthink = gpGlobals->time + 0.1;
+		pev->nextthink = gpGlobals->time + 0.1f;
 	}
 }
 
@@ -2047,87 +2037,3 @@ void CSpeaker::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 	else
 		CBaseEntity::KeyValue(pkvd);
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CAmbientGeneric::Spawn(void)
-{
-	Spawn_();
-}
-
-void CAmbientGeneric::Precache(void)
-{
-	Precache_();
-}
-
-void CAmbientGeneric::Restart(void)
-{
-	Restart_();
-}
-
-void CAmbientGeneric::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-int CAmbientGeneric::Save(CSave &save)
-{
-	Save_(save);
-}
-
-int CAmbientGeneric::Restore(CRestore &restore)
-{
-	Restore_(restore);
-}
-
-void CEnvSound::Spawn(void)
-{
-	Spawn_();
-}
-
-void CEnvSound::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-int CEnvSound::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CEnvSound::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-void CEnvSound::Think(void)
-{
-	Think_();
-}
-
-void CSpeaker::Spawn(void)
-{
-	Spawn_();
-}
-
-void CSpeaker::Precache(void)
-{
-	Precache_();
-}
-
-void CSpeaker::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-int CSpeaker::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CSpeaker::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-#endif // HOOK_GAMEDLL

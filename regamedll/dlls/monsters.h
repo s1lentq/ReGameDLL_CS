@@ -114,43 +114,41 @@ enum HitBoxGroup
 class CGib: public CBaseEntity
 {
 public:
-	virtual int ObjectCaps(void)
-	{
-		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | FCAP_DONT_SAVE;
-	}
+	virtual int ObjectCaps() { return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | FCAP_DONT_SAVE; }
 
 public:
 	void Spawn(const char *szGibModel);
 	void EXPORT BounceGibTouch(CBaseEntity *pOther);
 	void EXPORT StickyGibTouch(CBaseEntity *pOther);
-	void EXPORT WaitTillLand(void);
-	void LimitVelocity(void);
+	void EXPORT WaitTillLand();
+	void LimitVelocity();
+
 public:
 	static void SpawnHeadGib(entvars_t *pevVictim);
 	static void SpawnRandomGibs(entvars_t *pevVictim, int cGibs, int human);
 	NOXREF static void SpawnStickyGibs(entvars_t *pevVictim, Vector vecOrigin, int cGibs);
+
 public:
 	int m_bloodColor;
 	int m_cBloodDecals;
 	int m_material;
 	float m_lifeTime;
-
-};/* size: 168, cachelines: 3, members: 5 */
+};
 
 #define CUSTOM_SCHEDULES\
-		virtual Schedule_t *ScheduleFromName(const char *pName);\
-		static Schedule_t *m_scheduleList[];
+	virtual Schedule_t *ScheduleFromName(const char *pName);\
+	static Schedule_t *m_scheduleList[];
 
 #define DEFINE_CUSTOM_SCHEDULES(derivedClass)\
 	Schedule_t *derivedClass::m_scheduleList[] =
 
 #define IMPLEMENT_CUSTOM_SCHEDULES(derivedClass, baseClass)\
-		Schedule_t *derivedClass::ScheduleFromName(const char *pName)\
-		{\
-			Schedule_t *pSchedule = ScheduleInList(pName, m_scheduleList, ARRAYSIZE(m_scheduleList));\
-			if (!pSchedule)\
-				return baseClass::ScheduleFromName(pName);\
-			return pSchedule;\
-		}
+	Schedule_t *derivedClass::ScheduleFromName(const char *pName)\
+	{\
+		Schedule_t *pSchedule = ScheduleInList(pName, m_scheduleList, ARRAYSIZE(m_scheduleList));\
+		if (!pSchedule)\
+			return baseClass::ScheduleFromName(pName);\
+		return pSchedule;\
+	}
 
 #endif // MONSTERS_H

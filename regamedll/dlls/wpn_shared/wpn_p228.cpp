@@ -4,21 +4,22 @@
 LINK_ENTITY_TO_CLASS(weapon_p228, CP228);
 
 /* <290eb8> ../cstrike/dlls/wpn_shared/wpn_p228.cpp:65 */
-void CP228::__MAKE_VHOOK(Spawn)(void)
+void CP228::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
+
 	m_iId = WEAPON_P228;
 	SET_MODEL(ENT(pev), "models/w_p228.mdl");
 
 	m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
 	m_iDefaultAmmo = P228_DEFAULT_GIVE;
-	m_flAccuracy = 0.9;
+	m_flAccuracy = 0.9f;
 
 	FallInit();
 }
 
 /* <290e37> ../cstrike/dlls/wpn_shared/wpn_p228.cpp:80 */
-void CP228::__MAKE_VHOOK(Precache)(void)
+void CP228::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/v_p228.mdl");
 	PRECACHE_MODEL("models/w_p228.mdl");
@@ -53,9 +54,9 @@ int CP228::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 }
 
 /* <290fc6> ../cstrike/dlls/wpn_shared/wpn_p228.cpp:115 */
-BOOL CP228::__MAKE_VHOOK(Deploy)(void)
+BOOL CP228::__MAKE_VHOOK(Deploy)()
 {
-	m_flAccuracy = 0.9;
+	m_flAccuracy = 0.9f;
 	m_fMaxSpeed = P228_MAX_SPEED;
 	m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
 	m_pPlayer->m_bShieldDrawn = false;
@@ -67,7 +68,7 @@ BOOL CP228::__MAKE_VHOOK(Deploy)(void)
 }
 
 /* <2910ff> ../cstrike/dlls/wpn_shared/wpn_p228.cpp:130 */
-void CP228::__MAKE_VHOOK(PrimaryAttack)(void)
+void CP228::__MAKE_VHOOK(PrimaryAttack)()
 {
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
 	{
@@ -88,7 +89,7 @@ void CP228::__MAKE_VHOOK(PrimaryAttack)(void)
 }
 
 /* <290e91> ../cstrike/dlls/wpn_shared/wpn_p228.cpp:142 */
-void CP228::__MAKE_VHOOK(SecondaryAttack)(void)
+void CP228::__MAKE_VHOOK(SecondaryAttack)()
 {
 	ShieldSecondaryFire(SHIELDGUN_UP, SHIELDGUN_DOWN);
 }
@@ -99,24 +100,24 @@ void CP228::P228Fire(float flSpread, float flCycleTime, BOOL fUseSemi)
 	Vector vecAiming, vecSrc, vecDir;
 	int flag;
 
-	flCycleTime -= 0.05;
+	flCycleTime -= 0.05f;
 
 	if (++m_iShotsFired > 1)
 	{
 		return;
 	}
 
-	if (m_flLastFire != 0.0)
+	if (m_flLastFire != 0.0f)
 	{
-		m_flAccuracy -= (0.325 - (gpGlobals->time - m_flLastFire)) * 0.3;
+		m_flAccuracy -= (0.325f - (gpGlobals->time - m_flLastFire)) * 0.3f;
 
-		if (m_flAccuracy > 0.9)
+		if (m_flAccuracy > 0.9f)
 		{
-			m_flAccuracy = 0.9;
+			m_flAccuracy = 0.9f;
 		}
-		else if (m_flAccuracy < 0.6)
+		else if (m_flAccuracy < 0.6f)
 		{
-			m_flAccuracy = 0.6;
+			m_flAccuracy = 0.6f;
 		}
 	}
 
@@ -138,7 +139,7 @@ void CP228::P228Fire(float flSpread, float flCycleTime, BOOL fUseSemi)
 		return;
 	}
 
-	m_iClip--;
+	--m_iClip;
 	m_pPlayer->pev->effects |= EF_MUZZLEFLASH;
 	SetPlayerShieldAnim();
 
@@ -169,28 +170,26 @@ void CP228::P228Fire(float flSpread, float flCycleTime, BOOL fUseSemi)
 		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, FALSE);
 	}
 
-	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2;
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.0f;
 	m_pPlayer->pev->punchangle.x -= 2;
 	ResetPlayerShieldAnim();
 }
 
 /* <290f69> ../cstrike/dlls/wpn_shared/wpn_p228.cpp:241 */
-void CP228::__MAKE_VHOOK(Reload)(void)
+void CP228::__MAKE_VHOOK(Reload)()
 {
 	if (m_pPlayer->ammo_357sig <= 0)
-	{
 		return;
-	}
 
 	if (DefaultReload(P228_MAX_CLIP, m_pPlayer->HasShield() ? P228_SHIELD_RELOAD : P228_RELOAD, P228_RELOAD_TIME))
 	{
 		m_pPlayer->SetAnimation(PLAYER_RELOAD);
-		m_flAccuracy = 0.9;
+		m_flAccuracy = 0.9f;
 	}
 }
 
 /* <290f2e> ../cstrike/dlls/wpn_shared/wpn_p228.cpp:261 */
-void CP228::__MAKE_VHOOK(WeaponIdle)(void)
+void CP228::__MAKE_VHOOK(WeaponIdle)()
 {
 	ResetEmptySound();
 	m_pPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);
@@ -202,7 +201,7 @@ void CP228::__MAKE_VHOOK(WeaponIdle)(void)
 
 	if (m_pPlayer->HasShield())
 	{
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20.0;
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20.0f;
 
 		if (m_iWeaponState & WPNSTATE_SHIELD_DRAWN)
 		{
@@ -211,51 +210,7 @@ void CP228::__MAKE_VHOOK(WeaponIdle)(void)
 	}
 	else if (m_iClip)
 	{
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 3.0625;
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 3.0625f;
 		SendWeaponAnim(P228_IDLE, UseDecrement() != FALSE);
 	}
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CP228::Spawn(void)
-{
-	Spawn_();
-}
-
-void CP228::Precache(void)
-{
-	Precache_();
-}
-
-int CP228::GetItemInfo(ItemInfo *p)
-{
-	return GetItemInfo_(p);
-}
-
-BOOL CP228::Deploy(void)
-{
-	return Deploy_();
-}
-
-void CP228::PrimaryAttack(void)
-{
-	PrimaryAttack_();
-}
-
-void CP228::SecondaryAttack(void)
-{
-	SecondaryAttack_();
-}
-
-void CP228::Reload(void)
-{
-	Reload_();
-}
-
-void CP228::WeaponIdle(void)
-{
-	WeaponIdle_();
-}
-
-#endif // HOOK_GAMEDLL

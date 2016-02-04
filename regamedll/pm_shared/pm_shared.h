@@ -79,84 +79,62 @@
 // Only allow bunny jumping up to 1.2x server / player maxspeed setting
 #define BUNNYJUMP_MAX_SPEED_FACTOR		1.2f
 
-#ifdef HOOK_GAMEDLL
-
-#define pmove (*pg_ppmove)
-#define pm_shared_initialized (*ppm_shared_initialized)
-#define rgv3tStuckTable (*prgv3tStuckTable)
-
-#define pm_gcTextures (*ppm_gcTextures)
-#define pm_grgszTextureName (*ppm_grgszTextureName)
-#define pm_grgchTextureType (*ppm_grgchTextureType)
-#define rgStuckLast (*prgStuckLast)
-#define g_onladder (*pg_onladder)
-
-#endif // HOOK_GAMEDLL
-
-extern playermove_t *pmove;
-extern int pm_shared_initialized;
-extern vec3_t rgv3tStuckTable[54];
-extern int rgStuckLast[MAX_CLIENTS][2];
-extern int g_onladder;
-
-extern int pm_gcTextures;
-extern char pm_grgszTextureName[ CTEXTURESMAX ][ CBTEXTURENAMEMAX ];
-extern char pm_grgchTextureType[ CTEXTURESMAX ];
-
 void PM_SwapTextures(int i, int j);
-NOXREF int PM_IsThereGrassTexture(void);
-void PM_SortTextures(void);
-void PM_InitTextureTypes(void);
+NOXREF int PM_IsThereGrassTexture();
+void PM_SortTextures();
+void PM_InitTextureTypes();
 char PM_FindTextureType(char *name);
 void PM_PlayStepSound(int step, float fvol);
 int PM_MapTextureTypeStepType(char chTextureType);
-void PM_CatagorizeTextureType(void);
-void PM_UpdateStepSound(void);
+void PM_CatagorizeTextureType();
+void PM_UpdateStepSound();
 qboolean PM_AddToTouched(pmtrace_t tr, vec_t *impactvelocity);
-void PM_CheckVelocity(void);
+void PM_CheckVelocity();
 int PM_ClipVelocity(vec_t *in, vec_t *normal, vec_t *out, float overbounce);
-void PM_AddCorrectGravity(void);
-void PM_FixupGravityVelocity(void);
-int PM_FlyMove(void);
+void PM_AddCorrectGravity();
+void PM_FixupGravityVelocity();
+int PM_FlyMove();
 void PM_Accelerate(vec_t *wishdir, float_precision wishspeed, float accel);
-void PM_WalkMove(void);
-void PM_Friction(void);
+void PM_WalkMove();
+void PM_Friction();
 void PM_AirAccelerate(vec_t *wishdir, float wishspeed, float accel);
-void PM_WaterMove(void);
-void PM_AirMove(void);
-qboolean PM_InWater(void);
-qboolean PM_CheckWater(void);
-void PM_CatagorizePosition(void);
+void PM_WaterMove();
+void PM_AirMove();
+qboolean PM_InWater();
+qboolean PM_CheckWater();
+void PM_CatagorizePosition();
 int PM_GetRandomStuckOffsets(int nIndex, int server, vec_t *offset);
 void PM_ResetStuckOffsets(int nIndex, int server);
-int PM_CheckStuck(void);
-void PM_SpectatorMove(void);
+int PM_CheckStuck();
+void PM_SpectatorMove();
 float PM_SplineFraction(float value, float scale);
 NOXREF float PM_SimpleSpline(float value);
 void PM_FixPlayerCrouchStuck(int direction);
-void PM_Duck(void);
+void PM_Duck();
 void PM_LadderMove(physent_t *pLadder);
-physent_t *PM_Ladder(void);
-void PM_WaterJump(void);
-void PM_AddGravity(void);
+physent_t *PM_Ladder();
+void PM_WaterJump();
+void PM_AddGravity();
 pmtrace_t PM_PushEntity(vec_t *push);
-void PM_Physics_Toss(void);
-void PM_NoClip(void);
-void PM_PreventMegaBunnyJumping(void);
-void PM_Jump(void);
-void PM_CheckWaterJump(void);
-void PM_CheckFalling(void);
-void PM_PlayWaterSounds(void);
+void PM_Physics_Toss();
+void PM_NoClip();
+void PM_PreventMegaBunnyJumping();
+void PM_Jump();
+void PM_CheckWaterJump();
+void PM_CheckFalling();
+void PM_PlayWaterSounds();
 float PM_CalcRoll(vec_t *angles, vec_t *velocity, float rollangle, float rollspeed);
 void PM_DropPunchAngle(vec_t *punchangle);
-void PM_CheckParamters(void);
-void PM_ReduceTimers(void);
-qboolean PM_ShouldDoSpectMode(void);
+void PM_CheckParamters();
+void PM_ReduceTimers();
+qboolean PM_ShouldDoSpectMode();
 void PM_PlayerMove(qboolean server);
-void PM_CreateStuckTable(void);
+void PM_CreateStuckTable();
 void PM_Move(struct playermove_s *ppmove, int server);
 NOXREF int PM_GetVisEntInfo(int ent);
 NOXREF int PM_GetPhysEntInfo(int ent);
 void PM_Init(struct playermove_s *ppmove);
+
+extern playermove_t *pmove;
 
 #endif // PM_SHARED_H
