@@ -52,23 +52,8 @@ typedef struct localnode_s
 	node_index_t nindexParent;
 
 } localnode_t;
-/* size: 32, cachelines: 1, members: 6 */
 
-#ifdef HOOK_GAMEDLL
-
-#define s_flStepSize_LocalNav (*m_LocalNav->ps_flStepSize)
-
-#define flNextCvarCheck (*pflNextCvarCheck)
-#define s_flStepSize (*ps_flStepSize)
-#define flLastThinkTime (*pflLastThinkTime)
-#define nodeval (*pnodeval)
-#define tot_hostages (*ptot_hostages)
-#define tot_inqueue (*ptot_inqueue)
-#define qptr (*pqptr)
-#define _queue (*pqueue)
-#define hostages (*phostages)
-
-#else
+#ifndef HOOK_GAMEDLL
 
 #define s_flStepSize_LocalNav m_LocalNav->s_flStepSize
 
@@ -79,7 +64,7 @@ class CLocalNav
 {
 public:
 	CLocalNav(CHostage *pOwner);
-	virtual ~CLocalNav(void);
+	virtual ~CLocalNav();
 
 	void SetTargetEnt(CBaseEntity *pTarget)
 	{
@@ -112,10 +97,10 @@ public:
 	node_index_t FindDirectPath(Vector &vecStart, Vector &vecDest, float flTargetRadius, int fNoMonsters);
 	BOOL LadderHit(Vector &vecSource, Vector &vecDest, TraceResult &tr);
 
-	static void Think(void);
+	static void Think();
 	static void RequestNav(CHostage *pCaller);
-	static void Reset(void);
-	static void HostagePrethink(void);
+	static void Reset();
+	static void HostagePrethink();
 	static float s_flStepSize;
 
 #ifndef HOOK_GAMEDLL
@@ -141,14 +126,6 @@ private:
 	localnode_t *m_nodeArr;
 	node_index_t m_nindexAvailableNode;
 	Vector m_vecStartingLoc;
-
-};/* size: 36, cachelines: 1, members: 16 */
-
-#ifdef HOOK_GAMEDLL
-
-typedef BOOL (CLocalNav::*PATH_CLEAR_TRACE_RESULT)(Vector &, Vector &, int, TraceResult &);
-typedef BOOL (CLocalNav::*PATH_CLEAR_DEFAULT)(Vector &, Vector &, int);
-
-#endif // HOOK_GAMEDLL
+};
 
 #endif // HOSTAGE_LOCALNAV_H

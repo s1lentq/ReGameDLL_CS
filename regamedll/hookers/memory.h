@@ -152,4 +152,10 @@ void HIDDEN GetAddressVtableByClassname(const char *szClassName, const int iOffs
 
 #endif // _WIN32 && REGAMEDLL_UNIT_TESTS
 
+#ifdef HOOK_GAMEDLL
+extern void *addr_orig;
+extern char patchByte[5];
+extern char patchByteOriginal[5];
+#endif // HOOK_GAMEDLL
+
 #endif // _MEMORY_H

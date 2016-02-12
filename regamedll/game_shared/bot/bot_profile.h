@@ -66,7 +66,7 @@ enum BotProfileTeamType
 class BotProfile
 {
 public:
-	BotProfile(void)
+	BotProfile()
 	{
 		m_name = NULL;
 		m_aggression = 0.0f;
@@ -83,71 +83,27 @@ public:
 		m_voiceBank = 0;
 		m_prefersSilencer = false;
 	}
-
-	const char *GetName(void) const
-	{
-		return m_name;
-	}
-	float GetAggression(void) const
-	{
-		return m_aggression;
-	}
-	float GetSkill(void) const
-	{
-		return m_skill;
-	}
-	float GetTeamwork(void) const
-	{
-		return m_teamwork;
-	}
-	int GetWeaponPreference(int i)
-	{
-		return m_weaponPreference[i];
-	}
-	NOBODY const char *GetWeaponPreferenceAsString(int i) const;
-	int GetWeaponPreferenceCount(void) const
-	{
-		return m_weaponPreferenceCount;
-	}
-
-	NOBODY bool HasPrimaryPreference(void) const;
-	NOBODY bool HasPistolPreference(void) const;
-
-	int GetCost(void) const
-	{
-		return m_cost;
-	}
-	int GetSkin(void) const
-	{
-		return m_skin;
-	}
-	NOBODY bool IsDifficulty(BotDifficultyType diff) const;
-	int GetVoicePitch(void) const
-	{
-		return m_voicePitch;
-	}
-	float GetReactionTime(void) const
-	{
-		return m_reactionTime;
-	}
-	float GetAttackDelay(void) const
-	{
-		return m_attackDelay;
-	}
-	int GetVoiceBank(void) const
-	{
-		return m_voiceBank;
-	}
+	const char *GetName() const { return m_name; }
+	float GetAggression() const { return m_aggression; }
+	float GetSkill() const { return m_skill; }
+	float GetTeamwork() const { return m_teamwork; }
+	int GetWeaponPreference(int i) const { return m_weaponPreference[i]; }
+	const char *GetWeaponPreferenceAsString(int i) const;
+	int GetWeaponPreferenceCount() const { return m_weaponPreferenceCount; }
+	bool HasPrimaryPreference() const;
+	bool HasPistolPreference() const;
+	int GetCost() const { return m_cost; }
+	int GetSkin() const { return m_skin; }
+	bool IsDifficulty(BotDifficultyType diff) const;
+	int GetVoicePitch() const { return m_voicePitch; }
+	float GetReactionTime() const { return m_reactionTime; }
+	float GetAttackDelay() const { return m_attackDelay; }
+	int GetVoiceBank() const { return m_voiceBank; }
 	bool IsValidForTeam(BotProfileTeamType team) const;
-	bool PrefersSilencer(void) const
-	{
-		return m_prefersSilencer;
-	}
-	// TODO: it func private
-	NOBODY void Inherit(const BotProfile *parent, const BotProfile *baseline);
+	bool PrefersSilencer() const { return m_prefersSilencer; }
 
 private:
-
+	void Inherit(const BotProfile *parent, const BotProfile *baseline);
 	friend class BotProfileManager;
 
 	char *m_name;
@@ -170,8 +126,7 @@ private:
 	enum BotProfileTeamType m_teams;
 	bool m_prefersSilencer;
 	int m_voiceBank;
-
-}; /* size: 120, cachelines: 2, members: 15 */
+};
 
 /* <4a666f> ../game_shared/bot/bot_profile.h:115 */
 inline bool BotProfile::IsDifficulty(BotDifficultyType diff) const
@@ -194,7 +149,7 @@ inline void BotProfile::Inherit(const BotProfile *parent, const BotProfile *base
 	if (parent->m_weaponPreferenceCount != baseline->m_weaponPreferenceCount)
 	{
 		m_weaponPreferenceCount = parent->m_weaponPreferenceCount;
-		for (int i = 0; i<parent->m_weaponPreferenceCount; i++)
+		for (int i = 0; i < parent->m_weaponPreferenceCount; ++i)
 			m_weaponPreference[i] = parent->m_weaponPreference[i];
 	}
 
@@ -223,30 +178,29 @@ inline void BotProfile::Inherit(const BotProfile *parent, const BotProfile *base
 		m_voiceBank = parent->m_voiceBank;
 }
 
-typedef std::list<BotProfile *> BotProfileList;
+typedef std::STD_LIST<BotProfile *> BotProfileList;
 
 /* <36a051> ../game_shared/bot/bot_profile.h:180 */
 class BotProfileManager
 {
 public:
-	BotProfileManager(void);
-	~BotProfileManager(void);
+	BotProfileManager();
+	~BotProfileManager();
 
 	void Init(const char *filename, unsigned int *checksum = NULL);
-	void Reset(void);
+	void Reset();
 
 	const BotProfile *GetProfile(const char *name, BotProfileTeamType team) const
 	{
 		for (BotProfileList::const_iterator iter = m_profileList.begin(); iter != m_profileList.end(); ++iter)
+		{
 			if (!Q_stricmp(name, (*iter)->GetName()) && (*iter)->IsValidForTeam(team))
 				return *iter;
+		}
 
 		return NULL;
 	}
-	const BotProfileList *GetProfileList(void) const
-	{
-		return &m_profileList;
-	}
+	const BotProfileList *GetProfileList() const { return &m_profileList; }
 	const BotProfile *GetRandomProfile(BotDifficultyType difficulty, BotProfileTeamType team) const;
 
 	const char *GetCustomSkin(int index);
@@ -254,20 +208,12 @@ public:
 	const char *GetCustomSkinFname(int index);
 	int GetCustomSkinIndex(const char *name, const char *filename = NULL);
 
-	typedef std::vector<char *> VoiceBankList;
+	typedef std::STD_VECTOR<char *> VoiceBankList;
 
-	const VoiceBankList *GetVoiceBanks() const
-	{
-		return &m_voiceBanks;
-	}
+	const VoiceBankList *GetVoiceBanks() const { return &m_voiceBanks; }
 	int FindVoiceBankIndex(const char *filename);
 
 protected:
-
-#if defined(_WIN32) && defined(HOOK_GAMEDLL)
-	int unknown_padding1;
-#endif // HOOK_GAMEDLL
-
 	BotProfileList m_profileList;
 	VoiceBankList m_voiceBanks;
 
@@ -275,14 +221,7 @@ protected:
 	char *m_skinModelnames[NumCustomSkins];
 	char *m_skinFilenames[NumCustomSkins];
 	int m_nextSkin;
-
-};/* size: 1224, cachelines: 20, members: 6 */
-
-#ifdef HOOK_GAMEDLL
-
-#define TheBotProfiles (*pTheBotProfiles)
-
-#endif // HOOK_GAMEDLL
+};
 
 extern BotProfileManager *TheBotProfiles;
 

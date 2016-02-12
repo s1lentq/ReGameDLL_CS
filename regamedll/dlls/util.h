@@ -68,7 +68,7 @@
 #define cchMapNameMost		32
 
 #define CBSENTENCENAME_MAX	16
-#define CVOXFILESENTENCEMAX	1536	// max number of sentences in game. NOTE: this must match CVOXFILESENTENCEMAX in engine\sound.h!!!
+#define CVOXFILESENTENCEMAX	1536	// max number of sentences in game. NOTE: this must match CVOXFILESENTENCEMAX in engine\sound.h
 
 #define GROUP_OP_AND		0
 #define GROUP_OP_NAND		1
@@ -148,12 +148,7 @@ extern globalvars_t *gpGlobals;
 #define PLAYBACK_EVENT_DELAY(flags, who, index, delay)\
 		PLAYBACK_EVENT_FULL(flags, who, index, delay, (float *)&g_vecZero, (float *)&g_vecZero, 0.0, 0.0, 0, 0, 0, 0)
 
-#ifdef HOOK_GAMEDLL
-
-// prefix _
-#define __MAKE_VHOOK(fname)\
-	fname##_
-#else
+#ifndef HOOK_GAMEDLL
 
 #define __MAKE_VHOOK(fname)\
 	fname
@@ -161,7 +156,7 @@ extern globalvars_t *gpGlobals;
 #endif // HOOK_GAMEDLL
 
 #define LINK_ENTITY_TO_CLASS(mapClassName, DLLClassName)\
-	C_DLLEXPORT void mapClassName(entvars_t *pev);\
+	C_DLLEXPORT void EXT_FUNC mapClassName(entvars_t *pev);\
 	void mapClassName(entvars_t *pev)\
 	{\
 		GetClassPtr((DLLClassName *)pev);\
@@ -204,6 +199,16 @@ typedef enum
 
 } MONSTERSTATE;
 
+// Things that toggle (buttons/triggers/doors) need this
+typedef enum
+{
+	TS_AT_TOP,
+	TS_AT_BOTTOM,
+	TS_GOING_UP,
+	TS_GOING_DOWN,
+
+} TOGGLE_STATE;
+
 typedef struct hudtextparms_s
 {
 	float x;
@@ -218,18 +223,16 @@ typedef struct hudtextparms_s
 	int channel;
 
 } hudtextparms_t;
-/* size: 40, cachelines: 1, members: 16 */
 
 class UTIL_GroupTrace
 {
 public:
 	UTIL_GroupTrace(int groupmask, int op);
-	~UTIL_GroupTrace(void);
+	~UTIL_GroupTrace();
 private:
 	int m_oldgroupmask;
 	int m_oldgroupop;
-
-};/* size: 8, cachelines: 1, members: 2 */
+};
 
 /* <5da42> ../cstrike/dlls/util.h:67 */
 inline void MAKE_STRING_CLASS(const char *str, entvars_t *pev)
@@ -369,33 +372,14 @@ inline void STOP_SOUND(edict_t *entity, int channel, const char *sample)
 	EMIT_SOUND_DYN(entity, channel, sample, 0, 0, SND_STOP, PITCH_NORM);
 }
 
-#ifdef HOOK_GAMEDLL
-
-#define gEntvarsDescription (*pgEntvarsDescription)
-#define seed_table (*pseed_table)
-#define glSeed (*pglSeed)
-#define g_groupmask (*pg_groupmask)
-#define g_groupop (*pg_groupop)
-#define gSizes (*pgSizes)
-
-#endif // HOOK_GAMEDLL
-
-extern TYPEDESCRIPTION gEntvarsDescription[86];
-extern unsigned int seed_table[256];
-extern unsigned int glSeed;
-
-extern int g_groupmask;
-extern int g_groupop;
-extern const int gSizes[18];
-
-float UTIL_WeaponTimeBase(void);
-unsigned int U_Random(void);
+float UTIL_WeaponTimeBase();
+unsigned int U_Random();
 void U_Srand(unsigned int seed);
 int UTIL_SharedRandomLong(unsigned int seed, int low, int high);
 float UTIL_SharedRandomFloat(unsigned int seed, float low, float high);
 NOXREF void UTIL_ParametricRocket(entvars_t *pev, Vector vecOrigin, Vector vecAngles, edict_t *owner);
 void UTIL_SetGroupTrace(int groupmask, int op);
-void UTIL_UnsetGroupTrace(void);
+void UTIL_UnsetGroupTrace();
 NOXREF BOOL UTIL_GetNextBestWeapon(class CBasePlayer *pPlayer, class CBasePlayerItem *pCurrentWeapon);
 NOXREF float UTIL_AngleMod(float a);
 NOXREF float UTIL_AngleDiff(float destAngle, float srcAngle);
@@ -439,7 +423,7 @@ void UTIL_TraceLine(const Vector &vecStart, const Vector &vecEnd, IGNORE_MONSTER
 void UTIL_TraceLine(const Vector &vecStart, const Vector &vecEnd, IGNORE_MONSTERS igmon, IGNORE_GLASS ignoreGlass, edict_t *pentIgnore, TraceResult *ptr);
 void UTIL_TraceHull(const Vector &vecStart, const Vector &vecEnd, IGNORE_MONSTERS igmon, int hullNumber, edict_t *pentIgnore, TraceResult *ptr);
 void UTIL_TraceModel(const Vector &vecStart, const Vector &vecEnd, int hullNumber, edict_t *pentModel, TraceResult *ptr);
-NOXREF TraceResult UTIL_GetGlobalTrace(void);
+NOXREF TraceResult UTIL_GetGlobalTrace();
 void UTIL_SetSize(entvars_t *pev, const Vector &vecMin, const Vector &vecMax);
 float UTIL_VecToYaw(const Vector &vec);
 void UTIL_SetOrigin(entvars_t *pev, const Vector &vecOrigin);
@@ -455,7 +439,7 @@ BOOL UTIL_ShouldShowBlood(int color);
 int UTIL_PointContents(const Vector &vec);
 void UTIL_BloodStream(const Vector &origin, const Vector &direction, int color, int amount);
 void UTIL_BloodDrips(const Vector &origin, const Vector &direction, int color, int amount);
-Vector UTIL_RandomBloodVector(void);
+Vector UTIL_RandomBloodVector();
 void UTIL_BloodDecalTrace(TraceResult *pTrace, int bloodColor);
 void UTIL_DecalTrace(TraceResult *pTrace, int decalNumber);
 void UTIL_PlayerDecalTrace(TraceResult *pTrace, int playernum, int decalNumber, BOOL bIsCustom);
@@ -480,30 +464,9 @@ char UTIL_TextureHit(TraceResult *ptr, Vector vecSrc, Vector vecEnd);
 NOXREF int GetPlayerTeam(int index);
 bool UTIL_IsGame(const char *gameName);
 float_precision UTIL_GetPlayerGaitYaw(int playerIndex);
+int UTIL_ReadFlags(const char *c);
 
-/*
-* Declared for function overload
-*/
-#ifdef HOOK_GAMEDLL
-
-typedef void (*UTIL_TRACELINE_IGNORE)(const Vector &, const Vector &, IGNORE_MONSTERS, edict_t *, TraceResult *);
-typedef void (*UTIL_TRACELINE_IGNORE_GLASS)(const Vector &, const Vector &, IGNORE_MONSTERS, IGNORE_GLASS, edict_t *, TraceResult *);
-
-typedef int (CSaveRestoreBuffer::*ENTITYINDEX_CBASE)(CBaseEntity *);
-typedef int (CSaveRestoreBuffer::*ENTITYINDEX_ENTVARS)(entvars_t *);
-typedef int (CSaveRestoreBuffer::*ENTITYINDEX_EOFFSET)(EOFFSET);
-typedef int (CSaveRestoreBuffer::*ENTITYINDEX_EDICT)(edict_t *);
-
-typedef void (CSave::*WRITESTRING_)(const char *,const char *);
-typedef void (CSave::*WRITESTRING_COUNT)(const char *,const int *,int);
-typedef void (CSave::*WRITEVECTOR_)(const char *,const Vector &);
-typedef void (CSave::*WRITEVECTOR_COUNT)(const char *,const float *,int);
-typedef void (CSave::*WRITEPOSITIONVECTOR_)(const char *,const Vector &);
-typedef void (CSave::*WRITEPOSITIONVECTOR_COUNT)(const char *,const float *,int);
-
-typedef int (CSaveRestoreBuffer::*CSAVERESTOREBUFFER_VOID)(const char *,const Vector &);
-typedef int (CSaveRestoreBuffer::*CSAVERESTOREBUFFER_POINTER)(const char *,const float *,int);
-
-#endif // HOOK_GAMEDLL
+extern int g_groupmask;
+extern int g_groupop;
 
 #endif // UTIL_H

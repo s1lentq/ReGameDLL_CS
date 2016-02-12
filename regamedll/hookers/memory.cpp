@@ -715,6 +715,13 @@ bool HIDDEN GetAddress(Module *module, Address *addr, size_t baseOffset)
 
 	return true;
 }
+
+#if HOOK_GAMEDLL
+void *addr_orig;
+char patchByte[5];
+char patchByteOriginal[5];
+#endif // HOOK_GAMEDLL
+
 bool HIDDEN HookFunction(Module *module, FunctionHook *hook)
 {
 	if (hook->originalAddress == NULL)
@@ -725,8 +732,15 @@ bool HIDDEN HookFunction(Module *module, FunctionHook *hook)
 	*(size_t *)&patch[1] = hook->handlerFunc - hook->originalAddress - 5;
 	patch[0] = 0xE9;
 
-#if 0
-	if (strcmp(hook->symbolName,"_ZNK9BotPhrase12GetSpeakableEiPf")==0)
+#if HOOK_GAMEDLL
+	//static DWORD oldProtection;
+	///VirtualProtect(addr_orig,5,PAGE_EXECUTE_READWRITE,&oldProtection);
+	//memcpy(addr_orig,patchByteOriginal,5);
+	//pWeaponUSP(a);
+	//int seedad = pUTIL_SharedRandomLong(seed,low,high);
+	//memcpy(addr_orig,patchByte,5);
+
+	if (strcmp(hook->symbolName,"_ZN25HostageEscapeToCoverState15OnMoveToFailureERK6VectorN12IImprovEvent17MoveToFailureTypeE")==0)
 	{
 		addr_orig = (void *)hook->originalAddress;
 

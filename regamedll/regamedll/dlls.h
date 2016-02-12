@@ -29,6 +29,11 @@
 #include "mathlib.h"
 #include "extdll.h"
 
+// declared virtual function's and globals for hooks
+#ifdef HOOK_GAMEDLL
+#include "hooker_impl.h"
+#endif // HOOK_GAMEDLL
+
 #include "h_export.h"
 #include "schedule.h"
 #include "archtypes.h"
@@ -50,6 +55,9 @@
 
 // GameInit
 #include "game.h"
+
+// weapon shared
+#include "wpn_shared.h"
 
 //PM
 #include "pm_shared/pm_defs.h"
@@ -95,10 +103,8 @@
 #include "plats.h"
 #include "buttons.h"
 
-// weapon shared
-#include "wpn_shared.h"
-
 // CSBOT and Nav
+#include "game_shared/GameEvent.h"		// Game event enum used by career mode, tutor system, and bots
 #include "game_shared/bot/bot_util.h"
 #include "game_shared/bot/simple_state_machine.h"
 

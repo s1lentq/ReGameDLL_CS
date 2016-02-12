@@ -70,6 +70,7 @@ enum WeaponIdType
 
 enum AutoBuyClassType
 {
+	AUTOBUYCLASS_NONE		= 0,
 	AUTOBUYCLASS_PRIMARY		= (1 << 0),
 	AUTOBUYCLASS_SECONDARY		= (1 << 1),
 	AUTOBUYCLASS_AMMO		= (1 << 2),
@@ -321,7 +322,7 @@ enum shieldgun_e
 	SHIELDGUN_DOWN,
 };
 
-//custom
+// custom
 enum shieldgren_e
 {
 	SHIELDREN_IDLE = 4,
@@ -337,22 +338,10 @@ enum InventorySlotType
 	GRENADE_SLOT,
 	C4_SLOT,
 };
-
-enum WeaponType
-{
-	PISTOL = 0,
-	SHOTGUN,
-	SUB_MACHINE_GUN,
-	RIFLE,
-	MACHINE_GUN,
-	SNIPER_RIFLE,
-	GRENADE,
-	NUM_WEAPON_TYPES,
-};
  
 enum Bullet
 {
-	BULLET_NONE = 0,
+	BULLET_NONE,
 	BULLET_PLAYER_9MM,
 	BULLET_PLAYER_MP5,
 	BULLET_PLAYER_357,
@@ -375,26 +364,26 @@ struct AutoBuyInfoStruct
 	AutoBuyClassType m_class;
 	char *m_command;
 	char *m_classname;
-};/* size: 12, cachelines: 1, members: 3 */
+};
 
 struct WeaponAliasInfo
 {
 	char *alias;
 	WeaponIdType id;
-};/* size: 8, cachelines: 1, members: 2 */
+};
 
 struct WeaponBuyAliasInfo
 {
 	char *alias;
 	WeaponIdType id;
 	char *failName;
-};/* size: 12, cachelines: 1, members: 3 */
+};
 
 struct WeaponClassAliasInfo
 {
 	char *alias;
 	WeaponClassType id;
-};/* size: 8, cachelines: 1, members: 2 */
+};
 
 struct WeaponInfoStruct
 {
@@ -406,23 +395,9 @@ struct WeaponInfoStruct
 	int maxRounds;
 	int ammoType;
 	char *entityName;
-};/* size: 32, cachelines: 1, members: 8 */
-
-#ifdef HOOK_GAMEDLL
-
-#define g_autoBuyInfo (*pg_autoBuyInfo)
-#define weaponAliasInfo (*pweaponAliasInfo)
-#define weaponBuyAliasInfo (*pweaponBuyAliasInfo)
-#define weaponClassAliasInfo (*pweaponClassAliasInfo)
-#define weaponInfo (*pweaponInfo)
-
-#endif // HOOK_GAMEDLL
+};
 
 extern AutoBuyInfoStruct g_autoBuyInfo[35];
-extern WeaponAliasInfo weaponAliasInfo[39];
-extern WeaponBuyAliasInfo weaponBuyAliasInfo[43];
-extern WeaponClassAliasInfo weaponClassAliasInfo[46];
-extern WeaponInfoStruct weaponInfo[27];
 
 // WeaponType
 WeaponIdType AliasToWeaponID(const char *alias);
@@ -431,7 +406,7 @@ const char *WeaponIDToAlias(int id);
 WeaponClassType AliasToWeaponClass(const char *alias);
 WeaponClassType WeaponIDToWeaponClass(int id);
 bool IsPrimaryWeapon(int id);
-NOXREF bool IsSecondaryWeapon(int id);
+bool IsSecondaryWeapon(int id);
 WeaponInfoStruct *GetWeaponInfo(int weaponID);
 bool CanBuyWeaponByMaptype(int playerTeam, WeaponIdType weaponID, bool useAssasinationRestrictions);
 

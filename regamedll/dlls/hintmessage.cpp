@@ -9,13 +9,13 @@ CHintMessage::CHintMessage(const char *hintString, bool isHint, CUtlVector<const
 
 	if (args)
 	{
-		for (int i = 0; i < args->Count(); i++)
+		for (int i = 0; i < args->Count(); ++i)
 			m_args.AddToTail(CloneString((*args)[i]));
 	}
 }
 
 /* <db621> ../cstrike/dlls/hintmessage.cpp:27 */
-CHintMessage::~CHintMessage(void)
+CHintMessage::~CHintMessage()
 {
 	for (int i = 0; i < m_args.Count(); ++i)
 		delete [] m_args[i];
@@ -30,7 +30,7 @@ void CHintMessage::Send(CBaseEntity *client)
 }
 
 /* <db74d> ../cstrike/dlls/hintmessage.cpp:43 */
-void CHintMessageQueue::Reset(void)
+void CHintMessageQueue::Reset()
 {
 	m_tmMessageEnd = 0;
 

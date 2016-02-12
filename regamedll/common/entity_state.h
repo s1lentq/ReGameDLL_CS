@@ -107,8 +107,7 @@ struct entity_state_s
 	vec3_t vuser2;
 	vec3_t vuser3;
 	vec3_t vuser4;
-
-};/* size: 340, cachelines: 6, members: 62 */
+};
 
 typedef struct clientdata_s
 {
@@ -154,6 +153,5 @@ typedef struct clientdata_s
 	Vector vuser4;
 
 } clientdata_t;
-/* size: 476, cachelines: 8, members: 40 */
 
 #endif // ENTITY_STATE_H

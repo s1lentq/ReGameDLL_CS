@@ -4,21 +4,22 @@
 LINK_ENTITY_TO_CLASS(weapon_mp5navy, CMP5N);
 
 /* <28b9c0> ../cstrike/dlls/wpn_shared/wpn_mp5navy.cpp:52 */
-void CMP5N::__MAKE_VHOOK(Spawn)(void)
+void CMP5N::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
+
 	m_iId = WEAPON_MP5N;
 	SET_MODEL(edict(), "models/w_mp5.mdl");
 
 	m_iDefaultAmmo = MP5NAVY_DEFAULT_GIVE;
-	m_flAccuracy = 0;
+	m_flAccuracy = 0.0f;
 	m_bDelayFire = false;
 
 	FallInit();
 }
 
 /* <28b93f> ../cstrike/dlls/wpn_shared/wpn_mp5navy.cpp:66 */
-void CMP5N::__MAKE_VHOOK(Precache)(void)
+void CMP5N::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/v_mp5.mdl");
 	PRECACHE_MODEL("models/w_mp5.mdl");
@@ -52,9 +53,9 @@ int CMP5N::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 }
 
 /* <28b999> ../cstrike/dlls/wpn_shared/wpn_mp5navy.cpp:100 */
-BOOL CMP5N::__MAKE_VHOOK(Deploy)(void)
+BOOL CMP5N::__MAKE_VHOOK(Deploy)()
 {
-	m_flAccuracy = 0;
+	m_flAccuracy = 0.0f;
 	m_bDelayFire = false;
 	iShellOn = 1;
 
@@ -62,7 +63,7 @@ BOOL CMP5N::__MAKE_VHOOK(Deploy)(void)
 }
 
 /* <28bbbc> ../cstrike/dlls/wpn_shared/wpn_mp5navy.cpp:109 */
-void CMP5N::__MAKE_VHOOK(PrimaryAttack)(void)
+void CMP5N::__MAKE_VHOOK(PrimaryAttack)()
 {
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
 	{
@@ -81,12 +82,12 @@ void CMP5N::MP5NFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	int flag;
 
 	m_bDelayFire = true;
-	m_iShotsFired++;
+	++m_iShotsFired;
 
-	m_flAccuracy = ((m_iShotsFired * m_iShotsFired) / 220.1) + 0.45;
+	m_flAccuracy = ((m_iShotsFired * m_iShotsFired) / 220.1) + 0.45f;
 
-	if (m_flAccuracy > 0.75)
-		m_flAccuracy = 0.75;
+	if (m_flAccuracy > 0.75f)
+		m_flAccuracy = 0.75f;
 
 	if (m_iClip <= 0)
 	{
@@ -104,7 +105,7 @@ void CMP5N::MP5NFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 		return;
 	}
 
-	m_iClip--;
+	--m_iClip;
 	m_pPlayer->pev->effects |= EF_MUZZLEFLASH;
 	m_pPlayer->SetAnimation(PLAYER_ATTACK1);
 
@@ -135,7 +136,7 @@ void CMP5N::MP5NFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
 	}
 
-	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2;
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.0f;
 
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
 	{
@@ -156,12 +157,10 @@ void CMP5N::MP5NFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 }
 
 /* <28ba71> ../cstrike/dlls/wpn_shared/wpn_mp5navy.cpp:201 */
-void CMP5N::__MAKE_VHOOK(Reload)(void)
+void CMP5N::__MAKE_VHOOK(Reload)()
 {
 	if (m_pPlayer->ammo_9mm <= 0)
-	{
 		return;
-	}
 
 	if (DefaultReload(MP5N_MAX_CLIP, MP5N_RELOAD, MP5N_RELOAD_TIME))
 	{
@@ -173,7 +172,7 @@ void CMP5N::__MAKE_VHOOK(Reload)(void)
 }
 
 /* <28ba36> ../cstrike/dlls/wpn_shared/wpn_mp5navy.cpp:215 */
-void CMP5N::__MAKE_VHOOK(WeaponIdle)(void)
+void CMP5N::__MAKE_VHOOK(WeaponIdle)()
 {
 	ResetEmptySound();
 	m_pPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);
@@ -183,45 +182,6 @@ void CMP5N::__MAKE_VHOOK(WeaponIdle)(void)
 		return;
 	}
 
-	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20;
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20.0f;
 	SendWeaponAnim(MP5N_IDLE1, UseDecrement() != FALSE);
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CMP5N::Spawn(void)
-{
-	Spawn_();
-}
-
-void CMP5N::Precache(void)
-{
-	Precache_();
-}
-
-int CMP5N::GetItemInfo(ItemInfo *p)
-{
-	return GetItemInfo_(p);
-}
-
-BOOL CMP5N::Deploy(void)
-{
-	return Deploy_();
-}
-
-void CMP5N::PrimaryAttack(void)
-{
-	PrimaryAttack_();
-}
-
-void CMP5N::Reload(void)
-{
-	Reload_();
-}
-
-void CMP5N::WeaponIdle(void)
-{
-	WeaponIdle_();
-}
-
-#endif // HOOK_GAMEDLL

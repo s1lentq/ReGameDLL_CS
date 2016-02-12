@@ -32,27 +32,6 @@
 #pragma once
 #endif
 
-#ifdef HOOK_GAMEDLL
-
-#define s_tutorDisabledThisGame (*ps_tutorDisabledThisGame)
-#define s_nextCvarCheckTime (*ps_nextCvarCheckTime)
-
-#define cv_tutor_message_repeats (*pcv_tutor_message_repeats)
-#define cv_tutor_debug_level (*pcv_tutor_debug_level)
-#define cv_tutor_view_distance (*pcv_tutor_view_distance)
-#define cv_tutor_viewable_check_interval (*pcv_tutor_viewable_check_interval)
-#define cv_tutor_look_distance (*pcv_tutor_look_distance)
-#define cv_tutor_look_angle (*pcv_tutor_look_angle)
-#define cv_tutor_examine_time (*pcv_tutor_examine_time)
-#define cv_tutor_message_minimum_display_time (*pcv_tutor_message_minimum_display_time)
-#define cv_tutor_message_character_display_time_coefficient (*pcv_tutor_message_character_display_time_coefficient)
-#define cv_tutor_hint_interval_time (*pcv_tutor_hint_interval_time)
-
-#endif // HOOK_GAMEDLL
-
-extern bool s_tutorDisabledThisGame;
-extern float s_nextCvarCheckTime;
-
 extern cvar_t cv_tutor_message_repeats;
 extern cvar_t cv_tutor_debug_level;
 extern cvar_t cv_tutor_view_distance;
@@ -65,7 +44,7 @@ extern cvar_t cv_tutor_message_character_display_time_coefficient;
 extern cvar_t cv_tutor_hint_interval_time;
 
 void InstallTutor(bool start);
-void Tutor_RegisterCVars(void);
-void MonitorTutorStatus(void);
+void Tutor_RegisterCVars();
+void MonitorTutorStatus();
 
 #endif // TUTOR_H

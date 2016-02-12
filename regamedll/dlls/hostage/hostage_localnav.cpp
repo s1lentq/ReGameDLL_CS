@@ -15,18 +15,6 @@ float CLocalNav::flLastThinkTime;
 EHANDLE CLocalNav::hostages[MAX_HOSTAGES_NAV];
 int CLocalNav::tot_hostages;
 
-#else
-
-float (*CLocalNav::ps_flStepSize);
-int (*CLocalNav::pqptr);
-EHANDLE (*CLocalNav::pqueue)[MAX_HOSTAGES_NAV];
-int (*CLocalNav::ptot_inqueue);
-float (*CLocalNav::pnodeval);
-float (*CLocalNav::pflNextCvarCheck);
-float (*CLocalNav::pflLastThinkTime);
-EHANDLE (*CLocalNav::phostages)[MAX_HOSTAGES_NAV];
-int (*CLocalNav::ptot_hostages);
-
 #endif // HOOK_GAMEDLL
 
 /* <485b67> ../cstrike/dlls/hostage/hostage_localnav.cpp:45 */
@@ -45,7 +33,7 @@ CLocalNav::CLocalNav(CHostage *pOwner)
 }
 
 /* <485b09> ../cstrike/dlls/hostage/hostage_localnav.cpp:68 */
-CLocalNav::~CLocalNav(void)
+CLocalNav::~CLocalNav()
 {
 	delete m_nodeArr;
 }
@@ -254,7 +242,7 @@ node_index_t CLocalNav::GetBestNode(Vector &vecOrigin, Vector &vecDest)
 			}
 		}
 
-		nindexCurrent++;
+		++nindexCurrent;
 	}
 
 	return nindexBest;
@@ -287,7 +275,7 @@ int CLocalNav::GetFurthestTraversableNode(Vector &vecStartingLoc, Vector *vecNod
 		if (PathTraversable(vecStartingLoc, vecNodes[nCount], fNoMonsters) != PATH_TRAVERSABLE_EMPTY)
 			return nCount;
 
-		nCount++;
+		++nCount;
 	}
 
 	return -1;
@@ -467,14 +455,14 @@ int CLocalNav::PathTraversable(Vector &vecSource, Vector &vecDest, int fNoMonste
 	{
 		if (flTotal >= s_flStepSize)
 		{
-#ifndef HOOK_GAMEDLL
+#ifndef PLAY_GAMEDLL
 			vecDestTmp = vecSrcTmp + (vecDir * s_flStepSize);
 #else
-			// fix test demo
+			// TODO: fix test demo
 			vecDestTmp[0] = vecSrcTmp[0] + (vecDir[0] * s_flStepSize);
 			vecDestTmp[1] = vecSrcTmp[1] + (float)(vecDir[1] * s_flStepSize);
 			vecDestTmp[2] = vecSrcTmp[2] + (vecDir[2] * s_flStepSize);
-#endif // HOOK_GAMEDLL
+#endif // PLAY_GAMEDLL
 
 		}
 		else
@@ -775,7 +763,7 @@ BOOL CLocalNav::LadderHit(Vector &vecSource, Vector &vecDest, TraceResult &tr)
 }
 
 /* <487eeb> ../cstrike/dlls/hostage/hostage_localnav.cpp:851 */
-void CLocalNav::Think(void)
+void CLocalNav::Think()
 {
 	EHANDLE hCallback;
 	static cvar_t *sv_stepsize = NULL;
@@ -860,7 +848,7 @@ void CLocalNav::RequestNav(CHostage *pCaller)
 		return;
 	}
 
-	for (int i = 0; i < tot_inqueue; i++)
+	for (int i = 0; i < tot_inqueue; ++i)
 	{
 		CHostage *pQueueItem = GetClassPtr((CHostage *)_queue[curr]->pev);
 
@@ -872,11 +860,11 @@ void CLocalNav::RequestNav(CHostage *pCaller)
 	}
 
 	_queue[curr] = pCaller;
-	tot_inqueue++;
+	++tot_inqueue;
 }
 
 /* <487e03> ../cstrike/dlls/hostage/hostage_localnav.cpp:964 */
-void CLocalNav::Reset(void)
+void CLocalNav::Reset()
 {
 	flNextCvarCheck = 0;
 	flLastThinkTime = 0;
@@ -887,9 +875,9 @@ void CLocalNav::Reset(void)
 }
 
 /* <487e14> ../cstrike/dlls/hostage/hostage_localnav.cpp:976 */
-void CLocalNav::HostagePrethink(void)
+void CLocalNav::HostagePrethink()
 {
-	for (int iCount = 0; iCount < tot_hostages; iCount++)
+	for (int iCount = 0; iCount < tot_hostages; ++iCount)
 	{
 		if (hostages[ iCount ] != NULL)
 		{

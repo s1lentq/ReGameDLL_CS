@@ -62,6 +62,8 @@ TEST(StructOffsets, ReversingChecks, 5000)
 	REPEAT_SIZEOF_PRINT(CCareerTaskManager);
 	REPEAT_SIZEOF_PRINT(CCareerTask);
 	REPEAT_SIZEOF_PRINT(CPreventDefuseTask);
+	
+	REPEAT_SIZEOF_PRINT(BotStatement);
 
 	// offset the members
 	REPEAT_OFFSETOF_PRINT(CBaseEntity, pev);
@@ -99,7 +101,8 @@ TEST(StructOffsets, ReversingChecks, 5000)
 	//CHECK_CLASS_SIZE(CBotManager, 12u, 12);
 	CHECK_CLASS_SIZE(CCSBot, 11404, 11424);
 	//CHECK_CLASS_SIZE(CCSBotManager, 740, 0x2E0u);//0x2E4u | 0x2E0u
-
+	
+	CHECK_CLASS_SIZE(BotStatement, 0x70u, 0x70u);
 	//CHECK_CLASS_SIZE(HostageStateMachine, 0x10, 0x10);
 	//CHECK_CLASS_SIZE(HostageFollowState, 0x4C, 0x4C);
 	//CHECK_CLASS_SIZE(CCSBot, 0x2CA0, 0x2CA0);

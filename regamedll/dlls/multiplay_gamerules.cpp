@@ -8,27 +8,22 @@
 static char mp_com_token[ COM_TOKEN_LEN ];
 cvar_t *sv_clienttrace = NULL;
 
-#else
-
-char mp_com_token[ COM_TOKEN_LEN ];
-cvar_t *sv_clienttrace;
-
 #endif // HOOK_GAMEDLL
 
 CCStrikeGameMgrHelper g_GameMgrHelper;
 CHalfLifeMultiplay *g_pMPGameRules = NULL;
 
 /* <1153e2> ../cstrike/dlls/multiplay_gamerules.cpp:92 */
-bool IsBotSpeaking(void)
+bool IsBotSpeaking()
 {
-	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
-		CBasePlayer *pPlayer = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+		CBasePlayer *pPlayer = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
 		if (pPlayer == NULL || !pPlayer->IsBot())
 			continue;
 
-		CCSBot *pBot = reinterpret_cast<CCSBot *>(pPlayer);
+		CCSBot *pBot = static_cast<CCSBot *>(pPlayer);
 
 		if (pBot->IsUsingVoice())
 			return true;
@@ -38,7 +33,7 @@ bool IsBotSpeaking(void)
 }
 
 /* <1116dd> ../cstrike/dlls/multiplay_gamerules.cpp:111 */
-void SV_Continue_f(void)
+void SV_Continue_f()
 {
 	CHalfLifeMultiplay *mp = g_pGameRules;
 
@@ -51,9 +46,9 @@ void SV_Continue_f(void)
 			WRITE_STRING("GOGOGO");
 		MESSAGE_END();
 
-		for (int i = 1; i <= gpGlobals->maxClients; i++)
+		for (int i = 1; i <= gpGlobals->maxClients; ++i)
 		{
-			CBasePlayer *pPlayer = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+			CBasePlayer *pPlayer = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
 			if (pPlayer && !pPlayer->IsBot())
 			{
@@ -67,13 +62,13 @@ void SV_Continue_f(void)
 }
 
 /* <112860> ../cstrike/dlls/multiplay_gamerules.cpp:133 */
-void SV_Tutor_Toggle_f(void)
+void SV_Tutor_Toggle_f()
 {
 	CVAR_SET_FLOAT("tutor_enable", (CVAR_GET_FLOAT("tutor_enable") <= 0.0));
 }
 
 /* <11538f> ../cstrike/dlls/multiplay_gamerules.cpp:139 */
-void SV_Career_Restart_f(void)
+void SV_Career_Restart_f()
 {
 	CHalfLifeMultiplay *mp = g_pGameRules;
 
@@ -84,7 +79,7 @@ void SV_Career_Restart_f(void)
 }
 
 /* <111695> ../cstrike/dlls/multiplay_gamerules.cpp:149 */
-void SV_Career_EndRound_f(void)
+void SV_Career_EndRound_f()
 {
 	CHalfLifeMultiplay *mp = g_pGameRules;
 
@@ -99,9 +94,9 @@ void SV_Career_EndRound_f(void)
 	{
 		SERVER_COMMAND("kill\n");
 
-		for (int i = 1; i <= gpGlobals->maxClients; i++)
+		for (int i = 1; i <= gpGlobals->maxClients; ++i)
 		{
-			CBasePlayer *player = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+			CBasePlayer *player = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
 			if (!player || FNullEnt(player->pev))
 				continue;
@@ -115,13 +110,13 @@ void SV_Career_EndRound_f(void)
 }
 
 /* <1145dd> ../cstrike/dlls/multiplay_gamerules.cpp:173 */
-bool CHalfLifeMultiplay::IsInCareerRound(void)
+bool CHalfLifeMultiplay::IsInCareerRound()
 {
 	return IsMatchStarted() ? false : true;
 }
 
 /* <110ba1> ../cstrike/dlls/multiplay_gamerules.cpp:180 */
-void SV_CareerAddTask_f(void)
+void SV_CareerAddTask_f()
 {
 	if (CMD_ARGC() != 7)
 		return;
@@ -141,7 +136,7 @@ void SV_CareerAddTask_f(void)
 }
 
 /* <111640> ../cstrike/dlls/multiplay_gamerules.cpp:213 */
-void SV_CareerMatchLimit_f(void)
+void SV_CareerMatchLimit_f()
 {
 	if (CMD_ARGC() != 3)
 	{
@@ -172,13 +167,13 @@ void CHalfLifeMultiplay::SetCareerMatchLimit(int minWins, int winDifference)
 }
 
 /* <114650> ../cstrike/dlls/multiplay_gamerules.cpp:238 */
-BOOL CHalfLifeMultiplay::IsCareer(void)
+BOOL CHalfLifeMultiplay::IsCareer()
 {
 	return IS_CAREER_MATCH();
 }
 
 /* <113ca2> ../cstrike/dlls/multiplay_gamerules.cpp:241 */
-void CHalfLifeMultiplay::__MAKE_VHOOK(ServerDeactivate)(void)
+void CHalfLifeMultiplay::__MAKE_VHOOK(ServerDeactivate)()
 {
 	if (!IsCareer())
 	{
@@ -210,7 +205,7 @@ void CMapInfo::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 }
 
 /* <112879> ../cstrike/dlls/multiplay_gamerules.cpp:280 */
-void CMapInfo::__MAKE_VHOOK(Spawn)(void)
+void CMapInfo::__MAKE_VHOOK(Spawn)()
 {
 	pev->movetype = MOVETYPE_NONE;
 	pev->solid = SOLID_NOT;
@@ -342,24 +337,11 @@ void EndRoundMessage(const char *sentence, int event)
 	{
 		if (teamTriggered)
 		{
-			UTIL_LogPrintf
-			(
-				"Team \"%s\" triggered \"%s\" (CT \"%i\") (T \"%i\")\n",
-				team,
-				message,
-				mp->m_iNumCTWins,
-				mp->m_iNumTerroristWins
-			);
+			UTIL_LogPrintf("Team \"%s\" triggered \"%s\" (CT \"%i\") (T \"%i\")\n", team, message, mp->m_iNumCTWins, mp->m_iNumTerroristWins);
 		}
 		else
 		{
-			UTIL_LogPrintf
-			(
-				"World triggered \"%s\" (CT \"%i\") (T \"%i\")\n",
-				message,
-				mp->m_iNumCTWins,
-				mp->m_iNumTerroristWins
-			);
+			UTIL_LogPrintf("World triggered \"%s\" (CT \"%i\") (T \"%i\")\n", message, mp->m_iNumCTWins, mp->m_iNumTerroristWins);
 		}
 	}
 
@@ -374,6 +356,7 @@ void ReadMultiplayCvars(CHalfLifeMultiplay *mp)
 	mp->m_iIntroRoundTime = (int)CVAR_GET_FLOAT("mp_freezetime");
 	mp->m_iLimitTeams = (int)CVAR_GET_FLOAT("mp_limitteams");
 
+#ifndef REGAMEDLL_ADD
 	if (mp->m_iRoundTime > 540)
 	{
 		CVAR_SET_FLOAT("mp_roundtime", 9);
@@ -384,6 +367,20 @@ void ReadMultiplayCvars(CHalfLifeMultiplay *mp)
 		CVAR_SET_FLOAT("mp_roundtime", 1);
 		mp->m_iRoundTime = 60;
 	}
+#else
+	// a limit of 500 minutes because
+	// if you do more minutes would be a bug in the HUD RoundTime in the form 00:00
+	if (mp->m_iRoundTime > 30000)
+	{
+		CVAR_SET_FLOAT("mp_roundtime", 500);
+		mp->m_iRoundTime = 30000;
+	}
+	else if (mp->m_iRoundTime < 0)
+	{
+		CVAR_SET_FLOAT("mp_roundtime", 0);
+		mp->m_iRoundTime = 0;
+	}
+#endif // REGAMEDLL_ADD
 
 	if (mp->m_iIntroRoundTime > 60)
 	{
@@ -420,9 +417,8 @@ void ReadMultiplayCvars(CHalfLifeMultiplay *mp)
 }
 
 /* <11492c> ../cstrike/dlls/multiplay_gamerules.cpp:479 */
-CHalfLifeMultiplay::CHalfLifeMultiplay(void)
+CHalfLifeMultiplay::CHalfLifeMultiplay()
 {
-	UNTESTED
 	m_VoiceGameMgr.Init(&g_GameMgrHelper, gpGlobals->maxClients);
 	RefreshSkillData();
 
@@ -433,7 +429,7 @@ CHalfLifeMultiplay::CHalfLifeMultiplay(void)
 	m_iAccountCT = 0;
 	m_iAccountTerrorist = 0;
 	m_iHostagesRescued = 0;
-	m_iRoundWinStatus = 0;
+	m_iRoundWinStatus = WINNER_NONE;
 	m_iNumCTWins = 0;
 	m_iNumTerroristWins = 0;
 	m_pVIP = NULL;
@@ -497,7 +493,7 @@ CHalfLifeMultiplay::CHalfLifeMultiplay(void)
 	m_bMapHasRescueZone = false;
 	m_iStoredSpectValue = (int)allow_spectators.value;
 
-	for (int j = 0; j < MAX_VIP_QUEUES; j++)
+	for (int j = 0; j < MAX_VIP_QUEUES; ++j)
 	{
 		VIPQueue[j] = NULL;
 	}
@@ -552,7 +548,10 @@ CHalfLifeMultiplay::CHalfLifeMultiplay(void)
 	m_fRoundCount = 0;
 	m_fIntroRoundCount = 0;
 
+#ifndef CSTRIKE
 	InstallBotControl();
+#endif // CSTRIKE
+
 	InstallHostageManager();
 
 	m_bSkipSpawn = m_bInCareerGame;
@@ -561,7 +560,7 @@ CHalfLifeMultiplay::CHalfLifeMultiplay(void)
 
 	if (!installedCommands)
 	{
-		if (UTIL_IsGame("czero"))
+		if (g_bIsCzeroGame)
 		{
 #if defined(HOOK_GAMEDLL) && !defined(REGAMEDLL_UNIT_TESTS)
 			ADD_SERVER_COMMAND("career_continue", (xcommand_t)GetOriginalFuncAddrOrDefault("_Z13SV_Continue_fv", (void *)SV_Continue_f));
@@ -611,7 +610,7 @@ CHalfLifeMultiplay::CHalfLifeMultiplay(void)
 }
 
 /* <113b92> ../cstrike/dlls/multiplay_gamerules.cpp:678 */
-void CHalfLifeMultiplay::__MAKE_VHOOK(RefreshSkillData)(void)
+void CHalfLifeMultiplay::__MAKE_VHOOK(RefreshSkillData)()
 {
 	CGameRules::RefreshSkillData();
 
@@ -626,7 +625,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(RefreshSkillData)(void)
 }
 
 /* <113b51> ../cstrike/dlls/multiplay_gamerules.cpp:713 */
-void CHalfLifeMultiplay::__MAKE_VHOOK(RemoveGuns)(void)
+void CHalfLifeMultiplay::__MAKE_VHOOK(RemoveGuns)()
 {
 	CBaseEntity *toremove = NULL;
 
@@ -643,7 +642,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(RemoveGuns)(void)
 }
 
 /* <1149e8> ../cstrike/dlls/multiplay_gamerules.cpp:733 */
-void CHalfLifeMultiplay::UpdateTeamScores(void)
+void CHalfLifeMultiplay::UpdateTeamScores()
 {
 	MESSAGE_BEGIN(MSG_ALL, gmsgTeamScore);
 		WRITE_STRING("CT");
@@ -657,7 +656,7 @@ void CHalfLifeMultiplay::UpdateTeamScores(void)
 }
 
 /* <113aee> ../cstrike/dlls/multiplay_gamerules.cpp:747 */
-void CHalfLifeMultiplay::__MAKE_VHOOK(CleanUpMap)(void)
+void CHalfLifeMultiplay::__MAKE_VHOOK(CleanUpMap)()
 {
 	// Recreate all the map entities from the map data (preserving their indices),
 	// then remove everything else except the players.
@@ -756,7 +755,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(CleanUpMap)(void)
 	{
 		UTIL_Remove(toremove);
 		toremove = UTIL_FindEntityByClassname(toremove, "grenade");
-		icount++;
+		++icount;
 	}
 
 	// Remove defuse kit
@@ -773,22 +772,22 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(CleanUpMap)(void)
 }
 
 /* <118585> ../cstrike/dlls/multiplay_gamerules.cpp:862 */
-void CHalfLifeMultiplay::__MAKE_VHOOK(GiveC4)(void)
+void CHalfLifeMultiplay::__MAKE_VHOOK(GiveC4)()
 {
 	int iTeamCount;
 	int iTemp = 0;
 	int humansPresent = 0;
 
 	iTeamCount = m_iNumTerrorist;
-	m_iC4Guy++;
+	++m_iC4Guy;
 
 	bool giveToHumans = (cv_bot_defer_to_human.value > 0.0);
 
 	if (giveToHumans)
 	{
-		for (int i = 1; i <= gpGlobals->maxClients; i++)
+		for (int i = 1; i <= gpGlobals->maxClients; ++i)
 		{
-			CBasePlayer *player = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+			CBasePlayer *player = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
 			if (!player || FNullEnt(player->edict()))
 				continue;
@@ -797,7 +796,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(GiveC4)(void)
 				continue;
 
 			if (!player->IsBot())
-				humansPresent++;
+				++humansPresent;
 		}
 
 		if (humansPresent)
@@ -830,8 +829,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(GiveC4)(void)
 		if (player->pev->deadflag != DEAD_NO || player->m_iTeam != TERRORIST || (giveToHumans && player->IsBot()))
 			continue;
 
-		iTemp++;
-		if (iTemp == m_iC4Guy)
+		if (++iTemp == m_iC4Guy)
 		{
 			player->m_bHasC4 = true;
 			player->GiveNamedItem("weapon_c4");
@@ -842,14 +840,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(GiveC4)(void)
 			player->HintMessage("#Hint_you_have_the_bomb", FALSE, TRUE);
 
 			// Log this information
-			UTIL_LogPrintf
-			(
-				"\"%s<%i><%s><TERRORIST>\" triggered \"Spawned_With_The_Bomb\"\n",
-				STRING(player->pev->netname),
-				GETPLAYERUSERID(player->edict()),
-				GETPLAYERAUTHID(player->edict())
-			);
-
+			UTIL_LogPrintf("\"%s<%i><%s><TERRORIST>\" triggered \"Spawned_With_The_Bomb\"\n", STRING(player->pev->netname), GETPLAYERUSERID(player->edict()), GETPLAYERAUTHID(player->edict()));
 			m_bBombDropped = FALSE;
 		}
 	}
@@ -885,14 +876,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(GiveC4)(void)
 			player->HintMessage("#Hint_you_have_the_bomb", FALSE, TRUE);
 
 			// Log this information
-			UTIL_LogPrintf
-			(
-				"\"%s<%i><%s><TERRORIST>\" triggered \"Spawned_With_The_Bomb\"\n",
-				STRING(player->pev->netname),
-				GETPLAYERUSERID(player->edict()),
-				GETPLAYERAUTHID(player->edict())
-			);
-
+			UTIL_LogPrintf("\"%s<%i><%s><TERRORIST>\" triggered \"Spawned_With_The_Bomb\"\n", STRING(player->pev->netname), GETPLAYERUSERID(player->edict()), GETPLAYERAUTHID(player->edict()));
 			m_bBombDropped = FALSE;
 			return;
 		}
@@ -929,9 +913,9 @@ void CHalfLifeMultiplay::QueueCareerRoundEndMenu(float tmDelay, int iWinStatus)
 
 		while ((hostage = UTIL_FindEntityByClassname(hostage, "hostage_entity")) != NULL)
 		{
-			numHostagesInMap++;
+			++numHostagesInMap;
 
-			CHostage *pHostage = reinterpret_cast<CHostage *>(hostage);
+			CHostage *pHostage = static_cast<CHostage *>(hostage);
 
 			if (pHostage->pev->takedamage != DAMAGE_YES)
 			{
@@ -940,21 +924,12 @@ void CHalfLifeMultiplay::QueueCareerRoundEndMenu(float tmDelay, int iWinStatus)
 
 			CBasePlayer *pLeader = NULL;
 
-			if (pHostage->m_improv != NULL)
-			{
-				if (pHostage->IsFollowingSomeone())
-				{
-					pLeader = reinterpret_cast<CBasePlayer *>(pHostage->GetLeader());
-				}
-			}
-			else if (pHostage->m_hTargetEnt != NULL && pHostage->m_State == CHostage::FOLLOW)
-			{
-				pLeader = (CBasePlayer *)((CBaseEntity *)pHostage->m_hTargetEnt);
-			}
+			if (pHostage->IsFollowingSomeone())
+				pLeader = static_cast<CBasePlayer *>(pHostage->GetLeader());
 
 			if (pLeader == NULL)
 			{
-				numHostagesAlive++;
+				++numHostagesAlive;
 			}
 			else
 			{
@@ -1015,14 +990,28 @@ void CHalfLifeMultiplay::QueueCareerRoundEndMenu(float tmDelay, int iWinStatus)
 	}
 }
 
+// Check if the scenario has been won/lost.
+
 /* <117750> ../cstrike/dlls/multiplay_gamerules.cpp:1084 */
-void CHalfLifeMultiplay::__MAKE_VHOOK(CheckWinConditions)(void)
+void CHalfLifeMultiplay::__MAKE_VHOOK(CheckWinConditions)()
 {
+#ifdef REGAMEDLL_ADD
+	if (round_infinite.string[0] == '1')
+		return;
+#endif // REGAMEDLL_ADD
+
 	// If a winner has already been determined and game of started.. then get the heck out of here
-	if (m_bFirstConnected && m_iRoundWinStatus != 0)
+	if (m_bFirstConnected && m_iRoundWinStatus != WINNER_NONE)
 	{
 		return;
 	}
+
+#ifdef REGAMEDLL_ADD
+	int scenarioFlags = UTIL_ReadFlags(round_infinite.string);
+#else
+	// the icc compiler will cut out all of the code which refers to it
+	int scenarioFlags = 0;
+#endif // REGAMEDLL_ADD
 
 	// Initialize the player counts..
 	int NumDeadCT, NumDeadTerrorist, NumAliveTerrorist, NumAliveCT;
@@ -1030,29 +1019,31 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(CheckWinConditions)(void)
 
 	// other player's check
 	bool bNeededPlayers = false;
-	if (NeededPlayersCheck(bNeededPlayers))
+	if (!(scenarioFlags & SCENARIO_BLOCK_NEED_PLAYERS) && NeededPlayersCheck(bNeededPlayers))
 		return;
 
 	// Assasination/VIP scenarion check
-	if (VIPRoundEndCheck(bNeededPlayers))
+	if (!(scenarioFlags & SCENARIO_BLOCK_VIP_ESCAPRE) && VIPRoundEndCheck(bNeededPlayers))
 		return;
 
 	// Prison escape check
-	if (PrisonRoundEndCheck(NumAliveTerrorist, NumAliveCT, NumDeadTerrorist, NumDeadCT, bNeededPlayers))
+	if (!(scenarioFlags & SCENARIO_BLOCK_PRISON_ESCAPRE) && PrisonRoundEndCheck(NumAliveTerrorist, NumAliveCT, NumDeadTerrorist, NumDeadCT, bNeededPlayers))
 		return;
 
 	// Bomb check
-	if (BombRoundEndCheck(bNeededPlayers))
+	if (!(scenarioFlags & SCENARIO_BLOCK_BOMB) && BombRoundEndCheck(bNeededPlayers))
 		return;
 
 	// Team Extermination check
 	// CounterTerrorists won by virture of elimination
-	if (TeamExterminationCheck(NumAliveTerrorist, NumAliveCT, NumDeadTerrorist, NumDeadCT, bNeededPlayers))
+	if (!(scenarioFlags & SCENARIO_BLOCK_TEAM_EXTERMINATION) && TeamExterminationCheck(NumAliveTerrorist, NumAliveCT, NumDeadTerrorist, NumDeadCT, bNeededPlayers))
 		return;
 
 	// Hostage rescue check
-	if (HostageRescueRoundEndCheck(bNeededPlayers))
+	if (!(scenarioFlags & SCENARIO_BLOCK_HOSTAGE_RESCUE) && HostageRescueRoundEndCheck(bNeededPlayers))
 		return;
+
+	// scenario not won - still in progress
 }
 
 void CHalfLifeMultiplay::InitializePlayerCounts(int &NumAliveTerrorist, int &NumAliveCT, int &NumDeadTerrorist, int &NumDeadCT)
@@ -1062,6 +1053,8 @@ void CHalfLifeMultiplay::InitializePlayerCounts(int &NumAliveTerrorist, int &Num
 	m_iHaveEscaped = 0;
 
 	// initialize count dead/alive players
+
+	// Count how many dead players there are on each team.
 	CBaseEntity *pPlayer = NULL;
 	while ((pPlayer = UTIL_FindEntityByClassname(pPlayer, "player")) != NULL)
 	{
@@ -1090,41 +1083,41 @@ void CHalfLifeMultiplay::InitializePlayerCounts(int &NumAliveTerrorist, int &Num
 		{
 		case CT:
 		{
-			m_iNumCT++;
+			++m_iNumCT;
 
 			if (player->m_iMenu != Menu_ChooseAppearance)
 			{
-				m_iNumSpawnableCT++;
+				++m_iNumSpawnableCT;
 				//player->IsBot();
 			}
 
 			//player->IsBot();
 			if (player->pev->deadflag != DEAD_NO)
-				NumDeadCT++;
+				++NumDeadCT;
 			else
-				NumAliveCT++;
+				++NumAliveCT;
 
 			break;
 		}
 		case TERRORIST:
 		{
-			m_iNumTerrorist++;
+			++m_iNumTerrorist;
 
 			if (player->m_iMenu != Menu_ChooseAppearance)
 			{
-				m_iNumSpawnableTerrorist++;
+				++m_iNumSpawnableTerrorist;
 				//player->IsBot();
 			}
 			//player->IsBot();
 
 			if (player->pev->deadflag != DEAD_NO)
-				NumDeadTerrorist++;
+				++NumDeadTerrorist;
 			else
-				NumAliveTerrorist++;
+				++NumAliveTerrorist;
 
 			// Check to see if this guy escaped.
 			if (player->m_bEscaped)
-				m_iHaveEscaped++;
+				++m_iHaveEscaped;
 
 			break;
 		}
@@ -1150,7 +1143,7 @@ bool CHalfLifeMultiplay::NeededPlayersCheck(bool &bNeededPlayers)
 	{
 		if (IsCareer())
 		{
-			CBasePlayer *player = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(gpGlobals->maxClients));
+			CBasePlayer *player = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(gpGlobals->maxClients));
 
 			if (!player || !player->IsBot())
 			{
@@ -1191,7 +1184,7 @@ bool CHalfLifeMultiplay::VIPRoundEndCheck(bool bNeededPlayers)
 
 			if (!bNeededPlayers)
 			{
-				m_iNumCTWins++;
+				++m_iNumCTWins;
 				// Update the clients team score
 				UpdateTeamScores();
 			}
@@ -1205,6 +1198,8 @@ bool CHalfLifeMultiplay::VIPRoundEndCheck(bool bNeededPlayers)
 			MESSAGE_END();
 
 			EndRoundMessage("#VIP_Escaped", ROUND_VIP_ESCAPED);
+
+			// tell the bots the VIP got out
 			if (TheBots != NULL)
 			{
 				TheBots->OnEvent(EVENT_VIP_ESCAPED);
@@ -1226,12 +1221,14 @@ bool CHalfLifeMultiplay::VIPRoundEndCheck(bool bNeededPlayers)
 
 			if (!bNeededPlayers)
 			{
-				m_iNumTerroristWins++;
+				++m_iNumTerroristWins;
 				// Update the clients team score
 				UpdateTeamScores();
 			}
 
 			EndRoundMessage("#VIP_Assassinated", ROUND_VIP_ASSASSINATED);
+
+			// tell the bots the VIP was killed
 			if (TheBots != NULL)
 			{
 				TheBots->OnEvent(EVENT_VIP_ASSASSINATED);
@@ -1264,7 +1261,7 @@ bool CHalfLifeMultiplay::PrisonRoundEndCheck(int NumAliveTerrorist, int NumAlive
 
 			if (!bNeededPlayers)
 			{
-				m_iNumTerroristWins++;
+				++m_iNumTerroristWins;
 				// Update the clients team score
 				UpdateTeamScores();
 			}
@@ -1288,7 +1285,7 @@ bool CHalfLifeMultiplay::PrisonRoundEndCheck(int NumAliveTerrorist, int NumAlive
 
 			if (!bNeededPlayers)
 			{
-				m_iNumCTWins++;
+				++m_iNumCTWins;
 				// Update the clients team score
 				UpdateTeamScores();
 			}
@@ -1312,7 +1309,7 @@ bool CHalfLifeMultiplay::PrisonRoundEndCheck(int NumAliveTerrorist, int NumAlive
 
 			if (!bNeededPlayers)
 			{
-				m_iNumCTWins++;
+				++m_iNumCTWins;
 				// Update the clients team score
 				UpdateTeamScores();
 			}
@@ -1343,7 +1340,7 @@ bool CHalfLifeMultiplay::BombRoundEndCheck(bool bNeededPlayers)
 
 		if (!bNeededPlayers)
 		{
-			m_iNumTerroristWins++;
+			++m_iNumTerroristWins;
 			// Update the clients team score
 			UpdateTeamScores();
 		}
@@ -1366,7 +1363,7 @@ bool CHalfLifeMultiplay::BombRoundEndCheck(bool bNeededPlayers)
 
 		if (!bNeededPlayers)
 		{
-			m_iNumCTWins++;
+			++m_iNumCTWins;
 			// Update the clients team score
 			UpdateTeamScores();
 		}
@@ -1387,17 +1384,16 @@ bool CHalfLifeMultiplay::BombRoundEndCheck(bool bNeededPlayers)
 
 bool CHalfLifeMultiplay::TeamExterminationCheck(int NumAliveTerrorist, int NumAliveCT, int NumDeadTerrorist, int NumDeadCT, bool bNeededPlayers)
 {
-	if ((m_iNumCT > 0 && m_iNumSpawnableCT > 0)
-		&& (m_iNumTerrorist > 0 && m_iNumSpawnableTerrorist > 0))
+	if ((m_iNumCT > 0 && m_iNumSpawnableCT > 0) && (m_iNumTerrorist > 0 && m_iNumSpawnableTerrorist > 0))
 	{
-		if (!NumAliveTerrorist && NumDeadTerrorist && NumAliveCT > 0)
+		if (NumAliveTerrorist == 0 && NumDeadTerrorist != 0 && NumAliveCT > 0)
 		{
 			CBaseEntity *temp = NULL;
 			bool nowin = false;
 
 			while ((temp = UTIL_FindEntityByClassname(temp, "grenade")) != NULL)
 			{
-				CGrenade *C4 = reinterpret_cast<CGrenade *>(temp);
+				CGrenade *C4 = static_cast<CGrenade *>(temp);
 
 				if (C4->m_bIsC4 && !C4->m_bJustBlew)
 				{
@@ -1415,7 +1411,7 @@ bool CHalfLifeMultiplay::TeamExterminationCheck(int NumAliveTerrorist, int NumAl
 
 				if (!bNeededPlayers)
 				{
-					m_iNumCTWins++;
+					++m_iNumCTWins;
 					// Update the clients team score
 					UpdateTeamScores();
 				}
@@ -1428,20 +1424,19 @@ bool CHalfLifeMultiplay::TeamExterminationCheck(int NumAliveTerrorist, int NumAl
 					QueueCareerRoundEndMenu(5, WINSTATUS_CTS);
 				}
 
+				return true;
 			}
-
-			return true;
 		}
 
 		// Terrorists WON
-		if (NumAliveCT == 0 && NumDeadCT != 0)
+		else if (NumAliveCT == 0 && NumDeadCT != 0)
 		{
 			Broadcast("terwin");
 			m_iAccountTerrorist += m_bMapHasBombTarget ? REWARD_BOMB_EXPLODED : REWARD_TERRORISTS_WIN;
 
 			if (!bNeededPlayers)
 			{
-				m_iNumTerroristWins++;
+				++m_iNumTerroristWins;
 				// Update the clients team score
 				UpdateTeamScores();
 			}
@@ -1480,7 +1475,7 @@ bool CHalfLifeMultiplay::HostageRescueRoundEndCheck(bool bNeededPlayers)
 
 	while ((hostage = UTIL_FindEntityByClassname(hostage, "hostage_entity")) != NULL)
 	{
-		iHostages++;
+		++iHostages;
 
 		// We've found a live hostage. don't end the round
 		if (hostage->pev->takedamage == DAMAGE_YES)
@@ -1499,12 +1494,14 @@ bool CHalfLifeMultiplay::HostageRescueRoundEndCheck(bool bNeededPlayers)
 
 			if (!bNeededPlayers)
 			{
-				m_iNumCTWins++;
+				++m_iNumCTWins;
 				// Update the clients team score
 				UpdateTeamScores();
 			}
 
 			EndRoundMessage("#All_Hostages_Rescued", ROUND_ALL_HOSTAGES_RESCUED);
+
+			// tell the bots all the hostages have been rescued
 			if (TheBots != NULL)
 			{
 				TheBots->OnEvent(EVENT_ALL_HOSTAGES_RESCUED);
@@ -1532,7 +1529,7 @@ bool CHalfLifeMultiplay::HostageRescueRoundEndCheck(bool bNeededPlayers)
 }
 
 /* <117336> ../cstrike/dlls/multiplay_gamerules.cpp:1499 */
-void CHalfLifeMultiplay::SwapAllPlayers(void)
+void CHalfLifeMultiplay::SwapAllPlayers()
 {
 	CBaseEntity *pPlayer = NULL;
 
@@ -1560,7 +1557,7 @@ void CHalfLifeMultiplay::SwapAllPlayers(void)
 }
 
 /* <1171eb> ../cstrike/dlls/multiplay_gamerules.cpp:1525 */
-void CHalfLifeMultiplay::BalanceTeams(void)
+void CHalfLifeMultiplay::BalanceTeams()
 {
 	int iTeamToSwap = UNASSIGNED;
 	int iNumToSwap;
@@ -1620,7 +1617,7 @@ void CHalfLifeMultiplay::BalanceTeams(void)
 	int iHighestUserID = 0;
 	CBasePlayer *toSwap = NULL;
 
-	for (int i = 1; i <= iNumToSwap; i++)
+	for (int i = 1; i <= iNumToSwap; ++i)
 	{
 		iHighestUserID = 0;
 		toSwap = NULL;
@@ -1651,8 +1648,9 @@ void CHalfLifeMultiplay::BalanceTeams(void)
 }
 
 /* <113158> ../cstrike/dlls/multiplay_gamerules.cpp:1608 */
-void CHalfLifeMultiplay::__MAKE_VHOOK(CheckMapConditions)(void)
+void CHalfLifeMultiplay::__MAKE_VHOOK(CheckMapConditions)()
 {
+	// Check to see if this map has a bomb target in it
 	if (UTIL_FindEntityByClassname(NULL, "func_bomb_target"))
 	{
 		m_bMapHasBombTarget = true;
@@ -1687,7 +1685,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(CheckMapConditions)(void)
 }
 
 /* <11745e> ../cstrike/dlls/multiplay_gamerules.cpp:1676 */
-void CHalfLifeMultiplay::__MAKE_VHOOK(RestartRound)(void)
+void CHalfLifeMultiplay::__MAKE_VHOOK(RestartRound)()
 {
 	// tell bots that the round is restarting
 	if (TheBots != NULL)
@@ -1700,7 +1698,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(RestartRound)(void)
 		g_pHostages->RestartRound();
 	}
 
-	m_iTotalRoundsPlayed++;
+	++m_iTotalRoundsPlayed;
 	ClearBodyQue();
 
 	// Hardlock the player accelaration to 5.0
@@ -1743,7 +1741,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(RestartRound)(void)
 
 	if ((m_iNumCT - m_iNumTerrorist) >= 2 || (m_iNumTerrorist - m_iNumCT) >= 2)
 	{
-		m_iUnBalancedRounds++;
+		++m_iUnBalancedRounds;
 	}
 	else
 		m_iUnBalancedRounds = 0;
@@ -1796,9 +1794,9 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(RestartRound)(void)
 		UpdateTeamScores();
 
 		// Reset the player stats
-		for (int i = 1; i <= gpGlobals->maxClients; i++)
+		for (int i = 1; i <= gpGlobals->maxClients; ++i)
 		{
-			CBasePlayer *plr = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+			CBasePlayer *plr = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
 			if (plr && !FNullEnt(plr->pev))
 				plr->Reset();
@@ -1879,13 +1877,13 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(RestartRound)(void)
 		}
 
 		// Increment the number of rounds played... After 8 rounds, the players will do a whole sale switch..
-		m_iNumEscapeRounds++;
+		++m_iNumEscapeRounds;
 	}
 
 	if (m_iMapHasVIPSafetyZone == MAP_HAVE_VIP_SAFETYZONE_YES)
 	{
 		PickNextVIP();
-		m_iConsecutiveVIP++;
+		++m_iConsecutiveVIP;
 	}
 
 	int acct_tmp = 0;
@@ -1896,7 +1894,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(RestartRound)(void)
 		if (acct_tmp >= 2000)
 			break;
 
-		CHostage *temp = reinterpret_cast<CHostage *>(hostage);
+		CHostage *temp = static_cast<CHostage *>(hostage);
 
 		if (hostage->pev->solid != SOLID_NOT)
 		{
@@ -1938,12 +1936,12 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(RestartRound)(void)
 	}
 
 	// check if the losing team is in a losing streak & that the loser bonus hasen't maxed out.
-	if(m_iNumConsecutiveTerroristLoses > 1 && m_iLoserBonus < REWARD_LOSER_BONUS_MAX)
+	if (m_iNumConsecutiveTerroristLoses > 1 && m_iLoserBonus < REWARD_LOSER_BONUS_MAX)
 	{
 		// help out the team in the losing streak
 		m_iLoserBonus += REWARD_LOSER_BONUS_ADD;
 	}
-	else if(m_iNumConsecutiveCTLoses > 1 && m_iLoserBonus < REWARD_LOSER_BONUS_MAX)
+	else if (m_iNumConsecutiveCTLoses > 1 && m_iLoserBonus < REWARD_LOSER_BONUS_MAX)
 	{
 		// help out the team in the losing streak
 		m_iLoserBonus += REWARD_LOSER_BONUS_ADD;
@@ -2018,7 +2016,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(RestartRound)(void)
 		else if (player->m_iTeam == TERRORIST)
 		{
 			// Add another potential escaper to the mix!
-			m_iNumEscapers++;
+			++m_iNumEscapers;
 
 			if (!player->m_bReceivesNoMoneyNextRound)
 			{
@@ -2070,14 +2068,14 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(RestartRound)(void)
 	m_iAccountTerrorist = m_iAccountCT = 0;
 	m_iHostagesRescued = 0;
 	m_iHostagesTouched = 0;
-	m_iRoundWinStatus = 0;
+	m_iRoundWinStatus = WINNER_NONE;
 	m_bTargetBombed = m_bBombDefused = false;
 	m_bLevelInitialized = false;
 	m_bCompleteReset = false;
 }
 
 /* <114ca3> ../cstrike/dlls/multiplay_gamerules.cpp:2073 */
-BOOL CHalfLifeMultiplay::IsThereABomber(void)
+BOOL CHalfLifeMultiplay::IsThereABomber()
 {
 	CBasePlayer *pPlayer = NULL;
 
@@ -2098,7 +2096,7 @@ BOOL CHalfLifeMultiplay::IsThereABomber(void)
 }
 
 /* <114d20> ../cstrike/dlls/multiplay_gamerules.cpp:2097 */
-BOOL CHalfLifeMultiplay::IsThereABomb(void)
+BOOL CHalfLifeMultiplay::IsThereABomb()
 {
 	CGrenade *pC4 = NULL;
 	CBaseEntity *pWeaponC4 = NULL;
@@ -2172,9 +2170,9 @@ BOOL CHalfLifeMultiplay::TeamStacked(int newTeam_id, int curTeam_id)
 }
 
 /* <114e2b> ../cstrike/dlls/multiplay_gamerules.cpp:2214 */
-void CHalfLifeMultiplay::StackVIPQueue(void)
+void CHalfLifeMultiplay::StackVIPQueue()
 {
-	for (int i = 0; i < MAX_VIP_QUEUES - 2; i++)
+	for (int i = MAX_VIP_QUEUES - 2; i > 0; --i)
 	{
 		if (VIPQueue[i - 1])
 		{
@@ -2191,13 +2189,12 @@ void CHalfLifeMultiplay::StackVIPQueue(void)
 			VIPQueue[i + 1] = NULL;
 		}
 	}
-
 }
 
 /* <114e63> ../cstrike/dlls/multiplay_gamerules.cpp:2232 */
-bool CHalfLifeMultiplay::IsVIPQueueEmpty(void)
+bool CHalfLifeMultiplay::IsVIPQueueEmpty()
 {
-	for (int i = 0; i < MAX_VIP_QUEUES; i++)
+	for (int i = 0; i < MAX_VIP_QUEUES; ++i)
 	{
 		CBasePlayer *toCheck = VIPQueue[i];
 
@@ -2214,11 +2211,11 @@ bool CHalfLifeMultiplay::IsVIPQueueEmpty(void)
 /* <114eea> ../cstrike/dlls/multiplay_gamerules.cpp:2257 */
 bool CHalfLifeMultiplay::AddToVIPQueue(CBasePlayer *toAdd)
 {
-	for (int i = 0; i < MAX_VIP_QUEUES; i++)
+	for (int i = 0; i < MAX_VIP_QUEUES; ++i)
 	{
 		CBasePlayer *toCheck = VIPQueue[i];
 
-		if (toCheck && toCheck->m_iTeam != CT)
+		if (toCheck != NULL && toCheck->m_iTeam != CT)
 		{
 			VIPQueue[i] = NULL;
 		}
@@ -2229,17 +2226,16 @@ bool CHalfLifeMultiplay::AddToVIPQueue(CBasePlayer *toAdd)
 	if (toAdd->m_iTeam == CT)
 	{
 		int j;
-		for (j = 0; j < MAX_VIP_QUEUES; j++)
+		for (j = 0; j < MAX_VIP_QUEUES; ++j)
 		{
 			if (VIPQueue[j] == toAdd)
 			{
 				ClientPrint(toAdd->pev, HUD_PRINTCENTER, "#Game_in_position", UTIL_dtos1(j + 1));
-
 				return FALSE;
 			}
 		}
 
-		for (j = 0; j < MAX_VIP_QUEUES; j++)
+		for (j = 0; j < MAX_VIP_QUEUES; ++j)
 		{
 			if (!VIPQueue[j])
 			{
@@ -2247,7 +2243,6 @@ bool CHalfLifeMultiplay::AddToVIPQueue(CBasePlayer *toAdd)
 
 				StackVIPQueue();
 				ClientPrint(toAdd->pev, HUD_PRINTCENTER, "#Game_added_position", UTIL_dtos1(j + 1));
-
 				return TRUE;
 			}
 		}
@@ -2259,10 +2254,10 @@ bool CHalfLifeMultiplay::AddToVIPQueue(CBasePlayer *toAdd)
 }
 
 /* <114f80> ../cstrike/dlls/multiplay_gamerules.cpp:2290 */
-void CHalfLifeMultiplay::ResetCurrentVIP(void)
+void CHalfLifeMultiplay::ResetCurrentVIP()
 {
 	char *infobuffer = GET_INFO_BUFFER(m_pVIP->edict());
-	int numSkins = UTIL_IsGame("czero") ? CZ_NUM_SKIN : CS_NUM_SKIN;
+	int numSkins = g_bIsCzeroGame ? CZ_NUM_SKIN : CS_NUM_SKIN;
 
 	switch (RANDOM_LONG(0, numSkins))
 	{
@@ -2279,7 +2274,7 @@ void CHalfLifeMultiplay::ResetCurrentVIP(void)
 		SET_CLIENT_KEY_VALUE(m_pVIP->entindex(), infobuffer, "model", "gign");
 		break;
 	case 4:
-		if (UTIL_IsGame("czero"))
+		if (g_bIsCzeroGame)
 		{
 			m_pVIP->m_iModelName = MODEL_SPETSNAZ;
 			SET_CLIENT_KEY_VALUE(m_pVIP->entindex(), infobuffer, "model", "spetsnaz");
@@ -2296,7 +2291,7 @@ void CHalfLifeMultiplay::ResetCurrentVIP(void)
 }
 
 /* <11706f> ../cstrike/dlls/multiplay_gamerules.cpp:2335 */
-void CHalfLifeMultiplay::PickNextVIP(void)
+void CHalfLifeMultiplay::PickNextVIP()
 {
 	if (!IsVIPQueueEmpty())
 	{
@@ -2306,7 +2301,7 @@ void CHalfLifeMultiplay::PickNextVIP(void)
 			ResetCurrentVIP();
 		}
 
-		for (int i = 0; i < MAX_VIP_QUEUES; i++)
+		for (int i = 0; i < MAX_VIP_QUEUES; ++i)
 		{
 			if (VIPQueue[i] != NULL)
 			{
@@ -2323,7 +2318,7 @@ void CHalfLifeMultiplay::PickNextVIP(void)
 	// If it's been the same VIP for 3 rounds already.. then randomly pick a new one
 	else if (m_iConsecutiveVIP >= 3)
 	{
-		m_iLastPick++;
+		++m_iLastPick;
 
 		if (m_iLastPick > m_iNumCT)
 			m_iLastPick = 1;
@@ -2359,7 +2354,7 @@ void CHalfLifeMultiplay::PickNextVIP(void)
 					return;
 				}
 				else if (player->m_iTeam == CT)
-					iCount++;
+					++iCount;
 
 				if (player->m_iTeam != SPECTATOR)
 					pLastPlayer = player;
@@ -2395,7 +2390,7 @@ void CHalfLifeMultiplay::PickNextVIP(void)
 }
 
 /* <115458> ../cstrike/dlls/multiplay_gamerules.cpp:2435 */
-void CHalfLifeMultiplay::__MAKE_VHOOK(Think)(void)
+void CHalfLifeMultiplay::__MAKE_VHOOK(Think)()
 {
 	MonitorTutorStatus();
 
@@ -2517,9 +2512,9 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(Think)(void)
 
 					m_bFreezePeriod = TRUE;
 
-					for (int i = 1; i <= gpGlobals->maxClients; i++)
+					for (int i = 1; i <= gpGlobals->maxClients; ++i)
 					{
-						CBasePlayer *pPlayer = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+						CBasePlayer *pPlayer = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
 						if (pPlayer != NULL && !pPlayer->IsBot())
 						{
@@ -2535,9 +2530,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(Think)(void)
 							pPlayer->m_iHideHUD |= HIDEHUD_ALL;
 							m_fTeamCount = gpGlobals->time + 100000.0;
 
-							UTIL_LogPrintf("Career Round %d %d %d %d\n", m_iRoundWinStatus, m_iNumCTWins,
-								m_iNumTerroristWins, TheCareerTasks->AreAllTasksComplete());
-
+							UTIL_LogPrintf("Career Round %d %d %d %d\n", m_iRoundWinStatus, m_iNumCTWins, m_iNumTerroristWins, TheCareerTasks->AreAllTasksComplete());
 							break;
 						}
 					}
@@ -2613,13 +2606,12 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(Think)(void)
 			MESSAGE_END();
 
 			UTIL_LogPrintf("Career Match %d %d %d %d\n", m_iRoundWinStatus, m_iNumCTWins, m_iNumTerroristWins, TheCareerTasks->AreAllTasksComplete());
-
 			SERVER_COMMAND("setpause\n");
 		}
 	}
 }
 
-bool CHalfLifeMultiplay::CheckGameOver(void)
+bool CHalfLifeMultiplay::CheckGameOver()
 {
 	// someone else quit the game already
 	if (g_fGameOver)
@@ -2638,7 +2630,7 @@ bool CHalfLifeMultiplay::CheckGameOver(void)
 		// check to see if we should change levels now
 		if (m_flIntermissionEndTime < gpGlobals->time && !IsCareer())
 		{
-			if (!UTIL_HumansInGame(false)		// if only bots, just change immediately
+			if (!UTIL_HumansInGame()		// if only bots, just change immediately
 				|| m_iEndIntermissionButtonHit		// check that someone has pressed a key, or the max intermission time is over
 				|| ((m_flIntermissionStartTime + MAX_INTERMISSION_TIME) < gpGlobals->time))
 			{
@@ -2653,7 +2645,7 @@ bool CHalfLifeMultiplay::CheckGameOver(void)
 	return false;
 }
 
-bool CHalfLifeMultiplay::CheckTimeLimit(void)
+bool CHalfLifeMultiplay::CheckTimeLimit()
 {
 	float fTimeLimit = timelimit.value;
 
@@ -2681,7 +2673,7 @@ bool CHalfLifeMultiplay::CheckTimeLimit(void)
 	return false;
 }
 
-bool CHalfLifeMultiplay::CheckMaxRounds(void)
+bool CHalfLifeMultiplay::CheckMaxRounds()
 {
 	if (m_iMaxRounds != 0 && m_iTotalRoundsPlayed >= m_iMaxRounds)
 	{
@@ -2693,7 +2685,7 @@ bool CHalfLifeMultiplay::CheckMaxRounds(void)
 	return false;
 }
 
-bool CHalfLifeMultiplay::CheckWinLimit(void)
+bool CHalfLifeMultiplay::CheckWinLimit()
 {
 	// has one team won the specified number of rounds?
 	if (m_iMaxRoundsWon != 0 && (m_iNumCTWins >= m_iMaxRoundsWon || m_iNumTerroristWins >= m_iMaxRoundsWon))
@@ -2709,7 +2701,7 @@ bool CHalfLifeMultiplay::CheckWinLimit(void)
 	return false;
 }
 
-void CHalfLifeMultiplay::CheckFreezePeriodExpired(void)
+void CHalfLifeMultiplay::CheckFreezePeriodExpired()
 {
 	if (TimeRemaining() > 0)
 		return;
@@ -2769,9 +2761,9 @@ void CHalfLifeMultiplay::CheckFreezePeriodExpired(void)
 		TheCareerTasks->HandleEvent(EVENT_ROUND_START);
 	}
 
-	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
-		CBasePlayer *plr = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+		CBasePlayer *plr = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
 		if (!plr || plr->pev->flags == FL_DORMANT)
 		{
@@ -2782,12 +2774,12 @@ void CHalfLifeMultiplay::CheckFreezePeriodExpired(void)
 		{
 			if (plr->m_iTeam == CT && !bCTPlayed)
 			{
-				plr->Radio(CT_sentence, NULL);
+				plr->Radio(CT_sentence);
 				bCTPlayed = true;
 			}
 			else if (plr->m_iTeam == TERRORIST && !bTPlayed)
 			{
-				plr->Radio(T_sentence, NULL);
+				plr->Radio(T_sentence);
 				bTPlayed = true;
 			}
 
@@ -2812,8 +2804,13 @@ void CHalfLifeMultiplay::CheckFreezePeriodExpired(void)
 	}
 }
 
-void CHalfLifeMultiplay::CheckRoundTimeExpired(void)
+void CHalfLifeMultiplay::CheckRoundTimeExpired()
 {
+#ifdef REGAMEDLL_ADD
+	if (round_infinite.string[0] == '1' || (UTIL_ReadFlags(round_infinite.string) & SCENARIO_BLOCK_TIME_EXPRIRED))
+		return;
+#endif // REGAMEDLL_ADD
+
 	if (!HasRoundTimeExpired())
 		return;
 
@@ -2905,7 +2902,7 @@ void CHalfLifeMultiplay::CheckRoundTimeExpired(void)
 	m_fRoundCount = gpGlobals->time + 60.0f;
 }
 
-void CHalfLifeMultiplay::CheckLevelInitialized(void)
+void CHalfLifeMultiplay::CheckLevelInitialized()
 {
 	if (!m_bLevelInitialized)
 	{
@@ -2917,16 +2914,16 @@ void CHalfLifeMultiplay::CheckLevelInitialized(void)
 		m_iSpawnPointCount_CT = 0;
 
 		while ((ent = UTIL_FindEntityByClassname(ent, "info_player_deathmatch")) != NULL)
-			m_iSpawnPointCount_Terrorist++;
+			++m_iSpawnPointCount_Terrorist;
 
 		while ((ent = UTIL_FindEntityByClassname(ent, "info_player_start")) != NULL)
-			m_iSpawnPointCount_CT++;
+			++m_iSpawnPointCount_CT;
 
 		m_bLevelInitialized = true;
 	}
 }
 
-void CHalfLifeMultiplay::CheckRestartRound(void)
+void CHalfLifeMultiplay::CheckRestartRound()
 {
 	// Restart the round if specified by the server
 	int iRestartDelay = (int)restartround.value;
@@ -2943,19 +2940,8 @@ void CHalfLifeMultiplay::CheckRestartRound(void)
 
 		// log the restart
 		UTIL_LogPrintf("World triggered \"Restart_Round_(%i_%s)\"\n", iRestartDelay, (iRestartDelay == 1) ? "second" : "seconds");
-		UTIL_LogPrintf
-		(
-			"Team \"CT\" scored \"%i\" with \"%i\" players\n",
-			m_iNumCTWins,
-			m_iNumCT
-		);
-
-		UTIL_LogPrintf
-		(
-			"Team \"TERRORIST\" scored \"%i\" with \"%i\" players\n",
-			m_iNumTerroristWins,
-			m_iNumTerrorist
-		);
+		UTIL_LogPrintf("Team \"CT\" scored \"%i\" with \"%i\" players\n", m_iNumCTWins, m_iNumCT);
+		UTIL_LogPrintf("Team \"TERRORIST\" scored \"%i\" with \"%i\" players\n", m_iNumTerroristWins, m_iNumTerrorist);
 
 		// let the players know
 		UTIL_ClientPrintAll(HUD_PRINTCENTER, "#Game_will_restart_in", UTIL_dtos1(iRestartDelay), (iRestartDelay == 1) ? "SECOND" : "SECONDS");
@@ -2972,17 +2958,19 @@ void CHalfLifeMultiplay::CheckRestartRound(void)
 }
 
 /* <115189> ../cstrike/dlls/multiplay_gamerules.cpp:2922 */
-bool CHalfLifeMultiplay::HasRoundTimeExpired(void)
+bool CHalfLifeMultiplay::HasRoundTimeExpired()
 {
 	// We haven't completed other objectives, so go for this!.
-	if (TimeRemaining() > 0 || m_iRoundWinStatus != 0)
+	if (TimeRemaining() > 0 || m_iRoundWinStatus != WINNER_NONE)
 	{
 		return false;
 	}
 
+	// If the bomb is planted, don't let the round timer end the round.
+	// keep going until the bomb explodes or is defused
 	if (!IsBombPlanted())
 	{
-		if (cv_bot_nav_edit.value == 0.0f || IS_DEDICATED_SERVER() || UTIL_HumansInGame(false) != 1)
+		if (cv_bot_nav_edit.value == 0.0f || IS_DEDICATED_SERVER() || UTIL_HumansInGame() != 1)
 		{
 			return true;
 		}
@@ -2992,13 +2980,13 @@ bool CHalfLifeMultiplay::HasRoundTimeExpired(void)
 }
 
 /* <1151f4> ../cstrike/dlls/multiplay_gamerules.cpp:2945 */
-bool CHalfLifeMultiplay::IsBombPlanted(void)
+bool CHalfLifeMultiplay::IsBombPlanted()
 {
 	if (m_bMapHasBombTarget)
 	{
 		CGrenade *bomb = NULL;
 
-		if ((bomb = (CGrenade *)UTIL_FindEntityByClassname(bomb, "grenade")) != NULL)
+		while ((bomb = (CGrenade *)UTIL_FindEntityByClassname(bomb, "grenade")) != NULL)
 		{
 			if (bomb->m_bIsC4)
 			{
@@ -3010,12 +2998,15 @@ bool CHalfLifeMultiplay::IsBombPlanted(void)
 	return false;
 }
 
+// living players on the given team need to be marked as not receiving any money
+// next round.
+
 /* <115229> ../cstrike/dlls/multiplay_gamerules.cpp:2971 */
 void CHalfLifeMultiplay::MarkLivingPlayersOnTeamAsNotReceivingMoneyNextRound(int iTeam)
 {
-	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
-		CBasePlayer *player = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+		CBasePlayer *player = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
 		if (!player || FNullEnt(player->pev))
 			continue;
@@ -3031,7 +3022,7 @@ void CHalfLifeMultiplay::MarkLivingPlayersOnTeamAsNotReceivingMoneyNextRound(int
 }
 
 /* <1152e2> ../cstrike/dlls/multiplay_gamerules.cpp:2987 */
-void CHalfLifeMultiplay::CareerRestart(void)
+void CHalfLifeMultiplay::CareerRestart()
 {
 	g_fGameOver = FALSE;
 
@@ -3052,9 +3043,9 @@ void CHalfLifeMultiplay::CareerRestart(void)
 
 	m_bSkipSpawn = false;
 
-	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
-		CBasePlayer *player = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+		CBasePlayer *player = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
 		if (!player || FNullEnt(player->pev))
 			continue;
@@ -3067,19 +3058,19 @@ void CHalfLifeMultiplay::CareerRestart(void)
 }
 
 /* <1128cb> ../cstrike/dlls/multiplay_gamerules.cpp:3017 */
-BOOL CHalfLifeMultiplay::__MAKE_VHOOK(IsMultiplayer)(void)
+BOOL CHalfLifeMultiplay::__MAKE_VHOOK(IsMultiplayer)()
 {
 	return TRUE;
 }
 
 /* <1128f3> ../cstrike/dlls/multiplay_gamerules.cpp:3024 */
-BOOL CHalfLifeMultiplay::__MAKE_VHOOK(IsDeathmatch)(void)
+BOOL CHalfLifeMultiplay::__MAKE_VHOOK(IsDeathmatch)()
 {
 	return TRUE;
 }
 
 /* <11291b> ../cstrike/dlls/multiplay_gamerules.cpp:3031 */
-BOOL CHalfLifeMultiplay::__MAKE_VHOOK(IsCoOp)(void)
+BOOL CHalfLifeMultiplay::__MAKE_VHOOK(IsCoOp)()
 {
 	return gpGlobals->coop;
 }
@@ -3122,7 +3113,7 @@ BOOL CHalfLifeMultiplay::__MAKE_VHOOK(GetNextBestWeapon)(CBasePlayer *pPlayer, C
 	iBestWeight = -1; // no weapon lower than -1 can be autoswitched to
 	pBest = NULL;
 
-	for (i = 0; i < MAX_ITEM_TYPES; i++)
+	for (i = 0; i < MAX_ITEM_TYPES; ++i)
 	{
 		pCheck = pPlayer->m_rgpPlayerItems[i];
 
@@ -3195,13 +3186,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(InitHUD)(CBasePlayer *pl)
 	int i;
 
 	// notify other clients of player joining the game
-	UTIL_LogPrintf
-	(
-		"\"%s<%i><%s><>\" entered the game\n",
-		STRING(pl->pev->netname),
-		GETPLAYERUSERID(pl->edict()),
-		GETPLAYERAUTHID(pl->edict())
-	);
+	UTIL_LogPrintf("\"%s<%i><%s><>\" entered the game\n", STRING(pl->pev->netname), GETPLAYERUSERID(pl->edict()), GETPLAYERAUTHID(pl->edict()));
 
 	UpdateGameMode(pl);
 
@@ -3236,10 +3221,10 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(InitHUD)(CBasePlayer *pl)
 		SendMOTDToClient(pl->edict());
 
 	// loop through all active players and send their score info to the new client
-	for (i = 1; i <= gpGlobals->maxClients; i++)
+	for (i = 1; i <= gpGlobals->maxClients; ++i)
 	{
 		// FIXME: Probably don't need to cast this just to read m_iDeaths
-		CBasePlayer *plr = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+		CBasePlayer *plr = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
 		if (plr != NULL)
 		{
@@ -3279,9 +3264,9 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(InitHUD)(CBasePlayer *pl)
 		MESSAGE_END();
 	}
 
-	for (i = 1; i <= gpGlobals->maxClients; i++)
+	for (i = 1; i <= gpGlobals->maxClients; ++i)
 	{
-		CBasePlayer *plr = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+		CBasePlayer *plr = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
 		if (plr != NULL)
 		{
@@ -3345,7 +3330,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(ClientDisconnected)(edict_t *pClient)
 {
 	if (pClient != NULL)
 	{
-		CBasePlayer *pPlayer = reinterpret_cast<CBasePlayer *>(CBaseEntity::Instance(pClient));
+		CBasePlayer *pPlayer = static_cast<CBasePlayer *>(CBaseEntity::Instance(pClient));
 
 		if (pPlayer != NULL)
 		{
@@ -3372,7 +3357,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(ClientDisconnected)(edict_t *pClient)
 
 			if (pPlayer->m_iMapVote)
 			{
-				m_iMapVotes[ pPlayer->m_iMapVote ]--;
+				--m_iMapVotes[ pPlayer->m_iMapVote ];
 
 				if (m_iMapVotes[ pPlayer->m_iMapVote ] < 0)
 				{
@@ -3401,14 +3386,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(ClientDisconnected)(edict_t *pClient)
 			char *team = GetTeam(pPlayer->m_iTeam);
 
 			FireTargets("game_playerleave", pPlayer, pPlayer, USE_TOGGLE, 0);
-			UTIL_LogPrintf
-			(
-				"\"%s<%i><%s><%s>\" disconnected\n",
-				STRING(pPlayer->pev->netname),
-				GETPLAYERUSERID(pPlayer->edict()),
-				GETPLAYERAUTHID(pPlayer->edict()),
-				team
-			);
+			UTIL_LogPrintf("\"%s<%i><%s><%s>\" disconnected\n", STRING(pPlayer->pev->netname), GETPLAYERUSERID(pPlayer->edict()), GETPLAYERAUTHID(pPlayer->edict()), team);
 
 			// destroy all of the players weapons and items
 			pPlayer->RemoveAllItems(TRUE);
@@ -3489,7 +3467,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(PlayerThink)(CBasePlayer *pPlayer)
 
 	if (pPlayer->m_pActiveItem && pPlayer->m_pActiveItem->IsWeapon())
 	{
-		CBasePlayerWeapon *pWeapon = reinterpret_cast<CBasePlayerWeapon *>(pPlayer->m_pActiveItem->GetWeaponPtr());
+		CBasePlayerWeapon *pWeapon = static_cast<CBasePlayerWeapon *>(pPlayer->m_pActiveItem->GetWeaponPtr());
 
 		if (pWeapon->m_iWeaponState & WPNSTATE_SHIELD_DRAWN)
 		{
@@ -3613,7 +3591,7 @@ float CHalfLifeMultiplay::__MAKE_VHOOK(FlPlayerSpawnTime)(CBasePlayer *pPlayer)
 }
 
 /* <112abe> ../cstrike/dlls/multiplay_gamerules.cpp:3596 */
-BOOL CHalfLifeMultiplay::__MAKE_VHOOK(AllowAutoTargetCrosshair)(void)
+BOOL CHalfLifeMultiplay::__MAKE_VHOOK(AllowAutoTargetCrosshair)()
 {
 	return FALSE;
 }
@@ -3644,16 +3622,16 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(PlayerKilled)(CBasePlayer *pVictim, entvar
 
 	if (ktmp && ktmp->Classify() == CLASS_PLAYER)
 	{
-		peKiller = reinterpret_cast<CBasePlayer *>(ktmp);
+		peKiller = static_cast<CBasePlayer *>(ktmp);
 	}
 	else if (ktmp && ktmp->Classify() == CLASS_VEHICLE)
 	{
-		CBasePlayer *pDriver = reinterpret_cast<CBasePlayer *>(((CFuncVehicle *)ktmp)->m_pDriver);
+		CBasePlayer *pDriver = static_cast<CBasePlayer *>(((CFuncVehicle *)ktmp)->m_pDriver);
 
 		if (pDriver != NULL)
 		{
 			pKiller = pDriver->pev;
-			peKiller = reinterpret_cast<CBasePlayer *>(pDriver);
+			peKiller = static_cast<CBasePlayer *>(pDriver);
 		}
 	}
 
@@ -3669,8 +3647,14 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(PlayerKilled)(CBasePlayer *pVictim, entvar
 	{
 		// if a player dies in a deathmatch game and the killer is a client, award the killer some points
 		CBasePlayer *killer = GetClassPtr((CBasePlayer *)pKiller);
+		bool killedByFFA = false;
 
-		if (killer->m_iTeam == pVictim->m_iTeam)
+#ifdef REGAMEDLL_ADD
+		if (friendlyfire.string[0] == '2')
+			killedByFFA = true;
+#endif // REGAMEDLL_ADD
+
+		if (killer->m_iTeam == pVictim->m_iTeam && !killedByFFA)
 		{
 			// if a player dies by from teammate
 			pKiller->frags -= IPointsForKill(peKiller, pVictim);
@@ -3718,13 +3702,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(PlayerKilled)(CBasePlayer *pVictim, entvar
 					WRITE_LONG(DRC_FLAG_PRIO_MASK | DRC_FLAG_DRAMATIC | DRC_FLAG_FINAL);
 				MESSAGE_END();
 
-				UTIL_LogPrintf
-				(
-					"\"%s<%i><%s><TERRORIST>\" triggered \"Assassinated_The_VIP\"\n",
-					STRING(killer->pev->netname),
-					GETPLAYERUSERID(killer->edict()),
-					GETPLAYERAUTHID(killer->edict())
-				);
+				UTIL_LogPrintf("\"%s<%i><%s><TERRORIST>\" triggered \"Assassinated_The_VIP\"\n", STRING(killer->pev->netname), GETPLAYERUSERID(killer->edict()), GETPLAYERAUTHID(killer->edict()));
 			}
 			else
 				killer->AddAccount(REWARD_KILLED_ENEMY);
@@ -3759,7 +3737,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(PlayerKilled)(CBasePlayer *pVictim, entvar
 
 	if (ep && ep->Classify() == CLASS_PLAYER)
 	{
-		CBasePlayer *PK = reinterpret_cast<CBasePlayer *>(ep);
+		CBasePlayer *PK = static_cast<CBasePlayer *>(ep);
 
 		MESSAGE_BEGIN(MSG_ALL, gmsgScoreInfo);
 			WRITE_BYTE(ENTINDEX(PK->edict()));
@@ -3798,9 +3776,9 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(DeathNotice)(CBasePlayer *pVictim, entvars
 			if (pevInflictor == pKiller)
 			{
 				// If the inflictor is the killer, then it must be their current weapon doing the damage
-				CBasePlayer *pPlayer = reinterpret_cast<CBasePlayer*>(CBaseEntity::Instance(pKiller));
+				CBasePlayer *pPlayer = dynamic_cast<CBasePlayer *>(CBaseEntity::Instance(pKiller));
 
-				if (pPlayer && pPlayer->m_pActiveItem)
+				if (pPlayer != NULL && pPlayer->m_pActiveItem != NULL)
 				{
 					killer_weapon_name = pPlayer->m_pActiveItem->pszName();
 				}
@@ -3852,52 +3830,25 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(DeathNotice)(CBasePlayer *pVictim, entvars
 	{
 		// killed self
 		char *team = GetTeam(pVictim->m_iTeam);
-
-		UTIL_LogPrintf
-		(
-			"\"%s<%i><%s><%s>\" committed suicide with \"%s\"\n",
-			STRING(pVictim->pev->netname),
-			GETPLAYERUSERID(pVictim->edict()),
-			GETPLAYERAUTHID(pVictim->edict()),
-			team,
-			killer_weapon_name
-		);
+		UTIL_LogPrintf("\"%s<%i><%s><%s>\" committed suicide with \"%s\"\n", STRING(pVictim->pev->netname), GETPLAYERUSERID(pVictim->edict()),
+			GETPLAYERAUTHID(pVictim->edict()), team, killer_weapon_name);
 	}
 	else if (pKiller->flags & FL_CLIENT)
 	{
-		CBasePlayer *pPlayer = reinterpret_cast<CBasePlayer *>(CBaseEntity::Instance(pKiller));
+		CBasePlayer *pPlayer = dynamic_cast<CBasePlayer *>(CBaseEntity::Instance(pKiller));
 
-		char *VictimTeam = GetTeam(pVictim->m_iTeam);
-		char *KillerTeam = GetTeam(pPlayer->m_iTeam);
+		const char *VictimTeam = GetTeam(pVictim->m_iTeam);
+		const char *KillerTeam = (pPlayer != NULL) ? GetTeam(pPlayer->m_iTeam) : "";
 
-		UTIL_LogPrintf
-		(
-			"\"%s<%i><%s><%s>\" killed \"%s<%i><%s><%s>\" with \"%s\"\n",
-			STRING(pKiller->netname),
-			GETPLAYERUSERID(ENT(pKiller)),
-			GETPLAYERAUTHID(ENT(pKiller)),
-			KillerTeam,
-			STRING(pVictim->pev->netname),
-			GETPLAYERUSERID(pVictim->edict()),
-			GETPLAYERAUTHID(pVictim->edict()),
-			VictimTeam,
-			killer_weapon_name
-		);
+		UTIL_LogPrintf("\"%s<%i><%s><%s>\" killed \"%s<%i><%s><%s>\" with \"%s\"\n", STRING(pKiller->netname), GETPLAYERUSERID(ENT(pKiller)), GETPLAYERAUTHID(ENT(pKiller)),
+			KillerTeam, STRING(pVictim->pev->netname), GETPLAYERUSERID(pVictim->edict()), GETPLAYERAUTHID(pVictim->edict()), VictimTeam, killer_weapon_name);
 	}
 	else
 	{
 		// killed by the world
 		char *team = GetTeam(pVictim->m_iTeam);
-
-		UTIL_LogPrintf
-		(
-			"\"%s<%i><%s><%s>\" committed suicide with \"%s\" (world)\n",
-			STRING(pVictim->pev->netname),
-			GETPLAYERUSERID(pVictim->edict()),
-			GETPLAYERAUTHID(pVictim->edict()),
-			team,
-			killer_weapon_name
-		);
+		UTIL_LogPrintf("\"%s<%i><%s><%s>\" committed suicide with \"%s\" (world)\n", STRING(pVictim->pev->netname), GETPLAYERUSERID(pVictim->edict()),
+			GETPLAYERAUTHID(pVictim->edict()), team, killer_weapon_name);
 	}
 
 	CheckWinConditions();
@@ -4051,13 +4002,13 @@ Vector CHalfLifeMultiplay::__MAKE_VHOOK(VecAmmoRespawnSpot)(CBasePlayerAmmo *pAm
 }
 
 /* <112f0f> ../cstrike/dlls/multiplay_gamerules.cpp:4071 */
-float CHalfLifeMultiplay::__MAKE_VHOOK(FlHealthChargerRechargeTime)(void)
+float CHalfLifeMultiplay::__MAKE_VHOOK(FlHealthChargerRechargeTime)()
 {
 	return 60;
 }
 
 /* <112f37> ../cstrike/dlls/multiplay_gamerules.cpp:4077 */
-float CHalfLifeMultiplay::__MAKE_VHOOK(FlHEVChargerRechargeTime)(void)
+float CHalfLifeMultiplay::__MAKE_VHOOK(FlHEVChargerRechargeTime)()
 {
 	return 30;
 }
@@ -4077,6 +4028,7 @@ int CHalfLifeMultiplay::__MAKE_VHOOK(DeadPlayerAmmo)(CBasePlayer *pPlayer)
 /* <1131d6> ../cstrike/dlls/multiplay_gamerules.cpp:4096 */
 edict_t *CHalfLifeMultiplay::__MAKE_VHOOK(GetPlayerSpawnSpot)(CBasePlayer *pPlayer)
 {
+	// gat valid spawn point
 	edict_t *pentSpawnSpot = CGameRules::GetPlayerSpawnSpot(pPlayer);
 
 	if (IsMultiplayer())
@@ -4115,7 +4067,7 @@ int CHalfLifeMultiplay::__MAKE_VHOOK(PlayerRelationship)(CBasePlayer *pPlayer, C
 }
 
 /* <112fcf> ../cstrike/dlls/multiplay_gamerules.cpp:4128 */
-BOOL CHalfLifeMultiplay::__MAKE_VHOOK(FAllowFlashlight)(void)
+BOOL CHalfLifeMultiplay::__MAKE_VHOOK(FAllowFlashlight)()
 {
 	static cvar_t *mp_flashlight = NULL;
 
@@ -4129,13 +4081,13 @@ BOOL CHalfLifeMultiplay::__MAKE_VHOOK(FAllowFlashlight)(void)
 }
 
 /* <113012> ../cstrike/dlls/multiplay_gamerules.cpp:4145 */
-BOOL CHalfLifeMultiplay::__MAKE_VHOOK(FAllowMonsters)(void)
+BOOL CHalfLifeMultiplay::__MAKE_VHOOK(FAllowMonsters)()
 {
 	return CVAR_GET_FLOAT("mp_allowmonsters") != 0;
 }
 
 /* <114155> ../cstrike/dlls/multiplay_gamerules.cpp:4156 */
-void CHalfLifeMultiplay::__MAKE_VHOOK(GoToIntermission)(void)
+void CHalfLifeMultiplay::__MAKE_VHOOK(GoToIntermission)()
 {
 	if (g_fGameOver)
 		return;
@@ -4219,7 +4171,7 @@ void DestroyMapCycle(mapcycle_t *cycle)
 }
 
 /* <115d30> ../cstrike/dlls/multiplay_gamerules.cpp:4271 */
-char *MP_COM_GetToken(void)
+char *MP_COM_GetToken()
 {
 	return mp_com_token;
 }
@@ -4245,7 +4197,7 @@ skipwhite:
 		if (!data[0])
 			return NULL;
 
-		data++;
+		++data;
 	}
 
 	c = *data;
@@ -4254,7 +4206,7 @@ skipwhite:
 	if (c == '/' && data[1] == '/')
 	{
 		while (*data && *data != '\n')
-			data++;
+			++data;
 
 		goto skipwhite;	// start over new line
 	}
@@ -4262,7 +4214,7 @@ skipwhite:
 	// handle quoted strings specially: copy till the end or another quote
 	if (c == '\"')
 	{
-		data++;	// skip starting quote
+		++data;	// skip starting quote
 
 		while (true)
 		{
@@ -4292,7 +4244,7 @@ skipwhite:
 	do
 	{
 		mp_com_token[ len++ ] = c;
-		data++;
+		++data;
 		c = *data;
 
 		if (c == '{' || c == '}'|| c == ')'|| c == '(' || c == '\'' || c == ',')
@@ -4315,7 +4267,7 @@ int MP_COM_TokenWaiting(char *buffer)
 		if (!isspace(*p) || isalnum(*p))
 			return 1;
 
-		p++;
+		++p;
 	}
 
 	return 0;
@@ -4444,11 +4396,11 @@ int ReloadMapCycleFile(char *filename, mapcycle_t *cycle)
 // Determine the current # of active players on the server for map cycling logic
 
 /* <115f76> ../cstrike/dlls/multiplay_gamerules.cpp:4510 */
-int CountPlayers(void)
+int CountPlayers()
 {
 	int num = 0;
 
-	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
 		CBaseEntity *pEnt = UTIL_PlayerByIndex(i);
 
@@ -4474,7 +4426,7 @@ void ExtractCommandString(char *s, char *szCommand)
 	char *o;
 
 	if (*s == '\\')
-		s++;
+		++s;
 
 	while (true)
 	{
@@ -4490,7 +4442,7 @@ void ExtractCommandString(char *s, char *szCommand)
 		}
 
 		*o = '\0';
-		s++;
+		++s;
 
 		o = value;
 
@@ -4519,12 +4471,12 @@ void ExtractCommandString(char *s, char *szCommand)
 			return;
 		}
 
-		s++;
+		++s;
 	}
 }
 
 /* <116b52> ../cstrike/dlls/multiplay_gamerules.cpp:4582 */
-void CHalfLifeMultiplay::ResetAllMapVotes(void)
+void CHalfLifeMultiplay::ResetAllMapVotes()
 {
 	CBaseEntity *pTempEntity = NULL;
 
@@ -4541,12 +4493,12 @@ void CHalfLifeMultiplay::ResetAllMapVotes(void)
 		}
 	}
 
-	for (int j = 0; j < MAX_VOTE_MAPS; j++)
+	for (int j = 0; j < MAX_VOTE_MAPS; ++j)
 		m_iMapVotes[j] = 0;
 }
 
 /* <11624e> ../cstrike/dlls/multiplay_gamerules.cpp:4608 */
-int GetMapCount(void)
+int GetMapCount()
 {
 	static mapcycle_t mapcycle2;
 	char *mapcfile = (char *)CVAR_GET_STRING("mapcyclefile");
@@ -4640,10 +4592,10 @@ void CHalfLifeMultiplay::ProcessMapVote(CBasePlayer *player, int iVote)
 
 		if (pTempPlayer->m_iTeam != UNASSIGNED)
 		{
-			iNumPlayers++;
+			++iNumPlayers;
 
 			if (pTempPlayer->m_iMapVote = iVote)
-				iValidVotes++;
+				++iValidVotes;
 		}
 	}
 
@@ -4679,7 +4631,7 @@ void CHalfLifeMultiplay::ProcessMapVote(CBasePlayer *player, int iVote)
 // Server is changing to a new level, check mapcycle.txt for map name and setup info
 
 /* <116089> ../cstrike/dlls/multiplay_gamerules.cpp:4773 */
-void CHalfLifeMultiplay::__MAKE_VHOOK(ChangeLevel)(void)
+void CHalfLifeMultiplay::__MAKE_VHOOK(ChangeLevel)()
 {
 	static char szPreviousMapCycleFile[256];
 	static mapcycle_t mapcycle;
@@ -4862,307 +4814,3 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(ClientUserInfoChanged)(CBasePlayer *pPlaye
 	pPlayer->SetPlayerModel(pPlayer->m_bHasC4);
 	pPlayer->SetPrefsFromUserinfo(infobuffer);
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CMapInfo::Spawn(void)
-{
-	Spawn_();
-}
-
-void CMapInfo::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-bool CCStrikeGameMgrHelper::CanPlayerHearPlayer(CBasePlayer *pListener, CBasePlayer *pSender)
-{
-	return CanPlayerHearPlayer_(pListener, pSender);
-}
-
-void CHalfLifeMultiplay::RefreshSkillData(void)
-{
-	RefreshSkillData_();
-}
-
-void CHalfLifeMultiplay::Think(void)
-{
-	Think_();
-}
-
-BOOL CHalfLifeMultiplay::IsAllowedToSpawn(CBaseEntity *pEntity)
-{
-	return IsAllowedToSpawn_(pEntity);
-}
-
-BOOL CHalfLifeMultiplay::FAllowFlashlight(void)
-{
-	return FAllowFlashlight_();
-}
-
-BOOL CHalfLifeMultiplay::FShouldSwitchWeapon(CBasePlayer *pPlayer, CBasePlayerItem *pWeapon)
-{
-	return FShouldSwitchWeapon_(pPlayer, pWeapon);
-}
-
-BOOL CHalfLifeMultiplay::GetNextBestWeapon(CBasePlayer *pPlayer, CBasePlayerItem *pCurrentWeapon)
-{
-	return GetNextBestWeapon_(pPlayer, pCurrentWeapon);
-}
-
-BOOL CHalfLifeMultiplay::IsMultiplayer(void)
-{
-	return IsMultiplayer_();
-}
-
-BOOL CHalfLifeMultiplay::IsDeathmatch(void)
-{
-	return IsDeathmatch_();
-}
-
-BOOL CHalfLifeMultiplay::IsCoOp(void)
-{
-	return IsCoOp_();
-}
-
-BOOL CHalfLifeMultiplay::ClientConnected(edict_t *pEntity, const char *pszName, const char *pszAddress, char szRejectReason[128])
-{
-	return ClientConnected_(pEntity, pszName, pszAddress, szRejectReason);
-}
-
-void CHalfLifeMultiplay::InitHUD(CBasePlayer *pl)
-{
-	InitHUD_(pl);
-}
-
-void CHalfLifeMultiplay::ClientDisconnected(edict_t *pClient)
-{
-	ClientDisconnected_(pClient);
-}
-
-void CHalfLifeMultiplay::UpdateGameMode(CBasePlayer *pPlayer)
-{
-	UpdateGameMode_(pPlayer);
-}
-
-float CHalfLifeMultiplay::FlPlayerFallDamage(CBasePlayer *pPlayer)
-{
-	return FlPlayerFallDamage_(pPlayer);
-}
-
-BOOL CHalfLifeMultiplay::FPlayerCanTakeDamage(CBasePlayer *pPlayer, CBaseEntity *pAttacker)
-{
-	return FPlayerCanTakeDamage_(pPlayer, pAttacker);
-}
-
-void CHalfLifeMultiplay::PlayerSpawn(CBasePlayer *pPlayer)
-{
-	PlayerSpawn_(pPlayer);
-}
-
-void CHalfLifeMultiplay::PlayerThink(CBasePlayer *pPlayer)
-{
-	PlayerThink_(pPlayer);
-}
-
-BOOL CHalfLifeMultiplay::FPlayerCanRespawn(CBasePlayer *pPlayer)
-{
-	return FPlayerCanRespawn_(pPlayer);
-}
-
-float CHalfLifeMultiplay::FlPlayerSpawnTime(CBasePlayer *pPlayer)
-{
-	return FlPlayerSpawnTime_(pPlayer);
-}
-
-edict_t *CHalfLifeMultiplay::GetPlayerSpawnSpot(CBasePlayer *pPlayer)
-{
-	return GetPlayerSpawnSpot_(pPlayer);
-}
-
-BOOL CHalfLifeMultiplay::AllowAutoTargetCrosshair(void)
-{
-	return AllowAutoTargetCrosshair_();
-}
-
-BOOL CHalfLifeMultiplay::ClientCommand_DeadOrAlive(CBasePlayer *pPlayer, const char *pcmd)
-{
-	return ClientCommand_DeadOrAlive_(pPlayer, pcmd);
-}
-
-BOOL CHalfLifeMultiplay::ClientCommand(CBasePlayer *pPlayer, const char *pcmd)
-{
-	return ClientCommand_(pPlayer, pcmd);
-}
-
-void CHalfLifeMultiplay::ClientUserInfoChanged(CBasePlayer *pPlayer, char *infobuffer)
-{
-	ClientUserInfoChanged_(pPlayer, infobuffer);
-}
-
-int CHalfLifeMultiplay::IPointsForKill(CBasePlayer *pAttacker, CBasePlayer *pKilled)
-{
-	return IPointsForKill_(pAttacker, pKilled);
-}
-
-void CHalfLifeMultiplay::PlayerKilled(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor)
-{
-	PlayerKilled_(pVictim, pKiller, pInflictor);
-}
-
-void CHalfLifeMultiplay::DeathNotice(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor)
-{
-	DeathNotice_(pVictim, pKiller, pInflictor);
-}
-
-BOOL CHalfLifeMultiplay::CanHavePlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pWeapon)
-{
-	return CanHavePlayerItem_(pPlayer, pWeapon);
-}
-
-void CHalfLifeMultiplay::PlayerGotWeapon(CBasePlayer *pPlayer, CBasePlayerItem *pWeapon)
-{
-	PlayerGotWeapon_(pPlayer, pWeapon);
-}
-
-int CHalfLifeMultiplay::WeaponShouldRespawn(CBasePlayerItem *pWeapon)
-{
-	return WeaponShouldRespawn_(pWeapon);
-}
-
-float CHalfLifeMultiplay::FlWeaponRespawnTime(CBasePlayerItem *pWeapon)
-{
-	return FlWeaponRespawnTime_(pWeapon);
-}
-
-float CHalfLifeMultiplay::FlWeaponTryRespawn(CBasePlayerItem *pWeapon)
-{
-	return FlWeaponTryRespawn_(pWeapon);
-}
-
-Vector CHalfLifeMultiplay::VecWeaponRespawnSpot(CBasePlayerItem *pWeapon)
-{
-	return VecWeaponRespawnSpot_(pWeapon);
-}
-
-BOOL CHalfLifeMultiplay::CanHaveItem(CBasePlayer *pPlayer, CItem *pItem)
-{
-	return CanHaveItem_(pPlayer, pItem);
-}
-
-void CHalfLifeMultiplay::PlayerGotItem(CBasePlayer *pPlayer, CItem *pItem)
-{
-	PlayerGotItem_(pPlayer, pItem);
-}
-
-int CHalfLifeMultiplay::ItemShouldRespawn(CItem *pItem)
-{
-	return ItemShouldRespawn_(pItem);
-}
-
-float CHalfLifeMultiplay::FlItemRespawnTime(CItem *pItem)
-{
-	return FlItemRespawnTime_(pItem);
-}
-
-Vector CHalfLifeMultiplay::VecItemRespawnSpot(CItem *pItem)
-{
-	return VecItemRespawnSpot_(pItem);
-}
-
-void CHalfLifeMultiplay::PlayerGotAmmo(CBasePlayer *pPlayer, char *szName, int iCount)
-{
-	PlayerGotAmmo_(pPlayer, szName, iCount);
-}
-
-int CHalfLifeMultiplay::AmmoShouldRespawn(CBasePlayerAmmo *pAmmo)
-{
-	return AmmoShouldRespawn_(pAmmo);
-}
-
-float CHalfLifeMultiplay::FlAmmoRespawnTime(CBasePlayerAmmo *pAmmo)
-{
-	return FlAmmoRespawnTime_(pAmmo);
-}
-
-Vector CHalfLifeMultiplay::VecAmmoRespawnSpot(CBasePlayerAmmo *pAmmo)
-{
-	return VecAmmoRespawnSpot_(pAmmo);
-}
-
-float CHalfLifeMultiplay::FlHealthChargerRechargeTime(void)
-{
-	return FlHealthChargerRechargeTime_();
-}
-
-float CHalfLifeMultiplay::FlHEVChargerRechargeTime(void)
-{
-	return FlHEVChargerRechargeTime_();
-}
-
-int CHalfLifeMultiplay::DeadPlayerWeapons(CBasePlayer *pPlayer)
-{
-	return DeadPlayerWeapons_(pPlayer);
-}
-
-int CHalfLifeMultiplay::DeadPlayerAmmo(CBasePlayer *pPlayer)
-{
-	return DeadPlayerAmmo_(pPlayer);
-}
-
-int CHalfLifeMultiplay::PlayerRelationship(CBasePlayer *pPlayer, CBaseEntity *pTarget)
-{
-	return PlayerRelationship_(pPlayer, pTarget);
-}
-
-BOOL CHalfLifeMultiplay::FAllowMonsters(void)
-{
-	return FAllowMonsters_();
-}
-
-void CHalfLifeMultiplay::ServerDeactivate(void)
-{
-	ServerDeactivate_();
-}
-
-void CHalfLifeMultiplay::CheckMapConditions(void)
-{
-	CheckMapConditions_();
-}
-
-void CHalfLifeMultiplay::CleanUpMap(void)
-{
-	CleanUpMap_();
-}
-
-void CHalfLifeMultiplay::RestartRound(void)
-{
-	RestartRound_();
-}
-
-void CHalfLifeMultiplay::CheckWinConditions(void)
-{
-	CheckWinConditions_();
-}
-
-void CHalfLifeMultiplay::RemoveGuns(void)
-{
-	RemoveGuns_();
-}
-
-void CHalfLifeMultiplay::GiveC4(void)
-{
-	GiveC4_();
-}
-
-void CHalfLifeMultiplay::ChangeLevel(void)
-{
-	ChangeLevel_();
-}
-
-void CHalfLifeMultiplay::GoToIntermission(void)
-{
-	GoToIntermission_();
-}
-
-#endif // HOOK_GAMEDLL

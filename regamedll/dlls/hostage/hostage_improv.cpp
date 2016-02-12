@@ -1,22 +1,27 @@
 #include "precompiled.h"
 
 /* <4703fc> ../cstrike/dlls/hostage/hostage_improv.cpp:19 */
-inline void DrawAxes(Vector &origin, int red, int green, int blue)
+inline void DrawAxes(const Vector &origin, int red, int green, int blue)
 {
-//	{
-//		float size;                                           //    21
-//	}
+	float size = 10;
+
+	if (cv_hostage_debug.value != 1.0f)
+		return;
+
+	UTIL_DrawBeamPoints(origin - Vector(size, 0, 0), origin + Vector(size, 0, 0), 2, red, green, blue);
+	UTIL_DrawBeamPoints(origin - Vector(0, size, 0), origin + Vector(0, size, 0), 2, red, green, blue);
+	UTIL_DrawBeamPoints(origin + Vector(0, 0, size), origin - Vector(0, 0, size), 2, red, green, blue);
 }
 
 /* <47353e> ../cstrike/dlls/hostage/hostage_improv.cpp:41 */
 CHostageImprov::CHostageImprov(CBaseEntity *entity)
 {
-	m_hostage = reinterpret_cast<CHostage *>(entity);
+	m_hostage = static_cast<CHostage *>(entity);
 	OnReset();
 }
 
 /* <470d33> ../cstrike/dlls/hostage/hostage_improv.cpp:52 */
-bool CHostageImprov::__MAKE_VHOOK(IsAlive)(void) const
+bool CHostageImprov::__MAKE_VHOOK(IsAlive)() const
 {
 	return m_hostage->pev->deadflag != DEAD_DEAD;
 }
@@ -84,7 +89,7 @@ void CHostageImprov::__MAKE_VHOOK(LookAt)(const Vector &target)
 }
 
 /* <470d97> ../cstrike/dlls/hostage/hostage_improv.cpp:126 */
-void CHostageImprov::__MAKE_VHOOK(ClearLookAt)(void)
+void CHostageImprov::__MAKE_VHOOK(ClearLookAt)()
 {
 	m_isLookingAt = false;
 }
@@ -97,7 +102,7 @@ void CHostageImprov::__MAKE_VHOOK(FaceTo)(const Vector &goal)
 }
 
 /* <470dfb> ../cstrike/dlls/hostage/hostage_improv.cpp:145 */
-void CHostageImprov::__MAKE_VHOOK(ClearFaceTo)(void)
+void CHostageImprov::__MAKE_VHOOK(ClearFaceTo)()
 {
 	m_isFacingTo = false;
 }
@@ -109,7 +114,6 @@ void CHostageImprov::MoveTowards(const Vector &pos, float deltaT)
 	float_precision accelRate;
 	const float crouchWalkRate = 250.0f;
 
-	//
 	// Jump up on ledges
 	// Because we may not be able to get to our goal position and enter the next
 	// area because our extent collides with a nearby vertical ledge, make sure
@@ -117,8 +121,7 @@ void CHostageImprov::MoveTowards(const Vector &pos, float deltaT)
 	// Can't look too far ahead, or bots will try to jump up slopes.
 	//
 	// NOTE: We need to do this frequently to catch edges at the right time
-	// @todo Look ahead *along path* instead of straight line 
-	//
+	// TODO: Look ahead *along path* instead of straight line
 
 	ClearPath();
 
@@ -197,205 +200,290 @@ void CHostageImprov::MoveTowards(const Vector &pos, float deltaT)
 			accelRate = 1000;
 		break;
 	}
-	
+
 	m_vel.x = move.x * accelRate * deltaT + m_vel.x;
 	m_vel.y = move.y * accelRate * deltaT + m_vel.y;
 }
 
-void (*pCHostageImprov__FaceTowards)();
-
 /* <473e46> ../cstrike/dlls/hostage/hostage_improv.cpp:262 */
-NOBODY bool __declspec(naked) CHostageImprov::FaceTowards(const Vector &target, float deltaT)
+bool CHostageImprov::FaceTowards(const Vector &target, float deltaT)
 {
-	__asm
+	float error = 0;
+	Vector2D to = (target - GetFeet()).Make2D();
+
+#ifndef PLAY_GAMEDLL
+	to.NormalizeInPlace();
+#else
+	// TODO: fix test demo
+	float_precision float_x = target.x - GetFeet().x;
+	float_precision float_y = target.y - GetFeet().y;
+	float_precision flLen = to.Length();
+
+	if (flLen <= 0)
 	{
-		jmp pCHostageImprov__FaceTowards
+		to.x = 1;
+		to.y = 0;
+	}
+	else
+	{
+		to.x = float_x / flLen;
+		to.y = float_y / flLen;
+	}
+#endif // PLAY_GAMEDLL
+
+	float moveAngle = GetMoveAngle();
+
+	Vector2D lat(BotCOS(moveAngle), BotSIN(moveAngle));
+	Vector2D dir(-lat.y, lat.x);
+
+	float_precision dot = DotProduct(to, dir);
+
+	if (DotProduct(to, lat) < 0.0f)
+	{
+		if (dot >= 0.0f)
+			dot = 1.0f;
+		else
+			dot = -1.0f;
+
+		error = 1;
 	}
 
-//	{
-//		class Vector2D to;                                    //   264
-//		float moveAngle;                                      //   267
-//		class Vector2D dir;                                   //   270
-//		class Vector2D lat;                                   //   271
-//		float const maxTurnRate;                               //   273
-//		float error;                                          //   275
-//		float dot;                                            //   278
-//		operator-(const Vector *const this,
-//				const Vector &v);  //   264
-//		NormalizeInPlace(Vector2D *const this);  //   265
-//		DotProduct(const class Vector2D &a,
-//				const class Vector2D &b);  //   275
-//		DotProduct(const class Vector2D &a,
-//				const class Vector2D &b);  //   278
-//		{
-//			float const tolerance;                         //   285
-//			fabs(double __x);  //   286
-//		}
-//		SetMoveAngle(CHostageImprov *const this,
-//				float angle);  //   298
-//	}
+	const float maxTurnRate = 0.05f;
+
+	if (error || fabs(dot) >= maxTurnRate)
+	{
+		const float tolerance = 300.0f;
+		float moveRatio = dot * deltaT * tolerance + moveAngle;
+
+		BotCOS(moveRatio);
+		BotSIN(moveRatio);
+
+		m_moveAngle = moveRatio;
+		m_hostage->pev->angles.y = moveRatio;
+
+		return false;
+	}
+
+	return true;
 }
 
 /* <47402b> ../cstrike/dlls/hostage/hostage_improv.cpp:308 */
-NOBODY void CHostageImprov::FaceOutwards(void)
+void CHostageImprov::FaceOutwards()
 {
-//	{
-//		TraceResult result;                                   //   310
-//		Vector to;                                      //   312
-//		float farthestRange;                                  //   313
-//		int farthest;                                         //   314
-//		int const cornerCount;                                 //   316
-//		Vector corner;                                  //   317
-//		{
-//			int i;                                        //   325
-//			{
-//				float range;                          //   328
-//				operator+(const Vector *const this,
-//						const Vector &v);  //   327
-//				operator-(const Vector *const this,
-//						const Vector &v);  //   328
-//				LengthSquared(const Vector *const this);  //   328
-//			}
-//		}
-//		operator+(const Vector *const this,
-//				const Vector &v);  //   337
-//		Vector(Vector *const this,
-//			float X,
-//			float Y,
-//			float Z);  //   323
-//		Vector(Vector *const this,
-//			float X,
-//			float Y,
-//			float Z);  //   323
-//		Vector(Vector *const this,
-//			float X,
-//			float Y,
-//			float Z);  //   323
-//		Vector(Vector *const this,
-//			float X,
-//			float Y,
-//			float Z);  //   323
-//	}
+	TraceResult result;
+	Vector to;
+	float farthestRange = 0.0f;
+	int farthest = 0;
+
+	static Vector corner[] =
+	{
+		Vector(-1000, 1000, 0),
+		Vector(1000, 1000, 0),
+		Vector(-1000, -1000, 0),
+		Vector(1000, -1000, 0)
+	};
+
+	const int cornerCount = ARRAYSIZE(corner);
+
+	for (int i = 0; i < cornerCount; ++i)
+	{
+		to = GetCentroid() + corner[i];
+
+		UTIL_TraceLine(GetCentroid(), to, ignore_monsters, ignore_glass, m_hostage->edict(), &result);
+
+		float_precision range = (result.vecEndPos - GetCentroid()).LengthSquared();
+
+		if (range > farthestRange)
+		{
+			farthestRange = range;
+			farthest = i;
+		}
+	}
+
+	to = GetCentroid() + corner[farthest];
+	FaceTo(to);
 }
 
 /* <470e23> ../cstrike/dlls/hostage/hostage_improv.cpp:344 */
-NOBODY bool CHostageImprov::__MAKE_VHOOK(IsAtMoveGoal)(float error) const
+bool CHostageImprov::__MAKE_VHOOK(IsAtMoveGoal)(float error) const
 {
-//	operator-(const Vector *const this,
-//			const Vector &v);  //   346
-//	IsLengthLessThan(const Vector *const this,
-//			float length);  //   346
+	return (GetFeet() - m_moveGoal).IsLengthLessThan(error);
 }
 
 /* <470eab> ../cstrike/dlls/hostage/hostage_improv.cpp:353 */
-NOBODY bool CHostageImprov::__MAKE_VHOOK(IsAtFaceGoal)(void) const
+bool CHostageImprov::__MAKE_VHOOK(IsAtFaceGoal)() const
 {
+	return false;
 }
+
+// Return true if a friend is between us and the given position
 
 /* <46fb4b> ../cstrike/dlls/hostage/hostage_improv.cpp:395 */
-NOBODY bool CHostageImprov::__MAKE_VHOOK(IsFriendInTheWay)(const Vector &goalPos) const
+bool CHostageImprov::__MAKE_VHOOK(IsFriendInTheWay)(const Vector &goalPos) const
 {
-//	{
-//		float const avoidFriendInterval;                       //   403
-//		IsElapsed(const class CountdownTimer *const this);  //   398
-//		{
-//			class CheckWayFunctor check;                  //   411
-//		}
-//		{
-//			int i;                                        //   421
-//			{
-//				class CBasePlayer *player;           //   423
-//			}
-//		}
-//	}
-//	IsFriendInTheWay(const class CHostageImprov *const this,
-//			const Vector &goalPos);  //   395
+	// do this check less often to ease CPU burden
+	if (!m_avoidFriendTimer.IsElapsed())
+	{
+		return m_isFriendInTheWay;
+	}
+
+	const float avoidFriendInterval = 0.5f;
+	m_avoidFriendTimer.Start(avoidFriendInterval);
+
+	CheckWayFunctor check(this, goalPos);
+
+	if (g_pHostages != NULL)
+	{
+		g_pHostages->ForEachHostage(check);
+
+		if (check.m_blocker != NULL)
+		{
+			return m_isFriendInTheWay = true;
+		}
+	}
+
+	// check if any CT are overlapping this linear path
+	for (int i = 1; i <= gpGlobals->maxClients; ++i)
+	{
+		CBasePlayer *player = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+
+		if (player == NULL)
+			continue;
+
+		if (FNullEnt(player->pev))
+			continue;
+
+		if (!player->IsAlive() || player->m_iTeam == TERRORIST)
+			continue;
+
+		if (IsFriendInTheWay(player, goalPos))
+		{
+			m_isFriendInTheWay = true;
+			break;
+		}
+	}
+
+	return m_isFriendInTheWay;
 }
 
+// Return true if a friend is between us and the given entity
+
 /* <472b83> ../cstrike/dlls/hostage/hostage_improv.cpp:453 */
-NOBODY bool CHostageImprov::__MAKE_VHOOK(IsFriendInTheWay)(CBaseEntity *myFriend, const Vector &goalPos) const
+bool CHostageImprov::__MAKE_VHOOK(IsFriendInTheWay)(CBaseEntity *myFriend, const Vector &goalPos) const
 {
-//	{
-//		Vector moveDir;                                 //   460
-//		float length;                                         //   463
-//		Vector friendFeet;                              //   465
-//		Vector toFriend;                                //   476
-//		float const personalSpace;                             //   479
-//		float friendDistAlong;                                //   484
-//		Vector pos;                                     //   491
-//		float const friendRadius;                              //   498
-//		operator-(const Vector *const this,
-//				const Vector &v);  //   460
-//		NormalizeInPlace(Vector *const this);  //   463
-//		operator-(const Vector *const this,
-//				const Vector &v);  //   476
-//		IsLengthGreaterThan(const Vector *const this,
-//					float length);  //   480
-//		DotProduct(Vector &a,
-//				const Vector &b);  //   484
-//		operator-(const Vector *const this,
-//				const Vector &v);  //   499
-//		IsLengthLessThan(const Vector *const this,
-//				float length);  //   499
-//		IsZero(Vector *const this,
-//			float tolerance);  //   504
-//		DotProduct(Vector &a,
-//				const Vector &b);  //   507
-//		operator*(float fl,
-//				const Vector &v);  //   495
-//		operator+(const Vector *const this,
-//				const Vector &v);  //   495
-//	}
+	if (m_hostage == myFriend)
+		return false;
+
+	// compute ray along intended path
+	Vector moveDir = goalPos - GetFeet();
+	Vector friendFeet = myFriend->pev->origin;
+
+	// make it a unit vector
+	float length = moveDir.NormalizeInPlace();
+
+	if (myFriend->IsPlayer())
+		friendFeet.z = myFriend->pev->absmin.z;
+
+	Vector toFriend = friendFeet - GetFeet();
+
+	// check if friend is in our "personal space"
+	const float personalSpace = 100.0f;
+	if (toFriend.IsLengthGreaterThan(personalSpace))
+		return false;
+
+	// find distance of friend along our movement path
+	float friendDistAlong = DotProduct(toFriend, moveDir);
+
+	// if friend is behind us, ignore him
+	if (friendDistAlong <= 0.0f)
+		return false;
+
+	// constrain point to be on path segment
+	Vector pos;
+	if (friendDistAlong >= length)
+		pos = goalPos;
+	else
+		pos = GetFeet() + moveDir * friendDistAlong;
+
+	// check if friend overlaps our intended line of movement
+	const float friendRadius = 30.0f;
+	if (!(pos - friendFeet).IsLengthLessThan(friendRadius))
+		return false;
+
+	if (!myFriend->pev->velocity.IsZero())
+	{
+		if (DotProduct(myFriend->pev->velocity, m_hostage->pev->velocity) >= 0.0)
+			return false;
+	}
+
+	// friend is in our personal space and overlaps our intended line of movement
+	return true;
 }
 
 /* <474309> ../cstrike/dlls/hostage/hostage_improv.cpp:557 */
-NOBODY bool CHostageImprov::IsFriendInTheWay(void)
+bool CHostageImprov::IsFriendInTheWay() const
 {
-//	{
-//		class CheckAhead check;                               //   559
-//		CheckAhead(CheckAhead *const this,
-//				const class CHostageImprov *me);  //   559
-//		ForEachHostage<CheckAhead>(const class CHostageManager *const this,
-//						class CheckAhead &func);  //   561
-//		ForEachPlayer<CheckAhead>(CheckAhead &func);  //   562
-//	}
+	CheckAhead check(this);
+	g_pHostages->ForEachHostage(check);
+	ForEachPlayer(check);
+
+	return check.IsBlocked();
 }
 
 /* <474631> ../cstrike/dlls/hostage/hostage_improv.cpp:568 */
-NOBODY float CHostageImprov::GetSpeed(void)
+float CHostageImprov::GetSpeed()
 {
+	return -1.0f;
 }
 
 /* <46f249> ../cstrike/dlls/hostage/hostage_improv.cpp:592 */
-NOBODY bool CHostageImprov::__MAKE_VHOOK(Jump)(void)
+bool CHostageImprov::__MAKE_VHOOK(Jump)()
 {
-//	IsElapsed(const class CountdownTimer *const this);  //   604
-//	{
-//		float const epsilon;                                   //   609
-//		float const minJumpInterval;                           //   618
-//		{
-//			float const fudge;                             //   613
-//		}
-//	}
-//	Jump(CHostageImprov *const this);  //   592
+	if (IsCrouching() || g_pHostages->IsNearbyHostageJumping(this))
+		return false;
+
+	if (!m_jumpTimer.IsElapsed())
+		return false;
+
+	const float epsilon = 1.0f;
+
+	m_hasJumped = false;
+	m_moveFlags |= IN_JUMP;
+
+	if (m_hostage->pev->velocity.LengthSquared() < epsilon)
+	{
+		const float fudge = 2.0f;
+		m_hostage->pev->origin.z += fudge;
+	}
+
+	const float minJumpInterval = 3.0f;
+	m_jumpTimer.Start(minJumpInterval);
+
+	m_animateState.Reset();
+	m_animateState.SetPerformance(HostageAnimateState::Jump);
+	m_animateState.AddSequence(this, ACT_HOP);
+
+	return true;
 }
 
 /* <470ed3> ../cstrike/dlls/hostage/hostage_improv.cpp:632 */
-NOBODY void CHostageImprov::__MAKE_VHOOK(Run)(void)
+void CHostageImprov::__MAKE_VHOOK(Run)()
 {
+	m_moveType = m_moveLimit;
 }
 
 /* <470efb> ../cstrike/dlls/hostage/hostage_improv.cpp:638 */
-NOBODY void CHostageImprov::__MAKE_VHOOK(Walk)(void)
+void CHostageImprov::__MAKE_VHOOK(Walk)()
 {
+	m_moveType = (m_moveLimit > Walking) ? Walking : m_moveLimit;
 }
 
 /* <470f23> ../cstrike/dlls/hostage/hostage_improv.cpp:644 */
-void CHostageImprov::__MAKE_VHOOK(Stop)(void)
+void CHostageImprov::__MAKE_VHOOK(Stop)()
 {
 	MoveTo(GetFeet());
 	m_hostage->pev->velocity = Vector(0, 0, 0);
-	
+
 	if (m_moveLimit > Stopped)
 		m_moveType = Stopped;
 	else
@@ -403,38 +491,36 @@ void CHostageImprov::__MAKE_VHOOK(Stop)(void)
 }
 
 /* <470f4c> ../cstrike/dlls/hostage/hostage_improv.cpp:655 */
-const Vector &CHostageImprov::__MAKE_VHOOK(GetFeet)(void) const
+const Vector &CHostageImprov::__MAKE_VHOOK(GetFeet)() const
 {
 	return m_hostage->pev->origin;
 }
 
 /* <470f74> ../cstrike/dlls/hostage/hostage_improv.cpp:661 */
-const Vector &CHostageImprov::__MAKE_VHOOK(GetCentroid)(void) const
+const Vector &CHostageImprov::__MAKE_VHOOK(GetCentroid)() const
 {
 	m_centroid = m_hostage->pev->origin + Vector(0, 0, 36);
 	return m_centroid;
 }
 
 /* <470f9c> ../cstrike/dlls/hostage/hostage_improv.cpp:671 */
-const Vector &CHostageImprov::__MAKE_VHOOK(GetEyes)(void) const
+const Vector &CHostageImprov::__MAKE_VHOOK(GetEyes)() const
 {
 	m_eye = m_hostage->pev->origin + Vector(0, 0, 72) - Vector(0, 0, 7);
 	return m_eye;
 }
 
 /* <470fc4> ../cstrike/dlls/hostage/hostage_improv.cpp:681 */
-NOBODY bool CHostageImprov::__MAKE_VHOOK(IsOnGround)(void) const
+bool CHostageImprov::__MAKE_VHOOK(IsOnGround)() const
 {
+	return (m_hostage->pev->flags & FL_ONGROUND) != 0;
 }
 
 /* <470fec> ../cstrike/dlls/hostage/hostage_improv.cpp:687 */
-NOBODY bool CHostageImprov::__MAKE_VHOOK(IsMoving)(void) const
+bool CHostageImprov::__MAKE_VHOOK(IsMoving)() const
 {
-//	{
-//		float const epsilon;                                   //   689
-//		IsLengthGreaterThan(const Vector *const this,
-//					float length);  //   690
-//	}
+	float const epsilon = 10.0f;
+	return m_actualVel.IsLengthGreaterThan(epsilon);
 }
 
 /* <4715d1> ../cstrike/dlls/hostage/hostage_improv.cpp:697 */
@@ -448,55 +534,88 @@ bool CHostageImprov::__MAKE_VHOOK(IsVisible)(const Vector &pos, bool testFOV) co
 }
 
 /* <472938> ../cstrike/dlls/hostage/hostage_improv.cpp:728 */
-NOBODY bool CHostageImprov::__MAKE_VHOOK(IsPlayerLookingAtMe)(CBasePlayer *other, float cosTolerance) const
+bool CHostageImprov::__MAKE_VHOOK(IsPlayerLookingAtMe)(CBasePlayer *other, float cosTolerance) const
 {
-//	{
-//		class Vector2D toOther;                               //   730
-//		class Vector2D otherDir;                              //   737
-//		NormalizeInPlace(Vector2D *const this);  //   733
-//		operator+(const Vector *const this,
-//				const Vector &v);  //   736
-//		NormalizeInPlace(Vector2D *const this);  //   740
-//	}
+	Vector2D toOther = (other->pev->origin - GetCentroid()).Make2D();
+	toOther.NormalizeInPlace();
+
+	UTIL_MakeVectors(other->pev->punchangle + other->pev->v_angle);
+
+	Vector2D otherDir = gpGlobals->v_forward.Make2D();
+	otherDir.NormalizeInPlace();
+
+	if (-cosTolerance > DotProduct(toOther, otherDir))
+	{
+		if (IsVisible(other->EyePosition()))
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 
 /* <472a9f> ../cstrike/dlls/hostage/hostage_improv.cpp:757 */
-NOBODY CBasePlayer *CHostageImprov::__MAKE_VHOOK(IsAnyPlayerLookingAtMe)(int team, float cosTolerance) const
+CBasePlayer *CHostageImprov::__MAKE_VHOOK(IsAnyPlayerLookingAtMe)(int team, float cosTolerance) const
 {
-//	{
-//		int i;                                                //   759
-//		{
-//			class CBasePlayer *player;                   //   761
-//			IsEntityValid(CBaseEntity *entity);  //   763
-//		}
-//	}
+	for (int i = 1; i <= gpGlobals->maxClients; ++i)
+	{
+		CBasePlayer *player = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+
+		if (!IsEntityValid(player))
+			continue;
+
+		if (player->IsAlive() && (team == UNASSIGNED || player->m_iTeam == team))
+		{
+			if (IsPlayerLookingAtMe(player, cosTolerance))
+			{
+				return player;
+			}
+		}
+	}
+
+	return NULL;
 }
 
 /* <472e7b> ../cstrike/dlls/hostage/hostage_improv.cpp:783 */
-NOBODY CBasePlayer *CHostageImprov::__MAKE_VHOOK(GetClosestPlayerByTravelDistance)(int team, float *range) const
+CBasePlayer *CHostageImprov::__MAKE_VHOOK(GetClosestPlayerByTravelDistance)(int team, float *range) const
 {
-//	{
-//		class CBasePlayer *close;                            //   788
-//		float closeRange;                                     //   789
-//		{
-//			int i;                                        //   791
-//			{
-//				class CBasePlayer *player;           //   793
-//				class ShortestPathCost cost;          //   804
-//				Vector vecCenter;               //   805
-//				float range;                          //   806
-//				IsEntityValid(CBaseEntity *entity);  //   795
-//				NavAreaTravelDistance<ShortestPathCost>(const Vector *startPos,
-//									class CNavArea *startArea,
-//									const Vector *goalPos,
-//									class ShortestPathCost &costFunc);  //   806
-//			}
-//		}
-//	}
+	CBasePlayer *close = NULL;
+	float closeRange = 9.9999998e10f;
+
+	if (GetLastKnownArea() == NULL)
+		return NULL;
+
+	for (int i = 1; i <= gpGlobals->maxClients; ++i)
+	{
+		CBasePlayer *player = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+
+		if (!IsEntityValid(player))
+			continue;
+
+		if (player->IsAlive() && (team == UNASSIGNED || player->m_iTeam == team))
+		{
+			ShortestPathCost cost;
+			Vector vecCenter = player->Center();
+
+			float_precision range = NavAreaTravelDistance(GetLastKnownArea(), TheNavAreaGrid.GetNearestNavArea(&vecCenter), cost);
+
+			if (range > 0 && range < closeRange)
+			{
+				closeRange = range;
+				close = player;
+			}
+		}
+	}
+
+	if (range)
+		*range = closeRange;
+
+	return close;
 }
 
 /* <47166d> ../cstrike/dlls/hostage/hostage_improv.cpp:822 */
-void CHostageImprov::__MAKE_VHOOK(OnReset)(void)
+void CHostageImprov::__MAKE_VHOOK(OnReset)()
 {
 	m_moveFlags = 0;
 	m_moveType = Stopped;
@@ -553,28 +672,51 @@ void CHostageImprov::__MAKE_VHOOK(OnReset)(void)
 }
 
 /* <474659> ../cstrike/dlls/hostage/hostage_improv.cpp:886 */
-NOBODY void CHostageImprov::UpdateVision(void)
+void CHostageImprov::UpdateVision()
 {
-//	IsElapsed(const class CountdownTimer *const this);  //   888
-//	{
-//		int i;                                                //   893
-//		{
-//			class CBasePlayer *player;                   //   895
-//			FNullEnt(entvars_t *pev);  //   900
-//			Start(IntervalTimer *const this);  //   914
-//			Start(IntervalTimer *const this);  //   916
-//		}
-//	}
-//	Start(CountdownTimer *const this,
-//		float duration);  //   924
+	if (!m_visionTimer.IsElapsed())
+		return;
+
+	m_visiblePlayerCount = false;
+
+	for (int i = 1; i <= gpGlobals->maxClients; ++i)
+	{
+		CBasePlayer *player = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+
+		if (player == NULL)
+			continue;
+
+		if (FNullEnt(player->pev))
+			continue;
+
+		if (FStrEq(STRING(player->pev->netname), ""))
+			continue;
+
+		if (player->IsAlive() && IsVisible(player->pev->origin, true))
+		{
+			m_visiblePlayer[m_visiblePlayerCount] = player;
+
+			if (player->m_iTeam == TERRORIST)
+				m_lastSawT.Start();
+			else
+				m_lastSawCT.Start();
+
+			if (++m_visiblePlayerCount == ARRAYSIZE(m_visiblePlayer))
+				break;
+		}
+	}
+
+	m_visionTimer.Start(RANDOM_FLOAT(0.4, 0.6));
 }
 
 /* <476e49> ../cstrike/dlls/hostage/hostage_improv.cpp:997 */
-NOBODY void CHostageImprov::__MAKE_VHOOK(TrackPath)(const Vector &pathGoal, float deltaT)
+void CHostageImprov::__MAKE_VHOOK(TrackPath)(const Vector &pathGoal, float deltaT)
 {
-//	TrackPath(CHostageImprov *const this,
-//			const Vector &pathGoal,
-//			float deltaT);  //   997
+	FaceTowards(pathGoal, deltaT);
+	MoveTowards(pathGoal, deltaT);
+
+	m_jumpTarget = pathGoal;
+	DrawAxes(pathGoal, 255, 0, 255);
 }
 
 /* <474781> ../cstrike/dlls/hostage/hostage_improv.cpp:1014 */
@@ -598,7 +740,7 @@ void CHostageImprov::SetKnownGoodPosition(const Vector &pos)
 }
 
 /* <47486d> ../cstrike/dlls/hostage/hostage_improv.cpp:1038 */
-void CHostageImprov::ResetToKnownGoodPosition(void)
+void CHostageImprov::ResetToKnownGoodPosition()
 {
 	const float tolerance = 10.0f;
 
@@ -630,125 +772,265 @@ void CHostageImprov::ResetToKnownGoodPosition(void)
 }
 
 /* <47105c> ../cstrike/dlls/hostage/hostage_improv.cpp:1082 */
-void CHostageImprov::__MAKE_VHOOK(StartLadder)(const class CNavLadder *ladder, NavTraverseType how, const Vector *approachPos, const Vector *departPos)
+void CHostageImprov::__MAKE_VHOOK(StartLadder)(const CNavLadder *ladder, NavTraverseType how, const Vector *approachPos, const Vector *departPos)
 {
 	m_traversingLadder = true;
 }
 
 /* <4710c4> ../cstrike/dlls/hostage/hostage_improv.cpp:1094 */
-NOBODY bool CHostageImprov::__MAKE_VHOOK(TraverseLadder)(const CNavLadder *ladder, NavTraverseType how, const Vector *approachPos, const Vector *departPos, float deltaT)
+bool CHostageImprov::__MAKE_VHOOK(TraverseLadder)(const CNavLadder *ladder, NavTraverseType how, const Vector *approachPos, const Vector *departPos, float deltaT)
 {
-//	{
-//		Vector goal;                                    //  1098
-//		AddDirectionVector(Vector *v,
-//					enum NavDirType dir,
-//					float amount);  //  1122
-//		{
-//			float const atGoalRange;                       //  1198
-//			{
-//				float closeRange;                     //  1158
-//				float range;                          //  1158
-//				operator-(const Vector *const this,
-//						const Vector &v);  //  1162
-//				LengthSquared(const Vector *const this);  //  1162
-//				operator-(const Vector *const this,
-//						const Vector &v);  //  1174
-//				LengthSquared(const Vector *const this);  //  1174
-//				operator-(const Vector *const this,
-//						const Vector &v);  //  1186
-//				LengthSquared(const Vector *const this);  //  1186
-//			}
-//			operator-(const Vector *const this,
-//					const Vector &v);  //  1199
-//			IsLengthLessThan(const class Vector2D *const this,
-//					float length);  //  1199
-//		}
-//		{
-//			float const walkRange;                         //  1130
-//			float const ladderRange;                       //  1135
-//			operator-(const Vector *const this,
-//					const Vector &v);  //  1131
-//			IsLengthLessThan(const class Vector2D *const this,
-//					float length);  //  1131
-//			operator-(const Vector *const this,
-//					const Vector &v);  //  1136
-//			IsLengthLessThan(const class Vector2D *const this,
-//					float length);  //  1136
-//		}
-//		AddDirectionVector(Vector *v,
-//					enum NavDirType dir,
-//					float amount);  //  1103
-//		{
-//			float const ladderRange;                       //  1108
-//			operator-(const Vector *const this,
-//					const Vector &v);  //  1109
-//			IsLengthLessThan(const class Vector2D *const this,
-//					float length);  //  1109
-//		}
-//	}
+	Vector goal;
+
+	if (how == GO_LADDER_DOWN)
+	{
+		goal = ladder->m_bottom;
+		AddDirectionVector(&goal, ladder->m_dir, 16);
+
+		if (ladder->m_top.z - 36.0f > GetFeet().z)
+		{
+			const float atGoalRange = 50.0f;
+			if ((GetFeet() - goal).Make2D().IsLengthLessThan(atGoalRange))
+			{
+				m_hostage->pev->velocity.z = -100.0f;
+			}
+		}
+
+		if (ladder->m_bottom.z + 36.0f > GetFeet().z)
+			return true;
+	}
+	else if (m_traversingLadder)
+	{
+		goal = ladder->m_top;
+		AddDirectionVector(&goal, ladder->m_dir, 16);
+
+		const float walkRange = 100.0f;
+
+		if ((GetFeet() - goal).Make2D().IsLengthLessThan(walkRange))
+		{
+			Walk();
+		}
+
+		const float ladderRange = 40.0f;
+		if ((GetFeet() - goal).Make2D().IsLengthLessThan(ladderRange))
+		{
+			m_hostage->pev->velocity.z = 150.0;
+		}
+
+		if (GetFeet().z > ladder->m_top.z)
+			m_traversingLadder = false;
+	}
+	else
+	{
+		if (departPos != NULL)
+		{
+			float closeRange = 1e6;
+			float range;
+
+			if (ladder->m_topForwardArea != NULL)
+			{
+				range = (*departPos - *ladder->m_topForwardArea->GetCenter()).LengthSquared();
+
+				if (range < closeRange)
+				{
+					closeRange = range;
+					goal = *ladder->m_topForwardArea->GetCenter();
+
+					if (ladder->m_topForwardArea->GetAttributes() & NAV_CROUCH)
+					{
+						Crouch();
+					}
+				}
+			}
+			if (ladder->m_topLeftArea != NULL)
+			{
+				range = (*departPos - *ladder->m_topLeftArea->GetCenter()).LengthSquared();
+
+				if (closeRange > range)
+				{
+					goal = *ladder->m_topLeftArea->GetCenter();
+
+					if (ladder->m_topLeftArea->GetAttributes() & NAV_CROUCH)
+					{
+						Crouch();
+					}
+				}
+			}
+			if (ladder->m_topRightArea != NULL)
+			{
+				range = (*departPos - *ladder->m_topRightArea->GetCenter()).LengthSquared();
+
+				if (closeRange > range)
+				{
+					goal = *ladder->m_topRightArea->GetCenter();
+
+					if (ladder->m_topRightArea->GetAttributes() & NAV_CROUCH)
+					{
+						Crouch();
+					}
+				}
+			}
+		}
+
+		const float ladderRange = 20.0f;
+		if ((GetFeet() - goal).Make2D().IsLengthLessThan(ladderRange))
+		{
+			return true;
+		}
+	}
+
+	TrackPath(goal, deltaT);
+	return false;
 }
 
 /* <477691> ../cstrike/dlls/hostage/hostage_improv.cpp:1214 */
-NOBODY void CHostageImprov::UpdatePosition(float deltaT)
+void CHostageImprov::UpdatePosition(float deltaT)
 {
-//	{
-//		class CNavArea *area;                                //  1217
-//		float const friction;                                  //  1344
-//		float speed;                                          //  1349
-//		float const maxSpeed;                                  //  1351
-//		class KeepPersonalSpace spacer;                       //  1365
-//		{
-//			float const pushSpeed;                         //  1258
-//			Vector dir;                             //  1260
-//			operator-(const Vector *const this,
-//					const Vector &v);  //  1260
-//			NormalizeInPlace(Vector *const this);  //  1262
-//			ResetJump(CHostageImprov *const this);  //  1247
-//		}
-//		{
-//			Vector angles;                          //  1282
-//			float yaw;                                    //  1284
-//			float pitch;                                  //  1288
-//			operator-(const Vector *const this,
-//					const Vector &v);  //  1282
-//		}
-//		{
-//			class HostagePathCost pathCost;               //  1322
-//			Compute<HostagePathCost>(CNavPath *const this,
-//						const Vector *start,
-//						const Vector *goal,
-//						class HostagePathCost &costFunc);  //  1323
-//			SetPath(CNavPathFollower *const this,
-//				class CNavPath *path);  //  1326
-//			SetImprov(CNavPathFollower *const this,
-//					class CImprov *improv);  //  1325
-//			Debug(CNavPathFollower *const this,
-//				bool status);  //  1328
-//		}
-//		IsElapsed(const class CountdownTimer *const this);  //  1333
-//		ResetStuck(CNavPathFollower *const this);  //  1336
-//		NormalizeInPlace(Vector2D *const this);  //  1349
-//		operator*(float fl,
-//				const class Vector2D &v);  //  1355
-//		KeepPersonalSpace(KeepPersonalSpace *const this,
-//					class CHostageImprov *improv);  //  1365
-//		ForEachPlayer<KeepPersonalSpace>(KeepPersonalSpace &func);  //  1366
-//		DrawAxes(Vector &origin,
-//			int red,
-//			int green,
-//			int blue);  //  1223
-//		ForEachHostage<KeepPersonalSpace>(const class CHostageManager *const this,
-//							class KeepPersonalSpace &func);  //  1369
-//	}
+	CNavArea *area = TheNavAreaGrid.GetNavArea(&m_hostage->pev->origin);
+
+	if (area != NULL)
+	{
+		m_lastKnownArea = area;
+	}
+
+	DrawAxes(m_moveGoal, 255, 255, 0);
+
+	if (IsJumping())
+	{
+		Vector dir;
+		const float pushSpeed = 100.0f;
+
+		if (!m_hasJumped)
+		{
+			m_hasJumped = true;
+			m_hasJumpedIntoAir = false;
+			m_hostage->pev->velocity.z += 300.0f;
+		}
+		else
+			ResetJump();
+
+		dir = m_jumpTarget - GetFeet();
+		dir.z = 0;
+
+		dir.NormalizeInPlace();
+
+		m_hostage->pev->velocity.x = dir.x * pushSpeed;
+		m_hostage->pev->velocity.y = dir.y * pushSpeed;
+
+		m_hostage->SetBoneController(0);
+		m_hostage->SetBoneController(1);
+
+		FaceTowards(m_jumpTarget, deltaT);
+		return;
+	}
+
+	if (m_isLookingAt)
+	{
+		Vector angles = UTIL_VecToAngles(m_viewGoal - GetEyes());
+		float_precision pitch = angles.x - m_hostage->pev->angles.x;
+		float_precision yaw = angles.y - m_hostage->pev->angles.y;
+
+		while (yaw > 180.0f)
+			yaw -= 360.0f;
+
+		while (yaw < -180.0f)
+			yaw += 360.0f;
+
+		while (pitch > 180.0f)
+			pitch -= 360.0f;
+
+		while (pitch < -180.0f)
+			pitch += 360.0f;
+
+		m_hostage->SetBoneController(0, yaw);
+		m_hostage->SetBoneController(1, -pitch);
+
+		if (IsAtMoveGoal() && !HasFaceTo())
+		{
+			if (yaw < -45.0f || yaw > 45.0f)
+			{
+				FaceTowards(m_viewGoal, deltaT);
+			}
+		}
+	}
+	else
+	{
+		m_hostage->SetBoneController(0);
+		m_hostage->SetBoneController(1);
+	}
+
+	if (HasFaceTo() && FaceTowards(m_faceGoal, deltaT))
+		ClearFaceTo();
+
+	if (!IsAtMoveGoal() || m_path.GetSegmentCount() > 0)
+	{
+		if (m_path.GetSegmentCount() <= 0)
+		{
+			HostagePathCost pathCost;
+			if (m_path.Compute(&GetFeet(), &m_moveGoal, pathCost))
+			{
+				m_follower.SetPath(&m_path);
+				m_follower.SetImprov(this);
+
+				m_follower.Reset();
+				m_follower.Debug(cv_hostage_debug.value > 0.0);
+			}
+		}
+
+		m_follower.Update(deltaT, m_inhibitObstacleAvoidance.IsElapsed());
+
+		if (m_moveType == Stopped)
+		{
+			m_follower.ResetStuck();
+		}
+
+		if (m_follower.IsStuck())
+		{
+			Wiggle();
+		}
+	}
+
+	const float friction = 3.0f;
+
+	m_vel.x += m_vel.x * -friction * deltaT;
+	m_vel.y += m_vel.y * -friction * deltaT;
+
+	float_precision speed = m_vel.NormalizeInPlace();
+
+	const float maxSpeed = 285.0f;
+	if (speed > maxSpeed)
+	{
+		speed = maxSpeed;
+	}
+
+	m_vel.x = m_vel.x * speed;
+	m_vel.y = m_vel.y * speed;
+
+	KeepPersonalSpace spacer(this);
+	ForEachPlayer(spacer);
+
+	if (g_pHostages != NULL)
+	{
+		g_pHostages->ForEachHostage(spacer);
+	}
+
+	m_hostage->pev->velocity.x = m_vel.x;
+	m_hostage->pev->velocity.y = m_vel.y;
+
+	m_moveFlags = 0;
 }
 
 /* <47837a> ../cstrike/dlls/hostage/hostage_improv.cpp:1384 */
-NOBODY void CHostageImprov::__MAKE_VHOOK(OnUpkeep)(float deltaT)
+void CHostageImprov::__MAKE_VHOOK(OnUpkeep)(float deltaT)
 {
+	if (IsAlive())
+	{
+		UpdatePosition(deltaT);
+	}
 }
 
 /* <4749f9> ../cstrike/dlls/hostage/hostage_improv.cpp:1396 */
-bool CHostageImprov::IsTerroristNearby(void)
+bool CHostageImprov::IsTerroristNearby()
 {
 	if (m_nearbyTerroristTimer.IsElapsed())
 	{
@@ -760,17 +1042,16 @@ bool CHostageImprov::IsTerroristNearby(void)
 }
 
 /* <474ae7> ../cstrike/dlls/hostage/hostage_improv.cpp:1412 */
-void CHostageImprov::CheckForNearbyTerrorists(void)
+void CHostageImprov::CheckForNearbyTerrorists()
 {
-	const float checkInterval = 2.0f;
-	float range;
-
 	if (!m_checkNearbyTerroristTimer.IsElapsed())
 		return;
 
+	const float checkInterval = 2.0f;
 	m_checkNearbyTerroristTimer.Start(checkInterval);
 	m_isTerroristNearby = false;
 
+	float range;
 	if (GetClosestPlayerByTravelDistance(TERRORIST, &range))
 	{
 		const float nearbyTerroristRange = 2000.0f;
@@ -783,45 +1064,206 @@ void CHostageImprov::CheckForNearbyTerrorists(void)
 }
 
 /* <4753ba> ../cstrike/dlls/hostage/hostage_improv.cpp:1440 */
-NOBODY void CHostageImprov::UpdateGrenadeReactions(void)
+void CHostageImprov::UpdateGrenadeReactions()
 {
-//	IsElapsed(const class CountdownTimer *const this);  //  1442
-//	{
-//		class CBaseEntity *entity;                           //  1458
-//		float const watchGrenadeRadius;                        //  1459
-//		Start(CountdownTimer *const this,
-//			float duration);  //  1456
-//		FClassnameIs(entvars_t *pev,
-//				const char *szClassname);  //  1464
-//		{
-//			class CGrenade *grenade;                     //  1466
-//			OnInjury(HostageIdleState *const this,
-//				float amount);  //  1480
-//			Start(CountdownTimer *const this,
-//				float duration);  //  1489
-//		}
-//	}
-//	Start(CountdownTimer *const this,
-//		float duration);  //  1447
+	if (m_coughTimer.IsElapsed())
+	{
+		if (TheBots->IsInsideSmokeCloud(&GetCentroid()))
+		{
+			m_coughTimer.Start(RANDOM_FLOAT(1, 3));
+			Chatter(HOSTAGE_CHATTER_COUGH);
+			Frighten(SCARED);
+		}
+	}
+
+	if (m_grenadeTimer.IsElapsed())
+	{
+		CBaseEntity *entity = NULL;
+		const float watchGrenadeRadius = 500.0f;
+
+		m_grenadeTimer.Start(RANDOM_FLOAT(0.4, 0.6));
+
+		while ((entity = UTIL_FindEntityInSphere(entity, GetCentroid(), watchGrenadeRadius)) != NULL)
+		{
+			CGrenade *grenade = static_cast<CGrenade *>(entity);
+
+			if (!FClassnameIs(grenade->pev, "grenade") || grenade->m_SGSmoke > 1)
+				continue;
+
+			if (IsVisible(grenade->Center()))
+			{
+				Chatter(HOSTAGE_CHATTER_SAW_HE_GRENADE);
+
+				if (grenade->pev->dmg > 50.0f)
+				{
+					m_idleState.OnInjury();
+					Frighten(TERRIFIED);
+				}
+				else
+					Frighten(SCARED);
+
+				m_grenadeTimer.Start(10);
+				break;
+			}
+		}
+	}
 }
 
 /* <475ce3> ../cstrike/dlls/hostage/hostage_improv.cpp:1502 */
-NOBODY void CHostageImprov::__MAKE_VHOOK(OnUpdate)(float deltaT)
+void CHostageImprov::__MAKE_VHOOK(OnUpdate)(float deltaT)
 {
-//	{
-//		float const runSpeed;                                  //  1553
-//		float const walkSpeed;                                 //  1554
-//		float const fallVelocity;                              //  1560
-//		float const safeTime;                                  //  1687
-//		{
-//			float dot;                                    //  1621
-//			{
-//				float speed;                          //  1632
-//			}
-//		}
-//	}
-//	OnUpdate(CHostageImprov *const this,
-//		float deltaT);  //  1502
+	if (!IsAlive() || cv_hostage_stop.value > 0.0f)
+		return;
+
+	if (m_blinkTimer.IsElapsed())
+	{
+		if (m_scaredTimer.IsElapsed() && m_animateState.GetPerformance() != HostageAnimateState::Afraid)
+		{
+			m_blinkTimer.Start(RANDOM_FLOAT(3, 10));
+			m_blinkCounter = RANDOM_LONG(2, 4);
+		}
+		else
+		{
+			m_blinkTimer.Start(RANDOM_FLOAT(0.5, 2.0));
+			m_blinkCounter = RANDOM_LONG(1, 2);
+
+		}
+	}
+
+	if (m_blinkCounter)
+	{
+		m_hostage->pev->body = 1;
+		--m_blinkCounter;
+	}
+	else
+	{
+		m_hostage->pev->body = 0;
+	}
+
+	UpdateGrenadeReactions();
+	UpdateDelayedChatter();
+	UpdateVision();
+
+	m_behavior.Update();
+
+	m_actualVel.x = m_hostage->pev->origin.x - m_lastPosition.x;
+	m_actualVel.y = m_hostage->pev->origin.y - m_lastPosition.y;
+
+	const float runSpeed = 289.0f;
+	const float walkSpeed = 9.0f;
+	const float fallVelocity = -1000.0f;
+	const float safeTime = 0.4f;
+
+	if (IsOnGround())
+	{
+		if (IsCrouching())
+		{
+			if (m_actualVel.LengthSquared() > 9.0f)
+			{
+				if (m_animateState.GetPerformance() != HostageAnimateState::CrouchWalk)
+				{
+					m_animateState.Reset();
+					m_animateState.SetPerformance(HostageAnimateState::CrouchWalk);
+
+					ClearLookAt();
+					if (m_scaredTimer.IsElapsed() && m_animateState.GetPerformance() != HostageAnimateState::Afraid)
+						m_animateState.AddSequence(this, ACT_CROUCH_WALK, 99.9, 2.0);
+					else
+						m_animateState.AddSequence(this, ACT_CROUCH_WALK_SCARED, 99.9, 2.0);
+				}
+			}
+			else if (m_animateState.GetPerformance() != HostageAnimateState::Crouch)
+			{
+				m_animateState.Reset();
+				m_animateState.SetPerformance(HostageAnimateState::Crouch);
+
+				if (m_scaredTimer.IsElapsed())
+					m_animateState.AddSequence(this, ACT_CROUCH_IDLE, 99.9);
+				else
+					m_animateState.AddSequence(this, ACT_CROUCH_IDLE_SCARED);
+			}
+		}
+		else
+		{
+			UTIL_MakeVectors(m_hostage->pev->angles);
+
+			float dot = DotProduct2D(gpGlobals->v_forward, m_actualVel);
+
+			if (dot < -3.0f)
+			{
+				if (m_animateState.GetPerformance() != HostageAnimateState::Walk)
+				{
+					m_animateState.Reset();
+					m_animateState.SetPerformance(HostageAnimateState::Walk);
+					ClearLookAt();
+
+					float speed;
+					if (m_actualVel.LengthSquared() > runSpeed)
+						speed = 2.0f;
+					else
+						speed = 1.0f;
+
+					m_animateState.AddSequence(this, ACT_WALK_BACK, 99.9, speed);
+				}
+			}
+			else
+			{
+				if (m_actualVel.LengthSquared() > runSpeed)
+				{
+					if (m_animateState.GetPerformance() != HostageAnimateState::Run)
+					{
+						m_animateState.Reset();
+						m_animateState.SetPerformance(HostageAnimateState::Run);
+						ClearLookAt();
+
+						if (m_scaredTimer.IsElapsed() && m_animateState.GetPerformance() != HostageAnimateState::Afraid && !m_behavior.IsState(&m_escapeState))
+							m_animateState.AddSequence(this, ACT_RUN, 99.9, 2.0);
+						else
+							m_animateState.AddSequence(this, ACT_RUN_SCARED, 99.9, 2.0);
+					}
+				}
+				else if (m_actualVel.LengthSquared() > walkSpeed)
+				{
+					if (m_animateState.GetPerformance() != HostageAnimateState::Walk)
+					{
+						m_animateState.Reset();
+						m_animateState.SetPerformance(HostageAnimateState::Walk);
+						ClearLookAt();
+
+						if (m_behavior.IsState(&m_escapeState))
+						{
+							m_animateState.AddSequence(this, ACT_WALK_SNEAKY, 99.9, 1.5);
+						}
+						else if (m_scaredTimer.IsElapsed() && m_animateState.GetPerformance() != HostageAnimateState::Afraid)
+						{
+							m_animateState.AddSequence(this, ACT_WALK, 99.9, 1.5);
+						}
+						else
+							m_animateState.AddSequence(this, ACT_WALK_SCARED, 99.9, 1.5);
+					}
+				}
+				else
+				{
+					if (m_animateState.GetPerformance() == HostageAnimateState::Walk || m_animateState.GetPerformance() == HostageAnimateState::Run)
+						m_animateState.Reset();
+
+					UpdateStationaryAnimation();
+				}
+			}
+		}
+	}
+	else if (m_hostage->pev->velocity.z < fallVelocity && m_animateState.GetPerformance() != HostageAnimateState::Fall)
+	{
+		m_animateState.Reset();
+		m_animateState.SetPerformance(HostageAnimateState::Fall);
+		m_animateState.AddSequence(this, ACT_FALL, 99.9);
+	}
+
+	if (!m_collisionTimer.HasStarted() || m_collisionTimer.IsGreaterThen(safeTime))
+		SetKnownGoodPosition(m_lastPosition);
+
+	m_lastPosition = m_hostage->pev->origin;
+	m_animateState.OnUpdate(this);
 }
 
 /* <47552a> ../cstrike/dlls/hostage/hostage_improv.cpp:1705 */
@@ -852,7 +1294,7 @@ void CHostageImprov::__MAKE_VHOOK(OnGameEvent)(GameEventType event, CBaseEntity 
 			}
 			if (!entity->IsPlayer())
 			{
-				m_idleState.OnInjury(0);
+				m_idleState.OnInjury();
 			}
 		}
 		break;
@@ -862,7 +1304,7 @@ void CHostageImprov::__MAKE_VHOOK(OnGameEvent)(GameEventType event, CBaseEntity 
 			if (!entity)
 				return;
 
-			Chatter(HOSTAGE_CHATTER_RESCUED);
+			Chatter(HOSTAGE_CHATTER_RESCUED, false);
 		}
 		break;
 	case EVENT_TERRORISTS_WIN:
@@ -882,7 +1324,7 @@ void CHostageImprov::__MAKE_VHOOK(OnGameEvent)(GameEventType event, CBaseEntity 
 	float range;
 	PriorityType priority;
 	bool isHostile;
-	
+
 	if (entity != NULL && IsGameEventAudible(event, entity, other, &range, &priority, &isHostile))
 	{
 		const float fudge = 0.4f;
@@ -971,7 +1413,7 @@ void CHostageImprov::__MAKE_VHOOK(OnTouch)(CBaseEntity *other)
 
 		Vector pos = alongFloor * lookAheadRange;
 
-		for (float offset = 1.0f; offset <= 18.0f; offset += 3.0f)
+		for (double offset = 1.0f; offset <= 18.0f; offset += 3.0f)
 		{
 			Vector vecStart = GetFeet();
 			vecStart.z += offset;
@@ -995,6 +1437,7 @@ void CHostageImprov::__MAKE_VHOOK(OnTouch)(CBaseEntity *other)
 			for (float range = 1.0f; range <= 30.5f; range += 5.0f)
 			{
 				Vector stepAhead = GetFeet() + alongFloor * range;
+				stepAhead.z = GetEyes().z;
 
 				if (GetSimpleGroundHeightWithFloor(&stepAhead, &stepAheadGround, &stepAheadNormal))
 				{
@@ -1064,13 +1507,13 @@ void CHostageImprov::ApplyForce(Vector force)
 }
 
 /* <474bd5> ../cstrike/dlls/hostage/hostage_improv.cpp:2016 */
-bool CHostageImprov::IsAtHome(void)
+bool CHostageImprov::IsAtHome() const
 {
 	return m_hostage->IsAtHome();
 }
 
 /* <474c76> ../cstrike/dlls/hostage/hostage_improv.cpp:2025 */
-bool CHostageImprov::CanSeeRescueZone(void)
+bool CHostageImprov::CanSeeRescueZone() const
 {
 	CCSBotManager *ctrl = TheCSBots();
 
@@ -1091,9 +1534,9 @@ CBasePlayer *CHostageImprov::GetClosestVisiblePlayer(int team)
 	CBasePlayer *close = NULL;
 	float closeRangeSq = 1e8f;
 
-	for (int i = 0; i < m_visiblePlayerCount; i++)
+	for (int i = 0; i < m_visiblePlayerCount; ++i)
 	{
-		CBasePlayer *player = (CBasePlayer *)((CBaseEntity *)m_visiblePlayer[i]);
+		CBasePlayer *player = (CBasePlayer *)m_visiblePlayer[i];
 
 		if (player == NULL || (team > 0 && player->m_iTeam != team))
 			continue;
@@ -1128,19 +1571,19 @@ float CHostageImprov::GetTimeSinceLastSawPlayer(int team)
 }
 
 /* <474f2c> ../cstrike/dlls/hostage/hostage_improv.cpp:2098 */
-float CHostageImprov::GetTimeSinceLastInjury(void)
+float CHostageImprov::GetTimeSinceLastInjury()
 {
 	return m_lastInjuryTimer.GetElapsedTime();
 }
 
 /* <474fb3> ../cstrike/dlls/hostage/hostage_improv.cpp:2107 */
-float CHostageImprov::GetTimeSinceLastNoise(void)
+float CHostageImprov::GetTimeSinceLastNoise()
 {
 	return m_lastNoiseTimer.GetElapsedTime();
 }
 
 /* <47503a> ../cstrike/dlls/hostage/hostage_improv.cpp:2117 */
-bool CHostageImprov::IsScared(void)
+bool CHostageImprov::IsScared() const
 {
 	if (m_scaredTimer.IsElapsed())
 	{
@@ -1179,7 +1622,7 @@ void CHostageImprov::Frighten(ScareType scare)
 }
 
 /* <475200> ../cstrike/dlls/hostage/hostage_improv.cpp:2165 */
-void CHostageImprov::Afraid(void)
+void CHostageImprov::Afraid()
 {
 	char animInto[32];
 	char animLoop[32];
@@ -1202,7 +1645,7 @@ void CHostageImprov::Afraid(void)
 		Q_sprintf(animInto, "cower_into_%d", which);
 		Q_sprintf(animLoop, "cower_loop_%d", which);
 		Q_sprintf(animExit, "cower_exit_%d", which);
-	
+
 		m_animateState.AddSequence(this, animInto);
 		m_animateState.AddSequence(this, animLoop, RANDOM_FLOAT(3, 10));
 		m_animateState.AddSequence(this, animExit);
@@ -1264,7 +1707,7 @@ void CHostageImprov::DelayedChatter(float delayTime, HostageChatterType sayType,
 }
 
 /* <475bd4> ../cstrike/dlls/hostage/hostage_improv.cpp:2268 */
-NOXREF void CHostageImprov::UpdateDelayedChatter(void)
+void CHostageImprov::UpdateDelayedChatter()
 {
 	if (!m_isDelayedChatterPending)
 		return;
@@ -1277,7 +1720,7 @@ NOXREF void CHostageImprov::UpdateDelayedChatter(void)
 	switch (m_delayedChatterType)
 	{
 	case HOSTAGE_CHATTER_SCARED_OF_GUNFIRE:
-		if (RANDOM_FLOAT(0, 100) < 25)
+		if (RANDOM_FLOAT(0, 100) <= 25)
 		{
 			Chatter(m_delayedChatterType, m_delayedChatterMustSpeak);
 		}
@@ -1285,7 +1728,7 @@ NOXREF void CHostageImprov::UpdateDelayedChatter(void)
 	case HOSTAGE_CHATTER_LOOK_OUT:
 	case HOSTAGE_CHATTER_PLEASE_RESCUE_ME:
 	case HOSTAGE_CHATTER_IMPATIENT_FOR_RESCUE:
-		if (RANDOM_FLOAT(0, 100) < 60)
+		if (RANDOM_FLOAT(0, 100) <= 60)
 		{
 			Chatter(m_delayedChatterType, m_delayedChatterMustSpeak);
 		}
@@ -1310,21 +1753,21 @@ void CHostageImprov::Flinch(Activity activity)
 }
 
 /* <4762fe> ../cstrike/dlls/hostage/hostage_improv.cpp:2329 */
-void CHostageImprov::CrouchDie(void)
+void CHostageImprov::CrouchDie()
 {
 	m_animateState.Reset();
 	m_animateState.AddSequence(this, ACT_CROUCH_DIE);
 }
 
 /* <476327> ../cstrike/dlls/hostage/hostage_improv.cpp:2339 */
-void CHostageImprov::Agree(void)
+void CHostageImprov::Agree()
 {
 	m_animateState.Reset();
 	m_animateState.AddSequence(this, ACT_YES);
 }
 
 /* <476350> ../cstrike/dlls/hostage/hostage_improv.cpp:2349 */
-void CHostageImprov::Disagree(void)
+void CHostageImprov::Disagree()
 {
 	if (m_animateState.GetPerformance() != HostageAnimateState::Disagreeing)
 	{
@@ -1334,12 +1777,14 @@ void CHostageImprov::Disagree(void)
 }
 
 /* <476395> ../cstrike/dlls/hostage/hostage_improv.cpp:2363 */
-void CHostageImprov::Wave(void)
+void CHostageImprov::Wave()
 {
 	m_animateState.Reset();
 	m_animateState.SetPerformance(HostageAnimateState::Waving);
 	m_animateState.AddSequence(this, ACT_WAVE);
 }
+
+// Invoked when an improv fails to reach a MoveTo goal
 
 /* <474938> ../cstrike/dlls/hostage/hostage_improv.cpp:2375 */
 void CHostageImprov::__MAKE_VHOOK(OnMoveToFailure)(const Vector &goal, MoveToFailureType reason)
@@ -1353,14 +1798,8 @@ void CHostageImprov::__MAKE_VHOOK(OnMoveToFailure)(const Vector &goal, MoveToFai
 }
 
 /* <4763d7> ../cstrike/dlls/hostage/hostage_improv.cpp:2391 */
-void CHostageImprov::Wiggle(void)
+void CHostageImprov::Wiggle()
 {
-	Vector dir;
-	Vector lat;
-
-	const float force = 15.0f;
-	const float minStuckJumpTime = 0.5f;
-
 	// for wiggling
 	if (m_wiggleTimer.IsElapsed())
 	{
@@ -1368,51 +1807,40 @@ void CHostageImprov::Wiggle(void)
 		m_wiggleTimer.Start(RANDOM_FLOAT(0.3, 0.5));
 	}
 
-	lat.x = BotCOS(m_moveAngle);
-	lat.y = BotSIN(m_moveAngle);
-	lat.z = 0;
+	const float force = 15.0f;
+	Vector dir(BotCOS(m_moveAngle), BotSIN(m_moveAngle), 0.0f);
+	Vector lat(-dir.y, dir.x, 0.0f);
 
 	switch (m_wiggleDirection)
 	{
 	case FORWARD:
-		dir.x = lat.x;
-		dir.y = lat.y;
-
 		ApplyForce(dir * force);
 		break;
-	case RIGHT:
-		dir.x = -lat.y;
-		dir.y = lat.x;
-
-		ApplyForce(dir * -force);
-		break;
 	case BACKWARD:
-		dir.x = lat.x;
-		dir.y = lat.y;
-
 		ApplyForce(dir * -force);
 		break;
 	case LEFT:
-		dir.x = -lat.y;
-		dir.y = lat.x;
-
-		ApplyForce(dir * force);
+		ApplyForce(lat * force);
+		break;
+	case RIGHT:
+		ApplyForce(lat * -force);
 		break;
 	default:
 		break;
 	}
-	
+
+	const float minStuckJumpTime = 0.5f;
 	if (m_follower.GetStuckDuration() > minStuckJumpTime && m_wiggleJumpTimer.IsElapsed())
 	{
 		if (Jump())
 		{
-			m_wiggleJumpTimer.Start(RANDOM_FLOAT(0.75, 1.2));
+			m_wiggleJumpTimer.Start(RANDOM_FLOAT(0.75f, 1.2f));
 		}
 	}
 }
 
 /* <4766cc> ../cstrike/dlls/hostage/hostage_improv.cpp:2438 */
-void CHostageImprov::ClearPath(void)
+void CHostageImprov::ClearPath()
 {
 	Vector start;
 	Vector end;
@@ -1460,7 +1888,7 @@ void CHostageImprov::ClearPath(void)
 }
 
 /* <471b3f> ../cstrike/dlls/hostage/hostage_improv.cpp:2497 */
-void CHostageImprov::__MAKE_VHOOK(Crouch)(void)
+void CHostageImprov::__MAKE_VHOOK(Crouch)()
 {
 	const float minCrouchTime = 1.0f;
 
@@ -1473,7 +1901,7 @@ void CHostageImprov::__MAKE_VHOOK(Crouch)(void)
 }
 
 /* <47195c> ../cstrike/dlls/hostage/hostage_improv.cpp:2516 */
-void CHostageImprov::__MAKE_VHOOK(StandUp)(void)
+void CHostageImprov::__MAKE_VHOOK(StandUp)()
 {
 	if (!IsCrouching() || !m_minCrouchTimer.IsElapsed())
 	{
@@ -1502,187 +1930,7 @@ void CHostageImprov::__MAKE_VHOOK(StandUp)(void)
 }
 
 /* <477114> ../cstrike/dlls/hostage/hostage_improv.cpp:2558 */
-void CHostageImprov::UpdateStationaryAnimation(void)
+void CHostageImprov::UpdateStationaryAnimation()
 {
 	m_behavior.UpdateStationaryAnimation(this);
 }
-
-#ifdef HOOK_GAMEDLL
-
-
-void CHostageImprov::OnMoveToFailure(const Vector &goal, MoveToFailureType reason)
-{
-	OnMoveToFailure_(goal, reason);
-}
-
-bool CHostageImprov::IsAlive(void) const
-{
-	return IsAlive_();
-}
-
-void CHostageImprov::MoveTo(const Vector &goal)
-{
-	MoveTo_(goal);
-}
-
-void CHostageImprov::LookAt(const Vector &target)
-{
-	LookAt_(target);
-}
-
-void CHostageImprov::ClearLookAt(void)
-{
-	ClearLookAt_();
-}
-
-void CHostageImprov::FaceTo(const Vector &goal)
-{
-	FaceTo_(goal);
-}
-
-void CHostageImprov::ClearFaceTo(void)
-{
-	ClearFaceTo_();
-}
-
-bool CHostageImprov::IsAtMoveGoal(float error) const
-{
-	return IsAtMoveGoal_(error);
-}
-
-bool CHostageImprov::IsAtFaceGoal(void) const
-{
-	return IsAtFaceGoal_();
-}
-
-bool CHostageImprov::IsFriendInTheWay(const Vector &goalPos) const
-{
-	return IsFriendInTheWay_(goalPos);
-}
-
-bool CHostageImprov::IsFriendInTheWay(CBaseEntity *myFriend, const Vector &goalPos) const
-{
-	return IsFriendInTheWay_(myFriend, goalPos);
-}
-
-bool CHostageImprov::Jump(void)
-{
-	return Jump_();
-}
-
-void CHostageImprov::Crouch(void)
-{
-	Crouch_();
-}
-
-void CHostageImprov::StandUp(void)
-{
-	StandUp_();
-}
-
-void CHostageImprov::TrackPath(const Vector &pathGoal, float deltaT)
-{
-	TrackPath_(pathGoal, deltaT);
-}
-
-void CHostageImprov::StartLadder(const CNavLadder *ladder, NavTraverseType how, const Vector *approachPos, const Vector *departPos)
-{
-	StartLadder_(ladder, how, approachPos, departPos);
-}
-
-bool CHostageImprov::TraverseLadder(const CNavLadder *ladder, NavTraverseType how, const Vector *approachPos, const Vector *departPos, float deltaT)
-{
-	return TraverseLadder_(ladder, how, approachPos, departPos, deltaT);
-}
-
-bool CHostageImprov::GetSimpleGroundHeightWithFloor(const Vector *pos, float *height, Vector *normal)
-{
-	return GetSimpleGroundHeightWithFloor_(pos, height, normal);
-}
-
-void CHostageImprov::Run(void)
-{
-	Run_();
-}
-
-void CHostageImprov::Walk(void)
-{
-	Walk_();
-}
-
-void CHostageImprov::Stop(void)
-{
-	Stop_();
-}
-
-const Vector &CHostageImprov::GetFeet(void) const
-{
-	return GetFeet_();
-}
-
-const Vector &CHostageImprov::GetCentroid(void) const
-{
-	return GetCentroid_();
-}
-
-const Vector &CHostageImprov::GetEyes(void) const
-{
-	return GetEyes_();
-}
-
-bool CHostageImprov::IsOnGround(void) const
-{
-	return IsOnGround_();
-}
-
-bool CHostageImprov::IsMoving(void) const
-{
-	return IsMoving_();
-}
-
-bool CHostageImprov::IsVisible(const Vector &pos, bool testFOV) const
-{
-	return IsVisible_(pos, testFOV);
-}
-
-bool CHostageImprov::IsPlayerLookingAtMe(CBasePlayer *other, float cosTolerance) const
-{
-	return IsPlayerLookingAtMe_(other, cosTolerance);
-}
-
-CBasePlayer *CHostageImprov::IsAnyPlayerLookingAtMe(int team, float cosTolerance) const
-{
-	return IsAnyPlayerLookingAtMe_(team, cosTolerance);
-}
-
-CBasePlayer *CHostageImprov::GetClosestPlayerByTravelDistance(int team, float *range) const
-{
-	return GetClosestPlayerByTravelDistance_(team, range);
-}
-
-void CHostageImprov::OnUpdate(float deltaT)
-{
-	OnUpdate_(deltaT);
-}
-
-void CHostageImprov::OnUpkeep(float deltaT)
-{
-	OnUpkeep_(deltaT);
-}
-
-void CHostageImprov::OnReset(void)
-{
-	OnReset_();
-}
-
-void CHostageImprov::OnGameEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
-{
-	OnGameEvent_(event, entity, other);
-}
-
-void CHostageImprov::OnTouch(CBaseEntity *other)
-{
-	OnTouch_(other);
-}
-
-#endif // HOOK_GAMEDLL

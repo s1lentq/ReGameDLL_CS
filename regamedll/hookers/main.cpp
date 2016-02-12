@@ -46,7 +46,7 @@
 	#define ORIGINAL_FILESYSTEM_DLL_NAME "filesystem_stdio2.so"
 #endif
 
-IBaseInterface *CreateFileSystemInterface(void);
+IBaseInterface *CreateFileSystemInterface();
 InterfaceReg iface = InterfaceReg(CreateFileSystemInterface, "VFileSystem009");
 
 int HookGameDLL(size_t gameAddr, size_t engAddr);
@@ -57,7 +57,7 @@ CSysModule *g_pOriginalGameDLLModule = NULL;
 CreateInterfaceFn g_OriginalFileSystemFactory = NULL;
 IFileSystem *g_pOriginalFileSystem = NULL;
 
-IBaseInterface *CreateFileSystemInterface(void)
+IBaseInterface *CreateFileSystemInterface()
 {
 	if (g_pOriginalFileSystem)
 		return g_pOriginalFileSystem;

@@ -2,6 +2,9 @@
 **/.gradle
 .idea
 *.iml
+*.bat
+*.log
+*.lnk
 **/msvc/Debug*
 **/msvc/Release*
 **/msvc/Tests
@@ -9,6 +12,7 @@
 **/msvc/*.opensdf
 **/msvc/*.user
 **/msvc/*.suo
+**/msvc/*.txt
 **/msvc/ipch
 
 regamedll/version/appversion.h

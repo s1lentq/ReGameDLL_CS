@@ -1,218 +1,468 @@
 #include "precompiled.h"
 
+// Reset the stuck-checker.
+
 /* <37c284> ../cstrike/dlls/bot/cs_bot_nav.cpp:16 */
-NOBODY void CCSBot::ResetStuckMonitor(void)
+void CCSBot::ResetStuckMonitor()
 {
+	if (m_isStuck)
+	{
+		if (IsLocalPlayerWatchingMe() && cv_bot_debug.value > 0.0f)
+		{
+			EMIT_SOUND(edict(), CHAN_ITEM, "buttons/bell1.wav", VOL_NORM, ATTN_NORM);
+		}
+	}
+
+	m_isStuck = false;
+	m_stuckTimestamp = 0.0f;
+	m_stuckJumpTimestamp = 0.0f;
+
+	m_avgVelIndex = 0;
+	m_avgVelCount = 0;
+
+	m_areaEnteredTimestamp = gpGlobals->time;
 }
+
+// Test if we have become stuck
 
 /* <37c2a6> ../cstrike/dlls/bot/cs_bot_nav.cpp:37 */
-NOBODY void CCSBot::StuckCheck(void)
+void CCSBot::StuckCheck()
 {
-//	{
-//		Vector delta;                                   //    42
-//		float const unstuckRange;                              //    44
-//		operator-(const Vector *const this,
-//				const Vector &v);  //    42
-//		IsLengthGreaterThan(const Vector *const this,
-//					float length);  //    45
-//		ResetStuckMonitor(CCSBot *const this);  //    48
-//	}
-//	{
-//		Vector vel;                                     //    57
-//		float moveDist;                                       //    64
-//		float deltaT;                                         //    66
-//		operator-(const Vector *const this,
-//				const Vector &v);  //    57
-//		Length(const Vector *const this);  //    64
-//		{
-//			float avgVel;                                 //    81
-//			float stuckVel;                               //    88
-//			{
-//				int t;                                //    82
-//			}
-//		}
-//	}
+	if (m_isStuck)
+	{
+		// we are stuck - see if we have moved far enough to be considered unstuck
+		Vector delta = pev->origin - m_stuckSpot;
+
+		const float unstuckRange = 75.0f;
+		if (delta.IsLengthGreaterThan(unstuckRange))
+		{
+			// we are no longer stuck
+			ResetStuckMonitor();
+			PrintIfWatched("UN-STUCK\n");
+		}
+	}
+	else
+	{
+		// check if we are stuck
+		// compute average velocity over a short period (for stuck check)
+		Vector vel = pev->origin - m_lastOrigin;
+
+		// if we are jumping, ignore Z
+		if (IsJumping())
+			vel.z = 0.0f;
+
+		// cannot be Length2D, or will break ladder movement (they are only Z)
+		float moveDist = vel.Length();
+		float deltaT = g_flBotFullThinkInterval;
+
+		m_avgVel[ m_avgVelIndex++ ] = moveDist / deltaT;
+
+		if (m_avgVelIndex == MAX_VEL_SAMPLES)
+			m_avgVelIndex = 0;
+
+		if (m_avgVelCount < MAX_VEL_SAMPLES)
+		{
+			m_avgVelCount++;
+		}
+		else
+		{
+			// we have enough samples to know if we're stuck
+			float avgVel = 0.0f;
+			for (int t = 0; t < m_avgVelCount; ++t)
+				avgVel += m_avgVel[t];
+
+			avgVel /= m_avgVelCount;
+
+			// cannot make this velocity too high, or bots will get "stuck" when going down ladders
+			float stuckVel = (IsUsingLadder()) ? 10.0f : 20.0f;
+
+			if (avgVel < stuckVel)
+			{
+				// we are stuck - note when and where we initially become stuck
+				m_stuckTimestamp = gpGlobals->time;
+				m_stuckSpot = pev->origin;
+				m_stuckJumpTimestamp = gpGlobals->time + RANDOM_FLOAT(0.0f, 0.5f);
+
+				PrintIfWatched("STUCK\n");
+				if (IsLocalPlayerWatchingMe() && cv_bot_debug.value > 0.0f)
+				{
+					EMIT_SOUND(ENT(pev), CHAN_ITEM, "buttons/button11.wav", VOL_NORM, ATTN_NORM);
+				}
+
+				m_isStuck = true;
+			}
+		}
+	}
+
+	// always need to track this
+	m_lastOrigin = pev->origin;
 }
+
+// Check if we need to jump due to height change
 
 /* <37c05d> ../cstrike/dlls/bot/cs_bot_nav.cpp:114 */
-NOBODY bool CCSBot::DiscontinuityJump(float ground, bool onlyJumpDown, bool mustJump)
+bool CCSBot::DiscontinuityJump(float ground, bool onlyJumpDown, bool mustJump)
 {
-//	{
-//		float dz;                                             //   119
-//	}
+	// don't try to jump again.
+	if (m_isJumpCrouching)
+		return false;
+
+	float_precision dz = ground - GetFeetZ();
+
+	if (dz > StepHeight && !onlyJumpDown)
+	{
+		// dont restrict jump time when going up
+		if (Jump(MUST_JUMP))
+		{
+			m_isJumpCrouching = true;
+			m_isJumpCrouched = false;
+
+			StandUp();
+
+			m_jumpCrouchTimestamp = gpGlobals->time;
+			return true;
+		}
+	}
+	else if (!IsUsingLadder() && dz < -JumpHeight)
+	{
+		if (Jump(mustJump))
+		{
+			m_isJumpCrouching = true;
+			m_isJumpCrouched = false;
+
+			StandUp();
+
+			m_jumpCrouchTimestamp = gpGlobals->time;
+			return true;
+		}
+	}
+
+	return false;
 }
 
+// Find "simple" ground height, treating current nav area as part of the floor
+
 /* <37c448> ../cstrike/dlls/bot/cs_bot_nav.cpp:154 */
-NOBODY bool CCSBot::GetSimpleGroundHeightWithFloor(const Vector *pos, float *height, Vector *normal)
+bool CCSBot::GetSimpleGroundHeightWithFloor(const Vector *pos, float *height, Vector *normal)
 {
-//	GetSimpleGroundHeightWithFloor(CCSBot *const this,
-//					const Vector *pos,
-//					float *height,
-//					Vector *normal);  //   154
+	if (GetSimpleGroundHeight(pos, height, normal))
+	{
+		// our current nav area also serves as a ground polygon
+		if (m_lastKnownArea != NULL && m_lastKnownArea->IsOverlapping(pos))
+		{
+			*height = Q_max((*height), m_lastKnownArea->GetZ(pos));
+		}
+
+		return true;
+	}
+
+	return false;
 }
 
 /* <37c4b8> ../cstrike/dlls/bot/cs_bot_nav.cpp:172 */
-NOBODY Place CCSBot::GetPlace(void)
+Place CCSBot::GetPlace() const
 {
+	if (m_lastKnownArea != NULL)
+		return m_lastKnownArea->GetPlace();
+
+	return UNDEFINED_PLACE;
 }
 
 /* <37c4de> ../cstrike/dlls/bot/cs_bot_nav.cpp:184 */
-NOBODY void CCSBot::MoveTowardsPosition(const Vector *pos)
+void CCSBot::MoveTowardsPosition(const Vector *pos)
 {
-//	{
-//		float angle;                                          //   249
-//		class Vector2D dir;                                   //   251
-//		class Vector2D lat;                                   //   252
-//		class Vector2D to;                                    //   255
-//		float toProj;                                         //   259
-//		float latProj;                                        //   260
-//		float const c;                                         //   262
-//		{
-//			float ground;                                 //   200
-//			Vector aheadRay;                        //   201
-//			bool jumped;                                  //   207
-//			NormalizeInPlace(Vector *const this);  //   202
-//			{
-//				float const farLookAheadRange;         //   210
-//				Vector normal;                  //   211
-//				Vector stepAhead;               //   212
-//				operator*(float fl,
-//						const Vector &v);  //   212
-//				GetSimpleGroundHeightWithFloor(CCSBot *const this,
-//								const Vector *pos,
-//								float *height,
-//								Vector *normal);  //   215
-//				operator+(const Vector *const this,
-//						const Vector &v);  //   212
-//				DiscontinuityJump(CCSBot *const this,
-//							float ground,
-//							bool onlyJumpDown,
-//							bool mustJump);  //   218
-//			}
-//			{
-//				float const lookAheadRange;            //   225
-//				Vector stepAhead;               //   226
-//				operator*(float fl,
-//						const Vector &v);  //   226
-//				operator+(const Vector *const this,
-//						const Vector &v);  //   226
-//				GetSimpleGroundHeightWithFloor(CCSBot *const this,
-//								const Vector *pos,
-//								float *height,
-//								Vector *normal);  //   228
-//				DiscontinuityJump(CCSBot *const this,
-//							float ground,
-//							bool onlyJumpDown,
-//							bool mustJump);  //   230
-//			}
-//			{
-//				float const lookAheadRange;            //   237
-//				Vector stepAhead;               //   238
-//				operator*(float fl,
-//						const Vector &v);  //   238
-//				operator+(const Vector *const this,
-//						const Vector &v);  //   238
-//				GetSimpleGroundHeightWithFloor(CCSBot *const this,
-//								const Vector *pos,
-//								float *height,
-//								Vector *normal);  //   240
-//				DiscontinuityJump(CCSBot *const this,
-//							float ground,
-//							bool onlyJumpDown,
-//							bool mustJump);  //   242
-//			}
-//		}
-//		NormalizeInPlace(Vector2D *const this);  //   256
-//	}
+	// Jump up on ledges
+	// Because we may not be able to get to our goal position and enter the next
+	// area because our extent collides with a nearby vertical ledge, make sure
+	// we look far enough ahead to avoid this situation.
+	// Can't look too far ahead, or bots will try to jump up slopes.
+
+	// NOTE: We need to do this frequently to catch edges at the right time
+	// TODO: Look ahead *along path* instead of straight line
+	if ((m_lastKnownArea == NULL || !(m_lastKnownArea->GetAttributes() & NAV_NO_JUMP)) &&
+		!IsOnLadder() && !m_isJumpCrouching)
+	{
+		float ground;
+		Vector aheadRay(pos->x - pev->origin.x, pos->y - pev->origin.y, 0);
+		aheadRay.NormalizeInPlace();
+
+		// look far ahead to allow us to smoothly jump over gaps, ledges, etc
+		// only jump if ground is flat at lookahead spot to avoid jumping up slopes
+		bool jumped = false;
+
+		if (IsRunning())
+		{
+			const float farLookAheadRange = 80.0f;
+			Vector normal;
+			Vector stepAhead = pev->origin + farLookAheadRange * aheadRay;
+			stepAhead.z += HalfHumanHeight;
+
+			if (GetSimpleGroundHeightWithFloor(&stepAhead, &ground, &normal))
+			{
+				if (normal.z > 0.9f)
+					jumped = DiscontinuityJump(ground, ONLY_JUMP_DOWN);
+			}
+		}
+
+		if (!jumped)
+		{
+			// close up jumping
+			// cant be less or will miss jumps over low walls
+			const float lookAheadRange = 30.0f;
+			Vector stepAhead = pev->origin + lookAheadRange * aheadRay;
+			stepAhead.z += HalfHumanHeight;
+
+			if (GetSimpleGroundHeightWithFloor(&stepAhead, &ground))
+			{
+				jumped = DiscontinuityJump(ground);
+			}
+		}
+
+		if (!jumped)
+		{
+			// about to fall gap-jumping
+			const float lookAheadRange = 10.0f;
+			Vector stepAhead = pev->origin + lookAheadRange * aheadRay;
+			stepAhead.z += HalfHumanHeight;
+
+			if (GetSimpleGroundHeightWithFloor(&stepAhead, &ground))
+			{
+				jumped = DiscontinuityJump(ground, ONLY_JUMP_DOWN, MUST_JUMP);
+			}
+		}
+	}
+
+	// compute our current forward and lateral vectors
+	float angle = pev->v_angle.y;
+
+	Vector2D dir(BotCOS(angle), BotSIN(angle));
+	Vector2D lat(-dir.y, dir.x);
+
+	// compute unit vector to goal position
+	Vector2D to(pos->x - pev->origin.x, pos->y - pev->origin.y);
+	to.NormalizeInPlace();
+
+	// move towards the position independant of our view direction
+	float toProj = to.x * dir.x + to.y * dir.y;
+	float latProj = to.x * lat.x + to.y * lat.y;
+
+	const float c = 0.25f;
+	if (toProj > c)
+		MoveForward();
+	else if (toProj < -c)
+		MoveBackward();
+
+	// if we are avoiding someone via strafing, don't override
+	if (m_avoid != NULL)
+		return;
+
+	if (latProj >= c)
+		StrafeLeft();
+	else if (latProj <= -c)
+		StrafeRight();
 }
+
+// Move away from position, independant of view angle
 
 /* <37ca96> ../cstrike/dlls/bot/cs_bot_nav.cpp:282 */
-NOBODY void CCSBot::MoveAwayFromPosition(const Vector *pos)
+NOXREF void CCSBot::MoveAwayFromPosition(const Vector *pos)
 {
-//	{
-//		float angle;                                          //   285
-//		class Vector2D dir;                                   //   287
-//		class Vector2D lat;                                   //   288
-//		class Vector2D to;                                    //   291
-//		float toProj;                                         //   295
-//		float latProj;                                        //   296
-//		float const c;                                         //   298
-//		NormalizeInPlace(Vector2D *const this);  //   292
-//	}
+	// compute our current forward and lateral vectors
+	float angle = pev->v_angle[ YAW ];
+
+	Vector2D dir(BotCOS(angle), BotSIN(angle));
+	Vector2D lat(-dir.y, dir.x);
+
+	// compute unit vector to goal position
+	Vector2D to(pos->x - pev->origin.x, pos->y - pev->origin.y);
+	to.NormalizeInPlace();
+
+	// move away from the position independant of our view direction
+	float toProj = to.x * dir.x + to.y * dir.y;
+	float latProj = to.x * lat.x + to.y * lat.y;
+
+	const float c = 0.5f;
+	if (toProj > c)
+		MoveBackward();
+	else if (toProj < -c)
+		MoveForward();
+
+	if (latProj >= c)
+		StrafeRight();
+	else if (latProj <= -c)
+		StrafeLeft();
 }
+
+// Strafe (sidestep) away from position, independant of view angle
 
 /* <37cb85> ../cstrike/dlls/bot/cs_bot_nav.cpp:314 */
-NOBODY void CCSBot::StrafeAwayFromPosition(const Vector *pos)
+void CCSBot::StrafeAwayFromPosition(const Vector *pos)
 {
-//	{
-//		float angle;                                          //   317
-//		class Vector2D dir;                                   //   319
-//		class Vector2D lat;                                   //   320
-//		class Vector2D to;                                    //   323
-//		float latProj;                                        //   326
-//		NormalizeInPlace(Vector2D *const this);  //   324
-//	}
+	// compute our current forward and lateral vectors
+	float angle = pev->v_angle[ YAW ];
+
+	Vector2D dir(BotCOS(angle), BotSIN(angle));
+	Vector2D lat(-dir.y, dir.x);
+
+	// compute unit vector to goal position
+	Vector2D to(pos->x - pev->origin.x, pos->y - pev->origin.y);
+	to.NormalizeInPlace();
+
+	float latProj = to.x * lat.x + to.y * lat.y;
+
+	if (latProj >= 0.0f)
+		StrafeRight();
+	else
+		StrafeLeft();
 }
+
+// For getting un-stuck
 
 /* <37cc52> ../cstrike/dlls/bot/cs_bot_nav.cpp:338 */
-NOBODY void CCSBot::Wiggle(void)
+void CCSBot::Wiggle()
 {
-//	ResetStuckMonitor(CCSBot *const this);  //   342
+	if (IsCrouching())
+	{
+		ResetStuckMonitor();
+		return;
+	}
+
+	// for wiggling
+	if (gpGlobals->time >= m_wiggleTimestamp)
+	{
+		m_wiggleDirection = (NavRelativeDirType)RANDOM_LONG(0, 3);
+		m_wiggleTimestamp = RANDOM_FLOAT(0.5, 1.5) + gpGlobals->time;
+	}
+
+	// TODO: implement checking of the movement to fall down
+	switch (m_wiggleDirection)
+	{
+	case LEFT:
+		StrafeLeft();
+		break;
+	case RIGHT:
+		StrafeRight();
+		break;
+	case FORWARD:
+		MoveForward();
+		break;
+	case BACKWARD:
+		MoveBackward();
+		break;
+	}
+
+	if (gpGlobals->time >= m_stuckJumpTimestamp)
+	{
+		if (Jump())
+		{
+			m_stuckJumpTimestamp = RANDOM_FLOAT(1.0, 2.0) + gpGlobals->time;
+		}
+	}
 }
 
+// Determine approach points from eye position and approach areas of current area
+
 /* <37cc94> ../cstrike/dlls/bot/cs_bot_nav.cpp:383 */
-NOBODY void CCSBot::ComputeApproachPoints(void)
+void CCSBot::ComputeApproachPoints()
 {
-//	{
-//		Vector eye;                                     //   391
-//		Vector ap;                                      //   393
-//		float halfWidth;                                      //   394
-//		Vector(Vector *const this,
-//			const Vector &v);  //   391
-//		{
-//			int i;                                        //   395
-//			{
-//				const class ApproachInfo *info;     //   397
-//				Vector bendPoint;               //   415
-//			}
-//			GetApproachInfoCount(const class CNavArea *const this);  //   395
-//		}
-//	}
+	m_approachPointCount = 0;
+
+	if (m_lastKnownArea == NULL)
+	{
+		return;
+	}
+
+	// assume we're crouching for now
+	Vector eye = pev->origin;
+
+	Vector ap;
+	float halfWidth;
+	for (int i = 0; i < m_lastKnownArea->GetApproachInfoCount() && m_approachPointCount < MAX_APPROACH_POINTS; ++i)
+	{
+		const CNavArea::ApproachInfo *info = m_lastKnownArea->GetApproachInfo(i);
+
+		if (info->here.area == NULL || info->prev.area == NULL)
+		{
+			continue;
+		}
+
+		// compute approach point (approach area is "info->here")
+		if (info->prevToHereHow <= GO_WEST)
+		{
+			info->prev.area->ComputePortal(info->here.area, (NavDirType)info->prevToHereHow, &ap, &halfWidth);
+			ap.z = info->here.area->GetZ(&ap);
+		}
+		else
+		{
+			// use the area's center as an approach point
+			ap = *info->here.area->GetCenter();
+		}
+
+		// "bend" our line of sight around corners until we can see the approach point
+		Vector bendPoint;
+		if (BendLineOfSight(&eye, &ap, &bendPoint))
+		{
+			m_approachPoint[ m_approachPointCount++ ] = bendPoint;
+		}
+	}
 }
 
 /* <37cd67> ../cstrike/dlls/bot/cs_bot_nav.cpp:422 */
-NOBODY void CCSBot::DrawApproachPoints(void)
+void CCSBot::DrawApproachPoints()
 {
-//	{
-//		int i;                                                //   427
-//		operator+(const Vector *const this,
-//				const Vector &v);  //   428
-//		Vector(Vector *const this,
-//			const Vector &v);  //   428
-//	}
+	for (int i = 0; i < m_approachPointCount; ++i)
+	{
+		UTIL_DrawBeamPoints(m_approachPoint[i], m_approachPoint[i] + Vector(0, 0, 50), 3, 0, 255, 255);
+	}
 }
 
+// Find the approach point that is nearest to our current path, ahead of us
+
 /* <37ce12> ../cstrike/dlls/bot/cs_bot_nav.cpp:435 */
-NOBODY bool CCSBot::FindApproachPointNearestPath(const Vector *pos)
+NOXREF bool CCSBot::FindApproachPointNearestPath(Vector *pos)
 {
-//	{
-//		Vector target;                                  //   446
-//		Vector close;                                   //   446
-//		float targetRangeSq;                                  //   447
-//		bool found;                                           //   448
-//		int start;                                            //   450
-//		int end;                                              //   451
-//		float const nearPathSq;                                //   457
-//		{
-//			int i;                                        //   459
-//			{
-//				float rangeSq;                        //   464
-//				operator-(const Vector *const this,
-//						const Vector &v);  //   464
-//				LengthSquared(const Vector *const this);  //   464
-//			}
-//		}
-//		operator+(const Vector *const this,
-//				const Vector &v);  //   478
-//	}
+	if (!HasPath())
+		return false;
+
+	// make sure approach points are accurate
+	ComputeApproachPoints();
+
+	if (m_approachPointCount == 0)
+		return false;
+
+	Vector target = Vector(0, 0, 0), close;
+	float targetRangeSq = 0.0f;
+	bool found = false;
+
+	int start = m_pathIndex;
+	int end = m_pathLength;
+
+	// We dont want the strictly closest point, but the farthest approach point
+	// from us that is near our path
+	const float nearPathSq = 10000.0f;
+
+	for (int i = 0; i < m_approachPointCount; ++i)
+	{
+		if (FindClosestPointOnPath(&m_approachPoint[i], start, end, &close) == false)
+			continue;
+
+		float rangeSq = (m_approachPoint[i] - close).LengthSquared();
+		if (rangeSq > nearPathSq)
+			continue;
+
+		if (rangeSq > targetRangeSq)
+		{
+			target = close;
+			targetRangeSq = rangeSq;
+			found = true;
+		}
+	}
+
+	if (found)
+	{
+		*pos = target + Vector(0, 0, HalfHumanHeight);
+		return true;
+	}
+
+	return false;
 }

@@ -123,19 +123,9 @@ int g_groupop = 0;
 
 const int gSizes[18] = { 4, 4, 4, 4, 4, 4, 4, 12, 12, 4, 4, 4, 4, 2, 1, 4, 4, 4 };
 
-#else //HOOK_GAMEDLL
+#endif // HOOK_GAMEDLL
 
-unsigned int seed_table[256];
-TYPEDESCRIPTION gEntvarsDescription[86];
-
-int g_groupop;
-int g_groupmask;
-
-const int gSizes[18];
-
-#endif //HOOK_GAMEDLL
-
-float UTIL_WeaponTimeBase(void)
+float UTIL_WeaponTimeBase()
 {
 #ifdef CLIENT_WEAPONS
 	return 0.0;
@@ -145,7 +135,7 @@ float UTIL_WeaponTimeBase(void)
 }
 
 /* <1ac4be> ../cstrike/dlls/util.cpp:59 */
-unsigned int U_Random(void)
+unsigned int U_Random()
 {
 	glSeed *= 69069;
 	glSeed += seed_table[glSeed & 0xFF] + 1;
@@ -224,7 +214,7 @@ void UTIL_SetGroupTrace(int groupmask, int op)
 }
 
 /* <1ac8bf> ../cstrike/dlls/util.cpp:168 */
-void UTIL_UnsetGroupTrace(void)
+void UTIL_UnsetGroupTrace()
 {
 	g_groupmask = 0;
 	g_groupop = 0;
@@ -245,7 +235,7 @@ NOXREF UTIL_GroupTrace::UTIL_GroupTrace(int groupmask, int op)
 }
 
 /* <1ac963> ../cstrike/dlls/util.cpp:188 */
-NOXREF UTIL_GroupTrace::~UTIL_GroupTrace(void)
+NOXREF UTIL_GroupTrace::~UTIL_GroupTrace()
 {
 	g_groupmask = m_oldgroupmask;
 	g_groupop = m_oldgroupop;
@@ -283,6 +273,7 @@ NOXREF float UTIL_AngleDiff(float destAngle, float srcAngle)
 		if (delta <= -180.0f)
 			delta += 360.0f;
 	}
+
 	return delta;
 }
 
@@ -312,7 +303,7 @@ int UTIL_EntitiesInBox(CBaseEntity **pList, int listMax, const Vector &mins, con
 	if (!pEdict)
 		return 0;
 
-	for (int i = 1; i < gpGlobals->maxEntities; i++, pEdict++)
+	for (int i = 1; i < gpGlobals->maxEntities; ++i, ++pEdict)
 	{
 		if (pEdict->free)
 			continue;
@@ -356,12 +347,12 @@ NOXREF int UTIL_MonstersInSphere(CBaseEntity ** pList, int listMax, const Vector
 	if (!pEdict)
 		return count;
 
-	for (int i = 1; i < gpGlobals->maxEntities; i++, pEdict++)
+	for (int i = 1; i < gpGlobals->maxEntities; ++i, ++pEdict)
 	{
 		if (pEdict->free)
 			continue;
 
-		if (!(pEdict->v.flags & (FL_CLIENT|FL_MONSTER)))
+		if (!(pEdict->v.flags & (FL_CLIENT | FL_MONSTER)))
 			continue;
 
 		delta = center.x - pEdict->v.origin.x;
@@ -404,7 +395,7 @@ NOXREF int UTIL_MonstersInSphere(CBaseEntity ** pList, int listMax, const Vector
 CBaseEntity *UTIL_FindEntityInSphere(CBaseEntity *pStartEntity, const Vector &vecCenter, float flRadius)
 {
 	edict_t	*pentEntity;
-	if (pStartEntity)
+	if (pStartEntity != NULL)
 		pentEntity = pStartEntity->edict();
 	else
 		pentEntity = NULL;
@@ -422,7 +413,7 @@ CBaseEntity *UTIL_FindEntityInSphere(CBaseEntity *pStartEntity, const Vector &ve
 CBaseEntity *UTIL_FindEntityByString_Old(CBaseEntity *pStartEntity, const char *szKeyword, const char *szValue)
 {
 	edict_t	*pentEntity;
-	if (pStartEntity)
+	if (pStartEntity != NULL)
 		pentEntity = pStartEntity->edict();
 	else
 		pentEntity = NULL;
@@ -535,7 +526,7 @@ CBaseEntity *UTIL_FindEntityGeneric(const char *szWhatever, const Vector &vecSrc
 {
 	CBaseEntity *pSearch = NULL;
 	CBaseEntity *pEntity = UTIL_FindEntityByTargetname(NULL, szWhatever);
-	if (pEntity)
+	if (pEntity != NULL)
 		return pEntity;
 
 	float flMaxDist2 = flRadius * flRadius;
@@ -549,11 +540,12 @@ CBaseEntity *UTIL_FindEntityGeneric(const char *szWhatever, const Vector &vecSrc
 			flMaxDist2 = flDist2;
 		}
 	}
+
 	return pEntity;
 }
 
 /* <1ad347> ../cstrike/dlls/util.cpp:711 */
-CBaseEntity *UTIL_PlayerByIndex(int playerIndex)
+CBaseEntity *EXT_FUNC UTIL_PlayerByIndex(int playerIndex)
 {
 	CBaseEntity *pPlayer = NULL;
 	if (playerIndex > 0 && playerIndex <= gpGlobals->maxClients)
@@ -645,7 +637,7 @@ void UTIL_ScreenShake(const Vector &center, float amplitude, float frequency, fl
 	shake.duration = FixedUnsigned16(duration, 1<<12);
 	shake.frequency = FixedUnsigned16(frequency, 1<<8);
 
-	for (i = 1; i <= gpGlobals->maxClients; i++)
+	for (i = 1; i <= gpGlobals->maxClients; ++i)
 	{
 		CBaseEntity *pPlayer = UTIL_PlayerByIndex(i);
 		if (!pPlayer || !(pPlayer->pev->flags & FL_ONGROUND))
@@ -717,7 +709,7 @@ void UTIL_ScreenFadeAll(const Vector &color, float fadeTime, float fadeHold, int
 	int i;
 	ScreenFade fade;
 	UTIL_ScreenFadeBuild(fade, color, fadeTime, fadeHold, alpha, flags);
-	for (i = 1; i <= gpGlobals->maxClients; i++)
+	for (i = 1; i <= gpGlobals->maxClients; ++i)
 	{
 		CBaseEntity *pPlayer = UTIL_PlayerByIndex(i);
 		UTIL_ScreenFadeWrite(fade, pPlayer);
@@ -779,10 +771,10 @@ void UTIL_HudMessage(CBaseEntity *pEntity, const hudtextparms_t &textparms, cons
 /* <1ae1bf> ../cstrike/dlls/util.cpp:963 */
 void UTIL_HudMessageAll(const hudtextparms_t &textparms, const char *pMessage)
 {
-	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
 		CBaseEntity *pPlayer = UTIL_PlayerByIndex(i);
-		if (pPlayer)
+		if (pPlayer != NULL)
 			UTIL_HudMessage(pPlayer, textparms, pMessage);
 	}
 }
@@ -877,14 +869,14 @@ NOXREF char *UTIL_dtos4(int d)
 /* <1ae6c6> ../cstrike/dlls/util.cpp:1061 */
 void UTIL_ShowMessageArgs(const char *pString, CBaseEntity *pPlayer, CUtlVector<char *> *args, bool isHint)
 {
-	if (pPlayer && pPlayer->IsNetClient())
+	if (pPlayer != NULL && pPlayer->IsNetClient())
 	{
 		MESSAGE_BEGIN(MSG_ONE, gmsgHudTextArgs, NULL, pPlayer->pev);
 			WRITE_STRING(pString);
 			WRITE_BYTE(isHint);
 			WRITE_BYTE(args->Count());
 
-		for (int i = 0; i < args->Count(); i++)
+		for (int i = 0; i < args->Count(); ++i)
 			WRITE_STRING(args->Element(i));
 
 		MESSAGE_END();
@@ -913,10 +905,10 @@ void UTIL_ShowMessage(const char *pString, CBaseEntity *pEntity, bool isHint)
 /* <1ae8ac> ../cstrike/dlls/util.cpp:1095 */
 void UTIL_ShowMessageAll(const char *pString, bool isHint)
 {
-	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
 		CBaseEntity *pPlayer = UTIL_PlayerByIndex(i);
-		if (pPlayer)
+		if (pPlayer != NULL)
 			UTIL_ShowMessage(pString, pPlayer, isHint);
 	}
 }
@@ -946,7 +938,7 @@ void UTIL_TraceModel(const Vector &vecStart, const Vector &vecEnd, int hullNumbe
 }
 
 /* <1aec01> ../cstrike/dlls/util.cpp:1132 */
-NOXREF TraceResult UTIL_GetGlobalTrace(void)
+NOXREF TraceResult UTIL_GetGlobalTrace()
 {
 	TraceResult tr;
 
@@ -980,7 +972,8 @@ float UTIL_VecToYaw(const Vector &vec)
 void UTIL_SetOrigin(entvars_t *pev, const Vector &vecOrigin)
 {
 	edict_t *ent = ENT(pev);
-	if (ent)
+
+	if (ent != NULL)
 		SET_ORIGIN(ent, vecOrigin);
 }
 
@@ -1000,6 +993,7 @@ float UTIL_Approach(float target, float value, float speed)
 		value -= speed;
 	else
 		value = target;
+
 	return value;
 }
 
@@ -1024,6 +1018,7 @@ float_precision UTIL_ApproachAngle(float target, float value, float speed)
 		value -= speed;
 	else
 		value = target;
+
 	return value;
 }
 
@@ -1105,6 +1100,7 @@ BOOL UTIL_ShouldShowBlood(int color)
 				return TRUE;
 		}
 	}
+
 	return FALSE;
 }
 
@@ -1167,7 +1163,7 @@ void UTIL_BloodDrips(const Vector &origin, const Vector &direction, int color, i
 }
 
 /* <1af310> ../cstrike/dlls/util.cpp:1356 */
-Vector UTIL_RandomBloodVector(void)
+Vector UTIL_RandomBloodVector()
 {
 	Vector direction;
 	direction.x = RANDOM_FLOAT(-1, 1);
@@ -1231,6 +1227,7 @@ void UTIL_DecalTrace(TraceResult *pTrace, int decalNumber)
 			index -= 256;
 		}
 	}
+
 	MESSAGE_BEGIN(MSG_BROADCAST, SVC_TEMPENTITY);
 		WRITE_BYTE(message);
 		WRITE_COORD(pTrace->vecEndPos.x);
@@ -1330,6 +1327,7 @@ BOOL UTIL_TeamsMatch(const char *pTeamName1, const char *pTeamName2)
 		if (!Q_stricmp(pTeamName1, pTeamName2))
 			return TRUE;
 	}
+
 	return FALSE;
 }
 
@@ -1342,10 +1340,6 @@ void UTIL_StringToVector(float *pVector, const char *pString)
 	int j;
 
 	Q_strcpy(tempString, pString);
-
-#ifdef GAMEDLL_FIXES
-	tempString[127] = 0;
-#endif // GAMEDLL_FIXES
 
 	pstr = tempString;
 	pfront = tempString;
@@ -1510,7 +1504,7 @@ void UTIL_BubbleTrail(Vector from, Vector to, int count)
 /* <1afcfe> ../cstrike/dlls/util.cpp:1731 */
 void UTIL_Remove(CBaseEntity *pEntity)
 {
-	if (pEntity)
+	if (pEntity != NULL)
 	{
 		pEntity->UpdateOnRemove();
 		pEntity->pev->flags |= FL_KILLME;
@@ -1574,13 +1568,13 @@ void UTIL_StripToken(const char *pKey, char *pDest)
 	while (pKey[i] && pKey[i] != '#')
 	{
 		pDest[i] = pKey[i];
-		i++;
+		++i;
 	}
-	pDest[i] = 0;
+	pDest[i] = '\0';
 }
 
 /* <1b003a> ../cstrike/dlls/util.cpp:1847 */
-CSaveRestoreBuffer::CSaveRestoreBuffer(void)
+CSaveRestoreBuffer::CSaveRestoreBuffer()
 {
 	m_pdata = NULL;
 }
@@ -1592,7 +1586,7 @@ CSaveRestoreBuffer::CSaveRestoreBuffer(SAVERESTOREDATA *pdata)
 }
 
 /* <1b00d4> ../cstrike/dlls/util.cpp:1859 */
-CSaveRestoreBuffer::~CSaveRestoreBuffer(void)
+CSaveRestoreBuffer::~CSaveRestoreBuffer()
 {
 	;
 }
@@ -1627,12 +1621,13 @@ int CSaveRestoreBuffer::EntityIndex(edict_t *pentLookup)
 	if (!m_pdata || !pentLookup)
 		return -1;
 
-	for (int i = 0; i < m_pdata->tableCount; i++)
+	for (int i = 0; i < m_pdata->tableCount; ++i)
 	{
 		ENTITYTABLE *pTable = &m_pdata->pTable[i];
 		if (pTable->pent == pentLookup)
 			return i;
 	}
+
 	return -1;
 }
 
@@ -1642,12 +1637,13 @@ edict_t *CSaveRestoreBuffer::EntityFromIndex(int entityIndex)
 	if (!m_pdata || entityIndex < 0)
 		return NULL;
 
-	for (int i = 0; i < m_pdata->tableCount; i++)
+	for (int i = 0; i < m_pdata->tableCount; ++i)
 	{
 		ENTITYTABLE *pTable = &m_pdata->pTable[i];
 		if (pTable->id == entityIndex)
 			return pTable->pent;
 	}
+
 	return NULL;
 }
 
@@ -1695,10 +1691,11 @@ extern "C"
 			if (lobit)
 				num |= 0x80000000;
 		}
+
 		return num;
 	}
 }
-#endif
+#endif // _WIN32
 
 /* <1b04b5> ../cstrike/dlls/util.cpp:1971 */
 unsigned int CSaveRestoreBuffer::HashString(const char *pszToken)
@@ -1714,7 +1711,7 @@ unsigned int CSaveRestoreBuffer::HashString(const char *pszToken)
 unsigned short CSaveRestoreBuffer::TokenHash(const char *pszToken)
 {
 	unsigned short hash = (unsigned short)(HashString(pszToken) % (unsigned)m_pdata->tokenCount);
-	for (int i = 0; i < m_pdata->tokenCount; i++)
+	for (int i = 0; i < m_pdata->tokenCount; ++i)
 	{
 		int index = hash + i;
 		if (index >= m_pdata->tokenCount)
@@ -1726,12 +1723,13 @@ unsigned short CSaveRestoreBuffer::TokenHash(const char *pszToken)
 			return index;
 		}
 	}
+
 	ALERT(at_error, "CSaveRestoreBuffer :: TokenHash() is COMPLETELY FULL!");
 	return 0;
 }
 
 /* <1b06a5> ../cstrike/dlls/util.cpp:2020 */
-NOXREF void CSave::WriteData(const char *pname, int size, const char *pdata)
+void CSave::WriteData(const char *pname, int size, const char *pdata)
 {
 	BufferField(pname, size, pdata);
 }
@@ -1743,24 +1741,24 @@ NOXREF void CSave::WriteShort(const char *pname, const short *data, int count)
 }
 
 /* <1b0a7b> ../cstrike/dlls/util.cpp:2032 */
-NOXREF void CSave::WriteInt(const char *pname, const int *data, int count)
+void CSave::WriteInt(const char *pname, const int *data, int count)
 {
 	BufferField(pname, sizeof(int) * count, (const char *)data);
 }
 
 /* <1b0c77> ../cstrike/dlls/util.cpp:2038 */
-NOXREF void CSave::WriteFloat(const char *pname, const float *data, int count)
+void CSave::WriteFloat(const char *pname, const float *data, int count)
 {
 	BufferField(pname, sizeof(float) * count, (const char *)data);
 }
 
 /* <1b0ea5> ../cstrike/dlls/util.cpp:2044 */
-NOXREF void CSave::WriteTime(const char *pname, const float *data, int count)
+void CSave::WriteTime(const char *pname, const float *data, int count)
 {
 	int i;
 	BufferHeader(pname, sizeof(float) * count);
 
-	for (i = 0; i < count; i++)
+	for (i = 0; i < count; ++i)
 	{
 		float tmp = data[0];
 
@@ -1779,16 +1777,16 @@ NOXREF void CSave::WriteString(const char *pname, const char *pdata)
 }
 
 /* <1b121f> ../cstrike/dlls/util.cpp:2076 */
-NOXREF void CSave::WriteString(const char *pname, const int *stringId, int count)
+void CSave::WriteString(const char *pname, const int *stringId, int count)
 {
 	int i;
 	int size = 0;
 
-	for (i = 0; i < count; i++)
+	for (i = 0; i < count; ++i)
 		size += Q_strlen(STRING(stringId[i])) + 1;
 
 	BufferHeader(pname, size);
-	for (i = 0; i < count; i++)
+	for (i = 0; i < count; ++i)
 	{
 		const char *pString = STRING(stringId[i]);
 		BufferData(pString, Q_strlen(pString) + 1);
@@ -1796,13 +1794,13 @@ NOXREF void CSave::WriteString(const char *pname, const int *stringId, int count
 }
 
 /* <1b1480> ../cstrike/dlls/util.cpp:2099 */
-NOXREF void CSave::WriteVector(const char *pname, const Vector &value)
+void CSave::WriteVector(const char *pname, const Vector &value)
 {
 	WriteVector(pname, &value.x, 1);
 }
 
 /* <1b1630> ../cstrike/dlls/util.cpp:2105 */
-NOXREF void CSave::WriteVector(const char *pname, const float *value, int count)
+void CSave::WriteVector(const char *pname, const float *value, int count)
 {
 	BufferHeader(pname, sizeof(float) * 3 * count);
 	BufferData((const char *)value, sizeof(float) * 3 * count);
@@ -1820,10 +1818,10 @@ NOXREF void CSave::WritePositionVector(const char *pname, const Vector &value)
 }
 
 /* <1b1bde> ../cstrike/dlls/util.cpp:2126 */
-NOXREF void CSave::WritePositionVector(const char *pname, const float *value, int count)
+void CSave::WritePositionVector(const char *pname, const float *value, int count)
 {
 	BufferHeader(pname, sizeof(float) * 3 * count);
-	for (int i = 0; i < count; i++)
+	for (int i = 0; i < count; ++i)
 	{
 		Vector tmp(value[0], value[1], value[2]);
 
@@ -1836,7 +1834,7 @@ NOXREF void CSave::WritePositionVector(const char *pname, const float *value, in
 }
 
 /* <1b2ca4> ../cstrike/dlls/util.cpp:2145 */
-NOXREF void CSave::WriteFunction(const char *pname, void **data, int count)
+void CSave::WriteFunction(const char *pname, void **data, int count)
 {
 	const char *functionName = NAME_FOR_FUNCTION((uint32)*data);
 
@@ -1849,7 +1847,7 @@ NOXREF void CSave::WriteFunction(const char *pname, void **data, int count)
 /* <1b2e7a> ../cstrike/dlls/util.cpp:2157 */
 void EntvarsKeyvalue(entvars_t *pev, KeyValueData *pkvd)
 {
-	for (int i = 0; i < ARRAYSIZE(gEntvarsDescription); i++)
+	for (int i = 0; i < ARRAYSIZE(gEntvarsDescription); ++i)
 	{
 		TYPEDESCRIPTION *pField = &gEntvarsDescription[i];
 
@@ -1901,7 +1899,7 @@ int CSave::WriteFields(const char *pname, void *pBaseData, TYPEDESCRIPTION *pFie
 	int i;
 	int emptyCount = 0;
 
-	for (i = 0; i < fieldCount; i++)
+	for (i = 0; i < fieldCount; ++i)
 	{
 		void *pOutputData = ((char *)pBaseData + pFields[i].fieldOffset);
 		if (DataEmpty((const char *)pOutputData, pFields[i].fieldSize * gSizes[pFields[i].fieldType]))
@@ -1912,7 +1910,7 @@ int CSave::WriteFields(const char *pname, void *pBaseData, TYPEDESCRIPTION *pFie
 	int actualCount = fieldCount - emptyCount;
 
 	WriteInt(pname, &actualCount, 1);
-	for (i = 0; i < fieldCount; i++)
+	for (i = 0; i < fieldCount; ++i)
 	{
 		TYPEDESCRIPTION *pTest = &pFields[i];
 		void *pOutputData = ((char *)pBaseData + pTest->fieldOffset);
@@ -1997,6 +1995,7 @@ int CSave::WriteFields(const char *pname, void *pBaseData, TYPEDESCRIPTION *pFie
 			default: ALERT(at_error, "Bad field type\n");
 		}
 	}
+
 	return 1;
 }
 
@@ -2009,13 +2008,14 @@ NOXREF void CSave::BufferString(char *pdata, int len)
 }
 
 /* <1b3f5d> ../cstrike/dlls/util.cpp:2333 */
-NOXREF int CSave::DataEmpty(const char *pdata, int size)
+int CSave::DataEmpty(const char *pdata, int size)
 {
-	for (int i = 0; i < size; i++)
+	for (int i = 0; i < size; ++i)
 	{
 		if (pdata[i])
 			return 0;
 	}
+
 	return 1;
 }
 
@@ -2067,7 +2067,7 @@ int CRestore::ReadField(void *pBaseData, TYPEDESCRIPTION *pFields, int fieldCoun
 		if (m_pdata->fUseLandmark)
 			position = m_pdata->vecLandmarkOffset;
 	}
-	for (int i = 0; i < fieldCount; i++)
+	for (int i = 0; i < fieldCount; ++i)
 	{
 		int fieldNumber = (i + startField) % fieldCount;
 		TYPEDESCRIPTION *pTest = &pFields[fieldNumber];
@@ -2247,12 +2247,12 @@ int CRestore::ReadFields(const char *pname, void *pBaseData, TYPEDESCRIPTION *pF
 	int fileCount = ReadInt();
 	int lastField = 0;
 
-	for (i = 0; i < fieldCount; i++)
+	for (i = 0; i < fieldCount; ++i)
 	{
 		if (!m_global || !(pFields[i].flags & FTYPEDESC_GLOBAL))
 			Q_memset(((char *)pBaseData + pFields[i].fieldOffset), 0, pFields[i].fieldSize * gSizes[pFields[i].fieldType]);
 	}
-	for (i = 0; i < fileCount; i++)
+	for (i = 0; i < fileCount; ++i)
 	{
 		HEADER header;
 		BufferReadHeader(&header);
@@ -2264,7 +2264,7 @@ int CRestore::ReadFields(const char *pname, void *pBaseData, TYPEDESCRIPTION *pF
 }
 
 /* <1b46b1> ../cstrike/dlls/util.cpp:2595 */
-NOXREF void CRestore::BufferReadHeader(HEADER *pheader)
+void CRestore::BufferReadHeader(HEADER *pheader)
 {
 	pheader->size = ReadShort();
 	pheader->token = ReadShort();
@@ -2274,7 +2274,7 @@ NOXREF void CRestore::BufferReadHeader(HEADER *pheader)
 }
 
 /* <1b4654> ../cstrike/dlls/util.cpp:2605 */
-NOXREF short CRestore::ReadShort(void)
+short CRestore::ReadShort()
 {
 	short tmp = 0;
 	BufferReadBytes((char *)&tmp, sizeof(short));
@@ -2282,7 +2282,7 @@ NOXREF short CRestore::ReadShort(void)
 }
 
 /* <1b45f5> ../cstrike/dlls/util.cpp:2614 */
-NOXREF int CRestore::ReadInt(void)
+int CRestore::ReadInt()
 {
 	int tmp = 0;
 	BufferReadBytes((char *)&tmp, sizeof(int));
@@ -2306,7 +2306,7 @@ NOXREF char *CRestore::ReadNamedString(const char *pName)
 }
 
 /* <1b453a> ../cstrike/dlls/util.cpp:2644 */
-NOXREF char *CRestore::BufferPointer(void)
+char *CRestore::BufferPointer()
 {
 	if (!m_pdata)
 		return NULL;
@@ -2335,13 +2335,13 @@ void CRestore::BufferReadBytes(char *pOutput, int size)
 }
 
 /* <1b5092> ../cstrike/dlls/util.cpp:2673 */
-NOXREF void CRestore::BufferSkipBytes(int bytes)
+void CRestore::BufferSkipBytes(int bytes)
 {
 	BufferReadBytes(NULL, bytes);
 }
 
 /* <1b50bc> ../cstrike/dlls/util.cpp:2678 */
-NOXREF int CRestore::BufferSkipZString(void)
+NOXREF int CRestore::BufferSkipZString()
 {
 	if (!m_pdata)
 		return 0;
@@ -2372,6 +2372,7 @@ NOXREF int CRestore::BufferCheckZString(const char *string)
 		if (!strncmp(string, m_pdata->pCurrentData, len))
 			return 1;
 	}
+
 	return 0;
 }
 
@@ -2405,18 +2406,19 @@ char UTIL_TextureHit(TraceResult *ptr, Vector vecSrc, Vector vecEnd)
 			pTextureName++;
 
 		Q_strcpy(szbuffer, pTextureName);
-		szbuffer[16] = 0;
+		szbuffer[16] = '\0';
 		chTextureType = TEXTURETYPE_Find(szbuffer);
 	}
 	else
-		chTextureType = 0;
+		chTextureType = '\0';
+
 	return chTextureType;
 }
 
 /* <1b5330> ../cstrike/dlls/util.cpp:2767 */
 NOXREF int GetPlayerTeam(int index)
 {
-	CBasePlayer *pPlayer = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(index));
+	CBasePlayer *pPlayer = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(index));
 	if (pPlayer != NULL)
 	{
 		return pPlayer->m_iTeam;
@@ -2443,11 +2445,28 @@ bool UTIL_IsGame(const char *gameName)
 /* <1b5470> ../cstrike/dlls/util.cpp:2802 */
 float_precision UTIL_GetPlayerGaitYaw(int playerIndex)
 {
-	CBasePlayer *pPlayer = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(playerIndex));
+	CBasePlayer *pPlayer = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(playerIndex));
 	if (pPlayer != NULL)
 	{
 		return pPlayer->m_flGaityaw;
 	}
 
 	return 0;
+}
+
+int UTIL_ReadFlags(const char *c)
+{
+	int flags = 0;
+
+	while (*c)
+	{
+		if (*c >= 'a' && *c <= 'z')
+		{
+			flags |= (1 << (*c - 'a'));
+		}
+
+		*c++;
+	}
+
+	return flags;
 }

@@ -8,7 +8,7 @@ LINK_ENTITY_TO_CLASS(soundent, CSoundEnt);
 // CSound - Clear - zeros all fields for a sound
 
 /* <178d6e> ../cstrike/dlls/soundent.cpp:29 */
-void CSound::Clear(void)
+void CSound::Clear()
 {
 	m_vecOrigin = g_vecZero;
 	m_iType = 0;
@@ -22,7 +22,7 @@ void CSound::Clear(void)
 // but doesn't expire or unlink it.
 
 /* <178d8f> ../cstrike/dlls/soundent.cpp:43 */
-void CSound::Reset(void)
+void CSound::Reset()
 {
 	m_vecOrigin = g_vecZero;
 	m_iNext = SOUNDLIST_EMPTY;
@@ -33,7 +33,7 @@ void CSound::Reset(void)
 // FIsSound - returns TRUE if the sound is an Audible sound
 
 /* <178db7> ../cstrike/dlls/soundent.cpp:54 */
-NOXREF BOOL CSound::FIsSound(void)
+NOXREF BOOL CSound::FIsSound()
 {
 	if (m_iType & (bits_SOUND_COMBAT | bits_SOUND_WORLD | bits_SOUND_PLAYER | bits_SOUND_DANGER))
 	{
@@ -46,7 +46,7 @@ NOXREF BOOL CSound::FIsSound(void)
 // FIsScent - returns TRUE if the sound is actually a scent
 
 /* <178ddf> ../cstrike/dlls/soundent.cpp:67 */
-NOXREF BOOL CSound::FIsScent(void)
+NOXREF BOOL CSound::FIsScent()
 {
 	if (m_iType & (bits_SOUND_CARCASS | bits_SOUND_MEAT | bits_SOUND_GARBAGE))
 	{
@@ -57,7 +57,7 @@ NOXREF BOOL CSound::FIsScent(void)
 }
 
 /* <17900a> ../cstrike/dlls/soundent.cpp:80 */
-void CSoundEnt::__MAKE_VHOOK(Spawn)(void)
+void CSoundEnt::__MAKE_VHOOK(Spawn)()
 {
 	pev->solid = SOLID_NOT;
 	Initialize();
@@ -70,7 +70,7 @@ void CSoundEnt::__MAKE_VHOOK(Spawn)(void)
 // to the current world time, and these sounds are deallocated.
 
 /* <178b0c> ../cstrike/dlls/soundent.cpp:93 */
-void CSoundEnt::__MAKE_VHOOK(Think)(void)
+void CSoundEnt::__MAKE_VHOOK(Think)()
 {
 	int iSound;
 	int iPreviousSound;
@@ -109,14 +109,14 @@ void CSoundEnt::__MAKE_VHOOK(Think)(void)
 // Precache - dummy function
 
 /* <178a76> ../cstrike/dlls/soundent.cpp:132 */
-void CSoundEnt::__MAKE_VHOOK(Precache)(void)
+void CSoundEnt::__MAKE_VHOOK(Precache)()
 {
 	;
 }
 
 // FreeSound - clears the passed active sound and moves it
 // to the top of the free list. TAKE CARE to only call this
-// function for sounds in the Active list!!
+// function for sounds in the Active list
 
 /* <178e07> ../cstrike/dlls/soundent.cpp:141 */
 void CSoundEnt::FreeSound(int iSound, int iPrevious)
@@ -149,7 +149,7 @@ void CSoundEnt::FreeSound(int iSound, int iPrevious)
 // Active list returns the index of the alloc'd sound
 
 /* <178e2d> ../cstrike/dlls/soundent.cpp:171 */
-int CSoundEnt::IAllocSound(void)
+int CSoundEnt::IAllocSound()
 {
 	int iNewSound;
 
@@ -210,7 +210,7 @@ void CSoundEnt::InsertSound(int iType, const Vector &vecOrigin, int iVolume, flo
 // free sound list.
 
 /* <178f4e> ../cstrike/dlls/soundent.cpp:228 */
-void CSoundEnt::Initialize(void)
+void CSoundEnt::Initialize()
 {
   	int i;
 	int iSound;
@@ -220,7 +220,7 @@ void CSoundEnt::Initialize(void)
 	m_iActiveSound = SOUNDLIST_EMPTY;
 
 	// clear all sounds, and link them into the free sound list.
-	for (i = 0; i < MAX_WORLD_SOUNDS; i++)
+	for (i = 0; i < MAX_WORLD_SOUNDS; ++i)
 	{
 		m_SoundPool[ i ].Clear();
 		m_SoundPool[ i ].m_iNext = i + 1;
@@ -230,7 +230,7 @@ void CSoundEnt::Initialize(void)
 	m_SoundPool[ i - 1 ].m_iNext = SOUNDLIST_EMPTY;
 
 	// now reserve enough sounds for each client
-	for (i = 0; i < gpGlobals->maxClients; i++)
+	for (i = 0; i < gpGlobals->maxClients; ++i)
 	{
 		iSound = pSoundEnt->IAllocSound();
 
@@ -284,8 +284,7 @@ int CSoundEnt::ISoundsInList(int iListType)
 
 	while (iThisSound != SOUNDLIST_EMPTY)
 	{
-		i++;
-
+		++i;
 		iThisSound = m_SoundPool[ iThisSound ].m_iNext;
 	}
 
@@ -295,7 +294,7 @@ int CSoundEnt::ISoundsInList(int iListType)
 // ActiveList - returns the head of the active sound list
 
 /* <179073> ../cstrike/dlls/soundent.cpp:312 */
-NOXREF int CSoundEnt::ActiveList(void)
+NOXREF int CSoundEnt::ActiveList()
 {
 	if (!pSoundEnt)
 	{
@@ -308,7 +307,7 @@ NOXREF int CSoundEnt::ActiveList(void)
 // FreeList - returns the head of the free sound list
 
 /* <179083> ../cstrike/dlls/soundent.cpp:325 */
-NOXREF int CSoundEnt::FreeList(void)
+NOXREF int CSoundEnt::FreeList()
 {
 	if (!pSoundEnt)
 	{
@@ -365,22 +364,3 @@ int CSoundEnt::ClientSoundIndex(edict_t *pClient)
 
 	return iReturn;
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CSoundEnt::Spawn(void)
-{
-	Spawn_();
-}
-
-void CSoundEnt::Precache(void)
-{
-	Precache_();
-}
-
-void CSoundEnt::Think(void)
-{
-	Think_();
-}
-
-#endif // HOOK_GAMEDLL

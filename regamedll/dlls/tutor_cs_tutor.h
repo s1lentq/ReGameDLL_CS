@@ -86,15 +86,13 @@ struct TutorMessage
 	float m_minDisplayTimeOverride;
 	float m_minRepeatInterval;
 	float m_lastCloseTime;
-
-};/* size: 56, cachelines: 1, members: 15 */
+};
 
 struct TutorMessageEventParam
 {
 	char *m_data;
 	TutorMessageEventParam *m_next;
-
-};/* size: 8, cachelines: 1, members: 2 */
+};
 
 enum TutorMessageID
 {
@@ -262,16 +260,15 @@ struct ClientCorpseStruct
 {
 	Vector m_position;
 	int m_team;
+};
 
-};/* size: 16, cachelines: 1, members: 2 */
-
-typedef std::vector<ClientCorpseStruct *> ClientCorpseList;
+typedef std::STD_VECTOR<ClientCorpseStruct *> ClientCorpseList;
 typedef ClientCorpseList::iterator ClientCorpseListIter;
 
 class CCSTutor: public CBaseTutor
 {
 public:
-	CCSTutor(void);
+	CCSTutor();
 
 	struct PlayerDeathStruct
 	{
@@ -279,10 +276,9 @@ public:
 		TutorMessageEvent *m_event;
 	};
 
-	virtual ~CCSTutor(void);
-
+	virtual ~CCSTutor();
 	virtual void TutorThink(float time);
-	virtual void PurgeMessages(void);
+	virtual void PurgeMessages();
 	virtual void CallEventHandler(GameEventType event, CBaseEntity *entity, CBaseEntity *other);
 	virtual void ShowTutorMessage(TutorMessageEvent *event);
 	virtual void HandleShotFired(Vector source, Vector target);
@@ -292,27 +288,28 @@ public:
 	TutorMessageEvent *CreateTutorMessageEvent(TutorMessageID mid, CBaseEntity *entity = NULL, CBaseEntity *other = NULL);
 	void AddToEventList(TutorMessageEvent *event);
 	void DeleteEventFromEventList(TutorMessageEvent *event);
-	void ClearEventList(void);
+	void ClearEventList();
 	void ClearCurrentEvent(bool closeWindow = true, bool processDeathsForEvent = true);
 	void DeleteEvent(TutorMessageEvent *event);
 	bool ShouldShowMessageEvent(TutorMessageEvent *event, float time);
 	NOXREF bool ShouldUpdateCurrentMessage(TutorMessageID messageID);
-	void ComputeDisplayTimesForMessage(void);
+	void ComputeDisplayTimesForMessage();
 	void UpdateCurrentMessage(TutorMessageEvent *event);
-	void ConstructMessageAndDisplay(void);
+	void ConstructMessageAndDisplay();
 	NOXREF void LookupHotKey(TutorMessageID mid, int paramNum, wchar_t *buf, int buflen);
 	void CheckForWindowClose(float time);
-	void CheckForContentUpdate(void);
+	void CheckForContentUpdate();
 	bool HasCurrentWindowBeenActiveLongEnough(float time);
 	void CheckForInterruptingMessageEvent(float time);
 	void CheckForInactiveEvents(float time);
 	void CancelEvent(TutorMessageID mid);
 	void ProcessShownDeathsForEvent(TutorMessageEvent *event);
 	void TransferDeathEvents(TutorMessageEvent *oldEvent, TutorMessageEvent *newEvent);
-	TutorMessageEvent *GetTutorMessageUpdateEvent(void);
+	TutorMessageEvent *GetTutorMessageUpdateEvent();
 	bool GetDuplicateMessagesFromEventList(TutorMessageEvent *&event1, TutorMessageEvent *&event2);
-	bool IsBombMap(void);
-	bool IsHostageMap(void);
+	bool IsBombMap();
+	bool IsHostageMap();
+
 public:
 	void HandleWeaponFired(CBaseEntity *entity, CBaseEntity *other);
 	void HandleWeaponFiredOnEmpty(CBaseEntity *entity, CBaseEntity *other);
@@ -372,32 +369,32 @@ public:
 	void HandleCareerTaskDone(CBaseEntity *entity, CBaseEntity *other);
 
 	void GetNumPlayersAliveOnTeams(int &numT, int &numCT);
-	void CheckForBombViewable(void);
-	void CheckForLooseWeaponViewable(void);
-	void CheckForLooseDefuserViewable(void);
-	void CheckForBombsiteViewable(void);
-	TutorMessageID CheckForInBombZone(void);
-	void CheckForHostageViewable(void);
-	void CheckForTimeRunningOut(void);
-	void CheckForAllHostagesDead(void);
-	bool CheckForAllHostagesFollowingSomeone(void);
+	void CheckForBombViewable();
+	void CheckForLooseWeaponViewable();
+	void CheckForLooseDefuserViewable();
+	void CheckForBombsiteViewable();
+	TutorMessageID CheckForInBombZone();
+	void CheckForHostageViewable();
+	void CheckForTimeRunningOut();
+	void CheckForAllHostagesDead();
+	bool CheckForAllHostagesFollowingSomeone();
 	void CheckHintMessages(float time);
 	void CheckInGameHintMessages(float time);
 	void CheckExamineMessages(float time);
 	void CheckForNeedToReload(bool isPassiveCheck = false);
-	bool CanLocalPlayerBuyStuff(void);
-	void CheckBuyZoneMessages(void);
+	bool CanLocalPlayerBuyStuff();
+	void CheckBuyZoneMessages();
 	bool IsBombPlantedInBombsite(CBaseEntity *bombTarget);
-	void ReadTutorMessageFile(void);
-	void ApplyPersistentDecay(void);
+	void ReadTutorMessageFile();
+	void ApplyPersistentDecay();
 	CBaseEntity *GetEntityForMessageID(int messageID, CBaseEntity *last = NULL);
-	void ResetPlayerDeathInfo(void);
+	void ResetPlayerDeathInfo();
 	void ConstructRecentDeathsList(TeamName team, char *buf, int buflen, TutorMessageEvent *event);
 
 #ifdef HOOK_GAMEDLL
 
 	void TutorThink_(float time);
-	void PurgeMessages_(void);
+	void PurgeMessages_();
 	void CallEventHandler_(GameEventType event, CBaseEntity *entity, CBaseEntity *other);
 	void ShowTutorMessage_(TutorMessageEvent *event);
 	void HandleShotFired_(Vector source, Vector target);
@@ -420,16 +417,7 @@ private:
 	int m_messageTypeMask;
 	bool m_haveSpawned;
 	PlayerDeathStruct m_playerDeathInfo[32];
-
-};/* size: 356, cachelines: 6, members: 15 */
-
-#ifdef HOOK_GAMEDLL
-
-#define TutorIdentifierList (*pTutorIdentifierList)
-
-#endif // HOOK_GAMEDLL
-
-extern const char *TutorIdentifierList[ TUTOR_NUM_MESSAGES ];
+};
 
 void ParseMessageParameters(char *&messageData, TutorMessage *ret);
 TutorMessage *ConstructTutorMessage(char *&messageData, TutorMessage *defaults);

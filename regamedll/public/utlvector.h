@@ -5,9 +5,8 @@
 #endif
 
 #include "utlmemory.h"
-#include "tier0/platform.h"
 
-template< class T >
+template<class T>
 class CUtlVector
 {
 public:
@@ -551,7 +550,7 @@ void CUtlVector<T>::Purge()
 template<class T>
 inline void CUtlVector<T>::PurgeAndDeleteElements()
 {
-	for(int i=0; i < m_Size; i++)
+	for (int i = 0; i < m_Size; i++)
 		delete Element(i);
 
 	Purge();

@@ -159,14 +159,10 @@ const char *TutorIdentifierList[] =
 	"INGAME_HINT_3"
 };
 
-#else // HOOK_GAMEDLL
-
-const char *TutorIdentifierList[ TUTOR_NUM_MESSAGES ];
-
 #endif // HOOK_GAMEDLL
 
 /* <212575> ../cstrike/dlls/tutor_cs_tutor.cpp:197 */
-CCSTutor::CCSTutor(void)
+CCSTutor::CCSTutor()
 {
 	m_stateSystem = new CCSTutorStateSystem;
 
@@ -185,7 +181,7 @@ CCSTutor::CCSTutor(void)
 }
 
 /* <217e69> ../cstrike/dlls/tutor_cs_tutor.cpp:221 */
-CCSTutor::~CCSTutor(void)
+CCSTutor::~CCSTutor()
 {
 	if (m_stateSystem != NULL)
 	{
@@ -385,7 +381,7 @@ void ReadDefaultValues(char *&messageData, TutorMessage *defaults)
 }
 
 /* <21164e> ../cstrike/dlls/tutor_cs_tutor.cpp:436 */
-void CCSTutor::ReadTutorMessageFile(void)
+void CCSTutor::ReadTutorMessageFile()
 {
 	int messageFileLen = 0;
 
@@ -397,7 +393,7 @@ void CCSTutor::ReadTutorMessageFile(void)
 
 	if (!messageFile)
 	{
-		if (UTIL_IsGame("czero"))
+		if (g_bIsCzeroGame)
 		{
 			CONSOLE_ECHO("Warning: Cannot access tutor message file tutordata.txt\n");
 		}
@@ -448,7 +444,7 @@ void CCSTutor::ReadTutorMessageFile(void)
 }
 
 /* <2126f8> ../cstrike/dlls/tutor_cs_tutor.cpp:491 */
-void CCSTutor::ApplyPersistentDecay(void)
+void CCSTutor::ApplyPersistentDecay()
 {
 	for (TutorMessageID mid = YOU_FIRED_A_SHOT; mid < TUTOR_NUM_MESSAGES; mid++)
 	{
@@ -639,7 +635,7 @@ void CCSTutor::CheckForWindowClose(float time)
 }
 
 /* <2134a7> ../cstrike/dlls/tutor_cs_tutor.cpp:715 */
-void CCSTutor::CheckForContentUpdate(void)
+void CCSTutor::CheckForContentUpdate()
 {
 	if (m_currentlyShownMessageID < 0 || m_currentlyShownMessageID >= 150)
 	{
@@ -701,7 +697,7 @@ void CCSTutor::ProcessShownDeathsForEvent(TutorMessageEvent *event)
 		return;
 	}
 
-	for (int i = 0; i < ARRAYSIZE(m_playerDeathInfo); i++)
+	for (int i = 0; i < ARRAYSIZE(m_playerDeathInfo); ++i)
 	{
 		if (m_playerDeathInfo[i].m_event == event)
 		{
@@ -712,7 +708,7 @@ void CCSTutor::ProcessShownDeathsForEvent(TutorMessageEvent *event)
 }
 
 /* <212949> ../cstrike/dlls/tutor_cs_tutor.cpp:794 */
-TutorMessageEvent *CCSTutor::GetTutorMessageUpdateEvent(void)
+TutorMessageEvent *CCSTutor::GetTutorMessageUpdateEvent()
 {
 	TutorMessage *definition = GetTutorMessageDefinition(m_currentlyShownMessageID);
 
@@ -1057,7 +1053,7 @@ void CCSTutor::DeleteEventFromEventList(TutorMessageEvent *event)
 }
 
 /* <213215> ../cstrike/dlls/tutor_cs_tutor.cpp:1163 */
-void CCSTutor::ClearEventList(void)
+void CCSTutor::ClearEventList()
 {
 	while (m_eventList != NULL)
 	{
@@ -1071,7 +1067,7 @@ void CCSTutor::ClearEventList(void)
 /* <213289> ../cstrike/dlls/tutor_cs_tutor.cpp:1175 */
 void CCSTutor::DeleteEvent(TutorMessageEvent *event)
 {
-	for (int i = 0; i < ARRAYSIZE(m_playerDeathInfo); i++)
+	for (int i = 0; i < ARRAYSIZE(m_playerDeathInfo); ++i)
 	{
 		if (m_playerDeathInfo[i].m_event == event)
 		{
@@ -1086,7 +1082,7 @@ void CCSTutor::DeleteEvent(TutorMessageEvent *event)
 }
 
 /* <210a17> ../cstrike/dlls/tutor_cs_tutor.cpp:1189 */
-void CCSTutor::__MAKE_VHOOK(PurgeMessages)(void)
+void CCSTutor::__MAKE_VHOOK(PurgeMessages)()
 {
 	ClearCurrentEvent();
 	ClearEventList();
@@ -1099,7 +1095,7 @@ void CCSTutor::__MAKE_VHOOK(PurgeMessages)(void)
 }
 
 /* <2132ca> ../cstrike/dlls/tutor_cs_tutor.cpp:1203 */
-void CCSTutor::ComputeDisplayTimesForMessage(void)
+void CCSTutor::ComputeDisplayTimesForMessage()
 {
 	TutorMessage *message = GetTutorMessageDefinition(m_currentlyShownMessageID);
 	float now = gpGlobals->time;
@@ -1206,7 +1202,7 @@ void CCSTutor::__MAKE_VHOOK(ShowTutorMessage)(TutorMessageEvent *event)
 }
 
 /* <2135cc> ../cstrike/dlls/tutor_cs_tutor.cpp:1324 */
-void CCSTutor::ConstructMessageAndDisplay(void)
+void CCSTutor::ConstructMessageAndDisplay()
 {
 	CBasePlayer *localPlayer = UTIL_GetLocalPlayer();
 
@@ -1409,7 +1405,7 @@ void CCSTutor::HandleWeaponFired(CBaseEntity *entity, CBaseEntity *other)
 
 	if (localPlayer != NULL && localPlayer->IsAlive())
 	{
-		CBasePlayer *player = reinterpret_cast<CBasePlayer *>(entity);
+		CBasePlayer *player = static_cast<CBasePlayer *>(entity);
 
 		if (player != NULL && player == localPlayer)
 		{
@@ -1425,11 +1421,11 @@ void CCSTutor::HandleWeaponFiredOnEmpty(CBaseEntity *entity, CBaseEntity *other)
 
 	if (localPlayer != NULL)
 	{
-		CBasePlayer *player = reinterpret_cast<CBasePlayer *>(entity);
+		CBasePlayer *player = static_cast<CBasePlayer *>(entity);
 
 		if (player != NULL && player->IsPlayer() && player == localPlayer)
 		{
-			CBasePlayerWeapon *currentWeapon = reinterpret_cast<CBasePlayerWeapon *>(player->m_pActiveItem);
+			CBasePlayerWeapon *currentWeapon = static_cast<CBasePlayerWeapon *>(player->m_pActiveItem);
 
 			if (currentWeapon != NULL && player->m_rgAmmo[currentWeapon->m_iPrimaryAmmoType] <= 0)
 			{
@@ -1449,7 +1445,7 @@ void CCSTutor::HandleWeaponFiredOnEmpty(CBaseEntity *entity, CBaseEntity *other)
 /* <213817> ../cstrike/dlls/tutor_cs_tutor.cpp:1654 */
 void CCSTutor::HandleWeaponReloaded(CBaseEntity *entity, CBaseEntity *other)
 {
-	CBasePlayer *player = reinterpret_cast<CBasePlayer *>(entity);
+	CBasePlayer *player = static_cast<CBasePlayer *>(entity);
 
 	if (player != NULL && player->IsPlayer() && player == UTIL_GetLocalPlayer())
 	{
@@ -1467,8 +1463,8 @@ void CCSTutor::HandlePlayerDied(CBaseEntity *entity, CBaseEntity *other)
 		return;
 	}
 
-	CBasePlayer *victim = reinterpret_cast<CBasePlayer *>(entity);
-	CBasePlayer *attacker = reinterpret_cast<CBasePlayer *>(other);
+	CBasePlayer *victim = static_cast<CBasePlayer *>(entity);
+	CBasePlayer *attacker = static_cast<CBasePlayer *>(other);
 
 	if (victim != NULL && !victim->IsPlayer())
 	{
@@ -1711,8 +1707,8 @@ void CCSTutor::HandlePlayerTookDamage(CBaseEntity *entity, CBaseEntity *other)
 
 	if (localPlayer != NULL)
 	{
-		CBasePlayer *victim = reinterpret_cast<CBasePlayer *>(entity);
-		CBasePlayer *attacker = reinterpret_cast<CBasePlayer *>(other);
+		CBasePlayer *victim = static_cast<CBasePlayer *>(entity);
+		CBasePlayer *attacker = static_cast<CBasePlayer *>(other);
 
 		if (victim != NULL && !victim->IsPlayer())
 		{
@@ -1742,7 +1738,7 @@ void CCSTutor::HandlePlayerBlindedByFlashbang(CBaseEntity *entity, CBaseEntity *
 
 	if (localPlayer != NULL)
 	{
-		CBasePlayer *player = reinterpret_cast<CBasePlayer *>(entity);
+		CBasePlayer *player = static_cast<CBasePlayer *>(entity);
 
 		if (player != NULL && player->IsPlayer() && player == localPlayer)
 		{
@@ -1754,7 +1750,7 @@ void CCSTutor::HandlePlayerBlindedByFlashbang(CBaseEntity *entity, CBaseEntity *
 /* <213ab7> ../cstrike/dlls/tutor_cs_tutor.cpp:2008 */
 void CCSTutor::HandlePlayerSpawned(CBaseEntity *entity, CBaseEntity *other)
 {
-	CBasePlayer *player = reinterpret_cast<CBasePlayer *>(entity);
+	CBasePlayer *player = static_cast<CBasePlayer *>(entity);
 
 	if (player->IsPlayer() && player == UTIL_GetLocalPlayer())
 	{
@@ -1767,7 +1763,7 @@ void CCSTutor::HandlePlayerSpawned(CBaseEntity *entity, CBaseEntity *other)
 /* <21868e> ../cstrike/dlls/tutor_cs_tutor.cpp:2033 */
 NOXREF void CCSTutor::HandleClientCorpseSpawned(CBaseEntity *entity, CBaseEntity *other)
 {
-	CBasePlayer *player = reinterpret_cast<CBasePlayer *>(entity);
+	CBasePlayer *player = static_cast<CBasePlayer *>(entity);
 
 	if (player == NULL || !player->IsPlayer())
 	{
@@ -1850,7 +1846,7 @@ void CCSTutor::HandleBombDefused(CBaseEntity *entity, CBaseEntity *other)
 
 	if (localPlayer != NULL)
 	{
-		CBasePlayer *defuser = reinterpret_cast<CBasePlayer *>(entity);
+		CBasePlayer *defuser = static_cast<CBasePlayer *>(entity);
 
 		if (defuser != NULL && defuser->IsPlayer() && defuser == localPlayer)
 		{
@@ -1881,7 +1877,7 @@ void CCSTutor::HandleBombDefusing(CBaseEntity *entity, CBaseEntity *other)
 
 	if (localPlayer != NULL)
 	{
-		CBasePlayer *player = reinterpret_cast<CBasePlayer *>(entity);
+		CBasePlayer *player = static_cast<CBasePlayer *>(entity);
 
 		if (player != NULL && player->IsPlayer() && player == localPlayer && !player->m_bHasDefuser)
 		{
@@ -1962,7 +1958,7 @@ void CCSTutor::HandleBeingShotAt(CBaseEntity *entity, CBaseEntity *other)
 
 	if (localPlayer != NULL)
 	{
-		CBasePlayer *player = reinterpret_cast<CBasePlayer *>(entity);
+		CBasePlayer *player = static_cast<CBasePlayer *>(entity);
 
 		if (player != NULL && player->IsPlayer() && player == localPlayer && localPlayer->IsAlive())
 		{
@@ -1978,7 +1974,7 @@ void CCSTutor::HandleHostageUsed(CBaseEntity *entity, CBaseEntity *other)
 
 	if (localPlayer != NULL)
 	{
-		CBasePlayer *activator = reinterpret_cast<CBasePlayer *>(entity);
+		CBasePlayer *activator = static_cast<CBasePlayer *>(entity);
 
 		if (activator != NULL && activator->IsPlayer())
 		{
@@ -2013,7 +2009,7 @@ void CCSTutor::HandleHostageRescued(CBaseEntity *entity, CBaseEntity *other)
 
 	if (localPlayer != NULL)
 	{
-		CBasePlayer *rescuer = reinterpret_cast<CBasePlayer *>(entity);
+		CBasePlayer *rescuer = static_cast<CBasePlayer *>(entity);
 
 		if (rescuer != NULL && rescuer->IsPlayer())
 		{
@@ -2060,7 +2056,7 @@ void CCSTutor::HandleHostageDamaged(CBaseEntity *entity, CBaseEntity *other)
 
 	if (localPlayer != NULL)
 	{
-		CBasePlayer *attacker = reinterpret_cast<CBasePlayer *>(other);
+		CBasePlayer *attacker = static_cast<CBasePlayer *>(other);
 
 		if (entity != NULL && attacker != NULL && attacker->IsPlayer() && localPlayer == attacker)
 		{
@@ -2078,7 +2074,7 @@ void CCSTutor::HandleHostageKilled(CBaseEntity *entity, CBaseEntity *other)
 	{
 		CheckForAllHostagesDead();
 
-		CBasePlayer *attacker = reinterpret_cast<CBasePlayer *>(other);
+		CBasePlayer *attacker = static_cast<CBasePlayer *>(other);
 
 		if (entity != NULL && attacker != NULL && attacker->IsPlayer())
 		{
@@ -2141,7 +2137,7 @@ void CCSTutor::HandleDeathCameraStart(CBaseEntity *entity, CBaseEntity *other)
 
 	if (localPlayer != NULL)
 	{
-		CBasePlayer *player = reinterpret_cast<CBasePlayer *>(entity);
+		CBasePlayer *player = static_cast<CBasePlayer *>(entity);
 
 		if (player != NULL && player->IsPlayer() && player == localPlayer)
 		{
@@ -2362,9 +2358,9 @@ void CCSTutor::GetNumPlayersAliveOnTeams(int &numT, int &numCT)
 	numT = 0;
 	numCT = 0;
 
-	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
-		CBasePlayer *player = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+		CBasePlayer *player = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
 		if (player == NULL || !player->IsAlive())
 		{
@@ -2384,7 +2380,7 @@ void CCSTutor::GetNumPlayersAliveOnTeams(int &numT, int &numCT)
 }
 
 /* <2150d5> ../cstrike/dlls/tutor_cs_tutor.cpp:2749 */
-void CCSTutor::CheckForLooseWeaponViewable(void)
+void CCSTutor::CheckForLooseWeaponViewable()
 {
 	CBasePlayer *localPlayer = UTIL_GetLocalPlayer();
 
@@ -2412,7 +2408,7 @@ void CCSTutor::CheckForLooseWeaponViewable(void)
 }
 
 /* <21514d> ../cstrike/dlls/tutor_cs_tutor.cpp:2787 */
-void CCSTutor::CheckForLooseDefuserViewable(void)
+void CCSTutor::CheckForLooseDefuserViewable()
 {
 	CBasePlayer *localPlayer = UTIL_GetLocalPlayer();
 
@@ -2440,7 +2436,7 @@ void CCSTutor::CheckForLooseDefuserViewable(void)
 }
 
 /* <2151c1> ../cstrike/dlls/tutor_cs_tutor.cpp:2826 */
-void CCSTutor::CheckForBombViewable(void)
+void CCSTutor::CheckForBombViewable()
 {
 	CBasePlayer *localPlayer = UTIL_GetLocalPlayer();
 
@@ -2481,9 +2477,9 @@ void CCSTutor::CheckForBombViewable(void)
 	{
 		CBasePlayer *bombCarrier = NULL;
 
-		for (int i = 1; i <= gpGlobals->maxClients; i++)
+		for (int i = 1; i <= gpGlobals->maxClients; ++i)
 		{
-			CBasePlayer *player = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+			CBasePlayer *player = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
 			if (player && player->m_bHasC4)
 			{
@@ -2556,7 +2552,7 @@ void CCSTutor::CheckForBombViewable(void)
 }
 
 /* <215431> ../cstrike/dlls/tutor_cs_tutor.cpp:2959 */
-void CCSTutor::CheckForBombsiteViewable(void)
+void CCSTutor::CheckForBombsiteViewable()
 {
 	CBasePlayer *localPlayer = UTIL_GetLocalPlayer();
 
@@ -2632,7 +2628,7 @@ void CCSTutor::CheckForBombsiteViewable(void)
 }
 
 /* <21534e> ../cstrike/dlls/tutor_cs_tutor.cpp:3026 */
-TutorMessageID CCSTutor::CheckForInBombZone(void)
+TutorMessageID CCSTutor::CheckForInBombZone()
 {
 	CBasePlayer *localPlayer = UTIL_GetLocalPlayer();
 	TutorMessageID mid = TUTOR_NUM_MESSAGES;
@@ -2678,14 +2674,12 @@ bool CCSTutor::IsBombPlantedInBombsite(CBaseEntity *bombTarget)
 }
 
 /* <2154f4> ../cstrike/dlls/tutor_cs_tutor.cpp:3102 */
-void CCSTutor::CheckForHostageViewable(void)
+void CCSTutor::CheckForHostageViewable()
 {
 	CBasePlayer *localPlayer = UTIL_GetLocalPlayer();
 
 	if (localPlayer == NULL)
-	{
 		return;
-	}
 
 	CBaseEntity *hostageEntity = NULL;
 	bool sawFirst = false;
@@ -2693,21 +2687,12 @@ void CCSTutor::CheckForHostageViewable(void)
 	while ((hostageEntity = UTIL_FindEntityByClassname(hostageEntity, "hostage_entity")) != NULL)
 	{
 		bool validHostage = false;
-		CHostage *hostage = reinterpret_cast<CHostage *>(hostageEntity);
+		CHostage *hostage = static_cast<CHostage *>(hostageEntity);
 
 		if (hostage->pev->takedamage == DAMAGE_YES)
 		{
-			if (hostage->m_improv != NULL)
-			{
-				if (!hostage->IsFollowingSomeone())
-				{
-					validHostage = true;
-				}
-			}
-			else if (hostage->m_hTargetEnt == NULL || hostage->m_State != CHostage::FOLLOW)
-			{
+			if (!hostage->IsFollowingSomeone())
 				validHostage = true;
-			}
 		}
 
 		if (hostage->IsValid() && validHostage && IsEntityInViewOfPlayer(hostage, localPlayer) && !sawFirst)
@@ -2746,7 +2731,7 @@ void CCSTutor::CheckForHostageViewable(void)
 }
 
 /* <215646> ../cstrike/dlls/tutor_cs_tutor.cpp:3168 */
-void CCSTutor::CheckForTimeRunningOut(void)
+void CCSTutor::CheckForTimeRunningOut()
 {
 	CBasePlayer *localPlayer = UTIL_GetLocalPlayer();
 	CHalfLifeMultiplay *mpRules = g_pGameRules;
@@ -2783,7 +2768,7 @@ void CCSTutor::CheckForTimeRunningOut(void)
 }
 
 /* <2156fd> ../cstrike/dlls/tutor_cs_tutor.cpp:3218 */
-void CCSTutor::CheckForAllHostagesDead(void)
+void CCSTutor::CheckForAllHostagesDead()
 {
 	bool foundLiveOne = false;
 	CHostage *hostage = NULL;
@@ -2804,7 +2789,7 @@ void CCSTutor::CheckForAllHostagesDead(void)
 }
 
 /* <21573c> ../cstrike/dlls/tutor_cs_tutor.cpp:3242 */
-bool CCSTutor::CheckForAllHostagesFollowingSomeone(void)
+bool CCSTutor::CheckForAllHostagesFollowingSomeone()
 {
 	bool foundUnusedOne = false;
 	CHostage *hostage = NULL;
@@ -2813,15 +2798,7 @@ bool CCSTutor::CheckForAllHostagesFollowingSomeone(void)
 	{
 		if (hostage->pev->takedamage == DAMAGE_YES)
 		{
-			if (hostage->m_improv != NULL)
-			{
-				if (!hostage->IsFollowingSomeone())
-				{
-					foundUnusedOne = true;
-					break;
-				}
-			}
-			else if (hostage->m_hTargetEnt == NULL || hostage->m_State != CHostage::FOLLOW)
+			if (!hostage->IsFollowingSomeone())
 			{
 				foundUnusedOne = true;
 				break;
@@ -3031,7 +3008,7 @@ void CCSTutor::CheckForNeedToReload(bool isPassiveCheck)
 		return;
 	}
 
-	currentWeapon = reinterpret_cast<CBasePlayerWeapon *>(currentItem);
+	currentWeapon = static_cast<CBasePlayerWeapon *>(currentItem);
 	currentWeapon->GetItemInfo(&itemInfo);
 
 	if (itemInfo.iSlot && itemInfo.iSlot != 1)
@@ -3094,125 +3071,95 @@ void CCSTutor::CheckExamineMessages(float time)
 	CBasePlayer *localPlayer = UTIL_GetLocalPlayer();
 
 	if (localPlayer == NULL)
-	{
 		return;
-	}
 
-	for (int i = 0; i < TUTOR_NUM_MESSAGES; i++)
+	for (int i = 0; i < TUTOR_NUM_MESSAGES; ++i)
 	{
-		//bool sawOne = false;
-
 		TutorMessage *message = GetTutorMessageDefinition(i);
 
 		if (message == NULL || message->m_class != TUTORMESSAGECLASS_EXAMINE)
-		{
 			continue;
-		}
 
-		CBaseEntity *entity = GetEntityForMessageID(i);
-
-		if (entity == NULL)
-		{
-			message->m_examineStartTime = -1.0f;
-			continue;
-		}
-
+		CBaseEntity *entity = NULL;
 		bool isPlayerLooking = false;
 
-		if (i == YOU_SEE_FRIEND_CORPSE || i == YOU_SEE_ENEMY_CORPSE)
+		while ((entity = GetEntityForMessageID(i, entity)) != NULL)
 		{
-			if (IsPlayerLookingAtPosition((Vector *)entity, localPlayer))
+			if (i == YOU_SEE_FRIEND_CORPSE || i == YOU_SEE_ENEMY_CORPSE)
 			{
-				isPlayerLooking = true;
-			}
-		}
-		else if (i == YOU_SEE_HOSTAGE_CT_EXAMINE || i == YOU_SEE_FRIEND || i == YOU_SEE_ENEMY)
-		{
-			if (IsPlayerLookingAtEntity(entity, localPlayer))
-			{
-				isPlayerLooking = true;
-			}
-		}
-		else if (IsPlayerLookingAtPosition(&entity->pev->origin, localPlayer))
-		{
-			isPlayerLooking = true;
-		}
-		else
-			isPlayerLooking = false;
-
-		entity = GetEntityForMessageID(i, entity);
-
-		if (!isPlayerLooking)
-		{
-			if (entity == NULL)
-			{
-				message->m_examineStartTime = -1.0f;
-				continue;
-			}
-		}
-
-		if (message->m_examineStartTime == -1.0f || (time - message->m_examineStartTime <= cv_tutor_examine_time.value))
-		{
-			continue;
-		}
-
-		bool validEntity = false;
-
-		if (i == YOU_SEE_FRIEND)
-		{
-			CBasePlayer *player = reinterpret_cast<CBasePlayer *>(entity);
-
-			if (player->IsPlayer() && player->IsAlive() && player->m_iTeam == localPlayer->m_iTeam)
-			{
-				validEntity = true;
-			}
-		}
-		else if (i == YOU_SEE_ENEMY)
-		{
-			CBasePlayer *player = reinterpret_cast<CBasePlayer *>(entity);
-
-			if (player->IsPlayer() && player->IsAlive() && player->m_iTeam == localPlayer->m_iTeam)
-			{
-				if ((player->m_iTeam != CT || localPlayer->m_iTeam == TERRORIST) && (player->m_iTeam != TERRORIST || localPlayer->m_iTeam == CT))
+				if (IsPlayerLookingAtPosition((Vector *)entity, localPlayer))
 				{
-					validEntity = true;
+					isPlayerLooking = true;
+					break;
 				}
 			}
-		}
-		else if (i == YOU_SEE_HOSTAGE_CT_EXAMINE)
-		{
-			CHostage *hostage = reinterpret_cast<CHostage *>(entity);
-
-			if (entity->pev->takedamage == DAMAGE_YES)
+			else if (i == YOU_SEE_HOSTAGE_CT_EXAMINE || i == YOU_SEE_FRIEND || i == YOU_SEE_ENEMY)
 			{
-				if (hostage->m_improv != NULL)
+				if (IsPlayerLookingAtEntity(entity, localPlayer))
+				{
+					isPlayerLooking = true;
+					break;
+				}
+			}
+			else if (IsPlayerLookingAtPosition(&entity->pev->origin, localPlayer))
+			{
+				isPlayerLooking = true;
+				break;
+			}
+		}
+
+		if (isPlayerLooking)
+		{
+			if (message->m_examineStartTime == -1.0f)
+				continue;
+
+			if (time - message->m_examineStartTime <= cv_tutor_examine_time.value)
+				continue;
+
+			bool validEntity = false;
+			if (i == YOU_SEE_FRIEND)
+			{
+				CBasePlayer *player = static_cast<CBasePlayer *>(entity);
+
+				if (player->IsPlayer() && player->IsAlive() && player->m_iTeam == localPlayer->m_iTeam)
+					validEntity = true;
+			}
+			else if (i == YOU_SEE_ENEMY)
+			{
+				CBasePlayer *player = static_cast<CBasePlayer *>(entity);
+
+				if (player->IsPlayer() && player->IsAlive() && player->m_iTeam == localPlayer->m_iTeam)
+				{
+					if ((player->m_iTeam != CT || localPlayer->m_iTeam == TERRORIST) && (player->m_iTeam != TERRORIST || localPlayer->m_iTeam == CT))
+						validEntity = true;
+				}
+			}
+			else if (i == YOU_SEE_HOSTAGE_CT_EXAMINE)
+			{
+				CHostage *hostage = static_cast<CHostage *>(entity);
+
+				if (entity->pev->takedamage == DAMAGE_YES)
 				{
 					if (!hostage->IsFollowingSomeone())
-					{
 						validEntity = true;
-					}
 				}
-				else if (hostage->m_hTargetEnt == NULL || hostage->m_State != CHostage::FOLLOW)
-				{
-					validEntity = true;
-				}
+
+				if (!hostage->IsValid() || !validEntity)
+					continue;
 			}
 
-			if (!hostage->IsValid() || !validEntity)
+			if (validEntity)
 			{
-				continue;
+				CreateAndAddEventToList((TutorMessageID)i, entity);
 			}
 		}
-
-		if (validEntity)
-		{
-			CreateAndAddEventToList((TutorMessageID)i, entity);
-		}
+		else
+			message->m_examineStartTime = -1.0f;
 	}
 }
 
 /* <215eec> ../cstrike/dlls/tutor_cs_tutor.cpp:3696 */
-bool CCSTutor::CanLocalPlayerBuyStuff(void)
+bool CCSTutor::CanLocalPlayerBuyStuff()
 {
 	CBasePlayer *localPlayer = UTIL_GetLocalPlayer();
 
@@ -3225,7 +3172,7 @@ bool CCSTutor::CanLocalPlayerBuyStuff(void)
 }
 
 /* <215f25> ../cstrike/dlls/tutor_cs_tutor.cpp:3714 */
-void CCSTutor::CheckBuyZoneMessages(void)
+void CCSTutor::CheckBuyZoneMessages()
 {
 	CBasePlayer *localPlayer = UTIL_GetLocalPlayer();
 
@@ -3234,8 +3181,8 @@ void CCSTutor::CheckBuyZoneMessages(void)
 		return;
 	}
 
-	CBasePlayerWeapon *primary = reinterpret_cast<CBasePlayerWeapon *>(localPlayer->m_rgpPlayerItems[PRIMARY_WEAPON_SLOT]);
-	CBasePlayerWeapon *secondary = reinterpret_cast<CBasePlayerWeapon *>(localPlayer->m_rgpPlayerItems[PISTOL_SLOT]);
+	CBasePlayerWeapon *primary = static_cast<CBasePlayerWeapon *>(localPlayer->m_rgpPlayerItems[PRIMARY_WEAPON_SLOT]);
+	CBasePlayerWeapon *secondary = static_cast<CBasePlayerWeapon *>(localPlayer->m_rgpPlayerItems[PISTOL_SLOT]);
 
 	if (primary != NULL)
 	{
@@ -3275,13 +3222,13 @@ void CCSTutor::CheckBuyZoneMessages(void)
 }
 
 /* <216cdd> ../cstrike/dlls/tutor_cs_tutor.cpp:3767 */
-bool CCSTutor::IsHostageMap(void)
+bool CCSTutor::IsHostageMap()
 {
 	return UTIL_FindEntityByClassname(NULL, "hostage_entity") != NULL;
 }
 
 /* <216d01> ../cstrike/dlls/tutor_cs_tutor.cpp:3773 */
-bool CCSTutor::IsBombMap(void)
+bool CCSTutor::IsBombMap()
 {
 	CHalfLifeMultiplay *mpRules = g_pGameRules;
 
@@ -3289,9 +3236,9 @@ bool CCSTutor::IsBombMap(void)
 }
 
 /* <216d35> ../cstrike/dlls/tutor_cs_tutor.cpp:3781 */
-void CCSTutor::ResetPlayerDeathInfo(void)
+void CCSTutor::ResetPlayerDeathInfo()
 {
-	for (int i = 0; i < ARRAYSIZE(m_playerDeathInfo); i++)
+	for (int i = 0; i < ARRAYSIZE(m_playerDeathInfo); ++i)
 	{
 		m_playerDeathInfo[i].m_hasBeenShown = false;
 		m_playerDeathInfo[i].m_event = NULL;
@@ -3309,9 +3256,9 @@ void CCSTutor::ConstructRecentDeathsList(TeamName team, char *buf, int buflen, T
 	char scratch[32];
 	buf[0] = '\0';
 
-	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
-		CBasePlayer *pPlayer = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+		CBasePlayer *pPlayer = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
 		if (pPlayer == NULL)
 			continue;
@@ -3334,7 +3281,7 @@ void CCSTutor::ConstructRecentDeathsList(TeamName team, char *buf, int buflen, T
 /* <216dc2> ../cstrike/dlls/tutor_cs_tutor.cpp:3853 */
 void CCSTutor::TransferDeathEvents(TutorMessageEvent *oldEvent, TutorMessageEvent *newEvent)
 {
-	for (int i = 0; i < ARRAYSIZE(m_playerDeathInfo); i++)
+	for (int i = 0; i < ARRAYSIZE(m_playerDeathInfo); ++i)
 	{
 		if (m_playerDeathInfo[i].m_event == oldEvent)
 		{
@@ -3342,37 +3289,3 @@ void CCSTutor::TransferDeathEvents(TutorMessageEvent *oldEvent, TutorMessageEven
 		}
 	}
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CCSTutor::TutorThink(float time)
-{
-	TutorThink_(time);
-}
-
-void CCSTutor::PurgeMessages(void)
-{
-	PurgeMessages_();
-}
-
-void CCSTutor::CallEventHandler(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
-{
-	CallEventHandler_(event, entity, other);
-}
-
-void CCSTutor::ShowTutorMessage(TutorMessageEvent *event)
-{
-	ShowTutorMessage_(event);
-}
-
-void CCSTutor::HandleShotFired(Vector source, Vector target)
-{
-	HandleShotFired_(source, target);
-}
-
-TutorMessage *CCSTutor::GetTutorMessageDefinition(int messageID)
-{
-	return GetTutorMessageDefinition_(messageID);
-}
-
-#endif // HOOK_GAMEDLL

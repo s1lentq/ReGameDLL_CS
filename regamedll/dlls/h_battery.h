@@ -35,21 +35,18 @@
 class CRecharge: public CBaseToggle
 {
 public:
-	virtual void Spawn(void);
-	virtual void Precache(void);
+	virtual void Spawn();
+	virtual void Precache();
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
-	virtual int ObjectCaps(void)
-	{
-		return ((CBaseToggle::ObjectCaps() | FCAP_CONTINUOUS_USE) & ~FCAP_ACROSS_TRANSITION);
-	}
+	virtual int ObjectCaps() { return ((CBaseToggle::ObjectCaps() | FCAP_CONTINUOUS_USE) & ~FCAP_ACROSS_TRANSITION); }
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Precache_(void);
+	void Spawn_();
+	void Precache_();
 	void KeyValue_(KeyValueData *pkvd);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
@@ -58,18 +55,17 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	void EXPORT Off(void);
-	void EXPORT Recharge(void);
+	void EXPORT Off();
+	void EXPORT Recharge();
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[5];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[5];
 
 	float m_flNextCharge;
 	int m_iReactivate;
 	int m_iJuice;
 	int m_iOn;
 	float m_flSoundTime;
-
-};/* size: 332, cachelines: 6, members: 7 */
+};
 
 #endif // H_BATTERY_H

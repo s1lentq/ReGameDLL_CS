@@ -63,23 +63,10 @@ TYPEDESCRIPTION CTriggerCamera::m_SaveData[] =
 	DEFINE_FIELD(CTriggerCamera, m_state, FIELD_INTEGER),
 };
 
-FILE_GLOBAL char st_szNextMap[cchMapNameMost];
-FILE_GLOBAL char st_szNextSpot[cchMapNameMost];
-
-#else
-
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CFrictionModifier, m_SaveData)[1];
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CAutoTrigger, m_SaveData)[2];
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CTriggerRelay, m_SaveData)[1];
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CMultiManager, m_SaveData)[5];
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CChangeLevel, m_SaveData)[4];
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CTriggerChangeTarget, m_SaveData)[1];
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CTriggerCamera, m_SaveData)[13];
+#endif // HOOK_GAMEDLL
 
 char st_szNextMap[cchMapNameMost];
 char st_szNextSpot[cchMapNameMost];
-
-#endif // HOOK_GAMEDLL
 
 /* <1a257e> ../cstrike/dlls/triggers.cpp:60 */
 LINK_ENTITY_TO_CLASS(func_friction, CFrictionModifier);
@@ -88,7 +75,7 @@ LINK_ENTITY_TO_CLASS(func_friction, CFrictionModifier);
 IMPLEMENT_SAVERESTORE(CFrictionModifier, CBaseEntity);
 
 /* <19fa7d> ../cstrike/dlls/triggers.cpp:72 */
-void CFrictionModifier::__MAKE_VHOOK(Spawn)(void)
+void CFrictionModifier::__MAKE_VHOOK(Spawn)()
 {
 	pev->solid = SOLID_TRIGGER;
 
@@ -160,19 +147,19 @@ void CAutoTrigger::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 }
 
 /* <19fb05> ../cstrike/dlls/triggers.cpp:165 */
-void CAutoTrigger::__MAKE_VHOOK(Spawn)(void)
+void CAutoTrigger::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
 }
 
 /* <19fb2d> ../cstrike/dlls/triggers.cpp:171 */
-void CAutoTrigger::__MAKE_VHOOK(Precache)(void)
+void CAutoTrigger::__MAKE_VHOOK(Precache)()
 {
-	pev->nextthink = gpGlobals->time + 0.1;
+	pev->nextthink = gpGlobals->time + 0.1f;
 }
 
 /* <19d48c> ../cstrike/dlls/triggers.cpp:177 */
-void CAutoTrigger::__MAKE_VHOOK(Think)(void)
+void CAutoTrigger::__MAKE_VHOOK(Think)()
 {
 	if (!m_globalstate || gGlobalState.EntityGetState(m_globalstate) == GLOBAL_ON)
 	{
@@ -216,7 +203,7 @@ void CTriggerRelay::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 }
 
 /* <19fb7e> ../cstrike/dlls/triggers.cpp:240 */
-void CTriggerRelay::__MAKE_VHOOK(Spawn)(void)
+void CTriggerRelay::__MAKE_VHOOK(Spawn)()
 {
 	;
 }
@@ -263,7 +250,7 @@ void CMultiManager::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 }
 
 /* <19fbce> ../cstrike/dlls/triggers.cpp:347 */
-void CMultiManager::__MAKE_VHOOK(Spawn)(void)
+void CMultiManager::__MAKE_VHOOK(Spawn)()
 {
 	pev->solid = SOLID_NOT;
 	SetUse(&CMultiManager::ManagerUse);
@@ -276,7 +263,7 @@ void CMultiManager::__MAKE_VHOOK(Spawn)(void)
 	while (swapped)
 	{
 		swapped = 0;
-		for (int i = 1; i < m_cTargets; i++)
+		for (int i = 1; i < m_cTargets; ++i)
 		{
 			if (m_flTargetDelay[i] < m_flTargetDelay[i - 1])
 			{
@@ -295,11 +282,11 @@ void CMultiManager::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <1a03e5> ../cstrike/dlls/triggers.cpp:377 */
-void CMultiManager::__MAKE_VHOOK(Restart)(void)
+void CMultiManager::__MAKE_VHOOK(Restart)()
 {
 	edict_t *pentTarget = NULL;
 
-	for (int i = 0; i < m_cTargets; i++)
+	for (int i = 0; i < m_cTargets; ++i)
 	{
 		const char *name = STRING(m_iTargetName[i]);
 
@@ -334,7 +321,7 @@ void CMultiManager::__MAKE_VHOOK(Restart)(void)
 /* <1a1402> ../cstrike/dlls/triggers.cpp:420 */
 BOOL CMultiManager::__MAKE_VHOOK(HasTarget)(string_t targetname)
 {
-	for (int i = 0; i < m_cTargets; i++)
+	for (int i = 0; i < m_cTargets; ++i)
 	{
 		if (FStrEq(STRING(targetname), STRING(m_iTargetName[i])))
 		{
@@ -349,7 +336,7 @@ BOOL CMultiManager::__MAKE_VHOOK(HasTarget)(string_t targetname)
 // so I changed it to use the standard target fire code, made it a little simpler.
 
 /* <1a0393> ../cstrike/dlls/triggers.cpp:432 */
-void CMultiManager::ManagerThink(void)
+void CMultiManager::ManagerThink()
 {
 	float time;
 
@@ -378,7 +365,7 @@ void CMultiManager::ManagerThink(void)
 }
 
 /* <1a291b> ../cstrike/dlls/triggers.cpp:457 */
-CMultiManager *CMultiManager::Clone(void)
+CMultiManager *CMultiManager::Clone()
 {
 	CMultiManager *pMulti = GetClassPtr((CMultiManager *)NULL);
 
@@ -424,7 +411,7 @@ void CMultiManager::ManagerUse(CBaseEntity *pActivator, CBaseEntity *pCaller, US
 LINK_ENTITY_TO_CLASS(env_render, CRenderFxManager);
 
 /* <19fc52> ../cstrike/dlls/triggers.cpp:535 */
-void CRenderFxManager::__MAKE_VHOOK(Spawn)(void)
+void CRenderFxManager::__MAKE_VHOOK(Spawn)()
 {
 	pev->solid = SOLID_NOT;
 }
@@ -463,7 +450,7 @@ void CRenderFxManager::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *p
 LINK_ENTITY_TO_CLASS(trigger, CBaseTrigger);
 
 /* <1a2c92> ../cstrike/dlls/triggers.cpp:590 */
-void CBaseTrigger::InitTrigger(void)
+void CBaseTrigger::InitTrigger()
 {
 	// trigger angles are used for one-way touches.  An angle of 0 is assumed
 	// to mean no restrictions, so use a yaw of 360 instead.
@@ -515,7 +502,7 @@ LINK_ENTITY_TO_CLASS(trigger_hurt, CTriggerHurt);
 LINK_ENTITY_TO_CLASS(trigger_monsterjump, CTriggerMonsterJump);
 
 /* <1a2fdc> ../cstrike/dlls/triggers.cpp:652 */
-void CTriggerMonsterJump::__MAKE_VHOOK(Spawn)(void)
+void CTriggerMonsterJump::__MAKE_VHOOK(Spawn)()
 {
 	SetMovedir(pev);
 
@@ -537,9 +524,9 @@ void CTriggerMonsterJump::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <1a00e4> ../cstrike/dlls/triggers.cpp:671 */
-void CTriggerMonsterJump::__MAKE_VHOOK(Think)(void)
+void CTriggerMonsterJump::__MAKE_VHOOK(Think)()
 {
-	// kill the trigger for now !!!UNDONE
+	// kill the trigger for now UNDONE
 	pev->solid = SOLID_NOT;
 
 	// Unlink from trigger list
@@ -576,7 +563,7 @@ void CTriggerMonsterJump::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 LINK_ENTITY_TO_CLASS(trigger_cdaudio, CTriggerCDAudio);
 
 // Changes tracks or stops CD when player touches
-// !!!HACK - overloaded HEALTH to avoid adding new field
+// HACK: overloaded HEALTH to avoid adding new field
 
 /* <1a2382> ../cstrike/dlls/triggers.cpp:721 */
 void CTriggerCDAudio::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
@@ -591,7 +578,7 @@ void CTriggerCDAudio::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 }
 
 /* <1a2fb4> ../cstrike/dlls/triggers.cpp:731 */
-void CTriggerCDAudio::__MAKE_VHOOK(Spawn)(void)
+void CTriggerCDAudio::__MAKE_VHOOK(Spawn)()
 {
 	InitTrigger();
 }
@@ -636,7 +623,7 @@ void PlayCDTrack(int iTrack)
 // only plays for ONE client, so only use in single play!
 
 /* <1a3372> ../cstrike/dlls/triggers.cpp:773 */
-void CTriggerCDAudio::PlayTrack(void)
+void CTriggerCDAudio::PlayTrack()
 {
 	PlayCDTrack((int)pev->health);
 
@@ -660,7 +647,7 @@ void CTargetCDAudio::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 }
 
 /* <1a066a> ../cstrike/dlls/triggers.cpp:807 */
-void CTargetCDAudio::__MAKE_VHOOK(Spawn)(void)
+void CTargetCDAudio::__MAKE_VHOOK(Spawn)()
 {
 	pev->solid = SOLID_NOT;
 	pev->movetype = MOVETYPE_NONE;
@@ -680,7 +667,7 @@ void CTargetCDAudio::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCa
 // only plays for ONE client, so only use in single play!
 
 /* <1a2465> ../cstrike/dlls/triggers.cpp:822 */
-void CTargetCDAudio::__MAKE_VHOOK(Think)(void)
+void CTargetCDAudio::__MAKE_VHOOK(Think)()
 {
 	edict_t *pClient;
 
@@ -700,14 +687,14 @@ void CTargetCDAudio::__MAKE_VHOOK(Think)(void)
 }
 
 /* <1a34e8> ../cstrike/dlls/triggers.cpp:840 */
-void CTargetCDAudio::Play(void)
+void CTargetCDAudio::Play()
 {
 	PlayCDTrack((int)pev->health);
 	UTIL_Remove(this);
 }
 
 /* <1a2f8b> ../cstrike/dlls/triggers.cpp:853 */
-void CTriggerHurt::__MAKE_VHOOK(Spawn)(void)
+void CTriggerHurt::__MAKE_VHOOK(Spawn)()
 {
 	InitTrigger();
 	SetTouch(&CTriggerHurt::HurtTouch);
@@ -742,7 +729,7 @@ void CTriggerHurt::__MAKE_VHOOK(Spawn)(void)
 // according to distance from center of trigger
 
 /* <1a5df2> ../cstrike/dlls/triggers.cpp:883 */
-void CTriggerHurt::RadiationThink(void)
+void CTriggerHurt::RadiationThink()
 {
 	edict_t *pentPlayer;
 	CBasePlayer *pPlayer = NULL;
@@ -939,7 +926,7 @@ void CBaseTrigger::HurtTouch(CBaseEntity *pOther)
 LINK_ENTITY_TO_CLASS(trigger_multiple, CTriggerMultiple);
 
 /* <1a2f67> ../cstrike/dlls/triggers.cpp:1089 */
-void CTriggerMultiple::__MAKE_VHOOK(Spawn)(void)
+void CTriggerMultiple::__MAKE_VHOOK(Spawn)()
 {
 	if (m_flWait == 0)
 		m_flWait = 0.2;
@@ -975,7 +962,7 @@ void CTriggerMultiple::__MAKE_VHOOK(Spawn)(void)
 LINK_ENTITY_TO_CLASS(trigger_once, CTriggerOnce);
 
 /* <1a301c> ../cstrike/dlls/triggers.cpp:1136 */
-void CTriggerOnce::__MAKE_VHOOK(Spawn)(void)
+void CTriggerOnce::__MAKE_VHOOK(Spawn)()
 {
 	m_flWait = -1;
 	CTriggerMultiple::Spawn();
@@ -1056,7 +1043,7 @@ void CBaseTrigger::ActivateMultiTrigger(CBaseEntity *pActivator)
 // the wait time has passed, so set back up for another activation
 
 /* <19fd1a> ../cstrike/dlls/triggers.cpp:1214 */
-void CBaseTrigger::MultiWaitOver(void)
+void CBaseTrigger::MultiWaitOver()
 {
 	SetThink(NULL);
 }
@@ -1091,7 +1078,7 @@ void CBaseTrigger::CounterUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE
 		return;
 	}
 
-	// !!!UNDONE: I don't think we want these Quakesque messages
+	// UNDONE: I don't think we want these Quakesque messages
 	if (fTellActivator)
 	{
 		ALERT(at_console, "Sequence completed!");
@@ -1104,7 +1091,7 @@ void CBaseTrigger::CounterUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE
 LINK_ENTITY_TO_CLASS(trigger_counter, CTriggerCounter);
 
 /* <19fd42> ../cstrike/dlls/triggers.cpp:1280 */
-void CTriggerCounter::__MAKE_VHOOK(Spawn)(void)
+void CTriggerCounter::__MAKE_VHOOK(Spawn)()
 {
 	// By making the flWait be -1, this counter-trigger will disappear after it's activated
 	// (but of course it needs cTriggersLeft "uses" before that happens).
@@ -1124,7 +1111,7 @@ LINK_ENTITY_TO_CLASS(trigger_transition, CTriggerVolume);
 // Define space that travels across a level transition
 
 /* <19fd6a> ../cstrike/dlls/triggers.cpp:1302 */
-void CTriggerVolume::__MAKE_VHOOK(Spawn)(void)
+void CTriggerVolume::__MAKE_VHOOK(Spawn)()
 {
 	pev->solid = SOLID_NOT;
 	pev->movetype = MOVETYPE_NONE;
@@ -1140,7 +1127,7 @@ void CTriggerVolume::__MAKE_VHOOK(Spawn)(void)
 LINK_ENTITY_TO_CLASS(fireanddie, CFireAndDie);
 
 /* <1a0618> ../cstrike/dlls/triggers.cpp:1323 */
-void CFireAndDie::__MAKE_VHOOK(Spawn)(void)
+void CFireAndDie::__MAKE_VHOOK(Spawn)()
 {
 	if (pev->classname)
 	{
@@ -1153,13 +1140,13 @@ void CFireAndDie::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <19fdbb> ../cstrike/dlls/triggers.cpp:1330 */
-void CFireAndDie::__MAKE_VHOOK(Precache)(void)
+void CFireAndDie::__MAKE_VHOOK(Precache)()
 {
 	pev->nextthink = gpGlobals->time + m_flDelay;
 }
 
 /* <1a01ae> ../cstrike/dlls/triggers.cpp:1337 */
-void CFireAndDie::__MAKE_VHOOK(Think)(void)
+void CFireAndDie::__MAKE_VHOOK(Think)()
 {
 	SUB_UseTargets(this, USE_TOGGLE, 0);
 	UTIL_Remove(this);
@@ -1211,7 +1198,7 @@ void CChangeLevel::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 }
 
 /* <1a2f25> ../cstrike/dlls/triggers.cpp:1423 */
-void CChangeLevel::__MAKE_VHOOK(Spawn)(void)
+void CChangeLevel::__MAKE_VHOOK(Spawn)()
 {
 	if (FStrEq(m_szMapName, ""))
 	{
@@ -1236,7 +1223,7 @@ void CChangeLevel::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <19fde3> ../cstrike/dlls/triggers.cpp:1441 */
-void CChangeLevel::ExecuteChangeLevel(void)
+void CChangeLevel::ExecuteChangeLevel()
 {
 	MESSAGE_BEGIN(MSG_ALL, SVC_CDTRACK);
 		WRITE_BYTE(3);
@@ -1363,7 +1350,7 @@ int CChangeLevel::AddTransitionToList(LEVELLIST *pLevelList, int listCount, cons
 		return 0;
 	}
 
-	for (i = 0; i < listCount; i++)
+	for (i = 0; i < listCount; ++i)
 	{
 		if (pLevelList[i].pentLandmark == pentLandmark && Q_strcmp(pLevelList[i].mapName, pMapName) == 0)
 		{
@@ -1463,7 +1450,7 @@ int CChangeLevel::ChangeList(LEVELLIST *pLevelList, int maxList)
 				{
 					count++;
 
-					// FULL!!
+					// FULL!
 					if (count >= maxList)
 						break;
 				}
@@ -1477,7 +1464,7 @@ int CChangeLevel::ChangeList(LEVELLIST *pLevelList, int maxList)
 	{
 		CSave saveHelper((SAVERESTOREDATA *)gpGlobals->pSaveData);
 
-		for (i = 0; i < count; i++)
+		for (i = 0; i < count; ++i)
 		{
 			int j, entityCount = 0;
 			CBaseEntity *pEntList[ MAX_ENTITY ];
@@ -1542,7 +1529,7 @@ int CChangeLevel::ChangeList(LEVELLIST *pLevelList, int maxList)
 // only called if a time or frag limit has expired
 
 /* <1a44fc> ../cstrike/dlls/triggers.cpp:1722 */
-NOXREF void NextLevel(void)
+NOXREF void NextLevel()
 {
 	edict_t *pent;
 	CChangeLevel *pChange;
@@ -1582,7 +1569,7 @@ void CLadder::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 // func_ladder - makes an area vertically negotiable
 
 /* <19fe6c> ../cstrike/dlls/triggers.cpp:1772 */
-void CLadder::__MAKE_VHOOK(Precache)(void)
+void CLadder::__MAKE_VHOOK(Precache)()
 {
 	// Do all of this in here because we need to 'convert' old saved games
 	pev->solid = SOLID_NOT;
@@ -1598,7 +1585,7 @@ void CLadder::__MAKE_VHOOK(Precache)(void)
 }
 
 /* <19fe95> ../cstrike/dlls/triggers.cpp:1786 */
-void CLadder::__MAKE_VHOOK(Spawn)(void)
+void CLadder::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
 
@@ -1617,7 +1604,7 @@ void CTriggerPush::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 }
 
 /* <1a2eda> ../cstrike/dlls/triggers.cpp:1817 */
-void CTriggerPush::__MAKE_VHOOK(Spawn)(void)
+void CTriggerPush::__MAKE_VHOOK(Spawn)()
 {
 	if (pev->angles == g_vecZero)
 	{
@@ -1757,7 +1744,7 @@ void CBaseTrigger::TeleportTouch(CBaseEntity *pOther)
 LINK_ENTITY_TO_CLASS(trigger_teleport, CTriggerTeleport);
 
 /* <1a2eb1> ../cstrike/dlls/triggers.cpp:1942 */
-void CTriggerTeleport::__MAKE_VHOOK(Spawn)(void)
+void CTriggerTeleport::__MAKE_VHOOK(Spawn)()
 {
 	InitTrigger();
 	SetTouch(&CTriggerTeleport::TeleportTouch);
@@ -1770,7 +1757,7 @@ LINK_ENTITY_TO_CLASS(info_teleport_destination, CPointEntity);
 LINK_ENTITY_TO_CLASS(func_buyzone, CBuyZone);
 
 /* <1a2e71> ../cstrike/dlls/triggers.cpp:1973 */
-void CBuyZone::__MAKE_VHOOK(Spawn)(void)
+void CBuyZone::__MAKE_VHOOK(Spawn)()
 {
 	InitTrigger();
 	SetTouch(&CBuyZone::BuyTouch);
@@ -1788,7 +1775,7 @@ void CBuyZone::BuyTouch(CBaseEntity *pOther)
 	if (!pOther->IsPlayer())
 		return;
 
-	CBasePlayer *p = reinterpret_cast<CBasePlayer *>(pOther);
+	CBasePlayer *p = static_cast<CBasePlayer *>(pOther);
 
 	if (pev->team == UNASSIGNED || pev->team == p->m_iTeam)
 	{
@@ -1800,7 +1787,7 @@ void CBuyZone::BuyTouch(CBaseEntity *pOther)
 LINK_ENTITY_TO_CLASS(func_bomb_target, CBombTarget);
 
 /* <1a2e48> ../cstrike/dlls/triggers.cpp:2019 */
-void CBombTarget::__MAKE_VHOOK(Spawn)(void)
+void CBombTarget::__MAKE_VHOOK(Spawn)()
 {
 	InitTrigger();
 
@@ -1814,7 +1801,7 @@ void CBombTarget::BombTargetTouch(CBaseEntity *pOther)
 	if (!pOther->IsPlayer())
 		return;
 
-	CBasePlayer *p = reinterpret_cast<CBasePlayer *>(pOther);
+	CBasePlayer *p = static_cast<CBasePlayer *>(pOther);
 
 	if (p->m_bHasC4)
 	{
@@ -1833,7 +1820,7 @@ void CBombTarget::BombTargetUse(CBaseEntity *pActivator, CBaseEntity *pCaller, U
 LINK_ENTITY_TO_CLASS(func_hostage_rescue, CHostageRescue);
 
 /* <1a2e1f> ../cstrike/dlls/triggers.cpp:2067 */
-void CHostageRescue::__MAKE_VHOOK(Spawn)(void)
+void CHostageRescue::__MAKE_VHOOK(Spawn)()
 {
 	InitTrigger();
 	SetTouch(&CHostageRescue::HostageRescueTouch);
@@ -1857,7 +1844,7 @@ void CHostageRescue::HostageRescueTouch(CBaseEntity *pOther)
 LINK_ENTITY_TO_CLASS(func_escapezone, CEscapeZone);
 
 /* <1a2df6> ../cstrike/dlls/triggers.cpp:2108 */
-void CEscapeZone::__MAKE_VHOOK(Spawn)(void)
+void CEscapeZone::__MAKE_VHOOK(Spawn)()
 {
 	InitTrigger();
 	SetTouch(&CEscapeZone::EscapeTouch);
@@ -1869,7 +1856,7 @@ void CEscapeZone::EscapeTouch(CBaseEntity *pOther)
 	if (!pOther->IsPlayer())
 		return;
 
-	CBasePlayer *p = reinterpret_cast<CBasePlayer *>(pOther);
+	CBasePlayer *p = static_cast<CBasePlayer *>(pOther);
 
 	switch (p->m_iTeam)
 	{
@@ -1887,9 +1874,9 @@ void CEscapeZone::EscapeTouch(CBaseEntity *pOther)
 				GETPLAYERAUTHID(p->edict())
 			);
 
-			for (int i = 1; i <= gpGlobals->maxClients; i++)
+			for (int i = 1; i <= gpGlobals->maxClients; ++i)
 			{
-				CBasePlayer *pPlayer = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+				CBasePlayer *pPlayer = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
 				if (pPlayer == NULL || FNullEnt(pPlayer->pev))
 					continue;
@@ -1911,7 +1898,7 @@ void CEscapeZone::EscapeTouch(CBaseEntity *pOther)
 LINK_ENTITY_TO_CLASS(func_vip_safetyzone, CVIP_SafetyZone);
 
 /* <1a2dcd> ../cstrike/dlls/triggers.cpp:2166 */
-void CVIP_SafetyZone::__MAKE_VHOOK(Spawn)(void)
+void CVIP_SafetyZone::__MAKE_VHOOK(Spawn)()
 {
 	InitTrigger();
 	SetTouch(&CVIP_SafetyZone::VIP_SafetyTouch);
@@ -1923,7 +1910,7 @@ void CVIP_SafetyZone::VIP_SafetyTouch(CBaseEntity *pOther)
 	if (!pOther->IsPlayer())
 		return;
 
-	CBasePlayer *p = reinterpret_cast<CBasePlayer *>(pOther);
+	CBasePlayer *p = static_cast<CBasePlayer *>(pOther);
 	p->m_signals.Signal(SIGNAL_VIPSAFETY);
 
 	if (p->m_bIsVIP)
@@ -1947,7 +1934,7 @@ void CVIP_SafetyZone::VIP_SafetyTouch(CBaseEntity *pOther)
 LINK_ENTITY_TO_CLASS(trigger_autosave, CTriggerSave);
 
 /* <1a2d8e> ../cstrike/dlls/triggers.cpp:2206 */
-void CTriggerSave::__MAKE_VHOOK(Spawn)(void)
+void CTriggerSave::__MAKE_VHOOK(Spawn)()
 {
 	if (g_pGameRules->IsDeathmatch())
 	{
@@ -1994,7 +1981,7 @@ void CTriggerEndSection::EndSectionUse(CBaseEntity *pActivator, CBaseEntity *pCa
 }
 
 /* <1a2d4f> ../cstrike/dlls/triggers.cpp:2260 */
-void CTriggerEndSection::__MAKE_VHOOK(Spawn)(void)
+void CTriggerEndSection::__MAKE_VHOOK(Spawn)()
 {
 	if (g_pGameRules->IsDeathmatch())
 	{
@@ -2045,7 +2032,7 @@ void CTriggerEndSection::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 LINK_ENTITY_TO_CLASS(trigger_gravity, CTriggerGravity);
 
 /* <1a2d26> ../cstrike/dlls/triggers.cpp:2313 */
-void CTriggerGravity::__MAKE_VHOOK(Spawn)(void)
+void CTriggerGravity::__MAKE_VHOOK(Spawn)()
 {
 	InitTrigger();
 	SetTouch(&CTriggerGravity::GravityTouch);
@@ -2080,7 +2067,7 @@ void CTriggerChangeTarget::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 }
 
 /* <19ff1f> ../cstrike/dlls/triggers.cpp:2371 */
-void CTriggerChangeTarget::__MAKE_VHOOK(Spawn)(void)
+void CTriggerChangeTarget::__MAKE_VHOOK(Spawn)()
 {
 	;
 }
@@ -2110,7 +2097,7 @@ LINK_ENTITY_TO_CLASS(trigger_camera, CTriggerCamera);
 IMPLEMENT_SAVERESTORE(CTriggerCamera, CBaseDelay);
 
 /* <19ff6f> ../cstrike/dlls/triggers.cpp:2447 */
-void CTriggerCamera::__MAKE_VHOOK(Spawn)(void)
+void CTriggerCamera::__MAKE_VHOOK(Spawn)()
 {
 	pev->movetype = MOVETYPE_NOCLIP;
 
@@ -2261,7 +2248,7 @@ void CTriggerCamera::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCa
 }
 
 /* <1a5494> ../cstrike/dlls/triggers.cpp:2587 */
-void CTriggerCamera::FollowTarget(void)
+void CTriggerCamera::FollowTarget()
 {
 	if (m_hPlayer == NULL)
 		return;
@@ -2271,7 +2258,8 @@ void CTriggerCamera::FollowTarget(void)
 		if (m_hPlayer->IsAlive())
 		{
 			SET_VIEW(m_hPlayer->edict(), m_hPlayer->edict());
-			((CBasePlayer *)((CBaseEntity *)m_hPlayer))->EnableControl(TRUE);
+			((CBasePlayer *)m_hPlayer)->EnableControl(TRUE);
+			((CBasePlayer *)m_hPlayer)->ResetMaxSpeed();
 		}
 
 		SUB_UseTargets(this, USE_TOGGLE, 0);
@@ -2320,7 +2308,7 @@ void CTriggerCamera::FollowTarget(void)
 }
 
 /* <1a5311> ../cstrike/dlls/triggers.cpp:2644 */
-void CTriggerCamera::Move(void)
+void CTriggerCamera::Move()
 {
 	// Not moving on a path, return
 	if (!m_pentPath)
@@ -2391,7 +2379,7 @@ LINK_ENTITY_TO_CLASS(env_rain, CWeather);
 LINK_ENTITY_TO_CLASS(func_rain, CWeather);
 
 /* <1a2cfe> ../cstrike/dlls/triggers.cpp:2704 */
-void CWeather::__MAKE_VHOOK(Spawn)(void)
+void CWeather::__MAKE_VHOOK(Spawn)()
 {
 	InitTrigger();
 }
@@ -2426,7 +2414,7 @@ void CClientFog::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 }
 
 /* <19ff97> ../cstrike/dlls/triggers.cpp:2735 */
-void CClientFog::__MAKE_VHOOK(Spawn)(void)
+void CClientFog::__MAKE_VHOOK(Spawn)()
 {
 	pev->movetype = MOVETYPE_NOCLIP;
 	pev->solid = SOLID_NOT;				// Remove model & collisions
@@ -2436,379 +2424,3 @@ void CClientFog::__MAKE_VHOOK(Spawn)(void)
 
 /* <1a5ba9> ../cstrike/dlls/triggers.cpp:2744 */
 LINK_ENTITY_TO_CLASS(env_fog, CClientFog);
-
-#ifdef HOOK_GAMEDLL
-
-void CFrictionModifier::Spawn(void)
-{
-	Spawn_();
-}
-
-void CFrictionModifier::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-int CFrictionModifier::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CFrictionModifier::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-void CAutoTrigger::Spawn(void)
-{
-	Spawn_();
-}
-
-void CAutoTrigger::Precache(void)
-{
-	Precache_();
-}
-
-void CAutoTrigger::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-int CAutoTrigger::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CAutoTrigger::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-void CAutoTrigger::Think(void)
-{
-	Think_();
-}
-
-void CTriggerRelay::Spawn(void)
-{
-	Spawn_();
-}
-
-void CTriggerRelay::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-int CTriggerRelay::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CTriggerRelay::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-void CTriggerRelay::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	Use_(pActivator, pCaller, useType, value);
-}
-
-void CMultiManager::Spawn(void)
-{
-	Spawn_();
-}
-
-void CMultiManager::Restart(void)
-{
-	Restart_();
-}
-
-void CMultiManager::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-int CMultiManager::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CMultiManager::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-BOOL CMultiManager::HasTarget(string_t targetname)
-{
-	return HasTarget_(targetname);
-}
-
-void CRenderFxManager::Spawn(void)
-{
-	Spawn_();
-}
-
-void CRenderFxManager::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	Use_(pActivator, pCaller, useType, value);
-}
-
-void CBaseTrigger::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-void CTriggerHurt::Spawn(void)
-{
-	Spawn_();
-}
-
-void CTriggerMonsterJump::Spawn(void)
-{
-	Spawn_();
-}
-
-void CTriggerMonsterJump::Think(void)
-{
-	Think_();
-}
-
-void CTriggerMonsterJump::Touch(CBaseEntity *pOther)
-{
-	Touch_(pOther);
-}
-
-void CTriggerCDAudio::Spawn(void)
-{
-	Spawn_();
-}
-
-void CTriggerCDAudio::Touch(CBaseEntity *pOther)
-{
-	Touch_(pOther);
-}
-
-void CTriggerCDAudio::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	Use_(pActivator, pCaller, useType, value);
-}
-
-void CTargetCDAudio::Spawn(void)
-{
-	Spawn_();
-}
-
-void CTargetCDAudio::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-void CTargetCDAudio::Think(void)
-{
-	Think_();
-}
-
-void CTargetCDAudio::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	Use_(pActivator, pCaller, useType, value);
-}
-
-void CTriggerMultiple::Spawn(void)
-{
-	Spawn_();
-}
-
-void CTriggerOnce::Spawn(void)
-{
-	Spawn_();
-}
-
-void CTriggerCounter::Spawn(void)
-{
-	Spawn_();
-}
-
-void CTriggerVolume::Spawn(void)
-{
-	Spawn_();
-}
-
-void CFireAndDie::Spawn(void)
-{
-	Spawn_();
-}
-
-void CFireAndDie::Precache(void)
-{
-	Precache_();
-}
-
-void CFireAndDie::Think(void)
-{
-	Think_();
-}
-
-void CChangeLevel::Spawn(void)
-{
-	Spawn_();
-}
-
-void CChangeLevel::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-int CChangeLevel::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CChangeLevel::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-void CLadder::Spawn(void)
-{
-	Spawn_();
-}
-
-void CLadder::Precache(void)
-{
-	Precache_();
-}
-
-void CLadder::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-void CTriggerPush::Spawn(void)
-{
-	Spawn_();
-}
-
-void CTriggerPush::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-void CTriggerPush::Touch(CBaseEntity *pOther)
-{
-	Touch_(pOther);
-}
-
-void CTriggerTeleport::Spawn(void)
-{
-	Spawn_();
-}
-
-void CBuyZone::Spawn(void)
-{
-	Spawn_();
-}
-
-void CBombTarget::Spawn(void)
-{
-	Spawn_();
-}
-
-void CHostageRescue::Spawn(void)
-{
-	Spawn_();
-}
-
-void CEscapeZone::Spawn(void)
-{
-	Spawn_();
-}
-
-void CVIP_SafetyZone::Spawn(void)
-{
-	Spawn_();
-}
-
-void CTriggerSave::Spawn(void)
-{
-	Spawn_();
-}
-
-void CTriggerEndSection::Spawn(void)
-{
-	Spawn_();
-}
-
-void CTriggerEndSection::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-void CTriggerGravity::Spawn(void)
-{
-	Spawn_();
-}
-
-void CTriggerChangeTarget::Spawn(void)
-{
-	Spawn_();
-}
-void CTriggerChangeTarget::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-int CTriggerChangeTarget::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CTriggerChangeTarget::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-void CTriggerChangeTarget::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	Use_(pActivator, pCaller, useType, value);
-}
-
-void CTriggerCamera::Spawn(void)
-{
-	Spawn_();
-}
-void CTriggerCamera::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-int CTriggerCamera::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CTriggerCamera::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-void CTriggerCamera::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	Use_(pActivator, pCaller, useType, value);
-}
-
-void CClientFog::Spawn(void)
-{
-	Spawn_();
-}
-void CClientFog::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-void CWeather::Spawn(void)
-{
-	Spawn_();
-}
-
-#endif // HOOK_GAMEDLL

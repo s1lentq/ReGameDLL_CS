@@ -43,187 +43,182 @@
 class CItem: public CBaseEntity
 {
 public:
-	virtual void Spawn(void);
-	virtual CBaseEntity *Respawn(void);
-	virtual BOOL MyTouch(CBasePlayer *pPlayer)
-	{
-		return FALSE;
-	}
+	virtual void Spawn();
+	virtual CBaseEntity *Respawn();
+	virtual BOOL MyTouch(CBasePlayer *pPlayer) { return FALSE;}
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	CBaseEntity *Respawn_(void);
+	void Spawn_();
+	CBaseEntity *Respawn_();
 
 #endif // HOOK_GAMEDLL
 
 public:
 	void EXPORT ItemTouch(CBaseEntity *pOther);
-	void EXPORT Materialize(void);
-
-};/* size: 152, cachelines: 3, members: 1 */
+	void EXPORT Materialize();
+};
 
 /* <e06f5> ../cstrike/dlls/items.cpp:38 */
 class CWorldItem: public CBaseEntity
 {
 public:
-	virtual void Spawn(void);
+	virtual void Spawn();
 	virtual void KeyValue(KeyValueData *pkvd);
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
+	void Spawn_();
 	void KeyValue_(KeyValueData *pkvd);
 
 #endif // HOOK_GAMEDLL
 
 public:
 	int m_iType;
-
-};/* size: 156, cachelines: 3, members: 2 */
+};
 
 /* <e075d> ../cstrike/dlls/items.cpp:188 */
 class CItemSuit: public CItem
 {
 public:
-	virtual void Spawn(void);
-	virtual void Precache(void);
+	virtual void Spawn();
+	virtual void Precache();
 	virtual BOOL MyTouch(CBasePlayer *pPlayer);
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Precache_(void);
+	void Spawn_();
+	void Precache_();
 	BOOL MyTouch_(CBasePlayer *pPlayer);
 
 #endif // HOOK_GAMEDLL
 
-};/* size: 152, cachelines: 3, members: 1 */
+};
 
 /* <e07aa> ../cstrike/dlls/items.cpp:219 */
 class CItemBattery: public CItem
 {
 public:
-	virtual void Spawn(void);
-	virtual void Precache(void);
+	virtual void Spawn();
+	virtual void Precache();
 	virtual BOOL MyTouch(CBasePlayer *pPlayer);
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Precache_(void);
+	void Spawn_();
+	void Precache_();
 	BOOL MyTouch_(CBasePlayer *pPlayer);
 
 #endif // HOOK_GAMEDLL
 
-};/* size: 152, cachelines: 3, members: 1 */
+};
 
 /* <e07f7> ../cstrike/dlls/items.cpp:269 */
 class CItemAntidote: public CItem
 {
 public:
-	virtual void Spawn(void);
-	virtual void Precache(void);
+	virtual void Spawn();
+	virtual void Precache();
 	virtual BOOL MyTouch(CBasePlayer *pPlayer);
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Precache_(void);
+	void Spawn_();
+	void Precache_();
 	BOOL MyTouch_(CBasePlayer *pPlayer);
 
 #endif // HOOK_GAMEDLL
 
-};/* size: 152, cachelines: 3, members: 1 */
+};
 
 /* <e084a> ../cstrike/dlls/items.cpp:293 */
 class CItemSecurity: public CItem
 {
 public:
-	virtual void Spawn(void);
-	virtual void Precache(void);
+	virtual void Spawn();
+	virtual void Precache();
 	virtual BOOL MyTouch(CBasePlayer *pPlayer);
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Precache_(void);
+	void Spawn_();
+	void Precache_();
 	BOOL MyTouch_(CBasePlayer *pPlayer);
 
 #endif // HOOK_GAMEDLL
 
-};/* size: 152, cachelines: 3, members: 1 */
+};
 
 /* <e089d> ../cstrike/dlls/items.cpp:314 */
 class CItemLongJump: public CItem
 {
 public:
-	virtual void Spawn(void);
-	virtual void Precache(void);
+	virtual void Spawn();
+	virtual void Precache();
 	virtual BOOL MyTouch(CBasePlayer *pPlayer);
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Precache_(void);
+	void Spawn_();
+	void Precache_();
 	BOOL MyTouch_(CBasePlayer *pPlayer);
 
 #endif // HOOK_GAMEDLL
 
-};/* size: 152, cachelines: 3, members: 1 */
+};
 
 /* <e08eb> ../cstrike/dlls/items.cpp:352 */
 class CItemKevlar: public CItem
 {
 public:
-	virtual void Spawn(void);
-	virtual void Precache(void);
+	virtual void Spawn();
+	virtual void Precache();
 	virtual BOOL MyTouch(CBasePlayer *pPlayer);
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Precache_(void);
+	void Spawn_();
+	void Precache_();
 	BOOL MyTouch_(CBasePlayer *pPlayer);
 
 #endif // HOOK_GAMEDLL
 
-};/* size: 152, cachelines: 3, members: 1 */
+};
 
 /* <e093e> ../cstrike/dlls/items.cpp:393 */
 class CItemAssaultSuit: public CItem
 {
 public:
-	virtual void Spawn(void);
-	virtual void Precache(void);
+	virtual void Spawn();
+	virtual void Precache();
 	virtual BOOL MyTouch(CBasePlayer *pPlayer);
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Precache_(void);
+	void Spawn_();
+	void Precache_();
 	BOOL MyTouch_(CBasePlayer *pPlayer);
 
 #endif // HOOK_GAMEDLL
 
-};/* size: 152, cachelines: 3, members: 1 */
+};
 
 /* <e0991> ../cstrike/dlls/items.cpp:432 */
 class CItemThighPack: public CItem
 {
 public:
-	virtual void Spawn(void);
-	virtual void Precache(void);
+	virtual void Spawn();
+	virtual void Precache();
 	virtual BOOL MyTouch(CBasePlayer *pPlayer);
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Precache_(void);
+	void Spawn_();
+	void Precache_();
 	BOOL MyTouch_(CBasePlayer *pPlayer);
 
 #endif // HOOK_GAMEDLL
 
-};/* size: 152, cachelines: 3, members: 1 */
+};
 
 #endif // ITEMS_H

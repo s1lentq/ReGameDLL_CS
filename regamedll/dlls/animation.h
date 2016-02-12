@@ -58,7 +58,7 @@ int GetBodygroup(void *pmodel, entvars_t *pev, int iGroup);
 C_DLLEXPORT int Server_GetBlendingInterface(int version, struct sv_blending_interface_s **ppinterface, struct engine_studio_api_s *pstudio, float *rotationmatrix, float *bonetransform);
 void AngleQuaternion(vec_t *angles, vec_t *quaternion);
 void QuaternionSlerp(vec_t *p, vec_t *q, float t, vec_t *qt);
-NOBODY void QuaternionMatrix(vec_t *quaternion, float (*matrix)[4]);
+void QuaternionMatrix(vec_t *quaternion, float (*matrix)[4]);
 mstudioanim_t *StudioGetAnim(model_t *m_pSubModel, mstudioseqdesc_t *pseqdesc);
 mstudioanim_t *LookupAnimation(model_t *model, mstudioseqdesc_t *pseqdesc, int index);
 void StudioCalcBoneAdj(float dadt, float *adj, const byte *pcontroller1, const byte *pcontroller2, byte mouthopen);
@@ -68,31 +68,5 @@ void StudioSlerpBones(vec4_t *q1, float pos1[][3], vec4_t *q2, float pos2[][3], 
 void StudioCalcRotations(mstudiobone_t *pbones, int *chain, int chainlength, float *adj, float pos[128][3], vec4_t *q, mstudioseqdesc_t *pseqdesc, mstudioanim_t *panim, float f, float s);
 void ConcatTransforms(float in1[3][4], float in2[3][4], float out[3][4]);
 void SV_StudioSetupBones(model_t *pModel, float frame, int sequence, const vec_t *angles, const vec_t *origin, const byte *pcontroller, const byte *pblending, int iBone, const edict_t *pEdict);
-
-#ifdef HOOK_GAMEDLL
-
-#define svBlending (*psvBlending)
-#define IEngineStudio (*pIEngineStudio)
-#define g_pstudiohdr (*pg_pstudiohdr)
-#define g_pRotationMatrix (*pg_pRotationMatrix)
-#define g_pBoneTransform (*pg_pBoneTransform)
-#define omega (*pomega)
-#define cosom (*pcosom)
-#define sinom (*psinom)
-#define sclp (*psclp)
-#define sclq (*psclq)
-
-#endif // HOOK_GAMEDLL
-
-extern struct sv_blending_interface_s svBlending;
-extern server_studio_api_t IEngineStudio;
-extern studiohdr_t *g_pstudiohdr;
-extern float (*g_pRotationMatrix)[3][4];
-extern float (*g_pBoneTransform)[128][3][4];
-extern float omega;
-extern float cosom;
-extern float sinom;
-extern float sclp;
-extern float sclq;
 
 #endif // ANIMATION_H

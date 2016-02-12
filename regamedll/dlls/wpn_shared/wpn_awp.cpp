@@ -4,9 +4,10 @@
 LINK_ENTITY_TO_CLASS(weapon_awp, CAWP);
 
 /* <23fb10> ../cstrike/dlls/wpn_shared/wpn_awp.cpp:52 */
-void CAWP::__MAKE_VHOOK(Spawn)(void)
+void CAWP::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
+
 	m_iId = WEAPON_AWP;
 	SET_MODEL(ENT(pev), "models/w_awp.mdl");
 
@@ -15,7 +16,7 @@ void CAWP::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <23fa2c> ../cstrike/dlls/wpn_shared/wpn_awp.cpp:64 */
-void CAWP::__MAKE_VHOOK(Precache)(void)
+void CAWP::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/v_awp.mdl");
 	PRECACHE_MODEL("models/w_awp.mdl");
@@ -53,14 +54,13 @@ int CAWP::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 }
 
 /* <23fc19> ../cstrike/dlls/wpn_shared/wpn_awp.cpp:100 */
-BOOL CAWP::__MAKE_VHOOK(Deploy)(void)
+BOOL CAWP::__MAKE_VHOOK(Deploy)()
 {
 	if (DefaultDeploy("models/v_awp.mdl", "models/p_awp.mdl", AWP_DRAW, "rifle", UseDecrement() != FALSE))
 	{
 		m_pPlayer->m_flNextAttack = GetNextAttackDelay(1.45);
 		m_flNextPrimaryAttack = m_pPlayer->m_flNextAttack;
-
-		m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 1.0;
+		m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 1.0f;
 
 		return TRUE;
 	}
@@ -69,7 +69,7 @@ BOOL CAWP::__MAKE_VHOOK(Deploy)(void)
 }
 
 /* <23faac> ../cstrike/dlls/wpn_shared/wpn_awp.cpp:113 */
-void CAWP::__MAKE_VHOOK(SecondaryAttack)(void)
+void CAWP::__MAKE_VHOOK(SecondaryAttack)()
 {
 	switch (m_pPlayer->m_iFOV)
 	{
@@ -90,7 +90,7 @@ void CAWP::__MAKE_VHOOK(SecondaryAttack)(void)
 }
 
 /* <23fd53> ../cstrike/dlls/wpn_shared/wpn_awp.cpp:143 */
-void CAWP::__MAKE_VHOOK(PrimaryAttack)(void)
+void CAWP::__MAKE_VHOOK(PrimaryAttack)()
 {
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
 	{
@@ -129,9 +129,10 @@ void CAWP::AWPFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 		m_pPlayer->m_iFOV = DEFAULT_FOV;
 		m_pPlayer->pev->fov = DEFAULT_FOV;
 	}
+	// If we are not zoomed in, the bullet diverts more.
 	else
 	{
-		flSpread += 0.08;
+		flSpread += 0.08f;
 	}
 
 	if (m_iClip <= 0)
@@ -150,14 +151,13 @@ void CAWP::AWPFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 		return;
 	}
 
-	m_iClip--;
-
+	--m_iClip;
 	m_pPlayer->pev->effects |= EF_MUZZLEFLASH;
 	m_pPlayer->SetAnimation(PLAYER_ATTACK1);
 
 	UTIL_MakeVectors(m_pPlayer->pev->v_angle + m_pPlayer->pev->punchangle);
 
-	m_pPlayer->m_flEjectBrass = gpGlobals->time + 0.55;
+	m_pPlayer->m_flEjectBrass = gpGlobals->time + 0.55f;
 	m_pPlayer->m_iWeaponVolume = BIG_EXPLOSION_VOLUME;
 	m_pPlayer->m_iWeaponFlash = NORMAL_GUN_FLASH;
 
@@ -182,17 +182,15 @@ void CAWP::AWPFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
 	}
 
-	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2;
-	m_pPlayer->pev->punchangle.x -= 2;
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.0f;
+	m_pPlayer->pev->punchangle.x -= 2.0f;
 }
 
 /* <23fbc1> ../cstrike/dlls/wpn_shared/wpn_awp.cpp:239 */
-void CAWP::__MAKE_VHOOK(Reload)(void)
+void CAWP::__MAKE_VHOOK(Reload)()
 {
 	if (m_pPlayer->ammo_338mag <= 0)
-	{
 		return;
-	}
 
 	if (DefaultReload(AWP_MAX_CLIP, AWP_RELOAD, AWP_RELOAD_TIME))
 	{
@@ -209,69 +207,24 @@ void CAWP::__MAKE_VHOOK(Reload)(void)
 }
 
 /* <23fb86> ../cstrike/dlls/wpn_shared/wpn_awp.cpp:265 */
-void CAWP::__MAKE_VHOOK(WeaponIdle)(void)
+void CAWP::__MAKE_VHOOK(WeaponIdle)()
 {
 	ResetEmptySound();
 	m_pPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);
 
 	if (m_flTimeWeaponIdle <= UTIL_WeaponTimeBase() && m_iClip)
 	{
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 60;
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 60.0f;
 		SendWeaponAnim(AWP_IDLE, UseDecrement() != FALSE);
 	}
 }
 
 /* <23fa86> ../cstrike/dlls/wpn_shared/wpn_awp.cpp:283 */
-float CAWP::__MAKE_VHOOK(GetMaxSpeed)(void)
+float CAWP::__MAKE_VHOOK(GetMaxSpeed)()
 {
-	return m_pPlayer->m_iFOV == DEFAULT_FOV ? AWP_MAX_SPEED : AWP_MAX_SPEED_ZOOM;
+	if (m_pPlayer->m_iFOV == DEFAULT_FOV)
+		return AWP_MAX_SPEED;
+
+	// Slower speed when zoomed in.
+	return AWP_MAX_SPEED_ZOOM;
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CAWP::Spawn(void)
-{
-	Spawn_();
-}
-
-void CAWP::Precache(void)
-{
-	Precache_();
-}
-
-int CAWP::GetItemInfo(ItemInfo *p)
-{
-	return GetItemInfo_(p);
-}
-
-BOOL CAWP::Deploy(void)
-{
-	return Deploy_();
-}
-
-float CAWP::GetMaxSpeed(void)
-{
-	return GetMaxSpeed_();
-}
-
-void CAWP::PrimaryAttack(void)
-{
-	PrimaryAttack_();
-}
-
-void CAWP::SecondaryAttack(void)
-{
-	SecondaryAttack_();
-}
-
-void CAWP::Reload(void)
-{
-	Reload_();
-}
-
-void CAWP::WeaponIdle(void)
-{
-	WeaponIdle_();
-}
-
-#endif // HOOK_GAMEDLL

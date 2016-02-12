@@ -1,7 +1,7 @@
 #include "precompiled.h"
 
 /* <1262b3> ../cstrike/dlls/plane.cpp:24 */
-CPlane::CPlane(void)
+CPlane::CPlane()
 {
 	m_fInitialized = FALSE;
 }

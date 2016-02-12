@@ -38,11 +38,11 @@ const int DebugBufferSize = 1024;
 typedef enum
 {
 	DEBUG_NONE	= 0,
-	DEBUG_BOT	= (1<<0),
-	DEBUG_CAREER	= (1<<1),
-	DEBUG_TUTOR	= (1<<2),
-	DEBUG_STATS	= (1<<3),
-	DEBUG_HOSTAGE	= (1<<4),
+	DEBUG_BOT	= (1 << 0),
+	DEBUG_CAREER	= (1 << 1),
+	DEBUG_TUTOR	= (1 << 2),
+	DEBUG_STATS	= (1 << 3),
+	DEBUG_HOSTAGE	= (1 << 4),
 	DEBUG_ALL	= 0xFFFFFFFF,
 
 } DebugOutputType;
@@ -51,25 +51,12 @@ struct DebugOutputLevel
 {
 	const char *name;
 	DebugOutputType value;
+};
 
-};/* size: 8, cachelines: 1, members: 2 */
-
-#ifdef HOOK_GAMEDLL
-
-#define outputLevel (*poutputLevel)
-#define theDebugOutputTypes (*ptheDebugOutputTypes)
-#define theDebugBuffer (*ptheDebugBuffer)
-
-#endif // HOOK_GAMEDLL
-
-extern DebugOutputLevel outputLevel[ NUM_LEVELS ];
-extern unsigned int theDebugOutputTypes;
-extern char theDebugBuffer[ DebugBufferSize ];
-
-bool IsDeveloper(void);
+bool IsDeveloper();
 NOXREF void UTIL_DPrintf(DebugOutputType outputType, char *pszMsg, ...);
 void UTIL_DPrintf(char *pszMsg, ...);
-void PrintDebugFlags(void);
+void PrintDebugFlags();
 
 void SetDebugFlag(const char *flagStr, bool state);
 void PrintDebugFlag(const char *flagStr);
@@ -80,12 +67,5 @@ void UTIL_CareerDPrintf(char *pszMsg, ...);
 NOXREF void UTIL_TutorDPrintf(char *pszMsg, ...);
 NOXREF void UTIL_StatsDPrintf(char *pszMsg, ...);
 NOXREF void UTIL_HostageDPrintf(char *pszMsg, ...);
-
-#ifdef HOOK_GAMEDLL
-
-typedef void (*DPrintf_Flag)(DebugOutputType outputType, char *pszMsg, ...);
-typedef void (*DPrintf_MSG)(char *pszMsg, ...);
-
-#endif // HOOK_GAMEDLL
 
 #endif // DEBUG_H

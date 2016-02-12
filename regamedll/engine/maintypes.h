@@ -35,7 +35,7 @@
 #include "osconfig.h"
 #include "mathlib.h"
 
-// Has no references on server side.
+// Has no references on multiplayer library CS.
 #define NOXREF
 // Function body is not implemented.
 #define NOBODY
@@ -43,8 +43,6 @@
 #define UNTESTED
 // Function is doubt reversed
 #define TODOBODY
-// Function is inlined in code and has no references.
-#define INLINEBODY
 
 
 #define BIT(n) (1<<(n))

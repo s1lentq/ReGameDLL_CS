@@ -14,10 +14,6 @@ TYPEDESCRIPTION CRecharge::m_SaveData[] =
 	DEFINE_FIELD(CRecharge, m_flSoundTime, FIELD_TIME),
 };
 
-#else
-
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CRecharge, m_SaveData)[5];
-
 #endif // HOOK_GAMEDLL
 
 /* <c61e2> ../cstrike/dlls/h_battery.cpp:61 */
@@ -47,7 +43,7 @@ void CRecharge::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 }
 
 /* <c616f> ../cstrike/dlls/h_battery.cpp:85 */
-void CRecharge::__MAKE_VHOOK(Spawn)(void)
+void CRecharge::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
 
@@ -64,7 +60,7 @@ void CRecharge::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <c6122> ../cstrike/dlls/h_battery.cpp:99 */
-void CRecharge::__MAKE_VHOOK(Precache)(void)
+void CRecharge::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_SOUND("items/suitcharge1.wav");
 	PRECACHE_SOUND("items/suitchargeno1.wav");
@@ -81,7 +77,7 @@ void CRecharge::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller,
 	// if there is no juice left, turn it off
 	if (m_iJuice <= 0)
 	{
-		pev->frame = 1;
+		pev->frame = 1.0f;
 		Off();
 	}
 
@@ -90,14 +86,14 @@ void CRecharge::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller,
 	{
 		if (m_flSoundTime <= gpGlobals->time)
 		{
-			m_flSoundTime = gpGlobals->time + 0.62;
+			m_flSoundTime = gpGlobals->time + 0.62f;
 			EMIT_SOUND(ENT(pev), CHAN_ITEM, "items/suitchargeno1.wav", 0.85, ATTN_NORM);
 		}
 
 		return;
 	}
 
-	pev->nextthink = pev->ltime + 0.25;
+	pev->nextthink = pev->ltime + 0.25f;
 	SetThink(&CRecharge::Off);
 
 	// Time to recharge yet?
@@ -119,7 +115,7 @@ void CRecharge::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller,
 	{
 		m_iOn++;
 		EMIT_SOUND(ENT(pev), CHAN_ITEM, "items/suitchargeok1.wav", 0.85, ATTN_NORM);
-		m_flSoundTime = gpGlobals->time + 0.56;
+		m_flSoundTime = gpGlobals->time + 0.56f;
 	}
 
 	if (m_iOn == 1 && m_flSoundTime <= gpGlobals->time)
@@ -132,26 +128,26 @@ void CRecharge::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller,
 	if (m_hActivator->pev->armorvalue < 100)
 	{
 		m_iJuice--;
-		m_hActivator->pev->armorvalue += 1;
+		m_hActivator->pev->armorvalue += 1.0f;
 
 		if (m_hActivator->pev->armorvalue > 100)
 			m_hActivator->pev->armorvalue = 100;
 	}
 
 	// govern the rate of charge
-	m_flNextCharge = gpGlobals->time + 0.1;
+	m_flNextCharge = gpGlobals->time + 0.1f;
 }
 
 /* <c6149> ../cstrike/dlls/h_battery.cpp:178 */
-void CRecharge::Recharge(void)
+void CRecharge::Recharge()
 {
 	m_iJuice = gSkillData.suitchargerCapacity;
-	pev->frame = 0;			
+	pev->frame = 0;
 	SetThink(&CRecharge::SUB_DoNothing);
 }
 
 /* <c622e> ../cstrike/dlls/h_battery.cpp:185 */
-void CRecharge::Off(void)
+void CRecharge::Off()
 {
 	// Stop looping sound.
 	if (m_iOn > 1)
@@ -159,7 +155,7 @@ void CRecharge::Off(void)
 
 	m_iOn = 0;
 
-	if (!m_iJuice &&  (m_iReactivate = g_pGameRules->FlHEVChargerRechargeTime()) > 0)
+	if (!m_iJuice && (m_iReactivate = g_pGameRules->FlHEVChargerRechargeTime()) > 0)
 	{
 		pev->nextthink = pev->ltime + m_iReactivate;
 		SetThink(&CRecharge::Recharge);
@@ -167,37 +163,3 @@ void CRecharge::Off(void)
 	else
 		SetThink(&CRecharge::SUB_DoNothing);
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CRecharge::Spawn(void)
-{
-	Spawn_();
-}
-
-void CRecharge::Precache(void)
-{
-	Precache_();
-}
-
-void CRecharge::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-int CRecharge::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CRecharge::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-void CRecharge::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	Use_(pActivator, pCaller, useType, value);
-}
-
-#endif // HOOK_GAMEDLL

@@ -4,9 +4,10 @@
 LINK_ENTITY_TO_CLASS(weapon_flashbang, CFlashbang);
 
 /* <25b72f> ../cstrike/dlls/wpn_shared/wpn_flashbang.cpp:39 */
-void CFlashbang::__MAKE_VHOOK(Spawn)(void)
+void CFlashbang::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
+
 	m_iId = WEAPON_FLASHBANG;
 	SET_MODEL(edict(), "models/w_flashbang.mdl");
 
@@ -14,7 +15,7 @@ void CFlashbang::__MAKE_VHOOK(Spawn)(void)
 
 	m_iDefaultAmmo = FLASHBANG_DEFAULT_GIVE;
 	m_flStartThrow = 0;
-	m_flReleaseThrow = -1.0;
+	m_flReleaseThrow = -1.0f;
 	m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
 
 	// get ready to fall down.
@@ -22,7 +23,7 @@ void CFlashbang::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <25b67a> ../cstrike/dlls/wpn_shared/wpn_flashbang.cpp:58 */
-void CFlashbang::__MAKE_VHOOK(Precache)(void)
+void CFlashbang::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/v_flashbang.mdl");
 	PRECACHE_MODEL("models/shield/v_shield_flashbang.mdl");
@@ -51,9 +52,9 @@ int CFlashbang::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 }
 
 /* <25b7df> ../cstrike/dlls/wpn_shared/wpn_flashbang.cpp:87 */
-BOOL CFlashbang::__MAKE_VHOOK(Deploy)(void)
+BOOL CFlashbang::__MAKE_VHOOK(Deploy)()
 {
-	m_flReleaseThrow = -1.0;
+	m_flReleaseThrow = -1.0f;
 	m_fMaxSpeed = FLASHBANG_MAX_SPEED;
 
 	m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
@@ -68,7 +69,7 @@ BOOL CFlashbang::__MAKE_VHOOK(Deploy)(void)
 /* <25b6fa> ../cstrike/dlls/wpn_shared/wpn_flashbang.cpp:102 */
 void CFlashbang::__MAKE_VHOOK(Holster)(int skiplocal)
 {
-	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5;
+	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5f;
 
 	if (!m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType])
 	{
@@ -77,11 +78,11 @@ void CFlashbang::__MAKE_VHOOK(Holster)(int skiplocal)
 	}
 
 	m_flStartThrow = 0;
-	m_flReleaseThrow = -1.0;
+	m_flReleaseThrow = -1.0f;
 }
 
 /* <25b7a5> ../cstrike/dlls/wpn_shared/wpn_flashbang.cpp:118 */
-void CFlashbang::__MAKE_VHOOK(PrimaryAttack)(void)
+void CFlashbang::__MAKE_VHOOK(PrimaryAttack)()
 {
 	if (m_iWeaponState & WPNSTATE_SHIELD_DRAWN)
 	{
@@ -94,7 +95,7 @@ void CFlashbang::__MAKE_VHOOK(PrimaryAttack)(void)
 		m_flStartThrow = gpGlobals->time;
 
 		SendWeaponAnim(FLASHBANG_PULLPIN, UseDecrement() != FALSE);
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.5;
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.5f;
 	}
 }
 
@@ -130,21 +131,21 @@ bool CFlashbang::ShieldSecondaryFire(int iUpAnim, int iDownAnim)
 	m_pPlayer->UpdateShieldCrosshair((m_iWeaponState & WPNSTATE_SHIELD_DRAWN) != WPNSTATE_SHIELD_DRAWN);
 	m_pPlayer->ResetMaxSpeed();
 
-	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.4;
+	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.4f;
 	m_flNextPrimaryAttack = GetNextAttackDelay(0.4);
-	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.6;
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.6f;
 
 	return true;
 }
 
 /* <25b81a> ../cstrike/dlls/wpn_shared/wpn_flashbang.cpp:171 */
-void CFlashbang::__MAKE_VHOOK(SecondaryAttack)(void)
+void CFlashbang::__MAKE_VHOOK(SecondaryAttack)()
 {
 	ShieldSecondaryFire(SHIELDGUN_DRAW, SHIELDGUN_DRAWN_IDLE);
 }
 
 /* <25bb97> ../cstrike/dlls/wpn_shared/wpn_flashbang.cpp:176 */
-void CFlashbang::SetPlayerShieldAnim(void)
+void CFlashbang::SetPlayerShieldAnim()
 {
 	if (!m_pPlayer->HasShield())
 		return;
@@ -156,7 +157,7 @@ void CFlashbang::SetPlayerShieldAnim(void)
 }
 
 /* <25bbb9> ../cstrike/dlls/wpn_shared/wpn_flashbang.cpp:187 */
-void CFlashbang::ResetPlayerShieldAnim(void)
+void CFlashbang::ResetPlayerShieldAnim()
 {
 	if (!m_pPlayer->HasShield())
 		return;
@@ -168,7 +169,7 @@ void CFlashbang::ResetPlayerShieldAnim(void)
 }
 
 /* <25a8bd> ../cstrike/dlls/wpn_shared/wpn_flashbang.cpp:198 */
-void CFlashbang::__MAKE_VHOOK(WeaponIdle)(void)
+void CFlashbang::__MAKE_VHOOK(WeaponIdle)()
 {
 	if (m_flReleaseThrow == 0 && m_flStartThrow != 0.0f)
 		m_flReleaseThrow = gpGlobals->time;
@@ -187,7 +188,7 @@ void CFlashbang::__MAKE_VHOOK(WeaponIdle)(void)
 		else
 			angThrow.x = -10 + angThrow.x * ((90 + 10) / 90.0);
 
-		float_precision flVel = (90.0 - angThrow.x) * 6.0;
+		float_precision flVel = (90.0f - angThrow.x) * 6.0f;
 
 		if (flVel > 750.0f)
 			flVel = 750.0f;
@@ -207,11 +208,9 @@ void CFlashbang::__MAKE_VHOOK(WeaponIdle)(void)
 
 		m_flStartThrow = 0;
 		m_flNextPrimaryAttack = GetNextAttackDelay(0.5);
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.75;
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.75f;
 
-		m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]--;
-
-		if (!m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType])
+		if (--m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
 		{
 			// just threw last grenade
 			// set attack times in the future, and weapon idle in the future so we can see the whole throw
@@ -235,7 +234,7 @@ void CFlashbang::__MAKE_VHOOK(WeaponIdle)(void)
 
 		if (m_pPlayer->HasShield())
 		{
-			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20.0;
+			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20.0f;
 
 			if (m_iWeaponState & WPNSTATE_SHIELD_DRAWN)
 			{
@@ -259,7 +258,7 @@ void CFlashbang::__MAKE_VHOOK(WeaponIdle)(void)
 				// TODO: This is a bug?
 				iAnim = *(int *)&flRand;
 			#endif // REGAMEDLL_FIXES
-				m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 75.0 / 30.0;
+				m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 75.0f / 30.0f;
 			}
 
 			SendWeaponAnim(iAnim, UseDecrement() != FALSE);
@@ -268,56 +267,7 @@ void CFlashbang::__MAKE_VHOOK(WeaponIdle)(void)
 }
 
 /* <25b6d4> ../cstrike/dlls/wpn_shared/wpn_flashbang.cpp:315 */
-BOOL CFlashbang::__MAKE_VHOOK(CanDeploy)(void)
+BOOL CFlashbang::__MAKE_VHOOK(CanDeploy)()
 {
 	return m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] != 0;
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CFlashbang::Spawn(void)
-{
-	Spawn_();
-}
-
-void CFlashbang::Precache(void)
-{
-	Precache_();
-}
-
-int CFlashbang::GetItemInfo(ItemInfo *p)
-{
-	return GetItemInfo_(p);
-}
-
-BOOL CFlashbang::CanDeploy(void)
-{
-	return CanDeploy_();
-}
-
-BOOL CFlashbang::Deploy(void)
-{
-	return Deploy_();
-}
-
-void CFlashbang::Holster(int skiplocal)
-{
-	Holster_(skiplocal);
-}
-
-void CFlashbang::PrimaryAttack(void)
-{
-	PrimaryAttack_();
-}
-
-void CFlashbang::SecondaryAttack(void)
-{
-	SecondaryAttack_();
-}
-
-void CFlashbang::WeaponIdle(void)
-{
-	WeaponIdle_();
-}
-
-#endif // HOOK_GAMEDLL

@@ -1,7 +1,6 @@
 #include "precompiled.h"
 
-/* <11c190> ../cstrike/dlls/observer.cpp:36 */
-int GetForceCamera(void)
+int GetForceCamera_api(CBasePlayer *pObserver)
 {
 	int retVal;
 
@@ -18,19 +17,29 @@ int GetForceCamera(void)
 	return retVal;
 }
 
+/* <11c190> ../cstrike/dlls/observer.cpp:36 */
+int GetForceCamera(CBasePlayer *pObserver)
+{
+	return g_ReGameHookchains.m_GetForceCamera.callChain(GetForceCamera_api, pObserver);
+}
+
+CBasePlayer *Observer_IsValidTarget_api(CBasePlayer *pPlayer, CBasePlayer *pEntity, int iPlayerIndex, bool bSameTeam)
+{
+	// Don't spec observers or players who haven't picked a class yet
+	if (!pEntity || pEntity == pPlayer || pEntity->has_disconnected || pEntity->IsObserver() || (pEntity->pev->effects & EF_NODRAW) || pEntity->m_iTeam == UNASSIGNED || (bSameTeam && pEntity->m_iTeam != pPlayer->m_iTeam))
+		return NULL;
+
+	return pEntity;
+}
+
 /* <11c4fa> ../cstrike/dlls/observer.cpp:49 */
 CBaseEntity *CBasePlayer::Observer_IsValidTarget(int iPlayerIndex, bool bSameTeam)
 {
 	if (iPlayerIndex > gpGlobals->maxClients || iPlayerIndex < 1)
 		return NULL;
 
-	CBaseEntity *pEnt = UTIL_PlayerByIndex(iPlayerIndex);
-
-	// Don't spec observers or players who haven't picked a class yet
-	if (!pEnt || pEnt == this || pEnt->has_disconnected || ((CBasePlayer *)pEnt)->IsObserver() || (pEnt->pev->effects & EF_NODRAW) || ((CBasePlayer *)pEnt)->m_iTeam == UNASSIGNED || (bSameTeam && ((CBasePlayer *)pEnt)->m_iTeam != m_iTeam))
-		return NULL;
-
-	return pEnt;
+	CBasePlayer *pEnt = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(iPlayerIndex));
+	return g_ReGameHookchains.m_Observer_IsValidTarget.callChain(Observer_IsValidTarget_api, this, pEnt, iPlayerIndex, bSameTeam);
 }
 
 /* <11c2c7> ../cstrike/dlls/observer.cpp:82 */
@@ -49,7 +58,7 @@ void UpdateClientEffects(CBasePlayer *pObserver, int oldMode)
 
 		if (pObserver->m_hObserverTarget->IsPlayer())
 		{
-			CBasePlayer *pPlayer = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(ENTINDEX(pObserver->m_hObserverTarget->edict())));
+			CBasePlayer *pPlayer = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(pObserver->m_hObserverTarget->entindex()));
 
 			if (pPlayer)
 			{
@@ -147,7 +156,7 @@ void CBasePlayer::Observer_FindNextPlayer(bool bReverse, const char *name)
 
 	iDir = bReverse ? -1 : 1;
 
-	bForceSameTeam = (GetForceCamera() != CAMERA_MODE_SPEC_ANYONE && m_iTeam != SPECTATOR);
+	bForceSameTeam = (GetForceCamera(this) != CAMERA_MODE_SPEC_ANYONE && m_iTeam != SPECTATOR);
 
 	do
 	{
@@ -167,7 +176,7 @@ void CBasePlayer::Observer_FindNextPlayer(bool bReverse, const char *name)
 			if (!name)
 				break;
 
-			pPlayer = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(ENTINDEX(m_hObserverTarget->edict())));
+			pPlayer = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(m_hObserverTarget->entindex()));
 
 			if (!Q_strcmp(name, STRING(pPlayer->pev->netname)))
 				break;
@@ -200,7 +209,7 @@ void CBasePlayer::Observer_FindNextPlayer(bool bReverse, const char *name)
 // Handle buttons in observer mode
 
 /* <11c9ac> ../cstrike/dlls/observer.cpp:254 */
-void CBasePlayer::Observer_HandleButtons(void)
+void CBasePlayer::Observer_HandleButtons()
 {
 	// Slow down mouse clicks
 	if (m_flNextObserverInput > gpGlobals->time)
@@ -250,7 +259,7 @@ void CBasePlayer::Observer_HandleButtons(void)
 }
 
 /* <11c9d3> ../cstrike/dlls/observer.cpp:304 */
-void CBasePlayer::Observer_CheckTarget(void)
+void CBasePlayer::Observer_CheckTarget()
 {
 	if (pev->iuser1 == OBS_ROAMING && !m_bWasFollowing)
 		return;
@@ -273,7 +282,7 @@ void CBasePlayer::Observer_CheckTarget(void)
 		if (m_hObserverTarget)
 		{
 			int iPlayerIndex = ENTINDEX(m_hObserverTarget->edict());
-			CBasePlayer *target = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(iPlayerIndex));
+			CBasePlayer *target = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(iPlayerIndex));
 
 			// check taget
 			if (!target || target->pev->deadflag == DEAD_RESPAWNABLE || (target->pev->effects & EF_NODRAW))
@@ -305,12 +314,12 @@ void CBasePlayer::Observer_CheckTarget(void)
 }
 
 /* <11cb26> ../cstrike/dlls/observer.cpp:380 */
-void CBasePlayer::Observer_CheckProperties(void)
+void CBasePlayer::Observer_CheckProperties()
 {
 	// try to find a traget if we have no current one
 	if (pev->iuser1 == OBS_IN_EYE && m_hObserverTarget != NULL)
 	{
-		CBasePlayer *target = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(ENTINDEX(m_hObserverTarget->edict())));
+		CBasePlayer *target = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(m_hObserverTarget->entindex()));
 
 		if (!target)
 			return;
@@ -441,7 +450,7 @@ void CBasePlayer::Observer_SetMode(int iMode)
 	if (iMode == pev->iuser1)
 		return;
 
-	_forcecamera = GetForceCamera();
+	_forcecamera = GetForceCamera(this);
 
 	// is valid mode ?
 	if (iMode < OBS_CHASE_LOCKED || iMode > OBS_MAP_CHASE)

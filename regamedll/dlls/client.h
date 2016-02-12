@@ -86,62 +86,29 @@ typedef struct
 	float m_fTimeEnteredPVS;
 
 } ENTITYPVSSTATUS;
-/* size: 4, cachelines: 1, members: 1 */
 
-typedef struct
+struct PLAYERPVSSTATUS
 {
 	ENTITYPVSSTATUS m_Status[1380];
 	int headnode;
 	int num_leafs;
 	short int leafnums[ MAX_ENT_LEAFS ];
+};
 
-} PLAYERPVSSTATUS;
-/* size: 5624, cachelines: 88, members: 4 */
-
-typedef struct
+struct entity_field_alias_t
 {
 	char name[32];
 	int field;
+};
 
-} entity_field_alias_t;
-/* size: 36, cachelines: 1, members: 2 */
-
-#ifdef HOOK_GAMEDLL
-
-#define g_flTimeLimit (*pg_flTimeLimit)
-#define g_flResetTime (*pg_flResetTime)
-#define g_bClientPrintEnable (*pg_bClientPrintEnable)
-
-#define g_PVSStatus (*pg_PVSStatus)
-#define m_usResetDecals (*pm_usResetDecals)
-#define g_iShadowSprite (*pg_iShadowSprite)
-#define sPlayerModelFiles (*psPlayerModelFiles)
-#define g_skipCareerInitialSpawn (*pg_skipCareerInitialSpawn)
-#define entity_field_alias (*pentity_field_alias)
-#define player_field_alias (*pplayer_field_alias)
-#define custom_entity_field_alias (*pcustom_entity_field_alias)
-#define g_serveractive (*pg_serveractive)
-
-#endif // HOOK_GAMEDLL
-
-extern PLAYERPVSSTATUS g_PVSStatus[32];
-
-extern float g_flTimeLimit;// exported
+extern float g_flTimeLimit;
 extern float g_flResetTime;
-extern bool g_bClientPrintEnable;
 extern bool g_skipCareerInitialSpawn;
-
-extern char *sPlayerModelFiles[12];
-extern bool g_skipCareerInitialSpawn;
-extern entity_field_alias_t entity_field_alias[6];
-extern entity_field_alias_t player_field_alias[3];
-extern entity_field_alias_t custom_entity_field_alias[9];
-extern int g_serveractive;
 
 extern unsigned short m_usResetDecals;
 extern unsigned short g_iShadowSprite;
 
-int CMD_ARGC_(void);
+int CMD_ARGC_();
 const char *CMD_ARGV_(int i);
 NOXREF void set_suicide_frame(entvars_t *pev);
 void TeamChangeUpdate(CBasePlayer *player, int team_id);
@@ -152,12 +119,12 @@ void respawn(entvars_t *pev, BOOL fCopyCorpse = FALSE);
 void ClientKill(edict_t *pEntity);
 void ShowMenu(CBasePlayer *pPlayer, int bitsValidSlots, int nDisplayTime, BOOL fNeedMore, char *pszText);
 void ShowVGUIMenu(CBasePlayer *pPlayer, int MenuType, int BitMask, char *szOldMenu);
-NOXREF C_DLLEXPORT int CountTeams(void);
+NOXREF C_DLLEXPORT int CountTeams();
 void ListPlayers(CBasePlayer *current);
 C_DLLEXPORT int CountTeamPlayers(int iTeam);
 void ProcessKickVote(CBasePlayer *pVotingPlayer, CBasePlayer *pKickPlayer);
-TeamName SelectDefaultTeam(void);
-void CheckStartMoney(void);
+TeamName SelectDefaultTeam();
+void CheckStartMoney();
 void ClientPutInServer(edict_t *pEntity);
 int Q_strlen_(const char *str);
 void Host_Say(edict_t *pEntity, int teamonly);
@@ -179,20 +146,20 @@ void Radio3(CBasePlayer *player, int slot);
 bool BuyGunAmmo(CBasePlayer *player, CBasePlayerItem *weapon, bool bBlinkMoney);
 bool BuyAmmo(CBasePlayer *player, int nSlot, bool bBlinkMoney);
 CBaseEntity *EntityFromUserID(int userID);
-NOXREF int CountPlayersInServer(void);
+NOXREF int CountPlayersInServer();
 BOOL HandleBuyAliasCommands(CBasePlayer *pPlayer, const char *pszCommand);
 BOOL HandleRadioAliasCommands(CBasePlayer *pPlayer, const char *pszCommand);
 void ClientCommand(edict_t *pEntity);
 void ClientUserInfoChanged(edict_t *pEntity, char *infobuffer);
-void ServerDeactivate(void);
+void ServerDeactivate();
 void ServerActivate(edict_t *pEdictList, int edictCount, int clientMax);
 void PlayerPreThink(edict_t *pEntity);
 void PlayerPostThink(edict_t *pEntity);
-void ParmsNewLevel(void);
-void ParmsChangeLevel(void);
-void StartFrame(void);
-void ClientPrecache(void);
-const char *GetGameDescription(void);
+void ParmsNewLevel();
+void ParmsChangeLevel();
+void StartFrame();
+void ClientPrecache();
+const char *GetGameDescription();
 void Sys_Error(const char *error_string);
 void PlayerCustomization(edict_t *pEntity, customization_t *pCust);
 void SpectatorConnect(edict_t *pEntity);
@@ -211,15 +178,15 @@ void Player_FieldInit(struct delta_s *pFields);
 void Player_Encode(struct delta_s *pFields, const unsigned char *from, const unsigned char *to);
 void Custom_Entity_FieldInit(delta_s *pFields);
 void Custom_Encode(struct delta_s *pFields, const unsigned char *from, const unsigned char *to);
-void RegisterEncoders(void);
+void RegisterEncoders();
 int GetWeaponData(edict_s *player, struct weapon_data_s *info);
 void UpdateClientData(const edict_s *ent, int sendweapons, struct clientdata_s *cd);
 void CmdStart(const edict_t *player, const struct usercmd_s *cmd, unsigned int random_seed);
 void CmdEnd(const edict_t *player);
 int ConnectionlessPacket(const struct netadr_s *net_from, const char *args, char *response_buffer, int *response_buffer_size);
 int GetHullBounds(int hullnumber, float *mins, float *maxs);
-void CreateInstancedBaselines(void);
+void CreateInstancedBaselines();
 int InconsistentFile(const edict_t *player, const char *filename, char *disconnect_message);
-int AllowLagCompensation(void);
+int AllowLagCompensation();
 
 #endif // CLIENT_H

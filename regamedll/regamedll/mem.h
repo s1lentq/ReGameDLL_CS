@@ -12,6 +12,7 @@ void _free_mhook_(void *p);
 void *_calloc_mhook_(size_t n, size_t s);
 void *__nh_malloc_mhook_(size_t n);
 char *_strdup_mhook_(const char *s);
+int __cdecl _rand_mhook_();
 
 #endif // _WIN32
 

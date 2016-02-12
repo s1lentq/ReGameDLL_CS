@@ -36,15 +36,15 @@
 class CNullEntity: public CBaseEntity
 {
 public:
-	virtual void Spawn(void);
+	virtual void Spawn();
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
+	void Spawn_();
 
 #endif // HOOK_GAMEDLL
 
-};/* size: 152, cachelines: 3, members: 1 */
+};
 
 /* <1827de> ../cstrike/dlls/subs.cpp:59 */
 class CBaseDMStart: public CPointEntity
@@ -60,24 +60,10 @@ public:
 
 #endif // HOOK_GAMEDLL
 
-};/* size: 152, cachelines: 3, members: 1 */
+};
 
 void FireTargets(const char *targetName, CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 void SetMovedir(entvars_t *pev);
 NOXREF BOOL FEntIsVisible(entvars_t *pev, entvars_t *pevTarget);
-
-#ifdef HOOK_GAMEDLL
-
-// linked objects
-C_DLLEXPORT void info_null(entvars_t *pev);
-C_DLLEXPORT void info_player_deathmatch(entvars_t *pev);
-C_DLLEXPORT void info_player_start(entvars_t *pev);
-C_DLLEXPORT void info_vip_start(entvars_t *pev);
-C_DLLEXPORT void info_landmark(entvars_t *pev);
-C_DLLEXPORT void info_hostage_rescue(entvars_t *pev);
-C_DLLEXPORT void info_bomb_target(entvars_t *pev);
-C_DLLEXPORT void DelayedUse(entvars_t *pev);
-
-#endif // HOOK_GAMEDLL
 
 #endif // SUBS_H

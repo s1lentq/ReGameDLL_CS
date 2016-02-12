@@ -46,7 +46,7 @@ TYPEDESCRIPTION CFuncTankControls::m_SaveData[] =
 	DEFINE_FIELD(CFuncTankControls, m_pTank, FIELD_CLASSPTR),
 };
 
-static Vector gTankSpread[] =
+Vector gTankSpread[] =
 {
 	Vector(0, 0, 0),		// perfect
 	Vector(0.025, 0.025, 0.025),	// small cone
@@ -54,13 +54,6 @@ static Vector gTankSpread[] =
 	Vector(0.1, 0.1, 0.1),		// large cone
 	Vector(0.25, 0.25, 0.25),	// extra-large cone
 };
-
-#else
-
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CFuncTank, m_SaveData)[26];
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CFuncTankLaser, m_SaveData)[2];
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CFuncTankControls, m_SaveData)[1];
-Vector gTankSpread[5];
 
 #endif // HOOK_GAMEDLL
 
@@ -70,7 +63,7 @@ Vector gTankSpread[5];
 IMPLEMENT_SAVERESTORE(CFuncTank, CBaseEntity);
 
 /* <8ea25> ../cstrike/dlls/func_tank.cpp:177 */
-void CFuncTank::__MAKE_VHOOK(Spawn)(void)
+void CFuncTank::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
 
@@ -84,14 +77,14 @@ void CFuncTank::__MAKE_VHOOK(Spawn)(void)
 
 	if (IsActive())
 	{
-		pev->nextthink = pev->ltime + 1.0;
+		pev->nextthink = pev->ltime + 1.0f;
 	}
 
 	// Point at the end of the barrel
 	m_sightOrigin = BarrelPosition();
 
-	if (m_fireRate <= 0)
-		m_fireRate = 1;
+	if (m_fireRate <= 0.0f)
+		m_fireRate = 1.0f;
 
 	if (m_spread > MAX_FIRING_SPREADS)
 		m_spread = 0;
@@ -100,7 +93,7 @@ void CFuncTank::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <8d64d> ../cstrike/dlls/func_tank.cpp:202 */
-void CFuncTank::__MAKE_VHOOK(Precache)(void)
+void CFuncTank::__MAKE_VHOOK(Precache)()
 {
 	if (m_iszSpriteSmoke)
 	{
@@ -238,7 +231,7 @@ BOOL CFuncTank::__MAKE_VHOOK(OnControls)(entvars_t *pevTest)
 
 	Vector offset = pevTest->origin - pev->origin;
 
-	if ((m_vecControllerUsePos - pevTest->origin).Length() < 30)
+	if ((m_vecControllerUsePos - pevTest->origin).Length() < 30.0f)
 	{
 		return TRUE;
 	}
@@ -269,19 +262,22 @@ BOOL CFuncTank::StartControl(CBasePlayer *pController)
 	{
 		m_pController->m_pActiveItem->Holster();
 		m_pController->pev->weaponmodel = 0;
-		//m_pController->pev->viewmodel = 0;
+#ifdef REGAMEDLL_FIXES
+		m_pController->pev->viewmodel = 0;
+		m_pController->m_iFOV = DEFAULT_FOV;
+#endif // REGAMEDLL_FIXES
 	}
 
 	m_pController->m_iHideHUD |= HIDEHUD_WEAPONS;
 	m_vecControllerUsePos = m_pController->pev->origin;
 
-	pev->nextthink = pev->ltime + 0.1;
+	pev->nextthink = pev->ltime + 0.1f;
 
 	return TRUE;
 }
 
 /* <8ebde> ../cstrike/dlls/func_tank.cpp:372 */
-void CFuncTank::StopControl(void)
+void CFuncTank::StopControl()
 {
 	// TODO: bring back the controllers current weapon
 	if (!m_pController)
@@ -306,12 +302,12 @@ void CFuncTank::StopControl(void)
 
 	if (IsActive())
 	{
-		pev->nextthink = pev->ltime + 1.0;
+		pev->nextthink = pev->ltime + 1.0f;
 	}
 }
 
 /* <8ec15> ../cstrike/dlls/func_tank.cpp:398 */
-void CFuncTank::ControllerPostFrame(void)
+void CFuncTank::ControllerPostFrame()
 {
 	assert(m_pController != NULL);
 
@@ -323,7 +319,7 @@ void CFuncTank::ControllerPostFrame(void)
 		Vector vecForward;
 		UTIL_MakeVectorsPrivate(pev->angles, vecForward, NULL, NULL);
 
-		m_fireLast = gpGlobals->time - (1 / m_fireRate) - 0.01;
+		m_fireLast = gpGlobals->time - (1.0f / m_fireRate) - 0.01f;
 		Fire(BarrelPosition(), vecForward, m_pController->pev);
 
 		if (m_pController && m_pController->IsPlayer())
@@ -331,7 +327,7 @@ void CFuncTank::ControllerPostFrame(void)
 			m_pController->m_iWeaponVolume = LOUD_GUN_VOLUME;
 		}
 
-		m_flNextAttack = gpGlobals->time + (1 / m_fireRate);
+		m_flNextAttack = gpGlobals->time + (1.0f / m_fireRate);
 	}
 }
 
@@ -389,7 +385,7 @@ BOOL CFuncTank::InRange(float range)
 }
 
 /* <8f717> ../cstrike/dlls/func_tank.cpp:477 */
-void CFuncTank::__MAKE_VHOOK(Think)(void)
+void CFuncTank::__MAKE_VHOOK(Think)()
 {
 	pev->avelocity = g_vecZero;
 	TrackTarget();
@@ -401,7 +397,7 @@ void CFuncTank::__MAKE_VHOOK(Think)(void)
 }
 
 /* <8efe4> ../cstrike/dlls/func_tank.cpp:488 */
-void CFuncTank::TrackTarget(void)
+void CFuncTank::TrackTarget()
 {
 	TraceResult tr;
 	edict_t *pPlayer = FIND_CLIENT_IN_PVS(edict());
@@ -415,12 +411,12 @@ void CFuncTank::TrackTarget(void)
 		// Tanks attempt to mirror the player's angles
 		angles = m_pController->pev->v_angle;
 		angles.x = 0 - angles.x;
-		pev->nextthink = pev->ltime + 0.05;
+		pev->nextthink = pev->ltime + 0.05f;
 	}
 	else
 	{
 		if (IsActive())
-			pev->nextthink = pev->ltime + 0.1;
+			pev->nextthink = pev->ltime + 0.1f;
 		else
 			return;
 
@@ -429,7 +425,7 @@ void CFuncTank::TrackTarget(void)
 			if (IsActive())
 			{
 				// Wait 2 secs
-				pev->nextthink = pev->ltime + 2;
+				pev->nextthink = pev->ltime + 2.0f;
 			}
 
 			return;
@@ -466,7 +462,7 @@ void CFuncTank::TrackTarget(void)
 		}
 
 		// Track sight origin
-		// !!! I'm not sure what i changed
+		// TODO: I'm not sure what i changed
 		direction = m_sightOrigin - pev->origin;
 		//direction = m_sightOrigin - barrelEnd;
 		angles = UTIL_VecToAngles(direction);
@@ -504,7 +500,7 @@ void CFuncTank::TrackTarget(void)
 
 	// Move toward target at rate or less
 	float_precision distY = UTIL_AngleDistance(angles.y, pev->angles.y);
-	pev->avelocity.y = distY * 10;
+	pev->avelocity.y = distY * 10.0f;
 
 	if (pev->avelocity.y > m_yawRate)
 	{
@@ -527,7 +523,7 @@ void CFuncTank::TrackTarget(void)
 
 	// Move toward target at rate or less
 	float_precision distX = UTIL_AngleDistance(angles.x, pev->angles.x);
-	pev->avelocity.x = distX  * 10;
+	pev->avelocity.x = distX  * 10.0f;
 
 	if (pev->avelocity.x > m_pitchRate)
 	{
@@ -580,7 +576,7 @@ void CFuncTank::AdjustAnglesForBarrel(Vector &angles, float distance)
 {
 	float_precision r2, d2;
 
-	if (m_barrelPos.y != 0 || m_barrelPos.z != 0)
+	if (m_barrelPos.y != 0.0f || m_barrelPos.z != 0.0f)
 	{
 		distance -= m_barrelPos.z;
 		d2 = distance * distance;
@@ -588,13 +584,13 @@ void CFuncTank::AdjustAnglesForBarrel(Vector &angles, float distance)
 		if (m_barrelPos.y)
 		{
 			r2 = m_barrelPos.y * m_barrelPos.y;
-			angles.y += (180.0 / M_PI) * atan2(m_barrelPos.y, sqrt(d2 - r2));
+			angles.y += (180.0f / M_PI) * atan2(m_barrelPos.y, sqrt(d2 - r2));
 		}
 
 		if (m_barrelPos.z)
 		{
 			r2 = m_barrelPos.z * m_barrelPos.z;
-			angles.x += (180.0 / M_PI) * atan2(-m_barrelPos.z, sqrt(d2 - r2));
+			angles.x += (180.0f / M_PI) * atan2(-m_barrelPos.z, sqrt(d2 - r2));
 		}
 	}
 }
@@ -604,7 +600,7 @@ void CFuncTank::AdjustAnglesForBarrel(Vector &angles, float distance)
 /* <8d4ad> ../cstrike/dlls/func_tank.cpp:656 */
 void CFuncTank::__MAKE_VHOOK(Fire)(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker)
 {
-	if (m_fireLast != 0)
+	if (m_fireLast != 0.0f)
 	{
 		if (m_iszSpriteSmoke)
 		{
@@ -652,12 +648,12 @@ void CFuncTank::TankTrace(const Vector &vecStart, const Vector &vecForward, cons
 	Vector vecDir = vecForward + x * vecSpread.x * gpGlobals->v_right + y * vecSpread.y * gpGlobals->v_up;
 	Vector vecEnd;
 
-	vecEnd = vecStart + vecDir * 4096;
+	vecEnd = vecStart + vecDir * 4096.0f;
 	UTIL_TraceLine(vecStart, vecEnd, dont_ignore_monsters, edict(), &tr);
 }
 
 /* <8f9c0> ../cstrike/dlls/func_tank.cpp:703 */
-void CFuncTank::StartRotSound(void)
+void CFuncTank::StartRotSound()
 {
 	if (!pev->noise || (pev->spawnflags & SF_TANK_SOUNDON))
 	{
@@ -669,7 +665,7 @@ void CFuncTank::StartRotSound(void)
 }
 
 /* <8fa1b> ../cstrike/dlls/func_tank.cpp:712 */
-void CFuncTank::StopRotSound(void)
+void CFuncTank::StopRotSound()
 {
 	if (pev->spawnflags & SF_TANK_SOUNDON)
 	{
@@ -685,9 +681,7 @@ LINK_ENTITY_TO_CLASS(func_tank, CFuncTankGun);
 /* <8c3d5> ../cstrike/dlls/func_tank.cpp:726 */
 void CFuncTankGun::__MAKE_VHOOK(Fire)(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker)
 {
-	int i;
-
-	if (m_fireLast != 0)
+	if (m_fireLast != 0.0f)
 	{
 		// FireBullets needs gpGlobals->v_up, etc.
 		UTIL_MakeAimVectors(pev->angles);
@@ -696,9 +690,9 @@ void CFuncTankGun::__MAKE_VHOOK(Fire)(const Vector &barrelEnd, const Vector &for
 
 		if (bulletCount > 0)
 		{
-			for (i = 0; i < bulletCount; i++)
+			for (int i = 0; i < bulletCount; ++i)
 			{
-				switch(m_bulletType)
+				switch (m_bulletType)
 				{
 				case TANK_BULLET_9MM:
 					FireBullets(1, barrelEnd, forward, gTankSpread[m_spread], 4096, BULLET_MONSTER_9MM, 1, m_iBulletDamage, pevAttacker);
@@ -729,7 +723,7 @@ LINK_ENTITY_TO_CLASS(func_tanklaser, CFuncTankLaser);
 IMPLEMENT_SAVERESTORE(CFuncTankLaser, CFuncTank);
 
 /* <8deed> ../cstrike/dlls/func_tank.cpp:795 */
-void CFuncTankLaser::__MAKE_VHOOK(Activate)(void)
+void CFuncTankLaser::__MAKE_VHOOK(Activate)()
 {
 	if (!GetLaser())
 	{
@@ -755,16 +749,14 @@ void CFuncTankLaser::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 }
 
 /* <8dd79> ../cstrike/dlls/func_tank.cpp:821 */
-CLaser *CFuncTankLaser::GetLaser(void)
+CLaser *CFuncTankLaser::GetLaser()
 {
 	if (m_pLaser != NULL)
 	{
 		return m_pLaser;
 	}
 
-	edict_t	*pentLaser;
-
-	pentLaser = FIND_ENTITY_BY_TARGETNAME(NULL, STRING(pev->message));
+	edict_t *pentLaser = FIND_ENTITY_BY_TARGETNAME(NULL, STRING(pev->message));
 
 	while (!FNullEnt(pentLaser))
 	{
@@ -782,7 +774,7 @@ CLaser *CFuncTankLaser::GetLaser(void)
 }
 
 /* <8f809> ../cstrike/dlls/func_tank.cpp:845 */
-void CFuncTankLaser::__MAKE_VHOOK(Think)(void)
+void CFuncTankLaser::__MAKE_VHOOK(Think)()
 {
 	if (m_pLaser != NULL && gpGlobals->time > m_laserTime)
 	{
@@ -798,23 +790,22 @@ void CFuncTankLaser::__MAKE_VHOOK(Fire)(const Vector &barrelEnd, const Vector &f
 	int i;
 	TraceResult tr;
 
-	if (m_fireLast != 0 && GetLaser())
+	if (m_fireLast != 0.0f && GetLaser())
 	{
 		// TankTrace needs gpGlobals->v_up, etc.
 		UTIL_MakeAimVectors(pev->angles);
 
 		int bulletCount = (int)((gpGlobals->time - m_fireLast) * m_fireRate);
-
 		if (bulletCount)
 		{
-			for (i = 0; i < bulletCount; i++)
+			for (i = 0; i < bulletCount; ++i)
 			{
 				m_pLaser->pev->origin = barrelEnd;
 				TankTrace(barrelEnd, forward, gTankSpread[m_spread], tr);
 
 				m_laserTime = gpGlobals->time;
 				m_pLaser->TurnOn();
-				m_pLaser->pev->dmgtime = gpGlobals->time - 1.0;
+				m_pLaser->pev->dmgtime = gpGlobals->time - 1.0f;
 				m_pLaser->FireAtPoint(tr);
 				m_pLaser->pev->nextthink = 0;
 			}
@@ -832,7 +823,7 @@ void CFuncTankLaser::__MAKE_VHOOK(Fire)(const Vector &barrelEnd, const Vector &f
 LINK_ENTITY_TO_CLASS(func_tankrocket, CFuncTankRocket);
 
 /* <8e736> ../cstrike/dlls/func_tank.cpp:895 */
-void CFuncTankRocket::__MAKE_VHOOK(Precache)(void)
+void CFuncTankRocket::__MAKE_VHOOK(Precache)()
 {
 	UTIL_PrecacheOther("rpg_rocket");
 	CFuncTank::Precache();
@@ -843,13 +834,12 @@ void CFuncTankRocket::__MAKE_VHOOK(Fire)(const Vector &barrelEnd, const Vector &
 {
 	int i;
 
-	if (m_fireLast != 0)
+	if (m_fireLast != 0.0f)
 	{
 		int bulletCount = (int)((gpGlobals->time - m_fireLast) * m_fireRate);
-
 		if (bulletCount > 0)
 		{
-			for (i = 0; i < bulletCount; i++)
+			for (i = 0; i < bulletCount; ++i)
 			{
 				CBaseEntity *pRocket = CBaseEntity::Create("rpg_rocket", barrelEnd, pev->angles, edict());
 			}
@@ -879,7 +869,7 @@ void CFuncTankMortar::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 /* <8dbfa> ../cstrike/dlls/func_tank.cpp:945 */
 void CFuncTankMortar::__MAKE_VHOOK(Fire)(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker)
 {
-	if (m_fireLast != 0)
+	if (m_fireLast != 0.0f)
 	{
 		int bulletCount = (int)((gpGlobals->time - m_fireLast) * m_fireRate);
 
@@ -922,7 +912,7 @@ void CFuncTankControls::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *
 }
 
 /* <8d39a> ../cstrike/dlls/func_tank.cpp:1012 */
-void CFuncTankControls::__MAKE_VHOOK(Think)(void)
+void CFuncTankControls::__MAKE_VHOOK(Think)()
 {
 	edict_t *pTarget = NULL;
 
@@ -938,11 +928,11 @@ void CFuncTankControls::__MAKE_VHOOK(Think)(void)
 		return;
 	}
 
-	m_pTank = reinterpret_cast<CFuncTank *>(Instance(pTarget));
+	m_pTank = static_cast<CFuncTank *>(Instance(pTarget));
 }
 
 /* <8d373> ../cstrike/dlls/func_tank.cpp:1030 */
-void CFuncTankControls::__MAKE_VHOOK(Spawn)(void)
+void CFuncTankControls::__MAKE_VHOOK(Spawn)()
 {
 	pev->solid = SOLID_TRIGGER;
 	pev->movetype = MOVETYPE_NONE;
@@ -954,136 +944,7 @@ void CFuncTankControls::__MAKE_VHOOK(Spawn)(void)
 	UTIL_SetOrigin(pev, pev->origin);
 
 	// After all the func_tank's have spawned
-	pev->nextthink = gpGlobals->time + 0.3;
+	pev->nextthink = gpGlobals->time + 0.3f;
 
 	CBaseEntity::Spawn();
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CFuncTank::Spawn(void)
-{
-	Spawn_();
-}
-
-void CFuncTank::Precache(void)
-{
-	Precache_();
-}
-
-void CFuncTank::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-int CFuncTank::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CFuncTank::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-BOOL CFuncTank::OnControls(entvars_t *pevTest)
-{
-	OnControls_(pevTest);
-}
-
-void CFuncTank::Think(void)
-{
-	Think_();
-}
-
-void CFuncTank::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	Use_(pActivator, pCaller, useType, value);
-}
-
-void CFuncTank::Fire(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker)
-{
-	Fire_(barrelEnd, forward, pevAttacker);
-}
-
-void CFuncTankGun::Fire(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker)
-{
-	Fire_(barrelEnd, forward, pevAttacker);
-}
-
-void CFuncTankLaser::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-int CFuncTankLaser::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CFuncTankLaser::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-void CFuncTankLaser::Activate(void)
-{
-	Activate_();
-}
-
-void CFuncTankLaser::Think(void)
-{
-	Think_();
-}
-
-void CFuncTankLaser::Fire(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker)
-{
-	Fire_(barrelEnd, forward, pevAttacker);
-}
-
-void CFuncTankRocket::Precache(void)
-{
-	Precache_();
-}
-
-void CFuncTankRocket::Fire(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker)
-{
-	Fire_(barrelEnd, forward, pevAttacker);
-}
-
-void CFuncTankMortar::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-void CFuncTankMortar::Fire(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker)
-{
-	Fire_(barrelEnd, forward, pevAttacker);
-}
-
-void CFuncTankControls::Spawn(void)
-{
-	Spawn_();
-}
-
-int CFuncTankControls::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CFuncTankControls::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-void CFuncTankControls::Think(void)
-{
-	Think_();
-}
-
-void CFuncTankControls::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	Use_(pActivator, pCaller, useType, value);
-}
-
-#endif // HOOK_GAMEDLL

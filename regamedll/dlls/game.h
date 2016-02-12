@@ -44,96 +44,6 @@
 #define PLAYERID_TEAMONLY 1
 #define PLAYERID_OFF 2
 
-#ifdef HOOK_GAMEDLL
-
-#define g_psv_gravity (*pg_psv_gravity)
-#define g_psv_aim (*pg_psv_aim)
-#define g_footsteps (*pg_footsteps)
-#define g_psv_accelerate (*pg_psv_accelerate)
-#define g_psv_friction (*pg_psv_friction)
-#define g_psv_stopspeed (*pg_psv_stopspeed)
-#define displaysoundlist (*pdisplaysoundlist)
-#define timelimit (*ptimelimit)
-#define flashlight (*pflashlight)
-#define decalfrequency (*pdecalfrequency)
-#define fadetoblack (*pfadetoblack)
-#define fragsleft (*pfragsleft)
-#define timeleft (*ptimeleft)
-#define friendlyfire (*pfriendlyfire)
-#define allowmonsters (*pallowmonsters)
-#define roundtime (*proundtime)
-#define buytime (*pbuytime)
-#define freezetime (*pfreezetime)
-#define c4timer (*pc4timer)
-#define ghostfrequency (*pghostfrequency)
-#define autokick (*pautokick)
-#define autokick_timeout (*pautokick_timeout)
-#define restartround (*prestartround)
-#define sv_restart (*psv_restart)
-#define limitteams (*plimitteams)
-#define autoteambalance (*pautoteambalance)
-#define tkpunish (*ptkpunish)
-#define hostagepenalty (*phostagepenalty)
-#define mirrordamage (*pmirrordamage)
-#define logmessages (*plogmessages)
-#define forcecamera (*pforcecamera)
-#define forcechasecam (*pforcechasecam)
-#define mapvoteratio (*pmapvoteratio)
-#define logdetail (*plogdetail)
-#define startmoney (*pstartmoney)
-#define maxrounds (*pmaxrounds)
-#define winlimit (*pwinlimit)
-#define windifference (*pwindifference)
-#define playerid (*pplayerid)
-#define allow_spectators (*pallow_spectators)
-#define mp_chattime (*pmp_chattime)
-#define kick_percent (*pkick_percent)
-#define humans_join_team (*phumans_join_team)
-#define sk_plr_9mm_bullet1 (*psk_plr_9mm_bullet1)
-#define sk_plr_9mm_bullet2 (*psk_plr_9mm_bullet2)
-#define sk_plr_9mm_bullet3 (*psk_plr_9mm_bullet3)
-#define sk_plr_357_bullet1 (*psk_plr_357_bullet1)
-#define sk_plr_357_bullet2 (*psk_plr_357_bullet2)
-#define sk_plr_357_bullet3 (*psk_plr_357_bullet3)
-#define sk_plr_9mmAR_bullet1 (*psk_plr_9mmAR_bullet1)
-#define sk_plr_9mmAR_bullet2 (*psk_plr_9mmAR_bullet2)
-#define sk_plr_9mmAR_bullet3 (*psk_plr_9mmAR_bullet3)
-#define sk_plr_9mmAR_grenade1 (*psk_plr_9mmAR_grenade1)
-#define sk_plr_9mmAR_grenade2 (*psk_plr_9mmAR_grenade2)
-#define sk_plr_9mmAR_grenade3 (*psk_plr_9mmAR_grenade3)
-#define sk_plr_buckshot1 (*psk_plr_buckshot1)
-#define sk_plr_buckshot2 (*psk_plr_buckshot2)
-#define sk_plr_buckshot3 (*psk_plr_buckshot3)
-#define sk_plr_rpg1 (*psk_plr_rpg1)
-#define sk_plr_rpg2 (*psk_plr_rpg2)
-#define sk_plr_rpg3 (*psk_plr_rpg3)
-#define sk_12mm_bullet1 (*psk_12mm_bullet1)
-#define sk_12mm_bullet2 (*psk_12mm_bullet2)
-#define sk_12mm_bullet3 (*psk_12mm_bullet3)
-#define sk_9mmAR_bullet1 (*psk_9mmAR_bullet1)
-#define sk_9mmAR_bullet2 (*psk_9mmAR_bullet2)
-#define sk_9mmAR_bullet3 (*psk_9mmAR_bullet3)
-#define sk_9mm_bullet1 (*psk_9mm_bullet1)
-#define sk_9mm_bullet2 (*psk_9mm_bullet2)
-#define sk_9mm_bullet3 (*psk_9mm_bullet3)
-#define sk_suitcharger1 (*psk_suitcharger1)
-#define sk_suitcharger2 (*psk_suitcharger2)
-#define sk_suitcharger3 (*psk_suitcharger3)
-#define sk_battery1 (*psk_battery1)
-#define sk_battery2 (*psk_battery2)
-#define sk_battery3 (*psk_battery3)
-#define sk_healthcharger1 (*psk_healthcharger1)
-#define sk_healthcharger2 (*psk_healthcharger2)
-#define sk_healthcharger3 (*psk_healthcharger3)
-#define sk_healthkit1 (*psk_healthkit1)
-#define sk_healthkit2 (*psk_healthkit2)
-#define sk_healthkit3 (*psk_healthkit3)
-#define sk_scientist_heal1 (*psk_scientist_heal1)
-#define sk_scientist_heal2 (*psk_scientist_heal2)
-#define sk_scientist_heal3 (*psk_scientist_heal3)
-
-#endif // HOOK_GAMEDLL
-
 extern cvar_t *g_psv_gravity;
 extern cvar_t *g_psv_aim;
 extern cvar_t *g_footsteps;
@@ -221,6 +131,13 @@ extern cvar_t sk_scientist_heal1;
 extern cvar_t sk_scientist_heal2;
 extern cvar_t sk_scientist_heal3;
 
-void GameDLLInit(void);
+#ifdef REGAMEDLL_ADD
+
+extern cvar_t maxmoney;
+extern cvar_t round_infinite;
+
+#endif // REGAMEDLL_ADD
+
+void GameDLLInit();
 
 #endif // GAME_H

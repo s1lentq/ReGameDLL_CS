@@ -47,29 +47,23 @@ public:
 	virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
 	virtual int TakeHealth(float flHealth, int bitsDamageType);
 	virtual void Killed(entvars_t *pevAttacker, int iGib);
-	virtual int BloodColor(void)
-	{
-		return m_bloodColor;
-	}
-	virtual BOOL IsAlive(void)
-	{
-		return (pev->deadflag != DEAD_DEAD);
-	}
+	virtual int BloodColor() { return m_bloodColor; }
+	virtual BOOL IsAlive() { return (pev->deadflag != DEAD_DEAD); }
 	virtual float ChangeYaw(int speed);
-	virtual BOOL HasHumanGibs(void);
-	virtual BOOL HasAlienGibs(void);
-	virtual void FadeMonster(void);
-	virtual void GibMonster(void);
-	NOXREF virtual Activity GetDeathActivity(void);
-	virtual void BecomeDead(void);
-	virtual BOOL ShouldFadeOnDeath(void);
+	virtual BOOL HasHumanGibs();
+	virtual BOOL HasAlienGibs();
+	virtual void FadeMonster();
+	virtual void GibMonster();
+	NOXREF virtual Activity GetDeathActivity();
+	virtual void BecomeDead();
+	virtual BOOL ShouldFadeOnDeath();
 	virtual int IRelationship(CBaseEntity *pTarget);
-	virtual void PainSound(void) {}
-	virtual void ResetMaxSpeed(void) {}
-	virtual void ReportAIState(void) {}
-	virtual void MonsterInitDead(void);
+	virtual void PainSound() {}
+	virtual void ResetMaxSpeed() {}
+	virtual void ReportAIState() {}
+	virtual void MonsterInitDead();
 	virtual void Look(int iDistance);
-	virtual CBaseEntity *BestVisibleEnemy(void);
+	virtual CBaseEntity *BestVisibleEnemy();
 	virtual BOOL FInViewCone(CBaseEntity *pEntity);
 	virtual BOOL FInViewCone(const Vector *pOrigin);
 
@@ -81,17 +75,17 @@ public:
 	int TakeHealth_(float flHealth, int bitsDamageType);
 	void Killed_(entvars_t *pevAttacker, int iGib);
 	float ChangeYaw_(int speed);
-	BOOL HasHumanGibs_(void);
-	BOOL HasAlienGibs_(void);
-	void FadeMonster_(void);
-	void GibMonster_(void);
-	Activity GetDeathActivity_(void);
-	void BecomeDead_(void);
-	BOOL ShouldFadeOnDeath_(void);
+	BOOL HasHumanGibs_();
+	BOOL HasAlienGibs_();
+	void FadeMonster_();
+	void GibMonster_();
+	Activity GetDeathActivity_();
+	void BecomeDead_();
+	BOOL ShouldFadeOnDeath_();
 	int IRelationship_(CBaseEntity *pTarget);
-	void MonsterInitDead_(void);
+	void MonsterInitDead_();
 	void Look_(int iDistance);
-	CBaseEntity *BestVisibleEnemy_(void);
+	CBaseEntity *BestVisibleEnemy_();
 	BOOL FInViewCone_(CBaseEntity *pEntity);
 	BOOL FInViewCone_(const Vector *pOrigin);
 
@@ -99,10 +93,10 @@ public:
 
 public:
 	void MakeIdealYaw(Vector vecTarget);
-	NOXREF Activity GetSmallFlinchActivity(void);
+	NOXREF Activity GetSmallFlinchActivity();
 	BOOL ShouldGibMonster(int iGib);
-	void CallGibMonster(void);
-	BOOL FCheckAITrigger(void);
+	void CallGibMonster();
+	BOOL FCheckAITrigger();
 	int DeadTakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
 	float DamageForce(float damage);
 	void RadiusDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int iClassIgnore, int bitsDamageType);
@@ -111,65 +105,22 @@ public:
 	{
 		::RadiusDamage2(vecSrc, pevInflictor, pevAttacker, flDamage, flDamage * (RANDOM_FLOAT(0.5, 1.5) + 3), iClassIgnore, bitsDamageType);
 	}
-	void SetConditions(int iConditions)
-	{
-		m_afConditions |= iConditions;
-	}
-	void ClearConditions(int iConditions)
-	{
-		m_afConditions &= ~iConditions;
-	}
-	BOOL HasConditions(int iConditions)
-	{
-		if (m_afConditions & iConditions)
-		{
-			return TRUE;
-		}
-		return FALSE;
-	}
-	BOOL HasAllConditions(int iConditions)
-	{
-		if ((m_afConditions & iConditions) == iConditions)
-		{
-			return TRUE;
-		}
-		return FALSE;
-	}
-	void Remember(int iMemory)
-	{
-		m_afMemory |= iMemory;
-	}
-	void Forget(int iMemory)
-	{
-		m_afMemory &= ~iMemory;
-	}
-	BOOL HasMemory(int iMemory)
-	{
-		if (m_afMemory & iMemory)
-		{
-			return TRUE;
-		}
-		return FALSE;
-	}
-	BOOL HasAllMemories(int iMemory)
-	{
-		if ((m_afMemory & iMemory) == iMemory)
-		{
-			return TRUE;
-		}
-		return FALSE;
-	}
-	void StopAnimation(void)
-	{
-		pev->framerate = 0.0;
-	}
-	NOXREF void CorpseFallThink(void);
+	void SetConditions(int iConditions)	{ m_afConditions |= iConditions; }
+	void ClearConditions(int iConditions)	{ m_afConditions &= ~iConditions; }
+	BOOL HasConditions(int iConditions)	{ return (m_afConditions & iConditions) ? TRUE : FALSE; }
+	BOOL HasAllConditions(int iConditions)	{ return ((m_afConditions & iConditions) == iConditions) ? TRUE : FALSE; }
+
+	void Remember(int iMemory)		{ m_afMemory |= iMemory; }
+	void Forget(int iMemory)		{ m_afMemory &= ~iMemory; }
+	BOOL HasMemory(int iMemory)		{ return (m_afMemory & iMemory) ? TRUE : FALSE; }
+	BOOL HasAllMemories(int iMemory)	{ return ((m_afMemory & iMemory) == iMemory) ? TRUE : FALSE; }
+
+	void StopAnimation()		{ pev->framerate = 0.0f; }
+
+	NOXREF void CorpseFallThink();
 	NOXREF CBaseEntity *CheckTraceHullAttack(float flDist, int iDamage, int iDmgType);
 	NOXREF void MakeDamageBloodDecal(int cCount, float flNoise, TraceResult *ptr, Vector &vecDir);
-	void MonsterUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-	{
-		m_IdealMonsterState = MONSTERSTATE_ALERT;
-	}
+	void MonsterUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value) { m_IdealMonsterState = MONSTERSTATE_ALERT; }
 	void BloodSplat(const Vector &vecSrc, const Vector &vecDir, int HitLocation, int iVelocity);
 
 public:
@@ -178,10 +129,12 @@ public:
 	int m_LastHitGroup;			// the last body region that took damage
 	int m_bitsDamageType;			// what types of damage has monster (player) taken
 	BYTE m_rgbTimeBasedDamage[8];
+
 	MONSTERSTATE m_MonsterState;		// monster's current state
 	MONSTERSTATE m_IdealMonsterState;	// monster should change to this state
 	int m_afConditions;
 	int m_afMemory;
+
 	float m_flNextAttack;			// cannot attack again until this time
 	EHANDLE m_hEnemy;			// the entity that the monster is fighting.
 	EHANDLE m_hTargetEnt;			// the entity that the monster is trying to reach
@@ -189,17 +142,6 @@ public:
 	int m_bloodColor;			// color of blood particless
 	Vector m_HackedGunPos;			// HACK until we can query end of gun
 	Vector m_vecEnemyLKP;			// last known position of enemy. (enemy's origin)
-
-};/* size: 404, cachelines: 7, members: 17 */
-
-#ifdef HOOK_GAMEDLL
-
-typedef void (CBaseMonster::*RADIUSDAMAGE_ENTVARS)(entvars_t *, entvars_t *, float, int, int);
-typedef void (CBaseMonster::*RADIUSDAMAGE_VECTOR)(Vector, entvars_t *, entvars_t *, float, int, int);
-
-typedef BOOL (CBaseMonster::*FINVIEWCONE_ENTITY)(CBaseEntity *);
-typedef BOOL (CBaseMonster::*FINVIEWCONE_VECTOR)(const Vector *);
-
-#endif // HOOK_GAMEDLL
+};
 
 #endif // BASEMONSTER_H

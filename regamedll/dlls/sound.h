@@ -55,14 +55,12 @@
 #define LFO_RANDOM				3	// random
 
 // group of related sentences
-typedef struct
+struct sentenceg
 {
 	char szgroupname[16];
 	int count;
 	unsigned char rgblru[ CSENTENCE_LRU_MAX ];
-
-} sentenceg;
-/* size: 52, cachelines: 1, members: 3 */
+};
 
 // runtime pitch shift and volume fadein/out structure
 
@@ -106,28 +104,24 @@ typedef struct dynpitchvol
 	int lfomult;
 
 } dynpitchvol_t;
-/* size: 100, cachelines: 2, members: 25 */
 
 /* <170b59> ../cstrike/dlls/sound.cpp:117 */
 class CAmbientGeneric: public CBaseEntity
 {
 public:
-	virtual void Spawn(void);
-	virtual void Precache(void);
-	virtual void Restart(void);
+	virtual void Spawn();
+	virtual void Precache();
+	virtual void Restart();
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
-	virtual int ObjectCaps(void)
-	{
-		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION);
-	}
+	virtual int ObjectCaps() { return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Precache_(void);
-	void Restart_(void);
+	void Spawn_();
+	void Precache_();
+	void Restart_();
 	void KeyValue_(KeyValueData *pkvd);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
@@ -136,65 +130,60 @@ public:
 
 public:
 	void EXPORT ToggleUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-	void EXPORT RampThink(void);
-	void InitModulationParms(void);
+	void EXPORT RampThink();
+	void InitModulationParms();
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[4];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[4];
 
 	float m_flAttenuation;	// attenuation value
 	dynpitchvol_t m_dpv;
 	BOOL m_fActive;		// only TRUE when the entity is playing a looping sound
 	BOOL m_fLooping;	// TRUE when the sound played will loop
-
-};/* size: 264, cachelines: 5, members: 6 */
+};
 
 /* <170bc2> ../cstrike/dlls/sound.cpp:875 */
 class CEnvSound: public CPointEntity
 {
 public:
-	virtual void Spawn(void);
+	virtual void Spawn();
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
-	virtual void Think(void);
+	virtual void Think();
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
+	void Spawn_();
 	void KeyValue_(KeyValueData *pkvd);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
-	void Think_(void);
+	void Think_();
 
 #endif // HOOK_GAMEDLL
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[2];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[2];
 
 	float m_flRadius;
 	float m_flRoomtype;
-
-};/* size: 160, cachelines: 3, members: 4 */
+};
 
 /* <170ced> ../cstrike/dlls/sound.cpp:1867 */
 class CSpeaker: public CBaseEntity
 {
 public:
-	virtual void Spawn(void);
-	virtual void Precache(void);
+	virtual void Spawn();
+	virtual void Precache();
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
-	virtual int ObjectCaps(void)
-	{
-		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION);
-	}
+	virtual int ObjectCaps() { return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Precache_(void);
+	void Spawn_();
+	void Precache_();
 	void KeyValue_(KeyValueData *pkvd);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
@@ -203,13 +192,12 @@ public:
 
 public:
 	void EXPORT ToggleUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-	void EXPORT SpeakerThink(void);
+	void EXPORT SpeakerThink();
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[1];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[1];
 
 	int m_preset;		// preset number
-
-};/* size: 156, cachelines: 3, members: 3 */
+};
 
 BOOL FEnvSoundInRange(entvars_t *pev, entvars_t *pevTarget, float *pflRange);
 void USENTENCEG_InitLRU(unsigned char *plru, int count);
@@ -220,40 +208,18 @@ int SENTENCEG_PlayRndI(edict_t *entity, int isentenceg, float volume, float atte
 int SENTENCEG_PlayRndSz(edict_t *entity, const char *szgroupname, float volume, float attenuation, int flags, int pitch);
 int SENTENCEG_PlaySequentialSz(edict_t *entity, const char *szgroupname, float volume, float attenuation, int flags, int pitch, int ipick, int freset);
 NOXREF void SENTENCEG_Stop(edict_t *entity, int isentenceg, int ipick);
-void SENTENCEG_Init(void);
+void SENTENCEG_Init();
 int SENTENCEG_Lookup(const char *sample, char *sentencenum);
 void EMIT_SOUND_DYN(edict_t *entity, int channel, const char *sample, float volume, float attenuation, int flags, int pitch);
 void EMIT_SOUND_SUIT(edict_t *entity, const char *sample);
 void EMIT_GROUPID_SUIT(edict_t *entity, int isentenceg);
 NOXREF void EMIT_GROUPNAME_SUIT(edict_t *entity, const char *groupname);
 char *memfgets(byte *pMemFile, int fileSize, int &filePos, char *pBuffer, int bufferSize);
-void TEXTURETYPE_Init(void);
+void TEXTURETYPE_Init();
 char TEXTURETYPE_Find(char *name);
 float TEXTURETYPE_PlaySound(TraceResult *ptr, Vector vecSrc, Vector vecEnd, int iBulletType);
 
-#ifdef HOOK_GAMEDLL
-
-#define gszallsentencenames (*pgszallsentencenames)
-#define rgsentenceg (*prgsentenceg)
-#define fSentencesInit (*pfSentencesInit)
-#define gcallsentences (*pgcallsentences)
-#define rgdpvpreset (*prgdpvpreset)
-
-#endif // HOOK_GAMEDLL
-
 extern char gszallsentencenames[ CVOXFILESENTENCEMAX ][ CBSENTENCENAME_MAX ];
-extern sentenceg rgsentenceg[ CSENTENCEG_MAX ];
-extern int fSentencesInit;
-extern int gcallsentences;
-extern dynpitchvol_t rgdpvpreset[CDPVPRESETMAX];
-
-#ifdef HOOK_GAMEDLL
-
-// linked objects
-C_DLLEXPORT void ambient_generic(entvars_t *pev);
-C_DLLEXPORT void env_sound(entvars_t *pev);
-C_DLLEXPORT void speaker(entvars_t *pev);
-
-#endif // HOOK_GAMEDLL
+extern int gcTextures;
 
 #endif // SOUND_H

@@ -26,7 +26,7 @@ void Regamedll_Debug_logStrDup(const char *s, void *ptr)
 	g_ReGameDLLDebugLog.flush();
 }
 
-void Regamedll_Debug_Init(void)
+void Regamedll_Debug_Init()
 {
 	//g_ReGameDLLDebugLog.exceptions(std::ios::badbit | std::ios::failbit);
 	//g_ReGameDLLDebugLog.open("d:\\REGAME_SERVER\\regamedll_debug.log", std::ios::out | std::ios::binary);
@@ -45,7 +45,7 @@ void _print_chat(class CBasePlayer *pPlayer, const char *fmt, ...)
 		Q_strcat(Dest, "\n");
 
 	else Dest[Q_strlen(Dest) - 1] = '\n';
-	
+
 	UTIL_SayText(Dest, (class CBaseEntity *)pPlayer);
 }
 
@@ -62,7 +62,7 @@ void _print_console(struct entvars_s *pev, const char *fmt, ...)
 		Q_strcat(Dest, "\n");
 
 	else Dest[Q_strlen(Dest) - 1] = '\n';
-	
+
 	ClientPrint(pev, HUD_PRINTCONSOLE, Dest);
 }
 
@@ -84,14 +84,14 @@ void _printf2(const char *fmt, ...)
 		Q_strcat(Dest, "\n");
 
 	else Dest[Q_strlen(Dest) - 1] = '\n';
-	
+
 	SERVER_PRINT(Dest);
 }
 
 #if defined(HOOK_GAMEDLL) && !defined(REGAMEDLL_UNIT_TESTS)
 extern int nCountHook;
 
-void Regamedll_Game_Init(void)
+void Regamedll_Game_Init()
 {
 #ifdef _WIN32
 	if (g_ReGameDLLRuntimeConfig.disableAllHooks)

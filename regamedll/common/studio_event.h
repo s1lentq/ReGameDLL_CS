@@ -38,7 +38,7 @@ typedef struct mstudioevent_s
 	int event;
 	int type;
 	char options[64];
+
 } mstudioevent_t;
-/* size: 76, cachelines: 2, members: 4 */
 
 #endif // STUDIO_EVENT_H

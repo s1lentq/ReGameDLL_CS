@@ -4,22 +4,23 @@
 LINK_ENTITY_TO_CLASS(weapon_deagle, CDEAGLE);
 
 /* <24bbe5> ../cstrike/dlls/wpn_shared/wpn_deagle.cpp:51 */
-void CDEAGLE::__MAKE_VHOOK(Spawn)(void)
+void CDEAGLE::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
+
 	m_iId = WEAPON_DEAGLE;
 	SET_MODEL(edict(), "models/w_deagle.mdl");
 
 	m_iDefaultAmmo = DEAGLE_DEFAULT_GIVE;
 	m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
 	m_fMaxSpeed = DEAGLE_MAX_SPEED;
-	m_flAccuracy = 0.9;
+	m_flAccuracy = 0.9f;
 
 	FallInit();
 }
 
 /* <24bb64> ../cstrike/dlls/wpn_shared/wpn_deagle.cpp:68 */
-void CDEAGLE::__MAKE_VHOOK(Precache)(void)
+void CDEAGLE::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/v_deagle.mdl");
 	PRECACHE_MODEL("models/shield/v_shield_deagle.mdl");
@@ -54,9 +55,9 @@ int CDEAGLE::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 }
 
 /* <24bccf> ../cstrike/dlls/wpn_shared/wpn_deagle.cpp:103 */
-BOOL CDEAGLE::__MAKE_VHOOK(Deploy)(void)
+BOOL CDEAGLE::__MAKE_VHOOK(Deploy)()
 {
-	m_flAccuracy = 0.9;
+	m_flAccuracy = 0.9f;
 	m_fMaxSpeed = DEAGLE_MAX_SPEED;
 	m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
 	m_pPlayer->m_bShieldDrawn = false;
@@ -68,7 +69,7 @@ BOOL CDEAGLE::__MAKE_VHOOK(Deploy)(void)
 }
 
 /* <24be08> ../cstrike/dlls/wpn_shared/wpn_deagle.cpp:119 */
-void CDEAGLE::__MAKE_VHOOK(PrimaryAttack)(void)
+void CDEAGLE::__MAKE_VHOOK(PrimaryAttack)()
 {
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
 	{
@@ -89,7 +90,7 @@ void CDEAGLE::__MAKE_VHOOK(PrimaryAttack)(void)
 }
 
 /* <24bbbe> ../cstrike/dlls/wpn_shared/wpn_deagle.cpp:131 */
-void CDEAGLE::__MAKE_VHOOK(SecondaryAttack)(void)
+void CDEAGLE::__MAKE_VHOOK(SecondaryAttack)()
 {
 	ShieldSecondaryFire(SHIELDGUN_UP, SHIELDGUN_DOWN);
 }
@@ -100,7 +101,7 @@ void CDEAGLE::DEAGLEFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 	Vector vecAiming, vecSrc, vecDir;
 	int flag;
 
-	flCycleTime -= 0.075;
+	flCycleTime -= 0.075f;
 
 	if (++m_iShotsFired > 1)
 	{
@@ -109,15 +110,15 @@ void CDEAGLE::DEAGLEFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 
 	if (m_flLastFire != 0.0)
 	{
-		m_flAccuracy -= (0.4 - (gpGlobals->time - m_flLastFire)) * 0.35;
+		m_flAccuracy -= (0.4f - (gpGlobals->time - m_flLastFire)) * 0.35f;
 
-		if (m_flAccuracy > 0.9)
+		if (m_flAccuracy > 0.9f)
 		{
-			m_flAccuracy = 0.9;
+			m_flAccuracy = 0.9f;
 		}
-		else if (m_flAccuracy < 0.55)
+		else if (m_flAccuracy < 0.55f)
 		{
-			m_flAccuracy = 0.55;
+			m_flAccuracy = 0.55f;
 		}
 	}
 
@@ -139,7 +140,7 @@ void CDEAGLE::DEAGLEFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 		return;
 	}
 
-	m_iClip--;
+	--m_iClip;
 	m_pPlayer->pev->effects |= EF_MUZZLEFLASH;
 	SetPlayerShieldAnim();
 
@@ -170,83 +171,37 @@ void CDEAGLE::DEAGLEFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, FALSE);
 	}
 	
-	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.8;
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.8f;
 	m_pPlayer->pev->punchangle.x -= 2;
 	ResetPlayerShieldAnim();
 }
 
 /* <24bc95> ../cstrike/dlls/wpn_shared/wpn_deagle.cpp:231 */
-void CDEAGLE::__MAKE_VHOOK(Reload)(void)
+void CDEAGLE::__MAKE_VHOOK(Reload)()
 {
 	if (m_pPlayer->ammo_50ae <= 0)
-	{
 		return;
-	}
 
 	if (DefaultReload(DEAGLE_MAX_CLIP, DEAGLE_RELOAD, DEAGLE_RELOAD_TIME))
 	{
 		m_pPlayer->SetAnimation(PLAYER_RELOAD);
-		m_flAccuracy = 0.9;
+		m_flAccuracy = 0.9f;
 	}
 }
 
 /* <24bc5b> ../cstrike/dlls/wpn_shared/wpn_deagle.cpp:243 */
-void CDEAGLE::__MAKE_VHOOK(WeaponIdle)(void)
+void CDEAGLE::__MAKE_VHOOK(WeaponIdle)()
 {
 	ResetEmptySound();
 	m_pPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);
 
 	if (m_flTimeWeaponIdle <= UTIL_WeaponTimeBase())
 	{
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20.0;
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20.0f;
 
-		if (FBitSet(m_iWeaponState, WPNSTATE_SHIELD_DRAWN))
+		if (m_iWeaponState & WPNSTATE_SHIELD_DRAWN)
 		{
 			SendWeaponAnim(SHIELDGUN_DRAWN_IDLE, UseDecrement() != FALSE);
 		}
 	}
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CDEAGLE::Spawn(void)
-{
-	Spawn_();
-}
-
-void CDEAGLE::Precache(void)
-{
-	Precache_();
-}
-
-int CDEAGLE::GetItemInfo(ItemInfo *p)
-{
-	return GetItemInfo_(p);
-}
-
-BOOL CDEAGLE::Deploy(void)
-{
-	return Deploy_();
-}
-
-void CDEAGLE::PrimaryAttack(void)
-{
-	PrimaryAttack_();
-}
-
-void CDEAGLE::SecondaryAttack(void)
-{
-	SecondaryAttack_();
-}
-
-void CDEAGLE::Reload(void)
-{
-	Reload_();
-}
-
-void CDEAGLE::WeaponIdle(void)
-{
-	WeaponIdle_();
-}
-
-#endif // HOOK_GAMEDLL

@@ -36,8 +36,8 @@ typedef struct
 {
 	vec3_t normal;
 	float dist;
+
 } pmplane_t;
-/* size: 16, cachelines: 1, members: 2 */
 
 typedef struct pmtrace_s
 {
@@ -51,7 +51,7 @@ typedef struct pmtrace_s
 	vec3_t deltavelocity;			// Change in player's velocity caused by impact.  
 						// Only run on server.
 	int hitgroup;
+
 } pmtrace_t;
-/* size: 68, cachelines: 2, members: 10 */
 
 #endif // PMTRACE_H

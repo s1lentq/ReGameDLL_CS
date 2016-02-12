@@ -33,47 +33,42 @@
 #endif
 
 // Encapsulation of a finite-state-machine state
-template<
-	typename T
->
+
 /* <5c4388> ../game_shared/bot/simple_state_machine.h:21 */
+template<typename T>
 class SimpleState
 {
 public:
-	SimpleState(void)
-	{
-		m_parent = NULL;
-	}
+	SimpleState() { m_parent = NULL; }
 
 	virtual ~SimpleState() {};
 	virtual void OnEnter(T userData) {};		// when state is entered
 	virtual void OnUpdate(T userData) {};		// state behavior
 	virtual void OnExit(T userData) {};		// when state exited
-	virtual const char *GetName(void) const = 0;	// return state name
+	virtual const char *GetName() const = 0;	// return state name
 
 	void SetParent(SimpleState<T> *parent)
 	{
 		m_parent = parent;
 	}
-	SimpleState<T> *GetParent(void) const
+	SimpleState<T> *GetParent() const
 	{
 		return m_parent;
 	}
+
 private:
 	// the parent state that contains this state
 	SimpleState<T> *m_parent;
 };
 
 // Encapsulation of a finite state machine
-template<
-	typename T,
-	typename S
->
+
 /* <5c4bab> ../game_shared/bot/simple_state_machine.h:68 */
+template<typename T, typename S>
 class SimpleStateMachine
 {
 public:
-	SimpleStateMachine(void)
+	SimpleStateMachine()
 	{
 		m_state = NULL;
 	}
@@ -94,7 +89,7 @@ public:
 		m_stateTimer.Start();
 	}
 	// how long have we been in the current state
-	float GetStateDuration(void) const
+	float GetStateDuration() const
 	{
 		return m_stateTimer.GetElapsedTime();
 	}
@@ -104,13 +99,13 @@ public:
 		return (state == m_state);
 	}
 	// execute current state of machine
-	void Update(void)
+	void Update()
 	{
 		if (m_state)
 			m_state->OnUpdate(m_userData);
 	}
 
-protected:
+/*protected:*/
 	S *m_state;			// current behavior state
 	IntervalTimer m_stateTimer;	// how long have we been in the current state
 	T m_userData;

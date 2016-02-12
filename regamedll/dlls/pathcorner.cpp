@@ -19,11 +19,6 @@ TYPEDESCRIPTION CPathTrack::m_SaveData[] =
 	DEFINE_FIELD(CPathTrack, m_altName, FIELD_STRING),
 };
 
-#else
-
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CPathCorner, m_SaveData)[1];
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CPathTrack, m_SaveData)[5];
-
 #endif // HOOK_GAMEDLL
 
 /* <122843> ../cstrike/dlls/pathcorner.cpp:41 */
@@ -45,7 +40,7 @@ void CPathCorner::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 }
 
 /* <122325> ../cstrike/dlls/pathcorner.cpp:66 */
-void CPathCorner::__MAKE_VHOOK(Spawn)(void)
+void CPathCorner::__MAKE_VHOOK(Spawn)()
 {
 	assert(("path_corner without a targetname", !FStringNull(pev->targetname)));
 }
@@ -101,7 +96,7 @@ void CPathTrack::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller
 }
 
 /* <122a12> ../cstrike/dlls/pathcorner.cpp:128 */
-void CPathTrack::Link(void)
+void CPathTrack::Link()
 {
 	edict_t *pentTarget;
 
@@ -140,7 +135,7 @@ void CPathTrack::Link(void)
 }
 
 /* <12239a> ../cstrike/dlls/pathcorner.cpp:165 */
-void CPathTrack::__MAKE_VHOOK(Spawn)(void)
+void CPathTrack::__MAKE_VHOOK(Spawn)()
 {
 	pev->solid = SOLID_TRIGGER;
 	UTIL_SetSize(pev, Vector(-8, -8, -8), Vector(8, 8, 8));
@@ -150,7 +145,7 @@ void CPathTrack::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <122c76> ../cstrike/dlls/pathcorner.cpp:180 */
-void CPathTrack::__MAKE_VHOOK(Activate)(void)
+void CPathTrack::__MAKE_VHOOK(Activate)()
 {
 	// Link to next, and back-link
 	if (!FStringNull(pev->targetname))
@@ -184,7 +179,7 @@ void CPathTrack::Project(CPathTrack *pstart, CPathTrack *pend, Vector *origin, f
 }
 
 /* <122d0f> ../cstrike/dlls/pathcorner.cpp:208 */
-CPathTrack *CPathTrack::GetNext(void)
+CPathTrack *CPathTrack::GetNext()
 {
 	if (m_paltpath && (pev->spawnflags & SF_PATH_ALTERNATE) && !(pev->spawnflags & SF_PATH_ALTREVERSE))
 	{
@@ -195,7 +190,7 @@ CPathTrack *CPathTrack::GetNext(void)
 }
 
 /* <122d30> ../cstrike/dlls/pathcorner.cpp:218 */
-CPathTrack *CPathTrack::GetPrevious(void)
+CPathTrack *CPathTrack::GetPrevious()
 {
 	if (m_paltpath && (pev->spawnflags & SF_PATH_ALTERNATE) && (pev->spawnflags & SF_PATH_ALTREVERSE))
 	{
@@ -345,8 +340,7 @@ CPathTrack *CPathTrack::Nearest(Vector origin)
 	deadCount = 0;
 	while (ppath != NULL && ppath != this)
 	{
-		deadCount++;
-		if (deadCount > 9999)
+		if (++deadCount > 9999)
 		{
 			ALERT(at_error, "Bad sequence of path_tracks from %s", STRING(pev->targetname));
 			return NULL;
@@ -378,57 +372,3 @@ CPathTrack *CPathTrack::Instance(edict_t *pent)
 
 	return NULL;
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CPathCorner::Spawn(void)
-{
-	Spawn_();
-}
-
-void CPathCorner::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-int CPathCorner::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CPathCorner::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-void CPathTrack::Spawn(void)
-{
-	Spawn_();
-}
-
-void CPathTrack::KeyValue(KeyValueData* pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-int CPathTrack::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CPathTrack::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-void CPathTrack::Activate(void)
-{
-	Activate_();
-}
-
-void CPathTrack::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	Use_(pActivator, pCaller, useType, value);
-}
-
-#endif // HOOK_GAMEDLL

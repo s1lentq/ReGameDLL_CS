@@ -32,18 +32,18 @@
 #pragma once
 #endif
 
-#ifdef HOOK_GAMEDLL
+#ifdef PLAY_GAMEDLL
 
 // probably gamedll compiled with flag /fpmath:fasted,
 // so we need to use type double, otherwise will be the test failed
 
 typedef double float_precision;
 
-#else // HOOK_GAMEDLL
+#else // PLAY_GAMEDLL
 
 typedef float float_precision;
 
-#endif // HOOK_GAMEDLL
+#endif // PLAY_GAMEDLL
 
 /* <42b7f> ../common/mathlib.h:3 */
 typedef float vec_t;
@@ -55,7 +55,7 @@ typedef vec_t vec3_t[3];
 typedef vec_t vec4_t[4];
 
 /* <42bac> ../common/mathlib.h:18 */
-typedef int fixed16_t; /* size: 4 */
+typedef int fixed16_t;
 
 /* <42bb7> ../common/mathlib.h:60 */
 typedef union DLONG_u
@@ -75,6 +75,22 @@ T Q_max(T a, T b)		{ return (a > b) ? a : b; }
 
 template <typename T>
 T clamp(T a, T min, T max)	{ return (a > max) ? max : (a < min) ? min : a; }
+
+// bitwise operators templates
+template<class T, class type=typename std::underlying_type<T>::type>
+inline T operator~ (T a)	{ return (T)~(type)a; }
+template<class T, class type=typename std::underlying_type<T>::type>
+inline T operator| (T a, T b)	{ return (T)((type)a | (type)b); }
+template<class T, class type=typename std::underlying_type<T>::type>
+inline T operator& (T a, T b)	{ return (T)((type)a & (type)b); }
+template<class T, class type=typename std::underlying_type<T>::type>
+inline T operator^ (T a, T b)	{ return (T)((type)a ^ (type)b); }
+template<class T, class type=typename std::underlying_type<T>::type>
+inline T& operator|= (T& a, T b){ return (T&)((type&)a |= (type)b); }
+template<class T, class type=typename std::underlying_type<T>::type>
+inline T& operator&= (T& a, T b){ return (T&)((type&)a &= (type)b); }
+template<class T, class type=typename std::underlying_type<T>::type>
+inline T& operator^= (T& a, T b){ return (T&)((type&)a ^= (type)b); }
 
 #define VectorSubtract(a,b,c) {(c)[0]=(a)[0]-(b)[0];(c)[1]=(a)[1]-(b)[1];(c)[2]=(a)[2]-(b)[2];}
 #define VectorAdd(a,b,c) {(c)[0]=(a)[0]+(b)[0];(c)[1]=(a)[1]+(b)[1];(c)[2]=(a)[2]+(b)[2];}

@@ -4,21 +4,22 @@
 LINK_ENTITY_TO_CLASS(weapon_fiveseven, CFiveSeven);
 
 /* <256720> ../cstrike/dlls/wpn_shared/wpn_fiveseven.cpp:51 */
-void CFiveSeven::__MAKE_VHOOK(Spawn)(void)
+void CFiveSeven::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
+
 	m_iId = WEAPON_FIVESEVEN;
 	SET_MODEL(edict(), "models/w_fiveseven.mdl");
 
 	m_iDefaultAmmo = FIVESEVEN_DEFAULT_GIVE;
 	m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
-	m_flAccuracy = 0.92;
+	m_flAccuracy = 0.92f;
 
 	FallInit();
 }
 
 /* <25669f> ../cstrike/dlls/wpn_shared/wpn_fiveseven.cpp:66 */
-void CFiveSeven::__MAKE_VHOOK(Precache)(void)
+void CFiveSeven::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/v_fiveseven.mdl");
 	PRECACHE_MODEL("models/w_fiveseven.mdl");
@@ -53,9 +54,9 @@ int CFiveSeven::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 }
 
 /* <25680a> ../cstrike/dlls/wpn_shared/wpn_fiveseven.cpp:101 */
-BOOL CFiveSeven::__MAKE_VHOOK(Deploy)(void)
+BOOL CFiveSeven::__MAKE_VHOOK(Deploy)()
 {
-	m_flAccuracy = 0.92;
+	m_flAccuracy = 0.92f;
 	m_fMaxSpeed = FIVESEVEN_MAX_SPEED;
 	m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
 	m_pPlayer->m_bShieldDrawn = false;
@@ -67,7 +68,7 @@ BOOL CFiveSeven::__MAKE_VHOOK(Deploy)(void)
 }
 
 /* <256943> ../cstrike/dlls/wpn_shared/wpn_fiveseven.cpp:117 */
-void CFiveSeven::__MAKE_VHOOK(PrimaryAttack)(void)
+void CFiveSeven::__MAKE_VHOOK(PrimaryAttack)()
 {
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
 	{
@@ -88,7 +89,7 @@ void CFiveSeven::__MAKE_VHOOK(PrimaryAttack)(void)
 }
 
 /* <2566f9> ../cstrike/dlls/wpn_shared/wpn_fiveseven.cpp:129 */
-void CFiveSeven::__MAKE_VHOOK(SecondaryAttack)(void)
+void CFiveSeven::__MAKE_VHOOK(SecondaryAttack)()
 {
 	ShieldSecondaryFire(SHIELDGUN_UP, SHIELDGUN_DOWN);
 }
@@ -106,17 +107,17 @@ void CFiveSeven::FiveSevenFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 		return;
 	}
 
-	if (m_flLastFire != 0.0)
+	if (m_flLastFire != 0.0f)
 	{
-		m_flAccuracy -= (0.275 - (gpGlobals->time - m_flLastFire)) * 0.25;
+		m_flAccuracy -= (0.275f - (gpGlobals->time - m_flLastFire)) * 0.25f;
 
-		if (m_flAccuracy > 0.92)
+		if (m_flAccuracy > 0.92f)
 		{
-			m_flAccuracy = 0.92;
+			m_flAccuracy = 0.92f;
 		}
-		else if (m_flAccuracy < 0.725)
+		else if (m_flAccuracy < 0.725f)
 		{
-			m_flAccuracy = 0.725;
+			m_flAccuracy = 0.725f;
 		}
 	}
 
@@ -138,7 +139,7 @@ void CFiveSeven::FiveSevenFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 		return;
 	}
 
-	m_iClip--;
+	--m_iClip;
 	m_pPlayer->pev->effects |= EF_MUZZLEFLASH;
 	SetPlayerShieldAnim();
 
@@ -151,8 +152,7 @@ void CFiveSeven::FiveSevenFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 	vecSrc = m_pPlayer->GetGunPosition();
 	vecAiming = gpGlobals->v_forward;
 
-	vecDir = m_pPlayer->FireBullets3(vecSrc, vecAiming, flSpread, 4096, 1, BULLET_PLAYER_57MM, FIVESEVEN_DAMAGE, FIVESEVEN_RANGE_MODIFER, m_pPlayer->pev, false, // TODO: why fiveseven not is IsPistol?
-		m_pPlayer->random_seed);
+	vecDir = m_pPlayer->FireBullets3(vecSrc, vecAiming, flSpread, 4096, 1, BULLET_PLAYER_57MM, FIVESEVEN_DAMAGE, FIVESEVEN_RANGE_MODIFER, m_pPlayer->pev, false, m_pPlayer->random_seed);
 
 #ifdef CLIENT_WEAPONS
 	flag = FEV_NOTHOST;
@@ -170,28 +170,26 @@ void CFiveSeven::FiveSevenFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, FALSE);
 	}
 	
-	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2;
-	m_pPlayer->pev->punchangle.x -= 2;
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.0f;
+	m_pPlayer->pev->punchangle.x -= 2.0f;
 	ResetPlayerShieldAnim();
 }
 
 /* <2567d0> ../cstrike/dlls/wpn_shared/wpn_fiveseven.cpp:225 */
-void CFiveSeven::__MAKE_VHOOK(Reload)(void)
+void CFiveSeven::__MAKE_VHOOK(Reload)()
 {
 	if (m_pPlayer->ammo_57mm <= 0)
-	{
 		return;
-	}
 
 	if (DefaultReload(FIVESEVEN_MAX_CLIP, FIVESEVEN_RELOAD, FIVESEVEN_RELOAD_TIME))
 	{
 		m_pPlayer->SetAnimation(PLAYER_RELOAD);
-		m_flAccuracy = 0.92;
+		m_flAccuracy = 0.92f;
 	}
 }
 
 /* <256796> ../cstrike/dlls/wpn_shared/wpn_fiveseven.cpp:238 */
-void CFiveSeven::__MAKE_VHOOK(WeaponIdle)(void)
+void CFiveSeven::__MAKE_VHOOK(WeaponIdle)()
 {
 	ResetEmptySound();
 	m_pPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);
@@ -203,7 +201,7 @@ void CFiveSeven::__MAKE_VHOOK(WeaponIdle)(void)
 
 	if (m_pPlayer->HasShield())
 	{
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20.0;
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20.0f;
 
 		if (m_iWeaponState & WPNSTATE_SHIELD_DRAWN)
 		{
@@ -212,51 +210,7 @@ void CFiveSeven::__MAKE_VHOOK(WeaponIdle)(void)
 	}
 	else if (m_iClip)
 	{
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 3.0625;
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 3.0625f;
 		SendWeaponAnim(FIVESEVEN_IDLE, UseDecrement() != FALSE);
 	}
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CFiveSeven::Spawn(void)
-{
-	Spawn_();
-}
-
-void CFiveSeven::Precache(void)
-{
-	Precache_();
-}
-
-int CFiveSeven::GetItemInfo(ItemInfo *p)
-{
-	return GetItemInfo_(p);
-}
-
-BOOL CFiveSeven::Deploy(void)
-{
-	return Deploy_();
-}
-
-void CFiveSeven::PrimaryAttack(void)
-{
-	PrimaryAttack_();
-}
-
-void CFiveSeven::SecondaryAttack(void)
-{
-	SecondaryAttack_();
-}
-
-void CFiveSeven::Reload(void)
-{
-	Reload_();
-}
-
-void CFiveSeven::WeaponIdle(void)
-{
-	WeaponIdle_();
-}
-
-#endif // HOOK_GAMEDLL

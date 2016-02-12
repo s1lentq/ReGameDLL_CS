@@ -60,11 +60,11 @@
 class CSound
 {
 public:
-	void Clear(void);
-	void Reset(void);
+	void Clear();
+	void Reset();
 
-	NOXREF BOOL FIsSound(void);
-	NOXREF BOOL FIsScent(void);
+	NOXREF BOOL FIsSound();
+	NOXREF BOOL FIsScent();
 
 public:
 	Vector m_vecOrigin;		// sound's location in space
@@ -73,8 +73,7 @@ public:
 	float m_flExpireTime;		// when the sound should be purged from the list
 	int m_iNext;			// index of next sound in this list ( Active or Free )
 	int m_iNextAudible;		// temporary link that monsters use to build a list of audible sounds
-
-}; /* size: 32, cachelines: 1, members: 6 */
+};
 
 // CSoundEnt - a single instance of this entity spawns when
 // the world spawns. The SoundEnt's job is to update the
@@ -85,46 +84,39 @@ class CSoundEnt: public CBaseEntity
 {
 public:
 
-	virtual void Spawn(void);
-	virtual void Precache(void);
-	virtual int ObjectCaps(void)
-	{
-		return FCAP_DONT_SAVE;
-	}
-	virtual void Think(void);
+	virtual void Spawn();
+	virtual void Precache();
+	virtual int ObjectCaps() { return FCAP_DONT_SAVE; }
+	virtual void Think();
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Precache_(void);
-	void Think_(void);
+	void Spawn_();
+	void Precache_();
+	void Think_();
 
 #endif // HOOK_GAMEDLL
 
 public:
-
-	void Initialize(void);
+	void Initialize();
 
 	static void InsertSound(int iType, const Vector &vecOrigin, int iVolume, float flDuration);
 	static void FreeSound(int iSound, int iPrevious);
 
 	// return the head of the active list
-	NOXREF static int ActiveList(void);
+	NOXREF static int ActiveList();
 
 	// return the head of the free list
-	NOXREF static int FreeList(void);
+	NOXREF static int FreeList();
 
 	// return a pointer for this index in the sound list
 	static CSound *SoundPointerForIndex(int iIndex);
 	static int ClientSoundIndex(edict_t *pClient);
 
-	BOOL IsEmpty(void)
-	{
-		return m_iActiveSound == SOUNDLIST_EMPTY;
-	}
+	BOOL IsEmpty() const { return m_iActiveSound == SOUNDLIST_EMPTY; }
 
 	int ISoundsInList(int iListType);
-	int IAllocSound(void);
+	int IAllocSound();
 
 public:
 	int m_iFreeSound;			// index of the first sound in the free sound list
@@ -134,20 +126,8 @@ public:
 
 private:
 	CSound m_SoundPool[ MAX_WORLD_SOUNDS ];
-
-};/* size: 2216, cachelines: 35, members: 6 */
-
-#ifdef HOOK_GAMEDLL
-#define pSoundEnt (*ppSoundEnt)
-#endif // HOOK_GAMEDLL
+};
 
 extern CSoundEnt *pSoundEnt;
-
-#ifdef HOOK_GAMEDLL
-
-// linked objects
-C_DLLEXPORT void soundent(entvars_t *pev);
-
-#endif // HOOK_GAMEDLL
 
 #endif // SOUNDENT_H

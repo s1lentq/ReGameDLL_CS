@@ -36,19 +36,19 @@ class TutorMessageEvent
 {
 public:
 	TutorMessageEvent(int mid, int duplicateID, float time, float lifetime, int priority);
-	virtual ~TutorMessageEvent(void);
+	virtual ~TutorMessageEvent();
 
 	bool IsActive(float time);
-	int GetPriority(void);
+	int GetPriority();
 	float GetTimeActive(float time);
 	void SetActivationTime(float time);
-	int GetID(void);
-	int GetDuplicateID(void);
+	int GetID();
+	int GetDuplicateID();
 	void AddParameter(char *str);
 	char *GetNextParameter(char *buf, int buflen);
-	int GetNumParameters(void);
+	int GetNumParameters();
 	void SetNext(TutorMessageEvent *next);
-	TutorMessageEvent *GetNext(void);
+	TutorMessageEvent *GetNext();
 
 private:
 	int m_messageID;
@@ -59,17 +59,16 @@ private:
 	int m_numParameters;
 	struct TutorMessageEventParam *m_paramList;
 	TutorMessageEvent *m_next;
-
-};/* size: 36, cachelines: 1, members: 9 */
+};
 
 class CBaseTutor
 {
 public:
-	CBaseTutor(void);
-	virtual ~CBaseTutor(void);
+	CBaseTutor();
 
+	virtual ~CBaseTutor();
 	virtual void TutorThink(float time) = 0;
-	virtual void PurgeMessages(void) = 0;
+	virtual void PurgeMessages() = 0;
 	virtual void CallEventHandler(GameEventType event, CBaseEntity *entity, CBaseEntity *other) = 0;
 	virtual void ShowTutorMessage(TutorMessageEvent *event) = 0;
 
@@ -99,8 +98,8 @@ public:
 	void ShotFired(Vector source, Vector target);
 	void DisplayMessageToPlayer(CBasePlayer *player, int id, const char *szMessage, TutorMessageEvent *event);
 	NOXREF void DrawLineToEntity(CBasePlayer *player, int entindex, int id);
-	void DisplayNewStateDescriptionToPlayer(void);
-	void CloseCurrentWindow(void);
+	void DisplayNewStateDescriptionToPlayer();
+	void CloseCurrentWindow();
 	void CheckForStateTransition(GameEventType event, CBaseEntity *entity, CBaseEntity *other);
 	void CalculatePathForObjective(CBaseEntity *player);
 	bool DoMessagesHaveSameID(int id1, int id2);
@@ -110,14 +109,7 @@ protected:
 	TutorMessageEvent *m_eventList;
 	float m_deadAirStartTime;
 	float m_roundStartTime;
-
-};/* size: 20, cachelines: 1, members: 5 */
-
-#ifdef HOOK_GAMEDLL
-
-#define TheTutor (*pTheTutor)
-
-#endif // HOOK_GAMEDLL
+};
 
 extern CBaseTutor *TheTutor;
 

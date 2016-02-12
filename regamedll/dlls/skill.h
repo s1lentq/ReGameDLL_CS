@@ -53,14 +53,7 @@ struct skilldata_t
 	float batteryCapacity;
 	float healthchargerCapacity;
 	float healthkitCapacity;
-
-};/* size: 60, cachelines: 1, members: 15 */
-
-#ifdef HOOK_GAMEDLL
-
-#define gSkillData (*pgSkillData)
-
-#endif // HOOK_GAMEDLL
+};
 
 extern skilldata_t gSkillData;
 

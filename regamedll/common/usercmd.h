@@ -52,6 +52,5 @@ typedef struct usercmd_s
 	vec3_t impact_position;
 
 } usercmd_t;
-/* size: 52, cachelines: 1, members: 12 */
 
 #endif // USERCMD_H

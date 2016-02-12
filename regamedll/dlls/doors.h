@@ -52,13 +52,13 @@
 class CBaseDoor: public CBaseToggle
 {
 public:
-	virtual void Spawn(void);
-	virtual void Precache(void);
-	virtual void Restart(void);
+	virtual void Spawn();
+	virtual void Precache();
+	virtual void Restart();
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
-	virtual int ObjectCaps(void)
+	virtual int ObjectCaps()
 	{
 		if (pev->spawnflags & SF_ITEM_USE_ONLY)
 			return (CBaseToggle::ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | FCAP_IMPULSE_USE;
@@ -71,9 +71,9 @@ public:
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Precache_(void);
-	void Restart_(void);
+	void Spawn_();
+	void Precache_();
+	void Restart_();
 	void KeyValue_(KeyValueData *pkvd);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
@@ -84,16 +84,15 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[7];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[7];
 
-public:
 	// used to selectivly override defaults
 	void EXPORT DoorTouch(CBaseEntity *pOther);
-	int DoorActivate(void);
-	void EXPORT DoorGoUp(void);
-	void EXPORT DoorGoDown(void);
-	void EXPORT DoorHitTop(void);
-	void EXPORT DoorHitBottom(void);
+	int DoorActivate();
+	void EXPORT DoorGoUp();
+	void EXPORT DoorGoDown();
+	void EXPORT DoorHitTop();
+	void EXPORT DoorHitBottom();
 
 public:
 	BYTE m_bHealthValue;		// some doors are medi-kit doors, they give players health
@@ -109,46 +108,42 @@ public:
 	BYTE m_bUnlockedSentence;
 
 	float m_lastBlockedTimestamp;
-
-};/* size: 360, cachelines: 6, members: 11 */
+};
 
 /* <684c0> ../cstrike/dlls/doors.cpp:935 */
 class CRotDoor: public CBaseDoor
 {
 public:
-	virtual void Spawn(void);
-	virtual void Restart(void);
+	virtual void Spawn();
+	virtual void Restart();
 	virtual void SetToggleState(int state);
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Restart_(void);
+	void Spawn_();
+	void Restart_();
 	void SetToggleState_(int state);
 
 #endif // HOOK_GAMEDLL
 
-};/* size: 360, cachelines: 6, members: 1 */
+};
 
 /* <68513> ../cstrike/dlls/doors.cpp:1039 */
 class CMomentaryDoor: public CBaseToggle
 {
 public:
-	virtual void Spawn(void);
-	virtual void Precache(void);
+	virtual void Spawn();
+	virtual void Precache();
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
-	virtual int ObjectCaps(void)
-	{
-		return CBaseToggle::ObjectCaps() & ~FCAP_ACROSS_TRANSITION;
-	}
+	virtual int ObjectCaps() { return (CBaseToggle::ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Precache_(void);
+	void Spawn_();
+	void Precache_();
 	void KeyValue_(KeyValueData *pkvd);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
@@ -157,23 +152,11 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[1];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[1];
 
-public:
 	BYTE m_bMoveSnd;	// sound a door makes while moving
-
-};/* size: 316, cachelines: 5, members: 3 */
+};
 
 void PlayLockSounds(entvars_t *pev, locksound_t *pls, int flocked, int fbutton);
-
-#ifdef HOOK_GAMEDLL
-
-// linked objects
-C_DLLEXPORT void func_door(entvars_t *pev);
-C_DLLEXPORT void func_water(entvars_t *pev);
-C_DLLEXPORT void func_door_rotating(entvars_t *pev);
-C_DLLEXPORT void momentary_door(entvars_t *pev);
-
-#endif // HOOK_GAMEDLL
 
 #endif // DOORS_H

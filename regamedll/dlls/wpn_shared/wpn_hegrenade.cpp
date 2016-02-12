@@ -4,9 +4,10 @@
 LINK_ENTITY_TO_CLASS(weapon_hegrenade, CHEGrenade);
 
 /* <26b07c> ../cstrike/dlls/wpn_shared/wpn_hegrenade.cpp:40 */
-void CHEGrenade::__MAKE_VHOOK(Spawn)(void)
+void CHEGrenade::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
+
 	m_iId = WEAPON_HEGRENADE;
 	SET_MODEL(edict(), "models/w_hegrenade.mdl");
 
@@ -14,7 +15,7 @@ void CHEGrenade::__MAKE_VHOOK(Spawn)(void)
 	
 	m_iDefaultAmmo = HEGRENADE_DEFAULT_GIVE;
 	m_flStartThrow = 0;
-	m_flReleaseThrow = -1;
+	m_flReleaseThrow = -1.0f;
 	m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
 
 	// get ready to fall down.
@@ -22,7 +23,7 @@ void CHEGrenade::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <26afc7> ../cstrike/dlls/wpn_shared/wpn_hegrenade.cpp:59 */
-void CHEGrenade::__MAKE_VHOOK(Precache)(void)
+void CHEGrenade::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/v_hegrenade.mdl");
 	PRECACHE_MODEL("models/shield/v_shield_hegrenade.mdl");
@@ -54,9 +55,9 @@ int CHEGrenade::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 }
 
 /* <26b12c> ../cstrike/dlls/wpn_shared/wpn_hegrenade.cpp:92 */
-BOOL CHEGrenade::__MAKE_VHOOK(Deploy)(void)
+BOOL CHEGrenade::__MAKE_VHOOK(Deploy)()
 {
-	m_flReleaseThrow = -1;
+	m_flReleaseThrow = -1.0f;
 	m_fMaxSpeed = HEGRENADE_MAX_SPEED;
 	m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
 
@@ -71,7 +72,7 @@ BOOL CHEGrenade::__MAKE_VHOOK(Deploy)(void)
 /* <26b047> ../cstrike/dlls/wpn_shared/wpn_hegrenade.cpp:107 */
 void CHEGrenade::__MAKE_VHOOK(Holster)(int skiplocal)
 {
-	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5;
+	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5f;
 
 	if (!m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType])
 	{
@@ -80,11 +81,11 @@ void CHEGrenade::__MAKE_VHOOK(Holster)(int skiplocal)
 	}
 
 	m_flStartThrow = 0;
-	m_flReleaseThrow = -1;
+	m_flReleaseThrow = -1.0f;
 }
 
 /* <26b0f2> ../cstrike/dlls/wpn_shared/wpn_hegrenade.cpp:123 */
-void CHEGrenade::__MAKE_VHOOK(PrimaryAttack)(void)
+void CHEGrenade::__MAKE_VHOOK(PrimaryAttack)()
 {
 	if (m_iWeaponState & WPNSTATE_SHIELD_DRAWN)
 	{
@@ -97,7 +98,7 @@ void CHEGrenade::__MAKE_VHOOK(PrimaryAttack)(void)
 		m_flStartThrow = gpGlobals->time;
 
 		SendWeaponAnim(HEGRENADE_PULLPIN, UseDecrement() != FALSE);
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.5;
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.5f;
 	}
 }
 
@@ -131,21 +132,21 @@ bool CHEGrenade::ShieldSecondaryFire(int iUpAnim, int iDownAnim)
 	m_pPlayer->UpdateShieldCrosshair((m_iWeaponState & WPNSTATE_SHIELD_DRAWN) != WPNSTATE_SHIELD_DRAWN);
 	m_pPlayer->ResetMaxSpeed();
 
-	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.4;
+	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.4f;
 	m_flNextPrimaryAttack = GetNextAttackDelay(0.4);
-	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.6;
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.6f;
 
 	return true;
 }
 
 /* <26b167> ../cstrike/dlls/wpn_shared/wpn_hegrenade.cpp:176 */
-void CHEGrenade::__MAKE_VHOOK(SecondaryAttack)(void)
+void CHEGrenade::__MAKE_VHOOK(SecondaryAttack)()
 {
 	ShieldSecondaryFire(SHIELDGUN_DRAW, SHIELDGUN_DRAWN_IDLE);
 }
 
 /* <26b4c9> ../cstrike/dlls/wpn_shared/wpn_hegrenade.cpp:181 */
-void CHEGrenade::SetPlayerShieldAnim(void)
+void CHEGrenade::SetPlayerShieldAnim()
 {
 	if (!m_pPlayer->HasShield())
 		return;
@@ -157,7 +158,7 @@ void CHEGrenade::SetPlayerShieldAnim(void)
 }
 
 /* <26b4eb> ../cstrike/dlls/wpn_shared/wpn_hegrenade.cpp:192 */
-void CHEGrenade::ResetPlayerShieldAnim(void)
+void CHEGrenade::ResetPlayerShieldAnim()
 {
 	if (!m_pPlayer->HasShield())
 		return;
@@ -169,7 +170,7 @@ void CHEGrenade::ResetPlayerShieldAnim(void)
 }
 
 /* <26a24e> ../cstrike/dlls/wpn_shared/wpn_hegrenade.cpp:202 */
-void CHEGrenade::__MAKE_VHOOK(WeaponIdle)(void)
+void CHEGrenade::__MAKE_VHOOK(WeaponIdle)()
 {
 	if (m_flReleaseThrow == 0 && m_flStartThrow != 0.0f)
 		m_flReleaseThrow = gpGlobals->time;
@@ -188,7 +189,7 @@ void CHEGrenade::__MAKE_VHOOK(WeaponIdle)(void)
 		else
 			angThrow.x = -10 + angThrow.x * ((90 + 10) / 90.0);
 
-		float flVel = (90.0 - angThrow.x) * 6.0;
+		float flVel = (90.0f - angThrow.x) * 6.0f;
 
 		if (flVel > 750.0f)
 			flVel = 750.0f;
@@ -208,11 +209,9 @@ void CHEGrenade::__MAKE_VHOOK(WeaponIdle)(void)
 
 		m_flStartThrow = 0;
 		m_flNextPrimaryAttack = GetNextAttackDelay(0.5);
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.75;
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.75f;
 
-		m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]--;
-
-		if (!m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType])
+		if (--m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
 		{
 			// just threw last grenade
 			// set attack times in the future, and weapon idle in the future so we can see the whole throw
@@ -239,13 +238,13 @@ void CHEGrenade::__MAKE_VHOOK(WeaponIdle)(void)
 		}
 
 		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + RANDOM_FLOAT(10, 15);
-		m_flReleaseThrow = -1;
+		m_flReleaseThrow = -1.0f;
 	}
 	else if (m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType])
 	{
 		if (m_pPlayer->HasShield())
 		{
-			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20;
+			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20.0f;
 
 			if (m_iWeaponState & WPNSTATE_SHIELD_DRAWN)
 			{
@@ -263,56 +262,7 @@ void CHEGrenade::__MAKE_VHOOK(WeaponIdle)(void)
 }
 
 /* <26b021> ../cstrike/dlls/wpn_shared/wpn_hegrenade.cpp:303 */
-BOOL CHEGrenade::__MAKE_VHOOK(CanDeploy)(void)
+BOOL CHEGrenade::__MAKE_VHOOK(CanDeploy)()
 {
 	return m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] != 0;
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CHEGrenade::Spawn(void)
-{
-	Spawn_();
-}
-
-void CHEGrenade::Precache(void)
-{
-	Precache_();
-}
-
-int CHEGrenade::GetItemInfo(ItemInfo *p)
-{
-	return GetItemInfo_(p);
-}
-
-BOOL CHEGrenade::CanDeploy(void)
-{
-	return CanDeploy_();
-}
-
-BOOL CHEGrenade::Deploy(void)
-{
-	return Deploy_();
-}
-
-void CHEGrenade::Holster(int skiplocal)
-{
-	Holster_(skiplocal);
-}
-
-void CHEGrenade::PrimaryAttack(void)
-{
-	PrimaryAttack_();
-}
-
-void CHEGrenade::SecondaryAttack(void)
-{
-	SecondaryAttack_();
-}
-
-void CHEGrenade::WeaponIdle(void)
-{
-	WeaponIdle_();
-}
-
-#endif // HOOK_GAMEDLL

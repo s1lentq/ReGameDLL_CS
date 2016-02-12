@@ -14,17 +14,13 @@ TYPEDESCRIPTION CWallHealth::m_SaveData[] =
 	DEFINE_FIELD(CWallHealth, m_flSoundTime, FIELD_TIME),
 };
 
-#else
-
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CWallHealth, m_SaveData)[5];
-
 #endif // HOOK_GAMEDLL
 
 /* <d637a> ../cstrike/dlls/healthkit.cpp:43 */
 LINK_ENTITY_TO_CLASS(item_healthkit, CHealthKit);
 
 /* <d5e25> ../cstrike/dlls/healthkit.cpp:55 */
-void CHealthKit::__MAKE_VHOOK(Spawn)(void)
+void CHealthKit::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
 	SET_MODEL(ENT(pev), "models/w_medkit.mdl");
@@ -33,7 +29,7 @@ void CHealthKit::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <d5d8a> ../cstrike/dlls/healthkit.cpp:63 */
-void CHealthKit::__MAKE_VHOOK(Precache)(void)
+void CHealthKit::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/w_medkit.mdl");
 	PRECACHE_SOUND("items/smallmedkit1.wav");
@@ -84,7 +80,7 @@ void CWallHealth::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 }
 
 /* <d5dfe> ../cstrike/dlls/healthkit.cpp:154 */
-void CWallHealth::__MAKE_VHOOK(Spawn)(void)
+void CWallHealth::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
 
@@ -102,7 +98,7 @@ void CWallHealth::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <d5dd7> ../cstrike/dlls/healthkit.cpp:169 */
-void CWallHealth::__MAKE_VHOOK(Precache)(void)
+void CWallHealth::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_SOUND("items/medshot4.wav");
 	PRECACHE_SOUND("items/medshotno1.wav");
@@ -168,7 +164,7 @@ void CWallHealth::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCalle
 }
 
 /* <d5f4d> ../cstrike/dlls/healthkit.cpp:236 */
-void CWallHealth::Recharge(void)
+void CWallHealth::Recharge()
 {
 	EMIT_SOUND(ENT(pev), CHAN_ITEM, "items/medshot4.wav", VOL_NORM, ATTN_NORM);
 	m_iJuice = gSkillData.healthchargerCapacity;
@@ -177,7 +173,7 @@ void CWallHealth::Recharge(void)
 }
 
 /* <d5ee4> ../cstrike/dlls/healthkit.cpp:244 */
-void CWallHealth::Off(void)
+void CWallHealth::Off()
 {
 	// Stop looping sound.
 	if (m_iOn > 1)
@@ -193,52 +189,3 @@ void CWallHealth::Off(void)
 	else
 		SetThink(&CWallHealth::SUB_DoNothing);
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CHealthKit::Spawn(void)
-{
-	Spawn_();
-}
-
-void CHealthKit::Precache(void)
-{
-	Precache_();
-}
-
-BOOL CHealthKit::MyTouch(CBasePlayer *pPlayer)
-{
-	return MyTouch_(pPlayer);
-}
-
-void CWallHealth::Spawn(void)
-{
-	Spawn_();
-}
-
-void CWallHealth::Precache(void)
-{
-	Precache_();
-}
-
-void CWallHealth::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-int CWallHealth::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CWallHealth::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-void CWallHealth::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	Use_(pActivator, pCaller, useType, value);
-}
-
-#endif // HOOK_GAMEDLL

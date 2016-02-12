@@ -11,16 +11,6 @@ cvar_t cv_hostage_stop = { "hostage_stop", "0", FCVAR_SERVER, 0.0f, NULL };
 CHostageManager *g_pHostages = NULL;
 int g_iHostageNumber = 0;
 
-#else
-
-cvar_t cv_hostage_debug;
-cvar_t cv_hostage_stop;
-
-CHostageManager *g_pHostages;
-int g_iHostageNumber;
-
-void (CBaseEntity::*pCHostage__IdleThink)(void);
-
 #endif // HOOK_GAMEDLL
 
 /* <45c3fa> ../cstrike/dlls/hostage/hostage.cpp:47 */
@@ -30,7 +20,7 @@ LINK_ENTITY_TO_CLASS(hostage_entity, CHostage);
 LINK_ENTITY_TO_CLASS(monster_scientist, CHostage);
 
 /* <45c228> ../cstrike/dlls/hostage/hostage.cpp:54 */
-void CHostage::__MAKE_VHOOK(Spawn)(void)
+void CHostage::__MAKE_VHOOK(Spawn)()
 {
 	if (!g_pHostages)
 	{
@@ -116,11 +106,11 @@ void CHostage::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <45bf91> ../cstrike/dlls/hostage/hostage.cpp:137 */
-void CHostage::__MAKE_VHOOK(Precache)(void)
+void CHostage::__MAKE_VHOOK(Precache)()
 {
 	static int which = 0;
 
-	if (UTIL_IsGame("czero"))
+	if (g_bIsCzeroGame)
 	{
 		switch (which)
 		{
@@ -139,7 +129,7 @@ void CHostage::__MAKE_VHOOK(Precache)(void)
 		default:
 			break;
 		}
-		
+
 		m_whichModel = static_cast<ModelType>(which);
 
 		if (++which > 3)
@@ -189,10 +179,10 @@ void CHostage::SetActivity(int act)
 }
 
 /* <45f194> ../cstrike/dlls/hostage/hostage.cpp:204 */
-void CHostage::IdleThink(void)
+void CHostage::IdleThink()
 {
 	float flInterval;
-	const float upkeepRate = 0.3f;
+	const float upkeepRate = 0.03f;
 	const float giveUpTime = (1 / 30.0f);
 	float const updateRate = 0.1f;
 
@@ -216,7 +206,7 @@ void CHostage::IdleThink(void)
 
 		m_improv = NULL;
 	}
-	
+
 	pev->nextthink = gpGlobals->time + giveUpTime;
 
 	flInterval = StudioFrameAdvance(0);
@@ -240,7 +230,7 @@ void CHostage::IdleThink(void)
 		return;
 	}
 
-	if (m_hTargetEnt != NULL && (m_bStuck && gpGlobals->time - m_flStuckTime > 5.0 || m_hTargetEnt->pev->deadflag != DEAD_NO))
+	if (m_hTargetEnt != NULL && (m_bStuck && gpGlobals->time - m_flStuckTime > 5.0f || m_hTargetEnt->pev->deadflag != DEAD_NO))
 	{
 		m_State = STAND;
 		m_hTargetEnt = NULL;
@@ -253,17 +243,13 @@ void CHostage::IdleThink(void)
 
 		if (m_improv != NULL)
 		{
-			if (IsFollowingSomeone())
-			{
+			if (m_improv->IsFollowing())
 				player = (CBasePlayer *)m_improv->GetFollowLeader();
-			}
 		}
 		else
-		{
 			player = GetClassPtr((CBasePlayer *)m_hTargetEnt->pev);
-		}
 
-		if (!player || player->m_iTeam == CT)
+		if (player == NULL || player->m_iTeam == CT)
 		{
 			if (!g_pGameRules->m_bMapHasRescueZone)
 			{
@@ -325,8 +311,8 @@ void CHostage::IdleThink(void)
 				MESSAGE_BEGIN(MSG_SPEC, SVC_DIRECTOR);
 					WRITE_BYTE(9);
 					WRITE_BYTE(DRC_CMD_EVENT);
-					WRITE_SHORT((player != NULL) ? player->entindex() : 0);
-					WRITE_SHORT(player->entindex());
+					WRITE_SHORT(player != NULL ? player->entindex() : 0);
+					WRITE_SHORT(entindex());
 					WRITE_LONG(15);
 				MESSAGE_END();
 
@@ -388,7 +374,7 @@ void CHostage::IdleThink(void)
 }
 
 /* <45c041> ../cstrike/dlls/hostage/hostage.cpp:413 */
-void CHostage::Remove(void)
+void CHostage::Remove()
 {
 	pev->movetype = MOVETYPE_NONE;
 	pev->solid = SOLID_NOT;
@@ -400,7 +386,7 @@ void CHostage::Remove(void)
 }
 
 /* <45c624> ../cstrike/dlls/hostage/hostage.cpp:426 */
-void CHostage::RePosition(void)
+void CHostage::RePosition()
 {
 	pev->health = pev->max_health;
 	pev->movetype = MOVETYPE_STEP;
@@ -568,7 +554,7 @@ float CHostage::GetModifiedDamage(float flDamage, int nHitGroup)
 }
 
 /* <45c7d3> ../cstrike/dlls/hostage/hostage.cpp:597 */
-void CHostage::PlayPainSound(void)
+void CHostage::PlayPainSound()
 {
 	if (m_LastHitGroup != HITGROUP_HEAD)
 		return;
@@ -581,7 +567,7 @@ void CHostage::PlayPainSound(void)
 }
 
 /* <45c8c4> ../cstrike/dlls/hostage/hostage.cpp:612 */
-void CHostage::SetFlinchActivity(void)
+void CHostage::SetFlinchActivity()
 {
 	Activity activity = ACT_SMALL_FLINCH;
 
@@ -595,7 +581,7 @@ void CHostage::SetFlinchActivity(void)
 }
 
 /* <45c960> ../cstrike/dlls/hostage/hostage.cpp:642 */
-void CHostage::SetDeathActivity(void)
+void CHostage::SetDeathActivity()
 {
 	if (m_improv != NULL && m_improv->IsCrouching())
 	{
@@ -603,7 +589,7 @@ void CHostage::SetDeathActivity(void)
 		return;
 	}
 
-	if (UTIL_IsGame("czero"))
+	if (g_bIsCzeroGame)
 	{
 		switch (m_LastHitGroup)
 		{
@@ -654,7 +640,7 @@ void CHostage::SetDeathActivity(void)
 void CHostage::AnnounceDeath(CBasePlayer *pAttacker)
 {
 	ClientPrint(pAttacker->pev, HUD_PRINTCENTER, "#Killed_Hostage");
-	
+
 	if (!(pAttacker->m_flDisplayHistory & DHF_HOSTAGE_KILLED))
 	{
 		pAttacker->HintMessage("#Hint_lost_money");
@@ -713,7 +699,7 @@ void CHostage::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, 
 		return;
 
 	CBasePlayer *pPlayer = (CBasePlayer *)pActivator;
-	
+
 	if (pPlayer->m_iTeam != CT)
 	{
 		if (!(pPlayer->m_flDisplayHistory & DHF_HOSTAGE_CTMOVE))
@@ -782,7 +768,7 @@ void CHostage::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, 
 }
 
 /* <45cdba> ../cstrike/dlls/hostage/hostage.cpp:833 */
-void CHostage::PlayFollowRescueSound(void)
+void CHostage::PlayFollowRescueSound()
 {
 	switch (RANDOM_LONG(0, 4))
 	{
@@ -808,9 +794,9 @@ void CHostage::GiveCTTouchBonus(CBasePlayer *pPlayer)
 }
 
 /* <45bf69> ../cstrike/dlls/hostage/hostage.cpp:869 */
-int CHostage::__MAKE_VHOOK(ObjectCaps)(void)
+int CHostage::__MAKE_VHOOK(ObjectCaps)()
 {
-	return CBaseMonster::ObjectCaps() | FCAP_MUST_SPAWN | FCAP_ONOFF_USE;
+	return (CBaseMonster::ObjectCaps() | FCAP_MUST_SPAWN | FCAP_ONOFF_USE);
 }
 
 /* <45c0e3> ../cstrike/dlls/hostage/hostage.cpp:876 */
@@ -840,7 +826,7 @@ void CHostage::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 
 	vPush = (pev->origin - pOther->pev->origin).Make2D();
 
-#ifndef HOOK_GAMEDLL
+#ifndef PLAY_GAMEDLL
 	vPush = vPush.Normalize() * pushForce;
 
 	pev->velocity.x += vPush.x;
@@ -848,11 +834,11 @@ void CHostage::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 #else
 	// TODO: fix test demo
 	pev->velocity = pev->velocity + NormalizeMulScalar<float_precision, float_precision, float>(vPush, pushForce);
-#endif // HOOK_GAMEDLL
+#endif // PLAY_GAMEDLL
 }
 
 /* <45dd66> ../cstrike/dlls/hostage/hostage.cpp:910 */
-void CHostage::DoFollow(void)
+void CHostage::DoFollow()
 {
 	CBaseEntity *pFollowing;
 	Vector vecDest;
@@ -924,18 +910,7 @@ void CHostage::DoFollow(void)
 	}
 	else if (pev->takedamage == DAMAGE_YES)
 	{
-		if (m_improv != NULL)
-		{
-			if (IsFollowingSomeone())
-			{
-				if (!m_bStuck && flDistToDest > 200)
-				{
-					m_bStuck = TRUE;
-					m_flStuckTime = gpGlobals->time;
-				}
-			}
-		}
-		else if (m_hTargetEnt != NULL && m_State == FOLLOW)
+		if (IsFollowingSomeone())
 		{
 			if (!m_bStuck && flDistToDest > 200)
 			{
@@ -1024,13 +999,13 @@ void CHostage::MoveToward(const Vector &vecLoc)
 }
 
 /* <45d704> ../cstrike/dlls/hostage/hostage.cpp:1102 */
-BOOL CHostage::IsOnLadder(void)
+BOOL CHostage::IsOnLadder()
 {
 	return pev->movetype == MOVETYPE_FLY;
 }
 
 /* <45d727> ../cstrike/dlls/hostage/hostage.cpp:1106 */
-void CHostage::NavReady(void)
+void CHostage::NavReady()
 {
 	CBaseEntity *pFollowing;
 	Vector vecDest;
@@ -1086,7 +1061,7 @@ void CHostage::NavReady(void)
 }
 
 /* <45edaa> ../cstrike/dlls/hostage/hostage.cpp:1159 */
-void CHostage::SendHostagePositionMsg(void)
+void CHostage::SendHostagePositionMsg()
 {
 	CBaseEntity *pEntity = NULL;
 
@@ -1117,7 +1092,7 @@ void CHostage::SendHostagePositionMsg(void)
 }
 
 /* <45ecd5> ../cstrike/dlls/hostage/hostage.cpp:1189 */
-void CHostage::SendHostageEventMsg(void)
+void CHostage::SendHostageEventMsg()
 {
 	CBaseEntity *pEntity = NULL;
 
@@ -1147,7 +1122,7 @@ void CHostage::SendHostageEventMsg(void)
 }
 
 /* <45d8a6> ../cstrike/dlls/hostage/hostage.cpp:1292 */
-void CHostage::Wiggle(void)
+void CHostage::Wiggle()
 {
 	TraceResult tr;
 	Vector vec = Vector(0, 0, 0);
@@ -1163,7 +1138,7 @@ void CHostage::Wiggle(void)
 		Vector(-50, -50, 0)
 	};
 
-	for (int i = 0; i < ARRAYSIZE(wiggle_directions); i++)
+	for (int i = 0; i < ARRAYSIZE(wiggle_directions); ++i)
 	{
 		Vector dest = pev->origin + wiggle_directions[i];
 
@@ -1173,20 +1148,20 @@ void CHostage::Wiggle(void)
 		}
 	}
 
-#ifndef HOOK_GAMEDLL
+#ifndef PLAY_GAMEDLL
 	vec = vec + Vector(RANDOM_FLOAT(-3, 3), RANDOM_FLOAT(-3, 3), 0);
 #else
 	// TODO: fix test demo
 	vec.y = vec.y + RANDOM_FLOAT(-3.0, 3.0);
 	vec.x = vec.x + RANDOM_FLOAT(-3.0, 3.0);
 
-#endif // HOOK_GAMEDLL
+#endif // PLAY_GAMEDLL
 
 	pev->velocity = pev->velocity + (vec.Normalize() * 100);
 }
 
 /* <45e00c> ../cstrike/dlls/hostage/hostage.cpp:1346 */
-void CHostage::PreThink(void)
+void CHostage::PreThink()
 {
 	Vector vecSrc;
 	Vector vecDest;
@@ -1259,14 +1234,20 @@ void CHostage::PreThink(void)
 }
 
 /* <45e24e> ../cstrike/dlls/hostage/hostage.cpp:1421 */
-void Hostage_RegisterCVars(void)
+void Hostage_RegisterCVars()
 {
+// These cvars are only used in czero
+#ifdef REGAMEDLL_FIXES
+	if (!g_bIsCzeroGame)
+		return;
+#endif // REGAMEDLL_FIXES
+
 	CVAR_REGISTER(&cv_hostage_debug);
 	CVAR_REGISTER(&cv_hostage_stop);
 }
 
 /* <45e2a6> ../cstrike/dlls/hostage/hostage.cpp:1430 */
-void InstallHostageManager(void)
+void InstallHostageManager()
 {
 	if (g_pHostages != NULL)
 	{
@@ -1278,14 +1259,14 @@ void InstallHostageManager(void)
 }
 
 /* <45e375> ../cstrike/dlls/hostage/hostage.cpp:1443 */
-CHostageManager::CHostageManager(void)
+CHostageManager::CHostageManager()
 {
 	Q_memset(&m_chatter, 0, sizeof(m_chatter));
 	m_hostageCount = 0;
 }
 
 /* <45e39b> ../cstrike/dlls/hostage/hostage.cpp:1456 */
-void CHostageManager::ServerActivate(void)
+void CHostageManager::ServerActivate()
 {
 	m_hostageCount = 0;
 
@@ -1295,7 +1276,7 @@ void CHostageManager::ServerActivate(void)
 		AddHostage((CHostage *)pEntity);
 	}
 
-	if (UTIL_IsGame("czero"))
+	if (g_bIsCzeroGame)
 	{
 		m_chatter.AddSound(HOSTAGE_CHATTER_START_FOLLOW, "hostage/huse/getouttahere.wav");
 		m_chatter.AddSound(HOSTAGE_CHATTER_START_FOLLOW, "hostage/huse/illfollow.wav");
@@ -1431,15 +1412,15 @@ void CHostageManager::ServerActivate(void)
 }
 
 /* <45e3a2> ../cstrike/dlls/hostage/hostage.cpp:1624 */
-void CHostageManager::ServerDeactivate(void)
+void CHostageManager::ServerDeactivate()
 {
 	;
 }
 
 /* <45e3f7> ../cstrike/dlls/hostage/hostage.cpp:1631 */
-void CHostageManager::RestartRound(void)
+void CHostageManager::RestartRound()
 {
-	for (int i = 0; i < m_hostageCount; i++)
+	for (int i = 0; i < m_hostageCount; ++i)
 	{
 		if (m_hostage[i]->m_improv != NULL)
 		{
@@ -1455,7 +1436,7 @@ void CHostageManager::AddHostage(CHostage *hostage)
 		return;
 
 	int i;
-	for (i = 0; i < m_hostageCount; i++)
+	for (i = 0; i < m_hostageCount; ++i)
 	{
 		if (m_hostage[i] == hostage)
 		{
@@ -1473,7 +1454,7 @@ void CHostageManager::AddHostage(CHostage *hostage)
 /* <45e47f> ../cstrike/dlls/hostage/hostage.cpp:1657 */
 bool CHostageManager::IsNearbyHostageTalking(CHostageImprov *improv)
 {
-	for (int i = 0; i < m_hostageCount; i++)
+	for (int i = 0; i < m_hostageCount; ++i)
 	{
 		const float closeRange = 500.0f;
 		const CHostageImprov *other = m_hostage[i]->m_improv;
@@ -1496,9 +1477,8 @@ bool CHostageManager::IsNearbyHostageTalking(CHostageImprov *improv)
 /* <45e57b> ../cstrike/dlls/hostage/hostage.cpp:1689 */
 bool CHostageManager::IsNearbyHostageJumping(CHostageImprov *improv)
 {
-	for (int i = 0; i < m_hostageCount; i++)
+	for (int i = 0; i < m_hostageCount; ++i)
 	{
-		const float closeRange = 500.0f;
 		const CHostageImprov *other = m_hostage[i]->m_improv;
 
 		if (other == NULL)
@@ -1507,6 +1487,7 @@ bool CHostageManager::IsNearbyHostageJumping(CHostageImprov *improv)
 		if (!other->IsAlive() || other == improv)
 			continue;
 
+		const float closeRange = 500.0f;
 		if (!(improv->GetCentroid() - other->GetCentroid()).IsLengthGreaterThan(closeRange) && other->IsJumping())
 		{
 			return true;
@@ -1519,7 +1500,7 @@ bool CHostageManager::IsNearbyHostageJumping(CHostageImprov *improv)
 /* <45e642> ../cstrike/dlls/hostage/hostage.cpp:1716 */
 void CHostageManager::OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
 {
-	for (int i = 0; i < m_hostageCount; i++)
+	for (int i = 0; i < m_hostageCount; ++i)
 	{
 		CHostageImprov *improv = m_hostage[ i ]->m_improv;
 
@@ -1531,9 +1512,9 @@ void CHostageManager::OnEvent(GameEventType event, CBaseEntity *entity, CBaseEnt
 }
 
 /* <45e6b8> ../cstrike/dlls/hostage/hostage.cpp:1726 */
-SimpleChatter::SimpleChatter(void)
+SimpleChatter::SimpleChatter()
 {
-	for (int i = 0; i < ARRAYSIZE(m_chatter); i++)
+	for (int i = 0; i < ARRAYSIZE(m_chatter); ++i)
 	{
 		m_chatter[i].count = 0;
 		m_chatter[i].index = 0;
@@ -1542,9 +1523,9 @@ SimpleChatter::SimpleChatter(void)
 }
 
 /* <45e6f0> ../cstrike/dlls/hostage/hostage.cpp:1737 */
-SimpleChatter::~SimpleChatter(void)
+SimpleChatter::~SimpleChatter()
 {
-	for (int i = 0; i < ARRAYSIZE(m_chatter); i++)
+	for (int i = 0; i < ARRAYSIZE(m_chatter); ++i)
 	{
 		for (int f = 0; f < m_chatter[i].count; f++)
 		{
@@ -1581,7 +1562,7 @@ void SimpleChatter::Shuffle(ChatterSet *chatter)
 	if (!chatter->needsShuffle)
 		return;
 
-	for (int i = 1; i < chatter->count; i++)
+	for (int i = 1; i < chatter->count; ++i)
 	{
 		for (int j = i; j < chatter->count; j++)
 		{
@@ -1621,7 +1602,7 @@ char *SimpleChatter::GetSound(HostageChatterType type, float *duration)
 
 /* <45ea1b> ../cstrike/dlls/hostage/hostage.cpp:1818 */
 float SimpleChatter::PlaySound(CBaseEntity *entity, HostageChatterType type)
-{	
+{
 	CHostage *hostage;
 	float duration;
 	char *sound;
@@ -1629,7 +1610,7 @@ float SimpleChatter::PlaySound(CBaseEntity *entity, HostageChatterType type)
 	int attenuation = 1;
 
 	sound = GetSound(type, &duration);
-	hostage = reinterpret_cast<CHostage *>(entity);
+	hostage = static_cast<CHostage *>(entity);
 
 	if (sound == NULL)
 	{
@@ -1665,37 +1646,3 @@ float SimpleChatter::PlaySound(CBaseEntity *entity, HostageChatterType type)
 
 	return duration;
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CHostage::Spawn(void)
-{
-	Spawn_();
-}
-
-void CHostage::Precache(void)
-{
-	Precache_();
-}
-
-int CHostage::ObjectCaps(void)
-{
-	return ObjectCaps_();
-}
-
-int CHostage::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
-{
-	return TakeDamage_(pevInflictor, pevAttacker, flDamage, bitsDamageType);
-}
-
-void CHostage::Touch(CBaseEntity *pOther)
-{
-	Touch_(pOther);
-}
-
-void CHostage::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	Use_(pActivator, pCaller, useType, value);
-}
-
-#endif // HOOK_GAMEDLL

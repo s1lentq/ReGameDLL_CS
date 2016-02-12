@@ -34,33 +34,13 @@
 
 #define SF_DECAL_NOTINDEATHMATCH	2048
 
-#ifdef HOOK_GAMEDLL
-
-#define g_pBodyQueueHead (*pg_pBodyQueueHead)
-#define gGlobalState (*pgGlobalState)
-#define g_flWeaponCheat (*pg_flWeaponCheat)
-#define gGlobalEntitySaveData (*pgGlobalEntitySaveData)
-
-#endif // HOOK_GAMEDLL
-
 void CopyToBodyQue(entvars_t *pev);
-void ClearBodyQue(void);
+void ClearBodyQue();
 void SaveGlobalState(SAVERESTOREDATA *pSaveData);
 void RestoreGlobalState(SAVERESTOREDATA *pSaveData);
-void ResetGlobalState(void);
+void ResetGlobalState();
 
-#ifdef HOOK_GAMEDLL
-
-// linked object
-C_DLLEXPORT void infodecal(entvars_t *pev);
-C_DLLEXPORT void bodyque(entvars_t *pev);
-C_DLLEXPORT void worldspawn(entvars_t *pev);
-
-#endif // HOOK_GAMEDLL
-
-extern edict_t *g_pBodyQueueHead;
 extern CGlobalState gGlobalState;
 extern float g_flWeaponCheat;
-extern TYPEDESCRIPTION gGlobalEntitySaveData[3];
 
 #endif // WORLD_H

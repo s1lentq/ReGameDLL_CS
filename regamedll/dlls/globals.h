@@ -32,21 +32,6 @@
 #pragma once
 #endif
 
-#ifdef HOOK_GAMEDLL
-
-#define g_vecZero (*pg_vecZero)
-#define g_Language (*pg_Language)
-
-#define g_ulFrameCount (*pg_ulFrameCount)
-#define g_ulModelIndexEyes (*pg_ulModelIndexEyes)
-
-#define g_vecAttackDir (*pg_vecAttackDir)
-#define g_iSkillLevel (*pg_iSkillLevel)
-#define gDisplayTitle (*pgDisplayTitle)
-#define g_fGameOver (*pg_fGameOver)
-
-#endif // HOOK_GAMEDLL
-
 extern const Vector g_vecZero;
 extern int g_Language;
 
@@ -57,5 +42,6 @@ extern Vector g_vecAttackDir;
 extern int g_iSkillLevel;
 extern int gDisplayTitle;
 extern BOOL g_fGameOver;
+extern bool g_bIsCzeroGame;
 
 #endif // GLOBALS_H

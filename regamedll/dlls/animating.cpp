@@ -14,10 +14,6 @@ TYPEDESCRIPTION CBaseAnimating::m_SaveData[] =
 	DEFINE_FIELD(CBaseMonster, m_fSequenceLoops, FIELD_BOOLEAN),
 };
 
-#else
-
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CBaseAnimating, m_SaveData)[5];
-
 #endif // HOOK_GAMEDLL
 
 /* <10583> ../cstrike/dlls/animating.cpp:38 */
@@ -112,7 +108,7 @@ int CBaseAnimating::LookupSequence(const char *label)
 }
 
 /* <10711> ../cstrike/dlls/animating.cpp:110 */
-void CBaseAnimating::ResetSequenceInfo(void)
+void CBaseAnimating::ResetSequenceInfo()
 {
 	void *pmodel = GET_MODEL_PTR(ENT(pev));
 
@@ -126,7 +122,7 @@ void CBaseAnimating::ResetSequenceInfo(void)
 }
 
 /* <1077c> ../cstrike/dlls/animating.cpp:126 */
-BOOL CBaseAnimating::GetSequenceFlags(void)
+BOOL CBaseAnimating::GetSequenceFlags()
 {
 	void *pmodel = GET_MODEL_PTR(ENT(pev));
 	return ::GetSequenceFlags(pmodel, pev);
@@ -141,7 +137,7 @@ float CBaseAnimating::SetBoneController(int iController, float flValue)
 }
 
 /* <10893> ../cstrike/dlls/animating.cpp:180 */
-void CBaseAnimating::InitBoneControllers(void)
+void CBaseAnimating::InitBoneControllers()
 {
 	void *pmodel = GET_MODEL_PTR(ENT(pev));
 
@@ -214,7 +210,7 @@ int CBaseAnimating::ExtractBbox(int sequence, float *mins, float *maxs)
 }
 
 /* <10b99> ../cstrike/dlls/animating.cpp:258 */
-void CBaseAnimating::SetSequenceBox(void)
+void CBaseAnimating::SetSequenceBox()
 {
 	Vector mins, maxs;
 
@@ -239,7 +235,7 @@ void CBaseAnimating::SetSequenceBox(void)
 		Vector rmax(-9999, -9999, -9999);
 
 		Vector base, transformed;
-		for (int i = 0; i <= 1; i++)
+		for (int i = 0; i <= 1; ++i)
 		{
 			base.x = bounds[i].x;
 			for (int j = 0; j <= 1; j++)
@@ -280,17 +276,3 @@ void CBaseAnimating::SetSequenceBox(void)
 		UTIL_SetSize(pev, rmin, rmax);
 	}
 }
-
-#ifdef HOOK_GAMEDLL
-
-int CBaseAnimating::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CBaseAnimating::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-#endif // HOOK_GAMEDLL

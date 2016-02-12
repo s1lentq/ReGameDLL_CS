@@ -16,19 +16,6 @@ cvar_t cv_tutor_message_minimum_display_time = { "_tutor_message_minimum_display
 cvar_t cv_tutor_message_character_display_time_coefficient = { "_tutor_message_character_display_time_coefficient", "0.07", FCVAR_SERVER, 0.0f, NULL };
 cvar_t cv_tutor_hint_interval_time = { "_tutor_hint_interval_time", "10.0", FCVAR_SERVER, 0.0f, NULL };
 
-#else
-
-cvar_t cv_tutor_message_repeats;
-cvar_t cv_tutor_debug_level;
-cvar_t cv_tutor_view_distance;
-cvar_t cv_tutor_viewable_check_interval;
-cvar_t cv_tutor_look_distance;
-cvar_t cv_tutor_look_angle;
-cvar_t cv_tutor_examine_time;
-cvar_t cv_tutor_message_minimum_display_time;
-cvar_t cv_tutor_message_character_display_time_coefficient;
-cvar_t cv_tutor_hint_interval_time;
-
 #endif // HOOK_GAMEDLL
 
 bool s_tutorDisabledThisGame;
@@ -53,8 +40,13 @@ void InstallTutor(bool start)
 }
 
 /* <1dfde7> ../cstrike/dlls/tutor.cpp:51 */
-void Tutor_RegisterCVars(void)
+void Tutor_RegisterCVars()
 {
+#ifdef REGAMEDLL_FIXES
+	if (!g_bIsCzeroGame)
+		return;
+#endif // REGAMEDLL_FIXES
+
 	CVAR_REGISTER(&cv_tutor_message_repeats);
 	CVAR_REGISTER(&cv_tutor_debug_level);
 	CVAR_REGISTER(&cv_tutor_view_distance);
@@ -68,7 +60,7 @@ void Tutor_RegisterCVars(void)
 }
 
 /* <1dfdff> ../cstrike/dlls/tutor.cpp:66 */
-void MonitorTutorStatus(void)
+void MonitorTutorStatus()
 {
 	static cvar_t *tutor_enable = NULL;
 	static bool tutor_enableCvarExists = true;
@@ -91,9 +83,9 @@ void MonitorTutorStatus(void)
 	else
 		tutor_enableCvarExists = false;
 
-	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
-		CBasePlayer *pPlayer = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+		CBasePlayer *pPlayer = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
 		if (pPlayer && !pPlayer->IsBot())
 		{

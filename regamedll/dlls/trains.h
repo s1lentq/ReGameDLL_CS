@@ -54,26 +54,26 @@
 class CPathTrack: public CPointEntity
 {
 public:
-	virtual void Spawn(void);
+	virtual void Spawn();
 	virtual void KeyValue(KeyValueData* pkvd);
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
-	virtual void Activate(void);
+	virtual void Activate();
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
+	void Spawn_();
 	void KeyValue_(KeyValueData* pkvd);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
-	void Activate_(void);
+	void Activate_();
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #endif // HOOK_GAMEDLL
 
 	void SetPrevious(CPathTrack *pprevious);
-	void Link(void);
+	void Link();
 
 	// Returns ppath if enabled, NULL otherwise
 	CPathTrack *ValidPath(CPathTrack *ppath, int testFlag);
@@ -84,48 +84,44 @@ public:
 	CPathTrack *LookAhead(Vector *origin, float dist, int move);
 	CPathTrack *Nearest(Vector origin);
 
-	CPathTrack *GetNext(void);
-	CPathTrack *GetPrevious(void);
+	CPathTrack *GetNext();
+	CPathTrack *GetPrevious();
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[5];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[5];
 
 	float m_length;
 	string_t m_altName;
 	CPathTrack *m_pnext;
 	CPathTrack *m_pprevious;
 	CPathTrack *m_paltpath;
-
-};/* size: 172, cachelines: 3, members: 7 */
+};
 
 /* <12c98a> ../cstrike/dlls/trains.h:75 */
 class CFuncTrackTrain: public CBaseEntity
 {
 public:
-	virtual void Spawn(void);
-	virtual void Precache(void);
-	virtual void Restart(void);
+	virtual void Spawn();
+	virtual void Precache();
+	virtual void Restart();
 	virtual void KeyValue(KeyValueData* pkvd);
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
-	virtual int ObjectCaps(void)
-	{
-		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | FCAP_DIRECTIONAL_USE;
-	}
-	virtual void OverrideReset(void);
+	virtual int ObjectCaps() { return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | FCAP_DIRECTIONAL_USE; }
+	virtual void OverrideReset();
 	virtual BOOL OnControls(entvars_t *pev);
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 	virtual void Blocked(CBaseEntity *pOther);
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Precache_(void);
-	void Restart_(void);
+	void Spawn_();
+	void Precache_();
+	void Restart_();
 	void KeyValue_(KeyValueData* pkvd);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
-	void OverrideReset_(void);
+	void OverrideReset_();
 	BOOL OnControls_(entvars_t *pev);
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 	void Blocked_(CBaseEntity *pOther);
@@ -133,24 +129,19 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	void EXPORT Next(void);
-	void EXPORT Find(void);
-	void EXPORT NearestPath(void);
-	void EXPORT DeadEnd(void);
+	void EXPORT Next();
+	void EXPORT Find();
+	void EXPORT NearestPath();
+	void EXPORT DeadEnd();
 
 	void NextThink(float thinkTime, BOOL alwaysThink);
-	void SetTrack(CPathTrack *track)
-	{
-		m_ppath = track->Nearest(pev->origin);
-	}
+	void SetTrack(CPathTrack *track) { m_ppath = track->Nearest(pev->origin); }
 	void SetControls(entvars_t *pevControls);
-	void StopSound(void);
-	void UpdateSound(void);
+	void StopSound();
+	void UpdateSound();
 
 	static CFuncTrackTrain *Instance(edict_t *pent);
-
-public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[12];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[12];
 
 	CPathTrack *m_ppath;
 	float m_length;
@@ -171,39 +162,35 @@ public:
 
 private:
 	unsigned short m_usAdjustPitch;
-
-};/* size: 236, cachelines: 4, members: 19 */
+};
 
 /* <1ba5f9> ../cstrike/dlls/trains.h:134 */
 class CFuncVehicle: public CBaseEntity
 {
 public:
-	virtual void Spawn(void);
-	virtual void Precache(void);
-	virtual void Restart(void);
+	virtual void Spawn();
+	virtual void Precache();
+	virtual void Restart();
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
-	virtual int ObjectCaps(void)
-	{
-		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | FCAP_DIRECTIONAL_USE;
-	}
-	virtual int Classify(void);
-	virtual void OverrideReset(void);
+	virtual int ObjectCaps() { return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | FCAP_DIRECTIONAL_USE; }
+	virtual int Classify();
+	virtual void OverrideReset();
 	virtual BOOL OnControls(entvars_t *pev);
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 	virtual void Blocked(CBaseEntity *pOther);
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Precache_(void);
-	void Restart_(void);
+	void Spawn_();
+	void Precache_();
+	void Restart_();
 	void KeyValue_(KeyValueData *pkvd);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
-	int Classify_(void);
-	void OverrideReset_(void);
+	int Classify_();
+	void OverrideReset_();
 	BOOL OnControls_(entvars_t *pev);
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 	void Blocked_(CBaseEntity *pOther);
@@ -211,30 +198,25 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	void EXPORT Next(void);
-	void EXPORT Find(void);
-	void EXPORT NearestPath(void);
-	void EXPORT DeadEnd(void);
+	void EXPORT Next();
+	void EXPORT Find();
+	void EXPORT NearestPath();
+	void EXPORT DeadEnd();
 
 	void NextThink(float thinkTime, BOOL alwaysThink);
-	void CollisionDetection(void);
-	void TerrainFollowing(void);
-	void CheckTurning(void);
+	void CollisionDetection();
+	void TerrainFollowing();
+	void CheckTurning();
 
-	void SetTrack(CPathTrack *track)
-	{
-		m_ppath = track->Nearest(pev->origin);
-	}
+	void SetTrack(CPathTrack *track) { m_ppath = track->Nearest(pev->origin); }
 	void SetControls(entvars_t *pevControls);
 
-	void StopSound(void);
-	void UpdateSound(void);
+	void StopSound();
+	void UpdateSound();
 
 public:
 	static CFuncVehicle *Instance(edict_t *pent);
-
-public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[12];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[12];
 
 	CPathTrack *m_ppath;
 	float m_length;
@@ -271,14 +253,6 @@ public:
 
 private:
 	unsigned short m_usAdjustPitch;
-
-};/* size: 364, cachelines: 6, members: 35 */
-
-#ifdef HOOK_GAMEDLL
-
-// linked objects
-C_DLLEXPORT void path_track(entvars_t *pev);
-
-#endif // HOOK_GAMEDLL
+};
 
 #endif // TRAINS_H

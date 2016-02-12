@@ -4,9 +4,10 @@
 LINK_ENTITY_TO_CLASS(weapon_sg550, CSG550);
 
 /* <2a0ce8> ../cstrike/dlls/wpn_shared/wpn_sg550.cpp:50 */
-void CSG550::__MAKE_VHOOK(Spawn)(void)
+void CSG550::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
+
 	m_iId = WEAPON_SG550;
 	SET_MODEL(edict(), "models/w_sg550.mdl");
 
@@ -17,7 +18,7 @@ void CSG550::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <2a0bdd> ../cstrike/dlls/wpn_shared/wpn_sg550.cpp:63 */
-void CSG550::__MAKE_VHOOK(Precache)(void)
+void CSG550::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/v_sg550.mdl");
 	PRECACHE_MODEL("models/w_sg550.mdl");
@@ -51,13 +52,13 @@ int CSG550::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 }
 
 /* <2a0cc1> ../cstrike/dlls/wpn_shared/wpn_sg550.cpp:96 */
-BOOL CSG550::__MAKE_VHOOK(Deploy)(void)
+BOOL CSG550::__MAKE_VHOOK(Deploy)()
 {
 	return DefaultDeploy("models/v_sg550.mdl", "models/p_sg550.mdl", SG550_DRAW, "rifle", UseDecrement() != FALSE);
 }
 
 /* <2a0c5d> ../cstrike/dlls/wpn_shared/wpn_sg550.cpp:101 */
-void CSG550::__MAKE_VHOOK(SecondaryAttack)(void)
+void CSG550::__MAKE_VHOOK(SecondaryAttack)()
 {
 	switch (m_pPlayer->m_iFOV)
 	{
@@ -83,7 +84,7 @@ void CSG550::__MAKE_VHOOK(SecondaryAttack)(void)
 }
 
 /* <2a0eef> ../cstrike/dlls/wpn_shared/wpn_sg550.cpp:132 */
-void CSG550::__MAKE_VHOOK(PrimaryAttack)(void)
+void CSG550::__MAKE_VHOOK(PrimaryAttack)()
 {
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
 	{
@@ -111,16 +112,16 @@ void CSG550::SG550Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 
 	if (m_pPlayer->pev->fov == DEFAULT_FOV)
 	{
-		flSpread += 0.025;
+		flSpread += 0.025f;
 	}
 
 	if (m_flLastFire)
 	{
-		m_flAccuracy = (gpGlobals->time - m_flLastFire) * 0.35 + 0.65;
+		m_flAccuracy = (gpGlobals->time - m_flLastFire) * 0.35f + 0.65f;
 
-		if (m_flAccuracy > 0.98)
+		if (m_flAccuracy > 0.98f)
 		{
-			m_flAccuracy = 0.98;
+			m_flAccuracy = 0.98f;
 		}
 	}
 
@@ -142,8 +143,7 @@ void CSG550::SG550Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 		return;
 	}
 
-	m_iClip--;
-
+	--m_iClip;
 	m_pPlayer->pev->effects |= EF_MUZZLEFLASH;
 	m_pPlayer->SetAnimation(PLAYER_ATTACK1);
 
@@ -173,19 +173,17 @@ void CSG550::SG550Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
 	}
 
-	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.8;
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.8f;
 
 	m_pPlayer->pev->punchangle.x -= UTIL_SharedRandomFloat(m_pPlayer->random_seed + 4, 0.75, 1.25) + m_pPlayer->pev->punchangle.x * 0.25;
 	m_pPlayer->pev->punchangle.y += UTIL_SharedRandomFloat(m_pPlayer->random_seed + 5, -0.75, 0.75);
 }
 
 /* <2a0d98> ../cstrike/dlls/wpn_shared/wpn_sg550.cpp:227 */
-void CSG550::__MAKE_VHOOK(Reload)(void)
+void CSG550::__MAKE_VHOOK(Reload)()
 {
 	if (m_pPlayer->ammo_556nato <= 0)
-	{
 		return;
-	}
 
 	if (DefaultReload(SG550_MAX_CLIP, SG550_RELOAD, SG550_RELOAD_TIME))
 	{
@@ -200,10 +198,9 @@ void CSG550::__MAKE_VHOOK(Reload)(void)
 }
 
 /* <2a0d5e> ../cstrike/dlls/wpn_shared/wpn_sg550.cpp:248 */
-void CSG550::__MAKE_VHOOK(WeaponIdle)(void)
+void CSG550::__MAKE_VHOOK(WeaponIdle)()
 {
 	ResetEmptySound();
-
 	m_pPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);
 
 	if (m_flTimeWeaponIdle > UTIL_WeaponTimeBase())
@@ -213,62 +210,13 @@ void CSG550::__MAKE_VHOOK(WeaponIdle)(void)
 
 	if (m_iClip)
 	{
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 60.0;
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 60.0f;
 		SendWeaponAnim(SG550_IDLE, UseDecrement() != FALSE);
 	}
 }
 
 /* <2a0c37> ../cstrike/dlls/wpn_shared/wpn_sg550.cpp:265 */
-float CSG550::__MAKE_VHOOK(GetMaxSpeed)(void)
+float CSG550::__MAKE_VHOOK(GetMaxSpeed)()
 {
 	return (m_pPlayer->m_iFOV == DEFAULT_FOV) ? SG550_MAX_SPEED : SG550_MAX_SPEED_ZOOM;
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CSG550::Spawn(void)
-{
-	Spawn_();
-}
-
-void CSG550::Precache(void)
-{
-	Precache_();
-}
-
-int CSG550::GetItemInfo(ItemInfo *p)
-{
-	return GetItemInfo_(p);
-}
-
-BOOL CSG550::Deploy(void)
-{
-	return Deploy_();
-}
-
-float CSG550::GetMaxSpeed(void)
-{
-	return GetMaxSpeed_();
-}
-
-void CSG550::PrimaryAttack(void)
-{
-	PrimaryAttack_();
-}
-
-void CSG550::SecondaryAttack(void)
-{
-	SecondaryAttack_();
-}
-
-void CSG550::Reload(void)
-{
-	Reload_();
-}
-
-void CSG550::WeaponIdle(void)
-{
-	WeaponIdle_();
-}
-
-#endif // HOOK_GAMEDLL

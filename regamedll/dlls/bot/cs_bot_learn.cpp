@@ -1,64 +1,126 @@
 #include "precompiled.h"
 
-/*
-* Globals initialization
-*/
-#ifndef HOOK_GAMEDLL
+const float updateTimesliceDuration = 0.5f;
 
-const float updateTimesliceDuration = 0.0f;
-
-#else
-
-const float updateTimesliceDuration = 0.0;//TODO: what value?? check it.
-
-#endif // HOOK_GAMEDLL
-
-int _navAreaCount;
-int _currentIndex;
+int _navAreaCount = 0;
+int _currentIndex = 0;
 
 /* <343cbe> ../cstrike/dlls/bot/cs_bot_learn.cpp:95 */
-NOBODY inline class CNavNode *LadderEndSearch(CBaseEntity *entity, const Vector *pos, NavDirType mountDir)
+inline CNavNode *LadderEndSearch(CBaseEntity *entity, const Vector *pos, NavDirType mountDir)
 {
-//	{
-//		Vector center;                                  //    97
-//		{
-//			int d;                                        //   103
-//			{
-//				Vector tryPos;                  //   105
-//				Vector tryNormal;               //   118
-//				float const fudge;                     //   123
-//				TraceResult result;                   //   124
-//			}
-//		}
-//	}
+	Vector center = *pos;
+	AddDirectionVector(&center, mountDir, HalfHumanWidth);
+
+	// Test the ladder dismount point first, then each cardinal direction one and two steps away
+
+	for (int d = (-1); d < 2 * NUM_DIRECTIONS; ++d)
+	{
+		Vector tryPos = center;
+
+		if (d >= NUM_DIRECTIONS)
+			AddDirectionVector(&tryPos, (NavDirType)(d - NUM_DIRECTIONS), GenerationStepSize * 2.0f);
+		else if (d >= 0)
+			AddDirectionVector(&tryPos, (NavDirType)d, GenerationStepSize);
+
+		// step up a rung, to ensure adjacent floors are below us
+		tryPos.z += GenerationStepSize;
+		SnapToGrid(&tryPos);
+
+		// adjust height to account for sloping areas
+		Vector tryNormal;
+		if (GetGroundHeight(&tryPos, &tryPos.z, &tryNormal) == false)
+			continue;
+
+		// make sure this point is not on the other side of a wall
+		const float fudge = 2.0f;
+		TraceResult result;
+		UTIL_TraceLine(center + Vector(0, 0, fudge), tryPos + Vector(0, 0, fudge), ignore_monsters, dont_ignore_glass, ENT(entity->pev), &result);
+
+#ifndef REGAMEDLL_FIXES
+		if (result.flFraction != 1.0f)
+			continue;
+#else
+		if (result.flFraction != 1.0f || result.fStartSolid)
+			continue;
+#endif // REGAMEDLL_ADD
+
+		// if no node exists here, create one and continue the search
+		if (CNavNode::GetNode(&tryPos) == NULL)
+		{
+			return new CNavNode(&tryPos, &tryNormal, NULL);
+		}
+	}
+
+	return NULL;
 }
 
 /* <343a56> ../cstrike/dlls/bot/cs_bot_learn.cpp:30 */
-NOBODY CNavNode *CCSBot::AddNode(const Vector *destPos, const Vector *normal, NavDirType dir, CNavNode *source)
+CNavNode *CCSBot::AddNode(const Vector *destPos, const Vector *normal, NavDirType dir, CNavNode *source)
 {
-//	{
-//		class CNavNode *node;                                //    34
-//		bool useNew;                                          //    37
-//		float const zTolerance;                                //    48
-//		TraceResult result;                                   //    63
-//		Vector floor;                                   //    64
-//		Vector ceiling;                                 //    64
-//		bool crouch;                                          //    65
-//		MarkAsVisited(CNavNode *const this,
-//				enum NavDirType dir);  //    52
-//		{
-//			float y;                                      //    66
-//			{
-//				float x;                              //    68
-//			}
-//		}
-//		SetAttributes(CNavNode *const this,
-//				unsigned char bits);  //    89
-//	}
+	// check if a node exists at this location
+	CNavNode *node = const_cast<CNavNode *>(CNavNode::GetNode(destPos));
+
+	// if no node exists, create one
+	bool useNew = false;
+	if (node == NULL)
+	{
+		node = new CNavNode(destPos, normal, source);
+		useNew = true;
+	}
+
+	// connect source node to new node
+	source->ConnectTo(node, dir);
+
+	// optimization: if deltaZ changes very little, assume connection is commutative
+	const float zTolerance = 10.0f; // 50.0f;
+	if (fabs(source->GetPosition()->z - destPos->z) < zTolerance)
+	{
+		node->ConnectTo(source, OppositeDirection(dir));
+		node->MarkAsVisited(OppositeDirection(dir));
+	}
+
+	if (useNew)
+	{
+		// new node becomes current node
+		m_currentNode = node;
+	}
+
+	Vector ceiling;
+	Vector floor;
+	TraceResult result;
+
+	bool crouch = false;
+	const float epsilon = 0.1f;
+
+	for (float y = -16.0f; y <= 16.0f + epsilon; y += 16.0f)
+	{
+		for (float x = -16.0f; x <= 16.0f + epsilon; x += 16.0f)
+		{
+			floor = *destPos + Vector(x, y, 5.0f);
+			ceiling = *destPos + Vector(x, y, 72.0f - epsilon);
+
+			UTIL_TraceLine(floor, ceiling, ignore_monsters, dont_ignore_glass, ENT(pev), &result);
+
+			if (result.flFraction != 1.0f)
+			{
+				crouch = true;
+				break;
+			}
+		}
+
+		if (crouch)
+		{
+			node->SetAttributes(NAV_CROUCH);
+			break;
+
+		}
+	}
+
+	return node;
 }
 
 /* <343b40> ../cstrike/dlls/bot/cs_bot_learn.cpp:150 */
-NOXREF void drawProgressMeter(float progress, char *title)
+void drawProgressMeter(float progress, char *title)
 {
 	MESSAGE_BEGIN(MSG_ALL, gmsgBotProgress);
 		WRITE_BYTE(FLAG_PROGRESS_DRAW);
@@ -68,7 +130,7 @@ NOXREF void drawProgressMeter(float progress, char *title)
 }
 
 /* <3435ce> ../cstrike/dlls/bot/cs_bot_learn.cpp:159 */
-NOXREF void startProgressMeter(const char *title)
+void startProgressMeter(const char *title)
 {
 	MESSAGE_BEGIN(MSG_ALL, gmsgBotProgress);
 		WRITE_BYTE(FLAG_PROGRESS_START);
@@ -77,7 +139,7 @@ NOXREF void startProgressMeter(const char *title)
 }
 
 /* <3435a8> ../cstrike/dlls/bot/cs_bot_learn.cpp:167 */
-NOXREF void hideProgressMeter(void)
+void hideProgressMeter()
 {
 	MESSAGE_BEGIN(MSG_ALL, gmsgBotProgress);
 		WRITE_BYTE(FLAG_PROGRESS_HIDE);
@@ -85,119 +147,230 @@ NOXREF void hideProgressMeter(void)
 }
 
 /* <343b63> ../cstrike/dlls/bot/cs_bot_learn.cpp:182 */
-NOBODY void CCSBot::StartLearnProcess(void)
+void CCSBot::StartLearnProcess()
 {
-//	{
-//		Vector pos;                                     //   192
-//		Vector normal;                                  //   195
-//		startProgressMeter(const char *title);  //   184
-//		drawProgressMeter(float progress,
-//					char *title);  //   185
-//		Vector(Vector *const this,
-//			const Vector &v);  //   192
-//		SnapToGrid(Vector *pos);  //   193
-//		StartNormalProcess(CCSBot *const this);  //   199
-//	}
-
-	Vector pos;
-	Vector normal;
-
 	startProgressMeter("#CZero_LearningMap");
 	drawProgressMeter(0, "#CZero_LearningMap");
+	BuildLadders();
 
+	Vector normal;
+	Vector pos = pev->origin;
 
+	SnapToGrid(&pos.x);
+	SnapToGrid(&pos.y);
+
+	if (!GetGroundHeight(&pos, &pos.z, &normal))
+	{
+		CONSOLE_ECHO("ERROR: Start position invalid\n\n");
+		m_processMode = PROCESS_NORMAL;
+		return;
+	}
+
+	m_currentNode = new CNavNode(&pos, &normal);
+	m_goalPosition = pev->origin;
+	m_processMode = PROCESS_LEARN;
 }
 
+// Search the world and build a map of possible movements.
+// The algorithm begins at the bot's current location, and does a recursive search
+// outwards, tracking all valid steps and generating a directed graph of CNavNodes.
+// Sample the map one "step" in a cardinal direction to learn the map.
+// Returns true if sampling needs to continue, or false if done.
+
 /* <343d37> ../cstrike/dlls/bot/cs_bot_learn.cpp:217 */
-NOBODY bool CCSBot::LearnStep(void)
+bool CCSBot::LearnStep()
 {
-//	{
-//		int dir;                                              //   249
-//		{
-//			float feetOffset;                             //   256
-//			Vector pos;                             //   259
-//			int cx;                                       //   262
-//			int cy;                                       //   263
-//			TraceResult result;                           //   283
-//			Vector from;                            //   284
-//			Vector to;                              //   284
-//			Vector toNormal;                        //   289
-//			Vector fromOrigin;                      //   298
-//			Vector toOrigin;                        //   299
-//			bool walkable;                                //   303
-//			IsEntityWalkable(entvars_t *entity,
-//					unsigned int flags);  //   362
-//			{
-//				float toGround;                       //   309
-//				float fromGround;                     //   310
-//				float epsilon;                        //   312
-//				{
-//					Vector delta;           //   322
-//					float const inc;               //   323
-//					float along;                  //   324
-//					bool done;                    //   325
-//					float ground;                 //   326
-//					Vector normal;          //   327
-//					operator-(const Vector *const this,
-//							const Vector &v);  //   322
-//					{
-//						Vector p;       //   333
-//						operator*(const Vector *const this,
-//								float fl);  //   343
-//						operator+(const Vector *const this,
-//								const Vector &v);  //   343
-//					}
-//				}
-//			}
-//			VARS(edict_t *pent);  //   362
-//			GetFeetZ(const class CCSBot *const this);  //   256
-//			Vector(Vector *const this,
-//				const Vector &v);  //   259
-//			MarkAsVisited(CNavNode *const this,
-//					enum NavDirType dir);  //   280
-//			operator+(const Vector *const this,
-//					const Vector &v);  //   294
-//			operator+(const Vector *const this,
-//					const Vector &v);  //   298
-//			operator+(const Vector *const this,
-//					const Vector &v);  //   299
-//			{
-//				class CNavNode *newNode;             //   376
-//				AddNode(CCSBot *const this,
-//					const Vector *destPos,
-//					const Vector *normal,
-//					enum NavDirType dir,
-//					class CNavNode *source);  //   376
-//			}
-//		}
-//		HasVisited(CNavNode *const this,
-//				enum NavDirType dir);  //   251
-//	}
-//	{
-//		iterator iter;                                        //   225
-//		{
-//			class CNavLadder *ladder;                    //   227
-//			LadderEndSearch(CBaseEntity *entity,
-//					const Vector *pos,
-//					enum NavDirType mountDir);  //   230
-//			LadderEndSearch(CBaseEntity *entity,
-//					const Vector *pos,
-//					enum NavDirType mountDir);  //   234
-//		}
-//		operator++(_List_iterator<CNavLadder*> *const this);  //   225
-//	}
+	// take a step
+	while (true)
+	{
+		if (m_currentNode == NULL)
+		{
+			// search is exhausted - continue search from ends of ladders
+			NavLadderList::iterator iter;
+			for (iter = TheNavLadderList.begin(); iter != TheNavLadderList.end(); ++iter)
+			{
+				CNavLadder *ladder = (*iter);
+
+				// check ladder bottom
+				if ((m_currentNode = LadderEndSearch(ladder->m_entity, &ladder->m_bottom, ladder->m_dir)) != 0)
+					break;
+
+				// check ladder top
+				if ((m_currentNode = LadderEndSearch(ladder->m_entity, &ladder->m_top, ladder->m_dir)) != 0)
+					break;
+			}
+
+			if (m_currentNode == NULL)
+			{
+				// all seeds exhausted, sampling complete
+				GenerateNavigationAreaMesh();
+				return false;
+			}
+		}
+
+		// Take a step from this node
+		for (int dir = NORTH; dir < NUM_DIRECTIONS; dir++)
+		{
+			if (!m_currentNode->HasVisited((NavDirType)dir))
+			{
+				float feetOffset = pev->origin.z - GetFeetZ();
+
+				// start at current node position
+				Vector pos = *m_currentNode->GetPosition();
+
+				// snap to grid
+				int cx = SnapToGrid(pos.x);
+				int cy = SnapToGrid(pos.y);
+
+				// attempt to move to adjacent node
+				switch (dir)
+				{
+					case NORTH:		cy -= GenerationStepSize; break;
+					case SOUTH:		cy += GenerationStepSize; break;
+					case EAST:		cx += GenerationStepSize; break;
+					case WEST:		cx -= GenerationStepSize; break;
+				}
+
+				pos.x = cx;
+				pos.y = cy;
+
+				m_generationDir = (NavDirType)dir;
+
+				// mark direction as visited
+				m_currentNode->MarkAsVisited(m_generationDir);
+
+				// test if we can move to new position
+				TraceResult result;
+				Vector from, to;
+
+				// modify position to account for change in ground level during step
+				to.x = pos.x;
+				to.y = pos.y;
+				Vector toNormal;
+				if (GetGroundHeight(&pos, &to.z, &toNormal) == false)
+				{
+					return true;
+				}
+
+				from = *m_currentNode->GetPosition();
+
+				Vector fromOrigin = from + Vector(0, 0, feetOffset);
+				Vector toOrigin = to + Vector(0, 0, feetOffset);
+
+				UTIL_SetOrigin(pev, toOrigin);
+				UTIL_TraceLine(fromOrigin, toOrigin, ignore_monsters, dont_ignore_glass, ENT(pev), &result);
+
+				bool walkable;
+
+				if (result.flFraction == 1.0f && !result.fStartSolid)
+				{
+					// the trace didnt hit anything - clear
+					float toGround = to.z;
+					float fromGround = from.z;
+
+					float epsilon = 0.1f;
+
+					// check if ledge is too high to reach or will cause us to fall to our death
+					if (toGround - fromGround > JumpCrouchHeight + epsilon || fromGround - toGround > DeathDrop)
+					{
+						walkable = false;
+					}
+					else
+					{
+						// check surface normals along this step to see if we would cross any impassable slopes
+						Vector delta = to - from;
+						const float inc = 2.0f;
+						float along = inc;
+						bool done = false;
+						float ground;
+						Vector normal;
+
+						walkable = true;
+
+						while (!done)
+						{
+							Vector p;
+
+							// need to guarantee that we test the exact edges
+							if (along >= GenerationStepSize)
+							{
+								p = to;
+								done = true;
+							}
+							else
+							{
+								p = from + delta * (along / GenerationStepSize);
+							}
+
+							if (GetGroundHeight(&p, &ground, &normal) == false)
+							{
+								walkable = false;
+								break;
+							}
+
+							// check for maximum allowed slope
+							if (normal.z < 0.7f)
+							{
+								walkable = false;
+								break;
+							}
+
+							along += inc;
+						}
+					}
+				}
+				// TraceLine hit something...
+				else
+				{
+					if (IsEntityWalkable(VARS(result.pHit), WALK_THRU_EVERYTHING))
+					{
+						walkable = true;
+					}
+					else
+					{
+						walkable = false;
+					}
+				}
+#ifdef REGAMEDLL_FIXES
+				// if we're incrementally generating, don't overlap existing nav areas
+				CNavArea *overlap = TheNavAreaGrid.GetNavArea(&to, HumanHeight);
+				if (overlap != NULL)
+				{
+					walkable = false;
+				}
+#endif // REGAMEDLL_FIXES
+				if (walkable)
+				{
+					// we can move here
+					// create a new navigation node, and update current node pointer
+					CNavNode *newNode = AddNode(&to, &toNormal, m_generationDir, m_currentNode);
+				}
+
+				return true;
+			}
+		}
+
+		// all directions have been searched from this node - pop back to its parent and continue
+		m_currentNode = m_currentNode->GetParent();
+	}
 }
 
 /* <34489e> ../cstrike/dlls/bot/cs_bot_learn.cpp:392 */
-NOBODY void CCSBot::UpdateLearnProcess(void)
+void CCSBot::UpdateLearnProcess()
 {
-//	{
-//		float startTime;                                      //   394
-//	}
+	float startTime = g_engfuncs.pfnTime();
+	while (g_engfuncs.pfnTime() - startTime < updateTimesliceDuration)
+	{
+		if (LearnStep() == false)
+		{
+			StartAnalyzeAlphaProcess();
+			return;
+		}
+	}
 }
 
 /* <344750> ../cstrike/dlls/bot/cs_bot_learn.cpp:409 */
-void CCSBot::StartAnalyzeAlphaProcess(void)
+void CCSBot::StartAnalyzeAlphaProcess()
 {
 	m_processMode = PROCESS_ANALYZE_ALPHA;
 	m_analyzeIter = TheNavAreaList.begin();
@@ -213,76 +386,115 @@ void CCSBot::StartAnalyzeAlphaProcess(void)
 }
 
 /* <34396c> ../cstrike/dlls/bot/cs_bot_learn.cpp:427 */
-NOBODY inline bool CCSBot::AnalyzeAlphaStep(void)
+bool CCSBot::AnalyzeAlphaStep()
 {
-//	{
-//		class CNavArea *area;                                //   432
-//	}
+	++_currentIndex;
+	if (m_analyzeIter == TheNavAreaList.end())
+		return false;
+
+	CNavArea *area = (*m_analyzeIter);
+	area->ComputeHidingSpots();
+	area->ComputeApproachAreas();
+	++m_analyzeIter;
+
+	return true;
 }
 
 /* <3448de> ../cstrike/dlls/bot/cs_bot_learn.cpp:443 */
-NOBODY void CCSBot::UpdateAnalyzeAlphaProcess(void)
+void CCSBot::UpdateAnalyzeAlphaProcess()
 {
-//	{
-//		float startTime;                                      //   445
-//		float progress;                                       //   462
-//		AnalyzeAlphaStep(CCSBot *const this);  //   451
-//		drawProgressMeter(float progress,
-//					char *title);  //   454
-//		StartAnalyzeBetaProcess(CCSBot *const this);  //   456
-//		drawProgressMeter(float progress,
-//					char *title);  //   463
-//	}
+	float startTime = g_engfuncs.pfnTime();
+	while (g_engfuncs.pfnTime() - startTime < updateTimesliceDuration)
+	{
+		if (AnalyzeAlphaStep() == false)
+		{
+			drawProgressMeter(50, "#CZero_AnalyzingHidingSpots");
+			CleanupApproachAreaAnalysisPrep();
+			StartAnalyzeBetaProcess();
+			return;
+		}
+	}
+
+	float progress = _currentIndex / _navAreaCount * 50.0f;
+	drawProgressMeter(progress, "#CZero_AnalyzingHidingSpots");
 }
 
 /* <344aed> ../cstrike/dlls/bot/cs_bot_learn.cpp:467 */
-NOBODY void CCSBot::StartAnalyzeBetaProcess(void)
+void CCSBot::StartAnalyzeBetaProcess()
 {
-//	size(const class list<CNavArea*, std::allocator<CNavArea*>> *const this);  //   471
+	m_processMode = PROCESS_ANALYZE_BETA;
+	m_analyzeIter = TheNavAreaList.begin();
+
+	_navAreaCount = TheNavAreaList.size();
+	_currentIndex = 0;
 }
 
 /* <3437c8> ../cstrike/dlls/bot/cs_bot_learn.cpp:479 */
-NOBODY inline bool CCSBot::AnalyzeBetaStep(void)
+bool CCSBot::AnalyzeBetaStep()
 {
-//	{
-//		class CNavArea *area;                                //   484
-//	}
+	++_currentIndex;
+	if (m_analyzeIter == TheNavAreaList.end())
+		return false;
+
+	CNavArea *area = (*m_analyzeIter);
+	area->ComputeSpotEncounters();
+	area->ComputeSniperSpots();
+	++m_analyzeIter;
+
+	return true;
 }
 
 /* <344b8d> ../cstrike/dlls/bot/cs_bot_learn.cpp:495 */
-NOBODY void CCSBot::UpdateAnalyzeBetaProcess(void)
+void CCSBot::UpdateAnalyzeBetaProcess()
 {
-//	{
-//		float startTime;                                      //   497
-//		float progress;                                       //   512
-//		AnalyzeBetaStep(CCSBot *const this);  //   503
-//		drawProgressMeter(float progress,
-//					char *title);  //   506
-//		StartSaveProcess(CCSBot *const this);  //   507
-//		drawProgressMeter(float progress,
-//					char *title);  //   513
-//	}
+	float startTime = g_engfuncs.pfnTime();
+	while (g_engfuncs.pfnTime() - startTime < updateTimesliceDuration)
+	{
+		if (AnalyzeBetaStep() == false)
+		{
+			drawProgressMeter(100, "#CZero_AnalyzingApproachPoints");
+			StartSaveProcess();
+			return;
+		}
+	}
+
+	float progress = ((_currentIndex / _navAreaCount) + 1.0f) * 50.0f;
+	drawProgressMeter(progress, "#CZero_AnalyzingApproachPoints");
 }
 
 /* <344d1f> ../cstrike/dlls/bot/cs_bot_learn.cpp:517 */
-NOBODY void CCSBot::StartSaveProcess(void)
+void CCSBot::StartSaveProcess()
 {
+	m_processMode = PROCESS_SAVE;
 }
 
 /* <344d41> ../cstrike/dlls/bot/cs_bot_learn.cpp:527 */
-NOBODY void CCSBot::UpdateSaveProcess(void)
+void CCSBot::UpdateSaveProcess()
 {
-//	{
-//		char filename;                                        //   530
-//		char msg;                                             //   538
-//		char cmd;                                             //   548
-//		hideProgressMeter(void);  //   542
-//		StartNormalProcess(CCSBot *const this);  //   545
-//	}
+	char filename[256];
+	char msg[256];
+	char cmd[128];
+
+	GET_GAME_DIR(filename);
+
+	Q_strcat(filename, "\\");
+	Q_strcat(filename, TheBots->GetNavMapFilename());
+
+	HintMessageToAllPlayers("Saving...");
+	SaveNavigationMap(filename);
+
+	Q_sprintf(msg, "Navigation file '%s' saved.", filename);
+	HintMessageToAllPlayers(msg);
+
+	hideProgressMeter();
+	StartNormalProcess();
+
+	Q_sprintf(cmd, "map %s\n", STRING(gpGlobals->mapname));
+	SERVER_COMMAND(cmd);
 }
 
 /* <344e24> ../cstrike/dlls/bot/cs_bot_learn.cpp:554 */
-void CCSBot::StartNormalProcess(void)
+void CCSBot::StartNormalProcess()
 {
 	m_processMode = PROCESS_NORMAL;
 }

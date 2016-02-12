@@ -5,12 +5,7 @@
 */
 #ifndef HOOK_GAMEDLL
 
-static short s_iBeamSprite = 0;
-static float cosTable[ COS_TABLE_SIZE ];
-
-#else
-
-short s_iBeamSprite;
+short s_iBeamSprite = 0;
 float cosTable[ COS_TABLE_SIZE ];
 
 #endif // HOOK_GAMEDLL
@@ -35,7 +30,7 @@ bool UTIL_IsNameTaken(const char *name, bool ignoreHumans)
 		{
 			// bots can have prefixes so we need to check the name
 			// against the profile name instead.
-			CBot *bot = reinterpret_cast<CBot *>(player);
+			CBot *bot = static_cast<CBot *>(player);
 			if (FStrEq(name, bot->GetProfile()->GetName()))
 			{
 				return true;
@@ -50,14 +45,15 @@ bool UTIL_IsNameTaken(const char *name, bool ignoreHumans)
 			}
 		}
 	}
+
 	return false;
 }
 
 /* <4ad2da> ../game_shared/bot/bot_util.cpp:66 */
-int UTIL_ClientsInGame(void)
+int UTIL_ClientsInGame()
 {
 	int iCount = 0;
-	for (int iIndex = 1; iIndex <= gpGlobals->maxClients; iIndex++)
+	for (int iIndex = 1; iIndex <= gpGlobals->maxClients; ++iIndex)
 	{
 		CBaseEntity *pPlayer = UTIL_PlayerByIndex(iIndex);
 
@@ -70,16 +66,17 @@ int UTIL_ClientsInGame(void)
 		if (FStrEq(STRING(pPlayer->pev->netname), ""))
 			continue;
 
-		iCount++;
+		++iCount;
 	}
+
 	return iCount;
 }
 
 /* <4ad385> ../game_shared/bot/bot_util.cpp:93 */
-int UTIL_ActivePlayersInGame(void)
+int UTIL_ActivePlayersInGame()
 {
 	int iCount = 0;
-	for (int iIndex = 1; iIndex <= gpGlobals->maxClients; iIndex++)
+	for (int iIndex = 1; iIndex <= gpGlobals->maxClients; ++iIndex)
 	{
 		CBaseEntity *entity = UTIL_PlayerByIndex(iIndex);
 
@@ -101,7 +98,7 @@ int UTIL_ActivePlayersInGame(void)
 		if (player->m_iJoiningState != JOINED)
 			continue;
 
-		iCount++;
+		++iCount;
 	}
 
 	return iCount;
@@ -112,7 +109,7 @@ int UTIL_HumansInGame(bool ignoreSpectators)
 {
 	int iCount = 0;
 
-	for (int iIndex = 1; iIndex <= gpGlobals->maxClients; iIndex++)
+	for (int iIndex = 1; iIndex <= gpGlobals->maxClients; ++iIndex)
 	{
 		CBaseEntity *entity = UTIL_PlayerByIndex(iIndex);
 
@@ -136,17 +133,17 @@ int UTIL_HumansInGame(bool ignoreSpectators)
 		if (ignoreSpectators && player->m_iJoiningState != JOINED)
 			continue;
 
-		iCount++;
+		++iCount;
 	}
 
 	return iCount;
 }
 
 /* <4ad507> ../game_shared/bot/bot_util.cpp:174 */
-NOBODY int UTIL_HumansOnTeam(int teamID, bool isAlive)
+int UTIL_HumansOnTeam(int teamID, bool isAlive)
 {
 	int iCount = 0;
-	for (int iIndex = 1; iIndex <= gpGlobals->maxClients; iIndex++)
+	for (int iIndex = 1; iIndex <= gpGlobals->maxClients; ++iIndex)
 	{
 		CBaseEntity *entity = UTIL_PlayerByIndex(iIndex);
 
@@ -170,18 +167,18 @@ NOBODY int UTIL_HumansOnTeam(int teamID, bool isAlive)
 		if (isAlive && !player->IsAlive())
 			continue;
 
-		iCount++;
+		++iCount;
 	}
 
 	return iCount;
 }
 
 /* <4ad5db> ../game_shared/bot/bot_util.cpp:210 */
-NOBODY int UTIL_BotsInGame(void)
+int UTIL_BotsInGame()
 {
 	int iCount = 0;
 
-	for (int iIndex = 1; iIndex <= gpGlobals->maxClients; iIndex++)
+	for (int iIndex = 1; iIndex <= gpGlobals->maxClients; ++iIndex)
 	{
 		CBasePlayer *pPlayer = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(iIndex));
 
@@ -197,7 +194,7 @@ NOBODY int UTIL_BotsInGame(void)
 		if (!pPlayer->IsBot())
 			continue;
 
-		iCount++;
+		++iCount;
 	}
 
 	return iCount;
@@ -264,10 +261,10 @@ bool UTIL_KickBotFromTeam(TeamName kickTeam)
 }
 
 /* <4ad7ad> ../game_shared/bot/bot_util.cpp:305 */
-NOBODY bool UTIL_IsTeamAllBots(int team)
+bool UTIL_IsTeamAllBots(int team)
 {
 	int botCount = 0;
-	for (int i=1; i <= gpGlobals->maxClients; ++i)
+	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
 		CBasePlayer *player = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
@@ -301,7 +298,7 @@ NOBODY bool UTIL_IsTeamAllBots(int team)
 	CBasePlayer *closePlayer = NULL;
 	float closeDistSq = 1.0e12f;	// 999999999999.9f
 
-	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
 		CBasePlayer *player = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
@@ -329,12 +326,12 @@ NOBODY bool UTIL_IsTeamAllBots(int team)
 // If 'distance' is non-NULL, the distance to the closest player is returned in it.
 
 /* <4ad86a> ../game_shared/bot/bot_util.cpp:343 */
-NOBODY /*extern*/ CBasePlayer *UTIL_GetClosestPlayer(const Vector *pos, int team, float *distance)
+/*extern*/ CBasePlayer *UTIL_GetClosestPlayer(const Vector *pos, int team, float *distance)
 {
 	CBasePlayer *closePlayer = NULL;
-	float closeDistSq = 999999999999.9f;
+	float closeDistSq = 1.0e12f;	// 999999999999.9f
 
-	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
 		CBasePlayer *player = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
@@ -387,7 +384,7 @@ void UTIL_ConstructBotNetName(char *name, int nameLength, const BotProfile *prof
 }
 
 /* <4adb6c> ../game_shared/bot/bot_util.cpp:440 */
-NOBODY bool UTIL_IsVisibleToTeam(const Vector &spot, int team, float maxRange)
+bool UTIL_IsVisibleToTeam(const Vector &spot, int team, float maxRange)
 {
 	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
@@ -422,7 +419,7 @@ NOBODY bool UTIL_IsVisibleToTeam(const Vector &spot, int team, float maxRange)
 }
 
 /* <4adc8e> ../game_shared/bot/bot_util.cpp:479 */
-CBasePlayer *UTIL_GetLocalPlayer(void)
+CBasePlayer *UTIL_GetLocalPlayer()
 {
 	if (!IS_DEDICATED_SERVER())
 		return static_cast<CBasePlayer *>(UTIL_PlayerByIndex(1));
@@ -431,26 +428,26 @@ CBasePlayer *UTIL_GetLocalPlayer(void)
 }
 
 /* <4adcab> ../game_shared/bot/bot_util.cpp:491 */
-NOBODY Vector UTIL_ComputeOrigin(entvars_t *pevVars)
+NOXREF Vector UTIL_ComputeOrigin(entvars_t *pevVars)
 {
-	if ((pevVars->origin.x == 0.0) && (pevVars->origin.y == 0.0) && (pevVars->origin.z == 0.0))
-		return (pevVars->absmax + pevVars->absmin) *0.5;
+	if (pevVars->origin.x == 0.0f && pevVars->origin.y == 0.0f && pevVars->origin.z == 0.0f)
+		return (pevVars->absmax + pevVars->absmin) * 0.5f;
 	else
 		return pevVars->origin;
 }
 
-NOBODY Vector UTIL_ComputeOrigin(CBaseEntity *pEntity)
+NOXREF Vector UTIL_ComputeOrigin(CBaseEntity *pEntity)
 {
 	return UTIL_ComputeOrigin(pEntity->pev);
 }
 
-NOBODY Vector UTIL_ComputeOrigin(edict_t *pentEdict)
+NOXREF Vector UTIL_ComputeOrigin(edict_t *pentEdict)
 {
 	return UTIL_ComputeOrigin(VARS(pentEdict));
 }
 
 /* <4adf8a> ../game_shared/bot/bot_util.cpp:513 */
-NOBODY void UTIL_DrawBeamFromEnt(int iIndex, Vector vecEnd, int iLifetime, byte bRed, byte bGreen, byte bBlue)
+NOXREF void UTIL_DrawBeamFromEnt(int iIndex, Vector vecEnd, int iLifetime, byte bRed, byte bGreen, byte bBlue)
 {
 	MESSAGE_BEGIN(MSG_PVS, SVC_TEMPENTITY, vecEnd);
 		WRITE_BYTE(TE_BEAMENTPOINT);
@@ -473,7 +470,7 @@ NOBODY void UTIL_DrawBeamFromEnt(int iIndex, Vector vecEnd, int iLifetime, byte 
 }
 
 /* <4ae02e> ../game_shared/bot/bot_util.cpp:537 */
-NOBODY void UTIL_DrawBeamPoints(Vector vecStart, Vector vecEnd, int iLifetime, byte bRed, byte bGreen, byte bBlue)
+void UTIL_DrawBeamPoints(Vector vecStart, Vector vecEnd, int iLifetime, byte bRed, byte bGreen, byte bBlue)
 {
 	MESSAGE_BEGIN(MSG_PVS, SVC_TEMPENTITY, vecStart);
 		WRITE_BYTE(TE_BEAMPOINTS);
@@ -525,7 +522,7 @@ void CONSOLE_ECHO_LOGGED(char *pszMsg, ...)
 }
 
 /* <4ae198> ../game_shared/bot/bot_util.cpp:592 */
-void BotPrecache(void)
+void BotPrecache()
 {
 	s_iBeamSprite = PRECACHE_MODEL("sprites/smoke.spr");
 
@@ -544,9 +541,9 @@ void BotPrecache(void)
 }
 
 /* <4ae1b1> ../game_shared/bot/bot_util.cpp:666 */
-void InitBotTrig(void)
+void InitBotTrig()
 {
-	for (int i = 0; i < COS_TABLE_SIZE; i++)
+	for (int i = 0; i < COS_TABLE_SIZE; ++i)
 	{
 		float_precision angle = 2.0f * M_PI * (float)i / (float)(COS_TABLE_SIZE - 1);
 		cosTable[i] = cos(angle);
@@ -584,8 +581,8 @@ bool IsGameEventAudible(GameEventType event, CBaseEntity *entity, CBaseEntity *o
 
 	switch (event)
 	{
-	/// TODO: Check weapon type (knives are pretty quiet)
-	/// TODO: Use actual volume, account for silencers, etc.
+	// TODO: Check weapon type (knives are pretty quiet)
+	// TODO: Use actual volume, account for silencers, etc.
 	case EVENT_WEAPON_FIRED:
 	{
 		if (player->m_pActiveItem == NULL)

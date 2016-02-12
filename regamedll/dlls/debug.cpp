@@ -18,16 +18,10 @@ DebugOutputLevel outputLevel[ NUM_LEVELS ] =
 unsigned int theDebugOutputTypes;
 static char theDebugBuffer[ DebugBufferSize ];
 
-#else // HOOK_GAMEDLL
-
-DebugOutputLevel outputLevel[ NUM_LEVELS ];
-unsigned int theDebugOutputTypes;
-char theDebugBuffer[ DebugBufferSize ];
-
 #endif // HOOK_GAMEDLL
 
 /* <22fe8b> ../cstrike/dlls/debug.cpp:39 */
-bool IsDeveloper(void)
+bool IsDeveloper()
 {
 	return (CVAR_GET_FLOAT("developer") > 0.0);
 }
@@ -64,7 +58,7 @@ void UTIL_DPrintf(char *pszMsg, ...)
 }
 
 /* <22fe97> ../cstrike/dlls/debug.cpp:78 */
-void PrintDebugFlags(void)
+void PrintDebugFlags()
 {
 	char *tmp;
 	int remainder = DebugBufferSize;
@@ -72,7 +66,7 @@ void PrintDebugFlags(void)
 	theDebugBuffer[0] = '\0';
 	tmp = BufPrintf(theDebugBuffer, remainder, "mp_debug:\n");
 
-	for (int i = 0; i < NUM_LEVELS - 1; i++)
+	for (int i = 0; i < NUM_LEVELS - 1; ++i)
 	{
 		DebugOutputLevel level = outputLevel[i];
 
@@ -87,7 +81,7 @@ void SetDebugFlag(const char *flagStr, bool state)
 	if (flagStr != NULL)
 	{
 		DebugOutputType flag;
-		for (int i = 0; i < ARRAYSIZE(outputLevel); i++)
+		for (int i = 0; i < ARRAYSIZE(outputLevel); ++i)
 		{
 			DebugOutputLevel level = outputLevel[ i ];
 
@@ -115,7 +109,7 @@ void PrintDebugFlag(const char *flagStr)
 	if (flagStr != NULL)
 	{
 		DebugOutputType flag;
-		for (int i = 0; i < ARRAYSIZE(outputLevel); i++)
+		for (int i = 0; i < ARRAYSIZE(outputLevel); ++i)
 		{
 			DebugOutputLevel level = outputLevel[ i ];
 

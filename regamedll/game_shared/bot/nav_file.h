@@ -48,7 +48,7 @@ class PlaceDirectory
 public:
 	typedef unsigned short EntryType;
 
-	void Reset(void);
+	void Reset();
 	bool IsKnown(Place place) const;		// return true if this place is already in the directory
 	EntryType GetEntry(Place place) const;		// return the directory entry corresponding to this Place (0 = no entry)
 	void AddPlace(Place place);			// add the place to the directory if not already known
@@ -60,21 +60,10 @@ private:
 	std::vector<Place> m_directory;
 };
 
-#ifdef HOOK_GAMEDLL
-
-#define placeDirectory (*pplaceDirectory)
-
-#endif // HOOK_GAMEDLL
-
-extern PlaceDirectory placeDirectory;
-
-NOBODY char *GetBspFilename(const char *navFilename);
-NOBODY void COM_FixSlashes(char *pname);
-NOBODY bool SaveNavigationMap(const char *filename);
-NOBODY void LoadLocationFile(const char *filename);
-NOBODY void SanityCheckNavigationMap(const char *mapName);
-NOBODY NavErrorType LoadNavigationMap(void);
-
-extern void (*pLoadNavigationMap)(void);
+char *GetBspFilename(const char *navFilename);
+bool SaveNavigationMap(const char *filename);
+void LoadLocationFile(const char *filename);
+void SanityCheckNavigationMap(const char *mapName);	// Performs a lightweight sanity-check of the specified map's nav mesh
+NavErrorType LoadNavigationMap();
 
 #endif // NAV_FILE_H

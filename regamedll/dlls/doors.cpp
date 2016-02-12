@@ -21,11 +21,6 @@ TYPEDESCRIPTION CMomentaryDoor::m_SaveData[] =
 	DEFINE_FIELD(CMomentaryDoor, m_bMoveSnd, FIELD_CHARACTER),
 };
 
-#else
-
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CBaseDoor, m_SaveData)[7];
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CMomentaryDoor, m_SaveData)[1];
-
 #endif // HOOK_GAMEDLL
 
 /* <693c0> ../cstrike/dlls/doors.cpp:98 */
@@ -58,9 +53,9 @@ void PlayLockSounds(entvars_t *pev, locksound_t *pls, int flocked, int fbutton)
 		float fvol;
 
 		if (fplaysound && fplaysentence)
-			fvol = 0.25;
+			fvol = 0.25f;
 		else
-			fvol = 1.0;
+			fvol = 1.0f;
 
 		// if there is a locked sound, and we've debounced, play sound
 		if (fplaysound)
@@ -94,9 +89,9 @@ void PlayLockSounds(entvars_t *pev, locksound_t *pls, int flocked, int fbutton)
 
 		// if playing both sentence and sound, lower sound volume so we hear sentence
 		if (fplaysound && fplaysentence)
-			fvol = 0.25;
+			fvol = 0.25f;
 		else
-			fvol = 1.0;
+			fvol = 1.0f;
 
 		// play 'door unlocked' sound if set
 		if (fplaysound)
@@ -207,7 +202,7 @@ LINK_ENTITY_TO_CLASS(func_door, CBaseDoor);
 LINK_ENTITY_TO_CLASS(func_water, CBaseDoor);
 
 /* <690bc> ../cstrike/dlls/doors.cpp:285 */
-void CBaseDoor::__MAKE_VHOOK(Spawn)(void)
+void CBaseDoor::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
 	SetMovedir(pev);
@@ -267,7 +262,7 @@ void CBaseDoor::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <69949> ../cstrike/dlls/doors.cpp:334 */
-void CBaseDoor::__MAKE_VHOOK(Restart)(void)
+void CBaseDoor::__MAKE_VHOOK(Restart)()
 {
 	SetMovedir(pev);
 	m_toggle_state = TS_AT_BOTTOM;
@@ -292,7 +287,7 @@ void CBaseDoor::__MAKE_VHOOK(SetToggleState)(int state)
 #define noiseArrived noise2
 
 /* <6924c> ../cstrike/dlls/doors.cpp:359 */
-void CBaseDoor::__MAKE_VHOOK(Precache)(void)
+void CBaseDoor::__MAKE_VHOOK(Precache)()
 {
 	char *pszSound;
 
@@ -408,29 +403,29 @@ void CBaseDoor::__MAKE_VHOOK(Precache)(void)
 	// get sentence group names, for doors which are directly 'touched' to open
 	switch (m_bLockedSentence)
 	{
-		case 1: m_ls.sLockedSentence = ALLOC_STRING("NA"); break;	// access denied
-		case 2: m_ls.sLockedSentence = ALLOC_STRING("ND"); break;	// security lockout
-		case 3: m_ls.sLockedSentence = ALLOC_STRING("NF"); break;	// blast door
-		case 4: m_ls.sLockedSentence = ALLOC_STRING("NFIRE"); break;	// fire door
-		case 5: m_ls.sLockedSentence = ALLOC_STRING("NCHEM"); break;	// chemical door
-		case 6: m_ls.sLockedSentence = ALLOC_STRING("NRAD"); break;	// radiation door
-		case 7: m_ls.sLockedSentence = ALLOC_STRING("NCON"); break;	// gen containment
-		case 8: m_ls.sLockedSentence = ALLOC_STRING("NH"); break;	// maintenance door
-		case 9: m_ls.sLockedSentence = ALLOC_STRING("NG"); break;	// broken door
-		default: m_ls.sLockedSentence = 0; break;
+	case 1: m_ls.sLockedSentence = ALLOC_STRING("NA"); break;	// access denied
+	case 2: m_ls.sLockedSentence = ALLOC_STRING("ND"); break;	// security lockout
+	case 3: m_ls.sLockedSentence = ALLOC_STRING("NF"); break;	// blast door
+	case 4: m_ls.sLockedSentence = ALLOC_STRING("NFIRE"); break;	// fire door
+	case 5: m_ls.sLockedSentence = ALLOC_STRING("NCHEM"); break;	// chemical door
+	case 6: m_ls.sLockedSentence = ALLOC_STRING("NRAD"); break;	// radiation door
+	case 7: m_ls.sLockedSentence = ALLOC_STRING("NCON"); break;	// gen containment
+	case 8: m_ls.sLockedSentence = ALLOC_STRING("NH"); break;	// maintenance door
+	case 9: m_ls.sLockedSentence = ALLOC_STRING("NG"); break;	// broken door
+	default: m_ls.sLockedSentence = 0; break;
 	}
 
 	switch (m_bUnlockedSentence)
 	{
-		case 1: m_ls.sUnlockedSentence = ALLOC_STRING("EA"); break;	// access granted
-		case 2: m_ls.sUnlockedSentence = ALLOC_STRING("ED"); break;	// security door
-		case 3: m_ls.sUnlockedSentence = ALLOC_STRING("EF"); break;	// blast door
-		case 4: m_ls.sUnlockedSentence = ALLOC_STRING("EFIRE"); break;	// fire door
-		case 5: m_ls.sUnlockedSentence = ALLOC_STRING("ECHEM"); break;	// chemical door
-		case 6: m_ls.sUnlockedSentence = ALLOC_STRING("ERAD"); break;	// radiation door
-		case 7: m_ls.sUnlockedSentence = ALLOC_STRING("ECON"); break;	// gen containment
-		case 8: m_ls.sUnlockedSentence = ALLOC_STRING("EH"); break;	// maintenance door
-		default: m_ls.sUnlockedSentence = 0; break;
+	case 1: m_ls.sUnlockedSentence = ALLOC_STRING("EA"); break;	// access granted
+	case 2: m_ls.sUnlockedSentence = ALLOC_STRING("ED"); break;	// security door
+	case 3: m_ls.sUnlockedSentence = ALLOC_STRING("EF"); break;	// blast door
+	case 4: m_ls.sUnlockedSentence = ALLOC_STRING("EFIRE"); break;	// fire door
+	case 5: m_ls.sUnlockedSentence = ALLOC_STRING("ECHEM"); break;	// chemical door
+	case 6: m_ls.sUnlockedSentence = ALLOC_STRING("ERAD"); break;	// radiation door
+	case 7: m_ls.sUnlockedSentence = ALLOC_STRING("ECON"); break;	// gen containment
+	case 8: m_ls.sUnlockedSentence = ALLOC_STRING("EH"); break;	// maintenance door
+	default: m_ls.sUnlockedSentence = 0; break;
 	}
 }
 
@@ -488,7 +483,7 @@ void CBaseDoor::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller,
 // Causes the door to "do its thing", i.e. start moving, and cascade activation.
 
 /* <6a319> ../cstrike/dlls/doors.cpp:554 */
-int CBaseDoor::DoorActivate(void)
+int CBaseDoor::DoorActivate()
 {
 	if (!UTIL_IsMasterTriggered(m_sMaster, m_hActivator))
 		return 0;
@@ -519,7 +514,7 @@ int CBaseDoor::DoorActivate(void)
 // Starts the door going to its "up" position (simply ToggleData->vecPosition2).
 
 /* <6a125> ../cstrike/dlls/doors.cpp:588 */
-void CBaseDoor::DoorGoUp(void)
+void CBaseDoor::DoorGoUp()
 {
 	entvars_t *pevActivator;
 	bool isReversing = (m_toggle_state == TS_GOING_DOWN);
@@ -549,7 +544,7 @@ void CBaseDoor::DoorGoUp(void)
 
 	SetMoveDone(&CBaseDoor::DoorHitTop);
 
-	// !!! BUGBUG Triggered doors don't work with this yet
+	// BUGBUG: Triggered doors don't work with this yet
 	if (FClassnameIs(pev, "func_door_rotating"))
 	{
 		float sign = 1.0;
@@ -595,7 +590,7 @@ void CBaseDoor::DoorGoUp(void)
 				{
 					if (toActivator.x <= hiX)
 					{
-						if (toActivator.y > loY)
+						if (toActivator.y < loY)
 							sign = (momentArmX > 0) ? 1 : -1;
 						else if (toActivator.y > hiY)
 							sign = (momentArmX < 0) ? 1 : -1;
@@ -634,7 +629,7 @@ void CBaseDoor::DoorGoUp(void)
 // The door has reached the "up" position.  Either go back down, or wait for another activation.
 
 /* <6940c> ../cstrike/dlls/doors.cpp:721 */
-void CBaseDoor::DoorHitTop(void)
+void CBaseDoor::DoorHitTop()
 {
 	if (!(pev->spawnflags & SF_DOOR_SILENT))
 	{
@@ -679,7 +674,7 @@ void CBaseDoor::DoorHitTop(void)
 // Starts the door going to its "down" position (simply ToggleData->vecPosition1).
 
 /* <697ad> ../cstrike/dlls/doors.cpp:762 */
-void CBaseDoor::DoorGoDown(void)
+void CBaseDoor::DoorGoDown()
 {
 	bool isReversing = (m_toggle_state == TS_GOING_UP);
 
@@ -719,7 +714,7 @@ void CBaseDoor::DoorGoDown(void)
 // The door has reached the "down" position.  Back to quiescence.
 
 /* <694a5> ../cstrike/dlls/doors.cpp:791 */
-void CBaseDoor::DoorHitBottom(void)
+void CBaseDoor::DoorHitBottom()
 {
 	if (!(pev->spawnflags & SF_DOOR_SILENT))
 	{
@@ -879,7 +874,7 @@ void CBaseDoor::__MAKE_VHOOK(Blocked)(CBaseEntity *pOther)
 LINK_ENTITY_TO_CLASS(func_door_rotating, CRotDoor);
 
 /* <698be> ../cstrike/dlls/doors.cpp:946 */
-void CRotDoor::__MAKE_VHOOK(Restart)(void)
+void CRotDoor::__MAKE_VHOOK(Restart)()
 {
 	CBaseToggle::AxisDir(pev);
 
@@ -907,7 +902,7 @@ void CRotDoor::__MAKE_VHOOK(Restart)(void)
 }
 
 /* <69177> ../cstrike/dlls/doors.cpp:978 */
-void CRotDoor::__MAKE_VHOOK(Spawn)(void)
+void CRotDoor::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
 
@@ -984,7 +979,7 @@ LINK_ENTITY_TO_CLASS(momentary_door, CMomentaryDoor);
 IMPLEMENT_SAVERESTORE(CMomentaryDoor, CBaseToggle);
 
 /* <69001> ../cstrike/dlls/doors.cpp:1065 */
-void CMomentaryDoor::__MAKE_VHOOK(Spawn)(void)
+void CMomentaryDoor::__MAKE_VHOOK(Spawn)()
 {
 	SetMovedir(pev);
 
@@ -1020,7 +1015,7 @@ void CMomentaryDoor::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <68fa5> ../cstrike/dlls/doors.cpp:1096 */
-void CMomentaryDoor::__MAKE_VHOOK(Precache)(void)
+void CMomentaryDoor::__MAKE_VHOOK(Precache)()
 {
 	// set the door's "in-motion" sound
 	switch (m_bMoveSnd)
@@ -1097,8 +1092,8 @@ void CMomentaryDoor::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCa
 		return;
 	}
 
-	if (value > 1.0)
-		value = 1.0;
+	if (value > 1.0f)
+		value = 1.0f;
 
 	Vector move = m_vecPosition1 + (value * (m_vecPosition2 - m_vecPosition1));
 	Vector delta = move - pev->origin;
@@ -1106,7 +1101,7 @@ void CMomentaryDoor::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCa
 	//float speed = delta.Length() * 10;
 
 	// move there in 0.1 sec
-	float speed = delta.Length() / 0.1;
+	float speed = delta.Length() / 0.1f;
 
 	if (speed == 0)
 		return;
@@ -1129,97 +1124,3 @@ void CMomentaryDoor::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCa
 
 	LinearMove(move, speed);
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CBaseDoor::Spawn(void)
-{
-	Spawn_();
-}
-
-void CBaseDoor::Precache(void)
-{
-	Precache_();
-}
-
-void CBaseDoor::Restart(void)
-{
-	Restart_();
-}
-
-void CBaseDoor::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-int CBaseDoor::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CBaseDoor::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-void CBaseDoor::SetToggleState(int state)
-{
-	SetToggleState_(state);
-}
-
-void CBaseDoor::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	Use_(pActivator, pCaller, useType, value);
-}
-
-void CBaseDoor::Blocked(CBaseEntity *pOther)
-{
-	Blocked_(pOther);
-}
-
-void CRotDoor::Spawn(void)
-{
-	Spawn_();
-}
-
-void CRotDoor::Restart(void)
-{
-	Restart_();
-}
-
-void CRotDoor::SetToggleState(int state)
-{
-	SetToggleState_(state);
-}
-
-void CMomentaryDoor::Spawn(void)
-{
-	Spawn_();
-}
-
-void CMomentaryDoor::Precache(void)
-{
-	Precache_();
-}
-
-void CMomentaryDoor::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-int CMomentaryDoor::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CMomentaryDoor::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-void CMomentaryDoor::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	Use_(pActivator, pCaller, useType, value);
-}
-
-#endif // HOOK_GAMEDLL

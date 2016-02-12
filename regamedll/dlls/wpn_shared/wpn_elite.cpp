@@ -4,20 +4,21 @@
 LINK_ENTITY_TO_CLASS(weapon_elite, CELITE);
 
 /* <251034> ../cstrike/dlls/wpn_shared/wpn_elite.cpp:54 */
-void CELITE::__MAKE_VHOOK(Spawn)(void)
+void CELITE::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
+
 	m_iId = WEAPON_ELITE;
 	SET_MODEL(edict(), "models/w_elite.mdl");
 
 	m_iDefaultAmmo = ELITE_DEFAULT_GIVE;
-	m_flAccuracy = 0.88;
+	m_flAccuracy = 0.88f;
 
 	FallInit();
 }
 
 /* <250fb3> ../cstrike/dlls/wpn_shared/wpn_elite.cpp:67 */
-void CELITE::__MAKE_VHOOK(Precache)(void)
+void CELITE::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/v_elite.mdl");
 	PRECACHE_MODEL("models/w_elite.mdl");
@@ -55,9 +56,9 @@ int CELITE::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 }
 
 /* <25100d> ../cstrike/dlls/wpn_shared/wpn_elite.cpp:103 */
-BOOL CELITE::__MAKE_VHOOK(Deploy)(void)
+BOOL CELITE::__MAKE_VHOOK(Deploy)()
 {
-	m_flAccuracy = 0.88;
+	m_flAccuracy = 0.88f;
 
 	if (!(m_iClip & 1))
 	{
@@ -68,7 +69,7 @@ BOOL CELITE::__MAKE_VHOOK(Deploy)(void)
 }
 
 /* <251335> ../cstrike/dlls/wpn_shared/wpn_elite.cpp:114 */
-void CELITE::__MAKE_VHOOK(PrimaryAttack)(void)
+void CELITE::__MAKE_VHOOK(PrimaryAttack)()
 {
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
 	{
@@ -98,14 +99,12 @@ void CELITE::ELITEFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 	Vector vecDir;
 
 #ifdef REGAMEDLL_FIXES
-	flCycleTime -= 0.078;
+	flCycleTime -= 0.078f;
 #else
-	flCycleTime -= 0.125;
+	flCycleTime -= 0.125f;
 #endif // REGAMEDLL_FIXES
 
-	m_iShotsFired++;
-
-	if (m_iShotsFired > 1)
+	if (++m_iShotsFired > 1)
 	{
 		return;
 	}
@@ -114,15 +113,15 @@ void CELITE::ELITEFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 
 	if (m_flLastFire)
 	{
-		m_flAccuracy -= (0.325 - flTimeDiff) * 0.275;
+		m_flAccuracy -= (0.325f - flTimeDiff) * 0.275f;
 
-		if (m_flAccuracy > 0.88)
+		if (m_flAccuracy > 0.88f)
 		{
-			m_flAccuracy = 0.88;
+			m_flAccuracy = 0.88f;
 		}
-		else if (m_flAccuracy < 0.55)
+		else if (m_flAccuracy < 0.55f)
 		{
-			m_flAccuracy = 0.55;
+			m_flAccuracy = 0.55f;
 		}
 	}
 
@@ -145,8 +144,8 @@ void CELITE::ELITEFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 	}
 
 	m_flNextPrimaryAttack = m_flNextSecondaryAttack = GetNextAttackDelay(flCycleTime);
-	m_iClip--;
 
+	--m_iClip;
 	m_pPlayer->m_iWeaponVolume = BIG_EXPLOSION_VOLUME;
 	m_pPlayer->m_iWeaponFlash = DIM_GUN_FLASH;
 
@@ -191,30 +190,26 @@ void CELITE::ELITEFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
 	}
 
-	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.0;
-	m_pPlayer->pev->punchangle.x -= 2.0;
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.0f;
+	m_pPlayer->pev->punchangle.x -= 2.0f;
 }
 
 /* <2510f8> ../cstrike/dlls/wpn_shared/wpn_elite.cpp:239 */
-void CELITE::__MAKE_VHOOK(Reload)(void)
+void CELITE::__MAKE_VHOOK(Reload)()
 {
 	if (m_pPlayer->ammo_9mm <= 0)
-	{
 		return;
-	}
 
 	if (DefaultReload(ELITE_MAX_CLIP, ELITE_RELOAD, ELITE_RELOAD_TIME))
 	{
 		m_pPlayer->SetAnimation(PLAYER_RELOAD);
-		m_flAccuracy = 0.88;
+		m_flAccuracy = 0.88f;
 	}
 }
 
 /* <24fed7> ../cstrike/dlls/wpn_shared/wpn_elite.cpp:251 */
-void CELITE::__MAKE_VHOOK(WeaponIdle)(void)
+void CELITE::__MAKE_VHOOK(WeaponIdle)()
 {
-	int iAnim;
-
 	ResetEmptySound();
 	m_pPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);
 
@@ -222,49 +217,9 @@ void CELITE::__MAKE_VHOOK(WeaponIdle)(void)
 	{
 		if (m_iClip)
 		{
-			iAnim = (m_iClip == 1) ? ELITE_IDLE_LEFTEMPTY : ELITE_IDLE;
-
-			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 60.0;
+			int iAnim = (m_iClip == 1) ? ELITE_IDLE_LEFTEMPTY : ELITE_IDLE;
+			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 60.0f;
 			SendWeaponAnim(iAnim, UseDecrement() != FALSE);
 		}
 	}
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CELITE::Spawn(void)
-{
-	Spawn_();
-}
-
-void CELITE::Precache(void)
-{
-	Precache_();
-}
-
-int CELITE::GetItemInfo(ItemInfo *p)
-{
-	return GetItemInfo_(p);
-}
-
-BOOL CELITE::Deploy(void)
-{
-	return Deploy_();
-}
-
-void CELITE::PrimaryAttack(void)
-{
-	PrimaryAttack_();
-}
-
-void CELITE::Reload(void)
-{
-	Reload_();
-}
-
-void CELITE::WeaponIdle(void)
-{
-	WeaponIdle_();
-}
-
-#endif // HOOK_GAMEDLL

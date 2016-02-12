@@ -39,10 +39,7 @@
 class CNavPath
 {
 public:
-	CNavPath(void)
-	{
-		m_segmentCount = 0;
-	}
+	CNavPath() { m_segmentCount = 0; }
 
 	struct PathSegment
 	{
@@ -52,48 +49,30 @@ public:
 		const CNavLadder *ladder;	// if "how" refers to a ladder, this is it
 	};
 
-	const PathSegment *operator[](int i)
-	{
-		return (i >= 0 && i < m_segmentCount) ? &m_path[i] : NULL;
-	}
+	const PathSegment *operator[](int i) { return (i >= 0 && i < m_segmentCount) ? &m_path[i] : NULL; }
+	int GetSegmentCount() const { return m_segmentCount; }
+	const Vector &GetEndpoint() const { return m_path[ m_segmentCount - 1 ].pos; }
 
-	int GetSegmentCount(void) const
-	{
-		return m_segmentCount;
-	}
-	const Vector &GetEndpoint(void) const
-	{
-		return m_path[ m_segmentCount - 1 ].pos;
-	}
+	bool IsAtEnd(const Vector &pos) const;						// return true if position is at the end of the path
+	float GetLength() const;							// return length of path from start to finish
+	NOXREF bool GetPointAlongPath(float distAlong, Vector *pointOnPath) const;	// return point a given distance along the path - if distance is out of path bounds, point is clamped to start/end
 
-	bool IsAtEnd(const Vector &pos) const;					// return true if position is at the end of the path
-	float GetLength(void) const;						// return length of path from start to finish
-	bool GetPointAlongPath(float distAlong, Vector *pointOnPath) const;	// return point a given distance along the path - if distance is out of path bounds, point is clamped to start/end
-
-	/// return the node index closest to the given distance along the path without going over - returns (-1) if error
+	// return the node index closest to the given distance along the path without going over - returns (-1) if error
 	int GetSegmentIndexAlongPath(float distAlong) const;
 
-	bool IsValid(void) const
-	{
-		return (m_segmentCount > 0);
-	}
-	void Invalidate(void)
-	{
-		m_segmentCount = 0;
-	}
+	bool IsValid() const { return (m_segmentCount > 0); }
+	void Invalidate() { m_segmentCount = 0; }
 
 	// draw the path for debugging
-	void Draw(void);
+	void Draw();
 
-	/// compute closest point on path to given point
-	bool FindClosestPointOnPath(const Vector *worldPos, int startIndex, int endIndex, Vector *close) const;
+	// compute closest point on path to given point
+	NOXREF bool FindClosestPointOnPath(const Vector *worldPos, int startIndex, int endIndex, Vector *close) const;
 
-	void Optimize(void);
+	void Optimize();
 
 	// Compute shortest path from 'start' to 'goal' via A* algorithm
-	template<
-		typename CostFunctor
-	>
+	template<typename CostFunctor>
 	bool Compute(const Vector *start, const Vector *goal, CostFunctor &costFunc)
 	{
 		Invalidate();
@@ -171,45 +150,31 @@ public:
 
 		return true;
 	}
-
+#ifndef HOOK_GAMEDLL
 private:
+#endif // HOOK_GAMEDLL
 	enum { MAX_PATH_SEGMENTS = 256 };
-
 	PathSegment m_path[ MAX_PATH_SEGMENTS ];
 	int m_segmentCount;
 
-	// determine actual path positions
-	bool ComputePathPositions(void);
-#ifdef HOOK_GAMEDLL
-public:
-#endif // HOOK_GAMEDLL
-	// utility function for when start and goal are in the same area
-	bool BuildTrivialPath(const Vector *start, const Vector *goal);
-
-	// used by Optimize()
-	int FindNextOccludedNode(int anchor);
-
-};/* size: 6148, cachelines: 97, members: 2 */
-
+	bool ComputePathPositions();					// determine actual path positions
+	bool BuildTrivialPath(const Vector *start, const Vector *goal);	// utility function for when start and goal are in the same area
+	int FindNextOccludedNode(int anchor_);				// used by Optimize()
+};
 
 // Monitor improv movement and determine if it becomes stuck
 class CStuckMonitor
 {
 public:
-	CStuckMonitor(void);
+	CStuckMonitor();
 
-	void Reset(void);
+	void Reset();
 	void Update(CImprov *improv);
-	bool IsStuck(void) const
-	{
-		return m_isStuck;
-	}
-	float GetDuration(void) const
-	{
-		return m_isStuck ? m_stuckTimer.GetElapsedTime() : 0.0f;
-	}
 
-/*private:*/
+	bool IsStuck() const { return m_isStuck; }
+	float GetDuration() const { return m_isStuck ? m_stuckTimer.GetElapsedTime() : 0.0f; }
+
+private:
 	bool m_isStuck;			// if true, we are stuck
 	Vector m_stuckSpot;		// the location where we became stuck
 	IntervalTimer m_stuckTimer;	// how long we have been stuck
@@ -221,63 +186,41 @@ public:
 	int m_avgVelCount;
 	Vector m_lastCentroid;
 	float m_lastTime;
-
-};/* size: 64, cachelines: 1, members: 8 */
+};
 
 // The CNavPathFollower class implements path following behavior
 class CNavPathFollower
 {
 public:
-	CNavPathFollower(void);
+	CNavPathFollower();
 
-	void SetImprov(CImprov *improv)
-	{
-		m_improv = improv;
-	}
-	void SetPath(CNavPath *path)
-	{
-		m_path = path;
-	}
-	void Reset(void);
+	void SetImprov(CImprov *improv) { m_improv = improv; }
+	void SetPath(CNavPath *path) { m_path = path; }
+	void Reset();
 
-	// move improv along path
-	void Update(float deltaT, bool avoidObstacles = true);
+	void Update(float deltaT, bool avoidObstacles = true);				// move improv along path
+	void Debug(bool status) { m_isDebug = status; }					// turn debugging on/off
 
-	// turn debugging on/off
-	void Debug(bool status)
-	{
-		m_isDebug = status;
-	}
-	// return true if improv is stuck
-	bool IsStuck(void) const
-	{
-		return m_stuckMonitor.IsStuck();
-	}
-	void ResetStuck(void)
-	{
-		m_stuckMonitor.Reset();
-	}
-	// return how long we've been stuck
-	float GetStuckDuration(void) const
-	{
-		return m_stuckMonitor.GetDuration();
-	}
-	// adjust goal position if "feelers" are touched
-	void FeelerReflexAdjustment(Vector *goalPosition, float height = -1.0f);
+	bool IsStuck() const { return m_stuckMonitor.IsStuck(); }			// return true if improv is stuck
+	void ResetStuck() { m_stuckMonitor.Reset(); }
+	float GetStuckDuration() const { return m_stuckMonitor.GetDuration(); }		// return how long we've been stuck
 
+	void FeelerReflexAdjustment(Vector *goalPosition, float height = -1.0f);	// adjust goal position if "feelers" are touched
+
+#ifndef HOOK_GAMEDLL
 private:
+#endif // HOOK_GAMEDLL
 	int FindOurPositionOnPath(Vector *close, bool local) const;		// return the closest point to our current position on current path
 	int FindPathPoint(float aheadRange, Vector *point, int *prevIndex);	// compute a point a fixed distance ahead along our path.
 
-	CImprov *m_improv;						// who is doing the path following
-	CNavPath *m_path;						// the path being followed
-	int m_segmentIndex;						// the point on the path the improv is moving towards
-	int m_behindIndex;						// index of the node on the path just behind us
-	Vector m_goal;							// last computed follow goal
+	CImprov *m_improv;		// who is doing the path following
+	CNavPath *m_path;		// the path being followed
+	int m_segmentIndex;		// the point on the path the improv is moving towards
+	int m_behindIndex;		// index of the node on the path just behind us
+	Vector m_goal;			// last computed follow goal
 	bool m_isLadderStarted;
 	bool m_isDebug;
 	CStuckMonitor m_stuckMonitor;
-
-};/* size: 96, cachelines: 2, members: 8 */
+};
 
 #endif // NAV_PATH_H

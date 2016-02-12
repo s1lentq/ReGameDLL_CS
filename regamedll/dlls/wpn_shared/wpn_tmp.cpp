@@ -4,14 +4,15 @@
 LINK_ENTITY_TO_CLASS(weapon_tmp, CTMP);
 
 /* <2b04ba> ../cstrike/dlls/wpn_shared/wpn_tmp.cpp:52 */
-void CTMP::__MAKE_VHOOK(Spawn)(void)
+void CTMP::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
+
 	m_iId = WEAPON_TMP;
 	SET_MODEL(edict(), "models/w_tmp.mdl");
 
 	m_iDefaultAmmo = TMP_DEFAULT_GIVE;
-	m_flAccuracy = 0.2;
+	m_flAccuracy = 0.2f;
 	m_iShotsFired = 0;
 	m_bDelayFire = false;
 
@@ -19,7 +20,7 @@ void CTMP::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <2b0439> ../cstrike/dlls/wpn_shared/wpn_tmp.cpp:67 */
-void CTMP::__MAKE_VHOOK(Precache)(void)
+void CTMP::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/v_tmp.mdl");
 	PRECACHE_MODEL("models/w_tmp.mdl");
@@ -50,9 +51,9 @@ int CTMP::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 }
 
 /* <2b0493> ../cstrike/dlls/wpn_shared/wpn_tmp.cpp:98 */
-BOOL CTMP::__MAKE_VHOOK(Deploy)(void)
+BOOL CTMP::__MAKE_VHOOK(Deploy)()
 {
-	m_flAccuracy = 0.2;
+	m_flAccuracy = 0.2f;
 	m_iShotsFired = 0;
 	m_bDelayFire = false;
 	iShellOn = 1;
@@ -61,7 +62,7 @@ BOOL CTMP::__MAKE_VHOOK(Deploy)(void)
 }
 
 /* <2b06b6> ../cstrike/dlls/wpn_shared/wpn_tmp.cpp:108 */
-void CTMP::__MAKE_VHOOK(PrimaryAttack)(void)
+void CTMP::__MAKE_VHOOK(PrimaryAttack)()
 {
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
 	{
@@ -80,12 +81,12 @@ void CTMP::TMPFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	int flag;
 
 	m_bDelayFire = true;
-	m_iShotsFired++;
+	++m_iShotsFired;
 
-	m_flAccuracy = ((m_iShotsFired * m_iShotsFired * m_iShotsFired) / 200) + 0.55;
+	m_flAccuracy = ((m_iShotsFired * m_iShotsFired * m_iShotsFired) / 200) + 0.55f;
 
-	if (m_flAccuracy > 1.4)
-		m_flAccuracy = 1.4;
+	if (m_flAccuracy > 1.4f)
+		m_flAccuracy = 1.4f;
 
 	if (m_iClip <= 0)
 	{
@@ -103,7 +104,7 @@ void CTMP::TMPFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 		return;
 	}
 
-	m_iClip--;
+	--m_iClip;
 	m_pPlayer->SetAnimation(PLAYER_ATTACK1);
 
 	UTIL_MakeVectors(m_pPlayer->pev->v_angle + m_pPlayer->pev->punchangle);
@@ -132,7 +133,7 @@ void CTMP::TMPFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
 	}
 
-	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2;
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.0f;
 
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
 	{
@@ -153,27 +154,25 @@ void CTMP::TMPFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 }
 
 /* <2b056b> ../cstrike/dlls/wpn_shared/wpn_tmp.cpp:197 */
-void CTMP::__MAKE_VHOOK(Reload)(void)
+void CTMP::__MAKE_VHOOK(Reload)()
 {
 #ifdef REGAMEDLL_FIXES
 	// to prevent reload if not enough ammo
 	if (m_pPlayer->ammo_9mm <= 0)
-	{
 		return;
-	}
 #endif // REGAMEDLL_FIXES
 
 	if (DefaultReload(TMP_MAX_CLIP, TMP_RELOAD, TMP_RELOAD_TIME))
 	{
 		m_pPlayer->SetAnimation(PLAYER_RELOAD);
 
-		m_flAccuracy = 0.2;
+		m_flAccuracy = 0.2f;
 		m_iShotsFired = 0;
 	}
 }
 
 /* <2b0530> ../cstrike/dlls/wpn_shared/wpn_tmp.cpp:211 */
-void CTMP::__MAKE_VHOOK(WeaponIdle)(void)
+void CTMP::__MAKE_VHOOK(WeaponIdle)()
 {
 	ResetEmptySound();
 	m_pPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);
@@ -183,45 +182,6 @@ void CTMP::__MAKE_VHOOK(WeaponIdle)(void)
 		return;
 	}
 
-	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20;
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20.0f;
 	SendWeaponAnim(TMP_IDLE1, UseDecrement() != FALSE);
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CTMP::Spawn(void)
-{
-	Spawn_();
-}
-
-void CTMP::Precache(void)
-{
-	Precache_();
-}
-
-int CTMP::GetItemInfo(ItemInfo *p)
-{
-	return GetItemInfo_(p);
-}
-
-BOOL CTMP::Deploy(void)
-{
-	return Deploy_();
-}
-
-void CTMP::PrimaryAttack(void)
-{
-	PrimaryAttack_();
-}
-
-void CTMP::Reload(void)
-{
-	Reload_();
-}
-
-void CTMP::WeaponIdle(void)
-{
-	WeaponIdle_();
-}
-
-#endif // HOOK_GAMEDLL

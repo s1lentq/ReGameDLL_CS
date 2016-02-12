@@ -43,4 +43,9 @@ char *_strdup_mhook_(const char *s)
 	return ptr;
 }
 
+int __cdecl _rand_mhook_()
+{
+	return CRegamedllPlatformHolder::get()->rand();
+}
+
 #endif // _WIN32

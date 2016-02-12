@@ -25,19 +25,13 @@ TYPEDESCRIPTION CGamePlayerZone::m_SaveData[] =
 	DEFINE_FIELD(CGamePlayerZone, m_iszOutCount, FIELD_STRING),
 };
 
-#else
-
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CRuleEntity, m_SaveData)[1];
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CGameText, m_SaveData)[1];
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CGamePlayerZone, m_SaveData)[4];
-
 #endif // HOOK_GAMEDLL
 
 /* <eef33> ../cstrike/dlls/maprules.cpp:57 */
 IMPLEMENT_SAVERESTORE(CRuleEntity, CBaseEntity);
 
 /* <eed18> ../cstrike/dlls/maprules.cpp:60 */
-void CRuleEntity::__MAKE_VHOOK(Spawn)(void)
+void CRuleEntity::__MAKE_VHOOK(Spawn)()
 {
 	pev->solid = SOLID_NOT;
 	pev->movetype = MOVETYPE_NONE;
@@ -71,7 +65,7 @@ BOOL CRuleEntity::CanFireForActivator(CBaseEntity *pActivator)
 }
 
 /* <eed39> ../cstrike/dlls/maprules.cpp:101 */
-void CRulePointEntity::__MAKE_VHOOK(Spawn)(void)
+void CRulePointEntity::__MAKE_VHOOK(Spawn)()
 {
 	CRuleEntity::Spawn();
 	pev->frame = 0;
@@ -79,7 +73,7 @@ void CRulePointEntity::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <eed72> ../cstrike/dlls/maprules.cpp:120 */
-void CRuleBrushEntity::__MAKE_VHOOK(Spawn)(void)
+void CRuleBrushEntity::__MAKE_VHOOK(Spawn)()
 {
 	SET_MODEL(edict(), STRING(pev->model));
 	CRuleEntity::Spawn();
@@ -89,7 +83,7 @@ void CRuleBrushEntity::__MAKE_VHOOK(Spawn)(void)
 LINK_ENTITY_TO_CLASS(game_score, CGameScore);
 
 /* <eedb1> ../cstrike/dlls/maprules.cpp:154 */
-void CGameScore::__MAKE_VHOOK(Spawn)(void)
+void CGameScore::__MAKE_VHOOK(Spawn)()
 {
 	CRulePointEntity::Spawn();
 }
@@ -249,7 +243,7 @@ void CGameTeamMaster::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 	{
 		int type = Q_atoi(pkvd->szValue);
 
-		switch(type)
+		switch (type)
 		{
 		case 0:
 			triggerType = USE_OFF;
@@ -306,7 +300,7 @@ BOOL CGameTeamMaster::__MAKE_VHOOK(IsTriggered)(CBaseEntity *pActivator)
 }
 
 /* <eeeaf> ../cstrike/dlls/maprules.cpp:435 */
-const char *CGameTeamMaster::__MAKE_VHOOK(TeamID)(void)
+const char *CGameTeamMaster::__MAKE_VHOOK(TeamID)()
 {
 	// Currently set to "no team"
 	if (m_teamIndex < 0)
@@ -398,9 +392,9 @@ void CGamePlayerZone::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pC
 
 	CBaseEntity *pPlayer = NULL;
 
-	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
-		pPlayer = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+		pPlayer = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
 		if (pPlayer)
 		{
@@ -417,7 +411,7 @@ void CGamePlayerZone::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pC
 
 			if (trace.fStartSolid)
 			{
-				playersInCount++;
+				++playersInCount;
 				if (!FStringNull(m_iszInTarget))
 				{
 					FireTargets(STRING(m_iszInTarget), pPlayer, pActivator, useType, value);
@@ -425,7 +419,7 @@ void CGamePlayerZone::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pC
 			}
 			else
 			{
-				playersOutCount++;
+				++playersOutCount;
 				if (!FStringNull(m_iszOutTarget))
 				{
 					FireTargets(STRING(m_iszOutTarget), pPlayer, pActivator, useType, value);
@@ -475,7 +469,7 @@ void CGamePlayerHurt::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pC
 LINK_ENTITY_TO_CLASS(game_counter, CGameCounter);
 
 /* <eee2d> ../cstrike/dlls/maprules.cpp:686 */
-void CGameCounter::__MAKE_VHOOK(Spawn)(void)
+void CGameCounter::__MAKE_VHOOK(Spawn)()
 {
 	// Save off the initial count
 	SetInitialValue(CountValue());
@@ -547,7 +541,7 @@ void CGamePlayerEquip::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 
 	if (!pkvd->fHandled)
 	{
-		for (int i = 0; i < MAX_EQUIP; i++)
+		for (int i = 0; i < MAX_EQUIP; ++i)
 		{
 			if (FStringNull(m_weaponNames[i]))
 			{
@@ -584,18 +578,18 @@ void CGamePlayerEquip::EquipPlayer(CBaseEntity *pEntity)
 
 	if (pEntity->IsPlayer())
 	{
-		pPlayer = reinterpret_cast<CBasePlayer *>(pEntity);
+		pPlayer = static_cast<CBasePlayer *>(pEntity);
 	}
 
 	if (!pPlayer)
 		return;
 
-	for (int i = 0; i < MAX_EQUIP; i++)
+	for (int i = 0; i < MAX_EQUIP; ++i)
 	{
 		if (FStringNull(m_weaponNames[i]))
 			break;
 
-		for (int j = 0; j < m_weaponCount[i]; j++)
+		for (int j = 0; j < m_weaponCount[i]; ++j)
 		{
  			pPlayer->GiveNamedItem(STRING(m_weaponNames[i]));
 		}
@@ -637,7 +631,7 @@ void CGamePlayerTeam::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pC
 
 		if (pszTargetTeam != NULL)
 		{
-			CBasePlayer *pPlayer = reinterpret_cast<CBasePlayer *>(pActivator);
+			CBasePlayer *pPlayer = static_cast<CBasePlayer *>(pActivator);
 			g_pGameRules->ChangePlayerTeam(pPlayer, pszTargetTeam, ShouldKillPlayer(), ShouldGibPlayer());
 		}
 	}
@@ -647,162 +641,3 @@ void CGamePlayerTeam::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pC
 		UTIL_Remove(this);
 	}
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CRuleEntity::Spawn(void)
-{
-	Spawn_();
-}
-
-void CRuleEntity::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-int CRuleEntity::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CRuleEntity::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-void CRulePointEntity::Spawn(void)
-{
-	Spawn_();
-}
-
-void CRuleBrushEntity::Spawn(void)
-{
-	Spawn_();
-}
-
-void CGameScore::Spawn(void)
-{
-	Spawn_();
-}
-
-void CGameScore::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-void CGameScore::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	Use_(pActivator, pCaller, useType, value);
-}
-
-void CGameEnd::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	Use_(pActivator, pCaller, useType, value);
-}
-
-void CGameText::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-int CGameText::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CGameText::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-void CGameText::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	Use_(pActivator, pCaller, useType, value);
-}
-
-void CGameTeamMaster::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-BOOL CGameTeamMaster::IsTriggered(CBaseEntity *pActivator)
-{
-	return IsTriggered_(pActivator);
-}
-
-const char *CGameTeamMaster::TeamID(void)
-{
-	return TeamID_();
-}
-
-void CGameTeamMaster::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	Use_(pActivator, pCaller, useType, value);
-}
-
-void CGameTeamSet::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	Use_(pActivator, pCaller, useType, value);
-}
-
-void CGamePlayerZone::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-int CGamePlayerZone::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CGamePlayerZone::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-void CGamePlayerZone::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	Use_(pActivator, pCaller, useType, value);
-}
-
-void CGamePlayerHurt::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	Use_(pActivator, pCaller, useType, value);
-}
-
-void CGameCounter::Spawn(void)
-{
-	Spawn_();
-}
-
-void CGameCounter::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	Use_(pActivator, pCaller, useType, value);
-}
-
-void CGameCounterSet::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	Use_(pActivator, pCaller, useType, value);
-}
-
-void CGamePlayerEquip::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-void CGamePlayerEquip::Touch(CBaseEntity *pOther)
-{
-	Touch_(pOther);
-}
-
-void CGamePlayerEquip::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	Use_(pActivator, pCaller, useType, value);
-}
-
-void CGamePlayerTeam::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	Use_(pActivator, pCaller, useType, value);
-}
-
-#endif // HOOK_GAMEDLL

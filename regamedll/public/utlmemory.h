@@ -34,9 +34,9 @@
 #endif
 
 #include "osconfig.h"
-#include "tier0/dbg.h"
+//#include "tier0/dbg.h"
 #include <string.h>
-#include "tier0/platform.h"
+//#include "tier0/platform.h"
 
 #pragma warning (disable:4100)
 #pragma warning (disable:4514)

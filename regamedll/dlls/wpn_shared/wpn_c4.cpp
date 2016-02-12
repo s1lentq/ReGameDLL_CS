@@ -4,7 +4,7 @@
 LINK_ENTITY_TO_CLASS(weapon_c4, CC4);
 
 /* <2469b9> ../cstrike/dlls/wpn_shared/wpn_c4.cpp:50 */
-void CC4::__MAKE_VHOOK(Spawn)(void)
+void CC4::__MAKE_VHOOK(Spawn)()
 {
 	SET_MODEL(edict(), "models/w_backpack.mdl");
 
@@ -28,11 +28,11 @@ void CC4::__MAKE_VHOOK(Spawn)(void)
 
 	FallInit();
 	SetThink(&CBasePlayerItem::FallThink);
-	pev->nextthink = UTIL_WeaponTimeBase() + 0.1;
+	pev->nextthink = UTIL_WeaponTimeBase() + 0.1f;
 }
 
 /* <246418> ../cstrike/dlls/wpn_shared/wpn_c4.cpp:80 */
-void CC4::__MAKE_VHOOK(Precache)(void)
+void CC4::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/v_c4.mdl");
 	PRECACHE_MODEL("models/w_backpack.mdl");
@@ -59,7 +59,7 @@ int CC4::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 }
 
 /* <2466d5> ../cstrike/dlls/wpn_shared/wpn_c4.cpp:105 */
-BOOL CC4::__MAKE_VHOOK(Deploy)(void)
+BOOL CC4::__MAKE_VHOOK(Deploy)()
 {
 	pev->body = 0;
 
@@ -79,7 +79,7 @@ BOOL CC4::__MAKE_VHOOK(Deploy)(void)
 void CC4::__MAKE_VHOOK(Holster)(int skiplocal)
 {
 	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5;
-	m_bStartedArming = false;
+	m_bStartedArming = false;	// stop arming sequence
 
 	if (!m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType])
 	{
@@ -95,18 +95,17 @@ void CC4::__MAKE_VHOOK(Holster)(int skiplocal)
 }
 
 /* <2464e8> ../cstrike/dlls/wpn_shared/wpn_c4.cpp:152 */
-void CC4::__MAKE_VHOOK(PrimaryAttack)(void)
+void CC4::__MAKE_VHOOK(PrimaryAttack)()
 {
 	BOOL PlaceBomb;
-	int inBombZone, onGround;
 
 	if (m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
 	{
 		return;
 	}
 
-	inBombZone = (m_pPlayer->m_signals.GetState() & SIGNAL_BOMB) == SIGNAL_BOMB;
-	onGround = (m_pPlayer->pev->flags & FL_ONGROUND) == FL_ONGROUND;
+	int inBombZone = (m_pPlayer->m_signals.GetState() & SIGNAL_BOMB) == SIGNAL_BOMB;
+	int onGround = (m_pPlayer->pev->flags & FL_ONGROUND) == FL_ONGROUND;
 	PlaceBomb = (onGround && inBombZone);
 
 	if (!m_bStartedArming)
@@ -121,7 +120,7 @@ void CC4::__MAKE_VHOOK(PrimaryAttack)(void)
 		if (!onGround)
 		{
 			ClientPrint(m_pPlayer->pev, HUD_PRINTCENTER, "#C4_Plant_Must_Be_On_Ground");
-			m_flNextPrimaryAttack = GetNextAttackDelay(1);
+			m_flNextPrimaryAttack = GetNextAttackDelay(1.0);
 			return;
 		}
 
@@ -129,8 +128,10 @@ void CC4::__MAKE_VHOOK(PrimaryAttack)(void)
 		m_bBombPlacedAnimation = false;
 		m_fArmedTime = gpGlobals->time + C4_ARMING_ON_TIME;
 
+		// player "arming bomb" animation
 		SendWeaponAnim(C4_ARM, UseDecrement() != FALSE);
 
+		// freeze the player in place while planting
 		SET_CLIENT_MAXSPEED(m_pPlayer->edict(), 1.0);
 
 		m_pPlayer->SetAnimation(PLAYER_ATTACK1);
@@ -186,22 +187,25 @@ void CC4::__MAKE_VHOOK(PrimaryAttack)(void)
 						TheCareerTasks->HandleEvent(EVENT_BOMB_PLANTED, m_pPlayer);
 					}
 
-					UTIL_LogPrintf
-					(
-						"\"%s<%i><%s><TERRORIST>\" triggered \"Planted_The_Bomb\"\n",
+					UTIL_LogPrintf("\"%s<%i><%s><TERRORIST>\" triggered \"Planted_The_Bomb\"\n",
 						STRING(m_pPlayer->pev->netname),
 						GETPLAYERUSERID(m_pPlayer->edict()),
-						GETPLAYERAUTHID(m_pPlayer->edict())
-					);
+						GETPLAYERAUTHID(m_pPlayer->edict()));
 
 					g_pGameRules->m_bBombDropped = FALSE;
+
+					// Play the plant sound.
 					EMIT_SOUND(edict(), CHAN_WEAPON, "weapons/c4_plant.wav", VOL_NORM, ATTN_NORM);
 
+					// hide the backpack in Terrorist's models.
 					m_pPlayer->pev->body = 0;
-					m_pPlayer->ResetMaxSpeed();
-					m_pPlayer->SetBombIcon(FALSE);
 
-					m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]--;
+					// release the player from being frozen
+					m_pPlayer->ResetMaxSpeed();
+
+					// No more c4!
+					m_pPlayer->SetBombIcon(FALSE);
+					--m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType];
 
 					if (!m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType])
 					{
@@ -214,9 +218,11 @@ void CC4::__MAKE_VHOOK(PrimaryAttack)(void)
 			{
 				if (m_fArmedTime - 0.75 <= gpGlobals->time && !m_bBombPlacedAnimation)
 				{
+					// call the c4 Placement animation
 					m_bBombPlacedAnimation = true;
-
 					SendWeaponAnim(C4_DROP, UseDecrement() != FALSE);
+
+					// player "place" animation
 					m_pPlayer->SetAnimation(PLAYER_HOLDBOMB);
 				}
 			}
@@ -231,11 +237,17 @@ void CC4::__MAKE_VHOOK(PrimaryAttack)(void)
 			m_bStartedArming = false;
 			m_flNextPrimaryAttack = GetNextAttackDelay(1.5);
 
+			// release the player from being frozen, we've somehow left the bomb zone
 			m_pPlayer->ResetMaxSpeed();
 			m_pPlayer->SetProgressBarTime(0);
 			m_pPlayer->SetAnimation(PLAYER_HOLDBOMB);
 
-			SendWeaponAnim(m_bBombPlacedAnimation ? C4_DRAW : C4_IDLE1, UseDecrement() != FALSE);
+			// this means the placement animation is canceled
+			if (m_bBombPlacedAnimation)
+				SendWeaponAnim(C4_DRAW, UseDecrement() != FALSE);
+			else
+				SendWeaponAnim(C4_IDLE1, UseDecrement() != FALSE);
+
 			return;
 		}
 	}
@@ -245,17 +257,24 @@ void CC4::__MAKE_VHOOK(PrimaryAttack)(void)
 }
 
 /* <2464c1> ../cstrike/dlls/wpn_shared/wpn_c4.cpp:358 */
-void CC4::__MAKE_VHOOK(WeaponIdle)(void)
+void CC4::__MAKE_VHOOK(WeaponIdle)()
 {
 	if (m_bStartedArming)
 	{
+		// if the player releases the attack button cancel the arming sequence
 		m_bStartedArming = false;
 
+		// release the player from being frozen
 		m_pPlayer->ResetMaxSpeed();
+
 		m_flNextPrimaryAttack = GetNextAttackDelay(1.0);
 		m_pPlayer->SetProgressBarTime(0);
 
-		SendWeaponAnim(m_bBombPlacedAnimation ? C4_DRAW : C4_IDLE1, UseDecrement() != FALSE);
+		// this means the placement animation is canceled
+		if (m_bBombPlacedAnimation)
+			SendWeaponAnim(C4_DRAW, UseDecrement() != FALSE);
+		else
+			SendWeaponAnim(C4_IDLE1, UseDecrement() != FALSE);
 	}
 
 	if (m_flTimeWeaponIdle <= UTIL_WeaponTimeBase())
@@ -303,7 +322,7 @@ void CC4::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_T
 		return;
 	}
 
-	CBasePlayer *pPlayer = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(1));
+	CBasePlayer *pPlayer = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(1));
 
 	if (pPlayer != NULL)
 	{
@@ -336,56 +355,7 @@ void CC4::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_T
 }
 
 /* <2463cc> ../cstrike/dlls/weapons.h:732 */
-float CC4::GetMaxSpeed(void)
+float CC4::__MAKE_VHOOK(GetMaxSpeed)()
 {
 	return C4_MAX_SPEED;
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CC4::Spawn(void)
-{
-	Spawn_();
-}
-
-void CC4::Precache(void)
-{
-	Precache_();
-}
-
-void CC4::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-void CC4::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	Use_(pActivator, pCaller, useType, value);
-}
-
-int CC4::GetItemInfo(ItemInfo *p)
-{
-	return GetItemInfo_(p);
-}
-
-BOOL CC4::Deploy(void)
-{
-	return Deploy_();
-}
-
-void CC4::Holster(int skiplocal)
-{
-	Holster_(skiplocal);
-}
-
-void CC4::PrimaryAttack(void)
-{
-	PrimaryAttack_();
-}
-
-void CC4::WeaponIdle(void)
-{
-	WeaponIdle_();
-}
-
-#endif // HOOK_GAMEDLL

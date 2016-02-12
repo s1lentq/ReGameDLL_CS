@@ -4,9 +4,10 @@
 LINK_ENTITY_TO_CLASS(weapon_xm1014, CXM1014);
 
 /* <2cacc6> ../cstrike/dlls/wpn_shared/wpn_xm1014.cpp:53 */
-void CXM1014::__MAKE_VHOOK(Spawn)(void)
+void CXM1014::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
+
 	m_iId = WEAPON_XM1014;
 	SET_MODEL(edict(), "models/w_xm1014.mdl");
 
@@ -17,7 +18,7 @@ void CXM1014::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <2caadc> ../cstrike/dlls/wpn_shared/wpn_xm1014.cpp:65 */
-void CXM1014::__MAKE_VHOOK(Precache)(void)
+void CXM1014::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/v_xm1014.mdl");
 	PRECACHE_MODEL("models/w_xm1014.mdl");
@@ -50,13 +51,13 @@ int CXM1014::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 }
 
 /* <2cac9f> ../cstrike/dlls/wpn_shared/wpn_xm1014.cpp:100 */
-BOOL CXM1014::__MAKE_VHOOK(Deploy)(void)
+BOOL CXM1014::__MAKE_VHOOK(Deploy)()
 {
 	return DefaultDeploy("models/v_xm1014.mdl", "models/p_xm1014.mdl", XM1014_DRAW, "m249", UseDecrement() != FALSE);
 }
 
 /* <2cab36> ../cstrike/dlls/wpn_shared/wpn_xm1014.cpp:106 */
-void CXM1014::__MAKE_VHOOK(PrimaryAttack)(void)
+void CXM1014::__MAKE_VHOOK(PrimaryAttack)()
 {
 	Vector vecAiming, vecSrc, vecDir;
 	int flag;
@@ -72,7 +73,7 @@ void CXM1014::__MAKE_VHOOK(PrimaryAttack)(void)
 	if (m_iClip <= 0)
 	{
 		Reload();
-
+			
 		if (!m_iClip)
 		{
 			PlayEmptySound();
@@ -118,15 +119,15 @@ void CXM1014::__MAKE_VHOOK(PrimaryAttack)(void)
 	}
 
 	if (m_iClip != 0)
-		m_flPumpTime = UTIL_WeaponTimeBase() + 0.125;
+		m_flPumpTime = UTIL_WeaponTimeBase() + 0.125f;
 
 	m_flNextPrimaryAttack = GetNextAttackDelay(0.25);
-	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.25;
+	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.25f;
 
 	if (m_iClip != 0)
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.25;
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.25f;
 	else
-		m_flTimeWeaponIdle = 0.75;
+		m_flTimeWeaponIdle = 0.75f;
 
 	m_fInSpecialReload = 0;
 
@@ -137,7 +138,7 @@ void CXM1014::__MAKE_VHOOK(PrimaryAttack)(void)
 }
 
 /* <2cad77> ../cstrike/dlls/wpn_shared/wpn_xm1014.cpp:182 */
-void CXM1014::__MAKE_VHOOK(Reload)(void)
+void CXM1014::__MAKE_VHOOK(Reload)()
 {
 	if (m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0 || m_iClip == XM1014_MAX_CLIP)
 		return;
@@ -153,10 +154,10 @@ void CXM1014::__MAKE_VHOOK(Reload)(void)
 		SendWeaponAnim(XM1014_START_RELOAD, UseDecrement() != FALSE);
 
 		m_fInSpecialReload = 1;
-		m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.55;
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.55;
+		m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.55f;
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.55f;
 		m_flNextPrimaryAttack = GetNextAttackDelay(0.55);
-		m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.55;
+		m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.55f;
 	}
 	else if (m_fInSpecialReload == 1)
 	{
@@ -173,20 +174,20 @@ void CXM1014::__MAKE_VHOOK(Reload)(void)
 
 		SendWeaponAnim(XM1014_RELOAD, UseDecrement());
 
-		m_flNextReload = UTIL_WeaponTimeBase() + 0.3;
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.3;
+		m_flNextReload = UTIL_WeaponTimeBase() + 0.3f;
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.3f;
 	}
 	else
 	{
-		m_iClip++;
-		m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]--;
-		m_pPlayer->ammo_buckshot--;
+		++m_iClip;
+		--m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType];
+		--m_pPlayer->ammo_buckshot;
 		m_fInSpecialReload = 1;
 	}
 }
 
 /* <2cad3c> ../cstrike/dlls/wpn_shared/wpn_xm1014.cpp:231 */
-void CXM1014::__MAKE_VHOOK(WeaponIdle)(void)
+void CXM1014::__MAKE_VHOOK(WeaponIdle)()
 {
 	ResetEmptySound();
 	m_pPlayer->GetAutoaimVector(AUTOAIM_5DEGREES);
@@ -214,7 +215,7 @@ void CXM1014::__MAKE_VHOOK(WeaponIdle)(void)
 				SendWeaponAnim(XM1014_PUMP, UseDecrement() != FALSE);
 
 				m_fInSpecialReload = 0;
-				m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.5;
+				m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.5f;
 			}
 		}
 		else
@@ -223,42 +224,3 @@ void CXM1014::__MAKE_VHOOK(WeaponIdle)(void)
 		}
 	}
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CXM1014::Spawn(void)
-{
-	Spawn_();
-}
-
-void CXM1014::Precache(void)
-{
-	Precache_();
-}
-
-int CXM1014::GetItemInfo(ItemInfo *p)
-{
-	return GetItemInfo_(p);
-}
-
-BOOL CXM1014::Deploy(void)
-{
-	return Deploy_();
-}
-
-void CXM1014::PrimaryAttack(void)
-{
-	PrimaryAttack_();
-}
-
-void CXM1014::Reload(void)
-{
-	Reload_();
-}
-
-void CXM1014::WeaponIdle(void)
-{
-	WeaponIdle_();
-}
-
-#endif // HOOK_GAMEDLL

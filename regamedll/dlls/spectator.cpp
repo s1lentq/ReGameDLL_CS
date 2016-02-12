@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-void CBaseSpectator::SpectatorConnect(void)
+void CBaseSpectator::SpectatorConnect()
 {
 	pev->flags = FL_SPECTATOR;
 	pev->solid = SOLID_NOT;
@@ -9,13 +9,13 @@ void CBaseSpectator::SpectatorConnect(void)
 	m_pGoalEnt = NULL;
 }
 
-void CBaseSpectator::SpectatorDisconnect(void)
+void CBaseSpectator::SpectatorDisconnect()
 {
 	;
 }
 
 /* <17d35d> ../cstrike/dlls/spectator.cpp:61 */
-void CBaseSpectator::SpectatorImpulseCommand(void)
+void CBaseSpectator::SpectatorImpulseCommand()
 {
 	static edict_t *pGoal = NULL;
 
@@ -74,7 +74,7 @@ void CBaseSpectator::SpectatorImpulseCommand(void)
 	pev->impulse = 0;
 }
 
-void CBaseSpectator::SpectatorThink(void)
+void CBaseSpectator::SpectatorThink()
 {
 	if (!(pev->flags & FL_SPECTATOR))
 	{
@@ -91,7 +91,7 @@ void CBaseSpectator::SpectatorThink(void)
 }
 
 /* <17d297> ../cstrike/dlls/spectator.cpp:142 */
-void CBaseSpectator::__MAKE_VHOOK(Spawn)(void)
+void CBaseSpectator::__MAKE_VHOOK(Spawn)()
 {
 	pev->flags = FL_SPECTATOR;
 	pev->solid = SOLID_NOT;
@@ -99,12 +99,3 @@ void CBaseSpectator::__MAKE_VHOOK(Spawn)(void)
 
 	m_pGoalEnt = NULL;
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CBaseSpectator::Spawn(void)
-{
-	Spawn_();
-}
-
-#endif // HOOK_GAMEDLL

@@ -1,7 +1,7 @@
 #include "precompiled.h"
 
 /* <5f4cb> ../cstrike/dlls/combat.cpp:52 */
-void CGib::LimitVelocity(void)
+void CGib::LimitVelocity()
 {
 	float length = pev->velocity.Length();
 
@@ -25,7 +25,7 @@ NOXREF void CGib::SpawnStickyGibs(entvars_t *pevVictim, Vector vecOrigin, int cG
 		return;
 	}
 
-	for (i = 0; i < cGibs; i++)
+	for (i = 0; i < cGibs; ++i)
 	{
 		CGib *pGib = GetClassPtr((CGib *)NULL);
 
@@ -208,7 +208,7 @@ void CGib::SpawnRandomGibs(entvars_t *pevVictim, int cGibs, int human)
 }
 
 /* <5f58a> ../cstrike/dlls/combat.cpp:263 */
-BOOL CBaseMonster::__MAKE_VHOOK(HasHumanGibs)(void)
+BOOL CBaseMonster::__MAKE_VHOOK(HasHumanGibs)()
 {
 	int myClass = Classify();
 
@@ -222,7 +222,7 @@ BOOL CBaseMonster::__MAKE_VHOOK(HasHumanGibs)(void)
 }
 
 /* <5f5ca> ../cstrike/dlls/combat.cpp:278 */
-BOOL CBaseMonster::__MAKE_VHOOK(HasAlienGibs)(void)
+BOOL CBaseMonster::__MAKE_VHOOK(HasAlienGibs)()
 {
 	int myClass = Classify();
 	if (myClass == CLASS_ALIEN_MILITARY
@@ -237,7 +237,7 @@ BOOL CBaseMonster::__MAKE_VHOOK(HasAlienGibs)(void)
 }
 
 /* <5f60a> ../cstrike/dlls/combat.cpp:295 */
-void CBaseMonster::__MAKE_VHOOK(FadeMonster)(void)
+void CBaseMonster::__MAKE_VHOOK(FadeMonster)()
 {
 	StopAnimation();
 
@@ -251,14 +251,14 @@ void CBaseMonster::__MAKE_VHOOK(FadeMonster)(void)
 }
 
 /* <60a59> ../cstrike/dlls/combat.cpp:310 */
-void CBaseMonster::__MAKE_VHOOK(GibMonster)(void)
+void CBaseMonster::__MAKE_VHOOK(GibMonster)()
 {
 	TraceResult tr;
 	BOOL gibbed = FALSE;
 
 	EMIT_SOUND(ENT(pev), CHAN_WEAPON, "common/bodysplat.wav", VOL_NORM, ATTN_NORM);
 
-	// only humans throw skulls !!!UNDONE - eventually monsters will have their own sets of gibs
+	// only humans throw skulls UNDONE - eventually monsters will have their own sets of gibs
 	if (HasHumanGibs())
 	{
 		// Only the player will ever get here
@@ -299,7 +299,7 @@ void CBaseMonster::__MAKE_VHOOK(GibMonster)(void)
 // anim to play.
 
 /* <5f65e> ../cstrike/dlls/combat.cpp:355 */
-NOXREF Activity CBaseMonster::__MAKE_VHOOK(GetDeathActivity)(void)
+Activity CBaseMonster::__MAKE_VHOOK(GetDeathActivity)()
 {
 	Activity deathActivity;
 	BOOL fTriedDirection;
@@ -362,7 +362,7 @@ NOXREF Activity CBaseMonster::__MAKE_VHOOK(GetDeathActivity)(void)
 	}
 
 	// can we perform the prescribed death?
-	if (LookupActivity(deathActivity) == ACTIVITY_NOT_AVAILABLE)
+	if (LookupActivity(deathActivity) == ACT_INVALID)
 	{
 		// no! did we fail to perform a directional death?
 		if (fTriedDirection)
@@ -384,7 +384,7 @@ NOXREF Activity CBaseMonster::__MAKE_VHOOK(GetDeathActivity)(void)
 		}
 	}
 
-	if (LookupActivity(deathActivity) == ACTIVITY_NOT_AVAILABLE)
+	if (LookupActivity(deathActivity) == ACT_INVALID)
 	{
 		// if we're still invalid, simple is our only option.
 		deathActivity = ACT_DIESIMPLE;
@@ -419,7 +419,7 @@ NOXREF Activity CBaseMonster::__MAKE_VHOOK(GetDeathActivity)(void)
 // anim to play.
 
 /* <5f848> ../cstrike/dlls/combat.cpp:476 */
-NOXREF Activity CBaseMonster::GetSmallFlinchActivity(void)
+NOXREF Activity CBaseMonster::GetSmallFlinchActivity()
 {
 	Activity flinchActivity;
 	BOOL fTriedDirection;
@@ -458,7 +458,7 @@ NOXREF Activity CBaseMonster::GetSmallFlinchActivity(void)
 	}
 
 	// do we have a sequence for the ideal activity?
-	if (LookupActivity(flinchActivity) == ACTIVITY_NOT_AVAILABLE)
+	if (LookupActivity(flinchActivity) == ACT_INVALID)
 	{
 		flinchActivity = ACT_SMALL_FLINCH;
 	}
@@ -467,7 +467,7 @@ NOXREF Activity CBaseMonster::GetSmallFlinchActivity(void)
 }
 
 /* <5f8a6> ../cstrike/dlls/combat.cpp:525 */
-void CBaseMonster::__MAKE_VHOOK(BecomeDead)(void)
+void CBaseMonster::__MAKE_VHOOK(BecomeDead)()
 {
 	// don't let autoaim aim at corpses.
 	pev->takedamage = DAMAGE_YES;
@@ -494,7 +494,7 @@ BOOL CBaseMonster::ShouldGibMonster(int iGib)
 }
 
 /* <5f8f8> ../cstrike/dlls/combat.cpp:551 */
-void CBaseMonster::CallGibMonster(void)
+void CBaseMonster::CallGibMonster()
 {
 	BOOL fade = FALSE;
 
@@ -587,7 +587,7 @@ void CBaseMonster::__MAKE_VHOOK(Killed)(entvars_t *pevAttacker, int iGib)
 }
 
 /* <5e84e> ../cstrike/dlls/combat.cpp:652 */
-void CBaseEntity::SUB_StartFadeOut(void)
+void CBaseEntity::SUB_StartFadeOut()
 {
 	if (pev->rendermode == kRenderNormal)
 	{
@@ -603,7 +603,7 @@ void CBaseEntity::SUB_StartFadeOut(void)
 }
 
 /* <5ea72> ../cstrike/dlls/combat.cpp:667 */
-void CBaseEntity::SUB_FadeOut(void)
+void CBaseEntity::SUB_FadeOut()
 {
 	if (pev->renderamt > 7)
 	{
@@ -619,7 +619,7 @@ void CBaseEntity::SUB_FadeOut(void)
 }
 
 /* <5eab1> ../cstrike/dlls/combat.cpp:688 */
-void CGib::WaitTillLand(void)
+void CGib::WaitTillLand()
 {
 	if (!IsInWorld())
 	{
@@ -779,7 +779,7 @@ int CBaseMonster::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *p
 		PainSound();
 	}
 
-	//!!!LATER - make armor consideration here!
+	// LATER: make armor consideration here!
 	flTake = flDamage;
 
 	// set damage type sustained
@@ -794,14 +794,14 @@ int CBaseMonster::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *p
 
 		if (pInflictor)
 		{
-#if 0
+#ifndef PLAY_GAMEDLL
 			vecDir = (pInflictor->Center() - Vector(0, 0, 10) - Center()).Normalize();
 #else
 			// TODO: fix test demo
 			vecDir = NormalizeSubtract<
 				float_precision, float, float_precision, float_precision
 				>(Center(), pInflictor->Center() - Vector(0, 0, 10));
-#endif
+#endif // PLAY_GAMEDLL
 			vecDir = g_vecAttackDir = vecDir.Normalize();
 		}
 	}
@@ -1047,9 +1047,9 @@ void RadiusFlash(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker,
 
 			UTIL_ScreenFade(pPlayer, Vector(255, 255, 255), fadeTime, fadeHold, alpha, 0);
 
-			for (int i = 1; i <= gpGlobals->maxClients; i++)
+			for (int i = 1; i <= gpGlobals->maxClients; ++i)
 			{
-				CBasePlayer *pObserver = reinterpret_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+				CBasePlayer *pObserver = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
 				if (!pObserver || !pObserver->IsObservingPlayer(pPlayer))
 					continue;
@@ -1179,7 +1179,7 @@ void RadiusDamage(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker
 			bool useLOS = false;
 			float damageRatio = 1.0f;
 
-			if ((bitsDamageType & DMG_EXPLOSION) && UTIL_IsGame("czero"))
+			if ((bitsDamageType & DMG_EXPLOSION) && g_bIsCzeroGame)
 			{
 				useLOS = true;
 				damageRatio = GetAmountOfPlayerVisible(vecSrc, pEntity);
@@ -1921,7 +1921,7 @@ void CBaseEntity::__MAKE_VHOOK(TraceBleed)(float flDamage, Vector vecDir, TraceR
 		cCount = 4;
 	}
 
-	for (i = 0; i < cCount; i++)
+	for (i = 0; i < cCount; ++i)
 	{
 		// trace in the opposite direction the shot came from (the direction the shot is going)
 		vecTraceDir = vecDir * -1.0f;
@@ -1961,7 +1961,7 @@ NOXREF void CBaseMonster::MakeDamageBloodDecal(int cCount, float flNoise, TraceR
 			pev->max_health--;
 	}
 
-	for (i = 0; i < cCount; i++)
+	for (i = 0; i < cCount; ++i)
 	{
 		vecTraceDir = vecDir;
 
@@ -1996,102 +1996,3 @@ void CBaseMonster::BloodSplat(const Vector &vecSrc, const Vector &vecDir, int Hi
 		WRITE_BYTE(iVelocity + RANDOM_LONG(0, 100));
 	MESSAGE_END();
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CBaseMonster::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-void CBaseMonster::TraceAttack(entvars_t *pevAttacker,float flDamage,Vector vecDir,TraceResult *ptr,int bitsDamageType)
-{
-	TraceAttack_(pevAttacker, flDamage, vecDir, ptr, bitsDamageType);
-}
-
-int CBaseMonster::TakeDamage(entvars_t *pevInflictor,entvars_t *pevAttacker,float flDamage,int bitsDamageType)
-{
-	return TakeDamage_(pevInflictor, pevAttacker, flDamage, bitsDamageType);
-}
-
-int CBaseMonster::TakeHealth(float flHealth,int bitsDamageType)
-{
-	return TakeHealth_(flHealth, bitsDamageType);
-}
-
-void CBaseMonster::Killed(entvars_t *pevAttacker,int iGib)
-{
-	Killed_(pevAttacker, iGib);
-}
-
-float CBaseMonster::ChangeYaw(int speed)
-{
-	return ChangeYaw_(speed);
-}
-
-BOOL CBaseMonster::HasHumanGibs(void)
-{
-	return HasHumanGibs_();
-}
-
-BOOL CBaseMonster::HasAlienGibs(void)
-{
-	return HasHumanGibs_();
-}
-
-void CBaseMonster::FadeMonster(void)
-{
-	FadeMonster_();
-}
-
-void CBaseMonster::GibMonster(void)
-{
-	GibMonster_();
-}
-
-Activity CBaseMonster::GetDeathActivity(void)
-{
-	return GetDeathActivity_();
-}
-
-void CBaseMonster::BecomeDead(void)
-{
-	BecomeDead_();
-}
-
-BOOL CBaseMonster::ShouldFadeOnDeath(void)
-{
-	return ShouldFadeOnDeath_();
-}
-
-int CBaseMonster::IRelationship(CBaseEntity *pTarget)
-{
-	return IRelationship_(pTarget);
-}
-
-void CBaseMonster::MonsterInitDead(void)
-{
-	MonsterInitDead_();
-}
-
-void CBaseMonster::Look(int iDistance)
-{
-	Look_(iDistance);
-}
-
-CBaseEntity *CBaseMonster::BestVisibleEnemy(void)
-{
-	return BestVisibleEnemy_();
-}
-
-BOOL CBaseMonster::FInViewCone(CBaseEntity *pEntity)
-{
-	return FInViewCone_(pEntity);
-}
-
-BOOL CBaseMonster::FInViewCone(const Vector *pOrigin)
-{
-	return FInViewCone_(pOrigin);
-}
-
-#endif // HOOK_GAMEDLL

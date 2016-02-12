@@ -8,28 +8,32 @@ import org.joda.time.DateTime
 @CompileStatic @TypeChecked
 @ToString(includeNames = true)
 class RegamedllVersionInfo {
-    int majorVersion
-    int minorVersion
-    Integer maintenanceVersion
-    String suffix
+	int majorVersion
+	int minorVersion
+	Integer maintenanceVersion
+	String suffix
+	Integer countCommit
+	DateTime lastCommitDate
 
-    DateTime lastCommitDate
+	String format(String versionSeparator, String suffixSeparator, boolean includeSuffix) {
+		StringBuilder sb = new StringBuilder()
+		sb.append(majorVersion).append(versionSeparator).append(minorVersion)
+		if (maintenanceVersion != null) {
+			sb.append(versionSeparator).append(maintenanceVersion)
+		}
 
-    String format(String versionSeparator, String suffixSeparator, boolean includeSuffix) {
-        StringBuilder sb = new StringBuilder()
-        sb.append(majorVersion).append(versionSeparator).append(minorVersion)
-        if (maintenanceVersion != null) {
-            sb.append(versionSeparator).append(maintenanceVersion)
-        }
+		if (suffix && includeSuffix) {
+			sb.append(suffixSeparator).append(suffix)
+		}
 
-        if (suffix && includeSuffix) {
-            sb.append(suffixSeparator).append(suffix)
-        }
-
-        return sb.toString()
-    }
-
-    String asMavenVersion() {
-        format('.', '-', true)
-    }
+		return sb.toString()
+	}
+	String asVersion() {
+		StringBuilder sb = new StringBuilder()
+		sb.append(majorVersion).append('.' + minorVersion).append('.' + countCommit);
+		return sb;
+	}
+	String asMavenVersion() {
+		format('.', '-', true)
+	}
 }

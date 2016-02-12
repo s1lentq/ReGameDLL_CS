@@ -36,13 +36,10 @@
 class CHalfLifeTraining: public CHalfLifeMultiplay
 {
 public:
-	CHalfLifeTraining(void);
-public:
-	virtual BOOL IsMultiplayer(void)
-	{
-		return FALSE;
-	}
-	virtual BOOL IsDeathmatch(void);
+	CHalfLifeTraining();
+
+	virtual BOOL IsMultiplayer() { return FALSE; }
+	virtual BOOL IsDeathmatch();
 	virtual void InitHUD(CBasePlayer *pl);
 	virtual void PlayerSpawn(CBasePlayer *pPlayer);
 	virtual void PlayerThink(CBasePlayer *pPlayer);
@@ -50,12 +47,12 @@ public:
 	virtual edict_t *GetPlayerSpawnSpot(CBasePlayer *pPlayer);
 	virtual void PlayerKilled(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor);
 	virtual int ItemShouldRespawn(CItem *pItem);
-	virtual void CheckMapConditions(void) {};
-	virtual void CheckWinConditions(void);
+	virtual void CheckMapConditions() {};
+	virtual void CheckWinConditions();
 
 #ifdef HOOK_GAMEDLL
 
-	BOOL IsDeathmatch_(void);
+	BOOL IsDeathmatch_();
 	void InitHUD_(CBasePlayer *pl);
 	void PlayerSpawn_(CBasePlayer *pPlayer);
 	void PlayerThink_(CBasePlayer *pPlayer);
@@ -63,12 +60,12 @@ public:
 	edict_t *GetPlayerSpawnSpot_(CBasePlayer *pPlayer);
 	void PlayerKilled_(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor);
 	int ItemShouldRespawn_(CItem *pItem);
-	void CheckWinConditions_(void);
+	void CheckWinConditions_();
 
 #endif // HOOK_GAMEDLL
 
 public:
-	static void HostageDied(void);
+	static void HostageDied();
 	static bool PlayerCanBuy(CBasePlayer *pPlayer);
 
 	float FillAccountTime;
@@ -76,51 +73,46 @@ public:
 	BOOL fInBuyArea;
 	BOOL fVisitedBuyArea;
 	bool fVGUIMenus;
-
-};/* size: 728, cachelines: 12, members: 6 */
+};
 
 /* <18a1d5> ../cstrike/dlls/training_gamerules.cpp:252 */
 class CBaseGrenCatch: public CBaseEntity
 {
 public:
-	virtual void Spawn(void);
+	virtual void Spawn();
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
-	virtual int ObjectCaps(void)
-	{
-		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION);
-	}
-	virtual void Think(void);
+	virtual int ObjectCaps() { return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
+	virtual void Think();
 	virtual void Touch(CBaseEntity *pOther);
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
+	void Spawn_();
 	void KeyValue_(KeyValueData *pkvd);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
-	void Think_(void);
+	void Think_();
 	void Touch_(CBaseEntity *pOther);
 
 #endif // HOOK_GAMEDLL
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[5];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[5];
 
 	int m_NeedGrenadeType;
 	string_t sTriggerOnGrenade;
 	string_t sDisableOnGrenade;
 	bool m_fSmokeTouching;
 	bool m_fFlashTouched;
-
-};/* size: 168, cachelines: 3, members: 7 */
+};
 
 /* <18a222> ../cstrike/dlls/training_gamerules.cpp:385 */
 class CFuncWeaponCheck: public CBaseEntity
 {
 public:
-	virtual void Spawn(void);
+	virtual void Spawn();
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
@@ -128,7 +120,7 @@ public:
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
+	void Spawn_();
 	void KeyValue_(KeyValueData *pkvd);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
@@ -137,7 +129,7 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[6];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[6];
 
 private:
 	string_t sTriggerWithItems;
@@ -146,15 +138,6 @@ private:
 	unsigned int sItemName[32];
 	int iItemCount;
 	int iAnyWeapon;
-
-};/* size: 300, cachelines: 5, members: 8 */
-
-#ifdef HOOK_GAMEDLL
-
-// linked objects
-C_DLLEXPORT void func_grencatch(entvars_t *pev);
-C_DLLEXPORT void func_weaponcheck(entvars_t *pev);
-
-#endif // HOOK_GAMEDLL
+};
 
 #endif // TRAINING_GAMERULES_H

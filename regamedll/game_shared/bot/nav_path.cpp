@@ -1,152 +1,276 @@
 #include "precompiled.h"
 
+// Determine actual path positions
+
 /* <505025> ../game_shared/bot/nav_path.cpp:24 */
-NOBODY bool CNavPath::ComputePathPositions(void)
+bool CNavPath::ComputePathPositions()
 {
-//	{
-//		int i;                                                //    34
-//		{
-//			const class PathSegment *from;              //    36
-//			class PathSegment *to;                       //    37
-//			{
-//				const NavLadderList *list;          //   118
-//				const_iterator iter;                  //   119
-//				{
-//					class CNavLadder *ladder;    //   122
-//					AddDirectionVector(Vector *v,
-//								enum NavDirType dir,
-//								float amount);  //   128
-//				}
-//				end(const class list<CNavLadder*, std::allocator<CNavLadder*>> *const this);  //   120
-//				operator++(_List_const_iterator<CNavLadder*> *const this);  //   120
-//			}
-//			{
-//				const NavLadderList *list;          //    91
-//				const_iterator iter;                  //    92
-//				end(const class list<CNavLadder*, std::allocator<CNavLadder*>> *const this);  //    93
-//				{
-//					class CNavLadder *ladder;    //    95
-//					AddDirectionVector(Vector *v,
-//								enum NavDirType dir,
-//								float amount);  //   104
-//				}
-//				operator++(_List_const_iterator<CNavLadder*> *const this);  //    93
-//			}
-//			{
-//				float const stepInDist;                //    47
-//				AddDirectionVector(Vector *v,
-//							enum NavDirType dir,
-//							float amount);  //    48
-//				{
-//					class Vector2D dir;           //    59
-//					float const pushDist;          //    63
-//					DirectionToVector2D(NavDirType dir,
-//								class Vector2D *v);  //    60
-//					{
-//						int j;                //    71
-//					}
-//				}
-//			}
-//		}
-//	}
+	if (m_segmentCount == 0)
+		return false;
+
+	// start in first area's center
+	m_path[0].pos = *m_path[0].area->GetCenter();
+	m_path[0].ladder = NULL;
+	m_path[0].how = NUM_TRAVERSE_TYPES;
+
+	for (int i = 1; i < m_segmentCount; ++i)
+	{
+		const PathSegment *from = &m_path[i - 1];
+		PathSegment *to = &m_path[ i ];
+
+		// walk along the floor to the next area
+		if (to->how <= GO_WEST)
+		{
+			to->ladder = NULL;
+
+			// compute next point, keeping path as straight as possible
+			from->area->ComputeClosestPointInPortal(to->area, (NavDirType)to->how, &from->pos, &to->pos);
+
+			// move goal position into the goal area a bit
+			// how far to "step into" an area - must be less than min area size
+			const float stepInDist = 5.0f;
+			AddDirectionVector(&to->pos, (NavDirType)to->how, stepInDist);
+
+			// we need to walk out of "from" area, so keep Z where we can reach it
+			to->pos.z = from->area->GetZ(&to->pos);
+
+			// if this is a "jump down" connection, we must insert an additional point on the path
+			if (to->area->IsConnected(from->area, NUM_DIRECTIONS) == false)
+			{
+				// this is a "jump down" link
+				// compute direction of path just prior to "jump down"
+				Vector2D dir;
+				DirectionToVector2D((NavDirType)to->how, &dir);
+
+				// shift top of "jump down" out a bit to "get over the ledge"
+				const float pushDist = 25.0f;
+				to->pos.x += pushDist * dir.x;
+				to->pos.y += pushDist * dir.y;
+
+				// insert a duplicate node to represent the bottom of the fall
+				if (m_segmentCount < MAX_PATH_SEGMENTS - 1)
+				{
+					// copy nodes down
+					for (int j = m_segmentCount; j > i; --j)
+						m_path[j] = m_path[j - 1];
+
+					// path is one node longer
+					++m_segmentCount;
+
+					// move index ahead into the new node we just duplicated
+					++i;
+
+					m_path[i].pos.x = to->pos.x + pushDist * dir.x;
+					m_path[i].pos.y = to->pos.y + pushDist * dir.y;
+
+					// put this one at the bottom of the fall
+					m_path[i].pos.z = to->area->GetZ(&m_path[i].pos);
+				}
+			}
+		}
+		// to get to next area, must go up a ladder
+		else if (to->how == GO_LADDER_UP)
+		{
+			// find our ladder
+			const NavLadderList *list = from->area->GetLadderList(LADDER_UP);
+			NavLadderList::const_iterator iter;
+			for (iter = list->begin(); iter != list->end(); ++iter)
+			{
+				CNavLadder *ladder = *iter;
+
+				// can't use "behind" area when ascending...
+				if (ladder->m_topForwardArea == to->area || ladder->m_topLeftArea == to->area || ladder->m_topRightArea == to->area)
+				{
+					to->ladder = ladder;
+					to->pos = ladder->m_bottom;
+					AddDirectionVector(&to->pos, ladder->m_dir, 2.0f * HalfHumanWidth);
+					break;
+				}
+			}
+
+			if (iter == list->end())
+			{
+				//PrintIfWatched( "ERROR: Can't find ladder in path\n" );
+				return false;
+			}
+		}
+		// to get to next area, must go down a ladder
+		else if (to->how == GO_LADDER_DOWN)
+		{
+			// find our ladder
+			const NavLadderList *list = from->area->GetLadderList(LADDER_DOWN);
+			NavLadderList::const_iterator iter;
+			for (iter = list->begin(); iter != list->end(); ++iter)
+			{
+				CNavLadder *ladder = *iter;
+
+				if (ladder->m_bottomArea == to->area)
+				{
+					to->ladder = ladder;
+					to->pos = ladder->m_top;
+					AddDirectionVector(&to->pos, OppositeDirection(ladder->m_dir), 2.0f * HalfHumanWidth);
+					break;
+				}
+			}
+			if (iter == list->end())
+			{
+				//PrintIfWatched( "ERROR: Can't find ladder in path\n" );
+				return false;
+			}
+		}
+	}
+
+	return true;
 }
+
+// Return true if position is at the end of the path
 
 /* <50525f> ../game_shared/bot/nav_path.cpp:148 */
-NOBODY bool CNavPath::IsAtEnd(const Vector &pos) const
+bool CNavPath::IsAtEnd(const Vector &pos) const
 {
-//	{
-//		float const epsilon;                                   //   153
-//		operator-(const Vector *const this,
-//				const Vector &v);  //   154
-//		IsLengthLessThan(const Vector *const this,
-//				float length);  //   154
-//	}
+	if (!IsValid())
+		return false;
+
+	const float epsilon = 20.0f;
+	return (pos - GetEndpoint()).IsLengthLessThan(epsilon);
 }
+
+// Return length of path from start to finish
 
 /* <5052f6> ../game_shared/bot/nav_path.cpp:161 */
-NOBODY float CNavPath::GetLength(void) const
+float CNavPath::GetLength() const
 {
-//	{
-//		float length;                                         //   163
-//		{
-//			int i;                                        //   164
-//			operator-(const Vector *const this,
-//					const Vector &v);  //   166
-//			Length(const Vector *const this);  //   166
-//		}
-//	}
+	float length = 0.0f;
+	for (int i = 1; i < GetSegmentCount(); ++i)
+	{
+		length += (m_path[i].pos - m_path[i - 1].pos).Length();
+	}
+
+	return length;
 }
+
+// Return point a given distance along the path - if distance is out of path bounds, point is clamped to start/end
+// TODO: Be careful of returning "positions" along one-way drops, ladders, etc.
 
 /* <50537f> ../game_shared/bot/nav_path.cpp:177 */
-NOBODY bool CNavPath::GetPointAlongPath(float distAlong, Vector *pointOnPath) const
+NOXREF bool CNavPath::GetPointAlongPath(float distAlong, Vector *pointOnPath) const
 {
-//	{
-//		float lengthSoFar;                                    //   188
-//		float segmentLength;                                  //   189
-//		Vector dir;                                     //   190
-//		{
-//			int i;                                        //   191
-//			operator-(const Vector *const this,
-//					const Vector &v);  //   193
-//			Length(const Vector *const this);  //   194
-//			{
-//				float delta;                          //   199
-//				float t;                              //   200
-//				operator*(float fl,
-//						const Vector &v);  //   202
-//				operator+(const Vector *const this,
-//						const Vector &v);  //   202
-//			}
-//		}
-//	}
+	if (!IsValid() || pointOnPath == NULL)
+		return false;
+
+	if (distAlong <= 0.0f)
+	{
+		*pointOnPath = m_path[0].pos;
+		return true;
+	}
+
+	float lengthSoFar = 0.0f;
+	float segmentLength;
+	Vector dir;
+	for (int i = 1; i < GetSegmentCount(); ++i)
+	{
+		dir = m_path[i].pos - m_path[i - 1].pos;
+		segmentLength = dir.Length();
+
+		if (segmentLength + lengthSoFar >= distAlong)
+		{
+			// desired point is on this segment of the path
+			float delta = distAlong - lengthSoFar;
+			float t = delta / segmentLength;
+
+			*pointOnPath = m_path[i].pos + t * dir;
+
+			return true;
+		}
+
+		lengthSoFar += segmentLength;
+	}
+
+	*pointOnPath = m_path[ GetSegmentCount() - 1 ].pos;
+	return true;
 }
+
+// Return the node index closest to the given distance along the path without going over - returns (-1) if error
 
 /* <5054da> ../game_shared/bot/nav_path.cpp:218 */
-NOBODY int CNavPath::GetSegmentIndexAlongPath(float distAlong) const
+int CNavPath::GetSegmentIndexAlongPath(float distAlong) const
 {
-//	{
-//		float lengthSoFar;                                    //   228
-//		Vector dir;                                     //   229
-//		{
-//			int i;                                        //   230
-//			operator-(const Vector *const this,
-//					const Vector &v);  //   232
-//			Length(const Vector *const this);  //   232
-//		}
-//	}
+	if (!IsValid())
+		return -1;
+
+	if (distAlong <= 0.0f)
+	{
+		return 0;
+	}
+
+	float lengthSoFar = 0.0f;
+	Vector dir;
+	for (int i = 1; i < GetSegmentCount(); ++i)
+	{
+		lengthSoFar += (m_path[i].pos - m_path[i - 1].pos).Length();
+
+		if (lengthSoFar > distAlong)
+		{
+			return i - 1;
+		}
+	}
+
+	return GetSegmentCount() - 1;
 }
 
+// Compute closest point on path to given point
+// NOTE: This does not do line-of-sight tests, so closest point may be thru the floor, etc
+
 /* <50557e> ../game_shared/bot/nav_path.cpp:250 */
-NOBODY bool CNavPath::FindClosestPointOnPath(const Vector *worldPos, int startIndex, int endIndex, Vector *close) const
+NOXREF bool CNavPath::FindClosestPointOnPath(const Vector *worldPos, int startIndex, int endIndex, Vector *close) const
 {
-//	{
-//		Vector along;                                   //   255
-//		Vector toWorldPos;                              //   255
-//		Vector pos;                                     //   256
-//		const Vector *from;                           //   257
-//		const Vector *to;                             //   257
-//		float length;                                         //   258
-//		float closeLength;                                    //   259
-//		float closeDistSq;                                    //   260
-//		float distSq;                                         //   261
-//		{
-//			int i;                                        //   263
-//			NormalizeInPlace(Vector *const this);  //   272
-//			operator-(const Vector *const this,
-//					const Vector &v);  //   275
-//			DotProduct(Vector &a,
-//					const Vector &b);  //   278
-//			operator-(const Vector *const this,
-//					const Vector &v);  //   288
-//			LengthSquared(const Vector *const this);  //   288
-//			operator-(const Vector *const this,
-//					const Vector &v);  //   269
-//			operator*(float fl,
-//					const Vector &v);  //   286
-//			operator+(const Vector *const this,
-//					const Vector &v);  //   286
-//		}
-//	}
+	if (!IsValid() || close == NULL)
+		return false;
+
+	Vector along, toWorldPos;
+	Vector pos;
+	const Vector *from, *to;
+	float length;
+	float closeLength;
+	float closeDistSq = 9999999999.9;
+	float distSq;
+
+	for (int i = startIndex; i <= endIndex; ++i)
+	{
+		from = &m_path[i - 1].pos;
+		to = &m_path[i].pos;
+
+		// compute ray along this path segment
+		along = *to - *from;
+
+		// make it a unit vector along the path
+		length = along.NormalizeInPlace();
+
+		// compute vector from start of segment to our point
+		toWorldPos = *worldPos - *from;
+
+		// find distance of closest point on ray
+		closeLength = DotProduct(toWorldPos, along);
+
+		// constrain point to be on path segment
+		if (closeLength <= 0.0f)
+			pos = *from;
+		else if (closeLength >= length)
+			pos = *to;
+		else
+			pos = *from + closeLength * along;
+
+		distSq = (pos - *worldPos).LengthSquared();
+
+		// keep the closest point so far
+		if (distSq < closeDistSq)
+		{
+			closeDistSq = distSq;
+			*close = pos;
+		}
+	}
+
+	return true;
 }
 
 // Build trivial path when start and goal are in the same nav area
@@ -183,456 +307,827 @@ bool CNavPath::BuildTrivialPath(const Vector *start, const Vector *goal)
 	return true;
 }
 
+// Draw the path for debugging
+
 /* <505853> ../game_shared/bot/nav_path.cpp:340 */
-NOBODY void CNavPath::Draw(void)
+void CNavPath::Draw()
 {
-//	{
-//		int i;                                                //   345
-//		operator+(const Vector *const this,
-//				const Vector &v);  //   347
-//		operator+(const Vector *const this,
-//				const Vector &v);  //   347
-//	}
+	if (!IsValid())
+		return;
+
+	for (int i = 1; i < m_segmentCount; ++i)
+	{
+		UTIL_DrawBeamPoints(m_path[i - 1].pos + Vector(0, 0, HalfHumanHeight), m_path[i].pos + Vector(0, 0, HalfHumanHeight), 2, 255, 75, 0);
+	}
 }
+
+// Check line of sight from 'anchor' node on path to subsequent nodes until
+// we find a node that can't been seen from 'anchor'
 
 /* <505931> ../game_shared/bot/nav_path.cpp:357 */
-NOBODY int CNavPath::FindNextOccludedNode(int anchor)
+int CNavPath::FindNextOccludedNode(int anchor_)
 {
-//	{
-//		int lastVisible;                                      //   359
-//		{
-//			int i;                                        //   360
-//			{
-//				Vector anchorPlusHalf;          //   372
-//				Vector iPlusHalf;               //   373
-//				Vector anchorPlusFull;          //   380
-//				Vector iPlusFull;               //   381
-//				IsWalkableTraceLineClear(Vector &from,
-//							Vector &to,
-//							unsigned int flags);  //   366
-//				operator+(const Vector *const this,
-//						const Vector &v);  //   372
-//				IsWalkableTraceLineClear(Vector &from,
-//							Vector &to,
-//							unsigned int flags);  //   374
-//				operator+(const Vector *const this,
-//						const Vector &v);  //   373
-//				operator+(const Vector *const this,
-//						const Vector &v);  //   380
-//				IsWalkableTraceLineClear(Vector &from,
-//							Vector &to,
-//							unsigned int flags);  //   382
-//				operator+(const Vector *const this,
-//						const Vector &v);  //   381
-//			}
-//		}
-//	}
+	int lastVisible = anchor_;
+	for (int i = anchor_ + 1; i < m_segmentCount; ++i)
+	{
+		// don't remove ladder nodes
+		if (m_path[i].ladder)
+			return i;
+
+		if (!IsWalkableTraceLineClear(m_path[ anchor_ ].pos, m_path[ i ].pos))
+		{
+			// cant see this node from anchor node
+			return i;
+		}
+
+		Vector anchorPlusHalf =  m_path[ anchor_ ].pos + Vector(0, 0, HalfHumanHeight);
+		Vector iPlusHalf =  m_path[ i ].pos + Vector(0, 0, HalfHumanHeight);
+		if (!IsWalkableTraceLineClear(anchorPlusHalf, iPlusHalf))
+		{
+			// cant see this node from anchor node
+			return i;
+		}
+
+		Vector anchorPlusFull =  m_path[ anchor_ ].pos + Vector(0, 0, HumanHeight);
+		Vector iPlusFull = m_path[ i ].pos + Vector(0, 0, HumanHeight);
+		if (!IsWalkableTraceLineClear(anchorPlusFull, iPlusFull))
+		{
+			// cant see this node from anchor node
+			return i;
+		}
+	}
+
+	return m_segmentCount;
 }
 
+// Smooth out path, removing redundant nodes
+
 /* <505c26> ../game_shared/bot/nav_path.cpp:396 */
-NOBODY void CNavPath::Optimize(void)
+void CNavPath::Optimize()
 {
+	// DONT USE THIS: Optimizing the path results in cutting thru obstacles
+#if 0
+	if (m_segmentCount < 3)
+		return;
+
+	int anchor_ = 0;
+	while (anchor_ < m_segmentCount)
+	{
+		int occluded = FindNextOccludedNode(anchor_);
+		int nextAnchor = occluded - 1;
+
+		if (nextAnchor > anchor_)
+		{
+			// remove redundant nodes between anchor and nextAnchor
+			int removeCount = nextAnchor - anchor_ - 1;
+			if (removeCount > 0)
+			{
+				for (int i = nextAnchor; i < m_segmentCount; ++i)
+				{
+					m_path[i - removeCount] = m_path[i];
+				}
+				m_segmentCount -= removeCount;
+			}
+		}
+
+		++anchor_;
+	}
+#endif
 }
 
 /* <505c6d> ../game_shared/bot/nav_path.cpp:436 */
-NOBODY CNavPathFollower::CNavPathFollower(void)
+CNavPathFollower::CNavPathFollower()
 {
-//	CStuckMonitor(CStuckMonitor *const this);  //   436
+	m_improv = NULL;
+	m_path = NULL;
+
+	m_segmentIndex = 0;
+	m_isLadderStarted = false;
+
+	m_isDebug = false;
 }
 
 /* <505cce> ../game_shared/bot/nav_path.cpp:447 */
-NOBODY void CNavPathFollower::Reset(void)
+void CNavPathFollower::Reset()
 {
-//	Reset(CStuckMonitor *const this);  //   452
+	m_segmentIndex = 1;
+	m_isLadderStarted = false;
+
+	m_stuckMonitor.Reset();
 }
+
+// Move improv along path
 
 /* <507c31> ../game_shared/bot/nav_path.cpp:459 */
-NOBODY void CNavPathFollower::Update(float deltaT, bool avoidObstacles)
+void CNavPathFollower::Update(float deltaT, bool avoidObstacles)
 {
-//	{
-//		const class PathSegment *node;                      //   464
-//		float const closeRange;                                //   507
-//		float const aheadRange;                                //   523
-//		bool isApproachingJumpArea;                           //   529
-//		float const giveUpTime;                                //   596
-//		operator[](CNavPath *const this,
-//				int i);  //   464
-//		Invalidate(CNavPath *const this);  //   600
-//		{
-//			const Vector *approachPos;            //   476
-//			const Vector *departPos;              //   477
-//			operator[](CNavPath *const this,
-//					int i);  //   480
-//			operator[](CNavPath *const this,
-//					int i);  //   483
-//		}
-//		operator-(const Vector *const this,
-//				const Vector &v);  //   508
-//		IsLengthLessThan(const Vector *const this,
-//				float length);  //   508
-//		FindPathPoint(CNavPathFollower *const this,
-//				float aheadRange,
-//				Vector *point,
-//				int *prevIndex);  //   524
-//		{
-//			float const crouchRange;                       //   547
-//			bool didCrouch;                               //   548
-//			{
-//				int i;                                //   549
-//				{
-//					const class CNavArea *to;   //   551
-//					Vector close;           //   560
-//					operator-(const Vector *const this,
-//							const Vector &v);  //   563
-//					IsLengthGreaterThan(const class Vector2D *const this,
-//								float length);  //   563
-//					operator[](CNavPath *const this,
-//							int i);  //   551
-//				}
-//			}
-//		}
-//		GetDuration(const class CStuckMonitor *const this);  //   597
-//		GetEndpoint(const class CNavPath *const this);  //   599
-//		{
-//			float const closeRange;                        //   608
-//			class Vector2D to;                            //   609
-//			IsLengthLessThan(const class Vector2D *const this,
-//					float length);  //   610
-//			{
-//				const class PathSegment *nextNode;  //   614
-//				operator[](CNavPath *const this,
-//						int i);  //   614
-//				GetEndpoint(const class CNavPath *const this);  //   620
-//				Invalidate(CNavPath *const this);  //   621
-//				Invalidate(CNavPath *const this);  //   629
-//			}
-//		}
-//		operator+(const Vector *const this,
-//				const Vector &v);  //   587
-//		Vector(Vector *const this,
-//			const Vector &v);  //   587
-//		operator+(const Vector *const this,
-//				const Vector &v);  //   588
-//		Vector(Vector *const this,
-//			const Vector &v);  //   588
-//		Invalidate(CNavPath *const this);  //   515
-//	}
+	if (m_path == NULL || m_path->IsValid() == false)
+		return;
+
+	const CNavPath::PathSegment *node = (*m_path)[m_segmentIndex];
+
+	if (node == NULL)
+	{
+		m_improv->OnMoveToFailure(m_path->GetEndpoint(), IImprovEvent::FAIL_INVALID_PATH);
+		m_path->Invalidate();
+		return;
+	}
+
+	// handle ladders
+	if (node->ladder)
+	{
+		const Vector *approachPos = NULL;
+		const Vector *departPos = NULL;
+
+		if (m_segmentIndex)
+			approachPos = &(*m_path)[m_segmentIndex - 1]->pos;
+
+		if (m_segmentIndex < m_path->GetSegmentCount() - 1)
+			departPos = &(*m_path)[m_segmentIndex + 1]->pos;
+
+		if (!m_isLadderStarted)
+		{
+			// set up ladder movement
+			m_improv->StartLadder(node->ladder, node->how, approachPos, departPos);
+			m_isLadderStarted = true;
+		}
+
+		// move improv along ladder
+		if (m_improv->TraverseLadder(node->ladder, node->how, approachPos, departPos, deltaT))
+		{
+			// completed ladder
+			++m_segmentIndex;
+		}
+
+		return;
+	}
+
+	// reset ladder init flag
+	m_isLadderStarted = false;
+
+	// Check if we reached the end of the path
+	const float closeRange = 20.0f;
+	if ((m_improv->GetFeet() - node->pos).IsLengthLessThan(closeRange))
+	{
+		++m_segmentIndex;
+
+		if (m_segmentIndex >= m_path->GetSegmentCount())
+		{
+			m_improv->OnMoveToSuccess(m_path->GetEndpoint());
+			m_path->Invalidate();
+			return;
+		}
+	}
+
+	m_goal = node->pos;
+
+	const float aheadRange = 300.0f;
+	m_segmentIndex = FindPathPoint(aheadRange, &m_goal, &m_behindIndex);
+	if (m_segmentIndex >= m_path->GetSegmentCount())
+		m_segmentIndex = m_path->GetSegmentCount() - 1;
+
+	bool isApproachingJumpArea = false;
+
+	// Crouching
+	if (!m_improv->IsUsingLadder())
+	{
+		// because hostage crouching is not really supported by the engine,
+		// if we are standing in a crouch area, we must crouch to avoid collisions
+		if (m_improv->GetLastKnownArea() && (m_improv->GetLastKnownArea()->GetAttributes() & NAV_CROUCH) && !(m_improv->GetLastKnownArea()->GetAttributes() & NAV_JUMP))
+		{
+			m_improv->Crouch();
+		}
+
+		// if we are approaching a crouch area, crouch
+		// if there are no crouch areas coming up, stand
+		const float crouchRange = 50.0f;
+		bool didCrouch = false;
+		for (int i = m_segmentIndex; i < m_path->GetSegmentCount(); ++i)
+		{
+			const CNavArea *to = (*m_path)[i]->area;
+
+			// if there is a jump area on the way to the crouch area, don't crouch as it messes up the jump
+			if (to->GetAttributes() & NAV_JUMP)
+			{
+				isApproachingJumpArea = true;
+				break;
+			}
+
+			Vector close;
+			to->GetClosestPointOnArea(&m_improv->GetCentroid(), &close);
+
+			if ((close - m_improv->GetFeet()).Make2D().IsLengthGreaterThan(crouchRange))
+				break;
+
+			if (to->GetAttributes() & NAV_CROUCH)
+			{
+				m_improv->Crouch();
+				didCrouch = true;
+				break;
+			}
+		}
+
+		if (!didCrouch && !m_improv->IsJumping())
+		{
+			// no crouch areas coming up
+			m_improv->StandUp();
+		}
+	}	// end crouching logic
+
+	if (m_isDebug)
+	{
+		m_path->Draw();
+		UTIL_DrawBeamPoints(m_improv->GetCentroid(), m_goal + Vector(0, 0, StepHeight), 1, 255, 0, 255);
+		UTIL_DrawBeamPoints(m_goal + Vector(0, 0, StepHeight), m_improv->GetCentroid(), 1, 255, 0, 255);
+	}
+
+	// check if improv becomes stuck
+	m_stuckMonitor.Update(m_improv);
+
+	// if improv has been stuck for too long, give up
+	const float giveUpTime = 2.0f;
+	if (m_stuckMonitor.GetDuration() > giveUpTime)
+	{
+		m_improv->OnMoveToFailure(m_path->GetEndpoint(), IImprovEvent::FAIL_STUCK);
+		m_path->Invalidate();
+		return;
+	}
+
+	// if our goal is high above us, we must have fallen
+	if (m_goal.z - m_improv->GetFeet().z > JumpCrouchHeight)
+	{
+		const float closeRange = 75.0f;
+		Vector2D to(m_improv->GetFeet().x - m_goal.x, m_improv->GetFeet().y - m_goal.y);
+
+		if (to.IsLengthLessThan(closeRange))
+		{
+			// we can't reach the goal position
+			// check if we can reach the next node, in case this was a "jump down" situation
+			const CNavPath::PathSegment *nextNode = (*m_path)[m_behindIndex + 1];
+			if (m_behindIndex >= 0 && nextNode)
+			{
+				if (nextNode->pos.z - m_improv->GetFeet().z > JumpCrouchHeight)
+				{
+					// the next node is too high, too - we really did fall of the path
+					m_improv->OnMoveToFailure(m_path->GetEndpoint(), IImprovEvent::FAIL_FELL_OFF);
+					m_path->Invalidate();
+					return;
+				}
+			}
+			else
+			{
+				// fell trying to get to the last node in the path
+				m_improv->OnMoveToFailure(m_path->GetEndpoint(), IImprovEvent::FAIL_FELL_OFF);
+				m_path->Invalidate();
+				return;
+			}
+		}
+	}
+
+	// avoid small obstacles
+	if (avoidObstacles && !isApproachingJumpArea && !m_improv->IsJumping() && m_segmentIndex < m_path->GetSegmentCount() - 1)
+	{
+		FeelerReflexAdjustment(&m_goal);
+
+		// currently, this is only used for hostages, and their collision physics stinks
+		// do more feeler checks to avoid short obstacles
+		/*
+		const float inc = 0.25f;
+		for (float t = 0.5f; t < 1.0f; t += inc)
+		{
+			FeelerReflexAdjustment(&m_goal, t * StepHeight);
+		}
+		*/
+	}
+
+	// move improv along path
+	m_improv->TrackPath(m_goal, deltaT);
 }
+
+// Return the closest point to our current position on our current path
+// If "local" is true, only check the portion of the path surrounding m_pathIndex
 
 /* <505d18> ../game_shared/bot/nav_path.cpp:662 */
-NOBODY int CNavPathFollower::FindOurPositionOnPath(Vector *close, bool local) const
+int CNavPathFollower::FindOurPositionOnPath(Vector *close, bool local) const
 {
-//	{
-//		Vector along;                                   //   667
-//		Vector toFeet;                                  //   667
-//		Vector feet;                                    //   668
-//		Vector eyes;                                    //   669
-//		Vector pos;                                     //   670
-//		const Vector *from;                           //   671
-//		const Vector *to;                             //   671
-//		float length;                                         //   672
-//		float closeLength;                                    //   673
-//		float closeDistSq;                                    //   674
-//		int closeIndex;                                       //   675
-//		float distSq;                                         //   676
-//		int start;                                            //   678
-//		int end;                                              //   678
-//		Vector(Vector *const this,
-//			const Vector &v);  //   668
-//		Vector(Vector *const this,
-//			const Vector &v);  //   669
-//		{
-//			int i;                                        //   696
-//			NormalizeInPlace(Vector *const this);  //   705
-//			operator-(const Vector *const this,
-//					const Vector &v);  //   708
-//			DotProduct(Vector &a,
-//					const Vector &b);  //   711
-//			operator-(const Vector *const this,
-//					const Vector &v);  //   721
-//			LengthSquared(const Vector *const this);  //   721
-//			{
-//				Vector probe;                   //   727
-//				operator+(const Vector *const this,
-//						const Vector &v);  //   727
-//				IsWalkableTraceLineClear(Vector &from,
-//							Vector &to,
-//							unsigned int flags);  //   728
-//			}
-//			operator[](CNavPath *const this,
-//					int i);  //   698
-//			operator[](CNavPath *const this,
-//					int i);  //   699
-//			operator-(const Vector *const this,
-//					const Vector &v);  //   702
-//			operator*(float fl,
-//					const Vector &v);  //   719
-//			operator+(const Vector *const this,
-//					const Vector &v);  //   719
-//		}
-//	}
+	Vector along, toFeet;
+	Vector feet = m_improv->GetFeet();
+	Vector eyes = m_improv->GetEyes();
+	Vector pos;
+	const Vector *from, *to;
+	float_precision length;
+	float closeLength;
+	float closeDistSq = 1.0e10;
+	int closeIndex = -1;
+	float_precision distSq;
+	int start, end;
+
+	if (!m_path->IsValid())
+		return -1;
+
+	if (local)
+	{
+		start = m_segmentIndex - 3;
+		if (start < 1)
+			start = 1;
+
+		end = m_segmentIndex + 3;
+		if (end > m_path->GetSegmentCount())
+			end = m_path->GetSegmentCount();
+	}
+	else
+	{
+		start = 1;
+		end = m_path->GetSegmentCount();
+	}
+
+	for (int i = start; i < end; ++i)
+	{
+		from = &(*m_path)[i - 1]->pos;
+		to = &(*m_path)[i]->pos;
+
+		// compute ray along this path segment
+		along = *to - *from;
+
+		// make it a unit vector along the path
+		length = along.NormalizeInPlace();
+
+		// compute vector from start of segment to our point
+		toFeet = feet - *from;
+
+		// find distance of closest point on ray
+		closeLength = DotProduct(toFeet, along);
+
+		// constrain point to be on path segment
+		if (closeLength <= 0.0f)
+			pos = *from;
+		else if (closeLength >= length)
+			pos = *to;
+		else
+			pos = *from + closeLength * along;
+
+		distSq = (pos - feet).LengthSquared();
+
+		// keep the closest point so far
+		if (distSq < closeDistSq)
+		{
+			// don't use points we cant see
+			Vector probe = pos + Vector(0, 0, HalfHumanHeight);
+			if (!IsWalkableTraceLineClear(eyes, probe, WALK_THRU_DOORS | WALK_THRU_BREAKABLES))
+				continue;
+
+			// don't use points we cant reach
+			//if (!IsStraightLinePathWalkable(&pos))
+			//	continue;
+
+			closeDistSq = distSq;
+			if (close)
+				*close = pos;
+			closeIndex = i - 1;
+		}
+	}
+
+	return closeIndex;
 }
+
+// Compute a point a fixed distance ahead along our path
+// Returns path index just after point
 
 /* <506248> ../game_shared/bot/nav_path.cpp:750 */
-NOBODY int CNavPathFollower::FindPathPoint(float aheadRange, Vector *point, int *prevIndex)
+int CNavPathFollower::FindPathPoint(float aheadRange, Vector *point, int *prevIndex)
 {
-//	{
-//		int afterIndex;                                       //   753
-//		Vector close;                                   //   756
-//		int startIndex;                                       //   757
-//		Vector initDir;                                 //   838
-//		Vector feet;                                    //   841
-//		Vector eyes;                                    //   842
-//		float rangeSoFar;                                     //   843
-//		bool visible;                                         //   846
-//		Vector prevDir;                                 //   848
-//		bool isCorner;                                        //   851
-//		int i;                                                //   852
-//		{
-//			int index;                                    //   774
-//			float const closeEpsilon;                      //   782
-//			operator[](CNavPath *const this,
-//					int i);  //   778
-//			operator-(const Vector *const this,
-//					const Vector &v);  //   783
-//			IsLengthLessThan(const class Vector2D *const this,
-//					float length);  //   783
-//			operator[](CNavPath *const this,
-//					int i);  //   793
-//		}
-//		{
-//			Vector pos;                             //   802
-//			float const closeEpsilon;                      //   805
-//			operator-(const Vector *const this,
-//					const Vector &v);  //   806
-//			operator[](CNavPath *const this,
-//					int i);  //   802
-//			IsLengthLessThan(const class Vector2D *const this,
-//					float length);  //   806
-//		}
-//		operator[](CNavPath *const this,
-//				int i);  //   818
-//		operator[](CNavPath *const this,
-//				int i);  //   820
-//		operator[](CNavPath *const this,
-//				int i);  //   818
-//		operator[](CNavPath *const this,
-//				int i);  //   831
-//		operator[](CNavPath *const this,
-//				int i);  //   833
-//		operator[](CNavPath *const this,
-//				int i);  //   831
-//		operator[](CNavPath *const this,
-//				int i);  //   838
-//		operator[](CNavPath *const this,
-//				int i);  //   838
-//		operator-(const Vector *const this,
-//				const Vector &v);  //   838
-//		NormalizeInPlace(Vector *const this);  //   839
-//		Vector(Vector *const this,
-//			const Vector &v);  //   841
-//		{
-//			Vector pos;                             //   855
-//			Vector to;                              //   856
-//			Vector dir;                             //   857
-//			Vector probe;                           //   876
-//			Vector along;                           //   897
-//			operator[](CNavPath *const this,
-//					int i);  //   855
-//			Vector(Vector *const this,
-//				const Vector &v);  //   855
-//			operator[](CNavPath *const this,
-//					int i);  //   856
-//			operator-(const Vector *const this,
-//					const Vector &v);  //   856
-//			Normalize(const Vector *const this);  //   857
-//			DotProduct(Vector &a,
-//					const Vector &b);  //   860
-//			DotProduct(Vector &a,
-//					const Vector &b);  //   867
-//			operator+(const Vector *const this,
-//					const Vector &v);  //   876
-//			IsWalkableTraceLineClear(Vector &from,
-//						Vector &to,
-//						unsigned int flags);  //   877
-//			operator[](CNavPath *const this,
-//					int i);  //   886
-//			operator[](CNavPath *const this,
-//					int i);  //   886
-//			operator[](CNavPath *const this,
-//					int i);  //   897
-//			operator-(const Vector *const this,
-//					const Vector &v);  //   897
-//			Length2D(const Vector *const this);  //   898
-//			operator-(const Vector *const this,
-//					const Vector &v);  //   897
-//		}
-//		Vector(Vector *const this,
-//			const Vector &v);  //   842
-//		operator[](CNavPath *const this,
-//				int i);  //   916
-//		{
-//			const Vector *afterPoint;             //   921
-//			const Vector *beforePoint;            //   922
-//			Vector to;                              //   924
-//			float length;                                 //   925
-//			float t;                                      //   927
-//			operator[](CNavPath *const this,
-//					int i);  //   921
-//			operator[](CNavPath *const this,
-//					int i);  //   922
-//			operator-(const Vector *const this,
-//					const Vector &v);  //   924
-//			Length2D(const Vector *const this);  //   925
-//			operator*(float fl,
-//					const Vector &v);  //   934
-//			{
-//				float const sightStepSize;             //   939
-//				float dt;                             //   940
-//				Vector probe;                   //   942
-//				operator+(const Vector *const this,
-//						const Vector &v);  //   942
-//				IsWalkableTraceLineClear(Vector &from,
-//							Vector &to,
-//							unsigned int flags);  //   943
-//				operator+(const Vector *const this,
-//						const Vector &v);  //   946
-//				operator*(float fl,
-//						const Vector &v);  //   946
-//			}
-//			operator+(const Vector *const this,
-//					const Vector &v);  //   934
-//		}
-//		{
-//			float const epsilon;                           //   957
-//			class Vector2D toPoint;                       //   958
-//			class Vector2D centroid;                      //   959
-//			DotProduct(const class Vector2D &a,
-//					const class Vector2D &b);  //   964
-//			IsLengthLessThan(const class Vector2D *const this,
-//					float length);  //   964
-//			{
-//				int i;                                //   966
-//				operator[](CNavPath *const this,
-//						int i);  //   969
-//				operator[](CNavPath *const this,
-//						int i);  //   973
-//				operator[](CNavPath *const this,
-//						int i);  //   971
-//				IsLengthGreaterThan(const class Vector2D *const this,
-//							float length);  //   971
-//			}
-//		}
-//	}
+	// find path index just past aheadRange
+	int afterIndex;
+
+	// finds the closest point on local area of path, and returns the path index just prior to it
+	Vector close;
+	int startIndex = FindOurPositionOnPath(&close, true);
+
+	if (prevIndex)
+		*prevIndex = startIndex;
+
+	if (startIndex <= 0)
+	{
+		// went off the end of the path
+		// or next point in path is unwalkable (ie: jump-down)
+		// keep same point
+		return m_segmentIndex;
+	}
+
+	// if we are crouching, just follow the path exactly
+	if (m_improv->IsCrouching())
+	{
+		// we want to move to the immediately next point along the path from where we are now
+		int index = startIndex + 1;
+		if (index >= m_path->GetSegmentCount())
+			index = m_path->GetSegmentCount() - 1;
+
+		*point = (*m_path)[index]->pos;
+
+		// if we are very close to the next point in the path, skip ahead to the next one to avoid wiggling
+		// we must do a 2D check here, in case the goal point is floating in space due to jump down, etc
+		const float closeEpsilon = 20.0f;
+		while ((*point - close).Make2D().IsLengthLessThan(closeEpsilon))
+		{
+			++index;
+
+			if (index >= m_path->GetSegmentCount())
+			{
+				index = m_path->GetSegmentCount() - 1;
+				break;
+			}
+
+			*point = (*m_path)[index]->pos;
+		}
+
+		return index;
+	}
+
+	// make sure we use a node a minimum distance ahead of us, to avoid wiggling
+	while (startIndex < m_path->GetSegmentCount() - 1)
+	{
+		Vector pos = (*m_path)[startIndex + 1]->pos;
+
+		// we must do a 2D check here, in case the goal point is floating in space due to jump down, etc
+		const float closeEpsilon = 20.0f;
+		if ((pos - close).Make2D().IsLengthLessThan(closeEpsilon))
+		{
+			++startIndex;
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	// if we hit a ladder or jump area, must stop (dont use ladder behind us)
+	if (startIndex > m_segmentIndex && startIndex < m_path->GetSegmentCount() && ((*m_path)[startIndex]->ladder || ((*m_path)[startIndex]->area->GetAttributes() & NAV_JUMP)))
+	{
+		*point = (*m_path)[startIndex]->pos;
+		return startIndex;
+	}
+
+	// we need the point just *ahead* of us
+	++startIndex;
+	if (startIndex >= m_path->GetSegmentCount())
+		startIndex = m_path->GetSegmentCount() - 1;
+
+	// if we hit a ladder or jump area, must stop
+	if (startIndex < m_path->GetSegmentCount() && ((*m_path)[startIndex]->ladder || ((*m_path)[startIndex]->area->GetAttributes() & NAV_JUMP)))
+	{
+		*point = (*m_path)[startIndex]->pos;
+		return startIndex;
+	}
+
+	// note direction of path segment we are standing on
+	Vector initDir = (*m_path)[startIndex]->pos - (*m_path)[startIndex - 1]->pos;
+	initDir.NormalizeInPlace();
+
+	Vector feet = m_improv->GetFeet();
+	Vector eyes = m_improv->GetEyes();
+	float rangeSoFar = 0;
+
+	// this flag is true if our ahead point is visible
+	bool visible = true;
+
+	Vector prevDir = initDir;
+
+	// step along the path until we pass aheadRange
+	bool isCorner = false;
+	int i;
+	for (i = startIndex; i < m_path->GetSegmentCount(); ++i)
+	{
+		Vector pos = (*m_path)[i]->pos;
+		Vector to = pos - (*m_path)[i - 1]->pos;
+		Vector dir = to.Normalize();
+
+		// don't allow path to double-back from our starting direction (going upstairs, down curved passages, etc)
+		if (DotProduct(dir, initDir) < 0.0f) // -0.25f
+		{
+			--i;
+			break;
+		}
+
+		// if the path turns a corner, we want to move towards the corner, not into the wall/stairs/etc
+		if (DotProduct(dir, prevDir) < 0.5f)
+		{
+			isCorner = true;
+			--i;
+			break;
+		}
+		prevDir = dir;
+
+		// don't use points we cant see
+		Vector probe = pos + Vector(0, 0, HalfHumanHeight);
+		if (!IsWalkableTraceLineClear(eyes, probe, WALK_THRU_BREAKABLES))
+		{
+			// presumably, the previous point is visible, so we will interpolate
+			visible = false;
+			break;
+		}
+
+		// if we encounter a ladder or jump area, we must stop
+		if (i < m_path->GetSegmentCount() && ((*m_path)[i]->ladder || (*m_path)[i]->area->GetAttributes() & NAV_JUMP))
+			break;
+
+		// Check straight-line path from our current position to this position
+		// Test for un-jumpable height change, or unrecoverable fall
+		//if (!IsStraightLinePathWalkable(&pos))
+		//{
+		//	--i;
+		//	break;
+		//}
+
+		Vector along = (i == startIndex) ? (pos - feet) : (pos - (*m_path)[i - 1]->pos);
+		rangeSoFar += along.Length2D();
+
+		// stop if we have gone farther than aheadRange
+		if (rangeSoFar >= aheadRange)
+			break;
+	}
+
+	if (i < startIndex)
+		afterIndex = startIndex;
+	else if (i < m_path->GetSegmentCount())
+		afterIndex = i;
+	else
+		afterIndex = m_path->GetSegmentCount() - 1;
+
+	// compute point on the path at aheadRange
+	if (afterIndex == 0)
+	{
+		*point = (*m_path)[0]->pos;
+	}
+	else
+	{
+		// interpolate point along path segment
+		const Vector *afterPoint = &(*m_path)[afterIndex]->pos;
+		const Vector *beforePoint = &(*m_path)[afterIndex - 1]->pos;
+
+		Vector to = *afterPoint - *beforePoint;
+		float length = to.Length2D();
+
+		float t = 1.0f - ((rangeSoFar - aheadRange) / length);
+
+		if (t < 0.0f)
+			t = 0.0f;
+		else if (t > 1.0f)
+			t = 1.0f;
+
+		*point = *beforePoint + t * to;
+
+		// if afterPoint wasn't visible, slide point backwards towards beforePoint until it is
+		if (!visible)
+		{
+			const float sightStepSize = 25.0f;
+			float dt = sightStepSize / length;
+
+			Vector probe = *point + Vector(0, 0, HalfHumanHeight);
+			while (t > 0.0f && !IsWalkableTraceLineClear(eyes,  probe, WALK_THRU_BREAKABLES))
+			{
+				t -= dt;
+				*point = *beforePoint + t * to;
+			}
+
+			if (t <= 0.0f)
+				*point = *beforePoint;
+		}
+	}
+
+	// if position found is too close to us, or behind us, force it farther down the path so we don't stop and wiggle
+	if (!isCorner)
+	{
+		const float epsilon = 50.0f;
+		Vector2D toPoint;
+		Vector2D centroid(m_improv->GetCentroid().x, m_improv->GetCentroid().y);
+
+		toPoint.x = point->x - centroid.x;
+		toPoint.y = point->y - centroid.y;
+
+		if (DotProduct(toPoint, initDir.Make2D()) < 0.0f || toPoint.IsLengthLessThan(epsilon))
+		{
+			int i;
+			for (i = startIndex; i < m_path->GetSegmentCount(); ++i)
+			{
+				toPoint.x = (*m_path)[i]->pos.x - centroid.x;
+				toPoint.y = (*m_path)[i]->pos.y - centroid.y;
+				if ((*m_path)[i]->ladder || ((*m_path)[i]->area->GetAttributes() & NAV_JUMP) || toPoint.IsLengthGreaterThan(epsilon))
+				{
+					*point = (*m_path)[i]->pos;
+					startIndex = i;
+					break;
+				}
+			}
+
+			if (i == m_path->GetSegmentCount())
+			{
+				*point = m_path->GetEndpoint();
+				startIndex = m_path->GetSegmentCount() - 1;
+			}
+		}
+	}
+
+	// m_pathIndex should always be the next point on the path, even if we're not moving directly towards it
+	if (startIndex < m_path->GetSegmentCount())
+		return startIndex;
+
+	return m_path->GetSegmentCount() - 1;
 }
+
+// Do reflex avoidance movements if our "feelers" are touched
+// TODO: Parameterize feeler spacing
 
 /* <507004> ../game_shared/bot/nav_path.cpp:1000 */
-NOBODY void CNavPathFollower::FeelerReflexAdjustment(Vector *goalPosition, float height)
+void CNavPathFollower::FeelerReflexAdjustment(Vector *goalPosition, float height)
 {
-//	{
-//		Vector dir;                                     //  1006
-//		Vector lat;                                     //  1010
-//		float const feelerOffset;                              //  1012
-//		float const feelerLengthRun;                           //  1013
-//		float const feelerLengthWalk;                          //  1014
-//		float const feelerHeight;                              //  1016
-//		float feelerLength;                                   //  1018
-//		float ground;                                         //  1025
-//		Vector normal;                                  //  1026
-//		Vector feet;                                    //  1037
-//		Vector from;                                    //  1040
-//		Vector to;                                      //  1041
-//		bool leftClear;                                       //  1043
-//		bool rightClear;                                      //  1057
-//		float const avoidRange;                                //  1070
-//		NormalizeInPlace(Vector *const this);  //  1008
-//		CrossProduct(Vector &a,
-//				const Vector &b);  //  1031
-//		IsWalkableTraceLineClear(Vector &from,
-//					Vector &to,
-//					unsigned int flags);  //  1043
-//		CrossProduct(Vector &a,
-//				const Vector &b);  //  1034
-//		Vector(Vector *const this,
-//			const Vector &v);  //  1037
-//		operator*(float fl,
-//				const Vector &v);  //  1040
-//		operator+(const Vector *const this,
-//				const Vector &v);  //  1040
-//		operator*(float fl,
-//				const Vector &v);  //  1041
-//		operator+(const Vector *const this,
-//				const Vector &v);  //  1041
-//		Vector(Vector *const this,
-//			const Vector &v);  //  1049
-//		Vector(Vector *const this,
-//			const Vector &v);  //  1049
-//		operator-(const Vector *const this,
-//				const Vector &v);  //  1054
-//		IsWalkableTraceLineClear(Vector &from,
-//					Vector &to,
-//					unsigned int flags);  //  1057
-//		operator+(const Vector *const this,
-//				const Vector &v);  //  1055
-//		Vector(Vector *const this,
-//			const Vector &v);  //  1063
-//		Vector(Vector *const this,
-//			const Vector &v);  //  1063
-//		operator*(float fl,
-//				const Vector &v);  //  1077
-//		operator+(const Vector *const this,
-//				const Vector &v);  //  1077
-//		operator*(float fl,
-//				const Vector &v);  //  1086
-//		operator-(const Vector *const this,
-//				const Vector &v);  //  1086
-//		Vector(Vector *const this,
-//			const Vector &v);  //  1065
-//		Vector(Vector *const this,
-//			const Vector &v);  //  1065
-//		Vector(Vector *const this,
-//			const Vector &v);  //  1051
-//		Vector(Vector *const this,
-//			const Vector &v);  //  1051
-//	}
+	// if we are in a "precise" area, do not do feeler adjustments
+	if (m_improv->GetLastKnownArea() && (m_improv->GetLastKnownArea()->GetAttributes() & NAV_PRECISE))
+		return;
+
+	Vector dir(BotCOS(m_improv->GetMoveAngle()), BotSIN(m_improv->GetMoveAngle()), 0.0f);
+	dir.z = 0.0f;
+
+#ifndef PLAY_GAMEDLL
+	dir.NormalizeInPlace();
+#else
+	// TODO: fix test demo
+	float_precision flLen = dir.Length();
+
+	if (flLen > 0)
+		dir = dir * (float)(1 / flLen);
+	else
+		dir = Vector(0, 0, 0);
+#endif // PLAY_GAMEDLL
+
+	Vector lat(-dir.y, dir.x, 0.0f);
+
+	const float feelerOffset = (m_improv->IsCrouching()) ? 20.0f : 25.0f;	// 15, 20
+	const float feelerLengthRun = 50.0f;					// 100 - too long for tight hallways (cs_747)
+	const float feelerLengthWalk = 30.0f;
+
+	// if obstacle is lower than StepHeight, we'll walk right over it
+	const float feelerHeight = (height > 0.0f) ? height : StepHeight + 0.1f;
+	float feelerLength = (m_improv->IsRunning()) ? feelerLengthRun : feelerLengthWalk;
+
+	feelerLength = (m_improv->IsCrouching()) ? 20.0f : feelerLength;
+
+	// Feelers must follow floor slope
+	float ground;
+	Vector normal;
+	if (m_improv->GetSimpleGroundHeightWithFloor(&m_improv->GetEyes(), &ground, &normal) == false)
+		return;
+
+	// get forward vector along floor
+	dir = CrossProduct(lat, normal);
+
+	// correct the sideways vector
+	lat = CrossProduct(dir, normal);
+
+	Vector feet = m_improv->GetFeet();
+	feet.z += feelerHeight;
+
+	Vector from = feet + feelerOffset * lat;
+	Vector to = from + feelerLength * dir;
+
+	bool leftClear = IsWalkableTraceLineClear(from, to, WALK_THRU_DOORS | WALK_THRU_BREAKABLES);
+
+	// draw debug beams
+	if (m_isDebug)
+	{
+		if (leftClear)
+			UTIL_DrawBeamPoints(from, to, 1, 0, 255, 0);
+		else
+			UTIL_DrawBeamPoints(from, to, 1, 255, 0, 0);
+	}
+
+	from = feet - feelerOffset * lat;
+	to = from + feelerLength * dir;
+
+	bool rightClear = IsWalkableTraceLineClear(from, to, WALK_THRU_DOORS | WALK_THRU_BREAKABLES);
+
+	// draw debug beams
+	if (m_isDebug)
+	{
+		if (rightClear)
+			UTIL_DrawBeamPoints(from, to, 1, 0, 255, 0);
+		else
+			UTIL_DrawBeamPoints(from, to, 1, 255, 0, 0);
+	}
+
+	const float_precision avoidRange = (m_improv->IsCrouching()) ? 150.0f : 300.0f;
+
+	if (!rightClear)
+	{
+		if (leftClear)
+		{
+			// right hit, left clear - veer left
+			*goalPosition = *goalPosition + avoidRange * lat;
+			//*goalPosition = m_improv->GetFeet() + avoidRange * lat;
+			//m_improv->StrafeLeft();
+		}
+	}
+	else if (!leftClear)
+	{
+		// right clear, left hit - veer right
+		*goalPosition = *goalPosition - avoidRange * lat;
+		//*goalPosition = m_improv->GetFeet() - avoidRange * lat;
+		//m_improv->StrafeRight();
+	}
 }
+
+// Reset the stuck-checker
 
 /* <507a31> ../game_shared/bot/nav_path.cpp:1098 */
-NOBODY CStuckMonitor::CStuckMonitor(void)
+CStuckMonitor::CStuckMonitor()
 {
-//	IntervalTimer(IntervalTimer *const this);  //  1098
+	m_isStuck = false;
+	m_avgVelIndex = 0;
+	m_avgVelCount = 0;
 }
+
+// Reset the stuck-checker
 
 /* <507a73> ../game_shared/bot/nav_path.cpp:1108 */
-NOBODY void CStuckMonitor::Reset(void)
+void CStuckMonitor::Reset()
 {
+	m_isStuck = false;
+	m_avgVelIndex = 0;
+	m_avgVelCount = 0;
 }
 
+// Test if the improv has become stuck
+
 /* <507a96> ../game_shared/bot/nav_path.cpp:1119 */
-NOBODY void CStuckMonitor::Update(CImprov *improv)
+void CStuckMonitor::Update(CImprov *improv)
 {
-//	{
-//		float const unstuckRange;                              //  1124
-//		operator-(const Vector *const this,
-//				const Vector &v);  //  1125
-//		IsLengthGreaterThan(const Vector *const this,
-//					float length);  //  1125
-//		Reset(CStuckMonitor *const this);  //  1128
-//	}
-//	{
-//		Vector vel;                                     //  1137
-//		float moveDist;                                       //  1148
-//		float deltaT;                                         //  1150
-//		operator-(const Vector *const this,
-//				const Vector &v);  //  1137
-//		Length(const Vector *const this);  //  1148
-//		{
-//			float avgVel;                                 //  1170
-//			float stuckVel;                               //  1177
-//			{
-//				int t;                                //  1171
-//			}
-//			Start(IntervalTimer *const this);  //  1182
-//		}
-//	}
+	if (m_isStuck)
+	{
+		// improv is stuck - see if it has moved far enough to be considered unstuck
+		const float unstuckRange = 75.0f;
+		if ((improv->GetCentroid() - m_stuckSpot).IsLengthGreaterThan(unstuckRange))
+		{
+			// no longer stuck
+			Reset();
+			//PrintIfWatched( "UN-STUCK\n" );
+		}
+	}
+	else
+	{
+		// check if improv has become stuck
+
+		// compute average velocity over a short period (for stuck check)
+		Vector vel = improv->GetCentroid() - m_lastCentroid;
+
+		// if we are jumping, ignore Z
+		//if (improv->IsJumping())
+		//	vel.z = 0.0f;
+
+		// ignore Z unless we are on a ladder (which is only Z)
+		if (!improv->IsUsingLadder())
+			vel.z = 0.0f;
+
+		// cannot be Length2D, or will break ladder movement (they are only Z)
+		float moveDist = vel.Length();
+
+		float deltaT = gpGlobals->time - m_lastTime;
+		if (deltaT <= 0.0f)
+			return;
+
+		m_lastTime = gpGlobals->time;
+
+		// compute current velocity
+		m_avgVel[m_avgVelIndex++] = moveDist / deltaT;
+
+		if (m_avgVelIndex == MAX_VEL_SAMPLES)
+			m_avgVelIndex = 0;
+
+		if (m_avgVelCount < MAX_VEL_SAMPLES)
+		{
+			++m_avgVelCount;
+		}
+		else
+		{
+			// we have enough samples to know if we're stuck
+
+			float avgVel = 0.0f;
+			for (int t = 0; t < m_avgVelCount; ++t)
+				avgVel += m_avgVel[t];
+
+			avgVel /= m_avgVelCount;
+
+			// cannot make this velocity too high, or actors will get "stuck" when going down ladders
+			float stuckVel = (improv->IsUsingLadder()) ? 10.0f : 20.0f;
+
+			if (avgVel < stuckVel)
+			{
+				// note when and where we initially become stuck
+				m_stuckTimer.Start();
+				m_stuckSpot = improv->GetCentroid();
+				m_isStuck = true;
+			}
+		}
+	}
+
+	// always need to track this
+	m_lastCentroid = improv->GetCentroid();
 }

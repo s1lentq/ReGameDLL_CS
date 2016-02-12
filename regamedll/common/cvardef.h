@@ -50,7 +50,7 @@ typedef struct cvar_s
 	int flags;
 	float value;
 	struct cvar_s *next;
+
 } cvar_t;
-/* size: 20, cachelines: 1, members: 5 */
 
 #endif // CVARDEF_H

@@ -36,21 +36,11 @@
 
 #ifndef HOOK_GAMEDLL
 
-#define IMPL IMPLEMENT_ARRAY
-#define IMPLEMENT_ARRAY(var)\
+#define IMPL(var)\
 	var
 
-#define IMPLEMENT_ARRAY_CLASS(baseClass,var)\
+#define IMPL_CLASS(baseClass,var)\
 	baseClass::var
-
-#else // HOOK_GAMEDLL
-
-#define IMPL IMPLEMENT_ARRAY
-#define IMPLEMENT_ARRAY(var)\
-	(*p##var)
-
-#define IMPLEMENT_ARRAY_CLASS(baseClass,var)\
-	(*baseClass::p##var)
 
 #endif // HOOK_GAMEDLL
 
@@ -59,13 +49,13 @@
 	{\
 		if (!baseClass::Save(save))\
 			return 0;\
-		return save.WriteFields(#derivedClass, this, IMPLEMENT_ARRAY(m_SaveData), ARRAYSIZE(IMPLEMENT_ARRAY(m_SaveData)));\
+		return save.WriteFields(#derivedClass, this, IMPL(m_SaveData), ARRAYSIZE(IMPL(m_SaveData)));\
 	}\
 	int derivedClass::__MAKE_VHOOK(Restore)(CRestore &restore)\
 	{\
 		if (!baseClass::Restore(restore))\
 			return 0;\
-		return restore.ReadFields(#derivedClass, this, IMPLEMENT_ARRAY(m_SaveData), ARRAYSIZE(IMPLEMENT_ARRAY(m_SaveData)));\
+		return restore.ReadFields(#derivedClass, this, IMPL(m_SaveData), ARRAYSIZE(IMPL(m_SaveData)));\
 	}
 
 typedef enum
@@ -84,7 +74,6 @@ typedef struct globalentity_s
 	struct globalentity_s *pNext;
 
 } globalentity_t;
-/* size: 104, cachelines: 2, members: 4 */
 
 typedef struct
 {
@@ -93,7 +82,6 @@ typedef struct
 	char *pData;
 
 } HEADER;
-/* size: 8, cachelines: 1, members: 3 */
 
 class CBaseEntity;
 
@@ -101,29 +89,24 @@ class CBaseEntity;
 class CSaveRestoreBuffer
 {
 public:
-	CSaveRestoreBuffer(void);
+	CSaveRestoreBuffer();
 	CSaveRestoreBuffer(SAVERESTOREDATA *pdata);
-	~CSaveRestoreBuffer(void);
+	~CSaveRestoreBuffer();
 
 	int EntityIndex(entvars_t *pevLookup);
 	int EntityIndex(edict_t *pentLookup);
 	int EntityIndex(EOFFSET eoLookup);
 	int EntityIndex(CBaseEntity *pEntity);
-	int EntityFlags(int entityIndex, int flags = 0)
-	{
-		return EntityFlagsSet(entityIndex, flags);
-	}
+	int EntityFlags(int entityIndex, int flags = 0) { return EntityFlagsSet(entityIndex, flags); }
 	int EntityFlagsSet(int entityIndex, int flags);
 	edict_t *EntityFromIndex(int entityIndex);
 	unsigned short TokenHash(const char *pszToken);
 
 protected:
-
 	SAVERESTOREDATA *m_pdata;
 	void BufferRewind(int size);
 	unsigned int HashString(const char *pszToken);
-
-};/* size: 4, cachelines: 1, members: 1 */
+};
 
 /* <19e94e> ../cstrike/dlls/saverestore.h:50 */
 class CSave: public CSaveRestoreBuffer
@@ -156,8 +139,7 @@ public:
 	void BufferString(char *pdata, int len);
 	void BufferData(const char *pdata, int size);
 	void BufferHeader(const char *pname, int size);
-
-};/* size: 4, cachelines: 1, members: 1 */
+};
 
 /* <1d9f06> ../cstrike/dlls/saverestore.h:82 */
 class CRestore: public CSaveRestoreBuffer
@@ -171,66 +153,54 @@ public:
 	int ReadEntVars(const char *pname, entvars_t *pev);
 	int ReadFields(const char *pname, void *pBaseData, TYPEDESCRIPTION *pFields, int fieldCount);
 	int ReadField(void *pBaseData, TYPEDESCRIPTION *pFields, int fieldCount, int startField, int size, char *pName, void *pData);
-	int ReadInt(void);
-	short ReadShort(void);
+	int ReadInt();
+	short ReadShort();
 	int ReadNamedInt(const char *pName);
 	char *ReadNamedString(const char *pName);
-	int Empty(void)
-	{
-		return (m_pdata == NULL || ((m_pdata->pCurrentData - m_pdata->pBaseData) >= m_pdata->bufferSize));
-	}
-	void SetGlobalMode(int global)
-	{
-		m_global = global;
-	}
-	void PrecacheMode(BOOL mode)
-	{
-		m_precache = mode;
-	}
+
+	int Empty() const { return (m_pdata == NULL || ((m_pdata->pCurrentData - m_pdata->pBaseData) >= m_pdata->bufferSize)); }
+	void SetGlobalMode(int global) { m_global = global; }
+	void PrecacheMode(BOOL mode) { m_precache = mode; }
 
 private:
-	char *BufferPointer(void);
+	char *BufferPointer();
 	void BufferReadBytes(char *pOutput, int size);
 	void BufferSkipBytes(int bytes);
-	int BufferSkipZString(void);
+	int BufferSkipZString();
 	int BufferCheckZString(const char *string);
 	void BufferReadHeader(HEADER *pheader);
 
 private:
 	int m_global;
 	BOOL m_precache;
-
-};/* size: 12, cachelines: 1, members: 3 */
+};
 
 /* <245f6> ../cstrike/dlls/saverestore.h:153 */
 class CGlobalState
 {
 public:
-	CGlobalState(void);
+	CGlobalState();
 
-	void Reset(void);
-	void ClearStates(void);
+	void Reset();
+	void ClearStates();
 	void EntityAdd(string_t globalname, string_t mapName, GLOBALESTATE state);
 	void EntitySetState(string_t globalname, GLOBALESTATE state);
 	void EntityUpdate(string_t globalname, string_t mapname);
 	const globalentity_t *EntityFromTable(string_t globalname);
 	GLOBALESTATE EntityGetState(string_t globalname);
-	int EntityInTable(string_t globalname)
-	{
-		return (Find(globalname) != NULL) ? TRUE : FALSE;
-	}
+
+	int EntityInTable(string_t globalname) { return (Find(globalname) != NULL) ? TRUE : FALSE; }
 	int Save(CSave &save);
 	int Restore(CRestore &restore);
-	void DumpGlobals(void);
+	void DumpGlobals();
 
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[1];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[1];
 
 private:
 	globalentity_t *Find(string_t globalname);
 
 	globalentity_t *m_pList;
 	int m_listCount;
-
-};/* size: 8, cachelines: 1, members: 3 */
+};
 
 #endif // SAVERESTORE_H

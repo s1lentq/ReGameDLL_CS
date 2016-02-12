@@ -50,24 +50,18 @@
 class CBasePlatTrain: public CBaseToggle
 {
 public:
-	virtual void Precache(void);
+	virtual void Precache();
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
-	virtual int ObjectCaps(void)
-	{
-		return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION;
-	}
+	virtual int ObjectCaps() { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 
 	// This is done to fix spawn flag collisions between this class and a derived class
-	virtual BOOL IsTogglePlat(void)
-	{
-		return (pev->spawnflags & SF_PLAT_TOGGLE) != 0;
-	}
+	virtual BOOL IsTogglePlat() { return (pev->spawnflags & SF_PLAT_TOGGLE) != 0; }
 
 #ifdef HOOK_GAMEDLL
 
-	void Precache_(void);
+	void Precache_();
 	void KeyValue_(KeyValueData *pkvd);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
@@ -75,56 +69,50 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[3];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[3];
 
-public:
 	BYTE m_bMoveSnd;
 	BYTE m_bStopSnd;
 	float m_volume;
-
-};/* size: 320, cachelines: 5, members: 5 */
+};
 
 /* <12c853> ../cstrike/dlls/plats.cpp:223 */
 class CFuncPlat: public CBasePlatTrain
 {
 public:
-	virtual void Spawn(void);
-	virtual void Precache(void);
+	virtual void Spawn();
+	virtual void Precache();
 	virtual void Blocked(CBaseEntity *pOther);
-	virtual void GoUp(void);
-	virtual void GoDown(void);
-	virtual void HitTop(void);
-	virtual void HitBottom(void);
+	virtual void GoUp();
+	virtual void GoDown();
+	virtual void HitTop();
+	virtual void HitBottom();
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Precache_(void);
+	void Spawn_();
+	void Precache_();
 	void Blocked_(CBaseEntity *pOther);
-	void GoUp_(void);
-	void GoDown_(void);
-	void HitTop_(void);
-	void HitBottom_(void);
+	void GoUp_();
+	void GoDown_();
+	void HitTop_();
+	void HitBottom_();
 
 #endif // HOOK_GAMEDLL
 
 public:
-	void Setup(void);
+	void Setup();
 	void EXPORT PlatUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-	void EXPORT CallGoDown(void);
-	void EXPORT CallHitTop(void);
-	void EXPORT CallHitBottom(void);
-
-};/* size: 320, cachelines: 5, members: 1 */
+	void EXPORT CallGoDown();
+	void EXPORT CallHitTop();
+	void EXPORT CallHitBottom();
+};
 
 /* <12c86e> ../cstrike/dlls/plats.cpp:248 */
 class CPlatTrigger: public CBaseEntity
 {
 public:
-	virtual int ObjectCaps(void)
-	{
-		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | FCAP_DONT_SAVE;
-	}
+	virtual int ObjectCaps() { return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | FCAP_DONT_SAVE; }
 	virtual void Touch(CBaseEntity *pOther);
 
 #ifdef HOOK_GAMEDLL
@@ -136,181 +124,159 @@ public:
 public:
 	void SpawnInsideTrigger(CFuncPlat *pPlatform);
 
-public:
 	CFuncPlat *m_pPlatform;
-
-};/* size: 156, cachelines: 3, members: 2 */
+};
 
 /* <12c8ee> ../cstrike/dlls/plats.cpp:515 */
 class CFuncPlatRot: public CFuncPlat
 {
 public:
-	virtual void Spawn(void);
+	virtual void Spawn();
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
 
-	virtual void GoUp(void);
-	virtual void GoDown(void);
-	virtual void HitTop(void);
-	virtual void HitBottom(void);
+	virtual void GoUp();
+	virtual void GoDown();
+	virtual void HitTop();
+	virtual void HitBottom();
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
+	void Spawn_();
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
-	void GoUp_(void);
-	void GoDown_(void);
-	void HitTop_(void);
-	void HitBottom_(void);
+	void GoUp_();
+	void GoDown_();
+	void HitTop_();
+	void HitBottom_();
 
 #endif // HOOK_GAMEDLL
 
 public:
-	void SetupRotation(void);
+	void SetupRotation();
 	void RotMove(Vector &destAngle, float time);
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[2];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[2];
 
-public:
 	Vector m_end;
 	Vector m_start;
-
-};/* size: 344, cachelines: 6, members: 4 */
+};
 
 /* <12c93c> ../cstrike/dlls/plats.cpp:628 */
 class CFuncTrain: public CBasePlatTrain
 {
 public:
-	virtual void Spawn(void);
-	virtual void Precache(void);
-	virtual void Restart(void);
+	virtual void Spawn();
+	virtual void Precache();
+	virtual void Restart();
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
-	virtual void Activate(void);
-	virtual void OverrideReset(void);
+	virtual void Activate();
+	virtual void OverrideReset();
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 	virtual void Blocked(CBaseEntity *pOther);
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Precache_(void);
-	void Restart_(void);
+	void Spawn_();
+	void Precache_();
+	void Restart_();
 	void KeyValue_(KeyValueData *pkvd);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
-	void Activate_(void);
-	void OverrideReset_(void);
+	void Activate_();
+	void OverrideReset_();
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 	void Blocked_(CBaseEntity *pOther);
 
 #endif // HOOK_GAMEDLL
 
 public:
-	void EXPORT Wait(void);
-	void EXPORT Next(void);
+	void EXPORT Wait();
+	void EXPORT Next();
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[3];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[3];
 
-public:
 	Vector m_vStartPosition;
 	entvars_t *m_pevFirstTarget;
 	entvars_t *m_pevCurrentTarget;
 	int m_sounds;
 	BOOL m_activated;
-
-};/* size: 348, cachelines: 6, members: 7 */
+};
 
 /* <12c9d7> ../cstrike/dlls/plats.cpp:1588 */
 class CFuncTrainControls: public CBaseEntity
 {
 public:
-	virtual void Spawn(void);
-	virtual int ObjectCaps(void)
-	{
-		return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION;
-	}
+	virtual void Spawn();
+	virtual int ObjectCaps() { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
+	void Spawn_();
 
 #endif // HOOK_GAMEDLL
 
 public:
-	void EXPORT Find(void);
-
-};/* size: 152, cachelines: 3, members: 1 */
+	void EXPORT Find();
+};
 
 /* <12ca2a> ../cstrike/dlls/plats.cpp:1654 */
 class CFuncTrackChange: public CFuncPlatRot
 {
 public:
-	virtual void Spawn(void);
-	virtual void Precache(void);
+	virtual void Spawn();
+	virtual void Precache();
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
-	virtual void OverrideReset(void);
+	virtual void OverrideReset();
 	virtual void Touch(CBaseEntity *pOther);
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-	virtual BOOL IsTogglePlat(void);
+	virtual BOOL IsTogglePlat();
 
-	virtual void EXPORT GoUp(void);
-	virtual void EXPORT GoDown(void);
+	virtual void EXPORT GoUp();
+	virtual void EXPORT GoDown();
 
-	virtual void HitBottom(void);
-	virtual void HitTop(void);
+	virtual void HitBottom();
+	virtual void HitTop();
 	virtual void UpdateAutoTargets(int toggleState);
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Precache_(void);
+	void Spawn_();
+	void Precache_();
 	void KeyValue_(KeyValueData *pkvd);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
-	void OverrideReset_(void);
+	void OverrideReset_();
 	void Touch_(CBaseEntity *pOther);
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-	BOOL IsTogglePlat_(void);
-	void GoUp_(void);
-	void GoDown_(void);
-	void HitBottom_(void);
-	void HitTop_(void);
+	BOOL IsTogglePlat_();
+	void GoUp_();
+	void GoDown_();
+	void HitBottom_();
+	void HitTop_();
 	void UpdateAutoTargets_(int toggleState);
 
 #endif // HOOK_GAMEDLL
 
 public:
-	void EXPORT Find(void);
+	void EXPORT Find();
 	TRAIN_CODE EvaluateTrain(CPathTrack *pcurrent);
 	void UpdateTrain(Vector &dest);
 
-	/* <12c515> ../cstrike/dlls/plats.cpp:1675 */
-	void DisableUse(void)
-	{
-		m_use = 0;
-	}
-	/* <12c52e> ../cstrike/dlls/plats.cpp:1676 */
-	void EnableUse(void)
-	{
-		m_use = 1;
-	}
-	/* <12c547> ../cstrike/dlls/plats.cpp:1677 */
-	int UseEnabled(void)
-	{
-		return m_use;
-	}
+	void DisableUse() { m_use = 0; }
+	void EnableUse() { m_use = 1; }
+
+	int UseEnabled() const { return m_use; }
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[9];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[9];
 
-public:
 	CPathTrack *m_trackTop;
 	CPathTrack *m_trackBottom;
 	CFuncTrackTrain *m_train;
@@ -322,8 +288,7 @@ public:
 	TRAIN_CODE m_code;
 	int m_targetState;
 	int m_use;
-
-};/* size: 380, cachelines: 6, members: 11 */
+};
 
 /* <12ca78> ../cstrike/dlls/plats.cpp:2043 */
 class CFuncTrackAuto: public CFuncTrackChange
@@ -339,76 +304,49 @@ public:
 
 #endif // HOOK_GAMEDLL
 
-};/* size: 380, cachelines: 6, members: 1 */
+};
 
 /* <12caec> ../cstrike/dlls/plats.cpp:2136 */
 class CGunTarget: public CBaseMonster
 {
 public:
-	virtual void Spawn(void);
+	virtual void Spawn();
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
-	virtual int ObjectCaps(void)
-	{
-		return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION;
-	}
-	virtual void Activate(void);
-	virtual int Classify(void)
-	{
-		return CLASS_MACHINE;
-	}
+	virtual int ObjectCaps() { return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION);}
+	virtual void Activate();
+	virtual int Classify() { return CLASS_MACHINE; }
 	virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
-	virtual int BloodColor(void)
-	{
-		return DONT_BLEED;
-	}
+	virtual int BloodColor() { return DONT_BLEED; }
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-	virtual Vector BodyTarget(const Vector &posSrc)
-	{
-		return pev->origin;
-	}
+	virtual Vector BodyTarget(const Vector &posSrc) { return pev->origin; }
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
+	void Spawn_();
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
-	void Activate_(void);
+	void Activate_();
 	int TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #endif // HOOK_GAMEDLL
 
 public:
-	void EXPORT Next(void);
-	void EXPORT Start(void);
-	void EXPORT Wait(void);
-	void Stop(void);
+	void EXPORT Next();
+	void EXPORT Start();
+	void EXPORT Wait();
+	void Stop();
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[1];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[1];
 
 private:
 	BOOL m_on;
-
-};/* size: 408, cachelines: 7, members: 3 */
+};
 
 void PlatSpawnInsideTrigger(entvars_t *pevPlatform);
 //float Fix(float angle);
 void FixupAngles(Vector &v);
-
-#ifdef HOOK_GAMEDLL
-
-// linked objects
-C_DLLEXPORT void func_plat(entvars_t *pev);
-C_DLLEXPORT void func_platrot(entvars_t *pev);
-C_DLLEXPORT void func_train(entvars_t *pev);
-C_DLLEXPORT void func_tracktrain(entvars_t *pev);
-C_DLLEXPORT void func_traincontrols(entvars_t *pev);
-C_DLLEXPORT void func_trackchange(entvars_t *pev);
-C_DLLEXPORT void func_trackautochange(entvars_t *pev);
-C_DLLEXPORT void func_guntarget(entvars_t *pev);
-
-#endif // HOOK_GAMEDLL
 
 #endif // PLATS_H

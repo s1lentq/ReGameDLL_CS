@@ -11,10 +11,6 @@ TYPEDESCRIPTION CLight::m_SaveData[] =
 	DEFINE_FIELD(CLight, m_iszPattern, FIELD_STRING),
 };
 
-#else
-
-TYPEDESCRIPTION IMPLEMENT_ARRAY_CLASS(CLight, m_SaveData)[2];
-
 #endif // HOOK_GAMEDLL
 
 /* <e7ded> ../cstrike/dlls/lights.cpp:48 */
@@ -48,7 +44,7 @@ void CLight::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 }
 
 /* <e7b78> ../cstrike/dlls/lights.cpp:92 */
-void CLight::__MAKE_VHOOK(Spawn)(void)
+void CLight::__MAKE_VHOOK(Spawn)()
 {
 	// inert light
 	if (FStringNull(pev->targetname))
@@ -72,7 +68,7 @@ void CLight::__MAKE_VHOOK(Spawn)(void)
 }
 
 /* <e7a30> ../cstrike/dlls/lights.cpp:117 */
-void CLight::__MAKE_VHOOK(Restart)(void)
+void CLight::__MAKE_VHOOK(Restart)()
 {
 	if (m_iStyle >= 32)
 	{
@@ -162,7 +158,7 @@ void CEnvLight::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 }
 
 /* <e7bb3> ../cstrike/dlls/lights.cpp:215 */
-void CEnvLight::__MAKE_VHOOK(Spawn)(void)
+void CEnvLight::__MAKE_VHOOK(Spawn)()
 {
 #if defined(HOOK_GAMEDLL)
 // NOTE: fix negative the values for function sprintf from STD C++:
@@ -188,47 +184,3 @@ void CEnvLight::__MAKE_VHOOK(Spawn)(void)
 
 	CLight::Spawn();
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CLight::Spawn(void)
-{
-	Spawn_();
-}
-
-void CLight::Restart(void)
-{
-	Restart_();
-}
-
-int CLight::Save(CSave &save)
-{
-	return Save_(save);
-}
-
-int CLight::Restore(CRestore &restore)
-{
-	return Restore_(restore);
-}
-
-void CLight::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-void CLight::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	Use_(pActivator, pCaller, useType, value);
-}
-
-void CEnvLight::Spawn(void)
-{
-	Spawn_();
-}
-
-void CEnvLight::KeyValue(KeyValueData *pkvd)
-{
-	KeyValue_(pkvd);
-}
-
-#endif // HOOK_GAMEDLL

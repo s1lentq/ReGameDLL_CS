@@ -1,35 +1,60 @@
 #include "precompiled.h"
 
+// Plant the bomb.
+
 /* <5d4160> ../cstrike/dlls/bot/states/cs_bot_plant_bomb.cpp:17 */
-NOBODY void PlantBombState::OnEnter(CCSBot *me)
+void PlantBombState::__MAKE_VHOOK(OnEnter)(CCSBot *me)
 {
-//	{
-//		float yaw;                                            //    25
-//		class Vector2D dir;                                   //    26
-//		Vector down;                                    //    28
-//		GetFeetZ(const class CCSBot *const this);  //    28
-//		Vector(Vector *const this,
-//			float X,
-//			float Y,
-//			float Z);  //    28
-//	}
+	me->Crouch();
+	me->SetDisposition(CCSBot::SELF_DEFENSE);
+
+	float yaw = me->pev->v_angle.y;
+	Vector2D dir(BotCOS(yaw), BotSIN(yaw));
+
+	Vector down(me->pev->origin.x + 10.0f * dir.x, me->pev->origin.y + 10.0f * dir.y, me->GetFeetZ());
+	me->SetLookAt("Plant bomb on floor", &down, PRIORITY_HIGH);
 }
 
+// Plant the bomb.
+
 /* <5d40d0> ../cstrike/dlls/bot/states/cs_bot_plant_bomb.cpp:36 */
-NOBODY void PlantBombState::OnUpdate(CCSBot *me)
+void PlantBombState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 {
-//	{
-//		class CBasePlayerWeapon *gun;                        //    38
-//		bool holdingC4;                                       //    39
-//		float const timeout;                                   //    59
-//		SetTask(CCSBot *const this,
-//			enum TaskType task,
-//			class CBaseEntity *entity);  //    54
-//	}
+	CBasePlayerWeapon *gun = me->GetActiveWeapon();
+	bool holdingC4 = false;
+	if (gun != NULL)
+	{
+		if (FStrEq(STRING(gun->pev->classname), "weapon_c4"))
+			holdingC4 = true;
+	}
+
+	// if we aren't holding the C4, grab it, otherwise plant it
+	if (holdingC4)
+		me->PrimaryAttack();
+	else
+		me->SelectItem("weapon_c4");
+
+	// if we no longer have the C4, we've successfully planted
+	if (!me->IsCarryingBomb())
+	{
+		// move to a hiding spot and watch the bomb
+		me->SetTask(CCSBot::GUARD_TICKING_BOMB);
+		me->Hide();
+	}
+
+	// if we time out, it's because we slipped into a non-plantable area
+	const float timeout = 5.0f;
+	if (gpGlobals->time - me->GetStateTimestamp() > timeout)
+		me->Idle();
 }
 
 /* <5d4088> ../cstrike/dlls/bot/states/cs_bot_plant_bomb.cpp:65 */
-NOBODY void PlantBombState::OnExit(CCSBot *me)
+void PlantBombState::__MAKE_VHOOK(OnExit)(CCSBot *me)
 {
-//	ClearLookAt(CCSBot *const this);  //    72
+	// equip our rifle (in case we were interrupted while holding C4)
+	me->EquipBestWeapon();
+	me->StandUp();
+	me->ResetStuckMonitor();
+	me->SetDisposition(CCSBot::ENGAGE_AND_INVESTIGATE);
+	me->ClearLookAt();
 }

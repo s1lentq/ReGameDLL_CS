@@ -66,18 +66,18 @@
 #define R_NM						3	// (NEMESIS)  A monster Will ALWAYS attack its nemsis, no matter what
 
 #define MEMORY_CLEAR					0
-#define bits_MEMORY_PROVOKED				(1<<0)	// right now only used for houndeyes.
-#define bits_MEMORY_INCOVER				(1<<1)	// monster knows it is in a covered position.
-#define bits_MEMORY_SUSPICIOUS				(1<<2)	// Ally is suspicious of the player, and will move to provoked more easily
-#define bits_MEMORY_PATH_FINISHED			(1<<3)	// Finished monster path (just used by big momma for now)
-#define bits_MEMORY_ON_PATH				(1<<4)	// Moving on a path
-#define bits_MEMORY_MOVE_FAILED				(1<<5)	// Movement has already failed
-#define bits_MEMORY_FLINCHED				(1<<6)	// Has already flinched
-#define bits_MEMORY_KILLED				(1<<7)	// HACKHACK -- remember that I've already called my Killed()
-#define bits_MEMORY_CUSTOM4				(1<<28)	// Monster-specific memory
-#define bits_MEMORY_CUSTOM3				(1<<29)	// Monster-specific memory
-#define bits_MEMORY_CUSTOM2				(1<<30)	// Monster-specific memory
-#define bits_MEMORY_CUSTOM1				(1<<31)	// Monster-specific memory
+#define bits_MEMORY_PROVOKED				(1 << 0)	// right now only used for houndeyes.
+#define bits_MEMORY_INCOVER				(1 << 1)	// monster knows it is in a covered position.
+#define bits_MEMORY_SUSPICIOUS				(1 << 2)	// Ally is suspicious of the player, and will move to provoked more easily
+#define bits_MEMORY_PATH_FINISHED			(1 << 3)	// Finished monster path (just used by big momma for now)
+#define bits_MEMORY_ON_PATH				(1 << 4)	// Moving on a path
+#define bits_MEMORY_MOVE_FAILED				(1 << 5)	// Movement has already failed
+#define bits_MEMORY_FLINCHED				(1 << 6)	// Has already flinched
+#define bits_MEMORY_KILLED				(1 << 7)	// HACKHACK -- remember that I've already called my Killed()
+#define bits_MEMORY_CUSTOM4				(1 << 28)	// Monster-specific memory
+#define bits_MEMORY_CUSTOM3				(1 << 29)	// Monster-specific memory
+#define bits_MEMORY_CUSTOM2				(1 << 30)	// Monster-specific memory
+#define bits_MEMORY_CUSTOM1				(1 << 31)	// Monster-specific memory
 
 //TODO: unused?
 enum
@@ -114,43 +114,41 @@ enum HitBoxGroup
 class CGib: public CBaseEntity
 {
 public:
-	virtual int ObjectCaps(void)
-	{
-		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | FCAP_DONT_SAVE;
-	}
+	virtual int ObjectCaps() { return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | FCAP_DONT_SAVE; }
 
 public:
 	void Spawn(const char *szGibModel);
 	void EXPORT BounceGibTouch(CBaseEntity *pOther);
 	void EXPORT StickyGibTouch(CBaseEntity *pOther);
-	void EXPORT WaitTillLand(void);
-	void LimitVelocity(void);
+	void EXPORT WaitTillLand();
+	void LimitVelocity();
+
 public:
 	static void SpawnHeadGib(entvars_t *pevVictim);
 	static void SpawnRandomGibs(entvars_t *pevVictim, int cGibs, int human);
 	NOXREF static void SpawnStickyGibs(entvars_t *pevVictim, Vector vecOrigin, int cGibs);
+
 public:
 	int m_bloodColor;
 	int m_cBloodDecals;
 	int m_material;
 	float m_lifeTime;
-
-};/* size: 168, cachelines: 3, members: 5 */
+};
 
 #define CUSTOM_SCHEDULES\
-		virtual Schedule_t *ScheduleFromName(const char *pName);\
-		static Schedule_t *m_scheduleList[];
+	virtual Schedule_t *ScheduleFromName(const char *pName);\
+	static Schedule_t *m_scheduleList[];
 
 #define DEFINE_CUSTOM_SCHEDULES(derivedClass)\
 	Schedule_t *derivedClass::m_scheduleList[] =
 
 #define IMPLEMENT_CUSTOM_SCHEDULES(derivedClass, baseClass)\
-		Schedule_t *derivedClass::ScheduleFromName(const char *pName)\
-		{\
-			Schedule_t *pSchedule = ScheduleInList(pName, m_scheduleList, ARRAYSIZE(m_scheduleList));\
-			if (!pSchedule)\
-				return baseClass::ScheduleFromName(pName);\
-			return pSchedule;\
-		}
+	Schedule_t *derivedClass::ScheduleFromName(const char *pName)\
+	{\
+		Schedule_t *pSchedule = ScheduleInList(pName, m_scheduleList, ARRAYSIZE(m_scheduleList));\
+		if (!pSchedule)\
+			return baseClass::ScheduleFromName(pName);\
+		return pSchedule;\
+	}
 
 #endif // MONSTERS_H

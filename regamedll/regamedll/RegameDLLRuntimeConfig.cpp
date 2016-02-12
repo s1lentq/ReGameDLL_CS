@@ -11,7 +11,7 @@ CRegameDLLRuntimeConfig::CRegameDLLRuntimeConfig()
 	testPlayerMode = TPM_DISABLE;
 }
 
-void CRegameDLLRuntimeConfig::parseFromConfigFile(void)
+void CRegameDLLRuntimeConfig::parseFromConfigFile()
 {
 #ifdef _WIN32
 

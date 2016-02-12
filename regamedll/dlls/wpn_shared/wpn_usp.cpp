@@ -4,7 +4,7 @@
 LINK_ENTITY_TO_CLASS(weapon_usp, CUSP);
 
 /* <2bad55> ../cstrike/dlls/wpn_shared/wpn_usp.cpp:70 */
-void CUSP::__MAKE_VHOOK(Spawn)(void)
+void CUSP::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
 
@@ -13,12 +13,12 @@ void CUSP::__MAKE_VHOOK(Spawn)(void)
 
 	m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
 	m_iDefaultAmmo = USP_DEFAULT_GIVE;
-	m_flAccuracy = 0.92;
+	m_flAccuracy = 0.92f;
 
 	FallInit();
 }
 
-void CUSP::__MAKE_VHOOK(Precache)(void)
+void CUSP::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/v_usp.mdl");
 	PRECACHE_MODEL("models/w_usp.mdl");
@@ -61,7 +61,7 @@ int CUSP::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 }
 
 /* <2bad2e> ../cstrike/dlls/wpn_shared/wpn_usp.cpp:124 */
-BOOL CUSP::__MAKE_VHOOK(Deploy)(void)
+BOOL CUSP::__MAKE_VHOOK(Deploy)()
 {
 	m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
 	m_flAccuracy = 0.92f;
@@ -82,7 +82,7 @@ BOOL CUSP::__MAKE_VHOOK(Deploy)(void)
 }
 
 /* <2bae77> ../cstrike/dlls/wpn_shared/wpn_usp.cpp:147 */
-void CUSP::__MAKE_VHOOK(SecondaryAttack)(void)
+void CUSP::__MAKE_VHOOK(SecondaryAttack)()
 {
 	if (ShieldSecondaryFire(USP_SHIELD_UP, USP_SHIELD_DOWN))
 	{
@@ -104,13 +104,13 @@ void CUSP::__MAKE_VHOOK(SecondaryAttack)(void)
 		Q_strcpy(m_pPlayer->m_szAnimExtention, "onehanded");
 	}
 
-	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 3.0;
-	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 3.0;
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 3.0f;
+	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 3.0f;
 	m_flNextPrimaryAttack = GetNextAttackDelay(3.0);
 }
 
 /* <2bb000> ../cstrike/dlls/wpn_shared/wpn_usp.cpp:173 */
-void CUSP::__MAKE_VHOOK(PrimaryAttack)(void)
+void CUSP::__MAKE_VHOOK(PrimaryAttack)()
 {
 	if (m_iWeaponState & WPNSTATE_USP_SILENCED)
 	{
@@ -159,24 +159,24 @@ void CUSP::USPFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 	int iDamage;
 	Vector vecAiming, vecSrc, vecDir;
 
-	flCycleTime -= 0.075;
+	flCycleTime -= 0.075f;
 
 	if (++m_iShotsFired > 1)
 	{
 		return;
 	}
 
-	if (m_flLastFire != 0.0)
+	if (m_flLastFire != 0.0f)
 	{
-		m_flAccuracy -= (0.3 - (gpGlobals->time - m_flLastFire)) * 0.275;
+		m_flAccuracy -= (0.3f - (gpGlobals->time - m_flLastFire)) * 0.275f;
 
-		if (m_flAccuracy > 0.92)
+		if (m_flAccuracy > 0.92f)
 		{
-			m_flAccuracy = 0.92;
+			m_flAccuracy = 0.92f;
 		}
-		else if (m_flAccuracy < 0.6)
+		else if (m_flAccuracy < 0.6f)
 		{
-			m_flAccuracy = 0.6;
+			m_flAccuracy = 0.6f;
 		}
 	}
 
@@ -200,7 +200,7 @@ void CUSP::USPFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 
 	m_flNextPrimaryAttack = m_flNextSecondaryAttack = GetNextAttackDelay(flCycleTime);
 
-	m_iClip--;
+	--m_iClip;
 	SetPlayerShieldAnim();
 
 	m_pPlayer->SetAnimation(PLAYER_ATTACK1);
@@ -235,18 +235,16 @@ void CUSP::USPFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, FALSE);
 	}
 	
-	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2;
-	m_pPlayer->pev->punchangle.x -= 2;
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.0f;
+	m_pPlayer->pev->punchangle.x -= 2.0f;
 	ResetPlayerShieldAnim();
 }
 
 /* <2bae19> ../cstrike/dlls/wpn_shared/wpn_usp.cpp:297 */
-void CUSP::__MAKE_VHOOK(Reload)(void)
+void CUSP::__MAKE_VHOOK(Reload)()
 {
 	if (m_pPlayer->ammo_45acp <= 0)
-	{
 		return;
-	}
 
 	int iResult;
 	if (m_pPlayer->HasShield())
@@ -268,7 +266,7 @@ void CUSP::__MAKE_VHOOK(Reload)(void)
 }
 
 /* <2b9c2a> ../cstrike/dlls/wpn_shared/wpn_usp.cpp:318 */
-void CUSP::__MAKE_VHOOK(WeaponIdle)(void)
+void CUSP::__MAKE_VHOOK(WeaponIdle)()
 {
 	ResetEmptySound();
 	m_pPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);
@@ -280,7 +278,7 @@ void CUSP::__MAKE_VHOOK(WeaponIdle)(void)
 
 	if (m_pPlayer->HasShield())
 	{
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20.0;
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20.0f;
 
 		if (m_iWeaponState & WPNSTATE_SHIELD_DRAWN)
 		{
@@ -291,51 +289,7 @@ void CUSP::__MAKE_VHOOK(WeaponIdle)(void)
 	{
 		int iAnim = (~m_iWeaponState & WPNSTATE_USP_SILENCED) ? USP_UNSIL_IDLE: USP_IDLE;
 
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 60.0;
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 60.0f;
 		SendWeaponAnim(iAnim, UseDecrement());
 	}
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CUSP::Spawn(void)
-{
-	Spawn_();
-}
-
-void CUSP::Precache(void)
-{
-	Precache_();
-}
-
-int CUSP::GetItemInfo(ItemInfo *p)
-{
-	return GetItemInfo_(p);
-}
-
-BOOL CUSP::Deploy(void)
-{
-	return Deploy_();
-}
-
-void CUSP::PrimaryAttack(void)
-{
-	PrimaryAttack_();
-}
-
-void CUSP::SecondaryAttack(void)
-{
-	SecondaryAttack_();
-}
-
-void CUSP::Reload(void)
-{
-	Reload_();
-}
-
-void CUSP::WeaponIdle(void)
-{
-	WeaponIdle_();
-}
-
-#endif // HOOK_GAMEDLL

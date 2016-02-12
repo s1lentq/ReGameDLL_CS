@@ -1,17 +1,6 @@
 #include "precompiled.h"
 
-/*
-* Globals initialization
-*/
-#ifndef HOOK_GAMEDLL
-
 BOOL g_fDrawLines = FALSE;
-
-#else
-
-BOOL g_fDrawLines;
-
-#endif // HOOK_GAMEDLL
 
 /* <c08f4> ../cstrike/dlls/h_ai.cpp:47 */
 NOXREF BOOL FBoxVisible(entvars_t *pevLooker, entvars_t *pevTarget, Vector &vecTargetOrigin, float flSize)
@@ -27,7 +16,7 @@ NOXREF BOOL FBoxVisible(entvars_t *pevLooker, entvars_t *pevTarget, Vector &vecT
 	//look through the monster's 'eyes'
 	Vector vecLookerOrigin = pevLooker->origin + pevLooker->view_ofs;
 
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < 5; ++i)
 	{
 		Vector vecTarget = pevTarget->origin;
 

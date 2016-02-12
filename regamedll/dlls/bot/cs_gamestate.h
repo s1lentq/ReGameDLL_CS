@@ -33,29 +33,19 @@
 #endif
 
 class CCSBot;
-//class CHostage;
 
+// This class represents the game state as known by a particular bot
 class CSGameState
 {
 public:
-	CSGameState(void);
+	CSGameState() {};
 	CSGameState(CCSBot *owner);
 
-	struct HostageInfo
-	{
-		CHostage *hostage;
-		Vector knownPos;
-		bool isValid;
-		bool isAlive;
-		bool isFree;
-	};/* size: 20, cachelines: 1, members: 5 */
+	void Reset();
+	void OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *other);		// Event handling
+	bool IsRoundOver() const;								// true if round has been won or lost (but not yet reset)
 
-	NOBODY void Reset(void);
-	// Event handling
-	NOBODY void OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *other);
-	// true if round has been won or lost (but not yet reset)
-	NOBODY bool IsRoundOver(void) const;
-
+	// bomb defuse scenario
 	enum BombState
 	{
 		MOVING,		// being carried by a Terrorist
@@ -64,107 +54,101 @@ public:
 		DEFUSED,	// the bomb has been defused
 		EXPLODED,	// the bomb has exploded
 	};
-	bool IsBombMoving(void) const
-	{
-		return (m_bombState == MOVING);
-	}
-	bool IsBombLoose(void) const
-	{
-		return (m_bombState == LOOSE);
-	}
-	bool IsBombPlanted(void) const
-	{
-		return (m_bombState == PLANTED);
-	}
-	bool IsBombDefused(void) const
-	{
-		return (m_bombState == DEFUSED);
-	}
-	bool IsBombExploded(void) const
-	{
-		return (m_bombState == EXPLODED);
-	}
-	// we see the loose bomb
-	NOBODY void UpdateLooseBomb(const Vector *pos);
-	// how long has is been since we saw the loose bomb
-	NOBODY float TimeSinceLastSawLooseBomb(void) const;
-	// do we know where the loose bomb is
-	NOBODY bool IsLooseBombLocationKnown(void) const;
-	// we see the bomber
-	NOBODY void UpdateBomber(const Vector *pos);
-	// how long has is been since we saw the bomber
-	NOBODY float TimeSinceLastSawBomber(void) const;
-	// we see the planted bomb
-	NOBODY void UpdatePlantedBomb(const Vector *pos);
-	// do we know where the bomb was planted
-	NOBODY bool IsPlantedBombLocationKnown(void) const;
-	// mark bombsite as the location of the planted bomb
-	NOBODY void MarkBombsiteAsPlanted(int zoneIndex);
 
-	enum { UNKNOWN = -1 };
-	// return the zone index of the planted bombsite, or UNKNOWN
-	NOBODY int GetPlantedBombsite(void) const;
-	// return true if we are currently in the bombsite where the bomb is planted
-	NOBODY bool IsAtPlantedBombsite(void) const;
-	// return the zone index of the next bombsite to search
-	NOBODY int GetNextBombsiteToSearch(void);
-	// return true if given bombsite has been cleared
-	NOBODY bool IsBombsiteClear(int zoneIndex) const;
-	// mark bombsite as clear
-	NOBODY void ClearBombsite(int zoneIndex);
-	// return where we think the bomb is, or NULL if we don't know
-	NOBODY const Vector *GetBombPosition(void) const;
+	bool IsBombMoving() const	{ return (m_bombState == MOVING); }
+	bool IsBombLoose() const	{ return (m_bombState == LOOSE); }
+	bool IsBombPlanted() const	{ return (m_bombState == PLANTED); }
+	bool IsBombDefused() const	{ return (m_bombState == DEFUSED); }
+	bool IsBombExploded() const	{ return (m_bombState == EXPLODED); }
+	
+	void UpdateLooseBomb(const Vector *pos);		// we see the loose bomb	
+	float TimeSinceLastSawLooseBomb() const;		// how long has is been since we saw the loose bomb
+	bool IsLooseBombLocationKnown() const;			// do we know where the loose bomb is
 
-	NOBODY CHostage *GetNearestFreeHostage(Vector *knowPos);
-	NOBODY const Vector *GetRandomFreeHostagePosition(void);
-	NOBODY bool AreAllHostagesBeingRescued(void);
-	NOBODY bool AreAllHostagesGone(void);
-	NOBODY void AllHostagesGone(void);
-	bool HaveSomeHostagesBeenTaken(void)
-	{
-		return m_haveSomeHostagesBeenTaken;
-	}
-	void HostageWasTaken(void)
-	{
-		m_haveSomeHostagesBeenTaken = true;
-	}
-	NOBODY CHostage *GetNearestVisibleFreeHostage(void);
-	NOBODY unsigned char ValidateHostagePositions(void);
-	NOBODY void SetBombState(BombState state);
-	BombState GetBombState(void)
-	{
-		return m_bombState;
-	}
-	CBaseEntity *GetNearestHostage(void)
-	{
-		UNTESTED
-		// TODO: Not implemented
+	void UpdateBomber(const Vector *pos);			// we see the bomber
+	float TimeSinceLastSawBomber() const;			// how long has is been since we saw the bomber
 
-		//CHostage *pHostage = g_pHostages->GetClosestHostage(m_owner->pev->origin);
-		//return GetClassPtr((CHostage *)pHostage->pev);
-	}
-	NOBODY void InitializeHostageInfo(void);
+	void UpdatePlantedBomb(const Vector *pos);		// we see the planted bomb
+	bool IsPlantedBombLocationKnown() const;		// do we know where the bomb was planted
+	void MarkBombsiteAsPlanted(int zoneIndex);		// mark bombsite as the location of the planted bomb
+
+	enum { UNKNOWN = -1 };	
+	int GetPlantedBombsite() const;				// return the zone index of the planted bombsite, or UNKNOWN
+	bool IsAtPlantedBombsite() const;			// return true if we are currently in the bombsite where the bomb is planted
+
+	int GetNextBombsiteToSearch();				// return the zone index of the next bombsite to search
+	bool IsBombsiteClear(int zoneIndex) const;		// return true if given bombsite has been cleared
+	void ClearBombsite(int zoneIndex);			// mark bombsite as clear
+
+	const Vector *GetBombPosition() const;			// return where we think the bomb is, or NULL if we don't know
+
+	// hostage rescue scenario
+	CHostage *GetNearestFreeHostage(Vector *knowPos = NULL) const;					// return the closest free hostage, and where we think it is (knowPos)
+	const Vector *GetRandomFreeHostagePosition();
+	bool AreAllHostagesBeingRescued() const;							// return true if there are no free hostages
+	bool AreAllHostagesGone() const;								// all hostages have been rescued or are dead
+	void AllHostagesGone();										// someone told us all the hostages are gone
+	bool HaveSomeHostagesBeenTaken() const { return m_haveSomeHostagesBeenTaken; }			// return true if one or more hostages have been moved by the CT's
+	void HostageWasTaken() { m_haveSomeHostagesBeenTaken = true; }					// someone told us a CT is talking to a hostage
+
+	CHostage *GetNearestVisibleFreeHostage() const;
+
+	// hostage rescue scenario
+	enum ValidateStatusType:uint8
+	{
+		NO_CHANGE = 0x00,
+		HOSTAGE_DIED = 0x01,
+		HOSTAGE_GONE = 0x02,
+		HOSTAGES_ALL_GONE = 0x04
+	};
+	ValidateStatusType ValidateHostagePositions();	// update our knowledge with what we currently see - returns bitflag events
+
+#ifndef HOOK_GAMEDLL
 private:
-	CCSBot *m_owner;
-	bool m_isRoundOver;
-	BombState m_bombState;
+#endif // HOOK_GAMEDLL
+
+	CCSBot *m_owner;			// who owns this gamestate
+	bool m_isRoundOver;			// true if round is over, but no yet reset
+
+	// bomb defuse scenario
+	void SetBombState(BombState state);
+	BombState GetBombState() { return m_bombState; }
+
+	BombState m_bombState;			// what we think the bomb is doing
+
 	IntervalTimer m_lastSawBomber;
 	Vector m_bomberPos;
+
 	IntervalTimer m_lastSawLooseBomb;
 	Vector m_looseBombPos;
-	bool m_isBombsiteClear[4];
-	int m_bombsiteSearchOrder[4];
-	int m_bombsiteCount;
-	int m_bombsiteSearchIndex;
-	int m_plantedBombsite;
-	bool m_isPlantedBombPosKnown;
-	Vector m_plantedBombPos;
-	struct HostageInfo m_hostage[12];
-	int m_hostageCount;
-	CountdownTimer m_validateInterval;
-	bool m_allHostagesRescued;
-	bool m_haveSomeHostagesBeenTaken;
 
-};/* size: 348, cachelines: 6, members: 19 */
+	bool m_isBombsiteClear[4];		// corresponds to zone indices in CCSBotManager
+	int m_bombsiteSearchOrder[4];		// randomized order of bombsites to search
+	int m_bombsiteCount;
+	int m_bombsiteSearchIndex;		// the next step in the search
+
+	int m_plantedBombsite;			// zone index of the bombsite where the planted bomb is
+
+	bool m_isPlantedBombPosKnown;		// if true, we know the exact location of the bomb
+	Vector m_plantedBombPos;
+
+	// hostage rescue scenario
+	struct HostageInfo
+	{
+		CHostage *hostage;
+		Vector knownPos;
+		bool isValid;
+		bool isAlive;
+		bool isFree;		// not being escorted by a CT
+	}
+	m_hostage[ MAX_HOSTAGES ];
+	int m_hostageCount;					// number of hostages left in map
+	CountdownTimer m_validateInterval;
+	NOXREF CBaseEntity *GetNearestHostage() const;		// return the closest live hostage
+	void InitializeHostageInfo();				// initialize our knowledge of the number and location of hostages
+
+	bool m_allHostagesRescued;				// if true, so every hostages been is rescued
+	bool m_haveSomeHostagesBeenTaken;			// true if a hostage has been moved by a CT (and we've seen it)
+};
 
 #endif // CS_GAMESTATE_H

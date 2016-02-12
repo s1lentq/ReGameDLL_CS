@@ -5,31 +5,17 @@
 */
 #ifndef HOOK_GAMEDLL
 
-static int pm_shared_initialized = 0;
-
-static vec3_t rgv3tStuckTable[54];
-static int rgStuckLast[MAX_CLIENTS][2];
-
-static int pm_gcTextures = 0;
-static char pm_grgszTextureName[1024][17];
-static char pm_grgchTextureType[1024];
-
-playermove_t *pmove = NULL;
-int g_onladder = 0;
-
-#else // HOOK_GAMEDLL
-
-int pm_shared_initialized;
+int pm_shared_initialized = 0;
 
 vec3_t rgv3tStuckTable[54];
 int rgStuckLast[MAX_CLIENTS][2];
 
-int pm_gcTextures;
-char pm_grgszTextureName[CTEXTURESMAX][CBTEXTURENAMEMAX];
-char pm_grgchTextureType[CTEXTURESMAX];
+int pm_gcTextures = 0;
+char pm_grgszTextureName[1024][17];
+char pm_grgchTextureType[1024];
 
-playermove_t *pmove;
-int g_onladder;
+playermove_t *pmove = NULL;
+int g_onladder = 0;
 
 #endif // HOOK_GAMEDLL
 
@@ -50,11 +36,11 @@ void PM_SwapTextures(int i, int j)
 }
 
 /* <2cc691> ../cstrike/pm_shared/pm_shared.c:180 */
-NOXREF int PM_IsThereGrassTexture(void)
+NOXREF int PM_IsThereGrassTexture()
 {
 	int i;
 
-	for (i = 0; i < pm_gcTextures; i++)
+	for (i = 0; i < pm_gcTextures; ++i)
 	{
 		if (pm_grgchTextureType[i] == CHAR_TEX_GRASS)
 			return 1;
@@ -64,12 +50,12 @@ NOXREF int PM_IsThereGrassTexture(void)
 }
 
 /* <2cc6bb> ../cstrike/pm_shared/pm_shared.c:193 */
-void PM_SortTextures(void)
+void PM_SortTextures()
 {
 	// Bubble sort, yuck, but this only occurs at startup and it's only 512 elements...
 	int i, j;
 
-	for (i = 0; i < pm_gcTextures; i++)
+	for (i = 0; i < pm_gcTextures; ++i)
 	{
 		for (j = i + 1; j < pm_gcTextures; j++)
 		{
@@ -83,7 +69,7 @@ void PM_SortTextures(void)
 }
 
 /* <2cc720> ../cstrike/pm_shared/pm_shared.c:213 */
-void PM_InitTextureTypes(void)
+void PM_InitTextureTypes()
 {
 	char buffer[512];
 	int i, j;
@@ -113,7 +99,7 @@ void PM_InitTextureTypes(void)
 		// skip whitespace
 		i = 0;
 		while (buffer[i] && isspace(buffer[i]))
-			i++;
+			++i;
 
 		if (!buffer[i])
 			continue;
@@ -127,7 +113,7 @@ void PM_InitTextureTypes(void)
 
 		// skip whitespace
 		while (buffer[i] && isspace(buffer[i]))
-			i++;
+			++i;
 
 		if (!buffer[i])
 			continue;
@@ -155,7 +141,7 @@ void PM_InitTextureTypes(void)
 }
 
 /* <2cc7c5> ../cstrike/pm_shared/pm_shared.c:283 */
-char PM_FindTextureType(char *name)
+char EXT_FUNC PM_FindTextureType(char *name)
 {
 	int left, right, pivot;
 	int val;
@@ -360,7 +346,7 @@ int PM_MapTextureTypeStepType(char chTextureType)
 }
 
 /* <2cc8af> ../cstrike/pm_shared/pm_shared.c:512 */
-void PM_CatagorizeTextureType(void)
+void PM_CatagorizeTextureType()
 {
 	vec3_t start, end;
 	const char *pTextureName;
@@ -395,7 +381,7 @@ void PM_CatagorizeTextureType(void)
 }
 
 /* <2cc93c> ../cstrike/pm_shared/pm_shared.c:546 */
-void PM_UpdateStepSound(void)
+void PM_UpdateStepSound()
 {
 	float fvol;
 	vec3_t knee;
@@ -506,13 +492,13 @@ void PM_UpdateStepSound(void)
 			}
 		}
 
-		if (pmove->flags & FL_DUCKING || fLadder)
+		if ((pmove->flags & FL_DUCKING) || fLadder)
 		{
 			pmove->flTimeStepSound += 100; // slower step time if ducking
 
 			// play the sound
 			// 35% volume if ducking
-			if (pmove->flags & FL_DUCKING && pmove->flDuckTime < 950.0)
+			if ((pmove->flags & FL_DUCKING) && pmove->flDuckTime < 950.0)
 			{
 				fvol *= 0.35;
 			}
@@ -528,7 +514,7 @@ void PM_UpdateStepSound(void)
 qboolean PM_AddToTouched(pmtrace_t tr, vec_t *impactvelocity)
 {
 	int i;
-	for (i = 0; i < pmove->numtouch; i++)
+	for (i = 0; i < pmove->numtouch; ++i)
 	{
 		if (pmove->touchindex[i].ent == tr.ent)
 			break;
@@ -552,12 +538,12 @@ qboolean PM_AddToTouched(pmtrace_t tr, vec_t *impactvelocity)
 }
 
 /* <2cca88> ../cstrike/pm_shared/pm_shared.c:707 */
-void PM_CheckVelocity(void)
+void PM_CheckVelocity()
 {
 	int i;
 
 	// bound velocity
-	for (i = 0; i < 3; i++)
+	for (i = 0; i < 3; ++i)
 	{
 		// See if it's bogus.
 		if (IS_NAN(pmove->velocity[i]))
@@ -620,7 +606,7 @@ int PM_ClipVelocity(vec_t *in, vec_t *normal, vec_t *out, float overbounce)
 	// Scale by overbounce factor.
 	backoff = DotProduct(in, normal) * overbounce;
 
-	for (i = 0; i < 3; i++)
+	for (i = 0; i < 3; ++i)
 	{
 		change = in[i] - normal[i] * backoff;
 		out[i] = change;
@@ -637,7 +623,7 @@ int PM_ClipVelocity(vec_t *in, vec_t *normal, vec_t *out, float overbounce)
 }
 
 /* <2ccc93> ../cstrike/pm_shared/pm_shared.c:784 */
-void PM_AddCorrectGravity(void)
+void PM_AddCorrectGravity()
 {
 	float_precision ent_gravity;
 
@@ -660,7 +646,7 @@ void PM_AddCorrectGravity(void)
 }
 
 /* <2cc482> ../cstrike/pm_shared/pm_shared.c:806 */
-void PM_FixupGravityVelocity(void)
+void PM_FixupGravityVelocity()
 {
 	float_precision ent_gravity;
 
@@ -678,7 +664,7 @@ void PM_FixupGravityVelocity(void)
 }
 
 /* <2ccd08> ../cstrike/pm_shared/pm_shared.c:831 */
-int PM_FlyMove(void)
+int PM_FlyMove()
 {
 	int bumpcount, numbumps;
 	vec3_t dir;
@@ -710,7 +696,7 @@ int PM_FlyMove(void)
 
 		// Assume we can move all the way from the current origin to the
 		// end point.
-		for (i = 0; i < 3; i++)
+		for (i = 0; i < 3; ++i)
 		{
 			float_precision flScale = time_left * pmove->velocity[i];
 
@@ -754,7 +740,7 @@ int PM_FlyMove(void)
 
 		// Save entity that blocked us (since fraction was < 1.0)
 		// for contact
-		// Add it if it's not already in the list!!!
+		// Add it if it's not already in the list
 		PM_AddToTouched(trace, pmove->velocity);
 
 		// If the plane we hit has a high z component in the normal, then
@@ -794,7 +780,7 @@ int PM_FlyMove(void)
 		// relfect player velocity
 		if (numplanes == 1 && pmove->movetype == MOVETYPE_WALK && (pmove->onground == -1 || pmove->friction != 1))
 		{
-			for (i = 0; i < numplanes; i++)
+			for (i = 0; i < numplanes; ++i)
 			{
 				if (planes[i][2] > 0.7f)
 				{
@@ -811,7 +797,7 @@ int PM_FlyMove(void)
 		}
 		else
 		{
-			for (i = 0; i < numplanes; i++)
+			for (i = 0; i < numplanes; ++i)
 			{
 				PM_ClipVelocity(original_velocity, planes[i], pmove->velocity, 1);
 
@@ -891,7 +877,7 @@ void PM_Accelerate(vec_t *wishdir, float_precision wishspeed, float accel)
 		accelspeed = addspeed;
 
 	// Adjust velocity.
-	for (i = 0; i < 3; i++)
+	for (i = 0; i < 3; ++i)
 	{
 		pmove->velocity[i] += accelspeed * wishdir[i];
 	}
@@ -900,7 +886,7 @@ void PM_Accelerate(vec_t *wishdir, float_precision wishspeed, float accel)
 // Only used by players.  Moves along the ground when player is a MOVETYPE_WALK.
 
 /* <2cceaf> ../cstrike/pm_shared/pm_shared.c:1071 */
-void PM_WalkMove(void)
+void PM_WalkMove()
 {
 	int clip;
 	int oldonground;
@@ -941,7 +927,7 @@ void PM_WalkMove(void)
 	VectorNormalize(pmove->right);
 
 	// Determine x and y parts of velocity
-	for (i = 0; i < 2; i++)
+	for (i = 0; i < 2; ++i)
 	{
 		wishvel[i] = pmove->forward[i] * fmove + pmove->right[i] * smove;
 	}
@@ -1090,7 +1076,7 @@ usedown:
 // Handles both ground friction and water friction
 
 /* <2ccffb> ../cstrike/pm_shared/pm_shared.c:1249 */
-void PM_Friction(void)
+void PM_Friction()
 {
 	float *vel;
 	float speed;
@@ -1208,14 +1194,14 @@ void PM_AirAccelerate(vec_t *wishdir, float wishspeed, float accel)
 		accelspeed = addspeed;
 
 	// Adjust pmove vel.
-	for (i = 0; i < 3; i++)
+	for (i = 0; i < 3; ++i)
 	{
 		pmove->velocity[i] += accelspeed * wishdir[i];
 	}
 }
 
 /* <2cd14b> ../cstrike/pm_shared/pm_shared.c:1368 */
-void PM_WaterMove(void)
+void PM_WaterMove()
 {
 	int i;
 	vec3_t wishvel;
@@ -1228,7 +1214,7 @@ void PM_WaterMove(void)
 	float newspeed, addspeed;
 
 	// user intentions
-	for (i = 0; i < 3; i++)
+	for (i = 0; i < 3; ++i)
 	{
 		wishvel[i] = (pmove->forward[i] * pmove->cmd.forwardmove) + (pmove->cmd.sidemove * pmove->right[i]);
 	}
@@ -1296,7 +1282,7 @@ void PM_WaterMove(void)
 			accelspeed = addspeed;
 		}
 
-		for (i = 0; i < 3; i++)
+		for (i = 0; i < 3; ++i)
 		{
 			pmove->velocity[i] += accelspeed * wishvel[i];
 		}
@@ -1323,7 +1309,7 @@ void PM_WaterMove(void)
 }
 
 /* <2cd220> ../cstrike/pm_shared/pm_shared.c:1464 */
-void PM_AirMove(void)
+void PM_AirMove()
 {
 	int i;
 	vec3_t wishvel;
@@ -1344,7 +1330,7 @@ void PM_AirMove(void)
 	VectorNormalize(pmove->right);
 
 	// Determine x and y parts of velocity
-	for (i = 0; i < 2; i++)
+	for (i = 0; i < 2; ++i)
 	{
 		wishvel[i] = pmove->forward[i] * fmove + pmove->right[i] * smove;
 	}
@@ -1372,7 +1358,7 @@ void PM_AirMove(void)
 }
 
 /* <2cc586> ../cstrike/pm_shared/pm_shared.c:1510 */
-qboolean PM_InWater(void)
+qboolean PM_InWater()
 {
 	return (pmove->waterlevel > 1);
 }
@@ -1380,7 +1366,7 @@ qboolean PM_InWater(void)
 // Sets pmove->waterlevel and pmove->watertype values.
 
 /* <2cd2a7> ../cstrike/pm_shared/pm_shared.c:1522 */
-qboolean PM_CheckWater(void)
+qboolean PM_CheckWater()
 {
 	vec3_t point;
 	int cont;
@@ -1451,7 +1437,7 @@ qboolean PM_CheckWater(void)
 }
 
 /* <2cd33a> ../cstrike/pm_shared/pm_shared.c:1593 */
-void PM_CatagorizePosition(void)
+void PM_CatagorizePosition()
 {
 	vec3_t point;
 	pmtrace_t tr;
@@ -1542,7 +1528,7 @@ void PM_ResetStuckOffsets(int nIndex, int server)
 // allow for the cut precision of the net coordinates
 
 /* <2cd3cf> ../cstrike/pm_shared/pm_shared.c:1681 */
-int PM_CheckStuck(void)
+int PM_CheckStuck()
 {
 	vec3_t base;
 	vec3_t offset;
@@ -1662,7 +1648,7 @@ int PM_CheckStuck(void)
 }
 
 /* <2cd61f> ../cstrike/pm_shared/pm_shared.c:1807 */
-void PM_SpectatorMove(void)
+void PM_SpectatorMove()
 {
 	float_precision speed, drop, friction;
 	float_precision control, newspeed;
@@ -1715,7 +1701,7 @@ void PM_SpectatorMove(void)
 		VectorNormalize(pmove->forward);
 		VectorNormalize(pmove->right);
 
-		for (i = 0; i < 3; i++)
+		for (i = 0; i < 3; ++i)
 		{
 			wishvel[i] = pmove->forward[i] * fmove + pmove->right[i] * smove;
 		}
@@ -1746,7 +1732,7 @@ void PM_SpectatorMove(void)
 			accelspeed = addspeed;
 		}
 
-		for (i = 0; i < 3; i++)
+		for (i = 0; i < 3; ++i)
 		{
 			pmove->velocity[i] += accelspeed * wishdir[i];
 		}
@@ -1823,7 +1809,7 @@ void PM_FixPlayerCrouchStuck(int direction)
 
 	VectorCopy(pmove->origin, test);
 
-	for (i = 0; i < 36; i++)
+	for (i = 0; i < 36; ++i)
 	{
 		pmove->origin[2] += direction;
 		hitent = pmove->PM_TestPlayerPosition(pmove->origin, NULL);
@@ -1839,7 +1825,7 @@ void PM_FixPlayerCrouchStuck(int direction)
 }
 
 /* <2cd7cd> ../cstrike/pm_shared/pm_shared.c:1983 */
-void PM_Duck(void)
+void PM_Duck()
 {
 	float_precision duckFraction;
 
@@ -2079,7 +2065,7 @@ void PM_LadderMove(physent_t *pLadder)
 }
 
 /* <2cda06> ../cstrike/pm_shared/pm_shared.c:2457 */
-physent_t *PM_Ladder(void)
+physent_t *PM_Ladder()
 {
 	int i;
 	physent_t *pe;
@@ -2087,7 +2073,7 @@ physent_t *PM_Ladder(void)
 	int num;
 	vec3_t test;
 
-	for (i = 0; i < pmove->nummoveent; i++)
+	for (i = 0; i < pmove->nummoveent; ++i)
 	{
 		pe = &pmove->moveents[i];
 
@@ -2113,7 +2099,7 @@ physent_t *PM_Ladder(void)
 }
 
 /* <2cda77> ../cstrike/pm_shared/pm_shared.c:2491 */
-void PM_WaterJump(void)
+void PM_WaterJump()
 {
 	if (pmove->waterjumptime > 10000)
 	{
@@ -2138,7 +2124,7 @@ void PM_WaterJump(void)
 }
 
 /* <2cda8d> ../cstrike/pm_shared/pm_shared.c:2519 */
-void PM_AddGravity(void)
+void PM_AddGravity()
 {
 	float ent_gravity;
 
@@ -2178,7 +2164,7 @@ pmtrace_t PM_PushEntity(vec_t *push)
 }
 
 /* <2cdb13> ../cstrike/pm_shared/pm_shared.c:2569 */
-void PM_Physics_Toss(void)
+void PM_Physics_Toss()
 {
 	pmtrace_t trace;
 	vec3_t move;
@@ -2284,7 +2270,7 @@ void PM_Physics_Toss(void)
 }
 
 /* <2cdba2> ../cstrike/pm_shared/pm_shared.c:2674 */
-void PM_NoClip(void)
+void PM_NoClip()
 {
 	int i;
 	vec3_t wishvel;
@@ -2298,7 +2284,7 @@ void PM_NoClip(void)
 	VectorNormalize(pmove->right);
 
 	// Determine x and y parts of velocity
-	for (i = 0; i < 3; i++)
+	for (i = 0; i < 3; ++i)
 	{
 		wishvel[i] = pmove->forward[i] * fmove + pmove->right[i] * smove;
 	}
@@ -2318,7 +2304,7 @@ void PM_NoClip(void)
 //  movement logic does.
 
 /* <2ccab0> ../cstrike/pm_shared/pm_shared.c:2711 */
-void PM_PreventMegaBunnyJumping(void)
+void PM_PreventMegaBunnyJumping()
 {
 	// Current player speed
 	float_precision spd;
@@ -2346,7 +2332,7 @@ void PM_PreventMegaBunnyJumping(void)
 }
 
 /* <2cc541> ../cstrike/pm_shared/pm_shared.c:2741 */
-void PM_Jump(void)
+void PM_Jump()
 {
 	if (pmove->dead)
 	{
@@ -2440,11 +2426,43 @@ void PM_Jump(void)
 		PM_PlayStepSound(PM_MapTextureTypeStepType(pmove->chtexturetype), fvol);
 	}
 
-	pmove->velocity[2] = sqrt((float_precision)(2 * 800 * 45));
+#ifdef REGAMEDLL_ADD
+	// See if user can super long jump?
+	bool cansuperjump = (pmove->PM_Info_ValueForKey(pmove->physinfo, "slj")[0] == '1');
+
+	// Acclerate upward
+	// If we are ducking...
+	if (pmove->bInDuck || (pmove->flags & FL_DUCKING))
+	{
+		// Adjust for super long jump module
+		// UNDONE -- note this should be based on forward angles, not current velocity.
+		if (cansuperjump && (pmove->cmd.buttons & IN_DUCK) && pmove->flDuckTime > 0 && Length(pmove->velocity) > 50)
+		{
+			pmove->punchangle[0] = -5.0f;
+
+			for (int i  = 0; i < 2; ++i)
+			{
+				pmove->velocity[i] = pmove->forward[i] * PLAYER_LONGJUMP_SPEED * 1.6f;
+			}
+
+			pmove->velocity[2] = sqrt(2 * 800 * 56.0f);
+		}
+		else
+		{
+			pmove->velocity[2] = sqrt(2 * 800 * 45.0f);
+		}
+	}
+	else
+#endif // REGAMEDLL_ADD
+	{
+		// NOTE: don't do it in .f (float)
+		pmove->velocity[2] = sqrt(2.0 * 800.0f * 45.0f);
+	}
 
 	if (pmove->fuser2 > 0.0f)
 	{
-		float_precision flRatio = (100 - pmove->fuser2 * 0.001 * 19) * 0.01;
+		// NOTE: don't do it in .f (float)
+		float_precision flRatio = (100.0 - pmove->fuser2 * 0.001 * 19.0) * 0.01;
 		pmove->velocity[2] *= flRatio;
 	}
 
@@ -2459,7 +2477,7 @@ void PM_Jump(void)
 }
 
 /* <2cdc4b> ../cstrike/pm_shared/pm_shared.c:2869 */
-void PM_CheckWaterJump(void)
+void PM_CheckWaterJump()
 {
 	vec3_t vecStart, vecEnd;
 	vec3_t flatforward;
@@ -2535,7 +2553,7 @@ void PM_CheckWaterJump(void)
 }
 
 /* <2cdcd3> ../cstrike/pm_shared/pm_shared.c:2933 */
-void PM_CheckFalling(void)
+void PM_CheckFalling()
 {
 	if (pmove->onground != -1 && !pmove->dead && pmove->flFallVelocity >= PM_PLAYER_FALL_PUNCH_THRESHHOLD)
 	{
@@ -2584,7 +2602,7 @@ void PM_CheckFalling(void)
 }
 
 /* <2cdd60> ../cstrike/pm_shared/pm_shared.c:2988 */
-void PM_PlayWaterSounds(void)
+void PM_PlayWaterSounds()
 {
 	// Did we enter or leave water?
 	if (pmove->oldwaterlevel != 0)
@@ -2644,16 +2662,16 @@ void PM_DropPunchAngle(vec_t *punchangle)
 
 	len = VectorNormalize(punchangle);
 	len -= (10.0 + len * 0.5) * pmove->frametime;
-#ifdef HOOK_GAMEDLL
+#ifdef PLAY_GAMEDLL
 	len = Q_max(len, 0.0);
 #else
 	len = Q_max(len, 0.0f);
-#endif // HOOK_GAMEDLL
+#endif // PLAY_GAMEDLL
 	VectorScale(punchangle, len, punchangle);
 }
 
 /* <2cdeb8> ../cstrike/pm_shared/pm_shared.c:3069 */
-void PM_CheckParamters(void)
+void PM_CheckParamters()
 {
 	float spd;
 	float_precision maxspeed;
@@ -2716,7 +2734,7 @@ void PM_CheckParamters(void)
 }
 
 /* <2cdfc3> ../cstrike/pm_shared/pm_shared.c:3136 */
-void PM_ReduceTimers(void)
+void PM_ReduceTimers()
 {
 	if (pmove->flTimeStepSound > 0)
 	{
@@ -2760,7 +2778,7 @@ void PM_ReduceTimers(void)
 }
 
 /* <2cc577> ../cstrike/pm_shared/pm_shared.c:3203 */
-qboolean PM_ShouldDoSpectMode(void)
+qboolean PM_ShouldDoSpectMode()
 {
 	return (pmove->iuser3 <= 0 || pmove->deadflag == DEAD_DEAD);
 }
@@ -3022,7 +3040,7 @@ void PM_PlayerMove(qboolean server)
 }
 
 /* <2ce101> ../cstrike/pm_shared/pm_shared.c:3479 */
-void PM_CreateStuckTable(void)
+void PM_CreateStuckTable()
 {
 	float x, y, z;
 
@@ -3096,7 +3114,7 @@ void PM_CreateStuckTable(void)
 	zi[1] = 1.0f;
 	zi[2] = 6.0f;
 
-	for (i = 0; i < 3; i++)
+	for (i = 0; i < 3; ++i)
 	{
 		// Z moves
 		z = zi[i];
@@ -3135,7 +3153,7 @@ void PM_CreateStuckTable(void)
 	}
 
 	// Remaining multi axis nudges.
-	for (i = 0; i < 3; i++)
+	for (i = 0; i < 3; ++i)
 	{
 		z = zi[i];
 
@@ -3159,7 +3177,7 @@ void PM_CreateStuckTable(void)
 // and client. This will ensure that prediction behaves appropriately.
 
 /* <2ce182> ../cstrike/pm_shared/pm_shared.c:3596 */
-void PM_Move(struct playermove_s *ppmove, int server)
+void EXT_FUNC PM_Move(struct playermove_s *ppmove, int server)
 {
 	assert(pm_shared_initialized);
 
@@ -3201,7 +3219,7 @@ NOXREF int PM_GetPhysEntInfo(int ent)
 }
 
 /* <2ce21b> ../cstrike/pm_shared/pm_shared.c:3638 */
-void PM_Init(struct playermove_s *ppmove)
+void EXT_FUNC PM_Init(struct playermove_s *ppmove)
 {
 	assert(!pm_shared_initialized);
 

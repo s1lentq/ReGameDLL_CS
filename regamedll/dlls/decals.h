@@ -84,13 +84,6 @@ typedef struct
 	int index;
 
 } DLL_DECALLIST;
-/* size: 8, cachelines: 1, members: 2 */
-
-#ifdef HOOK_GAMEDLL
-
-#define gDecals (*pgDecals)
-
-#endif //HOOK_GAMEDLL
 
 extern DLL_DECALLIST gDecals[42];
 

@@ -6,7 +6,8 @@ import org.joda.time.DateTime
 
 @CompileStatic @TypeChecked
 class GitInfo {
-    DateTime lastCommitDate
-    String branch
-    String tag
+	DateTime lastCommitDate
+	String branch
+	String tag
+	Integer countCommit
 }

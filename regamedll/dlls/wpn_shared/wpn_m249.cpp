@@ -4,21 +4,22 @@
 LINK_ENTITY_TO_CLASS(weapon_m249, CM249);
 
 /* <276951> ../cstrike/dlls/wpn_shared/wpn_m249.cpp:51 */
-void CM249::__MAKE_VHOOK(Spawn)(void)
+void CM249::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
+
 	m_iId = WEAPON_M249;
 	SET_MODEL(edict(), "models/w_m249.mdl");
 
 	m_iDefaultAmmo = M249_DEFAULT_GIVE;
-	m_flAccuracy = 0.2;
+	m_flAccuracy = 0.2f;
 	m_iShotsFired = 0;
 
 	FallInit();
 }
 
 /* <2768d0> ../cstrike/dlls/wpn_shared/wpn_m249.cpp:65 */
-void CM249::__MAKE_VHOOK(Precache)(void)
+void CM249::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/v_m249.mdl");
 	PRECACHE_MODEL("models/w_m249.mdl");
@@ -54,9 +55,9 @@ int CM249::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 }
 
 /* <27692a> ../cstrike/dlls/wpn_shared/wpn_m249.cpp:101 */
-BOOL CM249::__MAKE_VHOOK(Deploy)(void)
+BOOL CM249::__MAKE_VHOOK(Deploy)()
 {
-	m_flAccuracy = 0.2;
+	m_flAccuracy = 0.2f;
 	m_iShotsFired = 0;
 	iShellOn = 1;
 
@@ -64,7 +65,7 @@ BOOL CM249::__MAKE_VHOOK(Deploy)(void)
 }
 
 /* <276b73> ../cstrike/dlls/wpn_shared/wpn_m249.cpp:111 */
-void CM249::__MAKE_VHOOK(PrimaryAttack)(void)
+void CM249::__MAKE_VHOOK(PrimaryAttack)()
 {
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
 	{
@@ -87,12 +88,12 @@ void CM249::M249Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	int flag;
 
 	m_bDelayFire = true;
-	m_iShotsFired++;
+	++m_iShotsFired;
 
-	m_flAccuracy = ((m_iShotsFired * m_iShotsFired * m_iShotsFired) / 175) + 0.4;
+	m_flAccuracy = ((m_iShotsFired * m_iShotsFired * m_iShotsFired) / 175) + 0.4f;
 
-	if (m_flAccuracy > 0.9)
-		m_flAccuracy = 0.9;
+	if (m_flAccuracy > 0.9f)
+		m_flAccuracy = 0.9f;
 
 	if (m_iClip <= 0)
 	{
@@ -110,7 +111,7 @@ void CM249::M249Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 		return;
 	}
 
-	m_iClip--;
+	--m_iClip;
 	m_pPlayer->pev->effects |= EF_MUZZLEFLASH;
 	m_pPlayer->SetAnimation(PLAYER_ATTACK1);
 
@@ -141,7 +142,7 @@ void CM249::M249Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
 	}
 
-	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.6;
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.6f;
 
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
 	{
@@ -162,28 +163,26 @@ void CM249::M249Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 }
 
 /* <276a02> ../cstrike/dlls/wpn_shared/wpn_m249.cpp:201 */
-void CM249::__MAKE_VHOOK(Reload)(void)
+void CM249::__MAKE_VHOOK(Reload)()
 {
 #ifdef REGAMEDLL_FIXES
 	// to prevent reload if not enough ammo
 	if (m_pPlayer->ammo_556natobox <= 0)
-	{
 		return;
-	}
 #endif // REGAMEDLL_FIXES
 
 	if (DefaultReload(M249_MAX_CLIP, M249_RELOAD, M249_RELOAD_TIME))
 	{
 		m_pPlayer->SetAnimation(PLAYER_RELOAD);
 
-		m_flAccuracy = 0.2;
+		m_flAccuracy = 0.2f;
 		m_bDelayFire = false;
 		m_iShotsFired = 0;
 	}
 }
 
 /* <2769c7> ../cstrike/dlls/wpn_shared/wpn_m249.cpp:222 */
-void CM249::__MAKE_VHOOK(WeaponIdle)(void)
+void CM249::__MAKE_VHOOK(WeaponIdle)()
 {
 	ResetEmptySound();
 	m_pPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);
@@ -193,45 +192,6 @@ void CM249::__MAKE_VHOOK(WeaponIdle)(void)
 		return;
 	}
 
-	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20;
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20.0f;
 	SendWeaponAnim(M249_IDLE1, UseDecrement() != FALSE);
 }
-
-#ifdef HOOK_GAMEDLL
-
-void CM249::Spawn(void)
-{
-	Spawn_();
-}
-
-void CM249::Precache(void)
-{
-	Precache_();
-}
-
-int CM249::GetItemInfo(ItemInfo *p)
-{
-	return GetItemInfo_(p);
-}
-
-BOOL CM249::Deploy(void)
-{
-	return Deploy_();
-}
-
-void CM249::PrimaryAttack(void)
-{
-	PrimaryAttack_();
-}
-
-void CM249::Reload(void)
-{
-	Reload_();
-}
-
-void CM249::WeaponIdle(void)
-{
-	WeaponIdle_();
-}
-
-#endif // HOOK_GAMEDLL

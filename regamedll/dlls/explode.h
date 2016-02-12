@@ -43,29 +43,26 @@
 class CShower: public CBaseEntity
 {
 public:
-	virtual void Spawn(void);
-	virtual int ObjectCaps(void)
-	{
-		return FCAP_DONT_SAVE;
-	}
-	virtual void Think(void);
+	virtual void Spawn();
+	virtual int ObjectCaps() { return FCAP_DONT_SAVE; }
+	virtual void Think();
 	virtual void Touch(CBaseEntity *pOther);
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Think_(void);
+	void Spawn_();
+	void Think_();
 	void Touch_(CBaseEntity *pOther);
 
 #endif // HOOK_GAMEDLL
 
-};/* size: 152, cachelines: 3, members: 1 */
+};
 
 /* <7e66b> ../cstrike/dlls/explode.cpp:84 */
 class CEnvExplosion: public CBaseMonster
 {
 public:
-	virtual void Spawn(void);
+	virtual void Spawn();
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
@@ -73,7 +70,7 @@ public:
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
+	void Spawn_();
 	void KeyValue_(KeyValueData *pkvd);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
@@ -82,25 +79,15 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	void EXPORT Smoke(void);
+	void EXPORT Smoke();
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[2];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[2];
 
-public:
 	int m_iMagnitude;
 	int m_spriteScale;
-
-};/* size: 412, cachelines: 7, members: 4 */
+};
 
 void ExplosionCreate(const Vector &center, Vector &angles, edict_t *pOwner, int magnitude, BOOL doDamage);
-
-#ifdef HOOK_GAMEDLL
-
-// linked objects
-C_DLLEXPORT void spark_shower(entvars_t *pev);
-C_DLLEXPORT void env_explosion(entvars_t *pev);
-
-#endif // HOOK_GAMEDLL
 
 #endif // EXPLODE_H

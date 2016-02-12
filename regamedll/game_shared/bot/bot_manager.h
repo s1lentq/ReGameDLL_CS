@@ -36,19 +36,6 @@
 #pragma warning(disable : 4530)
 
 #include <list>
-#include "game_shared/GameEvent.h"
-
-#ifndef _WIN32
-
-//#ifndef max
-//#define max(a,b) ((a) > (b) ? (a) : (b))
-//#endif // max
-
-//#ifndef min
-//#define min(a,b) ((a) < (b) ? (a) : (b))
-//#endif // min
-
-#endif // _WIN32
 
 class CNavArea;
 class CGrenade;
@@ -58,96 +45,70 @@ class ActiveGrenade
 public:
 	ActiveGrenade(int weaponID, CGrenade *grenadeEntity);
 
-	void OnEntityGone(void);
-	bool IsValid(void) const;
-	NOXREF bool IsEntity(CGrenade *grenade) const
-	{
-		return (grenade == m_entity) ? true : false;
-	}
-	int GetID(void) const
-	{
-		return m_id;
-	}
-	const Vector *GetDetonationPosition(void) const
-	{
-		return &m_detonationPosition;
-	}
-	NOXREF const Vector *GetPosition(void) const;
+	void OnEntityGone();
+	bool IsValid() const;
+
+	bool IsEntity(CGrenade *grenade) const		{ return (grenade == m_entity) ? true : false; }
+	int GetID() const				{ return m_id; }
+	const Vector *GetDetonationPosition() const	{ return &m_detonationPosition; }
+
+	const Vector *GetPosition() const;
 
 private:
 	int m_id;
 	CGrenade *m_entity;
 	Vector m_detonationPosition;
 	float m_dieTimestamp;
+};
 
-};/* size: 24, cachelines: 1, members: 4 */
-
-typedef std::list<ActiveGrenade *> ActiveGrenadeList;
+typedef std::STD_LIST<ActiveGrenade *> ActiveGrenadeList;
 
 class CBotManager
 {
 public:
-	CBotManager(void);
+	CBotManager();
 
 	virtual void ClientDisconnect(CBasePlayer *pPlayer) = 0;
 	virtual BOOL ClientCommand(CBasePlayer *pPlayer, const char *pcmd) = 0;
 
-	virtual void ServerActivate(void) = 0;
-	virtual void ServerDeactivate(void) = 0;
+	virtual void ServerActivate() = 0;
+	virtual void ServerDeactivate() = 0;
 
 	virtual void ServerCommand(const char *pcmd) = 0;
 	virtual void AddServerCommand(const char *cmd) = 0;
-	virtual void AddServerCommands(void) = 0;
+	virtual void AddServerCommands() = 0;
 
-	virtual void RestartRound(void);
-	virtual void StartFrame(void);
+	virtual void RestartRound();
+	virtual void StartFrame();
 
-	// Invoked when event occurs in the game (some events have NULL entity).
 	// Events are propogated to all bots.
-	virtual void OnEvent(GameEventType event, CBaseEntity *entity = NULL, CBaseEntity *other = NULL);
+	virtual void OnEvent(GameEventType event, CBaseEntity *entity = NULL, CBaseEntity *other = NULL);		// Invoked when event occurs in the game (some events have NULL entity).
+	virtual unsigned int GetPlayerPriority(CBasePlayer *player) const = 0;						// return priority of player (0 = max pri)
 
-	// return priority of player (0 = max pri)
-	virtual unsigned int GetPlayerPriority(CBasePlayer *player) const = 0;
+public:
+	const char *GetNavMapFilename() const;										// return the filename for this map's "nav" file
 
-	// return the filename for this map's "nav" file
-	const char *GetNavMapFilename(void) const;
+	void AddGrenade(int type, CGrenade *grenade);									// add an active grenade to the bot's awareness
+	void RemoveGrenade(CGrenade *grenade);										// the grenade entity in the world is going away
+	NOXREF void ValidateActiveGrenades();										// destroy any invalid active grenades
+	void DestroyAllGrenades();
 
-	// add an active grenade to the bot's awareness
-	void AddGrenade(int type, CGrenade *grenade);
-
-	// the grenade entity in the world is going away
-	void RemoveGrenade(CGrenade *grenade);
-
-	// destroy any invalid active grenades
-	NOXREF void ValidateActiveGrenades(void);
-	void DestroyAllGrenades(void);
-
-	// return true if line intersects smoke volume
-	bool IsLineBlockedBySmoke(const Vector *from, const Vector *to);
-
-	// return true if position is inside a smoke cloud
-	bool IsInsideSmokeCloud(const Vector *pos);
+	bool IsLineBlockedBySmoke(const Vector *from, const Vector *to);						// return true if line intersects smoke volume
+	bool IsInsideSmokeCloud(const Vector *pos);									// return true if position is inside a smoke cloud
 
 #ifdef HOOK_GAMEDLL
 
-	void RestartRound_(void);
-	void StartFrame_(void);
+	void RestartRound_();
+	void StartFrame_();
 	void OnEvent_(GameEventType event, CBaseEntity *entity = NULL, CBaseEntity *other = NULL);
 
 #endif // HOOK_GAMEDLL
 
 private:
-
-#if defined(_WIN32) && defined(HOOK_GAMEDLL)
-	// The member m_activeGrenadeList on Windows must be with offset +8
-	// on Linux : +4
-
-	int unknown_padding;
-#endif // HOOK_GAMEDLL
-
 	// the list of active grenades the bots are aware of
 	ActiveGrenadeList m_activeGrenadeList;
-//
-};/* size: 12, cachelines: 1, members: 2 */
+};
+
+GameEventType NameToGameEvent(const char *name);
 
 #endif // BOT_MANAGER_H

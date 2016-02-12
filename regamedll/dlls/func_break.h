@@ -67,33 +67,18 @@ typedef enum
 
 } Materials;
 
-#ifdef HOOK_GAMEDLL
-
-#define pSoundsWood (*ppSoundsWood)
-#define pSoundsFlesh (*ppSoundsFlesh)
-#define pSoundsGlass (*ppSoundsGlass)
-#define pSoundsMetal (*ppSoundsMetal)
-#define pSoundsConcrete (*ppSoundsConcrete)
-#define pSpawnObjects (*ppSpawnObjects)
-#define m_soundNames (*pm_soundNames)
-
-#endif // HOOK_GAMEDLL
-
 /* <84d53> ../cstrike/dlls/func_break.h:23 */
 class CBreakable: public CBaseDelay
 {
 public:
 	// basic functions
-	virtual void Spawn(void);
-	virtual void Precache(void);
-	virtual void Restart(void);
+	virtual void Spawn();
+	virtual void Precache();
+	virtual void Restart();
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
-	virtual int ObjectCaps(void)
-	{
-		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION);
-	}
+	virtual int ObjectCaps() { return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
 
 	// To spark when hit
 	virtual void TraceAttack(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType);
@@ -106,9 +91,9 @@ public:
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Precache_(void);
-	void Restart_(void);
+	void Spawn_();
+	void Precache_();
+	void Restart_();
 	void KeyValue_(KeyValueData *pkvd);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
@@ -121,25 +106,17 @@ public:
 
 public:
 	void EXPORT BreakTouch(CBaseEntity *pOther);
-	void DamageSound(void);
+	void DamageSound();
 
-	BOOL IsBreakable(void);
-	NOXREF BOOL SparkWhenHit(void);
+	BOOL IsBreakable();
+	NOXREF BOOL SparkWhenHit();
 
-	void EXPORT Die(void);
+	void EXPORT Die();
 
-	BOOL Explodable(void)
-	{
-		return ExplosionMagnitude() > 0;
-	}
-	int ExplosionMagnitude(void)
-	{
-		return pev->impulse;
-	}
-	void ExplosionSetMagnitude(int magnitude)
-	{
-		pev->impulse = magnitude;
-	}
+	BOOL Explodable() const		{ return ExplosionMagnitude() > 0; }
+	int ExplosionMagnitude() const	{ return pev->impulse; }
+
+	void ExplosionSetMagnitude(int magnitude) { pev->impulse = magnitude; }
 
 	static void MaterialSoundPrecache(Materials precacheMaterial);
 	static void MaterialSoundRandom(edict_t *pEdict, Materials soundMaterial, float volume);
@@ -152,7 +129,7 @@ public:
 	static const char *pSoundsConcrete[3];
 	static const char *pSpawnObjects[32];
 
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[5];
+	static TYPEDESCRIPTION IMPL(m_SaveData)[5];
 
 public:
 	Materials m_Material;
@@ -162,30 +139,26 @@ public:
 	int m_iszGibModel;
 	int m_iszSpawnObject;
 	float m_flHealth;
-
-};/* size: 188, cachelines: 3, members: 15 */
+};
 
 /* <84da0> ../cstrike/dlls/func_break.cpp:851 */
 class CPushable: public CBreakable
 {
 public:
-	virtual void Spawn(void);
-	virtual void Precache(void);
+	virtual void Spawn();
+	virtual void Precache();
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
-	virtual int ObjectCaps(void)
-	{
-		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | FCAP_CONTINUOUS_USE;
-	}
+	virtual int ObjectCaps() { return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | FCAP_CONTINUOUS_USE; }
 	virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
 	virtual void Touch(CBaseEntity *pOther);
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Precache_(void);
+	void Spawn_();
+	void Precache_();
 	void KeyValue_(KeyValueData *pkvd);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
@@ -197,7 +170,7 @@ public:
 
 public:
 	void Move(CBaseEntity *pMover, int push);
-	void EXPORT StopSound(void)
+	void EXPORT StopSound()
 	{
 #if 0
 		Vector dist = pev->oldorigin - pev->origin;
@@ -207,29 +180,15 @@ public:
 		}
 #endif
 	}
-	float MaxSpeed(void)
-	{
-		return m_maxSpeed;
-	}
+	float MaxSpeed() const { return m_maxSpeed; }
 
 public:
-	static TYPEDESCRIPTION IMPLEMENT_ARRAY(m_SaveData)[2];
-
-public:
+	static TYPEDESCRIPTION IMPL(m_SaveData)[2];
 	static char *m_soundNames[3];
 
 	int m_lastSound;
 	float m_maxSpeed;
 	float m_soundTime;
-
-};/* size: 200, cachelines: 4, members: 6 */
-
-#ifdef HOOK_GAMEDLL
-
-// linked objects
-C_DLLEXPORT void func_breakable(entvars_t *pev);
-C_DLLEXPORT void func_pushable(entvars_t *pev);
-
-#endif // HOOK_GAMEDLL
+};
 
 #endif // FUNC_BREAK_H

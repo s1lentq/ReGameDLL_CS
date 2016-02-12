@@ -7,41 +7,41 @@
 
 AutoBuyInfoStruct g_autoBuyInfo[] =
 {
-	{ (AutoBuyClassType)(AUTOBUYCLASS_PRIMARY | AUTOBUYCLASS_RIFLE),		"galil",	"weapon_galil" },
-	{ (AutoBuyClassType)(AUTOBUYCLASS_PRIMARY | AUTOBUYCLASS_RIFLE),		"ak47",		"weapon_ak47" },
-	{ (AutoBuyClassType)(AUTOBUYCLASS_PRIMARY | AUTOBUYCLASS_SNIPERRIFLE),		"scout",	"weapon_scout" },
-	{ (AutoBuyClassType)(AUTOBUYCLASS_PRIMARY | AUTOBUYCLASS_RIFLE),		"sg552",	"weapon_sg552" },
-	{ (AutoBuyClassType)(AUTOBUYCLASS_PRIMARY | AUTOBUYCLASS_SNIPERRIFLE),		"awp",		"weapon_awp" },
-	{ (AutoBuyClassType)(AUTOBUYCLASS_PRIMARY | AUTOBUYCLASS_SNIPERRIFLE),		"g3sg1",	"weapon_g3sg1" },
-	{ (AutoBuyClassType)(AUTOBUYCLASS_PRIMARY | AUTOBUYCLASS_RIFLE),		"famas",	"weapon_famas" },
-	{ (AutoBuyClassType)(AUTOBUYCLASS_PRIMARY | AUTOBUYCLASS_RIFLE),		"m4a1",		"weapon_m4a1" },
-	{ (AutoBuyClassType)(AUTOBUYCLASS_PRIMARY | AUTOBUYCLASS_RIFLE),		"aug",		"weapon_aug" },
-	{ (AutoBuyClassType)(AUTOBUYCLASS_PRIMARY | AUTOBUYCLASS_SNIPERRIFLE),		"sg550",	"weapon_sg550" },
-	{ (AutoBuyClassType)(AUTOBUYCLASS_SECONDARY | AUTOBUYCLASS_PISTOL),		"glock",	"weapon_glock18" },
-	{ (AutoBuyClassType)(AUTOBUYCLASS_SECONDARY | AUTOBUYCLASS_PISTOL),		"usp",		"weapon_usp" },
-	{ (AutoBuyClassType)(AUTOBUYCLASS_SECONDARY | AUTOBUYCLASS_PISTOL),		"p228",		"weapon_p228" },
-	{ (AutoBuyClassType)(AUTOBUYCLASS_SECONDARY | AUTOBUYCLASS_PISTOL),		"deagle",	"weapon_deagle" },
-	{ (AutoBuyClassType)(AUTOBUYCLASS_SECONDARY | AUTOBUYCLASS_PISTOL),		"elites",	"weapon_elite" },
-	{ (AutoBuyClassType)(AUTOBUYCLASS_SECONDARY | AUTOBUYCLASS_PISTOL),		"fn57",		"weapon_fiveseven" },
-	{ (AutoBuyClassType)(AUTOBUYCLASS_PRIMARY | AUTOBUYCLASS_SHOTGUN),		"m3",		"weapon_m3" },
-	{ (AutoBuyClassType)(AUTOBUYCLASS_PRIMARY | AUTOBUYCLASS_SHOTGUN),		"xm1014",	"weapon_xm1014" },
-	{ (AutoBuyClassType)(AUTOBUYCLASS_PRIMARY | AUTOBUYCLASS_SMG),			"mac10",	"weapon_mac10" },
-	{ (AutoBuyClassType)(AUTOBUYCLASS_PRIMARY | AUTOBUYCLASS_SMG),			"tmp",		"weapon_tmp" },
-	{ (AutoBuyClassType)(AUTOBUYCLASS_PRIMARY | AUTOBUYCLASS_SMG),			"mp5",		"weapon_mp5navy" },
-	{ (AutoBuyClassType)(AUTOBUYCLASS_PRIMARY | AUTOBUYCLASS_SMG),			"ump45",	"weapon_ump45" },
-	{ (AutoBuyClassType)(AUTOBUYCLASS_PRIMARY | AUTOBUYCLASS_SMG),			"p90",		"weapon_p90" },
-	{ (AutoBuyClassType)(AUTOBUYCLASS_PRIMARY | AUTOBUYCLASS_MACHINEGUN),		"m249",		"weapon_m249" },
-	{ (AutoBuyClassType)(AUTOBUYCLASS_PRIMARY | AUTOBUYCLASS_AMMO),			"primammo",	"primammo" },
-	{ (AutoBuyClassType)(AUTOBUYCLASS_SECONDARY | AUTOBUYCLASS_AMMO),		"secammo",	"secammo" },
-	{ (AutoBuyClassType)(AUTOBUYCLASS_ARMOR),					"vest",		"item_kevlar" },
-	{ (AutoBuyClassType)(AUTOBUYCLASS_ARMOR),					"vesthelm",	"item_assaultsuit" },
-	{ (AutoBuyClassType)(AUTOBUYCLASS_GRENADE),					"flash",	"weapon_flashbang" },
-	{ (AutoBuyClassType)(AUTOBUYCLASS_GRENADE),					"hegren",	"weapon_hegrenade" },
-	{ (AutoBuyClassType)(AUTOBUYCLASS_GRENADE),					"sgren",	"weapon_smokegrenade"},
-	{ (AutoBuyClassType)(AUTOBUYCLASS_NIGHTVISION),					"nvgs",		"nvgs" },
-	{ (AutoBuyClassType)(AUTOBUYCLASS_DEFUSER),					"defuser",	"defuser" },
-	{ (AutoBuyClassType)(AUTOBUYCLASS_PRIMARY | AUTOBUYCLASS_SHIELD),		"shield",	"shield" },
-	{ (AutoBuyClassType)0, NULL, NULL }
+	{ AUTOBUYCLASS_PRIMARY|AUTOBUYCLASS_RIFLE,		"galil",	"weapon_galil" },
+	{ AUTOBUYCLASS_PRIMARY|AUTOBUYCLASS_RIFLE,		"ak47",		"weapon_ak47" },
+	{ AUTOBUYCLASS_PRIMARY|AUTOBUYCLASS_SNIPERRIFLE,	"scout",	"weapon_scout" },
+	{ AUTOBUYCLASS_PRIMARY|AUTOBUYCLASS_RIFLE,		"sg552",	"weapon_sg552" },
+	{ AUTOBUYCLASS_PRIMARY|AUTOBUYCLASS_SNIPERRIFLE,	"awp",		"weapon_awp" },
+	{ AUTOBUYCLASS_PRIMARY|AUTOBUYCLASS_SNIPERRIFLE,	"g3sg1",	"weapon_g3sg1" },
+	{ AUTOBUYCLASS_PRIMARY|AUTOBUYCLASS_RIFLE,		"famas",	"weapon_famas" },
+	{ AUTOBUYCLASS_PRIMARY|AUTOBUYCLASS_RIFLE,		"m4a1",		"weapon_m4a1" },
+	{ AUTOBUYCLASS_PRIMARY|AUTOBUYCLASS_RIFLE,		"aug",		"weapon_aug" },
+	{ AUTOBUYCLASS_PRIMARY|AUTOBUYCLASS_SNIPERRIFLE,	"sg550",	"weapon_sg550" },
+	{ AUTOBUYCLASS_SECONDARY|AUTOBUYCLASS_PISTOL,		"glock",	"weapon_glock18" },
+	{ AUTOBUYCLASS_SECONDARY|AUTOBUYCLASS_PISTOL,		"usp",		"weapon_usp" },
+	{ AUTOBUYCLASS_SECONDARY|AUTOBUYCLASS_PISTOL,		"p228",		"weapon_p228" },
+	{ AUTOBUYCLASS_SECONDARY|AUTOBUYCLASS_PISTOL,		"deagle",	"weapon_deagle" },
+	{ AUTOBUYCLASS_SECONDARY|AUTOBUYCLASS_PISTOL,		"elites",	"weapon_elite" },
+	{ AUTOBUYCLASS_SECONDARY|AUTOBUYCLASS_PISTOL,		"fn57",		"weapon_fiveseven" },
+	{ AUTOBUYCLASS_PRIMARY|AUTOBUYCLASS_SHOTGUN,		"m3",		"weapon_m3" },
+	{ AUTOBUYCLASS_PRIMARY|AUTOBUYCLASS_SHOTGUN,		"xm1014",	"weapon_xm1014" },
+	{ AUTOBUYCLASS_PRIMARY|AUTOBUYCLASS_SMG,		"mac10",	"weapon_mac10" },
+	{ AUTOBUYCLASS_PRIMARY|AUTOBUYCLASS_SMG,		"tmp",		"weapon_tmp" },
+	{ AUTOBUYCLASS_PRIMARY|AUTOBUYCLASS_SMG,		"mp5",		"weapon_mp5navy" },
+	{ AUTOBUYCLASS_PRIMARY|AUTOBUYCLASS_SMG,		"ump45",	"weapon_ump45" },
+	{ AUTOBUYCLASS_PRIMARY|AUTOBUYCLASS_SMG,		"p90",		"weapon_p90" },
+	{ AUTOBUYCLASS_PRIMARY|AUTOBUYCLASS_MACHINEGUN,		"m249",		"weapon_m249" },
+	{ AUTOBUYCLASS_PRIMARY|AUTOBUYCLASS_AMMO,		"primammo",	"primammo" },
+	{ AUTOBUYCLASS_SECONDARY|AUTOBUYCLASS_AMMO,		"secammo",	"secammo" },
+	{ AUTOBUYCLASS_ARMOR,					"vest",		"item_kevlar" },
+	{ AUTOBUYCLASS_ARMOR,					"vesthelm",	"item_assaultsuit" },
+	{ AUTOBUYCLASS_GRENADE,					"flash",	"weapon_flashbang" },
+	{ AUTOBUYCLASS_GRENADE,					"hegren",	"weapon_hegrenade" },
+	{ AUTOBUYCLASS_GRENADE,					"sgren",	"weapon_smokegrenade"},
+	{ AUTOBUYCLASS_NIGHTVISION,				"nvgs",		"nvgs" },
+	{ AUTOBUYCLASS_DEFUSER,					"defuser",	"defuser" },
+	{ AUTOBUYCLASS_PRIMARY|AUTOBUYCLASS_SHIELD,		"shield",	"shield" },
+	{ AUTOBUYCLASS_NONE, NULL, NULL }
 };
 
 WeaponAliasInfo weaponAliasInfo[] =
@@ -215,22 +215,16 @@ WeaponInfoStruct weaponInfo[] =
 	{ 0,			0,			0,			0,			0,			0,			-1,			NULL }
 };
 
-#else // HOOK_GAMEDLL
-
-AutoBuyInfoStruct g_autoBuyInfo[35];
-WeaponAliasInfo weaponAliasInfo[39];
-WeaponBuyAliasInfo weaponBuyAliasInfo[43];
-WeaponClassAliasInfo weaponClassAliasInfo[46];
-WeaponInfoStruct weaponInfo[27];
-
 #endif // HOOK_GAMEDLL
+
+// Given an alias, return the associated weapon ID
 
 /* <22cd2a> ../cstrike/dlls/weapontype.cpp:208 */
 WeaponIdType AliasToWeaponID(const char *alias)
 {
 	if (alias != NULL)
 	{
-		for (int i = 0; weaponAliasInfo[i].alias != NULL; i++)
+		for (int i = 0; weaponAliasInfo[i].alias != NULL; ++i)
 		{
 			if (!Q_stricmp(weaponAliasInfo[i].alias, alias))
 				return weaponAliasInfo[i].id;
@@ -245,7 +239,7 @@ const char *BuyAliasToWeaponID(const char *alias, WeaponIdType &id)
 {
 	if (alias)
 	{
-		for (int i = 0; weaponBuyAliasInfo[i].alias != NULL; i++)
+		for (int i = 0; weaponBuyAliasInfo[i].alias != NULL; ++i)
 		{
 			if (!Q_stricmp(weaponBuyAliasInfo[i].alias, alias))
 			{
@@ -259,10 +253,12 @@ const char *BuyAliasToWeaponID(const char *alias, WeaponIdType &id)
 	return NULL;
 }
 
+// Given a weapon ID, return its alias
+
 /* <22cd03> ../cstrike/dlls/weapontype.cpp:246 */
 const char *WeaponIDToAlias(int id)
 {
-	for (int i = 0; weaponAliasInfo[i].alias != NULL; i++)
+	for (int i = 0; weaponAliasInfo[i].alias != NULL; ++i)
 	{
 		if (weaponAliasInfo[i].id == id)
 			return weaponAliasInfo[i].alias;
@@ -276,7 +272,7 @@ WeaponClassType AliasToWeaponClass(const char *alias)
 {
 	if (alias != NULL)
 	{
-		for (int i = 0; weaponClassAliasInfo[i].alias != NULL; i++)
+		for (int i = 0; weaponClassAliasInfo[i].alias != NULL; ++i)
 		{
 			if (!Q_stricmp(weaponClassAliasInfo[i].alias, alias))
 				return weaponClassAliasInfo[i].id;
@@ -291,6 +287,8 @@ WeaponClassType WeaponIDToWeaponClass(int id)
 {
 	return AliasToWeaponClass(WeaponIDToAlias(id));
 }
+
+// Return true if given weapon ID is a primary weapon
 
 /* <22cee3> ../cstrike/dlls/weapontype.cpp:285 */
 bool IsPrimaryWeapon(int id)
@@ -324,8 +322,10 @@ bool IsPrimaryWeapon(int id)
 	return false;
 }
 
+// Return true if given weapon ID is a secondary weapon
+
 /* <22cf19> ../cstrike/dlls/weapontype.cpp:318 */
-NOXREF bool IsSecondaryWeapon(int id)
+bool IsSecondaryWeapon(int id)
 {
 	switch (id)
 	{
@@ -346,7 +346,7 @@ NOXREF bool IsSecondaryWeapon(int id)
 /* <22cf48> ../cstrike/dlls/weapontype.cpp:426 */
 WeaponInfoStruct *GetWeaponInfo(int weaponID)
 {
-	for (int i = 0; weaponInfo[i].id != 0; i++)
+	for (int i = 0; weaponInfo[i].id != 0; ++i)
 	{
 		if (weaponInfo[i].id == weaponID)
 			return &weaponInfo[i];
@@ -364,63 +364,7 @@ bool CanBuyWeaponByMaptype(int playerTeam, WeaponIdType weaponID, bool useAssasi
 		{
 			switch (weaponID)
 			{
-				case WEAPON_P228:
-				case WEAPON_XM1014:
-				case WEAPON_AUG:
-				case WEAPON_FIVESEVEN:
-				case WEAPON_UMP45:
-				case WEAPON_SG550:
-				case WEAPON_FAMAS:
-				case WEAPON_USP:
-				case WEAPON_GLOCK18:
-				case WEAPON_MP5N:
-				case WEAPON_M249:
-				case WEAPON_M3:
-				case WEAPON_M4A1:
-				case WEAPON_TMP:
-				case WEAPON_DEAGLE:
-				case WEAPON_P90:
-				case WEAPON_SHIELDGUN:
-				{
-					return true;
-				}
-				default:
-				{
-					return false;
-				}
-			}
-		}
-		else if (playerTeam == TERRORIST)
-		{
-			switch (weaponID)
-			{
-				case WEAPON_P228:
-				case WEAPON_MAC10:
-				case WEAPON_ELITE:
-				case WEAPON_UMP45:
-				case WEAPON_GALIL:
-				case WEAPON_USP:
-				case WEAPON_GLOCK18:
-				case WEAPON_AWP:
-				case WEAPON_DEAGLE:
-				case WEAPON_AK47:
-				{
-					return true;
-				}
-				default:
-				{
-					return false;
-				}
-			}
-		}
-		return false;
-	}
-	if (playerTeam == CT)
-	{
-		switch (weaponID)
-		{
 			case WEAPON_P228:
-			case WEAPON_SCOUT:
 			case WEAPON_XM1014:
 			case WEAPON_AUG:
 			case WEAPON_FIVESEVEN:
@@ -429,7 +373,6 @@ bool CanBuyWeaponByMaptype(int playerTeam, WeaponIdType weaponID, bool useAssasi
 			case WEAPON_FAMAS:
 			case WEAPON_USP:
 			case WEAPON_GLOCK18:
-			case WEAPON_AWP:
 			case WEAPON_MP5N:
 			case WEAPON_M249:
 			case WEAPON_M3:
@@ -438,22 +381,16 @@ bool CanBuyWeaponByMaptype(int playerTeam, WeaponIdType weaponID, bool useAssasi
 			case WEAPON_DEAGLE:
 			case WEAPON_P90:
 			case WEAPON_SHIELDGUN:
-			{
 				return true;
-			}
 			default:
-			{
 				return false;
 			}
 		}
-	}
-	else if (playerTeam == TERRORIST)
-	{
-		switch (weaponID)
+		else if (playerTeam == TERRORIST)
 		{
+			switch (weaponID)
+			{
 			case WEAPON_P228:
-			case WEAPON_SCOUT:
-			case WEAPON_XM1014:
 			case WEAPON_MAC10:
 			case WEAPON_ELITE:
 			case WEAPON_UMP45:
@@ -461,21 +398,69 @@ bool CanBuyWeaponByMaptype(int playerTeam, WeaponIdType weaponID, bool useAssasi
 			case WEAPON_USP:
 			case WEAPON_GLOCK18:
 			case WEAPON_AWP:
-			case WEAPON_MP5N:
-			case WEAPON_M249:
-			case WEAPON_M3:
-			case WEAPON_G3SG1:
 			case WEAPON_DEAGLE:
-			case WEAPON_SG552:
 			case WEAPON_AK47:
-			case WEAPON_P90:
-			{
 				return true;
-			}
 			default:
-			{
 				return false;
 			}
+		}
+
+		return false;
+	}
+	if (playerTeam == CT)
+	{
+		switch (weaponID)
+		{
+		case WEAPON_P228:
+		case WEAPON_SCOUT:
+		case WEAPON_XM1014:
+		case WEAPON_AUG:
+		case WEAPON_FIVESEVEN:
+		case WEAPON_UMP45:
+		case WEAPON_SG550:
+		case WEAPON_FAMAS:
+		case WEAPON_USP:
+		case WEAPON_GLOCK18:
+		case WEAPON_AWP:
+		case WEAPON_MP5N:
+		case WEAPON_M249:
+		case WEAPON_M3:
+		case WEAPON_M4A1:
+		case WEAPON_TMP:
+		case WEAPON_DEAGLE:
+		case WEAPON_P90:
+		case WEAPON_SHIELDGUN:
+			return true;
+		default:
+			return false;
+		}
+	}
+	else if (playerTeam == TERRORIST)
+	{
+		switch (weaponID)
+		{
+		case WEAPON_P228:
+		case WEAPON_SCOUT:
+		case WEAPON_XM1014:
+		case WEAPON_MAC10:
+		case WEAPON_ELITE:
+		case WEAPON_UMP45:
+		case WEAPON_GALIL:
+		case WEAPON_USP:
+		case WEAPON_GLOCK18:
+		case WEAPON_AWP:
+		case WEAPON_MP5N:
+		case WEAPON_M249:
+		case WEAPON_M3:
+		case WEAPON_G3SG1:
+		case WEAPON_DEAGLE:
+		case WEAPON_SG552:
+		case WEAPON_AK47:
+		case WEAPON_P90:
+			return true;
+		default:
+			return false;
 		}
 	}
 

@@ -15,7 +15,7 @@ extern void *GetFuncRefAddrOrDefault(const char *funcName, void *def);
 
 #if defined(HOOK_GAMEDLL) && !defined(REGAMEDLL_UNIT_TESTS)
 
-extern void Regamedll_Game_Init(void);
+extern void Regamedll_Game_Init();
 extern void _printf2(const char *fmt, ...);
 extern void _print_chat(class CBasePlayer *pPlayer, const char *fmt, ...);
 

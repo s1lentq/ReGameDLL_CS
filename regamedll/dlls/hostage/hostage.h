@@ -79,46 +79,32 @@ enum HostageChatterType
 	NUM_HOSTAGE_CHATTER_TYPES,
 };
 
-#ifdef HOOK_GAMEDLL
-
-#define g_pHostages (*pg_pHostages)
-#define g_iHostageNumber (*pg_iHostageNumber)
-
-#define cv_hostage_debug (*pcv_hostage_debug)
-#define cv_hostage_stop (*pcv_hostage_stop)
-
-#endif // HOOK_GAMEDLL
-
 extern CHostageManager *g_pHostages;
 extern int g_iHostageNumber;
 
 extern cvar_t cv_hostage_debug;
 extern cvar_t cv_hostage_stop;
 
+// A Counter-Strike Hostage Simple
+
 /* <4858e5> ../cstrike/dlls/hostage/hostage.h:32 */
 class CHostage: public CBaseMonster
 {
 public:
-	virtual void Spawn(void);
-	virtual void Precache(void);
-	virtual int ObjectCaps(void);
-	virtual int Classify(void)
-	{
-		return CLASS_HUMAN_PASSIVE;
-	}
+	virtual void Spawn();
+	virtual void Precache();
+	virtual int ObjectCaps();		// make hostage "useable"
+	virtual int Classify() { return CLASS_HUMAN_PASSIVE; }
 	virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
-	virtual int BloodColor(void)
-	{
-		return BLOOD_COLOR_RED;
-	}
+	virtual int BloodColor() { return BLOOD_COLOR_RED; }
 	virtual void Touch(CBaseEntity *pOther);
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
 
-	void Spawn_(void);
-	void Precache_(void);
-	int ObjectCaps_(void);
+	void Spawn_();
+	void Precache_();
+	int ObjectCaps_();
 	int TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
 	void Touch_(CBaseEntity *pOther);
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
@@ -126,86 +112,61 @@ public:
 #endif // HOOK_GAMEDLL
 
 public:
-	void EXPORT IdleThink(void);
-	void EXPORT Remove(void);
-	void RePosition(void);
+	void EXPORT IdleThink();
+	void EXPORT Remove();
+	void RePosition();
 	void SetActivity(int act);
-	int GetActivity(void)
-	{
-		return m_Activity;
-	}
+	int GetActivity() { return m_Activity; }
 	float GetModifiedDamage(float flDamage, int nHitGroup);
-	void SetFlinchActivity(void);
-	void SetDeathActivity(void);
-	void PlayPainSound(void);
-	void PlayFollowRescueSound(void);
+	void SetFlinchActivity();
+	void SetDeathActivity();
+	void PlayPainSound();
+	void PlayFollowRescueSound();
 	void AnnounceDeath(CBasePlayer *pAttacker);
 	void ApplyHostagePenalty(CBasePlayer *pAttacker);
 	void GiveCTTouchBonus(CBasePlayer *pPlayer);
-	void SendHostagePositionMsg(void);
-	void SendHostageEventMsg(void);
-	void DoFollow(void);
-	BOOL IsOnLadder(void);
+	void SendHostagePositionMsg();
+	void SendHostageEventMsg();
+	void DoFollow();
+	BOOL IsOnLadder();
 	void PointAt(const Vector &vecLoc);
 	void MoveToward(const Vector &vecLoc);
-	void NavReady(void);
-	void Wiggle(void);
-	void PreThink(void);
+	void NavReady();
+	void Wiggle();
+	void PreThink();
 
-	bool IsFollowingSomeone(void)
+	// queries
+	bool IsFollowingSomeone() { return IsFollowing(); }
+	CBaseEntity *GetLeader()				// return our leader, or NULL
 	{
-		UNTESTED
-		return m_improv->IsFollowing();
-	}
-	CBaseEntity *GetLeader(void)
-	{
-		UNTESTED
 		if (m_improv != NULL)
 		{
 			return m_improv->GetFollowLeader();
 		}
 
-		return NULL;
+		return m_hTargetEnt;
 	}
-	bool IsFollowing(const CBaseEntity *entity)
+	bool IsFollowing(const CBaseEntity *entity = NULL)
 	{
-		return (entity == m_hTargetEnt && m_State == FOLLOW);
+		if (m_improv != NULL)
+		{
+			return m_improv->IsFollowing();
+		}
+
+		if (entity == NULL && m_hTargetEnt == NULL || (entity != NULL && m_hTargetEnt != entity))
+			return false;
+
+		if (m_State != FOLLOW)
+			return false;
+
+		return true;
 	}
-	bool IsValid(void)
-	{
-		UNTESTED
-		return (pev->takedamage == DAMAGE_YES);
-	}
-	bool IsDead(void)
-	{
-		UNTESTED
-		return (pev->deadflag == DEAD_DEAD);
-	}
-	bool IsAtHome(void)
-	{
-		return (pev->origin - m_vStart).IsLengthGreaterThan(20) != true;
-	}
-	NOBODY const Vector *GetHomePosition(void);
+	bool IsValid() { return (pev->takedamage == DAMAGE_YES); }
+	bool IsDead() { return (pev->deadflag == DEAD_DEAD); }
+	bool IsAtHome() { return (pev->origin - m_vStart).IsLengthGreaterThan(20) != true; }
+	const Vector *GetHomePosition() { return &m_vStart; }
 
 public:
-	enum state
-	{
-		FOLLOW = 0,
-		STAND,
-		DUCK,
-		SCARED,
-		IDLE,
-		FOLLOWPATH,
-	};
-
-	enum ModelType
-	{
-		REGULAR_GUY = 0,
-		OLD_GUY,
-		BLACK_GUY,
-		GOOFY_GUY,
-	};
-
 	int m_Activity;
 	BOOL m_bTouched;
 	BOOL m_bRescueMe;
@@ -215,7 +176,8 @@ public:
 	int m_iModel;
 	int m_iSkin;
 	float m_flNextRadarTime;
-	state m_State;
+	enum state { FOLLOW, STAND, DUCK, SCARED, IDLE, FOLLOWPATH }
+	m_State;
 	Vector m_vStart;
 	Vector m_vStartAngles;
 	Vector m_vPathToFollow[20];
@@ -236,23 +198,22 @@ public:
 	BOOL m_bStuck;
 	float m_flStuckTime;
 	CHostageImprov *m_improv;
-	ModelType m_whichModel;
 
-};/* size: 1988, cachelines: 32, members: 32 */
+	enum ModelType { REGULAR_GUY, OLD_GUY, BLACK_GUY, GOOFY_GUY }
+	m_whichModel;
+};
 
 class SimpleChatter
 {
 public:
-
-	SimpleChatter(void);
-	~SimpleChatter(void);
+	SimpleChatter();
+	~SimpleChatter();
 
 	struct SoundFile
 	{
 		char *filename;
 		float duration;
-
-	};/* size: 8, cachelines: 1, members: 2 */
+	};
 
 	struct ChatterSet
 	{
@@ -260,8 +221,7 @@ public:
 		int count;
 		int index;
 		bool needsShuffle;
-
-	};/* size: 268, cachelines: 5, members: 4 */
+	};
 
 	void AddSound(HostageChatterType type, char *filename);
 
@@ -275,27 +235,45 @@ public:
 
 private:
 	ChatterSet m_chatter[21];
-
-};/* size: 5628, cachelines: 88, members: 1 */
+};
 
 /* <45b018> ../cstrike/dlls/hostage/hostage.h:247 */
 class CHostageManager
 {
 public:
-	CHostageManager(void);
+	CHostageManager();
 
-	void ServerActivate(void);
-	void ServerDeactivate(void);
+	void ServerActivate();
+	void ServerDeactivate();
 
-	void RestartRound(void);
+	void RestartRound();
 	void AddHostage(CHostage *hostage);
-	SimpleChatter *GetChatter(void)
+	SimpleChatter *GetChatter()
 	{
 		return &m_chatter;
 	}
 	bool IsNearbyHostageTalking(CHostageImprov *improv);
 	bool IsNearbyHostageJumping(CHostageImprov *improv);
 	void OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *other);
+
+	// Iterate over all active hostages in the game, invoking functor on each.
+	// If functor returns false, stop iteration and return false.
+	template<typename Functor>
+	inline bool ForEachHostage(Functor &func) const
+	{
+		for (int i = 0; i < m_hostageCount; i++)
+		{
+			CHostage *hostage = m_hostage[i];
+
+			if (hostage == NULL || hostage->pev->deadflag == DEAD_DEAD)
+				continue;
+
+			if (func(hostage) == false)
+				return false;
+		}
+
+		return true;
+	}
 	inline CHostage *GetClosestHostage(const Vector &pos, float *resultRange = NULL)
 	{
 		float range;
@@ -319,71 +297,13 @@ public:
 		return close;
 	}
 
-	template<typename T>
-	bool ForEachHostage(T &func)
-	{
-		UNTESTED
-
-		for (int i = 0; i < m_hostageCount; i++)
-		{
-			CHostage *pHostage = m_hostage[ i ];
-
-			if (pHostage->deadflag != DEAD_NO || pHostage->takedamage != DAMAGE_YES)
-				continue;
-
-			if (!pHostage->m_improv)
-				break;
-
-			if (func(pHostage))
-				return true;
-		}
-		return false;
-	}
-
 private:
 	CHostage *m_hostage[ MAX_HOSTAGES ];
 	int m_hostageCount;
 	SimpleChatter m_chatter;
+};
 
-};/* size: 5680, cachelines: 89, members: 3 */
-
-
-///* <470134> ../cstrike/dlls/hostage/hostage.h:293 */
-//inline void CHostageManager::ForEachHostage<KeepPersonalSpace>(KeepPersonalSpace &func)
-//{
-////	{
-////		int i;                                                //   295
-////	}
-//}
-//
-///* <46fbe8> ../cstrike/dlls/hostage/hostage.h:293 */
-//inline void CHostageManager::ForEachHostage<CheckAhead>(CheckAhead &func)
-//{
-////	{
-////		int i;                                                //   295
-////	}
-//}
-//
-///* <46fb04> ../cstrike/dlls/hostage/hostage.h:293 */
-//inline void CHostageManager::ForEachHostage<CheckWayFunctor>(CheckWayFunctor &func)
-//{
-////	{
-////		int i;                                                //   295
-////	}
-//}
-
-#ifdef HOOK_GAMEDLL
-
-// linked object
-C_DLLEXPORT void hostage_entity(entvars_t *pev);
-C_DLLEXPORT void monster_scientist(entvars_t *pev);
-
-#endif // HOOK_GAMEDLL
-
-void Hostage_RegisterCVars(void);
-void InstallHostageManager(void);
-
-// refs
-extern void (CBaseEntity::*pCHostage__IdleThink)(void);
+void Hostage_RegisterCVars();
+void InstallHostageManager();
 
 #endif // HOSTAGE_H

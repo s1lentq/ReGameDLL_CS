@@ -7,10 +7,6 @@
 
 CHalfLifeMultiplay *g_pGameRules = NULL;
 
-#else //HOOK_GAMEDLL
-
-CHalfLifeMultiplay *g_pGameRules;
-
 #endif //HOOK_GAMEDLL
 
 /* <ad93d> ../cstrike/dlls/gamerules.cpp:36 */
@@ -38,15 +34,17 @@ BOOL CGameRules::__MAKE_VHOOK(CanHaveAmmo)(CBasePlayer *pPlayer, const char *psz
 /* <ad89d> ../cstrike/dlls/gamerules.cpp:59 */
 edict_t *CGameRules::__MAKE_VHOOK(GetPlayerSpawnSpot)(CBasePlayer *pPlayer)
 {
+	// gat valid spawn point
 	edict_t *pentSpawnSpot = EntSelectSpawnPoint(pPlayer);
 
-#if HOOK_GAMEDLL
+	// Move the player to the place it said.
+#ifndef PLAY_GAMEDLL
+	pPlayer->pev->origin = VARS(pentSpawnSpot)->origin + Vector(0, 0, 1);
+#else
 	// TODO: fix test demo
 	pPlayer->pev->origin = VARS(pentSpawnSpot)->origin;
 	pPlayer->pev->origin.z += 1;
-#else
-	pPlayer->pev->origin = VARS(pentSpawnSpot)->origin + Vector(0, 0, 1);
-#endif // HOOK_GAMEDLL
+#endif // PLAY_GAMEDLL
 
 	pPlayer->pev->v_angle = g_vecZero;
 	pPlayer->pev->velocity = g_vecZero;
@@ -99,7 +97,7 @@ BOOL CGameRules::__MAKE_VHOOK(CanHavePlayerItem)(CBasePlayer *pPlayer, CBasePlay
 }
 
 /* <ad85d> ../cstrike/dlls/gamerules.cpp:119 */
-void CGameRules::__MAKE_VHOOK(RefreshSkillData)(void)
+void CGameRules::__MAKE_VHOOK(RefreshSkillData)()
 {
 	int iSkill = (int)CVAR_GET_FLOAT("skill");
 
@@ -121,19 +119,8 @@ void CGameRules::__MAKE_VHOOK(RefreshSkillData)(void)
 	gSkillData.healthkitCapacity = 15;
 }
 
-void (*pInstallGameRules)(void);
-
 /* <ada23> ../cstrike/dlls/gamerules.cpp:157 */
-#ifdef HOOK_GAMEDLL
-NOBODY __declspec(naked) CGameRules *InstallGameRules(void)
-{
-	__asm
-	{
-		jmp pInstallGameRules
-	}
-}
-#else
-CGameRules *InstallGameRules(void)
+CGameRules *InstallGameRules()
 {
 	SERVER_COMMAND("exec game.cfg\n");
 	SERVER_EXECUTE();
@@ -143,28 +130,3 @@ CGameRules *InstallGameRules(void)
 
 	return new CHalfLifeMultiplay;
 }
-#endif // HOOK_GAMEDLL
-
-#ifdef HOOK_GAMEDLL
-
-void CGameRules::RefreshSkillData(void)
-{
-	RefreshSkillData_();
-}
-
-edict_t *CGameRules::GetPlayerSpawnSpot(CBasePlayer *pPlayer)
-{
-	return GetPlayerSpawnSpot_(pPlayer);
-}
-
-BOOL CGameRules::CanHavePlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pWeapon)
-{
-	return CanHavePlayerItem_(pPlayer, pWeapon);
-}
-
-BOOL CGameRules::CanHaveAmmo(CBasePlayer *pPlayer, const char *pszAmmoName, int iMaxCarry)
-{
-	return CanHaveAmmo_(pPlayer, pszAmmoName, iMaxCarry);
-}
-
-#endif // HOOK_GAMEDLL

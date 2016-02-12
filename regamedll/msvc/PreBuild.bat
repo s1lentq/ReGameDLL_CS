@@ -6,22 +6,21 @@
 SET srcdir=%~1
 SET repodir=%~2
 
-set old_version=
+SET old_version=
 set old_specialbuild=""
-set version_revision=0
+SET version_revision=0
 set version_specialbuild=
-set version_date=?
-set version_pdate=
-set version_pdate_1=
-set version_pdate_2=
-set version_major=
-set version_minor=
-set version_maintenance=
+SET version_pdate_1=%date:~-4%-%date:~3,2%-%date:~0,2%
+SET version_pdate=%version_pdate_1% %time:~0,2%:%time:~3,2%:%time:~6,2%
+SET version_date=%version_pdate_1%__%time:~0,2%-%time:~3,2%-%time:~6,2%
+SET version_major=0
+SET version_minor=0
+SET version_specialversion=
 
 ::
-:: Check for SubWCRev.exe presence
+:: Check for git.exe presence
 ::
-SubWCRev.exe 2>NUL >NUL
+CALL git.exe describe >NUL 2>&1
 set errlvl="%ERRORLEVEL%"
 
 ::
@@ -36,109 +35,71 @@ IF EXIST "%srcdir%\appversion.h" (
 	)
 )
 
-IF NOT %errlvl% == "1" (
-	echo can't locate SubWCRev.exe - auto-versioning step won't be performed
+IF %errlvl% == "1" (
+	echo can't locate git.exe - auto-versioning step won't be performed
 
 	:: if we haven't appversion.h, we need to create it
-	IF "%old_version%" == "" (
-		set version_revision=0
-		set version_date=?
-		goto _readVersionH
+	IF NOT "%old_version%" == "" (
+		SET version_revision=0
 	)
-	exit /B 0
 )
 
 ::
-:: Create template file for SubWCRev
+:: Read major, minor and maintenance version components from Version.h
 ::
-
-:GETTEMPNAME
-:: Use current path, current time and random number to create unique file name
-SET TMPFILE=svn-%CD:~-15%-%RANDOM%-%TIME:~-5%-%RANDOM%
-:: Remove bad characters
-SET TMPFILE=%TMPFILE:\=%
-SET TMPFILE=%TMPFILE:.=%
-SET TMPFILE=%TMPFILE:,=%
-SET TMPFILE=%TMPFILE: =%
-:: Will put in a temporary directory
-SET TMPFILE=%TMP%.\%TMPFILE%
-IF EXIST "%TMPFILE%" GOTO :GETTEMPNAME
-
-echo #define SVNV_REVISION ^$WCREV^$ >"%TMPFILE%.templ"
-echo #define SVNV_DATE ^$WCDATE=^%%Y-^%%m-^%%d__^%%H-^%%M-^%%S^$ >>"%TMPFILE%.templ"
-echo #define SVNV_PDATE_1 ^$WCDATE=^%%Y-^%%m-^%%d^$ >>"%TMPFILE%.templ"
-echo #define SVNV_PDATE_2 ^$WCDATE=^%%H:^%%M:^%%S^$ >>"%TMPFILE%.templ"
-echo .  >>"%TMPFILE%.templ"
-
-::
-:: Process template
-::
-SubWCRev.exe "%repodir%\." "%TMPFILE%.templ" "%TMPFILE%.h" >NUL
-
-IF NOT "%ERRORLEVEL%" == "0" (
-	echo SubWCRev.exe done with errors [%ERRORLEVEL%].
-	echo Check if you have correct SVN repository at '%repodir%'
-	echo Auto-versioning step will not be performed.
-
-	DEL /F /Q "%TMPFILE%.templ" 2>NUL
-	DEL /F /Q "%TMPFILE%.h" 2>NUL
-
-	:: if we haven't appversion.h, we need to create it
-	IF "%old_version%" == "" (
-		set version_revision=0
-		set version_date=?
-		goto _readVersionH
+IF EXIST "%srcdir%\version.h" (	
+	FOR /F "usebackq tokens=1,2,3" %%i in ("%srcdir%\version.h") do (
+		IF %%i==#define (
+			IF %%j==VERSION_MAJOR SET version_major=%%k
+			IF %%j==VERSION_MINOR SET version_minor=%%k
+			IF %%j==VERSION_SPECIALVERSION SET version_specialversion=%%k
+		)
 	)
-	exit /B 0
+) ELSE (
+	FOR /F "usebackq tokens=1,2,3,* delims==" %%i in ("%repodir%..\gradle.properties") do (
+		IF NOT [%%j] == [] (
+			IF %%i==majorVersion SET version_major=%%j
+			IF %%i==minorVersion SET version_minor=%%j
+			IF %%i==specialVersion SET version_specialversion=%%j
+		)
+	)
 )
-
-DEL /F /Q "%TMPFILE%.templ" 2>NUL
 
 ::
 :: Read revision and release date from it
 ::
-FOR /F "usebackq tokens=1,2,3" %%i in ("%TMPFILE%.h") do (
-	IF %%i==#define (
-		IF %%j==SVNV_REVISION SET version_revision=%%k
-		IF %%j==SVNV_DATE SET version_date=%%k
-		IF %%j==SVNV_PDATE_1 SET version_pdate_1=%%k
-		IF %%j==SVNV_PDATE_2 SET version_pdate_2=%%k
-	)
-)
-
-DEL /F /Q "%TMPFILE%.h" 2>NUL
-SET version_pdate=%version_pdate_1% %version_pdate_2%
-
-::
-:: Detect local modifications
-::
-SubWCRev.exe "%repodir%\." -nm >NUL
-
-IF "%ERRORLEVEL%" == "7" (
-	set version_specialbuild=m
-) ELSE (
-	set version_specialbuild=
-)
-
-:_readVersionH
-::
-:: Read major, minor and maintenance version components from Version.h
-::
-FOR /F "usebackq tokens=1,2,3" %%i in ("%srcdir%\version.h") do (
-	IF %%i==#define (
-		IF %%j==VERSION_MAJOR SET version_major=%%k
-		IF %%j==VERSION_MINOR SET version_minor=%%k
-		IF %%j==VERSION_MAINTENANCE SET version_maintenance=%%k
+IF NOT %errlvl% == "1" (
+	FOR /F "tokens=*" %%i IN ('"git -C "%repodir%\." rev-list --all | wc -l"') DO (
+		IF NOT [%%i] == [] (
+			set version_revision=%%i
+		)
 	)
 )
 
 ::
 :: Now form full version string like 1.0.0.1
 ::
-IF "%version_maintenance%" == "" (
-	set new_version=%version_major%,%version_minor%,0,%version_revision%
+
+set new_version=%version_major%,%version_minor%,0,%version_revision%
+
+::
+:: Detect local modifications
+::
+SET localChanged=0
+IF NOT %errlvl% == "1" (
+	FOR /F "tokens=*" %%i IN ('"git -C "%repodir%\." ls-files -m"') DO (
+		SET localChanged=1
+	)
+)
+
+IF [%localChanged%]==[1] (
+	IF NOT [%version_specialversion%] == [] (
+		set version_specialbuild=%version_specialversion%
+	) ELSE (
+		set version_specialbuild=m
+	)
 ) ELSE (
-	set new_version=%version_major%,%version_minor%,%version_maintenance%,%version_revision%
+	set version_specialbuild=
 )
 
 ::
@@ -162,14 +123,16 @@ echo // >>"%srcdir%\appversion.h"
 echo.>>"%srcdir%\appversion.h"
 echo // Version defines>>"%srcdir%\appversion.h"
 
-IF "%version_maintenance%" == "" (
+IF "%version_specialversion%" == "" (
 	echo #define APP_VERSION_D %version_major%.%version_minor%.%version_revision% >>"%srcdir%\appversion.h"
 	echo #define APP_VERSION_STRD "%version_major%.%version_minor%.%version_revision%">>"%srcdir%\appversion.h"
+	echo #define APP_VERSION_STRD_RC "%version_major%.%version_minor%.%version_revision%">>"%srcdir%\appversion.h"
 	echo #define APP_VERSION_C %version_major%,%version_minor%,0,%version_revision% >>"%srcdir%\appversion.h"
 	echo #define APP_VERSION_STRCS "%version_major%, %version_minor%, 0, %version_revision%">>"%srcdir%\appversion.h"
 ) ELSE (
 	echo #define APP_VERSION_D %version_major%.%version_minor%.%version_maintenance%.%version_revision% >>"%srcdir%\appversion.h"
 	echo #define APP_VERSION_STRD "%version_major%.%version_minor%.%version_maintenance%.%version_revision%">>"%srcdir%\appversion.h"
+	echo #define APP_VERSION_STRD_RC "%version_major%.%version_minor%.%version_maintenance%.%version_revision%">>"%srcdir%\appversion.h"
 	echo #define APP_VERSION_C %version_major%,%version_minor%,%version_maintenance%,%version_revision% >>"%srcdir%\appversion.h"
 	echo #define APP_VERSION_STRCS "%version_major%, %version_minor%, %version_maintenance%, %version_revision%">>"%srcdir%\appversion.h"
 )
@@ -186,10 +149,10 @@ echo.>>"%srcdir%\appversion.h"
 IF NOT "%version_specialbuild%" == "" (
 	echo #define APP_VERSION_FLAGS VS_FF_SPECIALBUILD>>"%srcdir%\appversion.h"
 	echo #define APP_VERSION_SPECIALBUILD "%version_specialbuild%">>"%srcdir%\appversion.h"
-	echo #define APP_VERSION APP_VERSION_STRD "" APP_VERSION_SPECIALBUILD "" VERSION_POSTFIX>>"%srcdir%\appversion.h"
+	echo #define APP_VERSION APP_VERSION_STRD "" APP_VERSION_SPECIALBUILD>>"%srcdir%\appversion.h"
 ) ELSE (
 	echo #define APP_VERSION_FLAGS 0x0L>>"%srcdir%\appversion.h"
-	echo #define APP_VERSION APP_VERSION_STRD "" VERSION_POSTFIX>>"%srcdir%\appversion.h"
+	echo #define APP_VERSION APP_VERSION_STRD>>"%srcdir%\appversion.h"
 )
 echo.>>"%srcdir%\appversion.h"
 
