@@ -312,8 +312,8 @@ public:
 
 public:
 	static TYPEDESCRIPTION IMPL(m_SaveData)[3];
-	static ItemInfo IMPL(ItemInfoArray)[32];
-	static AmmoInfo IMPL(AmmoInfoArray)[32];
+	static ItemInfo IMPL(ItemInfoArray)[MAX_WEAPONS];
+	static AmmoInfo IMPL(AmmoInfoArray)[MAX_AMMO_SLOTS];
 
 	CBasePlayer *m_pPlayer;
 	CBasePlayerItem *m_pNext;
