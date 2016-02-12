@@ -790,7 +790,7 @@ public:
 	float m_intenseTimestamp;
 	float m_silentTimestamp;
 	MusicState m_musicState;
-	float m_flLastCommandTime[8];
+	float m_flLastCommandTime[COMMANDS_TO_TRACK];
 };
 
 /* <14ed87> ../cstrike/dlls/player.cpp:3407 */

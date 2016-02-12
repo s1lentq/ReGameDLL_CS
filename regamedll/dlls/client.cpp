@@ -2913,33 +2913,33 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 
 	if (FStrEq(pcmd, "say"))
 	{
-		if (gpGlobals->time >= player->m_flLastCommandTime[0])
+		if (gpGlobals->time >= player->m_flLastCommandTime[CMD_SAY])
 		{
-			player->m_flLastCommandTime[0] = gpGlobals->time + 0.3f;
+			player->m_flLastCommandTime[CMD_SAY] = gpGlobals->time + 0.3f;
 			Host_Say(pEntity, 0);
 		}
 	}
 	else if (FStrEq(pcmd, "say_team"))
 	{
-		if (gpGlobals->time >= player->m_flLastCommandTime[1])
+		if (gpGlobals->time >= player->m_flLastCommandTime[CMD_SAYTEAM])
 		{
-			player->m_flLastCommandTime[1] = gpGlobals->time + 0.3f;
+			player->m_flLastCommandTime[CMD_SAYTEAM] = gpGlobals->time + 0.3f;
 			Host_Say(pEntity, 1);
 		}
 	}
 	else if (FStrEq(pcmd, "fullupdate"))
 	{
-		if (gpGlobals->time >= player->m_flLastCommandTime[2])
+		if (gpGlobals->time >= player->m_flLastCommandTime[CMD_FULLUPDATE])
 		{
-			player->m_flLastCommandTime[2] = gpGlobals->time + 0.6f;
+			player->m_flLastCommandTime[CMD_FULLUPDATE] = gpGlobals->time + 0.6f;
 			player->ForceClientDllUpdate();
 		}
 	}
 	else if (FStrEq(pcmd, "vote"))
 	{
-		if (gpGlobals->time >= player->m_flLastCommandTime[3])
+		if (gpGlobals->time >= player->m_flLastCommandTime[CMD_VOTE])
 		{
-			player->m_flLastCommandTime[3] = gpGlobals->time + 0.3f;
+			player->m_flLastCommandTime[CMD_VOTE] = gpGlobals->time + 0.3f;
 
 			if (gpGlobals->time < player->m_flNextVoteTime)
 			{
@@ -3012,17 +3012,17 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 	}
 	else if (FStrEq(pcmd, "listmaps"))
 	{
-		if (gpGlobals->time >= player->m_flLastCommandTime[5])
+		if (gpGlobals->time >= player->m_flLastCommandTime[CMD_LISTMAPS])
 		{
-			player->m_flLastCommandTime[5] = gpGlobals->time + 0.3f;
+			player->m_flLastCommandTime[CMD_LISTMAPS] = gpGlobals->time + 0.3f;
 			mp->DisplayMaps(player, 0);
 		}
 	}
 	else if (FStrEq(pcmd, "votemap"))
 	{
-		if (gpGlobals->time >= player->m_flLastCommandTime[4])
+		if (gpGlobals->time >= player->m_flLastCommandTime[CMD_VOTEMAP])
 		{
-			player->m_flLastCommandTime[4] = gpGlobals->time + 0.3f;
+			player->m_flLastCommandTime[CMD_VOTEMAP] = gpGlobals->time + 0.3f;
 
 			if (gpGlobals->time < player->m_flNextVoteTime)
 			{
@@ -3131,9 +3131,9 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 	}
 	else if (FStrEq(pcmd, "listplayers"))
 	{
-		if (gpGlobals->time >= player->m_flLastCommandTime[6])
+		if (gpGlobals->time >= player->m_flLastCommandTime[CMD_LISTPLAYERS])
 		{
-			player->m_flLastCommandTime[6] = gpGlobals->time + 0.3f;
+			player->m_flLastCommandTime[CMD_LISTPLAYERS] = gpGlobals->time + 0.3f;
 			ListPlayers(player);
 		}
 	}
@@ -3604,9 +3604,9 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 		{
 			if (FStrEq(pcmd, "nightvision"))
 			{
-				if (gpGlobals->time >= player->m_flLastCommandTime[7])
+				if (gpGlobals->time >= player->m_flLastCommandTime[CMD_NIGHTVISION])
 				{
-					player->m_flLastCommandTime[7] = gpGlobals->time + 0.3f;
+					player->m_flLastCommandTime[CMD_NIGHTVISION] = gpGlobals->time + 0.3f;
 
 					if (!player->m_bHasNightVision)
 						return;
