@@ -5471,7 +5471,7 @@ void CBasePlayer::__MAKE_VHOOK(Spawn)()
 
 	sv_aim = CVAR_GET_POINTER("sv_aim");
 
-	for (i = 0; i < ARRAYSIZE(m_flLastCommandTime); ++i)
+	for (i = 0; i < COMMANDS_TO_TRACK; ++i)
 		m_flLastCommandTime[i] = -1;
 }
 
