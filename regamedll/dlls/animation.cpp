@@ -1215,7 +1215,11 @@ void SV_StudioSetupBones(model_t *pModel, float frame, int sequence, const vec_t
 
 	VectorCopy(angles, temp_angles);
 
-	if (pEdict != NULL)
+#ifdef REGAMEDLL_FIXES
+	if(pEdict != NULL && CBaseEntity::Instance((edict_t*)pEdict)->IsPlayer())
+#else
+	if(pEdict != NULL)
+#endif
 	{
 		temp_angles[1] = UTIL_GetPlayerGaitYaw(ENTINDEX(pEdict));
 
