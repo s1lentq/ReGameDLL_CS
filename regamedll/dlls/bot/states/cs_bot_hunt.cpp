@@ -1,8 +1,6 @@
 #include "precompiled.h"
 
 // Begin the hunt
-
-/* <58e6e0> ../cstrike/dlls/bot/states/cs_bot_hunt.cpp:18 */
 void HuntState::__MAKE_VHOOK(OnEnter)(CCSBot *me)
 {
 	// lurking death
@@ -18,8 +16,6 @@ void HuntState::__MAKE_VHOOK(OnEnter)(CCSBot *me)
 }
 
 // Hunt down our enemies
-
-/* <58e452> ../cstrike/dlls/bot/states/cs_bot_hunt.cpp:38 */
 void HuntState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 {
 	// if we've been hunting for a long time, drop into Idle for a moment to
@@ -34,10 +30,8 @@ void HuntState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 		return;
 	}
 
-	CCSBotManager *ctrl = TheCSBots();
-
 	// scenario logic
-	if (ctrl->GetScenario() == CCSBotManager::SCENARIO_DEFUSE_BOMB)
+	if (TheCSBots()->GetScenario() == CCSBotManager::SCENARIO_DEFUSE_BOMB)
 	{
 		if (me->m_iTeam == TERRORIST)
 		{
@@ -45,7 +39,7 @@ void HuntState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 			if (me->IsCarryingBomb())
 			{
 				const float safeTime = 3.0f;
-				if (ctrl->IsTimeToPlantBomb() || (me->IsAtBombsite() && gpGlobals->time - me->GetLastSawEnemyTimestamp() > safeTime))
+				if (TheCSBots()->IsTimeToPlantBomb() || (me->IsAtBombsite() && gpGlobals->time - me->GetLastSawEnemyTimestamp() > safeTime))
 				{
 					me->Idle();
 					return;
@@ -75,14 +69,14 @@ void HuntState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 			{
 				// if we are near the loose bomb and can see it, hide nearby and guard it
 				me->SetTask(CCSBot::GUARD_LOOSE_BOMB);
-				me->Hide(ctrl->GetLooseBombArea());
-				me->GetChatter()->AnnouncePlan("GoingToGuardLooseBomb", ctrl->GetLooseBombArea()->GetPlace());
+				me->Hide(TheCSBots()->GetLooseBombArea());
+				me->GetChatter()->AnnouncePlan("GoingToGuardLooseBomb", TheCSBots()->GetLooseBombArea()->GetPlace());
 				return;
 			}
-			else if (ctrl->IsBombPlanted())
+			else if (TheCSBots()->IsBombPlanted())
 			{
 				// rogues will defuse a bomb, but not guard the defuser
-				if (!me->IsRogue() || !ctrl->GetBombDefuser())
+				if (!me->IsRogue() || !TheCSBots()->GetBombDefuser())
 				{
 					// search for the planted bomb to defuse
 					me->Idle();
@@ -91,7 +85,7 @@ void HuntState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 			}
 		}
 	}
-	else if (ctrl->GetScenario() == CCSBotManager::SCENARIO_RESCUE_HOSTAGES)
+	else if (TheCSBots()->GetScenario() == CCSBotManager::SCENARIO_RESCUE_HOSTAGES)
 	{
 		if (me->m_iTeam == TERRORIST)
 		{
@@ -194,8 +188,6 @@ void HuntState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 }
 
 // Done hunting
-
-/* <58e418> ../cstrike/dlls/bot/states/cs_bot_hunt.cpp:211 */
 void HuntState::__MAKE_VHOOK(OnExit)(CCSBot *me)
 {
 	;

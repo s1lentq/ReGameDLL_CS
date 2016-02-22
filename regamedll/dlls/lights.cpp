@@ -11,17 +11,12 @@ TYPEDESCRIPTION CLight::m_SaveData[] =
 	DEFINE_FIELD(CLight, m_iszPattern, FIELD_STRING),
 };
 
-#endif // HOOK_GAMEDLL
+#endif
 
-/* <e7ded> ../cstrike/dlls/lights.cpp:48 */
 LINK_ENTITY_TO_CLASS(light, CLight);
-
-/* <e7b2c> ../cstrike/dlls/lights.cpp:56 */
 IMPLEMENT_SAVERESTORE(CLight, CPointEntity);
 
 // Cache user-entity-field values until spawn is called.
-
-/* <e7bef> ../cstrike/dlls/lights.cpp:62 */
 void CLight::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "style"))
@@ -43,7 +38,6 @@ void CLight::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CPointEntity::KeyValue(pkvd);
 }
 
-/* <e7b78> ../cstrike/dlls/lights.cpp:92 */
 void CLight::__MAKE_VHOOK(Spawn)()
 {
 	// inert light
@@ -67,7 +61,6 @@ void CLight::__MAKE_VHOOK(Spawn)()
 	}
 }
 
-/* <e7a30> ../cstrike/dlls/lights.cpp:117 */
 void CLight::__MAKE_VHOOK(Restart)()
 {
 	if (m_iStyle >= 32)
@@ -89,7 +82,6 @@ void CLight::__MAKE_VHOOK(Restart)()
 	}
 }
 
-/* <e7a6b> ../cstrike/dlls/lights.cpp:139 */
 void CLight::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	if (m_iStyle >= 32)
@@ -114,19 +106,15 @@ void CLight::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, US
 	}
 }
 
-/* <e7eb7> ../cstrike/dlls/lights.cpp:165 */
 LINK_ENTITY_TO_CLASS(light_spot, CLight);
-
-/* <e7f81> ../cstrike/dlls/lights.cpp:175 */
 LINK_ENTITY_TO_CLASS(light_environment, CEnvLight);
 
-/* <e7d08> ../cstrike/dlls/lights.cpp:177 */
 void CEnvLight::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "_light"))
 	{
 		int r, g, b, v, j;
-		j = sscanf(pkvd->szValue, "%d %d %d %d\n", &r, &g, &b, &v);
+		j = Q_sscanf(pkvd->szValue, "%d %d %d %d\n", &r, &g, &b, &v);
 
 		if (j == 1)
 			g = b = r;
@@ -139,9 +127,9 @@ void CEnvLight::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		}
 
 		// simulate qrad direct, ambient,and gamma adjustments, as well as engine scaling
-		r = pow(r / 114.0, 0.6) * 264;
-		g = pow(g / 114.0, 0.6) * 264;
-		b = pow(b / 114.0, 0.6) * 264;
+		r = Q_pow(r / 114.0, 0.6) * 264;
+		g = Q_pow(g / 114.0, 0.6) * 264;
+		b = Q_pow(b / 114.0, 0.6) * 264;
 
 		pkvd->fHandled = TRUE;
 
@@ -157,10 +145,9 @@ void CEnvLight::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CLight::KeyValue(pkvd);
 }
 
-/* <e7bb3> ../cstrike/dlls/lights.cpp:215 */
 void CEnvLight::__MAKE_VHOOK(Spawn)()
 {
-#if defined(HOOK_GAMEDLL)
+#ifdef HOOK_GAMEDLL
 // NOTE: fix negative the values for function sprintf from STD C++:
 // expected - sv_skyvec_y "0.000000"
 // with using sprintf from STD C++, got - sv_skyvec_y "-0.000000"
@@ -168,7 +155,7 @@ void CEnvLight::__MAKE_VHOOK(Spawn)()
 #define SPRINTF_OLD_STD_FIX + 0
 #else
 #define SPRINTF_OLD_STD_FIX
-#endif // HOOK_GAMEDLL
+#endif
 
 	char szVector[64];
 	UTIL_MakeAimVectors(pev->angles);

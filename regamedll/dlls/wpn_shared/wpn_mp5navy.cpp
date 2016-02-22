@@ -1,9 +1,7 @@
 #include "precompiled.h"
 
-/* <28bbf6> ../cstrike/dlls/wpn_shared/wpn_mp5navy.cpp:50 */
 LINK_ENTITY_TO_CLASS(weapon_mp5navy, CMP5N);
 
-/* <28b9c0> ../cstrike/dlls/wpn_shared/wpn_mp5navy.cpp:52 */
 void CMP5N::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
@@ -18,7 +16,6 @@ void CMP5N::__MAKE_VHOOK(Spawn)()
 	FallInit();
 }
 
-/* <28b93f> ../cstrike/dlls/wpn_shared/wpn_mp5navy.cpp:66 */
 void CMP5N::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/v_mp5.mdl");
@@ -34,7 +31,6 @@ void CMP5N::__MAKE_VHOOK(Precache)()
 	m_usFireMP5N = PRECACHE_EVENT(1, "events/mp5n.sc");
 }
 
-/* <28b966> ../cstrike/dlls/wpn_shared/wpn_mp5navy.cpp:83 */
 int CMP5N::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
@@ -52,7 +48,6 @@ int CMP5N::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	return 1;
 }
 
-/* <28b999> ../cstrike/dlls/wpn_shared/wpn_mp5navy.cpp:100 */
 BOOL CMP5N::__MAKE_VHOOK(Deploy)()
 {
 	m_flAccuracy = 0.0f;
@@ -62,7 +57,6 @@ BOOL CMP5N::__MAKE_VHOOK(Deploy)()
 	return DefaultDeploy("models/v_mp5.mdl", "models/p_mp5.mdl", MP5N_DRAW, "mp5", UseDecrement() != FALSE);
 }
 
-/* <28bbbc> ../cstrike/dlls/wpn_shared/wpn_mp5navy.cpp:109 */
 void CMP5N::__MAKE_VHOOK(PrimaryAttack)()
 {
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
@@ -75,7 +69,6 @@ void CMP5N::__MAKE_VHOOK(PrimaryAttack)()
 	}
 }
 
-/* <28bcc0> ../cstrike/dlls/wpn_shared/wpn_mp5navy.cpp:117 */
 void CMP5N::MP5NFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 {
 	Vector vecAiming, vecSrc, vecDir;
@@ -121,10 +114,10 @@ void CMP5N::MP5NFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	flag = FEV_NOTHOST;
 #else
 	flag = 0;
-#endif // CLIENT_WEAPONS
+#endif
 
 	PLAYBACK_EVENT_FULL(flag, m_pPlayer->edict(), m_usFireMP5N, 0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y,
-		(int)(m_pPlayer->pev->punchangle.x * 100), (int)(m_pPlayer->pev->punchangle.y * 100), FALSE, FALSE);
+		int(m_pPlayer->pev->punchangle.x * 100), int(m_pPlayer->pev->punchangle.y * 100), FALSE, FALSE);
 
 	m_pPlayer->m_iWeaponVolume = NORMAL_GUN_VOLUME;
 	m_pPlayer->m_iWeaponFlash = DIM_GUN_FLASH;
@@ -156,7 +149,6 @@ void CMP5N::MP5NFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	}
 }
 
-/* <28ba71> ../cstrike/dlls/wpn_shared/wpn_mp5navy.cpp:201 */
 void CMP5N::__MAKE_VHOOK(Reload)()
 {
 	if (m_pPlayer->ammo_9mm <= 0)
@@ -171,7 +163,6 @@ void CMP5N::__MAKE_VHOOK(Reload)()
 	}
 }
 
-/* <28ba36> ../cstrike/dlls/wpn_shared/wpn_mp5navy.cpp:215 */
 void CMP5N::__MAKE_VHOOK(WeaponIdle)()
 {
 	ResetEmptySound();

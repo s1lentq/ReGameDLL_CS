@@ -1,8 +1,6 @@
 #include "precompiled.h"
 
 // Used to update view angles to stay on a ladder
-
-/* <3d8352> ../cstrike/dlls/bot/cs_bot_vision.cpp:16 */
 float StayOnLadderLine(CCSBot *me, const CNavLadder *ladder)
 {
 	// determine our facing
@@ -25,12 +23,10 @@ float StayOnLadderLine(CCSBot *me, const CNavLadder *ladder)
 	return 0.0f;
 }
 
+#ifndef HOOK_GAMEDLL
 // Move actual view angles towards desired ones.
 // This is the only place v_angle is altered.
 // TODO: Make stiffness and turn rate constants timestep invariant.
-
-/* <3d882c> ../cstrike/dlls/bot/cs_bot_vision.cpp:48 */
-#ifndef HOOK_GAMEDLL
 void CCSBot::UpdateLookAngles()
 {
 	const float deltaT = g_flBotCommandInterval;
@@ -198,8 +194,6 @@ void CCSBot::UpdateLookAngles()
 #endif // HOOK_GAMEDLL
 
 // Return true if we can see the point
-
-/* <3d8c91> ../cstrike/dlls/bot/cs_bot_vision.cpp:238 */
 bool CCSBot::__MAKE_VHOOK(IsVisible)(const Vector *pos, bool testFOV) const
 {
 	// we can't see anything if we're blind
@@ -227,8 +221,6 @@ bool CCSBot::__MAKE_VHOOK(IsVisible)(const Vector *pos, bool testFOV) const
 
 // Return true if we can see any part of the player
 // Check parts in order of importance. Return the first part seen in "visParts" if it is non-NULL.
-
-/* <3d8d9b> ../cstrike/dlls/bot/cs_bot_vision.cpp:269 */
 bool CCSBot::__MAKE_VHOOK(IsVisible)(CBasePlayer *player, bool testFOV, unsigned char *visParts) const
 {
 	Vector spot = player->pev->origin;
@@ -283,7 +275,6 @@ bool CCSBot::__MAKE_VHOOK(IsVisible)(CBasePlayer *player, bool testFOV, unsigned
 	return false;
 }
 
-/* <3d8f9f> ../cstrike/dlls/bot/cs_bot_vision.cpp:302 */
 bool CCSBot::__MAKE_VHOOK(IsEnemyPartVisible)(VisiblePartType part) const
 {
 	if (!IsEnemyVisible())
@@ -292,7 +283,6 @@ bool CCSBot::__MAKE_VHOOK(IsEnemyPartVisible)(VisiblePartType part) const
 	return (m_visibleEnemyParts & part) != 0;
 }
 
-/* <3d8f0d> ../cstrike/dlls/bot/cs_bot_vision.cpp:331 */
 void CCSBot::UpdateLookAt()
 {
 	Vector to = m_lookAtSpot - EyePosition();
@@ -303,8 +293,6 @@ void CCSBot::UpdateLookAt()
 }
 
 // Look at the given point in space for the given duration (-1 means forever)
-
-/* <3d900c> ../cstrike/dlls/bot/cs_bot_vision.cpp:345 */
 void CCSBot::SetLookAt(const char *desc, const Vector *pos, PriorityType pri, float duration, bool clearIfClose, float angleTolerance)
 {
 	if (pos == NULL)
@@ -338,16 +326,12 @@ void CCSBot::SetLookAt(const char *desc, const Vector *pos, PriorityType pri, fl
 }
 
 // Block all "look at" and "look around" behavior for given duration - just look ahead
-
-/* <3d90a7> ../cstrike/dlls/bot/cs_bot_vision.cpp:383 */
 void CCSBot::InhibitLookAround(float duration)
 {
 	m_inhibitLookAroundTimestamp = gpGlobals->time + duration;
 }
 
 // Update enounter spot timestamps, etc
-
-/* <3d90d3> ../cstrike/dlls/bot/cs_bot_vision.cpp:392 */
 void CCSBot::UpdatePeripheralVision()
 {
 	// if we update at 10Hz, this ensures we test once every three
@@ -383,8 +367,6 @@ void CCSBot::UpdatePeripheralVision()
 }
 
 // Update the "looking around" behavior.
-
-/* <3d91af> ../cstrike/dlls/bot/cs_bot_vision.cpp:429 */
 void CCSBot::UpdateLookAround(bool updateNow)
 {
 	// check if looking around has been inhibited
@@ -504,8 +486,8 @@ void CCSBot::UpdateLookAround(bool updateNow)
 			// figure out how far along the path segment we are
 			Vector delta = m_spotEncounter->path.to - m_spotEncounter->path.from;
 			float_precision length = delta.Length();
-			float adx = (float)abs(int64(delta.x));
-			float ady = (float)abs(int64(delta.y));
+			float adx = float(Q_abs(int64(delta.x)));
+			float ady = float(Q_abs(int64(delta.y)));
 			float_precision t;
 
 			if (adx > ady)
@@ -523,7 +505,7 @@ void CCSBot::UpdateLookAround(bool updateNow)
 				t = 1.0f;
 
 			// collect the unchecked spots so far
-			#define MAX_DANGER_SPOTS 8
+			const int MAX_DANGER_SPOTS = 8;
 			HidingSpot *dangerSpot[MAX_DANGER_SPOTS];
 			int dangerSpotCount = 0;
 			int dangerIndex = 0;
@@ -571,8 +553,6 @@ void CCSBot::UpdateLookAround(bool updateNow)
 }
 
 // "Bend" our line of sight around corners until we can "see" the point.
-
-/* <3d9618> ../cstrike/dlls/bot/cs_bot_vision.cpp:628 */
 bool CCSBot::BendLineOfSight(const Vector *eye, const Vector *point, Vector *bend) const
 {
 	// if we can directly see the point, use it
@@ -652,7 +632,6 @@ bool CCSBot::BendLineOfSight(const Vector *eye, const Vector *point, Vector *ben
 	return false;
 }
 
-/* <3d99e8> ../cstrike/dlls/bot/cs_bot_vision.cpp:707 */
 CBasePlayer *CCSBot::FindMostDangerousThreat()
 {
 	// maximum number of simulataneously attendable threats
@@ -907,8 +886,6 @@ CBasePlayer *CCSBot::FindMostDangerousThreat()
 }
 
 // Update our reaction time queue
-
-/* <3d9f7d> ../cstrike/dlls/bot/cs_bot_vision.cpp:960 */
 void CCSBot::UpdateReactionQueue()
 {
 	// zombies dont see any threats
@@ -935,8 +912,7 @@ void CCSBot::UpdateReactionQueue()
 	}
 
 	// queue is round-robin
-	++m_enemyQueueIndex;
-	if (m_enemyQueueIndex >= MAX_ENEMY_QUEUE)
+	if (++m_enemyQueueIndex >= MAX_ENEMY_QUEUE)
 		m_enemyQueueIndex = 0;
 
 	if (m_enemyQueueCount < MAX_ENEMY_QUEUE)
@@ -949,18 +925,16 @@ void CCSBot::UpdateReactionQueue()
 		reactionTime = maxReactionTime;
 
 	// "rewind" time back to our reaction time
-	int reactionTimeSteps = (int)((reactionTime / g_flBotFullThinkInterval) + 0.5f);
+	int reactionTimeSteps = int((reactionTime / g_flBotFullThinkInterval) + 0.5f);
 
 	int i = now - reactionTimeSteps;
 	if (i < 0)
 		i += MAX_ENEMY_QUEUE;
 
-	m_enemyQueueAttendIndex = (byte)i;
+	m_enemyQueueAttendIndex = byte(i);
 }
 
 // Return the most dangerous threat we are "conscious" of
-
-/* <3da052> ../cstrike/dlls/bot/cs_bot_vision.cpp:1013 */
 CBasePlayer *CCSBot::GetRecognizedEnemy()
 {
 	if (m_enemyQueueAttendIndex >= m_enemyQueueCount)
@@ -970,8 +944,6 @@ CBasePlayer *CCSBot::GetRecognizedEnemy()
 }
 
 // Return true if the enemy we are "conscious" of is reloading
-
-/* <3da075> ../cstrike/dlls/bot/cs_bot_vision.cpp:1025 */
 bool CCSBot::IsRecognizedEnemyReloading()
 {
 	if (m_enemyQueueAttendIndex >= m_enemyQueueCount)
@@ -981,8 +953,6 @@ bool CCSBot::IsRecognizedEnemyReloading()
 }
 
 // Return true if the enemy we are "conscious" of is hiding behind a shield
-
-/* <3da09d> ../cstrike/dlls/bot/cs_bot_vision.cpp:1037 */
 bool CCSBot::IsRecognizedEnemyProtectedByShield()
 {
 	if (m_enemyQueueAttendIndex >= m_enemyQueueCount)
@@ -992,8 +962,6 @@ bool CCSBot::IsRecognizedEnemyProtectedByShield()
 }
 
 // Return distance to closest enemy we are "conscious" of
-
-/* <3da0c5> ../cstrike/dlls/bot/cs_bot_vision.cpp:1049 */
 float CCSBot::GetRangeToNearestRecognizedEnemy()
 {
 	const CBasePlayer *enemy = GetRecognizedEnemy();
@@ -1007,8 +975,6 @@ float CCSBot::GetRangeToNearestRecognizedEnemy()
 }
 
 // Blind the bot for the given duration
-
-/* <3da170> ../cstrike/dlls/bot/cs_bot_vision.cpp:1063 */
 void CCSBot::__MAKE_VHOOK(Blind)(float duration, float holdTime, float fadeTime, int alpha)
 {
 	// extend

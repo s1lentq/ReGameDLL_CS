@@ -1,6 +1,5 @@
 #include "precompiled.h"
 
-/* <5499ae> ../cstrike/dlls/bot/states/cs_bot_escape_from_bomb.cpp:16 */
 void EscapeFromBombState::__MAKE_VHOOK(OnEnter)(CCSBot *me)
 {
 	me->StandUp();
@@ -10,8 +9,6 @@ void EscapeFromBombState::__MAKE_VHOOK(OnEnter)(CCSBot *me)
 }
 
 // Escape from the bomb
-
-/* <549be9> ../cstrike/dlls/bot/states/cs_bot_escape_from_bomb.cpp:28 */
 void EscapeFromBombState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 {
 	const Vector *bombPos = me->GetGameState()->GetBombPosition();
@@ -40,7 +37,6 @@ void EscapeFromBombState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 	}
 }
 
-/* <549976> ../cstrike/dlls/bot/states/cs_bot_escape_from_bomb.cpp:60 */
 void EscapeFromBombState::__MAKE_VHOOK(OnExit)(CCSBot *me)
 {
 	me->EquipBestWeapon();

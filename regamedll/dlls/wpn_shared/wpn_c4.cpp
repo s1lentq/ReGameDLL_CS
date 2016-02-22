@@ -1,9 +1,7 @@
 #include "precompiled.h"
 
-/* <246a03> ../cstrike/dlls/wpn_shared/wpn_c4.cpp:48 */
 LINK_ENTITY_TO_CLASS(weapon_c4, CC4);
 
-/* <2469b9> ../cstrike/dlls/wpn_shared/wpn_c4.cpp:50 */
 void CC4::__MAKE_VHOOK(Spawn)()
 {
 	SET_MODEL(edict(), "models/w_backpack.mdl");
@@ -31,7 +29,6 @@ void CC4::__MAKE_VHOOK(Spawn)()
 	pev->nextthink = UTIL_WeaponTimeBase() + 0.1f;
 }
 
-/* <246418> ../cstrike/dlls/wpn_shared/wpn_c4.cpp:80 */
 void CC4::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/v_c4.mdl");
@@ -40,7 +37,6 @@ void CC4::__MAKE_VHOOK(Precache)()
 	PRECACHE_SOUND("weapons/c4_click.wav");
 }
 
-/* <24643f> ../cstrike/dlls/wpn_shared/wpn_c4.cpp:88 */
 int CC4::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
@@ -58,7 +54,6 @@ int CC4::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	return 1;
 }
 
-/* <2466d5> ../cstrike/dlls/wpn_shared/wpn_c4.cpp:105 */
 BOOL CC4::__MAKE_VHOOK(Deploy)()
 {
 	pev->body = 0;
@@ -75,10 +70,9 @@ BOOL CC4::__MAKE_VHOOK(Deploy)()
 	return DefaultDeploy("models/v_c4.mdl", "models/p_c4.mdl", C4_DRAW, "c4", UseDecrement() != FALSE);
 }
 
-/* <2466fc> ../cstrike/dlls/wpn_shared/wpn_c4.cpp:123 */
 void CC4::__MAKE_VHOOK(Holster)(int skiplocal)
 {
-	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5;
+	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5f;
 	m_bStartedArming = false;	// stop arming sequence
 
 	if (!m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType])
@@ -94,19 +88,14 @@ void CC4::__MAKE_VHOOK(Holster)(int skiplocal)
 	}
 }
 
-/* <2464e8> ../cstrike/dlls/wpn_shared/wpn_c4.cpp:152 */
 void CC4::__MAKE_VHOOK(PrimaryAttack)()
 {
-	BOOL PlaceBomb;
-
 	if (m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
-	{
 		return;
-	}
 
 	int inBombZone = (m_pPlayer->m_signals.GetState() & SIGNAL_BOMB) == SIGNAL_BOMB;
 	int onGround = (m_pPlayer->pev->flags & FL_ONGROUND) == FL_ONGROUND;
-	PlaceBomb = (onGround && inBombZone);
+	bool bPlaceBomb = (onGround && inBombZone);
 
 	if (!m_bStartedArming)
 	{
@@ -139,7 +128,7 @@ void CC4::__MAKE_VHOOK(PrimaryAttack)()
 	}
 	else
 	{
-		if (PlaceBomb)
+		if (bPlaceBomb)
 		{
 			CBaseEntity *pEntity = NULL;
 			CBasePlayer *pTempPlayer = NULL;
@@ -154,9 +143,9 @@ void CC4::__MAKE_VHOOK(PrimaryAttack)()
 					Broadcast("BOMBPL");
 					m_pPlayer->m_bHasC4 = false;
 
-					if (pev->speed != 0 && g_pGameRules != NULL)
+					if (pev->speed != 0 && CSGameRules() != NULL)
 					{
-						g_pGameRules->m_iC4Timer = (int)pev->speed;
+						CSGameRules()->m_iC4Timer = int(pev->speed);
 					}
 
 					CGrenade *pBomb = CGrenade::ShootSatchelCharge(m_pPlayer->pev, m_pPlayer->pev->origin, Vector(0, 0, 0));
@@ -182,7 +171,7 @@ void CC4::__MAKE_VHOOK(PrimaryAttack)()
 						TheBots->OnEvent(EVENT_BOMB_PLANTED, m_pPlayer, pBomb);
 					}
 
-					if (TheCareerTasks != NULL && g_pGameRules->IsCareer() && !m_pPlayer->IsBot())
+					if (TheCareerTasks != NULL && CSGameRules()->IsCareer() && !m_pPlayer->IsBot())
 					{
 						TheCareerTasks->HandleEvent(EVENT_BOMB_PLANTED, m_pPlayer);
 					}
@@ -205,9 +194,8 @@ void CC4::__MAKE_VHOOK(PrimaryAttack)()
 
 					// No more c4!
 					m_pPlayer->SetBombIcon(FALSE);
-					--m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType];
 
-					if (!m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType])
+					if (--m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
 					{
 						RetireWeapon();
 						return;
@@ -216,7 +204,7 @@ void CC4::__MAKE_VHOOK(PrimaryAttack)()
 			}
 			else
 			{
-				if (m_fArmedTime - 0.75 <= gpGlobals->time && !m_bBombPlacedAnimation)
+				if (m_fArmedTime - 0.75f <= gpGlobals->time && !m_bBombPlacedAnimation)
 				{
 					// call the c4 Placement animation
 					m_bBombPlacedAnimation = true;
@@ -256,7 +244,6 @@ void CC4::__MAKE_VHOOK(PrimaryAttack)()
 	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + RANDOM_FLOAT(10, 15);
 }
 
-/* <2464c1> ../cstrike/dlls/wpn_shared/wpn_c4.cpp:358 */
 void CC4::__MAKE_VHOOK(WeaponIdle)()
 {
 	if (m_bStartedArming)
@@ -290,7 +277,6 @@ void CC4::__MAKE_VHOOK(WeaponIdle)()
 	}
 }
 
-/* <2468b7> ../cstrike/dlls/wpn_shared/wpn_c4.cpp:399 */
 void CC4::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "detonatedelay"))
@@ -314,7 +300,6 @@ void CC4::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 	}
 }
 
-/* <24674f> ../cstrike/dlls/wpn_shared/wpn_c4.cpp:419 */
 void CC4::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	if (m_pPlayer != NULL)
@@ -329,9 +314,9 @@ void CC4::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_T
 		edict_t *m_pentOldCurBombTarget = pPlayer->m_pentCurBombTarget;
 		pPlayer->m_pentCurBombTarget = NULL;
 
-		if (pev->speed != 0 && g_pGameRules)
+		if (pev->speed != 0 && CSGameRules() != NULL)
 		{
-			g_pGameRules->m_iC4Timer = (int)pev->speed;
+			CSGameRules()->m_iC4Timer = int(pev->speed);
 		}
 
 		EMIT_SOUND(edict(), CHAN_WEAPON, "weapons/c4_plant.wav", VOL_NORM, ATTN_NORM);
@@ -354,7 +339,6 @@ void CC4::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_T
 	}
 }
 
-/* <2463cc> ../cstrike/dlls/weapons.h:732 */
 float CC4::__MAKE_VHOOK(GetMaxSpeed)()
 {
 	return C4_MAX_SPEED;

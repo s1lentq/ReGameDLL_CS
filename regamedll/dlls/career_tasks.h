@@ -34,7 +34,6 @@
 
 #include <list>
 
-/* <1ef43f> ../cstrike/dlls/career_tasks.cpp:192 */
 class CCareerTask
 {
 public:
@@ -50,7 +49,7 @@ public:
 	void OnEvent_(GameEventType event, CBasePlayer *pAttacker, CBasePlayer *pVictim);
 	void Reset_();
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	static CCareerTask *NewTask(const char *taskName, GameEventType event, const char *weaponName, int n, bool mustLive, bool crossRounds, int id, bool isComplete);
@@ -58,13 +57,13 @@ public:
 	void OnWeaponKill(int weaponId, int weaponClassId, bool headshot, bool killerHasShield, CBasePlayer *pAttacker, CBasePlayer *pVictim);
 	void OnWeaponInjury(int weaponId, int weaponClassId, bool attackerHasShield, CBasePlayer *pAttacker);
 
-	bool IsComplete()		{ return m_isComplete;}
-	const char *GetTaskName()	{ return m_name; }
+	bool IsComplete() { return m_isComplete; }
+	const char *GetTaskName() { return m_name; }
 
-	int GetWeaponId()		{ return m_weaponId; }
-	int GetWeaponClassId()		{ return m_weaponClassId; }
+	int GetWeaponId() { return m_weaponId; }
+	int GetWeaponClassId() { return m_weaponClassId; }
 
-	bool IsValidFor(CBasePlayer *pPlayer)	{ return true; }
+	bool IsValidFor(CBasePlayer *pPlayer) { return true; }
 	void SendPartialNotification();
 
 private:
@@ -89,7 +88,6 @@ typedef CareerTaskList::iterator CareerTaskListIt;
 
 typedef CCareerTask *(*TaskFactoryFunction)(const char *taskName, GameEventType event, const char *weaponName, int eventCount, bool mustLive, bool crossRounds, int nextId, bool isComplete);
 
-/* <1ef56d> ../cstrike/dlls/career_tasks.cpp:139 */
 class CPreventDefuseTask: public CCareerTask
 {
 public:
@@ -104,7 +102,7 @@ public:
 	void OnEvent_(GameEventType event, CBasePlayer *pAttacker, CBasePlayer *pVictim);
 	void Reset_();
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	static CCareerTask *NewTask(const char *taskName, GameEventType event, const char *weaponName, int n, bool mustLive, bool crossRounds, int id, bool isComplete);
@@ -114,7 +112,6 @@ protected:
 	bool m_defuseStartedThisRound;
 };
 
-/* <1efed1> ../cstrike/dlls/career_tasks.cpp:636 */
 class CCareerTaskManager
 {
 public:

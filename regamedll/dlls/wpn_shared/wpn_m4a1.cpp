@@ -1,9 +1,7 @@
 #include "precompiled.h"
 
-/* <281342> ../cstrike/dlls/wpn_shared/wpn_m4a1.cpp:60 */
 LINK_ENTITY_TO_CLASS(weapon_m4a1, CM4A1);
 
-/* <281059> ../cstrike/dlls/wpn_shared/wpn_m4a1.cpp:62 */
 void CM4A1::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
@@ -19,7 +17,6 @@ void CM4A1::__MAKE_VHOOK(Spawn)()
 	FallInit();
 }
 
-/* <280fb2> ../cstrike/dlls/wpn_shared/wpn_m4a1.cpp:77 */
 void CM4A1::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/v_m4a1.mdl");
@@ -39,7 +36,6 @@ void CM4A1::__MAKE_VHOOK(Precache)()
 	m_usFireM4A1 = PRECACHE_EVENT(1, "events/m4a1.sc");
 }
 
-/* <280fd9> ../cstrike/dlls/wpn_shared/wpn_m4a1.cpp:97 */
 int CM4A1::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
@@ -57,7 +53,6 @@ int CM4A1::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	return 1;
 }
 
-/* <281169> ../cstrike/dlls/wpn_shared/wpn_m4a1.cpp:114 */
 BOOL CM4A1::__MAKE_VHOOK(Deploy)()
 {
 	m_bDelayFire = true;
@@ -72,7 +67,6 @@ BOOL CM4A1::__MAKE_VHOOK(Deploy)()
 		return DefaultDeploy("models/v_m4a1.mdl", "models/p_m4a1.mdl", M4A1_UNSIL_DRAW, "rifle", UseDecrement() != FALSE);
 }
 
-/* <281032> ../cstrike/dlls/wpn_shared/wpn_m4a1.cpp:127 */
 void CM4A1::__MAKE_VHOOK(SecondaryAttack)()
 {
 	if (m_iWeaponState & WPNSTATE_M4A1_SILENCED)
@@ -88,12 +82,10 @@ void CM4A1::__MAKE_VHOOK(SecondaryAttack)()
 		Q_strcpy(m_pPlayer->m_szAnimExtention, "rifle");
 	}
 
-	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 2.0;
-	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.0;
+	m_flTimeWeaponIdle = m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 2.0f;
 	m_flNextPrimaryAttack = GetNextAttackDelay(2.0);
 }
 
-/* <2812fd> ../cstrike/dlls/wpn_shared/wpn_m4a1.cpp:149 */
 void CM4A1::__MAKE_VHOOK(PrimaryAttack)()
 {
 	if (m_iWeaponState & WPNSTATE_M4A1_SILENCED)
@@ -128,7 +120,6 @@ void CM4A1::__MAKE_VHOOK(PrimaryAttack)()
 	}
 }
 
-/* <28140c> ../cstrike/dlls/wpn_shared/wpn_m4a1.cpp:173 */
 void CM4A1::M4A1Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 {
 	Vector vecAiming, vecSrc, vecDir;
@@ -186,14 +177,14 @@ void CM4A1::M4A1Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	flag = FEV_NOTHOST;
 #else
 	flag = 0;
-#endif // CLIENT_WEAPONS
+#endif
 
 #ifndef REGAMEDLL_FIXES
 	--m_pPlayer->ammo_556nato;
-#endif // REGAMEDLL_FIXES
+#endif
 
 	PLAYBACK_EVENT_FULL(flag, m_pPlayer->edict(), m_usFireM4A1, 0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y,
-		(int)(m_pPlayer->pev->punchangle.x * 100), (int)(m_pPlayer->pev->punchangle.y * 100), (m_iWeaponState & WPNSTATE_M4A1_SILENCED) == WPNSTATE_M4A1_SILENCED, FALSE);
+		int(m_pPlayer->pev->punchangle.x * 100), int(m_pPlayer->pev->punchangle.y * 100), (m_iWeaponState & WPNSTATE_M4A1_SILENCED) == WPNSTATE_M4A1_SILENCED, FALSE);
 
 	m_flNextPrimaryAttack = m_flNextSecondaryAttack = GetNextAttackDelay(flCycleTime);
 
@@ -222,7 +213,6 @@ void CM4A1::M4A1Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	}
 }
 
-/* <28110b> ../cstrike/dlls/wpn_shared/wpn_m4a1.cpp:257 */
 void CM4A1::__MAKE_VHOOK(Reload)()
 {
 	if (m_pPlayer->ammo_556nato <= 0)
@@ -238,7 +228,6 @@ void CM4A1::__MAKE_VHOOK(Reload)()
 	}
 }
 
-/* <2810cf> ../cstrike/dlls/wpn_shared/wpn_m4a1.cpp:279 */
 void CM4A1::__MAKE_VHOOK(WeaponIdle)()
 {
 	ResetEmptySound();
@@ -253,7 +242,6 @@ void CM4A1::__MAKE_VHOOK(WeaponIdle)()
 	SendWeaponAnim((m_iWeaponState & WPNSTATE_M4A1_SILENCED) == WPNSTATE_M4A1_SILENCED ? M4A1_IDLE : M4A1_UNSIL_IDLE, UseDecrement() != FALSE);
 }
 
-/* <28100c> ../cstrike/dlls/wpn_shared/wpn_m4a1.cpp:296 */
 float CM4A1::__MAKE_VHOOK(GetMaxSpeed)()
 {
 	return M4A1_MAX_SPEED;

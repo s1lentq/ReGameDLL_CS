@@ -69,7 +69,6 @@ TYPEDESCRIPTION gGlobalEntitySaveData[] =
 
 #endif // HOOK_GAMEDLL
 
-/* <1d9f84> ../cstrike/dlls/world.cpp:111 */
 class CDecal: public CBaseEntity
 {
 public:
@@ -81,10 +80,8 @@ public:
 	void EXPORT TriggerDecal(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 };
 
-/* <1db42b> ../cstrike/dlls/world.cpp:120 */
 LINK_ENTITY_TO_CLASS(infodecal, CDecal);
 
-/* <1db00a> ../cstrike/dlls/world.cpp:123 */
 void CDecal::Spawn()
 {
 	if (pev->skin < 0 || (gpGlobals->deathmatch != 0.0f && (pev->spawnflags & SF_DECAL_NOTINDEATHMATCH)))
@@ -108,7 +105,6 @@ void CDecal::Spawn()
 	}
 }
 
-/* <1dad69> ../cstrike/dlls/world.cpp:145 */
 void CDecal::TriggerDecal(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	// this is set up as a USE function for infodecals that have targetnames, so that the
@@ -123,12 +119,12 @@ void CDecal::TriggerDecal(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYP
 		WRITE_COORD(pev->origin.x);
 		WRITE_COORD(pev->origin.y);
 		WRITE_COORD(pev->origin.z);
-		WRITE_SHORT((int)pev->skin);
+		WRITE_SHORT(int(pev->skin));
 		entityIndex = (short)ENTINDEX(trace.pHit);
 		WRITE_SHORT(entityIndex);
 		if (entityIndex)
 		{
-			WRITE_SHORT((int)VARS(trace.pHit)->modelindex);
+			WRITE_SHORT(int(VARS(trace.pHit)->modelindex));
 		}
 	MESSAGE_END();
 
@@ -136,7 +132,6 @@ void CDecal::TriggerDecal(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYP
 	pev->nextthink = gpGlobals->time + 0.1f;
 }
 
-/* <1daee2> ../cstrike/dlls/world.cpp:171 */
 void CDecal::StaticDecal()
 {
 	TraceResult trace;
@@ -155,7 +150,6 @@ void CDecal::StaticDecal()
 	SUB_Remove();
 }
 
-/* <1db068> ../cstrike/dlls/world.cpp:190 */
 void CDecal::KeyValue(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "texture"))
@@ -173,18 +167,14 @@ void CDecal::KeyValue(KeyValueData *pkvd)
 }
 
 // Body queue class here.... It's really just CBaseEntity
-
-/* <1d9fd1> ../cstrike/dlls/world.cpp:207 */
 class CCorpse: public CBaseEntity
 {
 public:
 	virtual int ObjectCaps() { return FCAP_DONT_SAVE; }
 };
 
-/* <1db4f5> ../cstrike/dlls/world.cpp:212 */
 LINK_ENTITY_TO_CLASS(bodyque, CCorpse);
 
-/* <1da107> ../cstrike/dlls/world.cpp:214 */
 static void InitBodyQue()
 {
 	g_pBodyQueueHead = NULL;
@@ -192,8 +182,6 @@ static void InitBodyQue()
 
 // make a body que entry for the given ent so the ent can be respawned elsewhere
 // GLOBALS ASSUMED SET:  g_eoBodyQueueHeadstion
-
-/* <1db5bf> ../cstrike/dlls/world.cpp:242 */
 void CopyToBodyQue(entvars_t *pev)
 {
 #if 0
@@ -226,26 +214,22 @@ void CopyToBodyQue(entvars_t *pev)
 #endif
 }
 
-/* <1db5e9> ../cstrike/dlls/world.cpp:275 */
 void ClearBodyQue()
 {
 	;
 }
 
-/* <1db601> ../cstrike/dlls/world.cpp:294 */
 CGlobalState::CGlobalState()
 {
 	Reset();
 }
 
-/* <1db63b> ../cstrike/dlls/world.cpp:299 */
 void CGlobalState::Reset()
 {
 	m_pList = NULL;
 	m_listCount = 0;
 }
 
-/* <1db69e> ../cstrike/dlls/world.cpp:305 */
 globalentity_t *CGlobalState::Find(string_t globalname)
 {
 	if (!globalname)
@@ -266,8 +250,6 @@ globalentity_t *CGlobalState::Find(string_t globalname)
 }
 
 // This is available all the time now on impulse 104, remove later
-
-/* <1db703> ../cstrike/dlls/world.cpp:329 */
 void CGlobalState::DumpGlobals()
 {
 	static char *estates[] = { "Off", "On", "Dead" };
@@ -283,12 +265,11 @@ void CGlobalState::DumpGlobals()
 	}
 }
 
-/* <1db76a> ../cstrike/dlls/world.cpp:345 */
 void CGlobalState::EntityAdd(string_t globalname, string_t mapName, GLOBALESTATE state)
 {
 	assert(!Find(globalname));
 
-	globalentity_t *pNewEntity = (globalentity_t *)calloc(sizeof(globalentity_t), 1);
+	globalentity_t *pNewEntity = (globalentity_t *)Q_calloc(sizeof(globalentity_t), 1);
 	assert(pNewEntity != NULL);
 
 	pNewEntity->pNext = m_pList;
@@ -300,18 +281,16 @@ void CGlobalState::EntityAdd(string_t globalname, string_t mapName, GLOBALESTATE
 	m_listCount++;
 }
 
-/* <1db7b3> ../cstrike/dlls/world.cpp:360 */
 void CGlobalState::EntitySetState(string_t globalname, GLOBALESTATE state)
 {
 	globalentity_t *pEnt = Find(globalname);
 
-	if (pEnt)
+	if (pEnt != NULL)
 	{
 		pEnt->state = state;
 	}
 }
 
-/* <1db873> ../cstrike/dlls/world.cpp:369 */
 const globalentity_t *CGlobalState::EntityFromTable(string_t globalname)
 {
 	globalentity_t *pEnt = Find(globalname);
@@ -319,7 +298,6 @@ const globalentity_t *CGlobalState::EntityFromTable(string_t globalname)
 	return pEnt;
 }
 
-/* <1db91c> ../cstrike/dlls/world.cpp:377 */
 GLOBALESTATE CGlobalState::EntityGetState(string_t globalname)
 {
 	globalentity_t *pEnt = Find(globalname);
@@ -332,7 +310,6 @@ GLOBALESTATE CGlobalState::EntityGetState(string_t globalname)
 	return GLOBAL_OFF;
 }
 
-/* <1db9c5> ../cstrike/dlls/world.cpp:402 */
 int CGlobalState::Save(CSave &save)
 {
 	int i;
@@ -357,7 +334,6 @@ int CGlobalState::Save(CSave &save)
 	return 1;
 }
 
-/* <1dba07> ../cstrike/dlls/world.cpp:422 */
 int CGlobalState::Restore(CRestore &restore)
 {
 	int i, listCount;
@@ -389,7 +365,6 @@ int CGlobalState::Restore(CRestore &restore)
 	return 1;
 }
 
-/* <1dbaf2> ../cstrike/dlls/world.cpp:444 */
 void CGlobalState::EntityUpdate(string_t globalname, string_t mapname)
 {
 	globalentity_t *pEnt = Find(globalname);
@@ -400,7 +375,6 @@ void CGlobalState::EntityUpdate(string_t globalname, string_t mapname)
 	}
 }
 
-/* <1dbbae> ../cstrike/dlls/world.cpp:453 */
 void CGlobalState::ClearStates()
 {
 	globalentity_t *pFree = m_pList;
@@ -409,28 +383,25 @@ void CGlobalState::ClearStates()
 	{
 		globalentity_t *pNext = pFree->pNext;
 
-		free(pFree);
+		Q_free(pFree);
 		pFree = pNext;
 	}
 
 	Reset();
 }
 
-/* <1dbc13> ../cstrike/dlls/world.cpp:466 */
 void EXT_FUNC SaveGlobalState(SAVERESTOREDATA *pSaveData)
 {
 	CSave saveHelper(pSaveData);
 	gGlobalState.Save(saveHelper);
 }
 
-/* <1dbcde> ../cstrike/dlls/world.cpp:473 */
 void EXT_FUNC RestoreGlobalState(SAVERESTOREDATA *pSaveData)
 {
 	CRestore restoreHelper(pSaveData);
 	gGlobalState.Restore(restoreHelper);
 }
 
-/* <1dbe72> ../cstrike/dlls/world.cpp:480 */
 void EXT_FUNC ResetGlobalState()
 {
 	gGlobalState.ClearStates();
@@ -439,10 +410,8 @@ void EXT_FUNC ResetGlobalState()
 	gInitHUD = TRUE;
 }
 
-/* <1dbeff> ../cstrike/dlls/world.cpp:493 */
 LINK_ENTITY_TO_CLASS(worldspawn, CWorld);
 
-/* <1dad1d> ../cstrike/dlls/world.cpp:502 */
 void CWorld::__MAKE_VHOOK(Spawn)()
 {
 	EmptyEntityHashTable();
@@ -461,8 +430,8 @@ void CWorld::__MAKE_VHOOK(Spawn)()
 		Q_strncpy(g_szMapBriefingText, pFile, ARRAYSIZE(g_szMapBriefingText) - 2);
 
 #ifdef REGAMEDLL_FIXES
-		g_szMapBriefingText[ ARRAYSIZE(g_szMapBriefingText) - 2 ] = 0;
-#endif // REGAMEDLL_FIXES
+		g_szMapBriefingText[ ARRAYSIZE(g_szMapBriefingText) - 2 ] = '\0';
+#endif
 
 		PRECACHE_GENERIC(UTIL_VarArgs("maps/%s.txt", STRING(gpGlobals->mapname)));
 		FREE_FILE(pFile);
@@ -475,8 +444,8 @@ void CWorld::__MAKE_VHOOK(Spawn)()
 		{
 			Q_strncpy(g_szMapBriefingText, pFile, ARRAYSIZE(g_szMapBriefingText) - 2);
 #ifdef REGAMEDLL_FIXES
-			g_szMapBriefingText[ ARRAYSIZE(g_szMapBriefingText) - 2 ] = 0;
-#endif // REGAMEDLL_FIXES
+			g_szMapBriefingText[ ARRAYSIZE(g_szMapBriefingText) - 2 ] = '\0';
+#endif
 
 			PRECACHE_GENERIC(UTIL_VarArgs("maps/default.txt"));
 		}
@@ -485,7 +454,6 @@ void CWorld::__MAKE_VHOOK(Spawn)()
 	}
 }
 
-/* <1dac06> ../cstrike/dlls/world.cpp:542 */
 void CWorld::__MAKE_VHOOK(Precache)()
 {
 	g_pLastSpawn = NULL;
@@ -500,23 +468,26 @@ void CWorld::__MAKE_VHOOK(Precache)()
 	CVAR_SET_STRING("room_type", "0");
 
 	// Set up game rules
-	if (g_pGameRules)
+	if (g_pGameRules != NULL)
 	{
 		delete g_pGameRules;
 	}
 
-	g_pGameRules = (CHalfLifeMultiplay *)InstallGameRules();
+	g_pGameRules = InstallGameRules();
 
 	// UNDONE why is there so much Spawn code in the Precache function? I'll just keep it here
 
 	// LATER - do we want a sound ent in deathmatch? (sjb)
 	//pSoundEnt = CBaseEntity::Create("soundent", g_vecZero, g_vecZero, edict());
 	pSoundEnt = GetClassPtr((CSoundEnt *)NULL);
-	pSoundEnt->Spawn();
 
-	if (!pSoundEnt)
+	if (pSoundEnt == NULL)
 	{
 		ALERT(at_console, "**COULD NOT CREATE SOUNDENT**\n");
+	}
+	else
+	{
+		pSoundEnt->Spawn();
 	}
 
 	InitBodyQue();
@@ -550,7 +521,7 @@ void CWorld::__MAKE_VHOOK(Precache)()
 	PRECACHE_SOUND("common/bodydrop3.wav");
 	PRECACHE_SOUND("common/bodydrop4.wav");
 
-	g_Language = (int)CVAR_GET_FLOAT("sv_language");
+	g_Language = int(CVAR_GET_FLOAT("sv_language"));
 	if (g_Language == LANGUAGE_GERMAN)
 	{
 		PRECACHE_MODEL("models/germangibs.mdl");
@@ -681,7 +652,6 @@ void CWorld::__MAKE_VHOOK(Precache)()
 		gDisplayTitle = FALSE;
 }
 
-/* <1db153> ../cstrike/dlls/world.cpp:731 */
 void CWorld::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "skyname"))
@@ -696,7 +666,7 @@ void CWorld::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 	}
 	else if (FStrEq(pkvd->szKeyName, "WaveHeight"))
 	{
-		pev->scale = Q_atof(pkvd->szValue) * 0.125;
+		pev->scale = Q_atof(pkvd->szValue) * 0.125f;
 		CVAR_SET_FLOAT("sv_wateramp", pev->scale);
 		pkvd->fHandled = TRUE;
 	}
@@ -722,7 +692,7 @@ void CWorld::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 	else if (FStrEq(pkvd->szKeyName, "newunit"))
 	{
 		if (Q_atoi(pkvd->szValue))
-			CVAR_SET_FLOAT("sv_newunit", 1.0);
+			CVAR_SET_FLOAT("sv_newunit", 1.0f);
 
 		pkvd->fHandled = TRUE;
 	}

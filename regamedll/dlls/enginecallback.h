@@ -93,13 +93,11 @@ extern enginefuncs_t g_engfuncs;
 #define GET_TIMES_TUTOR_MESSAGE_SHOWN	(*g_engfuncs.pfnGetTimesTutorMessageShown)
 #define ENG_CHECK_PARM			(*g_engfuncs.pfnEngCheckParm)
 
-/* <472a4> ../cstrike/dlls/enginecallback.h:77 */
 inline void MESSAGE_BEGIN(int msg_dest, int msg_type, const float *pOrigin = NULL, edict_t *ed = NULL)
 {
 	(*g_engfuncs.pfnMessageBegin)(msg_dest,msg_type,pOrigin,ed);
 }
 
-/* <464e> ../cstrike/dlls/enginecallback.h:97 */
 inline void *GET_PRIVATE(edict_t *pent)
 {
 	if (pent)
@@ -185,4 +183,4 @@ inline void *GET_PRIVATE(edict_t *pent)
 #define ENGINE_FORCE_UNMODIFIED		(*g_engfuncs.pfnForceUnmodified)
 #define PLAYER_CNX_STATS		(*g_engfuncs.pfnGetPlayerStats)
 
-#endif //ENGINECALLBACK_H
+#endif // ENGINECALLBACK_H

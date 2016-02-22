@@ -1,9 +1,7 @@
 #include "precompiled.h"
 
-/* <25137f> ../cstrike/dlls/wpn_shared/wpn_elite.cpp:52 */
 LINK_ENTITY_TO_CLASS(weapon_elite, CELITE);
 
-/* <251034> ../cstrike/dlls/wpn_shared/wpn_elite.cpp:54 */
 void CELITE::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
@@ -17,7 +15,6 @@ void CELITE::__MAKE_VHOOK(Spawn)()
 	FallInit();
 }
 
-/* <250fb3> ../cstrike/dlls/wpn_shared/wpn_elite.cpp:67 */
 void CELITE::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/v_elite.mdl");
@@ -37,7 +34,6 @@ void CELITE::__MAKE_VHOOK(Precache)()
 	m_usFireELITE_RIGHT = PRECACHE_EVENT(1, "events/elite_right.sc");
 }
 
-/* <250fda> ../cstrike/dlls/wpn_shared/wpn_elite.cpp:86 */
 int CELITE::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
@@ -55,7 +51,6 @@ int CELITE::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	return 1;
 }
 
-/* <25100d> ../cstrike/dlls/wpn_shared/wpn_elite.cpp:103 */
 BOOL CELITE::__MAKE_VHOOK(Deploy)()
 {
 	m_flAccuracy = 0.88f;
@@ -68,7 +63,6 @@ BOOL CELITE::__MAKE_VHOOK(Deploy)()
 	return DefaultDeploy("models/v_elite.mdl", "models/p_elite.mdl", ELITE_DRAW, "dualpistols", UseDecrement() != FALSE);
 }
 
-/* <251335> ../cstrike/dlls/wpn_shared/wpn_elite.cpp:114 */
 void CELITE::__MAKE_VHOOK(PrimaryAttack)()
 {
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
@@ -89,7 +83,6 @@ void CELITE::__MAKE_VHOOK(PrimaryAttack)()
 	}
 }
 
-/* <251449> ../cstrike/dlls/wpn_shared/wpn_elite.cpp:126 */
 void CELITE::ELITEFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 {
 	float flTimeDiff;
@@ -102,7 +95,7 @@ void CELITE::ELITEFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 	flCycleTime -= 0.078f;
 #else
 	flCycleTime -= 0.125f;
-#endif // REGAMEDLL_FIXES
+#endif
 
 	if (++m_iShotsFired > 1)
 	{
@@ -160,7 +153,7 @@ void CELITE::ELITEFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 	flag = FEV_NOTHOST;
 #else
 	flag = 0;
-#endif // CLIENT_WEAPONS
+#endif
 
 	if (m_iWeaponState & WPNSTATE_ELITE_LEFT)
 	{
@@ -171,7 +164,7 @@ void CELITE::ELITEFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 			8192, BULLET_PLAYER_9MM, 1, ELITE_DAMAGE, ELITE_RANGE_MODIFER, m_pPlayer->pev, true, m_pPlayer->random_seed);
 
 		PLAYBACK_EVENT_FULL(flag, m_pPlayer->edict(), m_usFireELITE_LEFT, 0, (float *)&g_vecZero, (float *)&g_vecZero, flTimeDiff, vecDir.x,
-			(int)(vecDir.y * 100), m_iClip, FALSE, FALSE);
+			int(vecDir.y * 100), m_iClip, FALSE, FALSE);
 	}
 	else
 	{
@@ -182,7 +175,7 @@ void CELITE::ELITEFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 			8192, BULLET_PLAYER_9MM, 1, ELITE_DAMAGE, ELITE_RANGE_MODIFER, m_pPlayer->pev, true, m_pPlayer->random_seed);
 
 		PLAYBACK_EVENT_FULL(flag, m_pPlayer->edict(), m_usFireELITE_RIGHT, 0, (float *)&g_vecZero, (float *)&g_vecZero, flTimeDiff, vecDir.x,
-			(int)(vecDir.y * 100), m_iClip, FALSE, FALSE);
+			int(vecDir.y * 100), m_iClip, FALSE, FALSE);
 	}
 
 	if (!m_iClip && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
@@ -194,7 +187,6 @@ void CELITE::ELITEFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 	m_pPlayer->pev->punchangle.x -= 2.0f;
 }
 
-/* <2510f8> ../cstrike/dlls/wpn_shared/wpn_elite.cpp:239 */
 void CELITE::__MAKE_VHOOK(Reload)()
 {
 	if (m_pPlayer->ammo_9mm <= 0)
@@ -207,7 +199,6 @@ void CELITE::__MAKE_VHOOK(Reload)()
 	}
 }
 
-/* <24fed7> ../cstrike/dlls/wpn_shared/wpn_elite.cpp:251 */
 void CELITE::__MAKE_VHOOK(WeaponIdle)()
 {
 	ResetEmptySound();

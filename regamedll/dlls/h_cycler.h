@@ -32,7 +32,6 @@
 #pragma once
 #endif
 
-/* <cb93c> ../cstrike/dlls/h_cycler.cpp:35 */
 class CCycler: public CBaseMonster
 {
 public:
@@ -56,7 +55,7 @@ public:
 	void Think_();
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	void GenericCyclerSpawn(char *szModel, Vector vecMin, Vector vecMax);
@@ -68,8 +67,6 @@ public:
 };
 
 // we should get rid of all the other cyclers and replace them with this.
-
-/* <cb9b2> ../cstrike/dlls/h_cycler.cpp:67 */
 class CGenericCycler: public CCycler
 {
 public:
@@ -79,13 +76,11 @@ public:
 
 	void Spawn_();
 
-#endif // HOOK_GAMEDLL
+#endif
 
 };
 
 // Probe droid imported for tech demo compatibility
-
-/* <cba04> ../cstrike/dlls/h_cycler.cpp:80 */
 class CCyclerProbe: public CCycler
 {
 public:
@@ -95,11 +90,10 @@ public:
 
 	void Spawn_();
 
-#endif // HOOK_GAMEDLL
+#endif
 
 };
 
-/* <cba56> ../cstrike/dlls/h_cycler.cpp:218 */
 class CCyclerSprite: public CBaseEntity
 {
 public:
@@ -122,7 +116,7 @@ public:
 	void Think_();
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	void Animate(float frames);
@@ -140,7 +134,6 @@ public:
 	vec3_t m_rendercolor;
 };
 
-/* <cbbc0> ../cstrike/dlls/h_cycler.cpp:344 */
 class CWeaponCycler: public CBasePlayerWeapon
 {
 public:
@@ -160,7 +153,7 @@ public:
 	void PrimaryAttack_();
 	void SecondaryAttack_();
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	int m_iszModel;
@@ -168,8 +161,6 @@ public:
 };
 
 // Flaming Wreakage
-
-/* <cbc13> ../cstrike/dlls/h_cycler.cpp:427 */
 class CWreckage: public CBaseMonster
 {
 public:
@@ -187,7 +178,7 @@ public:
 	int Restore_(CRestore &restore);
 	void Think_();
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	static TYPEDESCRIPTION IMPL(m_SaveData)[1];

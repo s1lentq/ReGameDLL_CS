@@ -80,14 +80,12 @@ private:
 	unsigned int m_DWords[ NUM_DWORDS ];
 };
 
-/* <2d39f8> ../game_shared/bitvec.h:73 */
 inline CBitVecAccessor::CBitVecAccessor(uint32 *pDWords, int iBit)
 {
 	m_pDWords = pDWords;
 	m_iBit = iBit;
 }
 
-/* <2d37d7> ../game_shared/bitvec.h:80 */
 inline void CBitVecAccessor::operator=(int val)
 {
 	if (val)
@@ -96,20 +94,17 @@ inline void CBitVecAccessor::operator=(int val)
 		m_pDWords[m_iBit >> 5] &= ~(uint32)(1 << (m_iBit & 31));
 }
 
-/* <2d3a63> ../game_shared/bitvec.h:88 */
 inline CBitVecAccessor::operator uint32()
 {
 	return m_pDWords[m_iBit >> 5] & (1 << (m_iBit & 31));
 }
 
-/* <2d3ac9> ../game_shared/bitvec.h:100 */
 template<int NUM_BITS>
 inline int CBitVec<NUM_BITS>::GetNumBits()
 {
 	return NUM_BITS;
 }
 
-/* <2d39cf> ../game_shared/bitvec.h:107 */
 template<int NUM_BITS>
 inline CBitVec<NUM_BITS>::CBitVec()
 {
@@ -117,7 +112,6 @@ inline CBitVec<NUM_BITS>::CBitVec()
 		m_DWords[i] = 0;
 }
 
-/* <2d3ae2> ../game_shared/bitvec.h:115 */
 template<int NUM_BITS>
 inline void CBitVec<NUM_BITS>::Init(int val)
 {
@@ -127,7 +121,6 @@ inline void CBitVec<NUM_BITS>::Init(int val)
 	}
 }
 
-/* <2d3ba8> ../game_shared/bitvec.h:125 */
 template<int NUM_BITS>
 inline CBitVec<NUM_BITS> &CBitVec<NUM_BITS>::operator=(CBitVec<NUM_BITS> const &other)
 {
@@ -135,7 +128,6 @@ inline CBitVec<NUM_BITS> &CBitVec<NUM_BITS>::operator=(CBitVec<NUM_BITS> const &
 	return *this;
 }
 
-/* <2d3a41> ../game_shared/bitvec.h:133 */
 template<int NUM_BITS>
 inline CBitVecAccessor CBitVec<NUM_BITS>::operator[](int i)
 {
@@ -143,7 +135,6 @@ inline CBitVecAccessor CBitVec<NUM_BITS>::operator[](int i)
 	return CBitVecAccessor(m_DWords, i);
 }
 
-/* <2d3b11> ../game_shared/bitvec.h:141 */
 template<int NUM_BITS>
 inline bool CBitVec<NUM_BITS>::operator==(CBitVec<NUM_BITS> const &other)
 {
@@ -156,14 +147,12 @@ inline bool CBitVec<NUM_BITS>::operator==(CBitVec<NUM_BITS> const &other)
 	return true;
 }
 
-/* <2d3b7f> ../game_shared/bitvec.h:152 */
 template<int NUM_BITS>
 inline bool CBitVec<NUM_BITS>::operator!=(CBitVec<NUM_BITS> const &other)
 {
 	return !(*this == other);
 }
 
-/* <2d3bd1> ../game_shared/bitvec.h:165 */
 template<int NUM_BITS>
 inline uint32 CBitVec<NUM_BITS>::GetDWord(int i)
 {
@@ -171,7 +160,6 @@ inline uint32 CBitVec<NUM_BITS>::GetDWord(int i)
 	return m_DWords[i];
 }
 
-/* <2d3a7d> ../game_shared/bitvec.h:173 */
 template<int NUM_BITS>
 inline void CBitVec<NUM_BITS>::SetDWord(int i, uint32 val)
 {

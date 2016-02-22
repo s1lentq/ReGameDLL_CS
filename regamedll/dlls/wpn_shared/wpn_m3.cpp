@@ -1,9 +1,7 @@
 #include "precompiled.h"
 
-/* <27bf59> ../cstrike/dlls/wpn_shared/wpn_m3.cpp:52 */
 LINK_ENTITY_TO_CLASS(weapon_m3, CM3);
 
-/* <27be6d> ../cstrike/dlls/wpn_shared/wpn_m3.cpp:54 */
 void CM3::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
@@ -16,7 +14,6 @@ void CM3::__MAKE_VHOOK(Spawn)()
 	FallInit();
 }
 
-/* <27bc83> ../cstrike/dlls/wpn_shared/wpn_m3.cpp:66 */
 void CM3::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/v_m3.mdl");
@@ -33,7 +30,6 @@ void CM3::__MAKE_VHOOK(Precache)()
 	m_usFireM3 = PRECACHE_EVENT(1, "events/m3.sc");
 }
 
-/* <27bcaa> ../cstrike/dlls/wpn_shared/wpn_m3.cpp:84 */
 int CM3::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
@@ -51,13 +47,11 @@ int CM3::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	return 1;
 }
 
-/* <27be46> ../cstrike/dlls/wpn_shared/wpn_m3.cpp:103 */
 BOOL CM3::__MAKE_VHOOK(Deploy)()
 {
 	return DefaultDeploy("models/v_m3.mdl", "models/p_m3.mdl", M3_DRAW, "shotgun", UseDecrement() != FALSE);
 }
 
-/* <27bcdd> ../cstrike/dlls/wpn_shared/wpn_m3.cpp:109 */
 void CM3::__MAKE_VHOOK(PrimaryAttack)()
 {
 	Vector vecAiming, vecSrc, vecDir;
@@ -108,7 +102,7 @@ void CM3::__MAKE_VHOOK(PrimaryAttack)()
 	flag = FEV_NOTHOST;
 #else
 	flag = 0;
-#endif // CLIENT_WEAPONS
+#endif
 
 	PLAYBACK_EVENT_FULL(flag, m_pPlayer->edict(), m_usFireM3, 0, (float *)&g_vecZero, (float *)&g_vecZero, 0, 0, 0, 0, FALSE, FALSE);
 
@@ -139,7 +133,6 @@ void CM3::__MAKE_VHOOK(PrimaryAttack)()
 	m_pPlayer->m_flEjectBrass = gpGlobals->time + 0.45f;
 }
 
-/* <27bf1e> ../cstrike/dlls/wpn_shared/wpn_m3.cpp:182 */
 void CM3::__MAKE_VHOOK(Reload)()
 {
 	if (m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0 || m_iClip == M3_MAX_CLIP)
@@ -156,10 +149,8 @@ void CM3::__MAKE_VHOOK(Reload)()
 		SendWeaponAnim(M3_START_RELOAD, UseDecrement() != FALSE);
 
 		m_fInSpecialReload = 1;
-		m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.55f;
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.55f;
+		m_flNextSecondaryAttack = m_flTimeWeaponIdle = m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.55f;
 		m_flNextPrimaryAttack = GetNextAttackDelay(0.55);
-		m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.55f;
 	}
 	else if (m_fInSpecialReload == 1)
 	{
@@ -170,8 +161,7 @@ void CM3::__MAKE_VHOOK(Reload)()
 		m_fInSpecialReload = 2;
 		SendWeaponAnim(M3_RELOAD, UseDecrement());
 
-		m_flNextReload = UTIL_WeaponTimeBase() + 0.45f;
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.45f;
+		m_flTimeWeaponIdle = m_flNextReload = UTIL_WeaponTimeBase() + 0.45f;
 	}
 	else
 	{
@@ -182,7 +172,6 @@ void CM3::__MAKE_VHOOK(Reload)()
 	}
 }
 
-/* <27bee3> ../cstrike/dlls/wpn_shared/wpn_m3.cpp:228 */
 void CM3::__MAKE_VHOOK(WeaponIdle)()
 {
 	ResetEmptySound();

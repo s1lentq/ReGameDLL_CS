@@ -10,15 +10,11 @@ TYPEDESCRIPTION CAirtank::m_SaveData[] =
 	DEFINE_FIELD(CAirtank, m_state, FIELD_INTEGER)
 };
 
-#endif // HOOK_GAMEDLL
+#endif
 
-/* <5329> ../cstrike/dlls/airtank.cpp:41 */
 LINK_ENTITY_TO_CLASS(item_airtank, CAirtank);
-
-/* <5211> ../cstrike/dlls/airtank.cpp:47 */
 IMPLEMENT_SAVERESTORE(CAirtank, CGrenade);
 
-/* <50dd> ../cstrike/dlls/airtank.cpp:50 */
 void CAirtank::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
@@ -41,14 +37,12 @@ void CAirtank::__MAKE_VHOOK(Spawn)()
 	m_state = 1;
 }
 
-/* <4fef> ../cstrike/dlls/airtank.cpp:71 */
 void CAirtank::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/w_oxygen.mdl");
 	PRECACHE_SOUND("doors/aliendoor3.wav");
 }
 
-/* <503d> ../cstrike/dlls/airtank.cpp:78 */
 void CAirtank::__MAKE_VHOOK(Killed)(entvars_t *pevAttacker, int iGib)
 {
 	pev->owner = ENT(pevAttacker);
@@ -57,7 +51,6 @@ void CAirtank::__MAKE_VHOOK(Killed)(entvars_t *pevAttacker, int iGib)
 	Explode(pev->origin, Vector(0, 0, -1));
 }
 
-/* <5016> ../cstrike/dlls/airtank.cpp:88 */
 void CAirtank::TankThink()
 {
 	// Fire trigger
@@ -65,7 +58,6 @@ void CAirtank::TankThink()
 	SUB_UseTargets(this, USE_TOGGLE, 0);
 }
 
-/* <525d> ../cstrike/dlls/airtank.cpp:96 */
 void CAirtank::TankTouch(CBaseEntity *pOther)
 {
 	if (!pOther->IsPlayer())

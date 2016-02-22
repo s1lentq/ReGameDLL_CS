@@ -49,7 +49,6 @@ private:
 	int m_bytesLeft;
 };
 
-/* <4eb7b4> ../game_shared/steam_util.h:29 */
 inline SteamFile::SteamFile(const char *filename)
 {
 	m_fileData = (byte *)LOAD_FILE_FOR_ME(const_cast<char *>(filename), &m_fileDataLength);
@@ -57,14 +56,12 @@ inline SteamFile::SteamFile(const char *filename)
 	m_bytesLeft = m_fileDataLength;
 }
 
-/* <4eb65d> ../game_shared/steam_util.h:36 */
 inline SteamFile::~SteamFile()
 {
 	if (m_fileData)
 		FREE_FILE(m_fileData);
 }
 
-/* <4bfdfa> ../game_shared/steam_util.h:42 */
 inline bool SteamFile::Read(void *data, int length)
 {
 	if (length > m_bytesLeft || m_cursor == NULL || m_bytesLeft <= 0)

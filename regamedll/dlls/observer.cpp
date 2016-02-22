@@ -6,10 +6,10 @@ int GetForceCamera_api(CBasePlayer *pObserver)
 
 	if (!fadetoblack.value)
 	{
-		retVal = (int)CVAR_GET_FLOAT("mp_forcechasecam");
+		retVal = int(CVAR_GET_FLOAT("mp_forcechasecam"));
 
 		if (retVal == CAMERA_MODE_SPEC_ANYONE)
-			retVal = (int)CVAR_GET_FLOAT("mp_forcecamera");
+			retVal = int(CVAR_GET_FLOAT("mp_forcecamera"));
 	}
 	else
 		retVal = CAMERA_MODE_SPEC_ONLY_FRIST_PERSON;
@@ -17,7 +17,6 @@ int GetForceCamera_api(CBasePlayer *pObserver)
 	return retVal;
 }
 
-/* <11c190> ../cstrike/dlls/observer.cpp:36 */
 int GetForceCamera(CBasePlayer *pObserver)
 {
 	return g_ReGameHookchains.m_GetForceCamera.callChain(GetForceCamera_api, pObserver);
@@ -32,7 +31,6 @@ CBasePlayer *Observer_IsValidTarget_api(CBasePlayer *pPlayer, CBasePlayer *pEnti
 	return pEntity;
 }
 
-/* <11c4fa> ../cstrike/dlls/observer.cpp:49 */
 CBaseEntity *CBasePlayer::Observer_IsValidTarget(int iPlayerIndex, bool bSameTeam)
 {
 	if (iPlayerIndex > gpGlobals->maxClients || iPlayerIndex < 1)
@@ -42,7 +40,6 @@ CBaseEntity *CBasePlayer::Observer_IsValidTarget(int iPlayerIndex, bool bSameTea
 	return g_ReGameHookchains.m_Observer_IsValidTarget.callChain(Observer_IsValidTarget_api, this, pEnt, iPlayerIndex, bSameTeam);
 }
 
-/* <11c2c7> ../cstrike/dlls/observer.cpp:82 */
 void UpdateClientEffects(CBasePlayer *pObserver, int oldMode)
 {
 	bool clearProgress = false;
@@ -67,7 +64,7 @@ void UpdateClientEffects(CBasePlayer *pObserver, int oldMode)
 					if (pPlayer->m_progressEnd > gpGlobals->time)
 					{
 						float percentRemaining = gpGlobals->time - pPlayer->m_progressStart;
-						pObserver->SetProgressBarTime2((int)(pPlayer->m_progressEnd - pPlayer->m_progressStart), percentRemaining);
+						pObserver->SetProgressBarTime2(int(pPlayer->m_progressEnd - pPlayer->m_progressStart), percentRemaining);
 						clearProgress = false;
 					}
 				}
@@ -82,7 +79,7 @@ void UpdateClientEffects(CBasePlayer *pObserver, int oldMode)
 						clearBlindness = false;
 
 						fadeTime = pPlayer->m_blindFadeTime;
-						alpha = (float)pPlayer->m_blindAlpha;
+						alpha = float(pPlayer->m_blindAlpha);
 						holdTime = pPlayer->m_blindHoldTime + pPlayer->m_blindStartTime - gpGlobals->time;
 
 						if (holdTime <= 0)
@@ -134,8 +131,6 @@ void UpdateClientEffects(CBasePlayer *pObserver, int oldMode)
 }
 
 // Find the next client in the game for this player to spectate
-
-/* <11c7e4> ../cstrike/dlls/observer.cpp:175 */
 void CBasePlayer::Observer_FindNextPlayer(bool bReverse, const char *name)
 {
 	int iStart;
@@ -194,7 +189,7 @@ void CBasePlayer::Observer_FindNextPlayer(bool bReverse, const char *name)
 			m_hObserverTarget->pev->health = 0.0f;
 
 		MESSAGE_BEGIN(MSG_ONE, gmsgSpecHealth2, NULL, pev);
-			WRITE_BYTE((int)m_hObserverTarget->pev->health);
+			WRITE_BYTE(int(m_hObserverTarget->pev->health));
 			WRITE_BYTE(ENTINDEX(m_hObserverTarget->edict()));
 		MESSAGE_END();
 
@@ -207,8 +202,6 @@ void CBasePlayer::Observer_FindNextPlayer(bool bReverse, const char *name)
 }
 
 // Handle buttons in observer mode
-
-/* <11c9ac> ../cstrike/dlls/observer.cpp:254 */
 void CBasePlayer::Observer_HandleButtons()
 {
 	// Slow down mouse clicks
@@ -258,7 +251,6 @@ void CBasePlayer::Observer_HandleButtons()
 	}
 }
 
-/* <11c9d3> ../cstrike/dlls/observer.cpp:304 */
 void CBasePlayer::Observer_CheckTarget()
 {
 	if (pev->iuser1 == OBS_ROAMING && !m_bWasFollowing)
@@ -313,7 +305,6 @@ void CBasePlayer::Observer_CheckTarget()
 	}
 }
 
-/* <11cb26> ../cstrike/dlls/observer.cpp:380 */
 void CBasePlayer::Observer_CheckProperties()
 {
 	// try to find a traget if we have no current one
@@ -439,8 +430,6 @@ void CBasePlayer::Observer_CheckProperties()
 }
 
 // Attempt to change the observer mode
-
-/* <11c6db> ../cstrike/dlls/observer.cpp:506 */
 void CBasePlayer::Observer_SetMode(int iMode)
 {
 	int _forcecamera;

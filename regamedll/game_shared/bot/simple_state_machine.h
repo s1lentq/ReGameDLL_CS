@@ -33,8 +33,6 @@
 #endif
 
 // Encapsulation of a finite-state-machine state
-
-/* <5c4388> ../game_shared/bot/simple_state_machine.h:21 */
 template<typename T>
 class SimpleState
 {
@@ -62,8 +60,6 @@ private:
 };
 
 // Encapsulation of a finite state machine
-
-/* <5c4bab> ../game_shared/bot/simple_state_machine.h:68 */
 template<typename T, typename S>
 class SimpleStateMachine
 {
@@ -105,7 +101,7 @@ public:
 			m_state->OnUpdate(m_userData);
 	}
 
-/*protected:*/
+protected:
 	S *m_state;			// current behavior state
 	IntervalTimer m_stateTimer;	// how long have we been in the current state
 	T m_userData;

@@ -55,13 +55,13 @@ public:
 		EXPLODED,	// the bomb has exploded
 	};
 
-	bool IsBombMoving() const	{ return (m_bombState == MOVING); }
-	bool IsBombLoose() const	{ return (m_bombState == LOOSE); }
-	bool IsBombPlanted() const	{ return (m_bombState == PLANTED); }
-	bool IsBombDefused() const	{ return (m_bombState == DEFUSED); }
-	bool IsBombExploded() const	{ return (m_bombState == EXPLODED); }
-	
-	void UpdateLooseBomb(const Vector *pos);		// we see the loose bomb	
+	bool IsBombMoving() const { return (m_bombState == MOVING); }
+	bool IsBombLoose() const { return (m_bombState == LOOSE); }
+	bool IsBombPlanted() const { return (m_bombState == PLANTED); }
+	bool IsBombDefused() const { return (m_bombState == DEFUSED); }
+	bool IsBombExploded() const { return (m_bombState == EXPLODED); }
+
+	void UpdateLooseBomb(const Vector *pos);		// we see the loose bomb
 	float TimeSinceLastSawLooseBomb() const;		// how long has is been since we saw the loose bomb
 	bool IsLooseBombLocationKnown() const;			// do we know where the loose bomb is
 
@@ -72,7 +72,7 @@ public:
 	bool IsPlantedBombLocationKnown() const;		// do we know where the bomb was planted
 	void MarkBombsiteAsPlanted(int zoneIndex);		// mark bombsite as the location of the planted bomb
 
-	enum { UNKNOWN = -1 };	
+	enum { UNKNOWN = -1 };
 	int GetPlantedBombsite() const;				// return the zone index of the planted bombsite, or UNKNOWN
 	bool IsAtPlantedBombsite() const;			// return true if we are currently in the bombsite where the bomb is planted
 
@@ -105,7 +105,7 @@ public:
 
 #ifndef HOOK_GAMEDLL
 private:
-#endif // HOOK_GAMEDLL
+#endif
 
 	CCSBot *m_owner;			// who owns this gamestate
 	bool m_isRoundOver;			// true if round is over, but no yet reset
@@ -139,12 +139,12 @@ private:
 		Vector knownPos;
 		bool isValid;
 		bool isAlive;
-		bool isFree;		// not being escorted by a CT
+		bool isFree;			// not being escorted by a CT
 	}
-	m_hostage[ MAX_HOSTAGES ];
+	m_hostage[MAX_HOSTAGES];
 	int m_hostageCount;					// number of hostages left in map
 	CountdownTimer m_validateInterval;
-	NOXREF CBaseEntity *GetNearestHostage() const;		// return the closest live hostage
+	CBaseEntity *GetNearestHostage() const;			// return the closest live hostage
 	void InitializeHostageInfo();				// initialize our knowledge of the number and location of hostages
 
 	bool m_allHostagesRescued;				// if true, so every hostages been is rescued

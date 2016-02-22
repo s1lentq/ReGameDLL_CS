@@ -35,7 +35,6 @@
 // STL uses exceptions, but we are not compiling with them - ignore warning
 #pragma warning(disable : 4530)
 
-/* <46efa3> ../game_shared/bot/nav_path.h:22 */
 class CNavPath
 {
 public:
@@ -55,7 +54,7 @@ public:
 
 	bool IsAtEnd(const Vector &pos) const;						// return true if position is at the end of the path
 	float GetLength() const;							// return length of path from start to finish
-	NOXREF bool GetPointAlongPath(float distAlong, Vector *pointOnPath) const;	// return point a given distance along the path - if distance is out of path bounds, point is clamped to start/end
+	bool GetPointAlongPath(float distAlong, Vector *pointOnPath) const;		// return point a given distance along the path - if distance is out of path bounds, point is clamped to start/end
 
 	// return the node index closest to the given distance along the path without going over - returns (-1) if error
 	int GetSegmentIndexAlongPath(float distAlong) const;
@@ -67,7 +66,7 @@ public:
 	void Draw();
 
 	// compute closest point on path to given point
-	NOXREF bool FindClosestPointOnPath(const Vector *worldPos, int startIndex, int endIndex, Vector *close) const;
+	bool FindClosestPointOnPath(const Vector *worldPos, int startIndex, int endIndex, Vector *close) const;
 
 	void Optimize();
 
@@ -152,7 +151,7 @@ public:
 	}
 #ifndef HOOK_GAMEDLL
 private:
-#endif // HOOK_GAMEDLL
+#endif
 	enum { MAX_PATH_SEGMENTS = 256 };
 	PathSegment m_path[ MAX_PATH_SEGMENTS ];
 	int m_segmentCount;
@@ -209,7 +208,7 @@ public:
 
 #ifndef HOOK_GAMEDLL
 private:
-#endif // HOOK_GAMEDLL
+#endif
 	int FindOurPositionOnPath(Vector *close, bool local) const;		// return the closest point to our current position on current path
 	int FindPathPoint(float aheadRange, Vector *point, int *prevIndex);	// compute a point a fixed distance ahead along our path.
 

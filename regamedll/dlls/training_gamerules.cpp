@@ -24,38 +24,33 @@ TYPEDESCRIPTION CBaseGrenCatch::m_SaveData[] =
 	DEFINE_FIELD(CBaseGrenCatch, sDisableOnGrenade, FIELD_STRING),
 };
 
-#endif // HOOK_GAMEDLL
+#endif
 
-/* <18bcc4> ../cstrike/dlls/training_gamerules.cpp:23 */
 CHalfLifeTraining::CHalfLifeTraining()
 {
 	PRECACHE_MODEL("models/w_weaponbox.mdl");
 }
 
-/* <18ae1b> ../cstrike/dlls/training_gamerules.cpp:27 */
 BOOL CHalfLifeTraining::__MAKE_VHOOK(IsDeathmatch)()
 {
 	return FALSE;
 }
 
-/* <18ae41> ../cstrike/dlls/training_gamerules.cpp:28 */
 void CHalfLifeTraining::__MAKE_VHOOK(InitHUD)(CBasePlayer *pl)
 {
 	;
 }
 
-/* <18bcff> ../cstrike/dlls/training_gamerules.cpp:29 */
 void CHalfLifeTraining::HostageDied()
 {
 	CBasePlayer *pPlayer = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(1));
 
 	if (pPlayer != NULL)
 	{
-		pPlayer->pev->radsuit_finished = gpGlobals->time + 3;
+		pPlayer->pev->radsuit_finished = gpGlobals->time + 3.0f;
 	}
 }
 
-/* <18b005> ../cstrike/dlls/training_gamerules.cpp:34 */
 edict_t *CHalfLifeTraining::__MAKE_VHOOK(GetPlayerSpawnSpot)(CBasePlayer *pPlayer)
 {
 	CBaseEntity *pSpot = UTIL_FindEntityByClassname(NULL, "info_player_start");
@@ -76,7 +71,6 @@ edict_t *CHalfLifeTraining::__MAKE_VHOOK(GetPlayerSpawnSpot)(CBasePlayer *pPlaye
 	return pSpot->edict();
 }
 
-/* <18b4aa> ../cstrike/dlls/training_gamerules.cpp:52 */
 void CHalfLifeTraining::__MAKE_VHOOK(PlayerThink)(CBasePlayer *pPlayer)
 {
 	if (pPlayer->pev->radsuit_finished && gpGlobals->time > pPlayer->pev->radsuit_finished)
@@ -88,7 +82,7 @@ void CHalfLifeTraining::__MAKE_VHOOK(PlayerThink)(CBasePlayer *pPlayer)
 	{
 		if (pPlayer->pev->scale)
 		{
-			pPlayer->m_iAccount = (int)pPlayer->pev->scale;
+			pPlayer->m_iAccount = int(pPlayer->pev->scale);
 		}
 	}
 
@@ -99,7 +93,7 @@ void CHalfLifeTraining::__MAKE_VHOOK(PlayerThink)(CBasePlayer *pPlayer)
 	}
 
 	m_iHostagesRescued = 0;
-	m_iRoundTimeSecs = (int)(gpGlobals->time + 1.0f);
+	m_iRoundTimeSecs = int(gpGlobals->time + 1.0f);
 	m_bFreezePeriod = FALSE;
 	g_fGameOver = FALSE;
 
@@ -167,7 +161,7 @@ void CHalfLifeTraining::__MAKE_VHOOK(PlayerThink)(CBasePlayer *pPlayer)
 		fInBuyArea = TRUE;
 
 		if (pPlayer->m_iAccount < 16000 && FillAccountTime == 0.0f)
-			FillAccountTime = gpGlobals->time + 5;
+			FillAccountTime = gpGlobals->time + 5.0f;
 
 		if (FillAccountTime != 0.0f && gpGlobals->time > FillAccountTime)
 		{
@@ -206,7 +200,6 @@ void CHalfLifeTraining::__MAKE_VHOOK(PlayerThink)(CBasePlayer *pPlayer)
 	}
 }
 
-/* <18b79c> ../cstrike/dlls/training_gamerules.cpp:151 */
 void CHalfLifeTraining::__MAKE_VHOOK(PlayerSpawn)(CBasePlayer *pPlayer)
 {
 	if (pPlayer->m_bNotKilled)
@@ -237,32 +230,27 @@ void CHalfLifeTraining::__MAKE_VHOOK(PlayerSpawn)(CBasePlayer *pPlayer)
 	pPlayer->m_iHideHUD |= (HIDEHUD_WEAPONS | HIDEHUD_HEALTH | HIDEHUD_TIMER | HIDEHUD_MONEY);
 }
 
-/* <18ae74> ../cstrike/dlls/training_gamerules.cpp:182 */
 int CHalfLifeTraining::__MAKE_VHOOK(ItemShouldRespawn)(CItem *pItem)
 {
 	return GR_ITEM_RESPAWN_NO;
 }
 
-/* <18aea8> ../cstrike/dlls/training_gamerules.cpp:186 */
 BOOL CHalfLifeTraining::__MAKE_VHOOK(FPlayerCanRespawn)(CBasePlayer *pPlayer)
 {
 	return TRUE;
 }
 
-/* <18bd40> ../cstrike/dlls/training_gamerules.cpp:190 */
 bool CHalfLifeTraining::PlayerCanBuy(CBasePlayer *pPlayer)
 {
 	return (pPlayer->m_signals.GetState() & SIGNAL_BUY) != 0;
 }
 
-/* <18afa5> ../cstrike/dlls/training_gamerules.cpp:195 */
 void CHalfLifeTraining::__MAKE_VHOOK(PlayerKilled)(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor)
 {
 	SET_VIEW(pVictim->edict(), pVictim->edict());
 	FireTargets("game_playerdie", pVictim, pVictim, USE_TOGGLE, 0);
 }
 
-/* <18b0fb> ../cstrike/dlls/training_gamerules.cpp:202 */
 void CHalfLifeTraining::__MAKE_VHOOK(CheckWinConditions)()
 {
 	CBaseEntity *pHostage = NULL;
@@ -340,13 +328,9 @@ void CHalfLifeTraining::__MAKE_VHOOK(CheckWinConditions)()
 	}
 }
 
-/* <18b74f> ../cstrike/dlls/training_gamerules.cpp:280 */
 IMPLEMENT_SAVERESTORE(CBaseGrenCatch, CBaseEntity);
-
-/* <18bd74> ../cstrike/dlls/training_gamerules.cpp:282 */
 LINK_ENTITY_TO_CLASS(func_grencatch, CBaseGrenCatch);
 
-/* <18af02> ../cstrike/dlls/training_gamerules.cpp:284 */
 void CBaseGrenCatch::__MAKE_VHOOK(Spawn)()
 {
 	pev->solid = SOLID_TRIGGER;
@@ -357,7 +341,6 @@ void CBaseGrenCatch::__MAKE_VHOOK(Spawn)()
 	pev->nextthink = gpGlobals->time + 0.1f;
 }
 
-/* <18af50> ../cstrike/dlls/training_gamerules.cpp:293 */
 void CBaseGrenCatch::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 {
 	if (!pOther)
@@ -371,7 +354,6 @@ void CBaseGrenCatch::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 	}
 }
 
-/* <18b835> ../cstrike/dlls/training_gamerules.cpp:300 */
 void CBaseGrenCatch::__MAKE_VHOOK(Think)()
 {
 	CGrenade *pGrenade;
@@ -436,7 +418,6 @@ void CBaseGrenCatch::__MAKE_VHOOK(Think)()
 	pev->nextthink = gpGlobals->time + 0.1f;
 }
 
-/* <18ba09> ../cstrike/dlls/training_gamerules.cpp:358 */
 void CBaseGrenCatch::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "triggerongrenade"))
@@ -466,7 +447,6 @@ void CBaseGrenCatch::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CBaseEntity::KeyValue(pkvd);
 }
 
-/* <18af29> ../cstrike/dlls/training_gamerules.cpp:400 */
 void CFuncWeaponCheck::__MAKE_VHOOK(Spawn)()
 {
 	pev->dmgtime = 0;
@@ -477,13 +457,9 @@ void CFuncWeaponCheck::__MAKE_VHOOK(Spawn)()
 	SET_MODEL(ENT(pev), STRING(pev->model));
 }
 
-/* <18b702> ../cstrike/dlls/training_gamerules.cpp:420 */
 IMPLEMENT_SAVERESTORE(CFuncWeaponCheck, CBaseEntity);
-
-/* <18be46> ../cstrike/dlls/training_gamerules.cpp:422 */
 LINK_ENTITY_TO_CLASS(func_weaponcheck, CFuncWeaponCheck);
 
-/* <18b5f6> ../cstrike/dlls/training_gamerules.cpp:424 */
 void CFuncWeaponCheck::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 {
 	if (!UTIL_IsMasterTriggered(sMaster, pOther))
@@ -495,7 +471,7 @@ void CFuncWeaponCheck::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 	if (!pOther->IsPlayer())
 		return;
 
-	CBasePlayer *pPlayer = (CBasePlayer *)pOther;
+	CBasePlayer *pPlayer = static_cast<CBasePlayer *>(pOther);
 	for (int i = 1; i <= iItemCount; ++i)
 	{
 		if (iAnyWeapon)
@@ -530,7 +506,6 @@ void CFuncWeaponCheck::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 	SUB_Remove();
 }
 
-/* <18bb28> ../cstrike/dlls/training_gamerules.cpp:462 */
 void CFuncWeaponCheck::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "trigger_items"))

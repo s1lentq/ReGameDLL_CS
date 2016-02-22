@@ -71,7 +71,7 @@ public:
 
 #ifndef HOOK_GAMEDLL
 private:
-#endif // HOOK_GAMEDLL
+#endif
 	friend void DestroyNavigationMap();
 
 	Vector m_pos;				// position of this node in the world
@@ -93,31 +93,26 @@ private:
 	CNavArea *m_area;			// the area this node is contained within
 };
 
-/* <4c0577> ../game_shared/bot/nav_node.h:74 */
 inline CNavNode *CNavNode::GetConnectedNode(NavDirType dir) const
 {
 	return m_to[ dir ];
 }
 
-/* <4c05ba> ../game_shared/bot/nav_node.h:79 */
 inline const Vector *CNavNode::GetPosition() const
 {
 	return &m_pos;
 }
 
-/* <3434df> ../game_shared/bot/nav_node.h:84 */
 inline CNavNode *CNavNode::GetParent() const
 {
 	return m_parent;
 }
 
-/* <3434fe> ../game_shared/bot/nav_node.h:89 */
 inline void CNavNode::MarkAsVisited(NavDirType dir)
 {
 	m_visited |= (1 << dir);
 }
 
-/* <343523> ../game_shared/bot/nav_node.h:94 */
 inline BOOL CNavNode::HasVisited(NavDirType dir)
 {
 	if (m_visited & (1 << dir))
@@ -126,13 +121,11 @@ inline BOOL CNavNode::HasVisited(NavDirType dir)
 	return false;
 }
 
-/* <4bfdb6> ../game_shared/bot/nav_node.h:102 */
 inline void CNavNode::AssignArea(CNavArea *area)
 {
 	m_area = area;
 }
 
-/* <4bfdde> ../game_shared/bot/nav_node.h:107 */
 inline CNavArea *CNavNode::GetArea() const
 {
 	return m_area;

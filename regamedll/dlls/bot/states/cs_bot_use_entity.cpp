@@ -2,14 +2,11 @@
 
 // Face the entity and "use" it
 // NOTE: This state assumes we are standing in range of the entity to be used, with no obstructions.
-
-/* <5e3017> ../cstrike/dlls/bot/states/cs_bot_use_entity.cpp:17 */
 void UseEntityState::__MAKE_VHOOK(OnEnter)(CCSBot *me)
 {
 	;
 }
 
-/* <5e308c> ../cstrike/dlls/bot/states/cs_bot_use_entity.cpp:21 */
 void UseEntityState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 {
 	// in the very rare situation where two or more bots "used" a hostage at the same time,
@@ -41,7 +38,6 @@ void UseEntityState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 	}
 }
 
-/* <5e304a> ../cstrike/dlls/bot/states/cs_bot_use_entity.cpp:54 */
 void UseEntityState::__MAKE_VHOOK(OnExit)(CCSBot *me)
 {
 	me->ClearLookAt();

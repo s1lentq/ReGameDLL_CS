@@ -218,8 +218,6 @@ WeaponInfoStruct weaponInfo[] =
 #endif // HOOK_GAMEDLL
 
 // Given an alias, return the associated weapon ID
-
-/* <22cd2a> ../cstrike/dlls/weapontype.cpp:208 */
 WeaponIdType AliasToWeaponID(const char *alias)
 {
 	if (alias != NULL)
@@ -234,7 +232,6 @@ WeaponIdType AliasToWeaponID(const char *alias)
 	return WEAPON_NONE;
 }
 
-/* <22cd70> ../cstrike/dlls/weapontype.cpp:224 */
 const char *BuyAliasToWeaponID(const char *alias, WeaponIdType &id)
 {
 	if (alias)
@@ -254,8 +251,6 @@ const char *BuyAliasToWeaponID(const char *alias, WeaponIdType &id)
 }
 
 // Given a weapon ID, return its alias
-
-/* <22cd03> ../cstrike/dlls/weapontype.cpp:246 */
 const char *WeaponIDToAlias(int id)
 {
 	for (int i = 0; weaponAliasInfo[i].alias != NULL; ++i)
@@ -267,7 +262,6 @@ const char *WeaponIDToAlias(int id)
 	return NULL;
 }
 
-/* <22cdfe> ../cstrike/dlls/weapontype.cpp:259 */
 WeaponClassType AliasToWeaponClass(const char *alias)
 {
 	if (alias != NULL)
@@ -282,15 +276,12 @@ WeaponClassType AliasToWeaponClass(const char *alias)
 	return WEAPONCLASS_NONE;
 }
 
-/* <22ce5a> ../cstrike/dlls/weapontype.cpp:276 */
 WeaponClassType WeaponIDToWeaponClass(int id)
 {
 	return AliasToWeaponClass(WeaponIDToAlias(id));
 }
 
 // Return true if given weapon ID is a primary weapon
-
-/* <22cee3> ../cstrike/dlls/weapontype.cpp:285 */
 bool IsPrimaryWeapon(int id)
 {
 	switch (id)
@@ -323,8 +314,6 @@ bool IsPrimaryWeapon(int id)
 }
 
 // Return true if given weapon ID is a secondary weapon
-
-/* <22cf19> ../cstrike/dlls/weapontype.cpp:318 */
 bool IsSecondaryWeapon(int id)
 {
 	switch (id)
@@ -343,7 +332,6 @@ bool IsSecondaryWeapon(int id)
 	return false;
 }
 
-/* <22cf48> ../cstrike/dlls/weapontype.cpp:426 */
 WeaponInfoStruct *GetWeaponInfo(int weaponID)
 {
 	for (int i = 0; weaponInfo[i].id != 0; ++i)
@@ -355,7 +343,6 @@ WeaponInfoStruct *GetWeaponInfo(int weaponID)
 	return NULL;
 }
 
-/* <22cf97> ../cstrike/dlls/weapontype.cpp:443 */
 bool CanBuyWeaponByMaptype(int playerTeam, WeaponIdType weaponID, bool useAssasinationRestrictions)
 {
 	if (useAssasinationRestrictions)

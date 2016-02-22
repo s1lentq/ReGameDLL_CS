@@ -51,7 +51,6 @@
 #define VEHICLE_MAXPITCH		200
 #define VEHICLE_MAXSPEED		1500
 
-/* <1ba646> ../cstrike/dlls/vehicle.cpp:1057 */
 class CFuncVehicleControls: public CBaseEntity
 {
 public:
@@ -62,7 +61,7 @@ public:
 
 	void Spawn_();
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	void EXPORT Find();

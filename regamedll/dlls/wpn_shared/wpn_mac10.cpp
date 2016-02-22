@@ -1,9 +1,7 @@
 #include "precompiled.h"
 
-/* <2867c0> ../cstrike/dlls/wpn_shared/wpn_mac10.cpp:50 */
 LINK_ENTITY_TO_CLASS(weapon_mac10, CMAC10);
 
-/* <28658a> ../cstrike/dlls/wpn_shared/wpn_mac10.cpp:52 */
 void CMAC10::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
@@ -18,7 +16,6 @@ void CMAC10::__MAKE_VHOOK(Spawn)()
 	FallInit();
 }
 
-/* <286509> ../cstrike/dlls/wpn_shared/wpn_mac10.cpp:66 */
 void CMAC10::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/v_mac10.mdl");
@@ -33,7 +30,6 @@ void CMAC10::__MAKE_VHOOK(Precache)()
 	m_usFireMAC10 = PRECACHE_EVENT(1, "events/mac10.sc");
 }
 
-/* <286530> ../cstrike/dlls/wpn_shared/wpn_mac10.cpp:82 */
 int CMAC10::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
@@ -51,7 +47,6 @@ int CMAC10::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	return 1;
 }
 
-/* <286563> ../cstrike/dlls/wpn_shared/wpn_mac10.cpp:99 */
 BOOL CMAC10::__MAKE_VHOOK(Deploy)()
 {
 	m_flAccuracy = 0.15f;
@@ -61,7 +56,6 @@ BOOL CMAC10::__MAKE_VHOOK(Deploy)()
 	return DefaultDeploy("models/v_mac10.mdl", "models/p_mac10.mdl", MAC10_DRAW, "onehanded", UseDecrement() != FALSE);
 }
 
-/* <286786> ../cstrike/dlls/wpn_shared/wpn_mac10.cpp:108 */
 void CMAC10::__MAKE_VHOOK(PrimaryAttack)()
 {
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
@@ -74,7 +68,6 @@ void CMAC10::__MAKE_VHOOK(PrimaryAttack)()
 	}
 }
 
-/* <28688a> ../cstrike/dlls/wpn_shared/wpn_mac10.cpp:116 */
 void CMAC10::MAC10Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 {
 	Vector vecAiming, vecSrc, vecDir;
@@ -123,10 +116,10 @@ void CMAC10::MAC10Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	flag = FEV_NOTHOST;
 #else
 	flag = 0;
-#endif // CLIENT_WEAPONS
+#endif
 
 	PLAYBACK_EVENT_FULL(flag, m_pPlayer->edict(), m_usFireMAC10, 0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y,
-		(int)(m_pPlayer->pev->punchangle.x * 100), (int)(m_pPlayer->pev->punchangle.y * 100), FALSE, FALSE);
+		int(m_pPlayer->pev->punchangle.x * 100), int(m_pPlayer->pev->punchangle.y * 100), FALSE, FALSE);
 
 	m_flNextPrimaryAttack = m_flNextSecondaryAttack = GetNextAttackDelay(flCycleTime);
 
@@ -155,7 +148,6 @@ void CMAC10::MAC10Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	}
 }
 
-/* <28663b> ../cstrike/dlls/wpn_shared/wpn_mac10.cpp:199 */
 void CMAC10::__MAKE_VHOOK(Reload)()
 {
 	if (m_pPlayer->ammo_45acp <= 0)
@@ -170,7 +162,6 @@ void CMAC10::__MAKE_VHOOK(Reload)()
 	}
 }
 
-/* <286600> ../cstrike/dlls/wpn_shared/wpn_mac10.cpp:213 */
 void CMAC10::__MAKE_VHOOK(WeaponIdle)()
 {
 	ResetEmptySound();

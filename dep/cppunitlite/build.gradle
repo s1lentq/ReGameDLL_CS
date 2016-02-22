@@ -9,52 +9,50 @@ apply plugin: 'cpp'
 apply plugin: IccCompilerPlugin
 
 void setupToolchain(NativeBinarySpec b) {
-    def cfg = rootProject.createToolchainConfig(b)
+	def cfg = rootProject.createToolchainConfig(b)
 
-    ToolchainConfigUtils.apply(project, cfg, b)
+	ToolchainConfigUtils.apply(project, cfg, b)
 }
 
 model {
-    buildTypes {
-        debug
-        release
-    }
+	buildTypes {
+		debug
+		release
+	}
 
-    platforms {
-        x86 {
-            architecture "x86"
-        }
-    }
+	platforms {
+		x86 {
+			architecture "x86"
+		}
+	}
 
-    toolChains {
-        visualCpp(VisualCpp) {
-        }
-        icc(Icc) {
-        }
-    }
+	toolChains {
+		visualCpp(VisualCpp) {
+		}
+		icc(Icc) {
+		}
+	}
 
-    components {
+	components {
 		cppunitlite(NativeLibrarySpec) {
 			targetPlatform 'x86'
-			
+
 			sources {
 				cppul_main(CppSourceSet) {
 					source {
 						srcDir "src"
 						include "**/*.cpp"
 					}
-					
+
 					exportedHeaders {
 						srcDir "include"
-					}					
+					}
 				}
 			}
-			
 
-            binaries.all { NativeBinarySpec b ->
-                project.setupToolchain(b)
-            }			
+			binaries.all { NativeBinarySpec b ->
+				project.setupToolchain(b)
+			}
 		}
 	}
 }
-

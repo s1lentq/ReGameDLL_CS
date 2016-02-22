@@ -101,7 +101,10 @@ struct entity_field_alias_t
 	int field;
 };
 
-extern float g_flTimeLimit;
+C_DLLEXPORT float g_flTimeLimit;
+C_DLLEXPORT int CountTeams();
+C_DLLEXPORT int CountTeamPlayers(int iTeam);
+
 extern float g_flResetTime;
 extern bool g_skipCareerInitialSpawn;
 
@@ -110,7 +113,7 @@ extern unsigned short g_iShadowSprite;
 
 int CMD_ARGC_();
 const char *CMD_ARGV_(int i);
-NOXREF void set_suicide_frame(entvars_t *pev);
+void set_suicide_frame(entvars_t *pev);
 void TeamChangeUpdate(CBasePlayer *player, int team_id);
 void BlinkAccount(CBasePlayer *player, int numBlinks);
 BOOL ClientConnect(edict_t *pEntity, const char *pszName, const char *pszAddress, char *szRejectReason);
@@ -119,9 +122,7 @@ void respawn(entvars_t *pev, BOOL fCopyCorpse = FALSE);
 void ClientKill(edict_t *pEntity);
 void ShowMenu(CBasePlayer *pPlayer, int bitsValidSlots, int nDisplayTime, BOOL fNeedMore, char *pszText);
 void ShowVGUIMenu(CBasePlayer *pPlayer, int MenuType, int BitMask, char *szOldMenu);
-NOXREF C_DLLEXPORT int CountTeams();
 void ListPlayers(CBasePlayer *current);
-C_DLLEXPORT int CountTeamPlayers(int iTeam);
 void ProcessKickVote(CBasePlayer *pVotingPlayer, CBasePlayer *pKickPlayer);
 TeamName SelectDefaultTeam();
 void CheckStartMoney();
@@ -146,7 +147,7 @@ void Radio3(CBasePlayer *player, int slot);
 bool BuyGunAmmo(CBasePlayer *player, CBasePlayerItem *weapon, bool bBlinkMoney);
 bool BuyAmmo(CBasePlayer *player, int nSlot, bool bBlinkMoney);
 CBaseEntity *EntityFromUserID(int userID);
-NOXREF int CountPlayersInServer();
+int CountPlayersInServer();
 BOOL HandleBuyAliasCommands(CBasePlayer *pPlayer, const char *pszCommand);
 BOOL HandleRadioAliasCommands(CBasePlayer *pPlayer, const char *pszCommand);
 void ClientCommand(edict_t *pEntity);

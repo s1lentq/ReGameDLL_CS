@@ -17,9 +17,8 @@ char pm_grgchTextureType[1024];
 playermove_t *pmove = NULL;
 int g_onladder = 0;
 
-#endif // HOOK_GAMEDLL
+#endif
 
-/* <2cc613> ../cstrike/pm_shared/pm_shared.c:165 */
 void PM_SwapTextures(int i, int j)
 {
 	char chTemp;
@@ -35,12 +34,9 @@ void PM_SwapTextures(int i, int j)
 	pm_grgchTextureType[j] = chTemp;
 }
 
-/* <2cc691> ../cstrike/pm_shared/pm_shared.c:180 */
 NOXREF int PM_IsThereGrassTexture()
 {
-	int i;
-
-	for (i = 0; i < pm_gcTextures; ++i)
+	for (int i = 0; i < pm_gcTextures; ++i)
 	{
 		if (pm_grgchTextureType[i] == CHAR_TEX_GRASS)
 			return 1;
@@ -49,7 +45,6 @@ NOXREF int PM_IsThereGrassTexture()
 	return 0;
 }
 
-/* <2cc6bb> ../cstrike/pm_shared/pm_shared.c:193 */
 void PM_SortTextures()
 {
 	// Bubble sort, yuck, but this only occurs at startup and it's only 512 elements...
@@ -68,7 +63,6 @@ void PM_SortTextures()
 	}
 }
 
-/* <2cc720> ../cstrike/pm_shared/pm_shared.c:213 */
 void PM_InitTextureTypes()
 {
 	char buffer[512];
@@ -98,21 +92,21 @@ void PM_InitTextureTypes()
 	{
 		// skip whitespace
 		i = 0;
-		while (buffer[i] && isspace(buffer[i]))
+		while (buffer[i] && Q_isspace(buffer[i]))
 			++i;
 
 		if (!buffer[i])
 			continue;
 
 		// skip comment lines
-		if (buffer[i] == '/' || !isalpha(buffer[i]))
+		if (buffer[i] == '/' || !Q_isalpha(buffer[i]))
 			continue;
 
 		// get texture type
-		pm_grgchTextureType[pm_gcTextures] = toupper(buffer[i++]);
+		pm_grgchTextureType[pm_gcTextures] = Q_toupper(buffer[i++]);
 
 		// skip whitespace
-		while (buffer[i] && isspace(buffer[i]))
+		while (buffer[i] && Q_isspace(buffer[i]))
 			++i;
 
 		if (!buffer[i])
@@ -120,7 +114,7 @@ void PM_InitTextureTypes()
 
 		// get sentence name
 		j = i;
-		while (buffer[j] && !isspace(buffer[j]))
+		while (buffer[j] && !Q_isspace(buffer[j]))
 			j++;
 
 		if (!buffer[j])
@@ -140,7 +134,6 @@ void PM_InitTextureTypes()
 	bTextureTypeInit = true;
 }
 
-/* <2cc7c5> ../cstrike/pm_shared/pm_shared.c:283 */
 char EXT_FUNC PM_FindTextureType(char *name)
 {
 	int left, right, pivot;
@@ -149,7 +142,7 @@ char EXT_FUNC PM_FindTextureType(char *name)
 	assert(pm_shared_initialized);
 
 	left = 0;
-	right = gcTextures - 1;
+	right = pm_gcTextures - 1;
 
 	while (left <= right)
 	{
@@ -174,7 +167,6 @@ char EXT_FUNC PM_FindTextureType(char *name)
 	return CHAR_TEX_CONCRETE;
 }
 
-/* <2cc416> ../cstrike/pm_shared/pm_shared.c:315 */
 void PM_PlayStepSound(int step, float fvol)
 {
 	static int iSkipStep = 0;
@@ -328,7 +320,6 @@ void PM_PlayStepSound(int step, float fvol)
 	}
 }
 
-/* <2cc462> ../cstrike/pm_shared/pm_shared.c:489 */
 int PM_MapTextureTypeStepType(char chTextureType)
 {
 	switch (chTextureType)
@@ -345,7 +336,6 @@ int PM_MapTextureTypeStepType(char chTextureType)
 	}
 }
 
-/* <2cc8af> ../cstrike/pm_shared/pm_shared.c:512 */
 void PM_CatagorizeTextureType()
 {
 	vec3_t start, end;
@@ -380,7 +370,6 @@ void PM_CatagorizeTextureType()
 	pmove->chtexturetype = PM_FindTextureType(pmove->sztexturename);
 }
 
-/* <2cc93c> ../cstrike/pm_shared/pm_shared.c:546 */
 void PM_UpdateStepSound()
 {
 	float fvol;
@@ -509,8 +498,6 @@ void PM_UpdateStepSound()
 }
 
 // Add's the trace result to touch list, if contact is not already in list.
-
-/* <2cca3d> ../cstrike/pm_shared/pm_shared.c:679 */
 qboolean PM_AddToTouched(pmtrace_t tr, vec_t *impactvelocity)
 {
 	int i;
@@ -537,7 +524,6 @@ qboolean PM_AddToTouched(pmtrace_t tr, vec_t *impactvelocity)
 	return true;
 }
 
-/* <2cca88> ../cstrike/pm_shared/pm_shared.c:707 */
 void PM_CheckVelocity()
 {
 	int i;
@@ -576,8 +562,6 @@ void PM_CheckVelocity()
 // returns the blocked flags:
 // 0x01 == floor
 // 0x02 == step / wall
-
-/* <2ccbe9> ../cstrike/pm_shared/pm_shared.c:752 */
 int PM_ClipVelocity(vec_t *in, vec_t *normal, vec_t *out, float overbounce)
 {
 	float change;
@@ -622,7 +606,6 @@ int PM_ClipVelocity(vec_t *in, vec_t *normal, vec_t *out, float overbounce)
 	return blocked;
 }
 
-/* <2ccc93> ../cstrike/pm_shared/pm_shared.c:784 */
 void PM_AddCorrectGravity()
 {
 	float_precision ent_gravity;
@@ -645,7 +628,6 @@ void PM_AddCorrectGravity()
 	PM_CheckVelocity();
 }
 
-/* <2cc482> ../cstrike/pm_shared/pm_shared.c:806 */
 void PM_FixupGravityVelocity()
 {
 	float_precision ent_gravity;
@@ -663,7 +645,6 @@ void PM_FixupGravityVelocity()
 	PM_CheckVelocity();
 }
 
-/* <2ccd08> ../cstrike/pm_shared/pm_shared.c:831 */
 int PM_FlyMove()
 {
 	int bumpcount, numbumps;
@@ -821,7 +802,7 @@ int PM_FlyMove()
 					break;
 				}
 
-				_CrossProduct(planes[0], planes[1], dir);
+				CrossProduct(planes[0], planes[1], dir);
 				d = DotProduct(dir, pmove->velocity);
 				VectorScale(dir, d, pmove->velocity);
 			}
@@ -842,7 +823,6 @@ int PM_FlyMove()
 	return blocked;
 }
 
-/* <2cce2e> ../cstrike/pm_shared/pm_shared.c:1027 */
 void PM_Accelerate(vec_t *wishdir, float_precision wishspeed, float accel)
 {
 	int i;
@@ -884,8 +864,6 @@ void PM_Accelerate(vec_t *wishdir, float_precision wishspeed, float accel)
 }
 
 // Only used by players.  Moves along the ground when player is a MOVETYPE_WALK.
-
-/* <2cceaf> ../cstrike/pm_shared/pm_shared.c:1071 */
 void PM_WalkMove()
 {
 	int clip;
@@ -1074,8 +1052,6 @@ usedown:
 }
 
 // Handles both ground friction and water friction
-
-/* <2ccffb> ../cstrike/pm_shared/pm_shared.c:1249 */
 void PM_Friction()
 {
 	float *vel;
@@ -1091,7 +1067,7 @@ void PM_Friction()
 	vel = pmove->velocity;
 
 	// Calculate speed
-	speed = sqrt((float_precision)(vel[0] * vel[0] + vel[1] * vel[1] + vel[2] * vel[2]));
+	speed = Q_sqrt(float_precision(vel[0] * vel[0] + vel[1] * vel[1] + vel[2] * vel[2]));
 
 	// If too slow, return
 	if (speed < 0.1f)
@@ -1153,13 +1129,12 @@ void PM_Friction()
 
 	// Adjust velocity according to proportion.
 	newvel[0] = vel[0] * newspeed;
-	newvel[1] = vel[1] * (float)newspeed;
-	newvel[2] = vel[2] * (float)newspeed;
+	newvel[1] = vel[1] * float(newspeed);
+	newvel[2] = vel[2] * float(newspeed);
 
 	VectorCopy(newvel, pmove->velocity);
 }
 
-/* <2cd0ba> ../cstrike/pm_shared/pm_shared.c:1326 */
 void PM_AirAccelerate(vec_t *wishdir, float wishspeed, float accel)
 {
 	int i;
@@ -1200,7 +1175,6 @@ void PM_AirAccelerate(vec_t *wishdir, float wishspeed, float accel)
 	}
 }
 
-/* <2cd14b> ../cstrike/pm_shared/pm_shared.c:1368 */
 void PM_WaterMove()
 {
 	int i;
@@ -1265,17 +1239,17 @@ void PM_WaterMove()
 		newspeed = 0;
 
 	// water acceleration
-	if ((float)wishspeed < 0.1f)
+	if (float(wishspeed) < 0.1f)
 	{
 		return;
 	}
 
-	addspeed = (float)wishspeed - newspeed;
+	addspeed = float(wishspeed) - newspeed;
 
 	if (addspeed > 0.0f)
 	{
 		VectorNormalize(wishvel);
-		accelspeed = pmove->movevars->accelerate * pmove->friction * pmove->frametime * (float)wishspeed;
+		accelspeed = pmove->movevars->accelerate * pmove->friction * pmove->frametime * float(wishspeed);
 
 		if (accelspeed > addspeed)
 		{
@@ -1308,7 +1282,6 @@ void PM_WaterMove()
 	PM_FlyMove();
 }
 
-/* <2cd220> ../cstrike/pm_shared/pm_shared.c:1464 */
 void PM_AirMove()
 {
 	int i;
@@ -1357,15 +1330,12 @@ void PM_AirMove()
 	PM_FlyMove();
 }
 
-/* <2cc586> ../cstrike/pm_shared/pm_shared.c:1510 */
 qboolean PM_InWater()
 {
-	return (pmove->waterlevel > 1);
+	return (pmove->waterlevel > 1) ? TRUE : FALSE;
 }
 
 // Sets pmove->waterlevel and pmove->watertype values.
-
-/* <2cd2a7> ../cstrike/pm_shared/pm_shared.c:1522 */
 qboolean PM_CheckWater()
 {
 	vec3_t point;
@@ -1423,7 +1393,7 @@ qboolean PM_CheckWater()
 		if ((truecont <= CONTENTS_CURRENT_0) && (truecont >= CONTENTS_CURRENT_DOWN))
 		{
 			// The deeper we are, the stronger the current.
-			static vec_t current_table[][3] =
+			static vec3_t current_table[] =
 			{
 				{1, 0, 0}, {0, 1, 0}, {-1, 0, 0},
 				{0, -1, 0}, {0, 0, 1}, {0, 0, -1}
@@ -1433,10 +1403,9 @@ qboolean PM_CheckWater()
 		}
 	}
 
-	return pmove->waterlevel > 1;
+	return (pmove->waterlevel > 1) ? TRUE : FALSE;
 }
 
-/* <2cd33a> ../cstrike/pm_shared/pm_shared.c:1593 */
 void PM_CatagorizePosition()
 {
 	vec3_t point;
@@ -1504,8 +1473,6 @@ void PM_CatagorizePosition()
 
 // When a player is stuck, it's costly to try and unstick them
 // Grab a test offset for the player based on a passed in index
-
-/* <2cc4c5> ../cstrike/pm_shared/pm_shared.c:1654 */
 int PM_GetRandomStuckOffsets(int nIndex, int server, vec_t *offset)
 {
 	// Last time we did a full
@@ -1517,7 +1484,6 @@ int PM_GetRandomStuckOffsets(int nIndex, int server, vec_t *offset)
 	return (idx % 54);
 }
 
-/* <2cc49d> ../cstrike/pm_shared/pm_shared.c:1665 */
 void PM_ResetStuckOffsets(int nIndex, int server)
 {
 	rgStuckLast[nIndex][server] = 0;
@@ -1526,8 +1492,6 @@ void PM_ResetStuckOffsets(int nIndex, int server)
 // If pmove->origin is in a solid position,
 // try nudging slightly on all axis to
 // allow for the cut precision of the net coordinates
-
-/* <2cd3cf> ../cstrike/pm_shared/pm_shared.c:1681 */
 int PM_CheckStuck()
 {
 	vec3_t base;
@@ -1647,7 +1611,6 @@ int PM_CheckStuck()
 	return 1;
 }
 
-/* <2cd61f> ../cstrike/pm_shared/pm_shared.c:1807 */
 void PM_SpectatorMove()
 {
 	float_precision speed, drop, friction;
@@ -1691,7 +1654,7 @@ void PM_SpectatorMove()
 		}
 		else
 		{
-			VectorCopy(vec3_origin, pmove->velocity)
+			VectorCopy(vec3_origin, pmove->velocity);
 		}
 
 		// accelerate
@@ -1770,8 +1733,6 @@ void PM_SpectatorMove()
 
 // Use for ease-in, ease-out style interpolation (accel/decel)
 // Used by ducking code.
-
-/* <2cc509> ../cstrike/pm_shared/pm_shared.c:1941 */
 float PM_SplineFraction(float value, float scale)
 {
 	float_precision valueSquared;
@@ -1783,7 +1744,6 @@ float PM_SplineFraction(float value, float scale)
 	return 3 * valueSquared - 2 * valueSquared * value;
 }
 
-/* <2cd757> ../cstrike/pm_shared/pm_shared.c:1952 */
 NOXREF float PM_SimpleSpline(float value)
 {
 	float valueSquared;
@@ -1793,7 +1753,6 @@ NOXREF float PM_SimpleSpline(float value)
 	return 3 * valueSquared - 2 * valueSquared * value;
 }
 
-/* <2cc595> ../cstrike/pm_shared/pm_shared.c:1959 */
 void PM_FixPlayerCrouchStuck(int direction)
 {
 	int hitent;
@@ -1824,7 +1783,6 @@ void PM_FixPlayerCrouchStuck(int direction)
 	VectorCopy(test, pmove->origin);
 }
 
-/* <2cd7cd> ../cstrike/pm_shared/pm_shared.c:1983 */
 void PM_Duck()
 {
 	float_precision duckFraction;
@@ -1946,7 +1904,6 @@ void PM_Duck()
 	}
 }
 
-/* <2cd8c2> ../cstrike/pm_shared/pm_shared.c:2332 */
 void PM_LadderMove(physent_t *pLadder)
 {
 	vec3_t ladderCenter;
@@ -2031,7 +1988,7 @@ void PM_LadderMove(physent_t *pLadder)
 				VectorClear(tmp);
 				tmp[2] = 1;
 
-				_CrossProduct(tmp, trace.plane.normal, perp);
+				CrossProduct(tmp, trace.plane.normal, perp);
 				VectorNormalize(perp);
 
 				// decompose velocity into ladder plane
@@ -2047,7 +2004,7 @@ void PM_LadderMove(physent_t *pLadder)
 				// NOTE: It IS possible to face up and move down or face down and move up
 				// because the velocity is a sum of the directional velocity and the converted
 				// velocity through the face of the ladder -- by design.
-				_CrossProduct(trace.plane.normal, perp, tmp);
+				CrossProduct(trace.plane.normal, perp, tmp);
 				VectorMA(lateral, -normal, tmp, pmove->velocity);
 
 				// On ground moving away from the ladder
@@ -2064,7 +2021,6 @@ void PM_LadderMove(physent_t *pLadder)
 	}
 }
 
-/* <2cda06> ../cstrike/pm_shared/pm_shared.c:2457 */
 physent_t *PM_Ladder()
 {
 	int i;
@@ -2098,7 +2054,6 @@ physent_t *PM_Ladder()
 	return NULL;
 }
 
-/* <2cda77> ../cstrike/pm_shared/pm_shared.c:2491 */
 void PM_WaterJump()
 {
 	if (pmove->waterjumptime > 10000)
@@ -2123,7 +2078,6 @@ void PM_WaterJump()
 	pmove->velocity[1] = pmove->movedir[1];
 }
 
-/* <2cda8d> ../cstrike/pm_shared/pm_shared.c:2519 */
 void PM_AddGravity()
 {
 	float ent_gravity;
@@ -2141,8 +2095,6 @@ void PM_AddGravity()
 }
 
 // Does not change the entities velocity at all
-
-/* <2cdac6> ../cstrike/pm_shared/pm_shared.c:2541 */
 pmtrace_t PM_PushEntity(vec_t *push)
 {
 	pmtrace_t trace;
@@ -2163,7 +2115,6 @@ pmtrace_t PM_PushEntity(vec_t *push)
 	return trace;
 }
 
-/* <2cdb13> ../cstrike/pm_shared/pm_shared.c:2569 */
 void PM_Physics_Toss()
 {
 	pmtrace_t trace;
@@ -2262,14 +2213,13 @@ void PM_Physics_Toss()
 			trace = PM_PushEntity(move);
 		}
 
-		VectorSubtract(pmove->velocity, base, pmove->velocity)
+		VectorSubtract(pmove->velocity, base, pmove->velocity);
 	}
 
 	// check for in water
 	PM_CheckWater();
 }
 
-/* <2cdba2> ../cstrike/pm_shared/pm_shared.c:2674 */
 void PM_NoClip()
 {
 	int i;
@@ -2294,16 +2244,14 @@ void PM_NoClip()
 	VectorMA(pmove->origin, pmove->frametime, wishvel, pmove->origin);
 
 	// Zero out the velocity so that we don't accumulate a huge downward velocity from
-	//  gravity, etc.
+	// gravity, etc.
 	VectorClear(pmove->velocity);
 }
 
 // Purpose: Corrects bunny jumping (where player initiates a bunny jump before other
-//  movement logic runs, thus making onground == -1 thus making PM_Friction get skipped and
-//  running PM_AirMove, which doesn't crop velocity to maxspeed like the ground / other
-//  movement logic does.
-
-/* <2ccab0> ../cstrike/pm_shared/pm_shared.c:2711 */
+// movement logic runs, thus making onground == -1 thus making PM_Friction get skipped and
+// running PM_AirMove, which doesn't crop velocity to maxspeed like the ground / other
+// movement logic does.
 void PM_PreventMegaBunnyJumping()
 {
 	// Current player speed
@@ -2331,7 +2279,6 @@ void PM_PreventMegaBunnyJumping()
 	VectorScale(pmove->velocity, fraction, pmove->velocity);
 }
 
-/* <2cc541> ../cstrike/pm_shared/pm_shared.c:2741 */
 void PM_Jump()
 {
 	if (pmove->dead)
@@ -2445,18 +2392,18 @@ void PM_Jump()
 				pmove->velocity[i] = pmove->forward[i] * PLAYER_LONGJUMP_SPEED * 1.6f;
 			}
 
-			pmove->velocity[2] = sqrt(2 * 800 * 56.0f);
+			pmove->velocity[2] = Q_sqrt(2 * 800 * 56.0f);
 		}
 		else
 		{
-			pmove->velocity[2] = sqrt(2 * 800 * 45.0f);
+			pmove->velocity[2] = Q_sqrt(2 * 800 * 45.0f);
 		}
 	}
 	else
-#endif // REGAMEDLL_ADD
+#endif
 	{
 		// NOTE: don't do it in .f (float)
-		pmove->velocity[2] = sqrt(2.0 * 800.0f * 45.0f);
+		pmove->velocity[2] = Q_sqrt(2.0 * 800.0f * 45.0f);
 	}
 
 	if (pmove->fuser2 > 0.0f)
@@ -2476,7 +2423,6 @@ void PM_Jump()
 	pmove->oldbuttons |= IN_JUMP;
 }
 
-/* <2cdc4b> ../cstrike/pm_shared/pm_shared.c:2869 */
 void PM_CheckWaterJump()
 {
 	vec3_t vecStart, vecEnd;
@@ -2529,7 +2475,7 @@ void PM_CheckWaterJump()
 	tr = pmove->PM_PlayerTrace(vecStart, vecEnd, PM_NORMAL, -1);
 
 	// Facing a near vertical wall?
-	if (tr.fraction < 1.0 && fabs((float_precision)(tr.plane.normal[2])) < 0.1f)
+	if (tr.fraction < 1.0f && Q_fabs(float_precision(tr.plane.normal[2])) < 0.1f)
 	{
 		vecStart[2] += pmove->_player_maxs[savehull][2] - WJ_HEIGHT;
 
@@ -2552,7 +2498,6 @@ void PM_CheckWaterJump()
 	pmove->usehull = savehull;
 }
 
-/* <2cdcd3> ../cstrike/pm_shared/pm_shared.c:2933 */
 void PM_CheckFalling()
 {
 	if (pmove->onground != -1 && !pmove->dead && pmove->flFallVelocity >= PM_PLAYER_FALL_PUNCH_THRESHHOLD)
@@ -2601,7 +2546,6 @@ void PM_CheckFalling()
 	}
 }
 
-/* <2cdd60> ../cstrike/pm_shared/pm_shared.c:2988 */
 void PM_PlayWaterSounds()
 {
 	// Did we enter or leave water?
@@ -2625,7 +2569,6 @@ void PM_PlayWaterSounds()
 	}
 }
 
-/* <2cdd76> ../cstrike/pm_shared/pm_shared.c:3018 */
 float PM_CalcRoll(vec_t *angles, vec_t *velocity, float rollangle, float rollspeed)
 {
 	float sign;
@@ -2639,7 +2582,7 @@ float PM_CalcRoll(vec_t *angles, vec_t *velocity, float rollangle, float rollspe
 
 	sign = side < 0 ? -1 : 1;
 
-	side = fabs(side);
+	side = Q_fabs(side);
 
 	value = rollangle;
 
@@ -2655,7 +2598,6 @@ float PM_CalcRoll(vec_t *angles, vec_t *velocity, float rollangle, float rollspe
 	return side * sign;
 }
 
-/* <2cde69> ../cstrike/pm_shared/pm_shared.c:3053 */
 void PM_DropPunchAngle(vec_t *punchangle)
 {
 	float_precision len;
@@ -2666,27 +2608,26 @@ void PM_DropPunchAngle(vec_t *punchangle)
 	len = Q_max(len, 0.0);
 #else
 	len = Q_max(len, 0.0f);
-#endif // PLAY_GAMEDLL
+#endif
 	VectorScale(punchangle, len, punchangle);
 }
 
-/* <2cdeb8> ../cstrike/pm_shared/pm_shared.c:3069 */
 void PM_CheckParamters()
 {
 	float spd;
 	float_precision maxspeed;
 	vec3_t v_angle;
 
-	spd = sqrt((float_precision)(pmove->cmd.sidemove * pmove->cmd.sidemove + pmove->cmd.forwardmove * pmove->cmd.forwardmove + pmove->cmd.upmove * pmove->cmd.upmove));
+	spd = Q_sqrt(float_precision(pmove->cmd.sidemove * pmove->cmd.sidemove + pmove->cmd.forwardmove * pmove->cmd.forwardmove + pmove->cmd.upmove * pmove->cmd.upmove));
 
 	maxspeed = pmove->clientmaxspeed;
 
 	if (maxspeed != 0.0f)
 	{
-		pmove->maxspeed = Q_min(maxspeed, (float_precision)pmove->maxspeed);
+		pmove->maxspeed = Q_min(maxspeed, float_precision(pmove->maxspeed));
 	}
 
-	if (spd != 0.0f && spd > (float_precision)pmove->maxspeed)
+	if (spd != 0.0f && spd > float_precision(pmove->maxspeed))
 	{
 		float_precision fRatio = pmove->maxspeed / spd;
 
@@ -2733,7 +2674,6 @@ void PM_CheckParamters()
 	}
 }
 
-/* <2cdfc3> ../cstrike/pm_shared/pm_shared.c:3136 */
 void PM_ReduceTimers()
 {
 	if (pmove->flTimeStepSound > 0)
@@ -2777,7 +2717,6 @@ void PM_ReduceTimers()
 	}
 }
 
-/* <2cc577> ../cstrike/pm_shared/pm_shared.c:3203 */
 qboolean PM_ShouldDoSpectMode()
 {
 	return (pmove->iuser3 <= 0 || pmove->deadflag == DEAD_DEAD);
@@ -2786,8 +2725,6 @@ qboolean PM_ShouldDoSpectMode()
 // Returns with origin, angles, and velocity modified in place.
 // Numtouch and touchindex[] will be set if any of the physents
 // were contacted during the move.
-
-/* <2cdfe9> ../cstrike/pm_shared/pm_shared.c:3225 */
 void PM_PlayerMove(qboolean server)
 {
 	physent_t *pLadder = NULL;
@@ -3039,7 +2976,6 @@ void PM_PlayerMove(qboolean server)
 	}
 }
 
-/* <2ce101> ../cstrike/pm_shared/pm_shared.c:3479 */
 void PM_CreateStuckTable()
 {
 	float x, y, z;
@@ -3175,8 +3111,6 @@ void PM_CreateStuckTable()
 // the engine. The same PM_Move routine is built into the game .dll and the client .dll and is
 // invoked by each side as appropriate. There should be no distinction, internally, between server
 // and client. This will ensure that prediction behaves appropriately.
-
-/* <2ce182> ../cstrike/pm_shared/pm_shared.c:3596 */
 void EXT_FUNC PM_Move(struct playermove_s *ppmove, int server)
 {
 	assert(pm_shared_initialized);
@@ -3196,7 +3130,6 @@ void EXT_FUNC PM_Move(struct playermove_s *ppmove, int server)
 	}
 }
 
-/* <2ce1c1> ../cstrike/pm_shared/pm_shared.c:3620 */
 NOXREF int PM_GetVisEntInfo(int ent)
 {
 	if (ent >= 0 && ent <= pmove->numvisent)
@@ -3207,7 +3140,6 @@ NOXREF int PM_GetVisEntInfo(int ent)
 	return -1;
 }
 
-/* <2ce1ee> ../cstrike/pm_shared/pm_shared.c:3629 */
 NOXREF int PM_GetPhysEntInfo(int ent)
 {
 	if (ent >= 0 && ent <= pmove->numphysent)
@@ -3218,7 +3150,6 @@ NOXREF int PM_GetPhysEntInfo(int ent)
 	return -1;
 }
 
-/* <2ce21b> ../cstrike/pm_shared/pm_shared.c:3638 */
 void EXT_FUNC PM_Init(struct playermove_s *ppmove)
 {
 	assert(!pm_shared_initialized);

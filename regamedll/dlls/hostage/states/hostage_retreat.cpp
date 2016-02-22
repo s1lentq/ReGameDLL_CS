@@ -1,13 +1,11 @@
 #include "precompiled.h"
 
-/* <449fee> ../cstrike/dlls/hostage/states/hostage_retreat.cpp:12 */
 void HostageRetreatState::__MAKE_VHOOK(OnEnter)(CHostageImprov *improv)
 {
 	improv->Walk();
 	improv->MoveTo(improv->GetEntity()->m_vStart);
 }
 
-/* <44a220> ../cstrike/dlls/hostage/states/hostage_retreat.cpp:20 */
 void HostageRetreatState::__MAKE_VHOOK(OnUpdate)(CHostageImprov *improv)
 {
 	if (improv->IsAtHome())
@@ -39,7 +37,6 @@ void HostageRetreatState::__MAKE_VHOOK(OnUpdate)(CHostageImprov *improv)
 		improv->Walk();
 }
 
-/* <44a023> ../cstrike/dlls/hostage/states/hostage_retreat.cpp:79 */
 void HostageRetreatState::__MAKE_VHOOK(OnExit)(CHostageImprov *improv)
 {
 	;

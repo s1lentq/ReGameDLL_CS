@@ -75,7 +75,7 @@ TYPEDESCRIPTION IMPL_CLASS(CBasePlayer, m_playerSaveData)[40];
 TYPEDESCRIPTION gGlobalEntitySaveData[3];
 
 // globals gamerules
-CHalfLifeMultiplay *g_pGameRules;
+CGameRules *g_pGameRules;
 char mp_com_token[ COM_TOKEN_LEN ];
 cvar_t *sv_clienttrace;
 
@@ -1989,13 +1989,13 @@ void HostageEscapeToCoverState::OnUpdate(CHostageImprov *improv) { OnUpdate_(imp
 void HostageEscapeToCoverState::OnExit(CHostageImprov *improv) { OnExit_(improv); }
 
 void HostageEscapeToCoverState::OnMoveToFailure(const Vector &goal, MoveToFailureType reason) { OnMoveToFailure_(goal, reason); }
-void HostageEscapeToCoverState::OnMoveToFailure_(const Vector &goal, MoveToFailureType reason)
+/*void HostageEscapeToCoverState::OnMoveToFailure_(const Vector &goal, MoveToFailureType reason)
 {
 	// TODO: why this - 1? Hacks?
 	// need investigation
 	HostageEscapeState *escape = (HostageEscapeState *)*((int *)this - 1);
 	escape->LookAround();
-}
+}*/
 
 
 void HostageEscapeLookAroundState::OnEnter(CHostageImprov *improv) { OnEnter_(improv); }
@@ -2050,9 +2050,6 @@ void CCSBot::OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *othe
 bool CCSBot::Initialize(const BotProfile *profile) { return Initialize_(profile); }
 void CCSBot::SpawnBot() { SpawnBot_(); }
 void CCSBot::RoundRespawn() { RoundRespawn_(); }
-
-// cs_bot_manager
-bool __declspec(naked) CCSBotManager::AddBot(const BotProfile *profile, BotProfileTeamType team) { __asm { jmp pCCSBotManager__AddBot } }
 
 void CCSBotManager::ClientDisconnect(CBasePlayer *pPlayer) { ClientDisconnect_(pPlayer); }
 BOOL CCSBotManager::ClientCommand(CBasePlayer *pPlayer, const char *pcmd) { return ClientCommand_(pPlayer, pcmd); }

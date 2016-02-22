@@ -16,12 +16,11 @@ cvar_t cv_tutor_message_minimum_display_time = { "_tutor_message_minimum_display
 cvar_t cv_tutor_message_character_display_time_coefficient = { "_tutor_message_character_display_time_coefficient", "0.07", FCVAR_SERVER, 0.0f, NULL };
 cvar_t cv_tutor_hint_interval_time = { "_tutor_hint_interval_time", "10.0", FCVAR_SERVER, 0.0f, NULL };
 
-#endif // HOOK_GAMEDLL
+#endif
 
 bool s_tutorDisabledThisGame;
 float s_nextCvarCheckTime;
 
-/* <1dfdbc> ../cstrike/dlls/tutor.cpp:32 */
 void InstallTutor(bool start)
 {
 	if (TheTutor != NULL)
@@ -39,13 +38,12 @@ void InstallTutor(bool start)
 	s_nextCvarCheckTime = gpGlobals->time;
 }
 
-/* <1dfde7> ../cstrike/dlls/tutor.cpp:51 */
 void Tutor_RegisterCVars()
 {
 #ifdef REGAMEDLL_FIXES
 	if (!g_bIsCzeroGame)
 		return;
-#endif // REGAMEDLL_FIXES
+#endif
 
 	CVAR_REGISTER(&cv_tutor_message_repeats);
 	CVAR_REGISTER(&cv_tutor_debug_level);
@@ -59,7 +57,6 @@ void Tutor_RegisterCVars()
 	CVAR_REGISTER(&cv_tutor_hint_interval_time);
 }
 
-/* <1dfdff> ../cstrike/dlls/tutor.cpp:66 */
 void MonitorTutorStatus()
 {
 	static cvar_t *tutor_enable = NULL;

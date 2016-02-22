@@ -1,8 +1,6 @@
 #include "precompiled.h"
 
 // Reset the stuck-checker.
-
-/* <37c284> ../cstrike/dlls/bot/cs_bot_nav.cpp:16 */
 void CCSBot::ResetStuckMonitor()
 {
 	if (m_isStuck)
@@ -24,8 +22,6 @@ void CCSBot::ResetStuckMonitor()
 }
 
 // Test if we have become stuck
-
-/* <37c2a6> ../cstrike/dlls/bot/cs_bot_nav.cpp:37 */
 void CCSBot::StuckCheck()
 {
 	if (m_isStuck)
@@ -99,8 +95,6 @@ void CCSBot::StuckCheck()
 }
 
 // Check if we need to jump due to height change
-
-/* <37c05d> ../cstrike/dlls/bot/cs_bot_nav.cpp:114 */
 bool CCSBot::DiscontinuityJump(float ground, bool onlyJumpDown, bool mustJump)
 {
 	// don't try to jump again.
@@ -141,8 +135,6 @@ bool CCSBot::DiscontinuityJump(float ground, bool onlyJumpDown, bool mustJump)
 }
 
 // Find "simple" ground height, treating current nav area as part of the floor
-
-/* <37c448> ../cstrike/dlls/bot/cs_bot_nav.cpp:154 */
 bool CCSBot::GetSimpleGroundHeightWithFloor(const Vector *pos, float *height, Vector *normal)
 {
 	if (GetSimpleGroundHeight(pos, height, normal))
@@ -159,7 +151,6 @@ bool CCSBot::GetSimpleGroundHeightWithFloor(const Vector *pos, float *height, Ve
 	return false;
 }
 
-/* <37c4b8> ../cstrike/dlls/bot/cs_bot_nav.cpp:172 */
 Place CCSBot::GetPlace() const
 {
 	if (m_lastKnownArea != NULL)
@@ -168,7 +159,6 @@ Place CCSBot::GetPlace() const
 	return UNDEFINED_PLACE;
 }
 
-/* <37c4de> ../cstrike/dlls/bot/cs_bot_nav.cpp:184 */
 void CCSBot::MoveTowardsPosition(const Vector *pos)
 {
 	// Jump up on ledges
@@ -179,8 +169,8 @@ void CCSBot::MoveTowardsPosition(const Vector *pos)
 
 	// NOTE: We need to do this frequently to catch edges at the right time
 	// TODO: Look ahead *along path* instead of straight line
-	if ((m_lastKnownArea == NULL || !(m_lastKnownArea->GetAttributes() & NAV_NO_JUMP)) &&
-		!IsOnLadder() && !m_isJumpCrouching)
+	if ((m_lastKnownArea == NULL || !(m_lastKnownArea->GetAttributes() & NAV_NO_JUMP))
+		&& !IsOnLadder() && !m_isJumpCrouching)
 	{
 		float ground;
 		Vector aheadRay(pos->x - pev->origin.x, pos->y - pev->origin.y, 0);
@@ -263,8 +253,6 @@ void CCSBot::MoveTowardsPosition(const Vector *pos)
 }
 
 // Move away from position, independant of view angle
-
-/* <37ca96> ../cstrike/dlls/bot/cs_bot_nav.cpp:282 */
 NOXREF void CCSBot::MoveAwayFromPosition(const Vector *pos)
 {
 	// compute our current forward and lateral vectors
@@ -294,8 +282,6 @@ NOXREF void CCSBot::MoveAwayFromPosition(const Vector *pos)
 }
 
 // Strafe (sidestep) away from position, independant of view angle
-
-/* <37cb85> ../cstrike/dlls/bot/cs_bot_nav.cpp:314 */
 void CCSBot::StrafeAwayFromPosition(const Vector *pos)
 {
 	// compute our current forward and lateral vectors
@@ -317,8 +303,6 @@ void CCSBot::StrafeAwayFromPosition(const Vector *pos)
 }
 
 // For getting un-stuck
-
-/* <37cc52> ../cstrike/dlls/bot/cs_bot_nav.cpp:338 */
 void CCSBot::Wiggle()
 {
 	if (IsCrouching())
@@ -361,8 +345,6 @@ void CCSBot::Wiggle()
 }
 
 // Determine approach points from eye position and approach areas of current area
-
-/* <37cc94> ../cstrike/dlls/bot/cs_bot_nav.cpp:383 */
 void CCSBot::ComputeApproachPoints()
 {
 	m_approachPointCount = 0;
@@ -407,7 +389,6 @@ void CCSBot::ComputeApproachPoints()
 	}
 }
 
-/* <37cd67> ../cstrike/dlls/bot/cs_bot_nav.cpp:422 */
 void CCSBot::DrawApproachPoints()
 {
 	for (int i = 0; i < m_approachPointCount; ++i)
@@ -417,8 +398,6 @@ void CCSBot::DrawApproachPoints()
 }
 
 // Find the approach point that is nearest to our current path, ahead of us
-
-/* <37ce12> ../cstrike/dlls/bot/cs_bot_nav.cpp:435 */
 NOXREF bool CCSBot::FindApproachPointNearestPath(Vector *pos)
 {
 	if (!HasPath())

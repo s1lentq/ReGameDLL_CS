@@ -39,7 +39,6 @@
 #define SF_ENVEXPLOSION_NODECAL		(1<<4)	// don't make a scorch mark
 #define SF_ENVEXPLOSION_NOSPARKS	(1<<5)	// don't make a scorch mark
 
-/* <7e4a8> ../cstrike/dlls/explode.cpp:29 */
 class CShower: public CBaseEntity
 {
 public:
@@ -54,11 +53,10 @@ public:
 	void Think_();
 	void Touch_(CBaseEntity *pOther);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 };
 
-/* <7e66b> ../cstrike/dlls/explode.cpp:84 */
 class CEnvExplosion: public CBaseMonster
 {
 public:
@@ -76,7 +74,7 @@ public:
 	int Restore_(CRestore &restore);
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	void EXPORT Smoke();

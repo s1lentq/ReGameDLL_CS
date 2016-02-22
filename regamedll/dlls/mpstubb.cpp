@@ -2,67 +2,56 @@
 
 CGraph WorldGraph;
 
-/* <fc409> ../cstrike/dlls/mpstubb.cpp:32 */
 void CGraph::InitGraph()
 {
 	;
 }
 
-/* <fc436> ../cstrike/dlls/mpstubb.cpp:33 */
 int CGraph::FLoadGraph(char *szMapName)
 {
 	return 0;
 }
 
-/* <fc46c> ../cstrike/dlls/mpstubb.cpp:34 */
 int CGraph::AllocNodes()
 {
 	return 0;
 }
 
-/* <fc494> ../cstrike/dlls/mpstubb.cpp:35 */
 int CGraph::CheckNODFile(char *szMapName)
 {
 	return 0;
 }
 
-/* <fc4ca> ../cstrike/dlls/mpstubb.cpp:36 */
 int CGraph::FSetGraphPointers()
 {
 	return 0;
 }
 
-/* <fc4f2> ../cstrike/dlls/mpstubb.cpp:37 */
 void CGraph::ShowNodeConnections(int iNode)
 {
 	;
 }
 
-/* <fc528> ../cstrike/dlls/mpstubb.cpp:38 */
 int CGraph::FindNearestNode(const Vector &vecOrigin, int afNodeTypes)
 {
 	return 0;
 }
 
-/* <fc528> ../cstrike/dlls/mpstubb.cpp:38 */
 int CGraph::FindNearestNode(const Vector &vecOrigin, CBaseEntity *pEntity)
 {
 	return 0;
 }
 
-/* <fc023> ../cstrike/dlls/mpstubb.cpp:45 */
 float CBaseMonster::__MAKE_VHOOK(ChangeYaw)(int speed)
 {
 	return 0.0f;
 }
 
-/* <fc571> ../cstrike/dlls/mpstubb.cpp:46 */
 void CBaseMonster::MakeIdealYaw(Vector vecTarget)
 {
 	;
 }
 
-/* <fc5a6> ../cstrike/dlls/mpstubb.cpp:49 */
 NOXREF void CBaseMonster::CorpseFallThink()
 {
 	if (pev->flags & FL_ONGROUND)
@@ -74,10 +63,9 @@ NOXREF void CBaseMonster::CorpseFallThink()
 		UTIL_SetOrigin(pev, pev->origin);
 	}
 	else
-		pev->nextthink = gpGlobals->time + 0.1;
+		pev->nextthink = gpGlobals->time + 0.1f;
 }
 
-/* <fc2a1> ../cstrike/dlls/mpstubb.cpp:62 */
 void CBaseMonster::__MAKE_VHOOK(MonsterInitDead)()
 {
 	InitBoneControllers();
@@ -97,28 +85,24 @@ void CBaseMonster::__MAKE_VHOOK(MonsterInitDead)()
 
 	BecomeDead();
 	SetThink(&CBaseEntity::SUB_Remove);
-	pev->nextthink = gpGlobals->time + 0.5;
+	pev->nextthink = gpGlobals->time + 0.5f;
 }
 
-/* <fc057> ../cstrike/dlls/mpstubb.cpp:89 */
 BOOL CBaseMonster::__MAKE_VHOOK(ShouldFadeOnDeath)()
 {
 	return FALSE;
 }
 
-/* <fc5cd> ../cstrike/dlls/mpstubb.cpp:94 */
 BOOL CBaseMonster::FCheckAITrigger()
 {
 	return FALSE;
 }
 
-/* <fc26d> ../cstrike/dlls/mpstubb.cpp:99 */
 void CBaseMonster::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	CBaseToggle::KeyValue(pkvd);
 }
 
-/* <fc07d> ../cstrike/dlls/mpstubb.cpp:104 */
 int CBaseMonster::__MAKE_VHOOK(IRelationship)(CBaseEntity *pTarget)
 {
 	static int const iEnemy[14][14] =
@@ -152,8 +136,6 @@ int CBaseMonster::__MAKE_VHOOK(IRelationship)(CBaseEntity *pTarget)
 // Function also sets the Looker's m_pLink
 // to the head of a link list that contains all visible ents.
 // (linked via each ent's m_pLink field)
-
-/* <fc0e4> ../cstrike/dlls/mpstubb.cpp:140 */
 void CBaseMonster::__MAKE_VHOOK(Look)(int iDistance)
 {
 	int iSighted = 0;
@@ -231,8 +213,6 @@ void CBaseMonster::__MAKE_VHOOK(Look)(int iDistance)
 //
 // UNDONE: currently, this only returns the closest enemy.
 // we'll want to consider distance, relationship, attack types, back turned, etc.
-
-/* <fc317> ../cstrike/dlls/mpstubb.cpp:220 */
 CBaseEntity *CBaseMonster::__MAKE_VHOOK(BestVisibleEnemy)()
 {
 	CBaseEntity *pReturn;

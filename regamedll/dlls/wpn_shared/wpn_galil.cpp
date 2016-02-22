@@ -1,9 +1,7 @@
 #include "precompiled.h"
 
-/* <2c5a1c> ../cstrike/dlls/wpn_shared/wpn_galil.cpp:50 */
 LINK_ENTITY_TO_CLASS(weapon_galil, CGalil);
 
-/* <2c57b0> ../cstrike/dlls/wpn_shared/wpn_galil.cpp:52 */
 void CGalil::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
@@ -16,7 +14,6 @@ void CGalil::__MAKE_VHOOK(Spawn)()
 	FallInit();
 }
 
-/* <2c5709> ../cstrike/dlls/wpn_shared/wpn_galil.cpp:65 */
 void CGalil::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/v_galil.mdl");
@@ -32,7 +29,6 @@ void CGalil::__MAKE_VHOOK(Precache)()
 	m_usFireGalil = PRECACHE_EVENT(1, "events/galil.sc");
 }
 
-/* <2c5730> ../cstrike/dlls/wpn_shared/wpn_galil.cpp:81 */
 int CGalil::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
@@ -50,7 +46,6 @@ int CGalil::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	return 1;
 }
 
-/* <2c5789> ../cstrike/dlls/wpn_shared/wpn_galil.cpp:98 */
 BOOL CGalil::__MAKE_VHOOK(Deploy)()
 {
 	m_flAccuracy = 0.2f;
@@ -60,13 +55,11 @@ BOOL CGalil::__MAKE_VHOOK(Deploy)()
 	return DefaultDeploy("models/v_galil.mdl", "models/p_galil.mdl", GALIL_DRAW, "ak47", UseDecrement() != FALSE);
 }
 
-/* <2c5763> ../cstrike/dlls/wpn_shared/wpn_galil.cpp:107 */
 void CGalil::__MAKE_VHOOK(SecondaryAttack)()
 {
 	;
 }
 
-/* <2c59d2> ../cstrike/dlls/wpn_shared/wpn_galil.cpp:111 */
 void CGalil::__MAKE_VHOOK(PrimaryAttack)()
 {
 	if (m_pPlayer->pev->waterlevel == 3)
@@ -90,7 +83,6 @@ void CGalil::__MAKE_VHOOK(PrimaryAttack)()
 	}
 }
 
-/* <2c5ae6> ../cstrike/dlls/wpn_shared/wpn_galil.cpp:129 */
 void CGalil::GalilFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 {
 	Vector vecAiming, vecSrc, vecDir;
@@ -136,10 +128,10 @@ void CGalil::GalilFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	flag = FEV_NOTHOST;
 #else
 	flag = 0;
-#endif // CLIENT_WEAPONS
+#endif
 
 	PLAYBACK_EVENT_FULL(flag, m_pPlayer->edict(), m_usFireGalil, 0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y,
-		(int)(m_pPlayer->pev->punchangle.x * 10000000), (int)(m_pPlayer->pev->punchangle.y * 10000000), FALSE, FALSE);
+		int(m_pPlayer->pev->punchangle.x * 10000000), int(m_pPlayer->pev->punchangle.y * 10000000), FALSE, FALSE);
 
 	m_pPlayer->m_iWeaponVolume = NORMAL_GUN_VOLUME;
 	m_pPlayer->m_iWeaponFlash = BRIGHT_GUN_FLASH;
@@ -171,14 +163,13 @@ void CGalil::GalilFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	}
 }
 
-/* <2c5861> ../cstrike/dlls/wpn_shared/wpn_galil.cpp:210 */
 void CGalil::__MAKE_VHOOK(Reload)()
 {
 #ifdef REGAMEDLL_FIXES
 	// to prevent reload if not enough ammo
 	if (m_pPlayer->ammo_556nato <= 0)
 		return;
-#endif // REGAMEDLL_FIXES
+#endif
 
 	if (DefaultReload(GALIL_MAX_CLIP, GALIL_RELOAD, GALIL_RELOAD_TIME))
 	{
@@ -190,7 +181,6 @@ void CGalil::__MAKE_VHOOK(Reload)()
 	}
 }
 
-/* <2c5826> ../cstrike/dlls/wpn_shared/wpn_galil.cpp:232 */
 void CGalil::__MAKE_VHOOK(WeaponIdle)()
 {
 	ResetEmptySound();

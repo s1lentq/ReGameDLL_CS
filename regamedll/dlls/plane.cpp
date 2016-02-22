@@ -1,12 +1,10 @@
 #include "precompiled.h"
 
-/* <1262b3> ../cstrike/dlls/plane.cpp:24 */
 CPlane::CPlane()
 {
 	m_fInitialized = FALSE;
 }
 
-/* <1262d4> ../cstrike/dlls/plane.cpp:33 */
 NOXREF void CPlane::InitializePlane(const Vector &vecNormal, const Vector &vecPoint)
 {
 	m_vecNormal = vecNormal;
@@ -14,7 +12,6 @@ NOXREF void CPlane::InitializePlane(const Vector &vecNormal, const Vector &vecPo
 	m_flDist = DotProduct(m_vecNormal, vecPoint);
 }
 
-/* <126343> ../cstrike/dlls/plane.cpp:45 */
 NOXREF BOOL CPlane::PointInFront(const Vector &vecPoint)
 {
 	if (!m_fInitialized)

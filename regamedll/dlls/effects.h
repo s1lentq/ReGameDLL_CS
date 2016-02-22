@@ -68,7 +68,6 @@
 #define SF_MESSAGE_ONCE			0x0001	// Fade in, not out
 #define SF_MESSAGE_ALL			0x0002	// Send to all clients
 
-/* <7249d> ../cstrike/dlls/effects.h:33 */
 class CSprite: public CPointEntity
 {
 public:
@@ -96,14 +95,14 @@ public:
 	int Restore_(CRestore &restore);
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	void EXPORT AnimateThink();
 	void EXPORT ExpandThink();
 
 	void Animate(float frames);
-	NOXREF void Expand(float scaleSpeed, float fadeSpeed);
+	void Expand(float scaleSpeed, float fadeSpeed);
 	void SpriteInit(const char *pSpriteName, const Vector &origin);
 
 	void SetAttachment(edict_t *pEntity, int attachment)
@@ -131,10 +130,10 @@ public:
 		pev->renderfx = fx;
 	}
 
-	void SetTexture(int spriteIndex)	{ pev->modelindex = spriteIndex; }
-	void SetScale(float scale)		{ pev->scale = scale; }
-	void SetColor(int r, int g, int b)	{ pev->rendercolor.x = r; pev->rendercolor.y = g; pev->rendercolor.z = b; }
-	void SetBrightness(int brightness)	{ pev->renderamt = brightness; }
+	void SetTexture(int spriteIndex) { pev->modelindex = spriteIndex; }
+	void SetScale(float scale) { pev->scale = scale; }
+	void SetColor(int r, int g, int b) { pev->rendercolor.x = r; pev->rendercolor.y = g; pev->rendercolor.z = b; }
+	void SetBrightness(int brightness) { pev->renderamt = brightness; }
 
 	void AnimateAndDie(float_precision framerate)
 	{
@@ -154,7 +153,6 @@ private:
 	float m_maxFrame;
 };
 
-/* <723cb> ../cstrike/dlls/effects.h:105 */
 class CBeam: public CBaseEntity
 {
 public:
@@ -175,42 +173,42 @@ public:
 	void Spawn_();
 	void Precache_();
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	void EXPORT TriggerTouch(CBaseEntity *pOther);
 
-	void SetType(int type)			{ pev->rendermode = (pev->rendermode & 0xF0) | (type & 0x0F); }
-	void SetFlags(int flags)		{ pev->rendermode = (pev->rendermode & 0x0F) | (flags & 0xF0); }
-	void SetStartPos(const Vector &pos)	{ pev->origin = pos; }
-	void SetEndPos(const Vector &pos)	{ pev->angles = pos; }
+	void SetType(int type) { pev->rendermode = (pev->rendermode & 0xF0) | (type & 0x0F); }
+	void SetFlags(int flags) { pev->rendermode = (pev->rendermode & 0x0F) | (flags & 0xF0); }
+	void SetStartPos(const Vector &pos) { pev->origin = pos; }
+	void SetEndPos(const Vector &pos) { pev->angles = pos; }
 
 	void SetStartEntity(int entityIndex);
 	void SetEndEntity(int entityIndex);
 
-	void SetStartAttachment(int attachment)	{ pev->sequence = (pev->sequence & 0x0FFF) | ((attachment & 0xF) << 12); }
-	void SetEndAttachment(int attachment)	{ pev->skin = (pev->skin & 0x0FFF) | ((attachment & 0xF) << 12); }
-	void SetTexture(int spriteIndex)	{ pev->modelindex = spriteIndex; }
-	void SetWidth(int width)		{ pev->scale = width; }
-	void SetNoise(int amplitude)		{ pev->body = amplitude; }
-	void SetColor(int r, int g, int b)	{ pev->rendercolor.x = r; pev->rendercolor.y = g; pev->rendercolor.z = b; }
-	void SetBrightness(int brightness)	{ pev->renderamt = brightness;}
-	void SetFrame(float frame)		{ pev->frame = frame; }
-	void SetScrollRate(int speed)		{ pev->animtime = speed; }
-	int GetType() const			{ return pev->rendermode & 0x0F; }
-	int GetFlags() const			{ return pev->rendermode & 0xF0; }
-	int GetStartEntity() const		{ return pev->sequence & 0xFFF; }
-	int GetEndEntity() const		{ return pev->skin & 0xFFF; }
+	void SetStartAttachment(int attachment) { pev->sequence = (pev->sequence & 0x0FFF) | ((attachment & 0xF) << 12); }
+	void SetEndAttachment(int attachment) { pev->skin = (pev->skin & 0x0FFF) | ((attachment & 0xF) << 12); }
+	void SetTexture(int spriteIndex) { pev->modelindex = spriteIndex; }
+	void SetWidth(int width) { pev->scale = width; }
+	void SetNoise(int amplitude) { pev->body = amplitude; }
+	void SetColor(int r, int g, int b) { pev->rendercolor.x = r; pev->rendercolor.y = g; pev->rendercolor.z = b; }
+	void SetBrightness(int brightness) { pev->renderamt = brightness; }
+	void SetFrame(float frame) { pev->frame = frame; }
+	void SetScrollRate(int speed) { pev->animtime = speed; }
+	int GetType() const { return pev->rendermode & 0x0F; }
+	int GetFlags() const { return pev->rendermode & 0xF0; }
+	int GetStartEntity() const { return pev->sequence & 0xFFF; }
+	int GetEndEntity() const { return pev->skin & 0xFFF; }
 
 	const Vector &GetStartPos();
 	const Vector &GetEndPos();
 
-	int GetTexture() const			{ return pev->modelindex; }
-	int GetWidth() const			{ return pev->scale; }
-	int GetNoise() const			{ return pev->body; }
-	int GetBrightness() const		{ return pev->renderamt; }
-	int GetFrame() const			{ return pev->frame; }
-	int GetScrollRate() const		{ return pev->animtime; }
+	int GetTexture() const { return pev->modelindex; }
+	int GetWidth() const { return pev->scale; }
+	int GetNoise() const { return pev->body; }
+	int GetBrightness() const { return pev->renderamt; }
+	int GetFrame() const { return pev->frame; }
+	int GetScrollRate() const { return pev->animtime; }
 
 	void RelinkBeam();
 	void DoSparks(const Vector &start, const Vector &end);
@@ -237,7 +235,6 @@ public:
 	}
 };
 
-/* <72402> ../cstrike/dlls/effects.h:188 */
 class CLaser: public CBeam
 {
 public:
@@ -257,7 +254,7 @@ public:
 	int Restore_(CRestore &restore);
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	void TurnOn();
@@ -275,7 +272,6 @@ public:
 	Vector m_firePosition;
 };
 
-/* <7237e> ../cstrike/dlls/effects.cpp:36 */
 class CBubbling: public CBaseEntity
 {
 public:
@@ -296,7 +292,7 @@ public:
 	int Restore_(CRestore &restore);
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	void EXPORT FizzThink();
@@ -310,7 +306,6 @@ public:
 	int m_state;
 };
 
-/* <723e6> ../cstrike/dlls/effects.cpp:357 */
 class CLightning: public CBeam
 {
 public:
@@ -330,7 +325,7 @@ public:
 	int Restore_(CRestore &restore);
 	void Activate_();
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	void EXPORT StrikeThink();
@@ -368,7 +363,6 @@ public:
 	float m_radius;
 };
 
-/* <7244f> ../cstrike/dlls/effects.cpp:1085 */
 class CGlow: public CPointEntity
 {
 public:
@@ -384,7 +378,7 @@ public:
 	int Restore_(CRestore &restore);
 	void Think_();
 
-#endif // HOOK_GAMEDLL
+#endif
 
 	void Animate(float frames);
 
@@ -395,7 +389,6 @@ public:
 	float m_maxFrame;
 };
 
-/* <724b8> ../cstrike/dlls/effects.cpp:1146 */
 class CBombGlow: public CSprite
 {
 public:
@@ -407,7 +400,7 @@ public:
 	void Spawn_();
 	void Think_();
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	float m_lastTime;
@@ -415,7 +408,6 @@ public:
 	bool m_bSetModel;
 };
 
-/* <72581> ../cstrike/dlls/effects.cpp:1413 */
 class CGibShooter: public CBaseDelay
 {
 public:
@@ -437,7 +429,7 @@ public:
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 	CGib *CreateGib_();
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	void EXPORT ShootThink();
@@ -455,7 +447,6 @@ public:
 	float m_flGibLife;
 };
 
-/* <725ef> ../cstrike/dlls/effects.cpp:1592 */
 class CEnvShooter: public CGibShooter
 {
 public:
@@ -469,13 +460,12 @@ public:
 	void KeyValue_(KeyValueData *pkvd);
 	CGib *CreateGib_();
 
-#endif // HOOK_GAMEDLL
+#endif
 
 };
 
 #define MAX_BEAM 24
 
-/* <7263d> ../cstrike/dlls/effects.cpp:1679 */
 class CTestEffect: public CBaseDelay
 {
 public:
@@ -489,7 +479,7 @@ public:
 	void Precache_();
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	void EXPORT TestThink();
@@ -504,7 +494,6 @@ public:
 	float m_flStartTime;
 };
 
-/* <72690> ../cstrike/dlls/effects.cpp:1769 */
 class CBlood: public CPointEntity
 {
 public:
@@ -518,21 +507,20 @@ public:
 	void KeyValue_(KeyValueData *pkvd);
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
-	int Color() const			{ return pev->impulse; }
-	float BloodAmount() const		{ return pev->dmg; }
+	int Color() const { return pev->impulse; }
+	float BloodAmount() const { return pev->dmg; }
 
-	void SetColor(int color)		{ pev->impulse = color; }
-	void SetBloodAmount(float amount)	{ pev->dmg = amount; }
+	void SetColor(int color) { pev->impulse = color; }
+	void SetBloodAmount(float amount) { pev->dmg = amount; }
 
 public:
 	Vector Direction();
 	Vector BloodPosition(CBaseEntity *pActivator);
 };
 
-/* <726de> ../cstrike/dlls/effects.cpp:1886 */
 class CShake: public CPointEntity
 {
 public:
@@ -546,21 +534,20 @@ public:
 	void KeyValue_(KeyValueData *pkvd);
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
-	float Amplitude() const			{ return pev->scale; }
-	float Frequency() const			{ return pev->dmg_save; }
-	float Duration() const			{ return pev->dmg_take; }
-	float Radius() const			{ return pev->dmg; }
+	float Amplitude() const { return pev->scale; }
+	float Frequency() const { return pev->dmg_save; }
+	float Duration() const { return pev->dmg_take; }
+	float Radius() const { return pev->dmg; }
 
-	void SetAmplitude(float amplitude)	{ pev->scale = amplitude; }
-	void SetFrequency(float frequency)	{ pev->dmg_save = frequency; }
-	void SetDuration(float duration)	{ pev->dmg_take = duration; }
-	void SetRadius(float radius)		{ pev->dmg = radius; }
+	void SetAmplitude(float amplitude) { pev->scale = amplitude; }
+	void SetFrequency(float frequency) { pev->dmg_save = frequency; }
+	void SetDuration(float duration) { pev->dmg_take = duration; }
+	void SetRadius(float radius) { pev->dmg = radius; }
 };
 
-/* <7272c> ../cstrike/dlls/effects.cpp:1964 */
 class CFade: public CPointEntity
 {
 public:
@@ -574,17 +561,16 @@ public:
 	void KeyValue_(KeyValueData *pkvd);
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	float Duration() const { return pev->dmg_take; }
 	float HoldTime() const { return pev->dmg_save; }
 
-	void SetDuration(float duration)	{ pev->dmg_take = duration; }
-	void SetHoldTime(float hold)		{ pev->dmg_save = hold; }
+	void SetDuration(float duration) { pev->dmg_take = duration; }
+	void SetHoldTime(float hold) { pev->dmg_save = hold; }
 };
 
-/* <7277a> ../cstrike/dlls/effects.cpp:2038 */
 class CMessage: public CPointEntity
 {
 public:
@@ -600,11 +586,10 @@ public:
 	void KeyValue_(KeyValueData *pkvd);
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 };
 
-/* <727c8> ../cstrike/dlls/effects.cpp:2145 */
 class CEnvFunnel: public CBaseDelay
 {
 public:
@@ -618,13 +603,12 @@ public:
 	void Precache_();
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	int m_iSprite;
 };
 
-/* <7281b> ../cstrike/dlls/effects.cpp:2199 */
 class CEnvBeverage: public CBaseDelay
 {
 public:
@@ -638,11 +622,10 @@ public:
 	void Precache_();
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 };
 
-/* <72869> ../cstrike/dlls/effects.cpp:2258 */
 class CItemSoda: public CBaseEntity
 {
 public:
@@ -654,7 +637,7 @@ public:
 	void Spawn_();
 	void Precache_();
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	void EXPORT CanThink();

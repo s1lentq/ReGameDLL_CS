@@ -14,12 +14,10 @@ TYPEDESCRIPTION CBaseAnimating::m_SaveData[] =
 	DEFINE_FIELD(CBaseMonster, m_fSequenceLoops, FIELD_BOOLEAN),
 };
 
-#endif // HOOK_GAMEDLL
+#endif
 
-/* <10583> ../cstrike/dlls/animating.cpp:38 */
 IMPLEMENT_SAVERESTORE(CBaseAnimating, CBaseDelay);
 
-/* <105cf> ../cstrike/dlls/animating.cpp:45 */
 float CBaseAnimating::StudioFrameAdvance(float flInterval)
 {
 	if (flInterval == 0.0f)
@@ -42,7 +40,7 @@ float CBaseAnimating::StudioFrameAdvance(float flInterval)
 	if (pev->frame < 0.0 || pev->frame >= 256.0)
 	{
 		if (m_fSequenceLoops)
-			pev->frame -= (int)(pev->frame / 256.0) * 256.0;
+			pev->frame -= int(pev->frame / 256.0) * 256.0;
 		else
 			pev->frame = (pev->frame < 0) ? 0 : 255;
 
@@ -52,21 +50,18 @@ float CBaseAnimating::StudioFrameAdvance(float flInterval)
 	return flInterval;
 }
 
-/* <10605> ../cstrike/dlls/animating.cpp:77 */
 int CBaseAnimating::LookupActivity(int activity)
 {
 	void *pmodel = GET_MODEL_PTR(ENT(pev));
 	return ::LookupActivity(pmodel, pev, activity);
 }
 
-/* <10653> ../cstrike/dlls/animating.cpp:91 */
 int CBaseAnimating::LookupActivityHeaviest(int activity)
 {
 	void *pmodel = GET_MODEL_PTR(ENT(pev));
 	return ::LookupActivityHeaviest(pmodel, pev, activity);
 }
 
-/* <107b1> ../cstrike/dlls/animating.cpp:136 */
 void CBaseAnimating::DispatchAnimEvents(float flInterval)
 {
 	MonsterEvent_t event;
@@ -100,14 +95,12 @@ void CBaseAnimating::DispatchAnimEvents(float flInterval)
 	}
 }
 
-/* <106a1> ../cstrike/dlls/animating.cpp:100 */
 int CBaseAnimating::LookupSequence(const char *label)
 {
 	void *pmodel = GET_MODEL_PTR(ENT(pev));
 	return ::LookupSequence(pmodel, label);
 }
 
-/* <10711> ../cstrike/dlls/animating.cpp:110 */
 void CBaseAnimating::ResetSequenceInfo()
 {
 	void *pmodel = GET_MODEL_PTR(ENT(pev));
@@ -121,14 +114,12 @@ void CBaseAnimating::ResetSequenceInfo()
 	m_flLastEventCheck = gpGlobals->time;
 }
 
-/* <1077c> ../cstrike/dlls/animating.cpp:126 */
 BOOL CBaseAnimating::GetSequenceFlags()
 {
 	void *pmodel = GET_MODEL_PTR(ENT(pev));
 	return ::GetSequenceFlags(pmodel, pev);
 }
 
-/* <10837> ../cstrike/dlls/animating.cpp:171 */
 float CBaseAnimating::SetBoneController(int iController, float flValue)
 {
 	void *pmodel = GET_MODEL_PTR(ENT(pev));
@@ -136,7 +127,6 @@ float CBaseAnimating::SetBoneController(int iController, float flValue)
 	return SetController(pmodel, pev, iController, flValue);
 }
 
-/* <10893> ../cstrike/dlls/animating.cpp:180 */
 void CBaseAnimating::InitBoneControllers()
 {
 	void *pmodel = GET_MODEL_PTR(ENT(pev));
@@ -147,26 +137,22 @@ void CBaseAnimating::InitBoneControllers()
 	SetController(pmodel, pev, 3, 0);
 }
 
-/* <108d3> ../cstrike/dlls/animating.cpp:192 */
 NOXREF float CBaseAnimating::SetBlending(int iBlender, float flValue)
 {
 	void *pmodel = GET_MODEL_PTR(ENT(pev));
 	return ::SetBlending(pmodel, pev, iBlender, flValue);
 }
 
-/* <1092f> ../cstrike/dlls/animating.cpp:201 */
 NOXREF void CBaseAnimating::GetBonePosition(int iBone, Vector &origin, Vector &angles)
 {
 	GET_BONE_POSITION(ENT(pev), iBone, origin, angles);
 }
 
-/* <10984> ../cstrike/dlls/animating.cpp:208 */
 NOXREF void CBaseAnimating::GetAttachment(int iAttachment, Vector &origin, Vector &angles)
 {
 	GET_ATTACHMENT(ENT(pev), iAttachment, origin, angles);
 }
 
-/* <109d4> ../cstrike/dlls/animating.cpp:215 */
 NOXREF int CBaseAnimating::FindTransition(int iEndingSequence, int iGoalSequence, int *piDir)
 {
 	void *pmodel = GET_MODEL_PTR(ENT(pev));
@@ -185,31 +171,26 @@ NOXREF int CBaseAnimating::FindTransition(int iEndingSequence, int iGoalSequence
 	return ::FindTransition(pmodel, iEndingSequence, iGoalSequence, piDir);
 }
 
-/* <10a5d> ../cstrike/dlls/animating.cpp:234 */
 NOXREF void CBaseAnimating::GetAutomovement(Vector &origin, Vector &angles, float flInterval)
 {
 	;
 }
 
-/* <10aad> ../cstrike/dlls/animating.cpp:239 */
 NOXREF void CBaseAnimating::SetBodygroup(int iGroup, int iValue)
 {
 	::SetBodygroup(GET_MODEL_PTR(ENT(pev)), pev, iGroup, iValue);
 }
 
-/* <10af0> ../cstrike/dlls/animating.cpp:244 */
 NOXREF int CBaseAnimating::GetBodygroup(int iGroup)
 {
 	return ::GetBodygroup(GET_MODEL_PTR(ENT(pev)), pev, iGroup);
 }
 
-/* <10b5f> ../cstrike/dlls/animating.cpp:250 */
 int CBaseAnimating::ExtractBbox(int sequence, float *mins, float *maxs)
 {
 	return ::ExtractBbox(GET_MODEL_PTR(ENT(pev)), sequence, mins, maxs);
 }
 
-/* <10b99> ../cstrike/dlls/animating.cpp:258 */
 void CBaseAnimating::SetSequenceBox()
 {
 	Vector mins, maxs;
@@ -222,10 +203,10 @@ void CBaseAnimating::SetSequenceBox()
 		float yaw = pev->angles.y * (M_PI / 180.0);
 
 		Vector xvector, yvector;
-		xvector.x = cos(yaw);
-		xvector.y = sin(yaw);
-		yvector.x = -sin(yaw);
-		yvector.y = cos(yaw);
+		xvector.x = Q_cos(yaw);
+		xvector.y = Q_sin(yaw);
+		yvector.x = -Q_sin(yaw);
+		yvector.y = Q_cos(yaw);
 
 		Vector bounds[2];
 		bounds[0] = mins;

@@ -34,7 +34,6 @@
 
 class BotProfile;
 
-/* <36c175> ../game_shared/bot/bot.h:36 */
 template <class T>
 T *CreateBot(const BotProfile *profile)
 {
@@ -177,12 +176,12 @@ public:
 	void ExecuteCommand_();
 	void SetModel_(const char *modelName);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
-	unsigned int GetID() const 	{ return m_id; }
-	bool IsRunning() const		{ return m_isRunning; }
-	bool IsCrouching() const	{ return m_isCrouching; }
+	unsigned int GetID() const { return m_id; }
+	bool IsRunning() const { return m_isRunning; }
+	bool IsCrouching() const { return m_isCrouching; }
 
 	// push the current posture context onto the top of the stack
 	void PushPostureContext();
@@ -227,7 +226,7 @@ public:
 	bool IsLocalPlayerWatchingMe() const;
 
 	// output message to console
-	NOXREF void Print(char *format,...) const;
+	void Print(char *format,...) const;
 
 	// output message to console if we are being watched by the local player
 	void PrintIfWatched(char *format,...) const;
@@ -242,7 +241,7 @@ public:
 
 #ifndef HOOK_GAMEDLL
 protected:
-#endif // HOOK_GAMEDLL
+#endif
 	// Do a "client command" - useful for invoking menu choices, etc.
 	void ClientCommand(const char *cmd, const char *arg1 = NULL, const char *arg2 = NULL, const char *arg3 = NULL);
 
@@ -295,13 +294,11 @@ private:
 	int m_postureStackIndex;
 };
 
-/* <48f61d> ../game_shared/bot/bot.h:253 */
 inline void CBot::__MAKE_VHOOK(SetModel)(const char *modelName)
 {
 	SET_CLIENT_KEY_VALUE(entindex(), GET_INFO_BUFFER(edict()), "model", (char *)modelName);
 }
 
-/* <48e98a> ../game_shared/bot/bot.h:259 */
 inline float CBot::GetMoveSpeed()
 {
 	if (m_isRunning || m_isCrouching)
@@ -310,25 +307,21 @@ inline float CBot::GetMoveSpeed()
 	return 0.4f * pev->maxspeed;
 }
 
-/* <48f6a3> ../game_shared/bot/bot.h:269 */
 inline void CBot::Run()
 {
 	m_isRunning = true;
 }
 
-/* <48f6c9> ../game_shared/bot/bot.h:275 */
 inline void CBot::Walk()
 {
 	m_isRunning = false;
 }
 
-/* <5d3ed6> ../game_shared/bot/bot.h:281 */
 inline CBasePlayerWeapon *CBot::GetActiveWeapon() const
 {
 	return static_cast<CBasePlayerWeapon *>(m_pActiveItem);
 }
 
-/* <5c4d70> ../game_shared/bot/bot.h:287 */
 inline bool CBot::IsActiveWeaponReloading() const
 {
 	CBasePlayerWeapon *weapon = GetActiveWeapon();
@@ -338,25 +331,26 @@ inline bool CBot::IsActiveWeaponReloading() const
 	return (weapon->m_fInReload || weapon->m_fInSpecialReload) != 0;
 }
 
-/* <3c5c5c> ../game_shared/bot/bot.h:297 */
 inline bool CBot::IsActiveWeaponRecoilHigh() const
 {
-	CBasePlayerWeapon *gun = GetActiveWeapon();
-	if (gun != NULL)
+	CBasePlayerWeapon *weapon = GetActiveWeapon();
+	if (weapon != NULL)
 	{
 		const float highRecoil = 0.4f;
-		return (gun->m_flAccuracy > highRecoil) != 0;
+		return (weapon->m_flAccuracy > highRecoil) != 0;
 	}
+
 	return false;
 }
 
-/* <5194b2> ../game_shared/bot/bot.h:308 */
 inline void CBot::PushPostureContext()
 {
 	if (m_postureStackIndex == MAX_POSTURE_STACK)
 	{
-		if (pev)
+		if (pev != NULL)
+		{
 			PrintIfWatched("PushPostureContext() overflow error!\n");
+		}
 		return;
 	}
 
@@ -365,14 +359,14 @@ inline void CBot::PushPostureContext()
 	++m_postureStackIndex;
 }
 
-/* <519534> ../game_shared/bot/bot.h:323 */
 inline void CBot::PopPostureContext()
 {
 	if (m_postureStackIndex == 0)
 	{
-		if (pev)
+		if (pev != NULL)
+		{
 			PrintIfWatched("PopPostureContext() underflow error!\n");
-
+		}
 		m_isRunning = true;
 		m_isCrouching = false;
 		return;
@@ -383,7 +377,6 @@ inline void CBot::PopPostureContext()
 	m_isCrouching = m_postureStack[m_postureStackIndex].isCrouching;
 }
 
-/* <48fae3> ../game_shared/bot/bot.h:340 */
 inline bool CBot::__MAKE_VHOOK(IsPlayerFacingMe)(CBasePlayer *other) const
 {
 	Vector toOther = other->pev->origin - pev->origin;
@@ -396,7 +389,6 @@ inline bool CBot::__MAKE_VHOOK(IsPlayerFacingMe)(CBasePlayer *other) const
 	return false;
 }
 
-/* <48fbfc> ../game_shared/bot/bot.h:355 */
 inline bool CBot::__MAKE_VHOOK(IsPlayerLookingAtMe)(CBasePlayer *other) const
 {
 	Vector toOther = other->pev->origin - pev->origin;
@@ -421,8 +413,6 @@ extern float g_flBotFullThinkInterval;
 
 extern const char *BotArgs[4];
 extern bool UseBotArgs;
-
-class BotProfile;
 
 extern bool AreBotsAllowed();
 

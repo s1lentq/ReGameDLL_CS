@@ -35,8 +35,8 @@ TYPEDESCRIPTION CMultiManager::m_SaveData[] =
 // Global Savedata for changelevel trigger
 TYPEDESCRIPTION CChangeLevel::m_SaveData[] =
 {
-	DEFINE_ARRAY(CChangeLevel, m_szMapName, FIELD_CHARACTER, 32),
-	DEFINE_ARRAY(CChangeLevel, m_szLandmarkName, FIELD_CHARACTER, 32),
+	DEFINE_ARRAY(CChangeLevel, m_szMapName, FIELD_CHARACTER, cchMapNameMost),
+	DEFINE_ARRAY(CChangeLevel, m_szLandmarkName, FIELD_CHARACTER, cchMapNameMost),
 	DEFINE_FIELD(CChangeLevel, m_changeTarget, FIELD_STRING),
 	DEFINE_FIELD(CChangeLevel, m_changeTargetDelay, FIELD_FLOAT),
 };
@@ -68,13 +68,9 @@ TYPEDESCRIPTION CTriggerCamera::m_SaveData[] =
 char st_szNextMap[cchMapNameMost];
 char st_szNextSpot[cchMapNameMost];
 
-/* <1a257e> ../cstrike/dlls/triggers.cpp:60 */
 LINK_ENTITY_TO_CLASS(func_friction, CFrictionModifier);
-
-/* <1a0ad7> ../cstrike/dlls/triggers.cpp:68 */
 IMPLEMENT_SAVERESTORE(CFrictionModifier, CBaseEntity);
 
-/* <19fa7d> ../cstrike/dlls/triggers.cpp:72 */
 void CFrictionModifier::__MAKE_VHOOK(Spawn)()
 {
 	pev->solid = SOLID_TRIGGER;
@@ -87,8 +83,6 @@ void CFrictionModifier::__MAKE_VHOOK(Spawn)()
 }
 
 // Sets toucher's friction to m_frictionFraction (1.0 = normal friction)
-
-/* <19faa6> ../cstrike/dlls/triggers.cpp:82 */
 void CFrictionModifier::ChangeFriction(CBaseEntity *pOther)
 {
 	if (pOther->pev->movetype != MOVETYPE_BOUNCEMISSILE && pOther->pev->movetype != MOVETYPE_BOUNCE)
@@ -98,26 +92,20 @@ void CFrictionModifier::ChangeFriction(CBaseEntity *pOther)
 }
 
 // Sets toucher's friction to m_frictionFraction (1.0 = normal friction)
-
-/* <1a1c39> ../cstrike/dlls/triggers.cpp:91 */
 void CFrictionModifier::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "modifier"))
 	{
-		m_frictionFraction = Q_atof(pkvd->szValue) / 100.0;
+		m_frictionFraction = Q_atof(pkvd->szValue) / 100.0f;
 		pkvd->fHandled = TRUE;
 	}
 	else
 		CBaseEntity::KeyValue(pkvd);
 }
 
-/* <1a2657> ../cstrike/dlls/triggers.cpp:126 */
 LINK_ENTITY_TO_CLASS(trigger_auto, CAutoTrigger);
-
-/* <1a0a85> ../cstrike/dlls/triggers.cpp:134 */
 IMPLEMENT_SAVERESTORE(CAutoTrigger, CBaseDelay);
 
-/* <1a1b64> ../cstrike/dlls/triggers.cpp:136 */
 void CAutoTrigger::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "globalstate"))
@@ -146,19 +134,16 @@ void CAutoTrigger::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CBaseDelay::KeyValue(pkvd);
 }
 
-/* <19fb05> ../cstrike/dlls/triggers.cpp:165 */
 void CAutoTrigger::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
 }
 
-/* <19fb2d> ../cstrike/dlls/triggers.cpp:171 */
 void CAutoTrigger::__MAKE_VHOOK(Precache)()
 {
 	pev->nextthink = gpGlobals->time + 0.1f;
 }
 
-/* <19d48c> ../cstrike/dlls/triggers.cpp:177 */
 void CAutoTrigger::__MAKE_VHOOK(Think)()
 {
 	if (!m_globalstate || gGlobalState.EntityGetState(m_globalstate) == GLOBAL_ON)
@@ -172,13 +157,9 @@ void CAutoTrigger::__MAKE_VHOOK(Think)()
 	}
 }
 
-/* <1a2730> ../cstrike/dlls/triggers.cpp:207 */
 LINK_ENTITY_TO_CLASS(trigger_relay, CTriggerRelay);
-
-/* <1a0a33> ../cstrike/dlls/triggers.cpp:214 */
 IMPLEMENT_SAVERESTORE(CTriggerRelay, CBaseDelay);
 
-/* <1a1abc> ../cstrike/dlls/triggers.cpp:216 */
 void CTriggerRelay::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "triggerstate"))
@@ -202,13 +183,11 @@ void CTriggerRelay::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CBaseDelay::KeyValue(pkvd);
 }
 
-/* <19fb7e> ../cstrike/dlls/triggers.cpp:240 */
 void CTriggerRelay::__MAKE_VHOOK(Spawn)()
 {
 	;
 }
 
-/* <1a01d7> ../cstrike/dlls/triggers.cpp:247 */
 void CTriggerRelay::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	SUB_UseTargets(this, triggerType, 0);
@@ -218,13 +197,9 @@ void CTriggerRelay::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCal
 	}
 }
 
-/* <1a283f> ../cstrike/dlls/triggers.cpp:304 */
 LINK_ENTITY_TO_CLASS(multi_manager, CMultiManager);
-
-/* <1a09e0> ../cstrike/dlls/triggers.cpp:316 */
 IMPLEMENT_SAVERESTORE(CMultiManager, CBaseToggle);
 
-/* <1a19ed> ../cstrike/dlls/triggers.cpp:318 */
 void CMultiManager::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "wait"))
@@ -249,7 +224,6 @@ void CMultiManager::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 	}
 }
 
-/* <19fbce> ../cstrike/dlls/triggers.cpp:347 */
 void CMultiManager::__MAKE_VHOOK(Spawn)()
 {
 	pev->solid = SOLID_NOT;
@@ -281,7 +255,6 @@ void CMultiManager::__MAKE_VHOOK(Spawn)()
 	}
 }
 
-/* <1a03e5> ../cstrike/dlls/triggers.cpp:377 */
 void CMultiManager::__MAKE_VHOOK(Restart)()
 {
 	edict_t *pentTarget = NULL;
@@ -298,9 +271,9 @@ void CMultiManager::__MAKE_VHOOK(Restart)()
 		if (FNullEnt(pentTarget))
 			break;
 
-		CBaseEntity *pTarget = (CBaseEntity *)CBaseEntity::Instance(pentTarget);
+		CBaseEntity *pTarget = static_cast<CBaseEntity *>(CBaseEntity::Instance(pentTarget));
 
-		if (pTarget && !(pTarget->pev->flags & FL_KILLME))
+		if (pTarget != NULL && !(pTarget->pev->flags & FL_KILLME))
 		{
 			pTarget->Restart();
 		}
@@ -318,7 +291,6 @@ void CMultiManager::__MAKE_VHOOK(Restart)()
 	m_index = 0;
 }
 
-/* <1a1402> ../cstrike/dlls/triggers.cpp:420 */
 BOOL CMultiManager::__MAKE_VHOOK(HasTarget)(string_t targetname)
 {
 	for (int i = 0; i < m_cTargets; ++i)
@@ -334,8 +306,6 @@ BOOL CMultiManager::__MAKE_VHOOK(HasTarget)(string_t targetname)
 
 // Designers were using this to fire targets that may or may not exist --
 // so I changed it to use the standard target fire code, made it a little simpler.
-
-/* <1a0393> ../cstrike/dlls/triggers.cpp:432 */
 void CMultiManager::ManagerThink()
 {
 	float time;
@@ -364,7 +334,6 @@ void CMultiManager::ManagerThink()
 		pev->nextthink = m_startTime + m_flTargetDelay[ m_index ];
 }
 
-/* <1a291b> ../cstrike/dlls/triggers.cpp:457 */
 CMultiManager *CMultiManager::Clone()
 {
 	CMultiManager *pMulti = GetClassPtr((CMultiManager *)NULL);
@@ -383,8 +352,6 @@ CMultiManager *CMultiManager::Clone()
 }
 
 // The USE function builds the time table and starts the entity thinking.
-
-/* <1a2a24> ../cstrike/dlls/triggers.cpp:475 */
 void CMultiManager::ManagerUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	// In multiplayer games, clone the MM and execute in the clone (like a thread)
@@ -407,25 +374,20 @@ void CMultiManager::ManagerUse(CBaseEntity *pActivator, CBaseEntity *pCaller, US
 	pev->nextthink = gpGlobals->time;
 }
 
-/* <1a2ada> ../cstrike/dlls/triggers.cpp:532 */
 LINK_ENTITY_TO_CLASS(env_render, CRenderFxManager);
 
-/* <19fc52> ../cstrike/dlls/triggers.cpp:535 */
 void CRenderFxManager::__MAKE_VHOOK(Spawn)()
 {
 	pev->solid = SOLID_NOT;
 }
 
-/* <1a0c95> ../cstrike/dlls/triggers.cpp:540 */
 void CRenderFxManager::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	if (!FStringNull(pev->target))
 	{
 		edict_t *pentTarget = NULL;
-		while (true)
+		while ((pentTarget = FIND_ENTITY_BY_TARGETNAME(pentTarget, STRING(pev->target))) != NULL)
 		{
-			pentTarget = FIND_ENTITY_BY_TARGETNAME(pentTarget, STRING(pev->target));
-
 			if (FNullEnt(pentTarget))
 				break;
 
@@ -446,10 +408,8 @@ void CRenderFxManager::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *p
 	}
 }
 
-/* <1a2bb6> ../cstrike/dlls/triggers.cpp:583 */
 LINK_ENTITY_TO_CLASS(trigger, CBaseTrigger);
 
-/* <1a2c92> ../cstrike/dlls/triggers.cpp:590 */
 void CBaseTrigger::InitTrigger()
 {
 	// trigger angles are used for one-way touches.  An angle of 0 is assumed
@@ -472,8 +432,6 @@ void CBaseTrigger::InitTrigger()
 }
 
 // Cache user-entity-field values until spawn is called.
-
-/* <1a17cf> ../cstrike/dlls/triggers.cpp:608 */
 void CBaseTrigger::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "damage"))
@@ -483,7 +441,7 @@ void CBaseTrigger::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 	}
 	else if (FStrEq(pkvd->szKeyName, "count"))
 	{
-		m_cTriggersLeft = (int)Q_atof(pkvd->szValue);
+		m_cTriggersLeft = Q_atoi(pkvd->szValue);
 		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "damagetype"))
@@ -495,13 +453,9 @@ void CBaseTrigger::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CBaseToggle::KeyValue(pkvd);
 }
 
-/* <1a3060> ../cstrike/dlls/triggers.cpp:636 */
 LINK_ENTITY_TO_CLASS(trigger_hurt, CTriggerHurt);
-
-/* <1a313c> ../cstrike/dlls/triggers.cpp:649 */
 LINK_ENTITY_TO_CLASS(trigger_monsterjump, CTriggerMonsterJump);
 
-/* <1a2fdc> ../cstrike/dlls/triggers.cpp:652 */
 void CTriggerMonsterJump::__MAKE_VHOOK(Spawn)()
 {
 	SetMovedir(pev);
@@ -523,7 +477,6 @@ void CTriggerMonsterJump::__MAKE_VHOOK(Spawn)()
 	}
 }
 
-/* <1a00e4> ../cstrike/dlls/triggers.cpp:671 */
 void CTriggerMonsterJump::__MAKE_VHOOK(Think)()
 {
 	// kill the trigger for now UNDONE
@@ -534,7 +487,6 @@ void CTriggerMonsterJump::__MAKE_VHOOK(Think)()
 	SetThink(NULL);
 }
 
-/* <19fca2> ../cstrike/dlls/triggers.cpp:678 */
 void CTriggerMonsterJump::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 {
 	entvars_t *pevOther = pOther->pev;
@@ -559,13 +511,10 @@ void CTriggerMonsterJump::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 	pev->nextthink = gpGlobals->time;
 }
 
-/* <1a3218> ../cstrike/dlls/triggers.cpp:715 */
 LINK_ENTITY_TO_CLASS(trigger_cdaudio, CTriggerCDAudio);
 
 // Changes tracks or stops CD when player touches
 // HACK: overloaded HEALTH to avoid adding new field
-
-/* <1a2382> ../cstrike/dlls/triggers.cpp:721 */
 void CTriggerCDAudio::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 {
 	// only clients may trigger these events
@@ -577,19 +526,16 @@ void CTriggerCDAudio::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 	PlayTrack();
 }
 
-/* <1a2fb4> ../cstrike/dlls/triggers.cpp:731 */
 void CTriggerCDAudio::__MAKE_VHOOK(Spawn)()
 {
 	InitTrigger();
 }
 
-/* <1a2288> ../cstrike/dlls/triggers.cpp:736 */
 void CTriggerCDAudio::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	PlayTrack();
 }
 
-/* <19e08b> ../cstrike/dlls/triggers.cpp:741 */
 void PlayCDTrack(int iTrack)
 {
 	edict_t *pClient;
@@ -621,20 +567,16 @@ void PlayCDTrack(int iTrack)
 }
 
 // only plays for ONE client, so only use in single play!
-
-/* <1a3372> ../cstrike/dlls/triggers.cpp:773 */
 void CTriggerCDAudio::PlayTrack()
 {
-	PlayCDTrack((int)pev->health);
+	PlayCDTrack(int(pev->health));
 
 	SetTouch(NULL);
 	UTIL_Remove(this);
 }
 
-/* <1a340c> ../cstrike/dlls/triggers.cpp:794 */
 LINK_ENTITY_TO_CLASS(target_cdaudio, CTargetCDAudio);
 
-/* <1a170f> ../cstrike/dlls/triggers.cpp:796 */
 void CTargetCDAudio::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "radius"))
@@ -646,7 +588,6 @@ void CTargetCDAudio::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CPointEntity::KeyValue(pkvd);
 }
 
-/* <1a066a> ../cstrike/dlls/triggers.cpp:807 */
 void CTargetCDAudio::__MAKE_VHOOK(Spawn)()
 {
 	pev->solid = SOLID_NOT;
@@ -654,19 +595,16 @@ void CTargetCDAudio::__MAKE_VHOOK(Spawn)()
 
 	if (pev->scale > 0)
 	{
-		pev->nextthink = gpGlobals->time + 1.0;
+		pev->nextthink = gpGlobals->time + 1.0f;
 	}
 }
 
-/* <1a2175> ../cstrike/dlls/triggers.cpp:816 */
 void CTargetCDAudio::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	Play();
 }
 
 // only plays for ONE client, so only use in single play!
-
-/* <1a2465> ../cstrike/dlls/triggers.cpp:822 */
 void CTargetCDAudio::__MAKE_VHOOK(Think)()
 {
 	edict_t *pClient;
@@ -678,7 +616,7 @@ void CTargetCDAudio::__MAKE_VHOOK(Think)()
 	if (!pClient)
 		return;
 
-	pev->nextthink = gpGlobals->time + 0.5;
+	pev->nextthink = gpGlobals->time + 0.5f;
 
 	if ((pClient->v.origin - pev->origin).Length() <= pev->scale)
 	{
@@ -686,14 +624,12 @@ void CTargetCDAudio::__MAKE_VHOOK(Think)()
 	}
 }
 
-/* <1a34e8> ../cstrike/dlls/triggers.cpp:840 */
 void CTargetCDAudio::Play()
 {
-	PlayCDTrack((int)pev->health);
+	PlayCDTrack(int(pev->health));
 	UTIL_Remove(this);
 }
 
-/* <1a2f8b> ../cstrike/dlls/triggers.cpp:853 */
 void CTriggerHurt::__MAKE_VHOOK(Spawn)()
 {
 	InitTrigger();
@@ -727,8 +663,6 @@ void CTriggerHurt::__MAKE_VHOOK(Spawn)()
 // trigger hurt that causes radiation will do a radius
 // check and set the player's geiger counter level
 // according to distance from center of trigger
-
-/* <1a5df2> ../cstrike/dlls/triggers.cpp:883 */
 void CTriggerHurt::RadiationThink()
 {
 	edict_t *pentPlayer;
@@ -748,8 +682,8 @@ void CTriggerHurt::RadiationThink()
 	origin = pev->origin;
 	view_ofs = pev->view_ofs;
 
-	pev->origin = (pev->absmin + pev->absmax) * 0.5;
-	pev->view_ofs = pev->view_ofs * 0.0;
+	pev->origin = (pev->absmin + pev->absmax) * 0.5f;
+	pev->view_ofs = pev->view_ofs * 0.0f;
 
 	pentPlayer = FIND_CLIENT_IN_PVS(edict());
 
@@ -764,8 +698,8 @@ void CTriggerHurt::RadiationThink()
 		pevTarget = VARS(pentPlayer);
 
 		// get range to player;
-		vecSpot1 = (pev->absmin + pev->absmax) * 0.5;
-		vecSpot2 = (pevTarget->absmin + pevTarget->absmax) * 0.5;
+		vecSpot1 = (pev->absmin + pev->absmax) * 0.5f;
+		vecSpot2 = (pevTarget->absmin + pevTarget->absmax) * 0.5f;
 
 		vecRange = vecSpot1 - vecSpot2;
 		flRange = vecRange.Length();
@@ -780,12 +714,10 @@ void CTriggerHurt::RadiationThink()
 		}
 	}
 
-	pev->nextthink = gpGlobals->time + 0.25;
+	pev->nextthink = gpGlobals->time + 0.25f;
 }
 
 // ToggleUse - If this is the USE function for a trigger, its state will toggle every time it's fired
-
-/* <1a007c> ../cstrike/dlls/triggers.cpp:942 */
 void CBaseTrigger::ToggleUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	if (pev->solid == SOLID_NOT)
@@ -806,8 +738,6 @@ void CBaseTrigger::ToggleUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_
 }
 
 // When touched, a hurt trigger does DMG points of damage each half-second
-
-/* <1a0d93> ../cstrike/dlls/triggers.cpp:959 */
 void CBaseTrigger::HurtTouch(CBaseEntity *pOther)
 {
 	float fldmg;
@@ -884,7 +814,7 @@ void CBaseTrigger::HurtTouch(CBaseEntity *pOther)
 	// leaving the trigger
 
 	// 0.5 seconds worth of damage, pev->dmg is damage/second
-	fldmg = pev->dmg * 0.5;
+	fldmg = pev->dmg * 0.5f;
 
 	if (fldmg < 0)
 	{
@@ -900,7 +830,7 @@ void CBaseTrigger::HurtTouch(CBaseEntity *pOther)
 
 	// Apply damage every half second
 	// half second delay until this trigger can hurt toucher again
-	pev->dmgtime = gpGlobals->time + 0.5;
+	pev->dmgtime = gpGlobals->time + 0.5f;
 
 	if (pev->target)
 	{
@@ -922,14 +852,12 @@ void CBaseTrigger::HurtTouch(CBaseEntity *pOther)
 	}
 }
 
-/* <1a3582> ../cstrike/dlls/triggers.cpp:1086 */
 LINK_ENTITY_TO_CLASS(trigger_multiple, CTriggerMultiple);
 
-/* <1a2f67> ../cstrike/dlls/triggers.cpp:1089 */
 void CTriggerMultiple::__MAKE_VHOOK(Spawn)()
 {
-	if (m_flWait == 0)
-		m_flWait = 0.2;
+	if (m_flWait == 0.0f)
+		m_flWait = 0.2f;
 
 	InitTrigger();
 
@@ -958,17 +886,14 @@ void CTriggerMultiple::__MAKE_VHOOK(Spawn)()
 	}
 }
 
-/* <1a365e> ../cstrike/dlls/triggers.cpp:1135 */
 LINK_ENTITY_TO_CLASS(trigger_once, CTriggerOnce);
 
-/* <1a301c> ../cstrike/dlls/triggers.cpp:1136 */
 void CTriggerOnce::__MAKE_VHOOK(Spawn)()
 {
 	m_flWait = -1;
 	CTriggerMultiple::Spawn();
 }
 
-/* <1a20a4> ../cstrike/dlls/triggers.cpp:1145 */
 void CBaseTrigger::MultiTouch(CBaseEntity *pOther)
 {
 	entvars_t *pevToucher;
@@ -987,8 +912,6 @@ void CBaseTrigger::MultiTouch(CBaseEntity *pOther)
 // the trigger was just touched/killed/used
 // self.enemy should be set to the activator so it can be held through a delay
 // so wait for the delay time before firing
-
-/* <1a373a> ../cstrike/dlls/triggers.cpp:1167 */
 void CBaseTrigger::ActivateMultiTrigger(CBaseEntity *pActivator)
 {
 	if (pev->nextthink > gpGlobals->time)
@@ -1035,20 +958,17 @@ void CBaseTrigger::ActivateMultiTrigger(CBaseEntity *pActivator)
 		// we can't just remove (self) here, because this is a touch function
 		// called while C code is looping through area links...
 		SetTouch(NULL);
-		pev->nextthink = gpGlobals->time + 0.1;
+		pev->nextthink = gpGlobals->time + 0.1f;
 		SetThink(&CBaseTrigger::SUB_Remove);
 	}
 }
 
 // the wait time has passed, so set back up for another activation
-
-/* <19fd1a> ../cstrike/dlls/triggers.cpp:1214 */
 void CBaseTrigger::MultiWaitOver()
 {
 	SetThink(NULL);
 }
 
-/* <1a1f98> ../cstrike/dlls/triggers.cpp:1231 */
 void CBaseTrigger::CounterUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	m_cTriggersLeft--;
@@ -1087,10 +1007,8 @@ void CBaseTrigger::CounterUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE
 	ActivateMultiTrigger(m_hActivator);
 }
 
-/* <1a3767> ../cstrike/dlls/triggers.cpp:1278 */
 LINK_ENTITY_TO_CLASS(trigger_counter, CTriggerCounter);
 
-/* <19fd42> ../cstrike/dlls/triggers.cpp:1280 */
 void CTriggerCounter::__MAKE_VHOOK(Spawn)()
 {
 	// By making the flWait be -1, this counter-trigger will disappear after it's activated
@@ -1105,12 +1023,9 @@ void CTriggerCounter::__MAKE_VHOOK(Spawn)()
 	SetUse(&CTriggerCounter::CounterUse);
 }
 
-/* <1a3843> ../cstrike/dlls/triggers.cpp:1299 */
 LINK_ENTITY_TO_CLASS(trigger_transition, CTriggerVolume);
 
 // Define space that travels across a level transition
-
-/* <19fd6a> ../cstrike/dlls/triggers.cpp:1302 */
 void CTriggerVolume::__MAKE_VHOOK(Spawn)()
 {
 	pev->solid = SOLID_NOT;
@@ -1123,44 +1038,29 @@ void CTriggerVolume::__MAKE_VHOOK(Spawn)()
 	pev->modelindex = 0;
 }
 
-/* <1a3955> ../cstrike/dlls/triggers.cpp:1321 */
 LINK_ENTITY_TO_CLASS(fireanddie, CFireAndDie);
 
-/* <1a0618> ../cstrike/dlls/triggers.cpp:1323 */
 void CFireAndDie::__MAKE_VHOOK(Spawn)()
 {
-	if (pev->classname)
-	{
-		RemoveEntityHashValue(pev, STRING(pev->classname), CLASSNAME);
-	}
-
 	MAKE_STRING_CLASS("fireanddie", pev);
-	AddEntityHashValue(pev, STRING(pev->classname), CLASSNAME);
 	// Don't call Precache() - it should be called on restore
 }
 
-/* <19fdbb> ../cstrike/dlls/triggers.cpp:1330 */
 void CFireAndDie::__MAKE_VHOOK(Precache)()
 {
 	pev->nextthink = gpGlobals->time + m_flDelay;
 }
 
-/* <1a01ae> ../cstrike/dlls/triggers.cpp:1337 */
 void CFireAndDie::__MAKE_VHOOK(Think)()
 {
 	SUB_UseTargets(this, USE_TOGGLE, 0);
 	UTIL_Remove(this);
 }
 
-/* <1a3a67> ../cstrike/dlls/triggers.cpp:1371 */
 LINK_ENTITY_TO_CLASS(trigger_changelevel, CChangeLevel);
-
-/* <1a098d> ../cstrike/dlls/triggers.cpp:1382 */
 IMPLEMENT_SAVERESTORE(CChangeLevel, CBaseTrigger);
 
 // Cache user-entity-field values until spawn is called.
-
-/* <1a1d4a> ../cstrike/dlls/triggers.cpp:1388 */
 void CChangeLevel::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "map"))
@@ -1197,7 +1097,6 @@ void CChangeLevel::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CBaseTrigger::KeyValue(pkvd);
 }
 
-/* <1a2f25> ../cstrike/dlls/triggers.cpp:1423 */
 void CChangeLevel::__MAKE_VHOOK(Spawn)()
 {
 	if (FStrEq(m_szMapName, ""))
@@ -1222,7 +1121,6 @@ void CChangeLevel::__MAKE_VHOOK(Spawn)()
 	}
 }
 
-/* <19fde3> ../cstrike/dlls/triggers.cpp:1441 */
 void CChangeLevel::ExecuteChangeLevel()
 {
 	MESSAGE_BEGIN(MSG_ALL, SVC_CDTRACK);
@@ -1234,7 +1132,6 @@ void CChangeLevel::ExecuteChangeLevel()
 	MESSAGE_END();
 }
 
-/* <1a3b43> ../cstrike/dlls/triggers.cpp:1456 */
 edict_t *CChangeLevel::FindLandmark(const char *pLandmarkName)
 {
 	edict_t	*pentLandmark = FIND_ENTITY_BY_STRING(NULL, "targetname", pLandmarkName);
@@ -1253,14 +1150,11 @@ edict_t *CChangeLevel::FindLandmark(const char *pLandmarkName)
 
 // CChangeLevel::Use - allows level transitions to be
 // triggered by buttons, etc.
-
-/* <1a3e4f> ../cstrike/dlls/triggers.cpp:1479 */
 void CChangeLevel::UseChangeLevel(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	ChangeLevelNow(pActivator);
 }
 
-/* <1a3fb2> ../cstrike/dlls/triggers.cpp:1484 */
 void CChangeLevel::ChangeLevelNow(CBaseEntity *pActivator)
 {
 	edict_t *pentLandmark;
@@ -1326,7 +1220,6 @@ void CChangeLevel::ChangeLevelNow(CBaseEntity *pActivator)
 	CHANGE_LEVEL(st_szNextMap, st_szNextSpot);
 }
 
-/* <1a3ef5> ../cstrike/dlls/triggers.cpp:1545 */
 void CChangeLevel::TouchChangeLevel(CBaseEntity *pOther)
 {
 	if (!FClassnameIs(pOther->pev, "player"))
@@ -1339,8 +1232,6 @@ void CChangeLevel::TouchChangeLevel(CBaseEntity *pOther)
 
 // Add a transition to the list, but ignore duplicates
 // (a designer may have placed multiple trigger_changelevels with the same landmark)
-
-/* <1a3ff8> ../cstrike/dlls/triggers.cpp:1556 */
 int CChangeLevel::AddTransitionToList(LEVELLIST *pLevelList, int listCount, const char *pMapName, const char *pLandmarkName, edict_t *pentLandmark)
 {
 	int i;
@@ -1367,13 +1258,11 @@ int CChangeLevel::AddTransitionToList(LEVELLIST *pLevelList, int listCount, cons
 	return 1;
 }
 
-/* <1a44ba> ../cstrike/dlls/triggers.cpp:1576 */
 int BuildChangeList(LEVELLIST *pLevelList, int maxList)
 {
 	CChangeLevel::ChangeList(pLevelList, maxList);
 }
 
-/* <1a4075> ../cstrike/dlls/triggers.cpp:1582 */
 int CChangeLevel::InTransitionVolume(CBaseEntity *pEntity, char *pVolumeName)
 {
 	edict_t	*pentVolume;
@@ -1422,8 +1311,6 @@ int CChangeLevel::InTransitionVolume(CBaseEntity *pEntity, char *pVolumeName)
 // Can we make this more elegant?
 // This builds the list of all transitions on this level and which entities are in their PVS's and can / should
 // be moved across.
-
-/* <1a40b1> ../cstrike/dlls/triggers.cpp:1625 */
 int CChangeLevel::ChangeList(LEVELLIST *pLevelList, int maxList)
 {
 	edict_t	*pentChangelevel, *pentLandmark;
@@ -1477,7 +1364,7 @@ int CChangeLevel::ChangeList(LEVELLIST *pLevelList, int maxList)
 			while (!FNullEnt(pent))
 			{
 				CBaseEntity *pEntity = CBaseEntity::Instance(pent);
-				if (pEntity)
+				if (pEntity != NULL)
 				{
 					int caps = pEntity->ObjectCaps();
 
@@ -1527,8 +1414,6 @@ int CChangeLevel::ChangeList(LEVELLIST *pLevelList, int maxList)
 
 // go to the next level for deathmatch
 // only called if a time or frag limit has expired
-
-/* <1a44fc> ../cstrike/dlls/triggers.cpp:1722 */
 NOXREF void NextLevel()
 {
 	edict_t *pent;
@@ -1553,22 +1438,18 @@ NOXREF void NextLevel()
 	if (pChange->pev->nextthink < gpGlobals->time)
 	{
 		pChange->SetThink(&CChangeLevel::ExecuteChangeLevel);
-		pChange->pev->nextthink = gpGlobals->time + 0.1;
+		pChange->pev->nextthink = gpGlobals->time + 0.1f;
 	}
 }
 
-/* <1a4709> ../cstrike/dlls/triggers.cpp:1760 */
 LINK_ENTITY_TO_CLASS(func_ladder, CLadder);
 
-/* <1a1937> ../cstrike/dlls/triggers.cpp:1763 */
 void CLadder::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	CBaseTrigger::KeyValue(pkvd);
 }
 
 // func_ladder - makes an area vertically negotiable
-
-/* <19fe6c> ../cstrike/dlls/triggers.cpp:1772 */
 void CLadder::__MAKE_VHOOK(Precache)()
 {
 	// Do all of this in here because we need to 'convert' old saved games
@@ -1584,7 +1465,6 @@ void CLadder::__MAKE_VHOOK(Precache)()
 	pev->effects &= ~EF_NODRAW;
 }
 
-/* <19fe95> ../cstrike/dlls/triggers.cpp:1786 */
 void CLadder::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
@@ -1594,16 +1474,13 @@ void CLadder::__MAKE_VHOOK(Spawn)()
 	pev->movetype = MOVETYPE_PUSH;
 }
 
-/* <1a47e5> ../cstrike/dlls/triggers.cpp:1804 */
 LINK_ENTITY_TO_CLASS(trigger_push, CTriggerPush);
 
-/* <1a18ff> ../cstrike/dlls/triggers.cpp:1807 */
 void CTriggerPush::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	CBaseTrigger::KeyValue(pkvd);
 }
 
-/* <1a2eda> ../cstrike/dlls/triggers.cpp:1817 */
 void CTriggerPush::__MAKE_VHOOK(Spawn)()
 {
 	if (pev->angles == g_vecZero)
@@ -1630,7 +1507,6 @@ void CTriggerPush::__MAKE_VHOOK(Spawn)()
 	UTIL_SetOrigin(pev, pev->origin);
 }
 
-/* <1a023c> ../cstrike/dlls/triggers.cpp:1835 */
 void CTriggerPush::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 {
 	entvars_t *pevToucher = pOther->pev;
@@ -1674,7 +1550,6 @@ void CTriggerPush::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 	}
 }
 
-/* <1a051f> ../cstrike/dlls/triggers.cpp:1878 */
 void CBaseTrigger::TeleportTouch(CBaseEntity *pOther)
 {
 	entvars_t *pevToucher = pOther->pev;
@@ -1740,23 +1615,17 @@ void CBaseTrigger::TeleportTouch(CBaseEntity *pOther)
 	pevToucher->velocity = pevToucher->basevelocity = g_vecZero;
 }
 
-/* <1a48c1> ../cstrike/dlls/triggers.cpp:1940 */
 LINK_ENTITY_TO_CLASS(trigger_teleport, CTriggerTeleport);
 
-/* <1a2eb1> ../cstrike/dlls/triggers.cpp:1942 */
 void CTriggerTeleport::__MAKE_VHOOK(Spawn)()
 {
 	InitTrigger();
 	SetTouch(&CTriggerTeleport::TeleportTouch);
 }
 
-/* <1a499d> ../cstrike/dlls/triggers.cpp:1950 */
 LINK_ENTITY_TO_CLASS(info_teleport_destination, CPointEntity);
-
-/* <1a4a79> ../cstrike/dlls/triggers.cpp:1970 */
 LINK_ENTITY_TO_CLASS(func_buyzone, CBuyZone);
 
-/* <1a2e71> ../cstrike/dlls/triggers.cpp:1973 */
 void CBuyZone::__MAKE_VHOOK(Spawn)()
 {
 	InitTrigger();
@@ -1769,7 +1638,6 @@ void CBuyZone::__MAKE_VHOOK(Spawn)()
 	}
 }
 
-/* <1a116b> ../cstrike/dlls/triggers.cpp:1986 */
 void CBuyZone::BuyTouch(CBaseEntity *pOther)
 {
 	if (!pOther->IsPlayer())
@@ -1783,10 +1651,8 @@ void CBuyZone::BuyTouch(CBaseEntity *pOther)
 	}
 }
 
-/* <1a4b55> ../cstrike/dlls/triggers.cpp:2016 */
 LINK_ENTITY_TO_CLASS(func_bomb_target, CBombTarget);
 
-/* <1a2e48> ../cstrike/dlls/triggers.cpp:2019 */
 void CBombTarget::__MAKE_VHOOK(Spawn)()
 {
 	InitTrigger();
@@ -1795,7 +1661,6 @@ void CBombTarget::__MAKE_VHOOK(Spawn)()
 	SetUse(&CBombTarget::BombTargetUse);
 }
 
-/* <1a10c1> ../cstrike/dlls/triggers.cpp:2027 */
 void CBombTarget::BombTargetTouch(CBaseEntity *pOther)
 {
 	if (!pOther->IsPlayer())
@@ -1810,23 +1675,19 @@ void CBombTarget::BombTargetTouch(CBaseEntity *pOther)
 	}
 }
 
-/* <1a0014> ../cstrike/dlls/triggers.cpp:2042 */
 void CBombTarget::BombTargetUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	SUB_UseTargets(NULL, USE_TOGGLE, 0);
 }
 
-/* <1a4c31> ../cstrike/dlls/triggers.cpp:2064 */
 LINK_ENTITY_TO_CLASS(func_hostage_rescue, CHostageRescue);
 
-/* <1a2e1f> ../cstrike/dlls/triggers.cpp:2067 */
 void CHostageRescue::__MAKE_VHOOK(Spawn)()
 {
 	InitTrigger();
 	SetTouch(&CHostageRescue::HostageRescueTouch);
 }
 
-/* <19ffbf> ../cstrike/dlls/triggers.cpp:2074 */
 void CHostageRescue::HostageRescueTouch(CBaseEntity *pOther)
 {
 	if (pOther->IsPlayer())
@@ -1840,17 +1701,14 @@ void CHostageRescue::HostageRescueTouch(CBaseEntity *pOther)
 	}
 }
 
-/* <1a4d0d> ../cstrike/dlls/triggers.cpp:2105 */
 LINK_ENTITY_TO_CLASS(func_escapezone, CEscapeZone);
 
-/* <1a2df6> ../cstrike/dlls/triggers.cpp:2108 */
 void CEscapeZone::__MAKE_VHOOK(Spawn)()
 {
 	InitTrigger();
 	SetTouch(&CEscapeZone::EscapeTouch);
 }
 
-/* <1a0f88> ../cstrike/dlls/triggers.cpp:2115 */
 void CEscapeZone::EscapeTouch(CBaseEntity *pOther)
 {
 	if (!pOther->IsPlayer())
@@ -1864,15 +1722,9 @@ void CEscapeZone::EscapeTouch(CBaseEntity *pOther)
 		if (!p->m_bEscaped)
 		{
 			p->m_bEscaped = true;
-			g_pGameRules->CheckWinConditions();
+			CSGameRules()->CheckWinConditions();
 
-			UTIL_LogPrintf
-			(
-				"\"%s<%i><%s><TERRORIST>\" triggered \"Terrorist_Escaped\"\n",
-				STRING(p->pev->netname),
-				GETPLAYERUSERID(p->edict()),
-				GETPLAYERAUTHID(p->edict())
-			);
+			UTIL_LogPrintf("\"%s<%i><%s><TERRORIST>\" triggered \"Terrorist_Escaped\"\n", STRING(p->pev->netname), GETPLAYERUSERID(p->edict()), GETPLAYERAUTHID(p->edict()));
 
 			for (int i = 1; i <= gpGlobals->maxClients; ++i)
 			{
@@ -1894,17 +1746,14 @@ void CEscapeZone::EscapeTouch(CBaseEntity *pOther)
 	}
 }
 
-/* <1a4de9> ../cstrike/dlls/triggers.cpp:2163 */
 LINK_ENTITY_TO_CLASS(func_vip_safetyzone, CVIP_SafetyZone);
 
-/* <1a2dcd> ../cstrike/dlls/triggers.cpp:2166 */
 void CVIP_SafetyZone::__MAKE_VHOOK(Spawn)()
 {
 	InitTrigger();
 	SetTouch(&CVIP_SafetyZone::VIP_SafetyTouch);
 }
 
-/* <1a0ec7> ../cstrike/dlls/triggers.cpp:2173 */
 void CVIP_SafetyZone::VIP_SafetyTouch(CBaseEntity *pOther)
 {
 	if (!pOther->IsPlayer())
@@ -1915,13 +1764,8 @@ void CVIP_SafetyZone::VIP_SafetyTouch(CBaseEntity *pOther)
 
 	if (p->m_bIsVIP)
 	{
-		UTIL_LogPrintf
-		(
-			"\"%s<%i><%s><CT>\" triggered \"Escaped_As_VIP\"\n",
-			STRING(p->pev->netname),
-			GETPLAYERUSERID(p->edict()),
-			GETPLAYERAUTHID(p->edict())
-		);
+		UTIL_LogPrintf("\"%s<%i><%s><CT>\" triggered \"Escaped_As_VIP\"\n",
+			STRING(p->pev->netname), GETPLAYERUSERID(p->edict()), GETPLAYERAUTHID(p->edict()));
 
 		p->m_bEscaped = true;
 
@@ -1930,10 +1774,8 @@ void CVIP_SafetyZone::VIP_SafetyTouch(CBaseEntity *pOther)
 	}
 }
 
-/* <1a4ec5> ../cstrike/dlls/triggers.cpp:2204 */
 LINK_ENTITY_TO_CLASS(trigger_autosave, CTriggerSave);
 
-/* <1a2d8e> ../cstrike/dlls/triggers.cpp:2206 */
 void CTriggerSave::__MAKE_VHOOK(Spawn)()
 {
 	if (g_pGameRules->IsDeathmatch())
@@ -1946,7 +1788,6 @@ void CTriggerSave::__MAKE_VHOOK(Spawn)()
 	SetTouch(&CTriggerSave::SaveTouch);
 }
 
-/* <1a0c01> ../cstrike/dlls/triggers.cpp:2218 */
 void CTriggerSave::SaveTouch(CBaseEntity *pOther)
 {
 	if (!UTIL_IsMasterTriggered(m_sMaster, pOther))
@@ -1961,10 +1802,8 @@ void CTriggerSave::SaveTouch(CBaseEntity *pOther)
 	SERVER_COMMAND("autosave\n");
 }
 
-/* <1a4fa1> ../cstrike/dlls/triggers.cpp:2242 */
 LINK_ENTITY_TO_CLASS(trigger_endsection, CTriggerEndSection);
 
-/* <1a0b7f> ../cstrike/dlls/triggers.cpp:2245 */
 void CTriggerEndSection::EndSectionUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	// Only save on clients
@@ -1980,7 +1819,6 @@ void CTriggerEndSection::EndSectionUse(CBaseEntity *pActivator, CBaseEntity *pCa
 	UTIL_Remove(this);
 }
 
-/* <1a2d4f> ../cstrike/dlls/triggers.cpp:2260 */
 void CTriggerEndSection::__MAKE_VHOOK(Spawn)()
 {
 	if (g_pGameRules->IsDeathmatch())
@@ -1999,7 +1837,6 @@ void CTriggerEndSection::__MAKE_VHOOK(Spawn)()
 	}
 }
 
-/* <1a0b29> ../cstrike/dlls/triggers.cpp:2276 */
 void CTriggerEndSection::EndSectionTouch(CBaseEntity *pOther)
 {
 	// Only save on clients
@@ -2015,7 +1852,6 @@ void CTriggerEndSection::EndSectionTouch(CBaseEntity *pOther)
 	UTIL_Remove(this);
 }
 
-/* <1a196f> ../cstrike/dlls/triggers.cpp:2291 */
 void CTriggerEndSection::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "section"))
@@ -2028,17 +1864,14 @@ void CTriggerEndSection::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CBaseTrigger::KeyValue(pkvd);
 }
 
-/* <1a507d> ../cstrike/dlls/triggers.cpp:2311 */
 LINK_ENTITY_TO_CLASS(trigger_gravity, CTriggerGravity);
 
-/* <1a2d26> ../cstrike/dlls/triggers.cpp:2313 */
 void CTriggerGravity::__MAKE_VHOOK(Spawn)()
 {
 	InitTrigger();
 	SetTouch(&CTriggerGravity::GravityTouch);
 }
 
-/* <19febe> ../cstrike/dlls/triggers.cpp:2319 */
 void CTriggerGravity::GravityTouch(CBaseEntity *pOther)
 {
 	// Only save on clients
@@ -2048,13 +1881,9 @@ void CTriggerGravity::GravityTouch(CBaseEntity *pOther)
 	pOther->pev->gravity = pev->gravity;
 }
 
-/* <1a5159> ../cstrike/dlls/triggers.cpp:2351 */
 LINK_ENTITY_TO_CLASS(trigger_changetarget, CTriggerChangeTarget);
-
-/* <1a093a> ../cstrike/dlls/triggers.cpp:2358 */
 IMPLEMENT_SAVERESTORE(CTriggerChangeTarget, CBaseDelay);
 
-/* <1a1691> ../cstrike/dlls/triggers.cpp:2360 */
 void CTriggerChangeTarget::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "m_iszNewTarget"))
@@ -2066,13 +1895,11 @@ void CTriggerChangeTarget::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CBaseDelay::KeyValue(pkvd);
 }
 
-/* <19ff1f> ../cstrike/dlls/triggers.cpp:2371 */
 void CTriggerChangeTarget::__MAKE_VHOOK(Spawn)()
 {
 	;
 }
 
-/* <1a010d> ../cstrike/dlls/triggers.cpp:2376 */
 void CTriggerChangeTarget::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	CBaseEntity *pTarget = UTIL_FindEntityByString(NULL, "targetname", STRING(pev->target));
@@ -2083,20 +1910,16 @@ void CTriggerChangeTarget::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntit
 
 		CBaseMonster *pMonster = pTarget->MyMonsterPointer();
 
-		if (pMonster)
+		if (pMonster != NULL)
 		{
 			pMonster->m_pGoalEnt = NULL;
 		}
 	}
 }
 
-/* <1a5235> ../cstrike/dlls/triggers.cpp:2425 */
 LINK_ENTITY_TO_CLASS(trigger_camera, CTriggerCamera);
-
-/* <1a08e7> ../cstrike/dlls/triggers.cpp:2445 */
 IMPLEMENT_SAVERESTORE(CTriggerCamera, CBaseDelay);
 
-/* <19ff6f> ../cstrike/dlls/triggers.cpp:2447 */
 void CTriggerCamera::__MAKE_VHOOK(Spawn)()
 {
 	pev->movetype = MOVETYPE_NOCLIP;
@@ -2120,7 +1943,6 @@ void CTriggerCamera::__MAKE_VHOOK(Spawn)()
 	}
 }
 
-/* <1a1537> ../cstrike/dlls/triggers.cpp:2462 */
 void CTriggerCamera::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "wait"))
@@ -2147,7 +1969,6 @@ void CTriggerCamera::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CBaseDelay::KeyValue(pkvd);
 }
 
-/* <1a55e4> ../cstrike/dlls/triggers.cpp:2490 */
 void CTriggerCamera::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	if (!ShouldToggle(useType, m_state))
@@ -2159,7 +1980,7 @@ void CTriggerCamera::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCa
 	{
 		m_flReturnTime = gpGlobals->time;
 
-		if (pActivator->IsPlayer())
+		if (pActivator != NULL && pActivator->IsPlayer())
 		{
 			((CBasePlayer *)pActivator)->ResetMaxSpeed();
 		}
@@ -2247,7 +2068,6 @@ void CTriggerCamera::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCa
 	Move();
 }
 
-/* <1a5494> ../cstrike/dlls/triggers.cpp:2587 */
 void CTriggerCamera::FollowTarget()
 {
 	if (m_hPlayer == NULL)
@@ -2295,7 +2115,7 @@ void CTriggerCamera::FollowTarget()
 
 	if (!(pev->spawnflags & SF_CAMERA_PLAYER_TAKECONTROL))
 	{
-		pev->velocity = pev->velocity * 0.8;
+		pev->velocity = pev->velocity * 0.8f;
 
 		if (pev->velocity.Length() < 10.0)
 		{
@@ -2307,7 +2127,6 @@ void CTriggerCamera::FollowTarget()
 	Move();
 }
 
-/* <1a5311> ../cstrike/dlls/triggers.cpp:2644 */
 void CTriggerCamera::Move()
 {
 	// Not moving on a path, return
@@ -2366,25 +2185,16 @@ void CTriggerCamera::Move()
 	pev->velocity = ((pev->movedir * pev->speed) * fraction) + (pev->velocity * (1 - fraction));
 }
 
-/* <1a5815> ../cstrike/dlls/triggers.cpp:2699 */
 LINK_ENTITY_TO_CLASS(env_snow, CWeather);
-
-/* <1a58f1> ../cstrike/dlls/triggers.cpp:2700 */
 LINK_ENTITY_TO_CLASS(func_snow, CWeather);
-
-/* <1a59cd> ../cstrike/dlls/triggers.cpp:2701 */
 LINK_ENTITY_TO_CLASS(env_rain, CWeather);
-
-/* <1a5aa9> ../cstrike/dlls/triggers.cpp:2702 */
 LINK_ENTITY_TO_CLASS(func_rain, CWeather);
 
-/* <1a2cfe> ../cstrike/dlls/triggers.cpp:2704 */
 void CWeather::__MAKE_VHOOK(Spawn)()
 {
 	InitTrigger();
 }
 
-/* <1a1477> ../cstrike/dlls/triggers.cpp:2716 */
 void CClientFog::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 #if 0
@@ -2413,7 +2223,6 @@ void CClientFog::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CBaseEntity::KeyValue(pkvd);
 }
 
-/* <19ff97> ../cstrike/dlls/triggers.cpp:2735 */
 void CClientFog::__MAKE_VHOOK(Spawn)()
 {
 	pev->movetype = MOVETYPE_NOCLIP;
@@ -2422,5 +2231,4 @@ void CClientFog::__MAKE_VHOOK(Spawn)()
 	pev->rendermode = kRenderTransTexture;
 }
 
-/* <1a5ba9> ../cstrike/dlls/triggers.cpp:2744 */
 LINK_ENTITY_TO_CLASS(env_fog, CClientFog);

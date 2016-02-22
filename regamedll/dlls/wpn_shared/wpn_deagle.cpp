@@ -1,9 +1,7 @@
 #include "precompiled.h"
 
-/* <24be52> ../cstrike/dlls/wpn_shared/wpn_deagle.cpp:49 */
 LINK_ENTITY_TO_CLASS(weapon_deagle, CDEAGLE);
 
-/* <24bbe5> ../cstrike/dlls/wpn_shared/wpn_deagle.cpp:51 */
 void CDEAGLE::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
@@ -19,7 +17,6 @@ void CDEAGLE::__MAKE_VHOOK(Spawn)()
 	FallInit();
 }
 
-/* <24bb64> ../cstrike/dlls/wpn_shared/wpn_deagle.cpp:68 */
 void CDEAGLE::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/v_deagle.mdl");
@@ -36,7 +33,6 @@ void CDEAGLE::__MAKE_VHOOK(Precache)()
 	m_usFireDeagle = PRECACHE_EVENT(1, "events/deagle.sc");
 }
 
-/* <24bb8b> ../cstrike/dlls/wpn_shared/wpn_deagle.cpp:86 */
 int CDEAGLE::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
@@ -54,7 +50,6 @@ int CDEAGLE::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	return 1;
 }
 
-/* <24bccf> ../cstrike/dlls/wpn_shared/wpn_deagle.cpp:103 */
 BOOL CDEAGLE::__MAKE_VHOOK(Deploy)()
 {
 	m_flAccuracy = 0.9f;
@@ -68,7 +63,6 @@ BOOL CDEAGLE::__MAKE_VHOOK(Deploy)()
 		return DefaultDeploy("models/v_deagle.mdl", "models/p_deagle.mdl", DEAGLE_DRAW, "onehanded", UseDecrement() != FALSE);
 }
 
-/* <24be08> ../cstrike/dlls/wpn_shared/wpn_deagle.cpp:119 */
 void CDEAGLE::__MAKE_VHOOK(PrimaryAttack)()
 {
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
@@ -89,13 +83,11 @@ void CDEAGLE::__MAKE_VHOOK(PrimaryAttack)()
 	}
 }
 
-/* <24bbbe> ../cstrike/dlls/wpn_shared/wpn_deagle.cpp:131 */
 void CDEAGLE::__MAKE_VHOOK(SecondaryAttack)()
 {
 	ShieldSecondaryFire(SHIELDGUN_UP, SHIELDGUN_DOWN);
 }
 
-/* <24bf1c> ../cstrike/dlls/wpn_shared/wpn_deagle.cpp:137 */
 void CDEAGLE::DEAGLEFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 {
 	Vector vecAiming, vecSrc, vecDir;
@@ -159,10 +151,10 @@ void CDEAGLE::DEAGLEFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 	flag = FEV_NOTHOST;
 #else
 	flag = 0;
-#endif // CLIENT_WEAPONS
+#endif
 
 	PLAYBACK_EVENT_FULL(flag, m_pPlayer->edict(), m_usFireDeagle, 0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y,
-		(int)(m_pPlayer->pev->punchangle.x * 100), (int)(m_pPlayer->pev->punchangle.y * 100), m_iClip == 0, FALSE);
+		int(m_pPlayer->pev->punchangle.x * 100), int(m_pPlayer->pev->punchangle.y * 100), m_iClip == 0, FALSE);
 
 	m_flNextPrimaryAttack = m_flNextSecondaryAttack = GetNextAttackDelay(flCycleTime);
 
@@ -176,7 +168,6 @@ void CDEAGLE::DEAGLEFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 	ResetPlayerShieldAnim();
 }
 
-/* <24bc95> ../cstrike/dlls/wpn_shared/wpn_deagle.cpp:231 */
 void CDEAGLE::__MAKE_VHOOK(Reload)()
 {
 	if (m_pPlayer->ammo_50ae <= 0)
@@ -189,7 +180,6 @@ void CDEAGLE::__MAKE_VHOOK(Reload)()
 	}
 }
 
-/* <24bc5b> ../cstrike/dlls/wpn_shared/wpn_deagle.cpp:243 */
 void CDEAGLE::__MAKE_VHOOK(WeaponIdle)()
 {
 	ResetEmptySound();

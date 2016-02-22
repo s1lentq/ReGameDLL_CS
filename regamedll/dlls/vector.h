@@ -32,7 +32,6 @@
 #pragma once
 #endif
 
-/* <5d3ffa> ../cstrike/dlls/vector.h:26 */
 class Vector2D
 {
 public:
@@ -54,15 +53,15 @@ public:
 #ifdef PLAY_GAMEDLL
 	Vector2D operator*(float_precision fl) const
 	{
-		return Vector2D((vec_t)(x * fl), (vec_t)(y * fl));
+		return Vector2D(vec_t(x * fl), vec_t(y * fl));
 	}
 	Vector2D operator/(float_precision fl) const
 	{
-		return Vector2D((vec_t)(x / fl), (vec_t)(y / fl));
+		return Vector2D(vec_t(x / fl), vec_t(y / fl));
 	}
 	Vector2D operator/=(float_precision fl) const
 	{
-		return Vector2D((vec_t)(x / fl), (vec_t)(y / fl));
+		return Vector2D(vec_t(x / fl), vec_t(y / fl));
 	}
 #else
 	Vector2D operator*(float fl) const
@@ -80,7 +79,7 @@ public:
 #endif // PLAY_GAMEDLL
 	float_precision Length() const
 	{
-		return sqrt((float_precision)(x * x + y * y));
+		return Q_sqrt(float_precision(x * x + y * y));
 	}
 	float LengthSquared() const
 	{
@@ -103,7 +102,7 @@ public:
 		flLen = 1 / flLen;
 
 #ifdef PLAY_GAMEDLL
-		return Vector2D((vec_t)(x * flLen), (vec_t)(y * flLen));
+		return Vector2D(vec_t(x * flLen), vec_t(y * flLen));
 #else
 		return Vector2D(x * flLen, y * flLen);
 #endif // PLAY_GAMEDLL
@@ -121,8 +120,8 @@ public:
 		float_precision flLen = Length();
 		if (flLen > 0.0)
 		{
-			x = (vec_t)(1 / flLen * x);
-			y = (vec_t)(1 / flLen * y);
+			x = vec_t(1 / flLen * x);
+			y = vec_t(1 / flLen * y);
 		}
 		else
 		{
@@ -148,7 +147,6 @@ inline Vector2D operator*(float fl, const Vector2D &v)
 	return v * fl;
 }
 
-/* <5e2e91> ../cstrike/dlls/vector.h:104 */
 class Vector
 {
 public:
@@ -195,15 +193,15 @@ public:
 #ifdef PLAY_GAMEDLL
 	Vector operator*(float_precision fl) const
 	{
-		return Vector((vec_t)(x * fl), (vec_t)(y * fl), (vec_t)(z * fl));
+		return Vector(vec_t(x * fl), vec_t(y * fl), vec_t(z * fl));
 	}
 	Vector operator/(float_precision fl) const
 	{
-		return Vector((vec_t)(x / fl), (vec_t)(y / fl), (vec_t)(z / fl));
+		return Vector(vec_t(x / fl), vec_t(y / fl), vec_t(z / fl));
 	}
 	Vector operator/=(float_precision fl) const
 	{
-		return Vector((vec_t)(x / fl), (vec_t)(y / fl), (vec_t)(z / fl));
+		return Vector(vec_t(x / fl), vec_t(y / fl), vec_t(z / fl));
 	}
 #else
 	Vector operator*(float fl) const
@@ -227,13 +225,11 @@ public:
 	}
 	float_precision Length() const
 	{
-		float_precision x1 = (float_precision)x;
-		float_precision y1 = (float_precision)y;
-		float_precision z1 = (float_precision)z;
+		float_precision x1 = float_precision(x);
+		float_precision y1 = float_precision(y);
+		float_precision z1 = float_precision(z);
 
-		return sqrt(x1 * x1 + y1 * y1 + z1 * z1);
-
-		//return sqrt((float_precision)(x * x + y * y + z * z));
+		return Q_sqrt(x1 * x1 + y1 * y1 + z1 * z1);
 	}
 	float_precision LengthSquared() const
 	{
@@ -264,7 +260,7 @@ public:
 		if (flLen == 0)
 			return Vector(0, 0, 1);
 
-		vec_t fTemp = (vec_t)(1 / flLen);
+		vec_t fTemp = vec_t(1 / flLen);
 		return Vector(x * fTemp, y * fTemp, z * fTemp);
 	}
 #endif // PLAY_GAMEDLL
@@ -279,7 +275,7 @@ public:
 			return Vector(0, 0, 1);
 
 		flLen = 1 / flLen;
-		return Vector((vec_t)(x * flLen), (vec_t)(y * flLen), (vec_t)(z * flLen));
+		return Vector(vec_t(x * flLen), vec_t(y * flLen), vec_t(z * flLen));
 #endif // PLAY_GAMEDLL
 	}
 	Vector2D Make2D() const
@@ -291,7 +287,7 @@ public:
 	}
 	float_precision Length2D() const
 	{
-		return sqrt((float_precision)(x * x + y * y));
+		return Q_sqrt(float_precision(x * x + y * y));
 	}
 	bool IsLengthLessThan(float length) const
 	{
@@ -308,9 +304,9 @@ public:
 
 		if (flLen > 0)
 		{
-			x = (vec_t)(1 / flLen * x);
-			y = (vec_t)(1 / flLen * y);
-			z = (vec_t)(1 / flLen * z);
+			x = vec_t(1 / flLen * x);
+			y = vec_t(1 / flLen * y);
+			z = vec_t(1 / flLen * z);
 		}
 		else
 		{
@@ -328,9 +324,9 @@ public:
 
 		if (flLen > 0)
 		{
-			x = (vec_t)(1 / flLen * x);
-			y = (vec_t)(1 / flLen * y);
-			z = (vec_t)(1 / flLen * z);
+			x = vec_t(1 / flLen * x);
+			y = vec_t(1 / flLen * y);
+			z = vec_t(1 / flLen * z);
 		}
 		else
 		{
@@ -368,13 +364,11 @@ public:
 	}
 };
 
-/* <1c0d1> ../cstrike/dlls/vector.h:184 */
 inline Vector operator*(float fl, const Vector &v)
 {
 	return v * fl;
 }
 
-/* <5d9a4> ../cstrike/dlls/vector.h:185 */
 inline float_precision DotProduct(const Vector &a, const Vector &b)
 {
 	return (a.x * b.x + a.y * b.y + a.z * b.z);
@@ -385,7 +379,6 @@ inline float_precision DotProduct2D(const Vector &a, const Vector &b)
 	return (a.x * b.x + a.y * b.y);
 }
 
-/* <1ba548> ../cstrike/dlls/vector.h:186 */
 inline Vector CrossProduct(const Vector &a, const Vector &b)
 {
 	return Vector(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
@@ -411,7 +404,7 @@ inline LenType LengthSubtract(Vector vecStart, Vector vecDest)
 	Y floatY = (vecDest.y - vecStart.y);
 	Z floatZ = (vecDest.z - vecStart.z);
 
-	return sqrt((float_precision)(floatX * floatX + floatY * floatY + floatZ * floatZ));
+	return Q_sqrt(float_precision(floatX * floatX + floatY * floatY + floatZ * floatZ));
 }
 
 template<
@@ -430,7 +423,7 @@ inline Vector NormalizeSubtract(Vector vecStart, Vector vecDest)
 	Y floatY = (vecDest.y - vecStart.y);
 	Z floatZ = (vecDest.z - vecStart.z);
 
-	LenType flLen = sqrt((float_precision)(floatX * floatX + floatY * floatY + floatZ * floatZ));
+	LenType flLen = Q_sqrt(float_precision(floatX * floatX + floatY * floatY + floatZ * floatZ));
 
 	if (flLen == 0.0)
 	{
@@ -440,9 +433,9 @@ inline Vector NormalizeSubtract(Vector vecStart, Vector vecDest)
 	{
 		flLen = 1.0 / flLen;
 
-		dir.x = (vec_t)(floatX * flLen);
-		dir.y = (vec_t)(floatY * flLen);
-		dir.z = (vec_t)(floatZ * flLen);
+		dir.x = vec_t(floatX * flLen);
+		dir.y = vec_t(floatY * flLen);
+		dir.z = vec_t(floatZ * flLen);
 	}
 #else
 	dir = (vecDest - vecStart).Normalize();
@@ -474,7 +467,29 @@ inline Vector NormalizeMulScalar(Vector2D vec, float scalar)
 		floatY = vec.y * flLen;
 	}
 
-	return Vector((vec_t)(floatX * scalar), (vec_t)(floatY * scalar), 0);
+	return Vector(vec_t(floatX * scalar), vec_t(floatY * scalar), 0);
+}
+template<typename X, typename Y, typename LenType, typename LenCast>
+inline Vector NormalizeMulScalar(Vector vec, float scalar)
+{
+	LenType flLen;
+	X floatX = vec.x;
+	Y floatY = vec.y;
+
+	flLen = (LenType)vec.Length();
+
+	if (flLen <= 0.0)
+	{
+		floatX = 1;
+		floatY = 0;
+	}
+	else
+	{
+		floatX = floatX * LenCast(1 / flLen);
+		floatY = floatY * LenCast(1 / flLen);
+	}
+
+	return Vector(vec_t(floatX * scalar), vec_t(floatY * scalar), 0);
 }
 #endif // PLAY_GAMEDLL
 

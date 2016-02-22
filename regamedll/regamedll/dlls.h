@@ -26,7 +26,6 @@
 *
 */
 
-#include "mathlib.h"
 #include "extdll.h"
 
 // declared virtual function's and globals for hooks
@@ -109,6 +108,7 @@
 #include "game_shared/bot/simple_state_machine.h"
 
 #include "game_shared/steam_util.h"
+#include "game_shared/perf_counter.h"
 
 #include "game_shared/bot/bot_manager.h"
 #include "game_shared/bot/bot_constants.h"
@@ -158,4 +158,9 @@
 #include "spectator.h"
 #include "talkmonster.h"
 #include "animation.h"
+
+#include "com_model.h"
+#include "studio.h"
+#include "r_studioint.h"
+
 #include "shake.h"

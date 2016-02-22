@@ -1,9 +1,7 @@
 #include "precompiled.h"
 
-/* <276bbd> ../cstrike/dlls/wpn_shared/wpn_m249.cpp:49 */
 LINK_ENTITY_TO_CLASS(weapon_m249, CM249);
 
-/* <276951> ../cstrike/dlls/wpn_shared/wpn_m249.cpp:51 */
 void CM249::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
@@ -18,7 +16,6 @@ void CM249::__MAKE_VHOOK(Spawn)()
 	FallInit();
 }
 
-/* <2768d0> ../cstrike/dlls/wpn_shared/wpn_m249.cpp:65 */
 void CM249::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/v_m249.mdl");
@@ -36,7 +33,6 @@ void CM249::__MAKE_VHOOK(Precache)()
 	m_usFireM249 = PRECACHE_EVENT(1, "events/m249.sc");
 }
 
-/* <2768f7> ../cstrike/dlls/wpn_shared/wpn_m249.cpp:84 */
 int CM249::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
@@ -54,7 +50,6 @@ int CM249::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	return 1;
 }
 
-/* <27692a> ../cstrike/dlls/wpn_shared/wpn_m249.cpp:101 */
 BOOL CM249::__MAKE_VHOOK(Deploy)()
 {
 	m_flAccuracy = 0.2f;
@@ -64,7 +59,6 @@ BOOL CM249::__MAKE_VHOOK(Deploy)()
 	return DefaultDeploy("models/v_m249.mdl", "models/p_m249.mdl", M249_DRAW, "m249", UseDecrement() != FALSE);
 }
 
-/* <276b73> ../cstrike/dlls/wpn_shared/wpn_m249.cpp:111 */
 void CM249::__MAKE_VHOOK(PrimaryAttack)()
 {
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
@@ -81,7 +75,6 @@ void CM249::__MAKE_VHOOK(PrimaryAttack)()
 	}
 }
 
-/* <276c87> ../cstrike/dlls/wpn_shared/wpn_m249.cpp:121 */
 void CM249::M249Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 {
 	Vector vecAiming, vecSrc, vecDir;
@@ -130,10 +123,10 @@ void CM249::M249Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	flag = FEV_NOTHOST;
 #else
 	flag = 0;
-#endif // CLIENT_WEAPONS
+#endif
 
 	PLAYBACK_EVENT_FULL(flag, m_pPlayer->edict(), m_usFireM249, 0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y,
-		(int)(m_pPlayer->pev->punchangle.x * 100), (int)(m_pPlayer->pev->punchangle.y * 100), FALSE, FALSE);
+		int(m_pPlayer->pev->punchangle.x * 100), int(m_pPlayer->pev->punchangle.y * 100), FALSE, FALSE);
 
 	m_flNextPrimaryAttack = m_flNextSecondaryAttack = GetNextAttackDelay(flCycleTime);
 
@@ -162,14 +155,13 @@ void CM249::M249Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	}
 }
 
-/* <276a02> ../cstrike/dlls/wpn_shared/wpn_m249.cpp:201 */
 void CM249::__MAKE_VHOOK(Reload)()
 {
 #ifdef REGAMEDLL_FIXES
 	// to prevent reload if not enough ammo
 	if (m_pPlayer->ammo_556natobox <= 0)
 		return;
-#endif // REGAMEDLL_FIXES
+#endif
 
 	if (DefaultReload(M249_MAX_CLIP, M249_RELOAD, M249_RELOAD_TIME))
 	{
@@ -181,7 +173,6 @@ void CM249::__MAKE_VHOOK(Reload)()
 	}
 }
 
-/* <2769c7> ../cstrike/dlls/wpn_shared/wpn_m249.cpp:222 */
 void CM249::__MAKE_VHOOK(WeaponIdle)()
 {
 	ResetEmptySound();

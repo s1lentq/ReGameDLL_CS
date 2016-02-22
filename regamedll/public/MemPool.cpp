@@ -1,6 +1,5 @@
 #include "precompiled.h"
 
-/* <3fea40> ../public/MemPool.cpp:35 */
 CMemoryPool::CMemoryPool(int blockSize, int numElements)
 {
 	_blocksPerBlob = numElements;
@@ -14,14 +13,12 @@ CMemoryPool::CMemoryPool(int blockSize, int numElements)
 	_blocksAllocated = 0;
 }
 
-/* <3fe967> ../public/MemPool.cpp:52 */
 CMemoryPool::~CMemoryPool()
 {
 	for (int i = 0; i < _numBlobs; ++i)
 		free(_memBlob[i]);
 }
 
-/* <3fe99c> ../public/MemPool.cpp:109 */
 void CMemoryPool::AddNewBlob()
 {
 	int sizeMultiplier = pow(2.0, _numBlobs);
@@ -61,7 +58,6 @@ void CMemoryPool::AddNewBlob()
 
 }
 
-/* <3fea72> ../public/MemPool.cpp:157 */
 void *CMemoryPool::Alloc(unsigned int amount)
 {
 	void *returnBlock;
@@ -84,7 +80,6 @@ void *CMemoryPool::Alloc(unsigned int amount)
 	return returnBlock;
 }
 
-/* <3feabe> ../public/MemPool.cpp:193 */
 void CMemoryPool::Free(void *memblock)
 {
 	if (!memblock)

@@ -32,25 +32,25 @@
 #pragma once
 #endif
 
+#include "common.h"
+
 #ifndef _WIN32
 #include <string.h>
 #include <wchar.h>
 #endif // _WIN32
 
-NOXREF wchar_t *SharedWVarArgs(wchar_t *format, ...);
+wchar_t *SharedWVarArgs(wchar_t *format, ...);
 char *SharedVarArgs(char *format, ...);
 char *BufPrintf(char *buf, int &len, const char *fmt, ...);
-NOXREF wchar_t *BufWPrintf(wchar_t *buf, int &len, const wchar_t *fmt, ...);
-NOXREF const wchar_t *NumAsWString(int val);
+wchar_t *BufWPrintf(wchar_t *buf, int &len, const wchar_t *fmt, ...);
+const wchar_t *NumAsWString(int val);
 const char *NumAsString(int val);
 char *SharedGetToken();
-NOXREF void SharedSetQuoteChar(char c);
+void SharedSetQuoteChar(char c);
 const char *SharedParse(const char *data);
-NOXREF bool SharedTokenWaiting(const char *buffer);
+bool SharedTokenWaiting(const char *buffer);
 
 // Simple utility function to allocate memory and duplicate a string
-
-/* <db469> ../game_shared/shared_util.h:46 */
 inline char *CloneString(const char *str)
 {
 	if (!str)
@@ -66,7 +66,6 @@ inline char *CloneString(const char *str)
 }
 
 // Simple utility function to allocate memory and duplicate a wide string
-
 inline wchar_t *CloneWString(const wchar_t *str)
 {
 	if (!str)

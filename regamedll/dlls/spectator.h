@@ -46,7 +46,7 @@ public:
 
 	void Spawn_();
 
-#endif // HOOK_GAMEDLL
+#endif
 
 private:
 	void SpectatorImpulseCommand();

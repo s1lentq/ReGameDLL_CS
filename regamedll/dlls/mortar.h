@@ -32,7 +32,6 @@
 #pragma once
 #endif
 
-/* <f5dea> ../cstrike/dlls/mortar.cpp:31 */
 class CFuncMortarField: public CBaseToggle
 {
 public:
@@ -53,7 +52,7 @@ public:
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	void EXPORT FieldUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
@@ -61,7 +60,6 @@ public:
 public:
 	static TYPEDESCRIPTION IMPL(m_SaveData)[6];
 
-public:
 	int m_iszXController;
 	int m_iszYController;
 	float m_flSpread;
@@ -70,7 +68,6 @@ public:
 	int m_fControl;
 };
 
-/* <f5f11> ../cstrike/dlls/mortar.cpp:192 */
 class CMortar: public CGrenade
 {
 public:
@@ -82,7 +79,7 @@ public:
 	void Spawn_();
 	void Precache_();
 
-#endif // HOOK_GAMEDLL
+#endif
 
 	void EXPORT MortarExplode();
 

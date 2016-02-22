@@ -1,13 +1,9 @@
 #include "precompiled.h"
 
 // Lightweight maintenance, invoked frequently
-
-/* <3c635f> ../cstrike/dlls/bot/cs_bot_update.cpp:26 */
 void CCSBot::__MAKE_VHOOK(Upkeep)()
 {
-	CCSBotManager *ctrl = TheCSBots();
-
-	if (ctrl->IsLearningMap() || !IsAlive())
+	if (TheCSBots()->IsLearningMap() || !IsAlive())
 		return;
 
 	if (m_isRapidFiring)
@@ -151,15 +147,11 @@ void CCSBot::__MAKE_VHOOK(Upkeep)()
 }
 
 // Heavyweight processing, invoked less often
-
-/* <3c6e1e> ../cstrike/dlls/bot/cs_bot_update.cpp:208 */
 void CCSBot::__MAKE_VHOOK(Update)()
 {
-	CCSBotManager *ctrl = TheCSBots();
-
-	if (ctrl->IsAnalysisRequested() && m_processMode == PROCESS_NORMAL)
+	if (TheCSBots()->IsAnalysisRequested() && m_processMode == PROCESS_NORMAL)
 	{
-		ctrl->AckAnalysisRequest();
+		TheCSBots()->AckAnalysisRequest();
 		StartAnalyzeAlphaProcess();
 	}
 
@@ -191,7 +183,7 @@ void CCSBot::__MAKE_VHOOK(Update)()
 	}
 
 	// show line of fire
-	if ((cv_bot_traceview.value == 100.0f && IsLocalPlayerWatchingMe()) || cv_bot_traceview.value == 101.0f)
+	if ((cv_bot_traceview.value == 100.0 && IsLocalPlayerWatchingMe()) || cv_bot_traceview.value == 101.0)
 	{
 		UTIL_MakeVectors(pev->punchangle + pev->v_angle);
 
@@ -207,18 +199,46 @@ void CCSBot::__MAKE_VHOOK(Update)()
 		}
 	}
 
+	//
 	// Debug beam rendering
-	if (cv_bot_traceview.value == 2.0f && IsLocalPlayerWatchingMe() || cv_bot_traceview.value == 3.0f)
+	//
+
+	// show approach points
+	if ((cv_bot_traceview.value == 2.0f && IsLocalPlayerWatchingMe()) || cv_bot_traceview.value == 3.0f)
 		DrawApproachPoints();
 
-	if (cv_bot_traceview.value == 4.0f && IsLocalPlayerWatchingMe() || cv_bot_traceview.value == 5.0f)
+	// show encounter spot data
+	if ((cv_bot_traceview.value == 4.0f && IsLocalPlayerWatchingMe()) || cv_bot_traceview.value == 5.0f)
 	{
-		// ...
+		if (m_spotEncounter != NULL)
+		{
+			UTIL_DrawBeamPoints(m_spotEncounter->path.from, m_spotEncounter->path.to, 3, 0, 0, 255);
+
+			Vector dir = m_spotEncounter->path.to - m_spotEncounter->path.from;
+			float length = dir.NormalizeInPlace();
+
+			const SpotOrder *order;
+			Vector along;
+
+			for (SpotOrderList::const_iterator iter = m_spotEncounter->spotList.begin(); iter != m_spotEncounter->spotList.end(); ++iter)
+			{
+				order = &(*iter);
+
+				along = m_spotEncounter->path.from + order->t * length * dir;
+
+				UTIL_DrawBeamPoints(along, *order->spot->GetPosition(), 3, 0, 255, 255);
+			}
+		}
 	}
 
+	// show path navigation data
 	if (cv_bot_traceview.value == 1.0f && IsLocalPlayerWatchingMe())
 	{
-		// ...
+		Vector from = GetEyePosition();
+		const float size = 50.0f;
+
+		Vector arrow(size * float(Q_cos(m_lookAheadAngle * M_PI / 180.0f)), size * float(Q_sin(m_lookAheadAngle * M_PI / 180.0f)), 0.0f);
+		UTIL_DrawBeamPoints(from, from + arrow, 1, 0, 255, 255);
 	}
 
 	if (cv_bot_stop.value != 0.0f)
@@ -275,6 +295,7 @@ void CCSBot::__MAKE_VHOOK(Update)()
 				default:	Crouch(); break;
 			}
 		}
+
 		if (m_blindFire)
 		{
 			PrimaryAttack();
@@ -294,10 +315,14 @@ void CCSBot::__MAKE_VHOOK(Update)()
 		// adjust our personal "safe" time
 		AdjustSafeTime();
 
-		// Decide if we should attack
-		bool doAttack = false;
-		if (!IsUsingGrenade())
+		if (IsUsingGrenade())
 		{
+			ThrowGrenade(&threat->pev->origin);
+		}
+		else
+		{
+			// Decide if we should attack
+			bool doAttack = false;
 			switch (GetDisposition())
 			{
 				case IGNORE_ENEMIES:
@@ -327,50 +352,48 @@ void CCSBot::__MAKE_VHOOK(Update)()
 					break;
 				}
 			}
+
+			if (doAttack)
+			{
+				if (GetEnemy() == NULL || threat != GetEnemy() || !IsAttacking())
+				{
+					if (IsUsingKnife() && IsHiding())
+					{
+						// if hiding with a knife, wait until threat is close
+						const float knifeAttackRange = 250.0f;
+						if ((pev->origin - threat->pev->origin).IsLengthLessThan(knifeAttackRange))
+						{
+							Attack(threat);
+						}
+					}
+					else
+					{
+						Attack(threat);
+					}
+				}
+			}
+			else
+			{
+				// dont attack, but keep track of nearby enemies
+				SetEnemy(threat);
+				m_isEnemyVisible = true;
+			}
 		}
-		else
-			ThrowGrenade(&pev->origin);
 
 		// if we aren't attacking but we are being attacked, retaliate
-		if (!doAttack && !IsAttacking() && GetDisposition() != IGNORE_ENEMIES)
+		if (GetDisposition() != IGNORE_ENEMIES && !IsAttacking())
 		{
 			const float recentAttackDuration = 1.0f;
 			if (GetTimeSinceAttacked() < recentAttackDuration)
 			{
 				// we may not be attacking our attacker, but at least we're not just taking it
 				// (since m_attacker isn't reaction-time delayed, we can't directly use it)
-				doAttack = true;
+				Attack(threat);
 				PrintIfWatched("Ouch! Retaliating!\n");
 			}
 		}
 
-		if (doAttack)
-		{
-			if (GetEnemy() == NULL || !IsAttacking() || threat != GetEnemy())
-			{
-				if (IsUsingKnife() && IsHiding())
-				{
-					// if hiding with a knife, wait until threat is close
-					const float knifeAttackRange = 250.0f;
-					if ((pev->origin - threat->pev->origin).IsLengthLessThan(knifeAttackRange))
-					{
-						Attack(threat);
-					}
-				}
-				else
-				{
-					Attack(threat);
-				}
-			}
-		}
-		else
-		{
-			// dont attack, but keep track of nearby enemies
-			SetEnemy(threat);
-			m_isEnemyVisible = true;
-		}
-
-		ctrl->SetLastSeenEnemyTimestamp();
+		TheCSBots()->SetLastSeenEnemyTimestamp();
 	}
 
 	// Validate existing enemy, if any
@@ -384,6 +407,7 @@ void CCSBot::__MAKE_VHOOK(Update)()
 		}
 		else
 		{
+			const int dada = offsetof(CCSBot, m_visibleEnemyParts);
 			// check LOS to current enemy (chest & head), in case he's dead (GetNearestEnemy() only returns live players)
 			// note we're not checking FOV - once we've acquired an enemy (which does check FOV), assume we know roughly where he is
 			if (IsVisible(m_enemy, false, &m_visibleEnemyParts))
@@ -462,7 +486,6 @@ void CCSBot::__MAKE_VHOOK(Update)()
 		m_isWaitingToTossGrenade = false;
 	}
 
-
 	if (IsHunting() && IsWellPastSafe() && IsUsingGrenade())
 	{
 		EquipBestWeapon(MUST_EQUIP);
@@ -540,10 +563,10 @@ void CCSBot::__MAKE_VHOOK(Update)()
 		GetChatter()->SpottedBomber(GetBomber());
 
 	if (CanSeeLooseBomb())
-		GetChatter()->SpottedLooseBomb(ctrl->GetLooseBomb());
+		GetChatter()->SpottedLooseBomb(TheCSBots()->GetLooseBomb());
 
 	// Scenario interrupts
-	switch (ctrl->GetScenario())
+	switch (TheCSBots()->GetScenario())
 	{
 		case CCSBotManager::SCENARIO_DEFUSE_BOMB:
 		{
@@ -556,9 +579,9 @@ void CCSBot::__MAKE_VHOOK(Update)()
 				gonnaBlowTime *= 0.66f;
 
 			if (!IsEscapingFromBomb()					// we aren't already escaping the bomb
-				&& ctrl->IsBombPlanted()				// is the bomb planted
+				&& TheCSBots()->IsBombPlanted()				// is the bomb planted
 				&& GetGameState()->IsPlantedBombLocationKnown()		// we know where the bomb is
-				&& ctrl->GetBombTimeLeft() < gonnaBlowTime	// is the bomb about to explode
+				&& TheCSBots()->GetBombTimeLeft() < gonnaBlowTime		// is the bomb about to explode
 				&& !IsDefusingBomb()					// we aren't defusing the bomb
 				&& !IsAttacking())					// we aren't in the midst of a firefight
 			{
@@ -598,7 +621,7 @@ void CCSBot::__MAKE_VHOOK(Update)()
 	// give us a chance to do something else.
 	const float earliestAutoFollowTime = 5.0f;
 	const float minAutoFollowTeamwork = 0.4f;
-	if (ctrl->GetElapsedRoundTime() > earliestAutoFollowTime
+	if (TheCSBots()->GetElapsedRoundTime() > earliestAutoFollowTime
 		&& GetProfile()->GetTeamwork() > minAutoFollowTeamwork
 		&& CanAutoFollow()
 		&& !IsBusy()
@@ -629,7 +652,7 @@ void CCSBot::__MAKE_VHOOK(Update)()
 								Follow(leader);
 								PrintIfWatched("Auto-Following %s\n", STRING(leader->pev->netname));
 
-								if (g_pGameRules->IsCareer())
+								if (CSGameRules()->IsCareer())
 								{
 									GetChatter()->Say("FollowingCommander", 10.0f);
 								}
@@ -678,7 +701,7 @@ void CCSBot::__MAKE_VHOOK(Update)()
 		{
 			if (GetMorale() * -40.0 > RANDOM_FLOAT(0.0f, 100.0f))
 			{
-				if (ctrl->IsOnOffense(this) || !ctrl->IsDefenseRushing())
+				if (TheCSBots()->IsOnOffense(this) || !TheCSBots()->IsDefenseRushing())
 				{
 					SetDisposition(OPPORTUNITY_FIRE);
 					Hide(m_lastKnownArea, RANDOM_FLOAT(3.0f, 15.0f));

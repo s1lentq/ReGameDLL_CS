@@ -56,16 +56,15 @@
 extern int _navAreaCount;
 extern int _currentIndex;
 
-extern struct BuyInfo primaryWeaponBuyInfoCT[ PRIMARY_WEAPON_BUY_COUNT ];
-extern struct BuyInfo secondaryWeaponBuyInfoCT[ SECONDARY_WEAPON_BUY_COUNT ];
+extern struct BuyInfo primaryWeaponBuyInfoCT[PRIMARY_WEAPON_BUY_COUNT];
+extern struct BuyInfo secondaryWeaponBuyInfoCT[SECONDARY_WEAPON_BUY_COUNT];
 
-extern struct BuyInfo primaryWeaponBuyInfoT[ PRIMARY_WEAPON_BUY_COUNT ];
-extern struct BuyInfo secondaryWeaponBuyInfoT[ SECONDARY_WEAPON_BUY_COUNT ];
+extern struct BuyInfo primaryWeaponBuyInfoT[PRIMARY_WEAPON_BUY_COUNT];
+extern struct BuyInfo secondaryWeaponBuyInfoT[SECONDARY_WEAPON_BUY_COUNT];
 
 class CCSBot;
 class BotChatterInterface;
 
-/* <3327a8> ../cstrike/dlls/bot/cs_bot.h:44 */
 class BotState
 {
 public:
@@ -75,7 +74,6 @@ public:
 	virtual const char *GetName() const = 0;
 };
 
-/* <3328b8> ../cstrike/dlls/bot/cs_bot.h:53 */
 class IdleState: public BotState
 {
 public:
@@ -88,10 +86,9 @@ public:
 	void OnEnter_(CCSBot *me);
 	void OnUpdate_(CCSBot *me);
 
-#endif // HOOK_GAMEDLL
+#endif
 };
 
-/* <3328d9> ../cstrike/dlls/bot/cs_bot.h:61 */
 class HuntState: public BotState
 {
 public:
@@ -106,14 +103,13 @@ public:
 	void OnUpdate_(CCSBot *me);
 	void OnExit_(CCSBot *me);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 	void ClearHuntArea() { m_huntArea = NULL; }
 private:
 	CNavArea *m_huntArea;
 };
 
-/* <3328fb> ../cstrike/dlls/bot/cs_bot.h:75 */
 class AttackState: public BotState
 {
 public:
@@ -128,7 +124,7 @@ public:
 	void OnUpdate_(CCSBot *me);
 	void OnExit_(CCSBot *me);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 	void SetCrouchAndHold(bool crouch) { m_crouchAndHold = crouch; }
 	void StopAttacking(CCSBot *me);
@@ -160,7 +156,6 @@ protected:
 	CountdownTimer m_retreatTimer;
 };
 
-/* <332922> ../cstrike/dlls/bot/cs_bot.h:120 */
 class InvestigateNoiseState: public BotState
 {
 public:
@@ -175,14 +170,13 @@ public:
 	void OnUpdate_(CCSBot *me);
 	void OnExit_(CCSBot *me);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 private:
 	void AttendCurrentNoise(CCSBot *me);
 	Vector m_checkNoisePosition;
 };
 
-/* <332949> ../cstrike/dlls/bot/cs_bot.h:133 */
 class BuyState: public BotState
 {
 public:
@@ -197,7 +191,7 @@ public:
 	void OnUpdate_(CCSBot *me);
 	void OnExit_(CCSBot *me);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 private:
 	bool m_isInitialDelay;
@@ -211,7 +205,6 @@ private:
 	bool m_buyPistol;
 };
 
-/* <332970> ../cstrike/dlls/bot/cs_bot.h:154 */
 class MoveToState: public BotState
 {
 public:
@@ -226,7 +219,7 @@ public:
 	void OnUpdate_(CCSBot *me);
 	void OnExit_(CCSBot *me);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 	void SetGoalPosition(const Vector &pos) { m_goalPosition = pos; }
 	void SetRouteType(RouteType route) { m_routeType = route; }
@@ -238,7 +231,6 @@ private:
 	bool m_askedForCover;
 };
 
-/* <332997> ../cstrike/dlls/bot/cs_bot.h:171 */
 class FetchBombState: public BotState
 {
 public:
@@ -251,11 +243,10 @@ public:
 	void OnEnter_(CCSBot *me);
 	void OnUpdate_(CCSBot *me);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 };
 
-/* <3329be> ../cstrike/dlls/bot/cs_bot.h:179 */
 class PlantBombState: public BotState
 {
 public:
@@ -270,11 +261,10 @@ public:
 	void OnUpdate_(CCSBot *me);
 	void OnExit_(CCSBot *me);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 };
 
-/* <3329e5> ../cstrike/dlls/bot/cs_bot.h:188 */
 class DefuseBombState: public BotState
 {
 public:
@@ -289,10 +279,9 @@ public:
 	void OnUpdate_(CCSBot *me);
 	void OnExit_(CCSBot *me);
 
-#endif // HOOK_GAMEDLL
+#endif
 };
 
-/* <332a0c> ../cstrike/dlls/bot/cs_bot.h:197 */
 class HideState: public BotState
 {
 public:
@@ -307,19 +296,19 @@ public:
 	void OnUpdate_(CCSBot *me);
 	void OnExit_(CCSBot *me);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
-	void SetHidingSpot(const Vector &pos)	{ m_hidingSpot = pos; }
-	const Vector &GetHidingSpot() const	{ return m_hidingSpot; }
+	void SetHidingSpot(const Vector &pos) { m_hidingSpot = pos; }
+	const Vector &GetHidingSpot() const { return m_hidingSpot; }
 
-	void SetSearchArea(CNavArea *area)	{ m_searchFromArea = area; }
-	void SetSearchRange(float range)	{ m_range = range; }
+	void SetSearchArea(CNavArea *area) { m_searchFromArea = area; }
+	void SetSearchRange(float range) { m_range = range; }
 
-	void SetDuration(float time)		{ m_duration = time; }
-	void SetHoldPosition(bool hold)		{ m_isHoldingPosition = hold; }
+	void SetDuration(float time) { m_duration = time; }
+	void SetHoldPosition(bool hold) { m_isHoldingPosition = hold; }
 
-	bool IsAtSpot() const			{ return m_isAtSpot; }
+	bool IsAtSpot() const { return m_isAtSpot; }
 
 private:
 	CNavArea *m_searchFromArea;
@@ -337,7 +326,6 @@ private:
 	Vector m_leaderAnchorPos;
 };
 
-/* <332a33> ../cstrike/dlls/bot/cs_bot.h:234 */
 class EscapeFromBombState: public BotState
 {
 public:
@@ -352,11 +340,10 @@ public:
 	void OnUpdate_(CCSBot *me);
 	void OnExit_(CCSBot *me);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 };
 
-/* <332a5a> ../cstrike/dlls/bot/cs_bot.h:243 */
 class FollowState: public BotState
 {
 public:
@@ -371,11 +358,13 @@ public:
 	void OnUpdate_(CCSBot *me);
 	void OnExit_(CCSBot *me);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 	void SetLeader(CBaseEntity *leader) { m_leader = leader; }
 
+#ifndef HOOK_GAMEDLL
 private:
+#endif
 	void ComputeLeaderMotionState(float leaderSpeed);
 
 	EHANDLE m_leader;
@@ -405,7 +394,6 @@ private:
 	CountdownTimer m_idleTimer;
 };
 
-/* <332a81> ../cstrike/dlls/bot/cs_bot.h:282 */
 class UseEntityState: public BotState
 {
 public:
@@ -420,7 +408,7 @@ public:
 	void OnUpdate_(CCSBot *me);
 	void OnExit_(CCSBot *me);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 	void SetEntity(CBaseEntity *entity) { m_entity = entity; }
 
@@ -429,8 +417,6 @@ private:
 };
 
 // The Counter-strike Bot
-
-/* <32b267> ../cstrike/dlls/bot/cs_bot.h:300 */
 class CCSBot: public CBot
 {
 public:
@@ -478,7 +464,7 @@ public:
 	bool IsEnemyPartVisible_(VisiblePartType part) const;
 	void RoundRespawn_();
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	void Disconnect();
@@ -494,7 +480,7 @@ public:
 	bool IsEndOfSafeTime() const;				// return true if we were in the safe time last update, but not now
 	float GetSafeTimeRemaining() const;			// return the amount of "safe time" we have left
 	float GetSafeTime() const;				// return what we think the total "safe time" for this map is
-	NOXREF bool IsUnhealthy() const;			// returns true if bot is low on health
+	//bool IsUnhealthy() const;				// returns true if bot is low on health
 
 	// behaviors
 	void Idle();
@@ -639,7 +625,7 @@ public:
 	CNavArea *GetNoiseArea() const;								// return area where noise was heard
 	void ForgetNoise();									// clear the last heard noise
 	bool CanSeeNoisePosition() const;							// return true if we directly see where we think the noise came from
-	NOXREF float GetNoiseRange() const;							// return approximate distance to last noise heard
+	float GetNoiseRange() const;								// return approximate distance to last noise heard
 
 	bool CanHearNearbyEnemyGunfire(float range = -1.0f) const;				// return true if we hear nearby threatening enemy gunfire within given range (-1 == infinite)
 	PriorityType GetNoisePriority() const;							// return priority of last heard noise
@@ -706,14 +692,14 @@ public:
 	#define NO_SPEED_CHANGE false
 	PathResult UpdatePathMovement(bool allowSpeedChange = true);					// move along our computed path - if allowSpeedChange is true, bot will walk when near goal to ensure accuracy
 
-	NOXREF bool AStarSearch(CNavArea *startArea, CNavArea *goalArea);				// find shortest path from startArea to goalArea - don't actually buid the path
+	bool AStarSearch(CNavArea *startArea, CNavArea *goalArea);					// find shortest path from startArea to goalArea - don't actually buid the path
 	bool ComputePath(CNavArea *goalArea, const Vector *goal, RouteType route);			// compute path to goal position
 	bool StayOnNavMesh();
 	CNavArea *GetLastKnownArea() const;								// return the last area we know we were inside of
 	const Vector &GetPathEndpoint() const;								// return final position of our current path
 	float GetPathDistanceRemaining() const;								// eturn estimated distance left to travel along path
 	void ResetStuckMonitor();
-	NOXREF bool IsAreaVisible(CNavArea *area) const;						// is any portion of the area visible to this bot
+	bool IsAreaVisible(CNavArea *area) const;							// is any portion of the area visible to this bot
 	const Vector &GetPathPosition(int numpath) const;
 	bool GetSimpleGroundHeightWithFloor(const Vector *pos, float *height, Vector *normal = NULL);	// find "simple" ground height, treating current nav area as part of the floor
 
@@ -759,7 +745,7 @@ public:
 
 	// approach points
 	void ComputeApproachPoints();						// determine the set of "approach points" representing where the enemy can enter this region
-	NOXREF void UpdateApproachPoints();					// recompute the approach point set if we have moved far enough to invalidate the current ones
+	void UpdateApproachPoints();						// recompute the approach point set if we have moved far enough to invalidate the current ones
 	void ClearApproachPoints();
 	void DrawApproachPoints();						// for debugging
 	float GetHidingSpotCheckTimestamp(HidingSpot *spot) const;		// return time when given spot was last checked
@@ -815,7 +801,7 @@ public:
 
 #ifndef HOOK_GAMEDLL
 private:
-#endif // HOOK_GAMEDLL
+#endif
 	friend class CCSBotManager;
 
 	// TODO: Get rid of these
@@ -874,7 +860,7 @@ private:
 	Vector m_goalPosition;
 	EHANDLE m_goalEntity;
 	void MoveTowardsPosition(const Vector *pos);				// move towards position, independant of view angle
-	NOXREF void MoveAwayFromPosition(const Vector *pos);			// move away from position, independant of view angle
+	void MoveAwayFromPosition(const Vector *pos);				// move away from position, independant of view angle
 	void StrafeAwayFromPosition(const Vector *pos);				// strafe (sidestep) away from position, independant of view angle
 	void StuckCheck();							// check if we have become stuck
 
@@ -895,7 +881,7 @@ private:
 		Vector pos;			// our movement goal position at this point in the path
 		const CNavLadder *ladder;	// if "how" refers to a ladder, this is it
 	}
-	m_path[ MAX_PATH_LENGTH ];
+	m_path[MAX_PATH_LENGTH];
 	int m_pathLength;
 	int m_pathIndex;
 	float m_areaEnteredTimestamp;
@@ -993,12 +979,12 @@ private:
 	float m_peripheralTimestamp;
 
 	enum { MAX_APPROACH_POINTS = 16 };
-	Vector m_approachPoint[ MAX_APPROACH_POINTS ];
+	Vector m_approachPoint[MAX_APPROACH_POINTS];
 	unsigned char m_approachPointCount;
 	Vector m_approachPointViewPosition;			// the position used when computing current approachPoint set
 
 	bool BendLineOfSight(const Vector *eye, const Vector *point, Vector *bend) const;		// "bend" our line of sight until we can see the target point. Return bend point, false if cant bend.
-	NOXREF bool FindApproachPointNearestPath(Vector *pos);						// find the approach point that is nearest to our current path, ahead of us
+	bool FindApproachPointNearestPath(Vector *pos);							// find the approach point that is nearest to our current path, ahead of us
 
 	bool m_isWaitingToTossGrenade;				// lining up throw
 	CountdownTimer m_tossGrenadeTimer;			// timeout timer for grenade tossing
@@ -1013,7 +999,7 @@ private:
 		HidingSpot *spot;
 		float timestamp;
 	}
-	m_checkedHidingSpot[ MAX_CHECKED_SPOTS ];
+	m_checkedHidingSpot[MAX_CHECKED_SPOTS];
 	int m_checkedHidingSpotCount;
 
 	// view angle mechanism
@@ -1052,7 +1038,7 @@ private:
 		float timestamp;
 		bool isEnemy;
 	}
-	m_watchInfo[ MAX_CLIENTS ];
+	m_watchInfo[MAX_CLIENTS];
 	mutable EHANDLE m_bomber;				// points to bomber if we can see him
 
 	int m_nearbyFriendCount;				// number of nearby teammates
@@ -1082,7 +1068,7 @@ private:
 		bool isReloading;
 		bool isProtectedByShield;
 	}
-	m_enemyQueue[ MAX_ENEMY_QUEUE ];			// round-robin queue for simulating reaction times
+	m_enemyQueue[MAX_ENEMY_QUEUE];				// round-robin queue for simulating reaction times
 
 	byte m_enemyQueueIndex;
 	byte m_enemyQueueCount;
@@ -1099,7 +1085,7 @@ private:
 	float m_stuckJumpTimestamp;				// time for next jump when stuck
 
 	enum { MAX_VEL_SAMPLES = 5 };
-	float m_avgVel[ MAX_VEL_SAMPLES ];
+	float m_avgVel[MAX_VEL_SAMPLES];
 	int m_avgVelIndex;
 	int m_avgVelCount;
 	Vector m_lastOrigin;
@@ -1154,129 +1140,113 @@ private:
 };
 
 // Inlines
-
-/* <51934c> ../cstrike/dlls/bot/cs_bot.h:316 */
 inline float CCSBot::GetCombatRange() const
 {
 	return m_combatRange;
 }
 
-/* <58de9b> ../cstrike/dlls/bot/cs_bot.h:318 */
 inline void CCSBot::SetRogue(bool rogue)
 {
 	m_isRogue = rogue;
 }
 
-/* <519617> ../cstrike/dlls/bot/cs_bot.h:320 */
 inline void CCSBot::Hurry(float duration)
 {
 	m_hurryTimer.Start(duration);
 }
 
-/* <5a0773> ../cstrike/dlls/bot/cs_bot.h:326 */
 inline float CCSBot::GetSafeTime() const
 {
 	return m_safeTime;
 }
 
-/* <5c4b10> ../cstrike/dlls/bot/cs_bot.h:355 */
 inline bool CCSBot::IsCarryingBomb() const
 {
 	return m_bHasC4;
 }
 
-/* <5a07aa> ../cstrike/dlls/bot/cs_bot.h:369 */
 inline bool CCSBot::IsFollowing() const
 {
 	return m_isFollowing;
 }
 
-/* <57bf57> ../cstrike/dlls/bot/cs_bot.h:370 */
 inline CBasePlayer *CCSBot::GetFollowLeader()
 {
 	return m_leader;
 }
 
-/* <3c5a20> ../cstrike/dlls/bot/cs_bot.h:375 */
 inline float CCSBot::GetFollowDuration() const
 {
 	return gpGlobals->time - m_followTimestamp;
 }
 
-/* <3c5a39> ../cstrike/dlls/bot/cs_bot.h:376 */
 inline bool CCSBot::CanAutoFollow() const
 {
 	return (gpGlobals->time > m_allowAutoFollowTime);
 }
 
-/* <3c5a52> ../cstrike/dlls/bot/cs_bot.h:381 */
 inline void CCSBot::AimAtEnemy()
 {
 	m_isAimingAtEnemy = true;
 }
 
-/* <3c5a70> ../cstrike/dlls/bot/cs_bot.h:382 */
 inline void CCSBot::StopAiming()
 {
 	m_isAimingAtEnemy = false;
 }
 
-/* <3c5a89> ../cstrike/dlls/bot/cs_bot.h:383 */
 inline bool CCSBot::IsAimingAtEnemy() const
 {
 	return m_isAimingAtEnemy;
 }
 
-/* <3e9c5e> ../cstrike/dlls/bot/cs_bot.h:385 */
 inline bool CCSBot::IsSurprised() const
 {
-	return gpGlobals->time - m_surpriseTimestamp < 5.0f;
+	if (gpGlobals->time - m_surpriseTimestamp < 5.0f)
+		return true;
+
+	return false;
 }
 
-/* <3ea00d> ../cstrike/dlls/bot/cs_bot.h:386 */
 inline float CCSBot::GetSurpriseDelay() const
 {
-	return gpGlobals->time - IsSurprised() ? m_surpriseDelay : 0.0f;
+	if (!IsSurprised())
+		return 0.0f;
+
+	return m_surpriseDelay;
 }
 
-/* <51938e> ../cstrike/dlls/bot/cs_bot.h:387 */
 inline void CCSBot::ClearSurpriseDelay()
 {
 	m_surpriseDelay = 0.0f;
 	m_surpriseTimestamp = 0.0f;
 }
 
-/* <5e2f12> ../cstrike/dlls/bot/cs_bot.h:389 */
 inline float CCSBot::GetStateTimestamp() const
 {
 	return m_stateTimestamp;
 }
 
-/* <5c4c60> ../cstrike/dlls/bot/cs_bot.h:394 */
 inline CSGameState *CCSBot::GetGameState()
 {
 	return &m_gameState;
 }
 
-/* <2e7d45> ../cstrike/dlls/bot/cs_bot.h:395 */
 inline const CSGameState *CCSBot::GetGameState() const
 {
 	return &m_gameState;
 }
 
-/* <5c4ce8> ../cstrike/dlls/bot/cs_bot.h:397 */
 inline bool CCSBot::IsAtBombsite()
 {
 	return (m_signals.GetState() & SIGNAL_BOMB) == SIGNAL_BOMB;
 }
 
-/* <5a07c3> ../cstrike/dlls/bot/cs_bot.h:453 */
 inline CCSBot::MoraleType CCSBot::GetMorale() const
 {
 	return m_morale;
 }
 
-/* <5b2dba> ../cstrike/dlls/bot/cs_bot.h:459 */
 inline bool CCSBot::IsNoiseHeard() const
 {
 	if (m_noiseTimestamp <= 0.0f)
@@ -1289,214 +1259,179 @@ inline bool CCSBot::IsNoiseHeard() const
 	return false;
 }
 
-/* <5d3f92> ../cstrike/dlls/bot/cs_bot.h:426 */
 inline void CCSBot::SetTask(TaskType task, CBaseEntity *entity)
 {
 	m_task = task;
 	m_taskEntity = entity;
 }
 
-/* <5e2f30> ../cstrike/dlls/bot/cs_bot.h:427 */
 inline CCSBot::TaskType CCSBot::GetTask() const
 {
 	return m_task;
 }
 
-/* <5c4c42> ../cstrike/dlls/bot/cs_bot.h:428 */
 inline CBaseEntity *CCSBot::GetTaskEntity()
 {
 	return m_taskEntity;
 }
 
-/* <5b2d33> ../cstrike/dlls/bot/cs_bot.h:474 */
 inline CNavArea *CCSBot::GetNoiseArea() const
 {
 	return m_noiseArea;
 }
 
-/* <5b2d51> ../cstrike/dlls/bot/cs_bot.h:475 */
 inline void CCSBot::ForgetNoise()
 {
 	m_noiseTimestamp = 0.0f;
 }
 
-/* <5b2d6f> ../cstrike/dlls/bot/cs_bot.h:487 */
 inline PriorityType CCSBot::GetNoisePriority() const
 {
 	return m_noisePriority;
 }
 
-/* <5c4ccf> ../cstrike/dlls/bot/cs_bot.h:491 */
 inline BotChatterInterface *CCSBot::GetChatter()
 {
 	return &m_chatter;
 }
 
-/* <111238> ../cstrike/dlls/bot/cs_bot.h:508 */
 inline bool CCSBot::IsUsingVoice() const
 {
 	return (m_voiceFeedbackEndTimestamp != 0.0f);
 }
 
-/* <519493> ../cstrike/dlls/bot/cs_bot.h:513 */
 inline CBasePlayer *CCSBot::GetEnemy()
 {
 	return m_enemy;
 }
 
-/* <57bfbd> ../cstrike/dlls/bot/cs_bot.h:514 */
 inline int CCSBot::GetNearbyEnemyCount() const
 {
 	return Q_min(GetEnemiesRemaining(), m_nearbyEnemyCount);
 }
 
-/* <2fecad> ../cstrike/dlls/bot/cs_bot.h:515 */
 inline unsigned int CCSBot::GetEnemyPlace() const
 {
 	return m_enemyPlace;
 }
 
-/* <2eff13> ../cstrike/dlls/bot/cs_bot.h:516 */
 inline bool CCSBot::CanSeeBomber() const
 {
 	return (m_bomber == NULL) ? false : true;
 }
 
-/* <3c6110> ../cstrike/dlls/bot/cs_bot.h:517 */
 inline CBasePlayer *CCSBot::GetBomber() const
 {
 	return m_bomber;
 }
 
-/* <2fecc8> ../cstrike/dlls/bot/cs_bot.h:519 */
 inline int CCSBot::GetNearbyFriendCount() const
 {
 	return Q_min(GetFriendsRemaining(), m_nearbyFriendCount);
 }
 
-/* <3a138c> ../cstrike/dlls/bot/cs_bot.h:521 */
 inline CBasePlayer *CCSBot::GetClosestVisibleFriend() const
 {
 	return m_closestVisibleFriend;
 }
 
-/* <3c615b> ../cstrike/dlls/bot/cs_bot.h:521 */
 inline CBasePlayer *CCSBot::GetClosestVisibleHumanFriend() const
 {
 	return m_closestVisibleHumanFriend;
 }
 
-/* <57bfd6> ../cstrike/dlls/bot/cs_bot.h:536 */
 inline float CCSBot::GetTimeSinceAttacked() const
 {
 	return gpGlobals->time - m_attackedTimestamp;
 }
 
-/* <56ae2c> ../cstrike/dlls/bot/cs_bot.h:537 */
 inline float CCSBot::GetFirstSawEnemyTimestamp() const
 {
 	return m_firstSawEnemyTimestamp;
 }
 
-/* <58df07> ../cstrike/dlls/bot/cs_bot.h:538 */
 inline float CCSBot::GetLastSawEnemyTimestamp() const
 {
 	return m_lastSawEnemyTimestamp;
 }
 
-/* <3e9ccc> ../cstrike/dlls/bot/cs_bot.h:539 */
 inline float CCSBot::GetTimeSinceLastSawEnemy() const
 {
 	return gpGlobals->time - m_lastSawEnemyTimestamp;
 }
 
-/* <3e9ce5> ../cstrike/dlls/bot/cs_bot.h:540 */
 inline float CCSBot::GetTimeSinceAcquiredCurrentEnemy() const
 {
 	return gpGlobals->time - m_currentEnemyAcquireTimestamp;
 }
 
-/* <5196d7> ../cstrike/dlls/bot/cs_bot.h:542 */
 inline const Vector &CCSBot::GetLastKnownEnemyPosition() const
 {
 	return m_lastEnemyPosition;
 }
 
-/* <5e2f49> ../cstrike/dlls/bot/cs_bot.h:543 */
 inline bool CCSBot::IsEnemyVisible() const
 {
 	return m_isEnemyVisible;
 }
 
-/* <519429> ../cstrike/dlls/bot/cs_bot.h:544 */
 inline float CCSBot::GetEnemyDeathTimestamp() const
 {
 	return m_enemyDeathTimestamp;
 }
 
-/* <519442> ../cstrike/dlls/bot/cs_bot.h:547 */
 inline int CCSBot::GetLastVictimID() const
 {
 	return m_lastVictimID;
 }
 
-/* <5b2da1> ../cstrike/dlls/bot/cs_bot.h:550 */
 inline bool CCSBot::HasPath() const
 {
 	return m_pathLength != 0;
 }
 
-/* <5a07f5> ../cstrike/dlls/bot/cs_bot.h:551 */
 inline void CCSBot::DestroyPath()
 {
 	m_pathLength = 0;
 	m_pathLadder = NULL;
 }
 
-/* <5a0813> ../cstrike/dlls/bot/cs_bot.h:567 */
 inline CNavArea *CCSBot::GetLastKnownArea() const
 {
 	return m_lastKnownArea;
 }
 
-/* <51963c> ../cstrike/dlls/bot/cs_bot.h:568 */
 inline const Vector &CCSBot::GetPathEndpoint() const
 {
-	return m_path[ m_pathLength - 1 ].pos;
+	return m_path[m_pathLength - 1].pos;
 }
 
-/* <5c1be3> ../cstrike/dlls/bot/cs_bot.h:571 */
 inline const Vector &CCSBot::GetPathPosition(int numpath) const
 {
-	return m_path[ numpath ].pos;
+	return m_path[numpath].pos;
 }
 
-/* <5c4b79> ../cstrike/dlls/bot/cs_bot.h:577 */
 inline bool CCSBot::IsUsingLadder() const
 {
 	return m_pathLadder != NULL;
 }
 
-/* <5a0c27> ../cstrike/dlls/bot/cs_bot.h:580 */
 inline void CCSBot::SetGoalEntity(CBaseEntity *entity)
 {
 	m_goalEntity = entity;
 }
 
-/* <5c4d01> ../cstrike/dlls/bot/cs_bot.h:581 */
 inline CBaseEntity *CCSBot::GetGoalEntity()
 {
 	return m_goalEntity;
 }
 
-/* <5195f2> ../cstrike/dlls/bot/cs_bot.h:586 */
 inline void CCSBot::ForceRun(float duration)
 {
 	Run();
 	m_mustRunTimer.Start(duration);
 }
 
-/* <3d8238> ../cstrike/dlls/bot/cs_bot.h:598 */
 inline void CCSBot::SetLookAngles(float yaw, float pitch)
 {
 	m_lookYaw = yaw;
@@ -1508,13 +1443,11 @@ inline void CCSBot::SetForwardAngle(float angle)
 	m_forwardAngle = angle;
 }
 
-/* <57c008> ../cstrike/dlls/bot/cs_bot.h:609 */
 inline void CCSBot::SetLookAheadAngle(float angle)
 {
 	m_lookAheadAngle = angle;
 }
 
-/* <5e2f62> ../cstrike/dlls/bot/cs_bot.h:612 */
 inline void CCSBot::ClearLookAt()
 {
 	//PrintIfWatched("ClearLookAt()\n");
@@ -1522,7 +1455,6 @@ inline void CCSBot::ClearLookAt()
 	m_lookAtDesc = NULL;
 }
 
-/* <3d8287> ../cstrike/dlls/bot/cs_bot.h:618 */
 inline bool CCSBot::IsLookingAtSpot(PriorityType pri) const
 {
 	if (m_lookAtSpotState != NOT_LOOKING_AT_SPOT && m_lookAtSpotPriority >= pri)
@@ -1531,7 +1463,6 @@ inline bool CCSBot::IsLookingAtSpot(PriorityType pri) const
 	return false;
 }
 
-/* <3e9d59> ../cstrike/dlls/bot/cs_bot.h:625 */
 inline bool CCSBot::IsViewMoving(float angleVelThreshold) const
 {
 	if (m_lookYawVel < angleVelThreshold && m_lookYawVel > -angleVelThreshold &&
@@ -1539,34 +1470,30 @@ inline bool CCSBot::IsViewMoving(float angleVelThreshold) const
 	{
 		return false;
 	}
+
 	return true;
 }
 
-/* <57c047> ../cstrike/dlls/bot/cs_bot.h:651 */
 inline void CCSBot::ClearApproachPoints()
 {
 	m_approachPointCount = 0;
 }
 
-/* <3e9d7e> ../cstrike/dlls/bot/cs_bot.h:674 */
 inline bool CCSBot::IsThrowingGrenade() const
 {
 	return m_isWaitingToTossGrenade;
 }
 
-/* <3e9d97> ../cstrike/dlls/bot/cs_bot.h:679 */
 inline void CCSBot::StartRapidFire()
 {
 	m_isRapidFiring = true;
 }
 
-/* <3e9db0> ../cstrike/dlls/bot/cs_bot.h:680 */
 inline void CCSBot::StopRapidFire()
 {
 	m_isRapidFiring = false;
 }
 
-/* <51954d> ../cstrike/dlls/bot/cs_bot.h:684 */
 inline CCSBot::ZoomType CCSBot::GetZoomLevel() const
 {
 	if (m_iFOV > 60.0f)
@@ -1578,26 +1505,22 @@ inline CCSBot::ZoomType CCSBot::GetZoomLevel() const
 	return HIGH_ZOOM;
 }
 
-/* <5c4b92> ../cstrike/dlls/bot/cs_bot.h:698 */
 inline int CCSBot::GetHostageEscortCount() const
 {
 	return m_hostageEscortCount;
 }
 
-/* <5e2f80> ../cstrike/dlls/bot/cs_bot.h:699 */
 inline void CCSBot::IncreaseHostageEscortCount()
 {
 	++m_hostageEscortCount;
 }
 
-/* <5a0c4d> ../cstrike/dlls/bot/cs_bot.h:701 */
 inline void CCSBot::ResetWaitForHostagePatience()
 {
 	m_isWaitingForHostage = false;
 	m_inhibitWaitingForHostageTimer.Invalidate();
 }
 
-/* <5d402a> ../cstrike/dlls/bot/cs_bot.h:1055 */
 inline float CCSBot::GetFeetZ() const
 {
 	if (IsCrouching())
@@ -1612,7 +1535,6 @@ inline float CCSBot::GetFeetZ() const
 	}
 }
 
-/* <5b2dd3> ../cstrike/dlls/bot/cs_bot.h:1063 */
 inline const Vector *CCSBot::GetNoisePosition() const
 {
 	if (m_noiseTimestamp > 0.0f)
@@ -1621,7 +1543,6 @@ inline const Vector *CCSBot::GetNoisePosition() const
 	return NULL;
 }
 
-/* <519655> ../cstrike/dlls/bot/cs_bot.h:1071 */
 inline bool CCSBot::IsAwareOfEnemyDeath() const
 {
 	if (GetEnemyDeathTimestamp() == 0.0f)
@@ -1636,7 +1557,6 @@ inline bool CCSBot::IsAwareOfEnemyDeath() const
 	return false;
 }
 
-/* <568b12> ../cstrike/dlls/bot/cs_bot.h:1085 */
 inline bool CCSBot::IsNotMoving() const
 {
 	const float stillSpeed = 10.0f;
@@ -1648,7 +1568,6 @@ inline bool CCSBot::HasAnyAmmo(CBasePlayerWeapon *weapon) const
 	return (weapon->m_iClip != 0 || m_rgAmmo[weapon->m_iPrimaryAmmoType] > 0);
 }
 
-/* <2e8465> ../cstrike/dlls/bot/cs_bot.cpp:1004 */
 class CollectRetreatSpotsFunctor
 {
 public:
@@ -1697,7 +1616,7 @@ public:
 			if (owner != NULL && m_me->m_iTeam != owner->m_iTeam)
 				continue;
 
-			m_spot[ m_count++ ] = spot->GetPosition();
+			m_spot[m_count++] = spot->GetPosition();
 		}
 
 		// if we've filled up, stop searching
@@ -1710,11 +1629,10 @@ public:
 	CCSBot *m_me;
 	float m_range;
 
-	const Vector *m_spot[ MAX_SPOTS ];
+	const Vector *m_spot[MAX_SPOTS];
 	int m_count;
 };
 
-/* <2e7f9f> ../cstrike/dlls/bot/cs_bot.cpp:1088 */
 class FarthestHostage
 {
 public:
@@ -1736,26 +1654,6 @@ public:
 		}
 
 		return true;
-
-		/*if (hostage->pev->takedamage != DAMAGE_YES)
-			return true;
-
-		if (hostage->m_improv != NULL)
-		{
-			if (!hostage->IsFollowingSomeone() || m_me != hostage->GetLeader())
-				return true;
-		}
-		else if (!hostage->IsFollowing(m_me))
-			return true;
-
-		float range = (hostage->Center() - m_me->pev->origin).Length();
-
-		if (range > m_farRange)
-		{
-			m_farRange = range;
-		}
-
-		return true;*/
 	}
 
 	const CCSBot *m_me;
@@ -1763,8 +1661,6 @@ public:
 };
 
 // Functor used with NavAreaBuildPath()
-
-/* <5a0af3> ../cstrike/dlls/bot/cs_bot.h:1114 */
 class PathCost
 {
 public:
@@ -1892,7 +1788,7 @@ public:
 				{
 					// cost is proportional to the density of teammates in this area
 					const float costPerFriendPerUnit = 50000.0f;
-					cost += costPerFriendPerUnit * (float)area->GetPlayerCount(m_bot->m_iTeam, m_bot) / size;
+					cost += costPerFriendPerUnit * float(area->GetPlayerCount(m_bot->m_iTeam, m_bot)) / size;
 				}
 			}
 
@@ -1907,7 +1803,6 @@ private:
 	RouteType m_route;
 };
 
-/* <568fae> ../cstrike/dlls/bot/states/cs_bot_follow.cpp:95 */
 class FollowTargetCollector
 {
 public:
@@ -1941,8 +1836,6 @@ public:
 	}
 
 	enum { MAX_TARGET_AREAS = 128 };
-
-	/* <568dc3> ../cstrike/dlls/bot/states/cs_bot_follow.cpp:124 */
 	bool operator()(CNavArea *area)
 	{
 		if (m_targetAreaCount >= MAX_TARGET_AREAS)
@@ -1953,7 +1846,7 @@ public:
 		{
 			if (m_forward.IsZero())
 			{
-				m_targetArea[ m_targetAreaCount++ ] = area;
+				m_targetArea[m_targetAreaCount++] = area;
 			}
 			else
 			{
@@ -1963,7 +1856,7 @@ public:
 
 				//if (DotProduct(to, m_forward) > 0.7071f)
 				if ((to.x * m_forward.x + to.y * m_forward.y) > 0.7071f)
-					m_targetArea[ m_targetAreaCount++ ] = area;
+					m_targetArea[m_targetAreaCount++] = area;
 			}
 		}
 
@@ -1973,7 +1866,7 @@ public:
 	CBasePlayer *m_player;
 	Vector2D m_forward;
 	Vector2D m_cutoff;
-	CNavArea *m_targetArea[ MAX_TARGET_AREAS ];
+	CNavArea *m_targetArea[MAX_TARGET_AREAS];
 	int m_targetAreaCount;
 };
 

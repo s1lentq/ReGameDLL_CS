@@ -36,8 +36,6 @@ class CBaseEntity;
 class CNavLadder;
 
 // Improv-specific events
-
-/* <46f4d9> ../game_shared/bot/improv.h:17 */
 class IImprovEvent
 {
 public:

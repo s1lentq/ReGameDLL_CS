@@ -13,10 +13,13 @@ extern void *GetOriginalFuncAddrOrDefault(const char *funcName, void *def);
 extern void *GetFuncRefAddrOrDie(const char *funcName);
 extern void *GetFuncRefAddrOrDefault(const char *funcName, void *def);
 
-#if defined(HOOK_GAMEDLL) && !defined(REGAMEDLL_UNIT_TESTS)
+#ifdef _WIN32
 
-extern void Regamedll_Game_Init();
-extern void _printf2(const char *fmt, ...);
-extern void _print_chat(class CBasePlayer *pPlayer, const char *fmt, ...);
+void *_malloc_mhook_(size_t n);
+void *_realloc_mhook_(void *memblock, size_t size);
+void _free_mhook_(void *p);
+void *_calloc_mhook_(size_t n, size_t s);
+void *__nh_malloc_mhook_(size_t n);
+char *_strdup_mhook_(const char *s);
 
-#endif // HOOK_GAMEDLL
+#endif // _WIN32

@@ -111,11 +111,8 @@ void GameDLL_Version_f()
 	CONSOLE_ECHO("ReGameDLL API version %i.%i\n", REGAMEDLL_API_VERSION_MAJOR, REGAMEDLL_API_VERSION_MINOR);
 }
 
-/* <9c900> ../cstrike/dlls/game.cpp:500 */
 void EXT_FUNC GameDLLInit()
 {
-	g_bIsCzeroGame = UTIL_IsGame("czero");
-
 	g_psv_gravity = CVAR_GET_POINTER("sv_gravity");
 	g_psv_aim = CVAR_GET_POINTER("sv_aim");
 	g_footsteps = CVAR_GET_POINTER("mp_footsteps");
@@ -163,6 +160,7 @@ void EXT_FUNC GameDLLInit()
 
 // Remove unused cvars
 #ifndef REGAMEDLL_FIXES
+
 	CVAR_REGISTER(&sk_plr_9mm_bullet1);
 	CVAR_REGISTER(&sk_plr_9mm_bullet2);
 	CVAR_REGISTER(&sk_plr_9mm_bullet3);
@@ -205,6 +203,7 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&sk_scientist_heal1);
 	CVAR_REGISTER(&sk_scientist_heal2);
 	CVAR_REGISTER(&sk_scientist_heal3);
+
 #endif // REGAMEDLL_FIXES
 
 #ifdef REGAMEDLL_ADD

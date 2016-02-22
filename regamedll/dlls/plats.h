@@ -46,7 +46,6 @@
 
 #define FGUNTARGET_START_ON	0x0001
 
-/* <12c817> ../cstrike/dlls/plats.cpp:33 */
 class CBasePlatTrain: public CBaseToggle
 {
 public:
@@ -66,7 +65,7 @@ public:
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	static TYPEDESCRIPTION IMPL(m_SaveData)[3];
@@ -76,7 +75,6 @@ public:
 	float m_volume;
 };
 
-/* <12c853> ../cstrike/dlls/plats.cpp:223 */
 class CFuncPlat: public CBasePlatTrain
 {
 public:
@@ -98,7 +96,7 @@ public:
 	void HitTop_();
 	void HitBottom_();
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	void Setup();
@@ -108,7 +106,6 @@ public:
 	void EXPORT CallHitBottom();
 };
 
-/* <12c86e> ../cstrike/dlls/plats.cpp:248 */
 class CPlatTrigger: public CBaseEntity
 {
 public:
@@ -119,7 +116,7 @@ public:
 
 	void Touch_(CBaseEntity *pOther);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	void SpawnInsideTrigger(CFuncPlat *pPlatform);
@@ -127,7 +124,6 @@ public:
 	CFuncPlat *m_pPlatform;
 };
 
-/* <12c8ee> ../cstrike/dlls/plats.cpp:515 */
 class CFuncPlatRot: public CFuncPlat
 {
 public:
@@ -150,7 +146,7 @@ public:
 	void HitTop_();
 	void HitBottom_();
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	void SetupRotation();
@@ -163,7 +159,6 @@ public:
 	Vector m_start;
 };
 
-/* <12c93c> ../cstrike/dlls/plats.cpp:628 */
 class CFuncTrain: public CBasePlatTrain
 {
 public:
@@ -191,7 +186,7 @@ public:
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 	void Blocked_(CBaseEntity *pOther);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	void EXPORT Wait();
@@ -207,7 +202,6 @@ public:
 	BOOL m_activated;
 };
 
-/* <12c9d7> ../cstrike/dlls/plats.cpp:1588 */
 class CFuncTrainControls: public CBaseEntity
 {
 public:
@@ -218,13 +212,12 @@ public:
 
 	void Spawn_();
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	void EXPORT Find();
 };
 
-/* <12ca2a> ../cstrike/dlls/plats.cpp:1654 */
 class CFuncTrackChange: public CFuncPlatRot
 {
 public:
@@ -262,7 +255,7 @@ public:
 	void HitTop_();
 	void UpdateAutoTargets_(int toggleState);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	void EXPORT Find();
@@ -290,7 +283,6 @@ public:
 	int m_use;
 };
 
-/* <12ca78> ../cstrike/dlls/plats.cpp:2043 */
 class CFuncTrackAuto: public CFuncTrackChange
 {
 public:
@@ -302,18 +294,17 @@ public:
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 	void UpdateAutoTargets_(int toggleState);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 };
 
-/* <12caec> ../cstrike/dlls/plats.cpp:2136 */
 class CGunTarget: public CBaseMonster
 {
 public:
 	virtual void Spawn();
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
-	virtual int ObjectCaps() { return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION);}
+	virtual int ObjectCaps() { return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
 	virtual void Activate();
 	virtual int Classify() { return CLASS_MACHINE; }
 	virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
@@ -330,7 +321,7 @@ public:
 	int TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	void EXPORT Next();
@@ -346,7 +337,6 @@ private:
 };
 
 void PlatSpawnInsideTrigger(entvars_t *pevPlatform);
-//float Fix(float angle);
 void FixupAngles(Vector &v);
 
 #endif // PLATS_H

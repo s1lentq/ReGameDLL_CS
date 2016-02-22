@@ -1,9 +1,7 @@
 #include "precompiled.h"
 
-/* <29657d> ../cstrike/dlls/wpn_shared/wpn_p90.cpp:49 */
 LINK_ENTITY_TO_CLASS(weapon_p90, CP90);
 
-/* <296337> ../cstrike/dlls/wpn_shared/wpn_p90.cpp:51 */
 void CP90::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
@@ -19,7 +17,6 @@ void CP90::__MAKE_VHOOK(Spawn)()
 	FallInit();
 }
 
-/* <2962b6> ../cstrike/dlls/wpn_shared/wpn_p90.cpp:66 */
 void CP90::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/v_p90.mdl");
@@ -35,7 +32,6 @@ void CP90::__MAKE_VHOOK(Precache)()
 	m_usFireP90 = PRECACHE_EVENT(1, "events/p90.sc");
 }
 
-/* <2962dd> ../cstrike/dlls/wpn_shared/wpn_p90.cpp:83 */
 int CP90::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
@@ -53,7 +49,6 @@ int CP90::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	return 1;
 }
 
-/* <296310> ../cstrike/dlls/wpn_shared/wpn_p90.cpp:100 */
 BOOL CP90::__MAKE_VHOOK(Deploy)()
 {
 	m_iShotsFired = 0;
@@ -65,7 +60,6 @@ BOOL CP90::__MAKE_VHOOK(Deploy)()
 	return DefaultDeploy("models/v_p90.mdl", "models/p_p90.mdl", P90_DRAW, "carbine", UseDecrement() != FALSE);
 }
 
-/* <296533> ../cstrike/dlls/wpn_shared/wpn_p90.cpp:110 */
 void CP90::__MAKE_VHOOK(PrimaryAttack)()
 {
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
@@ -82,7 +76,6 @@ void CP90::__MAKE_VHOOK(PrimaryAttack)()
 	}
 }
 
-/* <296647> ../cstrike/dlls/wpn_shared/wpn_p90.cpp:120 */
 void CP90::P90Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 {
 	Vector vecAiming, vecSrc, vecDir;
@@ -130,10 +123,10 @@ void CP90::P90Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	flag = FEV_NOTHOST;
 #else
 	flag = 0;
-#endif // CLIENT_WEAPONS
+#endif
 
 	PLAYBACK_EVENT_FULL(flag, m_pPlayer->edict(), m_usFireP90, 0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y,
-		(int)(m_pPlayer->pev->punchangle.x * 100), (int)(m_pPlayer->pev->punchangle.y * 100), 5, FALSE);
+		int(m_pPlayer->pev->punchangle.x * 100), int(m_pPlayer->pev->punchangle.y * 100), 5, FALSE);
 
 	m_flNextPrimaryAttack = m_flNextSecondaryAttack = GetNextAttackDelay(flCycleTime);
 
@@ -162,7 +155,6 @@ void CP90::P90Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	}
 }
 
-/* <2963e8> ../cstrike/dlls/wpn_shared/wpn_p90.cpp:202 */
 void CP90::__MAKE_VHOOK(Reload)()
 {
 	if (m_pPlayer->ammo_57mm <= 0)
@@ -177,7 +169,6 @@ void CP90::__MAKE_VHOOK(Reload)()
 	}
 }
 
-/* <2963ad> ../cstrike/dlls/wpn_shared/wpn_p90.cpp:216 */
 void CP90::__MAKE_VHOOK(WeaponIdle)()
 {
 	ResetEmptySound();
@@ -192,7 +183,6 @@ void CP90::__MAKE_VHOOK(WeaponIdle)()
 	SendWeaponAnim(P90_IDLE1, UseDecrement() != FALSE);
 }
 
-/* <29626a> ../cstrike/dlls/weapons.h:1052 */
 float CP90::__MAKE_VHOOK(GetMaxSpeed)()
 {
 	return P90_MAX_SPEED;

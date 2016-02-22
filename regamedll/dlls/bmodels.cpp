@@ -26,20 +26,16 @@ TYPEDESCRIPTION CPendulum::m_SaveData[] =
 	DEFINE_FIELD(CPendulum, m_start, FIELD_VECTOR),
 };
 
-#endif // HOOK_GAMEDLL
+#endif
 
 // BModelOrigin - calculates origin of a bmodel from absmin/size because all bmodel origins are 0 0 0
-
-/* <1c36f> ../cstrike/dlls/bmodels.cpp:43 */
 Vector VecBModelOrigin(entvars_t *pevBModel)
 {
 	return pevBModel->absmin + (pevBModel->size * 0.5);
 }
 
-/* <1e384> ../cstrike/dlls/bmodels.cpp:63 */
 LINK_ENTITY_TO_CLASS(func_wall, CFuncWall);
 
-/* <1d193> ../cstrike/dlls/bmodels.cpp:65 */
 void CFuncWall::__MAKE_VHOOK(Spawn)()
 {
 	pev->angles = g_vecZero;
@@ -54,19 +50,16 @@ void CFuncWall::__MAKE_VHOOK(Spawn)()
 	pev->flags |= FL_WORLDBRUSH;
 }
 
-/* <1d873> ../cstrike/dlls/bmodels.cpp:77 */
 void CFuncWall::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
-	if (ShouldToggle(useType, (int)(pev->frame)))
+	if (ShouldToggle(useType, int(pev->frame)))
 	{
 		pev->frame = 1.0 - pev->frame;
 	}
 }
 
-/* <1e44e> ../cstrike/dlls/bmodels.cpp:96 */
 LINK_ENTITY_TO_CLASS(func_wall_toggle, CFuncWallToggle);
 
-/* <1e28f> ../cstrike/dlls/bmodels.cpp:98 */
 void CFuncWallToggle::__MAKE_VHOOK(Spawn)()
 {
 	CFuncWall::Spawn();
@@ -77,7 +70,6 @@ void CFuncWallToggle::__MAKE_VHOOK(Spawn)()
 	}
 }
 
-/* <1e518> ../cstrike/dlls/bmodels.cpp:106 */
 void CFuncWallToggle::TurnOff()
 {
 	pev->solid = SOLID_NOT;
@@ -85,7 +77,6 @@ void CFuncWallToggle::TurnOff()
 	UTIL_SetOrigin(pev, pev->origin);
 }
 
-/* <1e53a> ../cstrike/dlls/bmodels.cpp:114 */
 void CFuncWallToggle::TurnOn()
 {
 	pev->solid = SOLID_BSP;
@@ -93,7 +84,6 @@ void CFuncWallToggle::TurnOn()
 	UTIL_SetOrigin(pev, pev->origin);
 }
 
-/* <1e55c> ../cstrike/dlls/bmodels.cpp:122 */
 BOOL CFuncWallToggle::IsOn()
 {
 	if (pev->solid == SOLID_NOT)
@@ -104,7 +94,6 @@ BOOL CFuncWallToggle::IsOn()
 	return TRUE;
 }
 
-/* <1e101> ../cstrike/dlls/bmodels.cpp:130 */
 void CFuncWallToggle::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	int status = IsOn();
@@ -118,10 +107,8 @@ void CFuncWallToggle::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pC
 	}
 }
 
-/* <1e57d> ../cstrike/dlls/bmodels.cpp:155 */
 LINK_ENTITY_TO_CLASS(func_conveyor, CFuncConveyor);
 
-/* <1e1c3> ../cstrike/dlls/bmodels.cpp:156 */
 void CFuncConveyor::__MAKE_VHOOK(Spawn)()
 {
 	SetMovedir(pev);
@@ -147,12 +134,10 @@ void CFuncConveyor::__MAKE_VHOOK(Spawn)()
 }
 
 // HACKHACK -- This is ugly, but encode the speed in the rendercolor to avoid adding more data to the network stream
-
-/* <1e647> ../cstrike/dlls/bmodels.cpp:179 */
 void CFuncConveyor::UpdateSpeed(float speed)
 {
 	// Encode it as an integer with 4 fractional bits
-	int speedCode = (int)(fabs((float_precision)speed) * 16.0);
+	int speedCode = int(Q_fabs(float_precision(speed)) * 16.0);
 
 	if (speed < 0)
 		pev->rendercolor.x = 1;
@@ -163,30 +148,26 @@ void CFuncConveyor::UpdateSpeed(float speed)
 	pev->rendercolor.z = (speedCode & 0xFF);
 }
 
-/* <1e021> ../cstrike/dlls/bmodels.cpp:194 */
 void CFuncConveyor::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	pev->speed = -pev->speed;
 	UpdateSpeed(pev->speed);
 }
 
-/* <1e695> ../cstrike/dlls/bmodels.cpp:217 */
 LINK_ENTITY_TO_CLASS(func_illusionary, CFuncIllusionary);
 
-/* <1ddc9> ../cstrike/dlls/bmodels.cpp:219 */
 void CFuncIllusionary::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	//skin is used for content type
 	if (FStrEq(pkvd->szKeyName, "skin"))
 	{
-		pev->skin = (int)Q_atof(pkvd->szValue);
+		pev->skin = Q_atoi(pkvd->szValue);
 		pkvd->fHandled = TRUE;
 	}
 	else
 		CBaseToggle::KeyValue(pkvd);
 }
 
-/* <1d1db> ../cstrike/dlls/bmodels.cpp:230 */
 void CFuncIllusionary::__MAKE_VHOOK(Spawn)()
 {
 	pev->angles = g_vecZero;
@@ -203,10 +184,8 @@ void CFuncIllusionary::__MAKE_VHOOK(Spawn)()
 	// MAKE_STATIC(ENT(pev));
 }
 
-/* <1e75f> ../cstrike/dlls/bmodels.cpp:262 */
 LINK_ENTITY_TO_CLASS(func_monsterclip, CFuncMonsterClip);
 
-/* <1e24f> ../cstrike/dlls/bmodels.cpp:264 */
 void CFuncMonsterClip::__MAKE_VHOOK(Spawn)()
 {
 	CFuncWall::Spawn();
@@ -219,13 +198,10 @@ void CFuncMonsterClip::__MAKE_VHOOK(Spawn)()
 	pev->flags |= FL_MONSTERCLIP;
 }
 
-/* <1e82c> ../cstrike/dlls/bmodels.cpp:313 */
 LINK_ENTITY_TO_CLASS(func_rotating, CFuncRotating);
 
-/* <1d826> ../cstrike/dlls/bmodels.cpp:310 */
 IMPLEMENT_SAVERESTORE(CFuncRotating, CBaseEntity);
 
-/* <1dc21> ../cstrike/dlls/bmodels.cpp:315 */
 void CFuncRotating::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "fanfriction"))
@@ -275,8 +251,6 @@ void CFuncRotating::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 // "dmg"	damage to inflict when blocked (2 default)
 
 // REVERSE will cause the it to rotate in the opposite direction.
-
-/* <1d5c4> ../cstrike/dlls/bmodels.cpp:362 */
 void CFuncRotating::__MAKE_VHOOK(Spawn)()
 {
 	// set final pitch.  Must not be PITCH_NORM, since we
@@ -375,7 +349,6 @@ void CFuncRotating::__MAKE_VHOOK(Spawn)()
 	Precache();
 }
 
-/* <1d28a> ../cstrike/dlls/bmodels.cpp:447 */
 void CFuncRotating::__MAKE_VHOOK(Precache)()
 {
 	char *szSoundFile = (char *)STRING(pev->message);
@@ -439,8 +412,6 @@ void CFuncRotating::__MAKE_VHOOK(Precache)()
 }
 
 // Touch - will hurt others based on how fast the brush is spinning
-
-/* <1dea4> ../cstrike/dlls/bmodels.cpp:517 */
 void CFuncRotating::HurtTouch(CBaseEntity *pOther)
 {
 	entvars_t *pevOther = pOther->pev;
@@ -460,7 +431,6 @@ void CFuncRotating::HurtTouch(CBaseEntity *pOther)
 // RampPitchVol - ramp pitch and volume up to final values, based on difference
 // between how fast we're going vs how fast we plan to go
 
-/* <1e8f9> ../cstrike/dlls/bmodels.cpp:540 */
 void CFuncRotating::RampPitchVol(int fUp)
 {
 	Vector vecAVel = pev->avelocity;
@@ -472,12 +442,12 @@ void CFuncRotating::RampPitchVol(int fUp)
 	int pitch;
 
 	// get current angular velocity
-	vecCur = abs((int)(vecAVel.x != 0 ? vecAVel.x : (vecAVel.y != 0 ? vecAVel.y : vecAVel.z)));
+	vecCur = Q_abs(int(vecAVel.x != 0 ? vecAVel.x : (vecAVel.y != 0 ? vecAVel.y : vecAVel.z)));
 
 	// get target angular velocity
 	vecFinal = (pev->movedir.x != 0 ? pev->movedir.x : (pev->movedir.y != 0 ? pev->movedir.y : pev->movedir.z));
 	vecFinal *= pev->speed;
-	vecFinal = abs((int)vecFinal);
+	vecFinal = Q_abs(int(vecFinal));
 
 	// calc volume and pitch as % of final vol and pitch
 	fpct = vecCur / vecFinal;
@@ -485,7 +455,7 @@ void CFuncRotating::RampPitchVol(int fUp)
 	//if (fUp)
 	//{
 	//	// spinup volume ramps up from 50% max vol
-	//	fvol = m_flVolume * (0.5 + fpct/2.0);
+	//	fvol = m_flVolume * (0.5 + fpct / 2.0);
 	//}
 	//else
 	{
@@ -495,7 +465,7 @@ void CFuncRotating::RampPitchVol(int fUp)
 
 	fpitch = FANPITCHMIN + (FANPITCHMAX - FANPITCHMIN) * fpct;
 
-	pitch = (int)fpitch;
+	pitch = int(fpitch);
 	if (pitch == PITCH_NORM)
 	{
 		pitch = PITCH_NORM - 1;
@@ -506,8 +476,6 @@ void CFuncRotating::RampPitchVol(int fUp)
 }
 
 // SpinUp - accelerates a non-moving func_rotating up to it's speed
-
-/* <1ea74> ../cstrike/dlls/bmodels.cpp:585 */
 void CFuncRotating::SpinUp()
 {
 	//rotational velocity
@@ -520,9 +488,9 @@ void CFuncRotating::SpinUp()
 	vecAVel = pev->avelocity;
 
 	// if we've met or exceeded target speed, set target speed and stop thinking
-	if (abs((int)vecAVel.x) >= abs((int)(pev->movedir.x * pev->speed))
-		&& abs((int)vecAVel.y) >= abs((int)(pev->movedir.y * pev->speed))
-		&& abs((int)vecAVel.z) >= abs((int)(pev->movedir.z * pev->speed)))
+	if (Q_abs(int(vecAVel.x)) >= Q_abs(int(pev->movedir.x * pev->speed))
+		&& Q_abs(int(vecAVel.y)) >= Q_abs(int(pev->movedir.y * pev->speed))
+		&& Q_abs(int(vecAVel.z)) >= Q_abs(int(pev->movedir.z * pev->speed)))
 	{
 		// set speed in case we overshot
 		pev->avelocity = pev->movedir * pev->speed;
@@ -537,7 +505,6 @@ void CFuncRotating::SpinUp()
 	}
 }
 
-/* <1e9c3> ../cstrike/dlls/bmodels.cpp:615 */
 void CFuncRotating::SpinDown()
 {
 	//rotational velocity
@@ -579,15 +546,12 @@ void CFuncRotating::SpinDown()
 	}
 }
 
-/* <1d304> ../cstrike/dlls/bmodels.cpp:653 */
 void CFuncRotating::Rotate()
 {
 	pev->nextthink = pev->ltime + 10;
 }
 
 // Rotating Use - when a rotating brush is triggered
-
-/* <1d60e> ../cstrike/dlls/bmodels.cpp:661 */
 void CFuncRotating::RotatingUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	// is this a brush that should accelerate and decelerate when turned on/off (fan)?
@@ -633,20 +597,14 @@ void CFuncRotating::RotatingUse(CBaseEntity *pActivator, CBaseEntity *pCaller, U
 }
 
 // RotatingBlocked - An entity has blocked the brush
-
-/* <1d325> ../cstrike/dlls/bmodels.cpp:706 */
 void CFuncRotating::__MAKE_VHOOK(Blocked)(CBaseEntity *pOther)
 {
 	pOther->TakeDamage(pev, pev, pev->dmg, DMG_CRUSH);
 }
 
-/* <1eb14> ../cstrike/dlls/bmodels.cpp:747 */
 LINK_ENTITY_TO_CLASS(func_pendulum, CPendulum);
-
-/* <1d7d9> ../cstrike/dlls/bmodels.cpp:761 */
 IMPLEMENT_SAVERESTORE(CPendulum, CBaseEntity);
 
-/* <1db2a> ../cstrike/dlls/bmodels.cpp:765 */
 void CPendulum::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "distance"))
@@ -663,7 +621,6 @@ void CPendulum::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CBaseEntity::KeyValue(pkvd);
 }
 
-/* <1d9c7> ../cstrike/dlls/bmodels.cpp:782 */
 void CPendulum::__MAKE_VHOOK(Spawn)()
 {
 	// set the axis of rotation
@@ -685,7 +642,7 @@ void CPendulum::__MAKE_VHOOK(Spawn)()
 		pev->speed = 100;
 
 	// Calculate constant acceleration from speed and distance
-	m_accel = (pev->speed * pev->speed) / (2 * fabs((float_precision)m_distance));
+	m_accel = (pev->speed * pev->speed) / (2 * Q_fabs(float_precision(m_distance)));
 	m_maxSpeed = pev->speed;
 	m_start = pev->angles;
 	m_center = pev->angles + (m_distance * 0.5) * pev->movedir;
@@ -705,7 +662,6 @@ void CPendulum::__MAKE_VHOOK(Spawn)()
 	}
 }
 
-/* <1d8ec> ../cstrike/dlls/bmodels.cpp:821 */
 void CPendulum::PendulumUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	// Pendulum is moving, stop it and auto-return if necessary
@@ -741,7 +697,6 @@ void CPendulum::PendulumUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_T
 	}
 }
 
-/* <1d381> ../cstrike/dlls/bmodels.cpp:852 */
 void CPendulum::Stop()
 {
 	pev->angles = m_start;
@@ -750,13 +705,11 @@ void CPendulum::Stop()
 	pev->avelocity = g_vecZero;
 }
 
-/* <1d3a7> ../cstrike/dlls/bmodels.cpp:861 */
 void CPendulum::__MAKE_VHOOK(Blocked)(CBaseEntity *pOther)
 {
 	m_time = gpGlobals->time;
 }
 
-/* <1d533> ../cstrike/dlls/bmodels.cpp:867 */
 void CPendulum::Swing()
 {
 	float delta, dt;
@@ -808,7 +761,6 @@ void CPendulum::Swing()
 	}
 }
 
-/* <1d3f5> ../cstrike/dlls/bmodels.cpp:909 */
 void CPendulum::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 {
 	entvars_t *pevOther = pOther->pev;
@@ -832,7 +784,6 @@ void CPendulum::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 	pevOther->velocity = (pevOther->origin - VecBModelOrigin(pev)).Normalize() * damage;
 }
 
-/* <1da85> ../cstrike/dlls/bmodels.cpp:931 */
 void CPendulum::RopeTouch(CBaseEntity *pOther)
 {
 	entvars_t *pevOther = pOther->pev;

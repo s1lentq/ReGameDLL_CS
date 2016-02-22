@@ -1,13 +1,11 @@
 #include "precompiled.h"
 
-/* <4110a1> ../cstrike/dlls/hostage/states/hostage_animate.cpp:13 */
 void HostageAnimateState::Reset()
 {
 	m_sequenceCount = 0;
 	m_performance = None;
 }
 
-/* <4110c7> ../cstrike/dlls/hostage/states/hostage_animate.cpp:20 */
 void HostageAnimateState::StartSequence(CHostageImprov *improv, const SeqInfo *seqInfo)
 {
 	if (seqInfo->seqID >= 0)
@@ -24,13 +22,12 @@ void HostageAnimateState::StartSequence(CHostageImprov *improv, const SeqInfo *s
 	m_isHolding = false;
 }
 
-/* <41110a> ../cstrike/dlls/hostage/states/hostage_animate.cpp:41 */
 void HostageAnimateState::AddSequence(CHostageImprov *improv, const char *seqName, float holdTime, float rate)
 {
 	int seqIndex;
 	CHostage *hostage = improv->GetEntity();
 
-	if (m_sequenceCount >= 8)
+	if (m_sequenceCount >= MAX_SEQUENCES)
 		return;
 
 	if (seqName != NULL)
@@ -40,15 +37,12 @@ void HostageAnimateState::AddSequence(CHostageImprov *improv, const char *seqNam
 
 	m_sequence[m_sequenceCount].seqID = seqIndex;
 	m_sequence[m_sequenceCount].holdTime = holdTime;
-	m_sequence[m_sequenceCount].rate = rate;
-
+	m_sequence[m_sequenceCount++].rate = rate;
 	m_currentSequence = 0;
-	m_sequenceCount++;
 
 	StartSequence(improv, m_sequence);
 }
 
-/* <4111be> ../cstrike/dlls/hostage/states/hostage_animate.cpp:62 */
 void HostageAnimateState::AddSequence(CHostageImprov *improv, int activity, float holdTime, float rate)
 {
 	CHostage *hostage = improv->GetEntity();
@@ -58,16 +52,13 @@ void HostageAnimateState::AddSequence(CHostageImprov *improv, int activity, floa
 	{
 		m_sequence[m_sequenceCount].seqID = LookupActivity(model, hostage->pev, activity);
 		m_sequence[m_sequenceCount].holdTime = holdTime;
-		m_sequence[m_sequenceCount].rate = rate;
-
+		m_sequence[m_sequenceCount++].rate = rate;
 		m_currentSequence = 0;
-		m_sequenceCount++;
 	}
 
 	StartSequence(improv, m_sequence);
 }
 
-/* <41127f> ../cstrike/dlls/hostage/states/hostage_animate.cpp:81 */
 bool HostageAnimateState::IsDoneHolding()
 {
 	if (m_sequence[m_currentSequence].holdTime < 0)
@@ -81,13 +72,11 @@ bool HostageAnimateState::IsDoneHolding()
 	return false;
 }
 
-/* <410d45> ../cstrike/dlls/hostage/states/hostage_animate.cpp:103 */
 void HostageAnimateState::__MAKE_VHOOK(OnEnter)(CHostageImprov *improv)
 {
 	;
 }
 
-/* <410fb2> ../cstrike/dlls/hostage/states/hostage_animate.cpp:108 */
 void HostageAnimateState::__MAKE_VHOOK(OnUpdate)(CHostageImprov *improv)
 {
 	if (m_sequenceCount <= 0)
@@ -114,13 +103,11 @@ void HostageAnimateState::__MAKE_VHOOK(OnUpdate)(CHostageImprov *improv)
 	StartSequence(improv, &m_sequence[m_currentSequence]);
 }
 
-/* <410d79> ../cstrike/dlls/hostage/states/hostage_animate.cpp:139 */
 void HostageAnimateState::__MAKE_VHOOK(OnExit)(CHostageImprov *improv)
 {
 	;
 }
 
-/* <4112d1> ../cstrike/dlls/hostage/states/hostage_animate.cpp:147 */
 NOXREF bool HostageAnimateState::IsPlaying(CHostageImprov *improv, const char *seqName) const
 {
 	int id = 0;

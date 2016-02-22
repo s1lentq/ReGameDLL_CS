@@ -1,9 +1,7 @@
 #include "precompiled.h"
 
-/* <23fdac> ../cstrike/dlls/wpn_shared/wpn_awp.cpp:50 */
 LINK_ENTITY_TO_CLASS(weapon_awp, CAWP);
 
-/* <23fb10> ../cstrike/dlls/wpn_shared/wpn_awp.cpp:52 */
 void CAWP::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
@@ -15,7 +13,6 @@ void CAWP::__MAKE_VHOOK(Spawn)()
 	FallInit();
 }
 
-/* <23fa2c> ../cstrike/dlls/wpn_shared/wpn_awp.cpp:64 */
 void CAWP::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/v_awp.mdl");
@@ -35,7 +32,6 @@ void CAWP::__MAKE_VHOOK(Precache)()
 	m_usFireAWP = PRECACHE_EVENT(1, "events/awp.sc");
 }
 
-/* <23fa53> ../cstrike/dlls/wpn_shared/wpn_awp.cpp:83 */
 int CAWP::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
@@ -53,7 +49,6 @@ int CAWP::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	return 1;
 }
 
-/* <23fc19> ../cstrike/dlls/wpn_shared/wpn_awp.cpp:100 */
 BOOL CAWP::__MAKE_VHOOK(Deploy)()
 {
 	if (DefaultDeploy("models/v_awp.mdl", "models/p_awp.mdl", AWP_DRAW, "rifle", UseDecrement() != FALSE))
@@ -68,7 +63,6 @@ BOOL CAWP::__MAKE_VHOOK(Deploy)()
 	return FALSE;
 }
 
-/* <23faac> ../cstrike/dlls/wpn_shared/wpn_awp.cpp:113 */
 void CAWP::__MAKE_VHOOK(SecondaryAttack)()
 {
 	switch (m_pPlayer->m_iFOV)
@@ -89,7 +83,6 @@ void CAWP::__MAKE_VHOOK(SecondaryAttack)()
 	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.3;
 }
 
-/* <23fd53> ../cstrike/dlls/wpn_shared/wpn_awp.cpp:143 */
 void CAWP::__MAKE_VHOOK(PrimaryAttack)()
 {
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
@@ -114,7 +107,6 @@ void CAWP::__MAKE_VHOOK(PrimaryAttack)()
 	}
 }
 
-/* <23fe76> ../cstrike/dlls/wpn_shared/wpn_awp.cpp:157 */
 void CAWP::AWPFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 {
 	Vector vecAiming, vecSrc, vecDir;
@@ -170,10 +162,10 @@ void CAWP::AWPFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	flag = FEV_NOTHOST;
 #else
 	flag = 0;
-#endif // CLIENT_WEAPONS
+#endif
 
 	PLAYBACK_EVENT_FULL(flag, m_pPlayer->edict(), m_usFireAWP, 0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y,
-		(int)(m_pPlayer->pev->punchangle.x * 100), (int)(m_pPlayer->pev->punchangle.x * 100), FALSE, FALSE);
+		int(m_pPlayer->pev->punchangle.x * 100), int(m_pPlayer->pev->punchangle.x * 100), FALSE, FALSE);
 
 	m_flNextPrimaryAttack = m_flNextSecondaryAttack = GetNextAttackDelay(flCycleTime);
 
@@ -186,7 +178,6 @@ void CAWP::AWPFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	m_pPlayer->pev->punchangle.x -= 2.0f;
 }
 
-/* <23fbc1> ../cstrike/dlls/wpn_shared/wpn_awp.cpp:239 */
 void CAWP::__MAKE_VHOOK(Reload)()
 {
 	if (m_pPlayer->ammo_338mag <= 0)
@@ -206,7 +197,6 @@ void CAWP::__MAKE_VHOOK(Reload)()
 	}
 }
 
-/* <23fb86> ../cstrike/dlls/wpn_shared/wpn_awp.cpp:265 */
 void CAWP::__MAKE_VHOOK(WeaponIdle)()
 {
 	ResetEmptySound();
@@ -219,7 +209,6 @@ void CAWP::__MAKE_VHOOK(WeaponIdle)()
 	}
 }
 
-/* <23fa86> ../cstrike/dlls/wpn_shared/wpn_awp.cpp:283 */
 float CAWP::__MAKE_VHOOK(GetMaxSpeed)()
 {
 	if (m_pPlayer->m_iFOV == DEFAULT_FOV)

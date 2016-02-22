@@ -5,14 +5,12 @@ const float updateTimesliceDuration = 0.5f;
 int _navAreaCount = 0;
 int _currentIndex = 0;
 
-/* <343cbe> ../cstrike/dlls/bot/cs_bot_learn.cpp:95 */
 inline CNavNode *LadderEndSearch(CBaseEntity *entity, const Vector *pos, NavDirType mountDir)
 {
 	Vector center = *pos;
 	AddDirectionVector(&center, mountDir, HalfHumanWidth);
 
 	// Test the ladder dismount point first, then each cardinal direction one and two steps away
-
 	for (int d = (-1); d < 2 * NUM_DIRECTIONS; ++d)
 	{
 		Vector tryPos = center;
@@ -36,13 +34,12 @@ inline CNavNode *LadderEndSearch(CBaseEntity *entity, const Vector *pos, NavDirT
 		TraceResult result;
 		UTIL_TraceLine(center + Vector(0, 0, fudge), tryPos + Vector(0, 0, fudge), ignore_monsters, dont_ignore_glass, ENT(entity->pev), &result);
 
-#ifndef REGAMEDLL_FIXES
-		if (result.flFraction != 1.0f)
+		if (result.flFraction != 1.0f
+#ifdef REGAMEDLL_FIXES
+			|| result.fStartSolid
+#endif
+		)
 			continue;
-#else
-		if (result.flFraction != 1.0f || result.fStartSolid)
-			continue;
-#endif // REGAMEDLL_ADD
 
 		// if no node exists here, create one and continue the search
 		if (CNavNode::GetNode(&tryPos) == NULL)
@@ -54,7 +51,6 @@ inline CNavNode *LadderEndSearch(CBaseEntity *entity, const Vector *pos, NavDirT
 	return NULL;
 }
 
-/* <343a56> ../cstrike/dlls/bot/cs_bot_learn.cpp:30 */
 CNavNode *CCSBot::AddNode(const Vector *destPos, const Vector *normal, NavDirType dir, CNavNode *source)
 {
 	// check if a node exists at this location
@@ -73,7 +69,7 @@ CNavNode *CCSBot::AddNode(const Vector *destPos, const Vector *normal, NavDirTyp
 
 	// optimization: if deltaZ changes very little, assume connection is commutative
 	const float zTolerance = 10.0f; // 50.0f;
-	if (fabs(source->GetPosition()->z - destPos->z) < zTolerance)
+	if (Q_fabs(source->GetPosition()->z - destPos->z) < zTolerance)
 	{
 		node->ConnectTo(source, OppositeDirection(dir));
 		node->MarkAsVisited(OppositeDirection(dir));
@@ -119,17 +115,15 @@ CNavNode *CCSBot::AddNode(const Vector *destPos, const Vector *normal, NavDirTyp
 	return node;
 }
 
-/* <343b40> ../cstrike/dlls/bot/cs_bot_learn.cpp:150 */
 void drawProgressMeter(float progress, char *title)
 {
 	MESSAGE_BEGIN(MSG_ALL, gmsgBotProgress);
 		WRITE_BYTE(FLAG_PROGRESS_DRAW);
-		WRITE_BYTE((int)progress);
+		WRITE_BYTE(int(progress * 100.0f));
 		WRITE_STRING(title);
 	MESSAGE_END();
 }
 
-/* <3435ce> ../cstrike/dlls/bot/cs_bot_learn.cpp:159 */
 void startProgressMeter(const char *title)
 {
 	MESSAGE_BEGIN(MSG_ALL, gmsgBotProgress);
@@ -138,7 +132,6 @@ void startProgressMeter(const char *title)
 	MESSAGE_END();
 }
 
-/* <3435a8> ../cstrike/dlls/bot/cs_bot_learn.cpp:167 */
 void hideProgressMeter()
 {
 	MESSAGE_BEGIN(MSG_ALL, gmsgBotProgress);
@@ -146,7 +139,6 @@ void hideProgressMeter()
 	MESSAGE_END();
 }
 
-/* <343b63> ../cstrike/dlls/bot/cs_bot_learn.cpp:182 */
 void CCSBot::StartLearnProcess()
 {
 	startProgressMeter("#CZero_LearningMap");
@@ -176,8 +168,6 @@ void CCSBot::StartLearnProcess()
 // outwards, tracking all valid steps and generating a directed graph of CNavNodes.
 // Sample the map one "step" in a cardinal direction to learn the map.
 // Returns true if sampling needs to continue, or false if done.
-
-/* <343d37> ../cstrike/dlls/bot/cs_bot_learn.cpp:217 */
 bool CCSBot::LearnStep()
 {
 	// take a step
@@ -338,7 +328,7 @@ bool CCSBot::LearnStep()
 				{
 					walkable = false;
 				}
-#endif // REGAMEDLL_FIXES
+#endif
 				if (walkable)
 				{
 					// we can move here
@@ -355,7 +345,6 @@ bool CCSBot::LearnStep()
 	}
 }
 
-/* <34489e> ../cstrike/dlls/bot/cs_bot_learn.cpp:392 */
 void CCSBot::UpdateLearnProcess()
 {
 	float startTime = g_engfuncs.pfnTime();
@@ -369,7 +358,6 @@ void CCSBot::UpdateLearnProcess()
 	}
 }
 
-/* <344750> ../cstrike/dlls/bot/cs_bot_learn.cpp:409 */
 void CCSBot::StartAnalyzeAlphaProcess()
 {
 	m_processMode = PROCESS_ANALYZE_ALPHA;
@@ -385,7 +373,6 @@ void CCSBot::StartAnalyzeAlphaProcess()
 	drawProgressMeter(0, "#CZero_AnalyzingHidingSpots");
 }
 
-/* <34396c> ../cstrike/dlls/bot/cs_bot_learn.cpp:427 */
 bool CCSBot::AnalyzeAlphaStep()
 {
 	++_currentIndex;
@@ -400,7 +387,6 @@ bool CCSBot::AnalyzeAlphaStep()
 	return true;
 }
 
-/* <3448de> ../cstrike/dlls/bot/cs_bot_learn.cpp:443 */
 void CCSBot::UpdateAnalyzeAlphaProcess()
 {
 	float startTime = g_engfuncs.pfnTime();
@@ -408,18 +394,17 @@ void CCSBot::UpdateAnalyzeAlphaProcess()
 	{
 		if (AnalyzeAlphaStep() == false)
 		{
-			drawProgressMeter(50, "#CZero_AnalyzingHidingSpots");
+			drawProgressMeter(0.5f, "#CZero_AnalyzingHidingSpots");
 			CleanupApproachAreaAnalysisPrep();
 			StartAnalyzeBetaProcess();
 			return;
 		}
 	}
 
-	float progress = _currentIndex / _navAreaCount * 50.0f;
+	float progress = (double(_currentIndex) / double(_navAreaCount)) * 0.5f;
 	drawProgressMeter(progress, "#CZero_AnalyzingHidingSpots");
 }
 
-/* <344aed> ../cstrike/dlls/bot/cs_bot_learn.cpp:467 */
 void CCSBot::StartAnalyzeBetaProcess()
 {
 	m_processMode = PROCESS_ANALYZE_BETA;
@@ -429,7 +414,6 @@ void CCSBot::StartAnalyzeBetaProcess()
 	_currentIndex = 0;
 }
 
-/* <3437c8> ../cstrike/dlls/bot/cs_bot_learn.cpp:479 */
 bool CCSBot::AnalyzeBetaStep()
 {
 	++_currentIndex;
@@ -444,7 +428,6 @@ bool CCSBot::AnalyzeBetaStep()
 	return true;
 }
 
-/* <344b8d> ../cstrike/dlls/bot/cs_bot_learn.cpp:495 */
 void CCSBot::UpdateAnalyzeBetaProcess()
 {
 	float startTime = g_engfuncs.pfnTime();
@@ -452,23 +435,21 @@ void CCSBot::UpdateAnalyzeBetaProcess()
 	{
 		if (AnalyzeBetaStep() == false)
 		{
-			drawProgressMeter(100, "#CZero_AnalyzingApproachPoints");
+			drawProgressMeter(1, "#CZero_AnalyzingApproachPoints");
 			StartSaveProcess();
 			return;
 		}
 	}
-
-	float progress = ((_currentIndex / _navAreaCount) + 1.0f) * 50.0f;
+	
+	float progress = (double(_currentIndex) / double(_navAreaCount) + 1.0f) * 0.5f;
 	drawProgressMeter(progress, "#CZero_AnalyzingApproachPoints");
 }
 
-/* <344d1f> ../cstrike/dlls/bot/cs_bot_learn.cpp:517 */
 void CCSBot::StartSaveProcess()
 {
 	m_processMode = PROCESS_SAVE;
 }
 
-/* <344d41> ../cstrike/dlls/bot/cs_bot_learn.cpp:527 */
 void CCSBot::UpdateSaveProcess()
 {
 	char filename[256];
@@ -489,11 +470,15 @@ void CCSBot::UpdateSaveProcess()
 	hideProgressMeter();
 	StartNormalProcess();
 
+#ifndef REGAMEDLL_FIXES
 	Q_sprintf(cmd, "map %s\n", STRING(gpGlobals->mapname));
+#else
+	Q_sprintf(cmd, "changelevel %s\n", STRING(gpGlobals->mapname));
+#endif
+
 	SERVER_COMMAND(cmd);
 }
 
-/* <344e24> ../cstrike/dlls/bot/cs_bot_learn.cpp:554 */
 void CCSBot::StartNormalProcess()
 {
 	m_processMode = PROCESS_NORMAL;

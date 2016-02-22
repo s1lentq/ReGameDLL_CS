@@ -1,9 +1,7 @@
 #include "precompiled.h"
 
-/* <2ab333> ../cstrike/dlls/wpn_shared/wpn_smokegrenade.cpp:38 */
 LINK_ENTITY_TO_CLASS(weapon_smokegrenade, CSmokeGrenade);
 
-/* <2aafc7> ../cstrike/dlls/wpn_shared/wpn_smokegrenade.cpp:40 */
 void CSmokeGrenade::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
@@ -22,7 +20,6 @@ void CSmokeGrenade::__MAKE_VHOOK(Spawn)()
 	FallInit();
 }
 
-/* <2aaf12> ../cstrike/dlls/wpn_shared/wpn_smokegrenade.cpp:59 */
 void CSmokeGrenade::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/v_smokegrenade.mdl");
@@ -34,7 +31,6 @@ void CSmokeGrenade::__MAKE_VHOOK(Precache)()
 	m_usCreateSmoke = PRECACHE_EVENT(1, "events/createsmoke.sc");
 }
 
-/* <2aaf39> ../cstrike/dlls/wpn_shared/wpn_smokegrenade.cpp:71 */
 int CSmokeGrenade::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
@@ -52,7 +48,6 @@ int CSmokeGrenade::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	return 1;
 }
 
-/* <2ab077> ../cstrike/dlls/wpn_shared/wpn_smokegrenade.cpp:89 */
 BOOL CSmokeGrenade::__MAKE_VHOOK(Deploy)()
 {
 	m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
@@ -68,7 +63,6 @@ BOOL CSmokeGrenade::__MAKE_VHOOK(Deploy)()
 		return DefaultDeploy("models/v_smokegrenade.mdl", "models/p_smokegrenade.mdl", SMOKEGRENADE_DRAW, "grenade", UseDecrement() != FALSE);
 }
 
-/* <2aaf92> ../cstrike/dlls/wpn_shared/wpn_smokegrenade.cpp:104 */
 void CSmokeGrenade::__MAKE_VHOOK(Holster)(int skiplocal)
 {
 	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5f;
@@ -85,7 +79,6 @@ void CSmokeGrenade::__MAKE_VHOOK(Holster)(int skiplocal)
 	m_flReleaseThrow = -1;
 }
 
-/* <2ab03d> ../cstrike/dlls/wpn_shared/wpn_smokegrenade.cpp:120 */
 void CSmokeGrenade::__MAKE_VHOOK(PrimaryAttack)()
 {
 	if (m_iWeaponState & WPNSTATE_SHIELD_DRAWN)
@@ -101,7 +94,6 @@ void CSmokeGrenade::__MAKE_VHOOK(PrimaryAttack)()
 	}
 }
 
-/* <2ab3fd> ../cstrike/dlls/wpn_shared/wpn_smokegrenade.cpp:135 */
 bool CSmokeGrenade::ShieldSecondaryFire(int iUpAnim, int iDownAnim)
 {
 	if (!m_pPlayer->HasShield() || m_flStartThrow > 0)
@@ -140,13 +132,11 @@ bool CSmokeGrenade::ShieldSecondaryFire(int iUpAnim, int iDownAnim)
 	return true;
 }
 
-/* <2ab0b2> ../cstrike/dlls/wpn_shared/wpn_smokegrenade.cpp:173 */
 void CSmokeGrenade::__MAKE_VHOOK(SecondaryAttack)()
 {
 	ShieldSecondaryFire(SHIELDGUN_DRAW, SHIELDGUN_DRAWN_IDLE);
 }
 
-/* <2ab42f> ../cstrike/dlls/wpn_shared/wpn_smokegrenade.cpp:178 */
 void CSmokeGrenade::SetPlayerShieldAnim()
 {
 	if (!m_pPlayer->HasShield())
@@ -158,7 +148,6 @@ void CSmokeGrenade::SetPlayerShieldAnim()
 		Q_strcpy(m_pPlayer->m_szAnimExtention, "shieldgren");
 }
 
-/* <2ab451> ../cstrike/dlls/wpn_shared/wpn_smokegrenade.cpp:189 */
 void CSmokeGrenade::ResetPlayerShieldAnim()
 {
 	if (!m_pPlayer->HasShield())
@@ -170,7 +159,6 @@ void CSmokeGrenade::ResetPlayerShieldAnim()
 	}
 }
 
-/* <2aa17b> ../cstrike/dlls/wpn_shared/wpn_smokegrenade.cpp:199 */
 void CSmokeGrenade::__MAKE_VHOOK(WeaponIdle)()
 {
 	if (m_flReleaseThrow == 0)
@@ -275,7 +263,6 @@ void CSmokeGrenade::__MAKE_VHOOK(WeaponIdle)()
 	}
 }
 
-/* <2aaf6c> ../cstrike/dlls/wpn_shared/wpn_smokegrenade.cpp:310 */
 BOOL CSmokeGrenade::__MAKE_VHOOK(CanDeploy)()
 {
 	return m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] != 0;

@@ -39,27 +39,25 @@
 #define ITEM_BATTERY		4
 #define ITEM_SUIT		5
 
-/* <e0742> ../cstrike/dlls/items.h:19 */
 class CItem: public CBaseEntity
 {
 public:
 	virtual void Spawn();
 	virtual CBaseEntity *Respawn();
-	virtual BOOL MyTouch(CBasePlayer *pPlayer) { return FALSE;}
+	virtual BOOL MyTouch(CBasePlayer *pPlayer) { return FALSE; }
 
 #ifdef HOOK_GAMEDLL
 
 	void Spawn_();
 	CBaseEntity *Respawn_();
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	void EXPORT ItemTouch(CBaseEntity *pOther);
 	void EXPORT Materialize();
 };
 
-/* <e06f5> ../cstrike/dlls/items.cpp:38 */
 class CWorldItem: public CBaseEntity
 {
 public:
@@ -71,13 +69,12 @@ public:
 	void Spawn_();
 	void KeyValue_(KeyValueData *pkvd);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	int m_iType;
 };
 
-/* <e075d> ../cstrike/dlls/items.cpp:188 */
 class CItemSuit: public CItem
 {
 public:
@@ -91,11 +88,10 @@ public:
 	void Precache_();
 	BOOL MyTouch_(CBasePlayer *pPlayer);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 };
 
-/* <e07aa> ../cstrike/dlls/items.cpp:219 */
 class CItemBattery: public CItem
 {
 public:
@@ -109,11 +105,10 @@ public:
 	void Precache_();
 	BOOL MyTouch_(CBasePlayer *pPlayer);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 };
 
-/* <e07f7> ../cstrike/dlls/items.cpp:269 */
 class CItemAntidote: public CItem
 {
 public:
@@ -127,11 +122,10 @@ public:
 	void Precache_();
 	BOOL MyTouch_(CBasePlayer *pPlayer);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 };
 
-/* <e084a> ../cstrike/dlls/items.cpp:293 */
 class CItemSecurity: public CItem
 {
 public:
@@ -145,11 +139,10 @@ public:
 	void Precache_();
 	BOOL MyTouch_(CBasePlayer *pPlayer);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 };
 
-/* <e089d> ../cstrike/dlls/items.cpp:314 */
 class CItemLongJump: public CItem
 {
 public:
@@ -163,11 +156,10 @@ public:
 	void Precache_();
 	BOOL MyTouch_(CBasePlayer *pPlayer);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 };
 
-/* <e08eb> ../cstrike/dlls/items.cpp:352 */
 class CItemKevlar: public CItem
 {
 public:
@@ -181,11 +173,10 @@ public:
 	void Precache_();
 	BOOL MyTouch_(CBasePlayer *pPlayer);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 };
 
-/* <e093e> ../cstrike/dlls/items.cpp:393 */
 class CItemAssaultSuit: public CItem
 {
 public:
@@ -199,11 +190,10 @@ public:
 	void Precache_();
 	BOOL MyTouch_(CBasePlayer *pPlayer);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 };
 
-/* <e0991> ../cstrike/dlls/items.cpp:432 */
 class CItemThighPack: public CItem
 {
 public:
@@ -217,7 +207,7 @@ public:
 	void Precache_();
 	BOOL MyTouch_(CBasePlayer *pPlayer);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 };
 

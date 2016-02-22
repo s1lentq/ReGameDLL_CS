@@ -1,9 +1,7 @@
 #include "precompiled.h"
 
-/* <2662bb> ../cstrike/dlls/wpn_shared/wpn_glock18.cpp:68 */
 LINK_ENTITY_TO_CLASS(weapon_glock18, CGLOCK18);
 
-/* <26611a> ../cstrike/dlls/wpn_shared/wpn_glock18.cpp:70 */
 void CGLOCK18::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
@@ -22,7 +20,6 @@ void CGLOCK18::__MAKE_VHOOK(Spawn)()
 	FallInit();
 }
 
-/* <2660c0> ../cstrike/dlls/wpn_shared/wpn_glock18.cpp:88 */
 void CGLOCK18::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/v_glock18.mdl");
@@ -43,7 +40,6 @@ void CGLOCK18::__MAKE_VHOOK(Precache)()
 	m_usFireGlock18 = PRECACHE_EVENT(1, "events/glock18.sc");
 }
 
-/* <2660e7> ../cstrike/dlls/wpn_shared/wpn_glock18.cpp:112 */
 int CGLOCK18::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
@@ -61,7 +57,6 @@ int CGLOCK18::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	return 1;
 }
 
-/* <266281> ../cstrike/dlls/wpn_shared/wpn_glock18.cpp:129 */
 BOOL CGLOCK18::__MAKE_VHOOK(Deploy)()
 {
 	m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
@@ -87,7 +82,6 @@ BOOL CGLOCK18::__MAKE_VHOOK(Deploy)()
 	return DefaultDeploy("models/v_glock18.mdl", "models/p_glock18.mdl", GLOCK18_DRAW2, "onehanded", UseDecrement() != FALSE);
 }
 
-/* <266246> ../cstrike/dlls/wpn_shared/wpn_glock18.cpp:156 */
 void CGLOCK18::__MAKE_VHOOK(SecondaryAttack)()
 {
 	if (ShieldSecondaryFire(GLOCK18_SHIELD_UP, GLOCK18_SHIELD_DOWN))
@@ -109,7 +103,6 @@ void CGLOCK18::__MAKE_VHOOK(SecondaryAttack)()
 	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.3f;
 }
 
-/* <2664c3> ../cstrike/dlls/wpn_shared/wpn_glock18.cpp:175 */
 void CGLOCK18::__MAKE_VHOOK(PrimaryAttack)()
 {
 	if (m_iWeaponState & WPNSTATE_GLOCK18_BURST_MODE)
@@ -152,7 +145,6 @@ void CGLOCK18::__MAKE_VHOOK(PrimaryAttack)()
 	}
 }
 
-/* <266385> ../cstrike/dlls/wpn_shared/wpn_glock18.cpp:201 */
 void CGLOCK18::GLOCK18Fire(float flSpread, float flCycleTime, BOOL bFireBurst)
 {
 	Vector vecAiming, vecSrc, vecDir;
@@ -226,10 +218,10 @@ void CGLOCK18::GLOCK18Fire(float flSpread, float flCycleTime, BOOL bFireBurst)
 	flag = FEV_NOTHOST;
 #else
 	flag = 0;
-#endif // CLIENT_WEAPONS
+#endif
 
 	PLAYBACK_EVENT_FULL(flag, m_pPlayer->edict(), m_usFireGlock18, 0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y,
-		(int)(m_pPlayer->pev->punchangle.x * 100), (int)(m_pPlayer->pev->punchangle.y * 100), m_iClip == 0, FALSE);
+		int(m_pPlayer->pev->punchangle.x * 100), int(m_pPlayer->pev->punchangle.y * 100), m_iClip == 0, FALSE);
 
 	m_flNextPrimaryAttack = m_flNextSecondaryAttack = GetNextAttackDelay(flCycleTime);
 
@@ -251,7 +243,6 @@ void CGLOCK18::GLOCK18Fire(float flSpread, float flCycleTime, BOOL bFireBurst)
 	ResetPlayerShieldAnim();
 }
 
-/* <2661e8> ../cstrike/dlls/wpn_shared/wpn_glock18.cpp:307 */
 void CGLOCK18::__MAKE_VHOOK(Reload)()
 {
 	int iResult;
@@ -272,7 +263,6 @@ void CGLOCK18::__MAKE_VHOOK(Reload)()
 	}
 }
 
-/* <266190> ../cstrike/dlls/wpn_shared/wpn_glock18.cpp:329 */
 void CGLOCK18::__MAKE_VHOOK(WeaponIdle)()
 {
 	int iAnim;

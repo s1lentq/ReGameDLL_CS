@@ -1,4 +1,3 @@
 rootProject.name = 'regamedll'
 include 'dep/cppunitlite'
-include 'dep/bzip2'
 include 'regamedll'

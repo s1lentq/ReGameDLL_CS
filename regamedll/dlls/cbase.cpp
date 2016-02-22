@@ -81,7 +81,6 @@ BOOL gTouchDisabled = FALSE;
 
 #endif // HOOK_GAMEDLL
 
-/* <30850> ../cstrike/dlls/cbase.cpp:117 */
 int CaseInsensitiveHash(const char *string, int iBounds)
 {
 	unsigned int hash = 0;
@@ -102,7 +101,6 @@ int CaseInsensitiveHash(const char *string, int iBounds)
 	return (hash % iBounds);
 }
 
-/* <30d81> ../cstrike/dlls/cbase.cpp:136 */
 void EmptyEntityHashTable()
 {
 	int i;
@@ -127,7 +125,6 @@ void EmptyEntityHashTable()
 	}
 }
 
-/* <2f053> ../cstrike/dlls/cbase.cpp:156 */
 void AddEntityHashValue(entvars_t *pev, const char *value, hash_types_e fieldType)
 {
 	int count;
@@ -201,7 +198,6 @@ void AddEntityHashValue(entvars_t *pev, const char *value, hash_types_e fieldTyp
 	}
 }
 
-/* <2f0c8> ../cstrike/dlls/cbase.cpp:255 */
 void RemoveEntityHashValue(entvars_t *pev, const char *value, hash_types_e fieldType)
 {
 	int hash;
@@ -269,7 +265,6 @@ void RemoveEntityHashValue(entvars_t *pev, const char *value, hash_types_e field
 	}
 }
 
-/* <31125> ../cstrike/dlls/cbase.cpp:337 */
 void printEntities()
 {
 	for (int i = 0; i < stringsHashTable.Count(); ++i)
@@ -288,8 +283,7 @@ void printEntities()
 	}
 }
 
-/* <311e9> ../cstrike/dlls/cbase.cpp:354 */
-edict_t *CREATE_NAMED_ENTITY(string_t iClass)
+NOINLINE edict_t *CREATE_NAMED_ENTITY(string_t iClass)
 {
 	edict_t *named = g_engfuncs.pfnCreateNamedEntity(iClass);
 	if (named != NULL)
@@ -300,7 +294,6 @@ edict_t *CREATE_NAMED_ENTITY(string_t iClass)
 	return named;
 }
 
-/* <31249> ../cstrike/dlls/cbase.cpp:366 */
 void REMOVE_ENTITY(edict_t *e)
 {
 	if (e != NULL)
@@ -309,7 +302,6 @@ void REMOVE_ENTITY(edict_t *e)
 	}
 }
 
-/* <30158> ../cstrike/dlls/cbase.cpp:375 */
 void CONSOLE_ECHO_(char *pszMsg, ...)
 {
 	va_list argptr;
@@ -322,7 +314,6 @@ void CONSOLE_ECHO_(char *pszMsg, ...)
 	SERVER_PRINT(szStr);
 }
 
-/* <31273> ../cstrike/dlls/cbase.cpp:386 */
 void loopPerformance()
 {
 	CPerformanceCounter loopCounter;
@@ -375,7 +366,6 @@ void loopPerformance()
 	CONSOLE_ECHO(" Time in new search loop %.4f\n", (end - start) * 1000.0);
 }
 
-/* <313df> ../cstrike/dlls/cbase.cpp:451 */
 C_DLLEXPORT int GetEntityAPI(DLL_FUNCTIONS *pFunctionTable, int interfaceVersion)
 {
 	if (!pFunctionTable || interfaceVersion != INTERFACE_VERSION)
@@ -392,7 +382,6 @@ C_DLLEXPORT int GetEntityAPI(DLL_FUNCTIONS *pFunctionTable, int interfaceVersion
 	return 1;
 }
 
-/* <3161a> ../cstrike/dlls/cbase.cpp:471 */
 NOXREF int GetEntityAPI2(DLL_FUNCTIONS *pFunctionTable, int *interfaceVersion)
 {
 	if (!pFunctionTable || *interfaceVersion != INTERFACE_VERSION)
@@ -405,7 +394,6 @@ NOXREF int GetEntityAPI2(DLL_FUNCTIONS *pFunctionTable, int *interfaceVersion)
 	return 1;
 }
 
-/* <3165b> ../cstrike/dlls/cbase.cpp:485 */
 C_DLLEXPORT int GetNewDLLFunctions(NEW_DLL_FUNCTIONS *pFunctionTable, int *interfaceVersion)
 {
 	if (!pFunctionTable || *interfaceVersion != NEW_DLL_FUNCTIONS_VERSION)
@@ -418,7 +406,6 @@ C_DLLEXPORT int GetNewDLLFunctions(NEW_DLL_FUNCTIONS *pFunctionTable, int *inter
 	return 1;
 }
 
-/* <30ab0> ../cstrike/dlls/cbase.cpp:498 */
 int EXT_FUNC DispatchSpawn(edict_t *pent)
 {
 	CBaseEntity *pEntity = (CBaseEntity *)GET_PRIVATE(pent);
@@ -437,7 +424,7 @@ int EXT_FUNC DispatchSpawn(edict_t *pent)
 
 		if (pEntity != NULL)
 		{
-			if (g_pGameRules && !g_pGameRules->IsAllowedToSpawn(pEntity))
+			if (g_pGameRules != NULL && !g_pGameRules->IsAllowedToSpawn(pEntity))
 			{
 				// return that this entity should be deleted
 				return -1;
@@ -479,7 +466,6 @@ int EXT_FUNC DispatchSpawn(edict_t *pent)
 	return 0;
 }
 
-/* <2e8a0> ../cstrike/dlls/cbase.cpp:549 */
 void EXT_FUNC DispatchKeyValue(edict_t *pentKeyvalue, KeyValueData *pkvd)
 {
 	if (!pkvd || !pentKeyvalue)
@@ -503,8 +489,6 @@ void EXT_FUNC DispatchKeyValue(edict_t *pentKeyvalue, KeyValueData *pkvd)
 
 // HACKHACK -- this is a hack to keep the node graph entity from "touching" things (like triggers)
 // while it builds the graph
-
-/* <2e7db> ../cstrike/dlls/cbase.cpp:574 */
 void EXT_FUNC DispatchTouch(edict_t *pentTouched, edict_t *pentOther)
 {
 	if (gTouchDisabled)
@@ -517,19 +501,17 @@ void EXT_FUNC DispatchTouch(edict_t *pentTouched, edict_t *pentOther)
 		pEntity->Touch(pOther);
 }
 
-/* <2fa9b> ../cstrike/dlls/cbase.cpp:587 */
 void EXT_FUNC DispatchUse(edict_t *pentUsed, edict_t *pentOther)
 {
 	CBaseEntity *pEntity = (CBaseEntity *)GET_PRIVATE(pentUsed);
 	CBaseEntity *pOther = (CBaseEntity *)GET_PRIVATE(pentOther);
 
-	if (pEntity && !(pEntity->pev->flags & FL_KILLME))
+	if (pEntity != NULL && !(pEntity->pev->flags & FL_KILLME))
 	{
 		pEntity->Use(pOther, pOther, USE_TOGGLE, 0);
 	}
 }
 
-/* <2fb2f> ../cstrike/dlls/cbase.cpp:596 */
 void EXT_FUNC DispatchThink(edict_t *pent)
 {
 	CBaseEntity *pEntity = (CBaseEntity *)GET_PRIVATE(pent);
@@ -545,7 +527,6 @@ void EXT_FUNC DispatchThink(edict_t *pent)
 	}
 }
 
-/* <2fb89> ../cstrike/dlls/cbase.cpp:612 */
 void EXT_FUNC DispatchBlocked(edict_t *pentBlocked, edict_t *pentOther)
 {
 	CBaseEntity *pEntity = (CBaseEntity *)GET_PRIVATE(pentBlocked);
@@ -557,7 +538,6 @@ void EXT_FUNC DispatchBlocked(edict_t *pentBlocked, edict_t *pentOther)
 	}
 }
 
-/* <2ff56> ../cstrike/dlls/cbase.cpp:621 */
 void EXT_FUNC DispatchSave(edict_t *pent, SAVERESTOREDATA *pSaveData)
 {
 	CBaseEntity *pEntity = (CBaseEntity *)GET_PRIVATE(pent);
@@ -598,8 +578,6 @@ void EXT_FUNC DispatchSave(edict_t *pent, SAVERESTOREDATA *pSaveData)
 
 // Find the matching global entity.  Spit out an error if the designer made entities of
 // different classes with the same global name
-
-/* <31697> ../cstrike/dlls/cbase.cpp:656 */
 CBaseEntity *FindGlobalEntity(string_t classname, string_t globalname)
 {
 	edict_t *pent = FIND_ENTITY_BY_STRING(NULL, "globalname", STRING(globalname));
@@ -617,7 +595,6 @@ CBaseEntity *FindGlobalEntity(string_t classname, string_t globalname)
 	return pReturn;
 }
 
-/* <3179c> ../cstrike/dlls/cbase.cpp:673 */
 int EXT_FUNC DispatchRestore(edict_t *pent, SAVERESTOREDATA *pSaveData, int globalEntity)
 {
 	CBaseEntity *pEntity = (CBaseEntity *)GET_PRIVATE(pent);
@@ -732,7 +709,6 @@ int EXT_FUNC DispatchRestore(edict_t *pent, SAVERESTOREDATA *pSaveData, int glob
 	return 0;
 }
 
-/* <2fdcd> ../cstrike/dlls/cbase.cpp:776 */
 void EXT_FUNC DispatchObjectCollsionBox(edict_t *pent)
 {
 	CBaseEntity *pEntity = (CBaseEntity *)GET_PRIVATE(pent);
@@ -746,21 +722,18 @@ void EXT_FUNC DispatchObjectCollsionBox(edict_t *pent)
 
 }
 
-/* <2fe94> ../cstrike/dlls/cbase.cpp:788 */
 void EXT_FUNC SaveWriteFields(SAVERESTOREDATA *pSaveData, const char *pname, void *pBaseData, TYPEDESCRIPTION *pFields, int fieldCount)
 {
 	CSave saveHelper(pSaveData);
 	saveHelper.WriteFields(pname, pBaseData, pFields, fieldCount);
 }
 
-/* <30047> ../cstrike/dlls/cbase.cpp:795 */
 void EXT_FUNC SaveReadFields(SAVERESTOREDATA *pSaveData, const char *pname, void *pBaseData, TYPEDESCRIPTION *pFields, int fieldCount)
 {
 	CRestore restoreHelper(pSaveData);
 	restoreHelper.ReadFields(pname, pBaseData, pFields, fieldCount);
 }
 
-/* <31a74> ../cstrike/dlls/cbase.cpp:802 */
 edict_t *EHANDLE::Get()
 {
 	if (!m_pent || m_pent->serialnumber != m_serialnumber)
@@ -769,7 +742,6 @@ edict_t *EHANDLE::Get()
 	return m_pent;
 }
 
-/* <31a95> ../cstrike/dlls/cbase.cpp:814 */
 edict_t *EHANDLE::Set(edict_t *pent)
 {
 	m_pent = pent;
@@ -779,13 +751,11 @@ edict_t *EHANDLE::Set(edict_t *pent)
 	return pent;
 }
 
-/* <31ace> ../cstrike/dlls/cbase.cpp:823 */
 EHANDLE::operator CBaseEntity *()
 {
 	return (CBaseEntity *)GET_PRIVATE(Get());
 }
 
-/* <31b30> ../cstrike/dlls/cbase.cpp:829 */
 CBaseEntity *EHANDLE::operator=(CBaseEntity *pEntity)
 {
 	if (pEntity != NULL)
@@ -803,19 +773,16 @@ CBaseEntity *EHANDLE::operator=(CBaseEntity *pEntity)
 	return pEntity;
 }
 
-/* <31b69> ../cstrike/dlls/cbase.cpp:845 */
 EHANDLE::operator int()
 {
 	return Get() != NULL;
 }
 
-/* <31bac> ../cstrike/dlls/cbase.cpp:850 */
 CBaseEntity *EHANDLE::operator->()
 {
 	return (CBaseEntity *)GET_PRIVATE(Get());
 }
 
-/* <301be> ../cstrike/dlls/cbase.cpp:857 */
 int CBaseEntity::__MAKE_VHOOK(TakeHealth)(float flHealth, int bitsDamageType)
 {
 	if (pev->takedamage == DAMAGE_NO)
@@ -834,7 +801,6 @@ int CBaseEntity::__MAKE_VHOOK(TakeHealth)(float flHealth, int bitsDamageType)
 	return 1;
 }
 
-/* <305af> ../cstrike/dlls/cbase.cpp:876 */
 int CBaseEntity::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
 	Vector vecTemp;
@@ -845,11 +811,13 @@ int CBaseEntity::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pe
 	// UNDONE: some entity types may be immune or resistant to some bitsDamageType
 	// if Attacker == Inflictor, the attack was a melee or other instant-hit attack.
 	// (that is, no actual entity projectile was involved in the attack so use the shooter's origin).
+#ifndef REGAMEDLL_FIXES
 	if (pevAttacker == pevInflictor)
 	{
 		vecTemp = pevInflictor->origin - (VecBModelOrigin(pev));
 	}
 	else
+#endif
 	{
 		// an actual missile was involved.
 		vecTemp = pevInflictor->origin - (VecBModelOrigin(pev));
@@ -884,7 +852,6 @@ int CBaseEntity::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pe
 	return 1;
 }
 
-/* <2fe50> ../cstrike/dlls/cbase.cpp:927 */
 void CBaseEntity::__MAKE_VHOOK(Killed)(entvars_t *pevAttacker, int iGib)
 {
 	pev->takedamage = DAMAGE_NO;
@@ -892,7 +859,6 @@ void CBaseEntity::__MAKE_VHOOK(Killed)(entvars_t *pevAttacker, int iGib)
 	UTIL_Remove(this);
 }
 
-/* <2fc1c> ../cstrike/dlls/cbase.cpp:935 */
 CBaseEntity *CBaseEntity::__MAKE_VHOOK(GetNextTarget)()
 {
 	if (FStringNull(pev->target))
@@ -908,7 +874,6 @@ CBaseEntity *CBaseEntity::__MAKE_VHOOK(GetNextTarget)()
 	return Instance(pTarget);
 }
 
-/* <302a6> ../cstrike/dlls/cbase.cpp:958 */
 int CBaseEntity::__MAKE_VHOOK(Save)(CSave &save)
 {
 	if (save.WriteEntVars("ENTVARS", pev))
@@ -919,7 +884,6 @@ int CBaseEntity::__MAKE_VHOOK(Save)(CSave &save)
 	return 0;
 }
 
-/* <30440> ../cstrike/dlls/cbase.cpp:966 */
 int CBaseEntity::__MAKE_VHOOK(Restore)(CRestore &restore)
 {
 	int status;
@@ -949,7 +913,6 @@ int CBaseEntity::__MAKE_VHOOK(Restore)(CRestore &restore)
 	return status;
 }
 
-/* <2fcf6> ../cstrike/dlls/cbase.cpp:991 */
 void SetObjectCollisionBox(entvars_t *pev)
 {
 	if ((pev->solid == SOLID_BSP) && (pev->angles.x || pev->angles.y || pev->angles.z))
@@ -961,13 +924,13 @@ void SetObjectCollisionBox(entvars_t *pev)
 		max = 0;
 		for (i = 0; i < 3; ++i)
 		{
-			v = fabs((float_precision)((float *)pev->mins)[i]);
+			v = Q_fabs(float_precision(((float *)pev->mins)[i]));
 			if (v > max)
 			{
 				max = v;
 			}
 
-			v = fabs((float_precision)((float *)pev->maxs)[i]);
+			v = Q_fabs(float_precision(((float *)pev->maxs)[i]));
 			if (v > max)
 			{
 				max = v;
@@ -994,13 +957,11 @@ void SetObjectCollisionBox(entvars_t *pev)
 	pev->absmax.z += 1;
 }
 
-/* <2fe2a> ../cstrike/dlls/cbase.cpp:1030 */
 void CBaseEntity::__MAKE_VHOOK(SetObjectCollisionBox)()
 {
 	::SetObjectCollisionBox(pev);
 }
 
-/* <31c0e> ../cstrike/dlls/cbase.cpp:1036 */
 int CBaseEntity::Intersects(CBaseEntity *pOther)
 {
 	if (pOther->pev->absmin.x > pev->absmax.x
@@ -1013,7 +974,6 @@ int CBaseEntity::Intersects(CBaseEntity *pOther)
 	return 1;
 }
 
-/* <31c43> ../cstrike/dlls/cbase.cpp:1048 */
 void CBaseEntity::MakeDormant()
 {
 	pev->flags |= FL_DORMANT;
@@ -1034,13 +994,11 @@ void CBaseEntity::MakeDormant()
 	UTIL_SetOrigin(pev, pev->origin);
 }
 
-/* <31c66> ../cstrike/dlls/cbase.cpp:1064 */
 int CBaseEntity::IsDormant()
 {
 	return (pev->flags & FL_DORMANT) == FL_DORMANT;
 }
 
-/* <30221> ../cstrike/dlls/cbase.cpp:1069 */
 BOOL CBaseEntity::__MAKE_VHOOK(IsInWorld)()
 {
 	// position
@@ -1066,7 +1024,6 @@ BOOL CBaseEntity::__MAKE_VHOOK(IsInWorld)()
 	return TRUE;
 }
 
-/* <31c8c> ../cstrike/dlls/cbase.cpp:1089 */
 int CBaseEntity::ShouldToggle(USE_TYPE useType, BOOL currentState)
 {
 	if (useType != USE_TOGGLE && useType != USE_SET)
@@ -1078,7 +1035,6 @@ int CBaseEntity::ShouldToggle(USE_TYPE useType, BOOL currentState)
 	return 1;
 }
 
-/* <30258> ../cstrike/dlls/cbase.cpp:1100 */
 int CBaseEntity::__MAKE_VHOOK(DamageDecal)(int bitsDamageType)
 {
 	if (pev->rendermode == kRenderTransAlpha)
@@ -1092,8 +1048,6 @@ int CBaseEntity::__MAKE_VHOOK(DamageDecal)(int bitsDamageType)
 
 // NOTE: szName must be a pointer to constant memory, e.g. "monster_class" because the entity
 // will keep a pointer to it after this call.
-
-/* <31cd1> ../cstrike/dlls/cbase.cpp:1115 */
 CBaseEntity *CBaseEntity::Create(char *szName, const Vector &vecOrigin, const Vector &vecAngles, edict_t *pentOwner)
 {
 	edict_t	*pent;
@@ -1117,7 +1071,6 @@ CBaseEntity *CBaseEntity::Create(char *szName, const Vector &vecOrigin, const Ve
 	return pEntity;
 }
 
-/* <30885> ../cstrike/dlls/cbase.cpp:1134 */
 void OnFreeEntPrivateData(edict_t *pEnt)
 {
 	CBaseEntity *pEntity = CBaseEntity::Instance(pEnt);

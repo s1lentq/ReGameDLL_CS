@@ -2,7 +2,6 @@
 
 // Returns true if the radio message is an order to do something
 // NOTE: "Report in" is not considered a "command" because it doesnt ask the bot to go somewhere, or change its mind
-/* <3a3689> ../cstrike/dlls/bot/cs_bot_radio.cpp:19 */
 bool CCSBot::IsRadioCommand(GameEventType event) const
 {
 	if (event == EVENT_RADIO_AFFIRMATIVE
@@ -18,8 +17,6 @@ bool CCSBot::IsRadioCommand(GameEventType event) const
 }
 
 // Respond to radio commands from HUMAN players
-
-/* <3a36e0> ../cstrike/dlls/bot/cs_bot_radio.cpp:37 */
 void CCSBot::RespondToRadioCommands()
 {
 	// bots use the chatter system to respond to each other
@@ -74,7 +71,6 @@ void CCSBot::RespondToRadioCommands()
 		return;
 	}
 
-	CCSBotManager *ctrl = TheCSBots();
 	CBasePlayer *player = m_radioSubject;
 	if (player == NULL)
 		return;
@@ -142,7 +138,7 @@ void CCSBot::RespondToRadioCommands()
 		}
 		case EVENT_RADIO_GET_OUT_OF_THERE:
 		{
-			if (ctrl->IsBombPlanted())
+			if (TheCSBots()->IsBombPlanted())
 			{
 				EscapeFromBomb();
 				player->InhibitAutoFollow(inhibitAutoFollowDuration);
@@ -154,11 +150,11 @@ void CCSBot::RespondToRadioCommands()
 		{
 			// if this is a defusal scenario, and the bomb is planted,
 			// and a human player cleared a bombsite, check it off our list too
-			if (ctrl->GetScenario() == CCSBotManager::SCENARIO_DEFUSE_BOMB)
+			if (TheCSBots()->GetScenario() == CCSBotManager::SCENARIO_DEFUSE_BOMB)
 			{
-				if (m_iTeam == CT && ctrl->IsBombPlanted())
+				if (m_iTeam == CT && TheCSBots()->IsBombPlanted())
 				{
-					const CCSBotManager::Zone *zone = ctrl->GetClosestZone(player);
+					const CCSBotManager::Zone *zone = TheCSBots()->GetClosestZone(player);
 
 					if (zone != NULL)
 					{
@@ -196,8 +192,6 @@ void CCSBot::RespondToRadioCommands()
 }
 
 // Send voice chatter.  Also sends the entindex.
-
-/* <3a397f> ../cstrike/dlls/bot/cs_bot_radio.cpp:220 */
 void CCSBot::StartVoiceFeedback(float duration)
 {
 	m_voiceFeedbackStartTimestamp = gpGlobals->time;
@@ -213,7 +207,6 @@ void CCSBot::StartVoiceFeedback(float duration)
 	}
 }
 
-/* <3a3a32> ../cstrike/dlls/bot/cs_bot_radio.cpp:241 */
 void CCSBot::EndVoiceFeedback(bool force)
 {
 	if (!force && !m_voiceFeedbackEndTimestamp)
@@ -228,8 +221,6 @@ void CCSBot::EndVoiceFeedback(bool force)
 }
 
 // Decide if we should move to help the player, return true if we will
-
-/* <3a3bcd> ../cstrike/dlls/bot/cs_bot_radio.cpp:259 */
 bool CCSBot::RespondToHelpRequest(CBasePlayer *them, Place place, float maxRange)
 {
 	if (IsRogue())
@@ -290,8 +281,6 @@ bool CCSBot::RespondToHelpRequest(CBasePlayer *them, Place place, float maxRange
 }
 
 // Send a radio message
-
-/* <3a4316> ../cstrike/dlls/bot/cs_bot_radio.cpp:319 */
 void CCSBot::SendRadioMessage(GameEventType event)
 {
 	// make sure this is a radio event
@@ -300,11 +289,10 @@ void CCSBot::SendRadioMessage(GameEventType event)
 		return;
 	}
 
-	CCSBotManager *ctrl = TheCSBots();
 	PrintIfWatched("%3.1f: SendRadioMessage( %s )\n", gpGlobals->time, GameEventName[ event ]);
 
 	// note the time the message was sent
-	ctrl->SetRadioMessageTimestamp(event, m_iTeam);
+	TheCSBots()->SetRadioMessageTimestamp(event, m_iTeam);
 
 	m_lastRadioSentTimestamp = gpGlobals->time;
 

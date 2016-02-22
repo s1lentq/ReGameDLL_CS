@@ -1,6 +1,5 @@
 #include "precompiled.h"
 
-/* <5291fd> ../cstrike/dlls/bot/states/cs_bot_buy.cpp:18 */
 bool HasDefaultPistol(CCSBot *me)
 {
 	CBasePlayerWeapon *pistol = static_cast<CBasePlayerWeapon *>(me->m_rgpPlayerItems[ PISTOL_SLOT ]);
@@ -18,12 +17,8 @@ bool HasDefaultPistol(CCSBot *me)
 }
 
 // Buy weapons, armor, etc.
-
-/* <5299e4> ../cstrike/dlls/bot/states/cs_bot_buy.cpp:37 */
 void BuyState::__MAKE_VHOOK(OnEnter)(CCSBot *me)
 {
-	CCSBotManager *ctrl = TheCSBots();
-
 	m_retries = 0;
 	m_prefRetries = 0;
 	m_prefIndex = 0;
@@ -39,10 +34,10 @@ void BuyState::__MAKE_VHOOK(OnEnter)(CCSBot *me)
 
 	if (me->m_iTeam == CT)
 	{
-		if (ctrl->GetScenario() == CCSBotManager::SCENARIO_DEFUSE_BOMB)
+		if (TheCSBots()->GetScenario() == CCSBotManager::SCENARIO_DEFUSE_BOMB)
 		{
 			// CT's sometimes buy defuse kits in the bomb scenario (except in career mode, where the player should defuse)
-			if (g_pGameRules->IsCareer() == false)
+			if (!CSGameRules()->IsCareer())
 			{
 				const float buyDefuseKitChance = 50.0f;	// 100.0f * (me->GetProfile()->GetSkill() + 0.2f);
 				if (RANDOM_FLOAT(0.0f, 100.0f) < buyDefuseKitChance)
@@ -53,7 +48,7 @@ void BuyState::__MAKE_VHOOK(OnEnter)(CCSBot *me)
 		}
 
 		// determine if we want a tactical shield
-		if (!me->m_bHasPrimary && ctrl->AllowTacticalShield())
+		if (!me->m_bHasPrimary && TheCSBots()->AllowTacticalShield())
 		{
 			if (me->m_iAccount > 2500)
 			{
@@ -65,7 +60,7 @@ void BuyState::__MAKE_VHOOK(OnEnter)(CCSBot *me)
 		}
 	}
 
-	if (ctrl->AllowGrenades())
+	if (TheCSBots()->AllowGrenades())
 	{
 		m_buyGrenade = (RANDOM_FLOAT(0.0f, 100.0f) < 33.3f) ? true : false;
 	}
@@ -76,7 +71,7 @@ void BuyState::__MAKE_VHOOK(OnEnter)(CCSBot *me)
 
 	m_buyPistol = false;
 
-	if (ctrl->AllowPistols())
+	if (TheCSBots()->AllowPistols())
 	{
 		CBasePlayerWeapon *pistol = static_cast<CBasePlayerWeapon *>(me->m_rgpPlayerItems[ PISTOL_SLOT ]);
 
@@ -87,12 +82,12 @@ void BuyState::__MAKE_VHOOK(OnEnter)(CCSBot *me)
 			if (HasDefaultPistol(me))
 			{
 				// if everything other than pistols is disallowed, buy a pistol
-				if (ctrl->AllowShotguns() == false &&
-					ctrl->AllowSubMachineGuns() == false &&
-					ctrl->AllowRifles() == false &&
-					ctrl->AllowMachineGuns() == false &&
-					ctrl->AllowTacticalShield() == false &&
-					ctrl->AllowSnipers() == false)
+				if (TheCSBots()->AllowShotguns() == false &&
+					TheCSBots()->AllowSubMachineGuns() == false &&
+					TheCSBots()->AllowRifles() == false &&
+					TheCSBots()->AllowMachineGuns() == false &&
+					TheCSBots()->AllowTacticalShield() == false &&
+					TheCSBots()->AllowSnipers() == false)
 				{
 					m_buyPistol = (RANDOM_FLOAT(0, 100) < 75.0f);
 				}
@@ -201,8 +196,6 @@ BuyInfo secondaryWeaponBuyInfoT[ SECONDARY_WEAPON_BUY_COUNT ];
 #endif // HOOK_GAMEDLL
 
 // Given a weapon alias, return the kind of weapon it is
-
-/* <52972b> ../cstrike/dlls/bot/states/cs_bot_buy.cpp:212 */
 inline WeaponType GetWeaponType(const char *alias)
 {
 	int i;
@@ -227,7 +220,6 @@ inline WeaponType GetWeaponType(const char *alias)
 	return NUM_WEAPON_TYPES;
 }
 
-/* <529753> ../cstrike/dlls/bot/states/cs_bot_buy.cpp:241 */
 void BuyState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 {
 	// wait for a Navigation Mesh
@@ -247,11 +239,22 @@ void BuyState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 	// if we're done buying and still in the freeze period, wait
 	if (m_doneBuying)
 	{
-		if (g_pGameRules->IsMultiplayer() && g_pGameRules->IsFreezePeriod())
+		if (CSGameRules()->IsMultiplayer() && CSGameRules()->IsFreezePeriod())
+		{
+#ifdef REGAMEDLL_FIXES
+			// make sure we're locked and loaded
+			me->EquipBestWeapon(MUST_EQUIP);
+			me->Reload();
+			me->ResetStuckMonitor();
+#endif
 			return;
+		}
 
 		me->Idle();
-		//return;
+
+#ifdef REGAMEDLL_FIXES
+		return;
+#endif
 	}
 
 	// is the bot spawned outside of a buy zone?
@@ -261,8 +264,6 @@ void BuyState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 		UTIL_DPrintf("%s bot spawned outside of a buy zone (%d, %d, %d)\n", (me->m_iTeam == CT) ? "CT" : "Terrorist", me->pev->origin.x, me->pev->origin.y, me->pev->origin.z);
 		return;
 	}
-
-	CCSBotManager *ctrl = TheCSBots();
 
 	// try to buy some weapons
 	const float buyInterval = 0.2f; // 0.02f
@@ -307,7 +308,7 @@ void BuyState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 
 			if (weaponPreference == WEAPON_SHIELDGUN)
 			{
-				if (ctrl->AllowTacticalShield())
+				if (TheCSBots()->AllowTacticalShield())
 					buyAlias = "shield";
 			}
 			else
@@ -318,27 +319,27 @@ void BuyState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 				switch (type)
 				{
 				case PISTOL:
-					if (!ctrl->AllowPistols())
+					if (!TheCSBots()->AllowPistols())
 						buyAlias = NULL;
 					break;
 				case SHOTGUN:
-					if (!ctrl->AllowShotguns())
+					if (!TheCSBots()->AllowShotguns())
 						buyAlias = NULL;
 					break;
 				case SUB_MACHINE_GUN:
-					if (!ctrl->AllowSubMachineGuns())
+					if (!TheCSBots()->AllowSubMachineGuns())
 						buyAlias = NULL;
 					break;
 				case RIFLE:
-					if (!ctrl->AllowRifles())
+					if (!TheCSBots()->AllowRifles())
 						buyAlias = NULL;
 					break;
 				case MACHINE_GUN:
-					if (!ctrl->AllowMachineGuns())
+					if (!TheCSBots()->AllowMachineGuns())
 						buyAlias = NULL;
 					break;
 				case SNIPER_RIFLE:
-					if (!ctrl->AllowSnipers())
+					if (!TheCSBots()->AllowSnipers())
 						buyAlias = NULL;
 					break;
 				}
@@ -382,11 +383,11 @@ void BuyState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 
 				for (int i = 0; i < PRIMARY_WEAPON_BUY_COUNT; ++i)
 				{
-					if ((masterPrimary[i].type == SHOTGUN && ctrl->AllowShotguns()) ||
-						(masterPrimary[i].type == SUB_MACHINE_GUN && ctrl->AllowSubMachineGuns()) ||
-						(masterPrimary[i].type == RIFLE && ctrl->AllowRifles()) ||
-						(masterPrimary[i].type == SNIPER_RIFLE && ctrl->AllowSnipers() && wantSniper) ||
-						(masterPrimary[i].type == MACHINE_GUN && ctrl->AllowMachineGuns()))
+					if ((masterPrimary[i].type == SHOTGUN && TheCSBots()->AllowShotguns()) ||
+						(masterPrimary[i].type == SUB_MACHINE_GUN && TheCSBots()->AllowSubMachineGuns()) ||
+						(masterPrimary[i].type == RIFLE && TheCSBots()->AllowRifles()) ||
+						(masterPrimary[i].type == SNIPER_RIFLE && TheCSBots()->AllowSnipers() && wantSniper) ||
+						(masterPrimary[i].type == MACHINE_GUN && TheCSBots()->AllowMachineGuns()))
 					{
 						stockPrimary[ stockPrimaryCount++ ] = &masterPrimary[i];
 					}
@@ -398,7 +399,7 @@ void BuyState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 					int which;
 
 					// on hard difficulty levels, bots try to buy preferred weapons on the first pass
-					if (m_retries == 0 && ctrl->GetDifficultyLevel() >= BOT_HARD)
+					if (m_retries == 0 && TheCSBots()->GetDifficultyLevel() >= BOT_HARD)
 					{
 						// count up available preferred weapons
 						int prefCount = 0;
@@ -448,7 +449,7 @@ void BuyState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 			me->ClientCommand("vest");
 
 			// pistols - if we have no preferred pistol, buy at random
-			if (ctrl->AllowPistols() && !me->GetProfile()->HasPistolPreference())
+			if (TheCSBots()->AllowPistols() && !me->GetProfile()->HasPistolPreference())
 			{
 				if (m_buyPistol)
 				{
@@ -515,7 +516,6 @@ void BuyState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 	}
 }
 
-/* <5296f1> ../cstrike/dlls/bot/states/cs_bot_buy.cpp:529 */
 void BuyState::__MAKE_VHOOK(OnExit)(CCSBot *me)
 {
 	me->ResetStuckMonitor();

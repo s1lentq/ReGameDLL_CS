@@ -1,9 +1,7 @@
 #include "precompiled.h"
 
-/* <270ca6> ../cstrike/dlls/wpn_shared/wpn_knife.cpp:28 */
 LINK_ENTITY_TO_CLASS(weapon_knife, CKnife);
 
-/* <270586> ../cstrike/dlls/wpn_shared/wpn_knife.cpp:53 */
 void CKnife::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
@@ -17,7 +15,6 @@ void CKnife::__MAKE_VHOOK(Spawn)()
 	FallInit();
 }
 
-/* <2704d2> ../cstrike/dlls/wpn_shared/wpn_knife.cpp:66 */
 void CKnife::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/v_knife.mdl");
@@ -37,7 +34,6 @@ void CKnife::__MAKE_VHOOK(Precache)()
 	m_usKnife = PRECACHE_EVENT(1, "events/knife.sc");
 }
 
-/* <2704f9> ../cstrike/dlls/wpn_shared/wpn_knife.cpp:85 */
 int CKnife::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
@@ -58,7 +54,6 @@ int CKnife::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	return 1;
 }
 
-/* <2707c0> ../cstrike/dlls/wpn_shared/wpn_knife.cpp:102 */
 BOOL CKnife::__MAKE_VHOOK(Deploy)()
 {
 	EMIT_SOUND(m_pPlayer->edict(), CHAN_ITEM, "weapons/knife_deploy1.wav", 0.3, 2.4);
@@ -77,13 +72,11 @@ BOOL CKnife::__MAKE_VHOOK(Deploy)()
 		return DefaultDeploy("models/v_knife.mdl", "models/p_knife.mdl", KNIFE_DRAW, "knife", UseDecrement() != FALSE);
 }
 
-/* <27052b> ../cstrike/dlls/wpn_shared/wpn_knife.cpp:119 */
 void CKnife::__MAKE_VHOOK(Holster)(int skiplocal)
 {
 	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5f;
 }
 
-/* <270d70> ../cstrike/dlls/wpn_shared/wpn_knife.cpp:124 */
 NOXREF void CKnife::WeaponAnimation(int iAnimation)
 {
 	int flag;
@@ -92,7 +85,7 @@ NOXREF void CKnife::WeaponAnimation(int iAnimation)
 	flag = FEV_NOTHOST;
 #else
 	flag = 0;
-#endif // CLIENT_WEAPONS
+#endif
 
 	PLAYBACK_EVENT_FULL(flag, m_pPlayer->edict(), m_usKnife,
 		0.0, (float *)&g_vecZero, (float *)&g_vecZero,
@@ -101,7 +94,6 @@ NOXREF void CKnife::WeaponAnimation(int iAnimation)
 		iAnimation, 2, 3, 4);
 }
 
-/* <26f852> ../cstrike/dlls/wpn_shared/wpn_knife.cpp:140 */
 void FindHullIntersection(const Vector &vecSrc, TraceResult &tr, float *mins, float *maxs, edict_t *pEntity)
 {
 	int i, j, k;
@@ -149,13 +141,11 @@ void FindHullIntersection(const Vector &vecSrc, TraceResult &tr, float *mins, fl
 	}
 }
 
-/* <2714ba> ../cstrike/dlls/wpn_shared/wpn_knife.cpp:185 */
 void CKnife::__MAKE_VHOOK(PrimaryAttack)()
 {
 	Swing(TRUE);
 }
 
-/* <270f18> ../cstrike/dlls/wpn_shared/wpn_knife.cpp:190 */
 void CKnife::SetPlayerShieldAnim()
 {
 	if (!m_pPlayer->HasShield())
@@ -171,7 +161,6 @@ void CKnife::SetPlayerShieldAnim()
 	}
 }
 
-/* <270f53> ../cstrike/dlls/wpn_shared/wpn_knife.cpp:201 */
 void CKnife::ResetPlayerShieldAnim()
 {
 	if (!m_pPlayer->HasShield())
@@ -183,7 +172,6 @@ void CKnife::ResetPlayerShieldAnim()
 	}
 }
 
-/* <270f75> ../cstrike/dlls/wpn_shared/wpn_knife.cpp:211 */
 bool CKnife::ShieldSecondaryFire(int iUpAnim, int iDownAnim)
 {
 	if (!m_pPlayer->HasShield())
@@ -223,7 +211,6 @@ bool CKnife::ShieldSecondaryFire(int iUpAnim, int iDownAnim)
 	return true;
 }
 
-/* <270826> ../cstrike/dlls/wpn_shared/wpn_knife.cpp:245 */
 void CKnife::__MAKE_VHOOK(SecondaryAttack)()
 {
 	if (!ShieldSecondaryFire(KNIFE_SHIELD_UP, KNIFE_SHIELD_DOWN))
@@ -233,19 +220,16 @@ void CKnife::__MAKE_VHOOK(SecondaryAttack)()
 	}
 }
 
-/* <27055f> ../cstrike/dlls/wpn_shared/wpn_knife.cpp:254 */
 void CKnife::Smack()
 {
 	DecalGunshot(&m_trHit, BULLET_PLAYER_CROWBAR, false, m_pPlayer->pev, false);
 }
 
-/* <271493> ../cstrike/dlls/wpn_shared/wpn_knife.cpp:260 */
 void CKnife::SwingAgain()
 {
 	Swing(FALSE);
 }
 
-/* <2705fc> ../cstrike/dlls/wpn_shared/wpn_knife.cpp:265 */
 void CKnife::__MAKE_VHOOK(WeaponIdle)()
 {
 	ResetEmptySound();
@@ -263,7 +247,6 @@ void CKnife::__MAKE_VHOOK(WeaponIdle)()
 	SendWeaponAnim(KNIFE_IDLE, UseDecrement() != FALSE);
 }
 
-/* <270fa7> ../cstrike/dlls/wpn_shared/wpn_knife.cpp:283 */
 int CKnife::Swing(int fFirst)
 {
 	int fDidHit = FALSE;
@@ -377,7 +360,9 @@ int CKnife::Swing(int fFirst)
 
 		ApplyMultiDamage(m_pPlayer->pev, m_pPlayer->pev);
 
-		if (pEntity != NULL)
+#ifndef REGAMEDLL_FIXES
+		if (pEntity != NULL)	// -V595
+#endif
 		{
 			if (pEntity->Classify() != CLASS_NONE && pEntity->Classify() != CLASS_MACHINE)
 			{
@@ -422,7 +407,7 @@ int CKnife::Swing(int fFirst)
 			SetThink(&CKnife::Smack);
 
 			pev->nextthink = UTIL_WeaponTimeBase() + 0.2f;
-			m_pPlayer->m_iWeaponVolume = (int)(flVol * KNIFE_WALLHIT_VOLUME);
+			m_pPlayer->m_iWeaponVolume = int(flVol * KNIFE_WALLHIT_VOLUME);
 
 			ResetPlayerShieldAnim();
 		}
@@ -436,7 +421,6 @@ int CKnife::Swing(int fFirst)
 	return fDidHit;
 }
 
-/* <2714e1> ../cstrike/dlls/wpn_shared/wpn_knife.cpp:468 */
 int CKnife::Stab(int fFirst)
 {
 	int fDidHit = FALSE;
@@ -510,7 +494,7 @@ int CKnife::Stab(int fFirst)
 
 		float flDamage = 65.0f;
 
-		if (pEntity && pEntity->IsPlayer())
+		if (pEntity != NULL && pEntity->IsPlayer())
 		{
 			Vector2D vec2LOS;
 			float flDot;
@@ -536,7 +520,9 @@ int CKnife::Stab(int fFirst)
 		pEntity->TraceAttack(m_pPlayer->pev, flDamage, gpGlobals->v_forward, &tr, (DMG_NEVERGIB | DMG_BULLET));
 		ApplyMultiDamage(m_pPlayer->pev, m_pPlayer->pev);
 
-		if (pEntity != NULL)
+#ifndef REGAMEDLL_FIXES
+		if (pEntity != NULL)	// -V595
+#endif
 		{
 			if (pEntity->Classify() != CLASS_NONE && pEntity->Classify() != CLASS_MACHINE)
 			{
@@ -570,7 +556,7 @@ int CKnife::Stab(int fFirst)
 		{
 			// delay the decal a bit
 			m_trHit = tr;
-			m_pPlayer->m_iWeaponVolume = (int)(flVol * KNIFE_WALLHIT_VOLUME);
+			m_pPlayer->m_iWeaponVolume = int(flVol * KNIFE_WALLHIT_VOLUME);
 
 			SetThink(&CKnife::Smack);
 			pev->nextthink = UTIL_WeaponTimeBase() + 0.2f;

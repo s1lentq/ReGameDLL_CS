@@ -49,41 +49,37 @@ enum PriorityType
 };
 
 // Simple class for tracking intervals of game time
-
-/* <504550> ../game_shared/bot/bot_util.h:131 */
 class IntervalTimer
 {
 public:
-	IntervalTimer()		{ m_timestamp = -1.0f; }
-	void Reset()		{ m_timestamp = gpGlobals->time; }
-	void Start()		{ m_timestamp = gpGlobals->time; }
-	void Invalidate()	{ m_timestamp = -1.0f; }
+	IntervalTimer() { m_timestamp = -1.0f; }
+	void Reset() { m_timestamp = gpGlobals->time; }
+	void Start() { m_timestamp = gpGlobals->time; }
+	void Invalidate() { m_timestamp = -1.0f; }
 
 	bool HasStarted() const { return (m_timestamp > 0.0f); }
 
 	// if not started, elapsed time is very large
-	float GetElapsedTime() const			{ return (HasStarted()) ? (gpGlobals->time - m_timestamp) : 99999.9f; }
-	bool IsLessThen(float duration) const		{ return (gpGlobals->time - m_timestamp < duration) ? true : false; }
-	bool IsGreaterThen(float duration) const	{ return (gpGlobals->time - m_timestamp > duration) ? true : false; }
+	float GetElapsedTime() const { return (HasStarted()) ? (gpGlobals->time - m_timestamp) : 99999.9f; }
+	bool IsLessThen(float duration) const { return (gpGlobals->time - m_timestamp < duration) ? true : false; }
+	bool IsGreaterThen(float duration) const { return (gpGlobals->time - m_timestamp > duration) ? true : false; }
 
 private:
 	float m_timestamp;
 };
 
 // Simple class for counting down a short interval of time
-
-/* <46f878> ../game_shared/bot/bot_util.h:183 */
 class CountdownTimer
 {
 public:
-	CountdownTimer()	{ m_timestamp = -1.0f; m_duration = 0.0f; }
-	void Reset()		{ m_timestamp = gpGlobals->time + m_duration; }
+	CountdownTimer() { m_timestamp = -1.0f; m_duration = 0.0f; }
+	void Reset() { m_timestamp = gpGlobals->time + m_duration; }
 
-	void Start(float duration)	{ m_timestamp = gpGlobals->time + duration; m_duration = duration; }
-	bool HasStarted() const		{ return (m_timestamp > 0.0f); }
+	void Start(float duration) { m_timestamp = gpGlobals->time + duration; m_duration = duration; }
+	bool HasStarted() const { return (m_timestamp > 0.0f); }
 
-	void Invalidate()	{ m_timestamp = -1.0f; }
-	bool IsElapsed() const	{ return (gpGlobals->time > m_timestamp); }
+	void Invalidate() { m_timestamp = -1.0f; }
+	bool IsElapsed() const { return (gpGlobals->time > m_timestamp); }
 
 private:
 	float m_duration;
@@ -91,8 +87,6 @@ private:
 };
 
 // Return true if the given entity is valid
-
-/* <14ed68> ../game_shared/bot/bot_util.h:224 */
 inline bool IsEntityValid(CBaseEntity *entity)
 {
 	if (entity == NULL)
@@ -113,8 +107,6 @@ inline bool IsEntityValid(CBaseEntity *entity)
 // Given two line segments: startA to endA, and startB to endB, return true if they intesect
 // and put the intersection point in "result".
 // Note that this computes the intersection of the 2D (x,y) projection of the line segments.
-
-/* <4c0851> ../game_shared/bot/bot_util.h:247 */
 inline bool IsIntersecting2D(const Vector &startA, const Vector &endA, const Vector &startB, const Vector &endB, Vector *result = NULL)
 {
 	float denom = (endA.x - startA.x) * (endB.y - startB.y) - (endA.y - startA.y) * (endB.x - startB.x);
@@ -147,7 +139,7 @@ inline bool IsIntersecting2D(const Vector &startA, const Vector &endA, const Vec
 	}
 
 	// compute intesection point
-	if (result)
+	if (result != NULL)
 	{
 		*result = startA + s * (endA - startA);
 	}
@@ -157,8 +149,6 @@ inline bool IsIntersecting2D(const Vector &startA, const Vector &endA, const Vec
 
 // Iterate over all active players in the game, invoking functor on each.
 // If functor returns false, stop iteration and return false.
-
-/* <4700e1> ../game_shared/bot/bot_util.h:294 */
 template <typename Functor>
 bool ForEachPlayer(Functor &func)
 {
@@ -179,8 +169,6 @@ bool ForEachPlayer(Functor &func)
 }
 
 // For zombie game
-
-/* <b59bf> ../game_shared/bot/bot_util.h:317 */
 inline bool IsZombieGame()
 {
 #ifdef TERRORSTRIKE
@@ -238,10 +226,10 @@ const char *UTIL_GetBotPrefix();
 void UTIL_ConstructBotNetName(char *name, int nameLength, const BotProfile *profile);
 bool UTIL_IsVisibleToTeam(const Vector &spot, int team, float maxRange = -1.0f);
 CBasePlayer *UTIL_GetLocalPlayer();
-NOXREF Vector UTIL_ComputeOrigin(entvars_t *pevVars);
-NOXREF Vector UTIL_ComputeOrigin(CBaseEntity *pEntity);
-NOXREF Vector UTIL_ComputeOrigin(edict_t *pentEdict);
-NOXREF void UTIL_DrawBeamFromEnt(int iIndex, Vector vecEnd, int iLifetime, byte bRed, byte bGreen, byte bBlue);
+Vector UTIL_ComputeOrigin(entvars_t *pevVars);
+Vector UTIL_ComputeOrigin(CBaseEntity *pEntity);
+Vector UTIL_ComputeOrigin(edict_t *pentEdict);
+void UTIL_DrawBeamFromEnt(int iIndex, Vector vecEnd, int iLifetime, byte bRed, byte bGreen, byte bBlue);
 void UTIL_DrawBeamPoints(Vector vecStart, Vector vecEnd, int iLifetime, byte bRed, byte bGreen, byte bBlue);
 
 // Echos text to the console, and prints it on the client's screen.  This is NOT tied to the developer cvar.

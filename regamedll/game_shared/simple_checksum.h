@@ -34,8 +34,6 @@
 
 // Compute a simple checksum for the given data.
 // Each byte in the data is multiplied by its position to track re-ordering changes
-
-/* <4a799e> ../game_shared/simple_checksum.h:12 */
 inline unsigned int ComputeSimpleChecksum(const unsigned char *dataPointer, int dataLength)
 {
 	unsigned int checksum = 0;
@@ -44,6 +42,7 @@ inline unsigned int ComputeSimpleChecksum(const unsigned char *dataPointer, int 
 		checksum += (*dataPointer) * i;
 		++dataPointer;
 	}
+
 	return checksum;
 }
 

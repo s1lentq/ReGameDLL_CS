@@ -32,7 +32,6 @@
 #pragma once
 #endif
 
-/* <121944> ../cstrike/dlls/pathcorner.cpp:25 */
 class CPathCorner: public CPointEntity
 {
 public:
@@ -48,7 +47,7 @@ public:
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 	float GetDelay() const { return m_flWait; }
 

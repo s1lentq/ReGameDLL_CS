@@ -19,15 +19,11 @@ TYPEDESCRIPTION CPathTrack::m_SaveData[] =
 	DEFINE_FIELD(CPathTrack, m_altName, FIELD_STRING),
 };
 
-#endif // HOOK_GAMEDLL
+#endif
 
-/* <122843> ../cstrike/dlls/pathcorner.cpp:41 */
 LINK_ENTITY_TO_CLASS(path_corner, CPathCorner);
-
-/* <1225b6> ../cstrike/dlls/pathcorner.cpp:49 */
 IMPLEMENT_SAVERESTORE(CPathCorner, CPointEntity);
 
-/* <122697> ../cstrike/dlls/pathcorner.cpp:54 */
 void CPathCorner::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "wait"))
@@ -39,19 +35,14 @@ void CPathCorner::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CPointEntity::KeyValue(pkvd);
 }
 
-/* <122325> ../cstrike/dlls/pathcorner.cpp:66 */
 void CPathCorner::__MAKE_VHOOK(Spawn)()
 {
 	assert(("path_corner without a targetname", !FStringNull(pev->targetname)));
 }
 
-/* <12256a> ../cstrike/dlls/pathcorner.cpp:80 */
 IMPLEMENT_SAVERESTORE(CPathTrack, CBaseEntity);
-
-/* <12290d> ../cstrike/dlls/pathcorner.cpp:81 */
 LINK_ENTITY_TO_CLASS(path_track, CPathTrack);
 
-/* <122602> ../cstrike/dlls/pathcorner.cpp:86 */
 void CPathTrack::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "altpath"))
@@ -63,7 +54,6 @@ void CPathTrack::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CPointEntity::KeyValue(pkvd);
 }
 
-/* <122433> ../cstrike/dlls/pathcorner.cpp:97 */
 void CPathTrack::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	int on;
@@ -95,7 +85,6 @@ void CPathTrack::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller
 	}
 }
 
-/* <122a12> ../cstrike/dlls/pathcorner.cpp:128 */
 void CPathTrack::Link()
 {
 	edict_t *pentTarget;
@@ -134,7 +123,6 @@ void CPathTrack::Link()
 	}
 }
 
-/* <12239a> ../cstrike/dlls/pathcorner.cpp:165 */
 void CPathTrack::__MAKE_VHOOK(Spawn)()
 {
 	pev->solid = SOLID_TRIGGER;
@@ -144,7 +132,6 @@ void CPathTrack::__MAKE_VHOOK(Spawn)()
 	m_pprevious = NULL;
 }
 
-/* <122c76> ../cstrike/dlls/pathcorner.cpp:180 */
 void CPathTrack::__MAKE_VHOOK(Activate)()
 {
 	// Link to next, and back-link
@@ -154,7 +141,6 @@ void CPathTrack::__MAKE_VHOOK(Activate)()
 	}
 }
 
-/* <122c9c> ../cstrike/dlls/pathcorner.cpp:186 */
 CPathTrack *CPathTrack::ValidPath(CPathTrack *ppath, int testFlag)
 {
 	if (!ppath)
@@ -166,7 +152,6 @@ CPathTrack *CPathTrack::ValidPath(CPathTrack *ppath, int testFlag)
 	return ppath;
 }
 
-/* <122745> ../cstrike/dlls/pathcorner.cpp:198 */
 void CPathTrack::Project(CPathTrack *pstart, CPathTrack *pend, Vector *origin, float dist)
 {
 	if (pstart && pend)
@@ -178,10 +163,9 @@ void CPathTrack::Project(CPathTrack *pstart, CPathTrack *pend, Vector *origin, f
 	}
 }
 
-/* <122d0f> ../cstrike/dlls/pathcorner.cpp:208 */
 CPathTrack *CPathTrack::GetNext()
 {
-	if (m_paltpath && (pev->spawnflags & SF_PATH_ALTERNATE) && !(pev->spawnflags & SF_PATH_ALTREVERSE))
+	if (m_paltpath != NULL && (pev->spawnflags & SF_PATH_ALTERNATE) && !(pev->spawnflags & SF_PATH_ALTREVERSE))
 	{
 		return m_paltpath;
 	}
@@ -189,10 +173,9 @@ CPathTrack *CPathTrack::GetNext()
 	return m_pnext;
 }
 
-/* <122d30> ../cstrike/dlls/pathcorner.cpp:218 */
 CPathTrack *CPathTrack::GetPrevious()
 {
-	if (m_paltpath && (pev->spawnflags & SF_PATH_ALTERNATE) && (pev->spawnflags & SF_PATH_ALTREVERSE))
+	if (m_paltpath != NULL && (pev->spawnflags & SF_PATH_ALTERNATE) && (pev->spawnflags & SF_PATH_ALTREVERSE))
 	{
 		return m_paltpath;
 	}
@@ -200,19 +183,16 @@ CPathTrack *CPathTrack::GetPrevious()
 	return m_pprevious;
 }
 
-/* <122d51> ../cstrike/dlls/pathcorner.cpp:228 */
 void CPathTrack::SetPrevious(CPathTrack *pprev)
 {
 	// Only set previous if this isn't my alternate path
-	if (pprev && !FStrEq(STRING(pprev->pev->targetname), STRING(m_altName)))
+	if (pprev != NULL && !FStrEq(STRING(pprev->pev->targetname), STRING(m_altName)))
 	{
 		m_pprevious = pprev;
 	}
 }
 
 // Assumes this is ALWAYS enabled
-
-/* <122d95> ../cstrike/dlls/pathcorner.cpp:237 */
 CPathTrack *CPathTrack::LookAhead(Vector *origin, float dist, int move)
 {
 	CPathTrack *pcurrent;
@@ -248,7 +228,7 @@ CPathTrack *CPathTrack::LookAhead(Vector *origin, float dist, int move)
 			// enough left in this path to move
 			else if (length > dist)
 			{
-				*origin = currentPos + (dir * ((float)(dist / length)));
+				*origin = currentPos + (dir * float(dist / length));
 				return pcurrent;
 			}
 			else
@@ -301,7 +281,7 @@ CPathTrack *CPathTrack::LookAhead(Vector *origin, float dist, int move)
 			// enough left in this path to move
 			if (length > dist)
 			{
-				*origin = currentPos + (dir * ((float)(dist / length)));
+				*origin = currentPos + (dir * float(dist / length));
 				return pcurrent;
 			}
 			else
@@ -321,8 +301,6 @@ CPathTrack *CPathTrack::LookAhead(Vector *origin, float dist, int move)
 }
 
 // Assumes this is ALWAYS enabled
-
-/* <123220> ../cstrike/dlls/pathcorner.cpp:320 */
 CPathTrack *CPathTrack::Nearest(Vector origin)
 {
 	int deadCount;
@@ -362,7 +340,6 @@ CPathTrack *CPathTrack::Nearest(Vector origin)
 	return pnearest;
 }
 
-/* <123375> ../cstrike/dlls/pathcorner.cpp:358 */
 CPathTrack *CPathTrack::Instance(edict_t *pent)
 {
 	if (FClassnameIs(pent, "path_track"))

@@ -32,10 +32,8 @@
 #pragma once
 #endif
 
-/* <468c> ../cstrike/dlls/airtank.cpp:23 */
 class CAirtank: public CGrenade
 {
-
 public:
 	virtual void Spawn();
 	virtual void Precache();
@@ -56,7 +54,7 @@ public:
 	int Restore_(CRestore &restore);
 	void Killed_(entvars_t *pevAttacker, int iGib);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	static TYPEDESCRIPTION IMPL(m_SaveData)[1];

@@ -25,12 +25,10 @@ TYPEDESCRIPTION CGamePlayerZone::m_SaveData[] =
 	DEFINE_FIELD(CGamePlayerZone, m_iszOutCount, FIELD_STRING),
 };
 
-#endif // HOOK_GAMEDLL
+#endif
 
-/* <eef33> ../cstrike/dlls/maprules.cpp:57 */
 IMPLEMENT_SAVERESTORE(CRuleEntity, CBaseEntity);
 
-/* <eed18> ../cstrike/dlls/maprules.cpp:60 */
 void CRuleEntity::__MAKE_VHOOK(Spawn)()
 {
 	pev->solid = SOLID_NOT;
@@ -38,7 +36,6 @@ void CRuleEntity::__MAKE_VHOOK(Spawn)()
 	pev->effects = EF_NODRAW;
 }
 
-/* <eeff6> ../cstrike/dlls/maprules.cpp:68 */
 void CRuleEntity::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "master"))
@@ -50,7 +47,6 @@ void CRuleEntity::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CBaseEntity::KeyValue(pkvd);
 }
 
-/* <f0955> ../cstrike/dlls/maprules.cpp:79 */
 BOOL CRuleEntity::CanFireForActivator(CBaseEntity *pActivator)
 {
 	if (!FStringNull(m_iszMaster))
@@ -64,7 +60,6 @@ BOOL CRuleEntity::CanFireForActivator(CBaseEntity *pActivator)
 	return TRUE;
 }
 
-/* <eed39> ../cstrike/dlls/maprules.cpp:101 */
 void CRulePointEntity::__MAKE_VHOOK(Spawn)()
 {
 	CRuleEntity::Spawn();
@@ -72,23 +67,19 @@ void CRulePointEntity::__MAKE_VHOOK(Spawn)()
 	pev->model = 0;
 }
 
-/* <eed72> ../cstrike/dlls/maprules.cpp:120 */
 void CRuleBrushEntity::__MAKE_VHOOK(Spawn)()
 {
 	SET_MODEL(edict(), STRING(pev->model));
 	CRuleEntity::Spawn();
 }
 
-/* <f099d> ../cstrike/dlls/maprules.cpp:151 */
 LINK_ENTITY_TO_CLASS(game_score, CGameScore);
 
-/* <eedb1> ../cstrike/dlls/maprules.cpp:154 */
 void CGameScore::__MAKE_VHOOK(Spawn)()
 {
 	CRulePointEntity::Spawn();
 }
 
-/* <efc68> ../cstrike/dlls/maprules.cpp:160 */
 void CGameScore::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "points"))
@@ -100,7 +91,6 @@ void CGameScore::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CRulePointEntity::KeyValue(pkvd);
 }
 
-/* <ef54c> ../cstrike/dlls/maprules.cpp:173 */
 void CGameScore::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	if (!CanFireForActivator(pActivator))
@@ -120,10 +110,8 @@ void CGameScore::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller
 	}
 }
 
-/* <f0a68> ../cstrike/dlls/maprules.cpp:202 */
 LINK_ENTITY_TO_CLASS(game_end, CGameEnd);
 
-/* <ef497> ../cstrike/dlls/maprules.cpp:205 */
 void CGameEnd::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	if (!CanFireForActivator(pActivator))
@@ -132,13 +120,9 @@ void CGameEnd::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, 
 	g_pGameRules->EndMultiplayerGame();
 }
 
-/* <f0b33> ../cstrike/dlls/maprules.cpp:242 */
 LINK_ENTITY_TO_CLASS(game_text, CGameText);
-
-/* <ef252> ../cstrike/dlls/maprules.cpp:251 */
 IMPLEMENT_SAVERESTORE(CGameText, CRulePointEntity);
 
-/* <f00dd> ../cstrike/dlls/maprules.cpp:254 */
 void CGameText::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "channel"))
@@ -209,7 +193,6 @@ void CGameText::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CRulePointEntity::KeyValue(pkvd);
 }
 
-/* <ef655> ../cstrike/dlls/maprules.cpp:321 */
 void CGameText::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	if (!CanFireForActivator(pActivator))
@@ -228,10 +211,8 @@ void CGameText::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller,
 	}
 }
 
-/* <f0bfe> ../cstrike/dlls/maprules.cpp:371 */
 LINK_ENTITY_TO_CLASS(game_team_master, CGameTeamMaster);
 
-/* <eff4f> ../cstrike/dlls/maprules.cpp:373 */
 void CGameTeamMaster::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "teamindex"))
@@ -262,7 +243,6 @@ void CGameTeamMaster::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CRulePointEntity::KeyValue(pkvd);
 }
 
-/* <f0474> ../cstrike/dlls/maprules.cpp:402 */
 void CGameTeamMaster::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	if (!CanFireForActivator(pActivator))
@@ -293,13 +273,11 @@ void CGameTeamMaster::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pC
 	}
 }
 
-/* <ef2e0> ../cstrike/dlls/maprules.cpp:429 */
 BOOL CGameTeamMaster::__MAKE_VHOOK(IsTriggered)(CBaseEntity *pActivator)
 {
 	return TeamMatch(pActivator);
 }
 
-/* <eeeaf> ../cstrike/dlls/maprules.cpp:435 */
 const char *CGameTeamMaster::__MAKE_VHOOK(TeamID)()
 {
 	// Currently set to "no team"
@@ -312,7 +290,6 @@ const char *CGameTeamMaster::__MAKE_VHOOK(TeamID)()
 	return g_pGameRules->GetIndexedTeamName(m_teamIndex);
 }
 
-/* <f0ccd> ../cstrike/dlls/maprules.cpp:444 */
 BOOL CGameTeamMaster::TeamMatch(CBaseEntity *pActivator)
 {
 	if (m_teamIndex < 0 && AnyTeam())
@@ -324,10 +301,8 @@ BOOL CGameTeamMaster::TeamMatch(CBaseEntity *pActivator)
 	return UTIL_TeamsMatch(pActivator->TeamID(), TeamID());
 }
 
-/* <f0d2e> ../cstrike/dlls/maprules.cpp:474 */
 LINK_ENTITY_TO_CLASS(game_team_set, CGameTeamSet);
 
-/* <ef735> ../cstrike/dlls/maprules.cpp:477 */
 void CGameTeamSet::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	if (!CanFireForActivator(pActivator))
@@ -348,13 +323,9 @@ void CGameTeamSet::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCall
 	}
 }
 
-/* <f0dfd> ../cstrike/dlls/maprules.cpp:519 */
 LINK_ENTITY_TO_CLASS(game_zone_player, CGamePlayerZone);
-
-/* <ef0a2> ../cstrike/dlls/maprules.cpp:528 */
 IMPLEMENT_SAVERESTORE(CGamePlayerZone, CRuleBrushEntity);
 
-/* <efdbc> ../cstrike/dlls/maprules.cpp:530 */
 void CGamePlayerZone::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "intarget"))
@@ -381,7 +352,6 @@ void CGamePlayerZone::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CRuleBrushEntity::KeyValue(pkvd);
 }
 
-/* <ef36e> ../cstrike/dlls/maprules.cpp:556 */
 void CGamePlayerZone::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	int playersInCount = 0;
@@ -440,10 +410,8 @@ void CGamePlayerZone::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pC
 
 }
 
-/* <f0ecc> ../cstrike/dlls/maprules.cpp:628 */
 LINK_ENTITY_TO_CLASS(game_player_hurt, CGamePlayerHurt);
 
-/* <ef815> ../cstrike/dlls/maprules.cpp:631 */
 void CGamePlayerHurt::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	if (!CanFireForActivator(pActivator))
@@ -465,10 +433,8 @@ void CGamePlayerHurt::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pC
 	}
 }
 
-/* <f0f9b> ../cstrike/dlls/maprules.cpp:684 */
 LINK_ENTITY_TO_CLASS(game_counter, CGameCounter);
 
-/* <eee2d> ../cstrike/dlls/maprules.cpp:686 */
 void CGameCounter::__MAKE_VHOOK(Spawn)()
 {
 	// Save off the initial count
@@ -476,7 +442,6 @@ void CGameCounter::__MAKE_VHOOK(Spawn)()
 	CRulePointEntity::Spawn();
 }
 
-/* <ef8ef> ../cstrike/dlls/maprules.cpp:694 */
 void CGameCounter::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	if (!CanFireForActivator(pActivator))
@@ -494,7 +459,7 @@ void CGameCounter::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCall
 		break;
 
 	case USE_SET:
-		SetCountValue((int)value);
+		SetCountValue(int(value));
 		break;
 	}
 
@@ -514,10 +479,8 @@ void CGameCounter::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCall
 	}
 }
 
-/* <f106a> ../cstrike/dlls/maprules.cpp:747 */
 LINK_ENTITY_TO_CLASS(game_counter_set, CGameCounterSet);
 
-/* <efa65> ../cstrike/dlls/maprules.cpp:750 */
 void CGameCounterSet::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	if (!CanFireForActivator(pActivator))
@@ -531,10 +494,8 @@ void CGameCounterSet::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pC
 	}
 }
 
-/* <f1139> ../cstrike/dlls/maprules.cpp:788 */
 LINK_ENTITY_TO_CLASS(game_player_equip, CGamePlayerEquip);
 
-/* <ed81f> ../cstrike/dlls/maprules.cpp:791 */
 void CGamePlayerEquip::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	CRulePointEntity::KeyValue(pkvd);
@@ -559,7 +520,6 @@ void CGamePlayerEquip::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 	}
 }
 
-/* <f06ad> ../cstrike/dlls/maprules.cpp:816 */
 void CGamePlayerEquip::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 {
 	if (!CanFireForActivator(pOther))
@@ -571,7 +531,6 @@ void CGamePlayerEquip::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 	EquipPlayer(pOther);
 }
 
-/* <f1208> ../cstrike/dlls/maprules.cpp:827 */
 void CGamePlayerEquip::EquipPlayer(CBaseEntity *pEntity)
 {
 	CBasePlayer *pPlayer = NULL;
@@ -596,16 +555,13 @@ void CGamePlayerEquip::EquipPlayer(CBaseEntity *pEntity)
 	}
 }
 
-/* <f05f3> ../cstrike/dlls/maprules.cpp:851 */
 void CGamePlayerEquip::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	EquipPlayer(pActivator);
 }
 
-/* <f1268> ../cstrike/dlls/maprules.cpp:881 */
 LINK_ENTITY_TO_CLASS(game_player_team, CGamePlayerTeam);
 
-/* <f1337> ../cstrike/dlls/maprules.cpp:884 */
 const char *CGamePlayerTeam::TargetTeamName(const char *pszTargetName)
 {
 	CBaseEntity *pTeamEntity = NULL;
@@ -619,7 +575,6 @@ const char *CGamePlayerTeam::TargetTeamName(const char *pszTargetName)
 	return NULL;
 }
 
-/* <f07df> ../cstrike/dlls/maprules.cpp:898 */
 void CGamePlayerTeam::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	if (!CanFireForActivator(pActivator))

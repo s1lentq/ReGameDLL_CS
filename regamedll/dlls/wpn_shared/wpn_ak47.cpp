@@ -1,9 +1,7 @@
 #include "precompiled.h"
 
-/* <23556d> ../cstrike/dlls/wpn_shared/wpn_ak47.cpp:50 */
 LINK_ENTITY_TO_CLASS(weapon_ak47, CAK47);
 
-/* <235327> ../cstrike/dlls/wpn_shared/wpn_ak47.cpp:52 */
 void CAK47::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
@@ -18,7 +16,6 @@ void CAK47::__MAKE_VHOOK(Spawn)()
 	FallInit();
 }
 
-/* <235280> ../cstrike/dlls/wpn_shared/wpn_ak47.cpp:66 */
 void CAK47::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/v_ak47.mdl");
@@ -34,7 +31,6 @@ void CAK47::__MAKE_VHOOK(Precache)()
 	m_usFireAK47 = PRECACHE_EVENT(1, "events/ak47.sc");
 }
 
-/* <2352a7> ../cstrike/dlls/wpn_shared/wpn_ak47.cpp:82 */
 int CAK47::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
@@ -52,7 +48,6 @@ int CAK47::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	return 1;
 }
 
-/* <235300> ../cstrike/dlls/wpn_shared/wpn_ak47.cpp:99 */
 BOOL CAK47::__MAKE_VHOOK(Deploy)()
 {
 	m_flAccuracy = 0.2f;
@@ -62,13 +57,11 @@ BOOL CAK47::__MAKE_VHOOK(Deploy)()
 	return DefaultDeploy("models/v_ak47.mdl", "models/p_ak47.mdl", AK47_DRAW, "ak47", UseDecrement() != FALSE);
 }
 
-/* <2352da> ../cstrike/dlls/wpn_shared/wpn_ak47.cpp:108 */
 void CAK47::__MAKE_VHOOK(SecondaryAttack)()
 {
 	;
 }
 
-/* <235523> ../cstrike/dlls/wpn_shared/wpn_ak47.cpp:112 */
 void CAK47::__MAKE_VHOOK(PrimaryAttack)()
 {
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
@@ -85,7 +78,6 @@ void CAK47::__MAKE_VHOOK(PrimaryAttack)()
 	}
 }
 
-/* <235637> ../cstrike/dlls/wpn_shared/wpn_ak47.cpp:123 */
 void CAK47::AK47Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 {
 	Vector vecAiming, vecSrc, vecDir;
@@ -131,10 +123,10 @@ void CAK47::AK47Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	flag = FEV_NOTHOST;
 #else
 	flag = 0;
-#endif // CLIENT_WEAPONS
+#endif
 
 	PLAYBACK_EVENT_FULL(flag, m_pPlayer->edict(), m_usFireAK47, 0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y,
-		(int)(m_pPlayer->pev->punchangle.x * 100), (int)(m_pPlayer->pev->punchangle.y * 100), FALSE, FALSE);
+		int(m_pPlayer->pev->punchangle.x * 100), int(m_pPlayer->pev->punchangle.y * 100), FALSE, FALSE);
 
 	m_pPlayer->m_iWeaponVolume = NORMAL_GUN_VOLUME;
 	m_pPlayer->m_iWeaponFlash = BRIGHT_GUN_FLASH;
@@ -166,14 +158,13 @@ void CAK47::AK47Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	}
 }
 
-/* <2353d8> ../cstrike/dlls/wpn_shared/wpn_ak47.cpp:204 */
 void CAK47::__MAKE_VHOOK(Reload)()
 {
 #ifdef REGAMEDLL_FIXES
 	// to prevent reload if not enough ammo
 	if (m_pPlayer->ammo_762nato <= 0)
 		return;
-#endif // REGAMEDLL_FIXES
+#endif
 
 	if (DefaultReload(AK47_MAX_CLIP, AK47_RELOAD, AK47_RELOAD_TIME))
 	{
@@ -185,7 +176,6 @@ void CAK47::__MAKE_VHOOK(Reload)()
 	}
 }
 
-/* <23539d> ../cstrike/dlls/wpn_shared/wpn_ak47.cpp:219 */
 void CAK47::__MAKE_VHOOK(WeaponIdle)()
 {
 	ResetEmptySound();

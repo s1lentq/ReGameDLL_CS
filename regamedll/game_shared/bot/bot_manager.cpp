@@ -114,8 +114,6 @@ const float smokeRadius = 115.0f;		// for smoke grenades
 
 // Convert name to GameEventType
 // TODO: Find more appropriate place for this function
-
-/* <49f6d7> ../game_shared/bot/bot_manager.cpp:58 */
 GameEventType NameToGameEvent(const char *name)
 {
 	for (int i = 0; GameEventName[i] != NULL; ++i)
@@ -127,23 +125,18 @@ GameEventType NameToGameEvent(const char *name)
 	return EVENT_INVALID;
 }
 
-/* <49f733> ../game_shared/bot/bot_manager.cpp:69 */
 CBotManager::CBotManager()
 {
 	InitBotTrig();
 }
 
 // Invoked when the round is restarting
-
-/* <49f586> ../game_shared/bot/bot_manager.cpp:78 */
 void CBotManager::__MAKE_VHOOK(RestartRound)()
 {
 	DestroyAllGrenades();
 }
 
 // Invoked at the start of each frame
-
-/* <49a21c> ../game_shared/bot/bot_manager.cpp:85 */
 void CBotManager::__MAKE_VHOOK(StartFrame)()
 {
 	// debug smoke grenade visualization
@@ -154,7 +147,7 @@ void CBotManager::__MAKE_VHOOK(StartFrame)()
 		ActiveGrenadeList::iterator iter = m_activeGrenadeList.begin();
 		while (iter != m_activeGrenadeList.end())
 		{
-			ActiveGrenade *ag = *iter;
+			ActiveGrenade *ag = (*iter);
 
 			// lazy validation
 			if (!ag->IsValid())
@@ -214,8 +207,6 @@ void CBotManager::__MAKE_VHOOK(StartFrame)()
 }
 
 // Return the filename for this map's "nav map" file
-
-/* <49f7a6> ../game_shared/bot/bot_manager.cpp:205 */
 const char *CBotManager::GetNavMapFilename() const
 {
 	static char filename[256];
@@ -226,8 +217,6 @@ const char *CBotManager::GetNavMapFilename() const
 // Invoked when given player does given event (some events have NULL player).
 // Events are propogated to all bots.
 // TODO: This has become the game-wide event dispatcher. We should restructure this.
-
-/* <49f17b> ../game_shared/bot/bot_manager.cpp:219 */
 void CBotManager::__MAKE_VHOOK(OnEvent)(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
 {
 	// propogate event to all bots
@@ -267,8 +256,6 @@ void CBotManager::__MAKE_VHOOK(OnEvent)(GameEventType event, CBaseEntity *entity
 }
 
 // Add an active grenade to the bot's awareness
-
-/* <49f7ff> ../game_shared/bot/bot_manager.cpp:257 */
 void CBotManager::AddGrenade(int type, CGrenade *grenade)
 {
 	ActiveGrenade *ag = new ActiveGrenade(type, grenade);
@@ -277,13 +264,11 @@ void CBotManager::AddGrenade(int type, CGrenade *grenade)
 }
 
 // The grenade entity in the world is going away
-
-/* <49f95a> ../game_shared/bot/bot_manager.cpp:267 */
 void CBotManager::RemoveGrenade(CGrenade *grenade)
 {
 	for (ActiveGrenadeList::iterator iter = m_activeGrenadeList.begin(); iter != m_activeGrenadeList.end(); ++iter)
 	{
-		ActiveGrenade *ag = *iter;
+		ActiveGrenade *ag = (*iter);
 
 		if (ag->IsEntity(grenade))
 		{
@@ -294,14 +279,12 @@ void CBotManager::RemoveGrenade(CGrenade *grenade)
 }
 
 // Destroy any invalid active grenades
-
-/* <49f9fc> ../game_shared/bot/bot_manager.cpp:285 */
 NOXREF void CBotManager::ValidateActiveGrenades()
 {
 	ActiveGrenadeList::iterator iter = m_activeGrenadeList.begin();
 	while (iter != m_activeGrenadeList.end())
 	{
-		ActiveGrenade *ag = *iter;
+		ActiveGrenade *ag = (*iter);
 
 		if (!ag->IsValid())
 		{
@@ -313,24 +296,21 @@ NOXREF void CBotManager::ValidateActiveGrenades()
 	}
 }
 
-/* <49faf3> ../game_shared/bot/bot_manager.cpp:305 */
 void CBotManager::DestroyAllGrenades()
 {
 	for (ActiveGrenadeList::iterator iter = m_activeGrenadeList.begin(); iter != m_activeGrenadeList.end(); iter++)
-		delete *iter;
+		delete (*iter);
 
 	m_activeGrenadeList.clear();
 }
 
 // Return true if position is inside a smoke cloud
-
-/* <49fc24> ../game_shared/bot/bot_manager.cpp:317 */
 bool CBotManager::IsInsideSmokeCloud(const Vector *pos)
 {
 	ActiveGrenadeList::iterator iter = m_activeGrenadeList.begin();
 	while (iter != m_activeGrenadeList.end())
 	{
-		ActiveGrenade *ag = *iter;
+		ActiveGrenade *ag = (*iter);
 
 		// lazy validation
 		if (!ag->IsValid())
@@ -358,8 +338,6 @@ bool CBotManager::IsInsideSmokeCloud(const Vector *pos)
 // Determine the length of the line of sight covered by each smoke cloud,
 // and sum them (overlap is additive for obstruction).
 // If the overlap exceeds the threshold, the bot can't see through.
-
-/* <49fd8b> ../game_shared/bot/bot_manager.cpp:355 */
 bool CBotManager::IsLineBlockedBySmoke(const Vector *from, const Vector *to)
 {
 	const float smokeRadiusSq = smokeRadius * smokeRadius;
@@ -374,7 +352,7 @@ bool CBotManager::IsLineBlockedBySmoke(const Vector *from, const Vector *to)
 	ActiveGrenadeList::iterator iter = m_activeGrenadeList.begin();
 	while (iter != m_activeGrenadeList.end())
 	{
-		ActiveGrenade *ag = *iter;
+		ActiveGrenade *ag = (*iter);
 
 		// lazy validation
 		if (!ag->IsValid())
@@ -428,7 +406,7 @@ bool CBotManager::IsLineBlockedBySmoke(const Vector *from, const Vector *to)
 					{
 						// 'from' is inside the cloud, 'to' is outside
 						// compute half of total smoked length as if ray crosses entire cloud chord
-						float halfSmokedLength = sqrt(smokeRadiusSq - lengthSq);
+						float halfSmokedLength = Q_sqrt(smokeRadiusSq - lengthSq);
 
 						if (alongDist > 0.0f)
 						{
@@ -446,7 +424,7 @@ bool CBotManager::IsLineBlockedBySmoke(const Vector *from, const Vector *to)
 				{
 					// 'from' is outside the cloud, 'to' is inside
 					// compute half of total smoked length as if ray crosses entire cloud chord
-					float halfSmokedLength = sqrt(smokeRadiusSq - lengthSq);
+					float halfSmokedLength = Q_sqrt(smokeRadiusSq - lengthSq);
 
 					Vector v = *to - *smokeOrigin;
 					if (DotProduct(v, sightDir) > 0.0f)
@@ -465,7 +443,7 @@ bool CBotManager::IsLineBlockedBySmoke(const Vector *from, const Vector *to)
 					// 'from' and 'to' lie outside of the cloud - the line of sight completely crosses it
 					// determine the length of the chord that crosses the cloud
 
-					float smokedLength = 2.0f * sqrt(smokeRadiusSq - lengthSq);
+					float smokedLength = 2.0f * Q_sqrt(smokeRadiusSq - lengthSq);
 					totalSmokedLength += smokedLength;
 				}
 			}

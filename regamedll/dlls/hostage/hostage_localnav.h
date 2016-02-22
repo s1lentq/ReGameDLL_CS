@@ -41,7 +41,6 @@
 
 typedef int node_index_t;
 
-/* <48522d> ../cstrike/dlls/hostage/hostage_localnav.h:43 */
 typedef struct localnode_s
 {
 	Vector vecLoc;
@@ -57,9 +56,8 @@ typedef struct localnode_s
 
 #define s_flStepSize_LocalNav m_LocalNav->s_flStepSize
 
-#endif // HOOK_GAMEDLL
+#endif
 
-/* <45aaa2> ../cstrike/dlls/hostage/hostage_localnav.h:58 */
 class CLocalNav
 {
 public:
@@ -68,7 +66,7 @@ public:
 
 	void SetTargetEnt(CBaseEntity *pTarget)
 	{
-		if (pTarget)
+		if (pTarget != NULL)
 			m_pTargetEnt = pTarget->edict();
 		else
 			m_pTargetEnt = NULL;
@@ -105,20 +103,16 @@ public:
 
 #ifndef HOOK_GAMEDLL
 private:
-#endif // HOOK_GAMEDLL
+#endif
 
-	static EHANDLE _queue[ MAX_HOSTAGES_NAV ];
+	static EHANDLE _queue[MAX_HOSTAGES_NAV];
 	static int qptr;
 	static int tot_inqueue;
 	static float nodeval;
 	static float flNextCvarCheck;
 	static float flLastThinkTime;
-	static EHANDLE hostages[ MAX_HOSTAGES_NAV ];
+	static EHANDLE hostages[MAX_HOSTAGES_NAV];
 	static int tot_hostages;
-
-#ifdef HOOK_GAMEDLL
-private:
-#endif // HOOK_GAMEDLL
 
 	CHostage *m_pOwner;
 	edict_t *m_pTargetEnt;

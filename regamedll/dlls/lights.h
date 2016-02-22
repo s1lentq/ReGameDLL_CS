@@ -34,7 +34,6 @@
 
 #define SF_LIGHT_START_OFF		1
 
-/* <e70f6> ../cstrike/dlls/lights.cpp:29 */
 class CLight: public CPointEntity
 {
 public:
@@ -54,7 +53,7 @@ public:
 	void KeyValue_(KeyValueData *pkvd);
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 	static TYPEDESCRIPTION IMPL(m_SaveData)[2];
 
@@ -64,7 +63,6 @@ private:
 	BOOL m_iStartedOff;
 };
 
-/* <e7111> ../cstrike/dlls/lights.cpp:168 */
 class CEnvLight: public CLight
 {
 public:
@@ -76,7 +74,7 @@ public:
 	void Spawn_();
 	void KeyValue_(KeyValueData *pkvd);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 };
 

@@ -106,7 +106,6 @@ TYPEDESCRIPTION CPushable::m_SaveData[] =
 
 #endif // HOOK_GAMEDLL
 
-/* <85bf3> ../cstrike/dlls/func_break.cpp:76 */
 void CBreakable::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	// UNDONE_WC: explicitly ignoring these fields, but they shouldn't be in the map file!
@@ -170,13 +169,9 @@ void CBreakable::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CBaseDelay::KeyValue(pkvd);
 }
 
-/* <86426> ../cstrike/dlls/func_break.cpp:139 */
 LINK_ENTITY_TO_CLASS(func_breakable, CBreakable);
-
-/* <85b30> ../cstrike/dlls/func_break.cpp:155 */
 IMPLEMENT_SAVERESTORE(CBreakable, CBaseEntity);
 
-/* <85663> ../cstrike/dlls/func_break.cpp:157 */
 void CBreakable::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
@@ -217,7 +212,6 @@ void CBreakable::__MAKE_VHOOK(Spawn)()
 	}
 }
 
-/* <8568a> ../cstrike/dlls/func_break.cpp:191 */
 void CBreakable::__MAKE_VHOOK(Restart)()
 {
 	pev->solid = SOLID_BSP;
@@ -248,7 +242,6 @@ void CBreakable::__MAKE_VHOOK(Restart)()
 	}
 }
 
-/* <864f1> ../cstrike/dlls/func_break.cpp:260 */
 const char **CBreakable::MaterialSoundList(Materials precacheMaterial, int &soundCount)
 {
 	const char **pSoundList = NULL;
@@ -298,7 +291,6 @@ const char **CBreakable::MaterialSoundList(Materials precacheMaterial, int &soun
 	return pSoundList;
 }
 
-/* <86526> ../cstrike/dlls/func_break.cpp:303 */
 void CBreakable::MaterialSoundPrecache(Materials precacheMaterial)
 {
 	const char **pSoundList;
@@ -312,7 +304,6 @@ void CBreakable::MaterialSoundPrecache(Materials precacheMaterial)
 	}
 }
 
-/* <86598> ../cstrike/dlls/func_break.cpp:316 */
 void CBreakable::MaterialSoundRandom(edict_t *pEdict, Materials soundMaterial, float volume)
 {
 	int soundCount = 0;
@@ -324,7 +315,6 @@ void CBreakable::MaterialSoundRandom(edict_t *pEdict, Materials soundMaterial, f
 	}
 }
 
-/* <8634b> ../cstrike/dlls/func_break.cpp:328 */
 void CBreakable::__MAKE_VHOOK(Precache)()
 {
 	const char *pGibName = NULL;
@@ -402,7 +392,6 @@ void CBreakable::__MAKE_VHOOK(Precache)()
 	}
 }
 
-/* <86676> ../cstrike/dlls/func_break.cpp:401 */
 void CBreakable::DamageSound()
 {
 	int pitch;
@@ -476,7 +465,6 @@ void CBreakable::DamageSound()
 	}
 }
 
-/* <8691c> ../cstrike/dlls/func_break.cpp:475 */
 void CBreakable::BreakTouch(CBaseEntity *pOther)
 {
 	float flDamage;
@@ -497,7 +485,7 @@ void CBreakable::BreakTouch(CBaseEntity *pOther)
 		pev->takedamage = DAMAGE_NO;
 		pev->deadflag = DEAD_DEAD;
 		pev->effects = EF_NODRAW;
-#endif // REGAMEDLL_FIXES
+#endif
 
 		Die();
 	}
@@ -538,8 +526,6 @@ void CBreakable::BreakTouch(CBaseEntity *pOther)
 
 // Smash the our breakable object
 // Break when triggered
-
-/* <85f2d> ../cstrike/dlls/func_break.cpp:538 */
 void CBreakable::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	if (IsBreakable())
@@ -552,13 +538,12 @@ void CBreakable::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller
 		pev->takedamage = DAMAGE_NO;
 		pev->deadflag = DEAD_DEAD;
 		pev->effects = EF_NODRAW;
-#endif // REGAMEDLL_FIXES
+#endif
 
 		Die();
 	}
 }
 
-/* <85964> ../cstrike/dlls/func_break.cpp:554 */
 void CBreakable::__MAKE_VHOOK(TraceAttack)(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType)
 {
 	// random spark if this is a 'computer' object
@@ -595,8 +580,6 @@ void CBreakable::__MAKE_VHOOK(TraceAttack)(entvars_t *pevAttacker, float flDamag
 // Special takedamage for func_breakable. Allows us to make
 // exceptions that are breakable-specific
 // bitsDamageType indicates the type of damage sustained ie: DMG_CRUSH
-
-/* <86719> ../cstrike/dlls/func_break.cpp:588 */
 int CBreakable::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
 	Vector vecTemp;
@@ -646,7 +629,7 @@ int CBreakable::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pev
 		pev->takedamage = DAMAGE_NO;
 		pev->deadflag = DEAD_DEAD;
 		pev->effects = EF_NODRAW;
-#endif // REGAMEDLL_FIXES
+#endif
 		Die();
 
 		if (m_flDelay == 0.0f)
@@ -664,7 +647,6 @@ int CBreakable::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pev
 	return 1;
 }
 
-/* <856fe> ../cstrike/dlls/func_break.cpp:653 */
 void CBreakable::Die()
 {
 	Vector vecSpot;	// shard origin
@@ -678,7 +660,7 @@ void CBreakable::Die()
 	pev->takedamage = DAMAGE_NO;
 	pev->deadflag = DEAD_DEAD;
 	pev->effects = EF_NODRAW;
-#endif // REGAMEDLL_FIXES
+#endif
 
 	pitch = 95 + RANDOM_LONG(0, 29);
 
@@ -687,7 +669,7 @@ void CBreakable::Die()
 
 	// The more negative pev->health, the louder
 	// the sound should be.
-	fvol = RANDOM_FLOAT(0.85, 1.0) + (abs((int)pev->health) / 100.0f);
+	fvol = RANDOM_FLOAT(0.85f, 1.0f) + (Q_abs(int(pev->health)) / 100.0f);
 
 	if (fvol > 1.0f)
 		fvol = 1.0f;
@@ -791,7 +773,7 @@ void CBreakable::Die()
 		vecVelocity.z = 0;
 	}
 
-	vecSpot = pev->origin + (pev->mins + pev->maxs) * 0.5;
+	vecSpot = pev->origin + (pev->mins + pev->maxs) * 0.5f;
 
 	MESSAGE_BEGIN(MSG_PVS, SVC_TEMPENTITY, vecSpot);
 		WRITE_BYTE(TE_BREAKMODEL);
@@ -827,13 +809,10 @@ void CBreakable::Die()
 	CBaseEntity *pList[256];
 	int count = UTIL_EntitiesInBox(pList, ARRAYSIZE(pList), mins, maxs, FL_ONGROUND);
 
-	if (count)
+	for (int i = 0; i < count; ++i)
 	{
-		for (int i = 0; i < count; ++i)
-		{
-			pList[i]->pev->flags &= ~FL_ONGROUND;
-			pList[i]->pev->groundentity = NULL;
-		}
+		pList[i]->pev->flags &= ~FL_ONGROUND;
+		pList[i]->pev->groundentity = NULL;
 	}
 
 	pev->solid = SOLID_NOT;
@@ -853,13 +832,11 @@ void CBreakable::Die()
 	}
 }
 
-/* <86992> ../cstrike/dlls/func_break.cpp:833 */
 BOOL CBreakable::IsBreakable()
 {
 	return m_Material != matUnbreakableGlass;
 }
 
-/* <85a99> ../cstrike/dlls/func_break.cpp:839 */
 int CBreakable::__MAKE_VHOOK(DamageDecal)(int bitsDamageType)
 {
 	if (m_Material == matGlass)
@@ -871,13 +848,9 @@ int CBreakable::__MAKE_VHOOK(DamageDecal)(int bitsDamageType)
 	return CBaseEntity::DamageDecal(bitsDamageType);
 }
 
-/* <869b4> ../cstrike/dlls/func_break.cpp:888 */
 LINK_ENTITY_TO_CLASS(func_pushable, CPushable);
-
-/* <85e0b> ../cstrike/dlls/func_break.cpp:886 */
 IMPLEMENT_SAVERESTORE(CPushable, CBreakable);
 
-/* <856d7> ../cstrike/dlls/func_break.cpp:893 */
 void CPushable::__MAKE_VHOOK(Spawn)()
 {
 	if (pev->spawnflags & SF_PUSH_BREAKABLE)
@@ -905,11 +878,10 @@ void CPushable::__MAKE_VHOOK(Spawn)()
 	UTIL_SetOrigin(pev, pev->origin);
 
 	// Multiply by area of the box's cross-section (assume 1000 units^3 standard volume)
-	pev->skin = (int)((pev->skin * (pev->maxs.x - pev->mins.x) * (pev->maxs.y - pev->mins.y)) * 0.0005);
+	pev->skin = int((pev->skin * (pev->maxs.x - pev->mins.x) * (pev->maxs.y - pev->mins.y)) * 0.0005);
 	m_soundTime = 0;
 }
 
-/* <863eb> ../cstrike/dlls/func_break.cpp:920 */
 void CPushable::__MAKE_VHOOK(Precache)()
 {
 	for (int i = 0; i < 3; ++i)
@@ -923,7 +895,6 @@ void CPushable::__MAKE_VHOOK(Precache)()
 	}
 }
 
-/* <85fa3> ../cstrike/dlls/func_break.cpp:930 */
 void CPushable::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "size"))
@@ -950,11 +921,10 @@ void CPushable::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 			UTIL_SetSize(pev, VEC_HULL_MIN, VEC_HULL_MAX);
 			break;
 		}
-
 	}
 	else if (FStrEq(pkvd->szKeyName, "buoyancy"))
 	{
-		pev->skin = (int)Q_atof(pkvd->szValue);
+		pev->skin = Q_atoi(pkvd->szValue);
 		pkvd->fHandled = TRUE;
 	}
 	else
@@ -962,8 +932,6 @@ void CPushable::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 }
 
 // Pull the func_pushable
-
-/* <86c0d> ../cstrike/dlls/func_break.cpp:969 */
 void CPushable::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	if (!pActivator || !pActivator->IsPlayer())
@@ -982,7 +950,6 @@ void CPushable::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller,
 	}
 }
 
-/* <86b99> ../cstrike/dlls/func_break.cpp:983 */
 void CPushable::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 {
 	if (FClassnameIs(pOther->pev, "worldspawn"))
@@ -991,11 +958,10 @@ void CPushable::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 	Move(pOther, 1);
 }
 
-/* <86a82> ../cstrike/dlls/func_break.cpp:992 */
 void CPushable::Move(CBaseEntity *pOther, int push)
 {
 	entvars_t *pevToucher = pOther->pev;
-	int playerTouch = 0;
+	bool bPlayerTouch = false;
 
 	// Is entity standing on this pushable ?
 	if ((pevToucher->flags & FL_ONGROUND) && pevToucher->groundentity && VARS(pevToucher->groundentity) == pev)
@@ -1017,12 +983,12 @@ void CPushable::Move(CBaseEntity *pOther, int push)
 			return;
 		}
 
-		playerTouch = 1;
+		bPlayerTouch = true;
 	}
 
 	float_precision factor;
 
-	if (playerTouch)
+	if (bPlayerTouch)
 	{
 		// Don't push away from jumping/falling players unless in water
 		if (!(pevToucher->flags & FL_ONGROUND))
@@ -1041,7 +1007,7 @@ void CPushable::Move(CBaseEntity *pOther, int push)
 	pev->velocity.x += pevToucher->velocity.x * factor;
 	pev->velocity.y += pevToucher->velocity.y * factor;
 
-	float_precision length = sqrt(pev->velocity.x * pev->velocity.x + pev->velocity.y * pev->velocity.y);
+	float_precision length = Q_sqrt(pev->velocity.x * pev->velocity.x + pev->velocity.y * pev->velocity.y);
 
 	if (push && (length > MaxSpeed()))
 	{
@@ -1049,7 +1015,7 @@ void CPushable::Move(CBaseEntity *pOther, int push)
 		pev->velocity.y = (pev->velocity.y * MaxSpeed() / length);
 	}
 
-	if (playerTouch)
+	if (bPlayerTouch)
 	{
 		pevToucher->velocity.x = pev->velocity.x;
 		pevToucher->velocity.y = pev->velocity.y;
@@ -1064,7 +1030,7 @@ void CPushable::Move(CBaseEntity *pOther, int push)
 				EMIT_SOUND(ENT(pev), CHAN_WEAPON, m_soundNames[m_lastSound], 0.5, ATTN_NORM);
 
 				//SetThink(StopSound);
-				//pev->nextthink = pev->ltime + 0.1;
+				//pev->nextthink = pev->ltime + 0.1f;
 			}
 			else
 				STOP_SOUND(ENT(pev), CHAN_WEAPON, m_soundNames[m_lastSound]);
@@ -1072,7 +1038,6 @@ void CPushable::Move(CBaseEntity *pOther, int push)
 	}
 }
 
-/* <868b0> ../cstrike/dlls/func_break.cpp:1061 */
 int CPushable::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
 	if (pev->spawnflags & SF_PUSH_BREAKABLE)

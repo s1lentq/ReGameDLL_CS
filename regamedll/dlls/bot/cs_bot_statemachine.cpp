@@ -1,8 +1,6 @@
 #include "precompiled.h"
 
 // This method is the ONLY legal way to change a bot's current state
-
-/* <3b3a2a> ../cstrike/dlls/bot/cs_bot_statemachine.cpp:16 */
 void CCSBot::SetState(BotState *state)
 {
 	PrintIfWatched("SetState: %s -> %s\n", (m_state != NULL) ? m_state->GetName() : "NULL", state->GetName());
@@ -20,21 +18,18 @@ void CCSBot::SetState(BotState *state)
 	m_stateTimestamp = gpGlobals->time;
 }
 
-/* <3b3ab4> ../cstrike/dlls/bot/cs_bot_statemachine.cpp:34 */
 void CCSBot::Idle()
 {
 	SetTask(SEEK_AND_DESTROY);
 	SetState(&m_idleState);
 }
 
-/* <3b3afa> ../cstrike/dlls/bot/cs_bot_statemachine.cpp:41 */
 void CCSBot::EscapeFromBomb()
 {
 	SetTask(ESCAPE_FROM_BOMB);
 	SetState(&m_escapeFromBombState);
 }
 
-/* <3b3b4b> ../cstrike/dlls/bot/cs_bot_statemachine.cpp:48 */
 void CCSBot::Follow(CBasePlayer *player)
 {
 	if (player == NULL)
@@ -53,8 +48,6 @@ void CCSBot::Follow(CBasePlayer *player)
 }
 
 // Continue following our leader after finishing what we were doing
-
-/* <3b3bd1> ../cstrike/dlls/bot/cs_bot_statemachine.cpp:69 */
 void CCSBot::ContinueFollowing()
 {
 	SetTask(FOLLOW);
@@ -63,8 +56,6 @@ void CCSBot::ContinueFollowing()
 }
 
 // Stop following
-
-/* <3b3c57> ../cstrike/dlls/bot/cs_bot_statemachine.cpp:83 */
 void CCSBot::StopFollowing()
 {
 	m_isFollowing = false;
@@ -73,16 +64,12 @@ void CCSBot::StopFollowing()
 }
 
 // Begin process of rescuing hostages
-
-/* <3b3c7e> ../cstrike/dlls/bot/cs_bot_statemachine.cpp:94 */
 void CCSBot::RescueHostages()
 {
 	SetTask(RESCUE_HOSTAGES);
 }
 
 // Use the entity
-
-/* <3b3cc9> ../cstrike/dlls/bot/cs_bot_statemachine.cpp:103 */
 void CCSBot::UseEntity(CBaseEntity *entity)
 {
 	m_useEntityState.SetEntity(entity);
@@ -92,8 +79,6 @@ void CCSBot::UseEntity(CBaseEntity *entity)
 // DEPRECATED: Use TryToHide() instead.
 // Move to a hiding place.
 // If 'searchFromArea' is non-NULL, hiding spots are looked for from that area first.
-
-/* <3b3d23> ../cstrike/dlls/bot/cs_bot_statemachine.cpp:116 */
 void CCSBot::Hide(CNavArea *searchFromArea, float duration, float hideRange, bool holdPosition)
 {
 	DestroyPath();
@@ -152,8 +137,6 @@ void CCSBot::Hide(CNavArea *searchFromArea, float duration, float hideRange, boo
 }
 
 // Move to the given hiding place
-
-/* <3b3e98> ../cstrike/dlls/bot/cs_bot_statemachine.cpp:171 */
 void CCSBot::Hide(const Vector *hidingSpot, float duration, bool holdPosition)
 {
 	CNavArea *hideArea = TheNavAreaGrid.GetNearestNavArea(hidingSpot);
@@ -185,8 +168,6 @@ void CCSBot::Hide(const Vector *hidingSpot, float duration, bool holdPosition)
 
 // Try to hide nearby. Return true if hiding, false if can't hide here.
 // If 'searchFromArea' is non-NULL, hiding spots are looked for from that area first.
-
-/* <3b3fc1> ../cstrike/dlls/bot/cs_bot_statemachine.cpp:205 */
 bool CCSBot::TryToHide(CNavArea *searchFromArea, float duration, float hideRange, bool holdPosition, bool useNearest)
 {
 	CNavArea *source;
@@ -235,8 +216,6 @@ bool CCSBot::TryToHide(CNavArea *searchFromArea, float duration, float hideRange
 }
 
 // Retreat to a nearby hiding spot, away from enemies
-
-/* <3b40ed> ../cstrike/dlls/bot/cs_bot_statemachine.cpp:256 */
 bool CCSBot::TryToRetreat()
 {
 	const float maxRange = 1000.0f;
@@ -261,7 +240,6 @@ bool CCSBot::TryToRetreat()
 	return false;
 }
 
-/* <3b426a> ../cstrike/dlls/bot/cs_bot_statemachine.cpp:280 */
 void CCSBot::Hunt()
 {
 	SetState(&m_huntState);
@@ -269,8 +247,6 @@ void CCSBot::Hunt()
 
 // Attack our the given victim
 // NOTE: Attacking does not change our task.
-
-/* <3b4291> ../cstrike/dlls/bot/cs_bot_statemachine.cpp:290 */
 void CCSBot::Attack(CBasePlayer *victim)
 {
 	if (victim == NULL)
@@ -309,7 +285,7 @@ void CCSBot::Attack(CBasePlayer *victim)
 	Vector toEnemy = victim->pev->origin - pev->origin;
 	Vector idealAngle = UTIL_VecToAngles(toEnemy);
 
-	float deltaYaw = abs((int)(m_lookYaw - idealAngle.y));
+	float_precision deltaYaw = float_precision(Q_abs(int64(m_lookYaw - idealAngle.y)));
 
 	while (deltaYaw > 180.0f)
 		deltaYaw -= 360.0f;
@@ -319,7 +295,7 @@ void CCSBot::Attack(CBasePlayer *victim)
 
 	// immediately aim at enemy - accuracy penalty depending on how far we must turn to aim
 	// accuracy is halved if we have to turn 180 degrees
-	float turn = deltaYaw / 180.0f;
+	float turn = deltaYaw * 0.0055555557;/// 180.0f;
 	float accuracy = GetProfile()->GetSkill() / (1.0f + turn);
 
 	SetAimOffset(accuracy);
@@ -330,8 +306,6 @@ void CCSBot::Attack(CBasePlayer *victim)
 }
 
 // Exit the Attack state
-
-/* <3b4416> ../cstrike/dlls/bot/cs_bot_statemachine.cpp:366 */
 void CCSBot::StopAttacking()
 {
 	PrintIfWatched("ATTACK END\n");
@@ -345,15 +319,12 @@ void CCSBot::StopAttacking()
 	}
 }
 
-/* <3b447d> ../cstrike/dlls/bot/cs_bot_statemachine.cpp:378 */
 bool CCSBot::IsAttacking() const
 {
 	return m_isAttacking;
 }
 
 // Return true if we are escaping from the bomb
-
-/* <3b449f> ../cstrike/dlls/bot/cs_bot_statemachine.cpp:387 */
 bool CCSBot::IsEscapingFromBomb() const
 {
 	if (m_state == static_cast<const BotState *>(&m_escapeFromBombState))
@@ -363,8 +334,6 @@ bool CCSBot::IsEscapingFromBomb() const
 }
 
 // Return true if we are defusing the bomb
-
-/* <3b44c6> ../cstrike/dlls/bot/cs_bot_statemachine.cpp:399 */
 bool CCSBot::IsDefusingBomb() const
 {
 	if (m_state == static_cast<const BotState *>(&m_defuseBombState))
@@ -374,8 +343,6 @@ bool CCSBot::IsDefusingBomb() const
 }
 
 // Return true if we are hiding
-
-/* <3b44ed> ../cstrike/dlls/bot/cs_bot_statemachine.cpp:411 */
 bool CCSBot::IsHiding() const
 {
 	if (m_state == static_cast<const BotState *>(&m_hideState))
@@ -385,8 +352,6 @@ bool CCSBot::IsHiding() const
 }
 
 // Return true if we are hiding and at our hiding spot
-
-/* <3b450f> ../cstrike/dlls/bot/cs_bot_statemachine.cpp:423 */
 bool CCSBot::IsAtHidingSpot() const
 {
 	if (!IsHiding())
@@ -396,8 +361,6 @@ bool CCSBot::IsAtHidingSpot() const
 }
 
 // Return true if we are huting
-
-/* <3b454a> ../cstrike/dlls/bot/cs_bot_statemachine.cpp:435 */
 bool CCSBot::IsHunting() const
 {
 	if (m_state == static_cast<const BotState *>(&m_huntState))
@@ -407,8 +370,6 @@ bool CCSBot::IsHunting() const
 }
 
 // Return true if we are in the MoveTo state
-
-/* <3b4571> ../cstrike/dlls/bot/cs_bot_statemachine.cpp:447 */
 bool CCSBot::IsMovingTo() const
 {
 	if (m_state == static_cast<const BotState *>(&m_moveToState))
@@ -418,8 +379,6 @@ bool CCSBot::IsMovingTo() const
 }
 
 // Return true if we are buying
-
-/* <3b4598> ../cstrike/dlls/bot/cs_bot_statemachine.cpp:460 */
 bool CCSBot::IsBuying() const
 {
 	if (m_state == static_cast<const BotState *>(&m_buyState))
@@ -429,8 +388,6 @@ bool CCSBot::IsBuying() const
 }
 
 // Move to potentially distant position
-
-/* <3b45bf> ../cstrike/dlls/bot/cs_bot_statemachine.cpp:472 */
 void CCSBot::MoveTo(const Vector *pos, RouteType route)
 {
 	m_moveToState.SetGoalPosition(*pos);
@@ -438,29 +395,23 @@ void CCSBot::MoveTo(const Vector *pos, RouteType route)
 	SetState(&m_moveToState);
 }
 
-/* <3b463c> ../cstrike/dlls/bot/cs_bot_statemachine.cpp:480 */
 void CCSBot::PlantBomb()
 {
 	SetState(&m_plantBombState);
 }
 
 // Bomb has been dropped - go get it
-
-/* <3b4663> ../cstrike/dlls/bot/cs_bot_statemachine.cpp:489 */
 void CCSBot::FetchBomb()
 {
 	SetState(&m_fetchBombState);
 }
 
-/* <3b468a> ../cstrike/dlls/bot/cs_bot_statemachine.cpp:495 */
 void CCSBot::DefuseBomb()
 {
 	SetState(&m_defuseBombState);
 }
 
 // Investigate recent enemy noise
-
-/* <3b46b1> ../cstrike/dlls/bot/cs_bot_statemachine.cpp:504 */
 void CCSBot::InvestigateNoise()
 {
 	SetState(&m_investigateNoiseState);

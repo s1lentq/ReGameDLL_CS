@@ -48,7 +48,6 @@ enum TANKBULLET
 	TANK_BULLET_12MM,	// explosion?
 };
 
-/* <8c75e> ../cstrike/dlls/func_tank.cpp:46 */
 class CFuncTank: public CBaseEntity
 {
 public:
@@ -78,7 +77,7 @@ public:
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 	void Fire_(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	void TrackTarget();
@@ -157,7 +156,6 @@ protected:
 	int m_iszMaster;		// Master entity (game_team_master or multisource)
 };
 
-/* <8c79a> ../cstrike/dlls/func_tank.cpp:719 */
 class CFuncTankGun: public CFuncTank
 {
 public:
@@ -167,11 +165,10 @@ public:
 
 	void Fire_(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 };
 
-/* <8c7e8> ../cstrike/dlls/func_tank.cpp:768 */
 class CFuncTankLaser: public CFuncTank
 {
 public:
@@ -191,7 +188,7 @@ public:
 	void Think_();
 	void Fire_(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 	CLaser *GetLaser();
 
@@ -203,7 +200,6 @@ private:
 	float m_laserTime;
 };
 
-/* <8c836> ../cstrike/dlls/func_tank.cpp:887 */
 class CFuncTankRocket: public CFuncTank
 {
 public:
@@ -215,11 +211,10 @@ public:
 	void Precache_();
 	void Fire_(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 };
 
-/* <8c884> ../cstrike/dlls/func_tank.cpp:924 */
 class CFuncTankMortar: public CFuncTank
 {
 public:
@@ -231,11 +226,10 @@ public:
 	void KeyValue_(KeyValueData *pkvd);
 	void Fire_(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 };
 
-/* <8c8d2> ../cstrike/dlls/func_tank.cpp:974 */
 class CFuncTankControls: public CBaseEntity
 {
 public:
@@ -254,7 +248,7 @@ public:
 	void Think_();
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	static TYPEDESCRIPTION IMPL(m_SaveData)[1];

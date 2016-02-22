@@ -5,11 +5,10 @@
 */
 #ifndef HOOK_GAMEDLL
 
-CHalfLifeMultiplay *g_pGameRules = NULL;
+CGameRules *g_pGameRules = NULL;
 
-#endif //HOOK_GAMEDLL
+#endif
 
-/* <ad93d> ../cstrike/dlls/gamerules.cpp:36 */
 BOOL CGameRules::__MAKE_VHOOK(CanHaveAmmo)(CBasePlayer *pPlayer, const char *pszAmmoName, int iMaxCarry)
 {
 	int iAmmoIndex;
@@ -31,7 +30,6 @@ BOOL CGameRules::__MAKE_VHOOK(CanHaveAmmo)(CBasePlayer *pPlayer, const char *psz
 	return FALSE;
 }
 
-/* <ad89d> ../cstrike/dlls/gamerules.cpp:59 */
 edict_t *CGameRules::__MAKE_VHOOK(GetPlayerSpawnSpot)(CBasePlayer *pPlayer)
 {
 	// gat valid spawn point
@@ -39,23 +37,22 @@ edict_t *CGameRules::__MAKE_VHOOK(GetPlayerSpawnSpot)(CBasePlayer *pPlayer)
 
 	// Move the player to the place it said.
 #ifndef PLAY_GAMEDLL
-	pPlayer->pev->origin = VARS(pentSpawnSpot)->origin + Vector(0, 0, 1);
+	pPlayer->pev->origin = pentSpawnSpot->v.origin + Vector(0, 0, 1);
 #else
 	// TODO: fix test demo
-	pPlayer->pev->origin = VARS(pentSpawnSpot)->origin;
+	pPlayer->pev->origin = pentSpawnSpot->v.origin;
 	pPlayer->pev->origin.z += 1;
-#endif // PLAY_GAMEDLL
+#endif
 
 	pPlayer->pev->v_angle = g_vecZero;
 	pPlayer->pev->velocity = g_vecZero;
-	pPlayer->pev->angles = VARS(pentSpawnSpot)->angles;
+	pPlayer->pev->angles = pentSpawnSpot->v.angles;
 	pPlayer->pev->punchangle = g_vecZero;
 	pPlayer->pev->fixangle = 1;
 
 	return pentSpawnSpot;
 }
 
-/* <ad9a3> ../cstrike/dlls/gamerules.cpp:75 */
 BOOL CGameRules::__MAKE_VHOOK(CanHavePlayerItem)(CBasePlayer *pPlayer, CBasePlayerItem *pWeapon)
 {
 	// only living players can have items
@@ -64,9 +61,7 @@ BOOL CGameRules::__MAKE_VHOOK(CanHavePlayerItem)(CBasePlayer *pPlayer, CBasePlay
 		return FALSE;
 	}
 
-	CCSBotManager *ctrl = TheCSBots();
-
-	if (pPlayer->IsBot() && ctrl != NULL && !ctrl->IsWeaponUseable(pWeapon))
+	if (pPlayer->IsBot() && TheCSBots() != NULL && !TheCSBots()->IsWeaponUseable(pWeapon))
 	{
 		return FALSE;
 	}
@@ -96,10 +91,9 @@ BOOL CGameRules::__MAKE_VHOOK(CanHavePlayerItem)(CBasePlayer *pPlayer, CBasePlay
 	return TRUE;
 }
 
-/* <ad85d> ../cstrike/dlls/gamerules.cpp:119 */
 void CGameRules::__MAKE_VHOOK(RefreshSkillData)()
 {
-	int iSkill = (int)CVAR_GET_FLOAT("skill");
+	int iSkill = int(CVAR_GET_FLOAT("skill"));
 
 	if (iSkill < 1)
 		iSkill = 1;
@@ -119,7 +113,6 @@ void CGameRules::__MAKE_VHOOK(RefreshSkillData)()
 	gSkillData.healthkitCapacity = 15;
 }
 
-/* <ada23> ../cstrike/dlls/gamerules.cpp:157 */
 CGameRules *InstallGameRules()
 {
 	SERVER_COMMAND("exec game.cfg\n");

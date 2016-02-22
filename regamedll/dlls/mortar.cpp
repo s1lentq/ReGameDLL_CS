@@ -15,15 +15,11 @@ TYPEDESCRIPTION CFuncMortarField::m_SaveData[] =
 	DEFINE_FIELD(CFuncMortarField, m_fControl, FIELD_INTEGER),
 };
 
-#endif // HOOK_GAMEDLL
+#endif
 
-/* <f6ee7> ../cstrike/dlls/mortar.cpp:56 */
 LINK_ENTITY_TO_CLASS(func_mortar_field, CFuncMortarField);
-
-/* <f6d3b> ../cstrike/dlls/mortar.cpp:68 */
 IMPLEMENT_SAVERESTORE(CFuncMortarField, CBaseToggle);
 
-/* <f6d87> ../cstrike/dlls/mortar.cpp:71 */
 void CFuncMortarField::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "m_iszXController"))
@@ -54,8 +50,6 @@ void CFuncMortarField::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 }
 
 // Drop bombs from above
-
-/* <f694a> ../cstrike/dlls/mortar.cpp:102 */
 void CFuncMortarField::__MAKE_VHOOK(Spawn)()
 {
 	pev->solid = SOLID_NOT;
@@ -69,7 +63,6 @@ void CFuncMortarField::__MAKE_VHOOK(Spawn)()
 	Precache();
 }
 
-/* <f6971> ../cstrike/dlls/mortar.cpp:113 */
 void CFuncMortarField::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_SOUND("weapons/mortar.wav");
@@ -78,8 +71,6 @@ void CFuncMortarField::__MAKE_VHOOK(Precache)()
 }
 
 // If connected to a table, then use the table controllers, else hit where the trigger is.
-
-/* <f6ae4> ../cstrike/dlls/mortar.cpp:122 */
 void CFuncMortarField::FieldUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	Vector vecStart;
@@ -134,7 +125,7 @@ void CFuncMortarField::FieldUse(CBaseEntity *pActivator, CBaseEntity *pCaller, U
 
 	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "weapons/mortar.wav", VOL_NORM, ATTN_NONE, 0, pitch);
 
-	float t = 2.5;
+	float t = 2.5f;
 	for (int i = 0; i < m_iCount; ++i)
 	{
 		Vector vecSpot = vecStart;
@@ -161,10 +152,8 @@ void CFuncMortarField::FieldUse(CBaseEntity *pActivator, CBaseEntity *pCaller, U
 	}
 }
 
-/* <f6fb1> ../cstrike/dlls/mortar.cpp:203 */
 LINK_ENTITY_TO_CLASS(monster_mortar, CMortar);
 
-/* <f6998> ../cstrike/dlls/mortar.cpp:205 */
 void CMortar::__MAKE_VHOOK(Spawn)()
 {
 	pev->movetype = MOVETYPE_NONE;
@@ -176,13 +165,11 @@ void CMortar::__MAKE_VHOOK(Spawn)()
 	Precache();
 }
 
-/* <f69be> ../cstrike/dlls/mortar.cpp:221 */
 void CMortar::__MAKE_VHOOK(Precache)()
 {
 	m_spriteTexture = PRECACHE_MODEL("sprites/lgtning.spr");
 }
 
-/* <f69e5> ../cstrike/dlls/mortar.cpp:226 */
 void CMortar::MortarExplode()
 {
 	// mortar beam

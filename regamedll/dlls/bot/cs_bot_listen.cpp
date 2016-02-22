@@ -2,8 +2,6 @@
 
 // Listen for enemy noises, and determine if we should react to them.
 // Returns true if heard a noise and should move to investigate.
-
-/* <354545> ../cstrike/dlls/bot/cs_bot_listen.cpp:17 */
 bool CCSBot::ShouldInvestigateNoise(float *retNoiseDist)
 {
 	if (m_isNoiseTravelRangeChecked)
@@ -25,7 +23,7 @@ bool CCSBot::ShouldInvestigateNoise(float *retNoiseDist)
 		float noiseDist = toNoise.Length();
 
 		float const oneStoreyHeight = 120.0f;
-		if (abs(int64(toNoise.z)) > oneStoreyHeight)
+		if (Q_abs(int64(toNoise.z)) > oneStoreyHeight)
 		{
 			PathCost pc(this);
 			float travelDistToNoise = NavAreaTravelDistance(m_lastKnownArea, m_noiseArea, pc);
@@ -72,8 +70,6 @@ bool CCSBot::ShouldInvestigateNoise(float *retNoiseDist)
 
 // Return true if we hear nearby threatening enemy gunfire within given range
 // -1 == infinite range
-
-/* <354c8d> ../cstrike/dlls/bot/cs_bot_listen.cpp:104 */
 bool CCSBot::CanHearNearbyEnemyGunfire(float range) const
 {
 	// only attend to noise if it just happened
@@ -108,8 +104,6 @@ bool CCSBot::CanHearNearbyEnemyGunfire(float range) const
 // Return true if we directly see where we think the noise came from
 // NOTE: Dont check FOV, since this is used to determine if we should turn our head to look at the noise
 // NOTE: Dont use IsVisible(), because smoke shouldnt cause us to not look toward noises
-
-/* <354e7b> ../cstrike/dlls/bot/cs_bot_listen.cpp:141 */
 bool CCSBot::CanSeeNoisePosition() const
 {
 	TraceResult result;
@@ -126,8 +120,6 @@ bool CCSBot::CanSeeNoisePosition() const
 
 // Return true if we decided to look towards the most recent noise source
 // Assumes m_noisePosition is valid.
-
-/* <354f48> ../cstrike/dlls/bot/cs_bot_listen.cpp:160 */
 bool CCSBot::UpdateLookAtNoise()
 {
 	// make sure a noise exists

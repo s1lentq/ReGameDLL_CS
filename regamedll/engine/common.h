@@ -82,6 +82,15 @@ typedef struct incomingtransfer_s
 #define printf2 _printf2
 #define chatf _print_chat
 
+#define Q_isspace isspace
+#define Q_isalnum isalnum
+#define Q_isalpha isalpha
+
+#define Q_malloc malloc
+#define Q_calloc calloc
+#define Q_alloca alloca
+#define Q_free free
+
 #define Q_close _close
 #define Q_write _write
 #define Q_memset memset
@@ -97,6 +106,7 @@ typedef struct incomingtransfer_s
 #define Q_strncmp strncmp
 //#define Q_strcasecmp _stricmp		// Use Q_stricmp
 //#define Q_strncasecmp _strnicmp	// Use Q_strnicmp
+#define Q_sscanf sscanf
 #define Q_strdup _strdup
 #define Q_stricmp _stricmp
 #define Q_strnicmp _strnicmp
@@ -108,10 +118,25 @@ typedef struct incomingtransfer_s
 #define Q_snprintf _snprintf
 #define Q_atoi atoi
 #define Q_atof atof
+#define Q_toupper toupper
 #define Q_memmove memmove
 //#define Q_strtoull strtoull
 //#define Q_FileNameCmp FileNameCmp
 #define Q_vsnprintf _vsnprintf
 #define Q_vsnwprintf _vsnwprintf
+#define Q_abs abs
+#define Q_fabs fabs
+#define Q_tan tan
+#define Q_atan atan
+#define Q_atan2 atan2
+#define Q_acos acos
+#define Q_cos cos
+#define Q_sin sin
+#define Q_sqrt sqrt
+#define Q_pow pow
+#define Q_fmod fmod
+#define Q_fopen fopen
+#define Q_fprintf fprintf
+#define Q_fclose fclose
 
 #endif // COMMON_H

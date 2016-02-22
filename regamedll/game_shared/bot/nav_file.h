@@ -41,8 +41,6 @@
 // place name strings.  Each nav area then contains an index
 // into that directory, or zero if no place has been assigned to
 // that area.
-
-/* <4ecb57> ../game_shared/bot/nav_file.cpp:54 */
 class PlaceDirectory
 {
 public:
@@ -59,6 +57,9 @@ public:
 private:
 	std::vector<Place> m_directory;
 };
+
+extern char *MP_COM_GetToken();
+extern char *MP_COM_Parse(char *data);
 
 char *GetBspFilename(const char *navFilename);
 bool SaveNavigationMap(const char *filename);

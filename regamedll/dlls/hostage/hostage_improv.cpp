@@ -1,6 +1,5 @@
 #include "precompiled.h"
 
-/* <4703fc> ../cstrike/dlls/hostage/hostage_improv.cpp:19 */
 inline void DrawAxes(const Vector &origin, int red, int green, int blue)
 {
 	float size = 10;
@@ -13,20 +12,18 @@ inline void DrawAxes(const Vector &origin, int red, int green, int blue)
 	UTIL_DrawBeamPoints(origin + Vector(0, 0, size), origin - Vector(0, 0, size), 2, red, green, blue);
 }
 
-/* <47353e> ../cstrike/dlls/hostage/hostage_improv.cpp:41 */
 CHostageImprov::CHostageImprov(CBaseEntity *entity)
 {
+	m_animateState.Reset();
 	m_hostage = static_cast<CHostage *>(entity);
 	OnReset();
 }
 
-/* <470d33> ../cstrike/dlls/hostage/hostage_improv.cpp:52 */
 bool CHostageImprov::__MAKE_VHOOK(IsAlive)() const
 {
 	return m_hostage->pev->deadflag != DEAD_DEAD;
 }
 
-/* <474809> ../cstrike/dlls/hostage/hostage_improv.cpp:61 */
 void CHostageImprov::__MAKE_VHOOK(MoveTo)(const Vector &goal)
 {
 	m_moveGoal = goal;
@@ -40,8 +37,6 @@ void CHostageImprov::__MAKE_VHOOK(MoveTo)(const Vector &goal)
 }
 
 // Find "simple" ground height, treating current nav area as part of the floor
-
-/* <4717e4> ../cstrike/dlls/hostage/hostage_improv.cpp:78 */
 bool CHostageImprov::__MAKE_VHOOK(GetSimpleGroundHeightWithFloor)(const Vector *pos, float *height, Vector *normal)
 {
 	if (GetSimpleGroundHeight(pos, height, normal))
@@ -57,8 +52,6 @@ bool CHostageImprov::__MAKE_VHOOK(GetSimpleGroundHeightWithFloor)(const Vector *
 }
 
 // Check if we need to jump due to height change
-
-/* <473da4> ../cstrike/dlls/hostage/hostage_improv.cpp:96 */
 bool CHostageImprov::DiscontinuityJump(float ground, bool onlyJumpDown, bool mustJump)
 {
 	// Don't try to jump if in the air or crouching.
@@ -81,33 +74,28 @@ bool CHostageImprov::DiscontinuityJump(float ground, bool onlyJumpDown, bool mus
 	return false;
 }
 
-/* <470d5b> ../cstrike/dlls/hostage/hostage_improv.cpp:116 */
 void CHostageImprov::__MAKE_VHOOK(LookAt)(const Vector &target)
 {
 	m_isLookingAt = true;
 	m_viewGoal = target;
 }
 
-/* <470d97> ../cstrike/dlls/hostage/hostage_improv.cpp:126 */
 void CHostageImprov::__MAKE_VHOOK(ClearLookAt)()
 {
 	m_isLookingAt = false;
 }
 
-/* <470dbf> ../cstrike/dlls/hostage/hostage_improv.cpp:135 */
 void CHostageImprov::__MAKE_VHOOK(FaceTo)(const Vector &goal)
 {
 	m_isFacingTo = true;
 	m_faceGoal = goal;
 }
 
-/* <470dfb> ../cstrike/dlls/hostage/hostage_improv.cpp:145 */
 void CHostageImprov::__MAKE_VHOOK(ClearFaceTo)()
 {
 	m_isFacingTo = false;
 }
 
-/* <476a30> ../cstrike/dlls/hostage/hostage_improv.cpp:154 */
 void CHostageImprov::MoveTowards(const Vector &pos, float deltaT)
 {
 	Vector move;
@@ -122,10 +110,10 @@ void CHostageImprov::MoveTowards(const Vector &pos, float deltaT)
 	//
 	// NOTE: We need to do this frequently to catch edges at the right time
 	// TODO: Look ahead *along path* instead of straight line
-
 	ClearPath();
 
-	if ((m_lastKnownArea == NULL || !(m_lastKnownArea->GetAttributes() & 8)) && !IsUsingLadder() && !IsJumping() && IsOnGround() && !IsCrouching())
+	if ((m_lastKnownArea == NULL || !(m_lastKnownArea->GetAttributes() & NAV_NO_JUMP))
+		&& !IsUsingLadder() && !IsJumping() && IsOnGround() && !IsCrouching())
 	{
 		float ground;
 		Vector aheadRay(pos.x - GetFeet().x, pos.y - GetFeet().y, 0);
@@ -205,10 +193,9 @@ void CHostageImprov::MoveTowards(const Vector &pos, float deltaT)
 	m_vel.y = move.y * accelRate * deltaT + m_vel.y;
 }
 
-/* <473e46> ../cstrike/dlls/hostage/hostage_improv.cpp:262 */
 bool CHostageImprov::FaceTowards(const Vector &target, float deltaT)
 {
-	float error = 0;
+	bool bError = false;
 	Vector2D to = (target - GetFeet()).Make2D();
 
 #ifndef PLAY_GAMEDLL
@@ -229,7 +216,7 @@ bool CHostageImprov::FaceTowards(const Vector &target, float deltaT)
 		to.x = float_x / flLen;
 		to.y = float_y / flLen;
 	}
-#endif // PLAY_GAMEDLL
+#endif
 
 	float moveAngle = GetMoveAngle();
 
@@ -245,12 +232,12 @@ bool CHostageImprov::FaceTowards(const Vector &target, float deltaT)
 		else
 			dot = -1.0f;
 
-		error = 1;
+		bError = true;
 	}
 
 	const float maxTurnRate = 0.05f;
 
-	if (error || fabs(dot) >= maxTurnRate)
+	if (bError || Q_fabs(dot) >= maxTurnRate)
 	{
 		const float tolerance = 300.0f;
 		float moveRatio = dot * deltaT * tolerance + moveAngle;
@@ -267,7 +254,6 @@ bool CHostageImprov::FaceTowards(const Vector &target, float deltaT)
 	return true;
 }
 
-/* <47402b> ../cstrike/dlls/hostage/hostage_improv.cpp:308 */
 void CHostageImprov::FaceOutwards()
 {
 	TraceResult result;
@@ -304,21 +290,17 @@ void CHostageImprov::FaceOutwards()
 	FaceTo(to);
 }
 
-/* <470e23> ../cstrike/dlls/hostage/hostage_improv.cpp:344 */
 bool CHostageImprov::__MAKE_VHOOK(IsAtMoveGoal)(float error) const
 {
 	return (GetFeet() - m_moveGoal).IsLengthLessThan(error);
 }
 
-/* <470eab> ../cstrike/dlls/hostage/hostage_improv.cpp:353 */
 bool CHostageImprov::__MAKE_VHOOK(IsAtFaceGoal)() const
 {
 	return false;
 }
 
 // Return true if a friend is between us and the given position
-
-/* <46fb4b> ../cstrike/dlls/hostage/hostage_improv.cpp:395 */
 bool CHostageImprov::__MAKE_VHOOK(IsFriendInTheWay)(const Vector &goalPos) const
 {
 	// do this check less often to ease CPU burden
@@ -367,8 +349,6 @@ bool CHostageImprov::__MAKE_VHOOK(IsFriendInTheWay)(const Vector &goalPos) const
 }
 
 // Return true if a friend is between us and the given entity
-
-/* <472b83> ../cstrike/dlls/hostage/hostage_improv.cpp:453 */
 bool CHostageImprov::__MAKE_VHOOK(IsFriendInTheWay)(CBaseEntity *myFriend, const Vector &goalPos) const
 {
 	if (m_hostage == myFriend)
@@ -412,7 +392,7 @@ bool CHostageImprov::__MAKE_VHOOK(IsFriendInTheWay)(CBaseEntity *myFriend, const
 
 	if (!myFriend->pev->velocity.IsZero())
 	{
-		if (DotProduct(myFriend->pev->velocity, m_hostage->pev->velocity) >= 0.0)
+		if (DotProduct(myFriend->pev->velocity, m_hostage->pev->velocity) >= 0.0f)
 			return false;
 	}
 
@@ -420,7 +400,6 @@ bool CHostageImprov::__MAKE_VHOOK(IsFriendInTheWay)(CBaseEntity *myFriend, const
 	return true;
 }
 
-/* <474309> ../cstrike/dlls/hostage/hostage_improv.cpp:557 */
 bool CHostageImprov::IsFriendInTheWay() const
 {
 	CheckAhead check(this);
@@ -430,13 +409,11 @@ bool CHostageImprov::IsFriendInTheWay() const
 	return check.IsBlocked();
 }
 
-/* <474631> ../cstrike/dlls/hostage/hostage_improv.cpp:568 */
 float CHostageImprov::GetSpeed()
 {
 	return -1.0f;
 }
 
-/* <46f249> ../cstrike/dlls/hostage/hostage_improv.cpp:592 */
 bool CHostageImprov::__MAKE_VHOOK(Jump)()
 {
 	if (IsCrouching() || g_pHostages->IsNearbyHostageJumping(this))
@@ -466,19 +443,16 @@ bool CHostageImprov::__MAKE_VHOOK(Jump)()
 	return true;
 }
 
-/* <470ed3> ../cstrike/dlls/hostage/hostage_improv.cpp:632 */
 void CHostageImprov::__MAKE_VHOOK(Run)()
 {
 	m_moveType = m_moveLimit;
 }
 
-/* <470efb> ../cstrike/dlls/hostage/hostage_improv.cpp:638 */
 void CHostageImprov::__MAKE_VHOOK(Walk)()
 {
 	m_moveType = (m_moveLimit > Walking) ? Walking : m_moveLimit;
 }
 
-/* <470f23> ../cstrike/dlls/hostage/hostage_improv.cpp:644 */
 void CHostageImprov::__MAKE_VHOOK(Stop)()
 {
 	MoveTo(GetFeet());
@@ -490,40 +464,34 @@ void CHostageImprov::__MAKE_VHOOK(Stop)()
 		m_moveType = m_moveLimit;
 }
 
-/* <470f4c> ../cstrike/dlls/hostage/hostage_improv.cpp:655 */
 const Vector &CHostageImprov::__MAKE_VHOOK(GetFeet)() const
 {
 	return m_hostage->pev->origin;
 }
 
-/* <470f74> ../cstrike/dlls/hostage/hostage_improv.cpp:661 */
 const Vector &CHostageImprov::__MAKE_VHOOK(GetCentroid)() const
 {
-	m_centroid = m_hostage->pev->origin + Vector(0, 0, 36);
+	m_centroid = m_hostage->pev->origin + Vector(0, 0, HalfHumanHeight);
 	return m_centroid;
 }
 
-/* <470f9c> ../cstrike/dlls/hostage/hostage_improv.cpp:671 */
 const Vector &CHostageImprov::__MAKE_VHOOK(GetEyes)() const
 {
-	m_eye = m_hostage->pev->origin + Vector(0, 0, 72) - Vector(0, 0, 7);
+	m_eye = m_hostage->pev->origin + Vector(0, 0, HumanHeight) - Vector(0, 0, 7);
 	return m_eye;
 }
 
-/* <470fc4> ../cstrike/dlls/hostage/hostage_improv.cpp:681 */
 bool CHostageImprov::__MAKE_VHOOK(IsOnGround)() const
 {
 	return (m_hostage->pev->flags & FL_ONGROUND) != 0;
 }
 
-/* <470fec> ../cstrike/dlls/hostage/hostage_improv.cpp:687 */
 bool CHostageImprov::__MAKE_VHOOK(IsMoving)() const
 {
 	float const epsilon = 10.0f;
 	return m_actualVel.IsLengthGreaterThan(epsilon);
 }
 
-/* <4715d1> ../cstrike/dlls/hostage/hostage_improv.cpp:697 */
 bool CHostageImprov::__MAKE_VHOOK(IsVisible)(const Vector &pos, bool testFOV) const
 {
 	const Vector eye = GetEyes();
@@ -533,7 +501,6 @@ bool CHostageImprov::__MAKE_VHOOK(IsVisible)(const Vector &pos, bool testFOV) co
 	return result.flFraction == 1.0f;
 }
 
-/* <472938> ../cstrike/dlls/hostage/hostage_improv.cpp:728 */
 bool CHostageImprov::__MAKE_VHOOK(IsPlayerLookingAtMe)(CBasePlayer *other, float cosTolerance) const
 {
 	Vector2D toOther = (other->pev->origin - GetCentroid()).Make2D();
@@ -555,7 +522,6 @@ bool CHostageImprov::__MAKE_VHOOK(IsPlayerLookingAtMe)(CBasePlayer *other, float
 	return false;
 }
 
-/* <472a9f> ../cstrike/dlls/hostage/hostage_improv.cpp:757 */
 CBasePlayer *CHostageImprov::__MAKE_VHOOK(IsAnyPlayerLookingAtMe)(int team, float cosTolerance) const
 {
 	for (int i = 1; i <= gpGlobals->maxClients; ++i)
@@ -577,7 +543,6 @@ CBasePlayer *CHostageImprov::__MAKE_VHOOK(IsAnyPlayerLookingAtMe)(int team, floa
 	return NULL;
 }
 
-/* <472e7b> ../cstrike/dlls/hostage/hostage_improv.cpp:783 */
 CBasePlayer *CHostageImprov::__MAKE_VHOOK(GetClosestPlayerByTravelDistance)(int team, float *range) const
 {
 	CBasePlayer *close = NULL;
@@ -614,7 +579,6 @@ CBasePlayer *CHostageImprov::__MAKE_VHOOK(GetClosestPlayerByTravelDistance)(int 
 	return close;
 }
 
-/* <47166d> ../cstrike/dlls/hostage/hostage_improv.cpp:822 */
 void CHostageImprov::__MAKE_VHOOK(OnReset)()
 {
 	m_moveFlags = 0;
@@ -671,13 +635,12 @@ void CHostageImprov::__MAKE_VHOOK(OnReset)()
 	Idle();
 }
 
-/* <474659> ../cstrike/dlls/hostage/hostage_improv.cpp:886 */
 void CHostageImprov::UpdateVision()
 {
 	if (!m_visionTimer.IsElapsed())
 		return;
 
-	m_visiblePlayerCount = false;
+	m_visiblePlayerCount = 0;
 
 	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
@@ -706,10 +669,9 @@ void CHostageImprov::UpdateVision()
 		}
 	}
 
-	m_visionTimer.Start(RANDOM_FLOAT(0.4, 0.6));
+	m_visionTimer.Start(RANDOM_FLOAT(0.4f, 0.6f));
 }
 
-/* <476e49> ../cstrike/dlls/hostage/hostage_improv.cpp:997 */
 void CHostageImprov::__MAKE_VHOOK(TrackPath)(const Vector &pathGoal, float deltaT)
 {
 	FaceTowards(pathGoal, deltaT);
@@ -719,7 +681,6 @@ void CHostageImprov::__MAKE_VHOOK(TrackPath)(const Vector &pathGoal, float delta
 	DrawAxes(pathGoal, 255, 0, 255);
 }
 
-/* <474781> ../cstrike/dlls/hostage/hostage_improv.cpp:1014 */
 void CHostageImprov::SetKnownGoodPosition(const Vector &pos)
 {
 	if (IsJumping() || IsCrouching())
@@ -739,7 +700,6 @@ void CHostageImprov::SetKnownGoodPosition(const Vector &pos)
 	m_knownGoodPos = pos;
 }
 
-/* <47486d> ../cstrike/dlls/hostage/hostage_improv.cpp:1038 */
 void CHostageImprov::ResetToKnownGoodPosition()
 {
 	const float tolerance = 10.0f;
@@ -771,13 +731,11 @@ void CHostageImprov::ResetToKnownGoodPosition()
 	Stop();
 }
 
-/* <47105c> ../cstrike/dlls/hostage/hostage_improv.cpp:1082 */
 void CHostageImprov::__MAKE_VHOOK(StartLadder)(const CNavLadder *ladder, NavTraverseType how, const Vector *approachPos, const Vector *departPos)
 {
 	m_traversingLadder = true;
 }
 
-/* <4710c4> ../cstrike/dlls/hostage/hostage_improv.cpp:1094 */
 bool CHostageImprov::__MAKE_VHOOK(TraverseLadder)(const CNavLadder *ladder, NavTraverseType how, const Vector *approachPos, const Vector *departPos, float deltaT)
 {
 	Vector goal;
@@ -787,7 +745,7 @@ bool CHostageImprov::__MAKE_VHOOK(TraverseLadder)(const CNavLadder *ladder, NavT
 		goal = ladder->m_bottom;
 		AddDirectionVector(&goal, ladder->m_dir, 16);
 
-		if (ladder->m_top.z - 36.0f > GetFeet().z)
+		if (ladder->m_top.z - HalfHumanHeight > GetFeet().z)
 		{
 			const float atGoalRange = 50.0f;
 			if ((GetFeet() - goal).Make2D().IsLengthLessThan(atGoalRange))
@@ -796,7 +754,7 @@ bool CHostageImprov::__MAKE_VHOOK(TraverseLadder)(const CNavLadder *ladder, NavT
 			}
 		}
 
-		if (ladder->m_bottom.z + 36.0f > GetFeet().z)
+		if (ladder->m_bottom.z + HalfHumanHeight > GetFeet().z)
 			return true;
 	}
 	else if (m_traversingLadder)
@@ -883,7 +841,6 @@ bool CHostageImprov::__MAKE_VHOOK(TraverseLadder)(const CNavLadder *ladder, NavT
 	return false;
 }
 
-/* <477691> ../cstrike/dlls/hostage/hostage_improv.cpp:1214 */
 void CHostageImprov::UpdatePosition(float deltaT)
 {
 	CNavArea *area = TheNavAreaGrid.GetNavArea(&m_hostage->pev->origin);
@@ -912,10 +869,17 @@ void CHostageImprov::UpdatePosition(float deltaT)
 		dir = m_jumpTarget - GetFeet();
 		dir.z = 0;
 
+#ifndef PLAY_GAMEDLL
+		// TODO: fix test demo
 		dir.NormalizeInPlace();
 
 		m_hostage->pev->velocity.x = dir.x * pushSpeed;
 		m_hostage->pev->velocity.y = dir.y * pushSpeed;
+#else
+		Vector vecRet = NormalizeMulScalar<float_precision, float_precision, float_precision, float>(dir, pushSpeed);
+		m_hostage->pev->velocity.x = vecRet.x;
+		m_hostage->pev->velocity.y = vecRet.y;
+#endif
 
 		m_hostage->SetBoneController(0);
 		m_hostage->SetBoneController(1);
@@ -1020,7 +984,6 @@ void CHostageImprov::UpdatePosition(float deltaT)
 	m_moveFlags = 0;
 }
 
-/* <47837a> ../cstrike/dlls/hostage/hostage_improv.cpp:1384 */
 void CHostageImprov::__MAKE_VHOOK(OnUpkeep)(float deltaT)
 {
 	if (IsAlive())
@@ -1029,7 +992,6 @@ void CHostageImprov::__MAKE_VHOOK(OnUpkeep)(float deltaT)
 	}
 }
 
-/* <4749f9> ../cstrike/dlls/hostage/hostage_improv.cpp:1396 */
 bool CHostageImprov::IsTerroristNearby()
 {
 	if (m_nearbyTerroristTimer.IsElapsed())
@@ -1041,7 +1003,6 @@ bool CHostageImprov::IsTerroristNearby()
 	return true;
 }
 
-/* <474ae7> ../cstrike/dlls/hostage/hostage_improv.cpp:1412 */
 void CHostageImprov::CheckForNearbyTerrorists()
 {
 	if (!m_checkNearbyTerroristTimer.IsElapsed())
@@ -1063,7 +1024,6 @@ void CHostageImprov::CheckForNearbyTerrorists()
 	}
 }
 
-/* <4753ba> ../cstrike/dlls/hostage/hostage_improv.cpp:1440 */
 void CHostageImprov::UpdateGrenadeReactions()
 {
 	if (m_coughTimer.IsElapsed())
@@ -1081,7 +1041,7 @@ void CHostageImprov::UpdateGrenadeReactions()
 		CBaseEntity *entity = NULL;
 		const float watchGrenadeRadius = 500.0f;
 
-		m_grenadeTimer.Start(RANDOM_FLOAT(0.4, 0.6));
+		m_grenadeTimer.Start(RANDOM_FLOAT(0.4f, 0.6f));
 
 		while ((entity = UTIL_FindEntityInSphere(entity, GetCentroid(), watchGrenadeRadius)) != NULL)
 		{
@@ -1109,7 +1069,6 @@ void CHostageImprov::UpdateGrenadeReactions()
 	}
 }
 
-/* <475ce3> ../cstrike/dlls/hostage/hostage_improv.cpp:1502 */
 void CHostageImprov::__MAKE_VHOOK(OnUpdate)(float deltaT)
 {
 	if (!IsAlive() || cv_hostage_stop.value > 0.0f)
@@ -1124,7 +1083,7 @@ void CHostageImprov::__MAKE_VHOOK(OnUpdate)(float deltaT)
 		}
 		else
 		{
-			m_blinkTimer.Start(RANDOM_FLOAT(0.5, 2.0));
+			m_blinkTimer.Start(RANDOM_FLOAT(0.5f, 2.0f));
 			m_blinkCounter = RANDOM_LONG(1, 2);
 
 		}
@@ -1266,7 +1225,6 @@ void CHostageImprov::__MAKE_VHOOK(OnUpdate)(float deltaT)
 	m_animateState.OnUpdate(this);
 }
 
-/* <47552a> ../cstrike/dlls/hostage/hostage_improv.cpp:1705 */
 void CHostageImprov::__MAKE_VHOOK(OnGameEvent)(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
 {
 	switch (event)
@@ -1290,7 +1248,7 @@ void CHostageImprov::__MAKE_VHOOK(OnGameEvent)(GameEventType event, CBaseEntity 
 
 			if (!entity->IsPlayer() || entity->IsPlayer() && ((CBasePlayer *)entity)->m_iTeam != TERRORIST)
 			{
-				DelayedChatter(RANDOM_FLOAT(0.5, 0.7), HOSTAGE_CHATTER_SCARED_OF_MURDER, true);
+				DelayedChatter(RANDOM_FLOAT(0.5f, 0.7f), HOSTAGE_CHATTER_SCARED_OF_MURDER, true);
 			}
 			if (!entity->IsPlayer())
 			{
@@ -1310,15 +1268,13 @@ void CHostageImprov::__MAKE_VHOOK(OnGameEvent)(GameEventType event, CBaseEntity 
 	case EVENT_TERRORISTS_WIN:
 		Frighten(SCARED);
 		m_isDelayedChatterPending = false;
-		DelayedChatter(RANDOM_FLOAT(1.0, 4.0), HOSTAGE_CHATTER_TERRORISTS_WIN);
+		DelayedChatter(RANDOM_FLOAT(1.0f, 4.0f), HOSTAGE_CHATTER_TERRORISTS_WIN);
 		return;
 	case EVENT_CTS_WIN:
 		m_scaredTimer.Invalidate();
 		m_isDelayedChatterPending = false;
-		DelayedChatter(RANDOM_FLOAT(1.0, 4.0), HOSTAGE_CHATTER_CTS_WIN);
+		DelayedChatter(RANDOM_FLOAT(1.0f, 4.0f), HOSTAGE_CHATTER_CTS_WIN);
 		return;
-	default:
-		break;
 	}
 
 	float range;
@@ -1341,7 +1297,7 @@ void CHostageImprov::__MAKE_VHOOK(OnGameEvent)(GameEventType event, CBaseEntity 
 				{
 				case EVENT_WEAPON_FIRED:
 				{
-					DelayedChatter(RANDOM_FLOAT(0.3, 1.0), HOSTAGE_CHATTER_SCARED_OF_GUNFIRE);
+					DelayedChatter(RANDOM_FLOAT(0.3f, 1.0f), HOSTAGE_CHATTER_SCARED_OF_GUNFIRE);
 					break;
 				}
 				case EVENT_HE_GRENADE_EXPLODED:
@@ -1351,7 +1307,7 @@ void CHostageImprov::__MAKE_VHOOK(OnGameEvent)(GameEventType event, CBaseEntity 
 				case EVENT_BREAK_METAL:
 				case EVENT_BREAK_FLESH:
 				case EVENT_BREAK_CONCRETE:
-					DelayedChatter(RANDOM_FLOAT(0.3, 1.0), HOSTAGE_CHATTER_LOOK_OUT);
+					DelayedChatter(RANDOM_FLOAT(0.3f, 1.0f), HOSTAGE_CHATTER_LOOK_OUT);
 					break;
 
 				default:
@@ -1368,13 +1324,12 @@ void CHostageImprov::__MAKE_VHOOK(OnGameEvent)(GameEventType event, CBaseEntity 
 
 		if ((GetEyes() - *impactPos).IsLengthLessThan(flashRange) && IsVisible(*impactPos))
 		{
-			DelayedChatter(RANDOM_FLOAT(0.0, 1.0), HOSTAGE_CHATTER_BLINDED, true);
+			DelayedChatter(RANDOM_FLOAT(0.0f, 1.0f), HOSTAGE_CHATTER_BLINDED, true);
 			Frighten(TERRIFIED);
 		}
 	}
 }
 
-/* <471e27> ../cstrike/dlls/hostage/hostage_improv.cpp:1854 */
 void CHostageImprov::__MAKE_VHOOK(OnTouch)(CBaseEntity *other)
 {
 	const char *classname;
@@ -1413,14 +1368,14 @@ void CHostageImprov::__MAKE_VHOOK(OnTouch)(CBaseEntity *other)
 
 		Vector pos = alongFloor * lookAheadRange;
 
-		for (double offset = 1.0f; offset <= 18.0f; offset += 3.0f)
+		for (float_precision offset = 1.0f; offset <= 18.0f; offset += 3.0f)
 		{
 			Vector vecStart = GetFeet();
 			vecStart.z += offset;
 
 			UTIL_TraceLine(vecStart, vecStart + pos, ignore_monsters, dont_ignore_glass, m_hostage->pev->pContainingEntity, &result);
 
-			if (result.flFraction < 1.0f && result.vecPlaneNormal[2] < 0.7f)
+			if (result.flFraction < 1.0f && result.vecPlaneNormal.z < MaxUnitZSlope)
 			{
 				isStep = true;
 				break;
@@ -1499,28 +1454,23 @@ void CHostageImprov::__MAKE_VHOOK(OnTouch)(CBaseEntity *other)
 	}
 }
 
-/* <474ba8> ../cstrike/dlls/hostage/hostage_improv.cpp:2006 */
 void CHostageImprov::ApplyForce(Vector force)
 {
 	m_vel.x += force.x;
 	m_vel.y += force.y;
 }
 
-/* <474bd5> ../cstrike/dlls/hostage/hostage_improv.cpp:2016 */
 bool CHostageImprov::IsAtHome() const
 {
 	return m_hostage->IsAtHome();
 }
 
-/* <474c76> ../cstrike/dlls/hostage/hostage_improv.cpp:2025 */
 bool CHostageImprov::CanSeeRescueZone() const
 {
-	CCSBotManager *ctrl = TheCSBots();
-
-	if (ctrl == NULL)
+	if (TheCSBots() == NULL)
 		return false;
 
-	const CCSBotManager::Zone *zone = ctrl->GetClosestZone(&GetCentroid());
+	const CCSBotManager::Zone *zone = TheCSBots()->GetClosestZone(&GetCentroid());
 
 	if (zone != NULL)
 		return IsVisible(zone->m_center);
@@ -1528,7 +1478,6 @@ bool CHostageImprov::CanSeeRescueZone() const
 	return false;
 }
 
-/* <474cd3> ../cstrike/dlls/hostage/hostage_improv.cpp:2047 */
 CBasePlayer *CHostageImprov::GetClosestVisiblePlayer(int team)
 {
 	CBasePlayer *close = NULL;
@@ -1553,7 +1502,6 @@ CBasePlayer *CHostageImprov::GetClosestVisiblePlayer(int team)
 	return close;
 }
 
-/* <474db2> ../cstrike/dlls/hostage/hostage_improv.cpp:2080 */
 float CHostageImprov::GetTimeSinceLastSawPlayer(int team)
 {
 	float timeCT = m_lastSawCT.GetElapsedTime();
@@ -1570,19 +1518,16 @@ float CHostageImprov::GetTimeSinceLastSawPlayer(int team)
 	}
 }
 
-/* <474f2c> ../cstrike/dlls/hostage/hostage_improv.cpp:2098 */
 float CHostageImprov::GetTimeSinceLastInjury()
 {
 	return m_lastInjuryTimer.GetElapsedTime();
 }
 
-/* <474fb3> ../cstrike/dlls/hostage/hostage_improv.cpp:2107 */
 float CHostageImprov::GetTimeSinceLastNoise()
 {
 	return m_lastNoiseTimer.GetElapsedTime();
 }
 
-/* <47503a> ../cstrike/dlls/hostage/hostage_improv.cpp:2117 */
 bool CHostageImprov::IsScared() const
 {
 	if (m_scaredTimer.IsElapsed())
@@ -1593,7 +1538,6 @@ bool CHostageImprov::IsScared() const
 	return true;
 }
 
-/* <47506e> ../cstrike/dlls/hostage/hostage_improv.cpp:2129 */
 void CHostageImprov::Frighten(ScareType scare)
 {
 	const float ignoreTime = 10.0f;
@@ -1621,7 +1565,6 @@ void CHostageImprov::Frighten(ScareType scare)
 	}
 }
 
-/* <475200> ../cstrike/dlls/hostage/hostage_improv.cpp:2165 */
 void CHostageImprov::Afraid()
 {
 	char animInto[32];
@@ -1652,7 +1595,6 @@ void CHostageImprov::Afraid()
 	}
 }
 
-/* <475290> ../cstrike/dlls/hostage/hostage_improv.cpp:2201 */
 void CHostageImprov::UpdateIdleActivity(Activity activity, Activity fidget)
 {
 	if (m_animateState.IsBusy())
@@ -1662,19 +1604,18 @@ void CHostageImprov::UpdateIdleActivity(Activity activity, Activity fidget)
 
 	if (m_didFidget || fidget == ACT_RESET)
 	{
-		m_animateState.AddSequence(this, activity, RANDOM_FLOAT(1, 10), RANDOM_FLOAT(0.9, 1.1));
+		m_animateState.AddSequence(this, activity, RANDOM_FLOAT(1, 10), RANDOM_FLOAT(0.9f, 1.1f));
 		m_didFidget = false;
 
 	}
 	else
 	{
-		m_animateState.AddSequence(this, fidget, -1, RANDOM_FLOAT(0.9, 1.5));
+		m_animateState.AddSequence(this, fidget, -1, RANDOM_FLOAT(0.9f, 1.5f));
 		m_didFidget = true;
 
 	}
 }
 
-/* <4752d9> ../cstrike/dlls/hostage/hostage_improv.cpp:2226 */
 void CHostageImprov::Chatter(HostageChatterType sayType, bool mustSpeak)
 {
 	if (!IsAlive() && sayType != HOSTAGE_CHATTER_DEATH_CRY)
@@ -1691,7 +1632,6 @@ void CHostageImprov::Chatter(HostageChatterType sayType, bool mustSpeak)
 	}
 }
 
-/* <475b35> ../cstrike/dlls/hostage/hostage_improv.cpp:2249 */
 void CHostageImprov::DelayedChatter(float delayTime, HostageChatterType sayType, bool mustSpeak)
 {
 	if (!IsAlive())
@@ -1706,7 +1646,6 @@ void CHostageImprov::DelayedChatter(float delayTime, HostageChatterType sayType,
 	}
 }
 
-/* <475bd4> ../cstrike/dlls/hostage/hostage_improv.cpp:2268 */
 void CHostageImprov::UpdateDelayedChatter()
 {
 	if (!m_isDelayedChatterPending)
@@ -1720,7 +1659,7 @@ void CHostageImprov::UpdateDelayedChatter()
 	switch (m_delayedChatterType)
 	{
 	case HOSTAGE_CHATTER_SCARED_OF_GUNFIRE:
-		if (RANDOM_FLOAT(0, 100) <= 25)
+		if (RANDOM_FLOAT(0, 100) <= 25.0f)
 		{
 			Chatter(m_delayedChatterType, m_delayedChatterMustSpeak);
 		}
@@ -1728,7 +1667,7 @@ void CHostageImprov::UpdateDelayedChatter()
 	case HOSTAGE_CHATTER_LOOK_OUT:
 	case HOSTAGE_CHATTER_PLEASE_RESCUE_ME:
 	case HOSTAGE_CHATTER_IMPATIENT_FOR_RESCUE:
-		if (RANDOM_FLOAT(0, 100) <= 60)
+		if (RANDOM_FLOAT(0, 100) <= 60.0f)
 		{
 			Chatter(m_delayedChatterType, m_delayedChatterMustSpeak);
 		}
@@ -1739,7 +1678,6 @@ void CHostageImprov::UpdateDelayedChatter()
 	}
 }
 
-/* <4761eb> ../cstrike/dlls/hostage/hostage_improv.cpp:2307 */
 void CHostageImprov::Flinch(Activity activity)
 {
 	Chatter(HOSTAGE_CHATTER_PAIN, true);
@@ -1752,31 +1690,27 @@ void CHostageImprov::Flinch(Activity activity)
 	}
 }
 
-/* <4762fe> ../cstrike/dlls/hostage/hostage_improv.cpp:2329 */
 void CHostageImprov::CrouchDie()
 {
 	m_animateState.Reset();
 	m_animateState.AddSequence(this, ACT_CROUCH_DIE);
 }
 
-/* <476327> ../cstrike/dlls/hostage/hostage_improv.cpp:2339 */
 void CHostageImprov::Agree()
 {
 	m_animateState.Reset();
 	m_animateState.AddSequence(this, ACT_YES);
 }
 
-/* <476350> ../cstrike/dlls/hostage/hostage_improv.cpp:2349 */
 void CHostageImprov::Disagree()
 {
 	if (m_animateState.GetPerformance() != HostageAnimateState::Disagreeing)
 	{
 		m_animateState.Reset();
-		m_animateState.AddSequence(this, ACT_NO, -1.0, RANDOM_FLOAT(1.5, 3.0));
+		m_animateState.AddSequence(this, ACT_NO, -1.0, RANDOM_FLOAT(1.5f, 3.0f));
 	}
 }
 
-/* <476395> ../cstrike/dlls/hostage/hostage_improv.cpp:2363 */
 void CHostageImprov::Wave()
 {
 	m_animateState.Reset();
@@ -1785,8 +1719,6 @@ void CHostageImprov::Wave()
 }
 
 // Invoked when an improv fails to reach a MoveTo goal
-
-/* <474938> ../cstrike/dlls/hostage/hostage_improv.cpp:2375 */
 void CHostageImprov::__MAKE_VHOOK(OnMoveToFailure)(const Vector &goal, MoveToFailureType reason)
 {
 	m_behavior.OnMoveToFailure(goal, reason);
@@ -1797,14 +1729,13 @@ void CHostageImprov::__MAKE_VHOOK(OnMoveToFailure)(const Vector &goal, MoveToFai
 	}
 }
 
-/* <4763d7> ../cstrike/dlls/hostage/hostage_improv.cpp:2391 */
 void CHostageImprov::Wiggle()
 {
 	// for wiggling
 	if (m_wiggleTimer.IsElapsed())
 	{
 		m_wiggleDirection = static_cast<NavRelativeDirType>(RANDOM_LONG(FORWARD, LEFT));
-		m_wiggleTimer.Start(RANDOM_FLOAT(0.3, 0.5));
+		m_wiggleTimer.Start(RANDOM_FLOAT(0.3f, 0.5f));
 	}
 
 	const float force = 15.0f;
@@ -1839,7 +1770,6 @@ void CHostageImprov::Wiggle()
 	}
 }
 
-/* <4766cc> ../cstrike/dlls/hostage/hostage_improv.cpp:2438 */
 void CHostageImprov::ClearPath()
 {
 	Vector start;
@@ -1849,7 +1779,7 @@ void CHostageImprov::ClearPath()
 	if (!m_clearPathTimer.IsElapsed())
 		return;
 
-	m_clearPathTimer.Start(RANDOM_FLOAT(0.3, 0.5));
+	m_clearPathTimer.Start(RANDOM_FLOAT(0.3f, 0.5f));
 
 	const Vector eye = GetEyes();
 	start = eye;
@@ -1887,7 +1817,6 @@ void CHostageImprov::ClearPath()
 	}
 }
 
-/* <471b3f> ../cstrike/dlls/hostage/hostage_improv.cpp:2497 */
 void CHostageImprov::__MAKE_VHOOK(Crouch)()
 {
 	const float minCrouchTime = 1.0f;
@@ -1900,7 +1829,6 @@ void CHostageImprov::__MAKE_VHOOK(Crouch)()
 	UTIL_SetSize(m_hostage->pev, VEC_HOSTAGE_HULL_MIN, VEC_HOSTAGE_CROUCH);
 }
 
-/* <47195c> ../cstrike/dlls/hostage/hostage_improv.cpp:2516 */
 void CHostageImprov::__MAKE_VHOOK(StandUp)()
 {
 	if (!IsCrouching() || !m_minCrouchTimer.IsElapsed())
@@ -1921,6 +1849,7 @@ void CHostageImprov::__MAKE_VHOOK(StandUp)()
 		}
 	}
 
+	// HalfHumanHeight
 	if (y == 36)
 	{
 		m_animateState.Reset();
@@ -1929,7 +1858,6 @@ void CHostageImprov::__MAKE_VHOOK(StandUp)()
 	}
 }
 
-/* <477114> ../cstrike/dlls/hostage/hostage_improv.cpp:2558 */
 void CHostageImprov::UpdateStationaryAnimation()
 {
 	m_behavior.UpdateStationaryAnimation(this);

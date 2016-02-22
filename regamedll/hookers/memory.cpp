@@ -30,6 +30,10 @@
 
 #ifdef _WIN32
 
+#ifdef _MSC_VER
+#pragma comment(lib, "psapi.lib") // Process Status API
+#endif // _MSC_VER
+
 bool HIDDEN FindModuleByAddress(size_t addr, Module *module)
 {
 	if (!module)
@@ -53,6 +57,7 @@ bool HIDDEN FindModuleByAddress(size_t addr, Module *module)
 
 	return true;
 }
+
 bool HIDDEN FindModuleByName(const char *moduleName, Module *module)
 {
 	if (!moduleName || !*moduleName || !module)
@@ -151,6 +156,7 @@ bool HIDDEN ReloadProcessMemoryInfo()
 
 	return true;
 }
+
 // Finds section by the address.
 Section* HIDDEN FindSectionByAddress(size_t addr)
 {
@@ -163,6 +169,7 @@ Section* HIDDEN FindSectionByAddress(size_t addr)
 	}
 	return section;
 }
+
 // Finds section by the file name.
 Section* HIDDEN FindSectionByName(const char *moduleName)
 {
@@ -178,6 +185,7 @@ Section* HIDDEN FindSectionByName(const char *moduleName)
 	}
 	return section;
 }
+
 // Finds section by the address.
 Section* HIDDEN GetSectionByAddress(size_t addr)
 {
@@ -191,6 +199,7 @@ Section* HIDDEN GetSectionByAddress(size_t addr)
 	}
 	return section;
 }
+
 // Finds section by the file name.
 Section* HIDDEN GetSectionByName(const char *moduleName)
 {
@@ -204,6 +213,7 @@ Section* HIDDEN GetSectionByName(const char *moduleName)
 	}
 	return section;
 }
+
 // Fills module structure by info from the sections. Should be supplied with the first module section.
 bool HIDDEN FillModule(Section *section, Module *module)
 {
@@ -254,6 +264,7 @@ bool HIDDEN FindModuleByAddress(size_t addr, Module *module)
 	// Start over with the name to find module start
 	return FindModuleByName(section->filename + 1, module);
 }
+
 bool HIDDEN FindModuleByName(const char *moduleName, Module *module)
 {
 	if (!moduleName || !*moduleName || !module)
@@ -416,7 +427,7 @@ size_t HIDDEN FindSymbol(Module *module, const char* symbolName, int index)
 
 extern void regamedll_syserror(const char* fmt, ...);
 
-#ifdef WIN32
+#ifdef _WIN32
 void ProcessModuleData(Module *module)
 {
 	int i = 0;
@@ -451,12 +462,15 @@ void ProcessModuleData(Module *module)
 	module->codeSection.end = module->codeSection.start + module->codeSection.size;
 	module->codeSection.next = NULL;
 }
-#else //WIN32
+
+#else // _WIN32
+
 void ProcessModuleData(Module *module)
 {
 
 }
-#endif
+
+#endif // _WIN32
 
 #ifdef _WIN32
 
@@ -466,6 +480,7 @@ inline bool HIDDEN EnablePageWrite(size_t addr, size_t size)
 {
 	return VirtualProtect((void *)addr, size, PAGE_EXECUTE_READWRITE, &oldPageProtection) != 0;
 }
+
 inline bool HIDDEN RestorePageProtection(size_t addr, size_t size)
 {
 	bool ret = VirtualProtect((void *)addr, size, oldPageProtection, &oldPageProtection) != 0;
@@ -481,6 +496,7 @@ bool HIDDEN EnablePageWrite(size_t addr, size_t size)
 	size += addr - alignedAddr;
 	return mprotect((void *)alignedAddr, size, PROT_READ | PROT_WRITE | PROT_EXEC) == 0;
 }
+
 bool HIDDEN RestorePageProtection(size_t addr, size_t size)
 {
 	Section *section = GetSectionByAddress(addr);
@@ -492,7 +508,6 @@ bool HIDDEN RestorePageProtection(size_t addr, size_t size)
 }
 
 #endif // _WIN32
-
 
 // Converts HEX string containing pairs of symbols 0-9, A-F, a-f with possible space splitting into byte array
 size_t HIDDEN ConvertHexString(const char *srcHexString, unsigned char *outBuffer, size_t bufferSize)
@@ -526,6 +541,7 @@ size_t HIDDEN ConvertHexString(const char *srcHexString, unsigned char *outBuffe
 	}
 	return out - outBuffer;
 }
+
 size_t HIDDEN MemoryFindForward(size_t start, size_t end, const unsigned char *pattern, const unsigned char *mask, size_t len)
 {
 	// Ensure start is lower than the end
@@ -578,6 +594,7 @@ size_t HIDDEN MemoryFindForward(size_t start, size_t end, const unsigned char *p
 
 	return NULL;
 }
+
 size_t HIDDEN MemoryFindBackward(size_t start, size_t end, const unsigned char *pattern, const unsigned char *mask, size_t len)
 {
 	// Ensure start is higher than the end
@@ -630,6 +647,7 @@ size_t HIDDEN MemoryFindBackward(size_t start, size_t end, const unsigned char *
 
 	return NULL;
 }
+
 size_t HIDDEN MemoryFindRefForwardPrefix8(size_t start, size_t end, size_t refAddress, uint8_t prefixValue, bool relative)
 {
 	// Ensure start is lower than the end
@@ -674,6 +692,7 @@ uint32_t HIDDEN HookDWord(size_t addr, uint32_t newDWord)
 	RestorePageProtection(addr, sizeof(uint32_t));
 	return origDWord;
 }
+
 // Exchanges bytes between memory address and bytes array
 void HIDDEN ExchangeMemoryBytes(size_t origAddr, size_t dataAddr, uint32_t size)
 {
@@ -720,7 +739,7 @@ bool HIDDEN GetAddress(Module *module, Address *addr, size_t baseOffset)
 void *addr_orig;
 char patchByte[5];
 char patchByteOriginal[5];
-#endif // HOOK_GAMEDLL
+#endif
 
 bool HIDDEN HookFunction(Module *module, FunctionHook *hook)
 {
@@ -740,7 +759,7 @@ bool HIDDEN HookFunction(Module *module, FunctionHook *hook)
 	//int seedad = pUTIL_SharedRandomLong(seed,low,high);
 	//memcpy(addr_orig,patchByte,5);
 
-	if (strcmp(hook->symbolName,"_ZN25HostageEscapeToCoverState15OnMoveToFailureERK6VectorN12IImprovEvent17MoveToFailureTypeE")==0)
+	if (strcmp(hook->symbolName, "_ZN25HostageEscapeToCoverState15OnMoveToFailureERK6VectorN12IImprovEvent17MoveToFailureTypeE") == 0)
 	{
 		addr_orig = (void *)hook->originalAddress;
 
@@ -778,7 +797,7 @@ bool HIDDEN FindDataRef(Module *module, AddressRef *ref)
 	return true;
 }
 
-#ifdef WIN32
+#ifdef _WIN32
 void FindAllCalls(Section* section, CFuncAddr** calls, uint32_t findRefsTo)
 {
 	uint32_t coderef_addr = section->start;
@@ -791,7 +810,7 @@ void FindAllCalls(Section* section, CFuncAddr** calls, uint32_t findRefsTo)
 		coderef_addr = MemoryFindRefForwardPrefix8(coderef_addr + 1, section->end, findRefsTo, 0xE8, true);
 	}
 }
-#endif
+#endif // _WIN32
 
 template<typename T>
 size_t vtable_size(const T &t)

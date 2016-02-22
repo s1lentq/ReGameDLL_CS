@@ -32,7 +32,10 @@
 #pragma once
 #endif
 
+#include "shake.h"
 #include "activity.h"
+#include "enginecallback.h"
+#include "utlvector.h"
 
 #define _LOG_TRACE\
 	static int iNumPassed = 0;\
@@ -60,7 +63,7 @@
 #define FILE_GLOBAL
 #define DLL_GLOBAL
 
-#endif // HOOK_GAMEDLL
+#endif
 
 #define eoNullEntity		0	// Testing the three types of "entity" for nullity
 #define iStringNull		0	// Testing strings for nullity
@@ -153,7 +156,7 @@ extern globalvars_t *gpGlobals;
 #define __MAKE_VHOOK(fname)\
 	fname
 
-#endif // HOOK_GAMEDLL
+#endif
 
 #define LINK_ENTITY_TO_CLASS(mapClassName, DLLClassName)\
 	C_DLLEXPORT void EXT_FUNC mapClassName(entvars_t *pev);\
@@ -234,49 +237,36 @@ private:
 	int m_oldgroupop;
 };
 
-/* <5da42> ../cstrike/dlls/util.h:67 */
-inline void MAKE_STRING_CLASS(const char *str, entvars_t *pev)
-{
-	pev->classname = (string_t)MAKE_STRING(str);
-}
-
-/* <b5829> ../cstrike/dlls/util.h:80 */
 inline edict_t *FIND_ENTITY_BY_CLASSNAME(edict_t *entStart, const char *pszName)
 {
 	return FIND_ENTITY_BY_STRING(entStart, "classname", pszName);
 }
 
-/* <2468f> ../cstrike/dlls/util.h:85 */
 inline edict_t *FIND_ENTITY_BY_TARGETNAME(edict_t *entStart, const char *pszName)
 {
 	return FIND_ENTITY_BY_STRING(entStart, "targetname", pszName);
 }
 
-/* <4299> ../cstrike/dlls/util.h:157 */
 inline edict_t *ENT(const entvars_t *pev)
 {
 	return pev->pContainingEntity;
 }
 
-/* <431e6> ../cstrike/dlls/util.h:159 */
 inline edict_t *ENT(EOFFSET eoffset)
 {
 	return (*g_engfuncs.pfnPEntityOfEntOffset)(eoffset);
 }
 
-/* <244a7> ../cstrike/dlls/util.h:162 */
 inline EOFFSET OFFSET(const edict_t *pent)
 {
 	return (*g_engfuncs.pfnEntOffsetOfPEntity)(pent);
 }
 
-/* <543b7> ../cstrike/dlls/util.h:165 */
 inline EOFFSET OFFSET(const entvars_t *pev)
 {
 	return OFFSET(ENT(pev));
 }
 
-/* <4631> ../cstrike/dlls/util.h:180 */
 inline entvars_t *VARS(edict_t *pent)
 {
 	if (!pent)
@@ -285,74 +275,62 @@ inline entvars_t *VARS(edict_t *pent)
 	return &pent->v;
 }
 
-/* <483c6> ../cstrike/dlls/util.h:184 */
 inline entvars_t *VARS(EOFFSET eoffset)
 {
 	return VARS(ENT(eoffset));
 }
 
-/* <2ee03> ../cstrike/dlls/util.h:189 */
 inline int ENTINDEX(const edict_t *pEdict)
 {
 	return (*g_engfuncs.pfnIndexOfEdict)(pEdict);
 }
 
-/* <14e46e> ../cstrike/dlls/util.h:190 */
 inline edict_t *INDEXENT(int iEdictNum)
 {
 	return (*g_engfuncs.pfnPEntityOfEntIndex)(iEdictNum);
 }
 
-/* <15a45d> ../cstrike/dlls/util.h:193 */
 inline void MESSAGE_BEGIN(int msg_dest, int msg_type, const float *pOrigin, entvars_t *ent)
 {
 	MESSAGE_BEGIN(msg_dest, msg_type, pOrigin, ENT(ent));
 }
 
-/* <244c4> ../cstrike/dlls/util.h:197 */
 inline BOOL FNullEnt(EOFFSET eoffset)
 {
 	return (eoffset == 0);
 }
 
-/* <213e7> ../cstrike/dlls/util.h:198 */
 inline BOOL FNullEnt(entvars_t *pev)
 {
 	return (pev == NULL || FNullEnt(OFFSET(pev)));
 }
 
-/* <432b5> ../cstrike/dlls/util.h:199 */
 inline BOOL FNullEnt(const edict_t *pent)
 {
 	return (pent == NULL || FNullEnt(OFFSET(pent)));
 }
 
-/* <1c1cb> ../cstrike/dlls/util.h:203 */
 inline BOOL FStringNull(int iString)
 {
 	return (iString == iStringNull);
 }
 
-/* <42e8> ../cstrike/dlls/util.h:246 */
 inline BOOL FStrEq(const char *sz1, const char *sz2)
 {
 	return (Q_strcmp(sz1, sz2) == 0);
 }
 
-/* <245ce> ../cstrike/dlls/util.h:250 */
 inline BOOL FClassnameIs(entvars_t *pev, const char *szClassname)
 {
 	return FStrEq(STRING(pev->classname), szClassname);
 }
 
-/* <249a6> ../cstrike/dlls/util.h:265 */
 inline BOOL FClassnameIs(edict_t *pent, const char *szClassname)
 {
-	//TODO: check is null?
+	// TODO: check is null?
 	return FStrEq(STRING(VARS(pent)->classname), szClassname);
 }
 
-/* <8c49f> ../cstrike/dlls/util.h:282 */
 inline void UTIL_MakeVectorsPrivate(Vector vecAngles, float *p_vForward, float *p_vRight, float *p_vUp)
 {
 	g_engfuncs.pfnAngleVectors(vecAngles, p_vForward, p_vRight, p_vUp);
@@ -360,39 +338,41 @@ inline void UTIL_MakeVectorsPrivate(Vector vecAngles, float *p_vForward, float *
 
 extern void EMIT_SOUND_DYN(edict_t *entity, int channel, const char *sample, float volume, float attenuation, int flags, int pitch);
 
-/* <4310> ../cstrike/dlls/util.h:570 */
 inline void EMIT_SOUND(edict_t *entity, int channel, const char *sample, float volume, float attenuation)
 {
 	EMIT_SOUND_DYN(entity, channel, sample, volume, attenuation, 0, PITCH_NORM);
 }
 
-/* <6862b> ../cstrike/dlls/util.h:575 */
 inline void STOP_SOUND(edict_t *entity, int channel, const char *sample)
 {
 	EMIT_SOUND_DYN(entity, channel, sample, 0, 0, SND_STOP, PITCH_NORM);
 }
+
+class CBaseEntity;
+class CBasePlayer;
+class CBasePlayerItem;
 
 float UTIL_WeaponTimeBase();
 unsigned int U_Random();
 void U_Srand(unsigned int seed);
 int UTIL_SharedRandomLong(unsigned int seed, int low, int high);
 float UTIL_SharedRandomFloat(unsigned int seed, float low, float high);
-NOXREF void UTIL_ParametricRocket(entvars_t *pev, Vector vecOrigin, Vector vecAngles, edict_t *owner);
+void UTIL_ParametricRocket(entvars_t *pev, Vector vecOrigin, Vector vecAngles, edict_t *owner);
 void UTIL_SetGroupTrace(int groupmask, int op);
 void UTIL_UnsetGroupTrace();
-NOXREF BOOL UTIL_GetNextBestWeapon(class CBasePlayer *pPlayer, class CBasePlayerItem *pCurrentWeapon);
-NOXREF float UTIL_AngleMod(float a);
-NOXREF float UTIL_AngleDiff(float destAngle, float srcAngle);
+BOOL UTIL_GetNextBestWeapon(CBasePlayer *pPlayer, CBasePlayerItem *pCurrentWeapon);
+float UTIL_AngleMod(float a);
+float UTIL_AngleDiff(float destAngle, float srcAngle);
 Vector UTIL_VecToAngles(const Vector &vec);
-NOXREF void UTIL_MoveToOrigin(edict_t *pent, const Vector &vecGoal, float flDist, int iMoveType);
+void UTIL_MoveToOrigin(edict_t *pent, const Vector &vecGoal, float flDist, int iMoveType);
 int UTIL_EntitiesInBox(CBaseEntity **pList, int listMax, const Vector &mins, const Vector &maxs, int flagMask);
-NOXREF int UTIL_MonstersInSphere(CBaseEntity **pList, int listMax, const Vector &center, float radius);
+int UTIL_MonstersInSphere(CBaseEntity **pList, int listMax, const Vector &center, float radius);
 CBaseEntity *UTIL_FindEntityInSphere(CBaseEntity *pStartEntity, const Vector &vecCenter, float flRadius);
 CBaseEntity *UTIL_FindEntityByString_Old(CBaseEntity *pStartEntity, const char *szKeyword, const char *szValue);
 CBaseEntity *UTIL_FindEntityByString(CBaseEntity *pStartEntity, const char *szKeyword, const char *szValue);
 CBaseEntity *UTIL_FindEntityByClassname(CBaseEntity *pStartEntity, const char *szName);
 CBaseEntity *UTIL_FindEntityByTargetname(CBaseEntity *pStartEntity, const char *szName);
-NOXREF CBaseEntity *UTIL_FindEntityGeneric(const char *szWhatever, const Vector &vecSrc, float flRadius);
+CBaseEntity *UTIL_FindEntityGeneric(const char *szWhatever, const Vector &vecSrc, float flRadius);
 CBaseEntity *UTIL_PlayerByIndex(int playerIndex);
 void UTIL_MakeVectors(const Vector &vecAngles);
 void UTIL_MakeAimVectors(const Vector &vecAngles);
@@ -401,7 +381,7 @@ void UTIL_EmitAmbientSound(edict_t *entity, const Vector &vecOrigin, const char 
 unsigned short FixedUnsigned16(float value, float scale);
 short FixedSigned16(float value, float scale);
 void UTIL_ScreenShake(const Vector &center, float amplitude, float frequency, float duration, float radius);
-NOXREF void UTIL_ScreenShakeAll(const Vector &center, float amplitude, float frequency, float duration);
+void UTIL_ScreenShakeAll(const Vector &center, float amplitude, float frequency, float duration);
 void UTIL_ScreenFadeBuild(ScreenFade &fade, const Vector &color, float fadeTime, float fadeHold, int alpha, int flags);
 void UTIL_ScreenFadeWrite(const ScreenFade &fade, CBaseEntity *pEntity);
 void UTIL_ScreenFadeAll(const Vector &color, float fadeTime, float fadeHold, int alpha, int flags);
@@ -410,12 +390,12 @@ void UTIL_HudMessage(CBaseEntity *pEntity, const hudtextparms_t &textparms, cons
 void UTIL_HudMessageAll(const hudtextparms_t &textparms, const char *pMessage);
 void UTIL_ClientPrintAll(int msg_dest, const char *msg_name, const char *param1 = NULL, const char *param2 = NULL, const char *param3 = NULL, const char *param4 = NULL);
 void ClientPrint(entvars_t *client, int msg_dest, const char *msg_name, const char *param1 = NULL, const char *param2 = NULL, const char *param3 = NULL, const char *param4 = NULL);
-NOXREF void UTIL_SayText(const char *pText, CBaseEntity *pEntity);
+void UTIL_SayText(const char *pText, CBaseEntity *pEntity);
 void UTIL_SayTextAll(const char *pText, CBaseEntity *pEntity);
 char *UTIL_dtos1(int d);
 char *UTIL_dtos2(int d);
-NOXREF char *UTIL_dtos3(int d);
-NOXREF char *UTIL_dtos4(int d);
+char *UTIL_dtos3(int d);
+char *UTIL_dtos4(int d);
 void UTIL_ShowMessageArgs(const char *pString, CBaseEntity *pPlayer, CUtlVector<char*> *args, bool isHint = false);
 void UTIL_ShowMessage(const char *pString, CBaseEntity *pEntity, bool isHint = false);
 void UTIL_ShowMessageAll(const char *pString, bool isHint = false);
@@ -423,17 +403,17 @@ void UTIL_TraceLine(const Vector &vecStart, const Vector &vecEnd, IGNORE_MONSTER
 void UTIL_TraceLine(const Vector &vecStart, const Vector &vecEnd, IGNORE_MONSTERS igmon, IGNORE_GLASS ignoreGlass, edict_t *pentIgnore, TraceResult *ptr);
 void UTIL_TraceHull(const Vector &vecStart, const Vector &vecEnd, IGNORE_MONSTERS igmon, int hullNumber, edict_t *pentIgnore, TraceResult *ptr);
 void UTIL_TraceModel(const Vector &vecStart, const Vector &vecEnd, int hullNumber, edict_t *pentModel, TraceResult *ptr);
-NOXREF TraceResult UTIL_GetGlobalTrace();
+TraceResult UTIL_GetGlobalTrace();
 void UTIL_SetSize(entvars_t *pev, const Vector &vecMin, const Vector &vecMax);
 float UTIL_VecToYaw(const Vector &vec);
 void UTIL_SetOrigin(entvars_t *pev, const Vector &vecOrigin);
-NOXREF void UTIL_ParticleEffect(const Vector &vecOrigin, const Vector &vecDirection, ULONG ulColor, ULONG ulCount);
+void UTIL_ParticleEffect(const Vector &vecOrigin, const Vector &vecDirection, ULONG ulColor, ULONG ulCount);
 float UTIL_Approach(float target, float value, float speed);
 float_precision UTIL_ApproachAngle(float target, float value, float speed);
 float_precision UTIL_AngleDistance(float next, float cur);
 float UTIL_SplineFraction(float value, float scale);
 char *UTIL_VarArgs(char *format, ...);
-NOXREF Vector UTIL_GetAimVector(edict_t *pent, float flSpeed);
+Vector UTIL_GetAimVector(edict_t *pent, float flSpeed);
 int UTIL_IsMasterTriggered(string_t sMaster, CBaseEntity *pActivator);
 BOOL UTIL_ShouldShowBlood(int color);
 int UTIL_PointContents(const Vector &vec);
@@ -454,17 +434,20 @@ float UTIL_WaterLevel(const Vector &position, float minz, float maxz);
 void UTIL_Bubbles(Vector mins, Vector maxs, int count);
 void UTIL_BubbleTrail(Vector from, Vector to, int count);
 void UTIL_Remove(CBaseEntity *pEntity);
-NOXREF BOOL UTIL_IsValidEntity(edict_t *pent);
+BOOL UTIL_IsValidEntity(edict_t *pent);
 void UTIL_PrecacheOther(const char *szClassname);
 void UTIL_LogPrintf(char *fmt, ...);
-NOXREF float UTIL_DotPoints(const Vector &vecSrc, const Vector &vecCheck, const Vector &vecDir);
+float UTIL_DotPoints(const Vector &vecSrc, const Vector &vecCheck, const Vector &vecDir);
 void UTIL_StripToken(const char *pKey, char *pDest);
 void EntvarsKeyvalue(entvars_t *pev, KeyValueData *pkvd);
 char UTIL_TextureHit(TraceResult *ptr, Vector vecSrc, Vector vecEnd);
-NOXREF int GetPlayerTeam(int index);
+int GetPlayerTeam(int index);
 bool UTIL_IsGame(const char *gameName);
 float_precision UTIL_GetPlayerGaitYaw(int playerIndex);
 int UTIL_ReadFlags(const char *c);
+bool UTIL_AreBotsAllowed();
+bool UTIL_AreHostagesImprov();
+void MAKE_STRING_CLASS(const char *str, entvars_t *pev);
 
 extern int g_groupmask;
 extern int g_groupop;

@@ -33,10 +33,26 @@
 #endif
 
 // buttons
-#ifndef IN_BUTTONS_H
 #include "in_buttons.h"
-#endif
 
+// Max # of clients allowed in a server.
+#define MAX_CLIENTS				32
+
+// How many bits to use to encode an edict.
+#define MAX_EDICT_BITS				11			// # of bits needed to represent max edicts
+// Max # of edicts in a level (2048)
+#define MAX_EDICTS				(1<<MAX_EDICT_BITS)
+
+// How many data slots to use when in multiplayer (must be power of 2)
+#define MULTIPLAYER_BACKUP			64
+// Same for single player
+#define SINGLEPLAYER_BACKUP			8
+
+// Constants shared by the engine and dlls
+// This header file included by engine files and DLL files.
+// Most came from server.h
+
+// edict->flags
 #define FL_FLY					(1<<0)	// Changes the SV_Movestep() behavior to not need to be on ground
 #define FL_SWIM					(1<<1)	// Changes the SV_Movestep() behavior to not need to be on ground (but stay in water)
 #define FL_CONVEYOR				(1<<2)
@@ -139,81 +155,81 @@
 #define TE_EXPLFLAG_NOSOUND			4	// do not play client explosion sound
 #define TE_EXPLFLAG_NOPARTICLES			8	// do not draw particles
 #define TE_TAREXPLOSION				4	// Quake1 "tarbaby" explosion with sound
-#define TE_SMOKE				5		// alphablend sprite, move vertically 30 pps
-#define TE_TRACER				6		// tracer effect from point to point
-#define TE_LIGHTNING				7		// TE_BEAMPOINTS with simplified parameters
+#define TE_SMOKE				5	// alphablend sprite, move vertically 30 pps
+#define TE_TRACER				6	// tracer effect from point to point
+#define TE_LIGHTNING				7	// TE_BEAMPOINTS with simplified parameters
 #define TE_BEAMENTS				8
-#define TE_SPARKS				9		// 8 random tracers with gravity, ricochet sprite
-#define TE_LAVASPLASH				10		// Quake1 lava splash
-#define TE_TELEPORT				11		// Quake1 teleport splash
-#define TE_EXPLOSION2				12		// Quake1 colormaped (base palette) particle explosion with sound
-#define TE_BSPDECAL				13		// Decal from the .BSP file
-#define TE_IMPLOSION				14		// tracers moving toward a point
-#define TE_SPRITETRAIL				15		// line of moving glow sprites with gravity, fadeout, and collisions
-#define TE_BEAM					16		// obsolete
-#define TE_SPRITE				17		// additive sprite, plays 1 cycle
-#define TE_BEAMSPRITE				18		// A beam with a sprite at the end
-#define TE_BEAMTORUS				19		// screen aligned beam ring, expands to max radius over lifetime
-#define TE_BEAMDISK				20		// disk that expands to max radius over lifetime
-#define TE_BEAMCYLINDER				21		// cylinder that expands to max radius over lifetime
-#define TE_BEAMFOLLOW				22		// create a line of decaying beam segments until entity stops moving
+#define TE_SPARKS				9	// 8 random tracers with gravity, ricochet sprite
+#define TE_LAVASPLASH				10	// Quake1 lava splash
+#define TE_TELEPORT				11	// Quake1 teleport splash
+#define TE_EXPLOSION2				12	// Quake1 colormaped (base palette) particle explosion with sound
+#define TE_BSPDECAL				13	// Decal from the .BSP file
+#define TE_IMPLOSION				14	// tracers moving toward a point
+#define TE_SPRITETRAIL				15	// line of moving glow sprites with gravity, fadeout, and collisions
+#define TE_BEAM					16	// obsolete
+#define TE_SPRITE				17	// additive sprite, plays 1 cycle
+#define TE_BEAMSPRITE				18	// A beam with a sprite at the end
+#define TE_BEAMTORUS				19	// screen aligned beam ring, expands to max radius over lifetime
+#define TE_BEAMDISK				20	// disk that expands to max radius over lifetime
+#define TE_BEAMCYLINDER				21	// cylinder that expands to max radius over lifetime
+#define TE_BEAMFOLLOW				22	// create a line of decaying beam segments until entity stops moving
 #define TE_GLOWSPRITE				23
-#define TE_BEAMRING				24		// connect a beam ring to two entities
-#define TE_STREAK_SPLASH			25		// oriented shower of tracers
-#define TE_BEAMHOSE				26		// obsolete
-#define TE_DLIGHT				27		// dynamic light, effect world, minor entity effect
-#define TE_ELIGHT				28		// point entity light, no world effect
+#define TE_BEAMRING				24	// connect a beam ring to two entities
+#define TE_STREAK_SPLASH			25	// oriented shower of tracers
+#define TE_BEAMHOSE				26	// obsolete
+#define TE_DLIGHT				27	// dynamic light, effect world, minor entity effect
+#define TE_ELIGHT				28	// point entity light, no world effect
 #define TE_TEXTMESSAGE				29
 #define TE_LINE					30
 #define TE_BOX					31
-#define TE_KILLBEAM				99		// kill all beams attached to entity
+#define TE_KILLBEAM				99	// kill all beams attached to entity
 #define TE_LARGEFUNNEL				100
-#define TE_BLOODSTREAM				101		// particle spray
-#define TE_SHOWLINE				102		// line of particles every 5 units, dies in 30 seconds
-#define TE_BLOOD				103		// particle spray
-#define TE_DECAL				104		// Decal applied to a brush entity (not the world)
-#define TE_FIZZ					105		// create alpha sprites inside of entity, float upwards
-#define TE_MODEL				106		// create a moving model that bounces and makes a sound when it hits
-#define TE_EXPLODEMODEL				107		// spherical shower of models, picks from set
-#define TE_BREAKMODEL				108		// box of models or sprites
-#define TE_GUNSHOTDECAL				109		// decal and ricochet sound
-#define TE_SPRITE_SPRAY				110		// spay of alpha sprites
-#define TE_ARMOR_RICOCHET			111		// quick spark sprite, client ricochet sound.
-#define TE_PLAYERDECAL				112		// ???
-#define TE_BUBBLES				113		// create alpha sprites inside of box, float upwards
-#define TE_BUBBLETRAIL				114		// create alpha sprites along a line, float upwards
-#define TE_BLOODSPRITE				115		// spray of opaque sprite1's that fall, single sprite2 for 1..2 secs (this is a high-priority tent)
-#define TE_WORLDDECAL				116		// Decal applied to the world brush
-#define TE_WORLDDECALHIGH			117		// Decal (with texture index > 256) applied to world brush
-#define TE_DECALHIGH				118		// Same as TE_DECAL, but the texture index was greater than 256
-#define TE_PROJECTILE				119		// Makes a projectile (like a nail) (this is a high-priority tent)
-#define TE_SPRAY				120		// Throws a shower of sprites or models
-#define TE_PLAYERSPRITES			121		// sprites emit from a player's bounding box (ONLY use for players!)
-#define TE_PARTICLEBURST			122		// very similar to lavasplash.
-#define TE_FIREFIELD				123		// makes a field of fire.
+#define TE_BLOODSTREAM				101	// particle spray
+#define TE_SHOWLINE				102	// line of particles every 5 units, dies in 30 seconds
+#define TE_BLOOD				103	// particle spray
+#define TE_DECAL				104	// Decal applied to a brush entity (not the world)
+#define TE_FIZZ					105	// create alpha sprites inside of entity, float upwards
+#define TE_MODEL				106	// create a moving model that bounces and makes a sound when it hits
+#define TE_EXPLODEMODEL				107	// spherical shower of models, picks from set
+#define TE_BREAKMODEL				108	// box of models or sprites
+#define TE_GUNSHOTDECAL				109	// decal and ricochet sound
+#define TE_SPRITE_SPRAY				110	// spay of alpha sprites
+#define TE_ARMOR_RICOCHET			111	// quick spark sprite, client ricochet sound.
+#define TE_PLAYERDECAL				112	// ???
+#define TE_BUBBLES				113	// create alpha sprites inside of box, float upwards
+#define TE_BUBBLETRAIL				114	// create alpha sprites along a line, float upwards
+#define TE_BLOODSPRITE				115	// spray of opaque sprite1's that fall, single sprite2 for 1..2 secs (this is a high-priority tent)
+#define TE_WORLDDECAL				116	// Decal applied to the world brush
+#define TE_WORLDDECALHIGH			117	// Decal (with texture index > 256) applied to world brush
+#define TE_DECALHIGH				118	// Same as TE_DECAL, but the texture index was greater than 256
+#define TE_PROJECTILE				119	// Makes a projectile (like a nail) (this is a high-priority tent)
+#define TE_SPRAY				120	// Throws a shower of sprites or models
+#define TE_PLAYERSPRITES			121	// sprites emit from a player's bounding box (ONLY use for players!)
+#define TE_PARTICLEBURST			122	// very similar to lavasplash.
+#define TE_FIREFIELD				123	// makes a field of fire.
 
 // to keep network traffic low, this message has associated flags that fit into a byte:
-#define TEFIRE_FLAG_ALLFLOAT			1 // all sprites will drift upwards as they animate
-#define TEFIRE_FLAG_SOMEFLOAT			2 // some of the sprites will drift upwards. (50% chance)
-#define TEFIRE_FLAG_LOOP			4 // if set, sprite plays at 15 fps, otherwise plays at whatever rate stretches the animation over the sprite's duration.
-#define TEFIRE_FLAG_ALPHA			8 // if set, sprite is rendered alpha blended at 50% else, opaque
-#define TEFIRE_FLAG_PLANAR			16 // if set, all fire sprites have same initial Z instead of randomly filling a cube.
-#define TEFIRE_FLAG_ADDITIVE			32 // if set, sprite is rendered non-opaque with additive
-#define TE_PLAYERATTACHMENT			124 // attaches a TENT to a player (this is a high-priority tent)
-#define TE_KILLPLAYERATTACHMENTS		125 // will expire all TENTS attached to a player.
-#define TE_MULTIGUNSHOT				126 // much more compact shotgun message
-#define TE_USERTRACER				127 // larger message than the standard tracer, but allows some customization.
+#define TEFIRE_FLAG_ALLFLOAT			1	// all sprites will drift upwards as they animate
+#define TEFIRE_FLAG_SOMEFLOAT			2	// some of the sprites will drift upwards. (50% chance)
+#define TEFIRE_FLAG_LOOP			4	// if set, sprite plays at 15 fps, otherwise plays at whatever rate stretches the animation over the sprite's duration.
+#define TEFIRE_FLAG_ALPHA			8	// if set, sprite is rendered alpha blended at 50% else, opaque
+#define TEFIRE_FLAG_PLANAR			16	// if set, all fire sprites have same initial Z instead of randomly filling a cube.
+#define TEFIRE_FLAG_ADDITIVE			32	// if set, sprite is rendered non-opaque with additive
+#define TE_PLAYERATTACHMENT			124	// attaches a TENT to a player (this is a high-priority tent)
+#define TE_KILLPLAYERATTACHMENTS		125	// will expire all TENTS attached to a player.
+#define TE_MULTIGUNSHOT				126	// much more compact shotgun message
+#define TE_USERTRACER				127	// larger message than the standard tracer, but allows some customization.
 
-#define MSG_BROADCAST				0		// unreliable to all
-#define MSG_ONE					1		// reliable to one (msg_entity)
-#define MSG_ALL					2		// reliable to all
-#define MSG_INIT				3		// write to the init string
-#define MSG_PVS					4		// Ents in PVS of org
-#define MSG_PAS					5		// Ents in PAS of org
-#define MSG_PVS_R				6		// Reliable to PVS
-#define MSG_PAS_R				7		// Reliable to PAS
-#define MSG_ONE_UNRELIABLE			8		// Send to one client, but don't put in reliable stream, put in unreliable datagram ( could be dropped )
-#define MSG_SPEC				9		// Sends to all spectator proxies
+#define MSG_BROADCAST				0	// unreliable to all
+#define MSG_ONE					1	// reliable to one (msg_entity)
+#define MSG_ALL					2	// reliable to all
+#define MSG_INIT				3	// write to the init string
+#define MSG_PVS					4	// Ents in PVS of org
+#define MSG_PAS					5	// Ents in PAS of org
+#define MSG_PVS_R				6	// Reliable to PVS
+#define MSG_PAS_R				7	// Reliable to PAS
+#define MSG_ONE_UNRELIABLE			8	// Send to one client, but don't put in reliable stream, put in unreliable datagram ( could be dropped )
+#define MSG_SPEC				9	// Sends to all spectator proxies
 
 // contents of a spot in the world
 #define CONTENTS_EMPTY				-1
@@ -242,11 +258,11 @@
 #define CHAN_VOICE				2
 #define CHAN_ITEM				3
 #define CHAN_BODY				4
-#define CHAN_STREAM				5		// allocate stream channel from the static or dynamic area
-#define CHAN_STATIC				6		// allocate channel from the static area
-#define CHAN_NETWORKVOICE_BASE			7		// voice data coming across the network
-#define CHAN_NETWORKVOICE_END			500		// network voice data reserves slots (CHAN_NETWORKVOICE_BASE through CHAN_NETWORKVOICE_END).
-#define CHAN_BOT				501		// channel used for bot chatter.
+#define CHAN_STREAM				5	// allocate stream channel from the static or dynamic area
+#define CHAN_STATIC				6	// allocate channel from the static area
+#define CHAN_NETWORKVOICE_BASE			7	// voice data coming across the network
+#define CHAN_NETWORKVOICE_END			500	// network voice data reserves slots (CHAN_NETWORKVOICE_BASE through CHAN_NETWORKVOICE_END).
+#define CHAN_BOT				501	// channel used for bot chatter.
 
 // attenuation values
 #define ATTN_NONE				0
@@ -255,8 +271,8 @@
 #define ATTN_STATIC				1.25
 
 // pitch values
-#define PITCH_NORM				100		// non-pitch shifted
-#define PITCH_LOW				95		// other values are possible - 0-255, where 255 is very high
+#define PITCH_NORM				100	// non-pitch shifted
+#define PITCH_LOW				95	// other values are possible - 0-255, where 255 is very high
 #define PITCH_HIGH				120
 
 // volume values
@@ -267,8 +283,8 @@
 
 // Trains
 #define SF_TRAIN_WAIT_RETRIGGER			1
-#define SF_TRAIN_START_ON			4		// Train is initially moving
-#define SF_TRAIN_PASSABLE			8		// Train is not solid -- used to make water trains
+#define SF_TRAIN_START_ON			4	// Train is initially moving
+#define SF_TRAIN_PASSABLE			8	// Train is not solid -- used to make water trains
 
 // Break Model Defines
 #define BREAK_TYPEMASK				0x4F

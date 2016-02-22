@@ -28,9 +28,6 @@
     <Filter Include="public">
       <UniqueIdentifier>{d74cb79e-afd5-4215-af0e-029e38925be0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="testsuite">
-      <UniqueIdentifier>{f1a6df08-3b16-4524-b67e-21f6f4e16fa1}</UniqueIdentifier>
-    </Filter>
     <Filter Include="unittests">
       <UniqueIdentifier>{10ba586f-5f90-4a4b-940c-287810a7e9bc}</UniqueIdentifier>
     </Filter>
@@ -104,9 +101,6 @@
     </ClCompile>
     <ClCompile Include="..\dlls\h_export.cpp">
       <Filter>dlls</Filter>
-    </ClCompile>
-    <ClCompile Include="..\regamedll\platform.cpp">
-      <Filter>regamedll</Filter>
     </ClCompile>
     <ClCompile Include="..\dlls\player.cpp">
       <Filter>dlls</Filter>
@@ -281,24 +275,6 @@
     </ClCompile>
     <ClCompile Include="..\dlls\client.cpp">
       <Filter>dlls</Filter>
-    </ClCompile>
-    <ClCompile Include="..\regamedll\RegameDLLRuntimeConfig.cpp">
-      <Filter>regamedll</Filter>
-    </ClCompile>
-    <ClCompile Include="..\testsuite\demoplayer.cpp">
-      <Filter>testsuite</Filter>
-    </ClCompile>
-    <ClCompile Include="..\testsuite\funccalls.cpp">
-      <Filter>testsuite</Filter>
-    </ClCompile>
-    <ClCompile Include="..\testsuite\recorder.cpp">
-      <Filter>testsuite</Filter>
-    </ClCompile>
-    <ClCompile Include="..\testsuite\testsuite.cpp">
-      <Filter>testsuite</Filter>
-    </ClCompile>
-    <ClCompile Include="..\hookers\regamedll_debug.cpp">
-      <Filter>hookers</Filter>
     </ClCompile>
     <ClCompile Include="..\hookers\main_mp.cpp">
       <Filter>hookers</Filter>
@@ -498,9 +474,6 @@
     <ClCompile Include="..\dlls\ammo.cpp">
       <Filter>dlls</Filter>
     </ClCompile>
-    <ClCompile Include="..\regamedll\mem.cpp">
-      <Filter>regamedll</Filter>
-    </ClCompile>
     <ClCompile Include="..\dlls\spectator.cpp">
       <Filter>dlls</Filter>
     </ClCompile>
@@ -575,6 +548,18 @@
     </ClCompile>
     <ClCompile Include="..\hookers\hooker_impl.cpp">
       <Filter>hookers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\hookers\RegameDLLRuntimeConfig.cpp">
+      <Filter>hookers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\regamedll\platform.cpp">
+      <Filter>regamedll</Filter>
+    </ClCompile>
+    <ClCompile Include="..\regamedll\regamedll_debug.cpp">
+      <Filter>regamedll</Filter>
+    </ClCompile>
+    <ClCompile Include="..\regamedll\regamedll.cpp">
+      <Filter>regamedll</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -680,9 +665,6 @@
     <ClInclude Include="..\dlls\weapons.h">
       <Filter>dlls</Filter>
     </ClInclude>
-    <ClInclude Include="..\regamedll\platform.h">
-      <Filter>regamedll</Filter>
-    </ClInclude>
     <ClInclude Include="..\dlls\hintmessage.h">
       <Filter>dlls</Filter>
     </ClInclude>
@@ -740,26 +722,8 @@
     <ClInclude Include="..\dlls\bot\cs_gamestate.h">
       <Filter>dlls\bot</Filter>
     </ClInclude>
-    <ClInclude Include="..\regamedll\RegameDLLRuntimeConfig.h">
-      <Filter>regamedll</Filter>
-    </ClInclude>
-    <ClInclude Include="..\testsuite\demoplayer.h">
-      <Filter>testsuite</Filter>
-    </ClInclude>
-    <ClInclude Include="..\testsuite\funccalls.h">
-      <Filter>testsuite</Filter>
-    </ClInclude>
-    <ClInclude Include="..\testsuite\recorder.h">
-      <Filter>testsuite</Filter>
-    </ClInclude>
-    <ClInclude Include="..\testsuite\testsuite.h">
-      <Filter>testsuite</Filter>
-    </ClInclude>
     <ClInclude Include="..\dlls\h_export.h">
       <Filter>dlls</Filter>
-    </ClInclude>
-    <ClInclude Include="..\hookers\regamedll_debug.h">
-      <Filter>hookers</Filter>
     </ClInclude>
     <ClInclude Include="..\pm_shared\pm_debug.h">
       <Filter>pm_shared</Filter>
@@ -923,9 +887,6 @@
     <ClInclude Include="..\engine\unicode_strtools.h">
       <Filter>engine</Filter>
     </ClInclude>
-    <ClInclude Include="..\hookers\engine.h">
-      <Filter>regamedll</Filter>
-    </ClInclude>
     <ClInclude Include="..\public\interface.h">
       <Filter>public</Filter>
     </ClInclude>
@@ -988,9 +949,6 @@
     </ClInclude>
     <ClInclude Include="..\dlls\ammo.h">
       <Filter>dlls</Filter>
-    </ClInclude>
-    <ClInclude Include="..\regamedll\mem.h">
-      <Filter>regamedll</Filter>
     </ClInclude>
     <ClInclude Include="..\dlls\observer.h">
       <Filter>dlls</Filter>
@@ -1147,6 +1105,21 @@
     </ClInclude>
     <ClInclude Include="..\hookers\hooker_impl.h">
       <Filter>hookers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\hookers\RegameDLLRuntimeConfig.h">
+      <Filter>hookers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\regamedll\platform.h">
+      <Filter>regamedll</Filter>
+    </ClInclude>
+    <ClInclude Include="..\regamedll\engine.h">
+      <Filter>regamedll</Filter>
+    </ClInclude>
+    <ClInclude Include="..\regamedll\regamedll_debug.h">
+      <Filter>regamedll</Filter>
+    </ClInclude>
+    <ClInclude Include="..\regamedll\regamedll.h">
+      <Filter>regamedll</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

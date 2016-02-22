@@ -141,15 +141,13 @@ void *GetFuncRefAddrOrDefault(const char *funcName, void *def)
 	return def;
 }
 
-int nCountHook = 0;
-
 int HookGameDLL(size_t gameAddr, size_t engAddr)
 {
 	if (gameAddr == NULL
 		|| !FindModuleByAddress(gameAddr, &g_GameDLLModule)
 		|| !FindModuleByAddress(engAddr, &g_EngineModule))
 	{
-		return (FALSE);
+		return FALSE;
 	}
 
 	// Find all addresses
@@ -177,7 +175,6 @@ int HookGameDLL(size_t gameAddr, size_t engAddr)
 		refFunc++;
 	}
 
-
 	FunctionHook *hookFunc = g_FunctionHooks;
 	while (hookFunc->handlerFunc != NULL)
 	{
@@ -203,23 +200,14 @@ int HookGameDLL(size_t gameAddr, size_t engAddr)
 	if (!success)
 	{
 		_logf(__FUNCTION__ ": failed to hook gamedll!");
-		return (FALSE);
+		return FALSE;
 	}
-
-#ifdef _WIN32
-	Module hlds_exe;
-	if (!FindModuleByName("hlds.exe", &hlds_exe) && !FindModuleByName("hl.exe", &hlds_exe))
-		return (FALSE);
-
-	TestSuite_Init(&g_EngineModule, &hlds_exe, g_FunctionRefs);
-
-#endif // _WIN32
 
 	refData = g_DataRefs;
 	while (refData->addressRef != NULL)
 	{
 		if (!FindDataRef(&g_GameDLLModule, refData))
-			return (FALSE);
+			return FALSE;
 		refData++;
 	}
 
@@ -227,27 +215,51 @@ int HookGameDLL(size_t gameAddr, size_t engAddr)
 	while (refFunc->addressRef != NULL)
 	{
 		if (!FindDataRef(&g_GameDLLModule, refFunc))
-			return (FALSE);
+			return FALSE;
 		refFunc++;
 	}
 
 	// Actually hook all things
-	if (!g_ReGameDLLRuntimeConfig.disableAllHooks)
+	hookFunc = g_FunctionHooks;
+	while (hookFunc->handlerFunc != NULL)
 	{
-		hookFunc = g_FunctionHooks;
-		while (hookFunc->handlerFunc != NULL)
-		{
-			if (!HookFunction(&g_GameDLLModule, hookFunc))
-				return (FALSE);
+		if (!HookFunction(&g_GameDLLModule, hookFunc))
+			return FALSE;
 
-			hookFunc++;
-			nCountHook++;
-		}
+		hookFunc++;
 	}
 
-#ifdef _WIN32
-	Regamedll_Debug_Init();
-#endif // _WIN32
-
-	return (TRUE);
+	return TRUE;
 }
+
+#ifdef _WIN32
+void *_malloc_mhook_(size_t n)
+{
+	return malloc(n);
+}
+
+void *_realloc_mhook_(void *memblock, size_t size)
+{
+	return realloc(memblock, size);
+}
+
+void _free_mhook_(void *p)
+{
+	free(p);
+}
+
+void *_calloc_mhook_(size_t n, size_t s)
+{
+	return calloc(n, s);
+}
+
+void *__nh_malloc_mhook_(size_t n)
+{
+	return malloc(n);
+}
+
+char *_strdup_mhook_(const char *s)
+{
+	return _strdup(s);
+}
+#endif // _WIN32

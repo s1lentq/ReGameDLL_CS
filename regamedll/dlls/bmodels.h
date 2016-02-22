@@ -56,8 +56,6 @@
 #define noiseRunning		noise3
 
 // This is just a solid wall if not inhibited
-
-/* <1c494> ../cstrike/dlls/bmodels.cpp:53 */
 class CFuncWall: public CBaseEntity
 {
 public:
@@ -72,11 +70,10 @@ public:
 	void Spawn_();
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 };
 
-/* <1c4e1> ../cstrike/dlls/bmodels.cpp:86 */
 class CFuncWallToggle: public CFuncWall
 {
 public:
@@ -88,16 +85,14 @@ public:
 	void Spawn_();
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	void TurnOff();
 	void TurnOn();
 	BOOL IsOn();
-
 };
 
-/* <1c52e> ../cstrike/dlls/bmodels.cpp:147 */
 class CFuncConveyor: public CFuncWall
 {
 public:
@@ -109,16 +104,13 @@ public:
 	void Spawn_();
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	void UpdateSpeed(float speed);
-
 };
 
 // A simple entity that looks solid but lets you walk through it.
-
-/* <1c65b> ../cstrike/dlls/bmodels.cpp:208 */
 class CFuncIllusionary: public CBaseToggle
 {
 public:
@@ -131,11 +123,10 @@ public:
 	void Spawn_();
 	void KeyValue_(KeyValueData *pkvd);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	void EXPORT SloshTouch(CBaseEntity *pOther);
-
 };
 
 // Monster only clip brush
@@ -145,8 +136,6 @@ public:
 //
 // otherwise it will be invisible and not solid.  This can be used to keep
 // specific monsters out of certain areas
-
-/* <1c6a8> ../cstrike/dlls/bmodels.cpp:255 */
 class CFuncMonsterClip: public CFuncWall
 {
 public:
@@ -160,11 +149,10 @@ public:
 	void Spawn_();
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 };
 
-/* <1c6fa> ../cstrike/dlls/bmodels.cpp:274 */
 class CFuncRotating: public CBaseEntity
 {
 public:
@@ -186,7 +174,7 @@ public:
 	int Restore_(CRestore &restore);
 	void Blocked_(CBaseEntity *pOther);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	void EXPORT SpinUp();
@@ -199,7 +187,6 @@ public:
 public:
 	static TYPEDESCRIPTION IMPL(m_SaveData)[5];
 
-public:
 	float m_flFanFriction;
 	float m_flAttenuation;
 	float m_flVolume;
@@ -207,7 +194,6 @@ public:
 	int m_sounds;
 };
 
-/* <1c748> ../cstrike/dlls/bmodels.cpp:720 */
 class CPendulum: public CBaseEntity
 {
 public:
@@ -228,7 +214,7 @@ public:
 	void Touch_(CBaseEntity *pOther);
 	void Blocked_(CBaseEntity *pOther);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	void EXPORT Swing();
@@ -238,9 +224,9 @@ public:
 	// this touch func makes the pendulum a rope
 	void EXPORT RopeTouch(CBaseEntity *pOther);
 
+public:
 	static TYPEDESCRIPTION IMPL(m_SaveData)[8];
 
-public:
 	float m_accel;		// Acceleration
 	float m_distance;
 	float m_time;

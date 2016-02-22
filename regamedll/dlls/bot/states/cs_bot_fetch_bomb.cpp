@@ -1,16 +1,12 @@
 #include "precompiled.h"
 
 // Move to the bomb on the floor and pick it up
-
-/* <5587b3> ../cstrike/dlls/bot/states/cs_bot_fetch_bomb.cpp:17 */
 void FetchBombState::__MAKE_VHOOK(OnEnter)(CCSBot *me)
 {
 	me->DestroyPath();
 }
 
 // Move to the bomb on the floor and pick it up
-
-/* <5587fa> ../cstrike/dlls/bot/states/cs_bot_fetch_bomb.cpp:26 */
 void FetchBombState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 {
 	if (me->IsCarryingBomb())

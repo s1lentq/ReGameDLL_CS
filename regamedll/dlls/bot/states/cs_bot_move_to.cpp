@@ -1,8 +1,6 @@
 #include "precompiled.h"
 
 // Move to a potentially far away position.
-
-/* <5c4e91> ../cstrike/dlls/bot/states/cs_bot_move_to.cpp:21 */
 void MoveToState::__MAKE_VHOOK(OnEnter)(CCSBot *me)
 {
 	if (me->IsUsingKnife() && me->IsWellPastSafe() && !me->IsHurrying())
@@ -37,12 +35,8 @@ void MoveToState::__MAKE_VHOOK(OnEnter)(CCSBot *me)
 }
 
 // Move to a potentially far away position.
-
-/* <5c4edf> ../cstrike/dlls/bot/states/cs_bot_move_to.cpp:55 */
 void MoveToState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 {
-	CCSBotManager *ctrl = TheCSBots();
-
 	// assume that we are paying attention and close enough to know our enemy died
 	if (me->GetTask() == CCSBot::MOVE_TO_LAST_KNOWN_ENEMY_POSITION)
 	{
@@ -60,7 +54,7 @@ void MoveToState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 	me->UpdateLookAround();
 
 	// Scenario logic
-	switch (ctrl->GetScenario())
+	switch (TheCSBots()->GetScenario())
 	{
 		case CCSBotManager::SCENARIO_DEFUSE_BOMB:
 		{
@@ -83,13 +77,13 @@ void MoveToState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 				}
 
 				// check off bombsites that we explore or happen to stumble into
-				for (int z = 0; z < ctrl->GetZoneCount(); ++z)
+				for (int z = 0; z < TheCSBots()->GetZoneCount(); ++z)
 				{
 					// don't re-check zones
 					if (me->GetGameState()->IsBombsiteClear(z))
 						continue;
 
-					if (ctrl->GetZone(z)->m_extent.Contains(&me->pev->origin))
+					if (TheCSBots()->GetZone(z)->m_extent.Contains(&me->pev->origin))
 					{
 						// note this bombsite is clear
 						me->GetGameState()->ClearBombsite(z);
@@ -118,7 +112,7 @@ void MoveToState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 						case CCSBot::DEFUSE_BOMB:
 						{
 							// if we are trying to defuse the bomb, and someone has started defusing, guard them instead
-							if (me->CanSeePlantedBomb() && ctrl->GetBombDefuser())
+							if (me->CanSeePlantedBomb() && TheCSBots()->GetBombDefuser())
 							{
 								me->GetChatter()->Say("CoveringFriend");
 								me->Idle();
@@ -263,7 +257,8 @@ void MoveToState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 					if (bombPos != NULL)
 					{
 						const float defuseRange = 100.0f;
-						Vector toBomb = *bombPos - me->pev->origin + Vector(0, 0, me->GetFeetZ());
+						Vector toBomb = *bombPos - me->pev->origin;
+						toBomb.z = bombPos->z - me->GetFeetZ();
 
 						if (toBomb.IsLengthLessThan(defuseRange))
 						{
@@ -292,7 +287,6 @@ void MoveToState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 	}
 }
 
-/* <5c4e54> ../cstrike/dlls/bot/states/cs_bot_move_to.cpp:320 */
 void MoveToState::__MAKE_VHOOK(OnExit)(CCSBot *me)
 {
 	// reset to run in case we were walking near our goal position

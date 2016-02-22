@@ -45,8 +45,6 @@ typedef unsigned int CountCriteria;
 
 // A meme is a unit information that bots use to
 // transmit information to each other via the radio
-
-/* <2fe97b> ../cstrike/dlls/bot/cs_bot_chatter.h:42 */
 class BotMeme
 {
 public:
@@ -63,7 +61,7 @@ public:
 
 	void Interpret_(CCSBot *sender, CCSBot *receiver) const;
 
-#endif // HOOK_GAMEDLL
+#endif
 
 };
 
@@ -76,11 +74,10 @@ public:
 
 	void Interpret_(CCSBot *sender, CCSBot *receiver) const;
 
-#endif // HOOK_GAMEDLL
+#endif
 
 };
 
-/* <2ff7ef> ../cstrike/dlls/bot/cs_bot_chatter.h:53 */
 class BotHelpMeme: public BotMeme
 {
 public:
@@ -94,13 +91,12 @@ public:
 
 	void Interpret_(CCSBot *sender, CCSBot *receiver) const;
 
-#endif // HOOK_GAMEDLL
+#endif
 
 private:
 	Place m_place;
 };
 
-/* <2ff65e> ../cstrike/dlls/bot/cs_bot_chatter.h:70 */
 class BotBombsiteStatusMeme: public BotMeme
 {
 public:
@@ -117,14 +113,13 @@ public:
 
 	void Interpret_(CCSBot *sender, CCSBot *receiver) const;
 
-#endif // HOOK_GAMEDLL
+#endif
 
 private:
 	int m_zoneIndex;	// the bombsite
 	StatusType m_status;	// whether it is cleared or the bomb is there (planted)
 };
 
-/* <2ff6de> ../cstrike/dlls/bot/cs_bot_chatter.h:87 */
 class BotBombStatusMeme: public BotMeme
 {
 public:
@@ -141,14 +136,13 @@ public:
 
 	void Interpret_(CCSBot *sender, CCSBot *receiver) const;
 
-#endif // HOOK_GAMEDLL
+#endif
 
 private:
 	CSGameState::BombState m_state;
 	Vector m_pos;
 };
 
-/* <2ff75d> ../cstrike/dlls/bot/cs_bot_chatter.h:101 */
 class BotFollowMeme: public BotMeme
 {
 public:
@@ -158,10 +152,9 @@ public:
 
 	void Interpret_(CCSBot *sender, CCSBot *receiver) const;
 
-#endif // HOOK_GAMEDLL
+#endif
 };
 
-/* <2ff731> ../cstrike/dlls/bot/cs_bot_chatter.h:111 */
 class BotDefendHereMeme: public BotMeme
 {
 public:
@@ -175,13 +168,12 @@ public:
 
 	void Interpret_(CCSBot *sender, CCSBot *receiver) const;
 
-#endif // HOOK_GAMEDLL
+#endif
 
 private:
 	Vector m_pos;
 };
 
-/* <2ff696> ../cstrike/dlls/bot/cs_bot_chatter.h:123 */
 class BotWhereBombMeme: public BotMeme
 {
 public:
@@ -191,10 +183,9 @@ public:
 
 	void Interpret_(CCSBot *sender, CCSBot *receiver) const;
 
-#endif // HOOK_GAMEDLL
+#endif
 };
 
-/* <2ff81b> ../cstrike/dlls/bot/cs_bot_chatter.h:130 */
 class BotRequestReportMeme: public BotMeme
 {
 public:
@@ -204,7 +195,7 @@ public:
 
 	void Interpret_(CCSBot *sender, CCSBot *receiver) const;
 
-#endif // HOOK_GAMEDLL
+#endif
 
 };
 
@@ -258,17 +249,17 @@ public:
 	void SetPlaceCriteria(PlaceCriteria place) const;				// all returned phrases must have this place criteria
 	void SetCountCriteria(CountCriteria count) const;				// all returned phrases must have this count criteria
 
-	const char *GetName() const			{ return m_name; }
-	Place GetID() const				{ return m_id; }
-	GameEventType GetRadioEquivalent() const	{ return m_radioEvent; }
-	bool IsImportant() const			{ return m_isImportant; }	// return true if this phrase is part of an important statement
+	const char *GetName() const { return m_name; }
+	Place GetID() const { return m_id; }
+	GameEventType GetRadioEquivalent() const { return m_radioEvent; }
+	bool IsImportant() const { return m_isImportant; }				// return true if this phrase is part of an important statement
 
-	bool IsPlace() const				{ return m_isPlace; }
+	bool IsPlace() const { return m_isPlace; }
 	void Randomize();								// randomly shuffle the speakable order
 
 #ifndef HOOK_GAMEDLL
 private:
-#endif // HOOK_GAMEDLL
+#endif
 
 	friend class BotPhraseManager;
 	BotPhrase(unsigned int id, bool isPlace);
@@ -292,20 +283,17 @@ private:
 
 typedef std::STD_LIST<BotPhrase *> BotPhraseList;
 
-/* <2fea0e> ../cstrike/dlls/bot/cs_bot_chatter.h:239 */
 inline void BotPhrase::ClearCriteria() const
 {
 	m_placeCriteria = ANY_PLACE;
 	m_countCriteria = UNDEFINED_COUNT;
 }
 
-/* <2fea2a> ../cstrike/dlls/bot/cs_bot_chatter.h:245 */
 inline void BotPhrase::SetPlaceCriteria(PlaceCriteria place) const
 {
 	m_placeCriteria = place;
 }
 
-/* <2fea52> ../cstrike/dlls/bot/cs_bot_chatter.h:250 */
 inline void BotPhrase::SetCountCriteria(CountCriteria count) const
 {
 	m_countCriteria = count;
@@ -338,7 +326,7 @@ public:
 	// given an id, return the associated Place phrase collection
 	const BotPhrase *GetPlace(PlaceCriteria place) const;
 
-	const BotPhraseList *GetPlaceList() const	{ return &m_placeList; }
+	const BotPhraseList *GetPlaceList() const { return &m_placeList; }
 
 	// return time last statement of given type was emitted by a teammate for the given place
 	float GetPlaceStatementInterval(Place place) const;
@@ -348,7 +336,7 @@ public:
 
 #ifndef HOOK_GAMEDLL
 private:
-#endif // HOOK_GAMEDLL
+#endif
 
 	int FindPlaceIndex(Place where) const;
 
@@ -364,11 +352,10 @@ private:
 		IntervalTimer timer;
 	};
 
-	mutable PlaceTimeInfo m_placeStatementHistory[ MAX_PLACES_PER_MAP ];
+	mutable PlaceTimeInfo m_placeStatementHistory[MAX_PLACES_PER_MAP];
 	mutable int m_placeCount;
 };
 
-/* <2fea95> ../cstrike/dlls/bot/cs_bot_chatter.h:298 */
 inline int BotPhraseManager::FindPlaceIndex(Place where) const
 {
 	for (int i = 0; i < m_placeCount; ++i)
@@ -387,7 +374,6 @@ inline int BotPhraseManager::FindPlaceIndex(Place where) const
 	return -1;
 }
 
-/* <2ff83d> ../cstrike/dlls/bot/cs_bot_chatter.h:319 */
 inline float BotPhraseManager::GetPlaceStatementInterval(Place place) const
 {
 	int index = FindPlaceIndex(place);
@@ -398,10 +384,9 @@ inline float BotPhraseManager::GetPlaceStatementInterval(Place place) const
 	if (index >= m_placeCount)
 		return 999999.9f;
 
-	return m_placeStatementHistory[ index ].timer.GetElapsedTime();
+	return m_placeStatementHistory[index].timer.GetElapsedTime();
 }
 
-/* <2ff876> ../cstrike/dlls/bot/cs_bot_chatter.h:335 */
 inline void BotPhraseManager::ResetPlaceStatementInterval(Place place) const
 {
 	int index = FindPlaceIndex(place);
@@ -423,19 +408,19 @@ public:
 	~BotStatement();
 
 public:
-	BotChatterInterface *GetChatter() const		{ return m_chatter; }
+	BotChatterInterface *GetChatter() const { return m_chatter; }
 	CCSBot *GetOwner() const;
 
-	BotStatementType GetType() const			{ return m_type; }				// return the type of statement this is
+	BotStatementType GetType() const { return m_type; }							// return the type of statement this is
 	bool IsImportant() const;										// return true if this statement is "important" and not personality chatter
 
-	bool HasSubject() const				{ return (m_subject != UNDEFINED_SUBJECT); }
-	void SetSubject(int playerID)				{ m_subject = playerID; }			// who this statement is about
-	int GetSubject() const				{ return m_subject; }					// who this statement is about
+	bool HasSubject() const { return (m_subject != UNDEFINED_SUBJECT); }
+	void SetSubject(int playerID) { m_subject = playerID; }							// who this statement is about
+	int GetSubject() const { return m_subject; }								// who this statement is about
 
-	bool HasPlace() const				{ return (GetPlace()) ? true : false; }
+	bool HasPlace() const { return (GetPlace()) ? true : false; }
 	Place GetPlace() const;											// if this statement refers to a specific place, return that place
-	void SetPlace(Place where)				{ m_place = where; }				// explicitly set place
+	void SetPlace(Place where) { m_place = where; }								// explicitly set place
 
 	bool HasCount() const;											// return true if this statement has an associated count
 
@@ -445,8 +430,8 @@ public:
 
 	void AppendPhrase(const BotPhrase *phrase);
 
-	void SetStartTime(float timestamp)			{ m_startTime = timestamp; }			// define the earliest time this statement can be spoken
-	float GetStartTime() const				{ return m_startTime; }
+	void SetStartTime(float timestamp) { m_startTime = timestamp; }						// define the earliest time this statement can be spoken
+	float GetStartTime() const { return m_startTime; }
 
 	enum ConditionType
 	{
@@ -470,8 +455,8 @@ public:
 	void AppendPhrase(ContextType contextPhrase);				// special phrases that depend on the context
 
 	bool Update();								// emit statement over time, return false if statement is done
-	bool IsSpeaking() const		{ return m_isSpeaking; }		// return true if this statement is currently being spoken
-	float GetTimestamp() const		{ return m_timestamp; }		// get time statement was created (but not necessarily started talking)
+	bool IsSpeaking() const { return m_isSpeaking; }			// return true if this statement is currently being spoken
+	float GetTimestamp() const { return m_timestamp; }			// get time statement was created (but not necessarily started talking)
 
 	void AttachMeme(BotMeme *meme);						// attach a meme to this statement, to be transmitted to other friendly bots when spoken
 
@@ -506,10 +491,10 @@ public:
 		};
 
 	}
-	m_statement[ MAX_BOT_PHRASES ];
+	m_statement[MAX_BOT_PHRASES];
 
 	enum { MAX_BOT_CONDITIONS = 4 };
-	ConditionType m_condition[ MAX_BOT_CONDITIONS ];	// conditions that must be true for the statement to be said
+	ConditionType m_condition[MAX_BOT_CONDITIONS];		// conditions that must be true for the statement to be said
 	int m_conditionCount;
 
 	int m_index;						// m_index refers to the phrase currently being spoken, or -1 if we havent started yet
@@ -565,7 +550,7 @@ public:
 	void KilledMyEnemy(int victimID);
 	void EnemiesRemaining();
 
-	NOXREF void Clear(Place place);
+	void Clear(Place place);
 
 	void ReportIn();												// ask for current situation
 	void ReportingIn();												// report current situation
@@ -582,7 +567,7 @@ public:
 	void PlantingTheBomb(Place place);
 	void SpottedBomber(CBasePlayer *bomber);
 	void SpottedLooseBomb(CBaseEntity *bomb);
-	NOXREF void GuardingLooseBomb(CBaseEntity *bomb);
+	void GuardingLooseBomb(CBaseEntity *bomb);
 	void RequestBombLocation();
 
 	#define IS_PLAN true
@@ -592,7 +577,7 @@ public:
 	void HostagesTaken();
 	void TalkingToHostages();
 	void EscortingHostages();
-	NOXREF void HostageDown();
+	void HostageDown();
 
 	void CelebrateWin();
 
@@ -605,7 +590,7 @@ public:
 
 #ifndef HOOK_GAMEDLL
 private:
-#endif // HOOK_GAMEDLL
+#endif
 
 	BotStatement *m_statementList;				// list of all active/pending messages for this bot
 	void ReportEnemies();					// track nearby enemy count and generate enemy activity statements
@@ -632,7 +617,6 @@ private:
 	static CountdownTimer IMPL(m_encourageTimer);		// timer to know when we can "encourage" the human player again - shared by all bots
 };
 
-/* <2fec2d> ../cstrike/dlls/bot/cs_bot_chatter.h:572 */
 inline BotChatterInterface::VerbosityType BotChatterInterface::GetVerbosity() const
 {
 	const char *string = cv_bot_chatter.string;
@@ -652,7 +636,6 @@ inline BotChatterInterface::VerbosityType BotChatterInterface::GetVerbosity() co
 	return NORMAL;
 }
 
-/* <2fec4a> ../cstrike/dlls/bot/cs_bot_chatter.h:590 */
 inline bool BotChatterInterface::IsTalking() const
 {
 	if (m_statementList != NULL)
@@ -663,7 +646,6 @@ inline bool BotChatterInterface::IsTalking() const
 	return false;
 }
 
-/* <3f2bad> ../cstrike/dlls/bot/cs_bot_chatter.h:596 */
 inline BotStatement *BotChatterInterface::GetStatement() const
 {
 	return m_statementList;
@@ -672,7 +654,6 @@ inline BotStatement *BotChatterInterface::GetStatement() const
 extern BotPhraseManager *TheBotPhrases;
 extern CBaseEntity *g_pSelectedZombieSpawn;
 
-/* <5c4dcf> ../cstrike/dlls/bot/cs_bot_chatter.h:604 */
 inline void BotChatterInterface::Say(const char *phraseName, float lifetime, float delay)
 {
 	BotStatement *say = new BotStatement(this, REPORT_MY_INTENTION, lifetime);

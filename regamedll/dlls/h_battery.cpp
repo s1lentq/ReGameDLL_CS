@@ -14,15 +14,11 @@ TYPEDESCRIPTION CRecharge::m_SaveData[] =
 	DEFINE_FIELD(CRecharge, m_flSoundTime, FIELD_TIME),
 };
 
-#endif // HOOK_GAMEDLL
+#endif
 
-/* <c61e2> ../cstrike/dlls/h_battery.cpp:61 */
 IMPLEMENT_SAVERESTORE(CRecharge, CBaseEntity);
-
-/* <c65cc> ../cstrike/dlls/h_battery.cpp:63 */
 LINK_ENTITY_TO_CLASS(func_recharge, CRecharge);
 
-/* <c648b> ../cstrike/dlls/h_battery.cpp:66 */
 void CRecharge::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "style")
@@ -42,7 +38,6 @@ void CRecharge::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CBaseToggle::KeyValue(pkvd);
 }
 
-/* <c616f> ../cstrike/dlls/h_battery.cpp:85 */
 void CRecharge::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
@@ -55,11 +50,10 @@ void CRecharge::__MAKE_VHOOK(Spawn)()
 	UTIL_SetSize(pev, pev->mins, pev->maxs);
 	SET_MODEL(ENT(pev), STRING(pev->model));
 
-	m_iJuice = (int)gSkillData.suitchargerCapacity;
+	m_iJuice = int(gSkillData.suitchargerCapacity);
 	pev->frame = 0;
 }
 
-/* <c6122> ../cstrike/dlls/h_battery.cpp:99 */
 void CRecharge::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_SOUND("items/suitcharge1.wav");
@@ -67,7 +61,6 @@ void CRecharge::__MAKE_VHOOK(Precache)()
 	PRECACHE_SOUND("items/suitchargeok1.wav");
 }
 
-/* <c630e> ../cstrike/dlls/h_battery.cpp:107 */
 void CRecharge::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	// if it's not a player, ignore
@@ -138,7 +131,6 @@ void CRecharge::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller,
 	m_flNextCharge = gpGlobals->time + 0.1f;
 }
 
-/* <c6149> ../cstrike/dlls/h_battery.cpp:178 */
 void CRecharge::Recharge()
 {
 	m_iJuice = gSkillData.suitchargerCapacity;
@@ -146,7 +138,6 @@ void CRecharge::Recharge()
 	SetThink(&CRecharge::SUB_DoNothing);
 }
 
-/* <c622e> ../cstrike/dlls/h_battery.cpp:185 */
 void CRecharge::Off()
 {
 	// Stop looping sound.

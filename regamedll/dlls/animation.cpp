@@ -5,13 +5,15 @@
 */
 #ifndef HOOK_GAMEDLL
 
+void SV_StudioSetupBones(model_t *pModel, float frame, int sequence, const vec_t *angles, const vec_t *origin, const byte *pcontroller, const byte *pblending, int iBone, const edict_t *pEdict);
+
 sv_blending_interface_t svBlending =
 {
 	SV_BLENDING_INTERFACE_VERSION,
 	SV_StudioSetupBones
 };
 
-#endif // HOOK_GAMEDLL
+#endif
 
 server_studio_api_t IEngineStudio;
 studiohdr_t *g_pstudiohdr;
@@ -19,7 +21,6 @@ studiohdr_t *g_pstudiohdr;
 float (*g_pRotationMatrix)[3][4];
 float (*g_pBoneTransform)[128][3][4];
 
-/* <1523e> ../cstrike/dlls/animation.cpp:57 */
 int ExtractBbox(void *pmodel, int sequence, float *mins, float *maxs)
 {
 	studiohdr_t *pstudiohdr = (studiohdr_t *)pmodel;
@@ -42,7 +43,6 @@ int ExtractBbox(void *pmodel, int sequence, float *mins, float *maxs)
 	return 1;
 }
 
-/* <152c6> ../cstrike/dlls/animation.cpp:81 */
 int LookupActivity(void *pmodel, entvars_t *pev, int activity)
 {
 	studiohdr_t *pstudiohdr = (studiohdr_t *)pmodel;
@@ -112,7 +112,6 @@ int LookupActivity(void *pmodel, entvars_t *pev, int activity)
 	return ACT_INVALID;
 }
 
-/* <1539a> ../cstrike/dlls/animation.cpp:149 */
 int LookupActivityHeaviest(void *pmodel, entvars_t *pev, int activity)
 {
 	studiohdr_t *pstudiohdr = (studiohdr_t *)pmodel;
@@ -141,7 +140,6 @@ int LookupActivityHeaviest(void *pmodel, entvars_t *pev, int activity)
 	return seq;
 }
 
-/* <15439> ../cstrike/dlls/animation.cpp:178 */
 NOXREF void GetEyePosition(void *pmodel, float *vecEyePosition)
 {
 	studiohdr_t *pstudiohdr;
@@ -159,7 +157,6 @@ NOXREF void GetEyePosition(void *pmodel, float *vecEyePosition)
 	vecEyePosition[2] = pstudiohdr->eyeposition[2];
 }
 
-/* <15485> ../cstrike/dlls/animation.cpp:193 */
 int LookupSequence(void *pmodel, const char *label)
 {
 	studiohdr_t *pstudiohdr = (studiohdr_t *)pmodel;
@@ -181,7 +178,6 @@ int LookupSequence(void *pmodel, const char *label)
 	return ACT_INVALID;
 }
 
-/* <1518c> ../cstrike/dlls/animation.cpp:215 */
 int IsSoundEvent(int eventNumber)
 {
 	if (eventNumber == SCRIPT_EVENT_SOUND || eventNumber == SCRIPT_EVENT_SOUND_VOICE)
@@ -192,7 +188,6 @@ int IsSoundEvent(int eventNumber)
 	return 0;
 }
 
-/* <15539> ../cstrike/dlls/animation.cpp:223 */
 NOXREF void SequencePrecache(void *pmodel, const char *pSequenceName)
 {
 	int index = LookupSequence(pmodel, pSequenceName);
@@ -229,7 +224,6 @@ NOXREF void SequencePrecache(void *pmodel, const char *pSequenceName)
 	}
 }
 
-/* <15634> ../cstrike/dlls/animation.cpp:263 */
 void GetSequenceInfo(void *pmodel, entvars_t *pev, float *pflFrameRate, float *pflGroundSpeed)
 {
 	studiohdr_t *pstudiohdr = (studiohdr_t *)pmodel;
@@ -246,7 +240,7 @@ void GetSequenceInfo(void *pmodel, entvars_t *pev, float *pflFrameRate, float *p
 		return;
 	}
 
-	mstudioseqdesc_t *pseqdesc = (mstudioseqdesc_t *)((byte *)pstudiohdr + pstudiohdr->seqindex) + (int)pev->sequence;
+	mstudioseqdesc_t *pseqdesc = (mstudioseqdesc_t *)((byte *)pstudiohdr + pstudiohdr->seqindex) + int(pev->sequence);
 	if (pseqdesc->numframes <= 1)
 	{
 		*pflFrameRate = 256.0f;
@@ -255,11 +249,10 @@ void GetSequenceInfo(void *pmodel, entvars_t *pev, float *pflFrameRate, float *p
 	}
 
 	*pflFrameRate = pseqdesc->fps * 256.0f / (pseqdesc->numframes - 1);
-	*pflGroundSpeed = sqrt(pseqdesc->linearmovement[0] * pseqdesc->linearmovement[0] + pseqdesc->linearmovement[1] * pseqdesc->linearmovement[1] + pseqdesc->linearmovement[2] * pseqdesc->linearmovement[2]);
+	*pflGroundSpeed = Q_sqrt(pseqdesc->linearmovement[0] * pseqdesc->linearmovement[0] + pseqdesc->linearmovement[1] * pseqdesc->linearmovement[1] + pseqdesc->linearmovement[2] * pseqdesc->linearmovement[2]);
 	*pflGroundSpeed = *pflGroundSpeed * pseqdesc->fps / (pseqdesc->numframes - 1);
 }
 
-/* <156b3> ../cstrike/dlls/animation.cpp:297 */
 int GetSequenceFlags(void *pmodel, entvars_t *pev)
 {
 	studiohdr_t *pstudiohdr = (studiohdr_t *)pmodel;
@@ -269,11 +262,10 @@ int GetSequenceFlags(void *pmodel, entvars_t *pev)
 		return 0;
 	}
 
-	mstudioseqdesc_t *pseqdesc = (mstudioseqdesc_t *)((byte *)pstudiohdr + pstudiohdr->seqindex) + (int)pev->sequence;
+	mstudioseqdesc_t *pseqdesc = (mstudioseqdesc_t *)((byte *)pstudiohdr + pstudiohdr->seqindex) + int(pev->sequence);
 	return pseqdesc->flags;
 }
 
-/* <15717> ../cstrike/dlls/animation.cpp:312 */
 int GetAnimationEvent(void *pmodel, entvars_t *pev, MonsterEvent_t *pMonsterEvent, float flStart, float flEnd, int index)
 {
 	studiohdr_t *pstudiohdr = (studiohdr_t *)pmodel;
@@ -283,9 +275,7 @@ int GetAnimationEvent(void *pmodel, entvars_t *pev, MonsterEvent_t *pMonsterEven
 		return 0;
 	}
 
-	// int events = 0;
-
-	mstudioseqdesc_t *pseqdesc = (mstudioseqdesc_t *)((byte *)pstudiohdr + pstudiohdr->seqindex) + (int)pev->sequence;
+	mstudioseqdesc_t *pseqdesc = (mstudioseqdesc_t *)((byte *)pstudiohdr + pstudiohdr->seqindex) + int(pev->sequence);
 	mstudioevent_t *pevent = (mstudioevent_t *)((byte *)pstudiohdr + pseqdesc->eventindex);
 
 	if (pseqdesc->numevents == 0 || index > pseqdesc->numevents)
@@ -325,7 +315,6 @@ int GetAnimationEvent(void *pmodel, entvars_t *pev, MonsterEvent_t *pMonsterEven
 	return 0;
 }
 
-/* <157e1> ../cstrike/dlls/animation.cpp:359 */
 float SetController(void *pmodel, entvars_t *pev, int iController, float flValue)
 {
 	studiohdr_t *pstudiohdr = (studiohdr_t *)pmodel;
@@ -354,10 +343,10 @@ float SetController(void *pmodel, entvars_t *pev, int iController, float flValue
 		if (pbonecontroller->end > pbonecontroller->start + 359.0)
 		{
 			if (flValue > 360.0)
-				flValue = flValue - (int64_t)(flValue / 360.0) * 360.0;
+				flValue = flValue - int64(flValue / 360.0) * 360.0;
 
 			else if (flValue < 0.0)
-				flValue = flValue + (int64_t)((flValue / -360.0) + 1) * 360.0;
+				flValue = flValue + int64((flValue / -360.0) + 1) * 360.0;
 		}
 		else
 		{
@@ -369,7 +358,7 @@ float SetController(void *pmodel, entvars_t *pev, int iController, float flValue
 		}
 	}
 
-	int setting = (int64_t)(255.0f * (flValue - pbonecontroller->start) / (pbonecontroller->end - pbonecontroller->start));
+	int setting = int64(255.0f * (flValue - pbonecontroller->start) / (pbonecontroller->end - pbonecontroller->start));
 
 	if (setting < 0)
 		setting = 0;
@@ -382,7 +371,6 @@ float SetController(void *pmodel, entvars_t *pev, int iController, float flValue
 	return setting * (1.0f / 255.0f) * (pbonecontroller->end - pbonecontroller->start) + pbonecontroller->start;
 }
 
-/* <15883> ../cstrike/dlls/animation.cpp:414 */
 float SetBlending(void *pmodel, entvars_t *pev, int iBlender, float flValue)
 {
 	studiohdr_t *pstudiohdr = (studiohdr_t *)pmodel;
@@ -391,7 +379,7 @@ float SetBlending(void *pmodel, entvars_t *pev, int iBlender, float flValue)
 		return flValue;
 	}
 
-	mstudioseqdesc_t *pseqdesc = (mstudioseqdesc_t *)((byte *)pstudiohdr + pstudiohdr->seqindex) + (int)pev->sequence;
+	mstudioseqdesc_t *pseqdesc = (mstudioseqdesc_t *)((byte *)pstudiohdr + pstudiohdr->seqindex) + int(pev->sequence);
 
 	if (pseqdesc->blendtype[iBlender] == 0)
 	{
@@ -419,7 +407,7 @@ float SetBlending(void *pmodel, entvars_t *pev, int iBlender, float flValue)
 		}
 	}
 
-	int setting = (int64_t)(255.0f * (flValue - pseqdesc->blendstart[iBlender]) / (pseqdesc->blendend[iBlender] - pseqdesc->blendstart[iBlender]));
+	int setting = int64(255.0f * (flValue - pseqdesc->blendstart[iBlender]) / (pseqdesc->blendend[iBlender] - pseqdesc->blendstart[iBlender]));
 
 	if (setting < 0)
 		setting = 0;
@@ -432,7 +420,6 @@ float SetBlending(void *pmodel, entvars_t *pev, int iBlender, float flValue)
 	return setting * (1.0 / 255.0) * (pseqdesc->blendend[iBlender] - pseqdesc->blendstart[iBlender]) + pseqdesc->blendstart[iBlender];
 }
 
-/* <15917> ../cstrike/dlls/animation.cpp:458 */
 int FindTransition(void *pmodel, int iEndingAnim, int iGoalAnim, int *piDir)
 {
 	studiohdr_t *pstudiohdr = (studiohdr_t *)pmodel;
@@ -497,7 +484,6 @@ int FindTransition(void *pmodel, int iEndingAnim, int iGoalAnim, int *piDir)
 	return iGoalAnim;
 }
 
-/* <159d8> ../cstrike/dlls/animation.cpp:523 */
 void SetBodygroup(void *pmodel, entvars_t *pev, int iGroup, int iValue)
 {
 	studiohdr_t *pstudiohdr = (studiohdr_t *)pmodel;
@@ -522,7 +508,6 @@ void SetBodygroup(void *pmodel, entvars_t *pev, int iGroup, int iValue)
 	pev->body += (iValue - iCurrent) * pbodypart->base;
 }
 
-/* <15a6d> ../cstrike/dlls/animation.cpp:545 */
 int GetBodygroup(void *pmodel, entvars_t *pev, int iGroup)
 {
 	studiohdr_t *pstudiohdr = (studiohdr_t *)pmodel;
@@ -541,7 +526,6 @@ int GetBodygroup(void *pmodel, entvars_t *pev, int iGroup)
 	return iCurrent;
 }
 
-/* <15aed> ../cstrike/dlls/animation.cpp:605 */
 C_DLLEXPORT int Server_GetBlendingInterface(int version, struct sv_blending_interface_s **ppinterface, struct engine_studio_api_s *pstudio, float *rotationmatrix, float *bonetransform)
 {
 	if (version != SV_BLENDING_INTERFACE_VERSION)
@@ -560,7 +544,6 @@ C_DLLEXPORT int Server_GetBlendingInterface(int version, struct sv_blending_inte
 	return 1;
 }
 
-/* <15ba5> ../cstrike/dlls/animation.cpp:630 */
 #ifdef REGAMEDLL_FIXES // SSE2 version
 void AngleQuaternion(vec_t *angles, vec_t *quaternion)
 {
@@ -605,16 +588,16 @@ void AngleQuaternion(vec_t *angles, vec_t *quaternion)
 	float ftmp2;
 
 	angle = angles[ROLL] * 0.5;
-	sy = sin(angle);
-	cy = cos(angle);
+	sy = Q_sin(angle);
+	cy = Q_cos(angle);
 
 	angle = angles[YAW] * 0.5;
-	sp_ = sin(angle);
-	cp = cos(angle);
+	sp_ = Q_sin(angle);
+	cp = Q_cos(angle);
 
 	angle = angles[PITCH] * 0.5;
-	sr = sin(angle);
-	cr = cos(angle);
+	sr = Q_sin(angle);
+	cr = Q_cos(angle);
 
 	ftmp0 = sr * cp;
 	ftmp1 = cr * sp_;
@@ -628,7 +611,6 @@ void AngleQuaternion(vec_t *angles, vec_t *quaternion)
 }
 #endif // REGAMEDLL_FIXES
 
-/* <15c4d> ../cstrike/dlls/animation.cpp:653 */
 void QuaternionSlerp(vec_t *p, vec_t *q, float t, vec_t *qt)
 {
 	int i;
@@ -654,13 +636,13 @@ void QuaternionSlerp(vec_t *p, vec_t *q, float t, vec_t *qt)
 	{
 		if ((1.0 - cosom) > 0.00000001)
 		{
-			float_precision cosomega = acos((float_precision)cosom);
+			float_precision cosomega = Q_acos(float_precision(cosom));
 
 			float omega = cosomega;
-			float sinom = sin(cosomega);
+			float sinom = Q_sin(cosomega);
 
-			sclp = sin((1.0 - t) * omega) / sinom;
-			sclq = sin((float_precision)(omega * t)) / sinom;
+			sclp = Q_sin((1.0 - t) * omega) / sinom;
+			sclq = Q_sin(float_precision(omega * t)) / sinom;
 		}
 		else
 		{
@@ -678,15 +660,14 @@ void QuaternionSlerp(vec_t *p, vec_t *q, float t, vec_t *qt)
 		qt[2] = -q[3];
 		qt[3] = q[2];
 
-		sclp = sin((1.0 - t) * 0.5 * M_PI);
-		sclq = sin(t * 0.5 * M_PI);
+		sclp = Q_sin((1.0 - t) * 0.5 * M_PI);
+		sclq = Q_sin(t * 0.5 * M_PI);
 
 		for (i = 0; i < 3; ++i)
 			qt[i] = sclp * p[i] + sclq * qt[i];
 	}
 }
 
-/* <15cd0> ../cstrike/dlls/animation.cpp:700 */
 void QuaternionMatrix(vec_t *quaternion, float (*matrix)[4])
 {
 	matrix[0][0] = 1.0 - 2.0 * quaternion[1] * quaternion[1] - 2.0 * quaternion[2] * quaternion[2];
@@ -702,7 +683,6 @@ void QuaternionMatrix(vec_t *quaternion, float (*matrix)[4])
 	matrix[2][2] = 1.0 - 2.0 * quaternion[0] * quaternion[0] - 2.0 * quaternion[1] * quaternion[1];
 }
 
-/* <15d12> ../cstrike/dlls/animation.cpp:715 */
 mstudioanim_t *StudioGetAnim(model_t *m_pSubModel, mstudioseqdesc_t *pseqdesc)
 {
 	mstudioseqgroup_t *pseqgroup;
@@ -731,7 +711,6 @@ mstudioanim_t *StudioGetAnim(model_t *m_pSubModel, mstudioseqdesc_t *pseqdesc)
 	return (mstudioanim_t *)((byte *)paSequences[ pseqdesc->seqgroup ].data + pseqdesc->animindex);
 }
 
-/* <15d90> ../cstrike/dlls/animation.cpp:749 */
 mstudioanim_t *LookupAnimation(model_t *model, mstudioseqdesc_t *pseqdesc, int index)
 {
 	mstudioanim_t *panim = StudioGetAnim(model, pseqdesc);
@@ -741,7 +720,6 @@ mstudioanim_t *LookupAnimation(model_t *model, mstudioseqdesc_t *pseqdesc, int i
 	return panim;
 }
 
-/* <151a9> ../cstrike/dlls/animation.cpp:770 */
 void StudioCalcBoneAdj(float dadt, float *adj, const byte *pcontroller1, const byte *pcontroller2, byte mouthopen)
 {
 	int i, j;
@@ -758,7 +736,7 @@ void StudioCalcBoneAdj(float dadt, float *adj, const byte *pcontroller1, const b
 			// check for 360% wrapping
 			if (pbonecontroller[j].type & STUDIO_RLOOP)
 			{
-				if (abs(pcontroller1[i] - pcontroller2[i]) > 128)
+				if (Q_abs(pcontroller1[i] - pcontroller2[i]) > 128)
 				{
 					int a, b;
 					a = (pcontroller1[j] + 128) % 256;
@@ -767,7 +745,7 @@ void StudioCalcBoneAdj(float dadt, float *adj, const byte *pcontroller1, const b
 				}
 				else
 				{
-					value = ((pcontroller1[i] * dadt + (pcontroller2[i]) * (1.0 - dadt))) * (360.0 / 256.0) + pbonecontroller[j].start;
+					value = (pcontroller1[i] * dadt + (pcontroller2[i]) * (1.0 - dadt)) * (360.0 / 256.0) + pbonecontroller[j].start;
 				}
 			}
 			else
@@ -808,7 +786,6 @@ void StudioCalcBoneAdj(float dadt, float *adj, const byte *pcontroller1, const b
 	}
 }
 
-/* <15ea6> ../cstrike/dlls/animation.cpp:828 */
 void StudioCalcBoneQuaterion(int frame, float s, mstudiobone_t *pbone, mstudioanim_t *panim, float *adj, float *q)
 {
 	int j, k;
@@ -890,7 +867,6 @@ void StudioCalcBoneQuaterion(int frame, float s, mstudiobone_t *pbone, mstudioan
 		AngleQuaternion(angle1, q);
 }
 
-/* <15f94> ../cstrike/dlls/animation.cpp:908 */
 void StudioCalcBonePosition(int frame, float s, mstudiobone_t *pbone, mstudioanim_t *panim, float *adj, float *pos)
 {
 	int j, k;
@@ -944,7 +920,6 @@ void StudioCalcBonePosition(int frame, float s, mstudiobone_t *pbone, mstudioani
 	}
 }
 
-/* <1603c> ../cstrike/dlls/animation.cpp:970 */
 void StudioSlerpBones(vec4_t *q1, float pos1[][3], vec4_t *q2, float pos2[][3], float s)
 {
 	int i;
@@ -974,7 +949,6 @@ void StudioSlerpBones(vec4_t *q1, float pos1[][3], vec4_t *q2, float pos2[][3], 
 	}
 }
 
-/* <160de> ../cstrike/dlls/animation.cpp:994 */
 void StudioCalcRotations(mstudiobone_t *pbones, int *chain, int chainlength, float *adj, float pos[128][3], vec4_t *q, mstudioseqdesc_t *pseqdesc, mstudioanim_t *panim, float f, float s)
 {
 	int i;
@@ -984,12 +958,11 @@ void StudioCalcRotations(mstudiobone_t *pbones, int *chain, int chainlength, flo
 	{
 		j = chain[i];
 
-		StudioCalcBoneQuaterion((int)f, s, &pbones[j], &panim[j], adj, q[j]);
-		StudioCalcBonePosition((int)f, s, &pbones[j], &panim[j], adj, pos[j]);
+		StudioCalcBoneQuaterion(int(f), s, &pbones[j], &panim[j], adj, q[j]);
+		StudioCalcBonePosition(int(f), s, &pbones[j], &panim[j], adj, pos[j]);
 	}
 }
 
-/* <161fd> ../cstrike/dlls/animation.cpp:1006 */
 void ConcatTransforms(float in1[3][4], float in2[3][4], float out[3][4])
 {
 	out[0][0] = in1[0][0] * in2[0][0] + in1[0][1] * in2[1][0] + in1[0][2] * in2[2][0];
@@ -1013,10 +986,9 @@ float_precision StudioEstimateFrame(float frame, mstudioseqdesc_t *pseqdesc)
 	if (pseqdesc->numframes <= 1)
 		return 0;
 
-	return (float_precision)(pseqdesc->numframes - 1) * frame / 256;
+	return float_precision(pseqdesc->numframes - 1) * frame / 256;
 }
 
-/* <16247> ../cstrike/dlls/animation.cpp:1115 */
 void SV_StudioSetupBones(model_t *pModel, float frame, int sequence, const vec_t *angles, const vec_t *origin, const byte *pcontroller, const byte *pblending, int iBone, const edict_t *pEdict)
 {
 	int i, j;
@@ -1063,17 +1035,17 @@ void SV_StudioSetupBones(model_t *pModel, float frame, int sequence, const vec_t
 	}
 
 	f = StudioEstimateFrame(frame, pseqdesc);
-	subframe = (int)f;
+	subframe = int(f);
 	f -= subframe;
 	
 	StudioCalcBoneAdj(0, adj, pcontroller, pcontroller, 0);
 	StudioCalcRotations(pbones, chain, chainlength, adj, pos, q, pseqdesc, panim, subframe, f);
 
-	if (pseqdesc->numblends != 9)
+	if (pseqdesc->numblends != NUM_BLENDING)
 	{
 		if (pseqdesc->numblends > 1)
 		{
-			float b = (float_precision)pblending[0] / 255.0f;
+			float b = float_precision(pblending[0]) / 255.0f;
 			
 			pseqdesc = (mstudioseqdesc_t *)((byte *)g_pstudiohdr + g_pstudiohdr->seqindex) + sequence;
 			panim = StudioGetAnim(pModel, pseqdesc);
@@ -1215,10 +1187,10 @@ void SV_StudioSetupBones(model_t *pModel, float frame, int sequence, const vec_t
 
 	VectorCopy(angles, temp_angles);
 
-#ifdef REGAMEDLL_FIXES
-	if(pEdict != NULL && CBaseEntity::Instance((edict_t*)pEdict)->IsPlayer())
+#ifndef REGAMEDLL_FIXES
+	if (pEdict != NULL)
 #else
-	if(pEdict != NULL)
+	if (pEdict != NULL && CBaseEntity::Instance(const_cast<edict_t *>(pEdict))->IsPlayer())
 #endif
 	{
 		temp_angles[1] = UTIL_GetPlayerGaitYaw(ENTINDEX(pEdict));

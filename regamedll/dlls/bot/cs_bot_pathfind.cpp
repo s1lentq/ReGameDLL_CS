@@ -1,8 +1,6 @@
 #include "precompiled.h"
 
 // Determine actual path positions bot will move between along the path
-
-/* <38db02> ../cstrike/dlls/bot/cs_bot_pathfind.cpp:30 */
 bool CCSBot::ComputePathPositions()
 {
 	if (m_pathLength == 0)
@@ -125,8 +123,6 @@ bool CCSBot::ComputePathPositions()
 }
 
 // If next step of path uses a ladder, prepare to traverse it
-
-/* <38d424> ../cstrike/dlls/bot/cs_bot_pathfind.cpp:155 */
 void CCSBot::SetupLadderMovement()
 {
 	if (m_pathIndex < 1 || m_pathLength == 0)
@@ -187,8 +183,6 @@ void CCSBot::SetupLadderMovement()
 }
 
 // TODO: What about ladders whose top AND bottom are messed up?
-
-/* <38dd85> ../cstrike/dlls/bot/cs_bot_pathfind.cpp:213 */
 void CCSBot::ComputeLadderEndpoint(bool isAscending)
 {
 	TraceResult result;
@@ -221,8 +215,6 @@ void CCSBot::ComputeLadderEndpoint(bool isAscending)
 
 // Navigate our current ladder. Return true if we are doing ladder navigation.
 // TODO: Need Push() and Pop() for run/walk context to keep ladder speed contained.
-
-/* <38de76> ../cstrike/dlls/bot/cs_bot_pathfind.cpp:248 */
 bool CCSBot::UpdateLadderMovement()
 {
 	if (m_pathLadder == NULL)
@@ -303,7 +295,7 @@ bool CCSBot::UpdateLadderMovement()
 			{
 				Vector2D perp(-m_pathLadder->m_dirVector.y, m_pathLadder->m_dirVector.x);
 
-				if (abs(int64(d.x * perp.x + d.y * perp.y)) < tolerance && d.Length() < closeToGoal)
+				if (Q_abs(int64(d.x * perp.x + d.y * perp.y)) < tolerance && d.Length() < closeToGoal)
 					approached = true;
 			}
 
@@ -359,7 +351,7 @@ bool CCSBot::UpdateLadderMovement()
 				{
 					Vector2D perp(-m_pathLadder->m_dirVector.y, m_pathLadder->m_dirVector.x);
 
-					if (abs(int64(d.x * perp.x + d.y * perp.y)) < tolerance && d.Length() < closeToGoal)
+					if (Q_abs(int64(d.x * perp.x + d.y * perp.y)) < tolerance && d.Length() < closeToGoal)
 						approached = true;
 				}
 
@@ -582,8 +574,6 @@ bool CCSBot::UpdateLadderMovement()
 
 // Compute closest point on path to given point
 // NOTE: This does not do line-of-sight tests, so closest point may be thru the floor, etc
-
-/* <38e44d> ../cstrike/dlls/bot/cs_bot_pathfind.cpp:609 */
 bool CCSBot::FindClosestPointOnPath(const Vector *worldPos, int startIndex, int endIndex, Vector *close) const
 {
 	if (!HasPath() || close == NULL)
@@ -637,8 +627,6 @@ bool CCSBot::FindClosestPointOnPath(const Vector *worldPos, int startIndex, int 
 
 // Return the closest point to our current position on our current path
 // If "local" is true, only check the portion of the path surrounding m_pathIndex.
-
-/* <38e6d0> ../cstrike/dlls/bot/cs_bot_pathfind.cpp:665 */
 int CCSBot::FindOurPositionOnPath(Vector *close, bool local) const
 {
 	if (!HasPath())
@@ -724,8 +712,6 @@ int CCSBot::FindOurPositionOnPath(Vector *close, bool local) const
 }
 
 // Test for un-jumpable height change, or unrecoverable fall
-
-/* <38c911> ../cstrike/dlls/bot/cs_bot_pathfind.cpp:752 */
 bool CCSBot::IsStraightLinePathWalkable(const Vector *goal) const
 {
 // this is causing hang-up problems when crawling thru ducts/windows that drop off into rooms (they fail the "falling" check)
@@ -782,8 +768,6 @@ return true;
 
 // Compute a point a fixed distance ahead along our path.
 // Returns path index just after point.
-
-/* <38ec40> ../cstrike/dlls/bot/cs_bot_pathfind.cpp:810 */
 int CCSBot::FindPathPoint(float aheadRange, Vector *point, int *prevIndex)
 {
 	// find path index just past aheadRange
@@ -859,8 +843,7 @@ int CCSBot::FindPathPoint(float aheadRange, Vector *point, int *prevIndex)
 	}
 
 	// we need the point just *ahead* of us
-	++startIndex;
-	if (startIndex >= m_pathLength)
+	if (++startIndex >= m_pathLength)
 		startIndex = m_pathLength - 1;
 
 	// if we hit a ladder, stop, or jump area, must stop
@@ -1021,8 +1004,6 @@ int CCSBot::FindPathPoint(float aheadRange, Vector *point, int *prevIndex)
 }
 
 // Set the current index along the path
-
-/* <38f761> ../cstrike/dlls/bot/cs_bot_pathfind.cpp:1052 */
 void CCSBot::SetPathIndex(int newIndex)
 {
 	m_pathIndex = Q_min(newIndex, m_pathLength - 1);
@@ -1045,8 +1026,6 @@ void CCSBot::SetPathIndex(int newIndex)
 }
 
 // Return true if nearing a jump in the path
-
-/* <38cafc> ../cstrike/dlls/bot/cs_bot_pathfind.cpp:1077 */
 bool CCSBot::IsNearJump() const
 {
 	if (m_pathIndex == 0 || m_pathIndex >= m_pathLength)
@@ -1067,8 +1046,6 @@ bool CCSBot::IsNearJump() const
 }
 
 // Return approximately how much damage will will take from the given fall height
-
-/* <38f844> ../cstrike/dlls/bot/cs_bot_pathfind.cpp:1100 */
 float CCSBot::GetApproximateFallDamage(float height) const
 {
 	// empirically discovered height values
@@ -1084,8 +1061,6 @@ float CCSBot::GetApproximateFallDamage(float height) const
 }
 
 // Return true if a friend is between us and the given position
-
-/* <38f89b> ../cstrike/dlls/bot/cs_bot_pathfind.cpp:1118 */
 bool CCSBot::IsFriendInTheWay(const Vector *goalPos) const
 {
 	// do this check less often to ease CPU burden
@@ -1161,8 +1136,6 @@ bool CCSBot::IsFriendInTheWay(const Vector *goalPos) const
 }
 
 // Do reflex avoidance movements if our "feelers" are touched
-
-/* <38fbd5> ../cstrike/dlls/bot/cs_bot_pathfind.cpp:1197 */
 void CCSBot::FeelerReflexAdjustment(Vector *goalPosition)
 {
 	// if we are in a "precise" area, do not do feeler adjustments
@@ -1267,8 +1240,6 @@ void CCSBot::FeelerReflexAdjustment(Vector *goalPosition)
 }
 
 // Move along the path. Return false if end of path reached.
-
-/* <3912bf> ../cstrike/dlls/bot/cs_bot_pathfind.cpp:1300 */
 CCSBot::PathResult CCSBot::UpdatePathMovement(bool allowSpeedChange)
 {
 	if (m_pathLength == 0)
@@ -1574,8 +1545,6 @@ CCSBot::PathResult CCSBot::UpdatePathMovement(bool allowSpeedChange)
 }
 
 // Build trivial path to goal, assuming we are already in the same area
-
-/* <3906a6> ../cstrike/dlls/bot/cs_bot_pathfind.cpp:1634 */
 void CCSBot::BuildTrivialPath(const Vector *goal)
 {
 	m_pathIndex = 1;
@@ -1602,8 +1571,6 @@ void CCSBot::BuildTrivialPath(const Vector *goal)
 
 // Compute shortest path to goal position via A* algorithm
 // If 'goalArea' is NULL, path will get as close as it can.
-
-/* <3907cd> ../cstrike/dlls/bot/cs_bot_pathfind.cpp:1664 */
 bool CCSBot::ComputePath(CNavArea *goalArea, const Vector *goal, RouteType route)
 {
 	// Throttle re-pathing
@@ -1631,7 +1598,7 @@ bool CCSBot::ComputePath(CNavArea *goalArea, const Vector *goal, RouteType route
 		pathEndPosition = *goal;
 
 	// make sure path end position is on the ground
-	if (goalArea)
+	if (goalArea != NULL)
 		pathEndPosition.z = goalArea->GetZ(&pathEndPosition);
 	else
 		GetGroundHeight(&pathEndPosition, &pathEndPosition.z);
@@ -1731,8 +1698,6 @@ bool CCSBot::ComputePath(CNavArea *goalArea, const Vector *goal, RouteType route
 }
 
 // Return estimated distance left to travel along path
-
-/* <390ef6> ../cstrike/dlls/bot/cs_bot_pathfind.cpp:1798 */
 float CCSBot::GetPathDistanceRemaining() const
 {
 	if (!HasPath())
@@ -1753,8 +1718,6 @@ float CCSBot::GetPathDistanceRemaining() const
 }
 
 // Draw a portion of our current path for debugging.
-
-/* <390fb1> ../cstrike/dlls/bot/cs_bot_pathfind.cpp:1821 */
 void CCSBot::DrawPath()
 {
 	if (!HasPath())

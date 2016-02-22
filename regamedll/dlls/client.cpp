@@ -65,7 +65,6 @@ PLAYERPVSSTATUS g_PVSStatus[MAX_CLIENTS];
 unsigned short m_usResetDecals;
 unsigned short g_iShadowSprite;
 
-/* <47b45> ../cstrike/dlls/client.cpp:76 */
 int CMD_ARGC_()
 {
 	if (!UseBotArgs)
@@ -79,7 +78,6 @@ int CMD_ARGC_()
 	return i;
 }
 
-/* <47b84> ../cstrike/dlls/client.cpp:90 */
 const char *CMD_ARGV_(int i)
 {
 	if (!UseBotArgs)
@@ -91,7 +89,6 @@ const char *CMD_ARGV_(int i)
 	return NULL;
 }
 
-/* <47eac> ../cstrike/dlls/client.cpp:180 */
 NOXREF void set_suicide_frame(entvars_t *pev)
 {
 	if (!FStrEq(STRING(pev->model), "models/player.mdl"))
@@ -103,7 +100,6 @@ NOXREF void set_suicide_frame(entvars_t *pev)
 	pev->nextthink = -1;
 }
 
-/* <47a58> ../cstrike/dlls/client.cpp:192 */
 void TeamChangeUpdate(CBasePlayer *player, int team_id)
 {
 	MESSAGE_BEGIN(MSG_ALL, gmsgTeamInfo);
@@ -131,7 +127,6 @@ void TeamChangeUpdate(CBasePlayer *player, int team_id)
 	}
 }
 
-/* <4731f> ../cstrike/dlls/client.cpp:222 */
 void BlinkAccount(CBasePlayer *player, int numBlinks)
 {
 	MESSAGE_BEGIN(MSG_ONE, gmsgBlinkAcct, NULL, player->pev);
@@ -139,13 +134,11 @@ void BlinkAccount(CBasePlayer *player, int numBlinks)
 	MESSAGE_END();
 }
 
-/* <47efd> ../cstrike/dlls/client.cpp:236 */
 BOOL EXT_FUNC ClientConnect(edict_t *pEntity, const char *pszName, const char *pszAddress, char *szRejectReason)
 {
 	return g_pGameRules->ClientConnected(pEntity, pszName, pszAddress, szRejectReason);
 }
 
-/* <47f5b> ../cstrike/dlls/client.cpp:255 */
 void EXT_FUNC ClientDisconnect(edict_t *pEntity)
 {
 	CBasePlayer *pPlayer = dynamic_cast<CBasePlayer *>(CBaseEntity::Instance(pEntity));
@@ -155,7 +148,7 @@ void EXT_FUNC ClientDisconnect(edict_t *pEntity)
 		UTIL_ClientPrintAll(HUD_PRINTNOTIFY, "#Game_disconnected", STRING(pEntity->v.netname));
 		CSound *pSound = CSoundEnt::SoundPointerForIndex(CSoundEnt::ClientSoundIndex(pEntity));
 
-		if (pSound)
+		if (pSound != NULL)
 			pSound->Reset();
 
 		pEntity->v.takedamage = DAMAGE_NO;
@@ -175,19 +168,16 @@ void EXT_FUNC ClientDisconnect(edict_t *pEntity)
 	}
 }
 
-/* <4c477> ../cstrike/dlls/client.cpp:306 */
 void respawn(entvars_t *pev, BOOL fCopyCorpse)
 {
 	if (gpGlobals->coop || gpGlobals->deathmatch)
 	{
-		CHalfLifeMultiplay *mp = g_pGameRules;
-
-		if (mp->m_iTotalRoundsPlayed > 0)
-			mp->MarkSpawnSkipped();
+		if (CSGameRules()->m_iTotalRoundsPlayed > 0)
+			CSGameRules()->MarkSpawnSkipped();
 
 		CBasePlayer *pPlayer = GetClassPtr((CBasePlayer *)pev);
 
-		if (mp->IsCareer() && mp->ShouldSkipSpawn() && pPlayer->IsAlive())
+		if (CSGameRules()->IsCareer() && CSGameRules()->ShouldSkipSpawn() && pPlayer->IsAlive())
 			g_skipCareerInitialSpawn = true;
 
 		pPlayer->Spawn();
@@ -200,12 +190,9 @@ void respawn(entvars_t *pev, BOOL fCopyCorpse)
 }
 
 // Suicide...
-
-/* <48013> ../cstrike/dlls/client.cpp:347 */
 void EXT_FUNC ClientKill(edict_t *pEntity)
 {
 	entvars_t *pev = &pEntity->v;
-	CHalfLifeMultiplay *mp = g_pGameRules;
 	CBasePlayer *pl = (CBasePlayer *)CBasePlayer::Instance(pev);
 
 	if (pl->IsObserver())
@@ -227,13 +214,12 @@ void EXT_FUNC ClientKill(edict_t *pEntity)
 	pEntity->v.health = 0;
 	pl->Killed(pev, GIB_NEVER);
 
-	if (mp->m_pVIP == pl)
+	if (CSGameRules()->m_pVIP == pl)
 	{
-		mp->m_iConsecutiveVIP = 10;
+		CSGameRules()->m_iConsecutiveVIP = 10;
 	}
 }
 
-/* <47a8a> ../cstrike/dlls/client.cpp:379 */
 void ShowMenu(CBasePlayer *pPlayer, int bitsValidSlots, int nDisplayTime, BOOL fNeedMore, char *pszText)
 {
 	MESSAGE_BEGIN(MSG_ONE, gmsgShowMenu, NULL, pPlayer->pev);
@@ -244,7 +230,6 @@ void ShowMenu(CBasePlayer *pPlayer, int bitsValidSlots, int nDisplayTime, BOOL f
 	MESSAGE_END();
 }
 
-/* <4735f> ../cstrike/dlls/client.cpp:390 */
 void ShowVGUIMenu(CBasePlayer *pPlayer, int MenuType, int BitMask, char *szOldMenu)
 {
 	if (pPlayer->m_bVGUIMenus || MenuType > VGUI_Menu_Buy_Item)
@@ -261,7 +246,6 @@ void ShowVGUIMenu(CBasePlayer *pPlayer, int MenuType, int BitMask, char *szOldMe
 		ShowMenu(pPlayer, BitMask, -1, 0, szOldMenu);
 }
 
-/* <4c3c5> ../cstrike/dlls/client.cpp:414 */
 NOXREF int CountTeams()
 {
 	int iNumCT = 0, iNumTerrorist = 0;
@@ -293,7 +277,6 @@ NOXREF int CountTeams()
 	return iNumCT - iNumTerrorist;
 }
 
-/* <4c2be> ../cstrike/dlls/client.cpp:443 */
 void ListPlayers(CBasePlayer *current)
 {
 	char message[120], cNumber[12];
@@ -323,7 +306,6 @@ void ListPlayers(CBasePlayer *current)
 	ClientPrint(current->pev, HUD_PRINTCONSOLE, "\n");
 }
 
-/* <4c200> ../cstrike/dlls/client.cpp:475 */
 int CountTeamPlayers(int iTeam)
 {
 	CBaseEntity *pPlayer = NULL;
@@ -344,7 +326,6 @@ int CountTeamPlayers(int iTeam)
 	return i;
 }
 
-/* <4c4ef> ../cstrike/dlls/client.cpp:494 */
 void ProcessKickVote(CBasePlayer *pVotingPlayer, CBasePlayer *pKickPlayer)
 {
 	CBaseEntity *pTempEntity;
@@ -389,7 +370,7 @@ void ProcessKickVote(CBasePlayer *pVotingPlayer, CBasePlayer *pKickPlayer)
 	iVotesNeeded = iValidVotes;
 	fKickPercent = (iTeamCount * kick_percent.value + 0.5);
 
-	if (iVotesNeeded >= (int)fKickPercent)
+	if (iVotesNeeded >= int(fKickPercent))
 	{
 		UTIL_ClientPrintAll(HUD_PRINTCENTER, "#Game_kicked", STRING(pKickPlayer->pev->netname));
 		SERVER_COMMAND(UTIL_VarArgs("kick # %d\n", iVoteID));
@@ -411,26 +392,24 @@ void ProcessKickVote(CBasePlayer *pVotingPlayer, CBasePlayer *pKickPlayer)
 	}
 }
 
-/* <48298> ../cstrike/dlls/client.cpp:580 */
 TeamName SelectDefaultTeam()
 {
 	TeamName team = UNASSIGNED;
-	CHalfLifeMultiplay *mp = g_pGameRules;
 
-	if (mp->m_iNumTerrorist < mp->m_iNumCT)
+	if (CSGameRules()->m_iNumTerrorist < CSGameRules()->m_iNumCT)
 	{
 		team = TERRORIST;
 	}
-	else if (mp->m_iNumTerrorist > mp->m_iNumCT)
+	else if (CSGameRules()->m_iNumTerrorist > CSGameRules()->m_iNumCT)
 	{
 		team = CT;
 	}
 	// Choose the team that's losing
-	else if (mp->m_iNumTerroristWins < mp->m_iNumCTWins)
+	else if (CSGameRules()->m_iNumTerroristWins < CSGameRules()->m_iNumCTWins)
 	{
 		team = TERRORIST;
 	}
-	else if (mp->m_iNumCTWins < mp->m_iNumTerroristWins)
+	else if (CSGameRules()->m_iNumCTWins < CSGameRules()->m_iNumTerroristWins)
 	{
 		team = CT;
 	}
@@ -447,7 +426,7 @@ TeamName SelectDefaultTeam()
 		}
 	}
 
-	if (mp->TeamFull(team))
+	if (CSGameRules()->TeamFull(team))
 	{
 		// Pick the opposite team
 		if (team == TERRORIST)
@@ -460,7 +439,7 @@ TeamName SelectDefaultTeam()
 		}
 
 		// No choices left
-		if (mp->TeamFull(team))
+		if (CSGameRules()->TeamFull(team))
 		{
 			return UNASSIGNED;
 		}
@@ -470,10 +449,9 @@ TeamName SelectDefaultTeam()
 
 }
 
-/* <473a3> ../cstrike/dlls/client.cpp:638 */
 void CheckStartMoney()
 {
-	int money = (int)startmoney.value;
+	int money = int(startmoney.value);
 
 #ifndef REGAMEDLL_ADD
 	if (money > 16000)
@@ -481,7 +459,7 @@ void CheckStartMoney()
 	else if (money < 800)
 		CVAR_SET_FLOAT("mp_startmoney", 800);
 #else
-	int max_money = (int)maxmoney.value;
+	int max_money = int(maxmoney.value);
 
 	if (money > max_money)
 		CVAR_SET_FLOAT("mp_startmoney", max_money);
@@ -491,17 +469,15 @@ void CheckStartMoney()
 
 }
 
-/* <4c084> ../cstrike/dlls/client.cpp:661 */
 void EXT_FUNC ClientPutInServer(edict_t *pEntity)
 {
 	entvars_t *pev = &pEntity->v;
 	CBasePlayer *pPlayer = GetClassPtr((CBasePlayer *)pev);
-	CHalfLifeMultiplay *mp = g_pGameRules;
 
 	pPlayer->SetCustomDecalFrames(-1);
 	pPlayer->SetPrefsFromUserinfo(GET_INFO_BUFFER(pEntity));
 
-	if (!mp->IsMultiplayer())
+	if (!g_pGameRules->IsMultiplayer())
 	{
 		pPlayer->Spawn();
 		return;
@@ -517,7 +493,7 @@ void EXT_FUNC ClientPutInServer(edict_t *pEntity)
 
 	CheckStartMoney();
 
-	pPlayer->m_iAccount = (int)startmoney.value;
+	pPlayer->m_iAccount = int(startmoney.value);
 	pPlayer->m_fGameHUDInitialized = FALSE;
 	pPlayer->m_flDisplayHistory &= ~DHF_ROUND_STARTED;
 	pPlayer->pev->flags |= FL_SPECTATOR;
@@ -552,15 +528,15 @@ void EXT_FUNC ClientPutInServer(edict_t *pEntity)
 	CBaseEntity *Target = UTIL_FindEntityByClassname(NULL, "trigger_camera");
 	pPlayer->m_pIntroCamera = Target;
 
-	if (mp && mp->m_bMapHasCameras == MAP_HAS_CAMERAS_INIT)
+	if (CSGameRules() != NULL && CSGameRules()->m_bMapHasCameras == MAP_HAS_CAMERAS_INIT)
 	{
-		mp->m_bMapHasCameras = (Target != NULL);
+		CSGameRules()->m_bMapHasCameras = (Target != NULL);
 	}
 
-	if (pPlayer->m_pIntroCamera)
+	if (pPlayer->m_pIntroCamera != NULL)
 		Target = UTIL_FindEntityByTargetname(NULL, STRING(pPlayer->m_pIntroCamera->pev->target));
 
-	if (pPlayer->m_pIntroCamera && Target)
+	if (pPlayer->m_pIntroCamera != NULL && Target != NULL)
 	{
 		Vector CamAngles = UTIL_VecToAngles((Target->pev->origin - pPlayer->m_pIntroCamera->pev->origin).Normalize());
 		CamAngles.x = -CamAngles.x;
@@ -577,9 +553,9 @@ void EXT_FUNC ClientPutInServer(edict_t *pEntity)
 	{
 		pPlayer->m_iTeam = CT;
 
-		if (mp)
+		if (g_pGameRules != NULL)
 		{
-			mp->GetPlayerSpawnSpot(pPlayer);
+			g_pGameRules->GetPlayerSpawnSpot(pPlayer);
 		}
 
 		pPlayer->m_iTeam = UNASSIGNED;
@@ -606,7 +582,6 @@ void EXT_FUNC ClientPutInServer(edict_t *pEntity)
 	UTIL_ClientPrintAll(HUD_PRINTNOTIFY, "#Game_connected", (sName[0] != '\0') ? sName : "<unconnected>");
 }
 
-/* <478f7> ../cstrike/dlls/client.cpp:792 */
 int Q_strlen_(const char *str)
 {
 	int count = 0;
@@ -617,7 +592,6 @@ int Q_strlen_(const char *str)
 	return count;
 }
 
-/* <4bbff> ../cstrike/dlls/client.cpp:814 */
 void Host_Say(edict_t *pEntity, int teamonly)
 {
 	CBasePlayer *client;
@@ -680,7 +654,7 @@ void Host_Say(edict_t *pEntity, int teamonly)
 	}
 
 	// make sure the text has content
-	if (!p || !p[0] || !Q_UnicodeValidate(p))
+	if (/*!p || */!p[0] || !Q_UnicodeValidate(p))
 	{
 		// no character found, so say nothing
 		return;
@@ -831,7 +805,7 @@ void Host_Say(edict_t *pEntity, int teamonly)
 			continue;
 
 		// can the receiver hear the sender? or has he muted him?
-		if (gpGlobals->deathmatch != 0.0f && g_pGameRules->m_VoiceGameMgr.PlayerHasBlockedPlayer(client, player))
+		if (gpGlobals->deathmatch != 0.0f && CSGameRules()->m_VoiceGameMgr.PlayerHasBlockedPlayer(client, player))
 			continue;
 
 		if (teamonly && client->m_iTeam != player->m_iTeam)
@@ -895,21 +869,11 @@ void Host_Say(edict_t *pEntity, int teamonly)
 
 		char *szTeam = GetTeam(player->m_iTeam);
 
-		UTIL_LogPrintf
-		(
-			"\"%s<%i><%s><%s>\" %s \"%s\"%s\n",
-			STRING(player->pev->netname),
-			GETPLAYERUSERID(player->edict()),
-			GETPLAYERAUTHID(player->edict()),
-			szTeam,
-			temp,
-			fullText,
-			deadText
-		);
+		UTIL_LogPrintf("\"%s<%i><%s><%s>\" %s \"%s\"%s\n", STRING(player->pev->netname), GETPLAYERUSERID(player->edict()), GETPLAYERAUTHID(player->edict()),
+			szTeam, temp, fullText, deadText);
 	}
 }
 
-/* <4865e> ../cstrike/dlls/client.cpp:1160 */
 void DropSecondary(CBasePlayer *pPlayer)
 {
 	if (pPlayer->HasShield())
@@ -931,7 +895,6 @@ void DropSecondary(CBasePlayer *pPlayer)
 
 }
 
-/* <473db> ../cstrike/dlls/client.cpp:1182 */
 void DropPrimary(CBasePlayer *pPlayer)
 {
 	if (pPlayer->HasShield())
@@ -946,11 +909,8 @@ void DropPrimary(CBasePlayer *pPlayer)
 	}
 }
 
-/* <483a2> ../cstrike/dlls/client.cpp:1197 */
 bool CanBuyThis(CBasePlayer *pPlayer, int iWeapon)
 {
-	CHalfLifeMultiplay *mp = g_pGameRules;
-
 	if (pPlayer->HasShield() && iWeapon == WEAPON_ELITE)
 	{
 		return false;
@@ -986,7 +946,7 @@ bool CanBuyThis(CBasePlayer *pPlayer, int iWeapon)
 		return false;
 	}
 
-	if (!CanBuyWeaponByMaptype(pPlayer->m_iTeam, (WeaponIdType)iWeapon, (mp->m_iMapHasVIPSafetyZone == MAP_HAVE_VIP_SAFETYZONE_YES)))
+	if (!CanBuyWeaponByMaptype(pPlayer->m_iTeam, (WeaponIdType)iWeapon, (CSGameRules()->m_iMapHasVIPSafetyZone == MAP_HAVE_VIP_SAFETYZONE_YES)))
 	{
 		if (g_bClientPrintEnable)
 		{
@@ -999,7 +959,6 @@ bool CanBuyThis(CBasePlayer *pPlayer, int iWeapon)
 	return true;
 }
 
-/* <48696> ../cstrike/dlls/client.cpp:1247 */
 void BuyPistol(CBasePlayer *pPlayer, int iSlot)
 {
 	int iWeapon = 0;
@@ -1092,7 +1051,6 @@ void BuyPistol(CBasePlayer *pPlayer, int iSlot)
 	}
 }
 
-/* <487b0> ../cstrike/dlls/client.cpp:1325 */
 void BuyShotgun(CBasePlayer *pPlayer, int iSlot)
 {
 	int iWeapon = 0;
@@ -1154,7 +1112,6 @@ void BuyShotgun(CBasePlayer *pPlayer, int iSlot)
 	}
 }
 
-/* <488b5> ../cstrike/dlls/client.cpp:1378 */
 void BuySubMachineGun(CBasePlayer *pPlayer, int iSlot)
 {
 	int iWeapon = 0;
@@ -1240,7 +1197,6 @@ void BuySubMachineGun(CBasePlayer *pPlayer, int iSlot)
 	}
 }
 
-/* <489bb> ../cstrike/dlls/client.cpp:1450 */
 void BuyWeaponByWeaponID(CBasePlayer *pPlayer, WeaponIdType weaponID)
 {
 	if (!pPlayer->CanPlayerBuy(true))
@@ -1289,7 +1245,6 @@ void BuyWeaponByWeaponID(CBasePlayer *pPlayer, WeaponIdType weaponID)
 	}
 }
 
-/* <48adf> ../cstrike/dlls/client.cpp:1498 */
 void BuyRifle(CBasePlayer *pPlayer, int iSlot)
 {
 	int iWeapon = 0;
@@ -1443,7 +1398,6 @@ void BuyRifle(CBasePlayer *pPlayer, int iSlot)
 	}
 }
 
-/* <48bf5> ../cstrike/dlls/client.cpp:1629 */
 void BuyMachineGun(CBasePlayer *pPlayer, int iSlot)
 {
 	int iWeapon = WEAPON_M249;
@@ -1487,10 +1441,8 @@ void BuyMachineGun(CBasePlayer *pPlayer, int iSlot)
 	}
 }
 
-/* <473f8> ../cstrike/dlls/client.cpp:1677 */
 void BuyItem(CBasePlayer *pPlayer, int iSlot)
 {
-	//int iItem = 0;
 	int iItemPrice = 0;
 	const char *pszItem = NULL;
 
@@ -1510,7 +1462,6 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 
 	int fullArmor = (pPlayer->pev->armorvalue >= 100);
 	int helmet = (pPlayer->m_iKevlar == ARMOR_TYPE_HELMET);
-	//int price;
 	int enoughMoney = 1;
 
 	switch (iSlot)
@@ -1706,7 +1657,7 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 		}
 		case MENU_SLOT_ITEM_DEFUSEKIT:
 		{
-			if (pPlayer->m_iTeam != CT || !g_pGameRules->m_bMapHasBombTarget)
+			if (pPlayer->m_iTeam != CT || !CSGameRules()->m_bMapHasBombTarget)
 			{
 				return;
 			}
@@ -1790,10 +1741,8 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 	}
 }
 
-/* <48d40> ../cstrike/dlls/client.cpp:1998 */
 void HandleMenu_ChooseAppearance(CBasePlayer *player, int slot)
 {
-	CHalfLifeMultiplay *mp = g_pGameRules;
 	int numSkins = g_bIsCzeroGame ? CZ_NUM_SKIN : CS_NUM_SKIN;
 
 	struct
@@ -1909,17 +1858,17 @@ void HandleMenu_ChooseAppearance(CBasePlayer *player, int slot)
 	// Reset the player's state
 	if (player->m_iJoiningState == JOINED)
 	{
-		mp->CheckWinConditions();
+		CSGameRules()->CheckWinConditions();
 	}
 	else if (player->m_iJoiningState == PICKINGTEAM)
 	{
 		player->m_iJoiningState = GETINTOGAME;
 
-		if (mp->IsCareer())
+		if (CSGameRules()->IsCareer())
 		{
 			if (!player->IsBot())
 			{
-				mp->CheckWinConditions();
+				CSGameRules()->CheckWinConditions();
 			}
 		}
 	}
@@ -1930,17 +1879,17 @@ void HandleMenu_ChooseAppearance(CBasePlayer *player, int slot)
 	SET_CLIENT_KEY_VALUE(player->entindex(), GET_INFO_BUFFER(player->edict()), "model", appearance.model_name);
 	player->SetNewPlayerModel(sPlayerModelFiles[ appearance.model_name_index ]);
 
-	if (mp->m_iMapHasVIPSafetyZone == MAP_VIP_SAFETYZONE_UNINITIALIZED)
+	if (CSGameRules()->m_iMapHasVIPSafetyZone == MAP_VIP_SAFETYZONE_UNINITIALIZED)
 	{
 		if ((UTIL_FindEntityByClassname(NULL, "func_vip_safetyzone")) != NULL)
-			mp->m_iMapHasVIPSafetyZone = MAP_HAVE_VIP_SAFETYZONE_YES;
+			CSGameRules()->m_iMapHasVIPSafetyZone = MAP_HAVE_VIP_SAFETYZONE_YES;
 		else
-			mp->m_iMapHasVIPSafetyZone = MAP_HAVE_VIP_SAFETYZONE_NO;
+			CSGameRules()->m_iMapHasVIPSafetyZone = MAP_HAVE_VIP_SAFETYZONE_NO;
 	}
 
-	if (mp->m_iMapHasVIPSafetyZone == MAP_HAVE_VIP_SAFETYZONE_YES)
+	if (CSGameRules()->m_iMapHasVIPSafetyZone == MAP_HAVE_VIP_SAFETYZONE_YES)
 	{
-		if (!mp->m_pVIP && player->m_iTeam == CT)
+		if (!CSGameRules()->m_pVIP && player->m_iTeam == CT)
 		{
 			player->MakeVIP();
 		}
@@ -1949,12 +1898,8 @@ void HandleMenu_ChooseAppearance(CBasePlayer *player, int slot)
 
 // returns true if the selection has been handled and the player's menu
 // can be closed...false if the menu should be displayed again
-
-/* <48e4b> ../cstrike/dlls/client.cpp:2214 */
 BOOL HandleMenu_ChooseTeam(CBasePlayer *player, int slot)
 {
-	CHalfLifeMultiplay *mp = g_pGameRules;
-
 	int oldTeam;
 	char *szOldTeam;
 	char *szNewTeam;
@@ -1972,7 +1917,7 @@ BOOL HandleMenu_ChooseTeam(CBasePlayer *player, int slot)
 
 			return TRUE;
 		}
-		else if (g_pGameRules->IsVIPQueueEmpty())
+		else if (CSGameRules()->IsVIPQueueEmpty())
 		{
 			ClientPrint(player->pev, HUD_PRINTCENTER, "#Cannot_Switch_From_VIP");
 			CLIENT_COMMAND(ENT(player->pev), "slot10\n");
@@ -1993,9 +1938,9 @@ BOOL HandleMenu_ChooseTeam(CBasePlayer *player, int slot)
 		break;
 	case MENU_SLOT_TEAM_VIP:
 	{
-		if (mp->m_iMapHasVIPSafetyZone == MAP_HAVE_VIP_SAFETYZONE_YES && player->m_iTeam == CT)
+		if (CSGameRules()->m_iMapHasVIPSafetyZone == MAP_HAVE_VIP_SAFETYZONE_YES && player->m_iTeam == CT)
 		{
-			mp->AddToVIPQueue(player);
+			CSGameRules()->AddToVIPQueue(player);
 			CLIENT_COMMAND(ENT(player->pev), "slot10\n");
 			return TRUE;
 		}
@@ -2052,7 +1997,7 @@ BOOL HandleMenu_ChooseTeam(CBasePlayer *player, int slot)
 
 		// Only spectate if we are in the freeze period or dead.
 		// This is done here just in case.
-		if (mp->IsFreezePeriod() || player->pev->deadflag != DEAD_NO)
+		if (g_pGameRules->IsFreezePeriod() || player->pev->deadflag != DEAD_NO)
 		{
 			if (player->m_iTeam != UNASSIGNED && player->pev->deadflag == DEAD_NO)
 			{
@@ -2068,14 +2013,8 @@ BOOL HandleMenu_ChooseTeam(CBasePlayer *player, int slot)
 			if (player->m_iTeam != SPECTATOR)
 			{
 				// notify other clients of player joined to team spectator
-				UTIL_LogPrintf
-				(
-					"\"%s<%i><%s><%s>\" joined team \"SPECTATOR\"\n",
-					STRING(player->pev->netname),
-					GETPLAYERUSERID(player->edict()),
-					GETPLAYERAUTHID(player->edict()),
-					GetTeam(player->m_iTeam)
-				);
+				UTIL_LogPrintf("\"%s<%i><%s><%s>\" joined team \"SPECTATOR\"\n", STRING(player->pev->netname),
+					GETPLAYERUSERID(player->edict()), GETPLAYERAUTHID(player->edict()), GetTeam(player->m_iTeam));
 			}
 
 			player->m_iTeam = SPECTATOR;
@@ -2091,7 +2030,7 @@ BOOL HandleMenu_ChooseTeam(CBasePlayer *player, int slot)
 
 			MESSAGE_BEGIN(MSG_BROADCAST, gmsgScoreInfo);
 				WRITE_BYTE(ENTINDEX(player->edict()));
-				WRITE_SHORT((int)player->pev->frags);
+				WRITE_SHORT(int(player->pev->frags));
 				WRITE_SHORT(player->m_iDeaths);
 				WRITE_SHORT(0);
 				WRITE_SHORT(0);
@@ -2107,8 +2046,8 @@ BOOL HandleMenu_ChooseTeam(CBasePlayer *player, int slot)
 
 			TeamChangeUpdate(player, player->m_iTeam);
 
-			edict_t *pentSpawnSpot = mp->GetPlayerSpawnSpot(player);
-			player->StartObserver(VARS(pentSpawnSpot)->origin, VARS(pentSpawnSpot)->angles);
+			edict_t *pentSpawnSpot = g_pGameRules->GetPlayerSpawnSpot(player);
+			player->StartObserver(pentSpawnSpot->v.origin, pentSpawnSpot->v.angles);
 
 			MESSAGE_BEGIN(MSG_ALL, gmsgSpectator);
 				WRITE_BYTE(ENTINDEX(player->edict()));
@@ -2141,7 +2080,7 @@ BOOL HandleMenu_ChooseTeam(CBasePlayer *player, int slot)
 	// Player is switching to a new team (It is possible to switch to the
 	// same team just to choose a new appearance)
 
-	if (mp->TeamFull(team))
+	if (CSGameRules()->TeamFull(team))
 	{
 		// The specified team is full
 		// attempt to kick a bot to make room for this player
@@ -2161,7 +2100,7 @@ BOOL HandleMenu_ChooseTeam(CBasePlayer *player, int slot)
 	}
 
 	// players are allowed to change to their own team so they can just change their model
-	if (mp->TeamStacked(team, player->m_iTeam))
+	if (CSGameRules()->TeamStacked(team, player->m_iTeam))
 	{
 		// The specified team is full
 		ClientPrint(player->pev, HUD_PRINTCENTER, (team == TERRORIST) ? "#Too_Many_Terrorists" : "#Too_Many_CTs");
@@ -2208,7 +2147,7 @@ BOOL HandleMenu_ChooseTeam(CBasePlayer *player, int slot)
 		CheckStartMoney();
 
 		// all players start with "mp_startmoney" bucks
-		player->m_iAccount = (int)startmoney.value;
+		player->m_iAccount = int(startmoney.value);
 
 		player->pev->solid = SOLID_NOT;
 		player->pev->movetype = MOVETYPE_NOCLIP;
@@ -2231,7 +2170,7 @@ BOOL HandleMenu_ChooseTeam(CBasePlayer *player, int slot)
 		SET_MODEL(ENT(player->pev), "models/player.mdl");
 	}
 
-	if (!g_pGameRules->IsCareer())
+	if (!CSGameRules()->IsCareer())
 	{
 		switch (team)
 		{
@@ -2277,27 +2216,13 @@ BOOL HandleMenu_ChooseTeam(CBasePlayer *player, int slot)
 	szNewTeam = GetTeam(team);
 
 	// Notify others that this player has joined a new team
-	UTIL_ClientPrintAll
-	(
-		HUD_PRINTNOTIFY,
-		(team == TERRORIST) ? "#Game_join_terrorist" : "#Game_join_ct",
-		(STRING(player->pev->netname) && STRING(player->pev->netname)[0] != 0) ? STRING(player->pev->netname) : "<unconnected>"
-	);
+	UTIL_ClientPrintAll(HUD_PRINTNOTIFY, (team == TERRORIST) ? "#Game_join_terrorist" : "#Game_join_ct",
+		(STRING(player->pev->netname) && STRING(player->pev->netname)[0] != 0) ? STRING(player->pev->netname) : "<unconnected>");
 
-	UTIL_LogPrintf
-	(
-		"\"%s<%i><%s><%s>\" joined team \"%s\"\n",
-		STRING(player->pev->netname),
-		GETPLAYERUSERID(player->edict()),
-		GETPLAYERAUTHID(player->edict()),
-		szOldTeam,
-		szNewTeam
-	);
-
+	UTIL_LogPrintf("\"%s<%i><%s><%s>\" joined team \"%s\"\n", STRING(player->pev->netname), GETPLAYERUSERID(player->edict()), GETPLAYERAUTHID(player->edict()), szOldTeam, szNewTeam);
 	return TRUE;
 }
 
-/* <474a0> ../cstrike/dlls/client.cpp:2553 */
 void Radio1(CBasePlayer *player, int slot)
 {
 	if (player->m_flRadioTime >= gpGlobals->time)
@@ -2341,7 +2266,6 @@ void Radio1(CBasePlayer *player, int slot)
 	}
 }
 
-/* <474ca> ../cstrike/dlls/client.cpp:2596 */
 void Radio2(CBasePlayer *player, int slot)
 {
 	if (player->m_flRadioTime >= gpGlobals->time)
@@ -2385,7 +2309,6 @@ void Radio2(CBasePlayer *player, int slot)
 	}
 }
 
-/* <474f4> ../cstrike/dlls/client.cpp:2639 */
 void Radio3(CBasePlayer *player, int slot)
 {
 	if (player->m_flRadioTime >= gpGlobals->time)
@@ -2442,7 +2365,6 @@ void Radio3(CBasePlayer *player, int slot)
 	}
 }
 
-/* <49402> ../cstrike/dlls/client.cpp:2698 */
 bool BuyGunAmmo(CBasePlayer *player, CBasePlayerItem *weapon, bool bBlinkMoney)
 {
 	int cost;
@@ -2548,7 +2470,6 @@ bool BuyGunAmmo(CBasePlayer *player, CBasePlayerItem *weapon, bool bBlinkMoney)
 	return false;
 }
 
-/* <4751e> ../cstrike/dlls/client.cpp:2884 */
 bool BuyAmmo(CBasePlayer *player, int nSlot, bool bBlinkMoney)
 {
 	if (!player->CanPlayerBuy(true))
@@ -2590,7 +2511,6 @@ bool BuyAmmo(CBasePlayer *player, int nSlot, bool bBlinkMoney)
 	return false;
 }
 
-/* <4bb4a> ../cstrike/dlls/client.cpp:2933 */
 CBaseEntity *EntityFromUserID(int userID)
 {
 	CBaseEntity *pTempEntity = NULL;
@@ -2611,7 +2531,6 @@ CBaseEntity *EntityFromUserID(int userID)
 	return NULL;
 }
 
-/* <4baa5> ../cstrike/dlls/client.cpp:2958 */
 NOXREF int CountPlayersInServer()
 {
 	int count = 0;
@@ -2636,8 +2555,6 @@ NOXREF int CountPlayersInServer()
 // Handles the special "buy" alias commands we're creating to accommodate the buy
 // scripts players use (now that we've rearranged the buy menus and broken the scripts)
 // ** Returns TRUE if we've handled the command **
-
-/* <4958c> ../cstrike/dlls/client.cpp:2983 */
 BOOL HandleBuyAliasCommands(CBasePlayer *pPlayer, const char *pszCommand)
 {
 	// Let them buy it if it's got a weapon data string.
@@ -2651,7 +2568,7 @@ BOOL HandleBuyAliasCommands(CBasePlayer *pPlayer, const char *pszCommand)
 	{
 		// Ok, we have weapon info ID.
 		// assasination maps have a specific set of weapons that can be used in them.
-		if (CanBuyWeaponByMaptype(pPlayer->m_iTeam, weaponID, (g_pGameRules->m_iMapHasVIPSafetyZone == MAP_HAVE_VIP_SAFETYZONE_YES)))
+		if (CanBuyWeaponByMaptype(pPlayer->m_iTeam, weaponID, (CSGameRules()->m_iMapHasVIPSafetyZone == MAP_HAVE_VIP_SAFETYZONE_YES)))
 		{
 			bRetVal = TRUE;
 			BuyWeaponByWeaponID(pPlayer, weaponID);
@@ -2781,7 +2698,6 @@ BOOL HandleBuyAliasCommands(CBasePlayer *pPlayer, const char *pszCommand)
 	return bRetVal;
 }
 
-/* <49c3e> ../cstrike/dlls/client.cpp:3113 */
 BOOL HandleRadioAliasCommands(CBasePlayer *pPlayer, const char *pszCommand)
 {
 	BOOL bRetVal = FALSE;
@@ -2896,13 +2812,10 @@ BOOL HandleRadioAliasCommands(CBasePlayer *pPlayer, const char *pszCommand)
 }
 
 // Use CMD_ARGV,  CMD_ARGV, and CMD_ARGC to get pointers the character string command.
-
-/* <4c6c1> ../cstrike/dlls/client.cpp:3234 */
 void EXT_FUNC ClientCommand(edict_t *pEntity)
 {
 	const char *pcmd = CMD_ARGV_(0);
 	const char *pstr = NULL;
-	CHalfLifeMultiplay *mp = g_pGameRules;
 
 	// Is the client spawned yet?
 	if (!pEntity->pvPrivateData)
@@ -2913,33 +2826,33 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 
 	if (FStrEq(pcmd, "say"))
 	{
-		if (gpGlobals->time >= player->m_flLastCommandTime[0])
+		if (gpGlobals->time >= player->m_flLastCommandTime[CMD_SAY])
 		{
-			player->m_flLastCommandTime[0] = gpGlobals->time + 0.3f;
+			player->m_flLastCommandTime[CMD_SAY] = gpGlobals->time + 0.3f;
 			Host_Say(pEntity, 0);
 		}
 	}
 	else if (FStrEq(pcmd, "say_team"))
 	{
-		if (gpGlobals->time >= player->m_flLastCommandTime[1])
+		if (gpGlobals->time >= player->m_flLastCommandTime[CMD_SAYTEAM])
 		{
-			player->m_flLastCommandTime[1] = gpGlobals->time + 0.3f;
+			player->m_flLastCommandTime[CMD_SAYTEAM] = gpGlobals->time + 0.3f;
 			Host_Say(pEntity, 1);
 		}
 	}
 	else if (FStrEq(pcmd, "fullupdate"))
 	{
-		if (gpGlobals->time >= player->m_flLastCommandTime[2])
+		if (gpGlobals->time >= player->m_flLastCommandTime[CMD_FULLUPDATE])
 		{
-			player->m_flLastCommandTime[2] = gpGlobals->time + 0.6f;
+			player->m_flLastCommandTime[CMD_FULLUPDATE] = gpGlobals->time + 0.6f;
 			player->ForceClientDllUpdate();
 		}
 	}
 	else if (FStrEq(pcmd, "vote"))
 	{
-		if (gpGlobals->time >= player->m_flLastCommandTime[3])
+		if (gpGlobals->time >= player->m_flLastCommandTime[CMD_VOTE])
 		{
-			player->m_flLastCommandTime[3] = gpGlobals->time + 0.3f;
+			player->m_flLastCommandTime[CMD_VOTE] = gpGlobals->time + 0.3f;
 
 			if (gpGlobals->time < player->m_flNextVoteTime)
 			{
@@ -3012,17 +2925,17 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 	}
 	else if (FStrEq(pcmd, "listmaps"))
 	{
-		if (gpGlobals->time >= player->m_flLastCommandTime[5])
+		if (gpGlobals->time >= player->m_flLastCommandTime[CMD_LISTMAPS])
 		{
-			player->m_flLastCommandTime[5] = gpGlobals->time + 0.3f;
-			mp->DisplayMaps(player, 0);
+			player->m_flLastCommandTime[CMD_LISTMAPS] = gpGlobals->time + 0.3f;
+			CSGameRules()->DisplayMaps(player, 0);
 		}
 	}
 	else if (FStrEq(pcmd, "votemap"))
 	{
-		if (gpGlobals->time >= player->m_flLastCommandTime[4])
+		if (gpGlobals->time >= player->m_flLastCommandTime[CMD_VOTEMAP])
 		{
-			player->m_flLastCommandTime[4] = gpGlobals->time + 0.3f;
+			player->m_flLastCommandTime[CMD_VOTEMAP] = gpGlobals->time + 0.3f;
 
 			if (gpGlobals->time < player->m_flNextVoteTime)
 			{
@@ -3063,7 +2976,7 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 
 				if (iFailed)
 				{
-					mp->DisplayMaps(player, 0);
+					CSGameRules()->DisplayMaps(player, 0);
 					ClientPrint(player->pev, HUD_PRINTCONSOLE, "#Game_votemap_usage");
 					return;
 				}
@@ -3076,17 +2989,15 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 
 				if (player->m_iMapVote)
 				{
-					mp->m_iMapVotes[ player->m_iMapVote ]--;
-
-					if (mp->m_iMapVotes[player->m_iMapVote] < 0)
+					if (--CSGameRules()->m_iMapVotes[player->m_iMapVote] < 0)
 					{
-						mp->m_iMapVotes[player->m_iMapVote] = 0;
+						CSGameRules()->m_iMapVotes[player->m_iMapVote] = 0;
 					}
 				}
 
 				ClientPrint(player->pev, HUD_PRINTCONSOLE, "#Game_voted_for_map", UTIL_dtos1(iVoteID));
 				player->m_iMapVote = iVoteID;
-				mp->ProcessMapVote(player, iVoteID);
+				CSGameRules()->ProcessMapVote(player, iVoteID);
 			}
 		}
 	}
@@ -3094,7 +3005,7 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 	{
 		if (gpGlobals->time > player->m_iTimeCheckAllowed)
 		{
-			player->m_iTimeCheckAllowed = (int)(gpGlobals->time + 1);
+			player->m_iTimeCheckAllowed = int(gpGlobals->time + 1);
 
 			if (!timelimit.value)
 			{
@@ -3102,13 +3013,13 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 				return;
 			}
 
-			int iTimeRemaining = (int)(g_flTimeLimit - gpGlobals->time);
+			int iTimeRemaining = int(g_flTimeLimit - gpGlobals->time);
 
 			if (iTimeRemaining < 0)
 				iTimeRemaining = 0;
 
-			int iMinutes = (int)(iTimeRemaining % 60);
-			int iSeconds = (int)(iTimeRemaining / 60);
+			int iMinutes = int(iTimeRemaining % 60);
+			int iSeconds = int(iTimeRemaining / 60);
 
 			char secs[5];
 			char *temp = UTIL_dtos2(iMinutes);
@@ -3131,9 +3042,9 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 	}
 	else if (FStrEq(pcmd, "listplayers"))
 	{
-		if (gpGlobals->time >= player->m_flLastCommandTime[6])
+		if (gpGlobals->time >= player->m_flLastCommandTime[CMD_LISTPLAYERS])
 		{
-			player->m_flLastCommandTime[6] = gpGlobals->time + 0.3f;
+			player->m_flLastCommandTime[CMD_LISTPLAYERS] = gpGlobals->time + 0.3f;
 			ListPlayers(player);
 		}
 	}
@@ -3168,7 +3079,7 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 	{
 		int slot = Q_atoi(CMD_ARGV_(1));
 
-		if (player->m_iJoiningState == JOINED || (player->m_iMenu != SPECTATOR && player->m_iMenu != TERRORIST))
+		if (player->m_iJoiningState == JOINED || (player->m_iMenu != Menu_ChooseAppearance && player->m_iMenu != Menu_ChooseTeam))
 		{
 			if (slot == 10)
 			{
@@ -3228,7 +3139,7 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 						}
 						case VGUI_MenuSlot_Buy_ShotGun:
 						{
-							if (mp->m_iMapHasVIPSafetyZone == MAP_HAVE_VIP_SAFETYZONE_YES && player->m_iTeam == TERRORIST)
+							if (CSGameRules()->m_iMapHasVIPSafetyZone == MAP_HAVE_VIP_SAFETYZONE_YES && player->m_iTeam == TERRORIST)
 								ShowVGUIMenu(player, VGUI_Menu_Buy_ShotGun, MENU_KEY_0, "#AS_BuyShotgun");
 							else
 								ShowVGUIMenu(player, VGUI_Menu_Buy_ShotGun, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_0), "#BuyShotgun");
@@ -3238,7 +3149,7 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 						}
 						case VGUI_MenuSlot_Buy_SubMachineGun:
 						{
-							if (mp->m_iMapHasVIPSafetyZone == MAP_HAVE_VIP_SAFETYZONE_YES)
+							if (CSGameRules()->m_iMapHasVIPSafetyZone == MAP_HAVE_VIP_SAFETYZONE_YES)
 							{
 								if (player->m_iTeam == CT)
 									ShowVGUIMenu(player, VGUI_Menu_Buy_SubMachineGun, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_0), "#AS_CT_BuySubMachineGun");
@@ -3258,7 +3169,7 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 						}
 						case VGUI_MenuSlot_Buy_Rifle:
 						{
-							if (mp->m_iMapHasVIPSafetyZone == MAP_HAVE_VIP_SAFETYZONE_YES)
+							if (CSGameRules()->m_iMapHasVIPSafetyZone == MAP_HAVE_VIP_SAFETYZONE_YES)
 							{
 								if (player->m_iTeam == CT)
 									ShowVGUIMenu(player, VGUI_Menu_Buy_Rifle, (MENU_KEY_1 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_0), "#AS_CT_BuyRifle");
@@ -3278,7 +3189,7 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 						}
 						case VGUI_MenuSlot_Buy_MachineGun:
 						{
-							if (mp->m_iMapHasVIPSafetyZone == MAP_HAVE_VIP_SAFETYZONE_YES && player->m_iTeam == TERRORIST)
+							if (CSGameRules()->m_iMapHasVIPSafetyZone == MAP_HAVE_VIP_SAFETYZONE_YES && player->m_iTeam == TERRORIST)
 								ShowVGUIMenu(player, VGUI_Menu_Buy_MachineGun, MENU_KEY_0, "#AS_T_BuyMachineGun");
 							else
 								ShowVGUIMenu(player, VGUI_Menu_Buy_MachineGun, (MENU_KEY_1 | MENU_KEY_0), "#BuyMachineGun");
@@ -3328,7 +3239,7 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 						{
 							if (player->m_signals.GetState() & SIGNAL_BUY)
 							{
-								if (mp->m_bMapHasBombTarget)
+								if (CSGameRules()->m_bMapHasBombTarget)
 								{
 									if (player->m_iTeam == CT)
 										ShowVGUIMenu(player, VGUI_Menu_Buy_Item, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_7 | MENU_KEY_8 | MENU_KEY_0), "#DCT_BuyItem");
@@ -3435,18 +3346,18 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 			}
 		}
 
-		if (!mp->IsCareer())
+		if (!CSGameRules()->IsCareer())
 		{
-			if (mp->m_iMapHasVIPSafetyZone == MAP_HAVE_VIP_SAFETYZONE_YES && player->m_iJoiningState == JOINED && player->m_iTeam == CT)
+			if (CSGameRules()->m_iMapHasVIPSafetyZone == MAP_HAVE_VIP_SAFETYZONE_YES && player->m_iJoiningState == JOINED && player->m_iTeam == CT)
 			{
-				if (mp->IsFreezePeriod() || player->pev->deadflag != DEAD_NO)
+				if (CSGameRules()->IsFreezePeriod() || player->pev->deadflag != DEAD_NO)
 					ShowVGUIMenu(player, VGUI_Menu_Team, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_0), "#IG_VIP_Team_Select_Spect");
 				else
 					ShowVGUIMenu(player, VGUI_Menu_Team, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_5 | MENU_KEY_0), "#IG_VIP_Team_Select");
 			}
 			else
 			{
-				if (mp->IsFreezePeriod() || player->pev->deadflag != DEAD_NO)
+				if (CSGameRules()->IsFreezePeriod() || player->pev->deadflag != DEAD_NO)
 					ShowVGUIMenu(player, VGUI_Menu_Team, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_0), "#IG_Team_Select_Spect");
 				else
 					ShowVGUIMenu(player, VGUI_Menu_Team, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_5 | MENU_KEY_0), "#IG_Team_Select");
@@ -3500,7 +3411,7 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 			return;
 		}
 
-		mp->AddToVIPQueue(player);
+		CSGameRules()->AddToVIPQueue(player);
 	}
 	else if (FStrEq(pcmd, "spectate") && (player->pev->flags & FL_PROXY)) // always allow proxies to become a spectator
 	{
@@ -3547,7 +3458,7 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 	}
 	else
 	{
-		if (mp->ClientCommand_DeadOrAlive(GetClassPtr((CBasePlayer *)pev), pcmd))
+		if (g_pGameRules->ClientCommand_DeadOrAlive(GetClassPtr((CBasePlayer *)pev), pcmd))
 			return;
 
 		if (TheBots != NULL)
@@ -3604,9 +3515,9 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 		{
 			if (FStrEq(pcmd, "nightvision"))
 			{
-				if (gpGlobals->time >= player->m_flLastCommandTime[7])
+				if (gpGlobals->time >= player->m_flLastCommandTime[CMD_NIGHTVISION])
 				{
-					player->m_flLastCommandTime[7] = gpGlobals->time + 0.3f;
+					player->m_flLastCommandTime[CMD_NIGHTVISION] = gpGlobals->time + 0.3f;
 
 					if (!player->m_bHasNightVision)
 						return;
@@ -3702,7 +3613,7 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 				if (g_flWeaponCheat && CMD_ARGC() > 1)
 					GetClassPtr((CBasePlayer *)pev)->m_iFOV = Q_atoi(CMD_ARGV(1));
 				else
-					CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("\"fov\" is \"%d\"\n", (int)GetClassPtr((CBasePlayer *)pev)->m_iFOV));
+					CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("\"fov\" is \"%d\"\n", int(GetClassPtr((CBasePlayer *)pev)->m_iFOV)));
 #endif
 			}
 			else if (FStrEq(pcmd, "use"))
@@ -3747,7 +3658,7 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 			{
 				if (player->m_signals.GetState() & SIGNAL_BUY)
 				{
-					if (mp->m_bMapHasBombTarget)
+					if (CSGameRules()->m_bMapHasBombTarget)
 					{
 						if (player->m_iTeam == CT)
 							ShowVGUIMenu(player, VGUI_Menu_Buy_Item, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_7 | MENU_KEY_8 | MENU_KEY_0), "#DCT_BuyItem");
@@ -3854,7 +3765,6 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 	}
 }
 
-/* <4b959> ../cstrike/dlls/client.cpp:4282 */
 void EXT_FUNC ClientUserInfoChanged(edict_t *pEntity, char *infobuffer)
 {
 	// Is the client spawned yet?
@@ -3904,22 +3814,13 @@ void EXT_FUNC ClientUserInfoChanged(edict_t *pEntity, char *infobuffer)
 				WRITE_STRING(szName);
 			MESSAGE_END();
 
-			UTIL_LogPrintf
-			(
-				"\"%s<%i><%s><%s>\" changed name to \"%s\"\n",
-				STRING(pEntity->v.netname),
-				GETPLAYERUSERID(pEntity),
-				GETPLAYERAUTHID(pEntity),
-				GetTeam(pPlayer->m_iTeam),
-				szName
-			);
+			UTIL_LogPrintf("\"%s<%i><%s><%s>\" changed name to \"%s\"\n", STRING(pEntity->v.netname), GETPLAYERUSERID(pEntity), GETPLAYERAUTHID(pEntity), GetTeam(pPlayer->m_iTeam), szName);
 		}
 	}
 
 	g_pGameRules->ClientUserInfoChanged(GetClassPtr((CBasePlayer *)&pEntity->v), infobuffer);
 }
 
-/* <4a378> ../cstrike/dlls/client.cpp:4362 */
 void EXT_FUNC ServerDeactivate()
 {
 	// It's possible that the engine will call this function more times than is necessary
@@ -3946,7 +3847,6 @@ void EXT_FUNC ServerDeactivate()
 	}
 }
 
-/* <4a392> ../cstrike/dlls/client.cpp:4400 */
 void EXT_FUNC ServerActivate(edict_t *pEdictList, int edictCount, int clientMax)
 {
 	int i;
@@ -3971,7 +3871,7 @@ void EXT_FUNC ServerActivate(edict_t *pEdictList, int edictCount, int clientMax)
 		pClass = CBaseEntity::Instance(pEdict);
 
 		// Activate this entity if it's got a class & isn't dormant
-		if (pClass && !(pClass->pev->flags & FL_DORMANT))
+		if (pClass != NULL && !(pClass->pev->flags & FL_DORMANT))
 		{
 			AddEntityHashValue(&pEdict->v, STRING(pEdict->v.classname), CLASSNAME);
 			pClass->Activate();
@@ -4000,7 +3900,6 @@ void EXT_FUNC ServerActivate(edict_t *pEdictList, int edictCount, int clientMax)
 	}
 }
 
-/* <4a404> ../cstrike/dlls/client.cpp:4459 */
 void EXT_FUNC PlayerPreThink(edict_t *pEntity)
 {
 	entvars_t *pev = &pEntity->v;
@@ -4012,7 +3911,6 @@ void EXT_FUNC PlayerPreThink(edict_t *pEntity)
 	}
 }
 
-/* <4a47c> ../cstrike/dlls/client.cpp:4475 */
 void EXT_FUNC PlayerPostThink(edict_t *pEntity)
 {
 	entvars_t *pev = &pEntity->v;
@@ -4024,13 +3922,11 @@ void EXT_FUNC PlayerPostThink(edict_t *pEntity)
 	}
 }
 
-/* <4a4f4> ../cstrike/dlls/client.cpp:4486 */
 void EXT_FUNC ParmsNewLevel()
 {
 	;
 }
 
-/* <4a50d> ../cstrike/dlls/client.cpp:4491 */
 void EXT_FUNC ParmsChangeLevel()
 {
 	// retrieve the pointer to the save data
@@ -4042,7 +3938,6 @@ void EXT_FUNC ParmsChangeLevel()
 	}
 }
 
-/* <4a548> ../cstrike/dlls/client.cpp:4504 */
 void EXT_FUNC StartFrame()
 {
 	if (g_pGameRules != NULL)
@@ -4064,7 +3959,7 @@ void EXT_FUNC StartFrame()
 	gpGlobals->teamplay = 1.0f;
 
 	if (skill != NULL)
-		g_iSkillLevel = (int)skill->value;
+		g_iSkillLevel = int(skill->value);
 
 	else
 		g_iSkillLevel = 0;
@@ -4079,10 +3974,12 @@ void EXT_FUNC StartFrame()
 		TheTutor->StartFrame(gpGlobals->time);
 	}
 
+#ifndef REGAMEDLL_FIXES
+	// it is noxref
 	++g_ulFrameCount;
+#endif
 }
 
-/* <4a581> ../cstrike/dlls/client.cpp:4534 */
 void ClientPrecache()
 {
 	int i;
@@ -4492,23 +4389,8 @@ void ClientPrecache()
 	PRECACHE_GENERIC("sprites/scope_arc_sw.tga");
 
 	m_usResetDecals = g_engfuncs.pfnPrecacheEvent(1, "events/decal_reset.sc");
-
-	/*Vector temp = g_vecZero;
-	ENGINE_FORCE_UNMODIFIED(force_exactfile, (float *)&temp, (float *)&temp, "sprites/scope_arc.tga");
-	ENGINE_FORCE_UNMODIFIED(force_exactfile, (float *)&temp, (float *)&temp, "sprites/scope_arc_nw.tga");
-	ENGINE_FORCE_UNMODIFIED(force_exactfile, (float *)&temp, (float *)&temp, "sprites/scope_arc_ne.tga");
-	ENGINE_FORCE_UNMODIFIED(force_exactfile, (float *)&temp, (float *)&temp, "sprites/scope_arc_sw.tga");
-
-
-	PRECACHE_GENERIC("sprites/scope_arc.tga");
-	PRECACHE_GENERIC("sprites/scope_arc_nw.tga");
-	PRECACHE_GENERIC("sprites/scope_arc_ne.tga");
-	PRECACHE_GENERIC("sprites/scope_arc_sw.tga");
-
-	m_usResetDecals = g_engfuncs.pfnPrecacheEvent(1, "events/decal_reset.sc");*/
 }
 
-/* <4a6e5> ../cstrike/dlls/client.cpp:4996 */
 const char *EXT_FUNC GetGameDescription()
 {
 	if (g_bIsCzeroGame)
@@ -4517,13 +4399,11 @@ const char *EXT_FUNC GetGameDescription()
 	return "Counter-Strike";
 }
 
-/* <4a703> ../cstrike/dlls/client.cpp:5022 */
 void EXT_FUNC Sys_Error(const char *error_string)
 {
 	;
 }
 
-/* <4a731> ../cstrike/dlls/client.cpp:5039 */
 void EXT_FUNC PlayerCustomization(edict_t *pEntity, customization_t *pCust)
 {
 	CBasePlayer *pPlayer = (CBasePlayer *)GET_PRIVATE(pEntity);
@@ -4555,7 +4435,6 @@ void EXT_FUNC PlayerCustomization(edict_t *pEntity, customization_t *pCust)
 	}
 }
 
-/* <4a7b9> ../cstrike/dlls/client.cpp:5079 */
 void EXT_FUNC SpectatorConnect(edict_t *pEntity)
 {
 	CBaseSpectator *pPlayer = (CBaseSpectator *)GET_PRIVATE(pEntity);
@@ -4566,7 +4445,6 @@ void EXT_FUNC SpectatorConnect(edict_t *pEntity)
 	}
 }
 
-/* <4a83d> ../cstrike/dlls/client.cpp:5095 */
 void EXT_FUNC SpectatorDisconnect(edict_t *pEntity)
 {
 	CBaseSpectator *pPlayer = (CBaseSpectator *)GET_PRIVATE(pEntity);
@@ -4577,7 +4455,6 @@ void EXT_FUNC SpectatorDisconnect(edict_t *pEntity)
 	}
 }
 
-/* <4a8b5> ../cstrike/dlls/client.cpp:5111 */
 void EXT_FUNC SpectatorThink(edict_t *pEntity)
 {
 	CBaseSpectator *pPlayer = (CBaseSpectator *)GET_PRIVATE(pEntity);
@@ -4588,7 +4465,6 @@ void EXT_FUNC SpectatorThink(edict_t *pEntity)
 	}
 }
 
-/* <4a92d> ../cstrike/dlls/client.cpp:5160 */
 void EXT_FUNC SetupVisibility(edict_t *pViewEntity, edict_t *pClient, unsigned char **pvs, unsigned char **pas)
 {
 	edict_t *pView = pClient;
@@ -4628,7 +4504,6 @@ void EXT_FUNC SetupVisibility(edict_t *pViewEntity, edict_t *pClient, unsigned c
 	*pas = ENGINE_SET_PAS((float *)&org);
 }
 
-/* <4aa75> ../cstrike/dlls/client.cpp:5226 */
 void ResetPlayerPVS(edict_t *client, int clientnum)
 {
 	PLAYERPVSSTATUS *pvs = &g_PVSStatus[clientnum];
@@ -4639,7 +4514,6 @@ void ResetPlayerPVS(edict_t *client, int clientnum)
 	Q_memcpy(pvs->leafnums, client->leafnums, sizeof(pvs->leafnums));
 }
 
-/* <4aae8> ../cstrike/dlls/client.cpp:5240 */
 bool CheckPlayerPVSLeafChanged(edict_t *client, int clientnum)
 {
 	PLAYERPVSSTATUS *pvs = &g_PVSStatus[clientnum];
@@ -4654,7 +4528,6 @@ bool CheckPlayerPVSLeafChanged(edict_t *client, int clientnum)
 	return false;
 }
 
-/* <475e3> ../cstrike/dlls/client.cpp:5263 */
 void MarkEntityInPVS(int clientnum, int entitynum, float time, bool inpvs)
 {
 	PLAYERPVSSTATUS *pvs;
@@ -4669,7 +4542,6 @@ void MarkEntityInPVS(int clientnum, int entitynum, float time, bool inpvs)
 		es->m_fTimeEnteredPVS = 0;
 }
 
-/* <47581> ../cstrike/dlls/client.cpp:5275 */
 bool CheckEntityRecentlyInPVS(int clientnum, int entitynum, float currenttime)
 {
 	PLAYERPVSSTATUS *pvs;
@@ -4686,7 +4558,6 @@ bool CheckEntityRecentlyInPVS(int clientnum, int entitynum, float currenttime)
 	return false;
 }
 
-/* <4ac57> ../cstrike/dlls/client.cpp:5312 */
 int EXT_FUNC AddToFullPack(struct entity_state_s *state, int e, edict_t *ent, edict_t *host, int hostflags, int player, unsigned char *pSet)
 {
 	if ((ent->v.effects & EF_NODRAW) == EF_NODRAW && ent != host)
@@ -4750,7 +4621,7 @@ int EXT_FUNC AddToFullPack(struct entity_state_s *state, int e, edict_t *ent, ed
 	if (ent->v.flags & FL_CUSTOMENTITY)
 		state->entityType = ENTITY_BEAM;
 
-	state->animtime = (int)(1000.0 * ent->v.animtime) / 1000.0;
+	state->animtime = int(1000.0 * ent->v.animtime) / 1000.0;
 
 	Q_memcpy(state->origin, ent->v.origin, sizeof(float) * 3);
 	Q_memcpy(state->angles, ent->v.angles, sizeof(float) * 3);
@@ -4784,11 +4655,11 @@ int EXT_FUNC AddToFullPack(struct entity_state_s *state, int e, edict_t *ent, ed
 		state->blending[i] = ent->v.blending[i];
 
 	state->rendermode = ent->v.rendermode;
-	state->renderamt = (int)ent->v.renderamt;
+	state->renderamt = int(ent->v.renderamt);
 	state->renderfx = ent->v.renderfx;
-	state->rendercolor.r = (byte)ent->v.rendercolor.x;
-	state->rendercolor.g = (byte)ent->v.rendercolor.y;
-	state->rendercolor.b = (byte)ent->v.rendercolor.z;
+	state->rendercolor.r = byte(ent->v.rendercolor.x);
+	state->rendercolor.g = byte(ent->v.rendercolor.y);
+	state->rendercolor.b = byte(ent->v.rendercolor.z);
 
 	state->aiment = 0;
 
@@ -4815,7 +4686,7 @@ int EXT_FUNC AddToFullPack(struct entity_state_s *state, int e, edict_t *ent, ed
 		state->friction = ent->v.friction;
 		state->gravity = ent->v.gravity;
 		state->usehull = (ent->v.flags & FL_DUCKING) ? 1 : 0;
-		state->health = (int)ent->v.health;
+		state->health = int(ent->v.health);
 	}
 	else
 		state->playerclass = ent->v.playerclass;
@@ -4825,8 +4696,6 @@ int EXT_FUNC AddToFullPack(struct entity_state_s *state, int e, edict_t *ent, ed
 }
 
 // Creates baselines used for network encoding, especially for player data since players are not spawned until connect time.
-
-/* <4aef3> ../cstrike/dlls/client.cpp:5516 */
 void EXT_FUNC CreateBaseline(int player, int eindex, struct entity_state_s *baseline, struct edict_s *entity, int playermodelindex, Vector player_mins, Vector player_maxs)
 {
 	baseline->origin = entity->v.origin;
@@ -4836,12 +4705,12 @@ void EXT_FUNC CreateBaseline(int player, int eindex, struct entity_state_s *base
 	baseline->skin = (short)entity->v.skin;
 
 	// render information
-	baseline->rendermode = (byte)entity->v.rendermode;
-	baseline->renderamt = (byte)entity->v.renderamt;
-	baseline->rendercolor.r	= (byte)entity->v.rendercolor.x;
-	baseline->rendercolor.g	= (byte)entity->v.rendercolor.y;
-	baseline->rendercolor.b	= (byte)entity->v.rendercolor.z;
-	baseline->renderfx = (byte)entity->v.renderfx;
+	baseline->rendermode = byte(entity->v.rendermode);
+	baseline->renderamt = byte(entity->v.renderamt);
+	baseline->rendercolor.r	= byte(entity->v.rendercolor.x);
+	baseline->rendercolor.g	= byte(entity->v.rendercolor.y);
+	baseline->rendercolor.b	= byte(entity->v.rendercolor.z);
+	baseline->renderfx = byte(entity->v.renderfx);
 
 	if (player)
 	{
@@ -4874,7 +4743,6 @@ void EXT_FUNC CreateBaseline(int player, int eindex, struct entity_state_s *base
 	}
 }
 
-/* <47d8a> ../cstrike/dlls/client.cpp:5586 */
 void Entity_FieldInit(struct delta_s *pFields)
 {
 	entity_field_alias[ FIELD_ORIGIN0 ].field = DELTA_FINDFIELD(pFields, entity_field_alias[ FIELD_ORIGIN0 ].name);
@@ -4886,8 +4754,6 @@ void Entity_FieldInit(struct delta_s *pFields)
 }
 
 // Callback for sending entity_state_t info over network.
-
-/* <47da7> ../cstrike/dlls/client.cpp:5604 */
 void Entity_Encode(struct delta_s *pFields, const unsigned char *from, const unsigned char *to)
 {
 	entity_state_t *f, *t;
@@ -4936,7 +4802,6 @@ void Entity_Encode(struct delta_s *pFields, const unsigned char *from, const uns
 	}
 }
 
-/* <47cb4> ../cstrike/dlls/client.cpp:5662 */
 void Player_FieldInit(struct delta_s *pFields)
 {
 	player_field_alias[ FIELD_ORIGIN0 ].field = DELTA_FINDFIELD(pFields, player_field_alias[ FIELD_ORIGIN0 ].name);
@@ -4945,8 +4810,6 @@ void Player_FieldInit(struct delta_s *pFields)
 }
 
 // Callback for sending entity_state_t for players info over network.
-
-/* <47cd1> ../cstrike/dlls/client.cpp:5676 */
 void Player_Encode(struct delta_s *pFields, const unsigned char *from, const unsigned char *to)
 {
 	entity_state_t *f, *t;
@@ -4985,7 +4848,6 @@ void Player_Encode(struct delta_s *pFields, const unsigned char *from, const uns
 	}
 }
 
-/* <4afc4> ../cstrike/dlls/client.cpp:5738 */
 void Custom_Entity_FieldInit(delta_s *pFields)
 {
 	custom_entity_field_alias[ CUSTOMFIELD_ORIGIN0 ].field = DELTA_FINDFIELD(pFields, custom_entity_field_alias[ CUSTOMFIELD_ORIGIN0 ].name);
@@ -5000,8 +4862,6 @@ void Custom_Entity_FieldInit(delta_s *pFields)
 }
 
 // Callback for sending entity_state_t info ( for custom entities ) over network.
-
-/* <4aff3> ../cstrike/dlls/client.cpp:5759 */
 void Custom_Encode(struct delta_s *pFields, const unsigned char *from, const unsigned char *to)
 {
 	entity_state_t *f, *t;
@@ -5041,14 +4901,12 @@ void Custom_Encode(struct delta_s *pFields, const unsigned char *from, const uns
 
 	// animtime is compared by rounding first
 	// see if we really shouldn't actually send it
-
-	if ((int)f->animtime == (int)t->animtime)
+	if (int(f->animtime) == int(t->animtime))
 	{
 		DELTA_UNSETBYINDEX(pFields, custom_entity_field_alias[ CUSTOMFIELD_ANIMTIME ].field);
 	}
 }
 
-/* <4b08a> ../cstrike/dlls/client.cpp:5811 */
 void EXT_FUNC RegisterEncoders()
 {
 	DELTA_ADDENCODER("Entity_Encode", Entity_Encode);
@@ -5056,7 +4914,6 @@ void EXT_FUNC RegisterEncoders()
 	DELTA_ADDENCODER("Player_Encode", Player_Encode);
 }
 
-/* <4b0a4> ../cstrike/dlls/client.cpp:5818 */
 int EXT_FUNC GetWeaponData(edict_s *player, struct weapon_data_s *info)
 {
 	entvars_t *pev = &player->v;
@@ -5111,7 +4968,6 @@ int EXT_FUNC GetWeaponData(edict_s *player, struct weapon_data_s *info)
 	return 1;
 }
 
-/* <4b1fd> ../cstrike/dlls/client.cpp:5889 */
 void EXT_FUNC UpdateClientData(const struct edict_s *ent, int sendweapons, struct clientdata_s *cd)
 {
 	if (!ent || !ent->pvPrivateData)
@@ -5144,7 +5000,7 @@ void EXT_FUNC UpdateClientData(const struct edict_s *ent, int sendweapons, struc
 	cd->flTimeStepSound = pev->flTimeStepSound;
 	cd->flDuckTime = pev->flDuckTime;
 	cd->flSwimTime = pev->flSwimTime;
-	cd->waterjumptime = (int)pev->teleport_time;
+	cd->waterjumptime = int(pev->teleport_time);
 
 	Q_strcpy(cd->physinfo, ENGINE_GETPHYSINFO(ent));
 
@@ -5232,7 +5088,6 @@ void EXT_FUNC UpdateClientData(const struct edict_s *ent, int sendweapons, struc
 	}
 }
 
-/* <4b3ee> ../cstrike/dlls/client.cpp:6050 */
 void EXT_FUNC CmdStart(const edict_t *player, const struct usercmd_s *cmd, unsigned int random_seed)
 {
 	entvars_t *pev = const_cast<entvars_t *>(&player->v);
@@ -5249,7 +5104,6 @@ void EXT_FUNC CmdStart(const edict_t *player, const struct usercmd_s *cmd, unsig
 	}
 }
 
-/* <4b4eb> ../cstrike/dlls/client.cpp:6074 */
 void EXT_FUNC CmdEnd(const edict_t *player)
 {
 	entvars_t *pev = const_cast<entvars_t *>(&player->v);
@@ -5265,7 +5119,6 @@ void EXT_FUNC CmdEnd(const edict_t *player)
 	}
 }
 
-/* <4b644> ../cstrike/dlls/client.cpp:6101 */
 int EXT_FUNC ConnectionlessPacket(const struct netadr_s *net_from, const char *args, char *response_buffer, int *response_buffer_size)
 {
 	// Parse stuff from args
@@ -5280,7 +5133,6 @@ int EXT_FUNC ConnectionlessPacket(const struct netadr_s *net_from, const char *a
 	return 0;
 }
 
-/* <4b6c2> ../cstrike/dlls/client.cpp:6122 */
 int EXT_FUNC GetHullBounds(int hullnumber, float *mins, float *maxs)
 {
 	return hullnumber < 3;
@@ -5288,10 +5140,9 @@ int EXT_FUNC GetHullBounds(int hullnumber, float *mins, float *maxs)
 
 // Create pseudo-baselines for items that aren't placed in the map at spawn time, but which are likely
 // to be created during play ( e.g., grenades, ammo packs, projectiles, corpses, etc. )
-
-/* <4b733> ../cstrike/dlls/client.cpp:6156 */
 void EXT_FUNC CreateInstancedBaselines()
 {
+#ifndef REGAMEDLL_FIXES
 	int iret = 0;
 	entity_state_t state;
 
@@ -5302,9 +5153,9 @@ void EXT_FUNC CreateInstancedBaselines()
 
 	// Destroy objects.
 	// UTIL_Remove(pc);
+#endif
 }
 
-/* <4b77c> ../cstrike/dlls/client.cpp:6179 */
 int EXT_FUNC InconsistentFile(const edict_t *player, const char *filename, char *disconnect_message)
 {
 	// Server doesn't care?
@@ -5323,8 +5174,6 @@ int EXT_FUNC InconsistentFile(const edict_t *player, const char *filename, char 
 // Most games right now should return 0, until client-side weapon prediction code is written
 // and tested for them ( note you can predict weapons, but not do lag compensation, too,
 // if you want.
-
-/* <4b7cf> ../cstrike/dlls/client.cpp:6204 */
 int EXT_FUNC AllowLagCompensation()
 {
 	return 1;

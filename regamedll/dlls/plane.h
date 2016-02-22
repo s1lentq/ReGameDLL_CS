@@ -32,14 +32,13 @@
 #pragma once
 #endif
 
-/* <1262b3> ../cstrike/dlls/plane.cpp:24 */
 class CPlane
 {
 public:
 	CPlane();
 
-	NOXREF void InitializePlane(const Vector &vecNormal, const Vector &vecPoint);
-	NOXREF BOOL PointInFront(const Vector &vecPoint);
+	void InitializePlane(const Vector &vecNormal, const Vector &vecPoint);
+	BOOL PointInFront(const Vector &vecPoint);
 
 private:
 	Vector m_vecNormal;

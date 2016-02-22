@@ -32,10 +32,9 @@
 #pragma once
 #endif
 
+#include "saverestore.h"
+#include "schedule.h"
 #include "monsterevent.h"
-
-#include <utlvector.h>
-#include "game_shared/perf_counter.h"
 
 #undef CREATE_NAMED_ENTITY
 #undef REMOVE_ENTITY
@@ -182,10 +181,7 @@
 	#define EXPORT /**/
 #endif // _WIN32
 
-enum hash_types_e
-{
-	CLASSNAME
-};
+enum hash_types_e { CLASSNAME };
 
 typedef struct hash_item_s
 {
@@ -246,7 +242,7 @@ public:
 
 	operator int();
 	operator CBaseEntity*();
-	operator CBasePlayer*()	{ return static_cast<CBasePlayer *>(GET_PRIVATE(Get())); }
+	operator CBasePlayer*() { return static_cast<CBasePlayer *>(GET_PRIVATE(Get())); }
 
 	CBaseEntity *operator=(CBaseEntity *pEntity);
 	CBaseEntity *operator->();
@@ -256,7 +252,6 @@ private:
 	int m_serialnumber;
 };
 
-/* <48e9c1> ../cstrike/dlls/cbase.h:166 */
 class CBaseEntity
 {
 public:
@@ -360,11 +355,11 @@ public:
 	BOOL FVisible_(CBaseEntity *pEntity);
 	BOOL FVisible_(const Vector &vecOrigin);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	void *operator new(size_t stAllocateBlock, entvars_t *pevnew) { return ALLOC_PRIVATE(ENT(pevnew), stAllocateBlock); }
-	void operator delete(void *pMem, entvars_t *pev) { pev->flags |= FL_KILLME; }
+	void operator delete(void *pMem, entvars_t *pevnew) { pevnew->flags |= FL_KILLME; }
 	void UpdateOnRemove();
 	void EXPORT SUB_Remove();
 	void EXPORT SUB_DoNothing();
@@ -447,19 +442,9 @@ public:
 	bool has_disconnected;
 };
 
-/* <48d2a5> ../cstrike/dlls/cbase.h:273 */
-inline int FNullEnt(CBaseEntity *ent)
-{
-	return (ent == NULL || FNullEnt(ent->edict()));
-}
+inline int FNullEnt(CBaseEntity *ent) { return (ent == NULL || FNullEnt(ent->edict())); }
+inline int FNullEnt(EHANDLE hent) { return (hent == NULL || FNullEnt(OFFSET(hent.Get()))); }
 
-/* <48d67d> ../cstrike/dlls/cbase.h:273 */
-inline int FNullEnt(EHANDLE hent)
-{
-	return (hent == NULL || FNullEnt(OFFSET(hent.Get())));
-}
-
-/* <19e6b5> ../cstrike/dlls/cbase.h:450 */
 class CPointEntity: public CBaseEntity
 {
 public:
@@ -470,11 +455,10 @@ public:
 
 	void Spawn_();
 
-#endif // HOOK_GAMEDLL
+#endif
 
 };
 
-/* <249f0> ../cstrike/dlls/cbase.h:484 */
 class CMultiSource: public CPointEntity
 {
 public:
@@ -495,7 +479,7 @@ public:
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	void EXPORT Register();
@@ -509,7 +493,6 @@ public:
 	string_t m_globalstate;
 };
 
-/* <48ea00> ../cstrike/dlls/cbase.h:509 */
 class CBaseDelay: public CBaseEntity
 {
 public:
@@ -523,7 +506,7 @@ public:
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	void SUB_UseTargets(CBaseEntity *pActivator, USE_TYPE useType, float value);
@@ -535,7 +518,6 @@ public:
 	int m_iszKillTarget;
 };
 
-/* <48ea6f> ../cstrike/dlls/cbase.h:526 */
 class CBaseAnimating: public CBaseDelay
 {
 public:
@@ -548,7 +530,7 @@ public:
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	float StudioFrameAdvance(float flInterval = 0.0f);
@@ -561,13 +543,13 @@ public:
 	float SetBoneController(int iController, float flValue = 0.0f);
 	void InitBoneControllers();
 
-	NOXREF float SetBlending(int iBlender, float flValue);
-	NOXREF void GetBonePosition(int iBone, Vector &origin, Vector &angles);
-	NOXREF void GetAutomovement(Vector &origin, Vector &angles, float flInterval = 0.1f);
-	NOXREF int FindTransition(int iEndingSequence, int iGoalSequence, int *piDir);
-	NOXREF void GetAttachment(int iAttachment, Vector &origin, Vector &angles);
-	NOXREF void SetBodygroup(int iGroup, int iValue);
-	NOXREF int GetBodygroup(int iGroup);
+	float SetBlending(int iBlender, float flValue);
+	void GetBonePosition(int iBone, Vector &origin, Vector &angles);
+	void GetAutomovement(Vector &origin, Vector &angles, float flInterval = 0.1f);
+	int FindTransition(int iEndingSequence, int iGoalSequence, int *piDir);
+	void GetAttachment(int iAttachment, Vector &origin, Vector &angles);
+	void SetBodygroup(int iGroup, int iValue);
+	int GetBodygroup(int iGroup);
 
 	int ExtractBbox(int sequence, float *mins, float *maxs);
 	void SetSequenceBox();
@@ -581,7 +563,6 @@ public:
 	BOOL m_fSequenceLoops;
 };
 
-/* <48eb06> ../cstrike/dlls/cbase.h:569 */
 class CBaseToggle: public CBaseAnimating
 {
 public:
@@ -597,14 +578,14 @@ public:
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	void LinearMove(Vector vecDest, float flSpeed);
 	void EXPORT LinearMoveDone();
 	void AngularMove(Vector vecDestAngle, float flSpeed);
 	void EXPORT AngularMoveDone();
-	NOXREF BOOL IsLockedByMaster();
+	BOOL IsLockedByMaster();
 
 public:
 	static float AxisValue(int flags, const Vector &angles);
@@ -638,8 +619,6 @@ public:
 #include "basemonster.h"
 
 // Generic Button
-
-/* <24b19> ../cstrike/dlls/cbase.h:745 */
 class CBaseButton: public CBaseToggle
 {
 	enum BUTTON_CODE
@@ -675,14 +654,14 @@ public:
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
-	NOXREF void RotSpawn();
+	void RotSpawn();
 	void ButtonActivate();
-	NOXREF void SparkSoundCache();
+	void SparkSoundCache();
 
-	NOXREF void EXPORT ButtonShot();
+	void EXPORT ButtonShot();
 	void EXPORT ButtonTouch(CBaseEntity *pOther);
 	void EXPORT ButtonSpark();
 	void EXPORT TriggerAndWait();
@@ -706,7 +685,6 @@ public:
 	int m_sounds;
 };
 
-/* <1da023> ../cstrike/dlls/cbase.h:861 */
 class CWorld: public CBaseEntity
 {
 public:
@@ -720,7 +698,7 @@ public:
 	void Precache_();
 	void KeyValue_(KeyValueData *pkvd);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 };
 
@@ -738,14 +716,19 @@ T *GetClassPtr(T *a)
 
 #if defined(HOOK_GAMEDLL) && defined(_WIN32) && !defined(REGAMEDLL_UNIT_TESTS)
 		VirtualTableInit((void *)a, stripClass(typeid(T).name()));
-#endif // _WIN32 && HOOK_GAMEDLL
+#endif
 
 	}
 
 	return a;
 }
 
+#ifdef REGAMEDLL_SELF
 extern CUtlVector<hash_item_t> stringsHashTable;
+#endif
+
+C_DLLEXPORT int GetEntityAPI(DLL_FUNCTIONS *pFunctionTable, int interfaceVersion);
+C_DLLEXPORT int GetNewDLLFunctions(NEW_DLL_FUNCTIONS *pFunctionTable, int *interfaceVersion);
 
 int CaseInsensitiveHash(const char *string, int iBounds);
 void EmptyEntityHashTable();
@@ -756,11 +739,6 @@ edict_t *CREATE_NAMED_ENTITY(string_t iClass);
 void REMOVE_ENTITY(edict_t *e);
 void CONSOLE_ECHO_(char *pszMsg, ...);
 void loopPerformance();
-
-C_DLLEXPORT int GetEntityAPI(DLL_FUNCTIONS *pFunctionTable, int interfaceVersion);
-NOXREF int GetEntityAPI2(DLL_FUNCTIONS *pFunctionTable, int *interfaceVersion);
-C_DLLEXPORT int GetNewDLLFunctions(NEW_DLL_FUNCTIONS *pFunctionTable, int *interfaceVersion);
-
 int DispatchSpawn(edict_t *pent);
 void DispatchKeyValue(edict_t *pentKeyvalue, KeyValueData *pkvd);
 void DispatchTouch(edict_t *pentTouched, edict_t *pentOther);

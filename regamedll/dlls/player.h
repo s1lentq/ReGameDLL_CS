@@ -32,7 +32,10 @@
 #pragma once
 #endif
 
+#include "pm_materials.h"
 #include "hintmessage.h"
+#include "unisignals.h"
+#include "weapons.h"
 
 #define MIN_BUY_TIME			15	// the minimum threshold values for cvar mp_buytime 15 sec's
 
@@ -44,6 +47,7 @@
 #define MAX_REBUY_LENGTH		256
 
 #define MAX_RECENT_PATH			20
+#define MAX_HOSTAGE_ICON		4	// the maximum number of icons of the hostages in the HUD
 
 #define SUITUPDATETIME			3.5
 #define SUITFIRSTUPDATETIME		0.1
@@ -52,11 +56,11 @@
 #define PLAYER_MAX_SAFE_FALL_SPEED	500.0f
 #define PLAYER_USE_RADIUS		64.0f
 
-#define ARMOR_RATIO			0.5 // Armor Takes 50% of the damage
-#define ARMOR_BONUS			0.5 // Each Point of Armor is work 1/x points of health
+#define ARMOR_RATIO			0.5	// Armor Takes 50% of the damage
+#define ARMOR_BONUS			0.5	// Each Point of Armor is work 1/x points of health
 
-#define FLASH_DRAIN_TIME		1.2 // 100 units/3 minutes
-#define FLASH_CHARGE_TIME		0.2 // 100 units/20 seconds  (seconds per unit)
+#define FLASH_DRAIN_TIME		1.2	// 100 units/3 minutes
+#define FLASH_CHARGE_TIME		0.2	// 100 units/20 seconds  (seconds per unit)
 
 // damage per unit per second.
 #define DAMAGE_FOR_FALL_SPEED		100.0f / (PLAYER_FATAL_FALL_SPEED - PLAYER_MAX_SAFE_FALL_SPEED)
@@ -271,7 +275,6 @@ struct WeaponStruct
 	int m_ammoPrice;
 };
 
-/* <14efbf> ../cstrike/dlls/player.cpp:9418 */
 class CStripWeapons: public CPointEntity
 {
 public:
@@ -281,11 +284,10 @@ public:
 
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 };
 
-/* <14f06c> ../cstrike/dlls/player.cpp:9543 */
 class CInfoIntermission: public CPointEntity
 {
 public:
@@ -297,11 +299,10 @@ public:
 	void Spawn_();
 	void Think_();
 
-#endif // HOOK_GAMEDLL
+#endif
 
 };
 
-/* <14ef4d> ../cstrike/dlls/player.cpp:9361 */
 class CDeadHEV: public CBaseMonster
 {
 public:
@@ -315,14 +316,13 @@ public:
 	void KeyValue_(KeyValueData *pkvd);
 	int Classify_();
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	int m_iPose;
 	static char *m_szPoses[4];
 };
 
-/* <14ee80> ../cstrike/dlls/player.cpp:7001 */
 class CSprayCan: public CBaseEntity
 {
 public:
@@ -336,13 +336,12 @@ public:
 
 	void Think_();
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	void Spawn(entvars_t *pevOwner);
 };
 
-/* <14eea3> ../cstrike/dlls/player.cpp:7057 */
 class CBloodSplat: public CBaseEntity
 {
 public:
@@ -350,7 +349,6 @@ public:
 	void Spray();
 };
 
-/* <48ed5e> ../cstrike/dlls/player.h:250 */
 class CBasePlayer: public CBaseMonster
 {
 public:
@@ -436,24 +434,24 @@ public:
 	void Observer_CheckTarget();
 	void Observer_CheckProperties();
 	int IsObserver() { return pev->iuser1; }
-	NOXREF void PlantC4();
+	void PlantC4();
 	void Radio(const char *msg_id, const char *msg_verbose = NULL, short pitch = 100, bool showIcon = true);
 	CBasePlayer *GetNextRadioRecipient(CBasePlayer *pStartPlayer);
 	void SmartRadio();
-	NOXREF void ThrowWeapon(char *pszItemName);
-	NOXREF void ThrowPrimary();
+	void ThrowWeapon(char *pszItemName);
+	void ThrowPrimary();
 	void AddAccount(int amount, bool bTrackChange = true);
 	void Disappear();
 	void MakeVIP();
 	bool CanPlayerBuy(bool display = false);
 	void SwitchTeam();
 	void TabulateAmmo();
-	void Pain(int m_LastHitGroup, bool HasArmour);
+	void Pain(int iLastHitGroup, bool HasArmour);
 	BOOL IsBombGuy();
 	bool IsLookingAtPosition(Vector *pos, float angleTolerance = 20.0f);
 	void Reset();
 	void SetScoreboardAttributes(CBasePlayer *destination = NULL);
-	NOXREF void RenewItems();
+	void RenewItems();
 	void PackDeadPlayerItems();
 	void GiveDefaultItems();
 	void RemoveAllItems(BOOL removeSuit);
@@ -463,7 +461,7 @@ public:
 	void SetPlayerModel(BOOL HasC4);
 	void SetNewPlayerModel(const char *modelName);
 	BOOL SwitchWeapon(CBasePlayerItem *pWeapon);
-	void CheckPowerups(entvars_t *pev);
+	void CheckPowerups();
 	bool CanAffordPrimary();
 	bool CanAffordPrimaryAmmo();
 	bool CanAffordSecondaryAmmo();
@@ -482,7 +480,7 @@ public:
 	void UpdatePlayerSound();
 	void DeathSound();
 	void SetAnimation(PLAYER_ANIM playerAnim);
-	NOXREF void SetWeaponAnimType(const char *szExtention) { Q_strcpy(m_szAnimExtention, szExtention); }
+	void SetWeaponAnimType(const char *szExtention) { Q_strcpy(m_szAnimExtention, szExtention); }
 	void CheatImpulseCommands(int iImpulse);
 	void StartDeathCam();
 	void StartObserver(Vector vecPosition, Vector vecViewAngle);
@@ -491,8 +489,8 @@ public:
 	BOOL HasPlayerItem(CBasePlayerItem *pCheckItem);
 	BOOL HasNamedPlayerItem(const char *pszItemName);
 	BOOL HasWeapons();
-	NOXREF void SelectPrevItem(int iItem);
-	NOXREF void SelectNextItem(int iItem);
+	void SelectPrevItem(int iItem);
+	void SelectNextItem(int iItem);
 	void SelectLastItem();
 	void SelectItem(const char *pstr);
 	void ItemPreFrame();
@@ -515,8 +513,8 @@ public:
 	void SetSuitUpdate(char *name = NULL, int fgroup = 0, int iNoRepeatTime = 0);
 	void UpdateGeigerCounter();
 	void CheckTimeBasedDamage();
-	NOXREF void BarnacleVictimBitten(entvars_t *pevBarnacle);
-	NOXREF void BarnacleVictimReleased();
+	void BarnacleVictimBitten(entvars_t *pevBarnacle);
+	void BarnacleVictimReleased();
 	static int GetAmmoIndex(const char *psz);
 	int AmmoInventory(int iAmmoIndex);
 	void ResetAutoaim();
@@ -590,7 +588,7 @@ public:
 	void SetObserverAutoDirector(bool val) { m_bObserverAutoDirector = val; }
 	bool IsObservingPlayer(CBasePlayer *pPlayer);
 	bool CanSwitchObserverModes() const { return m_canSwitchObserverModes; }
-	NOXREF void Intense()
+	void Intense()
 	{
 		//m_musicState = INTENSE;
 		//m_intenseTimestamp = gpGlobals->time;
@@ -634,7 +632,7 @@ public:
 	int m_iIgnoreGlobalChat;
 	bool m_bHasNightVision;
 	bool m_bNightVisionOn;
-	Vector m_vRecentPath[ MAX_RECENT_PATH ];
+	Vector m_vRecentPath[MAX_RECENT_PATH];
 	float m_flIdleCheckTime;
 	float m_flRadioTime;
 	int m_iRadioMessages;
@@ -667,7 +665,7 @@ public:
 	bool m_bReceivesNoMoneyNextRound;
 	int m_iTimeCheckAllowed;
 	bool m_bHasChangedName;
-	char m_szNewName[ MAX_PLAYER_NAME_LENGTH ];
+	char m_szNewName[MAX_PLAYER_NAME_LENGTH];
 	bool m_bIsDefusing;
 	float m_tmHandleSignals;
 	CUnifiedSignals m_signals;
@@ -687,7 +685,7 @@ public:
 	float m_flSndRoomtype;
 	float m_flSndRange;
 	float m_flFallVelocity;
-	int m_rgItems[ MAX_ITEMS ];
+	int m_rgItems[MAX_ITEMS];
 	int m_fNewAmmo;
 	unsigned int m_afPhysicsFlags;
 	float m_fNextSuicideTime;
@@ -697,17 +695,17 @@ public:
 	float m_flDuckTime;
 	float m_flWallJumpTime;
 	float m_flSuitUpdate;
-	int m_rgSuitPlayList[ CSUITPLAYLIST ];
+	int m_rgSuitPlayList[CSUITPLAYLIST];
 	int m_iSuitPlayNext;
-	int m_rgiSuitNoRepeat[ CSUITNOREPEAT ];
-	float m_rgflSuitNoRepeatTime[ CSUITNOREPEAT ];
+	int m_rgiSuitNoRepeat[CSUITNOREPEAT];
+	float m_rgflSuitNoRepeatTime[CSUITNOREPEAT];
 	int m_lastDamageAmount;
 	float m_tbdPrev;
 	float m_flgeigerRange;
 	float m_flgeigerDelay;
 	int m_igeigerRangePrev;
 	int m_iStepLeft;
-	char m_szTextureName[ CBTEXTURENAMEMAX ];
+	char m_szTextureName[CBTEXTURENAMEMAX];
 	char m_chTextureType;
 	int m_idrowndmg;
 	int m_idrownrestored;
@@ -730,24 +728,24 @@ public:
 	int m_iClientFOV;
 	int m_iNumSpawns;
 	CBaseEntity *m_pObserver;
-	CBasePlayerItem *m_rgpPlayerItems[ MAX_ITEM_TYPES ];
+	CBasePlayerItem *m_rgpPlayerItems[MAX_ITEM_TYPES];
 	CBasePlayerItem *m_pActiveItem;
 	CBasePlayerItem *m_pClientActiveItem;
 	CBasePlayerItem *m_pLastItem;
-	int m_rgAmmo[ MAX_AMMO_SLOTS ];
-	int m_rgAmmoLast[ MAX_AMMO_SLOTS ];
+	int m_rgAmmo[MAX_AMMO_SLOTS];
+	int m_rgAmmoLast[MAX_AMMO_SLOTS];
 	Vector m_vecAutoAim;
 	BOOL m_fOnTarget;
 	int m_iDeaths;
 	int m_izSBarState[SBAR_END];
 	float m_flNextSBarUpdateTime;
 	float m_flStatusBarDisappearDelay;
-	char m_SbarString0[ SBAR_STRING_SIZE ];
+	char m_SbarString0[SBAR_STRING_SIZE];
 	int m_lastx;
 	int m_lasty;
 	int m_nCustomSprayFrames;
 	float m_flNextDecalTime;
-	char m_szTeamName[ TEAM_NAME_LENGTH ];
+	char m_szTeamName[TEAM_NAME_LENGTH];
 
 	static TYPEDESCRIPTION IMPL(m_playerSaveData)[40];
 
@@ -776,12 +774,12 @@ public:
 	float m_blindFadeTime;
 	int m_blindAlpha;
 	float m_allowAutoFollowTime;
-	char m_autoBuyString[ MAX_AUTOBUY_LENGTH ];
+	char m_autoBuyString[MAX_AUTOBUY_LENGTH];
 	char *m_rebuyString;
 	RebuyStruct m_rebuyStruct;
 	bool m_bIsInRebuy;
 	float m_flLastUpdateTime;
-	char m_lastLocation[ MaxLocationLen ];
+	char m_lastLocation[MaxLocationLen];
 	float m_progressStart;
 	float m_progressEnd;
 	bool m_bObserverAutoDirector;
@@ -790,10 +788,9 @@ public:
 	float m_intenseTimestamp;
 	float m_silentTimestamp;
 	MusicState m_musicState;
-	float m_flLastCommandTime[8];
+	float m_flLastCommandTime[COMMANDS_TO_TRACK];
 };
 
-/* <14ed87> ../cstrike/dlls/player.cpp:3407 */
 class CWShield: public CBaseEntity
 {
 public:
@@ -805,7 +802,7 @@ public:
 	void Spawn_();
 	void Touch_(CBaseEntity *pOther);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	void SetCantBePickedUpByUser(CBaseEntity *pEntity, float time)
@@ -937,10 +934,10 @@ const char *GetWeaponName(entvars_t *pevInflictor, entvars_t *pKiller);
 void LogAttack(CBasePlayer *pAttacker, CBasePlayer *pVictim, int teamAttack, int healthHit, int armorHit, int newHealth, int newArmor, const char *killer_weapon_name);
 void packPlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo);
 bool CanSeeUseable(CBasePlayer *me, CBaseEntity *entity);
-NOXREF void FixPlayerCrouchStuck(edict_t *pPlayer);
+void FixPlayerCrouchStuck(edict_t *pPlayer);
 BOOL IsSpawnPointValid(CBaseEntity *pPlayer, CBaseEntity *pSpot);
-NOXREF void InitZombieSpawns();
-NOXREF CBaseEntity *FindZombieSpawn(CBaseEntity *player, bool forceSpawn);
+void InitZombieSpawns();
+CBaseEntity *FindZombieSpawn(CBaseEntity *player, bool forceSpawn);
 edict_t *EntSelectSpawnPoint(CBaseEntity *pPlayer);
 void SetScoreAttrib(CBasePlayer *dest, CBasePlayer *src);
 CBaseEntity *FindEntityForward(CBaseEntity *pMe);

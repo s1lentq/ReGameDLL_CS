@@ -32,7 +32,6 @@
 #pragma once
 #endif
 
-/* <182770> ../cstrike/dlls/subs.cpp:45 */
 class CNullEntity: public CBaseEntity
 {
 public:
@@ -42,11 +41,10 @@ public:
 
 	void Spawn_();
 
-#endif // HOOK_GAMEDLL
+#endif
 
 };
 
-/* <1827de> ../cstrike/dlls/subs.cpp:59 */
 class CBaseDMStart: public CPointEntity
 {
 public:
@@ -58,12 +56,12 @@ public:
 	void KeyValue_(KeyValueData *pkvd);
 	BOOL IsTriggered_(CBaseEntity *pEntity);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 };
 
 void FireTargets(const char *targetName, CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 void SetMovedir(entvars_t *pev);
-NOXREF BOOL FEntIsVisible(entvars_t *pev, entvars_t *pevTarget);
+BOOL FEntIsVisible(entvars_t *pev, entvars_t *pevTarget);
 
 #endif // SUBS_H

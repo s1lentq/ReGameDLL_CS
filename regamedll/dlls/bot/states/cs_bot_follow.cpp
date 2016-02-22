@@ -1,8 +1,6 @@
 #include "precompiled.h"
 
 // Follow our leader
-
-/* <56918b> ../cstrike/dlls/bot/states/cs_bot_follow.cpp:16 */
 void FollowState::__MAKE_VHOOK(OnEnter)(CCSBot *me)
 {
 	me->StandUp();
@@ -32,8 +30,6 @@ void FollowState::__MAKE_VHOOK(OnEnter)(CCSBot *me)
 }
 
 // Determine the leader's motion state by tracking his speed
-
-/* <569268> ../cstrike/dlls/bot/states/cs_bot_follow.cpp:48 */
 void FollowState::ComputeLeaderMotionState(float leaderSpeed)
 {
 	// walk = 130, run = 250
@@ -76,8 +72,6 @@ void FollowState::ComputeLeaderMotionState(float leaderSpeed)
 
 // Follow our leader
 // TODO: Clean up this nasty mess
-
-/* <569368> ../cstrike/dlls/bot/states/cs_bot_follow.cpp:164 */
 void FollowState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 {
 	// if we lost our leader, give up
@@ -260,7 +254,6 @@ void FollowState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 	}
 }
 
-/* <569231> ../cstrike/dlls/bot/states/cs_bot_follow.cpp:353 */
 void FollowState::__MAKE_VHOOK(OnExit)(CCSBot *me)
 {
 	;

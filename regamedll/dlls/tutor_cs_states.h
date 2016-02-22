@@ -61,7 +61,6 @@ enum TutorStateType
 	TUTORSTATE_WAITING_FOR_START,
 };
 
-/* <22bf75> ../cstrike/dlls/tutor_cs_states.cpp:53 */
 class CCSTutorStateSystem: public CBaseTutorStateSystem
 {
 public:
@@ -77,13 +76,12 @@ public:
 	char *GetCurrentStateString_();
 	CBaseTutorState *ConstructNewState_(int stateType);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 protected:
 	virtual CBaseTutorState *ConstructNewState(int stateType);
 };
 
-/* <22bfcb> ../cstrike/dlls/tutor_cs_states.cpp:141 */
 class CCSTutorUndefinedState: public CBaseTutorState
 {
 public:
@@ -98,13 +96,12 @@ public:
 	int CheckForStateTransition_(GameEventType event, CBaseEntity *entity, CBaseEntity *other);
 	char *GetStateString_();
 
-#endif // HOOK_GAMEDLL
+#endif
 
 protected:
 	int HandlePlayerSpawned(CBaseEntity *entity, CBaseEntity *other);
 };
 
-/* <22c03e> ../cstrike/dlls/tutor_cs_states.cpp:198 */
 class CCSTutorWaitingForStartState: public CBaseTutorState
 {
 public:
@@ -119,14 +116,13 @@ public:
 	int CheckForStateTransition_(GameEventType event, CBaseEntity *entity, CBaseEntity *other);
 	char *GetStateString_();
 
-#endif // HOOK_GAMEDLL
+#endif
 
 protected:
 	int HandlePlayerSpawned(CBaseEntity *entity, CBaseEntity *other);
 	int HandleBuyTimeStart(CBaseEntity *entity, CBaseEntity *other);
 };
 
-/* <22c0e2> ../cstrike/dlls/tutor_cs_states.cpp:266 */
 class CCSTutorBuyMenuState: public CBaseTutorState
 {
 public:
@@ -141,7 +137,7 @@ public:
 	int CheckForStateTransition_(GameEventType event, CBaseEntity *entity, CBaseEntity *other);
 	char *GetStateString_();
 
-#endif // HOOK_GAMEDLL
+#endif
 
 protected:
 	int HandleRoundStart(CBaseEntity *entity, CBaseEntity *other);

@@ -128,6 +128,8 @@ enum RewardAccount
 	REWARD_KILLED_VIP		= 2500,
 	REWARD_VIP_HAVE_SELF_RESCUED	= 2500,
 
+	REWARD_TAKEN_HOSTAGE		= 1000
+
 };
 
 // custom enum
@@ -185,7 +187,6 @@ enum
 
 class CItem;
 
-/* <166901> ../cstrike/dlls/gamerules.h:86 */
 class CGameRules
 {
 public:
@@ -262,7 +263,7 @@ public:
 	BOOL CanHavePlayerItem_(CBasePlayer *pPlayer, CBasePlayerItem *pItem);
 	BOOL CanHaveAmmo_(CBasePlayer *pPlayer, const char *pszAmmoName, int iMaxCarry);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	BOOL m_bFreezePeriod;
@@ -416,9 +417,9 @@ public:
 	virtual int DeadPlayerAmmo(CBasePlayer *pPlayer);
 	virtual const char *GetTeamID(CBaseEntity *pEntity) { return ""; }
 	virtual int PlayerRelationship(CBasePlayer *pPlayer, CBaseEntity *pTarget);
-	virtual BOOL PlayTextureSounds() { return FALSE;}
+	virtual BOOL PlayTextureSounds() { return FALSE; }
 	virtual BOOL FAllowMonsters();
-	virtual void EndMultiplayerGame() { GoToIntermission();}
+	virtual void EndMultiplayerGame() { GoToIntermission(); }
 	virtual void ServerDeactivate();
 	virtual void CheckMapConditions();
 
@@ -536,7 +537,7 @@ public:
 	void CareerRestart();
 	bool ShouldSkipSpawn() const { return m_bSkipSpawn; }
 	void MarkSpawnSkipped() { m_bSkipSpawn = false; }
-	NOXREF void PlayerJoinedTeam(CBasePlayer *pPlayer) { }
+	void PlayerJoinedTeam(CBasePlayer *pPlayer) { }
 	float TimeRemaining() { return m_iRoundTimeSecs - gpGlobals->time + m_fRoundCount; }
 	BOOL TeamFull(int team_id);
 	BOOL TeamStacked(int newTeam_id, int curTeam_id);
@@ -627,7 +628,7 @@ public:
 	int m_iTotalArmourCount;
 	int m_iUnBalancedRounds;			// keeps track of the # of consecutive rounds that have gone by where one team outnumbers the other team by more than 2
 	int m_iNumEscapeRounds;				// keeps track of the # of consecutive rounds of escape played.. Teams will be swapped after 8 rounds
-	int m_iMapVotes[ MAX_VOTE_MAPS ];
+	int m_iMapVotes[MAX_VOTE_MAPS];
 	int m_iLastPick;
 	int m_iMaxMapTime;
 	int m_iMaxRounds;
@@ -638,7 +639,7 @@ public:
 	float m_flForceChaseCamValue;
 	float m_flFadeToBlackValue;
 	CBasePlayer *m_pVIP;
-	CBasePlayer *VIPQueue[ MAX_VIP_QUEUES ];
+	CBasePlayer *VIPQueue[MAX_VIP_QUEUES];
 
 protected:
 	float m_flIntermissionEndTime;
@@ -671,7 +672,6 @@ typedef struct mapcycle_s
 
 } mapcycle_t;
 
-/* <11192b> ../cstrike/dlls/multiplay_gamerules.cpp:257 */
 class CMapInfo: public CPointEntity
 {
 public:
@@ -683,14 +683,13 @@ public:
 	void Spawn_();
 	void KeyValue_(KeyValueData *pkvd);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	int m_iBuyingStatus;
 	float m_flBombRadius;
 };
 
-/* <111732> ../cstrike/dlls/multiplay_gamerules.cpp:292 */
 class CCStrikeGameMgrHelper: public IVoiceGameMgrHelper
 {
 public:
@@ -700,13 +699,18 @@ public:
 
 	bool CanPlayerHearPlayer_(CBasePlayer *pListener, CBasePlayer *pSender);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 };
 
-extern CHalfLifeMultiplay *g_pGameRules;
+extern CGameRules *g_pGameRules;
 
 CGameRules *InstallGameRules();
+
+inline CHalfLifeMultiplay *CSGameRules()
+{
+	return reinterpret_cast<CHalfLifeMultiplay *>(g_pGameRules);
+}
 
 bool IsBotSpeaking();
 void SV_Continue_f();

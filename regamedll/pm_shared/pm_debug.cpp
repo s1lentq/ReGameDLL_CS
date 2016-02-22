@@ -3,7 +3,7 @@
 #undef vec3_t
 
 // Expand debugging BBOX particle hulls by this many units.
-#define BOX_GAP 0.0f
+const float BOX_GAP = 0.0f;
 
 int PM_boxpnt[6][4] =
 {
@@ -15,7 +15,6 @@ int PM_boxpnt[6][4] =
 	{ 7, 6, 4, 5 }, // -Z
 };
 
-/* <2d0110> ../cstrike/pm_shared/pm_debug.c:43 */
 void PM_ShowClipBox()
 {
 #ifdef _DEBUG
@@ -49,7 +48,6 @@ void PM_ShowClipBox()
 #endif // _DEBUG
 }
 
-/* <2d0012> ../cstrike/pm_shared/pm_debug.c:82 */
 void PM_ParticleLine(vec3_t start, vec3_t end, int pcolor, float life, float vert)
 {
 	float linestep = 2.0f;
@@ -75,7 +73,6 @@ void PM_ParticleLine(vec3_t start, vec3_t end, int pcolor, float life, float ver
 	}
 }
 
-/* <2d0197> ../cstrike/pm_shared/pm_debug.c:114 */
 void PM_DrawRectangle(vec3_t tl, vec3_t bl, vec3_t tr, vec3_t br, int pcolor, float life)
 {
 	PM_ParticleLine(tl, bl, pcolor, life, 0);
@@ -84,7 +81,6 @@ void PM_DrawRectangle(vec3_t tl, vec3_t bl, vec3_t tr, vec3_t br, int pcolor, fl
 	PM_ParticleLine(tr, tl, pcolor, life, 0);
 }
 
-/* <2cff57> ../cstrike/pm_shared/pm_debug.c:128 */
 void PM_DrawPhysEntBBox(int num, int pcolor, float life)
 {
 	physent_t *pe;
@@ -167,7 +163,6 @@ void PM_DrawPhysEntBBox(int num, int pcolor, float life)
 	}
 }
 
-/* <2d030c> ../cstrike/pm_shared/pm_debug.c:218 */
 void PM_DrawBBox(vec3_t mins, vec3_t maxs, vec3_t origin, int pcolor, float life)
 {
 	int j;
@@ -200,8 +195,6 @@ void PM_DrawBBox(vec3_t mins, vec3_t maxs, vec3_t origin, int pcolor, float life
 // Shows a particle trail from player to entity in crosshair.
 // Shows particles at that entities bbox
 // Tries to shoot a ray out by about 128 units.
-
-/* <2d03e9> ../cstrike/pm_shared/pm_debug.c:260 */
 void PM_ViewEntity()
 {
 	vec3_t forward, right, up;
@@ -241,7 +234,9 @@ void PM_ViewEntity()
 	}
 
 	// Draw the hull or bbox.
+#ifndef REGAMEDLL_FIXES
 	if (trace.ent > 0)
+#endif
 	{
 		PM_DrawPhysEntBBox(trace.ent, pcolor, 0.3f);
 	}

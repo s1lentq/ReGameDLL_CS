@@ -70,7 +70,6 @@ private:
 	double m_flLastCurrentTime;
 };
 
-/* <2ebfc> ../game_shared/perf_counter.h:61 */
 inline CPerformanceCounter::CPerformanceCounter() :
 	m_iLowShift(0),
 	m_flPerfCounterFreq(0),
@@ -80,7 +79,6 @@ inline CPerformanceCounter::CPerformanceCounter() :
 	InitializePerformanceCounter();
 }
 
-/* <2ebdd> ../game_shared/perf_counter.h:69 */
 inline void CPerformanceCounter::InitializePerformanceCounter()
 {
 #ifdef _WIN32
@@ -108,7 +106,6 @@ inline void CPerformanceCounter::InitializePerformanceCounter()
 #endif // _WIN32
 }
 
-/* <2ec16> ../game_shared/perf_counter.h:97 */
 inline double CPerformanceCounter::GetCurTime()
 {
 #ifdef _WIN32
@@ -155,9 +152,7 @@ inline double CPerformanceCounter::GetCurTime()
 
 			if (m_flCurrentTime == m_flLastCurrentTime)
 			{
-				sametimecount++;
-
-				if (sametimecount > 100000)
+				if (++sametimecount > 100000)
 				{
 					m_flCurrentTime += 1.0;
 					sametimecount = 0;

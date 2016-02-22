@@ -1,9 +1,7 @@
 #include "precompiled.h"
 
-/* <25698d> ../cstrike/dlls/wpn_shared/wpn_fiveseven.cpp:49 */
 LINK_ENTITY_TO_CLASS(weapon_fiveseven, CFiveSeven);
 
-/* <256720> ../cstrike/dlls/wpn_shared/wpn_fiveseven.cpp:51 */
 void CFiveSeven::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
@@ -18,7 +16,6 @@ void CFiveSeven::__MAKE_VHOOK(Spawn)()
 	FallInit();
 }
 
-/* <25669f> ../cstrike/dlls/wpn_shared/wpn_fiveseven.cpp:66 */
 void CFiveSeven::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/v_fiveseven.mdl");
@@ -35,7 +32,6 @@ void CFiveSeven::__MAKE_VHOOK(Precache)()
 	m_usFireFiveSeven = PRECACHE_EVENT(1, "events/fiveseven.sc");
 }
 
-/* <2566c6> ../cstrike/dlls/wpn_shared/wpn_fiveseven.cpp:84 */
 int CFiveSeven::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
@@ -53,7 +49,6 @@ int CFiveSeven::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	return 1;
 }
 
-/* <25680a> ../cstrike/dlls/wpn_shared/wpn_fiveseven.cpp:101 */
 BOOL CFiveSeven::__MAKE_VHOOK(Deploy)()
 {
 	m_flAccuracy = 0.92f;
@@ -67,7 +62,6 @@ BOOL CFiveSeven::__MAKE_VHOOK(Deploy)()
 		return DefaultDeploy("models/v_fiveseven.mdl", "models/p_fiveseven.mdl", FIVESEVEN_DRAW, "onehanded", UseDecrement() != FALSE);
 }
 
-/* <256943> ../cstrike/dlls/wpn_shared/wpn_fiveseven.cpp:117 */
 void CFiveSeven::__MAKE_VHOOK(PrimaryAttack)()
 {
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
@@ -88,13 +82,11 @@ void CFiveSeven::__MAKE_VHOOK(PrimaryAttack)()
 	}
 }
 
-/* <2566f9> ../cstrike/dlls/wpn_shared/wpn_fiveseven.cpp:129 */
 void CFiveSeven::__MAKE_VHOOK(SecondaryAttack)()
 {
 	ShieldSecondaryFire(SHIELDGUN_UP, SHIELDGUN_DOWN);
 }
 
-/* <256a57> ../cstrike/dlls/wpn_shared/wpn_fiveseven.cpp:134 */
 void CFiveSeven::FiveSevenFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 {
 	Vector vecAiming, vecSrc, vecDir;
@@ -158,10 +150,10 @@ void CFiveSeven::FiveSevenFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 	flag = FEV_NOTHOST;
 #else
 	flag = 0;
-#endif // CLIENT_WEAPONS
+#endif
 
 	PLAYBACK_EVENT_FULL(flag, m_pPlayer->edict(), m_usFireFiveSeven, 0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y,
-		(int)(m_pPlayer->pev->punchangle.x * 100), (int)(m_pPlayer->pev->punchangle.y * 100), m_iClip == 0, FALSE);
+		int(m_pPlayer->pev->punchangle.x * 100), int(m_pPlayer->pev->punchangle.y * 100), m_iClip == 0, FALSE);
 
 	m_flNextPrimaryAttack = m_flNextSecondaryAttack = GetNextAttackDelay(flCycleTime);
 
@@ -175,7 +167,6 @@ void CFiveSeven::FiveSevenFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 	ResetPlayerShieldAnim();
 }
 
-/* <2567d0> ../cstrike/dlls/wpn_shared/wpn_fiveseven.cpp:225 */
 void CFiveSeven::__MAKE_VHOOK(Reload)()
 {
 	if (m_pPlayer->ammo_57mm <= 0)
@@ -188,7 +179,6 @@ void CFiveSeven::__MAKE_VHOOK(Reload)()
 	}
 }
 
-/* <256796> ../cstrike/dlls/wpn_shared/wpn_fiveseven.cpp:238 */
 void CFiveSeven::__MAKE_VHOOK(WeaponIdle)()
 {
 	ResetEmptySound();

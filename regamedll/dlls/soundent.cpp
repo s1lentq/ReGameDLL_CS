@@ -2,12 +2,9 @@
 
 CSoundEnt *pSoundEnt;
 
-/* <178ca4> ../cstrike/dlls/soundent.cpp:22 */
 LINK_ENTITY_TO_CLASS(soundent, CSoundEnt);
 
 // CSound - Clear - zeros all fields for a sound
-
-/* <178d6e> ../cstrike/dlls/soundent.cpp:29 */
 void CSound::Clear()
 {
 	m_vecOrigin = g_vecZero;
@@ -20,8 +17,6 @@ void CSound::Clear()
 
 // Reset - clears the volume, origin, and type for a sound,
 // but doesn't expire or unlink it.
-
-/* <178d8f> ../cstrike/dlls/soundent.cpp:43 */
 void CSound::Reset()
 {
 	m_vecOrigin = g_vecZero;
@@ -31,8 +26,6 @@ void CSound::Reset()
 }
 
 // FIsSound - returns TRUE if the sound is an Audible sound
-
-/* <178db7> ../cstrike/dlls/soundent.cpp:54 */
 NOXREF BOOL CSound::FIsSound()
 {
 	if (m_iType & (bits_SOUND_COMBAT | bits_SOUND_WORLD | bits_SOUND_PLAYER | bits_SOUND_DANGER))
@@ -44,8 +37,6 @@ NOXREF BOOL CSound::FIsSound()
 }
 
 // FIsScent - returns TRUE if the sound is actually a scent
-
-/* <178ddf> ../cstrike/dlls/soundent.cpp:67 */
 NOXREF BOOL CSound::FIsScent()
 {
 	if (m_iType & (bits_SOUND_CARCASS | bits_SOUND_MEAT | bits_SOUND_GARBAGE))
@@ -56,7 +47,6 @@ NOXREF BOOL CSound::FIsScent()
 	return FALSE;
 }
 
-/* <17900a> ../cstrike/dlls/soundent.cpp:80 */
 void CSoundEnt::__MAKE_VHOOK(Spawn)()
 {
 	pev->solid = SOLID_NOT;
@@ -68,8 +58,6 @@ void CSoundEnt::__MAKE_VHOOK(Spawn)()
 // Think - at interval, the entire active sound list is checked
 // for sounds that have ExpireTimes less than or equal
 // to the current world time, and these sounds are deallocated.
-
-/* <178b0c> ../cstrike/dlls/soundent.cpp:93 */
 void CSoundEnt::__MAKE_VHOOK(Think)()
 {
 	int iSound;
@@ -107,8 +95,6 @@ void CSoundEnt::__MAKE_VHOOK(Think)()
 }
 
 // Precache - dummy function
-
-/* <178a76> ../cstrike/dlls/soundent.cpp:132 */
 void CSoundEnt::__MAKE_VHOOK(Precache)()
 {
 	;
@@ -117,8 +103,6 @@ void CSoundEnt::__MAKE_VHOOK(Precache)()
 // FreeSound - clears the passed active sound and moves it
 // to the top of the free list. TAKE CARE to only call this
 // function for sounds in the Active list
-
-/* <178e07> ../cstrike/dlls/soundent.cpp:141 */
 void CSoundEnt::FreeSound(int iSound, int iPrevious)
 {
 	if (!pSoundEnt)
@@ -147,8 +131,6 @@ void CSoundEnt::FreeSound(int iSound, int iPrevious)
 
 // IAllocSound - moves a sound from the Free list to the
 // Active list returns the index of the alloc'd sound
-
-/* <178e2d> ../cstrike/dlls/soundent.cpp:171 */
 int CSoundEnt::IAllocSound()
 {
 	int iNewSound;
@@ -180,8 +162,6 @@ int CSoundEnt::IAllocSound()
 
 // InsertSound - Allocates a free sound and fills it with
 // sound info.
-
-/* <178e94> ../cstrike/dlls/soundent.cpp:200 */
 void CSoundEnt::InsertSound(int iType, const Vector &vecOrigin, int iVolume, float flDuration)
 {
 	int iThisSound;
@@ -208,8 +188,6 @@ void CSoundEnt::InsertSound(int iType, const Vector &vecOrigin, int iVolume, flo
 
 // Initialize - clears all sounds and moves them into the
 // free sound list.
-
-/* <178f4e> ../cstrike/dlls/soundent.cpp:228 */
 void CSoundEnt::Initialize()
 {
   	int i;
@@ -255,8 +233,6 @@ void CSoundEnt::Initialize()
 
 // ISoundsInList - returns the number of sounds in the desired
 // sound list.
-
-/* <179031> ../cstrike/dlls/soundent.cpp:274 */
 int CSoundEnt::ISoundsInList(int iListType)
 {
 	int i;
@@ -292,8 +268,6 @@ int CSoundEnt::ISoundsInList(int iListType)
 }
 
 // ActiveList - returns the head of the active sound list
-
-/* <179073> ../cstrike/dlls/soundent.cpp:312 */
 NOXREF int CSoundEnt::ActiveList()
 {
 	if (!pSoundEnt)
@@ -305,8 +279,6 @@ NOXREF int CSoundEnt::ActiveList()
 }
 
 // FreeList - returns the head of the free sound list
-
-/* <179083> ../cstrike/dlls/soundent.cpp:325 */
 NOXREF int CSoundEnt::FreeList()
 {
 	if (!pSoundEnt)
@@ -319,8 +291,6 @@ NOXREF int CSoundEnt::FreeList()
 
 // SoundPointerForIndex - returns a pointer to the instance
 // of CSound at index's position in the sound pool.
-
-/* <179093> ../cstrike/dlls/soundent.cpp:339 */
 CSound *CSoundEnt::SoundPointerForIndex(int iIndex)
 {
 	if (!pSoundEnt)
@@ -347,8 +317,6 @@ CSound *CSoundEnt::SoundPointerForIndex(int iIndex)
 // reserved sounds in the soundlist are from 0 to MAXCLIENTS - 1,
 // so this function ensures that a client gets the proper index
 // to his reserved sound in the soundlist.
-
-/* <1790b8> ../cstrike/dlls/soundent.cpp:367 */
 int CSoundEnt::ClientSoundIndex(edict_t *pClient)
 {
 	int iReturn = ENTINDEX(pClient) - 1;
@@ -360,7 +328,7 @@ int CSoundEnt::ClientSoundIndex(edict_t *pClient)
 		ALERT(at_console, "** ClientSoundIndex returning a bogus value! **\n");
 	}
 
-#endif // _DEBUG && !HOOK_GAMEDLL
+#endif
 
 	return iReturn;
 }

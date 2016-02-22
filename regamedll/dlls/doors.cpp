@@ -21,9 +21,8 @@ TYPEDESCRIPTION CMomentaryDoor::m_SaveData[] =
 	DEFINE_FIELD(CMomentaryDoor, m_bMoveSnd, FIELD_CHARACTER),
 };
 
-#endif // HOOK_GAMEDLL
+#endif
 
-/* <693c0> ../cstrike/dlls/doors.cpp:98 */
 IMPLEMENT_SAVERESTORE(CBaseDoor, CBaseToggle);
 
 // play door or button locked or unlocked sounds.
@@ -31,8 +30,6 @@ IMPLEMENT_SAVERESTORE(CBaseDoor, CBaseToggle);
 // if flocked is true, play 'door is locked' sound,
 // otherwise play 'door is unlocked' sound
 // NOTE: this routine is shared by doors and buttons
-
-/* <68561> ../cstrike/dlls/doors.cpp:112 */
 void PlayLockSounds(entvars_t *pev, locksound_t *pls, int flocked, int fbutton)
 {
 	// LOCKED SOUND
@@ -116,49 +113,47 @@ void PlayLockSounds(entvars_t *pev, locksound_t *pls, int flocked, int fbutton)
 }
 
 // Cache user-entity-field values until spawn is called.
-
-/* <69a4f> ../cstrike/dlls/doors.cpp:201 */
 void CBaseDoor::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	//skin is used for content type
 	if (FStrEq(pkvd->szKeyName, "skin"))
 	{
-		pev->skin = (int)Q_atof(pkvd->szValue);
+		pev->skin = Q_atoi(pkvd->szValue);
 		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "movesnd"))
 	{
-		m_bMoveSnd = (int)Q_atof(pkvd->szValue);
+		m_bMoveSnd = Q_atoi(pkvd->szValue);
 		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "stopsnd"))
 	{
-		m_bStopSnd = (int)Q_atof(pkvd->szValue);
+		m_bStopSnd = Q_atoi(pkvd->szValue);
 		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "healthvalue"))
 	{
-		m_bHealthValue = (int)Q_atof(pkvd->szValue);
+		m_bHealthValue = Q_atoi(pkvd->szValue);
 		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "locked_sound"))
 	{
-		m_bLockedSound = (int)Q_atof(pkvd->szValue);
+		m_bLockedSound = Q_atoi(pkvd->szValue);
 		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "locked_sentence"))
 	{
-		m_bLockedSentence = (int)Q_atof(pkvd->szValue);
+		m_bLockedSentence = Q_atoi(pkvd->szValue);
 		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "unlocked_sound"))
 	{
-		m_bUnlockedSound = (int)Q_atof(pkvd->szValue);
+		m_bUnlockedSound = Q_atoi(pkvd->szValue);
 		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "unlocked_sentence"))
 	{
-		m_bUnlockedSentence = (int)Q_atof(pkvd->szValue);
+		m_bUnlockedSentence = Q_atoi(pkvd->szValue);
 		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "WaveHeight"))
@@ -192,22 +187,17 @@ void CBaseDoor::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 // 2)	base
 // 3)	stone chain
 // 4)	screechy metal
-
-/* <69f8b> ../cstrike/dlls/doors.cpp:278 */
 LINK_ENTITY_TO_CLASS(func_door, CBaseDoor);
 
 // func_water - same as a door.
-
-/* <6a058> ../cstrike/dlls/doors.cpp:282 */
 LINK_ENTITY_TO_CLASS(func_water, CBaseDoor);
 
-/* <690bc> ../cstrike/dlls/doors.cpp:285 */
 void CBaseDoor::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
 	SetMovedir(pev);
 
-	//normal door
+	// normal door
 	if (pev->skin == 0)
 	{
 		if (pev->spawnflags & SF_DOOR_PASSABLE)
@@ -233,7 +223,7 @@ void CBaseDoor::__MAKE_VHOOK(Spawn)()
 	m_vecPosition1 = pev->origin;
 
 	// Subtract 2 from size because the engine expands bboxes by 1 in all directions making the size too big
-	m_vecPosition2 = m_vecPosition1 + (pev->movedir * (fabs((float_precision)(pev->movedir.x * (pev->size.x - 2))) + fabs((float_precision)(pev->movedir.y * (pev->size.y - 2))) + fabs((float_precision)(pev->movedir.z * (pev->size.z - 2))) - m_flLip));
+	m_vecPosition2 = m_vecPosition1 + (pev->movedir * (Q_fabs(float_precision(pev->movedir.x * (pev->size.x - 2))) + Q_fabs(float_precision(pev->movedir.y * (pev->size.y - 2))) + Q_fabs(float_precision(pev->movedir.z * (pev->size.z - 2))) - m_flLip));
 
 	assert(("door start/end positions are equal", m_vecPosition1 != m_vecPosition2));
 
@@ -261,7 +251,6 @@ void CBaseDoor::__MAKE_VHOOK(Spawn)()
 	m_lastBlockedTimestamp = 0;
 }
 
-/* <69949> ../cstrike/dlls/doors.cpp:334 */
 void CBaseDoor::__MAKE_VHOOK(Restart)()
 {
 	SetMovedir(pev);
@@ -274,7 +263,6 @@ void CBaseDoor::__MAKE_VHOOK(Restart)()
 		SetTouch(&CBaseDoor::DoorTouch);
 }
 
-/* <69289> ../cstrike/dlls/doors.cpp:350 */
 void CBaseDoor::__MAKE_VHOOK(SetToggleState)(int state)
 {
 	if (state == TS_AT_TOP)
@@ -286,7 +274,6 @@ void CBaseDoor::__MAKE_VHOOK(SetToggleState)(int state)
 #define noiseMoving noise1
 #define noiseArrived noise2
 
-/* <6924c> ../cstrike/dlls/doors.cpp:359 */
 void CBaseDoor::__MAKE_VHOOK(Precache)()
 {
 	char *pszSound;
@@ -388,14 +375,14 @@ void CBaseDoor::__MAKE_VHOOK(Precache)()
 	// get door button sounds, for doors which are directly 'touched' to open
 	if (m_bLockedSound)
 	{
-		pszSound = ButtonSound((int)m_bLockedSound);
+		pszSound = ButtonSound(int(m_bLockedSound));
 		PRECACHE_SOUND(pszSound);
 		m_ls.sLockedSound = ALLOC_STRING(pszSound);
 	}
 
 	if (m_bUnlockedSound)
 	{
-		pszSound = ButtonSound((int)m_bUnlockedSound);
+		pszSound = ButtonSound(int(m_bUnlockedSound));
 		PRECACHE_SOUND(pszSound);
 		m_ls.sUnlockedSound = ALLOC_STRING(pszSound);
 	}
@@ -430,8 +417,6 @@ void CBaseDoor::__MAKE_VHOOK(Precache)()
 }
 
 // Doors not tied to anything (e.g. button, another door) can be touched, to make them activate.
-
-/* <6a3b8> ../cstrike/dlls/doors.cpp:508 */
 void CBaseDoor::DoorTouch(CBaseEntity *pOther)
 {
 	entvars_t *pevToucher = pOther->pev;
@@ -467,8 +452,6 @@ void CBaseDoor::DoorTouch(CBaseEntity *pOther)
 }
 
 // Used by SUB_UseTargets, when a door is the target of a button.
-
-/* <6a33b> ../cstrike/dlls/doors.cpp:543 */
 void CBaseDoor::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	m_hActivator = pActivator;
@@ -481,8 +464,6 @@ void CBaseDoor::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller,
 }
 
 // Causes the door to "do its thing", i.e. start moving, and cascade activation.
-
-/* <6a319> ../cstrike/dlls/doors.cpp:554 */
 int CBaseDoor::DoorActivate()
 {
 	if (!UTIL_IsMasterTriggered(m_sMaster, m_hActivator))
@@ -512,8 +493,6 @@ int CBaseDoor::DoorActivate()
 }
 
 // Starts the door going to its "up" position (simply ToggleData->vecPosition2).
-
-/* <6a125> ../cstrike/dlls/doors.cpp:588 */
 void CBaseDoor::DoorGoUp()
 {
 	entvars_t *pevActivator;
@@ -571,14 +550,14 @@ void CBaseDoor::DoorGoUp()
 				{
 					if (toActivator.y < loY)
 					{
-						if (abs((int)momentArmY) > abs((int)momentArmX))
+						if (Q_abs(int(momentArmY)) > Q_abs(int(momentArmX)))
 							sign = (momentArmY < 0) ? 1 : -1;
 						else
 							sign = (momentArmX > 0) ? 1 : -1;
 					}
 					else if (toActivator.y > hiY)
 					{
-						if (abs((int)momentArmY) > abs((int)momentArmX))
+						if (Q_abs(int(momentArmY)) > Q_abs(int(momentArmX)))
 							sign = (momentArmY < 0) ? 1 : -1;
 						else
 							sign = (momentArmX < 0) ? 1 : -1;
@@ -597,14 +576,14 @@ void CBaseDoor::DoorGoUp()
 					}
 					else if (toActivator.y < loY)
 					{
-						if (abs((int)momentArmY) > abs((int)momentArmX))
+						if (Q_abs(int(momentArmY)) > Q_abs(int(momentArmX)))
 							sign = (momentArmY > 0) ? 1 : -1;
 						else
 							sign = (momentArmX > 0) ? 1 : -1;
 					}
 					else if (toActivator.y > hiY)
 					{
-						if (abs((int)momentArmY) > abs((int)momentArmX))
+						if (Q_abs(int(momentArmY)) > Q_abs(int(momentArmX)))
 							sign = (momentArmY > 0) ? 1 : -1;
 						else
 							sign = (momentArmX < 0) ? 1 : -1;
@@ -627,8 +606,6 @@ void CBaseDoor::DoorGoUp()
 }
 
 // The door has reached the "up" position.  Either go back down, or wait for another activation.
-
-/* <6940c> ../cstrike/dlls/doors.cpp:721 */
 void CBaseDoor::DoorHitTop()
 {
 	if (!(pev->spawnflags & SF_DOOR_SILENT))
@@ -672,8 +649,6 @@ void CBaseDoor::DoorHitTop()
 }
 
 // Starts the door going to its "down" position (simply ToggleData->vecPosition1).
-
-/* <697ad> ../cstrike/dlls/doors.cpp:762 */
 void CBaseDoor::DoorGoDown()
 {
 	bool isReversing = (m_toggle_state == TS_GOING_UP);
@@ -696,7 +671,7 @@ void CBaseDoor::DoorGoDown()
 
 #ifdef DOOR_ASSERT
 	assert(m_toggle_state == TS_AT_TOP);
-#endif // DOOR_ASSERT
+#endif
 
 	m_toggle_state = TS_GOING_DOWN;
 
@@ -712,8 +687,6 @@ void CBaseDoor::DoorGoDown()
 }
 
 // The door has reached the "down" position.  Back to quiescence.
-
-/* <694a5> ../cstrike/dlls/doors.cpp:791 */
 void CBaseDoor::DoorHitBottom()
 {
 	if (!(pev->spawnflags & SF_DOOR_SILENT))
@@ -747,7 +720,6 @@ void CBaseDoor::DoorHitBottom()
 	}
 }
 
-/* <6a465> ../cstrike/dlls/doors.cpp:817 */
 void CBaseDoor::__MAKE_VHOOK(Blocked)(CBaseEntity *pOther)
 {
 	edict_t *pentTarget = NULL;
@@ -868,12 +840,8 @@ void CBaseDoor::__MAKE_VHOOK(Blocked)(CBaseEntity *pOther)
 // 2)	base
 // 3)	stone chain
 // 4)	screechy metal
-
-
-/* <6a767> ../cstrike/dlls/doors.cpp:943 */
 LINK_ENTITY_TO_CLASS(func_door_rotating, CRotDoor);
 
-/* <698be> ../cstrike/dlls/doors.cpp:946 */
 void CRotDoor::__MAKE_VHOOK(Restart)()
 {
 	CBaseToggle::AxisDir(pev);
@@ -901,7 +869,6 @@ void CRotDoor::__MAKE_VHOOK(Restart)()
 	DoorGoDown();
 }
 
-/* <69177> ../cstrike/dlls/doors.cpp:978 */
 void CRotDoor::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
@@ -961,7 +928,6 @@ void CRotDoor::__MAKE_VHOOK(Spawn)()
 	}
 }
 
-/* <68fcc> ../cstrike/dlls/doors.cpp:1028 */
 void CRotDoor::__MAKE_VHOOK(SetToggleState)(int state)
 {
 	if (state == TS_AT_TOP)
@@ -972,13 +938,9 @@ void CRotDoor::__MAKE_VHOOK(SetToggleState)(int state)
 	UTIL_SetOrigin(pev, pev->origin);
 }
 
-/* <6a834> ../cstrike/dlls/doors.cpp:1056 */
 LINK_ENTITY_TO_CLASS(momentary_door, CMomentaryDoor);
-
-/* <69373> ../cstrike/dlls/doors.cpp:1063 */
 IMPLEMENT_SAVERESTORE(CMomentaryDoor, CBaseToggle);
 
-/* <69001> ../cstrike/dlls/doors.cpp:1065 */
 void CMomentaryDoor::__MAKE_VHOOK(Spawn)()
 {
 	SetMovedir(pev);
@@ -998,7 +960,7 @@ void CMomentaryDoor::__MAKE_VHOOK(Spawn)()
 	m_vecPosition1	= pev->origin;
 
 	// Subtract 2 from size because the engine expands bboxes by 1 in all directions making the size too big
-	m_vecPosition2 = m_vecPosition1 + (pev->movedir * (fabs((float_precision)(pev->movedir.x * (pev->size.x - 2))) + fabs((float_precision)(pev->movedir.y * (pev->size.y - 2))) + fabs((float_precision)(pev->movedir.z * (pev->size.z - 2))) - m_flLip));
+	m_vecPosition2 = m_vecPosition1 + (pev->movedir * (Q_fabs(float_precision(pev->movedir.x * (pev->size.x - 2))) + Q_fabs(float_precision(pev->movedir.y * (pev->size.y - 2))) + Q_fabs(float_precision(pev->movedir.z * (pev->size.z - 2))) - m_flLip));
 	assert(("door start/end positions are equal", m_vecPosition1 != m_vecPosition2));
 
 	if (pev->spawnflags & SF_DOOR_START_OPEN)
@@ -1014,7 +976,6 @@ void CMomentaryDoor::__MAKE_VHOOK(Spawn)()
 	Precache();
 }
 
-/* <68fa5> ../cstrike/dlls/doors.cpp:1096 */
 void CMomentaryDoor::__MAKE_VHOOK(Precache)()
 {
 	// set the door's "in-motion" sound
@@ -1061,29 +1022,27 @@ void CMomentaryDoor::__MAKE_VHOOK(Precache)()
 	}
 }
 
-/* <69970> ../cstrike/dlls/doors.cpp:1143 */
 void CMomentaryDoor::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "movesnd"))
 	{
-		m_bMoveSnd = (int)Q_atof(pkvd->szValue);
+		m_bMoveSnd = Q_atoi(pkvd->szValue);
 		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "stopsnd"))
 	{
-		//m_bStopSnd =(int) Q_atof(pkvd->szValue);
+		//m_bStopSnd = Q_atoi(pkvd->szValue);
 		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "healthvalue"))
 	{
-		//m_bHealthValue = (int)Q_atof(pkvd->szValue);
+		//m_bHealthValue = Q_atoi(pkvd->szValue);
 		pkvd->fHandled = TRUE;
 	}
 	else
 		CBaseToggle::KeyValue(pkvd);
 }
 
-/* <6953e> ../cstrike/dlls/doors.cpp:1165 */
 void CMomentaryDoor::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	// Momentary buttons will pass down a float in here

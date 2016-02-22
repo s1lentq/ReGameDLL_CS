@@ -32,7 +32,6 @@
 #pragma once
 #endif
 
-/* <d521a> ../cstrike/dlls/healthkit.cpp:27 */
 class CHealthKit: public CItem
 {
 public:
@@ -46,11 +45,10 @@ public:
 	void Precache_();
 	BOOL MyTouch_(CBasePlayer *pPlayer);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 };
 
-/* <d5342> ../cstrike/dlls/healthkit.cpp:99 */
 class CWallHealth: public CBaseToggle
 {
 public:
@@ -71,7 +69,7 @@ public:
 	int Restore_(CRestore &restore);
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	void EXPORT Off();

@@ -1,6 +1,5 @@
 #include "precompiled.h"
 
-/* <43c558> ../cstrike/dlls/hostage/states/hostage_idle.cpp:15 */
 void HostageIdleState::__MAKE_VHOOK(OnEnter)(CHostageImprov *improv)
 {
 	m_moveState = MoveDone;
@@ -8,7 +7,6 @@ void HostageIdleState::__MAKE_VHOOK(OnEnter)(CHostageImprov *improv)
 	m_mustFlee = false;
 }
 
-/* <43c197> ../cstrike/dlls/hostage/states/hostage_idle.cpp:23 */
 void HostageIdleState::__MAKE_VHOOK(OnUpdate)(CHostageImprov *improv)
 {
 	if (!UTIL_ActivePlayersInGame())
@@ -228,17 +226,14 @@ void HostageIdleState::__MAKE_VHOOK(OnUpdate)(CHostageImprov *improv)
 			}
 		}
 	}
-
 }
 
-/* <43c59b> ../cstrike/dlls/hostage/states/hostage_idle.cpp:297 */
 void HostageIdleState::__MAKE_VHOOK(OnExit)(CHostageImprov *improv)
 {
 	improv->StandUp();
 	improv->ClearFaceTo();
 }
 
-/* <43c783> ../cstrike/dlls/hostage/states/hostage_idle.cpp:307 */
 void HostageIdleState::__MAKE_VHOOK(UpdateStationaryAnimation)(CHostageImprov *improv)
 {
 	if (improv->IsScared())

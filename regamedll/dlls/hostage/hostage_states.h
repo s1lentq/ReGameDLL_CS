@@ -34,7 +34,6 @@
 
 class CHostageImprov;
 
-/* <46f85d> ../cstrike/dlls/hostage/hostage_states.h:16 */
 class HostageState: public SimpleState<CHostageImprov *>, public IImprovEvent
 {
 public:
@@ -42,7 +41,6 @@ public:
 	virtual void UpdateStationaryAnimation(CHostageImprov *improv) {};
 };
 
-/* <46f922> ../cstrike/dlls/hostage/hostage_states.h:26 */
 class HostageStateMachine: public SimpleStateMachine<CHostageImprov *, HostageState>, public IImprovEvent
 {
 public:
@@ -68,7 +66,6 @@ public:
 	}
 };
 
-/* <46fccf> ../cstrike/dlls/hostage/hostage_states.h:38 */
 class HostageIdleState: public HostageState
 {
 public:
@@ -90,7 +87,7 @@ public:
 	void OnExit_(CHostageImprov *improv);
 	void UpdateStationaryAnimation_(CHostageImprov *improv);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 private:
 	CountdownTimer m_waveTimer;
@@ -112,7 +109,6 @@ private:
 	bool m_mustFlee;
 };
 
-/* <46f8ec> ../cstrike/dlls/hostage/hostage_states.h:71 */
 class HostageEscapeToCoverState: public HostageState
 {
 public:
@@ -131,7 +127,7 @@ public:
 	void OnExit_(CHostageImprov *improv);
 	void OnMoveToFailure_(const Vector &goal, MoveToFailureType reason);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	void SetRescueGoal(const Vector &rescueGoal) { m_rescueGoal = rescueGoal; }
@@ -142,7 +138,6 @@ private:
 	bool m_canEscape;
 };
 
-/* <46f907> ../cstrike/dlls/hostage/hostage_states.h:92 */
 class HostageEscapeLookAroundState: public HostageState
 {
 public:
@@ -159,13 +154,12 @@ public:
 	void OnUpdate_(CHostageImprov *improv);
 	void OnExit_(CHostageImprov *improv);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 private:
 	CountdownTimer m_timer;
 };
 
-/* <46fcea> ../cstrike/dlls/hostage/hostage_states.h:109 */
 class HostageEscapeState: public HostageState
 {
 public:
@@ -188,7 +182,7 @@ public:
 	void OnUpdate_(CHostageImprov *improv);
 	void OnExit_(CHostageImprov *improv);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	void ToCover() { m_behavior.SetState(&m_toCoverState); }
@@ -202,7 +196,6 @@ private:
 	CountdownTimer m_runTimer;
 };
 
-/* <46fd03> ../cstrike/dlls/hostage/hostage_states.h:138 */
 class HostageRetreatState: public HostageState
 {
 public:
@@ -219,11 +212,10 @@ public:
 	void OnUpdate_(CHostageImprov *improv);
 	void OnExit_(CHostageImprov *improv);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 };
 
-/* <46fd1e> ../cstrike/dlls/hostage/hostage_states.h:149 */
 class HostageFollowState: public HostageState
 {
 public:
@@ -242,7 +234,7 @@ public:
 	void OnExit_(CHostageImprov *improv);
 	void UpdateStationaryAnimation_(CHostageImprov *improv);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	void SetLeader(CBaseEntity *leader) { m_leader = leader; }
@@ -260,7 +252,6 @@ private:
 	CountdownTimer m_waitForFriendTimer;
 };
 
-/* <46fd39> ../cstrike/dlls/hostage/hostage_states.h:186 */
 class HostageAnimateState: public HostageState
 {
 public:
@@ -277,7 +268,7 @@ public:
 	void OnUpdate_(CHostageImprov *improv);
 	void OnExit_(CHostageImprov *improv);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	struct SeqInfo
@@ -312,7 +303,7 @@ public:
 	void AddSequence(CHostageImprov *improv, int activity, float holdTime = -1.0f, float rate = 1.0f);
 
 	bool IsBusy() const { return (m_sequenceCount > 0); }
-	NOXREF bool IsPlaying(CHostageImprov *improv, const char *seqName) const;
+	bool IsPlaying(CHostageImprov *improv, const char *seqName) const;
 	int GetCurrentSequenceID() { return m_currentSequence; }
 	PerformanceType GetPerformance() const { return m_performance; }
 	void SetPerformance(PerformanceType performance) { m_performance = performance; }
@@ -321,7 +312,7 @@ public:
 	
 private:
 	enum { MAX_SEQUENCES = 8 };
-	struct SeqInfo m_sequence[ MAX_SEQUENCES ];
+	struct SeqInfo m_sequence[MAX_SEQUENCES];
 	int m_sequenceCount;
 	int m_currentSequence;
 	enum PerformanceType m_performance;

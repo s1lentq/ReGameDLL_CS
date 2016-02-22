@@ -142,12 +142,6 @@
 		#define CDECL __cdecl
 	#endif
 
-#ifdef HOOK_GAMEDLL
-	#define WINAPI_HOOK __stdcall
-#else
-	#define WINAPI_HOOK	/**/
-#endif // HOOK_GAMEDLL
-
 	#define STDCALL __stdcall
 	#define HIDDEN
 	#define NOINLINE __declspec(noinline)
@@ -183,10 +177,6 @@
 	typedef unsigned long DWORD;
 	typedef unsigned short WORD;
 	typedef unsigned int UNINT32;
-
-#ifdef HOOK_GAMEDLL
-	#define WINAPI_HOOK
-#endif // HOOK_GAMEDLL
 
 	#define CDECL __attribute__ ((cdecl))
 	#define STDCALL __attribute__ ((stdcall))
@@ -238,8 +228,5 @@
 #endif
 
 #define EXT_FUNC /*FORCE_STACK_ALIGN*/
-
-extern void regamedll_log(const char *fmt, ...);
-extern void __declspec(noreturn) regamedll_syserror(const char *fmt, ...);
 
 #endif // OSCONFIG_H

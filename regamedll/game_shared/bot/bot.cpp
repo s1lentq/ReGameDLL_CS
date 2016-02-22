@@ -15,9 +15,8 @@ float g_flBotFullThinkInterval = 1.0 / 10.0;
 const char *BotArgs[4] = { NULL };
 bool UseBotArgs = false;
 
-#endif // HOOK_GAMEDLL
+#endif
 
-/* <48fed0> ../game_shared/bot/bot.cpp:28 */
 CBot::CBot()
 {
 	// the profile will be attached after this instance is constructed
@@ -35,15 +34,12 @@ CBot::CBot()
 }
 
 // Prepare bot for action
-
-/* <48f6ef> ../game_shared/bot/bot.cpp:50 */
 bool CBot::__MAKE_VHOOK(Initialize)(const BotProfile *profile)
 {
 	m_profile = profile;
 	return true;
 }
 
-/* <48fbbd> ../game_shared/bot/bot.cpp:57 */
 void CBot::__MAKE_VHOOK(Spawn)()
 {
 	// Let CBasePlayer set some things up
@@ -73,14 +69,12 @@ void CBot::__MAKE_VHOOK(Spawn)()
 	SpawnBot();
 }
 
-/* <48fa37> ../game_shared/bot/bot.cpp:88 */
 Vector CBot::__MAKE_VHOOK(GetAutoaimVector)(float flDelta)
 {
 	UTIL_MakeVectors(pev->v_angle + pev->punchangle);
 	return gpGlobals->v_forward;
 }
 
-/* <48ffa8> ../game_shared/bot/bot.cpp:97 */
 void CBot::BotThink()
 {
 	if (gpGlobals->time >= m_flNextBotThink)
@@ -100,7 +94,6 @@ void CBot::BotThink()
 	}
 }
 
-/* <48f723> ../game_shared/bot/bot.cpp:119 */
 void CBot::__MAKE_VHOOK(MoveForward)()
 {
 	m_forwardSpeed = GetMoveSpeed();
@@ -110,7 +103,6 @@ void CBot::__MAKE_VHOOK(MoveForward)()
 	m_buttonFlags &= ~IN_BACK;
 }
 
-/* <48f761> ../game_shared/bot/bot.cpp:130 */
 void CBot::__MAKE_VHOOK(MoveBackward)()
 {
 	m_forwardSpeed = -GetMoveSpeed();
@@ -120,7 +112,6 @@ void CBot::__MAKE_VHOOK(MoveBackward)()
 	m_buttonFlags &= ~IN_FORWARD;
 }
 
-/* <48f79f> ../game_shared/bot/bot.cpp:140 */
 void CBot::__MAKE_VHOOK(StrafeLeft)()
 {
 	m_strafeSpeed = -GetMoveSpeed();
@@ -130,7 +121,6 @@ void CBot::__MAKE_VHOOK(StrafeLeft)()
 	m_buttonFlags &= ~IN_MOVERIGHT;
 }
 
-/* <48f7dd> ../game_shared/bot/bot.cpp:150 */
 void CBot::__MAKE_VHOOK(StrafeRight)()
 {
 	m_strafeSpeed = GetMoveSpeed();
@@ -140,7 +130,6 @@ void CBot::__MAKE_VHOOK(StrafeRight)()
 	m_buttonFlags &= ~IN_MOVELEFT;
 }
 
-/* <48fe00> ../game_shared/bot/bot.cpp:160 */
 bool CBot::__MAKE_VHOOK(Jump)(bool mustJump)
 {
 	if (IsJumping() || IsCrouching())
@@ -165,16 +154,12 @@ bool CBot::__MAKE_VHOOK(Jump)(bool mustJump)
 }
 
 // Zero any MoveForward(), Jump(), etc
-
-/* <48f81b> ../game_shared/bot/bot.cpp:187 */
 void CBot::__MAKE_VHOOK(ClearMovement)()
 {
 	ResetCommand();
 }
 
 // Returns true if we are in the midst of a jump
-
-/* <48ffe7> ../game_shared/bot/bot.cpp:196 */
 bool CBot::IsJumping()
 {
 	// if long time after last jump, we can't be jumping
@@ -192,37 +177,31 @@ bool CBot::IsJumping()
 	return true;
 }
 
-/* <48f859> ../game_shared/bot/bot.cpp:214 */
 void CBot::__MAKE_VHOOK(Crouch)()
 {
 	m_isCrouching = true;
 }
 
-/* <48f87f> ../game_shared/bot/bot.cpp:220 */
 void CBot::__MAKE_VHOOK(StandUp)()
 {
 	m_isCrouching = false;
 }
 
-/* <48f8a5> ../game_shared/bot/bot.cpp:227 */
 void CBot::__MAKE_VHOOK(UseEnvironment)()
 {
 	m_buttonFlags |= IN_USE;
 }
 
-/* <48f8cb> ../game_shared/bot/bot.cpp:234 */
 void CBot::__MAKE_VHOOK(PrimaryAttack)()
 {
 	m_buttonFlags |= IN_ATTACK;
 }
 
-/* <48f8f1> ../game_shared/bot/bot.cpp:240 */
 void CBot::__MAKE_VHOOK(ClearPrimaryAttack)()
 {
 	m_buttonFlags &= ~IN_ATTACK;
 }
 
-/* <48f917> ../game_shared/bot/bot.cpp:246 */
 void CBot::__MAKE_VHOOK(TogglePrimaryAttack)()
 {
 	if (m_buttonFlags & IN_ATTACK)
@@ -231,21 +210,17 @@ void CBot::__MAKE_VHOOK(TogglePrimaryAttack)()
 		m_buttonFlags |= IN_ATTACK;
 }
 
-/* <48f93d> ../game_shared/bot/bot.cpp:260 */
 void CBot::__MAKE_VHOOK(SecondaryAttack)()
 {
 	m_buttonFlags |= IN_ATTACK2;
 }
 
-/* <48f963> ../game_shared/bot/bot.cpp:266 */
 void CBot::__MAKE_VHOOK(Reload)()
 {
 	m_buttonFlags |= IN_RELOAD;
 }
 
 // Returns ratio of ammo left to max ammo (1 = full clip, 0 = empty)
-
-/* <490008> ../game_shared/bot/bot.cpp:275 */
 float CBot::GetActiveWeaponAmmoRatio() const
 {
 	CBasePlayerWeapon *weapon = GetActiveWeapon();
@@ -257,12 +232,10 @@ float CBot::GetActiveWeaponAmmoRatio() const
 	if (weapon->m_iClip < 0)
 		return 1.0f;
 
-	return (float)weapon->m_iClip / (float)weapon->iMaxClip();
+	return float(weapon->m_iClip) / float(weapon->iMaxClip());
 }
 
 // Return true if active weapon has an empty clip
-
-/* <490058> ../game_shared/bot/bot.cpp:293 */
 bool CBot::IsActiveWeaponClipEmpty() const
 {
 	CBasePlayerWeapon *weapon = GetActiveWeapon();
@@ -274,27 +247,23 @@ bool CBot::IsActiveWeaponClipEmpty() const
 }
 
 // Return true if active weapon has no ammo at all
-
-/* <490096> ../game_shared/bot/bot.cpp:307 */
 bool CBot::IsActiveWeaponOutOfAmmo() const
 {
-	CBasePlayerWeapon *gun = GetActiveWeapon();
+	CBasePlayerWeapon *weapon = GetActiveWeapon();
 
-	if (gun == NULL)
+	if (weapon == NULL)
 		return true;
 
-	if (gun->m_iClip < 0)
+	if (weapon->m_iClip < 0)
 		return false;
 
-	if (gun->m_iClip == 0 && m_rgAmmo[ gun->m_iPrimaryAmmoType ] <= 0)
+	if (weapon->m_iClip == 0 && m_rgAmmo[ weapon->m_iPrimaryAmmoType ] <= 0)
 		return true;
 
 	return false;
 }
 
 // Return true if looking thru weapon's scope
-
-/* <4900d4> ../game_shared/bot/bot.cpp:327 */
 bool CBot::IsUsingScope() const
 {
 	// if our field of view is less than 90, we're looking thru a scope (maybe only true for CS...)
@@ -304,7 +273,6 @@ bool CBot::IsUsingScope() const
 	return false;
 }
 
-/* <48f989> ../game_shared/bot/bot.cpp:338 */
 void CBot::__MAKE_VHOOK(ExecuteCommand)()
 {
 	byte adjustedMSec;
@@ -328,7 +296,6 @@ void CBot::__MAKE_VHOOK(ExecuteCommand)()
 	PLAYER_RUN_MOVE(edict(), pev->v_angle, m_forwardSpeed, m_strafeSpeed, m_verticalSpeed, m_buttonFlags, 0, adjustedMSec);
 }
 
-/* <4900fa> ../game_shared/bot/bot.cpp:362 */
 void CBot::ResetCommand()
 {
 	m_forwardSpeed = 0.0f;
@@ -337,25 +304,22 @@ void CBot::ResetCommand()
 	m_buttonFlags = 0;
 }
 
-/* <49011b> ../game_shared/bot/bot.cpp:372 */
 byte CBot::ThrottledMsec() const
 {
 	int iNewMsec;
 
 	// Estimate Msec to use for this command based on time passed from the previous command
-	iNewMsec = (int)((gpGlobals->time - m_flPreviousCommandTime) * 1000);
+	iNewMsec = int((gpGlobals->time - m_flPreviousCommandTime) * 1000);
 
 	// Doh, bots are going to be slower than they should if this happens.
 	// Upgrade that CPU or use less bots!
 	if (iNewMsec > 255)
 		iNewMsec = 255;
 
-	return (byte)iNewMsec;
+	return byte(iNewMsec);
 }
 
 // Do a "client command" - useful for invoking menu choices, etc.
-
-/* <49016e> ../game_shared/bot/bot.cpp:389 */
 void CBot::ClientCommand(const char *cmd, const char *arg1, const char *arg2, const char *arg3)
 {
 	BotArgs[0] = cmd;
@@ -369,8 +333,6 @@ void CBot::ClientCommand(const char *cmd, const char *arg1, const char *arg2, co
 }
 
 // Returns TRUE if given entity is our enemy
-
-/* <4901ac> ../game_shared/bot/bot.cpp:410 */
 bool CBot::IsEnemy(CBaseEntity *ent) const
 {
 	// only Players (real and AI) can be enemies
@@ -392,12 +354,9 @@ bool CBot::IsEnemy(CBaseEntity *ent) const
 }
 
 // Return number of enemies left alive
-
-/* <49021a> ../game_shared/bot/bot.cpp:434 */
 int CBot::GetEnemiesRemaining() const
 {
 	int count = 0;
-
 	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
 		CBaseEntity *player = UTIL_PlayerByIndex(i);
@@ -417,19 +376,16 @@ int CBot::GetEnemiesRemaining() const
 		if (!player->IsAlive())
 			continue;
 
-		count++;
+		++count;
 	}
 
 	return count;
 }
 
 // Return number of friends left alive
-
-/* <490338> ../game_shared/bot/bot.cpp:467 */
 int CBot::GetFriendsRemaining() const
 {
 	int count = 0;
-
 	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
 		CBaseEntity *player = UTIL_PlayerByIndex(i);
@@ -452,13 +408,12 @@ int CBot::GetFriendsRemaining() const
 		if (player == static_cast<CBaseEntity *>(const_cast<CBot *>(this)))
 			continue;
 
-		count++;
+		++count;
 	}
 
 	return count;
 }
 
-/* <490489> ../game_shared/bot/bot.cpp:503 */
 bool CBot::IsLocalPlayerWatchingMe() const
 {
 	// avoid crash during spawn
@@ -471,21 +426,20 @@ bool CBot::IsLocalPlayerWatchingMe() const
 	if (player == NULL)
 		return false;
 
-	if ((player->pev->flags & FL_SPECTATOR || player->m_iTeam == SPECTATOR) && player->pev->iuser2 == myIndex)
+	if (((player->pev->flags & FL_SPECTATOR) || player->m_iTeam == SPECTATOR) && player->pev->iuser2 == myIndex)
 	{
 		switch (player->pev->iuser1)
 		{
-			case OBS_CHASE_LOCKED:
-			case OBS_CHASE_FREE:
-			case OBS_IN_EYE:
-				return true;
+		case OBS_CHASE_LOCKED:
+		case OBS_CHASE_FREE:
+		case OBS_IN_EYE:
+			return true;
 		}
 	}
 
 	return false;
 }
 
-/* <4904f2> ../game_shared/bot/bot.cpp:536 */
 NOXREF void CBot::Print(char *format, ...) const
 {
 	va_list varg;
@@ -502,7 +456,6 @@ NOXREF void CBot::Print(char *format, ...) const
 	SERVER_PRINT(buffer);
 }
 
-/* <490561> ../game_shared/bot/bot.cpp:557 */
 void CBot::PrintIfWatched(char *format, ...) const
 {
 	if (!cv_bot_debug.value)
@@ -533,7 +486,6 @@ void CBot::PrintIfWatched(char *format, ...) const
 	}
 }
 
-/* <49066c> ../game_shared/bot/bot.cpp:588 */
 ActiveGrenade::ActiveGrenade(int weaponID, CGrenade *grenadeEntity)
 {
 	m_id = weaponID;
@@ -542,7 +494,6 @@ ActiveGrenade::ActiveGrenade(int weaponID, CGrenade *grenadeEntity)
 	m_dieTimestamp = 0;
 }
 
-/* <49069d> ../game_shared/bot/bot.cpp:597 */
 void ActiveGrenade::OnEntityGone()
 {
 	if (m_id == WEAPON_SMOKEGRENADE)
@@ -555,7 +506,6 @@ void ActiveGrenade::OnEntityGone()
 	m_entity = NULL;
 }
 
-/* <4906e1> ../game_shared/bot/bot.cpp:610 */
 bool ActiveGrenade::IsValid() const
 {
 	if (!m_entity)
@@ -563,10 +513,10 @@ bool ActiveGrenade::IsValid() const
 		if (gpGlobals->time > m_dieTimestamp)
 			return false;
 	}
+
 	return true;
 }
 
-/* <490710> ../game_shared/bot/bot.cpp:622 */
 const Vector *ActiveGrenade::GetPosition() const
 {
 	return &m_entity->pev->origin;

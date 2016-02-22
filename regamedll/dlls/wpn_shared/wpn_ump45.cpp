@@ -1,9 +1,7 @@
 #include "precompiled.h"
 
-/* <2b5b26> ../cstrike/dlls/wpn_shared/wpn_ump45.cpp:50 */
 LINK_ENTITY_TO_CLASS(weapon_ump45, CUMP45);
 
-/* <2b58f0> ../cstrike/dlls/wpn_shared/wpn_ump45.cpp:52 */
 void CUMP45::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
@@ -18,7 +16,6 @@ void CUMP45::__MAKE_VHOOK(Spawn)()
 	FallInit();
 }
 
-/* <2b586f> ../cstrike/dlls/wpn_shared/wpn_ump45.cpp:66 */
 void CUMP45::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/v_ump45.mdl");
@@ -33,7 +30,6 @@ void CUMP45::__MAKE_VHOOK(Precache)()
 	m_usFireUMP45 = PRECACHE_EVENT(1, "events/ump45.sc");
 }
 
-/* <2b5896> ../cstrike/dlls/wpn_shared/wpn_ump45.cpp:82 */
 int CUMP45::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
@@ -41,7 +37,7 @@ int CUMP45::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	p->pszAmmo1 = "45acp";
 #else
 	p->pszAmmo1 = "45ACP";
-#endif // REGAMEDLL_FIXES
+#endif
 	p->iMaxAmmo1 = MAX_AMMO_45ACP;
 	p->pszAmmo2 = NULL;
 	p->iMaxAmmo2 = -1;
@@ -55,7 +51,6 @@ int CUMP45::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	return 1;
 }
 
-/* <2b58c9> ../cstrike/dlls/wpn_shared/wpn_ump45.cpp:99 */
 BOOL CUMP45::__MAKE_VHOOK(Deploy)()
 {
 	m_flAccuracy = 0.0f;
@@ -65,7 +60,6 @@ BOOL CUMP45::__MAKE_VHOOK(Deploy)()
 	return DefaultDeploy("models/v_ump45.mdl", "models/p_ump45.mdl", UMP45_DRAW, "carbine", UseDecrement() != FALSE);
 }
 
-/* <2b5aec> ../cstrike/dlls/wpn_shared/wpn_ump45.cpp:108 */
 void CUMP45::__MAKE_VHOOK(PrimaryAttack)()
 {
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
@@ -78,7 +72,6 @@ void CUMP45::__MAKE_VHOOK(PrimaryAttack)()
 	}
 }
 
-/* <2b5bf0> ../cstrike/dlls/wpn_shared/wpn_ump45.cpp:116 */
 void CUMP45::UMP45Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 {
 	Vector vecAiming, vecSrc, vecDir;
@@ -124,10 +117,10 @@ void CUMP45::UMP45Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	flag = FEV_NOTHOST;
 #else
 	flag = 0;
-#endif // CLIENT_WEAPONS
+#endif
 
 	PLAYBACK_EVENT_FULL(flag, m_pPlayer->edict(), m_usFireUMP45, 0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y,
-		(int)(m_pPlayer->pev->punchangle.x * 100), (int)(m_pPlayer->pev->punchangle.y * 100), FALSE, FALSE);
+		int(m_pPlayer->pev->punchangle.x * 100), int(m_pPlayer->pev->punchangle.y * 100), FALSE, FALSE);
 
 	m_pPlayer->m_iWeaponVolume = NORMAL_GUN_VOLUME;
 	m_pPlayer->m_iWeaponFlash = DIM_GUN_FLASH;
@@ -159,7 +152,6 @@ void CUMP45::UMP45Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	}
 }
 
-/* <2b59a1> ../cstrike/dlls/wpn_shared/wpn_ump45.cpp:200 */
 void CUMP45::__MAKE_VHOOK(Reload)()
 {
 	if (m_pPlayer->ammo_45acp <= 0)
@@ -174,7 +166,6 @@ void CUMP45::__MAKE_VHOOK(Reload)()
 	}
 }
 
-/* <2b5966> ../cstrike/dlls/wpn_shared/wpn_ump45.cpp:214 */
 void CUMP45::__MAKE_VHOOK(WeaponIdle)()
 {
 	ResetEmptySound();

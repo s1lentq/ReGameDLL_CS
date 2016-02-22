@@ -32,7 +32,9 @@
 #pragma once
 #endif
 
+#include "maintypes.h"
 #include "custom.h"
+#include "bspfile.h"
 
 #define STUDIO_RENDER		1
 #define STUDIO_EVENTS		2
@@ -157,7 +159,7 @@ struct decal_s
 
 typedef struct mleaf_s
 {
-// common with node
+	// common with node
 	int contents;			// wil be a negative contents number
 	int visframe;			// node needs to be traversed if current
 
@@ -165,7 +167,7 @@ typedef struct mleaf_s
 
 	struct mnode_s *parent;
 
-// leaf specific
+	// leaf specific
 	byte *compressed_vis;
 	struct efrag_s *efrags;
 
@@ -279,7 +281,7 @@ typedef struct model_s
 	color24 *lightdata;
 	char *entities;
 
-// additional model data
+	// additional model data
 	cache_user_t cache;			// only access through Mod_Extradata
 
 } model_t;

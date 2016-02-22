@@ -1,9 +1,7 @@
 #include "precompiled.h"
 
-/* <2b06f0> ../cstrike/dlls/wpn_shared/wpn_tmp.cpp:50 */
 LINK_ENTITY_TO_CLASS(weapon_tmp, CTMP);
 
-/* <2b04ba> ../cstrike/dlls/wpn_shared/wpn_tmp.cpp:52 */
 void CTMP::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
@@ -19,7 +17,6 @@ void CTMP::__MAKE_VHOOK(Spawn)()
 	FallInit();
 }
 
-/* <2b0439> ../cstrike/dlls/wpn_shared/wpn_tmp.cpp:67 */
 void CTMP::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/v_tmp.mdl");
@@ -32,7 +29,6 @@ void CTMP::__MAKE_VHOOK(Precache)()
 	m_usFireTMP = PRECACHE_EVENT(1, "events/tmp.sc");
 }
 
-/* <2b0460> ../cstrike/dlls/wpn_shared/wpn_tmp.cpp:81 */
 int CTMP::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
@@ -50,7 +46,6 @@ int CTMP::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	return 1;
 }
 
-/* <2b0493> ../cstrike/dlls/wpn_shared/wpn_tmp.cpp:98 */
 BOOL CTMP::__MAKE_VHOOK(Deploy)()
 {
 	m_flAccuracy = 0.2f;
@@ -61,7 +56,6 @@ BOOL CTMP::__MAKE_VHOOK(Deploy)()
 	return DefaultDeploy("models/v_tmp.mdl", "models/p_tmp.mdl", TMP_DRAW, "onehanded", UseDecrement() != FALSE);
 }
 
-/* <2b06b6> ../cstrike/dlls/wpn_shared/wpn_tmp.cpp:108 */
 void CTMP::__MAKE_VHOOK(PrimaryAttack)()
 {
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
@@ -74,7 +68,6 @@ void CTMP::__MAKE_VHOOK(PrimaryAttack)()
 	}
 }
 
-/* <2b07ba> ../cstrike/dlls/wpn_shared/wpn_tmp.cpp:116 */
 void CTMP::TMPFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 {
 	Vector vecAiming, vecSrc, vecDir;
@@ -121,10 +114,10 @@ void CTMP::TMPFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	flag = FEV_NOTHOST;
 #else
 	flag = 0;
-#endif // CLIENT_WEAPONS
+#endif
 
 	PLAYBACK_EVENT_FULL(flag, m_pPlayer->edict(), m_usFireTMP, 0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y,
-		(int)(m_pPlayer->pev->punchangle.x * 100), (int)(m_pPlayer->pev->punchangle.y * 100), 5, FALSE);
+		int(m_pPlayer->pev->punchangle.x * 100), int(m_pPlayer->pev->punchangle.y * 100), 5, FALSE);
 
 	m_flNextPrimaryAttack = m_flNextSecondaryAttack = GetNextAttackDelay(flCycleTime);
 
@@ -153,14 +146,13 @@ void CTMP::TMPFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	}
 }
 
-/* <2b056b> ../cstrike/dlls/wpn_shared/wpn_tmp.cpp:197 */
 void CTMP::__MAKE_VHOOK(Reload)()
 {
 #ifdef REGAMEDLL_FIXES
 	// to prevent reload if not enough ammo
 	if (m_pPlayer->ammo_9mm <= 0)
 		return;
-#endif // REGAMEDLL_FIXES
+#endif
 
 	if (DefaultReload(TMP_MAX_CLIP, TMP_RELOAD, TMP_RELOAD_TIME))
 	{
@@ -171,7 +163,6 @@ void CTMP::__MAKE_VHOOK(Reload)()
 	}
 }
 
-/* <2b0530> ../cstrike/dlls/wpn_shared/wpn_tmp.cpp:211 */
 void CTMP::__MAKE_VHOOK(WeaponIdle)()
 {
 	ResetEmptySound();

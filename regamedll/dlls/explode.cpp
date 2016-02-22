@@ -11,12 +11,10 @@ TYPEDESCRIPTION CEnvExplosion::m_SaveData[] =
 	DEFINE_FIELD(CEnvExplosion, m_spriteScale, FIELD_INTEGER),
 };
 
-#endif // HOOK_GAMEDLL
+#endif
 
-/* <7f660> ../cstrike/dlls/explode.cpp:37 */
 LINK_ENTITY_TO_CLASS(spark_shower, CShower);
 
-/* <7f49c> ../cstrike/dlls/explode.cpp:39 */
 void CShower::__MAKE_VHOOK(Spawn)()
 {
 	pev->velocity = RANDOM_FLOAT(200, 300) * pev->angles;
@@ -42,7 +40,6 @@ void CShower::__MAKE_VHOOK(Spawn)()
 	pev->angles = g_vecZero;
 }
 
-/* <7f475> ../cstrike/dlls/explode.cpp:61 */
 void CShower::__MAKE_VHOOK(Think)()
 {
 	UTIL_Sparks(pev->origin);
@@ -57,7 +54,6 @@ void CShower::__MAKE_VHOOK(Think)()
 	pev->flags &= ~FL_ONGROUND;
 }
 
-/* <7f122> ../cstrike/dlls/explode.cpp:73 */
 void CShower::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 {
 	if (pev->flags & FL_ONGROUND)
@@ -71,13 +67,9 @@ void CShower::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 	}
 }
 
-/* <7f566> ../cstrike/dlls/explode.cpp:106 */
 IMPLEMENT_SAVERESTORE(CEnvExplosion, CBaseMonster);
-
-/* <7f72a> ../cstrike/dlls/explode.cpp:107 */
 LINK_ENTITY_TO_CLASS(env_explosion, CEnvExplosion);
 
-/* <7f5b2> ../cstrike/dlls/explode.cpp:109 */
 void CEnvExplosion::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "iMagnitude"))
@@ -89,7 +81,6 @@ void CEnvExplosion::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CBaseEntity::KeyValue(pkvd);
 }
 
-/* <7f1a5> ../cstrike/dlls/explode.cpp:120 */
 void CEnvExplosion::__MAKE_VHOOK(Spawn)()
 {
 	pev->solid = SOLID_NOT;
@@ -103,16 +94,15 @@ void CEnvExplosion::__MAKE_VHOOK(Spawn)()
 		flSpriteScale = 10.0f;
 	}
 
-	m_spriteScale = (int)flSpriteScale;
+	m_spriteScale = int(flSpriteScale);
 }
 
-/* <7f233> ../cstrike/dlls/explode.cpp:150 */
 void CEnvExplosion::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	TraceResult tr;
 
-	pev->model = iStringNull;//invisible
-	pev->solid = SOLID_NOT;//intangible
+	pev->model = iStringNull;// invisible
+	pev->solid = SOLID_NOT;// intangible
 
 	Vector vecSpot;// trace starts here!
 
@@ -125,15 +115,11 @@ void CEnvExplosion::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCal
 	{
 		pev->origin = tr.vecEndPos + (tr.vecPlaneNormal * (m_iMagnitude - 24) * 0.6f);
 	}
-	else
-	{
-		pev->origin = pev->origin;
-	}
 
 	// draw decal
 	if (! (pev->spawnflags & SF_ENVEXPLOSION_NODECAL))
 	{
-		if (RANDOM_FLOAT(0, 1) < 0.5)
+		if (RANDOM_FLOAT(0, 1) < 0.5f)
 		{
 			UTIL_DecalTrace(&tr, DECAL_SCORCH1);
 		}
@@ -152,7 +138,7 @@ void CEnvExplosion::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCal
 			WRITE_COORD(pev->origin.y);
 			WRITE_COORD(pev->origin.z);
 			WRITE_SHORT(g_sModelIndexFireball);
-			WRITE_BYTE((byte)m_spriteScale); // scale * 10
+			WRITE_BYTE(byte(m_spriteScale)); // scale * 10
 			WRITE_BYTE(15); // framerate
 			WRITE_BYTE(TE_EXPLFLAG_NONE);
 		MESSAGE_END();
@@ -192,7 +178,6 @@ void CEnvExplosion::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCal
 	}
 }
 
-/* <7f1e1> ../cstrike/dlls/explode.cpp:235 */
 void CEnvExplosion::Smoke()
 {
 	if (!(pev->spawnflags & SF_ENVEXPLOSION_NOSMOKE))
@@ -203,7 +188,7 @@ void CEnvExplosion::Smoke()
 			WRITE_COORD(pev->origin.y);
 			WRITE_COORD(pev->origin.z);
 			WRITE_SHORT(g_sModelIndexSmoke);
-			WRITE_BYTE((byte)m_spriteScale); // scale * 10
+			WRITE_BYTE(byte(m_spriteScale)); // scale * 10
 			WRITE_BYTE(12); // framerate
 		MESSAGE_END();
 	}
@@ -215,8 +200,6 @@ void CEnvExplosion::Smoke()
 }
 
 // HACKHACK -- create one of these and fake a keyvalue to get the right explosion setup
-
-/* <7f7f4> ../cstrike/dlls/explode.cpp:258 */
 void ExplosionCreate(const Vector &center, Vector &angles, edict_t *pOwner, int magnitude, BOOL doDamage)
 {
 	KeyValueData kvd;

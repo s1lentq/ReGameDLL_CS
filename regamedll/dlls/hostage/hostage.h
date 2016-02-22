@@ -39,14 +39,15 @@
 #define MAX_HOSTAGES			12
 #define MAX_HOSTAGES_NAV		20
 
-#define HOSTAGE_STEPSIZE		26.0
-#define HOSTAGE_STEPSIZE_DEFAULT	18.0
+#define HOSTAGE_STEPSIZE		26.0f
+#define HOSTAGE_STEPSIZE_DEFAULT	18.0f
 
 #define VEC_HOSTAGE_VIEW		Vector(0, 0, 12)
 #define VEC_HOSTAGE_HULL_MIN		Vector(-10, -10, 0)
 #define VEC_HOSTAGE_HULL_MAX		Vector(10, 10, 62)
 
 #define VEC_HOSTAGE_CROUCH		Vector(10, 10, 30)
+#define RESCUE_HOSTAGES_RADIUS		256.0f				// rescue zones from legacy info_*
 
 class CHostage;
 class CLocalNav;
@@ -86,8 +87,6 @@ extern cvar_t cv_hostage_debug;
 extern cvar_t cv_hostage_stop;
 
 // A Counter-Strike Hostage Simple
-
-/* <4858e5> ../cstrike/dlls/hostage/hostage.h:32 */
 class CHostage: public CBaseMonster
 {
 public:
@@ -109,7 +108,7 @@ public:
 	void Touch_(CBaseEntity *pOther);
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	void EXPORT IdleThink();
@@ -185,7 +184,7 @@ public:
 	CBasePlayer *m_target;
 	CLocalNav *m_LocalNav;
 	int nTargetNode;
-	Vector vecNodes[ MAX_NODES ];
+	Vector vecNodes[MAX_NODES];
 	EHANDLE m_hStoppedTargetEnt;
 	float m_flNextFullThink;
 	float m_flPathCheckInterval;
@@ -224,11 +223,6 @@ public:
 	};
 
 	void AddSound(HostageChatterType type, char *filename);
-
-#ifdef _WIN32
-	#undef PlaySound
-#endif // _WIN32
-
 	float PlaySound(CBaseEntity *entity, HostageChatterType type);
 	char *GetSound(HostageChatterType type, float *duration);
 	void Shuffle(ChatterSet *chatter);
@@ -237,7 +231,6 @@ private:
 	ChatterSet m_chatter[21];
 };
 
-/* <45b018> ../cstrike/dlls/hostage/hostage.h:247 */
 class CHostageManager
 {
 public:
@@ -282,12 +275,12 @@ public:
 
 		for (int i = 0; i < m_hostageCount; i++)
 		{
-			range = (m_hostage[ i ]->pev->origin - pos).Length();
+			range = (m_hostage[i]->pev->origin - pos).Length();
 
 			if (range < closeRange)
 			{
 				closeRange = range;
-				close = m_hostage[ i ];
+				close = m_hostage[i];
 			}
 		}
 
@@ -298,10 +291,16 @@ public:
 	}
 
 private:
-	CHostage *m_hostage[ MAX_HOSTAGES ];
+	CHostage *m_hostage[MAX_HOSTAGES];
 	int m_hostageCount;
 	SimpleChatter m_chatter;
 };
+
+// Determine whether hostage improv can be used or not
+inline bool AreImprovAllowed()
+{
+	return g_bHostageImprov;
+}
 
 void Hostage_RegisterCVars();
 void InstallHostageManager();

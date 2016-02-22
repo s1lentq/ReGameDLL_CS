@@ -14,7 +14,6 @@ void CBaseSpectator::SpectatorDisconnect()
 	;
 }
 
-/* <17d35d> ../cstrike/dlls/spectator.cpp:61 */
 void CBaseSpectator::SpectatorImpulseCommand()
 {
 	static edict_t *pGoal = NULL;
@@ -90,7 +89,6 @@ void CBaseSpectator::SpectatorThink()
 	}
 }
 
-/* <17d297> ../cstrike/dlls/spectator.cpp:142 */
 void CBaseSpectator::__MAKE_VHOOK(Spawn)()
 {
 	pev->flags = FL_SPECTATOR;

@@ -77,7 +77,6 @@ enum RouteType
 	SAFEST_ROUTE,
 };
 
-/* <4c1845> ../game_shared/bot/nav_area.h:35 */
 union NavConnect
 {
 	unsigned int id;
@@ -95,7 +94,6 @@ enum LadderDirectionType
 	NUM_LADDER_DIRECTIONS
 };
 
-/* <4c2fda> ../game_shared/bot/nav_area.h:63 */
 class CNavLadder
 {
 public:
@@ -124,8 +122,7 @@ public:
 
 	bool m_isDangling;
 
-	/* <4c2dc0> ../game_shared/bot/nav_area.h:88 */
-	void OnDestroyNotify(CNavArea *dead)
+		void OnDestroyNotify(CNavArea *dead)
 	{
 		if (dead == m_topForwardArea)
 			m_topForwardArea = NULL;
@@ -179,7 +176,7 @@ public:
 
 #ifndef HOOK_GAMEDLL
 private:
-#endif // HOOK_GAMEDLL
+#endif
 	friend void DestroyHidingSpots();
 
 	Vector m_pos;
@@ -193,7 +190,6 @@ private:
 
 typedef std::STD_LIST<HidingSpot *> HidingSpotList;
 
-/* <4ec0bd> ../game_shared/bot/nav_area.h:164 */
 struct SpotOrder
 {
 	float t;
@@ -206,7 +202,6 @@ struct SpotOrder
 
 typedef std::STD_LIST<SpotOrder> SpotOrderList;
 
-/* <4c3a51> ../game_shared/bot/nav_area.h:179 */
 struct SpotEncounter
 {
 	NavConnect from;
@@ -221,7 +216,6 @@ typedef std::STD_LIST<SpotEncounter> SpotEncounterList;
 typedef std::STD_LIST<CNavArea *> NavAreaList;
 
 // A CNavArea is a rectangular region defining a walkable area in the map
-
 class CNavArea
 {
 public:
@@ -241,11 +235,11 @@ public:
 	void Load(SteamFile *file, unsigned int version);
 	NavErrorType PostLoad();
 
-	unsigned int GetID() const			{ return m_id; }
-	void SetAttributes(unsigned char bits)		{ m_attributeFlags = bits; }
-	unsigned char GetAttributes() const		{ return m_attributeFlags; }
-	void SetPlace(Place place)			{ m_place = place; }			// set place descriptor
-	Place GetPlace() const				{ return m_place; }			// get place descriptor
+	unsigned int GetID() const { return m_id; }
+	void SetAttributes(unsigned char bits) { m_attributeFlags = bits; }
+	unsigned char GetAttributes() const { return m_attributeFlags; }
+	void SetPlace(Place place) { m_place = place; }						// set place descriptor
+	Place GetPlace() const { return m_place; }						// get place descriptor
 
 	bool IsOverlapping(const Vector *pos) const;						// return true if 'pos' is within 2D extents of area
 	bool IsOverlapping(const CNavArea *area) const;						// return true if 'area' overlaps our 2D extents
@@ -260,7 +254,7 @@ public:
 	float GetDistanceSquaredToPoint(const Vector *pos) const;				// return shortest distance between point and this area
 	bool IsDegenerate() const;								// return true if this area is badly formed
 	bool IsEdge(NavDirType dir) const;							// return true if there are no bi-directional links on the given side
-	int GetAdjacentCount(NavDirType dir) const	{ return m_connect[dir].size(); }	// return number of connected areas in given direction
+	int GetAdjacentCount(NavDirType dir) const { return m_connect[dir].size(); }		// return number of connected areas in given direction
 	CNavArea *GetAdjacentArea(NavDirType dir, int i) const;					// return the i'th adjacent area in the given direction
 	CNavArea *GetRandomAdjacentArea(NavDirType dir) const;
 	const NavConnectList *GetAdjacentList(NavDirType dir) const { return &m_connect[dir]; }
@@ -336,11 +330,11 @@ public:
 
 	static void ClearSearchLists();	// clears the open and closed lists for a new search
 
-	void SetTotalCost(float value)	{ m_totalCost = value; }
-	float GetTotalCost() const	{ return m_totalCost; }
+	void SetTotalCost(float value) { m_totalCost = value; }
+	float GetTotalCost() const { return m_totalCost; }
 
-	void SetCostSoFar(float value)	{ m_costSoFar = value; }
-	float GetCostSoFar() const	{ return m_costSoFar; }
+	void SetCostSoFar(float value) { m_costSoFar = value; }
+	float GetCostSoFar() const { return m_costSoFar; }
 
 	// editing
 	void Draw(byte red, byte green, byte blue, int duration = 50);							// draw area for debugging & editing
@@ -357,7 +351,7 @@ public:
 
 #ifndef HOOK_GAMEDLL
 private:
-#endif // HOOK_GAMEDLL
+#endif
 	friend void ConnectGeneratedAreas();
 	friend void MergeGeneratedAreas();
 	friend void MarkJumpAreas();
@@ -439,13 +433,11 @@ private:
 
 extern NavAreaList TheNavAreaList;
 
-/* <4c1534> ../game_shared/bot/nav_area.h:417 */
 inline bool CNavArea::IsDegenerate() const
 {
 	return (m_extent.lo.x >= m_extent.hi.x || m_extent.lo.y >= m_extent.hi.y);
 }
 
-/* <568e1d> ../game_shared/bot/nav_area.h:422 */
 inline CNavArea *CNavArea::GetAdjacentArea(NavDirType dir, int i) const
 {
 	NavConnectList::const_iterator iter;
@@ -459,19 +451,16 @@ inline CNavArea *CNavArea::GetAdjacentArea(NavDirType dir, int i) const
 	return NULL;
 }
 
-/* <5a01dc> ../game_shared/bot/nav_area.h:435 */
 inline bool CNavArea::IsOpen() const
 {
 	return (m_openMarker == IMPL(m_masterMarker)) ? true : false;
 }
 
-/* <5a0a62> ../game_shared/bot/nav_area.h:440 */
 inline bool CNavArea::IsOpenListEmpty()
 {
 	return (IMPL(m_openList) != NULL) ? false : true;
 }
 
-/* <5a1483> ../game_shared/bot/nav_area.h:445 */
 inline CNavArea *CNavArea::PopOpenList()
 {
 	if (IMPL(m_openList))
@@ -486,7 +475,6 @@ inline CNavArea *CNavArea::PopOpenList()
 	return NULL;
 }
 
-/* <5a0a2a> ../game_shared/bot/nav_area.h:460 */
 inline bool CNavArea::IsClosed() const
 {
 	if (IsMarked() && !IsOpen())
@@ -495,13 +483,11 @@ inline bool CNavArea::IsClosed() const
 	return false;
 }
 
-/* <5a0a46> ../game_shared/bot/nav_area.h:468 */
 inline void CNavArea::AddToClosedList()
 {
 	Mark();
 }
 
-/* <5a01f8> ../game_shared/bot/nav_area.h:473 */
 inline void CNavArea::RemoveFromClosedList()
 {
 	// since "closed" is defined as visited (marked) and not on open list, do nothing
@@ -510,8 +496,6 @@ inline void CNavArea::RemoveFromClosedList()
 // The CNavAreaGrid is used to efficiently access navigation areas by world position
 // Each cell of the grid contains a list of areas that overlap it
 // Given a world position, the corresponding grid cell is ( x/cellsize, y/cellsize )
-
-/* <4cf943> ../game_shared/bot/nav_area.cpp:4947 */
 class CNavAreaGrid
 {
 public:
@@ -617,12 +601,10 @@ public:
 // If 'goalArea' is NULL, will compute a path as close as possible to 'goalPos'.
 // If 'goalPos' is NULL, will use the center of 'goalArea' as the goal position.
 // Returns true if a path exists.
-
-/* <4c3e99> ../game_shared/bot/nav_area.h:679 */
 template <typename CostFunctor>
 bool NavAreaBuildPath(CNavArea *startArea, CNavArea *goalArea, const Vector *goalPos, CostFunctor &costFunc, CNavArea **closestArea = NULL)
 {
-	if (closestArea)
+	if (closestArea != NULL)
 		*closestArea = NULL;
 
 	if (startArea == NULL)
@@ -642,7 +624,7 @@ bool NavAreaBuildPath(CNavArea *startArea, CNavArea *goalArea, const Vector *goa
 	{
 		goalArea->SetParent(NULL);
 
-		if (closestArea)
+		if (closestArea != NULL)
 			*closestArea = goalArea;
 
 		return true;
@@ -666,7 +648,7 @@ bool NavAreaBuildPath(CNavArea *startArea, CNavArea *goalArea, const Vector *goa
 	startArea->AddToOpenList();
 
 	// keep track of the area we visit that is closest to the goal
-	if (closestArea)
+	if (closestArea != NULL)
 		*closestArea = startArea;
 
 	float closestAreaDist = startArea->GetTotalCost();
@@ -680,7 +662,7 @@ bool NavAreaBuildPath(CNavArea *startArea, CNavArea *goalArea, const Vector *goa
 		// check if we have found the goal area
 		if (area == goalArea)
 		{
-			if (closestArea)
+			if (closestArea != NULL)
 				*closestArea = goalArea;
 
 			return true;
@@ -821,7 +803,7 @@ bool NavAreaBuildPath(CNavArea *startArea, CNavArea *goalArea, const Vector *goa
 				float_precision newCostRemaining = (*newArea->GetCenter() - actualGoalPos).Length();
 
 				// track closest area to goal in case path fails
-				if (closestArea && newCostRemaining < closestAreaDist)
+				if (closestArea != NULL && newCostRemaining < closestAreaDist)
 				{
 					*closestArea = newArea;
 					closestAreaDist = newCostRemaining;
@@ -852,8 +834,6 @@ bool NavAreaBuildPath(CNavArea *startArea, CNavArea *goalArea, const Vector *goa
 }
 
 // Compute distance between two areas. Return -1 if can't reach 'endArea' from 'startArea'.
-
-/* <3fcb64> ../game_shared/bot/nav_area.h:914 */
 template <typename CostFunctor>
 float_precision NavAreaTravelDistance(CNavArea *startArea, CNavArea *endArea, CostFunctor &costFunc)
 {
@@ -881,7 +861,6 @@ float_precision NavAreaTravelDistance(CNavArea *startArea, CNavArea *endArea, Co
 }
 
 // Compute distance from area to position. Return -1 if can't reach position.
-
 template <typename CostFunctor>
 float NavAreaTravelDistance(const Vector *startPos, CNavArea *startArea, const Vector *goalPos, CostFunctor &costFunc)
 {
@@ -921,10 +900,8 @@ float NavAreaTravelDistance(const Vector *startPos, CNavArea *startArea, const V
 // If 'maxRange' is 0 or less, no range check is done (all areas will be examined).
 // NOTE: Returns all areas that overlap range, even partially
 // TODO: Use ladder connections
-
+//
 // helper function
-
-/* <2e7572> ../game_shared/bot/nav_area.h:990 */
 inline void AddAreaToOpenList(CNavArea *area, CNavArea *parent, const Vector *startPos, float maxRange)
 {
 	if (area == NULL)
@@ -961,7 +938,6 @@ inline void AddAreaToOpenList(CNavArea *area, CNavArea *parent, const Vector *st
 	}
 }
 
-/* <56903e> ../game_shared/bot/nav_area.h:1028 */
 template <typename Functor>
 void SearchSurroundingAreas(CNavArea *startArea, const Vector *startPos, Functor &func, float maxRange = -1.0f)
 {
@@ -1036,15 +1012,13 @@ void SearchSurroundingAreas(CNavArea *startArea, const Vector *startPos, Functor
 
 // Apply the functor to all navigation areas
 // If functor returns false, stop processing and return false.
-
-/* <4c4137> ../game_shared/bot/nav_area.h:1109 */
 template <typename Functor>
 bool ForAllAreas(Functor &func)
 {
 	NavAreaList::iterator iter;
 	for (iter = TheNavAreaList.begin(); iter != TheNavAreaList.end(); ++iter)
 	{
-		CNavArea *area = *iter;
+		CNavArea *area = (*iter);
 		if (func(area) == false)
 			return false;
 	}
@@ -1054,7 +1028,7 @@ bool ForAllAreas(Functor &func)
 
 // Fuctor that returns lowest cost for farthest away areas
 // For use with FindMinimumCostArea()
-NOXREF class FarAwayFunctor
+class FarAwayFunctor
 {
 public:
 	float operator()(CNavArea *area, CNavArea *fromArea, const CNavLadder *ladder)
@@ -1068,8 +1042,6 @@ public:
 
 // Fuctor that returns lowest cost for farthest away areas
 // For use with FindMinimumCostArea()
-
-/* <5497fa> ../game_shared/bot/nav_area.h:1143 */
 class FarAwayFromPositionFunctor
 {
 public:
@@ -1085,8 +1057,6 @@ private:
 };
 
 // Pick a low-cost area of "decent" size
-
-/* <549838> ../game_shared/bot/nav_area.h:1162 */
 template <typename CostFunctor>
 CNavArea *FindMinimumCostArea(CNavArea *startArea, CostFunctor &costFunc)
 {
@@ -1105,7 +1075,7 @@ CNavArea *FindMinimumCostArea(CNavArea *startArea, CostFunctor &costFunc)
 	NavAreaList::iterator iter;
 	for (iter = TheNavAreaList.begin(); iter != TheNavAreaList.end(); ++iter)
 	{
-		CNavArea *area = *iter;
+		CNavArea *area = (*iter);
 
 		// skip the small areas
 		const Extent *extent = area->GetExtent();
@@ -1155,7 +1125,7 @@ CNavArea *FindMinimumCostArea(CNavArea *startArea, CostFunctor &costFunc)
 				break;
 		}
 
-		return *iter;
+		return (*iter);
 	}
 }
 

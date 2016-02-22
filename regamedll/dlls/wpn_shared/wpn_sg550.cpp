@@ -1,9 +1,7 @@
 #include "precompiled.h"
 
-/* <2a0f39> ../cstrike/dlls/wpn_shared/wpn_sg550.cpp:48 */
 LINK_ENTITY_TO_CLASS(weapon_sg550, CSG550);
 
-/* <2a0ce8> ../cstrike/dlls/wpn_shared/wpn_sg550.cpp:50 */
 void CSG550::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
@@ -17,7 +15,6 @@ void CSG550::__MAKE_VHOOK(Spawn)()
 	FallInit();
 }
 
-/* <2a0bdd> ../cstrike/dlls/wpn_shared/wpn_sg550.cpp:63 */
 void CSG550::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/v_sg550.mdl");
@@ -33,7 +30,6 @@ void CSG550::__MAKE_VHOOK(Precache)()
 	m_usFireSG550 = PRECACHE_EVENT(1, "events/sg550.sc");
 }
 
-/* <2a0c04> ../cstrike/dlls/wpn_shared/wpn_sg550.cpp:79 */
 int CSG550::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
@@ -51,13 +47,11 @@ int CSG550::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	return 1;
 }
 
-/* <2a0cc1> ../cstrike/dlls/wpn_shared/wpn_sg550.cpp:96 */
 BOOL CSG550::__MAKE_VHOOK(Deploy)()
 {
 	return DefaultDeploy("models/v_sg550.mdl", "models/p_sg550.mdl", SG550_DRAW, "rifle", UseDecrement() != FALSE);
 }
 
-/* <2a0c5d> ../cstrike/dlls/wpn_shared/wpn_sg550.cpp:101 */
 void CSG550::__MAKE_VHOOK(SecondaryAttack)()
 {
 	switch (m_pPlayer->m_iFOV)
@@ -68,7 +62,7 @@ void CSG550::__MAKE_VHOOK(SecondaryAttack)()
 	default:
 #else
 	case 15:
-#endif // REGAMEDLL_FIXES
+#endif
 		m_pPlayer->m_iFOV = m_pPlayer->pev->fov = 90; break;
 	}
 
@@ -83,7 +77,6 @@ void CSG550::__MAKE_VHOOK(SecondaryAttack)()
 	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.3;
 }
 
-/* <2a0eef> ../cstrike/dlls/wpn_shared/wpn_sg550.cpp:132 */
 void CSG550::__MAKE_VHOOK(PrimaryAttack)()
 {
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
@@ -104,7 +97,6 @@ void CSG550::__MAKE_VHOOK(PrimaryAttack)()
 	}
 }
 
-/* <2a1003> ../cstrike/dlls/wpn_shared/wpn_sg550.cpp:144 */
 void CSG550::SG550Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 {
 	Vector vecAiming, vecSrc, vecDir;
@@ -161,10 +153,10 @@ void CSG550::SG550Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	flag = FEV_NOTHOST;
 #else
 	flag = 0;
-#endif // CLIENT_WEAPONS
+#endif
 
 	PLAYBACK_EVENT_FULL(flag, m_pPlayer->edict(), m_usFireSG550, 0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y,
-		(int)(m_pPlayer->pev->punchangle.x * 100), (int)(m_pPlayer->pev->punchangle.x * 100), 5, FALSE);
+		int(m_pPlayer->pev->punchangle.x * 100), int(m_pPlayer->pev->punchangle.x * 100), 5, FALSE);
 
 	m_flNextPrimaryAttack = m_flNextSecondaryAttack = GetNextAttackDelay(flCycleTime);
 
@@ -179,7 +171,6 @@ void CSG550::SG550Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	m_pPlayer->pev->punchangle.y += UTIL_SharedRandomFloat(m_pPlayer->random_seed + 5, -0.75, 0.75);
 }
 
-/* <2a0d98> ../cstrike/dlls/wpn_shared/wpn_sg550.cpp:227 */
 void CSG550::__MAKE_VHOOK(Reload)()
 {
 	if (m_pPlayer->ammo_556nato <= 0)
@@ -197,7 +188,6 @@ void CSG550::__MAKE_VHOOK(Reload)()
 	}
 }
 
-/* <2a0d5e> ../cstrike/dlls/wpn_shared/wpn_sg550.cpp:248 */
 void CSG550::__MAKE_VHOOK(WeaponIdle)()
 {
 	ResetEmptySound();
@@ -215,7 +205,6 @@ void CSG550::__MAKE_VHOOK(WeaponIdle)()
 	}
 }
 
-/* <2a0c37> ../cstrike/dlls/wpn_shared/wpn_sg550.cpp:265 */
 float CSG550::__MAKE_VHOOK(GetMaxSpeed)()
 {
 	return (m_pPlayer->m_iFOV == DEFAULT_FOV) ? SG550_MAX_SPEED : SG550_MAX_SPEED_ZOOM;

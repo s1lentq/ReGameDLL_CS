@@ -72,6 +72,7 @@ IBaseInterface *CreateFileSystemInterface()
 			return g_pOriginalFileSystem;
 		}
 	}
+
 	return NULL;
 }
 
@@ -83,20 +84,13 @@ const char *shrPathGameDLL()
 	_getcwd(szDllFilename, MAX_PATH);
 #else
 	getcwd(szDllFilename, MAX_PATH);
-#endif // _WIN32
+#endif
 
-	if (g_ReGameDLLRuntimeConfig.bIsZero)
+	if (g_ReGameDLLRuntimeConfig.IsCzero())
 		Q_strcat(szDllFilename, "\\czero\\dlls\\"ORIGINAL_GAME_DLL_NAME);
 	else
 		Q_strcat(szDllFilename, "\\cstrike\\dlls\\"ORIGINAL_GAME_DLL_NAME);
 
-	char *buf = &szDllFilename[0];
-	while (*buf != '\0')
-	{
-		if (*buf == '\\')
-			*buf = '/';
-		buf++;
-	}
 	return (const char *)szDllFilename;
 }
 
@@ -105,18 +99,17 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 {
 	if (fdwReason == DLL_PROCESS_ATTACH)
 	{
+#ifdef HOOK_GAMEDLL
 		g_ReGameDLLRuntimeConfig.parseFromCommandLine(GetCommandLineA());
 
-#ifdef HOOK_GAMEDLL
-
-		g_pOriginalGameDLLModule = Sys_LoadModule( shrPathGameDLL() );
+		g_pOriginalGameDLLModule = Sys_LoadModule(shrPathGameDLL());
 		g_pOriginalFileSystemModule = Sys_LoadModule(ORIGINAL_FILESYSTEM_DLL_NAME);
 
 		size_t gameAddr = (size_t)Sys_GetProcAddress((void *)g_pOriginalGameDLLModule, GIVEFNPTRS_TO_DLL_PROCNAME);
 		size_t engAddr = (size_t)Sys_GetProcAddress(ORIGINAL_ENGINE_DLL_NAME, CREATEINTERFACE_PROCNAME);
 
 		HookGameDLL(gameAddr, engAddr);
-#endif // HOOK_GAMEDLL
+#endif
 	}
 	else if (fdwReason == DLL_PROCESS_DETACH)
 	{
@@ -133,6 +126,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 			g_pOriginalGameDLLModule = NULL;
 		}
 	}
+
 	return TRUE;
 }
 #else // _WIN32

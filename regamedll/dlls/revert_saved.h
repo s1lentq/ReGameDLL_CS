@@ -32,7 +32,6 @@
 #pragma once
 #endif
 
-/* <14f018> ../cstrike/dlls/player.cpp:9446 */
 class CRevertSaved: public CPointEntity
 {
 public:
@@ -48,22 +47,22 @@ public:
 	int Restore_(CRestore &restore);
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	void EXPORT MessageThink();
 	void EXPORT LoadThink();
 
 public:
-	float Duration() const		{ return pev->dmg_take; }
-	float HoldTime() const		{ return pev->dmg_save; }
-	float MessageTime() const	{ return m_messageTime; }
-	float LoadTime() const		{ return m_loadTime; }
+	float Duration() const { return pev->dmg_take; }
+	float HoldTime() const { return pev->dmg_save; }
+	float MessageTime() const { return m_messageTime; }
+	float LoadTime() const { return m_loadTime; }
 
-	void SetDuration(float duration)	{ pev->dmg_take = duration; }
-	void SetHoldTime(float hold)		{ pev->dmg_save = hold; }
-	void SetMessageTime(float time)		{ m_messageTime = time; }
-	void SetLoadTime(float time)		{ m_loadTime = time; }
+	void SetDuration(float duration) { pev->dmg_take = duration; }
+	void SetHoldTime(float hold) { pev->dmg_save = hold; }
+	void SetMessageTime(float time) { m_messageTime = time; }
+	void SetLoadTime(float time) { m_loadTime = time; }
 
 public:
 	static TYPEDESCRIPTION IMPL(m_SaveData)[2];

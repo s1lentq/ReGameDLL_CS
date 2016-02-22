@@ -1,6 +1,5 @@
 #include "precompiled.h"
 
-/* <31d087> ../cstrike/dlls/bot/cs_bot_event.cpp:22 */
 void CCSBot::__MAKE_VHOOK(OnEvent)(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
 {
 	GetGameState()->OnEvent(event, entity, other);
@@ -47,7 +46,7 @@ void CCSBot::__MAKE_VHOOK(OnEvent)(GameEventType event, CBaseEntity *entity, CBa
 				CBasePlayer *killer = static_cast<CBasePlayer *>(other);
 
 				// check that attacker is an enemy (for friendly fire, etc)
-				if (killer && killer->IsPlayer())
+				if (killer != NULL && killer->IsPlayer())
 				{
 					// check if we saw our friend die - dont check FOV - assume we're aware of our surroundings in combat
 					// snipers stay put
@@ -75,10 +74,10 @@ void CCSBot::__MAKE_VHOOK(OnEvent)(GameEventType event, CBaseEntity *entity, CBa
 		case EVENT_PLAYER_DIED:
 		{
 			CBasePlayer *victim = player;
-			CBasePlayer *killer = (other && other->IsPlayer()) ? static_cast<CBasePlayer *>(other) : NULL;
+			CBasePlayer *killer = (other != NULL && other->IsPlayer()) ? static_cast<CBasePlayer *>(other) : NULL;
 
 			// if the human player died in the single player game, tell the team
-			if (g_pGameRules->IsCareer() && !victim->IsBot() && victim->m_iTeam == m_iTeam)
+			if (CSGameRules()->IsCareer() && !victim->IsBot() && victim->m_iTeam == m_iTeam)
 			{
 				GetChatter()->Say("CommanderDown", 20.0f);
 			}
@@ -136,7 +135,7 @@ void CCSBot::__MAKE_VHOOK(OnEvent)(GameEventType event, CBaseEntity *entity, CBa
 						if (IsVisible(&victim->pev->origin, CHECK_FOV))
 						{						
 							// congratulate teammates on their kills
-							if (killer != NULL && killer != this)
+							if (killer != this)
 							{
 								float delay = RANDOM_FLOAT(2.0f, 3.0f);
 								if (killer->IsBot())
@@ -147,7 +146,7 @@ void CCSBot::__MAKE_VHOOK(OnEvent)(GameEventType event, CBaseEntity *entity, CBa
 								else
 								{
 									// humans get the honorific
-									if (g_pGameRules->IsCareer())
+									if (CSGameRules()->IsCareer())
 										GetChatter()->Say("NiceShotCommander", 3.0f, delay);
 									else
 										GetChatter()->Say("NiceShotSir", 3.0f, delay);

@@ -11,9 +11,8 @@ CBaseEntity *g_pSelectedZombieSpawn = NULL;
 CountdownTimer BotChatterInterface::m_encourageTimer;
 IntervalTimer BotChatterInterface::m_radioSilenceInterval[ 2 ];
 
-#endif // HOOK_GAMEDLL
+#endif
 
-/* <303469> ../cstrike/dlls/bot/cs_bot_chatter.cpp:32 */
 const Vector *GetRandomSpotAtPlace(Place place)
 {
 	int count = 0;
@@ -45,8 +44,6 @@ const Vector *GetRandomSpotAtPlace(Place place)
 }
 
 // Transmit meme to other bots
-
-/* <303541> ../cstrike/dlls/bot/cs_bot_chatter.cpp:62 */
 void BotMeme::Transmit(CCSBot *sender) const
 {
 	for (int i = 1; i <= gpGlobals->maxClients; ++i)
@@ -89,8 +86,6 @@ void BotMeme::Transmit(CCSBot *sender) const
 }
 
 // A teammate called for help - respond
-
-/* <301f03> ../cstrike/dlls/bot/cs_bot_chatter.cpp:104 */
 void BotHelpMeme::__MAKE_VHOOK(Interpret)(CCSBot *sender, CCSBot *receiver) const
 {
 	const float maxHelpRange = 3000.0f; // 2000
@@ -98,8 +93,6 @@ void BotHelpMeme::__MAKE_VHOOK(Interpret)(CCSBot *sender, CCSBot *receiver) cons
 }
 
 // A teammate reported information about a bombsite
-
-/* <306b4f> ../cstrike/dlls/bot/cs_bot_chatter.cpp:114 */
 void BotBombsiteStatusMeme::__MAKE_VHOOK(Interpret)(CCSBot *sender, CCSBot *receiver) const
 {
 	// remember this bombsite's status
@@ -120,8 +113,6 @@ void BotBombsiteStatusMeme::__MAKE_VHOOK(Interpret)(CCSBot *sender, CCSBot *rece
 }
 
 // A teammate reported information about the bomb
-
-/* <306ab6> ../cstrike/dlls/bot/cs_bot_chatter.cpp:137 */
 void BotBombStatusMeme::__MAKE_VHOOK(Interpret)(CCSBot *sender, CCSBot *receiver) const
 {
 	// update our gamestate based on teammate's report
@@ -152,8 +143,6 @@ void BotBombStatusMeme::__MAKE_VHOOK(Interpret)(CCSBot *sender, CCSBot *receiver
 }
 
 // A teammate has asked that we follow him
-
-/* <302c87> ../cstrike/dlls/bot/cs_bot_chatter.cpp:167 */
 void BotFollowMeme::__MAKE_VHOOK(Interpret)(CCSBot *sender, CCSBot *receiver) const
 {
 	if (receiver->IsRogue())
@@ -180,8 +169,6 @@ void BotFollowMeme::__MAKE_VHOOK(Interpret)(CCSBot *sender, CCSBot *receiver) co
 }
 
 // A teammate has asked us to defend a place
-
-/* <302759> ../cstrike/dlls/bot/cs_bot_chatter.cpp:200 */
 void BotDefendHereMeme::__MAKE_VHOOK(Interpret)(CCSBot *sender, CCSBot *receiver) const
 {
 	if (receiver->IsRogue())
@@ -213,8 +200,6 @@ void BotDefendHereMeme::__MAKE_VHOOK(Interpret)(CCSBot *sender, CCSBot *receiver
 }
 
 // A teammate has asked where the bomb is planted
-
-/* <3082a5> ../cstrike/dlls/bot/cs_bot_chatter.cpp:234 */
 void BotWhereBombMeme::__MAKE_VHOOK(Interpret)(CCSBot *sender, CCSBot *receiver) const
 {
 	int zone = receiver->GetGameState()->GetPlantedBombsite();
@@ -224,16 +209,12 @@ void BotWhereBombMeme::__MAKE_VHOOK(Interpret)(CCSBot *sender, CCSBot *receiver)
 }
 
 // A teammate has asked us to report in
-
-/* <30a56e> ../cstrike/dlls/bot/cs_bot_chatter.cpp:246 */
 void BotRequestReportMeme::__MAKE_VHOOK(Interpret)(CCSBot *sender, CCSBot *receiver) const
 {
 	receiver->GetChatter()->ReportingIn();
 }
 
 // A teammate told us all the hostages are gone
-
-/* <3025b5> ../cstrike/dlls/bot/cs_bot_chatter.cpp:256 */
 void BotAllHostagesGoneMeme::__MAKE_VHOOK(Interpret)(CCSBot *sender, CCSBot *receiver) const
 {
 	receiver->GetGameState()->AllHostagesGone();
@@ -243,8 +224,6 @@ void BotAllHostagesGoneMeme::__MAKE_VHOOK(Interpret)(CCSBot *sender, CCSBot *rec
 }
 
 // A teammate told us a CT is talking to a hostage
-
-/* <3029a9> ../cstrike/dlls/bot/cs_bot_chatter.cpp:269 */
 void BotHostageBeingTakenMeme::__MAKE_VHOOK(Interpret)(CCSBot *sender, CCSBot *receiver) const
 {
 	receiver->GetGameState()->HostageWasTaken();
@@ -259,13 +238,11 @@ void BotHostageBeingTakenMeme::__MAKE_VHOOK(Interpret)(CCSBot *sender, CCSBot *r
 	receiver->GetChatter()->Say("Affirmative");
 }
 
-/* <303609> ../cstrike/dlls/bot/cs_bot_chatter.cpp:285 */
 BotSpeakable::BotSpeakable()
 {
 	m_phrase = NULL;
 }
 
-/* <303655> ../cstrike/dlls/bot/cs_bot_chatter.cpp:291 */
 BotSpeakable::~BotSpeakable()
 {
 	if (m_phrase != NULL)
@@ -275,7 +252,6 @@ BotSpeakable::~BotSpeakable()
 	}
 }
 
-/* <30ba3b> ../cstrike/dlls/bot/cs_bot_chatter.cpp:303 */
 BotPhrase::BotPhrase(unsigned int id, bool isPlace)
 {
 	m_name = NULL;
@@ -290,12 +266,11 @@ BotPhrase::BotPhrase(unsigned int id, bool isPlace)
 	InitVoiceBank(0);
 }
 
-/* <3036c2> ../cstrike/dlls/bot/cs_bot_chatter.cpp:314 */
 BotPhrase::~BotPhrase()
 {
-	for (uint32 bank = 0; bank < m_voiceBank.size(); ++bank)
+	for (size_t bank = 0; bank < m_voiceBank.size(); ++bank)
 	{
-		for (uint32 speakable = 0; speakable < m_voiceBank[bank]->size(); ++speakable)
+		for (size_t speakable = 0; speakable < m_voiceBank[bank]->size(); ++speakable)
 		{
 			delete (*m_voiceBank[bank])[speakable];
 		}
@@ -303,10 +278,12 @@ BotPhrase::~BotPhrase()
 	}
 
 	if (m_name != NULL)
-		delete [] m_name;
+	{
+		delete[] m_name;
+		m_name = NULL;
+	}
 }
 
-/* <30b837> ../cstrike/dlls/bot/cs_bot_chatter.cpp:326 */
 void BotPhrase::InitVoiceBank(int bankIndex)
 {
 	while (m_numVoiceBanks <= bankIndex)
@@ -319,8 +296,6 @@ void BotPhrase::InitVoiceBank(int bankIndex)
 }
 
 // Return a random speakable - avoid repeating
-
-/* <303917> ../cstrike/dlls/bot/cs_bot_chatter.cpp:340 */
 char *BotPhrase::GetSpeakable(int bankIndex, float *duration) const
 {
 	if (bankIndex < 0 || bankIndex >= m_numVoiceBanks || m_count[bankIndex] == 0)
@@ -376,19 +351,16 @@ char *BotPhrase::GetSpeakable(int bankIndex, float *duration) const
 }
 
 // Randomly shuffle the speakable order
-
-/* <30395a> ../cstrike/dlls/bot/cs_bot_chatter.cpp:395 */
 #ifndef HOOK_GAMEDLL
 void BotPhrase::Randomize()
 {
-	for (uint32 i = 0; i < m_voiceBank.size(); ++i)
+	for (size_t i = 0; i < m_voiceBank.size(); ++i)
 	{
 		std::random_shuffle(m_voiceBank[i]->begin(), m_voiceBank[i]->end());
 	}
 }
-#endif // HOOK_GAMEDLL
+#endif
 
-/* <303b3f> ../cstrike/dlls/bot/cs_bot_chatter.cpp:409 */
 BotPhraseManager::BotPhraseManager()
 {
 	for (int i = 0; i < MAX_PLACES_PER_MAP; ++i)
@@ -398,16 +370,12 @@ BotPhraseManager::BotPhraseManager()
 }
 
 // Invoked when map changes
-
-/* <303c45> ../cstrike/dlls/bot/cs_bot_chatter.cpp:417 */
 void BotPhraseManager::OnMapChange()
 {
 	m_placeCount = 0;
 }
 
 // Invoked when the round resets
-
-/* <303c70> ../cstrike/dlls/bot/cs_bot_chatter.cpp:425 */
 void BotPhraseManager::OnRoundRestart()
 {
 	// effectively reset all interval timers
@@ -427,8 +395,6 @@ void BotPhraseManager::OnRoundRestart()
 }
 
 // Initialize phrase system from database file
-
-/* <30c1fc> ../cstrike/dlls/bot/cs_bot_chatter.cpp:443 */
 bool BotPhraseManager::Initialize(const char *filename, int bankIndex)
 {
 	bool isDefault = (bankIndex == 0);
@@ -672,44 +638,27 @@ bool BotPhraseManager::Initialize(const char *filename, int bankIndex)
 	}
 
 	FREE_FILE(phraseDataFile);
-
 	return true;
 }
 
-/* <30409e> ../cstrike/dlls/bot/cs_bot_chatter.cpp:682 */
 BotPhraseManager::~BotPhraseManager()
 {
 	BotPhraseList::iterator iter;
 	for (iter = m_list.begin(); iter != m_list.end(); ++iter)
-	{
-		const BotPhrase *phrase = *iter;
-
-		if (phrase != NULL)
-		{
-			delete phrase;
-		}
-	}
+		delete (*iter);
 
 	for (iter = m_placeList.begin(); iter != m_placeList.end(); ++iter)
-	{
-		const BotPhrase *phrase = *iter;
-
-		if (phrase != NULL)
-		{
-			delete phrase;
-		}
-	}
+		delete (*iter);
 
 	m_list.clear();
 	m_placeList.clear();
 }
 
-/* <3043ec> ../cstrike/dlls/bot/cs_bot_chatter.cpp:708 */
 Place BotPhraseManager::NameToID(const char *name) const
 {
 	for (BotPhraseList::const_iterator iter = m_placeList.begin(); iter != m_placeList.end(); ++iter)
 	{
-		const BotPhrase *phrase = *iter;
+		const BotPhrase *phrase = (*iter);
 
 		if (!Q_stricmp(phrase->m_name, name))
 			return phrase->m_id;
@@ -717,7 +666,7 @@ Place BotPhraseManager::NameToID(const char *name) const
 
 	for (BotPhraseList::const_iterator iter = m_list.begin(); iter != m_list.end(); ++iter)
 	{
-		const BotPhrase *phrase = *iter;
+		const BotPhrase *phrase = (*iter);
 
 		if (!Q_stricmp(phrase->m_name, name))
 			return phrase->m_id;
@@ -726,12 +675,11 @@ Place BotPhraseManager::NameToID(const char *name) const
 	return 0;
 }
 
-/* <3044b4> ../cstrike/dlls/bot/cs_bot_chatter.cpp:732 */
 const char *BotPhraseManager::IDToName(Place id) const
 {
 	for (BotPhraseList::const_iterator iter = m_placeList.begin(); iter != m_placeList.end(); ++iter)
 	{
-		const BotPhrase *phrase = *iter;
+		const BotPhrase *phrase = (*iter);
 
 		if (phrase->m_id == id)
 			return phrase->m_name;
@@ -739,7 +687,7 @@ const char *BotPhraseManager::IDToName(Place id) const
 
 	for (BotPhraseList::const_iterator iter = m_list.begin(); iter != m_list.end(); ++iter)
 	{
-		const BotPhrase *phrase = *iter;
+		const BotPhrase *phrase = (*iter);
 
 		if (phrase->m_id == id)
 			return phrase->m_name;
@@ -749,13 +697,11 @@ const char *BotPhraseManager::IDToName(Place id) const
 }
 
 // Given a name, return the associated phrase collection
-
-/* <304597> ../cstrike/dlls/bot/cs_bot_chatter.cpp:758 */
 const BotPhrase *BotPhraseManager::GetPhrase(const char *name) const
 {
 	for (BotPhraseList::const_iterator iter = m_list.begin(); iter != m_list.end(); ++iter)
 	{
-		const BotPhrase *phrase = *iter;
+		const BotPhrase *phrase = (*iter);
 
 		if (!Q_stricmp(phrase->m_name, name))
 			return phrase;
@@ -765,15 +711,14 @@ const BotPhrase *BotPhraseManager::GetPhrase(const char *name) const
 	return NULL;
 }
 
+/*
 // Given an id, return the associated phrase collection
 // TODO: Store phrases in a vector to make this fast
-
-/*
 const BotPhrase *BotPhraseManager::GetPhrase(unsigned int id) const
 {
 	for (BotPhraseList::const_iterator iter = m_list.begin(); iter != m_list.end(); ++iter)
 	{
-		const BotPhrase *phrase = *iter;
+		const BotPhrase *phrase = (*iter);
 
 		if (phrase->m_id == id)
 			return phrase;
@@ -785,8 +730,6 @@ const BotPhrase *BotPhraseManager::GetPhrase(unsigned int id) const
 */
 
 // Given a name, return the associated Place phrase collection
-
-/* <304654> ../cstrike/dlls/bot/cs_bot_chatter.cpp:793 */
 const BotPhrase *BotPhraseManager::GetPlace(const char *name) const
 {
 	if (name == NULL)
@@ -794,7 +737,7 @@ const BotPhrase *BotPhraseManager::GetPlace(const char *name) const
 
 	for (BotPhraseList::const_iterator iter = m_placeList.begin(); iter != m_placeList.end(); ++iter)
 	{
-		const BotPhrase *phrase = *iter;
+		const BotPhrase *phrase = (*iter);
 
 		if (!Q_stricmp(phrase->m_name, name))
 			return phrase;
@@ -804,8 +747,6 @@ const BotPhrase *BotPhraseManager::GetPlace(const char *name) const
 }
 
 // Given a place, return the associated Place phrase collection
-
-/* <3046eb> ../cstrike/dlls/bot/cs_bot_chatter.cpp:811 */
 const BotPhrase *BotPhraseManager::GetPlace(PlaceCriteria place) const
 {
 	if (place == UNDEFINED_PLACE)
@@ -813,7 +754,7 @@ const BotPhrase *BotPhraseManager::GetPlace(PlaceCriteria place) const
 
 	for (BotPhraseList::const_iterator iter = m_placeList.begin(); iter != m_placeList.end(); ++iter)
 	{
-		const BotPhrase *phrase = *iter;
+		const BotPhrase *phrase = (*iter);
 
 		if (phrase->m_id == place)
 			return phrase;
@@ -822,7 +763,6 @@ const BotPhrase *BotPhraseManager::GetPlace(PlaceCriteria place) const
 	return NULL;
 }
 
-/* <30477e> ../cstrike/dlls/bot/cs_bot_chatter.cpp:830 */
 BotStatement::BotStatement(BotChatterInterface *chatter, BotStatementType type, float expireDuration)
 {
 	m_chatter = chatter;
@@ -847,32 +787,27 @@ BotStatement::BotStatement(BotChatterInterface *chatter, BotStatementType type, 
 	m_conditionCount = 0;
 }
 
-/* <3047bd> ../cstrike/dlls/bot/cs_bot_chatter.cpp:855 */
 BotStatement::~BotStatement()
 {
 	if (m_meme != NULL)
 	{
 		delete m_meme;
+		m_meme = NULL;
 	}
 }
 
-/* <3047e0> ../cstrike/dlls/bot/cs_bot_chatter.cpp:863 */
 CCSBot *BotStatement::GetOwner() const
 {
 	return m_chatter->GetOwner();
 }
 
 // Attach a meme to this statement, to be transmitted to other friendly bots when spoken
-
-/* <304803> ../cstrike/dlls/bot/cs_bot_chatter.cpp:872 */
 void BotStatement::AttachMeme(BotMeme *meme)
 {
 	m_meme = meme;
 }
 
 // Add a conditions that must be true for the statement to be spoken
-
-/* <30482f> ../cstrike/dlls/bot/cs_bot_chatter.cpp:881 */
 void BotStatement::AddCondition(ConditionType condition)
 {
 	if (m_conditionCount < MAX_BOT_CONDITIONS)
@@ -880,8 +815,6 @@ void BotStatement::AddCondition(ConditionType condition)
 }
 
 // Return true if this statement is "important" and not personality chatter
-
-/* <30485b> ../cstrike/dlls/bot/cs_bot_chatter.cpp:891 */
 bool BotStatement::IsImportant() const
 {
 	// if a statement contains any important phrases, it is important
@@ -899,8 +832,6 @@ bool BotStatement::IsImportant() const
 }
 
 // Verify all attached conditions
-
-/* <3048bc> ../cstrike/dlls/bot/cs_bot_chatter.cpp:911 */
 bool BotStatement::IsValid() const
 {
 	for (int i = 0; i < m_conditionCount; ++i)
@@ -932,8 +863,6 @@ bool BotStatement::IsValid() const
 }
 
 // Return true if this statement is essentially the same as the given one
-
-/* <30492d> ../cstrike/dlls/bot/cs_bot_chatter.cpp:950 */
 bool BotStatement::IsRedundant(const BotStatement *say) const
 {
 	// special cases
@@ -970,8 +899,6 @@ bool BotStatement::IsRedundant(const BotStatement *say) const
 }
 
 // Return true if this statement is no longer appropriate to say
-
-/* <304977> ../cstrike/dlls/bot/cs_bot_chatter.cpp:990 */
 bool BotStatement::IsObsolete() const
 {
 	// if the round is over, the only things we should say are emotes
@@ -995,8 +922,6 @@ bool BotStatement::IsObsolete() const
 }
 
 // Possibly change what were going to say base on what teammate is saying
-
-/* <3049b6> ../cstrike/dlls/bot/cs_bot_chatter.cpp:1008 */
 void BotStatement::Convert(const BotStatement *say)
 {
 	if (GetType() == REPORT_MY_PLAN && say->GetType() == REPORT_MY_PLAN)
@@ -1025,7 +950,6 @@ void BotStatement::Convert(const BotStatement *say)
 	}
 }
 
-/* <304a7c> ../cstrike/dlls/bot/cs_bot_chatter.cpp:1037 */
 void BotStatement::AppendPhrase(const BotPhrase *phrase)
 {
 	if (phrase == NULL)
@@ -1039,8 +963,6 @@ void BotStatement::AppendPhrase(const BotPhrase *phrase)
 }
 
 // Special phrases that depend on the context
-
-/* <304acf> ../cstrike/dlls/bot/cs_bot_chatter.cpp:1052 */
 void BotStatement::AppendPhrase(ContextType contextPhrase)
 {
 	if (m_count < MAX_BOT_PHRASES)
@@ -1052,8 +974,6 @@ void BotStatement::AppendPhrase(ContextType contextPhrase)
 
 // Say our statement
 // m_index refers to the phrase currently being spoken, or -1 if we havent started yet
-
-/* <304b22> ../cstrike/dlls/bot/cs_bot_chatter.cpp:1065 */
 bool BotStatement::Update()
 {
 	CCSBot *me = GetOwner();
@@ -1249,8 +1169,6 @@ bool BotStatement::Update()
 
 // If this statement refers to a specific place, return that place
 // Places can be implicit in the statement, or explicitly defined
-
-/* <2fee36> ../cstrike/dlls/bot/cs_bot_chatter.cpp:1266 */
 Place BotStatement::GetPlace() const
 {
 	// return any explicitly set place if we have one
@@ -1268,8 +1186,6 @@ Place BotStatement::GetPlace() const
 }
 
 // Return true if this statement has an associated count
-
-/* <305289> ../cstrike/dlls/bot/cs_bot_chatter.cpp:1283 */
 bool BotStatement::HasCount() const
 {
 	for (int i = 0; i < m_count; ++i)
@@ -1285,7 +1201,6 @@ enum PitchHack { P_HI, P_NORMAL, P_LOW };
 
 static int nextPitch = P_HI;
 
-/* <305543> ../cstrike/dlls/bot/cs_bot_chatter.cpp:1308 */
 BotChatterInterface::BotChatterInterface(CCSBot *me)
 {
 	m_me = me;
@@ -1308,7 +1223,6 @@ BotChatterInterface::BotChatterInterface(CCSBot *me)
 	Reset();
 }
 
-/* <305307> ../cstrike/dlls/bot/cs_bot_chatter.cpp:1334 */
 BotChatterInterface::~BotChatterInterface()
 {
 	// free pending statements
@@ -1321,8 +1235,6 @@ BotChatterInterface::~BotChatterInterface()
 }
 
 // Reset to initial state
-
-/* <305386> ../cstrike/dlls/bot/cs_bot_chatter.cpp:1347 */
 void BotChatterInterface::Reset()
 {
 	BotStatement *msg, *nextMsg;
@@ -1354,8 +1266,6 @@ void BotChatterInterface::Reset()
 }
 
 // Register a statement for speaking
-
-/* <305661> ../cstrike/dlls/bot/cs_bot_chatter.cpp:1381 */
 void BotChatterInterface::AddStatement(BotStatement *statement, bool mustAdd)
 {
 	// don't add statements if bot chatter is shut off
@@ -1443,8 +1353,6 @@ void BotChatterInterface::AddStatement(BotStatement *statement, bool mustAdd)
 }
 
 // Remove a statement
-
-/* <3056fa> ../cstrike/dlls/bot/cs_bot_chatter.cpp:1462 */
 void BotChatterInterface::RemoveStatement(BotStatement *statement)
 {
 	if (statement->m_next != NULL)
@@ -1459,8 +1367,6 @@ void BotChatterInterface::RemoveStatement(BotStatement *statement)
 }
 
 // Track nearby enemy count and report enemy activity
-
-/* <3087ee> ../cstrike/dlls/bot/cs_bot_chatter.cpp:1479 */
 void BotChatterInterface::ReportEnemies()
 {
 	if (!m_me->IsAlive())
@@ -1492,15 +1398,12 @@ void BotChatterInterface::ReportEnemies()
 	}
 }
 
-/* <305743> ../cstrike/dlls/bot/cs_bot_chatter.cpp:1515 */
 void BotChatterInterface::OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
 {
 	;
 }
 
 // Invoked when we die
-
-/* <30579e> ../cstrike/dlls/bot/cs_bot_chatter.cpp:1524 */
 void BotChatterInterface::OnDeath()
 {
 	if (IsTalking())
@@ -1524,8 +1427,6 @@ void BotChatterInterface::OnDeath()
 }
 
 // Process ongoing chatter for this bot
-
-/* <308852> ../cstrike/dlls/bot/cs_bot_chatter.cpp:1549 */
 void BotChatterInterface::Update()
 {
 	// report enemy activity
@@ -1605,8 +1506,6 @@ void BotChatterInterface::Update()
 }
 
 // Returns the statement that is being spoken, or is next to be spoken if no-one is speaking now
-
-/* <305915> ../cstrike/dlls/bot/cs_bot_chatter.cpp:1635 */
 BotStatement *BotChatterInterface::GetActiveStatement()
 {
 	// keep track of statement waiting longest to be spoken - it is next
@@ -1664,8 +1563,6 @@ BotStatement *BotChatterInterface::GetActiveStatement()
 }
 
 // Return true if we speaking makes sense now
-
-/* <305a35> ../cstrike/dlls/bot/cs_bot_chatter.cpp:1694 */
 bool BotChatterInterface::ShouldSpeak() const
 {
 	// don't talk to non-existent friends
@@ -1679,27 +1576,22 @@ bool BotChatterInterface::ShouldSpeak() const
 	return true;
 }
 
-/* <305a8f> ../cstrike/dlls/bot/cs_bot_chatter.cpp:1708 */
 float BotChatterInterface::GetRadioSilenceDuration()
 {
 	return IMPL(m_radioSilenceInterval)[ m_me->m_iTeam - 1 ].GetElapsedTime();
 }
 
-/* <305b15> ../cstrike/dlls/bot/cs_bot_chatter.cpp:1714 */
 void BotChatterInterface::ResetRadioSilenceDuration()
 {
 	IMPL(m_radioSilenceInterval)[m_me->m_iTeam - 1].Reset();
 }
 
-/* <305d7b> ../cstrike/dlls/bot/cs_bot_chatter.cpp:1732 */
 inline void SayWhere(BotStatement *say, Place place)
 {
 	say->AppendPhrase(TheBotPhrases->GetPlace(place));
 }
 
 // Report enemy sightings
-
-/* <305b50> ../cstrike/dlls/bot/cs_bot_chatter.cpp:1740 */
 void BotChatterInterface::EnemySpotted()
 {
 	// NOTE: This could be a few seconds out of date (enemy is in an adjacent place)
@@ -1718,7 +1610,6 @@ void BotChatterInterface::EnemySpotted()
 	AddStatement(say);
 }
 
-/* <305da4> ../cstrike/dlls/bot/cs_bot_chatter.cpp:1759 */
 NOXREF void BotChatterInterface::Clear(Place place)
 {
 	BotStatement *say = new BotStatement(this, REPORT_INFORMATION, 10.0f);
@@ -1729,8 +1620,6 @@ NOXREF void BotChatterInterface::Clear(Place place)
 }
 
 // Request enemy activity report
-
-/* <305ffa> ../cstrike/dlls/bot/cs_bot_chatter.cpp:1773 */
 void BotChatterInterface::ReportIn()
 {
 	BotStatement *say = new BotStatement(this, REPORT_REQUEST_INFORMATION, 10.0f);
@@ -1742,11 +1631,8 @@ void BotChatterInterface::ReportIn()
 }
 
 // Report our situtation
-
-/* <309851> ../cstrike/dlls/bot/cs_bot_chatter.cpp:1788 */
 void BotChatterInterface::ReportingIn()
 {
-	CCSBotManager *ctrl = TheCSBots();
 	BotStatement *say = new BotStatement(this, REPORT_INFORMATION, 10.0f);
 
 	// where are we
@@ -1768,10 +1654,10 @@ void BotChatterInterface::ReportingIn()
 		}
 		case CCSBot::GUARD_LOOSE_BOMB:
 		{
-			if (ctrl->GetLooseBomb())
+			if (TheCSBots()->GetLooseBomb())
 			{
 				say->AppendPhrase(TheBotPhrases->GetPhrase("GuardingLooseBomb"));
-				say->AttachMeme(new BotBombStatusMeme(CSGameState::LOOSE, ctrl->GetLooseBomb()->pev->origin));
+				say->AttachMeme(new BotBombStatusMeme(CSGameState::LOOSE, TheCSBots()->GetLooseBomb()->pev->origin));
 			}
 			break;
 		}
@@ -1841,7 +1727,6 @@ void BotChatterInterface::ReportingIn()
 	AddStatement(say);
 }
 
-/* <3084cf> ../cstrike/dlls/bot/cs_bot_chatter.cpp:1896 */
 bool BotChatterInterface::NeedBackup()
 {
 	const float minRequestInterval = 10.0f;
@@ -1873,7 +1758,6 @@ bool BotChatterInterface::NeedBackup()
 	return true;
 }
 
-/* <3061a8> ../cstrike/dlls/bot/cs_bot_chatter.cpp:1929 */
 void BotChatterInterface::PinnedDown()
 {
 	// this is a form of "need backup"
@@ -1896,7 +1780,6 @@ void BotChatterInterface::PinnedDown()
 	AddStatement(say);
 }
 
-/* <3064e2> ../cstrike/dlls/bot/cs_bot_chatter.cpp:1952 */
 void BotChatterInterface::HeardNoise(const Vector *pos)
 {
 	if (TheCSBots()->IsRoundOver())
@@ -1920,7 +1803,6 @@ void BotChatterInterface::HeardNoise(const Vector *pos)
 	}
 }
 
-/* <3066a7> ../cstrike/dlls/bot/cs_bot_chatter.cpp:1978 */
 void BotChatterInterface::KilledMyEnemy(int victimID)
 {
 	// only report if we killed the last enemy in the area
@@ -1933,7 +1815,6 @@ void BotChatterInterface::KilledMyEnemy(int victimID)
 	AddStatement(say);
 }
 
-/* <306853> ../cstrike/dlls/bot/cs_bot_chatter.cpp:1993 */
 void BotChatterInterface::EnemiesRemaining()
 {
 	// only report if we killed the last enemy in the area
@@ -1946,7 +1827,6 @@ void BotChatterInterface::EnemiesRemaining()
 	AddStatement(say);
 }
 
-/* <306974> ../cstrike/dlls/bot/cs_bot_chatter.cpp:2008 */
 void BotChatterInterface::Affirmative()
 {
 	BotStatement *say = new BotStatement(this, REPORT_ACKNOWLEDGE, 3.0f);
@@ -1954,7 +1834,6 @@ void BotChatterInterface::Affirmative()
 	AddStatement(say);
 }
 
-/* <306bb2> ../cstrike/dlls/bot/cs_bot_chatter.cpp:2018 */
 void BotChatterInterface::Negative()
 {
 	BotStatement *say = new BotStatement(this, REPORT_ACKNOWLEDGE, 3.0f);
@@ -1962,7 +1841,6 @@ void BotChatterInterface::Negative()
 	AddStatement(say);
 }
 
-/* <306cf4> ../cstrike/dlls/bot/cs_bot_chatter.cpp:2028 */
 void BotChatterInterface::GoingToPlantTheBomb(Place place)
 {
 	if (TheCSBots()->IsRoundOver())
@@ -1981,7 +1859,6 @@ void BotChatterInterface::GoingToPlantTheBomb(Place place)
 	AddStatement(say);
 }
 
-/* <306ef6> ../cstrike/dlls/bot/cs_bot_chatter.cpp:2050 */
 void BotChatterInterface::PlantingTheBomb(Place place)
 {
 	if (TheCSBots()->IsRoundOver())
@@ -1994,7 +1871,6 @@ void BotChatterInterface::PlantingTheBomb(Place place)
 	AddStatement(say);
 }
 
-/* <3070c8> ../cstrike/dlls/bot/cs_bot_chatter.cpp:2066 */
 void BotChatterInterface::TheyPickedUpTheBomb()
 {
 	if (TheCSBots()->IsRoundOver())
@@ -2014,7 +1890,6 @@ void BotChatterInterface::TheyPickedUpTheBomb()
 	AddStatement(say);
 }
 
-/* <307272> ../cstrike/dlls/bot/cs_bot_chatter.cpp:2090 */
 void BotChatterInterface::SpottedBomber(CBasePlayer *bomber)
 {
 	if (m_me->GetGameState()->IsBombMoving())
@@ -2044,7 +1919,6 @@ void BotChatterInterface::SpottedBomber(CBasePlayer *bomber)
 	AddStatement(say);
 }
 
-/* <30761a> ../cstrike/dlls/bot/cs_bot_chatter.cpp:2122 */
 void BotChatterInterface::SpottedLooseBomb(CBaseEntity *bomb)
 {
 	if (TheCSBots()->IsRoundOver())
@@ -2078,7 +1952,6 @@ void BotChatterInterface::SpottedLooseBomb(CBaseEntity *bomb)
 	}
 }
 
-/* <30795b> ../cstrike/dlls/bot/cs_bot_chatter.cpp:2157 */
 NOXREF void BotChatterInterface::GuardingLooseBomb(CBaseEntity *bomb)
 {
 	if (TheCSBots()->IsRoundOver() || !bomb)
@@ -2090,7 +1963,7 @@ NOXREF void BotChatterInterface::GuardingLooseBomb(CBaseEntity *bomb)
 		return;
 
 	m_planInterval.Reset();
-#endif // REGAMEDLL_FIXES
+#endif
 
 	// update our gamestate
 	m_me->GetGameState()->UpdateLooseBomb(&bomb->pev->origin);
@@ -2110,7 +1983,6 @@ NOXREF void BotChatterInterface::GuardingLooseBomb(CBaseEntity *bomb)
 	AddStatement(say);
 }
 
-/* <307c56> ../cstrike/dlls/bot/cs_bot_chatter.cpp:2186 */
 void BotChatterInterface::RequestBombLocation()
 {
 	// only ask once per round
@@ -2126,7 +1998,6 @@ void BotChatterInterface::RequestBombLocation()
 	AddStatement(say);
 }
 
-/* <307de2> ../cstrike/dlls/bot/cs_bot_chatter.cpp:2205 */
 void BotChatterInterface::BombsiteClear(int zoneIndex)
 {
 	const CCSBotManager::Zone *zone = TheCSBots()->GetZone(zoneIndex);
@@ -2141,7 +2012,6 @@ void BotChatterInterface::BombsiteClear(int zoneIndex)
 	AddStatement(say);
 }
 
-/* <3080b8> ../cstrike/dlls/bot/cs_bot_chatter.cpp:2223 */
 void BotChatterInterface::FoundPlantedBomb(int zoneIndex)
 {
 	const CCSBotManager::Zone *zone = TheCSBots()->GetZone(zoneIndex);
@@ -2155,7 +2025,6 @@ void BotChatterInterface::FoundPlantedBomb(int zoneIndex)
 	AddStatement(say);
 }
 
-/* <308308> ../cstrike/dlls/bot/cs_bot_chatter.cpp:2242 */
 void BotChatterInterface::Scared()
 {
 	const float minInterval = 10.0f;
@@ -2170,7 +2039,6 @@ void BotChatterInterface::Scared()
 	AddStatement(say);
 }
 
-/* <308b60> ../cstrike/dlls/bot/cs_bot_chatter.cpp:2259 */
 void BotChatterInterface::CelebrateWin()
 {
 	BotStatement *say = new BotStatement(this, REPORT_EMOTE, 15.0f);
@@ -2179,19 +2047,18 @@ void BotChatterInterface::CelebrateWin()
 	say->SetStartTime(gpGlobals->time + RANDOM_FLOAT(2.0f, 5.0f));
 
 	const float quickRound = 45.0f;
-	CCSBotManager *ctrl = TheCSBots();
 
 	if (m_me->GetFriendsRemaining() == 0)
 	{
 		// we were the last man standing
-		if (ctrl->GetElapsedRoundTime() < quickRound)
+		if (TheCSBots()->GetElapsedRoundTime() < quickRound)
 			say->AppendPhrase(TheBotPhrases->GetPhrase("WonRoundQuickly"));
 		else if (RANDOM_FLOAT(0.0f, 100.0f) < 33.3f)
 			say->AppendPhrase(TheBotPhrases->GetPhrase("LastManStanding"));
 	}
 	else
 	{
-		if (ctrl->GetElapsedRoundTime() < quickRound)
+		if (TheCSBots()->GetElapsedRoundTime() < quickRound)
 		{
 			if (RANDOM_FLOAT(0.0f, 100.0f) < 33.3f)
 				say->AppendPhrase(TheBotPhrases->GetPhrase("WonRoundQuickly"));
@@ -2205,11 +2072,9 @@ void BotChatterInterface::CelebrateWin()
 	AddStatement(say);
 }
 
-/* <308e52> ../cstrike/dlls/bot/cs_bot_chatter.cpp:2294 */
 void BotChatterInterface::AnnouncePlan(const char *phraseName, Place place)
 {
-	CCSBotManager *ctrl = TheCSBots();
-	if (ctrl->IsRoundOver())
+	if (TheCSBots()->IsRoundOver())
 		return;
 
 	BotStatement *say = new BotStatement(this, REPORT_MY_PLAN, 10.0f);
@@ -2217,11 +2082,10 @@ void BotChatterInterface::AnnouncePlan(const char *phraseName, Place place)
 	say->SetPlace(place);
 
 	// wait at least a short time after round start
-	say->SetStartTime(ctrl->GetRoundStartTime() + RANDOM_FLOAT(2.0, 3.0f));
+	say->SetStartTime(TheCSBots()->GetRoundStartTime() + RANDOM_FLOAT(2.0, 3.0f));
 	AddStatement(say);
 }
 
-/* <308fdd> ../cstrike/dlls/bot/cs_bot_chatter.cpp:2312 */
 void BotChatterInterface::GuardingHostages(Place place, bool isPlan)
 {
 	if (TheCSBots()->IsRoundOver())
@@ -2233,7 +2097,7 @@ void BotChatterInterface::GuardingHostages(Place place, bool isPlan)
 
 #ifdef REGAMEDLL_FIXES
 	m_planInterval.Reset();
-#endif // REGAMEDLL_FIXES
+#endif
 
 	if (isPlan)
 		AnnouncePlan("GoingToGuardHostages", place);
@@ -2241,7 +2105,6 @@ void BotChatterInterface::GuardingHostages(Place place, bool isPlan)
 		Say("GuardingHostages");
 }
 
-/* <3091eb> ../cstrike/dlls/bot/cs_bot_chatter.cpp:2329 */
 void BotChatterInterface::GuardingHostageEscapeZone(bool isPlan)
 {
 	if (TheCSBots()->IsRoundOver())
@@ -2253,7 +2116,7 @@ void BotChatterInterface::GuardingHostageEscapeZone(bool isPlan)
 
 #ifdef REGAMEDLL_FIXES
 	m_planInterval.Reset();
-#endif // REGAMEDLL_FIXES
+#endif
 
 	if (isPlan)
 		AnnouncePlan("GoingToGuardHostageEscapeZone", UNDEFINED_PLACE);
@@ -2261,7 +2124,6 @@ void BotChatterInterface::GuardingHostageEscapeZone(bool isPlan)
 		Say("GuardingHostageEscapeZone");
 }
 
-/* <3093a9> ../cstrike/dlls/bot/cs_bot_chatter.cpp:2346 */
 void BotChatterInterface::HostagesBeingTaken()
 {
 	if (TheCSBots()->IsRoundOver())
@@ -2273,7 +2135,6 @@ void BotChatterInterface::HostagesBeingTaken()
 	AddStatement(say);
 }
 
-/* <309542> ../cstrike/dlls/bot/cs_bot_chatter.cpp:2361 */
 void BotChatterInterface::HostagesTaken()
 {
 	if (TheCSBots()->IsRoundOver())
@@ -2284,13 +2145,11 @@ void BotChatterInterface::HostagesTaken()
 	AddStatement(say);
 }
 
-/* <309691> ../cstrike/dlls/bot/cs_bot_chatter.cpp:2375 */
 void BotChatterInterface::TalkingToHostages()
 {
 	;
 }
 
-/* <3096bc> ../cstrike/dlls/bot/cs_bot_chatter.cpp:2380 */
 void BotChatterInterface::EscortingHostages()
 {
 	if (TheCSBots()->IsRoundOver())
@@ -2307,7 +2166,6 @@ void BotChatterInterface::EscortingHostages()
 	}
 }
 
-/* <30a5b9> ../cstrike/dlls/bot/cs_bot_chatter.cpp:2400 */
 NOXREF void BotChatterInterface::HostageDown()
 {
 	if (TheCSBots()->IsRoundOver())
@@ -2318,7 +2176,6 @@ NOXREF void BotChatterInterface::HostageDown()
 	AddStatement(say);
 }
 
-/* <30a708> ../cstrike/dlls/bot/cs_bot_chatter.cpp:2414 */
 void BotChatterInterface::Encourage(const char *phraseName, float repeatInterval, float lifetime)
 {
 	if (IMPL(m_encourageTimer).IsElapsed())
@@ -2328,7 +2185,6 @@ void BotChatterInterface::Encourage(const char *phraseName, float repeatInterval
 	}
 }
 
-/* <30a905> ../cstrike/dlls/bot/cs_bot_chatter.cpp:2427 */
 void BotChatterInterface::KilledFriend()
 {
 	BotStatement *say = new BotStatement(this, REPORT_KILLED_FRIEND, 2.0f);
@@ -2339,7 +2195,6 @@ void BotChatterInterface::KilledFriend()
 	AddStatement(say);
 }
 
-/* <30aa67> ../cstrike/dlls/bot/cs_bot_chatter.cpp:2440 */
 void BotChatterInterface::FriendlyFire()
 {
 	BotStatement *say = new BotStatement(this, REPORT_FRIENDLY_FIRE, 1.0f);

@@ -55,11 +55,7 @@ void createIntergrationTestTask(NativeBinarySpec b) {
 	if (!GradleCppUtils.windows) return
 	if (regamedllFixes) return
 
-	def libLinkTask = GradleCppUtils.getLinkTask(b)
 	String unitTestTask = b.hasProperty('cppUnitTestTask') ? b.cppUnitTestTask : null
-
-	def depFiles = []
-	depFiles.addAll(libLinkTask.outputs.files.files)
 
 	def demoItgTestTask = project.tasks.create(b.namingScheme.getTaskName('demoItgTest'), RegamedllPlayTestTask)
 	demoItgTestTask.with {
@@ -69,12 +65,10 @@ void createIntergrationTestTask(NativeBinarySpec b) {
 		testFor = b
 
 	//inputs/outputs for up-to-date check
-	inputs.files depFiles
 	inputs.files testDemos.files
 	outputs.dir regamedllTestLogs
 
-	//dependencies on library and test executable
-	dependsOn libLinkTask
+	//dependencies on test executable
 	if (unitTestTask) {
 		dependsOn unitTestTask
 	}
@@ -88,17 +82,6 @@ void createIntergrationTestTask(NativeBinarySpec b) {
 	b.buildTask.dependsOn demoItgTestTask
 }
 
-void setupUnitTests(NativeBinarySpec bin) {
-	boolean unitTestExecutable = bin.component.name.endsWith('_tests')
-	if (!unitTestExecutable) return
-
-	GradleCppUtils.getLinkTask(bin).doLast {
-		String srcPath = '' + projectDir + (GradleCppUtils.windows ? '/lib/steam_api.dll' : '/lib/linux32/libsteam_api.so')
-		String dstPath = bin.executableFile.parent + (GradleCppUtils.windows ? '/steam_api.dll' : '/libsteam_api.so')
-		GradleCppUtils.copyFile(srcPath, dstPath, true)
-	}
-}
-
 void postEvaluate(NativeBinarySpec b) {
 
 	// attach generateAppVersion task to all 'compile source' tasks
@@ -106,7 +89,6 @@ void postEvaluate(NativeBinarySpec b) {
 		t.dependsOn project.generateAppVersion
 	}
 
-	setupUnitTests(b)
 	createIntergrationTestTask(b)
 }
 
@@ -117,7 +99,7 @@ void setupToolchain(NativeBinarySpec b)
 	boolean regamedllFixes = b.flavor.name.contains('regamedllFixes')
 
 	ToolchainConfig cfg = rootProject.createToolchainConfig(b)
-	cfg.projectInclude(project, '', '/engine', '/common', '/dlls', '/game_shared', '/pm_shared', '/regamedll', '/testsuite', '/hookers', '/public', '/public/regamedll')
+	cfg.projectInclude(project, '', '/engine', '/common', '/dlls', '/game_shared', '/pm_shared', '/regamedll', '/hookers', '/public', '/public/regamedll')
 
 	if (unitTestExecutable)
 	{
@@ -147,9 +129,6 @@ void setupToolchain(NativeBinarySpec b)
 			cfg.linkerOptions.randomizedBaseAddress = false
 			cfg.linkerOptions.baseAddress = '0x4970000'
 		}
-
-		cfg.projectLibpath(project, '/lib')
-		cfg.extraLibs 'steam_api.lib', 'psapi.lib', 'ws2_32.lib', 'kernel32.lib', 'user32.lib', 'advapi32.lib'
 	}
 	else if (cfg instanceof GccToolchainConfig)
 	{
@@ -172,8 +151,7 @@ void setupToolchain(NativeBinarySpec b)
 
 		cfg.linkerOptions.args '-no-opt-class-analysis'
 		cfg.compilerOptions.args '-Qoption,cpp,--treat_func_as_string_literal_cpp', '-g'
-		cfg.projectLibpath(project, '/lib/linux32')
-		cfg.extraLibs 'dl', 'm', 'stdc++', 'steam_api'
+		cfg.extraLibs 'dl', 'm', 'stdc++'
 	}
 
 	if (mpLib && GradleCppUtils.windows && !unitTestExecutable)
@@ -183,8 +161,6 @@ void setupToolchain(NativeBinarySpec b)
 
 	if (!unitTestExecutable)
 	{
-		//cfg.singleDefines 'CSTRIKE'
-
 		if (!mpLib)
 		{
 			cfg.singleDefines 'HOOK_GAMEDLL'
@@ -201,7 +177,6 @@ void setupToolchain(NativeBinarySpec b)
 	}
 
 	ToolchainConfigUtils.apply(project, cfg, b)
-
 	GradleCppUtils.onTasksCreated(project, 'postEvaluate', {
 		postEvaluate(b)
 	})
@@ -213,26 +188,20 @@ class RegamedllSrc {
 
 			source {
 				srcDirs "engine", "dlls", "game_shared", "pm_shared", "regamedll", "public", "version"
-				if (GradleCppUtils.windows) {
-					srcDirs "testsuite"
-				}
 
 				include "**/*.cpp"
 				exclude "precompiled.cpp"
 				exclude "tier0/dbg.cpp", "utlsymbol.cpp", "utlbuffer.cpp"
 
-				if (GradleCppUtils.windows) {
+				if (GradleCppUtils.windows)
+				{
 					exclude "tier0/platform_linux.cpp"
-				} else {
+				}
+				else
+				{
 					exclude "tier0/platform_win32.cpp"
 					exclude "classes_dummy.cpp"
 				}
-			}
-
-			source {
-				srcDirs "hookers"
-				include "**/*.cpp"
-				exclude "6153_hooker.cpp", "hooker.cpp", "main.cpp", "main_mp.cpp", "hooker_impl.cpp"
 			}
 		}
 	}
@@ -250,26 +219,16 @@ class RegamedllSrc {
 		h.regamedll_hooker_src(CppSourceSet) {
 			source {
 				srcDirs "hookers"
-				include "6153_hooker.cpp", "hooker.cpp", "hooker_impl.cpp"
+				include "main.cpp", "6153_hooker.cpp", "hooker.cpp", "memory.cpp", "hooker_impl.cpp", "RegameDLLRuntimeConfig.cpp"
 			}
 		}
 	}
 
-	static void regamedll_hooker_main_src(def h) {
-		h.regamedll_hooker_main_src(CppSourceSet) {
-			source {
-				srcDirs "hookers"
-				include "main.cpp"
-			}
-		}
-	}
-
-	static void regamedll_mp_main_src(def h) {
-		h.regamedll_mp_main_src(CppSourceSet) {
+	static void regamedll_mp_src(def h) {
+		h.regamedll_mp_src(CppSourceSet) {
 			source {
 				srcDirs "hookers"
 				include "main_mp.cpp"
-				exclude "memory.cpp"
 			}
 		}
 	}
@@ -318,7 +277,6 @@ model {
 				RegamedllSrc.regamedll_pch(it)
 				RegamedllSrc.regamedll_src(it)
 				RegamedllSrc.regamedll_hooker_src(it)
-				RegamedllSrc.regamedll_hooker_main_src(it)
 			}
 
 			binaries.all { NativeBinarySpec b -> project.setupToolchain(b) }
@@ -330,7 +288,7 @@ model {
 			sources {
 				RegamedllSrc.regamedll_pch(it)
 				RegamedllSrc.regamedll_src(it)
-				RegamedllSrc.regamedll_mp_main_src(it)
+				RegamedllSrc.regamedll_mp_src(it)
 			}
 			binaries.all { NativeBinarySpec b -> project.setupToolchain(b) }
 		}

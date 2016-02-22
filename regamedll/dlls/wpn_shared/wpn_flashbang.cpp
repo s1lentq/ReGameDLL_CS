@@ -1,9 +1,7 @@
 #include "precompiled.h"
 
-/* <25ba9b> ../cstrike/dlls/wpn_shared/wpn_flashbang.cpp:37 */
 LINK_ENTITY_TO_CLASS(weapon_flashbang, CFlashbang);
 
-/* <25b72f> ../cstrike/dlls/wpn_shared/wpn_flashbang.cpp:39 */
 void CFlashbang::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
@@ -22,7 +20,6 @@ void CFlashbang::__MAKE_VHOOK(Spawn)()
 	FallInit();
 }
 
-/* <25b67a> ../cstrike/dlls/wpn_shared/wpn_flashbang.cpp:58 */
 void CFlashbang::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/v_flashbang.mdl");
@@ -33,7 +30,6 @@ void CFlashbang::__MAKE_VHOOK(Precache)()
 	PRECACHE_SOUND("weapons/pinpull.wav");
 }
 
-/* <25b6a1> ../cstrike/dlls/wpn_shared/wpn_flashbang.cpp:69 */
 int CFlashbang::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
@@ -51,7 +47,6 @@ int CFlashbang::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	return 1;
 }
 
-/* <25b7df> ../cstrike/dlls/wpn_shared/wpn_flashbang.cpp:87 */
 BOOL CFlashbang::__MAKE_VHOOK(Deploy)()
 {
 	m_flReleaseThrow = -1.0f;
@@ -66,7 +61,6 @@ BOOL CFlashbang::__MAKE_VHOOK(Deploy)()
 		return DefaultDeploy("models/v_flashbang.mdl", "models/p_flashbang.mdl", FLASHBANG_DRAW, "grenade", UseDecrement() != FALSE);
 }
 
-/* <25b6fa> ../cstrike/dlls/wpn_shared/wpn_flashbang.cpp:102 */
 void CFlashbang::__MAKE_VHOOK(Holster)(int skiplocal)
 {
 	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5f;
@@ -81,7 +75,6 @@ void CFlashbang::__MAKE_VHOOK(Holster)(int skiplocal)
 	m_flReleaseThrow = -1.0f;
 }
 
-/* <25b7a5> ../cstrike/dlls/wpn_shared/wpn_flashbang.cpp:118 */
 void CFlashbang::__MAKE_VHOOK(PrimaryAttack)()
 {
 	if (m_iWeaponState & WPNSTATE_SHIELD_DRAWN)
@@ -99,7 +92,6 @@ void CFlashbang::__MAKE_VHOOK(PrimaryAttack)()
 	}
 }
 
-/* <25bb65> ../cstrike/dlls/wpn_shared/wpn_flashbang.cpp:133 */
 bool CFlashbang::ShieldSecondaryFire(int iUpAnim, int iDownAnim)
 {
 	if (!m_pPlayer->HasShield() || m_flStartThrow > 0)
@@ -138,13 +130,11 @@ bool CFlashbang::ShieldSecondaryFire(int iUpAnim, int iDownAnim)
 	return true;
 }
 
-/* <25b81a> ../cstrike/dlls/wpn_shared/wpn_flashbang.cpp:171 */
 void CFlashbang::__MAKE_VHOOK(SecondaryAttack)()
 {
 	ShieldSecondaryFire(SHIELDGUN_DRAW, SHIELDGUN_DRAWN_IDLE);
 }
 
-/* <25bb97> ../cstrike/dlls/wpn_shared/wpn_flashbang.cpp:176 */
 void CFlashbang::SetPlayerShieldAnim()
 {
 	if (!m_pPlayer->HasShield())
@@ -156,7 +146,6 @@ void CFlashbang::SetPlayerShieldAnim()
 		Q_strcpy(m_pPlayer->m_szAnimExtention, "shieldgren");
 }
 
-/* <25bbb9> ../cstrike/dlls/wpn_shared/wpn_flashbang.cpp:187 */
 void CFlashbang::ResetPlayerShieldAnim()
 {
 	if (!m_pPlayer->HasShield())
@@ -168,7 +157,6 @@ void CFlashbang::ResetPlayerShieldAnim()
 	}
 }
 
-/* <25a8bd> ../cstrike/dlls/wpn_shared/wpn_flashbang.cpp:198 */
 void CFlashbang::__MAKE_VHOOK(WeaponIdle)()
 {
 	if (m_flReleaseThrow == 0 && m_flStartThrow != 0.0f)
@@ -257,7 +245,7 @@ void CFlashbang::__MAKE_VHOOK(WeaponIdle)()
 			#else
 				// TODO: This is a bug?
 				iAnim = *(int *)&flRand;
-			#endif // REGAMEDLL_FIXES
+			#endif
 				m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 75.0f / 30.0f;
 			}
 
@@ -266,7 +254,6 @@ void CFlashbang::__MAKE_VHOOK(WeaponIdle)()
 	}
 }
 
-/* <25b6d4> ../cstrike/dlls/wpn_shared/wpn_flashbang.cpp:315 */
 BOOL CFlashbang::__MAKE_VHOOK(CanDeploy)()
 {
 	return m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] != 0;

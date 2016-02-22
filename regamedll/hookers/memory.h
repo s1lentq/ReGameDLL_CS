@@ -156,6 +156,6 @@ void HIDDEN GetAddressVtableByClassname(const char *szClassName, const int iOffs
 extern void *addr_orig;
 extern char patchByte[5];
 extern char patchByteOriginal[5];
-#endif // HOOK_GAMEDLL
+#endif
 
 #endif // _MEMORY_H

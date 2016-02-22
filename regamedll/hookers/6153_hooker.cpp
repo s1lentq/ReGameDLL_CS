@@ -108,8 +108,6 @@ extern const size_t g_BaseOffset = 0x00000000;
 //#define Data_References_Region
 //#define Function_References_Region
 
-extern void BotPhraseManager__OnRoundRestart(int pthis);
-
 FunctionHook g_FunctionHooks[] =
 {
 
@@ -147,43 +145,43 @@ FunctionHook g_FunctionHooks[] =
 	//{ 0x01DAFB50, "PM_DrawBBox", (size_t)&PM_DrawBBox },				// NOXREF
 	//{ 0x01DAFF20, "PM_ViewEntity", (size_t)&PM_ViewEntity },			// NOXREF
 //pm_shared
-	//{ 0x01DB0AB0, "PM_SwapTextures", (size_t)&PM_SwapTextures },	// NOXREF
+	//{ 0x01DB0AB0, "PM_SwapTextures", (size_t)&PM_SwapTextures },			// NOXREF
 	//{ 0x01DB0B30, "PM_IsThereGrassTexture", (size_t)&PM_IsThereGrassTexture },	// NOXREF
-	//{ 0x01DB0B60, "PM_SortTextures", (size_t)&PM_SortTextures },	// NOXREF
+	//{ 0x01DB0B60, "PM_SortTextures", (size_t)&PM_SortTextures },			// NOXREF
 	{ 0x01DB0C80, "PM_InitTextureTypes", (size_t)&PM_InitTextureTypes },
 	//{ 0x0, "PM_FindTextureType", (size_t)&PM_FindTextureType },
 	{ 0x01DB1080, "PM_PlayStepSound", (size_t)&PM_PlayStepSound },
 	//{ 0x01DB17E0, "PM_MapTextureTypeStepType", (size_t)&PM_MapTextureTypeStepType },	// NOXREF
 	{ 0x01DB1860, "PM_CatagorizeTextureType", (size_t)&PM_CatagorizeTextureType },
 	{ 0x01DB19B0, "PM_UpdateStepSound", (size_t)&PM_UpdateStepSound },
-	//{ 0x01DB1CB0, "PM_AddToTouched", (size_t)&PM_AddToTouched },	// NOXREF
+	//{ 0x01DB1CB0, "PM_AddToTouched", (size_t)&PM_AddToTouched },			// NOXREF
 	{ 0x01DB1D50, "PM_CheckVelocity", (size_t)&PM_CheckVelocity },
 	{ 0x01DB1E40, "PM_ClipVelocity", (size_t)&PM_ClipVelocity },
 	//{ 0x01DB1EF0, "PM_AddCorrectGravity", (size_t)&PM_AddCorrectGravity },	// NOXREF
 	//{ 0x01DB1F70, "PM_FixupGravityVelocity", (size_t)&PM_FixupGravityVelocity },	// NOXREF
 	{ 0x01DB1FD0, "PM_FlyMove", (size_t)&PM_FlyMove },
-	//{ 0x01DB24E0, "PM_Accelerate", (size_t)&PM_Accelerate },	// NOXREF
+	//{ 0x01DB24E0, "PM_Accelerate", (size_t)&PM_Accelerate },			// NOXREF
 	{ 0x01DB2580, "PM_WalkMove", (size_t)&PM_WalkMove },
 	{ 0x01DB2B50, "PM_Friction", (size_t)&PM_Friction },
 	{ 0x01DB2CF0, "PM_AirAccelerate", (size_t)&PM_AirAccelerate },
 	{ 0x01DB2DB0, "PM_WaterMove", (size_t)&PM_WaterMove },
 	{ 0x01DB30C0, "PM_AirMove", (size_t)&PM_AirMove },
-	//{ 0x01DB3200, "PM_InWater", (size_t)&PM_InWater },	// NOXREF
+	//{ 0x01DB3200, "PM_InWater", (size_t)&PM_InWater },				// NOXREF
 	{ 0x01DB3220, "PM_CheckWater", (size_t)&PM_CheckWater },
 	{ 0x01DB33E0, "PM_CatagorizePosition", (size_t)&PM_CatagorizePosition },
-	//{ 0x01DB3590, "PM_GetRandomStuckOffsets", (size_t)&PM_GetRandomStuckOffsets },	// NOXREF
+	//{ 0x01DB3590, "PM_GetRandomStuckOffsets", (size_t)&PM_GetRandomStuckOffsets },// NOXREF
 	//{ 0x01DB35E0, "PM_ResetStuckOffsets", (size_t)&PM_ResetStuckOffsets },	// NOXREF
 	{ 0x01DB3600, "PM_CheckStuck", (size_t)&PM_CheckStuck },
 	{ 0x01DB3970, "PM_SpectatorMove", (size_t)&PM_SpectatorMove },
-	//{ 0x01DB3C70, "PM_SplineFraction", (size_t)&PM_SplineFraction },	// NOXREF
-	//{ 0x01DB3C90, "PM_SimpleSpline", (size_t)&PM_SimpleSpline },	// NOXREF
+	//{ 0x01DB3C70, "PM_SplineFraction", (size_t)&PM_SplineFraction },		// NOXREF
+	//{ 0x01DB3C90, "PM_SimpleSpline", (size_t)&PM_SimpleSpline },			// NOXREF
 	//{ 0x01DB3CB0, "PM_FixPlayerCrouchStuck", (size_t)&PM_FixPlayerCrouchStuck },	// NOXREF
 	{ 0x01DB3D50, "PM_Duck", (size_t)&PM_Duck },
 	{ 0x01DB4110, "PM_LadderMove", (size_t)&PM_LadderMove },
 	{ 0x01DB44D0, "PM_Ladder", (size_t)&PM_Ladder },
-	//{ 0x01DB45A0, "PM_WaterJump", (size_t)&PM_WaterJump },	// NOXREF
-	//{ 0x01DB4660, "PM_AddGravity", (size_t)&PM_AddGravity },	// NOXREF
-	//{ 0x01DB46C0, "PM_PushEntity", (size_t)&PM_PushEntity },	// NOXREF
+	//{ 0x01DB45A0, "PM_WaterJump", (size_t)&PM_WaterJump },			// NOXREF
+	//{ 0x01DB4660, "PM_AddGravity", (size_t)&PM_AddGravity },			// NOXREF
+	//{ 0x01DB46C0, "PM_PushEntity", (size_t)&PM_PushEntity },			// NOXREF
 	{ 0x01DB4820, "PM_Physics_Toss", (size_t)&PM_Physics_Toss },
 	{ 0x01DB4DE0, "PM_NoClip", (size_t)&PM_NoClip },
 	//{ 0x01DB4E90, "PM_PreventMegaBunnyJumping", (size_t)&PM_PreventMegaBunnyJumping },	// NOXREF
@@ -216,7 +214,7 @@ FunctionHook g_FunctionHooks[] =
 	//{ 0x01DB06A0, "_VectorSubtract", (size_t)&_VectorSubtract },		// NOXREF
 	//{ 0x01DB06D0, "_VectorAdd", (size_t)&_VectorAdd },			// NOXREF
 	//{ 0x01DB0700, "_VectorCopy", (size_t)&_VectorCopy },			// NOXREF
-	//{ 0x01DB0720, "CrossProduct", (size_t)&_CrossProduct },		// NOXREF
+	//{ 0x01DB0720, "CrossProduct", (size_t)&CrossProduct },		// NOXREF
 	{ 0x01DB0760, "Length", (size_t)&Length },
 	//{ 0x01DB0780, "Distance", (size_t)&Distance },			// NOXREF
 	{ 0x01DB07D0, "VectorNormalize", (size_t)&VectorNormalize },
@@ -444,7 +442,7 @@ FunctionHook g_FunctionHooks[] =
 	{ 0x01D63AC0, "_ZN11CBaseEntity12ShouldToggleE8USE_TYPEi", mfunc_ptr_cast(&CBaseEntity::ShouldToggle) },
 	{ 0x01D71BC0, "_ZN11CBaseEntity11FireBulletsEj6VectorS0_S0_fiiiP9entvars_s", mfunc_ptr_cast(&CBaseEntity::FireBullets) },
 	{ 0x01D72480, "_ZN11CBaseEntity12FireBullets3E6VectorS0_ffiiifP9entvars_sbi", mfunc_ptr_cast(&CBaseEntity::FireBullets3) },
-	{ 0x01DBB190, "_ZN11CBaseEntity14SUB_UseTargetsEPS_8USE_TYPEf", mfunc_ptr_cast(&CBaseEntity::SUB_UseTargets) },		
+	{ 0x01DBB190, "_ZN11CBaseEntity14SUB_UseTargetsEPS_8USE_TYPEf", mfunc_ptr_cast(&CBaseEntity::SUB_UseTargets) },
 	{ 0x01DBB260, "_Z11FireTargetsPKcP11CBaseEntityS2_8USE_TYPEf", (size_t)&FireTargets },
 	{ 0x01D638C0, "_ZN11CBaseEntity10IntersectsEPS_", mfunc_ptr_cast(&CBaseEntity::Intersects) },
 	//{ 0x01D63950, "_ZN11CBaseEntity11MakeDormantEv", mfunc_ptr_cast(&CBaseEntity::MakeDormant) }, // NOXREF
@@ -589,7 +587,7 @@ FunctionHook g_FunctionHooks[] =
 #endif // BaseMonster_Region
 
 #ifndef Player_Region
-	
+
 //CBasePlayer
 	//virtual func
 	{ 0x01DA5200, "_ZN11CBasePlayer5SpawnEv", mfunc_ptr_cast(&CBasePlayer::Spawn_) },
@@ -1738,7 +1736,8 @@ FunctionHook g_FunctionHooks[] =
 	{ 0x01D867A0, "_ZN10CHealthKit5SpawnEv", mfunc_ptr_cast(&CHealthKit::Spawn_) },
 	{ 0x01D867D0, "_ZN10CHealthKit8PrecacheEv", mfunc_ptr_cast(&CHealthKit::Precache_) },
 	{ 0x01D867F0, "_ZN10CHealthKit7MyTouchEP11CBasePlayer", mfunc_ptr_cast(&CHealthKit::MyTouch_) },
-
+	//linked objects
+	{ 0x01D86750, "item_healthkit", (size_t)&item_healthkit },
 //CWallHealth
 	//virtual func
 	{ 0x01D86A30, "_ZN11CWallHealth5SpawnEv", mfunc_ptr_cast(&CWallHealth::Spawn_) },
@@ -1751,6 +1750,8 @@ FunctionHook g_FunctionHooks[] =
 	//non-virtual func
 	{ 0x01D86D90, "_ZN11CWallHealth3OffEv", mfunc_ptr_cast(&CWallHealth::Off) },
 	{ 0x01D86D30, "_ZN11CWallHealth8RechargeEv", mfunc_ptr_cast(&CWallHealth::Recharge) },
+	//linked objects
+	{ 0x01D86920, "func_healthcharger", (size_t)&func_healthcharger },
 
 #endif // Healkit_Region
 
@@ -1768,6 +1769,10 @@ FunctionHook g_FunctionHooks[] =
 	//virtual func
 	{ 0x01D88BB0, "_ZN9CEnvLight5SpawnEv", mfunc_ptr_cast(&CEnvLight::Spawn_) },
 	{ 0x01D88A20, "_ZN9CEnvLight8KeyValueEP14KeyValueData_s", mfunc_ptr_cast(&CEnvLight::KeyValue_) },
+	//linked objects
+	{ 0x01D88620, "light", (size_t)&light },
+	{ 0x01D88980, "light_spot", (size_t)&light_spot },
+	{ 0x01D889D0, "light_environment", (size_t)&light_environment },
 
 #endif // Lights_Region
 
@@ -1887,7 +1892,7 @@ FunctionHook g_FunctionHooks[] =
 	{ 0x01D86FC0, "_ZN17CHintMessageQueue5ResetEv", mfunc_ptr_cast(&CHintMessageQueue::Reset) },
 	{ 0x01D87050, "_ZN17CHintMessageQueue6UpdateER11CBaseEntity", mfunc_ptr_cast(&CHintMessageQueue::Update) },
 	{ 0x01D87120, "_ZN17CHintMessageQueue10AddMessageEPKcfbP10CUtlVectorIS1_E", mfunc_ptr_cast(&CHintMessageQueue::AddMessage) },
-	//{ 0x0, "_ZN17CHintMessageQueue7IsEmptyEv", mfunc_ptr_cast(&CHintMessageQueue::IsEmpty) },
+	//{ 0x0, "_ZN17CHintMessageQueue7IsEmptyEv", mfunc_ptr_cast(&CHintMessageQueue::IsEmpty) },	// NOXREF
 
 #endif // HintMessage_Region
 
@@ -1905,46 +1910,64 @@ FunctionHook g_FunctionHooks[] =
 	//virtual func
 	{ 0x01D874A0, "_ZN10CWorldItem5SpawnEv", mfunc_ptr_cast(&CWorldItem::Spawn_) },
 	{ 0x01D87450, "_ZN10CWorldItem8KeyValueEP14KeyValueData_s", mfunc_ptr_cast(&CWorldItem::KeyValue_) },
+	//linked objects
+	{ 0x01D87400, "world_items", (size_t)&world_items },
 //CItemSuit
 	//virtual func
 	{ 0x01D877F0, "_ZN9CItemSuit5SpawnEv", mfunc_ptr_cast(&CItemSuit::Spawn_) },
 	{ 0x01D878B0, "_ZN9CItemSuit8PrecacheEv", mfunc_ptr_cast(&CItemSuit::Precache_) },
 	{ 0x01D878D0, "_ZN9CItemSuit7MyTouchEP11CBasePlayer", mfunc_ptr_cast(&CItemSuit::MyTouch_) },
+	//linked objects
+	{ 0x01D877A0, "item_suit", (size_t)&item_suit },
 //CItemBattery
 	//virtual func
 	{ 0x01D87990, "_ZN12CItemBattery5SpawnEv", mfunc_ptr_cast(&CItemBattery::Spawn_) },
 	{ 0x01D87A50, "_ZN12CItemBattery8PrecacheEv", mfunc_ptr_cast(&CItemBattery::Precache_) },
 	{ 0x01D87A70, "_ZN12CItemBattery7MyTouchEP11CBasePlayer", mfunc_ptr_cast(&CItemBattery::MyTouch_) },
+	//linked objects
+	{ 0x01D87940, "item_battery", (size_t)&item_battery },
 //CItemAntidote
 	//virtual func
 	{ 0x01D87C10, "_ZN13CItemAntidote5SpawnEv", mfunc_ptr_cast(&CItemAntidote::Spawn_) },
 	{ 0x01D87CD0, "_ZN13CItemAntidote8PrecacheEv", mfunc_ptr_cast(&CItemAntidote::Precache_) },
 	{ 0x01D87CE0, "_ZN13CItemAntidote7MyTouchEP11CBasePlayer", mfunc_ptr_cast(&CItemAntidote::MyTouch_) },
+	//linked objects
+	{ 0x01D87BC0, "item_antidote", (size_t)&item_antidote },
 //CItemSecurity
 	//virtual func
 	{ 0x01D87D60, "_ZN13CItemSecurity5SpawnEv", mfunc_ptr_cast(&CItemSecurity::Spawn_) },
 	{ 0x01D87E20, "_ZN13CItemSecurity8PrecacheEv", mfunc_ptr_cast(&CItemSecurity::Precache_) },
 	{ 0x01D87E30, "_ZN13CItemSecurity7MyTouchEP11CBasePlayer", mfunc_ptr_cast(&CItemSecurity::MyTouch_) },
+	//linked objects
+	{ 0x01D87D10, "item_security", (size_t)&item_security },
 //CItemLongJump
 	//virtual func
 	{ 0x01D87EA0, "_ZN13CItemLongJump5SpawnEv", mfunc_ptr_cast(&CItemLongJump::Spawn_) },
 	{ 0x01D87F60, "_ZN13CItemLongJump8PrecacheEv", mfunc_ptr_cast(&CItemLongJump::Precache_) },
 	{ 0x01D87F70, "_ZN13CItemLongJump7MyTouchEP11CBasePlayer", mfunc_ptr_cast(&CItemLongJump::MyTouch_) },
+	//linked objects
+	{ 0x01D87E50, "item_longjump", (size_t)&item_longjump },
 //CItemKevlar
 	//virtual func
 	{ 0x01D88070, "_ZN11CItemKevlar5SpawnEv", mfunc_ptr_cast(&CItemKevlar::Spawn_) },
 	{ 0x01D88130, "_ZN11CItemKevlar8PrecacheEv", mfunc_ptr_cast(&CItemKevlar::Precache_) },
 	{ 0x01D88140, "_ZN11CItemKevlar7MyTouchEP11CBasePlayer", mfunc_ptr_cast(&CItemKevlar::MyTouch_) },
+	//linked objects
+	{ 0x01D88020, "item_kevlar", (size_t)&item_kevlar },
 //CItemAssaultSuit
 	//virtual func
 	{ 0x01D88270, "_ZN16CItemAssaultSuit5SpawnEv", mfunc_ptr_cast(&CItemAssaultSuit::Spawn_) },
 	{ 0x01D88330, "_ZN16CItemAssaultSuit8PrecacheEv", mfunc_ptr_cast(&CItemAssaultSuit::Precache_) },
 	{ 0x01D88340, "_ZN16CItemAssaultSuit7MyTouchEP11CBasePlayer", mfunc_ptr_cast(&CItemAssaultSuit::MyTouch_) },
+	//linked objects
+	{ 0x01D88220, "item_assaultsuit", (size_t)&item_assaultsuit },
 //CItemThighPack
 	//virtual func
 	{ 0x01D88460, "_ZN14CItemThighPack5SpawnEv", mfunc_ptr_cast(&CItemThighPack::Spawn_) },
 	{ 0x01D88520, "_ZN14CItemThighPack8PrecacheEv", mfunc_ptr_cast(&CItemThighPack::Precache_) },
 	{ 0x01D88530, "_ZN14CItemThighPack7MyTouchEP11CBasePlayer", mfunc_ptr_cast(&CItemThighPack::MyTouch_) },
+	//linked objects
+	{ 0x01D88410, "item_thighpack", (size_t)&item_thighpack },
 
 #endif // Items_Region
 
@@ -2351,6 +2374,7 @@ FunctionHook g_FunctionHooks[] =
 
 #ifdef _WIN32
 	//{ 0x01D67920, "", mfunc_ptr_cast<entvars_t *(*)(edict_t *)>(&VARS) },
+	//{ 0x01D78600, "", (size_t)&MAKE_STRING_CLASS },
 #endif // _WIN32
 
 	//{ 0x01DC2670, "_Z8U_Randomv", (size_t)&U_Random },	// NOXREF
@@ -2539,7 +2563,7 @@ FunctionHook g_FunctionHooks[] =
 	//{ 0x01D8EDA0, "_ZN10CGameRules14IsFreezePeriodEv", mfunc_ptr_cast(&CGameRules::IsFreezePeriod_) },				// DEFAULT
 	//{ 0x01D8EDB0, "_ZN10CGameRules16ServerDeactivateEv", mfunc_ptr_cast(&CGameRules::ServerDeactivate_) },	// PURE
 	//{ 0x01D8EDC0, "_ZN10CGameRules18CheckMapConditionsEv", mfunc_ptr_cast(&CGameRules::CheckMapConditions_) },	// PURE
-	
+
 #endif // GameRules_Region
 
 #ifndef Singleplay_GameRules_Region
@@ -2714,7 +2738,7 @@ FunctionHook g_FunctionHooks[] =
 #endif // Multiplay_GameRules_Region
 
 #ifndef Training_Gamerules_Region
-	
+
 //CHalfLifeTraining
 	//virtual func
 	//{ 0x01DBBE50, "_ZN17CHalfLifeTrainingC2Ev", mfunc_ptr_cast(&CHalfLifeTraining::CHalfLifeTraining) }
@@ -2763,7 +2787,7 @@ FunctionHook g_FunctionHooks[] =
 	{ 0x01DDCCD0, "_ZN11CCareerTask5ResetEv", mfunc_ptr_cast(&CCareerTask::Reset_) },
 	//{ 0x01DDDDE0, "_ZNK11CCareerTask26IsTaskCompletableThisRoundEv", mfunc_ptr_cast(&CCareerTask::IsTaskCompletableThisRound_) },		// DEFAULT
 	//non-virtual func
-	//{ 0x01DDCB80, "_ZN11CCareerTask7NewTaskEPKc13GameEventTypeS1_ibbib", mfunc_ptr_cast(&CCareerTask::NewTask) },
+	{ 0x01DDCB80, "_ZN11CCareerTask7NewTaskEPKc13GameEventTypeS1_ibbib", mfunc_ptr_cast(&CCareerTask::NewTask) },
 	{ 0x01DDCDB0, "_ZN11CCareerTask12OnWeaponKillEiibbP11CBasePlayerS1_", mfunc_ptr_cast(&CCareerTask::OnWeaponKill) },
 	{ 0x01DDD000, "_ZN11CCareerTask14OnWeaponInjuryEiibP11CBasePlayer", mfunc_ptr_cast(&CCareerTask::OnWeaponInjury) },
 	//{ 0x0, "_ZN11CCareerTask10IsCompleteEv", mfunc_ptr_cast(&CCareerTask::IsComplete) },
@@ -2832,9 +2856,6 @@ FunctionHook g_FunctionHooks[] =
 	//{ 0x0, "_ZN15CBasePlayerItem11GetItemInfoEP8ItemInfo", mfunc_ptr_cast(&CBasePlayerItem::GetItemInfo_) },
 	//{ 0x0, "_ZN15CBasePlayerItem9CanDeployEv", mfunc_ptr_cast(&CBasePlayerItem::CanDeploy_) },
 	//{ 0x01D01FF0, "_ZN15CBasePlayerItem7CanDropEv", mfunc_ptr_cast(&CBasePlayerItem::CanDrop_) },
-	//0x01DCF160 - CBasePlayerItem::???
-	//0x01D861D0 - CBasePlayerItem::???
-	
 	//{ 0x0, "_ZN15CBasePlayerItem6DeployEv", mfunc_ptr_cast(&CBasePlayerItem::Deploy) },
 	//{ 0x0, "_ZN15CBasePlayerItem8IsWeaponEv", mfunc_ptr_cast(&CBasePlayerItem::IsWeapon) },
 	//{ 0x01D02000, "_ZN15CBasePlayerItem10CanHolsterEv", mfunc_ptr_cast(&CBasePlayerItem::CanHolster) },
@@ -3543,6 +3564,8 @@ FunctionHook g_FunctionHooks[] =
 	{ 0x01D823B0, "_ZN8CGrenade11DetonateUseEP11CBaseEntityS1_8USE_TYPEf", mfunc_ptr_cast(&CGrenade::DetonateUse) },
 	{ 0x01D82EE0, "_ZN8CGrenade11TumbleThinkEv", mfunc_ptr_cast(&CGrenade::TumbleThink) },
 	{ 0x01D83030, "_ZN8CGrenade14SG_TumbleThinkEv", mfunc_ptr_cast(&CGrenade::SG_TumbleThink) },
+	//linked objects
+	{ 0x01D80CF0, "grenade", (size_t)&grenade },
 
 #endif // GGrenade_Region
 
@@ -3675,7 +3698,7 @@ FunctionHook g_FunctionHooks[] =
 	{ 0x01D346C0, "_ZN11CBotManager13RemoveGrenadeEP8CGrenade", mfunc_ptr_cast(&CBotManager::RemoveGrenade) },
 	//{ 0x01D346F0, "_ZN11CBotManager22ValidateActiveGrenadesEv", mfunc_ptr_cast(&CBotManager::ValidateActiveGrenades) },	// NOXREF
 	//{ 0x01D34740, "_ZN11CBotManager18DestroyAllGrenadesEv", mfunc_ptr_cast(&CBotManager::DestroyAllGrenades) },	// NOXREF
-	{ 0x01D347A0, "_ZN11CBotManager18IsInsideSmokeCloudEPK6Vector", mfunc_ptr_cast(&CBotManager::IsInsideSmokeCloud) },				// FIXME!!
+	{ 0x01D347A0, "_ZN11CBotManager18IsInsideSmokeCloudEPK6Vector", mfunc_ptr_cast(&CBotManager::IsInsideSmokeCloud) },
 	{ 0x01D34850, "_ZN11CBotManager20IsLineBlockedBySmokeEPK6VectorS2_", mfunc_ptr_cast(&CBotManager::IsLineBlockedBySmoke) },
 	//non-class func
 	{ 0x01D34120, "_Z15NameToGameEventPKc", (size_t)&NameToGameEvent },
@@ -3744,13 +3767,13 @@ FunctionHook g_FunctionHooks[] =
 	//{ 0x0, "_ZNK13CCSBotManager11IsRoundOverEv", mfunc_ptr_cast(&CCSBotManager::IsRoundOver) },
 	//{ 0x0, "_ZNK13CCSBotManager11GetNavPlaceEv", mfunc_ptr_cast(&CCSBotManager::GetNavPlace) },
 	//{ 0x0, "_ZN13CCSBotManager11SetNavPlaceEj", mfunc_ptr_cast(&CCSBotManager::SetNavPlace) },
-	//{ 0x01D24D10, "_ZN13CCSBotManager15MonitorBotCVarsEv", mfunc_ptr_cast(&CCSBotManager::MonitorBotCVars) },
+	//{ 0x01D24D10, "_ZN13CCSBotManager15MonitorBotCVarsEv", mfunc_ptr_cast(&CCSBotManager::MonitorBotCVars) },			// NOXREF
 	{ 0x01D24AE0, "_ZN13CCSBotManager16MaintainBotQuotaEv", mfunc_ptr_cast(&CCSBotManager::MaintainBotQuota) },
 	//{ 0x0, "_ZN13CCSBotManager16GetRandomBotNameENS_9SkillTypeE", mfunc_ptr_cast(&CCSBotManager::GetRandomBotName) },
-	//{ 0x01D25270, "_ZN13CCSBotManager6AddBotEPK10BotProfile18BotProfileTeamType", mfunc_ptr_cast(&CCSBotManager::AddBot) },	// HOOK: FIX ME
+	{ 0x01D25270, "_ZN13CCSBotManager6AddBotEPK10BotProfile18BotProfileTeamType", mfunc_ptr_cast(&CCSBotManager::AddBot) },
 	{ 0x01D248B0, "_ZN13CCSBotManager13BotAddCommandE18BotProfileTeamTypeb", mfunc_ptr_cast(&CCSBotManager::BotAddCommand) },
 	//{ 0x01D238A0, "_Z16PrintAllEntitiesv", (size_t)&PrintAllEntities },	// NOXREF
-	//{ 0x01D23020, "_Z12UTIL_DrawBoxP6Extentiiii", (size_t)&UTIL_DrawBox },
+	{ 0x01D23020, "_Z12UTIL_DrawBoxP6Extentiiii", (size_t)&UTIL_DrawBox },
 //CCSBot
 	//{ 0x01D208C0, "_ZN6CCSBotC2Ev", mfunc_ptr_cast(&CCSBot::CCSBot) },
 	//virtual func
@@ -3762,10 +3785,10 @@ FunctionHook g_FunctionHooks[] =
 	{ 0x01D20A60, "_ZN6CCSBot10InitializeEPK10BotProfile", mfunc_ptr_cast(&CCSBot::Initialize_) },
 	{ 0x01D20E40, "_ZN6CCSBot8SpawnBotEv", mfunc_ptr_cast(&CCSBot::SpawnBot_) },
 	{ 0x01D2D370, "_ZN6CCSBot6UpkeepEv", mfunc_ptr_cast(&CCSBot::Upkeep_) },
-	//{ 0x01D2D9B0, "_ZN6CCSBot6UpdateEv", mfunc_ptr_cast(&CCSBot::Update_) },	// using refs		HOOK: FIX ME
+	//@{ 0x01D2D9B0, "_ZN6CCSBot6UpdateEv", mfunc_ptr_cast(&CCSBot::Update_) },	// using refs		HOOK: FIX ME
 	{ 0x01D17370, "_ZN6CCSBot4WalkEv", mfunc_ptr_cast(&CCSBot::Walk_) },
 	{ 0x01D173A0, "_ZN6CCSBot4JumpEb", mfunc_ptr_cast(&CCSBot::Jump_) },
-	//{ 0x01D1F990, "_ZN6CCSBot7OnEventE13GameEventTypeP11CBaseEntityS2_", mfunc_ptr_cast(&CCSBot::OnEvent_) },
+	{ 0x01D1F990, "_ZN6CCSBot7OnEventE13GameEventTypeP11CBaseEntityS2_", mfunc_ptr_cast(&CCSBot::OnEvent_) },
 	{ 0x01D2F490, "_ZNK6CCSBot9IsVisibleEPK6Vectorb", mfunc_ptr_cast<CS_IS_VISIBLE_VECTOR>(&CCSBot::IsVisible_) },
 	{ 0x01D2F5C0, "_ZNK6CCSBot9IsVisibleEP11CBasePlayerbPh", mfunc_ptr_cast<CS_IS_VISIBLE_CBASEPLAYER>(&CCSBot::IsVisible_) },
 	{ 0x01D21390, "_ZNK6CCSBot18IsEnemyPartVisibleEN4CBot15VisiblePartTypeE", mfunc_ptr_cast(&CCSBot::IsEnemyPartVisible_) },
@@ -3788,11 +3811,11 @@ FunctionHook g_FunctionHooks[] =
 	{ 0x01D2C830, "_ZN6CCSBot9TryToHideEP8CNavAreaffbb", mfunc_ptr_cast(&CCSBot::TryToHide) },
 	{ 0x01D2CA10, "_ZN6CCSBot12TryToRetreatEv", mfunc_ptr_cast(&CCSBot::TryToRetreat) },
 	{ 0x01D2CEA0, "_ZNK6CCSBot8IsHidingEv", mfunc_ptr_cast(&CCSBot::IsHiding) },
-	//{ 0x01D2CEC0, "_ZNK6CCSBot14IsAtHidingSpotEv", mfunc_ptr_cast(&CCSBot::IsAtHidingSpot) },
+	{ 0x01D2CEC0, "_ZNK6CCSBot14IsAtHidingSpotEv", mfunc_ptr_cast(&CCSBot::IsAtHidingSpot) },
 	{ 0x01D2CA90, "_ZN6CCSBot4HuntEv", mfunc_ptr_cast(&CCSBot::Hunt) },
 	{ 0x01D2CEE0, "_ZNK6CCSBot9IsHuntingEv", mfunc_ptr_cast(&CCSBot::IsHunting) },
 	{ 0x01D2CB60, "_ZN6CCSBot6AttackEP11CBasePlayer", mfunc_ptr_cast(&CCSBot::Attack) },
-	//{ 0x01D30B70, "_ZN6CCSBot17FireWeaponAtEnemyEv", mfunc_ptr_cast(&CCSBot::FireWeaponAtEnemy) },
+	{ 0x01D30B70, "_ZN6CCSBot17FireWeaponAtEnemyEv", mfunc_ptr_cast(&CCSBot::FireWeaponAtEnemy) },
 	{ 0x01D2CD80, "_ZN6CCSBot13StopAttackingEv", mfunc_ptr_cast(&CCSBot::StopAttacking) },
 	{ 0x01D2CE50, "_ZNK6CCSBot11IsAttackingEv", mfunc_ptr_cast(&CCSBot::IsAttacking) },
 	{ 0x01D2CF40, "_ZN6CCSBot6MoveToEPK6Vector9RouteType", mfunc_ptr_cast(&CCSBot::MoveTo) },
@@ -3912,7 +3935,7 @@ FunctionHook g_FunctionHooks[] =
 	{ 0x01D29260, "_ZNK6CCSBot16IsFriendInTheWayEPK6Vector", mfunc_ptr_cast(&CCSBot::IsFriendInTheWay) },
 	{ 0x01D29500, "_ZN6CCSBot22FeelerReflexAdjustmentEP6Vector", mfunc_ptr_cast(&CCSBot::FeelerReflexAdjustment) },
 	//{ 0x0, "_ZN6CCSBot13SetLookAnglesEff", mfunc_ptr_cast(&CCSBot::SetLookAngles) },
-	//2@@{ 0x01D2EDD0, "_ZN6CCSBot16UpdateLookAnglesEv", mfunc_ptr_cast(&CCSBot::UpdateLookAngles) },	// Using REFS
+	//2@@{ 0x01D2EDD0, "_ZN6CCSBot16UpdateLookAnglesEv", mfunc_ptr_cast(&CCSBot::UpdateLookAngles) },	// Using REFS FIXME
 	{ 0x01D2F9C0, "_ZN6CCSBot16UpdateLookAroundEb", mfunc_ptr_cast(&CCSBot::UpdateLookAround) },
 	{ 0x01D2F910, "_ZN6CCSBot17InhibitLookAroundEf", mfunc_ptr_cast(&CCSBot::InhibitLookAround) },
 	//{ 0x0, "_ZN6CCSBot15SetForwardAngleEf", mfunc_ptr_cast(&CCSBot::SetForwardAngle) }, // NOXREF
@@ -3965,7 +3988,7 @@ FunctionHook g_FunctionHooks[] =
 	{ 0x01D2BD80, "_ZN6CCSBot8SetStateEP8BotState", mfunc_ptr_cast(&CCSBot::SetState) },
 	{ 0x01D26080, "_ZN6CCSBot19MoveTowardsPositionEPK6Vector", mfunc_ptr_cast(&CCSBot::MoveTowardsPosition) },
 	//{ 0x01D26510, "_ZN6CCSBot20MoveAwayFromPositionEPK6Vector", mfunc_ptr_cast(&CCSBot::MoveAwayFromPosition) },			// NOXREF
-	//{ 0x01D26650, "_ZN6CCSBot22StrafeAwayFromPositionEPK6Vector", mfunc_ptr_cast(&CCSBot::StrafeAwayFromPosition) },
+	{ 0x01D26650, "_ZN6CCSBot22StrafeAwayFromPositionEPK6Vector", mfunc_ptr_cast(&CCSBot::StrafeAwayFromPosition) },
 	{ 0x01D25C50, "_ZN6CCSBot10StuckCheckEv", mfunc_ptr_cast(&CCSBot::StuckCheck) },
 	{ 0x01D2A6F0, "_ZN6CCSBot16BuildTrivialPathEPK6Vector", mfunc_ptr_cast(&CCSBot::BuildTrivialPath) },
 	{ 0x01D26BA0, "_ZN6CCSBot20ComputePathPositionsEv", mfunc_ptr_cast(&CCSBot::ComputePathPositions) },
@@ -4046,7 +4069,7 @@ FunctionHook g_FunctionHooks[] =
 	//{ 0x0, "_ZNK11CSGameState12GetBombStateEv", mfunc_ptr_cast(&CSGameState::GetBombState) },						// NOXREF
 	//{ 0x0, "_ZNK11CSGameState17GetNearestHostageEv", mfunc_ptr_cast(&CSGameState::GetNearestHostage) },					// NOXREF
 	{ 0x01D32BE0, "_ZN11CSGameState21InitializeHostageInfoEv", mfunc_ptr_cast(&CSGameState::InitializeHostageInfo) },
-	//{ 0x01D15EA0, "_Z16NavAreaBuildPathI8PathCostEbP8CNavAreaS2_PK6VectorRT_PS2_", (size_t)&NavAreaBuildPath__PathCost__wrapper },
+	{ 0x01D15EA0, "_Z16NavAreaBuildPathI8PathCostEbP8CNavAreaS2_PK6VectorRT_PS2_", (size_t)&NavAreaBuildPath__PathCost__wrapper },
 #ifdef _WIN32
 	{ 0x01D15A30, "", (size_t)&NavAreaTravelDistance__PathCost__wrapper },
 #endif // _WIN32
@@ -4064,20 +4087,20 @@ FunctionHook g_FunctionHooks[] =
 //BotState
 	//virtual func
 	//{ 0x0, "_ZN8BotState7OnEnterEP6CCSBot", mfunc_ptr_cast(&BotState::OnEnter_) },			// PURE
-	//{ 0x0, "_ZN8BotState8OnUpdateEP6CCSBot", mfunc_ptr_cast(&BotState::OnUpdate_) },	// PURE
+	//{ 0x0, "_ZN8BotState8OnUpdateEP6CCSBot", mfunc_ptr_cast(&BotState::OnUpdate_) },			// PURE
 	//{ 0x01D212B0, "_ZN8BotState6OnExitEP6CCSBot", mfunc_ptr_cast(&BotState::OnExit_) },			// PURE
-	//{ 0x0, "_ZNK8BotState7GetNameEv", mfunc_ptr_cast(&BotState::GetName) },		// NOXREF
+	//{ 0x0, "_ZNK8BotState7GetNameEv", mfunc_ptr_cast(&BotState::GetName) },				// NOXREF
 //IdleState
 	//virtual func
 	{ 0x01D142A0, "_ZN9IdleState7OnEnterEP6CCSBot", mfunc_ptr_cast(&IdleState::OnEnter_) },
 	{ 0x01D14320, "_ZN9IdleState8OnUpdateEP6CCSBot", mfunc_ptr_cast(&IdleState::OnUpdate_) },
-	//{ 0x01D212C0, "_ZNK9IdleState7GetNameEv", mfunc_ptr_cast(&IdleState::GetName_) },
+	//{ 0x01D212C0, "_ZNK9IdleState7GetNameEv", mfunc_ptr_cast(&IdleState::GetName_) },			// DEFAULT
 //HuntState
 	//virtual func
 	{ 0x01D13E20, "_ZN9HuntState7OnEnterEP6CCSBot", mfunc_ptr_cast(&HuntState::OnEnter_) },
 	{ 0x01D13EA0, "_ZN9HuntState8OnUpdateEP6CCSBot", mfunc_ptr_cast(&HuntState::OnUpdate_) },
 	//{ 0x01D14290, "_ZN9HuntState6OnExitEP6CCSBot", mfunc_ptr_cast(&HuntState::OnExit_) },		// PURE
-	//{ 0x01D212D0, "_ZNK9HuntState7GetNameEv", mfunc_ptr_cast(&HuntState::GetName_) },
+	//{ 0x01D212D0, "_ZNK9HuntState7GetNameEv", mfunc_ptr_cast(&HuntState::GetName_) },		// DEFAULT
 	//non-virtual func
 	//{ 0x0, "_ZN9HuntState13ClearHuntAreaEv", mfunc_ptr_cast(&HuntState::ClearHuntArea) },		// NOXREF
 //AttackState
@@ -4085,7 +4108,7 @@ FunctionHook g_FunctionHooks[] =
 	{ 0x01D10960, "_ZN11AttackState7OnEnterEP6CCSBot", mfunc_ptr_cast(&AttackState::OnEnter_) },
 	{ 0x01D10CF0, "_ZN11AttackState8OnUpdateEP6CCSBot", mfunc_ptr_cast(&AttackState::OnUpdate_) },
 	{ 0x01D11860, "_ZN11AttackState6OnExitEP6CCSBot", mfunc_ptr_cast(&AttackState::OnExit_) },
-	//{ 0x01D212E0, "_ZNK11AttackState7GetNameEv", mfunc_ptr_cast(&AttackState::GetName_) },
+	//{ 0x01D212E0, "_ZNK11AttackState7GetNameEv", mfunc_ptr_cast(&AttackState::GetName_) },	// DEFAULT
 	//non-virtual func
 	//{ 0x0, "_ZN11AttackState16SetCrouchAndHoldEb", mfunc_ptr_cast(&AttackState::SetCrouchAndHold) },		// NOXREF
 	//{ 0x01D10CC0, "_ZN11AttackState13StopAttackingEP6CCSBot", mfunc_ptr_cast(&AttackState::StopAttacking) },	// NOXREF
@@ -4094,7 +4117,7 @@ FunctionHook g_FunctionHooks[] =
 	{ 0x01D165C0, "_ZN21InvestigateNoiseState7OnEnterEP6CCSBot", mfunc_ptr_cast(&InvestigateNoiseState::OnEnter_) },
 	{ 0x01D166B0, "_ZN21InvestigateNoiseState8OnUpdateEP6CCSBot", mfunc_ptr_cast(&InvestigateNoiseState::OnUpdate_) },
 	{ 0x01D16920, "_ZN21InvestigateNoiseState6OnExitEP6CCSBot", mfunc_ptr_cast(&InvestigateNoiseState::OnExit_) },
-	//{ 0x01D212F0, "_ZNK21InvestigateNoiseState7GetNameEv", mfunc_ptr_cast(&InvestigateNoiseState::GetName_) },
+	//{ 0x01D212F0, "_ZNK21InvestigateNoiseState7GetNameEv", mfunc_ptr_cast(&InvestigateNoiseState::GetName_) },	// DEFAULT
 	//non-virtual func
 	//{ 0x01D164D0, "_ZN21InvestigateNoiseState18AttendCurrentNoiseEP6CCSBot", mfunc_ptr_cast(&InvestigateNoiseState::AttendCurrentNoise) },	// NOXREF
 //BuyState
@@ -4106,7 +4129,7 @@ FunctionHook g_FunctionHooks[] =
 //MoveToState
 	//virtual func
 	{ 0x01D16930, "_ZN11MoveToState7OnEnterEP6CCSBot", mfunc_ptr_cast(&MoveToState::OnEnter_) },
-	//{ 0x01D169C0, "_ZN11MoveToState8OnUpdateEP6CCSBot", mfunc_ptr_cast(&MoveToState::OnUpdate_) },		// HOOK: FIX ME
+	{ 0x01D169C0, "_ZN11MoveToState8OnUpdateEP6CCSBot", mfunc_ptr_cast(&MoveToState::OnUpdate_) },
 	{ 0x01D16FE0, "_ZN11MoveToState6OnExitEP6CCSBot", mfunc_ptr_cast(&MoveToState::OnExit_) },
 	//{ 0x01D21310, "_ZNK11MoveToState7GetNameEv", mfunc_ptr_cast(&MoveToState::GetName_) },			// DEFAULT
 	//non-virtual func
@@ -4128,7 +4151,7 @@ FunctionHook g_FunctionHooks[] =
 	{ 0x01D12200, "_ZN15DefuseBombState7OnEnterEP6CCSBot", mfunc_ptr_cast(&DefuseBombState::OnEnter_) },
 	{ 0x01D12270, "_ZN15DefuseBombState8OnUpdateEP6CCSBot", mfunc_ptr_cast(&DefuseBombState::OnUpdate_) },
 	{ 0x01D12340, "_ZN15DefuseBombState6OnExitEP6CCSBot", mfunc_ptr_cast(&DefuseBombState::OnExit_) },
-	//{ 0x01D21340, "_ZNK15DefuseBombState7GetNameEv", mfunc_ptr_cast(&DefuseBombState::GetName_) },			// DEFAULT
+	//{ 0x01D21340, "_ZNK15DefuseBombState7GetNameEv", mfunc_ptr_cast(&DefuseBombState::GetName_) },		// DEFAULT
 //HideState
 	//virtual func
 	{ 0x01D13250, "_ZN9HideState7OnEnterEP6CCSBot", mfunc_ptr_cast(&HideState::OnEnter_) },
@@ -4157,13 +4180,13 @@ FunctionHook g_FunctionHooks[] =
 	//{ 0x01D21370, "_ZNK11FollowState7GetNameEv", mfunc_ptr_cast(&FollowState::GetName_) },				// DEFAULT
 	//non-virtual func
 	//{ 0x0, "_ZN11FollowState9SetLeaderEP11CBasePlayer", mfunc_ptr_cast(&FollowState::SetLeader) },		// NOXREF
-	//{ 0x01D126E0, "_ZN11FollowState24ComputeLeaderMotionStateEf", mfunc_ptr_cast(&FollowState::ComputeLeaderMotionState) },
+	{ 0x01D126E0, "_ZN11FollowState24ComputeLeaderMotionStateEf", mfunc_ptr_cast(&FollowState::ComputeLeaderMotionState) },
 //UseEntityState
 	//virtual func
 	{ 0x01D171A0, "_ZN14UseEntityState7OnEnterEP6CCSBot", mfunc_ptr_cast(&UseEntityState::OnEnter_) },
 	{ 0x01D171B0, "_ZN14UseEntityState8OnUpdateEP6CCSBot", mfunc_ptr_cast(&UseEntityState::OnUpdate_) },
 	{ 0x01D17280, "_ZN14UseEntityState6OnExitEP6CCSBot", mfunc_ptr_cast(&UseEntityState::OnExit_) },
-	//{ 0x01D21380, "_ZNK14UseEntityState7GetNameEv", mfunc_ptr_cast(&UseEntityState::GetName_) },
+	//{ 0x01D21380, "_ZNK14UseEntityState7GetNameEv", mfunc_ptr_cast(&UseEntityState::GetName_) },			// DEFAULT
 	//non-virtual func
 	//{ 0x0, "_ZN14UseEntityState9SetEntityEP11CBaseEntity", mfunc_ptr_cast(&UseEntityState::SetEntity) },		// NOXREF
 
@@ -4180,19 +4203,18 @@ FunctionHook g_FunctionHooks[] =
 	//{ 0x0, "_ZN13ActiveGrenadeC2EiP8CGrenade", mfunc_ptr_cast(&ActiveGrenade::ActiveGrenade) },
 	{ 0x01D34080, "_ZN13ActiveGrenade12OnEntityGoneEv", mfunc_ptr_cast(&ActiveGrenade::OnEntityGone) },
 	{ 0x01D340A0, "_ZNK13ActiveGrenade7IsValidEv", mfunc_ptr_cast(&ActiveGrenade::IsValid) },
-	//{ 0x0, "_ZNK13ActiveGrenade8IsEntityEP8CGrenade", mfunc_ptr_cast(&ActiveGrenade::IsEntity) },	// NOXREF
-	//{ 0x0, "_ZNK13ActiveGrenade5GetIDEv", mfunc_ptr_cast(&ActiveGrenade::GetID) },	// NOXREF
+	//{ 0x0, "_ZNK13ActiveGrenade8IsEntityEP8CGrenade", mfunc_ptr_cast(&ActiveGrenade::IsEntity) },				// NOXREF
+	//{ 0x0, "_ZNK13ActiveGrenade5GetIDEv", mfunc_ptr_cast(&ActiveGrenade::GetID) },					// NOXREF
 	//{ 0x0, "_ZNK13ActiveGrenade21GetDetonationPositionEv", mfunc_ptr_cast(&ActiveGrenade::GetDetonationPosition) },	// NOXREF
-	//{ 0x01D340C0, "_ZNK13ActiveGrenade11GetPositionEv", mfunc_ptr_cast(&ActiveGrenade::GetPosition) },
-
+	//{ 0x01D340C0, "_ZNK13ActiveGrenade11GetPositionEv", mfunc_ptr_cast(&ActiveGrenade::GetPosition) },			// NOXREF
 //CBot
 	//{ 0x01D334D0, "", mfunc_ptr_cast(&CBot::CBot) },
 	//virtual func
-	//{ 0x01D33550, "_ZN4CBot5SpawnEv", mfunc_ptr_cast(&CBot::Spawn_) },				// do not hook
-	//{ 0x01D340D0, "_ZN4CBot10TakeDamageEP9entvars_sS1_fi", mfunc_ptr_cast(&CBot::TakeDamage) },
-	//{ 0x01D340E0, "_ZN4CBot6KilledEP9entvars_si", mfunc_ptr_cast(&CBot::Killed) },
-	//{ 0x01D210C0, "_ZN4CBot5ThinkEv", mfunc_ptr_cast(&CBot::Think) },			// PURE
-	//{ 0x01D210B0, "_ZN4CBot5IsBotEv", mfunc_ptr_cast(&CBot::IsBot) },
+	{ 0x01D33550, "_ZN4CBot5SpawnEv", mfunc_ptr_cast(&CBot::Spawn_) },
+	//{ 0x01D340D0, "_ZN4CBot10TakeDamageEP9entvars_sS1_fi", mfunc_ptr_cast(&CBot::TakeDamage) },		// DEFAULT
+	//{ 0x01D340E0, "_ZN4CBot6KilledEP9entvars_si", mfunc_ptr_cast(&CBot::Killed) },			// DEFAULT
+	//{ 0x01D210C0, "_ZN4CBot5ThinkEv", mfunc_ptr_cast(&CBot::Think) },					// PURE
+	//{ 0x01D210B0, "_ZN4CBot5IsBotEv", mfunc_ptr_cast(&CBot::IsBot) },					// DEFAULT
 	{ 0x01D33600, "_ZN4CBot16GetAutoaimVectorEf", mfunc_ptr_cast(&CBot::GetAutoaimVector_) },
 	//{ 0x0, "_ZN4CBot16OnTouchingWeaponEP10CWeaponBox", mfunc_ptr_cast(&CBot::OnTouchingWeapon) },
 	{ 0x01D33540, "_ZN4CBot10InitializeEPK10BotProfile", mfunc_ptr_cast(&CBot::Initialize_) },
@@ -4215,7 +4237,7 @@ FunctionHook g_FunctionHooks[] =
 	{ 0x01D33990, "_ZN4CBot19TogglePrimaryAttackEv", mfunc_ptr_cast(&CBot::TogglePrimaryAttack_) },
 	{ 0x01D339C0, "_ZN4CBot15SecondaryAttackEv", mfunc_ptr_cast(&CBot::SecondaryAttack_) },
 	{ 0x01D339D0, "_ZN4CBot6ReloadEv", mfunc_ptr_cast(&CBot::Reload_) },
-	//{ 0x01D34100, "_ZN4CBot7OnEventE13GameEventTypeP11CBaseEntityS2_", mfunc_ptr_cast(&CBot::OnEvent) },
+	//{ 0x01D34100, "_ZN4CBot7OnEventE13GameEventTypeP11CBaseEntityS2_", mfunc_ptr_cast(&CBot::OnEvent) },		// PURE
 	//{ 0x0, "_ZNK4CBot9IsVisibleEPK6Vectorb", mfunc_ptr_cast<IS_VISIBLE_VECTOR>(&CBot::IsVisible) },
 	//{ 0x0, "_ZNK4CBot9IsVisibleEP11CBasePlayerbPh", mfunc_ptr_cast<IS_VISIBLE_CBASE_PLAYER>(&CBot::IsVisible) },
 	//{ 0x0, "_ZNK4CBot18IsEnemyPartVisibleENS_15VisiblePartTypeE", mfunc_ptr_cast(&CBot::IsEnemyPartVisible) },	// NOXREF PURE
@@ -4242,7 +4264,7 @@ FunctionHook g_FunctionHooks[] =
 	{ 0x01D33C40, "_ZNK4CBot19GetEnemiesRemainingEv", mfunc_ptr_cast(&CBot::GetEnemiesRemaining) },
 	{ 0x01D33D20, "_ZNK4CBot19GetFriendsRemainingEv", mfunc_ptr_cast(&CBot::GetFriendsRemaining) },
 	{ 0x01D33E30, "_ZNK4CBot23IsLocalPlayerWatchingMeEv", mfunc_ptr_cast(&CBot::IsLocalPlayerWatchingMe) },
-	//{ 0x01D33E90, "_ZNK4CBot5PrintEPcz", mfunc_ptr_cast(&CBot::Print) },	// NOXREF
+	//{ 0x01D33E90, "_ZNK4CBot5PrintEPcz", mfunc_ptr_cast(&CBot::Print) },			// NOXREF
 	{ 0x01D33F00, "_ZNK4CBot14PrintIfWatchedEPcz", mfunc_ptr_cast(&CBot::PrintIfWatched) },
 	{ 0x01D33660, "_ZN4CBot8BotThinkEv", mfunc_ptr_cast(&CBot::BotThink) },
 	//{ 0x0, "_ZNK4CBot11IsNetClientEv", mfunc_ptr_cast(&CBot::IsNetClient) },
@@ -4297,8 +4319,8 @@ FunctionHook g_FunctionHooks[] =
 	{ 0x01D19ED0, "_ZN16BotPhraseManager10InitializeEPKci", mfunc_ptr_cast(&BotPhraseManager::Initialize) },
 	{ 0x01D19DA0, "_ZN16BotPhraseManager14OnRoundRestartEv", mfunc_ptr_cast(&BotPhraseManager::OnRoundRestart) },
 	//{ 0x01D19D90, "_ZN16BotPhraseManager11OnMapChangeEv", mfunc_ptr_cast(&BotPhraseManager::OnMapChange) },		// NOXREF
-	//{ 0x01D1A830, "_ZNK16BotPhraseManager8NameToIDEPKc", mfunc_ptr_cast(&BotPhraseManager::NameToID) },
-	//{ 0x01D1A8A0, "_ZNK16BotPhraseManager8IDToNameEj", mfunc_ptr_cast(&BotPhraseManager::IDToName) },
+	{ 0x01D1A830, "_ZNK16BotPhraseManager8NameToIDEPKc", mfunc_ptr_cast(&BotPhraseManager::NameToID) },
+	{ 0x01D1A8A0, "_ZNK16BotPhraseManager8IDToNameEj", mfunc_ptr_cast(&BotPhraseManager::IDToName) },
 	{ 0x01D1A8F0, "_ZNK16BotPhraseManager9GetPhraseEPKc", mfunc_ptr_cast(&BotPhraseManager::GetPhrase) },
 	//{ 0x01D1A940, "_ZNK16BotPhraseManager8GetPlaceEPKc", mfunc_ptr_cast<const BotPhrase *(BotPhraseManager::*)(const char *name) const>(&BotPhraseManager::GetPlace) },	// NOXREF
 	{ 0x01D1A990, "_ZNK16BotPhraseManager8GetPlaceEj", mfunc_ptr_cast<const BotPhrase *(BotPhraseManager::*)(PlaceCriteria place) const>(&BotPhraseManager::GetPlace) },
@@ -4306,7 +4328,7 @@ FunctionHook g_FunctionHooks[] =
 	//{ 0x0, "_ZNK16BotPhraseManager25GetPlaceStatementIntervalEj", mfunc_ptr_cast(&BotPhraseManager::GetPlaceStatementInterval) },
 	//{ 0x0, "_ZN16BotPhraseManager27ResetPlaceStatementIntervalEj", mfunc_ptr_cast(&BotPhraseManager::ResetPlaceStatementInterval) },
 #ifdef _WIN32
-	//{ 0x01D1F830, "_ZNK16BotPhraseManager14FindPlaceIndexEj", mfunc_ptr_cast(&BotPhraseManager::FindPlaceIndex) },
+	{ 0x01D1F830, "_ZNK16BotPhraseManager14FindPlaceIndexEj", mfunc_ptr_cast(&BotPhraseManager::FindPlaceIndex) },
 #endif // _WIN32
 
 //BotStatement
@@ -4405,7 +4427,7 @@ FunctionHook g_FunctionHooks[] =
 	{ 0x01D36C10, "_Z18UTIL_IsTeamAllBotsi", (size_t)&UTIL_IsTeamAllBots },
 	{ 0x01D36CE0, "_Z21UTIL_GetClosestPlayerPK6VectorPf", mfunc_ptr_cast<UTIL_GETCLOSE_PLAYER>(&UTIL_GetClosestPlayer) },
 	{ 0x01D36E30, "_Z21UTIL_GetClosestPlayerPK6VectoriPf", mfunc_ptr_cast<UTIL_GETCLOSE_TEAM>(&UTIL_GetClosestPlayer) },
-	//{ 0x01D36F90, "_Z17UTIL_GetBotPrefixv", (size_t)&UTIL_GetBotPrefix },	// NOXREF
+	//{ 0x01D36F90, "_Z17UTIL_GetBotPrefixv", (size_t)&UTIL_GetBotPrefix },								// NOXREF
 	{ 0x01D36FA0, "_Z24UTIL_ConstructBotNetNamePciPK10BotProfile", (size_t)&UTIL_ConstructBotNetName },
 	{ 0x01D37000, "_Z20UTIL_IsVisibleToTeamRK6Vectorif", (size_t)&UTIL_IsVisibleToTeam },
 	{ 0x01D37190, "_Z19UTIL_GetLocalPlayerv", (size_t)&UTIL_GetLocalPlayer },
@@ -4429,7 +4451,7 @@ FunctionHook g_FunctionHooks[] =
 
 #ifndef CS_Init_Region
 
-	//{ 0x01D206A0, "_Z17InstallBotControlv", (size_t)&InstallBotControl },
+	{ 0x01D206A0, "_Z17InstallBotControlv", (size_t)&InstallBotControl },
 	{ 0x01D20730, "_Z17Bot_ServerCommandv", (size_t)&Bot_ServerCommand },
 	{ 0x01D20760, "_Z17Bot_RegisterCvarsv", (size_t)&Bot_RegisterCvars },
 
@@ -4439,9 +4461,8 @@ FunctionHook g_FunctionHooks[] =
 
 //AI
 	//{ 0x01D848B0, "_Z11FBoxVisibleP9entvars_sS0_R6Vectorf", (size_t)&FBoxVisible },		// NOXREF
-	//{ 0x01D84A10, "_Z12VecCheckTossP9entvars_sRK6VectorS1_f", (size_t)&VecCheckToss },	// NOXREF
-	//{ 0x01D84EB0, "_Z13VecCheckThrowP9entvars_sRK6VectorS1_ff", (size_t)&VecCheckThrow },	// NOXREF
-
+	//{ 0x01D84A10, "_Z12VecCheckTossP9entvars_sRK6VectorS1_f", (size_t)&VecCheckToss },		// NOXREF
+	//{ 0x01D84EB0, "_Z13VecCheckThrowP9entvars_sRK6VectorS1_ff", (size_t)&VecCheckThrow },		// NOXREF
 //CRecharge
 	//virtual func
 	{ 0x01D851E0, "_ZN9CRecharge5SpawnEv", mfunc_ptr_cast(&CRecharge::Spawn_) },
@@ -4452,7 +4473,7 @@ FunctionHook g_FunctionHooks[] =
 	//{ 0x01D85120, "_ZN9CRecharge10ObjectCapsEv", mfunc_ptr_cast(&CRecharge::ObjectCaps_) },	// DEFAULT
 	{ 0x01D852A0, "_ZN9CRecharge3UseEP11CBaseEntityS1_8USE_TYPEf", mfunc_ptr_cast(&CRecharge::Use_) },
 	//non-virtual func
-	//{ 0x01D850D0, "func_recharge", (size_t)&func_recharge },
+	{ 0x01D850D0, "func_recharge", (size_t)&func_recharge },
 	{ 0x01D855A0, "_ZN9CRecharge3OffEv", mfunc_ptr_cast(&CRecharge::Off) },
 	{ 0x01D85570, "_ZN9CRecharge8RechargeEv", mfunc_ptr_cast(&CRecharge::Recharge) },
 //CCycler
@@ -4654,7 +4675,7 @@ FunctionHook g_FunctionHooks[] =
 	//{ 0x01DD43A0, "_ZN8CCSTutor20ApplyPersistentDecayEv", mfunc_ptr_cast(&CCSTutor::ApplyPersistentDecay) },	// NOXREF
 	{ 0x01DDA9A0, "_ZN8CCSTutor21GetEntityForMessageIDEiP11CBaseEntity", mfunc_ptr_cast(&CCSTutor::GetEntityForMessageID) },
 	{ 0x01DDB3A0, "_ZN8CCSTutor20ResetPlayerDeathInfoEv", mfunc_ptr_cast(&CCSTutor::ResetPlayerDeathInfo) },
-	{ 0x01DDB3C0, "_ZN8CCSTutor25ConstructRecentDeathsListE8TeamNamePciP17TutorMessageEvent", mfunc_ptr_cast(&CCSTutor::ConstructRecentDeathsList) },	
+	{ 0x01DDB3C0, "_ZN8CCSTutor25ConstructRecentDeathsListE8TeamNamePciP17TutorMessageEvent", mfunc_ptr_cast(&CCSTutor::ConstructRecentDeathsList) },
 //TutorMessageEvent
 	//virtual func
 	//{ 0x01DD2A10, "_ZN17TutorMessageEventC2Eiiffi", mfunc_ptr_cast(&TutorMessageEvent::TutorMessageEvent) },
@@ -4785,12 +4806,12 @@ FunctionHook g_FunctionHooks[] =
 #endif // VoiceManager_Region
 
 #ifndef Vector_Region
-	
+
 	{ 0x01D71160, "_ZN8Vector2D16NormalizeInPlaceEv", mfunc_ptr_cast(&Vector2D::NormalizeInPlace) },
 	{ 0x01D290C0, "_ZN6Vector16NormalizeInPlaceEv", mfunc_ptr_cast(&Vector::NormalizeInPlace) },
 
 #ifdef _WIN32
-	
+
 	{ 0x01D12570, "", mfunc_ptr_cast(&Vector::Length) },
 	{ 0x01D9C290, "", mfunc_ptr_cast(&Vector::Length2D) },
 	{ 0x01D4EA30, "", mfunc_ptr_cast(&Vector::Normalize) },
@@ -5037,11 +5058,12 @@ FunctionHook g_FunctionHooks[] =
 	{ 0x01D3A060, "_Z20DestroyNavigationMapv", (size_t)&DestroyNavigationMap },
 	{ 0x01D3A210, "_Z20StripNavigationAreasv", (size_t)&StripNavigationAreas },
 
-#ifdef _WIN32	
+#ifdef _WIN32
+
 	{ 0x01D13120, "_ZNK8CNavArea15GetAdjacentAreaE10NavDirTypei", mfunc_ptr_cast(&CNavArea::GetAdjacentArea) },
 	{ 0x01D2B2A0, "_ZN8CNavArea11PopOpenListEv", mfunc_ptr_cast(&CNavArea::PopOpenList) },
 	{ 0x01D2B2C0, "_ZNK8CNavArea8IsClosedEv", mfunc_ptr_cast(&CNavArea::IsClosed) },
-	
+
 	{ 0x01D224C0, "", mfunc_ptr_cast<void (*)(Vector *)>(&SnapToGrid) },
 	{ 0x01D22460, "", (size_t)&AddDirectionVector },
 	{ 0x01D13150, "", (size_t)&AddAreaToOpenList },
@@ -5050,7 +5072,9 @@ FunctionHook g_FunctionHooks[] =
 	{ 0x01D2B030, "", (size_t)&IsEntityWalkable },
 	{ 0x01D2B0B0, "", (size_t)&IsWalkableTraceLineClear },
 	{ 0x01D3A9E0, "", (size_t)&testJumpDown },
+
 #endif // _WIN32
+
 	//{ 0x0, "", (size_t)&findJumpDownArea },					// NOXREF
 	{ 0x01D3A330, "_Z21ConnectGeneratedAreasv", (size_t)&ConnectGeneratedAreas },
 	{ 0x01D3AAF0, "_Z19MergeGeneratedAreasv", (size_t)&MergeGeneratedAreas },
@@ -5062,6 +5086,7 @@ FunctionHook g_FunctionHooks[] =
 	{ 0x01D3B3F0, "_Z12BuildLaddersv", (size_t)&BuildLadders },
 	{ 0x01D3C1B0, "_Z13MarkJumpAreasv", (size_t)&MarkJumpAreas },
 	{ 0x01D3C280, "_Z26GenerateNavigationAreaMeshv", (size_t)&GenerateNavigationAreaMesh },
+
 #endif // Nav_Region
 
 #ifndef Hostage_Region
@@ -5216,7 +5241,7 @@ FunctionHook g_FunctionHooks[] =
 	{ 0x01D4A4A0, "_ZN25HostageEscapeToCoverState8OnUpdateEP14CHostageImprov", mfunc_ptr_cast(&HostageEscapeToCoverState::OnUpdate_) },
 	//{ 0x01D4A590, "_ZN25HostageEscapeToCoverState6OnExitEP14CHostageImprov", mfunc_ptr_cast(&HostageEscapeToCoverState::OnExit_) },		// PURE
 	//{ 0x01D56B00, "_ZNK25HostageEscapeToCoverState7GetNameEv", mfunc_ptr_cast(&HostageEscapeToCoverState::GetName_) },
-	{ 0x01D4A5A0, "_ZN25HostageEscapeToCoverState15OnMoveToFailureERK6VectorN12IImprovEvent17MoveToFailureTypeE", mfunc_ptr_cast(&HostageEscapeToCoverState::OnMoveToFailure_) },
+	//{ 0x01D4A5A0, "_ZN25HostageEscapeToCoverState15OnMoveToFailureERK6VectorN12IImprovEvent17MoveToFailureTypeE", mfunc_ptr_cast(&HostageEscapeToCoverState::OnMoveToFailure_) },		// DEFAULT
 	//non-virtual func
 	//{ 0x0, "_ZN25HostageEscapeToCoverState13SetRescueGoalERK6Vector", mfunc_ptr_cast(&HostageEscapeToCoverState::SetRescueGoal) },
 //HostageEscapeLookAroundState
@@ -5269,9 +5294,9 @@ FunctionHook g_FunctionHooks[] =
 	//{ 0x01D49D70, "_ZN19HostageAnimateState13StartSequenceEP14CHostageImprovPKNS_7SeqInfoE", mfunc_ptr_cast(&HostageAnimateState::StartSequence) },	// NOXREF
 	{ 0x01D4A000, "_ZN19HostageAnimateState13IsDoneHoldingEv", mfunc_ptr_cast(&HostageAnimateState::IsDoneHolding) },
 //CHostage
-
 	//virtual func
 	//!!{ 0x01D4BE60, "_ZN8CHostage5SpawnEv", mfunc_ptr_cast(&CHostage::Spawn_) },			// do not use the hook together CHostage::IdleThink
+	{ 0x01D4BE60, "_ZN8CHostage5SpawnEv", mfunc_ptr_cast(&CHostage::Spawn_) },
 	{ 0x01D4C2C0, "_ZN8CHostage8PrecacheEv", mfunc_ptr_cast(&CHostage::Precache_) },
 	{ 0x01D4DB00, "_ZN8CHostage10ObjectCapsEv", mfunc_ptr_cast(&CHostage::ObjectCaps_) },
 	//{ 0x01D50D80, "_ZN8CHostage8ClassifyEv", mfunc_ptr_cast(&CHostage::Classify_) },
@@ -5561,7 +5586,7 @@ VirtualTableRef g_TableRefs[] =
 	{ 0x01DFCADC, "CHalfLifeMultiplay",	70 },
 	{ 0x01DFE7B4, "CHalfLifeTraining",	70 },
 	{ 0x01DFC9D4, "CMapInfo",		CBASE_VIRTUAL_COUNT },
-	
+
 	{ 0x01E01074, "CPreventDefuseTask",	0 },
 	{ 0x01E01084, "CCareerTask",		0 },
 
@@ -5645,7 +5670,6 @@ AddressRef g_FunctionRefs[] =
 
 	{ 0x01D2EDD0, "_ZN6CCSBot16UpdateLookAnglesEv", (size_t)&pCCSBot__UpdateLookAngles },
 	{ 0x01D19C70, "_ZN9BotPhrase9RandomizeEv", (size_t)&pBotPhrase__Randomize },
-	{ 0x01D25270, "_ZN13CCSBotManager6AddBotEPK10BotProfile18BotProfileTeamType", (size_t)&pCCSBotManager__AddBot },
 	{ 0x01D4C450, "_ZN8CHostage9IdleThinkEv", (size_t)&pCHostage__IdleThink },
 
 #endif // Function_References_Region
@@ -5659,11 +5683,9 @@ AddressRef g_DataRefs[] =
 
 	{ 0x01E61BD0, "g_engfuncs", (size_t)&pg_engfuncs },
 	{ 0x01E61E48, "gpGlobals", (size_t)&pgpGlobals },
-	
 	{ 0x01E10768, "GameEventName", (size_t)&pGameEventName },
 	{ 0x01E2A3F8, "_ZL14s_shared_token", (size_t)&ps_shared_token },
 	{ 0x01E13218, "_ZL14s_shared_quote", (size_t)&ps_shared_quote },
-
 	{ 0x01E61BA4, "g_vecZero", (size_t)&pg_vecZero },
 	{ 0x01E61BB4, "g_Language", (size_t)&pg_Language },
 	{ 0x01E61BB8, "g_ulFrameCount", (size_t)&pg_ulFrameCount },	// NOXREF
@@ -5692,50 +5714,40 @@ AddressRef g_DataRefs[] =
 	{ 0x01E75EB0, "g_sModelIndexTGhost", (size_t)&pg_sModelIndexTGhost },
 	{ 0x01E76560, "g_sModelIndexC4Glow", (size_t)&pg_sModelIndexC4Glow },
 	{ 0x01E76568, "giAmmoIndex", (size_t)&pgiAmmoIndex },
-
 	{ 0x01E75EC4, "g_sModelIndexRadio", (size_t)&pg_sModelIndexRadio },
 	{ 0x01E75EB8, "gMultiDamage", (size_t)&pgMultiDamage },
 	{ 0x01E29880, "_ZL13s_iBeamSprite", (size_t)&ps_iBeamSprite },
 	{ 0x01E29480, "_ZL8cosTable", (size_t)&pcosTable },
-	
 	{ 0x01E23AA8, "TutorIdentifierList", (size_t)&pTutorIdentifierList },
 	{ 0x01E23678, "_ZL19g_TutorStateStrings", (size_t)&pg_TutorStateStrings },
-
 	{ 0x01E61E4C, "WorldGraph", (size_t)&pWorldGraph },
 	{ 0x01E61B98, "g_pGameRules", (size_t)&pg_pGameRules },
 	{ 0x01E62560, "g_pMPGameRules", (size_t)&pg_pMPGameRules },
 	{ 0x01E61E70, "_ZL12mp_com_token", (size_t)&pmp_com_token },
-	
 	{ 0x01E636F0, "vec3_origin", (size_t)&pvec3_origin },
 	{ 0x01E1F420, "nanmask", (size_t)&pnanmask },
-
 	{ 0x01E0B0B0, "_ZL15weaponAliasInfo", (size_t)&pweaponAliasInfo },
 	{ 0x01E0B1E8, "_ZL18weaponBuyAliasInfo", (size_t)&pweaponBuyAliasInfo },
 	{ 0x01E0B3F0, "_ZL20weaponClassAliasInfo", (size_t)&pweaponClassAliasInfo },
 	{ 0x01E0B560, "g_autoBuyInfo", (size_t)&pg_autoBuyInfo },
 	{ 0x01E0B708, "_ZL10weaponInfo", (size_t)&pweaponInfo },
-
 	{ 0x01E6AC80, "gszallsentencenames", (size_t)&pgszallsentencenames },
 	{ 0x01E683E0, "rgsentenceg", (size_t)&prgsentenceg },
 	{ 0x01E75480, "fSentencesInit", (size_t)&pfSentencesInit },
 	{ 0x01E75484, "gcallsentences", (size_t)&pgcallsentences },
 	{ 0x01E1F5B0, "rgdpvpreset", (size_t)&prgdpvpreset },
 	{ 0x01E75488, "fTextureTypeInit", (size_t)&pfTextureTypeInit },
-
 	{ 0x01E7548C, "gcTextures", (size_t)&pgcTextures, 2 },
 	{ 0x01E70C80, "grgszTextureName", (size_t)&pgrgszTextureName, 2 },
 	{ 0x01E75080, "grgchTextureType", (size_t)&pgrgchTextureType, 2 },
-
-	//implementation at PM_Shared
+	// implementation at PM_Shared
 	{ 0x01E68390, "gcTextures", (size_t)&ppm_gcTextures, 1 },
 	{ 0x01E63B88, "grgszTextureName", (size_t)&ppm_grgszTextureName, 1 },
 	{ 0x01E67F88, "grgchTextureType", (size_t)&ppm_grgchTextureType, 1 },
-
 	{ 0x01E68388, "pm_shared_initialized", (size_t)&ppm_shared_initialized },
 	{ 0x01E63700, "rgv3tStuckTable", (size_t)&prgv3tStuckTable },
 	{ 0x01E63A88, "rgStuckLast", (size_t)&prgStuckLast },
 	{ 0x01E68394, "g_onladder", (size_t)&pg_onladder },
-
 	{ 0x01E6838C, "pmove", (size_t)&pg_ppmove },
 	{ 0x01E76578, "g_flWeaponCheat", (size_t)&pg_flWeaponCheat },
 	{ 0x01E62778, "gEvilImpulse101", (size_t)&pgEvilImpulse101 },
@@ -5744,7 +5756,6 @@ AddressRef g_DataRefs[] =
 	{ 0x01E75CFC, "g_groupmask", (size_t)&pg_groupmask },
 	{ 0x01E75D00, "g_groupop", (size_t)&pg_groupop },
 	{ 0x01E21EF8, "_ZL6gSizes", (size_t)&pgSizes },
-
 	{ 0x01E75490, "pSoundEnt", (size_t)&ppSoundEnt },
 	{ 0x01E75CF8, "_ZL6glSeed", (size_t)&pglSeed },
 	{ 0x01E21598, "seed_table", (size_t)&pseed_table },
@@ -5837,25 +5848,20 @@ AddressRef g_DataRefs[] =
 	{ 0x01E636D4, "gmsgBrass", (size_t)&pgmsgBrass },
 	{ 0x01E636D8, "gmsgFog", (size_t)&pgmsgFog },
 	{ 0x01E636DC, "gmsgShowTimer", (size_t)&pgmsgShowTimer },
-
 	{ 0x01E61B80, "g_psv_gravity", (size_t)&pg_psv_gravity },
 	{ 0x01E61B84, "g_psv_aim", (size_t)&pg_psv_aim },//TODO: unused, used cvar_t *sv_aim
 	{ 0x01E63598, "sv_aim", (size_t)&psv_aim },
-
 	{ 0x01E61E6C, "sv_clienttrace", (size_t)&psv_clienttrace },
 	{ 0x01E61E68, "_ZL15g_GameMgrHelper", (size_t)&pg_GameMgrHelper },
 	{ 0x01E22624, "voice_serverdebug", (size_t)&pvoice_serverdebug },
 	{ 0x01E22638, "sv_alltalk", (size_t)&psv_alltalk },
-
 	{ 0x01E75D20, "g_PlayerModEnable", (size_t)&pg_PlayerModEnable },
 	{ 0x01E75D28, "g_BanMasks", (size_t)&pg_BanMasks },
 	{ 0x01E75DA8, "g_SentGameRulesMasks", (size_t)&pg_SentGameRulesMasks },
 	{ 0x01E75E30, "g_SentBanMasks", (size_t)&pg_SentBanMasks },
 	{ 0x01E75E28, "g_bWantModEnable", (size_t)&pg_bWantModEnable },
-
 	{ 0x01E76580, "_ZL23s_tutorDisabledThisGame", (size_t)&ps_tutorDisabledThisGame },
 	{ 0x01E76584, "_ZL19s_nextCvarCheckTime", (size_t)&ps_nextCvarCheckTime },
-	
 	{ 0x01E11214, "BotDifficultyName", (size_t)&pBotDifficultyName },
 	{ 0x01E61B88, "g_footsteps", (size_t)&pg_footsteps },
 	{ 0x01E61B8C, "g_psv_accelerate", (size_t)&pg_psv_accelerate },
@@ -5940,14 +5946,12 @@ AddressRef g_DataRefs[] =
 	{ 0x01E19AFC, "sk_scientist_heal1", (size_t)&psk_scientist_heal1 },
 	{ 0x01E19B10, "sk_scientist_heal2", (size_t)&psk_scientist_heal2 },
 	{ 0x01E19B24, "sk_scientist_heal3", (size_t)&psk_scientist_heal3 },
-
 	{ 0x01E10738, "g_flBotCommandInterval", (size_t)&pg_flBotCommandInterval },
 	{ 0x01E1073C, "g_flBotFullThinkInterval", (size_t)&pg_flBotFullThinkInterval },
 	{ 0x01E61B44, "_ZL11gTankSpread", (size_t)&pgTankSpread },
 	{ 0x01E28A20, "BotArgs", (size_t)&pBotArgs },
 	{ 0x01E28A30, "UseBotArgs", (size_t)&pUseBotArgs },
 	{ 0x01E1E040, "g_weaponStruct", (size_t)&pg_weaponStruct },
-
 	{ 0x01E0EFF8, "cv_bot_traceview", (size_t)&pcv_bot_traceview },
 	{ 0x01E0F00C, "cv_bot_stop", (size_t)&pcv_bot_stop },
 	{ 0x01E0F020, "cv_bot_show_nav", (size_t)&pcv_bot_show_nav },
@@ -5987,7 +5991,6 @@ AddressRef g_DataRefs[] =
 	{ 0x01E23448, "cv_tutor_message_minimum_display_time", (size_t)&pcv_tutor_message_minimum_display_time },
 	{ 0x01E2345C, "cv_tutor_message_character_display_time_coefficient", (size_t)&pcv_tutor_message_character_display_time_coefficient },
 	{ 0x01E23470, "cv_tutor_hint_interval_time", (size_t)&pcv_tutor_hint_interval_time },
-
 	{ 0x01E2A3E8, "_ZN9CLocalNav15flNextCvarCheckE", mfunc_ptr_cast(&CLocalNav::pflNextCvarCheck) },
 	{ 0x01E2A3D8, "_ZN9CLocalNav12s_flStepSizeE", mfunc_ptr_cast(&CLocalNav::ps_flStepSize) },
 	{ 0x01E2A3EC, "_ZN9CLocalNav15flLastThinkTimeE", mfunc_ptr_cast(&CLocalNav::pflLastThinkTime) },
@@ -6100,7 +6103,6 @@ AddressRef g_DataRefs[] =
 	{ 0x01E5D6F8, "g_skipCareerInitialSpawn", (size_t)&pg_skipCareerInitialSpawn },
 	{ 0x01E31768, "m_usResetDecals", (size_t)&pm_usResetDecals },
 	{ 0x01E31760, "g_iShadowSprite", (size_t)&pg_iShadowSprite },
-
 	{ 0x01E31770, "_ZL11g_PVSStatus", (size_t)&pg_PVSStatus },
 	{ 0x01E14C90, "_ZL18entity_field_alias", (size_t)&pentity_field_alias },
 	{ 0x01E14D68, "_ZL18player_field_alias", (size_t)&pplayer_field_alias },
@@ -6112,17 +6114,12 @@ AddressRef g_DataRefs[] =
 	{ 0x01E2A250, "_ZN8CNavNode6m_listE", mfunc_ptr_cast(&CNavNode::pm_list) },
 	{ 0x01E2A254, "_ZN8CNavNode12m_listLengthE", mfunc_ptr_cast(&CNavNode::pm_listLength) },
 	{ 0x01E11E88, "Opposite", (size_t)&pOpposite },
-
-	//{ 0x0, "_ZN8CNavArea8m_nextIDE", mfunc_ptr_cast(&CNavArea::m_nextID) },
 	{ 0x01E11584, "_ZN8CNavArea14m_masterMarkerE", mfunc_ptr_cast(&CNavArea::pm_masterMarker) },
 	{ 0x01E11588, "_ZN10HidingSpot8m_nextIDE", mfunc_ptr_cast(&HidingSpot::pm_nextID) },
 	{ 0x01E2A108, "_ZN10HidingSpot14m_masterMarkerE", mfunc_ptr_cast(&HidingSpot::pm_masterMarker) },
 	{ 0x01E11580, "_ZN8CNavArea8m_nextIDE", mfunc_ptr_cast(&CNavArea::pm_nextID) },
-	//{ 0x0, "_ZN10HidingSpot14m_masterMarkerE", mfunc_ptr_cast(&HidingSpot::m_masterMarker) },
-
 	{ 0x01E2A100, "_ZN8CNavArea9m_isResetE", mfunc_ptr_cast(&CNavArea::pm_isReset) },
 	{ 0x01E2A0FC, "_ZN8CNavArea10m_openListE", mfunc_ptr_cast(&CNavArea::pm_openList) },
-
 	{ 0x01E2A104, "lastDrawTimestamp", (size_t)&plastDrawTimestamp },
 	{ 0x01E2A118, "_ZL13editTimestamp", (size_t)&peditTimestamp },
 	{ 0x01E2A10C, "_ZL10markedArea", (size_t)&pmarkedArea },
@@ -6166,13 +6163,10 @@ AddressRef g_DataRefs[] =
 	//{ 0x01E306C8, "sinom", (size_t)&psinom },	// LOCAL
 	//{ 0x01E2F8B4, "sclp", (size_t)&psclp },	// LOCAL
 	//{ 0x01E2F8B8, "sclq", (size_t)&psclq },	// LOCAL
-
 	{ 0x01E0DF70, "primaryWeaponBuyInfoCT", (size_t)&pprimaryWeaponBuyInfoCT },
 	{ 0x01E0E00C, "secondaryWeaponBuyInfoCT", (size_t)&psecondaryWeaponBuyInfoCT },
-
 	{ 0x01E0E030, "primaryWeaponBuyInfoT", (size_t)&pprimaryWeaponBuyInfoT },
 	{ 0x01E0E0CC, "secondaryWeaponBuyInfoT", (size_t)&psecondaryWeaponBuyInfoT },
-
 	{ 0x01E287E8, "_ZN19BotChatterInterface16m_encourageTimerE", mfunc_ptr_cast(&BotChatterInterface::pm_encourageTimer)  },
 	{ 0x01E287E0, "_ZN19BotChatterInterface22m_radioSilenceIntervalE", mfunc_ptr_cast(&BotChatterInterface::pm_radioSilenceInterval)  },
 

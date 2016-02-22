@@ -62,7 +62,6 @@ enum BotProfileTeamType
 	BOT_TEAM_ANY
 };
 
-/* <4a79de> ../game_shared/bot/bot_profile.h:46 */
 class BotProfile
 {
 public:
@@ -128,13 +127,11 @@ private:
 	int m_voiceBank;
 };
 
-/* <4a666f> ../game_shared/bot/bot_profile.h:115 */
 inline bool BotProfile::IsDifficulty(BotDifficultyType diff) const
 {
 	return (m_difficultyFlags & (1 << diff)) ? true : false;
 }
 
-/* <4a7a20> ../game_shared/bot/bot_profile.h:123 */
 inline void BotProfile::Inherit(const BotProfile *parent, const BotProfile *baseline)
 {
 	if (parent->m_aggression != baseline->m_aggression)
@@ -180,7 +177,6 @@ inline void BotProfile::Inherit(const BotProfile *parent, const BotProfile *base
 
 typedef std::STD_LIST<BotProfile *> BotProfileList;
 
-/* <36a051> ../game_shared/bot/bot_profile.h:180 */
 class BotProfileManager
 {
 public:
@@ -195,7 +191,7 @@ public:
 		for (BotProfileList::const_iterator iter = m_profileList.begin(); iter != m_profileList.end(); ++iter)
 		{
 			if (!Q_stricmp(name, (*iter)->GetName()) && (*iter)->IsValidForTeam(team))
-				return *iter;
+				return (*iter);
 		}
 
 		return NULL;

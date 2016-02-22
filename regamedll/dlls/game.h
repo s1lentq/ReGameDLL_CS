@@ -136,7 +136,7 @@ extern cvar_t sk_scientist_heal3;
 extern cvar_t maxmoney;
 extern cvar_t round_infinite;
 
-#endif // REGAMEDLL_ADD
+#endif
 
 void GameDLLInit();
 

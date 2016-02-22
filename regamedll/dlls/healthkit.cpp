@@ -14,12 +14,10 @@ TYPEDESCRIPTION CWallHealth::m_SaveData[] =
 	DEFINE_FIELD(CWallHealth, m_flSoundTime, FIELD_TIME),
 };
 
-#endif // HOOK_GAMEDLL
+#endif
 
-/* <d637a> ../cstrike/dlls/healthkit.cpp:43 */
 LINK_ENTITY_TO_CLASS(item_healthkit, CHealthKit);
 
-/* <d5e25> ../cstrike/dlls/healthkit.cpp:55 */
 void CHealthKit::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
@@ -28,14 +26,12 @@ void CHealthKit::__MAKE_VHOOK(Spawn)()
 	CItem::Spawn();
 }
 
-/* <d5d8a> ../cstrike/dlls/healthkit.cpp:63 */
 void CHealthKit::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/w_medkit.mdl");
 	PRECACHE_SOUND("items/smallmedkit1.wav");
 }
 
-/* <d5fb9> ../cstrike/dlls/healthkit.cpp:69 */
 BOOL CHealthKit::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
 {
 	if (pPlayer->TakeHealth(gSkillData.healthkitCapacity, DMG_GENERIC))
@@ -57,13 +53,9 @@ BOOL CHealthKit::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
 	return FALSE;
 }
 
-/* <d5e98> ../cstrike/dlls/healthkit.cpp:130 */
 IMPLEMENT_SAVERESTORE(CWallHealth, CBaseEntity);
-
-/* <d6444> ../cstrike/dlls/healthkit.cpp:132 */
 LINK_ENTITY_TO_CLASS(func_healthcharger, CWallHealth);
 
-/* <d60ed> ../cstrike/dlls/healthkit.cpp:135 */
 void CWallHealth::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "style") || FStrEq(pkvd->szKeyName, "height") || FStrEq(pkvd->szKeyName, "value1") || FStrEq(pkvd->szKeyName, "value2") || FStrEq(pkvd->szKeyName, "value3"))
@@ -79,7 +71,6 @@ void CWallHealth::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CBaseToggle::KeyValue(pkvd);
 }
 
-/* <d5dfe> ../cstrike/dlls/healthkit.cpp:154 */
 void CWallHealth::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
@@ -93,11 +84,10 @@ void CWallHealth::__MAKE_VHOOK(Spawn)()
 
 	SET_MODEL(ENT(pev), STRING(pev->model));
 
-	m_iJuice = (int)gSkillData.healthchargerCapacity;
+	m_iJuice = int(gSkillData.healthchargerCapacity);
 	pev->frame = 0.0f;
 }
 
-/* <d5dd7> ../cstrike/dlls/healthkit.cpp:169 */
 void CWallHealth::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_SOUND("items/medshot4.wav");
@@ -105,7 +95,6 @@ void CWallHealth::__MAKE_VHOOK(Precache)()
 	PRECACHE_SOUND("items/medcharge4.wav");
 }
 
-/* <d622e> ../cstrike/dlls/healthkit.cpp:177 */
 void CWallHealth::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	// Make sure that we have a caller
@@ -163,7 +152,6 @@ void CWallHealth::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCalle
 	m_flNextCharge = gpGlobals->time + 0.1f;
 }
 
-/* <d5f4d> ../cstrike/dlls/healthkit.cpp:236 */
 void CWallHealth::Recharge()
 {
 	EMIT_SOUND(ENT(pev), CHAN_ITEM, "items/medshot4.wav", VOL_NORM, ATTN_NORM);
@@ -172,7 +160,6 @@ void CWallHealth::Recharge()
 	SetThink(&CWallHealth::SUB_DoNothing);
 }
 
-/* <d5ee4> ../cstrike/dlls/healthkit.cpp:244 */
 void CWallHealth::Off()
 {
 	// Stop looping sound.

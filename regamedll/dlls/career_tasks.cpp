@@ -32,9 +32,8 @@ const TaskInfo taskInfo[] =
 	{ NULL,				EVENT_INVALID,			&CCareerTask::NewTask }
 };
 
-#endif // HOOK_GAMEDLL
+#endif
 
-/* <1ef647> ../cstrike/dlls/career_tasks.cpp:133 */
 CCareerTask *CPreventDefuseTask::NewTask(const char *taskName, GameEventType event, const char *weaponName, int n, bool mustLive, bool crossRounds, int id, bool isComplete)
 {
 	CPreventDefuseTask *pNewTask = new CPreventDefuseTask(taskName, event, weaponName, n, mustLive, crossRounds, id, isComplete);
@@ -42,10 +41,9 @@ CCareerTask *CPreventDefuseTask::NewTask(const char *taskName, GameEventType eve
 	pNewTask->m_bombPlantedThisRound = false;
 	pNewTask->m_defuseStartedThisRound = false;
 
-	return (CCareerTask *)pNewTask;
+	return reinterpret_cast<CCareerTask *>(pNewTask);
 }
 
-/* <1ef5db> ../cstrike/dlls/career_tasks.cpp:139 */
 CPreventDefuseTask::CPreventDefuseTask(const char *taskName, GameEventType event, const char *weaponName, int n, bool mustLive, bool crossRounds, int id, bool isComplete)
 {
 	CCareerTask(taskName, event, weaponName, n, mustLive, crossRounds, id, isComplete);
@@ -54,7 +52,6 @@ CPreventDefuseTask::CPreventDefuseTask(const char *taskName, GameEventType event
 	m_defuseStartedThisRound = false;
 }
 
-/* <1ef296> ../cstrike/dlls/career_tasks.cpp:147 */
 void CPreventDefuseTask::__MAKE_VHOOK(Reset)()
 {
 	m_bombPlantedThisRound = false;
@@ -63,7 +60,6 @@ void CPreventDefuseTask::__MAKE_VHOOK(Reset)()
 	CCareerTask::Reset();
 }
 
-/* <1efbf8> ../cstrike/dlls/career_tasks.cpp:156 */
 void CPreventDefuseTask::__MAKE_VHOOK(OnEvent)(GameEventType event, CBasePlayer *pAttacker, CBasePlayer *pVictim)
 {
 	if (IsComplete())
@@ -87,14 +83,12 @@ void CPreventDefuseTask::__MAKE_VHOOK(OnEvent)(GameEventType event, CBasePlayer 
 	}
 }
 
-/* <1ef4e1> ../cstrike/dlls/career_tasks.cpp:186 */
 CCareerTask *CCareerTask::NewTask(const char *taskName, GameEventType event, const char *weaponName, int n, bool mustLive, bool crossRounds, int id, bool isComplete)
 {
 	CCareerTask *pTask = new CCareerTask(taskName, event, weaponName, n, mustLive, crossRounds, id, isComplete);
 	return pTask;
 }
 
-/* <1ef43f> ../cstrike/dlls/career_tasks.cpp:192 */
 CCareerTask::CCareerTask(const char *taskName, GameEventType event, const char *weaponName, int n, bool mustLive, bool crossRounds, int id, bool isComplete)
 {
 	m_isComplete = isComplete;
@@ -129,7 +123,6 @@ CCareerTask::CCareerTask(const char *taskName, GameEventType event, const char *
 	}
 }
 
-/* <1ef211> ../cstrike/dlls/career_tasks.cpp:240 */
 void CCareerTask::__MAKE_VHOOK(Reset)()
 {
 	m_eventsSeen = 0;
@@ -147,7 +140,6 @@ void CCareerTask::__MAKE_VHOOK(Reset)()
 	MESSAGE_END();
 }
 
-/* <1ef74c> ../cstrike/dlls/career_tasks.cpp:256 */
 void CCareerTask::SendPartialNotification()
 {
 	MESSAGE_BEGIN(MSG_ALL, gmsgCZCareer);
@@ -159,18 +151,13 @@ void CCareerTask::SendPartialNotification()
 	UTIL_LogPrintf("Career Task Partial %d %d\n", m_id, m_eventsSeen);
 }
 
-/* <1efc6c> ../cstrike/dlls/career_tasks.cpp:268 */
 void CCareerTask::OnWeaponKill(int weaponId, int weaponClassId, bool headshot, bool killerHasShield, CBasePlayer *pAttacker, CBasePlayer *pVictim)
 {
-	if (m_isComplete || m_event != EVENT_KILL && (m_event != EVENT_HEADSHOT || !headshot))
-	{
+	if (m_isComplete || (m_event != EVENT_KILL && (m_event != EVENT_HEADSHOT || !headshot)))
 		return;
-	}
 
 	if (!pVictim || (m_defuser && !pVictim->m_bIsDefusing) || (m_vip && !pVictim->m_bIsVIP))
-	{
 		return;
-	}
 
 	if (m_rescuer)
 	{
@@ -187,7 +174,7 @@ void CCareerTask::OnWeaponKill(int weaponId, int weaponClassId, bool headshot, b
 			if (!hostage->IsFollowingSomeone())
 				continue;
 
-			if (hostage->IsValid() && hostage->m_target == pAttacker)
+			if (hostage->IsValid() && hostage->m_target == pVictim)
 				++hostages_;
 		}
 
@@ -205,9 +192,9 @@ void CCareerTask::OnWeaponKill(int weaponId, int weaponClassId, bool headshot, b
 		if (m_weaponId != weaponId)
 			return;
 	}
-	else if (m_weaponClassId)
+	else
 	{
-		if (m_weaponClassId != weaponClassId)
+		if (!m_weaponClassId || m_weaponClassId != weaponClassId)
 			return;
 	}
 
@@ -215,13 +202,10 @@ void CCareerTask::OnWeaponKill(int weaponId, int weaponClassId, bool headshot, b
 	SendPartialNotification();
 }
 
-/* <1efe16> ../cstrike/dlls/career_tasks.cpp:348 */
 void CCareerTask::OnWeaponInjury(int weaponId, int weaponClassId, bool attackerHasShield, CBasePlayer *pAttacker)
 {
 	if (m_isComplete || m_event != EVENT_PLAYER_TOOK_DAMAGE)
-	{
 		return;
-	}
 
 	if (m_weaponId == WEAPON_SHIELDGUN)
 	{
@@ -233,9 +217,9 @@ void CCareerTask::OnWeaponInjury(int weaponId, int weaponClassId, bool attackerH
 		if (m_weaponId != weaponId)
 			return;
 	}
-	else if (m_weaponClassId)
+	else
 	{
-		if (m_weaponClassId != weaponClassId)
+		if (!m_weaponClassId || m_weaponClassId != weaponClassId)
 			return;
 	}
 
@@ -243,7 +227,6 @@ void CCareerTask::OnWeaponInjury(int weaponId, int weaponClassId, bool attackerH
 	SendPartialNotification();
 }
 
-/* <1ef79d> ../cstrike/dlls/career_tasks.cpp:385 */
 void CCareerTask::__MAKE_VHOOK(OnEvent)(GameEventType event, CBasePlayer *pVictim, CBasePlayer *pAttacker)
 {
 	if (m_isComplete)
@@ -279,9 +262,9 @@ void CCareerTask::__MAKE_VHOOK(OnEvent)(GameEventType event, CBasePlayer *pVicti
 			}
 		}
 
-		if (m_event != EVENT_KILL || (!m_weaponId && !m_weaponClassId)
-			&& m_event != EVENT_HEADSHOT || (!m_weaponId && !m_weaponClassId)
-			&& m_event != EVENT_PLAYER_TOOK_DAMAGE || (!m_weaponId && !m_weaponClassId))
+		if ((m_event != EVENT_KILL || (!m_weaponId && !m_weaponClassId))
+			&& (m_event != EVENT_HEADSHOT || (!m_weaponId && !m_weaponClassId))
+			&& (m_event != EVENT_PLAYER_TOOK_DAMAGE || (!m_weaponId && !m_weaponClassId)))
 		{
 			if (m_event == EVENT_ROUND_WIN)
 			{
@@ -363,7 +346,7 @@ void CCareerTask::__MAKE_VHOOK(OnEvent)(GameEventType event, CBasePlayer *pVicti
 
 		if (m_event == EVENT_ROUND_WIN && !Q_strcmp(m_name, "winfast"))
 		{
-			TheCareerTasks->SetFinishedTaskTime((int)TheCareerTasks->GetRoundElapsedTime());
+			TheCareerTasks->SetFinishedTaskTime(int(TheCareerTasks->GetRoundElapsedTime()));
 			UTIL_GetLocalPlayer()->SyncRoundTimer();
 		}
 	}
@@ -395,7 +378,7 @@ void CCareerTask::__MAKE_VHOOK(OnEvent)(GameEventType event, CBasePlayer *pVicti
 
 				if (m_event == EVENT_ROUND_WIN && !Q_strcmp(m_name, "winfast"))
 				{
-					TheCareerTasks->SetFinishedTaskTime((int)TheCareerTasks->GetRoundElapsedTime());
+					TheCareerTasks->SetFinishedTaskTime(int(TheCareerTasks->GetRoundElapsedTime()));
 					UTIL_GetLocalPlayer()->SyncRoundTimer();
 				}
 
@@ -416,7 +399,6 @@ void CCareerTask::__MAKE_VHOOK(OnEvent)(GameEventType event, CBasePlayer *pVicti
 	}
 }
 
-/* <1efeed> ../cstrike/dlls/career_tasks.cpp:623 */
 void CCareerTaskManager::Create()
 {
 	if (TheCareerTasks != NULL)
@@ -428,22 +410,18 @@ void CCareerTaskManager::Create()
 	TheCareerTasks = new CCareerTaskManager;
 }
 
-/* <1eff77> ../cstrike/dlls/career_tasks.cpp:636 */
 CCareerTaskManager::CCareerTaskManager()
 {
 	m_taskTime = 0;
 	Reset();
 }
 
-/* <1effeb> ../cstrike/dlls/career_tasks.cpp:643 */
 void CCareerTaskManager::Reset(bool deleteTasks)
 {
 	if (deleteTasks)
 	{
 		for (CareerTaskListIt it = m_tasks.begin(); it != m_tasks.end(); ++it)
-		{
 			delete (*it);
-		}
 
 		m_tasks.clear();
 		m_nextId = 0;
@@ -464,16 +442,12 @@ void CCareerTaskManager::Reset(bool deleteTasks)
 	m_roundStartTime = gpGlobals->time + CVAR_GET_FLOAT("mp_freezetime");
 }
 
-/* <1f014e> ../cstrike/dlls/career_tasks.cpp:671 */
 void CCareerTaskManager::SetFinishedTaskTime(int val)
 {
-	CHalfLifeMultiplay *mp = g_pGameRules;
-
 	m_finishedTaskTime = val;
-	m_finishedTaskRound = mp->m_iTotalRoundsPlayed;
+	m_finishedTaskRound = CSGameRules()->m_iTotalRoundsPlayed;
 }
 
-/* <1f018b> ../cstrike/dlls/career_tasks.cpp:679 */
 void CCareerTaskManager::AddTask(const char *taskName, const char *weaponName, int eventCount, bool mustLive, bool crossRounds, bool isComplete)
 {
 	++m_nextId;
@@ -521,7 +495,6 @@ void CCareerTaskManager::AddTask(const char *taskName, const char *weaponName, i
 	MESSAGE_END();
 }
 
-/* <1f0381> ../cstrike/dlls/career_tasks.cpp:721 */
 void CCareerTaskManager::HandleEvent(GameEventType event, CBasePlayer *pAttacker, CBasePlayer *pVictim)
 {
 	if (event == EVENT_ROUND_START)
@@ -542,7 +515,6 @@ void CCareerTaskManager::HandleEvent(GameEventType event, CBasePlayer *pAttacker
 	}
 }
 
-/* <1f0462> ../cstrike/dlls/career_tasks.cpp:748 */
 void CCareerTaskManager::HandleWeaponKill(int weaponId, int weaponClassId, bool headshot, bool killerHasShield, CBasePlayer *pAttacker, CBasePlayer *pVictim)
 {
 	for (CareerTaskListIt it = m_tasks.begin(); it != m_tasks.end(); ++it)
@@ -551,11 +523,9 @@ void CCareerTaskManager::HandleWeaponKill(int weaponId, int weaponClassId, bool 
 	}
 }
 
-/* <1f04ed> ../cstrike/dlls/career_tasks.cpp:757 */
 void CCareerTaskManager::HandleEnemyKill(bool wasBlind, const char *weaponName, bool headshot, bool killerHasShield, CBasePlayer *pAttacker, CBasePlayer *pVictim)
 {
 	HandleWeaponKill(AliasToWeaponID(weaponName), AliasToWeaponClass(weaponName), headshot, killerHasShield, pAttacker, pVictim);
-
 	HandleEvent(EVENT_KILL, pAttacker, pVictim);
 
 	if (headshot)
@@ -568,7 +538,6 @@ void CCareerTaskManager::HandleEnemyKill(bool wasBlind, const char *weaponName, 
 	}
 }
 
-/* <1f079c> ../cstrike/dlls/career_tasks.cpp:768 */
 void CCareerTaskManager::HandleWeaponInjury(int weaponId, int weaponClassId, bool attackerHasShield, CBasePlayer *pAttacker)
 {
 	for (CareerTaskListIt it = m_tasks.begin(); it != m_tasks.end(); ++it)
@@ -577,14 +546,12 @@ void CCareerTaskManager::HandleWeaponInjury(int weaponId, int weaponClassId, boo
 	}
 }
 
-/* <1f0815> ../cstrike/dlls/career_tasks.cpp:777 */
 void CCareerTaskManager::HandleEnemyInjury(const char *weaponName, bool attackerHasShield, CBasePlayer *pAttacker)
 {
 	HandleWeaponInjury(AliasToWeaponID(weaponName), AliasToWeaponClass(weaponName), attackerHasShield, pAttacker);
 	HandleEvent(EVENT_PLAYER_TOOK_DAMAGE);
 }
 
-/* <1f094e> ../cstrike/dlls/career_tasks.cpp:784 */
 void CCareerTaskManager::HandleDeath(int team, CBasePlayer *pAttacker)
 {
 	int enemyTeam = (Q_strcmp(humans_join_team.string, "CT") != 0) ? CT : TERRORIST;
@@ -607,7 +574,6 @@ void CCareerTaskManager::HandleDeath(int team, CBasePlayer *pAttacker)
 	}
 }
 
-/* <1f0a5d> ../cstrike/dlls/career_tasks.cpp:805 */
 bool CCareerTaskManager::AreAllTasksComplete()
 {
 	for (CareerTaskListIt it = m_tasks.begin(); it != m_tasks.end(); ++it)
@@ -619,32 +585,28 @@ bool CCareerTaskManager::AreAllTasksComplete()
 	return true;
 }
 
-/* <1f0abc> ../cstrike/dlls/career_tasks.cpp:818 */
 int CCareerTaskManager::GetNumRemainingTasks()
 {
 	int ret = 0;
 	for (CareerTaskListIt it = m_tasks.begin(); it != m_tasks.end(); ++it)
 	{
 		if (!(*it)->IsComplete())
-			ret++;
+			++ret;
 	}
 
 	return ret;
 }
 
-/* <1f0b33> ../cstrike/dlls/career_tasks.cpp:832 */
 float CCareerTaskManager::GetRoundElapsedTime()
 {
 	return (gpGlobals->time - m_roundStartTime);
 }
 
-/* <1f0b56> ../cstrike/dlls/career_tasks.cpp:838 */
 void CCareerTaskManager::LatchRoundEndMessage()
 {
 	m_shouldLatchRoundEndMessage = true;
 }
 
-/* <1f0b81> ../cstrike/dlls/career_tasks.cpp:844 */
 void CCareerTaskManager::UnlatchRoundEndMessage()
 {
 	m_shouldLatchRoundEndMessage = false;

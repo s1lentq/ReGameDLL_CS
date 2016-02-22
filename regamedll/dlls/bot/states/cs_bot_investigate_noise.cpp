@@ -1,8 +1,6 @@
 #include "precompiled.h"
 
 // Move towards currently heard noise
-
-/* <5b3114> ../cstrike/dlls/bot/states/cs_bot_investigate_noise.cpp:17 */
 void InvestigateNoiseState::AttendCurrentNoise(CCSBot *me)
 {
 	if (!me->IsNoiseHeard() && me->GetNoisePosition())
@@ -23,15 +21,12 @@ void InvestigateNoiseState::AttendCurrentNoise(CCSBot *me)
 	me->ForgetNoise();
 }
 
-/* <5b2f37> ../cstrike/dlls/bot/states/cs_bot_investigate_noise.cpp:38 */
 void InvestigateNoiseState::__MAKE_VHOOK(OnEnter)(CCSBot *me)
 {
 	AttendCurrentNoise(me);
 }
 
 // Use TravelDistance instead of distance...
-
-/* <5b2fa2> ../cstrike/dlls/bot/states/cs_bot_investigate_noise.cpp:47 */
 void InvestigateNoiseState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 {
 	float newNoiseDist;
@@ -109,7 +104,6 @@ void InvestigateNoiseState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 	}
 }
 
-/* <5b2e95> ../cstrike/dlls/bot/states/cs_bot_investigate_noise.cpp:129 */
 void InvestigateNoiseState::__MAKE_VHOOK(OnExit)(CCSBot *me)
 {
 	// reset to run mode in case we were sneaking about

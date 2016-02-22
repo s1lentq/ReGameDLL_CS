@@ -5,12 +5,11 @@
 */
 #ifndef HOOK_GAMEDLL
 
-char s_shared_token[ COM_TOKEN_LEN ];
+char s_shared_token[ 1500 ];
 char s_shared_quote = '\"';
 
-#endif // HOOK_GAMEDLL
+#endif
 
-/* <2d4a66> ../game_shared/shared_util.cpp:50 */
 NOXREF wchar_t *SharedWVarArgs(wchar_t *format, ...)
 {
 	va_list argptr;
@@ -28,7 +27,6 @@ NOXREF wchar_t *SharedWVarArgs(wchar_t *format, ...)
 	return string[curstring];
 }
 
-/* <2d4b0a> ../game_shared/shared_util.cpp:68 */
 char *SharedVarArgs(char *format, ...)
 {
 	va_list argptr;
@@ -47,7 +45,6 @@ char *SharedVarArgs(char *format, ...)
 	return string[ curstring ];
 }
 
-/* <2d4ba1> ../game_shared/shared_util.cpp:90 */
 char *BufPrintf(char *buf, int &len, const char *fmt, ...)
 {
 	va_list argptr;
@@ -64,7 +61,6 @@ char *BufPrintf(char *buf, int &len, const char *fmt, ...)
 	return NULL;
 }
 
-/* <2d4c0d> ../game_shared/shared_util.cpp:106 */
 wchar_t *BufWPrintf(wchar_t *buf, int &len, const wchar_t *fmt, ...)
 {
 	if (len <= 0)
@@ -80,7 +76,6 @@ wchar_t *BufWPrintf(wchar_t *buf, int &len, const wchar_t *fmt, ...)
 	return buf + wcslen(buf);
 }
 
-/* <2d4c7e> ../game_shared/shared_util.cpp:122 */
 NOXREF const wchar_t *NumAsWString(int val)
 {
 	const int BufLen = 16;
@@ -95,7 +90,6 @@ NOXREF const wchar_t *NumAsWString(int val)
 	return string[curstring];
 }
 
-/* <2d4d11> ../game_shared/shared_util.cpp:137 */
 const char *NumAsString(int val)
 {
 	const int BufLen = 16;
@@ -113,24 +107,18 @@ const char *NumAsString(int val)
 }
 
 // Returns the token parsed by SharedParse()
-
-/* <2d4da4> ../game_shared/shared_util.cpp:155 */
 char *SharedGetToken()
 {
 	return s_shared_token;
 }
 
 // Returns the token parsed by SharedParse()
-
-/* <2d4dbf> ../game_shared/shared_util.cpp:164 */
 NOXREF void SharedSetQuoteChar(char c)
 {
 	s_shared_quote = c;
 }
 
 // Parse a token out of a string
-
-/* <2d4de7> ../game_shared/shared_util.cpp:173 */
 const char *SharedParse(const char *data)
 {
 	int c;
@@ -203,15 +191,14 @@ skipwhite:
 		if (c == '{' || c == '}'|| c == ')'|| c == '(' || c == '\'' || c == ',')
 			break;
 
-	} while (c > 32);
+	}
+	while (c > 32);
 
 	s_shared_token[len] = '\0';
 	return data;
 }
 
 // Returns true if additional data is waiting to be processed on this line
-
-/* <2d4e40> ../game_shared/shared_util.cpp:247 */
 NOXREF bool SharedTokenWaiting(const char *buffer)
 {
 	const char *p;
@@ -219,7 +206,7 @@ NOXREF bool SharedTokenWaiting(const char *buffer)
 	p = buffer;
 	while (*p && *p!='\n')
 	{
-		if (!isspace(*p) || isalnum(*p))
+		if (!Q_isspace(*p) || Q_isalnum(*p))
 			return true;
 
 		p++;

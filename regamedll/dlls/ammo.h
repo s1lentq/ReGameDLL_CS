@@ -32,7 +32,6 @@
 #pragma once
 #endif
 
-/* <9792> ../cstrike/dlls/ammo.cpp:14 */
 class C9MMAmmo: public CBasePlayerAmmo
 {
 public:
@@ -46,11 +45,10 @@ public:
 	void Precache_();
 	BOOL AddAmmo_(CBaseEntity *pOther);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 };
 
-/* <97df> ../cstrike/dlls/ammo.cpp:40 */
 class CBuckShotAmmo: public CBasePlayerAmmo
 {
 public:
@@ -64,11 +62,10 @@ public:
 	void Precache_();
 	BOOL AddAmmo_(CBaseEntity *pOther);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 };
 
-/* <982c> ../cstrike/dlls/ammo.cpp:67 */
 class C556NatoAmmo: public CBasePlayerAmmo
 {
 public:
@@ -82,11 +79,10 @@ public:
 	void Precache_();
 	BOOL AddAmmo_(CBaseEntity *pOther);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 };
 
-/* <9879> ../cstrike/dlls/ammo.cpp:93 */
 class C556NatoBoxAmmo: public CBasePlayerAmmo
 {
 public:
@@ -100,11 +96,10 @@ public:
 	void Precache_();
 	BOOL AddAmmo_(CBaseEntity *pOther);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 };
 
-/* <98c6> ../cstrike/dlls/ammo.cpp:119 */
 class C762NatoAmmo: public CBasePlayerAmmo
 {
 public:
@@ -118,11 +113,10 @@ public:
 	void Precache_();
 	BOOL AddAmmo_(CBaseEntity *pOther);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 };
 
-/* <9913> ../cstrike/dlls/ammo.cpp:145 */
 class C45ACPAmmo: public CBasePlayerAmmo
 {
 public:
@@ -136,11 +130,10 @@ public:
 	void Precache_();
 	BOOL AddAmmo_(CBaseEntity *pOther);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 };
 
-/* <9960> ../cstrike/dlls/ammo.cpp:171 */
 class C50AEAmmo: public CBasePlayerAmmo
 {
 public:
@@ -154,11 +147,10 @@ public:
 	void Precache_();
 	BOOL AddAmmo_(CBaseEntity *pOther);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 };
 
-/* <99ad> ../cstrike/dlls/ammo.cpp:197 */
 class C338MagnumAmmo: public CBasePlayerAmmo
 {
 public:
@@ -172,11 +164,10 @@ public:
 	void Precache_();
 	BOOL AddAmmo_(CBaseEntity *pOther);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 };
 
-/* <99fa> ../cstrike/dlls/ammo.cpp:224 */
 class C57MMAmmo: public CBasePlayerAmmo
 {
 public:
@@ -190,11 +181,9 @@ public:
 	void Precache_();
 	BOOL AddAmmo_(CBaseEntity *pOther);
 
-#endif // HOOK_GAMEDLL
-
+#endif
 };
 
-/* <9a47> ../cstrike/dlls/ammo.cpp:249 */
 class C357SIGAmmo: public CBasePlayerAmmo
 {
 public:
@@ -208,7 +197,7 @@ public:
 	void Precache_();
 	BOOL AddAmmo_(CBaseEntity *pOther);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 };
 

@@ -1,8 +1,6 @@
 #include "precompiled.h"
 
 // Plant the bomb.
-
-/* <5d4160> ../cstrike/dlls/bot/states/cs_bot_plant_bomb.cpp:17 */
 void PlantBombState::__MAKE_VHOOK(OnEnter)(CCSBot *me)
 {
 	me->Crouch();
@@ -16,8 +14,6 @@ void PlantBombState::__MAKE_VHOOK(OnEnter)(CCSBot *me)
 }
 
 // Plant the bomb.
-
-/* <5d40d0> ../cstrike/dlls/bot/states/cs_bot_plant_bomb.cpp:36 */
 void PlantBombState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 {
 	CBasePlayerWeapon *gun = me->GetActiveWeapon();
@@ -48,7 +44,6 @@ void PlantBombState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 		me->Idle();
 }
 
-/* <5d4088> ../cstrike/dlls/bot/states/cs_bot_plant_bomb.cpp:65 */
 void PlantBombState::__MAKE_VHOOK(OnExit)(CCSBot *me)
 {
 	// equip our rifle (in case we were interrupted while holding C4)

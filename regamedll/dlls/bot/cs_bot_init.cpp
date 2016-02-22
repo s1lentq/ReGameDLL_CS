@@ -35,9 +35,8 @@ cvar_t cv_bot_defer_to_human = { "bot_defer_to_human", "0", FCVAR_SERVER, 0.0f, 
 cvar_t cv_bot_chatter = { "bot_chatter", "normal", FCVAR_SERVER, 0.0f, NULL };
 cvar_t cv_bot_profile_db = { "bot_profile_db", "BotProfile.db", FCVAR_SERVER, 0.0f, NULL };
 
-#endif // HOOK_GAMEDLL
+#endif
 
-/* <333bca> ../cstrike/dlls/bot/cs_bot_init.cpp:57 */
 void InstallBotControl()
 {
 	if (TheBots != NULL)
@@ -49,8 +48,6 @@ void InstallBotControl()
 }
 
 // Engine callback for custom server commands
-
-/* <333cb3> ../cstrike/dlls/bot/cs_bot_init.cpp:68 */
 void Bot_ServerCommand()
 {
 	if (TheBots != NULL)
@@ -60,10 +57,9 @@ void Bot_ServerCommand()
 	}
 }
 
-/* <333cec> ../cstrike/dlls/bot/cs_bot_init.cpp:81 */
 void Bot_RegisterCvars()
 {
-	if (!g_bIsCzeroGame)
+	if (!AreBotsAllowed())
 		return;
 
 	CVAR_REGISTER(&cv_bot_traceview);
@@ -98,16 +94,12 @@ void Bot_RegisterCvars()
 }
 
 // Constructor
-
-/* <333d1e> ../cstrike/dlls/bot/cs_bot_init.cpp:129 */
 CCSBot::CCSBot() : m_chatter(this), m_gameState(this)
 {
 	;
 }
 
 // Prepare bot for action
-
-/* <3342ac> ../cstrike/dlls/bot/cs_bot_init.cpp:137 */
 bool CCSBot::__MAKE_VHOOK(Initialize)(const BotProfile *profile)
 {
 	// extend
@@ -134,8 +126,6 @@ bool CCSBot::__MAKE_VHOOK(Initialize)(const BotProfile *profile)
 }
 
 // Reset internal data to initial state
-
-/* <3341dc> ../cstrike/dlls/bot/cs_bot_init.cpp:167 */
 void CCSBot::ResetValues()
 {
 	m_chatter.Reset();
@@ -282,7 +272,7 @@ void CCSBot::ResetValues()
 		m_enemyQueue[i].isReloading = false;
 		m_enemyQueue[i].isProtectedByShield = false;
 	}
-#endif // REGAMEDLL_FIXES
+#endif
 
 	// start in idle state
 	StopAttacking();
@@ -291,13 +281,9 @@ void CCSBot::ResetValues()
 
 // Called when bot is placed in map, and when bots are reset after a round ends.
 // NOTE: For some reason, this can be called twice when a bot is added.
-
-/* <3342e4> ../cstrike/dlls/bot/cs_bot_init.cpp:336 */
 void CCSBot::__MAKE_VHOOK(SpawnBot)()
 {
-	CCSBotManager *ctrl = TheCSBots();
-
-	ctrl->ValidateMapData();
+	TheCSBots()->ValidateMapData();
 	ResetValues();
 
 	Q_strcpy(m_name, STRING(pev->netname));
@@ -305,14 +291,13 @@ void CCSBot::__MAKE_VHOOK(SpawnBot)()
 	SetState(&m_buyState);
 	SetTouch(&CCSBot::BotTouch);
 
-	if (TheNavAreaList.empty() && !ctrl->IsLearningMap())
+	if (TheNavAreaList.empty() && !TheCSBots()->IsLearningMap())
 	{
-		ctrl->SetLearningMapFlag();
+		TheCSBots()->SetLearningMapFlag();
 		StartLearnProcess();
 	}
 }
 
-/* <3338f7> ../cstrike/dlls/bot/cs_bot_init.cpp:366 */
 void CCSBot::__MAKE_VHOOK(RoundRespawn)()
 {
 	// do the normal player spawn process
@@ -320,7 +305,6 @@ void CCSBot::__MAKE_VHOOK(RoundRespawn)()
 	EndVoiceFeedback();
 }
 
-/* <334332> ../cstrike/dlls/bot/cs_bot_init.cpp:378 */
 void CCSBot::Disconnect()
 {
 	EndVoiceFeedback();

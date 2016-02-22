@@ -133,16 +133,15 @@ const float HalfHumanWidth = 16.0f;
 const float HalfHumanHeight = 36.0f;
 const float HumanHeight = 72.0f;
 
-/* <4f7910> ../game_shared/bot/nav.h:104 */
 struct Extent
 {
 	Vector lo;
 	Vector hi;
 
-	float SizeX() const		{ return hi.x - lo.x; }
-	float SizeY() const		{ return hi.y - lo.y;}
-	float SizeZ() const		{ return hi.z - lo.z; }
-	float Area() const		{ return SizeX() * SizeY(); }
+	float SizeX() const { return hi.x - lo.x; }
+	float SizeY() const { return hi.y - lo.y; }
+	float SizeZ() const { return hi.z - lo.z; }
+	float Area() const { return SizeX() * SizeY(); }
 
 	// return true if 'pos' is inside of this extent
 	bool Contains(const Vector *pos) const
@@ -159,7 +158,6 @@ struct Ray
 	Vector to;
 };
 
-/* <34358b> ../game_shared/bot/nav.h:134 */
 inline NavDirType OppositeDirection(NavDirType dir)
 {
 	switch (dir)
@@ -177,7 +175,6 @@ inline NavDirType OppositeDirection(NavDirType dir)
 	return NORTH;
 }
 
-/* <4c3042> ../game_shared/bot/nav.h:148 */
 inline NavDirType DirectionLeft(NavDirType dir)
 {
 	switch (dir)
@@ -195,7 +192,6 @@ inline NavDirType DirectionLeft(NavDirType dir)
 	return NORTH;
 }
 
-/* <4c3061> ../game_shared/bot/nav.h:162 */
 inline NavDirType DirectionRight(NavDirType dir)
 {
 	switch (dir)
@@ -213,7 +209,6 @@ inline NavDirType DirectionRight(NavDirType dir)
 	return NORTH;
 }
 
-/* <3433a4> ../game_shared/bot/nav.h:176 */
 inline void AddDirectionVector(Vector *v, NavDirType dir, float amount)
 {
 	switch (dir)
@@ -233,7 +228,6 @@ inline void AddDirectionVector(Vector *v, NavDirType dir, float amount)
 	}
 }
 
-/* <38c828> ../game_shared/bot/nav.h:188 */
 inline float DirectionToAngle(NavDirType dir)
 {
 	switch (dir)
@@ -251,7 +245,6 @@ inline float DirectionToAngle(NavDirType dir)
 	return 0.0f;
 }
 
-/* <3d8335> ../game_shared/bot/nav.h:202 */
 inline NavDirType AngleToDirection(float_precision angle)
 {
 	while (angle < 0.0f)
@@ -272,7 +265,6 @@ inline NavDirType AngleToDirection(float_precision angle)
 	return NORTH;
 }
 
-/* <38ccf5> ../game_shared/bot/nav.h:223 */
 inline void DirectionToVector2D(NavDirType dir, Vector2D *v)
 {
 	switch (dir)
@@ -296,7 +288,6 @@ inline void DirectionToVector2D(NavDirType dir, Vector2D *v)
 	}
 }
 
-/* <3433d1> ../game_shared/bot/nav.h:235 */
 inline void SnapToGrid(Vector *pos)
 {
 	int cx = pos->x / GenerationStepSize;
@@ -305,7 +296,6 @@ inline void SnapToGrid(Vector *pos)
 	pos->y = cy * GenerationStepSize;
 }
 
-/* <3433d1> ../game_shared/bot/nav.h:235 */
 inline void SnapToGrid(float *value)
 {
 	int c = *value / GenerationStepSize;
@@ -319,7 +309,6 @@ inline float SnapToGrid(float value)
 	return c * GenerationStepSize;
 }
 
-/* <14ea2f> ../game_shared/bot/nav.h:251 */
 inline float_precision NormalizeAngle(float_precision angle)
 {
 	while (angle < -180.0f)
@@ -331,7 +320,6 @@ inline float_precision NormalizeAngle(float_precision angle)
 	return angle;
 }
 
-/* <4ad17f> ../game_shared/bot/nav.h:263 */
 inline float NormalizeAnglePositive(float angle)
 {
 	while (angle < 0.0f)
@@ -343,7 +331,6 @@ inline float NormalizeAnglePositive(float angle)
 	return angle;
 }
 
-/* <38c40b> ../game_shared/bot/nav.h:275 */
 inline float AngleDifference(float a, float b)
 {
 	float angleDiff = a - b;
@@ -357,27 +344,24 @@ inline float AngleDifference(float a, float b)
 	return angleDiff;
 }
 
-/* <38cac9> ../game_shared/bot/nav.h:288 */
 inline bool AnglesAreEqual(float a, float b, float tolerance = 5.0f)
 {
-	if (abs(int64(AngleDifference(a, b))) < tolerance)
+	if (Q_abs(int64(AngleDifference(a, b))) < tolerance)
 		return true;
 
 	return false;
 }
 
-/* <3d8457> ../game_shared/bot/nav.h:297 */
 inline bool VectorsAreEqual(const Vector *a, const Vector *b, float tolerance = 0.1f)
 {
-	if (abs(a->x - b->x) < tolerance &&
-			abs(a->y - b->y) < tolerance &&
-			abs(a->z - b->z) < tolerance)
+	if (Q_abs(a->x - b->x) < tolerance
+		&& Q_abs(a->y - b->y) < tolerance
+		&& Q_abs(a->z - b->z) < tolerance)
 		return true;
 
 	return false;
 }
 
-/* <3436f6> ../game_shared/bot/nav.h:313 */
 inline bool IsEntityWalkable(entvars_t *entity, unsigned int flags)
 {
 	// if we hit a door, assume its walkable because it will open when we touch it
@@ -392,8 +376,6 @@ inline bool IsEntityWalkable(entvars_t *entity, unsigned int flags)
 }
 
 // Check LOS, ignoring any entities that we can walk through
-
-/* <38d33d> ../game_shared/bot/nav.h:330 */
 inline bool IsWalkableTraceLineClear(Vector &from, Vector &to, unsigned int flags = 0)
 {
 	TraceResult result;

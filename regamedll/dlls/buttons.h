@@ -54,7 +54,6 @@
 #define SF_BTARGET_USE			0x0001
 #define SF_BTARGET_ON			0x0002
 
-/* <249a3> ../cstrike/dlls/buttons.cpp:38 */
 class CEnvGlobal: public CPointEntity
 {
 public:
@@ -72,18 +71,16 @@ public:
 	int Restore_(CRestore &restore);
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	static TYPEDESCRIPTION IMPL(m_SaveData)[3];
 
-public:
 	string_t m_globalstate;
 	int m_triggermode;
 	int m_initialstate;
 };
 
-/* <24b67> ../cstrike/dlls/buttons.cpp:800 */
 class CRotButton: public CBaseButton
 {
 public:
@@ -93,11 +90,9 @@ public:
 
 	void Spawn_();
 
-#endif // HOOK_GAMEDLL
-
+#endif
 };
 
-/* <24bba> ../cstrike/dlls/buttons.cpp:873 */
 class CMomentaryRotButton: public CBaseToggle
 {
 public:
@@ -126,7 +121,7 @@ public:
 	int Restore_(CRestore &restore);
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	void EXPORT Off();
@@ -139,8 +134,6 @@ public:
 
 public:
 	static CMomentaryRotButton *Instance(edict_t *pent) { return (CMomentaryRotButton *)GET_PRIVATE(pent); }
-
-public:
 	static TYPEDESCRIPTION IMPL(m_SaveData)[6];
 
 	int m_lastUsed;
@@ -151,7 +144,6 @@ public:
 	int m_sounds;
 };
 
-/* <24c08> ../cstrike/dlls/buttons.cpp:1117 */
 class CEnvSpark: public CBaseEntity
 {
 public:
@@ -169,7 +161,7 @@ public:
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	void EXPORT SparkThink();
@@ -182,7 +174,6 @@ public:
 	float m_flDelay;
 };
 
-/* <24c24> ../cstrike/dlls/buttons.cpp:1223 */
 class CButtonTarget: public CBaseEntity
 {
 public:
@@ -198,7 +189,7 @@ public:
 	int TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 };
 

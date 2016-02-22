@@ -1,6 +1,5 @@
 #include "precompiled.h"
 
-/* <42e3e3> ../cstrike/dlls/hostage/states/hostage_follow.cpp:12 */
 void HostageFollowState::__MAKE_VHOOK(OnEnter)(CHostageImprov *improv)
 {
 	improv->Chatter(HOSTAGE_CHATTER_START_FOLLOW);
@@ -22,7 +21,6 @@ void HostageFollowState::__MAKE_VHOOK(OnEnter)(CHostageImprov *improv)
 	}
 }
 
-/* <42deaf> ../cstrike/dlls/hostage/states/hostage_follow.cpp:40 */
 void HostageFollowState::__MAKE_VHOOK(OnUpdate)(CHostageImprov *improv)
 {
 	// if we lost our leader, give up
@@ -44,7 +42,7 @@ void HostageFollowState::__MAKE_VHOOK(OnUpdate)(CHostageImprov *improv)
 	const float maxPathLength = 3000.0f;
 	const float giveUpRange = 1000.0f;
 
-	if (range > giveUpRange || improv->GetPath()->GetSegmentCount() > 0 && improv->GetPath()->GetLength() > maxPathLength)
+	if (range > giveUpRange || (improv->GetPath()->GetSegmentCount() > 0 && improv->GetPath()->GetLength() > maxPathLength))
 	{
 		improv->Idle();
 		return;
@@ -162,7 +160,7 @@ void HostageFollowState::__MAKE_VHOOK(OnUpdate)(CHostageImprov *improv)
 
 				if (GetGroundHeight(&sideStepPos, &ground))
 				{
-					if (abs((int)(ground - improv->GetFeet().z)) < 18.0f)
+					if (Q_abs(int(ground - improv->GetFeet().z)) < 18.0f)
 					{
 						const float push = 20.0f;
 						Vector lat = cross * push;
@@ -194,13 +192,11 @@ void HostageFollowState::__MAKE_VHOOK(OnUpdate)(CHostageImprov *improv)
 	}
 }
 
-/* <42e1aa> ../cstrike/dlls/hostage/states/hostage_follow.cpp:256 */
 void HostageFollowState::__MAKE_VHOOK(OnExit)(CHostageImprov *improv)
 {
 	improv->Stop();
 }
 
-/* <42e38f> ../cstrike/dlls/hostage/states/hostage_follow.cpp:270 */
 void HostageFollowState::__MAKE_VHOOK(UpdateStationaryAnimation)(CHostageImprov *improv)
 {
 	if (improv->IsScared())

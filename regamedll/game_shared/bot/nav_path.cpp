@@ -1,8 +1,6 @@
 #include "precompiled.h"
 
 // Determine actual path positions
-
-/* <505025> ../game_shared/bot/nav_path.cpp:24 */
 bool CNavPath::ComputePathPositions()
 {
 	if (m_segmentCount == 0)
@@ -76,7 +74,7 @@ bool CNavPath::ComputePathPositions()
 			NavLadderList::const_iterator iter;
 			for (iter = list->begin(); iter != list->end(); ++iter)
 			{
-				CNavLadder *ladder = *iter;
+				CNavLadder *ladder = (*iter);
 
 				// can't use "behind" area when ascending...
 				if (ladder->m_topForwardArea == to->area || ladder->m_topLeftArea == to->area || ladder->m_topRightArea == to->area)
@@ -102,7 +100,7 @@ bool CNavPath::ComputePathPositions()
 			NavLadderList::const_iterator iter;
 			for (iter = list->begin(); iter != list->end(); ++iter)
 			{
-				CNavLadder *ladder = *iter;
+				CNavLadder *ladder = (*iter);
 
 				if (ladder->m_bottomArea == to->area)
 				{
@@ -124,8 +122,6 @@ bool CNavPath::ComputePathPositions()
 }
 
 // Return true if position is at the end of the path
-
-/* <50525f> ../game_shared/bot/nav_path.cpp:148 */
 bool CNavPath::IsAtEnd(const Vector &pos) const
 {
 	if (!IsValid())
@@ -136,8 +132,6 @@ bool CNavPath::IsAtEnd(const Vector &pos) const
 }
 
 // Return length of path from start to finish
-
-/* <5052f6> ../game_shared/bot/nav_path.cpp:161 */
 float CNavPath::GetLength() const
 {
 	float length = 0.0f;
@@ -151,8 +145,6 @@ float CNavPath::GetLength() const
 
 // Return point a given distance along the path - if distance is out of path bounds, point is clamped to start/end
 // TODO: Be careful of returning "positions" along one-way drops, ladders, etc.
-
-/* <50537f> ../game_shared/bot/nav_path.cpp:177 */
 NOXREF bool CNavPath::GetPointAlongPath(float distAlong, Vector *pointOnPath) const
 {
 	if (!IsValid() || pointOnPath == NULL)
@@ -191,8 +183,6 @@ NOXREF bool CNavPath::GetPointAlongPath(float distAlong, Vector *pointOnPath) co
 }
 
 // Return the node index closest to the given distance along the path without going over - returns (-1) if error
-
-/* <5054da> ../game_shared/bot/nav_path.cpp:218 */
 int CNavPath::GetSegmentIndexAlongPath(float distAlong) const
 {
 	if (!IsValid())
@@ -220,8 +210,6 @@ int CNavPath::GetSegmentIndexAlongPath(float distAlong) const
 
 // Compute closest point on path to given point
 // NOTE: This does not do line-of-sight tests, so closest point may be thru the floor, etc
-
-/* <50557e> ../game_shared/bot/nav_path.cpp:250 */
 NOXREF bool CNavPath::FindClosestPointOnPath(const Vector *worldPos, int startIndex, int endIndex, Vector *close) const
 {
 	if (!IsValid() || close == NULL)
@@ -274,8 +262,6 @@ NOXREF bool CNavPath::FindClosestPointOnPath(const Vector *worldPos, int startIn
 }
 
 // Build trivial path when start and goal are in the same nav area
-
-/* <5057df> ../game_shared/bot/nav_path.cpp:305 */
 bool CNavPath::BuildTrivialPath(const Vector *start, const Vector *goal)
 {
 	m_segmentCount = 0;
@@ -308,8 +294,6 @@ bool CNavPath::BuildTrivialPath(const Vector *start, const Vector *goal)
 }
 
 // Draw the path for debugging
-
-/* <505853> ../game_shared/bot/nav_path.cpp:340 */
 void CNavPath::Draw()
 {
 	if (!IsValid())
@@ -323,8 +307,6 @@ void CNavPath::Draw()
 
 // Check line of sight from 'anchor' node on path to subsequent nodes until
 // we find a node that can't been seen from 'anchor'
-
-/* <505931> ../game_shared/bot/nav_path.cpp:357 */
 int CNavPath::FindNextOccludedNode(int anchor_)
 {
 	int lastVisible = anchor_;
@@ -361,8 +343,6 @@ int CNavPath::FindNextOccludedNode(int anchor_)
 }
 
 // Smooth out path, removing redundant nodes
-
-/* <505c26> ../game_shared/bot/nav_path.cpp:396 */
 void CNavPath::Optimize()
 {
 	// DONT USE THIS: Optimizing the path results in cutting thru obstacles
@@ -395,7 +375,6 @@ void CNavPath::Optimize()
 #endif
 }
 
-/* <505c6d> ../game_shared/bot/nav_path.cpp:436 */
 CNavPathFollower::CNavPathFollower()
 {
 	m_improv = NULL;
@@ -407,7 +386,6 @@ CNavPathFollower::CNavPathFollower()
 	m_isDebug = false;
 }
 
-/* <505cce> ../game_shared/bot/nav_path.cpp:447 */
 void CNavPathFollower::Reset()
 {
 	m_segmentIndex = 1;
@@ -417,8 +395,6 @@ void CNavPathFollower::Reset()
 }
 
 // Move improv along path
-
-/* <507c31> ../game_shared/bot/nav_path.cpp:459 */
 void CNavPathFollower::Update(float deltaT, bool avoidObstacles)
 {
 	if (m_path == NULL || m_path->IsValid() == false)
@@ -493,7 +469,7 @@ void CNavPathFollower::Update(float deltaT, bool avoidObstacles)
 	{
 		// because hostage crouching is not really supported by the engine,
 		// if we are standing in a crouch area, we must crouch to avoid collisions
-		if (m_improv->GetLastKnownArea() && (m_improv->GetLastKnownArea()->GetAttributes() & NAV_CROUCH) && !(m_improv->GetLastKnownArea()->GetAttributes() & NAV_JUMP))
+		if (m_improv->GetLastKnownArea() != NULL && (m_improv->GetLastKnownArea()->GetAttributes() & NAV_CROUCH) && !(m_improv->GetLastKnownArea()->GetAttributes() & NAV_JUMP))
 		{
 			m_improv->Crouch();
 		}
@@ -532,7 +508,8 @@ void CNavPathFollower::Update(float deltaT, bool avoidObstacles)
 			// no crouch areas coming up
 			m_improv->StandUp();
 		}
-	}	// end crouching logic
+	}
+	// end crouching logic
 
 	if (m_isDebug)
 	{
@@ -606,8 +583,6 @@ void CNavPathFollower::Update(float deltaT, bool avoidObstacles)
 
 // Return the closest point to our current position on our current path
 // If "local" is true, only check the portion of the path surrounding m_pathIndex
-
-/* <505d18> ../game_shared/bot/nav_path.cpp:662 */
 int CNavPathFollower::FindOurPositionOnPath(Vector *close, bool local) const
 {
 	Vector along, toFeet;
@@ -692,8 +667,6 @@ int CNavPathFollower::FindOurPositionOnPath(Vector *close, bool local) const
 
 // Compute a point a fixed distance ahead along our path
 // Returns path index just after point
-
-/* <506248> ../game_shared/bot/nav_path.cpp:750 */
 int CNavPathFollower::FindPathPoint(float aheadRange, Vector *point, int *prevIndex)
 {
 	// find path index just past aheadRange
@@ -768,8 +741,7 @@ int CNavPathFollower::FindPathPoint(float aheadRange, Vector *point, int *prevIn
 	}
 
 	// we need the point just *ahead* of us
-	++startIndex;
-	if (startIndex >= m_path->GetSegmentCount())
+	if (++startIndex >= m_path->GetSegmentCount())
 		startIndex = m_path->GetSegmentCount() - 1;
 
 	// if we hit a ladder or jump area, must stop
@@ -936,8 +908,6 @@ int CNavPathFollower::FindPathPoint(float aheadRange, Vector *point, int *prevIn
 
 // Do reflex avoidance movements if our "feelers" are touched
 // TODO: Parameterize feeler spacing
-
-/* <507004> ../game_shared/bot/nav_path.cpp:1000 */
 void CNavPathFollower::FeelerReflexAdjustment(Vector *goalPosition, float height)
 {
 	// if we are in a "precise" area, do not do feeler adjustments
@@ -954,10 +924,10 @@ void CNavPathFollower::FeelerReflexAdjustment(Vector *goalPosition, float height
 	float_precision flLen = dir.Length();
 
 	if (flLen > 0)
-		dir = dir * (float)(1 / flLen);
+		dir = dir * float(1 / flLen);
 	else
 		dir = Vector(0, 0, 0);
-#endif // PLAY_GAMEDLL
+#endif
 
 	Vector lat(-dir.y, dir.x, 0.0f);
 
@@ -1036,8 +1006,6 @@ void CNavPathFollower::FeelerReflexAdjustment(Vector *goalPosition, float height
 }
 
 // Reset the stuck-checker
-
-/* <507a31> ../game_shared/bot/nav_path.cpp:1098 */
 CStuckMonitor::CStuckMonitor()
 {
 	m_isStuck = false;
@@ -1046,8 +1014,6 @@ CStuckMonitor::CStuckMonitor()
 }
 
 // Reset the stuck-checker
-
-/* <507a73> ../game_shared/bot/nav_path.cpp:1108 */
 void CStuckMonitor::Reset()
 {
 	m_isStuck = false;
@@ -1056,8 +1022,6 @@ void CStuckMonitor::Reset()
 }
 
 // Test if the improv has become stuck
-
-/* <507a96> ../game_shared/bot/nav_path.cpp:1119 */
 void CStuckMonitor::Update(CImprov *improv)
 {
 	if (m_isStuck)

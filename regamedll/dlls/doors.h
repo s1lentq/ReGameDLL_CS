@@ -48,7 +48,6 @@
 #define SF_DOOR_NOMONSTERS		512		// Monster can't open
 #define SF_DOOR_SILENT			0x80000000
 
-/* <6840f> ../cstrike/dlls/doors.cpp:34 */
 class CBaseDoor: public CBaseToggle
 {
 public:
@@ -81,7 +80,7 @@ public:
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 	void Blocked_(CBaseEntity *pOther);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	static TYPEDESCRIPTION IMPL(m_SaveData)[7];
@@ -110,7 +109,6 @@ public:
 	float m_lastBlockedTimestamp;
 };
 
-/* <684c0> ../cstrike/dlls/doors.cpp:935 */
 class CRotDoor: public CBaseDoor
 {
 public:
@@ -124,11 +122,10 @@ public:
 	void Restart_();
 	void SetToggleState_(int state);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 };
 
-/* <68513> ../cstrike/dlls/doors.cpp:1039 */
 class CMomentaryDoor: public CBaseToggle
 {
 public:
@@ -149,7 +146,7 @@ public:
 	int Restore_(CRestore &restore);
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	static TYPEDESCRIPTION IMPL(m_SaveData)[1];

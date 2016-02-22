@@ -1,9 +1,7 @@
 #include "precompiled.h"
 
-/* <23a81f> ../cstrike/dlls/wpn_shared/wpn_aug.cpp:50 */
 LINK_ENTITY_TO_CLASS(weapon_aug, CAUG);
 
-/* <23a711> ../cstrike/dlls/wpn_shared/wpn_aug.cpp:52 */
 void CAUG::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
@@ -18,7 +16,6 @@ void CAUG::__MAKE_VHOOK(Spawn)()
 	FallInit();
 }
 
-/* <23a66a> ../cstrike/dlls/wpn_shared/wpn_aug.cpp:66 */
 void CAUG::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/v_aug.mdl");
@@ -35,7 +32,6 @@ void CAUG::__MAKE_VHOOK(Precache)()
 	m_usFireAug = PRECACHE_EVENT(1, "events/aug.sc");
 }
 
-/* <23a691> ../cstrike/dlls/wpn_shared/wpn_aug.cpp:83 */
 int CAUG::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
@@ -53,7 +49,6 @@ int CAUG::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	return 1;
 }
 
-/* <23a6ea> ../cstrike/dlls/wpn_shared/wpn_aug.cpp:100 */
 BOOL CAUG::__MAKE_VHOOK(Deploy)()
 {
 	m_flAccuracy = 0.2f;
@@ -63,7 +58,6 @@ BOOL CAUG::__MAKE_VHOOK(Deploy)()
 	return DefaultDeploy("models/v_aug.mdl", "models/p_aug.mdl", AUG_DRAW, "carbine", UseDecrement() != FALSE);
 }
 
-/* <23a6c4> ../cstrike/dlls/wpn_shared/wpn_aug.cpp:109 */
 void CAUG::__MAKE_VHOOK(SecondaryAttack)()
 {
 	if (m_pPlayer->m_iFOV == DEFAULT_FOV)
@@ -74,7 +68,6 @@ void CAUG::__MAKE_VHOOK(SecondaryAttack)()
 	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.3f;
 }
 
-/* <23aa31> ../cstrike/dlls/wpn_shared/wpn_aug.cpp:130 */
 void CAUG::__MAKE_VHOOK(PrimaryAttack)()
 {
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
@@ -95,7 +88,6 @@ void CAUG::__MAKE_VHOOK(PrimaryAttack)()
 	}
 }
 
-/* <23a8e9> ../cstrike/dlls/wpn_shared/wpn_aug.cpp:143 */
 void CAUG::AUGFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 {
 	Vector vecAiming, vecSrc, vecDir;
@@ -144,10 +136,10 @@ void CAUG::AUGFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	flag = FEV_NOTHOST;
 #else
 	flag = 0;
-#endif // CLIENT_WEAPONS
+#endif
 
 	PLAYBACK_EVENT_FULL(flag, m_pPlayer->edict(), m_usFireAug, 0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y,
-		(int)(m_pPlayer->pev->punchangle.x * 100), (int)(m_pPlayer->pev->punchangle.y * 100), FALSE, FALSE);
+		int(m_pPlayer->pev->punchangle.x * 100), int(m_pPlayer->pev->punchangle.y * 100), FALSE, FALSE);
 
 	m_flNextPrimaryAttack = m_flNextSecondaryAttack = GetNextAttackDelay(flCycleTime);
 
@@ -176,7 +168,6 @@ void CAUG::AUGFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	}
 }
 
-/* <23a7c2> ../cstrike/dlls/wpn_shared/wpn_aug.cpp:225 */
 void CAUG::__MAKE_VHOOK(Reload)()
 {
 	if (m_pPlayer->ammo_556nato <= 0)
@@ -197,7 +188,6 @@ void CAUG::__MAKE_VHOOK(Reload)()
 	}
 }
 
-/* <23a787> ../cstrike/dlls/wpn_shared/wpn_aug.cpp:245 */
 void CAUG::__MAKE_VHOOK(WeaponIdle)()
 {
 	ResetEmptySound();

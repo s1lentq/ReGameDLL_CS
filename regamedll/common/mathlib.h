@@ -39,7 +39,7 @@
 
 typedef double float_precision;
 
-#else // PLAY_GAMEDLL
+#else
 
 typedef float float_precision;
 
@@ -68,29 +68,29 @@ typedef union DLONG_u
 #define M_PI			3.14159265358979323846
 
 template <typename T>
-T Q_min(T a, T b)		{ return (a < b) ? a : b; }
+T Q_min(T a, T b) { return (a < b) ? a : b; }
 
 template <typename T>
-T Q_max(T a, T b)		{ return (a > b) ? a : b; }
+T Q_max(T a, T b) { return (a > b) ? a : b; }
 
 template <typename T>
-T clamp(T a, T min, T max)	{ return (a > max) ? max : (a < min) ? min : a; }
+T clamp(T a, T min, T max) { return (a > max) ? max : (a < min) ? min : a; }
 
 // bitwise operators templates
 template<class T, class type=typename std::underlying_type<T>::type>
-inline T operator~ (T a)	{ return (T)~(type)a; }
+inline T operator~ (T a) { return (T)~(type)a; }
 template<class T, class type=typename std::underlying_type<T>::type>
-inline T operator| (T a, T b)	{ return (T)((type)a | (type)b); }
+inline T operator| (T a, T b) { return (T)((type)a | (type)b); }
 template<class T, class type=typename std::underlying_type<T>::type>
-inline T operator& (T a, T b)	{ return (T)((type)a & (type)b); }
+inline T operator& (T a, T b) { return (T)((type)a & (type)b); }
 template<class T, class type=typename std::underlying_type<T>::type>
-inline T operator^ (T a, T b)	{ return (T)((type)a ^ (type)b); }
+inline T operator^ (T a, T b) { return (T)((type)a ^ (type)b); }
 template<class T, class type=typename std::underlying_type<T>::type>
-inline T& operator|= (T& a, T b){ return (T&)((type&)a |= (type)b); }
+inline T& operator|= (T& a, T b) { return (T&)((type&)a |= (type)b); }
 template<class T, class type=typename std::underlying_type<T>::type>
-inline T& operator&= (T& a, T b){ return (T&)((type&)a &= (type)b); }
+inline T& operator&= (T& a, T b) { return (T&)((type&)a &= (type)b); }
 template<class T, class type=typename std::underlying_type<T>::type>
-inline T& operator^= (T& a, T b){ return (T&)((type&)a ^= (type)b); }
+inline T& operator^= (T& a, T b) { return (T&)((type&)a ^= (type)b); }
 
 #define VectorSubtract(a,b,c) {(c)[0]=(a)[0]-(b)[0];(c)[1]=(a)[1]-(b)[1];(c)[2]=(a)[2]-(b)[2];}
 #define VectorAdd(a,b,c) {(c)[0]=(a)[0]+(b)[0];(c)[1]=(a)[1]+(b)[1];(c)[2]=(a)[2]+(b)[2];}

@@ -292,11 +292,11 @@ public:
 	void ClearCurrentEvent(bool closeWindow = true, bool processDeathsForEvent = true);
 	void DeleteEvent(TutorMessageEvent *event);
 	bool ShouldShowMessageEvent(TutorMessageEvent *event, float time);
-	NOXREF bool ShouldUpdateCurrentMessage(TutorMessageID messageID);
+	bool ShouldUpdateCurrentMessage(TutorMessageID messageID);
 	void ComputeDisplayTimesForMessage();
 	void UpdateCurrentMessage(TutorMessageEvent *event);
 	void ConstructMessageAndDisplay();
-	NOXREF void LookupHotKey(TutorMessageID mid, int paramNum, wchar_t *buf, int buflen);
+	void LookupHotKey(TutorMessageID mid, int paramNum, wchar_t *buf, int buflen);
 	void CheckForWindowClose(float time);
 	void CheckForContentUpdate();
 	bool HasCurrentWindowBeenActiveLongEnough(float time);
@@ -316,10 +316,10 @@ public:
 	void HandleWeaponReloaded(CBaseEntity *entity, CBaseEntity *other);
 	void HandlePlayerDied(CBaseEntity *entity, CBaseEntity *other);
 	void HandlePlayerSpawned(CBaseEntity *entity, CBaseEntity *other);
-	NOXREF void HandleClientCorpseSpawned(CBaseEntity *entity, CBaseEntity *other);
+	void HandleClientCorpseSpawned(CBaseEntity *entity, CBaseEntity *other);
 	void HandlePlayerTookDamage(CBaseEntity *entity, CBaseEntity *other);
 	void HandlePlayerBlindedByFlashbang(CBaseEntity *entity, CBaseEntity *other);
-	NOXREF void HandleBuyTimeStart(CBaseEntity *entity, CBaseEntity *other);
+	void HandleBuyTimeStart(CBaseEntity *entity, CBaseEntity *other);
 	void HandlePlayerLeftBuyZone(CBaseEntity *entity, CBaseEntity *other);
 	void HandleBombPlanted(CBaseEntity *entity, CBaseEntity *other);
 	void HandleRoundStart(CBaseEntity *entity, CBaseEntity *other);
@@ -400,7 +400,7 @@ public:
 	void HandleShotFired_(Vector source, Vector target);
 	TutorMessage *GetTutorMessageDefinition_(int messageID);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 private:
 	float m_nextViewableCheckTime;
@@ -416,7 +416,7 @@ private:
 	ClientCorpseList m_clientCorpseList;
 	int m_messageTypeMask;
 	bool m_haveSpawned;
-	PlayerDeathStruct m_playerDeathInfo[32];
+	PlayerDeathStruct m_playerDeathInfo[MAX_CLIENTS];
 };
 
 void ParseMessageParameters(char *&messageData, TutorMessage *ret);

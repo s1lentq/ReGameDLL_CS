@@ -1,9 +1,7 @@
 #include "precompiled.h"
 
-/* <29ba7b> ../cstrike/dlls/wpn_shared/wpn_scout.cpp:48 */
 LINK_ENTITY_TO_CLASS(weapon_scout, CSCOUT);
 
-/* <29b7ee> ../cstrike/dlls/wpn_shared/wpn_scout.cpp:50 */
 void CSCOUT::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
@@ -16,7 +14,6 @@ void CSCOUT::__MAKE_VHOOK(Spawn)()
 	FallInit();
 }
 
-/* <29b70a> ../cstrike/dlls/wpn_shared/wpn_scout.cpp:62 */
 void CSCOUT::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/v_scout.mdl");
@@ -32,7 +29,6 @@ void CSCOUT::__MAKE_VHOOK(Precache)()
 	m_usFireScout = PRECACHE_EVENT(1, "events/scout.sc");
 }
 
-/* <29b731> ../cstrike/dlls/wpn_shared/wpn_scout.cpp:79 */
 int CSCOUT::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
@@ -50,7 +46,6 @@ int CSCOUT::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	return 1;
 }
 
-/* <29b8f7> ../cstrike/dlls/wpn_shared/wpn_scout.cpp:96 */
 BOOL CSCOUT::__MAKE_VHOOK(Deploy)()
 {
 	if (DefaultDeploy("models/v_scout.mdl", "models/p_scout.mdl", SCOUT_DRAW, "rifle", UseDecrement() != FALSE))
@@ -64,7 +59,6 @@ BOOL CSCOUT::__MAKE_VHOOK(Deploy)()
 	return FALSE;
 }
 
-/* <29b78a> ../cstrike/dlls/wpn_shared/wpn_scout.cpp:109 */
 void CSCOUT::__MAKE_VHOOK(SecondaryAttack)()
 {
 	switch (m_pPlayer->m_iFOV)
@@ -75,7 +69,7 @@ void CSCOUT::__MAKE_VHOOK(SecondaryAttack)()
 	default:
 #else
 	case 15:
-#endif // REGAMEDLL_FIXES
+#endif
 		m_pPlayer->m_iFOV = m_pPlayer->pev->fov = 90; break;
 	}
 
@@ -89,7 +83,6 @@ void CSCOUT::__MAKE_VHOOK(SecondaryAttack)()
 	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.3;
 }
 
-/* <29ba31> ../cstrike/dlls/wpn_shared/wpn_scout.cpp:140 */
 void CSCOUT::__MAKE_VHOOK(PrimaryAttack)()
 {
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
@@ -110,7 +103,6 @@ void CSCOUT::__MAKE_VHOOK(PrimaryAttack)()
 	}
 }
 
-/* <29bb45> ../cstrike/dlls/wpn_shared/wpn_scout.cpp:154 */
 void CSCOUT::SCOUTFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 {
 	Vector vecAiming, vecSrc, vecDir;
@@ -163,10 +155,10 @@ void CSCOUT::SCOUTFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	flag = FEV_NOTHOST;
 #else
 	flag = 0;
-#endif // CLIENT_WEAPONS
+#endif
 
 	PLAYBACK_EVENT_FULL(flag, m_pPlayer->edict(), m_usFireScout, 0, (float *)&g_vecZero, (float *)&m_pPlayer->pev->angles, (vecDir.x * 1000), (vecDir.y * 1000),
-		(int)(m_pPlayer->pev->punchangle.x * 100), (int)(m_pPlayer->pev->punchangle.x * 100), FALSE, FALSE);
+		int(m_pPlayer->pev->punchangle.x * 100), int(m_pPlayer->pev->punchangle.x * 100), FALSE, FALSE);
 
 	m_flNextPrimaryAttack = m_flNextSecondaryAttack = GetNextAttackDelay(flCycleTime);
 
@@ -179,14 +171,13 @@ void CSCOUT::SCOUTFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	m_pPlayer->pev->punchangle.x -= 2.0f;
 }
 
-/* <29b89e> ../cstrike/dlls/wpn_shared/wpn_scout.cpp:232 */
 void CSCOUT::__MAKE_VHOOK(Reload)()
 {
 #ifdef REGAMEDLL_FIXES
 	// to prevent reload if not enough ammo
 	if (m_pPlayer->ammo_762nato <= 0)
 		return;
-#endif // REGAMEDLL_FIXES
+#endif
 
 	if (DefaultReload(SCOUT_MAX_CLIP, SCOUT_RELOAD, SCOUT_RELOAD_TIME))
 	{
@@ -200,7 +191,6 @@ void CSCOUT::__MAKE_VHOOK(Reload)()
 	}
 }
 
-/* <29b864> ../cstrike/dlls/wpn_shared/wpn_scout.cpp:250 */
 void CSCOUT::__MAKE_VHOOK(WeaponIdle)()
 {
 	ResetEmptySound();
@@ -218,7 +208,6 @@ void CSCOUT::__MAKE_VHOOK(WeaponIdle)()
 	}
 }
 
-/* <29b764> ../cstrike/dlls/wpn_shared/wpn_scout.cpp:267 */
 float CSCOUT::__MAKE_VHOOK(GetMaxSpeed)()
 {
 	return (m_pPlayer->m_iFOV == DEFAULT_FOV) ? SCOUT_MAX_SPEED : SCOUT_MAX_SPEED_ZOOM;

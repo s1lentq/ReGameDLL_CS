@@ -50,7 +50,6 @@
 #define SF_CORNER_TELEPORT		0x002
 #define SF_CORNER_FIREONCE		0x004
 
-/* <121991> ../cstrike/dlls/trains.h:37 */
 class CPathTrack: public CPointEntity
 {
 public:
@@ -70,7 +69,7 @@ public:
 	void Activate_();
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 	void SetPrevious(CPathTrack *pprevious);
 	void Link();
@@ -97,7 +96,6 @@ public:
 	CPathTrack *m_paltpath;
 };
 
-/* <12c98a> ../cstrike/dlls/trains.h:75 */
 class CFuncTrackTrain: public CBaseEntity
 {
 public:
@@ -126,7 +124,7 @@ public:
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 	void Blocked_(CBaseEntity *pOther);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	void EXPORT Next();
@@ -164,7 +162,6 @@ private:
 	unsigned short m_usAdjustPitch;
 };
 
-/* <1ba5f9> ../cstrike/dlls/trains.h:134 */
 class CFuncVehicle: public CBaseEntity
 {
 public:
@@ -195,7 +192,7 @@ public:
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 	void Blocked_(CBaseEntity *pOther);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	void EXPORT Next();

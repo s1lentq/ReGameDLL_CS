@@ -2,7 +2,6 @@
 
 BOOL g_fDrawLines = FALSE;
 
-/* <c08f4> ../cstrike/dlls/h_ai.cpp:47 */
 NOXREF BOOL FBoxVisible(entvars_t *pevLooker, entvars_t *pevTarget, Vector &vecTargetOrigin, float flSize)
 {
 	// don't look through water
@@ -41,8 +40,6 @@ NOXREF BOOL FBoxVisible(entvars_t *pevLooker, entvars_t *pevTarget, Vector &vecT
 
 // VecCheckToss - returns the velocity at which an object should be lobbed from vecspot1 to land near vecspot2.
 // returns g_vecZero if toss is not feasible.
-
-/* <c0a19> ../cstrike/dlls/h_ai.cpp:78 */
 NOXREF Vector VecCheckToss(entvars_t *pev, const Vector &vecSpot1, Vector vecSpot2, float flGravityAdj)
 {
 	TraceResult tr;
@@ -71,8 +68,8 @@ NOXREF Vector VecCheckToss(entvars_t *pev, const Vector &vecSpot1, Vector vecSpo
 	// How much time does it take to get there?
 
 	// get a rough idea of how high it can be thrown
-	vecMidPoint = vecSpot1 + (vecSpot2 - vecSpot1) * 0.5;
-	UTIL_TraceLine(vecMidPoint, vecMidPoint + Vector(0,0,500), ignore_monsters, ENT(pev), &tr);
+	vecMidPoint = vecSpot1 + (vecSpot2 - vecSpot1) * 0.5f;
+	UTIL_TraceLine(vecMidPoint, vecMidPoint + Vector(0, 0, 500), ignore_monsters, ENT(pev), &tr);
 	vecMidPoint = tr.vecEndPos;
 
 	// (subtract 15 so the grenade doesn't hit the ceiling)
@@ -89,10 +86,10 @@ NOXREF Vector VecCheckToss(entvars_t *pev, const Vector &vecSpot1, Vector vecSpo
 	float distance2 = (vecMidPoint.z - vecSpot2.z);
 
 	// How long will it take for the grenade to travel this distance
-	float time1 = sqrt(distance1 / (0.5 * flGravity));
-	float time2 = sqrt(distance2 / (0.5 * flGravity));
+	float time1 = Q_sqrt(distance1 / (0.5f * flGravity));
+	float time2 = Q_sqrt(distance2 / (0.5f * flGravity));
 
-	if (time1 < 0.1)
+	if (time1 < 0.1f)
 	{
 		// too close
 		return g_vecZero;
@@ -128,8 +125,6 @@ NOXREF Vector VecCheckToss(entvars_t *pev, const Vector &vecSpot1, Vector vecSpo
 
 // VecCheckThrow - returns the velocity vector at which an object should be thrown from vecspot1 to hit vecspot2.
 // returns g_vecZero if throw is not feasible.
-
-/* <c0d21> ../cstrike/dlls/h_ai.cpp:164 */
 NOXREF Vector VecCheckThrow(entvars_t *pev, const Vector &vecSpot1, Vector vecSpot2, float flSpeed, float flGravityAdj)
 {
 	float flGravity = g_psv_gravity->value * flGravityAdj;
@@ -138,13 +133,13 @@ NOXREF Vector VecCheckThrow(entvars_t *pev, const Vector &vecSpot1, Vector vecSp
 
 	// throw at a constant time
 	float time = vecGrenadeVel.Length() / flSpeed;
-	vecGrenadeVel = vecGrenadeVel * (1.0 / time);
+	vecGrenadeVel = vecGrenadeVel * (1.0f / time);
 
 	// adjust upward toss to compensate for gravity loss
-	vecGrenadeVel.z += flGravity * time * 0.5;
+	vecGrenadeVel.z += flGravity * time * 0.5f;
 
-	Vector vecApex = vecSpot1 + (vecSpot2 - vecSpot1) * 0.5;
-	vecApex.z += 0.5 * flGravity * (time * 0.5) * (time * 0.5);
+	Vector vecApex = vecSpot1 + (vecSpot2 - vecSpot1) * 0.5f;
+	vecApex.z += 0.5f * flGravity * (time * 0.5f) * (time * 0.5f);
 
 	TraceResult tr;
 	UTIL_TraceLine(vecSpot1, vecApex, dont_ignore_monsters, ENT(pev), &tr);

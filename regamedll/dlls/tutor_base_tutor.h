@@ -89,7 +89,7 @@ public:
 	bool IsPlayerLookingAtPosition_(Vector *origin, CBasePlayer *player);
 	bool IsPlayerLookingAtEntity_(CBaseEntity *entity, CBasePlayer *player);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	void StartFrame(float time);
@@ -97,7 +97,7 @@ public:
 
 	void ShotFired(Vector source, Vector target);
 	void DisplayMessageToPlayer(CBasePlayer *player, int id, const char *szMessage, TutorMessageEvent *event);
-	NOXREF void DrawLineToEntity(CBasePlayer *player, int entindex, int id);
+	void DrawLineToEntity(CBasePlayer *player, int entindex, int id);
 	void DisplayNewStateDescriptionToPlayer();
 	void CloseCurrentWindow();
 	void CheckForStateTransition(GameEventType event, CBaseEntity *entity, CBaseEntity *other);

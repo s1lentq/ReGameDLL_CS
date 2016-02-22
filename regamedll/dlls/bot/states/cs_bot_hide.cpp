@@ -2,8 +2,6 @@
 
 // Begin moving to a nearby hidey-hole.
 // NOTE: Do not forget this state may include a very long "move-to" time to get to our hidey spot!
-
-/* <57c261> ../cstrike/dlls/bot/states/cs_bot_hide.cpp:22 */
 void HideState::__MAKE_VHOOK(OnEnter)(CCSBot *me)
 {
 	m_isAtSpot = false;
@@ -42,12 +40,8 @@ void HideState::__MAKE_VHOOK(OnEnter)(CCSBot *me)
 
 // Move to a nearby hidey-hole.
 // NOTE: Do not forget this state may include a very long "move-to" time to get to our hidey spot!
-
-/* <57c35e> ../cstrike/dlls/bot/states/cs_bot_hide.cpp:59 */
 void HideState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 {
-	CCSBotManager *ctrl = TheCSBots();
-
 	// wait until finished reloading to leave hide state
 	if (!me->IsActiveWeaponReloading())
 	{
@@ -56,16 +50,16 @@ void HideState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 			if (me->GetTask() == CCSBot::GUARD_LOOSE_BOMB)
 			{
 				// if we're guarding the loose bomb, continue to guard it but pick a new spot
-				me->Hide(ctrl->GetLooseBombArea());
+				me->Hide(TheCSBots()->GetLooseBombArea());
 				return;
 			}
 			else if (me->GetTask() == CCSBot::GUARD_BOMB_ZONE)
 			{
 				// if we're guarding a bombsite, continue to guard it but pick a new spot
-				const CCSBotManager::Zone *zone = ctrl->GetClosestZone(&me->pev->origin);
+				const CCSBotManager::Zone *zone = TheCSBots()->GetClosestZone(&me->pev->origin);
 				if (zone != NULL)
 				{
-					CNavArea *area = ctrl->GetRandomAreaInZone(zone);
+					CNavArea *area = TheCSBots()->GetRandomAreaInZone(zone);
 					if (area != NULL)
 					{
 						me->Hide(area);
@@ -117,7 +111,7 @@ void HideState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 		// TODO: Perhaps tie in to TakeDamage(), so it works for human players, too
 
 		// Scenario logic
-		switch (ctrl->GetScenario())
+		switch (TheCSBots()->GetScenario())
 		{
 			case CCSBotManager::SCENARIO_DEFUSE_BOMB:
 			{
@@ -125,22 +119,22 @@ void HideState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 				{
 					// if we are just holding position (due to a radio order) and the bomb has just planted, go defuse it
 					if (me->GetTask() == CCSBot::HOLD_POSITION &&
-						ctrl->IsBombPlanted() &&
-						ctrl->GetBombPlantTimestamp() > me->GetStateTimestamp())
+						TheCSBots()->IsBombPlanted() &&
+						TheCSBots()->GetBombPlantTimestamp() > me->GetStateTimestamp())
 					{
 						me->Idle();
 						return;
 					}
 
 					// if we are guarding the defuser and he dies/gives up, stop hiding (to choose another defuser)
-					if (me->GetTask() == CCSBot::GUARD_BOMB_DEFUSER && ctrl->GetBombDefuser() == NULL)
+					if (me->GetTask() == CCSBot::GUARD_BOMB_DEFUSER && TheCSBots()->GetBombDefuser() == NULL)
 					{
 						me->Idle();
 						return;
 					}
 
 					// if we are guarding the loose bomb and it is picked up, stop hiding
-					if (me->GetTask() == CCSBot::GUARD_LOOSE_BOMB && ctrl->GetLooseBomb() == NULL)
+					if (me->GetTask() == CCSBot::GUARD_LOOSE_BOMB && TheCSBots()->GetLooseBomb() == NULL)
 					{
 						me->GetChatter()->TheyPickedUpTheBomb();
 						me->Idle();
@@ -155,7 +149,7 @@ void HideState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 					}
 
 					// if we are guarding (bombsite, initial encounter, etc) and the bomb is planted, go defuse it
-					if (me->IsDoingScenario() && me->GetTask() == CCSBot::GUARD_BOMB_ZONE && ctrl->IsBombPlanted())
+					if (me->IsDoingScenario() && me->GetTask() == CCSBot::GUARD_BOMB_ZONE && TheCSBots()->IsBombPlanted())
 					{
 						me->Idle();
 						return;
@@ -166,16 +160,16 @@ void HideState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 				else
 				{
 					// if we are near the ticking bomb and someone starts defusing it, attack!
-					if (ctrl->GetBombDefuser())
+					if (TheCSBots()->GetBombDefuser())
 					{
-						Vector toDefuser = ctrl->GetBombDefuser()->pev->origin;
+						Vector toDefuser = TheCSBots()->GetBombDefuser()->pev->origin;
 						const float hearDefuseRange = 2000.0f;
 						if ((toDefuser - me->pev->origin).IsLengthLessThan(hearDefuseRange))
 						{
 							// if we are nearby, attack, otherwise move to the bomb (which will cause us to attack when we see defuser)
 							if (me->CanSeePlantedBomb())
 							{
-								me->Attack(ctrl->GetBombDefuser());
+								me->Attack(TheCSBots()->GetBombDefuser());
 							}
 							else
 							{
@@ -286,16 +280,16 @@ void HideState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 		{
 			if (me->m_iTeam == CT)
 			{
-				if (me->GetTask() == CCSBot::GUARD_BOMB_ZONE && me->IsAtHidingSpot() && ctrl->IsBombPlanted())
+				if (me->GetTask() == CCSBot::GUARD_BOMB_ZONE && me->IsAtHidingSpot() && TheCSBots()->IsBombPlanted())
 				{
 					if (me->GetNearbyEnemyCount() == 0)
 					{
 						const float someTime = 30.0f;
 						const float littleTime = 11.0;
 
-						if (ctrl->GetBombTimeLeft() > someTime)
+						if (TheCSBots()->GetBombTimeLeft() > someTime)
 							me->GetChatter()->Encourage("BombsiteSecure", RANDOM_FLOAT(10.0f, 15.0f));
-						else if (ctrl->GetBombTimeLeft() > littleTime)
+						else if (TheCSBots()->GetBombTimeLeft() > littleTime)
 							me->GetChatter()->Encourage("WaitingForHumanToDefuseBomb", RANDOM_FLOAT(5.0f, 8.0f));
 						else
 							me->GetChatter()->Encourage("WaitingForHumanToDefuseBombPanic", RANDOM_FLOAT(3.0f, 4.0f));
@@ -401,9 +395,15 @@ void HideState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 				me->PrintIfWatched("No available hiding spots - hiding where I'm at.\n");
 
 				// hide where we are
+#ifndef REGAMEDLL_FIXES
 				m_hidingSpot.x = me->pev->origin.x;
 				m_hidingSpot.x = me->pev->origin.y;
 				m_hidingSpot.z = me->GetFeetZ();
+#else
+				m_hidingSpot.x = me->pev->origin.x;
+				m_hidingSpot.y = me->pev->origin.y;
+				m_hidingSpot.z = me->GetFeetZ();
+#endif
 			}
 			else
 			{
@@ -421,7 +421,6 @@ void HideState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 	}
 }
 
-/* <57c2c8> ../cstrike/dlls/bot/states/cs_bot_hide.cpp:450 */
 void HideState::__MAKE_VHOOK(OnExit)(CCSBot *me)
 {
 	m_isHoldingPosition = false;

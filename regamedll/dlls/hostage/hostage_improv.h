@@ -152,6 +152,10 @@ public:
 
 #endif // HOOK_GAMEDLL
 
+#ifdef PLAY_GAMEDLL
+	void ApplyForce2(float_precision x, float_precision y);
+#endif
+
 public:
 	enum MoveType { Stopped, Walking, Running };
 	enum ScareType { NERVOUS, SCARED, TERRIFIED };
@@ -161,28 +165,8 @@ public:
 	void SetKnownGoodPosition(const Vector &pos);
 	const Vector &GetKnownGoodPosition() const { return m_knownGoodPos; }
 	void ResetToKnownGoodPosition();
-	void ResetJump()
-	{
-		if (m_hasJumpedIntoAir)
-		{
-			if (IsOnGround())
-			{
-				m_jumpTimer.Invalidate();
-			}
-		}
-		else if (!IsOnGround())
-		{
-			m_hasJumpedIntoAir = true;
-		}
-	}
+	void ResetJump();
 	void ApplyForce(Vector force);					// apply a force to the hostage
-#ifdef PLAY_GAMEDLL
-	void ApplyForce2(float_precision x, float_precision y)
-	{
-		m_vel.x += x;
-		m_vel.y += y;
-	}
-#endif // PLAY_GAMEDLL
 	const Vector GetActualVelocity() const { return m_actualVel; }
 	void SetMoveLimit(MoveType limit) { m_moveLimit = limit; }
 	MoveType GetMoveLimit() const { return m_moveLimit; }
@@ -217,11 +201,11 @@ public:
 	void Frighten(ScareType scare);
 	bool IsScared() const;
 	ScareType GetScareIntensity() const { return m_scareIntensity; }
-	bool IsIgnoringTerrorists() const { m_ignoreTerroristTimer.IsElapsed(); }
+	bool IsIgnoringTerrorists() const { return m_ignoreTerroristTimer.IsElapsed(); }
 	float GetAggression() const { return m_aggression; }
 	void Chatter(HostageChatterType sayType, bool mustSpeak = true);
 	void DelayedChatter(float delayTime, HostageChatterType sayType, bool mustSpeak = false);
-	NOXREF void UpdateDelayedChatter();
+	void UpdateDelayedChatter();
 	bool IsTalking() const { return m_talkingTimer.IsElapsed(); }
 	void UpdateGrenadeReactions();
 	void Afraid();
@@ -234,7 +218,7 @@ public:
 	void UpdateStationaryAnimation();
 	CHostage *GetEntity() const { return m_hostage; }
 	void CheckForNearbyTerrorists();
-	void UpdatePosition(float);
+	void UpdatePosition(float deltaT);
 	void MoveTowards(const Vector &pos, float deltaT);
 	bool FaceTowards(const Vector &target, float deltaT);	// rotate body to face towards "target"
 	float GetSpeed();
@@ -317,12 +301,11 @@ private:
 	Vector m_jumpTarget;
 	CountdownTimer m_clearPathTimer;
 	bool m_traversingLadder;
-	EHANDLE m_visiblePlayer[ MAX_CLIENTS ];
+	EHANDLE m_visiblePlayer[MAX_CLIENTS];
 	int m_visiblePlayerCount;
 	CountdownTimer m_visionTimer;
 };
 
-/* <46fac7> ../cstrike/dlls/hostage/hostage_improv.cpp:363 */
 class CheckWayFunctor
 {
 public:
@@ -350,8 +333,6 @@ public:
 
 // Functor used with NavAreaBuildPath() for building Hostage paths.
 // Once we hook up crouching and ladders, this can be removed and ShortestPathCost() can be used instead.
-
-/* <46f426> ../cstrike/dlls/hostage/hostage_improv.h:400 */
 class HostagePathCost
 {
 public:
@@ -398,7 +379,6 @@ public:
 	}
 };
 
-/* <4700b6> ../cstrike/dlls/hostage/hostage_improv.cpp:931 */
 class KeepPersonalSpace
 {
 public:
@@ -427,7 +407,8 @@ public:
 		range = to.NormalizeInPlace<float>();
 #else
 		range = to.NormalizeInPlace();
-#endif // PLAY_GAMEDLL
+#endif
+
 		CBasePlayer *player = static_cast<CBasePlayer *>(entity);
 
 		const float spring = 50.0f;
@@ -448,7 +429,7 @@ public:
 #else
 		// TODO: fix test demo
 		m_improv->ApplyForce2(to.x * ds, to.y * ds);
-#endif // PLAY_GAMEDLL
+#endif
 
 		const float force = 0.1f;
 		m_improv->ApplyForce(m_speed * -force * m_velDir);
@@ -462,7 +443,6 @@ private:
 	float m_speed;
 };
 
-/* <46fbb8> ../cstrike/dlls/hostage/hostage_improv.cpp:518 */
 class CheckAhead
 {
 public:
@@ -497,5 +477,27 @@ private:
 	Vector m_dir;
 	bool m_isBlocked;
 };
+
+#ifdef PLAY_GAMEDLL
+inline void CHostageImprov::ApplyForce2(float_precision x, float_precision y)
+{
+	m_vel.x += x;
+	m_vel.y += y;
+}
+#endif
+inline void CHostageImprov::ResetJump()
+{
+	if (m_hasJumpedIntoAir)
+	{
+		if (IsOnGround())
+		{
+			m_jumpTimer.Invalidate();
+		}
+	}
+	else if (!IsOnGround())
+	{
+		m_hasJumpedIntoAir = true;
+	}
+}
 
 #endif // HOSTAGE_IMPROV_H

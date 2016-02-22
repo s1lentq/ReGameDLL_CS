@@ -2,20 +2,18 @@
 
 #include "version/appversion.h"
 
-#include "mem.h"
-#include "platform.h"
 #include "osconfig.h"
 #include "sse_mathfun.h"
 
-#include "memory.h"
-#include "RegameDLLRuntimeConfig.h"
-#include "regamedll_debug.h"
-
 #include "MemPool.h"
 #include "engine.h"
+#include "platform.h"
+#include "regamedll_debug.h"
 
 #ifdef HOOK_GAMEDLL
+#include "memory.h"
 #include "hooker.h"
+#include "RegameDLLRuntimeConfig.h"
 
 // STL containers Visual Studio 6.0
 #include "stl/vector"
@@ -31,13 +29,8 @@
 
 #include "interface.h"
 
-//testsuite
-#include "testsuite/testsuite.h"
-#include "testsuite/funccalls.h"
-#include "testsuite/recorder.h"
-#include "testsuite/demoplayer.h"
-
 #include "hookchains_impl.h"
+#include "regamedll.h"
 #include "regamedll_interfaces.h"
 #include "regamedll_interfaces_impl.h"
 #include "regamedll_api.h"

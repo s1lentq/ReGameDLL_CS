@@ -42,7 +42,7 @@
 #define IMPL_CLASS(baseClass,var)\
 	baseClass::var
 
-#endif // HOOK_GAMEDLL
+#endif
 
 #define IMPLEMENT_SAVERESTORE(derivedClass, baseClass)\
 	int derivedClass::__MAKE_VHOOK(Save)(CSave &save)\
@@ -85,7 +85,6 @@ typedef struct
 
 class CBaseEntity;
 
-/* <39a4f3> ../cstrike/dlls/saverestore.h:33 */
 class CSaveRestoreBuffer
 {
 public:
@@ -108,7 +107,6 @@ protected:
 	unsigned int HashString(const char *pszToken);
 };
 
-/* <19e94e> ../cstrike/dlls/saverestore.h:50 */
 class CSave: public CSaveRestoreBuffer
 {
 public:
@@ -132,7 +130,7 @@ private:
 
 #ifdef HOOK_GAMEDLL
 public:
-#endif // HOOK_GAMEDLL
+#endif
 
 	int DataEmpty(const char *pdata, int size);
 	void BufferField(const char *pname, int size, const char *pdata);
@@ -141,7 +139,6 @@ public:
 	void BufferHeader(const char *pname, int size);
 };
 
-/* <1d9f06> ../cstrike/dlls/saverestore.h:82 */
 class CRestore: public CSaveRestoreBuffer
 {
 public:
@@ -175,7 +172,6 @@ private:
 	BOOL m_precache;
 };
 
-/* <245f6> ../cstrike/dlls/saverestore.h:153 */
 class CGlobalState
 {
 public:

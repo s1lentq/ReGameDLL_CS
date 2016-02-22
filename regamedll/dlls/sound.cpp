@@ -76,10 +76,7 @@ char grgchTextureType[ CTEXTURESMAX ];
 int fTextureTypeInit;
 int gcTextures;
 
-/* <172311> ../cstrike/dlls/sound.cpp:140 */
 LINK_ENTITY_TO_CLASS(ambient_generic, CAmbientGeneric);
-
-/* <171c1f> ../cstrike/dlls/sound.cpp:155 */
 IMPLEMENT_SAVERESTORE(CAmbientGeneric, CBaseEntity);
 
 // -1 : "Default"
@@ -87,8 +84,6 @@ IMPLEMENT_SAVERESTORE(CAmbientGeneric, CBaseEntity);
 // 200 : "Small Radius"
 // 125 : "Medium Radius"
 // 80  : "Large Radius"
-
-/* <1718ea> ../cstrike/dlls/sound.cpp:160 */
 void CAmbientGeneric::__MAKE_VHOOK(Spawn)()
 {
 	if (pev->spawnflags & AMBIENT_SOUND_EVERYWHERE)
@@ -146,7 +141,6 @@ void CAmbientGeneric::__MAKE_VHOOK(Spawn)()
 	Precache();
 }
 
-/* <1724f8> ../cstrike/dlls/sound.cpp:223 */
 void CAmbientGeneric::__MAKE_VHOOK(Restart)()
 {
 	if (pev->spawnflags & AMBIENT_SOUND_EVERYWHERE)
@@ -213,7 +207,6 @@ void CAmbientGeneric::__MAKE_VHOOK(Restart)()
 	}
 }
 
-/* <1724bb> ../cstrike/dlls/sound.cpp:296 */
 void CAmbientGeneric::__MAKE_VHOOK(Precache)()
 {
 	char *szSoundFile = (char *)STRING(pev->message);
@@ -249,8 +242,6 @@ void CAmbientGeneric::__MAKE_VHOOK(Precache)()
 // pitch or volume of the playing sound.  This function will
 // ramp pitch and/or volume up or down, modify pitch/volume
 // with lfo if active.
-
-/* <171973> ../cstrike/dlls/sound.cpp:328 */
 void CAmbientGeneric::RampThink()
 {
 	char *szSoundFile = (char *)STRING(pev->message);
@@ -377,14 +368,14 @@ void CAmbientGeneric::RampThink()
 		if (m_dpv.lfofrac < 0)
 		{
 			m_dpv.lfofrac = 0;
-			m_dpv.lforate = abs(m_dpv.lforate);
+			m_dpv.lforate = Q_abs(m_dpv.lforate);
 			pos = 0;
 		}
 		else if (pos > 255)
 		{
 			pos = 255;
 			m_dpv.lfofrac = (255 << 8);
-			m_dpv.lforate = -abs(m_dpv.lforate);
+			m_dpv.lforate = -Q_abs(m_dpv.lforate);
 		}
 
 		switch (m_dpv.lfotype)
@@ -463,8 +454,6 @@ void CAmbientGeneric::RampThink()
 
 // Init all ramp params in preparation to
 // play a new sound
-
-/* <1723db> ../cstrike/dlls/sound.cpp:521 */
 void CAmbientGeneric::InitModulationParms()
 {
 	int pitchinc;
@@ -474,6 +463,7 @@ void CAmbientGeneric::InitModulationParms()
 
 	if (m_dpv.volrun > 100)
 		m_dpv.volrun = 100;
+
 	if (m_dpv.volrun < 0)
 		m_dpv.volrun = 0;
 
@@ -538,7 +528,7 @@ void CAmbientGeneric::InitModulationParms()
 	m_dpv.volfrac = m_dpv.vol << 8;
 
 	m_dpv.lfofrac = 0;
-	m_dpv.lforate = abs(m_dpv.lforate);
+	m_dpv.lforate = Q_abs(m_dpv.lforate);
 
 	m_dpv.cspincount = 1;
 
@@ -565,8 +555,6 @@ void CAmbientGeneric::InitModulationParms()
 // ambient is a looping sound, mark sound as active (m_fActive)
 // if it's playing, innactive if not.  If the sound is not
 // a looping sound, never mark it as active.
-
-/* <172418> ../cstrike/dlls/sound.cpp:605 */
 void CAmbientGeneric::ToggleUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	char *szSoundFile = (char *)STRING(pev->message);
@@ -667,8 +655,6 @@ void CAmbientGeneric::ToggleUse(CBaseEntity *pActivator, CBaseEntity *pCaller, U
 
 // KeyValue - load keyvalue pairs into member data of the
 // ambient generic. NOTE: called BEFORE spawn!
-
-/* <171f38> ../cstrike/dlls/sound.cpp:717 */
 void CAmbientGeneric::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	// NOTE: changing any of the modifiers in this code
@@ -865,13 +851,9 @@ void CAmbientGeneric::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CBaseEntity::KeyValue(pkvd);
 }
 
-/* <172566> ../cstrike/dlls/sound.cpp:891 */
 LINK_ENTITY_TO_CLASS(env_sound, CEnvSound);
-
-/* <171bd2> ../cstrike/dlls/sound.cpp:898 */
 IMPLEMENT_SAVERESTORE(CEnvSound, CBaseEntity);
 
-/* <171d61> ../cstrike/dlls/sound.cpp:901 */
 void CEnvSound::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "radius"))
@@ -888,8 +870,6 @@ void CEnvSound::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 
 // returns TRUE if the given sound entity (pev) is in range
 // and can see the given player entity (pevTarget)
-
-/* <172633> ../cstrike/dlls/sound.cpp:919 */
 BOOL FEnvSoundInRange(entvars_t *pev, entvars_t *pevTarget, float *pflRange)
 {
 	CEnvSound *pSound = GetClassPtr((CEnvSound *)pev);
@@ -928,16 +908,13 @@ BOOL FEnvSoundInRange(entvars_t *pev, entvars_t *pevTarget, float *pflRange)
 // sound entity to the client will set the client's room_type.
 // A client's room_type will remain set to its prior value until
 // a new in-range, visible sound entity resets a new room_type.
-
+//
 // CONSIDER: if player in water state, autoset roomtype to 14,15 or 16.
-
-/* <17428e> ../cstrike/dlls/sound.cpp:960 */
 void CEnvSound::__MAKE_VHOOK(Think)()
 {
 	// get pointer to client if visible; FIND_CLIENT_IN_PVS will
 	// cycle through visible clients on consecutive calls.
 	edict_t *pentPlayer = FIND_CLIENT_IN_PVS(edict());
-	CBasePlayer *pPlayer = NULL;
 
 	if (FNullEnt(pentPlayer))
 	{
@@ -945,7 +922,7 @@ void CEnvSound::__MAKE_VHOOK(Think)()
 		goto env_sound_Think_slow;
 	}
 
-	pPlayer = GetClassPtr((CBasePlayer *)VARS(pentPlayer));
+	CBasePlayer *pPlayer = GetClassPtr((CBasePlayer *)VARS(pentPlayer));
 	float flRange;
 
 	// check to see if this is the sound entity that is
@@ -1026,8 +1003,6 @@ env_sound_Think_slow:
 
 // env_sound - spawn a sound entity that will set player roomtype
 // when player moves in range and sight.
-
-/* <171926> ../cstrike/dlls/sound.cpp:1053 */
 void CEnvSound::__MAKE_VHOOK(Spawn)()
 {
 	// spread think times
@@ -1035,8 +1010,6 @@ void CEnvSound::__MAKE_VHOOK(Spawn)()
 }
 
 // randomize list of sentence name indices
-
-/* <17093f> ../cstrike/dlls/sound.cpp:1084 */
 void USENTENCEG_InitLRU(unsigned char *plru, int count)
 {
 	int i, j, k;
@@ -1068,8 +1041,6 @@ void USENTENCEG_InitLRU(unsigned char *plru, int count)
 // ipick is passed in as the requested sentence ordinal.
 // ipick 'next' is returned.
 // return of -1 indicates an error.
-
-/* <17290a> ../cstrike/dlls/sound.cpp:1115 */
 int USENTENCEG_PickSequential(int isentenceg, char *szfound, int ipick, int freset)
 {
 	char *szgroupname;
@@ -1114,8 +1085,6 @@ int USENTENCEG_PickSequential(int isentenceg, char *szfound, int ipick, int fres
 // rest of the lru filled with -1. The first integer in the lru is
 // actually the size of the list.  Returns ipick, the ordinal
 // of the picked sentence within the group.
-
-/* <1729cb> ../cstrike/dlls/sound.cpp:1163 */
 int USENTENCEG_Pick(int isentenceg, char *szfound)
 {
 	char *szgroupname;
@@ -1167,8 +1136,6 @@ int USENTENCEG_Pick(int isentenceg, char *szfound)
 
 // Given sentence group rootname (name without number suffix),
 // get sentence group index (isentenceg). Returns -1 if no such name.
-
-/* <172b0c> ../cstrike/dlls/sound.cpp:1213 */
 int SENTENCEG_GetIndex(const char *szgroupname)
 {
 	int i;
@@ -1194,8 +1161,6 @@ int SENTENCEG_GetIndex(const char *szgroupname)
 // returns ipick - which sentence was picked to
 // play from the group. Ipick is only needed if you plan on stopping
 // the sound before playback is done (see SENTENCEG_Stop).
-
-/* <170eb5> ../cstrike/dlls/sound.cpp:1238 */
 int SENTENCEG_PlayRndI(edict_t *entity, int isentenceg, float volume, float attenuation, int flags, int pitch)
 {
 	char name[64];
@@ -1207,15 +1172,20 @@ int SENTENCEG_PlayRndI(edict_t *entity, int isentenceg, float volume, float atte
 	name[0] = '\0';
 
 	ipick = USENTENCEG_Pick(isentenceg, name);
+
+#ifndef REGAMEDLL_FIXES
 	if (ipick > 0 && name)
+#else
+	if (ipick > 0 /*&& name[0] != '\0'*/)
+#endif
+	{
 		EMIT_SOUND_DYN(entity, CHAN_VOICE, name, volume, attenuation, flags, pitch);
+	}
 
 	return ipick;
 }
 
 // same as above, but takes sentence group name instead of index
-
-/* <170a36> ../cstrike/dlls/sound.cpp:1257 */
 int SENTENCEG_PlayRndSz(edict_t *entity, const char *szgroupname, float volume, float attenuation, int flags, int pitch)
 {
 	char name[64];
@@ -1245,8 +1215,6 @@ int SENTENCEG_PlayRndSz(edict_t *entity, const char *szgroupname, float volume, 
 }
 
 // play sentences in sequential order from sentence group.  Reset after last sentence.
-
-/* <173125> ../cstrike/dlls/sound.cpp:1285 */
 int SENTENCEG_PlaySequentialSz(edict_t *entity, const char *szgroupname, float volume, float attenuation, int flags, int pitch, int ipick, int freset)
 {
 	char name[64];
@@ -1273,8 +1241,6 @@ int SENTENCEG_PlaySequentialSz(edict_t *entity, const char *szgroupname, float v
 
 // for this entity, for the given sentence within the sentence group, stop
 // the sentence.
-
-/* <173360> ../cstrike/dlls/sound.cpp:1311 */
 NOXREF void SENTENCEG_Stop(edict_t *entity, int isentenceg, int ipick)
 {
 	char buffer[64];
@@ -1297,8 +1263,6 @@ NOXREF void SENTENCEG_Stop(edict_t *entity, int isentenceg, int ipick)
 // open sentences.txt, scan for groups, build rgsentenceg
 // Should be called from world spawn, only works on the
 // first call and is ignored subsequently.
-
-/* <1734e4> ../cstrike/dlls/sound.cpp:1334 */
 void SENTENCEG_Init()
 {
 	char buffer[512];
@@ -1334,7 +1298,7 @@ void SENTENCEG_Init()
 		if (!buffer[i])
 			continue;
 
-		if (buffer[i] == '/' || !isalpha(buffer[i]))
+		if (buffer[i] == '/' || !Q_isalpha(buffer[i]))
 			continue;
 
 		// get sentence name
@@ -1362,8 +1326,7 @@ void SENTENCEG_Init()
 
 		Q_strcpy(gszallsentencenames[gcallsentences++], pString);
 
-		j--;
-		if (j <= i)
+		if (--j <= i)
 			continue;
 
 		if (!isdigit(buffer[j]))
@@ -1381,7 +1344,7 @@ void SENTENCEG_Init()
 		// if new name doesn't match previous group name,
 		// make a new group.
 
-		if (Q_strcmp(szgroup, &(buffer[i])))
+		if (Q_strcmp(szgroup, &(buffer[i])) != 0)
 		{
 			// name doesn't match with prev name,
 			// copy name into group, init count to 1
@@ -1423,8 +1386,6 @@ void SENTENCEG_Init()
 }
 
 // convert sentence (sample) name to !sentencenum, return !sentencenum
-
-/* <172b37> ../cstrike/dlls/sound.cpp:1457 */
 int SENTENCEG_Lookup(const char *sample, char *sentencenum)
 {
 	char sznum[8];
@@ -1442,6 +1403,7 @@ int SENTENCEG_Lookup(const char *sample, char *sentencenum)
 				Q_sprintf(sznum, "%d", i);
 				Q_strcat(sentencenum, sznum);
 			}
+
 			return i;
 		}
 	}
@@ -1450,7 +1412,6 @@ int SENTENCEG_Lookup(const char *sample, char *sentencenum)
 	return -1;
 }
 
-/* <170992> ../cstrike/dlls/sound.cpp:1483 */
 void EMIT_SOUND_DYN(edict_t *entity, int channel, const char *sample, float volume, float attenuation, int flags, int pitch)
 {
 	if (sample && *sample == '!')
@@ -1466,8 +1427,6 @@ void EMIT_SOUND_DYN(edict_t *entity, int channel, const char *sample, float volu
 }
 
 // play a specific sentence over the HEV suit speaker - just pass player entity, and !sentencename
-
-/* <173770> ../cstrike/dlls/sound.cpp:1500 */
 void EMIT_SOUND_SUIT(edict_t *entity, const char *sample)
 {
 	float fvol;
@@ -1482,8 +1441,6 @@ void EMIT_SOUND_SUIT(edict_t *entity, const char *sample)
 }
 
 // play a sentence, randomly selected from the passed in group id, over the HEV suit speaker
-
-/* <1738c3> ../cstrike/dlls/sound.cpp:1515 */
 void EMIT_GROUPID_SUIT(edict_t *entity, int isentenceg)
 {
 	float fvol;
@@ -1500,8 +1457,6 @@ void EMIT_GROUPID_SUIT(edict_t *entity, int isentenceg)
 }
 
 // play a sentence, randomly selected from the passed in groupname
-
-/* <173a7b> ../cstrike/dlls/sound.cpp:1530 */
 NOXREF void EMIT_GROUPNAME_SUIT(edict_t *entity, const char *groupname)
 {
 	float fvol;
@@ -1518,7 +1473,6 @@ NOXREF void EMIT_GROUPNAME_SUIT(edict_t *entity, const char *groupname)
 	}
 }
 
-/* <171cc9> ../cstrike/dlls/sound.cpp:1561 */
 char *memfgets(byte *pMemFile, int fileSize, int &filePos, char *pBuffer, int bufferSize)
 {
 	// Bullet-proofing
@@ -1566,7 +1520,6 @@ char *memfgets(byte *pMemFile, int fileSize, int &filePos, char *pBuffer, int bu
 	return NULL;
 }
 
-/* <173cc2> ../cstrike/dlls/sound.cpp:1610 */
 void TEXTURETYPE_Init()
 {
 	char buffer[512];
@@ -1593,21 +1546,21 @@ void TEXTURETYPE_Init()
 	{
 		// skip whitespace
 		i = 0;
-		while (buffer[i] && isspace(buffer[i]))
+		while (buffer[i] && Q_isspace(buffer[i]))
 			++i;
 
 		if (!buffer[i])
 			continue;
 
 		// skip comment lines
-		if (buffer[i] == '/' || !isalpha(buffer[i]))
+		if (buffer[i] == '/' || !Q_isalpha(buffer[i]))
 			continue;
 
 		// get texture type
-		grgchTextureType[gcTextures] = toupper(buffer[i++]);
+		grgchTextureType[gcTextures] = Q_toupper(buffer[i++]);
 
 		// skip whitespace
-		while (buffer[i] && isspace(buffer[i]))
+		while (buffer[i] && Q_isspace(buffer[i]))
 			++i;
 
 		if (!buffer[i])
@@ -1615,7 +1568,7 @@ void TEXTURETYPE_Init()
 
 		// get sentence name
 		j = i;
-		while (buffer[j] && !isspace(buffer[j]))
+		while (buffer[j] && !Q_isspace(buffer[j]))
 			j++;
 
 		if (!buffer[j])
@@ -1634,11 +1587,9 @@ void TEXTURETYPE_Init()
 
 // given texture name, find texture type
 // if not found, return type 'concrete'
-
+//
 // NOTE: this routine should ONLY be called if the
 // current texture under the player changes!
-
-/* <173d41> ../cstrike/dlls/sound.cpp:1680 */
 char TEXTURETYPE_Find(char *name)
 {
 	// CONSIDER: pre-sort texture names and perform faster binary search here
@@ -1655,8 +1606,6 @@ char TEXTURETYPE_Find(char *name)
 // play a strike sound based on the texture that was hit by the attack traceline.  VecSrc/VecEnd are the
 // original traceline endpoints used by the attacker, iBulletType is the type of bullet that hit the texture.
 // returns volume of strike instrument (crowbar) to play
-
-/* <173d99> ../cstrike/dlls/sound.cpp:1697 */
 float TEXTURETYPE_PlaySound(TraceResult *ptr, Vector vecSrc, Vector vecEnd, int iBulletType)
 {
 	// hit the world, try to play sound based on texture material type
@@ -1860,15 +1809,10 @@ float TEXTURETYPE_PlaySound(TraceResult *ptr, Vector vecSrc, Vector vecEnd, int 
 	return fvolbar;
 }
 
-/* <17406b> ../cstrike/dlls/sound.cpp:1885 */
 LINK_ENTITY_TO_CLASS(speaker, CSpeaker);
-
-/* <171b85> ../cstrike/dlls/sound.cpp:1891 */
 IMPLEMENT_SAVERESTORE(CSpeaker, CBaseEntity);
 
 // ambient_generic - general-purpose user-defined static sound
-
-/* <171c6b> ../cstrike/dlls/sound.cpp:1896 */
 void CSpeaker::__MAKE_VHOOK(Spawn)()
 {
 	char *szSoundFile = (char *)STRING(pev->message);
@@ -1893,7 +1837,6 @@ void CSpeaker::__MAKE_VHOOK(Spawn)()
 	Precache();
 }
 
-/* <171a16> ../cstrike/dlls/sound.cpp:1924 */
 void CSpeaker::__MAKE_VHOOK(Precache)()
 {
 	if (!(pev->spawnflags & SPEAKER_START_SILENT))
@@ -1903,7 +1846,6 @@ void CSpeaker::__MAKE_VHOOK(Precache)()
 	}
 }
 
-/* <172b7a> ../cstrike/dlls/sound.cpp:1930 */
 void CSpeaker::SpeakerThink()
 {
 	char *szSoundFile = NULL;
@@ -1947,7 +1889,7 @@ void CSpeaker::SpeakerThink()
 		// if is null - return;
 		return;
 	}
-#endif // REGAMEDLL_FIXES
+#endif
 
 	if (szSoundFile[0] == '!')
 	{
@@ -1977,18 +1919,16 @@ void CSpeaker::SpeakerThink()
 }
 
 // ToggleUse - if an announcement is pending, cancel it.  If no announcement is pending, start one.
-
-/* <171a4e> ../cstrike/dlls/sound.cpp:1997 */
 void CSpeaker::ToggleUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
-	int fActive = (pev->nextthink > 0.0f);
+	bool bActive = (pev->nextthink > 0.0f);
 
-	// fActive is TRUE only if an announcement is pending
+	// bActive is TRUE only if an announcement is pending
 	if (useType != USE_TOGGLE)
 	{
 		// ignore if we're just turning something on that's already on, or
 		// turning something off that's already off.
-		if ((fActive && useType == USE_ON) || (!fActive && useType == USE_OFF))
+		if ((bActive && useType == USE_ON) || (!bActive && useType == USE_OFF))
 		{
 			return;
 		}
@@ -2004,16 +1944,16 @@ void CSpeaker::ToggleUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE
 	if (useType == USE_OFF)
 	{
 		// turn off announcements
-		pev->nextthink = 0.0;
+		pev->nextthink = 0.0f;
 		return;
 
 	}
 
 	// Toggle announcements
-	if (fActive)
+	if (bActive)
 	{
 		// turn off announcements
-		pev->nextthink = 0.0;
+		pev->nextthink = 0.0f;
 	}
 	else
 	{
@@ -2024,8 +1964,6 @@ void CSpeaker::ToggleUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE
 
 // KeyValue - load keyvalue pairs into member data
 // NOTE: called BEFORE spawn!
-
-/* <171e86> ../cstrike/dlls/sound.cpp:2044 */
 void CSpeaker::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	// preset

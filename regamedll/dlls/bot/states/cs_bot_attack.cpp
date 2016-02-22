@@ -1,8 +1,6 @@
 #include "precompiled.h"
 
 // Begin attacking
-
-/* <519735> ../cstrike/dlls/bot/states/cs_bot_attack.cpp:16 */
 void AttackState::__MAKE_VHOOK(OnEnter)(CCSBot *me)
 {
 	CBasePlayer *enemy = me->GetEnemy();
@@ -113,7 +111,6 @@ void AttackState::__MAKE_VHOOK(OnEnter)(CCSBot *me)
 	m_isCoward = (RANDOM_FLOAT(0.0f, 100.0f) > 100.0f * me->GetProfile()->GetAggression());
 }
 
-/* <51a140> ../cstrike/dlls/bot/states/cs_bot_attack.cpp:135 */
 void AttackState::StopAttacking(CCSBot *me)
 {
 	if (me->m_task == CCSBot::SNIPING)
@@ -128,8 +125,6 @@ void AttackState::StopAttacking(CCSBot *me)
 }
 
 // Perform attack behavior
-
-/* <51997e> ../cstrike/dlls/bot/states/cs_bot_attack.cpp:152 */
 void AttackState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 {
 	// can't be stuck while attacking
@@ -540,8 +535,6 @@ void AttackState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 }
 
 // Finish attack
-
-/* <5198d4> ../cstrike/dlls/bot/states/cs_bot_attack.cpp:578 */
 void AttackState::__MAKE_VHOOK(OnExit)(CCSBot *me)
 {
 	me->PrintIfWatched("AttackState:OnExit()\n");

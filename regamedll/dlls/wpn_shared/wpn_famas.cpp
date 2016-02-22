@@ -1,9 +1,7 @@
 #include "precompiled.h"
 
-/* <2c0549> ../cstrike/dlls/wpn_shared/wpn_famas.cpp:50 */
 LINK_ENTITY_TO_CLASS(weapon_famas, CFamas);
 
-/* <2c0284> ../cstrike/dlls/wpn_shared/wpn_famas.cpp:52 */
 void CFamas::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
@@ -18,7 +16,6 @@ void CFamas::__MAKE_VHOOK(Spawn)()
 	FallInit();
 }
 
-/* <2c01dc> ../cstrike/dlls/wpn_shared/wpn_famas.cpp:66 */
 void CFamas::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/v_famas.mdl");
@@ -37,7 +34,6 @@ void CFamas::__MAKE_VHOOK(Precache)()
 	m_usFireFamas = PRECACHE_EVENT(1, "events/famas.sc");
 }
 
-/* <2c0203> ../cstrike/dlls/wpn_shared/wpn_famas.cpp:85 */
 int CFamas::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
@@ -55,7 +51,6 @@ int CFamas::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	return 1;
 }
 
-/* <2c025d> ../cstrike/dlls/wpn_shared/wpn_famas.cpp:102 */
 BOOL CFamas::__MAKE_VHOOK(Deploy)()
 {
 	m_iShotsFired = 0;
@@ -68,7 +63,6 @@ BOOL CFamas::__MAKE_VHOOK(Deploy)()
 	return DefaultDeploy("models/v_famas.mdl", "models/p_famas.mdl", FAMAS_DRAW, "carbine", UseDecrement() != FALSE);
 }
 
-/* <2c0236> ../cstrike/dlls/wpn_shared/wpn_famas.cpp:114 */
 void CFamas::__MAKE_VHOOK(SecondaryAttack)()
 {
 	if (m_iWeaponState & WPNSTATE_FAMAS_BURST_MODE)
@@ -85,7 +79,6 @@ void CFamas::__MAKE_VHOOK(SecondaryAttack)()
 	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.3f;
 }
 
-/* <2c04fe> ../cstrike/dlls/wpn_shared/wpn_famas.cpp:129 */
 void CFamas::__MAKE_VHOOK(PrimaryAttack)()
 {
 	if (m_pPlayer->pev->waterlevel == 3)
@@ -111,12 +104,10 @@ void CFamas::__MAKE_VHOOK(PrimaryAttack)()
 	}
 }
 
-/* <2c0613> ../cstrike/dlls/wpn_shared/wpn_famas.cpp:152 */
 void CFamas::FamasFire(float flSpread, float flCycleTime, BOOL fUseAutoAim, BOOL bFireBurst)
 {
 	Vector vecAiming, vecSrc, vecDir;
 	int flag;
-	//int mask;
 
 	if (bFireBurst)
 	{
@@ -171,10 +162,10 @@ void CFamas::FamasFire(float flSpread, float flCycleTime, BOOL fUseAutoAim, BOOL
 	flag = FEV_NOTHOST;
 #else
 	flag = 0;
-#endif // CLIENT_WEAPONS
+#endif
 
 	PLAYBACK_EVENT_FULL(flag, m_pPlayer->edict(), m_usFireFamas, 0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y,
-		(int)(m_pPlayer->pev->punchangle.x * 10000000), (int)(m_pPlayer->pev->punchangle.y * 10000000), FALSE, FALSE);
+		int(m_pPlayer->pev->punchangle.x * 10000000), int(m_pPlayer->pev->punchangle.y * 10000000), FALSE, FALSE);
 
 	m_flNextPrimaryAttack = m_flNextSecondaryAttack = GetNextAttackDelay(flCycleTime);
 
@@ -210,7 +201,6 @@ void CFamas::FamasFire(float flSpread, float flCycleTime, BOOL fUseAutoAim, BOOL
 	}
 }
 
-/* <2c0336> ../cstrike/dlls/wpn_shared/wpn_famas.cpp:262 */
 void CFamas::__MAKE_VHOOK(Reload)()
 {
 	if (m_pPlayer->ammo_556nato <= 0)
@@ -231,7 +221,6 @@ void CFamas::__MAKE_VHOOK(Reload)()
 	}
 }
 
-/* <2c02fa> ../cstrike/dlls/wpn_shared/wpn_famas.cpp:284 */
 void CFamas::__MAKE_VHOOK(WeaponIdle)()
 {
 	ResetEmptySound();

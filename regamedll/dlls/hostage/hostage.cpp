@@ -11,15 +11,11 @@ cvar_t cv_hostage_stop = { "hostage_stop", "0", FCVAR_SERVER, 0.0f, NULL };
 CHostageManager *g_pHostages = NULL;
 int g_iHostageNumber = 0;
 
-#endif // HOOK_GAMEDLL
+#endif
 
-/* <45c3fa> ../cstrike/dlls/hostage/hostage.cpp:47 */
 LINK_ENTITY_TO_CLASS(hostage_entity, CHostage);
-
-/* <45c4d3> ../cstrike/dlls/hostage/hostage.cpp:48 */
 LINK_ENTITY_TO_CLASS(monster_scientist, CHostage);
 
-/* <45c228> ../cstrike/dlls/hostage/hostage.cpp:54 */
 void CHostage::__MAKE_VHOOK(Spawn)()
 {
 	if (!g_pHostages)
@@ -29,13 +25,7 @@ void CHostage::__MAKE_VHOOK(Spawn)()
 
 	Precache();
 
-	if (pev->classname)
-	{
-		RemoveEntityHashValue(pev, STRING(pev->classname), CLASSNAME);
-	}
-
 	MAKE_STRING_CLASS("hostage_entity", pev);
-	AddEntityHashValue(pev, STRING(pev->classname), CLASSNAME);
 
 	pev->movetype = MOVETYPE_STEP;
 	pev->solid = SOLID_SLIDEBOX;
@@ -76,12 +66,12 @@ void CHostage::__MAKE_VHOOK(Spawn)()
 
 	DROP_TO_FLOOR(edict());
 
-#ifdef HOOK_GAMEDLL
+#ifndef HOOK_GAMEDLL
+	SetThink(&CHostage::IdleThink);
+#else
 	// TODO: fix test demo
 	SetThink(pCHostage__IdleThink);
-#else
-	SetThink(&CHostage::IdleThink);
-#endif // HOOK_GAMEDLL
+#endif
 
 	pev->nextthink = gpGlobals->time + RANDOM_FLOAT(0.1, 0.2);
 
@@ -96,7 +86,7 @@ void CHostage::__MAKE_VHOOK(Spawn)()
 
 	m_flLastPathCheck = -1;
 	m_flPathAcquired = -1;
-	m_flPathCheckInterval = 0.1;
+	m_flPathCheckInterval = 0.1f;
 	m_flNextRadarTime = gpGlobals->time + RANDOM_FLOAT(0, 1);
 
 	m_LocalNav = new CLocalNav(this);
@@ -105,7 +95,6 @@ void CHostage::__MAKE_VHOOK(Spawn)()
 	m_improv = NULL;
 }
 
-/* <45bf91> ../cstrike/dlls/hostage/hostage.cpp:137 */
 void CHostage::__MAKE_VHOOK(Precache)()
 {
 	static int which = 0;
@@ -153,14 +142,13 @@ void CHostage::__MAKE_VHOOK(Precache)()
 	PRECACHE_MODEL("sprites/smoke.spr");
 }
 
-/* <45c5ac> ../cstrike/dlls/hostage/hostage.cpp:179 */
 void CHostage::SetActivity(int act)
 {
 	if (m_Activity != act)
 	{
 		int sequence = LookupActivity(act);
 
-		if (sequence != -1)
+		if (sequence != ACT_INVALID)
 		{
 			if (pev->sequence != sequence)
 			{
@@ -178,7 +166,6 @@ void CHostage::SetActivity(int act)
 	}
 }
 
-/* <45f194> ../cstrike/dlls/hostage/hostage.cpp:204 */
 void CHostage::IdleThink()
 {
 	float flInterval;
@@ -186,15 +173,11 @@ void CHostage::IdleThink()
 	const float giveUpTime = (1 / 30.0f);
 	float const updateRate = 0.1f;
 
-	if (!TheNavAreaList.empty())
+	if (AreImprovAllowed() && !TheNavAreaList.empty())
 	{
 		if (!m_improv)
 		{
 			m_improv = new CHostageImprov(this);
-
-			#if defined(HOOK_GAMEDLL) && defined(_WIN32) && !defined(REGAMEDLL_UNIT_TESTS)
-				VirtualTableInit((void *)m_improv, "CHostageImprov");
-			#endif // HOOK_GAMEDLL && _WIN32 && !REGAMEDLL_UNIT_TESTS
 		}
 	}
 	else
@@ -202,14 +185,13 @@ void CHostage::IdleThink()
 		if (m_improv != NULL)
 		{
 			delete m_improv;
+			m_improv = NULL;
 		}
-
-		m_improv = NULL;
 	}
 
 	pev->nextthink = gpGlobals->time + giveUpTime;
 
-	flInterval = StudioFrameAdvance(0);
+	flInterval = StudioFrameAdvance();
 	DispatchAnimEvents(flInterval);
 
 	if (m_improv != NULL)
@@ -222,7 +204,7 @@ void CHostage::IdleThink()
 		return;
 	}
 
-	m_flNextFullThink = gpGlobals->time + 0.1;
+	m_flNextFullThink = gpGlobals->time + 0.1f;
 
 	if (pev->deadflag == DEAD_DEAD)
 	{
@@ -251,19 +233,17 @@ void CHostage::IdleThink()
 
 		if (player == NULL || player->m_iTeam == CT)
 		{
-			if (!g_pGameRules->m_bMapHasRescueZone)
+			if (!CSGameRules()->m_bMapHasRescueZone)
 			{
-				BOOL bContinue = FALSE;
-				BOOL bResHostagePt = FALSE;
+				bool bResHostagePt = false;
 
 				if (UTIL_FindEntityByClassname(NULL, "info_hostage_rescue"))
-					bResHostagePt = TRUE;
+					bResHostagePt = true;
 
 				CBaseEntity *pSpot = NULL;
-
 				while ((pSpot = UTIL_FindEntityByClassname(pSpot, "info_hostage_rescue")) != NULL)
 				{
-					if ((pSpot->pev->origin - pev->origin).Length() < 256)
+					if ((pSpot->pev->origin - pev->origin).Length() < RESCUE_HOSTAGES_RADIUS)
 					{
 						m_bRescueMe = TRUE;
 						break;
@@ -276,7 +256,7 @@ void CHostage::IdleThink()
 
 					while ((pSpot = UTIL_FindEntityByClassname(pSpot, "info_player_start")) != NULL)
 					{
-						if ((pSpot->pev->origin - pev->origin).Length() < 256)
+						if ((pSpot->pev->origin - pev->origin).Length() < RESCUE_HOSTAGES_RADIUS)
 						{
 							m_bRescueMe = TRUE;
 							break;
@@ -292,7 +272,7 @@ void CHostage::IdleThink()
 					TheBots->OnEvent(EVENT_HOSTAGE_RESCUED, player, this);
 				}
 
-				if (TheCareerTasks != NULL && g_pGameRules->IsCareer() && player != NULL && !player->IsBot())
+				if (TheCareerTasks != NULL && CSGameRules()->IsCareer() && player != NULL && !player->IsBot())
 				{
 					TheCareerTasks->HandleEvent(EVENT_HOSTAGE_RESCUED, player);
 				}
@@ -301,7 +281,7 @@ void CHostage::IdleThink()
 
 				if (player != NULL)
 				{
-					player->AddAccount(1000);
+					player->AddAccount(REWARD_TAKEN_HOSTAGE);
 					UTIL_LogPrintf("\"%s<%i><%s><CT>\" triggered \"Rescued_A_Hostage\"\n", STRING(player->pev->netname),
 						GETPLAYERUSERID(player->edict()), GETPLAYERAUTHID(player->edict()));
 				}
@@ -319,8 +299,8 @@ void CHostage::IdleThink()
 				pev->effects |= EF_NODRAW;
 				Remove();
 
-				g_pGameRules->m_iHostagesRescued++;
-				g_pGameRules->CheckWinConditions();
+				CSGameRules()->m_iHostagesRescued++;
+				CSGameRules()->CheckWinConditions();
 
 				Broadcast((player != NULL) ? "rescued" : "escaped");
 			}
@@ -337,11 +317,11 @@ void CHostage::IdleThink()
 
 		if (gpGlobals->time >= m_flFlinchTime)
 		{
-			if (pev->velocity.Length() > 160)
+			if (pev->velocity.Length() > 160.0f)
 			{
 				SetActivity(ACT_RUN);
 			}
-			else if (pev->velocity.Length() > 15)
+			else if (pev->velocity.Length() > 15.0f)
 			{
 				SetActivity(ACT_WALK);
 			}
@@ -358,22 +338,21 @@ void CHostage::IdleThink()
 		{
 			Vector vDistance = m_vOldPos - pev->origin;
 
-			if (vDistance.Length() > 1)
+			if (vDistance.Length() > 1.0f)
 			{
 				m_vOldPos = pev->origin;
 
-				if (!g_pGameRules->m_fTeamCount)
+				if (!CSGameRules()->m_fTeamCount)
 				{
 					SendHostagePositionMsg();
 				}
 			}
 
-			m_flNextRadarTime = gpGlobals->time + 1;
+			m_flNextRadarTime = gpGlobals->time + 1.0f;
 		}
 	}
 }
 
-/* <45c041> ../cstrike/dlls/hostage/hostage.cpp:413 */
 void CHostage::Remove()
 {
 	pev->movetype = MOVETYPE_NONE;
@@ -385,7 +364,6 @@ void CHostage::Remove()
 	m_flNextFullThink = -1;
 }
 
-/* <45c624> ../cstrike/dlls/hostage/hostage.cpp:426 */
 void CHostage::RePosition()
 {
 	pev->health = pev->max_health;
@@ -412,13 +390,12 @@ void CHostage::RePosition()
 	DROP_TO_FLOOR(edict());
 	SetActivity(ACT_IDLE);
 
-#ifdef HOOK_GAMEDLL
+#ifndef HOOK_GAMEDLL
+	SetThink(&CHostage::IdleThink);
+#else
 	// TODO: fix test demo
 	SetThink(pCHostage__IdleThink);
-#else
-	SetThink(&CHostage::IdleThink);
-#endif // HOOK_GAMEDLL
-
+#endif
 	pev->nextthink = gpGlobals->time + RANDOM_FLOAT(0.1, 0.2);
 
 	m_fHasPath = FALSE;
@@ -430,7 +407,6 @@ void CHostage::RePosition()
 	m_flNextFullThink = gpGlobals->time + RANDOM_FLOAT(0.1, 0.2);
 }
 
-/* <45ee7f> ../cstrike/dlls/hostage/hostage.cpp:469 */
 int CHostage::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
 	float flActualDamage;
@@ -470,14 +446,14 @@ int CHostage::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAt
 		}
 	}
 
-	if (pev->health > 0)
+	if (pev->health > 0.0f)
 	{
-		m_flFlinchTime = gpGlobals->time + 0.75;
+		m_flFlinchTime = gpGlobals->time + 0.75f;
 		SetFlinchActivity();
 
 		if (pAttacker != NULL)
 		{
-			pAttacker->AddAccount(-20 * (unsigned __int64)(signed __int64)flActualDamage);
+			pAttacker->AddAccount(-20 * int(flActualDamage));
 
 			if (TheBots != NULL)
 			{
@@ -503,7 +479,7 @@ int CHostage::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAt
 
 		if (pAttacker != NULL)
 		{
-			pAttacker->AddAccount(20 * (-25 - (unsigned __int64)(signed __int64)flActualDamage));
+			pAttacker->AddAccount(20 * (-25 - int(flActualDamage)));
 			AnnounceDeath(pAttacker);
 			ApplyHostagePenalty(pAttacker);
 		}
@@ -522,19 +498,18 @@ int CHostage::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAt
 			m_improv->Chatter(HOSTAGE_CHATTER_DEATH_CRY);
 		}
 
-		g_pGameRules->CheckWinConditions();
+		CSGameRules()->CheckWinConditions();
 
-		if (!g_pGameRules->m_fTeamCount)
+		if (!CSGameRules()->m_fTeamCount)
 			SendHostageEventMsg();
 
-		pev->nextthink = gpGlobals->time + 3;
+		pev->nextthink = gpGlobals->time + 3.0f;
 		SetThink(&CHostage::Remove);
 	}
 
 	return 0;
 }
 
-/* <45c783> ../cstrike/dlls/hostage/hostage.cpp:578 */
 float CHostage::GetModifiedDamage(float flDamage, int nHitGroup)
 {
 	switch (nHitGroup)
@@ -553,7 +528,6 @@ float CHostage::GetModifiedDamage(float flDamage, int nHitGroup)
 	return flDamage;
 }
 
-/* <45c7d3> ../cstrike/dlls/hostage/hostage.cpp:597 */
 void CHostage::PlayPainSound()
 {
 	if (m_LastHitGroup != HITGROUP_HEAD)
@@ -566,7 +540,6 @@ void CHostage::PlayPainSound()
 	}
 }
 
-/* <45c8c4> ../cstrike/dlls/hostage/hostage.cpp:612 */
 void CHostage::SetFlinchActivity()
 {
 	Activity activity = ACT_SMALL_FLINCH;
@@ -580,7 +553,6 @@ void CHostage::SetFlinchActivity()
 	SetActivity(activity);
 }
 
-/* <45c960> ../cstrike/dlls/hostage/hostage.cpp:642 */
 void CHostage::SetDeathActivity()
 {
 	if (m_improv != NULL && m_improv->IsCrouching())
@@ -636,7 +608,6 @@ void CHostage::SetDeathActivity()
 	}
 }
 
-/* <45cc41> ../cstrike/dlls/hostage/hostage.cpp:684 */
 void CHostage::AnnounceDeath(CBasePlayer *pAttacker)
 {
 	ClientPrint(pAttacker->pev, HUD_PRINTCENTER, "#Killed_Hostage");
@@ -664,13 +635,12 @@ void CHostage::AnnounceDeath(CBasePlayer *pAttacker)
 	MESSAGE_END();
 }
 
-/* <45cd6b> ../cstrike/dlls/hostage/hostage.cpp:717 */
 void CHostage::ApplyHostagePenalty(CBasePlayer *pAttacker)
 {
 	if (pAttacker->m_iTeam != TERRORIST)
 		return;
 
-	int iHostagePenalty = (int)CVAR_GET_FLOAT("mp_hostagepenalty");
+	int iHostagePenalty = int(CVAR_GET_FLOAT("mp_hostagepenalty"));
 
 	if (iHostagePenalty)
 	{
@@ -684,12 +654,11 @@ void CHostage::ApplyHostagePenalty(CBasePlayer *pAttacker)
 			SERVER_COMMAND(UTIL_VarArgs("kick #%d\n", GETPLAYERUSERID(pAttacker->edict())));
 		#else
 			CLIENT_COMMAND(pAttacker->edict(), "disconnect\n");
-		#endif // REGAMEDLL_FIXES
+		#endif
 		}
 	}
 }
 
-/* <45cfd6> ../cstrike/dlls/hostage/hostage.cpp:740 */
 void CHostage::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	if (!pActivator->IsPlayer())
@@ -713,7 +682,7 @@ void CHostage::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, 
 
 	if (gpGlobals->time >= m_flNextChange)
 	{
-		m_flNextChange = gpGlobals->time + 1;
+		m_flNextChange = gpGlobals->time + 1.0f;
 
 		if (m_improv != NULL)
 		{
@@ -767,7 +736,6 @@ void CHostage::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, 
 	}
 }
 
-/* <45cdba> ../cstrike/dlls/hostage/hostage.cpp:833 */
 void CHostage::PlayFollowRescueSound()
 {
 	switch (RANDOM_LONG(0, 4))
@@ -780,26 +748,23 @@ void CHostage::PlayFollowRescueSound()
 	}
 }
 
-/* <45d1ff> ../cstrike/dlls/hostage/hostage.cpp:851 */
 void CHostage::GiveCTTouchBonus(CBasePlayer *pPlayer)
 {
 	if (m_bTouched)
 		return;
 
 	m_bTouched = TRUE;
-	g_pGameRules->m_iAccountCT += 100;
+	CSGameRules()->m_iAccountCT += 100;
 
 	pPlayer->AddAccount(150);
 	UTIL_LogPrintf("\"%s<%i><%s><CT>\" triggered \"Touched_A_Hostage\"\n", STRING(pPlayer->pev->netname), GETPLAYERUSERID(pPlayer->edict()), GETPLAYERAUTHID(pPlayer->edict()));
 }
 
-/* <45bf69> ../cstrike/dlls/hostage/hostage.cpp:869 */
 int CHostage::__MAKE_VHOOK(ObjectCaps)()
 {
 	return (CBaseMonster::ObjectCaps() | FCAP_MUST_SPAWN | FCAP_ONOFF_USE);
 }
 
-/* <45c0e3> ../cstrike/dlls/hostage/hostage.cpp:876 */
 void CHostage::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 {
 	Vector2D vPush;
@@ -834,10 +799,9 @@ void CHostage::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 #else
 	// TODO: fix test demo
 	pev->velocity = pev->velocity + NormalizeMulScalar<float_precision, float_precision, float>(vPush, pushForce);
-#endif // PLAY_GAMEDLL
+#endif
 }
 
-/* <45dd66> ../cstrike/dlls/hostage/hostage.cpp:910 */
 void CHostage::DoFollow()
 {
 	CBaseEntity *pFollowing;
@@ -848,7 +812,7 @@ void CHostage::DoFollow()
 	if (m_hTargetEnt == NULL)
 		return;
 
-	if (cv_hostage_stop.value > 0.0)
+	if (cv_hostage_stop.value > 0.0f)
 	{
 		m_State = STAND;
 		m_hTargetEnt = NULL;
@@ -863,14 +827,14 @@ void CHostage::DoFollow()
 	vecDest.z += pFollowing->pev->mins.z;
 	flDistToDest = (vecDest - pev->origin).Length();
 
-	if (flDistToDest < 80 && (m_fHasPath || m_LocalNav->PathTraversable(pev->origin, vecDest, TRUE)))
+	if (flDistToDest < 80.0f && (m_fHasPath || m_LocalNav->PathTraversable(pev->origin, vecDest, TRUE)))
 		return;
 
 	if (pev->flags & FL_ONGROUND)
 	{
 		if (m_flPathCheckInterval + m_flLastPathCheck < gpGlobals->time)
 		{
-			if (!m_fHasPath || pFollowing->pev->velocity.Length2D() > 1)
+			if (!m_fHasPath || pFollowing->pev->velocity.Length2D() > 1.0f)
 			{
 				m_flLastPathCheck = gpGlobals->time;
 				m_LocalNav->RequestNav(this);
@@ -912,7 +876,7 @@ void CHostage::DoFollow()
 	{
 		if (IsFollowingSomeone())
 		{
-			if (!m_bStuck && flDistToDest > 200)
+			if (!m_bStuck && flDistToDest > 200.0f)
 			{
 				m_bStuck = TRUE;
 				m_flStuckTime = gpGlobals->time;
@@ -932,7 +896,6 @@ void CHostage::DoFollow()
 	}
 }
 
-/* <45d278> ../cstrike/dlls/hostage/hostage.cpp:1018 */
 void CHostage::PointAt(const Vector &vecLoc)
 {
 	pev->angles.x = 0;
@@ -940,7 +903,6 @@ void CHostage::PointAt(const Vector &vecLoc)
 	pev->angles.z = 0;
 }
 
-/* <45d34c> ../cstrike/dlls/hostage/hostage.cpp:1025 */
 void CHostage::MoveToward(const Vector &vecLoc)
 {
 	int nFwdMove;
@@ -988,7 +950,7 @@ void CHostage::MoveToward(const Vector &vecLoc)
 		pev->velocity.x = vecFwd.x * flSpeed;
 		pev->velocity.y = vecFwd.y * flSpeed;
 
-		if (nFwdMove != PATH_TRAVERSABLE_STEP && nFwdMove == PATH_TRAVERSABLE_STEPJUMPABLE)
+		if (nFwdMove == PATH_TRAVERSABLE_STEPJUMPABLE)
 		{
 			if (pev->flags & FL_ONGROUND)
 			{
@@ -998,18 +960,16 @@ void CHostage::MoveToward(const Vector &vecLoc)
 	}
 }
 
-/* <45d704> ../cstrike/dlls/hostage/hostage.cpp:1102 */
 BOOL CHostage::IsOnLadder()
 {
 	return pev->movetype == MOVETYPE_FLY;
 }
 
-/* <45d727> ../cstrike/dlls/hostage/hostage.cpp:1106 */
 void CHostage::NavReady()
 {
 	CBaseEntity *pFollowing;
 	Vector vecDest;
-	float flRadius = 40.0;
+	float flRadius = 40.0f;
 
 	if (!m_hTargetEnt)
 	{
@@ -1041,7 +1001,7 @@ void CHostage::NavReady()
 	{
 		if (!m_fHasPath)
 		{
-			m_flPathCheckInterval += 0.1;
+			m_flPathCheckInterval += 0.1f;
 
 			if (m_flPathCheckInterval >= 0.5f)
 			{
@@ -1054,13 +1014,12 @@ void CHostage::NavReady()
 		m_fHasPath = TRUE;
 		nTargetNode = -1;
 		m_flPathAcquired = gpGlobals->time;
-		m_flPathCheckInterval = 0.5;
+		m_flPathCheckInterval = 0.5f;
 
 		m_nPathNodes = m_LocalNav->SetupPathNodes(nindexPath, vecNodes, 1);
 	}
 }
 
-/* <45edaa> ../cstrike/dlls/hostage/hostage.cpp:1159 */
 void CHostage::SendHostagePositionMsg()
 {
 	CBaseEntity *pEntity = NULL;
@@ -1091,7 +1050,6 @@ void CHostage::SendHostagePositionMsg()
 	}
 }
 
-/* <45ecd5> ../cstrike/dlls/hostage/hostage.cpp:1189 */
 void CHostage::SendHostageEventMsg()
 {
 	CBaseEntity *pEntity = NULL;
@@ -1121,7 +1079,6 @@ void CHostage::SendHostageEventMsg()
 	}
 }
 
-/* <45d8a6> ../cstrike/dlls/hostage/hostage.cpp:1292 */
 void CHostage::Wiggle()
 {
 	TraceResult tr;
@@ -1155,12 +1112,11 @@ void CHostage::Wiggle()
 	vec.y = vec.y + RANDOM_FLOAT(-3.0, 3.0);
 	vec.x = vec.x + RANDOM_FLOAT(-3.0, 3.0);
 
-#endif // PLAY_GAMEDLL
+#endif
 
 	pev->velocity = pev->velocity + (vec.Normalize() * 100);
 }
 
-/* <45e00c> ../cstrike/dlls/hostage/hostage.cpp:1346 */
 void CHostage::PreThink()
 {
 	Vector vecSrc;
@@ -1193,14 +1149,14 @@ void CHostage::PreThink()
 
 	TRACE_MONSTER_HULL(edict(), vecSrc, vecDest, dont_ignore_monsters, edict(), &tr);
 
-	if (tr.fStartSolid || tr.flFraction == 1.0f || tr.vecPlaneNormal.z > 0.7f)
+	if (tr.fStartSolid || tr.flFraction == 1.0f || tr.vecPlaneNormal.z > MaxUnitZSlope)
 	{
 		return;
 	}
 
 	flOrigDist = (tr.vecEndPos - pev->origin).Length2D();
 	vecSrc.z += flInterval;
-	vecDest = vecSrc + (pev->velocity.Normalize() * 0.1);
+	vecDest = vecSrc + (pev->velocity.Normalize() * 0.1f);
 	vecDest.z = vecSrc.z;
 
 	TRACE_MONSTER_HULL(edict(), vecSrc, vecDest, dont_ignore_monsters, edict(), &tr);
@@ -1216,7 +1172,7 @@ void CHostage::PreThink()
 
 	TRACE_MONSTER_HULL(edict(), vecSrc, vecDest, dont_ignore_monsters, edict(), &tr);
 
-	if (tr.vecPlaneNormal.z < 0.7f)
+	if (tr.vecPlaneNormal.z < MaxUnitZSlope)
 	{
 		return;
 	}
@@ -1233,20 +1189,18 @@ void CHostage::PreThink()
 	}
 }
 
-/* <45e24e> ../cstrike/dlls/hostage/hostage.cpp:1421 */
 void Hostage_RegisterCVars()
 {
 // These cvars are only used in czero
 #ifdef REGAMEDLL_FIXES
 	if (!g_bIsCzeroGame)
 		return;
-#endif // REGAMEDLL_FIXES
+#endif
 
 	CVAR_REGISTER(&cv_hostage_debug);
 	CVAR_REGISTER(&cv_hostage_stop);
 }
 
-/* <45e2a6> ../cstrike/dlls/hostage/hostage.cpp:1430 */
 void InstallHostageManager()
 {
 	if (g_pHostages != NULL)
@@ -1258,14 +1212,12 @@ void InstallHostageManager()
 	g_pHostages = new CHostageManager;
 }
 
-/* <45e375> ../cstrike/dlls/hostage/hostage.cpp:1443 */
 CHostageManager::CHostageManager()
 {
 	Q_memset(&m_chatter, 0, sizeof(m_chatter));
 	m_hostageCount = 0;
 }
 
-/* <45e39b> ../cstrike/dlls/hostage/hostage.cpp:1456 */
 void CHostageManager::ServerActivate()
 {
 	m_hostageCount = 0;
@@ -1411,13 +1363,11 @@ void CHostageManager::ServerActivate()
 	}
 }
 
-/* <45e3a2> ../cstrike/dlls/hostage/hostage.cpp:1624 */
 void CHostageManager::ServerDeactivate()
 {
 	;
 }
 
-/* <45e3f7> ../cstrike/dlls/hostage/hostage.cpp:1631 */
 void CHostageManager::RestartRound()
 {
 	for (int i = 0; i < m_hostageCount; ++i)
@@ -1429,7 +1379,6 @@ void CHostageManager::RestartRound()
 	}
 }
 
-/* <45e43d> ../cstrike/dlls/hostage/hostage.cpp:1640 */
 void CHostageManager::AddHostage(CHostage *hostage)
 {
 	if (m_hostageCount >= MAX_HOSTAGES)
@@ -1451,7 +1400,6 @@ void CHostageManager::AddHostage(CHostage *hostage)
 	}
 }
 
-/* <45e47f> ../cstrike/dlls/hostage/hostage.cpp:1657 */
 bool CHostageManager::IsNearbyHostageTalking(CHostageImprov *improv)
 {
 	for (int i = 0; i < m_hostageCount; ++i)
@@ -1474,7 +1422,6 @@ bool CHostageManager::IsNearbyHostageTalking(CHostageImprov *improv)
 	return false;
 }
 
-/* <45e57b> ../cstrike/dlls/hostage/hostage.cpp:1689 */
 bool CHostageManager::IsNearbyHostageJumping(CHostageImprov *improv)
 {
 	for (int i = 0; i < m_hostageCount; ++i)
@@ -1497,7 +1444,6 @@ bool CHostageManager::IsNearbyHostageJumping(CHostageImprov *improv)
 	return false;
 }
 
-/* <45e642> ../cstrike/dlls/hostage/hostage.cpp:1716 */
 void CHostageManager::OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
 {
 	for (int i = 0; i < m_hostageCount; ++i)
@@ -1511,7 +1457,6 @@ void CHostageManager::OnEvent(GameEventType event, CBaseEntity *entity, CBaseEnt
 	}
 }
 
-/* <45e6b8> ../cstrike/dlls/hostage/hostage.cpp:1726 */
 SimpleChatter::SimpleChatter()
 {
 	for (int i = 0; i < ARRAYSIZE(m_chatter); ++i)
@@ -1522,22 +1467,18 @@ SimpleChatter::SimpleChatter()
 	}
 }
 
-/* <45e6f0> ../cstrike/dlls/hostage/hostage.cpp:1737 */
 SimpleChatter::~SimpleChatter()
 {
 	for (int i = 0; i < ARRAYSIZE(m_chatter); ++i)
 	{
 		for (int f = 0; f < m_chatter[i].count; f++)
 		{
-			if (m_chatter[i].file[f].filename != NULL)
-			{
-				delete[] m_chatter[i].file[f].filename;
-			}
+			delete[] m_chatter[i].file[f].filename;
+			m_chatter[i].file[f].filename = NULL;
 		}
 	}
 }
 
-/* <45e736> ../cstrike/dlls/hostage/hostage.cpp:1752 */
 void SimpleChatter::AddSound(HostageChatterType type, char *filename)
 {
 	ChatterSet *chatter;
@@ -1556,7 +1497,6 @@ void SimpleChatter::AddSound(HostageChatterType type, char *filename)
 	PRECACHE_SOUND(filename);
 }
 
-/* <45e8c7> ../cstrike/dlls/hostage/hostage.cpp:1773 */
 void SimpleChatter::Shuffle(ChatterSet *chatter)
 {
 	if (!chatter->needsShuffle)
@@ -1582,7 +1522,6 @@ void SimpleChatter::Shuffle(ChatterSet *chatter)
 	chatter->needsShuffle = false;
 }
 
-/* <45e979> ../cstrike/dlls/hostage/hostage.cpp:1793 */
 char *SimpleChatter::GetSound(HostageChatterType type, float *duration)
 {
 	ChatterSet *chatter = &m_chatter[type];
@@ -1600,7 +1539,6 @@ char *SimpleChatter::GetSound(HostageChatterType type, float *duration)
 	return sound;
 }
 
-/* <45ea1b> ../cstrike/dlls/hostage/hostage.cpp:1818 */
 float SimpleChatter::PlaySound(CBaseEntity *entity, HostageChatterType type)
 {
 	CHostage *hostage;

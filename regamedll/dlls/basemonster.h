@@ -33,12 +33,9 @@
 #endif
 
 void RadiusFlash(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int iClassIgnore = 0, int bitsDamageType = 0);
-float GetAmountOfPlayerVisible(Vector vecSrc, CBaseEntity *entity);
 void RadiusDamage(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, float flRadius, int iClassIgnore, int bitsDamageType);
 void RadiusDamage2(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, float flRadius, int iClassIgnore, int bitsDamageType);
-NOXREF char *vstr(float *v);
 
-/* <48ecff> ../cstrike/dlls/basemonster.h:18 */
 class CBaseMonster: public CBaseToggle
 {
 public:
@@ -54,7 +51,7 @@ public:
 	virtual BOOL HasAlienGibs();
 	virtual void FadeMonster();
 	virtual void GibMonster();
-	NOXREF virtual Activity GetDeathActivity();
+	virtual Activity GetDeathActivity();
 	virtual void BecomeDead();
 	virtual BOOL ShouldFadeOnDeath();
 	virtual int IRelationship(CBaseEntity *pTarget);
@@ -89,37 +86,35 @@ public:
 	BOOL FInViewCone_(CBaseEntity *pEntity);
 	BOOL FInViewCone_(const Vector *pOrigin);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	void MakeIdealYaw(Vector vecTarget);
-	NOXREF Activity GetSmallFlinchActivity();
+	Activity GetSmallFlinchActivity();
 	BOOL ShouldGibMonster(int iGib);
 	void CallGibMonster();
 	BOOL FCheckAITrigger();
 	int DeadTakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
 	float DamageForce(float damage);
 	void RadiusDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int iClassIgnore, int bitsDamageType);
-	NOXREF void RadiusDamage(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int iClassIgnore, int bitsDamageType);
-	void RadiusDamage2(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int iClassIgnore, int bitsDamageType)
-	{
-		::RadiusDamage2(vecSrc, pevInflictor, pevAttacker, flDamage, flDamage * (RANDOM_FLOAT(0.5, 1.5) + 3), iClassIgnore, bitsDamageType);
-	}
-	void SetConditions(int iConditions)	{ m_afConditions |= iConditions; }
-	void ClearConditions(int iConditions)	{ m_afConditions &= ~iConditions; }
-	BOOL HasConditions(int iConditions)	{ return (m_afConditions & iConditions) ? TRUE : FALSE; }
-	BOOL HasAllConditions(int iConditions)	{ return ((m_afConditions & iConditions) == iConditions) ? TRUE : FALSE; }
+	void RadiusDamage(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int iClassIgnore, int bitsDamageType);
+	void RadiusDamage2(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int iClassIgnore, int bitsDamageType);
 
-	void Remember(int iMemory)		{ m_afMemory |= iMemory; }
-	void Forget(int iMemory)		{ m_afMemory &= ~iMemory; }
-	BOOL HasMemory(int iMemory)		{ return (m_afMemory & iMemory) ? TRUE : FALSE; }
-	BOOL HasAllMemories(int iMemory)	{ return ((m_afMemory & iMemory) == iMemory) ? TRUE : FALSE; }
+	void SetConditions(int iConditions) { m_afConditions |= iConditions; }
+	void ClearConditions(int iConditions) { m_afConditions &= ~iConditions; }
+	BOOL HasConditions(int iConditions) { return (m_afConditions & iConditions) ? TRUE : FALSE; }
+	BOOL HasAllConditions(int iConditions) { return ((m_afConditions & iConditions) == iConditions) ? TRUE : FALSE; }
 
-	void StopAnimation()		{ pev->framerate = 0.0f; }
+	void Remember(int iMemory) { m_afMemory |= iMemory; }
+	void Forget(int iMemory) { m_afMemory &= ~iMemory; }
+	BOOL HasMemory(int iMemory) { return (m_afMemory & iMemory) ? TRUE : FALSE; }
+	BOOL HasAllMemories(int iMemory) { return ((m_afMemory & iMemory) == iMemory) ? TRUE : FALSE; }
 
-	NOXREF void CorpseFallThink();
-	NOXREF CBaseEntity *CheckTraceHullAttack(float flDist, int iDamage, int iDmgType);
-	NOXREF void MakeDamageBloodDecal(int cCount, float flNoise, TraceResult *ptr, Vector &vecDir);
+	void StopAnimation() { pev->framerate = 0.0f; }
+
+	void EXPORT CorpseFallThink();
+	CBaseEntity *CheckTraceHullAttack(float flDist, int iDamage, int iDmgType);
+	void MakeDamageBloodDecal(int cCount, float flNoise, TraceResult *ptr, Vector &vecDir);
 	void MonsterUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value) { m_IdealMonsterState = MONSTERSTATE_ALERT; }
 	void BloodSplat(const Vector &vecSrc, const Vector &vecDir, int HitLocation, int iVelocity);
 

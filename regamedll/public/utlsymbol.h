@@ -38,7 +38,6 @@ typedef unsigned short UtlSymId_t;
 
 #define UTL_INVAL_SYMBOL  ((UtlSymId_t)~0)
 
-/* <400608> ../public/utlsymbol.cpp:85 */
 struct LessCtx_t
 {
 	char const *m_pUserString;
@@ -47,7 +46,6 @@ struct LessCtx_t
 	LessCtx_t() : m_pUserString(0), m_pTable(0) {}
 };
 
-/* <400e59> ../public/utlsymbol.h:46 */
 class CUtlSymbol
 {
 public:

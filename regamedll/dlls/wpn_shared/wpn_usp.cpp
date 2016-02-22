@@ -104,8 +104,7 @@ void CUSP::__MAKE_VHOOK(SecondaryAttack)()
 		Q_strcpy(m_pPlayer->m_szAnimExtention, "onehanded");
 	}
 
-	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 3.0f;
-	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 3.0f;
+	m_flNextSecondaryAttack = m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 3.0f;
 	m_flNextPrimaryAttack = GetNextAttackDelay(3.0);
 }
 

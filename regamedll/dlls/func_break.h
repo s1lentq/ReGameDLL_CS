@@ -67,7 +67,6 @@ typedef enum
 
 } Materials;
 
-/* <84d53> ../cstrike/dlls/func_break.h:23 */
 class CBreakable: public CBaseDelay
 {
 public:
@@ -102,19 +101,19 @@ public:
 	int DamageDecal_(int bitsDamageType);
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	void EXPORT BreakTouch(CBaseEntity *pOther);
 	void DamageSound();
 
 	BOOL IsBreakable();
-	NOXREF BOOL SparkWhenHit();
+	BOOL SparkWhenHit();
 
 	void EXPORT Die();
 
-	BOOL Explodable() const		{ return ExplosionMagnitude() > 0; }
-	int ExplosionMagnitude() const	{ return pev->impulse; }
+	BOOL Explodable() const { return ExplosionMagnitude() > 0; }
+	int ExplosionMagnitude() const { return pev->impulse; }
 
 	void ExplosionSetMagnitude(int magnitude) { pev->impulse = magnitude; }
 
@@ -141,7 +140,6 @@ public:
 	float m_flHealth;
 };
 
-/* <84da0> ../cstrike/dlls/func_break.cpp:851 */
 class CPushable: public CBreakable
 {
 public:
@@ -166,7 +164,7 @@ public:
 	void Touch_(CBaseEntity *pOther);
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	void Move(CBaseEntity *pMover, int push);

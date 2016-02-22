@@ -32,7 +32,6 @@
 #pragma once
 #endif
 
-/* <18bcdd> ../cstrike/dlls/training_gamerules.cpp:23 */
 class CHalfLifeTraining: public CHalfLifeMultiplay
 {
 public:
@@ -62,7 +61,7 @@ public:
 	int ItemShouldRespawn_(CItem *pItem);
 	void CheckWinConditions_();
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	static void HostageDied();
@@ -75,7 +74,6 @@ public:
 	bool fVGUIMenus;
 };
 
-/* <18a1d5> ../cstrike/dlls/training_gamerules.cpp:252 */
 class CBaseGrenCatch: public CBaseEntity
 {
 public:
@@ -96,7 +94,7 @@ public:
 	void Think_();
 	void Touch_(CBaseEntity *pOther);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	static TYPEDESCRIPTION IMPL(m_SaveData)[5];
@@ -108,7 +106,6 @@ public:
 	bool m_fFlashTouched;
 };
 
-/* <18a222> ../cstrike/dlls/training_gamerules.cpp:385 */
 class CFuncWeaponCheck: public CBaseEntity
 {
 public:
@@ -126,7 +123,7 @@ public:
 	int Restore_(CRestore &restore);
 	void Touch_(CBaseEntity *pOther);
 
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	static TYPEDESCRIPTION IMPL(m_SaveData)[6];

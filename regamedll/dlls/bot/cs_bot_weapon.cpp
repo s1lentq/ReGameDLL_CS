@@ -2,8 +2,6 @@
 
 // Fire our active weapon towards our current enemy
 // NOTE: Aiming our weapon is handled in RunBotUpkeep()
-
-/* <3eb434> ../cstrike/dlls/bot/cs_bot_weapon.cpp:17 */
 void CCSBot::FireWeaponAtEnemy()
 {
 	CBasePlayer *enemy = GetEnemy();
@@ -38,7 +36,7 @@ void CCSBot::FireWeaponAtEnemy()
 			const float_precision halfPI = (M_PI / 180.0f);
 			float_precision yaw = pev->v_angle[ YAW ] * halfPI;
 
-			Vector2D dir(cos(yaw), sin(yaw));
+			Vector2D dir(Q_cos(yaw), Q_sin(yaw));
 			float_precision onTarget = DotProduct(toAimSpot, dir);
 
 			// aim more precisely with a sniper rifle
@@ -46,7 +44,7 @@ void CCSBot::FireWeaponAtEnemy()
 			const float_precision halfSize = (IsUsingSniperRifle()) ? HalfHumanWidth : 2.0f * HalfHumanWidth;
 
 			// aiming tolerance depends on how close the target is - closer targets subtend larger angles
-			float_precision aimTolerance = cos(atan(halfSize / rangeToEnemy));
+			float_precision aimTolerance = Q_cos(Q_atan(halfSize / rangeToEnemy));
 
 			if (onTarget > aimTolerance)
 			{
@@ -150,8 +148,6 @@ void CCSBot::FireWeaponAtEnemy()
 }
 
 // Set the current aim offset using given accuracy (1.0 = perfect aim, 0.0f = terrible aim)
-
-/* <3ea12d> ../cstrike/dlls/bot/cs_bot_weapon.cpp:210 */
 void CCSBot::SetAimOffset(float accuracy)
 {
 	// if our accuracy is less than perfect, it will improve as we "focus in" while not rotating our view
@@ -181,7 +177,7 @@ void CCSBot::SetAimOffset(float accuracy)
 	PrintIfWatched("Accuracy = %4.3f\n", accuracy);
 
 	float range = (m_lastEnemyPosition - pev->origin).Length();
-	const float_precision maxOffset = range * ((float_precision)m_iFOV / DEFAULT_FOV) * 0.1;
+	const float_precision maxOffset = range * (float_precision(m_iFOV) / DEFAULT_FOV) * 0.1;
 	float error = maxOffset * (1 - accuracy);
 
 	m_aimOffsetGoal[0] = RANDOM_FLOAT(-error, error);
@@ -189,12 +185,10 @@ void CCSBot::SetAimOffset(float accuracy)
 	m_aimOffsetGoal[2] = RANDOM_FLOAT(-error, error);
 
 	// define time when aim offset will automatically be updated
-	m_aimOffsetTimestamp = gpGlobals->time + RANDOM_FLOAT(0.25, 1);
+	m_aimOffsetTimestamp = gpGlobals->time + RANDOM_FLOAT(0.25f, 1.0f);
 }
 
 // Wiggle aim error based on GetProfile()->GetSkill()
-
-/* <3ea224> ../cstrike/dlls/bot/cs_bot_weapon.cpp:252 */
 void CCSBot::UpdateAimOffset()
 {
 	if (gpGlobals->time >= m_aimOffsetTimestamp)
@@ -213,8 +207,6 @@ void CCSBot::UpdateAimOffset()
 
 // Change our zoom level to be appropriate for the given range.
 // Return true if the zoom level changed.
-
-/* <3ea2b7> ../cstrike/dlls/bot/cs_bot_weapon.cpp:271 */
 bool CCSBot::AdjustZoom(float range)
 {
 	bool adjustZoom = false;
@@ -269,8 +261,6 @@ bool CCSBot::AdjustZoom(float range)
 }
 
 // Return true if the given weapon is a sniper rifle
-
-/* <3e9e2d> ../cstrike/dlls/bot/cs_bot_weapon.cpp:320 */
 bool isSniperRifle(CBasePlayerItem *item)
 {
 	switch (item->m_iId)
@@ -286,7 +276,6 @@ bool isSniperRifle(CBasePlayerItem *item)
 	}
 }
 
-/* <3ea3ab> ../cstrike/dlls/bot/cs_bot_weapon.cpp:342 */
 bool CCSBot::IsUsingAWP() const
 {
 	CBasePlayerWeapon *weapon = GetActiveWeapon();
@@ -298,8 +287,6 @@ bool CCSBot::IsUsingAWP() const
 }
 
 // Returns true if we are using a weapon with a removable silencer
-
-/* <3ea3ce> ../cstrike/dlls/bot/cs_bot_weapon.cpp:357 */
 bool CCSBot::DoesActiveWeaponHaveSilencer() const
 {
 	CBasePlayerWeapon *weapon = GetActiveWeapon();
@@ -314,8 +301,6 @@ bool CCSBot::DoesActiveWeaponHaveSilencer() const
 }
 
 // Return true if we are using a sniper rifle
-
-/* <3ea3f1> ../cstrike/dlls/bot/cs_bot_weapon.cpp:375 */
 bool CCSBot::IsUsingSniperRifle() const
 {
 	CBasePlayerWeapon *weapon = GetActiveWeapon();
@@ -327,8 +312,6 @@ bool CCSBot::IsUsingSniperRifle() const
 }
 
 // Return true if we have a sniper rifle in our inventory
-
-/* <3ea462> ../cstrike/dlls/bot/cs_bot_weapon.cpp:387 */
 bool CCSBot::IsSniper() const
 {
 	for (int i = 0; i < MAX_ITEM_TYPES; ++i)
@@ -348,8 +331,6 @@ bool CCSBot::IsSniper() const
 }
 
 // Return true if we are actively sniping (moving to sniper spot or settled in)
-
-/* <3ea4c1> ../cstrike/dlls/bot/cs_bot_weapon.cpp:405 */
 bool CCSBot::IsSniping() const
 {
 	if (GetTask() == MOVE_TO_SNIPER_SPOT || GetTask() == SNIPING)
@@ -359,8 +340,6 @@ bool CCSBot::IsSniping() const
 }
 
 // Return true if we are using a shotgun
-
-/* <3ea4e8> ../cstrike/dlls/bot/cs_bot_weapon.cpp:417 */
 bool CCSBot::IsUsingShotgun() const
 {
 	CBasePlayerWeapon *weapon = GetActiveWeapon();
@@ -375,8 +354,6 @@ bool CCSBot::IsUsingShotgun() const
 }
 
 // Returns true if using the big 'ol machinegun
-
-/* <3ea50f> ../cstrike/dlls/bot/cs_bot_weapon.cpp:437 */
 bool CCSBot::IsUsingMachinegun() const
 {
 	CBasePlayerWeapon *weapon = GetActiveWeapon();
@@ -388,8 +365,6 @@ bool CCSBot::IsUsingMachinegun() const
 }
 
 // Return true if primary weapon doesn't exist or is totally out of ammo
-
-/* <3ea532> ../cstrike/dlls/bot/cs_bot_weapon.cpp:449 */
 bool CCSBot::IsPrimaryWeaponEmpty() const
 {
 	CBasePlayerWeapon *weapon = static_cast<CBasePlayerWeapon *>(m_rgpPlayerItems[ PRIMARY_WEAPON_SLOT ]);
@@ -405,8 +380,6 @@ bool CCSBot::IsPrimaryWeaponEmpty() const
 }
 
 // Return true if pistol doesn't exist or is totally out of ammo
-
-/* <3ea578> ../cstrike/dlls/bot/cs_bot_weapon.cpp:467 */
 bool CCSBot::IsPistolEmpty() const
 {
 	CBasePlayerWeapon *weapon = static_cast<CBasePlayerWeapon *>(m_rgpPlayerItems[ PISTOL_SLOT ]);
@@ -424,8 +397,6 @@ bool CCSBot::IsPistolEmpty() const
 }
 
 // Equip the given item
-
-/* <3ea5d9> ../cstrike/dlls/bot/cs_bot_weapon.cpp:485 */
 bool CCSBot::DoEquip(CBasePlayerWeapon *gun)
 {
 	if (gun == NULL)
@@ -446,38 +417,35 @@ bool CCSBot::DoEquip(CBasePlayerWeapon *gun)
 const float minEquipInterval = 5.0f;
 
 // Equip the best weapon we are carrying that has ammo
-
-/* <3ea621> ../cstrike/dlls/bot/cs_bot_weapon.cpp:510 */
 void CCSBot::EquipBestWeapon(bool mustEquip)
 {
 	// throttle how often equipping is allowed
 	if (!mustEquip && m_equipTimer.GetElapsedTime() < minEquipInterval)
 		return;
 
-	CCSBotManager *ctrl = TheCSBots();
 	CBasePlayerWeapon *primary = static_cast<CBasePlayerWeapon *>(m_rgpPlayerItems[ PRIMARY_WEAPON_SLOT ]);
 
 	if (primary != NULL)
 	{
 		WeaponClassType weaponClass = WeaponIDToWeaponClass(primary->m_iId);
 
-		if ((ctrl->AllowShotguns() && weaponClass == WEAPONCLASS_SHOTGUN)
-			|| (ctrl->AllowMachineGuns() && weaponClass == WEAPONCLASS_MACHINEGUN)
-			|| (ctrl->AllowRifles() && weaponClass == WEAPONCLASS_RIFLE)
+		if ((TheCSBots()->AllowShotguns() && weaponClass == WEAPONCLASS_SHOTGUN)
+			|| (TheCSBots()->AllowMachineGuns() && weaponClass == WEAPONCLASS_MACHINEGUN)
+			|| (TheCSBots()->AllowRifles() && weaponClass == WEAPONCLASS_RIFLE)
 #ifndef REGAMEDLL_FIXES
 			// TODO: already is checked shotguns!
-			|| (ctrl->AllowShotguns() && weaponClass == WEAPONCLASS_SHOTGUN)
-#endif // REGAMEDLL_FIXES
-			|| (ctrl->AllowSnipers() && weaponClass == WEAPONCLASS_SNIPERRIFLE)
-			|| (ctrl->AllowSubMachineGuns() && weaponClass == WEAPONCLASS_SUBMACHINEGUN)
-			|| (ctrl->AllowTacticalShield() && primary->m_iId == WEAPON_SHIELDGUN))
+			|| (TheCSBots()->AllowShotguns() && weaponClass == WEAPONCLASS_SHOTGUN)
+#endif
+			|| (TheCSBots()->AllowSnipers() && weaponClass == WEAPONCLASS_SNIPERRIFLE)
+			|| (TheCSBots()->AllowSubMachineGuns() && weaponClass == WEAPONCLASS_SUBMACHINEGUN)
+			|| (TheCSBots()->AllowTacticalShield() && primary->m_iId == WEAPON_SHIELDGUN))
 		{
 			if (DoEquip(primary))
 				return;
 		}
 	}
 
-	if (ctrl->AllowPistols())
+	if (TheCSBots()->AllowPistols())
 	{
 		if (DoEquip(static_cast<CBasePlayerWeapon *>(m_rgpPlayerItems[ PISTOL_SLOT ])))
 			return;
@@ -488,8 +456,6 @@ void CCSBot::EquipBestWeapon(bool mustEquip)
 }
 
 // Equip our pistol
-
-/* <3ea7fe> ../cstrike/dlls/bot/cs_bot_weapon.cpp:557 */
 void CCSBot::EquipPistol()
 {
 	// throttle how often equipping is allowed
@@ -504,8 +470,6 @@ void CCSBot::EquipPistol()
 }
 
 // Equip the knife
-
-/* <3ea91a> ../cstrike/dlls/bot/cs_bot_weapon.cpp:575 */
 void CCSBot::EquipKnife()
 {
 	if (!IsUsingKnife())
@@ -519,8 +483,6 @@ void CCSBot::EquipKnife()
 }
 
 // Return true if we have a grenade in our inventory
-
-/* <3ea98b> ../cstrike/dlls/bot/cs_bot_weapon.cpp:589 */
 bool CCSBot::HasGrenade() const
 {
 	CBasePlayerWeapon *grenade = static_cast<CBasePlayerWeapon *>(m_rgpPlayerItems[ GRENADE_SLOT ]);
@@ -528,8 +490,6 @@ bool CCSBot::HasGrenade() const
 }
 
 // Equip a grenade, return false if we cant
-
-/* <3ea9ae> ../cstrike/dlls/bot/cs_bot_weapon.cpp:598 */
 bool CCSBot::EquipGrenade(bool noSmoke)
 {
 	// snipers don't use grenades
@@ -557,8 +517,6 @@ bool CCSBot::EquipGrenade(bool noSmoke)
 }
 
 // Returns true if we have knife equipped
-
-/* <3eaa8c> ../cstrike/dlls/bot/cs_bot_weapon.cpp:624 */
 bool CCSBot::IsUsingKnife() const
 {
 	CBasePlayerWeapon *weapon = GetActiveWeapon();
@@ -570,8 +528,6 @@ bool CCSBot::IsUsingKnife() const
 }
 
 // Returns true if we have pistol equipped
-
-/* <3eaac2> ../cstrike/dlls/bot/cs_bot_weapon.cpp:638 */
 bool CCSBot::IsUsingPistol() const
 {
 	CBasePlayerWeapon *weapon = GetActiveWeapon();
@@ -583,8 +539,6 @@ bool CCSBot::IsUsingPistol() const
 }
 
 // Returns true if we have a grenade equipped
-
-/* <3eab09> ../cstrike/dlls/bot/cs_bot_weapon.cpp:652 */
 bool CCSBot::IsUsingGrenade() const
 {
 	CBasePlayerWeapon *weapon = GetActiveWeapon();
@@ -600,7 +554,6 @@ bool CCSBot::IsUsingGrenade() const
 	return false;
 }
 
-/* <3eab3f> ../cstrike/dlls/bot/cs_bot_weapon.cpp:672 */
 bool CCSBot::IsUsingHEGrenade() const
 {
 	CBasePlayerWeapon *weapon = GetActiveWeapon();
@@ -612,8 +565,6 @@ bool CCSBot::IsUsingHEGrenade() const
 }
 
 // Begin the process of throwing the grenade
-
-/* <3eab80> ../cstrike/dlls/bot/cs_bot_weapon.cpp:690 */
 void CCSBot::ThrowGrenade(const Vector *target)
 {
 	if (IsUsingGrenade() && !m_isWaitingToTossGrenade)
@@ -628,8 +579,6 @@ void CCSBot::ThrowGrenade(const Vector *target)
 }
 
 // Find spot to throw grenade ahead of us and "around the corner" along our path
-
-/* <3eac08> ../cstrike/dlls/bot/cs_bot_weapon.cpp:709 */
 bool CCSBot::FindGrenadeTossPathTarget(Vector *pos)
 {
 	if (!HasPath())
@@ -728,8 +677,6 @@ bool CCSBot::FindGrenadeTossPathTarget(Vector *pos)
 }
 
 // Reload our weapon if we must
-
-/* <3eaf22> ../cstrike/dlls/bot/cs_bot_weapon.cpp:810 */
 void CCSBot::ReloadCheck()
 {
 	const float safeReloadWaitTime = 3.0f;
@@ -802,8 +749,6 @@ void CCSBot::ReloadCheck()
 }
 
 // Silence/unsilence our weapon if we must
-
-/* <3eb0ac> ../cstrike/dlls/bot/cs_bot_weapon.cpp:885 */
 void CCSBot::SilencerCheck()
 {
 	// longer than reload check because reloading should take precedence
@@ -819,7 +764,7 @@ void CCSBot::SilencerCheck()
 #ifdef REGAMEDLL_FIXES
 	if (GetTimeSinceLastSawEnemy() < safeSilencerWaitTime)
 		return;
-#endif // REGAMEDLL_FIXES
+#endif
 
 	// don't touch the silencer if there are enemies nearby
 	if (GetNearbyEnemyCount() == 0)
@@ -839,7 +784,7 @@ void CCSBot::SilencerCheck()
 
 		// equip silencer if we want to and we don't have a shield.
 		if (isSilencerOn != (GetProfile()->PrefersSilencer() || GetProfile()->GetSkill() > 0.7f) && !HasShield())
-#endif // REGAMEDLL_FIXES
+#endif
 		{
 			PrintIfWatched("%s silencer!\n", (isSilencerOn) ? "Unequipping" : "Equipping");
 			myGun->SecondaryAttack();
@@ -848,8 +793,6 @@ void CCSBot::SilencerCheck()
 }
 
 // Invoked when in contact with a CWeaponBox
-
-/* <3eb1a9> ../cstrike/dlls/bot/cs_bot_weapon.cpp:926 */
 void CCSBot::__MAKE_VHOOK(OnTouchingWeapon)(CWeaponBox *box)
 {
 	CBasePlayerItem *droppedGun = dynamic_cast<CBasePlayerItem *>(box->m_rgpPlayerItems[ PRIMARY_WEAPON_SLOT ]);
@@ -896,8 +839,6 @@ void CCSBot::__MAKE_VHOOK(OnTouchingWeapon)(CWeaponBox *box)
 
 // Return true if a friend is in our weapon's way
 // TODO: Check more rays for safety.
-
-/* <3eb277> ../cstrike/dlls/bot/cs_bot_weapon.cpp:977 */
 bool CCSBot::IsFriendInLineOfFire()
 {
 	UTIL_MakeVectors(pev->punchangle + pev->v_angle);
@@ -928,8 +869,6 @@ bool CCSBot::IsFriendInLineOfFire()
 
 // Return line-of-sight distance to obstacle along weapon fire ray
 // TODO: Re-use this computation with IsFriendInLineOfFire()
-
-/* <3eb84d> ../cstrike/dlls/bot/cs_bot_weapon.cpp:1009 */
 float CCSBot::ComputeWeaponSightRange()
 {
 	UTIL_MakeVectors(pev->punchangle + pev->v_angle);

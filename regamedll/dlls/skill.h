@@ -57,6 +57,6 @@ struct skilldata_t
 
 extern skilldata_t gSkillData;
 
-NOXREF float GetSkillCvar(char *pName);
+float GetSkillCvar(char *pName);
 
 #endif // SKILL_H

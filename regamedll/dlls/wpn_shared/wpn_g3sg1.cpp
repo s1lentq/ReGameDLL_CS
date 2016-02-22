@@ -1,9 +1,7 @@
 #include "precompiled.h"
 
-/* <260ef4> ../cstrike/dlls/wpn_shared/wpn_g3sg1.cpp:48 */
 LINK_ENTITY_TO_CLASS(weapon_g3sg1, CG3SG1);
 
-/* <260ca2> ../cstrike/dlls/wpn_shared/wpn_g3sg1.cpp:50 */
 void CG3SG1::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
@@ -17,7 +15,6 @@ void CG3SG1::__MAKE_VHOOK(Spawn)()
 	FallInit();
 }
 
-/* <260b97> ../cstrike/dlls/wpn_shared/wpn_g3sg1.cpp:63 */
 void CG3SG1::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL("models/v_g3sg1.mdl");
@@ -33,7 +30,6 @@ void CG3SG1::__MAKE_VHOOK(Precache)()
 	m_usFireG3SG1 = PRECACHE_EVENT(1, "events/g3sg1.sc");
 }
 
-/* <260bbe> ../cstrike/dlls/wpn_shared/wpn_g3sg1.cpp:79 */
 int CG3SG1::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
@@ -51,14 +47,12 @@ int CG3SG1::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	return 1;
 }
 
-/* <260c7b> ../cstrike/dlls/wpn_shared/wpn_g3sg1.cpp:96 */
 BOOL CG3SG1::__MAKE_VHOOK(Deploy)()
 {
 	m_flAccuracy = 0.2f;
 	return DefaultDeploy("models/v_g3sg1.mdl", "models/p_g3sg1.mdl", G3SG1_DRAW, "mp5", UseDecrement() != FALSE);
 }
 
-/* <260c17> ../cstrike/dlls/wpn_shared/wpn_g3sg1.cpp:102 */
 void CG3SG1::__MAKE_VHOOK(SecondaryAttack)()
 {
 	switch (m_pPlayer->m_iFOV)
@@ -69,7 +63,7 @@ void CG3SG1::__MAKE_VHOOK(SecondaryAttack)()
 	default:
 #else
 	case 15:
-#endif // REGAMEDLL_FIXES
+#endif
 		m_pPlayer->m_iFOV = m_pPlayer->pev->fov = 90; break;
 	}
 
@@ -84,7 +78,6 @@ void CG3SG1::__MAKE_VHOOK(SecondaryAttack)()
 	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.3f;
 }
 
-/* <260eaa> ../cstrike/dlls/wpn_shared/wpn_g3sg1.cpp:133 */
 void CG3SG1::__MAKE_VHOOK(PrimaryAttack)()
 {
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
@@ -105,7 +98,6 @@ void CG3SG1::__MAKE_VHOOK(PrimaryAttack)()
 	}
 }
 
-/* <260dab> ../cstrike/dlls/wpn_shared/wpn_g3sg1.cpp:145 */
 void CG3SG1::G3SG1Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 {
 	Vector vecAiming, vecSrc, vecDir;
@@ -166,10 +158,10 @@ void CG3SG1::G3SG1Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	flag = FEV_NOTHOST;
 #else
 	flag = 0;
-#endif // CLIENT_WEAPONS
+#endif
 
 	PLAYBACK_EVENT_FULL(flag, m_pPlayer->edict(), m_usFireG3SG1, 0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y,
-		(int)(m_pPlayer->pev->punchangle.x * 100), (int)(m_pPlayer->pev->punchangle.x * 100), FALSE, FALSE);
+		int(m_pPlayer->pev->punchangle.x * 100), int(m_pPlayer->pev->punchangle.x * 100), FALSE, FALSE);
 
 	m_flNextPrimaryAttack = m_flNextSecondaryAttack = GetNextAttackDelay(flCycleTime);
 
@@ -184,7 +176,6 @@ void CG3SG1::G3SG1Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	m_pPlayer->pev->punchangle.y += UTIL_SharedRandomFloat(m_pPlayer->random_seed + 5, -0.75, 0.75);
 }
 
-/* <260d53> ../cstrike/dlls/wpn_shared/wpn_g3sg1.cpp:234 */
 void CG3SG1::__MAKE_VHOOK(Reload)()
 {
 	if (m_pPlayer->ammo_762nato <= 0)
@@ -203,7 +194,6 @@ void CG3SG1::__MAKE_VHOOK(Reload)()
 	}
 }
 
-/* <260d18> ../cstrike/dlls/wpn_shared/wpn_g3sg1.cpp:260 */
 void CG3SG1::__MAKE_VHOOK(WeaponIdle)()
 {
 	ResetEmptySound();
@@ -219,7 +209,6 @@ void CG3SG1::__MAKE_VHOOK(WeaponIdle)()
 	}
 }
 
-/* <260bf1> ../cstrike/dlls/wpn_shared/wpn_g3sg1.cpp:277 */
 float CG3SG1::__MAKE_VHOOK(GetMaxSpeed)()
 {
 	return (m_pPlayer->m_iFOV == DEFAULT_FOV) ? G3SG1_MAX_SPEED : G3SG1_MAX_SPEED_ZOOM;

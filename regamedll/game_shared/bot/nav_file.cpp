@@ -23,20 +23,17 @@
 
 PlaceDirectory placeDirectory;
 
-/* <4edbfc> ../game_shared/bot/nav_file.cpp:60 */
 void PlaceDirectory::Reset()
 {
 	m_directory.clear();
 }
 
-/* <4edbaf> ../game_shared/bot/nav_file.cpp:66 */
 bool PlaceDirectory::IsKnown(Place place) const
 {
 	std::vector<Place>::const_iterator it = std::find(m_directory.begin(), m_directory.end(), place);
 	return (it != m_directory.end());
 }
 
-/* <4ec844> ../game_shared/bot/nav_file.cpp:74 */
 PlaceDirectory::EntryType PlaceDirectory::GetEntry(Place place) const
 {
 	if (place == UNDEFINED_PLACE)
@@ -53,7 +50,6 @@ PlaceDirectory::EntryType PlaceDirectory::GetEntry(Place place) const
 	return 1 + (it - m_directory.begin());
 }
 
-/* <4ee200> ../game_shared/bot/nav_file.cpp:91 */
 void PlaceDirectory::AddPlace(Place place)
 {
 	if (place == UNDEFINED_PLACE)
@@ -67,7 +63,6 @@ void PlaceDirectory::AddPlace(Place place)
 	m_directory.push_back(place);
 }
 
-/* <4edf61> ../game_shared/bot/nav_file.cpp:105 */
 Place PlaceDirectory::EntryToPlace(EntryType entry) const
 {
 	if (entry == 0)
@@ -84,7 +79,6 @@ Place PlaceDirectory::EntryToPlace(EntryType entry) const
 	return m_directory[ i ];
 }
 
-/* <4edc2e> ../game_shared/bot/nav_file.cpp:122 */
 void PlaceDirectory::Save(int fd)
 {
 	// store number of entries in directory
@@ -104,7 +98,6 @@ void PlaceDirectory::Save(int fd)
 	}
 }
 
-/* <4edfaa> ../game_shared/bot/nav_file.cpp:142 */
 void PlaceDirectory::Load(SteamFile *file)
 {
 	// read number of entries
@@ -125,7 +118,6 @@ void PlaceDirectory::Load(SteamFile *file)
 	}
 }
 
-/* <4ee54b> ../game_shared/bot/nav_file.cpp:173 */
 char *GetBspFilename(const char *navFilename)
 {
 	static char bspFilename[256];
@@ -142,24 +134,22 @@ char *GetBspFilename(const char *navFilename)
 	return bspFilename;
 }
 
-/* <4ee5c1> ../game_shared/bot/nav_file.cpp:191 */
 void CNavArea::Save(FILE *fp) const
 {
-	fprintf(fp, "v  %f %f %f\n", m_extent.lo.x, m_extent.lo.y, m_extent.lo.z);
-	fprintf(fp, "v  %f %f %f\n", m_extent.hi.x, m_extent.lo.y, m_neZ);
-	fprintf(fp, "v  %f %f %f\n", m_extent.hi.x, m_extent.hi.y, m_extent.hi.z);
-	fprintf(fp, "v  %f %f %f\n", m_extent.lo.x, m_extent.hi.y, m_swZ);
+	Q_fprintf(fp, "v  %f %f %f\n", m_extent.lo.x, m_extent.lo.y, m_extent.lo.z);
+	Q_fprintf(fp, "v  %f %f %f\n", m_extent.hi.x, m_extent.lo.y, m_neZ);
+	Q_fprintf(fp, "v  %f %f %f\n", m_extent.hi.x, m_extent.hi.y, m_extent.hi.z);
+	Q_fprintf(fp, "v  %f %f %f\n", m_extent.lo.x, m_extent.hi.y, m_swZ);
 
 	static int base = 1;
-	fprintf(fp, "\n\ng %04dArea%s%s%s%s\n", m_id,
+	Q_fprintf(fp, "\n\ng %04dArea%s%s%s%s\n", m_id,
 			(GetAttributes() & NAV_CROUCH) ? "CROUCH" : "", (GetAttributes() & NAV_JUMP) ? "JUMP" : "",
 			(GetAttributes() & NAV_PRECISE) ? "PRECISE" : "", (GetAttributes() & NAV_NO_JUMP) ? "NO_JUMP" : "");
 
-	fprintf(fp, "f %d %d %d %d\n\n", base, base + 1, base + 2, base + 3);
+	Q_fprintf(fp, "f %d %d %d %d\n\n", base, base + 1, base + 2, base + 3);
 	base += 4;
 }
 
-/* <4f09b8> ../game_shared/bot/nav_file.cpp:212 */
 void CNavArea::Save(int fd, unsigned int version)
 {
 	// save ID
@@ -186,7 +176,7 @@ void CNavArea::Save(int fd, unsigned int version)
 		NavConnectList::const_iterator iter;
 		for (iter = m_connect[d].begin(); iter != m_connect[d].end(); ++iter)
 		{
-			NavConnect connect = *iter;
+			NavConnect connect = (*iter);
 			Q_write(fd, &connect.area->m_id, sizeof(unsigned int));
 		}
 	}
@@ -209,8 +199,7 @@ void CNavArea::Save(int fd, unsigned int version)
 	unsigned int saveCount = 0;
 	for (HidingSpotList::iterator iter = m_hidingSpotList.begin(); iter != m_hidingSpotList.end(); ++iter)
 	{
-		HidingSpot *spot = *iter;
-
+		HidingSpot *spot = (*iter);
 		spot->Save(fd, version);
 
 		// overflow check
@@ -321,7 +310,6 @@ void CNavArea::Save(int fd, unsigned int version)
 	Q_write(fd, &entry, sizeof(entry));
 }
 
-/* <4ee669> ../game_shared/bot/nav_file.cpp:379 */
 void CNavArea::Load(SteamFile *file, unsigned int version)
 {
 	// load ID
@@ -471,7 +459,7 @@ void CNavArea::Load(SteamFile *file, unsigned int version)
 			unsigned char t;
 			file->Read(&t, sizeof(unsigned char));
 
-			order.t = (float)t / 255.0f;
+			order.t = float(t) / 255.0f;
 
 			encounter.spotList.push_back(order);
 		}
@@ -490,7 +478,6 @@ void CNavArea::Load(SteamFile *file, unsigned int version)
 	SetPlace(placeDirectory.EntryToPlace(entry));
 }
 
-/* <4f029e> ../game_shared/bot/nav_file.cpp:562 */
 NavErrorType CNavArea::PostLoad()
 {
 	NavErrorType error = NAV_OK;
@@ -601,8 +588,6 @@ NavErrorType CNavArea::PostLoad()
 }
 
 // Changes all '/' characters into '\' characters, in place.
-
-/* <4edbe0> ../game_shared/bot/nav_file.cpp:680 */
 inline void COM_FixSlashes(char *pname)
 {
 #ifdef _WIN32
@@ -623,8 +608,6 @@ inline void COM_FixSlashes(char *pname)
 }
 
 // Store AI navigation data to a file
-
-/* <4f3e47> ../game_shared/bot/nav_file.cpp:702 */
 bool SaveNavigationMap(const char *filename)
 {
 	if (filename == NULL)
@@ -673,7 +656,7 @@ bool SaveNavigationMap(const char *filename)
 	NavAreaList::iterator it;
 	for (it = TheNavAreaList.begin(); it != TheNavAreaList.end(); ++it)
 	{
-		CNavArea *area = *it;
+		CNavArea *area = (*it);
 		Place place = area->GetPlace();
 
 		if (place)
@@ -692,40 +675,36 @@ bool SaveNavigationMap(const char *filename)
 	// store each area
 	for (it = TheNavAreaList.begin(); it != TheNavAreaList.end(); ++it)
 	{
-		CNavArea *area = *it;
+		CNavArea *area = (*it);
 		area->Save(fd, version);
 	}
 
 	Q_close(fd);
 
-#ifdef _WIN32
+/*#if defined(_WIN32) && !defined(REGAMEDLL_FIXES)
 	// output a simple Wavefront file to visualize the generated areas in 3DSMax
-	FILE *fp = fopen("c:\\tmp\\nav.obj", "w");
+	FILE *fp = Q_fopen("c:\\tmp\\nav.obj", "w");
 	if (fp)
 	{
 		for (NavAreaList::iterator iter = TheNavAreaList.begin(); iter != TheNavAreaList.end(); ++iter)
-		{
 			(*iter)->Save(fp);
-		}
 
-		fclose(fp);
+		Q_fclose(fp);
 	}
-#endif // _WIN32
+#endif // _WIN32 && !REGAMEDLL_FIXES*/
 
 	return true;
 }
 
 // Load place map
 // This is legacy code - Places are stored directly in the nav file now
-
-/* <4f169d> ../game_shared/bot/nav_file.cpp:811 */
 void LoadLocationFile(const char *filename)
 {
 	char locFilename[256];
 	Q_strcpy(locFilename, filename);
 
 	char *dot = Q_strchr(locFilename, '.');
-	if (dot)
+	if (dot != NULL)
 	{
 		Q_strcpy(dot, ".loc");
 
@@ -733,7 +712,7 @@ void LoadLocationFile(const char *filename)
 		char *locDataFile = (char *)LOAD_FILE_FOR_ME(const_cast<char *>(locFilename), &locDataLength);
 		char *locData = locDataFile;
 
-		if (locData)
+		if (locData != NULL)
 		{
 			CONSOLE_ECHO("Loading legacy 'location file' '%s'\n", locFilename);
 
@@ -768,7 +747,7 @@ void LoadLocationFile(const char *filename)
 					CNavArea *area = TheNavAreaGrid.GetNavAreaByID(areaID);
 					unsigned int place = (locDirIndex > 0) ? directory[locDirIndex - 1] : UNDEFINED_PLACE;
 
-					if (area)
+					if (area != NULL)
 						area->SetPlace(place);
 				}
 			}
@@ -779,8 +758,6 @@ void LoadLocationFile(const char *filename)
 }
 
 // Performs a lightweight sanity-check of the specified map's nav mesh
-
-/* <4f05c5> ../game_shared/bot/nav_file.cpp:876 */
 void SanityCheckNavigationMap(const char *mapName)
 {
 	if (!mapName)
@@ -850,7 +827,6 @@ void SanityCheckNavigationMap(const char *mapName)
 	CONSOLE_ECHO("navigation file %s passes the sanity check.\n", navFilename);
 }
 
-/* <4f19c7> ../game_shared/bot/nav_file.cpp:947 */
 NavErrorType LoadNavigationMap()
 {
 	// since the navigation map is destroyed on map change,
@@ -969,7 +945,7 @@ NavErrorType LoadNavigationMap()
 	// allow areas to connect to each other, etc
 	for (iter = TheNavAreaList.begin(); iter != TheNavAreaList.end(); ++iter)
 	{
-		CNavArea *area = *iter;
+		CNavArea *area = (*iter);
 		area->PostLoad();
 	}
 
@@ -981,6 +957,5 @@ NavErrorType LoadNavigationMap()
 
 	// Set up all the ladders
 	BuildLadders();
-
 	return NAV_OK;
 }

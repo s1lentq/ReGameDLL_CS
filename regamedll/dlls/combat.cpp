@@ -1,6 +1,5 @@
 #include "precompiled.h"
 
-/* <5f4cb> ../cstrike/dlls/combat.cpp:52 */
 void CGib::LimitVelocity()
 {
 	float length = pev->velocity.Length();
@@ -14,7 +13,6 @@ void CGib::LimitVelocity()
 	}
 }
 
-/* <60320> ../cstrike/dlls/combat.cpp:63 */
 NOXREF void CGib::SpawnStickyGibs(entvars_t *pevVictim, Vector vecOrigin, int cGibs)
 {
 	int i;
@@ -78,7 +76,6 @@ NOXREF void CGib::SpawnStickyGibs(entvars_t *pevVictim, Vector vecOrigin, int cG
 	}
 }
 
-/* <5ff7f> ../cstrike/dlls/combat.cpp:132 */
 void CGib::SpawnHeadGib(entvars_t *pevVictim)
 {
 	CGib *pGib = GetClassPtr((CGib *)NULL);
@@ -112,6 +109,7 @@ void CGib::SpawnHeadGib(entvars_t *pevVictim)
 		}
 		else
 		{
+			// TODO: fix test demo
 			pGib->pev->velocity.z = RANDOM_FLOAT(200, 300);
 			pGib->pev->velocity.y = RANDOM_FLOAT(-100, 100);
 			pGib->pev->velocity.x = RANDOM_FLOAT(-100, 100);
@@ -138,7 +136,6 @@ void CGib::SpawnHeadGib(entvars_t *pevVictim)
 	pGib->LimitVelocity();
 }
 
-/* <606c8> ../cstrike/dlls/combat.cpp:190 */
 void CGib::SpawnRandomGibs(entvars_t *pevVictim, int cGibs, int human)
 {
 	int cSplat;
@@ -207,7 +204,6 @@ void CGib::SpawnRandomGibs(entvars_t *pevVictim, int cGibs, int human)
 	}
 }
 
-/* <5f58a> ../cstrike/dlls/combat.cpp:263 */
 BOOL CBaseMonster::__MAKE_VHOOK(HasHumanGibs)()
 {
 	int myClass = Classify();
@@ -221,7 +217,6 @@ BOOL CBaseMonster::__MAKE_VHOOK(HasHumanGibs)()
 	return FALSE;
 }
 
-/* <5f5ca> ../cstrike/dlls/combat.cpp:278 */
 BOOL CBaseMonster::__MAKE_VHOOK(HasAlienGibs)()
 {
 	int myClass = Classify();
@@ -236,7 +231,6 @@ BOOL CBaseMonster::__MAKE_VHOOK(HasAlienGibs)()
 	return FALSE;
 }
 
-/* <5f60a> ../cstrike/dlls/combat.cpp:295 */
 void CBaseMonster::__MAKE_VHOOK(FadeMonster)()
 {
 	StopAnimation();
@@ -250,11 +244,10 @@ void CBaseMonster::__MAKE_VHOOK(FadeMonster)()
 	SUB_StartFadeOut();
 }
 
-/* <60a59> ../cstrike/dlls/combat.cpp:310 */
 void CBaseMonster::__MAKE_VHOOK(GibMonster)()
 {
 	TraceResult tr;
-	BOOL gibbed = FALSE;
+	bool gibbed = false;
 
 	EMIT_SOUND(ENT(pev), CHAN_WEAPON, "common/bodysplat.wav", VOL_NORM, ATTN_NORM);
 
@@ -269,7 +262,7 @@ void CBaseMonster::__MAKE_VHOOK(GibMonster)()
 			// throw some human gibs.
 			CGib::SpawnRandomGibs(pev, 4, 1);
 		}
-		gibbed = TRUE;
+		gibbed = true;
 	}
 	else if (HasAlienGibs())
 	{
@@ -279,7 +272,7 @@ void CBaseMonster::__MAKE_VHOOK(GibMonster)()
 			// Throw alien gibs
 			CGib::SpawnRandomGibs(pev, 4, 0);
 		}
-		gibbed = TRUE;
+		gibbed = true;
 	}
 
 	if (!IsPlayer())
@@ -297,8 +290,6 @@ void CBaseMonster::__MAKE_VHOOK(GibMonster)()
 
 // GetDeathActivity - determines the best type of death
 // anim to play.
-
-/* <5f65e> ../cstrike/dlls/combat.cpp:355 */
 Activity CBaseMonster::__MAKE_VHOOK(GetDeathActivity)()
 {
 	Activity deathActivity;
@@ -417,8 +408,6 @@ Activity CBaseMonster::__MAKE_VHOOK(GetDeathActivity)()
 
 // GetSmallFlinchActivity - determines the best type of flinch
 // anim to play.
-
-/* <5f848> ../cstrike/dlls/combat.cpp:476 */
 NOXREF Activity CBaseMonster::GetSmallFlinchActivity()
 {
 	Activity flinchActivity;
@@ -466,7 +455,6 @@ NOXREF Activity CBaseMonster::GetSmallFlinchActivity()
 	return flinchActivity;
 }
 
-/* <5f8a6> ../cstrike/dlls/combat.cpp:525 */
 void CBaseMonster::__MAKE_VHOOK(BecomeDead)()
 {
 	// don't let autoaim aim at corpses.
@@ -482,7 +470,6 @@ void CBaseMonster::__MAKE_VHOOK(BecomeDead)()
 	pev->movetype = MOVETYPE_TOSS;
 }
 
-/* <5f8cc> ../cstrike/dlls/combat.cpp:542 */
 BOOL CBaseMonster::ShouldGibMonster(int iGib)
 {
 	if ((iGib == GIB_NORMAL && pev->health < GIB_HEALTH_VALUE) || (iGib == GIB_ALWAYS))
@@ -493,7 +480,6 @@ BOOL CBaseMonster::ShouldGibMonster(int iGib)
 	return FALSE;
 }
 
-/* <5f8f8> ../cstrike/dlls/combat.cpp:551 */
 void CBaseMonster::CallGibMonster()
 {
 	BOOL fade = FALSE;
@@ -537,7 +523,6 @@ void CBaseMonster::CallGibMonster()
 		UTIL_Remove(this);
 }
 
-/* <5f938> ../cstrike/dlls/combat.cpp:598 */
 void CBaseMonster::__MAKE_VHOOK(Killed)(entvars_t *pevAttacker, int iGib)
 {
 	// unsigned int cCount = 0;
@@ -586,7 +571,6 @@ void CBaseMonster::__MAKE_VHOOK(Killed)(entvars_t *pevAttacker, int iGib)
 	m_IdealMonsterState = MONSTERSTATE_DEAD;
 }
 
-/* <5e84e> ../cstrike/dlls/combat.cpp:652 */
 void CBaseEntity::SUB_StartFadeOut()
 {
 	if (pev->rendermode == kRenderNormal)
@@ -602,7 +586,6 @@ void CBaseEntity::SUB_StartFadeOut()
 	SetThink(&CBaseEntity::SUB_FadeOut);
 }
 
-/* <5ea72> ../cstrike/dlls/combat.cpp:667 */
 void CBaseEntity::SUB_FadeOut()
 {
 	if (pev->renderamt > 7)
@@ -618,7 +601,6 @@ void CBaseEntity::SUB_FadeOut()
 	}
 }
 
-/* <5eab1> ../cstrike/dlls/combat.cpp:688 */
 void CGib::WaitTillLand()
 {
 	if (!IsInWorld())
@@ -639,7 +621,6 @@ void CGib::WaitTillLand()
 		pev->nextthink = gpGlobals->time + 0.5f;
 }
 
-/* <5eee0> ../cstrike/dlls/combat.cpp:718 */
 void CGib::BounceGibTouch(CBaseEntity *pOther)
 {
 	if (pev->flags & FL_ONGROUND)
@@ -663,7 +644,7 @@ void CGib::BounceGibTouch(CBaseEntity *pOther)
 
 		if (m_material != matNone && !RANDOM_LONG(0, 2))
 		{
-			float zvel = fabs(pev->velocity.z);
+			float zvel = Q_fabs(pev->velocity.z);
 			float volume = 0.8 * Q_min(1.0f, zvel / 450);
 
 			CBreakable::MaterialSoundRandom(edict(), (Materials)m_material, volume);
@@ -672,8 +653,6 @@ void CGib::BounceGibTouch(CBaseEntity *pOther)
 }
 
 // Sticky gib puts blood on the wall and stays put.
-
-/* <5ed6d> ../cstrike/dlls/combat.cpp:761 */
 void CGib::StickyGibTouch(CBaseEntity *pOther)
 {
 	Vector vecSpot;
@@ -700,7 +679,6 @@ void CGib::StickyGibTouch(CBaseEntity *pOther)
 	pev->movetype = MOVETYPE_NONE;
 }
 
-/* <5fb0b> ../cstrike/dlls/combat.cpp:789 */
 void CGib::Spawn(const char *szGibModel)
 {
 	pev->movetype = MOVETYPE_BOUNCE;
@@ -717,11 +695,7 @@ void CGib::Spawn(const char *szGibModel)
 	/// hopefully this will fix the VELOCITY TOO LOW crap
 	pev->solid = SOLID_SLIDEBOX;
 
-	if (pev->classname)
-		RemoveEntityHashValue(pev, STRING(pev->classname), CLASSNAME);
-
 	MAKE_STRING_CLASS("gib", pev);
-	AddEntityHashValue(pev, STRING(pev->classname), CLASSNAME);
 
 	SET_MODEL(ENT(pev), szGibModel);
 	UTIL_SetSize(pev, Vector(0, 0, 0), Vector(0, 0, 0));
@@ -738,7 +712,6 @@ void CGib::Spawn(const char *szGibModel)
 	m_cBloodDecals = 5;
 }
 
-/* <60aea> ../cstrike/dlls/combat.cpp:815 */
 int CBaseMonster::__MAKE_VHOOK(TakeHealth)(float flHealth, int bitsDamageType)
 {
 	if (pev->takedamage == DAMAGE_NO)
@@ -758,8 +731,6 @@ int CBaseMonster::__MAKE_VHOOK(TakeHealth)(float flHealth, int bitsDamageType)
 //
 // Time-based damage: only occurs while the monster is within the trigger_hurt.
 // When a monster is poisoned via an arrow etc it takes all the poison damage at once.
-
-/* <60d7a> ../cstrike/dlls/combat.cpp:845 */
 int CBaseMonster::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
 	float flTake;
@@ -801,7 +772,7 @@ int CBaseMonster::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *p
 			vecDir = NormalizeSubtract<
 				float_precision, float, float_precision, float_precision
 				>(Center(), pInflictor->Center() - Vector(0, 0, 10));
-#endif // PLAY_GAMEDLL
+#endif
 			vecDir = g_vecAttackDir = vecDir.Normalize();
 		}
 	}
@@ -853,20 +824,7 @@ int CBaseMonster::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *p
 			}
 			else
 			{
-				//m_vecEnemyLKP = pev->origin + (g_vecAttackDir * 64);
-
-				Vector v38;
-				float v37 = g_vecAttackDir[2] * 64.0;
-				v38[0] = g_vecAttackDir[0] * 64.0 + pev->origin[0];
-				v38[1] = g_vecAttackDir[1] * 64.0 + pev->origin[1];
-				double dbl_v29 = v37 + pev->origin[2];
-				float v30 = v38[1];
-
-				m_vecEnemyLKP[0] = v38[0];
-				v38[2] = dbl_v29;
-				float v32 = v38[2];
-				m_vecEnemyLKP[1] = v30;
-				m_vecEnemyLKP[2] = v32;
+				m_vecEnemyLKP = pev->origin + (g_vecAttackDir * 64);
 			}
 
 			MakeIdealYaw(m_vecEnemyLKP);
@@ -887,8 +845,6 @@ int CBaseMonster::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *p
 }
 
 // DeadTakeDamage - takedamage function called when a monster's corpse is damaged.
-
-/* <60b32> ../cstrike/dlls/combat.cpp:981 */
 int CBaseMonster::DeadTakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
 	// grab the vector of the incoming attack. ( pretend that the inflictor is a little lower than it really is, so the body will tend to fly upward a bit).
@@ -935,7 +891,6 @@ int CBaseMonster::DeadTakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker
 	return 1;
 }
 
-/* <61120> ../cstrike/dlls/combat.cpp:1027 */
 float CBaseMonster::DamageForce(float damage)
 {
 	float_precision force = damage * ((32 * 32 * 72.0) / (pev->size.x * pev->size.y * pev->size.z)) * 5;
@@ -947,7 +902,6 @@ float CBaseMonster::DamageForce(float damage)
 	return force;
 }
 
-/* <61174> ../cstrike/dlls/combat.cpp:1044 */
 void RadiusFlash(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int iClassIgnore, int bitsDamageType)
 {
 	CBaseEntity *pEntity = NULL;
@@ -1070,7 +1024,6 @@ void RadiusFlash(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker,
 	}
 }
 
-/* <5f042> ../cstrike/dlls/combat.cpp:1185 */
 float GetAmountOfPlayerVisible(Vector vecSrc, CBaseEntity *entity)
 {
 	float retval = 0.0f;
@@ -1139,7 +1092,6 @@ float GetAmountOfPlayerVisible(Vector vecSrc, CBaseEntity *entity)
 	return retval;
 }
 
-/* <5dc27> ../cstrike/dlls/combat.cpp:1262 */
 void RadiusDamage(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, float flRadius, int iClassIgnore, int bitsDamageType)
 {
 	CBaseEntity *pEntity = NULL;
@@ -1208,7 +1160,6 @@ void RadiusDamage(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker
 	}
 }
 
-/* <5dcf9> ../cstrike/dlls/combat.cpp:1349 */
 void RadiusDamage2(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, float flRadius, int iClassIgnore, int bitsDamageType)
 {
 	CBaseEntity *pEntity = NULL;
@@ -1274,22 +1225,20 @@ void RadiusDamage2(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacke
 	}
 }
 
-/* <5e0d2> ../cstrike/dlls/combat.cpp:1442 */
 void CBaseMonster::RadiusDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int iClassIgnore, int bitsDamageType)
 {
 	if (flDamage > 80)
 		::RadiusDamage(pev->origin, pevInflictor, pevAttacker, flDamage, flDamage * 3.5, iClassIgnore, bitsDamageType);
 	else
-		RadiusDamage2(pev->origin, pevInflictor, pevAttacker, flDamage, iClassIgnore, bitsDamageType);
+		::RadiusDamage2(pev->origin, pevInflictor, pevAttacker, flDamage, flDamage * (RANDOM_FLOAT(0.5, 1.5) + 3), iClassIgnore, bitsDamageType);
 }
 
-/* <5e0d2> ../cstrike/dlls/combat.cpp:1448 */
 NOXREF void CBaseMonster::RadiusDamage(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int iClassIgnore, int bitsDamageType)
 {
 	if (flDamage > 80)
 		::RadiusDamage(vecSrc, pevInflictor, pevAttacker, flDamage, flDamage * 3.5, iClassIgnore, bitsDamageType);
 	else
-		RadiusDamage2(vecSrc, pevInflictor, pevAttacker, flDamage, iClassIgnore, bitsDamageType);
+		::RadiusDamage2(vecSrc, pevInflictor, pevAttacker, flDamage, flDamage * (RANDOM_FLOAT(0.5, 1.5) + 3), iClassIgnore, bitsDamageType);
 }
 
 // CheckTraceHullAttack - expects a length to trace, amount
@@ -1298,8 +1247,6 @@ NOXREF void CBaseMonster::RadiusDamage(Vector vecSrc, entvars_t *pevInflictor, e
 // other stuff to the victim (punchangle, etc)
 //
 // Used for many contact-range melee attacks. Bites, claws, etc.
-
-/* <61949> ../cstrike/dlls/combat.cpp:1454 */
 NOXREF CBaseEntity *CBaseMonster::CheckTraceHullAttack(float flDist, int iDamage, int iDmgType)
 {
 	TraceResult tr;
@@ -1333,8 +1280,6 @@ NOXREF CBaseEntity *CBaseMonster::CheckTraceHullAttack(float flDist, int iDamage
 // FInViewCone - returns true is the passed ent is in
 // the caller's forward view cone. The dot product is performed
 // in 2d, making the view cone infinitely tall.
-
-/* <61ae6> ../cstrike/dlls/combat.cpp:1490 */
 BOOL CBaseMonster::__MAKE_VHOOK(FInViewCone)(CBaseEntity *pEntity)
 {
 	Vector2D vec2LOS;
@@ -1360,8 +1305,6 @@ BOOL CBaseMonster::__MAKE_VHOOK(FInViewCone)(CBaseEntity *pEntity)
 // FInViewCone - returns true is the passed vector is in
 // the caller's forward view cone. The dot product is performed
 // in 2d, making the view cone infinitely tall.
-
-/* <61be6> ../cstrike/dlls/combat.cpp:1517 */
 BOOL CBaseMonster::__MAKE_VHOOK(FInViewCone)(const Vector *pOrigin)
 {
 	Vector2D vec2LOS;
@@ -1386,8 +1329,6 @@ BOOL CBaseMonster::__MAKE_VHOOK(FInViewCone)(const Vector *pOrigin)
 
 // FVisible - returns true if a line can be traced from
 // the caller's eyes to the target
-
-/* <5ecb4> ../cstrike/dlls/combat.cpp:1543 */
 BOOL CBaseEntity::__MAKE_VHOOK(FVisible)(CBaseEntity *pEntity)
 {
 	TraceResult tr;
@@ -1421,8 +1362,6 @@ BOOL CBaseEntity::__MAKE_VHOOK(FVisible)(CBaseEntity *pEntity)
 
 // FVisible - returns true if a line can be traced from
 // the caller's eyes to the target vector
-
-/* <5e9bb> ../cstrike/dlls/combat.cpp:1576 */
 BOOL CBaseEntity::__MAKE_VHOOK(FVisible)(const Vector &vecOrigin)
 {
 	TraceResult tr;
@@ -1445,7 +1384,6 @@ BOOL CBaseEntity::__MAKE_VHOOK(FVisible)(const Vector &vecOrigin)
 	}
 }
 
-/* <5e872> ../cstrike/dlls/combat.cpp:1600 */
 void CBaseEntity::__MAKE_VHOOK(TraceAttack)(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType)
 {
 	Vector vecOrigin = ptr->vecEndPos - vecDir * 4;
@@ -1464,7 +1402,6 @@ void CBaseEntity::__MAKE_VHOOK(TraceAttack)(entvars_t *pevAttacker, float flDama
 	}
 }
 
-/* <61ce5> ../cstrike/dlls/combat.cpp:1647 */
 void CBaseMonster::__MAKE_VHOOK(TraceAttack)(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType)
 {
 	Vector vecOrigin = ptr->vecEndPos - vecDir * 4;
@@ -1510,7 +1447,6 @@ void CBaseMonster::__MAKE_VHOOK(TraceAttack)(entvars_t *pevAttacker, float flDam
 	}
 }
 
-/* <61df9> ../cstrike/dlls/combat.cpp:1704 */
 void CBaseEntity::FireBullets(ULONG cShots, Vector vecSrc, Vector vecDirShooting, Vector vecSpread, float flDistance, int iBulletType, int iTracerFreq, int iDamage, entvars_t *pevAttacker)
 {
 	static int tracerCount;
@@ -1606,7 +1542,7 @@ void CBaseEntity::FireBullets(ULONG cShots, Vector vecSrc, Vector vecDirShooting
 					break;
 				case BULLET_PLAYER_BUCKSHOT:
 					flDamage = ((1 - tr.flFraction) * 20);
-					pEntity->TraceAttack(pevAttacker, (int)flDamage, vecDir, &tr, DMG_BULLET);
+					pEntity->TraceAttack(pevAttacker, int(flDamage), vecDir, &tr, DMG_BULLET);
 					break;
 				case BULLET_PLAYER_357:
 					pEntity->TraceAttack(pevAttacker, gSkillData.plrDmg357, vecDir, &tr, DMG_BULLET);
@@ -1649,13 +1585,12 @@ void CBaseEntity::FireBullets(ULONG cShots, Vector vecSrc, Vector vecDirShooting
 		}
 
 		// make bullet trails
-		UTIL_BubbleTrail(vecSrc, tr.vecEndPos, (int)((flDistance * tr.flFraction) / 64));
+		UTIL_BubbleTrail(vecSrc, tr.vecEndPos, int((flDistance * tr.flFraction) / 64));
 	}
 
 	ApplyMultiDamage(pev, pevAttacker);
 }
 
-/* <62693> ../cstrike/dlls/combat.cpp:1856 */
 NOXREF char *vstr(float *v)
 {
 	static int idx = 0;
@@ -1669,8 +1604,6 @@ NOXREF char *vstr(float *v)
 
 // Go to the trouble of combining multiple pellets into a single damage call.
 // This version is used by Players, uses the random seed generator to sync client and server side shots.
-
-/* <62709> ../cstrike/dlls/combat.cpp:1869 */
 Vector CBaseEntity::FireBullets3(Vector vecSrc, Vector vecDirShooting, float vecSpread, float flDistance, int iPenetration, int iBulletType, int iDamage, float flRangeModifier, entvars_t *pevAttacker, bool bPistol, int shared_rand)
 {
 	int iOriginalPenetration = iPenetration;
@@ -1826,7 +1759,7 @@ Vector CBaseEntity::FireBullets3(Vector vecSrc, Vector vecDirShooting, float vec
 			iPenetration--;
 
 			flCurrentDistance = tr.flFraction * flDistance;
-			iCurrentDamage *= pow(flRangeModifier, flCurrentDistance / 500);
+			iCurrentDamage *= Q_pow(flRangeModifier, flCurrentDistance / 500);
 
 			if (flCurrentDistance > flPenetrationDistance)
 			{
@@ -1886,7 +1819,6 @@ Vector CBaseEntity::FireBullets3(Vector vecSrc, Vector vecDirShooting, float vec
 	return Vector(x * vecSpread, y * vecSpread, 0);
 }
 
-/* <5eb17> ../cstrike/dlls/combat.cpp:2075 */
 void CBaseEntity::__MAKE_VHOOK(TraceBleed)(float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType)
 {
 	if (BloodColor() == DONT_BLEED)
@@ -1941,7 +1873,6 @@ void CBaseEntity::__MAKE_VHOOK(TraceBleed)(float flDamage, Vector vecDir, TraceR
 	}
 }
 
-/* <62e0e> ../cstrike/dlls/combat.cpp:2145 */
 NOXREF void CBaseMonster::MakeDamageBloodDecal(int cCount, float flNoise, TraceResult *ptr, Vector &vecDir)
 {
 	// make blood decal on the wall!
@@ -1971,14 +1902,13 @@ NOXREF void CBaseMonster::MakeDamageBloodDecal(int cCount, float flNoise, TraceR
 
 		UTIL_TraceLine(ptr->vecEndPos, ptr->vecEndPos + vecTraceDir * 172, ignore_monsters, ENT(pev), &Bloodtr);
 
-		if (Bloodtr.flFraction != 1.0)
+		if (Bloodtr.flFraction != 1.0f)
 		{
 			UTIL_BloodDecalTrace(&Bloodtr, BloodColor());
 		}
 	}
 }
 
-/* <62f3e> ../cstrike/dlls/combat.cpp:2197 */
 void CBaseMonster::BloodSplat(const Vector &vecSrc, const Vector &vecDir, int HitLocation, int iVelocity)
 {
 	if (HitLocation != HITGROUP_HEAD)

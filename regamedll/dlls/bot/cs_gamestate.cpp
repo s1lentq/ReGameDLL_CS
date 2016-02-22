@@ -1,6 +1,5 @@
 #include "precompiled.h"
 
-/* <3fcd6b> ../cstrike/dlls/bot/cs_gamestate.cpp:27 */
 CSGameState::CSGameState(CCSBot *owner)
 {
 	m_owner = owner;
@@ -29,20 +28,16 @@ CSGameState::CSGameState(CCSBot *owner)
 }
 
 // Reset at round start
-
-/* <3fd4f4> ../cstrike/dlls/bot/cs_gamestate.cpp:55 */
 void CSGameState::Reset()
 {
 	int i;
-	CCSBotManager *ctrl = TheCSBots();
-
 	m_isRoundOver = false;
 
 	// bomb
 	m_bombState = MOVING;
 	m_lastSawBomber.Invalidate();
 	m_lastSawLooseBomb.Invalidate();
-	m_bombsiteCount = ctrl->GetZoneCount();
+	m_bombsiteCount = TheCSBots()->GetZoneCount();
 
 	m_isPlantedBombPosKnown = false;
 	m_plantedBombsite = UNKNOWN;
@@ -70,8 +65,6 @@ void CSGameState::Reset()
 }
 
 // Update game state based on events we have received
-
-/* <3fce67> ../cstrike/dlls/bot/cs_gamestate.cpp:97 */
 void CSGameState::OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
 {
 	switch (event)
@@ -103,14 +96,11 @@ void CSGameState::OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity 
 }
 
 // True if round has been won or lost (but not yet reset)
-
-/* <3fcf9c> ../cstrike/dlls/bot/cs_gamestate.cpp:144 */
 bool CSGameState::IsRoundOver() const
 {
 	return m_isRoundOver;
 }
 
-/* <3fcfc6> ../cstrike/dlls/bot/cs_gamestate.cpp:150 */
 void CSGameState::SetBombState(BombState state)
 {
 	// if state changed, reset "last seen" timestamps
@@ -120,7 +110,6 @@ void CSGameState::SetBombState(BombState state)
 	}
 }
 
-/* <3fcff2> ../cstrike/dlls/bot/cs_gamestate.cpp:160 */
 void CSGameState::UpdateLooseBomb(const Vector *pos)
 {
 	m_looseBombPos = *pos;
@@ -130,13 +119,11 @@ void CSGameState::UpdateLooseBomb(const Vector *pos)
 	SetBombState(LOOSE);
 }
 
-/* <3fd06e> ../cstrike/dlls/bot/cs_gamestate.cpp:170 */
 float CSGameState::TimeSinceLastSawLooseBomb() const
 {
 	return m_lastSawLooseBomb.GetElapsedTime();
 }
 
-/* <3fd0f4> ../cstrike/dlls/bot/cs_gamestate.cpp:176 */
 bool CSGameState::IsLooseBombLocationKnown() const
 {
 	if (m_bombState != LOOSE)
@@ -145,7 +132,6 @@ bool CSGameState::IsLooseBombLocationKnown() const
 	return (m_lastSawLooseBomb.HasStarted()) ? true : false;
 }
 
-/* <3fd135> ../cstrike/dlls/bot/cs_gamestate.cpp:185 */
 void CSGameState::UpdateBomber(const Vector *pos)
 {
 	m_bomberPos = *pos;
@@ -155,13 +141,11 @@ void CSGameState::UpdateBomber(const Vector *pos)
 	SetBombState(MOVING);
 }
 
-/* <3fd1b1> ../cstrike/dlls/bot/cs_gamestate.cpp:195 */
 float CSGameState::TimeSinceLastSawBomber() const
 {
 	return m_lastSawBomber.GetElapsedTime();
 }
 
-/* <3fd237> ../cstrike/dlls/bot/cs_gamestate.cpp:201 */
 bool CSGameState::IsPlantedBombLocationKnown() const
 {
 	if (m_bombState != PLANTED)
@@ -171,8 +155,6 @@ bool CSGameState::IsPlantedBombLocationKnown() const
 }
 
 // Return the zone index of the planted bombsite, or UNKNOWN
-
-/* <3fd25a> ../cstrike/dlls/bot/cs_gamestate.cpp:213 */
 int CSGameState::GetPlantedBombsite() const
 {
 	if (m_bombState != PLANTED)
@@ -182,15 +164,12 @@ int CSGameState::GetPlantedBombsite() const
 }
 
 // Return true if we are currently in the bombsite where the bomb is planted
-
-/* <3fd284> ../cstrike/dlls/bot/cs_gamestate.cpp:225 */
 bool CSGameState::IsAtPlantedBombsite() const
 {
 	if (m_bombState != PLANTED)
 		return false;
 
-	CCSBotManager *ctrl = TheCSBots();
-	const CCSBotManager::Zone *zone = ctrl->GetClosestZone(&m_owner->pev->origin);
+	const CCSBotManager::Zone *zone = TheCSBots()->GetClosestZone(&m_owner->pev->origin);
 
 	if (zone != NULL)
 	{
@@ -201,8 +180,6 @@ bool CSGameState::IsAtPlantedBombsite() const
 }
 
 // Return the zone index of the next bombsite to search
-
-/* <3fd2d2> ../cstrike/dlls/bot/cs_gamestate.cpp:246 */
 int CSGameState::GetNextBombsiteToSearch()
 {
 	if (m_bombsiteCount <= 0)
@@ -232,8 +209,6 @@ int CSGameState::GetNextBombsiteToSearch()
 
 // Returns position of bomb in its various states (moving, loose, planted),
 // or NULL if we don't know where the bomb is
-
-/* <3fd32c> ../cstrike/dlls/bot/cs_gamestate.cpp:277 */
 const Vector *CSGameState::GetBombPosition() const
 {
 	switch (m_bombState)
@@ -265,12 +240,9 @@ const Vector *CSGameState::GetBombPosition() const
 }
 
 // We see the planted bomb at 'pos'
-
-/* <3fd373> ../cstrike/dlls/bot/cs_gamestate.cpp:313 */
 void CSGameState::UpdatePlantedBomb(const Vector *pos)
 {
-	CCSBotManager *ctrl = TheCSBots();
-	const CCSBotManager::Zone *zone = ctrl->GetClosestZone(pos);
+	const CCSBotManager::Zone *zone = TheCSBots()->GetClosestZone(pos);
 
 	if (zone == NULL)
 	{
@@ -288,8 +260,6 @@ void CSGameState::UpdatePlantedBomb(const Vector *pos)
 }
 
 // Someone told us where the bomb is planted
-
-/* <3fd3dd> ../cstrike/dlls/bot/cs_gamestate.cpp:337 */
 void CSGameState::MarkBombsiteAsPlanted(int zoneIndex)
 {
 	m_plantedBombsite = zoneIndex;
@@ -297,15 +267,12 @@ void CSGameState::MarkBombsiteAsPlanted(int zoneIndex)
 }
 
 // Someone told us a bombsite is clear
-
-/* <3fd43a> ../cstrike/dlls/bot/cs_gamestate.cpp:347 */
 void CSGameState::ClearBombsite(int zoneIndex)
 {
 	if (zoneIndex >= 0 && zoneIndex < m_bombsiteCount)
 		m_isBombsiteClear[zoneIndex] = true;
 }
 
-/* <3fd475> ../cstrike/dlls/bot/cs_gamestate.cpp:354 */
 bool CSGameState::IsBombsiteClear(int zoneIndex) const
 {
 	if (zoneIndex >= 0 && zoneIndex < m_bombsiteCount)
@@ -314,7 +281,6 @@ bool CSGameState::IsBombsiteClear(int zoneIndex) const
 	return false;
 }
 
-/* <3fd4b0> ../cstrike/dlls/bot/cs_gamestate.cpp:367 */
 void CSGameState::InitializeHostageInfo()
 {
 	m_hostageCount = 0;
@@ -344,9 +310,7 @@ void CSGameState::InitializeHostageInfo()
 // Otherwise, this is based on our individual memory of the game state.
 // If NULL is returned, we don't think there are any hostages left, or we dont know where they are.
 // NOTE: a T can remember a hostage who has died.  knowPos will be filled in, but NULL will be
-//	returned, since CHostages get deleted when they die.
-
-/* <3fd5ab> ../cstrike/dlls/bot/cs_gamestate.cpp:398 */
+// returned, since CHostages get deleted when they die.
 CHostage *CSGameState::GetNearestFreeHostage(Vector *knowPos) const
 {
 	if (m_owner == NULL)
@@ -412,8 +376,6 @@ CHostage *CSGameState::GetNearestFreeHostage(Vector *knowPos) const
 }
 
 // Return the location of a "free" hostage, or NULL if we dont know of any
-
-/* <3fdbd3> ../cstrike/dlls/bot/cs_gamestate.cpp:461 */
 const Vector *CSGameState::GetRandomFreeHostagePosition()
 {
 	// TODO: use static?
@@ -460,8 +422,6 @@ const Vector *CSGameState::GetRandomFreeHostagePosition()
 
 // If we can see any of the positions where we think a hostage is, validate it
 // Return status of any changes (a hostage died or was moved)
-
-/* <3fdcd2> ../cstrike/dlls/bot/cs_gamestate.cpp:509 */
 CSGameState::ValidateStatusType CSGameState::ValidateHostagePositions()
 {
 	// limit how often we validate
@@ -578,8 +538,6 @@ CSGameState::ValidateStatusType CSGameState::ValidateHostagePositions()
 
 // Return the nearest visible free hostage
 // Since we can actually see any hostage we return, we know its actual position
-
-/* <3fdef7> ../cstrike/dlls/bot/cs_gamestate.cpp:626 */
 CHostage *CSGameState::GetNearestVisibleFreeHostage() const
 {
 	CHostage *close = NULL;
@@ -621,8 +579,6 @@ CHostage *CSGameState::GetNearestVisibleFreeHostage() const
 }
 
 // Return true if there are no free hostages
-
-/* <3fe064> ../cstrike/dlls/bot/cs_gamestate.cpp:668 */
 bool CSGameState::AreAllHostagesBeingRescued() const
 {
 	// if the hostages have all been rescued, they are not being rescued any longer
@@ -664,8 +620,6 @@ bool CSGameState::AreAllHostagesBeingRescued() const
 }
 
 // All hostages have been rescued or are dead
-
-/* <3fe148> ../cstrike/dlls/bot/cs_gamestate.cpp:712 */
 bool CSGameState::AreAllHostagesGone() const
 {
 	if (m_allHostagesRescued)
@@ -693,8 +647,6 @@ bool CSGameState::AreAllHostagesGone() const
 }
 
 // Someone told us all the hostages are gone
-
-/* <3fe1a2> ../cstrike/dlls/bot/cs_gamestate.cpp:742 */
 void CSGameState::AllHostagesGone()
 {
 	for (int i = 0; i < m_hostageCount; ++i)
