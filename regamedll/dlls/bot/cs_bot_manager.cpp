@@ -646,7 +646,7 @@ void CCSBotManager::__MAKE_VHOOK(ServerCommand)(const char *pcmd)
 			else
 			{
 				CONSOLE_ECHO("Current place set to '%s'\n", found->GetName());
-				m_navPlace = found->GetID();
+				SetNavPlace(found->GetID());
 			}
 		}
 	}

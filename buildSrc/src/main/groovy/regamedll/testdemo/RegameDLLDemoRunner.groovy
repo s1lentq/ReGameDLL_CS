@@ -75,12 +75,11 @@ class RegamedllDemoRunner {
 
         def cmdParams = []
         cmdParams << new File(rootDir, 'hlds.exe').absolutePath
-
         cmdParams.addAll(info.hldsArgs)
         if (info.regamedllExtraArgs) {
             cmdParams.addAll(info.regamedllExtraArgs)
         }
-        cmdParams << '--regamedll-test-play' << info.testBinFile.absolutePath
+        cmdParams << '--rehlds-test-play' << info.testBinFile.absolutePath
 
         def pb = new ProcessBuilder(cmdParams).redirectErrorStream(true).directory(rootDir)
         def sout = new StringBuffer()

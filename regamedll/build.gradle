@@ -37,23 +37,19 @@ configurations {
 }
 
 dependencies {
-	//regamedll_tests 'regamedll.testdemos:cstrike-fulltests-2:2.0'
-	//regamedll_tests 'regamedll.testdemos:czero-ladder_hard:2.0'
-	//regamedll_tests 'regamedll.testdemos:cstrike-multiplayer-2:2.0'
-	//regamedll_tests 'regamedll.testdemos:cstrike-hostage-2:2.0'
-	//regamedll_tests 'regamedll.testdemos:cstrike-weapon-1:1.0'
-	//regamedll_tests 'regamedll.testdemos:czero-czbot_game-2:2.0'
-
+	regamedll_tests 'regamedll.testdemos:cstrike-basic:1.0'
 }
 
 project.ext.dep_cppunitlite = project(':dep/cppunitlite')
 
 void createIntergrationTestTask(NativeBinarySpec b) {
 	boolean regamedllFixes = b.flavor.name.contains('regamedllFixes')
+	boolean mpLib = b.name.toLowerCase().contains('mp')
 
 	if (!(b instanceof SharedLibraryBinarySpec)) return
 	if (!GradleCppUtils.windows) return
 	if (regamedllFixes) return
+	if (!mpLib) return
 
 	String unitTestTask = b.hasProperty('cppUnitTestTask') ? b.cppUnitTestTask : null
 
@@ -64,18 +60,19 @@ void createIntergrationTestTask(NativeBinarySpec b) {
 		testDemos = project.configurations.regamedll_tests
 		testFor = b
 
-	//inputs/outputs for up-to-date check
-	inputs.files testDemos.files
-	outputs.dir regamedllTestLogs
+		//inputs/outputs for up-to-date check
+		inputs.files testDemos.files
+		outputs.dir regamedllTestLogs
 
-	//dependencies on test executable
-	if (unitTestTask) {
-		dependsOn unitTestTask
-	}
+		//dependencies on test executable
+		if (unitTestTask) {
+			dependsOn unitTestTask
+		}
 
-	postExtractAction {
-		def binaryOutFile = GradleCppUtils.getBinaryOutputFile(b)
-			GradleCppUtils.copyFile(binaryOutFile, new File(regamedllImageRoot, binaryOutFile.name), true)
+		postExtractAction {
+			def binaryOutFile = GradleCppUtils.getBinaryOutputFile(b)
+			def binaryOutDir = new File(project.projectDir, '/_regamedllTestImg/cstrike/dlls')
+			GradleCppUtils.copyFile(binaryOutFile, new File(binaryOutDir, binaryOutFile.name), true)
 		}
 	}
 
@@ -154,26 +151,20 @@ void setupToolchain(NativeBinarySpec b)
 		cfg.extraLibs 'dl', 'm', 'stdc++'
 	}
 
-	if (mpLib && GradleCppUtils.windows && !unitTestExecutable)
-	{
+	if (mpLib && GradleCppUtils.windows && !unitTestExecutable) {
 		cfg.linkerOptions.definitionFile = "${projectDir}\\msvc\\mp.def";
 	}
 
-	if (!unitTestExecutable)
-	{
-		if (!mpLib)
-		{
-			cfg.singleDefines 'HOOK_GAMEDLL'
-		}
-	}
-	else
-	{
+	if (unitTestExecutable) {
 		cfg.singleDefines 'REGAMEDLL_UNIT_TESTS'
+	} else if (!mpLib) {
+		cfg.singleDefines 'HOOK_GAMEDLL'
 	}
 
-	if (regamedllFixes)
-	{
+	if (regamedllFixes) {
 		cfg.singleDefines 'REGAMEDLL_FIXES', 'REGAMEDLL_CHECKS', 'REGAMEDLL_ADD', 'NDEBUG'
+	} else {
+		cfg.singleDefines 'PLAY_GAMEDLL'
 	}
 
 	ToolchainConfigUtils.apply(project, cfg, b)
@@ -242,7 +233,6 @@ class RegamedllSrc {
 		}
 	}
 }
-
 
 model {
 	buildTypes {

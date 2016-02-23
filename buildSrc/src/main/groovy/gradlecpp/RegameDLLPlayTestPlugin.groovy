@@ -11,7 +11,7 @@ class RegamedllPlayTestPlugin implements Plugin<Project> {
         }
 
         project.dependencies {
-            regamedll_playtest_image 'regamedll.testimg:testimg:1.0'
+            regamedll_playtest_image 'regamedll.testimg:testimg:2.0'
         }
     }
 }

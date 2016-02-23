@@ -3669,7 +3669,6 @@ public:
 			return false;
 
 		area->SetPlace(TheCSBots()->GetNavPlace());
-
 		return true;
 	}
 

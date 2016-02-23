@@ -66,12 +66,10 @@ class CSaveRestoreBuffer;
 #define __MAKE_VHOOK(fname)\
 	fname##_
 
-#define IMPL IMPLEMENT_ARRAY
-#define IMPLEMENT_ARRAY(var)\
+#define IMPL(var)\
 	(*p##var)
 
-#define IMPL_CLASS IMPLEMENT_ARRAY_CLASS
-#define IMPLEMENT_ARRAY_CLASS(baseClass,var)\
+#define IMPL_CLASS(baseClass,var)\
 	(*baseClass::p##var)
 
 // refs
