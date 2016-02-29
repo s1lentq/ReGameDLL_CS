@@ -2350,12 +2350,14 @@ bool UTIL_AreBotsAllowed()
 		return true;
 	}
 
+#ifdef REGAMEDLL_ADD
 	// allow the using of bots for CS 1.6
 	int bots = ENG_CHECK_PARM("-bots", NULL);
 	if (bots)
 	{
 		return true;
 	}
+#endif
 
 	return false;
 }
@@ -2367,8 +2369,10 @@ bool UTIL_AreHostagesImprov()
 		return true;
 	}
 
+#ifdef REGAMEDLL_ADD
 	// someday in CS 1.6
 	// ...
+#endif
 
 	return false;
 }
