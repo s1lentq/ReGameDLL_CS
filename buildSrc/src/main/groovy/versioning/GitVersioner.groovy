@@ -26,6 +26,18 @@ class GitVersioner {
 
 		return count;
 	}
+	// return last commit excluding merge commit 
+	static RevCommit parseCommitLast(Repository repo) {
+		Iterable<RevCommit> commits = Git.wrap(repo).log().call()
+		for (RevCommit b : commits) {
+			if (b.getParents().length > 1) { // it's merge commit ignore it
+				continue;
+			}
+			return b;
+		}
+
+		return null;
+	}
 	static GitInfo versionForDir(File dir) {
 		FileRepositoryBuilder builder = new FileRepositoryBuilder()
 		Repository repo = builder.setWorkTree(dir)
@@ -38,17 +50,27 @@ class GitVersioner {
 		}
 
 		def commit = new RevWalk(repo).parseCommit(head)
+		def commitLast = parseCommitLast(repo)
+		int commitCount = getCountCommit(repo)
+
 		def branch = repo.getBranch()
 		def commitDate = new DateTime(1000L * commit.commitTime, DateTimeZone.UTC)
-		int commitCount = getCountCommit(repo);
+
+		if (!commit) {
+			throw new RuntimeException("Can't find last commit.")
+		}
 
 		String tag = repo.tags.find { kv -> kv.value.objectId == commit.id }?.key
+		String headCommitId = commit.getId().abbreviate(7).name();
+		String authorCommit = commitLast.getAuthorIdent().getName();
 
 		return new GitInfo(
 			lastCommitDate: commitDate,
 			branch: branch,
 			tag: tag,
-			countCommit: commitCount
+			countCommit: commitCount,
+			commitID: headCommitId,
+			authorCommit: authorCommit
 		)
 	}
 }

@@ -30,7 +30,9 @@ if (gitInfo.tag && gitInfo.tag[0] == 'v') {
 		minorVersion: m.group(2) as int,
 		maintenanceVersion: m.group(4) ? (m.group(4) as int) : null,
 		countCommit: gitInfo.countCommit,
-		lastCommitDate: gitInfo.lastCommitDate
+		lastCommitDate: gitInfo.lastCommitDate,
+		commitID: gitInfo.commitID,
+		authorCommit: gitInfo.authorCommit
 	)
 } else {
 	versionInfo = new RegamedllVersionInfo(
@@ -38,7 +40,9 @@ if (gitInfo.tag && gitInfo.tag[0] == 'v') {
 		minorVersion: project.minorVersion as int,
 		suffix: 'SNAPSHOT',
 		countCommit: gitInfo.countCommit,
-		lastCommitDate: gitInfo.lastCommitDate
+		lastCommitDate: gitInfo.lastCommitDate,
+		commitID: gitInfo.commitID,
+		authorCommit: gitInfo.authorCommit
 	)
 }
 

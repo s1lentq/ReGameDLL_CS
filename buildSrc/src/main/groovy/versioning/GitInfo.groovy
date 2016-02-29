@@ -10,4 +10,6 @@ class GitInfo {
 	String branch
 	String tag
 	Integer countCommit
+	String commitID
+	String authorCommit
 }

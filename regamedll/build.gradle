@@ -371,6 +371,6 @@ task generateAppVersion {
 		renderedFile.delete()
 		renderedFile.write(content, 'utf-8')
 
-		println 'The current ReGameDLL version is ' + verInfo.asVersion().toString() + ', maven version is ' + verInfo.asMavenVersion().toString();
+		println 'The current ReGameDLL version is ' + verInfo.asVersion().toString() + ', maven version is ' + verInfo.asMavenVersion().toString() + ', commit id: ' + verInfo.commitID.toString() + ', commit author: ' + verInfo.authorCommit.toString();
 	}
 }
