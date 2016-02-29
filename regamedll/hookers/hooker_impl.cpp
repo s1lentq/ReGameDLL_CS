@@ -232,6 +232,9 @@ char theDebugBuffer[ DebugBufferSize ];
 char *const g_TutorStateStrings[20];
 const char *TutorIdentifierList[150];
 
+bool s_tutorDisabledThisGame;
+float s_nextCvarCheckTime;
+
 cvar_t cv_tutor_message_repeats;
 cvar_t cv_tutor_debug_level;
 cvar_t cv_tutor_view_distance;

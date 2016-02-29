@@ -39,6 +39,7 @@ public:
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
+	virtual float GetDelay() { return m_flWait; }
 
 #ifdef HOOK_GAMEDLL
 
@@ -48,8 +49,6 @@ public:
 	int Restore_(CRestore &restore);
 
 #endif
-
-	float GetDelay() const { return m_flWait; }
 
 public:
 	static TYPEDESCRIPTION IMPL(m_SaveData)[1];

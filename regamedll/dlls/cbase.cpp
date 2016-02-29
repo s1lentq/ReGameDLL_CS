@@ -913,6 +913,7 @@ int CBaseEntity::__MAKE_VHOOK(Restore)(CRestore &restore)
 	return status;
 }
 
+// Initialize absmin & absmax to the appropriate box
 void SetObjectCollisionBox(entvars_t *pev)
 {
 	if ((pev->solid == SOLID_BSP) && (pev->angles.x || pev->angles.y || pev->angles.z))

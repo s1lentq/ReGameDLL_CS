@@ -5,6 +5,9 @@
 */
 #ifndef HOOK_GAMEDLL
 
+bool s_tutorDisabledThisGame = false;
+float s_nextCvarCheckTime = 0.0f;
+
 cvar_t cv_tutor_message_repeats = { "_tutor_message_repeats", "5", FCVAR_SERVER, 0.0f, NULL };
 cvar_t cv_tutor_debug_level = { "_tutor_debug_level", "0", FCVAR_SERVER, 0.0f, NULL };
 cvar_t cv_tutor_view_distance = { "_tutor_view_distance", "1000", FCVAR_SERVER, 0.0f, NULL };
@@ -17,9 +20,6 @@ cvar_t cv_tutor_message_character_display_time_coefficient = { "_tutor_message_c
 cvar_t cv_tutor_hint_interval_time = { "_tutor_hint_interval_time", "10.0", FCVAR_SERVER, 0.0f, NULL };
 
 #endif
-
-bool s_tutorDisabledThisGame;
-float s_nextCvarCheckTime;
 
 void InstallTutor(bool start)
 {
@@ -66,9 +66,7 @@ void MonitorTutorStatus()
 	int numHumans = 0;
 
 	if (!tutor_enableCvarExists || s_nextCvarCheckTime > gpGlobals->time)
-	{
 		return;
-	}
 
 	if (tutor_enable != NULL || (tutor_enable = CVAR_GET_POINTER("tutor_enable")) != NULL)
 	{
@@ -84,10 +82,8 @@ void MonitorTutorStatus()
 	{
 		CBasePlayer *pPlayer = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
 
-		if (pPlayer && !pPlayer->IsBot())
-		{
+		if (pPlayer != NULL && !pPlayer->IsBot())
 			++numHumans;
-		}
 	}
 
 	if (shouldTutorBeOn)

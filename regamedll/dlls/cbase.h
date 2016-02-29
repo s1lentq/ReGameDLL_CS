@@ -293,7 +293,7 @@ public:
 	virtual BOOL IsAlive() { return (pev->deadflag == DEAD_NO && pev->health > 0.0f); }
 	virtual BOOL IsBSPModel() { return (pev->solid == SOLID_BSP || pev->movetype == MOVETYPE_PUSHSTEP); }
 	virtual BOOL ReflectGauss() { return (IsBSPModel() && pev->takedamage == DAMAGE_NO); }
-	virtual BOOL HasTarget(string_t targetname) { return FStrEq(STRING(targetname),STRING(pev->targetname)); }
+	virtual BOOL HasTarget(string_t targetname) { return FStrEq(STRING(targetname), STRING(pev->targetname)); }
 	virtual BOOL IsInWorld();
 	virtual BOOL IsPlayer() { return FALSE; }
 	virtual BOOL IsNetClient() { return FALSE; }

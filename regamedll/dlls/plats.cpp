@@ -426,7 +426,6 @@ void CFuncPlat::__MAKE_VHOOK(GoDown)()
 	}
 
 	assert(m_toggle_state == TS_AT_TOP || m_toggle_state == TS_GOING_UP);
-
 	m_toggle_state = TS_GOING_DOWN;
 	SetMoveDone(&CFuncPlat::CallHitBottom);
 	LinearMove(m_vecPosition2, pev->speed);
@@ -446,7 +445,6 @@ void CFuncPlat::__MAKE_VHOOK(HitBottom)()
 	}
 
 	assert(m_toggle_state == TS_GOING_DOWN);
-
 	m_toggle_state = TS_AT_BOTTOM;
 }
 
@@ -459,7 +457,6 @@ void CFuncPlat::__MAKE_VHOOK(GoUp)()
 	}
 
 	assert(m_toggle_state == TS_AT_BOTTOM || m_toggle_state == TS_GOING_DOWN);
-
 	m_toggle_state = TS_GOING_UP;
 	SetMoveDone(&CFuncPlat::CallHitTop);
 	LinearMove(m_vecPosition1, pev->speed);
@@ -479,7 +476,6 @@ void CFuncPlat::__MAKE_VHOOK(HitTop)()
 	}
 
 	assert(m_toggle_state == TS_GOING_UP);
-
 	m_toggle_state = TS_AT_TOP;
 
 	if (!IsTogglePlat())
@@ -612,7 +608,6 @@ void CFuncTrain::__MAKE_VHOOK(Blocked)(CBaseEntity *pOther)
 		return;
 
 	m_flActivateFinished = gpGlobals->time + 0.5f;
-
 	pOther->TakeDamage(pev, pev, pev->dmg, DMG_CRUSH);
 }
 
@@ -723,7 +718,6 @@ void CFuncTrain::Next()
 
 	// Save last target in case we need to find it again
 	pev->message = pev->target;
-
 	pev->target = pTarg->pev->target;
 	m_flWait = pTarg->GetDelay();
 
@@ -737,7 +731,7 @@ void CFuncTrain::Next()
 	// keep track of this since path corners change our target for us.
 	m_pevCurrentTarget = pTarg->pev;
 
-	//hack
+	// hack
 	pev->enemy = pTarg->edict();
 
 	if (m_pevCurrentTarget->spawnflags & SF_CORNER_TELEPORT)
@@ -745,7 +739,7 @@ void CFuncTrain::Next()
 		// Path corner has indicated a teleport to the next corner.
 		pev->effects |= EF_NOINTERP;
 
-		UTIL_SetOrigin(pev, pTarg->pev->origin - (pev->mins + pev->maxs) * 0.5);
+		UTIL_SetOrigin(pev, pTarg->pev->origin - (pev->mins + pev->maxs) * 0.5f);
 
 		// Get on with doing the next path corner.
 		Wait();
@@ -784,7 +778,7 @@ void CFuncTrain::__MAKE_VHOOK(Activate)()
 		// keep track of this since path corners change our target for us.
 		m_pevCurrentTarget = pevTarg;
 
-		UTIL_SetOrigin(pev, pevTarg->origin - (pev->mins + pev->maxs) * 0.5);
+		UTIL_SetOrigin(pev, pevTarg->origin - (pev->mins + pev->maxs) * 0.5f);
 
 		if (FStringNull(pev->targetname))
 		{
@@ -1048,7 +1042,7 @@ void CFuncTrackTrain::StopSound()
 	if (m_soundPlaying && pev->noise)
 	{
 		unsigned short us_encode;
-		unsigned short us_sound  = ((unsigned short)(m_sounds) & 0x0007) << 12;
+		unsigned short us_sound = ((unsigned short)(m_sounds) & 0x0007) << 12;
 
 		us_encode = us_sound;
 
@@ -1066,7 +1060,7 @@ void CFuncTrackTrain::UpdateSound()
 	if (!pev->noise)
 		return;
 
-	flpitch = TRAIN_STARTPITCH + (Q_abs(pev->speed) * (TRAIN_MAXPITCH - TRAIN_STARTPITCH) / TRAIN_MAXSPEED);
+	flpitch = TRAIN_STARTPITCH + (Q_abs(int(pev->speed)) * (TRAIN_MAXPITCH - TRAIN_STARTPITCH) / TRAIN_MAXSPEED);
 
 	if (!m_soundPlaying)
 	{
