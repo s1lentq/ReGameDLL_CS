@@ -99,8 +99,6 @@ cvar_t game_version = { "game_version", APP_VERSION_STRD, FCVAR_SERVER, 0.0f, NU
 cvar_t maxmoney = { "mp_maxmoney", "16000", FCVAR_SERVER, 0.0f, NULL };
 cvar_t round_infinite = { "mp_round_infinite", "0", FCVAR_SERVER, 0.0f, NULL };
 
-#endif // REGAMEDLL_ADD
-
 void GameDLL_Version_f()
 {
 	if (Q_stricmp(CMD_ARGV(1), "version") != 0)
@@ -110,6 +108,15 @@ void GameDLL_Version_f()
 	CONSOLE_ECHO("ReGameDLL build: " __TIME__ " " __DATE__ " (" APP_VERSION_STRD ")\n");
 	CONSOLE_ECHO("ReGameDLL API version %i.%i\n", REGAMEDLL_API_VERSION_MAJOR, REGAMEDLL_API_VERSION_MINOR);
 }
+
+void GameDLL_EndRound_f()
+{
+	EndRoundMessage("#Round_Draw", ROUND_END_DRAW);
+	Broadcast("rounddraw");
+	CSGameRules()->TerminateRound(5, WINSTATUS_DRAW);
+}
+
+#endif // REGAMEDLL_ADD
 
 void EXT_FUNC GameDLLInit()
 {
@@ -209,6 +216,7 @@ void EXT_FUNC GameDLLInit()
 #ifdef REGAMEDLL_ADD
 
 	ADD_SERVER_COMMAND("game", GameDLL_Version_f);
+	ADD_SERVER_COMMAND("endround", GameDLL_EndRound_f);
 
 	CVAR_REGISTER(&game_version);
 	CVAR_REGISTER(&maxmoney);
