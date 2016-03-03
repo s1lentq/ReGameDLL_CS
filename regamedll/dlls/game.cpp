@@ -107,7 +107,7 @@ void GameDLL_Version_f()
 	// print version
 	CONSOLE_ECHO("ReGameDLL build: " __TIME__ " " __DATE__ " (" APP_VERSION_STRD ")\n");
 	CONSOLE_ECHO("ReGameDLL API version %i.%i\n", REGAMEDLL_API_VERSION_MAJOR, REGAMEDLL_API_VERSION_MINOR);
-	CONSOLE_ECHO("Build from: https://github.com/s1lentq/ReGameDLL_CS/commit/" APP_COMMIT_ID " (" APP_COMMIT_AUTHOR ")\n");
+	CONSOLE_ECHO("Build from: " APP_COMMITS_URL APP_COMMIT_ID " " APP_COMMIT_AUTHOR "\n");
 }
 
 void GameDLL_EndRound_f()

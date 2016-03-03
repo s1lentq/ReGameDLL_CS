@@ -12,4 +12,5 @@ class GitInfo {
 	Integer countCommit
 	String commitID
 	String authorCommit
+	String urlCommits
 }

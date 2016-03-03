@@ -16,6 +16,7 @@ class RegamedllVersionInfo {
 	DateTime lastCommitDate
 	String commitID
 	String authorCommit
+	String urlCommits
 
 	String format(String versionSeparator, String suffixSeparator, boolean includeSuffix) {
 		StringBuilder sb = new StringBuilder()

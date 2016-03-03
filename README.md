@@ -7,7 +7,7 @@ Regamedll_CS is a result of reverse engineering of original library mods HLDS (b
 At the moment, the work of reverse engineering continues
 
 ## Goals of the project
-* Provide more stable (than official) version of Half-Life dedicated server with extended API for mods and plugins
+* Provide more stable (than official) version of Counter-Strike game with extended API for mods and plugins
 
 ## How can use it?
 Regamedll_CS is fully compatible with official mod CS 1.6 by Valve. All you have to do is to download binaries and replace original mo.dll/cs.so

@@ -586,7 +586,7 @@ void CBasePlayer::Radio(const char *msg_id, const char *msg_verbose, short pitch
 				{
 					// search the place name where is located the player
 					const char *placeName = NULL;
-					if (TheBotPhrases != NULL)
+					if (g_bIsCzeroGame && TheBotPhrases != NULL)
 					{
 						Place playerPlace = TheNavAreaGrid.GetPlace(&pev->origin);
 						const BotPhraseList *placeList = TheBotPhrases->GetPlaceList();

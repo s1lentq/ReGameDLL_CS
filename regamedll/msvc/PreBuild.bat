@@ -1,21 +1,27 @@
-@echo OFF
+@setlocal enableextensions enabledelayedexpansion
+@echo off
 ::
 :: Pre-build auto-versioning script
 ::
 
-SET srcdir=%~1
-SET repodir=%~2
+set srcdir=%~1
+set repodir=%~2
 
-SET old_version=
+set old_version=
 set old_specialbuild=""
-SET version_revision=0
+set version_revision=0
 set version_specialbuild=
-SET version_pdate_1=%date:~-4%-%date:~3,2%-%date:~0,2%
-SET version_pdate=%version_pdate_1% %time:~0,2%:%time:~3,2%:%time:~6,2%
-SET version_date=%version_pdate_1%__%time:~0,2%-%time:~3,2%-%time:~6,2%
-SET version_major=0
-SET version_minor=0
-SET version_specialversion=
+set version_id_commit=
+set version_author_commit=
+set version_pdate_1=%date:~-4%-%date:~3,2%-%date:~0,2%
+set version_pdate=%version_pdate_1%%time:~0,2%:%time:~3,2%:%time:~6,2%
+set version_pdate_2=%time:~0,2%-%time:~3,2%-%time:~6,2%
+set version_pdate_2=%version_pdate_2: =%
+set version_date=%version_pdate_1%__%version_pdate_2%
+set version_major=0
+set version_minor=0
+set version_specialversion=
+set url_commit=
 
 ::
 :: Check for git.exe presence
@@ -29,8 +35,8 @@ set errlvl="%ERRORLEVEL%"
 IF EXIST "%srcdir%\appversion.h" (
 	FOR /F "usebackq tokens=1,2,3" %%i in ("%srcdir%\appversion.h") do (
 		IF %%i==#define (
-			IF %%j==APP_VERSION_C SET old_version=%%k
-			IF %%j==APP_VERSION_SPECIALBUILD SET old_specialbuild=%%k
+			IF %%j==APP_VERSION_C set old_version=%%k
+			IF %%j==APP_VERSION_SPECIALBUILD set old_specialbuild=%%k
 		)
 	)
 )
@@ -40,27 +46,27 @@ IF %errlvl% == "1" (
 
 	:: if we haven't appversion.h, we need to create it
 	IF NOT "%old_version%" == "" (
-		SET version_revision=0
+		set version_revision=0
 	)
 )
 
 ::
 :: Read major, minor and maintenance version components from Version.h
 ::
-IF EXIST "%srcdir%\version.h" (	
+IF EXIST "%srcdir%\version.h" (
 	FOR /F "usebackq tokens=1,2,3" %%i in ("%srcdir%\version.h") do (
 		IF %%i==#define (
-			IF %%j==VERSION_MAJOR SET version_major=%%k
-			IF %%j==VERSION_MINOR SET version_minor=%%k
-			IF %%j==VERSION_SPECIALVERSION SET version_specialversion=%%k
+			IF %%j==VERSION_MAJOR set version_major=%%k
+			IF %%j==VERSION_MINOR set version_minor=%%k
+			IF %%j==VERSION_SPECIALVERSION set version_specialversion=%%k
 		)
 	)
 ) ELSE (
 	FOR /F "usebackq tokens=1,2,3,* delims==" %%i in ("%repodir%..\gradle.properties") do (
 		IF NOT [%%j] == [] (
-			IF %%i==majorVersion SET version_major=%%j
-			IF %%i==minorVersion SET version_minor=%%j
-			IF %%i==specialVersion SET version_specialversion=%%j
+			IF %%i==majorVersion set version_major=%%j
+			IF %%i==minorVersion set version_minor=%%j
+			IF %%i==specialVersion set version_specialversion=%%j
 		)
 	)
 )
@@ -83,12 +89,65 @@ IF NOT %errlvl% == "1" (
 set new_version=%version_major%,%version_minor%,0,%version_revision%
 
 ::
+:: Get remote url repository
+::
+IF NOT %errlvl% == "1" (
+
+	set branch_name=master
+	set branch_remote=origin
+	:: Get current branch
+	FOR /F "tokens=*" %%i IN ('"git -C "%repodir%\." rev-parse --abbrev-ref HEAD"') DO (
+		set branch_name=%%i
+	)
+	:: Get remote name by current branch
+	FOR /F "tokens=*" %%i IN ('"git -C "%repodir%\." config branch.!branch_name!.remote"') DO (
+		set branch_remote=%%i
+	)
+	:: Get remote url
+	FOR /F "tokens=2 delims=@" %%i IN ('"git -C "%repodir%\." config remote.!branch_remote!.url"') DO (
+		set url_commit=%%i
+	)
+	:: Get author last no-merge commit
+	FOR /F "tokens=*" %%i IN ('"git -C "%repodir%\." log -1 --no-merges --pretty=format:%%an"') DO (
+		set version_author_commit=%%i
+	)
+	:: Get commit id
+	FOR /F "tokens=*" %%i IN ('"git -C "%repodir%\." rev-parse --verify HEAD"') DO (
+		set var=%%i
+		set version_id_commit=!var:~0,+7!
+	)
+
+	IF [!url_commit!] == [] (
+
+		FOR /F "tokens=1" %%i IN ('"git -C "%repodir%\." config remote.!branch_remote!.url"') DO (
+			set url_commit=%%i
+		)
+
+		:: strip .git
+		if "x!url_commit:~-4!"=="x.git" (
+			set url_commit=!url_commit:~0,-4!
+		)
+		:: append extra string
+		set url_commit=!url_commit!/commit/
+	) ELSE (
+		:: strip .git
+		if "x!url_commit:~-4!"=="x.git" (
+			set url_commit=!url_commit:~0,-4!
+		)
+		:: replace : to /
+		set url_commit=!url_commit::=/!
+		:: append extra string
+		set url_commit=https://!url_commit!/commit/
+	)
+)
+
+::
 :: Detect local modifications
 ::
-SET localChanged=0
+set localChanged=0
 IF NOT %errlvl% == "1" (
 	FOR /F "tokens=*" %%i IN ('"git -C "%repodir%\." ls-files -m"') DO (
-		SET localChanged=1
+		set localChanged=1
 	)
 )
 
@@ -128,22 +187,24 @@ IF "%version_specialversion%" == "" (
 	echo #define APP_VERSION_STRD "%version_major%.%version_minor%.%version_revision%">>"%srcdir%\appversion.h"
 	echo #define APP_VERSION_STRD_RC "%version_major%.%version_minor%.%version_revision%">>"%srcdir%\appversion.h"
 	echo #define APP_VERSION_C %version_major%,%version_minor%,0,%version_revision% >>"%srcdir%\appversion.h"
-	echo #define APP_VERSION_STRCS "%version_major%, %version_minor%, 0, %version_revision%">>"%srcdir%\appversion.h"
+	echo #define APP_VERSION_STRCS "%version_major%,%version_minor%,0,%version_revision%">>"%srcdir%\appversion.h"
 ) ELSE (
 	echo #define APP_VERSION_D %version_major%.%version_minor%.%version_maintenance%.%version_revision% >>"%srcdir%\appversion.h"
 	echo #define APP_VERSION_STRD "%version_major%.%version_minor%.%version_maintenance%.%version_revision%">>"%srcdir%\appversion.h"
 	echo #define APP_VERSION_STRD_RC "%version_major%.%version_minor%.%version_maintenance%.%version_revision%">>"%srcdir%\appversion.h"
 	echo #define APP_VERSION_C %version_major%,%version_minor%,%version_maintenance%,%version_revision% >>"%srcdir%\appversion.h"
-	echo #define APP_VERSION_STRCS "%version_major%, %version_minor%, %version_maintenance%, %version_revision%">>"%srcdir%\appversion.h"
+	echo #define APP_VERSION_STRCS "%version_major%,%version_minor%,%version_maintenance%,%version_revision%">>"%srcdir%\appversion.h"
 )
 
 echo.>>"%srcdir%\appversion.h"
 echo #define APP_VERSION_DATE %version_date%>>"%srcdir%\appversion.h"
 echo #define APP_VERSION_DATE_STR "%version_date%">>"%srcdir%\appversion.h"
-echo.>>"%srcdir%\appversion.h"
 echo #define APP_VERSION_PDATE_STR "%version_pdate%">>"%srcdir%\appversion.h"
-echo.>>"%srcdir%\appversion.h"
 echo #define APP_VERSION_YMD_STR "%version_pdate_1%">>"%srcdir%\appversion.h"
+echo.>>"%srcdir%\appversion.h"
+echo #define APP_COMMIT_AUTHOR "(%version_author_commit%)">>"%srcdir%\appversion.h"
+echo #define APP_COMMIT_ID "%version_id_commit%">>"%srcdir%\appversion.h"
+echo #define APP_COMMITS_URL "%url_commit%">>"%srcdir%\appversion.h"
 echo.>>"%srcdir%\appversion.h"
 
 IF NOT "%version_specialbuild%" == "" (
@@ -163,6 +224,7 @@ echo.>>"%srcdir%\appversion.h"
 :: Do update of version.cpp file last modify time to force it recompile
 ::
 copy /b "%srcdir%\version.cpp"+,, "%srcdir%\version.cpp"
+endlocal
 
 :_exit
 exit /B 0

@@ -10,8 +10,9 @@
 \#define VERSION_MAJOR ${verInfo.majorVersion}
 \#define VERSION_MINOR ${verInfo.minorVersion}
 
-\#define APP_COMMIT_AUTHOR "${verInfo.authorCommit}"
+\#define APP_COMMIT_AUTHOR "(${verInfo.authorCommit})"
 \#define APP_COMMIT_ID "${verInfo.commitID}"
+\#define APP_COMMITS_URL "${verInfo.urlCommits}"
 
 \#define APP_VERSION_D ${verInfo.format('.', '-', true)}
 \#define APP_VERSION_C ${verInfo.majorVersion},${verInfo.minorVersion},0,${verInfo.countCommit}

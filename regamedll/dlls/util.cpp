@@ -2337,6 +2337,9 @@ int UTIL_ReadFlags(const char *c)
 // Determine whether bots can be used or not
 bool UTIL_AreBotsAllowed()
 {
+	if (g_engfuncs.pfnEngCheckParm == NULL)
+		return false;
+
 	if (g_bIsCzeroGame)
 	{
 		// If they pass in -nobots, don't allow bots.  This is for people who host servers, to

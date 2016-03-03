@@ -5,6 +5,7 @@ import groovy.transform.TypeChecked
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.lib.ObjectId
 import org.eclipse.jgit.lib.Repository
+import org.eclipse.jgit.lib.StoredConfig
 import org.eclipse.jgit.revwalk.RevCommit
 import org.eclipse.jgit.revwalk.RevWalk
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
@@ -38,6 +39,20 @@ class GitVersioner {
 
 		return null;
 	}
+	static String prepareUrlToCommits(String url) {
+		StringBuilder sb = new StringBuilder();
+		String childPath;
+		int pos = url.indexOf('@');
+		if (pos != -1) {
+			childPath = url.substring(pos + 1, url.lastIndexOf('.git')).replace(':', '/');
+			sb.append('https://');
+		} else {
+			childPath = url.substring(0, url.lastIndexOf('.git'));
+		}
+
+		sb.append(childPath).append('/commit/');
+		return sb.toString();
+	}
 	static GitInfo versionForDir(File dir) {
 		FileRepositoryBuilder builder = new FileRepositoryBuilder()
 		Repository repo = builder.setWorkTree(dir)
@@ -49,12 +64,18 @@ class GitVersioner {
 			return null
 		}
 
+		final StoredConfig cfg = repo.getConfig();
 		def commit = new RevWalk(repo).parseCommit(head)
 		def commitLast = parseCommitLast(repo)
 		int commitCount = getCountCommit(repo)
 
 		def branch = repo.getBranch()
 		def commitDate = new DateTime(1000L * commit.commitTime, DateTimeZone.UTC)
+
+		String remote_name = cfg.getString("branch", branch, "remote");
+
+		String url = cfg.getString("remote", remote_name, "url");
+		String urlCommits = prepareUrlToCommits(url);
 
 		if (!commit) {
 			throw new RuntimeException("Can't find last commit.")
@@ -70,7 +91,8 @@ class GitVersioner {
 			tag: tag,
 			countCommit: commitCount,
 			commitID: headCommitId,
-			authorCommit: authorCommit
+			authorCommit: authorCommit,
+			urlCommits: urlCommits
 		)
 	}
 }

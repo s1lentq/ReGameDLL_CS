@@ -32,7 +32,8 @@ if (gitInfo.tag && gitInfo.tag[0] == 'v') {
 		countCommit: gitInfo.countCommit,
 		lastCommitDate: gitInfo.lastCommitDate,
 		commitID: gitInfo.commitID,
-		authorCommit: gitInfo.authorCommit
+		authorCommit: gitInfo.authorCommit,
+		urlCommits: gitInfo.urlCommits
 	)
 } else {
 	versionInfo = new RegamedllVersionInfo(
@@ -42,7 +43,8 @@ if (gitInfo.tag && gitInfo.tag[0] == 'v') {
 		countCommit: gitInfo.countCommit,
 		lastCommitDate: gitInfo.lastCommitDate,
 		commitID: gitInfo.commitID,
-		authorCommit: gitInfo.authorCommit
+		authorCommit: gitInfo.authorCommit,
+		urlCommits: gitInfo.urlCommits
 	)
 }
 
