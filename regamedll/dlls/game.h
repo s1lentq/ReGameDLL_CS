@@ -139,5 +139,6 @@ extern cvar_t round_infinite;
 #endif
 
 void GameDLLInit();
+void GameDLLShutdown();
 
 #endif // GAME_H

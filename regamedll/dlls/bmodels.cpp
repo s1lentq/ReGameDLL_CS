@@ -35,6 +35,7 @@ Vector VecBModelOrigin(entvars_t *pevBModel)
 }
 
 LINK_ENTITY_TO_CLASS(func_wall, CFuncWall);
+LINK_CLASS_TO_WRAP(CFuncWall, CCSFuncWall);
 
 void CFuncWall::__MAKE_VHOOK(Spawn)()
 {
@@ -59,6 +60,7 @@ void CFuncWall::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller,
 }
 
 LINK_ENTITY_TO_CLASS(func_wall_toggle, CFuncWallToggle);
+LINK_CLASS_TO_WRAP(CFuncWallToggle, CCSFuncWallToggle);
 
 void CFuncWallToggle::__MAKE_VHOOK(Spawn)()
 {
@@ -108,6 +110,7 @@ void CFuncWallToggle::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pC
 }
 
 LINK_ENTITY_TO_CLASS(func_conveyor, CFuncConveyor);
+LINK_CLASS_TO_WRAP(CFuncConveyor, CCSFuncConveyor);
 
 void CFuncConveyor::__MAKE_VHOOK(Spawn)()
 {
@@ -155,6 +158,7 @@ void CFuncConveyor::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCal
 }
 
 LINK_ENTITY_TO_CLASS(func_illusionary, CFuncIllusionary);
+LINK_CLASS_TO_WRAP(CFuncIllusionary, CCSFuncIllusionary);
 
 void CFuncIllusionary::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
@@ -185,6 +189,7 @@ void CFuncIllusionary::__MAKE_VHOOK(Spawn)()
 }
 
 LINK_ENTITY_TO_CLASS(func_monsterclip, CFuncMonsterClip);
+LINK_CLASS_TO_WRAP(CFuncMonsterClip, CCSFuncMonsterClip);
 
 void CFuncMonsterClip::__MAKE_VHOOK(Spawn)()
 {
@@ -199,7 +204,7 @@ void CFuncMonsterClip::__MAKE_VHOOK(Spawn)()
 }
 
 LINK_ENTITY_TO_CLASS(func_rotating, CFuncRotating);
-
+LINK_CLASS_TO_WRAP(CFuncRotating, CCSFuncRotating);
 IMPLEMENT_SAVERESTORE(CFuncRotating, CBaseEntity);
 
 void CFuncRotating::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
@@ -603,6 +608,7 @@ void CFuncRotating::__MAKE_VHOOK(Blocked)(CBaseEntity *pOther)
 }
 
 LINK_ENTITY_TO_CLASS(func_pendulum, CPendulum);
+LINK_CLASS_TO_WRAP(CPendulum, CCSPendulum);
 IMPLEMENT_SAVERESTORE(CPendulum, CBaseEntity);
 
 void CPendulum::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)

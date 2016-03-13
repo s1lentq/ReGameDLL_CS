@@ -64,7 +64,7 @@
 #define MAX_MOTD_LENGTH				1536 // (MAX_MOTD_CHUNK * 4)
 
 // custom enum
-#define	WINNER_NONE			0
+#define WINNER_NONE			0
 #define WINNER_DRAW			1
 
 enum

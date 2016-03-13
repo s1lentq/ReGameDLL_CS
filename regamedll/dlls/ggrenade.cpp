@@ -27,6 +27,7 @@ TYPEDESCRIPTION CGrenade::m_SaveData[] =
 #endif
 
 LINK_ENTITY_TO_CLASS(grenade, CGrenade);
+LINK_CLASS_TO_WRAP(CGrenade, CCSGrenade);
 
 void CGrenade::Explode(Vector vecSrc, Vector vecAim)
 {

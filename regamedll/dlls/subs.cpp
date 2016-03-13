@@ -181,6 +181,7 @@ void FireTargets(const char *targetName, CBaseEntity *pActivator, CBaseEntity *p
 }
 
 LINK_ENTITY_TO_CLASS(DelayedUse, CBaseDelay);
+LINK_CLASS_TO_WRAP(CBaseDelay, CCSDelay);
 
 void CBaseDelay::SUB_UseTargets(CBaseEntity *pActivator, USE_TYPE useType, float value)
 {

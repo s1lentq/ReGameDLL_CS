@@ -358,7 +358,12 @@ public:
 #endif
 
 public:
-	void *operator new(size_t stAllocateBlock, entvars_t *pevnew) { return ALLOC_PRIVATE(ENT(pevnew), stAllocateBlock); }
+	void *operator new(size_t stAllocateBlock, entvars_t *pevnew)
+	{
+		CBaseEntity *ent = (CBaseEntity *)ALLOC_PRIVATE(ENT(pevnew), stAllocateBlock);
+		ent->pev = pevnew;
+		return ent;
+	}
 	void operator delete(void *pMem, entvars_t *pevnew) { pevnew->flags |= FL_KILLME; }
 	void UpdateOnRemove();
 	void EXPORT SUB_Remove();
@@ -448,6 +453,7 @@ inline int FNullEnt(EHANDLE hent) { return (hent == NULL || FNullEnt(OFFSET(hent
 class CPointEntity: public CBaseEntity
 {
 public:
+	CPointEntity();
 	virtual void Spawn();
 	virtual int ObjectCaps() { return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
 
@@ -462,22 +468,23 @@ public:
 class CMultiSource: public CPointEntity
 {
 public:
+	CMultiSource();
 	virtual void Spawn();
 	virtual void KeyValue(KeyValueData *pkvd);
-	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-	virtual int ObjectCaps() { return (CPointEntity::ObjectCaps() | FCAP_MASTER); }
-	virtual BOOL IsTriggered(CBaseEntity *pActivator);
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
+	virtual int ObjectCaps() { return (CPointEntity::ObjectCaps() | FCAP_MASTER); }
+	virtual BOOL IsTriggered(CBaseEntity *pActivator);
+	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
 
 	void Spawn_();
 	void KeyValue_(KeyValueData *pkvd);
-	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-	BOOL IsTriggered_(CBaseEntity *pActivator);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
+	BOOL IsTriggered_(CBaseEntity *pActivator);
+	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #endif
 
@@ -496,6 +503,7 @@ public:
 class CBaseDelay: public CBaseEntity
 {
 public:
+	CBaseDelay();
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
@@ -628,7 +636,7 @@ class CBaseButton: public CBaseToggle
 		BUTTON_RETURN
 	};
 public:
-
+	CBaseButton();
 	virtual void Spawn();
 	virtual void Precache();
 	virtual void KeyValue(KeyValueData *pkvd);
@@ -688,6 +696,7 @@ public:
 class CWorld: public CBaseEntity
 {
 public:
+	CWorld();
 	virtual void Spawn();
 	virtual void Precache();
 	virtual void KeyValue(KeyValueData *pkvd);
@@ -702,6 +711,25 @@ public:
 
 };
 
+extern const std::type_info *g_typeInfo;
+extern class CCSEntity **g_GameEntities;
+
+template <class T>
+T *GetClassPtrWrap(CBaseEntity *a)
+{
+	// yet not allocated?
+	if (g_GameEntities == NULL)
+		return NULL;
+
+	// to ignore constructor classes invoked by inheritance
+	if (!g_typeInfo || g_typeInfo != &typeid(*a))
+		return NULL;
+
+	int index = a->entindex();
+	g_GameEntities[index] = new T (a);
+	return reinterpret_cast<T *>(g_GameEntities[index]);
+}
+
 template <class T>
 T *GetClassPtr(T *a)
 {
@@ -711,8 +739,9 @@ T *GetClassPtr(T *a)
 	a = (T *)GET_PRIVATE(ENT(pev));
 	if (!a)
 	{
+		g_typeInfo = &typeid(T);
 		a = new(pev) T;
-		a->pev = pev;
+		g_typeInfo = NULL;
 
 #if defined(HOOK_GAMEDLL) && defined(_WIN32) && !defined(REGAMEDLL_UNIT_TESTS)
 		VirtualTableInit((void *)a, stripClass(typeid(T).name()));

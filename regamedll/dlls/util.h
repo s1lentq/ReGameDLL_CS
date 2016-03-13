@@ -123,7 +123,7 @@ extern globalvars_t *gpGlobals;
 #define SF_BRUSH_ROTATE_Z_AXIS		4
 #define SF_BRUSH_ROTATE_X_AXIS		8
 #define SF_PENDULUM_AUTO_RETURN		16
-#define	SF_PENDULUM_PASSABLE		32
+#define SF_PENDULUM_PASSABLE		32
 
 #define SF_BRUSH_ROTATE_SMALLRADIUS	128
 #define SF_BRUSH_ROTATE_MEDIUMRADIUS	256
@@ -158,12 +158,20 @@ extern globalvars_t *gpGlobals;
 
 #endif
 
+#define REGAMEDLL_ALLOC_FUNC
 #define LINK_ENTITY_TO_CLASS(mapClassName, DLLClassName)\
 	C_DLLEXPORT void EXT_FUNC mapClassName(entvars_t *pev);\
 	void mapClassName(entvars_t *pev)\
 	{\
+		REGAMEDLL_ALLOC_FUNC\
 		GetClassPtr((DLLClassName *)pev);\
 	}
+
+#define LINK_CLASS_TO_WRAP(className, classNameWrap)\
+	className::className()\
+	{\
+		GetClassPtrWrap<classNameWrap>(this);\
+	}\
 
 typedef enum
 {

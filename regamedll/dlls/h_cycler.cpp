@@ -25,6 +25,7 @@ TYPEDESCRIPTION CWreckage::m_SaveData[] =
 #endif
 
 IMPLEMENT_SAVERESTORE(CCycler, CBaseToggle);
+LINK_CLASS_TO_WRAP(CCycler, CCSCycler);
 
 void CGenericCycler::__MAKE_VHOOK(Spawn)()
 {
@@ -32,7 +33,10 @@ void CGenericCycler::__MAKE_VHOOK(Spawn)()
 }
 
 LINK_ENTITY_TO_CLASS(cycler, CGenericCycler);
+LINK_CLASS_TO_WRAP(CGenericCycler, CCSGenericCycler);
+
 LINK_ENTITY_TO_CLASS(cycler_prdroid, CCyclerProbe);
+LINK_CLASS_TO_WRAP(CCyclerProbe, CCSCyclerProbe);
 
 void CCyclerProbe::__MAKE_VHOOK(Spawn)()
 {
@@ -162,6 +166,7 @@ int CCycler::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAtt
 }
 
 LINK_ENTITY_TO_CLASS(cycler_sprite, CCyclerSprite);
+LINK_CLASS_TO_WRAP(CCyclerSprite, CCSCyclerSprite);
 IMPLEMENT_SAVERESTORE(CCyclerSprite, CBaseEntity);
 
 void CCyclerSprite::__MAKE_VHOOK(Spawn)()
@@ -243,6 +248,7 @@ void CCyclerSprite::Animate(float frames)
 }
 
 LINK_ENTITY_TO_CLASS(cycler_weapon, CWeaponCycler);
+LINK_CLASS_TO_WRAP(CWeaponCycler, CCSWeaponCycler);
 
 void CWeaponCycler::__MAKE_VHOOK(Spawn)()
 {
@@ -304,6 +310,7 @@ void CWeaponCycler::__MAKE_VHOOK(SecondaryAttack)()
 
 IMPLEMENT_SAVERESTORE(CWreckage, CBaseToggle);
 LINK_ENTITY_TO_CLASS(cycler_wreckage, CWreckage);
+LINK_CLASS_TO_WRAP(CWreckage, CCSWreckage);
 
 void CWreckage::__MAKE_VHOOK(Spawn)()
 {

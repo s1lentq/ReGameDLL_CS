@@ -233,3 +233,8 @@ void EXT_FUNC GameDLLInit()
 	Tutor_RegisterCVars();
 	Hostage_RegisterCVars();
 }
+
+void EXT_FUNC GameDLLShutdown()
+{
+	Regamedll_FreeEntities();
+}

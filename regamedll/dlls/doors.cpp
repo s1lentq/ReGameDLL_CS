@@ -191,6 +191,7 @@ LINK_ENTITY_TO_CLASS(func_door, CBaseDoor);
 
 // func_water - same as a door.
 LINK_ENTITY_TO_CLASS(func_water, CBaseDoor);
+LINK_CLASS_TO_WRAP(CBaseDoor, CCSDoor);
 
 void CBaseDoor::__MAKE_VHOOK(Spawn)()
 {
@@ -841,6 +842,7 @@ void CBaseDoor::__MAKE_VHOOK(Blocked)(CBaseEntity *pOther)
 // 3)	stone chain
 // 4)	screechy metal
 LINK_ENTITY_TO_CLASS(func_door_rotating, CRotDoor);
+LINK_CLASS_TO_WRAP(CRotDoor, CCSRotDoor);
 
 void CRotDoor::__MAKE_VHOOK(Restart)()
 {
@@ -939,6 +941,7 @@ void CRotDoor::__MAKE_VHOOK(SetToggleState)(int state)
 }
 
 LINK_ENTITY_TO_CLASS(momentary_door, CMomentaryDoor);
+LINK_CLASS_TO_WRAP(CMomentaryDoor, CCSMomentaryDoor);
 IMPLEMENT_SAVERESTORE(CMomentaryDoor, CBaseToggle);
 
 void CMomentaryDoor::__MAKE_VHOOK(Spawn)()

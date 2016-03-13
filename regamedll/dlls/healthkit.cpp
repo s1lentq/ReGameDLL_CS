@@ -17,6 +17,7 @@ TYPEDESCRIPTION CWallHealth::m_SaveData[] =
 #endif
 
 LINK_ENTITY_TO_CLASS(item_healthkit, CHealthKit);
+LINK_CLASS_TO_WRAP(CHealthKit, CCSHealthKit);
 
 void CHealthKit::__MAKE_VHOOK(Spawn)()
 {

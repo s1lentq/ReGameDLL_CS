@@ -142,6 +142,7 @@ BOOL EXT_FUNC ClientConnect(edict_t *pEntity, const char *pszName, const char *p
 void EXT_FUNC ClientDisconnect(edict_t *pEntity)
 {
 	CBasePlayer *pPlayer = dynamic_cast<CBasePlayer *>(CBaseEntity::Instance(pEntity));
+	CSPlayer(pPlayer)->OnClientDisconnected();
 
 	if (!g_fGameOver)
 	{
@@ -476,6 +477,7 @@ void EXT_FUNC ClientPutInServer(edict_t *pEntity)
 
 	pPlayer->SetCustomDecalFrames(-1);
 	pPlayer->SetPrefsFromUserinfo(GET_INFO_BUFFER(pEntity));
+	CSPlayer(pPlayer)->OnClientConnected();
 
 	if (!g_pGameRules->IsMultiplayer())
 	{

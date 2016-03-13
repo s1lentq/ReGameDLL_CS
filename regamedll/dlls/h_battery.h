@@ -35,6 +35,7 @@
 class CRecharge: public CBaseToggle
 {
 public:
+	CRecharge();
 	virtual void Spawn();
 	virtual void Precache();
 	virtual void KeyValue(KeyValueData *pkvd);

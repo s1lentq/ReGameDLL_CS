@@ -32,7 +32,7 @@
 #pragma once
 #endif
 
-typedef enum
+typedef enum Activity_s
 {
 	ACT_INVALID = -1,
 

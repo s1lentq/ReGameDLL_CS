@@ -62,6 +62,8 @@ static DLL_FUNCTIONS gFunctionTable =
 static NEW_DLL_FUNCTIONS gNewDLLFunctions
 {
 	&OnFreeEntPrivateData,
+	&GameDLLShutdown,
+	NULL,
 	NULL,
 	NULL
 };
@@ -80,6 +82,8 @@ CMemoryPool hashItemMemPool(sizeof(hash_item_t), 64);
 BOOL gTouchDisabled = FALSE;
 
 #endif // HOOK_GAMEDLL
+
+const std::type_info *g_typeInfo = NULL;
 
 int CaseInsensitiveHash(const char *string, int iBounds)
 {
@@ -1080,4 +1084,7 @@ void OnFreeEntPrivateData(edict_t *pEnt)
 
 	pEntity->UpdateOnRemove();
 	RemoveEntityHashValue(pEntity->pev, STRING(pEntity->pev->classname), CLASSNAME);
+	Regamedll_FreeEntities(pEntity);
 }
+
+//LINK_CLASS_TO_WRAP(CBaseEntity, CCSEntity);

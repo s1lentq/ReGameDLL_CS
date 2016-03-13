@@ -35,6 +35,7 @@
 class CHealthKit: public CItem
 {
 public:
+	CHealthKit();
 	virtual void Spawn();
 	virtual void Precache();
 	virtual BOOL MyTouch(CBasePlayer *pPlayer);

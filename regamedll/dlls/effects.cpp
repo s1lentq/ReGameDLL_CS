@@ -62,7 +62,11 @@ TYPEDESCRIPTION CGibShooter::m_SaveData[] =
 #endif // HOOK_GAMEDLL
 
 LINK_ENTITY_TO_CLASS(info_target, CPointEntity);
+LINK_CLASS_TO_WRAP(CPointEntity, CCSPointEntity);
+
 LINK_ENTITY_TO_CLASS(env_bubbles, CBubbling);
+LINK_CLASS_TO_WRAP(CBubbling, CCSBubbling);
+
 IMPLEMENT_SAVERESTORE(CBubbling, CBaseEntity);
 
 void CBubbling::__MAKE_VHOOK(Spawn)()
@@ -155,6 +159,7 @@ void CBubbling::FizzThink()
 }
 
 LINK_ENTITY_TO_CLASS(beam, CBeam);
+LINK_CLASS_TO_WRAP(CBeam, CCSBeam);
 
 void CBeam::__MAKE_VHOOK(Spawn)()
 {
@@ -352,6 +357,8 @@ void CBeam::DoSparks(const Vector &start, const Vector &end)
 
 LINK_ENTITY_TO_CLASS(env_lightning, CLightning);
 LINK_ENTITY_TO_CLASS(env_beam, CLightning);
+LINK_CLASS_TO_WRAP(CLightning, CCSLightning);
+
 IMPLEMENT_SAVERESTORE(CLightning, CBeam);
 
 void CLightning::__MAKE_VHOOK(Spawn)()
@@ -847,6 +854,7 @@ void CLightning::BeamUpdateVars()
 }
 
 LINK_ENTITY_TO_CLASS(env_laser, CLaser);
+LINK_CLASS_TO_WRAP(CLaser, CCSLaser);
 IMPLEMENT_SAVERESTORE(CLaser, CBeam);
 
 void CLaser::__MAKE_VHOOK(Spawn)()
@@ -1006,6 +1014,7 @@ void CLaser::StrikeThink()
 }
 
 LINK_ENTITY_TO_CLASS(env_glow, CGlow);
+LINK_CLASS_TO_WRAP(CGlow, CCSGlow);
 IMPLEMENT_SAVERESTORE(CGlow, CPointEntity);
 
 void CGlow::__MAKE_VHOOK(Spawn)()
@@ -1045,6 +1054,7 @@ void CGlow::Animate(float frames)
 }
 
 LINK_ENTITY_TO_CLASS(env_bombglow, CBombGlow);
+LINK_CLASS_TO_WRAP(CBombGlow, CCSBombGlow);
 
 void CBombGlow::__MAKE_VHOOK(Spawn)()
 {
@@ -1097,6 +1107,7 @@ void CBombGlow::__MAKE_VHOOK(Think)()
 }
 
 LINK_ENTITY_TO_CLASS(env_sprite, CSprite);
+LINK_CLASS_TO_WRAP(CSprite, CCSSprite);
 IMPLEMENT_SAVERESTORE(CSprite, CPointEntity);
 
 void CSprite::__MAKE_VHOOK(Spawn)()
@@ -1274,6 +1285,7 @@ void CSprite::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, U
 
 IMPLEMENT_SAVERESTORE(CGibShooter, CBaseDelay);
 LINK_ENTITY_TO_CLASS(gibshooter, CGibShooter);
+LINK_CLASS_TO_WRAP(CGibShooter, CCSGibShooter);
 
 void CGibShooter::__MAKE_VHOOK(Precache)()
 {
@@ -1426,6 +1438,7 @@ void CGibShooter::ShootThink()
 }
 
 LINK_ENTITY_TO_CLASS(env_shooter, CEnvShooter);
+LINK_CLASS_TO_WRAP(CEnvShooter, CCSEnvShooter);
 
 void CEnvShooter::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
@@ -1498,6 +1511,7 @@ CGib *CEnvShooter::__MAKE_VHOOK(CreateGib)()
 }
 
 LINK_ENTITY_TO_CLASS(test_effect, CTestEffect);
+LINK_CLASS_TO_WRAP(CTestEffect, CCSTestEffect);
 
 void CTestEffect::__MAKE_VHOOK(Spawn)()
 {
@@ -1572,6 +1586,7 @@ void CTestEffect::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCalle
 }
 
 LINK_ENTITY_TO_CLASS(env_blood, CBlood);
+LINK_CLASS_TO_WRAP(CBlood, CCSBlood);
 
 void CBlood::__MAKE_VHOOK(Spawn)()
 {
@@ -1660,6 +1675,7 @@ void CBlood::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, US
 }
 
 LINK_ENTITY_TO_CLASS(env_shake, CShake);
+LINK_CLASS_TO_WRAP(CShake, CCSShake);
 
 void CShake::__MAKE_VHOOK(Spawn)()
 {
@@ -1704,6 +1720,7 @@ void CShake::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, US
 }
 
 LINK_ENTITY_TO_CLASS(env_fade, CFade);
+LINK_CLASS_TO_WRAP(CFade, CCSFade);
 
 void CFade::__MAKE_VHOOK(Spawn)()
 {
@@ -1753,6 +1770,7 @@ void CFade::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE
 }
 
 LINK_ENTITY_TO_CLASS(env_message, CMessage);
+LINK_CLASS_TO_WRAP(CMessage, CCSMessage);
 
 void CMessage::__MAKE_VHOOK(Spawn)()
 {
@@ -1846,6 +1864,7 @@ void CMessage::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, 
 }
 
 LINK_ENTITY_TO_CLASS(env_funnel, CEnvFunnel);
+LINK_CLASS_TO_WRAP(CEnvFunnel, CCSEnvFunnel);
 
 void CEnvFunnel::__MAKE_VHOOK(Precache)()
 {
@@ -1892,6 +1911,7 @@ void CEnvBeverage::__MAKE_VHOOK(Precache)()
 }
 
 LINK_ENTITY_TO_CLASS(env_beverage, CEnvBeverage);
+LINK_CLASS_TO_WRAP(CEnvBeverage, CCSEnvBeverage);
 
 void CEnvBeverage::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
@@ -1934,6 +1954,7 @@ void CItemSoda::__MAKE_VHOOK(Precache)()
 }
 
 LINK_ENTITY_TO_CLASS(item_sodacan, CItemSoda);
+LINK_CLASS_TO_WRAP(CItemSoda, CCSItemSoda);
 
 void CItemSoda::__MAKE_VHOOK(Spawn)()
 {

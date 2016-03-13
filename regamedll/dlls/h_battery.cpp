@@ -18,6 +18,7 @@ TYPEDESCRIPTION CRecharge::m_SaveData[] =
 
 IMPLEMENT_SAVERESTORE(CRecharge, CBaseEntity);
 LINK_ENTITY_TO_CLASS(func_recharge, CRecharge);
+LINK_CLASS_TO_WRAP(CRecharge, CCSRecharge);
 
 void CRecharge::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {

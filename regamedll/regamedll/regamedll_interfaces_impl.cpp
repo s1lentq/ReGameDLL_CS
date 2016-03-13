@@ -28,3 +28,91 @@
 
 #include "precompiled.h"
 
+CCSEntity **g_GameEntities = NULL;
+bool g_bInitialized = false;
+
+void Regamedll_AllocEntities(int maxEdicts)
+{
+	if (g_bInitialized)
+		return;
+
+	g_bInitialized = true;
+	g_GameEntities = (CCSEntity **)Q_malloc(sizeof(CCSEntity *) * maxEdicts);
+	Q_memset(g_GameEntities, 0, sizeof(CCSEntity *) * maxEdicts);
+
+	CONSOLE_ECHO(__FUNCTION__":: alloc entities!\n");
+
+	ADD_SERVER_COMMAND("check", [](){		
+		Regamedll_MonitorEntities();
+	});
+}
+
+void Regamedll_FreeEntities(CBaseEntity *pEntity)
+{
+	if (pEntity == NULL)
+	{
+		for (int i = 0; i < gpGlobals->maxEntities; ++i)
+		{
+			delete g_GameEntities[i];
+			g_GameEntities[i] = NULL;
+		}
+
+		Q_free(g_GameEntities);
+		g_GameEntities = NULL;
+		g_bInitialized = false;
+		return;
+	}
+
+	int index = pEntity->entindex();
+	if (index < 0 || index > gpGlobals->maxEntities)
+		return;
+
+	delete g_GameEntities[index];
+	g_GameEntities[index] = NULL;
+
+	CONSOLE_ECHO(__FUNCTION__ ":: Free on (#%d. %s)\n", index, STRING(pEntity->edict()->v.classname));
+}
+
+void Regamedll_MonitorEntities()
+{
+	int nCount = 0;
+	for (int i = 0; i < gpGlobals->maxEntities; ++i)
+	{
+		if (g_GameEntities[i] == NULL)
+			continue;
+
+		++nCount;
+	}
+	
+	CONSOLE_ECHO(__FUNCTION__":: nCount: (%d) (%d)\n", nCount, gpGlobals->maxEntities);
+}
+
+ICSPlayer *CBASE_TO_CSPLAYER(CBaseEntity *pEntity)
+{
+	if (pEntity == NULL)
+		return NULL;
+	
+	int index = pEntity->entindex();
+	if (index < 1 || index > gpGlobals->maxClients)
+	{
+		return NULL;
+		//regamedll_syserror(__FUNCTION__": Invalid player index %d", index);
+	}
+
+	return reinterpret_cast<ICSPlayer *>(g_GameEntities[index]);
+}
+
+ICSEntity *CBASE_TO_CSENTITY(CBaseEntity *pEntity)
+{
+	if (pEntity == NULL)
+		return NULL;
+	
+	int index = pEntity->entindex();
+	if (index < 0 || index > gpGlobals->maxEntities)
+	{
+		return NULL;
+		//regamedll_syserror(__FUNCTION__": Invalid entity index %d", index);
+	}
+
+	return g_GameEntities[index];
+}

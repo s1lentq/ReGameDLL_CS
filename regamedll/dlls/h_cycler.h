@@ -35,6 +35,7 @@
 class CCycler: public CBaseMonster
 {
 public:
+	CCycler();
 	virtual void Spawn();
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
@@ -70,6 +71,7 @@ public:
 class CGenericCycler: public CCycler
 {
 public:
+	CGenericCycler();
 	virtual void Spawn();
 
 #ifdef HOOK_GAMEDLL
@@ -84,6 +86,7 @@ public:
 class CCyclerProbe: public CCycler
 {
 public:
+	CCyclerProbe();
 	virtual void Spawn();
 
 #ifdef HOOK_GAMEDLL
@@ -97,6 +100,7 @@ public:
 class CCyclerSprite: public CBaseEntity
 {
 public:
+	CCyclerSprite();
 	virtual void Spawn();
 	virtual void Restart();
 	virtual int Save(CSave &save);
@@ -137,6 +141,7 @@ public:
 class CWeaponCycler: public CBasePlayerWeapon
 {
 public:
+	CWeaponCycler();
 	virtual void Spawn();
 	virtual int GetItemInfo(ItemInfo *p) { return 0; }
 	virtual BOOL Deploy();
@@ -164,6 +169,7 @@ public:
 class CWreckage: public CBaseMonster
 {
 public:
+	CWreckage();
 	virtual void Spawn();
 	virtual void Precache();
 	virtual int Save(CSave &save);

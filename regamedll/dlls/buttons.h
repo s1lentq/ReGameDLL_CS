@@ -34,8 +34,8 @@
 
 #define SF_BUTTON_DONTMOVE		1
 #define SF_ROTBUTTON_NOTSOLID		1
-#define	SF_BUTTON_TOGGLE		32	// button stays pushed until reactivated
-#define	SF_BUTTON_SPARK_IF_OFF		64	// button sparks in OFF state
+#define SF_BUTTON_TOGGLE		32	// button stays pushed until reactivated
+#define SF_BUTTON_SPARK_IF_OFF		64	// button sparks in OFF state
 #define SF_BUTTON_TOUCH_ONLY		256	// button only fires as a result of USE key.
 
 #define SF_GLOBAL_SET			1	// Set global state to initial state on spawn
@@ -57,6 +57,7 @@
 class CEnvGlobal: public CPointEntity
 {
 public:
+	CEnvGlobal();
 	virtual void Spawn();
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual int Save(CSave &save);
@@ -84,6 +85,7 @@ public:
 class CRotButton: public CBaseButton
 {
 public:
+	CRotButton();
 	virtual void Spawn();
 
 #ifdef HOOK_GAMEDLL
@@ -96,6 +98,7 @@ public:
 class CMomentaryRotButton: public CBaseToggle
 {
 public:
+	CMomentaryRotButton();
 	virtual void Spawn();
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual int Save(CSave &save);
@@ -147,6 +150,7 @@ public:
 class CEnvSpark: public CBaseEntity
 {
 public:
+	CEnvSpark();
 	virtual void Spawn();
 	virtual void Precache();
 	virtual void KeyValue(KeyValueData *pkvd);
@@ -170,13 +174,13 @@ public:
 
 public:
 	static TYPEDESCRIPTION IMPL(m_SaveData)[1];
-
 	float m_flDelay;
 };
 
 class CButtonTarget: public CBaseEntity
 {
 public:
+	CButtonTarget();
 	virtual void Spawn();
 	virtual int ObjectCaps();
 	virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);

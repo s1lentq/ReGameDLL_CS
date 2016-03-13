@@ -1,6 +1,7 @@
 #include "precompiled.h"
 
 LINK_ENTITY_TO_CLASS(world_items, CWorldItem);
+LINK_CLASS_TO_WRAP(CWorldItem, CCSWorldItem);
 
 void CWorldItem::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
@@ -44,6 +45,8 @@ void CWorldItem::__MAKE_VHOOK(Spawn)()
 
 	REMOVE_ENTITY(edict());
 }
+
+LINK_CLASS_TO_WRAP(CItem, CCSItem);
 
 void CItem::__MAKE_VHOOK(Spawn)()
 {
@@ -143,6 +146,7 @@ BOOL CItemSuit::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
 }
 
 LINK_ENTITY_TO_CLASS(item_suit, CItemSuit);
+LINK_CLASS_TO_WRAP(CItemSuit, CCSItemSuit);
 
 void CItemBattery::__MAKE_VHOOK(Spawn)()
 {
@@ -190,6 +194,7 @@ BOOL CItemBattery::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
 }
 
 LINK_ENTITY_TO_CLASS(item_battery, CItemBattery);
+LINK_CLASS_TO_WRAP(CItemBattery, CCSItemBattery);
 
 void CItemAntidote::__MAKE_VHOOK(Spawn)()
 {
@@ -212,6 +217,7 @@ BOOL CItemAntidote::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
 }
 
 LINK_ENTITY_TO_CLASS(item_antidote, CItemAntidote);
+LINK_CLASS_TO_WRAP(CItemAntidote, CCSItemAntidote);
 
 void CItemSecurity::__MAKE_VHOOK(Spawn)()
 {
@@ -232,6 +238,7 @@ BOOL CItemSecurity::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
 }
 
 LINK_ENTITY_TO_CLASS(item_security, CItemSecurity);
+LINK_CLASS_TO_WRAP(CItemSecurity, CCSItemSecurity);
 
 void CItemLongJump::__MAKE_VHOOK(Spawn)()
 {
@@ -269,6 +276,7 @@ BOOL CItemLongJump::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
 }
 
 LINK_ENTITY_TO_CLASS(item_longjump, CItemLongJump);
+LINK_CLASS_TO_WRAP(CItemLongJump, CCSItemLongJump);
 
 void CItemKevlar::__MAKE_VHOOK(Spawn)()
 {
@@ -307,6 +315,7 @@ BOOL CItemKevlar::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
 }
 
 LINK_ENTITY_TO_CLASS(item_kevlar, CItemKevlar);
+LINK_CLASS_TO_WRAP(CItemKevlar, CCSItemKevlar);
 
 void CItemAssaultSuit::__MAKE_VHOOK(Spawn)()
 {
@@ -344,6 +353,7 @@ BOOL CItemAssaultSuit::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
 }
 
 LINK_ENTITY_TO_CLASS(item_assaultsuit, CItemAssaultSuit);
+LINK_CLASS_TO_WRAP(CItemAssaultSuit, CCSItemAssaultSuit);
 
 void CItemThighPack::__MAKE_VHOOK(Spawn)()
 {
@@ -387,3 +397,4 @@ BOOL CItemThighPack::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
 }
 
 LINK_ENTITY_TO_CLASS(item_thighpack, CItemThighPack);
+LINK_CLASS_TO_WRAP(CItemThighPack, CCSItemThighPack);

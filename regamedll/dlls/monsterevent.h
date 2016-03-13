@@ -32,7 +32,7 @@
 #pragma once
 #endif
 
-typedef struct
+typedef struct MonsterEvent_s
 {
 	int event;
 	char *options;

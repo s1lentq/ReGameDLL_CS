@@ -324,6 +324,7 @@ void WriteSigonMessages()
 }
 
 LINK_ENTITY_TO_CLASS(player, CBasePlayer);
+LINK_CLASS_TO_WRAP(CBasePlayer, CCSPlayer);
 
 void SendItemStatus(CBasePlayer *pPlayer)
 {

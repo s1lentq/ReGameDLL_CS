@@ -1530,6 +1530,7 @@ float CBasePlayerWeapon::GetNextAttackDelay(float delay)
 }
 
 LINK_ENTITY_TO_CLASS(weaponbox, CWeaponBox);
+LINK_CLASS_TO_WRAP(CWeaponBox, CCSWeaponBox);
 IMPLEMENT_SAVERESTORE(CWeaponBox, CBaseEntity);
 
 void CWeaponBox::__MAKE_VHOOK(Precache)()

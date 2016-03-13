@@ -50,7 +50,7 @@
 
 #define SPEAKER_START_SILENT			1	// wait for trigger 'on' to start announcements
 
-#define	LFO_SQUARE				1	// square
+#define LFO_SQUARE				1	// square
 #define LFO_TRIANGLE				2	// triangle
 #define LFO_RANDOM				3	// random
 

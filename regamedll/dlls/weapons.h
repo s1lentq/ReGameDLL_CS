@@ -155,6 +155,7 @@ public:
 class CGrenade: public CBaseMonster
 {
 public:
+	CGrenade();
 	virtual void Spawn();
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
@@ -457,6 +458,7 @@ public:
 class CWeaponBox: public CBaseEntity
 {
 public:
+	CWeaponBox();
 	virtual void Spawn();
 	virtual void Precache();
 	virtual void KeyValue(KeyValueData *pkvd);

@@ -30,6 +30,7 @@
 #include "interface.h"
 
 #include "hookchains_impl.h"
+
 #include "regamedll.h"
 #include "regamedll_interfaces.h"
 #include "regamedll_interfaces_impl.h"

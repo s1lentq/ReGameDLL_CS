@@ -410,7 +410,13 @@ void EXT_FUNC ResetGlobalState()
 	gInitHUD = TRUE;
 }
 
+#pragma push_macro("REGAMEDLL_ALLOC_FUNC")
+#define REGAMEDLL_ALLOC_FUNC Regamedll_AllocEntities(gpGlobals->maxEntities);
+
 LINK_ENTITY_TO_CLASS(worldspawn, CWorld);
+LINK_CLASS_TO_WRAP(CWorld, CCSWorld);
+
+#pragma pop_macro("REGAMEDLL_ALLOC_FUNC")
 
 void CWorld::__MAKE_VHOOK(Spawn)()
 {

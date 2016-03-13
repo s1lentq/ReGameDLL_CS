@@ -170,6 +170,7 @@ void CBreakable::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 }
 
 LINK_ENTITY_TO_CLASS(func_breakable, CBreakable);
+LINK_CLASS_TO_WRAP(CBreakable, CCSBreakable);
 IMPLEMENT_SAVERESTORE(CBreakable, CBaseEntity);
 
 void CBreakable::__MAKE_VHOOK(Spawn)()
@@ -849,6 +850,7 @@ int CBreakable::__MAKE_VHOOK(DamageDecal)(int bitsDamageType)
 }
 
 LINK_ENTITY_TO_CLASS(func_pushable, CPushable);
+LINK_CLASS_TO_WRAP(CPushable, CCSPushable);
 IMPLEMENT_SAVERESTORE(CPushable, CBreakable);
 
 void CPushable::__MAKE_VHOOK(Spawn)()
