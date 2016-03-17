@@ -91,7 +91,6 @@
 	#include <sys/types.h>
 	#include <sys/sysinfo.h>
 	#include <unistd.h>
-	#include <typeinfo>
 
 	// Deail with stupid macro in kernel.h
 	#undef __FUNCTION__

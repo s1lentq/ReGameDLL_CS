@@ -40,11 +40,13 @@ void Regamedll_AllocEntities(int maxEdicts)
 	g_GameEntities = (CCSEntity **)Q_malloc(sizeof(CCSEntity *) * maxEdicts);
 	Q_memset(g_GameEntities, 0, sizeof(CCSEntity *) * maxEdicts);
 
+#ifdef _DEBUG
 	CONSOLE_ECHO(__FUNCTION__":: alloc entities!\n");
 
-	ADD_SERVER_COMMAND("check", [](){		
+	ADD_SERVER_COMMAND("check_ent", [](){		
 		Regamedll_MonitorEntities();
 	});
+#endif
 }
 
 void Regamedll_FreeEntities(CBaseEntity *pEntity)
@@ -70,7 +72,9 @@ void Regamedll_FreeEntities(CBaseEntity *pEntity)
 	delete g_GameEntities[index];
 	g_GameEntities[index] = NULL;
 
+#ifdef _DEBUG
 	CONSOLE_ECHO(__FUNCTION__ ":: Free on (#%d. %s)\n", index, STRING(pEntity->edict()->v.classname));
+#endif
 }
 
 void Regamedll_MonitorEntities()
@@ -102,6 +106,12 @@ ICSPlayer *CBASE_TO_CSPLAYER(CBaseEntity *pEntity)
 	return reinterpret_cast<ICSPlayer *>(g_GameEntities[index]);
 }
 
+ICSPlayer *INDEX_TO_CSPLAYER(int iPlayerIndex)
+{
+	CBaseEntity *pEntity = CBaseEntity::Instance(iPlayerIndex);
+	return CBASE_TO_CSPLAYER(pEntity);
+}
+
 ICSEntity *CBASE_TO_CSENTITY(CBaseEntity *pEntity)
 {
 	if (pEntity == NULL)
@@ -115,4 +125,10 @@ ICSEntity *CBASE_TO_CSENTITY(CBaseEntity *pEntity)
 	}
 
 	return g_GameEntities[index];
+}
+
+ICSEntity *INDEX_TO_CSENTITY(int iEntityIndex)
+{
+	CBaseEntity *pEntity = CBaseEntity::Instance(iEntityIndex);
+	return CBASE_TO_CSENTITY(pEntity);
 }

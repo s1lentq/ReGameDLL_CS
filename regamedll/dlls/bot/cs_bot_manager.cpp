@@ -347,7 +347,7 @@ void CCSBotManager::__MAKE_VHOOK(ClientDisconnect)(CBasePlayer *pPlayer)
 
 		FREE_PRIVATE(pPlayer->edict());
 
-		CBasePlayer *player = GetClassPtr((CBasePlayer *)temp);
+		CBasePlayer *player = GetClassPtr<CCSPlayer>((CBasePlayer *)temp);
 		AddEntityHashValue(player->pev, STRING(player->pev->classname), CLASSNAME);
 		player->pev->flags = FL_DORMANT;
 	}
@@ -681,7 +681,7 @@ void CCSBotManager::__MAKE_VHOOK(ServerCommand)(const char *pcmd)
 				if ((pEntity->pev->flags & FL_DORMANT) == FL_DORMANT)
 					continue;
 
-				CBasePlayer *playerOrBot = GetClassPtr((CBasePlayer *)pEntity->pev);
+				CBasePlayer *playerOrBot = GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev);
 
 				if (playerOrBot->IsBot())
 				{
@@ -1189,7 +1189,7 @@ bool CCSBotManager::AddBot(const BotProfile *profile, BotProfileTeamType team)
 		return false;
 	}
 
-	CCSBot *pBot = CreateBot<CCSBot>(profile);
+	CCSBot *pBot = CreateBot<CCSBot, CAPI_CSBot>(profile);
 	if (pBot == NULL)
 	{
 		return false;

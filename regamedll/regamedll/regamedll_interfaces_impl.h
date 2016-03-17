@@ -39,6 +39,8 @@ class CCSquadMonster;
 extern CCSEntity **g_GameEntities;
 extern ICSEntity *CBASE_TO_CSENTITY(CBaseEntity *pEntity);
 extern ICSPlayer *CBASE_TO_CSPLAYER(CBaseEntity *pEntity);
+extern ICSPlayer *INDEX_TO_CSPLAYER(int iPlayerIndex);
+extern ICSEntity *INDEX_TO_CSENTITY(int iEntityIndex);
 
 class CCSEntity: public ICSEntity {
 public:
@@ -62,7 +64,7 @@ public:
 	virtual void Killed(entvars_t *pevAttacker, int iGib) { m_pEntity->Killed(pevAttacker, iGib); }
 	virtual int BloodColor() { return m_pEntity->BloodColor(); }
 	virtual void TraceBleed(float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType) { m_pEntity->TraceBleed(flDamage, vecDir, ptr, bitsDamageType); }
-	virtual bool IsTriggered(CCSEntity *pActivator) { return m_pEntity->IsTriggered(pActivator->m_pEntity) ? TRUE : FALSE; }
+	virtual bool IsTriggered(CCSEntity *pActivator) { return m_pEntity->IsTriggered(pActivator->m_pEntity) ? true : false; }
 	virtual ICSMonster *MyMonsterPointer() { return (ICSMonster *)CBASE_TO_CSENTITY(m_pEntity->MyMonsterPointer()); }
 	virtual ICSquadMonster *MySquadMonsterPointer() { return (ICSquadMonster *)m_pEntity->MySquadMonsterPointer(); }
 	virtual int GetToggleState() { return m_pEntity->GetToggleState(); }
@@ -208,6 +210,16 @@ public:
 	virtual void Touch(CCSEntity *pOther) { m_pEntity->Touch(pOther->m_pEntity); }
 };
 
+class CCSArmoury: public CCSEntity {
+public:
+	CCSArmoury(CBaseEntity *pEntity) : CCSEntity(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void Precache() { m_pEntity->Precache(); }
+	virtual void Restart() { m_pEntity->Restart(); }
+	virtual void KeyValue(KeyValueData *pkvd) { m_pEntity->KeyValue(pkvd); }
+};
+
 class CCSPlayer: public CCSMonster {
 private:
 	bool m_bConnected;
@@ -259,6 +271,98 @@ public:
 	virtual bool IsConnected() const { return m_bConnected; }
 };
 
+class CAPI_Bot: public CCSPlayer {
+public:
+	CAPI_Bot(CBaseEntity *pEntity) : CCSPlayer(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType) { return m_pEntity->TakeDamage(pevInflictor, pevAttacker, flDamage, bitsDamageType); }
+	virtual void Killed(entvars_t *pevAttacker, int iGib) { m_pEntity->Killed(pevAttacker, iGib); }
+	virtual void Think() { m_pEntity->Think(); }
+	virtual bool IsBot() { return ((CBot *)m_pEntity)->IsBot() ? true : false; }
+	virtual Vector GetAutoaimVector(float flDelta) { return ((CBot *)m_pEntity)->GetAutoaimVector(flDelta); }
+	virtual void OnTouchingWeapon(CCSWeaponBox *box) { ((CBot *)m_pEntity)->OnTouchingWeapon((CWeaponBox *)box->m_pEntity); }
+	virtual bool Initialize(const BotProfile *profile) { ((CBot *)m_pEntity)->Initialize(profile); }
+	virtual void SpawnBot() = 0;
+	virtual void Upkeep() = 0;
+	virtual void Update() = 0;
+	virtual void Run() { ((CBot *)m_pEntity)->Run(); }
+	virtual void Walk() { ((CBot *)m_pEntity)->Walk(); }
+	virtual void Crouch() { ((CBot *)m_pEntity)->Crouch(); }
+	virtual void StandUp() { ((CBot *)m_pEntity)->StandUp(); }
+	virtual void MoveForward() { ((CBot *)m_pEntity)->MoveForward(); }
+	virtual void MoveBackward() { ((CBot *)m_pEntity)->MoveBackward(); }
+	virtual void StrafeLeft() { ((CBot *)m_pEntity)->StrafeLeft(); }
+	virtual void StrafeRight() { ((CBot *)m_pEntity)->StrafeRight(); }
+	virtual bool Jump(bool mustJump) { return ((CBot *)m_pEntity)->Jump(mustJump); }
+	virtual void ClearMovement() { ((CBot *)m_pEntity)->ClearMovement(); }
+	virtual void UseEnvironment() { ((CBot *)m_pEntity)->UseEnvironment(); }
+	virtual void PrimaryAttack() { ((CBot *)m_pEntity)->PrimaryAttack(); }
+	virtual void ClearPrimaryAttack() { ((CBot *)m_pEntity)->ClearPrimaryAttack(); }
+	virtual void TogglePrimaryAttack() { ((CBot *)m_pEntity)->TogglePrimaryAttack(); }
+	virtual void SecondaryAttack() { ((CBot *)m_pEntity)->SecondaryAttack(); }
+	virtual void Reload() { ((CBot *)m_pEntity)->Reload(); }
+	virtual void OnEvent(GameEventType event, CCSEntity *entity, CCSEntity *other) { ((CBot *)m_pEntity)->OnEvent(event, entity->m_pEntity, other->m_pEntity); }
+	virtual bool IsVisible(const Vector *pos, bool testFOV = false) const = 0;
+	virtual bool IsVisible(CCSPlayer *player, bool testFOV = false, unsigned char *visParts = NULL) const = 0;
+	virtual bool IsEnemyPartVisible(VisiblePartTypeBot part) const = 0;
+	virtual bool IsPlayerFacingMe(CCSPlayer *other) const { return ((CBot *)m_pEntity)->IsPlayerFacingMe((CBasePlayer *)other->m_pEntity); }
+	virtual bool IsPlayerLookingAtMe(CCSPlayer *other) const { return ((CBot *)m_pEntity)->IsPlayerLookingAtMe((CBasePlayer *)other->m_pEntity); }
+	virtual void ExecuteCommand() { ((CBot *)m_pEntity)->ExecuteCommand(); }
+	virtual void SetModel(const char *modelName) { ((CBot *)m_pEntity)->SetModel(modelName); }
+};
+
+class CAPI_CSBot: public CAPI_Bot {
+public:
+	CAPI_CSBot(CBaseEntity *pEntity) : CAPI_Bot(pEntity) {}
+public:
+	virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType) { return m_pEntity->TakeDamage(pevInflictor, pevAttacker, flDamage, bitsDamageType); }
+	virtual void Killed(entvars_t *pevAttacker, int iGib) { m_pEntity->Killed(pevAttacker, iGib); }
+	virtual void RoundRespawn() { ((CCSBot *)m_pEntity)->RoundRespawn(); }
+	virtual void Blind(float duration, float holdTime, float fadeTime, int alpha) { ((CCSBot *)m_pEntity)->Blind(duration, holdTime, fadeTime, alpha); }
+	virtual void OnTouchingWeapon(CCSWeaponBox *box) { ((CCSBot *)m_pEntity)->OnTouchingWeapon((CWeaponBox *)box->m_pEntity); }
+	virtual bool Initialize(const BotProfile *profile) { return ((CCSBot *)m_pEntity)->Initialize(profile); }
+	virtual void SpawnBot() { ((CCSBot *)m_pEntity)->SpawnBot(); }
+	virtual void Upkeep() { ((CCSBot *)m_pEntity)->Upkeep(); }
+	virtual void Update() { ((CCSBot *)m_pEntity)->Update(); }
+	virtual void Walk() { ((CCSBot *)m_pEntity)->Walk(); }
+	virtual bool Jump(bool mustJump) { return ((CCSBot *)m_pEntity)->Jump(); }
+	virtual void OnEvent(GameEventType event, CCSEntity *entity, CCSEntity *other) { ((CCSBot *)m_pEntity)->OnEvent(event, entity->m_pEntity, other->m_pEntity); }
+	virtual bool IsVisible(const Vector *pos, bool testFOV) const { return ((CCSBot *)m_pEntity)->IsVisible(pos, testFOV); }
+	virtual bool IsVisible(CCSPlayer *player, bool testFOV, unsigned char *visParts) const { return ((CCSBot *)m_pEntity)->IsVisible((CBasePlayer *)player->m_pEntity, testFOV, visParts); }
+	virtual bool IsEnemyPartVisible(VisiblePartTypeBot part) const { return ((CCSBot *)m_pEntity)->IsEnemyPartVisible((CBot::VisiblePartType)part); }
+};
+
+class CCSShield: public CCSEntity {
+public:
+	CCSShield(CBaseEntity *pEntity) : CCSEntity(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void Touch(CCSEntity *pOther) { m_pEntity->Touch(pOther->m_pEntity); }
+};
+
+class CCSDeadHEV: public CCSMonster {
+public:
+	CCSDeadHEV(CBaseEntity *pEntity) : CCSMonster(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void KeyValue(KeyValueData *pkvd) { m_pEntity->KeyValue(pkvd); }
+	virtual int Classify() { return m_pEntity->Classify(); }
+};
+
+class CCSSprayCan: public CCSEntity {
+public:
+	CCSSprayCan(CBaseEntity *pEntity) : CCSEntity(pEntity) {}
+public:
+	virtual void Think() { m_pEntity->Think(); }
+	virtual int ObjectCaps() { return m_pEntity->ObjectCaps(); }
+};
+
+class CCSBloodSplat: public CCSEntity {
+public:
+	CCSBloodSplat(CBaseEntity *pEntity) : CCSEntity(pEntity) {}
+};
+
 class CCSPlayerWeapon: public CCSPlayerItem {
 public:
 	CCSPlayerWeapon(CBaseEntity *pEntity) : CCSPlayerItem(pEntity) {}
@@ -292,14 +396,28 @@ public:
 	virtual bool UseDecrement() { return ((CBasePlayerWeapon *)m_pEntity)->UseDecrement() ? true : false; }
 };
 
-class CCSWorld: public CCSEntity
-{
+class CCSWorld: public CCSEntity {
 public:
 	CCSWorld(CBaseEntity *pEntity) : CCSEntity(pEntity) {}
 public:
 	virtual void Spawn() { m_pEntity->Spawn(); }
 	virtual void Precache() { m_pEntity->Precache(); }
 	virtual void KeyValue(KeyValueData *pkvd) { m_pEntity->KeyValue(pkvd); }
+};
+
+class CCSDecal: public CCSEntity {
+public:
+	CCSDecal(CBaseEntity *pEntity) : CCSEntity(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void KeyValue(KeyValueData *pkvd) { m_pEntity->KeyValue(pkvd); }
+};
+
+class CCSCorpse: public CCSEntity {
+public:
+	CCSCorpse(CBaseEntity *pEntity) : CCSEntity(pEntity) {}
+public:
+	virtual int ObjectCaps() { return m_pEntity->ObjectCaps(); }
 };
 
 class CCSGrenade: public CCSMonster {
@@ -501,6 +619,31 @@ public:
 public:
 	virtual void Spawn() { m_pEntity->Spawn(); }
 	virtual int ObjectCaps() { return m_pEntity->ObjectCaps(); }
+};
+
+class CCSStripWeapons: public CCSPointEntity {
+public:
+	CCSStripWeapons(CBaseEntity *pEntity) : CCSPointEntity(pEntity) {}
+public:
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) { m_pEntity->Use(pActivator->m_pEntity, pCaller->m_pEntity, useType, value); }
+};
+
+class CCSInfoIntermission: public CCSPointEntity {
+public:
+	CCSInfoIntermission(CBaseEntity *pEntity) : CCSPointEntity(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void Think() { m_pEntity->Think(); }
+};
+
+class CCSRevertSaved: public CCSPointEntity {
+public:
+	CCSRevertSaved(CBaseEntity *pEntity) : CCSPointEntity(pEntity) {}
+public:
+	virtual void KeyValue(KeyValueData *pkvd) { m_pEntity->KeyValue(pkvd); }
+	virtual int Save(CSave &save) { return m_pEntity->Save(save); }
+	virtual int Restore(CRestore &restore) { return m_pEntity->Restore(restore); }
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) { m_pEntity->Use(pActivator->m_pEntity, pCaller->m_pEntity, useType, value); }
 };
 
 class CCSEnvGlobal: public CCSPointEntity {
@@ -914,11 +1057,6 @@ public:
 	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) { m_pEntity->Use(pActivator->m_pEntity, pCaller->m_pEntity, useType, value); }
 };
 
-
-
-
-
-
 class CCSRecharge: public CCSToggle {
 public:
 	CCSRecharge(CBaseEntity *pEntity) : CCSToggle(pEntity) {}
@@ -1024,6 +1162,19 @@ public:
 	virtual bool MyTouch(CCSPlayer *pPlayer) { return ((CHealthKit *)m_pEntity)->MyTouch((CBasePlayer *)pPlayer->m_pEntity) ? true : false; }
 };
 
+class CCSWallHealth: public CCSToggle {
+public:
+	CCSWallHealth(CBaseEntity *pEntity) : CCSToggle(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void Precache() { m_pEntity->Precache(); }
+	virtual void KeyValue(KeyValueData *pkvd) { m_pEntity->KeyValue(pkvd); }
+	virtual int Save(CSave &save) { return m_pEntity->Save(save); }
+	virtual int Restore(CRestore &restore) { return m_pEntity->Restore(restore); }
+	virtual int ObjectCaps() { return m_pEntity->ObjectCaps(); }
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) { m_pEntity->Use(pActivator->m_pEntity, pCaller->m_pEntity, useType, value); }
+};
+
 class CCSItemSuit: public CCSItem {
 public:
 	CCSItemSuit(CBaseEntity *pEntity) : CCSItem(pEntity) {}
@@ -1096,8 +1247,1219 @@ public:
 	virtual bool MyTouch(CCSPlayer *pPlayer) { return ((CItemThighPack *)m_pEntity)->MyTouch((CBasePlayer *)pPlayer->m_pEntity) ? true : false; }
 };
 
+class CCSGrenCatch: public CCSEntity {
+public:
+	CCSGrenCatch(CBaseEntity *pEntity) : CCSEntity(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void KeyValue(KeyValueData *pkvd) { m_pEntity->KeyValue(pkvd); }
+	virtual int Save(CSave &save) { return m_pEntity->Save(save); }
+	virtual int Restore(CRestore &restore) { return m_pEntity->Restore(restore); }
+	virtual int ObjectCaps() { return m_pEntity->ObjectCaps(); }
+	virtual void Think() { m_pEntity->Think(); }
+	virtual void Touch(CCSEntity *pOther) { m_pEntity->Touch(pOther->m_pEntity); }
+};
 
+class CCSFuncWeaponCheck: public CCSEntity {
+public:
+	CCSFuncWeaponCheck(CBaseEntity *pEntity) : CCSEntity(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void KeyValue(KeyValueData *pkvd) { m_pEntity->KeyValue(pkvd); }
+	virtual int Save(CSave &save) { return m_pEntity->Save(save); }
+	virtual int Restore(CRestore &restore) { return m_pEntity->Restore(restore); }
+	virtual void Touch(CCSEntity *pOther) { m_pEntity->Touch(pOther->m_pEntity); }
+};
 
+class CCSHostage: public CCSMonster {
+public:
+	CCSHostage(CBaseEntity *pEntity) : CCSMonster(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void Precache() { m_pEntity->Precache(); }
+	virtual int ObjectCaps() { return m_pEntity->ObjectCaps(); }
+	virtual int Classify() { return m_pEntity->Classify(); }
+	virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType) { return m_pEntity->TakeDamage(pevInflictor, pevAttacker, flDamage, bitsDamageType); }
+	virtual int BloodColor() { return m_pEntity->BloodColor(); }
+	virtual void Touch(CCSEntity *pOther) { m_pEntity->Touch(pOther->m_pEntity); }
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) { m_pEntity->Use(pActivator->m_pEntity, pCaller->m_pEntity, useType, value); }
+};
+
+class CCSLight: public CCSPointEntity {
+public:
+	CCSLight(CBaseEntity *pEntity) : CCSPointEntity(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void Restart() { m_pEntity->Restart(); }
+	virtual void KeyValue(KeyValueData *pkvd) { m_pEntity->KeyValue(pkvd); }
+	virtual int Save(CSave &save) { return m_pEntity->Save(save); }
+	virtual int Restore(CRestore &restore) { return m_pEntity->Restore(restore); }
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) { m_pEntity->Use(pActivator->m_pEntity, pCaller->m_pEntity, useType, value); }
+};
+
+class CCSEnvLight: public CCSLight {
+public:
+	CCSEnvLight(CBaseEntity *pEntity) : CCSLight(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void KeyValue(KeyValueData *pkvd) { m_pEntity->KeyValue(pkvd); }
+};
+
+class CCSRuleEntity: public CCSEntity {
+public:
+	CCSRuleEntity(CBaseEntity *pEntity) : CCSEntity(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void KeyValue(KeyValueData *pkvd) { m_pEntity->KeyValue(pkvd); }
+	virtual int Save(CSave &save) { return m_pEntity->Save(save); }
+	virtual int Restore(CRestore &restore) { return m_pEntity->Restore(restore); }
+};
+
+class CCSRulePointEntity: public CCSRuleEntity {
+public:
+	CCSRulePointEntity(CBaseEntity *pEntity) : CCSRuleEntity(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+};
+
+class CCSRuleBrushEntity: public CCSRuleEntity {
+public:
+	CCSRuleBrushEntity(CBaseEntity *pEntity) : CCSRuleEntity(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+};
+
+class CCSGameScore: public CCSRulePointEntity {
+public:
+	CCSGameScore(CBaseEntity *pEntity) : CCSRulePointEntity(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void KeyValue(KeyValueData *pkvd) { m_pEntity->KeyValue(pkvd); }
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) { m_pEntity->Use(pActivator->m_pEntity, pCaller->m_pEntity, useType, value); }
+};
+
+class CCSGameEnd: public CCSRulePointEntity {
+public:
+	CCSGameEnd(CBaseEntity *pEntity) : CCSRulePointEntity(pEntity) {}
+public:
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) { m_pEntity->Use(pActivator->m_pEntity, pCaller->m_pEntity, useType, value); }
+};
+
+class CCSGameText: public CCSRulePointEntity {
+public:
+	CCSGameText(CBaseEntity *pEntity) : CCSRulePointEntity(pEntity) {}
+public:
+	virtual void KeyValue(KeyValueData *pkvd) { m_pEntity->KeyValue(pkvd); }
+	virtual int Save(CSave &save) { return m_pEntity->Save(save); }
+	virtual int Restore(CRestore &restore) { return m_pEntity->Restore(restore); }
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) { m_pEntity->Use(pActivator->m_pEntity, pCaller->m_pEntity, useType, value); }
+};
+
+class CCSGameTeamMaster: public CCSRulePointEntity {
+public:
+	CCSGameTeamMaster(CBaseEntity *pEntity) : CCSRulePointEntity(pEntity) {}
+public:
+	virtual void KeyValue(KeyValueData *pkvd) { m_pEntity->KeyValue(pkvd); }
+	virtual int ObjectCaps() { m_pEntity->ObjectCaps(); }
+	virtual bool IsTriggered(CCSEntity *pActivator) { return m_pEntity->IsTriggered(pActivator->m_pEntity) ? true : false; }
+	virtual const char *TeamID() { return m_pEntity->TeamID(); }
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) { m_pEntity->Use(pActivator->m_pEntity, pCaller->m_pEntity, useType, value); }
+};
+
+class CCSGameTeamSet: public CCSRulePointEntity {
+public:
+	CCSGameTeamSet(CBaseEntity *pEntity) : CCSRulePointEntity(pEntity) {}
+public:
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) { m_pEntity->Use(pActivator->m_pEntity, pCaller->m_pEntity, useType, value); }
+};
+
+class CCSGamePlayerZone: public CCSRuleBrushEntity {
+public:
+	CCSGamePlayerZone(CBaseEntity *pEntity) : CCSRuleBrushEntity(pEntity) {}
+public:
+	virtual void KeyValue(KeyValueData *pkvd) { m_pEntity->KeyValue(pkvd); }
+	virtual int Save(CSave &save) { return m_pEntity->Save(save); }
+	virtual int Restore(CRestore &restore) { return m_pEntity->Restore(restore); }
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) { m_pEntity->Use(pActivator->m_pEntity, pCaller->m_pEntity, useType, value); }
+};
+
+class CCSGamePlayerHurt: public CCSRulePointEntity {
+public:
+	CCSGamePlayerHurt(CBaseEntity *pEntity) : CCSRulePointEntity(pEntity) {}
+public:
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) { m_pEntity->Use(pActivator->m_pEntity, pCaller->m_pEntity, useType, value); }
+};
+
+class CCSGameCounter: public CCSRulePointEntity {
+public:
+	CCSGameCounter(CBaseEntity *pEntity) : CCSRulePointEntity(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) { m_pEntity->Use(pActivator->m_pEntity, pCaller->m_pEntity, useType, value); }
+};
+
+class CCSGameCounterSet: public CCSRulePointEntity {
+public:
+	CCSGameCounterSet(CBaseEntity *pEntity) : CCSRulePointEntity(pEntity) {}
+public:
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) { m_pEntity->Use(pActivator->m_pEntity, pCaller->m_pEntity, useType, value); }
+};
+
+class CCSGamePlayerEquip: public CCSRulePointEntity {
+public:
+	CCSGamePlayerEquip(CBaseEntity *pEntity) : CCSRulePointEntity(pEntity) {}
+public:
+	virtual void KeyValue(KeyValueData *pkvd) { m_pEntity->KeyValue(pkvd); }
+	virtual void Touch(CCSEntity *pOther) { m_pEntity->Touch(pOther->m_pEntity); }
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) { m_pEntity->Use(pActivator->m_pEntity, pCaller->m_pEntity, useType, value); }
+};
+
+class CCSGamePlayerTeam: public CCSRulePointEntity {
+public:
+	CCSGamePlayerTeam(CBaseEntity *pEntity) : CCSRulePointEntity(pEntity) {}
+public:
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) { m_pEntity->Use(pActivator->m_pEntity, pCaller->m_pEntity, useType, value); }
+};
+
+class CCSFuncMortarField: public CCSToggle {
+public:
+	CCSFuncMortarField(CBaseEntity *pEntity) : CCSToggle(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void Precache() { m_pEntity->Precache(); }
+	virtual void KeyValue(KeyValueData *pkvd) { m_pEntity->KeyValue(pkvd); }
+	virtual int Save(CSave &save) { return m_pEntity->Save(save); }
+	virtual int Restore(CRestore &restore) { return m_pEntity->Restore(restore); }
+	virtual int ObjectCaps() { return m_pEntity->ObjectCaps(); }
+};
+
+class CCSMortar: public CCSGrenade {
+public:
+	CCSMortar(CBaseEntity *pEntity) : CCSGrenade(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void Precache() { m_pEntity->Precache(); }
+};
+
+class CCSMapInfo: public CCSPointEntity {
+public:
+	CCSMapInfo(CBaseEntity *pEntity) : CCSPointEntity(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void KeyValue(KeyValueData *pkvd) { m_pEntity->KeyValue(pkvd); }
+};
+
+class CCSPathCorner: public CCSPointEntity {
+public:
+	CCSPathCorner(CBaseEntity *pEntity) : CCSPointEntity(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void KeyValue(KeyValueData *pkvd) { m_pEntity->KeyValue(pkvd); }
+	virtual int Save(CSave &save) { return m_pEntity->Save(save); }
+	virtual int Restore(CRestore &restore) { return m_pEntity->Restore(restore); }
+	virtual float GetDelay() { return m_pEntity->GetDelay(); }
+};
+
+class CCSPathTrack: public CCSPointEntity {
+public:
+	CCSPathTrack(CBaseEntity *pEntity) : CCSPointEntity(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void KeyValue(KeyValueData *pkvd) { m_pEntity->KeyValue(pkvd); }
+	virtual int Save(CSave &save) { return m_pEntity->Save(save); }
+	virtual int Restore(CRestore &restore) { return m_pEntity->Restore(restore); }
+	virtual void Activate() { m_pEntity->Activate(); }
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) { m_pEntity->Use(pActivator->m_pEntity, pCaller->m_pEntity, useType, value); }
+};
+
+class CCSFuncTrackTrain: public CCSEntity {
+public:
+	CCSFuncTrackTrain(CBaseEntity *pEntity) : CCSEntity(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void Precache() { m_pEntity->Precache(); }
+	virtual void Restart() { m_pEntity->Restart(); }
+	virtual void KeyValue(KeyValueData *pkvd) { m_pEntity->KeyValue(pkvd); }
+	virtual int Save(CSave &save) { return m_pEntity->Save(save); }
+	virtual int Restore(CRestore &restore) { return m_pEntity->Restore(restore); }
+	virtual int ObjectCaps() { return m_pEntity->ObjectCaps(); }
+	virtual void OverrideReset() { m_pEntity->OverrideReset(); }
+	virtual bool OnControls(entvars_t *pev) { return m_pEntity->OnControls(pev) ? true : false; }
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) { m_pEntity->Use(pActivator->m_pEntity, pCaller->m_pEntity, useType, value); }
+	virtual void Blocked(CCSEntity *pOther) { m_pEntity->Blocked(pOther->m_pEntity); }
+};
+
+class CCSFuncVehicleControls: public CCSEntity {
+public:
+	CCSFuncVehicleControls(CBaseEntity *pEntity) : CCSEntity(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual int ObjectCaps() { return m_pEntity->ObjectCaps(); }
+};
+
+class CCSFuncVehicle: public CCSEntity {
+public:
+	CCSFuncVehicle(CBaseEntity *pEntity) : CCSEntity(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void Precache() { m_pEntity->Precache(); }
+	virtual void Restart() { m_pEntity->Restart(); }
+	virtual void KeyValue(KeyValueData *pkvd) { m_pEntity->KeyValue(pkvd); }
+	virtual int Save(CSave &save) { return m_pEntity->Save(save); }
+	virtual int Restore(CRestore &restore) { return m_pEntity->Restore(restore); }
+	virtual int ObjectCaps() { return m_pEntity->ObjectCaps(); }
+	virtual int Classify() { return m_pEntity->Classify(); }
+	virtual void OverrideReset() { m_pEntity->OverrideReset(); }
+	virtual bool OnControls(entvars_t *pev) { return m_pEntity->OnControls(pev) ? true : false; }
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) { m_pEntity->Use(pActivator->m_pEntity, pCaller->m_pEntity, useType, value); }
+	virtual void Blocked(CCSEntity *pOther) { m_pEntity->Blocked(pOther->m_pEntity); }
+};
+
+class CCSPlatTrain: public CCSToggle {
+public:
+	CCSPlatTrain(CBaseEntity *pEntity) : CCSToggle(pEntity) {}
+public:
+	virtual void Precache() { m_pEntity->Precache(); }
+	virtual void KeyValue(KeyValueData *pkvd) { m_pEntity->KeyValue(pkvd); }
+	virtual int Save(CSave &save) { return m_pEntity->Save(save); }
+	virtual int Restore(CRestore &restore) { return m_pEntity->Restore(restore); }
+	virtual int ObjectCaps() { return m_pEntity->ObjectCaps(); }
+	virtual bool IsTogglePlat() { return ((CBasePlatTrain *)m_pEntity)->IsTogglePlat() ? true : false; }
+};
+
+class CCSFuncPlat: public CCSPlatTrain {
+public:
+	CCSFuncPlat(CBaseEntity *pEntity) : CCSPlatTrain(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void Precache() { m_pEntity->Precache(); }
+	virtual void Blocked(CCSEntity *pOther) { m_pEntity->Blocked(pOther->m_pEntity); }
+	virtual void GoUp() { ((CFuncPlat *)m_pEntity)->GoUp(); }
+	virtual void GoDown() { ((CFuncPlat *)m_pEntity)->GoDown(); }
+	virtual void HitTop() { ((CFuncPlat *)m_pEntity)->HitTop(); }
+	virtual void HitBottom() { ((CFuncPlat *)m_pEntity)->HitBottom(); }
+};
+
+class CCSPlatTrigger: public CCSEntity {
+public:
+	CCSPlatTrigger(CBaseEntity *pEntity) : CCSEntity(pEntity) {}
+public:
+	virtual int ObjectCaps() { return m_pEntity->ObjectCaps(); }
+	virtual void Touch(CCSEntity *pOther) { m_pEntity->Touch(pOther->m_pEntity); }
+};
+
+class CCSFuncPlatRot: public CCSFuncPlat {
+public:
+	CCSFuncPlatRot(CBaseEntity *pEntity) : CCSFuncPlat(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual int Save(CSave &save) { return m_pEntity->Save(save); }
+	virtual int Restore(CRestore &restore) { return m_pEntity->Restore(restore); }
+	virtual void GoUp() { ((CFuncPlatRot *)m_pEntity)->GoUp(); }
+	virtual void GoDown() { ((CFuncPlatRot *)m_pEntity)->GoDown(); }
+	virtual void HitTop() { ((CFuncPlatRot *)m_pEntity)->HitTop(); }
+	virtual void HitBottom() { ((CFuncPlatRot *)m_pEntity)->HitBottom(); }
+};
+
+class CCSFuncTrain: public CCSPlatTrain {
+public:
+	CCSFuncTrain(CBaseEntity *pEntity) : CCSPlatTrain(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void Precache() { m_pEntity->Precache(); }
+	virtual void Restart() { m_pEntity->Restart(); }
+	virtual void KeyValue(KeyValueData *pkvd) { m_pEntity->KeyValue(pkvd); }
+	virtual int Save(CSave &save) { return m_pEntity->Save(save); }
+	virtual int Restore(CRestore &restore) { return m_pEntity->Restore(restore); }
+	virtual void Activate() { m_pEntity->Activate(); }
+	virtual void OverrideReset() { m_pEntity->OverrideReset(); }
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) { m_pEntity->Use(pActivator->m_pEntity, pCaller->m_pEntity, useType, value); }
+	virtual void Blocked(CCSEntity *pOther) { m_pEntity->Blocked(pOther->m_pEntity); }
+};
+
+class CCSFuncTrainControls: public CCSEntity {
+public:
+	CCSFuncTrainControls(CBaseEntity *pEntity) : CCSEntity(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual int ObjectCaps() { return m_pEntity->ObjectCaps(); }
+};
+
+class CCSFuncTrackChange: public CCSFuncPlatRot {
+public:
+	CCSFuncTrackChange(CBaseEntity *pEntity) : CCSFuncPlatRot(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void Precache() { m_pEntity->Precache(); }
+	virtual void KeyValue(KeyValueData *pkvd) { m_pEntity->KeyValue(pkvd); }
+	virtual int Save(CSave &save) { return m_pEntity->Save(save); }
+	virtual int Restore(CRestore &restore) { return m_pEntity->Restore(restore); }
+	virtual void OverrideReset() { m_pEntity->OverrideReset(); }
+	virtual void Touch(CCSEntity *pOther) { m_pEntity->Touch(pOther->m_pEntity); }
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) { m_pEntity->Use(pActivator->m_pEntity, pCaller->m_pEntity, useType, value); }
+	virtual bool IsTogglePlat() { return ((CFuncTrackChange *)m_pEntity)->IsTogglePlat() ? true : false; }
+	virtual void GoUp() { ((CFuncTrackChange *)m_pEntity)->GoUp(); }
+	virtual void GoDown() { ((CFuncTrackChange *)m_pEntity)->GoDown(); }
+	virtual void HitTop() { ((CFuncTrackChange *)m_pEntity)->HitTop(); }
+	virtual void HitBottom() { ((CFuncTrackChange *)m_pEntity)->HitBottom(); }
+	virtual void UpdateAutoTargets(int toggleState) { ((CFuncTrackChange *)m_pEntity)->UpdateAutoTargets(toggleState); }
+};
+
+class CCSFuncTrackAuto: public CCSFuncTrackChange {
+public:
+	CCSFuncTrackAuto(CBaseEntity *pEntity) : CCSFuncTrackChange(pEntity) {}
+public:
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) { m_pEntity->Use(pActivator->m_pEntity, pCaller->m_pEntity, useType, value); }
+	virtual void UpdateAutoTargets(int toggleState) { ((CFuncTrackAuto *)m_pEntity)->UpdateAutoTargets(toggleState); }
+};
+
+class CCSGunTarget: public CCSMonster {
+public:
+	CCSGunTarget(CBaseEntity *pEntity) : CCSMonster(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual int Save(CSave &save) { return m_pEntity->Save(save); }
+	virtual int Restore(CRestore &restore) { return m_pEntity->Restore(restore); }
+	virtual int ObjectCaps() { return m_pEntity->ObjectCaps(); }
+	virtual void Activate() { m_pEntity->Activate(); }
+	virtual int Classify() { return m_pEntity->Classify(); }
+	virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType) { return m_pEntity->TakeDamage(pevInflictor, pevAttacker, flDamage, bitsDamageType); }
+	virtual int BloodColor() { return m_pEntity->BloodColor(); }
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) { m_pEntity->Use(pActivator->m_pEntity, pCaller->m_pEntity, useType, value); }
+	virtual Vector BodyTarget(const Vector &posSrc) { return m_pEntity->BodyTarget(posSrc); }
+};
+
+class CCSAmbientGeneric: public CCSEntity {
+public:
+	CCSAmbientGeneric(CBaseEntity *pEntity) : CCSEntity(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void Precache() { m_pEntity->Precache(); }
+	virtual void Restart() { m_pEntity->Restart(); }
+	virtual void KeyValue(KeyValueData *pkvd) { m_pEntity->KeyValue(pkvd); }
+	virtual int Save(CSave &save) { return m_pEntity->Save(save); }
+	virtual int Restore(CRestore &restore) { return m_pEntity->Restore(restore); }
+	virtual int ObjectCaps() { return m_pEntity->ObjectCaps(); }
+};
+
+class CCSEnvSound: public CCSPointEntity {
+public:
+	CCSEnvSound(CBaseEntity *pEntity) : CCSPointEntity(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void KeyValue(KeyValueData *pkvd) { m_pEntity->KeyValue(pkvd); }
+	virtual int Save(CSave &save) { return m_pEntity->Save(save); }
+	virtual int Restore(CRestore &restore) { return m_pEntity->Restore(restore); }
+	virtual void Think() { m_pEntity->Think(); }
+};
+
+class CCSSpeaker: public CCSEntity {
+public:
+	CCSSpeaker(CBaseEntity *pEntity) : CCSEntity(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void Precache() { m_pEntity->Precache(); }
+	virtual void KeyValue(KeyValueData *pkvd) { m_pEntity->KeyValue(pkvd); }
+	virtual int Save(CSave &save) { return m_pEntity->Save(save); }
+	virtual int Restore(CRestore &restore) { return m_pEntity->Restore(restore); }
+	virtual int ObjectCaps() { return m_pEntity->ObjectCaps(); }
+};
+
+class CCSSoundEnt: public CCSEntity {
+public:
+	CCSSoundEnt(CBaseEntity *pEntity) : CCSEntity(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void Precache() { m_pEntity->Precache(); }
+	virtual int ObjectCaps() { return m_pEntity->ObjectCaps(); }
+	virtual void Think() { m_pEntity->Think(); }
+};
+
+class CCSUSP: public CCSPlayerWeapon {
+public:
+	CCSUSP(CBaseEntity *pEntity) : CCSPlayerWeapon(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void Precache() { m_pEntity->Precache(); }
+	virtual int GetItemInfo(ItemInfo *p) { return ((CBasePlayerItem *)m_pEntity)->GetItemInfo(p); }
+	virtual bool Deploy() { return ((CBasePlayerItem *)m_pEntity)->Deploy() ? true : false; }
+	virtual float GetMaxSpeed() { return ((CBasePlayerItem *)m_pEntity)->GetMaxSpeed(); }
+	virtual int iItemSlot() { return ((CBasePlayerItem *)m_pEntity)->iItemSlot(); }
+	virtual void PrimaryAttack() { ((CBasePlayerWeapon *)m_pEntity)->PrimaryAttack(); }
+	virtual void SecondaryAttack() { ((CBasePlayerWeapon *)m_pEntity)->SecondaryAttack(); }
+	virtual void Reload() { ((CBasePlayerWeapon *)m_pEntity)->Reload(); }
+	virtual void WeaponIdle() { ((CBasePlayerWeapon *)m_pEntity)->WeaponIdle(); }
+	virtual bool UseDecrement() { return ((CBasePlayerWeapon *)m_pEntity)->UseDecrement() ? true : false; }
+};
+
+class CCSMP5N: public CCSPlayerWeapon {
+public:
+	CCSMP5N(CBaseEntity *pEntity) : CCSPlayerWeapon(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void Precache() { m_pEntity->Precache(); }
+	virtual int GetItemInfo(ItemInfo *p) { return ((CBasePlayerItem *)m_pEntity)->GetItemInfo(p); }
+	virtual bool Deploy() { return ((CBasePlayerItem *)m_pEntity)->Deploy() ? true : false; }
+	virtual float GetMaxSpeed() { return ((CBasePlayerItem *)m_pEntity)->GetMaxSpeed(); }
+	virtual int iItemSlot() { return ((CBasePlayerItem *)m_pEntity)->iItemSlot(); }
+	virtual void PrimaryAttack() { ((CBasePlayerWeapon *)m_pEntity)->PrimaryAttack(); }
+	virtual void Reload() { ((CBasePlayerWeapon *)m_pEntity)->Reload(); }
+	virtual void WeaponIdle() { ((CBasePlayerWeapon *)m_pEntity)->WeaponIdle(); }
+	virtual bool UseDecrement() { return ((CBasePlayerWeapon *)m_pEntity)->UseDecrement() ? true : false; }
+};
+
+class CCSSG552: public CCSPlayerWeapon {
+public:
+	CCSSG552(CBaseEntity *pEntity) : CCSPlayerWeapon(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void Precache() { m_pEntity->Precache(); }
+	virtual int GetItemInfo(ItemInfo *p) { return ((CBasePlayerItem *)m_pEntity)->GetItemInfo(p); }
+	virtual bool Deploy() { return ((CBasePlayerItem *)m_pEntity)->Deploy() ? true : false; }
+	virtual float GetMaxSpeed() { return ((CBasePlayerItem *)m_pEntity)->GetMaxSpeed(); }
+	virtual int iItemSlot() { return ((CBasePlayerItem *)m_pEntity)->iItemSlot(); }
+	virtual void PrimaryAttack() { ((CBasePlayerWeapon *)m_pEntity)->PrimaryAttack(); }
+	virtual void SecondaryAttack() { ((CBasePlayerWeapon *)m_pEntity)->SecondaryAttack(); }
+	virtual void Reload() { ((CBasePlayerWeapon *)m_pEntity)->Reload(); }
+	virtual void WeaponIdle() { ((CBasePlayerWeapon *)m_pEntity)->WeaponIdle(); }
+	virtual bool UseDecrement() { return ((CBasePlayerWeapon *)m_pEntity)->UseDecrement() ? true : false; }
+};
+
+class CCSAK47: public CCSPlayerWeapon {
+public:
+	CCSAK47(CBaseEntity *pEntity) : CCSPlayerWeapon(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void Precache() { m_pEntity->Precache(); }
+	virtual int GetItemInfo(ItemInfo *p) { return ((CBasePlayerItem *)m_pEntity)->GetItemInfo(p); }
+	virtual bool Deploy() { return ((CBasePlayerItem *)m_pEntity)->Deploy() ? true : false; }
+	virtual float GetMaxSpeed() { return ((CBasePlayerItem *)m_pEntity)->GetMaxSpeed(); }
+	virtual int iItemSlot() { return ((CBasePlayerItem *)m_pEntity)->iItemSlot(); }
+	virtual void PrimaryAttack() { ((CBasePlayerWeapon *)m_pEntity)->PrimaryAttack(); }
+	virtual void SecondaryAttack() { ((CBasePlayerWeapon *)m_pEntity)->SecondaryAttack(); }
+	virtual void Reload() { ((CBasePlayerWeapon *)m_pEntity)->Reload(); }
+	virtual void WeaponIdle() { ((CBasePlayerWeapon *)m_pEntity)->WeaponIdle(); }
+	virtual bool UseDecrement() { return ((CBasePlayerWeapon *)m_pEntity)->UseDecrement() ? true : false; }
+};
+
+class CCSAUG: public CCSPlayerWeapon {
+public:
+	CCSAUG(CBaseEntity *pEntity) : CCSPlayerWeapon(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void Precache() { m_pEntity->Precache(); }
+	virtual int GetItemInfo(ItemInfo *p) { return ((CBasePlayerItem *)m_pEntity)->GetItemInfo(p); }
+	virtual bool Deploy() { return ((CBasePlayerItem *)m_pEntity)->Deploy() ? true : false; }
+	virtual float GetMaxSpeed() { return ((CBasePlayerItem *)m_pEntity)->GetMaxSpeed(); }
+	virtual int iItemSlot() { return ((CBasePlayerItem *)m_pEntity)->iItemSlot(); }
+	virtual void PrimaryAttack() { ((CBasePlayerWeapon *)m_pEntity)->PrimaryAttack(); }
+	virtual void SecondaryAttack() { ((CBasePlayerWeapon *)m_pEntity)->SecondaryAttack(); }
+	virtual void Reload() { ((CBasePlayerWeapon *)m_pEntity)->Reload(); }
+	virtual void WeaponIdle() { ((CBasePlayerWeapon *)m_pEntity)->WeaponIdle(); }
+	virtual bool UseDecrement() { return ((CBasePlayerWeapon *)m_pEntity)->UseDecrement() ? true : false; }
+};
+
+class CCSAWP: public CCSPlayerWeapon {
+public:
+	CCSAWP(CBaseEntity *pEntity) : CCSPlayerWeapon(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void Precache() { m_pEntity->Precache(); }
+	virtual int GetItemInfo(ItemInfo *p) { return ((CBasePlayerItem *)m_pEntity)->GetItemInfo(p); }
+	virtual bool Deploy() { return ((CBasePlayerItem *)m_pEntity)->Deploy() ? true : false; }
+	virtual float GetMaxSpeed() { return ((CBasePlayerItem *)m_pEntity)->GetMaxSpeed(); }
+	virtual int iItemSlot() { return ((CBasePlayerItem *)m_pEntity)->iItemSlot(); }
+	virtual void PrimaryAttack() { ((CBasePlayerWeapon *)m_pEntity)->PrimaryAttack(); }
+	virtual void SecondaryAttack() { ((CBasePlayerWeapon *)m_pEntity)->SecondaryAttack(); }
+	virtual void Reload() { ((CBasePlayerWeapon *)m_pEntity)->Reload(); }
+	virtual void WeaponIdle() { ((CBasePlayerWeapon *)m_pEntity)->WeaponIdle(); }
+	virtual bool UseDecrement() { return ((CBasePlayerWeapon *)m_pEntity)->UseDecrement() ? true : false; }
+};
+
+class CCSC4: public CCSPlayerWeapon {
+public:
+	CCSC4(CBaseEntity *pEntity) : CCSPlayerWeapon(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void Precache() { m_pEntity->Precache(); }
+	virtual void KeyValue(KeyValueData *pkvd) { m_pEntity->KeyValue(pkvd); }
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) { m_pEntity->Use(pActivator->m_pEntity, pCaller->m_pEntity, useType, value); }
+	virtual int GetItemInfo(ItemInfo *p) { return ((CBasePlayerItem *)m_pEntity)->GetItemInfo(p); }
+	virtual bool Deploy() { return ((CBasePlayerItem *)m_pEntity)->Deploy() ? true : false; }
+	virtual void Holster(int skiplocal) { ((CBasePlayerItem *)m_pEntity)->Holster(skiplocal); }
+	virtual float GetMaxSpeed() { return ((CBasePlayerItem *)m_pEntity)->GetMaxSpeed(); }
+	virtual int iItemSlot() { return ((CBasePlayerItem *)m_pEntity)->iItemSlot(); }
+	virtual void PrimaryAttack() { ((CBasePlayerWeapon *)m_pEntity)->PrimaryAttack(); }
+	virtual void WeaponIdle() { ((CBasePlayerWeapon *)m_pEntity)->WeaponIdle(); }
+	virtual bool UseDecrement() { return ((CBasePlayerWeapon *)m_pEntity)->UseDecrement() ? true : false; }
+};
+
+class CCSDEAGLE: public CCSPlayerWeapon {
+public:
+	CCSDEAGLE(CBaseEntity *pEntity) : CCSPlayerWeapon(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void Precache() { m_pEntity->Precache(); }
+	virtual int GetItemInfo(ItemInfo *p) { return ((CBasePlayerItem *)m_pEntity)->GetItemInfo(p); }
+	virtual bool Deploy() { return ((CBasePlayerItem *)m_pEntity)->Deploy() ? true : false; }
+	virtual float GetMaxSpeed() { return ((CBasePlayerItem *)m_pEntity)->GetMaxSpeed(); }
+	virtual int iItemSlot() { return ((CBasePlayerItem *)m_pEntity)->iItemSlot(); }
+	virtual void PrimaryAttack() { ((CBasePlayerWeapon *)m_pEntity)->PrimaryAttack(); }
+	virtual void SecondaryAttack() { ((CBasePlayerWeapon *)m_pEntity)->SecondaryAttack(); }
+	virtual void Reload() { ((CBasePlayerWeapon *)m_pEntity)->Reload(); }
+	virtual void WeaponIdle() { ((CBasePlayerWeapon *)m_pEntity)->WeaponIdle(); }
+	virtual bool UseDecrement() { return ((CBasePlayerWeapon *)m_pEntity)->UseDecrement() ? true : false; }
+	virtual bool IsPistol() { return ((CDEAGLE *)m_pEntity)->IsPistol() ? true : false; }
+};
+
+class CCSFlashbang: public CCSPlayerWeapon {
+public:
+	CCSFlashbang(CBaseEntity *pEntity) : CCSPlayerWeapon(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void Precache() { m_pEntity->Precache(); }
+	virtual int GetItemInfo(ItemInfo *p) { return ((CBasePlayerItem *)m_pEntity)->GetItemInfo(p); }
+	virtual bool CanDeploy() { return ((CBasePlayerItem *)m_pEntity)->CanDeploy() ? true : false; }
+	virtual bool CanDrop() { return ((CBasePlayerItem *)m_pEntity)->CanDrop() ? true : false; }
+	virtual bool Deploy() { return ((CBasePlayerItem *)m_pEntity)->Deploy() ? true : false; }
+	virtual void Holster(int skiplocal) { ((CBasePlayerItem *)m_pEntity)->Holster(skiplocal); }
+	virtual float GetMaxSpeed() { return ((CBasePlayerItem *)m_pEntity)->GetMaxSpeed(); }
+	virtual int iItemSlot() { return ((CBasePlayerItem *)m_pEntity)->iItemSlot(); }
+	virtual void PrimaryAttack() { ((CBasePlayerWeapon *)m_pEntity)->PrimaryAttack(); }
+	virtual void SecondaryAttack() { ((CBasePlayerWeapon *)m_pEntity)->SecondaryAttack(); }
+	virtual void WeaponIdle() { ((CBasePlayerWeapon *)m_pEntity)->WeaponIdle(); }
+	virtual bool UseDecrement() { return ((CBasePlayerWeapon *)m_pEntity)->UseDecrement() ? true : false; }
+	virtual bool IsPistol() { return ((CFlashbang *)m_pEntity)->IsPistol() ? true : false; }
+};
+
+class CCSG3SG1: public CCSPlayerWeapon {
+public:
+	CCSG3SG1(CBaseEntity *pEntity) : CCSPlayerWeapon(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void Precache() { m_pEntity->Precache(); }
+	virtual int GetItemInfo(ItemInfo *p) { return ((CBasePlayerItem *)m_pEntity)->GetItemInfo(p); }
+	virtual bool Deploy() { return ((CBasePlayerItem *)m_pEntity)->Deploy() ? true : false; }
+	virtual float GetMaxSpeed() { return ((CBasePlayerItem *)m_pEntity)->GetMaxSpeed(); }
+	virtual int iItemSlot() { return ((CBasePlayerItem *)m_pEntity)->iItemSlot(); }
+	virtual void PrimaryAttack() { ((CBasePlayerWeapon *)m_pEntity)->PrimaryAttack(); }
+	virtual void SecondaryAttack() { ((CBasePlayerWeapon *)m_pEntity)->SecondaryAttack(); }
+	virtual void Reload() { ((CBasePlayerWeapon *)m_pEntity)->Reload(); }
+	virtual void WeaponIdle() { ((CBasePlayerWeapon *)m_pEntity)->WeaponIdle(); }
+	virtual bool UseDecrement() { return ((CBasePlayerWeapon *)m_pEntity)->UseDecrement() ? true : false; }
+};
+
+class CCSGLOCK18: public CCSPlayerWeapon {
+public:
+	CCSGLOCK18(CBaseEntity *pEntity) : CCSPlayerWeapon(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void Precache() { m_pEntity->Precache(); }
+	virtual int GetItemInfo(ItemInfo *p) { return ((CBasePlayerItem *)m_pEntity)->GetItemInfo(p); }
+	virtual bool Deploy() { return ((CBasePlayerItem *)m_pEntity)->Deploy() ? true : false; }
+	virtual float GetMaxSpeed() { return ((CBasePlayerItem *)m_pEntity)->GetMaxSpeed(); }
+	virtual int iItemSlot() { return ((CBasePlayerItem *)m_pEntity)->iItemSlot(); }
+	virtual void PrimaryAttack() { ((CBasePlayerWeapon *)m_pEntity)->PrimaryAttack(); }
+	virtual void SecondaryAttack() { ((CBasePlayerWeapon *)m_pEntity)->SecondaryAttack(); }
+	virtual void Reload() { ((CBasePlayerWeapon *)m_pEntity)->Reload(); }
+	virtual void WeaponIdle() { ((CBasePlayerWeapon *)m_pEntity)->WeaponIdle(); }
+	virtual bool UseDecrement() { return ((CBasePlayerWeapon *)m_pEntity)->UseDecrement() ? true : false; }
+};
+
+class CCSHEGrenade: public CCSPlayerWeapon {
+public:
+	CCSHEGrenade(CBaseEntity *pEntity) : CCSPlayerWeapon(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void Precache() { m_pEntity->Precache(); }
+	virtual int GetItemInfo(ItemInfo *p) { return ((CBasePlayerItem *)m_pEntity)->GetItemInfo(p); }
+	virtual bool CanDeploy() { return ((CBasePlayerItem *)m_pEntity)->CanDeploy() ? true : false; }
+	virtual bool CanDrop() { return ((CBasePlayerItem *)m_pEntity)->CanDrop() ? true : false; }
+	virtual bool Deploy() { return ((CBasePlayerItem *)m_pEntity)->Deploy() ? true : false; }
+	virtual void Holster(int skiplocal) { ((CBasePlayerItem *)m_pEntity)->Holster(skiplocal); }
+	virtual float GetMaxSpeed() { return ((CBasePlayerItem *)m_pEntity)->GetMaxSpeed(); }
+	virtual int iItemSlot() { return ((CBasePlayerItem *)m_pEntity)->iItemSlot(); }
+	virtual void PrimaryAttack() { ((CBasePlayerWeapon *)m_pEntity)->PrimaryAttack(); }
+	virtual void SecondaryAttack() { ((CBasePlayerWeapon *)m_pEntity)->SecondaryAttack(); }
+	virtual void WeaponIdle() { ((CBasePlayerWeapon *)m_pEntity)->WeaponIdle(); }
+	virtual bool UseDecrement() { return ((CBasePlayerWeapon *)m_pEntity)->UseDecrement() ? true : false; }
+};
+
+class CCSKnife: public CCSPlayerWeapon {
+public:
+	CCSKnife(CBaseEntity *pEntity) : CCSPlayerWeapon(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void Precache() { m_pEntity->Precache(); }
+	virtual int GetItemInfo(ItemInfo *p) { return ((CBasePlayerItem *)m_pEntity)->GetItemInfo(p); }
+	virtual bool CanDrop() { return ((CBasePlayerWeapon *)m_pEntity)->CanDrop() ? true : false; }
+	virtual bool Deploy() { return ((CBasePlayerItem *)m_pEntity)->Deploy() ? true : false; }
+	virtual void Holster(int skiplocal) { ((CBasePlayerItem *)m_pEntity)->Holster(skiplocal); }
+	virtual float GetMaxSpeed() { return ((CBasePlayerItem *)m_pEntity)->GetMaxSpeed(); }
+	virtual int iItemSlot() { return ((CBasePlayerItem *)m_pEntity)->iItemSlot(); }
+	virtual void PrimaryAttack() { ((CBasePlayerWeapon *)m_pEntity)->PrimaryAttack(); }
+	virtual void SecondaryAttack() { ((CBasePlayerWeapon *)m_pEntity)->SecondaryAttack(); }
+	virtual bool UseDecrement() { return ((CBasePlayerWeapon *)m_pEntity)->UseDecrement() ? true : false; }
+};
+
+class CCSM249: public CCSPlayerWeapon {
+public:
+	CCSM249(CBaseEntity *pEntity) : CCSPlayerWeapon(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void Precache() { m_pEntity->Precache(); }
+	virtual int GetItemInfo(ItemInfo *p) { return ((CBasePlayerItem *)m_pEntity)->GetItemInfo(p); }
+	virtual bool Deploy() { return ((CBasePlayerItem *)m_pEntity)->Deploy() ? true : false; }
+	virtual float GetMaxSpeed() { return ((CBasePlayerItem *)m_pEntity)->GetMaxSpeed(); }
+	virtual int iItemSlot() { return ((CBasePlayerItem *)m_pEntity)->iItemSlot(); }
+	virtual void PrimaryAttack() { ((CBasePlayerWeapon *)m_pEntity)->PrimaryAttack(); }
+	virtual void Reload() { ((CBasePlayerWeapon *)m_pEntity)->Reload(); }
+	virtual void WeaponIdle() { ((CBasePlayerWeapon *)m_pEntity)->WeaponIdle(); }
+	virtual bool UseDecrement() { return ((CBasePlayerWeapon *)m_pEntity)->UseDecrement() ? true : false; }
+};
+
+class CCSM3: public CCSPlayerWeapon {
+public:
+	CCSM3(CBaseEntity *pEntity) : CCSPlayerWeapon(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void Precache() { m_pEntity->Precache(); }
+	virtual int GetItemInfo(ItemInfo *p) { return ((CBasePlayerItem *)m_pEntity)->GetItemInfo(p); }
+	virtual bool Deploy() { return ((CBasePlayerItem *)m_pEntity)->Deploy() ? true : false; }
+	virtual float GetMaxSpeed() { return ((CBasePlayerItem *)m_pEntity)->GetMaxSpeed(); }
+	virtual int iItemSlot() { return ((CBasePlayerItem *)m_pEntity)->iItemSlot(); }
+	virtual void PrimaryAttack() { ((CBasePlayerWeapon *)m_pEntity)->PrimaryAttack(); }
+	virtual void Reload() { ((CBasePlayerWeapon *)m_pEntity)->Reload(); }
+	virtual void WeaponIdle() { ((CBasePlayerWeapon *)m_pEntity)->WeaponIdle(); }
+	virtual bool UseDecrement() { return ((CBasePlayerWeapon *)m_pEntity)->UseDecrement() ? true : false; }
+};
+
+class CCSM4A1: public CCSPlayerWeapon {
+public:
+	CCSM4A1(CBaseEntity *pEntity) : CCSPlayerWeapon(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void Precache() { m_pEntity->Precache(); }
+	virtual int GetItemInfo(ItemInfo *p) { return ((CBasePlayerItem *)m_pEntity)->GetItemInfo(p); }
+	virtual bool Deploy() { return ((CBasePlayerItem *)m_pEntity)->Deploy() ? true : false; }
+	virtual float GetMaxSpeed() { return ((CBasePlayerItem *)m_pEntity)->GetMaxSpeed(); }
+	virtual int iItemSlot() { return ((CBasePlayerItem *)m_pEntity)->iItemSlot(); }
+	virtual void PrimaryAttack() { ((CBasePlayerWeapon *)m_pEntity)->PrimaryAttack(); }
+	virtual void SecondaryAttack() { ((CBasePlayerWeapon *)m_pEntity)->SecondaryAttack(); }
+	virtual void Reload() { ((CBasePlayerWeapon *)m_pEntity)->Reload(); }
+	virtual void WeaponIdle() { ((CBasePlayerWeapon *)m_pEntity)->WeaponIdle(); }
+	virtual bool UseDecrement() { return ((CBasePlayerWeapon *)m_pEntity)->UseDecrement() ? true : false; }
+};
+
+class CCSMAC10: public CCSPlayerWeapon {
+public:
+	CCSMAC10(CBaseEntity *pEntity) : CCSPlayerWeapon(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void Precache() { m_pEntity->Precache(); }
+	virtual int GetItemInfo(ItemInfo *p) { return ((CBasePlayerItem *)m_pEntity)->GetItemInfo(p); }
+	virtual bool Deploy() { return ((CBasePlayerItem *)m_pEntity)->Deploy() ? true : false; }
+	virtual float GetMaxSpeed() { return ((CBasePlayerItem *)m_pEntity)->GetMaxSpeed(); }
+	virtual int iItemSlot() { return ((CBasePlayerItem *)m_pEntity)->iItemSlot(); }
+	virtual void PrimaryAttack() { ((CBasePlayerWeapon *)m_pEntity)->PrimaryAttack(); }
+	virtual void Reload() { ((CBasePlayerWeapon *)m_pEntity)->Reload(); }
+	virtual void WeaponIdle() { ((CBasePlayerWeapon *)m_pEntity)->WeaponIdle(); }
+	virtual bool UseDecrement() { return ((CBasePlayerWeapon *)m_pEntity)->UseDecrement() ? true : false; }
+};
+
+class CCSP228: public CCSPlayerWeapon {
+public:
+	CCSP228(CBaseEntity *pEntity) : CCSPlayerWeapon(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void Precache() { m_pEntity->Precache(); }
+	virtual int GetItemInfo(ItemInfo *p) { return ((CBasePlayerItem *)m_pEntity)->GetItemInfo(p); }
+	virtual bool Deploy() { return ((CBasePlayerItem *)m_pEntity)->Deploy() ? true : false; }
+	virtual float GetMaxSpeed() { return ((CBasePlayerItem *)m_pEntity)->GetMaxSpeed(); }
+	virtual int iItemSlot() { return ((CBasePlayerItem *)m_pEntity)->iItemSlot(); }
+	virtual void PrimaryAttack() { ((CBasePlayerWeapon *)m_pEntity)->PrimaryAttack(); }
+	virtual void SecondaryAttack() { ((CBasePlayerWeapon *)m_pEntity)->SecondaryAttack(); }
+	virtual void Reload() { ((CBasePlayerWeapon *)m_pEntity)->Reload(); }
+	virtual void WeaponIdle() { ((CBasePlayerWeapon *)m_pEntity)->WeaponIdle(); }
+	virtual bool UseDecrement() { return ((CBasePlayerWeapon *)m_pEntity)->UseDecrement() ? true : false; }
+	virtual bool IsPistol() { return ((CP228 *)m_pEntity)->IsPistol() ? true : false; }
+};
+
+class CCSP90: public CCSPlayerWeapon {
+public:
+	CCSP90(CBaseEntity *pEntity) : CCSPlayerWeapon(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void Precache() { m_pEntity->Precache(); }
+	virtual int GetItemInfo(ItemInfo *p) { return ((CBasePlayerItem *)m_pEntity)->GetItemInfo(p); }
+	virtual bool Deploy() { return ((CBasePlayerItem *)m_pEntity)->Deploy() ? true : false; }
+	virtual float GetMaxSpeed() { return ((CBasePlayerItem *)m_pEntity)->GetMaxSpeed(); }
+	virtual int iItemSlot() { return ((CBasePlayerItem *)m_pEntity)->iItemSlot(); }
+	virtual void PrimaryAttack() { ((CBasePlayerWeapon *)m_pEntity)->PrimaryAttack(); }
+	virtual void Reload() { ((CBasePlayerWeapon *)m_pEntity)->Reload(); }
+	virtual void WeaponIdle() { ((CBasePlayerWeapon *)m_pEntity)->WeaponIdle(); }
+	virtual bool UseDecrement() { return ((CBasePlayerWeapon *)m_pEntity)->UseDecrement() ? true : false; }
+};
+
+class CCSSCOUT: public CCSPlayerWeapon {
+public:
+	CCSSCOUT(CBaseEntity *pEntity) : CCSPlayerWeapon(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void Precache() { m_pEntity->Precache(); }
+	virtual int GetItemInfo(ItemInfo *p) { return ((CBasePlayerItem *)m_pEntity)->GetItemInfo(p); }
+	virtual bool Deploy() { return ((CBasePlayerItem *)m_pEntity)->Deploy() ? true : false; }
+	virtual float GetMaxSpeed() { return ((CBasePlayerItem *)m_pEntity)->GetMaxSpeed(); }
+	virtual int iItemSlot() { return ((CBasePlayerItem *)m_pEntity)->iItemSlot(); }
+	virtual void PrimaryAttack() { ((CBasePlayerWeapon *)m_pEntity)->PrimaryAttack(); }
+	virtual void SecondaryAttack() { ((CBasePlayerWeapon *)m_pEntity)->SecondaryAttack(); }
+	virtual void Reload() { ((CBasePlayerWeapon *)m_pEntity)->Reload(); }
+	virtual void WeaponIdle() { ((CBasePlayerWeapon *)m_pEntity)->WeaponIdle(); }
+	virtual bool UseDecrement() { return ((CBasePlayerWeapon *)m_pEntity)->UseDecrement() ? true : false; }
+};
+
+class CCSSmokeGrenade: public CCSPlayerWeapon {
+public:
+	CCSSmokeGrenade(CBaseEntity *pEntity) : CCSPlayerWeapon(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void Precache() { m_pEntity->Precache(); }
+	virtual int GetItemInfo(ItemInfo *p) { return ((CBasePlayerItem *)m_pEntity)->GetItemInfo(p); }
+	virtual bool CanDeploy() { return ((CBasePlayerItem *)m_pEntity)->CanDeploy() ? true : false; }
+	virtual bool CanDrop() { return ((CBasePlayerItem *)m_pEntity)->CanDrop() ? true : false; }
+	virtual bool Deploy() { return ((CBasePlayerItem *)m_pEntity)->Deploy() ? true : false; }
+	virtual void Holster(int skiplocal) { ((CBasePlayerItem *)m_pEntity)->Holster(skiplocal); }
+	virtual float GetMaxSpeed() { return ((CBasePlayerItem *)m_pEntity)->GetMaxSpeed(); }
+	virtual int iItemSlot() { return ((CBasePlayerItem *)m_pEntity)->iItemSlot(); }
+	virtual void PrimaryAttack() { ((CBasePlayerWeapon *)m_pEntity)->PrimaryAttack(); }
+	virtual void SecondaryAttack() { ((CBasePlayerWeapon *)m_pEntity)->SecondaryAttack(); }
+	virtual void WeaponIdle() { ((CBasePlayerWeapon *)m_pEntity)->WeaponIdle(); }
+	virtual bool UseDecrement() { return ((CBasePlayerWeapon *)m_pEntity)->UseDecrement() ? true : false; }
+};
+
+class CCSTMP: public CCSPlayerWeapon {
+public:
+	CCSTMP(CBaseEntity *pEntity) : CCSPlayerWeapon(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void Precache() { m_pEntity->Precache(); }
+	virtual int GetItemInfo(ItemInfo *p) { return ((CBasePlayerItem *)m_pEntity)->GetItemInfo(p); }
+	virtual bool Deploy() { return ((CBasePlayerItem *)m_pEntity)->Deploy() ? true : false; }
+	virtual float GetMaxSpeed() { return ((CBasePlayerItem *)m_pEntity)->GetMaxSpeed(); }
+	virtual int iItemSlot() { return ((CBasePlayerItem *)m_pEntity)->iItemSlot(); }
+	virtual void PrimaryAttack() { ((CBasePlayerWeapon *)m_pEntity)->PrimaryAttack(); }
+	virtual void Reload() { ((CBasePlayerWeapon *)m_pEntity)->Reload(); }
+	virtual void WeaponIdle() { ((CBasePlayerWeapon *)m_pEntity)->WeaponIdle(); }
+	virtual bool UseDecrement() { return ((CBasePlayerWeapon *)m_pEntity)->UseDecrement() ? true : false; }
+};
+
+class CCSXM1014: public CCSPlayerWeapon {
+public:
+	CCSXM1014(CBaseEntity *pEntity) : CCSPlayerWeapon(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void Precache() { m_pEntity->Precache(); }
+	virtual int GetItemInfo(ItemInfo *p) { return ((CBasePlayerItem *)m_pEntity)->GetItemInfo(p); }
+	virtual bool Deploy() { return ((CBasePlayerItem *)m_pEntity)->Deploy() ? true : false; }
+	virtual float GetMaxSpeed() { return ((CBasePlayerItem *)m_pEntity)->GetMaxSpeed(); }
+	virtual int iItemSlot() { return ((CBasePlayerItem *)m_pEntity)->iItemSlot(); }
+	virtual void PrimaryAttack() { ((CBasePlayerWeapon *)m_pEntity)->PrimaryAttack(); }
+	virtual void Reload() { ((CBasePlayerWeapon *)m_pEntity)->Reload(); }
+	virtual void WeaponIdle() { ((CBasePlayerWeapon *)m_pEntity)->WeaponIdle(); }
+	virtual bool UseDecrement() { return ((CBasePlayerWeapon *)m_pEntity)->UseDecrement() ? true : false; }
+};
+
+class CCSELITE: public CCSPlayerWeapon {
+public:
+	CCSELITE(CBaseEntity *pEntity) : CCSPlayerWeapon(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void Precache() { m_pEntity->Precache(); }
+	virtual int GetItemInfo(ItemInfo *p) { return ((CBasePlayerItem *)m_pEntity)->GetItemInfo(p); }
+	virtual bool Deploy() { return ((CBasePlayerItem *)m_pEntity)->Deploy() ? true : false; }
+	virtual float GetMaxSpeed() { return ((CBasePlayerItem *)m_pEntity)->GetMaxSpeed(); }
+	virtual int iItemSlot() { return ((CBasePlayerItem *)m_pEntity)->iItemSlot(); }
+	virtual void PrimaryAttack() { ((CBasePlayerWeapon *)m_pEntity)->PrimaryAttack(); }
+	virtual void Reload() { ((CBasePlayerWeapon *)m_pEntity)->Reload(); }
+	virtual void WeaponIdle() { ((CBasePlayerWeapon *)m_pEntity)->WeaponIdle(); }
+	virtual bool UseDecrement() { return ((CBasePlayerWeapon *)m_pEntity)->UseDecrement() ? true : false; }
+};
+
+class CCSFiveSeven: public CCSPlayerWeapon {
+public:
+	CCSFiveSeven(CBaseEntity *pEntity) : CCSPlayerWeapon(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void Precache() { m_pEntity->Precache(); }
+	virtual int GetItemInfo(ItemInfo *p) { return ((CBasePlayerItem *)m_pEntity)->GetItemInfo(p); }
+	virtual bool Deploy() { return ((CBasePlayerItem *)m_pEntity)->Deploy() ? true : false; }
+	virtual float GetMaxSpeed() { return ((CBasePlayerItem *)m_pEntity)->GetMaxSpeed(); }
+	virtual int iItemSlot() { return ((CBasePlayerItem *)m_pEntity)->iItemSlot(); }
+	virtual void PrimaryAttack() { ((CBasePlayerWeapon *)m_pEntity)->PrimaryAttack(); }
+	virtual void SecondaryAttack() { ((CBasePlayerWeapon *)m_pEntity)->SecondaryAttack(); }
+	virtual void Reload() { ((CBasePlayerWeapon *)m_pEntity)->Reload(); }
+	virtual void WeaponIdle() { ((CBasePlayerWeapon *)m_pEntity)->WeaponIdle(); }
+	virtual bool UseDecrement() { return ((CBasePlayerWeapon *)m_pEntity)->UseDecrement() ? true : false; }
+};
+
+class CCSUMP45: public CCSPlayerWeapon {
+public:
+	CCSUMP45(CBaseEntity *pEntity) : CCSPlayerWeapon(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void Precache() { m_pEntity->Precache(); }
+	virtual int GetItemInfo(ItemInfo *p) { return ((CBasePlayerItem *)m_pEntity)->GetItemInfo(p); }
+	virtual bool Deploy() { return ((CBasePlayerItem *)m_pEntity)->Deploy() ? true : false; }
+	virtual float GetMaxSpeed() { return ((CBasePlayerItem *)m_pEntity)->GetMaxSpeed(); }
+	virtual int iItemSlot() { return ((CBasePlayerItem *)m_pEntity)->iItemSlot(); }
+	virtual void PrimaryAttack() { ((CBasePlayerWeapon *)m_pEntity)->PrimaryAttack(); }
+	virtual void Reload() { ((CBasePlayerWeapon *)m_pEntity)->Reload(); }
+	virtual void WeaponIdle() { ((CBasePlayerWeapon *)m_pEntity)->WeaponIdle(); }
+	virtual bool UseDecrement() { return ((CBasePlayerWeapon *)m_pEntity)->UseDecrement() ? true : false; }
+};
+
+class CCSSG550: public CCSPlayerWeapon {
+public:
+	CCSSG550(CBaseEntity *pEntity) : CCSPlayerWeapon(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void Precache() { m_pEntity->Precache(); }
+	virtual int GetItemInfo(ItemInfo *p) { return ((CBasePlayerItem *)m_pEntity)->GetItemInfo(p); }
+	virtual bool Deploy() { return ((CBasePlayerItem *)m_pEntity)->Deploy() ? true : false; }
+	virtual float GetMaxSpeed() { return ((CBasePlayerItem *)m_pEntity)->GetMaxSpeed(); }
+	virtual int iItemSlot() { return ((CBasePlayerItem *)m_pEntity)->iItemSlot(); }
+	virtual void PrimaryAttack() { ((CBasePlayerWeapon *)m_pEntity)->PrimaryAttack(); }
+	virtual void SecondaryAttack() { ((CBasePlayerWeapon *)m_pEntity)->SecondaryAttack(); }
+	virtual void Reload() { ((CBasePlayerWeapon *)m_pEntity)->Reload(); }
+	virtual void WeaponIdle() { ((CBasePlayerWeapon *)m_pEntity)->WeaponIdle(); }
+	virtual bool UseDecrement() { return ((CBasePlayerWeapon *)m_pEntity)->UseDecrement() ? true : false; }
+};
+
+class CCSGalil: public CCSPlayerWeapon {
+public:
+	CCSGalil(CBaseEntity *pEntity) : CCSPlayerWeapon(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void Precache() { m_pEntity->Precache(); }
+	virtual int GetItemInfo(ItemInfo *p) { return ((CBasePlayerItem *)m_pEntity)->GetItemInfo(p); }
+	virtual bool Deploy() { return ((CBasePlayerItem *)m_pEntity)->Deploy() ? true : false; }
+	virtual float GetMaxSpeed() { return ((CBasePlayerItem *)m_pEntity)->GetMaxSpeed(); }
+	virtual int iItemSlot() { return ((CBasePlayerItem *)m_pEntity)->iItemSlot(); }
+	virtual void PrimaryAttack() { ((CBasePlayerWeapon *)m_pEntity)->PrimaryAttack(); }
+	virtual void SecondaryAttack() { ((CBasePlayerWeapon *)m_pEntity)->SecondaryAttack(); }
+	virtual void Reload() { ((CBasePlayerWeapon *)m_pEntity)->Reload(); }
+	virtual void WeaponIdle() { ((CBasePlayerWeapon *)m_pEntity)->WeaponIdle(); }
+	virtual bool UseDecrement() { return ((CBasePlayerWeapon *)m_pEntity)->UseDecrement() ? true : false; }
+};
+
+class CCSFamas: public CCSPlayerWeapon {
+public:
+	CCSFamas(CBaseEntity *pEntity) : CCSPlayerWeapon(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void Precache() { m_pEntity->Precache(); }
+	virtual int GetItemInfo(ItemInfo *p) { return ((CBasePlayerItem *)m_pEntity)->GetItemInfo(p); }
+	virtual bool Deploy() { return ((CBasePlayerItem *)m_pEntity)->Deploy() ? true : false; }
+	virtual float GetMaxSpeed() { return ((CBasePlayerItem *)m_pEntity)->GetMaxSpeed(); }
+	virtual int iItemSlot() { return ((CBasePlayerItem *)m_pEntity)->iItemSlot(); }
+	virtual void PrimaryAttack() { ((CBasePlayerWeapon *)m_pEntity)->PrimaryAttack(); }
+	virtual void SecondaryAttack() { ((CBasePlayerWeapon *)m_pEntity)->SecondaryAttack(); }
+	virtual void Reload() { ((CBasePlayerWeapon *)m_pEntity)->Reload(); }
+	virtual void WeaponIdle() { ((CBasePlayerWeapon *)m_pEntity)->WeaponIdle(); }
+	virtual bool UseDecrement() { return ((CBasePlayerWeapon *)m_pEntity)->UseDecrement() ? true : false; }
+};
+
+class CCSNullEntity: public CCSEntity {
+public:
+	CCSNullEntity(CBaseEntity *pEntity) : CCSEntity(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+};
+
+class CCSDMStart: public CCSPointEntity {
+public:
+	CCSDMStart(CBaseEntity *pEntity) : CCSPointEntity(pEntity) {}
+public:
+	virtual void KeyValue(KeyValueData *pkvd) { m_pEntity->KeyValue(pkvd); }
+	virtual bool IsTriggered(CCSEntity *pEntity) { return m_pEntity->IsTriggered(pEntity->m_pEntity) ? true : false; }
+};
+
+class CCSFrictionModifier: public CCSEntity {
+public:
+	CCSFrictionModifier(CBaseEntity *pEntity) : CCSEntity(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void KeyValue(KeyValueData *pkvd) { m_pEntity->KeyValue(pkvd); }
+	virtual int Save(CSave &save) { return m_pEntity->Save(save); }
+	virtual int Restore(CRestore &restore) { return m_pEntity->Restore(restore); }
+	virtual int ObjectCaps() { return m_pEntity->ObjectCaps(); }
+};
+
+class CCSAutoTrigger: public CCSDelay {
+public:
+	CCSAutoTrigger(CBaseEntity *pEntity) : CCSDelay(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void Precache() { m_pEntity->Precache(); }
+	virtual void KeyValue(KeyValueData *pkvd) { m_pEntity->KeyValue(pkvd); }
+	virtual int Save(CSave &save) { return m_pEntity->Save(save); }
+	virtual int Restore(CRestore &restore) { return m_pEntity->Restore(restore); }
+	virtual int ObjectCaps() { return m_pEntity->ObjectCaps(); }
+	virtual void Think() { m_pEntity->Think(); }
+};
+
+class CCSTriggerRelay: public CCSDelay {
+public:
+	CCSTriggerRelay(CBaseEntity *pEntity) : CCSDelay(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void KeyValue(KeyValueData *pkvd) { m_pEntity->KeyValue(pkvd); }
+	virtual int Save(CSave &save) { return m_pEntity->Save(save); }
+	virtual int Restore(CRestore &restore) { return m_pEntity->Restore(restore); }
+	virtual int ObjectCaps() { return m_pEntity->ObjectCaps(); }
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) { m_pEntity->Use(pActivator->m_pEntity, pCaller->m_pEntity, useType, value); }
+};
+
+class CCSMultiManager: public CCSToggle {
+public:
+	CCSMultiManager(CBaseEntity *pEntity) : CCSToggle(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void Restart() { m_pEntity->Restart(); }
+	virtual void KeyValue(KeyValueData *pkvd) { m_pEntity->KeyValue(pkvd); }
+	virtual int Save(CSave &save) { return m_pEntity->Save(save); }
+	virtual int Restore(CRestore &restore) { return m_pEntity->Restore(restore); }
+	virtual int ObjectCaps() { return m_pEntity->ObjectCaps(); }
+	virtual bool HasTarget(string_t targetname) { m_pEntity->HasTarget(targetname) ? true : false; }
+};
+
+class CCSRenderFxManager: public CCSEntity {
+public:
+	CCSRenderFxManager(CBaseEntity *pEntity) : CCSEntity(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) { m_pEntity->Use(pActivator->m_pEntity, pCaller->m_pEntity, useType, value); }
+};
+
+class CCSTrigger: public CCSToggle {
+public:
+	CCSTrigger(CBaseEntity *pEntity) : CCSToggle(pEntity) {}
+public:
+	virtual void KeyValue(KeyValueData *pkvd) { m_pEntity->KeyValue(pkvd); }
+	virtual int ObjectCaps() { return m_pEntity->ObjectCaps(); }
+};
+
+class CCSTriggerHurt: public CCSTrigger {
+public:
+	CCSTriggerHurt(CBaseEntity *pEntity) : CCSTrigger(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+};
+
+class CCSTriggerMonsterJump: public CCSTrigger {
+public:
+	CCSTriggerMonsterJump(CBaseEntity *pEntity) : CCSTrigger(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void Think() { m_pEntity->Think(); }
+	virtual void Touch(CCSEntity *pOther) { m_pEntity->Touch(pOther->m_pEntity); }
+};
+
+class CCSTriggerCDAudio: public CCSTrigger {
+public:
+	CCSTriggerCDAudio(CBaseEntity *pEntity) : CCSTrigger(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void Touch(CCSEntity *pOther) { m_pEntity->Touch(pOther->m_pEntity); }
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) { m_pEntity->Use(pActivator->m_pEntity, pCaller->m_pEntity, useType, value); }
+};
+
+class CCSTargetCDAudio: public CCSPointEntity {
+public:
+	CCSTargetCDAudio(CBaseEntity *pEntity) : CCSPointEntity(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void KeyValue(KeyValueData *pkvd) { m_pEntity->KeyValue(pkvd); }
+	virtual void Think() { m_pEntity->Think(); }
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) { m_pEntity->Use(pActivator->m_pEntity, pCaller->m_pEntity, useType, value); }
+};
+
+class CCSTriggerMultiple: public CCSTrigger {
+public:
+	CCSTriggerMultiple(CBaseEntity *pEntity) : CCSTrigger(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+};
+
+class CCSTriggerOnce: public CCSTriggerMultiple {
+public:
+	CCSTriggerOnce(CBaseEntity *pEntity) : CCSTriggerMultiple(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+};
+
+class CCSTriggerCounter: public CCSTrigger {
+public:
+	CCSTriggerCounter(CBaseEntity *pEntity) : CCSTrigger(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+};
+
+class CCSTriggerVolume: public CCSPointEntity {
+public:
+	CCSTriggerVolume(CBaseEntity *pEntity) : CCSPointEntity(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+};
+
+class CCSFireAndDie: public CCSDelay {
+public:
+	CCSFireAndDie(CBaseEntity *pEntity) : CCSDelay(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void Precache() { m_pEntity->Precache(); }
+	virtual int ObjectCaps() { return m_pEntity->ObjectCaps(); }
+	virtual void Think() { m_pEntity->Think(); }
+};
+
+class CCSChangeLevel: public CCSTrigger {
+public:
+	CCSChangeLevel(CBaseEntity *pEntity) : CCSTrigger(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void KeyValue(KeyValueData *pkvd) { m_pEntity->KeyValue(pkvd); }
+	virtual int Save(CSave &save) { return m_pEntity->Save(save); }
+	virtual int Restore(CRestore &restore) { return m_pEntity->Restore(restore); }
+};
+
+class CCSLadder: public CCSTrigger {
+public:
+	CCSLadder(CBaseEntity *pEntity) : CCSTrigger(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void Precache() { m_pEntity->Precache(); }
+	virtual void KeyValue(KeyValueData *pkvd) { m_pEntity->KeyValue(pkvd); }
+};
+
+class CCSTriggerPush: public CCSTrigger {
+public:
+	CCSTriggerPush(CBaseEntity *pEntity) : CCSTrigger(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void KeyValue(KeyValueData *pkvd) { m_pEntity->KeyValue(pkvd); }
+	virtual void Touch(CCSEntity *pOther) { m_pEntity->Touch(pOther->m_pEntity); }
+};
+
+class CCSTriggerTeleport: public CCSTrigger {
+public:
+	CCSTriggerTeleport(CBaseEntity *pEntity) : CCSTrigger(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+};
+
+class CCSBuyZone: public CCSTrigger {
+public:
+	CCSBuyZone(CBaseEntity *pEntity) : CCSTrigger(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+};
+
+class CCSBombTarget: public CCSTrigger {
+public:
+	CCSBombTarget(CBaseEntity *pEntity) : CCSTrigger(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+};
+
+class CCSHostageRescue: public CCSTrigger {
+public:
+	CCSHostageRescue(CBaseEntity *pEntity) : CCSTrigger(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+};
+
+class CCSEscapeZone: public CCSTrigger {
+public:
+	CCSEscapeZone(CBaseEntity *pEntity) : CCSTrigger(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+};
+
+class CCSVIP_SafetyZone: public CCSTrigger {
+public:
+	CCSVIP_SafetyZone(CBaseEntity *pEntity) : CCSTrigger(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+};
+
+class CCSTriggerSave: public CCSTrigger {
+public:
+	CCSTriggerSave(CBaseEntity *pEntity) : CCSTrigger(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+};
+
+class CCSTriggerEndSection: public CCSTrigger {
+public:
+	CCSTriggerEndSection(CBaseEntity *pEntity) : CCSTrigger(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void KeyValue(KeyValueData *pkvd) { m_pEntity->KeyValue(pkvd); }
+};
+
+class CCSTriggerGravity: public CCSTrigger {
+public:
+	CCSTriggerGravity(CBaseEntity *pEntity) : CCSTrigger(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+};
+
+class CCSTriggerChangeTarget: public CCSDelay {
+public:
+	CCSTriggerChangeTarget(CBaseEntity *pEntity) : CCSDelay(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void KeyValue(KeyValueData *pkvd) { m_pEntity->KeyValue(pkvd); }
+	virtual int Save(CSave &save) { return m_pEntity->Save(save); }
+	virtual int Restore(CRestore &restore) { return m_pEntity->Restore(restore); }
+	virtual int ObjectCaps() { return m_pEntity->ObjectCaps(); }
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) { m_pEntity->Use(pActivator->m_pEntity, pCaller->m_pEntity, useType, value); }
+};
+
+class CCSTriggerCamera: public CCSDelay {
+public:
+	CCSTriggerCamera(CBaseEntity *pEntity) : CCSDelay(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void KeyValue(KeyValueData *pkvd) { m_pEntity->KeyValue(pkvd); }
+	virtual int Save(CSave &save) { return m_pEntity->Save(save); }
+	virtual int Restore(CRestore &restore) { return m_pEntity->Restore(restore); }
+	virtual int ObjectCaps() { return m_pEntity->ObjectCaps(); }
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) { m_pEntity->Use(pActivator->m_pEntity, pCaller->m_pEntity, useType, value); }
+};
+
+class CCSWeather: public CCSTrigger {
+public:
+	CCSWeather(CBaseEntity *pEntity) : CCSTrigger(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+};
+
+class CCSClientFog: public CCSEntity {
+public:
+	CCSClientFog(CBaseEntity *pEntity) : CCSEntity(pEntity) {}
+public:
+	virtual void Spawn() { m_pEntity->Spawn(); }
+	virtual void KeyValue(KeyValueData *pkvd) { m_pEntity->KeyValue(pkvd); }
+};
+
+template <class T>
+inline T *Regamedll_InitializeEntities(CBaseEntity *a)
+{
+	int index = a->entindex();
+	g_GameEntities[index] = new T (a);
+	return reinterpret_cast<T *>(g_GameEntities[index]);
+}
 
 inline CCSPlayer *CSPlayer(int iPlayerNum) { return reinterpret_cast<CCSPlayer *>(g_GameEntities[iPlayerNum]); }
 inline CCSPlayer *CSPlayer(const edict_t *pEdict) { return CSPlayer(ENTINDEX(pEdict)); }

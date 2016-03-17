@@ -79,7 +79,6 @@ public:
 class CSoundEnt: public CBaseEntity
 {
 public:
-
 	virtual void Spawn();
 	virtual void Precache();
 	virtual int ObjectCaps() { return FCAP_DONT_SAVE; }

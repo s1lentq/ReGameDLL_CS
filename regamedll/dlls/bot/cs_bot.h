@@ -421,8 +421,6 @@ class CCSBot: public CBot
 {
 public:
 	CCSBot();														// constructor initializes all values to zero
-
-public:
 	virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);		// invoked when injured by something (EXTEND) - returns the amount of damage inflicted
 	virtual void Killed(entvars_t *pevAttacker, int iGib);									// invoked when killed (EXTEND)
 	virtual void RoundRespawn();

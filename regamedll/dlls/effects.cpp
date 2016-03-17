@@ -61,12 +61,8 @@ TYPEDESCRIPTION CGibShooter::m_SaveData[] =
 
 #endif // HOOK_GAMEDLL
 
-LINK_ENTITY_TO_CLASS(info_target, CPointEntity);
-LINK_CLASS_TO_WRAP(CPointEntity, CCSPointEntity);
-
-LINK_ENTITY_TO_CLASS(env_bubbles, CBubbling);
-LINK_CLASS_TO_WRAP(CBubbling, CCSBubbling);
-
+LINK_ENTITY_TO_CLASS(info_target, CPointEntity, CCSPointEntity);
+LINK_ENTITY_TO_CLASS(env_bubbles, CBubbling, CCSBubbling);
 IMPLEMENT_SAVERESTORE(CBubbling, CBaseEntity);
 
 void CBubbling::__MAKE_VHOOK(Spawn)()
@@ -158,8 +154,7 @@ void CBubbling::FizzThink()
 		pev->nextthink = gpGlobals->time + 2.5f - (0.1f * m_frequency);
 }
 
-LINK_ENTITY_TO_CLASS(beam, CBeam);
-LINK_CLASS_TO_WRAP(CBeam, CCSBeam);
+LINK_ENTITY_TO_CLASS(beam, CBeam, CCSBeam);
 
 void CBeam::__MAKE_VHOOK(Spawn)()
 {
@@ -223,7 +218,7 @@ const Vector &CBeam::GetEndPos()
 CBeam *CBeam::BeamCreate(const char *pSpriteName, int width)
 {
 	// Create a new entity with CBeam private data
-	CBeam *pBeam = GetClassPtr((CBeam *)NULL);
+	CBeam *pBeam = GetClassPtr<CCSBeam>((CBeam *)NULL);
 
 	MAKE_STRING_CLASS("beam", pBeam->pev);
 	pBeam->BeamInit(pSpriteName, width);
@@ -355,10 +350,8 @@ void CBeam::DoSparks(const Vector &start, const Vector &end)
 	}
 }
 
-LINK_ENTITY_TO_CLASS(env_lightning, CLightning);
-LINK_ENTITY_TO_CLASS(env_beam, CLightning);
-LINK_CLASS_TO_WRAP(CLightning, CCSLightning);
-
+LINK_ENTITY_TO_CLASS(env_lightning, CLightning, CCSLightning);
+LINK_ENTITY_TO_CLASS(env_beam, CLightning, CCSLightning);
 IMPLEMENT_SAVERESTORE(CLightning, CBeam);
 
 void CLightning::__MAKE_VHOOK(Spawn)()
@@ -853,8 +846,7 @@ void CLightning::BeamUpdateVars()
 	}
 }
 
-LINK_ENTITY_TO_CLASS(env_laser, CLaser);
-LINK_CLASS_TO_WRAP(CLaser, CCSLaser);
+LINK_ENTITY_TO_CLASS(env_laser, CLaser, CCSLaser);
 IMPLEMENT_SAVERESTORE(CLaser, CBeam);
 
 void CLaser::__MAKE_VHOOK(Spawn)()
@@ -1013,8 +1005,7 @@ void CLaser::StrikeThink()
 	pev->nextthink = gpGlobals->time + 0.1f;
 }
 
-LINK_ENTITY_TO_CLASS(env_glow, CGlow);
-LINK_CLASS_TO_WRAP(CGlow, CCSGlow);
+LINK_ENTITY_TO_CLASS(env_glow, CGlow, CCSGlow);
 IMPLEMENT_SAVERESTORE(CGlow, CPointEntity);
 
 void CGlow::__MAKE_VHOOK(Spawn)()
@@ -1053,8 +1044,7 @@ void CGlow::Animate(float frames)
 	}
 }
 
-LINK_ENTITY_TO_CLASS(env_bombglow, CBombGlow);
-LINK_CLASS_TO_WRAP(CBombGlow, CCSBombGlow);
+LINK_ENTITY_TO_CLASS(env_bombglow, CBombGlow, CCSBombGlow);
 
 void CBombGlow::__MAKE_VHOOK(Spawn)()
 {
@@ -1106,8 +1096,7 @@ void CBombGlow::__MAKE_VHOOK(Think)()
 	pev->nextthink = gpGlobals->time + 0.05f;
 }
 
-LINK_ENTITY_TO_CLASS(env_sprite, CSprite);
-LINK_CLASS_TO_WRAP(CSprite, CCSSprite);
+LINK_ENTITY_TO_CLASS(env_sprite, CSprite, CCSSprite);
 IMPLEMENT_SAVERESTORE(CSprite, CPointEntity);
 
 void CSprite::__MAKE_VHOOK(Spawn)()
@@ -1171,7 +1160,7 @@ void CSprite::SpriteInit(const char *pSpriteName, const Vector &origin)
 
 CSprite *CSprite::SpriteCreate(const char *pSpriteName, const Vector &origin, BOOL animate)
 {
-	CSprite *pSprite = GetClassPtr((CSprite *)NULL);
+	CSprite *pSprite = GetClassPtr<CCSSprite>((CSprite *)NULL);
 	pSprite->SpriteInit(pSpriteName, origin);
 
 	MAKE_STRING_CLASS("env_sprite", pSprite->pev);
@@ -1284,8 +1273,7 @@ void CSprite::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, U
 }
 
 IMPLEMENT_SAVERESTORE(CGibShooter, CBaseDelay);
-LINK_ENTITY_TO_CLASS(gibshooter, CGibShooter);
-LINK_CLASS_TO_WRAP(CGibShooter, CCSGibShooter);
+LINK_ENTITY_TO_CLASS(gibshooter, CGibShooter, CCSGibShooter);
 
 void CGibShooter::__MAKE_VHOOK(Precache)()
 {
@@ -1357,7 +1345,7 @@ CGib *CGibShooter::__MAKE_VHOOK(CreateGib)()
 	if (CVAR_GET_FLOAT("violence_hgibs") == 0)
 		return NULL;
 
-	CGib *pGib = GetClassPtr((CGib *)NULL);
+	CGib *pGib = GetClassPtr<CCSGib>((CGib *)NULL);
 
 	pGib->Spawn("models/hgibs.mdl");
 	pGib->m_bloodColor = BLOOD_COLOR_RED;
@@ -1437,8 +1425,7 @@ void CGibShooter::ShootThink()
 	}
 }
 
-LINK_ENTITY_TO_CLASS(env_shooter, CEnvShooter);
-LINK_CLASS_TO_WRAP(CEnvShooter, CCSEnvShooter);
+LINK_ENTITY_TO_CLASS(env_shooter, CEnvShooter, CCSEnvShooter);
 
 void CEnvShooter::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
@@ -1487,7 +1474,7 @@ void CEnvShooter::__MAKE_VHOOK(Precache)()
 
 CGib *CEnvShooter::__MAKE_VHOOK(CreateGib)()
 {
-	CGib *pGib = GetClassPtr((CGib *)NULL);
+	CGib *pGib = GetClassPtr<CCSGib>((CGib *)NULL);
 
 	pGib->Spawn(STRING(pev->model));
 
@@ -1510,8 +1497,7 @@ CGib *CEnvShooter::__MAKE_VHOOK(CreateGib)()
 	return pGib;
 }
 
-LINK_ENTITY_TO_CLASS(test_effect, CTestEffect);
-LINK_CLASS_TO_WRAP(CTestEffect, CCSTestEffect);
+LINK_ENTITY_TO_CLASS(test_effect, CTestEffect, CCSTestEffect);
 
 void CTestEffect::__MAKE_VHOOK(Spawn)()
 {
@@ -1585,8 +1571,7 @@ void CTestEffect::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCalle
 	m_flStartTime = gpGlobals->time;
 }
 
-LINK_ENTITY_TO_CLASS(env_blood, CBlood);
-LINK_CLASS_TO_WRAP(CBlood, CCSBlood);
+LINK_ENTITY_TO_CLASS(env_blood, CBlood, CCSBlood);
 
 void CBlood::__MAKE_VHOOK(Spawn)()
 {
@@ -1674,8 +1659,7 @@ void CBlood::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, US
 	}
 }
 
-LINK_ENTITY_TO_CLASS(env_shake, CShake);
-LINK_CLASS_TO_WRAP(CShake, CCSShake);
+LINK_ENTITY_TO_CLASS(env_shake, CShake, CCSShake);
 
 void CShake::__MAKE_VHOOK(Spawn)()
 {
@@ -1719,8 +1703,7 @@ void CShake::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, US
 	UTIL_ScreenShake(pev->origin, Amplitude(), Frequency(), Duration(), Radius());
 }
 
-LINK_ENTITY_TO_CLASS(env_fade, CFade);
-LINK_CLASS_TO_WRAP(CFade, CCSFade);
+LINK_ENTITY_TO_CLASS(env_fade, CFade, CCSFade);
 
 void CFade::__MAKE_VHOOK(Spawn)()
 {
@@ -1769,8 +1752,7 @@ void CFade::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE
 	SUB_UseTargets(this, USE_TOGGLE, 0);
 }
 
-LINK_ENTITY_TO_CLASS(env_message, CMessage);
-LINK_CLASS_TO_WRAP(CMessage, CCSMessage);
+LINK_ENTITY_TO_CLASS(env_message, CMessage, CCSMessage);
 
 void CMessage::__MAKE_VHOOK(Spawn)()
 {
@@ -1863,8 +1845,7 @@ void CMessage::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, 
 	SUB_UseTargets(this, USE_TOGGLE, 0);
 }
 
-LINK_ENTITY_TO_CLASS(env_funnel, CEnvFunnel);
-LINK_CLASS_TO_WRAP(CEnvFunnel, CCSEnvFunnel);
+LINK_ENTITY_TO_CLASS(env_funnel, CEnvFunnel, CCSEnvFunnel);
 
 void CEnvFunnel::__MAKE_VHOOK(Precache)()
 {
@@ -1910,8 +1891,7 @@ void CEnvBeverage::__MAKE_VHOOK(Precache)()
 	PRECACHE_SOUND("weapons/g_bounce3.wav");
 }
 
-LINK_ENTITY_TO_CLASS(env_beverage, CEnvBeverage);
-LINK_CLASS_TO_WRAP(CEnvBeverage, CCSEnvBeverage);
+LINK_ENTITY_TO_CLASS(env_beverage, CEnvBeverage, CCSEnvBeverage);
 
 void CEnvBeverage::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
@@ -1953,8 +1933,7 @@ void CItemSoda::__MAKE_VHOOK(Precache)()
 	;
 }
 
-LINK_ENTITY_TO_CLASS(item_sodacan, CItemSoda);
-LINK_CLASS_TO_WRAP(CItemSoda, CCSItemSoda);
+LINK_ENTITY_TO_CLASS(item_sodacan, CItemSoda, CCSItemSoda);
 
 void CItemSoda::__MAKE_VHOOK(Spawn)()
 {

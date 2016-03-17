@@ -111,6 +111,9 @@ float (*CLocalNav::pflLastThinkTime);
 EHANDLE (*CLocalNav::phostages)[20];
 int (*CLocalNav::ptot_hostages);
 
+// soundent
+CSoundEnt *pSoundEnt;
+
 // globals weapons
 const char *g_pModelNameLaser;
 ItemInfo IMPL_CLASS(CBasePlayerItem, ItemInfoArray)[32];

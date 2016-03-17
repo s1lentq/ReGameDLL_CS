@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-LINK_ENTITY_TO_CLASS(weapon_xm1014, CXM1014);
+LINK_ENTITY_TO_CLASS(weapon_xm1014, CXM1014, CCSXM1014);
 
 void CXM1014::__MAKE_VHOOK(Spawn)()
 {

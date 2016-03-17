@@ -352,7 +352,6 @@ public:
 class CBasePlayer: public CBaseMonster
 {
 public:
-	CBasePlayer();
 	virtual void Spawn();
 	virtual void Precache();
 	virtual int Save(CSave &save);

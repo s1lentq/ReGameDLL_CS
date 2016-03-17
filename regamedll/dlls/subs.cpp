@@ -50,15 +50,15 @@ void CNullEntity::__MAKE_VHOOK(Spawn)()
 	REMOVE_ENTITY(ENT(pev));
 }
 
-LINK_ENTITY_TO_CLASS(info_null, CNullEntity);
+LINK_ENTITY_TO_CLASS(info_null, CNullEntity, CCSNullEntity);
 
 // These are the new entry points to entities.
-LINK_ENTITY_TO_CLASS(info_player_deathmatch, CBaseDMStart);
-LINK_ENTITY_TO_CLASS(info_player_start, CPointEntity);
-LINK_ENTITY_TO_CLASS(info_vip_start, CBaseDMStart);
-LINK_ENTITY_TO_CLASS(info_landmark, CPointEntity);
-LINK_ENTITY_TO_CLASS(info_hostage_rescue, CPointEntity);
-LINK_ENTITY_TO_CLASS(info_bomb_target, CPointEntity);
+LINK_ENTITY_TO_CLASS(info_player_deathmatch, CBaseDMStart, CCSDMStart);
+LINK_ENTITY_TO_CLASS(info_player_start, CPointEntity, CCSPointEntity);
+LINK_ENTITY_TO_CLASS(info_vip_start, CBaseDMStart, CCSDMStart);
+LINK_ENTITY_TO_CLASS(info_landmark, CPointEntity, CCSPointEntity);
+LINK_ENTITY_TO_CLASS(info_hostage_rescue, CPointEntity, CCSPointEntity);
+LINK_ENTITY_TO_CLASS(info_bomb_target, CPointEntity, CCSPointEntity);
 
 void CBaseDMStart::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
@@ -180,8 +180,7 @@ void FireTargets(const char *targetName, CBaseEntity *pActivator, CBaseEntity *p
 	}
 }
 
-LINK_ENTITY_TO_CLASS(DelayedUse, CBaseDelay);
-LINK_CLASS_TO_WRAP(CBaseDelay, CCSDelay);
+LINK_ENTITY_TO_CLASS(DelayedUse, CBaseDelay, CCSDelay);
 
 void CBaseDelay::SUB_UseTargets(CBaseEntity *pActivator, USE_TYPE useType, float value)
 {
@@ -193,7 +192,7 @@ void CBaseDelay::SUB_UseTargets(CBaseEntity *pActivator, USE_TYPE useType, float
 	if (m_flDelay != 0)
 	{
 		// create a temp object to fire at a later time
-		CBaseDelay *pTemp = GetClassPtr((CBaseDelay *)NULL);
+		CBaseDelay *pTemp = GetClassPtr<CCSDelay>((CBaseDelay *)NULL);
 
 		MAKE_STRING_CLASS("DelayedUse", pTemp->pev);
 

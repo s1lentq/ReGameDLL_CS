@@ -31,11 +31,10 @@ TYPEDESCRIPTION CPendulum::m_SaveData[] =
 // BModelOrigin - calculates origin of a bmodel from absmin/size because all bmodel origins are 0 0 0
 Vector VecBModelOrigin(entvars_t *pevBModel)
 {
-	return pevBModel->absmin + (pevBModel->size * 0.5);
+	return pevBModel->absmin + (pevBModel->size * 0.5f);
 }
 
-LINK_ENTITY_TO_CLASS(func_wall, CFuncWall);
-LINK_CLASS_TO_WRAP(CFuncWall, CCSFuncWall);
+LINK_ENTITY_TO_CLASS(func_wall, CFuncWall, CCSFuncWall);
 
 void CFuncWall::__MAKE_VHOOK(Spawn)()
 {
@@ -59,8 +58,7 @@ void CFuncWall::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller,
 	}
 }
 
-LINK_ENTITY_TO_CLASS(func_wall_toggle, CFuncWallToggle);
-LINK_CLASS_TO_WRAP(CFuncWallToggle, CCSFuncWallToggle);
+LINK_ENTITY_TO_CLASS(func_wall_toggle, CFuncWallToggle, CCSFuncWallToggle);
 
 void CFuncWallToggle::__MAKE_VHOOK(Spawn)()
 {
@@ -109,8 +107,7 @@ void CFuncWallToggle::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pC
 	}
 }
 
-LINK_ENTITY_TO_CLASS(func_conveyor, CFuncConveyor);
-LINK_CLASS_TO_WRAP(CFuncConveyor, CCSFuncConveyor);
+LINK_ENTITY_TO_CLASS(func_conveyor, CFuncConveyor, CCSFuncConveyor);
 
 void CFuncConveyor::__MAKE_VHOOK(Spawn)()
 {
@@ -157,8 +154,7 @@ void CFuncConveyor::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCal
 	UpdateSpeed(pev->speed);
 }
 
-LINK_ENTITY_TO_CLASS(func_illusionary, CFuncIllusionary);
-LINK_CLASS_TO_WRAP(CFuncIllusionary, CCSFuncIllusionary);
+LINK_ENTITY_TO_CLASS(func_illusionary, CFuncIllusionary, CCSFuncIllusionary);
 
 void CFuncIllusionary::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
@@ -188,8 +184,7 @@ void CFuncIllusionary::__MAKE_VHOOK(Spawn)()
 	// MAKE_STATIC(ENT(pev));
 }
 
-LINK_ENTITY_TO_CLASS(func_monsterclip, CFuncMonsterClip);
-LINK_CLASS_TO_WRAP(CFuncMonsterClip, CCSFuncMonsterClip);
+LINK_ENTITY_TO_CLASS(func_monsterclip, CFuncMonsterClip, CCSFuncMonsterClip);
 
 void CFuncMonsterClip::__MAKE_VHOOK(Spawn)()
 {
@@ -203,8 +198,7 @@ void CFuncMonsterClip::__MAKE_VHOOK(Spawn)()
 	pev->flags |= FL_MONSTERCLIP;
 }
 
-LINK_ENTITY_TO_CLASS(func_rotating, CFuncRotating);
-LINK_CLASS_TO_WRAP(CFuncRotating, CCSFuncRotating);
+LINK_ENTITY_TO_CLASS(func_rotating, CFuncRotating, CCSFuncRotating);
 IMPLEMENT_SAVERESTORE(CFuncRotating, CBaseEntity);
 
 void CFuncRotating::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
@@ -607,8 +601,7 @@ void CFuncRotating::__MAKE_VHOOK(Blocked)(CBaseEntity *pOther)
 	pOther->TakeDamage(pev, pev, pev->dmg, DMG_CRUSH);
 }
 
-LINK_ENTITY_TO_CLASS(func_pendulum, CPendulum);
-LINK_CLASS_TO_WRAP(CPendulum, CCSPendulum);
+LINK_ENTITY_TO_CLASS(func_pendulum, CPendulum, CCSPendulum);
 IMPLEMENT_SAVERESTORE(CPendulum, CBaseEntity);
 
 void CPendulum::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)

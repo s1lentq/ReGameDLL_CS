@@ -25,7 +25,7 @@ NOXREF void CGib::SpawnStickyGibs(entvars_t *pevVictim, Vector vecOrigin, int cG
 
 	for (i = 0; i < cGibs; ++i)
 	{
-		CGib *pGib = GetClassPtr((CGib *)NULL);
+		CGib *pGib = GetClassPtr<CCSGib>((CGib *)NULL);
 
 		pGib->Spawn("models/stickygib.mdl");
 		pGib->pev->body = RANDOM_LONG(0, 2);
@@ -78,7 +78,7 @@ NOXREF void CGib::SpawnStickyGibs(entvars_t *pevVictim, Vector vecOrigin, int cG
 
 void CGib::SpawnHeadGib(entvars_t *pevVictim)
 {
-	CGib *pGib = GetClassPtr((CGib *)NULL);
+	CGib *pGib = GetClassPtr<CCSGib>((CGib *)NULL);
 
 	if (g_Language == LANGUAGE_GERMAN)
 	{
@@ -139,9 +139,9 @@ void CGib::SpawnHeadGib(entvars_t *pevVictim)
 void CGib::SpawnRandomGibs(entvars_t *pevVictim, int cGibs, int human)
 {
 	int cSplat;
-	for (cSplat = 0; cSplat < cGibs; cSplat++)
+	for (cSplat = 0; cSplat < cGibs; ++cSplat)
 	{
-		CGib *pGib = GetClassPtr((CGib *)NULL);
+		CGib *pGib = GetClassPtr<CCSGib>((CGib *)NULL);
 
 		if (g_Language == LANGUAGE_GERMAN)
 		{
@@ -1468,7 +1468,7 @@ void CBaseEntity::FireBullets(ULONG cShots, Vector vecSrc, Vector vecDirShooting
 	ClearMultiDamage();
 	gMultiDamage.type = (DMG_BULLET | DMG_NEVERGIB);
 
-	for (ULONG iShot = 1; iShot <= cShots; iShot++)
+	for (ULONG iShot = 1; iShot <= cShots; ++iShot)
 	{
 		int spark = 0;
 

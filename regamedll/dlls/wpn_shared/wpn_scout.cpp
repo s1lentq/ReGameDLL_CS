@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-LINK_ENTITY_TO_CLASS(weapon_scout, CSCOUT);
+LINK_ENTITY_TO_CLASS(weapon_scout, CSCOUT, CCSSCOUT);
 
 void CSCOUT::__MAKE_VHOOK(Spawn)()
 {

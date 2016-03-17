@@ -51,7 +51,6 @@ enum TANKBULLET
 class CFuncTank: public CBaseEntity
 {
 public:
-	CFuncTank();
 	virtual void Spawn();
 	virtual void Precache();
 	virtual void KeyValue(KeyValueData *pkvd);
@@ -160,7 +159,6 @@ protected:
 class CFuncTankGun: public CFuncTank
 {
 public:
-	CFuncTankGun();
 	virtual void Fire(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker);
 
 #ifdef HOOK_GAMEDLL
@@ -172,7 +170,6 @@ public:
 class CFuncTankLaser: public CFuncTank
 {
 public:
-	CFuncTankLaser();
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
@@ -204,7 +201,6 @@ private:
 class CFuncTankRocket: public CFuncTank
 {
 public:
-	CFuncTankRocket();
 	virtual void Precache();
 	virtual void Fire(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker);
 
@@ -220,7 +216,6 @@ public:
 class CFuncTankMortar: public CFuncTank
 {
 public:
-	CFuncTankMortar();
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual void Fire(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker);
 
@@ -236,7 +231,6 @@ public:
 class CFuncTankControls: public CBaseEntity
 {
 public:
-	CFuncTankControls();
 	virtual void Spawn();
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);

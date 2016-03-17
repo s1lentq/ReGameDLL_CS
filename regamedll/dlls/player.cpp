@@ -323,8 +323,7 @@ void WriteSigonMessages()
 	}
 }
 
-LINK_ENTITY_TO_CLASS(player, CBasePlayer);
-LINK_CLASS_TO_WRAP(CBasePlayer, CCSPlayer);
+LINK_ENTITY_TO_CLASS(player, CBasePlayer, CCSPlayer);
 
 void SendItemStatus(CBasePlayer *pPlayer)
 {
@@ -482,7 +481,7 @@ CBasePlayer *CBasePlayer::GetNextRadioRecipient(CBasePlayer *pStartPlayer)
 			break;
 
 		bool bSend = false;
-		CBasePlayer *pPlayer = GetClassPtr((CBasePlayer *)pEntity->pev);
+		CBasePlayer *pPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev);
 
 		if (pEntity->IsPlayer())
 		{
@@ -536,7 +535,7 @@ void CBasePlayer::Radio(const char *msg_id, const char *msg_verbose, short pitch
 			break;
 
 		bool bSend = false;
-		CBasePlayer *pPlayer = GetClassPtr((CBasePlayer *)pEntity->pev);
+		CBasePlayer *pPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev);
 
 		if (pPlayer == NULL)
 			continue;
@@ -982,20 +981,15 @@ int CBasePlayer::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pe
 
 		if (bitsDamageType & DMG_EXPLOSION)
 		{
-			CBaseEntity *temp = GetClassPtr((CBaseEntity *)pevInflictor);
+			CBaseEntity *temp = GetClassPtr<CCSEntity>((CBaseEntity *)pevInflictor);
 
 			if (!Q_strcmp(STRING(temp->pev->classname), "grenade"))
 			{
-				CGrenade *pGrenade = GetClassPtr((CGrenade *)pevInflictor);
+				CGrenade *pGrenade = GetClassPtr<CCSGrenade>((CGrenade *)pevInflictor);
 
 				if (CVAR_GET_FLOAT("mp_friendlyfire"))
 				{
-#ifdef REGAMEDLL_ADD
-					if (friendlyfire.string[0] == '2')
-						bTeamAttack = FALSE;
-					else
-#endif
-					if (pGrenade->m_iTeam == m_iTeam)
+					if (!CSGameRules()->IsFriendlyFireAttack() && pGrenade->m_iTeam == m_iTeam)
 						bTeamAttack = TRUE;
 
 					pAttack = dynamic_cast<CBasePlayer *>(CBasePlayer::Instance(pevAttacker));
@@ -1147,17 +1141,13 @@ int CBasePlayer::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pe
 	if (!IsAlive())
 		return 0;
 
-	pAttacker = GetClassPtr((CBaseEntity *)pevAttacker);
+	pAttacker = GetClassPtr<CCSEntity>((CBaseEntity *)pevAttacker);
 
 	if (pAttacker->IsPlayer())
 	{
-		pAttack = GetClassPtr((CBasePlayer *)pevAttacker);
+		pAttack = GetClassPtr<CCSPlayer>((CBasePlayer *)pevAttacker);
 
-		bool bAttackFFA = false;
-#ifdef REGAMEDLL_ADD
-		if (friendlyfire.string[0] == '2')
-			bAttackFFA = true;
-#endif
+		bool bAttackFFA = CSGameRules()->IsFriendlyFireAttack();
 
 		// warn about team attacks
 		if (pAttack != this && pAttack->m_iTeam == m_iTeam && !bAttackFFA)
@@ -1186,7 +1176,7 @@ int CBasePlayer::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pe
 					if (FNullEnt(pBasePlayer->edict()))
 						break;
 
-					CBasePlayer *basePlayer = GetClassPtr((CBasePlayer *)pBasePlayer->pev);
+					CBasePlayer *basePlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pBasePlayer->pev);
 
 					if (basePlayer->m_iTeam == m_iTeam)
 					{
@@ -1606,7 +1596,7 @@ void CBasePlayer::SetProgressBarTime(int time)
 		if (FNullEnt(pPlayer->edict()))
 			break;
 
-		CBasePlayer *player = GetClassPtr((CBasePlayer *)pPlayer->pev);
+		CBasePlayer *player = GetClassPtr<CCSPlayer>((CBasePlayer *)pPlayer->pev);
 
 		if (player->IsObserver() == OBS_IN_EYE && player->pev->iuser2 == myIndex)
 		{
@@ -1646,7 +1636,7 @@ void CBasePlayer::SetProgressBarTime2(int time, float timeElapsed)
 		if (FNullEnt(pPlayer->edict()))
 			break;
 
-		CBasePlayer *player = GetClassPtr((CBasePlayer *)pPlayer->pev);
+		CBasePlayer *player = GetClassPtr<CCSPlayer>((CBasePlayer *)pPlayer->pev);
 
 		if (player->IsObserver() == OBS_IN_EYE && player->pev->iuser2 == myIndex)
 		{
@@ -2859,7 +2849,7 @@ NOXREF void CBasePlayer::ThrowWeapon(char *pszItemName)
 	}
 }
 
-LINK_ENTITY_TO_CLASS(weapon_shield, CWShield);
+LINK_ENTITY_TO_CLASS(weapon_shield, CWShield, CCSShield);
 
 void CWShield::__MAKE_VHOOK(Spawn)()
 {
@@ -4725,7 +4715,11 @@ void CBasePlayer::__MAKE_VHOOK(PostThink)()
 
 	StudioFrameAdvance();
 	CheckPowerups();
+
+	// s1lent: this is useless for CS 1.6
+#ifndef REGAMEDLL_FIXES
 	UpdatePlayerSound();
+#endif
 
 pt_end:
 #ifdef CLIENT_WEAPONS
@@ -5655,7 +5649,7 @@ void CSprayCan::Spawn(entvars_t *pevOwner)
 	pev->owner = ENT(pevOwner);
 	pev->frame = 0;
 
-	pev->nextthink = gpGlobals->time + 0.1;
+	pev->nextthink = gpGlobals->time + 0.1f;
 	EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/sprayer.wav", VOL_NORM, ATTN_NORM);
 }
 
@@ -5693,7 +5687,7 @@ void CSprayCan::__MAKE_VHOOK(Think)()
 			UTIL_Remove(this);
 	}
 
-	pev->nextthink = gpGlobals->time + 0.1;
+	pev->nextthink = gpGlobals->time + 0.1f;
 }
 
 void CBloodSplat::Spawn(entvars_t *pevOwner)
@@ -5703,7 +5697,7 @@ void CBloodSplat::Spawn(entvars_t *pevOwner)
 	pev->owner = ENT(pevOwner);
 
 	SetThink(&CBloodSplat::Spray);
-	pev->nextthink = gpGlobals->time + 0.1;
+	pev->nextthink = gpGlobals->time + 0.1f;
 }
 
 void CBloodSplat::Spray()
@@ -5717,7 +5711,7 @@ void CBloodSplat::Spray()
 	}
 
 	SetThink(&CBloodSplat::SUB_Remove);
-	pev->nextthink = gpGlobals->time + 0.1;
+	pev->nextthink = gpGlobals->time + 0.1f;
 }
 
 void CBasePlayer::GiveNamedItem(const char *pszName)
@@ -5864,7 +5858,7 @@ void CBasePlayer::__MAKE_VHOOK(ImpulseCommands)()
 			{
 				// line hit something, so paint a decal
 				m_flNextDecalTime = gpGlobals->time + CVAR_GET_FLOAT("decalfrequency");
-				CSprayCan *pCan = GetClassPtr((CSprayCan *)NULL);
+				CSprayCan *pCan = GetClassPtr<CCSSprayCan>((CSprayCan *)NULL);
 				pCan->Spawn(pev);
 			}
 			break;
@@ -6006,7 +6000,7 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 			if (tr.flFraction != 1.0f)
 			{
 				// line hit something, so paint a decal
-				CBloodSplat *pBlood = GetClassPtr((CBloodSplat *)NULL);
+				CBloodSplat *pBlood = GetClassPtr<CCSBloodSplat>((CBloodSplat *)NULL);
 				pBlood->Spawn(pev);
 			}
 			break;
@@ -6772,7 +6766,7 @@ void CBasePlayer::__MAKE_VHOOK(UpdateClientData)()
 				if (!pEntity || i == entindex())
 					continue;
 
-				CBasePlayer *pPlayer = GetClassPtr((CBasePlayer *)pEntity->pev);
+				CBasePlayer *pPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev);
 
 				if (pPlayer->pev->flags == FL_DORMANT)
 					continue;
@@ -7200,7 +7194,7 @@ void CBasePlayer::DropPlayerItem(const char *pszItemName)
 
 						if (pEntity->pev->flags != FL_DORMANT)
 						{
-							CBasePlayer *pOther = GetClassPtr((CBasePlayer *)pEntity->pev);
+							CBasePlayer *pOther = GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev);
 
 							if (pOther->pev->deadflag == DEAD_NO && pOther->m_iTeam == TERRORIST)
 							{
@@ -7545,7 +7539,7 @@ void CDeadHEV::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CBaseMonster::KeyValue(pkvd);
 }
 
-LINK_ENTITY_TO_CLASS(monster_hevsuit_dead, CDeadHEV);
+LINK_ENTITY_TO_CLASS(monster_hevsuit_dead, CDeadHEV, CCSDeadHEV);
 
 void CDeadHEV::__MAKE_VHOOK(Spawn)()
 {
@@ -7572,7 +7566,7 @@ void CDeadHEV::__MAKE_VHOOK(Spawn)()
 	MonsterInitDead();
 }
 
-LINK_ENTITY_TO_CLASS(player_weaponstrip, CStripWeapons);
+LINK_ENTITY_TO_CLASS(player_weaponstrip, CStripWeapons, CCSStripWeapons);
 
 void CStripWeapons::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
@@ -7593,7 +7587,7 @@ void CStripWeapons::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCal
 	}
 }
 
-LINK_ENTITY_TO_CLASS(player_loadsaved, CRevertSaved);
+LINK_ENTITY_TO_CLASS(player_loadsaved, CRevertSaved, CCSRevertSaved);
 IMPLEMENT_SAVERESTORE(CRevertSaved, CPointEntity);
 
 void CRevertSaved::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
@@ -7670,7 +7664,7 @@ void CInfoIntermission::__MAKE_VHOOK(Think)()
 	}
 }
 
-LINK_ENTITY_TO_CLASS(info_intermission, CInfoIntermission);
+LINK_ENTITY_TO_CLASS(info_intermission, CInfoIntermission, CCSInfoIntermission);
 
 void CBasePlayer::StudioEstimateGait()
 {

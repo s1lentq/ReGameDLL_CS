@@ -70,7 +70,6 @@ typedef enum
 class CBreakable: public CBaseDelay
 {
 public:
-	CBreakable();
 	// basic functions
 	virtual void Spawn();
 	virtual void Precache();
@@ -144,7 +143,6 @@ public:
 class CPushable: public CBreakable
 {
 public:
-	CPushable();
 	virtual void Spawn();
 	virtual void Precache();
 	virtual void KeyValue(KeyValueData *pkvd);

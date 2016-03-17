@@ -83,8 +83,6 @@ BOOL gTouchDisabled = FALSE;
 
 #endif // HOOK_GAMEDLL
 
-const std::type_info *g_typeInfo = NULL;
-
 int CaseInsensitiveHash(const char *string, int iBounds)
 {
 	unsigned int hash = 0;
@@ -1086,5 +1084,3 @@ void OnFreeEntPrivateData(edict_t *pEnt)
 	RemoveEntityHashValue(pEntity->pev, STRING(pEntity->pev->classname), CLASSNAME);
 	Regamedll_FreeEntities(pEntity);
 }
-
-//LINK_CLASS_TO_WRAP(CBaseEntity, CCSEntity);

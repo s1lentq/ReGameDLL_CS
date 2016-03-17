@@ -191,7 +191,7 @@ void CMapInfo::__MAKE_VHOOK(Spawn)()
 	pev->effects |= EF_NODRAW;
 }
 
-LINK_ENTITY_TO_CLASS(info_map_parameters, CMapInfo);
+LINK_ENTITY_TO_CLASS(info_map_parameters, CMapInfo, CCSMapInfo);
 
 bool CCStrikeGameMgrHelper::__MAKE_VHOOK(CanPlayerHearPlayer)(CBasePlayer *pListener, CBasePlayer *pSender)
 {
@@ -775,7 +775,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(GiveC4)()
 		if (pPlayer->pev->flags == FL_DORMANT)
 			continue;
 
-		CBasePlayer *player = GetClassPtr((CBasePlayer *)pPlayer->pev);
+		CBasePlayer *player = GetClassPtr<CCSPlayer>((CBasePlayer *)pPlayer->pev);
 
 		if (player->pev->deadflag != DEAD_NO || player->m_iTeam != TERRORIST || (giveToHumans && player->IsBot()))
 			continue;
@@ -813,7 +813,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(GiveC4)()
 			if (pPlayer->pev->flags == FL_DORMANT)
 				continue;
 
-			CBasePlayer *player = GetClassPtr((CBasePlayer *)pPlayer->pev);
+			CBasePlayer *player = GetClassPtr<CCSPlayer>((CBasePlayer *)pPlayer->pev);
 
 			if (player->pev->deadflag != DEAD_NO || player->m_iTeam != TERRORIST)
 				continue;
@@ -1010,7 +1010,7 @@ void CHalfLifeMultiplay::InitializePlayerCounts(int &NumAliveTerrorist, int &Num
 			break;
 		}
 
-		CBasePlayer *player = GetClassPtr((CBasePlayer *)pPlayer->pev);
+		CBasePlayer *player = GetClassPtr<CCSPlayer>((CBasePlayer *)pPlayer->pev);
 
 		if (pPlayer->pev->flags == FL_DORMANT)
 		{
@@ -1487,7 +1487,7 @@ void CHalfLifeMultiplay::SwapAllPlayers()
 		if (pPlayer->pev->flags == FL_DORMANT)
 			continue;
 
-		CBasePlayer *player = GetClassPtr((CBasePlayer *)pPlayer->pev);
+		CBasePlayer *player = GetClassPtr<CCSPlayer>((CBasePlayer *)pPlayer->pev);
 		player->SwitchTeam();
 	}
 
@@ -1576,7 +1576,7 @@ void CHalfLifeMultiplay::BalanceTeams()
 			if (pPlayer->pev->flags == FL_DORMANT)
 				continue;
 
-			CBasePlayer *player = GetClassPtr((CBasePlayer *)pPlayer->pev);
+			CBasePlayer *player = GetClassPtr<CCSPlayer>((CBasePlayer *)pPlayer->pev);
 
 			if (player->m_iTeam == iTeamToSwap && GETPLAYERUSERID(player->edict()) > iHighestUserID && m_pVIP != player)
 			{
@@ -1939,7 +1939,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(RestartRound)()
 		if (pPlayer->pev->flags == FL_DORMANT)
 			continue;
 
-		CBasePlayer *player = GetClassPtr((CBasePlayer *)pPlayer->pev);
+		CBasePlayer *player = GetClassPtr<CCSPlayer>((CBasePlayer *)pPlayer->pev);
 
 		player->m_iNumSpawns = 0;
 		player->m_bTeamChanged = false;
@@ -2249,9 +2249,7 @@ void CHalfLifeMultiplay::PickNextVIP()
 	// If it's been the same VIP for 3 rounds already.. then randomly pick a new one
 	else if (m_iConsecutiveVIP >= 3)
 	{
-		++m_iLastPick;
-
-		if (m_iLastPick > m_iNumCT)
+		if (++m_iLastPick > m_iNumCT)
 			m_iLastPick = 1;
 
 		int iCount = 1;
@@ -2266,7 +2264,7 @@ void CHalfLifeMultiplay::PickNextVIP()
 		{
 			if (!(pPlayer->pev->flags & FL_DORMANT))
 			{
-				player = GetClassPtr((CBasePlayer *)pPlayer->pev);
+				player = GetClassPtr<CCSPlayer>((CBasePlayer *)pPlayer->pev);
 
 				if (player->m_iTeam == CT && iCount == m_iLastPick)
 				{
@@ -2305,7 +2303,7 @@ void CHalfLifeMultiplay::PickNextVIP()
 		{
 			if (pPlayer->pev->flags != FL_DORMANT)
 			{
-				player = GetClassPtr((CBasePlayer *)pPlayer->pev);
+				player = GetClassPtr<CCSPlayer>((CBasePlayer *)pPlayer->pev);
 
 				if (player->m_iTeam == CT)
 				{
@@ -2756,7 +2754,7 @@ void CHalfLifeMultiplay::CheckRoundTimeExpired()
 		if (!C4->m_bJustBlew)
 			flEndRoundTime = C4->m_flC4Blow;
 		else
-			flEndRoundTime = gpGlobals->time + 5.0;
+			flEndRoundTime = gpGlobals->time + 5.0f;
 	}
 #endif
 
@@ -3549,13 +3547,8 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(PlayerKilled)(CBasePlayer *pVictim, entvar
 	else if (peKiller && peKiller->IsPlayer())
 	{
 		// if a player dies in a deathmatch game and the killer is a client, award the killer some points
-		CBasePlayer *killer = GetClassPtr((CBasePlayer *)pKiller);
-		bool killedByFFA = false;
-
-#ifdef REGAMEDLL_ADD
-		if (friendlyfire.string[0] == '2')
-			killedByFFA = true;
-#endif
+		CBasePlayer *killer = GetClassPtr<CCSPlayer>((CBasePlayer *)pKiller);
+		bool killedByFFA = CSGameRules()->IsFriendlyFireAttack();
 
 		if (killer->m_iTeam == pVictim->m_iTeam && !killedByFFA)
 		{
@@ -3932,8 +3925,8 @@ int CHalfLifeMultiplay::__MAKE_VHOOK(PlayerRelationship)(CBasePlayer *pPlayer, C
 		return GR_NOTTEAMMATE;
 	}
 
-	CBasePlayer *player = GetClassPtr((CBasePlayer *)pPlayer->pev);
-	CBasePlayer *target = GetClassPtr((CBasePlayer *)pTarget->pev);
+	CBasePlayer *player = GetClassPtr<CCSPlayer>((CBasePlayer *)pPlayer->pev);
+	CBasePlayer *target = GetClassPtr<CCSPlayer>((CBasePlayer *)pTarget->pev);
 
 	if (player->m_iTeam != target->m_iTeam)
 	{
@@ -4348,7 +4341,7 @@ void CHalfLifeMultiplay::ResetAllMapVotes()
 		if (FNullEnt(pTempEntity->edict()))
 			break;
 
-		CBasePlayer *pTempPlayer = GetClassPtr((CBasePlayer *)pTempEntity->pev);
+		CBasePlayer *pTempPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pTempEntity->pev);
 
 		if (pTempPlayer->m_iTeam != UNASSIGNED)
 		{
@@ -4448,7 +4441,7 @@ void CHalfLifeMultiplay::ProcessMapVote(CBasePlayer *player, int iVote)
 		if (FNullEnt(pTempEntity->edict()))
 			break;
 
-		CBasePlayer *pTempPlayer = GetClassPtr((CBasePlayer *)pTempEntity->pev);
+		CBasePlayer *pTempPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pTempEntity->pev);
 
 		if (pTempPlayer->m_iTeam != UNASSIGNED)
 		{

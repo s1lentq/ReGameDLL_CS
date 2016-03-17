@@ -26,8 +26,7 @@ TYPEDESCRIPTION CGrenade::m_SaveData[] =
 
 #endif
 
-LINK_ENTITY_TO_CLASS(grenade, CGrenade);
-LINK_CLASS_TO_WRAP(CGrenade, CCSGrenade);
+LINK_ENTITY_TO_CLASS(grenade, CGrenade, CCSGrenade);
 
 void CGrenade::Explode(Vector vecSrc, Vector vecAim)
 {
@@ -823,7 +822,7 @@ void CGrenade::__MAKE_VHOOK(Spawn)()
 
 NOXREF CGrenade *CGrenade::ShootContact(entvars_t *pevOwner, Vector vecStart, Vector vecVelocity)
 {
-	CGrenade *pGrenade = GetClassPtr((CGrenade *)NULL);
+	CGrenade *pGrenade = GetClassPtr<CCSGrenade>((CGrenade *)NULL);
 	pGrenade->Spawn();
 
 	// contact grenades arc lower
@@ -851,7 +850,7 @@ NOXREF CGrenade *CGrenade::ShootContact(entvars_t *pevOwner, Vector vecStart, Ve
 
 CGrenade *CGrenade::ShootTimed2(entvars_t *pevOwner, Vector vecStart, Vector vecVelocity, float time, int iTeam, unsigned short usEvent)
 {
-	CGrenade *pGrenade = GetClassPtr((CGrenade *)NULL);
+	CGrenade *pGrenade = GetClassPtr<CCSGrenade>((CGrenade *)NULL);
 	pGrenade->Spawn();
 
 	UTIL_SetOrigin(pGrenade->pev, vecStart);
@@ -885,7 +884,7 @@ CGrenade *CGrenade::ShootTimed2(entvars_t *pevOwner, Vector vecStart, Vector vec
 
 CGrenade *CGrenade::ShootTimed(entvars_t *pevOwner, Vector vecStart, Vector vecVelocity, float time)
 {
-	CGrenade *pGrenade = GetClassPtr((CGrenade *)NULL);
+	CGrenade *pGrenade = GetClassPtr<CCSGrenade>((CGrenade *)NULL);
 	pGrenade->Spawn();
 
 	UTIL_SetOrigin(pGrenade->pev, vecStart);
@@ -929,7 +928,7 @@ void CGrenade::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, 
 	if (!m_bIsC4)
 		return;
 
-	CBasePlayer *player = GetClassPtr((CBasePlayer *)pActivator->pev);
+	CBasePlayer *player = GetClassPtr<CCSPlayer>((CBasePlayer *)pActivator->pev);
 
 	// For CTs to defuse the c4
 	if (player->m_iTeam != CT)
@@ -1003,7 +1002,7 @@ void CGrenade::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, 
 
 CGrenade *CGrenade::ShootSatchelCharge(entvars_t *pevOwner, Vector vecStart, Vector vecAngles)
 {
-	CGrenade *pGrenade = GetClassPtr((CGrenade *)NULL);
+	CGrenade *pGrenade = GetClassPtr<CCSGrenade>((CGrenade *)NULL);
 	pGrenade->pev->movetype = MOVETYPE_TOSS;
 
 	MAKE_STRING_CLASS("grenade", pGrenade->pev);
@@ -1057,7 +1056,7 @@ CGrenade *CGrenade::ShootSatchelCharge(entvars_t *pevOwner, Vector vecStart, Vec
 
 CGrenade *CGrenade::ShootSmokeGrenade(entvars_t *pevOwner, Vector vecStart, Vector vecVelocity, float time, unsigned short usEvent)
 {
-	CGrenade *pGrenade = GetClassPtr((CGrenade *)NULL);
+	CGrenade *pGrenade = GetClassPtr<CCSGrenade>((CGrenade *)NULL);
 	pGrenade->Spawn();
 
 	UTIL_SetOrigin(pGrenade->pev, vecStart);

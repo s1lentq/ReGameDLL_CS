@@ -563,6 +563,16 @@ public:
 	bool IsMatchStarted() { return (m_fTeamCount != 0.0f || m_fCareerRoundMenuTime != 0.0f || m_fCareerMatchMenuTime != 0.0f); }
 	void SendMOTDToClient(edict_t *client);
 
+	// allow the mode of fire on a friendly player (FFA)
+	inline bool IsFriendlyFireAttack() const
+	{
+#ifdef REGAMEDLL_ADD
+		if (friendlyfire.string[0] == '2')
+			return true;
+#endif
+		return false;
+	}
+
 private:
 	bool HasRoundTimeExpired();
 	bool IsBombPlanted();

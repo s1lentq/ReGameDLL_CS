@@ -68,7 +68,7 @@ bool CCSBot::__MAKE_VHOOK(Jump)(bool mustJump)
 // NOTE: We dont want to directly call Attack() here, or the bots will have super-human reaction times when injured
 int CCSBot::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
-	CBaseEntity *attacker = GetClassPtr((CBaseEntity *)pevInflictor);
+	CBaseEntity *attacker = GetClassPtr<CCSEntity>((CBaseEntity *)pevInflictor);
 
 	// if we were attacked by a teammate, rebuke
 	if (attacker->IsPlayer())

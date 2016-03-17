@@ -744,7 +744,7 @@ public:
 };
 
 void PlayCDTrack(int iTrack);
-int BuildChangeList(LEVELLIST * pLevelList, int maxList);
+int BuildChangeList(LEVELLIST *pLevelList, int maxList);
 void NextLevel();
 
 #endif // TRIGGERS_H

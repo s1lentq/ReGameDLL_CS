@@ -34,7 +34,7 @@
 
 class BotProfile;
 
-template <class T>
+template <class T, class TWrap>
 T *CreateBot(const BotProfile *profile)
 {
 	edict_t *pentBot;
@@ -57,7 +57,7 @@ T *CreateBot(const BotProfile *profile)
 	{
 		T *pBot = NULL;
 		FREE_PRIVATE(pentBot);
-		pBot = GetClassPtr((T *)VARS(pentBot));
+		pBot = GetClassPtr<TWrap>((T *)VARS(pentBot));
 		pBot->Initialize(profile);
 
 		return pBot;

@@ -71,7 +71,6 @@
 class CSprite: public CPointEntity
 {
 public:
-	CSprite();
 	virtual void Spawn();
 	virtual void Precache();
 	virtual void Restart();
@@ -157,7 +156,6 @@ private:
 class CBeam: public CBaseEntity
 {
 public:
-	CBeam();
 	virtual void Spawn();
 	virtual void Precache();
 	virtual int ObjectCaps()
@@ -240,7 +238,6 @@ public:
 class CLaser: public CBeam
 {
 public:
-	CLaser();
 	virtual void Spawn();
 	virtual void Precache();
 	virtual void KeyValue(KeyValueData *pkvd);
@@ -278,7 +275,6 @@ public:
 class CBubbling: public CBaseEntity
 {
 public:
-	CBubbling();
 	virtual void Spawn();
 	virtual void Precache();
 	virtual void KeyValue(KeyValueData *pkvd);
@@ -313,7 +309,6 @@ public:
 class CLightning: public CBeam
 {
 public:
-	CLightning();
 	virtual void Spawn();
 	virtual void Precache();
 	virtual void KeyValue(KeyValueData *pkvd);
@@ -371,7 +366,6 @@ public:
 class CGlow: public CPointEntity
 {
 public:
-	CGlow();
 	virtual void Spawn();
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
@@ -398,7 +392,6 @@ public:
 class CBombGlow: public CSprite
 {
 public:
-	CBombGlow();
 	virtual void Spawn();
 	virtual void Think();
 
@@ -418,7 +411,6 @@ public:
 class CGibShooter: public CBaseDelay
 {
 public:
-	CGibShooter();
 	virtual void Spawn();
 	virtual void Precache();
 	virtual void KeyValue(KeyValueData *pkvd);
@@ -458,7 +450,6 @@ public:
 class CEnvShooter: public CGibShooter
 {
 public:
-	CEnvShooter();
 	virtual void Precache();
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual CGib *CreateGib();
@@ -478,7 +469,6 @@ public:
 class CTestEffect: public CBaseDelay
 {
 public:
-	CTestEffect();
 	virtual void Spawn();
 	virtual void Precache();
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
@@ -507,7 +497,6 @@ public:
 class CBlood: public CPointEntity
 {
 public:
-	CBlood();
 	virtual void Spawn();
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
@@ -535,7 +524,6 @@ public:
 class CShake: public CPointEntity
 {
 public:
-	CShake();
 	virtual void Spawn();
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
@@ -563,7 +551,6 @@ public:
 class CFade: public CPointEntity
 {
 public:
-	CFade();
 	virtual void Spawn();
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
@@ -587,7 +574,6 @@ public:
 class CMessage: public CPointEntity
 {
 public:
-	CMessage();
 	virtual void Spawn();
 	virtual void Precache();
 	virtual void KeyValue(KeyValueData *pkvd);
@@ -607,7 +593,6 @@ public:
 class CEnvFunnel: public CBaseDelay
 {
 public:
-	CEnvFunnel();
 	virtual void Spawn();
 	virtual void Precache();
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
@@ -627,7 +612,6 @@ public:
 class CEnvBeverage: public CBaseDelay
 {
 public:
-	CEnvBeverage();
 	virtual void Spawn();
 	virtual void Precache();
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
@@ -645,7 +629,6 @@ public:
 class CItemSoda: public CBaseEntity
 {
 public:
-	CItemSoda();
 	virtual void Spawn();
 	virtual void Precache();
 

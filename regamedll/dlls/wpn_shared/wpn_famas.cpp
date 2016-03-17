@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-LINK_ENTITY_TO_CLASS(weapon_famas, CFamas);
+LINK_ENTITY_TO_CLASS(weapon_famas, CFamas, CCSFamas);
 
 void CFamas::__MAKE_VHOOK(Spawn)()
 {

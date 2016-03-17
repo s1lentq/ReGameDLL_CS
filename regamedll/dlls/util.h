@@ -159,19 +159,13 @@ extern globalvars_t *gpGlobals;
 #endif
 
 #define REGAMEDLL_ALLOC_FUNC
-#define LINK_ENTITY_TO_CLASS(mapClassName, DLLClassName)\
+#define LINK_ENTITY_TO_CLASS(mapClassName, DLLClassName, DLLClassWrapName)\
 	C_DLLEXPORT void EXT_FUNC mapClassName(entvars_t *pev);\
 	void mapClassName(entvars_t *pev)\
 	{\
 		REGAMEDLL_ALLOC_FUNC\
-		GetClassPtr((DLLClassName *)pev);\
+		GetClassPtr<DLLClassWrapName>((DLLClassName *)pev);\
 	}
-
-#define LINK_CLASS_TO_WRAP(className, classNameWrap)\
-	className::className()\
-	{\
-		GetClassPtrWrap<classNameWrap>(this);\
-	}\
 
 typedef enum
 {

@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-LINK_ENTITY_TO_CLASS(weapon_mac10, CMAC10);
+LINK_ENTITY_TO_CLASS(weapon_mac10, CMAC10, CCSMAC10);
 
 void CMAC10::__MAKE_VHOOK(Spawn)()
 {

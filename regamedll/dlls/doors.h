@@ -51,7 +51,6 @@
 class CBaseDoor: public CBaseToggle
 {
 public:
-	CBaseDoor();
 	virtual void Spawn();
 	virtual void Precache();
 	virtual void Restart();
@@ -113,7 +112,6 @@ public:
 class CRotDoor: public CBaseDoor
 {
 public:
-	CRotDoor();
 	virtual void Spawn();
 	virtual void Restart();
 	virtual void SetToggleState(int state);
@@ -131,7 +129,6 @@ public:
 class CMomentaryDoor: public CBaseToggle
 {
 public:
-	CMomentaryDoor();
 	virtual void Spawn();
 	virtual void Precache();
 	virtual void KeyValue(KeyValueData *pkvd);

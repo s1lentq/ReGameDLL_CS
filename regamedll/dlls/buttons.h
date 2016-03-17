@@ -57,7 +57,6 @@
 class CEnvGlobal: public CPointEntity
 {
 public:
-	CEnvGlobal();
 	virtual void Spawn();
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual int Save(CSave &save);
@@ -85,7 +84,6 @@ public:
 class CRotButton: public CBaseButton
 {
 public:
-	CRotButton();
 	virtual void Spawn();
 
 #ifdef HOOK_GAMEDLL
@@ -98,7 +96,6 @@ public:
 class CMomentaryRotButton: public CBaseToggle
 {
 public:
-	CMomentaryRotButton();
 	virtual void Spawn();
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual int Save(CSave &save);
@@ -150,7 +147,6 @@ public:
 class CEnvSpark: public CBaseEntity
 {
 public:
-	CEnvSpark();
 	virtual void Spawn();
 	virtual void Precache();
 	virtual void KeyValue(KeyValueData *pkvd);
@@ -180,7 +176,6 @@ public:
 class CButtonTarget: public CBaseEntity
 {
 public:
-	CButtonTarget();
 	virtual void Spawn();
 	virtual int ObjectCaps();
 	virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);

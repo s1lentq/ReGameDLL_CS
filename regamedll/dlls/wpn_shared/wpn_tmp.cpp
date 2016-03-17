@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-LINK_ENTITY_TO_CLASS(weapon_tmp, CTMP);
+LINK_ENTITY_TO_CLASS(weapon_tmp, CTMP, CCSTMP);
 
 void CTMP::__MAKE_VHOOK(Spawn)()
 {

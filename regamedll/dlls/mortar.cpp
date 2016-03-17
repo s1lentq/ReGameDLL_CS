@@ -17,7 +17,7 @@ TYPEDESCRIPTION CFuncMortarField::m_SaveData[] =
 
 #endif
 
-LINK_ENTITY_TO_CLASS(func_mortar_field, CFuncMortarField);
+LINK_ENTITY_TO_CLASS(func_mortar_field, CFuncMortarField, CCSFuncMortarField);
 IMPLEMENT_SAVERESTORE(CFuncMortarField, CBaseToggle);
 
 void CFuncMortarField::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
@@ -152,7 +152,7 @@ void CFuncMortarField::FieldUse(CBaseEntity *pActivator, CBaseEntity *pCaller, U
 	}
 }
 
-LINK_ENTITY_TO_CLASS(monster_mortar, CMortar);
+LINK_ENTITY_TO_CLASS(monster_mortar, CMortar, CCSMortar);
 
 void CMortar::__MAKE_VHOOK(Spawn)()
 {

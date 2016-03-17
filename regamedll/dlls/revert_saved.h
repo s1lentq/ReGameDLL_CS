@@ -35,10 +35,10 @@
 class CRevertSaved: public CPointEntity
 {
 public:
-	void KeyValue(KeyValueData *pkvd);
-	int Save(CSave &save);
-	int Restore(CRestore &restore);
-	void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	virtual void KeyValue(KeyValueData *pkvd);
+	virtual int Save(CSave &save);
+	virtual int Restore(CRestore &restore);
+	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 #ifdef HOOK_GAMEDLL
 

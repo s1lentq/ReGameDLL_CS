@@ -42,7 +42,6 @@
 class CItem: public CBaseEntity
 {
 public:
-	CItem();
 	virtual void Spawn();
 	virtual CBaseEntity *Respawn();
 	virtual BOOL MyTouch(CBasePlayer *pPlayer) { return FALSE; }
@@ -62,7 +61,6 @@ public:
 class CWorldItem: public CBaseEntity
 {
 public:
-	CWorldItem();
 	virtual void Spawn();
 	virtual void KeyValue(KeyValueData *pkvd);
 
@@ -80,7 +78,6 @@ public:
 class CItemSuit: public CItem
 {
 public:
-	CItemSuit();
 	virtual void Spawn();
 	virtual void Precache();
 	virtual BOOL MyTouch(CBasePlayer *pPlayer);
@@ -98,7 +95,6 @@ public:
 class CItemBattery: public CItem
 {
 public:
-	CItemBattery();
 	virtual void Spawn();
 	virtual void Precache();
 	virtual BOOL MyTouch(CBasePlayer *pPlayer);
@@ -116,7 +112,6 @@ public:
 class CItemAntidote: public CItem
 {
 public:
-	CItemAntidote();
 	virtual void Spawn();
 	virtual void Precache();
 	virtual BOOL MyTouch(CBasePlayer *pPlayer);
@@ -134,7 +129,6 @@ public:
 class CItemSecurity: public CItem
 {
 public:
-	CItemSecurity();
 	virtual void Spawn();
 	virtual void Precache();
 	virtual BOOL MyTouch(CBasePlayer *pPlayer);
@@ -152,7 +146,6 @@ public:
 class CItemLongJump: public CItem
 {
 public:
-	CItemLongJump();
 	virtual void Spawn();
 	virtual void Precache();
 	virtual BOOL MyTouch(CBasePlayer *pPlayer);
@@ -170,7 +163,6 @@ public:
 class CItemKevlar: public CItem
 {
 public:
-	CItemKevlar();
 	virtual void Spawn();
 	virtual void Precache();
 	virtual BOOL MyTouch(CBasePlayer *pPlayer);
@@ -188,7 +180,6 @@ public:
 class CItemAssaultSuit: public CItem
 {
 public:
-	CItemAssaultSuit();
 	virtual void Spawn();
 	virtual void Precache();
 	virtual BOOL MyTouch(CBasePlayer *pPlayer);
@@ -206,7 +197,6 @@ public:
 class CItemThighPack: public CItem
 {
 public:
-	CItemThighPack();
 	virtual void Spawn();
 	virtual void Precache();
 	virtual BOOL MyTouch(CBasePlayer *pPlayer);

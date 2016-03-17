@@ -42,7 +42,6 @@
 class CShower: public CBaseEntity
 {
 public:
-	CShower();
 	virtual void Spawn();
 	virtual int ObjectCaps() { return FCAP_DONT_SAVE; }
 	virtual void Think();
@@ -61,7 +60,6 @@ public:
 class CEnvExplosion: public CBaseMonster
 {
 public:
-	CEnvExplosion();
 	virtual void Spawn();
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual int Save(CSave &save);

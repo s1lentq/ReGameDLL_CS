@@ -35,6 +35,7 @@ class CRestore;
 class CCSEntity;
 class CCSPlayer;
 class CCSMonster;
+class BotProfile;
 class CCSWeaponBox;
 class CCSPlayerItem;
 class CCSPlayerWeapon;
@@ -42,6 +43,16 @@ class CCSquadMonster;
 
 class ICSMonster;
 class ICSquadMonster;
+
+enum VisiblePartTypeBot:uint8
+{
+	NONE = 0x00,
+	CHEST = 0x01,
+	HEAD = 0x02,
+	LEFT_SIDE = 0x04,
+	RIGHT_SIDE = 0x08,
+	FEET = 0x10
+};
 
 class ICSEntity {
 public:
@@ -227,6 +238,14 @@ public:
 	virtual void Touch(CCSEntity *pOther) = 0;
 };
 
+class ICSArmoury: public ICSEntity {
+public:
+	virtual void Spawn() = 0;
+	virtual void Precache() = 0;
+	virtual void Restart() = 0;
+	virtual void KeyValue(struct KeyValueData_s *pkvd) = 0;
+};
+
 class ICSPlayer: public ICSMonster {
 	virtual void Spawn() = 0;
 	virtual void Precache() = 0;
@@ -271,11 +290,103 @@ class ICSPlayer: public ICSMonster {
 	virtual bool IsConnected() const = 0;
 };
 
+class IAPI_Bot: public ICSPlayer {
+public:
+	virtual void Spawn() = 0;
+	virtual int TakeDamage(struct entvars_s *pevInflictor, struct entvars_s *pevAttacker, float flDamage, int bitsDamageType) = 0;
+	virtual void Killed(struct entvars_s *pevAttacker, int iGib) = 0;
+	virtual void Think() = 0;
+	virtual bool IsBot() = 0;
+	virtual Vector GetAutoaimVector(float flDelta) = 0;
+	virtual void OnTouchingWeapon(CCSWeaponBox *box) = 0;
+	virtual bool Initialize(const BotProfile *profile) = 0;
+	virtual void SpawnBot() = 0;
+	virtual void Upkeep() = 0;
+	virtual void Update() = 0;
+	virtual void Run() = 0;
+	virtual void Walk() = 0;
+	virtual void Crouch() = 0;
+	virtual void StandUp() = 0;
+	virtual void MoveForward() = 0;
+	virtual void MoveBackward() = 0;
+	virtual void StrafeLeft() = 0;
+	virtual void StrafeRight() = 0;
+	virtual bool Jump(bool mustJump = false) = 0;
+	virtual void ClearMovement() = 0;
+	virtual void UseEnvironment() = 0;
+	virtual void PrimaryAttack() = 0;
+	virtual void ClearPrimaryAttack() = 0;
+	virtual void TogglePrimaryAttack() = 0;
+	virtual void SecondaryAttack() = 0;
+	virtual void Reload() = 0;
+	virtual void OnEvent(GameEventType event, CCSEntity *entity = NULL, CCSEntity *other = NULL) = 0;
+	virtual bool IsVisible(const Vector *pos, bool testFOV = false) const = 0;
+	virtual bool IsVisible(CCSPlayer *player, bool testFOV = false, unsigned char *visParts = NULL) const = 0;
+	virtual bool IsEnemyPartVisible(VisiblePartTypeBot part) const = 0;
+	virtual bool IsPlayerFacingMe(CCSPlayer *other) const = 0;
+	virtual bool IsPlayerLookingAtMe(CCSPlayer *other) const = 0;
+	virtual void ExecuteCommand() = 0;
+	virtual void SetModel(const char *modelName) = 0;
+};
+
+class IAPI_CSBot: public IAPI_Bot {
+public:
+	virtual int TakeDamage(struct entvars_s *pevInflictor, struct entvars_s *pevAttacker, float flDamage, int bitsDamageType) = 0;
+	virtual void Killed(struct entvars_s *pevAttacker, int iGib) = 0;
+	virtual void RoundRespawn() = 0;
+	virtual void Blind(float duration, float holdTime, float fadeTime, int alpha = 255) = 0;
+	virtual void OnTouchingWeapon(CCSWeaponBox *box) = 0;
+	virtual bool Initialize(const BotProfile *profile) = 0;
+	virtual void SpawnBot() = 0;
+	virtual void Upkeep() = 0;
+	virtual void Update() = 0;
+	virtual void Walk() = 0;
+	virtual bool Jump(bool mustJump = false) = 0;
+	virtual void OnEvent(GameEventType event, CCSEntity *entity = NULL, CCSEntity *other = NULL) = 0;
+	virtual bool IsVisible(const Vector *pos, bool testFOV = false) const = 0;
+	virtual bool IsVisible(CCSPlayer *player, bool testFOV = false, unsigned char *visParts = NULL) const = 0;
+	virtual bool IsEnemyPartVisible(VisiblePartTypeBot part) const = 0;
+};
+
+class ICSShield: public ICSEntity {
+public:
+	virtual void Spawn() = 0;
+	virtual void Touch(CCSEntity *pOther) = 0;
+};
+
+class ICSDeadHEV: public ICSMonster {
+public:
+	virtual void Spawn() = 0;
+	virtual void KeyValue(struct KeyValueData_s *pkvd) = 0;
+	virtual int Classify() = 0;
+};
+
+class ICSSprayCan: public ICSEntity {
+public:
+	virtual void Think() = 0;
+	virtual int ObjectCaps() = 0;
+};
+
+class ICSBloodSplat: public ICSEntity {
+public:
+};
+
 class ICSWorld: public ICSEntity {
 public:
 	virtual void Spawn() = 0;
 	virtual void Precache() = 0;
 	virtual void KeyValue(struct KeyValueData_s *pkvd) = 0;
+};
+
+class ICSDecal: public ICSEntity {
+public:
+	virtual void Spawn() = 0;
+	virtual void KeyValue(struct KeyValueData_s *pkvd) = 0;
+};
+
+class ICSCorpse: public ICSEntity {
+public:
+	virtual int ObjectCaps() = 0;
 };
 
 class ICSGrenade: public ICSMonster {
@@ -435,6 +546,25 @@ class ICSPointEntity: public ICSEntity {
 public:
 	virtual void Spawn() = 0;
 	virtual int ObjectCaps() = 0;
+};
+
+class ICSStripWeapons: public ICSPointEntity {
+public:
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) = 0;
+};
+
+class ICSInfoIntermission: public ICSPointEntity {
+public:
+	virtual void Spawn() = 0;
+	virtual void Think() = 0;
+};
+
+class ICSRevertSaved: public ICSPointEntity {
+public:
+	virtual void KeyValue(struct KeyValueData_s *pkvd) = 0;
+	virtual int Save(CSave &save) = 0;
+	virtual int Restore(CRestore &restore) = 0;
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) = 0;
 };
 
 class ICSEnvGlobal: public ICSPointEntity {
@@ -859,6 +989,17 @@ public:
 	virtual bool MyTouch(CCSPlayer *pPlayer) = 0;
 };
 
+class ICSWallHealth: public ICSToggle {
+public:
+	virtual void Spawn() = 0;
+	virtual void Precache() = 0;
+	virtual void KeyValue(struct KeyValueData_s *pkvd) = 0;
+	virtual int Save(CSave &save) = 0;
+	virtual int Restore(CRestore &restore) = 0;
+	virtual int ObjectCaps() = 0;
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) = 0;
+};
+
 class ICSItemSuit: public ICSItem {
 public:
 	virtual void Spawn() = 0;
@@ -915,3 +1056,1004 @@ public:
 	virtual bool MyTouch(CCSPlayer *pPlayer) = 0;
 };
 
+class ICSGrenCatch: public ICSEntity {
+public:
+	virtual void Spawn() = 0;
+	virtual void KeyValue(struct KeyValueData_s *pkvd) = 0;
+	virtual int Save(CSave &save) = 0;
+	virtual int Restore(CRestore &restore) = 0;
+	virtual int ObjectCaps() = 0;
+	virtual void Think() = 0;
+	virtual void Touch(CCSEntity *pOther) = 0;
+};
+
+class ICSFuncWeaponCheck: public ICSEntity {
+public:
+	virtual void Spawn() = 0;
+	virtual void KeyValue(struct KeyValueData_s *pkvd) = 0;
+	virtual int Save(CSave &save) = 0;
+	virtual int Restore(CRestore &restore) = 0;
+	virtual void Touch(CCSEntity *pOther) = 0;
+};
+
+class ICSHostage: public ICSMonster {
+public:
+	virtual void Spawn() = 0;
+	virtual void Precache() = 0;
+	virtual int ObjectCaps() = 0;
+	virtual int Classify() = 0;
+	virtual int TakeDamage(struct entvars_s *pevInflictor, struct entvars_s *pevAttacker, float flDamage, int bitsDamageType) = 0;
+	virtual int BloodColor() = 0;
+	virtual void Touch(CCSEntity *pOther) = 0;
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) = 0;
+};
+
+class ICSLight: public ICSPointEntity {
+public:
+	virtual void Spawn() = 0;
+	virtual void Restart() = 0;
+	virtual int Save(CSave &save) = 0;
+	virtual int Restore(CRestore &restore) = 0;
+	virtual void KeyValue(struct KeyValueData_s *pkvd) = 0;
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) = 0;
+};
+
+class ICSEnvLight: public ICSLight {
+public:
+	virtual void Spawn() = 0;
+	virtual void KeyValue(struct KeyValueData_s *pkvd) = 0;
+};
+
+class ICSRuleEntity: public ICSEntity {
+public:
+	virtual void Spawn() = 0;
+	virtual void KeyValue(struct KeyValueData_s *pkvd) = 0;
+	virtual int Save(CSave &save) = 0;
+	virtual int Restore(CRestore &restore) = 0;
+};
+
+class ICSRulePointEntity: public ICSRuleEntity {
+public:
+	virtual void Spawn() = 0;
+};
+
+class ICSRuleBrushEntity: public ICSRuleEntity {
+public:
+	virtual void Spawn() = 0;
+};
+
+class ICSGameScore: public ICSRulePointEntity {
+public:
+	virtual void Spawn() = 0;
+	virtual void KeyValue(struct KeyValueData_s *pkvd) = 0;
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) = 0;
+};
+
+class ICSGameEnd: public ICSRulePointEntity {
+public:
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) = 0;
+};
+
+class ICSGameText: public ICSRulePointEntity {
+public:
+	virtual void KeyValue(struct KeyValueData_s *pkvd) = 0;
+	virtual int Save(CSave &save) = 0;
+	virtual int Restore(CRestore &restore) = 0;
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) = 0;
+};
+
+class ICSGameTeamMaster: public ICSRulePointEntity {
+public:
+	virtual void KeyValue(struct KeyValueData_s *pkvd) = 0;
+	virtual int ObjectCaps() = 0;
+	virtual bool IsTriggered(CCSEntity *pActivator) = 0;
+	virtual const char *TeamID() = 0;
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) = 0;
+};
+
+class ICSGameTeamSet: public ICSRulePointEntity {
+public:
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) = 0;
+};
+
+class ICSGamePlayerZone: public ICSRuleBrushEntity {
+public:
+	virtual void KeyValue(struct KeyValueData_s *pkvd) = 0;
+	virtual int Save(CSave &save) = 0;
+	virtual int Restore(CRestore &restore) = 0;
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) = 0;
+};
+
+class ICSGamePlayerHurt: public ICSRulePointEntity {
+public:
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) = 0;
+};
+
+class ICSGameCounter: public ICSRulePointEntity {
+public:
+	virtual void Spawn() = 0;
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) = 0;
+};
+
+class ICSGameCounterSet: public ICSRulePointEntity {
+public:
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) = 0;
+};
+
+class ICSGamePlayerEquip: public ICSRulePointEntity {
+public:
+	virtual void KeyValue(struct KeyValueData_s *pkvd) = 0;
+	virtual void Touch(CCSEntity *pOther) = 0;
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) = 0;
+};
+
+class ICSGamePlayerTeam: public ICSRulePointEntity {
+public:
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) = 0;
+};
+
+class ICSFuncMortarField: public ICSToggle {
+public:
+	virtual void Spawn() = 0;
+	virtual void Precache() = 0;
+	virtual void KeyValue(struct KeyValueData_s *pkvd) = 0;
+	virtual int Save(CSave &save) = 0;
+	virtual int Restore(CRestore &restore) = 0;
+	virtual int ObjectCaps() = 0;
+};
+
+class ICSMortar: public ICSGrenade {
+public:
+	virtual void Spawn() = 0;
+	virtual void Precache() = 0;
+};
+
+class ICSMapInfo: public ICSPointEntity {
+public:
+	virtual void Spawn() = 0;
+	virtual void KeyValue(struct KeyValueData_s *pkvd) = 0;
+};
+
+class ICSPathCorner: public ICSPointEntity {
+public:
+	virtual void Spawn() = 0;
+	virtual void KeyValue(struct KeyValueData_s *pkvd) = 0;
+	virtual int Save(CSave &save) = 0;
+	virtual int Restore(CRestore &restore) = 0;
+	virtual float GetDelay() = 0;
+};
+
+class ICSPathTrack: public ICSPointEntity {
+public:
+	virtual void Spawn() = 0;
+	virtual void KeyValue(struct KeyValueData_s *pkvd) = 0;
+	virtual int Save(CSave &save) = 0;
+	virtual int Restore(CRestore &restore) = 0;
+	virtual void Activate() = 0;
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) = 0;
+};
+
+class ICSFuncTrackTrain: public ICSEntity {
+public:
+	virtual void Spawn() = 0;
+	virtual void Precache() = 0;
+	virtual void Restart() = 0;
+	virtual void KeyValue(struct KeyValueData_s *pkvd) = 0;
+	virtual int Save(CSave &save) = 0;
+	virtual int Restore(CRestore &restore) = 0;
+	virtual int ObjectCaps() = 0;
+	virtual void OverrideReset() = 0;
+	virtual bool OnControls(struct entvars_s *pev) = 0;
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) = 0;
+	virtual void Blocked(CCSEntity *pOther) = 0;
+};
+
+class ICSFuncVehicleControls: public ICSEntity {
+public:
+	virtual void Spawn() = 0;
+	virtual int ObjectCaps() = 0;
+};
+
+class ICSFuncVehicle: public ICSEntity {
+public:
+	virtual void Spawn() = 0;
+	virtual void Precache() = 0;
+	virtual void Restart() = 0;
+	virtual void KeyValue(struct KeyValueData_s *pkvd) = 0;
+	virtual int Save(CSave &save) = 0;
+	virtual int Restore(CRestore &restore) = 0;
+	virtual int ObjectCaps() = 0;
+	virtual int Classify() = 0;
+	virtual void OverrideReset() = 0;
+	virtual bool OnControls(struct entvars_s *pev) = 0;
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) = 0;
+	virtual void Blocked(CCSEntity *pOther) = 0;
+};
+
+class ICSPlatTrain: public ICSToggle {
+public:
+	virtual void Precache() = 0;
+	virtual void KeyValue(struct KeyValueData_s *pkvd) = 0;
+	virtual int Save(CSave &save) = 0;
+	virtual int Restore(CRestore &restore) = 0;
+	virtual int ObjectCaps() = 0;
+	virtual bool IsTogglePlat() = 0;
+};
+
+class ICSFuncPlat: public ICSPlatTrain {
+public:
+	virtual void Spawn() = 0;
+	virtual void Precache() = 0;
+	virtual void Blocked(CCSEntity *pOther) = 0;
+	virtual void GoUp() = 0;
+	virtual void GoDown() = 0;
+	virtual void HitTop() = 0;
+	virtual void HitBottom() = 0;
+};
+
+class ICSPlatTrigger: public ICSEntity {
+public:
+	virtual int ObjectCaps() = 0;
+	virtual void Touch(CCSEntity *pOther) = 0;
+};
+
+class ICSFuncPlatRot: public ICSFuncPlat {
+public:
+	virtual void Spawn() = 0;
+	virtual int Save(CSave &save) = 0;
+	virtual int Restore(CRestore &restore) = 0;
+	virtual void GoUp() = 0;
+	virtual void GoDown() = 0;
+	virtual void HitTop() = 0;
+	virtual void HitBottom() = 0;
+};
+
+class ICSFuncTrain: public ICSPlatTrain {
+public:
+	virtual void Spawn() = 0;
+	virtual void Precache() = 0;
+	virtual void Restart() = 0;
+	virtual void KeyValue(struct KeyValueData_s *pkvd) = 0;
+	virtual int Save(CSave &save) = 0;
+	virtual int Restore(CRestore &restore) = 0;
+	virtual void Activate() = 0;
+	virtual void OverrideReset() = 0;
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) = 0;
+	virtual void Blocked(CCSEntity *pOther) = 0;
+};
+
+class ICSFuncTrainControls: public ICSEntity {
+public:
+	virtual void Spawn() = 0;
+	virtual int ObjectCaps() = 0;
+};
+
+class ICSFuncTrackChange: public ICSFuncPlatRot {
+public:
+	virtual void Spawn() = 0;
+	virtual void Precache() = 0;
+	virtual void KeyValue(struct KeyValueData_s *pkvd) = 0;
+	virtual int Save(CSave &save) = 0;
+	virtual int Restore(CRestore &restore) = 0;
+	virtual void OverrideReset() = 0;
+	virtual void Touch(CCSEntity *pOther) = 0;
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) = 0;
+	virtual bool IsTogglePlat() = 0;
+	virtual void GoUp() = 0;
+	virtual void GoDown() = 0;
+	virtual void HitTop() = 0;
+	virtual void HitBottom() = 0;
+	virtual void UpdateAutoTargets(int toggleState) = 0;
+};
+
+class ICSFuncTrackAuto: public ICSFuncTrackChange {
+public:
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) = 0;
+	virtual void UpdateAutoTargets(int toggleState) = 0;
+};
+
+class ICSGunTarget: public ICSMonster {
+public:
+	virtual void Spawn() = 0;
+	virtual int Save(CSave &save) = 0;
+	virtual int Restore(CRestore &restore) = 0;
+	virtual int ObjectCaps() = 0;
+	virtual void Activate() = 0;
+	virtual int Classify() = 0;
+	virtual int TakeDamage(struct entvars_s *pevInflictor, struct entvars_s *pevAttacker, float flDamage, int bitsDamageType) = 0;
+	virtual int BloodColor() = 0;
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) = 0;
+	virtual Vector BodyTarget(const Vector &posSrc) = 0;
+};
+
+class ICSAmbientGeneric: public ICSEntity {
+public:
+	virtual void Spawn() = 0;
+	virtual void Precache() = 0;
+	virtual void Restart() = 0;
+	virtual void KeyValue(struct KeyValueData_s *pkvd) = 0;
+	virtual int Save(CSave &save) = 0;
+	virtual int Restore(CRestore &restore) = 0;
+	virtual int ObjectCaps() = 0;
+};
+
+class ICSEnvSound: public ICSPointEntity {
+public:
+	virtual void Spawn() = 0;
+	virtual void KeyValue(struct KeyValueData_s *pkvd) = 0;
+	virtual int Save(CSave &save) = 0;
+	virtual int Restore(CRestore &restore) = 0;
+	virtual void Think() = 0;
+};
+
+class ICSSpeaker: public ICSEntity {
+public:
+	virtual void Spawn() = 0;
+	virtual void Precache() = 0;
+	virtual void KeyValue(struct KeyValueData_s *pkvd) = 0;
+	virtual int Save(CSave &save) = 0;
+	virtual int Restore(CRestore &restore) = 0;
+	virtual int ObjectCaps() = 0;
+};
+
+class ICSSoundEnt: public ICSEntity {
+public:
+	virtual void Spawn() = 0;
+	virtual void Precache() = 0;
+	virtual int ObjectCaps() = 0;
+	virtual void Think() = 0;
+};
+
+class ICSUSP: public ICSPlayerWeapon {
+public:
+	virtual void Spawn() = 0;
+	virtual void Precache() = 0;
+	virtual int GetItemInfo(ItemInfo *p) = 0;
+	virtual bool Deploy() = 0;
+	virtual float GetMaxSpeed() = 0;
+	virtual int iItemSlot() = 0;
+	virtual void PrimaryAttack() = 0;
+	virtual void SecondaryAttack() = 0;
+	virtual void Reload() = 0;
+	virtual void WeaponIdle() = 0;
+	virtual bool UseDecrement() = 0;
+};
+
+class ICSMP5N: public ICSPlayerWeapon {
+public:
+	virtual void Spawn() = 0;
+	virtual void Precache() = 0;
+	virtual int GetItemInfo(ItemInfo *p) = 0;
+	virtual bool Deploy() = 0;
+	virtual float GetMaxSpeed() = 0;
+	int iItemSlot() = 0;
+	virtual void PrimaryAttack() = 0;
+	virtual void Reload() = 0;
+	virtual void WeaponIdle() = 0;
+	virtual bool UseDecrement() = 0;
+};
+
+class ICSSG552: public ICSPlayerWeapon {
+public:
+	virtual void Spawn() = 0;
+	virtual void Precache() = 0;
+	virtual int GetItemInfo(ItemInfo *p) = 0;
+	virtual bool Deploy() = 0;
+	virtual float GetMaxSpeed() = 0;
+	virtual int iItemSlot() = 0;
+	virtual void PrimaryAttack() = 0;
+	virtual void SecondaryAttack() = 0;
+	virtual void Reload() = 0;
+	virtual void WeaponIdle() = 0;
+	virtual bool UseDecrement() = 0;
+};
+
+class ICSAK47: public ICSPlayerWeapon {
+public:
+	virtual void Spawn() = 0;
+	virtual void Precache() = 0;
+	virtual int GetItemInfo(ItemInfo *p) = 0;
+	virtual bool Deploy() = 0;
+	virtual float GetMaxSpeed() = 0;
+	virtual int iItemSlot() = 0;
+	virtual void PrimaryAttack() = 0;
+	virtual void SecondaryAttack() = 0;
+	virtual void Reload() = 0;
+	virtual void WeaponIdle() = 0;
+	virtual bool UseDecrement() = 0;
+};
+
+class ICSAUG: public ICSPlayerWeapon {
+public:
+	virtual void Spawn() = 0;
+	virtual void Precache() = 0;
+	virtual int GetItemInfo(ItemInfo *p) = 0;
+	virtual bool Deploy() = 0;
+	virtual float GetMaxSpeed() = 0;
+	virtual int iItemSlot() = 0;
+	virtual void PrimaryAttack() = 0;
+	virtual void SecondaryAttack() = 0;
+	virtual void Reload() = 0;
+	virtual void WeaponIdle() = 0;
+	virtual bool UseDecrement() = 0;
+};
+
+class ICSAWP: public ICSPlayerWeapon {
+public:
+	virtual void Spawn() = 0;
+	virtual void Precache() = 0;
+	virtual int GetItemInfo(ItemInfo *p) = 0;
+	virtual bool Deploy() = 0;
+	virtual float GetMaxSpeed() = 0;
+	virtual int iItemSlot() = 0;
+	virtual void PrimaryAttack() = 0;
+	virtual void SecondaryAttack() = 0;
+	virtual void Reload() = 0;
+	virtual void WeaponIdle() = 0;
+	virtual bool UseDecrement() = 0;
+};
+
+class ICSC4: public ICSPlayerWeapon {
+public:
+	virtual void Spawn() = 0;
+	virtual void Precache() = 0;
+	virtual void KeyValue(struct KeyValueData_s *pkvd) = 0;
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) = 0;
+	virtual int GetItemInfo(ItemInfo *p) = 0;
+	virtual bool Deploy() = 0;
+	virtual void Holster(int skiplocal) = 0;
+	virtual float GetMaxSpeed() = 0;
+	virtual int iItemSlot() = 0;
+	virtual void PrimaryAttack() = 0;
+	virtual void WeaponIdle() = 0;
+	virtual bool UseDecrement() = 0;
+};
+
+class ICSDEAGLE: public ICSPlayerWeapon {
+public:
+	virtual void Spawn() = 0;
+	virtual void Precache() = 0;
+	virtual int GetItemInfo(ItemInfo *p) = 0;
+	virtual bool Deploy() = 0;
+	virtual float GetMaxSpeed() = 0;
+	virtual int iItemSlot() = 0;
+	virtual void PrimaryAttack() = 0;
+	virtual void SecondaryAttack() = 0;
+	virtual void Reload() = 0;
+	virtual void WeaponIdle() = 0;
+	virtual bool UseDecrement() = 0;
+	virtual bool IsPistol() = 0;
+};
+
+class ICSFlashbang: public ICSPlayerWeapon {
+public:
+	virtual void Spawn() = 0;
+	virtual void Precache() = 0;
+	virtual int GetItemInfo(ItemInfo *p) = 0;
+	virtual bool CanDeploy() = 0;
+	virtual bool CanDrop() = 0;
+	virtual bool Deploy() = 0;
+	virtual void Holster(int skiplocal) = 0;
+	virtual float GetMaxSpeed() = 0;
+	virtual int iItemSlot() = 0;
+	virtual void PrimaryAttack() = 0;
+	virtual void SecondaryAttack() = 0;
+	virtual void WeaponIdle() = 0;
+	virtual bool UseDecrement() = 0;
+	virtual bool IsPistol() = 0;
+};
+
+class ICSG3SG1: public ICSPlayerWeapon {
+public:
+	virtual void Spawn() = 0;
+	virtual void Precache() = 0;
+	virtual int GetItemInfo(ItemInfo *p) = 0;
+	virtual bool Deploy() = 0;
+	virtual float GetMaxSpeed() = 0;
+	virtual int iItemSlot() = 0;
+	virtual void PrimaryAttack() = 0;
+	virtual void SecondaryAttack() = 0;
+	virtual void Reload() = 0;
+	virtual void WeaponIdle() = 0;
+	virtual bool UseDecrement() = 0;
+};
+
+class ICSGLOCK18: public ICSPlayerWeapon {
+public:
+	virtual void Spawn() = 0;
+	virtual void Precache() = 0;
+	virtual int GetItemInfo(ItemInfo *p) = 0;
+	virtual bool Deploy() = 0;
+	virtual float GetMaxSpeed() = 0;
+	virtual int iItemSlot() = 0;
+	virtual void PrimaryAttack() = 0;
+	virtual void SecondaryAttack() = 0;
+	virtual void Reload() = 0;
+	virtual void WeaponIdle() = 0;
+	virtual bool UseDecrement() = 0;
+};
+
+class ICSHEGrenade: public ICSPlayerWeapon {
+public:
+	virtual void Spawn() = 0;
+	virtual void Precache() = 0;
+	virtual int GetItemInfo(ItemInfo *p) = 0;
+	virtual bool CanDeploy() = 0;
+	virtual bool CanDrop() = 0;
+	virtual bool Deploy() = 0;
+	virtual void Holster(int skiplocal) = 0;
+	virtual float GetMaxSpeed() = 0;
+	virtual int iItemSlot() = 0;
+	virtual void PrimaryAttack() = 0;
+	virtual void SecondaryAttack() = 0;
+	virtual void WeaponIdle() = 0;
+	virtual bool UseDecrement() = 0;
+};
+
+class ICSKnife: public ICSPlayerWeapon {
+public:
+	virtual void Spawn() = 0;
+	virtual void Precache() = 0;
+	virtual int GetItemInfo(ItemInfo *p) = 0;
+	virtual bool CanDrop() = 0;
+	virtual bool Deploy() = 0;
+	virtual void Holster(int skiplocal) = 0;
+	virtual float GetMaxSpeed() = 0;
+	virtual int iItemSlot() = 0;
+	virtual void PrimaryAttack() = 0;
+	virtual void SecondaryAttack() = 0;
+	virtual bool UseDecrement() = 0;
+};
+
+class ICSM249: public ICSPlayerWeapon {
+public:
+	virtual void Spawn() = 0;
+	virtual void Precache() = 0;
+	virtual int GetItemInfo(ItemInfo *p) = 0;
+	virtual bool Deploy() = 0;
+	virtual float GetMaxSpeed() = 0;
+	virtual int iItemSlot() = 0;
+	virtual void PrimaryAttack() = 0;
+	virtual void Reload() = 0;
+	virtual void WeaponIdle() = 0;
+	virtual bool UseDecrement() = 0;
+};
+
+class ICSM3: public ICSPlayerWeapon {
+public:
+	virtual void Spawn() = 0;
+	virtual void Precache() = 0;
+	virtual int GetItemInfo(ItemInfo *p) = 0;
+	virtual bool Deploy() = 0;
+	virtual float GetMaxSpeed() = 0;
+	virtual int iItemSlot() = 0;
+	virtual void PrimaryAttack() = 0;
+	virtual void Reload() = 0;
+	virtual void WeaponIdle() = 0;
+	virtual bool UseDecrement() = 0;
+};
+
+class ICSM4A1: public ICSPlayerWeapon {
+public:
+	virtual void Spawn() = 0;
+	virtual void Precache() = 0;
+	virtual int GetItemInfo(ItemInfo *p) = 0;
+	virtual bool Deploy() = 0;
+	virtual float GetMaxSpeed() = 0;
+	virtual int iItemSlot() = 0;
+	virtual void PrimaryAttack() = 0;
+	virtual void SecondaryAttack() = 0;
+	virtual void Reload() = 0;
+	virtual void WeaponIdle() = 0;
+	virtual bool UseDecrement() = 0;
+};
+
+class ICSMAC10: public ICSPlayerWeapon {
+public:
+	virtual void Spawn() = 0;
+	virtual void Precache() = 0;
+	virtual int GetItemInfo(ItemInfo *p) = 0;
+	virtual bool Deploy() = 0;
+	virtual float GetMaxSpeed() = 0;
+	virtual int iItemSlot() = 0;
+	virtual void PrimaryAttack() = 0;
+	virtual void Reload() = 0;
+	virtual void WeaponIdle() = 0;
+	virtual bool UseDecrement() = 0;
+};
+
+class ICSP228: public ICSPlayerWeapon {
+public:
+	virtual void Spawn() = 0;
+	virtual void Precache() = 0;
+	virtual int GetItemInfo(ItemInfo *p) = 0;
+	virtual bool Deploy() = 0;
+	virtual float GetMaxSpeed() = 0;
+	virtual int iItemSlot() = 0;
+	virtual void PrimaryAttack() = 0;
+	virtual void SecondaryAttack() = 0;
+	virtual void Reload() = 0;
+	virtual void WeaponIdle() = 0;
+	virtual bool UseDecrement() = 0;
+	virtual bool IsPistol() = 0;
+};
+
+class ICSP90: public ICSPlayerWeapon {
+public:
+	virtual void Spawn() = 0;
+	virtual void Precache() = 0;
+	virtual int GetItemInfo(ItemInfo *p) = 0;
+	virtual bool Deploy() = 0;
+	virtual float GetMaxSpeed() = 0;
+	virtual int iItemSlot() = 0;
+	virtual void PrimaryAttack() = 0;
+	virtual void Reload() = 0;
+	virtual void WeaponIdle() = 0;
+	virtual bool UseDecrement() = 0;
+};
+
+class ICSSCOUT: public ICSPlayerWeapon {
+public:
+	virtual void Spawn() = 0;
+	virtual void Precache() = 0;
+	virtual int GetItemInfo(ItemInfo *p) = 0;
+	virtual bool Deploy() = 0;
+	virtual float GetMaxSpeed() = 0;
+	virtual int iItemSlot() = 0;
+	virtual void PrimaryAttack() = 0;
+	virtual void SecondaryAttack() = 0;
+	virtual void Reload() = 0;
+	virtual void WeaponIdle() = 0;
+	virtual bool UseDecrement() = 0;
+};
+
+class ICSSmokeGrenade: public ICSPlayerWeapon {
+public:
+	virtual void Spawn() = 0;
+	virtual void Precache() = 0;
+	virtual int GetItemInfo(ItemInfo *p) = 0;
+	virtual bool CanDeploy() = 0;
+	virtual bool CanDrop() = 0;
+	virtual bool Deploy() = 0;
+	virtual void Holster(int skiplocal) = 0;
+	virtual float GetMaxSpeed() = 0;
+	virtual int iItemSlot() = 0;
+	virtual void PrimaryAttack() = 0;
+	virtual void SecondaryAttack() = 0;
+	virtual void WeaponIdle() = 0;
+	virtual bool UseDecrement() = 0;
+};
+
+class ICSTMP: public ICSPlayerWeapon {
+public:
+	virtual void Spawn() = 0;
+	virtual void Precache() = 0;
+	virtual int GetItemInfo(ItemInfo *p) = 0;
+	virtual bool Deploy() = 0;
+	virtual float GetMaxSpeed() = 0;
+	virtual int iItemSlot() = 0;
+	virtual void PrimaryAttack() = 0;
+	virtual void Reload() = 0;
+	virtual void WeaponIdle() = 0;
+	virtual bool UseDecrement() = 0;
+};
+
+class ICSXM1014: public ICSPlayerWeapon {
+public:
+	virtual void Spawn() = 0;
+	virtual void Precache() = 0;
+	virtual int GetItemInfo(ItemInfo *p) = 0;
+	virtual bool Deploy() = 0;
+	virtual float GetMaxSpeed() = 0;
+	virtual int iItemSlot() = 0;
+	virtual void PrimaryAttack() = 0;
+	virtual void Reload() = 0;
+	virtual void WeaponIdle() = 0;
+	virtual bool UseDecrement() = 0;
+};
+
+class ICSELITE: public ICSPlayerWeapon {
+public:
+	virtual void Spawn() = 0;
+	virtual void Precache() = 0;
+	virtual int GetItemInfo(ItemInfo *p) = 0;
+	virtual bool Deploy() = 0;
+	virtual float GetMaxSpeed() = 0;
+	virtual int iItemSlot() = 0;
+	virtual void PrimaryAttack() = 0;
+	virtual void Reload() = 0;
+	virtual void WeaponIdle() = 0;
+	virtual bool UseDecrement() = 0;
+};
+
+class ICSFiveSeven: public ICSPlayerWeapon {
+public:
+	virtual void Spawn() = 0;
+	virtual void Precache() = 0;
+	virtual int GetItemInfo(ItemInfo *p) = 0;
+	virtual bool Deploy() = 0;
+	virtual float GetMaxSpeed() = 0;
+	virtual int iItemSlot() = 0;
+	virtual void PrimaryAttack() = 0;
+	virtual void SecondaryAttack() = 0;
+	virtual void Reload() = 0;
+	virtual void WeaponIdle() = 0;
+	virtual bool UseDecrement() = 0;
+};
+
+class ICSUMP45: public ICSPlayerWeapon {
+public:
+	virtual void Spawn() = 0;
+	virtual void Precache() = 0;
+	virtual int GetItemInfo(ItemInfo *p) = 0;
+	virtual bool Deploy() = 0;
+	virtual float GetMaxSpeed() = 0;
+	virtual int iItemSlot() = 0;
+	virtual void PrimaryAttack() = 0;
+	virtual void Reload() = 0;
+	virtual void WeaponIdle() = 0;
+	virtual bool UseDecrement() = 0;
+};
+
+class ICSSG550: public ICSPlayerWeapon {
+public:
+	virtual void Spawn() = 0;
+	virtual void Precache() = 0;
+	virtual int GetItemInfo(ItemInfo *p) = 0;
+	virtual bool Deploy() = 0;
+	virtual float GetMaxSpeed() = 0;
+	virtual int iItemSlot() = 0;
+	virtual void PrimaryAttack() = 0;
+	virtual void SecondaryAttack() = 0;
+	virtual void Reload() = 0;
+	virtual void WeaponIdle() = 0;
+	virtual bool UseDecrement() = 0;
+};
+
+class ICSGalil: public ICSPlayerWeapon {
+public:
+	virtual void Spawn() = 0;
+	virtual void Precache() = 0;
+	virtual int GetItemInfo(ItemInfo *p) = 0;
+	virtual bool Deploy() = 0;
+	virtual float GetMaxSpeed() = 0;
+	virtual int iItemSlot() = 0;
+	virtual void PrimaryAttack() = 0;
+	virtual void SecondaryAttack() = 0;
+	virtual void Reload() = 0;
+	virtual void WeaponIdle() = 0;
+	virtual bool UseDecrement() = 0;
+};
+
+class ICSFamas: public ICSPlayerWeapon {
+public:
+	virtual void Spawn() = 0;
+	virtual void Precache() = 0;
+	virtual int GetItemInfo(ItemInfo *p) = 0;
+	virtual bool Deploy() = 0;
+	virtual float GetMaxSpeed() = 0;
+	virtual int iItemSlot() = 0;
+	virtual void PrimaryAttack() = 0;
+	virtual void SecondaryAttack() = 0;
+	virtual void Reload() = 0;
+	virtual void WeaponIdle() = 0;
+	virtual bool UseDecrement() = 0;
+};
+
+class ICSNullEntity: public ICSEntity {
+public:
+	virtual void Spawn() = 0;
+};
+
+class ICSDMStart: public ICSPointEntity {
+public:
+	virtual void KeyValue(struct KeyValueData_s *pkvd) = 0;
+	virtual bool IsTriggered(CCSEntity *pEntity) = 0;
+};
+
+class ICSFrictionModifier: public ICSEntity {
+public:
+	virtual void Spawn() = 0;
+	virtual void KeyValue(struct KeyValueData_s *pkvd) = 0;
+	virtual int Save(CSave &save) = 0;
+	virtual int Restore(CRestore &restore) = 0;
+	virtual int ObjectCaps() = 0;
+};
+
+class ICSAutoTrigger: public ICSDelay {
+public:
+	virtual void Spawn() = 0;
+	virtual void Precache() = 0;
+	virtual void KeyValue(struct KeyValueData_s *pkvd) = 0;
+	virtual int Save(CSave &save) = 0;
+	virtual int Restore(CRestore &restore) = 0;
+	virtual int ObjectCaps() = 0;
+	virtual void Think() = 0;
+};
+
+class ICSTriggerRelay: public ICSDelay {
+public:
+	virtual void Spawn() = 0;
+	virtual void KeyValue(struct KeyValueData_s *pkvd) = 0;
+	virtual int Save(CSave &save) = 0;
+	virtual int Restore(CRestore &restore) = 0;
+	virtual int ObjectCaps() = 0;
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) = 0;
+};
+
+class ICSMultiManager: public ICSToggle {
+public:
+	virtual void Spawn() = 0;
+	virtual void Restart() = 0;
+	virtual void KeyValue(struct KeyValueData_s *pkvd) = 0;
+	virtual int Save(CSave &save) = 0;
+	virtual int Restore(CRestore &restore) = 0;
+	virtual int ObjectCaps() = 0;
+	virtual bool HasTarget(string_t targetname) = 0;
+};
+
+class ICSRenderFxManager: public ICSEntity {
+public:
+	virtual void Spawn() = 0;
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) = 0;
+};
+
+class ICSTrigger: public ICSToggle {
+public:
+	virtual void KeyValue(struct KeyValueData_s *pkvd) = 0;
+	virtual int ObjectCaps() = 0;
+};
+
+class ICSTriggerHurt: public ICSTrigger {
+public:
+	virtual void Spawn() = 0;
+};
+
+class ICSTriggerMonsterJump: public ICSTrigger {
+public:
+	virtual void Spawn() = 0;
+	virtual void Think() = 0;
+	virtual void Touch(CCSEntity *pOther) = 0;
+};
+
+class ICSTriggerCDAudio: public ICSTrigger {
+public:
+	virtual void Spawn() = 0;
+	virtual void Touch(CCSEntity *pOther) = 0;
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) = 0;
+};
+
+class ICSTargetCDAudio: public ICSPointEntity {
+public:
+	virtual void Spawn() = 0;
+	virtual void KeyValue(struct KeyValueData_s *pkvd) = 0;
+	virtual void Think() = 0;
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) = 0;
+};
+
+class ICSTriggerMultiple: public ICSTrigger {
+public:
+	virtual void Spawn() = 0;
+};
+
+class ICSTriggerOnce: public ICSTriggerMultiple {
+public:
+	virtual void Spawn() = 0;
+};
+
+class ICSTriggerCounter: public ICSTrigger {
+public:
+	virtual void Spawn() = 0;
+};
+
+class ICSTriggerVolume: public ICSPointEntity {
+public:
+	virtual void Spawn() = 0;
+};
+
+class ICSFireAndDie: public ICSDelay {
+public:
+	virtual void Spawn() = 0;
+	virtual void Precache() = 0;
+	virtual int ObjectCaps() = 0;
+	virtual void Think() = 0;
+};
+
+class ICSChangeLevel: public ICSTrigger {
+public:
+	virtual void Spawn() = 0;
+	virtual void KeyValue(struct KeyValueData_s *pkvd) = 0;
+	virtual int Save(CSave &save) = 0;
+	virtual int Restore(CRestore &restore) = 0;
+};
+
+class ICSLadder: public ICSTrigger {
+public:
+	virtual void Spawn() = 0;
+	virtual void Precache() = 0;
+	virtual void KeyValue(struct KeyValueData_s *pkvd) = 0;
+};
+
+class ICSTriggerPush: public ICSTrigger {
+public:
+	virtual void Spawn() = 0;
+	virtual void KeyValue(struct KeyValueData_s *pkvd) = 0;
+	virtual void Touch(CCSEntity *pOther) = 0;
+};
+
+class ICSTriggerTeleport: public ICSTrigger {
+public:
+	virtual void Spawn() = 0;
+};
+
+class ICSBuyZone: public ICSTrigger {
+public:
+	virtual void Spawn() = 0;
+};
+
+class ICSBombTarget: public ICSTrigger {
+public:
+	virtual void Spawn() = 0;
+};
+
+class ICSHostageRescue: public ICSTrigger {
+public:
+	virtual void Spawn() = 0;
+};
+
+class ICSEscapeZone: public ICSTrigger {
+public:
+	virtual void Spawn() = 0;
+};
+
+class ICSVIP_SafetyZone: public ICSTrigger {
+public:
+	virtual void Spawn() = 0;
+};
+
+class ICSTriggerSave: public ICSTrigger {
+public:
+	virtual void Spawn() = 0;
+};
+
+class ICSTriggerEndSection: public ICSTrigger {
+public:
+	virtual void Spawn() = 0;
+	virtual void KeyValue(struct KeyValueData_s *pkvd) = 0;
+};
+
+class ICSTriggerGravity: public ICSTrigger {
+public:
+	virtual void Spawn() = 0;
+};
+
+class ICSTriggerChangeTarget: public ICSDelay {
+public:
+	virtual void Spawn() = 0;
+	virtual void KeyValue(struct KeyValueData_s *pkvd) = 0;
+	virtual int Save(CSave &save) = 0;
+	virtual int Restore(CRestore &restore) = 0;
+	virtual int ObjectCaps() = 0;
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) = 0;
+};
+
+class ICSTriggerCamera: public ICSDelay {
+public:
+	virtual void Spawn() = 0;
+	virtual void KeyValue(struct KeyValueData_s *pkvd) = 0;
+	virtual int Save(CSave &save) = 0;
+	virtual int Restore(CRestore &restore) = 0;
+	virtual int ObjectCaps() = 0;
+	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) = 0;
+};
+
+class ICSWeather: public ICSTrigger {
+public:
+	virtual void Spawn() = 0;
+};
+
+class ICSClientFog: public ICSEntity {
+public:
+	virtual void Spawn() = 0;
+	virtual void KeyValue(struct KeyValueData_s *pkvd) = 0;
+};

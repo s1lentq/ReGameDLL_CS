@@ -1,9 +1,7 @@
 #include "precompiled.h"
 
-/* <2bb045> ../cstrike/dlls/wpn_shared/wpn_usp.cpp:68 */
-LINK_ENTITY_TO_CLASS(weapon_usp, CUSP);
+LINK_ENTITY_TO_CLASS(weapon_usp, CUSP, CCSUSP);
 
-/* <2bad55> ../cstrike/dlls/wpn_shared/wpn_usp.cpp:70 */
 void CUSP::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
@@ -38,7 +36,6 @@ void CUSP::__MAKE_VHOOK(Precache)()
 	m_usFireUSP = PRECACHE_EVENT(1, "events/usp.sc");
 }
 
-/* <2bacfb> ../cstrike/dlls/wpn_shared/wpn_usp.cpp:107 */
 int CUSP::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
@@ -60,7 +57,6 @@ int CUSP::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	return 1;
 }
 
-/* <2bad2e> ../cstrike/dlls/wpn_shared/wpn_usp.cpp:124 */
 BOOL CUSP::__MAKE_VHOOK(Deploy)()
 {
 	m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
@@ -81,7 +77,6 @@ BOOL CUSP::__MAKE_VHOOK(Deploy)()
 	return DefaultDeploy("models/v_usp.mdl", "models/p_usp.mdl", USP_UNSIL_DRAW, "onehanded", UseDecrement());
 }
 
-/* <2bae77> ../cstrike/dlls/wpn_shared/wpn_usp.cpp:147 */
 void CUSP::__MAKE_VHOOK(SecondaryAttack)()
 {
 	if (ShieldSecondaryFire(USP_SHIELD_UP, USP_SHIELD_DOWN))
@@ -108,7 +103,6 @@ void CUSP::__MAKE_VHOOK(SecondaryAttack)()
 	m_flNextPrimaryAttack = GetNextAttackDelay(3.0);
 }
 
-/* <2bb000> ../cstrike/dlls/wpn_shared/wpn_usp.cpp:173 */
 void CUSP::__MAKE_VHOOK(PrimaryAttack)()
 {
 	if (m_iWeaponState & WPNSTATE_USP_SILENCED)
@@ -151,7 +145,6 @@ void CUSP::__MAKE_VHOOK(PrimaryAttack)()
 	}
 }
 
-/* <2bb10f> ../cstrike/dlls/wpn_shared/wpn_usp.cpp:200 */
 void CUSP::USPFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 {
 	int flag;
@@ -239,7 +232,6 @@ void CUSP::USPFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 	ResetPlayerShieldAnim();
 }
 
-/* <2bae19> ../cstrike/dlls/wpn_shared/wpn_usp.cpp:297 */
 void CUSP::__MAKE_VHOOK(Reload)()
 {
 	if (m_pPlayer->ammo_45acp <= 0)
@@ -264,7 +256,6 @@ void CUSP::__MAKE_VHOOK(Reload)()
 	}
 }
 
-/* <2b9c2a> ../cstrike/dlls/wpn_shared/wpn_usp.cpp:318 */
 void CUSP::__MAKE_VHOOK(WeaponIdle)()
 {
 	ResetEmptySound();

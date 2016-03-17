@@ -155,7 +155,6 @@ public:
 class CGrenade: public CBaseMonster
 {
 public:
-	CGrenade();
 	virtual void Spawn();
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
@@ -458,7 +457,6 @@ public:
 class CWeaponBox: public CBaseEntity
 {
 public:
-	CWeaponBox();
 	virtual void Spawn();
 	virtual void Precache();
 	virtual void KeyValue(KeyValueData *pkvd);
@@ -555,7 +553,7 @@ public:
 	virtual int GetItemInfo(ItemInfo *p);
 	virtual BOOL Deploy();
 	virtual float GetMaxSpeed() { return MP5N_MAX_SPEED; }
-	int iItemSlot() { return PRIMARY_WEAPON_SLOT; }
+	virtual int iItemSlot() { return PRIMARY_WEAPON_SLOT; }
 	virtual void PrimaryAttack();
 	virtual void Reload();
 	virtual void WeaponIdle();

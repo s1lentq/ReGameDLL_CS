@@ -59,7 +59,6 @@
 class CFuncWall: public CBaseEntity
 {
 public:
-	CFuncWall();
 	virtual void Spawn();
 
 	// Bmodels don't go across transitions
@@ -78,7 +77,6 @@ public:
 class CFuncWallToggle: public CFuncWall
 {
 public:
-	CFuncWallToggle();
 	virtual void Spawn();
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
@@ -98,7 +96,6 @@ public:
 class CFuncConveyor: public CFuncWall
 {
 public:
-	CFuncConveyor();
 	virtual void Spawn();
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
@@ -117,7 +114,6 @@ public:
 class CFuncIllusionary: public CBaseToggle
 {
 public:
-	CFuncIllusionary();
 	virtual void Spawn();
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual int ObjectCaps() { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
@@ -143,7 +139,6 @@ public:
 class CFuncMonsterClip: public CFuncWall
 {
 public:
-	CFuncMonsterClip();
 	virtual void Spawn();
 
 	// Clear out func_wall's use function
@@ -161,7 +156,6 @@ public:
 class CFuncRotating: public CBaseEntity
 {
 public:
-	CFuncRotating();
 	// basic functions
 	virtual void Spawn();
 	virtual void Precache();
@@ -203,7 +197,6 @@ public:
 class CPendulum: public CBaseEntity
 {
 public:
-	CPendulum();
 	virtual void Spawn();
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual int Save(CSave &save);

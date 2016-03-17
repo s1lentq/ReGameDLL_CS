@@ -1491,6 +1491,7 @@ void CBasePlayerWeapon::__MAKE_VHOOK(RetireWeapon)()
 // GetNextAttackDelay - An accurate way of calcualting the next attack time.
 float CBasePlayerWeapon::GetNextAttackDelay(float delay)
 {
+#ifndef REGAMEDLL_FIXES
 	if (m_flLastFireTime == 0.0f || m_flNextPrimaryAttack == -1.0f)
 	{
 		// At this point, we are assuming that the client has stopped firing
@@ -1498,6 +1499,7 @@ float CBasePlayerWeapon::GetNextAttackDelay(float delay)
 		m_flPrevPrimaryAttack = delay;
 		m_flLastFireTime = gpGlobals->time;
 	}
+#endif
 
 #ifdef REGAMEDLL_BUILD_6153
 
@@ -1529,8 +1531,7 @@ float CBasePlayerWeapon::GetNextAttackDelay(float delay)
 	return flNextAttack;
 }
 
-LINK_ENTITY_TO_CLASS(weaponbox, CWeaponBox);
-LINK_CLASS_TO_WRAP(CWeaponBox, CCSWeaponBox);
+LINK_ENTITY_TO_CLASS(weaponbox, CWeaponBox, CCSWeaponBox);
 IMPLEMENT_SAVERESTORE(CWeaponBox, CBaseEntity);
 
 void CWeaponBox::__MAKE_VHOOK(Precache)()
@@ -1567,7 +1568,7 @@ void CWeaponBox::BombThink()
 		if (!pEntity->IsPlayer() || pEntity->IsDormant())
 			continue;
 
-		CBasePlayer *pTempPlayer = GetClassPtr((CBasePlayer *)pEntity->pev);
+		CBasePlayer *pTempPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev);
 
 		if (pTempPlayer->pev->deadflag == DEAD_NO && pTempPlayer->m_iTeam == TERRORIST)
 		{
@@ -1717,7 +1718,7 @@ void CWeaponBox::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 					if (pEntity->pev->flags == FL_DORMANT)
 						continue;
 
-					CBasePlayer *pTempPlayer = GetClassPtr((CBasePlayer *)pEntity->pev);
+					CBasePlayer *pTempPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev);
 
 					if (pTempPlayer->pev->deadflag == DEAD_NO && pTempPlayer->m_iTeam == TERRORIST)
 					{
@@ -2270,4 +2271,4 @@ void CArmoury::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CBaseEntity::KeyValue(pkvd);
 }
 
-LINK_ENTITY_TO_CLASS(armoury_entity, CArmoury);
+LINK_ENTITY_TO_CLASS(armoury_entity, CArmoury, CCSArmoury);

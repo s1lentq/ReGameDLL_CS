@@ -53,8 +53,7 @@ TYPEDESCRIPTION CEnvSpark::m_SaveData[] =
 #endif // HOOK_GAMEDLL
 
 IMPLEMENT_SAVERESTORE(CEnvGlobal, CBaseEntity);
-LINK_ENTITY_TO_CLASS(env_global, CEnvGlobal);
-LINK_CLASS_TO_WRAP(CEnvGlobal, CCSEnvGlobal);
+LINK_ENTITY_TO_CLASS(env_global, CEnvGlobal, CCSEnvGlobal);
 
 void CEnvGlobal::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
@@ -136,8 +135,7 @@ void CEnvGlobal::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller
 }
 
 IMPLEMENT_SAVERESTORE(CMultiSource, CBaseEntity);
-LINK_ENTITY_TO_CLASS(multisource, CMultiSource);
-LINK_CLASS_TO_WRAP(CMultiSource, CCSMultiSource);
+LINK_ENTITY_TO_CLASS(multisource, CMultiSource, CCSMultiSource);
 
 // Cache user-entity-field values until spawn is called.
 void CMultiSource::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
@@ -427,8 +425,7 @@ int CBaseButton::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pe
 // 1) wooden clunk
 // 2) metallic click
 // 3) in-out
-LINK_ENTITY_TO_CLASS(func_button, CBaseButton);
-LINK_CLASS_TO_WRAP(CBaseButton, CCSButton);
+LINK_ENTITY_TO_CLASS(func_button, CBaseButton, CCSButton);
 
 void CBaseButton::__MAKE_VHOOK(Spawn)()
 {
@@ -792,8 +789,7 @@ void CBaseButton::ButtonBackHome()
 	}
 }
 
-LINK_ENTITY_TO_CLASS(func_rot_button, CRotButton);
-LINK_CLASS_TO_WRAP(CRotButton, CCSRotButton);
+LINK_ENTITY_TO_CLASS(func_rot_button, CRotButton, CCSRotButton);
 
 void CRotButton::__MAKE_VHOOK(Spawn)()
 {
@@ -860,8 +856,7 @@ void CRotButton::__MAKE_VHOOK(Spawn)()
 }
 
 IMPLEMENT_SAVERESTORE(CMomentaryRotButton, CBaseToggle);
-LINK_ENTITY_TO_CLASS(momentary_rot_button, CMomentaryRotButton);
-LINK_CLASS_TO_WRAP(CMomentaryRotButton, CCSMomentaryRotButton);
+LINK_ENTITY_TO_CLASS(momentary_rot_button, CMomentaryRotButton, CCSMomentaryRotButton);
 
 void CMomentaryRotButton::__MAKE_VHOOK(Spawn)()
 {
@@ -1076,9 +1071,8 @@ void CMomentaryRotButton::UpdateSelfReturn(float value)
 }
 
 IMPLEMENT_SAVERESTORE(CEnvSpark, CBaseEntity);
-LINK_ENTITY_TO_CLASS(env_spark, CEnvSpark);
-LINK_ENTITY_TO_CLASS(env_debris, CEnvSpark);
-LINK_CLASS_TO_WRAP(CEnvSpark, CCSEnvSpark);
+LINK_ENTITY_TO_CLASS(env_spark, CEnvSpark, CCSEnvSpark);
+LINK_ENTITY_TO_CLASS(env_debris, CEnvSpark, CCSEnvSpark);
 
 void CEnvSpark::__MAKE_VHOOK(Spawn)()
 {
@@ -1160,8 +1154,7 @@ void CEnvSpark::SparkStop(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYP
 	SetThink(NULL);
 }
 
-LINK_ENTITY_TO_CLASS(button_target, CButtonTarget);
-LINK_CLASS_TO_WRAP(CButtonTarget, CCSButtonTarget);
+LINK_ENTITY_TO_CLASS(button_target, CButtonTarget, CCSButtonTarget);
 
 void CButtonTarget::__MAKE_VHOOK(Spawn)()
 {

@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-LINK_ENTITY_TO_CLASS(weapon_smokegrenade, CSmokeGrenade);
+LINK_ENTITY_TO_CLASS(weapon_smokegrenade, CSmokeGrenade, CCSSmokeGrenade);
 
 void CSmokeGrenade::__MAKE_VHOOK(Spawn)()
 {

@@ -35,7 +35,6 @@
 class CAirtank: public CGrenade
 {
 public:
-	CAirtank();
 	virtual void Spawn();
 	virtual void Precache();
 	virtual int Save(CSave &save);

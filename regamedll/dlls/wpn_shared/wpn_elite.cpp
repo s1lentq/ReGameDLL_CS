@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-LINK_ENTITY_TO_CLASS(weapon_elite, CELITE);
+LINK_ENTITY_TO_CLASS(weapon_elite, CELITE, CCSELITE);
 
 void CELITE::__MAKE_VHOOK(Spawn)()
 {

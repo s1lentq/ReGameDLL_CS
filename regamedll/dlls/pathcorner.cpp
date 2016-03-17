@@ -21,7 +21,7 @@ TYPEDESCRIPTION CPathTrack::m_SaveData[] =
 
 #endif
 
-LINK_ENTITY_TO_CLASS(path_corner, CPathCorner);
+LINK_ENTITY_TO_CLASS(path_corner, CPathCorner, CCSPathCorner);
 IMPLEMENT_SAVERESTORE(CPathCorner, CPointEntity);
 
 void CPathCorner::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
@@ -41,7 +41,7 @@ void CPathCorner::__MAKE_VHOOK(Spawn)()
 }
 
 IMPLEMENT_SAVERESTORE(CPathTrack, CBaseEntity);
-LINK_ENTITY_TO_CLASS(path_track, CPathTrack);
+LINK_ENTITY_TO_CLASS(path_track, CPathTrack, CCSPathTrack);
 
 void CPathTrack::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {

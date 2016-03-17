@@ -25,18 +25,14 @@ TYPEDESCRIPTION CWreckage::m_SaveData[] =
 #endif
 
 IMPLEMENT_SAVERESTORE(CCycler, CBaseToggle);
-LINK_CLASS_TO_WRAP(CCycler, CCSCycler);
 
 void CGenericCycler::__MAKE_VHOOK(Spawn)()
 {
 	GenericCyclerSpawn((char *)STRING(pev->model), Vector(-16, -16, 0), Vector(16, 16, 72));
 }
 
-LINK_ENTITY_TO_CLASS(cycler, CGenericCycler);
-LINK_CLASS_TO_WRAP(CGenericCycler, CCSGenericCycler);
-
-LINK_ENTITY_TO_CLASS(cycler_prdroid, CCyclerProbe);
-LINK_CLASS_TO_WRAP(CCyclerProbe, CCSCyclerProbe);
+LINK_ENTITY_TO_CLASS(cycler, CGenericCycler, CCSGenericCycler);
+LINK_ENTITY_TO_CLASS(cycler_prdroid, CCyclerProbe, CCSCyclerProbe);
 
 void CCyclerProbe::__MAKE_VHOOK(Spawn)()
 {
@@ -165,8 +161,7 @@ int CCycler::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAtt
 	return 0;
 }
 
-LINK_ENTITY_TO_CLASS(cycler_sprite, CCyclerSprite);
-LINK_CLASS_TO_WRAP(CCyclerSprite, CCSCyclerSprite);
+LINK_ENTITY_TO_CLASS(cycler_sprite, CCyclerSprite, CCSCyclerSprite);
 IMPLEMENT_SAVERESTORE(CCyclerSprite, CBaseEntity);
 
 void CCyclerSprite::__MAKE_VHOOK(Spawn)()
@@ -247,8 +242,7 @@ void CCyclerSprite::Animate(float frames)
 	}
 }
 
-LINK_ENTITY_TO_CLASS(cycler_weapon, CWeaponCycler);
-LINK_CLASS_TO_WRAP(CWeaponCycler, CCSWeaponCycler);
+LINK_ENTITY_TO_CLASS(cycler_weapon, CWeaponCycler, CCSWeaponCycler);
 
 void CWeaponCycler::__MAKE_VHOOK(Spawn)()
 {
@@ -309,8 +303,7 @@ void CWeaponCycler::__MAKE_VHOOK(SecondaryAttack)()
 }
 
 IMPLEMENT_SAVERESTORE(CWreckage, CBaseToggle);
-LINK_ENTITY_TO_CLASS(cycler_wreckage, CWreckage);
-LINK_CLASS_TO_WRAP(CWreckage, CCSWreckage);
+LINK_ENTITY_TO_CLASS(cycler_wreckage, CWreckage, CCSWreckage);
 
 void CWreckage::__MAKE_VHOOK(Spawn)()
 {
