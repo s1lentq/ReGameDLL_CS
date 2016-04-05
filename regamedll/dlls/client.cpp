@@ -142,16 +142,16 @@ BOOL EXT_FUNC ClientConnect(edict_t *pEntity, const char *pszName, const char *p
 void EXT_FUNC ClientDisconnect(edict_t *pEntity)
 {
 	CBasePlayer *pPlayer = dynamic_cast<CBasePlayer *>(CBaseEntity::Instance(pEntity));
-	CSPlayer(pPlayer)->OnClientDisconnected();
 
 	if (!g_fGameOver)
 	{
 		UTIL_ClientPrintAll(HUD_PRINTNOTIFY, "#Game_disconnected", STRING(pEntity->v.netname));
+#ifndef REGAMEDLL_FIXES
 		CSound *pSound = CSoundEnt::SoundPointerForIndex(CSoundEnt::ClientSoundIndex(pEntity));
 
 		if (pSound != NULL)
 			pSound->Reset();
-
+#endif
 		pEntity->v.takedamage = DAMAGE_NO;
 		pEntity->v.solid = SOLID_NOT;
 		pEntity->v.flags = FL_DORMANT;
@@ -477,7 +477,6 @@ void EXT_FUNC ClientPutInServer(edict_t *pEntity)
 
 	pPlayer->SetCustomDecalFrames(-1);
 	pPlayer->SetPrefsFromUserinfo(GET_INFO_BUFFER(pEntity));
-	CSPlayer(pPlayer)->OnClientConnected();
 
 	if (!g_pGameRules->IsMultiplayer())
 	{

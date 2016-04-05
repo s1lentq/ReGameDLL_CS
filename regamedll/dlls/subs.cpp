@@ -81,6 +81,7 @@ BOOL CBaseDMStart::__MAKE_VHOOK(IsTriggered)(CBaseEntity *pEntity)
 // This updates global tables that need to know about entities being removed
 void CBaseEntity::UpdateOnRemove()
 {
+#ifndef REGAMEDLL_FIXES
 	if (pev->flags & FL_GRAPHED)
 	{
 		// this entity was a LinkEnt in the world node graph, so we must remove it from
@@ -94,6 +95,7 @@ void CBaseEntity::UpdateOnRemove()
 			}
 		}
 	}
+#endif
 
 	if (pev->globalname)
 	{

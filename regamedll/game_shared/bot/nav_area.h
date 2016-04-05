@@ -122,7 +122,7 @@ public:
 
 	bool m_isDangling;
 
-		void OnDestroyNotify(CNavArea *dead)
+	void OnDestroyNotify(CNavArea *dead)
 	{
 		if (dead == m_topForwardArea)
 			m_topForwardArea = NULL;

@@ -572,6 +572,14 @@ public:
 #endif
 		return false;
 	}
+	inline bool HasRoundInfinite(bool time_expired = false) const
+	{
+#ifdef REGAMEDLL_ADD
+		if (round_infinite.string[0] == '1' || (time_expired && (UTIL_ReadFlags(round_infinite.string) & SCENARIO_BLOCK_TIME_EXPRIRED)))
+			return true;
+#endif
+		return false;
+	}
 
 private:
 	bool HasRoundTimeExpired();

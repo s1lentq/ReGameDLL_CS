@@ -28,21 +28,44 @@
 #include "precompiled.h"
 
 CReGameHookchains g_ReGameHookchains;
-ReGameFuncs_t g_ReGameApiFuncs = 
-{
-	&UTIL_PlayerByIndex
+CReGameData g_ReGameData;
 
+ReGameFuncs_t g_ReGameApiFuncs = {
+	&UTIL_PlayerByIndex,
+	&CBASE_TO_CSPLAYER,
+	&CBASE_TO_CSENTITY,
+	&INDEX_TO_CSPLAYER,
+	&INDEX_TO_CSENTITY,
+	&CREATE_NAMED_ENTITY,
 };
 
-IReGameHookRegistry_Observer_IsValidTarget* CReGameHookchains::Observer_IsValidTarget()
-{
-	return &m_Observer_IsValidTarget;
-}
+IReGameHookRegistry_CBasePlayer_Spawn* CReGameHookchains::CBasePlayer_Spawn() { return &m_CBasePlayer_Spawn; }
+IReGameHookRegistry_CBasePlayer_Precache* CReGameHookchains::CBasePlayer_Precache() { return &m_CBasePlayer_Precache; }
+IReGameHookRegistry_CBasePlayer_ObjectCaps* CReGameHookchains::CBasePlayer_ObjectCaps() { return &m_CBasePlayer_ObjectCaps; }
+IReGameHookRegistry_CBasePlayer_Classify* CReGameHookchains::CBasePlayer_Classify() { return &m_CBasePlayer_Classify; }
+IReGameHookRegistry_CBasePlayer_TraceAttack* CReGameHookchains::CBasePlayer_TraceAttack() { return &m_CBasePlayer_TraceAttack; }
+IReGameHookRegistry_CBasePlayer_TakeDamage* CReGameHookchains::CBasePlayer_TakeDamage() { return &m_CBasePlayer_TakeDamage; }
+IReGameHookRegistry_CBasePlayer_TakeHealth* CReGameHookchains::CBasePlayer_TakeHealth() { return &m_CBasePlayer_TakeHealth; }
+IReGameHookRegistry_CBasePlayer_Killed* CReGameHookchains::CBasePlayer_Killed() { return &m_CBasePlayer_Killed; }
+IReGameHookRegistry_CBasePlayer_AddPoints* CReGameHookchains::CBasePlayer_AddPoints() { return &m_CBasePlayer_AddPoints; }
+IReGameHookRegistry_CBasePlayer_AddPointsToTeam* CReGameHookchains::CBasePlayer_AddPointsToTeam() { return &m_CBasePlayer_AddPointsToTeam; }
+IReGameHookRegistry_CBasePlayer_AddPlayerItem* CReGameHookchains::CBasePlayer_AddPlayerItem() { return &m_CBasePlayer_AddPlayerItem; }
+IReGameHookRegistry_CBasePlayer_RemovePlayerItem* CReGameHookchains::CBasePlayer_RemovePlayerItem() { return &m_CBasePlayer_RemovePlayerItem; }
+IReGameHookRegistry_CBasePlayer_GiveAmmo* CReGameHookchains::CBasePlayer_GiveAmmo() { return &m_CBasePlayer_GiveAmmo; }
+IReGameHookRegistry_CBasePlayer_ResetMaxSpeed* CReGameHookchains::CBasePlayer_ResetMaxSpeed() { return &m_CBasePlayer_ResetMaxSpeed; }
+IReGameHookRegistry_CBasePlayer_Jump* CReGameHookchains::CBasePlayer_Jump() { return &m_CBasePlayer_Jump; }
+IReGameHookRegistry_CBasePlayer_Duck* CReGameHookchains::CBasePlayer_Duck() { return &m_CBasePlayer_Duck; }
+IReGameHookRegistry_CBasePlayer_PreThink* CReGameHookchains::CBasePlayer_PreThink() { return &m_CBasePlayer_PreThink; }
+IReGameHookRegistry_CBasePlayer_PostThink* CReGameHookchains::CBasePlayer_PostThink() { return &m_CBasePlayer_PostThink; }
+IReGameHookRegistry_CBasePlayer_UpdateClientData* CReGameHookchains::CBasePlayer_UpdateClientData() { return &m_CBasePlayer_UpdateClientData; }
+IReGameHookRegistry_CBasePlayer_ImpulseCommands* CReGameHookchains::CBasePlayer_ImpulseCommands() { return &m_CBasePlayer_ImpulseCommands; }
+IReGameHookRegistry_CBasePlayer_RoundRespawn* CReGameHookchains::CBasePlayer_RoundRespawn() { return &m_CBasePlayer_RoundRespawn; }
+IReGameHookRegistry_CBasePlayer_Blind* CReGameHookchains::CBasePlayer_Blind() { return &m_CBasePlayer_Blind; }
 
-IReGameHookRegistry_GetForceCamera* CReGameHookchains::GetForceCamera()
-{
-	return &m_GetForceCamera;
-}
+
+
+IReGameHookRegistry_CBasePlayer_Observer_IsValidTarget* CReGameHookchains::CBasePlayer_Observer_IsValidTarget() { return &m_CBasePlayer_Observer_IsValidTarget; }
+IReGameHookRegistry_GetForceCamera* CReGameHookchains::GetForceCamera() { return &m_GetForceCamera; }
 
 int CReGameApi::GetMajorVersion()
 {
@@ -64,4 +87,9 @@ IReGameHookchains *CReGameApi::GetHookchains()
 	return &g_ReGameHookchains;
 }
 
-EXPOSE_SINGLE_INTERFACE(CReGameApi, IReGameApi, VREHLDS_HLDS_API_VERSION);
+IReGameData *CReGameApi::GetGameData()
+{
+	return &g_ReGameData;
+}
+
+EXPOSE_SINGLE_INTERFACE(CReGameApi, IReGameApi, VRE_GAMEDLL_API_VERSION);

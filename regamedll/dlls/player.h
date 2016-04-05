@@ -258,25 +258,9 @@ enum sbar_data
 	SBAR_END
 };
 
-typedef enum
-{
-	SILENT,
-	CALM,
-	INTENSE
+enum MusicState { SILENT, CALM, INTENSE };
 
-} MusicState;
-
-struct WeaponStruct
-{
-	int m_type;
-	int m_price;
-	int m_side;
-	int m_slot;
-	int m_ammoPrice;
-};
-
-class CStripWeapons: public CPointEntity
-{
+class CStripWeapons: public CPointEntity {
 public:
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
@@ -288,8 +272,7 @@ public:
 
 };
 
-class CInfoIntermission: public CPointEntity
-{
+class CInfoIntermission: public CPointEntity {
 public:
 	virtual void Spawn();
 	virtual void Think();
@@ -303,8 +286,7 @@ public:
 
 };
 
-class CDeadHEV: public CBaseMonster
-{
+class CDeadHEV: public CBaseMonster {
 public:
 	virtual void Spawn();
 	virtual void KeyValue(KeyValueData *pkvd);
@@ -323,8 +305,7 @@ public:
 	static char *m_szPoses[4];
 };
 
-class CSprayCan: public CBaseEntity
-{
+class CSprayCan: public CBaseEntity {
 public:
 	virtual void Think();
 	virtual int ObjectCaps()
@@ -342,21 +323,19 @@ public:
 	void Spawn(entvars_t *pevOwner);
 };
 
-class CBloodSplat: public CBaseEntity
-{
+class CBloodSplat: public CBaseEntity {
 public:
 	void Spawn(entvars_t *pevOwner);
 	void Spray();
 };
 
-class CBasePlayer: public CBaseMonster
-{
+class CBasePlayer: public CBaseMonster {
 public:
 	virtual void Spawn();
 	virtual void Precache();
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
-	virtual int ObjectCaps() { return (CBaseMonster::ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
+	virtual int ObjectCaps();
 	virtual int Classify();
 	virtual void TraceAttack(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType);
 	virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
@@ -392,12 +371,10 @@ public:
 	virtual void Blind(float flUntilTime, float flHoldTime, float flFadeTime, int iAlpha);
 	virtual void OnTouchingWeapon(CWeaponBox *pWeapon) { }
 
-#ifdef HOOK_GAMEDLL
-
+#ifdef REGAMEDLL_API
 	void Spawn_();
 	void Precache_();
-	int Save_(CSave &save);
-	int Restore_(CRestore &restore);
+	int ObjectCaps_();
 	int Classify_();
 	void TraceAttack_(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType);
 	int TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
@@ -405,30 +382,36 @@ public:
 	void Killed_(entvars_t *pevAttacker, int iGib);
 	void AddPoints_(int score, BOOL bAllowNegativeScore);
 	void AddPointsToTeam_(int score, BOOL bAllowNegativeScore);
-	BOOL AddPlayerItem_(CBasePlayerItem *pItem);
+	BOOL AddPlayerItem_(CBasePlayerItem *pItem);	
 	BOOL RemovePlayerItem_(CBasePlayerItem *pItem);
 	int GiveAmmo_(int iAmount,char *szName,int iMax);
-	const char *TeamID_();
-	BOOL FBecomeProne_();
-	int Illumination_();
 	void ResetMaxSpeed_();
 	void Jump_();
 	void Duck_();
 	void PreThink_();
 	void PostThink_();
-	Vector GetGunPosition_();
 	void UpdateClientData_();
 	void ImpulseCommands_();
 	void RoundRespawn_();
-	Vector GetAutoaimVector_(float flDelta);
 	void Blind_(float flUntilTime, float flHoldTime, float flFadeTime, int iAlpha);
+#endif // REGAMEDLL_API
 
-#endif // HOOK_GAMEDLL
+#ifdef HOOK_GAMEDLL
+	int Save_(CSave &save);
+	int Restore_(CRestore &restore);
+	const char *TeamID_();
+	BOOL FBecomeProne_();
+	int Illumination_();
+	Vector GetGunPosition_();
+	Vector GetAutoaimVector_(float flDelta);
+#endif
 
 public:
 	void SpawnClientSideCorpse();
 	void Observer_FindNextPlayer(bool bReverse, const char *name = NULL);
 	CBaseEntity *Observer_IsValidTarget(int iPlayerIndex, bool bSameTeam);
+	CBaseEntity *Observer_IsValidTarget_(int iPlayerIndex, bool bSameTeam);
+
 	void Observer_HandleButtons();
 	void Observer_SetMode(int iMode);
 	void Observer_CheckTarget();

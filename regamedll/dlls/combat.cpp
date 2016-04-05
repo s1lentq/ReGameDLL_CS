@@ -613,9 +613,10 @@ void CGib::WaitTillLand()
 	{
 		SetThink(&CBaseEntity::SUB_StartFadeOut);
 		pev->nextthink = gpGlobals->time + m_lifeTime;
-
+#ifndef REGAMEDLL_FIXES
 		if (m_bloodColor != DONT_BLEED)
 			CSoundEnt::InsertSound(bits_SOUND_MEAT, pev->origin, 384, 25);
+#endif
 	}
 	else
 		pev->nextthink = gpGlobals->time + 0.5f;

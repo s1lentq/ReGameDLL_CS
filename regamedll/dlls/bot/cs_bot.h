@@ -965,6 +965,7 @@ private:
 		NUM_LOOK_AT_SPOT_STATES
 	}
 	m_lookAtSpotState;
+
 	Vector m_lookAtSpot;					// the spot we're currently looking at
 	PriorityType m_lookAtSpotPriority;
 	float m_lookAtSpotDuration;				// how long we need to look at the spot
@@ -1108,7 +1109,7 @@ private:
 	CNavNode *m_currentNode;
 	NavDirType m_generationDir;
 	NavAreaList::iterator m_analyzeIter;
-	
+
 	enum ProcessType
 	{
 		PROCESS_NORMAL,
@@ -1724,7 +1725,7 @@ public:
 				//{
 				//	fallDistance = ladder->m_bottom.z - area->GetCenter()->z;
 				//}
-				
+
 				float fallDamage = m_bot->GetApproximateFallDamage(fallDistance);
 
 				if (fallDamage > 0.0f)

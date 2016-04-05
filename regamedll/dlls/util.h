@@ -167,68 +167,6 @@ extern globalvars_t *gpGlobals;
 		GetClassPtr<DLLClassWrapName>((DLLClassName *)pev);\
 	}
 
-typedef enum
-{
-	ignore_monsters = 1,
-	dont_ignore_monsters = 0,
-	missile = 2
-
-} IGNORE_MONSTERS;
-
-typedef enum
-{
-	ignore_glass = 1,
-	dont_ignore_glass = 0
-
-} IGNORE_GLASS;
-
-enum
-{
-	point_hull = 0,
-	human_hull = 1,
-	large_hull = 2,
-	head_hull = 3
-};
-
-typedef enum
-{
-	MONSTERSTATE_NONE = 0,
-	MONSTERSTATE_IDLE,
-	MONSTERSTATE_COMBAT,
-	MONSTERSTATE_ALERT,
-	MONSTERSTATE_HUNT,
-	MONSTERSTATE_PRONE,
-	MONSTERSTATE_SCRIPT,
-	MONSTERSTATE_PLAYDEAD,
-	MONSTERSTATE_DEAD
-
-} MONSTERSTATE;
-
-// Things that toggle (buttons/triggers/doors) need this
-typedef enum
-{
-	TS_AT_TOP,
-	TS_AT_BOTTOM,
-	TS_GOING_UP,
-	TS_GOING_DOWN,
-
-} TOGGLE_STATE;
-
-typedef struct hudtextparms_s
-{
-	float x;
-	float y;
-	int effect;
-	byte r1,g1,b1,a1;
-	byte r2,g2,b2,a2;
-	float fadeinTime;
-	float fadeoutTime;
-	float holdTime;
-	float fxTime;
-	int channel;
-
-} hudtextparms_t;
-
 class UTIL_GroupTrace
 {
 public:
@@ -239,35 +177,14 @@ private:
 	int m_oldgroupop;
 };
 
-inline edict_t *FIND_ENTITY_BY_CLASSNAME(edict_t *entStart, const char *pszName)
-{
-	return FIND_ENTITY_BY_STRING(entStart, "classname", pszName);
-}
+// Inlines
+inline edict_t *FIND_ENTITY_BY_CLASSNAME(edict_t *entStart, const char *pszName) { return FIND_ENTITY_BY_STRING(entStart, "classname", pszName); }
+inline edict_t *FIND_ENTITY_BY_TARGETNAME(edict_t *entStart, const char *pszName) { return FIND_ENTITY_BY_STRING(entStart, "targetname", pszName); }
 
-inline edict_t *FIND_ENTITY_BY_TARGETNAME(edict_t *entStart, const char *pszName)
-{
-	return FIND_ENTITY_BY_STRING(entStart, "targetname", pszName);
-}
-
-inline edict_t *ENT(const entvars_t *pev)
-{
-	return pev->pContainingEntity;
-}
-
-inline edict_t *ENT(EOFFSET eoffset)
-{
-	return (*g_engfuncs.pfnPEntityOfEntOffset)(eoffset);
-}
-
-inline EOFFSET OFFSET(const edict_t *pent)
-{
-	return (*g_engfuncs.pfnEntOffsetOfPEntity)(pent);
-}
-
-inline EOFFSET OFFSET(const entvars_t *pev)
-{
-	return OFFSET(ENT(pev));
-}
+inline edict_t *ENT(const entvars_t *pev) { return pev->pContainingEntity; }
+inline edict_t *ENT(EOFFSET eoffset) { return (*g_engfuncs.pfnPEntityOfEntOffset)(eoffset); }
+inline EOFFSET OFFSET(const edict_t *pent) { return (*g_engfuncs.pfnEntOffsetOfPEntity)(pent); }
+inline EOFFSET OFFSET(const entvars_t *pev) { return OFFSET(ENT(pev)); }
 
 inline entvars_t *VARS(edict_t *pent)
 {
@@ -277,69 +194,26 @@ inline entvars_t *VARS(edict_t *pent)
 	return &pent->v;
 }
 
-inline entvars_t *VARS(EOFFSET eoffset)
-{
-	return VARS(ENT(eoffset));
-}
-
-inline int ENTINDEX(const edict_t *pEdict)
-{
-	return (*g_engfuncs.pfnIndexOfEdict)(pEdict);
-}
-
-inline edict_t *INDEXENT(int iEdictNum)
-{
-	return (*g_engfuncs.pfnPEntityOfEntIndex)(iEdictNum);
-}
-
-inline void MESSAGE_BEGIN(int msg_dest, int msg_type, const float *pOrigin, entvars_t *ent)
-{
-	MESSAGE_BEGIN(msg_dest, msg_type, pOrigin, ENT(ent));
-}
-
-inline BOOL FNullEnt(EOFFSET eoffset)
-{
-	return (eoffset == 0);
-}
-
-inline BOOL FNullEnt(entvars_t *pev)
-{
-	return (pev == NULL || FNullEnt(OFFSET(pev)));
-}
-
-inline BOOL FNullEnt(const edict_t *pent)
-{
-	return (pent == NULL || FNullEnt(OFFSET(pent)));
-}
-
-inline BOOL FStringNull(int iString)
-{
-	return (iString == iStringNull);
-}
-
-inline BOOL FStrEq(const char *sz1, const char *sz2)
-{
-	return (Q_strcmp(sz1, sz2) == 0);
-}
-
-inline BOOL FClassnameIs(entvars_t *pev, const char *szClassname)
-{
-	return FStrEq(STRING(pev->classname), szClassname);
-}
-
-inline BOOL FClassnameIs(edict_t *pent, const char *szClassname)
-{
-	// TODO: check is null?
-	return FStrEq(STRING(VARS(pent)->classname), szClassname);
-}
-
-inline void UTIL_MakeVectorsPrivate(Vector vecAngles, float *p_vForward, float *p_vRight, float *p_vUp)
-{
-	g_engfuncs.pfnAngleVectors(vecAngles, p_vForward, p_vRight, p_vUp);
-}
+inline entvars_t *VARS(EOFFSET eoffset) { return VARS(ENT(eoffset)); }
+inline int ENTINDEX(const edict_t *pEdict) { return (*g_engfuncs.pfnIndexOfEdict)(pEdict); }
+inline edict_t *INDEXENT(int iEdictNum) { return (*g_engfuncs.pfnPEntityOfEntIndex)(iEdictNum); }
+inline void MESSAGE_BEGIN(int msg_dest, int msg_type, const float *pOrigin, entvars_t *ent) { MESSAGE_BEGIN(msg_dest, msg_type, pOrigin, ENT(ent)); }
+inline BOOL FNullEnt(EOFFSET eoffset) { return (eoffset == 0); }
+inline BOOL FNullEnt(entvars_t *pev) { return (pev == NULL || FNullEnt(OFFSET(pev))); }
+inline BOOL FNullEnt(const edict_t *pent) { return (pent == NULL || FNullEnt(OFFSET(pent))); }
+inline BOOL FStringNull(int iString) { return (iString == iStringNull); }
+inline BOOL FStrEq(const char *sz1, const char *sz2) { return (strcmp(sz1, sz2) == 0); }
+inline BOOL FClassnameIs(entvars_t *pev, const char *szClassname) { return FStrEq(STRING(pev->classname), szClassname); }
+inline BOOL FClassnameIs(edict_t *pent, const char *szClassname) { return FStrEq(STRING(VARS(pent)->classname), szClassname); }
+inline void UTIL_MakeVectorsPrivate(Vector vecAngles, float *p_vForward, float *p_vRight, float *p_vUp) { g_engfuncs.pfnAngleVectors(vecAngles, p_vForward, p_vRight, p_vUp); }
 
 extern void EMIT_SOUND_DYN(edict_t *entity, int channel, const char *sample, float volume, float attenuation, int flags, int pitch);
 
+// NOTE: use EMIT_SOUND_DYN to set the pitch of a sound. Pitch of 100
+// is no pitch shift.  Pitch > 100 up to 255 is a higher pitch, pitch < 100
+// down to 1 is a lower pitch.   150 to 70 is the realistic range.
+// EMIT_SOUND_DYN with pitch != 100 should be used sparingly, as it's not quite as
+// fast as EMIT_SOUND (the pitchshift mixer is not native coded).
 inline void EMIT_SOUND(edict_t *entity, int channel, const char *sample, float volume, float attenuation)
 {
 	EMIT_SOUND_DYN(entity, channel, sample, volume, attenuation, 0, PITCH_NORM);
@@ -438,7 +312,7 @@ void UTIL_BubbleTrail(Vector from, Vector to, int count);
 void UTIL_Remove(CBaseEntity *pEntity);
 BOOL UTIL_IsValidEntity(edict_t *pent);
 void UTIL_PrecacheOther(const char *szClassname);
-void UTIL_LogPrintf(char *fmt, ...);
+void UTIL_LogPrintf(const char *fmt, ...);
 float UTIL_DotPoints(const Vector &vecSrc, const Vector &vecCheck, const Vector &vecDir);
 void UTIL_StripToken(const char *pKey, char *pDest);
 void EntvarsKeyvalue(entvars_t *pev, KeyValueData *pkvd);

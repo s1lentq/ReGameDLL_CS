@@ -32,6 +32,19 @@
 #pragma once
 #endif
 
+enum MONSTERSTATE
+{
+	MONSTERSTATE_NONE = 0,
+	MONSTERSTATE_IDLE,
+	MONSTERSTATE_COMBAT,
+	MONSTERSTATE_ALERT,
+	MONSTERSTATE_HUNT,
+	MONSTERSTATE_PRONE,
+	MONSTERSTATE_SCRIPT,
+	MONSTERSTATE_PLAYDEAD,
+	MONSTERSTATE_DEAD
+};
+
 void RadiusFlash(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int iClassIgnore = 0, int bitsDamageType = 0);
 void RadiusDamage(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, float flRadius, int iClassIgnore, int bitsDamageType);
 void RadiusDamage2(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, float flRadius, int iClassIgnore, int bitsDamageType);

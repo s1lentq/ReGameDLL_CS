@@ -42,11 +42,52 @@ extern ICSPlayer *CBASE_TO_CSPLAYER(CBaseEntity *pEntity);
 extern ICSPlayer *INDEX_TO_CSPLAYER(int iPlayerIndex);
 extern ICSEntity *INDEX_TO_CSENTITY(int iEntityIndex);
 
+#define __API_VHOOK(fname)\
+	fname##_
+
+#define __API_HOOK __API_VHOOK
+
+#ifndef HOOK_GAMEDLL
+
+#define __MAKE_VHOOK(fname)\
+	fname
+
+#define LINK_HOOK_CLASS_VOID_CHAIN(className, functionName, args, ...)\
+	void className::functionName args {\
+		g_ReGameHookchains.m_##className##_##functionName.callChain(&className::functionName##_, this, __VA_ARGS__);\
+	}
+#define LINK_HOOK_CLASS_VOID_CHAIN2(className, functionName)\
+	void className::functionName() {\
+		g_ReGameHookchains.m_##className##_##functionName.callChain(&className::functionName##_, this);\
+	}
+
+#define LINK_HOOK_CLASS_CHAIN(ret, className, functionName, args, ...)\
+	ret className::functionName args {\
+		return g_ReGameHookchains.m_##className##_##functionName.callChain(&className::functionName##_, this, __VA_ARGS__);\
+	}
+#define LINK_HOOK_CLASS_CHAIN2(ret, className, functionName)\
+	ret className::functionName() {\
+		return g_ReGameHookchains.m_##className##_##functionName.callChain(&className::functionName##_, this);\
+	}
+
+#define LINK_HOOK_VOID_CHAIN(functionName, args, ...)\
+	void functionName args {\
+		g_ReGameHookchains.m_##functionName.callChain(functionName##_internal, __VA_ARGS__);\
+	}
+
+#define LINK_HOOK_CHAIN(ret, functionName, args, ...)\
+	ret functionName args {\
+		return g_ReGameHookchains.m_##functionName.callChain(functionName##_internal, __VA_ARGS__);\
+	}
+#endif
+
+// Implementation interfaces
 class CCSEntity: public ICSEntity {
 public:
 	CBaseEntity *m_pEntity;
 	CCSEntity(CBaseEntity *pEntity) : m_pEntity(pEntity) {}
 public:
+	virtual ~CCSEntity() {}
 	virtual void Spawn() { m_pEntity->Spawn(); }
 	virtual void Precache() { m_pEntity->Precache(); }
 	virtual void Restart() { m_pEntity->Restart(); }
@@ -65,7 +106,7 @@ public:
 	virtual int BloodColor() { return m_pEntity->BloodColor(); }
 	virtual void TraceBleed(float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType) { m_pEntity->TraceBleed(flDamage, vecDir, ptr, bitsDamageType); }
 	virtual bool IsTriggered(CCSEntity *pActivator) { return m_pEntity->IsTriggered(pActivator->m_pEntity) ? true : false; }
-	virtual ICSMonster *MyMonsterPointer() { return (ICSMonster *)CBASE_TO_CSENTITY(m_pEntity->MyMonsterPointer()); }
+	virtual ICSMonster *MyMonsterPointer() { return reinterpret_cast<ICSMonster *>(CBASE_TO_CSENTITY(m_pEntity->MyMonsterPointer())); }
 	virtual ICSquadMonster *MySquadMonsterPointer() { return (ICSquadMonster *)m_pEntity->MySquadMonsterPointer(); }
 	virtual int GetToggleState() { return m_pEntity->GetToggleState(); }
 	virtual void AddPoints(int score, bool bAllowNegativeScore) { m_pEntity->AddPoints(score, bAllowNegativeScore ? TRUE : FALSE); }
@@ -105,6 +146,9 @@ public:
 	virtual int Illumination() { return m_pEntity->Illumination(); }
 	virtual bool FVisible(CCSEntity *pEntity) { return m_pEntity->FVisible(pEntity->m_pEntity) ? true : false; }
 	virtual bool FVisible(const Vector &vecOrigin) { return m_pEntity->FVisible(vecOrigin) ? true : false; }
+public:
+	virtual entvars_t *GetEntVars() const { return m_pEntity->pev; }
+	virtual CBaseEntity *GetEntity() const { return m_pEntity; }
 };
 
 class CCSDelay: public CCSEntity {
@@ -154,6 +198,8 @@ public:
 	virtual ICSPlayerItem *GetWeaponPtr() { ((CBasePlayerItem *)m_pEntity)->GetWeaponPtr(); }
 	virtual float GetMaxSpeed() { ((CBasePlayerItem *)m_pEntity)->GetMaxSpeed(); }
 	virtual int iItemSlot() { ((CBasePlayerItem *)m_pEntity)->iItemSlot(); }
+public:
+	virtual CBasePlayerItem *GetEntity() const { return (CBasePlayerItem *)m_pEntity; }
 };
 
 class CCSToggle: public CCSAnimating {
@@ -221,12 +267,8 @@ public:
 };
 
 class CCSPlayer: public CCSMonster {
-private:
-	bool m_bConnected;
 public:
 	CCSPlayer(CBaseEntity *pEntity) : CCSMonster(pEntity) {}
-	void OnClientConnected() { m_bConnected = true; }
-	void OnClientDisconnected() { m_bConnected = false; }
 
 	virtual void Spawn() { m_pEntity->Spawn(); }
 	virtual void Precache() { m_pEntity->Precache(); }
@@ -268,7 +310,8 @@ public:
 	virtual void Blind(float flUntilTime, float flHoldTime, float flFadeTime, int iAlpha) { ((CBasePlayer *)m_pEntity)->Blind(flUntilTime, flHoldTime, flFadeTime, iAlpha); }
 	virtual void OnTouchingWeapon(CCSWeaponBox *pWeapon) { ((CBasePlayer *)m_pEntity)->OnTouchingWeapon((CWeaponBox *)pWeapon->m_pEntity); }
 public:
-	virtual bool IsConnected() const { return m_bConnected; }
+	virtual bool IsConnected() const { return m_pEntity->has_disconnected == false; }
+	virtual CBasePlayer *GetEntity() const { return (CBasePlayer *)m_pEntity; }
 };
 
 class CAPI_Bot: public CCSPlayer {
@@ -379,7 +422,7 @@ public:
 	virtual int PrimaryAmmoIndex() { return ((CBasePlayerWeapon *)m_pEntity)->PrimaryAmmoIndex(); }
 	virtual int SecondaryAmmoIndex() { return ((CBasePlayerWeapon *)m_pEntity)->SecondaryAmmoIndex(); }
 	virtual int UpdateClientData(CCSPlayer *pPlayer) { return ((CBasePlayerWeapon *)m_pEntity)->UpdateClientData((CBasePlayer *)pPlayer->m_pEntity); }
-	virtual ICSPlayerItem *GetWeaponPtr() { return (ICSPlayerItem *)CBASE_TO_CSENTITY(((CBasePlayerWeapon *)m_pEntity)->GetWeaponPtr()); }
+	virtual ICSPlayerItem *GetWeaponPtr() { return reinterpret_cast<ICSPlayerItem *>(CBASE_TO_CSENTITY(((CBasePlayerWeapon *)m_pEntity)->GetWeaponPtr())); }
 	virtual int ExtractAmmo(CCSPlayerWeapon *pWeapon) { return ((CBasePlayerWeapon *)m_pEntity)->ExtractAmmo((CBasePlayerWeapon *)pWeapon->m_pEntity); }
 	virtual int ExtractClipAmmo(CCSPlayerWeapon *pWeapon) { return ((CBasePlayerWeapon *)m_pEntity)->ExtractClipAmmo((CBasePlayerWeapon *)pWeapon->m_pEntity); }
 	virtual int AddWeapon() { return ((CBasePlayerWeapon *)m_pEntity)->AddWeapon(); }
@@ -1175,6 +1218,10 @@ public:
 	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) { m_pEntity->Use(pActivator->m_pEntity, pCaller->m_pEntity, useType, value); }
 };
 
+
+
+
+
 class CCSItemSuit: public CCSItem {
 public:
 	CCSItemSuit(CBaseEntity *pEntity) : CCSItem(pEntity) {}
@@ -1183,6 +1230,10 @@ public:
 	virtual void Precache() { m_pEntity->Precache(); }
 	virtual bool MyTouch(CCSPlayer *pPlayer) { return ((CItemSuit *)m_pEntity)->MyTouch((CBasePlayer *)pPlayer->m_pEntity) ? true : false; }
 };
+
+
+
+
 
 class CCSItemBattery: public CCSItem {
 public:
@@ -2453,12 +2504,23 @@ public:
 	virtual void KeyValue(KeyValueData *pkvd) { m_pEntity->KeyValue(pkvd); }
 };
 
+class CReGameData: public IReGameData {
+public:
+	virtual CGameRules** GetGameRules();
+};
+
 template <class T>
 inline T *Regamedll_InitializeEntities(CBaseEntity *a)
 {
 	int index = a->entindex();
 	g_GameEntities[index] = new T (a);
 	return reinterpret_cast<T *>(g_GameEntities[index]);
+}
+
+template <class T>
+inline T *CBASE_TO_CSENTITY(CBaseEntity *a)
+{
+	return reinterpret_cast<T *>(CBASE_TO_CSENTITY(a));
 }
 
 inline CCSPlayer *CSPlayer(int iPlayerNum) { return reinterpret_cast<CCSPlayer *>(g_GameEntities[iPlayerNum]); }

@@ -33,7 +33,7 @@ CLocalNav::CLocalNav(CHostage *pOwner)
 
 CLocalNav::~CLocalNav()
 {
-	delete m_nodeArr;
+	delete[] m_nodeArr;
 	m_nodeArr = NULL;
 }
 

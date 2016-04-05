@@ -1456,7 +1456,7 @@ void UTIL_PrecacheOther(const char *szClassname)
 	REMOVE_ENTITY(pent);
 }
 
-void UTIL_LogPrintf(char *fmt, ...)
+void UTIL_LogPrintf(const char *fmt, ...)
 {
 	va_list argptr;
 	static char string[1024];

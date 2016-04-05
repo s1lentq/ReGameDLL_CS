@@ -430,7 +430,7 @@ void CWorld::__MAKE_VHOOK(Spawn)()
 	int flength = 0;
 	char *pFile = (char *)LOAD_FILE_FOR_ME(UTIL_VarArgs("maps/%s.txt", STRING(gpGlobals->mapname)), &flength);
 
-	if (pFile && flength != NULL)
+	if (pFile != NULL && flength)
 	{
 		Q_strncpy(g_szMapBriefingText, pFile, ARRAYSIZE(g_szMapBriefingText) - 2);
 
@@ -600,6 +600,7 @@ void CWorld::__MAKE_VHOOK(Precache)()
 	for (int i = 0; i < ARRAYSIZE(gDecals); ++i)
 		gDecals[i].index = DECAL_INDEX(gDecals[i].name);
 
+#ifndef REGAMEDLL_FIXES
 	// init the WorldGraph.
 	WorldGraph.InitGraph();
 
@@ -623,6 +624,7 @@ void CWorld::__MAKE_VHOOK(Precache)()
 			ALERT(at_console, "\n*Graph Loaded!\n");
 		}
 	}
+#endif
 
 	if (pev->speed > 0)
 		CVAR_SET_FLOAT("sv_zmax", pev->speed);

@@ -1121,6 +1121,12 @@
     <ClInclude Include="..\regamedll\regamedll.h">
       <Filter>regamedll</Filter>
     </ClInclude>
+    <ClInclude Include="..\dlls\extdef.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\regamedll\osconfig.h">
+      <Filter>public\regamedll</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\linux\appversion.sh">

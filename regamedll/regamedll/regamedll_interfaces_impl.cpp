@@ -31,6 +31,8 @@
 CCSEntity **g_GameEntities = NULL;
 bool g_bInitialized = false;
 
+ICSEntity::~ICSEntity() {}
+
 void Regamedll_AllocEntities(int maxEdicts)
 {
 	if (g_bInitialized)
@@ -41,10 +43,13 @@ void Regamedll_AllocEntities(int maxEdicts)
 	Q_memset(g_GameEntities, 0, sizeof(CCSEntity *) * maxEdicts);
 
 #ifdef _DEBUG
-	CONSOLE_ECHO(__FUNCTION__":: alloc entities!\n");
+	//CONSOLE_ECHO(__FUNCTION__":: alloc entities!\n");
 
 	ADD_SERVER_COMMAND("check_ent", [](){		
 		Regamedll_MonitorEntities();
+
+		//ICSPlayer *pPlayer = CSPlayer(1);
+		//pPlayer->Spawn();
 	});
 #endif
 }
@@ -73,7 +78,7 @@ void Regamedll_FreeEntities(CBaseEntity *pEntity)
 	g_GameEntities[index] = NULL;
 
 #ifdef _DEBUG
-	CONSOLE_ECHO(__FUNCTION__ ":: Free on (#%d. %s)\n", index, STRING(pEntity->edict()->v.classname));
+	//CONSOLE_ECHO(__FUNCTION__ ":: Free on (#%d. %s)\n", index, STRING(pEntity->edict()->v.classname));
 #endif
 }
 
@@ -91,7 +96,7 @@ void Regamedll_MonitorEntities()
 	CONSOLE_ECHO(__FUNCTION__":: nCount: (%d) (%d)\n", nCount, gpGlobals->maxEntities);
 }
 
-ICSPlayer *CBASE_TO_CSPLAYER(CBaseEntity *pEntity)
+ICSPlayer *EXT_FUNC CBASE_TO_CSPLAYER(CBaseEntity *pEntity)
 {
 	if (pEntity == NULL)
 		return NULL;
@@ -106,13 +111,13 @@ ICSPlayer *CBASE_TO_CSPLAYER(CBaseEntity *pEntity)
 	return reinterpret_cast<ICSPlayer *>(g_GameEntities[index]);
 }
 
-ICSPlayer *INDEX_TO_CSPLAYER(int iPlayerIndex)
+ICSPlayer *EXT_FUNC INDEX_TO_CSPLAYER(int iPlayerIndex)
 {
 	CBaseEntity *pEntity = CBaseEntity::Instance(iPlayerIndex);
 	return CBASE_TO_CSPLAYER(pEntity);
 }
 
-ICSEntity *CBASE_TO_CSENTITY(CBaseEntity *pEntity)
+ICSEntity *EXT_FUNC CBASE_TO_CSENTITY(CBaseEntity *pEntity)
 {
 	if (pEntity == NULL)
 		return NULL;
@@ -127,8 +132,12 @@ ICSEntity *CBASE_TO_CSENTITY(CBaseEntity *pEntity)
 	return g_GameEntities[index];
 }
 
-ICSEntity *INDEX_TO_CSENTITY(int iEntityIndex)
+ICSEntity *EXT_FUNC INDEX_TO_CSENTITY(int iEntityIndex)
 {
 	CBaseEntity *pEntity = CBaseEntity::Instance(iEntityIndex);
 	return CBASE_TO_CSENTITY(pEntity);
+}
+
+CGameRules** EXT_FUNC CReGameData::GetGameRules() {
+	return &g_pGameRules;
 }

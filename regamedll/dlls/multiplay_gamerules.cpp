@@ -942,10 +942,8 @@ void CHalfLifeMultiplay::QueueCareerRoundEndMenu(float tmDelay, int iWinStatus)
 // Check if the scenario has been won/lost.
 void CHalfLifeMultiplay::__MAKE_VHOOK(CheckWinConditions)()
 {
-#ifdef REGAMEDLL_ADD
-	if (round_infinite.string[0] == '1')
+	if (HasRoundInfinite())
 		return;
-#endif
 
 	// If a winner has already been determined and game of started.. then get the heck out of here
 	if (m_bFirstConnected && m_iRoundWinStatus != WINNER_NONE)
@@ -2734,10 +2732,8 @@ void CHalfLifeMultiplay::CheckFreezePeriodExpired()
 
 void CHalfLifeMultiplay::CheckRoundTimeExpired()
 {
-#ifdef REGAMEDLL_ADD
-	if (round_infinite.string[0] == '1' || (UTIL_ReadFlags(round_infinite.string) & SCENARIO_BLOCK_TIME_EXPRIRED))
+	if (HasRoundInfinite(true))
 		return;
-#endif
 
 	if (!HasRoundTimeExpired())
 		return;

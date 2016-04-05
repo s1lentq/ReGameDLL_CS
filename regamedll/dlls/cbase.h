@@ -39,16 +39,19 @@
 #undef CREATE_NAMED_ENTITY
 #undef REMOVE_ENTITY
 
+// These are caps bits to indicate what an object's capabilities (currently used for save/restore and level transitions)
 #define FCAP_CUSTOMSAVE			0x00000001
-#define FCAP_ACROSS_TRANSITION		0x00000002
-#define FCAP_MUST_SPAWN			0x00000004
-#define FCAP_DONT_SAVE			0x80000000
-#define FCAP_IMPULSE_USE		0x00000008
-#define FCAP_CONTINUOUS_USE		0x00000010
-#define FCAP_ONOFF_USE			0x00000020
-#define FCAP_DIRECTIONAL_USE		0x00000040
-#define FCAP_MASTER			0x00000080
-#define FCAP_FORCE_TRANSITION		0x00000080
+#define FCAP_ACROSS_TRANSITION		0x00000002	// should transfer between transitions
+#define FCAP_MUST_SPAWN			0x00000004	// Spawn after restore
+#define FCAP_DONT_SAVE			0x80000000	// Don't save this
+#define FCAP_IMPULSE_USE		0x00000008	// can be used by the player
+#define FCAP_CONTINUOUS_USE		0x00000010	// can be used by the player
+#define FCAP_ONOFF_USE			0x00000020	// can be used by the player
+#define FCAP_DIRECTIONAL_USE		0x00000040	// Player sends +/- 1 when using (currently only tracktrains)
+#define FCAP_MASTER			0x00000080	// Can be used to "master" other entities (like multisource)
+
+// UNDONE: This will ignore transition volumes (trigger_transition), but not the PVS!!!
+#define FCAP_FORCE_TRANSITION		0x00000080	// ALWAYS goes across transitions
 
 #define SetThink(a)\
 	m_pfnThink = static_cast<void (CBaseEntity::*)()>(a)
@@ -62,6 +65,7 @@
 #define SetMoveDone(a)\
 	m_pfnCallWhenMoveDone = static_cast<void (CBaseToggle::*)()>(a)
 
+// for Classify
 #define CLASS_NONE		0
 #define CLASS_MACHINE		1
 #define CLASS_PLAYER		2
@@ -74,10 +78,10 @@
 #define CLASS_ALIEN_PREDATOR	9
 #define CLASS_INSECT		10
 #define CLASS_PLAYER_ALLY	11
-#define CLASS_PLAYER_BIOWEAPON	12
-#define CLASS_ALIEN_BIOWEAPON	13
+#define CLASS_PLAYER_BIOWEAPON	12		// hornets and snarks.launched by players
+#define CLASS_ALIEN_BIOWEAPON	13		// hornets and snarks.launched by the alien menace
 #define CLASS_VEHICLE		14
-#define CLASS_BARNACLE		99
+#define CLASS_BARNACLE		99		// special because no one pays attention to it, and it eats a wide cross-section of creatures.
 
 #define GIB_HEALTH_VALUE	-30
 
@@ -102,37 +106,43 @@
 #define bits_CAP_FLY		(1<<15)
 #define bits_CAP_DOORS_GROUP	(bits_CAP_USE | bits_CAP_AUTO_DOORS | bits_CAP_OPEN_DOORS)
 
-#define DMG_GENERIC		0
-#define DMG_CRUSH		(1<<0)
-#define DMG_BULLET		(1<<1)
-#define DMG_SLASH		(1<<2)
-#define DMG_BURN		(1<<3)
-#define DMG_FREEZE		(1<<4)
-#define DMG_FALL		(1<<5)
-#define DMG_BLAST		(1<<6)
-#define DMG_CLUB		(1<<7)
-#define DMG_SHOCK		(1<<8)
-#define DMG_SONIC		(1<<9)
-#define DMG_ENERGYBEAM		(1<<10)
-#define DMG_NEVERGIB		(1<<12)
-#define DMG_ALWAYSGIB		(1<<13)
-#define DMG_DROWN		(1<<14)
-#define DMG_TIMEBASED		(~(0x3FFF))
+#define SF_NORESPAWN		(1<<30)		// set this bit on guns and stuff that should never respawn.
 
-#define DMG_PARALYZE		(1<<15)
-#define DMG_NERVEGAS		(1<<16)
-#define DMG_POISON		(1<<17)
-#define DMG_RADIATION		(1<<18)
-#define DMG_DROWNRECOVER	(1<<19)
-#define DMG_ACID		(1<<20)
-#define DMG_SLOWBURN		(1<<21)
-#define DMG_SLOWFREEZE		(1<<22)
-#define DMG_MORTAR		(1<<23)
+#define DMG_GENERIC		0		// generic damage was done
+#define DMG_CRUSH		(1<<0)		// crushed by falling or moving object
+#define DMG_BULLET		(1<<1)		// shot
+#define DMG_SLASH		(1<<2)		// cut, clawed, stabbed
+#define DMG_BURN		(1<<3)		// heat burned
+#define DMG_FREEZE		(1<<4)		// frozen
+#define DMG_FALL		(1<<5)		// fell too far
+#define DMG_BLAST		(1<<6)		// explosive blast damage
+#define DMG_CLUB		(1<<7)		// crowbar, punch, headbutt
+#define DMG_SHOCK		(1<<8)		// electric shock
+#define DMG_SONIC		(1<<9)		// sound pulse shockwave
+#define DMG_ENERGYBEAM		(1<<10)		// laser or other high energy beam
+#define DMG_NEVERGIB		(1<<12)		// with this bit OR'd in, no damage type will be able to gib victims upon death
+#define DMG_ALWAYSGIB		(1<<13)		// with this bit OR'd in, any damage type can be made to gib victims upon death
+#define DMG_DROWN		(1<<14)		// Drowning
+
+// time-based damage
+#define DMG_TIMEBASED		(~(0x3FFF))	// mask for time-based damage
+
+#define DMG_PARALYZE		(1<<15)		// slows affected creature down
+#define DMG_NERVEGAS		(1<<16)		// nerve toxins, very bad
+#define DMG_POISON		(1<<17)		// blood poisioning
+#define DMG_RADIATION		(1<<18)		// radiation exposure
+#define DMG_DROWNRECOVER	(1<<19)		// drowning recovery
+#define DMG_ACID		(1<<20)		// toxic chemicals or acid burns
+#define DMG_SLOWBURN		(1<<21)		// in an oven
+#define DMG_SLOWFREEZE		(1<<22)		// in a subzero freezer
+#define DMG_MORTAR		(1<<23)		// Hit by air raid (done to distinguish grenade from mortar)
 #define DMG_EXPLOSION		(1<<24)
-#define DMG_GIB_CORPSE		(DMG_CRUSH | DMG_FALL | DMG_BLAST | DMG_SONIC | DMG_CLUB)
-#define DMG_SHOWNHUD		(DMG_POISON | DMG_ACID | DMG_FREEZE | DMG_SLOWFREEZE | DMG_DROWN | DMG_BURN | DMG_SLOWBURN | DMG_NERVEGAS | DMG_RADIATION | DMG_SHOCK)
 
-#define SF_NORESPAWN		(1 << 30)
+// these are the damage types that are allowed to gib corpses
+#define DMG_GIB_CORPSE		(DMG_CRUSH | DMG_FALL | DMG_BLAST | DMG_SONIC | DMG_CLUB)
+
+// these are the damage types that have client hud art
+#define DMG_SHOWNHUD		(DMG_POISON | DMG_ACID | DMG_FREEZE | DMG_SLOWFREEZE | DMG_DROWN | DMG_BURN | DMG_SLOWBURN | DMG_NERVEGAS | DMG_RADIATION | DMG_SHOCK)
 
 #define AIRTIME			12	// lung full of air lasts this many seconds
 #define PARALYZE_DURATION	2	// number of 2 second intervals to take damage
@@ -166,9 +176,11 @@
 #define itbd_SlowFreeze		7
 #define CDMG_TIMEBASED		8
 
-#define GIB_NORMAL		0
-#define GIB_NEVER		1
-#define GIB_ALWAYS		2
+// when calling KILLED(), a value that governs gib behavior is expected to be
+// one of these three values
+#define GIB_NORMAL		0		// gib if entity was overkilled
+#define GIB_NEVER		1		// never gib, no matter how much death damage is done ( freezing, etc )
+#define GIB_ALWAYS		2		// always gib ( Houndeye Shock, Barnacle Bite )
 
 #define SF_ITEM_USE_ONLY	256
 
@@ -181,49 +193,6 @@
 	#define EXPORT /**/
 #endif // _WIN32
 
-enum hash_types_e { CLASSNAME };
-
-typedef struct hash_item_s
-{
-	entvars_t *pev;
-	struct hash_item_s *next;
-	struct hash_item_s *lastHash;
-	int pevIndex;
-
-} hash_item_t;
-
-typedef struct locksounds
-{
-	string_t sLockedSound;
-	string_t sLockedSentence;
-	string_t sUnlockedSound;
-	string_t sUnlockedSentence;
-	int iLockedSentence;
-	int iUnlockedSentence;
-	float flwaitSound;
-	float flwaitSentence;
-	BYTE bEOFLocked;
-	BYTE bEOFUnlocked;
-
-} locksound_t;
-
-typedef enum
-{
-	USE_OFF,
-	USE_ON,
-	USE_SET,
-	USE_TOGGLE,
-
-} USE_TYPE;
-
-typedef enum
-{
-	TRAIN_SAFE,
-	TRAIN_BLOCKING,
-	TRAIN_FOLLOWING
-
-} TRAIN_CODE;
-
 class CGrenade;
 class CBaseEntity;
 class CBaseMonster;
@@ -234,8 +203,8 @@ class CSquadMonster;
 class CCineMonster;
 class CSound;
 
-class EHANDLE
-{
+// EHANDLE. Safe way to point to CBaseEntities who may die between frames
+class EHANDLE {
 public:
 	edict_t *Get();
 	edict_t *Set(edict_t *pent);
@@ -252,8 +221,8 @@ private:
 	int m_serialnumber;
 };
 
-class CBaseEntity
-{
+// Base Entity.  All entity types derive from this
+class CBaseEntity {
 public:
 	virtual void Spawn() {}
 	virtual void Precache() {}
@@ -299,36 +268,15 @@ public:
 	virtual BOOL IsNetClient() { return FALSE; }
 	virtual const char *TeamID() { return ""; }
 	virtual CBaseEntity *GetNextTarget();
-	virtual void Think()
-	{
-		if (m_pfnThink)
-		{
-			(this->*m_pfnThink)();
-		}
-	}
-	virtual void Touch(CBaseEntity *pOther)
-	{
-		if (m_pfnTouch)
-		{
-			(this->*m_pfnTouch)(pOther);
-		}
-	}
-	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType = USE_OFF, float value = 0.0f)
-	{
-		if (m_pfnUse)
-		{
-			(this->*m_pfnUse)(pActivator, pCaller, useType, value);
-		}
-	}
-	virtual void Blocked(CBaseEntity *pOther)
-	{
-		if (m_pfnBlocked)
-		{
-			(this->*m_pfnBlocked)(pOther);
-		}
-	}
+	virtual void Think() { if (m_pfnThink) (this->*m_pfnThink)(); }
+	virtual void Touch(CBaseEntity *pOther) { if (m_pfnTouch) (this->*m_pfnTouch)(pOther); }
+	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType = USE_OFF, float value = 0.0f) { if (m_pfnUse) (this->*m_pfnUse)(pActivator, pCaller, useType, value); }
+	virtual void Blocked(CBaseEntity *pOther) { if (m_pfnBlocked) (this->*m_pfnBlocked)(pOther); }
 	virtual CBaseEntity *Respawn() { return NULL; }
+
+	// used by monsters that are created by the MonsterMaker
 	virtual void UpdateOwner() {}
+
 	virtual BOOL FBecomeProne() { return FALSE; }
 	virtual Vector Center() { return (pev->absmax + pev->absmin) * 0.5f; }
 	virtual Vector EyePosition() { return (pev->origin + pev->view_ofs); }
@@ -358,6 +306,7 @@ public:
 #endif
 
 public:
+	// allow engine to allocate instance data
 	void *operator new(size_t stAllocateBlock, entvars_t *pevnew) { return ALLOC_PRIVATE(ENT(pevnew), stAllocateBlock); }
 	void operator delete(void *pMem, entvars_t *pevnew) { pevnew->flags |= FL_KILLME; }
 	void UpdateOnRemove();
@@ -384,28 +333,29 @@ public:
 	{
 		CBaseEntity *pEntity = Instance(pevMonster);
 		if (pEntity != NULL)
-		{
 			return pEntity->MyMonsterPointer();
-		}
+
 		return NULL;
 	}
 	CBaseMonster *GetMonsterPointer(edict_t *pentMonster)
 	{
 		CBaseEntity *pEntity = Instance(pentMonster);
-		if (pEntity)
+		if (pEntity != NULL)
 			return pEntity->MyMonsterPointer();
+
 		return NULL;
 	}
-
 	static CBaseEntity *Create(char *szName, const Vector &vecOrigin, const Vector &vecAngles, edict_t *pentOwner = NULL);
 	edict_t *edict() { return ENT(pev); }
 	EOFFSET eoffset() { return OFFSET(pev); }
 	int entindex() { return ENTINDEX(edict()); }
 
 public:
-	entvars_t *pev;
-	CBaseEntity *m_pGoalEnt;
-	CBaseEntity *m_pLink;
+	entvars_t *pev;				// Don't need to save/restore this pointer, the engine resets it
+
+	// path corners
+	CBaseEntity *m_pGoalEnt;		// path corner we are heading towards
+	CBaseEntity *m_pLink;			// used for temporary link-list operations.
 
 	static TYPEDESCRIPTION IMPL(m_SaveData)[5];
 
@@ -414,6 +364,7 @@ public:
 	void (CBaseEntity::*m_pfnUse)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 	void (CBaseEntity::*m_pfnBlocked)(CBaseEntity *pOther);
 
+	// We use this variables to store each ammo count.
 	int *current_ammo;
 	float currentammo;
 	int maxammo_buckshot;
@@ -436,17 +387,20 @@ public:
 	int ammo_57mm;
 	int maxammo_357sig;
 	int ammo_357sig;
+
+	// Special stuff for grenades and knife.
 	float m_flStartThrow;
 	float m_flReleaseThrow;
 	int m_iSwing;
+
+	// client has left the game
 	bool has_disconnected;
 };
 
 inline int FNullEnt(CBaseEntity *ent) { return (ent == NULL || FNullEnt(ent->edict())); }
 inline int FNullEnt(EHANDLE hent) { return (hent == NULL || FNullEnt(OFFSET(hent.Get()))); }
 
-class CPointEntity: public CBaseEntity
-{
+class CPointEntity: public CBaseEntity {
 public:
 	virtual void Spawn();
 	virtual int ObjectCaps() { return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
@@ -459,8 +413,8 @@ public:
 
 };
 
-class CMultiSource: public CPointEntity
-{
+// MultiSouce
+class CMultiSource: public CPointEntity {
 public:
 	virtual void Spawn();
 	virtual void KeyValue(KeyValueData *pkvd);
@@ -493,8 +447,8 @@ public:
 	string_t m_globalstate;
 };
 
-class CBaseDelay: public CBaseEntity
-{
+// generic Delay entity.
+class CBaseDelay: public CBaseEntity {
 public:
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual int Save(CSave &save);
@@ -518,8 +472,7 @@ public:
 	int m_iszKillTarget;
 };
 
-class CBaseAnimating: public CBaseDelay
-{
+class CBaseAnimating: public CBaseDelay {
 public:
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
@@ -533,13 +486,14 @@ public:
 #endif
 
 public:
-	float StudioFrameAdvance(float flInterval = 0.0f);
+	// Basic Monster Animation functions
+	float StudioFrameAdvance(float flInterval = 0.0f);				// accumulate animation frame time from last time called until now
 	BOOL GetSequenceFlags();
 	int LookupActivity(int activity);
 	int LookupActivityHeaviest(int activity);
 	int LookupSequence(const char *label);
 	void ResetSequenceInfo();
-	void DispatchAnimEvents(float flFutureInterval = 0.1f);
+	void DispatchAnimEvents(float flFutureInterval = 0.1f);				// Handle events that have happend since last time called up until X seconds into the future
 	float SetBoneController(int iController, float flValue = 0.0f);
 	void InitBoneControllers();
 
@@ -556,15 +510,16 @@ public:
 public:
 	static TYPEDESCRIPTION IMPL(m_SaveData)[5];
 
-	float m_flFrameRate;
-	float m_flGroundSpeed;
-	float m_flLastEventCheck;
-	BOOL m_fSequenceFinished;
-	BOOL m_fSequenceLoops;
+	// animation needs
+	float m_flFrameRate;				// computed FPS for current sequence
+	float m_flGroundSpeed;				// computed linear movement rate for current sequence
+	float m_flLastEventCheck;			// last time the event list was checked
+	BOOL m_fSequenceFinished;			// flag set when StudioAdvanceFrame moves across a frame boundry
+	BOOL m_fSequenceLoops;				// true if the sequence loops
 };
 
-class CBaseToggle: public CBaseAnimating
-{
+// generic Toggle entity.
+class CBaseToggle: public CBaseAnimating {
 public:
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual int Save(CSave &save);
@@ -596,37 +551,38 @@ public:
 	static TYPEDESCRIPTION IMPL(m_SaveData)[19];
 
 	TOGGLE_STATE m_toggle_state;
-	float m_flActivateFinished;
-	float m_flMoveDistance;
+	float m_flActivateFinished;	// like attack_finished, but for doors
+	float m_flMoveDistance;		// how far a door should slide or rotate
 	float m_flWait;
 	float m_flLip;
-	float m_flTWidth;
-	float m_flTLength;
+	float m_flTWidth;		// for plats
+	float m_flTLength;		// for plats
+
 	Vector m_vecPosition1;
 	Vector m_vecPosition2;
 	Vector m_vecAngle1;
 	Vector m_vecAngle2;
-	int m_cTriggersLeft;
+
+	int m_cTriggersLeft;		// trigger_counter only, # of activations remaining
 	float m_flHeight;
 	EHANDLE m_hActivator;
 	void (CBaseToggle::*m_pfnCallWhenMoveDone)();
 	Vector m_vecFinalDest;
 	Vector m_vecFinalAngle;
-	int m_bitsDamageInflict;
-	string_t m_sMaster;
+
+	int m_bitsDamageInflict;	// DMG_ damage type that the door or tigger does
+
+	string_t m_sMaster;		// If this button has a master switch, this is the targetname.
+						// A master switch must be of the multisource type. If all
+						// of the switches in the multisource have been triggered, then
+						// the button will be allowed to operate. Otherwise, it will be
+						// deactivated.
 };
 
 #include "basemonster.h"
 
 // Generic Button
-class CBaseButton: public CBaseToggle
-{
-	enum BUTTON_CODE
-	{
-		BUTTON_NOTHING,
-		BUTTON_ACTIVATE,
-		BUTTON_RETURN
-	};
+class CBaseButton: public CBaseToggle {
 public:
 	virtual void Spawn();
 	virtual void Precache();
@@ -668,6 +624,7 @@ public:
 	void EXPORT ButtonBackHome();
 	void EXPORT ButtonUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
+	enum BUTTON_CODE { BUTTON_NOTHING, BUTTON_ACTIVATE, BUTTON_RETURN };
 	BUTTON_CODE ButtonResponseToTouch();
 
 public:
@@ -684,8 +641,8 @@ public:
 	int m_sounds;
 };
 
-class CWorld: public CBaseEntity
-{
+// This spawns first when each level begins.
+class CWorld: public CBaseEntity {
 public:
 	virtual void Spawn();
 	virtual void Precache();
@@ -705,15 +662,23 @@ public:
 extern class CCSEntity **g_GameEntities;
 #endif
 
+// Converts a entvars_t * to a class pointer
+// It will allocate the class and entity if necessary
 template <class TWrap, class T>
 T *GetClassPtr(T *a)
 {
 	entvars_t *pev = (entvars_t *)a;
-	if (!pev)
+
+	// allocate entity if necessary
+	if (pev == NULL)
 		pev = VARS(CREATE_ENTITY());
+
+	// get the private data
 	a = (T *)GET_PRIVATE(ENT(pev));
+
 	if (!a)
 	{
+		// allocate private data
 		a = new(pev) T;
 		a->pev = pev;
 

@@ -32,7 +32,9 @@
 #include "hookchains_impl.h"
 
 #include "regamedll.h"
+
 #include "regamedll_interfaces.h"
-#include "regamedll_interfaces_impl.h"
 #include "regamedll_api.h"
+
+#include "regamedll_interfaces_impl.h"
 #include "regamedll_api_impl.h"

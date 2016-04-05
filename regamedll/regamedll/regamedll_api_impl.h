@@ -31,32 +31,199 @@
 #include "regamedll_api.h"
 #include "regamedll_interfaces_impl.h"
 
-// Observer_IsValidTarget
-typedef IHookChainImpl<class CBasePlayer *, class CBasePlayer *, class CBasePlayer *, int, bool> CReGameHook_Observer_IsValidTarget;
-typedef IHookChainRegistryImpl<class CBasePlayer *, class CBasePlayer *, class CBasePlayer *, int, bool> CReGameHookRegistry_Observer_IsValidTarget;
+// CBasePlayer::Spawn hook
+typedef IVoidHookChainClassImpl<CBasePlayer> CRegameHook_CBasePlayer_Spawn;
+typedef IVoidHookChainRegistryClassImpl<CBasePlayer> CReGameHookRegistry_CBasePlayer_Spawn;
+
+// CBasePlayer::Precache hook
+typedef IVoidHookChainClassImpl<CBasePlayer> CRegameHook_CBasePlayer_Precache;
+typedef IVoidHookChainRegistryClassImpl<CBasePlayer> CReGameHookRegistry_CBasePlayer_Precache;
+
+// CBasePlayer::ObjectCaps hook
+typedef IHookChainClassImpl<int, CBasePlayer> CRegameHook_CBasePlayer_ObjectCaps;
+typedef IHookChainRegistryClassImpl<int, CBasePlayer> CReGameHookRegistry_CBasePlayer_ObjectCaps;
+
+// CBasePlayer::Classify hook
+typedef IHookChainClassImpl<int, CBasePlayer> CRegameHook_CBasePlayer_Classify;
+typedef IHookChainRegistryClassImpl<int, CBasePlayer> CReGameHookRegistry_CBasePlayer_Classify;
+
+// CBasePlayer::TraceAttack hook
+typedef IVoidHookChainClassImpl<CBasePlayer, entvars_t *, float, Vector, TraceResult *, int> CRegameHook_CBasePlayer_TraceAttack;
+typedef IVoidHookChainRegistryClassImpl<CBasePlayer, entvars_t *, float, Vector, TraceResult *, int> CReGameHookRegistry_CBasePlayer_TraceAttack;
+
+// CBasePlayer::TakeDamage hook
+typedef IHookChainClassImpl<int, CBasePlayer, entvars_t *, entvars_t *, float, int> CRegameHook_CBasePlayer_TakeDamage;
+typedef IHookChainRegistryClassImpl<int, CBasePlayer, entvars_t *, entvars_t *, float, int> CReGameHookRegistry_CBasePlayer_TakeDamage;
+
+
+
+
+
+
+
+
+// CBasePlayer::TakeHealth hook
+typedef IHookChainClassImpl<int, CBasePlayer, float, int> CRegameHook_CBasePlayer_TakeHealth;
+typedef IHookChainRegistryClassImpl<int, CBasePlayer, float, int> CReGameHookRegistry_CBasePlayer_TakeHealth;
+
+// CBasePlayer::Killed hook
+typedef IVoidHookChainClassImpl<CBasePlayer, entvars_t *, int> CRegameHook_CBasePlayer_Killed;
+typedef IVoidHookChainRegistryClassImpl<CBasePlayer, entvars_t *, int> CReGameHookRegistry_CBasePlayer_Killed;
+
+// CBasePlayer::AddPoints hook
+typedef IVoidHookChainClassImpl<CBasePlayer, int, BOOL> CRegameHook_CBasePlayer_AddPoints;
+typedef IVoidHookChainRegistryClassImpl<CBasePlayer, int, BOOL> CReGameHookRegistry_CBasePlayer_AddPoints;
+
+// CBasePlayer::AddPointsToTeam hook
+typedef IVoidHookChainClassImpl<CBasePlayer, int, BOOL> CRegameHook_CBasePlayer_AddPointsToTeam;
+typedef IVoidHookChainRegistryClassImpl<CBasePlayer, int, BOOL> CReGameHookRegistry_CBasePlayer_AddPointsToTeam;
+
+// CBasePlayer::AddPlayerItem hook
+typedef IHookChainClassImpl<BOOL, CBasePlayer, CBasePlayerItem *> CRegameHook_CBasePlayer_AddPlayerItem;
+typedef IHookChainRegistryClassImpl<BOOL, CBasePlayer, CBasePlayerItem *> CReGameHookRegistry_CBasePlayer_AddPlayerItem;
+
+// CBasePlayer::RemovePlayerItem hook
+typedef IHookChainClassImpl<BOOL, CBasePlayer, CBasePlayerItem *> CRegameHook_CBasePlayer_RemovePlayerItem;
+typedef IHookChainRegistryClassImpl<BOOL, CBasePlayer, CBasePlayerItem *> CReGameHookRegistry_CBasePlayer_RemovePlayerItem;
+
+// CBasePlayer::GiveAmmo hook
+typedef IHookChainClassImpl<int, CBasePlayer, int , char *, int> CRegameHook_CBasePlayer_GiveAmmo;
+typedef IHookChainRegistryClassImpl<int, CBasePlayer, int , char *, int> CReGameHookRegistry_CBasePlayer_GiveAmmo;
+
+// CBasePlayer::ResetMaxSpeed hook
+typedef IVoidHookChainClassImpl<CBasePlayer> CRegameHook_CBasePlayer_ResetMaxSpeed;
+typedef IVoidHookChainRegistryClassImpl<CBasePlayer> CReGameHookRegistry_CBasePlayer_ResetMaxSpeed;
+
+// CBasePlayer::Jump hook
+typedef IVoidHookChainClassImpl<CBasePlayer> CRegameHook_CBasePlayer_Jump;
+typedef IVoidHookChainRegistryClassImpl<CBasePlayer> CReGameHookRegistry_CBasePlayer_Jump;
+
+// CBasePlayer::Duck hook
+typedef IVoidHookChainClassImpl<CBasePlayer> CRegameHook_CBasePlayer_Duck;
+typedef IVoidHookChainRegistryClassImpl<CBasePlayer> CReGameHookRegistry_CBasePlayer_Duck;
+
+// CBasePlayer::PreThink hook
+typedef IVoidHookChainClassImpl<CBasePlayer> CRegameHook_CBasePlayer_PreThink;
+typedef IVoidHookChainRegistryClassImpl<CBasePlayer> CReGameHookRegistry_CBasePlayer_PreThink;
+
+// CBasePlayer::PostThink hook
+typedef IVoidHookChainClassImpl<CBasePlayer> CRegameHook_CBasePlayer_PostThink;
+typedef IVoidHookChainRegistryClassImpl<CBasePlayer> CReGameHookRegistry_CBasePlayer_PostThink;
+
+// CBasePlayer::UpdateClientData hook
+typedef IVoidHookChainClassImpl<CBasePlayer> CRegameHook_CBasePlayer_UpdateClientData;
+typedef IVoidHookChainRegistryClassImpl<CBasePlayer> CReGameHookRegistry_CBasePlayer_UpdateClientData;
+
+// CBasePlayer::ImpulseCommands hook
+typedef IVoidHookChainClassImpl<CBasePlayer> CRegameHook_CBasePlayer_ImpulseCommands;
+typedef IVoidHookChainRegistryClassImpl<CBasePlayer> CReGameHookRegistry_CBasePlayer_ImpulseCommands;
+
+// CBasePlayer::RoundRespawn hook
+typedef IVoidHookChainClassImpl<CBasePlayer> CRegameHook_CBasePlayer_RoundRespawn;
+typedef IVoidHookChainRegistryClassImpl<CBasePlayer> CReGameHookRegistry_CBasePlayer_RoundRespawn;
+
+// CBasePlayer::Blind hook
+typedef IVoidHookChainClassImpl<CBasePlayer, float, float, float, int> CRegameHook_CBasePlayer_Blind;
+typedef IVoidHookChainRegistryClassImpl<CBasePlayer, float, float, float, int> CReGameHookRegistry_CBasePlayer_Blind;
+
+
+
+
+
+
+
+// CBasePlayer::Observer_IsValidTarget
+typedef IHookChainClassImpl<CBaseEntity *, CBasePlayer, int, bool> CReGameHook_CBasePlayer_Observer_IsValidTarget;
+typedef IHookChainRegistryClassImpl<CBaseEntity *, CBasePlayer, int, bool> CReGameHookRegistry_CBasePlayer_Observer_IsValidTarget;
 
 // GetForceCamera
 typedef IHookChainImpl<int, class CBasePlayer *> CReGameHook_GetForceCamera;
 typedef IHookChainRegistryImpl<int, class CBasePlayer *> CReGameHookRegistry_GetForceCamera;
 
-class CReGameHookchains : public IReGameHookchains {
+class CReGameHookchains: public IReGameHookchains {
 public:
-	CReGameHookRegistry_Observer_IsValidTarget m_Observer_IsValidTarget;
+	// CBasePlayer virtual
+	CReGameHookRegistry_CBasePlayer_Spawn m_CBasePlayer_Spawn;
+	CReGameHookRegistry_CBasePlayer_Precache m_CBasePlayer_Precache;
+	CReGameHookRegistry_CBasePlayer_ObjectCaps m_CBasePlayer_ObjectCaps;
+	CReGameHookRegistry_CBasePlayer_Classify m_CBasePlayer_Classify;
+	CReGameHookRegistry_CBasePlayer_TraceAttack m_CBasePlayer_TraceAttack;
+	CReGameHookRegistry_CBasePlayer_TakeDamage m_CBasePlayer_TakeDamage;
+	CReGameHookRegistry_CBasePlayer_TakeHealth m_CBasePlayer_TakeHealth;
+	CReGameHookRegistry_CBasePlayer_Killed m_CBasePlayer_Killed;
+	CReGameHookRegistry_CBasePlayer_AddPoints m_CBasePlayer_AddPoints;
+	CReGameHookRegistry_CBasePlayer_AddPointsToTeam m_CBasePlayer_AddPointsToTeam;
+	CReGameHookRegistry_CBasePlayer_AddPlayerItem m_CBasePlayer_AddPlayerItem;
+	CReGameHookRegistry_CBasePlayer_RemovePlayerItem m_CBasePlayer_RemovePlayerItem;
+	CReGameHookRegistry_CBasePlayer_GiveAmmo m_CBasePlayer_GiveAmmo;
+	CReGameHookRegistry_CBasePlayer_ResetMaxSpeed m_CBasePlayer_ResetMaxSpeed;
+	CReGameHookRegistry_CBasePlayer_Jump m_CBasePlayer_Jump;
+	CReGameHookRegistry_CBasePlayer_Duck m_CBasePlayer_Duck;
+	CReGameHookRegistry_CBasePlayer_PreThink m_CBasePlayer_PreThink;
+	CReGameHookRegistry_CBasePlayer_PostThink m_CBasePlayer_PostThink;
+	CReGameHookRegistry_CBasePlayer_UpdateClientData m_CBasePlayer_UpdateClientData;
+	CReGameHookRegistry_CBasePlayer_ImpulseCommands m_CBasePlayer_ImpulseCommands;
+	CReGameHookRegistry_CBasePlayer_RoundRespawn m_CBasePlayer_RoundRespawn;
+	CReGameHookRegistry_CBasePlayer_Blind m_CBasePlayer_Blind;
+
+
+
+
+
+
+
+
+
+	CReGameHookRegistry_CBasePlayer_Observer_IsValidTarget m_CBasePlayer_Observer_IsValidTarget;
 	CReGameHookRegistry_GetForceCamera m_GetForceCamera;
 
 public:
-	virtual IReGameHookRegistry_Observer_IsValidTarget* Observer_IsValidTarget();
+	virtual IReGameHookRegistry_CBasePlayer_Spawn* CBasePlayer_Spawn();
+	virtual IReGameHookRegistry_CBasePlayer_Precache* CBasePlayer_Precache();
+	virtual IReGameHookRegistry_CBasePlayer_ObjectCaps* CBasePlayer_ObjectCaps();
+	virtual IReGameHookRegistry_CBasePlayer_Classify* CBasePlayer_Classify();
+	virtual IReGameHookRegistry_CBasePlayer_TraceAttack* CBasePlayer_TraceAttack();
+	virtual IReGameHookRegistry_CBasePlayer_TakeDamage* CBasePlayer_TakeDamage();
+	virtual IReGameHookRegistry_CBasePlayer_TakeHealth* CBasePlayer_TakeHealth();
+	virtual IReGameHookRegistry_CBasePlayer_Killed* CBasePlayer_Killed();
+	virtual IReGameHookRegistry_CBasePlayer_AddPoints* CBasePlayer_AddPoints();
+	virtual IReGameHookRegistry_CBasePlayer_AddPointsToTeam* CBasePlayer_AddPointsToTeam();
+	virtual IReGameHookRegistry_CBasePlayer_AddPlayerItem* CBasePlayer_AddPlayerItem();
+	virtual IReGameHookRegistry_CBasePlayer_RemovePlayerItem* CBasePlayer_RemovePlayerItem();
+	virtual IReGameHookRegistry_CBasePlayer_GiveAmmo* CBasePlayer_GiveAmmo();
+	virtual IReGameHookRegistry_CBasePlayer_ResetMaxSpeed* CBasePlayer_ResetMaxSpeed();
+	virtual IReGameHookRegistry_CBasePlayer_Jump* CBasePlayer_Jump();
+	virtual IReGameHookRegistry_CBasePlayer_Duck* CBasePlayer_Duck();
+	virtual IReGameHookRegistry_CBasePlayer_PreThink* CBasePlayer_PreThink();
+	virtual IReGameHookRegistry_CBasePlayer_PostThink* CBasePlayer_PostThink();
+	virtual IReGameHookRegistry_CBasePlayer_UpdateClientData* CBasePlayer_UpdateClientData();
+	virtual IReGameHookRegistry_CBasePlayer_ImpulseCommands* CBasePlayer_ImpulseCommands();
+	virtual IReGameHookRegistry_CBasePlayer_RoundRespawn* CBasePlayer_RoundRespawn();
+	virtual IReGameHookRegistry_CBasePlayer_Blind* CBasePlayer_Blind();
+
+
+
+
+
+
+
+
+
+	virtual IReGameHookRegistry_CBasePlayer_Observer_IsValidTarget* CBasePlayer_Observer_IsValidTarget();
 	virtual IReGameHookRegistry_GetForceCamera* GetForceCamera();
+
 };
 
 extern CReGameHookchains g_ReGameHookchains;
+extern CReGameData g_ReGameData;
 extern ReGameFuncs_t g_ReGameApiFuncs;
 
-class CReGameApi : public IReGameApi {
+class CReGameApi: public IReGameApi {
 public:
 	virtual int GetMajorVersion();
 	virtual int GetMinorVersion();
 
 	virtual const ReGameFuncs_t *GetFuncs();
 	virtual IReGameHookchains *GetHookchains();
+	virtual IReGameData* GetGameData();
 };

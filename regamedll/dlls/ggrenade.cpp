@@ -51,8 +51,10 @@ void CGrenade::Explode(TraceResult *pTrace, int bitsDamageType)
 	}
 
 	int iContents = UTIL_PointContents(pev->origin);
-	CSoundEnt::InsertSound(bits_SOUND_COMBAT, pev->origin, NORMAL_EXPLOSION_VOLUME, 3);
 
+#ifndef REGAMEDLL_FIXES
+	CSoundEnt::InsertSound(bits_SOUND_COMBAT, pev->origin, NORMAL_EXPLOSION_VOLUME, 3);
+#endif
 	entvars_t *pevOwner = VARS(pev->owner);
 
 	if (TheBots != NULL)
@@ -166,8 +168,10 @@ void CGrenade::Explode2(TraceResult *pTrace, int bitsDamageType)
 
 	// Sound! for everyone
 	EMIT_SOUND(ENT(pev), CHAN_WEAPON, "weapons/c4_explode1.wav", VOL_NORM, 0.25);
-	CSoundEnt::InsertSound(bits_SOUND_COMBAT, pev->origin, NORMAL_EXPLOSION_VOLUME, 3);
 
+#ifndef REGAMEDLL_FIXES
+	CSoundEnt::InsertSound(bits_SOUND_COMBAT, pev->origin, NORMAL_EXPLOSION_VOLUME, 3);
+#endif
 	entvars_t *pevOwner = VARS(pev->owner);
 
 	pev->owner = NULL;
@@ -257,8 +261,9 @@ void CGrenade::Explode3(TraceResult *pTrace, int bitsDamageType)
 		WRITE_BYTE(TE_EXPLFLAG_NONE);	// flags
 	MESSAGE_END();
 
+#ifndef REGAMEDLL_FIXES
 	CSoundEnt::InsertSound(bits_SOUND_COMBAT, pev->origin, NORMAL_EXPLOSION_VOLUME, 3);
-
+#endif
 	entvars_t *pevOwner = VARS(pev->owner);
 
 	if (TheBots != NULL)
@@ -310,7 +315,10 @@ NOXREF void CGrenade::SG_Explode(TraceResult *pTrace, int bitsDamageType)
 	}
 
 	int iContents = UTIL_PointContents(pev->origin);
+
+#ifndef REGAMEDLL_FIXES
 	CSoundEnt::InsertSound(bits_SOUND_COMBAT, pev->origin, NORMAL_EXPLOSION_VOLUME, 3);
+#endif
 
 	// can't traceline attack owner if this is set
 	pev->owner = NULL;
@@ -517,7 +525,9 @@ void CGrenade::DetonateUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TY
 
 void CGrenade::PreDetonate()
 {
+#ifndef REGAMEDLL_FIXES
 	CSoundEnt::InsertSound(bits_SOUND_DANGER, pev->origin, 400, 0.3);
+#endif
 
 	SetThink(&CGrenade::Detonate);
 	pev->nextthink = gpGlobals->time + 1.0f;
@@ -626,7 +636,9 @@ void CGrenade::DangerSoundThink()
 		return;
 	}
 
+#ifndef REGAMEDLL_FIXES
 	CSoundEnt::InsertSound(bits_SOUND_DANGER, pev->origin + pev->velocity * 0.5, pev->velocity.Length(), 0.2);
+#endif
 	pev->nextthink = gpGlobals->time + 0.2f;
 
 	if (pev->waterlevel != 0)
@@ -655,6 +667,7 @@ void CGrenade::BounceTouch(CBaseEntity *pOther)
 	vecTestVelocity = pev->velocity;
 	vecTestVelocity.z *= 0.7f;
 
+#ifndef REGAMEDLL_FIXES
 	if (!m_fRegisteredSound && vecTestVelocity.Length() <= 60.0f)
 	{
 		// grenade is moving really slow. It's probably very close to where it will ultimately stop moving.
@@ -664,7 +677,7 @@ void CGrenade::BounceTouch(CBaseEntity *pOther)
 		CSoundEnt::InsertSound(bits_SOUND_DANGER, pev->origin, pev->dmg / 0.4f, 0.3);
 		m_fRegisteredSound = TRUE;
 	}
-
+#endif
 	if (pev->flags & FL_ONGROUND)
 	{
 		// add a bit of static friction
@@ -745,10 +758,12 @@ void CGrenade::TumbleThink()
 	StudioFrameAdvance();
 	pev->nextthink = gpGlobals->time + 0.1f;
 
+#ifndef REGAMEDLL_FIXES
 	if (pev->dmgtime - 1 < gpGlobals->time)
 	{
 		CSoundEnt::InsertSound(bits_SOUND_DANGER, pev->origin + pev->velocity * (pev->dmgtime - gpGlobals->time), 400, 0.1);
 	}
+#endif
 
 	if (pev->dmgtime <= gpGlobals->time)
 	{
@@ -783,10 +798,12 @@ void CGrenade::SG_TumbleThink()
 	StudioFrameAdvance();
 	pev->nextthink = gpGlobals->time + 0.1f;
 
+#ifndef REGAMEDLL_FIXES
 	if (pev->dmgtime - 1 < gpGlobals->time)
 	{
 		CSoundEnt::InsertSound(bits_SOUND_DANGER, pev->origin + pev->velocity * (pev->dmgtime - gpGlobals->time), 400, 0.1);
 	}
+#endif
 
 	if (pev->dmgtime <= gpGlobals->time)
 	{

@@ -1,6 +1,8 @@
 #include "precompiled.h"
 
-int GetForceCamera_api(CBasePlayer *pObserver)
+LINK_HOOK_CHAIN(int, GetForceCamera, (CBasePlayer *pObserver), pObserver);
+
+int GetForceCamera_internal(CBasePlayer *pObserver)
 {
 	int retVal;
 
@@ -17,27 +19,20 @@ int GetForceCamera_api(CBasePlayer *pObserver)
 	return retVal;
 }
 
-int GetForceCamera(CBasePlayer *pObserver)
-{
-	return g_ReGameHookchains.m_GetForceCamera.callChain(GetForceCamera_api, pObserver);
-}
+LINK_HOOK_CLASS_CHAIN(CBaseEntity *, CBasePlayer, Observer_IsValidTarget, (int iPlayerIndex, bool bSameTeam), iPlayerIndex, bSameTeam);
 
-CBasePlayer *Observer_IsValidTarget_api(CBasePlayer *pPlayer, CBasePlayer *pEntity, int iPlayerIndex, bool bSameTeam)
-{
-	// Don't spec observers or players who haven't picked a class yet
-	if (!pEntity || pEntity == pPlayer || pEntity->has_disconnected || pEntity->IsObserver() || (pEntity->pev->effects & EF_NODRAW) || pEntity->m_iTeam == UNASSIGNED || (bSameTeam && pEntity->m_iTeam != pPlayer->m_iTeam))
-		return NULL;
-
-	return pEntity;
-}
-
-CBaseEntity *CBasePlayer::Observer_IsValidTarget(int iPlayerIndex, bool bSameTeam)
+CBaseEntity *CBasePlayer::__API_HOOK(Observer_IsValidTarget)(int iPlayerIndex, bool bSameTeam)
 {
 	if (iPlayerIndex > gpGlobals->maxClients || iPlayerIndex < 1)
 		return NULL;
 
-	CBasePlayer *pEnt = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(iPlayerIndex));
-	return g_ReGameHookchains.m_Observer_IsValidTarget.callChain(Observer_IsValidTarget_api, this, pEnt, iPlayerIndex, bSameTeam);
+	CBasePlayer *pPlayer = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(iPlayerIndex));
+
+	// Don't spec observers or players who haven't picked a class yet
+	if (!pPlayer || pPlayer == this || pPlayer->has_disconnected || pPlayer->IsObserver() || (pPlayer->pev->effects & EF_NODRAW) || pPlayer->m_iTeam == UNASSIGNED || (bSameTeam && pPlayer->m_iTeam != m_iTeam))
+		return NULL;
+
+	return pPlayer;
 }
 
 void UpdateClientEffects(CBasePlayer *pObserver, int oldMode)

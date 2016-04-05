@@ -359,6 +359,15 @@ enum Bullet
 	BULLET_PLAYER_357SIG,
 };
 
+struct WeaponStruct
+{
+	int m_type;
+	int m_price;
+	int m_side;
+	int m_slot;
+	int m_ammoPrice;
+};
+
 struct AutoBuyInfoStruct
 {
 	AutoBuyClassType m_class;
@@ -398,6 +407,7 @@ struct WeaponInfoStruct
 };
 
 extern AutoBuyInfoStruct g_autoBuyInfo[35];
+extern WeaponStruct g_weaponStruct[MAX_WEAPONS];
 
 // WeaponType
 WeaponIdType AliasToWeaponID(const char *alias);
