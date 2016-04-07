@@ -293,6 +293,12 @@ public:
 	virtual void OnTouchingWeapon(CCSWeaponBox *pWeapon) = 0;
 public:
 	virtual bool IsConnected() const = 0;
+
+	virtual void SetAnimation(PLAYER_ANIM playerAnim) = 0;
+	virtual void AddAccount(int amount, bool bTrackChange = true) = 0;
+	virtual void GiveNamedItem(const char *pszName) = 0;
+	virtual void GiveDefaultItems() = 0;
+	virtual void GiveShield(bool bDeploy = true) = 0;
 };
 
 class IAPI_Bot: public virtual ICSPlayer {

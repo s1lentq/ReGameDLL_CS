@@ -143,7 +143,8 @@ void setupToolchain(NativeBinarySpec b)
 			'_vsnprintf': 'vsnprintf',
 			'_write' : 'write',
 			'_close' : 'close',
-			'_vsnwprintf' : 'vswprintf'
+			'_vsnwprintf' : 'vswprintf',
+			'_access' : 'access'
 		])
 
 		cfg.linkerOptions.args '-no-opt-class-analysis'

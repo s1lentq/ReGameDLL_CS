@@ -74,7 +74,7 @@ public:
 		return (*this); }
 	void reserve(size_type _N)
 		{if (capacity() < _N)
-			{iterator_ _S = allocator.allocate(_N, (void *)0);
+			{iterator _S = allocator.allocate(_N, (void *)0);
 			_Ucopy(_First, _Last, _S);
 			__Destroy(_First, _Last);
 			allocator.deallocate(_First, _End - _First);

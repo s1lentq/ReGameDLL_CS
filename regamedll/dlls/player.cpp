@@ -706,7 +706,7 @@ bool CBasePlayer::IsHittingShield(Vector &vecDirection, TraceResult *ptr)
 
 LINK_HOOK_CLASS_VOID_CHAIN(CBasePlayer, TraceAttack, (entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType), pevAttacker, flDamage, vecDir, ptr, bitsDamageType);
 
-void CBasePlayer::__API_VHOOK(TraceAttack)(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType)
+void CBasePlayer::__API_VHOOK(TraceAttack)(entvars_t *pevAttacker, float flDamage, VectorRef vecDir, TraceResult *ptr, int bitsDamageType)
 {
 	bool bShouldBleed = true;
 	bool bShouldSpark = false;
@@ -1348,7 +1348,7 @@ void packPlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 		pWeaponBox->pev->angles.x = 0;
 		pWeaponBox->pev->angles.z = 0;
 
-		pWeaponBox->pev->velocity = pPlayer->pev->velocity * 0.75;
+		pWeaponBox->pev->velocity = pPlayer->pev->velocity * 0.75f;
 
 		pWeaponBox->SetThink(&CWeaponBox::Kill);
 		pWeaponBox->pev->nextthink = gpGlobals->time + 300.0f;
@@ -1361,6 +1361,55 @@ void packPlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 		SET_MODEL(ENT(pWeaponBox->pev), modelName);
 	}
 }
+
+#ifdef REGAMEDLL_ADD
+void packPlayerNade(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
+{
+	if (pItem == NULL)
+		return;
+
+	const char *modelName = GetCSModelName(pItem->m_iId);
+	if (modelName != NULL)
+	{
+		float flOffset = 0.0f;
+		switch (pItem->m_iId)
+		{
+		case WEAPON_HEGRENADE:
+			flOffset = 14.0f;
+			break;
+		case WEAPON_FLASHBANG:
+			flOffset = 0.0f;
+			break;
+		case WEAPON_SMOKEGRENADE:
+			flOffset = -14.0f;
+			break;
+		}
+
+		Vector vecAngles = pPlayer->pev->angles;
+		Vector dir(Q_cos(vecAngles.y) * flOffset, Q_sin(vecAngles.y) * flOffset, 0.0f);
+
+		vecAngles.x = 0.0f;
+		vecAngles.y += 45.0f;
+
+		CWeaponBox *pWeaponBox = (CWeaponBox *)CBaseEntity::Create("weaponbox", pPlayer->pev->origin + dir, vecAngles, ENT(pPlayer->pev));
+
+		pWeaponBox->pev->angles.x = 0;
+		pWeaponBox->pev->angles.z = 0;
+
+		pWeaponBox->pev->velocity = pPlayer->pev->velocity * 0.75f;
+
+		pWeaponBox->SetThink(&CWeaponBox::Kill);
+		pWeaponBox->pev->nextthink = gpGlobals->time + 300.0f;
+		pWeaponBox->PackWeapon(pItem);
+
+		if (packAmmo)
+		{
+			pWeaponBox->PackAmmo(MAKE_STRING(IMPL_CLASS(CBasePlayerItem, ItemInfoArray)[pItem->m_iId].pszAmmo1), pPlayer->m_rgAmmo[pItem->PrimaryAmmoIndex()]);
+		}
+		SET_MODEL(ENT(pWeaponBox->pev), modelName);
+	}
+}
+#endif
 
 void CBasePlayer::PackDeadPlayerItems()
 {
@@ -1379,7 +1428,7 @@ void CBasePlayer::PackDeadPlayerItems()
 		int nBestWeight = 0;
 		CBasePlayerItem *pBestItem = NULL;
 
-		for (int n = 0; n < MAX_ITEM_TYPES; n++)
+		for (int n = 0; n < MAX_ITEM_TYPES; ++n)
 		{
 			CBasePlayerItem *pPlayerItem = m_rgpPlayerItems[ n ];
 
@@ -1398,19 +1447,47 @@ void CBasePlayer::PackDeadPlayerItems()
 					}
 				}
 				// drop a grenade after death
-				else if (pPlayerItem->iItemSlot() == GRENADE_SLOT && g_bIsCzeroGame)
-					packPlayerItem(this, pPlayerItem, true);
+				else if (pPlayerItem->iItemSlot() == GRENADE_SLOT)
+				{
+					if (g_bIsCzeroGame)
+						packPlayerItem(this, pPlayerItem, true);
+#ifdef REGAMEDLL_ADD
+					else
+					{
+						switch ((int)nadedrops.value)
+						{
+						case 1:
+							packPlayerItem(this, pPlayerItem, true);
+							break;
+						case 2:
+						{
+							CBasePlayerItem *pNade = pPlayerItem;
+							while (pNade != nullptr)
+							{
+								CBasePlayerItem *pTemp = pNade->m_pNext;
+								packPlayerNade(this, pNade, true);
+								pNade = pTemp;
+							}
+							break;
+						}
+						}
+					}
+#endif
+				}
 
 				pPlayerItem = pPlayerItem->m_pNext;
 			}
 		}
+
 		packPlayerItem(this, pBestItem, bPackAmmo);
 	}
 
 	RemoveAllItems(TRUE);
 }
 
-void CBasePlayer::GiveDefaultItems()
+LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, GiveDefaultItems);
+
+void CBasePlayer::__API_HOOK(GiveDefaultItems)()
 {
 	RemoveAllItems(FALSE);
 	m_bHasPrimary = false;
@@ -2113,7 +2190,9 @@ BOOL CBasePlayer::IsBombGuy()
 	return m_bHasC4;
 }
 
-void CBasePlayer::SetAnimation(PLAYER_ANIM playerAnim)
+LINK_HOOK_CLASS_VOID_CHAIN(CBasePlayer, SetAnimation, (PLAYER_ANIM playerAnim), playerAnim);
+
+void CBasePlayer::__API_HOOK(SetAnimation)(PLAYER_ANIM playerAnim)
 {
 	int animDesired;
 	float speed;
@@ -2870,7 +2949,9 @@ void CWShield::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 	}
 }
 
-void CBasePlayer::GiveShield(bool bDeploy)
+LINK_HOOK_CLASS_VOID_CHAIN(CBasePlayer, GiveShield, (bool bDeploy), bDeploy);
+
+void CBasePlayer::__API_HOOK(GiveShield)(bool bDeploy)
 {
 	m_bOwnsShield = true;
 	m_bHasPrimary = true;
@@ -2983,7 +3064,9 @@ NOXREF void CBasePlayer::ThrowPrimary()
 	DropShield();
 }
 
-void CBasePlayer::AddAccount(int amount, bool bTrackChange)
+LINK_HOOK_CLASS_VOID_CHAIN(CBasePlayer, AddAccount, (int amount, bool bTrackChange), amount, bTrackChange);
+
+void CBasePlayer::__API_HOOK(AddAccount)(int amount, bool bTrackChange)
 {
 	m_iAccount += amount;
 
@@ -5714,7 +5797,9 @@ void CBloodSplat::Spray()
 	pev->nextthink = gpGlobals->time + 0.1f;
 }
 
-void CBasePlayer::GiveNamedItem(const char *pszName)
+LINK_HOOK_CLASS_VOID_CHAIN(CBasePlayer, GiveNamedItem, (const char *pszName), pszName);
+
+void CBasePlayer::__API_HOOK(GiveNamedItem)(const char *pszName)
 {
 	string_t istr = MAKE_STRING(pszName);
 	edict_t *pent = CREATE_NAMED_ENTITY(istr);
@@ -6764,7 +6849,7 @@ void CBasePlayer::__API_VHOOK(UpdateClientData)()
 		m_tmNextRadarUpdate = gpGlobals->time + 1.0f;
 
 #ifdef REGAMEDLL_ADD
-		if (friendlyfire.string[0] == '2')
+		if (CSGameRules()->IsFriendlyFireAttack())
 			vecOrigin = g_vecZero;
 #endif
 

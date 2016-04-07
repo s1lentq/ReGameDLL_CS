@@ -6093,7 +6093,7 @@ AddressRef g_DataRefs[] =
 	{ 0x01E23470, "cv_tutor_hint_interval_time", (size_t)&pcv_tutor_hint_interval_time },
 	{ 0x01E11EE4, "cv_hostage_debug", (size_t)&pcv_hostage_debug },
 	{ 0x01E11EF8, "cv_hostage_stop", (size_t)&pcv_hostage_stop },
-	//{ 0x0, "_ZL14placeDirectory", (size_t)&pplaceDirectory },	// DONT USE - NOXREF
+	//{ 0x01E2A228, "_ZL14placeDirectory", (size_t)&pplaceDirectory },	// DONT USE - NOXREF
 	{ 0x01E2A0E4, "TheNavLadderList", (size_t)&pTheNavLadderList },
 	{ 0x01E2A0F0, "TheHidingSpotList", (size_t)&pTheHidingSpotList },
 	{ 0x01E14C5C, "sPlayerModelFiles", (size_t)&psPlayerModelFiles },

@@ -37,6 +37,8 @@ ReGameFuncs_t g_ReGameApiFuncs = {
 	&INDEX_TO_CSPLAYER,
 	&INDEX_TO_CSENTITY,
 	&CREATE_NAMED_ENTITY,
+
+	&Regamedll_CopyString_api,
 };
 
 IReGameHookRegistry_CBasePlayer_Spawn* CReGameHookchains::CBasePlayer_Spawn() { return &m_CBasePlayer_Spawn; }
@@ -62,10 +64,17 @@ IReGameHookRegistry_CBasePlayer_ImpulseCommands* CReGameHookchains::CBasePlayer_
 IReGameHookRegistry_CBasePlayer_RoundRespawn* CReGameHookchains::CBasePlayer_RoundRespawn() { return &m_CBasePlayer_RoundRespawn; }
 IReGameHookRegistry_CBasePlayer_Blind* CReGameHookchains::CBasePlayer_Blind() { return &m_CBasePlayer_Blind; }
 
-
-
 IReGameHookRegistry_CBasePlayer_Observer_IsValidTarget* CReGameHookchains::CBasePlayer_Observer_IsValidTarget() { return &m_CBasePlayer_Observer_IsValidTarget; }
+IReGameHookRegistry_CBasePlayer_SetAnimation* CReGameHookchains::CBasePlayer_SetAnimation() { return &m_CBasePlayer_SetAnimation; }
+IReGameHookRegistry_CBasePlayer_GiveDefaultItems* CReGameHookchains::CBasePlayer_GiveDefaultItems() { return &m_CBasePlayer_GiveDefaultItems; }
+IReGameHookRegistry_CBasePlayer_GiveNamedItem* CReGameHookchains::CBasePlayer_GiveNamedItem() { return &m_CBasePlayer_GiveNamedItem; }
+IReGameHookRegistry_CBasePlayer_AddAccount* CReGameHookchains::CBasePlayer_AddAccount() { return &m_CBasePlayer_AddAccount; }
+IReGameHookRegistry_CBasePlayer_GiveShield* CReGameHookchains::CBasePlayer_GiveShield() { return &m_CBasePlayer_GiveShield; }
+
+
 IReGameHookRegistry_GetForceCamera* CReGameHookchains::GetForceCamera() { return &m_GetForceCamera; }
+IReGameHookRegistry_PlayerBlind* CReGameHookchains::PlayerBlind() { return &m_PlayerBlind; }
+IReGameHookRegistry_RadiusFlash_TraceLine* CReGameHookchains::RadiusFlash_TraceLine() { return &m_RadiusFlash_TraceLine; }
 
 int CReGameApi::GetMajorVersion()
 {
@@ -90,6 +99,17 @@ IReGameHookchains *CReGameApi::GetHookchains()
 IReGameData *CReGameApi::GetGameData()
 {
 	return &g_ReGameData;
+}
+
+void EXT_FUNC Regamedll_CopyString_api(char *dest, const char *source)
+{
+	size_t len = Q_strlen(source);
+	if (dest == nullptr || Q_strlen(dest) != len) {
+		delete [] dest;
+		dest = new char [len + 1];
+	}
+
+	Q_strcpy(dest, source);
 }
 
 EXPOSE_SINGLE_INTERFACE(CReGameApi, IReGameApi, VRE_GAMEDLL_API_VERSION);

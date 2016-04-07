@@ -32,6 +32,8 @@
 // declared virtual function's and globals for hooks
 #ifdef HOOK_GAMEDLL
 #include "hooker_impl.h"
+#else
+typedef Vector& VectorRef;
 #endif // HOOK_GAMEDLL
 
 #include "h_export.h"

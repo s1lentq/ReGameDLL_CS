@@ -45,10 +45,9 @@ extern ICSEntity *INDEX_TO_CSENTITY(int iEntityIndex);
 #define __API_VHOOK(fname)\
 	fname##_
 
-#define __API_HOOK __API_VHOOK
-
 #ifndef HOOK_GAMEDLL
 
+#define __API_HOOK __API_VHOOK
 #define __MAKE_VHOOK(fname)\
 	fname
 
@@ -72,13 +71,14 @@ extern ICSEntity *INDEX_TO_CSENTITY(int iEntityIndex);
 
 #define LINK_HOOK_VOID_CHAIN(functionName, args, ...)\
 	void functionName args {\
-		g_ReGameHookchains.m_##functionName.callChain(functionName##_internal, __VA_ARGS__);\
+		g_ReGameHookchains.m_##functionName.callChain(functionName##_, __VA_ARGS__);\
 	}
 
 #define LINK_HOOK_CHAIN(ret, functionName, args, ...)\
 	ret functionName args {\
-		return g_ReGameHookchains.m_##functionName.callChain(functionName##_internal, __VA_ARGS__);\
+		return g_ReGameHookchains.m_##functionName.callChain(functionName##_, __VA_ARGS__);\
 	}
+
 #endif
 
 // Implementation interfaces
@@ -198,8 +198,6 @@ public:
 	virtual ICSPlayerItem *GetWeaponPtr() { ((CBasePlayerItem *)m_pEntity)->GetWeaponPtr(); }
 	virtual float GetMaxSpeed() { ((CBasePlayerItem *)m_pEntity)->GetMaxSpeed(); }
 	virtual int iItemSlot() { ((CBasePlayerItem *)m_pEntity)->iItemSlot(); }
-public:
-	virtual CBasePlayerItem *GetEntity() const { return (CBasePlayerItem *)m_pEntity; }
 };
 
 class CCSToggle: public CCSAnimating {
@@ -311,7 +309,13 @@ public:
 	virtual void OnTouchingWeapon(CCSWeaponBox *pWeapon) { ((CBasePlayer *)m_pEntity)->OnTouchingWeapon((CWeaponBox *)pWeapon->m_pEntity); }
 public:
 	virtual bool IsConnected() const { return m_pEntity->has_disconnected == false; }
-	virtual CBasePlayer *GetEntity() const { return (CBasePlayer *)m_pEntity; }
+
+	virtual void SetAnimation(PLAYER_ANIM playerAnim) { ((CBasePlayer *)m_pEntity)->SetAnimation(playerAnim); }
+	virtual void AddAccount(int amount, bool bTrackChange = true) { ((CBasePlayer *)m_pEntity)->AddAccount(amount, bTrackChange); }
+	virtual void GiveNamedItem(const char *pszName) { ((CBasePlayer *)m_pEntity)->GiveNamedItem(pszName); }
+	virtual void GiveDefaultItems() { ((CBasePlayer *)m_pEntity)->GiveDefaultItems(); }
+	virtual void GiveShield(bool bDeploy = true) { ((CBasePlayer *)m_pEntity)->GiveShield(bDeploy); }
+
 };
 
 class CAPI_Bot: public CCSPlayer {

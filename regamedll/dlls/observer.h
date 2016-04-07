@@ -37,7 +37,7 @@
 #define CAMERA_MODE_SPEC_ONLY_FRIST_PERSON	2
 
 int GetForceCamera(CBasePlayer *pObserver);
-int GetForceCamera_internal(CBasePlayer *pObserver);
+int GetForceCamera_(CBasePlayer *pObserver);
 void UpdateClientEffects(CBasePlayer *pObserver, int oldMode);
 
 #endif // OBSERVER_H

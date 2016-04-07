@@ -903,6 +903,31 @@ float CBaseMonster::DamageForce(float damage)
 	return force;
 }
 
+void EXT_FUNC PlayerBlind(CBasePlayer *pPlayer, entvars_t *pevInflictor, entvars_t *pevAttacker, float fadeTime, float fadeHold, int alpha, Vector &color)
+{
+	UTIL_ScreenFade(pPlayer, color, fadeTime, fadeHold, alpha, 0);
+
+	for (int i = 1; i <= gpGlobals->maxClients; ++i)
+	{
+		CBasePlayer *pObserver = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+
+		if (!pObserver || !pObserver->IsObservingPlayer(pPlayer))
+			continue;
+
+		if (!fadetoblack.value)
+		{
+			UTIL_ScreenFade(pObserver, color, fadeTime, fadeHold, alpha, 0);
+		}
+	}
+
+	pPlayer->Blind(fadeTime * 0.33, fadeHold, fadeTime, alpha);
+
+	if (TheBots != NULL)
+	{
+		TheBots->OnEvent(EVENT_PLAYER_BLINDED_BY_FLASHBANG, pPlayer);
+	}
+}
+
 void RadiusFlash(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int iClassIgnore, int bitsDamageType)
 {
 	CBaseEntity *pEntity = NULL;
@@ -948,12 +973,16 @@ void RadiusFlash(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker,
 		vecSpot = pPlayer->BodyTarget(vecSrc);
 		UTIL_TraceLine(vecSrc, vecSpot, dont_ignore_monsters, ENT(pevInflictor), &tr);
 
+		g_ReGameHookchains.m_RadiusFlash_TraceLine.callChain(NULL, pPlayer, pevInflictor, pevAttacker, vecSrc, vecSpot, &tr);
+
 		if (tr.flFraction != 1.0f && tr.pHit != pPlayer->pev->pContainingEntity)
 			continue;
 
+#ifndef REGAMEDLL_FIXES
 		UTIL_TraceLine(vecSpot, vecSrc, dont_ignore_monsters, tr.pHit, &tr2);
 
 		if (tr2.flFraction >= 1.0)
+#endif
 		{
 			if (tr.fStartSolid)
 			{
@@ -1000,27 +1029,8 @@ void RadiusFlash(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker,
 				}
 			}
 
-			UTIL_ScreenFade(pPlayer, Vector(255, 255, 255), fadeTime, fadeHold, alpha, 0);
-
-			for (int i = 1; i <= gpGlobals->maxClients; ++i)
-			{
-				CBasePlayer *pObserver = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
-
-				if (!pObserver || !pObserver->IsObservingPlayer(pPlayer))
-					continue;
-
-				if (!fadetoblack.value)
-				{
-					UTIL_ScreenFade(pObserver, Vector(255, 255, 255), fadeTime, fadeHold, alpha, 0);
-				}
-			}
-
-			pPlayer->Blind(fadeTime * 0.33, fadeHold, fadeTime, alpha);
-
-			if (TheBots != NULL)
-			{
-				TheBots->OnEvent(EVENT_PLAYER_BLINDED_BY_FLASHBANG, pPlayer);
-			}
+			Vector color(255, 255, 255);
+			g_ReGameHookchains.m_PlayerBlind.callChain(PlayerBlind, pPlayer, pevInflictor, pevAttacker, fadeTime, fadeHold, alpha, color);
 		}
 	}
 }
@@ -1030,8 +1040,6 @@ float GetAmountOfPlayerVisible(Vector vecSrc, CBaseEntity *entity)
 	float retval = 0.0f;
 	TraceResult tr;
 	Vector spot;
-	Vector2D dir;
-	Vector2D perp;
 
 	const float topOfHead = 25.0f;
 	const float standFeet = 34.0f;
@@ -1070,11 +1078,10 @@ float GetAmountOfPlayerVisible(Vector vecSrc, CBaseEntity *entity)
 	if (tr.flFraction == 1.0f)
 		retval += 0.2f;
 
-	dir = (entity->pev->origin - vecSrc).Make2D();
+	Vector2D dir = (entity->pev->origin - vecSrc).Make2D();
 	dir.NormalizeInPlace();
 
-	perp.x = -dir.y * edgeOffset;
-	perp.y = dir.x * edgeOffset;
+	Vector2D perp(-dir.y * edgeOffset, dir.x * edgeOffset);
 
 	spot = entity->pev->origin + Vector(perp.x, perp.y, 0);
 
@@ -1138,7 +1145,16 @@ void RadiusDamage(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker
 				damageRatio = GetAmountOfPlayerVisible(vecSrc, pEntity);
 			}
 
-			float length = (vecSrc - pEntity->pev->origin).Length();
+			damageRatio = GetAmountOfPlayerVisible(vecSrc, pEntity);
+
+			float length;
+#ifdef REGAMEDLL_ADD
+			// allow to damage breakable objects
+			if (FClassnameIs(pEntity->pev, "func_breakable"))
+				length = (vecSrc - pEntity->Center()).Length();
+			else
+#endif
+				length = (vecSrc - pEntity->pev->origin).Length();
 
 			if (useLOS)
 			{
@@ -1151,12 +1167,28 @@ void RadiusDamage(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker
 				flAdjustedDamage = (flRadius - length) * (flRadius - length) * 1.25 / (flRadius * flRadius) * (damageRatio * flDamage) * 1.5;
 			}
 			else
+			{
 				flAdjustedDamage = flDamage - length * falloff;
+#ifdef REGAMEDLL_ADD
+				// disable grenade damage through walls?
+				if (hegrenade_penetration.string[0] == '1' && (bitsDamageType & DMG_EXPLOSION))
+				{
+					UTIL_TraceLine(vecSrc, pEntity->pev->origin, ignore_monsters, NULL, &tr);
+
+					if (tr.flFraction != 1.0f)
+						flAdjustedDamage = 0.0f;
+				}
+#endif
+			}
 
 			if (flAdjustedDamage < 0)
 				flAdjustedDamage = 0;
 
-			pEntity->TakeDamage(pevInflictor, pevAttacker, flAdjustedDamage, bitsDamageType);
+#ifdef REGAMEDLL_FIXES
+			if (flAdjustedDamage > 0)
+#endif
+				pEntity->TakeDamage(pevInflictor, pevAttacker, flAdjustedDamage, bitsDamageType);
+
 		}
 	}
 }

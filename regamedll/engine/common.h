@@ -91,6 +91,7 @@ typedef struct incomingtransfer_s
 #define Q_alloca alloca
 #define Q_free free
 
+#define Q_access _access
 #define Q_close _close
 #define Q_write _write
 #define Q_memset memset

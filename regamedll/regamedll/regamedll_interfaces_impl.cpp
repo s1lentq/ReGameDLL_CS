@@ -92,7 +92,7 @@ void Regamedll_MonitorEntities()
 
 		++nCount;
 	}
-	
+
 	CONSOLE_ECHO(__FUNCTION__":: nCount: (%d) (%d)\n", nCount, gpGlobals->maxEntities);
 }
 

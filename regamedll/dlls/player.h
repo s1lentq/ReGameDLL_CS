@@ -371,12 +371,14 @@ public:
 	virtual void Blind(float flUntilTime, float flHoldTime, float flFadeTime, int iAlpha);
 	virtual void OnTouchingWeapon(CWeaponBox *pWeapon) { }
 
-#ifdef REGAMEDLL_API
+#if defined(REGAMEDLL_API) || defined(HOOK_GAMEDLL)
 	void Spawn_();
 	void Precache_();
 	int ObjectCaps_();
 	int Classify_();
-	void TraceAttack_(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType);
+	int Save_(CSave &save);
+	int Restore_(CRestore &restore);
+	void TraceAttack_(entvars_t *pevAttacker, float flDamage, VectorRef vecDir, TraceResult *ptr, int bitsDamageType);
 	int TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
 	int TakeHealth_(float flHealth, int bitsDamageType);
 	void Killed_(entvars_t *pevAttacker, int iGib);
@@ -394,11 +396,6 @@ public:
 	void ImpulseCommands_();
 	void RoundRespawn_();
 	void Blind_(float flUntilTime, float flHoldTime, float flFadeTime, int iAlpha);
-#endif // REGAMEDLL_API
-
-#ifdef HOOK_GAMEDLL
-	int Save_(CSave &save);
-	int Restore_(CRestore &restore);
 	const char *TeamID_();
 	BOOL FBecomeProne_();
 	int Illumination_();
@@ -424,6 +421,7 @@ public:
 	void ThrowWeapon(char *pszItemName);
 	void ThrowPrimary();
 	void AddAccount(int amount, bool bTrackChange = true);
+	void AddAccount_(int amount, bool bTrackChange = true);
 	void Disappear();
 	void MakeVIP();
 	bool CanPlayerBuy(bool display = false);
@@ -437,6 +435,7 @@ public:
 	void RenewItems();
 	void PackDeadPlayerItems();
 	void GiveDefaultItems();
+	void GiveDefaultItems_();
 	void RemoveAllItems(BOOL removeSuit);
 	void SetBombIcon(BOOL bFlash = FALSE);
 	void SetProgressBarTime(int time);
@@ -463,6 +462,7 @@ public:
 	void UpdatePlayerSound();
 	void DeathSound();
 	void SetAnimation(PLAYER_ANIM playerAnim);
+	void SetAnimation_(PLAYER_ANIM playerAnim);
 	void SetWeaponAnimType(const char *szExtention) { Q_strcpy(m_szAnimExtention, szExtention); }
 	void CheatImpulseCommands(int iImpulse);
 	void StartDeathCam();
@@ -479,6 +479,7 @@ public:
 	void ItemPreFrame();
 	void ItemPostFrame();
 	void GiveNamedItem(const char *pszName);
+	void GiveNamedItem_(const char *pszName);
 	void EnableControl(BOOL fControl);
 	bool HintMessage(const char *pMessage, BOOL bDisplayIfPlayerDead = FALSE, BOOL bOverride = FALSE);
 	void SendAmmoUpdate();
@@ -526,6 +527,7 @@ public:
 	void RemoveShield();
 	void DropShield(bool bDeploy = true);
 	void GiveShield(bool bDeploy = true);
+	void GiveShield_(bool bDeploy = true);
 	bool IsHittingShield(Vector &vecDirection, TraceResult *ptr);
 	bool SelectSpawnSpot(const char *pEntClassName, CBaseEntity* &pSpot);
 	bool IsReloading()

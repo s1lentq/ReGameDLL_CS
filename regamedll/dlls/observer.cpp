@@ -2,7 +2,7 @@
 
 LINK_HOOK_CHAIN(int, GetForceCamera, (CBasePlayer *pObserver), pObserver);
 
-int GetForceCamera_internal(CBasePlayer *pObserver)
+int __API_HOOK(GetForceCamera)(CBasePlayer *pObserver)
 {
 	int retVal;
 

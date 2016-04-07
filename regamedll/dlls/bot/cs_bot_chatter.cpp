@@ -419,6 +419,14 @@ bool BotPhraseManager::Initialize(const char *filename, int bankIndex)
 	char baseDir[RadioPathLen] = "";
 	char compositeFilename[RadioPathLen];
 
+#ifdef REGAMEDLL_ADD
+	char soundDir[MAX_PATH];
+	char filePath[MAX_PATH];
+
+	GET_GAME_DIR(soundDir);
+	Q_strcat(soundDir, "\\sound\\");
+#endif
+
 	// Parse the BotChatter.db into BotPhrase collections
 	while (true)
 	{
@@ -567,8 +575,8 @@ bool BotPhraseManager::Initialize(const char *filename, int bankIndex)
 						FREE_FILE(phraseDataFile);
 						return false;
 					}
-					token = MP_COM_GetToken();
 
+					token = MP_COM_GetToken();
 					GameEventType event = NameToGameEvent(token);
 					if (event <= EVENT_START_RADIO_1 || event >= EVENT_END_RADIO)
 					{
@@ -578,7 +586,6 @@ bool BotPhraseManager::Initialize(const char *filename, int bankIndex)
 					}
 
 					radioEvent = event;
-
 					continue;
 				}
 
@@ -592,6 +599,13 @@ bool BotPhraseManager::Initialize(const char *filename, int bankIndex)
 				// check for End delimiter
 				if (!Q_stricmp(token, "End"))
 					break;
+
+#ifdef REGAMEDLL_ADD
+				Q_snprintf(filePath, sizeof(filePath), "%s%s%s", soundDir, baseDir, token);
+
+				if (Q_access(filePath, 0) != 0)
+					continue;
+#endif
 
 				// found a phrase - add it to the collection
 				BotSpeakable *speak = new BotSpeakable;
