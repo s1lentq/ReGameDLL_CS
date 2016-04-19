@@ -37,11 +37,7 @@ class Vector2D
 public:
 	vec_t x, y;
 	Vector2D() : x(0.0), y(0.0) {}
-	Vector2D(float X, float Y) : x(0.0), y(0.0)
-	{
-		x = X;
-		y = Y;
-	}
+	Vector2D(float X, float Y) : x(X), y(Y) {}
 	Vector2D operator+(const Vector2D &v) const
 	{
 		return Vector2D(x + v.x, y + v.y);
@@ -152,24 +148,9 @@ class Vector
 public:
 	vec_t x, y, z;
 	Vector() : x(0.0), y(0.0), z(0.0) {}
-	Vector(float X, float Y, float Z) : x(0.0), y(0.0), z(0.0)
-	{
-		x = X;
-		y = Y;
-		z = Z;
-	}
-	Vector(const Vector &v) : x(0.0), y(0.0), z(0.0)
-	{
-		x = v.x;
-		y = v.y;
-		z = v.z;
-	}
-	Vector(const float rgfl[3]) : x(0.0), y(0.0), z(0.0)
-	{
-		x = rgfl[0];
-		y = rgfl[1];
-		z = rgfl[2];
-	}
+	Vector(float X, float Y, float Z) : x(X), y(Y), z(Z) {}
+	Vector(const Vector &v) : x(v.x), y(v.y), z(v.z) {}
+	Vector(const float rgfl[3]) : x(rgfl[0]), y(rgfl[1]), z(rgfl[2]) {}
 	Vector operator-() const
 	{
 		return Vector(-x, -y, -z);
@@ -244,7 +225,7 @@ public:
 		return &x;
 	}
 #ifndef PLAY_GAMEDLL
-	Vector Normalize()
+	Vector Normalize() const
 	{
 		float flLen = Length();
 		if (flLen == 0)
@@ -265,7 +246,7 @@ public:
 	}
 #endif // PLAY_GAMEDLL
 	// for out precision normalize
-	Vector NormalizePrecision()
+	Vector NormalizePrecision() const
 	{
 #ifndef PLAY_GAMEDLL
 		return Normalize();

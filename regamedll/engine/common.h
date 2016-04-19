@@ -79,6 +79,21 @@ typedef struct incomingtransfer_s
 #define _strlwr(p) for (int i = 0; p[i] != 0; i++) p[i] = tolower(p[i]);
 #endif // _WIN32
 
+inline double M_sqrt(int value) {
+	return sqrt(value);
+}
+
+inline float M_sqrt(float value) {
+	return _mm_cvtss_f32(_mm_sqrt_ss(_mm_load_ss(&value)));
+}
+
+inline double M_sqrt(double value) {
+	double ret;
+	auto v = _mm_load_sd(&value);
+	_mm_store_sd(&ret, _mm_sqrt_sd(v, v));
+	return ret;
+}
+
 #define printf2 _printf2
 #define chatf _print_chat
 
@@ -138,5 +153,10 @@ typedef struct incomingtransfer_s
 #define Q_fopen fopen
 #define Q_fprintf fprintf
 #define Q_fclose fclose
+
+#ifdef REGAMEDLL_FIXES
+#undef Q_sqrt
+#define Q_sqrt M_sqrt
+#endif
 
 #endif // COMMON_H
