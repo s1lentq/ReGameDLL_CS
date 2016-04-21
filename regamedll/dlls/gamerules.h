@@ -34,8 +34,6 @@
 
 #include "game_shared/voice_gamemgr.h"
 
-#define COM_TOKEN_LEN				1500
-
 #define MAX_RULE_BUFFER				1024
 #define MAX_VOTE_MAPS				100
 #define MAX_VIP_QUEUES				5

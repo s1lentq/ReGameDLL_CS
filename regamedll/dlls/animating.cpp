@@ -101,7 +101,9 @@ int CBaseAnimating::LookupSequence(const char *label)
 	return ::LookupSequence(pmodel, label);
 }
 
-void CBaseAnimating::ResetSequenceInfo()
+LINK_HOOK_CLASS_VOID_CHAIN2(CBaseAnimating, ResetSequenceInfo)
+
+void CBaseAnimating::__API_HOOK(ResetSequenceInfo)()
 {
 	void *pmodel = GET_MODEL_PTR(ENT(pev));
 

@@ -124,6 +124,7 @@
 	#endif
 
 	typedef unsigned char byte;
+	typedef unsigned char BYTE;
 	typedef unsigned short uchar16;
 	typedef wchar_t uchar32;
 #endif // _WIN32
@@ -197,13 +198,5 @@
 // AFAIK, this is os-independent, but it's included here in osdep.h where
 // DLLEXPORT is defined, for convenience.
 #define C_DLLEXPORT extern "C" DLLEXPORT
-
-#ifdef _WIN32
-	static const bool __isWindows = true;
-	static const bool __isLinux = false;
-#else
-	static const bool __isWindows = false;
-	static const bool __isLinux = true;
-#endif
 
 #define EXT_FUNC /*FORCE_STACK_ALIGN*/

@@ -149,6 +149,8 @@ public:
 public:
 	virtual entvars_t *GetEntVars() const { return m_pEntity->pev; }
 	virtual CBaseEntity *GetEntity() const { return m_pEntity; }
+	virtual void FireBullets(int iShots, Vector vecSrc, Vector vecDirShooting, Vector vecSpread, float flDistance, int iBulletType, int iTracerFreq, int iDamage, entvars_t *pevAttacker) { m_pEntity->FireBullets(iShots, vecSrc, vecDirShooting, vecSpread, flDistance, iBulletType, iTracerFreq, iDamage, pevAttacker); };
+	virtual Vector FireBullets3(Vector vecSrc, Vector vecDirShooting, float vecSpread, float flDistance, int iPenetration, int iBulletType, int iDamage, float flRangeModifier, entvars_t *pevAttacker, bool bPistol, int shared_rand) { return m_pEntity->FireBullets3(vecSrc, vecDirShooting, vecSpread, flDistance, iPenetration, iBulletType, iDamage, flRangeModifier, pevAttacker, bPistol, shared_rand); };
 };
 
 class CCSDelay: public CCSEntity {

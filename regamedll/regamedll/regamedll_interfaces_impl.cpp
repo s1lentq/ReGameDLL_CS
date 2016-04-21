@@ -47,9 +47,6 @@ void Regamedll_AllocEntities(int maxEdicts)
 
 	ADD_SERVER_COMMAND("check_ent", [](){		
 		Regamedll_MonitorEntities();
-
-		//ICSPlayer *pPlayer = CSPlayer(1);
-		//pPlayer->Spawn();
 	});
 #endif
 }
@@ -113,7 +110,7 @@ ICSPlayer *EXT_FUNC CBASE_TO_CSPLAYER(CBaseEntity *pEntity)
 
 ICSPlayer *EXT_FUNC INDEX_TO_CSPLAYER(int iPlayerIndex)
 {
-	CBaseEntity *pEntity = CBaseEntity::Instance(iPlayerIndex);
+	CBaseEntity *pEntity = UTIL_PlayerByIndex(iPlayerIndex);
 	return CBASE_TO_CSPLAYER(pEntity);
 }
 
@@ -134,7 +131,7 @@ ICSEntity *EXT_FUNC CBASE_TO_CSENTITY(CBaseEntity *pEntity)
 
 ICSEntity *EXT_FUNC INDEX_TO_CSENTITY(int iEntityIndex)
 {
-	CBaseEntity *pEntity = CBaseEntity::Instance(iEntityIndex);
+	CBaseEntity *pEntity = CBaseEntity::Instance(INDEXENT(iEntityIndex));
 	return CBASE_TO_CSENTITY(pEntity);
 }
 

@@ -5,7 +5,7 @@
 */
 #ifndef HOOK_GAMEDLL
 
-static char mp_com_token[ COM_TOKEN_LEN ];
+static char mp_com_token[ 1500 ];
 cvar_t *sv_clienttrace = NULL;
 
 #endif
@@ -3460,7 +3460,6 @@ BOOL CHalfLifeMultiplay::__MAKE_VHOOK(FPlayerCanRespawn)(CBasePlayer *pPlayer)
 	// Tabulate the number of players on each team.
 	m_iNumCT = CountTeamPlayers(CT);
 	m_iNumTerrorist = CountTeamPlayers(TERRORIST);
-
 
 	if (m_iNumTerrorist > 0 && m_iNumCT > 0)
 	{

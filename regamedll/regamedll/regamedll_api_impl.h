@@ -147,6 +147,11 @@ typedef IVoidHookChainRegistryClassImpl<CBasePlayer, bool> CReGameHookRegistry_C
 
 
 
+// CBaseAnimating::ResetSequenceInfo hook
+typedef IVoidHookChainClassImpl<CBaseAnimating> CRegameHook_CBaseAnimating_ResetSequenceInfo;
+typedef IVoidHookChainRegistryClassImpl<CBaseAnimating> CReGameHookRegistry_CBaseAnimating_ResetSequenceInfo;
+
+
 // GetForceCamera hook
 typedef IHookChainImpl<int, class CBasePlayer *> CReGameHook_GetForceCamera;
 typedef IHookChainRegistryImpl<int, class CBasePlayer *> CReGameHookRegistry_GetForceCamera;
@@ -193,6 +198,8 @@ public:
 	CReGameHookRegistry_CBasePlayer_GiveShield m_CBasePlayer_GiveShield;
 
 
+	CReGameHookRegistry_CBaseAnimating_ResetSequenceInfo m_CBaseAnimating_ResetSequenceInfo;
+
 	CReGameHookRegistry_GetForceCamera m_GetForceCamera;
 	CReGameHookRegistry_PlayerBlind m_PlayerBlind;
 	CReGameHookRegistry_RadiusFlash_TraceLine m_RadiusFlash_TraceLine;
@@ -229,7 +236,7 @@ public:
 	virtual IReGameHookRegistry_CBasePlayer_GiveShield* CBasePlayer_GiveShield();
 
 
-
+	virtual IReGameHookRegistry_CBaseAnimating_ResetSequenceInfo* CBaseAnimating_ResetSequenceInfo();
 
 	virtual IReGameHookRegistry_GetForceCamera* GetForceCamera();
 	virtual IReGameHookRegistry_PlayerBlind* PlayerBlind();
@@ -251,4 +258,10 @@ public:
 	virtual IReGameData* GetGameData();
 };
 
-extern void Regamedll_CopyString_api(char *dest, const char *source);
+void Regamedll_ChangeString_api(char *&dest, const char *source);
+
+void RadiusDamage_api(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, float flRadius, int iClassIgnore, int bitsDamageType);
+
+void ClearMultiDamage_api();
+void ApplyMultiDamage_api(entvars_t *pevInflictor, entvars_t *pevAttacker);
+void AddMultiDamage_api(entvars_t *pevInflictor, CBaseEntity *pEntity, float flDamage, int bitsDamageType);

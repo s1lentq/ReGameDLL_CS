@@ -151,6 +151,11 @@
 	// It's usually defined to something like "__stdcall".
 
 #else // _WIN32
+	#ifdef __FUNCTION__
+		#undef __FUNCTION__
+	#endif
+	#define __FUNCTION__ __func__
+
 	#ifndef PAGESIZE
 		#define PAGESIZE 4096
 	#endif

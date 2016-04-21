@@ -38,7 +38,12 @@ ReGameFuncs_t g_ReGameApiFuncs = {
 	&INDEX_TO_CSENTITY,
 	&CREATE_NAMED_ENTITY,
 
-	&Regamedll_CopyString_api,
+	&Regamedll_ChangeString_api,
+
+	&RadiusDamage_api,
+	&ClearMultiDamage_api,
+	&ApplyMultiDamage_api,
+	&AddMultiDamage_api,
 };
 
 IReGameHookRegistry_CBasePlayer_Spawn* CReGameHookchains::CBasePlayer_Spawn() { return &m_CBasePlayer_Spawn; }
@@ -72,6 +77,8 @@ IReGameHookRegistry_CBasePlayer_AddAccount* CReGameHookchains::CBasePlayer_AddAc
 IReGameHookRegistry_CBasePlayer_GiveShield* CReGameHookchains::CBasePlayer_GiveShield() { return &m_CBasePlayer_GiveShield; }
 
 
+IReGameHookRegistry_CBaseAnimating_ResetSequenceInfo* CReGameHookchains::CBaseAnimating_ResetSequenceInfo() { return &m_CBaseAnimating_ResetSequenceInfo; }
+
 IReGameHookRegistry_GetForceCamera* CReGameHookchains::GetForceCamera() { return &m_GetForceCamera; }
 IReGameHookRegistry_PlayerBlind* CReGameHookchains::PlayerBlind() { return &m_PlayerBlind; }
 IReGameHookRegistry_RadiusFlash_TraceLine* CReGameHookchains::RadiusFlash_TraceLine() { return &m_RadiusFlash_TraceLine; }
@@ -101,7 +108,7 @@ IReGameData *CReGameApi::GetGameData()
 	return &g_ReGameData;
 }
 
-void EXT_FUNC Regamedll_CopyString_api(char *dest, const char *source)
+void EXT_FUNC Regamedll_ChangeString_api(char *&dest, const char *source)
 {
 	size_t len = Q_strlen(source);
 	if (dest == nullptr || Q_strlen(dest) != len) {
@@ -110,6 +117,26 @@ void EXT_FUNC Regamedll_CopyString_api(char *dest, const char *source)
 	}
 
 	Q_strcpy(dest, source);
+}
+
+void EXT_FUNC RadiusDamage_api(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, float flRadius, int iClassIgnore, int bitsDamageType)
+{
+	RadiusDamage(vecSrc, pevInflictor, pevAttacker, flDamage, flRadius, iClassIgnore, bitsDamageType);
+}
+
+void EXT_FUNC ClearMultiDamage_api()
+{
+	ClearMultiDamage();
+}
+
+void EXT_FUNC ApplyMultiDamage_api(entvars_t *pevInflictor, entvars_t *pevAttacker)
+{
+	ApplyMultiDamage(pevInflictor, pevAttacker);
+}
+
+void EXT_FUNC AddMultiDamage_api(entvars_t *pevInflictor, CBaseEntity *pEntity, float flDamage, int bitsDamageType)
+{
+	AddMultiDamage(pevInflictor, pEntity, flDamage, bitsDamageType);
 }
 
 EXPOSE_SINGLE_INTERFACE(CReGameApi, IReGameApi, VRE_GAMEDLL_API_VERSION);

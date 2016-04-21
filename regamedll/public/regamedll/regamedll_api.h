@@ -150,6 +150,9 @@ typedef IVoidHookChainRegistryClass<class CBasePlayer, bool> IReGameHookRegistry
 
 
 
+// CBaseAnimating::ResetSequenceInfo hook
+typedef IVoidHookChain<> IReGameHook_CBaseAnimating_ResetSequenceInfo;
+typedef IVoidHookChainRegistryClass<class CBaseAnimating> IReGameHookRegistry_CBaseAnimating_ResetSequenceInfo;
 
 
 
@@ -201,6 +204,8 @@ public:
 	virtual IReGameHookRegistry_CBasePlayer_AddAccount* CBasePlayer_AddAccount() = 0;
 	virtual IReGameHookRegistry_CBasePlayer_GiveShield* CBasePlayer_GiveShield() = 0;
 	
+	
+	virtual IReGameHookRegistry_CBaseAnimating_ResetSequenceInfo* CBaseAnimating_ResetSequenceInfo() = 0;
 
 
 	virtual IReGameHookRegistry_GetForceCamera* GetForceCamera() = 0;
@@ -217,7 +222,13 @@ struct ReGameFuncs_t {
 	class ICSEntity *(*INDEX_TO_CSENTITY)(int iEntityIndex);
 	struct edict_s *(*CREATE_NAMED_ENTITY2)(string_t iClass);
 
-	void (*CopyString)(char *dest, const char *source);
+	void (*ChangeString)(char *&dest, const char *source);
+
+	void (*RadiusDamage)(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, float flRadius, int iClassIgnore, int bitsDamageType);
+	void (*ClearMultiDamage)();
+	void (*ApplyMultiDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker);
+	void (*AddMultiDamage)(entvars_t *pevInflictor, CBaseEntity *pEntity, float flDamage, int bitsDamageType);
+
 };
 
 class IReGameApi {

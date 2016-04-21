@@ -76,7 +76,7 @@ TYPEDESCRIPTION gGlobalEntitySaveData[3];
 
 // globals gamerules
 CGameRules *g_pGameRules;
-char mp_com_token[ COM_TOKEN_LEN ];
+char mp_com_token[ 1500 ];
 cvar_t *sv_clienttrace;
 
 // globals player.cpp
