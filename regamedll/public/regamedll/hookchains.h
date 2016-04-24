@@ -69,6 +69,16 @@ public:
 };
 
 // Hook chain registry(for hooks [un]registration)
+template<typename t_ret, typename ...t_args>
+class IHookChainRegistryClassEmpty {
+public:
+	typedef t_ret(*hookfunc_t)(IHookChain<t_ret, t_args...>*, t_args...);
+
+	virtual void registerHook(hookfunc_t hook) = 0;
+	virtual void unregisterHook(hookfunc_t hook) = 0;
+};
+
+// Hook chain registry(for hooks [un]registration)
 template<typename ...t_args>
 class IVoidHookChainRegistry {
 public:

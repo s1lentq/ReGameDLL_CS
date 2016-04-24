@@ -170,6 +170,10 @@ typedef IVoidHookChainRegistry<class CBasePlayer *, struct entvars_s *, struct e
 typedef IVoidHookChain<class CBasePlayer *, struct entvars_s *, struct entvars_s *, Vector &, Vector &, struct TraceResult *> IReGameHook_RadiusFlash_TraceLine;
 typedef IVoidHookChainRegistry<class CBasePlayer *, struct entvars_s *, struct entvars_s *, Vector &, Vector &, struct TraceResult *> IReGameHookRegistry_RadiusFlash_TraceLine;
 
+// RoundEnd hook
+typedef IHookChain<bool, int, ScenarioEventEndRound, float> IReGameHook_RoundEnd;
+typedef IHookChainRegistryClassEmpty<bool, int, ScenarioEventEndRound, float> IReGameHookRegistry_RoundEnd;
+
 class IReGameHookchains {
 public:
 	virtual ~IReGameHookchains() {}
@@ -211,6 +215,7 @@ public:
 	virtual IReGameHookRegistry_GetForceCamera* GetForceCamera() = 0;
 	virtual IReGameHookRegistry_PlayerBlind* PlayerBlind() = 0;
 	virtual IReGameHookRegistry_RadiusFlash_TraceLine* RadiusFlash_TraceLine() = 0;
+	virtual IReGameHookRegistry_RoundEnd* RoundEnd() = 0;
 
 };
 
@@ -228,6 +233,8 @@ struct ReGameFuncs_t {
 	void (*ClearMultiDamage)();
 	void (*ApplyMultiDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker);
 	void (*AddMultiDamage)(entvars_t *pevInflictor, CBaseEntity *pEntity, float flDamage, int bitsDamageType);
+
+	void (*EndRoundMessage)(const char *sentence, int event);
 
 };
 

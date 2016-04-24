@@ -68,12 +68,12 @@ public:
 	virtual void SetObjectCollisionBox() = 0;
 	virtual int Classify() = 0;
 	virtual void DeathNotice(struct entvars_s *pevChild) = 0;
-	virtual void TraceAttack(struct entvars_s *pevAttacker, float flDamage, Vector vecDir, struct TraceResult *ptr, int bitsDamageType) = 0;
+	virtual void TraceAttack(struct entvars_s *pevAttacker, float flDamage, Vector &vecDir, struct TraceResult *ptr, int bitsDamageType) = 0;
 	virtual int TakeDamage(struct entvars_s *pevInflictor, struct entvars_s *pevAttacker, float flDamage, int bitsDamageType) = 0;
 	virtual int TakeHealth(float flHealth, int bitsDamageType) = 0;
 	virtual void Killed(struct entvars_s *pevAttacker, int iGib) = 0;
 	virtual int BloodColor() = 0;
-	virtual void TraceBleed(float flDamage, Vector vecDir, struct TraceResult *ptr, int bitsDamageType) = 0;
+	virtual void TraceBleed(float flDamage, Vector &vecDir, struct TraceResult *ptr, int bitsDamageType) = 0;
 	virtual bool IsTriggered(CCSEntity *pActivator) = 0;
 	virtual ICSMonster *MyMonsterPointer() = 0;
 	virtual ICSquadMonster *MySquadMonsterPointer() = 0;
@@ -118,8 +118,8 @@ public:
 public:
 	virtual struct entvars_s *GetEntVars() const = 0;
 	virtual class CBaseEntity *GetEntity() const = 0;
-	virtual void FireBullets(int iShots, Vector vecSrc, Vector vecDirShooting, Vector vecSpread, float flDistance, int iBulletType, int iTracerFreq, int iDamage, entvars_t *pevAttacker) = 0;
-	virtual Vector FireBullets3(Vector vecSrc, Vector vecDirShooting, float vecSpread, float flDistance, int iPenetration, int iBulletType, int iDamage, float flRangeModifier, entvars_t *pevAttacker, bool bPistol, int shared_rand) = 0;
+	virtual void FireBullets(int iShots, Vector &vecSrc, Vector &vecDirShooting, Vector &vecSpread, float flDistance, int iBulletType, int iTracerFreq, int iDamage, entvars_t *pevAttacker) = 0;
+	virtual Vector FireBullets3(Vector &vecSrc, Vector &vecDirShooting, float vecSpread, float flDistance, int iPenetration, int iBulletType, int iDamage, float flRangeModifier, entvars_t *pevAttacker, bool bPistol, int shared_rand) = 0;
 };
 
 class ICSDelay: public ICSEntity {
@@ -208,7 +208,7 @@ public:
 class ICSMonster: public ICSToggle {
 public:
 	virtual void KeyValue(struct KeyValueData_s *pkvd) = 0;
-	virtual void TraceAttack(struct entvars_s *pevAttacker, float flDamage, Vector vecDir, struct TraceResult *ptr, int bitsDamageType) = 0;
+	virtual void TraceAttack(struct entvars_s *pevAttacker, float flDamage, Vector &vecDir, struct TraceResult *ptr, int bitsDamageType) = 0;
 	virtual int TakeDamage(struct entvars_s *pevInflictor, struct entvars_s *pevAttacker, float flDamage, int bitsDamageType) = 0;
 	virtual int TakeHealth(float flHealth, int bitsDamageType) = 0;
 	virtual void Killed(struct entvars_s *pevAttacker, int iGib) = 0;
@@ -260,7 +260,7 @@ public:
 	virtual int Restore(CRestore &restore) = 0;
 	virtual int ObjectCaps() = 0;
 	virtual int Classify() = 0;
-	virtual void TraceAttack(struct entvars_s *pevAttacker, float flDamage, Vector vecDir, struct TraceResult *ptr, int bitsDamageType) = 0;
+	virtual void TraceAttack(struct entvars_s *pevAttacker, float flDamage, Vector &vecDir, struct TraceResult *ptr, int bitsDamageType) = 0;
 	virtual int TakeDamage(struct entvars_s *pevInflictor, struct entvars_s *pevAttacker, float flDamage, int bitsDamageType) = 0;
 	virtual int TakeHealth(float flHealth, int bitsDamageType) = 0;
 	virtual void Killed(struct entvars_s *pevAttacker, int iGib) = 0;
@@ -846,7 +846,7 @@ public:
 	virtual int Save(CSave &save) = 0;
 	virtual int Restore(CRestore &restore) = 0;
 	virtual int ObjectCaps() = 0;
-	virtual void TraceAttack(struct entvars_s *pevAttacker, float flDamage, Vector vecDir, struct TraceResult *ptr, int bitsDamageType) = 0;
+	virtual void TraceAttack(struct entvars_s *pevAttacker, float flDamage, Vector &vecDir, struct TraceResult *ptr, int bitsDamageType) = 0;
 	virtual int TakeDamage(struct entvars_s *pevInflictor, struct entvars_s *pevAttacker, float flDamage, int bitsDamageType) = 0;
 	virtual int DamageDecal(int bitsDamageType) = 0;
 	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) = 0;

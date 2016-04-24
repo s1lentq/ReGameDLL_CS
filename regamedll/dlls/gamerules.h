@@ -74,9 +74,10 @@ enum
 
 // custom enum
 // used for EndRoundMessage() logged messages
-enum ScenarionEventEndRound
+enum ScenarioEventEndRound
 {
-	ROUND_TARGET_BOMB = 1,
+	ROUND_NONE,
+	ROUND_TARGET_BOMB,
 	ROUND_VIP_ESCAPED,
 	ROUND_VIP_ASSASSINATED,
 	ROUND_TERRORISTS_ESCAPED,
@@ -500,21 +501,44 @@ public:
 public:
 	// Checks if it still needs players to start a round, or if it has enough players to start rounds.
 	// Starts a round and returns true if there are enough players.
-	bool NeededPlayersCheck(bool &bNeededPlayers);
+	bool NeededPlayersCheck();
 
 	// Setup counts for m_iNumTerrorist, m_iNumCT, m_iNumSpawnableTerrorist, m_iNumSpawnableCT, etc.
 	void InitializePlayerCounts(int &NumAliveTerrorist, int &NumAliveCT, int &NumDeadTerrorist, int &NumDeadCT);
 
 	// Check to see if the round is over for the various game types. Terminates the round
 	// and returns true if the round should end.
-	bool PrisonRoundEndCheck(int NumAliveTerrorist, int NumAliveCT, int NumDeadTerrorist, int NumDeadCT, bool bNeededPlayers);
-	bool BombRoundEndCheck(bool bNeededPlayers);
-	bool HostageRescueRoundEndCheck(bool bNeededPlayers);
-	bool VIPRoundEndCheck(bool bNeededPlayers);
+	bool PrisonRoundEndCheck(int NumAliveTerrorist, int NumAliveCT, int NumDeadTerrorist, int NumDeadCT);
+	bool BombRoundEndCheck();
+	bool HostageRescueRoundEndCheck();
+	bool VIPRoundEndCheck();
 
 	// Check to see if the teams exterminated each other. Ends the round and returns true if so.
-	bool TeamExterminationCheck(int NumAliveTerrorist, int NumAliveCT, int NumDeadTerrorist, int NumDeadCT, bool bNeededPlayers);
-	void TerminateRound(float tmDelay, int iWinStatus);
+	bool TeamExterminationCheck(int NumAliveTerrorist, int NumAliveCT, int NumDeadTerrorist, int NumDeadCT);
+
+	// for internal functions API
+	bool NeededPlayersCheck_internal(int winStatus, ScenarioEventEndRound event, float tmDelay);
+
+	bool VIP_Escaped_internal(int winStatus, ScenarioEventEndRound event, float tmDelay);
+	bool VIP_Died_internal(int winStatus, ScenarioEventEndRound event, float tmDelay);
+	bool VIP_NotEscaped_internal(int winStatus, ScenarioEventEndRound event, float tmDelay);
+
+	bool Prison_Escaped_internal(int winStatus, ScenarioEventEndRound event, float tmDelay);
+	bool Prison_PreventEscape_internal(int winStatus, ScenarioEventEndRound event, float tmDelay);
+	bool Prison_NotEscaped_internal(int winStatus, ScenarioEventEndRound event, float tmDelay);
+	bool Prison_Neutralized_internal(int winStatus, ScenarioEventEndRound event, float tmDelay);
+
+	bool Target_Bombed_internal(int winStatus, ScenarioEventEndRound event, float tmDelay);
+	bool Target_Saved_internal(int winStatus, ScenarioEventEndRound event, float tmDelay);
+	bool Target_Defused_internal(int winStatus, ScenarioEventEndRound event, float tmDelay);
+
+	// Team extermination
+	bool Round_Cts_internal(int winStatus, ScenarioEventEndRound event, float tmDelay);
+	bool Round_Ts_internal(int winStatus, ScenarioEventEndRound event, float tmDelay);
+	bool Round_Draw_internal(int winStatus, ScenarioEventEndRound event, float tmDelay);
+
+	bool Hostage_Rescue_internal(int winStatus, ScenarioEventEndRound event, float tmDelay);
+	bool Hostage_NotRescued_internal(int winStatus, ScenarioEventEndRound event, float tmDelay);
 
 	// Check various conditions to end the map.
 	bool CheckGameOver();
@@ -560,6 +584,13 @@ public:
 
 	bool IsMatchStarted() { return (m_fTeamCount != 0.0f || m_fCareerRoundMenuTime != 0.0f || m_fCareerMatchMenuTime != 0.0f); }
 	void SendMOTDToClient(edict_t *client);
+
+	inline void TerminateRound(float tmDelay, int iWinStatus)
+	{
+		m_iRoundWinStatus = iWinStatus;
+		m_fTeamCount = gpGlobals->time + tmDelay;
+		m_bRoundTerminating = true;
+	}
 
 	// allow the mode of fire on a friendly player (FFA)
 	inline bool IsFriendlyFireAttack() const
@@ -669,6 +700,10 @@ protected:
 	int m_iRoundWinDifference;
 	float m_fCareerMatchMenuTime;
 	bool m_bSkipSpawn;
+
+	// custom
+	bool m_bNeededPlayers;
+	float m_flEscapeRatio;
 };
 
 typedef struct mapcycle_item_s

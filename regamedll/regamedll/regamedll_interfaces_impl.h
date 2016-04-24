@@ -99,12 +99,12 @@ public:
 	virtual void SetObjectCollisionBox() { m_pEntity->SetObjectCollisionBox(); }
 	virtual int Classify() { return m_pEntity->Classify(); }
 	virtual void DeathNotice(entvars_t *pevChild) { m_pEntity->DeathNotice(pevChild); }
-	virtual void TraceAttack(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType) { m_pEntity->TraceAttack(pevAttacker, flDamage, vecDir, ptr, bitsDamageType); }
+	virtual void TraceAttack(entvars_t *pevAttacker, float flDamage, Vector &vecDir, TraceResult *ptr, int bitsDamageType) { m_pEntity->TraceAttack(pevAttacker, flDamage, vecDir, ptr, bitsDamageType); }
 	virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType) { return m_pEntity->TakeDamage(pevInflictor, pevAttacker, flDamage, bitsDamageType); }
 	virtual int TakeHealth(float flHealth, int bitsDamageType) { return m_pEntity->TakeHealth(flHealth, bitsDamageType); }
 	virtual void Killed(entvars_t *pevAttacker, int iGib) { m_pEntity->Killed(pevAttacker, iGib); }
 	virtual int BloodColor() { return m_pEntity->BloodColor(); }
-	virtual void TraceBleed(float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType) { m_pEntity->TraceBleed(flDamage, vecDir, ptr, bitsDamageType); }
+	virtual void TraceBleed(float flDamage, Vector &vecDir, TraceResult *ptr, int bitsDamageType) { m_pEntity->TraceBleed(flDamage, vecDir, ptr, bitsDamageType); }
 	virtual bool IsTriggered(CCSEntity *pActivator) { return m_pEntity->IsTriggered(pActivator->m_pEntity) ? true : false; }
 	virtual ICSMonster *MyMonsterPointer() { return reinterpret_cast<ICSMonster *>(CBASE_TO_CSENTITY(m_pEntity->MyMonsterPointer())); }
 	virtual ICSquadMonster *MySquadMonsterPointer() { return (ICSquadMonster *)m_pEntity->MySquadMonsterPointer(); }
@@ -149,8 +149,8 @@ public:
 public:
 	virtual entvars_t *GetEntVars() const { return m_pEntity->pev; }
 	virtual CBaseEntity *GetEntity() const { return m_pEntity; }
-	virtual void FireBullets(int iShots, Vector vecSrc, Vector vecDirShooting, Vector vecSpread, float flDistance, int iBulletType, int iTracerFreq, int iDamage, entvars_t *pevAttacker) { m_pEntity->FireBullets(iShots, vecSrc, vecDirShooting, vecSpread, flDistance, iBulletType, iTracerFreq, iDamage, pevAttacker); };
-	virtual Vector FireBullets3(Vector vecSrc, Vector vecDirShooting, float vecSpread, float flDistance, int iPenetration, int iBulletType, int iDamage, float flRangeModifier, entvars_t *pevAttacker, bool bPistol, int shared_rand) { return m_pEntity->FireBullets3(vecSrc, vecDirShooting, vecSpread, flDistance, iPenetration, iBulletType, iDamage, flRangeModifier, pevAttacker, bPistol, shared_rand); };
+	virtual void FireBullets(int iShots, Vector &vecSrc, Vector &vecDirShooting, Vector &vecSpread, float flDistance, int iBulletType, int iTracerFreq, int iDamage, entvars_t *pevAttacker) { m_pEntity->FireBullets(iShots, vecSrc, vecDirShooting, vecSpread, flDistance, iBulletType, iTracerFreq, iDamage, pevAttacker); };
+	virtual Vector FireBullets3(Vector &vecSrc, Vector &vecDirShooting, float vecSpread, float flDistance, int iPenetration, int iBulletType, int iDamage, float flRangeModifier, entvars_t *pevAttacker, bool bPistol, int shared_rand) { return m_pEntity->FireBullets3(vecSrc, vecDirShooting, vecSpread, flDistance, iPenetration, iBulletType, iDamage, flRangeModifier, pevAttacker, bPistol, shared_rand); };
 };
 
 class CCSDelay: public CCSEntity {
@@ -218,7 +218,7 @@ public:
 	CCSMonster(CBaseEntity *pEntity) : CCSToggle(pEntity) {}
 public:
 	virtual void KeyValue(KeyValueData *pkvd) { m_pEntity->KeyValue(pkvd); }
-	virtual void TraceAttack(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType) { m_pEntity->TraceAttack(pevAttacker, flDamage, vecDir, ptr, bitsDamageType); }
+	virtual void TraceAttack(entvars_t *pevAttacker, float flDamage, Vector &vecDir, TraceResult *ptr, int bitsDamageType) { m_pEntity->TraceAttack(pevAttacker, flDamage, vecDir, ptr, bitsDamageType); }
 	virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType) { return m_pEntity->TakeDamage(pevInflictor, pevAttacker, flDamage, bitsDamageType); }
 	virtual int TakeHealth(float flHealth, int bitsDamageType) { return m_pEntity->TakeHealth(flHealth, bitsDamageType); }
 	virtual void Killed(entvars_t *pevAttacker, int iGib) { m_pEntity->Killed(pevAttacker, iGib); }
@@ -276,7 +276,7 @@ public:
 	virtual int Restore(CRestore &restore) { return m_pEntity->Restore(restore); }
 	virtual int ObjectCaps() { return m_pEntity->ObjectCaps(); }
 	virtual int Classify() { return m_pEntity->Classify(); }
-	virtual void TraceAttack(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType) { m_pEntity->TraceAttack(pevAttacker, flDamage, vecDir, ptr, bitsDamageType); }
+	virtual void TraceAttack(entvars_t *pevAttacker, float flDamage, Vector &vecDir, TraceResult *ptr, int bitsDamageType) { m_pEntity->TraceAttack(pevAttacker, flDamage, vecDir, ptr, bitsDamageType); }
 	virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType) { return m_pEntity->TakeDamage(pevInflictor, pevAttacker, flDamage, bitsDamageType); }
 	virtual int TakeHealth(float flHealth, int bitsDamageType) { return m_pEntity->TakeHealth(flHealth, bitsDamageType); }
 	virtual void Killed(entvars_t *pevAttacker, int iGib) { m_pEntity->Killed(pevAttacker, iGib); }
@@ -1021,7 +1021,7 @@ public:
 	virtual int Save(CSave &save) { return m_pEntity->Save(save); }
 	virtual int Restore(CRestore &restore) { return m_pEntity->Restore(restore); }
 	virtual int ObjectCaps() { return m_pEntity->ObjectCaps(); }
-	virtual void TraceAttack(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType) { m_pEntity->TraceAttack(pevAttacker, flDamage, vecDir, ptr, bitsDamageType); }
+	virtual void TraceAttack(entvars_t *pevAttacker, float flDamage, Vector &vecDir, TraceResult *ptr, int bitsDamageType) { m_pEntity->TraceAttack(pevAttacker, flDamage, vecDir, ptr, bitsDamageType); }
 	virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType) { return m_pEntity->TakeDamage(pevInflictor, pevAttacker, flDamage, bitsDamageType); }
 	virtual int DamageDecal(int bitsDamageType) { return m_pEntity->DamageDecal(bitsDamageType); }
 	virtual void Use(CCSEntity *pActivator, CCSEntity *pCaller, USE_TYPE useType, float value) { m_pEntity->Use(pActivator->m_pEntity, pCaller->m_pEntity, useType, value); }

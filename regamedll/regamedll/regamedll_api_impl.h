@@ -164,6 +164,9 @@ typedef IVoidHookChainRegistryImpl<CBasePlayer *, entvars_t *, entvars_t *, floa
 typedef IVoidHookChainImpl<CBasePlayer *, entvars_t *, entvars_t *, Vector &, Vector &, TraceResult *> CReGameHook_RadiusFlash_TraceLine;
 typedef IVoidHookChainRegistryImpl<CBasePlayer *, entvars_t *, entvars_t *, Vector &, Vector &, TraceResult *> CReGameHookRegistry_RadiusFlash_TraceLine;
 
+typedef IHookChainClassImpl<bool, class CHalfLifeMultiplay, int, ScenarioEventEndRound, float> CReGameHook_RoundEnd;
+typedef IHookChainRegistryClassEmptyImpl<bool, class CHalfLifeMultiplay, int, ScenarioEventEndRound, float> CReGameHookRegistry_RoundEnd;
+
 class CReGameHookchains: public IReGameHookchains {
 public:
 	// CBasePlayer virtual
@@ -203,6 +206,7 @@ public:
 	CReGameHookRegistry_GetForceCamera m_GetForceCamera;
 	CReGameHookRegistry_PlayerBlind m_PlayerBlind;
 	CReGameHookRegistry_RadiusFlash_TraceLine m_RadiusFlash_TraceLine;
+	CReGameHookRegistry_RoundEnd m_RoundEnd;
 
 public:
 	virtual IReGameHookRegistry_CBasePlayer_Spawn* CBasePlayer_Spawn();
@@ -241,6 +245,7 @@ public:
 	virtual IReGameHookRegistry_GetForceCamera* GetForceCamera();
 	virtual IReGameHookRegistry_PlayerBlind* PlayerBlind();
 	virtual IReGameHookRegistry_RadiusFlash_TraceLine* RadiusFlash_TraceLine();
+	virtual IReGameHookRegistry_RoundEnd* RoundEnd();
 
 };
 

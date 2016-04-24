@@ -69,9 +69,10 @@ enum
 
 // custom enum
 // used for EndRoundMessage() logged messages
-enum ScenarionEventEndRound
+enum ScenarioEventEndRound
 {
-	ROUND_TARGET_BOMB = 1,
+	ROUND_NONE,
+	ROUND_TARGET_BOMB,
 	ROUND_VIP_ESCAPED,
 	ROUND_VIP_ASSASSINATED,
 	ROUND_TERRORISTS_ESCAPED,
@@ -375,6 +376,13 @@ public:
 	void MarkSpawnSkipped() { m_bSkipSpawn = false; }
 	float TimeRemaining() { return m_iRoundTimeSecs - gpGlobals->time + m_fRoundCount; }
 	bool IsMatchStarted() { return (m_fTeamCount != 0.0f || m_fCareerRoundMenuTime != 0.0f || m_fCareerMatchMenuTime != 0.0f); }
+
+	inline void TerminateRound(float tmDelay, int iWinStatus)
+	{
+		m_iRoundWinStatus = iWinStatus;
+		m_fTeamCount = gpGlobals->time + tmDelay;
+		m_bRoundTerminating = true;
+	}
 public:
 	CVoiceGameMgr m_VoiceGameMgr;
 	float m_fTeamCount;				// m_flRestartRoundTime, the global time when the round is supposed to end, if this is not 0
@@ -458,6 +466,10 @@ public:
 	int m_iRoundWinDifference;
 	float m_fCareerMatchMenuTime;
 	bool m_bSkipSpawn;
+
+	// custom
+	bool m_bNeededPlayers;
+	float m_flEscapeRatio;
 };
 
 typedef struct mapcycle_item_s

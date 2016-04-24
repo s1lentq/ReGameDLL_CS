@@ -40,6 +40,11 @@ class GitVersioner {
 		return null;
 	}
 	static String prepareUrlToCommits(String url) {
+		if (url == null) {
+			// default remote url
+			return "https://github.com/s1lentq/ReGameDLL_CS/commit/";
+		}
+
 		StringBuilder sb = new StringBuilder();
 		String childPath;
 		int pos = url.indexOf('@');
@@ -72,9 +77,29 @@ class GitVersioner {
 		def branch = repo.getBranch()
 		def commitDate = new DateTime(1000L * commit.commitTime, DateTimeZone.UTC)
 
+		String url = null;
 		String remote_name = cfg.getString("branch", branch, "remote");
 
-		String url = cfg.getString("remote", remote_name, "url");
+		if (remote_name == null) {
+			for (String remotes : cfg.getSubsections("remote")) {
+				if (url != null) {
+					println 'Found a second remote: (' + remotes + '), url: (' + cfg.getString("remote", remotes, "url") + ')'
+					continue;
+				}
+
+				url = cfg.getString("remote", remotes, "url");
+			}
+		} else {
+			url = cfg.getString("remote", remote_name, "url");
+		}
+
+		println 'Debug: Start';
+		println '	cfg: (' + cfg + ')';
+		println '	branch: (' + branch + ')';
+		println '	remote_name: (' + remote_name + ')';
+		println '	url: (' + url + ')';
+		println 'Debug: End';
+
 		String urlCommits = prepareUrlToCommits(url);
 
 		if (!commit) {
