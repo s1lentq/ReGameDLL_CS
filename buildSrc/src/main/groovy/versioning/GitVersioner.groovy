@@ -77,8 +77,21 @@ class GitVersioner {
 		def branch = repo.getBranch()
 		def commitDate = new DateTime(1000L * commit.commitTime, DateTimeZone.UTC)
 
+		String url = null;
 		String remote_name = cfg.getString("branch", branch, "remote");
-		String url = cfg.getString("remote", remote_name, "url");
+
+		if (remote_name == null) {
+			for (String remotes : cfg.getSubsections("remote")) {
+				if (url != null) {
+					println 'Found a second remote: (' + remotes + '), url: (' + cfg.getString("remote", remotes, "url") + ')'
+					continue;
+				}
+
+				url = cfg.getString("remote", remotes, "url");
+			}
+		} else {
+			url = cfg.getString("remote", remote_name, "url");
+		}
 
 		println 'Debug: Start';
 		println '	cfg: (' + cfg + ')';
