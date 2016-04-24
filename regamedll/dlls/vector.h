@@ -36,12 +36,9 @@ class Vector2D
 {
 public:
 	vec_t x, y;
-	Vector2D() : x(0.0), y(0.0) {}
-	Vector2D(float X, float Y) : x(0.0), y(0.0)
-	{
-		x = X;
-		y = Y;
-	}
+	Vector2D() : x(), y() {}
+	Vector2D(float X, float Y) : x(X), y(Y) {}
+	Vector2D(const Vector2D &v) { *(int*)&x = *(int*)&v.x; *(int*)&y = *(int*)&v.y; }
 	Vector2D operator+(const Vector2D &v) const
 	{
 		return Vector2D(x + v.x, y + v.y);
@@ -151,25 +148,10 @@ class Vector
 {
 public:
 	vec_t x, y, z;
-	Vector() : x(0.0), y(0.0), z(0.0) {}
-	Vector(float X, float Y, float Z) : x(0.0), y(0.0), z(0.0)
-	{
-		x = X;
-		y = Y;
-		z = Z;
-	}
-	Vector(const Vector &v) : x(0.0), y(0.0), z(0.0)
-	{
-		x = v.x;
-		y = v.y;
-		z = v.z;
-	}
-	Vector(const float rgfl[3]) : x(0.0), y(0.0), z(0.0)
-	{
-		x = rgfl[0];
-		y = rgfl[1];
-		z = rgfl[2];
-	}
+	Vector() : x(), y(), z() {}
+	Vector(float X, float Y, float Z) : x(X), y(Y), z(Z) {}
+	Vector(const Vector &v) { *(int*)&x = *(int*)&v.x; *(int*)&y = *(int*)&v.y; *(int*)&z = *(int*)&v.z; }
+	Vector(const float rgfl[3]) { *(int*)&x = *(int*)&rgfl[0]; *(int*)&y = *(int*)&rgfl[1]; *(int*)&z = *(int*)&rgfl[2]; }
 	Vector operator-() const
 	{
 		return Vector(-x, -y, -z);
@@ -219,9 +201,9 @@ public:
 #endif // PLAY_GAMEDLL
 	void CopyToArray(float *rgfl) const
 	{
-		rgfl[0] = x;
-		rgfl[1] = y;
-		rgfl[2] = z;
+		*(int*)&rgfl[0] = *(int*)&x;
+		*(int*)&rgfl[1] = *(int*)&y;
+		*(int*)&rgfl[2] = *(int*)&z;
 	}
 	float_precision Length() const
 	{
@@ -244,7 +226,7 @@ public:
 		return &x;
 	}
 #ifndef PLAY_GAMEDLL
-	Vector Normalize()
+	Vector Normalize() const
 	{
 		float flLen = Length();
 		if (flLen == 0)
@@ -265,7 +247,7 @@ public:
 	}
 #endif // PLAY_GAMEDLL
 	// for out precision normalize
-	Vector NormalizePrecision()
+	Vector NormalizePrecision() const
 	{
 #ifndef PLAY_GAMEDLL
 		return Normalize();
@@ -281,8 +263,8 @@ public:
 	Vector2D Make2D() const
 	{
 		Vector2D Vec2;
-		Vec2.x = x;
-		Vec2.y = y;
+		*(int*)&Vec2.x = *(int*)&x;
+		*(int*)&Vec2.y = *(int*)&y;
 		return Vec2;
 	}
 	float_precision Length2D() const
