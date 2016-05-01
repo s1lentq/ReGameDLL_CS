@@ -178,6 +178,10 @@ typedef IHookChainRegistryClassEmpty<bool, int, ScenarioEventEndRound, float> IR
 typedef IHookChain<bool, class CBasePlayer *, int> IReGameHook_CanBuyThis;
 typedef IHookChainRegistry<bool, class CBasePlayer *, int> IReGameHookRegistry_CanBuyThis;
 
+// InstallGameRules hook
+typedef IHookChain<class CGameRules *> IReGameHook_InstallGameRules;
+typedef IHookChainRegistry<class CGameRules *> IReGameHookRegistry_InstallGameRules;
+
 class IReGameHookchains {
 public:
 	virtual ~IReGameHookchains() {}
@@ -221,6 +225,7 @@ public:
 	virtual IReGameHookRegistry_RadiusFlash_TraceLine* RadiusFlash_TraceLine() = 0;
 	virtual IReGameHookRegistry_RoundEnd* RoundEnd() = 0;
 	virtual IReGameHookRegistry_CanBuyThis* CanBuyThis() = 0;
+	virtual IReGameHookRegistry_InstallGameRules* InstallGameRules() = 0;
 
 };
 

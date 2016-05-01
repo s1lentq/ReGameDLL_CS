@@ -2076,5 +2076,5 @@ class IReGameData {
 public:
 	virtual ~IReGameData() {}
 
-	virtual class CGameRules** GetGameRules() = 0;
+	virtual class CGameRules* GetGameRules() = 0;
 };

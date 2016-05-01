@@ -172,6 +172,10 @@ typedef IHookChainRegistryClassEmptyImpl<bool, class CHalfLifeMultiplay, int, Sc
 typedef IHookChainImpl<bool, class CBasePlayer *, int> CReGameHook_CanBuyThis;
 typedef IHookChainRegistryImpl<bool, class CBasePlayer *, int> CReGameHookRegistry_CanBuyThis;
 
+// InstallGameRules hook
+typedef IHookChainImpl<CGameRules *> CReGameHook_InstallGameRules;
+typedef IHookChainRegistryImpl<CGameRules *> CReGameHookRegistry_InstallGameRules;
+
 class CReGameHookchains: public IReGameHookchains {
 public:
 	// CBasePlayer virtual
@@ -213,6 +217,7 @@ public:
 	CReGameHookRegistry_RadiusFlash_TraceLine m_RadiusFlash_TraceLine;
 	CReGameHookRegistry_RoundEnd m_RoundEnd;
 	CReGameHookRegistry_CanBuyThis m_CanBuyThis;
+	CReGameHookRegistry_InstallGameRules m_InstallGameRules;
 
 public:
 	virtual IReGameHookRegistry_CBasePlayer_Spawn* CBasePlayer_Spawn();
@@ -253,6 +258,7 @@ public:
 	virtual IReGameHookRegistry_RadiusFlash_TraceLine* RadiusFlash_TraceLine();
 	virtual IReGameHookRegistry_RoundEnd* RoundEnd();
 	virtual IReGameHookRegistry_CanBuyThis* CanBuyThis();
+	virtual IReGameHookRegistry_InstallGameRules* InstallGameRules();
 
 };
 

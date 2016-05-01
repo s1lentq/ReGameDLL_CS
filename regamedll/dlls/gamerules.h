@@ -767,6 +767,7 @@ public:
 extern CGameRules *g_pGameRules;
 
 CGameRules *InstallGameRules();
+CGameRules *InstallGameRules_();
 
 inline CHalfLifeMultiplay *CSGameRules()
 {

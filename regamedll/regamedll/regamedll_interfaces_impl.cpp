@@ -135,6 +135,6 @@ ICSEntity *EXT_FUNC INDEX_TO_CSENTITY(int iEntityIndex)
 	return CBASE_TO_CSENTITY(pEntity);
 }
 
-CGameRules** EXT_FUNC CReGameData::GetGameRules() {
-	return &g_pGameRules;
+CGameRules* EXT_FUNC CReGameData::GetGameRules() {
+	return g_pGameRules;
 }

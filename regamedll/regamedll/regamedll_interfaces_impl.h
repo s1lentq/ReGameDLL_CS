@@ -79,6 +79,16 @@ extern ICSEntity *INDEX_TO_CSENTITY(int iEntityIndex);
 		return g_ReGameHookchains.m_##functionName.callChain(functionName##_, __VA_ARGS__);\
 	}
 
+#define LINK_HOOK_VOID_CHAIN2(functionName)\
+	void functionName() {\
+		g_ReGameHookchains.m_##functionName.callChain(functionName##_);\
+	}
+
+#define LINK_HOOK_CHAIN2(ret, functionName)\
+	ret functionName() {\
+		return g_ReGameHookchains.m_##functionName.callChain(functionName##_);\
+	}
+
 #endif
 
 // Implementation interfaces
@@ -2512,7 +2522,7 @@ public:
 
 class CReGameData: public IReGameData {
 public:
-	virtual CGameRules** GetGameRules();
+	virtual CGameRules* GetGameRules();
 };
 
 template <class T>
