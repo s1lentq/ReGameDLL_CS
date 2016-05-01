@@ -1930,9 +1930,9 @@ int CWeaponBox::GiveAmmo(int iCount, char *szName, int iMax, int *pIndex)
 			if (iCount == 0 || iAdd > 0)
 			{
 				m_rgAmmo[i] += iAdd;
-
 				return i;
 			}
+
 			return -1;
 		}
 	}

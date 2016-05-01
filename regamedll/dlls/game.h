@@ -137,6 +137,7 @@ extern cvar_t maxmoney;
 extern cvar_t round_infinite;
 extern cvar_t hegrenade_penetration;
 extern cvar_t nadedrops;
+extern cvar_t roundrespawn_time;
 
 #endif
 

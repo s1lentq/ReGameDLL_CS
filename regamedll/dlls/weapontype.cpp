@@ -372,7 +372,7 @@ bool IsSecondaryWeapon(int id)
 	return false;
 }
 
-WeaponInfoStruct *GetWeaponInfo(int weaponID)
+WeaponInfoStruct *EXT_FUNC GetWeaponInfo(int weaponID)
 {
 	for (int i = 0; weaponInfo[i].id != 0; ++i)
 	{

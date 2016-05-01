@@ -1343,8 +1343,10 @@ void packPlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 	const char *modelName = GetCSModelName(pItem->m_iId);
 	if (modelName != NULL)
 	{
+		// create a box to pack the stuff into.
 		CWeaponBox *pWeaponBox = (CWeaponBox *)CBaseEntity::Create("weaponbox", pPlayer->pev->origin, pPlayer->pev->angles, ENT(pPlayer->pev));
 
+		// don't let weaponbox tilt.
 		pWeaponBox->pev->angles.x = 0;
 		pWeaponBox->pev->angles.z = 0;
 
@@ -1352,8 +1354,9 @@ void packPlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 
 		pWeaponBox->SetThink(&CWeaponBox::Kill);
 		pWeaponBox->pev->nextthink = gpGlobals->time + 300.0f;
-		pWeaponBox->PackWeapon(pItem);
+		pWeaponBox->PackWeapon(pItem); // now pack all of the items in the lists
 
+		// pack the ammo
 		if (packAmmo)
 		{
 			pWeaponBox->PackAmmo(MAKE_STRING(IMPL_CLASS(CBasePlayerItem, ItemInfoArray)[pItem->m_iId].pszAmmo1), pPlayer->m_rgAmmo[pItem->PrimaryAmmoIndex()]);
@@ -1391,8 +1394,10 @@ void packPlayerNade(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 		vecAngles.x = 0.0f;
 		vecAngles.y += 45.0f;
 
+		// create a box to pack the stuff into.
 		CWeaponBox *pWeaponBox = (CWeaponBox *)CBaseEntity::Create("weaponbox", pPlayer->pev->origin + dir, vecAngles, ENT(pPlayer->pev));
 
+		// don't let weaponbox tilt.
 		pWeaponBox->pev->angles.x = 0;
 		pWeaponBox->pev->angles.z = 0;
 
@@ -1400,8 +1405,9 @@ void packPlayerNade(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 
 		pWeaponBox->SetThink(&CWeaponBox::Kill);
 		pWeaponBox->pev->nextthink = gpGlobals->time + 300.0f;
-		pWeaponBox->PackWeapon(pItem);
+		pWeaponBox->PackWeapon(pItem); // now pack all of the items in the lists
 
+		// pack the ammo
 		if (packAmmo)
 		{
 			pWeaponBox->PackAmmo(MAKE_STRING(IMPL_CLASS(CBasePlayerItem, ItemInfoArray)[pItem->m_iId].pszAmmo1), pPlayer->m_rgAmmo[pItem->PrimaryAmmoIndex()]);
@@ -1411,8 +1417,12 @@ void packPlayerNade(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 }
 #endif
 
+// PackDeadPlayerItems - call this when a player dies to
+// pack up the appropriate weapons and ammo items, and to
+// destroy anything that shouldn't be packed.
 void CBasePlayer::PackDeadPlayerItems()
 {
+	// get the game rules
 	bool bPackGun = (g_pGameRules->DeadPlayerWeapons(this) != GR_PLR_DROP_GUN_NO);
 	bool bPackAmmo = (g_pGameRules->DeadPlayerAmmo(this) != GR_PLR_DROP_AMMO_NO);
 
@@ -1430,6 +1440,7 @@ void CBasePlayer::PackDeadPlayerItems()
 
 		for (int n = 0; n < MAX_ITEM_TYPES; ++n)
 		{
+			// there's a weapon here. Should I pack it?
 			CBasePlayerItem *pPlayerItem = m_rgpPlayerItems[ n ];
 
 			while (pPlayerItem != NULL)
@@ -1461,14 +1472,10 @@ void CBasePlayer::PackDeadPlayerItems()
 							break;
 						case 2:
 						{
-							CBasePlayerItem *pNade = pPlayerItem;
-							while (pNade != nullptr)
-							{
-								CBasePlayerItem *pTemp = pNade->m_pNext;
-								packPlayerNade(this, pNade, true);
-								pNade = pTemp;
-							}
-							break;
+							CBasePlayerItem *pNext = pPlayerItem->m_pNext;
+							packPlayerNade(this, pPlayerItem, true);
+							pPlayerItem = pNext;
+							continue;
 						}
 						}
 					}

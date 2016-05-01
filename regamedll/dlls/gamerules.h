@@ -50,6 +50,7 @@
 #define ITEM_RESPAWN_TIME			30
 #define WEAPON_RESPAWN_TIME			20
 #define AMMO_RESPAWN_TIME			20
+#define ROUND_RESPAWN_TIME			20
 
 // longest the intermission can last, in seconds
 #define MAX_INTERMISSION_TIME			120
@@ -590,6 +591,15 @@ public:
 		m_iRoundWinStatus = iWinStatus;
 		m_fTeamCount = gpGlobals->time + tmDelay;
 		m_bRoundTerminating = true;
+	}
+
+	inline float GetRoundRespawnTime() const
+	{
+#ifdef REGAMEDLL_ADD
+		return roundrespawn_time.value;
+#else
+		return ROUND_RESPAWN_TIME;
+#endif
 	}
 
 	// allow the mode of fire on a friendly player (FFA)

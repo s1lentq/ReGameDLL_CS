@@ -409,7 +409,7 @@ CBaseEntity *UTIL_FindEntityByString_Old(CBaseEntity *pStartEntity, const char *
 	return NULL;
 }
 
-CBaseEntity *UTIL_FindEntityByString(CBaseEntity *pStartEntity, const char *szKeyword, const char *szValue)
+CBaseEntity *EXT_FUNC UTIL_FindEntityByString(CBaseEntity *pStartEntity, const char *szKeyword, const char *szValue)
 {
 	edict_t	*pentEntity;
 	int startEntityIndex;

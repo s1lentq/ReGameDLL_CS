@@ -3546,10 +3546,10 @@ BOOL CHalfLifeMultiplay::__MAKE_VHOOK(FPlayerCanRespawn)(CBasePlayer *pPlayer)
 
 	if (m_iNumTerrorist > 0 && m_iNumCT > 0)
 	{
-		// If this player just connected and fadetoblack is on, then maybe
-		// the server admin doesn't want him peeking around.
-		if (gpGlobals->time > m_fRoundCount + 20.0f)
+		if (gpGlobals->time > m_fRoundCount + GetRoundRespawnTime())
 		{
+			// If this player just connected and fadetoblack is on, then maybe
+			// the server admin doesn't want him peeking around.
 			if (fadetoblack.value != 0.0f)
 			{
 				UTIL_ScreenFade(pPlayer, Vector(0, 0, 0), 3, 3, 255, (FFADE_OUT | FFADE_STAYOUT));

@@ -132,6 +132,7 @@ void Host_Say(edict_t *pEntity, int teamonly);
 void DropSecondary(CBasePlayer *pPlayer);
 void DropPrimary(CBasePlayer *pPlayer);
 bool CanBuyThis(CBasePlayer *pPlayer, int iWeapon);
+bool CanBuyThis_(CBasePlayer *pPlayer, int iWeapon);
 void BuyPistol(CBasePlayer *pPlayer, int iSlot);
 void BuyShotgun(CBasePlayer *pPlayer, int iSlot);
 void BuySubMachineGun(CBasePlayer *pPlayer, int iSlot);

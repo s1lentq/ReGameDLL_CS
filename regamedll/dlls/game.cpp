@@ -100,6 +100,7 @@ cvar_t maxmoney = { "mp_maxmoney", "16000", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t round_infinite = { "mp_round_infinite", "0", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t hegrenade_penetration = { "mp_hegrenade_penetration", "0", 0, 0.0f, nullptr };
 cvar_t nadedrops = { "mp_nadedrops", "0", 0, 0.0f, nullptr };
+cvar_t roundrespawn_time = { "mp_roundrespawn_time", "20", 0, 20.0f, nullptr };
 
 void GameDLL_Version_f()
 {
@@ -226,6 +227,7 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&round_infinite);
 	CVAR_REGISTER(&hegrenade_penetration);
 	CVAR_REGISTER(&nadedrops);
+	CVAR_REGISTER(&roundrespawn_time);
 
 	// print version
 	CONSOLE_ECHO("ReGameDLL build: " __TIME__ " " __DATE__ " (" APP_VERSION_STRD ")\n");

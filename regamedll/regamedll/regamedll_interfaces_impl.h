@@ -317,7 +317,7 @@ public:
 	virtual void GiveNamedItem(const char *pszName) { ((CBasePlayer *)m_pEntity)->GiveNamedItem(pszName); }
 	virtual void GiveDefaultItems() { ((CBasePlayer *)m_pEntity)->GiveDefaultItems(); }
 	virtual void GiveShield(bool bDeploy = true) { ((CBasePlayer *)m_pEntity)->GiveShield(bDeploy); }
-
+	virtual void RemoveAllItems(bool bRemoveSuit) { ((CBasePlayer *)m_pEntity)->RemoveAllItems(bRemoveSuit ? TRUE : FALSE); }
 };
 
 class CAPI_Bot: public CCSPlayer {

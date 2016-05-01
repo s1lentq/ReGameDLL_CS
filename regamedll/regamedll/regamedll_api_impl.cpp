@@ -45,7 +45,10 @@ ReGameFuncs_t g_ReGameApiFuncs = {
 	&ApplyMultiDamage_api,
 	&AddMultiDamage_api,
 
-	&EndRoundMessage
+	&EndRoundMessage,
+	&UTIL_FindEntityByString,
+	&GetWeaponInfo,
+
 };
 
 IReGameHookRegistry_CBasePlayer_Spawn* CReGameHookchains::CBasePlayer_Spawn() { return &m_CBasePlayer_Spawn; }
@@ -85,6 +88,7 @@ IReGameHookRegistry_GetForceCamera* CReGameHookchains::GetForceCamera() { return
 IReGameHookRegistry_PlayerBlind* CReGameHookchains::PlayerBlind() { return &m_PlayerBlind; }
 IReGameHookRegistry_RadiusFlash_TraceLine* CReGameHookchains::RadiusFlash_TraceLine() { return &m_RadiusFlash_TraceLine; }
 IReGameHookRegistry_RoundEnd* CReGameHookchains::RoundEnd() { return &m_RoundEnd; }
+IReGameHookRegistry_CanBuyThis* CReGameHookchains::CanBuyThis() { return &m_CanBuyThis; }
 
 int CReGameApi::GetMajorVersion()
 {

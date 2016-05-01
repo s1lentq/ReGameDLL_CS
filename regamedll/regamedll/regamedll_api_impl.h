@@ -164,8 +164,13 @@ typedef IVoidHookChainRegistryImpl<CBasePlayer *, entvars_t *, entvars_t *, floa
 typedef IVoidHookChainImpl<CBasePlayer *, entvars_t *, entvars_t *, Vector &, Vector &, TraceResult *> CReGameHook_RadiusFlash_TraceLine;
 typedef IVoidHookChainRegistryImpl<CBasePlayer *, entvars_t *, entvars_t *, Vector &, Vector &, TraceResult *> CReGameHookRegistry_RadiusFlash_TraceLine;
 
+// RoundEnd hook
 typedef IHookChainClassImpl<bool, class CHalfLifeMultiplay, int, ScenarioEventEndRound, float> CReGameHook_RoundEnd;
 typedef IHookChainRegistryClassEmptyImpl<bool, class CHalfLifeMultiplay, int, ScenarioEventEndRound, float> CReGameHookRegistry_RoundEnd;
+
+// CanBuyThis hook
+typedef IHookChainImpl<bool, class CBasePlayer *, int> CReGameHook_CanBuyThis;
+typedef IHookChainRegistryImpl<bool, class CBasePlayer *, int> CReGameHookRegistry_CanBuyThis;
 
 class CReGameHookchains: public IReGameHookchains {
 public:
@@ -207,6 +212,7 @@ public:
 	CReGameHookRegistry_PlayerBlind m_PlayerBlind;
 	CReGameHookRegistry_RadiusFlash_TraceLine m_RadiusFlash_TraceLine;
 	CReGameHookRegistry_RoundEnd m_RoundEnd;
+	CReGameHookRegistry_CanBuyThis m_CanBuyThis;
 
 public:
 	virtual IReGameHookRegistry_CBasePlayer_Spawn* CBasePlayer_Spawn();
@@ -246,6 +252,7 @@ public:
 	virtual IReGameHookRegistry_PlayerBlind* PlayerBlind();
 	virtual IReGameHookRegistry_RadiusFlash_TraceLine* RadiusFlash_TraceLine();
 	virtual IReGameHookRegistry_RoundEnd* RoundEnd();
+	virtual IReGameHookRegistry_CanBuyThis* CanBuyThis();
 
 };
 

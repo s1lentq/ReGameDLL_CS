@@ -910,7 +910,9 @@ void DropPrimary(CBasePlayer *pPlayer)
 	}
 }
 
-bool CanBuyThis(CBasePlayer *pPlayer, int iWeapon)
+LINK_HOOK_CHAIN(bool, CanBuyThis, (CBasePlayer *pPlayer, int iWeapon), pPlayer, iWeapon);
+
+bool __API_HOOK(CanBuyThis)(CBasePlayer *pPlayer, int iWeapon)
 {
 	if (pPlayer->HasShield() && iWeapon == WEAPON_ELITE)
 	{
