@@ -2523,6 +2523,7 @@ public:
 class CReGameData: public IReGameData {
 public:
 	virtual CGameRules* GetGameRules();
+	virtual WeaponInfoStruct *GetWeaponInfo(int weaponID);
 };
 
 template <class T>

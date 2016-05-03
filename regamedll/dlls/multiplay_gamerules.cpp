@@ -3264,21 +3264,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(InitHUD)(CBasePlayer *pl)
 		{
 			MESSAGE_BEGIN(MSG_ONE, gmsgTeamInfo, NULL, pl->edict());
 				WRITE_BYTE(plr->entindex());
-				switch (plr->m_iTeam)
-				{
-				case CT:
-					WRITE_STRING("CT");
-					break;
-				case TERRORIST:
-					WRITE_STRING("TERRORIST");
-					break;
-				case SPECTATOR:
-					WRITE_STRING("SPECTATOR");
-					break;
-				default:
-					WRITE_STRING("UNASSIGNED");
-					break;
-				}
+				WRITE_STRING(GetTeamName(plr->m_iTeam));
 			MESSAGE_END();
 
 			plr->SetScoreboardAttributes(pl);

@@ -138,3 +138,7 @@ ICSEntity *EXT_FUNC INDEX_TO_CSENTITY(int iEntityIndex)
 CGameRules* EXT_FUNC CReGameData::GetGameRules() {
 	return g_pGameRules;
 }
+
+WeaponInfoStruct* EXT_FUNC CReGameData::GetWeaponInfo(int weaponID) {
+	return ::GetWeaponInfo(weaponID);
+}

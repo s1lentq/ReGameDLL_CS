@@ -47,7 +47,6 @@ ReGameFuncs_t g_ReGameApiFuncs = {
 
 	&EndRoundMessage,
 	&UTIL_FindEntityByString,
-	&GetWeaponInfo,
 
 };
 

@@ -251,6 +251,7 @@ enum MaxAmmoType
 
 enum AmmoType
 {
+	AMMO_NONE = -1,
 	AMMO_BUCKSHOT,
 	AMMO_9MM,
 	AMMO_556NATO,
@@ -399,4 +400,5 @@ struct WeaponInfoStruct
 	int maxRounds;
 	int ammoType;
 	char *entityName;
+	const char *ammoName;
 };

@@ -3335,21 +3335,7 @@ void CBasePlayer::JoiningThink()
 
 				MESSAGE_BEGIN(MSG_ALL, gmsgTeamInfo);
 					WRITE_BYTE(entindex());
-					switch (m_iTeam)
-					{
-					case CT:
-						WRITE_STRING("CT");
-						break;
-					case TERRORIST:
-						WRITE_STRING("TERRORIST");
-						break;
-					case SPECTATOR:
-						WRITE_STRING("SPECTATOR");
-						break;
-					default:
-						WRITE_STRING("UNASSIGNED");
-						break;
-					}
+					WRITE_STRING(GetTeamName(m_iTeam));
 				MESSAGE_END();
 
 				MESSAGE_BEGIN(MSG_ALL, gmsgLocation);
@@ -5340,21 +5326,7 @@ void CBasePlayer::__API_VHOOK(Spawn)()
 
 	MESSAGE_BEGIN(MSG_ALL, gmsgTeamInfo);
 		WRITE_BYTE(entindex());
-		switch (m_iTeam)
-		{
-		case CT:
-			WRITE_STRING("CT");
-			break;
-		case TERRORIST:
-			WRITE_STRING("TERRORIST");
-			break;
-		case SPECTATOR:
-			WRITE_STRING("SPECTATOR");
-			break;
-		default:
-			WRITE_STRING("UNASSIGNED");
-			break;
-		}
+		WRITE_STRING(GetTeamName(m_iTeam));
 	MESSAGE_END();
 
 	UpdateLocation(true);
@@ -7482,21 +7454,7 @@ void CBasePlayer::SwitchTeam()
 
 	MESSAGE_BEGIN(MSG_ALL, gmsgTeamInfo);
 		WRITE_BYTE(entindex());
-		switch (m_iTeam)
-		{
-		case CT:
-			WRITE_STRING("CT");
-			break;
-		case TERRORIST:
-			WRITE_STRING("TERRORIST");
-			break;
-		case SPECTATOR:
-			WRITE_STRING("SPECTATOR");
-			break;
-		default:
-			WRITE_STRING("UNASSIGNED");
-			break;
-		}
+		WRITE_STRING(GetTeamName(m_iTeam));
 	MESSAGE_END();
 
 	if (TheBots != NULL)

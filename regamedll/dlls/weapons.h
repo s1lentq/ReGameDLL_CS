@@ -95,6 +95,7 @@ enum ArmouryItemPack
 	ARMOURY_KEVLAR,
 	ARMOURY_ASSAULT,
 	ARMOURY_SMOKEGRENADE,
+	ARMOURY_END
 };
 
 struct ItemInfo
@@ -1840,6 +1841,8 @@ void FindHullIntersection(const Vector &vecSrc, TraceResult &tr, float *mins, fl
 void AnnounceFlashInterval(float interval, float offset = 0);
 
 int MaxAmmoCarry(int iszName);
+int MaxAmmoCarry(const char *szName);
+
 void ClearMultiDamage();
 void ApplyMultiDamage(entvars_t *pevInflictor, entvars_t *pevAttacker);
 void AddMultiDamage(entvars_t *pevInflictor, CBaseEntity *pEntity, float flDamage, int bitsDamageType);

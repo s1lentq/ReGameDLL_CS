@@ -246,7 +246,6 @@ struct ReGameFuncs_t {
 
 	void (*EndRoundMessage)(const char *sentence, int event);
 	class CBaseEntity *(*UTIL_FindEntityByString)(class CBaseEntity *pStartEntity, const char *szKeyword, const char *szValue);
-	struct WeaponInfoStruct *(*GetWeaponInfo)(int weaponID);
 };
 
 class IReGameApi {

@@ -421,7 +421,7 @@ CBaseEntity *EXT_FUNC UTIL_FindEntityByString(CBaseEntity *pStartEntity, const c
 
 	startEntityIndex = ENTINDEX(pentEntity);
 
-	//it best each entity list
+	// it best each entity list
 	if (*szKeyword == 'c')
 	{
 		int hash;

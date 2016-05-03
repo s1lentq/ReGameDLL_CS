@@ -115,7 +115,7 @@ int CMD_ARGC_();
 const char *CMD_ARGV_(int i);
 void set_suicide_frame(entvars_t *pev);
 void TeamChangeUpdate(CBasePlayer *player, int team_id);
-void BlinkAccount(CBasePlayer *player, int numBlinks);
+void BlinkAccount(CBasePlayer *player, int numBlinks = 2);
 BOOL ClientConnect(edict_t *pEntity, const char *pszName, const char *pszAddress, char *szRejectReason);
 void ClientDisconnect(edict_t *pEntity);
 void respawn(entvars_t *pev, BOOL fCopyCorpse = FALSE);
@@ -190,5 +190,20 @@ int GetHullBounds(int hullnumber, float *mins, float *maxs);
 void CreateInstancedBaselines();
 int InconsistentFile(const edict_t *player, const char *filename, char *disconnect_message);
 int AllowLagCompensation();
+
+inline const char *GetTeamName(int team)
+{
+	switch (team)
+	{
+	case CT:
+		return "CT";
+	case TERRORIST:
+		return "TERRORIST";
+	case SPECTATOR:
+		return "SPECTATOR";
+	default:
+		return "UNASSIGNED";
+	}
+}
 
 #endif // CLIENT_H

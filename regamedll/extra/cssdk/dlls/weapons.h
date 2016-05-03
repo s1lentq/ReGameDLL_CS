@@ -90,6 +90,7 @@ enum ArmouryItemPack
 	ARMOURY_KEVLAR,
 	ARMOURY_ASSAULT,
 	ARMOURY_SMOKEGRENADE,
+	ARMOURY_END
 };
 
 struct ItemInfo

@@ -2077,4 +2077,5 @@ public:
 	virtual ~IReGameData() {}
 
 	virtual class CGameRules* GetGameRules() = 0;
+	virtual struct WeaponInfoStruct *GetWeaponInfo(int weaponID) = 0;
 };
