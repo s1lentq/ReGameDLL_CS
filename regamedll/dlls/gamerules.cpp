@@ -113,7 +113,9 @@ void CGameRules::__MAKE_VHOOK(RefreshSkillData)()
 	gSkillData.healthkitCapacity = 15;
 }
 
-CGameRules *InstallGameRules()
+LINK_HOOK_CHAIN2(CGameRules *, InstallGameRules);
+
+CGameRules *__API_HOOK(InstallGameRules)()
 {
 	SERVER_COMMAND("exec game.cfg\n");
 	SERVER_EXECUTE();

@@ -59,7 +59,10 @@ inline SteamFile::SteamFile(const char *filename)
 inline SteamFile::~SteamFile()
 {
 	if (m_fileData)
+	{
 		FREE_FILE(m_fileData);
+		m_fileData = NULL;
+	}
 }
 
 inline bool SteamFile::Read(void *data, int length)

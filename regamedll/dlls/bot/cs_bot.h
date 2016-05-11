@@ -421,8 +421,6 @@ class CCSBot: public CBot
 {
 public:
 	CCSBot();														// constructor initializes all values to zero
-
-public:
 	virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);		// invoked when injured by something (EXTEND) - returns the amount of damage inflicted
 	virtual void Killed(entvars_t *pevAttacker, int iGib);									// invoked when killed (EXTEND)
 	virtual void RoundRespawn();
@@ -967,6 +965,7 @@ private:
 		NUM_LOOK_AT_SPOT_STATES
 	}
 	m_lookAtSpotState;
+
 	Vector m_lookAtSpot;					// the spot we're currently looking at
 	PriorityType m_lookAtSpotPriority;
 	float m_lookAtSpotDuration;				// how long we need to look at the spot
@@ -1110,7 +1109,7 @@ private:
 	CNavNode *m_currentNode;
 	NavDirType m_generationDir;
 	NavAreaList::iterator m_analyzeIter;
-	
+
 	enum ProcessType
 	{
 		PROCESS_NORMAL,
@@ -1525,12 +1524,12 @@ inline float CCSBot::GetFeetZ() const
 {
 	if (IsCrouching())
 	{
-		const Vector crouch = Vector(0, 0, -StepHeight);
+		const Vector crouch(0, 0, -StepHeight);
 		return (pev->origin + crouch).z;
 	}
 	else
 	{
-		const Vector stand = Vector(0, 0, -HalfHumanHeight);
+		const Vector stand(0, 0, -HalfHumanHeight);
 		return (pev->origin + stand).z;
 	}
 }
@@ -1726,7 +1725,7 @@ public:
 				//{
 				//	fallDistance = ladder->m_bottom.z - area->GetCenter()->z;
 				//}
-				
+
 				float fallDamage = m_bot->GetApproximateFallDamage(fallDistance);
 
 				if (fallDamage > 0.0f)

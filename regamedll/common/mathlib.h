@@ -45,19 +45,11 @@ typedef float float_precision;
 
 #endif // PLAY_GAMEDLL
 
-/* <42b7f> ../common/mathlib.h:3 */
 typedef float vec_t;
-
-/* <42b91> ../common/mathlib.h:6 */
 typedef vec_t vec3_t[3];
-
-/* <80013> ../common/mathlib.h:8 */
 typedef vec_t vec4_t[4];
-
-/* <42bac> ../common/mathlib.h:18 */
 typedef int fixed16_t;
 
-/* <42bb7> ../common/mathlib.h:60 */
 typedef union DLONG_u
 {
 	int i[2];

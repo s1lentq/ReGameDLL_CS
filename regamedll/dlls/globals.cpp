@@ -5,7 +5,7 @@
 */
 #ifndef HOOK_GAMEDLL
 
-const Vector g_vecZero = Vector(0, 0, 0);
+const Vector g_vecZero(0, 0, 0);
 NOXREF u_long g_ulFrameCount = 0;
 
 #endif

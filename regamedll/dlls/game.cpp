@@ -95,9 +95,12 @@ cvar_t sk_scientist_heal3 = { "sk_scientist_heal3", "0", 0, 0.0f, NULL };
 
 #ifdef REGAMEDLL_ADD
 
-cvar_t game_version = { "game_version", APP_VERSION_STRD, FCVAR_SERVER, 0.0f, NULL };
-cvar_t maxmoney = { "mp_maxmoney", "16000", FCVAR_SERVER, 0.0f, NULL };
-cvar_t round_infinite = { "mp_round_infinite", "0", FCVAR_SERVER, 0.0f, NULL };
+cvar_t game_version = { "game_version", APP_VERSION_STRD, FCVAR_SERVER, 0.0f, nullptr };
+cvar_t maxmoney = { "mp_maxmoney", "16000", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t round_infinite = { "mp_round_infinite", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t hegrenade_penetration = { "mp_hegrenade_penetration", "0", 0, 0.0f, nullptr };
+cvar_t nadedrops = { "mp_nadedrops", "0", 0, 0.0f, nullptr };
+cvar_t roundrespawn_time = { "mp_roundrespawn_time", "20", 0, 20.0f, nullptr };
 
 void GameDLL_Version_f()
 {
@@ -222,6 +225,9 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&game_version);
 	CVAR_REGISTER(&maxmoney);
 	CVAR_REGISTER(&round_infinite);
+	CVAR_REGISTER(&hegrenade_penetration);
+	CVAR_REGISTER(&nadedrops);
+	CVAR_REGISTER(&roundrespawn_time);
 
 	// print version
 	CONSOLE_ECHO("ReGameDLL build: " __TIME__ " " __DATE__ " (" APP_VERSION_STRD ")\n");
@@ -232,4 +238,9 @@ void EXT_FUNC GameDLLInit()
 	Bot_RegisterCvars();
 	Tutor_RegisterCVars();
 	Hostage_RegisterCVars();
+}
+
+void EXT_FUNC GameDLLShutdown()
+{
+	Regamedll_FreeEntities();
 }

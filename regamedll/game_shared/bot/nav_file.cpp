@@ -429,6 +429,7 @@ void CNavArea::Load(SteamFile *file, unsigned int version)
 				file->Read(&pos, sizeof(float));
 			}
 		}
+
 		return;
 	}
 

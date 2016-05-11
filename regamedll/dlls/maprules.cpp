@@ -73,7 +73,7 @@ void CRuleBrushEntity::__MAKE_VHOOK(Spawn)()
 	CRuleEntity::Spawn();
 }
 
-LINK_ENTITY_TO_CLASS(game_score, CGameScore);
+LINK_ENTITY_TO_CLASS(game_score, CGameScore, CCSGameScore);
 
 void CGameScore::__MAKE_VHOOK(Spawn)()
 {
@@ -110,7 +110,7 @@ void CGameScore::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller
 	}
 }
 
-LINK_ENTITY_TO_CLASS(game_end, CGameEnd);
+LINK_ENTITY_TO_CLASS(game_end, CGameEnd, CCSGameEnd);
 
 void CGameEnd::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
@@ -120,7 +120,7 @@ void CGameEnd::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, 
 	g_pGameRules->EndMultiplayerGame();
 }
 
-LINK_ENTITY_TO_CLASS(game_text, CGameText);
+LINK_ENTITY_TO_CLASS(game_text, CGameText, CCSGameText);
 IMPLEMENT_SAVERESTORE(CGameText, CRulePointEntity);
 
 void CGameText::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
@@ -211,7 +211,7 @@ void CGameText::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller,
 	}
 }
 
-LINK_ENTITY_TO_CLASS(game_team_master, CGameTeamMaster);
+LINK_ENTITY_TO_CLASS(game_team_master, CGameTeamMaster, CCSGameTeamMaster);
 
 void CGameTeamMaster::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
@@ -301,7 +301,7 @@ BOOL CGameTeamMaster::TeamMatch(CBaseEntity *pActivator)
 	return UTIL_TeamsMatch(pActivator->TeamID(), TeamID());
 }
 
-LINK_ENTITY_TO_CLASS(game_team_set, CGameTeamSet);
+LINK_ENTITY_TO_CLASS(game_team_set, CGameTeamSet, CCSGameTeamSet);
 
 void CGameTeamSet::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
@@ -323,7 +323,7 @@ void CGameTeamSet::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCall
 	}
 }
 
-LINK_ENTITY_TO_CLASS(game_zone_player, CGamePlayerZone);
+LINK_ENTITY_TO_CLASS(game_zone_player, CGamePlayerZone, CCSGamePlayerZone);
 IMPLEMENT_SAVERESTORE(CGamePlayerZone, CRuleBrushEntity);
 
 void CGamePlayerZone::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
@@ -410,7 +410,7 @@ void CGamePlayerZone::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pC
 
 }
 
-LINK_ENTITY_TO_CLASS(game_player_hurt, CGamePlayerHurt);
+LINK_ENTITY_TO_CLASS(game_player_hurt, CGamePlayerHurt, CCSGamePlayerHurt);
 
 void CGamePlayerHurt::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
@@ -433,7 +433,7 @@ void CGamePlayerHurt::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pC
 	}
 }
 
-LINK_ENTITY_TO_CLASS(game_counter, CGameCounter);
+LINK_ENTITY_TO_CLASS(game_counter, CGameCounter, CCSGameCounter);
 
 void CGameCounter::__MAKE_VHOOK(Spawn)()
 {
@@ -479,7 +479,7 @@ void CGameCounter::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCall
 	}
 }
 
-LINK_ENTITY_TO_CLASS(game_counter_set, CGameCounterSet);
+LINK_ENTITY_TO_CLASS(game_counter_set, CGameCounterSet, CCSGameCounterSet);
 
 void CGameCounterSet::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
@@ -494,7 +494,7 @@ void CGameCounterSet::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pC
 	}
 }
 
-LINK_ENTITY_TO_CLASS(game_player_equip, CGamePlayerEquip);
+LINK_ENTITY_TO_CLASS(game_player_equip, CGamePlayerEquip, CCSGamePlayerEquip);
 
 void CGamePlayerEquip::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
@@ -560,7 +560,7 @@ void CGamePlayerEquip::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *p
 	EquipPlayer(pActivator);
 }
 
-LINK_ENTITY_TO_CLASS(game_player_team, CGamePlayerTeam);
+LINK_ENTITY_TO_CLASS(game_player_team, CGamePlayerTeam, CCSGamePlayerTeam);
 
 const char *CGamePlayerTeam::TargetTeamName(const char *pszTargetName)
 {

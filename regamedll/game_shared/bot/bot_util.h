@@ -234,8 +234,8 @@ void UTIL_DrawBeamPoints(Vector vecStart, Vector vecEnd, int iLifetime, byte bRe
 
 // Echos text to the console, and prints it on the client's screen.  This is NOT tied to the developer cvar.
 // If you are adding debugging output in cstrike, use UTIL_DPrintf() (debug.h) instead.
-void CONSOLE_ECHO(char *pszMsg, ...);
-void CONSOLE_ECHO_LOGGED(char *pszMsg, ...);
+void CONSOLE_ECHO(const char *pszMsg, ...);
+void CONSOLE_ECHO_LOGGED(const char *pszMsg, ...);
 
 void BotPrecache();
 void InitBotTrig();

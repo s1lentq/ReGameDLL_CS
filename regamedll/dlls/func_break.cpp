@@ -169,7 +169,7 @@ void CBreakable::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CBaseDelay::KeyValue(pkvd);
 }
 
-LINK_ENTITY_TO_CLASS(func_breakable, CBreakable);
+LINK_ENTITY_TO_CLASS(func_breakable, CBreakable, CCSBreakable);
 IMPLEMENT_SAVERESTORE(CBreakable, CBaseEntity);
 
 void CBreakable::__MAKE_VHOOK(Spawn)()
@@ -848,7 +848,7 @@ int CBreakable::__MAKE_VHOOK(DamageDecal)(int bitsDamageType)
 	return CBaseEntity::DamageDecal(bitsDamageType);
 }
 
-LINK_ENTITY_TO_CLASS(func_pushable, CPushable);
+LINK_ENTITY_TO_CLASS(func_pushable, CPushable, CCSPushable);
 IMPLEMENT_SAVERESTORE(CPushable, CBreakable);
 
 void CPushable::__MAKE_VHOOK(Spawn)()

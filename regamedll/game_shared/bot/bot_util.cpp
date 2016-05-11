@@ -475,7 +475,7 @@ void UTIL_DrawBeamPoints(Vector vecStart, Vector vecEnd, int iLifetime, byte bRe
 	MESSAGE_END();
 }
 
-void CONSOLE_ECHO(char *pszMsg, ...)
+void CONSOLE_ECHO(const char *pszMsg, ...)
 {
 	va_list argptr;
 	static char szStr[1024];
@@ -487,7 +487,7 @@ void CONSOLE_ECHO(char *pszMsg, ...)
 	SERVER_PRINT(szStr);
 }
 
-void CONSOLE_ECHO_LOGGED(char *pszMsg, ...)
+void CONSOLE_ECHO_LOGGED(const char *pszMsg, ...)
 {
 	va_list argptr;
 	static char szStr[1024];

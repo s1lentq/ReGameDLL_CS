@@ -104,7 +104,7 @@ void setupToolchain(NativeBinarySpec b)
 		b.lib LazyNativeDepSet.create(dep_cppunitlite, 'cppunitlite', b.buildType.name, true)
 	}
 
-	cfg.singleDefines 'USE_BREAKPAD_HANDLER', 'DEDICATED', 'REGAMEDLL_SELF', 'CLIENT_WEAPONS'
+	cfg.singleDefines 'USE_BREAKPAD_HANDLER', 'DEDICATED', 'REGAMEDLL_SELF', 'REGAMEDLL_API', 'CLIENT_WEAPONS'
 
 	if (cfg instanceof MsvcToolchainConfig)
 	{
@@ -146,7 +146,8 @@ void setupToolchain(NativeBinarySpec b)
 			'_vsnprintf': 'vsnprintf',
 			'_write' : 'write',
 			'_close' : 'close',
-			'_vsnwprintf' : 'vswprintf'
+			'_vsnwprintf' : 'vswprintf',
+			'_access' : 'access'
 		])
 
 		cfg.linkerOptions.args '-no-opt-class-analysis'

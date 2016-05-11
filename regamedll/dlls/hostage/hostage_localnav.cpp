@@ -33,7 +33,7 @@ CLocalNav::CLocalNav(CHostage *pOwner)
 
 CLocalNav::~CLocalNav()
 {
-	delete m_nodeArr;
+	delete[] m_nodeArr;
 	m_nodeArr = NULL;
 }
 
@@ -801,7 +801,7 @@ void CLocalNav::Think()
 
 		if (hCallback)
 		{
-			CHostage *pHostage = GetClassPtr((CHostage *)hCallback->pev);
+			CHostage *pHostage = GetClassPtr<CCSHostage>((CHostage *)hCallback->pev);
 
 			if (++qptr == MAX_HOSTAGES_NAV)
 				qptr = 0;
@@ -830,7 +830,7 @@ void CLocalNav::RequestNav(CHostage *pCaller)
 
 	for (int i = 0; i < tot_inqueue; ++i)
 	{
-		CHostage *pQueueItem = GetClassPtr((CHostage *)_queue[curr]->pev);
+		CHostage *pQueueItem = GetClassPtr<CCSHostage>((CHostage *)_queue[curr]->pev);
 
 		if (pQueueItem == pCaller)
 			return;
@@ -859,7 +859,7 @@ void CLocalNav::HostagePrethink()
 	{
 		if (hostages[ iCount ] != NULL)
 		{
-			GetClassPtr((CHostage *)hostages[ iCount ]->pev)->PreThink();
+			GetClassPtr<CCSHostage>((CHostage *)hostages[ iCount ]->pev)->PreThink();
 		}
 	}
 }

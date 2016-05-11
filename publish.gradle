@@ -46,26 +46,12 @@ task publishPrepareFiles {
 			into 'publish/publishRoot'
 		}
 
-		//hlsdk
-		//project.file('publish/publishRoot/hlsdk').mkdirs()
-		//copy {
-		//	from 'regamedll/common'
-		//	into 'publish/publishRoot/hlsdk/common'
-		//}
-		//copy {
-		//	from 'regamedll/dlls'
-		//	into 'publish/publishRoot/hlsdk/dlls'
-		//}
-		//copy {
-		//	from 'regamedll/pm_shared'
-		//	into 'publish/publishRoot/hlsdk/pm_shared'
-		//}
-		//copy {
-		//	from 'regamedll/public'
-		//	into 'publish/publishRoot/hlsdk/public'
-		//	include 'interface.h', 'interface.cpp', 'FileSystem.h'
-		//}
-
+		//cssdk
+		project.file('publish/publishRoot/cssdk').mkdirs()
+		copy {
+			from 'regamedll/extra/cssdk'
+			into 'publish/publishRoot/cssdk'
+		}
 	}
 }
 

@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-LINK_ENTITY_TO_CLASS(world_items, CWorldItem);
+LINK_ENTITY_TO_CLASS(world_items, CWorldItem, CCSWorldItem);
 
 void CWorldItem::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
@@ -142,7 +142,7 @@ BOOL CItemSuit::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
 	return TRUE;
 }
 
-LINK_ENTITY_TO_CLASS(item_suit, CItemSuit);
+LINK_ENTITY_TO_CLASS(item_suit, CItemSuit, CCSItemSuit);
 
 void CItemBattery::__MAKE_VHOOK(Spawn)()
 {
@@ -189,7 +189,7 @@ BOOL CItemBattery::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
 	return FALSE;
 }
 
-LINK_ENTITY_TO_CLASS(item_battery, CItemBattery);
+LINK_ENTITY_TO_CLASS(item_battery, CItemBattery, CCSItemBattery);
 
 void CItemAntidote::__MAKE_VHOOK(Spawn)()
 {
@@ -211,7 +211,7 @@ BOOL CItemAntidote::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
 	return TRUE;
 }
 
-LINK_ENTITY_TO_CLASS(item_antidote, CItemAntidote);
+LINK_ENTITY_TO_CLASS(item_antidote, CItemAntidote, CCSItemAntidote);
 
 void CItemSecurity::__MAKE_VHOOK(Spawn)()
 {
@@ -231,7 +231,7 @@ BOOL CItemSecurity::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
 	return TRUE;
 }
 
-LINK_ENTITY_TO_CLASS(item_security, CItemSecurity);
+LINK_ENTITY_TO_CLASS(item_security, CItemSecurity, CCSItemSecurity);
 
 void CItemLongJump::__MAKE_VHOOK(Spawn)()
 {
@@ -268,7 +268,7 @@ BOOL CItemLongJump::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
 	return FALSE;
 }
 
-LINK_ENTITY_TO_CLASS(item_longjump, CItemLongJump);
+LINK_ENTITY_TO_CLASS(item_longjump, CItemLongJump, CCSItemLongJump);
 
 void CItemKevlar::__MAKE_VHOOK(Spawn)()
 {
@@ -306,7 +306,7 @@ BOOL CItemKevlar::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
 	return TRUE;
 }
 
-LINK_ENTITY_TO_CLASS(item_kevlar, CItemKevlar);
+LINK_ENTITY_TO_CLASS(item_kevlar, CItemKevlar, CCSItemKevlar);
 
 void CItemAssaultSuit::__MAKE_VHOOK(Spawn)()
 {
@@ -343,7 +343,7 @@ BOOL CItemAssaultSuit::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
 	return TRUE;
 }
 
-LINK_ENTITY_TO_CLASS(item_assaultsuit, CItemAssaultSuit);
+LINK_ENTITY_TO_CLASS(item_assaultsuit, CItemAssaultSuit, CCSItemAssaultSuit);
 
 void CItemThighPack::__MAKE_VHOOK(Spawn)()
 {
@@ -386,4 +386,4 @@ BOOL CItemThighPack::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
 	return TRUE;
 }
 
-LINK_ENTITY_TO_CLASS(item_thighpack, CItemThighPack);
+LINK_ENTITY_TO_CLASS(item_thighpack, CItemThighPack, CCSItemThighPack);

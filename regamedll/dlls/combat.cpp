@@ -15,17 +15,15 @@ void CGib::LimitVelocity()
 
 NOXREF void CGib::SpawnStickyGibs(entvars_t *pevVictim, Vector vecOrigin, int cGibs)
 {
-	int i;
-
 	if (g_Language == LANGUAGE_GERMAN)
 	{
 		// no sticky gibs in germany right now!
 		return;
 	}
 
-	for (i = 0; i < cGibs; ++i)
+	for (int i = 0; i < cGibs; ++i)
 	{
-		CGib *pGib = GetClassPtr((CGib *)NULL);
+		CGib *pGib = GetClassPtr<CCSGib>((CGib *)NULL);
 
 		pGib->Spawn("models/stickygib.mdl");
 		pGib->pev->body = RANDOM_LONG(0, 2);
@@ -67,7 +65,7 @@ NOXREF void CGib::SpawnStickyGibs(entvars_t *pevVictim, Vector vecOrigin, int cG
 
 			pGib->pev->movetype = MOVETYPE_TOSS;
 			pGib->pev->solid = SOLID_BBOX;
-			UTIL_SetSize(pGib->pev, Vector (0, 0,0), Vector (0, 0, 0));
+			UTIL_SetSize(pGib->pev, Vector(0, 0,0), Vector(0, 0, 0));
 			pGib->SetTouch(&CGib::StickyGibTouch);
 			pGib->SetThink(NULL);
 		}
@@ -78,7 +76,7 @@ NOXREF void CGib::SpawnStickyGibs(entvars_t *pevVictim, Vector vecOrigin, int cG
 
 void CGib::SpawnHeadGib(entvars_t *pevVictim)
 {
-	CGib *pGib = GetClassPtr((CGib *)NULL);
+	CGib *pGib = GetClassPtr<CCSGib>((CGib *)NULL);
 
 	if (g_Language == LANGUAGE_GERMAN)
 	{
@@ -139,9 +137,9 @@ void CGib::SpawnHeadGib(entvars_t *pevVictim)
 void CGib::SpawnRandomGibs(entvars_t *pevVictim, int cGibs, int human)
 {
 	int cSplat;
-	for (cSplat = 0; cSplat < cGibs; cSplat++)
+	for (cSplat = 0; cSplat < cGibs; ++cSplat)
 	{
-		CGib *pGib = GetClassPtr((CGib *)NULL);
+		CGib *pGib = GetClassPtr<CCSGib>((CGib *)NULL);
 
 		if (g_Language == LANGUAGE_GERMAN)
 		{
@@ -613,9 +611,10 @@ void CGib::WaitTillLand()
 	{
 		SetThink(&CBaseEntity::SUB_StartFadeOut);
 		pev->nextthink = gpGlobals->time + m_lifeTime;
-
+#ifndef REGAMEDLL_FIXES
 		if (m_bloodColor != DONT_BLEED)
 			CSoundEnt::InsertSound(bits_SOUND_MEAT, pev->origin, 384, 25);
+#endif
 	}
 	else
 		pev->nextthink = gpGlobals->time + 0.5f;
@@ -733,9 +732,6 @@ int CBaseMonster::__MAKE_VHOOK(TakeHealth)(float flHealth, int bitsDamageType)
 // When a monster is poisoned via an arrow etc it takes all the poison damage at once.
 int CBaseMonster::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
-	float flTake;
-	Vector vecDir;
-
 	if (pev->takedamage == DAMAGE_NO)
 		return 0;
 
@@ -751,13 +747,13 @@ int CBaseMonster::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *p
 	}
 
 	// LATER: make armor consideration here!
-	flTake = flDamage;
+	float flTake = flDamage;
 
 	// set damage type sustained
 	m_bitsDamageType |= bitsDamageType;
 
 	// grab the vector of the incoming attack. ( pretend that the inflictor is a little lower than it really is, so the body will tend to fly upward a bit).
-	vecDir = Vector(0, 0, 0);
+	Vector vecDir(0, 0, 0);
 
 	if (!FNullEnt(pevInflictor))
 	{
@@ -848,7 +844,7 @@ int CBaseMonster::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *p
 int CBaseMonster::DeadTakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
 	// grab the vector of the incoming attack. ( pretend that the inflictor is a little lower than it really is, so the body will tend to fly upward a bit).
-	Vector vecDir = Vector(0, 0, 0);
+	Vector vecDir(0, 0, 0);
 
 	if (!FNullEnt(pevInflictor))
 	{
@@ -902,6 +898,31 @@ float CBaseMonster::DamageForce(float damage)
 	return force;
 }
 
+void EXT_FUNC PlayerBlind(CBasePlayer *pPlayer, entvars_t *pevInflictor, entvars_t *pevAttacker, float fadeTime, float fadeHold, int alpha, Vector &color)
+{
+	UTIL_ScreenFade(pPlayer, color, fadeTime, fadeHold, alpha, 0);
+
+	for (int i = 1; i <= gpGlobals->maxClients; ++i)
+	{
+		CBasePlayer *pObserver = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+
+		if (!pObserver || !pObserver->IsObservingPlayer(pPlayer))
+			continue;
+
+		if (!fadetoblack.value)
+		{
+			UTIL_ScreenFade(pObserver, color, fadeTime, fadeHold, alpha, 0);
+		}
+	}
+
+	pPlayer->Blind(fadeTime * 0.33, fadeHold, fadeTime, alpha);
+
+	if (TheBots != NULL)
+	{
+		TheBots->OnEvent(EVENT_PLAYER_BLINDED_BY_FLASHBANG, pPlayer);
+	}
+}
+
 void RadiusFlash(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int iClassIgnore, int bitsDamageType)
 {
 	CBaseEntity *pEntity = NULL;
@@ -947,12 +968,16 @@ void RadiusFlash(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker,
 		vecSpot = pPlayer->BodyTarget(vecSrc);
 		UTIL_TraceLine(vecSrc, vecSpot, dont_ignore_monsters, ENT(pevInflictor), &tr);
 
+		g_ReGameHookchains.m_RadiusFlash_TraceLine.callChain(NULL, pPlayer, pevInflictor, pevAttacker, vecSrc, vecSpot, &tr);
+
 		if (tr.flFraction != 1.0f && tr.pHit != pPlayer->pev->pContainingEntity)
 			continue;
 
+#ifndef REGAMEDLL_FIXES
 		UTIL_TraceLine(vecSpot, vecSrc, dont_ignore_monsters, tr.pHit, &tr2);
 
 		if (tr2.flFraction >= 1.0)
+#endif
 		{
 			if (tr.fStartSolid)
 			{
@@ -999,27 +1024,8 @@ void RadiusFlash(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker,
 				}
 			}
 
-			UTIL_ScreenFade(pPlayer, Vector(255, 255, 255), fadeTime, fadeHold, alpha, 0);
-
-			for (int i = 1; i <= gpGlobals->maxClients; ++i)
-			{
-				CBasePlayer *pObserver = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
-
-				if (!pObserver || !pObserver->IsObservingPlayer(pPlayer))
-					continue;
-
-				if (!fadetoblack.value)
-				{
-					UTIL_ScreenFade(pObserver, Vector(255, 255, 255), fadeTime, fadeHold, alpha, 0);
-				}
-			}
-
-			pPlayer->Blind(fadeTime * 0.33, fadeHold, fadeTime, alpha);
-
-			if (TheBots != NULL)
-			{
-				TheBots->OnEvent(EVENT_PLAYER_BLINDED_BY_FLASHBANG, pPlayer);
-			}
+			Vector color(255, 255, 255);
+			g_ReGameHookchains.m_PlayerBlind.callChain(PlayerBlind, pPlayer, pevInflictor, pevAttacker, fadeTime, fadeHold, alpha, color);
 		}
 	}
 }
@@ -1029,8 +1035,6 @@ float GetAmountOfPlayerVisible(Vector vecSrc, CBaseEntity *entity)
 	float retval = 0.0f;
 	TraceResult tr;
 	Vector spot;
-	Vector2D dir;
-	Vector2D perp;
 
 	const float topOfHead = 25.0f;
 	const float standFeet = 34.0f;
@@ -1069,11 +1073,10 @@ float GetAmountOfPlayerVisible(Vector vecSrc, CBaseEntity *entity)
 	if (tr.flFraction == 1.0f)
 		retval += 0.2f;
 
-	dir = (entity->pev->origin - vecSrc).Make2D();
+	Vector2D dir = (entity->pev->origin - vecSrc).Make2D();
 	dir.NormalizeInPlace();
 
-	perp.x = -dir.y * edgeOffset;
-	perp.y = dir.x * edgeOffset;
+	Vector2D perp(-dir.y * edgeOffset, dir.x * edgeOffset);
 
 	spot = entity->pev->origin + Vector(perp.x, perp.y, 0);
 
@@ -1137,7 +1140,16 @@ void RadiusDamage(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker
 				damageRatio = GetAmountOfPlayerVisible(vecSrc, pEntity);
 			}
 
-			float length = (vecSrc - pEntity->pev->origin).Length();
+			damageRatio = GetAmountOfPlayerVisible(vecSrc, pEntity);
+
+			float length;
+#ifdef REGAMEDLL_ADD
+			// allow to damage breakable objects
+			if (FClassnameIs(pEntity->pev, "func_breakable"))
+				length = (vecSrc - pEntity->Center()).Length();
+			else
+#endif
+				length = (vecSrc - pEntity->pev->origin).Length();
 
 			if (useLOS)
 			{
@@ -1150,12 +1162,28 @@ void RadiusDamage(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker
 				flAdjustedDamage = (flRadius - length) * (flRadius - length) * 1.25 / (flRadius * flRadius) * (damageRatio * flDamage) * 1.5;
 			}
 			else
+			{
 				flAdjustedDamage = flDamage - length * falloff;
+#ifdef REGAMEDLL_ADD
+				// disable grenade damage through walls?
+				if (hegrenade_penetration.string[0] == '1' && (bitsDamageType & DMG_EXPLOSION))
+				{
+					UTIL_TraceLine(vecSrc, pEntity->pev->origin, ignore_monsters, NULL, &tr);
+
+					if (tr.flFraction != 1.0f)
+						flAdjustedDamage = 0.0f;
+				}
+#endif
+			}
 
 			if (flAdjustedDamage < 0)
 				flAdjustedDamage = 0;
 
-			pEntity->TakeDamage(pevInflictor, pevAttacker, flAdjustedDamage, bitsDamageType);
+#ifdef REGAMEDLL_FIXES
+			if (flAdjustedDamage > 0)
+#endif
+				pEntity->TakeDamage(pevInflictor, pevAttacker, flAdjustedDamage, bitsDamageType);
+
 		}
 	}
 }
@@ -1468,7 +1496,7 @@ void CBaseEntity::FireBullets(ULONG cShots, Vector vecSrc, Vector vecDirShooting
 	ClearMultiDamage();
 	gMultiDamage.type = (DMG_BULLET | DMG_NEVERGIB);
 
-	for (ULONG iShot = 1; iShot <= cShots; iShot++)
+	for (ULONG iShot = 1; iShot <= cShots; ++iShot)
 	{
 		int spark = 0;
 

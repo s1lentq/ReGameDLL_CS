@@ -975,6 +975,7 @@
     <ClInclude Include="..\dlls\effects.h" />
     <ClInclude Include="..\dlls\enginecallback.h" />
     <ClInclude Include="..\dlls\explode.h" />
+    <ClInclude Include="..\dlls\extdef.h" />
     <ClInclude Include="..\dlls\extdll.h" />
     <ClInclude Include="..\dlls\func_break.h" />
     <ClInclude Include="..\dlls\func_tank.h" />
@@ -1080,6 +1081,7 @@
     <ClInclude Include="..\public\MemPool.h" />
     <ClInclude Include="..\public\protected_things.h" />
     <ClInclude Include="..\public\regamedll\hookchains.h" />
+    <ClInclude Include="..\public\regamedll\osconfig.h" />
     <ClInclude Include="..\public\regamedll\regamedll_api.h" />
     <ClInclude Include="..\public\regamedll\regamedll_interfaces.h" />
     <ClInclude Include="..\public\steam\isteamapps.h" />
@@ -1328,11 +1330,11 @@
       <Message>Setup version from Git revision</Message>
     </PreBuildEvent>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir)\..\;$(ProjectDir)\..\hookers\;$(ProjectDir)\..\common;$(ProjectDir)\..\dlls;$(ProjectDir)\..\engine;$(ProjectDir)\..\public;$(ProjectDir)\..\public\regamedll;$(ProjectDir)\..\pm_shared;$(ProjectDir)\..\regamedll\;$(ProjectDir)\..\testsuite\;$(VCInstallDir)UnitTest\include;$(SolutionDir)..\dep\bzip2\include\;$(SolutionDir)..\dep\cppunitlite\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\;$(ProjectDir)\..\hookers\;$(ProjectDir)\..\common;$(ProjectDir)\..\dlls;$(ProjectDir)\..\engine;$(ProjectDir)\..\public;$(ProjectDir)\..\public\regamedll;$(ProjectDir)\..\pm_shared;$(ProjectDir)\..\regamedll\;$(ProjectDir)\..\testsuite\;$(VCInstallDir)UnitTest\include;$(SolutionDir)..\dep\cppunitlite\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>HOOK_GAMEDLL;REGAMEDLL_SELF;REGAMEDLL_FIXES;REGAMEDLL_CHECKS;CLIENT_WEAPONS;USE_BREAKPAD_HANDLER;DEDICATED;_CRT_SECURE_NO_WARNINGS;_DEBUG;_ITERATOR_DEBUG_LEVEL=0;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>HOOK_GAMEDLL;REGAMEDLL_API;REGAMEDLL_SELF;REGAMEDLL_FIXES;REGAMEDLL_CHECKS;CLIENT_WEAPONS;USE_BREAKPAD_HANDLER;DEDICATED;_CRT_SECURE_NO_WARNINGS;_DEBUG;_ITERATOR_DEBUG_LEVEL=0;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <FloatingPointModel>Precise</FloatingPointModel>
       <AdditionalOptions>/arch:IA32 %(AdditionalOptions)</AdditionalOptions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -1365,7 +1367,7 @@
       <Message>Setup version from Git revision</Message>
     </PreBuildEvent>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir)\..\;$(ProjectDir)\..\hookers\;$(ProjectDir)\..\common;$(ProjectDir)\..\dlls;$(ProjectDir)\..\engine;$(ProjectDir)\..\public;$(ProjectDir)\..\public\regamedll;$(ProjectDir)\..\pm_shared;$(ProjectDir)\..\regamedll\;$(ProjectDir)\..\testsuite\;$(VCInstallDir)UnitTest\include;$(SolutionDir)..\dep\bzip2\include\;$(SolutionDir)..\dep\cppunitlite\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\;$(ProjectDir)\..\hookers\;$(ProjectDir)\..\common;$(ProjectDir)\..\dlls;$(ProjectDir)\..\engine;$(ProjectDir)\..\public;$(ProjectDir)\..\public\regamedll;$(ProjectDir)\..\pm_shared;$(ProjectDir)\..\regamedll\;$(ProjectDir)\..\testsuite\;$(VCInstallDir)UnitTest\include;$(SolutionDir)..\dep\cppunitlite\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
@@ -1401,11 +1403,11 @@
       <Message>Setup version from Git revision</Message>
     </PreBuildEvent>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir)\..\;$(ProjectDir)\..\hookers\;$(ProjectDir)\..\common;$(ProjectDir)\..\dlls;$(ProjectDir)\..\engine;$(ProjectDir)\..\public;$(ProjectDir)\..\public\regamedll;$(ProjectDir)\..\pm_shared;$(ProjectDir)\..\regamedll\;$(ProjectDir)\..\testsuite\;$(VCInstallDir)UnitTest\include;$(SolutionDir)..\dep\bzip2\include\;$(SolutionDir)..\dep\cppunitlite\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\;$(ProjectDir)\..\hookers\;$(ProjectDir)\..\common;$(ProjectDir)\..\dlls;$(ProjectDir)\..\engine;$(ProjectDir)\..\public;$(ProjectDir)\..\public\regamedll;$(ProjectDir)\..\pm_shared;$(ProjectDir)\..\regamedll\;$(ProjectDir)\..\testsuite\;$(VCInstallDir)UnitTest\include;$(SolutionDir)..\dep\cppunitlite\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>REGAMEDLL_ADD;REGAMEDLL_FIXES;REGAMEDLL_SELF;REGAMEDLL_CHECKS;CLIENT_WEAPONS;USE_BREAKPAD_HANDLER;DEDICATED;_CRT_SECURE_NO_WARNINGS;_DEBUG;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>REGAMEDLL_ADD;REGAMEDLL_API;REGAMEDLL_FIXES;REGAMEDLL_SELF;REGAMEDLL_CHECKS;CLIENT_WEAPONS;USE_BREAKPAD_HANDLER;DEDICATED;_CRT_SECURE_NO_WARNINGS;_DEBUG;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <FloatingPointModel>Precise</FloatingPointModel>
       <AdditionalOptions>/arch:IA32 %(AdditionalOptions)</AdditionalOptions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -1437,11 +1439,11 @@
       <Message>Setup version from Git revision</Message>
     </PreBuildEvent>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir)\..\;$(ProjectDir)\..\hookers\;$(ProjectDir)\..\common;$(ProjectDir)\..\dlls;$(ProjectDir)\..\engine;$(ProjectDir)\..\public;$(ProjectDir)\..\public\regamedll;$(ProjectDir)\..\pm_shared;$(ProjectDir)\..\regamedll\;$(ProjectDir)\..\testsuite\;$(VCInstallDir)UnitTest\include;$(SolutionDir)..\dep\bzip2\include\;$(SolutionDir)..\dep\cppunitlite\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\;$(ProjectDir)\..\hookers\;$(ProjectDir)\..\common;$(ProjectDir)\..\dlls;$(ProjectDir)\..\engine;$(ProjectDir)\..\public;$(ProjectDir)\..\public\regamedll;$(ProjectDir)\..\pm_shared;$(ProjectDir)\..\regamedll\;$(ProjectDir)\..\testsuite\;$(VCInstallDir)UnitTest\include;$(SolutionDir)..\dep\cppunitlite\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Full</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>REGAMEDLL_ADD;REGAMEDLL_FIXES;REGAMEDLL_SELF;REGAMEDLL_CHECKS;CLIENT_WEAPONS;USE_BREAKPAD_HANDLER;DEDICATED;_CRT_SECURE_NO_WARNINGS;NDEBUG;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>REGAMEDLL_ADD;REGAMEDLL_FIXES;REGAMEDLL_SELF;REGAMEDLL_CHECKS;REGAMEDLL_API;CLIENT_WEAPONS;USE_BREAKPAD_HANDLER;DEDICATED;_CRT_SECURE_NO_WARNINGS;NDEBUG;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <FloatingPointModel>Precise</FloatingPointModel>
       <AdditionalOptions>/arch:IA32 %(AdditionalOptions)</AdditionalOptions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -1482,7 +1484,7 @@
       <Message>Setup version from Git revision</Message>
     </PreBuildEvent>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir)\..\;$(ProjectDir)\..\hookers\;$(ProjectDir)\..\common;$(ProjectDir)\..\dlls;$(ProjectDir)\..\engine;$(ProjectDir)\..\public;$(ProjectDir)\..\public\regamedll;$(ProjectDir)\..\pm_shared;$(ProjectDir)\..\regamedll\;$(ProjectDir)\..\testsuite\;$(VCInstallDir)UnitTest\include;$(SolutionDir)..\dep\bzip2\include\;$(SolutionDir)..\dep\cppunitlite\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\;$(ProjectDir)\..\hookers\;$(ProjectDir)\..\common;$(ProjectDir)\..\dlls;$(ProjectDir)\..\engine;$(ProjectDir)\..\public;$(ProjectDir)\..\public\regamedll;$(ProjectDir)\..\pm_shared;$(ProjectDir)\..\regamedll\;$(ProjectDir)\..\testsuite\;$(VCInstallDir)UnitTest\include;$(SolutionDir)..\dep\cppunitlite\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Full</Optimization>
       <SDLCheck>true</SDLCheck>
@@ -1527,7 +1529,7 @@
       <Message>Setup version from Git revision</Message>
     </PreBuildEvent>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir)\..\;$(ProjectDir)\..\hookers\;$(ProjectDir)\..\common;$(ProjectDir)\..\dlls;$(ProjectDir)\..\engine;$(ProjectDir)\..\public;$(ProjectDir)\..\public\regamedll;$(ProjectDir)\..\pm_shared;$(ProjectDir)\..\regamedll\;$(ProjectDir)\..\testsuite\;$(VCInstallDir)UnitTest\include;$(SolutionDir)..\dep\bzip2\include\;$(SolutionDir)..\dep\cppunitlite\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\;$(ProjectDir)\..\hookers\;$(ProjectDir)\..\common;$(ProjectDir)\..\dlls;$(ProjectDir)\..\engine;$(ProjectDir)\..\public;$(ProjectDir)\..\public\regamedll;$(ProjectDir)\..\pm_shared;$(ProjectDir)\..\regamedll\;$(ProjectDir)\..\testsuite\;$(VCInstallDir)UnitTest\include;$(SolutionDir)..\dep\cppunitlite\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
@@ -1563,7 +1565,7 @@
       <Message>Setup version from Git revision</Message>
     </PreBuildEvent>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir)\..\;$(ProjectDir)\..\hookers\;$(ProjectDir)\..\common;$(ProjectDir)\..\dlls;$(ProjectDir)\..\engine;$(ProjectDir)\..\public;$(ProjectDir)\..\public\regamedll;$(ProjectDir)\..\pm_shared;$(ProjectDir)\..\regamedll\;$(ProjectDir)\..\testsuite\;$(VCInstallDir)UnitTest\include;$(SolutionDir)..\dep\bzip2\include\;$(SolutionDir)..\dep\cppunitlite\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\;$(ProjectDir)\..\hookers\;$(ProjectDir)\..\common;$(ProjectDir)\..\dlls;$(ProjectDir)\..\engine;$(ProjectDir)\..\public;$(ProjectDir)\..\public\regamedll;$(ProjectDir)\..\pm_shared;$(ProjectDir)\..\regamedll\;$(ProjectDir)\..\testsuite\;$(VCInstallDir)UnitTest\include;$(SolutionDir)..\dep\cppunitlite\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
@@ -1600,7 +1602,7 @@
       <Message>Setup version from Git revision</Message>
     </PreBuildEvent>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir)\..\;$(ProjectDir)\..\hookers\;$(ProjectDir)\..\common;$(ProjectDir)\..\dlls;$(ProjectDir)\..\engine;$(ProjectDir)\..\public;$(ProjectDir)\..\public\regamedll;$(ProjectDir)\..\pm_shared;$(ProjectDir)\..\regamedll\;$(ProjectDir)\..\testsuite\;$(VCInstallDir)UnitTest\include;$(SolutionDir)..\dep\bzip2\include\;$(SolutionDir)..\dep\cppunitlite\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\;$(ProjectDir)\..\hookers\;$(ProjectDir)\..\common;$(ProjectDir)\..\dlls;$(ProjectDir)\..\engine;$(ProjectDir)\..\public;$(ProjectDir)\..\public\regamedll;$(ProjectDir)\..\pm_shared;$(ProjectDir)\..\regamedll\;$(ProjectDir)\..\testsuite\;$(VCInstallDir)UnitTest\include;$(SolutionDir)..\dep\cppunitlite\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -1639,7 +1641,7 @@
       <Message>Setup version from Git revision</Message>
     </PreBuildEvent>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir)\..\;$(ProjectDir)\..\hookers\;$(ProjectDir)\..\common;$(ProjectDir)\..\dlls;$(ProjectDir)\..\engine;$(ProjectDir)\..\public;$(ProjectDir)\..\public\regamedll;$(ProjectDir)\..\pm_shared;$(ProjectDir)\..\regamedll\;$(ProjectDir)\..\testsuite\;$(VCInstallDir)UnitTest\include;$(SolutionDir)..\dep\bzip2\include\;$(SolutionDir)..\dep\cppunitlite\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\;$(ProjectDir)\..\hookers\;$(ProjectDir)\..\common;$(ProjectDir)\..\dlls;$(ProjectDir)\..\engine;$(ProjectDir)\..\public;$(ProjectDir)\..\public\regamedll;$(ProjectDir)\..\pm_shared;$(ProjectDir)\..\regamedll\;$(ProjectDir)\..\testsuite\;$(VCInstallDir)UnitTest\include;$(SolutionDir)..\dep\cppunitlite\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>

@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-LINK_ENTITY_TO_CLASS(weapon_deagle, CDEAGLE);
+LINK_ENTITY_TO_CLASS(weapon_deagle, CDEAGLE, CCSDEAGLE);
 
 void CDEAGLE::__MAKE_VHOOK(Spawn)()
 {

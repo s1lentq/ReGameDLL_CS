@@ -654,7 +654,7 @@ void CFuncTank::StopRotSound()
 	pev->spawnflags &= ~SF_TANK_SOUNDON;
 }
 
-LINK_ENTITY_TO_CLASS(func_tank, CFuncTankGun);
+LINK_ENTITY_TO_CLASS(func_tank, CFuncTankGun, CCSFuncTankGun);
 
 void CFuncTankGun::__MAKE_VHOOK(Fire)(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker)
 {
@@ -693,7 +693,7 @@ void CFuncTankGun::__MAKE_VHOOK(Fire)(const Vector &barrelEnd, const Vector &for
 		CFuncTank::Fire(barrelEnd, forward, pevAttacker);
 }
 
-LINK_ENTITY_TO_CLASS(func_tanklaser, CFuncTankLaser);
+LINK_ENTITY_TO_CLASS(func_tanklaser, CFuncTankLaser, CCSFuncTankLaser);
 IMPLEMENT_SAVERESTORE(CFuncTankLaser, CFuncTank);
 
 void CFuncTankLaser::__MAKE_VHOOK(Activate)()
@@ -789,7 +789,7 @@ void CFuncTankLaser::__MAKE_VHOOK(Fire)(const Vector &barrelEnd, const Vector &f
 	}
 }
 
-LINK_ENTITY_TO_CLASS(func_tankrocket, CFuncTankRocket);
+LINK_ENTITY_TO_CLASS(func_tankrocket, CFuncTankRocket, CCSFuncTankRocket);
 
 void CFuncTankRocket::__MAKE_VHOOK(Precache)()
 {
@@ -819,7 +819,7 @@ void CFuncTankRocket::__MAKE_VHOOK(Fire)(const Vector &barrelEnd, const Vector &
 		CFuncTank::Fire(barrelEnd, forward, pev);
 }
 
-LINK_ENTITY_TO_CLASS(func_tankmortar, CFuncTankMortar);
+LINK_ENTITY_TO_CLASS(func_tankmortar, CFuncTankMortar, CCSFuncTankMortar);
 
 void CFuncTankMortar::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
@@ -847,9 +847,7 @@ void CFuncTankMortar::__MAKE_VHOOK(Fire)(const Vector &barrelEnd, const Vector &
 			UTIL_MakeAimVectors(pev->angles);
 
 			TankTrace(barrelEnd, forward, gTankSpread[m_spread], tr);
-
 			ExplosionCreate(tr.vecEndPos, pev->angles, edict(), pev->impulse, TRUE);
-
 			CFuncTank::Fire(barrelEnd, forward, pev);
 		}
 	}
@@ -857,7 +855,7 @@ void CFuncTankMortar::__MAKE_VHOOK(Fire)(const Vector &barrelEnd, const Vector &
 		CFuncTank::Fire(barrelEnd, forward, pev);
 }
 
-LINK_ENTITY_TO_CLASS(func_tankcontrols, CFuncTankControls);
+LINK_ENTITY_TO_CLASS(func_tankcontrols, CFuncTankControls, CCSFuncTankControls);
 IMPLEMENT_SAVERESTORE(CFuncTankControls, CBaseEntity);
 
 void CFuncTankControls::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)

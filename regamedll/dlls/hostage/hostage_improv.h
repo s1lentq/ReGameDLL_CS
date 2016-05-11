@@ -393,7 +393,7 @@ public:
 		const float space = 1.0f;
 		Vector to;
 		float range;
-		
+
 		if (entity == reinterpret_cast<CBaseEntity *>(m_improv->GetEntity()))
 			return true;
 

@@ -76,7 +76,7 @@ char grgchTextureType[ CTEXTURESMAX ];
 int fTextureTypeInit;
 int gcTextures;
 
-LINK_ENTITY_TO_CLASS(ambient_generic, CAmbientGeneric);
+LINK_ENTITY_TO_CLASS(ambient_generic, CAmbientGeneric, CCSAmbientGeneric);
 IMPLEMENT_SAVERESTORE(CAmbientGeneric, CBaseEntity);
 
 // -1 : "Default"
@@ -851,7 +851,7 @@ void CAmbientGeneric::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CBaseEntity::KeyValue(pkvd);
 }
 
-LINK_ENTITY_TO_CLASS(env_sound, CEnvSound);
+LINK_ENTITY_TO_CLASS(env_sound, CEnvSound, CCSEnvSound);
 IMPLEMENT_SAVERESTORE(CEnvSound, CBaseEntity);
 
 void CEnvSound::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
@@ -872,7 +872,7 @@ void CEnvSound::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 // and can see the given player entity (pevTarget)
 BOOL FEnvSoundInRange(entvars_t *pev, entvars_t *pevTarget, float *pflRange)
 {
-	CEnvSound *pSound = GetClassPtr((CEnvSound *)pev);
+	CEnvSound *pSound = GetClassPtr<CCSEnvSound>((CEnvSound *)pev);
 	Vector vecSpot1 = pev->origin + pev->view_ofs;
 	Vector vecSpot2 = pevTarget->origin + pevTarget->view_ofs;
 	Vector vecRange;
@@ -922,7 +922,7 @@ void CEnvSound::__MAKE_VHOOK(Think)()
 		goto env_sound_Think_slow;
 	}
 
-	CBasePlayer *pPlayer = GetClassPtr((CBasePlayer *)VARS(pentPlayer));
+	CBasePlayer *pPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)VARS(pentPlayer));
 	float flRange;
 
 	// check to see if this is the sound entity that is
@@ -1809,7 +1809,7 @@ float TEXTURETYPE_PlaySound(TraceResult *ptr, Vector vecSrc, Vector vecEnd, int 
 	return fvolbar;
 }
 
-LINK_ENTITY_TO_CLASS(speaker, CSpeaker);
+LINK_ENTITY_TO_CLASS(speaker, CSpeaker, CCSSpeaker);
 IMPLEMENT_SAVERESTORE(CSpeaker, CBaseEntity);
 
 // ambient_generic - general-purpose user-defined static sound

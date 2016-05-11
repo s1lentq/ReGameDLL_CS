@@ -309,7 +309,7 @@ public:
 	void SetPerformance(PerformanceType performance) { m_performance = performance; }
 	void StartSequence(CHostageImprov *improv, const SeqInfo *seqInfo);
 	bool IsDoneHolding();
-	
+
 private:
 	enum { MAX_SEQUENCES = 8 };
 	struct SeqInfo m_sequence[MAX_SEQUENCES];

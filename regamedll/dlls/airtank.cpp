@@ -12,7 +12,7 @@ TYPEDESCRIPTION CAirtank::m_SaveData[] =
 
 #endif
 
-LINK_ENTITY_TO_CLASS(item_airtank, CAirtank);
+LINK_ENTITY_TO_CLASS(item_airtank, CAirtank, CCSAirtank);
 IMPLEMENT_SAVERESTORE(CAirtank, CGrenade);
 
 void CAirtank::__MAKE_VHOOK(Spawn)()

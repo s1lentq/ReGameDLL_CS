@@ -32,9 +32,6 @@
 #pragma once
 #endif
 
-#include "weapontype.h"
-#include "wpn_shared.h"
-
 class CBasePlayer;
 
 #define MAX_WEAPONS			32
@@ -73,6 +70,9 @@ class CBasePlayer;
 // spawn flags
 #define SF_DETONATE			0x0001	// Grenades flagged with this will be triggered when the owner calls detonateSatchelCharges
 
+#include "weapontype.h"
+#include "wpn_shared.h"
+
 // custom enum
 enum ArmouryItemPack
 {
@@ -95,6 +95,7 @@ enum ArmouryItemPack
 	ARMOURY_KEVLAR,
 	ARMOURY_ASSAULT,
 	ARMOURY_SMOKEGRENADE,
+	ARMOURY_END
 };
 
 struct ItemInfo
@@ -400,17 +401,17 @@ public:
 
 	int m_iPlayEmptySound;
 	int m_fFireOnEmpty;
-	float m_flNextPrimaryAttack;
-	float m_flNextSecondaryAttack;
-	float m_flTimeWeaponIdle;
-	int m_iPrimaryAmmoType;
-	int m_iSecondaryAmmoType;
-	int m_iClip;
-	int m_iClientClip;
-	int m_iClientWeaponState;
-	int m_fInReload;
-	int m_fInSpecialReload;
-	int m_iDefaultAmmo;
+	float m_flNextPrimaryAttack;			// soonest time ItemPostFrame will call PrimaryAttack
+	float m_flNextSecondaryAttack;			// soonest time ItemPostFrame will call SecondaryAttack
+	float m_flTimeWeaponIdle;			// soonest time ItemPostFrame will call WeaponIdle
+	int m_iPrimaryAmmoType;				// "primary" ammo index into players m_rgAmmo[]
+	int m_iSecondaryAmmoType;			// "secondary" ammo index into players m_rgAmmo[]
+	int m_iClip;					// number of shots left in the primary weapon clip, -1 it not used
+	int m_iClientClip;				// the last version of m_iClip sent to hud dll
+	int m_iClientWeaponState;			// the last version of the weapon state sent to hud dll (is current weapon, is on target)
+	int m_fInReload;				// Are we in the middle of a reload;
+	int m_fInSpecialReload;				// Are we in the middle of a reload for the shotguns
+	int m_iDefaultAmmo;				// how much ammo you get when you pick up this weapon as placed by a level designer.
 	int m_iShellId;
 	float m_fMaxSpeed;
 	bool m_bDelayFire;
@@ -431,6 +432,8 @@ public:
 	float m_flDecreaseShotsFired;
 	unsigned short m_usFireGlock18;
 	unsigned short m_usFireFamas;
+
+	// hle time creep vars
 	float m_flPrevPrimaryAttack;
 	float m_flLastFireTime;
 };
@@ -553,7 +556,7 @@ public:
 	virtual int GetItemInfo(ItemInfo *p);
 	virtual BOOL Deploy();
 	virtual float GetMaxSpeed() { return MP5N_MAX_SPEED; }
-	int iItemSlot() { return PRIMARY_WEAPON_SLOT; }
+	virtual int iItemSlot() { return PRIMARY_WEAPON_SLOT; }
 	virtual void PrimaryAttack();
 	virtual void Reload();
 	virtual void WeaponIdle();
@@ -1584,6 +1587,7 @@ public:
 
 public:
 	int m_iShell;
+private:
 	unsigned short m_usFireELITE_LEFT;
 	unsigned short m_usFireELITE_RIGHT;
 };
@@ -1672,7 +1676,6 @@ public:
 public:
 	void UMP45Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim);
 
-public:
 	int m_iShell;
 	int iShellOn;
 
@@ -1718,8 +1721,6 @@ public:
 
 public:
 	void SG550Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim);
-
-public:
 	int m_iShell;
 
 private:
@@ -1840,6 +1841,8 @@ void FindHullIntersection(const Vector &vecSrc, TraceResult &tr, float *mins, fl
 void AnnounceFlashInterval(float interval, float offset = 0);
 
 int MaxAmmoCarry(int iszName);
+int MaxAmmoCarry(const char *szName);
+
 void ClearMultiDamage();
 void ApplyMultiDamage(entvars_t *pevInflictor, entvars_t *pevAttacker);
 void AddMultiDamage(entvars_t *pevInflictor, CBaseEntity *pEntity, float flDamage, int bitsDamageType);

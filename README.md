@@ -1,4 +1,4 @@
-# ReGameDLL_CS
+# ReGameDLL_CS [![Build Status](http://teamcity.rehlds.org/app/rest/builds/buildType:(id:ReGameDLLCs_Publish)/statusIcon)](http://teamcity.rehlds.org/viewType.html?buildTypeId=ReGameDLLCs_Publish&guest=1)
 Reverse-engineered gamedll (mp.dll / Counter-Strike)
 
 ## What is this?

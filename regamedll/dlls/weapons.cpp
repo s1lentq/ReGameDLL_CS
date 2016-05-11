@@ -63,25 +63,30 @@ MULTIDAMAGE gMultiDamage;
 // MaxAmmoCarry - pass in a name and this function will tell
 // you the maximum amount of that type of ammunition that a
 // player can carry.
-int MaxAmmoCarry(int iszName)
+int MaxAmmoCarry(const char *szName)
 {
 	for (int i = 0; i < MAX_WEAPONS; ++i)
 	{
 		ItemInfo *info = &IMPL_CLASS(CBasePlayerItem, ItemInfoArray)[ i ];
 
-		if (info->pszAmmo1 && !Q_strcmp(STRING(iszName), info->pszAmmo1))
+		if (info->pszAmmo1 && !Q_strcmp(szName, info->pszAmmo1))
 		{
 			return info->iMaxAmmo1;
 		}
 
-		if (info->pszAmmo2 && !Q_strcmp(STRING(iszName), info->pszAmmo2))
+		if (info->pszAmmo2 && !Q_strcmp(szName, info->pszAmmo2))
 		{
 			return info->iMaxAmmo2;
 		}
 	}
 
-	ALERT(at_console, "MaxAmmoCarry() doesn't recognize '%s'!\n", STRING(iszName));
+	ALERT(at_console, "MaxAmmoCarry() doesn't recognize '%s'!\n", szName);
 	return -1;
+}
+
+int MaxAmmoCarry(int iszName)
+{
+	return MaxAmmoCarry(STRING(iszName));
 }
 
 // ClearMultiDamage - resets the global multi damage accumulator
@@ -309,7 +314,9 @@ void W_Precache()
 {
 	Q_memset(IMPL_CLASS(CBasePlayerItem, ItemInfoArray), 0, sizeof(IMPL_CLASS(CBasePlayerItem, ItemInfoArray)));
 	Q_memset(IMPL_CLASS(CBasePlayerItem, AmmoInfoArray), 0, sizeof(IMPL_CLASS(CBasePlayerItem, AmmoInfoArray)));
+
 	giAmmoIndex = 0;
+	WeaponInfoReset();
 
 	// custom items...
 
@@ -1491,6 +1498,7 @@ void CBasePlayerWeapon::__MAKE_VHOOK(RetireWeapon)()
 // GetNextAttackDelay - An accurate way of calcualting the next attack time.
 float CBasePlayerWeapon::GetNextAttackDelay(float delay)
 {
+#ifndef REGAMEDLL_FIXES
 	if (m_flLastFireTime == 0.0f || m_flNextPrimaryAttack == -1.0f)
 	{
 		// At this point, we are assuming that the client has stopped firing
@@ -1498,6 +1506,7 @@ float CBasePlayerWeapon::GetNextAttackDelay(float delay)
 		m_flPrevPrimaryAttack = delay;
 		m_flLastFireTime = gpGlobals->time;
 	}
+#endif
 
 #ifdef REGAMEDLL_BUILD_6153
 
@@ -1529,7 +1538,7 @@ float CBasePlayerWeapon::GetNextAttackDelay(float delay)
 	return flNextAttack;
 }
 
-LINK_ENTITY_TO_CLASS(weaponbox, CWeaponBox);
+LINK_ENTITY_TO_CLASS(weaponbox, CWeaponBox, CCSWeaponBox);
 IMPLEMENT_SAVERESTORE(CWeaponBox, CBaseEntity);
 
 void CWeaponBox::__MAKE_VHOOK(Precache)()
@@ -1566,7 +1575,7 @@ void CWeaponBox::BombThink()
 		if (!pEntity->IsPlayer() || pEntity->IsDormant())
 			continue;
 
-		CBasePlayer *pTempPlayer = GetClassPtr((CBasePlayer *)pEntity->pev);
+		CBasePlayer *pTempPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev);
 
 		if (pTempPlayer->pev->deadflag == DEAD_NO && pTempPlayer->m_iTeam == TERRORIST)
 		{
@@ -1716,7 +1725,7 @@ void CWeaponBox::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 					if (pEntity->pev->flags == FL_DORMANT)
 						continue;
 
-					CBasePlayer *pTempPlayer = GetClassPtr((CBasePlayer *)pEntity->pev);
+					CBasePlayer *pTempPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev);
 
 					if (pTempPlayer->pev->deadflag == DEAD_NO && pTempPlayer->m_iTeam == TERRORIST)
 					{
@@ -1814,6 +1823,11 @@ void CWeaponBox::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 		{
 			if (!FStringNull(m_rgiszAmmo[n]))
 			{
+#ifdef REGAMEDLL_FIXES
+				if (m_rgAmmo[n] < MaxAmmoCarry(m_rgiszAmmo[n]))
+					continue;
+#endif
+
 				// there's some ammo of this type.
 				pPlayer->GiveAmmo(m_rgAmmo[n], (char *)STRING(m_rgiszAmmo[n]), MaxAmmoCarry(m_rgiszAmmo[n]));
 
@@ -1923,9 +1937,9 @@ int CWeaponBox::GiveAmmo(int iCount, char *szName, int iMax, int *pIndex)
 			if (iCount == 0 || iAdd > 0)
 			{
 				m_rgAmmo[i] += iAdd;
-
 				return i;
 			}
+
 			return -1;
 		}
 	}
@@ -1995,6 +2009,29 @@ void CWeaponBox::__MAKE_VHOOK(SetObjectCollisionBox)()
 	pev->absmax = pev->origin + Vector(16, 16, 16);
 }
 
+char *armouryItemModels[] = {
+	"models/w_mp5.mdl",
+	"models/w_tmp.mdl",
+	"models/w_p90.mdl",
+	"models/w_mac10.mdl",
+	"models/w_ak47.mdl",
+	"models/w_sg552.mdl",
+	"models/w_m4a1.mdl",
+	"models/w_aug.mdl",
+	"models/w_scout.mdl",
+	"models/w_g3sg1.mdl",
+	"models/w_awp.mdl",
+	"models/w_m3.mdl",
+	"models/w_xm1014.mdl",
+	"models/w_m249.mdl",
+	"models/w_flashbang.mdl",
+	"models/w_hegrenade.mdl",
+	"models/w_kevlar.mdl",
+	"models/w_assault.mdl",
+	"models/w_smokegrenade.mdl",
+	"models/w_kevlar.mdl",
+};
+
 void CArmoury::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
@@ -2003,31 +2040,9 @@ void CArmoury::__MAKE_VHOOK(Spawn)()
 
 	UTIL_SetSize(pev, Vector(-16, -16, 0), Vector(16, 16, 16));
 	UTIL_SetOrigin(pev, pev->origin);
-	SetTouch(&CArmoury::ArmouryTouch);
 
-	switch (m_iItem)
-	{
-	case ARMOURY_MP5NAVY:		SET_MODEL(ENT(pev), "models/w_mp5.mdl"); break;
-	case ARMOURY_TMP:		SET_MODEL(ENT(pev), "models/w_tmp.mdl"); break;
-	case ARMOURY_P90:		SET_MODEL(ENT(pev), "models/w_p90.mdl"); break;
-	case ARMOURY_MAC10:		SET_MODEL(ENT(pev), "models/w_mac10.mdl"); break;
-	case ARMOURY_AK47:		SET_MODEL(ENT(pev), "models/w_ak47.mdl"); break;
-	case ARMOURY_SG552:		SET_MODEL(ENT(pev), "models/w_sg552.mdl"); break;
-	case ARMOURY_M4A1:		SET_MODEL(ENT(pev), "models/w_m4a1.mdl"); break;
-	case ARMOURY_AUG:		SET_MODEL(ENT(pev), "models/w_aug.mdl"); break;
-	case ARMOURY_SCOUT:		SET_MODEL(ENT(pev), "models/w_scout.mdl"); break;
-	case ARMOURY_G3SG1:		SET_MODEL(ENT(pev), "models/w_g3sg1.mdl"); break;
-	case ARMOURY_AWP:		SET_MODEL(ENT(pev), "models/w_awp.mdl"); break;
-	case ARMOURY_M3:		SET_MODEL(ENT(pev), "models/w_m3.mdl"); break;
-	case ARMOURY_XM1014:		SET_MODEL(ENT(pev), "models/w_xm1014.mdl"); break;
-	case ARMOURY_M249:		SET_MODEL(ENT(pev), "models/w_m249.mdl"); break;
-	case ARMOURY_FLASHBANG:		SET_MODEL(ENT(pev), "models/w_flashbang.mdl"); break;
-	case ARMOURY_HEGRENADE:		SET_MODEL(ENT(pev), "models/w_hegrenade.mdl"); break;
-	case ARMOURY_KEVLAR:		SET_MODEL(ENT(pev), "models/w_kevlar.mdl"); break;
-	case ARMOURY_ASSAULT:		SET_MODEL(ENT(pev), "models/w_assault.mdl"); break;
-	case ARMOURY_SMOKEGRENADE:	SET_MODEL(ENT(pev), "models/w_smokegrenade.mdl"); break;
-	default:			SET_MODEL(ENT(pev), "models/w_kevlar.mdl"); break;
-	}
+	SetTouch(&CArmoury::ArmouryTouch);
+	SET_MODEL(ENT(pev), armouryItemModels[m_iItem]);
 
 	if (m_iCount <= 0)
 	{
@@ -2093,30 +2108,31 @@ void CArmoury::__MAKE_VHOOK(Restart)()
 
 void CArmoury::__MAKE_VHOOK(Precache)()
 {
-	switch (m_iItem)
-	{
-	case ARMOURY_MP5NAVY:		PRECACHE_MODEL("models/w_mp5.mdl"); break;
-	case ARMOURY_TMP:		PRECACHE_MODEL("models/w_tmp.mdl"); break;
-	case ARMOURY_P90:		PRECACHE_MODEL("models/w_p90.mdl"); break;
-	case ARMOURY_MAC10:		PRECACHE_MODEL("models/w_mac10.mdl"); break;
-	case ARMOURY_AK47:		PRECACHE_MODEL("models/w_ak47.mdl"); break;
-	case ARMOURY_SG552:		PRECACHE_MODEL("models/w_sg552.mdl"); break;
-	case ARMOURY_M4A1:		PRECACHE_MODEL("models/w_m4a1.mdl"); break;
-	case ARMOURY_AUG:		PRECACHE_MODEL("models/w_aug.mdl"); break;
-	case ARMOURY_SCOUT:		PRECACHE_MODEL("models/w_scout.mdl"); break;
-	case ARMOURY_G3SG1:		PRECACHE_MODEL("models/w_g3sg1.mdl"); break;
-	case ARMOURY_AWP:		PRECACHE_MODEL("models/w_awp.mdl"); break;
-	case ARMOURY_M3:		PRECACHE_MODEL("models/w_m3.mdl"); break;
-	case ARMOURY_XM1014:		PRECACHE_MODEL("models/w_xm1014.mdl"); break;
-	case ARMOURY_M249:		PRECACHE_MODEL("models/w_m249.mdl"); break;
-	case ARMOURY_FLASHBANG:		PRECACHE_MODEL("models/w_flashbang.mdl"); break;
-	case ARMOURY_HEGRENADE:		PRECACHE_MODEL("models/w_hegrenade.mdl"); break;
-	case ARMOURY_KEVLAR:		PRECACHE_MODEL("models/w_kevlar.mdl"); break;
-	case ARMOURY_ASSAULT:		PRECACHE_MODEL("models/w_assault.mdl"); break;
-	case ARMOURY_SMOKEGRENADE:	PRECACHE_MODEL("models/w_smokegrenade.mdl"); break;
-	default:			PRECACHE_MODEL("models/w_kevlar.mdl"); break;
-	}
+	PRECACHE_MODEL(armouryItemModels[m_iItem]);
 }
+
+struct ArmouryItemStruct
+{
+	const char *entityName;
+	char *ammoName;
+	int giveAmount;
+	MaxAmmoType maxRounds;
+} armouryItemInfo[] = {
+	{ "weapon_mp5navy",	"9mm",		60, MAX_AMMO_9MM },		// ARMOURY_MP5NAVY
+	{ "weapon_tmp",		"9mm",		60, MAX_AMMO_9MM },		// ARMOURY_TMP
+	{ "weapon_p90",		"57mm",		50, MAX_AMMO_57MM },		// ARMOURY_P90
+	{ "weapon_mac10",	"45acp",	60, MAX_AMMO_45ACP },		// ARMOURY_MAC10
+	{ "weapon_ak47",	"762Nato",	60, MAX_AMMO_762NATO },		// ARMOURY_AK47
+	{ "weapon_sg552",	"556Nato",	60, MAX_AMMO_556NATO },		// ARMOURY_SG552
+	{ "weapon_m4a1",	"556Nato",	60, MAX_AMMO_556NATO },		// ARMOURY_M4A1
+	{ "weapon_aug",		"556Nato",	60, MAX_AMMO_556NATO },		// ARMOURY_AUG
+	{ "weapon_scout",	"762Nato",	30, MAX_AMMO_762NATO },		// ARMOURY_SCOUT
+	{ "weapon_g3sg1",	"762Nato",	30, MAX_AMMO_762NATO },		// ARMOURY_G3SG1
+	{ "weapon_awp",		"338Magnum",	20, MAX_AMMO_338MAGNUM },	// ARMOURY_AWP
+	{ "weapon_m3",		"buckshot",	24, MAX_AMMO_BUCKSHOT },	// ARMOURY_M3
+	{ "weapon_xm1014",	"buckshot",	24, MAX_AMMO_BUCKSHOT },	// ARMOURY_XM1014
+	{ "weapon_m249",	"556NatoBox",	60, MAX_AMMO_556NATOBOX },	// ARMOURY_M249
+};
 
 void CArmoury::ArmouryTouch(CBaseEntity *pOther)
 {
@@ -2128,80 +2144,26 @@ void CArmoury::ArmouryTouch(CBaseEntity *pOther)
 	if (p->m_bIsVIP)
 		return;
 
+	// weapons
 	if (m_iCount > 0 && m_iItem <= ARMOURY_M249)
 	{
 		if (p->m_bHasPrimary)
 			return;
 
 		m_iCount--;
+		auto item = &armouryItemInfo[m_iItem];
 
-		switch (m_iItem)
-		{
-		case ARMOURY_MP5NAVY:
-			p->GiveNamedItem("weapon_mp5navy");
-			p->GiveAmmo(60, "9mm", MAX_AMMO_9MM);
-			break;
-		case ARMOURY_TMP:
-			p->GiveNamedItem("weapon_tmp");
-			p->GiveAmmo(60, "9mm", MAX_AMMO_9MM);
-			break;
-		case ARMOURY_P90:
-			p->GiveNamedItem("weapon_p90");
-			p->GiveAmmo(50, "57mm", MAX_AMMO_57MM);
-			break;
-		case ARMOURY_MAC10:
-			p->GiveNamedItem("weapon_mac10");
-			p->GiveAmmo(60, "45acp", MAX_AMMO_45ACP);
-			break;
-		case ARMOURY_AK47:
-			p->GiveNamedItem("weapon_ak47");
-			p->GiveAmmo(60, "762Nato", MAX_AMMO_762NATO);
-			break;
-		case ARMOURY_SG552:
-			p->GiveNamedItem("weapon_sg552");
-			p->GiveAmmo(60, "556Nato", MAX_AMMO_556NATO);
-			break;
-		case ARMOURY_M4A1:
-			p->GiveNamedItem("weapon_m4a1");
-			p->GiveAmmo(60, "556Nato", MAX_AMMO_556NATO);
-			break;
-		case ARMOURY_AUG:
-			p->GiveNamedItem("weapon_aug");
-			p->GiveAmmo(60, "556Nato", MAX_AMMO_556NATO);
-			break;
-		case ARMOURY_SCOUT:
-			p->GiveNamedItem("weapon_scout");
-			p->GiveAmmo(30, "762Nato", MAX_AMMO_762NATO);
-			break;
-		case ARMOURY_G3SG1:
-			p->GiveNamedItem("weapon_g3sg1");
-			p->GiveAmmo(30, "762Nato", MAX_AMMO_762NATO);
-			break;
-		case ARMOURY_AWP:
-			p->GiveNamedItem("weapon_awp");
-			p->GiveAmmo(20, "338Magnum", MAX_AMMO_338MAGNUM);
-			break;
-		case ARMOURY_M3:
-			p->GiveNamedItem("weapon_m3");
-			p->GiveAmmo(24, "buckshot", MAX_AMMO_BUCKSHOT);
-			break;
-		case ARMOURY_XM1014:
-			p->GiveNamedItem("weapon_xm1014");
-			p->GiveAmmo(24, "buckshot", MAX_AMMO_BUCKSHOT);
-			break;
-		case ARMOURY_M249:
-			p->GiveNamedItem("weapon_m249");
-			p->GiveAmmo(60, "556NatoBox", MAX_AMMO_556NATOBOX);
-			break;
-		}
+		p->GiveNamedItem(item->entityName);
+		p->GiveAmmo(item->giveAmount, item->ammoName, item->maxRounds);
 	}
+	// items & grenades
 	else if (m_iCount > 0 && m_iItem >= ARMOURY_FLASHBANG)
 	{
 		switch (m_iItem)
 		{
 		case ARMOURY_FLASHBANG:
 		{
-			if (p->AmmoInventory(p->GetAmmoIndex("Flashbang")) >= 2)
+			if (p->AmmoInventory(p->GetAmmoIndex("Flashbang")) >= MaxAmmoCarry("Flashbang"))
 				return;
 
 			p->GiveNamedItem("weapon_flashbang");
@@ -2210,7 +2172,7 @@ void CArmoury::ArmouryTouch(CBaseEntity *pOther)
 		}
 		case ARMOURY_HEGRENADE:
 		{
-			if (p->AmmoInventory(p->GetAmmoIndex("HEGrenade")) >= 1)
+			if (p->AmmoInventory(p->GetAmmoIndex("HEGrenade")) >= MaxAmmoCarry("HEGrenade"))
 				return;
 
 			p->GiveNamedItem("weapon_hegrenade");
@@ -2237,7 +2199,7 @@ void CArmoury::ArmouryTouch(CBaseEntity *pOther)
 		}
 		case ARMOURY_SMOKEGRENADE:
 		{
-			if (p->AmmoInventory(p->GetAmmoIndex("SmokeGrenade")) >= 1)
+			if (p->AmmoInventory(p->GetAmmoIndex("SmokeGrenade")) >= MaxAmmoCarry("SmokeGrenade"))
 				return;
 
 			p->GiveNamedItem("weapon_smokegrenade");
@@ -2269,4 +2231,4 @@ void CArmoury::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CBaseEntity::KeyValue(pkvd);
 }
 
-LINK_ENTITY_TO_CLASS(armoury_entity, CArmoury);
+LINK_ENTITY_TO_CLASS(armoury_entity, CArmoury, CCSArmoury);

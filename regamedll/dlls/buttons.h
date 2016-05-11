@@ -34,8 +34,8 @@
 
 #define SF_BUTTON_DONTMOVE		1
 #define SF_ROTBUTTON_NOTSOLID		1
-#define	SF_BUTTON_TOGGLE		32	// button stays pushed until reactivated
-#define	SF_BUTTON_SPARK_IF_OFF		64	// button sparks in OFF state
+#define SF_BUTTON_TOGGLE		32	// button stays pushed until reactivated
+#define SF_BUTTON_SPARK_IF_OFF		64	// button sparks in OFF state
 #define SF_BUTTON_TOUCH_ONLY		256	// button only fires as a result of USE key.
 
 #define SF_GLOBAL_SET			1	// Set global state to initial state on spawn
@@ -170,7 +170,6 @@ public:
 
 public:
 	static TYPEDESCRIPTION IMPL(m_SaveData)[1];
-
 	float m_flDelay;
 };
 

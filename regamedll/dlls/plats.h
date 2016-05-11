@@ -234,8 +234,8 @@ public:
 	virtual void EXPORT GoUp();
 	virtual void EXPORT GoDown();
 
-	virtual void HitBottom();
 	virtual void HitTop();
+	virtual void HitBottom();
 	virtual void UpdateAutoTargets(int toggleState);
 
 #ifdef HOOK_GAMEDLL

@@ -39,14 +39,14 @@
 #define MAX_ENTITY				512	// We can only ever move 512 entities across a transition
 
 // triggers
-#define	SF_TRIGGER_ALLOWMONSTERS		1	// monsters allowed to fire this trigger
-#define	SF_TRIGGER_NOCLIENTS			2	// players not allowed to fire this trigger
+#define SF_TRIGGER_ALLOWMONSTERS		1	// monsters allowed to fire this trigger
+#define SF_TRIGGER_NOCLIENTS			2	// players not allowed to fire this trigger
 #define SF_TRIGGER_PUSHABLES			4	// only pushables can fire this trigger
 
-#define	SF_TRIGGER_PUSH_START_OFF		2	// spawnflag that makes trigger_push spawn turned OFF
+#define SF_TRIGGER_PUSH_START_OFF		2	// spawnflag that makes trigger_push spawn turned OFF
 #define SF_TRIGGER_HURT_TARGETONCE		1	// Only fire hurt target once
-#define	SF_TRIGGER_HURT_START_OFF		2	// spawnflag that makes trigger_push spawn turned OFF
-#define	SF_TRIGGER_HURT_NO_CLIENTS		8	// spawnflag that makes trigger_push spawn turned OFF
+#define SF_TRIGGER_HURT_START_OFF		2	// spawnflag that makes trigger_push spawn turned OFF
+#define SF_TRIGGER_HURT_NO_CLIENTS		8	// spawnflag that makes trigger_push spawn turned OFF
 #define SF_TRIGGER_HURT_CLIENTONLYFIRE		16	// trigger hurt will only fire its target if it is hurting a client
 #define SF_TRIGGER_HURT_CLIENTONLYTOUCH		32	// only clients may touch this trigger.
 
@@ -744,7 +744,7 @@ public:
 };
 
 void PlayCDTrack(int iTrack);
-int BuildChangeList(LEVELLIST * pLevelList, int maxList);
+int BuildChangeList(LEVELLIST *pLevelList, int maxList);
 void NextLevel();
 
 #endif // TRIGGERS_H

@@ -135,9 +135,13 @@ extern cvar_t sk_scientist_heal3;
 
 extern cvar_t maxmoney;
 extern cvar_t round_infinite;
+extern cvar_t hegrenade_penetration;
+extern cvar_t nadedrops;
+extern cvar_t roundrespawn_time;
 
 #endif
 
 void GameDLLInit();
+void GameDLLShutdown();
 
 #endif // GAME_H

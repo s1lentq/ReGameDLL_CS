@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-LINK_ENTITY_TO_CLASS(weapon_hegrenade, CHEGrenade);
+LINK_ENTITY_TO_CLASS(weapon_hegrenade, CHEGrenade, CCSHEGrenade);
 
 void CHEGrenade::__MAKE_VHOOK(Spawn)()
 {

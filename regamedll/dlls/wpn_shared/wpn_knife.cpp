@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-LINK_ENTITY_TO_CLASS(weapon_knife, CKnife);
+LINK_ENTITY_TO_CLASS(weapon_knife, CKnife, CCSKnife);
 
 void CKnife::__MAKE_VHOOK(Spawn)()
 {

@@ -76,7 +76,7 @@ TYPEDESCRIPTION gGlobalEntitySaveData[3];
 
 // globals gamerules
 CGameRules *g_pGameRules;
-char mp_com_token[ COM_TOKEN_LEN ];
+char mp_com_token[ 1500 ];
 cvar_t *sv_clienttrace;
 
 // globals player.cpp
@@ -110,6 +110,9 @@ float (*CLocalNav::pflNextCvarCheck);
 float (*CLocalNav::pflLastThinkTime);
 EHANDLE (*CLocalNav::phostages)[20];
 int (*CLocalNav::ptot_hostages);
+
+// soundent
+CSoundEnt *pSoundEnt;
 
 // globals weapons
 const char *g_pModelNameLaser;
@@ -1285,6 +1288,7 @@ void CGunTarget::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE use
 void CBasePlayer::Spawn() { Spawn_(); }
 void CBasePlayer::Precache() { Precache_(); }
 int CBasePlayer::Save(CSave &save) { return Save_(save); }
+int CBasePlayer::ObjectCaps() { return ObjectCaps_(); }
 int CBasePlayer::Restore(CRestore &restore) { return Restore_(restore); }
 int CBasePlayer::Classify() { return Classify_(); }
 void CBasePlayer::TraceAttack(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType) { TraceAttack_(pevAttacker, flDamage, vecDir, ptr, bitsDamageType); }

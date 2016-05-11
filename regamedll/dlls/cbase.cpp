@@ -62,6 +62,8 @@ static DLL_FUNCTIONS gFunctionTable =
 static NEW_DLL_FUNCTIONS gNewDLLFunctions
 {
 	&OnFreeEntPrivateData,
+	&GameDLLShutdown,
+	NULL,
 	NULL,
 	NULL
 };
@@ -283,7 +285,7 @@ void printEntities()
 	}
 }
 
-NOINLINE edict_t *CREATE_NAMED_ENTITY(string_t iClass)
+NOINLINE edict_t *EXT_FUNC CREATE_NAMED_ENTITY(string_t iClass)
 {
 	edict_t *named = g_engfuncs.pfnCreateNamedEntity(iClass);
 	if (named != NULL)
@@ -1080,4 +1082,5 @@ void OnFreeEntPrivateData(edict_t *pEnt)
 
 	pEntity->UpdateOnRemove();
 	RemoveEntityHashValue(pEntity->pev, STRING(pEntity->pev->classname), CLASSNAME);
+	Regamedll_FreeEntities(pEntity);
 }

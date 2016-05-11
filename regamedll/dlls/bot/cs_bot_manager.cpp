@@ -347,7 +347,7 @@ void CCSBotManager::__MAKE_VHOOK(ClientDisconnect)(CBasePlayer *pPlayer)
 
 		FREE_PRIVATE(pPlayer->edict());
 
-		CBasePlayer *player = GetClassPtr((CBasePlayer *)temp);
+		CBasePlayer *player = GetClassPtr<CCSPlayer>((CBasePlayer *)temp);
 		AddEntityHashValue(player->pev, STRING(player->pev->classname), CLASSNAME);
 		player->pev->flags = FL_DORMANT;
 	}
@@ -376,7 +376,7 @@ void CCSBotManager::__MAKE_VHOOK(ServerCommand)(const char *pcmd)
 
 	if (FStrEq(pcmd, "bot_about"))
 	{
-		Q_sprintf(buffer, "\n--------------------------------------------------------------------------\nThe Official Counter-Strike Bot V%d.%02d\nCreated by Michael S. Booth\nWeb: www.turtlerockstudios.com\\csbot\nE-mail: csbot@turtlerockstudios.com\n--------------------------------------------------------------------------\n\n", CSBOT_VERSION_MAJOR, CSBOT_VERSION_MINOR);
+		Q_sprintf(buffer, "\n--------------------------------------------------------------------------\nThe Official Counter-Strike Bot V%d.%02d\nCreated by Michael S. Booth\nWeb: www.turtlerockstudios.com\\csbot\nE-mail: csbot@turtlerockstudios.com\n--------------------------------------------------------------------------\n\n", BOT_VERSION_MAJOR, BOT_VERSION_MINOR);
 		CONSOLE_ECHO(buffer);
 		HintMessageToAllPlayers(buffer);
 	}
@@ -681,7 +681,7 @@ void CCSBotManager::__MAKE_VHOOK(ServerCommand)(const char *pcmd)
 				if ((pEntity->pev->flags & FL_DORMANT) == FL_DORMANT)
 					continue;
 
-				CBasePlayer *playerOrBot = GetClassPtr((CBasePlayer *)pEntity->pev);
+				CBasePlayer *playerOrBot = GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev);
 
 				if (playerOrBot->IsBot())
 				{
@@ -1189,7 +1189,7 @@ bool CCSBotManager::AddBot(const BotProfile *profile, BotProfileTeamType team)
 		return false;
 	}
 
-	CCSBot *pBot = CreateBot<CCSBot>(profile);
+	CCSBot *pBot = CreateBot<CCSBot, CAPI_CSBot>(profile);
 	if (pBot == NULL)
 	{
 		return false;

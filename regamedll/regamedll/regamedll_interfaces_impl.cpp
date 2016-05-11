@@ -28,3 +28,117 @@
 
 #include "precompiled.h"
 
+CCSEntity **g_GameEntities = NULL;
+bool g_bInitialized = false;
+
+ICSEntity::~ICSEntity() {}
+
+void Regamedll_AllocEntities(int maxEdicts)
+{
+	if (g_bInitialized)
+		return;
+
+	g_bInitialized = true;
+	g_GameEntities = (CCSEntity **)Q_malloc(sizeof(CCSEntity *) * maxEdicts);
+	Q_memset(g_GameEntities, 0, sizeof(CCSEntity *) * maxEdicts);
+
+#ifdef _DEBUG
+	//CONSOLE_ECHO(__FUNCTION__":: alloc entities!\n");
+
+	ADD_SERVER_COMMAND("check_ent", [](){		
+		Regamedll_MonitorEntities();
+	});
+#endif
+}
+
+void Regamedll_FreeEntities(CBaseEntity *pEntity)
+{
+	if (pEntity == NULL)
+	{
+		for (int i = 0; i < gpGlobals->maxEntities; ++i)
+		{
+			delete g_GameEntities[i];
+			g_GameEntities[i] = NULL;
+		}
+
+		Q_free(g_GameEntities);
+		g_GameEntities = NULL;
+		g_bInitialized = false;
+		return;
+	}
+
+	int index = pEntity->entindex();
+	if (index < 0 || index > gpGlobals->maxEntities)
+		return;
+
+	delete g_GameEntities[index];
+	g_GameEntities[index] = NULL;
+
+#ifdef _DEBUG
+	//CONSOLE_ECHO(__FUNCTION__ ":: Free on (#%d. %s)\n", index, STRING(pEntity->edict()->v.classname));
+#endif
+}
+
+void Regamedll_MonitorEntities()
+{
+	int nCount = 0;
+	for (int i = 0; i < gpGlobals->maxEntities; ++i)
+	{
+		if (g_GameEntities[i] == NULL)
+			continue;
+
+		++nCount;
+	}
+
+	CONSOLE_ECHO(__FUNCTION__":: nCount: (%d) (%d)\n", nCount, gpGlobals->maxEntities);
+}
+
+ICSPlayer *EXT_FUNC CBASE_TO_CSPLAYER(CBaseEntity *pEntity)
+{
+	if (pEntity == NULL)
+		return NULL;
+	
+	int index = pEntity->entindex();
+	if (index < 1 || index > gpGlobals->maxClients)
+	{
+		return NULL;
+		//regamedll_syserror(__FUNCTION__": Invalid player index %d", index);
+	}
+
+	return reinterpret_cast<ICSPlayer *>(g_GameEntities[index]);
+}
+
+ICSPlayer *EXT_FUNC INDEX_TO_CSPLAYER(int iPlayerIndex)
+{
+	CBaseEntity *pEntity = UTIL_PlayerByIndex(iPlayerIndex);
+	return CBASE_TO_CSPLAYER(pEntity);
+}
+
+ICSEntity *EXT_FUNC CBASE_TO_CSENTITY(CBaseEntity *pEntity)
+{
+	if (pEntity == NULL)
+		return NULL;
+	
+	int index = pEntity->entindex();
+	if (index < 0 || index > gpGlobals->maxEntities)
+	{
+		return NULL;
+		//regamedll_syserror(__FUNCTION__": Invalid entity index %d", index);
+	}
+
+	return g_GameEntities[index];
+}
+
+ICSEntity *EXT_FUNC INDEX_TO_CSENTITY(int iEntityIndex)
+{
+	CBaseEntity *pEntity = CBaseEntity::Instance(INDEXENT(iEntityIndex));
+	return CBASE_TO_CSENTITY(pEntity);
+}
+
+CGameRules* EXT_FUNC CReGameData::GetGameRules() {
+	return g_pGameRules;
+}
+
+WeaponInfoStruct* EXT_FUNC CReGameData::GetWeaponInfo(int weaponID) {
+	return ::GetWeaponInfo(weaponID);
+}

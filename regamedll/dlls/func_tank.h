@@ -162,9 +162,7 @@ public:
 	virtual void Fire(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker);
 
 #ifdef HOOK_GAMEDLL
-
 	void Fire_(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker);
-
 #endif
 
 };
@@ -252,7 +250,6 @@ public:
 
 public:
 	static TYPEDESCRIPTION IMPL(m_SaveData)[1];
-
 	CFuncTank *m_pTank;
 };
 

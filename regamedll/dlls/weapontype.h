@@ -256,6 +256,7 @@ enum MaxAmmoType
 
 enum AmmoType
 {
+	AMMO_NONE = -1,
 	AMMO_BUCKSHOT,
 	AMMO_9MM,
 	AMMO_556NATO,
@@ -359,6 +360,15 @@ enum Bullet
 	BULLET_PLAYER_357SIG,
 };
 
+struct WeaponStruct
+{
+	int m_type;
+	int m_price;
+	int m_side;
+	int m_slot;
+	int m_ammoPrice;
+};
+
 struct AutoBuyInfoStruct
 {
 	AutoBuyClassType m_class;
@@ -393,11 +403,17 @@ struct WeaponInfoStruct
 	int buyClipSize;
 	int gunClipSize;
 	int maxRounds;
-	int ammoType;
+	AmmoType ammoType;
 	char *entityName;
+
+#ifndef HOOK_GAMEDLL
+	const char *ammoName;
+#endif
 };
 
 extern AutoBuyInfoStruct g_autoBuyInfo[35];
+extern WeaponStruct g_weaponStruct[MAX_WEAPONS];
+extern WeaponInfoStruct weaponInfo[27];
 
 // WeaponType
 WeaponIdType AliasToWeaponID(const char *alias);
@@ -409,5 +425,6 @@ bool IsPrimaryWeapon(int id);
 bool IsSecondaryWeapon(int id);
 WeaponInfoStruct *GetWeaponInfo(int weaponID);
 bool CanBuyWeaponByMaptype(int playerTeam, WeaponIdType weaponID, bool useAssasinationRestrictions);
+void WeaponInfoReset();
 
 #endif // WEAPONTYPE_H

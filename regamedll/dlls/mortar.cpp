@@ -17,7 +17,7 @@ TYPEDESCRIPTION CFuncMortarField::m_SaveData[] =
 
 #endif
 
-LINK_ENTITY_TO_CLASS(func_mortar_field, CFuncMortarField);
+LINK_ENTITY_TO_CLASS(func_mortar_field, CFuncMortarField, CCSFuncMortarField);
 IMPLEMENT_SAVERESTORE(CFuncMortarField, CBaseToggle);
 
 void CFuncMortarField::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
@@ -144,15 +144,16 @@ void CFuncMortarField::FieldUse(CBaseEntity *pActivator, CBaseEntity *pCaller, U
 		CBaseEntity *pMortar = Create("monster_mortar", tr.vecEndPos, Vector(0, 0, 0), pentOwner);
 		pMortar->pev->nextthink = gpGlobals->time + t;
 		t += RANDOM_FLOAT(0.2, 0.5);
-
+#ifndef REGAMEDLL_FIXES
 		if (i == 0)
 		{
 			CSoundEnt::InsertSound(bits_SOUND_DANGER, tr.vecEndPos, 400, 0.3);
 		}
+#endif
 	}
 }
 
-LINK_ENTITY_TO_CLASS(monster_mortar, CMortar);
+LINK_ENTITY_TO_CLASS(monster_mortar, CMortar, CCSMortar);
 
 void CMortar::__MAKE_VHOOK(Spawn)()
 {

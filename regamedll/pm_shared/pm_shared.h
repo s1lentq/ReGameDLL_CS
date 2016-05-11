@@ -54,7 +54,7 @@
 #define STEP_SNOW			9
 
 #define WJ_HEIGHT				8
-#define	STOP_EPSILON				0.1
+#define STOP_EPSILON				0.1
 #define MAX_CLIMB_SPEED				200
 #define PLAYER_DUCKING_MULTIPLIER		0.333
 #define PM_CHECKSTUCK_MINTIME			0.05	// Don't check again too quickly.

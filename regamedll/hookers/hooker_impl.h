@@ -63,6 +63,14 @@ class CGraph;
 class CRestore;
 class CSaveRestoreBuffer;
 
+typedef Vector VectorRef;
+
+#define __API_HOOK(fname)\
+	fname
+
+#define __API_VHOOK(fname)\
+	fname##_
+
 #define __MAKE_VHOOK(fname)\
 	fname##_
 
@@ -71,6 +79,13 @@ class CSaveRestoreBuffer;
 
 #define IMPL_CLASS(baseClass,var)\
 	(*baseClass::p##var)
+
+#define LINK_HOOK_CLASS_VOID_CHAIN(...)
+#define LINK_HOOK_CLASS_VOID_CHAIN2(...)
+#define LINK_HOOK_CLASS_CHAIN(...)
+#define LINK_HOOK_CLASS_CHAIN2(...)
+#define LINK_HOOK_VOID_CHAIN(...)
+#define LINK_HOOK_CHAIN(...)
 
 // refs
 extern void (CBaseEntity::*pCHostage__IdleThink)();

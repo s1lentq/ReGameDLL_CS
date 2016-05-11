@@ -409,7 +409,7 @@ CBaseEntity *UTIL_FindEntityByString_Old(CBaseEntity *pStartEntity, const char *
 	return NULL;
 }
 
-CBaseEntity *UTIL_FindEntityByString(CBaseEntity *pStartEntity, const char *szKeyword, const char *szValue)
+CBaseEntity *EXT_FUNC UTIL_FindEntityByString(CBaseEntity *pStartEntity, const char *szKeyword, const char *szValue)
 {
 	edict_t	*pentEntity;
 	int startEntityIndex;
@@ -421,7 +421,7 @@ CBaseEntity *UTIL_FindEntityByString(CBaseEntity *pStartEntity, const char *szKe
 
 	startEntityIndex = ENTINDEX(pentEntity);
 
-	//it best each entity list
+	// it best each entity list
 	if (*szKeyword == 'c')
 	{
 		int hash;
@@ -1456,7 +1456,7 @@ void UTIL_PrecacheOther(const char *szClassname)
 	REMOVE_ENTITY(pent);
 }
 
-void UTIL_LogPrintf(char *fmt, ...)
+void UTIL_LogPrintf(const char *fmt, ...)
 {
 	va_list argptr;
 	static char string[1024];
@@ -1938,7 +1938,7 @@ void CSave::BufferData(const char *pdata, int size)
 int CRestore::ReadField(void *pBaseData, TYPEDESCRIPTION *pFields, int fieldCount, int startField, int size, char *pName, void *pData)
 {
 	float time = 0.0f;
-	Vector position = Vector(0, 0, 0);
+	Vector position(0, 0, 0);
 
 	if (m_pdata)
 	{

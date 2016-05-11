@@ -104,21 +104,7 @@ void TeamChangeUpdate(CBasePlayer *player, int team_id)
 {
 	MESSAGE_BEGIN(MSG_ALL, gmsgTeamInfo);
 		WRITE_BYTE(player->entindex());
-		switch (team_id)
-		{
-		case CT:
-			WRITE_STRING("CT");
-			break;
-		case TERRORIST:
-			WRITE_STRING("TERRORIST");
-			break;
-		case SPECTATOR:
-			WRITE_STRING("SPECTATOR");
-			break;
-		default:
-			WRITE_STRING("UNASSIGNED");
-			break;
-		}
+		WRITE_STRING(GetTeamName(team_id));
 	MESSAGE_END();
 
 	if (team_id != UNASSIGNED)
@@ -146,11 +132,12 @@ void EXT_FUNC ClientDisconnect(edict_t *pEntity)
 	if (!g_fGameOver)
 	{
 		UTIL_ClientPrintAll(HUD_PRINTNOTIFY, "#Game_disconnected", STRING(pEntity->v.netname));
+#ifndef REGAMEDLL_FIXES
 		CSound *pSound = CSoundEnt::SoundPointerForIndex(CSoundEnt::ClientSoundIndex(pEntity));
 
 		if (pSound != NULL)
 			pSound->Reset();
-
+#endif
 		pEntity->v.takedamage = DAMAGE_NO;
 		pEntity->v.solid = SOLID_NOT;
 		pEntity->v.flags = FL_DORMANT;
@@ -175,7 +162,7 @@ void respawn(entvars_t *pev, BOOL fCopyCorpse)
 		if (CSGameRules()->m_iTotalRoundsPlayed > 0)
 			CSGameRules()->MarkSpawnSkipped();
 
-		CBasePlayer *pPlayer = GetClassPtr((CBasePlayer *)pev);
+		CBasePlayer *pPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pev);
 
 		if (CSGameRules()->IsCareer() && CSGameRules()->ShouldSkipSpawn() && pPlayer->IsAlive())
 			g_skipCareerInitialSpawn = true;
@@ -256,7 +243,7 @@ NOXREF int CountTeams()
 		if (FNullEnt(pPlayer->edict()))
 			break;
 
-		CBasePlayer *player = GetClassPtr((CBasePlayer *)pPlayer->pev);
+		CBasePlayer *player = GetClassPtr<CCSPlayer>((CBasePlayer *)pPlayer->pev);
 
 		if (player->m_iTeam == UNASSIGNED)
 			continue;
@@ -279,8 +266,7 @@ NOXREF int CountTeams()
 
 void ListPlayers(CBasePlayer *current)
 {
-	char message[120], cNumber[12];
-	Q_strcpy(message, "");
+	char message[120] = "", cNumber[12];
 
 	CBaseEntity *pPlayer = NULL;
 	while ((pPlayer = UTIL_FindEntityByClassname(pPlayer, "player")) != NULL)
@@ -291,7 +277,7 @@ void ListPlayers(CBasePlayer *current)
 		if (pPlayer->pev->flags & FL_DORMANT)
 			continue;
 
-		CBasePlayer *player = GetClassPtr((CBasePlayer *)pPlayer->pev);
+		CBasePlayer *player = GetClassPtr<CCSPlayer>((CBasePlayer *)pPlayer->pev);
 		int iUserID = GETPLAYERUSERID(ENT(player->pev));
 
 		Q_sprintf(cNumber, "%d", iUserID);
@@ -319,7 +305,7 @@ int CountTeamPlayers(int iTeam)
 		if (pPlayer->pev->flags & FL_DORMANT)
 			continue;
 
-		if (GetClassPtr((CBasePlayer *)pPlayer->pev)->m_iTeam == iTeam)
+		if (GetClassPtr<CCSPlayer>((CBasePlayer *)pPlayer->pev)->m_iTeam == iTeam)
 			++i;
 	}
 
@@ -352,7 +338,7 @@ void ProcessKickVote(CBasePlayer *pVotingPlayer, CBasePlayer *pKickPlayer)
 		if (FNullEnt(pTempEntity->edict()))
 			break;
 
-		pTempPlayer = GetClassPtr((CBasePlayer *)pTempEntity->pev);
+		pTempPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pTempEntity->pev);
 
 		if (!pTempPlayer || pTempPlayer->m_iTeam == UNASSIGNED)
 			continue;
@@ -381,7 +367,7 @@ void ProcessKickVote(CBasePlayer *pVotingPlayer, CBasePlayer *pKickPlayer)
 			if (FNullEnt(pTempEntity->edict()))
 				break;
 
-			pTempPlayer = GetClassPtr((CBasePlayer *)pTempEntity->pev);
+			pTempPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pTempEntity->pev);
 
 			if (!pTempPlayer || pTempPlayer->m_iTeam == UNASSIGNED)
 				continue;
@@ -472,7 +458,7 @@ void CheckStartMoney()
 void EXT_FUNC ClientPutInServer(edict_t *pEntity)
 {
 	entvars_t *pev = &pEntity->v;
-	CBasePlayer *pPlayer = GetClassPtr((CBasePlayer *)pev);
+	CBasePlayer *pPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pev);
 
 	pPlayer->SetCustomDecalFrames(-1);
 	pPlayer->SetPrefsFromUserinfo(GET_INFO_BUFFER(pEntity));
@@ -605,7 +591,7 @@ void Host_Say(edict_t *pEntity, int teamonly)
 	bool bSenderDead = false;
 
 	entvars_t *pev = &pEntity->v;
-	CBasePlayer *player = GetClassPtr((CBasePlayer *)pev);
+	CBasePlayer *player = GetClassPtr<CCSPlayer>((CBasePlayer *)pev);
 
 	if (player->m_flLastTalk != 0.0f && gpGlobals->time - player->m_flLastTalk < 0.66f)
 		return;
@@ -679,11 +665,11 @@ void Host_Say(edict_t *pEntity, int teamonly)
 			Place playerPlace = TheNavAreaGrid.GetPlace(&player->pev->origin);
 			const BotPhraseList *placeList = TheBotPhrases->GetPlaceList();
 
-			for (BotPhraseList::const_iterator iter = placeList->begin(); iter != placeList->end(); ++iter)
+			for (auto& it : *placeList)
 			{
-				if ((*iter)->GetID() == playerPlace)
+				if (it->GetID() == playerPlace)
 				{
-					placeName = (*iter)->GetName();
+					placeName = it->GetName();
 					break;
 				}
 			}
@@ -909,22 +895,18 @@ void DropPrimary(CBasePlayer *pPlayer)
 	}
 }
 
-bool CanBuyThis(CBasePlayer *pPlayer, int iWeapon)
+LINK_HOOK_CHAIN(bool, CanBuyThis, (CBasePlayer *pPlayer, int iWeapon), pPlayer, iWeapon);
+
+bool __API_HOOK(CanBuyThis)(CBasePlayer *pPlayer, int iWeapon)
 {
 	if (pPlayer->HasShield() && iWeapon == WEAPON_ELITE)
-	{
 		return false;
-	}
 
 	if (pPlayer->HasShield() && iWeapon == WEAPON_SHIELDGUN)
-	{
 		return false;
-	}
 
 	if (pPlayer->m_rgpPlayerItems[ PISTOL_SLOT ] != NULL && pPlayer->m_rgpPlayerItems[ PISTOL_SLOT ]->m_iId == WEAPON_ELITE && iWeapon == WEAPON_SHIELDGUN)
-	{
 		return false;
-	}
 
 	if (pPlayer->m_rgpPlayerItems[ PRIMARY_WEAPON_SLOT ] != NULL && pPlayer->m_rgpPlayerItems[ PRIMARY_WEAPON_SLOT ]->m_iId == iWeapon)
 	{
@@ -961,484 +943,115 @@ bool CanBuyThis(CBasePlayer *pPlayer, int iWeapon)
 
 void BuyPistol(CBasePlayer *pPlayer, int iSlot)
 {
-	int iWeapon = 0;
-	int iWeaponPrice = 0;
-	const char *pszWeapon = NULL;
-
-	if (!pPlayer->CanPlayerBuy(true))
-	{
-		return;
-	}
-
 	if (iSlot < 1 || iSlot > 5)
-	{
 		return;
-	}
 
+	WeaponIdType buyWeapon = WEAPON_NONE;
 	switch (iSlot)
 	{
-		case 1:
-		{
-			iWeapon = WEAPON_GLOCK18;
-			iWeaponPrice = GLOCK18_PRICE;
-			pszWeapon = "weapon_glock18";
-			break;
-		}
-		case 2:
-		{
-			iWeapon = WEAPON_USP;
-			iWeaponPrice = USP_PRICE;
-			pszWeapon = "weapon_usp";
-			break;
-		}
-		case 3:
-		{
-			iWeapon = WEAPON_P228;
-			iWeaponPrice = P228_PRICE;
-			pszWeapon = "weapon_p228";
-			break;
-		}
-		case 4:
-		{
-			iWeapon = WEAPON_DEAGLE;
-			iWeaponPrice = DEAGLE_PRICE;
-			pszWeapon = "weapon_deagle";
-			break;
-		}
-		case 5:
-		{
-			if (pPlayer->m_iTeam == CT)
-			{
-				iWeapon = WEAPON_FIVESEVEN;
-				iWeaponPrice = FIVESEVEN_PRICE;
-				pszWeapon = "weapon_fiveseven";
-			}
-			else
-			{
-				iWeapon = WEAPON_ELITE;
-				iWeaponPrice = ELITE_PRICE;
-				pszWeapon = "weapon_elite";
-			}
-
-			break;
-		}
+	case 1:
+		buyWeapon = WEAPON_GLOCK18;
+		break;
+	case 2:
+		buyWeapon = WEAPON_USP;
+		break;
+	case 3:
+		buyWeapon = WEAPON_P228;
+		break;
+	case 4:
+		buyWeapon = WEAPON_DEAGLE;
+		break;
+	case 5:
+		buyWeapon = (pPlayer->m_iTeam == CT) ? WEAPON_FIVESEVEN : WEAPON_ELITE;
+		break;
 	}
 
-	if (!CanBuyThis(pPlayer, iWeapon))
-	{
-		return;
-	}
-
-	if (pPlayer->m_iAccount < iWeaponPrice)
-	{
-		if (g_bClientPrintEnable)
-		{
-			ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Not_Enough_Money");
-			BlinkAccount(pPlayer, 2);
-		}
-
-		return;
-	}
-
-	DropSecondary(pPlayer);
-
-	pPlayer->GiveNamedItem(pszWeapon);
-	pPlayer->AddAccount(-iWeaponPrice);
-
-	if (TheTutor != NULL)
-	{
-		TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, pPlayer);
-	}
+	BuyWeaponByWeaponID(pPlayer, buyWeapon);
 }
 
 void BuyShotgun(CBasePlayer *pPlayer, int iSlot)
 {
-	int iWeapon = 0;
-	int iWeaponPrice = 0;
-	const char *pszWeapon = NULL;
-
-	if (!pPlayer->CanPlayerBuy(true))
-	{
-		return;
-	}
-
 	if (iSlot < 1 || iSlot > 2)
-	{
 		return;
-	}
 
+	WeaponIdType buyWeapon = WEAPON_NONE;
 	switch (iSlot)
 	{
-		case 1:
-		{
-			iWeapon = WEAPON_M3;
-			iWeaponPrice = M3_PRICE;
-			pszWeapon = "weapon_m3";
-			break;
-		}
-		case 2:
-		{
-			iWeapon = WEAPON_XM1014;
-			iWeaponPrice = XM1014_PRICE;
-			pszWeapon = "weapon_xm1014";
-			break;
-		}
+	case 1:
+		buyWeapon = WEAPON_M3;
+		break;
+	case 2:
+		buyWeapon = WEAPON_XM1014;
+		break;
 	}
 
-	if (!CanBuyThis(pPlayer, iWeapon))
-	{
-		return;
-	}
-
-	if (pPlayer->m_iAccount < iWeaponPrice)
-	{
-		if (g_bClientPrintEnable)
-		{
-			ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Not_Enough_Money");
-			BlinkAccount(pPlayer, 2);
-		}
-
-		return;
-	}
-
-	DropPrimary(pPlayer);
-
-	pPlayer->GiveNamedItem(pszWeapon);
-	pPlayer->AddAccount(-iWeaponPrice);
-
-	if (TheTutor != NULL)
-	{
-		TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, pPlayer);
-	}
+	BuyWeaponByWeaponID(pPlayer, buyWeapon);
 }
 
 void BuySubMachineGun(CBasePlayer *pPlayer, int iSlot)
 {
-	int iWeapon = 0;
-	int iWeaponPrice = 0;
-	const char *pszWeapon = NULL;
-
-	if (!pPlayer->CanPlayerBuy(true))
-	{
-		return;
-	}
-
 	if (iSlot < 1 || iSlot > 4)
-	{
 		return;
-	}
 
+	WeaponIdType buyWeapon = WEAPON_NONE;
 	switch (iSlot)
 	{
-		case 1:
-		{
-			if (pPlayer->m_iTeam == CT)
-			{
-				iWeapon = WEAPON_TMP;
-				iWeaponPrice = TMP_PRICE;
-				pszWeapon = "weapon_tmp";
-			}
-			else
-			{
-				iWeapon = WEAPON_MAC10;
-				iWeaponPrice = MAC10_PRICE;
-				pszWeapon = "weapon_mac10";
-			}
-
-			break;
-		}
-		case 2:
-		{
-			iWeapon = WEAPON_MP5N;
-			iWeaponPrice = MP5NAVY_PRICE;
-			pszWeapon = "weapon_mp5navy";
-			break;
-		}
-		case 3:
-		{
-			iWeapon = WEAPON_UMP45;
-			iWeaponPrice = UMP45_PRICE;
-			pszWeapon = "weapon_ump45";
-			break;
-		}
-		case 4:
-		{
-			iWeapon = WEAPON_P90;
-			iWeaponPrice = P90_PRICE;
-			pszWeapon = "weapon_p90";
-			break;
-		}
+	case 1:
+		buyWeapon = (pPlayer->m_iTeam == CT) ? WEAPON_TMP : WEAPON_MAC10;
+		break;
+	case 2:
+		buyWeapon = WEAPON_MP5N;
+		break;
+	case 3:
+		buyWeapon = WEAPON_UMP45;
+		break;
+	case 4:
+		buyWeapon = WEAPON_P90;
+		break;
 	}
 
-	if (!CanBuyThis(pPlayer, iWeapon))
-	{
-		return;
-	}
-
-	if (pPlayer->m_iAccount < iWeaponPrice)
-	{
-		if (g_bClientPrintEnable)
-		{
-			ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Not_Enough_Money");
-			BlinkAccount(pPlayer, 2);
-		}
-
-		return;
-	}
-
-	DropPrimary(pPlayer);
-
-	pPlayer->GiveNamedItem(pszWeapon);
-	pPlayer->AddAccount(-iWeaponPrice);
-
-	if (TheTutor != NULL)
-	{
-		TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, pPlayer);
-	}
-}
-
-void BuyWeaponByWeaponID(CBasePlayer *pPlayer, WeaponIdType weaponID)
-{
-	if (!pPlayer->CanPlayerBuy(true))
-	{
-		return;
-	}
-
-	if (!CanBuyThis(pPlayer, weaponID))
-	{
-		return;
-	}
-
-	WeaponInfoStruct *info = GetWeaponInfo(weaponID);
-
-	if (!info || !info->entityName)
-	{
-		return;
-	}
-
-	if (pPlayer->m_iAccount < info->cost)
-	{
-		if (g_bClientPrintEnable)
-		{
-			ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Not_Enough_Money");
-			BlinkAccount(pPlayer, 2);
-		}
-
-		return;
-	}
-
-	if (IsPrimaryWeapon(weaponID))
-	{
-		DropPrimary(pPlayer);
-	}
-	else
-	{
-		DropSecondary(pPlayer);
-	}
-
-	pPlayer->GiveNamedItem(info->entityName);
-	pPlayer->AddAccount(-info->cost);
-
-	if (TheTutor != NULL)
-	{
-		TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, pPlayer);
-	}
+	BuyWeaponByWeaponID(pPlayer, buyWeapon);
 }
 
 void BuyRifle(CBasePlayer *pPlayer, int iSlot)
 {
-	int iWeapon = 0;
-	int iWeaponPrice = 0;
-	bool bIsCT = false;
-	const char *pszWeapon = NULL;
-
-	if (!pPlayer->CanPlayerBuy(true))
-	{
-		return;
-	}
-
 	if (iSlot < 1 || iSlot > 6)
-	{
 		return;
-	}
 
-	if (pPlayer->m_iTeam == CT)
-		bIsCT = true;
+	WeaponIdType buyWeapon = WEAPON_NONE;
+	bool bIsCT = (pPlayer->m_iTeam == CT) ? true : false;
 
 	switch (iSlot)
 	{
-		case 2:
-		{
-			if (bIsCT)
-			{
-				iWeapon = WEAPON_SCOUT;
-				iWeaponPrice = SCOUT_PRICE;
-				pszWeapon = "weapon_scout";
-			}
-			else
-			{
-				iWeapon = WEAPON_AK47;
-				iWeaponPrice = AK47_PRICE;
-				pszWeapon = "weapon_ak47";
-			}
-
-			break;
-		}
-		case 3:
-		{
-			if (bIsCT)
-			{
-				iWeapon = WEAPON_M4A1;
-				iWeaponPrice = M4A1_PRICE;
-				pszWeapon = "weapon_m4a1";
-			}
-			else
-			{
-				iWeapon = WEAPON_SCOUT;
-				iWeaponPrice = SCOUT_PRICE;
-				pszWeapon = "weapon_scout";
-			}
-
-			break;
-		}
-		case 4:
-		{
-			if (bIsCT)
-			{
-				iWeapon = WEAPON_AUG;
-				iWeaponPrice = AUG_PRICE;
-				pszWeapon = "weapon_aug";
-			}
-			else
-			{
-				iWeapon = WEAPON_SG552;
-				iWeaponPrice = SG552_PRICE;
-				pszWeapon = "weapon_sg552";
-			}
-
-			break;
-		}
-		case 5:
-		{
-			if (bIsCT)
-			{
-				iWeapon = WEAPON_SG550;
-				iWeaponPrice = SG550_PRICE;
-				pszWeapon = "weapon_sg550";
-			}
-			else
-			{
-				iWeapon = WEAPON_AWP;
-				iWeaponPrice = AWP_PRICE;
-				pszWeapon = "weapon_awp";
-			}
-
-			break;
-		}
-		case 6:
-		{
-			if (bIsCT)
-			{
-				iWeapon = WEAPON_AWP;
-				iWeaponPrice = AWP_PRICE;
-				pszWeapon = "weapon_awp";
-			}
-			else
-			{
-				iWeapon = WEAPON_G3SG1;
-				iWeaponPrice = G3SG1_PRICE;
-				pszWeapon = "weapon_g3sg1";
-			}
-
-			break;
-		}
-		default:
-		{
-			if (bIsCT)
-			{
-				iWeapon = WEAPON_FAMAS;
-				iWeaponPrice = FAMAS_PRICE;
-				pszWeapon = "weapon_famas";
-			}
-			else
-			{
-				iWeapon = WEAPON_GALIL;
-				iWeaponPrice = GALIL_PRICE;
-				pszWeapon = "weapon_galil";
-			}
-
-			break;
-		}
+	case 2:
+		buyWeapon = bIsCT ? WEAPON_SCOUT : WEAPON_AK47;
+		break;
+	case 3:
+		buyWeapon = bIsCT ? WEAPON_M4A1 : WEAPON_SCOUT;
+		break;
+	case 4:
+		buyWeapon = bIsCT ? WEAPON_AUG : WEAPON_SG552;
+		break;
+	case 5:
+		buyWeapon = bIsCT ? WEAPON_SG550 : WEAPON_AWP;
+		break;
+	case 6:
+		buyWeapon = bIsCT ? WEAPON_AWP : WEAPON_G3SG1;
+		break;
+	default:
+		buyWeapon = bIsCT ? WEAPON_FAMAS : WEAPON_GALIL;
+		break;
 	}
 
-	if (!CanBuyThis(pPlayer, iWeapon))
-	{
-		return;
-	}
-
-	if (pPlayer->m_iAccount < iWeaponPrice)
-	{
-		if (g_bClientPrintEnable)
-		{
-			ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Not_Enough_Money");
-			BlinkAccount(pPlayer, 2);
-		}
-
-		return;
-	}
-
-	DropPrimary(pPlayer);
-
-	pPlayer->GiveNamedItem(pszWeapon);
-	pPlayer->AddAccount(-iWeaponPrice);
-
-	if (TheTutor != NULL)
-	{
-		TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, pPlayer);
-	}
+	BuyWeaponByWeaponID(pPlayer, buyWeapon);
 }
 
 void BuyMachineGun(CBasePlayer *pPlayer, int iSlot)
 {
-	int iWeapon = WEAPON_M249;
-	int iWeaponPrice = M249_PRICE;
-	const char *pszWeapon = "weapon_m249";
-
-	if (!pPlayer->CanPlayerBuy(true))
-	{
-		return;
-	}
-
 	if (iSlot != 1)
-	{
 		return;
-	}
 
-	if (!CanBuyThis(pPlayer, iWeapon))
-	{
-		return;
-	}
-
-	if (pPlayer->m_iAccount < iWeaponPrice)
-	{
-		if (g_bClientPrintEnable)
-		{
-			ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Not_Enough_Money");
-			BlinkAccount(pPlayer, 2);
-		}
-
-		return;
-	}
-
-	DropPrimary(pPlayer);
-
-	pPlayer->GiveNamedItem(pszWeapon);
-	pPlayer->AddAccount(-iWeaponPrice);
-
-	if (TheTutor != NULL)
-	{
-		TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, pPlayer);
-	}
+	BuyWeaponByWeaponID(pPlayer, WEAPON_M249);
 }
 
 void BuyItem(CBasePlayer *pPlayer, int iSlot)
@@ -1461,8 +1074,8 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 	}
 
 	int fullArmor = (pPlayer->pev->armorvalue >= 100);
-	int helmet = (pPlayer->m_iKevlar == ARMOR_TYPE_HELMET);
-	int enoughMoney = 1;
+	bool bHasHelmet = (pPlayer->m_iKevlar == ARMOR_TYPE_HELMET);
+	bool bEnoughMoney = false;
 
 	switch (iSlot)
 	{
@@ -1480,27 +1093,22 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 
 			if (pPlayer->m_iAccount >= KEVLAR_PRICE)
 			{
-				if (helmet)
+				if (bHasHelmet && g_bClientPrintEnable)
 				{
-					if (g_bClientPrintEnable)
-					{
-						ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Already_Have_Helmet_Bought_Kevlar");
-					}
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Already_Have_Helmet_Bought_Kevlar");
 				}
 
+				bEnoughMoney = true;
 				pszItem = "item_kevlar";
 				iItemPrice = KEVLAR_PRICE;
 			}
-			else
-				enoughMoney = 0;
-
 			break;
 		}
 		case MENU_SLOT_ITEM_VESTHELM:
 		{
 			if (fullArmor)
 			{
-				if (helmet)
+				if (bHasHelmet)
 				{
 					if (g_bClientPrintEnable)
 					{
@@ -1517,17 +1125,15 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 						ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Already_Have_Kevlar_Bought_Helmet");
 					}
 
+					bEnoughMoney = true;
 					pszItem = "item_assaultsuit";
 					iItemPrice = HELMET_PRICE;
 				}
-				else
-					enoughMoney = 0;
-
 				break;
 			}
 			else
 			{
-				if (helmet)
+				if (bHasHelmet)
 				{
 					if (pPlayer->m_iAccount >= KEVLAR_PRICE)
 					{
@@ -1536,29 +1142,26 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 							ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Already_Have_Helmet_Bought_Kevlar");
 						}
 
+						bEnoughMoney = true;
 						pszItem = "item_assaultsuit";
 						iItemPrice = KEVLAR_PRICE;
 					}
-					else
-						enoughMoney = 0;
 				}
 				else
 				{
 					if (pPlayer->m_iAccount >= ASSAULTSUIT_PRICE)
 					{
+						bEnoughMoney = true;
 						pszItem = "item_assaultsuit";
 						iItemPrice = ASSAULTSUIT_PRICE;
 					}
-					else
-						enoughMoney = 0;
 				}
 			}
-
 			break;
 		}
 		case MENU_SLOT_ITEM_FLASHGREN:
 		{
-			if (pPlayer->AmmoInventory(pPlayer->GetAmmoIndex("Flashbang")) >= 2)
+			if (pPlayer->AmmoInventory(pPlayer->GetAmmoIndex("Flashbang")) >= MaxAmmoCarry("Flashbang"))
 			{
 				if (g_bClientPrintEnable)
 				{
@@ -1570,18 +1173,16 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 
 			if (pPlayer->m_iAccount >= FLASHBANG_PRICE)
 			{
+				bEnoughMoney = true;
 				pszItem = "weapon_flashbang";
 				iItemPrice = FLASHBANG_PRICE;
 
 			}
-			else
-				enoughMoney = 0;
-
 			break;
 		}
 		case MENU_SLOT_ITEM_HEGREN:
 		{
-			if (pPlayer->AmmoInventory(pPlayer->GetAmmoIndex("HEGrenade")) >= 1)
+			if (pPlayer->AmmoInventory(pPlayer->GetAmmoIndex("HEGrenade")) >= MaxAmmoCarry("HEGrenade"))
 			{
 				if (g_bClientPrintEnable)
 				{
@@ -1593,17 +1194,15 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 
 			if (pPlayer->m_iAccount >= HEGRENADE_PRICE)
 			{
+				bEnoughMoney = true;
 				pszItem = "weapon_hegrenade";
 				iItemPrice = HEGRENADE_PRICE;
 			}
-			else
-				enoughMoney = 0;
-
 			break;
 		}
 		case MENU_SLOT_ITEM_SMOKEGREN:
 		{
-			if (pPlayer->AmmoInventory(pPlayer->GetAmmoIndex("SmokeGrenade")) >= 1)
+			if (pPlayer->AmmoInventory(pPlayer->GetAmmoIndex("SmokeGrenade")) >= MaxAmmoCarry("SmokeGrenade"))
 			{
 				if (g_bClientPrintEnable)
 				{
@@ -1615,12 +1214,10 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 
 			if (pPlayer->m_iAccount >= SMOKEGRENADE_PRICE)
 			{
+				bEnoughMoney = true;
 				pszItem = "weapon_smokegrenade";
 				iItemPrice = SMOKEGRENADE_PRICE;
 			}
-			else
-				enoughMoney = 0;
-
 			break;
 		}
 		case MENU_SLOT_ITEM_NVG:
@@ -1645,22 +1242,18 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 
 				EMIT_SOUND(ENT(pPlayer->pev), CHAN_ITEM, "items/equip_nvg.wav", VOL_NORM, ATTN_NORM);
 
+				bEnoughMoney = true;
 				pPlayer->m_bHasNightVision = true;
 				pPlayer->AddAccount(-NVG_PRICE);
 
 				SendItemStatus(pPlayer);
 			}
-			else
-				enoughMoney = 0;
-
 			break;
 		}
 		case MENU_SLOT_ITEM_DEFUSEKIT:
 		{
 			if (pPlayer->m_iTeam != CT || !CSGameRules()->m_bMapHasBombTarget)
-			{
 				return;
-			}
 
 			if (pPlayer->m_bHasDefuser)
 			{
@@ -1674,6 +1267,7 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 
 			if (pPlayer->m_iAccount >= DEFUSEKIT_PRICE)
 			{
+				bEnoughMoney = true;
 				pPlayer->m_bHasDefuser = true;
 
 				MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, NULL, pPlayer->pev);
@@ -1690,20 +1284,16 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 				EMIT_SOUND(ENT(pPlayer->pev), CHAN_ITEM, "items/kevlar.wav", VOL_NORM, ATTN_NORM);
 				SendItemStatus(pPlayer);
 			}
-			else
-				enoughMoney = 0;
-
 			break;
 		}
 		case MENU_SLOT_ITEM_SHIELD:
 		{
 			if (!CanBuyThis(pPlayer, WEAPON_SHIELDGUN))
-			{
 				return;
-			}
 
 			if (pPlayer->m_iAccount >= SHIELDGUN_PRICE)
 			{
+				bEnoughMoney = true;
 				DropPrimary(pPlayer);
 
 				pPlayer->GiveShield(true);
@@ -1711,19 +1301,16 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 
 				EMIT_SOUND(ENT(pPlayer->pev), CHAN_ITEM, "items/gunpickup2.wav", VOL_NORM, ATTN_NORM);
 			}
-			else
-				enoughMoney = 0;
-
 			break;
 		}
 	}
 
-	if (!enoughMoney)
+	if (!bEnoughMoney)
 	{
 		if (g_bClientPrintEnable)
 		{
 			ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Not_Enough_Money");
-			BlinkAccount(pPlayer, 2);
+			BlinkAccount(pPlayer);
 		}
 
 		return;
@@ -1734,6 +1321,47 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 		pPlayer->GiveNamedItem(pszItem);
 		pPlayer->AddAccount(-iItemPrice);
 	}
+
+	if (TheTutor != NULL)
+	{
+		TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, pPlayer);
+	}
+}
+
+void BuyWeaponByWeaponID(CBasePlayer *pPlayer, WeaponIdType weaponID)
+{
+	if (!pPlayer->CanPlayerBuy(true))
+		return;
+
+	if (!CanBuyThis(pPlayer, weaponID))
+		return;
+
+	WeaponInfoStruct *info = GetWeaponInfo(weaponID);
+	if (!info || !info->entityName)
+		return;
+
+	if (pPlayer->m_iAccount < info->cost)
+	{
+		if (g_bClientPrintEnable)
+		{
+			ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Not_Enough_Money");
+			BlinkAccount(pPlayer);
+		}
+
+		return;
+	}
+
+	if (IsPrimaryWeapon(weaponID))
+	{
+		DropPrimary(pPlayer);
+	}
+	else
+	{
+		DropSecondary(pPlayer);
+	}
+
+	pPlayer->GiveNamedItem(info->entityName);
+	pPlayer->AddAccount(-info->cost);
 
 	if (TheTutor != NULL)
 	{
@@ -2226,14 +1854,10 @@ BOOL HandleMenu_ChooseTeam(CBasePlayer *player, int slot)
 void Radio1(CBasePlayer *player, int slot)
 {
 	if (player->m_flRadioTime >= gpGlobals->time)
-	{
 		return;
-	}
 
 	if (player->m_iRadioMessages <= 0)
-	{
 		return;
-	}
 
 	player->m_iRadioMessages--;
 	player->m_flRadioTime = gpGlobals->time + 1.5f;
@@ -2269,14 +1893,10 @@ void Radio1(CBasePlayer *player, int slot)
 void Radio2(CBasePlayer *player, int slot)
 {
 	if (player->m_flRadioTime >= gpGlobals->time)
-	{
 		return;
-	}
 
 	if (player->m_iRadioMessages <= 0)
-	{
 		return;
-	}
 
 	player->m_iRadioMessages--;
 	player->m_flRadioTime = gpGlobals->time + 1.5f;
@@ -2312,14 +1932,10 @@ void Radio2(CBasePlayer *player, int slot)
 void Radio3(CBasePlayer *player, int slot)
 {
 	if (player->m_flRadioTime >= gpGlobals->time)
-	{
 		return;
-	}
 
 	if (player->m_iRadioMessages <= 0)
-	{
 		return;
-	}
 
 	player->m_iRadioMessages--;
 	player->m_flRadioTime = gpGlobals->time + 1.5f;
@@ -2367,93 +1983,29 @@ void Radio3(CBasePlayer *player, int slot)
 
 bool BuyGunAmmo(CBasePlayer *player, CBasePlayerItem *weapon, bool bBlinkMoney)
 {
-	int cost;
-	const char *classname;
-
 	if (!player->CanPlayerBuy(true))
-	{
 		return false;
-	}
 
 	// Ensure that the weapon uses ammo
 	int nAmmo = weapon->PrimaryAmmoIndex();
 	if (nAmmo == -1)
-	{
 		return false;
-	}
 
 	// Can only buy if the player does not already have full ammo
 	if (player->m_rgAmmo[ nAmmo ] >= weapon->iMaxAmmo1())
-	{
 		return false;
-	}
 
-	switch (weapon->m_iId)
-	{
-	case WEAPON_AWP:
-		cost = AMMO_338MAG_PRICE;
-		classname = "ammo_338magnum";
-		break;
-	case WEAPON_SCOUT:
-	case WEAPON_G3SG1:
-	case WEAPON_AK47:
-		cost = AMMO_762MM_PRICE;
-		classname = "ammo_762nato";
-		break;
-	case WEAPON_XM1014:
-	case WEAPON_M3:
-		cost = AMMO_BUCKSHOT_PRICE;
-		classname = "ammo_buckshot";
-		break;
-	case WEAPON_MAC10:
-	case WEAPON_UMP45:
-	case WEAPON_USP:
-		cost = AMMO_45ACP_PRICE;
-		classname = "ammo_45acp";
-		break;
-	case WEAPON_M249:
-		cost = AMMO_556MM_PRICE;
-		classname = "ammo_556natobox";
-		break;
-	case WEAPON_FIVESEVEN:
-	case WEAPON_P90:
-		cost = AMMO_57MM_PRICE;
-		classname = "ammo_57mm";
-		break;
-	case WEAPON_ELITE:
-	case WEAPON_GLOCK18:
-	case WEAPON_MP5N:
-	case WEAPON_TMP:
-		cost = AMMO_9MM_PRICE;
-		classname = "ammo_9mm";
-		break;
-	case WEAPON_DEAGLE:
-		cost = AMMO_50AE_PRICE;
-		classname = "ammo_50ae";
-		break;
-	case WEAPON_P228:
-		cost = AMMO_357SIG_PRICE;
-		classname = "ammo_357sig";
-		break;
-	case WEAPON_AUG:
-	case WEAPON_SG550:
-	case WEAPON_GALIL:
-	case WEAPON_FAMAS:
-	case WEAPON_M4A1:
-	case WEAPON_SG552:
-		cost = AMMO_556MM_PRICE;
-		classname = "ammo_556nato";
-		break;
-	default:
+	WeaponInfoStruct *info = GetWeaponInfo(weapon->m_iId);
+	if (info == nullptr) {
 		ALERT(at_console, "Tried to buy ammo for an unrecognized gun\n");
 		return false;
 	}
 
 	// Purchase the ammo if the player has enough money
-	if (player->m_iAccount >= cost)
+	if (player->m_iAccount >= info->clipCost)
 	{
-		player->GiveNamedItem(classname);
-		player->AddAccount(-cost);
+		player->GiveNamedItem(info->ammoName);
+		player->AddAccount(-info->clipCost);
 		return true;
 	}
 
@@ -2463,7 +2015,7 @@ bool BuyGunAmmo(CBasePlayer *player, CBasePlayerItem *weapon, bool bBlinkMoney)
 		{
 			// Not enough money.. let the player know
 			ClientPrint(player->pev, HUD_PRINTCENTER, "#Not_Enough_Money");
-			BlinkAccount(player, 2);
+			BlinkAccount(player);
 		}
 	}
 
@@ -2473,19 +2025,15 @@ bool BuyGunAmmo(CBasePlayer *player, CBasePlayerItem *weapon, bool bBlinkMoney)
 bool BuyAmmo(CBasePlayer *player, int nSlot, bool bBlinkMoney)
 {
 	if (!player->CanPlayerBuy(true))
-	{
 		return false;
-	}
 
 	if (nSlot < PRIMARY_WEAPON_SLOT || nSlot > PISTOL_SLOT)
-	{
 		return false;
-	}
 
 	// Buy one ammo clip for all weapons in the given slot
 	//
-	//  nSlot == 1 : Primary weapons
-	//  nSlot == 2 : Secondary weapons
+	// nSlot == 1 : Primary weapons
+	// nSlot == 2 : Secondary weapons
 
 	CBasePlayerItem *pItem = player->m_rgpPlayerItems[ nSlot ];
 
@@ -2520,7 +2068,7 @@ CBaseEntity *EntityFromUserID(int userID)
 		if (FNullEnt(pTempEntity->edict()))
 			break;
 
-		CBasePlayer *pTempPlayer = GetClassPtr((CBasePlayer *)pTempEntity->pev);
+		CBasePlayer *pTempPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pTempEntity->pev);
 
 		if (pTempPlayer->m_iTeam != UNASSIGNED && userID == GETPLAYERUSERID(pTempEntity->edict()))
 		{
@@ -2541,7 +2089,7 @@ NOXREF int CountPlayersInServer()
 		if (FNullEnt(pTempEntity->edict()))
 			break;
 
-		CBasePlayer *pTempPlayer = GetClassPtr((CBasePlayer *)pTempEntity->pev);
+		CBasePlayer *pTempPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pTempEntity->pev);
 
 		if (pTempPlayer->m_iTeam != UNASSIGNED)
 		{
@@ -2698,117 +2246,50 @@ BOOL HandleBuyAliasCommands(CBasePlayer *pPlayer, const char *pszCommand)
 	return bRetVal;
 }
 
+struct RadioStruct
+{
+	int slot;
+	void (*func)(CBasePlayer *, int);
+	const char *alias;
+
+} radioInfo[] = {
+	{ 1, Radio1, "coverme" },
+	{ 2, Radio1, "takepoint" },
+	{ 3, Radio1, "holdpos" },
+	{ 4, Radio1, "regroup" },
+	{ 5, Radio1, "followme" },
+	{ 6, Radio1, "takingfire" },
+
+	{ 1, Radio2, "go" },
+	{ 2, Radio2, "fallback" },
+	{ 3, Radio2, "sticktog" },
+	{ 4, Radio2, "getinpos" },
+	{ 5, Radio2, "stormfront" },
+	{ 6, Radio2, "report" },
+
+	{ 1, Radio3, "roger" },
+	{ 2, Radio3, "enemyspot" },
+	{ 3, Radio3, "needbackup" },
+	{ 4, Radio3, "sectorclear" },
+	{ 5, Radio3, "inposition" },
+	{ 6, Radio3, "reportingin" },
+	{ 7, Radio3, "getout" },
+	{ 8, Radio3, "negative" },
+	{ 9, Radio3, "enemydown" },
+};
+
 BOOL HandleRadioAliasCommands(CBasePlayer *pPlayer, const char *pszCommand)
 {
-	BOOL bRetVal = FALSE;
-
-	if (FStrEq(pszCommand, "coverme"))
+	for (auto& radio : radioInfo)
 	{
-		bRetVal = TRUE;
-		Radio1(pPlayer, 1);
-	}
-	else if (FStrEq(pszCommand, "takepoint"))
-	{
-		bRetVal = TRUE;
-		Radio1(pPlayer, 2);
-	}
-	else if (FStrEq(pszCommand, "holdpos"))
-	{
-		bRetVal = TRUE;
-		Radio1(pPlayer, 3);
-	}
-	else if (FStrEq(pszCommand, "regroup"))
-	{
-		bRetVal = TRUE;
-		Radio1(pPlayer, 4);
-	}
-	else if (FStrEq(pszCommand, "followme"))
-	{
-		bRetVal = TRUE;
-		Radio1(pPlayer, 5);
-	}
-	else if (FStrEq(pszCommand, "takingfire"))
-	{
-		bRetVal = TRUE;
-		Radio1(pPlayer, 6);
-	}
-	else if (FStrEq(pszCommand, "go"))
-	{
-		bRetVal = TRUE;
-		Radio2(pPlayer, 1);
-	}
-	else if (FStrEq(pszCommand, "fallback"))
-	{
-		bRetVal = TRUE;
-		Radio2(pPlayer, 2);
-	}
-	else if (FStrEq(pszCommand, "sticktog"))
-	{
-		bRetVal = TRUE;
-		Radio2(pPlayer, 3);
-	}
-	else if (FStrEq(pszCommand, "getinpos"))
-	{
-		bRetVal = TRUE;
-		Radio2(pPlayer, 4);
-	}
-	else if (FStrEq(pszCommand, "stormfront"))
-	{
-		bRetVal = TRUE;
-		Radio2(pPlayer, 5);
-	}
-	else if (FStrEq(pszCommand, "report"))
-	{
-		bRetVal = TRUE;
-		Radio2(pPlayer, 6);
-	}
-	else if (FStrEq(pszCommand, "roger"))
-	{
-		bRetVal = TRUE;
-		Radio3(pPlayer, 1);
-	}
-	else if (FStrEq(pszCommand, "enemyspot"))
-	{
-		bRetVal = TRUE;
-		Radio3(pPlayer, 2);
-	}
-	else if (FStrEq(pszCommand, "needbackup"))
-	{
-		bRetVal = TRUE;
-		Radio3(pPlayer, 3);
-	}
-	else if (FStrEq(pszCommand, "sectorclear"))
-	{
-		bRetVal = TRUE;
-		Radio3(pPlayer, 4);
-	}
-	else if (FStrEq(pszCommand, "inposition"))
-	{
-		bRetVal = TRUE;
-		Radio3(pPlayer, 5);
-	}
-	else if (FStrEq(pszCommand, "reportingin"))
-	{
-		bRetVal = TRUE;
-		Radio3(pPlayer, 6);
-	}
-	else if (FStrEq(pszCommand, "getout"))
-	{
-		bRetVal = TRUE;
-		Radio3(pPlayer, 7);
-	}
-	else if (FStrEq(pszCommand, "negative"))
-	{
-		bRetVal = TRUE;
-		Radio3(pPlayer, 8);
-	}
-	else if (FStrEq(pszCommand, "enemydown"))
-	{
-		bRetVal = TRUE;
-		Radio3(pPlayer, 9);
+		if (FStrEq(pszCommand, radio.alias))
+		{
+			radio.func(pPlayer, radio.slot);
+			return TRUE;
+		} 
 	}
 
-	return bRetVal;
+	return FALSE;
 }
 
 // Use CMD_ARGV,  CMD_ARGV, and CMD_ARGC to get pointers the character string command.
@@ -2822,7 +2303,7 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 		return;
 
 	entvars_t *pev = &pEntity->v;
-	CBasePlayer *player = GetClassPtr((CBasePlayer *)pev);
+	CBasePlayer *player = GetClassPtr<CCSPlayer>((CBasePlayer *)pev);
 
 	if (FStrEq(pcmd, "say"))
 	{
@@ -2897,7 +2378,7 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 				CBaseEntity *pKickEntity = EntityFromUserID(iVoteID);
 				if (pKickEntity != NULL)
 				{
-					CBasePlayer *pKickPlayer = GetClassPtr((CBasePlayer *)pKickEntity->pev);
+					CBasePlayer *pKickPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pKickEntity->pev);
 
 					if (pKickPlayer->m_iTeam != player->m_iTeam)
 					{
@@ -3458,12 +2939,12 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 	}
 	else
 	{
-		if (g_pGameRules->ClientCommand_DeadOrAlive(GetClassPtr((CBasePlayer *)pev), pcmd))
+		if (g_pGameRules->ClientCommand_DeadOrAlive(GetClassPtr<CCSPlayer>((CBasePlayer *)pev), pcmd))
 			return;
 
 		if (TheBots != NULL)
 		{
-			if (TheBots->ClientCommand(GetClassPtr((CBasePlayer *)pev), pcmd))
+			if (TheBots->ClientCommand(GetClassPtr<CCSPlayer>((CBasePlayer *)pev), pcmd))
 				return;
 		}
 
@@ -3611,22 +3092,22 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 			{
 #if 0
 				if (g_flWeaponCheat && CMD_ARGC() > 1)
-					GetClassPtr((CBasePlayer *)pev)->m_iFOV = Q_atoi(CMD_ARGV(1));
+					GetClassPtr<CCSPlayer>((CBasePlayer *)pev)->m_iFOV = Q_atoi(CMD_ARGV(1));
 				else
-					CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("\"fov\" is \"%d\"\n", int(GetClassPtr((CBasePlayer *)pev)->m_iFOV)));
+					CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("\"fov\" is \"%d\"\n", int(GetClassPtr<CCSPlayer>((CBasePlayer *)pev)->m_iFOV)));
 #endif
 			}
 			else if (FStrEq(pcmd, "use"))
 			{
-				GetClassPtr((CBasePlayer *)pev)->SelectItem(CMD_ARGV_(1));
+				GetClassPtr<CCSPlayer>((CBasePlayer *)pev)->SelectItem(CMD_ARGV_(1));
 			}
 			else if (((pstr = Q_strstr(pcmd, "weapon_")) != NULL) && (pstr == pcmd))
 			{
-				GetClassPtr((CBasePlayer *)pev)->SelectItem(pcmd);
+				GetClassPtr<CCSPlayer>((CBasePlayer *)pev)->SelectItem(pcmd);
 			}
 			else if (FStrEq(pcmd, "lastinv"))
 			{
-				GetClassPtr((CBasePlayer *)pev)->SelectLastItem();
+				GetClassPtr<CCSPlayer>((CBasePlayer *)pev)->SelectLastItem();
 			}
 			else if (FStrEq(pcmd, "buyammo1"))
 			{
@@ -3747,7 +3228,7 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 				if (HandleRadioAliasCommands(player, pcmd))
 					return;
 
-				if (!g_pGameRules->ClientCommand(GetClassPtr((CBasePlayer *)pev), pcmd))
+				if (!g_pGameRules->ClientCommand(GetClassPtr<CCSPlayer>((CBasePlayer *)pev), pcmd))
 				{
 					// tell the user they entered an unknown command
 					char command[128];
@@ -3818,7 +3299,7 @@ void EXT_FUNC ClientUserInfoChanged(edict_t *pEntity, char *infobuffer)
 		}
 	}
 
-	g_pGameRules->ClientUserInfoChanged(GetClassPtr((CBasePlayer *)&pEntity->v), infobuffer);
+	g_pGameRules->ClientUserInfoChanged(GetClassPtr<CCSPlayer>((CBasePlayer *)&pEntity->v), infobuffer);
 }
 
 void EXT_FUNC ServerDeactivate()
@@ -4164,8 +3645,8 @@ void ClientPrecache()
 	PRECACHE_MODEL("models/w_shield.mdl");
 
 	Vector temp = g_vecZero;
-	Vector vMin = Vector(-38, -24, -41);
-	Vector vMax = Vector(38, 24, 41);
+	Vector vMin(-38, -24, -41);
+	Vector vMax(38, 24, 41);
 
 	for (i = 0; i < numPlayerModels; ++i)
 		ENGINE_FORCE_UNMODIFIED(force_model_specifybounds, (float *)&vMin, (float *)&vMax, sPlayerModelFiles[i]);
