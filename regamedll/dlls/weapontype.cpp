@@ -252,7 +252,7 @@ WeaponInfoStruct weaponInfo_default[] =
 	{ WEAPON_SG552,		SG552_PRICE,		AMMO_556MM_PRICE,	AMMO_556NATO_BUY,	SG552_MAX_CLIP,		MAX_AMMO_556NATO,	AMMO_556NATO,		"weapon_sg552",		"ammo_556nato" },
 	{ WEAPON_AK47,		AK47_PRICE,		AMMO_762MM_PRICE,	AMMO_762NATO_BUY,	AK47_MAX_CLIP,		MAX_AMMO_762NATO,	AMMO_762NATO,		"weapon_ak47",		"ammo_762nato" },
 	{ WEAPON_P90,		P90_PRICE,		AMMO_57MM_PRICE,	AMMO_57MM_BUY,		P90_MAX_CLIP,		MAX_AMMO_57MM,		AMMO_57MM,		"weapon_p90",		"ammo_57mm" },
-	{ WEAPON_SHIELDGUN,	SHIELDGUN_PRICE,	0,			0,			0,			0,			AMMO_NONE,		nullptr,		nullptr },
+	{ WEAPON_SHIELDGUN,	SHIELDGUN_PRICE,	0,			0,			0,			0,			AMMO_NONE,		"weapon_shield",	nullptr },
 	{ 0,			0,			0,			0,			0,			0,			AMMO_NONE,		nullptr,		nullptr }
 };
 

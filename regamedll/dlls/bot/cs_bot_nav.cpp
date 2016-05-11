@@ -409,7 +409,7 @@ NOXREF bool CCSBot::FindApproachPointNearestPath(Vector *pos)
 	if (m_approachPointCount == 0)
 		return false;
 
-	Vector target = Vector(0, 0, 0), close;
+	Vector target(0, 0, 0), close;
 	float targetRangeSq = 0.0f;
 	bool found = false;
 

@@ -1938,7 +1938,7 @@ void CSave::BufferData(const char *pdata, int size)
 int CRestore::ReadField(void *pBaseData, TYPEDESCRIPTION *pFields, int fieldCount, int startField, int size, char *pName, void *pData)
 {
 	float time = 0.0f;
-	Vector position = Vector(0, 0, 0);
+	Vector position(0, 0, 0);
 
 	if (m_pdata)
 	{

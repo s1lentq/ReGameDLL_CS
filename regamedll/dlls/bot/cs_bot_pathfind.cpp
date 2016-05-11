@@ -633,7 +633,7 @@ int CCSBot::FindOurPositionOnPath(Vector *close, bool local) const
 		return -1;
 
 	Vector along, toFeet;
-	Vector feet = Vector(pev->origin.x, pev->origin.y, GetFeetZ());
+	Vector feet(pev->origin.x, pev->origin.y, GetFeetZ());
 	Vector eyes = feet + Vector(0, 0, HalfHumanHeight); // in case we're crouching
 	Vector pos;
 	const Vector *from, *to;
@@ -857,7 +857,7 @@ int CCSBot::FindPathPoint(float aheadRange, Vector *point, int *prevIndex)
 	Vector initDir = m_path[ startIndex ].pos - m_path[ startIndex - 1 ].pos;
 	initDir.NormalizeInPlace();
 
-	Vector feet = Vector(pev->origin.x, pev->origin.y, GetFeetZ());
+	Vector feet(pev->origin.x, pev->origin.y, GetFeetZ());
 	Vector eyes = feet + Vector(0, 0, HalfHumanHeight);
 	float rangeSoFar = 0;
 
@@ -1172,7 +1172,7 @@ void CCSBot::FeelerReflexAdjustment(Vector *goalPosition)
 	// correct the sideways vector
 	lat = CrossProduct(dir, normal);
 
-	Vector feet = Vector(pev->origin.x, pev->origin.y, GetFeetZ());
+	Vector feet(pev->origin.x, pev->origin.y, GetFeetZ());
 	feet.z += feelerHeight;
 
 	Vector from = feet + feelerOffset * lat;

@@ -1082,7 +1082,7 @@ void CHostage::SendHostageEventMsg()
 void CHostage::Wiggle()
 {
 	TraceResult tr;
-	Vector vec = Vector(0, 0, 0);
+	Vector vec(0, 0, 0);
 	Vector wiggle_directions[] =
 	{
 		Vector(50, 0, 0),

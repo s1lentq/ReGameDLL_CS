@@ -3645,8 +3645,8 @@ void ClientPrecache()
 	PRECACHE_MODEL("models/w_shield.mdl");
 
 	Vector temp = g_vecZero;
-	Vector vMin = Vector(-38, -24, -41);
-	Vector vMax = Vector(38, 24, 41);
+	Vector vMin(-38, -24, -41);
+	Vector vMax(38, 24, 41);
 
 	for (i = 0; i < numPlayerModels; ++i)
 		ENGINE_FORCE_UNMODIFIED(force_model_specifybounds, (float *)&vMin, (float *)&vMax, sPlayerModelFiles[i]);

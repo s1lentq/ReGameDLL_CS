@@ -149,7 +149,7 @@ void CBaseMonster::__MAKE_VHOOK(Look)(int iDistance)
 	CBaseEntity *pSightEnt = NULL;
 	CBaseEntity *pList[100];
 
-	Vector delta = Vector(iDistance, iDistance, iDistance);
+	Vector delta(iDistance, iDistance, iDistance);
 
 	// Find only monsters/clients in box, NOT limited to PVS
 	int count = UTIL_EntitiesInBox(pList, ARRAYSIZE(pList), pev->origin - delta, pev->origin + delta, (FL_CLIENT | FL_MONSTER));

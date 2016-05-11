@@ -1349,7 +1349,7 @@ void CHostageImprov::__MAKE_VHOOK(OnTouch)(CBaseEntity *other)
 	{
 		const float lookAheadRange = 30.0f;
 		float ground;
-		Vector normal = Vector(0, 0, 1);
+		Vector normal(0, 0, 1);
 		Vector alongFloor;
 		TraceResult result;
 		bool isStep = false;
@@ -1385,7 +1385,7 @@ void CHostageImprov::__MAKE_VHOOK(OnTouch)(CBaseEntity *other)
 		if (isStep)
 		{
 			float stepAheadGround = pos.z;
-			Vector stepAheadNormal = Vector(0, 0, stepAheadGround);
+			Vector stepAheadNormal(0, 0, stepAheadGround);
 
 			m_inhibitObstacleAvoidance.Start(0.5);
 

@@ -1524,12 +1524,12 @@ inline float CCSBot::GetFeetZ() const
 {
 	if (IsCrouching())
 	{
-		const Vector crouch = Vector(0, 0, -StepHeight);
+		const Vector crouch(0, 0, -StepHeight);
 		return (pev->origin + crouch).z;
 	}
 	else
 	{
-		const Vector stand = Vector(0, 0, -HalfHumanHeight);
+		const Vector stand(0, 0, -HalfHumanHeight);
 		return (pev->origin + stand).z;
 	}
 }

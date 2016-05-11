@@ -715,7 +715,7 @@ void CLightning::RandomArea()
 	for (int iLoops = 0; iLoops < 10; iLoops++)
 	{
 		Vector vecSrc = pev->origin;
-		Vector vecDir1 = Vector(RANDOM_FLOAT(-1, 1), RANDOM_FLOAT(-1, 1), RANDOM_FLOAT(-1, 1));
+		Vector vecDir1(RANDOM_FLOAT(-1, 1), RANDOM_FLOAT(-1, 1), RANDOM_FLOAT(-1, 1));
 		vecDir1 = vecDir1.Normalize();
 
 		TraceResult tr1;
@@ -756,7 +756,7 @@ void CLightning::RandomPoint(Vector &vecSrc)
 {
 	for (int iLoops = 0; iLoops < 10; iLoops++)
 	{
-		Vector vecDir1 = Vector(RANDOM_FLOAT(-1, 1), RANDOM_FLOAT(-1, 1), RANDOM_FLOAT(-1, 1));
+		Vector vecDir1(RANDOM_FLOAT(-1, 1), RANDOM_FLOAT(-1, 1), RANDOM_FLOAT(-1, 1));
 		vecDir1 = vecDir1.Normalize();
 
 		TraceResult tr1;

@@ -15,15 +15,13 @@ void CGib::LimitVelocity()
 
 NOXREF void CGib::SpawnStickyGibs(entvars_t *pevVictim, Vector vecOrigin, int cGibs)
 {
-	int i;
-
 	if (g_Language == LANGUAGE_GERMAN)
 	{
 		// no sticky gibs in germany right now!
 		return;
 	}
 
-	for (i = 0; i < cGibs; ++i)
+	for (int i = 0; i < cGibs; ++i)
 	{
 		CGib *pGib = GetClassPtr<CCSGib>((CGib *)NULL);
 
@@ -67,7 +65,7 @@ NOXREF void CGib::SpawnStickyGibs(entvars_t *pevVictim, Vector vecOrigin, int cG
 
 			pGib->pev->movetype = MOVETYPE_TOSS;
 			pGib->pev->solid = SOLID_BBOX;
-			UTIL_SetSize(pGib->pev, Vector (0, 0,0), Vector (0, 0, 0));
+			UTIL_SetSize(pGib->pev, Vector(0, 0,0), Vector(0, 0, 0));
 			pGib->SetTouch(&CGib::StickyGibTouch);
 			pGib->SetThink(NULL);
 		}
@@ -734,9 +732,6 @@ int CBaseMonster::__MAKE_VHOOK(TakeHealth)(float flHealth, int bitsDamageType)
 // When a monster is poisoned via an arrow etc it takes all the poison damage at once.
 int CBaseMonster::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
-	float flTake;
-	Vector vecDir;
-
 	if (pev->takedamage == DAMAGE_NO)
 		return 0;
 
@@ -752,13 +747,13 @@ int CBaseMonster::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *p
 	}
 
 	// LATER: make armor consideration here!
-	flTake = flDamage;
+	float flTake = flDamage;
 
 	// set damage type sustained
 	m_bitsDamageType |= bitsDamageType;
 
 	// grab the vector of the incoming attack. ( pretend that the inflictor is a little lower than it really is, so the body will tend to fly upward a bit).
-	vecDir = Vector(0, 0, 0);
+	Vector vecDir(0, 0, 0);
 
 	if (!FNullEnt(pevInflictor))
 	{
@@ -849,7 +844,7 @@ int CBaseMonster::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *p
 int CBaseMonster::DeadTakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
 	// grab the vector of the incoming attack. ( pretend that the inflictor is a little lower than it really is, so the body will tend to fly upward a bit).
-	Vector vecDir = Vector(0, 0, 0);
+	Vector vecDir(0, 0, 0);
 
 	if (!FNullEnt(pevInflictor))
 	{
