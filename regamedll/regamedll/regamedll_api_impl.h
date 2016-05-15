@@ -52,8 +52,8 @@ typedef IVoidHookChainClassImpl<CBasePlayer, entvars_t *, float, Vector &, Trace
 typedef IVoidHookChainRegistryClassImpl<CBasePlayer, entvars_t *, float, Vector &, TraceResult *, int> CReGameHookRegistry_CBasePlayer_TraceAttack;
 
 // CBasePlayer::TakeDamage hook
-typedef IHookChainClassImpl<int, CBasePlayer, entvars_t *, entvars_t *, float, int> CRegameHook_CBasePlayer_TakeDamage;
-typedef IHookChainRegistryClassImpl<int, CBasePlayer, entvars_t *, entvars_t *, float, int> CReGameHookRegistry_CBasePlayer_TakeDamage;
+typedef IHookChainClassImpl<int, CBasePlayer, entvars_t *, entvars_t *, float&, int> CRegameHook_CBasePlayer_TakeDamage;
+typedef IHookChainRegistryClassImpl<int, CBasePlayer, entvars_t *, entvars_t *, float&, int> CReGameHookRegistry_CBasePlayer_TakeDamage;
 
 // CBasePlayer::TakeHealth hook
 typedef IHookChainClassImpl<int, CBasePlayer, float, int> CRegameHook_CBasePlayer_TakeHealth;

@@ -64,6 +64,7 @@ class CRestore;
 class CSaveRestoreBuffer;
 
 typedef Vector VectorRef;
+typedef float FloatRef;
 
 #define __API_HOOK(fname)\
 	fname

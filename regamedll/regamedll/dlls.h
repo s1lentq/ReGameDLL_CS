@@ -34,6 +34,7 @@
 #include "hooker_impl.h"
 #else
 typedef Vector& VectorRef;
+typedef float& FloatRef;
 #endif // HOOK_GAMEDLL
 
 #include "h_export.h"
