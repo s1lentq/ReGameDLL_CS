@@ -2139,7 +2139,6 @@ void CBasePlayer::__API_VHOOK(Killed)(entvars_t *pevAttacker, int iGib)
 	{
 		m_bHasDefuser = false;
 		pev->body = 0;
-
 		GiveNamedItem("item_thighpack");
 
 		MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, NULL, pev);
@@ -5794,6 +5793,14 @@ void CBasePlayer::__API_HOOK(GiveNamedItem)(const char *pszName)
 
 	DispatchSpawn(pent);
 	DispatchTouch(pent, ENT(pev));
+
+#ifdef REGAMEDLL_FIXES
+	// not allow the item to fall to the ground.
+	if (FNullEnt(pent->v.owner))
+	{
+		pent->v.flags |= FL_KILLME;
+	}
+#endif
 }
 
 CBaseEntity *FindEntityForward(CBaseEntity *pMe)
