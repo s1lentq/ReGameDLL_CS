@@ -182,6 +182,18 @@ typedef IHookChainRegistry<bool, class CBasePlayer *, int> IReGameHookRegistry_C
 typedef IHookChain<class CGameRules *> IReGameHook_InstallGameRules;
 typedef IHookChainRegistry<class CGameRules *> IReGameHookRegistry_InstallGameRules;
 
+// PM_Init hook
+typedef IVoidHookChain<struct playermove_s *> IReGameHook_PM_Init;
+typedef IVoidHookChainRegistry<struct playermove_s *> IReGameHookRegistry_PM_Init;
+
+// PM_Move hook
+typedef IVoidHookChain<struct playermove_s *, int> IReGameHook_PM_Move;
+typedef IVoidHookChainRegistry<struct playermove_s *, int> IReGameHookRegistry_PM_Move;
+
+// PM_AirMove hook
+typedef IVoidHookChain<> IReGameHook_PM_AirMove;
+typedef IVoidHookChainRegistry<> IReGameHookRegistry_PM_AirMove;
+
 class IReGameHookchains {
 public:
 	virtual ~IReGameHookchains() {}
@@ -215,10 +227,7 @@ public:
 	virtual IReGameHookRegistry_CBasePlayer_GiveNamedItem* CBasePlayer_GiveNamedItem() = 0;
 	virtual IReGameHookRegistry_CBasePlayer_AddAccount* CBasePlayer_AddAccount() = 0;
 	virtual IReGameHookRegistry_CBasePlayer_GiveShield* CBasePlayer_GiveShield() = 0;
-	
-	
 	virtual IReGameHookRegistry_CBaseAnimating_ResetSequenceInfo* CBaseAnimating_ResetSequenceInfo() = 0;
-
 
 	virtual IReGameHookRegistry_GetForceCamera* GetForceCamera() = 0;
 	virtual IReGameHookRegistry_PlayerBlind* PlayerBlind() = 0;
@@ -226,6 +235,9 @@ public:
 	virtual IReGameHookRegistry_RoundEnd* RoundEnd() = 0;
 	virtual IReGameHookRegistry_CanBuyThis* CanBuyThis() = 0;
 	virtual IReGameHookRegistry_InstallGameRules* InstallGameRules() = 0;
+	virtual IReGameHookRegistry_PM_Init* PM_Init() = 0;
+	virtual IReGameHookRegistry_PM_Move* PM_Move() = 0;
+	virtual IReGameHookRegistry_PM_AirMove* PM_AirMove() = 0;
 
 };
 

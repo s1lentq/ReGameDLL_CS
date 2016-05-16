@@ -2524,6 +2524,7 @@ class CReGameData: public IReGameData {
 public:
 	virtual CGameRules* GetGameRules();
 	virtual WeaponInfoStruct *GetWeaponInfo(int weaponID);
+	virtual playermove_t *GetPlayerMove();
 };
 
 template <class T>

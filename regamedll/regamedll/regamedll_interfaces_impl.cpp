@@ -142,3 +142,7 @@ CGameRules* EXT_FUNC CReGameData::GetGameRules() {
 WeaponInfoStruct* EXT_FUNC CReGameData::GetWeaponInfo(int weaponID) {
 	return ::GetWeaponInfo(weaponID);
 }
+
+playermove_t* EXT_FUNC CReGameData::GetPlayerMove() {
+	return pmove;
+}

@@ -1282,7 +1282,9 @@ void PM_WaterMove()
 	PM_FlyMove();
 }
 
-void PM_AirMove()
+LINK_HOOK_VOID_CHAIN2(PM_AirMove);
+
+void EXT_FUNC __API_HOOK(PM_AirMove)()
 {
 	int i;
 	vec3_t wishvel;
@@ -2579,9 +2581,7 @@ float PM_CalcRoll(vec_t *angles, vec_t *velocity, float rollangle, float rollspe
 	AngleVectors(angles, forward, right, up);
 
 	side = DotProduct(velocity, right);
-
 	sign = side < 0 ? -1 : 1;
-
 	side = Q_fabs(side);
 
 	value = rollangle;
@@ -3107,11 +3107,13 @@ void PM_CreateStuckTable()
 	}
 }
 
+LINK_HOOK_VOID_CHAIN(PM_Move, (struct playermove_s *ppmove, int server), ppmove, server);
+
 // This module implements the shared player physics code between any particular game and
 // the engine. The same PM_Move routine is built into the game .dll and the client .dll and is
 // invoked by each side as appropriate. There should be no distinction, internally, between server
 // and client. This will ensure that prediction behaves appropriately.
-void EXT_FUNC PM_Move(struct playermove_s *ppmove, int server)
+void EXT_FUNC __API_HOOK(PM_Move)(struct playermove_s *ppmove, int server)
 {
 	assert(pm_shared_initialized);
 
@@ -3150,7 +3152,9 @@ NOXREF int PM_GetPhysEntInfo(int ent)
 	return -1;
 }
 
-void EXT_FUNC PM_Init(struct playermove_s *ppmove)
+LINK_HOOK_VOID_CHAIN(PM_Init, (struct playermove_s *ppmove), ppmove);
+
+void EXT_FUNC __API_HOOK(PM_Init)(struct playermove_s *ppmove)
 {
 	assert(!pm_shared_initialized);
 

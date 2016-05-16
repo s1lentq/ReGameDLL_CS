@@ -176,6 +176,18 @@ typedef IHookChainRegistryImpl<bool, class CBasePlayer *, int> CReGameHookRegist
 typedef IHookChainImpl<CGameRules *> CReGameHook_InstallGameRules;
 typedef IHookChainRegistryImpl<CGameRules *> CReGameHookRegistry_InstallGameRules;
 
+// PM_Init hook
+typedef IVoidHookChainImpl<struct playermove_s *> CReGameHook_PM_Init;
+typedef IVoidHookChainRegistryImpl<struct playermove_s *> CReGameHookRegistry_PM_Init;
+
+// PM_Move hook
+typedef IVoidHookChainImpl<struct playermove_s *, int> CReGameHook_PM_Move;
+typedef IVoidHookChainRegistryImpl<struct playermove_s *, int> CReGameHookRegistry_PM_Move;
+
+// PM_AirMove hook
+typedef IVoidHookChainImpl<> CReGameHook_PM_AirMove;
+typedef IVoidHookChainRegistryImpl<> CReGameHookRegistry_PM_AirMove;
+
 class CReGameHookchains: public IReGameHookchains {
 public:
 	// CBasePlayer virtual
@@ -209,7 +221,6 @@ public:
 	CReGameHookRegistry_CBasePlayer_AddAccount m_CBasePlayer_AddAccount;
 	CReGameHookRegistry_CBasePlayer_GiveShield m_CBasePlayer_GiveShield;
 
-
 	CReGameHookRegistry_CBaseAnimating_ResetSequenceInfo m_CBaseAnimating_ResetSequenceInfo;
 
 	CReGameHookRegistry_GetForceCamera m_GetForceCamera;
@@ -218,6 +229,9 @@ public:
 	CReGameHookRegistry_RoundEnd m_RoundEnd;
 	CReGameHookRegistry_CanBuyThis m_CanBuyThis;
 	CReGameHookRegistry_InstallGameRules m_InstallGameRules;
+	CReGameHookRegistry_PM_Init m_PM_Init;
+	CReGameHookRegistry_PM_Move m_PM_Move;
+	CReGameHookRegistry_PM_AirMove m_PM_AirMove;
 
 public:
 	virtual IReGameHookRegistry_CBasePlayer_Spawn* CBasePlayer_Spawn();
@@ -250,7 +264,6 @@ public:
 	virtual IReGameHookRegistry_CBasePlayer_AddAccount* CBasePlayer_AddAccount();
 	virtual IReGameHookRegistry_CBasePlayer_GiveShield* CBasePlayer_GiveShield();
 
-
 	virtual IReGameHookRegistry_CBaseAnimating_ResetSequenceInfo* CBaseAnimating_ResetSequenceInfo();
 
 	virtual IReGameHookRegistry_GetForceCamera* GetForceCamera();
@@ -259,6 +272,9 @@ public:
 	virtual IReGameHookRegistry_RoundEnd* RoundEnd();
 	virtual IReGameHookRegistry_CanBuyThis* CanBuyThis();
 	virtual IReGameHookRegistry_InstallGameRules* InstallGameRules();
+	virtual IReGameHookRegistry_PM_Init* PM_Init();
+	virtual IReGameHookRegistry_PM_Move* PM_Move();
+	virtual IReGameHookRegistry_PM_AirMove* PM_AirMove();
 
 };
 

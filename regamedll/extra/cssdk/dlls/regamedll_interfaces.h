@@ -2076,5 +2076,7 @@ class IReGameData {
 public:
 	virtual ~IReGameData() {}
 
-	virtual class CGameRules** GetGameRules() = 0;
+	virtual class CGameRules* GetGameRules() = 0;
+	virtual struct WeaponInfoStruct *GetWeaponInfo(int weaponID) = 0;
+	virtual struct playermove_s *GetPlayerMove() = 0;
 };

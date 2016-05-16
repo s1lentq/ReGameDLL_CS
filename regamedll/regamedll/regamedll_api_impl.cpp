@@ -89,6 +89,9 @@ IReGameHookRegistry_RadiusFlash_TraceLine* CReGameHookchains::RadiusFlash_TraceL
 IReGameHookRegistry_RoundEnd* CReGameHookchains::RoundEnd() { return &m_RoundEnd; }
 IReGameHookRegistry_CanBuyThis* CReGameHookchains::CanBuyThis() { return &m_CanBuyThis; }
 IReGameHookRegistry_InstallGameRules* CReGameHookchains::InstallGameRules() { return &m_InstallGameRules; }
+IReGameHookRegistry_PM_Init* CReGameHookchains::PM_Init() { return &m_PM_Init; }
+IReGameHookRegistry_PM_Move* CReGameHookchains::PM_Move() { return &m_PM_Move; }
+IReGameHookRegistry_PM_AirMove* CReGameHookchains::PM_AirMove() { return &m_PM_AirMove; }
 
 int CReGameApi::GetMajorVersion()
 {

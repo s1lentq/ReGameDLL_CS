@@ -81,6 +81,10 @@ void PM_Init(struct playermove_s *ppmove);
 void PM_Move(struct playermove_s *ppmove, int server);
 char PM_FindTextureType(char *name);
 
+void PM_Init_(struct playermove_s *ppmove);
+void PM_Move_(struct playermove_s *ppmove, int server);
+void PM_AirMove_();
+
 extern struct playermove_s *pmove;
 
 #endif // PM_SHARED_H
