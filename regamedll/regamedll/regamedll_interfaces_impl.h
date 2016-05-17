@@ -2520,13 +2520,6 @@ public:
 	virtual void KeyValue(KeyValueData *pkvd) { m_pEntity->KeyValue(pkvd); }
 };
 
-class CReGameData: public IReGameData {
-public:
-	virtual CGameRules* GetGameRules();
-	virtual WeaponInfoStruct *GetWeaponInfo(int weaponID);
-	virtual playermove_t *GetPlayerMove();
-};
-
 template <class T>
 inline T *Regamedll_InitializeEntities(CBaseEntity *a)
 {

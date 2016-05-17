@@ -268,7 +268,10 @@ public:
 	virtual int GetMinorVersion() = 0;
 	virtual const ReGameFuncs_t* GetFuncs() = 0;
 	virtual IReGameHookchains* GetHookchains() = 0;
-	virtual IReGameData* GetGameData() = 0;
+
+	virtual class CGameRules* GetGameRules() = 0;
+	virtual struct WeaponInfoStruct *GetWeaponInfo(int weaponID) = 0;
+	virtual struct playermove_s *GetPlayerMove() = 0;
 
 };
 

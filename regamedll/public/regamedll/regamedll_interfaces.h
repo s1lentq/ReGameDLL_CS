@@ -2071,12 +2071,3 @@ public:
 	virtual void Spawn() = 0;
 	virtual void KeyValue(struct KeyValueData_s *pkvd) = 0;
 };
-
-class IReGameData {
-public:
-	virtual ~IReGameData() {}
-
-	virtual class CGameRules* GetGameRules() = 0;
-	virtual struct WeaponInfoStruct *GetWeaponInfo(int weaponID) = 0;
-	virtual struct playermove_s *GetPlayerMove() = 0;
-};

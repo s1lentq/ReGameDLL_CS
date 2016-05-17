@@ -134,15 +134,3 @@ ICSEntity *EXT_FUNC INDEX_TO_CSENTITY(int iEntityIndex)
 	CBaseEntity *pEntity = CBaseEntity::Instance(INDEXENT(iEntityIndex));
 	return CBASE_TO_CSENTITY(pEntity);
 }
-
-CGameRules* EXT_FUNC CReGameData::GetGameRules() {
-	return g_pGameRules;
-}
-
-WeaponInfoStruct* EXT_FUNC CReGameData::GetWeaponInfo(int weaponID) {
-	return ::GetWeaponInfo(weaponID);
-}
-
-playermove_t* EXT_FUNC CReGameData::GetPlayerMove() {
-	return pmove;
-}

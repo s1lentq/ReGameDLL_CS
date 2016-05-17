@@ -279,7 +279,6 @@ public:
 };
 
 extern CReGameHookchains g_ReGameHookchains;
-extern CReGameData g_ReGameData;
 extern ReGameFuncs_t g_ReGameApiFuncs;
 
 class CReGameApi: public IReGameApi {
@@ -289,7 +288,10 @@ public:
 
 	virtual const ReGameFuncs_t *GetFuncs();
 	virtual IReGameHookchains *GetHookchains();
-	virtual IReGameData* GetGameData();
+
+	virtual CGameRules* GetGameRules();
+	virtual WeaponInfoStruct *GetWeaponInfo(int weaponID);
+	virtual playermove_t *GetPlayerMove();
 };
 
 void Regamedll_ChangeString_api(char *&dest, const char *source);

@@ -28,7 +28,6 @@
 #include "precompiled.h"
 
 CReGameHookchains g_ReGameHookchains;
-CReGameData g_ReGameData;
 
 ReGameFuncs_t g_ReGameApiFuncs = {
 	&UTIL_PlayerByIndex,
@@ -113,9 +112,16 @@ IReGameHookchains *CReGameApi::GetHookchains()
 	return &g_ReGameHookchains;
 }
 
-IReGameData *CReGameApi::GetGameData()
-{
-	return &g_ReGameData;
+CGameRules* EXT_FUNC CReGameApi::GetGameRules() {
+	return g_pGameRules;
+}
+
+WeaponInfoStruct* EXT_FUNC CReGameApi::GetWeaponInfo(int weaponID) {
+	return ::GetWeaponInfo(weaponID);
+}
+
+playermove_t* EXT_FUNC CReGameApi::GetPlayerMove() {
+	return pmove;
 }
 
 void EXT_FUNC Regamedll_ChangeString_api(char *&dest, const char *source)
