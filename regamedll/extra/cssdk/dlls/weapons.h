@@ -44,10 +44,6 @@ class CBasePlayer;
 
 #define WEAPON_IS_ONTARGET		0x40
 
-#define ARMOR_TYPE_EMPTY		0
-#define ARMOR_TYPE_KEVLAR		1	// Armor
-#define ARMOR_TYPE_HELMET		2	// Armor and helmet
-
 // the maximum amount of ammo each weapon's clip can hold
 #define WEAPON_NOCLIP			-1
 
@@ -69,6 +65,13 @@ class CBasePlayer;
 #define SF_DETONATE			0x0001	// Grenades flagged with this will be triggered when the owner calls detonateSatchelCharges
 
 // custom enum
+enum ArmorType
+{
+	ARMOR_NONE,	// no armor
+	ARMOR_KEVLAR,	// body vest only
+	ARMOR_VESTHELM,	// vest and helmet
+};
+
 enum ArmouryItemPack
 {
 	ARMOURY_MP5NAVY,

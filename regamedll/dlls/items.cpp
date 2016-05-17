@@ -284,8 +284,8 @@ void CItemKevlar::__MAKE_VHOOK(Precache)()
 
 BOOL CItemKevlar::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
 {
-	if (pPlayer->m_iKevlar == ARMOR_TYPE_EMPTY)
-		pPlayer->m_iKevlar = ARMOR_TYPE_KEVLAR;
+	if (pPlayer->m_iKevlar == ARMOR_NONE)
+		pPlayer->m_iKevlar = ARMOR_KEVLAR;
 
 	pPlayer->pev->armorvalue = 100;
 	EMIT_SOUND(pPlayer->edict(), CHAN_ITEM, "items/ammopickup2.wav", VOL_NORM, ATTN_NORM);
@@ -322,7 +322,7 @@ void CItemAssaultSuit::__MAKE_VHOOK(Precache)()
 
 BOOL CItemAssaultSuit::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
 {
-	pPlayer->m_iKevlar = ARMOR_TYPE_HELMET;
+	pPlayer->m_iKevlar = ARMOR_VESTHELM;
 	pPlayer->pev->armorvalue = 100;
 
 	EMIT_SOUND(pPlayer->edict(), CHAN_ITEM, "items/ammopickup2.wav", VOL_NORM, ATTN_NORM);

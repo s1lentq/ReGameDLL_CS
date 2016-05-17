@@ -1282,9 +1282,14 @@ void PM_WaterMove()
 	PM_FlyMove();
 }
 
-LINK_HOOK_VOID_CHAIN2(PM_AirMove);
+LINK_HOOK_VOID_CHAIN(PM_AirMove, (int playerIndex = 0), pmove->player_index + 1);
 
-void EXT_FUNC __API_HOOK(PM_AirMove)()
+void EXT_FUNC __API_HOOK(PM_AirMove)(int playerIndex)
+{
+	PM_AirMove_internal();
+}
+
+void PM_AirMove_internal()
 {
 	int i;
 	vec3_t wishvel;

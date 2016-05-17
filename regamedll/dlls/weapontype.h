@@ -333,7 +333,8 @@ enum shieldgren_e
 
 enum InventorySlotType
 {
-	PRIMARY_WEAPON_SLOT = 1,
+	NONE_SLOT,
+	PRIMARY_WEAPON_SLOT,
 	PISTOL_SLOT,
 	KNIFE_SLOT,
 	GRENADE_SLOT,
@@ -411,9 +412,15 @@ struct WeaponInfoStruct
 #endif
 };
 
+struct WeaponSlotInfo
+{
+	WeaponIdType id;
+	InventorySlotType slot;
+	const char *weaponName;
+};
+
 extern AutoBuyInfoStruct g_autoBuyInfo[35];
 extern WeaponStruct g_weaponStruct[MAX_WEAPONS];
-extern WeaponInfoStruct weaponInfo[27];
 
 // WeaponType
 WeaponIdType AliasToWeaponID(const char *alias);
@@ -423,8 +430,13 @@ WeaponClassType AliasToWeaponClass(const char *alias);
 WeaponClassType WeaponIDToWeaponClass(int id);
 bool IsPrimaryWeapon(int id);
 bool IsSecondaryWeapon(int id);
-WeaponInfoStruct *GetWeaponInfo(int weaponID);
 bool CanBuyWeaponByMaptype(int playerTeam, WeaponIdType weaponID, bool useAssasinationRestrictions);
 void WeaponInfoReset();
+
+WeaponInfoStruct* GetWeaponInfo(int weaponID);
+WeaponInfoStruct* GetWeaponInfo(const char* weaponName);
+
+WeaponSlotInfo* GetWeaponSlot(WeaponIdType weaponID);
+WeaponSlotInfo* GetWeaponSlot(const char* weaponName);
 
 #endif // WEAPONTYPE_H

@@ -224,7 +224,7 @@ WeaponClassAliasInfo weaponClassAliasInfo[] =
 	{ NULL,		WEAPONCLASS_NONE }
 };
 
-WeaponInfoStruct weaponInfo[27];
+WeaponInfoStruct weaponInfo[31];
 WeaponInfoStruct weaponInfo_default[] =
 {
 	{ WEAPON_P228,		P228_PRICE,		AMMO_357SIG_PRICE,	AMMO_357SIG_BUY,	P228_MAX_CLIP,		MAX_AMMO_357SIG,	AMMO_357SIG,		"weapon_p228",		"ammo_357sig" },
@@ -252,11 +252,56 @@ WeaponInfoStruct weaponInfo_default[] =
 	{ WEAPON_SG552,		SG552_PRICE,		AMMO_556MM_PRICE,	AMMO_556NATO_BUY,	SG552_MAX_CLIP,		MAX_AMMO_556NATO,	AMMO_556NATO,		"weapon_sg552",		"ammo_556nato" },
 	{ WEAPON_AK47,		AK47_PRICE,		AMMO_762MM_PRICE,	AMMO_762NATO_BUY,	AK47_MAX_CLIP,		MAX_AMMO_762NATO,	AMMO_762NATO,		"weapon_ak47",		"ammo_762nato" },
 	{ WEAPON_P90,		P90_PRICE,		AMMO_57MM_PRICE,	AMMO_57MM_BUY,		P90_MAX_CLIP,		MAX_AMMO_57MM,		AMMO_57MM,		"weapon_p90",		"ammo_57mm" },
-	{ WEAPON_SHIELDGUN,	SHIELDGUN_PRICE,	0,			0,			0,			0,			AMMO_NONE,		"weapon_shield",	nullptr },
-	{ 0,			0,			0,			0,			0,			0,			AMMO_NONE,		nullptr,		nullptr }
+
+#ifdef REGAMEDLL_ADD
+	{ WEAPON_C4,		0,					0,			0,			0,			0,			AMMO_NONE,		"weapon_c4",		nullptr },
+	{ WEAPON_KNIFE,		0,					0,			0,			0,			0,			AMMO_NONE,		"weapon_knife",		nullptr },
+	{ WEAPON_HEGRENADE,	(WeaponCostType)HEGRENADE_PRICE,	0,			0,			0,			0,			AMMO_NONE,		"weapon_hegrenade",	nullptr },
+	{ WEAPON_SMOKEGRENADE,	(WeaponCostType)SMOKEGRENADE_PRICE,	0,			0,			0,			0,			AMMO_NONE,		"weapon_smokegrenade",	nullptr },
+	{ WEAPON_FLASHBANG,	(WeaponCostType)FLASHBANG_PRICE,	0,			0,			0,			0,			AMMO_NONE,		"weapon_flashbang",	nullptr },
+#endif
+
+	{ WEAPON_SHIELDGUN,	SHIELDGUN_PRICE,			0,			0,			0,			0,			AMMO_NONE,		"weapon_shield",	nullptr },
+#ifndef REGAMEDLL_ADD
+	{ 0,			0,					0,			0,			0,			0,			AMMO_NONE,		nullptr,		nullptr }
+#endif
 };
 
 #endif // HOOK_GAMEDLL
+
+WeaponSlotInfo weaponSlotInfo[] = {
+	{ WEAPON_C4,		C4_SLOT,		"weapon_c4" },
+	{ WEAPON_KNIFE,		KNIFE_SLOT,		"weapon_knife" },
+	{ WEAPON_P228,		PISTOL_SLOT,		"weapon_p228" },
+	{ WEAPON_GLOCK,		PISTOL_SLOT,		"weapon_glock" },
+	{ WEAPON_ELITE,		PISTOL_SLOT,		"weapon_elite" },
+	{ WEAPON_FIVESEVEN,	PISTOL_SLOT,		"weapon_fiveseven" },
+	{ WEAPON_USP,		PISTOL_SLOT,		"weapon_usp" },
+	{ WEAPON_GLOCK18,	PISTOL_SLOT,		"weapon_glock18" },
+	{ WEAPON_DEAGLE,	PISTOL_SLOT,		"weapon_deagle" },
+	{ WEAPON_HEGRENADE,	GRENADE_SLOT,		"weapon_hegrenade" },
+	{ WEAPON_SMOKEGRENADE,	GRENADE_SLOT,		"weapon_smokegrenade" },
+	{ WEAPON_FLASHBANG,	GRENADE_SLOT,		"weapon_flashbang" },
+	{ WEAPON_SCOUT,		PRIMARY_WEAPON_SLOT,	"weapon_scout" },
+	{ WEAPON_XM1014,	PRIMARY_WEAPON_SLOT,	"weapon_xm1014" },
+	{ WEAPON_MAC10,		PRIMARY_WEAPON_SLOT,	"weapon_mac10" },
+	{ WEAPON_AUG,		PRIMARY_WEAPON_SLOT,	"weapon_aug" },
+	{ WEAPON_UMP45,		PRIMARY_WEAPON_SLOT,	"weapon_ump45" },
+	{ WEAPON_SG550,		PRIMARY_WEAPON_SLOT,	"weapon_sg550" },
+	{ WEAPON_GALIL,		PRIMARY_WEAPON_SLOT,	"weapon_galil" },
+	{ WEAPON_FAMAS,		PRIMARY_WEAPON_SLOT,	"weapon_famas" },
+	{ WEAPON_AWP,		PRIMARY_WEAPON_SLOT,	"weapon_awp" },
+	{ WEAPON_MP5N,		PRIMARY_WEAPON_SLOT,	"weapon_mp5navy" },
+	{ WEAPON_M249,		PRIMARY_WEAPON_SLOT,	"weapon_m249" },
+	{ WEAPON_M3,		PRIMARY_WEAPON_SLOT,	"weapon_m3" },
+	{ WEAPON_M4A1,		PRIMARY_WEAPON_SLOT,	"weapon_m4a1" },
+	{ WEAPON_TMP,		PRIMARY_WEAPON_SLOT,	"weapon_tmp" },
+	{ WEAPON_G3SG1,		PRIMARY_WEAPON_SLOT,	"weapon_g3sg1" },
+	{ WEAPON_SG552,		PRIMARY_WEAPON_SLOT,	"weapon_sg552" },
+	{ WEAPON_AK47,		PRIMARY_WEAPON_SLOT,	"weapon_ak47" },
+	{ WEAPON_P90,		PRIMARY_WEAPON_SLOT,	"weapon_p90" },
+	{ WEAPON_SHIELDGUN,	NONE_SLOT,		"weapon_shield" }
+};
 
 // Given an alias, return the associated weapon ID
 WeaponIdType AliasToWeaponID(const char *alias)
@@ -373,15 +418,25 @@ bool IsSecondaryWeapon(int id)
 	return false;
 }
 
-WeaponInfoStruct *EXT_FUNC GetWeaponInfo(int weaponID)
+WeaponInfoStruct* GetWeaponInfo(int weaponID)
 {
-	for (int i = 0; weaponInfo[i].id != 0; ++i)
-	{
-		if (weaponInfo[i].id == weaponID)
-			return &weaponInfo[i];
+	for (auto& info : weaponInfo) {
+		if (info.id == weaponID) {
+			return &info;
+		}
 	}
 
-	return NULL;
+	return nullptr;
+}
+
+WeaponInfoStruct* GetWeaponInfo(const char* weaponName)
+{
+	for (auto& info : weaponInfo) {
+		if (!Q_stricmp(info.entityName, weaponName)) {
+			return &info;
+		}
+	}
+	return nullptr;
 }
 
 void WeaponInfoReset()
@@ -389,6 +444,28 @@ void WeaponInfoReset()
 #ifndef HOOK_GAMEDLL
 	Q_memcpy(weaponInfo, weaponInfo_default, sizeof(weaponInfo));
 #endif
+}
+
+WeaponSlotInfo* GetWeaponSlot(WeaponIdType weaponID)
+{
+	for (auto& infoSlot : weaponSlotInfo) {
+		if (infoSlot.id == weaponID) {
+			return &infoSlot;
+		}
+	}
+
+	return nullptr;
+}
+
+WeaponSlotInfo* GetWeaponSlot(const char* weaponName)
+{
+	for (auto& infoSlot : weaponSlotInfo) {
+		if (!Q_stricmp(infoSlot.weaponName, weaponName)) {
+			return &infoSlot;
+		}
+	}
+
+	return nullptr;
 }
 
 bool CanBuyWeaponByMaptype(int playerTeam, WeaponIdType weaponID, bool useAssasinationRestrictions)

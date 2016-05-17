@@ -92,6 +92,29 @@ IReGameHookRegistry_PM_Init* CReGameHookchains::PM_Init() { return &m_PM_Init; }
 IReGameHookRegistry_PM_Move* CReGameHookchains::PM_Move() { return &m_PM_Move; }
 IReGameHookRegistry_PM_AirMove* CReGameHookchains::PM_AirMove() { return &m_PM_AirMove; }
 
+IReGameHookRegistry_CSGameRules_FShouldSwitchWeapon* CReGameHookchains::CSGameRules_FShouldSwitchWeapon() { return &m_CSGameRules_FShouldSwitchWeapon; }
+IReGameHookRegistry_CSGameRules_GetNextBestWeapon* CReGameHookchains::CSGameRules_GetNextBestWeapon() { return &m_CSGameRules_GetNextBestWeapon; }
+IReGameHookRegistry_CSGameRules_FlPlayerFallDamage* CReGameHookchains::CSGameRules_FlPlayerFallDamage() { return &m_CSGameRules_FlPlayerFallDamage; }
+IReGameHookRegistry_CSGameRules_FPlayerCanTakeDamage* CReGameHookchains::CSGameRules_FPlayerCanTakeDamage() { return &m_CSGameRules_FPlayerCanTakeDamage; }
+IReGameHookRegistry_CSGameRules_PlayerSpawn* CReGameHookchains::CSGameRules_PlayerSpawn() { return &m_CSGameRules_PlayerSpawn; }
+IReGameHookRegistry_CSGameRules_FPlayerCanRespawn* CReGameHookchains::CSGameRules_FPlayerCanRespawn() { return &m_CSGameRules_FPlayerCanRespawn; }
+IReGameHookRegistry_CSGameRules_GetPlayerSpawnSpot* CReGameHookchains::CSGameRules_GetPlayerSpawnSpot() { return &m_CSGameRules_GetPlayerSpawnSpot; }
+IReGameHookRegistry_CSGameRules_ClientUserInfoChanged* CReGameHookchains::CSGameRules_ClientUserInfoChanged() { return &m_CSGameRules_ClientUserInfoChanged; }
+IReGameHookRegistry_CSGameRules_PlayerKilled* CReGameHookchains::CSGameRules_PlayerKilled() { return &m_CSGameRules_PlayerKilled; }
+IReGameHookRegistry_CSGameRules_DeathNotice* CReGameHookchains::CSGameRules_DeathNotice() { return &m_CSGameRules_DeathNotice; }
+IReGameHookRegistry_CSGameRules_CanHavePlayerItem* CReGameHookchains::CSGameRules_CanHavePlayerItem() { return &m_CSGameRules_CanHavePlayerItem; }
+IReGameHookRegistry_CSGameRules_DeadPlayerWeapons* CReGameHookchains::CSGameRules_DeadPlayerWeapons() { return &m_CSGameRules_DeadPlayerWeapons; }
+IReGameHookRegistry_CSGameRules_ServerDeactivate* CReGameHookchains::CSGameRules_ServerDeactivate() { return &m_CSGameRules_ServerDeactivate; }
+IReGameHookRegistry_CSGameRules_CheckMapConditions* CReGameHookchains::CSGameRules_CheckMapConditions() { return &m_CSGameRules_CheckMapConditions; }
+IReGameHookRegistry_CSGameRules_CleanUpMap* CReGameHookchains::CSGameRules_CleanUpMap() { return &m_CSGameRules_CleanUpMap; }
+IReGameHookRegistry_CSGameRules_RestartRound* CReGameHookchains::CSGameRules_RestartRound() { return &m_CSGameRules_RestartRound; }
+IReGameHookRegistry_CSGameRules_CheckWinConditions* CReGameHookchains::CSGameRules_CheckWinConditions() { return &m_CSGameRules_CheckWinConditions; }
+IReGameHookRegistry_CSGameRules_RemoveGuns* CReGameHookchains::CSGameRules_RemoveGuns() { return &m_CSGameRules_RemoveGuns; }
+IReGameHookRegistry_CSGameRules_GiveC4* CReGameHookchains::CSGameRules_GiveC4() { return &m_CSGameRules_GiveC4; }
+IReGameHookRegistry_CSGameRules_ChangeLevel* CReGameHookchains::CSGameRules_ChangeLevel() { return &m_CSGameRules_ChangeLevel; }
+IReGameHookRegistry_CSGameRules_GoToIntermission* CReGameHookchains::CSGameRules_GoToIntermission() { return &m_CSGameRules_GoToIntermission; }
+IReGameHookRegistry_CSGameRules_BalanceTeams* CReGameHookchains::CSGameRules_BalanceTeams() { return &m_CSGameRules_BalanceTeams; }
+
 int CReGameApi::GetMajorVersion()
 {
 	return REGAMEDLL_API_VERSION_MAJOR;
@@ -120,9 +143,16 @@ WeaponInfoStruct* EXT_FUNC CReGameApi::GetWeaponInfo(int weaponID) {
 	return ::GetWeaponInfo(weaponID);
 }
 
+WeaponInfoStruct* EXT_FUNC CReGameApi::GetWeaponInfo(const char* weaponName) {
+	return ::GetWeaponInfo(weaponName);
+}
+
 playermove_t* EXT_FUNC CReGameApi::GetPlayerMove() {
 	return pmove;
 }
+
+WeaponSlotInfo* EXT_FUNC CReGameApi::GetWeaponSlot(WeaponIdType weaponID) { return ::GetWeaponSlot(weaponID); }
+WeaponSlotInfo* EXT_FUNC CReGameApi::GetWeaponSlot(const char* weaponName) { return ::GetWeaponSlot(weaponName); }
 
 void EXT_FUNC Regamedll_ChangeString_api(char *&dest, const char *source)
 {

@@ -1074,7 +1074,7 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 	}
 
 	int fullArmor = (pPlayer->pev->armorvalue >= 100);
-	bool bHasHelmet = (pPlayer->m_iKevlar == ARMOR_TYPE_HELMET);
+	bool bHasHelmet = (pPlayer->m_iKevlar == ARMOR_VESTHELM);
 	bool bEnoughMoney = false;
 
 	switch (iSlot)

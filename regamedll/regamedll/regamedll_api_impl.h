@@ -185,8 +185,96 @@ typedef IVoidHookChainImpl<struct playermove_s *, int> CReGameHook_PM_Move;
 typedef IVoidHookChainRegistryImpl<struct playermove_s *, int> CReGameHookRegistry_PM_Move;
 
 // PM_AirMove hook
-typedef IVoidHookChainImpl<> CReGameHook_PM_AirMove;
-typedef IVoidHookChainRegistryImpl<> CReGameHookRegistry_PM_AirMove;
+typedef IVoidHookChainImpl<int> CReGameHook_PM_AirMove;
+typedef IVoidHookChainRegistryImpl<int> CReGameHookRegistry_PM_AirMove;
+
+// CHalfLifeMultiplay::FShouldSwitchWeapon hook
+typedef IHookChainClassImpl<BOOL, class CHalfLifeMultiplay, CBasePlayer *, CBasePlayerItem *> CReGameHook_CSGameRules_FShouldSwitchWeapon;
+typedef IHookChainRegistryClassEmptyImpl<BOOL, class CHalfLifeMultiplay, CBasePlayer *, CBasePlayerItem *> CReGameHookRegistry_CSGameRules_FShouldSwitchWeapon;
+
+// CHalfLifeMultiplay::GetNextBestWeapon hook
+typedef IHookChainClassImpl<BOOL, class CHalfLifeMultiplay, CBasePlayer *, CBasePlayerItem *> CReGameHook_CSGameRules_GetNextBestWeapon;
+typedef IHookChainRegistryClassEmptyImpl<BOOL, class CHalfLifeMultiplay, CBasePlayer *, CBasePlayerItem *> CReGameHookRegistry_CSGameRules_GetNextBestWeapon;
+
+// CHalfLifeMultiplay::FlPlayerFallDamage hook
+typedef IHookChainClassImpl<float, class CHalfLifeMultiplay, CBasePlayer *> CReGameHook_CSGameRules_FlPlayerFallDamage;
+typedef IHookChainRegistryClassEmptyImpl<float, class CHalfLifeMultiplay, CBasePlayer *> CReGameHookRegistry_CSGameRules_FlPlayerFallDamage;
+
+// CHalfLifeMultiplay::FPlayerCanTakeDamage hook
+typedef IHookChainClassImpl<BOOL, class CHalfLifeMultiplay, CBasePlayer *, CBaseEntity *> CReGameHook_CSGameRules_FPlayerCanTakeDamage;
+typedef IHookChainRegistryClassEmptyImpl<BOOL, class CHalfLifeMultiplay, CBasePlayer *, CBaseEntity *> CReGameHookRegistry_CSGameRules_FPlayerCanTakeDamage;
+
+// CHalfLifeMultiplay::PlayerSpawn hook
+typedef IVoidHookChainClassImpl<class CHalfLifeMultiplay, CBasePlayer *> CReGameHook_CSGameRules_PlayerSpawn;
+typedef IVoidHookChainRegistryClassEmptyImpl<class CHalfLifeMultiplay, CBasePlayer *> CReGameHookRegistry_CSGameRules_PlayerSpawn;
+
+// CHalfLifeMultiplay::FPlayerCanRespawn hook
+typedef IHookChainClassImpl<BOOL, class CHalfLifeMultiplay, CBasePlayer *> CReGameHook_CSGameRules_FPlayerCanRespawn;
+typedef IHookChainRegistryClassEmptyImpl<BOOL, class CHalfLifeMultiplay, CBasePlayer *> CReGameHookRegistry_CSGameRules_FPlayerCanRespawn;
+
+// CHalfLifeMultiplay::GetPlayerSpawnSpot hook
+typedef IHookChainClassImpl<edict_t *, class CHalfLifeMultiplay, CBasePlayer *> CReGameHook_CSGameRules_GetPlayerSpawnSpot;
+typedef IHookChainRegistryClassEmptyImpl<edict_t *, class CHalfLifeMultiplay, CBasePlayer *> CReGameHookRegistry_CSGameRules_GetPlayerSpawnSpot;
+
+// CHalfLifeMultiplay::ClientUserInfoChanged hook
+typedef IVoidHookChainClassImpl<class CHalfLifeMultiplay, CBasePlayer *, char *> CReGameHook_CSGameRules_ClientUserInfoChanged;
+typedef IVoidHookChainRegistryClassEmptyImpl< class CHalfLifeMultiplay, CBasePlayer *, char *> CReGameHookRegistry_CSGameRules_ClientUserInfoChanged;
+
+// CHalfLifeMultiplay::PlayerKilled hook
+typedef IVoidHookChainClassImpl<class CHalfLifeMultiplay, CBasePlayer *, entvars_t *, entvars_t *> CReGameHook_CSGameRules_PlayerKilled;
+typedef IVoidHookChainRegistryClassEmptyImpl<class CHalfLifeMultiplay, CBasePlayer *, entvars_t *, entvars_t *> CReGameHookRegistry_CSGameRules_PlayerKilled;
+
+// CHalfLifeMultiplay::DeathNotice hook
+typedef IVoidHookChainClassImpl<class CHalfLifeMultiplay, CBasePlayer *, entvars_t *, entvars_t *> CReGameHook_CSGameRules_DeathNotice;
+typedef IVoidHookChainRegistryClassEmptyImpl<class CHalfLifeMultiplay, CBasePlayer *, entvars_t *, entvars_t *> CReGameHookRegistry_CSGameRules_DeathNotice;
+
+// CHalfLifeMultiplay::CanHavePlayerItem hook
+typedef IHookChainClassImpl<BOOL, class CHalfLifeMultiplay, CBasePlayer *, CBasePlayerItem *> CReGameHook_CSGameRules_CanHavePlayerItem;
+typedef IHookChainRegistryClassEmptyImpl<BOOL, class CHalfLifeMultiplay, CBasePlayer *, CBasePlayerItem *> CReGameHookRegistry_CSGameRules_CanHavePlayerItem;
+
+// CHalfLifeMultiplay::DeadPlayerWeapons hook
+typedef IHookChainClassImpl<int, class CHalfLifeMultiplay, CBasePlayer *> CReGameHook_CSGameRules_DeadPlayerWeapons;
+typedef IHookChainRegistryClassEmptyImpl<int, class CHalfLifeMultiplay, CBasePlayer *> CReGameHookRegistry_CSGameRules_DeadPlayerWeapons;
+
+// CHalfLifeMultiplay::ServerDeactivate hook
+typedef IVoidHookChainClassImpl<class CHalfLifeMultiplay> CReGameHook_CSGameRules_ServerDeactivate;
+typedef IVoidHookChainRegistryClassEmptyImpl<class CHalfLifeMultiplay> CReGameHookRegistry_CSGameRules_ServerDeactivate;
+
+// CHalfLifeMultiplay::CheckMapConditions hook
+typedef IVoidHookChainClassImpl<class CHalfLifeMultiplay> CReGameHook_CSGameRules_CheckMapConditions;
+typedef IVoidHookChainRegistryClassEmptyImpl<class CHalfLifeMultiplay> CReGameHookRegistry_CSGameRules_CheckMapConditions;
+
+// CHalfLifeMultiplay::CleanUpMap hook
+typedef IVoidHookChainClassImpl<class CHalfLifeMultiplay> CReGameHook_CSGameRules_CleanUpMap;
+typedef IVoidHookChainRegistryClassEmptyImpl<class CHalfLifeMultiplay> CReGameHookRegistry_CSGameRules_CleanUpMap;
+
+// CHalfLifeMultiplay::RestartRound hook
+typedef IVoidHookChainClassImpl<class CHalfLifeMultiplay> CReGameHook_CSGameRules_RestartRound;
+typedef IVoidHookChainRegistryClassEmptyImpl<class CHalfLifeMultiplay> CReGameHookRegistry_CSGameRules_RestartRound;
+
+// CHalfLifeMultiplay::CheckWinConditions hook
+typedef IVoidHookChainClassImpl<class CHalfLifeMultiplay> CReGameHook_CSGameRules_CheckWinConditions;
+typedef IVoidHookChainRegistryClassEmptyImpl<class CHalfLifeMultiplay> CReGameHookRegistry_CSGameRules_CheckWinConditions;
+
+// CHalfLifeMultiplay::RemoveGuns hook
+typedef IVoidHookChainClassImpl<class CHalfLifeMultiplay> CReGameHook_CSGameRules_RemoveGuns;
+typedef IVoidHookChainRegistryClassEmptyImpl<class CHalfLifeMultiplay> CReGameHookRegistry_CSGameRules_RemoveGuns;
+
+// CHalfLifeMultiplay::GiveC4 hook
+typedef IVoidHookChainClassImpl<class CHalfLifeMultiplay> CReGameHook_CSGameRules_GiveC4;
+typedef IVoidHookChainRegistryClassEmptyImpl<class CHalfLifeMultiplay> CReGameHookRegistry_CSGameRules_GiveC4;
+
+// CHalfLifeMultiplay::ChangeLevel hook
+typedef IVoidHookChainClassImpl<class CHalfLifeMultiplay> CReGameHook_CSGameRules_ChangeLevel;
+typedef IVoidHookChainRegistryClassEmptyImpl<class CHalfLifeMultiplay> CReGameHookRegistry_CSGameRules_ChangeLevel;
+
+// CHalfLifeMultiplay::GoToIntermission hook
+typedef IVoidHookChainClassImpl<class CHalfLifeMultiplay> CReGameHook_CSGameRules_GoToIntermission;
+typedef IVoidHookChainRegistryClassEmptyImpl<class CHalfLifeMultiplay> CReGameHookRegistry_CSGameRules_GoToIntermission;
+
+// CHalfLifeMultiplay::BalanceTeams hook
+typedef IVoidHookChainClassImpl<class CHalfLifeMultiplay> CReGameHook_CSGameRules_BalanceTeams;
+typedef IVoidHookChainRegistryClassEmptyImpl<class CHalfLifeMultiplay> CReGameHookRegistry_CSGameRules_BalanceTeams;
 
 class CReGameHookchains: public IReGameHookchains {
 public:
@@ -233,6 +321,29 @@ public:
 	CReGameHookRegistry_PM_Move m_PM_Move;
 	CReGameHookRegistry_PM_AirMove m_PM_AirMove;
 
+	CReGameHookRegistry_CSGameRules_FShouldSwitchWeapon m_CSGameRules_FShouldSwitchWeapon;
+	CReGameHookRegistry_CSGameRules_GetNextBestWeapon m_CSGameRules_GetNextBestWeapon;
+	CReGameHookRegistry_CSGameRules_FlPlayerFallDamage m_CSGameRules_FlPlayerFallDamage;
+	CReGameHookRegistry_CSGameRules_FPlayerCanTakeDamage m_CSGameRules_FPlayerCanTakeDamage;
+	CReGameHookRegistry_CSGameRules_PlayerSpawn m_CSGameRules_PlayerSpawn;
+	CReGameHookRegistry_CSGameRules_FPlayerCanRespawn m_CSGameRules_FPlayerCanRespawn;
+	CReGameHookRegistry_CSGameRules_GetPlayerSpawnSpot m_CSGameRules_GetPlayerSpawnSpot;
+	CReGameHookRegistry_CSGameRules_ClientUserInfoChanged m_CSGameRules_ClientUserInfoChanged;
+	CReGameHookRegistry_CSGameRules_PlayerKilled m_CSGameRules_PlayerKilled;
+	CReGameHookRegistry_CSGameRules_DeathNotice m_CSGameRules_DeathNotice;
+	CReGameHookRegistry_CSGameRules_CanHavePlayerItem m_CSGameRules_CanHavePlayerItem;
+	CReGameHookRegistry_CSGameRules_DeadPlayerWeapons m_CSGameRules_DeadPlayerWeapons;
+	CReGameHookRegistry_CSGameRules_ServerDeactivate m_CSGameRules_ServerDeactivate;
+	CReGameHookRegistry_CSGameRules_CheckMapConditions m_CSGameRules_CheckMapConditions;
+	CReGameHookRegistry_CSGameRules_CleanUpMap m_CSGameRules_CleanUpMap;
+	CReGameHookRegistry_CSGameRules_RestartRound m_CSGameRules_RestartRound;
+	CReGameHookRegistry_CSGameRules_CheckWinConditions m_CSGameRules_CheckWinConditions;
+	CReGameHookRegistry_CSGameRules_RemoveGuns m_CSGameRules_RemoveGuns;
+	CReGameHookRegistry_CSGameRules_GiveC4 m_CSGameRules_GiveC4;
+	CReGameHookRegistry_CSGameRules_ChangeLevel m_CSGameRules_ChangeLevel;
+	CReGameHookRegistry_CSGameRules_GoToIntermission m_CSGameRules_GoToIntermission;
+	CReGameHookRegistry_CSGameRules_BalanceTeams m_CSGameRules_BalanceTeams;
+
 public:
 	virtual IReGameHookRegistry_CBasePlayer_Spawn* CBasePlayer_Spawn();
 	virtual IReGameHookRegistry_CBasePlayer_Precache* CBasePlayer_Precache();
@@ -276,6 +387,28 @@ public:
 	virtual IReGameHookRegistry_PM_Move* PM_Move();
 	virtual IReGameHookRegistry_PM_AirMove* PM_AirMove();
 
+	virtual IReGameHookRegistry_CSGameRules_FShouldSwitchWeapon* CSGameRules_FShouldSwitchWeapon();
+	virtual IReGameHookRegistry_CSGameRules_GetNextBestWeapon* CSGameRules_GetNextBestWeapon();
+	virtual IReGameHookRegistry_CSGameRules_FlPlayerFallDamage* CSGameRules_FlPlayerFallDamage();
+	virtual IReGameHookRegistry_CSGameRules_FPlayerCanTakeDamage* CSGameRules_FPlayerCanTakeDamage();
+	virtual IReGameHookRegistry_CSGameRules_PlayerSpawn* CSGameRules_PlayerSpawn();
+	virtual IReGameHookRegistry_CSGameRules_FPlayerCanRespawn* CSGameRules_FPlayerCanRespawn();
+	virtual IReGameHookRegistry_CSGameRules_GetPlayerSpawnSpot* CSGameRules_GetPlayerSpawnSpot();
+	virtual IReGameHookRegistry_CSGameRules_ClientUserInfoChanged* CSGameRules_ClientUserInfoChanged();
+	virtual IReGameHookRegistry_CSGameRules_PlayerKilled* CSGameRules_PlayerKilled();
+	virtual IReGameHookRegistry_CSGameRules_DeathNotice* CSGameRules_DeathNotice();
+	virtual IReGameHookRegistry_CSGameRules_CanHavePlayerItem* CSGameRules_CanHavePlayerItem();
+	virtual IReGameHookRegistry_CSGameRules_DeadPlayerWeapons* CSGameRules_DeadPlayerWeapons();
+	virtual IReGameHookRegistry_CSGameRules_ServerDeactivate* CSGameRules_ServerDeactivate();
+	virtual IReGameHookRegistry_CSGameRules_CheckMapConditions* CSGameRules_CheckMapConditions();
+	virtual IReGameHookRegistry_CSGameRules_CleanUpMap* CSGameRules_CleanUpMap();
+	virtual IReGameHookRegistry_CSGameRules_RestartRound* CSGameRules_RestartRound();
+	virtual IReGameHookRegistry_CSGameRules_CheckWinConditions* CSGameRules_CheckWinConditions();
+	virtual IReGameHookRegistry_CSGameRules_RemoveGuns* CSGameRules_RemoveGuns();
+	virtual IReGameHookRegistry_CSGameRules_GiveC4* CSGameRules_GiveC4();
+	virtual IReGameHookRegistry_CSGameRules_ChangeLevel* CSGameRules_ChangeLevel();
+	virtual IReGameHookRegistry_CSGameRules_GoToIntermission* CSGameRules_GoToIntermission();
+	virtual IReGameHookRegistry_CSGameRules_BalanceTeams* CSGameRules_BalanceTeams();
 };
 
 extern CReGameHookchains g_ReGameHookchains;
@@ -290,12 +423,14 @@ public:
 	virtual IReGameHookchains *GetHookchains();
 
 	virtual CGameRules* GetGameRules();
-	virtual WeaponInfoStruct *GetWeaponInfo(int weaponID);
-	virtual playermove_t *GetPlayerMove();
+	virtual WeaponInfoStruct* GetWeaponInfo(int weaponID);
+	virtual WeaponInfoStruct* GetWeaponInfo(const char* weaponName);
+	virtual playermove_t* GetPlayerMove();
+	virtual WeaponSlotInfo* GetWeaponSlot(WeaponIdType weaponID);
+	virtual WeaponSlotInfo* GetWeaponSlot(const char* weaponName);
 };
 
 void Regamedll_ChangeString_api(char *&dest, const char *source);
-
 void RadiusDamage_api(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, float flRadius, int iClassIgnore, int bitsDamageType);
 
 void ClearMultiDamage_api();

@@ -175,6 +175,40 @@ private:
 	origfunc_t m_OriginalFunc;
 };
 
+template<typename t_class, typename ...t_args>
+class IVoidHookChainClassEmptyImpl : public IVoidHookChain<t_args...> {
+public:
+	typedef void(*hookfunc_t)(IVoidHookChain<t_args...>*, t_args...);
+	typedef void(t_class::*origfunc_t)(t_args...);
+
+	IVoidHookChainClassEmptyImpl(void** hooks, origfunc_t orig, t_class *object) : m_Hooks(hooks), m_OriginalFunc(orig), m_Object(object) {}
+	virtual ~IVoidHookChainClassEmptyImpl() {}
+
+	virtual void callNext(t_args... args) {
+		hookfunc_t nexthook = (hookfunc_t)m_Hooks[0];
+
+		if (nexthook)
+		{
+			IVoidHookChainClassEmptyImpl nextChain(m_Hooks + 1, m_OriginalFunc, m_Object);
+			nexthook(&nextChain, args...);
+		}
+		else
+		{
+			if (m_OriginalFunc && m_Object)
+				(m_Object->*m_OriginalFunc)(args...);
+		}
+	}
+
+	virtual void callOriginal(t_args... args) {
+		(m_Object->*m_OriginalFunc)(args...);
+	}
+
+private:
+	void** m_Hooks;
+	t_class *m_Object;
+	origfunc_t m_OriginalFunc;
+};
+
 // Implementation for void chains in modules
 template<typename t_class, typename ...t_args>
 class IVoidHookChainClassImpl : public IVoidHookChain<t_args...> {
@@ -266,7 +300,7 @@ public:
 };
 
 template<typename t_ret, typename t_class, typename ...t_args>
-class IHookChainRegistryClassEmptyImpl : public IHookChainRegistryClassEmpty <t_ret, t_args...>, public AbstractHookChainRegistry {
+class IHookChainRegistryClassEmptyImpl : public IHookChainRegistry <t_ret, t_args...>, public AbstractHookChainRegistry {
 public:
 	typedef t_ret(*hookfunc_t)(IHookChain<t_ret, t_args...>*, t_args...);
 	typedef t_ret(t_class::*origfunc_t)(t_args...);
@@ -281,6 +315,28 @@ public:
 	virtual void registerHook(hookfunc_t hook) {
 		addHook((void*)hook);
 	}
+	virtual void unregisterHook(hookfunc_t hook) {
+		removeHook((void*)hook);
+	}
+};
+
+template<typename t_class, typename ...t_args>
+class IVoidHookChainRegistryClassEmptyImpl : public IVoidHookChainRegistry <t_args...>, public AbstractHookChainRegistry {
+public:
+	typedef void(*hookfunc_t)(IVoidHookChain<t_args...>*, t_args...);
+	typedef void(t_class::*origfunc_t)(t_args...);
+
+	virtual ~IVoidHookChainRegistryClassEmptyImpl() { }
+
+	void callChain(origfunc_t origFunc, t_class *object, t_args... args) {
+		IVoidHookChainClassEmptyImpl<t_class, t_args...> chain(m_Hooks, origFunc, object);
+		chain.callNext(args...);
+	}
+
+	virtual void registerHook(hookfunc_t hook) {
+		addHook((void*)hook);
+	}
+
 	virtual void unregisterHook(hookfunc_t hook) {
 		removeHook((void*)hook);
 	}

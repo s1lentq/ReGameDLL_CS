@@ -594,7 +594,7 @@ void CBasePlayer::Pain(int iLastHitGroup, bool HasArmour)
 
 	if (iLastHitGroup == HITGROUP_HEAD)
 	{
-		if (m_iKevlar == ARMOR_TYPE_HELMET)
+		if (m_iKevlar == ARMOR_VESTHELM)
 		{
 			EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/bhit_helmet-1.wav", VOL_NORM, ATTN_NORM);
 			return;
@@ -755,7 +755,7 @@ void CBasePlayer::__API_VHOOK(TraceAttack)(entvars_t *pevAttacker, float flDamag
 
 		case HITGROUP_HEAD:
 		{
-			if (m_iKevlar == ARMOR_TYPE_HELMET)
+			if (m_iKevlar == ARMOR_VESTHELM)
 			{
 				bShouldBleed = false;
 				bShouldSpark = true;
@@ -783,7 +783,7 @@ void CBasePlayer::__API_VHOOK(TraceAttack)(entvars_t *pevAttacker, float flDamag
 		{
 			flDamage *= 1;
 
-			if (m_iKevlar != ARMOR_TYPE_EMPTY)
+			if (m_iKevlar != ARMOR_NONE)
 				bShouldBleed = false;
 
 			else if (bShouldBleed)
@@ -799,7 +799,7 @@ void CBasePlayer::__API_VHOOK(TraceAttack)(entvars_t *pevAttacker, float flDamag
 		{
 			flDamage *= 1.25;
 
-			if (m_iKevlar != ARMOR_TYPE_EMPTY)
+			if (m_iKevlar != ARMOR_NONE)
 				bShouldBleed = false;
 
 			else if (bShouldBleed)
@@ -814,7 +814,7 @@ void CBasePlayer::__API_VHOOK(TraceAttack)(entvars_t *pevAttacker, float flDamag
 		case HITGROUP_LEFTARM:
 		case HITGROUP_RIGHTARM:
 		{
-			if (m_iKevlar != ARMOR_TYPE_EMPTY)
+			if (m_iKevlar != ARMOR_NONE)
 				bShouldBleed = false;
 
 			break;
@@ -996,7 +996,7 @@ int CBasePlayer::__API_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pev
 			flDamage = flNew;
 
 			if (pev->armorvalue <= 0.0)
-				m_iKevlar = ARMOR_TYPE_EMPTY;
+				m_iKevlar = ARMOR_NONE;
 
 			Pain(m_LastHitGroup, true);
 		}
@@ -1246,7 +1246,7 @@ int CBasePlayer::__API_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pev
 		flDamage = flNew;
 
 		if (pev->armorvalue <= 0.0f)
-			m_iKevlar = ARMOR_TYPE_EMPTY;
+			m_iKevlar = ARMOR_NONE;
 
 		Pain(m_LastHitGroup, true);
 	}
@@ -5060,7 +5060,7 @@ void CBasePlayer::__API_VHOOK(Spawn)()
 	if (!m_bNotKilled)
 	{
 		pev->armorvalue = 0;
-		m_iKevlar = ARMOR_TYPE_EMPTY;
+		m_iKevlar = ARMOR_NONE;
 	}
 
 	pev->maxspeed = 1000;
@@ -5316,7 +5316,7 @@ void CBasePlayer::__API_VHOOK(Spawn)()
 
 	if (m_bIsVIP)
 	{
-		m_iKevlar = ARMOR_TYPE_HELMET;
+		m_iKevlar = ARMOR_VESTHELM;
 		pev->armorvalue = 200;
 		HintMessage("#Hint_you_are_the_vip", TRUE, TRUE);
 	}
@@ -5780,6 +5780,25 @@ LINK_HOOK_CLASS_VOID_CHAIN(CBasePlayer, GiveNamedItem, (const char *pszName), ps
 void CBasePlayer::__API_HOOK(GiveNamedItem)(const char *pszName)
 {
 	string_t istr = MAKE_STRING(pszName);
+	edict_t *pent = CREATE_NAMED_ENTITY(istr);
+
+	if (FNullEnt(pent))
+	{
+		ALERT(at_console, "NULL Ent in GiveNamedItem!\n");
+		return;
+	}
+
+	pent->v.origin = pev->origin;
+	pent->v.spawnflags |= SF_NORESPAWN;
+
+	DispatchSpawn(pent);
+	DispatchTouch(pent, ENT(pev));
+}
+
+// external function for 3rd-party
+void CBasePlayer::GiveNamedItemEx(const char *pszName)
+{
+	string_t istr = ALLOC_STRING(pszName);
 	edict_t *pent = CREATE_NAMED_ENTITY(istr);
 
 	if (FNullEnt(pent))
@@ -8019,14 +8038,14 @@ BOOL CBasePlayer::IsArmored(int nHitGroup)
 {
 	BOOL fApplyArmor = FALSE;
 
-	if (m_iKevlar == ARMOR_TYPE_EMPTY)
+	if (m_iKevlar == ARMOR_NONE)
 		return FALSE;
 
 	switch (nHitGroup)
 	{
 	case HITGROUP_HEAD:
 	{
-		fApplyArmor = (m_iKevlar == ARMOR_TYPE_HELMET);
+		fApplyArmor = (m_iKevlar == ARMOR_VESTHELM);
 		break;
 	}
 	case HITGROUP_GENERIC:
@@ -8171,7 +8190,7 @@ bool CBasePlayer::CanAffordSecondaryAmmo()
 
 bool CBasePlayer::CanAffordArmor()
 {
-	if (m_iKevlar == ARMOR_TYPE_KEVLAR && pev->armorvalue == 100.0f && m_iAccount >= HELMET_PRICE)
+	if (m_iKevlar == ARMOR_KEVLAR && pev->armorvalue == 100.0f && m_iAccount >= HELMET_PRICE)
 		return true;
 
 	return (m_iAccount >= KEVLAR_PRICE);
@@ -8209,7 +8228,7 @@ bool CBasePlayer::NeedsSecondaryAmmo()
 
 bool CBasePlayer::NeedsArmor()
 {
-	if (m_iKevlar == ARMOR_TYPE_EMPTY)
+	if (m_iKevlar == ARMOR_NONE)
 		return true;
 
 	return (pev->armorvalue < 50.0f);
@@ -9088,7 +9107,7 @@ void CBasePlayer::RebuyArmor()
 	{
 		if (m_rebuyStruct.m_armor > m_iKevlar)
 		{
-			if (m_rebuyStruct.m_armor == ARMOR_TYPE_KEVLAR)
+			if (m_rebuyStruct.m_armor == ARMOR_KEVLAR)
 				ClientCommand("vest");
 			else
 				ClientCommand("vesthelm");

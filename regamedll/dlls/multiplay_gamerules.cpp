@@ -154,7 +154,9 @@ BOOL CHalfLifeMultiplay::IsCareer()
 	return IS_CAREER_MATCH();
 }
 
-void CHalfLifeMultiplay::__MAKE_VHOOK(ServerDeactivate)()
+LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN2(CHalfLifeMultiplay, CSGameRules, ServerDeactivate);
+
+void CHalfLifeMultiplay::__API_VHOOK(ServerDeactivate)()
 {
 	if (!IsCareer())
 	{
@@ -584,7 +586,9 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(RefreshSkillData)()
 	gSkillData.plrDmgRPG = 120;
 }
 
-void CHalfLifeMultiplay::__MAKE_VHOOK(RemoveGuns)()
+LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN2(CHalfLifeMultiplay, CSGameRules, RemoveGuns);
+
+void CHalfLifeMultiplay::__API_VHOOK(RemoveGuns)()
 {
 	CBaseEntity *toremove = NULL;
 
@@ -613,7 +617,9 @@ void CHalfLifeMultiplay::UpdateTeamScores()
 	MESSAGE_END();
 }
 
-void CHalfLifeMultiplay::__MAKE_VHOOK(CleanUpMap)()
+LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN2(CHalfLifeMultiplay, CSGameRules, CleanUpMap);
+
+void CHalfLifeMultiplay::__API_VHOOK(CleanUpMap)()
 {
 	// Recreate all the map entities from the map data (preserving their indices),
 	// then remove everything else except the players.
@@ -728,7 +734,9 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(CleanUpMap)()
 	PLAYBACK_EVENT((FEV_GLOBAL | FEV_RELIABLE), 0, m_usResetDecals);
 }
 
-void CHalfLifeMultiplay::__MAKE_VHOOK(GiveC4)()
+LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN2(CHalfLifeMultiplay, CSGameRules, GiveC4);
+
+void CHalfLifeMultiplay::__API_VHOOK(GiveC4)()
 {
 	int iTeamCount;
 	int iTemp = 0;
@@ -937,8 +945,10 @@ void CHalfLifeMultiplay::QueueCareerRoundEndMenu(float tmDelay, int iWinStatus)
 	}
 }
 
+LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN2(CHalfLifeMultiplay, CSGameRules, CheckWinConditions);
+
 // Check if the scenario has been won/lost.
-void CHalfLifeMultiplay::__MAKE_VHOOK(CheckWinConditions)()
+void CHalfLifeMultiplay::__API_VHOOK(CheckWinConditions)()
 {
 	if (HasRoundInfinite())
 		return;
@@ -1555,7 +1565,9 @@ void CHalfLifeMultiplay::SwapAllPlayers()
 	UpdateTeamScores();
 }
 
-void CHalfLifeMultiplay::BalanceTeams()
+LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN2(CHalfLifeMultiplay, CSGameRules, BalanceTeams);
+
+void CHalfLifeMultiplay::__API_HOOK(BalanceTeams)()
 {
 	int iTeamToSwap = UNASSIGNED;
 	int iNumToSwap;
@@ -1645,7 +1657,9 @@ void CHalfLifeMultiplay::BalanceTeams()
 	}
 }
 
-void CHalfLifeMultiplay::__MAKE_VHOOK(CheckMapConditions)()
+LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN2(CHalfLifeMultiplay, CSGameRules, CheckMapConditions);
+
+void CHalfLifeMultiplay::__API_VHOOK(CheckMapConditions)()
 {
 	// Check to see if this map has a bomb target in it
 	if (UTIL_FindEntityByClassname(NULL, "func_bomb_target"))
@@ -1681,7 +1695,9 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(CheckMapConditions)()
 		m_iMapHasVIPSafetyZone = MAP_HAVE_VIP_SAFETYZONE_NO;
 }
 
-void CHalfLifeMultiplay::__MAKE_VHOOK(RestartRound)()
+LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN2(CHalfLifeMultiplay, CSGameRules, RestartRound);
+
+void CHalfLifeMultiplay::__API_VHOOK(RestartRound)()
 {
 	// tell bots that the round is restarting
 	if (TheBots != NULL)
@@ -3074,7 +3090,9 @@ BOOL CHalfLifeMultiplay::__MAKE_VHOOK(IsCoOp)()
 	return gpGlobals->coop;
 }
 
-BOOL CHalfLifeMultiplay::__MAKE_VHOOK(FShouldSwitchWeapon)(CBasePlayer *pPlayer, CBasePlayerItem *pWeapon)
+LINK_HOOK_CLASS_CUSTOM_CHAIN(BOOL, CHalfLifeMultiplay, CSGameRules, FShouldSwitchWeapon, (CBasePlayer *pPlayer, CBasePlayerItem *pWeapon), pPlayer, pWeapon);
+
+BOOL CHalfLifeMultiplay::__API_VHOOK(FShouldSwitchWeapon)(CBasePlayer *pPlayer, CBasePlayerItem *pWeapon)
 {
 	if (!pWeapon->CanDeploy())
 		return FALSE;
@@ -3094,7 +3112,9 @@ BOOL CHalfLifeMultiplay::__MAKE_VHOOK(FShouldSwitchWeapon)(CBasePlayer *pPlayer,
 	return FALSE;
 }
 
-BOOL CHalfLifeMultiplay::__MAKE_VHOOK(GetNextBestWeapon)(CBasePlayer *pPlayer, CBasePlayerItem *pCurrentWeapon)
+LINK_HOOK_CLASS_CUSTOM_CHAIN(BOOL, CHalfLifeMultiplay, CSGameRules, GetNextBestWeapon, (CBasePlayer *pPlayer, CBasePlayerItem *pCurrentWeapon), pPlayer, pCurrentWeapon);
+
+BOOL CHalfLifeMultiplay::__API_VHOOK(GetNextBestWeapon)(CBasePlayer *pPlayer, CBasePlayerItem *pCurrentWeapon)
 {
 	CBasePlayerItem *pCheck;
 	CBasePlayerItem *pBest; // this will be used in the event that we don't find a weapon in the same category.
@@ -3397,13 +3417,17 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(ClientDisconnected)(edict_t *pClient)
 	CheckWinConditions();
 }
 
-float CHalfLifeMultiplay::__MAKE_VHOOK(FlPlayerFallDamage)(CBasePlayer *pPlayer)
+LINK_HOOK_CLASS_CUSTOM_CHAIN(float, CHalfLifeMultiplay, CSGameRules, FlPlayerFallDamage, (CBasePlayer *pPlayer), pPlayer);
+
+float CHalfLifeMultiplay::__API_VHOOK(FlPlayerFallDamage)(CBasePlayer *pPlayer)
 {
 	pPlayer->m_flFallVelocity -= PLAYER_MAX_SAFE_FALL_SPEED;
 	return pPlayer->m_flFallVelocity * DAMAGE_FOR_FALL_SPEED * 1.25;
 }
 
-BOOL CHalfLifeMultiplay::__MAKE_VHOOK(FPlayerCanTakeDamage)(CBasePlayer *pPlayer, CBaseEntity *pAttacker)
+LINK_HOOK_CLASS_CUSTOM_CHAIN(BOOL, CHalfLifeMultiplay, CSGameRules, FPlayerCanTakeDamage, (CBasePlayer *pPlayer, CBaseEntity *pAttacker), pPlayer, pAttacker);
+
+BOOL CHalfLifeMultiplay::__API_VHOOK(FPlayerCanTakeDamage)(CBasePlayer *pPlayer, CBaseEntity *pAttacker)
 {
 	if (!pAttacker || PlayerRelationship(pPlayer, pAttacker) != GR_TEAMMATE)
 	{
@@ -3485,8 +3509,10 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(PlayerThink)(CBasePlayer *pPlayer)
 	}
 }
 
+LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN(CHalfLifeMultiplay, CSGameRules, PlayerSpawn, (CBasePlayer *pPlayer), pPlayer);
+
 // Purpose: Player has just spawned. Equip them.
-void CHalfLifeMultiplay::__MAKE_VHOOK(PlayerSpawn)(CBasePlayer *pPlayer)
+void CHalfLifeMultiplay::__API_VHOOK(PlayerSpawn)(CBasePlayer *pPlayer)
 {
 	// This is tied to the joining state (m_iJoiningState).. add it when the joining state is there.
 	if (pPlayer->m_bJustConnected)
@@ -3516,7 +3542,9 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(PlayerSpawn)(CBasePlayer *pPlayer)
 	pPlayer->SetPlayerModel(false);
 }
 
-BOOL CHalfLifeMultiplay::__MAKE_VHOOK(FPlayerCanRespawn)(CBasePlayer *pPlayer)
+LINK_HOOK_CLASS_CUSTOM_CHAIN(BOOL, CHalfLifeMultiplay, CSGameRules, FPlayerCanRespawn, (CBasePlayer *pPlayer), pPlayer);
+
+BOOL CHalfLifeMultiplay::__API_VHOOK(FPlayerCanRespawn)(CBasePlayer *pPlayer)
 {
 	// Player cannot respawn twice in a round
 	if (pPlayer->m_iNumSpawns > 0)
@@ -3571,7 +3599,9 @@ int CHalfLifeMultiplay::__MAKE_VHOOK(IPointsForKill)(CBasePlayer *pAttacker, CBa
 	return 1;
 }
 
-void CHalfLifeMultiplay::__MAKE_VHOOK(PlayerKilled)(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor)
+LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN(CHalfLifeMultiplay, CSGameRules, PlayerKilled, (CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor), pVictim, pKiller, pInflictor);
+
+void CHalfLifeMultiplay::__API_VHOOK(PlayerKilled)(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor)
 {
 	DeathNotice(pVictim, pKiller, pInflictor);
 
@@ -3712,7 +3742,9 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(PlayerKilled)(CBasePlayer *pVictim, entvar
 	}
 }
 
-void CHalfLifeMultiplay::__MAKE_VHOOK(DeathNotice)(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pevInflictor)
+LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN(CHalfLifeMultiplay, CSGameRules, DeathNotice, (CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pevInflictor), pVictim, pKiller, pevInflictor);
+
+void CHalfLifeMultiplay::__API_VHOOK(DeathNotice)(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pevInflictor)
 {
 	// Work out what killed the player, and send a message to all clients about it
 	// CBaseEntity *Killer = CBaseEntity::Instance(pKiller);
@@ -3876,7 +3908,9 @@ int CHalfLifeMultiplay::__MAKE_VHOOK(WeaponShouldRespawn)(CBasePlayerItem *pWeap
 	return GR_WEAPON_RESPAWN_YES;
 }
 
-BOOL CHalfLifeMultiplay::__MAKE_VHOOK(CanHavePlayerItem)(CBasePlayer *pPlayer, CBasePlayerItem *pItem)
+LINK_HOOK_CLASS_CUSTOM_CHAIN(BOOL, CHalfLifeMultiplay, CSGameRules, CanHavePlayerItem, (CBasePlayer *pPlayer, CBasePlayerItem *pItem), pPlayer, pItem);
+
+BOOL CHalfLifeMultiplay::__API_VHOOK(CanHavePlayerItem)(CBasePlayer *pPlayer, CBasePlayerItem *pItem)
 {
 	return CGameRules::CanHavePlayerItem(pPlayer, pItem);
 }
@@ -3951,7 +3985,9 @@ float CHalfLifeMultiplay::__MAKE_VHOOK(FlHEVChargerRechargeTime)()
 	return 30;
 }
 
-int CHalfLifeMultiplay::__MAKE_VHOOK(DeadPlayerWeapons)(CBasePlayer *pPlayer)
+LINK_HOOK_CLASS_CUSTOM_CHAIN(int, CHalfLifeMultiplay, CSGameRules, DeadPlayerWeapons, (CBasePlayer *pPlayer), pPlayer);
+
+int CHalfLifeMultiplay::__API_VHOOK(DeadPlayerWeapons)(CBasePlayer *pPlayer)
 {
 	return GR_PLR_DROP_GUN_ACTIVE;
 }
@@ -3961,7 +3997,9 @@ int CHalfLifeMultiplay::__MAKE_VHOOK(DeadPlayerAmmo)(CBasePlayer *pPlayer)
 	return GR_PLR_DROP_AMMO_ACTIVE;
 }
 
-edict_t *CHalfLifeMultiplay::__MAKE_VHOOK(GetPlayerSpawnSpot)(CBasePlayer *pPlayer)
+LINK_HOOK_CLASS_CUSTOM_CHAIN(edict_t *, CHalfLifeMultiplay, CSGameRules, GetPlayerSpawnSpot, (CBasePlayer *pPlayer), pPlayer);
+
+edict_t *CHalfLifeMultiplay::__API_VHOOK(GetPlayerSpawnSpot)(CBasePlayer *pPlayer)
 {
 	// gat valid spawn point
 	edict_t *pentSpawnSpot = CGameRules::GetPlayerSpawnSpot(pPlayer);
@@ -4018,7 +4056,9 @@ BOOL CHalfLifeMultiplay::__MAKE_VHOOK(FAllowMonsters)()
 	return CVAR_GET_FLOAT("mp_allowmonsters") != 0;
 }
 
-void CHalfLifeMultiplay::__MAKE_VHOOK(GoToIntermission)()
+LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN2(CHalfLifeMultiplay, CSGameRules, GoToIntermission);
+
+void CHalfLifeMultiplay::__API_VHOOK(GoToIntermission)()
 {
 	if (g_fGameOver)
 		return;
@@ -4545,8 +4585,10 @@ void CHalfLifeMultiplay::ProcessMapVote(CBasePlayer *player, int iVote)
 		DisplayMaps(NULL, iVote);
 }
 
+LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN2(CHalfLifeMultiplay, CSGameRules, ChangeLevel);
+
 // Server is changing to a new level, check mapcycle.txt for map name and setup info
-void CHalfLifeMultiplay::__MAKE_VHOOK(ChangeLevel)()
+void CHalfLifeMultiplay::__API_VHOOK(ChangeLevel)()
 {
 	static char szPreviousMapCycleFile[256];
 	static mapcycle_t mapcycle;
@@ -4722,7 +4764,9 @@ void CHalfLifeMultiplay::SendMOTDToClient(edict_t *client)
 	FREE_FILE(aFileList);
 }
 
-void CHalfLifeMultiplay::__MAKE_VHOOK(ClientUserInfoChanged)(CBasePlayer *pPlayer, char *infobuffer)
+LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN(CHalfLifeMultiplay, CSGameRules, ClientUserInfoChanged, (CBasePlayer *pPlayer, char *infobuffer), pPlayer, infobuffer);
+
+void CHalfLifeMultiplay::__API_VHOOK(ClientUserInfoChanged)(CBasePlayer *pPlayer, char *infobuffer)
 {
 	pPlayer->SetPlayerModel(pPlayer->m_bHasC4);
 	pPlayer->SetPrefsFromUserinfo(infobuffer);

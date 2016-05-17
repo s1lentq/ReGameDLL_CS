@@ -480,6 +480,7 @@ public:
 	void ItemPostFrame();
 	void GiveNamedItem(const char *pszName);
 	void GiveNamedItem_(const char *pszName);
+	void GiveNamedItemEx(const char *pszName);
 	void EnableControl(BOOL fControl);
 	bool HintMessage(const char *pMessage, BOOL bDisplayIfPlayerDead = FALSE, BOOL bOverride = FALSE);
 	void SendAmmoUpdate();

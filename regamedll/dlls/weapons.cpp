@@ -2181,7 +2181,7 @@ void CArmoury::ArmouryTouch(CBaseEntity *pOther)
 		}
 		case ARMOURY_KEVLAR:
 		{
-			if (p->m_iKevlar == ARMOR_TYPE_KEVLAR)
+			if (p->m_iKevlar == ARMOR_KEVLAR)
 				return;
 
 			p->GiveNamedItem("item_kevlar");
@@ -2190,7 +2190,7 @@ void CArmoury::ArmouryTouch(CBaseEntity *pOther)
 		}
 		case ARMOURY_ASSAULT:
 		{
-			if (p->m_iKevlar == ARMOR_TYPE_HELMET)
+			if (p->m_iKevlar == ARMOR_VESTHELM)
 				return;
 
 			p->GiveNamedItem("item_assaultsuit");

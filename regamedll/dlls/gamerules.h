@@ -437,8 +437,7 @@ public:
 	virtual void ChangeLevel();
 	virtual void GoToIntermission();
 
-#ifdef HOOK_GAMEDLL
-
+#if defined(REGAMEDLL_API) || defined(HOOK_GAMEDLL)
 	void RefreshSkillData_();
 	void Think_();
 	BOOL IsAllowedToSpawn_(CBaseEntity *pEntity);
@@ -496,8 +495,7 @@ public:
 	void GiveC4_();
 	void ChangeLevel_();
 	void GoToIntermission_();
-
-#endif // HOOK_GAMEDLL
+#endif
 
 public:
 	// Checks if it still needs players to start a round, or if it has enough players to start rounds.
@@ -573,6 +571,8 @@ public:
 	void ResetCurrentVIP();
 
 	void BalanceTeams();
+	void BalanceTeams_();
+
 	void SwapAllPlayers();
 	void UpdateTeamScores();
 	void DisplayMaps(CBasePlayer *player, int iVote);

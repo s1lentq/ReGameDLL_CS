@@ -69,6 +69,24 @@ extern ICSEntity *INDEX_TO_CSENTITY(int iEntityIndex);
 		return g_ReGameHookchains.m_##className##_##functionName.callChain(&className::functionName##_, this);\
 	}
 
+#define LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN(className, customPrefix, functionName, args, ...)\
+	void className::functionName args {\
+		g_ReGameHookchains.m_##customPrefix##_##functionName.callChain(&className::functionName##_, this, __VA_ARGS__);\
+	}
+#define LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN2(className, customPrefix, functionName)\
+	void className::functionName() {\
+		g_ReGameHookchains.m_##customPrefix##_##functionName.callChain(&className::functionName##_, this);\
+	}
+
+#define LINK_HOOK_CLASS_CUSTOM_CHAIN(ret, className, customPrefix, functionName, args, ...)\
+	ret className::functionName args {\
+		return g_ReGameHookchains.m_##customPrefix##_##functionName.callChain(&className::functionName##_, this, __VA_ARGS__);\
+	}
+#define LINK_HOOK_CLASS_CUSTOM_CHAIN2(ret, className, functionName)\
+	ret className::functionName() {\
+		return g_ReGameHookchains.m_##customPrefix##_##functionName.callChain(&className::functionName##_, this);\
+	}
+
 #define LINK_HOOK_VOID_CHAIN(functionName, args, ...)\
 	void functionName args {\
 		g_ReGameHookchains.m_##functionName.callChain(functionName##_, __VA_ARGS__);\
@@ -325,9 +343,14 @@ public:
 	virtual void SetAnimation(PLAYER_ANIM playerAnim) { ((CBasePlayer *)m_pEntity)->SetAnimation(playerAnim); }
 	virtual void AddAccount(int amount, bool bTrackChange = true) { ((CBasePlayer *)m_pEntity)->AddAccount(amount, bTrackChange); }
 	virtual void GiveNamedItem(const char *pszName) { ((CBasePlayer *)m_pEntity)->GiveNamedItem(pszName); }
+	virtual void GiveNamedItemEx(const char *pszName) { ((CBasePlayer *)m_pEntity)->GiveNamedItemEx(pszName); }
 	virtual void GiveDefaultItems() { ((CBasePlayer *)m_pEntity)->GiveDefaultItems(); }
 	virtual void GiveShield(bool bDeploy = true) { ((CBasePlayer *)m_pEntity)->GiveShield(bDeploy); }
+	virtual void DropShield(bool bDeploy = true) { ((CBasePlayer *)m_pEntity)->DropShield(bDeploy); }
+	virtual void DropPlayerItem(const char *pszItemName) { ((CBasePlayer *)m_pEntity)->DropPlayerItem(pszItemName); }
+	virtual void RemoveShield() { ((CBasePlayer *)m_pEntity)->RemoveShield(); }
 	virtual void RemoveAllItems(bool bRemoveSuit) { ((CBasePlayer *)m_pEntity)->RemoveAllItems(bRemoveSuit ? TRUE : FALSE); }
+
 };
 
 class CAPI_Bot: public CCSPlayer {

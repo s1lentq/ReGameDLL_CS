@@ -299,8 +299,12 @@ public:
 	virtual void SetAnimation(PLAYER_ANIM playerAnim) = 0;
 	virtual void AddAccount(int amount, bool bTrackChange = true) = 0;
 	virtual void GiveNamedItem(const char *pszName) = 0;
+	virtual void GiveNamedItemEx(const char *pszName) = 0;
 	virtual void GiveDefaultItems() = 0;
 	virtual void GiveShield(bool bDeploy = true) = 0;
+	virtual void DropShield(bool bDeploy = true) = 0;
+	virtual void DropPlayerItem(const char *pszItemName) = 0;
+	virtual void RemoveShield() = 0;
 	virtual void RemoveAllItems(bool bRemoveSuit) = 0;
 };
 
@@ -2070,13 +2074,4 @@ class ICSClientFog: public ICSEntity {
 public:
 	virtual void Spawn() = 0;
 	virtual void KeyValue(struct KeyValueData_s *pkvd) = 0;
-};
-
-class IReGameData {
-public:
-	virtual ~IReGameData() {}
-
-	virtual class CGameRules* GetGameRules() = 0;
-	virtual struct WeaponInfoStruct *GetWeaponInfo(int weaponID) = 0;
-	virtual struct playermove_s *GetPlayerMove() = 0;
 };

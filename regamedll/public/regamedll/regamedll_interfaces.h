@@ -299,8 +299,12 @@ public:
 	virtual void SetAnimation(PLAYER_ANIM playerAnim) = 0;
 	virtual void AddAccount(int amount, bool bTrackChange = true) = 0;
 	virtual void GiveNamedItem(const char *pszName) = 0;
+	virtual void GiveNamedItemEx(const char *pszName) = 0;
 	virtual void GiveDefaultItems() = 0;
 	virtual void GiveShield(bool bDeploy = true) = 0;
+	virtual void DropShield(bool bDeploy = true) = 0;
+	virtual void DropPlayerItem(const char *pszItemName) = 0;
+	virtual void RemoveShield() = 0;
 	virtual void RemoveAllItems(bool bRemoveSuit) = 0;
 };
 
