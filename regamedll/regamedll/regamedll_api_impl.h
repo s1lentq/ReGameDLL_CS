@@ -188,6 +188,14 @@ typedef IVoidHookChainRegistryImpl<struct playermove_s *, int> CReGameHookRegist
 typedef IVoidHookChainImpl<int> CReGameHook_PM_AirMove;
 typedef IVoidHookChainRegistryImpl<int> CReGameHookRegistry_PM_AirMove;
 
+// HandleMenu_ChooseAppearance hook
+typedef IVoidHookChainImpl<CBasePlayer *, int> CReGameHook_HandleMenu_ChooseAppearance;
+typedef IVoidHookChainRegistryImpl<CBasePlayer *, int> CReGameHookRegistry_HandleMenu_ChooseAppearance;
+
+// HandleMenu_ChooseTeam hook
+typedef IHookChainImpl<BOOL, CBasePlayer *, int> CReGameHook_HandleMenu_ChooseTeam;
+typedef IHookChainRegistryImpl<BOOL, CBasePlayer *, int> CReGameHookRegistry_HandleMenu_ChooseTeam;
+
 // CHalfLifeMultiplay::FShouldSwitchWeapon hook
 typedef IHookChainClassImpl<BOOL, class CHalfLifeMultiplay, CBasePlayer *, CBasePlayerItem *> CReGameHook_CSGameRules_FShouldSwitchWeapon;
 typedef IHookChainRegistryClassEmptyImpl<BOOL, class CHalfLifeMultiplay, CBasePlayer *, CBasePlayerItem *> CReGameHookRegistry_CSGameRules_FShouldSwitchWeapon;
@@ -320,6 +328,8 @@ public:
 	CReGameHookRegistry_PM_Init m_PM_Init;
 	CReGameHookRegistry_PM_Move m_PM_Move;
 	CReGameHookRegistry_PM_AirMove m_PM_AirMove;
+	CReGameHookRegistry_HandleMenu_ChooseAppearance m_HandleMenu_ChooseAppearance;
+	CReGameHookRegistry_HandleMenu_ChooseTeam m_HandleMenu_ChooseTeam;
 
 	CReGameHookRegistry_CSGameRules_FShouldSwitchWeapon m_CSGameRules_FShouldSwitchWeapon;
 	CReGameHookRegistry_CSGameRules_GetNextBestWeapon m_CSGameRules_GetNextBestWeapon;
@@ -386,6 +396,8 @@ public:
 	virtual IReGameHookRegistry_PM_Init* PM_Init();
 	virtual IReGameHookRegistry_PM_Move* PM_Move();
 	virtual IReGameHookRegistry_PM_AirMove* PM_AirMove();
+	virtual IReGameHookRegistry_HandleMenu_ChooseAppearance* HandleMenu_ChooseAppearance();
+	virtual IReGameHookRegistry_HandleMenu_ChooseTeam* HandleMenu_ChooseTeam();
 
 	virtual IReGameHookRegistry_CSGameRules_FShouldSwitchWeapon* CSGameRules_FShouldSwitchWeapon();
 	virtual IReGameHookRegistry_CSGameRules_GetNextBestWeapon* CSGameRules_GetNextBestWeapon();

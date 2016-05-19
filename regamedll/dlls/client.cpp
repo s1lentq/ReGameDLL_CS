@@ -1369,7 +1369,9 @@ void BuyWeaponByWeaponID(CBasePlayer *pPlayer, WeaponIdType weaponID)
 	}
 }
 
-void HandleMenu_ChooseAppearance(CBasePlayer *player, int slot)
+LINK_HOOK_VOID_CHAIN(HandleMenu_ChooseAppearance, (CBasePlayer *player, int slot), player, slot);
+
+void __API_HOOK(HandleMenu_ChooseAppearance)(CBasePlayer *player, int slot)
 {
 	int numSkins = g_bIsCzeroGame ? CZ_NUM_SKIN : CS_NUM_SKIN;
 
@@ -1524,9 +1526,11 @@ void HandleMenu_ChooseAppearance(CBasePlayer *player, int slot)
 	}
 }
 
+LINK_HOOK_CHAIN(BOOL, HandleMenu_ChooseTeam, (CBasePlayer *player, int slot), player, slot);
+
 // returns true if the selection has been handled and the player's menu
 // can be closed...false if the menu should be displayed again
-BOOL HandleMenu_ChooseTeam(CBasePlayer *player, int slot)
+BOOL __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *player, int slot)
 {
 	int oldTeam;
 	char *szOldTeam;

@@ -91,6 +91,8 @@ IReGameHookRegistry_InstallGameRules* CReGameHookchains::InstallGameRules() { re
 IReGameHookRegistry_PM_Init* CReGameHookchains::PM_Init() { return &m_PM_Init; }
 IReGameHookRegistry_PM_Move* CReGameHookchains::PM_Move() { return &m_PM_Move; }
 IReGameHookRegistry_PM_AirMove* CReGameHookchains::PM_AirMove() { return &m_PM_AirMove; }
+IReGameHookRegistry_HandleMenu_ChooseAppearance* CReGameHookchains::HandleMenu_ChooseAppearance() { return &m_HandleMenu_ChooseAppearance; }
+IReGameHookRegistry_HandleMenu_ChooseTeam* CReGameHookchains::HandleMenu_ChooseTeam() { return &m_HandleMenu_ChooseTeam; }
 
 IReGameHookRegistry_CSGameRules_FShouldSwitchWeapon* CReGameHookchains::CSGameRules_FShouldSwitchWeapon() { return &m_CSGameRules_FShouldSwitchWeapon; }
 IReGameHookRegistry_CSGameRules_GetNextBestWeapon* CReGameHookchains::CSGameRules_GetNextBestWeapon() { return &m_CSGameRules_GetNextBestWeapon; }

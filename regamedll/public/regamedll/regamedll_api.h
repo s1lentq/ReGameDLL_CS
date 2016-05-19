@@ -194,6 +194,14 @@ typedef IVoidHookChainRegistry<struct playermove_s *, int> IReGameHookRegistry_P
 typedef IVoidHookChain<int> IReGameHook_PM_AirMove;
 typedef IVoidHookChainRegistry<int> IReGameHookRegistry_PM_AirMove;
 
+// HandleMenu_ChooseAppearance hook
+typedef IVoidHookChain<class CBasePlayer *, int> IReGameHook_HandleMenu_ChooseAppearance;
+typedef IVoidHookChainRegistry<class CBasePlayer *, int> IReGameHookRegistry_HandleMenu_ChooseAppearance;
+
+// HandleMenu_ChooseTeam hook
+typedef IHookChain<BOOL, class CBasePlayer *, int> IReGameHook_HandleMenu_ChooseTeam;
+typedef IHookChainRegistry<BOOL, class CBasePlayer *, int> IReGameHookRegistry_HandleMenu_ChooseTeam;
+
 // CHalfLifeMultiplay::FShouldSwitchWeapon hook
 typedef IHookChain<BOOL, class CBasePlayer *, class CBasePlayerItem *> IReGameHook_CSGameRules_FShouldSwitchWeapon;
 typedef IHookChainRegistry<BOOL, class CBasePlayer *, class CBasePlayerItem *> IReGameHookRegistry_CSGameRules_FShouldSwitchWeapon;
@@ -326,6 +334,8 @@ public:
 	virtual IReGameHookRegistry_PM_Init* PM_Init() = 0;
 	virtual IReGameHookRegistry_PM_Move* PM_Move() = 0;
 	virtual IReGameHookRegistry_PM_AirMove* PM_AirMove() = 0;
+	virtual IReGameHookRegistry_HandleMenu_ChooseAppearance* HandleMenu_ChooseAppearance() = 0;
+	virtual IReGameHookRegistry_HandleMenu_ChooseTeam* HandleMenu_ChooseTeam() = 0;
 
 	virtual IReGameHookRegistry_CSGameRules_FShouldSwitchWeapon* CSGameRules_FShouldSwitchWeapon() = 0;
 	virtual IReGameHookRegistry_CSGameRules_GetNextBestWeapon* CSGameRules_GetNextBestWeapon() = 0;
