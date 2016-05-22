@@ -586,39 +586,12 @@ public:
 	bool IsMatchStarted() { return (m_fTeamCount != 0.0f || m_fCareerRoundMenuTime != 0.0f || m_fCareerMatchMenuTime != 0.0f); }
 	void SendMOTDToClient(edict_t *client);
 
-	inline void TerminateRound(float tmDelay, int iWinStatus)
-	{
-		m_iRoundWinStatus = iWinStatus;
-		m_fTeamCount = gpGlobals->time + tmDelay;
-		m_bRoundTerminating = true;
-	}
-
-	inline float GetRoundRespawnTime() const
-	{
-#ifdef REGAMEDLL_ADD
-		return roundrespawn_time.value;
-#else
-		return ROUND_RESPAWN_TIME;
-#endif
-	}
+	void TerminateRound(float tmDelay, int iWinStatus);
+	float GetRoundRespawnTime() const;
 
 	// allow the mode of fire on a friendly player (FFA)
-	inline bool IsFriendlyFireAttack() const
-	{
-#ifdef REGAMEDLL_ADD
-		if (friendlyfire.string[0] == '2')
-			return true;
-#endif
-		return false;
-	}
-	inline bool HasRoundInfinite(bool time_expired = false) const
-	{
-#ifdef REGAMEDLL_ADD
-		if (round_infinite.string[0] == '1' || (time_expired && (UTIL_ReadFlags(round_infinite.string) & SCENARIO_BLOCK_TIME_EXPRIRED)))
-			return true;
-#endif
-		return false;
-	}
+	bool IsFriendlyFireAttack() const;
+	bool HasRoundInfinite(bool time_expired = false) const;
 
 private:
 	bool HasRoundTimeExpired();
@@ -772,6 +745,41 @@ CGameRules *InstallGameRules_();
 inline CHalfLifeMultiplay *CSGameRules()
 {
 	return reinterpret_cast<CHalfLifeMultiplay *>(g_pGameRules);
+}
+
+inline void CHalfLifeMultiplay::TerminateRound(float tmDelay, int iWinStatus)
+{
+	m_iRoundWinStatus = iWinStatus;
+	m_fTeamCount = gpGlobals->time + tmDelay;
+	m_bRoundTerminating = true;
+}
+
+inline float CHalfLifeMultiplay::GetRoundRespawnTime() const
+{
+#ifdef REGAMEDLL_ADD
+	return roundrespawn_time.value;
+#else
+	return ROUND_RESPAWN_TIME;
+#endif
+}
+
+// allow the mode of fire on a friendly player (FFA)
+inline bool CHalfLifeMultiplay::IsFriendlyFireAttack() const
+{
+#ifdef REGAMEDLL_ADD
+	if (friendlyfire.string[0] == '2')
+		return true;
+#endif
+	return false;
+}
+
+inline bool CHalfLifeMultiplay::HasRoundInfinite(bool time_expired) const
+{
+#ifdef REGAMEDLL_ADD
+	if (round_infinite.string[0] == '1' || (time_expired && (UTIL_ReadFlags(round_infinite.string) & SCENARIO_BLOCK_TIME_EXPRIRED)))
+		return true;
+#endif
+	return false;
 }
 
 bool IsBotSpeaking();

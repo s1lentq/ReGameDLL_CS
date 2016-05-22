@@ -1002,7 +1002,7 @@ void SV_StudioSetupBones(model_t *pModel, float frame, int sequence, const vec_t
 	int chain[MAXSTUDIOBONES];
 	int chainlength;
 	vec3_t temp_angles;
-	
+
 	/*static */float pos[MAXSTUDIOBONES][3], pos2[MAXSTUDIOBONES][3];
 	/*static */float q[MAXSTUDIOBONES][4], q2[MAXSTUDIOBONES][4];
 
@@ -1037,7 +1037,7 @@ void SV_StudioSetupBones(model_t *pModel, float frame, int sequence, const vec_t
 	f = StudioEstimateFrame(frame, pseqdesc);
 	subframe = int(f);
 	f -= subframe;
-	
+
 	StudioCalcBoneAdj(0, adj, pcontroller, pcontroller, 0);
 	StudioCalcRotations(pbones, chain, chainlength, adj, pos, q, pseqdesc, panim, subframe, f);
 
@@ -1046,7 +1046,7 @@ void SV_StudioSetupBones(model_t *pModel, float frame, int sequence, const vec_t
 		if (pseqdesc->numblends > 1)
 		{
 			float b = float_precision(pblending[0]) / 255.0f;
-			
+
 			pseqdesc = (mstudioseqdesc_t *)((byte *)g_pstudiohdr + g_pstudiohdr->seqindex) + sequence;
 			panim = StudioGetAnim(pModel, pseqdesc);
 			panim += g_pstudiohdr->numbones;
@@ -1060,7 +1060,7 @@ void SV_StudioSetupBones(model_t *pModel, float frame, int sequence, const vec_t
 	{
 		/*static */float pos3[MAXSTUDIOBONES][3], pos4[MAXSTUDIOBONES][3];
 		/*static */float q3[MAXSTUDIOBONES][4], q4[MAXSTUDIOBONES][4];
-		
+
 		float_precision s, t;
 
 		s = GetPlayerYaw(pEdict);

@@ -196,6 +196,14 @@ typedef IVoidHookChainRegistryImpl<CBasePlayer *, int> CReGameHookRegistry_Handl
 typedef IHookChainImpl<BOOL, CBasePlayer *, int> CReGameHook_HandleMenu_ChooseTeam;
 typedef IHookChainRegistryImpl<BOOL, CBasePlayer *, int> CReGameHookRegistry_HandleMenu_ChooseTeam;
 
+// ShowMenu hook
+typedef IVoidHookChainImpl<CBasePlayer *, int, int, BOOL, char *> CReGameHook_ShowMenu;
+typedef IVoidHookChainRegistryImpl<CBasePlayer *, int, int, BOOL, char *> CReGameHookRegistry_ShowMenu;
+
+// ShowVGUIMenu hook
+typedef IVoidHookChainImpl<CBasePlayer *, int, int, char *> CReGameHook_ShowVGUIMenu;
+typedef IVoidHookChainRegistryImpl<CBasePlayer *, int, int, char *> CReGameHookRegistry_ShowVGUIMenu;
+
 // CHalfLifeMultiplay::FShouldSwitchWeapon hook
 typedef IHookChainClassImpl<BOOL, class CHalfLifeMultiplay, CBasePlayer *, CBasePlayerItem *> CReGameHook_CSGameRules_FShouldSwitchWeapon;
 typedef IHookChainRegistryClassEmptyImpl<BOOL, class CHalfLifeMultiplay, CBasePlayer *, CBasePlayerItem *> CReGameHookRegistry_CSGameRules_FShouldSwitchWeapon;
@@ -330,6 +338,8 @@ public:
 	CReGameHookRegistry_PM_AirMove m_PM_AirMove;
 	CReGameHookRegistry_HandleMenu_ChooseAppearance m_HandleMenu_ChooseAppearance;
 	CReGameHookRegistry_HandleMenu_ChooseTeam m_HandleMenu_ChooseTeam;
+	CReGameHookRegistry_ShowMenu m_ShowMenu;
+	CReGameHookRegistry_ShowVGUIMenu m_ShowVGUIMenu;
 
 	CReGameHookRegistry_CSGameRules_FShouldSwitchWeapon m_CSGameRules_FShouldSwitchWeapon;
 	CReGameHookRegistry_CSGameRules_GetNextBestWeapon m_CSGameRules_GetNextBestWeapon;
@@ -398,6 +408,8 @@ public:
 	virtual IReGameHookRegistry_PM_AirMove* PM_AirMove();
 	virtual IReGameHookRegistry_HandleMenu_ChooseAppearance* HandleMenu_ChooseAppearance();
 	virtual IReGameHookRegistry_HandleMenu_ChooseTeam* HandleMenu_ChooseTeam();
+	virtual IReGameHookRegistry_ShowMenu* ShowMenu();
+	virtual IReGameHookRegistry_ShowVGUIMenu* ShowVGUIMenu();
 
 	virtual IReGameHookRegistry_CSGameRules_FShouldSwitchWeapon* CSGameRules_FShouldSwitchWeapon();
 	virtual IReGameHookRegistry_CSGameRules_GetNextBestWeapon* CSGameRules_GetNextBestWeapon();

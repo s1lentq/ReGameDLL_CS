@@ -207,7 +207,9 @@ void EXT_FUNC ClientKill(edict_t *pEntity)
 	}
 }
 
-void ShowMenu(CBasePlayer *pPlayer, int bitsValidSlots, int nDisplayTime, BOOL fNeedMore, char *pszText)
+LINK_HOOK_VOID_CHAIN(ShowMenu, (CBasePlayer *pPlayer, int bitsValidSlots, int nDisplayTime, BOOL fNeedMore, char *pszText), pPlayer, bitsValidSlots, nDisplayTime, fNeedMore, pszText);
+
+void __API_HOOK(ShowMenu)(CBasePlayer *pPlayer, int bitsValidSlots, int nDisplayTime, BOOL fNeedMore, char *pszText)
 {
 	MESSAGE_BEGIN(MSG_ONE, gmsgShowMenu, NULL, pPlayer->pev);
 		WRITE_SHORT(bitsValidSlots);
@@ -217,7 +219,9 @@ void ShowMenu(CBasePlayer *pPlayer, int bitsValidSlots, int nDisplayTime, BOOL f
 	MESSAGE_END();
 }
 
-void ShowVGUIMenu(CBasePlayer *pPlayer, int MenuType, int BitMask, char *szOldMenu)
+LINK_HOOK_VOID_CHAIN(ShowVGUIMenu, (CBasePlayer *pPlayer, int MenuType, int BitMask, char *szOldMenu), pPlayer, MenuType, BitMask, szOldMenu);
+
+void __API_HOOK(ShowVGUIMenu)(CBasePlayer *pPlayer, int MenuType, int BitMask, char *szOldMenu)
 {
 	if (pPlayer->m_bVGUIMenus || MenuType > VGUI_Menu_Buy_Item)
 	{

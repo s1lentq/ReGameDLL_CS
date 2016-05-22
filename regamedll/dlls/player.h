@@ -37,7 +37,11 @@
 #include "unisignals.h"
 #include "weapons.h"
 
+#ifdef REGAMEDLL_ADD
+#define MIN_BUY_TIME			0
+#else
 #define MIN_BUY_TIME			15	// the minimum threshold values for cvar mp_buytime 15 sec's
+#endif
 
 #define MAX_BUFFER_MENU			175
 #define MAX_BUFFER_MENU_BRIEFING	50

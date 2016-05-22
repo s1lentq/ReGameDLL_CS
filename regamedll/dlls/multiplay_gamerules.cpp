@@ -341,20 +341,6 @@ void ReadMultiplayCvars(CHalfLifeMultiplay *mp)
 		CVAR_SET_FLOAT("mp_roundtime", 1);
 		mp->m_iRoundTime = 60;
 	}
-#else
-	// a limit of 500 minutes because
-	// if you do more minutes would be a bug in the HUD RoundTime in the form 00:00
-	if (mp->m_iRoundTime > 30000)
-	{
-		CVAR_SET_FLOAT("mp_roundtime", 500);
-		mp->m_iRoundTime = 30000;
-	}
-	else if (mp->m_iRoundTime < 0)
-	{
-		CVAR_SET_FLOAT("mp_roundtime", 0);
-		mp->m_iRoundTime = 0;
-	}
-#endif
 
 	if (mp->m_iIntroRoundTime > 60)
 	{
@@ -388,6 +374,37 @@ void ReadMultiplayCvars(CHalfLifeMultiplay *mp)
 		CVAR_SET_FLOAT("mp_limitteams", 0);
 		mp->m_iLimitTeams = 0;
 	}
+#else
+	// a limit of 500 minutes because
+	// if you do more minutes would be a bug in the HUD RoundTime in the form 00:00
+	if (mp->m_iRoundTime > 30000)
+	{
+		CVAR_SET_FLOAT("mp_roundtime", 500);
+		mp->m_iRoundTime = 30000;
+	}
+	else if (mp->m_iRoundTime < 0)
+	{
+		CVAR_SET_FLOAT("mp_roundtime", 0);
+		mp->m_iRoundTime = 0;
+	}
+	if (mp->m_iIntroRoundTime < 0)
+	{
+		CVAR_SET_FLOAT("mp_freezetime", 0);
+		mp->m_iIntroRoundTime = 0;
+	}
+	if (mp->m_iC4Timer < 0)
+	{
+		CVAR_SET_FLOAT("mp_c4timer", 0);
+		mp->m_iC4Timer = 0;
+	}
+	if (mp->m_iLimitTeams < 0)
+	{
+		CVAR_SET_FLOAT("mp_limitteams", 0);
+		mp->m_iLimitTeams = 0;
+	}
+
+#endif
+
 }
 
 CHalfLifeMultiplay::CHalfLifeMultiplay()
@@ -2958,8 +2975,10 @@ void CHalfLifeMultiplay::CheckRestartRound()
 
 	if (iRestartDelay > 0)
 	{
+#ifndef REGAMEDLL_ADD
 		if (iRestartDelay > 60)
 			iRestartDelay = 60;
+#endif
 
 		// log the restart
 		UTIL_LogPrintf("World triggered \"Restart_Round_(%i_%s)\"\n", iRestartDelay, (iRestartDelay == 1) ? "second" : "seconds");
