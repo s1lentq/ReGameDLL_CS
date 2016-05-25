@@ -281,7 +281,7 @@ void CHostage::IdleThink()
 
 				if (player != NULL)
 				{
-					player->AddAccount(REWARD_TAKEN_HOSTAGE);
+					player->AddAccount(REWARD_TAKEN_HOSTAGE, RT_HOSTAGE_RESCUED);
 					UTIL_LogPrintf("\"%s<%i><%s><CT>\" triggered \"Rescued_A_Hostage\"\n", STRING(player->pev->netname),
 						GETPLAYERUSERID(player->edict()), GETPLAYERAUTHID(player->edict()));
 				}
@@ -453,7 +453,7 @@ int CHostage::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAt
 
 		if (pAttacker != NULL)
 		{
-			pAttacker->AddAccount(-20 * int(flActualDamage));
+			pAttacker->AddAccount(-20 * int(flActualDamage), RT_HOSTAGE_DAMAGED);
 
 			if (TheBots != NULL)
 			{
@@ -479,7 +479,7 @@ int CHostage::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAt
 
 		if (pAttacker != NULL)
 		{
-			pAttacker->AddAccount(20 * (-25 - int(flActualDamage)));
+			pAttacker->AddAccount(20 * (-25 - int(flActualDamage)), RT_HOSTAGE_KILLED);
 			AnnounceDeath(pAttacker);
 			ApplyHostagePenalty(pAttacker);
 		}
@@ -756,7 +756,7 @@ void CHostage::GiveCTTouchBonus(CBasePlayer *pPlayer)
 	m_bTouched = TRUE;
 	CSGameRules()->m_iAccountCT += 100;
 
-	pPlayer->AddAccount(150);
+	pPlayer->AddAccount(REWARD_TOOK_HOSTAGE, RT_HOSTAGE_TOOK);
 	UTIL_LogPrintf("\"%s<%i><%s><CT>\" triggered \"Touched_A_Hostage\"\n", STRING(pPlayer->pev->netname), GETPLAYERUSERID(pPlayer->edict()), GETPLAYERAUTHID(pPlayer->edict()));
 }
 

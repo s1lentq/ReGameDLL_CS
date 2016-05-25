@@ -1248,7 +1248,7 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 
 				bEnoughMoney = true;
 				pPlayer->m_bHasNightVision = true;
-				pPlayer->AddAccount(-NVG_PRICE);
+				pPlayer->AddAccount(-NVG_PRICE, RT_PLAYER_BOUGHT_SOMETHING);
 
 				SendItemStatus(pPlayer);
 			}
@@ -1283,7 +1283,7 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 				MESSAGE_END();
 
 				pPlayer->pev->body = 1;
-				pPlayer->AddAccount(-DEFUSEKIT_PRICE);
+				pPlayer->AddAccount(-DEFUSEKIT_PRICE, RT_PLAYER_BOUGHT_SOMETHING);
 
 				EMIT_SOUND(ENT(pPlayer->pev), CHAN_ITEM, "items/kevlar.wav", VOL_NORM, ATTN_NORM);
 				SendItemStatus(pPlayer);
@@ -1301,7 +1301,7 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 				DropPrimary(pPlayer);
 
 				pPlayer->GiveShield(true);
-				pPlayer->AddAccount(-SHIELDGUN_PRICE);
+				pPlayer->AddAccount(-SHIELDGUN_PRICE, RT_PLAYER_BOUGHT_SOMETHING);
 
 				EMIT_SOUND(ENT(pPlayer->pev), CHAN_ITEM, "items/gunpickup2.wav", VOL_NORM, ATTN_NORM);
 			}
@@ -1323,7 +1323,7 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 	if (pszItem != NULL)
 	{
 		pPlayer->GiveNamedItem(pszItem);
-		pPlayer->AddAccount(-iItemPrice);
+		pPlayer->AddAccount(-iItemPrice, RT_PLAYER_BOUGHT_SOMETHING);
 	}
 
 	if (TheTutor != NULL)
@@ -1365,7 +1365,7 @@ void BuyWeaponByWeaponID(CBasePlayer *pPlayer, WeaponIdType weaponID)
 	}
 
 	pPlayer->GiveNamedItem(info->entityName);
-	pPlayer->AddAccount(-info->cost);
+	pPlayer->AddAccount(-info->cost, RT_PLAYER_BOUGHT_SOMETHING);
 
 	if (TheTutor != NULL)
 	{
@@ -2013,7 +2013,7 @@ bool BuyGunAmmo(CBasePlayer *player, CBasePlayerItem *weapon, bool bBlinkMoney)
 	if (player->m_iAccount >= info->clipCost)
 	{
 		player->GiveNamedItem(info->ammoName);
-		player->AddAccount(-info->clipCost);
+		player->AddAccount(-info->clipCost, RT_PLAYER_BOUGHT_SOMETHING);
 		return true;
 	}
 

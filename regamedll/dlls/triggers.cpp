@@ -1770,7 +1770,7 @@ void CVIP_SafetyZone::VIP_SafetyTouch(CBaseEntity *pOther)
 		p->m_bEscaped = true;
 
 		p->Disappear();
-		p->AddAccount(REWARD_VIP_HAVE_SELF_RESCUED);
+		p->AddAccount(REWARD_VIP_HAVE_SELF_RESCUED, RT_VIP_RESCUED_MYSELF);
 	}
 }
 

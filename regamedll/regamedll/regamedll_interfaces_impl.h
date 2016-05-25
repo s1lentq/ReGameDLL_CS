@@ -341,7 +341,7 @@ public:
 	virtual bool IsConnected() const { return m_pEntity->has_disconnected == false; }
 
 	virtual void SetAnimation(PLAYER_ANIM playerAnim) { ((CBasePlayer *)m_pEntity)->SetAnimation(playerAnim); }
-	virtual void AddAccount(int amount, bool bTrackChange = true) { ((CBasePlayer *)m_pEntity)->AddAccount(amount, bTrackChange); }
+	virtual void AddAccount(int amount, RewardType type = RT_NONE, bool bTrackChange = true) { ((CBasePlayer *)m_pEntity)->AddAccount(amount, type, bTrackChange); }
 	virtual void GiveNamedItem(const char *pszName) { ((CBasePlayer *)m_pEntity)->GiveNamedItem(pszName); }
 	virtual void GiveNamedItemEx(const char *pszName) { ((CBasePlayer *)m_pEntity)->GiveNamedItemEx(pszName); }
 	virtual void GiveDefaultItems() { ((CBasePlayer *)m_pEntity)->GiveDefaultItems(); }

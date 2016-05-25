@@ -3070,9 +3070,9 @@ NOXREF void CBasePlayer::ThrowPrimary()
 	DropShield();
 }
 
-LINK_HOOK_CLASS_VOID_CHAIN(CBasePlayer, AddAccount, (int amount, bool bTrackChange), amount, bTrackChange);
+LINK_HOOK_CLASS_VOID_CHAIN(CBasePlayer, AddAccount, (int amount, RewardType type, bool bTrackChange), amount, type, bTrackChange);
 
-void CBasePlayer::__API_HOOK(AddAccount)(int amount, bool bTrackChange)
+void CBasePlayer::__API_HOOK(AddAccount)(int amount, RewardType type, bool bTrackChange)
 {
 	m_iAccount += amount;
 
@@ -3300,7 +3300,7 @@ void CBasePlayer::JoiningThink()
 			{
 				m_iAccount = 0;
 				CheckStartMoney();
-				AddAccount(startmoney.value);
+				AddAccount(startmoney.value, RT_INTO_GAME);
 			}
 
 			if (g_pGameRules->FPlayerCanRespawn(this))
@@ -5499,7 +5499,7 @@ void CBasePlayer::Reset()
 
 	RemoveShield();
 	CheckStartMoney();
-	AddAccount(startmoney.value);
+	AddAccount(startmoney.value, RT_PLAYER_RESET);
 
 	MESSAGE_BEGIN(MSG_ALL, gmsgScoreInfo);
 		WRITE_BYTE(ENTINDEX(edict()));

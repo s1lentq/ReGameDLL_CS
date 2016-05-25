@@ -1176,14 +1176,15 @@ void RadiusDamage(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker
 #endif
 			}
 
+#ifdef REGAMEDLL_FIXES
+			// not allow inflict to the player damage is less than 1.0f and to entities not less than 0.0f
+			if ((pEntity->Classify() == CLASS_PLAYER && flAdjustedDamage < 1.0f) || flAdjustedDamage <= 0.0f)
+				continue;
+#else
 			if (flAdjustedDamage < 0)
 				flAdjustedDamage = 0;
-
-#ifdef REGAMEDLL_FIXES
-			if (flAdjustedDamage > 0)
 #endif
 				pEntity->TakeDamage(pevInflictor, pevAttacker, flAdjustedDamage, bitsDamageType);
-
 		}
 	}
 }
@@ -1198,23 +1199,27 @@ void RadiusDamage2(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacke
 	if (flRadius)
 		falloff = flDamage / flRadius;
 	else
-		falloff = 1;
+		falloff = 1.0;
 
 	int bInWater = (UTIL_PointContents(vecSrc) == CONTENTS_WATER);
 
+	// in case grenade is lying on the ground
 	vecSrc.z += 1;
 
 	if (!pevAttacker)
 		pevAttacker = pevInflictor;
 
+	// iterate on all entities in the vicinity.
 	while ((pEntity = UTIL_FindEntityInSphere(pEntity, vecSrc, flRadius)) != NULL)
 	{
 		if (pEntity->pev->takedamage != DAMAGE_NO)
 		{
+			// UNDONE: this should check a damage mask, not an ignore
 			if (iClassIgnore != CLASS_NONE && pEntity->Classify() == iClassIgnore)
 				continue;
 
-			if (bInWater && !pEntity->pev->waterlevel)
+			// blast's don't tavel into or out of water
+			if (bInWater && pEntity->pev->waterlevel == 0)
 				continue;
 
 			if (!bInWater && pEntity->pev->waterlevel == 3)

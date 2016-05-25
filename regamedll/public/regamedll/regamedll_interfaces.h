@@ -297,7 +297,7 @@ public:
 	virtual bool IsConnected() const = 0;
 
 	virtual void SetAnimation(PLAYER_ANIM playerAnim) = 0;
-	virtual void AddAccount(int amount, bool bTrackChange = true) = 0;
+	virtual void AddAccount(int amount, RewardType type = RT_NONE, bool bTrackChange = true) = 0;
 	virtual void GiveNamedItem(const char *pszName) = 0;
 	virtual void GiveNamedItemEx(const char *pszName) = 0;
 	virtual void GiveDefaultItems() = 0;

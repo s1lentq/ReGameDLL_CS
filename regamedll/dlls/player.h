@@ -140,6 +140,24 @@
 #define SOUND_FLASHLIGHT_ON		"items/flashlight1.wav"
 #define SOUND_FLASHLIGHT_OFF		"items/flashlight1.wav"
 
+// custom enum
+enum RewardType
+{
+	RT_NONE,
+	RT_ROUND_BONUS,
+	RT_PLAYER_RESET,
+	RT_PLAYER_BOUGHT_SOMETHING,
+	RT_HOSTAGE_TOOK,
+	RT_HOSTAGE_RESCUED,
+	RT_HOSTAGE_DAMAGED,
+	RT_HOSTAGE_KILLED,
+	RT_TEAMMATES_KILLED,
+	RT_ENEMY_KILLED,
+	RT_INTO_GAME,
+	RT_VIP_KILLED,
+	RT_VIP_RESCUED_MYSELF
+};
+
 typedef enum
 {
 	PLAYER_IDLE,
@@ -424,8 +442,8 @@ public:
 	void SmartRadio();
 	void ThrowWeapon(char *pszItemName);
 	void ThrowPrimary();
-	void AddAccount(int amount, bool bTrackChange = true);
-	void AddAccount_(int amount, bool bTrackChange = true);
+	void AddAccount(int amount, RewardType type = RT_NONE, bool bTrackChange = true);
+	void AddAccount_(int amount, RewardType type = RT_NONE, bool bTrackChange = true);
 	void Disappear();
 	void MakeVIP();
 	bool CanPlayerBuy(bool display = false);

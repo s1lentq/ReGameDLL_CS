@@ -137,10 +137,10 @@ typedef IVoidHookChainClassImpl<CBasePlayer, const char *> CRegameHook_CBasePlay
 typedef IVoidHookChainRegistryClassImpl<CBasePlayer, const char *> CReGameHookRegistry_CBasePlayer_GiveNamedItem;
 
 // CBasePlayer::AddAccount hook
-typedef IVoidHookChainClassImpl<CBasePlayer, int, bool> CRegameHook_CBasePlayer_AddAccount;
-typedef IVoidHookChainRegistryClassImpl<CBasePlayer, int, bool> CReGameHookRegistry_CBasePlayer_AddAccount;
+typedef IVoidHookChainClassImpl<CBasePlayer, int, RewardType, bool> CRegameHook_CBasePlayer_AddAccount;
+typedef IVoidHookChainRegistryClassImpl<CBasePlayer, int, RewardType, bool> CReGameHookRegistry_CBasePlayer_AddAccount;
 
-// CBasePlayer::AddAccount hook
+// CBasePlayer::GiveShield hook
 typedef IVoidHookChainClassImpl<CBasePlayer, bool> CRegameHook_CBasePlayer_GiveShield;
 typedef IVoidHookChainRegistryClassImpl<CBasePlayer, bool> CReGameHookRegistry_CBasePlayer_GiveShield;
 

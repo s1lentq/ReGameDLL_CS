@@ -1927,7 +1927,7 @@ void CHalfLifeMultiplay::__API_VHOOK(RestartRound)()
 
 		if (hostage->pev->solid != SOLID_NOT)
 		{
-			acct_tmp += 150;
+			acct_tmp += REWARD_TOOK_HOSTAGE;
 
 			if (hostage->pev->deadflag == DEAD_DEAD)
 			{
@@ -2039,7 +2039,7 @@ void CHalfLifeMultiplay::__API_VHOOK(RestartRound)()
 		{
 			if (!player->m_bReceivesNoMoneyNextRound)
 			{
-				player->AddAccount(m_iAccountCT);
+				player->AddAccount(m_iAccountCT, RT_ROUND_BONUS);
 			}
 		}
 		else if (player->m_iTeam == TERRORIST)
@@ -2049,7 +2049,7 @@ void CHalfLifeMultiplay::__API_VHOOK(RestartRound)()
 
 			if (!player->m_bReceivesNoMoneyNextRound)
 			{
-				player->AddAccount(m_iAccountTerrorist);
+				player->AddAccount(m_iAccountTerrorist, RT_ROUND_BONUS);
 			}
 
 			// If it's a prison scenario then remove the Ts guns
@@ -3668,7 +3668,7 @@ void CHalfLifeMultiplay::__API_VHOOK(PlayerKilled)(CBasePlayer *pVictim, entvars
 			// if a player dies by from teammate
 			pKiller->frags -= IPointsForKill(peKiller, pVictim);
 
-			killer->AddAccount(PAYBACK_FOR_KILLED_TEAMMATES);
+			killer->AddAccount(PAYBACK_FOR_KILLED_TEAMMATES, RT_TEAMMATES_KILLED);
 			killer->m_iTeamKills++;
 			killer->m_bJustKilledTeammate = true;
 
@@ -3701,7 +3701,7 @@ void CHalfLifeMultiplay::__API_VHOOK(PlayerKilled)(CBasePlayer *pVictim, entvars
 			if (pVictim->m_bIsVIP)
 			{
 				killer->HintMessage("#Hint_reward_for_killing_vip", TRUE);
-				killer->AddAccount(REWARD_KILLED_VIP);
+				killer->AddAccount(REWARD_KILLED_VIP, RT_VIP_KILLED);
 
 				MESSAGE_BEGIN(MSG_SPEC, SVC_DIRECTOR);
 					WRITE_BYTE(9);
@@ -3714,7 +3714,7 @@ void CHalfLifeMultiplay::__API_VHOOK(PlayerKilled)(CBasePlayer *pVictim, entvars
 				UTIL_LogPrintf("\"%s<%i><%s><TERRORIST>\" triggered \"Assassinated_The_VIP\"\n", STRING(killer->pev->netname), GETPLAYERUSERID(killer->edict()), GETPLAYERAUTHID(killer->edict()));
 			}
 			else
-				killer->AddAccount(REWARD_KILLED_ENEMY);
+				killer->AddAccount(REWARD_KILLED_ENEMY, RT_ENEMY_KILLED);
 
 			if (!(killer->m_flDisplayHistory & DHF_ENEMY_KILLED))
 			{
