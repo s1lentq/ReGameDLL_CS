@@ -2281,26 +2281,26 @@ void CHalfLifeMultiplay::ResetCurrentVIP()
 	{
 	case 1:
 		m_pVIP->m_iModelName = MODEL_GSG9;
-		SET_CLIENT_KEY_VALUE(m_pVIP->entindex(), infobuffer, "model", "gsg9");
+		m_pVIP->SetClientUserInfoModel(infobuffer, "gsg9");
 		break;
 	case 2:
 		m_pVIP->m_iModelName = MODEL_SAS;
-		SET_CLIENT_KEY_VALUE(m_pVIP->entindex(), infobuffer, "model", "sas");
+		m_pVIP->SetClientUserInfoModel(infobuffer, "sas");
 		break;
 	case 3:
 		m_pVIP->m_iModelName = MODEL_GIGN;
-		SET_CLIENT_KEY_VALUE(m_pVIP->entindex(), infobuffer, "model", "gign");
+		m_pVIP->SetClientUserInfoModel(infobuffer, "gign");
 		break;
 	case 4:
 		if (g_bIsCzeroGame)
 		{
 			m_pVIP->m_iModelName = MODEL_SPETSNAZ;
-			SET_CLIENT_KEY_VALUE(m_pVIP->entindex(), infobuffer, "model", "spetsnaz");
+			m_pVIP->SetClientUserInfoModel(infobuffer, "spetsnaz");
 			break;
 		}
 	default:
 		m_pVIP->m_iModelName = MODEL_URBAN;
-		SET_CLIENT_KEY_VALUE(m_pVIP->entindex(), infobuffer, "model", "urban");
+		m_pVIP->SetClientUserInfoModel(infobuffer, "urban");
 		break;
 	}
 

@@ -341,11 +341,33 @@ const char *GetCSModelName(int item_id)
 	return modelName;
 }
 
+void EXT_FUNC CBasePlayer::SetClientUserInfoModel_api(char *infobuffer, char *szNewModel)
+{
+	SET_CLIENT_KEY_VALUE(entindex(), infobuffer, "model", szNewModel);
+}
+
+void CBasePlayer::SetClientUserInfoModel(char *infobuffer, char *szNewModel)
+{
+	if (szNewModel == nullptr)
+		return;
+
+	if (Q_strcmp(GET_KEY_VALUE(infobuffer, "model"), szNewModel) != 0)
+	{
+		g_ReGameHookchains.m_CBasePlayer_SetClientUserInfoModel.callChain(&CBasePlayer::SetClientUserInfoModel_api, this, infobuffer, szNewModel);
+	}
+}
+
 void CBasePlayer::SetPlayerModel(BOOL HasC4)
 {
 	char *infobuffer = GET_INFO_BUFFER(edict());
 	char *model;
 
+#ifdef REGAMEDLL_ADD
+	CCSPlayer *pPlayer = CSPlayer(this);
+	if (*pPlayer->m_szModel != '\0') {
+		model = pPlayer->m_szModel;
+	} else
+#endif
 	if (m_iTeam == CT)
 	{
 		switch (m_iModelName)
@@ -426,10 +448,7 @@ void CBasePlayer::SetPlayerModel(BOOL HasC4)
 	else
 		model = "urban";
 
-	if (Q_strcmp(GET_KEY_VALUE(infobuffer, "model"), model) != 0)
-	{
-		SET_CLIENT_KEY_VALUE(entindex(), infobuffer, "model", model);
-	}
+	SetClientUserInfoModel(infobuffer, model);
 }
 
 CBasePlayer *CBasePlayer::GetNextRadioRecipient(CBasePlayer *pStartPlayer)
@@ -1576,7 +1595,7 @@ void CBasePlayer::RemoveAllItems(BOOL removeSuit)
 	}
 
 	m_pActiveItem = NULL;
-	m_bHasPrimary = NULL;
+	m_bHasPrimary = false;
 
 	pev->viewmodel = 0;
 	pev->weaponmodel = 0;
@@ -3232,7 +3251,7 @@ void CBasePlayer::MakeVIP()
 	pev->body = 0;
 	m_iModelName = MODEL_VIP;
 
-	SET_CLIENT_KEY_VALUE(entindex(), GET_INFO_BUFFER(edict()), "model", "vip");
+	SetClientUserInfoModel(GET_INFO_BUFFER(edict()), "vip");
 	UTIL_LogPrintf("\"%s<%i><%s><CT>\" triggered \"Became_VIP\"\n", STRING(pev->netname), GETPLAYERUSERID(edict()), GETPLAYERAUTHID(edict()));
 
 	m_iTeam = CT;
@@ -7403,6 +7422,7 @@ void CBasePlayer::SwitchTeam()
 	char *szOldTeam;
 	char *szNewTeam;
 	const char *szName;
+	char *szNewModel = nullptr;
 
 	oldTeam = m_iTeam;
 
@@ -7414,28 +7434,28 @@ void CBasePlayer::SwitchTeam()
 		{
 		case MODEL_URBAN:
 			m_iModelName = MODEL_LEET;
-			SET_CLIENT_KEY_VALUE(entindex(), GET_INFO_BUFFER(edict()), "model", "leet");
+			szNewModel = "leet";
 			break;
 		case MODEL_GIGN:
 			m_iModelName = MODEL_GUERILLA;
-			SET_CLIENT_KEY_VALUE(entindex(), GET_INFO_BUFFER(edict()), "model", "guerilla");
+			szNewModel = "guerilla";
 			break;
 		case MODEL_SAS:
 			m_iModelName = MODEL_ARCTIC;
-			SET_CLIENT_KEY_VALUE(entindex(), GET_INFO_BUFFER(edict()), "model", "arctic");
+			szNewModel = "arctic";
 			break;
 		case MODEL_SPETSNAZ:
 			if (g_bIsCzeroGame)
 			{
 				m_iModelName = MODEL_MILITIA;
-				SET_CLIENT_KEY_VALUE(entindex(), GET_INFO_BUFFER(edict()), "model", "militia");
+				szNewModel = "militia";
 				break;
 			}
 		default:
 			if (m_iModelName == MODEL_GSG9 || !IsBot() || !TheBotProfiles->GetCustomSkinModelname(m_iModelName))
 			{
 				m_iModelName = MODEL_TERROR;
-				SET_CLIENT_KEY_VALUE(entindex(), GET_INFO_BUFFER(edict()), "model", "terror");
+				szNewModel = "terror";
 			}
 			break;
 		}
@@ -7448,35 +7468,37 @@ void CBasePlayer::SwitchTeam()
 		{
 		case MODEL_TERROR:
 			m_iModelName = MODEL_GSG9;
-			SET_CLIENT_KEY_VALUE(entindex(), GET_INFO_BUFFER(edict()), "model", "gsg9");
+			szNewModel = "gsg9";
 			break;
 
 		case MODEL_ARCTIC:
 			m_iModelName = MODEL_SAS;
-			SET_CLIENT_KEY_VALUE(entindex(), GET_INFO_BUFFER(edict()), "model", "sas");
+			szNewModel = "sas";
 			break;
 
 		case MODEL_GUERILLA:
 			m_iModelName = MODEL_GIGN;
-			SET_CLIENT_KEY_VALUE(entindex(), GET_INFO_BUFFER(edict()), "model", "gign");
+			szNewModel = "gign";
 			break;
 
 		case MODEL_MILITIA:
 			if (g_bIsCzeroGame)
 			{
 				m_iModelName = MODEL_SPETSNAZ;
-				SET_CLIENT_KEY_VALUE(entindex(), GET_INFO_BUFFER(edict()), "model", "spetsnaz");
+				szNewModel = "spetsnaz";
 				break;
 			}
 		default:
 			if (m_iModelName == MODEL_LEET || !IsBot() || !TheBotProfiles->GetCustomSkinModelname(m_iModelName))
 			{
 				m_iModelName = MODEL_URBAN;
-				SET_CLIENT_KEY_VALUE(entindex(), GET_INFO_BUFFER(edict()), "model", "urban");
+				szNewModel = "urban";
 			}
 			break;
 		}
 	}
+
+	SetClientUserInfoModel(GET_INFO_BUFFER(edict()), szNewModel);
 
 	MESSAGE_BEGIN(MSG_ALL, gmsgTeamInfo);
 		WRITE_BYTE(entindex());

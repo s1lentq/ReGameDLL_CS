@@ -294,9 +294,12 @@ public:
 	virtual void KeyValue(KeyValueData *pkvd) { m_pEntity->KeyValue(pkvd); }
 };
 
+#pragma warning(disable:4351)		// new behavior: elements of array will be default initialized
+
 class CCSPlayer: public CCSMonster {
 public:
-	CCSPlayer(CBaseEntity *pEntity) : CCSMonster(pEntity) {}
+	char m_szModel[32];
+	CCSPlayer(CBaseEntity *pEntity) : CCSMonster(pEntity), m_szModel() {}
 
 	virtual void Spawn() { m_pEntity->Spawn(); }
 	virtual void Precache() { m_pEntity->Precache(); }
@@ -350,7 +353,9 @@ public:
 	virtual void DropPlayerItem(const char *pszItemName) { ((CBasePlayer *)m_pEntity)->DropPlayerItem(pszItemName); }
 	virtual void RemoveShield() { ((CBasePlayer *)m_pEntity)->RemoveShield(); }
 	virtual void RemoveAllItems(bool bRemoveSuit) { ((CBasePlayer *)m_pEntity)->RemoveAllItems(bRemoveSuit ? TRUE : FALSE); }
-
+	virtual void SetPlayerModel(bool bHasC4) { ((CBasePlayer *)m_pEntity)->SetPlayerModel(bHasC4 ? TRUE : FALSE); }
+	virtual void SetPlayerModelEx(const char *modelName) { strncpy(m_szModel, modelName, sizeof(m_szModel) - 1); m_szModel[sizeof(m_szModel) - 1] = '\0'; };
+	virtual void SetNewPlayerModel(const char *modelName) { ((CBasePlayer *)m_pEntity)->SetNewPlayerModel(modelName); }
 };
 
 class CAPI_Bot: public CCSPlayer {
@@ -2559,7 +2564,7 @@ inline T *CBASE_TO_CSENTITY(CBaseEntity *a)
 
 inline CCSPlayer *CSPlayer(int iPlayerNum) { return reinterpret_cast<CCSPlayer *>(g_GameEntities[iPlayerNum]); }
 inline CCSPlayer *CSPlayer(const edict_t *pEdict) { return CSPlayer(ENTINDEX(pEdict)); }
-inline CCSPlayer *CSPlayer(CBaseEntity *pEntity) { return CSPlayer(pEntity->entindex()); }
+inline CCSPlayer *CSPlayer(CBasePlayer *pPlayer) { return CSPlayer(pPlayer->entindex()); }
 
 inline CCSEntity *CSEntity(int iEntityNum) { return reinterpret_cast<CCSEntity *>(g_GameEntities[iEntityNum]); }
 inline CCSEntity *CSEntity(const edict_t *pEdict) { return CSEntity(ENTINDEX(pEdict)); }

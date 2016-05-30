@@ -78,6 +78,7 @@ IReGameHookRegistry_CBasePlayer_GiveDefaultItems* CReGameHookchains::CBasePlayer
 IReGameHookRegistry_CBasePlayer_GiveNamedItem* CReGameHookchains::CBasePlayer_GiveNamedItem() { return &m_CBasePlayer_GiveNamedItem; }
 IReGameHookRegistry_CBasePlayer_AddAccount* CReGameHookchains::CBasePlayer_AddAccount() { return &m_CBasePlayer_AddAccount; }
 IReGameHookRegistry_CBasePlayer_GiveShield* CReGameHookchains::CBasePlayer_GiveShield() { return &m_CBasePlayer_GiveShield; }
+IReGameHookRegistry_CBasePlayer_SetClientUserInfoModel* CReGameHookchains::CBasePlayer_SetClientUserInfoModel() { return &m_CBasePlayer_SetClientUserInfoModel; }
 
 
 IReGameHookRegistry_CBaseAnimating_ResetSequenceInfo* CReGameHookchains::CBaseAnimating_ResetSequenceInfo() { return &m_CBaseAnimating_ResetSequenceInfo; }

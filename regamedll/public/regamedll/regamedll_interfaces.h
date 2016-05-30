@@ -306,6 +306,9 @@ public:
 	virtual void DropPlayerItem(const char *pszItemName) = 0;
 	virtual void RemoveShield() = 0;
 	virtual void RemoveAllItems(bool bRemoveSuit) = 0;
+	virtual void SetPlayerModel(bool bHasC4) = 0;
+	virtual void SetPlayerModelEx(const char *modelName) = 0;
+	virtual void SetNewPlayerModel(const char *modelName) = 0;
 };
 
 class IAPI_Bot: public ICSPlayer {

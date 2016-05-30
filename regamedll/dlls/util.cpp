@@ -2374,7 +2374,11 @@ bool UTIL_AreHostagesImprov()
 
 #ifdef REGAMEDLL_ADD
 	// someday in CS 1.6
-	// ...
+	int improv = ENG_CHECK_PARM("-host-improv", NULL);
+	if (improv)
+	{
+		return true;
+	}
 #endif
 
 	return false;

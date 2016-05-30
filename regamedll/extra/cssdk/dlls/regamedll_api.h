@@ -32,7 +32,7 @@
 #include "interface.h"
 
 #define REGAMEDLL_API_VERSION_MAJOR 1
-#define REGAMEDLL_API_VERSION_MINOR 0
+#define REGAMEDLL_API_VERSION_MINOR 1
 
 // CBasePlayer::Spawn hook
 typedef IVoidHookChain<> IReGameHook_CBasePlayer_Spawn;
@@ -147,7 +147,9 @@ typedef IVoidHookChainRegistryClass<class CBasePlayer, int, enum RewardType, boo
 typedef IVoidHookChain<bool> IReGameHook_CBasePlayer_GiveShield;
 typedef IVoidHookChainRegistryClass<class CBasePlayer, bool> IReGameHookRegistry_CBasePlayer_GiveShield;
 
-
+// CBasePlayer:SetClientUserInfoModel hook
+typedef IVoidHookChain<char *, char *> IReGameHook_CBasePlayer_SetClientUserInfoModel;
+typedef IVoidHookChainRegistryClass<class CBasePlayer, char *, char *> IReGameHookRegistry_CBasePlayer_SetClientUserInfoModel;
 
 
 // CBaseAnimating::ResetSequenceInfo hook
@@ -331,6 +333,7 @@ public:
 	virtual IReGameHookRegistry_CBasePlayer_GiveNamedItem* CBasePlayer_GiveNamedItem() = 0;
 	virtual IReGameHookRegistry_CBasePlayer_AddAccount* CBasePlayer_AddAccount() = 0;
 	virtual IReGameHookRegistry_CBasePlayer_GiveShield* CBasePlayer_GiveShield() = 0;
+	virtual IReGameHookRegistry_CBasePlayer_SetClientUserInfoModel* CBasePlayer_SetClientUserInfoModel() = 0;
 	virtual IReGameHookRegistry_CBaseAnimating_ResetSequenceInfo* CBaseAnimating_ResetSequenceInfo() = 0;
 
 	virtual IReGameHookRegistry_GetForceCamera* GetForceCamera() = 0;

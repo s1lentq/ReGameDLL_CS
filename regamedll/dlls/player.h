@@ -463,6 +463,8 @@ public:
 	void SetProgressBarTime(int time);
 	void SetProgressBarTime2(int time, float timeElapsed);
 	void SetPlayerModel(BOOL HasC4);
+	void SetClientUserInfoModel(char *infobuffer, char *szNewModel);
+	void SetClientUserInfoModel_api(char *infobuffer, char *szNewModel);
 	void SetNewPlayerModel(const char *modelName);
 	BOOL SwitchWeapon(CBasePlayerItem *pWeapon);
 	void CheckPowerups();

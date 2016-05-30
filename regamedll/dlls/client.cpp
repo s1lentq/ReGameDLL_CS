@@ -1510,7 +1510,7 @@ void __API_HOOK(HandleMenu_ChooseAppearance)(CBasePlayer *player, int slot)
 	player->pev->body = 0;
 	player->m_iModelName = appearance.model_id;
 
-	SET_CLIENT_KEY_VALUE(player->entindex(), GET_INFO_BUFFER(player->edict()), "model", appearance.model_name);
+	player->SetClientUserInfoModel(GET_INFO_BUFFER(player->edict()), appearance.model_name);
 	player->SetNewPlayerModel(sPlayerModelFiles[ appearance.model_name_index ]);
 
 	if (CSGameRules()->m_iMapHasVIPSafetyZone == MAP_VIP_SAFETYZONE_UNINITIALIZED)
