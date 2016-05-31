@@ -77,13 +77,15 @@
 // NOTE: It works for CZ
 #define MONEY_BLINK_AMOUNT		30
 
+// Player physics flags bits
+// CBasePlayer::m_afPhysicsFlags
 #define PFLAG_ONLADDER			(1<<0)
 #define PFLAG_ONSWING			(1<<0)
 #define PFLAG_ONTRAIN			(1<<1)
 #define PFLAG_ONBARNACLE		(1<<2)
-#define PFLAG_DUCKING			(1<<3)
-#define PFLAG_USING			(1<<4)
-#define PFLAG_OBSERVER			(1<<5)
+#define PFLAG_DUCKING			(1<<3)	// In the process of ducking, but totally squatted yet
+#define PFLAG_USING			(1<<4)	// Using a continuous entity
+#define PFLAG_OBSERVER			(1<<5)	// player is locked in stationary cam mode. Spectators can move, observers can't.
 
 #define TRAIN_OFF			0x00
 #define TRAIN_NEUTRAL			0x01
@@ -157,6 +159,7 @@ enum RewardType
 	RT_VIP_KILLED,
 	RT_VIP_RESCUED_MYSELF
 };
+
 enum PLAYER_ANIM
 {
 	PLAYER_IDLE,
@@ -197,7 +200,6 @@ enum TeamName
 	TERRORIST,
 	CT,
 	SPECTATOR,
-
 };
 
 enum ModelName
@@ -225,7 +227,6 @@ enum JoinState
 	SHOWTEAMSELECT,
 	PICKINGTEAM,
 	GETINTOGAME
-
 };
 
 enum TrackCommands
@@ -239,7 +240,6 @@ enum TrackCommands
 	CMD_LISTPLAYERS,
 	CMD_NIGHTVISION,
 	COMMANDS_TO_TRACK,
-
 };
 
 struct RebuyStruct
@@ -327,10 +327,7 @@ public:
 class CSprayCan: public CBaseEntity {
 public:
 	virtual void Think();
-	virtual int ObjectCaps()
-	{
-		return FCAP_DONT_SAVE;
-	}
+	virtual int ObjectCaps() { return FCAP_DONT_SAVE; }
 
 #ifdef HOOK_GAMEDLL
 
