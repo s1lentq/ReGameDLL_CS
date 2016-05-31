@@ -363,9 +363,9 @@ void CBasePlayer::SetPlayerModel(BOOL HasC4)
 	char *model;
 
 #ifdef REGAMEDLL_ADD
-	CCSPlayer *pPlayer = CSPlayer(this);
-	if (*pPlayer->m_szModel != '\0') {
-		model = pPlayer->m_szModel;
+	auto& modelEx = CSPlayer()->m_szModel;
+	if (*modelEx != '\0') {
+		model = modelEx;
 	} else
 #endif
 	if (m_iTeam == CT)
@@ -1052,7 +1052,7 @@ int CBasePlayer::__API_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pev
 			{
 				for (int i = 1; i <= gpGlobals->maxClients; ++i)
 				{
-					CBasePlayer *pPlayer = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+					CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
 					if (!pPlayer)
 						continue;
@@ -1095,7 +1095,7 @@ int CBasePlayer::__API_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pev
 
 		for (int i = 1; i <= gpGlobals->maxClients; ++i)
 		{
-			CBasePlayer *pPlayer = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+			CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
 			if (!pPlayer || pPlayer->m_hObserverTarget != this)
 				continue;
@@ -1289,7 +1289,7 @@ int CBasePlayer::__API_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pev
 		{
 			for (int i = 1; i <= gpGlobals->maxClients; ++i)
 			{
-				CBasePlayer *pPlayer = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+				CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
 				if (!pPlayer)
 					continue;
@@ -1332,7 +1332,7 @@ int CBasePlayer::__API_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pev
 
 	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
-		CBasePlayer *pPlayer = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
 		if (!pPlayer)
 			continue;
@@ -1947,7 +1947,7 @@ void CBasePlayer::__API_VHOOK(Killed)(entvars_t *pevAttacker, int iGib)
 
 			for (int i = 1; i <= gpGlobals->maxClients; ++i)
 			{
-				CBasePlayer *pPlayer = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+				CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
 				if (!pPlayer)
 					continue;
@@ -1978,7 +1978,7 @@ void CBasePlayer::__API_VHOOK(Killed)(entvars_t *pevAttacker, int iGib)
 
 	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
-		CBasePlayer *pObserver = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+		CBasePlayer *pObserver = UTIL_PlayerByIndex(i);
 
 		if (!pObserver)
 			continue;
@@ -3325,7 +3325,6 @@ void CBasePlayer::JoiningThink()
 			if (g_pGameRules->FPlayerCanRespawn(this))
 			{
 				Spawn();
-
 				CSGameRules()->CheckWinConditions();
 
 				if (!CSGameRules()->m_fTeamCount && CSGameRules()->m_bMapHasBombTarget && !CSGameRules()->IsThereABomber() && !CSGameRules()->IsThereABomb())
@@ -4051,7 +4050,7 @@ void CBasePlayer::__API_VHOOK(AddPointsToTeam)(int score, BOOL bAllowNegativeSco
 
 	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
-		CBasePlayer *pPlayer = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
 		if (pPlayer != NULL && i != index)
 		{
@@ -5308,7 +5307,7 @@ void CBasePlayer::__API_VHOOK(Spawn)()
 
 	for (i = 1; i <= gpGlobals->maxClients; ++i)
 	{
-		CBasePlayer *pObserver = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+		CBasePlayer *pObserver = UTIL_PlayerByIndex(i);
 
 		if (pObserver && pObserver->IsObservingPlayer(this))
 		{
@@ -5448,7 +5447,7 @@ void CBasePlayer::SetScoreboardAttributes(CBasePlayer *destination)
 
 	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
-		CBasePlayer *player = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+		CBasePlayer *player = UTIL_PlayerByIndex(i);
 
 		if (player != NULL && !FNullEnt(player->edict()))
 			SetScoreboardAttributes(player);
@@ -7362,7 +7361,6 @@ void CBasePlayer::DropPlayerItem(const char *pszItemName)
 			if (pWeapon->iFlags() & ITEM_FLAG_EXHAUSTIBLE)
 			{
 				int iAmmoIndex = GetAmmoIndex(pWeapon->pszAmmo1());
-
 				if (iAmmoIndex != -1)
 				{
 					pWeaponBox->PackAmmo(MAKE_STRING(pWeapon->pszAmmo1()), m_rgAmmo[iAmmoIndex] > 0);
@@ -7371,7 +7369,6 @@ void CBasePlayer::DropPlayerItem(const char *pszItemName)
 			}
 
 			const char *modelname = GetCSModelName(pWeapon->m_iId);
-
 			if (modelname != NULL)
 			{
 				SET_MODEL(ENT(pWeaponBox->pev), modelname);
@@ -9181,7 +9178,7 @@ void CBasePlayer::UpdateLocation(bool forceUpdate)
 
 	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
-		CBasePlayer *player = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+		CBasePlayer *player = UTIL_PlayerByIndex(i);
 
 		if (!player)
 			continue;

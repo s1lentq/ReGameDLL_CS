@@ -199,6 +199,7 @@ class CBaseMonster;
 class CBasePlayerItem;
 class CBasePlayerWeapon;
 class CSquadMonster;
+class CCSEntity;
 
 class CCineMonster;
 class CSound;
@@ -364,8 +365,15 @@ public:
 	void (CBaseEntity::*m_pfnUse)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 	void (CBaseEntity::*m_pfnBlocked)(CBaseEntity *pOther);
 
+#ifdef REGAMEDLL_ADD
+	CCSEntity *m_pEntity;
+#endif
+
 	// We use this variables to store each ammo count.
+#ifndef REGAMEDLL_ADD
+	// let's sacrifice this unused member, for its own needs in favor of m_pEntity
 	int *current_ammo;
+#endif
 	float currentammo;
 	int maxammo_buckshot;
 	int ammo_buckshot;
@@ -659,13 +667,9 @@ public:
 
 };
 
-#ifdef REGAMEDLL_SELF
-extern class CCSEntity **g_GameEntities;
-#endif
-
 // Converts a entvars_t * to a class pointer
 // It will allocate the class and entity if necessary
-template <class TWrap, class T>
+template <class W, class T>
 T *GetClassPtr(T *a)
 {
 	entvars_t *pev = (entvars_t *)a;
@@ -683,8 +687,9 @@ T *GetClassPtr(T *a)
 		a = new(pev) T;
 		a->pev = pev;
 
-#ifdef REGAMEDLL_SELF
-		g_GameEntities[a->entindex()] = new TWrap (a);
+#ifdef REGAMEDLL_ADD
+		a->m_pEntity = new W();
+		a->m_pEntity->m_pContainingEntity = a;
 #endif
 
 #if defined(HOOK_GAMEDLL) && defined(_WIN32) && !defined(REGAMEDLL_UNIT_TESTS)
@@ -695,9 +700,7 @@ T *GetClassPtr(T *a)
 	return a;
 }
 
-#ifdef REGAMEDLL_SELF
 extern CUtlVector<hash_item_t> stringsHashTable;
-#endif
 
 C_DLLEXPORT int GetEntityAPI(DLL_FUNCTIONS *pFunctionTable, int interfaceVersion);
 C_DLLEXPORT int GetNewDLLFunctions(NEW_DLL_FUNCTIONS *pFunctionTable, int *interfaceVersion);

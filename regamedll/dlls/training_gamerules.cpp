@@ -43,7 +43,7 @@ void CHalfLifeTraining::__MAKE_VHOOK(InitHUD)(CBasePlayer *pl)
 
 void CHalfLifeTraining::HostageDied()
 {
-	CBasePlayer *pPlayer = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(1));
+	CBasePlayer *pPlayer = UTIL_PlayerByIndex(1);
 
 	if (pPlayer != NULL)
 	{

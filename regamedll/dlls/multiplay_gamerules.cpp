@@ -17,7 +17,7 @@ bool IsBotSpeaking()
 {
 	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
-		CBasePlayer *pPlayer = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
 		if (pPlayer == NULL || !pPlayer->IsBot())
 			continue;
@@ -44,7 +44,7 @@ void SV_Continue_f()
 
 		for (int i = 1; i <= gpGlobals->maxClients; ++i)
 		{
-			CBasePlayer *pPlayer = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+			CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
 			if (pPlayer && !pPlayer->IsBot())
 			{
@@ -85,7 +85,7 @@ void SV_Career_EndRound_f()
 
 		for (int i = 1; i <= gpGlobals->maxClients; ++i)
 		{
-			CBasePlayer *player = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+			CBasePlayer *player = UTIL_PlayerByIndex(i);
 
 			if (!player || FNullEnt(player->pev))
 				continue;
@@ -768,7 +768,7 @@ void CHalfLifeMultiplay::__API_VHOOK(GiveC4)()
 	{
 		for (int i = 1; i <= gpGlobals->maxClients; ++i)
 		{
-			CBasePlayer *player = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+			CBasePlayer *player = UTIL_PlayerByIndex(i);
 
 			if (!player || FNullEnt(player->edict()))
 				continue;
@@ -850,7 +850,7 @@ void CHalfLifeMultiplay::__API_VHOOK(GiveC4)()
 
 			player->m_bHasC4 = true;
 			player->GiveNamedItem("weapon_c4");
-			player->SetBombIcon(FALSE);
+			player->SetBombIcon();
 			player->pev->body = 1;
 
 			player->m_flDisplayHistory |= DHF_BOMB_RETRIEVED;
@@ -1132,7 +1132,7 @@ bool CHalfLifeMultiplay::NeededPlayersCheck()
 	{
 		if (IsCareer())
 		{
-			CBasePlayer *player = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(gpGlobals->maxClients));
+			CBasePlayer *player = UTIL_PlayerByIndex(gpGlobals->maxClients);
 
 			if (!player || !player->IsBot())
 			{
@@ -1825,7 +1825,7 @@ void CHalfLifeMultiplay::__API_VHOOK(RestartRound)()
 		// Reset the player stats
 		for (int i = 1; i <= gpGlobals->maxClients; ++i)
 		{
-			CBasePlayer *plr = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+			CBasePlayer *plr = UTIL_PlayerByIndex(i);
 
 			if (plr && !FNullEnt(plr->pev))
 				plr->Reset();
@@ -2528,7 +2528,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(Think)()
 
 					for (int i = 1; i <= gpGlobals->maxClients; ++i)
 					{
-						CBasePlayer *pPlayer = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+						CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
 						if (pPlayer != NULL && !pPlayer->IsBot())
 						{
@@ -2777,7 +2777,7 @@ void CHalfLifeMultiplay::CheckFreezePeriodExpired()
 
 	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
-		CBasePlayer *plr = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+		CBasePlayer *plr = UTIL_PlayerByIndex(i);
 
 		if (!plr || plr->pev->flags == FL_DORMANT)
 		{
@@ -3044,7 +3044,7 @@ void CHalfLifeMultiplay::MarkLivingPlayersOnTeamAsNotReceivingMoneyNextRound(int
 {
 	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
-		CBasePlayer *player = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+		CBasePlayer *player = UTIL_PlayerByIndex(i);
 
 		if (!player || FNullEnt(player->pev))
 			continue;
@@ -3082,7 +3082,7 @@ void CHalfLifeMultiplay::CareerRestart()
 
 	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
-		CBasePlayer *player = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+		CBasePlayer *player = UTIL_PlayerByIndex(i);
 
 		if (!player || FNullEnt(player->pev))
 			continue;
@@ -3255,7 +3255,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(InitHUD)(CBasePlayer *pl)
 	for (i = 1; i <= gpGlobals->maxClients; ++i)
 	{
 		// FIXME: Probably don't need to cast this just to read m_iDeaths
-		CBasePlayer *plr = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+		CBasePlayer *plr = UTIL_PlayerByIndex(i);
 
 		if (plr != NULL)
 		{
@@ -3297,7 +3297,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(InitHUD)(CBasePlayer *pl)
 
 	for (i = 1; i <= gpGlobals->maxClients; ++i)
 	{
-		CBasePlayer *plr = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+		CBasePlayer *plr = UTIL_PlayerByIndex(i);
 
 		if (plr != NULL)
 		{
@@ -4384,9 +4384,8 @@ int CountPlayers()
 
 	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
-		CBaseEntity *pEnt = UTIL_PlayerByIndex(i);
-
-		if (pEnt != NULL)
+		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
+		if (pPlayer != NULL)
 		{
 			num = num + 1;
 		}

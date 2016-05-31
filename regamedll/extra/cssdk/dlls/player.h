@@ -27,8 +27,6 @@
 */
 #pragma once
 
-//#include "weapons.h"
-
 #include "pm_materials.h"
 #include "hintmessage.h"
 #include "unisignals.h"
@@ -150,7 +148,7 @@ enum RewardType
 	RT_VIP_RESCUED_MYSELF
 };
 
-typedef enum
+enum PLAYER_ANIM
 {
 	PLAYER_IDLE,
 	PLAYER_WALK,
@@ -164,9 +162,9 @@ typedef enum
 	PLAYER_RELOAD,
 	PLAYER_HOLDBOMB
 
-} PLAYER_ANIM;
+};
 
-typedef enum
+enum _Menu
 {
 	Menu_OFF,
 	Menu_ChooseTeam,
@@ -184,18 +182,18 @@ typedef enum
 	Menu_Radio3,
 	Menu_ClientBuy
 
-} _Menu;
+};
 
-typedef enum
+enum TeamName
 {
 	UNASSIGNED,
 	TERRORIST,
 	CT,
 	SPECTATOR,
 
-} TeamName;
+};
 
-typedef enum
+enum ModelName
 {
 	MODEL_UNASSIGNED,
 	MODEL_URBAN,
@@ -208,11 +206,12 @@ typedef enum
 	MODEL_GUERILLA,
 	MODEL_VIP,
 	MODEL_MILITIA,
-	MODEL_SPETSNAZ
+	MODEL_SPETSNAZ,
+	MODEL_AUTO
 
-} ModelName;
+};
 
-typedef enum
+enum JoinState
 {
 	JOINED,
 	SHOWLTEXT,
@@ -221,9 +220,9 @@ typedef enum
 	PICKINGTEAM,
 	GETINTOGAME
 
-} JoinState;
+};
 
-typedef enum
+enum TrackCommands
 {
 	CMD_SAY = 0,
 	CMD_SAYTEAM,
@@ -235,9 +234,9 @@ typedef enum
 	CMD_NIGHTVISION,
 	COMMANDS_TO_TRACK,
 
-} TrackCommands;
+};
 
-typedef struct
+struct RebuyStruct
 {
 	int m_primaryWeapon;
 	int m_primaryAmmo;
@@ -250,9 +249,9 @@ typedef struct
 	int m_nightVision;
 	int m_armor;
 
-} RebuyStruct;
+};
 
-typedef enum
+enum ThrowDirection
 {
 	THROW_NONE,
 	THROW_FORWARD,
@@ -262,7 +261,7 @@ typedef enum
 	THROW_GRENADE,
 	THROW_HITVEL_MINUS_AIRVEL
 
-} ThrowDirection;
+};
 
 enum sbar_data
 {
@@ -272,13 +271,9 @@ enum sbar_data
 	SBAR_END
 };
 
-typedef enum
-{
-	SILENT,
-	CALM,
-	INTENSE
+enum MusicState { SILENT, CALM, INTENSE };
 
-} MusicState;
+class CCSPlayer;
 
 class CStripWeapons: public CPointEntity {
 public:
@@ -356,21 +351,14 @@ public:
 	int IsObserver() { return pev->iuser1; }
 	void SetWeaponAnimType(const char *szExtention) { strcpy(m_szAnimExtention, szExtention); }
 	bool IsProtectedByShield() { return m_bOwnsShield && m_bShieldDrawn; }
-	bool IsReloading()
-	{
-		CBasePlayerWeapon *weapon = static_cast<CBasePlayerWeapon *>(m_pActiveItem);
-
-		if (weapon != NULL && weapon->m_fInReload)
-			return true;
-
-		return false;
-	}
+	bool IsReloading() const;
 	bool IsBlind() const { return (m_blindUntilTime > gpGlobals->time); }
 	bool IsAutoFollowAllowed() const { return (gpGlobals->time > m_allowAutoFollowTime); }
 	void InhibitAutoFollow(float duration) { m_allowAutoFollowTime = gpGlobals->time + duration; }
 	void AllowAutoFollow() { m_allowAutoFollowTime = 0; }
 	void SetObserverAutoDirector(bool val) { m_bObserverAutoDirector = val; }
 	bool CanSwitchObserverModes() const { return m_canSwitchObserverModes; }
+	CCSPlayer *CSPlayer() const;
 public:
 	enum { MaxLocationLen = 32 };
 
@@ -574,3 +562,17 @@ public:
 	EHANDLE m_hEntToIgnoreTouchesFrom;
 	float m_flTimeToIgnoreTouches;
 };
+
+inline bool CBasePlayer::IsReloading() const
+{
+	CBasePlayerWeapon *weapon = static_cast<CBasePlayerWeapon *>(m_pActiveItem);
+
+	if (weapon != NULL && weapon->m_fInReload)
+		return true;
+
+	return false;
+}
+
+inline CCSPlayer *CBasePlayer::CSPlayer() const {
+	return reinterpret_cast<CCSPlayer *>(this->m_pEntity);
+}

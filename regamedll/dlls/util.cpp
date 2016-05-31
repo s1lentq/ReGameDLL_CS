@@ -522,14 +522,14 @@ CBaseEntity *UTIL_FindEntityGeneric(const char *szWhatever, const Vector &vecSrc
 	return pEntity;
 }
 
-CBaseEntity *EXT_FUNC UTIL_PlayerByIndex(int playerIndex)
+CBasePlayer *EXT_FUNC UTIL_PlayerByIndex(int playerIndex)
 {
-	CBaseEntity *pPlayer = NULL;
+	CBasePlayer *pPlayer = NULL;
 	if (playerIndex > 0 && playerIndex <= gpGlobals->maxClients)
 	{
 		edict_t *pPlayerEdict = INDEXENT(playerIndex);
 		if (pPlayerEdict != NULL && !pPlayerEdict->free)
-			pPlayer = CBaseEntity::Instance(pPlayerEdict);
+			pPlayer = (CBasePlayer *)CBaseEntity::Instance(pPlayerEdict);
 	}
 
 	return pPlayer;
@@ -2283,7 +2283,7 @@ char UTIL_TextureHit(TraceResult *ptr, Vector vecSrc, Vector vecEnd)
 
 NOXREF int GetPlayerTeam(int index)
 {
-	CBasePlayer *pPlayer = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(index));
+	CBasePlayer *pPlayer = UTIL_PlayerByIndex(index);
 	if (pPlayer != NULL)
 	{
 		return pPlayer->m_iTeam;
@@ -2308,7 +2308,7 @@ bool UTIL_IsGame(const char *gameName)
 
 float_precision UTIL_GetPlayerGaitYaw(int playerIndex)
 {
-	CBasePlayer *pPlayer = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(playerIndex));
+	CBasePlayer *pPlayer = UTIL_PlayerByIndex(playerIndex);
 	if (pPlayer != NULL)
 	{
 		return pPlayer->m_flGaityaw;

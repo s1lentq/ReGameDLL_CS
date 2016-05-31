@@ -154,7 +154,7 @@ bool ForEachPlayer(Functor &func)
 {
 	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
-		CBasePlayer *player = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+		CBasePlayer *player = UTIL_PlayerByIndex(i);
 		if (!IsEntityValid((CBaseEntity *)player))
 			continue;
 

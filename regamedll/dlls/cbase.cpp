@@ -62,7 +62,7 @@ static DLL_FUNCTIONS gFunctionTable =
 static NEW_DLL_FUNCTIONS gNewDLLFunctions
 {
 	&OnFreeEntPrivateData,
-	&GameDLLShutdown,
+	NULL,
 	NULL,
 	NULL,
 	NULL
@@ -1082,5 +1082,11 @@ void OnFreeEntPrivateData(edict_t *pEnt)
 
 	pEntity->UpdateOnRemove();
 	RemoveEntityHashValue(pEntity->pev, STRING(pEntity->pev->classname), CLASSNAME);
-	Regamedll_FreeEntities(pEntity);
+
+#ifdef REGAMEDLL_ADD
+	if (pEntity->m_pEntity != nullptr) {
+		delete pEntity->m_pEntity;
+		pEntity->m_pEntity = nullptr;
+	}
+#endif
 }

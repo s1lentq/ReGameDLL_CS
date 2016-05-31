@@ -657,19 +657,17 @@ CBasePlayer *CCSBot::FindMostDangerousThreat()
 	{
 		for (i = 1; i <= gpGlobals->maxClients; ++i)
 		{
-			CBaseEntity *entity = UTIL_PlayerByIndex(i);
+			CBasePlayer *player = UTIL_PlayerByIndex(i);
 
-			if (entity == NULL)
+			if (player == NULL)
 				continue;
 
-			if (FNullEnt(entity->pev))
+			if (FNullEnt(player->pev))
 				continue;
 
 			// is it a player?
-			if (!entity->IsPlayer())
+			if (!player->IsPlayer())
 				continue;
-
-			CBasePlayer *player = static_cast<CBasePlayer *>(entity);
 
 			// ignore self
 			if (player->entindex() == entindex())

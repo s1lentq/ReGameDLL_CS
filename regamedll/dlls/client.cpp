@@ -3023,7 +3023,7 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 
 						for (int i = 1; i <= gpGlobals->maxClients; ++i)
 						{
-							CBasePlayer *pObserver = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+							CBasePlayer *pObserver = UTIL_PlayerByIndex(i);
 
 							if (pObserver && pObserver->IsObservingPlayer(player))
 							{
@@ -3049,7 +3049,7 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 
 						for (int i = 1; i <= gpGlobals->maxClients; ++i)
 						{
-							CBasePlayer *pObserver = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+							CBasePlayer *pObserver = UTIL_PlayerByIndex(i);
 
 							if (pObserver && pObserver->IsObservingPlayer(player))
 							{

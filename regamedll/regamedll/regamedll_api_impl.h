@@ -121,8 +121,8 @@ typedef IVoidHookChainRegistryClassImpl<CBasePlayer, float, float, float, int> C
 
 
 // CBasePlayer::Observer_IsValidTarget hook
-typedef IHookChainClassImpl<CBaseEntity *, CBasePlayer, int, bool> CReGameHook_CBasePlayer_Observer_IsValidTarget;
-typedef IHookChainRegistryClassImpl<CBaseEntity *, CBasePlayer, int, bool> CReGameHookRegistry_CBasePlayer_Observer_IsValidTarget;
+typedef IHookChainClassImpl<CBasePlayer *, CBasePlayer, int, bool> CReGameHook_CBasePlayer_Observer_IsValidTarget;
+typedef IHookChainRegistryClassImpl<CBasePlayer *, CBasePlayer, int, bool> CReGameHookRegistry_CBasePlayer_Observer_IsValidTarget;
 
 // CBasePlayer::SetAnimation hook
 typedef IVoidHookChainClassImpl<CBasePlayer, PLAYER_ANIM> CReGameHook_CBasePlayer_SetAnimation;

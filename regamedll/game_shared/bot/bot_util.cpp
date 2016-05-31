@@ -75,18 +75,16 @@ int UTIL_ActivePlayersInGame()
 	int iCount = 0;
 	for (int iIndex = 1; iIndex <= gpGlobals->maxClients; ++iIndex)
 	{
-		CBaseEntity *entity = UTIL_PlayerByIndex(iIndex);
+		CBasePlayer *player = UTIL_PlayerByIndex(iIndex);
 
-		if (entity == NULL)
+		if (player == NULL)
 			continue;
 
-		if (FNullEnt(entity->pev))
+		if (FNullEnt(player->pev))
 			continue;
 
-		if (FStrEq(STRING(entity->pev->netname), ""))
+		if (FStrEq(STRING(player->pev->netname), ""))
 			continue;
-
-		CBasePlayer *player = static_cast<CBasePlayer *>(entity);
 
 		// ignore spectators
 		if (player->m_iTeam != TERRORIST && player->m_iTeam != CT)
@@ -107,18 +105,16 @@ int UTIL_HumansInGame(bool ignoreSpectators)
 
 	for (int iIndex = 1; iIndex <= gpGlobals->maxClients; ++iIndex)
 	{
-		CBaseEntity *entity = UTIL_PlayerByIndex(iIndex);
+		CBasePlayer *player = UTIL_PlayerByIndex(iIndex);
 
-		if (entity == NULL)
+		if (player == NULL)
 			continue;
 
-		if (FNullEnt(entity->pev))
+		if (FNullEnt(player->pev))
 			continue;
 
-		if (FStrEq(STRING(entity->pev->netname), ""))
+		if (FStrEq(STRING(player->pev->netname), ""))
 			continue;
-
-		CBasePlayer *player = static_cast<CBasePlayer *>(entity);
 
 		if (player->IsBot())
 			continue;
@@ -140,18 +136,16 @@ int UTIL_HumansOnTeam(int teamID, bool isAlive)
 	int iCount = 0;
 	for (int iIndex = 1; iIndex <= gpGlobals->maxClients; ++iIndex)
 	{
-		CBaseEntity *entity = UTIL_PlayerByIndex(iIndex);
+		CBasePlayer *player = UTIL_PlayerByIndex(iIndex);
 
-		if (entity == NULL)
+		if (player == NULL)
 			continue;
 
-		if (FNullEnt(entity->pev))
+		if (FNullEnt(player->pev))
 			continue;
 
-		if (FStrEq(STRING(entity->pev->netname), ""))
+		if (FStrEq(STRING(player->pev->netname), ""))
 			continue;
-
-		CBasePlayer *player = static_cast<CBasePlayer *>(entity);
 
 		if (player->IsBot())
 			continue;
@@ -174,7 +168,7 @@ int UTIL_BotsInGame()
 
 	for (int iIndex = 1; iIndex <= gpGlobals->maxClients; ++iIndex)
 	{
-		CBasePlayer *pPlayer = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(iIndex));
+		CBasePlayer *pPlayer = UTIL_PlayerByIndex(iIndex);
 
 		if (pPlayer == NULL)
 			continue;
@@ -201,7 +195,7 @@ bool UTIL_KickBotFromTeam(TeamName kickTeam)
 	// try to kick a dead bot first
 	for (i = 1; i <= gpGlobals->maxClients; ++i)
 	{
-		CBasePlayer *player = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+		CBasePlayer *player = UTIL_PlayerByIndex(i);
 
 		if (player == NULL)
 			continue;
@@ -227,7 +221,7 @@ bool UTIL_KickBotFromTeam(TeamName kickTeam)
 	// no dead bots, kick any bot on the given team
 	for (i = 1; i <= gpGlobals->maxClients; ++i)
 	{
-		CBasePlayer *player = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+		CBasePlayer *player = UTIL_PlayerByIndex(i);
 
 		if (player == NULL)
 			continue;
@@ -258,7 +252,7 @@ bool UTIL_IsTeamAllBots(int team)
 	int botCount = 0;
 	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
-		CBasePlayer *player = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+		CBasePlayer *player = UTIL_PlayerByIndex(i);
 
 		if (player == NULL)
 			continue;
@@ -290,7 +284,7 @@ extern CBasePlayer *UTIL_GetClosestPlayer(const Vector *pos, float *distance)
 
 	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
-		CBasePlayer *player = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+		CBasePlayer *player = UTIL_PlayerByIndex(i);
 
 		if (!IsEntityValid(player))
 			continue;
@@ -321,7 +315,7 @@ extern CBasePlayer *UTIL_GetClosestPlayer(const Vector *pos, int team, float *di
 
 	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
-		CBasePlayer *player = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+		CBasePlayer *player = UTIL_PlayerByIndex(i);
 
 		if (!IsEntityValid(player))
 			continue;
@@ -373,7 +367,7 @@ bool UTIL_IsVisibleToTeam(const Vector &spot, int team, float maxRange)
 {
 	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
-		CBasePlayer *player = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+		CBasePlayer *player = UTIL_PlayerByIndex(i);
 
 		if (player == NULL)
 			continue;
@@ -406,7 +400,7 @@ bool UTIL_IsVisibleToTeam(const Vector &spot, int team, float maxRange)
 CBasePlayer *UTIL_GetLocalPlayer()
 {
 	if (!IS_DEDICATED_SERVER())
-		return static_cast<CBasePlayer *>(UTIL_PlayerByIndex(1));
+		return UTIL_PlayerByIndex(1);
 
 	return NULL;
 }
