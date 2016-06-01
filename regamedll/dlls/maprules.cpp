@@ -360,40 +360,38 @@ void CGamePlayerZone::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pC
 	if (!CanFireForActivator(pActivator))
 		return;
 
-	CBaseEntity *pPlayer = NULL;
-
 	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
-		pPlayer = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+		CBaseEntity *pPlayer = UTIL_PlayerByIndex(i);
 
-		if (pPlayer)
+		if (pPlayer == nullptr)
+			continue;
+
+		TraceResult trace;
+		int hullNumber;
+
+		hullNumber = human_hull;
+		if (pPlayer->pev->flags & FL_DUCKING)
 		{
-			TraceResult trace;
-			int hullNumber;
+			hullNumber = head_hull;
+		}
 
-			hullNumber = human_hull;
-			if (pPlayer->pev->flags & FL_DUCKING)
+		UTIL_TraceModel(pPlayer->pev->origin, pPlayer->pev->origin, hullNumber, edict(), &trace);
+
+		if (trace.fStartSolid)
+		{
+			++playersInCount;
+			if (!FStringNull(m_iszInTarget))
 			{
-				hullNumber = head_hull;
+				FireTargets(STRING(m_iszInTarget), pPlayer, pActivator, useType, value);
 			}
-
-			UTIL_TraceModel(pPlayer->pev->origin, pPlayer->pev->origin, hullNumber, edict(), &trace);
-
-			if (trace.fStartSolid)
+		}
+		else
+		{
+			++playersOutCount;
+			if (!FStringNull(m_iszOutTarget))
 			{
-				++playersInCount;
-				if (!FStringNull(m_iszInTarget))
-				{
-					FireTargets(STRING(m_iszInTarget), pPlayer, pActivator, useType, value);
-				}
-			}
-			else
-			{
-				++playersOutCount;
-				if (!FStringNull(m_iszOutTarget))
-				{
-					FireTargets(STRING(m_iszOutTarget), pPlayer, pActivator, useType, value);
-				}
+				FireTargets(STRING(m_iszOutTarget), pPlayer, pActivator, useType, value);
 			}
 		}
 	}

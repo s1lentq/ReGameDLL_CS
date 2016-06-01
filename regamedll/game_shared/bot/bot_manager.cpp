@@ -193,7 +193,7 @@ void CBotManager::__MAKE_VHOOK(StartFrame)()
 	// Process each active bot
 	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
-		CBasePlayer *pPlayer = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
 		if (!pPlayer)
 			continue;
@@ -222,7 +222,7 @@ void CBotManager::__MAKE_VHOOK(OnEvent)(GameEventType event, CBaseEntity *entity
 	// propogate event to all bots
 	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
-		CBasePlayer *player = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+		CBasePlayer *player = UTIL_PlayerByIndex(i);
 
 		if (player == NULL)
 			continue;

@@ -1083,7 +1083,7 @@ bool CCSBot::IsFriendInTheWay(const Vector *goalPos) const
 	// check if any friends are overlapping this linear path
 	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
-		CBasePlayer *player = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+		CBasePlayer *player = UTIL_PlayerByIndex(i);
 
 		if (player == NULL)
 			continue;

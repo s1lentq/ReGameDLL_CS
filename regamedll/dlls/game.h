@@ -142,6 +142,5 @@ extern cvar_t roundrespawn_time;
 #endif
 
 void GameDLLInit();
-void GameDLLShutdown();
 
 #endif // GAME_H

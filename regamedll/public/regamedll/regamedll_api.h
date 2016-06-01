@@ -124,8 +124,8 @@ typedef IVoidHookChainRegistryClass<class CBasePlayer, float, float, float, int>
 
 
 // CBasePlayer::Observer_IsValidTarget hook
-typedef IHookChain<class CBaseEntity *, int, bool> IReGameHook_CBasePlayer_Observer_IsValidTarget;
-typedef IHookChainRegistryClass<class CBaseEntity *, class CBasePlayer, int, bool> IReGameHookRegistry_CBasePlayer_Observer_IsValidTarget;
+typedef IHookChain<class CBasePlayer *, int, bool> IReGameHook_CBasePlayer_Observer_IsValidTarget;
+typedef IHookChainRegistryClass<class CBasePlayer *, class CBasePlayer, int, bool> IReGameHookRegistry_CBasePlayer_Observer_IsValidTarget;
 
 // CBasePlayer::SetAnimation hook
 typedef IVoidHookChain<PLAYER_ANIM> IReGameHook_CBasePlayer_SetAnimation;
@@ -376,11 +376,7 @@ public:
 };
 
 struct ReGameFuncs_t {
-	class CBaseEntity *(*UTIL_PlayerByIndex)(int playerIndex);
-	class ICSPlayer *(*CBASE_TO_CSPLAYER)(class CBaseEntity *pEntity);
-	class ICSEntity *(*CBASE_TO_CSENTITY)(class CBaseEntity *pEntity);
-	class ICSPlayer *(*INDEX_TO_CSPLAYER)(int iPlayerIndex);
-	class ICSEntity *(*INDEX_TO_CSENTITY)(int iEntityIndex);
+	class CBasePlayer *(*UTIL_PlayerByIndex)(int playerIndex);
 	struct edict_s *(*CREATE_NAMED_ENTITY2)(string_t iClass);
 
 	void (*ChangeString)(char *&dest, const char *source);

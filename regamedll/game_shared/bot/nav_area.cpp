@@ -3277,7 +3277,7 @@ bool IsCrossingLineOfFire(const Vector &start, const Vector &finish, CBaseEntity
 {
 	for (int p = 1; p <= gpGlobals->maxClients; ++p)
 	{
-		CBasePlayer *player = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(p));
+		CBasePlayer *player = UTIL_PlayerByIndex(p);
 
 		if (!IsEntityValid(player))
 			continue;
@@ -3424,7 +3424,7 @@ int CNavArea::GetPlayerCount(int teamID, CBasePlayer *ignore) const
 
 	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
-		CBasePlayer *player = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+		CBasePlayer *player = UTIL_PlayerByIndex(i);
 
 		if (player == ignore)
 			continue;

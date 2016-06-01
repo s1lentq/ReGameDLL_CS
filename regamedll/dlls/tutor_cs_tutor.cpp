@@ -2188,7 +2188,7 @@ void CCSTutor::GetNumPlayersAliveOnTeams(int &numT, int &numCT)
 
 	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
-		CBasePlayer *player = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+		CBasePlayer *player = UTIL_PlayerByIndex(i);
 
 		if (player == NULL || !player->IsAlive())
 			continue;
@@ -2289,7 +2289,7 @@ void CCSTutor::CheckForBombViewable()
 
 		for (int i = 1; i <= gpGlobals->maxClients; ++i)
 		{
-			CBasePlayer *player = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+			CBasePlayer *player = UTIL_PlayerByIndex(i);
 
 			if (player != NULL && player->m_bHasC4)
 			{
@@ -3016,7 +3016,7 @@ void CCSTutor::ConstructRecentDeathsList(TeamName team, char *buf, int buflen, T
 
 	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
-		CBasePlayer *pPlayer = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
 		if (pPlayer == NULL)
 			continue;

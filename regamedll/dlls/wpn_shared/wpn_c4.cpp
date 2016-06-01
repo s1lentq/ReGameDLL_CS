@@ -307,7 +307,7 @@ void CC4::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_T
 		return;
 	}
 
-	CBasePlayer *pPlayer = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(1));
+	CBasePlayer *pPlayer = UTIL_PlayerByIndex(1);
 
 	if (pPlayer != NULL)
 	{

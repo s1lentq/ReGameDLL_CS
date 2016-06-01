@@ -19,14 +19,14 @@ int __API_HOOK(GetForceCamera)(CBasePlayer *pObserver)
 	return retVal;
 }
 
-LINK_HOOK_CLASS_CHAIN(CBaseEntity *, CBasePlayer, Observer_IsValidTarget, (int iPlayerIndex, bool bSameTeam), iPlayerIndex, bSameTeam);
+LINK_HOOK_CLASS_CHAIN(CBasePlayer *, CBasePlayer, Observer_IsValidTarget, (int iPlayerIndex, bool bSameTeam), iPlayerIndex, bSameTeam);
 
-CBaseEntity *CBasePlayer::__API_HOOK(Observer_IsValidTarget)(int iPlayerIndex, bool bSameTeam)
+CBasePlayer *CBasePlayer::__API_HOOK(Observer_IsValidTarget)(int iPlayerIndex, bool bSameTeam)
 {
 	if (iPlayerIndex > gpGlobals->maxClients || iPlayerIndex < 1)
 		return NULL;
 
-	CBasePlayer *pPlayer = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(iPlayerIndex));
+	CBasePlayer *pPlayer = UTIL_PlayerByIndex(iPlayerIndex);
 
 	// Don't spec observers or players who haven't picked a class yet
 	if (!pPlayer || pPlayer == this || pPlayer->has_disconnected || pPlayer->IsObserver() || (pPlayer->pev->effects & EF_NODRAW) || pPlayer->m_iTeam == UNASSIGNED || (bSameTeam && pPlayer->m_iTeam != m_iTeam))
@@ -50,7 +50,7 @@ void UpdateClientEffects(CBasePlayer *pObserver, int oldMode)
 
 		if (pObserver->m_hObserverTarget->IsPlayer())
 		{
-			CBasePlayer *pPlayer = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(pObserver->m_hObserverTarget->entindex()));
+			CBasePlayer *pPlayer = UTIL_PlayerByIndex(pObserver->m_hObserverTarget->entindex());
 
 			if (pPlayer)
 			{
@@ -132,7 +132,6 @@ void CBasePlayer::Observer_FindNextPlayer(bool bReverse, const char *name)
 	int iCurrent;
 	int iDir;
 	bool bForceSameTeam;
-	CBasePlayer *pPlayer;
 
 	if (m_flNextFollowTime && m_flNextFollowTime > gpGlobals->time)
 		return;
@@ -166,8 +165,7 @@ void CBasePlayer::Observer_FindNextPlayer(bool bReverse, const char *name)
 			if (!name)
 				break;
 
-			pPlayer = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(m_hObserverTarget->entindex()));
-
+			CBasePlayer *pPlayer = UTIL_PlayerByIndex(m_hObserverTarget->entindex());
 			if (!Q_strcmp(name, STRING(pPlayer->pev->netname)))
 				break;
 		}
@@ -269,7 +267,7 @@ void CBasePlayer::Observer_CheckTarget()
 		if (m_hObserverTarget)
 		{
 			int iPlayerIndex = ENTINDEX(m_hObserverTarget->edict());
-			CBasePlayer *target = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(iPlayerIndex));
+			CBasePlayer *target = UTIL_PlayerByIndex(iPlayerIndex);
 
 			// check taget
 			if (!target || target->pev->deadflag == DEAD_RESPAWNABLE || (target->pev->effects & EF_NODRAW))
@@ -305,7 +303,7 @@ void CBasePlayer::Observer_CheckProperties()
 	// try to find a traget if we have no current one
 	if (pev->iuser1 == OBS_IN_EYE && m_hObserverTarget != NULL)
 	{
-		CBasePlayer *target = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(m_hObserverTarget->entindex()));
+		CBasePlayer *target = UTIL_PlayerByIndex(m_hObserverTarget->entindex());
 
 		if (!target)
 			return;

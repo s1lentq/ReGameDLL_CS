@@ -158,12 +158,10 @@ extern globalvars_t *gpGlobals;
 
 #endif
 
-#define REGAMEDLL_ALLOC_FUNC
 #define LINK_ENTITY_TO_CLASS(mapClassName, DLLClassName, DLLClassWrapName)\
 	C_DLLEXPORT void EXT_FUNC mapClassName(entvars_t *pev);\
 	void mapClassName(entvars_t *pev)\
 	{\
-		REGAMEDLL_ALLOC_FUNC\
 		GetClassPtr<DLLClassWrapName>((DLLClassName *)pev);\
 	}
 
@@ -249,7 +247,7 @@ CBaseEntity *UTIL_FindEntityByString(CBaseEntity *pStartEntity, const char *szKe
 CBaseEntity *UTIL_FindEntityByClassname(CBaseEntity *pStartEntity, const char *szName);
 CBaseEntity *UTIL_FindEntityByTargetname(CBaseEntity *pStartEntity, const char *szName);
 CBaseEntity *UTIL_FindEntityGeneric(const char *szWhatever, const Vector &vecSrc, float flRadius);
-CBaseEntity *UTIL_PlayerByIndex(int playerIndex);
+CBasePlayer *UTIL_PlayerByIndex(int playerIndex);
 void UTIL_MakeVectors(const Vector &vecAngles);
 void UTIL_MakeAimVectors(const Vector &vecAngles);
 void UTIL_MakeInvVectors(const Vector &vec, globalvars_t *pgv);

@@ -80,7 +80,7 @@ void MonitorTutorStatus()
 
 	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
-		CBasePlayer *pPlayer = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
 		if (pPlayer != NULL && !pPlayer->IsBot())
 			++numHumans;

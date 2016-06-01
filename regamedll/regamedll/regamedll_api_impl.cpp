@@ -31,10 +31,6 @@ CReGameHookchains g_ReGameHookchains;
 
 ReGameFuncs_t g_ReGameApiFuncs = {
 	&UTIL_PlayerByIndex,
-	&CBASE_TO_CSPLAYER,
-	&CBASE_TO_CSENTITY,
-	&INDEX_TO_CSPLAYER,
-	&INDEX_TO_CSENTITY,
 	&CREATE_NAMED_ENTITY,
 
 	&Regamedll_ChangeString_api,

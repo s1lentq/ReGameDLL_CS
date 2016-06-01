@@ -77,13 +77,15 @@
 // NOTE: It works for CZ
 #define MONEY_BLINK_AMOUNT		30
 
+// Player physics flags bits
+// CBasePlayer::m_afPhysicsFlags
 #define PFLAG_ONLADDER			(1<<0)
 #define PFLAG_ONSWING			(1<<0)
 #define PFLAG_ONTRAIN			(1<<1)
 #define PFLAG_ONBARNACLE		(1<<2)
-#define PFLAG_DUCKING			(1<<3)
-#define PFLAG_USING			(1<<4)
-#define PFLAG_OBSERVER			(1<<5)
+#define PFLAG_DUCKING			(1<<3)	// In the process of ducking, but totally squatted yet
+#define PFLAG_USING			(1<<4)	// Using a continuous entity
+#define PFLAG_OBSERVER			(1<<5)	// player is locked in stationary cam mode. Spectators can move, observers can't.
 
 #define TRAIN_OFF			0x00
 #define TRAIN_NEUTRAL			0x01
@@ -158,7 +160,7 @@ enum RewardType
 	RT_VIP_RESCUED_MYSELF
 };
 
-typedef enum
+enum PLAYER_ANIM
 {
 	PLAYER_IDLE,
 	PLAYER_WALK,
@@ -171,10 +173,9 @@ typedef enum
 	PLAYER_LARGE_FLINCH,
 	PLAYER_RELOAD,
 	PLAYER_HOLDBOMB
+};
 
-} PLAYER_ANIM;
-
-typedef enum
+enum _Menu
 {
 	Menu_OFF,
 	Menu_ChooseTeam,
@@ -191,19 +192,17 @@ typedef enum
 	Menu_Radio2,
 	Menu_Radio3,
 	Menu_ClientBuy
+};
 
-} _Menu;
-
-typedef enum
+enum TeamName
 {
 	UNASSIGNED,
 	TERRORIST,
 	CT,
 	SPECTATOR,
+};
 
-} TeamName;
-
-typedef enum
+enum ModelName
 {
 	MODEL_UNASSIGNED,
 	MODEL_URBAN,
@@ -216,11 +215,11 @@ typedef enum
 	MODEL_GUERILLA,
 	MODEL_VIP,
 	MODEL_MILITIA,
-	MODEL_SPETSNAZ
+	MODEL_SPETSNAZ,
+	MODEL_AUTO
+};
 
-} ModelName;
-
-typedef enum
+enum JoinState
 {
 	JOINED,
 	SHOWLTEXT,
@@ -228,10 +227,9 @@ typedef enum
 	SHOWTEAMSELECT,
 	PICKINGTEAM,
 	GETINTOGAME
+};
 
-} JoinState;
-
-typedef enum
+enum TrackCommands
 {
 	CMD_SAY = 0,
 	CMD_SAYTEAM,
@@ -242,10 +240,9 @@ typedef enum
 	CMD_LISTPLAYERS,
 	CMD_NIGHTVISION,
 	COMMANDS_TO_TRACK,
+};
 
-} TrackCommands;
-
-typedef struct
+struct RebuyStruct
 {
 	int m_primaryWeapon;
 	int m_primaryAmmo;
@@ -257,10 +254,9 @@ typedef struct
 	int m_defuser;
 	int m_nightVision;
 	int m_armor;
+};
 
-} RebuyStruct;
-
-typedef enum
+enum ThrowDirection
 {
 	THROW_NONE,
 	THROW_FORWARD,
@@ -269,8 +265,7 @@ typedef enum
 	THROW_BOMB,
 	THROW_GRENADE,
 	THROW_HITVEL_MINUS_AIRVEL
-
-} ThrowDirection;
+};
 
 enum sbar_data
 {
@@ -281,6 +276,8 @@ enum sbar_data
 };
 
 enum MusicState { SILENT, CALM, INTENSE };
+
+class CCSPlayer;
 
 class CStripWeapons: public CPointEntity {
 public:
@@ -330,10 +327,7 @@ public:
 class CSprayCan: public CBaseEntity {
 public:
 	virtual void Think();
-	virtual int ObjectCaps()
-	{
-		return FCAP_DONT_SAVE;
-	}
+	virtual int ObjectCaps() { return FCAP_DONT_SAVE; }
 
 #ifdef HOOK_GAMEDLL
 
@@ -428,8 +422,8 @@ public:
 public:
 	void SpawnClientSideCorpse();
 	void Observer_FindNextPlayer(bool bReverse, const char *name = NULL);
-	CBaseEntity *Observer_IsValidTarget(int iPlayerIndex, bool bSameTeam);
-	CBaseEntity *Observer_IsValidTarget_(int iPlayerIndex, bool bSameTeam);
+	CBasePlayer *Observer_IsValidTarget(int iPlayerIndex, bool bSameTeam);
+	CBasePlayer *Observer_IsValidTarget_(int iPlayerIndex, bool bSameTeam);
 
 	void Observer_HandleButtons();
 	void Observer_SetMode(int iMode);
@@ -555,15 +549,7 @@ public:
 	void GiveShield_(bool bDeploy = true);
 	bool IsHittingShield(Vector &vecDirection, TraceResult *ptr);
 	bool SelectSpawnSpot(const char *pEntClassName, CBaseEntity* &pSpot);
-	bool IsReloading()
-	{
-		CBasePlayerWeapon *weapon = static_cast<CBasePlayerWeapon *>(m_pActiveItem);
-
-		if (weapon != NULL && weapon->m_fInReload)
-			return true;
-
-		return false;
-	}
+	bool IsReloading() const;
 	bool IsBlind() const { return (m_blindUntilTime > gpGlobals->time); }
 	bool IsAutoFollowAllowed() const { return (gpGlobals->time > m_allowAutoFollowTime); }
 	void InhibitAutoFollow(float duration) { m_allowAutoFollowTime = gpGlobals->time + duration; }
@@ -603,6 +589,10 @@ public:
 		//m_musicState = INTENSE;
 		//m_intenseTimestamp = gpGlobals->time;
 	}
+#ifdef REGAMEDLL_ADD
+	CCSPlayer *CSPlayer() const;
+#endif
+
 public:
 	enum { MaxLocationLen = 32 };
 
@@ -825,6 +815,22 @@ public:
 	EHANDLE m_hEntToIgnoreTouchesFrom;
 	float m_flTimeToIgnoreTouches;
 };
+
+inline bool CBasePlayer::IsReloading() const
+{
+	CBasePlayerWeapon *weapon = static_cast<CBasePlayerWeapon *>(m_pActiveItem);
+
+	if (weapon != NULL && weapon->m_fInReload)
+		return true;
+
+	return false;
+}
+
+#ifdef REGAMEDLL_ADD
+inline CCSPlayer *CBasePlayer::CSPlayer() const {
+	return reinterpret_cast<CCSPlayer *>(this->m_pEntity);
+}
+#endif
 
 extern int gEvilImpulse101;
 extern char g_szMapBriefingText[512];

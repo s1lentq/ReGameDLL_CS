@@ -37,6 +37,7 @@ class CBaseEntity;
 class CBaseMonster;
 class CBasePlayerItem;
 class CSquadMonster;
+class CCSEntity;
 
 class CBaseEntity {
 public:
@@ -135,8 +136,9 @@ public:
 	EOFFSET eoffset() { return OFFSET(pev); }
 	int entindex() { return ENTINDEX(edict()); }
 public:
+	CCSEntity *m_pEntity;
+
 	// We use this variables to store each ammo count.
-	int *current_ammo;
 	float currentammo;
 	int maxammo_buckshot;
 	int ammo_buckshot;

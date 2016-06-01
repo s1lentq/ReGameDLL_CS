@@ -14,18 +14,16 @@ int GetBotFollowCount(CBasePlayer *leader)
 
 	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
-		CBaseEntity *entity = UTIL_PlayerByIndex(i);
+		CBasePlayer *player = UTIL_PlayerByIndex(i);
 
-		if (entity == NULL)
+		if (player == NULL)
 			continue;
 
-		if (FNullEnt(entity->pev))
+		if (FNullEnt(player->pev))
 			continue;
 
-		if (FStrEq(STRING(entity->pev->netname), ""))
+		if (FStrEq(STRING(player->pev->netname), ""))
 			continue;
-
-		CBasePlayer *player = static_cast<CBasePlayer *>(entity);
 
 		if (!player->IsBot())
 			continue;
@@ -632,22 +630,20 @@ CBasePlayer *CCSBot::GetImportantEnemy(bool checkVisibility) const
 
 	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
-		CBaseEntity *entity = UTIL_PlayerByIndex(i);
+		CBasePlayer *player = UTIL_PlayerByIndex(i);
 
-		if (entity == NULL)
+		if (player == NULL)
 			continue;
 
-		if (FNullEnt(entity->pev))
+		if (FNullEnt(player->pev))
 			continue;
 
-		if (FStrEq(STRING(entity->pev->netname), ""))
+		if (FStrEq(STRING(player->pev->netname), ""))
 			continue;
 
 		// is it a player?
-		if (!entity->IsPlayer())
+		if (!player->IsPlayer())
 			continue;
-
-		CBasePlayer *player = static_cast<CBasePlayer *>(entity);
 
 		// is it alive?
 		if (!player->IsAlive())

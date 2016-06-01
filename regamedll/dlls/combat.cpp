@@ -904,7 +904,7 @@ void EXT_FUNC PlayerBlind(CBasePlayer *pPlayer, entvars_t *pevInflictor, entvars
 
 	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
-		CBasePlayer *pObserver = static_cast<CBasePlayer *>(UTIL_PlayerByIndex(i));
+		CBasePlayer *pObserver = UTIL_PlayerByIndex(i);
 
 		if (!pObserver || !pObserver->IsObservingPlayer(pPlayer))
 			continue;
