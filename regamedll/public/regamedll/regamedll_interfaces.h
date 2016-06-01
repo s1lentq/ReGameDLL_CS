@@ -65,9 +65,17 @@ public:
 	virtual void DropPlayerItem(const char *pszItemName);
 	virtual void RemoveShield();
 	virtual void RemoveAllItems(bool bRemoveSuit);
+	virtual bool RemovePlayerItem(const char* pszItemName);
 	virtual void SetPlayerModel(bool bHasC4);
 	virtual void SetPlayerModelEx(const char *modelName);
 	virtual void SetNewPlayerModel(const char *modelName);
+	virtual void ClientCommand(const char *cmd, const char *arg1 = nullptr, const char *arg2 = nullptr, const char *arg3 = nullptr);
+	virtual void SetProgressBarTime(int time);
+	virtual void SetProgressBarTime2(int time, float timeElapsed);
+	virtual struct edict_s *EntSelectSpawnPoint();
+	virtual void SetBombIcon(bool bFlash = false);
+	virtual void SetScoreAttrib(CBasePlayer *dest);
+	virtual void SendItemStatus();
 
 	CBasePlayer *BasePlayer() const;
 public:

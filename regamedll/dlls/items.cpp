@@ -375,7 +375,7 @@ BOOL CItemThighPack::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
 		WRITE_BYTE(0);
 	MESSAGE_END();
 
-	SendItemStatus(pPlayer);
+	pPlayer->SendItemStatus();
 	EMIT_SOUND(pPlayer->edict(), CHAN_VOICE, "items/kevlar.wav", VOL_NORM, ATTN_NORM);
 
 	if (TheTutor != NULL)

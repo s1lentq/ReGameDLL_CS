@@ -33,7 +33,7 @@ BOOL CGameRules::__MAKE_VHOOK(CanHaveAmmo)(CBasePlayer *pPlayer, const char *psz
 edict_t *CGameRules::__MAKE_VHOOK(GetPlayerSpawnSpot)(CBasePlayer *pPlayer)
 {
 	// gat valid spawn point
-	edict_t *pentSpawnSpot = EntSelectSpawnPoint(pPlayer);
+	edict_t *pentSpawnSpot = pPlayer->EntSelectSpawnPoint();
 
 	// Move the player to the place it said.
 #ifndef PLAY_GAMEDLL

@@ -36,6 +36,33 @@ Vector CCSEntity::FireBullets3(Vector &vecSrc, Vector &vecDirShooting, float vec
 	return m_pContainingEntity->FireBullets3(vecSrc, vecDirShooting, vecSpread, flDistance, iPenetration, iBulletType, iDamage, flRangeModifier, pevAttacker, bPistol, shared_rand);
 };
 
+bool CCSPlayer::RemovePlayerItem(const char* pszItemName)
+{
+	CBasePlayer *pPlayer = BasePlayer();
+
+	for (auto pItem : pPlayer->m_rgpPlayerItems) {
+		while (pItem != nullptr)
+		{
+			if (FClassnameIs(pItem->pev, pszItemName))
+			{
+				CBasePlayerWeapon *pWeapon = static_cast<CBasePlayerWeapon *>(pItem);
+				if (pWeapon->IsWeapon()) {
+					pWeapon->RetireWeapon();
+				}
+
+				pPlayer->pev->weapons &= ~(1 << pItem->m_iId);
+				pPlayer->RemovePlayerItem(pItem);
+				pItem->Kill();
+				return true;
+			}
+
+			pItem = pItem->m_pNext;
+		}
+	}
+
+	return false;
+}
+
 bool CCSPlayer::IsConnected() const { return m_pContainingEntity->has_disconnected == false; }
 void CCSPlayer::SetAnimation(PLAYER_ANIM playerAnim) { BasePlayer()->SetAnimation(playerAnim); }
 void CCSPlayer::AddAccount(int amount, RewardType type, bool bTrackChange) { BasePlayer()->AddAccount(amount, type, bTrackChange); }
@@ -50,3 +77,10 @@ void CCSPlayer::RemoveAllItems(bool bRemoveSuit) { BasePlayer()->RemoveAllItems(
 void CCSPlayer::SetPlayerModel(bool bHasC4) { BasePlayer()->SetPlayerModel(bHasC4 ? TRUE : FALSE); }
 void CCSPlayer::SetPlayerModelEx(const char *modelName) { strncpy(m_szModel, modelName, sizeof(m_szModel) - 1); m_szModel[sizeof(m_szModel) - 1] = '\0'; };
 void CCSPlayer::SetNewPlayerModel(const char *modelName) { BasePlayer()->SetNewPlayerModel(modelName); }
+void CCSPlayer::ClientCommand(const char *cmd, const char *arg1, const char *arg2, const char *arg3) { BasePlayer()->ClientCommand(cmd, arg1, arg2, arg3); }
+void CCSPlayer::SetProgressBarTime(int time) { BasePlayer()->SetProgressBarTime(time); }
+void CCSPlayer::SetProgressBarTime2(int time, float timeElapsed) { BasePlayer()->SetProgressBarTime2(time, timeElapsed); }
+edict_t *CCSPlayer::EntSelectSpawnPoint() { return BasePlayer()->EntSelectSpawnPoint(); }
+void CCSPlayer::SendItemStatus() { BasePlayer()->SendItemStatus(); }
+void CCSPlayer::SetBombIcon(bool bFlash) { BasePlayer()->SetBombIcon(bFlash ? TRUE : FALSE); }
+void CCSPlayer::SetScoreAttrib(CBasePlayer *dest) { BasePlayer()->SetScoreAttrib(dest); }

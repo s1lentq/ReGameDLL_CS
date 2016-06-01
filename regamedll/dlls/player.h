@@ -584,11 +584,10 @@ public:
 	void SetObserverAutoDirector(bool val) { m_bObserverAutoDirector = val; }
 	bool IsObservingPlayer(CBasePlayer *pPlayer);
 	bool CanSwitchObserverModes() const { return m_canSwitchObserverModes; }
-	void Intense()
-	{
-		//m_musicState = INTENSE;
-		//m_intenseTimestamp = gpGlobals->time;
-	}
+	void SendItemStatus();
+	edict_t *EntSelectSpawnPoint();
+	void SetScoreAttrib(CBasePlayer *dest);
+
 #ifdef REGAMEDLL_ADD
 	CCSPlayer *CSPlayer() const;
 #endif
@@ -954,8 +953,6 @@ void FixPlayerCrouchStuck(edict_t *pPlayer);
 BOOL IsSpawnPointValid(CBaseEntity *pPlayer, CBaseEntity *pSpot);
 void InitZombieSpawns();
 CBaseEntity *FindZombieSpawn(CBaseEntity *player, bool forceSpawn);
-edict_t *EntSelectSpawnPoint(CBaseEntity *pPlayer);
-void SetScoreAttrib(CBasePlayer *dest, CBasePlayer *src);
 CBaseEntity *FindEntityForward(CBaseEntity *pMe);
 float_precision GetPlayerPitch(const edict_t *pEdict);
 float_precision GetPlayerYaw(const edict_t *pEdict);

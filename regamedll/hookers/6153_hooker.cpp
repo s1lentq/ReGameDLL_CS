@@ -806,7 +806,7 @@ FunctionHook g_FunctionHooks[] =
 	//{ 0x0, "_ZN11CBasePlayer7IntenseEv", mfunc_ptr_cast(&CBasePlayer::Intense) },	// NOXREF
 	{ 0x01D9AB20, "_Z16LinkUserMessagesv", (size_t)&LinkUserMessages },
 	{ 0x01D9B0F0, "_Z18WriteSigonMessagesv", (size_t)&WriteSigonMessages },
-	{ 0x01D9B280, "_Z14SendItemStatusP11CBasePlayer", (size_t)&SendItemStatus },
+	//{ 0x01D9B280, "_Z14SendItemStatusP11CBasePlayer", (size_t)&SendItemStatus },
 	{ 0x01D9D8A0, "_ZL14GetCSModelNamei", (size_t)&GetCSModelName },
 	{ 0x01D9B2D0, "_ZN11CBasePlayer14SetPlayerModelEi", mfunc_ptr_cast(&CBasePlayer::SetPlayerModel) },
 	//{ 0x01D9BB40, "_Z20VecVelocityForDamagef", (size_t)&VecVelocityForDamage },	// NOXREF
@@ -819,10 +819,10 @@ FunctionHook g_FunctionHooks[] =
 	//{ 0x01DA4A90, "_Z17IsSpawnPointValidP11CBaseEntityS0_", (size_t)&IsSpawnPointValid },	// NOXREF
 	//{ 0x01DA4B20, "_Z16InitZombieSpawnsv", (size_t)&InitZombieSpawns },	// NOXREF
 	//{ 0x01DA4BC0, "_Z15FindZombieSpawnP11CBaseEntityb", (size_t)&FindZombieSpawn },	// NOXREF
-	{ 0x01DA4BD0, "_Z19EntSelectSpawnPointP11CBaseEntity", (size_t)&EntSelectSpawnPoint },
+	//{ 0x01DA4BD0, "_Z19EntSelectSpawnPointP11CBaseEntity", (size_t)&EntSelectSpawnPoint },
 
 #ifdef _WIN32
-	{ 0x01DA5180, "", (size_t)&SetScoreAttrib },
+	//{ 0x01DA5180, "", (size_t)&SetScoreAttrib },
 #endif // _WIN32
 
 	//{ 0x01DA6D60, "_Z17FindEntityForwardP11CBaseEntity", (size_t)&FindEntityForward },	// NOXREF
@@ -2716,7 +2716,7 @@ FunctionHook g_FunctionHooks[] =
 	{ 0x01D8B6E0, "_Z9BroadcastPKc", (size_t)&Broadcast },
 	{ 0x01D8B780, "_Z7GetTeami", (size_t)&GetTeam },
 	{ 0x01D8B7B0, "_Z15EndRoundMessagePKci", (size_t)&EndRoundMessage },
-	{ 0x01D8BD80, "_ZL18ReadMultiplayCvarsP18CHalfLifeMultiplay", (size_t)&ReadMultiplayCvars },
+	//{ 0x01D8BD80, "_ZL18ReadMultiplayCvarsP18CHalfLifeMultiplay", (size_t)&ReadMultiplayCvars },
 	//{ 0x01D92670, "_Z15DestroyMapCycleP10mapcycle_s", (size_t)&DestroyMapCycle },	// NOXREF
 	{ 0x01D926B0, "_Z15MP_COM_GetTokenv", (size_t)&MP_COM_GetToken },
 	{ 0x01D926C0, "_Z12MP_COM_ParsePc", (size_t)&MP_COM_Parse },

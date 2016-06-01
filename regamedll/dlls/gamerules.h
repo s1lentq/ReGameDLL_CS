@@ -499,6 +499,9 @@ public:
 #endif
 
 public:
+	void ServerActivate();
+	void ReadMultiplayCvars();
+
 	// Checks if it still needs players to start a round, or if it has enough players to start rounds.
 	// Starts a round and returns true if there are enough players.
 	bool NeededPlayersCheck();
@@ -670,7 +673,7 @@ public:
 	float m_flForceChaseCamValue;
 	float m_flFadeToBlackValue;
 	CBasePlayer *m_pVIP;
-	CBasePlayer *VIPQueue[MAX_VIP_QUEUES];
+	CBasePlayer *m_pVIPQueue[MAX_VIP_QUEUES];
 
 protected:
 	float m_flIntermissionEndTime;
@@ -793,7 +796,6 @@ void SV_CareerMatchLimit_f();
 void Broadcast(const char *sentence);
 char *GetTeam(int teamNo);
 void EndRoundMessage(const char *sentence, int event);
-void ReadMultiplayCvars(CHalfLifeMultiplay *mp);
 void DestroyMapCycle(mapcycle_t *cycle);
 
 char *MP_COM_GetToken();

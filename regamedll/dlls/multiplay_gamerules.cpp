@@ -323,86 +323,85 @@ void EXT_FUNC EndRoundMessage(const char *sentence, int event)
 	UTIL_LogPrintf("World triggered \"Round_End\"\n");
 }
 
-void ReadMultiplayCvars(CHalfLifeMultiplay *mp)
+void CHalfLifeMultiplay::ReadMultiplayCvars()
 {
-	mp->m_iRoundTime = int(CVAR_GET_FLOAT("mp_roundtime") * 60);
-	mp->m_iC4Timer = int(CVAR_GET_FLOAT("mp_c4timer"));
-	mp->m_iIntroRoundTime = int(CVAR_GET_FLOAT("mp_freezetime"));
-	mp->m_iLimitTeams = int(CVAR_GET_FLOAT("mp_limitteams"));
+	m_iRoundTime = int(CVAR_GET_FLOAT("mp_roundtime") * 60);
+	m_iC4Timer = int(CVAR_GET_FLOAT("mp_c4timer"));
+	m_iIntroRoundTime = int(CVAR_GET_FLOAT("mp_freezetime"));
+	m_iLimitTeams = int(CVAR_GET_FLOAT("mp_limitteams"));
 
 #ifndef REGAMEDLL_ADD
-	if (mp->m_iRoundTime > 540)
+	if (m_iRoundTime > 540)
 	{
 		CVAR_SET_FLOAT("mp_roundtime", 9);
-		mp->m_iRoundTime = 540;
+		m_iRoundTime = 540;
 	}
-	else if (mp->m_iRoundTime < 60)
+	else if (m_iRoundTime < 60)
 	{
 		CVAR_SET_FLOAT("mp_roundtime", 1);
-		mp->m_iRoundTime = 60;
+		m_iRoundTime = 60;
 	}
 
-	if (mp->m_iIntroRoundTime > 60)
+	if (m_iIntroRoundTime > 60)
 	{
 		CVAR_SET_FLOAT("mp_freezetime", 60);
-		mp->m_iIntroRoundTime = 60;
+		m_iIntroRoundTime = 60;
 	}
-	else if (mp->m_iIntroRoundTime < 0)
+	else if (m_iIntroRoundTime < 0)
 	{
 		CVAR_SET_FLOAT("mp_freezetime", 0);
-		mp->m_iIntroRoundTime = 0;
+		m_iIntroRoundTime = 0;
 	}
 
-	if (mp->m_iC4Timer > 90)
+	if (m_iC4Timer > 90)
 	{
 		CVAR_SET_FLOAT("mp_c4timer", 90);
-		mp->m_iC4Timer = 90;
+		m_iC4Timer = 90;
 	}
-	else if (mp->m_iC4Timer < 10)
+	else if (m_iC4Timer < 10)
 	{
 		CVAR_SET_FLOAT("mp_c4timer", 10);
-		mp->m_iC4Timer = 10;
+		m_iC4Timer = 10;
 	}
 
-	if (mp->m_iLimitTeams > 20)
+	if (m_iLimitTeams > 20)
 	{
 		CVAR_SET_FLOAT("mp_limitteams", 20);
-		mp->m_iLimitTeams = 20;
+		m_iLimitTeams = 20;
 	}
-	else if (mp->m_iLimitTeams < 0)
+	else if (m_iLimitTeams < 0)
 	{
 		CVAR_SET_FLOAT("mp_limitteams", 0);
-		mp->m_iLimitTeams = 0;
+		m_iLimitTeams = 0;
 	}
 #else
 	// a limit of 500 minutes because
 	// if you do more minutes would be a bug in the HUD RoundTime in the form 00:00
-	if (mp->m_iRoundTime > 30000)
+	if (m_iRoundTime > 30000)
 	{
 		CVAR_SET_FLOAT("mp_roundtime", 500);
-		mp->m_iRoundTime = 30000;
+		m_iRoundTime = 30000;
 	}
-	else if (mp->m_iRoundTime < 0)
+	else if (m_iRoundTime < 0)
 	{
 		CVAR_SET_FLOAT("mp_roundtime", 0);
-		mp->m_iRoundTime = 0;
+		m_iRoundTime = 0;
 	}
-	if (mp->m_iIntroRoundTime < 0)
+	if (m_iIntroRoundTime < 0)
 	{
 		CVAR_SET_FLOAT("mp_freezetime", 0);
-		mp->m_iIntroRoundTime = 0;
+		m_iIntroRoundTime = 0;
 	}
-	if (mp->m_iC4Timer < 0)
+	if (m_iC4Timer < 0)
 	{
 		CVAR_SET_FLOAT("mp_c4timer", 0);
-		mp->m_iC4Timer = 0;
+		m_iC4Timer = 0;
 	}
-	if (mp->m_iLimitTeams < 0)
+	if (m_iLimitTeams < 0)
 	{
 		CVAR_SET_FLOAT("mp_limitteams", 0);
-		mp->m_iLimitTeams = 0;
+		m_iLimitTeams = 0;
 	}
-
 #endif
 
 }
@@ -485,11 +484,11 @@ CHalfLifeMultiplay::CHalfLifeMultiplay()
 
 	for (int j = 0; j < MAX_VIP_QUEUES; ++j)
 	{
-		VIPQueue[j] = NULL;
+		m_pVIPQueue[j] = NULL;
 	}
 
 	CVAR_SET_FLOAT("cl_himodels", 0);
-	ReadMultiplayCvars(this);
+	ReadMultiplayCvars();
 
 	m_iIntroRoundTime += 2;
 	m_fMaxIdlePeriod = m_iRoundTime * 2;
@@ -1327,7 +1326,6 @@ bool CHalfLifeMultiplay::PrisonRoundEndCheck(int NumAliveTerrorist, int NumAlive
 	return false;
 }
 
-
 bool CHalfLifeMultiplay::Target_Bombed_internal(int winStatus, ScenarioEventEndRound event, float tmDelay) {
 
 	Broadcast("terwin");
@@ -1840,7 +1838,7 @@ void CHalfLifeMultiplay::__API_VHOOK(RestartRound)()
 	m_bFreezePeriod = TRUE;
 	m_bRoundTerminating = false;
 
-	ReadMultiplayCvars(this);
+	ReadMultiplayCvars();
 
 	float flAutoKickIdle = CVAR_GET_FLOAT("mp_autokick_timeout");
 
@@ -2195,19 +2193,19 @@ void CHalfLifeMultiplay::StackVIPQueue()
 {
 	for (int i = MAX_VIP_QUEUES - 2; i > 0; --i)
 	{
-		if (VIPQueue[i - 1])
+		if (m_pVIPQueue[i - 1])
 		{
-			if (!VIPQueue[i])
+			if (!m_pVIPQueue[i])
 			{
-				VIPQueue[i] = VIPQueue[i + 1];
-				VIPQueue[i + 1] = NULL;
+				m_pVIPQueue[i] = m_pVIPQueue[i + 1];
+				m_pVIPQueue[i + 1] = NULL;
 			}
 		}
 		else
 		{
-			VIPQueue[i - 1] = VIPQueue[i];
-			VIPQueue[i] = VIPQueue[i + 1];
-			VIPQueue[i + 1] = NULL;
+			m_pVIPQueue[i - 1] = m_pVIPQueue[i];
+			m_pVIPQueue[i] = m_pVIPQueue[i + 1];
+			m_pVIPQueue[i + 1] = NULL;
 		}
 	}
 }
@@ -2216,27 +2214,27 @@ bool CHalfLifeMultiplay::IsVIPQueueEmpty()
 {
 	for (int i = 0; i < MAX_VIP_QUEUES; ++i)
 	{
-		CBasePlayer *toCheck = VIPQueue[i];
+		CBasePlayer *toCheck = m_pVIPQueue[i];
 
 		if (toCheck != NULL && toCheck->m_iTeam != CT)
 		{
-			VIPQueue[i] = NULL;
+			m_pVIPQueue[i] = NULL;
 		}
 	}
 
 	StackVIPQueue();
-	return (VIPQueue[0] == NULL && VIPQueue[1] == NULL && VIPQueue[2] == NULL && VIPQueue[3] == NULL && VIPQueue[4] == NULL);
+	return (m_pVIPQueue[0] == NULL && m_pVIPQueue[1] == NULL && m_pVIPQueue[2] == NULL && m_pVIPQueue[3] == NULL && m_pVIPQueue[4] == NULL);
 }
 
 bool CHalfLifeMultiplay::AddToVIPQueue(CBasePlayer *toAdd)
 {
 	for (int i = 0; i < MAX_VIP_QUEUES; ++i)
 	{
-		CBasePlayer *toCheck = VIPQueue[i];
+		CBasePlayer *toCheck = m_pVIPQueue[i];
 
 		if (toCheck != NULL && toCheck->m_iTeam != CT)
 		{
-			VIPQueue[i] = NULL;
+			m_pVIPQueue[i] = NULL;
 		}
 	}
 
@@ -2247,7 +2245,7 @@ bool CHalfLifeMultiplay::AddToVIPQueue(CBasePlayer *toAdd)
 		int j;
 		for (j = 0; j < MAX_VIP_QUEUES; ++j)
 		{
-			if (VIPQueue[j] == toAdd)
+			if (m_pVIPQueue[j] == toAdd)
 			{
 				ClientPrint(toAdd->pev, HUD_PRINTCENTER, "#Game_in_position", UTIL_dtos1(j + 1));
 				return FALSE;
@@ -2256,9 +2254,9 @@ bool CHalfLifeMultiplay::AddToVIPQueue(CBasePlayer *toAdd)
 
 		for (j = 0; j < MAX_VIP_QUEUES; ++j)
 		{
-			if (!VIPQueue[j])
+			if (!m_pVIPQueue[j])
 			{
-				VIPQueue[j] = toAdd;
+				m_pVIPQueue[j] = toAdd;
 
 				StackVIPQueue();
 				ClientPrint(toAdd->pev, HUD_PRINTCENTER, "#Game_added_position", UTIL_dtos1(j + 1));
@@ -2320,12 +2318,12 @@ void CHalfLifeMultiplay::PickNextVIP()
 
 		for (int i = 0; i < MAX_VIP_QUEUES; ++i)
 		{
-			if (VIPQueue[i] != NULL)
+			if (m_pVIPQueue[i] != NULL)
 			{
-				m_pVIP = VIPQueue[i];
+				m_pVIP = m_pVIPQueue[i];
 				m_pVIP->MakeVIP();
 
-				VIPQueue[i] = NULL;	// remove this player from the VIP queue
+				m_pVIPQueue[i] = NULL;	// remove this player from the VIP queue
 				StackVIPQueue();		// and re-organize the queue
 				m_iConsecutiveVIP = 0;
 				return;
@@ -3772,9 +3770,11 @@ void CHalfLifeMultiplay::__API_VHOOK(DeathNotice)(CBasePlayer *pVictim, entvars_
 	const char *killer_weapon_name = "world";
 	int killer_index = 0;
 
+#ifndef REGAMEDLL_FIXES
 	// Hack to fix name change
 	char *tau = "tau_cannon";
 	char *gluon = "gluon gun";
+#endif
 
 	// Is the killer a client?
 	if (pKiller->flags & FL_CLIENT)
@@ -3801,6 +3801,9 @@ void CHalfLifeMultiplay::__API_VHOOK(DeathNotice)(CBasePlayer *pVictim, entvars_
 		}
 	}
 	else
+#ifdef REGAMEDLL_FIXES
+		if (pevInflictor)
+#endif
 		killer_weapon_name = STRING(pevInflictor->classname);
 
 	// strip the monster_* or weapon_* from the inflictor's classname
@@ -3828,12 +3831,15 @@ void CHalfLifeMultiplay::__API_VHOOK(DeathNotice)(CBasePlayer *pVictim, entvars_
 		MESSAGE_END();
 	}
 
+	// This weapons from HL isn't it?
+#ifndef REGAMEDLL_FIXES
 	// replace the code names with the 'real' names
 	if (!Q_strcmp(killer_weapon_name, "egon"))
 		killer_weapon_name = gluon;
 
 	else if (!Q_strcmp(killer_weapon_name, "gauss"))
 		killer_weapon_name = tau;
+#endif
 
 	// Did he kill himself?
 	if (pVictim->pev == pKiller)
@@ -4788,4 +4794,49 @@ void CHalfLifeMultiplay::__API_VHOOK(ClientUserInfoChanged)(CBasePlayer *pPlayer
 {
 	pPlayer->SetPlayerModel(pPlayer->m_bHasC4);
 	pPlayer->SetPrefsFromUserinfo(infobuffer);
+}
+
+void CHalfLifeMultiplay::ServerActivate()
+{
+	// Check to see if there's a mapping info paramater entity
+	CMapInfo *mi = (CMapInfo *)UTIL_FindEntityByClassname(NULL, "info_map_parameters");
+	if (mi != nullptr)
+	{
+		switch (mi->m_iBuyingStatus)
+		{
+		case BUYING_EVERYONE:
+			m_bCTCantBuy = false;
+			m_bTCantBuy = false;
+
+			ALERT(at_console, "EVERYONE CAN BUY!\n");
+			break;
+		case BUYING_ONLY_CTS:
+			m_bCTCantBuy = false;
+			m_bTCantBuy = true;
+
+			ALERT(at_console, "Only CT's can buy!!\n");
+			break;
+		case BUYING_ONLY_TERRORISTS:
+			m_bCTCantBuy = true;
+			m_bTCantBuy = false;
+
+			ALERT(at_console, "Only T's can buy!!\n");
+			break;
+		case BUYING_NO_ONE:
+			m_bCTCantBuy = true;
+			m_bTCantBuy = true;
+
+			ALERT(at_console, "No one can buy!!\n");
+			break;
+		default:
+			m_bCTCantBuy = false;
+			m_bTCantBuy = false;
+			break;
+		}
+
+		m_flBombRadius = mi->m_flBombRadius;
+	}
+
+	ReadMultiplayCvars();
+	CheckMapConditions();
 }

@@ -34,6 +34,7 @@
 #endif
 
 #include "osconfig.h"
+#include "tier0/dbg.h"
 #include <string.h>
 
 #pragma warning (disable:4100)

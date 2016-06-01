@@ -454,7 +454,7 @@ public:
 	float m_flForceChaseCamValue;
 	float m_flFadeToBlackValue;
 	CBasePlayer *m_pVIP;
-	CBasePlayer *VIPQueue[MAX_VIP_QUEUES];
+	CBasePlayer *m_pVIPQueue[MAX_VIP_QUEUES];
 	float m_flIntermissionEndTime;
 	float m_flIntermissionStartTime;
 	BOOL m_iEndIntermissionButtonHit;

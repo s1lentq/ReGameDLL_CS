@@ -1249,8 +1249,7 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 				bEnoughMoney = true;
 				pPlayer->m_bHasNightVision = true;
 				pPlayer->AddAccount(-NVG_PRICE, RT_PLAYER_BOUGHT_SOMETHING);
-
-				SendItemStatus(pPlayer);
+				pPlayer->SendItemStatus();
 			}
 			break;
 		}
@@ -1286,7 +1285,7 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 				pPlayer->AddAccount(-DEFUSEKIT_PRICE, RT_PLAYER_BOUGHT_SOMETHING);
 
 				EMIT_SOUND(ENT(pPlayer->pev), CHAN_ITEM, "items/kevlar.wav", VOL_NORM, ATTN_NORM);
-				SendItemStatus(pPlayer);
+				pPlayer->SendItemStatus();
 			}
 			break;
 		}
@@ -1800,8 +1799,8 @@ BOOL __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *player, int slot)
 		player->has_disconnected = false;
 
 		player->m_iJoiningState = GETINTOGAME;
+		player->SendItemStatus();
 
-		SendItemStatus(player);
 		SET_CLIENT_MAXSPEED(ENT(player->pev), 1);
 		SET_MODEL(ENT(player->pev), "models/player.mdl");
 	}
@@ -3387,6 +3386,10 @@ void EXT_FUNC ServerActivate(edict_t *pEdictList, int edictCount, int clientMax)
 	{
 		g_pHostages->ServerActivate();
 	}
+
+#ifdef REGAMEDLL_ADD
+	CSGameRules()->ServerActivate();
+#endif
 }
 
 void EXT_FUNC PlayerPreThink(edict_t *pEntity)
@@ -4535,21 +4538,21 @@ void EXT_FUNC UpdateClientData(const struct edict_s *ent, int sendweapons, struc
 
 		if (g_pGameRules->IsFreezePeriod())
 			iUser3 |= DATA_IUSER3_FREEZETIMEOVER;
-		else
-			iUser3 &= ~DATA_IUSER3_FREEZETIMEOVER;
 
 		if (pl->m_signals.GetState() & SIGNAL_BOMB)
 			iUser3 |= DATA_IUSER3_INBOMBZONE;
-		else
-			iUser3 &= ~DATA_IUSER3_INBOMBZONE;
 
 		if (pl->HasShield())
 			iUser3 |= DATA_IUSER3_HOLDINGSHIELD;
-		else
-			iUser3 &= ~DATA_IUSER3_HOLDINGSHIELD;
 
 		if (!pl->pev->iuser1 && !pevOrg)
+		{
+#ifdef REGAMEDLL_ADD
+			// useful for mods
+			iUser3 |= pev->iuser3;
+#endif
 			cd->iuser3 = iUser3;
+		}
 
 		if (pl->m_pActiveItem != NULL)
 		{

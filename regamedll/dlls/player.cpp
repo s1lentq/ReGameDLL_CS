@@ -285,16 +285,16 @@ void WriteSigonMessages()
 
 LINK_ENTITY_TO_CLASS(player, CBasePlayer, CCSPlayer);
 
-void SendItemStatus(CBasePlayer *pPlayer)
+void CBasePlayer::SendItemStatus()
 {
 	int itemStatus = 0;
-	if (pPlayer->m_bHasNightVision)
+	if (m_bHasNightVision)
 		itemStatus |= ITEM_STATUS_NIGHTVISION;
 
-	if (pPlayer->m_bHasDefuser)
+	if (m_bHasDefuser)
 		itemStatus |= ITEM_STATUS_DEFUSER;
 
-	MESSAGE_BEGIN(MSG_ONE, gmsgItemStatus, NULL, pPlayer->pev);
+	MESSAGE_BEGIN(MSG_ONE, gmsgItemStatus, NULL, pev);
 		WRITE_BYTE(itemStatus);
 	MESSAGE_END();
 }
@@ -1548,7 +1548,7 @@ void CBasePlayer::RemoveAllItems(BOOL removeSuit)
 			WRITE_STRING("defuser");
 		MESSAGE_END();
 
-		SendItemStatus(this);
+		SendItemStatus();
 		bKillProgBar = true;
 	}
 
@@ -2165,7 +2165,7 @@ void CBasePlayer::__API_VHOOK(Killed)(entvars_t *pevAttacker, int iGib)
 			WRITE_STRING("defuser");
 		MESSAGE_END();
 
-		SendItemStatus(this);
+		SendItemStatus();
 	}
 
 	if (m_bIsDefusing)
@@ -3284,7 +3284,7 @@ void CBasePlayer::JoiningThink()
 			m_fLastMovement = gpGlobals->time;
 			m_bMissionBriefing = false;
 
-			SendItemStatus(this);
+			SendItemStatus();
 			break;
 		}
 		case READINGLTEXT:
@@ -3469,7 +3469,7 @@ void CBasePlayer::Disappear()
 			WRITE_STRING("defuser");
 		MESSAGE_END();
 
-		SendItemStatus(this);
+		SendItemStatus();
 		SetProgressBarTime(0);
 	}
 
@@ -4082,7 +4082,6 @@ bool CBasePlayer::CanPlayerBuy(bool display)
 	}
 
 	int buyTime = int(CVAR_GET_FLOAT("mp_buytime") * 60.0f);
-
 	if (buyTime < MIN_BUY_TIME)
 	{
 		buyTime = MIN_BUY_TIME;
@@ -4951,10 +4950,9 @@ bool CBasePlayer::SelectSpawnSpot(const char *pEntClassName, CBaseEntity *&pSpot
 	return false;
 }
 
-edict_t *EntSelectSpawnPoint(CBaseEntity *pPlayer)
+edict_t *CBasePlayer::EntSelectSpawnPoint()
 {
 	CBaseEntity *pSpot;
-	edict_t *player = pPlayer->edict();
 
 	// choose a info_player_deathmatch point
 	if (g_pGameRules->IsCoOp())
@@ -4970,7 +4968,7 @@ edict_t *EntSelectSpawnPoint(CBaseEntity *pPlayer)
 			goto ReturnSpot;
 	}
 	// VIP spawn point
-	else if (g_pGameRules->IsDeathmatch() && ((CBasePlayer *)pPlayer)->m_bIsVIP)
+	else if (g_pGameRules->IsDeathmatch() && m_bIsVIP)
 	{
 		pSpot = UTIL_FindEntityByClassname(NULL, "info_vip_start");
 
@@ -4983,22 +4981,22 @@ edict_t *EntSelectSpawnPoint(CBaseEntity *pPlayer)
 		goto CTSpawn;
 	}
 	// the counter-terrorist spawns at "info_player_start"
-	else if (g_pGameRules->IsDeathmatch() && ((CBasePlayer *)pPlayer)->m_iTeam == CT)
+	else if (g_pGameRules->IsDeathmatch() && m_iTeam == CT)
 	{
 CTSpawn:
 		pSpot = g_pLastCTSpawn;
 
-		if (((CBasePlayer *)pPlayer)->SelectSpawnSpot("info_player_start", pSpot))
+		if (SelectSpawnSpot("info_player_start", pSpot))
 		{
 			goto ReturnSpot;
 		}
 	}
 	// The terrorist spawn points
-	else if (g_pGameRules->IsDeathmatch() && ((CBasePlayer *)pPlayer)->m_iTeam == TERRORIST)
+	else if (g_pGameRules->IsDeathmatch() && m_iTeam == TERRORIST)
 	{
 		pSpot = g_pLastTerroristSpawn;
 
-		if (((CBasePlayer *)pPlayer)->SelectSpawnSpot("info_player_deathmatch", pSpot))
+		if (SelectSpawnSpot("info_player_deathmatch", pSpot))
 		{
 			goto ReturnSpot;
 		}
@@ -5027,7 +5025,7 @@ ReturnSpot:
 		return INDEXENT(0);
 	}
 
-	if (((CBasePlayer *)pPlayer)->m_iTeam == TERRORIST)
+	if (m_iTeam == TERRORIST)
 		g_pLastTerroristSpawn = pSpot;
 	else
 		g_pLastCTSpawn = pSpot;
@@ -5035,22 +5033,22 @@ ReturnSpot:
 	return pSpot->edict();
 }
 
-void SetScoreAttrib(CBasePlayer *dest, CBasePlayer *src)
+void CBasePlayer::SetScoreAttrib(CBasePlayer *dest)
 {
 	int state = 0;
-	if (src->pev->deadflag != DEAD_NO)
+	if (pev->deadflag != DEAD_NO)
 		state |= SCORE_STATUS_DEAD;
 
-	if (src->m_bHasC4)
+	if (m_bHasC4)
 		state |= SCORE_STATUS_BOMB;
 
-	if (src->m_bIsVIP)
+	if (m_bIsVIP)
 		state |= SCORE_STATUS_VIP;
 
 	if (gmsgScoreAttrib)
 	{
 		MESSAGE_BEGIN(MSG_ONE, gmsgScoreAttrib, NULL, dest->pev);
-			WRITE_BYTE(src->entindex());
+			WRITE_BYTE(entindex());
 			WRITE_BYTE(state);
 		MESSAGE_END();
 	}
@@ -5291,7 +5289,7 @@ void CBasePlayer::__API_VHOOK(Spawn)()
 		m_bHasPrimary = false;
 		m_bHasNightVision = false;
 
-		SendItemStatus(this);
+		SendItemStatus();
 	}
 	else
 	{
@@ -5383,6 +5381,13 @@ void CBasePlayer::__API_VHOOK(Spawn)()
 
 	for (i = 0; i < COMMANDS_TO_TRACK; ++i)
 		m_flLastCommandTime[i] = -1;
+
+#ifdef REGAMEDLL_FIXES
+	if (!m_bJustConnected) {
+		FireTargets("game_playerspawn", this, this, USE_TOGGLE, 0);
+	}
+#endif
+
 }
 
 LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, Precache);
@@ -5441,7 +5446,7 @@ void CBasePlayer::SetScoreboardAttributes(CBasePlayer *destination)
 {
 	if (destination != NULL)
 	{
-		SetScoreAttrib(destination, this);
+		SetScoreAttrib(destination);
 		return;
 	}
 
@@ -5474,7 +5479,7 @@ int CBasePlayer::__MAKE_VHOOK(Restore)(CRestore &restore)
 		ALERT(at_console, "No Landmark:%s\n", pSaveData->szLandmarkName);
 
 		// default to normal spawn
-		edict_t *pentSpawnSpot = EntSelectSpawnPoint(this);
+		edict_t *pentSpawnSpot = EntSelectSpawnPoint();
 
 		pev->origin = pentSpawnSpot->v.origin + Vector(0, 0, 1);
 		pev->angles = pentSpawnSpot->v.angles;
@@ -5508,10 +5513,12 @@ void CBasePlayer::Reset()
 	m_iDeaths = 0;
 	m_iAccount = 0;
 
+#ifndef REGAMEDLL_FIXES
 	MESSAGE_BEGIN(MSG_ONE, gmsgMoney, NULL, pev);
 		WRITE_LONG(m_iAccount);
 		WRITE_BYTE(0);
 	MESSAGE_END();
+#endif
 
 	m_bNotKilled = false;
 
@@ -6640,8 +6647,9 @@ void CBasePlayer::__API_VHOOK(UpdateClientData)()
 			SetObserverAutoDirector(false);
 		}
 
+#ifndef REGAMEDLL_FIXES
 		FireTargets("game_playerspawn", this, this, USE_TOGGLE, 0);
-
+#endif
 		MESSAGE_BEGIN(MSG_ONE, gmsgMoney, NULL, pev);
 			WRITE_LONG(m_iAccount);
 			WRITE_BYTE(0);
@@ -7536,7 +7544,7 @@ void CBasePlayer::SwitchTeam()
 			WRITE_STRING("defuser");
 		MESSAGE_END();
 
-		SendItemStatus(this);
+		SendItemStatus();
 		SetProgressBarTime(0);
 
 		for (int i = 0; i < MAX_ITEM_TYPES; ++i)
