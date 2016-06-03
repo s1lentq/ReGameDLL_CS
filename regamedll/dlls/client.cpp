@@ -2584,12 +2584,11 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 			{
 				if (!player->m_bVGUIMenus && !HandleMenu_ChooseTeam(player, slot))
 				{
+					player->m_iMenu = Menu_ChooseTeam;
 					if (player->m_iJoiningState == JOINED)
 						ShowVGUIMenu(player, VGUI_Menu_Team, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_5 | MENU_KEY_0), "#IG_Team_Select");
 					else
 						ShowVGUIMenu(player, VGUI_Menu_Team, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_5), "#Team_Select");
-
-					player->m_iMenu = Menu_ChooseTeam;
 				}
 				break;
 			}
@@ -2617,26 +2616,25 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 					{
 						case VGUI_MenuSlot_Buy_Pistol:
 						{
+							player->m_iMenu = Menu_BuyPistol;
 							if (player->m_iTeam == CT)
 								ShowVGUIMenu(player, VGUI_Menu_Buy_Pistol, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_0), "#CT_BuyPistol");
 							else
 								ShowVGUIMenu(player, VGUI_Menu_Buy_Pistol, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_0), "#T_BuyPistol");
-
-							player->m_iMenu = Menu_BuyPistol;
 							break;
 						}
 						case VGUI_MenuSlot_Buy_ShotGun:
 						{
+							player->m_iMenu = Menu_BuyShotgun;
 							if (CSGameRules()->m_iMapHasVIPSafetyZone == MAP_HAVE_VIP_SAFETYZONE_YES && player->m_iTeam == TERRORIST)
 								ShowVGUIMenu(player, VGUI_Menu_Buy_ShotGun, MENU_KEY_0, "#AS_BuyShotgun");
 							else
 								ShowVGUIMenu(player, VGUI_Menu_Buy_ShotGun, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_0), "#BuyShotgun");
-
-							player->m_iMenu = Menu_BuyShotgun;
 							break;
 						}
 						case VGUI_MenuSlot_Buy_SubMachineGun:
 						{
+							player->m_iMenu = Menu_BuySubMachineGun;
 							if (CSGameRules()->m_iMapHasVIPSafetyZone == MAP_HAVE_VIP_SAFETYZONE_YES)
 							{
 								if (player->m_iTeam == CT)
@@ -2651,12 +2649,11 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 								else
 									ShowVGUIMenu(player, VGUI_Menu_Buy_SubMachineGun, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_0), "#T_BuySubMachineGun");
 							}
-
-							player->m_iMenu = Menu_BuySubMachineGun;
 							break;
 						}
 						case VGUI_MenuSlot_Buy_Rifle:
 						{
+							player->m_iMenu = Menu_BuyRifle;
 							if (CSGameRules()->m_iMapHasVIPSafetyZone == MAP_HAVE_VIP_SAFETYZONE_YES)
 							{
 								if (player->m_iTeam == CT)
@@ -2671,18 +2668,15 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 								else
 									ShowVGUIMenu(player, VGUI_Menu_Buy_Rifle, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_0), "#T_BuyRifle");
 							}
-
-							player->m_iMenu = Menu_BuyRifle;
 							break;
 						}
 						case VGUI_MenuSlot_Buy_MachineGun:
 						{
+							player->m_iMenu = Menu_BuyMachineGun;
 							if (CSGameRules()->m_iMapHasVIPSafetyZone == MAP_HAVE_VIP_SAFETYZONE_YES && player->m_iTeam == TERRORIST)
 								ShowVGUIMenu(player, VGUI_Menu_Buy_MachineGun, MENU_KEY_0, "#AS_T_BuyMachineGun");
 							else
 								ShowVGUIMenu(player, VGUI_Menu_Buy_MachineGun, (MENU_KEY_1 | MENU_KEY_0), "#BuyMachineGun");
-
-							player->m_iMenu = Menu_BuyMachineGun;
 							break;
 						}
 						case VGUI_MenuSlot_Buy_PrimAmmo:
@@ -2727,6 +2721,7 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 						{
 							if (player->m_signals.GetState() & SIGNAL_BUY)
 							{
+								player->m_iMenu = Menu_BuyItem;
 								if (CSGameRules()->m_bMapHasBombTarget)
 								{
 									if (player->m_iTeam == CT)
@@ -2741,8 +2736,6 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 									else
 										ShowVGUIMenu(player, VGUI_Menu_Buy_Item, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_0), "#T_BuyItem");
 								}
-
-								player->m_iMenu = Menu_BuyItem;
 							}
 							break;
 						}
@@ -2836,6 +2829,7 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 
 		if (!CSGameRules()->IsCareer())
 		{
+			player->m_iMenu = Menu_ChooseTeam;
 			if (CSGameRules()->m_iMapHasVIPSafetyZone == MAP_HAVE_VIP_SAFETYZONE_YES && player->m_iJoiningState == JOINED && player->m_iTeam == CT)
 			{
 				if (CSGameRules()->IsFreezePeriod() || player->pev->deadflag != DEAD_NO)
@@ -2850,8 +2844,6 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 				else
 					ShowVGUIMenu(player, VGUI_Menu_Team, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_5 | MENU_KEY_0), "#IG_Team_Select");
 			}
-
-			player->m_iMenu = Menu_ChooseTeam;
 		}
 	}
 	else if (FStrEq(pcmd, "showbriefing"))
@@ -2979,12 +2971,11 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 			}
 			else
 			{
+				player->m_iMenu = Menu_ChooseTeam;
 				if (player->m_iJoiningState == JOINED)
 					ShowVGUIMenu(player, VGUI_Menu_Team, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_5 | MENU_KEY_0), "#IG_Team_Select");
 				else
 					ShowVGUIMenu(player, VGUI_Menu_Team, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_5), "#Team_Select");
-
-				player->m_iMenu = Menu_ChooseTeam;
 			}
 		}
 		else if (FStrEq(pcmd, "joinclass"))
@@ -3257,14 +3248,10 @@ void EXT_FUNC ClientUserInfoChanged(edict_t *pEntity, char *infobuffer)
 {
 	// Is the client spawned yet?
 	if (!pEntity->pvPrivateData)
-	{
 		return;
-	}
 
 	CBasePlayer *pPlayer = (CBasePlayer *)CBaseEntity::Instance(pEntity);
-
 	char *szBufferName = GET_KEY_VALUE(infobuffer, "name");
-	int iClientIndex = pPlayer->entindex();
 
 	// msg everyone if someone changes their name,  and it isn't the first time (changing no name to current name)
 	if (pEntity->v.netname && STRING(pEntity->v.netname)[0] != '\0' && !FStrEq(STRING(pEntity->v.netname), szBufferName))
@@ -3283,30 +3270,15 @@ void EXT_FUNC ClientUserInfoChanged(edict_t *pEntity, char *infobuffer)
 		if (szName[0] == '#')
 			szName[0] = '*';
 
-		if (pPlayer->pev->deadflag != DEAD_NO)
-		{
-			pPlayer->m_bHasChangedName = true;
-			Q_snprintf(pPlayer->m_szNewName, sizeof(pPlayer->m_szNewName), "%s", szName);
-			ClientPrint(pPlayer->pev, HUD_PRINTTALK, "#Name_change_at_respawn");
-			SET_CLIENT_KEY_VALUE(iClientIndex, infobuffer, "name", (char *)STRING(pEntity->v.netname));
-		}
-		else
-		{
-			// Set the name
-			SET_CLIENT_KEY_VALUE(iClientIndex, infobuffer, "name", szName);
-
-			MESSAGE_BEGIN(MSG_BROADCAST, gmsgSayText);
-				WRITE_BYTE(iClientIndex);
-				WRITE_STRING("#Cstrike_Name_Change");
-				WRITE_STRING(STRING(pEntity->v.netname));
-				WRITE_STRING(szName);
-			MESSAGE_END();
-
-			UTIL_LogPrintf("\"%s<%i><%s><%s>\" changed name to \"%s\"\n", STRING(pEntity->v.netname), GETPLAYERUSERID(pEntity), GETPLAYERAUTHID(pEntity), GetTeam(pPlayer->m_iTeam), szName);
-		}
+		pPlayer->SetClientUserInfoName(infobuffer, szName);
 	}
 
+	// was already checking on pvPrivateData
+#ifndef REGAMEDLL_FIXES
 	g_pGameRules->ClientUserInfoChanged(GetClassPtr<CCSPlayer>((CBasePlayer *)&pEntity->v), infobuffer);
+#else
+	g_pGameRules->ClientUserInfoChanged(pPlayer, infobuffer);
+#endif
 }
 
 void EXT_FUNC ServerDeactivate()
@@ -3885,10 +3857,7 @@ void ClientPrecache()
 
 const char *EXT_FUNC GetGameDescription()
 {
-	if (g_bIsCzeroGame)
-		return "Condition Zero";
-
-	return "Counter-Strike";
+	return g_bIsCzeroGame ? "Condition Zero" : "Counter-Strike";
 }
 
 void EXT_FUNC Sys_Error(const char *error_string)

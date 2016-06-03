@@ -2232,3 +2232,23 @@ void CArmoury::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 }
 
 LINK_ENTITY_TO_CLASS(armoury_entity, CArmoury, CCSArmoury);
+
+void CBasePlayerWeapon::InstantReload()
+{
+	// if you already reload
+	if (m_fInReload)
+		return;
+
+	if (m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
+		return;
+
+	// complete the reload.
+	int j = Q_min(iMaxClip() - m_iClip, m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]);
+	if (j == 0)
+		return;
+
+	// Add them to the clip
+	m_iClip += j;
+	m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] -= j;
+	m_pPlayer->TabulateAmmo();
+}

@@ -84,3 +84,4 @@ edict_t *CCSPlayer::EntSelectSpawnPoint() { return BasePlayer()->EntSelectSpawnP
 void CCSPlayer::SendItemStatus() { BasePlayer()->SendItemStatus(); }
 void CCSPlayer::SetBombIcon(bool bFlash) { BasePlayer()->SetBombIcon(bFlash ? TRUE : FALSE); }
 void CCSPlayer::SetScoreAttrib(CBasePlayer *dest) { BasePlayer()->SetScoreAttrib(dest); }
+void CCSPlayer::ReloadWeapons(CBasePlayerItem *pWeapon) { BasePlayer()->ReloadWeapons(pWeapon); }

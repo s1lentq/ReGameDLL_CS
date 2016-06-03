@@ -70,7 +70,7 @@
 	ret className::functionName args {\
 		return g_ReGameHookchains.m_##customPrefix##_##functionName.callChain(&className::functionName##_, this, __VA_ARGS__);\
 	}
-#define LINK_HOOK_CLASS_CUSTOM_CHAIN2(ret, className, functionName)\
+#define LINK_HOOK_CLASS_CUSTOM_CHAIN2(ret, className, customPrefix, functionName)\
 	ret className::functionName() {\
 		return g_ReGameHookchains.m_##customPrefix##_##functionName.callChain(&className::functionName##_, this);\
 	}

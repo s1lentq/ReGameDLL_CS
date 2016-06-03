@@ -76,6 +76,7 @@ public:
 	virtual void SetBombIcon(bool bFlash = false);
 	virtual void SetScoreAttrib(CBasePlayer *dest);
 	virtual void SendItemStatus();
+	virtual void ReloadWeapons(CBasePlayerItem *pWeapon = nullptr);
 
 	CBasePlayer *BasePlayer() const;
 public:

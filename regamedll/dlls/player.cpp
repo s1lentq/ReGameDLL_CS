@@ -341,6 +341,34 @@ const char *GetCSModelName(int item_id)
 	return modelName;
 }
 
+LINK_HOOK_CLASS_VOID_CHAIN(CBasePlayer, SetClientUserInfoName, (char *infobuffer, char *szNewName), infobuffer, szNewName);
+
+void EXT_FUNC CBasePlayer::__API_HOOK(SetClientUserInfoName)(char *infobuffer, char *szNewName)
+{
+	int nClientIndex = entindex();
+	if (pev->deadflag != DEAD_NO)
+	{
+		m_bHasChangedName = true;
+		Q_snprintf(m_szNewName, sizeof(m_szNewName), "%s", szNewName);
+		ClientPrint(pev, HUD_PRINTTALK, "#Name_change_at_respawn");
+		SET_CLIENT_KEY_VALUE(nClientIndex, infobuffer, "name", (char *)STRING(pev->netname));
+	}
+	else
+	{
+		// Set the name
+		SET_CLIENT_KEY_VALUE(nClientIndex, infobuffer, "name", szNewName);
+
+		MESSAGE_BEGIN(MSG_BROADCAST, gmsgSayText);
+			WRITE_BYTE(nClientIndex);
+			WRITE_STRING("#Cstrike_Name_Change");
+			WRITE_STRING(STRING(pev->netname));
+			WRITE_STRING(szNewName);
+		MESSAGE_END();
+
+		UTIL_LogPrintf("\"%s<%i><%s><%s>\" changed name to \"%s\"\n", STRING(pev->netname), GETPLAYERUSERID(edict()), GETPLAYERAUTHID(edict()), GetTeam(m_iTeam), szNewName);
+	}
+}
+
 void EXT_FUNC CBasePlayer::SetClientUserInfoModel_api(char *infobuffer, char *szNewModel)
 {
 	SET_CLIENT_KEY_VALUE(entindex(), infobuffer, "model", szNewModel);
@@ -5228,6 +5256,12 @@ void CBasePlayer::__API_VHOOK(Spawn)()
 	m_iFlashBattery = 99;
 	m_flFlashLightTime = 1;
 
+#ifdef REGAMEDLL_ADD
+	if (auto_reload_weapons.string[0] == '1') {
+		ReloadWeapons();
+	}
+#endif
+
 	if (m_bHasDefuser)
 		pev->body = 1;
 	else
@@ -5383,11 +5417,12 @@ void CBasePlayer::__API_VHOOK(Spawn)()
 		m_flLastCommandTime[i] = -1;
 
 #ifdef REGAMEDLL_FIXES
-	if (!m_bJustConnected) {
-		FireTargets("game_playerspawn", this, this, USE_TOGGLE, 0);
-	}
-#endif
+	// everything that comes after this, this spawn of the player a the game.
+	if (m_bJustConnected)
+		return;
 
+	FireTargets("game_playerspawn", this, this, USE_TOGGLE, 0);
+#endif
 }
 
 LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, Precache);
@@ -9205,5 +9240,35 @@ void CBasePlayer::UpdateLocation(bool forceUpdate)
 				WRITE_STRING("");
 			MESSAGE_END();
 		}
+	}
+}
+
+void CBasePlayer::ReloadWeapons(CBasePlayerItem *pWeapon)
+{
+	// if we died in the previous round
+	// so that we have nothing to reload
+	if (!m_bNotKilled)
+		return;
+
+	// to ignore first spawn on ClientPutinServer
+	if (m_bJustConnected)
+		return;
+
+	for (int i = PRIMARY_WEAPON_SLOT; i <= PISTOL_SLOT; ++i)
+	{
+		auto item = m_rgpPlayerItems[i];
+		while (item != nullptr)
+		{
+			if (pWeapon == nullptr || pWeapon == item)
+				((CBasePlayerWeapon *)item)->InstantReload();
+
+			if (pWeapon == item)
+				break;
+
+			item = item->m_pNext;
+		}
+
+		if (pWeapon != nullptr && pWeapon == item)
+			break;
 	}
 }

@@ -153,6 +153,9 @@ typedef IVoidHookChainRegistryClass<class CBasePlayer, bool> IReGameHookRegistry
 typedef IVoidHookChain<char *, char *> IReGameHook_CBasePlayer_SetClientUserInfoModel;
 typedef IVoidHookChainRegistryClass<class CBasePlayer, char *, char *> IReGameHookRegistry_CBasePlayer_SetClientUserInfoModel;
 
+// CBasePlayer:SetClientUserInfoName hook
+typedef IVoidHookChain<char *, char *> IReGameHook_CBasePlayer_SetClientUserInfoName;
+typedef IVoidHookChainRegistryClass<class CBasePlayer, char *, char *> IReGameHookRegistry_CBasePlayer_SetClientUserInfoName;
 
 // CBaseAnimating::ResetSequenceInfo hook
 typedef IVoidHookChain<> IReGameHook_CBaseAnimating_ResetSequenceInfo;
@@ -375,6 +378,8 @@ public:
 	virtual IReGameHookRegistry_CSGameRules_GoToIntermission* CSGameRules_GoToIntermission() = 0;
 	virtual IReGameHookRegistry_CSGameRules_BalanceTeams* CSGameRules_BalanceTeams() = 0;
 
+	// later sort them on the positions and change the major version
+	virtual IReGameHookRegistry_CBasePlayer_SetClientUserInfoName* CBasePlayer_SetClientUserInfoName() = 0;
 };
 
 struct ReGameFuncs_t {

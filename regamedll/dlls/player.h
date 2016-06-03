@@ -457,6 +457,8 @@ public:
 	void SetProgressBarTime(int time);
 	void SetProgressBarTime2(int time, float timeElapsed);
 	void SetPlayerModel(BOOL HasC4);
+	void SetClientUserInfoName(char *infobuffer, char *szNewName);
+	void SetClientUserInfoName_(char *infobuffer, char *szNewName);
 	void SetClientUserInfoModel(char *infobuffer, char *szNewModel);
 	void SetClientUserInfoModel_api(char *infobuffer, char *szNewModel);
 	void SetNewPlayerModel(const char *modelName);
@@ -587,6 +589,7 @@ public:
 	void SendItemStatus();
 	edict_t *EntSelectSpawnPoint();
 	void SetScoreAttrib(CBasePlayer *dest);
+	void ReloadWeapons(CBasePlayerItem *pWeapon = nullptr);
 
 #ifdef REGAMEDLL_ADD
 	CCSPlayer *CSPlayer() const;

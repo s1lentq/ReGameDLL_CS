@@ -148,6 +148,10 @@ typedef IVoidHookChainRegistryClassImpl<CBasePlayer, bool> CReGameHookRegistry_C
 typedef IVoidHookChainClassImpl<CBasePlayer, char *, char *> CReGameHook_CBasePlayer_SetClientUserInfoModel;
 typedef IVoidHookChainRegistryClassImpl<CBasePlayer, char *, char *> CReGameHookRegistry_CBasePlayer_SetClientUserInfoModel;
 
+// CBasePlayer:SetClientUserInfoName hook
+typedef IVoidHookChainClassImpl<CBasePlayer, char *, char *> CReGameHook_CBasePlayer_SetClientUserInfoName;
+typedef IVoidHookChainRegistryClassImpl<CBasePlayer, char *, char *> CReGameHookRegistry_CBasePlayer_SetClientUserInfoName;
+
 
 // CBaseAnimating::ResetSequenceInfo hook
 typedef IVoidHookChainClassImpl<CBaseAnimating> CReGameHook_CBaseAnimating_ResetSequenceInfo;
@@ -367,6 +371,7 @@ public:
 	CReGameHookRegistry_CSGameRules_GoToIntermission m_CSGameRules_GoToIntermission;
 	CReGameHookRegistry_CSGameRules_BalanceTeams m_CSGameRules_BalanceTeams;
 
+	CReGameHookRegistry_CBasePlayer_SetClientUserInfoName m_CBasePlayer_SetClientUserInfoName;
 public:
 	virtual IReGameHookRegistry_CBasePlayer_Spawn* CBasePlayer_Spawn();
 	virtual IReGameHookRegistry_CBasePlayer_Precache* CBasePlayer_Precache();
@@ -437,6 +442,8 @@ public:
 	virtual IReGameHookRegistry_CSGameRules_ChangeLevel* CSGameRules_ChangeLevel();
 	virtual IReGameHookRegistry_CSGameRules_GoToIntermission* CSGameRules_GoToIntermission();
 	virtual IReGameHookRegistry_CSGameRules_BalanceTeams* CSGameRules_BalanceTeams();
+
+	virtual IReGameHookRegistry_CBasePlayer_SetClientUserInfoName* CBasePlayer_SetClientUserInfoName();
 };
 
 extern CReGameHookchains g_ReGameHookchains;
