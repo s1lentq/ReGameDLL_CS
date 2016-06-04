@@ -4483,22 +4483,22 @@ void CHalfLifeMultiplay::ResetAllMapVotes()
 
 int GetMapCount()
 {
-	static mapcycle_t mapcycle2;
+	static mapcycle_t mapcycle;
 	char *mapcfile = (char *)CVAR_GET_STRING("mapcyclefile");
 
-	DestroyMapCycle(&mapcycle2);
-	ReloadMapCycleFile(mapcfile, &mapcycle2);
+	DestroyMapCycle(&mapcycle);
+	ReloadMapCycleFile(mapcfile, &mapcycle);
 
-	int iCount = 0, iDone = 0;
-	for (mapcycle_item_s *item = mapcycle2.next_item; item != NULL && iDone != 1; item = item->next)
+	int nCount = 0;
+	auto item = mapcycle.next_item;
+
+	do
 	{
-		if (item == mapcycle2.next_item)
-			iDone = 1;
+		++nCount;
+		item = item->next;
+	} while (item != mapcycle.next_item);
 
-		++iCount;
-	}
-
-	return iCount;
+	return nCount;
 }
 
 void CHalfLifeMultiplay::DisplayMaps(CBasePlayer *player, int iVote)
@@ -4561,7 +4561,6 @@ void CHalfLifeMultiplay::DisplayMaps(CBasePlayer *player, int iVote)
 void CHalfLifeMultiplay::ProcessMapVote(CBasePlayer *player, int iVote)
 {
 	CBaseEntity *pTempEntity = NULL;
-
 	int iValidVotes = 0, iNumPlayers = 0;
 
 	while ((pTempEntity = UTIL_FindEntityByClassname(pTempEntity, "player")) != NULL)
@@ -4575,7 +4574,7 @@ void CHalfLifeMultiplay::ProcessMapVote(CBasePlayer *player, int iVote)
 		{
 			++iNumPlayers;
 
-			if (pTempPlayer->m_iMapVote = iVote)
+			if (pTempPlayer->m_iMapVote == iVote)
 				++iValidVotes;
 		}
 	}
