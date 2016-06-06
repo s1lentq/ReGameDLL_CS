@@ -33,132 +33,132 @@
 #include "player.h"
 #include "gamerules.h"
 
-#define REGAMEDLL_API_VERSION_MAJOR 2
+#define REGAMEDLL_API_VERSION_MAJOR 3
 #define REGAMEDLL_API_VERSION_MINOR 1
 
 // CBasePlayer::Spawn hook
-typedef IVoidHookChain<> IReGameHook_CBasePlayer_Spawn;
+typedef IVoidHookChainClass<class CBasePlayer> IReGameHook_CBasePlayer_Spawn;
 typedef IVoidHookChainRegistryClass<class CBasePlayer> IReGameHookRegistry_CBasePlayer_Spawn;
 
 // CBasePlayer::Precache hook
-typedef IVoidHookChain<> IReGameHook_CBasePlayer_Precache;
+typedef IVoidHookChainClass<class CBasePlayer> IReGameHook_CBasePlayer_Precache;
 typedef IVoidHookChainRegistryClass<class CBasePlayer> IReGameHookRegistry_CBasePlayer_Precache;
 
 // CBasePlayer::ObjectCaps hook
-typedef IHookChain<int> IReGameHook_CBasePlayer_ObjectCaps;
+typedef IHookChainClass<int, class CBasePlayer> IReGameHook_CBasePlayer_ObjectCaps;
 typedef IHookChainRegistryClass<int, class CBasePlayer> IReGameHookRegistry_CBasePlayer_ObjectCaps;
 
 // CBasePlayer::Classify hook
-typedef IHookChain<int> IReGameHook_CBasePlayer_Classify;
+typedef IHookChainClass<int, class CBasePlayer> IReGameHook_CBasePlayer_Classify;
 typedef IHookChainRegistryClass<int, class CBasePlayer> IReGameHookRegistry_CBasePlayer_Classify;
 
 // CBasePlayer::TraceAttack hook
-typedef IVoidHookChain<struct entvars_s *, float, Vector &, struct TraceResult *, int> IReGameHook_CBasePlayer_TraceAttack;
+typedef IVoidHookChainClass<class CBasePlayer, struct entvars_s *, float, Vector &, struct TraceResult *, int> IReGameHook_CBasePlayer_TraceAttack;
 typedef IVoidHookChainRegistryClass<class CBasePlayer, struct entvars_s *, float, Vector &, struct TraceResult *, int> IReGameHookRegistry_CBasePlayer_TraceAttack;
 
 // CBasePlayer::TakeDamage hook
-typedef IHookChain<int, struct entvars_s *, struct entvars_s *, float&, int> IReGameHook_CBasePlayer_TakeDamage;
+typedef IHookChainClass<int, class CBasePlayer, struct entvars_s *, struct entvars_s *, float&, int> IReGameHook_CBasePlayer_TakeDamage;
 typedef IHookChainRegistryClass<int, class CBasePlayer, struct entvars_s *, struct entvars_s *, float&, int> IReGameHookRegistry_CBasePlayer_TakeDamage;
 
 // CBasePlayer::TakeHealth hook
-typedef IHookChain<int, float, int> IReGameHook_CBasePlayer_TakeHealth;
+typedef IHookChainClass<int, class CBasePlayer, float, int> IReGameHook_CBasePlayer_TakeHealth;
 typedef IHookChainRegistryClass<int, class CBasePlayer, float, int> IReGameHookRegistry_CBasePlayer_TakeHealth;
 
 // CBasePlayer::Killed hook
-typedef IVoidHookChain<struct entvars_s *, int> IReGameHook_CBasePlayer_Killed;
+typedef IVoidHookChainClass<class CBasePlayer, struct entvars_s *, int> IReGameHook_CBasePlayer_Killed;
 typedef IVoidHookChainRegistryClass<class CBasePlayer, struct entvars_s *, int> IReGameHookRegistry_CBasePlayer_Killed;
 
 // CBasePlayer::AddPoints hook
-typedef IVoidHookChain<int, BOOL> IReGameHook_CBasePlayer_AddPoints;
+typedef IVoidHookChainClass<class CBasePlayer, int, BOOL> IReGameHook_CBasePlayer_AddPoints;
 typedef IVoidHookChainRegistryClass<class CBasePlayer, int, BOOL> IReGameHookRegistry_CBasePlayer_AddPoints;
 
 // CBasePlayer::AddPointsToTeam hook
-typedef IVoidHookChain<int, BOOL> IReGameHook_CBasePlayer_AddPointsToTeam;
+typedef IVoidHookChainClass<class CBasePlayer, int, BOOL> IReGameHook_CBasePlayer_AddPointsToTeam;
 typedef IVoidHookChainRegistryClass<class CBasePlayer, int, BOOL> IReGameHookRegistry_CBasePlayer_AddPointsToTeam;
 
 // CBasePlayer::AddPlayerItem hook
-typedef IHookChain<BOOL, class CBasePlayerItem *> IReGameHook_CBasePlayer_AddPlayerItem;
+typedef IHookChainClass<BOOL, class CBasePlayer, class CBasePlayerItem *> IReGameHook_CBasePlayer_AddPlayerItem;
 typedef IHookChainRegistryClass<BOOL, class CBasePlayer, class CBasePlayerItem *> IReGameHookRegistry_CBasePlayer_AddPlayerItem;
 
 // CBasePlayer::RemovePlayerItem hook
-typedef IHookChain<BOOL, class CBasePlayerItem *> IReGameHook_CBasePlayer_RemovePlayerItem;
+typedef IHookChainClass<BOOL, class CBasePlayer, class CBasePlayerItem *> IReGameHook_CBasePlayer_RemovePlayerItem;
 typedef IHookChainRegistryClass<BOOL, class CBasePlayer, class CBasePlayerItem *> IReGameHookRegistry_CBasePlayer_RemovePlayerItem;
 
 // CBasePlayer::GiveAmmo hook
-typedef IHookChain<int, int , char *, int> IReGameHook_CBasePlayer_GiveAmmo;
+typedef IHookChainClass<int, class CBasePlayer, int , char *, int> IReGameHook_CBasePlayer_GiveAmmo;
 typedef IHookChainRegistryClass<int, class CBasePlayer, int , char *, int> IReGameHookRegistry_CBasePlayer_GiveAmmo;
 
 // CBasePlayer::ResetMaxSpeed hook
-typedef IVoidHookChain<> IReGameHook_CBasePlayer_ResetMaxSpeed;
+typedef IVoidHookChainClass<class CBasePlayer> IReGameHook_CBasePlayer_ResetMaxSpeed;
 typedef IVoidHookChainRegistryClass<class CBasePlayer> IReGameHookRegistry_CBasePlayer_ResetMaxSpeed;
 
 // CBasePlayer::Jump hook
-typedef IVoidHookChain<> IReGameHook_CBasePlayer_Jump;
+typedef IVoidHookChainClass<class CBasePlayer> IReGameHook_CBasePlayer_Jump;
 typedef IVoidHookChainRegistryClass<class CBasePlayer> IReGameHookRegistry_CBasePlayer_Jump;
 
 // CBasePlayer::Duck hook
-typedef IVoidHookChain<> IReGameHook_CBasePlayer_Duck;
+typedef IVoidHookChainClass<class CBasePlayer> IReGameHook_CBasePlayer_Duck;
 typedef IVoidHookChainRegistryClass<class CBasePlayer> IReGameHookRegistry_CBasePlayer_Duck;
 
 // CBasePlayer::PreThink hook
-typedef IVoidHookChain<> IReGameHook_CBasePlayer_PreThink;
+typedef IVoidHookChainClass<class CBasePlayer> IReGameHook_CBasePlayer_PreThink;
 typedef IVoidHookChainRegistryClass<class CBasePlayer> IReGameHookRegistry_CBasePlayer_PreThink;
 
 // CBasePlayer::PostThink hook
-typedef IVoidHookChain<> IReGameHook_CBasePlayer_PostThink;
+typedef IVoidHookChainClass<class CBasePlayer> IReGameHook_CBasePlayer_PostThink;
 typedef IVoidHookChainRegistryClass<class CBasePlayer> IReGameHookRegistry_CBasePlayer_PostThink;
 
 // CBasePlayer::UpdateClientData hook
-typedef IVoidHookChain<> IReGameHook_CBasePlayer_UpdateClientData;
+typedef IVoidHookChainClass<class CBasePlayer> IReGameHook_CBasePlayer_UpdateClientData;
 typedef IVoidHookChainRegistryClass<class CBasePlayer> IReGameHookRegistry_CBasePlayer_UpdateClientData;
 
 // CBasePlayer::ImpulseCommands hook
-typedef IVoidHookChain<> IReGameHook_CBasePlayer_ImpulseCommands;
+typedef IVoidHookChainClass<class CBasePlayer> IReGameHook_CBasePlayer_ImpulseCommands;
 typedef IVoidHookChainRegistryClass<class CBasePlayer> IReGameHookRegistry_CBasePlayer_ImpulseCommands;
 
 // CBasePlayer::RoundRespawn hook
-typedef IVoidHookChain<> IReGameHook_CBasePlayer_RoundRespawn;
+typedef IVoidHookChainClass<class CBasePlayer> IReGameHook_CBasePlayer_RoundRespawn;
 typedef IVoidHookChainRegistryClass<class CBasePlayer> IReGameHookRegistry_CBasePlayer_RoundRespawn;
 
 // CBasePlayer::Blind hook
-typedef IVoidHookChain<float, float, float, int> IReGameHook_CBasePlayer_Blind;
+typedef IVoidHookChainClass<class CBasePlayer, float, float, float, int> IReGameHook_CBasePlayer_Blind;
 typedef IVoidHookChainRegistryClass<class CBasePlayer, float, float, float, int> IReGameHookRegistry_CBasePlayer_Blind;
 
 
 // CBasePlayer::Observer_IsValidTarget hook
-typedef IHookChain<class CBasePlayer *, int, bool> IReGameHook_CBasePlayer_Observer_IsValidTarget;
+typedef IHookChainClass<class CBasePlayer *, class CBasePlayer, int, bool> IReGameHook_CBasePlayer_Observer_IsValidTarget;
 typedef IHookChainRegistryClass<class CBasePlayer *, class CBasePlayer, int, bool> IReGameHookRegistry_CBasePlayer_Observer_IsValidTarget;
 
 // CBasePlayer::SetAnimation hook
-typedef IVoidHookChain<PLAYER_ANIM> IReGameHook_CBasePlayer_SetAnimation;
+typedef IVoidHookChainClass<class CBasePlayer, PLAYER_ANIM> IReGameHook_CBasePlayer_SetAnimation;
 typedef IVoidHookChainRegistryClass<class CBasePlayer, PLAYER_ANIM> IReGameHookRegistry_CBasePlayer_SetAnimation;
 
 // CBasePlayer::GiveDefaultItems hook
-typedef IVoidHookChain<> IReGameHook_CBasePlayer_GiveDefaultItems;
+typedef IVoidHookChainClass<class CBasePlayer> IReGameHook_CBasePlayer_GiveDefaultItems;
 typedef IVoidHookChainRegistryClass<class CBasePlayer> IReGameHookRegistry_CBasePlayer_GiveDefaultItems;
 
 // CBasePlayer::GiveNamedItem hook
-typedef IVoidHookChain<const char *> IReGameHook_CBasePlayer_GiveNamedItem;
+typedef IVoidHookChainClass<class CBasePlayer, const char *> IReGameHook_CBasePlayer_GiveNamedItem;
 typedef IVoidHookChainRegistryClass<class CBasePlayer, const char *> IReGameHookRegistry_CBasePlayer_GiveNamedItem;
 
 // CBasePlayer::AddAccount hook
-typedef IVoidHookChain<int, RewardType, bool> IReGameHook_CBasePlayer_AddAccount;
+typedef IVoidHookChainClass<class CBasePlayer, int, RewardType, bool> IReGameHook_CBasePlayer_AddAccount;
 typedef IVoidHookChainRegistryClass<class CBasePlayer, int, RewardType, bool> IReGameHookRegistry_CBasePlayer_AddAccount;
 
 // CBasePlayer::GiveShield hook
-typedef IVoidHookChain<bool> IReGameHook_CBasePlayer_GiveShield;
+typedef IVoidHookChainClass<class CBasePlayer, bool> IReGameHook_CBasePlayer_GiveShield;
 typedef IVoidHookChainRegistryClass<class CBasePlayer, bool> IReGameHookRegistry_CBasePlayer_GiveShield;
 
 // CBasePlayer:SetClientUserInfoModel hook
-typedef IVoidHookChain<char *, char *> IReGameHook_CBasePlayer_SetClientUserInfoModel;
+typedef IVoidHookChainClass<class CBasePlayer, char *, char *> IReGameHook_CBasePlayer_SetClientUserInfoModel;
 typedef IVoidHookChainRegistryClass<class CBasePlayer, char *, char *> IReGameHookRegistry_CBasePlayer_SetClientUserInfoModel;
 
 // CBasePlayer:SetClientUserInfoName hook
-typedef IVoidHookChain<char *, char *> IReGameHook_CBasePlayer_SetClientUserInfoName;
+typedef IVoidHookChainClass<class CBasePlayer, char *, char *> IReGameHook_CBasePlayer_SetClientUserInfoName;
 typedef IVoidHookChainRegistryClass<class CBasePlayer, char *, char *> IReGameHookRegistry_CBasePlayer_SetClientUserInfoName;
 
 // CBaseAnimating::ResetSequenceInfo hook
-typedef IVoidHookChain<> IReGameHook_CBaseAnimating_ResetSequenceInfo;
+typedef IVoidHookChainClass<class CBaseAnimating> IReGameHook_CBaseAnimating_ResetSequenceInfo;
 typedef IVoidHookChainRegistryClass<class CBaseAnimating> IReGameHookRegistry_CBaseAnimating_ResetSequenceInfo;
 
 
@@ -339,6 +339,7 @@ public:
 	virtual IReGameHookRegistry_CBasePlayer_AddAccount* CBasePlayer_AddAccount() = 0;
 	virtual IReGameHookRegistry_CBasePlayer_GiveShield* CBasePlayer_GiveShield() = 0;
 	virtual IReGameHookRegistry_CBasePlayer_SetClientUserInfoModel* CBasePlayer_SetClientUserInfoModel() = 0;
+	virtual IReGameHookRegistry_CBasePlayer_SetClientUserInfoName* CBasePlayer_SetClientUserInfoName() = 0;
 	virtual IReGameHookRegistry_CBaseAnimating_ResetSequenceInfo* CBaseAnimating_ResetSequenceInfo() = 0;
 
 	virtual IReGameHookRegistry_GetForceCamera* GetForceCamera() = 0;
@@ -377,9 +378,6 @@ public:
 	virtual IReGameHookRegistry_CSGameRules_ChangeLevel* CSGameRules_ChangeLevel() = 0;
 	virtual IReGameHookRegistry_CSGameRules_GoToIntermission* CSGameRules_GoToIntermission() = 0;
 	virtual IReGameHookRegistry_CSGameRules_BalanceTeams* CSGameRules_BalanceTeams() = 0;
-
-	// later sort them on the positions and change the major version
-	virtual IReGameHookRegistry_CBasePlayer_SetClientUserInfoName* CBasePlayer_SetClientUserInfoName() = 0;
 };
 
 struct ReGameFuncs_t {

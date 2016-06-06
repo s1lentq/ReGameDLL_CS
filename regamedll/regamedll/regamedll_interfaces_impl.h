@@ -44,7 +44,7 @@
 		g_ReGameHookchains.m_##className##_##functionName.callChain(&className::functionName##_, this, __VA_ARGS__);\
 	}
 #define LINK_HOOK_CLASS_VOID_CHAIN2(className, functionName)\
-	void className::functionName() {\
+	void EXT_ALIGN className::functionName() {\
 		g_ReGameHookchains.m_##className##_##functionName.callChain(&className::functionName##_, this);\
 	}
 

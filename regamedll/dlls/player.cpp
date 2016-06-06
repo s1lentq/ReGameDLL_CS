@@ -1541,7 +1541,7 @@ void CBasePlayer::PackDeadPlayerItems()
 
 LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, GiveDefaultItems);
 
-void CBasePlayer::__API_HOOK(GiveDefaultItems)()
+void EXT_ALIGN CBasePlayer::__API_HOOK(GiveDefaultItems)()
 {
 	RemoveAllItems(FALSE);
 	m_bHasPrimary = false;
@@ -1638,6 +1638,7 @@ void CBasePlayer::RemoveAllItems(BOOL removeSuit)
 
 	UpdateClientData();
 
+	// send Selected Weapon Message to our client
 	MESSAGE_BEGIN(MSG_ONE, gmsgCurWeapon, NULL, pev);
 		WRITE_BYTE(0);
 		WRITE_BYTE(0);
@@ -3602,7 +3603,7 @@ void CBasePlayer::PlayerDeathThink()
 
 LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, RoundRespawn);
 
-void CBasePlayer::__API_VHOOK(RoundRespawn)()
+void EXT_ALIGN CBasePlayer::__API_VHOOK(RoundRespawn)()
 {
 	m_canSwitchObserverModes = true;
 
@@ -3948,7 +3949,7 @@ void CBasePlayer::HostageUsed()
 
 LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, Jump);
 
-void CBasePlayer::__API_VHOOK(Jump)()
+void EXT_ALIGN CBasePlayer::__API_VHOOK(Jump)()
 {
 	if (pev->flags & FL_WATERJUMP)
 		return;
@@ -4020,7 +4021,7 @@ NOXREF void FixPlayerCrouchStuck(edict_t *pPlayer)
 
 LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, Duck);
 
-void CBasePlayer::__API_VHOOK(Duck)()
+void EXT_ALIGN CBasePlayer::__API_VHOOK(Duck)()
 {
 	if (pev->button & IN_DUCK)
 		SetAnimation(PLAYER_WALK);
@@ -4161,7 +4162,7 @@ bool CBasePlayer::CanPlayerBuy(bool display)
 
 LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, PreThink);
 
-void CBasePlayer::__API_VHOOK(PreThink)()
+void EXT_ALIGN CBasePlayer::__API_VHOOK(PreThink)()
 {
 	// These buttons have changed this frame
 	int buttonsChanged = (m_afButtonLast ^ pev->button);
@@ -4737,7 +4738,7 @@ void CBasePlayer::UpdatePlayerSound()
 
 LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, PostThink);
 
-void CBasePlayer::__API_VHOOK(PostThink)()
+void EXT_ALIGN CBasePlayer::__API_VHOOK(PostThink)()
 {
 	// intermission or finale
 	if (g_fGameOver)
@@ -5084,7 +5085,7 @@ void CBasePlayer::SetScoreAttrib(CBasePlayer *dest)
 
 LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, Spawn);
 
-void CBasePlayer::__API_VHOOK(Spawn)()
+void EXT_ALIGN CBasePlayer::__API_VHOOK(Spawn)()
 {
 	int i;
 
@@ -5427,7 +5428,7 @@ void CBasePlayer::__API_VHOOK(Spawn)()
 
 LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, Precache);
 
-void CBasePlayer::__API_VHOOK(Precache)()
+void EXT_ALIGN CBasePlayer::__API_VHOOK(Precache)()
 {
 #ifndef REGAMEDLL_FIXES
 	// in the event that the player JUST spawned, and the level node graph
@@ -5950,7 +5951,7 @@ void CBasePlayer::ForceClientDllUpdate()
 
 LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, ImpulseCommands);
 
-void CBasePlayer::__API_VHOOK(ImpulseCommands)()
+void EXT_ALIGN CBasePlayer::__API_VHOOK(ImpulseCommands)()
 {
 	TraceResult tr;
 
@@ -6622,7 +6623,7 @@ LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, UpdateClientData);
 // Also called at start of demo recording and playback by
 // ForceClientDllUpdate to ensure the demo gets messages
 // reflecting all of the HUD state info.
-void CBasePlayer::__API_VHOOK(UpdateClientData)()
+void EXT_ALIGN CBasePlayer::__API_VHOOK(UpdateClientData)()
 {
 	if (m_fInitHUD)
 	{
@@ -6992,7 +6993,7 @@ void CBasePlayer::EnableControl(BOOL fControl)
 
 LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, ResetMaxSpeed);
 
-void CBasePlayer::__API_VHOOK(ResetMaxSpeed)()
+void EXT_ALIGN CBasePlayer::__API_VHOOK(ResetMaxSpeed)()
 {
 	float speed;
 

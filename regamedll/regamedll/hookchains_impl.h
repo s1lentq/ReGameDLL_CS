@@ -68,12 +68,12 @@ private:
 
 // Implementation for chains in modules
 template<typename t_ret, typename t_class, typename ...t_args>
-class IHookChainClassImpl : public IHookChain<t_ret, t_args...> {
+class IHookChainClassImpl : public IHookChainClass<t_ret, t_class, t_args...> {
 public:
-	typedef t_ret(*hookfunc_t)(IHookChain<t_ret, t_args...>*, t_class *, t_args...);
+	typedef t_ret(*hookfunc_t)(IHookChainClass<t_ret, t_class, t_args...>*, t_class *, t_args...);
 	typedef t_ret(t_class::*origfunc_t)(t_args...);
 
-	IHookChainClassImpl(void** hooks, origfunc_t orig, t_class *object) : m_Hooks(hooks), m_OriginalFunc(orig), m_Object(object)
+	IHookChainClassImpl(void** hooks, origfunc_t orig) : m_Hooks(hooks), m_OriginalFunc(orig)
 	{
 		if (orig == NULL)
 			regamedll_syserror("Non-void HookChain without original function.");
@@ -81,25 +81,24 @@ public:
 
 	virtual ~IHookChainClassImpl() {}
 
-	virtual t_ret callNext(t_args... args) {
+	virtual t_ret callNext(t_class *object, t_args... args) {
 		hookfunc_t nexthook = (hookfunc_t)m_Hooks[0];
 
 		if (nexthook)
 		{
-			IHookChainClassImpl nextChain(m_Hooks + 1, m_OriginalFunc, m_Object);
-			return nexthook(&nextChain, m_Object, args...);
+			IHookChainClassImpl nextChain(m_Hooks + 1, m_OriginalFunc);
+			return nexthook(&nextChain, object, args...);
 		}
 
-		return (m_Object->*m_OriginalFunc)(args...);
+		return (object->*m_OriginalFunc)(args...);
 	}
 
-	virtual t_ret callOriginal(t_args... args) {
-		return (m_Object->*m_OriginalFunc)(args...);
+	virtual t_ret callOriginal(t_class *object, t_args... args) {
+		return (object->*m_OriginalFunc)(args...);
 	}
 
 private:
 	void** m_Hooks;
-	t_class *m_Object;
 	origfunc_t m_OriginalFunc;
 };
 
@@ -211,30 +210,30 @@ private:
 
 // Implementation for void chains in modules
 template<typename t_class, typename ...t_args>
-class IVoidHookChainClassImpl : public IVoidHookChain<t_args...> {
+class IVoidHookChainClassImpl : public IVoidHookChainClass<t_class, t_args...> {
 public:
-	typedef void(*hookfunc_t)(IVoidHookChain<t_args...>*, t_class *, t_args...);
+	typedef void(*hookfunc_t)(IVoidHookChainClass<t_class, t_args...>*, t_class *, t_args...);
 	typedef void(t_class::*origfunc_t)(t_args...);
 
-	IVoidHookChainClassImpl(void** hooks, origfunc_t orig, t_class *object) : m_Hooks(hooks), m_OriginalFunc(orig), m_Object(object) {}
+	IVoidHookChainClassImpl(void** hooks, origfunc_t orig) : m_Hooks(hooks), m_OriginalFunc(orig) {}
 	virtual ~IVoidHookChainClassImpl() {}
 
-	virtual void callNext(t_args... args) {
+	virtual void callNext(t_class *object, t_args... args) {
 		hookfunc_t nexthook = (hookfunc_t)m_Hooks[0];
 
 		if (nexthook)
 		{
-			IVoidHookChainClassImpl nextChain(m_Hooks + 1, m_OriginalFunc, m_Object);
-			nexthook(&nextChain, m_Object, args...);
+			IVoidHookChainClassImpl nextChain(m_Hooks + 1, m_OriginalFunc);
+			nexthook(&nextChain, object, args...);
 		}
 		else
 		{
-			if (m_OriginalFunc && m_Object)
-				(m_Object->*m_OriginalFunc)(args...);
+			if (m_OriginalFunc && object)
+				(object->*m_OriginalFunc)(args...);
 		}
 	}
 
-	virtual void callOriginal(t_args... args) {
+	virtual void callOriginal(t_class *object, t_args... args) {
 		(m_Object->*m_OriginalFunc)(args...);
 	}
 
@@ -287,8 +286,8 @@ public:
 	virtual ~IHookChainRegistryClassImpl() { }
 
 	t_ret callChain(origfunc_t origFunc, t_class *object, t_args... args) {
-		IHookChainClassImpl<t_ret, t_class, t_args...> chain(m_Hooks, origFunc, object);
-		return chain.callNext(args...);
+		IHookChainClassImpl<t_ret, t_class, t_args...> chain(m_Hooks, origFunc);
+		return chain.callNext(object, args...);
 	}
 
 	virtual void registerHook(hookfunc_t hook) {
@@ -373,8 +372,8 @@ public:
 	virtual ~IVoidHookChainRegistryClassImpl() { }
 
 	void callChain(origfunc_t origFunc, t_class *object, t_args... args) {
-		IVoidHookChainClassImpl<t_class, t_args...> chain(m_Hooks, origFunc, object);
-		chain.callNext(args...);
+		IVoidHookChainClassImpl<t_class, t_args...> chain(m_Hooks, origFunc);
+		chain.callNext(object, args...);
 	}
 
 	virtual void registerHook(hookfunc_t hook) {

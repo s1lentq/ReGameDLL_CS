@@ -49,10 +49,12 @@ class CCSMonster: public CCSToggle {};
 class CCSWeaponBox: public CCSEntity {};
 class CCSArmoury: public CCSEntity {};
 
-#pragma warning(disable:4351)		// new behavior: elements of array 'CCSPlayer::m_szModel' will be default initialized
 class CCSPlayer: public CCSMonster {
 public:
-	CCSPlayer() : m_szModel() {}
+	CCSPlayer()
+	{
+		m_szModel[0] = '\0';
+	}
 
 	virtual bool IsConnected() const;
 	virtual void SetAnimation(PLAYER_ANIM playerAnim);

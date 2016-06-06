@@ -1782,7 +1782,7 @@ void CWeaponBox::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 					if (playerGrenades < maxGrenades && grenadeName != NULL)
 					{
 						bEmitSound = true;
-						pPlayer->GiveNamedItem(grenadeName);
+						pPlayer->GiveNamedItemEx(grenadeName);
 
 						// unlink this weapon from the box
 						pItem = m_rgpPlayerItems[i]->m_pNext;

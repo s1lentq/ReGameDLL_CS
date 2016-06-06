@@ -185,6 +185,10 @@ typedef IVoidHookChainRegistry<> IRehldsHookRegistry_SV_Spawn_f;
 typedef IHookChain<int, enum sv_delta_s, IGameClient *, struct packet_entities_s *, struct sizebuf_s *> IRehldsHook_SV_CreatePacketEntities;
 typedef IHookChainRegistry<int, enum sv_delta_s, IGameClient *, struct packet_entities_s *, struct sizebuf_s *> IRehldsHookRegistry_SV_CreatePacketEntities;
 
+//SV_EmitSound2 hook
+typedef IHookChain<bool, edict_t *, IGameClient *, int, const char*, float, float, int, int, int, const float*> IRehldsHook_SV_EmitSound2;
+typedef IHookChainRegistry<bool, edict_t *, IGameClient *, int, const char*, float, float, int, int, int, const float*> IRehldsHookRegistry_SV_EmitSound2;
+
 class IRehldsHookchains {
 public:
 	virtual ~IRehldsHookchains() { }
@@ -226,6 +230,7 @@ public:
 	virtual IRehldsHookRegistry_SV_EstablishTimeBase* SV_EstablishTimeBase() = 0;
 	virtual IRehldsHookRegistry_SV_Spawn_f* SV_Spawn_f() = 0;
 	virtual IRehldsHookRegistry_SV_CreatePacketEntities* SV_CreatePacketEntities() = 0;
+	virtual IRehldsHookRegistry_SV_EmitSound2* SV_EmitSound2() = 0;
 };
 
 struct RehldsFuncs_t {
@@ -273,6 +278,8 @@ struct RehldsFuncs_t {
 	qboolean(*SV_FileInConsistencyList)(const char *filename, struct consistency_s **ppconsist);
 	qboolean(*Steam_NotifyClientConnect)(IGameClient *cl, const void *pvSteam2Key, unsigned int ucbSteam2Key);
 	void(*Steam_NotifyClientDisconnect)(IGameClient* cl);
+	void(*SV_StartSound)(int recipients, edict_t *entity, int channel, const char *sample, int volume, float attenuation, int flags, int pitch);
+	bool(*SV_EmitSound2)(edict_t *entity, IGameClient *receiver, int channel, const char *sample, float volume, float attenuation, int flags, int pitch, int emitFlags, const float *pOrigin);
 };
 
 class IRehldsApi {
