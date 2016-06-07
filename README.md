@@ -4,15 +4,13 @@ Reverse-engineered gamedll (mp.dll / Counter-Strike)
 ## What is this?
 Regamedll_CS is a result of reverse engineering of original library mods HLDS (build 6153beta) using DWARF debug info embedded into linux version of HLDS, cs.so
 
-At the moment, the work of reverse engineering continues
-
 ## Goals of the project
 * Provide more stable (than official) version of Counter-Strike game with extended API for mods and plugins
 
 ## How can use it?
 Regamedll_CS is fully compatible with official mod CS 1.6 by Valve. All you have to do is to download binaries and replace original mo.dll/cs.so
 
-Compiled binaries are available here: http://nexus.rehlds.org/nexus/content/repositories/regamedll-snapshots/regamedll/regamedll/0.2-SNAPSHOT/
+Compiled binaries are available here: [link](http://nexus.rehlds.org/nexus/content/repositories/regamedll-snapshots/regamedll/regamedll/0.2-SNAPSHOT/)
 
 Archive's bin directory contains 2 subdirectories, 'bugfixed' and 'pure'
 * 'pure' version is designed to work exactly as official mod CS
@@ -20,9 +18,17 @@ Archive's bin directory contains 2 subdirectories, 'bugfixed' and 'pure'
 
 <b>Warning!</b> Regamedll_CS is not binary compatible with original hlds since it's compiled with compilers other than ones used for original mod CS. This means that plugins that do binary code analysis (Orpheu for example) probably will not work with Regamedll_CS.
 
-## Current status
-* Counter-Strike 1.6 - 100%
-* Counter-Strike: Condition Zero - 100%
+## Configuration (cvars)
+| CVar                          | Default | Min | Max          | Description                                    |
+| :---------------------------- | :-----: | :-: | :----------: | :--------------------------------------------- |
+| mp_friendlyfire               | 0       | 0   | 2            | Allow inflict damage to teammates<br/>`0` disabled <br/>`1` enabled <br/>`2` FFA mode |
+| mp_maxmoney                   | 16000   | 0   | `0x7FFFFFFF` | The maximum allowable amount of money in the game
+| mp_round_infinite             | 0       | 0   | 1            | Flags for fine grained control (choose as many as needed)<br/>`0` disabled<br/>`1` enabled<br/><br/>or flags<br/>`a` block round time round end check<br/>`b` block needed players round end check<br/>`c` block VIP assassination/success round end check<br/>`d` block prison escape round end check<br/>`e` block bomb round end check<br/>`f` block team extermination round end check<br/>`g` block hostage rescue round end check<br/><br/>`Example setting:` "ae" blocks round time and bomb round end checks |
+| mp_hegrenade_penetration      | 0       | 0   | 1            | Disable grenade damage through walls<br>`0` disabled<br>`1` enabled |
+| mp_nadedrops                  | 0       | 0   | 2            | Drop a grenade after player death<br>`0` disabled<br>`1` drop one the grenade<br>`2` drop a everyone grenades |
+| mp_roundrespawn_time          | 20      | 0   | -            | Player cannot respawn until next round if more than N seconds has elapsed since the beginning round |
+| mp_auto_reload_weapons        | 0       | 0   | 1            | Automatically reload each weapon on player spawn<br>`0` disabled<br>`1` enabled |
+| mp_refill_bpammo_weapons      | 0       | 0   | 2            | Refill amount of backpack ammo up to the max <br/>`0` disabled<br/>`1` refill backpack ammo on player spawn<br/>`2` refill backpack ammo on each weapon reload |
 
 ## How to install zBot for CS 1.6?
 * Extract all the files from an [archive](regamedll/extra/zBot/bot_profiles.zip?raw=true)

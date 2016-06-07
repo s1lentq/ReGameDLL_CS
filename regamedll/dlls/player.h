@@ -589,7 +589,7 @@ public:
 	void SendItemStatus();
 	edict_t *EntSelectSpawnPoint();
 	void SetScoreAttrib(CBasePlayer *dest);
-	void ReloadWeapons(CBasePlayerItem *pWeapon = nullptr);
+	void ReloadWeapons(CBasePlayerItem *pWeapon = nullptr, bool bForceReload = false, bool bForceRefill = false);
 
 #ifdef REGAMEDLL_ADD
 	CCSPlayer *CSPlayer() const;

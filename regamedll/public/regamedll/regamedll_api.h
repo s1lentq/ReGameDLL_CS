@@ -161,10 +161,6 @@ typedef IVoidHookChainRegistryClass<class CBasePlayer, char *, char *> IReGameHo
 typedef IVoidHookChainClass<class CBaseAnimating> IReGameHook_CBaseAnimating_ResetSequenceInfo;
 typedef IVoidHookChainRegistryClass<class CBaseAnimating> IReGameHookRegistry_CBaseAnimating_ResetSequenceInfo;
 
-
-
-
-
 // GetForceCamera hook
 typedef IHookChain<int, class CBasePlayer *> IReGameHook_GetForceCamera;
 typedef IHookChainRegistry<int, class CBasePlayer *> IReGameHookRegistry_GetForceCamera;
@@ -383,21 +379,17 @@ public:
 struct ReGameFuncs_t {
 	class CBasePlayer *(*UTIL_PlayerByIndex)(int playerIndex);
 	struct edict_s *(*CREATE_NAMED_ENTITY2)(string_t iClass);
-
 	void (*ChangeString)(char *&dest, const char *source);
-
 	void (*RadiusDamage)(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, float flRadius, int iClassIgnore, int bitsDamageType);
 	void (*ClearMultiDamage)();
 	void (*ApplyMultiDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker);
 	void (*AddMultiDamage)(entvars_t *pevInflictor, CBaseEntity *pEntity, float flDamage, int bitsDamageType);
-
-	void (*EndRoundMessage)(const char *sentence, int event);
 	class CBaseEntity *(*UTIL_FindEntityByString)(class CBaseEntity *pStartEntity, const char *szKeyword, const char *szValue);
 };
 
 class IReGameApi {
 public:
-	virtual ~IReGameApi() {	}
+	virtual ~IReGameApi() {}
 
 	virtual int GetMajorVersion() = 0;
 	virtual int GetMinorVersion() = 0;
@@ -410,7 +402,6 @@ public:
 	virtual struct playermove_s* GetPlayerMove() = 0;
 	virtual struct WeaponSlotInfo* GetWeaponSlot(WeaponIdType weaponID) = 0;
 	virtual struct WeaponSlotInfo* GetWeaponSlot(const char* weaponName) = 0;
-
 };
 
 #define VRE_GAMEDLL_API_VERSION "VRE_GAMEDLL_API_VERSION001"

@@ -96,6 +96,33 @@ enum ScenarioEventEndRound
 	ROUND_GAME_COMMENCE,
 };
 
+enum RewardRules
+{
+	RR_CTS_WIN,
+	RR_TERRORISTS_WIN,
+	RR_TARGET_BOMB,
+	RR_VIP_ESCAPED,
+	RR_VIP_ASSASSINATED,
+	RR_TERRORISTS_ESCAPED,
+	RR_CTS_PREVENT_ESCAPE,
+	RR_ESCAPING_TERRORISTS_NEUTRALIZED,
+	RR_BOMB_DEFUSED,
+	RR_BOMB_PLANTED,
+	RR_BOMB_EXPLODED,
+	RR_ALL_HOSTAGES_RESCUED,
+	RR_TARGET_BOMB_SAVED,
+	RR_HOSTAGE_NOT_RESCUED,
+	RR_VIP_NOT_ESCAPED,
+	RR_LOSER_BONUS_DEFAULT,
+	RR_LOSER_BONUS_MIN,
+	RR_LOSER_BONUS_MAX,
+	RR_LOSER_BONUS_ADD,
+	RR_RESCUED_HOSTAGE,
+	RR_TOOK_HOSTAGE_ACC,
+	RR_TOOK_HOSTAGE,
+	RR_END
+};
+
 // custom enum
 enum RewardAccount
 {
@@ -129,8 +156,8 @@ enum RewardAccount
 	REWARD_VIP_HAVE_SELF_RESCUED	= 2500,
 
 	REWARD_TAKEN_HOSTAGE		= 1000,
-	REWARD_TOOK_HOSTAGE		= 150
-
+	REWARD_TOOK_HOSTAGE_ACC		= 100,
+	REWARD_TOOK_HOSTAGE		= 150,
 };
 
 // custom enum
@@ -363,6 +390,12 @@ public:
 #endif // HOOK_GAMEDLL
 };
 
+#if defined(REGAMEDLL_ADD) && !defined(HOOK_GAMEDLL)
+#define VFUNC virtual
+#else
+#define VFUNC
+#endif
+
 class CHalfLifeMultiplay: public CGameRules
 {
 public:
@@ -507,7 +540,7 @@ public:
 	bool NeededPlayersCheck();
 
 	// Setup counts for m_iNumTerrorist, m_iNumCT, m_iNumSpawnableTerrorist, m_iNumSpawnableCT, etc.
-	void InitializePlayerCounts(int &NumAliveTerrorist, int &NumAliveCT, int &NumDeadTerrorist, int &NumDeadCT);
+	VFUNC void InitializePlayerCounts(int &NumAliveTerrorist, int &NumAliveCT, int &NumDeadTerrorist, int &NumDeadCT);
 
 	// Check to see if the round is over for the various game types. Terminates the round
 	// and returns true if the round should end.
@@ -574,18 +607,21 @@ public:
 	void StackVIPQueue();
 	void ResetCurrentVIP();
 
-	void BalanceTeams();
+	VFUNC void BalanceTeams();
 	void BalanceTeams_();
 
-	void SwapAllPlayers();
-	void UpdateTeamScores();
+	VFUNC void SwapAllPlayers();
+	VFUNC void UpdateTeamScores();
+	VFUNC void EndRoundMessage(const char *sentence, int event);
+	VFUNC void SetAccountRules(RewardRules rules, int amount) { m_rgRewardAccountRules[rules] = static_cast<RewardAccount>(amount); }
+
 	void DisplayMaps(CBasePlayer *player, int iVote);
 	void ResetAllMapVotes();
 	void ProcessMapVote(CBasePlayer *player, int iVote);
 
 	// BOMB MAP FUNCTIONS
-	BOOL IsThereABomber();
-	BOOL IsThereABomb();
+	VFUNC BOOL IsThereABomber();
+	VFUNC BOOL IsThereABomb();
 
 	bool IsMatchStarted() { return (m_fTeamCount != 0.0f || m_fCareerRoundMenuTime != 0.0f || m_fCareerMatchMenuTime != 0.0f); }
 	void SendMOTDToClient(edict_t *client);
@@ -598,11 +634,13 @@ public:
 	bool HasRoundInfinite(bool time_expired = false) const;
 
 private:
-	bool HasRoundTimeExpired();
-	bool IsBombPlanted();
+	VFUNC bool HasRoundTimeExpired();
+	VFUNC bool IsBombPlanted();
 	void MarkLivingPlayersOnTeamAsNotReceivingMoneyNextRound(int iTeam);
 
 public:
+	static RewardAccount m_rgRewardAccountRules[];
+
 	CVoiceGameMgr m_VoiceGameMgr;
 	float m_fTeamCount;				// m_flRestartRoundTime, the global time when the round is supposed to end, if this is not 0
 	float m_flCheckWinConditions;

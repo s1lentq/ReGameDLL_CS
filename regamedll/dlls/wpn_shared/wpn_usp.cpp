@@ -45,7 +45,7 @@ int CUSP::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	p->pszAmmo1 = "45ACP";
 #endif // REGAMEDLL_FIXES
 	p->iMaxAmmo1 = MAX_AMMO_45ACP;
-	p->pszAmmo2 = 0;
+	p->pszAmmo2 = NULL;
 	p->iMaxAmmo2 = -1;
 	p->iMaxClip = USP_MAX_CLIP;
 	p->iSlot = 1;

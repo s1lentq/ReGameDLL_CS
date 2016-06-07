@@ -280,7 +280,7 @@ public:
 template<typename t_ret, typename t_class, typename ...t_args>
 class IHookChainRegistryClassImpl : public IHookChainRegistryClass <t_ret, t_class, t_args...>, public AbstractHookChainRegistry {
 public:
-	typedef t_ret(*hookfunc_t)(IHookChain<t_ret, t_args...>*, t_class *, t_args...);
+	typedef t_ret(*hookfunc_t)(IHookChainClass<t_ret, t_class, t_args...>*, t_class *, t_args...);
 	typedef t_ret(t_class::*origfunc_t)(t_args...);
 
 	virtual ~IHookChainRegistryClassImpl() { }
@@ -366,7 +366,7 @@ public:
 template<typename t_class, typename ...t_args>
 class IVoidHookChainRegistryClassImpl : public IVoidHookChainRegistryClass <t_class, t_args...>, public AbstractHookChainRegistry {
 public:
-	typedef void(*hookfunc_t)(IVoidHookChain<t_args...>*, t_class *, t_args...);
+	typedef void(*hookfunc_t)(IVoidHookChainClass<t_class, t_args...>*, t_class *, t_args...);
 	typedef void(t_class::*origfunc_t)(t_args...);
 
 	virtual ~IVoidHookChainRegistryClassImpl() { }

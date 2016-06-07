@@ -152,11 +152,9 @@ typedef IVoidHookChainRegistryClassImpl<CBasePlayer, char *, char *> CReGameHook
 typedef IVoidHookChainClassImpl<CBasePlayer, char *, char *> CReGameHook_CBasePlayer_SetClientUserInfoName;
 typedef IVoidHookChainRegistryClassImpl<CBasePlayer, char *, char *> CReGameHookRegistry_CBasePlayer_SetClientUserInfoName;
 
-
 // CBaseAnimating::ResetSequenceInfo hook
 typedef IVoidHookChainClassImpl<CBaseAnimating> CReGameHook_CBaseAnimating_ResetSequenceInfo;
 typedef IVoidHookChainRegistryClassImpl<CBaseAnimating> CReGameHookRegistry_CBaseAnimating_ResetSequenceInfo;
-
 
 // GetForceCamera hook
 typedef IHookChainImpl<int, class CBasePlayer *> CReGameHook_GetForceCamera;
@@ -331,7 +329,7 @@ public:
 	CReGameHookRegistry_CBasePlayer_AddAccount m_CBasePlayer_AddAccount;
 	CReGameHookRegistry_CBasePlayer_GiveShield m_CBasePlayer_GiveShield;
 	CReGameHookRegistry_CBasePlayer_SetClientUserInfoModel m_CBasePlayer_SetClientUserInfoModel;
-
+	CReGameHookRegistry_CBasePlayer_SetClientUserInfoName m_CBasePlayer_SetClientUserInfoName;
 	CReGameHookRegistry_CBaseAnimating_ResetSequenceInfo m_CBaseAnimating_ResetSequenceInfo;
 
 	CReGameHookRegistry_GetForceCamera m_GetForceCamera;
@@ -371,7 +369,6 @@ public:
 	CReGameHookRegistry_CSGameRules_GoToIntermission m_CSGameRules_GoToIntermission;
 	CReGameHookRegistry_CSGameRules_BalanceTeams m_CSGameRules_BalanceTeams;
 
-	CReGameHookRegistry_CBasePlayer_SetClientUserInfoName m_CBasePlayer_SetClientUserInfoName;
 public:
 	virtual IReGameHookRegistry_CBasePlayer_Spawn* CBasePlayer_Spawn();
 	virtual IReGameHookRegistry_CBasePlayer_Precache* CBasePlayer_Precache();
@@ -403,7 +400,7 @@ public:
 	virtual IReGameHookRegistry_CBasePlayer_AddAccount* CBasePlayer_AddAccount();
 	virtual IReGameHookRegistry_CBasePlayer_GiveShield* CBasePlayer_GiveShield();
 	virtual IReGameHookRegistry_CBasePlayer_SetClientUserInfoModel* CBasePlayer_SetClientUserInfoModel();
-
+	virtual IReGameHookRegistry_CBasePlayer_SetClientUserInfoName* CBasePlayer_SetClientUserInfoName();
 	virtual IReGameHookRegistry_CBaseAnimating_ResetSequenceInfo* CBaseAnimating_ResetSequenceInfo();
 
 	virtual IReGameHookRegistry_GetForceCamera* GetForceCamera();
@@ -442,8 +439,6 @@ public:
 	virtual IReGameHookRegistry_CSGameRules_ChangeLevel* CSGameRules_ChangeLevel();
 	virtual IReGameHookRegistry_CSGameRules_GoToIntermission* CSGameRules_GoToIntermission();
 	virtual IReGameHookRegistry_CSGameRules_BalanceTeams* CSGameRules_BalanceTeams();
-
-	virtual IReGameHookRegistry_CBasePlayer_SetClientUserInfoName* CBasePlayer_SetClientUserInfoName();
 };
 
 extern CReGameHookchains g_ReGameHookchains;

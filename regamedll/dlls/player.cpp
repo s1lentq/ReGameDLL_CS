@@ -3125,22 +3125,16 @@ void CBasePlayer::__API_HOOK(AddAccount)(int amount, RewardType type, bool bTrac
 	m_iAccount += amount;
 
 #ifndef REGAMEDLL_ADD
-	if (m_iAccount < 0)
-		m_iAccount = 0;
-
-	else if (m_iAccount > 16000)
+	if (m_iAccount > 16000)
 		m_iAccount = 16000;
-
 #else
-	int mmoney = int(maxmoney.value);
-
-	if (m_iAccount < 0)
-		m_iAccount = 0;
-
-	else if (m_iAccount > mmoney)
-		m_iAccount = mmoney;
-
+	auto nMax = int(maxmoney.value);
+	if (m_iAccount > nMax)
+		m_iAccount = nMax;
 #endif
+
+	else if (m_iAccount < 0)
+		m_iAccount = 0;
 
 	// Send money update to HUD
 	MESSAGE_BEGIN(MSG_ONE, gmsgMoney, NULL, pev);
@@ -5258,9 +5252,7 @@ void EXT_ALIGN CBasePlayer::__API_VHOOK(Spawn)()
 	m_flFlashLightTime = 1;
 
 #ifdef REGAMEDLL_ADD
-	if (auto_reload_weapons.string[0] == '1') {
-		ReloadWeapons();
-	}
+	ReloadWeapons();
 #endif
 
 	if (m_bHasDefuser)
@@ -9244,8 +9236,15 @@ void CBasePlayer::UpdateLocation(bool forceUpdate)
 	}
 }
 
-void CBasePlayer::ReloadWeapons(CBasePlayerItem *pWeapon)
+void CBasePlayer::ReloadWeapons(CBasePlayerItem *pWeapon, bool bForceReload, bool bForceRefill)
 {
+#ifdef REGAMEDLL_ADD
+	bool bCanAutoReload = (bForceReload || auto_reload_weapons.value != 0.0f);
+	bool bCanRefillBPAmmo = (bForceRefill || refill_bpammo_weapons.value != 0.0f);
+
+	if (!bCanAutoReload && !bCanRefillBPAmmo)
+		return;
+
 	// if we died in the previous round
 	// so that we have nothing to reload
 	if (!m_bNotKilled)
@@ -9261,7 +9260,14 @@ void CBasePlayer::ReloadWeapons(CBasePlayerItem *pWeapon)
 		while (item != nullptr)
 		{
 			if (pWeapon == nullptr || pWeapon == item)
-				((CBasePlayerWeapon *)item)->InstantReload();
+			{
+				if (bCanRefillBPAmmo) {
+					m_rgAmmo[ item->PrimaryAmmoIndex() ] = item->iMaxAmmo1();
+				}
+				if (bCanAutoReload) {
+					((CBasePlayerWeapon *)item)->InstantReload(bCanRefillBPAmmo);
+				}
+			}
 
 			if (pWeapon == item)
 				break;
@@ -9272,4 +9278,5 @@ void CBasePlayer::ReloadWeapons(CBasePlayerItem *pWeapon)
 		if (pWeapon != nullptr && pWeapon == item)
 			break;
 	}
+#endif
 }

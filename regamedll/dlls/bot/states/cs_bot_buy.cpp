@@ -261,7 +261,7 @@ void BuyState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 	if (!(me->m_signals.GetState() & SIGNAL_BUY))
 	{
 		m_doneBuying = true;
-		UTIL_DPrintf("%s bot spawned outside of a buy zone (%d, %d, %d)\n", (me->m_iTeam == CT) ? "CT" : "Terrorist", me->pev->origin.x, me->pev->origin.y, me->pev->origin.z);
+		UTIL_DPrintf("%s bot spawned outside of a buy zone (%d, %d, %d)\n", (me->m_iTeam == CT) ? "CT" : "Terrorist", int(me->pev->origin.x), int(me->pev->origin.y), int(me->pev->origin.z));
 		return;
 	}
 

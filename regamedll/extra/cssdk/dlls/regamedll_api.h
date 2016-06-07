@@ -161,10 +161,6 @@ typedef IVoidHookChainRegistryClass<class CBasePlayer, char *, char *> IReGameHo
 typedef IVoidHookChainClass<class CBaseAnimating> IReGameHook_CBaseAnimating_ResetSequenceInfo;
 typedef IVoidHookChainRegistryClass<class CBaseAnimating> IReGameHookRegistry_CBaseAnimating_ResetSequenceInfo;
 
-
-
-
-
 // GetForceCamera hook
 typedef IHookChain<int, class CBasePlayer *> IReGameHook_GetForceCamera;
 typedef IHookChainRegistry<int, class CBasePlayer *> IReGameHookRegistry_GetForceCamera;
@@ -391,7 +387,6 @@ struct ReGameFuncs_t {
 	void (*ApplyMultiDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker);
 	void (*AddMultiDamage)(entvars_t *pevInflictor, CBaseEntity *pEntity, float flDamage, int bitsDamageType);
 
-	void (*EndRoundMessage)(const char *sentence, int event);
 	class CBaseEntity *(*UTIL_FindEntityByString)(class CBaseEntity *pStartEntity, const char *szKeyword, const char *szValue);
 };
 

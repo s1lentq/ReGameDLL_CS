@@ -2715,7 +2715,7 @@ FunctionHook g_FunctionHooks[] =
 	{ 0x01D8B400, "_Z21SV_CareerMatchLimit_fv", (size_t)&SV_CareerMatchLimit_f },
 	{ 0x01D8B6E0, "_Z9BroadcastPKc", (size_t)&Broadcast },
 	{ 0x01D8B780, "_Z7GetTeami", (size_t)&GetTeam },
-	{ 0x01D8B7B0, "_Z15EndRoundMessagePKci", (size_t)&EndRoundMessage },
+	//{ 0x01D8B7B0, "_Z15EndRoundMessagePKci", (size_t)&EndRoundMessage },
 	//{ 0x01D8BD80, "_ZL18ReadMultiplayCvarsP18CHalfLifeMultiplay", (size_t)&ReadMultiplayCvars },
 	//{ 0x01D92670, "_Z15DestroyMapCycleP10mapcycle_s", (size_t)&DestroyMapCycle },	// NOXREF
 	{ 0x01D926B0, "_Z15MP_COM_GetTokenv", (size_t)&MP_COM_GetToken },

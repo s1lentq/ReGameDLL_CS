@@ -11,7 +11,31 @@ cvar_t *sv_clienttrace = NULL;
 #endif
 
 CCStrikeGameMgrHelper g_GameMgrHelper;
-CHalfLifeMultiplay *g_pMPGameRules = NULL;
+CHalfLifeMultiplay *g_pMPGameRules = nullptr;
+RewardAccount CHalfLifeMultiplay::m_rgRewardAccountRules[] = {
+	REWARD_CTS_WIN,					// RR_CTS_WIN
+	REWARD_TERRORISTS_WIN,				// RR_TERRORISTS_WIN
+	REWARD_TARGET_BOMB,				// RR_TARGET_BOMB
+	REWARD_VIP_ESCAPED,				// RR_VIP_ESCAPED
+	REWARD_VIP_ASSASSINATED,			// RR_VIP_ASSASSINATED
+	REWARD_TERRORISTS_ESCAPED,			// RR_TERRORISTS_ESCAPED
+	REWARD_CTS_PREVENT_ESCAPE,			// RR_CTS_PREVENT_ESCAPE
+	REWARD_ESCAPING_TERRORISTS_NEUTRALIZED,		// RR_ESCAPING_TERRORISTS_NEUTRALIZED
+	REWARD_BOMB_DEFUSED,				// RR_BOMB_DEFUSED
+	REWARD_BOMB_PLANTED,				// RR_BOMB_PLANTED
+	REWARD_BOMB_EXPLODED,				// RR_BOMB_EXPLODED
+	REWARD_ALL_HOSTAGES_RESCUED,			// RR_ALL_HOSTAGES_RESCUED
+	REWARD_TARGET_BOMB_SAVED,			// RR_TARGET_BOMB_SAVED
+	REWARD_HOSTAGE_NOT_RESCUED,			// RR_HOSTAGE_NOT_RESCUED
+	REWARD_VIP_NOT_ESCAPED,				// RR_VIP_NOT_ESCAPED
+	REWARD_LOSER_BONUS_DEFAULT,			// RR_LOSER_BONUS_DEFAULT
+	REWARD_LOSER_BONUS_MIN,				// RR_LOSER_BONUS_MIN
+	REWARD_LOSER_BONUS_MAX,				// RR_LOSER_BONUS_MAX
+	REWARD_LOSER_BONUS_ADD,				// RR_LOSER_BONUS_ADD
+	REWARD_RESCUED_HOSTAGE,				// RR_RESCUED_HOSTAGE
+	REWARD_TOOK_HOSTAGE_ACC,			// RR_TOOK_HOSTAGE_ACC
+	REWARD_TOOK_HOSTAGE,				// RR_TOOK_HOSTAGE
+};
 
 bool IsBotSpeaking()
 {
@@ -260,7 +284,7 @@ char *GetTeam(int teamNo)
 	return "";
 }
 
-void EXT_FUNC EndRoundMessage(const char *sentence, int event)
+void CHalfLifeMultiplay::EndRoundMessage(const char *sentence, int event)
 {
 	char *team = NULL;
 	const char *message = &(sentence[1]);
@@ -308,16 +332,13 @@ void EXT_FUNC EndRoundMessage(const char *sentence, int event)
 		break;
 	}
 
-	if (CSGameRules() != NULL)
+	if (bTeamTriggered)
 	{
-		if (bTeamTriggered)
-		{
-			UTIL_LogPrintf("Team \"%s\" triggered \"%s\" (CT \"%i\") (T \"%i\")\n", team, message, CSGameRules()->m_iNumCTWins, CSGameRules()->m_iNumTerroristWins);
-		}
-		else
-		{
-			UTIL_LogPrintf("World triggered \"%s\" (CT \"%i\") (T \"%i\")\n", message, CSGameRules()->m_iNumCTWins, CSGameRules()->m_iNumTerroristWins);
-		}
+		UTIL_LogPrintf("Team \"%s\" triggered \"%s\" (CT \"%i\") (T \"%i\")\n", team, message, m_iNumCTWins, m_iNumTerroristWins);
+	}
+	else
+	{
+		UTIL_LogPrintf("World triggered \"%s\" (CT \"%i\") (T \"%i\")\n", message, m_iNumCTWins, m_iNumTerroristWins);
 	}
 
 	UTIL_LogPrintf("World triggered \"Round_End\"\n");
@@ -429,7 +450,7 @@ CHalfLifeMultiplay::CHalfLifeMultiplay()
 	m_bMapHasCameras = MAP_HAS_CAMERAS_INIT;
 	g_fGameOver = FALSE;
 
-	m_iLoserBonus = REWARD_LOSER_BONUS_DEFAULT;
+	m_iLoserBonus = m_rgRewardAccountRules[RR_LOSER_BONUS_DEFAULT];
 	m_iNumConsecutiveCTLoses = 0;
 	m_iNumConsecutiveTerroristLoses = 0;
 	m_iC4Guy = 0;
@@ -1148,7 +1169,7 @@ bool CHalfLifeMultiplay::NeededPlayersCheck()
 bool CHalfLifeMultiplay::VIP_Escaped_internal(int winStatus, ScenarioEventEndRound event, float tmDelay) {
 
 	Broadcast("ctwin");
-	m_iAccountCT += REWARD_VIP_ESCAPED;
+	m_iAccountCT += m_rgRewardAccountRules[RR_VIP_ESCAPED];
 
 	if (!m_bNeededPlayers)
 	{
@@ -1185,7 +1206,7 @@ bool CHalfLifeMultiplay::VIP_Escaped_internal(int winStatus, ScenarioEventEndRou
 bool CHalfLifeMultiplay::VIP_Died_internal(int winStatus, ScenarioEventEndRound event, float tmDelay) {
 
 	Broadcast("terwin");
-	m_iAccountTerrorist += REWARD_VIP_ASSASSINATED;
+	m_iAccountTerrorist += m_rgRewardAccountRules[RR_VIP_ASSASSINATED];
 
 	if (!m_bNeededPlayers)
 	{
@@ -1233,7 +1254,7 @@ bool CHalfLifeMultiplay::VIPRoundEndCheck()
 bool CHalfLifeMultiplay::Prison_Escaped_internal(int winStatus, ScenarioEventEndRound event, float tmDelay) {
 
 	Broadcast("terwin");
-	m_iAccountTerrorist += REWARD_TERRORISTS_ESCAPED;
+	m_iAccountTerrorist += m_rgRewardAccountRules[RR_TERRORISTS_ESCAPED];
 
 	if (!m_bNeededPlayers)
 	{
@@ -1257,7 +1278,7 @@ bool CHalfLifeMultiplay::Prison_PreventEscape_internal(int winStatus, ScenarioEv
 
 	Broadcast("ctwin");
 	// CTs are rewarded based on how many terrorists have escaped...
-	m_iAccountCT += (1 - m_flEscapeRatio) * REWARD_CTS_PREVENT_ESCAPE;
+	m_iAccountCT += (1 - m_flEscapeRatio) * m_rgRewardAccountRules[RR_CTS_PREVENT_ESCAPE];
 
 	if (!m_bNeededPlayers)
 	{
@@ -1281,7 +1302,7 @@ bool CHalfLifeMultiplay::Prison_Neutralized_internal(int winStatus, ScenarioEven
 
 	Broadcast("ctwin");
 	// CTs are rewarded based on how many terrorists have escaped...
-	m_iAccountCT += (1 - m_flEscapeRatio) * REWARD_ESCAPING_TERRORISTS_NEUTRALIZED;
+	m_iAccountCT += (1 - m_flEscapeRatio) * m_rgRewardAccountRules[RR_ESCAPING_TERRORISTS_NEUTRALIZED];
 
 	if (!m_bNeededPlayers)
 	{
@@ -1329,7 +1350,7 @@ bool CHalfLifeMultiplay::PrisonRoundEndCheck(int NumAliveTerrorist, int NumAlive
 bool CHalfLifeMultiplay::Target_Bombed_internal(int winStatus, ScenarioEventEndRound event, float tmDelay) {
 
 	Broadcast("terwin");
-	m_iAccountTerrorist += REWARD_TARGET_BOMB;
+	m_iAccountTerrorist += m_rgRewardAccountRules[RR_TARGET_BOMB];
 
 	if (!m_bNeededPlayers)
 	{
@@ -1352,8 +1373,8 @@ bool CHalfLifeMultiplay::Target_Bombed_internal(int winStatus, ScenarioEventEndR
 bool CHalfLifeMultiplay::Target_Defused_internal(int winStatus, ScenarioEventEndRound event, float tmDelay) {
 
 	Broadcast("ctwin");
-	m_iAccountCT += REWARD_BOMB_DEFUSED;
-	m_iAccountTerrorist += REWARD_BOMB_PLANTED;
+	m_iAccountCT += m_rgRewardAccountRules[RR_BOMB_DEFUSED];
+	m_iAccountTerrorist += m_rgRewardAccountRules[RR_BOMB_PLANTED];
 
 	if (!m_bNeededPlayers)
 	{
@@ -1391,7 +1412,7 @@ bool CHalfLifeMultiplay::BombRoundEndCheck()
 bool CHalfLifeMultiplay::Round_Cts_internal(int winStatus, ScenarioEventEndRound event, float tmDelay) {
 
 	Broadcast("ctwin");
-	m_iAccountCT += m_bMapHasBombTarget ? REWARD_BOMB_DEFUSED : REWARD_CTS_WIN;
+	m_iAccountCT += m_rgRewardAccountRules[m_bMapHasBombTarget ? RR_BOMB_DEFUSED : RR_CTS_WIN];
 
 	if (!m_bNeededPlayers)
 	{
@@ -1414,7 +1435,7 @@ bool CHalfLifeMultiplay::Round_Cts_internal(int winStatus, ScenarioEventEndRound
 bool CHalfLifeMultiplay::Round_Ts_internal(int winStatus, ScenarioEventEndRound event, float tmDelay) {
 
 	Broadcast("terwin");
-	m_iAccountTerrorist += m_bMapHasBombTarget ? REWARD_BOMB_EXPLODED : REWARD_TERRORISTS_WIN;
+	m_iAccountTerrorist += m_rgRewardAccountRules[m_bMapHasBombTarget ? RR_BOMB_EXPLODED : RR_TERRORISTS_WIN];
 
 	if (!m_bNeededPlayers)
 	{
@@ -1487,7 +1508,7 @@ bool CHalfLifeMultiplay::TeamExterminationCheck(int NumAliveTerrorist, int NumAl
 bool CHalfLifeMultiplay::Hostage_Rescue_internal(int winStatus, ScenarioEventEndRound event, float tmDelay) {
 
 	Broadcast("ctwin");
-	m_iAccountCT += REWARD_ALL_HOSTAGES_RESCUED;
+	m_iAccountCT += m_rgRewardAccountRules[RR_ALL_HOSTAGES_RESCUED];
 
 	if (!m_bNeededPlayers)
 	{
@@ -1925,7 +1946,7 @@ void CHalfLifeMultiplay::__API_VHOOK(RestartRound)()
 
 		if (hostage->pev->solid != SOLID_NOT)
 		{
-			acct_tmp += REWARD_TOOK_HOSTAGE;
+			acct_tmp += m_rgRewardAccountRules[RR_TOOK_HOSTAGE];
 
 			if (hostage->pev->deadflag == DEAD_DEAD)
 			{
@@ -1943,7 +1964,7 @@ void CHalfLifeMultiplay::__API_VHOOK(RestartRound)()
 		if (m_iNumConsecutiveTerroristLoses > 1)
 		{
 			// this is the default losing bonus
-			m_iLoserBonus = REWARD_LOSER_BONUS_MIN;
+			m_iLoserBonus = m_rgRewardAccountRules[RR_LOSER_BONUS_MIN];
 		}
 
 		m_iNumConsecutiveTerroristLoses = 0;	// starting fresh
@@ -1955,7 +1976,7 @@ void CHalfLifeMultiplay::__API_VHOOK(RestartRound)()
 		if (m_iNumConsecutiveCTLoses > 1)
 		{
 			// this is the default losing bonus
-			m_iLoserBonus = REWARD_LOSER_BONUS_MIN;
+			m_iLoserBonus = m_rgRewardAccountRules[RR_LOSER_BONUS_MIN];
 		}
 
 		m_iNumConsecutiveCTLoses = 0;		// starting fresh
@@ -1963,15 +1984,15 @@ void CHalfLifeMultiplay::__API_VHOOK(RestartRound)()
 	}
 
 	// check if the losing team is in a losing streak & that the loser bonus hasen't maxed out.
-	if (m_iNumConsecutiveTerroristLoses > 1 && m_iLoserBonus < REWARD_LOSER_BONUS_MAX)
+	if (m_iNumConsecutiveTerroristLoses > 1 && m_iLoserBonus < m_rgRewardAccountRules[RR_LOSER_BONUS_MAX])
 	{
 		// help out the team in the losing streak
-		m_iLoserBonus += REWARD_LOSER_BONUS_ADD;
+		m_iLoserBonus += m_rgRewardAccountRules[RR_LOSER_BONUS_ADD];
 	}
-	else if (m_iNumConsecutiveCTLoses > 1 && m_iLoserBonus < REWARD_LOSER_BONUS_MAX)
+	else if (m_iNumConsecutiveCTLoses > 1 && m_iLoserBonus < m_rgRewardAccountRules[RR_LOSER_BONUS_MAX])
 	{
 		// help out the team in the losing streak
-		m_iLoserBonus += REWARD_LOSER_BONUS_ADD;
+		m_iLoserBonus += m_rgRewardAccountRules[RR_LOSER_BONUS_ADD];
 	}
 
 	// assign the wining and losing bonuses
@@ -1992,7 +2013,7 @@ void CHalfLifeMultiplay::__API_VHOOK(RestartRound)()
 	}
 
 	// Update CT account based on number of hostages rescued
-	m_iAccountCT += m_iHostagesRescued * REWARD_RESCUED_HOSTAGE;
+	m_iAccountCT += m_iHostagesRescued * m_rgRewardAccountRules[RR_RESCUED_HOSTAGE];
 
 	// Update individual players accounts and respawn players
 
@@ -2010,7 +2031,7 @@ void CHalfLifeMultiplay::__API_VHOOK(RestartRound)()
 		m_iNumCTWins = 0;
 		m_iNumConsecutiveTerroristLoses = 0;
 		m_iNumConsecutiveCTLoses = 0;
-		m_iLoserBonus = REWARD_LOSER_BONUS_DEFAULT;
+		m_iLoserBonus = m_rgRewardAccountRules[RR_LOSER_BONUS_DEFAULT];
 	}
 
 	// tell bots that the round is restarting
@@ -2819,7 +2840,7 @@ void CHalfLifeMultiplay::CheckFreezePeriodExpired()
 bool CHalfLifeMultiplay::Target_Saved_internal(int winStatus, ScenarioEventEndRound event, float tmDelay) {
 
 	Broadcast("ctwin");
-	m_iAccountCT += REWARD_TARGET_BOMB_SAVED;
+	m_iAccountCT += m_rgRewardAccountRules[RR_TARGET_BOMB_SAVED];
 	m_iNumCTWins++;
 
 	EndRoundMessage("#Target_Saved", event);
@@ -2839,7 +2860,7 @@ bool CHalfLifeMultiplay::Target_Saved_internal(int winStatus, ScenarioEventEndRo
 bool CHalfLifeMultiplay::Hostage_NotRescued_internal(int winStatus, ScenarioEventEndRound event, float tmDelay) {
 
 	Broadcast("terwin");
-	m_iAccountTerrorist += REWARD_HOSTAGE_NOT_RESCUED;
+	m_iAccountTerrorist += m_rgRewardAccountRules[RR_HOSTAGE_NOT_RESCUED];
 	m_iNumTerroristWins++;
 
 	EndRoundMessage("#Hostages_Not_Rescued", event);
@@ -2875,7 +2896,7 @@ bool CHalfLifeMultiplay::Prison_NotEscaped_internal(int winStatus, ScenarioEvent
 bool CHalfLifeMultiplay::VIP_NotEscaped_internal(int winStatus, ScenarioEventEndRound event, float tmDelay) {
 
 	Broadcast("terwin");
-	m_iAccountTerrorist += REWARD_VIP_NOT_ESCAPED;
+	m_iAccountTerrorist += m_rgRewardAccountRules[RR_VIP_NOT_ESCAPED];
 	m_iNumTerroristWins++;
 
 	EndRoundMessage("#VIP_Not_Escaped", event);

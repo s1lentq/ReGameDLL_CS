@@ -90,6 +90,33 @@ enum ScenarioEventEndRound
 	ROUND_GAME_COMMENCE,
 };
 
+enum RewardRules
+{
+	RR_CTS_WIN,
+	RR_TERRORISTS_WIN,
+	RR_TARGET_BOMB,
+	RR_VIP_ESCAPED,
+	RR_VIP_ASSASSINATED,
+	RR_TERRORISTS_ESCAPED,
+	RR_CTS_PREVENT_ESCAPE,
+	RR_ESCAPING_TERRORISTS_NEUTRALIZED,
+	RR_BOMB_DEFUSED,
+	RR_BOMB_PLANTED,
+	RR_BOMB_EXPLODED,
+	RR_ALL_HOSTAGES_RESCUED,
+	RR_TARGET_BOMB_SAVED,
+	RR_HOSTAGE_NOT_RESCUED,
+	RR_VIP_NOT_ESCAPED,
+	RR_LOSER_BONUS_DEFAULT,
+	RR_LOSER_BONUS_MIN,
+	RR_LOSER_BONUS_MAX,
+	RR_LOSER_BONUS_ADD,
+	RR_RESCUED_HOSTAGE,
+	RR_TOOK_HOSTAGE_ACC,
+	RR_TOOK_HOSTAGE,
+	RR_END
+};
+
 // custom enum
 enum RewardAccount
 {
@@ -371,6 +398,23 @@ public:
 	virtual void GiveC4() = 0;
 	virtual void ChangeLevel() = 0;
 	virtual void GoToIntermission() = 0;
+
+	// Setup counts for m_iNumTerrorist, m_iNumCT, m_iNumSpawnableTerrorist, m_iNumSpawnableCT, etc.
+	virtual void InitializePlayerCounts(int &NumAliveTerrorist, int &NumAliveCT, int &NumDeadTerrorist, int &NumDeadCT) = 0;
+
+	virtual void BalanceTeams() = 0;
+	virtual void SwapAllPlayers() = 0;
+	virtual void UpdateTeamScores() = 0;
+	virtual void EndRoundMessage(const char *sentence, int event) = 0;
+	virtual void SetAccountRules(RewardRules rules, int amount) = 0;
+
+	// BOMB MAP FUNCTIONS
+	virtual BOOL IsThereABomber() = 0;
+	virtual BOOL IsThereABomb() = 0;
+
+	virtual bool HasRoundTimeExpired() = 0;
+	virtual bool IsBombPlanted() = 0;
+
 public:
 	bool ShouldSkipSpawn() const { return m_bSkipSpawn; }
 	void MarkSpawnSkipped() { m_bSkipSpawn = false; }

@@ -398,7 +398,7 @@ public:
 	void SetPlayerShieldAnim();
 	void ResetPlayerShieldAnim();
 	bool ShieldSecondaryFire(int iUpAnim, int iDownAnim);
-	void InstantReload();
+	void InstantReload(bool bCanRefillBPAmmo = false);
 
 public:
 	static TYPEDESCRIPTION IMPL(m_SaveData)[7];

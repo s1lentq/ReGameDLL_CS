@@ -904,7 +904,17 @@ void CBasePlayerWeapon::__MAKE_VHOOK(ItemPostFrame)()
 
 		// Add them to the clip
 		m_iClip += j;
+
+#ifdef REGAMEDLL_ADD
+		// Do not remove bpammo of the player,
+		// if cvar allows to refill bpammo on during reloading the weapons
+		if (refill_bpammo_weapons.value < 2.0f) {
+			m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] -= j;
+		}
+#else
 		m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] -= j;
+#endif
+
 		m_pPlayer->TabulateAmmo();
 		m_fInReload = FALSE;
 	}
@@ -1305,7 +1315,6 @@ int CBasePlayerWeapon::DefaultReload(int iClipSize, int iAnim, float fDelay)
 		return FALSE;
 
 	int j = Q_min(iClipSize - m_iClip, m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]);
-
 	if (!j)
 	{
 		return FALSE;
@@ -2233,7 +2242,9 @@ void CArmoury::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 
 LINK_ENTITY_TO_CLASS(armoury_entity, CArmoury, CCSArmoury);
 
-void CBasePlayerWeapon::InstantReload()
+// true - keep the amount of bpammo
+// false - let take away bpammo
+void CBasePlayerWeapon::InstantReload(bool bCanRefillBPAmmo)
 {
 	// if you already reload
 	if (m_fInReload)
@@ -2249,6 +2260,10 @@ void CBasePlayerWeapon::InstantReload()
 
 	// Add them to the clip
 	m_iClip += j;
-	m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] -= j;
+
+	if (!bCanRefillBPAmmo) {
+		m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] -= j;
+	}
+
 	m_pPlayer->TabulateAmmo();
 }

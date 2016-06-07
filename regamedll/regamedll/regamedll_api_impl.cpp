@@ -40,7 +40,6 @@ ReGameFuncs_t g_ReGameApiFuncs = {
 	&ApplyMultiDamage_api,
 	&AddMultiDamage_api,
 
-	&EndRoundMessage,
 	&UTIL_FindEntityByString,
 
 };
@@ -76,8 +75,6 @@ IReGameHookRegistry_CBasePlayer_AddAccount* CReGameHookchains::CBasePlayer_AddAc
 IReGameHookRegistry_CBasePlayer_GiveShield* CReGameHookchains::CBasePlayer_GiveShield() { return &m_CBasePlayer_GiveShield; }
 IReGameHookRegistry_CBasePlayer_SetClientUserInfoModel* CReGameHookchains::CBasePlayer_SetClientUserInfoModel() { return &m_CBasePlayer_SetClientUserInfoModel; }
 IReGameHookRegistry_CBasePlayer_SetClientUserInfoName* CReGameHookchains::CBasePlayer_SetClientUserInfoName() { return &m_CBasePlayer_SetClientUserInfoName; }
-
-
 IReGameHookRegistry_CBaseAnimating_ResetSequenceInfo* CReGameHookchains::CBaseAnimating_ResetSequenceInfo() { return &m_CBaseAnimating_ResetSequenceInfo; }
 
 IReGameHookRegistry_GetForceCamera* CReGameHookchains::GetForceCamera() { return &m_GetForceCamera; }
