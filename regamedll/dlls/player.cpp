@@ -8030,6 +8030,9 @@ void CBasePlayer::ResetStamina()
 
 float_precision GetPlayerPitch(const edict_t *pEdict)
 {
+	if( !pEdict )
+		return 0.0f;
+	
 	entvars_t *pev = VARS(const_cast<edict_t *>(pEdict));
 	CBasePlayer *pPlayer = dynamic_cast<CBasePlayer *>(CBasePlayer::Instance(pev));
 
@@ -8041,6 +8044,9 @@ float_precision GetPlayerPitch(const edict_t *pEdict)
 
 float_precision GetPlayerYaw(const edict_t *pEdict)
 {
+	if( !pEdict )
+		return 0.0f;
+	
 	entvars_t *pev = VARS(const_cast<edict_t *>(pEdict));
 	CBasePlayer *pPlayer = dynamic_cast<CBasePlayer *>(CBasePlayer::Instance(pev));
 

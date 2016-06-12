@@ -1062,7 +1062,6 @@ void SV_StudioSetupBones(model_t *pModel, float frame, int sequence, const vec_t
 		/*static */float q3[MAXSTUDIOBONES][4], q4[MAXSTUDIOBONES][4];
 
 		float_precision s, t;
-
 		s = GetPlayerYaw(pEdict);
 		t = GetPlayerPitch(pEdict);
 
