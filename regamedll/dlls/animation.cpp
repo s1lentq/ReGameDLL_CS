@@ -1062,16 +1062,8 @@ void SV_StudioSetupBones(model_t *pModel, float frame, int sequence, const vec_t
 		/*static */float q3[MAXSTUDIOBONES][4], q4[MAXSTUDIOBONES][4];
 
 		float_precision s, t;
-		if( pEdict )
-		{
-			s = GetPlayerYaw(pEdict);
-			t = GetPlayerPitch(pEdict);
-		}
-		else
-		{
-			s = t = 0.0f;	
-		}
-		
+		s = GetPlayerYaw(pEdict);
+		t = GetPlayerPitch(pEdict);
 
 		// Blending is 0-127 == Left to Middle, 128 to 255 == Middle to right
 		if (s <= 127.0f)
