@@ -212,7 +212,7 @@ void UTIL_UnsetGroupTrace()
 	g_groupmask = 0;
 	g_groupop = 0;
 
-	ENGINE_SETGROUPMASK(0,0);
+	ENGINE_SETGROUPMASK(0, 0);
 }
 
 NOXREF UTIL_GroupTrace::UTIL_GroupTrace(int groupmask, int op)
@@ -524,12 +524,12 @@ CBaseEntity *UTIL_FindEntityGeneric(const char *szWhatever, const Vector &vecSrc
 
 CBasePlayer *EXT_FUNC UTIL_PlayerByIndex(int playerIndex)
 {
-	CBasePlayer *pPlayer = NULL;
+	CBasePlayer *pPlayer = nullptr;
 	if (playerIndex > 0 && playerIndex <= gpGlobals->maxClients)
 	{
 		edict_t *pPlayerEdict = INDEXENT(playerIndex);
-		if (pPlayerEdict != NULL && !pPlayerEdict->free)
-			pPlayer = (CBasePlayer *)CBaseEntity::Instance(pPlayerEdict);
+		if (pPlayerEdict && !pPlayerEdict->free)
+			pPlayer = CBasePlayer::Instance(pPlayerEdict);
 	}
 
 	return pPlayer;

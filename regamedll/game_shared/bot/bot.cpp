@@ -346,7 +346,7 @@ bool CBot::IsEnemy(CBaseEntity *ent) const
 	CBasePlayer *player = static_cast<CBasePlayer *>(ent);
 
 	// if they are on our team, they are our friends
-	if (player->m_iTeam == m_iTeam)
+	if (BotRelationship(player) == BOT_TEAMMATE)
 		return false;
 
 	// yep, we hate 'em

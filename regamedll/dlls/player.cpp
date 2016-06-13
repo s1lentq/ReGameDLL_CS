@@ -508,8 +508,7 @@ CBasePlayer *CBasePlayer::GetNextRadioRecipient(CBasePlayer *pStartPlayer)
 			if (!FNullEnt(m_hObserverTarget))
 				continue;
 
-			CBasePlayer *pTarget = (CBasePlayer *)CBaseEntity::Instance(pPlayer->m_hObserverTarget->pev);
-
+			CBasePlayer *pTarget = CBasePlayer::Instance(pPlayer->m_hObserverTarget->pev);
 			if (pTarget != NULL && pTarget->m_iTeam == m_iTeam)
 			{
 				bSend = true;
@@ -759,9 +758,8 @@ void CBasePlayer::__API_VHOOK(TraceAttack)(entvars_t *pevAttacker, float flDamag
 	bool bShouldSpark = false;
 	bool bHitShield = IsHittingShield(vecDir, ptr);
 
-	CBasePlayer *pAttacker = dynamic_cast<CBasePlayer *>(CBaseEntity::Instance(pevAttacker));
-
-	if (pAttacker != NULL && m_iTeam == pAttacker->m_iTeam && CVAR_GET_FLOAT("mp_friendlyfire") == 0)
+	CBasePlayer *pAttacker = CBasePlayer::Instance(pevAttacker);
+	if (pAttacker && pAttacker->IsPlayer() && m_iTeam == pAttacker->m_iTeam && CVAR_GET_FLOAT("mp_friendlyfire") == 0)
 		bShouldBleed = false;
 
 	if (pev->takedamage == DAMAGE_NO)
@@ -904,36 +902,52 @@ void CBasePlayer::__API_VHOOK(TraceAttack)(entvars_t *pevAttacker, float flDamag
 
 const char *GetWeaponName(entvars_t *pevInflictor, entvars_t *pKiller)
 {
+	// by default, the player is killed by the world
 	const char *killer_weapon_name = "world";
 
+	// Is the killer a client?
 	if (pKiller->flags & FL_CLIENT)
 	{
 		if (pevInflictor)
 		{
 			if (pevInflictor == pKiller)
 			{
-				CBasePlayer *pAttacker = dynamic_cast<CBasePlayer *>(CBaseEntity::Instance(pKiller));
-				if (pAttacker != NULL)
+				// If the inflictor is the killer, then it must be their current weapon doing the damage
+				CBasePlayer *pAttacker = CBasePlayer::Instance(pKiller);
+				if (pAttacker && pAttacker->IsPlayer())
 				{
-					if (pAttacker->m_pActiveItem != NULL)
+					if (pAttacker->m_pActiveItem)
 						killer_weapon_name = pAttacker->m_pActiveItem->pszName();
 				}
 			}
 			else
+			{
+				// it's just that easy
 				killer_weapon_name = STRING(pevInflictor->classname);
+			}
 		}
 	}
 	else
+#ifdef REGAMEDLL_FIXES
+		if (pevInflictor)
+#endif
+	{
 		killer_weapon_name = STRING(pevInflictor->classname);
+	}
 
-	if (!Q_strncmp(killer_weapon_name, "weapon_", 7))
-		killer_weapon_name += 7;
+	// strip the monster_* or weapon_* from the inflictor's classname
+	const char cut_weapon[] = "weapon_";
+	const char cut_monster[] = "monster_";
+	const char cut_func[] = "func_";
 
-	else if (!Q_strncmp(killer_weapon_name, "monster_", 8))
-		killer_weapon_name += 8;
+	if (!Q_strncmp(killer_weapon_name, cut_weapon, sizeof(cut_weapon) - 1))
+		killer_weapon_name += sizeof(cut_weapon) - 1;
 
-	else if (Q_strncmp(killer_weapon_name, "func_", 5) != 0)
-		killer_weapon_name += 5;
+	else if (!Q_strncmp(killer_weapon_name, cut_monster, sizeof(cut_monster) - 1))
+		killer_weapon_name += sizeof(cut_monster) - 1;
+
+	else if (!Q_strncmp(killer_weapon_name, cut_func, sizeof(cut_func) - 1))
+		killer_weapon_name += sizeof(cut_func) - 1;
 
 	return killer_weapon_name;
 }
@@ -972,8 +986,8 @@ int CBasePlayer::__API_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pev
 	float flShieldRatio = 0;
 	BOOL bTeamAttack = FALSE;
 	int armorHit = 0;
-	CBasePlayer *pAttack = NULL;
-	CBaseEntity *pAttacker = NULL;
+	CBasePlayer *pAttack = nullptr;
+	CBaseEntity *pAttacker = nullptr;
 
 	if (bitsDamageType & (DMG_EXPLOSION | DMG_BLAST | DMG_FALL))
 		m_LastHitGroup = HITGROUP_GENERIC;
@@ -1005,7 +1019,7 @@ int CBasePlayer::__API_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pev
 					if (!CSGameRules()->IsFriendlyFireAttack() && pGrenade->m_iTeam == m_iTeam)
 						bTeamAttack = TRUE;
 
-					pAttack = dynamic_cast<CBasePlayer *>(CBasePlayer::Instance(pevAttacker));
+					pAttack = CBasePlayer::Instance(pevAttacker);
 				}
 				else if (pGrenade->m_iTeam == m_iTeam && (&edict()->v != pevAttacker))
 				{
@@ -1415,11 +1429,11 @@ void packPlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 #ifdef REGAMEDLL_ADD
 void packPlayerNade(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 {
-	if (pItem == NULL)
+	if (!pItem)
 		return;
 
 	const char *modelName = GetCSModelName(pItem->m_iId);
-	if (modelName != NULL)
+	if (modelName)
 	{
 		float flOffset = 0.0f;
 		switch (pItem->m_iId)
@@ -1433,6 +1447,15 @@ void packPlayerNade(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 		case WEAPON_SMOKEGRENADE:
 			flOffset = -14.0f;
 			break;
+		}
+
+		if (pItem->m_flStartThrow != 0.0f)
+		{
+			auto& ammoNades = pPlayer->m_rgAmmo[ pItem->PrimaryAmmoIndex() ];
+			if (ammoNades < 2)
+				return;
+
+			ammoNades--;
 		}
 
 		Vector vecAngles = pPlayer->pev->angles;
@@ -1515,7 +1538,7 @@ void CBasePlayer::PackDeadPlayerItems()
 						switch ((int)nadedrops.value)
 						{
 						case 1:
-							packPlayerItem(this, pPlayerItem, true);
+							packPlayerNade(this, pPlayerItem, true);
 							break;
 						case 2:
 						{
@@ -1962,14 +1985,12 @@ void CBasePlayer::__API_VHOOK(Killed)(entvars_t *pevAttacker, int iGib)
 
 		if (!m_bKilledByBomb)
 		{
-			CBasePlayer *pAttacker = (CBasePlayer *)CBaseEntity::Instance(pevAttacker);
+			CBasePlayer *pAttacker = CBasePlayer::Instance(pevAttacker);
 
 			if (pAttacker->HasShield())
 				killerHasShield = true;
 
-			CCSBot *pBot = static_cast<CCSBot *>(this);
-
-			if (pBot->IsBot() && pBot->IsBlind())
+			if (IsBot() && IsBlind())
 			{
 				wasBlind = true;
 			}
@@ -1982,7 +2003,6 @@ void CBasePlayer::__API_VHOOK(Killed)(entvars_t *pevAttacker, int iGib)
 					continue;
 
 				bool killedByHumanPlayer = (!pPlayer->IsBot() && pPlayer->pev == pevAttacker && pPlayer->m_iTeam != m_iTeam);
-
 				if (killedByHumanPlayer)
 				{
 					if (TheCareerTasks != NULL)
@@ -2038,7 +2058,7 @@ void CBasePlayer::__API_VHOOK(Killed)(entvars_t *pevAttacker, int iGib)
 #endif
 	SetAnimation(PLAYER_DIE);
 
-	if (m_pActiveItem != NULL && m_pActiveItem->m_pPlayer != NULL)
+	if (m_pActiveItem && m_pActiveItem->m_pPlayer)
 	{
 		switch (m_pActiveItem->m_iId)
 		{
@@ -8030,13 +8050,13 @@ void CBasePlayer::ResetStamina()
 
 float_precision GetPlayerPitch(const edict_t *pEdict)
 {
-	if( !pEdict )
+	if (!pEdict)
 		return 0.0f;
-	
-	entvars_t *pev = VARS(const_cast<edict_t *>(pEdict));
-	CBasePlayer *pPlayer = dynamic_cast<CBasePlayer *>(CBasePlayer::Instance(pev));
 
-	if (!pPlayer)
+	entvars_t *pev = VARS(const_cast<edict_t *>(pEdict));
+	CBasePlayer *pPlayer = CBasePlayer::Instance(pev);
+
+	if (!pPlayer || !pPlayer->IsPlayer())
 		return 0.0f;
 
 	return pPlayer->m_flPitch;
@@ -8044,13 +8064,13 @@ float_precision GetPlayerPitch(const edict_t *pEdict)
 
 float_precision GetPlayerYaw(const edict_t *pEdict)
 {
-	if( !pEdict )
+	if (!pEdict)
 		return 0.0f;
-	
-	entvars_t *pev = VARS(const_cast<edict_t *>(pEdict));
-	CBasePlayer *pPlayer = dynamic_cast<CBasePlayer *>(CBasePlayer::Instance(pev));
 
-	if (!pPlayer)
+	entvars_t *pev = VARS(const_cast<edict_t *>(pEdict));
+	CBasePlayer *pPlayer = CBasePlayer::Instance(pev);
+
+	if (!pPlayer || !pPlayer->IsPlayer())
 		return 0.0f;
 
 	return pPlayer->m_flYaw;
@@ -8058,10 +8078,13 @@ float_precision GetPlayerYaw(const edict_t *pEdict)
 
 int GetPlayerGaitsequence(const edict_t *pEdict)
 {
-	entvars_t *pev = VARS(const_cast<edict_t *>(pEdict));
-	CBasePlayer *pPlayer = dynamic_cast<CBasePlayer *>(CBasePlayer::Instance(pev));
+	if (!pEdict)
+		return 1;
 
-	if (!pPlayer)
+	entvars_t *pev = VARS(const_cast<edict_t *>(pEdict));
+	CBasePlayer *pPlayer = CBasePlayer::Instance(pev);
+
+	if (!pPlayer || !pPlayer->IsPlayer())
 		return 1;
 
 	return pPlayer->m_iGaitsequence;

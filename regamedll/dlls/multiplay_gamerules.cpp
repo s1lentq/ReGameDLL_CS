@@ -3807,11 +3807,11 @@ void CHalfLifeMultiplay::__API_VHOOK(DeathNotice)(CBasePlayer *pVictim, entvars_
 			if (pevInflictor == pKiller)
 			{
 				// If the inflictor is the killer, then it must be their current weapon doing the damage
-				CBasePlayer *pPlayer = dynamic_cast<CBasePlayer *>(CBaseEntity::Instance(pKiller));
-
-				if (pPlayer != NULL && pPlayer->m_pActiveItem != NULL)
+				CBasePlayer *pAttacker = CBasePlayer::Instance(pKiller);
+				if (pAttacker && pAttacker->IsPlayer())
 				{
-					killer_weapon_name = pPlayer->m_pActiveItem->pszName();
+					if (pAttacker->m_pActiveItem)
+						killer_weapon_name = pAttacker->m_pActiveItem->pszName();
 				}
 			}
 			else
@@ -3825,29 +3825,30 @@ void CHalfLifeMultiplay::__API_VHOOK(DeathNotice)(CBasePlayer *pVictim, entvars_
 #ifdef REGAMEDLL_FIXES
 		if (pevInflictor)
 #endif
+	{
 		killer_weapon_name = STRING(pevInflictor->classname);
+	}
 
 	// strip the monster_* or weapon_* from the inflictor's classname
-	if (!Q_strncmp(killer_weapon_name, "weapon_", 7))
-		killer_weapon_name += 7;
+	const char cut_weapon[] = "weapon_";
+	const char cut_monster[] = "monster_";
+	const char cut_func[] = "func_";
 
-	else if (!Q_strncmp(killer_weapon_name, "monster_", 8))
-		killer_weapon_name += 8;
+	if (!Q_strncmp(killer_weapon_name, cut_weapon, sizeof(cut_weapon) - 1))
+		killer_weapon_name += sizeof(cut_weapon) - 1;
 
-	else if (!Q_strncmp(killer_weapon_name, "func_", 5))
-		killer_weapon_name += 5;
+	else if (!Q_strncmp(killer_weapon_name, cut_monster, sizeof(cut_monster) - 1))
+		killer_weapon_name += sizeof(cut_monster) - 1;
 
-	int iGotHeadshot = 0;
+	else if (!Q_strncmp(killer_weapon_name, cut_func, sizeof(cut_func) - 1))
+		killer_weapon_name += sizeof(cut_func) - 1;
 
-	if (pVictim->m_bHeadshotKilled)
-		iGotHeadshot = 1;
-
-	if (TheTutor == NULL)
+	if (TheTutor == nullptr)
 	{
 		MESSAGE_BEGIN(MSG_ALL, gmsgDeathMsg);
 			WRITE_BYTE(killer_index);			// the killer
 			WRITE_BYTE(ENTINDEX(pVictim->edict()));		// the victim
-			WRITE_BYTE(iGotHeadshot);			// is killed headshot
+			WRITE_BYTE(pVictim->m_bHeadshotKilled);		// is killed headshot
 			WRITE_STRING(killer_weapon_name);		// what they were killed by (should this be a string?)
 		MESSAGE_END();
 	}
@@ -3872,10 +3873,10 @@ void CHalfLifeMultiplay::__API_VHOOK(DeathNotice)(CBasePlayer *pVictim, entvars_
 	}
 	else if (pKiller->flags & FL_CLIENT)
 	{
-		CBasePlayer *pPlayer = dynamic_cast<CBasePlayer *>(CBaseEntity::Instance(pKiller));
+		CBasePlayer *pAttacker = CBasePlayer::Instance(pKiller);
 
 		const char *VictimTeam = GetTeam(pVictim->m_iTeam);
-		const char *KillerTeam = (pPlayer != NULL) ? GetTeam(pPlayer->m_iTeam) : "";
+		const char *KillerTeam = (pAttacker && pAttacker->IsPlayer()) ? GetTeam(pAttacker->m_iTeam) : "";
 
 		UTIL_LogPrintf("\"%s<%i><%s><%s>\" killed \"%s<%i><%s><%s>\" with \"%s\"\n", STRING(pKiller->netname), GETPLAYERUSERID(ENT(pKiller)), GETPLAYERAUTHID(ENT(pKiller)),
 			KillerTeam, STRING(pVictim->pev->netname), GETPLAYERUSERID(pVictim->edict()), GETPLAYERAUTHID(pVictim->edict()), VictimTeam, killer_weapon_name);
@@ -3900,7 +3901,7 @@ void CHalfLifeMultiplay::__API_VHOOK(DeathNotice)(CBasePlayer *pVictim, entvars_
 	else
 		WRITE_SHORT(ENTINDEX(ENT(pKiller)));	// index number of secondary entity
 
-	if (iGotHeadshot)
+	if (pVictim->m_bHeadshotKilled)
 		WRITE_LONG(9 | DRC_FLAG_DRAMATIC | DRC_FLAG_SLOWMOTION);
 	else
 		WRITE_LONG(7 | DRC_FLAG_DRAMATIC);	// eventflags (priority and flags)

@@ -209,6 +209,8 @@ enum
 class CItem;
 
 class CGameRules {
+protected:
+	virtual ~CGameRules() {};
 public:
 	virtual void RefreshSkillData() = 0;
 	virtual void Think() = 0;
@@ -280,9 +282,14 @@ public:
 public:
 	BOOL m_bFreezePeriod;
 	BOOL m_bBombDropped;
+
+	// custom
+	char *m_GameDesc;
 };
 
 class CHalfLifeRules: public CGameRules {
+protected:
+	virtual ~CHalfLifeRules() {};
 public:
 	virtual void Think() = 0;
 	virtual BOOL IsAllowedToSpawn(CBaseEntity *pEntity) = 0;
@@ -328,6 +335,8 @@ public:
 };
 
 class CHalfLifeMultiplay: public CGameRules {
+protected:
+	virtual ~CHalfLifeMultiplay() {};
 public:
 	virtual void RefreshSkillData() = 0;
 	virtual void Think() = 0;
@@ -407,6 +416,7 @@ public:
 	virtual void UpdateTeamScores() = 0;
 	virtual void EndRoundMessage(const char *sentence, int event) = 0;
 	virtual void SetAccountRules(RewardRules rules, int amount) = 0;
+	virtual RewardAccount GetAccountRules(RewardRules rules) const = 0;
 
 	// BOMB MAP FUNCTIONS
 	virtual BOOL IsThereABomber() = 0;

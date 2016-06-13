@@ -420,6 +420,10 @@ public:
 #endif
 
 public:
+	static CBasePlayer *Instance(edict_t *pent) { return (CBasePlayer *)GET_PRIVATE(pent ? pent : ENT(0)); }
+	static CBasePlayer *Instance(entvars_t *pev) { return Instance(ENT(pev)); }
+	static CBasePlayer *Instance(int offset) { return Instance(ENT(offset)); }
+
 	void SpawnClientSideCorpse();
 	void Observer_FindNextPlayer(bool bReverse, const char *name = NULL);
 	CBasePlayer *Observer_IsValidTarget(int iPlayerIndex, bool bSameTeam);

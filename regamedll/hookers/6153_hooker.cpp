@@ -267,7 +267,7 @@ FunctionHook g_FunctionHooks[] =
 	{ 0x01D63E50, "_Z7respawnP9entvars_si", (size_t)&respawn },
 	{ 0x01D63F60, "_Z10ClientKillP7edict_s", (size_t)&ClientKill },
 	{ 0x01D64010, "_Z8ShowMenuP11CBasePlayeriiiPc_constprop_32", (size_t)&ShowMenu },
-	{ 0x01D64070, "_Z12ShowVGUIMenuP11CBasePlayeriiPc", (size_t)&ShowVGUIMenu },
+	//{ 0x01D64070, "_Z12ShowVGUIMenuP11CBasePlayeriiPc", (size_t)&ShowVGUIMenu },
 	{ 0x01D64130, "CountTeams", (size_t)&CountTeams },				//extern c func
 	{ 0x01D64260, "_Z11ListPlayersP11CBasePlayer", (size_t)&ListPlayers },
 	{ 0x01D64460, "CountTeamPlayers", (size_t)&CountTeamPlayers },			//extern c func

@@ -330,27 +330,24 @@ void CCSBotManager::__MAKE_VHOOK(ServerDeactivate)()
 
 void CCSBotManager::__MAKE_VHOOK(ClientDisconnect)(CBasePlayer *pPlayer)
 {
-	if (pPlayer != NULL && pPlayer->IsBot())
+	if (!pPlayer || !pPlayer->IsBot())
+		return;
+
+	auto pevTemp = VARS(pPlayer->edict());
+
+	CCSBot *bot = reinterpret_cast<CCSBot *>(pPlayer);
+	bot->Disconnect();
+
+	if (!FStringNull(pPlayer->pev->classname))
 	{
-		entvars_t *temp = VARS(pPlayer->edict());
-		CCSBot *pBot = dynamic_cast<CCSBot *>(pPlayer);
-
-		if (pBot != NULL)
-		{
-			pBot->Disconnect();
-		}
-
-		if (!FStringNull(pPlayer->pev->classname))
-		{
-			RemoveEntityHashValue(pPlayer->pev, STRING(pPlayer->pev->classname), CLASSNAME);
-		}
-
-		FREE_PRIVATE(pPlayer->edict());
-
-		CBasePlayer *player = GetClassPtr<CCSPlayer>((CBasePlayer *)temp);
-		AddEntityHashValue(player->pev, STRING(player->pev->classname), CLASSNAME);
-		player->pev->flags = FL_DORMANT;
+		RemoveEntityHashValue(pPlayer->pev, STRING(pPlayer->pev->classname), CLASSNAME);
 	}
+
+	FREE_PRIVATE(pPlayer->edict());
+
+	auto player = GetClassPtr<CCSPlayer>((CBasePlayer *)pevTemp);
+	AddEntityHashValue(player->pev, STRING(player->pev->classname), CLASSNAME);
+	player->pev->flags = FL_DORMANT;
 }
 
 void PrintAllEntities()
@@ -1029,9 +1026,13 @@ void CCSBotManager::ValidateMapData()
 	m_zoneCount = 0;
 	m_gameScenario = SCENARIO_DEATHMATCH;
 
-	// Search all entities in the map and set the game type and
-	// store all zones (bomb target, etc).
+#ifdef REGAMEDLL_ADD
+	// if we have included deathmatch mode, so set the game type like SCENARIO_DEATHMATCH
+	if (cv_bot_deathmatch.value > 0.0f)
+		return;
+#endif
 
+	// Search all entities in the map and set the game type and store all zones (bomb target, etc).
 	CBaseEntity *entity = NULL;
 	int i;
 	for (i = 1; i < gpGlobals->maxEntities; ++i)
@@ -1410,10 +1411,7 @@ unsigned int CCSBotManager::__MAKE_VHOOK(GetPlayerPriority)(CBasePlayer *player)
 	if (!player->IsBot())
 		return 0;
 
-	CCSBot *bot = dynamic_cast<CCSBot *>(player);
-
-	if (!bot)
-		return 0;
+	CCSBot *bot = reinterpret_cast<CCSBot *>(player);
 
 	// bots doing something important for the current scenario have high priority
 	switch (GetScenario())

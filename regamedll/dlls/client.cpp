@@ -127,7 +127,7 @@ BOOL EXT_FUNC ClientConnect(edict_t *pEntity, const char *pszName, const char *p
 
 void EXT_FUNC ClientDisconnect(edict_t *pEntity)
 {
-	CBasePlayer *pPlayer = dynamic_cast<CBasePlayer *>(CBaseEntity::Instance(pEntity));
+	CBasePlayer *pPlayer = CBasePlayer::Instance(pEntity);
 
 	if (!g_fGameOver)
 	{
@@ -135,21 +135,26 @@ void EXT_FUNC ClientDisconnect(edict_t *pEntity)
 #ifndef REGAMEDLL_FIXES
 		CSound *pSound = CSoundEnt::SoundPointerForIndex(CSoundEnt::ClientSoundIndex(pEntity));
 
-		if (pSound != NULL)
+		if (pSound)
 			pSound->Reset();
 #endif
 		pEntity->v.takedamage = DAMAGE_NO;
 		pEntity->v.solid = SOLID_NOT;
 		pEntity->v.flags = FL_DORMANT;
 
-		if (pPlayer != NULL)
-			pPlayer->SetThink(NULL);
+		if (pPlayer)
+			pPlayer->SetThink(nullptr);
 
 		UTIL_SetOrigin(&pEntity->v, pEntity->v.origin);
 		g_pGameRules->ClientDisconnected(pEntity);
 	}
 
-	if (TheBots != NULL && pPlayer != NULL && pPlayer->IsBot())
+#ifndef REGAMEDLL_FIXES
+	if (TheBots && pPlayer && pPlayer->IsBot())
+#else
+	// These checks are already inside into this CCSBotManager::ClientDisconnect
+	if (TheBots)
+#endif
 	{
 		TheBots->ClientDisconnect(pPlayer);
 	}
@@ -180,28 +185,28 @@ void respawn(entvars_t *pev, BOOL fCopyCorpse)
 void EXT_FUNC ClientKill(edict_t *pEntity)
 {
 	entvars_t *pev = &pEntity->v;
-	CBasePlayer *pl = (CBasePlayer *)CBasePlayer::Instance(pev);
+	CBasePlayer *pPlayer = CBasePlayer::Instance(pev);
 
-	if (pl->IsObserver())
+	if (pPlayer->IsObserver())
 		return;
 
-	if (pl->m_iJoiningState != JOINED)
+	if (pPlayer->m_iJoiningState != JOINED)
 		return;
 
 	// prevent suiciding too often
-	if (pl->m_fNextSuicideTime > gpGlobals->time)
+	if (pPlayer->m_fNextSuicideTime > gpGlobals->time)
 		return;
 
-	pl->m_LastHitGroup = 0;
+	pPlayer->m_LastHitGroup = 0;
 
 	// don't let them suicide for 5 seconds after suiciding
-	pl->m_fNextSuicideTime = gpGlobals->time + 1;
+	pPlayer->m_fNextSuicideTime = gpGlobals->time + 1.0f;
 
 	// have the player kill themself
 	pEntity->v.health = 0;
-	pl->Killed(pev, GIB_NEVER);
+	pPlayer->Killed(pev, GIB_NEVER);
 
-	if (CSGameRules()->m_pVIP == pl)
+	if (CSGameRules()->m_pVIP == pPlayer)
 	{
 		CSGameRules()->m_iConsecutiveVIP = 10;
 	}
@@ -219,18 +224,18 @@ void __API_HOOK(ShowMenu)(CBasePlayer *pPlayer, int bitsValidSlots, int nDisplay
 	MESSAGE_END();
 }
 
-LINK_HOOK_VOID_CHAIN(ShowVGUIMenu, (CBasePlayer *pPlayer, int MenuType, int BitMask, char *szOldMenu), pPlayer, MenuType, BitMask, szOldMenu);
+LINK_HOOK_VOID_CHAIN(ShowVGUIMenu, (CBasePlayer *pPlayer, int MenuType, int BitMask, char *szOldMenu, bool bForceOldMenu), pPlayer, MenuType, BitMask, szOldMenu, bForceOldMenu);
 
-void __API_HOOK(ShowVGUIMenu)(CBasePlayer *pPlayer, int MenuType, int BitMask, char *szOldMenu)
+void __API_HOOK(ShowVGUIMenu)(CBasePlayer *pPlayer, int MenuType, int BitMask, char *szOldMenu, bool bForceOldMenu)
 {
-	if (pPlayer->m_bVGUIMenus || MenuType > VGUI_Menu_Buy_Item)
+	if (!bForceOldMenu && (pPlayer->m_bVGUIMenus || MenuType > VGUI_Menu_Buy_Item))
 	{
 		MESSAGE_BEGIN(MSG_ONE, gmsgVGUIMenu, NULL, pPlayer->pev);
-		WRITE_BYTE(MenuType);
-		WRITE_SHORT(BitMask);
-		WRITE_CHAR(-1);
-		WRITE_BYTE(0);
-		WRITE_STRING(" ");
+			WRITE_BYTE(MenuType);
+			WRITE_SHORT(BitMask);
+			WRITE_CHAR(-1);
+			WRITE_BYTE(0);
+			WRITE_STRING(" ");
 		MESSAGE_END();
 	}
 	else
@@ -669,7 +674,7 @@ void Host_Say(edict_t *pEntity, int teamonly)
 			Place playerPlace = TheNavAreaGrid.GetPlace(&player->pev->origin);
 			const BotPhraseList *placeList = TheBotPhrases->GetPlaceList();
 
-			for (auto& it : *placeList)
+			for (auto it : *placeList)
 			{
 				if (it->GetID() == playerPlace)
 				{
@@ -3244,13 +3249,14 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 	}
 }
 
+// called after the player changes userinfo - gives dll a chance to modify it before it gets sent into the rest of the engine.
 void EXT_FUNC ClientUserInfoChanged(edict_t *pEntity, char *infobuffer)
 {
 	// Is the client spawned yet?
 	if (!pEntity->pvPrivateData)
 		return;
 
-	CBasePlayer *pPlayer = (CBasePlayer *)CBaseEntity::Instance(pEntity);
+	CBasePlayer *pPlayer = CBasePlayer::Instance(pEntity);
 	char *szBufferName = GET_KEY_VALUE(infobuffer, "name");
 
 	// msg everyone if someone changes their name,  and it isn't the first time (changing no name to current name)
@@ -3270,6 +3276,7 @@ void EXT_FUNC ClientUserInfoChanged(edict_t *pEntity, char *infobuffer)
 		if (szName[0] == '#')
 			szName[0] = '*';
 
+		// Set the name
 		pPlayer->SetClientUserInfoName(infobuffer, szName);
 	}
 
@@ -3857,7 +3864,16 @@ void ClientPrecache()
 
 const char *EXT_FUNC GetGameDescription()
 {
-	return g_bIsCzeroGame ? "Condition Zero" : "Counter-Strike";
+#ifdef REGAMEDLL_ADD
+	if (CSGameRules()) {
+		return CSGameRules()->GetGameDescription();
+	}
+#else
+	if (g_bIsCzeroGame) {
+		return "Condition Zero";
+	}
+#endif
+	return "Counter-Strike";
 }
 
 void EXT_FUNC Sys_Error(const char *error_string)
@@ -3938,14 +3954,13 @@ void EXT_FUNC SetupVisibility(edict_t *pViewEntity, edict_t *pClient, unsigned c
 
 	if (pClient->v.flags & FL_PROXY)
 	{
-		*pvs = NULL;	// the spectator proxy sees
-		*pas = NULL;	// and hears everything
+		*pvs = nullptr;	// the spectator proxy sees
+		*pas = nullptr;	// and hears everything
 		return;
 	}
 
-	CBasePlayer *pPlayer = dynamic_cast<CBasePlayer *>(CBasePlayer::Instance(pClient));
-
-	if (pPlayer != NULL && pPlayer->pev->iuser2 && pPlayer->m_hObserverTarget)
+	CBasePlayer *pPlayer = CBasePlayer::Instance(pClient);
+	if (pPlayer && pPlayer->pev->iuser2 && pPlayer->m_hObserverTarget)
 	{
 		if (pPlayer->m_afPhysicsFlags & PFLAG_OBSERVER)
 		{
@@ -4131,7 +4146,6 @@ int EXT_FUNC AddToFullPack(struct entity_state_s *state, int e, edict_t *ent, ed
 	if (ent->v.owner)
 	{
 		int owner = ENTINDEX(ent->v.owner);
-
 		if (owner >= 1 && owner <= gpGlobals->maxClients)
 			state->owner = owner;
 	}
@@ -4368,6 +4382,7 @@ void Custom_Encode(struct delta_s *pFields, const unsigned char *from, const uns
 	}
 }
 
+// Allows game .dll to override network encoding of certain types of entities and tweak values, etc.
 void EXT_FUNC RegisterEncoders()
 {
 	DELTA_ADDENCODER("Entity_Encode", Entity_Encode);
@@ -4375,76 +4390,79 @@ void EXT_FUNC RegisterEncoders()
 	DELTA_ADDENCODER("Player_Encode", Player_Encode);
 }
 
-int EXT_FUNC GetWeaponData(edict_s *player, struct weapon_data_s *info)
+int EXT_FUNC GetWeaponData(edict_t *player, struct weapon_data_s *info)
 {
+#ifdef CLIENT_WEAPONS
 	entvars_t *pev = &player->v;
-	CBasePlayer *pl = dynamic_cast<CBasePlayer *>(CBasePlayer::Instance(pev));
+	CBasePlayer *pPlayer = CBasePlayer::Instance(pev);
 
 	Q_memset(info, 0, sizeof(weapon_data_t) * MAX_WEAPONS);
 
-	if (!pl)
-	{
+	if (!pPlayer)
 		return 1;
-	}
 
+	// go through all of the weapons and make a list of the ones to pack
 	for (int i = 0; i < MAX_ITEM_TYPES; ++i)
 	{
-		CBasePlayerItem *pPlayerItem = pl->m_rgpPlayerItems[i];
-
-		while (pPlayerItem != NULL)
+		auto pPlayerItem = pPlayer->m_rgpPlayerItems[i];
+		while (pPlayerItem != nullptr)
 		{
-			CBasePlayerWeapon *gun = dynamic_cast<CBasePlayerWeapon *>(pPlayerItem->GetWeaponPtr());
-
-			if (gun != NULL && gun->UseDecrement())
+			// there's a weapon here. Should I pack it?
+			auto weapon = (CBasePlayerWeapon *)pPlayerItem->GetWeaponPtr();
+			if (weapon && weapon->UseDecrement())
 			{
+				// Get The ID
 				ItemInfo II;
 				Q_memset(&II, 0, sizeof(II));
-				gun->GetItemInfo(&II);
+				weapon->GetItemInfo(&II);
 
 				if (II.iId >= 0 && II.iId < MAX_WEAPONS)
 				{
-					weapon_data_t *item = &info[II.iId];
+					auto item = &info[II.iId];
 
 					item->m_iId = II.iId;
-					item->m_iClip = gun->m_iClip;
-					item->m_flTimeWeaponIdle = Q_max(gun->m_flTimeWeaponIdle, -0.001f);
-					item->m_flNextPrimaryAttack = Q_max(gun->m_flNextPrimaryAttack, -0.001f);
-					item->m_flNextSecondaryAttack = Q_max(gun->m_flNextSecondaryAttack, -0.001f);
-					item->m_flNextReload = Q_max(gun->m_flNextReload, -0.001f);
-					item->m_fInReload = gun->m_fInReload;
-					item->m_fInSpecialReload = gun->m_fInSpecialReload;
-					item->m_fInZoom = gun->m_iShotsFired;
-					item->m_fAimedDamage = gun->m_flLastFire;
-					item->m_iWeaponState = gun->m_iWeaponState;
-					item->fuser2 = gun->m_flStartThrow;
-					item->fuser3 = gun->m_flReleaseThrow;
-					item->iuser1 = gun->m_iSwing;
+					item->m_iClip = weapon->m_iClip;
+					item->m_flTimeWeaponIdle = Q_max(weapon->m_flTimeWeaponIdle, -0.001f);
+					item->m_flNextPrimaryAttack = Q_max(weapon->m_flNextPrimaryAttack, -0.001f);
+					item->m_flNextSecondaryAttack = Q_max(weapon->m_flNextSecondaryAttack, -0.001f);
+					item->m_flNextReload = Q_max(weapon->m_flNextReload, -0.001f);
+					item->m_fInReload = weapon->m_fInReload;
+					item->m_fInSpecialReload = weapon->m_fInSpecialReload;
+					item->m_fInZoom = weapon->m_iShotsFired;
+					item->m_fAimedDamage = weapon->m_flLastFire;
+					item->m_iWeaponState = weapon->m_iWeaponState;
+					item->fuser2 = weapon->m_flStartThrow;
+					item->fuser3 = weapon->m_flReleaseThrow;
+					item->iuser1 = weapon->m_iSwing;
 				}
 			}
 
 			pPlayerItem = pPlayerItem->m_pNext;
 		}
 	}
+#else
+	Q_memset(info, 0, sizeof(weapon_data_t) * MAX_WEAPONS);
+#endif
 
 	return 1;
 }
 
+// Data sent to current client only engine sets cd to 0 before calling.
 void EXT_FUNC UpdateClientData(const struct edict_s *ent, int sendweapons, struct clientdata_s *cd)
 {
 	if (!ent || !ent->pvPrivateData)
-	{
 		return;
-	}
 
-	entvars_t *pevOrg = NULL;
+	entvars_t *pevOrg = nullptr;
 	entvars_t *pev = const_cast<entvars_t *>(&ent->v);
-	CBasePlayer *pl = dynamic_cast<CBasePlayer *>(CBasePlayer::Instance(pev));
+	CBasePlayer *pPlayer = CBasePlayer::Instance(pev);
 
-	if (pl != NULL && pl->pev->iuser1 == OBS_IN_EYE && pl->m_hObserverTarget)
+	// if user is spectating different player in First person, override some vars
+	if (pPlayer && pPlayer->pev->iuser1 == OBS_IN_EYE && pPlayer->m_hObserverTarget)
 	{
 		pevOrg = pev;
-		pev = pl->m_hObserverTarget->pev;
-		pl = dynamic_cast<CBasePlayer *>(CBasePlayer::Instance(pev));
+		pev = pPlayer->m_hObserverTarget->pev;
+		pPlayer = CBasePlayer::Instance(pev);
 	}
 
 	cd->flags = pev->flags;
@@ -4487,34 +4505,34 @@ void EXT_FUNC UpdateClientData(const struct edict_s *ent, int sendweapons, struc
 	cd->fuser3 = pev->fuser3;
 	cd->fuser2 = pev->fuser2;
 
-	if (sendweapons && pl != NULL)
+	if (sendweapons && pPlayer)
 	{
-		cd->ammo_shells = pl->ammo_buckshot;
-		cd->ammo_nails = pl->ammo_9mm;
-		cd->ammo_cells = pl->ammo_556nato;
-		cd->ammo_rockets = pl->ammo_556natobox;
-		cd->vuser2.x = pl->ammo_762nato;
-		cd->vuser2.y = pl->ammo_45acp;
-		cd->vuser2.z = pl->ammo_50ae;
-		cd->vuser3.x = pl->ammo_338mag;
-		cd->vuser3.y = pl->ammo_57mm;
-		cd->vuser3.z = pl->ammo_357sig;
-		cd->m_flNextAttack = pl->m_flNextAttack;
+		cd->ammo_shells = pPlayer->ammo_buckshot;
+		cd->ammo_nails = pPlayer->ammo_9mm;
+		cd->ammo_cells = pPlayer->ammo_556nato;
+		cd->ammo_rockets = pPlayer->ammo_556natobox;
+		cd->vuser2.x = pPlayer->ammo_762nato;
+		cd->vuser2.y = pPlayer->ammo_45acp;
+		cd->vuser2.z = pPlayer->ammo_50ae;
+		cd->vuser3.x = pPlayer->ammo_338mag;
+		cd->vuser3.y = pPlayer->ammo_57mm;
+		cd->vuser3.z = pPlayer->ammo_357sig;
+		cd->m_flNextAttack = pPlayer->m_flNextAttack;
 
 		int iUser3 = 0;
-		if (pl->m_bCanShoot && !pl->m_bIsDefusing)
+		if (pPlayer->m_bCanShoot && !pPlayer->m_bIsDefusing)
 			iUser3 |= DATA_IUSER3_CANSHOOT;
 
 		if (g_pGameRules->IsFreezePeriod())
 			iUser3 |= DATA_IUSER3_FREEZETIMEOVER;
 
-		if (pl->m_signals.GetState() & SIGNAL_BOMB)
+		if (pPlayer->m_signals.GetState() & SIGNAL_BOMB)
 			iUser3 |= DATA_IUSER3_INBOMBZONE;
 
-		if (pl->HasShield())
+		if (pPlayer->HasShield())
 			iUser3 |= DATA_IUSER3_HOLDINGSHIELD;
 
-		if (!pl->pev->iuser1 && !pevOrg)
+		if (pPlayer->pev->iuser1 == OBS_NONE && !pevOrg)
 		{
 #ifdef REGAMEDLL_ADD
 			// useful for mods
@@ -4523,21 +4541,20 @@ void EXT_FUNC UpdateClientData(const struct edict_s *ent, int sendweapons, struc
 			cd->iuser3 = iUser3;
 		}
 
-		if (pl->m_pActiveItem != NULL)
+		if (pPlayer->m_pActiveItem)
 		{
 			ItemInfo II;
 			Q_memset(&II, 0, sizeof(II));
 
-			CBasePlayerWeapon *gun = dynamic_cast<CBasePlayerWeapon *>(pl->m_pActiveItem->GetWeaponPtr());
-
-			if (gun != NULL && gun->UseDecrement() && gun->GetItemInfo(&II))
+			CBasePlayerWeapon *weapon = (CBasePlayerWeapon *)pPlayer->m_pActiveItem->GetWeaponPtr();
+			if (weapon && weapon->UseDecrement() && weapon->GetItemInfo(&II))
 			{
 				cd->m_iId = II.iId;
 
-				if ((unsigned int)gun->m_iPrimaryAmmoType < MAX_AMMO_TYPES)
+				if ((unsigned int)weapon->m_iPrimaryAmmoType < MAX_AMMO_TYPES)
 				{
-					cd->vuser4.x = gun->m_iPrimaryAmmoType;
-					cd->vuser4.y = pl->m_rgAmmo[ gun->m_iPrimaryAmmoType ];
+					cd->vuser4.x = weapon->m_iPrimaryAmmoType;
+					cd->vuser4.y = pPlayer->m_rgAmmo[ weapon->m_iPrimaryAmmoType ];
 				}
 				else
 				{
@@ -4552,32 +4569,30 @@ void EXT_FUNC UpdateClientData(const struct edict_s *ent, int sendweapons, struc
 void EXT_FUNC CmdStart(const edict_t *player, const struct usercmd_s *cmd, unsigned int random_seed)
 {
 	entvars_t *pev = const_cast<entvars_t *>(&player->v);
-	CBasePlayer *pl = dynamic_cast<CBasePlayer *>(CBasePlayer::Instance(pev));
+	CBasePlayer *pPlayer = CBasePlayer::Instance(pev);
 
-	if (pl != NULL)
-	{
-		if (pl->pev->groupinfo)
-		{
-			UTIL_SetGroupTrace(pl->pev->groupinfo, GROUP_OP_AND);
-		}
+	if (!pPlayer)
+		return;
 
-		pl->random_seed = random_seed;
-	}
+	if (pPlayer->pev->groupinfo)
+		UTIL_SetGroupTrace(pPlayer->pev->groupinfo, GROUP_OP_AND);
+
+	pPlayer->random_seed = random_seed;
 }
 
 void EXT_FUNC CmdEnd(const edict_t *player)
 {
 	entvars_t *pev = const_cast<entvars_t *>(&player->v);
-	CBasePlayer *pl = dynamic_cast<CBasePlayer *>(CBasePlayer::Instance(pev));
+	CBasePlayer *pPlayer = CBasePlayer::Instance(pev);
 
-	if (pl != NULL)
-	{
-		if (pl->pev->groupinfo)
-			UTIL_UnsetGroupTrace();
+	if (!pPlayer)
+		return;
 
-		if (pev->flags & FL_DUCKING)
-			UTIL_SetSize(pev, VEC_DUCK_HULL_MIN, VEC_DUCK_HULL_MAX);
-	}
+	if (pPlayer->pev->groupinfo)
+		UTIL_UnsetGroupTrace();
+
+	if (pev->flags & FL_DUCKING)
+		UTIL_SetSize(pev, VEC_DUCK_HULL_MIN, VEC_DUCK_HULL_MAX);
 }
 
 int EXT_FUNC ConnectionlessPacket(const struct netadr_s *net_from, const char *args, char *response_buffer, int *response_buffer_size)

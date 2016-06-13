@@ -36,6 +36,8 @@ class CHalfLifeTraining: public CHalfLifeMultiplay
 {
 public:
 	CHalfLifeTraining();
+	virtual ~CHalfLifeTraining() {};
+
 	virtual BOOL IsMultiplayer() { return FALSE; }
 	virtual BOOL IsDeathmatch();
 	virtual void InitHUD(CBasePlayer *pl);

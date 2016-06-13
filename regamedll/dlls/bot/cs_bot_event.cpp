@@ -41,7 +41,7 @@ void CCSBot::__MAKE_VHOOK(OnEvent)(GameEventType event, CBaseEntity *entity, CBa
 	{
 		if (event == EVENT_PLAYER_DIED)
 		{
-			if (player->m_iTeam == m_iTeam)
+			if (BotRelationship(player) == BOT_TEAMMATE)
 			{
 				CBasePlayer *killer = static_cast<CBasePlayer *>(other);
 
@@ -77,7 +77,7 @@ void CCSBot::__MAKE_VHOOK(OnEvent)(GameEventType event, CBaseEntity *entity, CBa
 			CBasePlayer *killer = (other != NULL && other->IsPlayer()) ? static_cast<CBasePlayer *>(other) : NULL;
 
 			// if the human player died in the single player game, tell the team
-			if (CSGameRules()->IsCareer() && !victim->IsBot() && victim->m_iTeam == m_iTeam)
+			if (CSGameRules()->IsCareer() && !victim->IsBot() && BotRelationship(victim) == BOT_TEAMMATE)
 			{
 				GetChatter()->Say("CommanderDown", 20.0f);
 			}
@@ -89,10 +89,10 @@ void CCSBot::__MAKE_VHOOK(OnEvent)(GameEventType event, CBaseEntity *entity, CBa
 			}
 
 			// react to teammate death
-			if (victim->m_iTeam == m_iTeam)
+			if (BotRelationship(victim) == BOT_TEAMMATE)
 			{
 				// chastise friendly fire from humans
-				if (killer != NULL && !killer->IsBot() && killer->m_iTeam == m_iTeam && killer != this)
+				if (killer != NULL && !killer->IsBot() && BotRelationship(killer) == BOT_TEAMMATE && killer != this)
 				{
 					GetChatter()->KilledFriend();
 				}
@@ -124,7 +124,7 @@ void CCSBot::__MAKE_VHOOK(OnEvent)(GameEventType event, CBaseEntity *entity, CBa
 			// an enemy was killed
 			else
 			{
-				if (killer != NULL && killer->m_iTeam == m_iTeam)
+				if (killer != NULL && BotRelationship(killer) == BOT_TEAMMATE)
 				{
 					// only chatter about enemy kills if we see them occur, and they were the last one we see
 					if (GetNearbyEnemyCount() <= 1)
@@ -240,7 +240,7 @@ void CCSBot::__MAKE_VHOOK(OnEvent)(GameEventType event, CBaseEntity *entity, CBa
 	}
 
 	// Process radio events from our team
-	if (player != NULL && player->m_iTeam == m_iTeam && event > EVENT_START_RADIO_1 && event < EVENT_END_RADIO)
+	if (player != NULL && BotRelationship(player) == BOT_TEAMMATE && event > EVENT_START_RADIO_1 && event < EVENT_END_RADIO)
 	{
 		// TODO: Distinguish between radio commands and responses
 		if (event != EVENT_RADIO_AFFIRMATIVE && event != EVENT_RADIO_NEGATIVE && event != EVENT_RADIO_REPORTING_IN)

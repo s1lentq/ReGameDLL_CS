@@ -9,7 +9,7 @@ rootProject.ext.createIccConfig = { boolean release, BinaryKind binKind ->
 			compilerOptions: new GccToolchainConfig.CompilerOptions(
 				optimizationLevel: OptimizationLevel.LEVEL_3,
 				stackProtector: false,
-				interProceduralOptimizations: false,		// -ipo
+				interProceduralOptimizations: true,		// -ipo
 
 				noBuiltIn: true,
 
@@ -19,7 +19,7 @@ rootProject.ext.createIccConfig = { boolean release, BinaryKind binKind ->
 				positionIndependentCode: false
 			),
 			linkerOptions: new GccToolchainConfig.LinkerOptions(
-				interProceduralOptimizations: false,		// -ipo
+				interProceduralOptimizations: true,		// -ipo
 				stripSymbolTable: true,
 				staticLibGcc: true,
 				staticIntel: true,

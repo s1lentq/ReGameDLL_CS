@@ -795,15 +795,15 @@ void CCSBot::SilencerCheck()
 // Invoked when in contact with a CWeaponBox
 void CCSBot::__MAKE_VHOOK(OnTouchingWeapon)(CWeaponBox *box)
 {
-	CBasePlayerItem *droppedGun = dynamic_cast<CBasePlayerItem *>(box->m_rgpPlayerItems[ PRIMARY_WEAPON_SLOT ]);
+	auto pDroppedWeapon = box->m_rgpPlayerItems[ PRIMARY_WEAPON_SLOT ];
 
 	// right now we only care about primary weapons on the ground
-	if (droppedGun != NULL)
+	if (pDroppedWeapon)
 	{
-		CBasePlayerWeapon *myGun = dynamic_cast<CBasePlayerWeapon *>(m_rgpPlayerItems[ PRIMARY_WEAPON_SLOT ]);
+		CBasePlayerWeapon *pWeapon = (CBasePlayerWeapon *)m_rgpPlayerItems[ PRIMARY_WEAPON_SLOT ];
 
 		// if the gun on the ground is the same one we have, dont bother
-		if (myGun != NULL && droppedGun->m_iId != myGun->m_iId)
+		if (pWeapon && pWeapon->IsWeapon() && pDroppedWeapon->m_iId != pWeapon->m_iId)
 		{
 			// if we don't have a weapon preference, give up
 			if (GetProfile()->HasPrimaryPreference())
@@ -816,15 +816,14 @@ void CCSBot::__MAKE_VHOOK(OnTouchingWeapon)(CWeaponBox *box)
 					for (int i = 0; i < GetProfile()->GetWeaponPreferenceCount(); ++i)
 					{
 						int prefID = GetProfile()->GetWeaponPreference(i);
-
 						if (!IsPrimaryWeapon(prefID))
 							continue;
 
 						// if the gun we are using is more desirable, give up
-						if (prefID == myGun->m_iId)
+						if (prefID == pWeapon->m_iId)
 							break;
 
-						if (prefID == droppedGun->m_iId)
+						if (prefID == pDroppedWeapon->m_iId)
 						{
 							// the gun on the ground is better than the one we have - drop our gun
 							DropPrimary(this);
@@ -859,7 +858,7 @@ bool CCSBot::IsFriendInLineOfFire()
 		{
 			CBasePlayer *player = static_cast<CBasePlayer *>(victim);
 
-			if (player->m_iTeam == m_iTeam)
+			if (BotRelationship(player) == BOT_TEAMMATE)
 				return true;
 		}
 	}

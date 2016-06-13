@@ -208,6 +208,10 @@ extern cvar_t cv_bot_defer_to_human;
 extern cvar_t cv_bot_chatter;
 extern cvar_t cv_bot_profile_db;
 
+#ifdef REGAMEDLL_ADD
+extern cvar_t cv_bot_deathmatch;
+#endif
+
 #define IS_ALIVE true
 int UTIL_HumansOnTeam(int teamID, bool isAlive = false);
 

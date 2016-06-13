@@ -28,6 +28,8 @@
 #pragma once
 
 class CHalfLifeTraining: public CHalfLifeMultiplay {
+protected:
+	virtual ~CHalfLifeTraining() {};
 public:
 	virtual BOOL IsMultiplayer() = 0;
 	virtual BOOL IsDeathmatch() = 0;

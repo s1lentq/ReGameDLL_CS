@@ -1094,7 +1094,8 @@ bool CCSBot::IsFriendInTheWay(const Vector *goalPos) const
 		if (!player->IsAlive())
 			continue;
 
-		if (player->m_iTeam != m_iTeam)
+		// ignore enemies
+		if (BotRelationship(player) == BOT_ENEMY)
 			continue;
 
 		if (player == this)

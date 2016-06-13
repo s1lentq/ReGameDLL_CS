@@ -11,12 +11,11 @@ LINK_ENTITY_TO_CLASS(bot, CCSBot, CAPI_CSBot);
 int GetBotFollowCount(CBasePlayer *leader)
 {
 	int count = 0;
-
 	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
 		CBasePlayer *player = UTIL_PlayerByIndex(i);
 
-		if (player == NULL)
+		if (!player)
 			continue;
 
 		if (FNullEnt(player->pev))
@@ -31,8 +30,8 @@ int GetBotFollowCount(CBasePlayer *leader)
  		if (!player->IsAlive())
  			continue;
 
-		CCSBot *bot = dynamic_cast<CCSBot *>(player);
-		if (bot != NULL && bot->GetFollowLeader() == leader)
+		CCSBot *bot = reinterpret_cast<CCSBot *>(player);
+		if (bot->IsBot() && bot->GetFollowLeader() == leader)
 			++count;
 	}
 
@@ -79,8 +78,7 @@ int CCSBot::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAtta
 	if (attacker->IsPlayer())
 	{
 		CBasePlayer *player = static_cast<CBasePlayer *>(attacker);
-
-		if (player->m_iTeam == m_iTeam && !player->IsBot())
+		if (BotRelationship(player) == BOT_TEAMMATE && !player->IsBot())
 		{
 			GetChatter()->FriendlyFire();
 		}
@@ -453,7 +451,7 @@ bool CCSBot::IsDoingScenario() const
 	if (cv_bot_defer_to_human.value <= 0.0f)
 		return true;
 
-	return !UTIL_HumansOnTeam(m_iTeam, true);
+	return !UTIL_HumansOnTeam(m_iTeam, IS_ALIVE);
 }
 
 // Return true if we noticed the bomb on the ground or on the radar (for T's only)
@@ -650,7 +648,7 @@ CBasePlayer *CCSBot::GetImportantEnemy(bool checkVisibility) const
 			continue;
 
 		// skip friends
-		if (player->m_iTeam == m_iTeam)
+		if (BotRelationship(player) == BOT_TEAMMATE)
 			continue;
 
 		// is it "important"

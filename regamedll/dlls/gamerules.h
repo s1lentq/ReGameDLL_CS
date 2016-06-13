@@ -218,6 +218,8 @@ class CItem;
 class CGameRules
 {
 public:
+	CGameRules();
+	virtual ~CGameRules();
 	virtual void RefreshSkillData();
 	virtual void Think() = 0;
 	virtual BOOL IsAllowedToSpawn(CBaseEntity *pEntity) = 0;
@@ -228,7 +230,7 @@ public:
 	virtual BOOL IsDeathmatch() = 0;
 	virtual BOOL IsTeamplay() { return FALSE; }
 	virtual BOOL IsCoOp() = 0;
-	virtual const char *GetGameDescription() { return "Counter-Strike"; }	// this is the game name that gets seen in the server browser
+	virtual const char *GetGameDescription();		// this is the game name that gets seen in the server browser
 	virtual BOOL ClientConnected(edict_t *pEntity, const char *pszName, const char *pszAddress, char *szRejectReason) = 0;
 	virtual void InitHUD(CBasePlayer *pl) = 0;
 	virtual void ClientDisconnected(edict_t *pClient) = 0;
@@ -296,12 +298,16 @@ public:
 public:
 	BOOL m_bFreezePeriod;
 	BOOL m_bBombDropped;
+
+	// custom
+	char *m_GameDesc;
 };
 
 class CHalfLifeRules: public CGameRules
 {
 public:
 	CHalfLifeRules();
+	virtual ~CHalfLifeRules() {};
 
 	virtual void Think();
 	virtual BOOL IsAllowedToSpawn(CBaseEntity *pEntity);
@@ -400,7 +406,8 @@ class CHalfLifeMultiplay: public CGameRules
 {
 public:
 	CHalfLifeMultiplay();
-public:
+	virtual ~CHalfLifeMultiplay() {};
+
 	virtual void RefreshSkillData();
 	virtual void Think();
 	virtual BOOL IsAllowedToSpawn(CBaseEntity *pEntity);
@@ -614,6 +621,7 @@ public:
 	VFUNC void UpdateTeamScores();
 	VFUNC void EndRoundMessage(const char *sentence, int event);
 	VFUNC void SetAccountRules(RewardRules rules, int amount) { m_rgRewardAccountRules[rules] = static_cast<RewardAccount>(amount); }
+	VFUNC RewardAccount GetAccountRules(RewardRules rules) const { return m_rgRewardAccountRules[rules]; }
 
 	void DisplayMaps(CBasePlayer *player, int iVote);
 	void ResetAllMapVotes();

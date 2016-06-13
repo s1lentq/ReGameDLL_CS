@@ -678,7 +678,7 @@ CBasePlayer *CCSBot::FindMostDangerousThreat()
 				continue;
 
 			// is it an enemy?
-			if (player->m_iTeam == m_iTeam)
+			if (BotRelationship(player) == BOT_TEAMMATE)
 			{
 				TraceResult result;
 				UTIL_TraceLine(GetEyePosition(), player->pev->origin, ignore_monsters, ignore_glass, edict(), &result);
@@ -810,8 +810,9 @@ CBasePlayer *CCSBot::FindMostDangerousThreat()
 		{
 			// find the area the player/bot is standing on
 			CNavArea *area;
-			CCSBot *bot = dynamic_cast<CCSBot *>(threat[i].enemy);
-			if (bot != NULL && bot->IsBot())
+			CCSBot *bot = reinterpret_cast<CCSBot *>(threat[i].enemy);
+
+			if (bot->IsBot())
 			{
 				area = bot->GetLastKnownArea();
 			}

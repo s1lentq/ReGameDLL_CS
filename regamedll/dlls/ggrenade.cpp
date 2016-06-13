@@ -1059,11 +1059,10 @@ CGrenade *CGrenade::ShootSatchelCharge(entvars_t *pevOwner, Vector vecStart, Vec
 	pGrenade->pev->friction = 0.9f;
 	pGrenade->m_bJustBlew = false;
 
-	CBasePlayer *owner = dynamic_cast<CBasePlayer *>(CBasePlayer::Instance(pevOwner));
-
-	if (owner != NULL && owner->IsPlayer())
+	CBasePlayer *pOwner = CBasePlayer::Instance(pevOwner);
+	if (pOwner && pOwner->IsPlayer())
 	{
-		pGrenade->m_pentCurBombTarget = owner->m_pentCurBombTarget;
+		pGrenade->m_pentCurBombTarget = pOwner->m_pentCurBombTarget;
 	}
 	else
 		pGrenade->m_pentCurBombTarget = NULL;
@@ -1217,15 +1216,14 @@ void CGrenade::C4Think()
 		if (m_pentCurBombTarget)
 		{
 			CBaseEntity *pBombTarget = CBaseEntity::Instance(m_pentCurBombTarget);
-
 			if (pBombTarget)
 			{
 				pBombTarget->Use(CBaseEntity::Instance(pev->owner), this, USE_TOGGLE, 0);
 			}
 		}
 
-		CBasePlayer *pBombOwner = dynamic_cast<CBasePlayer *>(CBaseEntity::Instance(pev->owner));
-		if (pBombOwner != NULL)
+		CBasePlayer *pBombOwner = CBasePlayer::Instance(pev->owner);
+		if (pBombOwner)
 		{
 			pBombOwner->pev->frags += 3.0f;
 		}

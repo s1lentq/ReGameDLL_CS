@@ -9,6 +9,29 @@ CGameRules *g_pGameRules = NULL;
 
 #endif
 
+CGameRules::CGameRules()
+	: m_GameDesc()
+{
+	m_GameDesc = new char[sizeof("Counter-Strike")];
+	Q_strcpy(m_GameDesc, AreRunningCZero() ? "Condition Zero" : "Counter-Strike");
+}
+
+CGameRules::~CGameRules()
+{
+	delete[] m_GameDesc;
+	m_GameDesc = nullptr;
+}
+
+// this is the game name that gets seen in the server browser
+const char *CGameRules::GetGameDescription()
+{
+#ifdef REGAMEDLL_ADD
+	return m_GameDesc;
+#else
+	return "Counter-Strike";
+#endif
+}
+
 BOOL CGameRules::__MAKE_VHOOK(CanHaveAmmo)(CBasePlayer *pPlayer, const char *pszAmmoName, int iMaxCarry)
 {
 	int iAmmoIndex;

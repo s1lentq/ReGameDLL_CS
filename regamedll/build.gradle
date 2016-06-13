@@ -121,7 +121,7 @@ void setupToolchain(NativeBinarySpec b)
 			cfg.compilerOptions.enhancedInstructionsSet = EnhancedInstructionsSet.DISABLED
 		}
 		else {
-			cfg.compilerOptions.args '/Oi', '/GF', '/GS-'
+			cfg.compilerOptions.args '/Oi', '/GF', '/GS-', '/GR-'
 		}
 
 		if (mpLib)
@@ -151,7 +151,7 @@ void setupToolchain(NativeBinarySpec b)
 		])
 
 		cfg.linkerOptions.args '-no-opt-class-analysis'
-		cfg.compilerOptions.args '-Qoption,cpp,--treat_func_as_string_literal_cpp', '-g'
+		cfg.compilerOptions.args '-Qoption,cpp,--treat_func_as_string_literal_cpp', '-g0', '-fno-rtti'
 		cfg.extraLibs 'dl', 'm', 'stdc++'
 	}
 

@@ -342,6 +342,10 @@ public:
 	virtual void Blind(float flUntilTime, float flHoldTime, float flFadeTime, int iAlpha) = 0;
 	virtual void OnTouchingWeapon(CWeaponBox *pWeapon) = 0;
 public:
+	static CBasePlayer *Instance(edict_t *pent) { return (CBasePlayer *)GET_PRIVATE(pent ? pent : ENT(0)); }
+	static CBasePlayer *Instance(entvars_t *pev) { return Instance(ENT(pev)); }
+	static CBasePlayer *Instance(int offset) { return Instance(ENT(offset)); }
+
 	int IsObserver() { return pev->iuser1; }
 	void SetWeaponAnimType(const char *szExtention) { strcpy(m_szAnimExtention, szExtention); }
 	bool IsProtectedByShield() { return m_bOwnsShield && m_bShieldDrawn; }

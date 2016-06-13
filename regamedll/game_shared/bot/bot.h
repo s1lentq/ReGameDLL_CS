@@ -84,10 +84,13 @@ public:
 		CBasePlayer::Killed(pevAttacker, iGib);
 	}
 	virtual void Think() {};
-	virtual BOOL IsBot() { return true; }
+	virtual BOOL IsBot() { return TRUE; }
 	virtual Vector GetAutoaimVector(float flDelta);
+
 	// invoked when in contact with a CWeaponBox
 	virtual void OnTouchingWeapon(CWeaponBox *box) {}
+
+	// prepare bot for action
 	virtual bool Initialize(const BotProfile *profile);
 
 	virtual void SpawnBot() = 0;
@@ -179,6 +182,7 @@ public:
 #endif
 
 public:
+	// return bot's unique ID
 	unsigned int GetID() const { return m_id; }
 	bool IsRunning() const { return m_isRunning; }
 	bool IsCrouching() const { return m_isCrouching; }
@@ -238,6 +242,13 @@ public:
 
 	// return our personality profile
 	const BotProfile *GetProfile() const { return m_profile; }
+
+	enum BotRelationshipTeam: uint8
+	{
+		BOT_TEAMMATE = 0,
+		BOT_ENEMY
+	};
+	BotRelationshipTeam BotRelationship(CBasePlayer *pTarget) const;
 
 #ifndef HOOK_GAMEDLL
 protected:
@@ -406,6 +417,16 @@ inline bool CBot::__MAKE_VHOOK(IsPlayerLookingAtMe)(CBasePlayer *other) const
 	}
 
 	return false;
+}
+
+inline CBot::BotRelationshipTeam CBot::BotRelationship(CBasePlayer *pTarget) const
+{
+#ifdef REGAMEDLL_ADD
+	if (cv_bot_deathmatch.value > 1.0f)
+		return BOT_ENEMY;
+#endif
+
+	return pTarget->m_iTeam == m_iTeam ? BOT_TEAMMATE : BOT_ENEMY;
 }
 
 extern float g_flBotCommandInterval;

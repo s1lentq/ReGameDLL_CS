@@ -50,7 +50,7 @@ void BotMeme::Transmit(CCSBot *sender) const
 	{
 		CBasePlayer *player = UTIL_PlayerByIndex(i);
 
-		if (player == NULL)
+		if (!player)
 			continue;
 
 		if (FNullEnt(player->pev))
@@ -68,20 +68,15 @@ void BotMeme::Transmit(CCSBot *sender) const
 			continue;
 
 		// ignore enemies, since we can't hear them talk
-		if (sender->m_iTeam != player->m_iTeam)
+		if (sender->BotRelationship(player) == CCSBot::BOT_ENEMY)
 			continue;
 
 		// if not a bot, fail the test
 		if (!player->IsBot())
 			continue;
 
-		CCSBot *bot = dynamic_cast<CCSBot *>(player);
-
-		if (!bot)
-			continue;
-
 		// allow bot to interpret our meme
-		Interpret(sender, bot);
+		Interpret(sender, (CCSBot *)player);
 	}
 }
 
@@ -1523,14 +1518,14 @@ void BotChatterInterface::Update()
 BotStatement *BotChatterInterface::GetActiveStatement()
 {
 	// keep track of statement waiting longest to be spoken - it is next
-	BotStatement *earliest = NULL;
+	BotStatement *earliest = nullptr;
 	float earlyTime = 999999999.9f;
 
 	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
 		CBasePlayer *player = UTIL_PlayerByIndex(i);
 
-		if (player == NULL)
+		if (!player)
 			continue;
 
 		if (FNullEnt(player->pev))
@@ -1544,17 +1539,17 @@ BotStatement *BotChatterInterface::GetActiveStatement()
 			continue;
 
 		// ignore enemies, since we can't hear them talk
-		if (m_me->m_iTeam != player->m_iTeam)
+		if (m_me->BotRelationship(player) == CCSBot::BOT_ENEMY)
 			continue;
-
-		CCSBot *bot = dynamic_cast<CCSBot *>(player);
 
 		// if not a bot, fail the test
 		// TODO: Check if human is currently talking
-		if (!bot)
+		if (!player->IsBot())
 			continue;
 
-		for (BotStatement *say = bot->GetChatter()->m_statementList; say != NULL; say = say->m_next)
+		CCSBot *bot = reinterpret_cast<CCSBot *>(player);
+		auto say = bot->GetChatter()->m_statementList;
+		while (say)
 		{
 			// if this statement is currently being spoken, return it
 			if (say->IsSpeaking())
@@ -1566,12 +1561,14 @@ BotStatement *BotChatterInterface::GetActiveStatement()
 				earlyTime = say->GetTimestamp();
 				earliest = say;
 			}
+
+			say = say->m_next;
 		}
 	}
 
 	// make sure it is time to start this statement
-	if (earliest != NULL && earliest->GetStartTime() > gpGlobals->time)
-		return NULL;
+	if (earliest && earliest->GetStartTime() > gpGlobals->time)
+		return nullptr;
 
 	return earliest;
 }
