@@ -2354,6 +2354,12 @@ bool UTIL_AreBotsAllowed()
 	}
 
 #ifdef REGAMEDLL_ADD
+	// let enables zBot by default from listen server?
+	if (!IS_DEDICATED_SERVER())
+	{
+		return true;
+	}
+
 	// allow the using of bots for CS 1.6
 	int bots = ENG_CHECK_PARM("-bots", NULL);
 	if (bots)

@@ -103,6 +103,7 @@ cvar_t nadedrops = { "mp_nadedrops", "0", 0, 0.0f, nullptr };
 cvar_t roundrespawn_time = { "mp_roundrespawn_time", "20", 0, 20.0f, nullptr };
 cvar_t auto_reload_weapons = { "mp_auto_reload_weapons", "0", 0, 0.0f, nullptr };
 cvar_t refill_bpammo_weapons = { "mp_refill_bpammo_weapons", "0", 0, 0.0f, nullptr };		// Useful for mods like DeathMatch, GunGame, ZombieMod etc
+cvar_t freeforall = { "mp_freeforall", "0", FCVAR_SERVER, 0.0f, nullptr };
 
 void GameDLL_Version_f()
 {
@@ -232,6 +233,7 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&roundrespawn_time);
 	CVAR_REGISTER(&auto_reload_weapons);
 	CVAR_REGISTER(&refill_bpammo_weapons);
+	CVAR_REGISTER(&freeforall);
 
 	// print version
 	CONSOLE_ECHO("ReGameDLL build: " __TIME__ " " __DATE__ " (" APP_VERSION_STRD ")\n");

@@ -637,8 +637,8 @@ public:
 	void TerminateRound(float tmDelay, int iWinStatus);
 	float GetRoundRespawnTime() const;
 
-	// allow the mode of fire on a friendly player (FFA)
-	bool IsFriendlyFireAttack() const;
+	// has a style of gameplay when aren't any teams
+	bool IsFreeForAll() const;
 	bool HasRoundInfinite(bool time_expired = false) const;
 
 private:
@@ -813,11 +813,10 @@ inline float CHalfLifeMultiplay::GetRoundRespawnTime() const
 #endif
 }
 
-// allow the mode of fire on a friendly player (FFA)
-inline bool CHalfLifeMultiplay::IsFriendlyFireAttack() const
+inline bool CHalfLifeMultiplay::IsFreeForAll() const
 {
 #ifdef REGAMEDLL_ADD
-	if (friendlyfire.string[0] == '2')
+	if (freeforall.value != 0.0f)
 		return true;
 #endif
 	return false;

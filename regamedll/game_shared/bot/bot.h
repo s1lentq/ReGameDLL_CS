@@ -32,6 +32,8 @@
 #pragma once
 #endif
 
+#include "gamerules.h"
+
 class BotProfile;
 
 template <class T, class TWrap>
@@ -422,7 +424,7 @@ inline bool CBot::__MAKE_VHOOK(IsPlayerLookingAtMe)(CBasePlayer *other) const
 inline CBot::BotRelationshipTeam CBot::BotRelationship(CBasePlayer *pTarget) const
 {
 #ifdef REGAMEDLL_ADD
-	if (cv_bot_deathmatch.value > 1.0f)
+	if (CSGameRules()->IsFreeForAll())
 		return BOT_ENEMY;
 #endif
 

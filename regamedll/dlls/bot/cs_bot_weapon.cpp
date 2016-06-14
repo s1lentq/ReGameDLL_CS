@@ -840,6 +840,9 @@ void CCSBot::__MAKE_VHOOK(OnTouchingWeapon)(CWeaponBox *box)
 // TODO: Check more rays for safety.
 bool CCSBot::IsFriendInLineOfFire()
 {
+	if (CSGameRules()->IsFreeForAll())
+		return false;
+
 	UTIL_MakeVectors(pev->punchangle + pev->v_angle);
 
 	// compute the unit vector along our view

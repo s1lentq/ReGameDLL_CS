@@ -21,7 +21,7 @@ Archive's bin directory contains 2 subdirectories, 'bugfixed' and 'pure'
 ## Configuration (cvars)
 | CVar                          | Default | Min | Max          | Description                                    |
 | :---------------------------- | :-----: | :-: | :----------: | :--------------------------------------------- |
-| mp_friendlyfire               | 0       | 0   | 2            | Allow inflict damage to teammates<br/>`0` disabled <br/>`1` enabled <br/>`2` FFA mode |
+| mp_freeforall                 | 0       | 0   | 1            | The style of gameplay where there aren't any teams (FFA mode)<br/>`0` disabled <br/>`1` enabled |
 | mp_maxmoney                   | 16000   | 0   | `0x7FFFFFFF` | The maximum allowable amount of money in the game
 | mp_round_infinite             | 0       | 0   | 1            | Flags for fine grained control (choose as many as needed)<br/>`0` disabled<br/>`1` enabled<br/><br/>or flags<br/>`a` block round time round end check<br/>`b` block needed players round end check<br/>`c` block VIP assassination/success round end check<br/>`d` block prison escape round end check<br/>`e` block bomb round end check<br/>`f` block team extermination round end check<br/>`g` block hostage rescue round end check<br/><br/>`Example setting:` "ae" blocks round time and bomb round end checks |
 | mp_hegrenade_penetration      | 0       | 0   | 1            | Disable grenade damage through walls<br/>`0` disabled<br/>`1` enabled |
@@ -29,7 +29,7 @@ Archive's bin directory contains 2 subdirectories, 'bugfixed' and 'pure'
 | mp_roundrespawn_time          | 20      | 0   | -            | Player cannot respawn until next round if more than N seconds has elapsed since the beginning round |
 | mp_auto_reload_weapons        | 0       | 0   | 1            | Automatically reload each weapon on player spawn<br/>`0` disabled<br/>`1` enabled |
 | mp_refill_bpammo_weapons      | 0       | 0   | 2            | Refill amount of backpack ammo up to the max <br/>`0` disabled<br/>`1` refill backpack ammo on player spawn<br/>`2` refill backpack ammo on each weapon reload |
-| bot_deathmatch                | 0       | 0   | 2            | Set's the mode for the zBot <br/>`0` disabled<br/>`1` enable mode Deathmatch and not allow to do the scenario<br/>`2` enable Deathmatch and FFA mode |
+| bot_deathmatch                | 0       | 0   | 1            | Set's the mode for the zBot <br/>`0` disabled<br/>`1` enable mode Deathmatch and not allow to do the scenario |
 
 ## How to install zBot for CS 1.6?
 * Extract all the files from an [archive](regamedll/extra/zBot/bot_profiles.zip?raw=true)

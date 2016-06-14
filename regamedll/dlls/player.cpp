@@ -1016,7 +1016,7 @@ int CBasePlayer::__API_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pev
 
 				if (CVAR_GET_FLOAT("mp_friendlyfire"))
 				{
-					if (!CSGameRules()->IsFriendlyFireAttack() && pGrenade->m_iTeam == m_iTeam)
+					if (!CSGameRules()->IsFreeForAll() && pGrenade->m_iTeam == m_iTeam)
 						bTeamAttack = TRUE;
 
 					pAttack = CBasePlayer::Instance(pevAttacker);
@@ -1174,7 +1174,7 @@ int CBasePlayer::__API_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pev
 	{
 		pAttack = GetClassPtr<CCSPlayer>((CBasePlayer *)pevAttacker);
 
-		bool bAttackFFA = CSGameRules()->IsFriendlyFireAttack();
+		bool bAttackFFA = CSGameRules()->IsFreeForAll();
 
 		// warn about team attacks
 		if (pAttack != this && pAttack->m_iTeam == m_iTeam && !bAttackFFA)
@@ -6928,7 +6928,7 @@ void EXT_ALIGN CBasePlayer::__API_VHOOK(UpdateClientData)()
 		m_tmNextRadarUpdate = gpGlobals->time + 1.0f;
 
 #ifdef REGAMEDLL_ADD
-		if (CSGameRules()->IsFriendlyFireAttack())
+		if (CSGameRules()->IsFreeForAll())
 			vecOrigin = g_vecZero;
 #endif
 
