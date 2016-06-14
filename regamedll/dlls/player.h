@@ -594,6 +594,7 @@ public:
 	edict_t *EntSelectSpawnPoint();
 	void SetScoreAttrib(CBasePlayer *dest);
 	void ReloadWeapons(CBasePlayerItem *pWeapon = nullptr, bool bForceReload = false, bool bForceRefill = false);
+	void TeamChangeUpdate();
 
 #ifdef REGAMEDLL_ADD
 	CCSPlayer *CSPlayer() const;

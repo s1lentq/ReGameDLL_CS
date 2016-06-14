@@ -9309,3 +9309,16 @@ void CBasePlayer::ReloadWeapons(CBasePlayerItem *pWeapon, bool bForceReload, boo
 	}
 #endif
 }
+
+void CBasePlayer::TeamChangeUpdate()
+{
+	MESSAGE_BEGIN(MSG_ALL, gmsgTeamInfo);
+		WRITE_BYTE(entindex());
+		WRITE_STRING(GetTeamName(m_iTeam));
+	MESSAGE_END();
+
+	if (m_iTeam != UNASSIGNED)
+	{
+		SetScoreboardAttributes();
+	}
+}

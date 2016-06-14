@@ -114,7 +114,6 @@ extern unsigned short g_iShadowSprite;
 int CMD_ARGC_();
 const char *CMD_ARGV_(int i);
 void set_suicide_frame(entvars_t *pev);
-void TeamChangeUpdate(CBasePlayer *player, int team_id);
 void BlinkAccount(CBasePlayer *player, int numBlinks = 2);
 BOOL ClientConnect(edict_t *pEntity, const char *pszName, const char *pszAddress, char *szRejectReason);
 void ClientDisconnect(edict_t *pEntity);

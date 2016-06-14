@@ -100,19 +100,6 @@ NOXREF void set_suicide_frame(entvars_t *pev)
 	pev->nextthink = -1;
 }
 
-void TeamChangeUpdate(CBasePlayer *player, int team_id)
-{
-	MESSAGE_BEGIN(MSG_ALL, gmsgTeamInfo);
-		WRITE_BYTE(player->entindex());
-		WRITE_STRING(GetTeamName(team_id));
-	MESSAGE_END();
-
-	if (team_id != UNASSIGNED)
-	{
-		player->SetScoreboardAttributes();
-	}
-}
-
 void BlinkAccount(CBasePlayer *player, int numBlinks)
 {
 	MESSAGE_BEGIN(MSG_ONE, gmsgBlinkAcct, NULL, player->pev);
@@ -1650,7 +1637,9 @@ BOOL __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *player, int slot)
 			player->RemoveAllItems(TRUE);
 			player->m_bHasC4 = false;
 
+#ifdef REGAMEDLL_FIXES
 			if (player->m_iTeam != SPECTATOR)
+#endif
 			{
 				// notify other clients of player joined to team spectator
 				UTIL_LogPrintf("\"%s<%i><%s><%s>\" joined team \"SPECTATOR\"\n", STRING(player->pev->netname),
@@ -1684,16 +1673,18 @@ BOOL __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *player, int slot)
 				TheBots->OnEvent(EVENT_PLAYER_CHANGED_TEAM, player);
 			}
 
-			TeamChangeUpdate(player, player->m_iTeam);
+			player->TeamChangeUpdate();
 
 			edict_t *pentSpawnSpot = g_pGameRules->GetPlayerSpawnSpot(player);
 			player->StartObserver(pentSpawnSpot->v.origin, pentSpawnSpot->v.angles);
 
+#ifndef REGAMEDLL_FIXES
+			// TODO: it was already sent in StartObserver
 			MESSAGE_BEGIN(MSG_ALL, gmsgSpectator);
 				WRITE_BYTE(ENTINDEX(player->edict()));
 				WRITE_BYTE(1);
 			MESSAGE_END();
-
+#endif
 			// do we have fadetoblack on? (need to fade their screen back in)
 			if (fadetoblack.value)
 			{
@@ -1719,12 +1710,10 @@ BOOL __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *player, int slot)
 	// If the code gets this far, the team is not TEAM_UNASSIGNED
 	// Player is switching to a new team (It is possible to switch to the
 	// same team just to choose a new appearance)
-
 	if (CSGameRules()->TeamFull(team))
 	{
 		// The specified team is full
 		// attempt to kick a bot to make room for this player
-
 		bool madeRoom = false;
 		if (cv_bot_auto_vacate.value > 0 && !player->IsBot())
 		{
@@ -1834,7 +1823,6 @@ BOOL __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *player, int slot)
 
 	// Show the appropriate Choose Appearance menu
 	// This must come before ClientKill() for CheckWinConditions() to function properly
-
 	if (player->pev->deadflag == DEAD_NO)
 	{
 		ClientKill(player->edict());
@@ -1850,7 +1838,7 @@ BOOL __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *player, int slot)
 		TheBots->OnEvent(EVENT_PLAYER_CHANGED_TEAM, player);
 	}
 
-	TeamChangeUpdate(player, player->m_iTeam);
+	player->TeamChangeUpdate();
 
 	szOldTeam = GetTeam(oldTeam);
 	szNewTeam = GetTeam(team);

@@ -36,6 +36,95 @@ Vector CCSEntity::FireBullets3(Vector &vecSrc, Vector &vecDirShooting, float vec
 	return m_pContainingEntity->FireBullets3(vecSrc, vecDirShooting, vecSpread, flDistance, iPenetration, iBulletType, iDamage, flRangeModifier, pevAttacker, bPistol, shared_rand);
 };
 
+bool CCSPlayer::JoinTeam(TeamName team)
+{
+	CBasePlayer *pPlayer = BasePlayer();
+	switch (team)
+	{
+	case SPECTATOR:
+	{
+		// are we already a spectator?
+		if (pPlayer->m_iTeam == SPECTATOR)
+			return false;
+
+		pPlayer->RemoveAllItems(TRUE);
+		pPlayer->m_bHasC4 = false;
+
+		pPlayer->m_iTeam = SPECTATOR;
+		pPlayer->m_iJoiningState = JOINED;
+
+		pPlayer->m_pIntroCamera = NULL;
+		pPlayer->m_bTeamChanged = true;
+
+		pPlayer->TeamChangeUpdate();
+
+		edict_t *pentSpawnSpot = g_pGameRules->GetPlayerSpawnSpot(pPlayer);
+		pPlayer->StartObserver(pentSpawnSpot->v.origin, pentSpawnSpot->v.angles);
+
+		// do we have fadetoblack on? (need to fade their screen back in)
+		if (fadetoblack.value)
+		{
+			UTIL_ScreenFade(pPlayer, Vector(0, 0, 0), 0.001, 0, 0, FFADE_IN);
+		}
+
+		return true;
+	}
+	case CT:
+	case TERRORIST:
+	{
+		if (pPlayer->m_iTeam == SPECTATOR)
+		{
+			// If they're switching into spectator, setup spectator properties..
+			pPlayer->m_bNotKilled = true;
+			pPlayer->m_iIgnoreGlobalChat = IGNOREMSG_NONE;
+			pPlayer->m_iTeamKills = 0;
+
+			pPlayer->pev->solid = SOLID_NOT;
+			pPlayer->pev->movetype = MOVETYPE_NOCLIP;
+			pPlayer->pev->effects = EF_NODRAW;
+			pPlayer->pev->effects |= EF_NOINTERP;
+			pPlayer->pev->takedamage = DAMAGE_NO;
+			pPlayer->pev->deadflag = DEAD_DEAD;
+			pPlayer->pev->velocity = g_vecZero;
+			pPlayer->pev->punchangle = g_vecZero;
+
+			pPlayer->m_bHasNightVision = false;
+			pPlayer->m_iHostagesKilled = 0;
+			pPlayer->m_fDeadTime = 0;
+			pPlayer->has_disconnected = false;
+
+			pPlayer->m_iJoiningState = GETINTOGAME;
+			pPlayer->SendItemStatus();
+
+			SET_CLIENT_MAXSPEED(ENT(pPlayer->pev), 1);
+			SET_MODEL(ENT(pPlayer->pev), "models/player.mdl");
+		}
+		break;
+	}
+	}
+
+	if (pPlayer->pev->deadflag == DEAD_NO)
+	{
+		ClientKill(pPlayer->edict());
+		pPlayer->pev->frags++;
+	}
+
+	MESSAGE_BEGIN(MSG_BROADCAST, gmsgScoreInfo);
+		WRITE_BYTE(ENTINDEX(pPlayer->edict()));
+		WRITE_SHORT(int(pPlayer->pev->frags));
+		WRITE_SHORT(pPlayer->m_iDeaths);
+		WRITE_SHORT(0);
+		WRITE_SHORT(0);
+	MESSAGE_END();
+
+	// Switch their actual team...
+	pPlayer->m_bTeamChanged = true;
+	pPlayer->m_iTeam = team;
+	pPlayer->TeamChangeUpdate();
+
+	return true;
+}
+
 bool CCSPlayer::RemovePlayerItem(const char* pszItemName)
 {
 	CBasePlayer *pPlayer = BasePlayer();
@@ -89,3 +178,5 @@ void CCSPlayer::Observer_SetMode(int iMode) { BasePlayer()->Observer_SetMode(iMo
 bool CCSPlayer::SelectSpawnSpot(const char *pEntClassName, CBaseEntity* &pSpot) { return BasePlayer()->SelectSpawnSpot(pEntClassName, pSpot); }
 bool CCSPlayer::SwitchWeapon(CBasePlayerItem *pWeapon) { return BasePlayer()->SwitchWeapon(pWeapon) != FALSE; }
 void CCSPlayer::SwitchTeam() { BasePlayer()->SwitchTeam(); }
+void CCSPlayer::StartObserver(Vector& vecPosition, Vector& vecViewAngle) { BasePlayer()->StartObserver(vecPosition, vecViewAngle); }
+void CCSPlayer::TeamChangeUpdate() { BasePlayer()->TeamChangeUpdate(); }
