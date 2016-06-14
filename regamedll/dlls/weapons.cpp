@@ -1833,7 +1833,7 @@ void CWeaponBox::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 			if (!FStringNull(m_rgiszAmmo[n]))
 			{
 #ifdef REGAMEDLL_FIXES
-				if (m_rgAmmo[n] < MaxAmmoCarry(m_rgiszAmmo[n]))
+				if (FStrEq(STRING(m_rgiszAmmo[n]), "Flashbang") && m_rgAmmo[n] < MaxAmmoCarry(m_rgiszAmmo[n]))
 					continue;
 #endif
 
