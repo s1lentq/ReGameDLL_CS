@@ -85,6 +85,7 @@ public:
 	{
 		CBasePlayer::Killed(pevAttacker, iGib);
 	}
+
 	virtual void Think() {};
 	virtual BOOL IsBot() { return TRUE; }
 	virtual Vector GetAutoaimVector(float flDelta);
@@ -238,10 +239,16 @@ public:
 	void PrintIfWatched(char *format,...) const;
 
 	void BotThink();
-	bool IsNetClient() const { return false; }
-	int Save(CSave &save) const;
-	int Restore(CRestore &restor) const;
 
+#ifdef REGAMEDLL_FIXES
+	BOOL IsNetClient() { return FALSE; }
+#else
+	// The ambiguous function because there is a virtual function in inherited classes.
+	bool IsNetClient() const { return false; }
+
+	int Save(CSave &save) const;
+	int Restore(CRestore &restore) const;
+#endif
 	// return our personality profile
 	const BotProfile *GetProfile() const { return m_profile; }
 
