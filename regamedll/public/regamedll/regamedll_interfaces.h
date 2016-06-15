@@ -51,7 +51,7 @@ class CCSArmoury: public CCSEntity {};
 
 class CCSPlayer: public CCSMonster {
 public:
-	CCSPlayer()
+	CCSPlayer() : m_bForceShowMenu(false)
 	{
 		m_szModel[0] = '\0';
 	}
@@ -90,6 +90,7 @@ public:
 	CBasePlayer *BasePlayer() const;
 public:
 	char m_szModel[32];
+	bool m_bForceShowMenu;
 };
 
 class CAPI_Bot: public CCSPlayer {};

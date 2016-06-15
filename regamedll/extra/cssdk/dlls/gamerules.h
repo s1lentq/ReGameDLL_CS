@@ -426,8 +426,12 @@ public:
 	virtual bool IsBombPlanted() = 0;
 
 public:
+	bool ShouldSkipShowMenu() const { return m_bSkipShowMenu; }
+	void MarkShowMenuSkipped() { m_bSkipShowMenu = false; }
+
 	bool ShouldSkipSpawn() const { return m_bSkipSpawn; }
 	void MarkSpawnSkipped() { m_bSkipSpawn = false; }
+
 	float TimeRemaining() { return m_iRoundTimeSecs - gpGlobals->time + m_fRoundCount; }
 	bool IsMatchStarted() { return (m_fTeamCount != 0.0f || m_fCareerRoundMenuTime != 0.0f || m_fCareerMatchMenuTime != 0.0f); }
 
@@ -522,6 +526,7 @@ public:
 	bool m_bSkipSpawn;
 
 	// custom
+	bool m_bSkipShowMenu;
 	bool m_bNeededPlayers;
 	float m_flEscapeRatio;
 };

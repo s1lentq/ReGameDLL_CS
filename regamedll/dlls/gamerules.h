@@ -600,6 +600,8 @@ public:
 	void SetCareerMatchLimit(int minWins, int winDifference);
 	bool IsInCareerRound();
 	void CareerRestart();
+	bool ShouldSkipShowMenu() const { return m_bSkipShowMenu; }
+	void MarkShowMenuSkipped() { m_bSkipShowMenu = false; }
 	bool ShouldSkipSpawn() const { return m_bSkipSpawn; }
 	void MarkSpawnSkipped() { m_bSkipSpawn = false; }
 	void PlayerJoinedTeam(CBasePlayer *pPlayer) { }
@@ -735,6 +737,7 @@ protected:
 	bool m_bSkipSpawn;
 
 	// custom
+	bool m_bSkipShowMenu;
 	bool m_bNeededPlayers;
 	float m_flEscapeRatio;
 };

@@ -210,8 +210,8 @@ typedef IVoidHookChain<class CBasePlayer *, int, int, BOOL, char *> IReGameHook_
 typedef IVoidHookChainRegistry<class CBasePlayer *, int, int, BOOL, char *> IReGameHookRegistry_ShowMenu;
 
 // ShowVGUIMenu hook
-typedef IVoidHookChain<class CBasePlayer *, int, int, char *, bool> IReGameHook_ShowVGUIMenu;
-typedef IVoidHookChainRegistry<class CBasePlayer *, int, int, char *, bool> IReGameHookRegistry_ShowVGUIMenu;
+typedef IVoidHookChain<class CBasePlayer *, int, int, char *> IReGameHook_ShowVGUIMenu;
+typedef IVoidHookChainRegistry<class CBasePlayer *, int, int, char *> IReGameHookRegistry_ShowVGUIMenu;
 
 // CHalfLifeMultiplay::FShouldSwitchWeapon hook
 typedef IHookChain<BOOL, class CBasePlayer *, class CBasePlayerItem *> IReGameHook_CSGameRules_FShouldSwitchWeapon;

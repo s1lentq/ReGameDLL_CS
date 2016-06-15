@@ -67,6 +67,7 @@ bool CCSPlayer::JoinTeam(TeamName team)
 			UTIL_ScreenFade(pPlayer, Vector(0, 0, 0), 0.001, 0, 0, FFADE_IN);
 		}
 
+		CSGameRules()->CheckWinConditions();
 		return true;
 	}
 	case CT:
@@ -78,6 +79,10 @@ bool CCSPlayer::JoinTeam(TeamName team)
 			pPlayer->m_bNotKilled = true;
 			pPlayer->m_iIgnoreGlobalChat = IGNOREMSG_NONE;
 			pPlayer->m_iTeamKills = 0;
+
+			if (pPlayer->m_iAccount < int(startmoney.value)) {
+				pPlayer->m_iAccount = int(startmoney.value);
+			}
 
 			pPlayer->pev->solid = SOLID_NOT;
 			pPlayer->pev->movetype = MOVETYPE_NOCLIP;
@@ -122,6 +127,7 @@ bool CCSPlayer::JoinTeam(TeamName team)
 	pPlayer->m_iTeam = team;
 	pPlayer->TeamChangeUpdate();
 
+	CSGameRules()->CheckWinConditions();
 	return true;
 }
 

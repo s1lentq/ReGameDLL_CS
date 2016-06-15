@@ -3523,6 +3523,12 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(PlayerThink)(CBasePlayer *pPlayer)
 		{
 			team = MENU_SLOT_TEAM_CT;
 		}
+#ifdef REGAMEDLL_ADD
+		else if (!Q_stricmp(humans_join_team.string, "any") && auto_join_team.value != 0.0f)
+		{
+			team = MENU_SLOT_TEAM_RANDOM;
+		}
+#endif
 		else
 		{
 			if (allow_spectators.value == 0.0f)
@@ -3536,6 +3542,17 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(PlayerThink)(CBasePlayer *pPlayer)
 
 		if (team != MENU_SLOT_TEAM_UNDEFINED && !pPlayer->IsBot())
 		{
+#ifdef REGAMEDLL_ADD
+			m_bSkipShowMenu = (auto_join_team.value != 0.0f);
+			HandleMenu_ChooseTeam(pPlayer, team);
+
+			if (team != MENU_SLOT_TEAM_SPECT && (IsCareer() || m_bSkipShowMenu))
+			{
+				// slot 6 - chooses randomize the appearance to model player
+				HandleMenu_ChooseAppearance(pPlayer, 6);
+			}
+			m_bSkipShowMenu = false;
+#else
 			HandleMenu_ChooseTeam(pPlayer, team);
 
 			if (team != MENU_SLOT_TEAM_SPECT && IsCareer())
@@ -3543,6 +3560,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(PlayerThink)(CBasePlayer *pPlayer)
 				// slot 6 - chooses randomize the appearance to model player
 				HandleMenu_ChooseAppearance(pPlayer, 6);
 			}
+#endif
 		}
 	}
 }

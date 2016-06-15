@@ -205,8 +205,8 @@ typedef IVoidHookChainImpl<CBasePlayer *, int, int, BOOL, char *> CReGameHook_Sh
 typedef IVoidHookChainRegistryImpl<CBasePlayer *, int, int, BOOL, char *> CReGameHookRegistry_ShowMenu;
 
 // ShowVGUIMenu hook
-typedef IVoidHookChainImpl<CBasePlayer *, int, int, char *, bool> CReGameHook_ShowVGUIMenu;
-typedef IVoidHookChainRegistryImpl<CBasePlayer *, int, int, char *, bool> CReGameHookRegistry_ShowVGUIMenu;
+typedef IVoidHookChainImpl<CBasePlayer *, int, int, char *> CReGameHook_ShowVGUIMenu;
+typedef IVoidHookChainRegistryImpl<CBasePlayer *, int, int, char *> CReGameHookRegistry_ShowVGUIMenu;
 
 // CHalfLifeMultiplay::FShouldSwitchWeapon hook
 typedef IHookChainClassImpl<BOOL, class CHalfLifeMultiplay, CBasePlayer *, CBasePlayerItem *> CReGameHook_CSGameRules_FShouldSwitchWeapon;

@@ -211,11 +211,25 @@ void __API_HOOK(ShowMenu)(CBasePlayer *pPlayer, int bitsValidSlots, int nDisplay
 	MESSAGE_END();
 }
 
-LINK_HOOK_VOID_CHAIN(ShowVGUIMenu, (CBasePlayer *pPlayer, int MenuType, int BitMask, char *szOldMenu, bool bForceOldMenu), pPlayer, MenuType, BitMask, szOldMenu, bForceOldMenu);
+LINK_HOOK_VOID_CHAIN(ShowVGUIMenu, (CBasePlayer *pPlayer, int MenuType, int BitMask, char *szOldMenu), pPlayer, MenuType, BitMask, szOldMenu);
 
-void __API_HOOK(ShowVGUIMenu)(CBasePlayer *pPlayer, int MenuType, int BitMask, char *szOldMenu, bool bForceOldMenu)
+void __API_HOOK(ShowVGUIMenu)(CBasePlayer *pPlayer, int MenuType, int BitMask, char *szOldMenu)
 {
-	if (!bForceOldMenu && (pPlayer->m_bVGUIMenus || MenuType > VGUI_Menu_Buy_Item))
+#ifdef REGAMEDLL_ADD
+	if (CSGameRules()->ShouldSkipShowMenu()) {
+		CSGameRules()->MarkShowMenuSkipped();
+		pPlayer->m_iMenu = Menu_OFF;
+		return;
+	}
+
+	if (pPlayer->CSPlayer()->m_bForceShowMenu) {
+		ShowMenu(pPlayer, BitMask, -1, 0, szOldMenu);
+		return;
+	}
+
+#endif
+
+	if (pPlayer->m_bVGUIMenus || MenuType > VGUI_Menu_Buy_Item)
 	{
 		MESSAGE_BEGIN(MSG_ONE, gmsgVGUIMenu, NULL, pPlayer->pev);
 			WRITE_BYTE(MenuType);
@@ -1736,7 +1750,11 @@ BOOL __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *player, int slot)
 		return FALSE;
 	}
 
-	if (team != SPECTATOR && !player->IsBot())
+	if (team != SPECTATOR && !player->IsBot()
+#ifdef REGAMEDLL_ADD
+		&& auto_join_team.value != 1.0f
+#endif
+	)
 	{
 		int humanTeam = UNASSIGNED;
 
@@ -1751,7 +1769,12 @@ BOOL __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *player, int slot)
 
 		if (humanTeam != UNASSIGNED && team != humanTeam)
 		{
+			// TODO: These localization strings are not defined on the client CS 1.6, only for CZero
+#ifdef REGAMEDLL_FIXES
+			ClientPrint(player->pev, HUD_PRINTCENTER, (team == TERRORIST) ? "Humans can only be CT!" : "Humans can only be terrorists!");
+#else
 			ClientPrint(player->pev, HUD_PRINTCENTER, (team == TERRORIST) ? "#Humans_Join_Team_CT" : "#Humans_Join_Team_T");
+#endif
 			return FALSE;
 		}
 	}
@@ -1799,33 +1822,38 @@ BOOL __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *player, int slot)
 		SET_MODEL(ENT(player->pev), "models/player.mdl");
 	}
 
-	if (!CSGameRules()->IsCareer())
+#ifdef REGAMEDLL_ADD
+	if (!CSGameRules()->ShouldSkipShowMenu())
+#endif
 	{
-		switch (team)
+		if (!CSGameRules()->IsCareer())
 		{
-		case CT:
-			if (g_bIsCzeroGame)
-				ShowVGUIMenu(player, VGUI_Menu_Class_CT, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6), "#CT_Select");
-			else
-				ShowVGUIMenu(player, VGUI_Menu_Class_CT, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5), "#CT_Select");
-			break;
+			switch (team)
+			{
+			case CT:
+				if (g_bIsCzeroGame)
+					ShowVGUIMenu(player, VGUI_Menu_Class_CT, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6), "#CT_Select");
+				else
+					ShowVGUIMenu(player, VGUI_Menu_Class_CT, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5), "#CT_Select");
+				break;
 
-		case TERRORIST:
-			if (g_bIsCzeroGame)
-				ShowVGUIMenu(player, VGUI_Menu_Class_T, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6), "#Terrorist_Select");
-			else
-				ShowVGUIMenu(player, VGUI_Menu_Class_T, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5), "#Terrorist_Select");
-			break;
+			case TERRORIST:
+				if (g_bIsCzeroGame)
+					ShowVGUIMenu(player, VGUI_Menu_Class_T, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6), "#Terrorist_Select");
+				else
+					ShowVGUIMenu(player, VGUI_Menu_Class_T, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5), "#Terrorist_Select");
+				break;
+			}
 		}
-	}
 
-	player->m_iMenu = Menu_ChooseAppearance;
+		player->m_iMenu = Menu_ChooseAppearance;
 
-	// Show the appropriate Choose Appearance menu
-	// This must come before ClientKill() for CheckWinConditions() to function properly
-	if (player->pev->deadflag == DEAD_NO)
-	{
-		ClientKill(player->edict());
+		// Show the appropriate Choose Appearance menu
+		// This must come before ClientKill() for CheckWinConditions() to function properly
+		if (player->pev->deadflag == DEAD_NO)
+		{
+			ClientKill(player->edict());
+		}
 	}
 
 	// Switch their actual team...
@@ -2575,6 +2603,21 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 
 			case Menu_ChooseTeam:
 			{
+#ifdef REGAMEDLL_ADD
+				if (!player->m_bVGUIMenus || player->CSPlayer()->m_bForceShowMenu)
+				{
+					player->CSPlayer()->m_bForceShowMenu = false;
+
+					if (!HandleMenu_ChooseTeam(player, slot))
+					{
+						player->m_iMenu = Menu_ChooseTeam;
+						if (player->m_iJoiningState == JOINED)
+							ShowVGUIMenu(player, VGUI_Menu_Team, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_5 | MENU_KEY_0), "#IG_Team_Select");
+						else
+							ShowVGUIMenu(player, VGUI_Menu_Team, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_5), "#Team_Select");
+					}
+				}
+#else
 				if (!player->m_bVGUIMenus && !HandleMenu_ChooseTeam(player, slot))
 				{
 					player->m_iMenu = Menu_ChooseTeam;
@@ -2583,6 +2626,7 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 					else
 						ShowVGUIMenu(player, VGUI_Menu_Team, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_5), "#Team_Select");
 				}
+#endif
 				break;
 			}
 			case Menu_IGChooseTeam:
@@ -2807,9 +2851,7 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 	else if (FStrEq(pcmd, "chooseteam"))
 	{
 		if (player->m_iMenu == Menu_ChooseAppearance)
-		{
 			return;
-		}
 
 		if (player->m_bTeamChanged)
 		{

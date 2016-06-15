@@ -30,6 +30,7 @@ Archive's bin directory contains 2 subdirectories, 'bugfixed' and 'pure'
 | mp_auto_reload_weapons        | 0       | 0   | 1            | Automatically reload each weapon on player spawn<br/>`0` disabled<br/>`1` enabled |
 | mp_refill_bpammo_weapons      | 0       | 0   | 2            | Refill amount of backpack ammo up to the max <br/>`0` disabled<br/>`1` refill backpack ammo on player spawn<br/>`2` refill backpack ammo on each weapon reload |
 | bot_deathmatch                | 0       | 0   | 1            | Set's the mode for the zBot <br/>`0` disabled<br/>`1` enable mode Deathmatch and not allow to do the scenario |
+| mp_auto_join_team             | 0       | 0   | 1            | Automatically joins the team <br/>`0` disabled<br/>`1` enable (Use in conjunction with the cvar humans_join_team any/CT/T) |
 
 ## How to install zBot for CS 1.6?
 * Extract all the files from an [archive](regamedll/extra/zBot/bot_profiles.zip?raw=true)
