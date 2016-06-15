@@ -272,7 +272,7 @@ FunctionHook g_FunctionHooks[] =
 	{ 0x01D64260, "_Z11ListPlayersP11CBasePlayer", (size_t)&ListPlayers },
 	{ 0x01D64460, "CountTeamPlayers", (size_t)&CountTeamPlayers },			//extern c func
 	{ 0x01D64580, "_Z15ProcessKickVoteP11CBasePlayerS0_", (size_t)&ProcessKickVote },
-	{ 0x01D64920, "_Z17SelectDefaultTeamv", (size_t)&SelectDefaultTeam },
+	//{ 0x01D64920, "_Z17SelectDefaultTeamv", (size_t)&SelectDefaultTeam },
 	{ 0x01D649A0, "_Z15CheckStartMoneyv", (size_t)&CheckStartMoney },
 	{ 0x01D649F0, "_Z17ClientPutInServerP7edict_s", (size_t)&ClientPutInServer },
 	{ 0x01D64F00, "Q_strlen", (size_t)&Q_strlen_ },

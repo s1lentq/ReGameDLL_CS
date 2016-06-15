@@ -790,8 +790,7 @@ bool CCSBotManager::BotAddCommand(BotProfileTeamType team, bool isFromConsole)
 				team = BOT_TEAM_CT;
 			else
 			{
-				TeamName defaultTeam = SelectDefaultTeam();
-
+				TeamName defaultTeam = CSGameRules()->SelectDefaultTeam();
 				if (defaultTeam == TERRORIST)
 					team = BOT_TEAM_T;
 
@@ -1175,7 +1174,7 @@ bool CCSBotManager::AddBot(const BotProfile *profile, BotProfileTeamType team)
 
 	if (nTeamSlot == UNASSIGNED)
 	{
-		nTeamSlot = SelectDefaultTeam();
+		nTeamSlot = CSGameRules()->SelectDefaultTeam();
 	}
 
 	if (nTeamSlot == UNASSIGNED || CSGameRules()->TeamFull(nTeamSlot))

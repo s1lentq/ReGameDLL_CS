@@ -125,7 +125,6 @@ void ShowVGUIMenu(CBasePlayer *pPlayer, int MenuType, int BitMask, char *szOldMe
 void ShowVGUIMenu_(CBasePlayer *pPlayer, int MenuType, int BitMask, char *szOldMenu);
 void ListPlayers(CBasePlayer *current);
 void ProcessKickVote(CBasePlayer *pVotingPlayer, CBasePlayer *pKickPlayer);
-TeamName SelectDefaultTeam();
 void CheckStartMoney();
 void ClientPutInServer(edict_t *pEntity);
 int Q_strlen_(const char *str);

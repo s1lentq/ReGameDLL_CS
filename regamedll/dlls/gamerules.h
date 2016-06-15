@@ -632,6 +632,7 @@ public:
 	// BOMB MAP FUNCTIONS
 	VFUNC BOOL IsThereABomber();
 	VFUNC BOOL IsThereABomb();
+	VFUNC TeamName SelectDefaultTeam();
 
 	bool IsMatchStarted() { return (m_fTeamCount != 0.0f || m_fCareerRoundMenuTime != 0.0f || m_fCareerMatchMenuTime != 0.0f); }
 	void SendMOTDToClient(edict_t *client);

@@ -388,63 +388,6 @@ void ProcessKickVote(CBasePlayer *pVotingPlayer, CBasePlayer *pKickPlayer)
 	}
 }
 
-TeamName SelectDefaultTeam()
-{
-	TeamName team = UNASSIGNED;
-
-	if (CSGameRules()->m_iNumTerrorist < CSGameRules()->m_iNumCT)
-	{
-		team = TERRORIST;
-	}
-	else if (CSGameRules()->m_iNumTerrorist > CSGameRules()->m_iNumCT)
-	{
-		team = CT;
-	}
-	// Choose the team that's losing
-	else if (CSGameRules()->m_iNumTerroristWins < CSGameRules()->m_iNumCTWins)
-	{
-		team = TERRORIST;
-	}
-	else if (CSGameRules()->m_iNumCTWins < CSGameRules()->m_iNumTerroristWins)
-	{
-		team = CT;
-	}
-	else
-	{
-		// Teams and scores are equal, pick a random team
-		if (RANDOM_LONG(0, 1) == 0)
-		{
-			team = CT;
-		}
-		else
-		{
-			team = TERRORIST;
-		}
-	}
-
-	if (CSGameRules()->TeamFull(team))
-	{
-		// Pick the opposite team
-		if (team == TERRORIST)
-		{
-			team = CT;
-		}
-		else
-		{
-			team = TERRORIST;
-		}
-
-		// No choices left
-		if (CSGameRules()->TeamFull(team))
-		{
-			return UNASSIGNED;
-		}
-	}
-
-	return team;
-
-}
-
 void CheckStartMoney()
 {
 	int money = int(startmoney.value);
@@ -1594,8 +1537,7 @@ BOOL __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *player, int slot)
 	case MENU_SLOT_TEAM_RANDOM:
 	{
 		// Attempt to auto-select a team
-		team = SelectDefaultTeam();
-
+		team = CSGameRules()->SelectDefaultTeam();
 		if (team == UNASSIGNED)
 		{
 			if (cv_bot_auto_vacate.value > 0.0f && !player->IsBot())

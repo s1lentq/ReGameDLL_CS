@@ -4879,3 +4879,45 @@ void CHalfLifeMultiplay::ServerActivate()
 	ReadMultiplayCvars();
 	CheckMapConditions();
 }
+
+TeamName CHalfLifeMultiplay::SelectDefaultTeam()
+{
+	TeamName team = UNASSIGNED;
+	if (m_iNumTerrorist < m_iNumCT)
+	{
+		team = TERRORIST;
+	}
+	else if (m_iNumTerrorist > m_iNumCT)
+	{
+		team = CT;
+	}
+	// Choose the team that's losing
+	else if (m_iNumTerroristWins < m_iNumCTWins)
+	{
+		team = TERRORIST;
+	}
+	else if (m_iNumCTWins < m_iNumTerroristWins)
+	{
+		team = CT;
+	}
+	else
+	{
+		// Teams and scores are equal, pick a random team
+		team = (RANDOM_LONG(0, 1) == 0) ? CT : TERRORIST;
+	}
+
+	if (TeamFull(team))
+	{
+		// Pick the opposite team
+		team = (team == TERRORIST) ? CT : TERRORIST;
+
+		// No choices left
+		if (TeamFull(team))
+		{
+			return UNASSIGNED;
+		}
+	}
+
+	return team;
+
+}
