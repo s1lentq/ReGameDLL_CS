@@ -78,7 +78,14 @@ public:
 	virtual void SetBombIcon(bool bFlash = false);
 	virtual void SetScoreAttrib(CBasePlayer *dest);
 	virtual void SendItemStatus();
-	virtual void ReloadWeapons(CBasePlayerItem *pWeapon = nullptr);
+	virtual void ReloadWeapons(CBasePlayerItem *pWeapon = nullptr, bool bForceReload = false, bool bForceRefill = false);
+	virtual void Observer_SetMode(int iMode);
+	virtual bool SelectSpawnSpot(const char *pEntClassName, CBaseEntity* &pSpot);
+	virtual bool SwitchWeapon(CBasePlayerItem *pWeapon);
+	virtual void SwitchTeam();
+	virtual bool JoinTeam(TeamName team);
+	virtual void StartObserver(Vector& vecPosition, Vector& vecViewAngle);
+	virtual void TeamChangeUpdate();
 
 	CBasePlayer *BasePlayer() const;
 public:

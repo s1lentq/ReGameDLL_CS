@@ -281,7 +281,7 @@ private:
 // The Counter-strike Bot
 class CCSBot: public CBot {
 public:
-	virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType) = 0;		// invoked when injured by something (EXTEND) - returns the amount of damage inflicted
+	virtual BOOL TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType) = 0;		// invoked when injured by something (EXTEND) - returns the amount of damage inflicted
 	virtual void Killed(entvars_t *pevAttacker, int iGib) = 0;									// invoked when killed (EXTEND)
 	virtual void RoundRespawn() = 0;
 	virtual void Blind(float duration, float holdTime, float fadeTime, int alpha = 255) = 0;					// player blinded by a flashbang

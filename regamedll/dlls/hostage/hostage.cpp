@@ -564,7 +564,7 @@ void CHostage::RePosition()
 	m_flNextFullThink = gpGlobals->time + RANDOM_FLOAT(0.1, 0.2);
 }
 
-int CHostage::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
+BOOL CHostage::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
 	float flActualDamage;
 	CBasePlayer *pAttacker = NULL;
@@ -624,7 +624,7 @@ int CHostage::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAt
 				pAttacker->m_flDisplayHistory |= DHF_HOSTAGE_INJURED;
 			}
 
-			return 1;
+			return TRUE;
 		}
 	}
 	else
@@ -664,7 +664,7 @@ int CHostage::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAt
 		SetThink(&CHostage::Remove);
 	}
 
-	return 0;
+	return FALSE;
 }
 
 float CHostage::GetModifiedDamage(float flDamage, int nHitGroup)

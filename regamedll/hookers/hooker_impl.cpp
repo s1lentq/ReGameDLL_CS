@@ -715,7 +715,7 @@ void CPendulum::Blocked(CBaseEntity *pOther) { Blocked_(pOther); }
 void CBaseButton::Spawn() { Spawn_(); }
 void CBaseButton::Precache() { Precache_(); }
 void CBaseButton::KeyValue(KeyValueData *pkvd) { KeyValue_(pkvd); }
-int CBaseButton::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType) { return TakeDamage_(pevInflictor, pevAttacker, flDamage, bitsDamageType); }
+BOOL CBaseButton::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType) { return TakeDamage_(pevInflictor, pevAttacker, flDamage, bitsDamageType); }
 int CBaseButton::Save(CSave &save) { return Save_(save); }
 int CBaseButton::Restore(CRestore &restore) { return Restore_(restore); }
 
@@ -748,7 +748,7 @@ int CEnvSpark::Restore(CRestore &restore) { return Restore_(restore); }
 
 void CButtonTarget::Spawn() { Spawn_(); }
 int CButtonTarget::ObjectCaps() { return ObjectCaps_(); }
-int CButtonTarget::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType) { return TakeDamage_(pevInflictor, pevAttacker, flDamage, bitsDamageType); }
+BOOL CButtonTarget::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType) { return TakeDamage_(pevInflictor, pevAttacker, flDamage, bitsDamageType); }
 void CButtonTarget::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value) { Use_(pActivator, pCaller, useType, value); }
 
 // career
@@ -763,8 +763,8 @@ int CBaseEntity::Save(CSave &save) { return Save_(save); }
 int CBaseEntity::Restore(CRestore &restore) { return Restore_(restore); }
 void CBaseEntity::SetObjectCollisionBox() { SetObjectCollisionBox_(); }
 void CBaseEntity::TraceAttack(entvars_t *pevAttacker,float flDamage,Vector vecDir,TraceResult *ptr,int bitsDamageType) { TraceAttack_(pevAttacker,flDamage,vecDir,ptr,bitsDamageType); }
-int CBaseEntity::TakeDamage(entvars_t *pevInflictor,entvars_t *pevAttacker,float flDamage,int bitsDamageType) { return TakeDamage_(pevInflictor,pevAttacker,flDamage,bitsDamageType); }
-int CBaseEntity::TakeHealth(float flHealth,int bitsDamageType) { return TakeHealth_(flHealth, bitsDamageType); }
+BOOL CBaseEntity::TakeDamage(entvars_t *pevInflictor,entvars_t *pevAttacker,float flDamage,int bitsDamageType) { return TakeDamage_(pevInflictor,pevAttacker,flDamage,bitsDamageType); }
+BOOL CBaseEntity::TakeHealth(float flHealth,int bitsDamageType) { return TakeHealth_(flHealth, bitsDamageType); }
 void CBaseEntity::Killed(entvars_t *pevAttacker,int iGib) { Killed_(pevAttacker,iGib); }
 void CBaseEntity::TraceBleed(float flDamage,Vector vecDir,TraceResult *ptr,int bitsDamageType) { TraceBleed_(flDamage,vecDir,ptr,bitsDamageType); }
 int CBaseEntity::DamageDecal(int bitsDamageType) { return DamageDecal_(bitsDamageType); }
@@ -776,8 +776,8 @@ BOOL CBaseEntity::FVisible(const Vector &vecOrigin) { return FVisible_(vecOrigin
 // combat
 void CBaseMonster::KeyValue(KeyValueData *pkvd) { KeyValue_(pkvd); }
 void CBaseMonster::TraceAttack(entvars_t *pevAttacker,float flDamage,Vector vecDir,TraceResult *ptr,int bitsDamageType) { TraceAttack_(pevAttacker, flDamage, vecDir, ptr, bitsDamageType); }
-int CBaseMonster::TakeDamage(entvars_t *pevInflictor,entvars_t *pevAttacker,float flDamage,int bitsDamageType) { return TakeDamage_(pevInflictor, pevAttacker, flDamage, bitsDamageType); }
-int CBaseMonster::TakeHealth(float flHealth,int bitsDamageType) { return TakeHealth_(flHealth, bitsDamageType); }
+BOOL CBaseMonster::TakeDamage(entvars_t *pevInflictor,entvars_t *pevAttacker,float flDamage,int bitsDamageType) { return TakeDamage_(pevInflictor, pevAttacker, flDamage, bitsDamageType); }
+BOOL CBaseMonster::TakeHealth(float flHealth,int bitsDamageType) { return TakeHealth_(flHealth, bitsDamageType); }
 void CBaseMonster::Killed(entvars_t *pevAttacker,int iGib) { Killed_(pevAttacker, iGib); }
 float CBaseMonster::ChangeYaw(int speed) { return ChangeYaw_(speed); }
 BOOL CBaseMonster::HasHumanGibs() { return HasHumanGibs_(); }
@@ -917,7 +917,7 @@ void CBreakable::KeyValue(KeyValueData *pkvd) { KeyValue_(pkvd); }
 int CBreakable::Save(CSave &save) { return Save_(save); }
 int CBreakable::Restore(CRestore &restore) { return Restore_(restore); }
 void CBreakable::TraceAttack(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType) { TraceAttack_(pevAttacker, flDamage, vecDir, ptr, bitsDamageType); }
-int CBreakable::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType) { return TakeDamage_(pevInflictor, pevAttacker, flDamage, bitsDamageType); }
+BOOL CBreakable::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType) { return TakeDamage_(pevInflictor, pevAttacker, flDamage, bitsDamageType); }
 int CBreakable::DamageDecal(int bitsDamageType) { return DamageDecal_(bitsDamageType); }
 void CBreakable::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value) { Use_(pActivator, pCaller, useType, value); }
 
@@ -926,7 +926,7 @@ void CPushable::Precache() { Precache_(); }
 void CPushable::KeyValue(KeyValueData *pkvd) { KeyValue_(pkvd); }
 int CPushable::Save(CSave &save) { return Save_(save); }
 int CPushable::Restore(CRestore &restore) { return Restore_(restore); }
-int CPushable::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType) { return TakeDamage_(pevInflictor, pevAttacker, flDamage, bitsDamageType); }
+BOOL CPushable::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType) { return TakeDamage_(pevInflictor, pevAttacker, flDamage, bitsDamageType); }
 void CPushable::Touch(CBaseEntity *pOther) { Touch_(pOther); }
 void CPushable::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value) { Use_(pActivator, pCaller, useType, value); }
 
@@ -1001,14 +1001,14 @@ void CCyclerSprite::Spawn() { Spawn_(); }
 void CCyclerSprite::Restart() { Restart_(); }
 int CCyclerSprite::Save(CSave &save) { return Save_(save); }
 int CCyclerSprite::Restore(CRestore &restore) { return Restore_(restore); }
-int CCyclerSprite::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType) { return TakeDamage_(pevInflictor,pevAttacker,flDamage,bitsDamageType); }
+BOOL CCyclerSprite::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType) { return TakeDamage_(pevInflictor,pevAttacker,flDamage,bitsDamageType); }
 void CCyclerSprite::Think() { Think_(); }
 void CCyclerSprite::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value) { Use_(pActivator,pCaller,useType,value); }
 
 void CCycler::Spawn() { Spawn_(); }
 int CCycler::Save(CSave &save) { return Save_(save); }
 int CCycler::Restore(CRestore &restore) { return Restore_(restore); }
-int CCycler::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType) { return TakeDamage_(pevInflictor,pevAttacker,flDamage,bitsDamageType); }
+BOOL CCycler::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType) { return TakeDamage_(pevInflictor,pevAttacker,flDamage,bitsDamageType); }
 void CCycler::Think() { Think_(); }
 void CCycler::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value) { Use_(pActivator,pCaller,useType,value); }
 
@@ -1281,7 +1281,7 @@ void CGunTarget::Spawn() { Spawn_(); }
 int CGunTarget::Save(CSave &save) { return Save_(save); }
 int CGunTarget::Restore(CRestore &restore) { return Restore_(restore); }
 void CGunTarget::Activate() { Activate_(); }
-int CGunTarget::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType) { return TakeDamage_(pevInflictor, pevAttacker, flDamage, bitsDamageType); }
+BOOL CGunTarget::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType) { return TakeDamage_(pevInflictor, pevAttacker, flDamage, bitsDamageType); }
 void CGunTarget::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value) { Use_(pActivator, pCaller, useType, value); }
 
 // player
@@ -1292,8 +1292,8 @@ int CBasePlayer::ObjectCaps() { return ObjectCaps_(); }
 int CBasePlayer::Restore(CRestore &restore) { return Restore_(restore); }
 int CBasePlayer::Classify() { return Classify_(); }
 void CBasePlayer::TraceAttack(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType) { TraceAttack_(pevAttacker, flDamage, vecDir, ptr, bitsDamageType); }
-int CBasePlayer::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType) { return TakeDamage_(pevInflictor, pevAttacker, flDamage, bitsDamageType); }
-int CBasePlayer::TakeHealth(float flHealth, int bitsDamageType) { return TakeHealth_(flHealth, bitsDamageType); }
+BOOL CBasePlayer::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType) { return TakeDamage_(pevInflictor, pevAttacker, flDamage, bitsDamageType); }
+BOOL CBasePlayer::TakeHealth(float flHealth, int bitsDamageType) { return TakeHealth_(flHealth, bitsDamageType); }
 void CBasePlayer::Killed(entvars_t *pevAttacker, int iGib) { Killed_(pevAttacker, iGib); }
 void CBasePlayer::AddPoints(int score, BOOL bAllowNegativeScore) { AddPoints_(score, bAllowNegativeScore); }
 void CBasePlayer::AddPointsToTeam(int score, BOOL bAllowNegativeScore) { AddPointsToTeam_(score, bAllowNegativeScore); }
@@ -1943,7 +1943,7 @@ void CXM1014::WeaponIdle() { WeaponIdle_(); }
 void CHostage::Spawn() { Spawn_(); }
 void CHostage::Precache() { Precache_(); }
 int CHostage::ObjectCaps() { return ObjectCaps_(); }
-int CHostage::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType) { return TakeDamage_(pevInflictor, pevAttacker, flDamage, bitsDamageType); }
+BOOL CHostage::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType) { return TakeDamage_(pevInflictor, pevAttacker, flDamage, bitsDamageType); }
 void CHostage::Touch(CBaseEntity *pOther) { Touch_(pOther); }
 void CHostage::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value) { Use_(pActivator, pCaller, useType, value); }
 
@@ -2032,7 +2032,7 @@ void HostageRetreatState::OnExit(CHostageImprov *improv) { OnExit_(improv); }
 // cs_bot
 void CCSBot::Walk() { Walk_(); }
 bool CCSBot::Jump(bool mustJump) { return Jump_(mustJump); }
-int CCSBot::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType) { return TakeDamage_(pevInflictor, pevAttacker, flDamage, bitsDamageType); }
+BOOL CCSBot::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType) { return TakeDamage_(pevInflictor, pevAttacker, flDamage, bitsDamageType); }
 void CCSBot::Killed(entvars_t *pevAttacker, int iGib) { Killed_(pevAttacker, iGib); }
 
 // cs_bot_chatter

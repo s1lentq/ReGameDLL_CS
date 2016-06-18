@@ -52,12 +52,12 @@ typedef IVoidHookChainClassImpl<CBasePlayer, entvars_t *, float, Vector &, Trace
 typedef IVoidHookChainRegistryClassImpl<CBasePlayer, entvars_t *, float, Vector &, TraceResult *, int> CReGameHookRegistry_CBasePlayer_TraceAttack;
 
 // CBasePlayer::TakeDamage hook
-typedef IHookChainClassImpl<int, CBasePlayer, entvars_t *, entvars_t *, float&, int> CReGameHook_CBasePlayer_TakeDamage;
-typedef IHookChainRegistryClassImpl<int, CBasePlayer, entvars_t *, entvars_t *, float&, int> CReGameHookRegistry_CBasePlayer_TakeDamage;
+typedef IHookChainClassImpl<BOOL, CBasePlayer, entvars_t *, entvars_t *, float&, int> CReGameHook_CBasePlayer_TakeDamage;
+typedef IHookChainRegistryClassImpl<BOOL, CBasePlayer, entvars_t *, entvars_t *, float&, int> CReGameHookRegistry_CBasePlayer_TakeDamage;
 
 // CBasePlayer::TakeHealth hook
-typedef IHookChainClassImpl<int, CBasePlayer, float, int> CReGameHook_CBasePlayer_TakeHealth;
-typedef IHookChainRegistryClassImpl<int, CBasePlayer, float, int> CReGameHookRegistry_CBasePlayer_TakeHealth;
+typedef IHookChainClassImpl<BOOL, CBasePlayer, float, int> CReGameHook_CBasePlayer_TakeHealth;
+typedef IHookChainRegistryClassImpl<BOOL, CBasePlayer, float, int> CReGameHookRegistry_CBasePlayer_TakeHealth;
 
 // CBasePlayer::Killed hook
 typedef IVoidHookChainClassImpl<CBasePlayer, entvars_t *, int> CReGameHook_CBasePlayer_Killed;
@@ -296,6 +296,10 @@ typedef IVoidHookChainRegistryClassEmptyImpl<class CHalfLifeMultiplay> CReGameHo
 typedef IVoidHookChainClassImpl<class CHalfLifeMultiplay> CReGameHook_CSGameRules_BalanceTeams;
 typedef IVoidHookChainRegistryClassEmptyImpl<class CHalfLifeMultiplay> CReGameHookRegistry_CSGameRules_BalanceTeams;
 
+// CanBuyThisItem hook
+typedef IHookChainImpl<bool, class CBasePlayer *, BuyItemID> CReGameHook_CanBuyThisItem;
+typedef IHookChainRegistryImpl<bool, class CBasePlayer *, BuyItemID> CReGameHookRegistry_CanBuyThisItem;
+
 class CReGameHookchains: public IReGameHookchains {
 public:
 	// CBasePlayer virtual
@@ -369,6 +373,8 @@ public:
 	CReGameHookRegistry_CSGameRules_GoToIntermission m_CSGameRules_GoToIntermission;
 	CReGameHookRegistry_CSGameRules_BalanceTeams m_CSGameRules_BalanceTeams;
 
+	CReGameHookRegistry_CanBuyThisItem m_CanBuyThisItem;
+
 public:
 	virtual IReGameHookRegistry_CBasePlayer_Spawn* CBasePlayer_Spawn();
 	virtual IReGameHookRegistry_CBasePlayer_Precache* CBasePlayer_Precache();
@@ -439,6 +445,8 @@ public:
 	virtual IReGameHookRegistry_CSGameRules_ChangeLevel* CSGameRules_ChangeLevel();
 	virtual IReGameHookRegistry_CSGameRules_GoToIntermission* CSGameRules_GoToIntermission();
 	virtual IReGameHookRegistry_CSGameRules_BalanceTeams* CSGameRules_BalanceTeams();
+
+	virtual IReGameHookRegistry_CanBuyThisItem* CanBuyThisItem();
 };
 
 extern CReGameHookchains g_ReGameHookchains;

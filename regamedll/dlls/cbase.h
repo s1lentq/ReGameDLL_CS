@@ -237,8 +237,8 @@ public:
 	virtual int Classify() { return CLASS_NONE; }
 	virtual void DeathNotice(entvars_t *pevChild) {}
 	virtual void TraceAttack(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType);
-	virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
-	virtual int TakeHealth(float flHealth, int bitsDamageType);
+	virtual BOOL TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
+	virtual BOOL TakeHealth(float flHealth, int bitsDamageType);
 	virtual void Killed(entvars_t *pevAttacker, int iGib);
 	virtual int BloodColor() { return DONT_BLEED; }
 	virtual void TraceBleed(float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType);
@@ -294,8 +294,8 @@ public:
 	int Restore_(CRestore &restore);
 	void SetObjectCollisionBox_();
 	void TraceAttack_(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType);
-	int TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
-	int TakeHealth_(float flHealth, int bitsDamageType);
+	BOOL TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
+	BOOL TakeHealth_(float flHealth, int bitsDamageType);
 	void Killed_(entvars_t *pevAttacker, int iGib);
 	void TraceBleed_(float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType);
 	int DamageDecal_(int bitsDamageType);
@@ -596,7 +596,7 @@ public:
 	virtual void Spawn();
 	virtual void Precache();
 	virtual void KeyValue(KeyValueData *pkvd);
-	virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
+	virtual BOOL TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
 	virtual int ObjectCaps()
@@ -614,7 +614,7 @@ public:
 	void Spawn_();
 	void Precache_();
 	void KeyValue_(KeyValueData *pkvd);
-	int TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
+	BOOL TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
 	int Save_(CSave &save);
 	int Restore_(CRestore &restore);
 

@@ -2125,7 +2125,7 @@ void CGunTarget::Stop()
 	pev->takedamage = DAMAGE_NO;
 }
 
-int CGunTarget::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
+BOOL CGunTarget::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
 	if (pev->health > 0)
 	{
@@ -2143,7 +2143,7 @@ int CGunTarget::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pev
 		}
 	}
 
-	return 0;
+	return FALSE;
 }
 
 void CGunTarget::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)

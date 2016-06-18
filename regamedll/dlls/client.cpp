@@ -1007,6 +1007,12 @@ void BuyMachineGun(CBasePlayer *pPlayer, int iSlot)
 	BuyWeaponByWeaponID(pPlayer, WEAPON_M249);
 }
 
+#ifdef REGAMEDLL_ADD
+bool EXT_FUNC CanBuyThisItem_hook(CBasePlayer *pPlayer, BuyItemID item) {
+	return true;
+}
+#endif
+
 void BuyItem(CBasePlayer *pPlayer, int iSlot)
 {
 	int iItemPrice = 0;
@@ -1034,6 +1040,11 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 	{
 		case MENU_SLOT_ITEM_VEST:
 		{
+#ifdef REGAMEDLL_ADD
+			if (!g_ReGameHookchains.m_CanBuyThisItem.callChain(CanBuyThisItem_hook, pPlayer, BUY_ITEM_VEST))
+				return;
+#endif
+
 			if (fullArmor)
 			{
 				if (g_bClientPrintEnable)
@@ -1059,6 +1070,11 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 		}
 		case MENU_SLOT_ITEM_VESTHELM:
 		{
+#ifdef REGAMEDLL_ADD
+			if (!g_ReGameHookchains.m_CanBuyThisItem.callChain(CanBuyThisItem_hook, pPlayer, BUY_ITEM_VESTHELM))
+				return;
+#endif
+
 			if (fullArmor)
 			{
 				if (bHasHelmet)
@@ -1114,6 +1130,11 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 		}
 		case MENU_SLOT_ITEM_FLASHGREN:
 		{
+#ifdef REGAMEDLL_ADD
+			if (!g_ReGameHookchains.m_CanBuyThisItem.callChain(CanBuyThisItem_hook, pPlayer, BUY_ITEM_FLASHGREN))
+				return;
+#endif
+
 			if (pPlayer->AmmoInventory(pPlayer->GetAmmoIndex("Flashbang")) >= MaxAmmoCarry("Flashbang"))
 			{
 				if (g_bClientPrintEnable)
@@ -1135,6 +1156,11 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 		}
 		case MENU_SLOT_ITEM_HEGREN:
 		{
+#ifdef REGAMEDLL_ADD
+			if (!g_ReGameHookchains.m_CanBuyThisItem.callChain(CanBuyThisItem_hook, pPlayer, BUY_ITEM_HEGREN))
+				return;
+#endif
+
 			if (pPlayer->AmmoInventory(pPlayer->GetAmmoIndex("HEGrenade")) >= MaxAmmoCarry("HEGrenade"))
 			{
 				if (g_bClientPrintEnable)
@@ -1155,6 +1181,11 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 		}
 		case MENU_SLOT_ITEM_SMOKEGREN:
 		{
+#ifdef REGAMEDLL_ADD
+			if (!g_ReGameHookchains.m_CanBuyThisItem.callChain(CanBuyThisItem_hook, pPlayer, BUY_ITEM_SMOKEGREN))
+				return;
+#endif
+
 			if (pPlayer->AmmoInventory(pPlayer->GetAmmoIndex("SmokeGrenade")) >= MaxAmmoCarry("SmokeGrenade"))
 			{
 				if (g_bClientPrintEnable)
@@ -1175,6 +1206,11 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 		}
 		case MENU_SLOT_ITEM_NVG:
 		{
+#ifdef REGAMEDLL_ADD
+			if (!g_ReGameHookchains.m_CanBuyThisItem.callChain(CanBuyThisItem_hook, pPlayer, BUY_ITEM_NVG))
+				return;
+#endif
+
 			if (pPlayer->m_bHasNightVision)
 			{
 				if (g_bClientPrintEnable)
@@ -1204,6 +1240,11 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 		}
 		case MENU_SLOT_ITEM_DEFUSEKIT:
 		{
+#ifdef REGAMEDLL_ADD
+			if (!g_ReGameHookchains.m_CanBuyThisItem.callChain(CanBuyThisItem_hook, pPlayer, BUY_ITEM_DEFUSEKIT))
+				return;
+#endif
+
 			if (pPlayer->m_iTeam != CT || !CSGameRules()->m_bMapHasBombTarget)
 				return;
 

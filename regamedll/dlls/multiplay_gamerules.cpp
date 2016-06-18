@@ -423,6 +423,13 @@ void CHalfLifeMultiplay::ReadMultiplayCvars()
 		CVAR_SET_FLOAT("mp_limitteams", 0);
 		m_iLimitTeams = 0;
 	}
+
+	// auto-disable ff
+	if (friendlyfire.value)
+	{
+		CVAR_SET_FLOAT("mp_friendlyfire", 0);
+	}
+
 #endif
 
 }
@@ -601,6 +608,7 @@ CHalfLifeMultiplay::CHalfLifeMultiplay()
 	sv_clienttrace = CVAR_GET_POINTER("sv_clienttrace");
 	InstallTutor(CVAR_GET_FLOAT("tutor_enable") != 0.0f);
 
+	m_bSkipShowMenu = false;
 	m_bNeededPlayers = false;
 	m_flEscapeRatio = 0.0f;
 
@@ -4082,6 +4090,13 @@ edict_t *CHalfLifeMultiplay::__API_VHOOK(GetPlayerSpawnSpot)(CBasePlayer *pPlaye
 
 int CHalfLifeMultiplay::__MAKE_VHOOK(PlayerRelationship)(CBasePlayer *pPlayer, CBaseEntity *pTarget)
 {
+#ifdef REGAMEDLL_ADD
+	if (IsFreeForAll())
+	{
+		return GR_NOTTEAMMATE;
+	}
+#endif
+
 	if (!pPlayer || !pTarget)
 	{
 		return GR_NOTTEAMMATE;

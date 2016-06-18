@@ -94,7 +94,7 @@ public:
 	virtual void Precache();
 	virtual int ObjectCaps();		// make hostage "useable"
 	virtual int Classify() { return CLASS_HUMAN_PASSIVE; }
-	virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
+	virtual BOOL TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
 	virtual int BloodColor() { return BLOOD_COLOR_RED; }
 	virtual void Touch(CBaseEntity *pOther);
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
@@ -104,7 +104,7 @@ public:
 	void Spawn_();
 	void Precache_();
 	int ObjectCaps_();
-	int TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
+	BOOL TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
 	void Touch_(CBaseEntity *pOther);
 	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 

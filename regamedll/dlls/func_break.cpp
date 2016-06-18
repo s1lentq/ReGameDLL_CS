@@ -580,7 +580,7 @@ void CBreakable::__MAKE_VHOOK(TraceAttack)(entvars_t *pevAttacker, float flDamag
 // Special takedamage for func_breakable. Allows us to make
 // exceptions that are breakable-specific
 // bitsDamageType indicates the type of damage sustained ie: DMG_CRUSH
-int CBreakable::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
+BOOL CBreakable::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
 	Vector vecTemp;
 
@@ -603,7 +603,7 @@ int CBreakable::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pev
 	}
 
 	if (!IsBreakable())
-		return 0;
+		return FALSE;
 
 	// Breakables take double damage from the crowbar
 	if (bitsDamageType & DMG_CLUB)
@@ -638,13 +638,13 @@ int CBreakable::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pev
 		}
 
 		pev->nextthink = pev->ltime + m_flDelay;
-		return 0;
+		return FALSE;
 	}
 
 	// Make a shard noise each time func breakable is hit.
 	// Don't play shard noise if cbreakable actually died.
 	DamageSound();
-	return 1;
+	return TRUE;
 }
 
 void CBreakable::Die()
@@ -1038,12 +1038,12 @@ void CPushable::Move(CBaseEntity *pOther, int push)
 	}
 }
 
-int CPushable::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
+BOOL CPushable::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
 	if (pev->spawnflags & SF_PUSH_BREAKABLE)
 	{
 		return CBreakable::TakeDamage(pevInflictor, pevAttacker, flDamage, bitsDamageType);
 	}
 
-	return 1;
+	return TRUE;
 }

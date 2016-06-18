@@ -711,10 +711,10 @@ void CGib::Spawn(const char *szGibModel)
 	m_cBloodDecals = 5;
 }
 
-int CBaseMonster::__MAKE_VHOOK(TakeHealth)(float flHealth, int bitsDamageType)
+BOOL CBaseMonster::__MAKE_VHOOK(TakeHealth)(float flHealth, int bitsDamageType)
 {
 	if (pev->takedamage == DAMAGE_NO)
-		return 0;
+		return FALSE;
 
 	// clear out any damage types we healed.
 	// UNDONE: generic health should not heal any
@@ -730,10 +730,10 @@ int CBaseMonster::__MAKE_VHOOK(TakeHealth)(float flHealth, int bitsDamageType)
 //
 // Time-based damage: only occurs while the monster is within the trigger_hurt.
 // When a monster is poisoned via an arrow etc it takes all the poison damage at once.
-int CBaseMonster::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
+BOOL CBaseMonster::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
 	if (pev->takedamage == DAMAGE_NO)
-		return 0;
+		return FALSE;
 
 	if (!IsAlive())
 	{
@@ -791,7 +791,7 @@ int CBaseMonster::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *p
 	if (m_MonsterState == MONSTERSTATE_SCRIPT)
 	{
 		SetConditions(bits_COND_LIGHT_DAMAGE);
-		return 0;
+		return FALSE;
 	}
 
 	if (pev->health <= 0.0f)
@@ -807,7 +807,7 @@ int CBaseMonster::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *p
 			Killed(pevAttacker, GIB_NORMAL);
 
 		g_pevLastInflictor = NULL;
-		return 0;
+		return FALSE;
 	}
 	if ((pev->flags & FL_MONSTER) && !FNullEnt(pevAttacker))
 	{
@@ -837,11 +837,11 @@ int CBaseMonster::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *p
 		}
 	}
 
-	return 1;
+	return TRUE;
 }
 
 // DeadTakeDamage - takedamage function called when a monster's corpse is damaged.
-int CBaseMonster::DeadTakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
+BOOL CBaseMonster::DeadTakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
 	// grab the vector of the incoming attack. ( pretend that the inflictor is a little lower than it really is, so the body will tend to fly upward a bit).
 	Vector vecDir(0, 0, 0);
@@ -877,14 +877,14 @@ int CBaseMonster::DeadTakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker
 		{
 			pev->health = -50;
 			Killed(pevAttacker, GIB_ALWAYS);
-			return 0;
+			return FALSE;
 		}
 
 		// Accumulate corpse gibbing damage, so you can gib with multiple hits
 		pev->health -= flDamage * 0.1;
 	}
 
-	return 1;
+	return TRUE;
 }
 
 float CBaseMonster::DamageForce(float damage)

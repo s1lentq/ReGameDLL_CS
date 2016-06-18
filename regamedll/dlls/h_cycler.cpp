@@ -134,7 +134,7 @@ void CCycler::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, U
 }
 
 // CyclerPain , changes sequences when shot
-int CCycler::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
+BOOL CCycler::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
 	if (m_animate)
 	{
@@ -158,7 +158,7 @@ int CCycler::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAtt
 		ALERT(at_console, "sequence: %d, frame %.0f\n", pev->sequence, pev->frame);
 	}
 
-	return 0;
+	return FALSE;
 }
 
 LINK_ENTITY_TO_CLASS(cycler_sprite, CCyclerSprite, CCSCyclerSprite);
@@ -222,14 +222,14 @@ void CCyclerSprite::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCal
 	ALERT(at_console, "Sprite: %s\n", STRING(pev->model));
 }
 
-int CCyclerSprite::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
+BOOL CCyclerSprite::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
 	if (m_maxFrame > 1.0)
 	{
 		Animate(1.0);
 	}
 
-	return 1;
+	return TRUE;
 }
 
 void CCyclerSprite::Animate(float frames)

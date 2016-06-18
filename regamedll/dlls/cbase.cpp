@@ -785,13 +785,13 @@ CBaseEntity *EHANDLE::operator->()
 	return (CBaseEntity *)GET_PRIVATE(Get());
 }
 
-int CBaseEntity::__MAKE_VHOOK(TakeHealth)(float flHealth, int bitsDamageType)
+BOOL CBaseEntity::__MAKE_VHOOK(TakeHealth)(float flHealth, int bitsDamageType)
 {
 	if (pev->takedamage == DAMAGE_NO)
-		return 0;
+		return FALSE;
 
 	if (pev->health >= pev->max_health)
-		return 0;
+		return FALSE;
 
 	pev->health += flHealth;
 
@@ -800,15 +800,15 @@ int CBaseEntity::__MAKE_VHOOK(TakeHealth)(float flHealth, int bitsDamageType)
 		pev->health = pev->max_health;
 	}
 
-	return 1;
+	return TRUE;
 }
 
-int CBaseEntity::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
+BOOL CBaseEntity::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
 	Vector vecTemp;
 
 	if (pev->takedamage == DAMAGE_NO)
-		return 0;
+		return FALSE;
 
 	// UNDONE: some entity types may be immune or resistant to some bitsDamageType
 	// if Attacker == Inflictor, the attack was a melee or other instant-hit attack.
@@ -848,10 +848,10 @@ int CBaseEntity::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pe
 	if (pev->health <= 0)
 	{
 		Killed(pevAttacker, GIB_NORMAL);
-		return 0;
+		return FALSE;
 	}
 
-	return 1;
+	return TRUE;
 }
 
 void CBaseEntity::__MAKE_VHOOK(Killed)(entvars_t *pevAttacker, int iGib)

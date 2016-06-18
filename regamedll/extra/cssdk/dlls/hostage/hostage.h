@@ -85,7 +85,7 @@ public:
 	virtual void Precache() = 0;
 	virtual int ObjectCaps() = 0;		// make hostage "useable"
 	virtual int Classify() = 0;
-	virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType) = 0;
+	virtual BOOL TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType) = 0;
 	virtual int BloodColor() = 0;
 	virtual void Touch(CBaseEntity *pOther) = 0;
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value) = 0;

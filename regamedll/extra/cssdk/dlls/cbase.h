@@ -68,8 +68,8 @@ public:
 	virtual void DeathNotice(entvars_t *pevChild) = 0;
 
 	virtual void TraceAttack(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType) = 0;
-	virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType) = 0;
-	virtual int TakeHealth(float flHealth, int bitsDamageType) = 0;
+	virtual BOOL TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType) = 0;
+	virtual BOOL TakeHealth(float flHealth, int bitsDamageType) = 0;
 	virtual void Killed(entvars_t *pevAttacker, int iGib) = 0;
 	virtual int BloodColor() = 0;
 	virtual void TraceBleed(float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType) = 0;
@@ -268,7 +268,7 @@ public:
 	virtual void Spawn() = 0;
 	virtual void Precache() = 0;
 	virtual void KeyValue(KeyValueData *pkvd) = 0;
-	virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType) = 0;
+	virtual BOOL TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType) = 0;
 	virtual int Save(CSave &save) = 0;
 	virtual int Restore(CRestore &restore) = 0;
 	virtual int ObjectCaps() = 0;		// Buttons that don't take damage can be IMPULSE used

@@ -70,7 +70,7 @@ bool CCSBot::__MAKE_VHOOK(Jump)(bool mustJump)
 
 // Invoked when injured by something
 // NOTE: We dont want to directly call Attack() here, or the bots will have super-human reaction times when injured
-int CCSBot::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
+BOOL CCSBot::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
 	CBaseEntity *attacker = GetClassPtr<CCSEntity>((CBaseEntity *)pevInflictor);
 
@@ -104,12 +104,12 @@ int CCSBot::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAtta
 			// being hurt by an enemy we can't see causes panic
 			if (!IsVisible(enemy, CHECK_FOV))
 			{
-				bool panic = false;
+				bool bPanic = false;
 
 				// if not attacking anything, look around to try to find attacker
 				if (!IsAttacking())
 				{
-					panic = true;
+					bPanic = true;
 				}
 				else
 				{
@@ -117,22 +117,22 @@ int CCSBot::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAtta
 					if (!IsEnemyVisible())
 					{
 						// can't see our current enemy, panic to acquire new attacker
-						panic = true;
+						bPanic = true;
 					}
 				}
 
-				if (!panic)
+				if (!bPanic)
 				{
 					float invSkill = 1.0f - GetProfile()->GetSkill();
 					float panicChance = invSkill * invSkill * 50.0f;
 
 					if (panicChance > RANDOM_FLOAT(0, 100))
 					{
-						panic = true;
+						bPanic = true;
 					}
 				}
 
-				if (panic != false)
+				if (bPanic)
 				{
 					// can't see our current enemy, panic to acquire new attacker
 					Panic(m_attacker);

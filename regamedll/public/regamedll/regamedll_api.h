@@ -57,12 +57,12 @@ typedef IVoidHookChainClass<class CBasePlayer, struct entvars_s *, float, Vector
 typedef IVoidHookChainRegistryClass<class CBasePlayer, struct entvars_s *, float, Vector &, struct TraceResult *, int> IReGameHookRegistry_CBasePlayer_TraceAttack;
 
 // CBasePlayer::TakeDamage hook
-typedef IHookChainClass<int, class CBasePlayer, struct entvars_s *, struct entvars_s *, float&, int> IReGameHook_CBasePlayer_TakeDamage;
-typedef IHookChainRegistryClass<int, class CBasePlayer, struct entvars_s *, struct entvars_s *, float&, int> IReGameHookRegistry_CBasePlayer_TakeDamage;
+typedef IHookChainClass<BOOL, class CBasePlayer, struct entvars_s *, struct entvars_s *, float&, int> IReGameHook_CBasePlayer_TakeDamage;
+typedef IHookChainRegistryClass<BOOL, class CBasePlayer, struct entvars_s *, struct entvars_s *, float&, int> IReGameHookRegistry_CBasePlayer_TakeDamage;
 
 // CBasePlayer::TakeHealth hook
-typedef IHookChainClass<int, class CBasePlayer, float, int> IReGameHook_CBasePlayer_TakeHealth;
-typedef IHookChainRegistryClass<int, class CBasePlayer, float, int> IReGameHookRegistry_CBasePlayer_TakeHealth;
+typedef IHookChainClass<BOOL, class CBasePlayer, float, int> IReGameHook_CBasePlayer_TakeHealth;
+typedef IHookChainRegistryClass<BOOL, class CBasePlayer, float, int> IReGameHookRegistry_CBasePlayer_TakeHealth;
 
 // CBasePlayer::Killed hook
 typedef IVoidHookChainClass<class CBasePlayer, struct entvars_s *, int> IReGameHook_CBasePlayer_Killed;
@@ -301,6 +301,10 @@ typedef IVoidHookChainRegistry<> IReGameHookRegistry_CSGameRules_GoToIntermissio
 typedef IVoidHookChain<> IReGameHook_CSGameRules_BalanceTeams;
 typedef IVoidHookChainRegistry<> IReGameHookRegistry_CSGameRules_BalanceTeams;
 
+// CanBuyThisItem hook
+typedef IHookChain<bool, class CBasePlayer *, BuyItemID> IReGameHook_CanBuyThisItem;
+typedef IHookChainRegistry<bool, class CBasePlayer *, BuyItemID> IReGameHookRegistry_CanBuyThisItem;
+
 class IReGameHookchains {
 public:
 	virtual ~IReGameHookchains() {}
@@ -374,6 +378,8 @@ public:
 	virtual IReGameHookRegistry_CSGameRules_ChangeLevel* CSGameRules_ChangeLevel() = 0;
 	virtual IReGameHookRegistry_CSGameRules_GoToIntermission* CSGameRules_GoToIntermission() = 0;
 	virtual IReGameHookRegistry_CSGameRules_BalanceTeams* CSGameRules_BalanceTeams() = 0;
+
+	virtual IReGameHookRegistry_CanBuyThisItem* CanBuyThisItem() = 0;
 };
 
 struct ReGameFuncs_t {

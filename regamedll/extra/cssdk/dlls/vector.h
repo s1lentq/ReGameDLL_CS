@@ -31,13 +31,15 @@
 // operations that are treated as planar rather than 3d.
 class Vector2D {
 public:
-	inline Vector2D() : x(0.0), y(0.0) {}
-	inline Vector2D(float X, float Y) : x(0.0), y(0.0) { x = X; y = Y; }
+	inline Vector2D() : x(), y() {}
+	inline Vector2D(float X, float Y) : x(X), y(Y) {}
+	inline Vector2D(const Vector2D &v) { *(int*)&x = *(int*)&v.x; *(int*)&y = *(int*)&v.y; }
 	inline Vector2D operator+(const Vector2D &v) const { return Vector2D(x + v.x, y + v.y); }
 	inline Vector2D operator-(const Vector2D &v) const { return Vector2D(x - v.x, y - v.y); }
 	inline Vector2D operator*(float fl) const { return Vector2D(x * fl, y * fl); }
 	inline Vector2D operator/(float fl) const { return Vector2D(x / fl, y / fl); }
 	inline Vector2D operator/=(float fl) const { return Vector2D(x / fl, y / fl); }
+
 	inline float Length() const { return sqrt(x * x + y * y); }
 	inline float LengthSquared() const { return (x * x + y * y); }
 
@@ -89,11 +91,10 @@ inline Vector2D operator*(float fl, const Vector2D &v) { return v * fl; }
 class Vector {
 public:
 	// Construction/destruction
-	inline Vector() : x(0.0), y(0.0), z(0.0) {}
-	inline Vector(float X, float Y, float Z) : x(0.0), y(0.0), z(0.0) { x = X; y = Y; z = Z; }
-
-	inline Vector(const Vector &v) : x(0.0), y(0.0), z(0.0) { x = v.x; y = v.y; z = v.z; }
-	inline Vector(const float rgfl[3]) : x(0.0), y(0.0), z(0.0) { x = rgfl[0]; y = rgfl[1]; z = rgfl[2]; }
+	inline Vector() : x(), y(), z() {}
+	inline Vector(float X, float Y, float Z) : x(X), y(Y), z(Z) {}
+	inline Vector(const Vector &v) { *(int*)&x = *(int*)&v.x; *(int*)&y = *(int*)&v.y; *(int*)&z = *(int*)&v.z; }
+	inline Vector(const float rgfl[3]) { *(int*)&x = *(int*)&rgfl[0]; *(int*)&y = *(int*)&rgfl[1]; *(int*)&z = *(int*)&rgfl[2]; }
 
 	// Operators
 	inline Vector operator-() const { return Vector(-x, -y, -z); }
@@ -106,7 +107,7 @@ public:
 	inline Vector operator/=(float fl) const{ return Vector(x / fl, y / fl, z / fl); }
 
 	// Methods
-	inline void CopyToArray(float *rgfl) const { rgfl[0] = x; rgfl[1] = y; rgfl[2] = z; }
+	inline void CopyToArray(float *rgfl) const { *(int*)&rgfl[0] = *(int*)&x; *(int*)&rgfl[1] = *(int*)&y; *(int*)&rgfl[2] = *(int*)&z; }
 	inline float Length() const { return sqrt(x * x + y * y + z * z); }
 	inline float LengthSquared() const { return (x * x + y * y + z * z); }
 
@@ -122,7 +123,14 @@ public:
 		flLen = 1 / flLen;
 		return Vector(x * flLen, y * flLen, z * flLen);
 	}
-	inline Vector2D Make2D() const { return Vector2D(x, y); }
+	inline Vector2D Make2D() const
+	{
+		Vector2D Vec2;
+		*(int*)&Vec2.x = *(int*)&x;
+		*(int*)&Vec2.y = *(int*)&y;
+		return Vec2;
+	}
+
 	inline float Length2D() const { return sqrt(x * x + y * y); }
 
 	inline bool IsLengthLessThan(float length) const { return (LengthSquared() < length * length); }

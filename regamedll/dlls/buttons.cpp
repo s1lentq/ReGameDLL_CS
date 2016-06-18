@@ -372,13 +372,13 @@ void CBaseButton::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 }
 
 // ButtonShot
-int CBaseButton::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
+BOOL CBaseButton::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
 	BUTTON_CODE code = ButtonResponseToTouch();
 
 	if (code == BUTTON_NOTHING)
 	{
-		return 0;
+		return FALSE;
 	}
 
 	// Temporarily disable the touch function, until movement is finished.
@@ -386,7 +386,7 @@ int CBaseButton::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pe
 
 	m_hActivator = CBaseEntity::Instance(pevAttacker);
 	if (m_hActivator == NULL)
-		return 0;
+		return FALSE;
 
 	if (code == BUTTON_RETURN)
 	{
@@ -406,7 +406,7 @@ int CBaseButton::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pe
 		ButtonActivate();
 	}
 
-	return 0;
+	return FALSE;
 }
 
 // QUAKED func_button (0 .5 .8) ?
@@ -1195,8 +1195,8 @@ int CButtonTarget::__MAKE_VHOOK(ObjectCaps)()
 		return caps;
 }
 
-int CButtonTarget::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
+BOOL CButtonTarget::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
 	Use(Instance(pevAttacker), this, USE_TOGGLE, 0);
-	return 1;
+	return TRUE;
 }

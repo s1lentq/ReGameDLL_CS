@@ -35,7 +35,7 @@ public:
 	virtual void Spawn() = 0;
 
 	// invoked when injured by something
-	virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType) = 0;
+	virtual BOOL TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType) = 0;
 
 	// invoked when killed
 	virtual void Killed(entvars_t *pevAttacker, int iGib) = 0;

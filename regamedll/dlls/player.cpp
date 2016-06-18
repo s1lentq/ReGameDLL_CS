@@ -722,11 +722,11 @@ void CBasePlayer::DeathSound()
 	}
 }
 
-LINK_HOOK_CLASS_CHAIN(int, CBasePlayer, TakeHealth, (float flHealth, int bitsDamageType), flHealth, bitsDamageType);
+LINK_HOOK_CLASS_CHAIN(BOOL, CBasePlayer, TakeHealth, (float flHealth, int bitsDamageType), flHealth, bitsDamageType);
 
 // override takehealth
 // bitsDamageType indicates type of damage healed.
-int CBasePlayer::__API_VHOOK(TakeHealth)(float flHealth, int bitsDamageType)
+BOOL CBasePlayer::__API_VHOOK(TakeHealth)(float flHealth, int bitsDamageType)
 {
 	return CBaseMonster::TakeHealth(flHealth, bitsDamageType);
 }
@@ -759,8 +759,13 @@ void CBasePlayer::__API_VHOOK(TraceAttack)(entvars_t *pevAttacker, float flDamag
 	bool bHitShield = IsHittingShield(vecDir, ptr);
 
 	CBasePlayer *pAttacker = CBasePlayer::Instance(pevAttacker);
+#ifdef REGAMEDLL_ADD
+	if (pAttacker && pAttacker->IsPlayer() && !CSGameRules()->FPlayerCanTakeDamage(this, pAttacker))
+		bShouldBleed = false;
+#else
 	if (pAttacker && pAttacker->IsPlayer() && m_iTeam == pAttacker->m_iTeam && CVAR_GET_FLOAT("mp_friendlyfire") == 0)
 		bShouldBleed = false;
+#endif
 
 	if (pev->takedamage == DAMAGE_NO)
 		return;
@@ -971,15 +976,16 @@ void LogAttack(CBasePlayer *pAttacker, CBasePlayer *pVictim, int teamAttack, int
 	}
 }
 
-LINK_HOOK_CLASS_CHAIN(int, CBasePlayer, TakeDamage, (entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType), pevInflictor, pevAttacker, flDamage, bitsDamageType);
+LINK_HOOK_CLASS_CHAIN(BOOL, CBasePlayer, TakeDamage, (entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType), pevInflictor, pevAttacker, flDamage, bitsDamageType);
 
 // Take some damage.
+// RETURN: TRUE took damage, FALSE otherwise
 // NOTE: each call to TakeDamage with bitsDamageType set to a time-based damage
 // type will cause the damage time countdown to be reset.  Thus the ongoing effects of poison, radiation
 // etc are implemented with subsequent calls to TakeDamage using DMG_GENERIC.
-int CBasePlayer::__API_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, FloatRef flDamage, int bitsDamageType)
+BOOL CBasePlayer::__API_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, FloatRef flDamage, int bitsDamageType)
 {
-	int fTookDamage;
+	BOOL bTookDamage;
 	float flRatio = ARMOR_RATIO;
 	float flBonus = ARMOR_BONUS;
 	int iGunType = 0;
@@ -993,7 +999,7 @@ int CBasePlayer::__API_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pev
 		m_LastHitGroup = HITGROUP_GENERIC;
 
 	else if (m_LastHitGroup == HITGROUP_SHIELD && (bitsDamageType & DMG_BULLET))
-		return 0;
+		return FALSE;
 
 	if (HasShield())
 		flShieldRatio = 0.2;
@@ -1004,7 +1010,7 @@ int CBasePlayer::__API_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pev
 	if (bitsDamageType & (DMG_EXPLOSION | DMG_BLAST))
 	{
 		if (!IsAlive())
-			return 0;
+			return FALSE;
 
 		if (bitsDamageType & DMG_EXPLOSION)
 		{
@@ -1016,14 +1022,14 @@ int CBasePlayer::__API_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pev
 
 				if (CVAR_GET_FLOAT("mp_friendlyfire"))
 				{
-					if (!CSGameRules()->IsFreeForAll() && pGrenade->m_iTeam == m_iTeam)
+					if (pGrenade->m_iTeam == m_iTeam)
 						bTeamAttack = TRUE;
 
 					pAttack = CBasePlayer::Instance(pevAttacker);
 				}
 				else if (pGrenade->m_iTeam == m_iTeam && (&edict()->v != pevAttacker))
 				{
-					return 0;
+					return FALSE;
 				}
 			}
 		}
@@ -1081,9 +1087,9 @@ int CBasePlayer::__API_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pev
 		}
 
 		LogAttack(pAttack, this, bTeamAttack, int(flDamage), armorHit, pev->health - flDamage, pev->armorvalue, GetWeaponName(pevInflictor, pevAttacker));
-		fTookDamage = CBaseMonster::TakeDamage(pevInflictor, pevAttacker, int(flDamage), bitsDamageType);
+		bTookDamage = CBaseMonster::TakeDamage(pevInflictor, pevAttacker, int(flDamage), bitsDamageType);
 
-		if (fTookDamage > 0)
+		if (bTookDamage)
 		{
 			if (TheBots != NULL)
 			{
@@ -1147,7 +1153,7 @@ int CBasePlayer::__API_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pev
 			MESSAGE_END();
 		}
 
-		return fTookDamage;
+		return bTookDamage;
 	}
 
 	pAttacker = CBaseEntity::Instance(pevAttacker);
@@ -1155,7 +1161,7 @@ int CBasePlayer::__API_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pev
 	if (!g_pGameRules->FPlayerCanTakeDamage(this, pAttacker) && Q_strcmp("grenade", STRING(pevInflictor->classname)) != 0)
 	{
 		// Refuse the damage
-		return 0;
+		return FALSE;
 	}
 
 	if (bitsDamageType & DMG_BLAST && g_pGameRules->IsMultiplayer())
@@ -1166,7 +1172,7 @@ int CBasePlayer::__API_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pev
 
 	// Already dead
 	if (!IsAlive())
-		return 0;
+		return FALSE;
 
 	pAttacker = GetClassPtr<CCSEntity>((CBaseEntity *)pevAttacker);
 
@@ -1177,7 +1183,7 @@ int CBasePlayer::__API_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pev
 		bool bAttackFFA = CSGameRules()->IsFreeForAll();
 
 		// warn about team attacks
-		if (pAttack != this && pAttack->m_iTeam == m_iTeam && !bAttackFFA)
+		if (!bAttackFFA && pAttack != this && pAttack->m_iTeam == m_iTeam)
 		{
 #ifndef REGAMEDLL_FIXES
 			// TODO: this->m_flDisplayHistory!
@@ -1215,7 +1221,7 @@ int CBasePlayer::__API_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pev
 			}
 		}
 
-		if (pAttack->m_iTeam == m_iTeam && !bAttackFFA)
+		if (!bAttackFFA && pAttack->m_iTeam == m_iTeam)
 		{
 			// bullets hurt teammates less
 			flDamage *= 0.35;
@@ -1318,9 +1324,9 @@ int CBasePlayer::__API_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pev
 
 	// this cast to INT is critical!!! If a player ends up with 0.5 health, the engine will get that
 	// as an int (zero) and think the player is dead! (this will incite a clientside screentilt, etc)
-	fTookDamage = CBaseMonster::TakeDamage(pevInflictor, pevAttacker, int(flDamage), bitsDamageType);
+	bTookDamage = CBaseMonster::TakeDamage(pevInflictor, pevAttacker, int(flDamage), bitsDamageType);
 
-	if (fTookDamage > 0)
+	if (bTookDamage)
 	{
 		if (TheBots != NULL)
 		{
@@ -1393,7 +1399,7 @@ int CBasePlayer::__API_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pev
 	// make sure the damage bits get resent
 	m_bitsDamageType |= bitsDamageType;
 
-	return fTookDamage;
+	return bTookDamage;
 }
 
 void packPlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)

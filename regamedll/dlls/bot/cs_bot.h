@@ -421,7 +421,7 @@ class CCSBot: public CBot
 {
 public:
 	CCSBot();														// constructor initializes all values to zero
-	virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);		// invoked when injured by something (EXTEND) - returns the amount of damage inflicted
+	virtual BOOL TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);		// invoked when injured by something (EXTEND) - returns the amount of damage inflicted
 	virtual void Killed(entvars_t *pevAttacker, int iGib);									// invoked when killed (EXTEND)
 	virtual void RoundRespawn();
 	virtual void Blind(float duration, float holdTime, float fadeTime, int alpha = 255);					// player blinded by a flashbang
@@ -453,7 +453,7 @@ public:
 	void Walk_();
 	bool Jump_(bool mustJump);
 	void Blind_(float duration, float holdTime, float fadeTime, int alpha);
-	int TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
+	BOOL TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
 	void Killed_(entvars_t *pevAttacker, int iGib);
 	void OnTouchingWeapon_(CWeaponBox *box);
 	void OnEvent_(GameEventType event, CBaseEntity *entity, CBaseEntity *other);
