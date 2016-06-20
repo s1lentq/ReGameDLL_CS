@@ -151,6 +151,10 @@ typedef IVoidHookChainRegistryClassImpl<CBasePlayer, char *, char *> CReGameHook
 typedef IVoidHookChainClassImpl<CBasePlayer, char *, char *> CReGameHook_CBasePlayer_SetClientUserInfoName;
 typedef IVoidHookChainRegistryClassImpl<CBasePlayer, char *, char *> CReGameHookRegistry_CBasePlayer_SetClientUserInfoName;
 
+// CBasePlayer::HasRestrictItem hook
+typedef IHookChainClassImpl<bool, CBasePlayer, ItemID, ItemRestType> CReGameHook_CBasePlayer_HasRestrictItem;
+typedef IHookChainRegistryClassImpl<bool, CBasePlayer, ItemID, ItemRestType> CReGameHookRegistry_CBasePlayer_HasRestrictItem;
+
 // CBasePlayer::DropPlayerItem hook
 typedef IVoidHookChainClassImpl<CBasePlayer, const char *> CReGameHook_CBasePlayer_DropPlayerItem;
 typedef IVoidHookChainRegistryClassImpl<CBasePlayer, const char *> CReGameHookRegistry_CBasePlayer_DropPlayerItem;
@@ -158,14 +162,6 @@ typedef IVoidHookChainRegistryClassImpl<CBasePlayer, const char *> CReGameHookRe
 // CBaseAnimating::ResetSequenceInfo hook
 typedef IVoidHookChainClassImpl<CBaseAnimating> CReGameHook_CBaseAnimating_ResetSequenceInfo;
 typedef IVoidHookChainRegistryClassImpl<CBaseAnimating> CReGameHookRegistry_CBaseAnimating_ResetSequenceInfo;
-
-// CWeaponBox::Touch hook
-typedef IVoidHookChainClassImpl<CWeaponBox, CBaseEntity*> CReGameHook_CWeaponBox_Touch;
-typedef IVoidHookChainRegistryClassImpl<CWeaponBox, CBaseEntity*> CReGameHookRegistry_CWeaponBox_Touch;
-
-// CArmoury::Touch hook
-typedef IVoidHookChainClassImpl<CArmoury, CBaseEntity*> CReGameHook_CArmoury_Touch;
-typedef IVoidHookChainRegistryClassImpl<CArmoury, CBaseEntity*> CReGameHookRegistry_CArmoury_Touch;
 
 // GetForceCamera hook
 typedef IHookChainImpl<int, class CBasePlayer *> CReGameHook_GetForceCamera;
@@ -182,14 +178,6 @@ typedef IVoidHookChainRegistryImpl<CBasePlayer *, entvars_t *, entvars_t *, Vect
 // RoundEnd hook
 typedef IHookChainClassImpl<bool, class CHalfLifeMultiplay, int, ScenarioEventEndRound, float> CReGameHook_RoundEnd;
 typedef IHookChainRegistryClassEmptyImpl<bool, class CHalfLifeMultiplay, int, ScenarioEventEndRound, float> CReGameHookRegistry_RoundEnd;
-
-// CanBuyThis hook
-typedef IHookChainImpl<bool, class CBasePlayer *, int> CReGameHook_CanBuyThis;
-typedef IHookChainRegistryImpl<bool, class CBasePlayer *, int> CReGameHookRegistry_CanBuyThis;
-
-// CanBuyThisItem hook
-typedef IHookChainImpl<bool, class CBasePlayer *, BuyItemID> CReGameHook_CanBuyThisItem;
-typedef IHookChainRegistryImpl<bool, class CBasePlayer *, BuyItemID> CReGameHookRegistry_CanBuyThisItem;
 
 // InstallGameRules hook
 typedef IHookChainImpl<CGameRules *> CReGameHook_InstallGameRules;
@@ -345,13 +333,14 @@ public:
 	CReGameHookRegistry_CBasePlayer_GiveShield m_CBasePlayer_GiveShield;
 	CReGameHookRegistry_CBasePlayer_SetClientUserInfoModel m_CBasePlayer_SetClientUserInfoModel;
 	CReGameHookRegistry_CBasePlayer_SetClientUserInfoName m_CBasePlayer_SetClientUserInfoName;
+	CReGameHookRegistry_CBasePlayer_HasRestrictItem m_CBasePlayer_HasRestrictItem;
+	CReGameHookRegistry_CBasePlayer_DropPlayerItem m_CBasePlayer_DropPlayerItem;
 	CReGameHookRegistry_CBaseAnimating_ResetSequenceInfo m_CBaseAnimating_ResetSequenceInfo;
 
 	CReGameHookRegistry_GetForceCamera m_GetForceCamera;
 	CReGameHookRegistry_PlayerBlind m_PlayerBlind;
 	CReGameHookRegistry_RadiusFlash_TraceLine m_RadiusFlash_TraceLine;
 	CReGameHookRegistry_RoundEnd m_RoundEnd;
-	CReGameHookRegistry_CanBuyThis m_CanBuyThis;
 	CReGameHookRegistry_InstallGameRules m_InstallGameRules;
 	CReGameHookRegistry_PM_Init m_PM_Init;
 	CReGameHookRegistry_PM_Move m_PM_Move;
@@ -383,11 +372,6 @@ public:
 	CReGameHookRegistry_CSGameRules_ChangeLevel m_CSGameRules_ChangeLevel;
 	CReGameHookRegistry_CSGameRules_GoToIntermission m_CSGameRules_GoToIntermission;
 	CReGameHookRegistry_CSGameRules_BalanceTeams m_CSGameRules_BalanceTeams;
-
-	CReGameHookRegistry_CanBuyThisItem m_CanBuyThisItem;
-	CReGameHookRegistry_CBasePlayer_DropPlayerItem m_CBasePlayer_DropPlayerItem;
-	CReGameHookRegistry_CWeaponBox_Touch m_CWeaponBox_Touch;
-	CReGameHookRegistry_CArmoury_Touch m_CArmoury_ArmouryTouch;
 
 public:
 	virtual IReGameHookRegistry_CBasePlayer_Spawn* CBasePlayer_Spawn();
@@ -421,13 +405,14 @@ public:
 	virtual IReGameHookRegistry_CBasePlayer_GiveShield* CBasePlayer_GiveShield();
 	virtual IReGameHookRegistry_CBasePlayer_SetClientUserInfoModel* CBasePlayer_SetClientUserInfoModel();
 	virtual IReGameHookRegistry_CBasePlayer_SetClientUserInfoName* CBasePlayer_SetClientUserInfoName();
+	virtual IReGameHookRegistry_CBasePlayer_HasRestrictItem* CBasePlayer_HasRestrictItem();
+	virtual IReGameHookRegistry_CBasePlayer_DropPlayerItem* CBasePlayer_DropPlayerItem();
 	virtual IReGameHookRegistry_CBaseAnimating_ResetSequenceInfo* CBaseAnimating_ResetSequenceInfo();
 
 	virtual IReGameHookRegistry_GetForceCamera* GetForceCamera();
 	virtual IReGameHookRegistry_PlayerBlind* PlayerBlind();
 	virtual IReGameHookRegistry_RadiusFlash_TraceLine* RadiusFlash_TraceLine();
 	virtual IReGameHookRegistry_RoundEnd* RoundEnd();
-	virtual IReGameHookRegistry_CanBuyThis* CanBuyThis();
 	virtual IReGameHookRegistry_InstallGameRules* InstallGameRules();
 	virtual IReGameHookRegistry_PM_Init* PM_Init();
 	virtual IReGameHookRegistry_PM_Move* PM_Move();
@@ -459,11 +444,6 @@ public:
 	virtual IReGameHookRegistry_CSGameRules_ChangeLevel* CSGameRules_ChangeLevel();
 	virtual IReGameHookRegistry_CSGameRules_GoToIntermission* CSGameRules_GoToIntermission();
 	virtual IReGameHookRegistry_CSGameRules_BalanceTeams* CSGameRules_BalanceTeams();
-
-	virtual IReGameHookRegistry_CanBuyThisItem* CanBuyThisItem();
-	virtual IReGameHookRegistry_CBasePlayer_DropPlayerItem* CBasePlayer_DropPlayerItem();
-	virtual IReGameHookRegistry_CWeaponBox_Touch* CWeaponBox_Touch();
-	virtual IReGameHookRegistry_CArmoury_Touch* CArmoury_Touch();
 };
 
 extern CReGameHookchains g_ReGameHookchains;

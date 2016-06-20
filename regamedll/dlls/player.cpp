@@ -3019,6 +3019,10 @@ void CWShield::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 
 		if (!pPlayer->m_bIsVIP)
 		{
+#ifdef REGAMEDLL_ADD
+			if (pPlayer->HasRestrictItem(ITEM_SHIELDGUN, ITEM_TYPE_TOUCHED))
+				return;
+#endif
 			pPlayer->GiveShield();
 
 			EMIT_SOUND(edict(), CHAN_ITEM, "items/gunpickup2.wav", VOL_NORM, ATTN_NORM);
@@ -9329,4 +9333,10 @@ void CBasePlayer::TeamChangeUpdate()
 	{
 		SetScoreboardAttributes();
 	}
+}
+
+LINK_HOOK_CLASS_CHAIN(bool, CBasePlayer, HasRestrictItem, (ItemID item, ItemRestType type), item, type);
+
+bool EXT_FUNC CBasePlayer::__API_HOOK(HasRestrictItem)(ItemID item, ItemRestType type) {
+	return false;
 }

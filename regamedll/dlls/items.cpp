@@ -1,12 +1,62 @@
 #include "precompiled.h"
 
+ItemInfo itemInfo[] = {
+	DEFINE_ITEMINFO(ITEM_SHIELDGUN,		"weapon_shield"),
+	DEFINE_ITEMINFO(ITEM_P228, 		"weapon_p228"),
+	DEFINE_ITEMINFO(ITEM_GLOCK,		"weapon_glock"),
+	DEFINE_ITEMINFO(ITEM_SCOUT,		"weapon_scout"),
+	DEFINE_ITEMINFO(ITEM_HEGRENADE,		"weapon_hegrenade"),
+	DEFINE_ITEMINFO(ITEM_XM1014,		"weapon_xm1014"),
+	DEFINE_ITEMINFO(ITEM_C4,		"weapon_c4"),
+	DEFINE_ITEMINFO(ITEM_MAC10,		"weapon_mac10"),
+	DEFINE_ITEMINFO(ITEM_AUG,		"weapon_aug"),
+	DEFINE_ITEMINFO(ITEM_SMOKEGRENADE,	"weapon_smokegrenade"),
+	DEFINE_ITEMINFO(ITEM_ELITE,		"weapon_elite"),
+	DEFINE_ITEMINFO(ITEM_FIVESEVEN,		"weapon_fiveseven"),
+	DEFINE_ITEMINFO(ITEM_UMP45,		"weapon_ump45"),
+	DEFINE_ITEMINFO(ITEM_SG550,		"weapon_sg550"),
+	DEFINE_ITEMINFO(ITEM_GALIL,		"weapon_galil"),
+	DEFINE_ITEMINFO(ITEM_FAMAS,		"weapon_famas"),
+	DEFINE_ITEMINFO(ITEM_USP,		"weapon_usp"),
+	DEFINE_ITEMINFO(ITEM_GLOCK18,		"weapon_glock18"),
+	DEFINE_ITEMINFO(ITEM_AWP,		"weapon_awp"),
+	DEFINE_ITEMINFO(ITEM_MP5N,		"weapon_mp5navy"),
+	DEFINE_ITEMINFO(ITEM_M249,		"weapon_m249"),
+	DEFINE_ITEMINFO(ITEM_M3,		"weapon_m3"),
+	DEFINE_ITEMINFO(ITEM_M4A1,		"weapon_m4a1"),
+	DEFINE_ITEMINFO(ITEM_TMP,		"weapon_tmp"),
+	DEFINE_ITEMINFO(ITEM_G3SG1,		"weapon_g3sg1"),
+	DEFINE_ITEMINFO(ITEM_FLASHBANG,		"weapon_flashbang"),
+	DEFINE_ITEMINFO(ITEM_DEAGLE,		"weapon_deagle"),
+	DEFINE_ITEMINFO(ITEM_SG552,		"weapon_sg552"),
+	DEFINE_ITEMINFO(ITEM_AK47,		"weapon_ak47"),
+	DEFINE_ITEMINFO(ITEM_KNIFE,		"weapon_knife"),
+	DEFINE_ITEMINFO(ITEM_P90,		"weapon_p90"),
+	DEFINE_ITEMINFO(ITEM_NVG,		""),
+	DEFINE_ITEMINFO(ITEM_DEFUSEKIT,		"item_thighpack"),
+	DEFINE_ITEMINFO(ITEM_KEVLAR,		"item_kevlar"),
+	DEFINE_ITEMINFO(ITEM_ASSAULT,		"item_assaultsuit"),
+	DEFINE_ITEMINFO(ITEM_LONGJUMP,		"item_longjump"),
+	DEFINE_ITEMINFO(ITEM_SODACAN,		"item_sodacan"),
+	DEFINE_ITEMINFO(ITEM_HEALTHKIT,		"item_healthkit"),
+	DEFINE_ITEMINFO(ITEM_ANTIDOTE,		"item_antidote"),
+	DEFINE_ITEMINFO(ITEM_SECURITY,		"item_security"),
+	DEFINE_ITEMINFO(ITEM_BATTERY,		"item_battery"),
+	DEFINE_ITEMINFO(ITEM_SUIT,		"item_suit"),
+};
+
 LINK_ENTITY_TO_CLASS(world_items, CWorldItem, CCSWorldItem);
 
 void CWorldItem::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "type"))
 	{
-		m_iType = Q_atoi(pkvd->szValue);
+#ifdef REGAMEDLL_FIXES
+		// let's start with ITEM_HEALTHKIT
+		m_iType = (ItemID)(Q_atoi(pkvd->szValue) - 41 - ITEM_HEALTHKIT);
+#else
+		m_iType = (ItemID)Q_atoi(pkvd->szValue);
+#endif
 		pkvd->fHandled = TRUE;
 	}
 	else
@@ -17,23 +67,43 @@ void CWorldItem::__MAKE_VHOOK(Spawn)()
 {
 	CBaseEntity *pEntity = NULL;
 
+#ifdef REGAMEDLL_FIXES
 	switch (m_iType)
 	{
-	case 41: // ITEM_HEALTHKIT
+	case ITEM_HEALTHKIT:
 		break;
-	case 42: // ITEM_ANTIDOTE
+	case ITEM_ANTIDOTE:
 		pEntity = CBaseEntity::Create("item_antidote", pev->origin, pev->angles);
 		break;
-	case 43: // ITEM_SECURITY
+	case ITEM_SECURITY:
 		pEntity = CBaseEntity::Create("item_security", pev->origin, pev->angles);
 		break;
-	case 44: // ITEM_BATTERY
+	case ITEM_BATTERY:
 		pEntity = CBaseEntity::Create("item_battery", pev->origin, pev->angles);
 		break;
-	case 45: // ITEM_SUIT
+	case ITEM_SUIT:
 		pEntity = CBaseEntity::Create("item_suit", pev->origin, pev->angles);
 		break;
 	}
+#else
+	switch (m_iType)
+	{
+	case 41:
+		break;
+	case 42:
+		pEntity = CBaseEntity::Create("item_antidote", pev->origin, pev->angles);
+		break;
+	case 43:
+		pEntity = CBaseEntity::Create("item_security", pev->origin, pev->angles);
+		break;
+	case 44:
+		pEntity = CBaseEntity::Create("item_battery", pev->origin, pev->angles);
+		break;
+	case 45:
+		pEntity = CBaseEntity::Create("item_suit", pev->origin, pev->angles);
+		break;
+	}
+#endif
 
 	if (pEntity != NULL)
 	{
@@ -67,7 +137,7 @@ void CItem::ItemTouch(CBaseEntity *pOther)
 	if (!pOther->IsPlayer() || pOther->pev->deadflag != DEAD_NO)
 		return;
 
-	CBasePlayer *pPlayer = (CBasePlayer *)pOther;
+	CBasePlayer *pPlayer = static_cast<CBasePlayer *>(pOther);
 
 	if (!g_pGameRules->CanHaveItem(pPlayer, this))
 		return;
@@ -134,6 +204,11 @@ BOOL CItemSuit::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
 	if (pPlayer->pev->weapons & (1 << WEAPON_SUIT))
 		return FALSE;
 
+#ifdef REGAMEDLL_ADD
+	if (pPlayer->HasRestrictItem(ITEM_SUIT, ITEM_TYPE_TOUCHED))
+		return FALSE;
+#endif
+
 	EMIT_SOUND(pPlayer->edict(), CHAN_VOICE, "items/tr_kevlar.wav", VOL_NORM, ATTN_NORM);
 
 	pPlayer->pev->weapons |= (1 << WEAPON_SUIT);
@@ -159,6 +234,11 @@ void CItemBattery::__MAKE_VHOOK(Precache)()
 
 BOOL CItemBattery::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
 {
+#ifdef REGAMEDLL_ADD
+	if (pPlayer->HasRestrictItem(ITEM_BATTERY, ITEM_TYPE_TOUCHED))
+		return FALSE;
+#endif
+
 	if (pPlayer->pev->armorvalue < MAX_NORMAL_BATTERY && (pPlayer->pev->weapons & (1 << WEAPON_SUIT)))
 	{
 		int pct;
@@ -205,6 +285,11 @@ void CItemAntidote::__MAKE_VHOOK(Precache)()
 
 BOOL CItemAntidote::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
 {
+#ifdef REGAMEDLL_ADD
+	if (pPlayer->HasRestrictItem(ITEM_ANTIDOTE, ITEM_TYPE_TOUCHED))
+		return FALSE;
+#endif
+
 	pPlayer->SetSuitUpdate("!HEV_DET4", FALSE, SUIT_NEXT_IN_1MIN);
 	pPlayer->m_rgItems[ ITEM_ANTIDOTE ] += 1;
 
@@ -227,6 +312,11 @@ void CItemSecurity::__MAKE_VHOOK(Precache)()
 
 BOOL CItemSecurity::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
 {
+#ifdef REGAMEDLL_ADD
+	if (pPlayer->HasRestrictItem(ITEM_SECURITY, ITEM_TYPE_TOUCHED))
+		return FALSE;
+#endif
+
 	pPlayer->m_rgItems[ ITEM_SECURITY ] += 1;
 	return TRUE;
 }
@@ -247,6 +337,11 @@ void CItemLongJump::__MAKE_VHOOK(Precache)()
 
 BOOL CItemLongJump::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
 {
+#ifdef REGAMEDLL_ADD
+	if (pPlayer->HasRestrictItem(ITEM_LONGJUMP, ITEM_TYPE_TOUCHED))
+		return FALSE;
+#endif
+
 	if (pPlayer->m_fLongJump)
 		return FALSE;
 
@@ -284,6 +379,11 @@ void CItemKevlar::__MAKE_VHOOK(Precache)()
 
 BOOL CItemKevlar::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
 {
+#ifdef REGAMEDLL_ADD
+	if (pPlayer->HasRestrictItem(ITEM_KEVLAR, ITEM_TYPE_TOUCHED))
+		return FALSE;
+#endif
+
 	if (pPlayer->m_iKevlar == ARMOR_NONE)
 		pPlayer->m_iKevlar = ARMOR_KEVLAR;
 
@@ -322,6 +422,11 @@ void CItemAssaultSuit::__MAKE_VHOOK(Precache)()
 
 BOOL CItemAssaultSuit::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
 {
+#ifdef REGAMEDLL_ADD
+	if (pPlayer->HasRestrictItem(ITEM_ASSAULT, ITEM_TYPE_TOUCHED))
+		return FALSE;
+#endif
+
 	pPlayer->m_iKevlar = ARMOR_VESTHELM;
 	pPlayer->pev->armorvalue = 100;
 
@@ -362,6 +467,11 @@ BOOL CItemThighPack::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
 	if (pPlayer->m_iTeam != CT || pPlayer->m_bHasDefuser)
 		return FALSE;
 
+#ifdef REGAMEDLL_ADD
+	if (pPlayer->HasRestrictItem(ITEM_DEFUSEKIT, ITEM_TYPE_TOUCHED))
+		return FALSE;
+#endif
+
 	pPlayer->m_bHasDefuser = true;
 	pPlayer->pev->body = 1;
 
@@ -387,3 +497,40 @@ BOOL CItemThighPack::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
 }
 
 LINK_ENTITY_TO_CLASS(item_thighpack, CItemThighPack, CCSItemThighPack);
+
+ItemID GetItemIdByName(const char *pszName)
+{
+	for (auto& item : itemInfo) {
+		if (item.pszName[0] != '\0' && FStrEq(item.pszName, pszName))
+			return (ItemID)item.iId;
+	}
+
+	return ITEM_NONE;
+}
+
+ItemID GetItemIdByArmoury(ArmouryItemPack armoury)
+{
+	switch (armoury)
+	{
+	case ARMOURY_MP5NAVY: return ITEM_MP5N;
+	case ARMOURY_TMP: return ITEM_TMP;
+	case ARMOURY_P90: return ITEM_P90;
+	case ARMOURY_MAC10: return ITEM_MAC10;
+	case ARMOURY_AK47: return ITEM_AK47;
+	case ARMOURY_SG552: return ITEM_SG552;
+	case ARMOURY_M4A1: return ITEM_M4A1;
+	case ARMOURY_AUG: return ITEM_AUG;
+	case ARMOURY_SCOUT: return ITEM_SCOUT;
+	case ARMOURY_G3SG1: return ITEM_G3SG1;
+	case ARMOURY_AWP: return ITEM_AWP;
+	case ARMOURY_M3: return ITEM_M3;
+	case ARMOURY_XM1014: return ITEM_XM1014;
+	case ARMOURY_M249: return ITEM_M249;
+	case ARMOURY_FLASHBANG: return ITEM_FLASHBANG;
+	case ARMOURY_HEGRENADE: return ITEM_HEGRENADE;
+	case ARMOURY_KEVLAR: return ITEM_KEVLAR;
+	case ARMOURY_ASSAULT: return ITEM_ASSAULT;
+	case ARMOURY_SMOKEGRENADE: return ITEM_SMOKEGRENADE;
+	default: return ITEM_NONE;
+	}
+}

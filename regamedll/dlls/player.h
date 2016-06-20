@@ -253,7 +253,7 @@ struct RebuyStruct
 	int m_smokeGrenade;
 	int m_defuser;
 	int m_nightVision;
-	int m_armor;
+	ArmorType m_armor;
 };
 
 enum ThrowDirection
@@ -596,6 +596,8 @@ public:
 	void SetScoreAttrib(CBasePlayer *dest);
 	void ReloadWeapons(CBasePlayerItem *pWeapon = nullptr, bool bForceReload = false, bool bForceRefill = false);
 	void TeamChangeUpdate();
+	bool HasRestrictItem(ItemID item, ItemRestType type);
+	bool HasRestrictItem_(ItemID item, ItemRestType type);
 
 #ifdef REGAMEDLL_ADD
 	CCSPlayer *CSPlayer() const;
@@ -619,7 +621,7 @@ public:
 	int m_iLastZoom;
 	bool m_bResumeZoom;
 	float m_flEjectBrass;
-	int m_iKevlar;
+	ArmorType m_iKevlar;
 	bool m_bNotKilled;
 	TeamName m_iTeam;
 	int m_iAccount;

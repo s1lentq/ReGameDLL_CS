@@ -97,8 +97,7 @@ enum ArmouryItemPack
 	ARMOURY_HEGRENADE,
 	ARMOURY_KEVLAR,
 	ARMOURY_ASSAULT,
-	ARMOURY_SMOKEGRENADE,
-	ARMOURY_END
+	ARMOURY_SMOKEGRENADE
 };
 
 struct ItemInfo
@@ -148,10 +147,9 @@ public:
 
 public:
 	void EXPORT ArmouryTouch(CBaseEntity *pOther);
-	void ArmouryTouch_(CBaseEntity *pOther);
 
 public:
-	int m_iItem;
+	ArmouryItemPack m_iItem;
 	int m_iCount;
 	int m_iInitialCount;
 	bool m_bAlreadyCounted;

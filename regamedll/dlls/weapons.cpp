@@ -1637,11 +1637,9 @@ void CWeaponBox::Kill()
 	UTIL_Remove(this);
 }
 
-LINK_HOOK_CLASS_VOID_CHAIN(CWeaponBox, Touch, (CBaseEntity *pOther), pOther);
-
 // CWeaponBox - Touch: try to add my contents to the toucher
 // if the toucher is a player.
-void CWeaponBox::__API_VHOOK(Touch)(CBaseEntity *pOther)
+void CWeaponBox::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 {
 	if (!(pev->flags & FL_ONGROUND))
 	{
@@ -1691,10 +1689,19 @@ void CWeaponBox::__API_VHOOK(Touch)(CBaseEntity *pOther)
 				return;
 			}
 
+#ifdef REGAMEDLL_ADD
+			if (pPlayer->HasRestrictItem((pItem->m_iId == WEAPON_SHIELDGUN) ? ITEM_SHIELDGUN : (ItemID)pItem->m_iId, ITEM_TYPE_TOUCHED))
+				return;
+#endif
 			if (FClassnameIs(pItem->pev, "weapon_c4"))
 			{
+#ifdef REGAMEDLL_FIXES
+				if (pPlayer->m_iTeam != TERRORIST)
+					return;
+#else
 				if (pPlayer->m_iTeam != TERRORIST || pPlayer->pev->deadflag != DEAD_NO)
 					return;
+#endif
 
 				if (pPlayer->m_bShowHints && !(pPlayer->m_flDisplayHistory & DHF_BOMB_RETRIEVED))
 				{
@@ -2145,9 +2152,7 @@ struct ArmouryItemStruct
 	{ "weapon_m249",	"556NatoBox",	60, MAX_AMMO_556NATOBOX },	// ARMOURY_M249
 };
 
-LINK_HOOK_CLASS_VOID_CHAIN(CArmoury, ArmouryTouch, (CBaseEntity *pOther), pOther);
-
-void CArmoury::__API_HOOK(ArmouryTouch)(CBaseEntity *pOther)
+void CArmoury::ArmouryTouch(CBaseEntity *pOther)
 {
 	if (!pOther->IsPlayer())
 		return;
@@ -2156,6 +2161,11 @@ void CArmoury::__API_HOOK(ArmouryTouch)(CBaseEntity *pOther)
 
 	if (p->m_bIsVIP)
 		return;
+
+#ifdef REGAMEDLL_ADD
+	if (p->HasRestrictItem(GetItemIdByArmoury(m_iItem), ITEM_TYPE_TOUCHED))
+		return;
+#endif
 
 	// weapons
 	if (m_iCount > 0 && m_iItem <= ARMOURY_M249)
@@ -2232,7 +2242,7 @@ void CArmoury::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "item"))
 	{
-		m_iItem = Q_atoi(pkvd->szValue);
+		m_iItem = (ArmouryItemPack)Q_atoi(pkvd->szValue);
 		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "count"))

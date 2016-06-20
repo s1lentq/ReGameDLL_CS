@@ -546,6 +546,12 @@ void CGamePlayerEquip::EquipPlayer(CBaseEntity *pEntity)
 		if (FStringNull(m_weaponNames[i]))
 			break;
 
+#ifdef REGAMEDLL_ADD
+		auto itemid = GetItemIdByName(STRING(m_weaponNames[i]));
+		if (itemid != ITEM_NONE && pPlayer->HasRestrictItem(itemid, ITEM_TYPE_EQUIPPED))
+			continue;
+#endif
+
 		for (int j = 0; j < m_weaponCount[i]; ++j)
 		{
  			pPlayer->GiveNamedItem(STRING(m_weaponNames[i]));

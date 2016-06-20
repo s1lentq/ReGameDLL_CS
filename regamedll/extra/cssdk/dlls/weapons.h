@@ -92,8 +92,7 @@ enum ArmouryItemPack
 	ARMOURY_HEGRENADE,
 	ARMOURY_KEVLAR,
 	ARMOURY_ASSAULT,
-	ARMOURY_SMOKEGRENADE,
-	ARMOURY_END
+	ARMOURY_SMOKEGRENADE
 };
 
 struct ItemInfo
@@ -131,7 +130,7 @@ public:
 	virtual void Restart() = 0;
 	virtual void KeyValue(KeyValueData *pkvd) = 0;
 public:
-	int m_iItem;
+	ArmouryItemPack m_iItem;
 	int m_iCount;
 	int m_iInitialCount;
 	bool m_bAlreadyCounted;

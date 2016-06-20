@@ -848,9 +848,7 @@ void DropPrimary(CBasePlayer *pPlayer)
 	}
 }
 
-LINK_HOOK_CHAIN(bool, CanBuyThis, (CBasePlayer *pPlayer, int iWeapon), pPlayer, iWeapon);
-
-bool __API_HOOK(CanBuyThis)(CBasePlayer *pPlayer, int iWeapon)
+bool CanBuyThis(CBasePlayer *pPlayer, int iWeapon)
 {
 	if (pPlayer->HasShield() && iWeapon == WEAPON_ELITE)
 		return false;
@@ -1007,12 +1005,6 @@ void BuyMachineGun(CBasePlayer *pPlayer, int iSlot)
 	BuyWeaponByWeaponID(pPlayer, WEAPON_M249);
 }
 
-#ifdef REGAMEDLL_ADD
-bool EXT_FUNC CanBuyThisItem_hook(CBasePlayer *pPlayer, BuyItemID item) {
-	return true;
-}
-#endif
-
 void BuyItem(CBasePlayer *pPlayer, int iSlot)
 {
 	int iItemPrice = 0;
@@ -1041,10 +1033,9 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 		case MENU_SLOT_ITEM_VEST:
 		{
 #ifdef REGAMEDLL_ADD
-			if (!g_ReGameHookchains.m_CanBuyThisItem.callChain(CanBuyThisItem_hook, pPlayer, BUY_ITEM_VEST))
+			if (pPlayer->HasRestrictItem(ITEM_KEVLAR, ITEM_TYPE_BUYING))
 				return;
 #endif
-
 			if (fullArmor)
 			{
 				if (g_bClientPrintEnable)
@@ -1071,10 +1062,9 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 		case MENU_SLOT_ITEM_VESTHELM:
 		{
 #ifdef REGAMEDLL_ADD
-			if (!g_ReGameHookchains.m_CanBuyThisItem.callChain(CanBuyThisItem_hook, pPlayer, BUY_ITEM_VESTHELM))
+			if (pPlayer->HasRestrictItem(ITEM_ASSAULT, ITEM_TYPE_BUYING))
 				return;
 #endif
-
 			if (fullArmor)
 			{
 				if (bHasHelmet)
@@ -1131,10 +1121,9 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 		case MENU_SLOT_ITEM_FLASHGREN:
 		{
 #ifdef REGAMEDLL_ADD
-			if (!g_ReGameHookchains.m_CanBuyThisItem.callChain(CanBuyThisItem_hook, pPlayer, BUY_ITEM_FLASHGREN))
+			if (pPlayer->HasRestrictItem(ITEM_FLASHBANG, ITEM_TYPE_BUYING))
 				return;
 #endif
-
 			if (pPlayer->AmmoInventory(pPlayer->GetAmmoIndex("Flashbang")) >= MaxAmmoCarry("Flashbang"))
 			{
 				if (g_bClientPrintEnable)
@@ -1157,10 +1146,9 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 		case MENU_SLOT_ITEM_HEGREN:
 		{
 #ifdef REGAMEDLL_ADD
-			if (!g_ReGameHookchains.m_CanBuyThisItem.callChain(CanBuyThisItem_hook, pPlayer, BUY_ITEM_HEGREN))
+			if (pPlayer->HasRestrictItem(ITEM_HEGRENADE, ITEM_TYPE_BUYING))
 				return;
 #endif
-
 			if (pPlayer->AmmoInventory(pPlayer->GetAmmoIndex("HEGrenade")) >= MaxAmmoCarry("HEGrenade"))
 			{
 				if (g_bClientPrintEnable)
@@ -1182,10 +1170,9 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 		case MENU_SLOT_ITEM_SMOKEGREN:
 		{
 #ifdef REGAMEDLL_ADD
-			if (!g_ReGameHookchains.m_CanBuyThisItem.callChain(CanBuyThisItem_hook, pPlayer, BUY_ITEM_SMOKEGREN))
+			if (pPlayer->HasRestrictItem(ITEM_SMOKEGRENADE, ITEM_TYPE_BUYING))
 				return;
 #endif
-
 			if (pPlayer->AmmoInventory(pPlayer->GetAmmoIndex("SmokeGrenade")) >= MaxAmmoCarry("SmokeGrenade"))
 			{
 				if (g_bClientPrintEnable)
@@ -1207,10 +1194,9 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 		case MENU_SLOT_ITEM_NVG:
 		{
 #ifdef REGAMEDLL_ADD
-			if (!g_ReGameHookchains.m_CanBuyThisItem.callChain(CanBuyThisItem_hook, pPlayer, BUY_ITEM_NVG))
+			if (pPlayer->HasRestrictItem(ITEM_NVG, ITEM_TYPE_BUYING))
 				return;
 #endif
-
 			if (pPlayer->m_bHasNightVision)
 			{
 				if (g_bClientPrintEnable)
@@ -1241,10 +1227,9 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 		case MENU_SLOT_ITEM_DEFUSEKIT:
 		{
 #ifdef REGAMEDLL_ADD
-			if (!g_ReGameHookchains.m_CanBuyThisItem.callChain(CanBuyThisItem_hook, pPlayer, BUY_ITEM_DEFUSEKIT))
+			if (pPlayer->HasRestrictItem(ITEM_DEFUSEKIT, ITEM_TYPE_BUYING))
 				return;
 #endif
-
 			if (pPlayer->m_iTeam != CT || !CSGameRules()->m_bMapHasBombTarget)
 				return;
 
@@ -1281,6 +1266,11 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 		}
 		case MENU_SLOT_ITEM_SHIELD:
 		{
+#ifdef REGAMEDLL_ADD
+			if (pPlayer->HasRestrictItem(ITEM_SHIELDGUN, ITEM_TYPE_BUYING))
+				return;
+#endif
+
 			if (!CanBuyThis(pPlayer, WEAPON_SHIELDGUN))
 				return;
 
@@ -1325,6 +1315,11 @@ void BuyWeaponByWeaponID(CBasePlayer *pPlayer, WeaponIdType weaponID)
 {
 	if (!pPlayer->CanPlayerBuy(true))
 		return;
+
+#ifdef REGAMEDLL_ADD
+	if (pPlayer->HasRestrictItem((ItemID)weaponID, ITEM_TYPE_BUYING))
+		return;
+#endif
 
 	if (!CanBuyThis(pPlayer, weaponID))
 		return;
@@ -4461,7 +4456,7 @@ int EXT_FUNC GetWeaponData(edict_t *player, struct weapon_data_s *info)
 }
 
 // Data sent to current client only engine sets cd to 0 before calling.
-void EXT_FUNC UpdateClientData(const struct edict_s *ent, int sendweapons, struct clientdata_s *cd)
+void EXT_ALIGN UpdateClientData(const struct edict_s *ent, int sendweapons, struct clientdata_s *cd)
 {
 	if (!ent || !ent->pvPrivateData)
 		return;

@@ -27,22 +27,66 @@
 */
 #pragma once
 
+enum ItemRestType
+{
+	ITEM_TYPE_BUYING,	// when a player buying items
+	ITEM_TYPE_TOUCHED,	// when the player touches with a weaponbox or armoury_entity
+	ITEM_TYPE_EQUIPPED	// when a entity game_player_equip to player gives item
+};
+
 // constant items
-#define ITEM_HEALTHKIT		1
-#define ITEM_ANTIDOTE		2
-#define ITEM_SECURITY		3
-#define ITEM_BATTERY		4
-#define ITEM_SUIT		5
+enum ItemID
+{
+	ITEM_NONE = -1,
+	ITEM_SHIELDGUN,
+	ITEM_P228,
+	ITEM_GLOCK,
+	ITEM_SCOUT,
+	ITEM_HEGRENADE,
+	ITEM_XM1014,
+	ITEM_C4,
+	ITEM_MAC10,
+	ITEM_AUG,
+	ITEM_SMOKEGRENADE,
+	ITEM_ELITE,
+	ITEM_FIVESEVEN,
+	ITEM_UMP45,
+	ITEM_SG550,
+	ITEM_GALIL,
+	ITEM_FAMAS,
+	ITEM_USP,
+	ITEM_GLOCK18,
+	ITEM_AWP,
+	ITEM_MP5N,
+	ITEM_M249,
+	ITEM_M3,
+	ITEM_M4A1,
+	ITEM_TMP,
+	ITEM_G3SG1,
+	ITEM_FLASHBANG,
+	ITEM_DEAGLE,
+	ITEM_SG552,
+	ITEM_AK47,
+	ITEM_KNIFE,
+	ITEM_P90,
+	ITEM_NVG,
+	ITEM_DEFUSEKIT,
+	ITEM_KEVLAR,
+	ITEM_ASSAULT,
+	ITEM_LONGJUMP,
+	ITEM_SODACAN,
+	ITEM_HEALTHKIT,
+	ITEM_ANTIDOTE,
+	ITEM_SECURITY,
+	ITEM_BATTERY,
+	ITEM_SUIT
+};
 
 class CItem: public CBaseEntity {
 public:
 	virtual void Spawn() = 0;
 	virtual CBaseEntity *Respawn() = 0;
 	virtual BOOL MyTouch(CBasePlayer *pPlayer) = 0;
-
-public:
-	void EXPORT ItemTouch(CBaseEntity *pOther) = 0;
-	void EXPORT Materialize() = 0;
 };
 
 class CWorldItem: public CBaseEntity {
@@ -50,7 +94,7 @@ public:
 	virtual void Spawn() = 0;
 	virtual void KeyValue(KeyValueData *pkvd) = 0;
 public:
-	int m_iType;
+	ItemID m_iType;
 };
 
 class CItemSuit: public CItem {

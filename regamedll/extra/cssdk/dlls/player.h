@@ -243,7 +243,7 @@ struct RebuyStruct
 	int m_smokeGrenade;
 	int m_defuser;
 	int m_nightVision;
-	int m_armor;
+	ArmorType m_armor;
 };
 
 enum ThrowDirection
@@ -375,7 +375,7 @@ public:
 	int m_iLastZoom;
 	bool m_bResumeZoom;
 	float m_flEjectBrass;
-	int m_iKevlar;
+	ArmorType m_iKevlar;
 	bool m_bNotKilled;
 	TeamName m_iTeam;
 	int m_iAccount;

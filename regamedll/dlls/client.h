@@ -58,17 +58,6 @@ enum BuyItemMenuSlot
 	MENU_SLOT_ITEM_SHIELD,
 };
 
-enum BuyItemID
-{
-	BUY_ITEM_VEST = 1,
-	BUY_ITEM_VESTHELM,
-	BUY_ITEM_FLASHGREN,
-	BUY_ITEM_HEGREN,
-	BUY_ITEM_SMOKEGREN,
-	BUY_ITEM_NVG,
-	BUY_ITEM_DEFUSEKIT
-};
-
 #define CS_NUM_SKIN			4
 #define CZ_NUM_SKIN			5
 
@@ -143,7 +132,6 @@ void Host_Say(edict_t *pEntity, int teamonly);
 void DropSecondary(CBasePlayer *pPlayer);
 void DropPrimary(CBasePlayer *pPlayer);
 bool CanBuyThis(CBasePlayer *pPlayer, int iWeapon);
-bool CanBuyThis_(CBasePlayer *pPlayer, int iWeapon);
 void BuyPistol(CBasePlayer *pPlayer, int iSlot);
 void BuyShotgun(CBasePlayer *pPlayer, int iSlot);
 void BuySubMachineGun(CBasePlayer *pPlayer, int iSlot);

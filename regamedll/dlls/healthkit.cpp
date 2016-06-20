@@ -34,6 +34,11 @@ void CHealthKit::__MAKE_VHOOK(Precache)()
 
 BOOL CHealthKit::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
 {
+#ifdef REGAMEDLL_ADD
+	if (pPlayer->HasRestrictItem(ITEM_HEALTHKIT, ITEM_TYPE_TOUCHED))
+		return FALSE;
+#endif
+
 	if (pPlayer->TakeHealth(gSkillData.healthkitCapacity, DMG_GENERIC))
 	{
 		MESSAGE_BEGIN(MSG_ONE, gmsgItemPickup, NULL, pPlayer->pev);
