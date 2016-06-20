@@ -493,6 +493,7 @@ public:
 	void StartObserver(Vector vecPosition, Vector vecViewAngle);
 	void HandleSignals();
 	void DropPlayerItem(const char *pszItemName);
+	void DropPlayerItem_(const char *pszItemName);
 	BOOL HasPlayerItem(CBasePlayerItem *pCheckItem);
 	BOOL HasNamedPlayerItem(const char *pszItemName);
 	BOOL HasWeapons();

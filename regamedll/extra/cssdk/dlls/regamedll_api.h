@@ -32,6 +32,7 @@
 #include "interface.h"
 #include "player.h"
 #include "gamerules.h"
+#include "client.h"
 
 #define REGAMEDLL_API_VERSION_MAJOR 3
 #define REGAMEDLL_API_VERSION_MINOR 1
@@ -123,7 +124,6 @@ typedef IVoidHookChainRegistryClass<class CBasePlayer> IReGameHookRegistry_CBase
 // CBasePlayer::Blind hook
 typedef IVoidHookChainClass<class CBasePlayer, float, float, float, int> IReGameHook_CBasePlayer_Blind;
 typedef IVoidHookChainRegistryClass<class CBasePlayer, float, float, float, int> IReGameHookRegistry_CBasePlayer_Blind;
-
 
 // CBasePlayer::Observer_IsValidTarget hook
 typedef IHookChainClass<class CBasePlayer *, class CBasePlayer, int, bool> IReGameHook_CBasePlayer_Observer_IsValidTarget;
@@ -305,6 +305,10 @@ typedef IVoidHookChainRegistry<> IReGameHookRegistry_CSGameRules_BalanceTeams;
 typedef IHookChain<bool, class CBasePlayer *, BuyItemID> IReGameHook_CanBuyThisItem;
 typedef IHookChainRegistry<bool, class CBasePlayer *, BuyItemID> IReGameHookRegistry_CanBuyThisItem;
 
+// CBasePlayer::DropPlayerItem hook
+typedef IVoidHookChainClass<class CBasePlayer, const char *> IReGameHook_CBasePlayer_DropPlayerItem;
+typedef IVoidHookChainRegistryClass<class CBasePlayer, const char *> IReGameHookRegistry_CBasePlayer_DropPlayerItem;
+
 class IReGameHookchains {
 public:
 	virtual ~IReGameHookchains() {}
@@ -380,6 +384,7 @@ public:
 	virtual IReGameHookRegistry_CSGameRules_BalanceTeams* CSGameRules_BalanceTeams() = 0;
 
 	virtual IReGameHookRegistry_CanBuyThisItem* CanBuyThisItem() = 0;
+	virtual IReGameHookRegistry_CBasePlayer_DropPlayerItem* CBasePlayer_DropPlayerItem() = 0;
 };
 
 struct ReGameFuncs_t {

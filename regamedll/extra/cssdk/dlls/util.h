@@ -57,6 +57,7 @@ extern globalvars_t *gpGlobals;
 #define SND_CHANGE_VOL		(1<<6)		// duplicated in protocol.h change sound vol
 #define SND_CHANGE_PITCH	(1<<7)		// duplicated in protocol.h change sound pitch
 
+// All monsters need this data
 #define DONT_BLEED		-1
 #define BLOOD_COLOR_RED		(byte)247
 #define BLOOD_COLOR_YELLOW	(byte)195

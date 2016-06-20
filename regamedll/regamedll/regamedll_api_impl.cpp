@@ -115,6 +115,7 @@ IReGameHookRegistry_CSGameRules_GoToIntermission* CReGameHookchains::CSGameRules
 IReGameHookRegistry_CSGameRules_BalanceTeams* CReGameHookchains::CSGameRules_BalanceTeams() { return &m_CSGameRules_BalanceTeams; }
 
 IReGameHookRegistry_CanBuyThisItem* CReGameHookchains::CanBuyThisItem() { return &m_CanBuyThisItem; }
+IReGameHookRegistry_CBasePlayer_DropPlayerItem* CReGameHookchains::CBasePlayer_DropPlayerItem() { return &m_CBasePlayer_DropPlayerItem; }
 
 int CReGameApi::GetMajorVersion()
 {

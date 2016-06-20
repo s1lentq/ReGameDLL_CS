@@ -300,6 +300,10 @@ typedef IVoidHookChainRegistryClassEmptyImpl<class CHalfLifeMultiplay> CReGameHo
 typedef IHookChainImpl<bool, class CBasePlayer *, BuyItemID> CReGameHook_CanBuyThisItem;
 typedef IHookChainRegistryImpl<bool, class CBasePlayer *, BuyItemID> CReGameHookRegistry_CanBuyThisItem;
 
+// CBasePlayer::DropPlayerItem hook
+typedef IVoidHookChainClassImpl<CBasePlayer, const char *> CReGameHook_CBasePlayer_DropPlayerItem;
+typedef IVoidHookChainRegistryClassImpl<CBasePlayer, const char *> CReGameHookRegistry_CBasePlayer_DropPlayerItem;
+
 class CReGameHookchains: public IReGameHookchains {
 public:
 	// CBasePlayer virtual
@@ -374,6 +378,7 @@ public:
 	CReGameHookRegistry_CSGameRules_BalanceTeams m_CSGameRules_BalanceTeams;
 
 	CReGameHookRegistry_CanBuyThisItem m_CanBuyThisItem;
+	CReGameHookRegistry_CBasePlayer_DropPlayerItem m_CBasePlayer_DropPlayerItem;
 
 public:
 	virtual IReGameHookRegistry_CBasePlayer_Spawn* CBasePlayer_Spawn();
@@ -447,6 +452,7 @@ public:
 	virtual IReGameHookRegistry_CSGameRules_BalanceTeams* CSGameRules_BalanceTeams();
 
 	virtual IReGameHookRegistry_CanBuyThisItem* CanBuyThisItem();
+	virtual IReGameHookRegistry_CBasePlayer_DropPlayerItem* CBasePlayer_DropPlayerItem();
 };
 
 extern CReGameHookchains g_ReGameHookchains;

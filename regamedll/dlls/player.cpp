@@ -7300,7 +7300,9 @@ void CBasePlayer::UpdateStatusBar()
 	}
 }
 
-void CBasePlayer::DropPlayerItem(const char *pszItemName)
+LINK_HOOK_CLASS_VOID_CHAIN(CBasePlayer, DropPlayerItem, (const char *pszItemName), pszItemName);
+
+void CBasePlayer::__API_HOOK(DropPlayerItem)(const char *pszItemName)
 {
 	if (!Q_strlen(pszItemName))
 	{
