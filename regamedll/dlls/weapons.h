@@ -148,6 +148,7 @@ public:
 
 public:
 	void EXPORT ArmouryTouch(CBaseEntity *pOther);
+	void ArmouryTouch_(CBaseEntity *pOther);
 
 public:
 	int m_iItem;
@@ -472,7 +473,7 @@ public:
 	virtual void SetObjectCollisionBox();
 	virtual void Touch(CBaseEntity *pOther);
 
-#ifdef HOOK_GAMEDLL
+#if defined(REGAMEDLL_API) || defined(HOOK_GAMEDLL)
 
 	void Spawn_();
 	void Precache_();

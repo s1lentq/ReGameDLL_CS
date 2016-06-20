@@ -157,9 +157,21 @@ typedef IVoidHookChainRegistryClass<class CBasePlayer, char *, char *> IReGameHo
 typedef IVoidHookChainClass<class CBasePlayer, char *, char *> IReGameHook_CBasePlayer_SetClientUserInfoName;
 typedef IVoidHookChainRegistryClass<class CBasePlayer, char *, char *> IReGameHookRegistry_CBasePlayer_SetClientUserInfoName;
 
+// CBasePlayer::DropPlayerItem hook
+typedef IVoidHookChainClass<class CBasePlayer, const char *> IReGameHook_CBasePlayer_DropPlayerItem;
+typedef IVoidHookChainRegistryClass<class CBasePlayer, const char *> IReGameHookRegistry_CBasePlayer_DropPlayerItem;
+
 // CBaseAnimating::ResetSequenceInfo hook
 typedef IVoidHookChainClass<class CBaseAnimating> IReGameHook_CBaseAnimating_ResetSequenceInfo;
 typedef IVoidHookChainRegistryClass<class CBaseAnimating> IReGameHookRegistry_CBaseAnimating_ResetSequenceInfo;
+
+// CWeaponBox::Touch hook
+typedef IVoidHookChainClass<class CWeaponBox, class CBaseEntity*> IReGameHook_CWeaponBox_Touch;
+typedef IVoidHookChainRegistryClass<class CWeaponBox, class CBaseEntity*> IReGameHookRegistry_CWeaponBox_Touch;
+
+// CArmoury::Touch hook
+typedef IVoidHookChainClass<class CArmoury, class CBaseEntity*> IReGameHook_CArmoury_Touch;
+typedef IVoidHookChainRegistryClass<class CArmoury, class CBaseEntity*> IReGameHookRegistry_CArmoury_Touch;
 
 // GetForceCamera hook
 typedef IHookChain<int, class CBasePlayer *> IReGameHook_GetForceCamera;
@@ -180,6 +192,10 @@ typedef IHookChainRegistry<bool, int, ScenarioEventEndRound, float> IReGameHookR
 // CanBuyThis hook
 typedef IHookChain<bool, class CBasePlayer *, int> IReGameHook_CanBuyThis;
 typedef IHookChainRegistry<bool, class CBasePlayer *, int> IReGameHookRegistry_CanBuyThis;
+
+// CanBuyThisItem hook
+typedef IHookChain<bool, class CBasePlayer *, BuyItemID> IReGameHook_CanBuyThisItem;
+typedef IHookChainRegistry<bool, class CBasePlayer *, BuyItemID> IReGameHookRegistry_CanBuyThisItem;
 
 // InstallGameRules hook
 typedef IHookChain<class CGameRules *> IReGameHook_InstallGameRules;
@@ -301,14 +317,6 @@ typedef IVoidHookChainRegistry<> IReGameHookRegistry_CSGameRules_GoToIntermissio
 typedef IVoidHookChain<> IReGameHook_CSGameRules_BalanceTeams;
 typedef IVoidHookChainRegistry<> IReGameHookRegistry_CSGameRules_BalanceTeams;
 
-// CanBuyThisItem hook
-typedef IHookChain<bool, class CBasePlayer *, BuyItemID> IReGameHook_CanBuyThisItem;
-typedef IHookChainRegistry<bool, class CBasePlayer *, BuyItemID> IReGameHookRegistry_CanBuyThisItem;
-
-// CBasePlayer::DropPlayerItem hook
-typedef IVoidHookChainClass<class CBasePlayer, const char *> IReGameHook_CBasePlayer_DropPlayerItem;
-typedef IVoidHookChainRegistryClass<class CBasePlayer, const char *> IReGameHookRegistry_CBasePlayer_DropPlayerItem;
-
 class IReGameHookchains {
 public:
 	virtual ~IReGameHookchains() {}
@@ -385,6 +393,8 @@ public:
 
 	virtual IReGameHookRegistry_CanBuyThisItem* CanBuyThisItem() = 0;
 	virtual IReGameHookRegistry_CBasePlayer_DropPlayerItem* CBasePlayer_DropPlayerItem() = 0;
+	virtual IReGameHookRegistry_CWeaponBox_Touch* CWeaponBox_Touch() = 0;
+	virtual IReGameHookRegistry_CArmoury_Touch* CArmoury_Touch() = 0;
 };
 
 struct ReGameFuncs_t {

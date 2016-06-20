@@ -1637,9 +1637,11 @@ void CWeaponBox::Kill()
 	UTIL_Remove(this);
 }
 
+LINK_HOOK_CLASS_VOID_CHAIN(CWeaponBox, Touch, (CBaseEntity *pOther), pOther);
+
 // CWeaponBox - Touch: try to add my contents to the toucher
 // if the toucher is a player.
-void CWeaponBox::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
+void CWeaponBox::__API_VHOOK(Touch)(CBaseEntity *pOther)
 {
 	if (!(pev->flags & FL_ONGROUND))
 	{
@@ -2143,7 +2145,9 @@ struct ArmouryItemStruct
 	{ "weapon_m249",	"556NatoBox",	60, MAX_AMMO_556NATOBOX },	// ARMOURY_M249
 };
 
-void CArmoury::ArmouryTouch(CBaseEntity *pOther)
+LINK_HOOK_CLASS_VOID_CHAIN(CArmoury, ArmouryTouch, (CBaseEntity *pOther), pOther);
+
+void CArmoury::__API_HOOK(ArmouryTouch)(CBaseEntity *pOther)
 {
 	if (!pOther->IsPlayer())
 		return;

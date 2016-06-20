@@ -75,13 +75,18 @@ IReGameHookRegistry_CBasePlayer_AddAccount* CReGameHookchains::CBasePlayer_AddAc
 IReGameHookRegistry_CBasePlayer_GiveShield* CReGameHookchains::CBasePlayer_GiveShield() { return &m_CBasePlayer_GiveShield; }
 IReGameHookRegistry_CBasePlayer_SetClientUserInfoModel* CReGameHookchains::CBasePlayer_SetClientUserInfoModel() { return &m_CBasePlayer_SetClientUserInfoModel; }
 IReGameHookRegistry_CBasePlayer_SetClientUserInfoName* CReGameHookchains::CBasePlayer_SetClientUserInfoName() { return &m_CBasePlayer_SetClientUserInfoName; }
+IReGameHookRegistry_CBasePlayer_DropPlayerItem* CReGameHookchains::CBasePlayer_DropPlayerItem() { return &m_CBasePlayer_DropPlayerItem; }
 IReGameHookRegistry_CBaseAnimating_ResetSequenceInfo* CReGameHookchains::CBaseAnimating_ResetSequenceInfo() { return &m_CBaseAnimating_ResetSequenceInfo; }
+
+IReGameHookRegistry_CWeaponBox_Touch* CReGameHookchains::CWeaponBox_Touch() { return &m_CWeaponBox_Touch; }
+IReGameHookRegistry_CArmoury_Touch* CReGameHookchains::CArmoury_Touch() { return &m_CArmoury_ArmouryTouch; }
 
 IReGameHookRegistry_GetForceCamera* CReGameHookchains::GetForceCamera() { return &m_GetForceCamera; }
 IReGameHookRegistry_PlayerBlind* CReGameHookchains::PlayerBlind() { return &m_PlayerBlind; }
 IReGameHookRegistry_RadiusFlash_TraceLine* CReGameHookchains::RadiusFlash_TraceLine() { return &m_RadiusFlash_TraceLine; }
 IReGameHookRegistry_RoundEnd* CReGameHookchains::RoundEnd() { return &m_RoundEnd; }
 IReGameHookRegistry_CanBuyThis* CReGameHookchains::CanBuyThis() { return &m_CanBuyThis; }
+IReGameHookRegistry_CanBuyThisItem* CReGameHookchains::CanBuyThisItem() { return &m_CanBuyThisItem; }
 IReGameHookRegistry_InstallGameRules* CReGameHookchains::InstallGameRules() { return &m_InstallGameRules; }
 IReGameHookRegistry_PM_Init* CReGameHookchains::PM_Init() { return &m_PM_Init; }
 IReGameHookRegistry_PM_Move* CReGameHookchains::PM_Move() { return &m_PM_Move; }
@@ -113,9 +118,6 @@ IReGameHookRegistry_CSGameRules_GiveC4* CReGameHookchains::CSGameRules_GiveC4() 
 IReGameHookRegistry_CSGameRules_ChangeLevel* CReGameHookchains::CSGameRules_ChangeLevel() { return &m_CSGameRules_ChangeLevel; }
 IReGameHookRegistry_CSGameRules_GoToIntermission* CReGameHookchains::CSGameRules_GoToIntermission() { return &m_CSGameRules_GoToIntermission; }
 IReGameHookRegistry_CSGameRules_BalanceTeams* CReGameHookchains::CSGameRules_BalanceTeams() { return &m_CSGameRules_BalanceTeams; }
-
-IReGameHookRegistry_CanBuyThisItem* CReGameHookchains::CanBuyThisItem() { return &m_CanBuyThisItem; }
-IReGameHookRegistry_CBasePlayer_DropPlayerItem* CReGameHookchains::CBasePlayer_DropPlayerItem() { return &m_CBasePlayer_DropPlayerItem; }
 
 int CReGameApi::GetMajorVersion()
 {

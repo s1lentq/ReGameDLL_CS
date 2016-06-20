@@ -119,7 +119,6 @@ typedef IVoidHookChainRegistryClassImpl<CBasePlayer> CReGameHookRegistry_CBasePl
 typedef IVoidHookChainClassImpl<CBasePlayer, float, float, float, int> CReGameHook_CBasePlayer_Blind;
 typedef IVoidHookChainRegistryClassImpl<CBasePlayer, float, float, float, int> CReGameHookRegistry_CBasePlayer_Blind;
 
-
 // CBasePlayer::Observer_IsValidTarget hook
 typedef IHookChainClassImpl<CBasePlayer *, CBasePlayer, int, bool> CReGameHook_CBasePlayer_Observer_IsValidTarget;
 typedef IHookChainRegistryClassImpl<CBasePlayer *, CBasePlayer, int, bool> CReGameHookRegistry_CBasePlayer_Observer_IsValidTarget;
@@ -152,9 +151,21 @@ typedef IVoidHookChainRegistryClassImpl<CBasePlayer, char *, char *> CReGameHook
 typedef IVoidHookChainClassImpl<CBasePlayer, char *, char *> CReGameHook_CBasePlayer_SetClientUserInfoName;
 typedef IVoidHookChainRegistryClassImpl<CBasePlayer, char *, char *> CReGameHookRegistry_CBasePlayer_SetClientUserInfoName;
 
+// CBasePlayer::DropPlayerItem hook
+typedef IVoidHookChainClassImpl<CBasePlayer, const char *> CReGameHook_CBasePlayer_DropPlayerItem;
+typedef IVoidHookChainRegistryClassImpl<CBasePlayer, const char *> CReGameHookRegistry_CBasePlayer_DropPlayerItem;
+
 // CBaseAnimating::ResetSequenceInfo hook
 typedef IVoidHookChainClassImpl<CBaseAnimating> CReGameHook_CBaseAnimating_ResetSequenceInfo;
 typedef IVoidHookChainRegistryClassImpl<CBaseAnimating> CReGameHookRegistry_CBaseAnimating_ResetSequenceInfo;
+
+// CWeaponBox::Touch hook
+typedef IVoidHookChainClassImpl<CWeaponBox, CBaseEntity*> CReGameHook_CWeaponBox_Touch;
+typedef IVoidHookChainRegistryClassImpl<CWeaponBox, CBaseEntity*> CReGameHookRegistry_CWeaponBox_Touch;
+
+// CArmoury::Touch hook
+typedef IVoidHookChainClassImpl<CArmoury, CBaseEntity*> CReGameHook_CArmoury_Touch;
+typedef IVoidHookChainRegistryClassImpl<CArmoury, CBaseEntity*> CReGameHookRegistry_CArmoury_Touch;
 
 // GetForceCamera hook
 typedef IHookChainImpl<int, class CBasePlayer *> CReGameHook_GetForceCamera;
@@ -175,6 +186,10 @@ typedef IHookChainRegistryClassEmptyImpl<bool, class CHalfLifeMultiplay, int, Sc
 // CanBuyThis hook
 typedef IHookChainImpl<bool, class CBasePlayer *, int> CReGameHook_CanBuyThis;
 typedef IHookChainRegistryImpl<bool, class CBasePlayer *, int> CReGameHookRegistry_CanBuyThis;
+
+// CanBuyThisItem hook
+typedef IHookChainImpl<bool, class CBasePlayer *, BuyItemID> CReGameHook_CanBuyThisItem;
+typedef IHookChainRegistryImpl<bool, class CBasePlayer *, BuyItemID> CReGameHookRegistry_CanBuyThisItem;
 
 // InstallGameRules hook
 typedef IHookChainImpl<CGameRules *> CReGameHook_InstallGameRules;
@@ -296,14 +311,6 @@ typedef IVoidHookChainRegistryClassEmptyImpl<class CHalfLifeMultiplay> CReGameHo
 typedef IVoidHookChainClassImpl<class CHalfLifeMultiplay> CReGameHook_CSGameRules_BalanceTeams;
 typedef IVoidHookChainRegistryClassEmptyImpl<class CHalfLifeMultiplay> CReGameHookRegistry_CSGameRules_BalanceTeams;
 
-// CanBuyThisItem hook
-typedef IHookChainImpl<bool, class CBasePlayer *, BuyItemID> CReGameHook_CanBuyThisItem;
-typedef IHookChainRegistryImpl<bool, class CBasePlayer *, BuyItemID> CReGameHookRegistry_CanBuyThisItem;
-
-// CBasePlayer::DropPlayerItem hook
-typedef IVoidHookChainClassImpl<CBasePlayer, const char *> CReGameHook_CBasePlayer_DropPlayerItem;
-typedef IVoidHookChainRegistryClassImpl<CBasePlayer, const char *> CReGameHookRegistry_CBasePlayer_DropPlayerItem;
-
 class CReGameHookchains: public IReGameHookchains {
 public:
 	// CBasePlayer virtual
@@ -379,6 +386,8 @@ public:
 
 	CReGameHookRegistry_CanBuyThisItem m_CanBuyThisItem;
 	CReGameHookRegistry_CBasePlayer_DropPlayerItem m_CBasePlayer_DropPlayerItem;
+	CReGameHookRegistry_CWeaponBox_Touch m_CWeaponBox_Touch;
+	CReGameHookRegistry_CArmoury_Touch m_CArmoury_ArmouryTouch;
 
 public:
 	virtual IReGameHookRegistry_CBasePlayer_Spawn* CBasePlayer_Spawn();
@@ -453,6 +462,8 @@ public:
 
 	virtual IReGameHookRegistry_CanBuyThisItem* CanBuyThisItem();
 	virtual IReGameHookRegistry_CBasePlayer_DropPlayerItem* CBasePlayer_DropPlayerItem();
+	virtual IReGameHookRegistry_CWeaponBox_Touch* CWeaponBox_Touch();
+	virtual IReGameHookRegistry_CArmoury_Touch* CArmoury_Touch();
 };
 
 extern CReGameHookchains g_ReGameHookchains;
