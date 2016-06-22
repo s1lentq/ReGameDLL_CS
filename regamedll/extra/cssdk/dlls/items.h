@@ -31,7 +31,7 @@ enum ItemRestType
 {
 	ITEM_TYPE_BUYING,	// when a player buying items
 	ITEM_TYPE_TOUCHED,	// when the player touches with a weaponbox or armoury_entity
-	ITEM_TYPE_EQUIPPED	// when a entity game_player_equip to player gives item
+	ITEM_TYPE_EQUIPPED	// when a entity game_player_equip gives item to player or default item's on player spawn
 };
 
 // constant items

@@ -425,7 +425,7 @@ void CHalfLifeMultiplay::ReadMultiplayCvars()
 	}
 
 	// auto-disable ff
-	if (friendlyfire.value)
+	if (freeforall.value)
 	{
 		CVAR_SET_FLOAT("mp_friendlyfire", 0);
 	}

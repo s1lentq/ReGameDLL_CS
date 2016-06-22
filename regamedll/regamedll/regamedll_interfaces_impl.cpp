@@ -133,7 +133,109 @@ bool CCSPlayer::JoinTeam(TeamName team)
 
 bool CCSPlayer::RemovePlayerItem(const char* pszItemName)
 {
+	if (!pszItemName)
+		return false;
+
 	CBasePlayer *pPlayer = BasePlayer();
+
+	// if it item_ ?
+	if (pszItemName[0] == 'i') {
+		pszItemName += sizeof("item_") - 1;
+
+		// item_thighpack
+		if (FStrEq(pszItemName, "thighpack"))
+		{
+			// if we don't have it?
+			if (!pPlayer->m_bHasDefuser)
+				return false;
+
+			pPlayer->m_bHasDefuser = false;
+			pPlayer->pev->body = 0;
+
+			MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, NULL, pPlayer->pev);
+				WRITE_BYTE(STATUSICON_HIDE);
+				WRITE_STRING("defuser");
+			MESSAGE_END();
+
+			pPlayer->SendItemStatus();
+		}
+		// item_longjump
+		else if (FStrEq(pszItemName, "longjump"))
+		{
+			// if we don't have it?
+			if (!pPlayer->m_fLongJump)
+				return false;
+
+			pPlayer->m_fLongJump = FALSE;
+			SET_PHYSICS_KEY_VALUE(pPlayer->edict(), "slj", "0");
+		}
+		// item_assaultsuit
+		else if (FStrEq(pszItemName, "assaultsuit"))
+		{
+			// if we don't have it?
+			if (pPlayer->m_iKevlar != ARMOR_VESTHELM)
+				return false;
+
+			pPlayer->m_iKevlar = ARMOR_NONE;
+			pPlayer->pev->armorvalue = 0;
+
+			MESSAGE_BEGIN(MSG_ONE, gmsgArmorType, NULL, pPlayer->pev);
+				WRITE_BYTE(0);
+			MESSAGE_END();
+		}
+		// item_kevlar
+		else if (FStrEq(pszItemName, "kevlar"))
+		{
+			// if we don't have it?
+			if (pPlayer->m_iKevlar != ARMOR_KEVLAR)
+				return false;
+
+			pPlayer->m_iKevlar = ARMOR_NONE;
+			pPlayer->pev->armorvalue = 0;
+		}
+		else
+			return false;
+
+		return true;
+	}
+
+	else if (FStrEq(pszItemName, "weapon_shield")) {
+		if (!pPlayer->HasShield())
+			return false;
+
+		bool bIsProtectedShield = pPlayer->IsProtectedByShield();
+		pPlayer->RemoveShield();
+
+		CBasePlayerWeapon *pWeapon = static_cast<CBasePlayerWeapon *>(pPlayer->m_pActiveItem);
+
+		if (pWeapon)
+		{
+			if (!pWeapon->CanHolster())
+				return false;
+
+			if (pWeapon->m_iId == WEAPON_HEGRENADE || pWeapon->m_iId == WEAPON_FLASHBANG || pWeapon->m_iId == WEAPON_SMOKEGRENADE)
+			{
+				if (pPlayer->m_rgAmmo[ pWeapon->m_iPrimaryAmmoType ] <= 0)
+					g_pGameRules->GetNextBestWeapon(pPlayer, pWeapon);
+			}
+
+			if (pWeapon->m_flStartThrow != 0.0f)
+				pWeapon->Holster();
+
+			if (pPlayer->IsReloading())
+			{
+				pWeapon->m_fInReload = FALSE;
+				pPlayer->m_flNextAttack = 0;
+			}
+
+			if (bIsProtectedShield)
+				pWeapon->SecondaryAttack();
+
+			pWeapon->Deploy();
+		}
+
+		return true;
+	}
 
 	for (auto pItem : pPlayer->m_rgpPlayerItems) {
 		while (pItem != nullptr)
@@ -141,8 +243,21 @@ bool CCSPlayer::RemovePlayerItem(const char* pszItemName)
 			if (FClassnameIs(pItem->pev, pszItemName))
 			{
 				CBasePlayerWeapon *pWeapon = static_cast<CBasePlayerWeapon *>(pItem);
-				if (pWeapon->IsWeapon()) {
+				if (pWeapon->IsWeapon())
+				{
+					if (FClassnameIs(pWeapon->pev, "weapon_c4"))
+					{
+						pPlayer->m_bHasC4 = false;
+						pPlayer->pev->body = 0;
+						pPlayer->SetBombIcon(FALSE);
+						pPlayer->SetProgressBarTime(0);
+					}
+
 					pWeapon->RetireWeapon();
+				}
+
+				if (pWeapon->iItemSlot() == PRIMARY_WEAPON_SLOT) {
+					pPlayer->m_bHasPrimary = false;
 				}
 
 				pPlayer->pev->weapons &= ~(1 << pItem->m_iId);
@@ -158,11 +273,30 @@ bool CCSPlayer::RemovePlayerItem(const char* pszItemName)
 	return false;
 }
 
+void CCSPlayer::GiveNamedItemEx(const char *pszName)
+{
+	CBasePlayer *pPlayer = BasePlayer();
+
+	if (FStrEq(pszName, "weapon_c4")) {
+		pPlayer->m_bHasC4 = true;
+		pPlayer->SetBombIcon();
+
+		if (pPlayer->m_iTeam == TERRORIST) {
+			pPlayer->pev->body = 1;
+		}
+	} else if (FStrEq(pszName, "weapon_shield")) {
+		DropPrimary(pPlayer);
+		pPlayer->GiveShield();
+		return;
+	}
+
+	pPlayer->GiveNamedItemEx(pszName);
+}
+
 bool CCSPlayer::IsConnected() const { return m_pContainingEntity->has_disconnected == false; }
 void CCSPlayer::SetAnimation(PLAYER_ANIM playerAnim) { BasePlayer()->SetAnimation(playerAnim); }
 void CCSPlayer::AddAccount(int amount, RewardType type, bool bTrackChange) { BasePlayer()->AddAccount(amount, type, bTrackChange); }
 void CCSPlayer::GiveNamedItem(const char *pszName) { BasePlayer()->GiveNamedItem(pszName); }
-void CCSPlayer::GiveNamedItemEx(const char *pszName) { BasePlayer()->GiveNamedItemEx(pszName); }
 void CCSPlayer::GiveDefaultItems() { BasePlayer()->GiveDefaultItems(); }
 void CCSPlayer::GiveShield(bool bDeploy) { BasePlayer()->GiveShield(bDeploy); }
 void CCSPlayer::DropShield(bool bDeploy) { BasePlayer()->DropShield(bDeploy); }

@@ -1575,6 +1575,35 @@ void EXT_ALIGN CBasePlayer::__API_HOOK(GiveDefaultItems)()
 	RemoveAllItems(FALSE);
 	m_bHasPrimary = false;
 
+#ifdef REGAMEDLL_ADD
+	switch (m_iTeam)
+	{
+	case CT:
+	{
+		if (!HasRestrictItem(ITEM_KNIFE, ITEM_TYPE_EQUIPPED)) {
+			GiveNamedItem("weapon_knife");
+		}
+		if (!HasRestrictItem(ITEM_USP, ITEM_TYPE_EQUIPPED)) {
+			GiveNamedItem("weapon_usp");
+			GiveAmmo(m_bIsVIP ? 12 : 24, "45acp", MAX_AMMO_45ACP);
+		}
+
+		break;
+	}
+	case TERRORIST:
+	{
+		if (!HasRestrictItem(ITEM_KNIFE, ITEM_TYPE_EQUIPPED)) {
+			GiveNamedItem("weapon_knife");
+		}
+		if (!HasRestrictItem(ITEM_GLOCK18, ITEM_TYPE_EQUIPPED)) {
+			GiveNamedItem("weapon_glock18");
+			GiveAmmo(40, "9mm", MAX_AMMO_9MM);
+		}
+
+		break;
+	}
+	}
+#else
 	switch (m_iTeam)
 	{
 	case CT:
@@ -1588,6 +1617,7 @@ void EXT_ALIGN CBasePlayer::__API_HOOK(GiveDefaultItems)()
 		GiveAmmo(40, "9mm", MAX_AMMO_9MM);
 		break;
 	}
+#endif
 }
 
 void CBasePlayer::RemoveAllItems(BOOL removeSuit)
@@ -7363,7 +7393,7 @@ void CBasePlayer::__API_HOOK(DropPlayerItem)(const char *pszItemName)
 			if (pWeapon->iItemSlot() == PRIMARY_WEAPON_SLOT)
 				m_bHasPrimary = false;
 
-			if (!Q_strcmp(STRING(pWeapon->pev->classname), "weapon_c4"))
+			if (FClassnameIs(pWeapon->pev, "weapon_c4"))
 			{
 				m_bHasC4 = false;
 				pev->body = 0;
@@ -7412,7 +7442,7 @@ void CBasePlayer::__API_HOOK(DropPlayerItem)(const char *pszItemName)
 			pWeaponBox->PackWeapon(pWeapon);
 			pWeaponBox->pev->velocity = gpGlobals->v_forward * 300 + gpGlobals->v_forward * 100;
 
-			if (!Q_strcmp(STRING(pWeapon->pev->classname), "weapon_c4"))
+			if (FClassnameIs(pWeapon->pev, "weapon_c4"))
 			{
 				pWeaponBox->m_bIsBomb = true;
 				pWeaponBox->SetThink(&CWeaponBox::BombThink);
@@ -7431,7 +7461,12 @@ void CBasePlayer::__API_HOOK(DropPlayerItem)(const char *pszItemName)
 				int iAmmoIndex = GetAmmoIndex(pWeapon->pszAmmo1());
 				if (iAmmoIndex != -1)
 				{
+#ifdef REGAMEDLL_FIXES
+					// why not pack the ammo more than one?
+					pWeaponBox->PackAmmo(MAKE_STRING(pWeapon->pszAmmo1()), m_rgAmmo[iAmmoIndex]);
+#else
 					pWeaponBox->PackAmmo(MAKE_STRING(pWeapon->pszAmmo1()), m_rgAmmo[iAmmoIndex] > 0);
+#endif
 					m_rgAmmo[iAmmoIndex] = 0;
 				}
 			}

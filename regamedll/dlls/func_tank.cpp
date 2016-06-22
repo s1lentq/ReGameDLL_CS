@@ -337,7 +337,7 @@ void CFuncTank::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller,
 		}
 		else if (!m_pController && useType != USE_OFF)
 		{
-			((CBasePlayer*)pActivator)->m_pTank = this;
+			((CBasePlayer *)pActivator)->m_pTank = this;
 			StartControl((CBasePlayer*)pActivator);
 		}
 		else
