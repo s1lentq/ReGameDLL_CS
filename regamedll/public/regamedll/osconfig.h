@@ -199,5 +199,5 @@
 // DLLEXPORT is defined, for convenience.
 #define C_DLLEXPORT extern "C" DLLEXPORT
 
-#define EXT_FUNC /*FORCE_STACK_ALIGN*/
+#define EXT_FUNC FORCE_STACK_ALIGN
 #define EXT_ALIGN FORCE_STACK_ALIGN

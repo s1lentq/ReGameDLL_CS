@@ -404,7 +404,7 @@ void CheckStartMoney()
 		CVAR_SET_FLOAT("mp_startmoney", max_money);
 	else if (money < 0)
 		CVAR_SET_FLOAT("mp_startmoney", 0);
-#endif // REGAMEDLL_ADD
+#endif
 
 }
 
@@ -2299,7 +2299,7 @@ BOOL HandleRadioAliasCommands(CBasePlayer *pPlayer, const char *pszCommand)
 }
 
 // Use CMD_ARGV,  CMD_ARGV, and CMD_ARGC to get pointers the character string command.
-void EXT_FUNC ClientCommand(edict_t *pEntity)
+void EXT_ALIGN ClientCommand(edict_t *pEntity)
 {
 	const char *pcmd = CMD_ARGV_(0);
 	const char *pstr = NULL;
