@@ -19,6 +19,12 @@ int g_onladder = 0;
 
 #endif
 
+#ifdef CLIENT_DLL
+	int iJumpSpectator;
+	float vJumpOrigin[3];
+	float vJumpAngles[3];
+#endif
+
 void PM_SwapTextures(int i, int j)
 {
 	char chTemp;
@@ -1636,6 +1642,16 @@ void PM_SpectatorMove()
 	// targets position and real view position is calculated on client (saves server CPU)
 	if (pmove->iuser1 == OBS_ROAMING)
 	{
+#ifdef CLIENT_DLL
+		if (iJumpSpectator)
+		{
+			VectorCopy(vJumpOrigin, pmove->origin);
+			VectorCopy(vJumpAngles, pmove->angles);
+			VectorCopy(vec3_origin, pmove->velocity);
+			iJumpSpectator = 0;
+			return;
+		}
+#endif		
 		// Move around in normal spectator method
 		speed = Length (pmove->velocity);
 
