@@ -37,7 +37,6 @@ typedef Vector& VectorRef;
 typedef float& FloatRef;
 #endif // HOOK_GAMEDLL
 
-#include "h_export.h"
 #include "schedule.h"
 #include "archtypes.h"
 #include "scriptevent.h"
@@ -152,6 +151,7 @@ typedef float& FloatRef;
 #include "doors.h"
 #include "explode.h"
 #include "gamerules.h"
+#include "mapinfo.h"
 #include "career_tasks.h"
 #include "training_gamerules.h"
 #include "maprules.h"

@@ -758,7 +758,7 @@ public:
 
 	// has a style of gameplay when aren't any teams
 	bool IsFreeForAll() const;
-	bool HasRoundInfinite(bool time_expired = false) const;
+	bool HasRoundInfinite(int flags = 0) const;
 
 private:
 	VFUNC bool HasRoundTimeExpired();
@@ -876,24 +876,6 @@ typedef struct mapcycle_s
 
 } mapcycle_t;
 
-class CMapInfo: public CPointEntity
-{
-public:
-	virtual void Spawn();
-	virtual void KeyValue(KeyValueData *pkvd);
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void KeyValue_(KeyValueData *pkvd);
-
-#endif
-
-public:
-	int m_iBuyingStatus;
-	float m_flBombRadius;
-};
-
 class CCStrikeGameMgrHelper: public IVoiceGameMgrHelper
 {
 public:
@@ -907,7 +889,7 @@ public:
 
 };
 
-extern CGameRules *g_pGameRules;
+extern CGameRules DLLEXPORT *g_pGameRules;
 
 CGameRules *InstallGameRules();
 CGameRules *InstallGameRules_();
@@ -942,11 +924,15 @@ inline bool CHalfLifeMultiplay::IsFreeForAll() const
 	return false;
 }
 
-inline bool CHalfLifeMultiplay::HasRoundInfinite(bool time_expired) const
+inline bool CHalfLifeMultiplay::HasRoundInfinite(int flags) const
 {
 #ifdef REGAMEDLL_ADD
-	if (round_infinite.string[0] == '1' || (time_expired && (UTIL_ReadFlags(round_infinite.string) & SCENARIO_BLOCK_TIME_EXPRIRED)))
+	if (round_infinite.string[0] == '1')
 		return true;
+
+	if (flags && (UTIL_ReadFlags(round_infinite.string) & flags))
+		return true;
+
 #endif
 	return false;
 }

@@ -20,10 +20,11 @@ void IdleState::__MAKE_VHOOK(OnEnter)(CCSBot *me)
 	me->SetDisposition(CCSBot::ENGAGE_AND_INVESTIGATE);
 }
 
+// Determine what we should do next
 void IdleState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 {
 	// all other states assume GetLastKnownArea() is valid, ensure that it is
-	if (me->GetLastKnownArea() == NULL && me->StayOnNavMesh() == false)
+	if (!me->GetLastKnownArea() && me->StayOnNavMesh() == false)
 		return;
 
 	// zombies never leave the Idle state
@@ -54,12 +55,18 @@ void IdleState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 		if (me->GetHostageEscortCount())
 		{
 			const CCSBotManager::Zone *zone = TheCSBots()->GetClosestZone(me->GetLastKnownArea(), PathCost(me, FASTEST_ROUTE));
-			me->SetTask(CCSBot::RESCUE_HOSTAGES);
-			me->Run();
-			me->SetDisposition(CCSBot::SELF_DEFENSE);
-			me->MoveTo(TheCSBots()->GetRandomPositionInZone(zone), FASTEST_ROUTE);
-			me->PrintIfWatched("Trying to rescue hostages at the end of the round\n");
-			return;
+			const Vector *zonePos = TheCSBots()->GetRandomPositionInZone(zone);
+#ifdef REGAMEDLL_FIXES
+			if (zonePos)
+#endif
+			{
+				me->SetTask(CCSBot::RESCUE_HOSTAGES);
+				me->Run();
+				me->SetDisposition(CCSBot::SELF_DEFENSE);
+				me->MoveTo(zonePos, FASTEST_ROUTE);
+				me->PrintIfWatched("Trying to rescue hostages at the end of the round\n");
+				return;
+			}
 		}
 
 		me->Hunt();
@@ -81,9 +88,6 @@ void IdleState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 	{
 		case CCSBotManager::SCENARIO_DEFUSE_BOMB:
 		{
-			static int inumpo = 0;
-			inumpo++;
-
 			// if this is a bomb game and we have the bomb, go plant it
 			if (me->m_iTeam == TERRORIST)
 			{
@@ -93,23 +97,28 @@ void IdleState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 					{
 						// T's always know where the bomb is - go defend it
 						const CCSBotManager::Zone *zone = TheCSBots()->GetZone(me->GetGameState()->GetPlantedBombsite());
-						me->SetTask(CCSBot::GUARD_TICKING_BOMB);
-
-						Place place = TheNavAreaGrid.GetPlace(&zone->m_center);
-						if (place != UNDEFINED_PLACE)
+#ifdef REGAMEDLL_FIXES
+						if (zone)
+#endif
 						{
-							// pick a random hiding spot in this place
-							const Vector *spot = FindRandomHidingSpot(me, place, me->IsSniper());
-							if (spot != NULL)
-							{
-								me->Hide(spot);
-								return;
-							}
-						}
+							me->SetTask(CCSBot::GUARD_TICKING_BOMB);
 
-						// hide nearby
-						me->Hide(TheNavAreaGrid.GetNearestNavArea(&zone->m_center));
-						return;
+							Place place = TheNavAreaGrid.GetPlace(&zone->m_center);
+							if (place != UNDEFINED_PLACE)
+							{
+								// pick a random hiding spot in this place
+								const Vector *spot = FindRandomHidingSpot(me, place, me->IsSniper());
+								if (spot)
+								{
+									me->Hide(spot);
+									return;
+								}
+							}
+
+							// hide nearby
+							me->Hide(TheNavAreaGrid.GetNearestNavArea(&zone->m_center));
+							return;
+						}
 					}
 					else
 					{
@@ -121,7 +130,7 @@ void IdleState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 
 						// move to bombsite - if we reach it, we'll update its cleared status, causing us to select another
 						const Vector *pos = TheCSBots()->GetRandomPositionInZone(TheCSBots()->GetZone(zoneIndex));
-						if (pos != NULL)
+						if (pos)
 						{
 							me->SetTask(CCSBot::FIND_TICKING_BOMB);
 							me->MoveTo(pos);
@@ -147,11 +156,11 @@ void IdleState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 					{
 						// move to the closest bomb site
 						const CCSBotManager::Zone *zone = TheCSBots()->GetClosestZone(me->GetLastKnownArea(), PathCost(me));
-						if (zone != NULL)
+						if (zone)
 						{
 							// pick a random spot within the bomb zone
 							const Vector *pos = TheCSBots()->GetRandomPositionInZone(zone);
-							if (pos != NULL)
+							if (pos)
 							{
 								// move to bombsite
 								me->SetTask(CCSBot::PLANT_BOMB);
@@ -186,7 +195,8 @@ void IdleState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 					if (!me->IsRogue() && me->GetGameState()->IsBombPlanted() && me->GetGameState()->GetBombPosition() != NULL)
 					{
 						const Vector *bombPos = me->GetGameState()->GetBombPosition();
-						if (bombPos != NULL)
+
+						if (bombPos)
 						{
 							me->SetTask(CCSBot::GUARD_TICKING_BOMB);
 							me->Hide(TheNavAreaGrid.GetNavArea(bombPos));
@@ -202,7 +212,7 @@ void IdleState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 				{
 					// if the bomb has been planted, attempt to defuse it
 					const Vector *bombPos = me->GetGameState()->GetBombPosition();
-					if (bombPos != NULL)
+					if (bombPos)
 					{
 						// if someone is defusing the bomb, guard them
 						if (TheCSBots()->GetBombDefuser())
@@ -235,7 +245,7 @@ void IdleState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 					{
 						// we know which bombsite, but not exactly where the bomb is, go there
 						const CCSBotManager::Zone *zone = TheCSBots()->GetZone(me->GetGameState()->GetPlantedBombsite());
-						if (zone != NULL)
+						if (zone)
 						{
 							if (me->IsDoingScenario())
 							{
@@ -258,7 +268,7 @@ void IdleState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 					{
 						// we dont know where the bomb is - we must search the bombsites
 						// find closest un-cleared bombsite
-						const CCSBotManager::Zone *zone = NULL;
+						const CCSBotManager::Zone *zone = nullptr;
 						float travelDistance = 9999999.9f;
 
 						for (int z = 0; z < TheCSBots()->GetZoneCount(); ++z)
@@ -274,34 +284,39 @@ void IdleState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 							ShortestPathCost pathCost = ShortestPathCost();
 							float_precision dist = NavAreaTravelDistance(me->GetLastKnownArea(), TheNavAreaGrid.GetNearestNavArea(&TheCSBots()->GetZone(z)->m_center), pathCost);
 
-							if (/*dist >= 0.0f && */dist < travelDistance)
+#ifdef REGAMEDLL_FIXES
+							if (dist < 0.0f)
+								continue;
+#endif
+
+							if (dist < travelDistance)
 							{
 								zone = TheCSBots()->GetZone(z);
 								travelDistance = dist;
 							}
 						}
 
-						if (zone != NULL)
+						if (zone)
 						{
 							const float farAwayRange = 2000.0f;
 							if (travelDistance > farAwayRange)
 							{
-								zone = NULL;
+								zone = nullptr;
 							}
 						}
 
 						// if closest bombsite is "far away", pick one at random
-						if (zone == NULL)
+						if (!zone)
 						{
 							int zoneIndex = me->GetGameState()->GetNextBombsiteToSearch();
 							zone = TheCSBots()->GetZone(zoneIndex);
 						}
 
 						// move to bombsite - if we reach it, we'll update its cleared status, causing us to select another
-						if (zone != NULL)
+						if (zone)
 						{
 							const Vector *pos = TheCSBots()->GetRandomPositionInZone(zone);
-							if (pos != NULL)
+							if (pos)
 							{
 								me->SetTask(CCSBot::FIND_TICKING_BOMB);
 								me->MoveTo(pos);
@@ -330,14 +345,14 @@ void IdleState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 						{
 							// snipe bomb zone(s)
 							const CCSBotManager::Zone *zone = TheCSBots()->GetRandomZone();
-							if (zone != NULL)
+							if (zone)
 							{
 								snipingArea = TheCSBots()->GetRandomAreaInZone(zone);
 								me->PrintIfWatched("Sniping near bombsite\n");
 							}
 						}
 
-						if (snipingArea != NULL)
+						if (snipingArea)
 						{
 							me->SetTask(CCSBot::MOVE_TO_SNIPER_SPOT);
 							me->Hide(snipingArea, -1.0f, sniperHideRange);
@@ -368,10 +383,10 @@ void IdleState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 
 						// guard bomb zone(s)
 						const CCSBotManager::Zone *zone = TheCSBots()->GetRandomZone();
-						if (zone != NULL)
+						if (zone)
 						{
 							CNavArea *area = TheCSBots()->GetRandomAreaInZone(zone);
-							if (area != NULL)
+							if (area)
 							{
 								me->PrintIfWatched("I'm guarding a bombsite\n");
 								me->GetChatter()->AnnouncePlan("GoingToDefendBombsite", area->GetPlace());
@@ -397,10 +412,10 @@ void IdleState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 					{
 						// snipe escape zone(s)
 						const CCSBotManager::Zone *zone = TheCSBots()->GetRandomZone();
-						if (zone != NULL)
+						if (zone)
 						{
 							CNavArea *area = TheCSBots()->GetRandomAreaInZone(zone);
-							if (area != NULL)
+							if (area)
 							{
 								me->SetTask(CCSBot::MOVE_TO_SNIPER_SPOT);
 								me->Hide(area, -1.0, sniperHideRange);
@@ -424,10 +439,10 @@ void IdleState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 				{
 					// guard escape zone(s)
 					const CCSBotManager::Zone *zone = TheCSBots()->GetRandomZone();
-					if (zone != NULL)
+					if (zone)
 					{
 						CNavArea *area = TheCSBots()->GetRandomAreaInZone(zone);
-						if (area != NULL)
+						if (area)
 						{
 							// guard the escape zone - stay closer if our morale is low
 							me->SetTask(CCSBot::GUARD_VIP_ESCAPE_ZONE);
@@ -461,11 +476,11 @@ void IdleState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 						zone = TheCSBots()->GetClosestZone(me->GetLastKnownArea(), PathCost(me));
 					}
 
-					if (zone != NULL)
+					if (zone)
 					{
 						// pick a random spot within the escape zone
 						const Vector *pos = TheCSBots()->GetRandomPositionInZone(zone);
-						if (pos != NULL)
+						if (pos)
 						{
 							// move to escape zone
 							me->SetTask(CCSBot::VIP_ESCAPE);
@@ -523,7 +538,7 @@ void IdleState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 					if (RANDOM_FLOAT(0, 100) <= defenseSniperCampChance)
 					{
 						const Vector *hostagePos = me->GetGameState()->GetRandomFreeHostagePosition();
-						if (hostagePos != NULL && campHostages)
+						if (hostagePos && campHostages)
 						{
 							me->SetTask(CCSBot::MOVE_TO_SNIPER_SPOT);
 							me->PrintIfWatched("Sniping near hostages\n");
@@ -549,11 +564,11 @@ void IdleState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 				if (!me->IsSafe() && !me->IsRogue())
 				{
 					CBaseEntity *hostage = me->GetGameState()->GetNearestVisibleFreeHostage();
-					if (hostage != NULL)
+					if (hostage)
 					{
 						// we see a free hostage, guard it
 						CNavArea *area = TheNavAreaGrid.GetNearestNavArea(&hostage->pev->origin);
-						if (area != NULL)
+						if (area)
 						{
 							me->SetTask(CCSBot::GUARD_HOSTAGES);
 							me->Hide(area);
@@ -580,10 +595,10 @@ void IdleState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 
 				// decide whether to camp the hostages or the escape zones
 				const Vector *hostagePos = me->GetGameState()->GetRandomFreeHostagePosition();
-				if (hostagePos != NULL && campHostages)
+				if (hostagePos && campHostages)
 				{
 					CNavArea *area = TheNavAreaGrid.GetNearestNavArea(hostagePos);
-					if (area != NULL)
+					if (area)
 					{
 						// guard the hostages - stay closer to hostages if our morale is low
 						me->SetTask(CCSBot::GUARD_HOSTAGES);
@@ -645,10 +660,10 @@ void IdleState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 				// if we are not allowed to do the scenario, guard the hostages to clear the area for the human(s)
 				if (!me->IsDoingScenario())
 				{
-					if (hostage != NULL)
+					if (hostage)
 					{
 						CNavArea *area = TheNavAreaGrid.GetNearestNavArea(&hostage->pev->origin);
-						if (area != NULL)
+						if (area)
 						{
 							me->SetTask(CCSBot::GUARD_HOSTAGES);
 							me->Hide(area);
@@ -672,9 +687,9 @@ void IdleState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 
 				// if we are escorting hostages and there are more hostages to rescue,
 				// determine whether it's faster to rescue the ones we have, or go get the remaining ones
-				if (hostage != NULL)
+				if (hostage)
 				{
-					if (zone != NULL)
+					if (zone)
 					{
 						PathCost pathCost(me, FASTEST_ROUTE);
 						float toZone = NavAreaTravelDistance(me->GetLastKnownArea(), zone->m_area[0], pathCost);
@@ -697,7 +712,7 @@ void IdleState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 						fetchHostages = true;
 					}
 				}
-				else if (zone != NULL)
+				else if (zone)
 				{
 					rescueHostages = true;
 				}

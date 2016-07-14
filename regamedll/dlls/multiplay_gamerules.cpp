@@ -192,33 +192,6 @@ void CHalfLifeMultiplay::__API_VHOOK(ServerDeactivate)()
 	UTIL_LogPrintf("Career End\n");
 }
 
-void CMapInfo::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
-{
-	if (FStrEq(pkvd->szKeyName, "buying"))
-	{
-		m_iBuyingStatus = Q_atoi(pkvd->szValue);
-		pkvd->fHandled = TRUE;
-	}
-	else if (FStrEq(pkvd->szKeyName, "bombradius"))
-	{
-		m_flBombRadius = Q_atoi(pkvd->szValue);
-
-		if (m_flBombRadius > MAX_BOMB_RADIUS)
-			m_flBombRadius = MAX_BOMB_RADIUS;
-
-		pkvd->fHandled = TRUE;
-	}
-}
-
-void CMapInfo::__MAKE_VHOOK(Spawn)()
-{
-	pev->movetype = MOVETYPE_NONE;
-	pev->solid = SOLID_NOT;
-	pev->effects |= EF_NODRAW;
-}
-
-LINK_ENTITY_TO_CLASS(info_map_parameters, CMapInfo, CCSMapInfo);
-
 bool CCStrikeGameMgrHelper::__MAKE_VHOOK(CanPlayerHearPlayer)(CBasePlayer *pListener, CBasePlayer *pSender)
 {
 	if (!pSender->IsPlayer() || pListener->m_iTeam != pSender->m_iTeam)
@@ -470,8 +443,11 @@ CHalfLifeMultiplay::CHalfLifeMultiplay()
 	m_bCompleteReset = false;
 	m_flRequiredEscapeRatio = 0.5;
 	m_iNumEscapers = 0;
+
+	// by default everyone can buy
 	m_bCTCantBuy = false;
 	m_bTCantBuy = false;
+
 	m_flBombRadius = 500.0;
 	m_iTotalGunCount = 0;
 	m_iTotalGrenadeCount = 0;
@@ -521,8 +497,7 @@ CHalfLifeMultiplay::CHalfLifeMultiplay()
 	m_iIntroRoundTime += 2;
 	m_fMaxIdlePeriod = m_iRoundTime * 2;
 
-	float flAutoKickIdle = CVAR_GET_FLOAT("mp_autokick_timeout");
-
+	float flAutoKickIdle = autokick_timeout.value;
 	if (flAutoKickIdle > 0.0)
 	{
 		m_fMaxIdlePeriod = flAutoKickIdle;
@@ -668,112 +643,36 @@ void CHalfLifeMultiplay::__API_VHOOK(CleanUpMap)()
 {
 	// Recreate all the map entities from the map data (preserving their indices),
 	// then remove everything else except the players.
-
-	CBaseEntity *torestart = NULL;
-	CBaseEntity *toremove = NULL;
-
-	torestart = UTIL_FindEntityByClassname(NULL, "cycler_sprite");
-	while (torestart != NULL)
-	{
-		torestart->Restart();
-		torestart = UTIL_FindEntityByClassname(torestart, "cycler_sprite");
-	}
-
-	torestart = UTIL_FindEntityByClassname(NULL, "light");
-	while (torestart != NULL)
-	{
-		torestart->Restart();
-		torestart = UTIL_FindEntityByClassname(torestart, "light");
-	}
-
-	torestart = UTIL_FindEntityByClassname(NULL, "func_breakable");
-	while (torestart != NULL)
-	{
-		torestart->Restart();
-		torestart = UTIL_FindEntityByClassname(torestart, "func_breakable");
-	}
-
-	torestart = UTIL_FindEntityByClassname(NULL, "func_door");
-	while (torestart != NULL)
-	{
-		torestart->Restart();
-		torestart = UTIL_FindEntityByClassname(torestart, "func_door");
-	}
-
-	torestart = UTIL_FindEntityByClassname(NULL, "func_water");
-	while (torestart != NULL)
-	{
-		torestart->Restart();
-		torestart = UTIL_FindEntityByClassname(torestart, "func_water");
-	}
-
-	torestart = UTIL_FindEntityByClassname(NULL, "func_door_rotating");
-	while (torestart != NULL)
-	{
-		torestart->Restart();
-		torestart = UTIL_FindEntityByClassname(torestart, "func_door_rotating");
-	}
-
-	torestart = UTIL_FindEntityByClassname(NULL, "func_tracktrain");
-	while (torestart != NULL)
-	{
-		torestart->Restart();
-		torestart = UTIL_FindEntityByClassname(torestart, "func_tracktrain");
-	}
-
-	torestart = UTIL_FindEntityByClassname(NULL, "func_vehicle");
-	while (torestart != NULL)
-	{
-		torestart->Restart();
-		torestart = UTIL_FindEntityByClassname(torestart, "func_vehicle");
-	}
-
-	torestart = UTIL_FindEntityByClassname(NULL, "func_train");
-	while (torestart != NULL)
-	{
-		torestart->Restart();
-		torestart = UTIL_FindEntityByClassname(torestart, "func_train");
-	}
-
-	torestart = UTIL_FindEntityByClassname(NULL, "armoury_entity");
-	while (torestart != NULL)
-	{
-		torestart->Restart();
-		torestart = UTIL_FindEntityByClassname(torestart, "armoury_entity");
-	}
-
-	torestart = UTIL_FindEntityByClassname(NULL, "ambient_generic");
-	while (torestart != NULL)
-	{
-		torestart->Restart();
-		torestart = UTIL_FindEntityByClassname(torestart, "ambient_generic");
-	}
-
-	torestart = UTIL_FindEntityByClassname(NULL, "env_sprite");
-	while (torestart != NULL)
-	{
-		torestart->Restart();
-		torestart = UTIL_FindEntityByClassname(torestart, "env_sprite");
-	}
+	UTIL_RestartOther("cycler_sprite");
+	UTIL_RestartOther("light");
+	UTIL_RestartOther("func_breakable");
+	UTIL_RestartOther("func_door");
+	UTIL_RestartOther("func_water");
+	UTIL_RestartOther("func_door_rotating");
+	UTIL_RestartOther("func_tracktrain");
+	UTIL_RestartOther("func_vehicle");
+	UTIL_RestartOther("func_train");
+	UTIL_RestartOther("armoury_entity");
+	UTIL_RestartOther("ambient_generic");
+	UTIL_RestartOther("env_sprite");
 
 	// Remove grenades and C4
+#ifdef REGAMEDLL_FIXES
+	UTIL_RemoveOther("grenade");
+#else
 	int icount = 0;
-	toremove = UTIL_FindEntityByClassname(NULL, "grenade");
+	CBaseEntity *toremove = UTIL_FindEntityByClassname(NULL, "grenade");
 	while (toremove != NULL && icount < 20)
 	{
 		UTIL_Remove(toremove);
 		toremove = UTIL_FindEntityByClassname(toremove, "grenade");
 		++icount;
 	}
+#endif
 
 	// Remove defuse kit
 	// Old code only removed 4 kits and stopped.
-	toremove = UTIL_FindEntityByClassname(NULL, "item_thighpack");
-	while (toremove != NULL)
-	{
-		UTIL_Remove(toremove);
-		toremove = UTIL_FindEntityByClassname(toremove, "item_thighpack");
-	}
+	UTIL_RemoveOther("item_thighpack");
 
 	RemoveGuns();
 	PLAYBACK_EVENT((FEV_GLOBAL | FEV_RELIABLE), 0, m_usResetDecals);
@@ -1694,8 +1593,7 @@ void CHalfLifeMultiplay::__API_HOOK(BalanceTeams)()
 			}
 		}
 
-		if (toSwap != NULL)
-		{
+		if (toSwap) {
 			toSwap->SwitchTeam();
 		}
 	}
@@ -1790,7 +1688,7 @@ void CHalfLifeMultiplay::__API_VHOOK(RestartRound)()
 		WRITE_BYTE(0);		// to default FOV value
 	MESSAGE_END();
 
-	if (CVAR_GET_FLOAT("mp_autoteambalance") != 0.0f && m_iUnBalancedRounds >= 1)
+	if (autoteambalance.value != 0.0f && m_iUnBalancedRounds >= 1)
 	{
 		BalanceTeams();
 	}
@@ -1803,7 +1701,7 @@ void CHalfLifeMultiplay::__API_VHOOK(RestartRound)()
 		m_iUnBalancedRounds = 0;
 
 	// Warn the players of an impending auto-balance next round...
-	if (CVAR_GET_FLOAT("mp_autoteambalance") != 0.0f && m_iUnBalancedRounds == 1)
+	if (autoteambalance.value != 0.0f && m_iUnBalancedRounds == 1)
 	{
 		UTIL_ClientPrintAll(HUD_PRINTCENTER, "#Auto_Team_Balance_Next_Round");
 	}
@@ -1869,7 +1767,7 @@ void CHalfLifeMultiplay::__API_VHOOK(RestartRound)()
 
 	ReadMultiplayCvars();
 
-	float flAutoKickIdle = CVAR_GET_FLOAT("mp_autokick_timeout");
+	float flAutoKickIdle = autokick_timeout.value;
 
 	// set the idlekick max time (in seconds)
 	if (flAutoKickIdle > 0)
@@ -1881,43 +1779,8 @@ void CHalfLifeMultiplay::__API_VHOOK(RestartRound)()
 	m_iRoundTimeSecs = m_iIntroRoundTime;
 
 	// Check to see if there's a mapping info paramater entity
-	CMapInfo *mi = (CMapInfo *)UTIL_FindEntityByClassname(NULL, "info_map_parameters");
-	if (mi != NULL)
-	{
-		switch (mi->m_iBuyingStatus)
-		{
-		case BUYING_EVERYONE:
-			m_bCTCantBuy = false;
-			m_bTCantBuy = false;
-
-			ALERT(at_console, "EVERYONE CAN BUY!\n");
-			break;
-		case BUYING_ONLY_CTS:
-			m_bCTCantBuy = false;
-			m_bTCantBuy = true;
-
-			ALERT(at_console, "Only CT's can buy!!\n");
-			break;
-		case BUYING_ONLY_TERRORISTS:
-			m_bCTCantBuy = true;
-			m_bTCantBuy = false;
-
-			ALERT(at_console, "Only T's can buy!!\n");
-			break;
-		case BUYING_NO_ONE:
-			m_bCTCantBuy = true;
-			m_bTCantBuy = true;
-
-			ALERT(at_console, "No one can buy!!\n");
-			break;
-		default:
-			m_bCTCantBuy = false;
-			m_bTCantBuy = false;
-			break;
-		}
-
-		m_flBombRadius = mi->m_flBombRadius;
-	}
+	if (g_pMapInfo)
+		g_pMapInfo->CheckMapInfo();
 
 	CheckMapConditions();
 
@@ -2921,7 +2784,7 @@ bool CHalfLifeMultiplay::VIP_NotEscaped_internal(int winStatus, ScenarioEventEnd
 
 void CHalfLifeMultiplay::CheckRoundTimeExpired()
 {
-	if (HasRoundInfinite(true))
+	if (HasRoundInfinite(SCENARIO_BLOCK_TIME_EXPRIRED))
 		return;
 
 	if (!HasRoundTimeExpired())
@@ -3480,7 +3343,7 @@ BOOL CHalfLifeMultiplay::__API_VHOOK(FPlayerCanTakeDamage)(CBasePlayer *pPlayer,
 		return TRUE;
 	}
 
-	if (CVAR_GET_FLOAT("mp_friendlyfire") != 0 || pAttacker == pPlayer)
+	if (friendlyfire.value != 0.0f || pAttacker == pPlayer)
 	{
 		return TRUE;
 	}
@@ -3720,7 +3583,7 @@ void CHalfLifeMultiplay::__API_VHOOK(PlayerKilled)(CBasePlayer *pVictim, entvars
 			ClientPrint(killer->pev, HUD_PRINTCENTER, "#Killed_Teammate");
 			ClientPrint(killer->pev, HUD_PRINTCONSOLE, "#Game_teammate_kills", UTIL_dtos1(killer->m_iTeamKills));
 
-			if (killer->m_iTeamKills == 3 && CVAR_GET_FLOAT("mp_autokick") != 0.0f)
+			if (killer->m_iTeamKills == 3 && autokick.value != 0.0f)
 			{
 				ClientPrint(killer->pev, HUD_PRINTCONSOLE, "#Banned_For_Killing_Teamates");
 
@@ -3778,7 +3641,11 @@ void CHalfLifeMultiplay::__API_VHOOK(PlayerKilled)(CBasePlayer *pVictim, entvars
 
 	// update the scores
 	// killed scores
+#ifndef REGAMEDLL_FIXES
 	MESSAGE_BEGIN(MSG_BROADCAST, gmsgScoreInfo);
+#else
+	MESSAGE_BEGIN(MSG_ALL, gmsgScoreInfo);
+#endif
 		WRITE_BYTE(ENTINDEX(pVictim->edict()));
 		WRITE_SHORT(int(pVictim->pev->frags));
 		WRITE_SHORT(pVictim->m_iDeaths);
@@ -3949,9 +3816,8 @@ float CHalfLifeMultiplay::__MAKE_VHOOK(FlWeaponRespawnTime)(CBasePlayerItem *pWe
 	return gpGlobals->time + WEAPON_RESPAWN_TIME;
 }
 
-// FlWeaponRespawnTime - Returns 0 if the weapon can respawn
-// now, otherwise it returns the time at which it can try
-// to spawn again.
+// FlWeaponRespawnTime - Returns 0 if the weapon can respawn now,
+// otherwise it returns the time at which it can try to spawn again.
 float CHalfLifeMultiplay::__MAKE_VHOOK(FlWeaponTryRespawn)(CBasePlayerItem *pWeapon)
 {
 	if (pWeapon && pWeapon->m_iId && (pWeapon->iFlags() & ITEM_FLAG_LIMITINWORLD))
@@ -4133,7 +3999,7 @@ BOOL CHalfLifeMultiplay::__MAKE_VHOOK(FAllowFlashlight)()
 
 BOOL CHalfLifeMultiplay::__MAKE_VHOOK(FAllowMonsters)()
 {
-	return CVAR_GET_FLOAT("mp_allowmonsters") != 0;
+	return allowmonsters.value != 0.0f;
 }
 
 LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN2(CHalfLifeMultiplay, CSGameRules, GoToIntermission);
@@ -4853,43 +4719,8 @@ void CHalfLifeMultiplay::__API_VHOOK(ClientUserInfoChanged)(CBasePlayer *pPlayer
 void CHalfLifeMultiplay::ServerActivate()
 {
 	// Check to see if there's a mapping info paramater entity
-	CMapInfo *mi = (CMapInfo *)UTIL_FindEntityByClassname(NULL, "info_map_parameters");
-	if (mi != nullptr)
-	{
-		switch (mi->m_iBuyingStatus)
-		{
-		case BUYING_EVERYONE:
-			m_bCTCantBuy = false;
-			m_bTCantBuy = false;
-
-			ALERT(at_console, "EVERYONE CAN BUY!\n");
-			break;
-		case BUYING_ONLY_CTS:
-			m_bCTCantBuy = false;
-			m_bTCantBuy = true;
-
-			ALERT(at_console, "Only CT's can buy!!\n");
-			break;
-		case BUYING_ONLY_TERRORISTS:
-			m_bCTCantBuy = true;
-			m_bTCantBuy = false;
-
-			ALERT(at_console, "Only T's can buy!!\n");
-			break;
-		case BUYING_NO_ONE:
-			m_bCTCantBuy = true;
-			m_bTCantBuy = true;
-
-			ALERT(at_console, "No one can buy!!\n");
-			break;
-		default:
-			m_bCTCantBuy = false;
-			m_bTCantBuy = false;
-			break;
-		}
-
-		m_flBombRadius = mi->m_flBombRadius;
-	}
+	if (g_pMapInfo)
+		g_pMapInfo->CheckMapInfo();
 
 	ReadMultiplayCvars();
 	CheckMapConditions();

@@ -710,8 +710,8 @@ FunctionHook g_FunctionHooks[] =
 	{ 0x01DA26D0, "_ZN11CBasePlayer13StartObserverE6VectorS0_", mfunc_ptr_cast(&CBasePlayer::StartObserver) },
 	{ 0x01DA7FF0, "_ZN11CBasePlayer13HandleSignalsEv", mfunc_ptr_cast(&CBasePlayer::HandleSignals) },
 	{ 0x01DAA850, "_ZN11CBasePlayer14DropPlayerItemEPKc", mfunc_ptr_cast(&CBasePlayer::DropPlayerItem) },
-	{ 0x01DAAF30, "_ZN11CBasePlayer13HasPlayerItemEP15CBasePlayerItem", mfunc_ptr_cast(&CBasePlayer::HasPlayerItem) },
-	{ 0x01DAAFC0, "_ZN11CBasePlayer18HasNamedPlayerItemEPKc", mfunc_ptr_cast(&CBasePlayer::HasNamedPlayerItem) },
+	//{ 0x01DAAF30, "_ZN11CBasePlayer13HasPlayerItemEP15CBasePlayerItem", mfunc_ptr_cast(&CBasePlayer::HasPlayerItem) },
+	//{ 0x01DAAFC0, "_ZN11CBasePlayer18HasNamedPlayerItemEPKc", mfunc_ptr_cast(&CBasePlayer::HasNamedPlayerItem) },
 	//{ 0x01DA6920, "_ZN11CBasePlayer10HasWeaponsEv", mfunc_ptr_cast(&CBasePlayer::HasWeapons) },	// NOXREF
 	//{ 0x01DA6940, "_ZN11CBasePlayer14SelectPrevItemEi", mfunc_ptr_cast(&CBasePlayer::SelectPrevItem) }, // NOXREF
 	//{ 0x01DA6470, "_ZN11CBasePlayer14SelectNextItemEi", mfunc_ptr_cast(&CBasePlayer::SelectNextItem) }, // NOXREF
@@ -6107,7 +6107,7 @@ AddressRef g_DataRefs[] =
 	{ 0x01E14C90, "_ZL18entity_field_alias", (size_t)&pentity_field_alias },
 	{ 0x01E14D68, "_ZL18player_field_alias", (size_t)&pplayer_field_alias },
 	{ 0x01E14DD8, "custom_entity_field_alias", (size_t)&pcustom_entity_field_alias },
-	{ 0x01E5D718, "_ZL14g_serveractive", (size_t)&pg_serveractive },
+	//{ 0x01E5D718, "_ZL14g_serveractive", (size_t)&pg_serveractive },
 	{ 0x01E2A0A8, "_ZL17goodSizedAreaList", (size_t)&pgoodSizedAreaList },
 	{ 0x01E2A0D8, "TheNavAreaList", (size_t)&pTheNavAreaList },
 	{ 0x01E29888, "TheNavAreaGrid", (size_t)&pTheNavAreaGrid },

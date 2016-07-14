@@ -1421,7 +1421,7 @@ void CBaseEntity::__MAKE_VHOOK(TraceAttack)(entvars_t *pevAttacker, float flDama
 {
 	Vector vecOrigin = ptr->vecEndPos - vecDir * 4;
 
-	if (pev->takedamage == DAMAGE_YES)
+	if (pev->takedamage != DAMAGE_NO)
 	{
 		AddMultiDamage(pevAttacker, this, flDamage, bitsDamageType);
 
@@ -1439,7 +1439,7 @@ void CBaseMonster::__MAKE_VHOOK(TraceAttack)(entvars_t *pevAttacker, float flDam
 {
 	Vector vecOrigin = ptr->vecEndPos - vecDir * 4;
 
-	if (pev->takedamage == DAMAGE_YES)
+	if (pev->takedamage != DAMAGE_NO)
 	{
 		m_LastHitGroup = ptr->iHitgroup;
 

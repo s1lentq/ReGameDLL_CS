@@ -291,6 +291,7 @@ public:
 
 };
 
+// Multiplayer intermission spots.
 class CInfoIntermission: public CPointEntity {
 public:
 	virtual void Spawn();
@@ -305,6 +306,7 @@ public:
 
 };
 
+// Dead HEV suit prop
 class CDeadHEV: public CBaseMonster {
 public:
 	virtual void Spawn();
@@ -320,7 +322,7 @@ public:
 #endif
 
 public:
-	int m_iPose;
+	int m_iPose;				// which sequence to display -- temporary, don't need to save
 	static char *m_szPoses[4];
 };
 
@@ -494,9 +496,9 @@ public:
 	void HandleSignals();
 	void DropPlayerItem(const char *pszItemName);
 	void DropPlayerItem_(const char *pszItemName);
-	BOOL HasPlayerItem(CBasePlayerItem *pCheckItem);
-	BOOL HasNamedPlayerItem(const char *pszItemName);
-	BOOL HasWeapons();
+	bool HasPlayerItem(CBasePlayerItem *pCheckItem);
+	bool HasNamedPlayerItem(const char *pszItemName);
+	bool HasWeapons();
 	void SelectPrevItem(int iItem);
 	void SelectNextItem(int iItem);
 	void SelectLastItem();
@@ -598,6 +600,8 @@ public:
 	void TeamChangeUpdate();
 	bool HasRestrictItem(ItemID item, ItemRestType type);
 	bool HasRestrictItem_(ItemID item, ItemRestType type);
+	void DropSecondary();
+	void DropPrimary();
 
 #ifdef REGAMEDLL_ADD
 	CCSPlayer *CSPlayer() const;

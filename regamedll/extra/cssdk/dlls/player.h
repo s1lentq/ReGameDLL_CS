@@ -274,19 +274,21 @@ public:
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value) = 0;
 };
 
+// Multiplayer intermission spots.
 class CInfoIntermission: public CPointEntity {
 public:
 	virtual void Spawn() = 0;
 	virtual void Think() = 0;
 };
 
+// Dead HEV suit prop
 class CDeadHEV: public CBaseMonster {
 public:
 	virtual void Spawn() = 0;
 	virtual void KeyValue(KeyValueData *pkvd) = 0;
 	virtual int Classify() = 0;
 public:
-	int m_iPose;
+	int m_iPose;				// which sequence to display -- temporary, don't need to save
 	static char *m_szPoses[4];
 };
 

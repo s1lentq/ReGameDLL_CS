@@ -665,15 +665,6 @@ typedef struct mapcycle_s
 
 } mapcycle_t;
 
-class CMapInfo: public CPointEntity {
-public:
-	virtual void Spawn() = 0;
-	virtual void KeyValue(KeyValueData *pkvd) = 0;
-public:
-	int m_iBuyingStatus;
-	float m_flBombRadius;
-};
-
 class CCStrikeGameMgrHelper: public IVoiceGameMgrHelper {
 public:
 	virtual bool CanPlayerHearPlayer(CBasePlayer *pListener, CBasePlayer *pSender) = 0;

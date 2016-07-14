@@ -103,7 +103,7 @@ int CBaseAnimating::LookupSequence(const char *label)
 
 LINK_HOOK_CLASS_VOID_CHAIN2(CBaseAnimating, ResetSequenceInfo)
 
-void EXT_ALIGN CBaseAnimating::__API_HOOK(ResetSequenceInfo)()
+void EXT_FUNC CBaseAnimating::__API_HOOK(ResetSequenceInfo)()
 {
 	void *pmodel = GET_MODEL_PTR(ENT(pev));
 

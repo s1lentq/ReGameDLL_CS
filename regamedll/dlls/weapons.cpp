@@ -321,10 +321,14 @@ void W_Precache()
 	// custom items...
 
 	// common world objects
+#ifndef REGAMEDLL_FIXES
 	UTIL_PrecacheOther("item_suit");
+#endif
 	UTIL_PrecacheOther("item_battery");
 	UTIL_PrecacheOther("item_antidote");
+#ifndef REGAMEDLL_FIXES
 	UTIL_PrecacheOther("item_security");
+#endif
 	UTIL_PrecacheOther("item_longjump");
 	UTIL_PrecacheOther("item_kevlar");
 	UTIL_PrecacheOther("item_assaultsuit");
@@ -2073,60 +2077,90 @@ void CArmoury::__MAKE_VHOOK(Spawn)()
 
 void CArmoury::__MAKE_VHOOK(Restart)()
 {
-	if (m_iItem == ARMOURY_FLASHBANG || m_iItem == ARMOURY_HEGRENADE)
+#ifdef REGAMEDLL_FIXES
+	// This code refers to the mode of Escape. (Because there is relationship to the team Terrorists)
+	if (CSGameRules()->m_bMapHasEscapeZone)
+#endif
 	{
-		if (!m_bAlreadyCounted)
+		if (m_iItem == ARMOURY_FLASHBANG || m_iItem == ARMOURY_HEGRENADE)
 		{
-			m_bAlreadyCounted = true;
-			CSGameRules()->m_iTotalGrenadeCount += m_iInitialCount;
-			m_iCount = m_iInitialCount;
-			pev->effects &= ~EF_NODRAW;
-			return;
-		}
+			if (!m_bAlreadyCounted)
+			{
+				m_bAlreadyCounted = true;
+				CSGameRules()->m_iTotalGrenadeCount += m_iInitialCount;
+				m_iCount = m_iInitialCount;
+				Draw();
+				return;
+			}
 
-		float flRatio = float_precision(m_iInitialCount / CSGameRules()->m_iTotalGrenadeCount) * float_precision(CSGameRules()->m_iNumTerrorist) * 1.75;
-		m_iCount = int(flRatio);
-	}
-	else if (m_iItem == ARMOURY_KEVLAR || m_iItem == ARMOURY_ASSAULT)
-	{
-		if (!m_bAlreadyCounted)
+			float flRatio = float_precision(m_iInitialCount / CSGameRules()->m_iTotalGrenadeCount) * float_precision(CSGameRules()->m_iNumTerrorist) * 1.75;
+			m_iCount = int(flRatio);
+		}
+		else if (m_iItem == ARMOURY_KEVLAR || m_iItem == ARMOURY_ASSAULT)
 		{
-			m_bAlreadyCounted = true;
-			CSGameRules()->m_iTotalArmourCount += m_iInitialCount;
-			m_iCount = m_iInitialCount;
-			pev->effects &= ~EF_NODRAW;
-			return;
-		}
+			if (!m_bAlreadyCounted)
+			{
+				m_bAlreadyCounted = true;
+				CSGameRules()->m_iTotalArmourCount += m_iInitialCount;
+				m_iCount = m_iInitialCount;
+				Draw();
+				return;
+			}
 
-		float flRatio = float_precision(m_iInitialCount / CSGameRules()->m_iTotalArmourCount) * float_precision(CSGameRules()->m_iNumTerrorist);
-		m_iCount = int(flRatio);
+			float flRatio = float_precision(m_iInitialCount / CSGameRules()->m_iTotalArmourCount) * float_precision(CSGameRules()->m_iNumTerrorist);
+			m_iCount = int(flRatio);
+		}
+		else
+		{
+			if (!m_bAlreadyCounted)
+			{
+				m_bAlreadyCounted = true;
+				CSGameRules()->m_iTotalGunCount += m_iInitialCount;
+				m_iCount = m_iInitialCount;
+				Draw();
+				return;
+			}
+
+			float flRatio = float_precision(m_iInitialCount / CSGameRules()->m_iTotalGunCount) * float_precision(CSGameRules()->m_iNumTerrorist) * 0.85;
+			m_iCount = int(flRatio);
+		}
 	}
+
+#ifdef REGAMEDLL_FIXES
 	else
 	{
-		if (!m_bAlreadyCounted)
-		{
-			m_bAlreadyCounted = true;
-			CSGameRules()->m_iTotalGunCount += m_iInitialCount;
-			m_iCount = m_iInitialCount;
-			pev->effects &= ~EF_NODRAW;
-			return;
-		}
-
-		float flRatio = float_precision(m_iInitialCount / CSGameRules()->m_iTotalGunCount) * float_precision(CSGameRules()->m_iNumTerrorist) * 0.85;
-		m_iCount = int(flRatio);
+		m_iCount = m_iInitialCount;
 	}
+#endif
 
 	if (m_iCount < 1)
-	{
 		m_iCount = 1;
-	}
 
-	pev->effects &= ~EF_NODRAW;
+	Draw();
 }
 
 void CArmoury::__MAKE_VHOOK(Precache)()
 {
 	PRECACHE_MODEL(armouryItemModels[m_iItem]);
+}
+
+void CArmoury::Draw()
+{
+	pev->effects &= ~EF_NODRAW;
+
+#ifdef REGAMEDLL_FIXES
+	pev->solid = SOLID_TRIGGER;
+#endif
+}
+
+void CArmoury::Hide()
+{
+	pev->effects |= EF_NODRAW;
+
+#ifdef REGAMEDLL_FIXES
+	// more not to touch with the world.
+	pev->solid = SOLID_NOT;
+#endif
 }
 
 struct ArmouryItemStruct
@@ -2233,9 +2267,7 @@ void CArmoury::ArmouryTouch(CBaseEntity *pOther)
 	}
 
 	if (!m_iCount)
-	{
-		pev->effects |= EF_NODRAW;
-	}
+		Hide();
 }
 
 void CArmoury::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
@@ -2261,11 +2293,14 @@ LINK_ENTITY_TO_CLASS(armoury_entity, CArmoury, CCSArmoury);
 void CBasePlayerWeapon::InstantReload(bool bCanRefillBPAmmo)
 {
 	// if you already reload
-	if (m_fInReload)
-		return;
+	//if (m_fInReload)
+	//	return;
 
 	if (m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
 		return;
+
+	m_fInReload = FALSE;
+	m_pPlayer->m_flNextAttack = 0;
 
 	// complete the reload.
 	int j = Q_min(iMaxClip() - m_iClip, m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]);

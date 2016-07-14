@@ -3,6 +3,7 @@
 #include "version/appversion.h"
 
 #include "osconfig.h"
+#include "asmlib.h"
 #include "sse_mathfun.h"
 
 #include "MemPool.h"

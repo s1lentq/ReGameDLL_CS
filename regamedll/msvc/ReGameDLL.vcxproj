@@ -428,6 +428,7 @@
     <ClCompile Include="..\dlls\h_export.cpp" />
     <ClCompile Include="..\dlls\items.cpp" />
     <ClCompile Include="..\dlls\lights.cpp" />
+    <ClCompile Include="..\dlls\mapinfo.cpp" />
     <ClCompile Include="..\dlls\maprules.cpp" />
     <ClCompile Include="..\dlls\mortar.cpp" />
     <ClCompile Include="..\dlls\mpstubb.cpp" />
@@ -991,9 +992,9 @@
     <ClInclude Include="..\dlls\h_ai.h" />
     <ClInclude Include="..\dlls\h_battery.h" />
     <ClInclude Include="..\dlls\h_cycler.h" />
-    <ClInclude Include="..\dlls\h_export.h" />
     <ClInclude Include="..\dlls\items.h" />
     <ClInclude Include="..\dlls\lights.h" />
+    <ClInclude Include="..\dlls\mapinfo.h" />
     <ClInclude Include="..\dlls\maprules.h" />
     <ClInclude Include="..\dlls\monsterevent.h" />
     <ClInclude Include="..\dlls\monsters.h" />
@@ -1081,7 +1082,6 @@
     <ClInclude Include="..\public\MemPool.h" />
     <ClInclude Include="..\public\protected_things.h" />
     <ClInclude Include="..\public\regamedll\hookchains.h" />
-    <ClInclude Include="..\public\regamedll\osconfig.h" />
     <ClInclude Include="..\public\regamedll\regamedll_api.h" />
     <ClInclude Include="..\public\regamedll\regamedll_interfaces.h" />
     <ClInclude Include="..\public\steam\isteamapps.h" />

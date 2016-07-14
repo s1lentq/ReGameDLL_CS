@@ -256,9 +256,9 @@ WeaponInfoStruct weaponInfo_default[] =
 #ifdef REGAMEDLL_ADD
 	{ WEAPON_C4,		0,					0,			0,			0,			0,			AMMO_NONE,		"weapon_c4",		nullptr },
 	{ WEAPON_KNIFE,		0,					0,			0,			0,			0,			AMMO_NONE,		"weapon_knife",		nullptr },
-	{ WEAPON_HEGRENADE,	(WeaponCostType)HEGRENADE_PRICE,	0,			0,			0,			0,			AMMO_NONE,		"weapon_hegrenade",	nullptr },
-	{ WEAPON_SMOKEGRENADE,	(WeaponCostType)SMOKEGRENADE_PRICE,	0,			0,			0,			0,			AMMO_NONE,		"weapon_smokegrenade",	nullptr },
-	{ WEAPON_FLASHBANG,	(WeaponCostType)FLASHBANG_PRICE,	0,			0,			0,			0,			AMMO_NONE,		"weapon_flashbang",	nullptr },
+	{ WEAPON_HEGRENADE,	(WeaponCostType)HEGRENADE_PRICE,	0,			0,			0,			1,			AMMO_NONE,		"weapon_hegrenade",	nullptr },
+	{ WEAPON_SMOKEGRENADE,	(WeaponCostType)SMOKEGRENADE_PRICE,	0,			0,			0,			1,			AMMO_NONE,		"weapon_smokegrenade",	nullptr },
+	{ WEAPON_FLASHBANG,	(WeaponCostType)FLASHBANG_PRICE,	0,			0,			0,			2,			AMMO_NONE,		"weapon_flashbang",	nullptr },
 #endif
 
 	{ WEAPON_SHIELDGUN,	SHIELDGUN_PRICE,			0,			0,			0,			0,			AMMO_NONE,		"weapon_shield",	nullptr },

@@ -37,26 +37,20 @@ ItemInfo itemInfo[] = {
 	DEFINE_ITEMINFO(ITEM_KEVLAR,		"item_kevlar"),
 	DEFINE_ITEMINFO(ITEM_ASSAULT,		"item_assaultsuit"),
 	DEFINE_ITEMINFO(ITEM_LONGJUMP,		"item_longjump"),
-	DEFINE_ITEMINFO(ITEM_SODACAN,		"item_sodacan"),
 	DEFINE_ITEMINFO(ITEM_HEALTHKIT,		"item_healthkit"),
 	DEFINE_ITEMINFO(ITEM_ANTIDOTE,		"item_antidote"),
-	DEFINE_ITEMINFO(ITEM_SECURITY,		"item_security"),
 	DEFINE_ITEMINFO(ITEM_BATTERY,		"item_battery"),
-	DEFINE_ITEMINFO(ITEM_SUIT,		"item_suit"),
 };
 
+// NOTE: useless thing
+#ifndef REGAMEDLL_FIXES
 LINK_ENTITY_TO_CLASS(world_items, CWorldItem, CCSWorldItem);
 
 void CWorldItem::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "type"))
 	{
-#ifdef REGAMEDLL_FIXES
-		// let's start with ITEM_HEALTHKIT
-		m_iType = (ItemID)(Q_atoi(pkvd->szValue) - 41 - ITEM_HEALTHKIT);
-#else
-		m_iType = (ItemID)Q_atoi(pkvd->szValue);
-#endif
+		m_iType = Q_atoi(pkvd->szValue);
 		pkvd->fHandled = TRUE;
 	}
 	else
@@ -67,43 +61,23 @@ void CWorldItem::__MAKE_VHOOK(Spawn)()
 {
 	CBaseEntity *pEntity = NULL;
 
-#ifdef REGAMEDLL_FIXES
 	switch (m_iType)
 	{
-	case ITEM_HEALTHKIT:
+	case 41: // ITEM_HEALTHKIT
 		break;
-	case ITEM_ANTIDOTE:
+	case 42: // ITEM_ANTIDOTE
 		pEntity = CBaseEntity::Create("item_antidote", pev->origin, pev->angles);
 		break;
-	case ITEM_SECURITY:
+	case 43: // ITEM_SECURITY
 		pEntity = CBaseEntity::Create("item_security", pev->origin, pev->angles);
 		break;
-	case ITEM_BATTERY:
+	case 44: // ITEM_BATTERY
 		pEntity = CBaseEntity::Create("item_battery", pev->origin, pev->angles);
 		break;
-	case ITEM_SUIT:
+	case 45: // ITEM_SUIT
 		pEntity = CBaseEntity::Create("item_suit", pev->origin, pev->angles);
 		break;
 	}
-#else
-	switch (m_iType)
-	{
-	case 41:
-		break;
-	case 42:
-		pEntity = CBaseEntity::Create("item_antidote", pev->origin, pev->angles);
-		break;
-	case 43:
-		pEntity = CBaseEntity::Create("item_security", pev->origin, pev->angles);
-		break;
-	case 44:
-		pEntity = CBaseEntity::Create("item_battery", pev->origin, pev->angles);
-		break;
-	case 45:
-		pEntity = CBaseEntity::Create("item_suit", pev->origin, pev->angles);
-		break;
-	}
-#endif
 
 	if (pEntity != NULL)
 	{
@@ -114,6 +88,7 @@ void CWorldItem::__MAKE_VHOOK(Spawn)()
 
 	REMOVE_ENTITY(edict());
 }
+#endif
 
 void CItem::__MAKE_VHOOK(Spawn)()
 {
@@ -186,6 +161,8 @@ void CItem::Materialize()
 	SetTouch(&CItem::ItemTouch);
 }
 
+// NOTE: useless thing
+#ifndef REGAMEDLL_FIXES
 void CItemSuit::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
@@ -204,11 +181,6 @@ BOOL CItemSuit::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
 	if (pPlayer->pev->weapons & (1 << WEAPON_SUIT))
 		return FALSE;
 
-#ifdef REGAMEDLL_ADD
-	if (pPlayer->HasRestrictItem(ITEM_SUIT, ITEM_TYPE_TOUCHED))
-		return FALSE;
-#endif
-
 	EMIT_SOUND(pPlayer->edict(), CHAN_VOICE, "items/tr_kevlar.wav", VOL_NORM, ATTN_NORM);
 
 	pPlayer->pev->weapons |= (1 << WEAPON_SUIT);
@@ -218,6 +190,7 @@ BOOL CItemSuit::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
 }
 
 LINK_ENTITY_TO_CLASS(item_suit, CItemSuit, CCSItemSuit);
+#endif
 
 void CItemBattery::__MAKE_VHOOK(Spawn)()
 {
@@ -291,13 +264,15 @@ BOOL CItemAntidote::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
 #endif
 
 	pPlayer->SetSuitUpdate("!HEV_DET4", FALSE, SUIT_NEXT_IN_1MIN);
-	pPlayer->m_rgItems[ ITEM_ANTIDOTE ] += 1;
+	pPlayer->m_rgItems[ ITEM_ID_ANTIDOTE ] += 1;
 
 	return TRUE;
 }
 
 LINK_ENTITY_TO_CLASS(item_antidote, CItemAntidote, CCSItemAntidote);
 
+// NOTE: useless thing
+#ifndef REGAMEDLL_FIXES
 void CItemSecurity::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
@@ -312,16 +287,12 @@ void CItemSecurity::__MAKE_VHOOK(Precache)()
 
 BOOL CItemSecurity::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
 {
-#ifdef REGAMEDLL_ADD
-	if (pPlayer->HasRestrictItem(ITEM_SECURITY, ITEM_TYPE_TOUCHED))
-		return FALSE;
-#endif
-
-	pPlayer->m_rgItems[ ITEM_SECURITY ] += 1;
+	pPlayer->m_rgItems[ ITEM_ID_SECURITY ] += 1;
 	return TRUE;
 }
 
 LINK_ENTITY_TO_CLASS(item_security, CItemSecurity, CCSItemSecurity);
+#endif
 
 void CItemLongJump::__MAKE_VHOOK(Spawn)()
 {

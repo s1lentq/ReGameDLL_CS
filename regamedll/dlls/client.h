@@ -105,6 +105,8 @@ C_DLLEXPORT float g_flTimeLimit;
 C_DLLEXPORT int CountTeams();
 C_DLLEXPORT int CountTeamPlayers(int iTeam);
 
+extern bool g_bServerActive;
+
 extern float g_flResetTime;
 extern bool g_skipCareerInitialSpawn;
 
@@ -128,7 +130,7 @@ void ProcessKickVote(CBasePlayer *pVotingPlayer, CBasePlayer *pKickPlayer);
 void CheckStartMoney();
 void ClientPutInServer(edict_t *pEntity);
 int Q_strlen_(const char *str);
-void Host_Say(edict_t *pEntity, int teamonly);
+void Host_Say(edict_t *pEntity, BOOL teamonly);
 void DropSecondary(CBasePlayer *pPlayer);
 void DropPrimary(CBasePlayer *pPlayer);
 bool CanBuyThis(CBasePlayer *pPlayer, int iWeapon);
