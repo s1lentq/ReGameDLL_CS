@@ -275,7 +275,7 @@ public:
 	virtual void Blocked(CBaseEntity *pOther) { if (m_pfnBlocked) (this->*m_pfnBlocked)(pOther); }
 	virtual CBaseEntity *Respawn() { return NULL; }
 
-#ifndef REGAMEDLL_FIXES
+#ifndef REGAMEDLL_ADD
 	// used by monsters that are created by the MonsterMaker
 	virtual void UpdateOwner() {}
 #else
@@ -313,7 +313,12 @@ public:
 public:
 	// allow engine to allocate instance data
 	void *operator new(size_t stAllocateBlock, entvars_t *pevnew) { return ALLOC_PRIVATE(ENT(pevnew), stAllocateBlock); }
+
+	// don't use this.
+#if _MSC_VER >= 1200 // only build this code if MSVC++ 6.0 or higher
 	void operator delete(void *pMem, entvars_t *pevnew) { pevnew->flags |= FL_KILLME; }
+#endif
+
 	void UpdateOnRemove();
 	void EXPORT SUB_Remove();
 	void EXPORT SUB_DoNothing();

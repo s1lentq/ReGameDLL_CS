@@ -3,6 +3,7 @@
 #include "version/appversion.h"
 
 #include "osconfig.h"
+#include "basetypes.h"
 #include "asmlib.h"
 #include "sse_mathfun.h"
 
@@ -26,12 +27,8 @@
 #include "tier0/dbg.h"
 
 #include "dlls.h"
-#include "basetypes.h"
-
 #include "interface.h"
-
 #include "hookchains_impl.h"
-
 #include "regamedll.h"
 
 #include "regamedll_interfaces.h"

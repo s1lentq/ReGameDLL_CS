@@ -13,8 +13,8 @@ CMapInfo::CMapInfo()
 		// Should only be one of these.
 		ALERT(at_warning, "Warning: Multiple info_map_parameters entities in map!\n");
 	}
-#endif
 	else
+#endif
 	{
 		g_pMapInfo = this;
 	}
