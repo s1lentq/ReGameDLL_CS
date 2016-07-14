@@ -311,6 +311,8 @@ void UTIL_BubbleTrail(Vector from, Vector to, int count);
 void UTIL_Remove(CBaseEntity *pEntity);
 BOOL UTIL_IsValidEntity(edict_t *pent);
 void UTIL_PrecacheOther(const char *szClassname);
+void UTIL_RestartOther(const char *szClassname);
+void UTIL_RemoveOther(const char *szClassname);
 void UTIL_LogPrintf(const char *fmt, ...);
 float UTIL_DotPoints(const Vector &vecSrc, const Vector &vecCheck, const Vector &vecDir);
 void UTIL_StripToken(const char *pKey, char *pDest);

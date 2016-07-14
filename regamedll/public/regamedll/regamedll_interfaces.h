@@ -86,6 +86,10 @@ public:
 	virtual bool JoinTeam(TeamName team);
 	virtual void StartObserver(Vector& vecPosition, Vector& vecViewAngle);
 	virtual void TeamChangeUpdate();
+	virtual void DropSecondary();
+	virtual void DropPrimary();
+	virtual bool HasPlayerItem(CBasePlayerItem *pCheckItem);
+	virtual bool HasNamedPlayerItem(const char *pszItemName);
 
 	CBasePlayer *BasePlayer() const;
 public:

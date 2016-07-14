@@ -70,12 +70,17 @@ void CSGameState::OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity 
 	switch (event)
 	{
 	case EVENT_BOMB_PLANTED:
+	{
+		// change state - the event is announced to everyone
 		SetBombState(PLANTED);
-		if (m_owner->m_iTeam == TERRORIST && other != NULL)
+
+		// Terrorists always know where the bomb is
+		if (m_owner->m_iTeam == TERRORIST && other)
 		{
 			UpdatePlantedBomb(&other->pev->origin);
 		}
 		break;
+	}
 	case EVENT_BOMB_DEFUSED:
 		SetBombState(DEFUSED);
 		break;
@@ -284,8 +289,8 @@ bool CSGameState::IsBombsiteClear(int zoneIndex) const
 void CSGameState::InitializeHostageInfo()
 {
 	m_hostageCount = 0;
-	m_allHostagesRescued = 0;
-	m_haveSomeHostagesBeenTaken = 0;
+	m_allHostagesRescued = false;
+	m_haveSomeHostagesBeenTaken = false;
 
 	CBaseEntity *hostage = NULL;
 	while ((hostage = UTIL_FindEntityByClassname(hostage, "hostage_entity")) != NULL)

@@ -826,7 +826,7 @@ void CCSBot::__MAKE_VHOOK(OnTouchingWeapon)(CWeaponBox *box)
 						if (prefID == pDroppedWeapon->m_iId)
 						{
 							// the gun on the ground is better than the one we have - drop our gun
-							DropPrimary(this);
+							DropPrimary();
 							break;
 						}
 					}

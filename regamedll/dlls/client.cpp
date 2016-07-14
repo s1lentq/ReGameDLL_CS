@@ -57,7 +57,7 @@ static entity_field_alias_t custom_entity_field_alias[] =
 	{ "animtime",	0 },
 };
 
-static int g_serveractive = 0;
+bool g_bServerActive = false;
 
 #endif // HOOK_GAMEDLL
 
@@ -464,20 +464,20 @@ void EXT_FUNC ClientPutInServer(edict_t *pEntity)
 
 	pPlayer->SetThink(NULL);
 
-	CBaseEntity *Target = UTIL_FindEntityByClassname(NULL, "trigger_camera");
-	pPlayer->m_pIntroCamera = Target;
+	CBaseEntity *pTarget = UTIL_FindEntityByClassname(NULL, "trigger_camera");
+	pPlayer->m_pIntroCamera = pTarget;
 
-	if (CSGameRules() != NULL && CSGameRules()->m_bMapHasCameras == MAP_HAS_CAMERAS_INIT)
+	if (CSGameRules() && CSGameRules()->m_bMapHasCameras == MAP_HAS_CAMERAS_INIT)
 	{
-		CSGameRules()->m_bMapHasCameras = (Target != NULL);
+		CSGameRules()->m_bMapHasCameras = (pTarget != NULL);
 	}
 
-	if (pPlayer->m_pIntroCamera != NULL)
-		Target = UTIL_FindEntityByTargetname(NULL, STRING(pPlayer->m_pIntroCamera->pev->target));
+	if (pPlayer->m_pIntroCamera)
+		pTarget = UTIL_FindEntityByTargetname(NULL, STRING(pPlayer->m_pIntroCamera->pev->target));
 
-	if (pPlayer->m_pIntroCamera != NULL && Target != NULL)
+	if (pPlayer->m_pIntroCamera && pTarget)
 	{
-		Vector CamAngles = UTIL_VecToAngles((Target->pev->origin - pPlayer->m_pIntroCamera->pev->origin).Normalize());
+		Vector CamAngles = UTIL_VecToAngles((pTarget->pev->origin - pPlayer->m_pIntroCamera->pev->origin).Normalize());
 		CamAngles.x = -CamAngles.x;
 
 		UTIL_SetOrigin(pPlayer->pev, pPlayer->m_pIntroCamera->pev->origin);
@@ -488,6 +488,7 @@ void EXT_FUNC ClientPutInServer(edict_t *pEntity)
 		pPlayer->m_fIntroCamTime = gpGlobals->time + 6;
 		pPlayer->pev->view_ofs = g_vecZero;
 	}
+#ifndef REGAMEDLL_FIXES
 	else
 	{
 		pPlayer->m_iTeam = CT;
@@ -501,6 +502,7 @@ void EXT_FUNC ClientPutInServer(edict_t *pEntity)
 		pPlayer->pev->v_angle = g_vecZero;
 		pPlayer->pev->angles = gpGlobals->v_forward;
 	}
+#endif
 
 	if (TheBots != NULL)
 	{
@@ -521,17 +523,17 @@ void EXT_FUNC ClientPutInServer(edict_t *pEntity)
 	UTIL_ClientPrintAll(HUD_PRINTNOTIFY, "#Game_connected", (sName[0] != '\0') ? sName : "<unconnected>");
 }
 
-int Q_strlen_(const char *str)
+NOXREF int Q_strlen_(const char *str)
 {
 	int count = 0;
-	if (str && *str)
-	{
+	if (str && *str) {
 		while (str[count++ + 1]);
 	}
+
 	return count;
 }
 
-void Host_Say(edict_t *pEntity, int teamonly)
+void Host_Say(edict_t *pEntity, BOOL teamonly)
 {
 	CBasePlayer *client;
 	int j;
@@ -810,41 +812,6 @@ void Host_Say(edict_t *pEntity, int teamonly)
 
 		UTIL_LogPrintf("\"%s<%i><%s><%s>\" %s \"%s\"%s\n", STRING(player->pev->netname), GETPLAYERUSERID(player->edict()), GETPLAYERAUTHID(player->edict()),
 			szTeam, temp, fullText, deadText);
-	}
-}
-
-void DropSecondary(CBasePlayer *pPlayer)
-{
-	if (pPlayer->HasShield())
-	{
-		if (pPlayer->HasShield() && pPlayer->m_bShieldDrawn && pPlayer->m_pActiveItem != NULL)
-		{
-			((CBasePlayerWeapon *)pPlayer->m_pActiveItem)->SecondaryAttack();
-		}
-
-		pPlayer->m_bShieldDrawn = false;
-	}
-
-	CBasePlayerWeapon *pWeapon = (CBasePlayerWeapon *)pPlayer->m_rgpPlayerItems[ PISTOL_SLOT ];
-
-	if (pWeapon != NULL)
-	{
-		pPlayer->DropPlayerItem(STRING(pWeapon->pev->classname));
-	}
-
-}
-
-void DropPrimary(CBasePlayer *pPlayer)
-{
-	if (pPlayer->HasShield())
-	{
-		pPlayer->DropShield();
-		return;
-	}
-
-	if (pPlayer->m_rgpPlayerItems[ PRIMARY_WEAPON_SLOT ])
-	{
-		pPlayer->DropPlayerItem(STRING(pPlayer->m_rgpPlayerItems[ PRIMARY_WEAPON_SLOT ]->pev->classname));
 	}
 }
 
@@ -1277,9 +1244,9 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 			if (pPlayer->m_iAccount >= SHIELDGUN_PRICE)
 			{
 				bEnoughMoney = true;
-				DropPrimary(pPlayer);
 
-				pPlayer->GiveShield(true);
+				pPlayer->DropPrimary();
+				pPlayer->GiveShield();
 				pPlayer->AddAccount(-SHIELDGUN_PRICE, RT_PLAYER_BOUGHT_SOMETHING);
 
 				EMIT_SOUND(ENT(pPlayer->pev), CHAN_ITEM, "items/gunpickup2.wav", VOL_NORM, ATTN_NORM);
@@ -1341,11 +1308,11 @@ void BuyWeaponByWeaponID(CBasePlayer *pPlayer, WeaponIdType weaponID)
 
 	if (IsPrimaryWeapon(weaponID))
 	{
-		DropPrimary(pPlayer);
+		pPlayer->DropPrimary();
 	}
 	else
 	{
-		DropSecondary(pPlayer);
+		pPlayer->DropSecondary();
 	}
 
 	pPlayer->GiveNamedItem(info->entityName);
@@ -1649,7 +1616,11 @@ BOOL __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *player, int slot)
 				WRITE_BYTE(0);
 			MESSAGE_END();
 
+#ifndef REGAMEDLL_FIXES
 			MESSAGE_BEGIN(MSG_BROADCAST, gmsgScoreInfo);
+#else
+			MESSAGE_BEGIN(MSG_ALL, gmsgScoreInfo);
+#endif
 				WRITE_BYTE(ENTINDEX(player->edict()));
 				WRITE_SHORT(int(player->pev->frags));
 				WRITE_SHORT(player->m_iDeaths);
@@ -2299,7 +2270,7 @@ BOOL HandleRadioAliasCommands(CBasePlayer *pPlayer, const char *pszCommand)
 }
 
 // Use CMD_ARGV,  CMD_ARGV, and CMD_ARGC to get pointers the character string command.
-void EXT_ALIGN ClientCommand(edict_t *pEntity)
+void EXT_FUNC ClientCommand(edict_t *pEntity)
 {
 	const char *pcmd = CMD_ARGV_(0);
 	const char *pstr = NULL;
@@ -2316,7 +2287,7 @@ void EXT_ALIGN ClientCommand(edict_t *pEntity)
 		if (gpGlobals->time >= player->m_flLastCommandTime[CMD_SAY])
 		{
 			player->m_flLastCommandTime[CMD_SAY] = gpGlobals->time + 0.3f;
-			Host_Say(pEntity, 0);
+			Host_Say(pEntity, FALSE);
 		}
 	}
 	else if (FStrEq(pcmd, "say_team"))
@@ -2324,7 +2295,7 @@ void EXT_ALIGN ClientCommand(edict_t *pEntity)
 		if (gpGlobals->time >= player->m_flLastCommandTime[CMD_SAYTEAM])
 		{
 			player->m_flLastCommandTime[CMD_SAYTEAM] = gpGlobals->time + 0.3f;
-			Host_Say(pEntity, 1);
+			Host_Say(pEntity, TRUE);
 		}
 	}
 	else if (FStrEq(pcmd, "fullupdate"))
@@ -2565,7 +2536,6 @@ void EXT_ALIGN ClientCommand(edict_t *pEntity)
 	else if (FStrEq(pcmd, "menuselect"))
 	{
 		int slot = Q_atoi(CMD_ARGV_(1));
-
 		if (player->m_iJoiningState == JOINED || (player->m_iMenu != Menu_ChooseAppearance && player->m_iMenu != Menu_ChooseTeam))
 		{
 			if (slot == 10)
@@ -2574,6 +2544,22 @@ void EXT_ALIGN ClientCommand(edict_t *pEntity)
 			}
 		}
 
+#ifdef REGAMEDLL_ADD
+		auto canOpenOldMenu = [player]()-> bool
+		{
+			if (!player->m_bVGUIMenus || player->CSPlayer()->m_bForceShowMenu) {
+				player->CSPlayer()->m_bForceShowMenu = false;
+				return true;
+			}
+
+			return false;
+		};
+#else
+		auto canOpenOldMenu = [player]()-> bool {
+			return player->m_bVGUIMenus == false;
+		};
+#endif
+
 		switch (player->m_iMenu)
 		{
 			case Menu_OFF:
@@ -2581,22 +2567,7 @@ void EXT_ALIGN ClientCommand(edict_t *pEntity)
 
 			case Menu_ChooseTeam:
 			{
-#ifdef REGAMEDLL_ADD
-				if (!player->m_bVGUIMenus || player->CSPlayer()->m_bForceShowMenu)
-				{
-					player->CSPlayer()->m_bForceShowMenu = false;
-
-					if (!HandleMenu_ChooseTeam(player, slot))
-					{
-						player->m_iMenu = Menu_ChooseTeam;
-						if (player->m_iJoiningState == JOINED)
-							ShowVGUIMenu(player, VGUI_Menu_Team, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_5 | MENU_KEY_0), "#IG_Team_Select");
-						else
-							ShowVGUIMenu(player, VGUI_Menu_Team, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_5), "#Team_Select");
-					}
-				}
-#else
-				if (!player->m_bVGUIMenus && !HandleMenu_ChooseTeam(player, slot))
+				if (canOpenOldMenu() && !HandleMenu_ChooseTeam(player, slot))
 				{
 					player->m_iMenu = Menu_ChooseTeam;
 					if (player->m_iJoiningState == JOINED)
@@ -2604,28 +2575,25 @@ void EXT_ALIGN ClientCommand(edict_t *pEntity)
 					else
 						ShowVGUIMenu(player, VGUI_Menu_Team, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_5), "#Team_Select");
 				}
-#endif
 				break;
 			}
 			case Menu_IGChooseTeam:
 			{
-				if (!player->m_bVGUIMenus)
-				{
+				if (canOpenOldMenu()) {
 					HandleMenu_ChooseTeam(player, slot);
 				}
 				break;
 			}
 			case Menu_ChooseAppearance:
 			{
-				if (!player->m_bVGUIMenus)
-				{
+				if (canOpenOldMenu()) {
 					HandleMenu_ChooseAppearance(player, slot);
 				}
 				break;
 			}
 			case Menu_Buy:
 			{
-				if (!player->m_bVGUIMenus)
+				if (canOpenOldMenu())
 				{
 					switch (slot)
 					{
@@ -2760,48 +2728,42 @@ void EXT_ALIGN ClientCommand(edict_t *pEntity)
 			}
 			case Menu_BuyPistol:
 			{
-				if (!player->m_bVGUIMenus)
-				{
+				if (canOpenOldMenu()) {
 					BuyPistol(player, slot);
 				}
 				break;
 			}
 			case Menu_BuyShotgun:
 			{
-				if (!player->m_bVGUIMenus)
-				{
+				if (canOpenOldMenu()) {
 					BuyShotgun(player, slot);
 				}
 				break;
 			}
 			case Menu_BuySubMachineGun:
 			{
-				if (!player->m_bVGUIMenus)
-				{
+				if (canOpenOldMenu()) {
 					BuySubMachineGun(player, slot);
 				}
 				break;
 			}
 			case Menu_BuyRifle:
 			{
-				if (!player->m_bVGUIMenus)
-				{
+				if (canOpenOldMenu()) {
 					BuyRifle(player, slot);
 				}
 				break;
 			}
 			case Menu_BuyMachineGun:
 			{
-				if (!player->m_bVGUIMenus)
-				{
+				if (canOpenOldMenu()) {
 					BuyMachineGun(player, slot);
 				}
 				break;
 			}
 			case Menu_BuyItem:
 			{
-				if (!player->m_bVGUIMenus)
-				{
+				if (canOpenOldMenu()) {
 					BuyItem(player, slot);
 				}
 				break;
@@ -3299,24 +3261,22 @@ void EXT_FUNC ClientUserInfoChanged(edict_t *pEntity, char *infobuffer)
 void EXT_FUNC ServerDeactivate()
 {
 	// It's possible that the engine will call this function more times than is necessary
-	//  Therefore, only run it one time for each call to ServerActivate
-	if (g_serveractive != 1)
-	{
+	// Therefore, only run it one time for each call to ServerActivate
+	if (!g_bServerActive)
 		return;
-	}
 
-	g_serveractive = 0;
+	g_bServerActive = false;
 
 	// Peform any shutdown operations here...
 	g_pGameRules->ServerDeactivate();
 	CLocalNav::Reset();
 
-	if (TheBots != NULL)
+	if (TheBots)
 	{
 		TheBots->ServerDeactivate();
 	}
 
-	if (g_pHostages != NULL)
+	if (g_pHostages)
 	{
 		g_pHostages->ServerDeactivate();
 	}
@@ -3328,7 +3288,7 @@ void EXT_FUNC ServerActivate(edict_t *pEdictList, int edictCount, int clientMax)
 	CBaseEntity *pClass;
 
 	// Every call to ServerActivate should be matched by a call to ServerDeactivate
-	g_serveractive = 1;
+	g_bServerActive = true;
 	EmptyEntityHashTable();
 
 	// Clients have not been initialized yet
@@ -3419,8 +3379,7 @@ void EXT_FUNC ParmsChangeLevel()
 
 void EXT_FUNC StartFrame()
 {
-	if (g_pGameRules != NULL)
-	{
+	if (g_pGameRules) {
 		g_pGameRules->Think();
 	}
 
@@ -3443,13 +3402,11 @@ void EXT_FUNC StartFrame()
 	else
 		g_iSkillLevel = 0;
 
-	if (TheBots != NULL)
-	{
+	if (TheBots) {
 		TheBots->StartFrame();
 	}
 
-	if (TheTutor != NULL)
-	{
+	if (TheTutor) {
 		TheTutor->StartFrame(gpGlobals->time);
 	}
 
@@ -4456,7 +4413,7 @@ int EXT_FUNC GetWeaponData(edict_t *player, struct weapon_data_s *info)
 }
 
 // Data sent to current client only engine sets cd to 0 before calling.
-void EXT_ALIGN UpdateClientData(const struct edict_s *ent, int sendweapons, struct clientdata_s *cd)
+void EXT_FUNC UpdateClientData(const struct edict_s *ent, int sendweapons, struct clientdata_s *cd)
 {
 	if (!ent || !ent->pvPrivateData)
 		return;

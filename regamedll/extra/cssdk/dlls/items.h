@@ -35,6 +35,9 @@ enum ItemRestType
 };
 
 // constant items
+#define ITEM_ID_ANTIDOTE	2
+#define ITEM_ID_SECURITY	3
+
 enum ItemID
 {
 	ITEM_NONE = -1,
@@ -77,9 +80,7 @@ enum ItemID
 	ITEM_SODACAN,
 	ITEM_HEALTHKIT,
 	ITEM_ANTIDOTE,
-	ITEM_SECURITY,
-	ITEM_BATTERY,
-	ITEM_SUIT
+	ITEM_BATTERY
 };
 
 class CItem: public CBaseEntity {
@@ -94,7 +95,7 @@ public:
 	virtual void Spawn() = 0;
 	virtual void KeyValue(KeyValueData *pkvd) = 0;
 public:
-	ItemID m_iType;
+	int m_iType;
 };
 
 class CItemSuit: public CItem {

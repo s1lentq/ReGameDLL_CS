@@ -1235,7 +1235,6 @@ void CChangeLevel::TouchChangeLevel(CBaseEntity *pOther)
 int CChangeLevel::AddTransitionToList(LEVELLIST *pLevelList, int listCount, const char *pMapName, const char *pLandmarkName, edict_t *pentLandmark)
 {
 	int i;
-
 	if (!pLevelList || !pMapName || !pLandmarkName || !pentLandmark)
 	{
 		return 0;
@@ -1260,17 +1259,13 @@ int CChangeLevel::AddTransitionToList(LEVELLIST *pLevelList, int listCount, cons
 
 int BuildChangeList(LEVELLIST *pLevelList, int maxList)
 {
-	CChangeLevel::ChangeList(pLevelList, maxList);
+	return CChangeLevel::ChangeList(pLevelList, maxList);
 }
 
 int CChangeLevel::InTransitionVolume(CBaseEntity *pEntity, char *pVolumeName)
 {
-	edict_t	*pentVolume;
-
 	if (pEntity->ObjectCaps() & FCAP_FORCE_TRANSITION)
-	{
 		return 1;
-	}
 
 	// If you're following another entity, follow it through the transition (weapons follow the player)
 	if (pEntity->pev->movetype == MOVETYPE_FOLLOW)
@@ -1284,7 +1279,7 @@ int CChangeLevel::InTransitionVolume(CBaseEntity *pEntity, char *pVolumeName)
 	// Unless we find a trigger_transition, everything is in the volume
 	int inVolume = 1;
 
-	pentVolume = FIND_ENTITY_BY_TARGETNAME(NULL, pVolumeName);
+	edict_t	*pentVolume = FIND_ENTITY_BY_TARGETNAME(NULL, pVolumeName);
 	while (!FNullEnt(pentVolume))
 	{
 		CBaseEntity *pVolume = CBaseEntity::Instance(pentVolume);

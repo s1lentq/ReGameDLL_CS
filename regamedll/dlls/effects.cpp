@@ -1974,7 +1974,7 @@ void CItemSoda::CanTouch(CBaseEntity *pOther)
 #endif
 
 	// spoit sound here
-	pPlayer->TakeHealth(1, DMG_GENERIC);// a bit of health.
+	pPlayer->TakeHealth(1, DMG_GENERIC); // a bit of health.
 
 	if (!FNullEnt(pev->owner))
 	{

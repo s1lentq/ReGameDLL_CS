@@ -27,28 +27,7 @@
 // need this for memset
 #include <string.h>
 
-// for when we care about how many bits we use
-typedef signed char      int8;
-typedef signed short     int16;
-
-#ifdef _WIN32
-#ifdef _MSC_VER
-typedef signed __int64   int64;
-#endif
-#elif defined __linux__
-typedef long long	int64;
-#endif
-
-typedef unsigned char      uint8;
-typedef unsigned short     uint16;
-#ifdef _WIN32
-#ifdef _MSC_VER
-typedef unsigned __int64   uint64;
-#endif
-#elif defined __linux__
-typedef unsigned long long uint64;
-#endif
-
+#include "archtypes.h"
 
 typedef float  float32;
 typedef double float64;
@@ -86,7 +65,7 @@ FIXME: Enable this when we no longer fear change =)
 
 #define  UINT8_MAX   ((uint8)~0)
 #define  UINT16_MAX  ((uint16)~0)
-#define  UINT32_MAX  ((uint32_t)~0)
+#define  UINT32_MAX  ((uint32)~0)
 #define  UINT64_MAX  ((uint64)~0)
 
 #define  UINT8_MIN   0
@@ -259,12 +238,12 @@ inline T WordSwapC(T w)
 template <typename T>
 inline T DWordSwapC(T dw)
 {
-	uint32_t temp;
-	
-	temp = *((uint32_t *)&dw) >> 24;
-	temp |= ((*((uint32_t *)&dw) & 0x00FF0000) >> 8);
-	temp |= ((*((uint32_t *)&dw) & 0x0000FF00) << 8);
-	temp |= ((*((uint32_t *)&dw) & 0x000000FF) << 24);
+	uint32 temp;
+
+	temp = *((uint32 *)&dw) >> 24;
+	temp |= ((*((uint32 *)&dw) & 0x00FF0000) >> 8);
+	temp |= ((*((uint32 *)&dw) & 0x0000FF00) << 8);
+	temp |= ((*((uint32 *)&dw) & 0x000000FF) << 24);
 
 	return *((T*)&temp);
 }
@@ -363,12 +342,12 @@ inline float DWordSwapAsm<float>(float f)
 inline short BigShort(short val)		{ int test = 1; return (*(char *)&test == 1) ? WordSwap(val) : val; }
 inline uint16 BigWord(uint16 val)		{ int test = 1; return (*(char *)&test == 1) ? WordSwap(val) : val; }
 inline long BigLong(long val)			{ int test = 1; return (*(char *)&test == 1) ? DWordSwap(val) : val; }
-inline uint32_t BigDWord(uint32_t val)	{ int test = 1; return (*(char *)&test == 1) ? DWordSwap(val) : val; }
+inline uint32 BigDWord(uint32 val)	{ int test = 1; return (*(char *)&test == 1) ? DWordSwap(val) : val; }
 inline float BigFloat(float val)		{ int test = 1; return (*(char *)&test == 1) ? DWordSwap(val) : val; }
 inline short LittleShort(short val)	{ int test = 1; return (*(char *)&test == 1) ? val : WordSwap(val); }
 inline uint16 LittleWord(uint16 val)	{ int test = 1; return (*(char *)&test == 1) ? val : WordSwap(val); }
 inline long LittleLong(long val)		{ int test = 1; return (*(char *)&test == 1) ? val : DWordSwap(val); }
-inline uint32_t LittleDWord(uint32_t val)	{ int test = 1; return (*(char *)&test == 1) ? val : DWordSwap(val); }
+inline uint32 LittleDWord(uint32 val)	{ int test = 1; return (*(char *)&test == 1) ? val : DWordSwap(val); }
 inline float LittleFloat(float val)	{ int test = 1; return (*(char *)&test == 1) ? val : DWordSwap(val); }
 
 #endif

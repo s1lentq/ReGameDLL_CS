@@ -92,7 +92,7 @@ cvar_t *sv_aim = NULL;
 
 TYPEDESCRIPTION CRevertSaved::m_SaveData[] =
 {
-	DEFINE_FIELD(CRevertSaved, m_messageTime, FIELD_FLOAT),
+	DEFINE_FIELD(CRevertSaved, m_messageTime, FIELD_FLOAT),		// These are not actual times, but durations, so save as floats
 	DEFINE_FIELD(CRevertSaved, m_loadTime, FIELD_FLOAT),
 };
 
@@ -1570,7 +1570,7 @@ void CBasePlayer::PackDeadPlayerItems()
 
 LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, GiveDefaultItems);
 
-void EXT_ALIGN CBasePlayer::__API_HOOK(GiveDefaultItems)()
+void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 {
 	RemoveAllItems(FALSE);
 	m_bHasPrimary = false;
@@ -3657,7 +3657,7 @@ void CBasePlayer::PlayerDeathThink()
 
 LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, RoundRespawn);
 
-void EXT_ALIGN CBasePlayer::__API_VHOOK(RoundRespawn)()
+void EXT_FUNC CBasePlayer::__API_VHOOK(RoundRespawn)()
 {
 	m_canSwitchObserverModes = true;
 
@@ -4003,7 +4003,7 @@ void CBasePlayer::HostageUsed()
 
 LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, Jump);
 
-void EXT_ALIGN CBasePlayer::__API_VHOOK(Jump)()
+void EXT_FUNC CBasePlayer::__API_VHOOK(Jump)()
 {
 	if (pev->flags & FL_WATERJUMP)
 		return;
@@ -4075,7 +4075,7 @@ NOXREF void FixPlayerCrouchStuck(edict_t *pPlayer)
 
 LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, Duck);
 
-void EXT_ALIGN CBasePlayer::__API_VHOOK(Duck)()
+void EXT_FUNC CBasePlayer::__API_VHOOK(Duck)()
 {
 	if (pev->button & IN_DUCK)
 		SetAnimation(PLAYER_WALK);
@@ -4216,7 +4216,7 @@ bool CBasePlayer::CanPlayerBuy(bool display)
 
 LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, PreThink);
 
-void EXT_ALIGN CBasePlayer::__API_VHOOK(PreThink)()
+void EXT_FUNC CBasePlayer::__API_VHOOK(PreThink)()
 {
 	// These buttons have changed this frame
 	int buttonsChanged = (m_afButtonLast ^ pev->button);
@@ -4547,10 +4547,10 @@ void CBasePlayer::CheckTimeBasedDamage()
 				// use up an antitoxin on poison or nervegas after a few seconds of damage
 				if ((i == itbd_NerveGas && m_rgbTimeBasedDamage[i] < NERVEGAS_DURATION) || (i == itbd_Poison && m_rgbTimeBasedDamage[i] < POISON_DURATION))
 				{
-					if (m_rgItems[ ITEM_ANTIDOTE ])
+					if (m_rgItems[ ITEM_ID_ANTIDOTE ])
 					{
 						m_rgbTimeBasedDamage[i] = 0;
-						m_rgItems[ ITEM_ANTIDOTE ]--;
+						m_rgItems[ ITEM_ID_ANTIDOTE ]--;
 						SetSuitUpdate("!HEV_HEAL4", FALSE, SUIT_REPEAT_OK);
 					}
 				}
@@ -4792,7 +4792,7 @@ void CBasePlayer::UpdatePlayerSound()
 
 LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, PostThink);
 
-void EXT_ALIGN CBasePlayer::__API_VHOOK(PostThink)()
+void EXT_FUNC CBasePlayer::__API_VHOOK(PostThink)()
 {
 	// intermission or finale
 	if (g_fGameOver)
@@ -5139,7 +5139,7 @@ void CBasePlayer::SetScoreAttrib(CBasePlayer *dest)
 
 LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, Spawn);
 
-void EXT_ALIGN CBasePlayer::__API_VHOOK(Spawn)()
+void EXT_FUNC CBasePlayer::__API_VHOOK(Spawn)()
 {
 	int i;
 
@@ -5480,7 +5480,7 @@ void EXT_ALIGN CBasePlayer::__API_VHOOK(Spawn)()
 
 LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, Precache);
 
-void EXT_ALIGN CBasePlayer::__API_VHOOK(Precache)()
+void EXT_FUNC CBasePlayer::__API_VHOOK(Precache)()
 {
 #ifndef REGAMEDLL_FIXES
 	// in the event that the player JUST spawned, and the level node graph
@@ -5747,10 +5747,10 @@ void CBasePlayer::SelectLastItem()
 
 	if (!m_pLastItem || m_pLastItem == m_pActiveItem)
 	{
-		for (int i = 1; i < MAX_ITEMS; ++i)
+		for (int i = PRIMARY_WEAPON_SLOT; i <= KNIFE_SLOT; ++i)
 		{
 			CBasePlayerItem *pItem = m_rgpPlayerItems[i];
-			if (pItem != NULL && pItem != m_pActiveItem)
+			if (pItem && pItem != m_pActiveItem)
 			{
 				m_pLastItem = pItem;
 				break;
@@ -5768,18 +5768,14 @@ void CBasePlayer::SelectLastItem()
 
 	if (HasShield())
 	{
-		CBasePlayerWeapon *pWeapon = (CBasePlayerWeapon *)m_pActiveItem;
-
-		if (m_pActiveItem != NULL)
+		CBasePlayerWeapon *pWeapon = static_cast<CBasePlayerWeapon *>(m_pActiveItem);
+		if (pWeapon)
 			pWeapon->m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
 
 		m_bShieldDrawn = false;
 	}
 
-	CBasePlayerItem *pTemp = m_pActiveItem;
-
-	m_pActiveItem = m_pLastItem;
-	m_pLastItem = pTemp;
+	SWAP(m_pActiveItem, m_pLastItem);
 
 	m_pActiveItem->Deploy();
 	m_pActiveItem->UpdateItemInfo();
@@ -5790,15 +5786,15 @@ void CBasePlayer::SelectLastItem()
 }
 
 // HasWeapons - do I have any weapons at all?
-BOOL CBasePlayer::HasWeapons()
+bool CBasePlayer::HasWeapons()
 {
-	for (int i = 0; i < MAX_ITEM_TYPES; ++i)
+	for (auto item : m_rgpPlayerItems)
 	{
-		if (m_rgpPlayerItems[i] != NULL)
-			return TRUE;
+		if (item)
+			return true;
 	}
 
-	return FALSE;
+	return false;
 }
 
 NOXREF void CBasePlayer::SelectPrevItem(int iItem)
@@ -5809,7 +5805,7 @@ NOXREF void CBasePlayer::SelectPrevItem(int iItem)
 const char *CBasePlayer::__MAKE_VHOOK(TeamID)()
 {
 	// Not fully connected yet
-	if (pev == NULL)
+	if (!pev)
 		return "";
 
 	// return their team name
@@ -6003,7 +5999,7 @@ void CBasePlayer::ForceClientDllUpdate()
 
 LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, ImpulseCommands);
 
-void EXT_ALIGN CBasePlayer::__API_VHOOK(ImpulseCommands)()
+void EXT_FUNC CBasePlayer::__API_VHOOK(ImpulseCommands)()
 {
 	TraceResult tr;
 
@@ -6675,7 +6671,7 @@ LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, UpdateClientData);
 // Also called at start of demo recording and playback by
 // ForceClientDllUpdate to ensure the demo gets messages
 // reflecting all of the HUD state info.
-void EXT_ALIGN CBasePlayer::__API_VHOOK(UpdateClientData)()
+void EXT_FUNC CBasePlayer::__API_VHOOK(UpdateClientData)()
 {
 	if (m_fInitHUD)
 	{
@@ -7045,7 +7041,7 @@ void CBasePlayer::EnableControl(BOOL fControl)
 
 LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, ResetMaxSpeed);
 
-void EXT_ALIGN CBasePlayer::__API_VHOOK(ResetMaxSpeed)()
+void EXT_FUNC CBasePlayer::__API_VHOOK(ResetMaxSpeed)()
 {
 	float speed;
 
@@ -7336,6 +7332,7 @@ void CBasePlayer::UpdateStatusBar()
 
 LINK_HOOK_CLASS_VOID_CHAIN(CBasePlayer, DropPlayerItem, (const char *pszItemName), pszItemName);
 
+// DropPlayerItem - drop the named item, or if no name, the active item.
 void CBasePlayer::__API_HOOK(DropPlayerItem)(const char *pszItemName)
 {
 	if (!Q_strlen(pszItemName))
@@ -7360,8 +7357,7 @@ void CBasePlayer::__API_HOOK(DropPlayerItem)(const char *pszItemName)
 	for (int i = 0; i < MAX_ITEM_TYPES; ++i)
 	{
 		CBasePlayerItem *pWeapon = m_rgpPlayerItems[i];
-
-		while (pWeapon != NULL)
+		while (pWeapon)
 		{
 			if (pszItemName)
 			{
@@ -7482,38 +7478,36 @@ void CBasePlayer::__API_HOOK(DropPlayerItem)(const char *pszItemName)
 	}
 }
 
-BOOL CBasePlayer::HasPlayerItem(CBasePlayerItem *pCheckItem)
+// Does the player already have this item?
+bool CBasePlayer::HasPlayerItem(CBasePlayerItem *pCheckItem)
 {
-	CBasePlayerItem *pItem = m_rgpPlayerItems[ pCheckItem->iItemSlot() ];
-	while (pItem != NULL)
+	auto item = m_rgpPlayerItems[ pCheckItem->iItemSlot() ];
+	while (item)
 	{
-		if (FClassnameIs(pItem->pev, STRING(pCheckItem->pev->classname)))
-			return TRUE;
+		if (FClassnameIs(item->pev, STRING(pCheckItem->pev->classname)))
+			return true;
 
-		pItem = pItem->m_pNext;
+		item = item->m_pNext;
 	}
 
-	return FALSE;
+	return false;
 }
 
-BOOL CBasePlayer::HasNamedPlayerItem(const char *pszItemName)
+// Does the player already have this item?
+bool CBasePlayer::HasNamedPlayerItem(const char *pszItemName)
 {
-	CBasePlayerItem *pItem;
-
-	for (int i = 0; i < MAX_ITEM_TYPES; ++i)
+	for (auto item : m_rgpPlayerItems)
 	{
-		pItem = m_rgpPlayerItems[ i ];
-
-		while (pItem != NULL)
+		while (item)
 		{
-			if (!Q_strcmp(pszItemName, STRING(pItem->pev->classname)))
-				return TRUE;
+			if (FClassnameIs(item->pev, pszItemName))
+				return true;
 
-			pItem = pItem->m_pNext;
+			item = item->m_pNext;
 		}
 	}
 
-	return FALSE;
+	return false;
 }
 
 void CBasePlayer::SwitchTeam()
@@ -7776,6 +7770,7 @@ void CDeadHEV::__MAKE_VHOOK(Spawn)()
 		pev->effects = EF_BRIGHTFIELD;
 	}
 
+	// Corpses have less health
 	pev->health = 8;
 	MonsterInitDead();
 }
@@ -7864,11 +7859,12 @@ void CInfoIntermission::__MAKE_VHOOK(Spawn)()
 	pev->solid = SOLID_NOT;
 	pev->effects = EF_NODRAW;
 	pev->v_angle = g_vecZero;
-	pev->nextthink = gpGlobals->time + 2.0f;
+	pev->nextthink = gpGlobals->time + 2.0f;	// let targets spawn!
 }
 
 void CInfoIntermission::__MAKE_VHOOK(Think)()
 {
+	// find my target
 	edict_t *pTarget = FIND_ENTITY_BY_TARGETNAME(NULL, STRING(pev->target));
 
 	if (!FNullEnt(pTarget))
@@ -9374,4 +9370,56 @@ LINK_HOOK_CLASS_CHAIN(bool, CBasePlayer, HasRestrictItem, (ItemID item, ItemRest
 
 bool EXT_FUNC CBasePlayer::__API_HOOK(HasRestrictItem)(ItemID item, ItemRestType type) {
 	return false;
+}
+
+void CBasePlayer::DropSecondary()
+{
+	if (HasShield())
+	{
+		if (IsProtectedByShield() && m_pActiveItem) {
+			((CBasePlayerWeapon *)m_pActiveItem)->SecondaryAttack();
+		}
+
+		m_bShieldDrawn = false;
+	}
+
+	auto item = m_rgpPlayerItems[ PISTOL_SLOT ];
+
+#ifdef REGAMEDLL_ADD
+	while (item)
+	{
+		DropPlayerItem(STRING(item->pev->classname));
+		item = item->m_pNext;
+	}
+#else
+	if (item)
+	{
+		DropPlayerItem(STRING(item->pev->classname));
+	}
+#endif
+
+}
+
+void CBasePlayer::DropPrimary()
+{
+	if (HasShield()) {
+		DropShield();
+		return;
+	}
+
+	auto item = m_rgpPlayerItems[ PRIMARY_WEAPON_SLOT ];
+
+#ifdef REGAMEDLL_ADD
+	while (item)
+	{
+		DropPlayerItem(STRING(item->pev->classname));
+		item = item->m_pNext;
+	}
+#else
+	if (item)
+	{
+		DropPlayerItem(STRING(item->pev->classname));
+	}
+#endif
+
 }

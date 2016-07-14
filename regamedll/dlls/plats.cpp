@@ -87,12 +87,12 @@ void CBasePlatTrain::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 	}
 	else if (FStrEq(pkvd->szKeyName, "movesnd"))
 	{
-		m_bMoveSnd = byte(Q_atof(pkvd->szValue));
+		m_bMoveSnd = (BYTE)Q_atof(pkvd->szValue);
 		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "stopsnd"))
 	{
-		m_bStopSnd = byte(Q_atof(pkvd->szValue));
+		m_bStopSnd = (BYTE)Q_atof(pkvd->szValue);
 		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "volume"))

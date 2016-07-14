@@ -275,8 +275,12 @@ public:
 	virtual void Blocked(CBaseEntity *pOther) { if (m_pfnBlocked) (this->*m_pfnBlocked)(pOther); }
 	virtual CBaseEntity *Respawn() { return NULL; }
 
+#ifndef REGAMEDLL_FIXES
 	// used by monsters that are created by the MonsterMaker
 	virtual void UpdateOwner() {}
+#else
+	virtual ~CBaseEntity() {}
+#endif
 
 	virtual BOOL FBecomeProne() { return FALSE; }
 	virtual Vector Center() { return (pev->absmax + pev->absmin) * 0.5f; }

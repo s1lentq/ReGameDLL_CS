@@ -148,6 +148,10 @@ public:
 public:
 	void EXPORT ArmouryTouch(CBaseEntity *pOther);
 
+private:
+	void Draw();
+	void Hide();
+
 public:
 	ArmouryItemPack m_iItem;
 	int m_iCount;

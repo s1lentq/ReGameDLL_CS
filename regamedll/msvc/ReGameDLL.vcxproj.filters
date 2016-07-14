@@ -561,6 +561,9 @@
     <ClCompile Include="..\regamedll\regamedll.cpp">
       <Filter>regamedll</Filter>
     </ClCompile>
+    <ClCompile Include="..\dlls\mapinfo.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\hookers\memory.h">
@@ -721,9 +724,6 @@
     </ClInclude>
     <ClInclude Include="..\dlls\bot\cs_gamestate.h">
       <Filter>dlls\bot</Filter>
-    </ClInclude>
-    <ClInclude Include="..\dlls\h_export.h">
-      <Filter>dlls</Filter>
     </ClInclude>
     <ClInclude Include="..\pm_shared\pm_debug.h">
       <Filter>pm_shared</Filter>
@@ -1124,8 +1124,8 @@
     <ClInclude Include="..\dlls\extdef.h">
       <Filter>dlls</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\regamedll\osconfig.h">
-      <Filter>public\regamedll</Filter>
+    <ClInclude Include="..\dlls\mapinfo.h">
+      <Filter>dlls</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

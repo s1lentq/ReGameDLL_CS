@@ -13,7 +13,7 @@ void DefuseBombState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 {
 	const Vector *bombPos = me->GetGameState()->GetBombPosition();
 
-	if (bombPos == NULL)
+	if (!bombPos)
 	{
 		me->PrintIfWatched("In Defuse state, but don't know where the bomb is!\n");
 		me->Idle();
@@ -29,7 +29,7 @@ void DefuseBombState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 	if (gpGlobals->time - me->GetStateTimestamp() > 1.0f)
 	{
 		// if we missed starting the defuse, give up
-		if (TheCSBots()->GetBombDefuser() == NULL)
+		if (!TheCSBots()->GetBombDefuser())
 		{
 			me->PrintIfWatched("Failed to start defuse, giving up\n");
 			me->Idle();
@@ -47,6 +47,14 @@ void DefuseBombState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 	// if bomb has been defused, give up
 	if (!TheCSBots()->IsBombPlanted())
 	{
+#ifdef REGAMEDLL_ADD
+		if (CSGameRules()->HasRoundInfinite(SCENARIO_BLOCK_BOMB)) {
+			me->GetGameState()->Reset();
+			me->Hunt();
+			return;
+		}
+#endif
+
 		me->Idle();
 		return;
 	}

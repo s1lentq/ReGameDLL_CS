@@ -1084,9 +1084,12 @@ void OnFreeEntPrivateData(edict_t *pEnt)
 	RemoveEntityHashValue(pEntity->pev, STRING(pEntity->pev->classname), CLASSNAME);
 
 #ifdef REGAMEDLL_ADD
-	if (pEntity->m_pEntity != nullptr) {
+	if (pEntity->m_pEntity) {
 		delete pEntity->m_pEntity;
 		pEntity->m_pEntity = nullptr;
 	}
+
+	// entities can have a own destructor
+	pEntity->~CBaseEntity();
 #endif
 }

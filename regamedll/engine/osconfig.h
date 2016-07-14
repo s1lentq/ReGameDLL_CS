@@ -25,23 +25,12 @@
 *    version.
 *
 */
-#pragma once
+
+#ifndef _OSCONFIG_H
+#define _OSCONFIG_H
 
 #ifdef _WIN32 // WINDOWS
 	#pragma warning(disable : 4005)
-#endif // _WIN32
-
-// disable must return a value
-#pragma warning(disable : 4716)
-
-#ifndef _WIN32
-
-// disable missing return statement at end of non-void function
-#pragma warning(disable : 1011)
-
-// disable offsetof applied to non-POD (Plain Old Data) types is nonstandard
-#pragma warning(disable : 1875)
-
 #endif // _WIN32
 
 #include <stdio.h>
@@ -51,22 +40,26 @@
 #include <string.h>
 #include <time.h>
 #include <math.h>
-//#include <setjmp.h>
+#include <setjmp.h>
 #include <assert.h>
+
+#include <algorithm>
+#include <deque>
+#include <functional>
 
 #ifdef _WIN32 // WINDOWS
 	#include <windows.h>
-	//#include <winsock.h>
-	//#include <wsipx.h> // for support IPX
+	#include <winsock.h>
+	#include <wsipx.h> // for support IPX
 	#define PSAPI_VERSION 1
 	#include <psapi.h>
 	#include <nmmintrin.h>
 	#include <fcntl.h>
-	//#include <sys/types.h>
+	#include <sys/types.h>
 	#include <sys/stat.h>
 	#include <io.h>
 #else // _WIN32
-	//#include <arpa/inet.h>
+	#include <arpa/inet.h>
 	#include <ctype.h>
 	//#include <dirent.h>
 	#include <dlfcn.h>
@@ -80,10 +73,11 @@
 	#include <pthread.h>
 	#include <sys/ioctl.h>
 	#include <sys/mman.h>
+	#include <sys/socket.h>
 	#include <sys/stat.h>
 	#include <sys/time.h>
-	//#include <sys/types.h>
-	//#include <sys/sysinfo.h>
+	#include <sys/types.h>
+	#include <sys/sysinfo.h>
 	#include <unistd.h>
 
 	// Deail with stupid macro in kernel.h
@@ -91,43 +85,12 @@
 #endif // _WIN32
 
 #include <string>
-//#include <sstream>
-//#include <fstream>
+#include <sstream>
+#include <fstream>
 #include <iomanip>
 
-#ifdef _WIN32 // WINDOWS
-#ifndef _STDINT
-	typedef unsigned __int64 uint64_t;
-	typedef unsigned __int32 uint32_t;
-	typedef unsigned __int16 uint16_t;
-	typedef unsigned __int8 uint8_t;
-
-	typedef __int64 int64_t;
-	typedef __int32 int32_t;
-	typedef __int16 int16_t;
-	typedef __int8 int8_t;
-
-	typedef wchar_t uchar16;
-	typedef unsigned int uchar32;
-#endif
-#else // _WIN32
-	typedef unsigned long long uint64_t;
-	typedef unsigned int uint32_t;
-	typedef unsigned short uint16_t;
-	typedef unsigned char uint8_t;
-
-	#ifndef __int8_t_defined
-		typedef long long int64_t;
-		typedef int int32_t;
-		typedef short int16_t;
-		typedef char int8_t;
-	#endif
-
-	typedef unsigned char byte;
-	typedef unsigned char BYTE;
-	typedef unsigned short uchar16;
-	typedef wchar_t uchar32;
-#endif // _WIN32
+#include <smmintrin.h>
+#include <xmmintrin.h>
 
 #ifdef _WIN32 // WINDOWS
 	#define _CRT_SECURE_NO_WARNINGS
@@ -136,20 +99,29 @@
 	#ifndef CDECL
 		#define CDECL __cdecl
 	#endif
-
 	#define STDCALL __stdcall
 	#define HIDDEN
 	#define NOINLINE __declspec(noinline)
 	#define ALIGN16 __declspec(align(16))
 	#define FORCE_STACK_ALIGN
 
-	// Attributes to specify an "exported" function, visible from outside the
-	// DLL.
-	#undef DLLEXPORT
-	#define DLLEXPORT	__declspec(dllexport)
-	// WINAPI should be provided in the windows compiler headers.
-	// It's usually defined to something like "__stdcall".
+	//inline bool SOCKET_FIONBIO(SOCKET s, int m) { return (ioctlsocket(s, FIONBIO, (u_long*)&m) == 0); }
+	//inline int SOCKET_MSGLEN(SOCKET s, u_long& r) { return ioctlsocket(s, FIONREAD, (u_long*)&r); }
+	typedef int socklen_t;
+	#define SOCKET_FIONBIO(s, m) ioctlsocket(s, FIONBIO, (u_long*)&m)
+	#define SOCKET_MSGLEN(s, r) ioctlsocket(s, FIONREAD, (u_long*)&r)
+	#define SIN_GET_ADDR(saddr, r) r = (saddr)->S_un.S_addr
+	#define SIN_SET_ADDR(saddr, r) (saddr)->S_un.S_addr = (r)
+	#define SOCKET_CLOSE(s) closesocket(s)
+	#define SOCKET_AGAIN() (WSAGetLastError() == WSAEWOULDBLOCK)
 
+	inline void* sys_allocmem(unsigned int size) {
+		return VirtualAlloc(NULL, size, MEM_COMMIT, PAGE_READWRITE);
+	}
+
+	inline void sys_freemem(void* ptr, unsigned int size) {
+		VirtualFree(ptr, 0, MEM_RELEASE);
+	}
 #else // _WIN32
 	#ifdef __FUNCTION__
 		#undef __FUNCTION__
@@ -178,9 +150,26 @@
 	#define ALIGN16 __attribute__((aligned(16)))
 	#define FORCE_STACK_ALIGN __attribute__((force_align_arg_pointer))
 
-	#undef DLLEXPORT
-	#define DLLEXPORT	__attribute__((visibility("default")))
-	#define WINAPI		/* */
+	//inline bool SOCKET_FIONBIO(SOCKET s, int m) { return (ioctl(s, FIONBIO, (int*)&m) == 0); }
+	//inline int SOCKET_MSGLEN(SOCKET s, u_long& r) { return ioctl(s, FIONREAD, (int*)&r); }
+	typedef int SOCKET;
+	#define INVALID_SOCKET (SOCKET)(~0)
+	#define SOCKET_FIONBIO(s, m) ioctl(s, FIONBIO, (char*)&m)
+	#define SOCKET_MSGLEN(s, r) ioctl(s, FIONREAD, (char*)&r)
+	#define SIN_GET_ADDR(saddr, r) r = (saddr)->s_addr
+	#define SIN_SET_ADDR(saddr, r) (saddr)->s_addr = (r)
+	#define SOCKET_CLOSE(s) close(s)
+	#define SOCKET_AGAIN() (errno == EAGAIN)
+	#define SOCKET_ERROR -1
+
+	inline void* sys_allocmem(unsigned int size) {
+		return mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+	}
+	inline void sys_freemem(void* ptr, unsigned int size) {
+		munmap(ptr, size);
+	}
+
+	#define WSAENOPROTOOPT ENOPROTOOPT
 
 	#ifndef FALSE
 	#define FALSE	0
@@ -190,14 +179,16 @@
 	#endif
 #endif // _WIN32
 
-// Simplified macro for declaring/defining exported DLL functions.  They
-// need to be 'extern "C"' so that the C++ compiler enforces parameter
-// type-matching, rather than considering routines with mis-matched
-// arguments/types to be overloaded functions...
-//
-// AFAIK, this is os-independent, but it's included here in osdep.h where
-// DLLEXPORT is defined, for convenience.
-#define C_DLLEXPORT extern "C" DLLEXPORT
+#ifdef _WIN32
+	static const bool __isWindows = true;
+	static const bool __isLinux = false;
+#else
+	static const bool __isWindows = false;
+	static const bool __isLinux = true;
+#endif
 
 #define EXT_FUNC FORCE_STACK_ALIGN
-#define EXT_ALIGN FORCE_STACK_ALIGN
+
+extern void __declspec(noreturn) rehlds_syserror(const char* fmt, ...);
+
+#endif // _OSCONFIG_H

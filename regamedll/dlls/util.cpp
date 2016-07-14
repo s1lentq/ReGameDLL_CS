@@ -1422,12 +1422,12 @@ void UTIL_BubbleTrail(Vector from, Vector to, int count)
 
 void UTIL_Remove(CBaseEntity *pEntity)
 {
-	if (pEntity != NULL)
-	{
-		pEntity->UpdateOnRemove();
-		pEntity->pev->flags |= FL_KILLME;
-		pEntity->pev->targetname = 0;
-	}
+	if (!pEntity)
+		return;
+
+	pEntity->UpdateOnRemove();
+	pEntity->pev->flags |= FL_KILLME;
+	pEntity->pev->targetname = 0;
 }
 
 NOXREF BOOL UTIL_IsValidEntity(edict_t *pent)
@@ -1454,6 +1454,24 @@ void UTIL_PrecacheOther(const char *szClassname)
 	}
 
 	REMOVE_ENTITY(pent);
+}
+
+void UTIL_RestartOther(const char *szClassname)
+{
+	CBaseEntity *pEntity = nullptr;
+	while ((pEntity = UTIL_FindEntityByClassname(pEntity, szClassname)) != nullptr)
+	{
+		pEntity->Restart();
+	}
+}
+
+void UTIL_RemoveOther(const char *szClassname)
+{
+	CBaseEntity *pEntity = nullptr;
+	while ((pEntity = UTIL_FindEntityByClassname(pEntity, szClassname)) != nullptr)
+	{
+		UTIL_Remove(pEntity);
+	}
 }
 
 void UTIL_LogPrintf(const char *fmt, ...)
