@@ -116,7 +116,7 @@ public:
 	virtual void Blocked(CBaseEntity *pOther) = 0;
 
 	virtual CBaseEntity *Respawn() = 0;
-	virtual ~CBaseEntity() = 0;					// NOTE: it was replaced on function "virtual void UpdateOwner() {}" which is not used.
+	virtual void UpdateOwner() = 0;
 	virtual BOOL FBecomeProne() = 0;
 
 	virtual Vector Center() = 0;					// center point of entity

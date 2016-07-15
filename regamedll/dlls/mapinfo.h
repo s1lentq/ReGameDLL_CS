@@ -32,7 +32,6 @@ class CMapInfo: public CPointEntity
 {
 public:
 	CMapInfo();
-	virtual ~CMapInfo();
 	virtual void Spawn();
 	virtual void KeyValue(KeyValueData *pkvd);
 	void CheckMapInfo();

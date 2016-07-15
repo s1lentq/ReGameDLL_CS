@@ -33,12 +33,16 @@ void CSmokeGrenade::__MAKE_VHOOK(Precache)()
 
 int CSmokeGrenade::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 {
+	auto info = GetWeaponInfo(WEAPON_SMOKEGRENADE);
+
 	p->pszName = STRING(pev->classname);
 	p->pszAmmo1 = "SmokeGrenade";
-	p->iMaxAmmo1 = MAX_AMMO_SMOKEGRENADE;
+
+	p->iMaxAmmo1 = info ? info->maxRounds : MAX_AMMO_SMOKEGRENADE;
+	p->iMaxClip = info ? info->gunClipSize : WEAPON_NOCLIP;
+
 	p->pszAmmo2 = NULL;
 	p->iMaxAmmo2 = -1;
-	p->iMaxClip = WEAPON_NOCLIP;
 	p->iSlot = 3;
 	p->iPosition = 3;
 	p->iId = m_iId = WEAPON_SMOKEGRENADE;

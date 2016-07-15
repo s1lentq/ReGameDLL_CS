@@ -1089,7 +1089,8 @@ void OnFreeEntPrivateData(edict_t *pEnt)
 		pEntity->m_pEntity = nullptr;
 	}
 
-	// entities can have a own destructor
-	pEntity->~CBaseEntity();
+	if (g_pMapInfo == pEntity)
+		g_pMapInfo = nullptr;
+
 #endif
 }

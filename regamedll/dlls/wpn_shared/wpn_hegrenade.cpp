@@ -35,12 +35,16 @@ void CHEGrenade::__MAKE_VHOOK(Precache)()
 
 int CHEGrenade::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 {
+	auto info = GetWeaponInfo(WEAPON_HEGRENADE);
+
 	p->pszName = STRING(pev->classname);
 	p->pszAmmo1 = "HEGrenade";
-	p->iMaxAmmo1 = MAX_AMMO_HEGRENADE;
+
+	p->iMaxAmmo1 = info ? info->maxRounds : MAX_AMMO_HEGRENADE;
+	p->iMaxClip = info ? info->gunClipSize : WEAPON_NOCLIP;
+
 	p->pszAmmo2 = NULL;
 	p->iMaxAmmo2 = -1;
-	p->iMaxClip = WEAPON_NOCLIP;
 	p->iSlot = 3;
 	p->iPosition = 1;
 	p->iId = m_iId = WEAPON_HEGRENADE;

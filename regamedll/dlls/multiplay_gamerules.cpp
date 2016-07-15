@@ -3588,7 +3588,6 @@ void CHalfLifeMultiplay::__API_VHOOK(PlayerKilled)(CBasePlayer *pVictim, entvars
 				ClientPrint(killer->pev, HUD_PRINTCONSOLE, "#Banned_For_Killing_Teamates");
 
 				int iUserID = GETPLAYERUSERID(killer->edict());
-
 				if (iUserID != -1)
 				{
 					SERVER_COMMAND(UTIL_VarArgs("kick # %d\n", iUserID));

@@ -1455,14 +1455,16 @@ void packPlayerNade(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 			break;
 		}
 
-		if (pItem->m_flStartThrow != 0.0f)
+		auto& ammoNades = pPlayer->m_rgAmmo[ pItem->PrimaryAmmoIndex() ];
+		if (pItem->m_flStartThrow != 0)
 		{
-			auto& ammoNades = pPlayer->m_rgAmmo[ pItem->PrimaryAmmoIndex() ];
 			if (ammoNades < 2)
 				return;
 
 			ammoNades--;
 		}
+		else if (pItem->m_flReleaseThrow > 0 && ammoNades < 1)
+			return;
 
 		Vector vecAngles = pPlayer->pev->angles;
 		Vector dir(Q_cos(vecAngles.y) * flOffset, Q_sin(vecAngles.y) * flOffset, 0.0f);

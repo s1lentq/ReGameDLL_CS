@@ -20,12 +20,6 @@ CMapInfo::CMapInfo()
 	}
 }
 
-CMapInfo::~CMapInfo()
-{
-	if (g_pMapInfo == this)
-		g_pMapInfo = nullptr;
-}
-
 void CMapInfo::CheckMapInfo()
 {
 	bool bCTCantBuy, bTCantBuy;
