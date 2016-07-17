@@ -1973,7 +1973,8 @@ bool BuyGunAmmo(CBasePlayer *player, CBasePlayerItem *weapon, bool bBlinkMoney)
 		return false;
 
 	WeaponInfoStruct *info = GetWeaponInfo(weapon->m_iId);
-	if (info == nullptr) {
+	if (!info)
+	{
 		ALERT(at_console, "Tried to buy ammo for an unrecognized gun\n");
 		return false;
 	}

@@ -408,7 +408,6 @@ void CCSBotManager::__MAKE_VHOOK(ServerCommand)(const char *pcmd)
 				continue;
 
 			const char *name = STRING(pPlayer->pev->netname);
-
 			if (FStrEq(name, ""))
 				continue;
 
@@ -416,7 +415,11 @@ void CCSBotManager::__MAKE_VHOOK(ServerCommand)(const char *pcmd)
 			{
 				if (killThemAll || FStrEq(name, msg))
 				{
+#ifdef REGAMEDLL_FIXES
+					ClientKill(pPlayer->edict());
+#else
 					pPlayer->TakeDamage(pPlayer->pev, pPlayer->pev, 9999.9f, DMG_CRUSH);
+#endif
 				}
 			}
 		}

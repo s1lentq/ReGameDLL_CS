@@ -1106,7 +1106,6 @@ BOOL CBasePlayer::__API_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pe
 						continue;
 
 					bool killedByHumanPlayer = (!pPlayer->IsBot() && pPlayer->pev == pevAttacker && pPlayer->m_iTeam != m_iTeam);
-
 					if (killedByHumanPlayer)
 					{
 						if (TheCareerTasks != NULL)
@@ -2080,7 +2079,7 @@ void CBasePlayer::__API_VHOOK(Killed)(entvars_t *pevAttacker, int iGib)
 		}
 	}
 
-	if (m_pTank != NULL)
+	if (m_pTank)
 	{
 		m_pTank->Use(this, this, USE_OFF, 0);
 		m_pTank = NULL;

@@ -3569,7 +3569,7 @@ void CHalfLifeMultiplay::__API_VHOOK(PlayerKilled)(CBasePlayer *pVictim, entvars
 	{
 		// if a player dies in a deathmatch game and the killer is a client, award the killer some points
 		CBasePlayer *killer = GetClassPtr<CCSPlayer>((CBasePlayer *)pKiller);
-		bool killedByFFA = CSGameRules()->IsFreeForAll();
+		bool killedByFFA = IsFreeForAll();
 
 		if (killer->m_iTeam == pVictim->m_iTeam && !killedByFFA)
 		{
