@@ -1,37 +1,51 @@
-/***
+/*
 *
-*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
-*	
-*	This product contains software technology licensed from Id 
-*	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
-*	All Rights Reserved.
+*   This program is free software; you can redistribute it and/or modify it
+*   under the terms of the GNU General Public License as published by the
+*   Free Software Foundation; either version 2 of the License, or (at
+*   your option) any later version.
 *
-*   Use, distribution, and modification of this source code and/or resulting
-*   object code is restricted to non-commercial enhancements to products from
-*   Valve LLC.  All other use, distribution, or modification is prohibited
-*   without written permission from Valve LLC.
+*   This program is distributed in the hope that it will be useful, but
+*   WITHOUT ANY WARRANTY; without even the implied warranty of
+*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+*   General Public License for more details.
 *
-****/
+*   You should have received a copy of the GNU General Public License
+*   along with this program; if not, write to the Free Software Foundation,
+*   Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*
+*   In addition, as a special exception, the author gives permission to
+*   link the code of this program with the Half-Life Game Engine ("HL
+*   Engine") and Modified Game Libraries ("MODs") developed by Valve,
+*   L.L.C ("Valve").  You must obey the GNU General Public License in all
+*   respects for all of the code used other than the HL Engine and MODs
+*   from Valve.  If you modify this file, you may extend this exception
+*   to your version of the file, but you are not obligated to do so.  If
+*   you do not wish to do so, delete this exception statement from your
+*   version.
+*
+*/
 
-#ifndef MATHLIB_H
-#define MATHLIB_H
+#pragma once
 
-/* <42b7f> ../common/mathlib.h:3 */
+#ifdef PLAY_GAMEDLL
+
+// probably gamedll compiled with flag /fpmath:fasted,
+// so we need to use type double, otherwise will be the test failed
+
+typedef double float_precision;
+
+#else
+
+typedef float float_precision;
+
+#endif // PLAY_GAMEDLL
+
 typedef float vec_t;
-
-/* <42b91> ../common/mathlib.h:6 */
-#if !defined DID_VEC3_T_DEFINE && !defined vec3_t
-#define DID_VEC3_T_DEFINE
 typedef vec_t vec3_t[3];
-#endif
-
-/* <80013> ../common/mathlib.h:8 */
 typedef vec_t vec4_t[4];
+typedef int fixed16_t;
 
-/* <42bac> ../common/mathlib.h:18 */
-typedef int fixed16_t; /* size: 4 */
-
-/* <42bb7> ../common/mathlib.h:60 */
 typedef union DLONG_u
 {
 	int i[2];
@@ -55,36 +69,16 @@ typedef union DLONG_u
 #endif
 
 template <typename T>
-inline T min(T a, T b) {
-	return (a < b) ? a : b;
-}
+T min(T a, T b) { return (a < b) ? a : b; }
 
 template <typename T>
-inline T max(T a, T b) {
-	return (a < b) ? b : a;
-}
+T max(T a, T b) { return (a > b) ? a : b; }
 
 template <typename T>
-inline T clamp(T a, T min, T max) {
-	return (a > max) ? max : (a < min) ? min : a;
-}
+T clamp(T a, T min, T max) { return (a > max) ? max : (a < min) ? min : a; }
 
-template <typename T>
-inline T bswap(T s) {
-	switch (sizeof(T)) {
-#ifdef _WIN32
-	case 2: {auto res = _byteswap_ushort(*(uint16 *)&s); return *(T *)&res;}
-	case 4:	{auto res = _byteswap_ulong(*(uint32 *)(&s)); return *(T *)&res;}
-	case 8: {auto res = _byteswap_uint64(*(uint64 *)&s); return *(T *)&res;}
-#else
-	case 2: {auto res = _bswap16(*(uint16 *)&s); return *(T *)&res;}
-	case 4: {auto res = _bswap(*(uint32 *)&s); return *(T *)&res;}
-	case 8: {auto res = _bswap64(*(uint64 *)&s); return *(T *)&res;}
-#endif
-	default: return s;
-	}
-}
 #else // __cplusplus
+
 #ifndef max
 #define max(a,b) (((a) > (b)) ? (a) : (b))
 #endif
@@ -96,4 +90,38 @@ inline T bswap(T s) {
 #define clamp(val, min, max) (((val) > (max)) ? (max) : (((val) < (min)) ? (min) : (val)))
 #endif // __cplusplus
 
-#endif // MATHLIB_H
+// bitwise operators templates
+template<class T, class type=typename std::underlying_type<T>::type>
+inline T operator~ (T a) { return (T)~(type)a; }
+template<class T, class type=typename std::underlying_type<T>::type>
+inline T operator| (T a, T b) { return (T)((type)a | (type)b); }
+template<class T, class type=typename std::underlying_type<T>::type>
+inline T operator& (T a, T b) { return (T)((type)a & (type)b); }
+template<class T, class type=typename std::underlying_type<T>::type>
+inline T operator^ (T a, T b) { return (T)((type)a ^ (type)b); }
+template<class T, class type=typename std::underlying_type<T>::type>
+inline T& operator|= (T& a, T b) { return (T&)((type&)a |= (type)b); }
+template<class T, class type=typename std::underlying_type<T>::type>
+inline T& operator&= (T& a, T b) { return (T&)((type&)a &= (type)b); }
+template<class T, class type=typename std::underlying_type<T>::type>
+inline T& operator^= (T& a, T b) { return (T&)((type&)a ^= (type)b); }
+
+inline double M_sqrt(int value) {
+	return sqrt(value);
+}
+
+inline float M_sqrt(float value) {
+	return _mm_cvtss_f32(_mm_sqrt_ss(_mm_load_ss(&value)));
+}
+
+inline double M_sqrt(double value) {
+	double ret;
+	auto v = _mm_load_sd(&value);
+	_mm_store_sd(&ret, _mm_sqrt_sd(v, v));
+	return ret;
+}
+
+#define VectorSubtract(a,b,c) {(c)[0]=(a)[0]-(b)[0];(c)[1]=(a)[1]-(b)[1];(c)[2]=(a)[2]-(b)[2];}
+#define VectorAdd(a,b,c) {(c)[0]=(a)[0]+(b)[0];(c)[1]=(a)[1]+(b)[1];(c)[2]=(a)[2]+(b)[2];}
+#define VectorCopy(a,b) {(b)[0]=(a)[0];(b)[1]=(a)[1];(b)[2]=(a)[2];}
+#define VectorClear(a) {(a)[0]=0.0;(a)[1]=0.0;(a)[2]=0.0;}

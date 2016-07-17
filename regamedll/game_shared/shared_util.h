@@ -26,18 +26,12 @@
 *
 */
 
-#ifndef SHARED_UTIL
-#define SHARED_UTIL
-#ifdef _WIN32
 #pragma once
-#endif
-
-#include "common.h"
 
 #ifndef _WIN32
 #include <string.h>
 #include <wchar.h>
-#endif // _WIN32
+#endif
 
 wchar_t *SharedWVarArgs(wchar_t *format, ...);
 char *SharedVarArgs(char *format, ...);
@@ -79,5 +73,4 @@ inline wchar_t *CloneWString(const wchar_t *str)
 	wcscpy(cloneStr, str);
 	return cloneStr;
 }
-
-#endif // SHARED_UTIL
+	

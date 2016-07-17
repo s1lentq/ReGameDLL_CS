@@ -25,29 +25,23 @@
 *    version.
 *
 */
+
 #pragma once
 
 #include "const.h"
 #include "qlimits.h"
 
-#ifdef REHLDS_FIXES
-#define COM_TOKEN_LEN	2048
-#else
-#define COM_TOKEN_LEN	1024
-#endif
-
 // Don't allow overflow
-#define SIZEBUF_CHECK_OVERFLOW	0
-#define SIZEBUF_ALLOW_OVERFLOW	BIT(0)
+#define SIZEBUF_CHECK_OVERFLOW		0
+#define SIZEBUF_ALLOW_OVERFLOW		BIT(0)
 #define SIZEBUF_OVERFLOWED		BIT(1)
 
-#define MAX_NUM_ARGVS	50
-#define NUM_SAFE_ARGVS	7
+#define MAX_NUM_ARGVS			50
+#define NUM_SAFE_ARGVS			7
 
-#define COM_COPY_CHUNK_SIZE 1024
-#define COM_MAX_CMD_LINE 256
+#define COM_COPY_CHUNK_SIZE		1024
+#define COM_MAX_CMD_LINE		256
 
-/* <6ae> ../common/common.h:82 */
 typedef struct sizebuf_s
 {
 	const char *buffername;
@@ -57,7 +51,6 @@ typedef struct sizebuf_s
 	int cursize;
 } sizebuf_t;
 
-/* <270aa> ../common/common.h:297 */
 typedef struct downloadtime_s
 {
 	qboolean bUsed;
@@ -65,7 +58,6 @@ typedef struct downloadtime_s
 	int nBytesRemaining;
 } downloadtime_t;
 
-/* <19fa2> ../common/common.h:303 */
 typedef struct incomingtransfer_s
 {
 	qboolean doneregistering;

@@ -3,7 +3,9 @@
 #include "version/appversion.h"
 
 #include "osconfig.h"
+
 #include "basetypes.h"
+#include "archtypes.h"
 #include "asmlib.h"
 #include "sse_mathfun.h"
 

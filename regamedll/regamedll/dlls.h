@@ -27,7 +27,6 @@
 */
 
 #include "extdll.h"
-#include "extdef.h"
 
 // declared virtual function's and globals for hooks
 #ifdef HOOK_GAMEDLL

@@ -66,9 +66,14 @@ icc (ICC) 15.0.1 20141023
 ### Building
 On Windows:
 <pre>gradlew --max-workers=1 clean buildRelease</pre>
+* For faster building without unit tests use this:exclamation:
+<pre>gradlew --max-workers=1 clean buildFixes</pre>
 
 On Linux:
 <pre>./gradlew --max-workers=1 clean buildRelease</pre>
+
+* For faster building without unit tests use this:exclamation:
+<pre>./gradlew --max-workers=1 clean buildFixes</pre>
 
 Compiled binaries will be placed in the build/binaries/ directory
 

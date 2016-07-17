@@ -29,6 +29,28 @@
 
 #include "regamedll_const.h"
 
+#ifdef _WIN32
+	// Attributes to specify an "exported" function, visible from outside the
+	// DLL.
+	#undef DLLEXPORT
+	#define DLLEXPORT	__declspec(dllexport)
+	// WINAPI should be provided in the windows compiler headers.
+	// It's usually defined to something like "__stdcall".
+#else
+	#undef DLLEXPORT
+	#define DLLEXPORT	__attribute__((visibility("default")))
+	#define WINAPI		/* */
+#endif // _WIN32
+
+// Simplified macro for declaring/defining exported DLL functions.  They
+// need to be 'extern "C"' so that the C++ compiler enforces parameter
+// type-matching, rather than considering routines with mis-matched
+// arguments/types to be overloaded functions...
+//
+// AFAIK, this is os-independent, but it's included here in osdep.h where
+// DLLEXPORT is defined, for convenience.
+#define C_DLLEXPORT extern "C" DLLEXPORT
+
 enum hash_types_e { CLASSNAME };
 
 // Things that toggle (buttons/triggers/doors) need this

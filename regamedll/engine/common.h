@@ -26,33 +26,31 @@
 *
 */
 
-#ifndef COMMON_H
-#define COMMON_H
-#ifdef _WIN32
 #pragma once
-#endif
 
-#include "maintypes.h"
-#include "bspfile.h"
-#include "FileSystem.h"
-#include "info.h"
+#include "const.h"
+#include "qlimits.h"
 
 // Don't allow overflow
 #define SIZEBUF_CHECK_OVERFLOW		0
 #define SIZEBUF_ALLOW_OVERFLOW		BIT(0)
 #define SIZEBUF_OVERFLOWED		BIT(1)
 
-/* <6ae> ../common/common.h:82 */
+#define MAX_NUM_ARGVS			50
+#define NUM_SAFE_ARGVS			7
+
+#define COM_COPY_CHUNK_SIZE		1024
+#define COM_MAX_CMD_LINE		256
+
 typedef struct sizebuf_s
 {
 	const char *buffername;
-	uint16_t flags;
+	uint16 flags;
 	byte *data;
 	int maxsize;
 	int cursize;
 } sizebuf_t;
 
-/* <270aa> ../common/common.h:297 */
 typedef struct downloadtime_s
 {
 	qboolean bUsed;
@@ -60,7 +58,6 @@ typedef struct downloadtime_s
 	int nBytesRemaining;
 } downloadtime_t;
 
-/* <19fa2> ../common/common.h:303 */
 typedef struct incomingtransfer_s
 {
 	qboolean doneregistering;
@@ -74,90 +71,3 @@ typedef struct incomingtransfer_s
 	float fLastStatusUpdate;
 	qboolean custom;
 } incomingtransfer_t;
-
-#ifndef _WIN32
-#define _strlwr(p) for (int i = 0; p[i] != 0; i++) p[i] = tolower(p[i]);
-#endif // _WIN32
-
-inline double M_sqrt(int value) {
-	return sqrt(value);
-}
-
-inline float M_sqrt(float value) {
-	return _mm_cvtss_f32(_mm_sqrt_ss(_mm_load_ss(&value)));
-}
-
-inline double M_sqrt(double value) {
-	double ret;
-	auto v = _mm_load_sd(&value);
-	_mm_store_sd(&ret, _mm_sqrt_sd(v, v));
-	return ret;
-}
-
-#define printf2 _printf2
-#define chatf _print_chat
-
-#define Q_isspace isspace
-#define Q_isalnum isalnum
-#define Q_isalpha isalpha
-
-#define Q_malloc malloc
-#define Q_calloc calloc
-#define Q_alloca alloca
-#define Q_free free
-
-#define Q_access _access
-#define Q_close _close
-#define Q_write _write
-#define Q_memset memset
-#define Q_memcpy memcpy
-#define Q_strlen strlen
-#define Q_memcmp memcmp
-#define Q_strcpy strcpy
-#define Q_strncpy strncpy
-#define Q_strrchr strrchr
-#define Q_strcat strcat
-#define Q_strncat strncat
-#define Q_strcmp strcmp
-#define Q_strncmp strncmp
-//#define Q_strcasecmp _stricmp		// Use Q_stricmp
-//#define Q_strncasecmp _strnicmp	// Use Q_strnicmp
-#define Q_sscanf sscanf
-#define Q_strdup _strdup
-#define Q_stricmp _stricmp
-#define Q_strnicmp _strnicmp
-#define Q_strstr strstr
-#define Q_strchr strchr
-#define Q_strrchr strrchr
-#define Q_strlwr _strlwr
-#define Q_sprintf sprintf
-#define Q_snprintf _snprintf
-#define Q_atoi atoi
-#define Q_atof atof
-#define Q_toupper toupper
-#define Q_memmove memmove
-//#define Q_strtoull strtoull
-//#define Q_FileNameCmp FileNameCmp
-#define Q_vsnprintf _vsnprintf
-#define Q_vsnwprintf _vsnwprintf
-#define Q_abs abs
-#define Q_fabs fabs
-#define Q_tan tan
-#define Q_atan atan
-#define Q_atan2 atan2
-#define Q_acos acos
-#define Q_cos cos
-#define Q_sin sin
-#define Q_sqrt sqrt
-#define Q_pow pow
-#define Q_fmod fmod
-#define Q_fopen fopen
-#define Q_fprintf fprintf
-#define Q_fclose fclose
-
-#ifdef REGAMEDLL_FIXES
-#undef Q_sqrt
-#define Q_sqrt M_sqrt
-#endif
-
-#endif // COMMON_H

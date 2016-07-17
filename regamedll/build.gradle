@@ -317,6 +317,24 @@ task buildRelease {
 	}
 }
 
+task buildFixes {
+	dependsOn binaries.withType(SharedLibraryBinarySpec).matching {
+		SharedLibraryBinarySpec blib -> blib.buildable && blib.buildType.name == 'release' && blib.flavor.name == 'regamedllFixes' && blib.component.name == 'regamedll_mp_gamedll'
+	}
+}
+
+gradle.taskGraph.whenReady { graph ->
+	if (!graph.hasTask(buildFixes)) {
+		return;
+	}
+
+	// skip all tasks with the matched substrings in the name like "test"
+	def tasks = graph.getAllTasks();
+	tasks.findAll { it.name.toLowerCase().contains("test") }.each { task ->
+		task.enabled = false;
+	}
+}
+
 task prepareDevEnvTests {
 	def regamedllTests = new File(project.projectDir, '_dev/testDemos')
 

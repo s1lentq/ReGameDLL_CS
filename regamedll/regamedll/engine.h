@@ -26,6 +26,7 @@
 *
 */
 
+#include "maintypes.h"
 #include "common.h"
 #include "cmd.h"
 #include "unicode_strtools.h"

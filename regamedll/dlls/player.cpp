@@ -597,7 +597,7 @@ void CBasePlayer::Radio(const char *msg_id, const char *msg_verbose, short pitch
 						Place playerPlace = TheNavAreaGrid.GetPlace(&pev->origin);
 						const BotPhraseList *placeList = TheBotPhrases->GetPlaceList();
 
-						for (BotPhraseList::const_iterator iter = placeList->begin(); iter != placeList->end(); ++iter)
+						for (auto iter = placeList->begin(); iter != placeList->end(); ++iter)
 						{
 							if ((*iter)->GetID() == playerPlace)
 							{

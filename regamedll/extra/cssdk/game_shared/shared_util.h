@@ -27,12 +27,10 @@
 */
 #pragma once
 
-#include "common.h"
-
 #ifndef _WIN32
 #include <string.h>
 #include <wchar.h>
-#endif // _WIN32
+#endif
 
 // Simple utility function to allocate memory and duplicate a string
 inline char *CloneString(const char *str)

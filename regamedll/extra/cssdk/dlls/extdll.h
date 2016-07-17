@@ -25,6 +25,7 @@
 *   version.
 *
 */
+
 #pragma once
 
 #pragma warning(disable:4244)		// int or float down-conversion
@@ -35,9 +36,9 @@
 
 #include "archtypes.h"
 #include "maintypes.h"
+#include "regamedll_common.h"
 
 #ifdef _WIN32
-
 	#define WIN32_LEAN_AND_MEAN
 	#define NOWINRES
 	#define NOSERVICE
@@ -48,11 +49,9 @@
 	#include "winsani_out.h"
 	#undef PlaySound
 #else
-
 	#include <limits.h>
 	#include <stdarg.h>
 	#include <string.h>
-
 #endif // _WIN32
 
 // Misc C-runtime library headers
