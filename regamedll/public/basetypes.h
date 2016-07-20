@@ -17,7 +17,7 @@
 
 
 // For backward compatibilty only...
-//#include "tier0/platform.h"
+#include "tier0/platform.h"
 
 // stdio.h
 #ifndef NULL
@@ -44,29 +44,18 @@
 #define PAD_NUMBER(number, boundary) \
 	( ((number) + ((boundary)-1)) / (boundary) ) * (boundary)
 
+#ifndef MATHLIB_H
 // In case this ever changes
 #define M_PI			3.14159265358979323846
 
-// #ifndef min
-// #define min(a,b)  (((a) < (b)) ? (a) : (b))
-// #endif
-
-// #ifndef max
-// #define max(a,b)  (((a) > (b)) ? (a) : (b))
-// #endif
-
-#ifdef __cplusplus
-template<typename T>
-inline T clamp2(T const &val, T const &minVal, T const &maxVal) //renamed to clamp2 to avoid conflicts with clamp defined in mathlib
-{
-	if (val < minVal)
-		return minVal;
-	else if (val > maxVal)
-		return maxVal;
-	else
-		return val;
-}
+#ifndef min
+#define min(a,b)  (((a) < (b)) ? (a) : (b))
 #endif
+
+#ifndef max
+#define max(a,b)  (((a) > (b)) ? (a) : (b))
+#endif
+#endif // MATHLIB_H
 
 #ifndef FALSE
 #define FALSE 0
@@ -81,7 +70,7 @@ typedef unsigned char BYTE;
 typedef unsigned char byte;
 typedef unsigned short word;
 
-//#include "string_t.h"
+#include "string_t.h"
 
 typedef float vec_t;
 

@@ -69,13 +69,13 @@ typedef union DLONG_u
 #endif
 
 template <typename T>
-T min(T a, T b) { return (a < b) ? a : b; }
+const T& min(const T& a, const T& b) { return (a < b) ? a : b; }
 
 template <typename T>
-T max(T a, T b) { return (a > b) ? a : b; }
+const T& max(const T& a, const T& b) { return (a > b) ? a : b; }
 
 template <typename T>
-T clamp(T a, T min, T max) { return (a > max) ? max : (a < min) ? min : a; }
+const T& clamp(const T& a, const T& min, const T& max) { return (a > max) ? max : (a < min) ? min : a; }
 
 #else // __cplusplus
 

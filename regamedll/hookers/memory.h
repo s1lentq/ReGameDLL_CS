@@ -96,7 +96,7 @@ struct AddressRef
 
 class CFuncAddr {
 public:
-	uint32_t Addr;
+	uint32 Addr;
 	CFuncAddr *Next;
 
 	void *operator new(size_t size){
@@ -107,7 +107,7 @@ public:
 		free(cPoint);
 	}
 
-	CFuncAddr(uint32_t addr) {
+	CFuncAddr(uint32 addr) {
 		Addr = addr;
 		Next = NULL;
 	}
@@ -128,10 +128,10 @@ void ProcessModuleData(Module *module);
 size_t ConvertHexString(const char *srcHexString, unsigned char *outBuffer, size_t bufferSize);
 size_t MemoryFindForward(size_t start, size_t end, const unsigned char *pattern, const unsigned char *mask, size_t len);
 size_t MemoryFindBackward(size_t start, size_t end, const unsigned char *pattern, const unsigned char *mask, size_t len);
-size_t MemoryFindRefForwardPrefix8(size_t start, size_t end, size_t refAddress, uint8_t prefixValue, bool relative);
+size_t MemoryFindRefForwardPrefix8(size_t start, size_t end, size_t refAddress, uint8 prefixValue, bool relative);
 
-uint32_t HookDWord(size_t addr, uint32_t newDWord);
-void ExchangeMemoryBytes(size_t origAddr, size_t dataAddr, uint32_t size);
+uint32 HookDWord(size_t addr, uint32 newDWord);
+void ExchangeMemoryBytes(size_t origAddr, size_t dataAddr, uint32 size);
 
 bool GetAddress(Module *module, Address *addr, size_t baseOffset);
 bool HookFunction(Module *module, FunctionHook *hook);
@@ -139,7 +139,7 @@ void HookFunctionCall(void* hookWhat, void* hookAddr);
 bool HIDDEN FindDataRef(Module *module, AddressRef *ref);
 
 #ifdef WIN32
-void FindAllCalls(Section* section, CFuncAddr** calls, uint32_t findRefsTo);
+void FindAllCalls(Section* section, CFuncAddr** calls, uint32 findRefsTo);
 #endif
 
 #if defined(HOOK_GAMEDLL) && defined(_WIN32) && !defined(REGAMEDLL_UNIT_TESTS)

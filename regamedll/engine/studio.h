@@ -155,7 +155,7 @@ typedef struct
 {
 	char label[32];		// textual name
 	char name[64];		// file name
-	int32_t unused1;	// cache index pointer
+	int32 unused1;	// cache index pointer
 	int unused2;		// hack for group 0
 
 } mstudioseqgroup_t;
