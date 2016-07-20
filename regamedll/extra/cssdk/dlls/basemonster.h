@@ -88,7 +88,7 @@ public:
 	Activity m_IdealActivity;		// monster should switch to this activity
 	int m_LastHitGroup;			// the last body region that took damage
 	int m_bitsDamageType;			// what types of damage has monster (player) taken
-	BYTE m_rgbTimeBasedDamage[8];
+	byte m_rgbTimeBasedDamage[8];
 
 	MONSTERSTATE m_MonsterState;		// monster's current state
 	MONSTERSTATE m_IdealMonsterState;	// monster should change to this state

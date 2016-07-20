@@ -282,10 +282,10 @@ public:
 
 	locksound_t m_ls;			// door lock sounds
 
-	BYTE m_bLockedSound;			// ordinals from entity selection
-	BYTE m_bLockedSentence;
-	BYTE m_bUnlockedSound;
-	BYTE m_bUnlockedSentence;
+	byte m_bLockedSound;			// ordinals from entity selection
+	byte m_bLockedSentence;
+	byte m_bUnlockedSound;
+	byte m_bUnlockedSentence;
 	int m_sounds;
 };
 

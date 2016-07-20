@@ -70,8 +70,8 @@ public:
 public:
 	static TYPEDESCRIPTION IMPL(m_SaveData)[3];
 
-	BYTE m_bMoveSnd;
-	BYTE m_bStopSnd;
+	byte m_bMoveSnd;
+	byte m_bStopSnd;
 	float m_volume;
 };
 

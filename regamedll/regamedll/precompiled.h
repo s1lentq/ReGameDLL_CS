@@ -3,7 +3,6 @@
 #include "version/appversion.h"
 
 #include "osconfig.h"
-
 #include "basetypes.h"
 #include "archtypes.h"
 #include "sse_mathfun.h"

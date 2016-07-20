@@ -10,7 +10,7 @@ void CHEGrenade::__MAKE_VHOOK(Spawn)()
 	SET_MODEL(edict(), "models/w_hegrenade.mdl");
 
 	pev->dmg = 4;
-	
+
 	m_iDefaultAmmo = HEGRENADE_DEFAULT_GIVE;
 	m_flStartThrow = 0;
 	m_flReleaseThrow = -1.0f;

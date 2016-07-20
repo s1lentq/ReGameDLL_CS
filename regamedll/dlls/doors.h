@@ -94,17 +94,17 @@ public:
 	void EXPORT DoorHitBottom();
 
 public:
-	BYTE m_bHealthValue;		// some doors are medi-kit doors, they give players health
+	byte m_bHealthValue;		// some doors are medi-kit doors, they give players health
 
-	BYTE m_bMoveSnd;		// sound a door makes while moving
-	BYTE m_bStopSnd;		// sound a door makes when it stops
+	byte m_bMoveSnd;		// sound a door makes while moving
+	byte m_bStopSnd;		// sound a door makes when it stops
 
 	locksound_t m_ls;		// door lock sounds
 
-	BYTE m_bLockedSound;		// ordinals from entity selection
-	BYTE m_bLockedSentence;
-	BYTE m_bUnlockedSound;
-	BYTE m_bUnlockedSentence;
+	byte m_bLockedSound;		// ordinals from entity selection
+	byte m_bLockedSentence;
+	byte m_bUnlockedSound;
+	byte m_bUnlockedSentence;
 
 	float m_lastBlockedTimestamp;
 };
@@ -151,7 +151,7 @@ public:
 public:
 	static TYPEDESCRIPTION IMPL(m_SaveData)[1];
 
-	BYTE m_bMoveSnd;	// sound a door makes while moving
+	byte m_bMoveSnd;	// sound a door makes while moving
 };
 
 void PlayLockSounds(entvars_t *pev, locksound_t *pls, int flocked, int fbutton);

@@ -52,8 +52,8 @@ public:
 	// This is done to fix spawn flag collisions between this class and a derived class
 	virtual BOOL IsTogglePlat() = 0;
 public:
-	BYTE m_bMoveSnd;
-	BYTE m_bStopSnd;
+	byte m_bMoveSnd;
+	byte m_bStopSnd;
 	float m_volume;
 };
 

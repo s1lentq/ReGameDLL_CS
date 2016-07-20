@@ -1028,12 +1028,6 @@ void CCSBotManager::ValidateMapData()
 	m_zoneCount = 0;
 	m_gameScenario = SCENARIO_DEATHMATCH;
 
-#ifdef REGAMEDLL_ADD
-	// if we have included deathmatch mode, so set the game type like SCENARIO_DEATHMATCH
-	if (cv_bot_deathmatch.value > 0.0f)
-		return;
-#endif
-
 	// Search all entities in the map and set the game type and store all zones (bomb target, etc).
 	CBaseEntity *entity = NULL;
 	int i;

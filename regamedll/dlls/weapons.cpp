@@ -1162,7 +1162,7 @@ int CBasePlayerWeapon::__MAKE_VHOOK(UpdateClientData)(CBasePlayer *pPlayer)
 		pPlayer->m_fWeapon = TRUE;
 	}
 
-	if (m_pNext != NULL)
+	if (m_pNext)
 	{
 		m_pNext->UpdateClientData(pPlayer);
 	}
@@ -1629,7 +1629,7 @@ void CWeaponBox::Kill()
 	{
 		pWeapon = m_rgpPlayerItems[i];
 
-		while (pWeapon != NULL)
+		while (pWeapon)
 		{
 			pWeapon->SetThink(&CBaseEntity::SUB_Remove);
 			pWeapon->pev->nextthink = gpGlobals->time + 0.1f;
@@ -1678,14 +1678,12 @@ void CWeaponBox::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 	for (int i = 0; i < MAX_ITEM_TYPES; ++i)
 	{
 		if (!m_rgpPlayerItems[i])
-		{
 			continue;
-		}
 
 		CBasePlayerItem *pItem = m_rgpPlayerItems[i];
 
 		// have at least one weapon in this slot
-		while (pItem != NULL)
+		while (pItem)
 		{
 			if ((pPlayer->HasShield() && pItem->m_iId == WEAPON_ELITE)
 				|| (pPlayer->IsBot() && (TheCSBots() != NULL && !TheCSBots()->IsWeaponUseable(pItem))))
@@ -1697,6 +1695,7 @@ void CWeaponBox::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 			if (pPlayer->HasRestrictItem((pItem->m_iId == WEAPON_SHIELDGUN) ? ITEM_SHIELDGUN : (ItemID)pItem->m_iId, ITEM_TYPE_TOUCHED))
 				return;
 #endif
+
 			if (FClassnameIs(pItem->pev, "weapon_c4"))
 			{
 #ifdef REGAMEDLL_FIXES
@@ -1734,8 +1733,7 @@ void CWeaponBox::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 				pPlayer->SetBombIcon(FALSE);
 				pPlayer->pev->body = 1;
 
-				CBaseEntity *pEntity = NULL;
-
+				CBaseEntity *pEntity = nullptr;
 				while ((pEntity = UTIL_FindEntityByClassname(pEntity, "player")) != NULL)
 				{
 					if (FNullEnt(pEntity->edict()))
@@ -1761,29 +1759,48 @@ void CWeaponBox::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 					}
 				}
 
-				if (TheCSBots() != NULL)
+				if (TheCSBots())
 				{
 					TheCSBots()->SetLooseBomb(NULL);
 				}
 
-				if (TheBots != NULL)
+				if (TheBots)
 				{
 					TheBots->OnEvent(EVENT_BOMB_PICKED_UP, pPlayer);
 				}
 			}
 
-			if (i >= PRIMARY_WEAPON_SLOT && i <= PISTOL_SLOT && pPlayer->m_rgpPlayerItems[i] != NULL)
+			if (i >= PRIMARY_WEAPON_SLOT && i <= PISTOL_SLOT && pPlayer->m_rgpPlayerItems[i])
 			{
 				// ...
 			}
 			else if (i == GRENADE_SLOT)
 			{
 				CBasePlayerWeapon *pGrenade = static_cast<CBasePlayerWeapon *>(m_rgpPlayerItems[i]);
-				if (pGrenade != NULL && pGrenade->IsWeapon())
+				if (pGrenade && pGrenade->IsWeapon())
 				{
 					int playerGrenades = pPlayer->m_rgAmmo[pGrenade->m_iPrimaryAmmoType];
+
+#ifdef REGAMEDLL_FIXES
+					auto info = GetWeaponInfo(pGrenade->m_iId);
+					if (info && playerGrenades < info->maxRounds)
+					{
+						auto pNext = m_rgpPlayerItems[i]->m_pNext;
+						if (pPlayer->AddPlayerItem(pItem))
+						{
+							pItem->AttachToPlayer(pPlayer);
+							bEmitSound = true;
+						}
+
+						// unlink this weapon from the box
+						m_rgpPlayerItems[i] = pItem = pNext;
+
+						continue;
+					}
+#else
+
 					int maxGrenades = 0;
-					const char *grenadeName = NULL;
+					const char *grenadeName = nullptr;
 
 					switch (pGrenade->m_iId)
 					{
@@ -1801,10 +1818,12 @@ void CWeaponBox::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 						break;
 					}
 
-					if (playerGrenades < maxGrenades && grenadeName != NULL)
+					if (playerGrenades < maxGrenades && grenadeName)
 					{
+						// CRITICAL BUG: since gives a new entity using GiveNamedItem,
+						// but the entity is packaged in a weaponbox still exists and will never used or removed. It's leak!
 						bEmitSound = true;
-						pPlayer->GiveNamedItemEx(grenadeName);
+						pPlayer->GiveNamedItem(grenadeName);
 
 						// unlink this weapon from the box
 						pItem = m_rgpPlayerItems[i]->m_pNext;
@@ -1812,6 +1831,8 @@ void CWeaponBox::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 
 						continue;
 					}
+#endif
+
 				}
 			}
 			else if (pPlayer->HasShield() && i == PRIMARY_WEAPON_SLOT)
@@ -1820,6 +1841,7 @@ void CWeaponBox::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 			}
 			else
 			{
+				auto pNext = m_rgpPlayerItems[i]->m_pNext;
 				if (pPlayer->AddPlayerItem(pItem))
 				{
 					pItem->AttachToPlayer(pPlayer);
@@ -1827,8 +1849,7 @@ void CWeaponBox::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 				}
 
 				// unlink this weapon from the box
-				pItem = m_rgpPlayerItems[i]->m_pNext;
-				m_rgpPlayerItems[i] = pItem;
+				m_rgpPlayerItems[i] = pItem = pNext;
 
 				continue;
 			}
@@ -1845,11 +1866,6 @@ void CWeaponBox::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 		{
 			if (!FStringNull(m_rgiszAmmo[n]))
 			{
-#ifdef REGAMEDLL_FIXES
-				if (FStrEq(STRING(m_rgiszAmmo[n]), "Flashbang") && m_rgAmmo[n] < MaxAmmoCarry(m_rgiszAmmo[n]))
-					continue;
-#endif
-
 				// there's some ammo of this type.
 				pPlayer->GiveAmmo(m_rgAmmo[n], (char *)STRING(m_rgiszAmmo[n]), MaxAmmoCarry(m_rgiszAmmo[n]));
 

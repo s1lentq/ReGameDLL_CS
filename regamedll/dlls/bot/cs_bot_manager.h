@@ -105,7 +105,16 @@ public:
 		SCENARIO_RESCUE_HOSTAGES,
 		SCENARIO_ESCORT_VIP
 	};
-	GameScenarioType GetScenario() const { return m_gameScenario; }
+	GameScenarioType GetScenario() const
+	{
+#ifdef REGAMEDLL_ADD
+		// if we have included deathmatch mode, so set the game type like SCENARIO_DEATHMATCH
+		if (cv_bot_deathmatch.value > 0)
+			return SCENARIO_DEATHMATCH;
+#endif
+
+		return m_gameScenario;
+	}
 
 	// "zones"
 	// depending on the game mode, these are bomb zones, rescue zones, etc.
@@ -216,12 +225,12 @@ public:
 	enum SkillType { LOW, AVERAGE, HIGH, RANDOM };
 	const char *GetRandomBotName(SkillType skill);
 
-	static void MonitorBotCVars();
-	static void MaintainBotQuota();
-	static bool AddBot(const BotProfile *profile, BotProfileTeamType team);
+	void MonitorBotCVars();
+	void MaintainBotQuota();
+	bool AddBot(const BotProfile *profile, BotProfileTeamType team);
 
 	#define FROM_CONSOLE true
-	static bool BotAddCommand(BotProfileTeamType team, bool isFromConsole = false);			// process the "bot_add" console command
+	bool BotAddCommand(BotProfileTeamType team, bool isFromConsole = false);			// process the "bot_add" console command
 
 #ifndef HOOK_GAMEDLL
 private:

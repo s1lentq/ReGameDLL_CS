@@ -56,17 +56,17 @@ public:
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value) = 0;
 	virtual void Blocked(CBaseEntity *pOther) = 0;
 public:
-	BYTE m_bHealthValue;		// some doors are medi-kit doors, they give players health
+	byte m_bHealthValue;		// some doors are medi-kit doors, they give players health
 
-	BYTE m_bMoveSnd;		// sound a door makes while moving
-	BYTE m_bStopSnd;		// sound a door makes when it stops
+	byte m_bMoveSnd;		// sound a door makes while moving
+	byte m_bStopSnd;		// sound a door makes when it stops
 
 	locksound_t m_ls;		// door lock sounds
 
-	BYTE m_bLockedSound;		// ordinals from entity selection
-	BYTE m_bLockedSentence;
-	BYTE m_bUnlockedSound;
-	BYTE m_bUnlockedSentence;
+	byte m_bLockedSound;		// ordinals from entity selection
+	byte m_bLockedSentence;
+	byte m_bUnlockedSound;
+	byte m_bUnlockedSentence;
 
 	float m_lastBlockedTimestamp;
 };
@@ -88,5 +88,5 @@ public:
 	virtual int ObjectCaps() = 0;
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value) = 0;
 public:
-	BYTE m_bMoveSnd;	// sound a door makes while moving
+	byte m_bMoveSnd;	// sound a door makes while moving
 };

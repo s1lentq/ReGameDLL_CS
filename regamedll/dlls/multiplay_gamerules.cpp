@@ -523,15 +523,20 @@ CHalfLifeMultiplay::CHalfLifeMultiplay()
 	}
 	else
 	{
+		// 3/31/99
+		// Added lservercfg file cvar, since listen and dedicated servers should not
+		// share a single config file. (sjb)
+
+		// listen server
 		CVAR_SET_FLOAT("pausable", 0);
 
 		const char *lservercfgfile = CVAR_GET_STRING("lservercfgfile");
 
-		if (lservercfgfile && *lservercfgfile != '\0')
+		if (lservercfgfile && lservercfgfile[0] != '\0')
 		{
-			ALERT(at_console, "Executing listen server config file\n");
-
 			char szCommand[256];
+
+			ALERT(at_console, "Executing listen server config file\n");
 			Q_sprintf(szCommand, "exec %s\n", lservercfgfile);
 			SERVER_COMMAND(szCommand);
 		}
@@ -594,15 +599,32 @@ CHalfLifeMultiplay::CHalfLifeMultiplay()
 
 void CHalfLifeMultiplay::__MAKE_VHOOK(RefreshSkillData)()
 {
+	// load all default values
 	CGameRules::RefreshSkillData();
 
+// override some values for multiplay.
+
+	// Glock Round
 	gSkillData.plrDmg9MM = 12;
+
+	// MP5 Round
 	gSkillData.plrDmgMP5 = 12;
+
+	// suitcharger
 	gSkillData.suitchargerCapacity = 30;
+	// 357 Round
 	gSkillData.plrDmg357 = 40;
+	// M203 grenade
 	gSkillData.plrDmgM203Grenade = 100;
+
+	// Shotgun buckshot
+	// fewer pellets in deathmatch
 	gSkillData.plrDmgBuckshot = 20;
+
+	// Crossbow
 	gSkillData.plrDmgCrossbowClient = 20;
+
+	// RPG
 	gSkillData.plrDmgRPG = 120;
 }
 
@@ -3375,7 +3397,6 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(PlayerThink)(CBasePlayer *pPlayer)
 	if (pPlayer->m_pActiveItem && pPlayer->m_pActiveItem->IsWeapon())
 	{
 		CBasePlayerWeapon *pWeapon = static_cast<CBasePlayerWeapon *>(pPlayer->m_pActiveItem->GetWeaponPtr());
-
 		if (pWeapon->m_iWeaponState & WPNSTATE_SHIELD_DRAWN)
 		{
 			pPlayer->m_bCanShoot = false;

@@ -642,10 +642,16 @@ void CWorld::__MAKE_VHOOK(Precache)()
 		}
 	}
 
-	if (pev->spawnflags & SF_WORLD_DARK)
-		CVAR_SET_FLOAT("v_dark", 1);
-	else
-		CVAR_SET_FLOAT("v_dark", 0);
+#ifndef REGAMEDLL_FIXES
+	if (!IS_DEDICATED_SERVER())
+#endif
+	{
+		// TODO: cvar v_dark there is only the client side
+		if (pev->spawnflags & SF_WORLD_DARK)
+			CVAR_SET_FLOAT("v_dark", 1);
+		else
+			CVAR_SET_FLOAT("v_dark", 0);
+	}
 
 	if (pev->spawnflags & SF_WORLD_TITLE)
 	{

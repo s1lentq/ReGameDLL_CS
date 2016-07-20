@@ -647,10 +647,10 @@ public:
 	BOOL m_fRotating;
 	string_t m_strChangeTarget;
 	locksound_t m_ls;
-	BYTE m_bLockedSound;
-	BYTE m_bLockedSentence;
-	BYTE m_bUnlockedSound;
-	BYTE m_bUnlockedSentence;
+	byte m_bLockedSound;
+	byte m_bLockedSentence;
+	byte m_bUnlockedSound;
+	byte m_bUnlockedSentence;
 	int m_sounds;
 };
 

@@ -1427,6 +1427,7 @@ void packPlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 		{
 			pWeaponBox->PackAmmo(MAKE_STRING(IMPL_CLASS(CBasePlayerItem, ItemInfoArray)[pItem->m_iId].pszAmmo1), pPlayer->m_rgAmmo[pItem->PrimaryAmmoIndex()]);
 		}
+
 		SET_MODEL(ENT(pWeaponBox->pev), modelName);
 	}
 }
@@ -1489,6 +1490,7 @@ void packPlayerNade(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 		{
 			pWeaponBox->PackAmmo(MAKE_STRING(IMPL_CLASS(CBasePlayerItem, ItemInfoArray)[pItem->m_iId].pszAmmo1), pPlayer->m_rgAmmo[pItem->PrimaryAmmoIndex()]);
 		}
+
 		SET_MODEL(ENT(pWeaponBox->pev), modelName);
 	}
 }
@@ -1520,7 +1522,7 @@ void CBasePlayer::PackDeadPlayerItems()
 			// there's a weapon here. Should I pack it?
 			CBasePlayerItem *pPlayerItem = m_rgpPlayerItems[ n ];
 
-			while (pPlayerItem != NULL)
+			while (pPlayerItem)
 			{
 				ItemInfo info;
 				if (pPlayerItem->iItemSlot() < KNIFE_SLOT && !bShieldDropped)
@@ -1671,7 +1673,7 @@ void CBasePlayer::RemoveAllItems(BOOL removeSuit)
 	{
 		m_pActiveItem = m_rgpPlayerItems[i];
 
-		while (m_pActiveItem != NULL)
+		while (m_pActiveItem)
 		{
 			CBasePlayerItem *pPendingItem = m_pActiveItem->m_pNext;
 
@@ -4479,7 +4481,7 @@ void EXT_FUNC CBasePlayer::__API_VHOOK(PreThink)()
 void CBasePlayer::CheckTimeBasedDamage()
 {
 	int i;
-	BYTE bDuration = 0;
+	byte bDuration = 0;
 	static float gtbdPrev = 0.0;
 
 	if (!(m_bitsDamageType & DMG_TIMEBASED))
@@ -4573,7 +4575,7 @@ void CBasePlayer::CheckTimeBasedDamage()
 
 void CBasePlayer::UpdateGeigerCounter()
 {
-	BYTE range;
+	byte range;
 
 	// delay per update ie: don't flood net with these msgs
 	if (gpGlobals->time < m_flgeigerDelay)
@@ -6356,7 +6358,7 @@ LINK_HOOK_CLASS_CHAIN(BOOL, CBasePlayer, AddPlayerItem, (CBasePlayerItem *pItem)
 BOOL CBasePlayer::__API_VHOOK(AddPlayerItem)(CBasePlayerItem *pItem)
 {
 	CBasePlayerItem *pInsert = m_rgpPlayerItems[ pItem->iItemSlot() ];
-	while (pInsert != NULL)
+	while (pInsert)
 	{
 		if (FClassnameIs(pInsert->pev, STRING(pItem->pev->classname)))
 		{
