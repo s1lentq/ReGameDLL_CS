@@ -105,6 +105,7 @@ cvar_t auto_reload_weapons = { "mp_auto_reload_weapons", "0", 0, 0.0f, nullptr }
 cvar_t refill_bpammo_weapons = { "mp_refill_bpammo_weapons", "0", 0, 0.0f, nullptr };		// Useful for mods like DeathMatch, GunGame, ZombieMod etc
 cvar_t freeforall = { "mp_freeforall", "0", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t auto_join_team = { "mp_auto_join_team", "0", 0, 0.0f, nullptr };
+cvar_t max_teamkills = { "mp_max_teamkills", "3", 0, 3.0f, nullptr };
 
 void GameDLL_Version_f()
 {
@@ -236,6 +237,7 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&refill_bpammo_weapons);
 	CVAR_REGISTER(&freeforall);
 	CVAR_REGISTER(&auto_join_team);
+	CVAR_REGISTER(&max_teamkills);
 
 	// print version
 	CONSOLE_ECHO("ReGameDLL build: " __TIME__ " " __DATE__ " (" APP_VERSION_STRD ")\n");

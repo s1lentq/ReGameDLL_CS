@@ -4290,7 +4290,7 @@ void EXT_FUNC CBasePlayer::__API_VHOOK(PreThink)()
 		//check if this player has been inactive for 2 rounds straight
 		if (flLastMove > CSGameRules()->m_fMaxIdlePeriod)
 		{
-			if (!IsBot() && CVAR_GET_FLOAT("mp_autokick") != 0.0f)
+			if (!IsBot() && autokick.value)
 			{
 				// Log the kick
 				UTIL_LogPrintf("\"%s<%i><%s><%s>\" triggered \"Game_idle_kick\" (auto)\n", STRING(pev->netname), GETPLAYERUSERID(edict()), GETPLAYERAUTHID(edict()), GetTeam(m_iTeam));

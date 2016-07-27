@@ -84,7 +84,6 @@
 #define MENU_KEY_9			(1<<8)
 #define MENU_KEY_0			(1<<9)
 
-#define MAX_AMMO_TYPES			32		// ???
 #define MAX_AMMO_SLOTS			32		// not really slots
 
 #define HUD_PRINTNOTIFY			1

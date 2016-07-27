@@ -22,6 +22,7 @@ set version_major=0
 set version_minor=0
 set version_specialversion=
 set url_commit=
+set branch_name=master
 
 ::
 :: Check for git.exe presence
@@ -75,7 +76,12 @@ IF EXIST "%srcdir%\version.h" (
 :: Read revision and release date from it
 ::
 IF NOT %errlvl% == "1" (
-	FOR /F "tokens=*" %%i IN ('"git -C "%repodir%\." rev-list --all | wc -l"') DO (
+	:: Get current branch
+	FOR /F "tokens=*" %%i IN ('"git -C "%repodir%\." rev-parse --abbrev-ref HEAD"') DO (
+		set branch_name=%%i
+	)
+
+	FOR /F "tokens=*" %%i IN ('"git -C "%repodir%\." rev-list --count !branch_name!"') DO (
 		IF NOT [%%i] == [] (
 			set version_revision=%%i
 		)
@@ -93,12 +99,7 @@ set new_version=%version_major%,%version_minor%,0,%version_revision%
 ::
 IF NOT %errlvl% == "1" (
 
-	set branch_name=master
 	set branch_remote=origin
-	:: Get current branch
-	FOR /F "tokens=*" %%i IN ('"git -C "%repodir%\." rev-parse --abbrev-ref HEAD"') DO (
-		set branch_name=%%i
-	)
 	:: Get remote name by current branch
 	FOR /F "tokens=*" %%i IN ('"git -C "%repodir%\." config branch.!branch_name!.remote"') DO (
 		set branch_remote=%%i
@@ -127,8 +128,14 @@ IF NOT %errlvl% == "1" (
 		if "x!url_commit:~-4!"=="x.git" (
 			set url_commit=!url_commit:~0,-4!
 		)
+
 		:: append extra string
-		set url_commit=!url_commit!/commit/
+		If NOT "%url_commit%"=="%url_commit:bitbucket.org=%" (
+			set url_commit=!url_commit!/commits/
+		) ELSE (
+			set url_commit=!url_commit!/commit/
+		)
+
 	) ELSE (
 		:: strip .git
 		if "x!url_commit:~-4!"=="x.git" (
@@ -136,8 +143,13 @@ IF NOT %errlvl% == "1" (
 		)
 		:: replace : to /
 		set url_commit=!url_commit::=/!
+
 		:: append extra string
-		set url_commit=https://!url_commit!/commit/
+		If NOT "%url_commit%"=="%url_commit:bitbucket.org=%" (
+			set url_commit=https://!url_commit!/commits/
+		) ELSE (
+			set url_commit=https://!url_commit!/commit/
+		)
 	)
 )
 

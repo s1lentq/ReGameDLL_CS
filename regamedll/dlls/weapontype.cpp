@@ -254,11 +254,11 @@ WeaponInfoStruct weaponInfo_default[] =
 	{ WEAPON_P90,		P90_PRICE,		AMMO_57MM_PRICE,	AMMO_57MM_BUY,		P90_MAX_CLIP,		MAX_AMMO_57MM,		AMMO_57MM,		"weapon_p90",		"ammo_57mm" },
 
 #ifdef REGAMEDLL_ADD
-	{ WEAPON_C4,		0,					0,			0,			0,			0,			AMMO_NONE,		"weapon_c4",		nullptr },
+	{ WEAPON_C4,		0,					0,			0,			0,			0,			AMMO_C4,		"weapon_c4",		nullptr },
 	{ WEAPON_KNIFE,		0,					0,			0,			0,			0,			AMMO_NONE,		"weapon_knife",		nullptr },
-	{ WEAPON_HEGRENADE,	(WeaponCostType)HEGRENADE_PRICE,	0,			0,			0,			MAX_AMMO_HEGRENADE,	AMMO_NONE,		"weapon_hegrenade",	nullptr },
-	{ WEAPON_SMOKEGRENADE,	(WeaponCostType)SMOKEGRENADE_PRICE,	0,			0,			0,			MAX_AMMO_SMOKEGRENADE,	AMMO_NONE,		"weapon_smokegrenade",	nullptr },
-	{ WEAPON_FLASHBANG,	(WeaponCostType)FLASHBANG_PRICE,	0,			0,			0,			MAX_AMMO_FLASHBANG,	AMMO_NONE,		"weapon_flashbang",	nullptr },
+	{ WEAPON_HEGRENADE,	(WeaponCostType)HEGRENADE_PRICE,	0,			0,			0,			MAX_AMMO_HEGRENADE,	AMMO_HEGRENADE,		"weapon_hegrenade",	nullptr },
+	{ WEAPON_SMOKEGRENADE,	(WeaponCostType)SMOKEGRENADE_PRICE,	0,			0,			0,			MAX_AMMO_SMOKEGRENADE,	AMMO_SMOKEGRENADE,	"weapon_smokegrenade",	nullptr },
+	{ WEAPON_FLASHBANG,	(WeaponCostType)FLASHBANG_PRICE,	0,			0,			0,			MAX_AMMO_FLASHBANG,	AMMO_FLASHBANG,		"weapon_flashbang",	nullptr },
 #endif
 
 	{ WEAPON_SHIELDGUN,	SHIELDGUN_PRICE,			0,			0,			0,			0,			AMMO_NONE,		"weapon_shield",	nullptr },

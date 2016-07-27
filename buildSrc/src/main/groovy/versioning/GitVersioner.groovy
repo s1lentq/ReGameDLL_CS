@@ -52,10 +52,16 @@ class GitVersioner {
 			childPath = url.substring(pos + 1, url.lastIndexOf('.git')).replace(':', '/');
 			sb.append('https://');
 		} else {
-			childPath = url.substring(0, url.lastIndexOf('.git'));
+			pos = url.lastIndexOf('.git');
+			childPath = (pos == -1) ? url : url.substring(0, pos);
 		}
 
-		sb.append(childPath).append('/commit/');
+		// support for different links to history of commits
+		if (url.indexOf('bitbucket.org') != -1) {
+			sb.append(childPath).append('/commits/');
+		} else {
+			sb.append(childPath).append('/commit/');
+		}
 		return sb.toString();
 	}
 	static GitInfo versionForDir(File dir) {

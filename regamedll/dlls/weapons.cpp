@@ -204,6 +204,29 @@ NOXREF void EjectBrass2(const Vector &vecOrigin, const Vector &vecVelocity, floa
 	MESSAGE_END();
 }
 
+#ifdef REGAMEDLL_ADD
+struct {
+	AmmoType type;
+	const char *name;
+} ammoIndex[] =
+{
+	{ AMMO_338MAGNUM,    "338Magnum" },
+	{ AMMO_762NATO,      "762Nato" },
+	{ AMMO_556NATOBOX,   "556NatoBox" },
+	{ AMMO_556NATO,      "556Nato" },
+	{ AMMO_BUCKSHOT,     "buckshot" },
+	{ AMMO_45ACP,        "45acp" },
+	{ AMMO_57MM,         "57mm" },
+	{ AMMO_50AE,         "50AE" },
+	{ AMMO_357SIG,       "357SIG" },
+	{ AMMO_9MM,          "9mm" },
+	{ AMMO_FLASHBANG,    "Flashbang" },
+	{ AMMO_HEGRENADE,    "HEGrenade" },
+	{ AMMO_SMOKEGRENADE, "SmokeGrenade" },
+	{ AMMO_C4,           "C4" },
+};
+#endif
+
 // Precaches the ammo and queues the ammo info for sending to clients
 void AddAmmoNameToAmmoRegistry(const char *szAmmoname)
 {
@@ -224,9 +247,20 @@ void AddAmmoNameToAmmoRegistry(const char *szAmmoname)
 	assert(giAmmoIndex < MAX_AMMO_SLOTS);
 
 	if (giAmmoIndex >= MAX_AMMO_SLOTS)
-	{
 		giAmmoIndex = 0;
+
+#ifdef REGAMEDLL_ADD
+	for (auto& ammo : ammoIndex)
+	{
+		if (Q_stricmp(ammo.name, szAmmoname))
+			continue;
+
+		if (ammo.type != giAmmoIndex) {
+			CONSOLE_ECHO("Warning: ammo '%s' index mismatch; expected %i, real %i\n", szAmmoname, ammo.type, giAmmoIndex);
+		}
+		break;
 	}
+#endif
 
 	IMPL_CLASS(CBasePlayerItem, AmmoInfoArray)[ giAmmoIndex ].pszName = szAmmoname;
 
@@ -246,8 +280,7 @@ void UTIL_PrecacheOtherWeapon(const char *szClassname)
 	}
 
 	CBaseEntity *pEntity = CBaseEntity::Instance(VARS(pent));
-
-	if (pEntity != NULL)
+	if (pEntity)
 	{
 		ItemInfo II;
 		Q_memset(&II, 0, sizeof(II));
@@ -1794,7 +1827,6 @@ void CWeaponBox::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 
 						// unlink this weapon from the box
 						m_rgpPlayerItems[i] = pItem = pNext;
-
 						continue;
 					}
 #else
@@ -1822,13 +1854,16 @@ void CWeaponBox::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 					{
 						// CRITICAL BUG: since gives a new entity using GiveNamedItem,
 						// but the entity is packaged in a weaponbox still exists and will never used or removed. It's leak!
+						// How reproduced: Drop your grenade on the ground, check output of command `entity_dump`,
+						// there we will see only get one grenade. Next step - pick it up, do check again `entity_dump`,
+						// but this time we'll see them x2.
+
 						bEmitSound = true;
 						pPlayer->GiveNamedItem(grenadeName);
 
 						// unlink this weapon from the box
 						pItem = m_rgpPlayerItems[i]->m_pNext;
 						m_rgpPlayerItems[i] = pItem;
-
 						continue;
 					}
 #endif
@@ -1850,7 +1885,6 @@ void CWeaponBox::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 
 				// unlink this weapon from the box
 				m_rgpPlayerItems[i] = pItem = pNext;
-
 				continue;
 			}
 

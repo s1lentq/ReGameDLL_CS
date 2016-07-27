@@ -4517,7 +4517,7 @@ void EXT_FUNC UpdateClientData(const struct edict_s *ent, int sendweapons, struc
 			{
 				cd->m_iId = II.iId;
 
-				if ((unsigned int)weapon->m_iPrimaryAmmoType < MAX_AMMO_TYPES)
+				if ((unsigned int)weapon->m_iPrimaryAmmoType < MAX_AMMO_SLOTS)
 				{
 					cd->vuser4.x = weapon->m_iPrimaryAmmoType;
 					cd->vuser4.y = pPlayer->m_rgAmmo[ weapon->m_iPrimaryAmmoType ];

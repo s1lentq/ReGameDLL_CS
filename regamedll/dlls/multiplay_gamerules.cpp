@@ -3604,7 +3604,11 @@ void CHalfLifeMultiplay::__API_VHOOK(PlayerKilled)(CBasePlayer *pVictim, entvars
 			ClientPrint(killer->pev, HUD_PRINTCENTER, "#Killed_Teammate");
 			ClientPrint(killer->pev, HUD_PRINTCONSOLE, "#Game_teammate_kills", UTIL_dtos1(killer->m_iTeamKills));
 
-			if (killer->m_iTeamKills == 3 && autokick.value != 0.0f)
+#ifdef REGAMEDLL_ADD
+			if (autokick.value && max_teamkills.value && killer->m_iTeamKills >= (int)max_teamkills.value)
+#else
+			if (autokick.value && killer->m_iTeamKills == 3)
+#endif
 			{
 				ClientPrint(killer->pev, HUD_PRINTCONSOLE, "#Banned_For_Killing_Teamates");
 
