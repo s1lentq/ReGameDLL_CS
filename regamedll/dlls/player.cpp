@@ -4224,7 +4224,7 @@ void EXT_FUNC CBasePlayer::__API_VHOOK(PreThink)()
 	// These buttons have changed this frame
 	int buttonsChanged = (m_afButtonLast ^ pev->button);
 
-	//this means the player has pressed or released a key
+	// this means the player has pressed or released a key
 	if (buttonsChanged)
 	{
 		m_fLastMovement = gpGlobals->time;

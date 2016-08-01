@@ -3169,7 +3169,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(InitHUD)(CBasePlayer *pl)
 		// FIXME: Probably don't need to cast this just to read m_iDeaths
 		CBasePlayer *plr = UTIL_PlayerByIndex(i);
 
-		if (plr != NULL)
+		if (plr)
 		{
 			MESSAGE_BEGIN(MSG_ONE, gmsgScoreInfo, NULL, pl->edict());
 				WRITE_BYTE(i);	// client number
@@ -3211,7 +3211,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(InitHUD)(CBasePlayer *pl)
 	{
 		CBasePlayer *plr = UTIL_PlayerByIndex(i);
 
-		if (plr != NULL)
+		if (plr)
 		{
 			MESSAGE_BEGIN(MSG_ONE, gmsgTeamInfo, NULL, pl->edict());
 				WRITE_BYTE(plr->entindex());
@@ -3242,7 +3242,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(InitHUD)(CBasePlayer *pl)
 	{
 		CBaseEntity *pWeaponC4 = UTIL_FindEntityByClassname(NULL, "weapon_c4");
 
-		if (pWeaponC4 != NULL)
+		if (pWeaponC4)
 		{
 			MESSAGE_BEGIN(MSG_ONE, gmsgBombDrop, NULL, pl->edict());
 				WRITE_COORD(pWeaponC4->pev->origin.x);
@@ -3256,11 +3256,11 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(InitHUD)(CBasePlayer *pl)
 
 void CHalfLifeMultiplay::__MAKE_VHOOK(ClientDisconnected)(edict_t *pClient)
 {
-	if (pClient != NULL)
+	if (pClient)
 	{
 		CBasePlayer *pPlayer = static_cast<CBasePlayer *>(CBaseEntity::Instance(pClient));
 
-		if (pPlayer != NULL)
+		if (pPlayer)
 		{
 			pPlayer->has_disconnected = true;
 			pPlayer->pev->deadflag = DEAD_DEAD;
@@ -3319,7 +3319,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(ClientDisconnected)(edict_t *pClient)
 			// destroy all of the players weapons and items
 			pPlayer->RemoveAllItems(TRUE);
 
-			if (pPlayer->m_pObserver != NULL)
+			if (pPlayer->m_pObserver)
 			{
 				pPlayer->m_pObserver->SUB_Remove();
 			}

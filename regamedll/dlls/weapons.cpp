@@ -486,7 +486,7 @@ void CBasePlayerItem::FallInit()
 
 	UTIL_SetOrigin(pev, pev->origin);
 
-	//pointsize until it lands on the ground.
+	// pointsize until it lands on the ground.
 	UTIL_SetSize(pev, Vector(0, 0, 0), Vector(0, 0, 0));
 
 	SetTouch(&CBasePlayerItem::DefaultTouch);
@@ -1418,6 +1418,7 @@ void CBasePlayerAmmo::__MAKE_VHOOK(Spawn)()
 {
 	pev->movetype = MOVETYPE_TOSS;
 	pev->solid = SOLID_TRIGGER;
+
 	UTIL_SetSize(pev, Vector(-16, -16, 0), Vector(16, 16, 16));
 	UTIL_SetOrigin(pev, pev->origin);
 
@@ -2107,6 +2108,12 @@ char *armouryItemModels[] = {
 void CArmoury::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
+
+#ifdef REGAMEDLL_FIXES
+	// do it earlier than set UTIL_SetSize to avoid resetting mins/maxs.
+	SET_MODEL(ENT(pev), armouryItemModels[m_iItem]);
+#endif
+
 	pev->movetype = MOVETYPE_TOSS;
 	pev->solid = SOLID_TRIGGER;
 
@@ -2114,12 +2121,20 @@ void CArmoury::__MAKE_VHOOK(Spawn)()
 	UTIL_SetOrigin(pev, pev->origin);
 
 	SetTouch(&CArmoury::ArmouryTouch);
+
+#ifndef REGAMEDLL_FIXES
 	SET_MODEL(ENT(pev), armouryItemModels[m_iItem]);
+#endif
 
 	if (m_iCount <= 0)
 	{
 		m_iCount = 1;
 	}
+
+#ifdef REGAMEDLL_ADD
+	// Cache the placed origin of source point
+	pev->oldorigin = pev->origin;
+#endif
 
 	m_bAlreadyCounted = false;
 	m_iInitialCount = m_iCount;
@@ -2185,6 +2200,14 @@ void CArmoury::__MAKE_VHOOK(Restart)()
 
 	if (m_iCount < 1)
 		m_iCount = 1;
+
+#ifdef REGAMEDLL_ADD
+	// Restored origin from the cache
+	UTIL_SetSize(pev, Vector(-16, -16, 0), Vector(16, 16, 16));
+	UTIL_SetOrigin(pev, pev->oldorigin);
+
+	DROP_TO_FLOOR(edict());
+#endif
 
 	Draw();
 }
