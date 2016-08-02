@@ -288,7 +288,7 @@ void printEntities()
 NOINLINE edict_t *EXT_FUNC CREATE_NAMED_ENTITY(string_t iClass)
 {
 	edict_t *named = g_engfuncs.pfnCreateNamedEntity(iClass);
-	if (named != NULL)
+	if (named)
 	{
 		AddEntityHashValue(&named->v, STRING(iClass), CLASSNAME);
 	}
@@ -715,7 +715,7 @@ void EXT_FUNC DispatchObjectCollsionBox(edict_t *pent)
 {
 	CBaseEntity *pEntity = (CBaseEntity *)GET_PRIVATE(pent);
 
-	if (pEntity != NULL)
+	if (pEntity)
 	{
 		pEntity->SetObjectCollisionBox();
 	}
@@ -918,7 +918,7 @@ int CBaseEntity::__MAKE_VHOOK(Restore)(CRestore &restore)
 // Initialize absmin & absmax to the appropriate box
 void SetObjectCollisionBox(entvars_t *pev)
 {
-	if ((pev->solid == SOLID_BSP) && (pev->angles.x || pev->angles.y || pev->angles.z))
+	if (pev->solid == SOLID_BSP && (pev->angles.x || pev->angles.y || pev->angles.z))
 	{
 		// expand for rotation
 		float_precision max, v;
