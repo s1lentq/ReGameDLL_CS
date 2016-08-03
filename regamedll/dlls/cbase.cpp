@@ -1053,17 +1053,14 @@ int CBaseEntity::__MAKE_VHOOK(DamageDecal)(int bitsDamageType)
 // will keep a pointer to it after this call.
 CBaseEntity *CBaseEntity::Create(char *szName, const Vector &vecOrigin, const Vector &vecAngles, edict_t *pentOwner)
 {
-	edict_t	*pent;
-	CBaseEntity *pEntity;
-
-	pent = CREATE_NAMED_ENTITY(MAKE_STRING(szName));
+	edict_t	*pent = CREATE_NAMED_ENTITY(MAKE_STRING(szName));
 	if (FNullEnt(pent))
 	{
 		ALERT(at_console, "NULL Ent in Create!\n");
 		return NULL;
 	}
 
-	pEntity = Instance(pent);
+	CBaseEntity *pEntity = Instance(pent);
 
 	pEntity->pev->owner = pentOwner;
 	pEntity->pev->origin = vecOrigin;

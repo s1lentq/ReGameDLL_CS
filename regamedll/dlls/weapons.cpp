@@ -2201,6 +2201,8 @@ void CArmoury::__MAKE_VHOOK(Restart)()
 	if (m_iCount < 1)
 		m_iCount = 1;
 
+	Draw();
+
 #ifdef REGAMEDLL_ADD
 	// Restored origin from the cache
 	UTIL_SetSize(pev, Vector(-16, -16, 0), Vector(16, 16, 16));
@@ -2208,8 +2210,6 @@ void CArmoury::__MAKE_VHOOK(Restart)()
 
 	DROP_TO_FLOOR(edict());
 #endif
-
-	Draw();
 }
 
 void CArmoury::__MAKE_VHOOK(Precache)()
