@@ -123,14 +123,14 @@ void CBreakable::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 	}
 	else if (FStrEq(pkvd->szKeyName, "material"))
 	{
-		int i = Q_atoi(pkvd->szValue);
+		Materials type = (Materials)Q_atoi(pkvd->szValue);
 
-		// 0:glass, 1:metal, 2:flesh, 3:wood
+		// 0:glass, 1:wood, 2:metal, 3:flesh etc
 
-		if (i < 0 || i >= matLastMaterial)
+		if (type < 0 || type >= matLastMaterial)
 			m_Material = matWood;
 		else
-			m_Material = (Materials)i;
+			m_Material = type;
 
 		pkvd->fHandled = TRUE;
 	}
@@ -244,48 +244,49 @@ void CBreakable::__MAKE_VHOOK(Restart)()
 
 const char **CBreakable::MaterialSoundList(Materials precacheMaterial, int &soundCount)
 {
-	const char **pSoundList = NULL;
+	const char **pSoundList;
 
 	switch (precacheMaterial)
 	{
-		case matWood:
-		{
-			pSoundList = pSoundsWood;
-			soundCount = ARRAYSIZE(pSoundsWood);
-			break;
-		}
-		case matFlesh:
-		{
-			pSoundList = pSoundsFlesh;
-			soundCount = ARRAYSIZE(pSoundsFlesh);
-			break;
-		}
-		case matGlass:
-		case matComputer:
-		case matUnbreakableGlass:
-		{
-			pSoundList = pSoundsGlass;
-			soundCount = ARRAYSIZE(pSoundsGlass);
-			break;
-		}
-		case matMetal:
-		{
-			pSoundList = pSoundsMetal;
-			soundCount = ARRAYSIZE(pSoundsMetal);
-			break;
-		}
-		case matCinderBlock:
-		case matRocks:
-		{
-			pSoundList = pSoundsConcrete;
-			soundCount = ARRAYSIZE(pSoundsConcrete);
-			break;
-		}
-		case matCeilingTile:
-		case matNone:
-		default:
-			soundCount = 0;
-			break;
+	case matWood:
+	{
+		pSoundList = pSoundsWood;
+		soundCount = ARRAYSIZE(pSoundsWood);
+		break;
+	}
+	case matFlesh:
+	{
+		pSoundList = pSoundsFlesh;
+		soundCount = ARRAYSIZE(pSoundsFlesh);
+		break;
+	}
+	case matGlass:
+	case matComputer:
+	case matUnbreakableGlass:
+	{
+		pSoundList = pSoundsGlass;
+		soundCount = ARRAYSIZE(pSoundsGlass);
+		break;
+	}
+	case matMetal:
+	{
+		pSoundList = pSoundsMetal;
+		soundCount = ARRAYSIZE(pSoundsMetal);
+		break;
+	}
+	case matCinderBlock:
+	case matRocks:
+	{
+		pSoundList = pSoundsConcrete;
+		soundCount = ARRAYSIZE(pSoundsConcrete);
+		break;
+	}
+	case matCeilingTile:
+	case matNone:
+	default:
+		pSoundList = nullptr;
+		soundCount = 0;
+		break;
 	}
 
 	return pSoundList;
@@ -407,8 +408,10 @@ void CBreakable::DamageSound()
 
 	fvol = RANDOM_FLOAT(0.75, 1.0);
 
+#ifndef REGAMEDLL_FIXES
 	if (material == matComputer && RANDOM_LONG(0, 1))
 		material = matMetal;
+#endif
 
 	switch (material)
 	{
@@ -432,7 +435,11 @@ void CBreakable::DamageSound()
 		rgpsz[0] = "debris/metal1.wav";
 		rgpsz[1] = "debris/metal3.wav";
 		rgpsz[2] = "debris/metal2.wav";
+#ifdef REGAMEDLL_FIXES
+		i = 3;
+#else
 		i = 2;
+#endif
 		break;
 
 	case matFlesh:

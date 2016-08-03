@@ -856,11 +856,15 @@ void CRotDoor::__MAKE_VHOOK(Restart)()
 
 	if (pev->spawnflags & SF_DOOR_START_OPEN)
 	{
+#ifdef REGAMEDLL_FIXES
+		pev->angles = m_vecAngle1;
+#else
 		pev->angles = m_vecAngle2;
 
 		Vector vecSav = m_vecAngle1;
 		m_vecAngle2 = m_vecAngle1;
 		m_vecAngle1 = vecSav;
+#endif
 
 		pev->movedir = pev->movedir * -1;
 	}
@@ -908,9 +912,13 @@ void CRotDoor::__MAKE_VHOOK(Spawn)()
 		// swap pos1 and pos2, put door at pos2, invert movement direction
 		pev->angles = m_vecAngle2;
 
+#ifdef REGAMEDLL_FIXES
+		SWAP(m_vecAngle1, m_vecAngle2);
+#else
 		Vector vecSav = m_vecAngle1;
 		m_vecAngle2 = m_vecAngle1;
 		m_vecAngle1 = vecSav;
+#endif
 
 		pev->movedir = pev->movedir * -1;
 	}
