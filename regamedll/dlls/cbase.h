@@ -715,7 +715,7 @@ void AddEntityHashValue(entvars_t *pev, const char *value, hash_types_e fieldTyp
 void RemoveEntityHashValue(entvars_t *pev, const char *value, hash_types_e fieldType);
 void printEntities();
 edict_t *CREATE_NAMED_ENTITY(string_t iClass);
-void REMOVE_ENTITY(edict_t *e);
+void REMOVE_ENTITY(edict_t *pEntity);
 void CONSOLE_ECHO_(char *pszMsg, ...);
 void loopPerformance();
 int DispatchSpawn(edict_t *pent);

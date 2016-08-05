@@ -166,8 +166,15 @@ void CM3::__MAKE_VHOOK(Reload)()
 	else
 	{
 		++m_iClip;
-		--m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType];
-		--m_pPlayer->ammo_buckshot;
+
+#ifdef REGAMEDLL_ADD
+		if (refill_bpammo_weapons.value < 2.0f)
+#endif
+		{
+			--m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType];
+			--m_pPlayer->ammo_buckshot;
+		}
+
 		m_fInSpecialReload = 1;
 	}
 }

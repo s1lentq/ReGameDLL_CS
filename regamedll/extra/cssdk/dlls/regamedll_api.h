@@ -36,7 +36,7 @@
 #include "items.h"
 
 #define REGAMEDLL_API_VERSION_MAJOR 4
-#define REGAMEDLL_API_VERSION_MINOR 1
+#define REGAMEDLL_API_VERSION_MINOR 2
 
 // CBasePlayer::Spawn hook
 typedef IVoidHookChainClass<class CBasePlayer> IReGameHook_CBasePlayer_Spawn;
@@ -391,6 +391,8 @@ struct ReGameFuncs_t {
 	void (*ApplyMultiDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker);
 	void (*AddMultiDamage)(entvars_t *pevInflictor, CBaseEntity *pEntity, float flDamage, int bitsDamageType);
 	class CBaseEntity *(*UTIL_FindEntityByString)(class CBaseEntity *pStartEntity, const char *szKeyword, const char *szValue);
+	void (*AddEntityHashValue)(entvars_t *pev, const char *value, hash_types_e fieldType);
+	void (*RemoveEntityHashValue)(entvars_t *pev, const char *value, hash_types_e fieldType);
 };
 
 class IReGameApi {
@@ -408,6 +410,8 @@ public:
 	virtual struct playermove_s* GetPlayerMove() = 0;
 	virtual struct WeaponSlotInfo* GetWeaponSlot(WeaponIdType weaponID) = 0;
 	virtual struct WeaponSlotInfo* GetWeaponSlot(const char* weaponName) = 0;
+	virtual struct ItemInfo* GetItemInfo(WeaponIdType weaponID) = 0;
+	virtual struct AmmoInfo* GetAmmoInfo(AmmoType ammoID) = 0;
 };
 
 #define VRE_GAMEDLL_API_VERSION "VRE_GAMEDLL_API_VERSION001"

@@ -135,6 +135,8 @@ public:
 	edict_t *edict() { return ENT(pev); }
 	EOFFSET eoffset() { return OFFSET(pev); }
 	int entindex() { return ENTINDEX(edict()); }
+	int IsDormant() { return (pev->flags & FL_DORMANT) == FL_DORMANT; }
+
 public:
 	CCSEntity *m_pEntity;						// NOTE: it was replaced on member "int *current_ammo" because it is useless.
 

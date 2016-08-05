@@ -42,6 +42,9 @@ ReGameFuncs_t g_ReGameApiFuncs = {
 
 	&UTIL_FindEntityByString,
 
+	&AddEntityHashValue,
+	&RemoveEntityHashValue
+
 };
 
 IReGameHookRegistry_CBasePlayer_Spawn* CReGameHookchains::CBasePlayer_Spawn() { return &m_CBasePlayer_Spawn; }
@@ -115,23 +118,19 @@ IReGameHookRegistry_CSGameRules_ChangeLevel* CReGameHookchains::CSGameRules_Chan
 IReGameHookRegistry_CSGameRules_GoToIntermission* CReGameHookchains::CSGameRules_GoToIntermission() { return &m_CSGameRules_GoToIntermission; }
 IReGameHookRegistry_CSGameRules_BalanceTeams* CReGameHookchains::CSGameRules_BalanceTeams() { return &m_CSGameRules_BalanceTeams; }
 
-int CReGameApi::GetMajorVersion()
-{
+int EXT_FUNC CReGameApi::GetMajorVersion() {
 	return REGAMEDLL_API_VERSION_MAJOR;
 }
 
-int CReGameApi::GetMinorVersion()
-{
+int EXT_FUNC CReGameApi::GetMinorVersion() {
 	return REGAMEDLL_API_VERSION_MINOR;
 }
 
-const ReGameFuncs_t *CReGameApi::GetFuncs()
-{
+const EXT_FUNC ReGameFuncs_t *CReGameApi::GetFuncs() {
 	return &g_ReGameApiFuncs;
 }
 
-IReGameHookchains *CReGameApi::GetHookchains()
-{
+IReGameHookchains* EXT_FUNC CReGameApi::GetHookchains() {
 	return &g_ReGameHookchains;
 }
 
@@ -153,6 +152,9 @@ playermove_t* EXT_FUNC CReGameApi::GetPlayerMove() {
 
 WeaponSlotInfo* EXT_FUNC CReGameApi::GetWeaponSlot(WeaponIdType weaponID) { return ::GetWeaponSlot(weaponID); }
 WeaponSlotInfo* EXT_FUNC CReGameApi::GetWeaponSlot(const char* weaponName) { return ::GetWeaponSlot(weaponName); }
+
+ItemInfo* EXT_FUNC CReGameApi::GetItemInfo(WeaponIdType weaponID) { return &IMPL_CLASS(CBasePlayerItem, ItemInfoArray)[ weaponID ]; }
+AmmoInfo* EXT_FUNC CReGameApi::GetAmmoInfo(AmmoType ammoID) { return &IMPL_CLASS(CBasePlayerItem, AmmoInfoArray)[ ammoID ]; }
 
 void EXT_FUNC Regamedll_ChangeString_api(char *&dest, const char *source)
 {

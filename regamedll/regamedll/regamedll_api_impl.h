@@ -463,6 +463,8 @@ public:
 	virtual playermove_t* GetPlayerMove();
 	virtual WeaponSlotInfo* GetWeaponSlot(WeaponIdType weaponID);
 	virtual WeaponSlotInfo* GetWeaponSlot(const char* weaponName);
+	virtual ItemInfo* GetItemInfo(WeaponIdType weaponID);
+	virtual AmmoInfo* GetAmmoInfo(AmmoType ammoID);
 };
 
 void Regamedll_ChangeString_api(char *&dest, const char *source);

@@ -127,7 +127,7 @@ void EmptyEntityHashTable()
 	}
 }
 
-void AddEntityHashValue(entvars_t *pev, const char *value, hash_types_e fieldType)
+void EXT_FUNC AddEntityHashValue(entvars_t *pev, const char *value, hash_types_e fieldType)
 {
 	int count;
 	hash_item_t *item, *next, *temp, *newp;
@@ -200,7 +200,7 @@ void AddEntityHashValue(entvars_t *pev, const char *value, hash_types_e fieldTyp
 	}
 }
 
-void RemoveEntityHashValue(entvars_t *pev, const char *value, hash_types_e fieldType)
+void EXT_FUNC RemoveEntityHashValue(entvars_t *pev, const char *value, hash_types_e fieldType)
 {
 	int hash;
 	hash_item_t *item;
@@ -296,11 +296,11 @@ NOINLINE edict_t *EXT_FUNC CREATE_NAMED_ENTITY(string_t iClass)
 	return named;
 }
 
-void REMOVE_ENTITY(edict_t *e)
+void REMOVE_ENTITY(edict_t *pEntity)
 {
-	if (e != NULL)
+	if (pEntity)
 	{
-		(*g_engfuncs.pfnRemoveEntity)(e);
+		(*g_engfuncs.pfnRemoveEntity)(pEntity);
 	}
 }
 
@@ -412,7 +412,7 @@ int EXT_FUNC DispatchSpawn(edict_t *pent)
 {
 	CBaseEntity *pEntity = (CBaseEntity *)GET_PRIVATE(pent);
 
-	if (pEntity != NULL)
+	if (pEntity)
 	{
 		// Initialize these or entities who don't link to the world won't have anything in here
 		pEntity->pev->absmin = pEntity->pev->origin - Vector(1, 1, 1);
@@ -424,9 +424,9 @@ int EXT_FUNC DispatchSpawn(edict_t *pent)
 		// that would touch too much code for me to do that right now.
 		pEntity = (CBaseEntity *)GET_PRIVATE(pent);
 
-		if (pEntity != NULL)
+		if (pEntity)
 		{
-			if (g_pGameRules != NULL && !g_pGameRules->IsAllowedToSpawn(pEntity))
+			if (g_pGameRules && !g_pGameRules->IsAllowedToSpawn(pEntity))
 			{
 				// return that this entity should be deleted
 				return -1;
@@ -439,7 +439,7 @@ int EXT_FUNC DispatchSpawn(edict_t *pent)
 		}
 
 		// Handle global stuff here
-		if (pEntity != NULL && pEntity->pev->globalname)
+		if (pEntity && pEntity->pev->globalname)
 		{
 			const globalentity_t *pGlobal = gGlobalState.EntityFromTable(pEntity->pev->globalname);
 
@@ -508,17 +508,15 @@ void EXT_FUNC DispatchUse(edict_t *pentUsed, edict_t *pentOther)
 	CBaseEntity *pEntity = (CBaseEntity *)GET_PRIVATE(pentUsed);
 	CBaseEntity *pOther = (CBaseEntity *)GET_PRIVATE(pentOther);
 
-	if (pEntity != NULL && !(pEntity->pev->flags & FL_KILLME))
-	{
+	if (pEntity && !(pEntity->pev->flags & FL_KILLME))
 		pEntity->Use(pOther, pOther, USE_TOGGLE, 0);
-	}
 }
 
 void EXT_FUNC DispatchThink(edict_t *pent)
 {
 	CBaseEntity *pEntity = (CBaseEntity *)GET_PRIVATE(pent);
 
-	if (pEntity != NULL)
+	if (pEntity)
 	{
 		if (pEntity->pev->flags & FL_DORMANT)
 		{
@@ -534,7 +532,7 @@ void EXT_FUNC DispatchBlocked(edict_t *pentBlocked, edict_t *pentOther)
 	CBaseEntity *pEntity = (CBaseEntity *)GET_PRIVATE(pentBlocked);
 	CBaseEntity *pOther = (CBaseEntity *)GET_PRIVATE(pentOther);
 
-	if (pEntity != NULL)
+	if (pEntity)
 	{
 		pEntity->Blocked(pOther);
 	}
@@ -544,7 +542,7 @@ void EXT_FUNC DispatchSave(edict_t *pent, SAVERESTOREDATA *pSaveData)
 {
 	CBaseEntity *pEntity = (CBaseEntity *)GET_PRIVATE(pent);
 
-	if (pEntity != NULL && pSaveData != NULL)
+	if (pEntity && pSaveData)
 	{
 		ENTITYTABLE *pTable = &pSaveData->pTable[ pSaveData->currentIndex ];
 
@@ -585,7 +583,7 @@ CBaseEntity *FindGlobalEntity(string_t classname, string_t globalname)
 	edict_t *pent = FIND_ENTITY_BY_STRING(NULL, "globalname", STRING(globalname));
 	CBaseEntity *pReturn = CBaseEntity::Instance(pent);
 
-	if (pReturn != NULL)
+	if (pReturn)
 	{
 		if (!FClassnameIs(pReturn->pev, STRING(classname)))
 		{
@@ -632,7 +630,7 @@ int EXT_FUNC DispatchRestore(edict_t *pent, SAVERESTOREDATA *pSaveData, int glob
 			oldOffset = pSaveData->vecLandmarkOffset;
 			CBaseEntity *pNewEntity = FindGlobalEntity(tmpVars.classname, tmpVars.globalname);
 
-			if (pNewEntity != NULL)
+			if (pNewEntity)
 			{
 				// Tell the restore code we're overlaying a global entity from another level
 				// Don't overwrite global fields
@@ -675,17 +673,17 @@ int EXT_FUNC DispatchRestore(edict_t *pent, SAVERESTOREDATA *pSaveData, int glob
 		{
 			pSaveData->vecLandmarkOffset = oldOffset;
 
-			if (pEntity != NULL)
+			if (pEntity)
 			{
 				UTIL_SetOrigin(pEntity->pev, pEntity->pev->origin);
 				pEntity->OverrideReset();
 			}
 		}
-		else if (pEntity != NULL && pEntity->pev->globalname)
+		else if (pEntity && pEntity->pev->globalname)
 		{
 			const globalentity_t *pGlobal = gGlobalState.EntityFromTable(pEntity->pev->globalname);
 
-			if (pGlobal != NULL)
+			if (pGlobal)
 			{
 				// Already dead? delete
 				if (pGlobal->state == GLOBAL_DEAD)
@@ -760,7 +758,7 @@ EHANDLE::operator CBaseEntity *()
 
 CBaseEntity *EHANDLE::operator=(CBaseEntity *pEntity)
 {
-	if (pEntity != NULL)
+	if (pEntity)
 	{
 		m_pent = ENT(pEntity->pev);
 		if (m_pent)
