@@ -3610,8 +3610,11 @@ void CHalfLifeMultiplay::__API_VHOOK(PlayerKilled)(CBasePlayer *pVictim, entvars
 			if (autokick.value && killer->m_iTeamKills == 3)
 #endif
 			{
+#ifdef REGAMEDLL_FIXES
+				ClientPrint(killer->pev, HUD_PRINTCONSOLE, "#Banned_For_Killing_Teammates");
+#else
 				ClientPrint(killer->pev, HUD_PRINTCONSOLE, "#Banned_For_Killing_Teamates");
-
+#endif
 				int iUserID = GETPLAYERUSERID(killer->edict());
 				if (iUserID != -1)
 				{
@@ -4439,6 +4442,9 @@ int GetMapCount()
 
 	do
 	{
+		if (!item)
+			break;
+
 		++nCount;
 		item = item->next;
 	} while (item != mapcycle.next_item);
