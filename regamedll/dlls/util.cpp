@@ -823,24 +823,27 @@ NOXREF char *UTIL_dtos4(int d)
 
 void UTIL_ShowMessageArgs(const char *pString, CBaseEntity *pPlayer, CUtlVector<char *> *args, bool isHint)
 {
-	if (pPlayer != NULL && pPlayer->IsNetClient())
+	if (pPlayer != NULL)
 	{
-		MESSAGE_BEGIN(MSG_ONE, gmsgHudTextArgs, NULL, pPlayer->pev);
+		if (pPlayer->IsNetClient())
+		{
+			MESSAGE_BEGIN(MSG_ONE, gmsgHudTextArgs, NULL, pPlayer->pev);
 			WRITE_STRING(pString);
 			WRITE_BYTE(isHint);
 			WRITE_BYTE(args->Count());
 
-		for (int i = 0; i < args->Count(); ++i)
-			WRITE_STRING(args->Element(i));
+			for (int i = 0; i < args->Count(); ++i)
+				WRITE_STRING(args->Element(i));
 
-		MESSAGE_END();
-	}
-	else
-	{
-		MESSAGE_BEGIN(MSG_ONE, gmsgHudText, NULL, pPlayer->pev);
+			MESSAGE_END();
+		}
+		else
+		{
+			MESSAGE_BEGIN(MSG_ONE, gmsgHudText, NULL, pPlayer->pev);
 			WRITE_STRING(pString);
 			WRITE_BYTE(isHint);
-		MESSAGE_END();
+			MESSAGE_END();
+		}
 	}
 }
 
