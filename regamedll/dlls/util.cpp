@@ -823,7 +823,13 @@ NOXREF char *UTIL_dtos4(int d)
 
 void UTIL_ShowMessageArgs(const char *pString, CBaseEntity *pPlayer, CUtlVector<char *> *args, bool isHint)
 {
-	if (pPlayer != NULL && pPlayer->IsNetClient())
+	if (!pPlayer)
+		return;
+
+	if (!pPlayer->IsNetClient())
+		return;
+
+	if (args)
 	{
 		MESSAGE_BEGIN(MSG_ONE, gmsgHudTextArgs, NULL, pPlayer->pev);
 			WRITE_STRING(pString);
@@ -831,7 +837,7 @@ void UTIL_ShowMessageArgs(const char *pString, CBaseEntity *pPlayer, CUtlVector<
 			WRITE_BYTE(args->Count());
 
 		for (int i = 0; i < args->Count(); ++i)
-			WRITE_STRING(args->Element(i));
+			WRITE_STRING((*args)[i]);
 
 		MESSAGE_END();
 	}
