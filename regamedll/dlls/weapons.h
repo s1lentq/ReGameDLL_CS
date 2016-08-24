@@ -135,6 +135,9 @@ public:
 	virtual void Precache();
 	virtual void Restart();
 	virtual void KeyValue(KeyValueData *pkvd);
+#ifdef REGAMEDLL_ADD
+	virtual void SetObjectCollisionBox();
+#endif
 
 #ifdef HOOK_GAMEDLL
 

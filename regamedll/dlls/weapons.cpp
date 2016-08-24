@@ -1768,7 +1768,7 @@ void CWeaponBox::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 				pPlayer->pev->body = 1;
 
 				CBaseEntity *pEntity = nullptr;
-				while ((pEntity = UTIL_FindEntityByClassname(pEntity, "player")) != NULL)
+				while ((pEntity = UTIL_FindEntityByClassname(pEntity, "player")))
 				{
 					if (FNullEnt(pEntity->edict()))
 						break;
@@ -1967,7 +1967,7 @@ BOOL CWeaponBox::PackWeapon(CBasePlayerItem *pWeapon)
 	pWeapon->pev->solid = SOLID_NOT;
 	pWeapon->pev->effects = EF_NODRAW;
 	pWeapon->pev->modelindex = 0;
-	pWeapon->pev->model = NULL;
+	pWeapon->pev->model = 0;
 	pWeapon->pev->owner = ENT(pev);
 	pWeapon->SetThink(NULL);
 	pWeapon->SetTouch(NULL);
@@ -2109,11 +2109,6 @@ void CArmoury::__MAKE_VHOOK(Spawn)()
 {
 	Precache();
 
-#ifdef REGAMEDLL_FIXES
-	// do it earlier than set UTIL_SetSize to avoid resetting mins/maxs.
-	SET_MODEL(ENT(pev), armouryItemModels[m_iItem]);
-#endif
-
 	pev->movetype = MOVETYPE_TOSS;
 	pev->solid = SOLID_TRIGGER;
 
@@ -2121,10 +2116,7 @@ void CArmoury::__MAKE_VHOOK(Spawn)()
 	UTIL_SetOrigin(pev, pev->origin);
 
 	SetTouch(&CArmoury::ArmouryTouch);
-
-#ifndef REGAMEDLL_FIXES
 	SET_MODEL(ENT(pev), armouryItemModels[m_iItem]);
-#endif
 
 	if (m_iCount <= 0)
 	{
@@ -2205,9 +2197,7 @@ void CArmoury::__MAKE_VHOOK(Restart)()
 
 #ifdef REGAMEDLL_ADD
 	// Restored origin from the cache
-	UTIL_SetSize(pev, Vector(-16, -16, 0), Vector(16, 16, 16));
 	UTIL_SetOrigin(pev, pev->oldorigin);
-
 	DROP_TO_FLOOR(edict());
 #endif
 }
@@ -2358,6 +2348,14 @@ void CArmoury::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 	else
 		CBaseEntity::KeyValue(pkvd);
 }
+
+#ifdef REGAMEDLL_ADD
+void CArmoury::__MAKE_VHOOK(SetObjectCollisionBox)()
+{
+	pev->absmin = pev->origin + Vector(-16, -16, 0);
+	pev->absmax = pev->origin + Vector(16, 16, 16);
+}
+#endif
 
 LINK_ENTITY_TO_CLASS(armoury_entity, CArmoury, CCSArmoury);
 
