@@ -639,7 +639,7 @@ void CFuncTrain::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller
 
 void CFuncTrain::Wait()
 {
-	if (m_pevCurrentTarget != NULL)
+	if (m_pevCurrentTarget)
 	{
 		// Fire the pass target if there is one
 		if (m_pevCurrentTarget->message)
@@ -721,7 +721,7 @@ void CFuncTrain::Next()
 	pev->target = pTarg->pev->target;
 	m_flWait = pTarg->GetDelay();
 
-	if (m_pevCurrentTarget != NULL && m_pevCurrentTarget->speed != 0)
+	if (m_pevCurrentTarget && m_pevCurrentTarget->speed != 0)
 	{
 		// don't copy speed from target if it is 0 (uninitialized)
 		pev->speed = m_pevCurrentTarget->speed;
@@ -777,7 +777,9 @@ void CFuncTrain::__MAKE_VHOOK(Activate)()
 
 		// keep track of this since path corners change our target for us.
 		m_pevCurrentTarget = pevTarg;
-
+#ifdef REGAMEDLL_FIXES
+		m_pevFirstTarget = m_pevCurrentTarget;
+#endif
 		UTIL_SetOrigin(pev, pevTarg->origin - (pev->mins + pev->maxs) * 0.5f);
 
 		if (FStringNull(pev->targetname))
@@ -812,7 +814,12 @@ void CFuncTrain::__MAKE_VHOOK(Spawn)()
 		ALERT(at_console, "FuncTrain with no target");
 	}
 
+#ifndef REGAMEDLL_FIXES
+	// NOTE: useless, m_pevCurrentTarget always is NULL
 	m_pevFirstTarget = m_pevCurrentTarget;
+#endif
+
+	// TODO: brush-entity is always zero origin, use (mins+max)*0.5f
 	m_vStartPosition = pev->origin;
 
 	if (pev->dmg == 0)
@@ -844,14 +851,36 @@ void CFuncTrain::__MAKE_VHOOK(Restart)()
 		pev->dmg = 2;
 
 	pev->movetype = MOVETYPE_PUSH;
-	m_pevCurrentTarget = m_pevFirstTarget;
 
+#ifdef REGAMEDLL_FIXES
+	// restore of first target
+	pev->target = m_pevFirstTarget->targetname;
+#endif
+
+	m_pevCurrentTarget = m_pevFirstTarget;
 	UTIL_SetOrigin(pev, m_vStartPosition);
 
 	m_activated = FALSE;
 
 	if (m_volume == 0.0f)
 		m_volume = 0.85f;
+
+#ifdef REGAMEDLL_FIXES
+	pev->nextthink = 0;
+	pev->velocity = g_vecZero;
+
+	if (pev->noiseMovement)
+	{
+		STOP_SOUND(edict(), CHAN_STATIC, (char *)STRING(pev->noiseMovement));
+	}
+	if (pev->noiseStopMoving)
+	{
+		EMIT_SOUND(ENT(pev), CHAN_VOICE, (char *)STRING(pev->noiseStopMoving), m_volume, ATTN_NORM);
+	}
+
+	Activate();
+#endif
+
 }
 
 void CFuncTrain::__MAKE_VHOOK(Precache)()
