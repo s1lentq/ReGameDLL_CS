@@ -1167,16 +1167,16 @@ void CFuncTrackTrain::Next()
 	Vector delta = nextFront - pev->origin;
 	Vector angles = UTIL_VecToAngles(delta);
 
-	float_precision fixAngleY = angles.y + 180.0f;
-
+#ifndef PLAY_GAMEDLL
 	// The train actually points west
-	angles.y += fixAngleY;
+	angles.y += 180.0f;
 
 	// TODO: All of this crap has to be done to make the angles not wrap around, revisit this.
-#ifndef PLAY_GAMEDLL
 	FixupAngles(angles);
 	FixupAngles(pev->angles);
 #else
+	float_precision fixAngleY = angles.y + 180.0f;
+
 	angles.x = Fix(angles.x);
 	angles.y = Fix(fixAngleY);	// TODO: fix test demo
 	angles.z = Fix(angles.z);
@@ -1214,7 +1214,7 @@ void CFuncTrackTrain::Next()
 		}
 	}
 
-	if (pnext != NULL)
+	if (pnext)
 	{
 		if (pnext != m_ppath)
 		{
