@@ -37,8 +37,10 @@
 #define SF_TRIGGER_ALLOWMONSTERS		1	// monsters allowed to fire this trigger
 #define SF_TRIGGER_NOCLIENTS			2	// players not allowed to fire this trigger
 #define SF_TRIGGER_PUSHABLES			4	// only pushables can fire this trigger
+#define SF_TRIGGER_NO_RESTART			64	// it is not allowed to be restarted on a new round
 
 #define SF_TRIGGER_PUSH_START_OFF		2	// spawnflag that makes trigger_push spawn turned OFF
+
 #define SF_TRIGGER_HURT_TARGETONCE		1	// Only fire hurt target once
 #define SF_TRIGGER_HURT_START_OFF		2	// spawnflag that makes trigger_push spawn turned OFF
 #define SF_TRIGGER_HURT_NO_CLIENTS		8	// spawnflag that makes trigger_push spawn turned OFF
@@ -203,6 +205,7 @@ public:
 class CTriggerOnce: public CTriggerMultiple {
 public:
 	virtual void Spawn() = 0;
+	virtual void Restart() = 0;
 };
 
 // QUAKED trigger_counter (.5 .5 .5) ? nomessage

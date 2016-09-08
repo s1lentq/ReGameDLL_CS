@@ -453,7 +453,6 @@ void CBaseTrigger::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CBaseToggle::KeyValue(pkvd);
 }
 
-LINK_ENTITY_TO_CLASS(trigger_hurt, CTriggerHurt, CCSTriggerHurt);
 LINK_ENTITY_TO_CLASS(trigger_monsterjump, CTriggerMonsterJump, CCSTriggerMonsterJump);
 
 void CTriggerMonsterJump::__MAKE_VHOOK(Spawn)()
@@ -629,6 +628,8 @@ void CTargetCDAudio::Play()
 	PlayCDTrack(int(pev->health));
 	UTIL_Remove(this);
 }
+
+LINK_ENTITY_TO_CLASS(trigger_hurt, CTriggerHurt, CCSTriggerHurt);
 
 void CTriggerHurt::__MAKE_VHOOK(Spawn)()
 {
@@ -890,20 +891,31 @@ LINK_ENTITY_TO_CLASS(trigger_once, CTriggerOnce, CCSTriggerOnce);
 
 void CTriggerOnce::__MAKE_VHOOK(Spawn)()
 {
+#ifdef REGAMEDLL_FIXES
+	m_flWait = -2;
+#else
 	m_flWait = -1;
+#endif
+
 	CTriggerMultiple::Spawn();
 }
 
+#ifdef REGAMEDLL_FIXES
+void CTriggerOnce::Restart()
+{
+	m_flWait = -2;
+	CTriggerMultiple::Spawn();
+}
+#endif
+
 void CBaseTrigger::MultiTouch(CBaseEntity *pOther)
 {
-	entvars_t *pevToucher;
-
-	pevToucher = pOther->pev;
+	entvars_t *pevToucher = pOther->pev;
 
 	// Only touch clients, monsters, or pushables (depending on flags)
-	if ((pevToucher->flags & FL_CLIENT && !(pev->spawnflags & SF_TRIGGER_NOCLIENTS))
-		|| (pevToucher->flags & FL_MONSTER && (pev->spawnflags & SF_TRIGGER_ALLOWMONSTERS))
-		|| (pev->spawnflags & SF_TRIGGER_PUSHABLES && FClassnameIs(pevToucher,"func_pushable")))
+	if (((pevToucher->flags & FL_CLIENT) && !(pev->spawnflags & SF_TRIGGER_NOCLIENTS))
+		|| ((pevToucher->flags & FL_MONSTER) && (pev->spawnflags & SF_TRIGGER_ALLOWMONSTERS))
+		|| ((pev->spawnflags & SF_TRIGGER_PUSHABLES) && FClassnameIs(pevToucher, "func_pushable")))
 	{
 		ActivateMultiTrigger(pOther);
 	}
@@ -959,7 +971,13 @@ void CBaseTrigger::ActivateMultiTrigger(CBaseEntity *pActivator)
 		// called while C code is looping through area links...
 		SetTouch(NULL);
 		pev->nextthink = gpGlobals->time + 0.1f;
-		SetThink(&CBaseTrigger::SUB_Remove);
+
+#ifdef REGAMEDLL_FIXES
+		if (!(pev->spawnflags & SF_TRIGGER_NO_RESTART) && m_flWait == -2)
+			SetThink(NULL);
+		else
+#endif
+			SetThink(&CBaseTrigger::SUB_Remove);
 	}
 }
 
@@ -1034,7 +1052,7 @@ void CTriggerVolume::__MAKE_VHOOK(Spawn)()
 	// set size and link into world
 	SET_MODEL(ENT(pev), STRING(pev->model));
 
-	pev->model = NULL;
+	pev->model = 0;
 	pev->modelindex = 0;
 }
 

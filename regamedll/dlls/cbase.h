@@ -371,13 +371,12 @@ public:
 
 #ifdef REGAMEDLL_ADD
 	CCSEntity *m_pEntity;
-#endif
-
+#else
 	// We use this variables to store each ammo count.
-#ifndef REGAMEDLL_ADD
 	// let's sacrifice this unused member, for its own needs in favor of m_pEntity
 	int *current_ammo;
 #endif
+
 	float currentammo;
 	int maxammo_buckshot;
 	int ammo_buckshot;
@@ -612,6 +611,11 @@ public:
 
 		return (CBaseToggle::ObjectCaps() & ~FCAP_ACROSS_TRANSITION);
 	}
+
+#ifdef REGAMEDLL_FIXES
+	virtual void Restart();
+#endif
+
 
 #ifdef HOOK_GAMEDLL
 

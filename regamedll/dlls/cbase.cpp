@@ -59,7 +59,7 @@ static DLL_FUNCTIONS gFunctionTable =
 	&AllowLagCompensation
 };
 
-static NEW_DLL_FUNCTIONS gNewDLLFunctions
+static NEW_DLL_FUNCTIONS gNewDLLFunctions =
 {
 	&OnFreeEntPrivateData,
 	NULL,

@@ -390,7 +390,7 @@ BOOL CBaseButton::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *p
 
 	if (code == BUTTON_RETURN)
 	{
-		EMIT_SOUND(ENT(pev), CHAN_VOICE, (char*)STRING(pev->noise), 1, ATTN_NORM);
+		EMIT_SOUND(ENT(pev), CHAN_VOICE, (char *)STRING(pev->noise), 1, ATTN_NORM);
 
 		// Toggle buttons fire when they get back to their "home" position
 		if (!(pev->spawnflags & SF_BUTTON_TOGGLE))
@@ -719,7 +719,7 @@ void CBaseButton::TriggerAndWait()
 // Starts the button moving "out/down".
 void CBaseButton::ButtonReturn()
 {
-	assert(m_toggle_state == TS_AT_TOP);
+	//assert(m_toggle_state == TS_AT_TOP);
 	m_toggle_state = TS_GOING_DOWN;
 
 	SetMoveDone(&CBaseButton::ButtonBackHome);
@@ -736,13 +736,36 @@ void CBaseButton::ButtonReturn()
 	pev->frame = 0;
 }
 
+#ifdef REGAMEDLL_FIXES
+void CBaseButton::Restart()
+{
+	m_hActivator = NULL;
+	SetMovedir(pev);
+	ButtonReturn();
+
+	if (pev->spawnflags & SF_BUTTON_TOUCH_ONLY)
+	{
+		SetTouch(&CBaseButton::ButtonTouch);
+	}
+	else
+	{
+		SetTouch(NULL);
+		SetUse(&CBaseButton::ButtonUse);
+	}
+}
+#endif
+
 // Button has returned to start state. Quiesce it.
 void CBaseButton::ButtonBackHome()
 {
 	assert(m_toggle_state == TS_GOING_DOWN);
 	m_toggle_state = TS_AT_BOTTOM;
 
-	if (pev->spawnflags & SF_BUTTON_TOGGLE)
+	if (pev->spawnflags & SF_BUTTON_TOGGLE
+#ifdef REGAMEDLL_FIXES
+		&& m_hActivator
+#endif
+)
 	{
 		//EMIT_SOUND(ENT(pev), CHAN_VOICE, (char *)STRING(pev->noise), 1, ATTN_NORM);
 		SUB_UseTargets(m_hActivator, USE_TOGGLE, 0);

@@ -678,6 +678,11 @@ void CHalfLifeMultiplay::__API_VHOOK(CleanUpMap)()
 	UTIL_RestartOther("ambient_generic");
 	UTIL_RestartOther("env_sprite");
 
+#ifdef REGAMEDLL_FIXES
+	UTIL_RestartOther("func_button");
+	UTIL_RestartOther("trigger_once");
+#endif
+
 	// Remove grenades and C4
 #ifdef REGAMEDLL_FIXES
 	UTIL_RemoveOther("grenade");

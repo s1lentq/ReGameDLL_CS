@@ -777,6 +777,7 @@ void CFuncTrain::__MAKE_VHOOK(Activate)()
 
 		// keep track of this since path corners change our target for us.
 		m_pevCurrentTarget = pevTarg;
+
 #ifdef REGAMEDLL_FIXES
 		m_pevFirstTarget = m_pevCurrentTarget;
 #endif
@@ -817,6 +818,9 @@ void CFuncTrain::__MAKE_VHOOK(Spawn)()
 #ifndef REGAMEDLL_FIXES
 	// NOTE: useless, m_pevCurrentTarget always is NULL
 	m_pevFirstTarget = m_pevCurrentTarget;
+#else
+	// keep track of this since path corners change our target for us.
+	m_pevFirstTarget = VARS(FIND_ENTITY_BY_TARGETNAME(NULL, STRING(pev->target)));
 #endif
 
 	// TODO: brush-entity is always zero origin, use (mins+max)*0.5f
@@ -851,13 +855,8 @@ void CFuncTrain::__MAKE_VHOOK(Restart)()
 		pev->dmg = 2;
 
 	pev->movetype = MOVETYPE_PUSH;
-
-#ifdef REGAMEDLL_FIXES
-	// restore of first target
-	pev->target = m_pevFirstTarget->targetname;
-#endif
-
 	m_pevCurrentTarget = m_pevFirstTarget;
+
 	UTIL_SetOrigin(pev, m_vStartPosition);
 
 	m_activated = FALSE;
@@ -866,8 +865,15 @@ void CFuncTrain::__MAKE_VHOOK(Restart)()
 		m_volume = 0.85f;
 
 #ifdef REGAMEDLL_FIXES
-	pev->nextthink = 0;
+
+	SetThink(NULL);
 	pev->velocity = g_vecZero;
+
+	// restore of first target
+	if (m_pevFirstTarget)
+	{
+		pev->target = m_pevFirstTarget->targetname;
+	}
 
 	if (pev->noiseMovement)
 	{
@@ -880,7 +886,6 @@ void CFuncTrain::__MAKE_VHOOK(Restart)()
 
 	Activate();
 #endif
-
 }
 
 void CFuncTrain::__MAKE_VHOOK(Precache)()
