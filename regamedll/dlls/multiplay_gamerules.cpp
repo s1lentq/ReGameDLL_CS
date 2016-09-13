@@ -681,6 +681,7 @@ void CHalfLifeMultiplay::__API_VHOOK(CleanUpMap)()
 #ifdef REGAMEDLL_FIXES
 	UTIL_RestartOther("func_button");
 	UTIL_RestartOther("trigger_once");
+	UTIL_RestartOther("multi_manager");
 #endif
 
 	// Remove grenades and C4

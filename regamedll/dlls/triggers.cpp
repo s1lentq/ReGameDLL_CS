@@ -257,6 +257,7 @@ void CMultiManager::__MAKE_VHOOK(Spawn)()
 
 void CMultiManager::__MAKE_VHOOK(Restart)()
 {
+#ifndef REGAMEDLL_FIXES
 	edict_t *pentTarget = NULL;
 
 	for (int i = 0; i < m_cTargets; ++i)
@@ -278,6 +279,7 @@ void CMultiManager::__MAKE_VHOOK(Restart)()
 			pTarget->Restart();
 		}
 	}
+#endif
 
 	SetThink(NULL);
 
