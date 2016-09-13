@@ -1351,6 +1351,12 @@ qboolean PM_InWater()
 // Sets pmove->waterlevel and pmove->watertype values.
 qboolean PM_CheckWater()
 {
+#ifdef REGAMEDLL_FIXES
+	// do not check for dead
+	if (pmove->dead || pmove->deadflag != DEAD_NO)
+		return FALSE;
+#endif
+
 	vec3_t point;
 	int cont;
 	int truecont;

@@ -2881,8 +2881,13 @@ void CBasePlayer::WaterMove()
 	if (pev->movetype == MOVETYPE_NOCLIP || pev->movetype == MOVETYPE_NONE)
 		return;
 
+#ifdef REGAMEDLL_FIXES
+	if (!IsAlive())
+		return;
+#else
 	if (pev->health < 0.0f)
 		return;
+#endif
 
 	// waterlevel 0 - not in water
 	// waterlevel 1 - feet in water
@@ -4482,7 +4487,6 @@ void CBasePlayer::CheckTimeBasedDamage()
 {
 	int i;
 	byte bDuration = 0;
-	static float gtbdPrev = 0.0;
 
 	if (!(m_bitsDamageType & DMG_TIMEBASED))
 		return;
@@ -5179,6 +5183,11 @@ void EXT_FUNC CBasePlayer::__API_VHOOK(Spawn)()
 	pev->deadflag = DEAD_NO;
 	pev->dmg_take = 0;
 	pev->dmg_save = 0;
+
+#ifdef REGAMEDLL_FIXES
+	pev->watertype = CONTENTS_EMPTY;
+	pev->waterlevel = 0;
+#endif
 
 	m_bitsHUDDamage = -1;
 	m_bitsDamageType = 0;
