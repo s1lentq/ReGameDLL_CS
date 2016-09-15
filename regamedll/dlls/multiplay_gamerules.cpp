@@ -679,7 +679,9 @@ void CHalfLifeMultiplay::__API_VHOOK(CleanUpMap)()
 	UTIL_RestartOther("env_sprite");
 
 #ifdef REGAMEDLL_FIXES
+	UTIL_RestartOther("multisource");
 	UTIL_RestartOther("func_button");
+	UTIL_RestartOther("trigger_auto");
 	UTIL_RestartOther("trigger_once");
 	UTIL_RestartOther("multi_manager");
 #endif

@@ -79,8 +79,6 @@ extern globalvars_t *gpGlobals;
 #define SVC_ROOMTYPE		37
 #define SVC_DIRECTOR		51
 
-#define SF_TRIG_PUSH_ONCE		1
-
 // func_rotating
 #define SF_BRUSH_ROTATE_Y_AXIS		0
 #define SF_BRUSH_ROTATE_INSTANT		1

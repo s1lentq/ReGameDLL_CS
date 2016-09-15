@@ -369,7 +369,7 @@ public:
 	void (CBaseEntity::*m_pfnUse)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 	void (CBaseEntity::*m_pfnBlocked)(CBaseEntity *pOther);
 
-#ifdef REGAMEDLL_ADD
+#ifdef REGAMEDLL_API
 	CCSEntity *m_pEntity;
 #else
 	// We use this variables to store each ammo count.
@@ -434,6 +434,10 @@ public:
 	virtual int ObjectCaps() { return (CPointEntity::ObjectCaps() | FCAP_MASTER); }
 	virtual BOOL IsTriggered(CBaseEntity *pActivator);
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+
+#ifdef REGAMEDLL_FIXES
+	virtual void Restart();
+#endif
 
 #ifdef HOOK_GAMEDLL
 
@@ -695,7 +699,7 @@ T *GetClassPtr(T *a)
 		a = new(pev) T;
 		a->pev = pev;
 
-#ifdef REGAMEDLL_ADD
+#ifdef REGAMEDLL_API
 		a->m_pEntity = new W();
 		a->m_pEntity->m_pContainingEntity = a;
 #endif

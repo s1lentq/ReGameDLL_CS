@@ -170,6 +170,14 @@ void CMultiSource::__MAKE_VHOOK(Spawn)()
 	SetThink(&CMultiSource::Register);
 }
 
+#ifdef REGAMEDLL_FIXES
+void CMultiSource::Restart()
+{
+	Q_memset(m_rgTriggered, 0, sizeof(m_rgTriggered));
+	Spawn();
+}
+#endif
+
 void CMultiSource::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	int i = 0;

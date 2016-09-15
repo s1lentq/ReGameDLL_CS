@@ -157,6 +157,16 @@ void CAutoTrigger::__MAKE_VHOOK(Think)()
 	}
 }
 
+#ifdef REGAMEDLL_FIXES
+void CAutoTrigger::Restart()
+{
+	if (pev->spawnflags & SF_AUTO_NO_RESET)
+		return;
+
+	pev->nextthink = gpGlobals->time + 0.1f;
+}
+#endif
+
 LINK_ENTITY_TO_CLASS(trigger_relay, CTriggerRelay, CCSTriggerRelay);
 IMPLEMENT_SAVERESTORE(CTriggerRelay, CBaseDelay);
 
@@ -975,7 +985,7 @@ void CBaseTrigger::ActivateMultiTrigger(CBaseEntity *pActivator)
 		pev->nextthink = gpGlobals->time + 0.1f;
 
 #ifdef REGAMEDLL_FIXES
-		if (!(pev->spawnflags & SF_TRIGGER_NO_RESTART) && m_flWait == -2)
+		if (!(pev->spawnflags & SF_TRIGGER_NO_RESET) && m_flWait == -2)
 			SetThink(NULL);
 		else
 #endif
@@ -1539,7 +1549,7 @@ void CTriggerPush::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 	if (pevToucher->solid != SOLID_NOT && pevToucher->solid != SOLID_BSP)
 	{
 		// Instant trigger, just transfer velocity and remove
-		if (pev->spawnflags & SF_TRIG_PUSH_ONCE)
+		if (pev->spawnflags & SF_TRIGGER_PUSH_ONCE)
 		{
 			pevToucher->velocity = pevToucher->velocity + (pev->speed * pev->movedir);
 

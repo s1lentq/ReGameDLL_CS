@@ -42,8 +42,9 @@
 #define SF_TRIGGER_ALLOWMONSTERS		1	// monsters allowed to fire this trigger
 #define SF_TRIGGER_NOCLIENTS			2	// players not allowed to fire this trigger
 #define SF_TRIGGER_PUSHABLES			4	// only pushables can fire this trigger
-#define SF_TRIGGER_NO_RESTART			64	// it is not allowed to be restarted on a new round
+#define SF_TRIGGER_NO_RESET			64	// it is not allowed to be resetting on a new round
 
+#define SF_TRIGGER_PUSH_ONCE			1
 #define SF_TRIGGER_PUSH_START_OFF		2	// spawnflag that makes trigger_push spawn turned OFF
 
 #define SF_TRIGGER_HURT_TARGETONCE		1	// Only fire hurt target once
@@ -53,6 +54,8 @@
 #define SF_TRIGGER_HURT_CLIENTONLYTOUCH		32	// only clients may touch this trigger.
 
 #define SF_AUTO_FIREONCE			0x0001
+#define SF_AUTO_NO_RESET			0x0002
+
 #define SF_RELAY_FIREONCE			0x0001
 #define SF_ENDSECTION_USEONLY			0x0001
 
@@ -107,6 +110,10 @@ public:
 	virtual int Restore(CRestore &restore);
 	virtual int ObjectCaps() { return (CBaseDelay::ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
 	virtual void Think();
+
+#ifdef REGAMEDLL_FIXES
+	virtual void Restart();
+#endif
 
 #ifdef HOOK_GAMEDLL
 

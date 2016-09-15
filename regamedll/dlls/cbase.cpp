@@ -1078,14 +1078,13 @@ void OnFreeEntPrivateData(edict_t *pEnt)
 	pEntity->UpdateOnRemove();
 	RemoveEntityHashValue(pEntity->pev, STRING(pEntity->pev->classname), CLASSNAME);
 
-#ifdef REGAMEDLL_ADD
+#ifdef REGAMEDLL_API
 	if (pEntity->m_pEntity) {
 		delete pEntity->m_pEntity;
 		pEntity->m_pEntity = nullptr;
 	}
+#endif
 
 	if (g_pMapInfo == pEntity)
 		g_pMapInfo = nullptr;
-
-#endif
 }
