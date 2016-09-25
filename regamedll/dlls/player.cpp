@@ -5150,6 +5150,13 @@ void EXT_FUNC CBasePlayer::__API_VHOOK(Spawn)()
 {
 	int i;
 
+#ifdef REGAMEDLL_FIXES
+	// Do not allow to do spawn, if player chooses a team or appearance.
+	if (m_bJustConnected && m_iJoiningState == PICKINGTEAM) {
+		return;
+	}
+#endif
+
 	m_iGaitsequence = 0;
 
 	m_flGaitframe = 0;

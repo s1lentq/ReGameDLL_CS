@@ -2066,7 +2066,6 @@
 [
 	spawnflags(Flags) =
 	[
-		1 : "Remove On fire" : 1
 		2 : "No reset on New Round" : 0
 	]
 	globalstate(string) : "Global State to Read"

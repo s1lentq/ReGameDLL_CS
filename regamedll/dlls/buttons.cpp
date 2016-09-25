@@ -243,15 +243,27 @@ BOOL CMultiSource::__MAKE_VHOOK(IsTriggered)(CBaseEntity *)
 
 void CMultiSource::Register()
 {
-	edict_t *pentTarget = NULL;
-
 	m_iTotal = 0;
 	Q_memset(m_rgEntities, 0, MS_MAX_TARGETS * sizeof(EHANDLE));
 
 	SetThink(&CMultiSource::SUB_DoNothing);
 
 	// search for all entities which target this multisource (pev->targetname)
-	pentTarget = FIND_ENTITY_BY_STRING(NULL, "target", STRING(pev->targetname));
+#ifdef REGAMEDLL_FIXES
+	CBaseEntity *pTarget = nullptr;
+	while (m_iTotal < MS_MAX_TARGETS && (pTarget = UTIL_FindEntityByTargetname(pTarget, "multi_manager"))) {
+		m_rgEntities[m_iTotal++] = pTarget;
+	}
+
+	pTarget = nullptr;
+	while (m_iTotal < MS_MAX_TARGETS && (pTarget = UTIL_FindEntityByClassname(pTarget, "multi_manager")))
+	{
+		if (pTarget->HasTarget(pev->targetname)) {
+			m_rgEntities[m_iTotal++] = pTarget;
+		}
+	}
+#else
+	edict_t *pentTarget = FIND_ENTITY_BY_STRING(NULL, "target", STRING(pev->targetname));
 
 	while (!FNullEnt(pentTarget) && m_iTotal < MS_MAX_TARGETS)
 	{
@@ -277,7 +289,7 @@ void CMultiSource::Register()
 
 		pentTarget = FIND_ENTITY_BY_STRING(pentTarget, "classname", "multi_manager");
 	}
-
+#endif
 	pev->spawnflags &= ~SF_MULTI_INIT;
 }
 

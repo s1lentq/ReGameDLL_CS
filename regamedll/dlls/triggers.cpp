@@ -150,7 +150,11 @@ void CAutoTrigger::__MAKE_VHOOK(Think)()
 	{
 		SUB_UseTargets(this, triggerType, 0);
 
+#ifdef REGAMEDLL_FIXES
+		if (pev->spawnflags & SF_AUTO_NO_RESET)
+#else
 		if (pev->spawnflags & SF_AUTO_FIREONCE)
+#endif
 		{
 			UTIL_Remove(this);
 		}
@@ -359,6 +363,12 @@ CMultiManager *CMultiManager::Clone()
 
 	Q_memcpy(pMulti->m_iTargetName, m_iTargetName, sizeof(m_iTargetName));
 	Q_memcpy(pMulti->m_flTargetDelay, m_flTargetDelay, sizeof(m_flTargetDelay));
+
+#ifdef REGAMEDLL_FIXES
+	// Add entity in hash table, otherwise,
+	// it will not be reset for the entity via UTIL_RestartRound
+	MAKE_STRING_CLASS("multi_manager", pMulti->pev);
+#endif
 
 	return pMulti;
 }
