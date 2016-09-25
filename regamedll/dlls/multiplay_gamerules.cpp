@@ -704,6 +704,11 @@ void CHalfLifeMultiplay::__API_VHOOK(CleanUpMap)()
 	// Old code only removed 4 kits and stopped.
 	UTIL_RemoveOther("item_thighpack");
 
+#ifdef REGAMEDLL_FIXES
+	UTIL_RemoveOther("gib");
+	UTIL_RemoveOther("DelayedUse");
+#endif
+
 	RemoveGuns();
 	PLAYBACK_EVENT((FEV_GLOBAL | FEV_RELIABLE), 0, m_usResetDecals);
 }
