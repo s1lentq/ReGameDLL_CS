@@ -251,7 +251,7 @@ void CMultiSource::Register()
 	// search for all entities which target this multisource (pev->targetname)
 #ifdef REGAMEDLL_FIXES
 	CBaseEntity *pTarget = nullptr;
-	while (m_iTotal < MS_MAX_TARGETS && (pTarget = UTIL_FindEntityByTargetname(pTarget, "multi_manager"))) {
+	while (m_iTotal < MS_MAX_TARGETS && (pTarget = UTIL_FindEntityByString(pTarget, "target", STRING(pev->targetname)))) {
 		m_rgEntities[m_iTotal++] = pTarget;
 	}
 
