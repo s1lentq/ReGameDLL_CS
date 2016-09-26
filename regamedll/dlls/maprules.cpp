@@ -256,7 +256,15 @@ void CGameTeamMaster::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pC
 		}
 		else
 		{
+#ifdef REGAMEDLL_FIXES
+			CBasePlayer *pPlayer = static_cast<CBasePlayer *>(pActivator);
+			if (pPlayer->IsPlayer())
+				m_teamIndex = pPlayer->m_iTeam;
+			else
+				m_teamIndex = -1;
+#else
 			m_teamIndex = g_pGameRules->GetTeamIndex(pActivator->TeamID());
+#endif
 		}
 
 		return;
@@ -287,7 +295,11 @@ const char *CGameTeamMaster::__MAKE_VHOOK(TeamID)()
 	}
 
 	// UNDONE: Fill this in with the team from the "teamlist"
+#ifdef REGAMEDLL_FIXES
+	return GetTeamName(m_teamIndex);
+#else
 	return g_pGameRules->GetIndexedTeamName(m_teamIndex);
+#endif
 }
 
 BOOL CGameTeamMaster::TeamMatch(CBaseEntity *pActivator)
@@ -298,7 +310,15 @@ BOOL CGameTeamMaster::TeamMatch(CBaseEntity *pActivator)
 	if (!pActivator)
 		return FALSE;
 
+#ifdef REGAMEDLL_FIXES
+	CBasePlayer *pPlayer = static_cast<CBasePlayer *>(pActivator);
+	if (!pPlayer->IsPlayer())
+		return FALSE;
+
+	return pPlayer->m_iTeam == m_teamIndex;
+#else
 	return UTIL_TeamsMatch(pActivator->TeamID(), TeamID());
+#endif
 }
 
 LINK_ENTITY_TO_CLASS(game_team_set, CGameTeamSet, CCSGameTeamSet);
@@ -310,10 +330,12 @@ void CGameTeamSet::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCall
 
 	if (ShouldClearTeam())
 	{
+		// clear the team of our target
 		SUB_UseTargets(pActivator, USE_SET, -1);
 	}
 	else
 	{
+		// set the team of our target to our activator's team
 		SUB_UseTargets(pActivator, USE_SET, 0);
 	}
 
