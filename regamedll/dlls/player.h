@@ -603,6 +603,9 @@ public:
 	void DropSecondary();
 	void DropPrimary();
 
+	void RemoveBomb();
+	CBasePlayerItem *GetItemOfNamed(const char *pszItemName);
+
 #ifdef REGAMEDLL_ADD
 	CCSPlayer *CSPlayer() const;
 #endif

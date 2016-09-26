@@ -1940,6 +1940,11 @@ void CHalfLifeMultiplay::__API_VHOOK(RestartRound)()
 		m_iLoserBonus = m_rgRewardAccountRules[RR_LOSER_BONUS_DEFAULT];
 	}
 
+#ifdef REGAMEDLL_FIXES
+	// Respawn entities (glass, doors, etc..)
+	CleanUpMap();
+#endif
+
 	// tell bots that the round is restarting
 	CBaseEntity *pPlayer = NULL;
 	while ((pPlayer = UTIL_FindEntityByClassname(pPlayer, "player")) != NULL)
@@ -1987,11 +1992,17 @@ void CHalfLifeMultiplay::__API_VHOOK(RestartRound)()
 
 		if (player->m_iTeam != UNASSIGNED && player->m_iTeam != SPECTATOR)
 		{
+#ifdef REGAMEDLL_FIXES
+			// remove the c4 if the player is carrying it
+			if (player->m_bHasC4) {
+				player->RemoveBomb();
+			}
+#else
 			// drop the c4 if the player is carrying it
-			if (player->m_bHasC4)
-			{
+			if (player->m_bHasC4) {
 				player->DropPlayerItem("weapon_c4");
 			}
+#endif
 
 			player->RoundRespawn();
 		}
@@ -2001,8 +2012,10 @@ void CHalfLifeMultiplay::__API_VHOOK(RestartRound)()
 		// for EVERY player (regardless of what team they're on)
 	}
 
-	// Respawn entities (glass, doors, etc..)
+	// Moved above the loop spawning the players
+#ifndef REGAMEDLL_FIXES
 	CleanUpMap();
+#endif
 
 	// Give C4 to the terrorists
 	if (m_bMapHasBombTarget)

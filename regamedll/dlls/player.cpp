@@ -6006,8 +6006,14 @@ void CBasePlayer::FlashlightTurnOff()
 
 void CBasePlayer::ForceClientDllUpdate()
 {
+#ifdef REGAMEDLL_FIXES
+	// fix for https://github.com/ValveSoftware/halflife/issues/1567
+	m_iClientHideHUD = -1;
+#endif
+
 	m_iClientHealth = -1;
 	m_iClientBattery = -1;
+
 	m_fWeapon = FALSE;
 	m_fInitHUD = TRUE;
 	m_iTrain |= TRAIN_NEW;
@@ -6786,6 +6792,17 @@ void EXT_FUNC CBasePlayer::__API_VHOOK(UpdateClientData)()
 				WRITE_SHORT(CSGameRules()->m_iNumTerroristWins);
 			MESSAGE_END();
 		}
+
+#ifdef REGAMEDLL_FIXES
+		// send "flashlight" update message
+		if (FlashlightIsOn())
+		{
+			MESSAGE_BEGIN(MSG_ONE, gmsgFlashlight, NULL, pev);
+				WRITE_BYTE(1);
+				WRITE_BYTE(m_iFlashBattery);
+			MESSAGE_END();
+		}
+#endif
 	}
 
 	if (m_iHideHUD != m_iClientHideHUD)
@@ -9441,4 +9458,39 @@ void CBasePlayer::DropPrimary()
 	}
 #endif
 
+}
+
+CBasePlayerItem *CBasePlayer::GetItemOfNamed(const char *pszItemName)
+{
+	for (auto pItem : m_rgpPlayerItems) {
+		while (pItem) {
+			if (FClassnameIs(pItem->pev, pszItemName))
+				return pItem;
+
+			pItem = pItem->m_pNext;
+		}
+	}
+
+	return nullptr;
+}
+
+void CBasePlayer::RemoveBomb()
+{
+	auto pBomb = GetItemOfNamed("weapon_c4");
+	if (!pBomb)
+		return;
+
+	m_bHasC4 = false;
+	pev->body = 0;
+	SetBombIcon(FALSE);
+	SetProgressBarTime(0);
+
+	if (m_pActiveItem == pBomb) {
+		((CBasePlayerWeapon *)pBomb)->RetireWeapon();
+	}
+
+	if (RemovePlayerItem(pBomb)) {
+		pev->weapons &= ~(1 << pBomb->m_iId);
+		pBomb->Kill();
+	}
 }
