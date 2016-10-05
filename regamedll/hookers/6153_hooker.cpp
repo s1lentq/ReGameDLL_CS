@@ -165,7 +165,7 @@ FunctionHook g_FunctionHooks[] =
 	{ 0x01DB2B50, "PM_Friction", (size_t)&PM_Friction },
 	{ 0x01DB2CF0, "PM_AirAccelerate", (size_t)&PM_AirAccelerate },
 	{ 0x01DB2DB0, "PM_WaterMove", (size_t)&PM_WaterMove },
-	{ 0x01DB30C0, "PM_AirMove", (size_t)&PM_AirMove },
+	{ 0x01DB30C0, "PM_AirMove", (size_t)&PM_AirMove_internal },
 	//{ 0x01DB3200, "PM_InWater", (size_t)&PM_InWater },				// NOXREF
 	{ 0x01DB3220, "PM_CheckWater", (size_t)&PM_CheckWater },
 	{ 0x01DB33E0, "PM_CatagorizePosition", (size_t)&PM_CatagorizePosition },
@@ -278,7 +278,7 @@ FunctionHook g_FunctionHooks[] =
 	{ 0x01D64F00, "Q_strlen", (size_t)&Q_strlen_ },
 	{ 0x01D64F20, "_Z8Host_SayP7edict_si", (size_t)&Host_Say },
 	//{ 0x0, "", (size_t)&DropSecondary },	// NOXREF
-	{ 0x01D656F0, "_Z11DropPrimaryP11CBasePlayer", (size_t)&DropPrimary },
+	//{ 0x01D656F0, "_Z11DropPrimaryP11CBasePlayer", (size_t)&DropPrimary },
 	{ 0x01D65740, "_Z10CanBuyThisP11CBasePlayeri", (size_t)&CanBuyThis },
 	{ 0x01D65850, "_Z9BuyPistolP11CBasePlayeri", (size_t)&BuyPistol },
 	{ 0x01D65A30, "_Z10BuyShotgunP11CBasePlayeri", (size_t)&BuyShotgun },
@@ -644,7 +644,7 @@ FunctionHook g_FunctionHooks[] =
 	//{ 0x01D9B9A0, "_ZN11CBasePlayer10SmartRadioEv", mfunc_ptr_cast(&CBasePlayer::SmartRadio) },	// NOXREF
 	{ 0x01DA07D0, "_ZN11CBasePlayer11ThrowWeaponEPc", mfunc_ptr_cast(&CBasePlayer::ThrowWeapon) },	// NOXREF
 	//{ 0x01DA0DB0, "_ZN11CBasePlayer12ThrowPrimaryEv", mfunc_ptr_cast(&CBasePlayer::ThrowPrimary) },	// NOXREF
-	{ 0x01DA1170, "_ZN11CBasePlayer10AddAccountEib", mfunc_ptr_cast(&CBasePlayer::AddAccount) },
+	//{ 0x01DA1170, "_ZN11CBasePlayer10AddAccountEib", mfunc_ptr_cast(&CBasePlayer::AddAccount) },
 	{ 0x01DA1DA0, "_ZN11CBasePlayer9DisappearEv", mfunc_ptr_cast(&CBasePlayer::Disappear) },
 	{ 0x01DA15B0, "_ZN11CBasePlayer7MakeVIPEv", mfunc_ptr_cast(&CBasePlayer::MakeVIP) },
 	{ 0x01DA36C0, "_ZN11CBasePlayer12CanPlayerBuyEb", mfunc_ptr_cast(&CBasePlayer::CanPlayerBuy) },
@@ -1908,17 +1908,17 @@ FunctionHook g_FunctionHooks[] =
 	{ 0x01D87730, "_ZN5CItem11MaterializeEv", mfunc_ptr_cast(&CItem::Materialize) },
 //CWorldItem
 	//virtual func
-	{ 0x01D874A0, "_ZN10CWorldItem5SpawnEv", mfunc_ptr_cast(&CWorldItem::Spawn_) },
-	{ 0x01D87450, "_ZN10CWorldItem8KeyValueEP14KeyValueData_s", mfunc_ptr_cast(&CWorldItem::KeyValue_) },
+	//{ 0x01D874A0, "_ZN10CWorldItem5SpawnEv", mfunc_ptr_cast(&CWorldItem::Spawn_) },
+	//{ 0x01D87450, "_ZN10CWorldItem8KeyValueEP14KeyValueData_s", mfunc_ptr_cast(&CWorldItem::KeyValue_) },
 	//linked objects
-	{ 0x01D87400, "world_items", (size_t)&world_items },
+	//{ 0x01D87400, "world_items", (size_t)&world_items },
 //CItemSuit
 	//virtual func
-	{ 0x01D877F0, "_ZN9CItemSuit5SpawnEv", mfunc_ptr_cast(&CItemSuit::Spawn_) },
-	{ 0x01D878B0, "_ZN9CItemSuit8PrecacheEv", mfunc_ptr_cast(&CItemSuit::Precache_) },
-	{ 0x01D878D0, "_ZN9CItemSuit7MyTouchEP11CBasePlayer", mfunc_ptr_cast(&CItemSuit::MyTouch_) },
+	//{ 0x01D877F0, "_ZN9CItemSuit5SpawnEv", mfunc_ptr_cast(&CItemSuit::Spawn_) },
+	//{ 0x01D878B0, "_ZN9CItemSuit8PrecacheEv", mfunc_ptr_cast(&CItemSuit::Precache_) },
+	//{ 0x01D878D0, "_ZN9CItemSuit7MyTouchEP11CBasePlayer", mfunc_ptr_cast(&CItemSuit::MyTouch_) },
 	//linked objects
-	{ 0x01D877A0, "item_suit", (size_t)&item_suit },
+	//{ 0x01D877A0, "item_suit", (size_t)&item_suit },
 //CItemBattery
 	//virtual func
 	{ 0x01D87990, "_ZN12CItemBattery5SpawnEv", mfunc_ptr_cast(&CItemBattery::Spawn_) },
@@ -1935,11 +1935,11 @@ FunctionHook g_FunctionHooks[] =
 	{ 0x01D87BC0, "item_antidote", (size_t)&item_antidote },
 //CItemSecurity
 	//virtual func
-	{ 0x01D87D60, "_ZN13CItemSecurity5SpawnEv", mfunc_ptr_cast(&CItemSecurity::Spawn_) },
-	{ 0x01D87E20, "_ZN13CItemSecurity8PrecacheEv", mfunc_ptr_cast(&CItemSecurity::Precache_) },
-	{ 0x01D87E30, "_ZN13CItemSecurity7MyTouchEP11CBasePlayer", mfunc_ptr_cast(&CItemSecurity::MyTouch_) },
+	//{ 0x01D87D60, "_ZN13CItemSecurity5SpawnEv", mfunc_ptr_cast(&CItemSecurity::Spawn_) },
+	//{ 0x01D87E20, "_ZN13CItemSecurity8PrecacheEv", mfunc_ptr_cast(&CItemSecurity::Precache_) },
+	//{ 0x01D87E30, "_ZN13CItemSecurity7MyTouchEP11CBasePlayer", mfunc_ptr_cast(&CItemSecurity::MyTouch_) },
 	//linked objects
-	{ 0x01D87D10, "item_security", (size_t)&item_security },
+	//{ 0x01D87D10, "item_security", (size_t)&item_security },
 //CItemLongJump
 	//virtual func
 	{ 0x01D87EA0, "_ZN13CItemLongJump5SpawnEv", mfunc_ptr_cast(&CItemLongJump::Spawn_) },
@@ -2531,7 +2531,7 @@ FunctionHook g_FunctionHooks[] =
 	{ 0x01D01140, "_Z21WeaponIDToWeaponClassi", (size_t)&WeaponIDToWeaponClass },
 	{ 0x01D011C0, "_Z15IsPrimaryWeaponi", (size_t)&IsPrimaryWeapon },
 	//{ 0x01D01250, "_Z17IsSecondaryWeaponi", (size_t)&IsSecondaryWeapon },	// NOXREF
-	{ 0x01D012A0, "_Z13GetWeaponInfoi", (size_t)&GetWeaponInfo },
+	{ 0x01D012A0, "_Z13GetWeaponInfoi", mfunc_ptr_cast<WeaponInfoStruct* (*)(int)>(&GetWeaponInfo) },
 	{ 0x01D012E0, "_Z21CanBuyWeaponByMaptypei12WeaponIdTypeb", (size_t)&CanBuyWeaponByMaptype },
 
 #endif // WeaponType_Region
@@ -4453,7 +4453,7 @@ FunctionHook g_FunctionHooks[] =
 
 	{ 0x01D206A0, "_Z17InstallBotControlv", (size_t)&InstallBotControl },
 	{ 0x01D20730, "_Z17Bot_ServerCommandv", (size_t)&Bot_ServerCommand },
-	{ 0x01D20760, "_Z17Bot_RegisterCvarsv", (size_t)&Bot_RegisterCvars },
+	{ 0x01D20760, "_Z17Bot_RegisterCvarsv", (size_t)&Bot_RegisterCVars },
 
 #endif // CS_Init_Region
 

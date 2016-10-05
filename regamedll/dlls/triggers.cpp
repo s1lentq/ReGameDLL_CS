@@ -557,12 +557,44 @@ void CTriggerCDAudio::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pC
 	PlayTrack();
 }
 
+#ifdef REGAMEDLL_FIXES
+const char *g_szMP3trackFileMap[] =
+{
+	"", "",
+	"media/Half-Life01.mp3",
+	"media/Prospero01.mp3",
+	"media/Half-Life12.mp3",
+	"media/Half-Life07.mp3",
+	"media/Half-Life10.mp3",
+	"media/Suspense01.mp3",
+	"media/Suspense03.mp3",
+	"media/Half-Life09.mp3",
+	"media/Half-Life02.mp3",
+	"media/Half-Life13.mp3",
+	"media/Half-Life04.mp3",
+	"media/Half-Life15.mp3",
+	"media/Half-Life14.mp3",
+	"media/Half-Life16.mp3",
+	"media/Suspense02.mp3",
+	"media/Half-Life03.mp3",
+	"media/Half-Life08.mp3",
+	"media/Prospero02.mp3",
+	"media/Half-Life05.mp3",
+	"media/Prospero04.mp3",
+	"media/Half-Life11.mp3",
+	"media/Half-Life06.mp3",
+	"media/Prospero03.mp3",
+	"media/Half-Life17.mp3",
+	"media/Prospero05.mp3",
+	"media/Suspense05.mp3",
+	"media/Suspense07.mp3"
+};
+#endif
+
 void PlayCDTrack(int iTrack)
 {
-	edict_t *pClient;
-
 	// manually find the single player.
-	pClient = INDEXENT(1);
+	edict_t *pClient = INDEXENT(1);
 
 	// Can't play if the client is not connected!
 	if (!pClient)
@@ -576,15 +608,22 @@ void PlayCDTrack(int iTrack)
 
 	if (iTrack == -1)
 	{
+#ifdef REGAMEDLL_FIXES
+		CLIENT_COMMAND(pClient, "mp3 stop\n");
+#else
 		CLIENT_COMMAND(pClient, "cd stop\n");
+#endif
 	}
 	else
 	{
+#ifdef REGAMEDLL_FIXES
+		CLIENT_COMMAND(pClient, UTIL_VarArgs("mp3 play %s\n", g_szMP3trackFileMap[iTrack]));
+#else
 		char string[64];
 		Q_sprintf(string, "cd play %3d\n", iTrack);
 		CLIENT_COMMAND(pClient, string);
+#endif
 	}
-
 }
 
 // only plays for ONE client, so only use in single play!
@@ -628,10 +667,8 @@ void CTargetCDAudio::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCa
 // only plays for ONE client, so only use in single play!
 void CTargetCDAudio::__MAKE_VHOOK(Think)()
 {
-	edict_t *pClient;
-
 	// manually find the single player.
-	pClient = INDEXENT(1);
+	edict_t *pClient = INDEXENT(1);
 
 	// Can't play if the client is not connected!
 	if (!pClient)

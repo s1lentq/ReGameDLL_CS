@@ -28,10 +28,15 @@ Archive's bin directory contains 2 subdirectories, 'bugfixed' and 'pure'
 | mp_nadedrops                  | 0       | 0   | 2            | Drop a grenade after player death<br/>`0` disabled<br/>`1` drop one the grenade<br/>`2` drop a everyone grenades |
 | mp_roundrespawn_time          | 20      | 0   | -            | Player cannot respawn until next round if more than N seconds has elapsed since the beginning round |
 | mp_auto_reload_weapons        | 0       | 0   | 1            | Automatically reload each weapon on player spawn<br/>`0` disabled<br/>`1` enabled |
-| mp_refill_bpammo_weapons      | 0       | 0   | 2            | Refill amount of backpack ammo up to the max <br/>`0` disabled<br/>`1` refill backpack ammo on player spawn<br/>`2` refill backpack ammo on each weapon reload |
-| bot_deathmatch                | 0       | 0   | 1            | Set's the mode for the zBot <br/>`0` disabled<br/>`1` enable mode Deathmatch and not allow to do the scenario |
+| mp_refill_bpammo_weapons      | 0       | 0   | 2            | Refill amount of backpack ammo up to the max<br/>`0` disabled<br/>`1` refill backpack ammo on player spawn<br/>`2` refill backpack ammo on each weapon reload |
 | mp_auto_join_team             | 0       | 0   | 1            | Automatically joins the team <br/>`0` disabled<br/>`1` enable (Use in conjunction with the cvar humans_join_team any/CT/T) |
 | mp_max_teamkills              | 3       | 0   | -            | Maximum number of allowed teamkills before autokick. Used when enabled mp_autokick. |
+| mp_fragsleft                  | -       | -   | -            | Is the number of frags left, if you have set mp_fraglimit. You just type mp_fragsleft in server console, and it tells you the number of frags left depending of mp_fraglimit. |
+| mp_fraglimit                  | 0       | -   | -            | If set to something other than 0, when anybody’s scored reaches mp_fraglimit the server changes map.<br />`0` means no limit |
+| mp_timeleft                   | -       | -   | -            | Is the number of time left before the map changes, if you have set mp_timelimit. You just type mp_timeleft in server console, and it tells you the number of time left depending of mp_timelimit. |
+| mp_timelimit                  | 0       | -   | -            | Period between map rotations.<br />`0` means no limit |
+| showtriggers                  | 0       | 0   | 1            | Debug cvar shows triggers. |
+| bot_deathmatch                | 0       | 0   | 1            | Set's the mode for the zBot <br/>`0` disabled<br/>`1` enable mode Deathmatch and not allow to do the scenario |
 
 ## How to install zBot for CS 1.6?
 * Extract all the files from an [archive](regamedll/extra/zBot/bot_profiles.zip?raw=true)

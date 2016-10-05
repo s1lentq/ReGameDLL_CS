@@ -150,7 +150,8 @@ enum RewardAccount
 	REWARD_VIP_HAVE_SELF_RESCUED	= 2500,
 
 	REWARD_TAKEN_HOSTAGE		= 1000
-
+	REWARD_TOOK_HOSTAGE_ACC		= 100,
+	REWARD_TOOK_HOSTAGE		= 150,
 };
 
 // custom enum
@@ -323,7 +324,7 @@ public:
 	virtual void ServerDeactivate() = 0;
 	virtual void CheckMapConditions() = 0;
 public:
-	BOOL m_bFreezePeriod;
+	BOOL m_bFreezePeriod;				// TRUE at beginning of round, set to FALSE when the period expires
 	BOOL m_bBombDropped;
 
 	// custom
@@ -549,20 +550,17 @@ public:
 	bool ShouldSkipSpawn() const { return m_bSkipSpawn; }
 	void MarkSpawnSkipped() { m_bSkipSpawn = false; }
 
-	float TimeRemaining() { return m_iRoundTimeSecs - gpGlobals->time + m_fRoundCount; }
-	bool IsMatchStarted() { return (m_fTeamCount != 0.0f || m_fCareerRoundMenuTime != 0.0f || m_fCareerMatchMenuTime != 0.0f); }
+	float GetRoundRemainingTime() const { return m_iRoundTimeSecs - gpGlobals->time + m_fRoundStartTime; }
+	float GetTimeLeft() const { return m_flTimeLimit - gpGlobals->time; }
+	bool IsMatchStarted() { return (m_flRestartRoundTime != 0.0f || m_fCareerRoundMenuTime != 0.0f || m_fCareerMatchMenuTime != 0.0f); }
 
-	inline void TerminateRound(float tmDelay, int iWinStatus)
-	{
-		m_iRoundWinStatus = iWinStatus;
-		m_fTeamCount = gpGlobals->time + tmDelay;
-		m_bRoundTerminating = true;
-	}
+	void TerminateRound(float tmDelay, int iWinStatus);
+
 public:
 	CVoiceGameMgr m_VoiceGameMgr;
-	float m_fTeamCount;				// m_flRestartRoundTime, the global time when the round is supposed to end, if this is not 0
+	float m_flRestartRoundTime;			// The global time when the round is supposed to end, if this is not 0 (deprecated name m_fTeamCount)
 	float m_flCheckWinConditions;
-	float m_fRoundCount;
+	float m_fRoundStartTime;			// Time round has started (deprecated name m_fRoundCount)
 	int m_iRoundTime;				// (From mp_roundtime) - How many seconds long this round is.
 	int m_iRoundTimeSecs;
 	int m_iIntroRoundTime;				// (From mp_freezetime) - How many seconds long the intro round (when players are frozen) is.
@@ -646,6 +644,8 @@ public:
 	bool m_bSkipShowMenu;
 	bool m_bNeededPlayers;
 	float m_flEscapeRatio;
+	float m_flTimeLimit;
+	float m_flGameStartTime;
 };
 
 typedef struct mapcycle_item_s
@@ -672,7 +672,15 @@ public:
 
 extern CGameRules *g_pGameRules;
 
+// Gets us at the CS game rules
 inline CHalfLifeMultiplay *CSGameRules()
 {
-	return reinterpret_cast<CHalfLifeMultiplay *>(g_pGameRules);
+	return static_cast<CHalfLifeMultiplay *>(g_pGameRules);
+}
+
+inline void CHalfLifeMultiplay::TerminateRound(float tmDelay, int iWinStatus)
+{
+	m_iRoundWinStatus = iWinStatus;
+	m_flRestartRoundTime = gpGlobals->time + tmDelay;
+	m_bRoundTerminating = true;
 }

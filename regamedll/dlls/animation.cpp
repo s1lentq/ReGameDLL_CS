@@ -359,12 +359,7 @@ float SetController(void *pmodel, entvars_t *pev, int iController, float flValue
 	}
 
 	int setting = int64(255.0f * (flValue - pbonecontroller->start) / (pbonecontroller->end - pbonecontroller->start));
-
-	if (setting < 0)
-		setting = 0;
-
-	if (setting > 255)
-		setting = 255;
+	setting = Q_clamp(setting, 0, 255);
 
 	pev->controller[ iController ] = setting;
 
@@ -408,12 +403,7 @@ float SetBlending(void *pmodel, entvars_t *pev, int iBlender, float flValue)
 	}
 
 	int setting = int64(255.0f * (flValue - pseqdesc->blendstart[iBlender]) / (pseqdesc->blendend[iBlender] - pseqdesc->blendstart[iBlender]));
-
-	if (setting < 0)
-		setting = 0;
-
-	if (setting > 255)
-		setting = 255;
+	setting = Q_clamp(setting, 0, 255);
 
 	pev->blending[iBlender] = setting;
 
@@ -751,13 +741,7 @@ void StudioCalcBoneAdj(float dadt, float *adj, const byte *pcontroller1, const b
 			else
 			{
 				value = (pcontroller1[i] * dadt + pcontroller2[i] * (1.0 - dadt)) / 255.0;
-
-				if (value < 0)
-					value = 0;
-
-				if (value > 1.0)
-					value = 1.0;
-
+				value = Q_clamp(value, 0.0f, 1.0f);
 				value = (1.0 - value) * pbonecontroller[j].start + value * pbonecontroller[j].end;
 			}
 		}
@@ -797,7 +781,7 @@ void StudioCalcBoneQuaterion(int frame, float s, mstudiobone_t *pbone, mstudioan
 	{
 		if (panim->offset[j + 3] == 0)
 		{
-			// default;
+			// default
 			angle2[j] = angle1[j] = pbone->value[j + 3];
 		}
 		else
@@ -894,6 +878,7 @@ void StudioCalcBonePosition(int frame, float s, mstudiobone_t *pbone, mstudioani
 				if (panimvalue->num.total < panimvalue->num.valid)
 					k = 0;
 			}
+
 			// if we're inside the span
 			if (panimvalue->num.valid > k)
 			{
@@ -913,6 +898,7 @@ void StudioCalcBonePosition(int frame, float s, mstudiobone_t *pbone, mstudioani
 					pos[j] += panimvalue[panimvalue->num.valid].value * pbone->scale[j];
 			}
 		}
+
 		if (pbone->bonecontroller[j] != -1 && adj)
 		{
 			pos[j] += adj[pbone->bonecontroller[j]];
@@ -926,13 +912,8 @@ void StudioSlerpBones(vec4_t *q1, float pos1[][3], vec4_t *q2, float pos2[][3], 
 	vec4_t q3;
 	float s1;
 
-	if (s < 0)
-		s = 0;
-
-	else if (s > 1.0)
-		s = 1.0;
-
-	s1 = 1.0 - s;
+	s = Q_clamp(s, 0.0f, 1.0f);
+	s1 = 1.0f - s;
 
 	for (i = 0; i < g_pstudiohdr->numbones; ++i)
 	{
@@ -958,8 +939,8 @@ void StudioCalcRotations(mstudiobone_t *pbones, int *chain, int chainlength, flo
 	{
 		j = chain[i];
 
-		StudioCalcBoneQuaterion(int(f), s, &pbones[j], &panim[j], adj, q[j]);
-		StudioCalcBonePosition(int(f), s, &pbones[j], &panim[j], adj, pos[j]);
+		StudioCalcBoneQuaterion((int)f, s, &pbones[j], &panim[j], adj, q[j]);
+		StudioCalcBonePosition((int)f, s, &pbones[j], &panim[j], adj, pos[j]);
 	}
 }
 
@@ -991,16 +972,16 @@ float_precision StudioEstimateFrame(float frame, mstudioseqdesc_t *pseqdesc)
 
 void SV_StudioSetupBones(model_t *pModel, float frame, int sequence, const vec_t *angles, const vec_t *origin, const byte *pcontroller, const byte *pblending, int iBone, const edict_t *pEdict)
 {
-	int i, j;
-	float_precision f;
+	int i, j, chainlength = 0;
+	int chain[MAXSTUDIOBONES];
+	double f;
+
 	float subframe;
 	float adj[MAXSTUDIOCONTROLLERS];
 	mstudiobone_t *pbones;
 	mstudioseqdesc_t *pseqdesc;
 	mstudioanim_t *panim;
 	float bonematrix[3][4];
-	int chain[MAXSTUDIOBONES];
-	int chainlength;
 	vec3_t temp_angles;
 
 	/*static */float pos[MAXSTUDIOBONES][3], pos2[MAXSTUDIOBONES][3];
@@ -1028,8 +1009,7 @@ void SV_StudioSetupBones(model_t *pModel, float frame, int sequence, const vec_t
 	}
 	else
 	{
-		chainlength = 0;
-
+		// only the parent bones
 		for (i = iBone; i != -1; i = pbones[i].parent)
 			chain[chainlength++] = i;
 	}
@@ -1047,7 +1027,6 @@ void SV_StudioSetupBones(model_t *pModel, float frame, int sequence, const vec_t
 		{
 			float b = float_precision(pblending[0]) / 255.0f;
 
-			pseqdesc = (mstudioseqdesc_t *)((byte *)g_pstudiohdr + g_pstudiohdr->seqindex) + sequence;
 			panim = StudioGetAnim(pModel, pseqdesc);
 			panim += g_pstudiohdr->numbones;
 
@@ -1154,7 +1133,7 @@ void SV_StudioSetupBones(model_t *pModel, float frame, int sequence, const vec_t
 
 	if (pseqdesc->numblends == 9 && sequence < ANIM_FIRST_DEATH_SEQUENCE && sequence != ANIM_SWIM_1 && sequence != ANIM_SWIM_2)
 	{
-		int copy = 1;
+		bool bCopy = true;
 		int gaitsequence = GetPlayerGaitsequence(pEdict);	// calc gait animation
 
 		if (gaitsequence < 0 || gaitsequence >= g_pstudiohdr->numseq)
@@ -1169,14 +1148,14 @@ void SV_StudioSetupBones(model_t *pModel, float frame, int sequence, const vec_t
 		{
 			if (!Q_strcmp(pbones[i].name, "Bip01 Spine"))
 			{
-				copy = 0;
+				bCopy = 0;
 			}
 			else if (!Q_strcmp(pbones[pbones[i].parent].name, "Bip01 Pelvis"))
 			{
-				copy = 1;
+				bCopy = 1;
 			}
 
-			if (copy)
+			if (bCopy)
 			{
 				Q_memcpy(pos[i], pos2[i], sizeof(pos[i]));
 				Q_memcpy(q[i], q2[i], sizeof(q[i]));
@@ -1187,9 +1166,9 @@ void SV_StudioSetupBones(model_t *pModel, float frame, int sequence, const vec_t
 	VectorCopy(angles, temp_angles);
 
 #ifndef REGAMEDLL_FIXES
-	if (pEdict != NULL)
+	if (pEdict)
 #else
-	if (pEdict != NULL && CBaseEntity::Instance(const_cast<edict_t *>(pEdict))->IsPlayer())
+	if (pEdict && CBaseEntity::Instance(const_cast<edict_t *>(pEdict))->IsPlayer())
 #endif
 	{
 		temp_angles[1] = UTIL_GetPlayerGaitYaw(ENTINDEX(pEdict));

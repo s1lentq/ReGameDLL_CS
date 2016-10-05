@@ -1034,15 +1034,21 @@ float GetAmountOfPlayerVisible(Vector vecSrc, CBaseEntity *entity)
 {
 	float retval = 0.0f;
 	TraceResult tr;
-	Vector spot;
 
 	const float topOfHead = 25.0f;
 	const float standFeet = 34.0f;
 	const float crouchFeet = 14.0f;
 	const float edgeOffset = 13.0f;
 
+	const float damagePercentageChest = 0.40f;
+	const float damagePercentageHead = 0.20f;
+	const float damagePercentageFeet = 0.20f;
+	const float damagePercentageRightSide = 0.10f;
+	const float damagePercentageLeftSide = 0.10f;
+
 	if (!entity->IsPlayer())
 	{
+		// the entity is not a player, so the damage is all or nothing.
 		UTIL_TraceLine(vecSrc, entity->pev->origin, ignore_monsters, NULL, &tr);
 
 		if (tr.flFraction == 1.0f)
@@ -1051,46 +1057,47 @@ float GetAmountOfPlayerVisible(Vector vecSrc, CBaseEntity *entity)
 		return retval;
 	}
 
-	UTIL_TraceLine(vecSrc, entity->pev->origin, ignore_monsters, NULL, &tr);
+	// check chest
+	Vector vecChest = entity->pev->origin;
+	UTIL_TraceLine(vecSrc, vecChest, ignore_monsters, NULL, &tr);
 
 	if (tr.flFraction == 1.0f)
-		retval += 0.4f;
+		retval += damagePercentageChest;
 
-	spot = entity->pev->origin + Vector(0, 0, topOfHead);
-	UTIL_TraceLine(vecSrc, spot, ignore_monsters, NULL, &tr);
-
-	if (tr.flFraction == 1.0f)
-		retval += 0.2f;
-
-	spot = entity->pev->origin;
-	if (entity->pev->flags & FL_DUCKING)
-		spot.z -= crouchFeet;
-	else
-		spot.z -= standFeet;
-
-	UTIL_TraceLine(vecSrc, spot, ignore_monsters, NULL, &tr);
+	// check top of head
+	Vector vecHead = entity->pev->origin + Vector(0, 0, topOfHead);
+	UTIL_TraceLine(vecSrc, vecHead, ignore_monsters, NULL, &tr);
 
 	if (tr.flFraction == 1.0f)
-		retval += 0.2f;
+		retval += damagePercentageHead;
+
+	// check feet
+	Vector vecFeet = entity->pev->origin;
+	vecFeet.z -= (entity->pev->flags & FL_DUCKING) ? crouchFeet : standFeet;
+
+	UTIL_TraceLine(vecSrc, vecFeet, ignore_monsters, NULL, &tr);
+
+	if (tr.flFraction == 1.0f)
+		retval += damagePercentageFeet;
 
 	Vector2D dir = (entity->pev->origin - vecSrc).Make2D();
 	dir.NormalizeInPlace();
 
 	Vector2D perp(-dir.y * edgeOffset, dir.x * edgeOffset);
+	Vector vecRightSide = entity->pev->origin + Vector(perp.x, perp.y, 0);
+	Vector vecLeftSide = entity->pev->origin - Vector(perp.x, perp.y, 0);
 
-	spot = entity->pev->origin + Vector(perp.x, perp.y, 0);
-
-	UTIL_TraceLine(vecSrc, spot, ignore_monsters, NULL, &tr);
-
-	if (tr.flFraction == 1.0f)
-		retval += 0.1;
-
-	spot = entity->pev->origin - Vector(perp.x, perp.y, 0);
-
-	UTIL_TraceLine(vecSrc, spot, ignore_monsters, NULL, &tr);
+	// check right "edge"
+	UTIL_TraceLine(vecSrc, vecRightSide, ignore_monsters, NULL, &tr);
 
 	if (tr.flFraction == 1.0f)
-		retval += 0.1;
+		retval += damagePercentageRightSide;
+
+	// check left "edge"
+	UTIL_TraceLine(vecSrc, vecLeftSide, ignore_monsters, NULL, &tr);
+
+	if (tr.flFraction == 1.0f)
+		retval += damagePercentageLeftSide;
 
 	return retval;
 }

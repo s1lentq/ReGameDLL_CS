@@ -776,9 +776,6 @@ bool CCSBotManager::BotAddCommand(BotProfileTeamType team, bool isFromConsole)
 	if (IMPL(m_isLearningMap))
 		return false;
 
-	if (!AreBotsAllowed())
-		return false;
-
 	const BotProfile *profile = NULL;
 
 	if (!isFromConsole || CMD_ARGC() < 2)
@@ -848,8 +845,10 @@ bool CCSBotManager::BotAddCommand(BotProfileTeamType team, bool isFromConsole)
 // Keep a minimum quota of bots in the game
 void CCSBotManager::MaintainBotQuota()
 {
+#ifdef REGAMEDLL_FIXES
 	if (!AreBotsAllowed())
 		return;
+#endif
 
 	if (IMPL(m_isLearningMap))
 		return;
@@ -887,7 +886,14 @@ void CCSBotManager::MaintainBotQuota()
 	{
 		// don't try to add a bot if all teams are full
 		if (!CSGameRules()->TeamFull(TERRORIST) || !CSGameRules()->TeamFull(CT))
-			BotAddCommand(BOT_TEAM_ANY);
+		{
+#ifndef REGAMEDLL_FIXES
+			if (AreBotsAllowed())
+#endif
+			{
+				BotAddCommand(BOT_TEAM_ANY);
+			}
+		}
 	}
 	else if (desiredBotCount < botsInGame)
 	{

@@ -347,7 +347,7 @@ public:
 #endif
 
 public:
-	BOOL m_bFreezePeriod;
+	BOOL m_bFreezePeriod;				// TRUE at beginning of round, set to FALSE when the period expires
 	BOOL m_bBombDropped;
 
 	// custom
@@ -702,6 +702,7 @@ public:
 	// Check various conditions to end the map.
 	bool CheckGameOver();
 	bool CheckTimeLimit();
+	bool CheckFragLimit();
 	bool CheckMaxRounds();
 	bool CheckWinLimit();
 
@@ -721,7 +722,9 @@ public:
 	bool ShouldSkipSpawn() const { return m_bSkipSpawn; }
 	void MarkSpawnSkipped() { m_bSkipSpawn = false; }
 	void PlayerJoinedTeam(CBasePlayer *pPlayer) { }
-	float TimeRemaining() { return m_iRoundTimeSecs - gpGlobals->time + m_fRoundCount; }
+	float GetRoundRemainingTime() const { return m_iRoundTimeSecs - gpGlobals->time + m_fRoundStartTime; }
+	float GetTimeLeft() const { return m_flTimeLimit - gpGlobals->time; }
+
 	BOOL TeamFull(int team_id);
 	BOOL TeamStacked(int newTeam_id, int curTeam_id);
 	bool IsVIPQueueEmpty();
@@ -750,7 +753,7 @@ public:
 	VFUNC BOOL IsThereABomb();
 	VFUNC TeamName SelectDefaultTeam();
 
-	bool IsMatchStarted() { return (m_fTeamCount != 0.0f || m_fCareerRoundMenuTime != 0.0f || m_fCareerMatchMenuTime != 0.0f); }
+	bool IsMatchStarted() { return (m_flRestartRoundTime != 0.0f || m_fCareerRoundMenuTime != 0.0f || m_fCareerMatchMenuTime != 0.0f); }
 	void SendMOTDToClient(edict_t *client);
 
 	void TerminateRound(float tmDelay, int iWinStatus);
@@ -769,9 +772,9 @@ public:
 	static RewardAccount m_rgRewardAccountRules[];
 
 	CVoiceGameMgr m_VoiceGameMgr;
-	float m_fTeamCount;				// m_flRestartRoundTime, the global time when the round is supposed to end, if this is not 0
+	float m_flRestartRoundTime;			// The global time when the round is supposed to end, if this is not 0 (deprecated name m_fTeamCount)
 	float m_flCheckWinConditions;
-	float m_fRoundCount;
+	float m_fRoundStartTime;			// Time round has started (deprecated name m_fRoundCount)
 	int m_iRoundTime;				// (From mp_roundtime) - How many seconds long this round is.
 	int m_iRoundTimeSecs;
 	int m_iIntroRoundTime;				// (From mp_freezetime) - How many seconds long the intro round (when players are frozen) is.
@@ -857,6 +860,8 @@ protected:
 	bool m_bSkipShowMenu;
 	bool m_bNeededPlayers;
 	float m_flEscapeRatio;
+	float m_flTimeLimit;
+	float m_flGameStartTime;
 };
 
 typedef struct mapcycle_item_s
@@ -894,15 +899,16 @@ extern CGameRules DLLEXPORT *g_pGameRules;
 CGameRules *InstallGameRules();
 CGameRules *InstallGameRules_();
 
+// Gets us at the CS game rules
 inline CHalfLifeMultiplay *CSGameRules()
 {
-	return reinterpret_cast<CHalfLifeMultiplay *>(g_pGameRules);
+	return static_cast<CHalfLifeMultiplay *>(g_pGameRules);
 }
 
 inline void CHalfLifeMultiplay::TerminateRound(float tmDelay, int iWinStatus)
 {
 	m_iRoundWinStatus = iWinStatus;
-	m_fTeamCount = gpGlobals->time + tmDelay;
+	m_flRestartRoundTime = gpGlobals->time + tmDelay;
 	m_bRoundTerminating = true;
 }
 

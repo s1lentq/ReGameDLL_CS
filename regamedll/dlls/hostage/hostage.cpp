@@ -499,7 +499,7 @@ void CHostage::IdleThink()
 			{
 				m_vOldPos = pev->origin;
 
-				if (!CSGameRules()->m_fTeamCount)
+				if (!CSGameRules()->m_flRestartRoundTime)
 				{
 					SendHostagePositionMsg();
 				}
@@ -657,7 +657,7 @@ BOOL CHostage::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevA
 
 		CSGameRules()->CheckWinConditions();
 
-		if (!CSGameRules()->m_fTeamCount)
+		if (!CSGameRules()->m_flRestartRoundTime)
 			SendHostageEventMsg();
 
 		pev->nextthink = gpGlobals->time + 3.0f;

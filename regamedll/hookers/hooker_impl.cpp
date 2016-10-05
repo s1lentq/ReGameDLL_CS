@@ -214,8 +214,8 @@ CCareerTaskManager *TheCareerTasks;
 const TaskInfo taskInfo[21];
 
 // globals client.cpp
-float g_flTimeLimit;
-float g_flResetTime;
+float g_flTimeLimit;		// moved from gamerules
+float g_flResetTime;		// moved from gamerules
 bool g_bClientPrintEnable;
 
 char *sPlayerModelFiles[12];
@@ -936,7 +936,7 @@ void CFuncTank::Precache() { Precache_(); }
 void CFuncTank::KeyValue(KeyValueData *pkvd) { KeyValue_(pkvd); }
 int CFuncTank::Save(CSave &save) { return Save_(save); }
 int CFuncTank::Restore(CRestore &restore) { return Restore_(restore); }
-BOOL CFuncTank::OnControls(entvars_t *pevTest) { OnControls_(pevTest); }
+BOOL CFuncTank::OnControls(entvars_t *pevTest) { return OnControls_(pevTest); }
 void CFuncTank::Think() { Think_(); }
 void CFuncTank::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value) { Use_(pActivator, pCaller, useType, value); }
 void CFuncTank::Fire(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker) { Fire_(barrelEnd, forward, pevAttacker); }
@@ -970,8 +970,8 @@ BOOL CGameRules::CanHaveAmmo(CBasePlayer *pPlayer, const char *pszAmmoName, int 
 
 // grenade
 void CGrenade::Spawn() { Spawn_(); }
-int CGrenade::Save(CSave &save) { Save_(save); }
-int CGrenade::Restore(CRestore &restore) { Restore_(restore); }
+int CGrenade::Save(CSave &save) { return Save_(save); }
+int CGrenade::Restore(CRestore &restore) { return Restore_(restore); }
 void CGrenade::Killed(entvars_t *pevAttacker, int iGib) { Killed_(pevAttacker, iGib); }
 void CGrenade::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value) { Use_(pActivator, pCaller, useType, value); }
 void CGrenade::BounceSound() { BounceSound_(); }
@@ -1032,12 +1032,12 @@ void CWallHealth::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE us
 void CItem::Spawn() { Spawn_(); }
 CBaseEntity *CItem::Respawn() { return Respawn_(); }
 
-void CWorldItem::Spawn() { Spawn_(); }
-void CWorldItem::KeyValue(KeyValueData *pkvd) { KeyValue_(pkvd); }
+//void CWorldItem::Spawn() { Spawn_(); }
+//void CWorldItem::KeyValue(KeyValueData *pkvd) { KeyValue_(pkvd); }
 
-void CItemSuit::Spawn() { Spawn_(); }
-void CItemSuit::Precache() { Precache_(); }
-BOOL CItemSuit::MyTouch(CBasePlayer *pPlayer) { return MyTouch_(pPlayer); }
+//void CItemSuit::Spawn() { Spawn_(); }
+//void CItemSuit::Precache() { Precache_(); }
+//BOOL CItemSuit::MyTouch(CBasePlayer *pPlayer) { return MyTouch_(pPlayer); }
 
 void CItemBattery::Spawn() { Spawn_(); }
 void CItemBattery::Precache() { Precache_(); }
@@ -1047,9 +1047,9 @@ void CItemAntidote::Spawn() { Spawn_(); }
 void CItemAntidote::Precache() { Precache_(); }
 BOOL CItemAntidote::MyTouch(CBasePlayer *pPlayer) { return MyTouch_(pPlayer); }
 
-void CItemSecurity::Spawn() { Spawn_(); }
-void CItemSecurity::Precache() { Precache_(); }
-BOOL CItemSecurity::MyTouch(CBasePlayer *pPlayer) { return MyTouch_(pPlayer); }
+//void CItemSecurity::Spawn() { Spawn_(); }
+//void CItemSecurity::Precache() { Precache_(); }
+//BOOL CItemSecurity::MyTouch(CBasePlayer *pPlayer) { return MyTouch_(pPlayer); }
 
 void CItemLongJump::Spawn() { Spawn_(); }
 void CItemLongJump::Precache() { Precache_(); }
@@ -1380,8 +1380,8 @@ void CAmbientGeneric::Spawn() { Spawn_(); }
 void CAmbientGeneric::Precache() { Precache_(); }
 void CAmbientGeneric::Restart() { Restart_(); }
 void CAmbientGeneric::KeyValue(KeyValueData *pkvd) { KeyValue_(pkvd); }
-int CAmbientGeneric::Save(CSave &save) { Save_(save); }
-int CAmbientGeneric::Restore(CRestore &restore) { Restore_(restore); }
+int CAmbientGeneric::Save(CSave &save) { return Save_(save); }
+int CAmbientGeneric::Restore(CRestore &restore) { return Restore_(restore); }
 
 void CEnvSound::Spawn() { Spawn_(); }
 void CEnvSound::KeyValue(KeyValueData *pkvd) { KeyValue_(pkvd); }

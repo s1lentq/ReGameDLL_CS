@@ -57,9 +57,9 @@ bool IsBotSpeaking()
 
 void SV_Continue_f()
 {
-	if (CSGameRules()->IsCareer() && CSGameRules()->m_fTeamCount > 100000.0)
+	if (CSGameRules()->IsCareer() && CSGameRules()->m_flRestartRoundTime > 100000.0)
 	{
-		CSGameRules()->m_fTeamCount = gpGlobals->time;
+		CSGameRules()->m_flRestartRoundTime = gpGlobals->time;
 
 		// go continue
 		MESSAGE_BEGIN(MSG_ALL, gmsgCZCareer);
@@ -414,7 +414,7 @@ CHalfLifeMultiplay::CHalfLifeMultiplay()
 
 	m_flIntermissionEndTime = 0;
 	m_flIntermissionStartTime = 0;
-	m_fTeamCount = 0;
+	m_flRestartRoundTime = 0;
 
 	m_iAccountCT = 0;
 	m_iAccountTerrorist = 0;
@@ -542,7 +542,7 @@ CHalfLifeMultiplay::CHalfLifeMultiplay()
 		}
 	}
 
-	m_fRoundCount = 0;
+	m_fRoundStartTime = 0;
 	m_fIntroRoundCount = 0;
 
 #ifndef CSTRIKE
@@ -591,6 +591,8 @@ CHalfLifeMultiplay::CHalfLifeMultiplay()
 	m_bSkipShowMenu = false;
 	m_bNeededPlayers = false;
 	m_flEscapeRatio = 0.0f;
+	m_flTimeLimit = 0.0f;
+	m_flGameStartTime = 0.0f;
 
 #ifndef REGAMEDLL_FIXES
 	g_pMPGameRules = this;
@@ -1533,11 +1535,7 @@ void CHalfLifeMultiplay::SwapAllPlayers()
 	}
 
 	// Swap Team victories
-	int iTemp;
-
-	iTemp = m_iNumTerroristWins;
-	m_iNumTerroristWins = m_iNumCTWins;
-	m_iNumCTWins = iTemp;
+	SWAP(m_iNumTerroristWins, m_iNumCTWins);
 
 	// Update the clients team score
 	UpdateTeamScores();
@@ -1749,11 +1747,11 @@ void CHalfLifeMultiplay::__API_VHOOK(RestartRound)()
 			CVAR_SET_FLOAT("mp_timelimit", 0);
 		}
 
-		g_flResetTime = gpGlobals->time;
+		m_flGameStartTime = gpGlobals->time;
 
 		// Reset timelimit
 		if (timelimit.value)
-			g_flTimeLimit = gpGlobals->time + (timelimit.value * 60);
+			m_flTimeLimit = gpGlobals->time + (timelimit.value * 60);
 
 		// Reset total # of rounds played
 		m_iTotalRoundsPlayed = 0;
@@ -1924,7 +1922,7 @@ void CHalfLifeMultiplay::__API_VHOOK(RestartRound)()
 	// Update individual players accounts and respawn players
 
 	// the round time stamp must be set before players are spawned
-	m_fIntroRoundCount = m_fRoundCount = gpGlobals->time;
+	m_fIntroRoundCount = m_fRoundStartTime = gpGlobals->time;
 
 	// Adrian - No cash for anyone at first rounds! ( well, only the default. )
 	if (m_bCompleteReset)
@@ -2031,7 +2029,7 @@ void CHalfLifeMultiplay::__API_VHOOK(RestartRound)()
 	// Reset game variables
 	m_flIntermissionEndTime = 0;
 	m_flIntermissionStartTime = 0;
-	m_fTeamCount = 0.0;
+	m_flRestartRoundTime = 0.0;
 	m_iAccountTerrorist = m_iAccountCT = 0;
 	m_iHostagesRescued = 0;
 	m_iHostagesTouched = 0;
@@ -2353,10 +2351,10 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(Think)()
 		CVAR_SET_FLOAT("sv_clienttrace", 1);
 	}
 
-	if (!m_fRoundCount)
+	if (!m_fRoundStartTime)
 	{
-		// intialize the timer time stamps, this happens once only
-		m_fIntroRoundCount = m_fRoundCount = gpGlobals->time;
+		// initialize the timer time stamps, this happens once only
+		m_fIntroRoundCount = m_fRoundStartTime = gpGlobals->time;
 	}
 
 	if (m_flForceCameraValue != forcecamera.value
@@ -2380,6 +2378,10 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(Think)()
 
 	// have we hit the timelimit?
 	if (CheckTimeLimit())
+		return;
+
+	// did somebody hit the fraglimit ?
+	if (CheckFragLimit())
 		return;
 
 	if (!IsCareer())
@@ -2413,7 +2415,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(Think)()
 			CheckRoundTimeExpired();
 		}
 
-		if (m_fTeamCount != 0.0f && m_fTeamCount <= gpGlobals->time)
+		if (m_flRestartRoundTime > 0.0f && m_flRestartRoundTime <= gpGlobals->time)
 		{
 			if (!IsCareer() || !m_fCareerRoundMenuTime)
 			{
@@ -2423,7 +2425,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(Think)()
 			{
 				bool isBotSpeaking = false;
 
-				if (m_fTeamCount + 10.0f > gpGlobals->time)
+				if (m_flRestartRoundTime + 10.0f > gpGlobals->time)
 				{
 					isBotSpeaking = IsBotSpeaking();
 				}
@@ -2480,7 +2482,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(Think)()
 							MESSAGE_END();
 
 							pPlayer->m_iHideHUD |= HIDEHUD_ALL;
-							m_fTeamCount = gpGlobals->time + 100000.0;
+							m_flRestartRoundTime = gpGlobals->time + 100000.0;
 
 							UTIL_LogPrintf("Career Round %d %d %d %d\n", m_iRoundWinStatus, m_iNumCTWins, m_iNumTerroristWins, TheCareerTasks->AreAllTasksComplete());
 							break;
@@ -2568,6 +2570,7 @@ bool CHalfLifeMultiplay::CheckGameOver()
 	// someone else quit the game already
 	if (g_fGameOver)
 	{
+		// bounds check
 		int time = int(CVAR_GET_FLOAT("mp_chattime"));
 
 		if (time < 1)
@@ -2576,13 +2579,12 @@ bool CHalfLifeMultiplay::CheckGameOver()
 		else if (time > MAX_INTERMISSION_TIME)
 			CVAR_SET_STRING("mp_chattime", UTIL_dtos1(MAX_INTERMISSION_TIME));
 
-		// bounds check
 		m_flIntermissionEndTime = m_flIntermissionStartTime + mp_chattime.value;
 
 		// check to see if we should change levels now
 		if (m_flIntermissionEndTime < gpGlobals->time && !IsCareer())
 		{
-			if (!UTIL_HumansInGame()		// if only bots, just change immediately
+			if (!UTIL_HumansInGame()			// if only bots, just change immediately
 				|| m_iEndIntermissionButtonHit		// check that someone has pressed a key, or the max intermission time is over
 				|| ((m_flIntermissionStartTime + MAX_INTERMISSION_TIME) < gpGlobals->time))
 			{
@@ -2599,9 +2601,7 @@ bool CHalfLifeMultiplay::CheckGameOver()
 
 bool CHalfLifeMultiplay::CheckTimeLimit()
 {
-	float fTimeLimit = timelimit.value;
-
-	if (fTimeLimit < 0)
+	if (timelimit.value < 0)
 	{
 		CVAR_SET_FLOAT("mp_timelimit", 0);
 		return false;
@@ -2609,17 +2609,29 @@ bool CHalfLifeMultiplay::CheckTimeLimit()
 
 	if (!IsCareer())
 	{
-		if (fTimeLimit != 0.0f)
+		if (timelimit.value)
 		{
-			g_flTimeLimit = g_flResetTime + fTimeLimit * 60.0f;
+			m_flTimeLimit = m_flGameStartTime + timelimit.value * 60.0f;
+
+			if (gpGlobals->time >= m_flTimeLimit)
+			{
+				ALERT(at_console, "Changing maps because time limit has been met\n");
+				GoToIntermission();
+				return true;
+			}
 		}
 
-		if (fTimeLimit > 0 && gpGlobals->time >= g_flTimeLimit)
+#ifdef REGAMEDLL_ADD
+		static int lastTime = 0;
+		int timeRemaining = (int)(timelimit.value ? (m_flTimeLimit - gpGlobals->time) : 0);
+
+		// Updates once per second
+		if (timeRemaining != lastTime)
 		{
-			ALERT(at_console, "Changing maps because time limit has been met\n");
-			GoToIntermission();
-			return true;
+			lastTime = timeRemaining;
+			g_engfuncs.pfnCvar_DirectSet(&timeleft, UTIL_VarArgs("%02d:%02d", timeRemaining / 60, timeRemaining % 60));
 		}
+#endif
 	}
 
 	return false;
@@ -2653,9 +2665,56 @@ bool CHalfLifeMultiplay::CheckWinLimit()
 	return false;
 }
 
+bool CHalfLifeMultiplay::CheckFragLimit()
+{
+#ifdef REGAMEDLL_ADD
+	int fragsRemaining = 0;
+
+	if (fraglimit.value)
+	{
+		int bestFrags = fraglimit.value;
+
+		// check if any player is over the frag limit
+		for (int i = 1; i <= gpGlobals->maxClients; i++)
+		{
+			auto pPlayer = UTIL_PlayerByIndex(i);
+
+			if (!pPlayer || pPlayer->has_disconnected)
+				continue;
+
+			if (pPlayer->pev->frags >= fraglimit.value)
+			{
+				ALERT(at_console, "Changing maps because frag limit has been met\n");
+				GoToIntermission();
+				return true;
+			}
+
+			int remain = (int)(fraglimit.value - pPlayer->pev->frags);
+			if (remain < bestFrags)
+			{
+				bestFrags = remain;
+			}
+		}
+
+		fragsRemaining = bestFrags;
+	}
+
+	static int lastFrags = 0;
+
+	// Updates when frags change
+	if (fragsRemaining != lastFrags)
+	{
+		lastFrags = fragsRemaining;
+		g_engfuncs.pfnCvar_DirectSet(&fragsleft, UTIL_VarArgs("%i", fragsRemaining));
+	}
+#endif
+
+	return false;
+}
+
 void CHalfLifeMultiplay::CheckFreezePeriodExpired()
 {
-	if (TimeRemaining() > 0)
+	if (GetRoundRemainingTime() > 0)
 		return;
 
 	// Log this information
@@ -2700,7 +2759,7 @@ void CHalfLifeMultiplay::CheckFreezePeriodExpired()
 	}
 
 	// Reset the round time
-	m_fRoundCount = gpGlobals->time;
+	m_fRoundStartTime = gpGlobals->time;
 
 	// in seconds
 	m_iRoundTimeSecs = m_iRoundTime;
@@ -2843,12 +2902,12 @@ void CHalfLifeMultiplay::CheckRoundTimeExpired()
 	float flEndRoundTime;
 
 	// Check to see if there's still a live C4 hanging around.. if so, wait until this C4 blows before ending the round
-	CGrenade *C4 = (CGrenade *)UTIL_FindEntityByClassname(NULL, "grenade");
+	CGrenade *pBomb = (CGrenade *)UTIL_FindEntityByClassname(NULL, "grenade");
 
-	if (C4 != NULL)
+	if (pBomb)
 	{
-		if (!C4->m_bJustBlew)
-			flEndRoundTime = C4->m_flC4Blow;
+		if (!pBomb->m_bJustBlew)
+			flEndRoundTime = pBomb->m_flC4Blow;
 		else
 			flEndRoundTime = gpGlobals->time + 5.0f;
 	}
@@ -2877,7 +2936,7 @@ void CHalfLifeMultiplay::CheckRoundTimeExpired()
 	}
 
 	// This is done so that the portion of code has enough time to do it's thing.
-	m_fRoundCount = gpGlobals->time + 60.0f;
+	m_fRoundStartTime = gpGlobals->time + 60.0f;
 }
 
 void CHalfLifeMultiplay::CheckLevelInitialized()
@@ -2927,7 +2986,7 @@ void CHalfLifeMultiplay::CheckRestartRound()
 		UTIL_ClientPrintAll(HUD_PRINTCENTER, "#Game_will_restart_in", UTIL_dtos1(iRestartDelay), (iRestartDelay == 1) ? "SECOND" : "SECONDS");
 		UTIL_ClientPrintAll(HUD_PRINTCONSOLE, "#Game_will_restart_in_console", UTIL_dtos1(iRestartDelay), (iRestartDelay == 1) ? "SECOND" : "SECONDS");
 
-		m_fTeamCount = gpGlobals->time + iRestartDelay;
+		m_flRestartRoundTime = gpGlobals->time + iRestartDelay;
 		m_bCompleteReset = true;
 
 		CVAR_SET_FLOAT("sv_restartround", 0);
@@ -2940,7 +2999,7 @@ void CHalfLifeMultiplay::CheckRestartRound()
 bool CHalfLifeMultiplay::HasRoundTimeExpired()
 {
 	// We haven't completed other objectives, so go for this!.
-	if (TimeRemaining() > 0 || m_iRoundWinStatus != WINNER_NONE)
+	if (GetRoundRemainingTime() > 0 || m_iRoundWinStatus != WINNER_NONE)
 	{
 		return false;
 	}
@@ -3001,9 +3060,9 @@ void CHalfLifeMultiplay::CareerRestart()
 {
 	g_fGameOver = FALSE;
 
-	if (m_fTeamCount == 0.0f)
+	if (m_flRestartRoundTime == 0.0f)
 	{
-		m_fTeamCount = gpGlobals->time + 1.0f;
+		m_flRestartRoundTime = gpGlobals->time + 1.0f;
 	}
 
 	// for reset everything
@@ -3534,7 +3593,7 @@ BOOL CHalfLifeMultiplay::__API_VHOOK(FPlayerCanRespawn)(CBasePlayer *pPlayer)
 
 	if (m_iNumTerrorist > 0 && m_iNumCT > 0)
 	{
-		if (gpGlobals->time > m_fRoundCount + GetRoundRespawnTime())
+		if (gpGlobals->time > m_fRoundStartTime + GetRoundRespawnTime())
 		{
 			// If this player just connected and fadetoblack is on, then maybe
 			// the server admin doesn't want him peeking around.
@@ -4599,8 +4658,13 @@ void CHalfLifeMultiplay::__API_VHOOK(ChangeLevel)()
 	char szRules[1500];
 	int minplayers = 0, maxplayers = 0;
 
+#ifdef REGAMEDLL_FIXES
+	// the absolute default level is de_dust
+	Q_strcpy(szFirstMapInList, "de_dust");
+#else
 	// the absolute default level is hldm1
 	Q_strcpy(szFirstMapInList, "hldm1");
+#endif
 
 	int curplayers;
 	bool do_cycle = true;
@@ -4821,5 +4885,4 @@ TeamName CHalfLifeMultiplay::SelectDefaultTeam()
 	}
 
 	return team;
-
 }

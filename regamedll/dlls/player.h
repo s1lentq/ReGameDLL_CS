@@ -606,7 +606,7 @@ public:
 	void RemoveBomb();
 	CBasePlayerItem *GetItemOfNamed(const char *pszItemName);
 
-#ifdef REGAMEDLL_ADD
+#ifdef REGAMEDLL_API
 	CCSPlayer *CSPlayer() const;
 #endif
 
@@ -843,7 +843,7 @@ inline bool CBasePlayer::IsReloading() const
 	return false;
 }
 
-#ifdef REGAMEDLL_ADD
+#ifdef REGAMEDLL_API
 inline CCSPlayer *CBasePlayer::CSPlayer() const {
 	return reinterpret_cast<CCSPlayer *>(this->m_pEntity);
 }

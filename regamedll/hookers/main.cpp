@@ -27,6 +27,7 @@
 */
 
 #include "precompiled.h"
+#include "FileSystem.h"
 
 #ifdef _WIN32
 	#include <direct.h>

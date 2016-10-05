@@ -49,6 +49,8 @@ class BotMeme
 {
 public:
 	void Transmit(CCSBot *sender) const;						// transmit meme to other bots
+
+	virtual ~BotMeme(){}
 	virtual void Interpret(CCSBot *sender, CCSBot *receiver) const = 0;		// cause the given bot to act on this meme
 };
 

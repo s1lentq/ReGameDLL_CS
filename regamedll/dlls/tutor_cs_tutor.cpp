@@ -2527,7 +2527,7 @@ void CCSTutor::CheckForTimeRunningOut()
 {
 	CBasePlayer *localPlayer = UTIL_GetLocalPlayer();
 
-	if (localPlayer == NULL || CSGameRules()->IsFreezePeriod() || CSGameRules()->TimeRemaining() > 30.0f)
+	if (localPlayer == NULL || CSGameRules()->IsFreezePeriod() || CSGameRules()->GetRoundRemainingTime() > 30.0f)
 		return;
 
 	if (IsBombMap())

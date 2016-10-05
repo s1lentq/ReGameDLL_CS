@@ -101,13 +101,10 @@ struct entity_field_alias_t
 	int field;
 };
 
-C_DLLEXPORT float g_flTimeLimit;
 C_DLLEXPORT int CountTeams();
 C_DLLEXPORT int CountTeamPlayers(int iTeam);
 
 extern bool g_bServerActive;
-
-extern float g_flResetTime;
 extern bool g_skipCareerInitialSpawn;
 
 extern unsigned short m_usResetDecals;

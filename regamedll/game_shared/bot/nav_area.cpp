@@ -4215,8 +4215,18 @@ void EditNavAreas(NavEditCmdType cmd)
 				{
 					// create the new nav area
 					CNavArea *newArea = new CNavArea(&anchor, &cursor);
+
+#ifdef REGAMEDLL_FIXES
+					if (TheNavAreaList.empty())
+					{
+						// first add the areas to the grid
+						TheNavAreaGrid.Initialize(8192.0f, -8192.0f, 8192.0f, -8192.0f);
+					}
+#endif
+
 					TheNavAreaList.push_back(newArea);
 					TheNavAreaGrid.AddNavArea(newArea);
+
 					EMIT_SOUND_DYN(ENT(UTIL_GetLocalPlayer()->pev), CHAN_ITEM, "buttons/blip1.wav", 1, ATTN_NORM, 0, 100);
 
 					// if we have a marked area, inter-connect the two
@@ -4255,6 +4265,7 @@ void EditNavAreas(NavEditCmdType cmd)
 				{
 					EMIT_SOUND_DYN(ENT(UTIL_GetLocalPlayer()->pev), CHAN_ITEM, "buttons/button11.wav", 1, ATTN_NORM, 0, 100);
 				}
+
 				break;
 			}
 		}

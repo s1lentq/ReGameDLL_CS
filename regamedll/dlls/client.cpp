@@ -5,8 +5,6 @@
 */
 #ifndef HOOK_GAMEDLL
 
-float g_flTimeLimit = 0;
-float g_flResetTime = 0;
 bool g_bClientPrintEnable = true;
 
 char *sPlayerModelFiles[] =
@@ -57,10 +55,9 @@ static entity_field_alias_t custom_entity_field_alias[] =
 	{ "animtime",	0 },
 };
 
-bool g_bServerActive = false;
-
 #endif // HOOK_GAMEDLL
 
+bool g_bServerActive = false;
 PLAYERPVSSTATUS g_PVSStatus[MAX_CLIENTS];
 unsigned short m_usResetDecals;
 unsigned short g_iShadowSprite;
@@ -991,7 +988,7 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 			return;
 	}
 
-	int fullArmor = (pPlayer->pev->armorvalue >= 100);
+	bool bFullArmor = (pPlayer->pev->armorvalue >= 100);
 	bool bHasHelmet = (pPlayer->m_iKevlar == ARMOR_VESTHELM);
 	bool bEnoughMoney = false;
 
@@ -1003,7 +1000,7 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 			if (pPlayer->HasRestrictItem(ITEM_KEVLAR, ITEM_TYPE_BUYING))
 				return;
 #endif
-			if (fullArmor)
+			if (bFullArmor)
 			{
 				if (g_bClientPrintEnable)
 				{
@@ -1032,7 +1029,7 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 			if (pPlayer->HasRestrictItem(ITEM_ASSAULT, ITEM_TYPE_BUYING))
 				return;
 #endif
-			if (fullArmor)
+			if (bFullArmor)
 			{
 				if (bHasHelmet)
 				{
@@ -2090,9 +2087,9 @@ BOOL HandleBuyAliasCommands(CBasePlayer *pPlayer, const char *pszCommand)
 	WeaponIdType weaponID = WEAPON_NONE;
 	const char *weaponFailName = BuyAliasToWeaponID(pszCommand, weaponID);
 
+	// Ok, we have weapon info ID.
 	if (weaponID != WEAPON_NONE)
 	{
-		// Ok, we have weapon info ID.
 		// assasination maps have a specific set of weapons that can be used in them.
 		if (CanBuyWeaponByMaptype(pPlayer->m_iTeam, weaponID, (CSGameRules()->m_iMapHasVIPSafetyZone == MAP_HAVE_VIP_SAFETYZONE_YES)))
 		{
@@ -2464,15 +2461,15 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 	{
 		if (gpGlobals->time > player->m_iTimeCheckAllowed)
 		{
-			player->m_iTimeCheckAllowed = int(gpGlobals->time + 1);
+			player->m_iTimeCheckAllowed = int(gpGlobals->time + 1.0f);
 
 			if (!timelimit.value)
 			{
 				ClientPrint(player->pev, HUD_PRINTTALK, "#Game_no_timelimit");
 				return;
 			}
-
-			int iTimeRemaining = int(g_flTimeLimit - gpGlobals->time);
+#ifndef REGAMEDLL_FIXES
+			int iTimeRemaining = (int)CSGameRules()->GetTimeLeft();
 
 			if (iTimeRemaining < 0)
 				iTimeRemaining = 0;
@@ -2497,6 +2494,10 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 			}
 
 			ClientPrint(player->pev, HUD_PRINTTALK, "#Game_timelimit", UTIL_dtos1(iSeconds), secs);
+#else
+			int timeRemaining = (int)(timelimit.value ? CSGameRules()->GetTimeLeft() : 0);
+			ClientPrint(player->pev, HUD_PRINTTALK, "#Game_timelimit", UTIL_dtos1(timeRemaining / 60), UTIL_dtos2(timeRemaining % 60));
+#endif
 		}
 	}
 	else if (FStrEq(pcmd, "listplayers"))
@@ -3338,6 +3339,7 @@ void EXT_FUNC ServerActivate(edict_t *pEdictList, int edictCount, int clientMax)
 #ifdef REGAMEDLL_ADD
 	CSGameRules()->ServerActivate();
 #endif
+
 }
 
 void EXT_FUNC PlayerPreThink(edict_t *pEntity)

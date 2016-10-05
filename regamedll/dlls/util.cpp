@@ -2361,11 +2361,14 @@ int UTIL_ReadFlags(const char *c)
 // Determine whether bots can be used or not
 bool UTIL_AreBotsAllowed()
 {
+#ifdef REGAMEDLL_ADD
 	if (g_engfuncs.pfnEngCheckParm == NULL)
 		return false;
+#endif
 
 	if (g_bIsCzeroGame)
 	{
+#ifdef REGAMEDLL_ADD
 		// If they pass in -nobots, don't allow bots.  This is for people who host servers, to
 		// allow them to disallow bots to enforce CPU limits.
 		int nobots = ENG_CHECK_PARM("-nobots", NULL);
@@ -2373,6 +2376,7 @@ bool UTIL_AreBotsAllowed()
 		{
 			return false;
 		}
+#endif
 
 		return true;
 	}

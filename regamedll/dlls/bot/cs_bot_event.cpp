@@ -269,7 +269,7 @@ void CCSBot::__MAKE_VHOOK(OnEvent)(GameEventType event, CBaseEntity *entity, CBa
 			Run();
 			m_goalEntity = entity;
 
-			MoveTo(&entity->pev->origin, (RouteType)(m_hostageEscortCount == 0));
+			MoveTo(&entity->pev->origin, m_hostageEscortCount == 0 ? SAFEST_ROUTE : FASTEST_ROUTE);
 			PrintIfWatched("I'm fetching a hostage that called out to me\n");
 
 			return;

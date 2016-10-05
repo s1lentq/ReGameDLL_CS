@@ -412,6 +412,12 @@
 		15: "Distort (Models)"
 		16: "Hologram (Distort + fade)"
 // Strange effect. As seen, briefly, when a Gargantua dies.
+
+		17: "Dead Player"		// kRenderFxDeadPlayer
+		18: "Explode"			// kRenderFxExplode
+		19: "Glow Shell"		// kRenderFxGlowShell
+		20 : "Clamp Min Scale"		// kRenderFxClampMinScale
+		21 : "Light Multiplier"		// kRenderFxLightMultiplier
 	]
 ]
 
@@ -867,30 +873,13 @@
 // style commented out, seems to serve no purpose besides adding
 // to the lightdata load.
 //	style(integer) : "Style" : 32
-	sounds(choices) : "Sound style" : 0 =
-	[
-		0: "No Sound, None"
-		// the rest of these may or may not work, copied from button
-		1: "Big zap & Warmup"
-		2: "Access Denied"
-		3: "Access Granted"
-		4: "Quick Combolock"
-		5: "Power Deadbolt 1"
-		6: "Power Deadbolt 2"
-		7: "Plunger"
-		8: "Small zap"
-		9: "Keycard Sound"
-		10: "Buzz"
-		11: "Buzz Off"
-		14: "Lightswitch"
-	]
 	message(string) : "Message (set sound too)"
 	spawnflags(flags) =
 	[
 		1:  "Monsters" : 0
 		2:  "No Players, entity only" : 0
 		4:  "Pushables" : 0
-		64: "No reset on New Round"
+		64: "No reset on New Round" : 0
 	]
 ]
 
@@ -1019,10 +1008,10 @@
 
 // line below edited by Dmitrich! -->
 // was: @PointClass base(Targetname, Angles, RenderFields) iconsprite("sprites/CS/cycler_sprite.spr") = cycler_sprite : "Sprite Cycler"
-@PointClass base(Targetname, Angles, Sequence) size(-16 -16 0, 16 16 72) studio() = cycler_sprite : "Sprite Cycler"
+@PointClass base(Targetname, Angles, RenderFields) size(-16 -16 0, 16 16 72) studio() = cycler_sprite : "Sprite Cycler"
 [
-	model(sprite) : "Sprite/model path/name"
-	sequence(string) : "model only sequence # of animation" : ""
+	model(studio) : "Model / Sprite" : ""
+	sequence(string) : "Animation # sequence (Models only)" : ""
 	framerate(integer) : "Frames per second" : 10
 ]
 
@@ -1433,11 +1422,6 @@
 	[
 		1: "Use Only" : 0
 	]
-	weapon_briefcase (choices) : "Give Nightvision" : 0 =
-	[
-		0: "No"
-		1: "Yes"
-	]
 	weapon_knife (choices) : "Give Knife" : 0 =
 	[
 		0: "No"
@@ -1563,7 +1547,7 @@
 		0: "No"
 		1: "Yes"
 	]
-	weapon_shieldgun (choices) : "CS 1.6 Police Riot Shield" : 0 =
+	weapon_shield (choices) : "CS 1.6 Police Riot Shield" : 0 =
 	[
 		0: "No"
 		1: "Yes"
@@ -1680,7 +1664,6 @@
 		5: "5 Clips"
 		6: "6 Clips"
 		7: "7 Clips (Fill FN M249 Para)"
-
 	]
 	ammo_338magnum (choices) : "Give .338 AWP Ammo" : 0 =
 	[

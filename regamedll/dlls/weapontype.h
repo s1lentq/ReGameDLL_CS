@@ -412,9 +412,8 @@ struct WeaponInfoStruct
 	AmmoType ammoType;
 	char *entityName;
 
-#ifndef HOOK_GAMEDLL
+	// custom
 	const char *ammoName;
-#endif
 };
 
 struct WeaponSlotInfo

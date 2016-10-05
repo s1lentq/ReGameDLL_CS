@@ -267,12 +267,20 @@ void CCSBot::Attack(CBasePlayer *victim)
 	if (IsAttacking())
 		return;
 
+	// if we are currently hiding, increase our chances of crouching and holding position
 	if (IsAtHidingSpot())
 		m_attackState.SetCrouchAndHold((RANDOM_FLOAT(0, 100) < 60.0f) != 0);
 	else
 		m_attackState.SetCrouchAndHold(false);
 
-	PrintIfWatched("ATTACK BEGIN (reaction time = %g (+ update time), surprise time = %g, attack delay = %g)\n");
+	PrintIfWatched("ATTACK BEGIN (reaction time = %g (+ update time), surprise time = %g, attack delay = %g)\n"
+
+#ifdef REGAMEDLL_FIXES
+		, GetProfile()->GetReactionTime(), m_surpriseDelay, GetProfile()->GetAttackDelay()
+#endif
+
+	);
+
 	m_isAttacking = true;
 	m_attackState.OnEnter(this);
 

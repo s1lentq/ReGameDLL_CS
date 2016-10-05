@@ -570,7 +570,7 @@ void CBasePlayer::Radio(const char *msg_id, const char *msg_verbose, short pitch
 
 			CBasePlayer *pTarget = static_cast<CBasePlayer *>(CBaseEntity::Instance(pPlayer->m_hObserverTarget->pev));
 
-			if (pTarget != NULL && pTarget->m_iTeam == m_iTeam)
+			if (pTarget && pTarget->m_iTeam == m_iTeam)
 			{
 				bSend = true;
 			}
@@ -1689,6 +1689,10 @@ void CBasePlayer::RemoveAllItems(BOOL removeSuit)
 
 	pev->viewmodel = 0;
 	pev->weaponmodel = 0;
+
+#ifdef REGAMEDLL_FIXES
+	m_iHideHUD |= HIDEHUD_WEAPONS;
+#endif
 
 	if (removeSuit)
 		pev->weapons = 0;
@@ -3231,7 +3235,7 @@ void CBasePlayer::SyncRoundTimer()
 	float tmRemaining;
 
 	if (CSGameRules()->IsMultiplayer())
-		tmRemaining = CSGameRules()->TimeRemaining();
+		tmRemaining = CSGameRules()->GetRoundRemainingTime();
 	else
 		tmRemaining = 0;
 
@@ -3260,7 +3264,7 @@ void CBasePlayer::SyncRoundTimer()
 
 		if (tmRemaining != 0.0f)
 		{
-			remaining = TheCareerTasks->GetTaskTime() - (gpGlobals->time - CSGameRules()->m_fRoundCount);
+			remaining = TheCareerTasks->GetTaskTime() - (gpGlobals->time - CSGameRules()->m_fRoundStartTime);
 		}
 
 		if (remaining < 0)
@@ -3418,7 +3422,7 @@ void CBasePlayer::JoiningThink()
 				Spawn();
 				CSGameRules()->CheckWinConditions();
 
-				if (!CSGameRules()->m_fTeamCount && CSGameRules()->m_bMapHasBombTarget && !CSGameRules()->IsThereABomber() && !CSGameRules()->IsThereABomb())
+				if (!CSGameRules()->m_flRestartRoundTime && CSGameRules()->m_bMapHasBombTarget && !CSGameRules()->IsThereABomber() && !CSGameRules()->IsThereABomb())
 				{
 					CSGameRules()->GiveC4();
 				}
@@ -4179,7 +4183,7 @@ bool CBasePlayer::CanPlayerBuy(bool display)
 		CVAR_SET_FLOAT("mp_buytime", (MIN_BUY_TIME / 60.0f));
 	}
 
-	if (gpGlobals->time - CSGameRules()->m_fRoundCount > buyTime)
+	if (gpGlobals->time - CSGameRules()->m_fRoundStartTime > buyTime)
 	{
 		if (display)
 		{
@@ -4630,7 +4634,7 @@ void CBasePlayer::CheckSuitUpdate()
 		// play a sentence off of the end of the queue
 		for (i = 0; i < CSUITPLAYLIST; ++i)
 		{
-			if (isentence = m_rgSuitPlayList[ isearch ])
+			if ((isentence = m_rgSuitPlayList[ isearch ]))
 				break;
 
 			if (++isearch == CSUITPLAYLIST)
@@ -6428,6 +6432,9 @@ BOOL CBasePlayer::__API_VHOOK(AddPlayerItem)(CBasePlayerItem *pItem)
 				SwitchWeapon(pItem);
 			}
 		}
+#ifdef REGAMEDLL_FIXES
+		m_iHideHUD &= ~HIDEHUD_WEAPONS;
+#endif
 
 		return TRUE;
 	}
@@ -7432,7 +7439,7 @@ void CBasePlayer::__API_HOOK(DropPlayerItem)(const char *pszItemName)
 				SetBombIcon(FALSE);
 				pWeapon->m_pPlayer->SetProgressBarTime(0);
 
-				if (!CSGameRules()->m_fTeamCount)
+				if (!CSGameRules()->m_flRestartRoundTime)
 				{
 					UTIL_LogPrintf("\"%s<%i><%s><TERRORIST>\" triggered \"Dropped_The_Bomb\"\n", STRING(pev->netname), GETPLAYERUSERID(edict()), GETPLAYERAUTHID(edict()));
 					g_pGameRules->m_bBombDropped = TRUE;
@@ -7730,7 +7737,7 @@ BOOL CBasePlayer::SwitchWeapon(CBasePlayerItem *pWeapon)
 
 	ResetAutoaim();
 
-	if (m_pActiveItem != NULL)
+	if (m_pActiveItem)
 	{
 		m_pActiveItem->Holster();
 	}
@@ -7738,9 +7745,10 @@ BOOL CBasePlayer::SwitchWeapon(CBasePlayerItem *pWeapon)
 	CBasePlayerItem *pTemp = m_pActiveItem;
 	m_pActiveItem = pWeapon;
 	m_pLastItem = pTemp;
+
 	pWeapon->Deploy();
 
-	if (pWeapon->m_pPlayer != NULL)
+	if (pWeapon->m_pPlayer)
 	{
 		pWeapon->m_pPlayer->ResetMaxSpeed();
 	}
@@ -8191,7 +8199,7 @@ void CBasePlayer::SpawnClientSideCorpse()
 
 	m_canSwitchObserverModes = true;
 
-	if (TheTutor != NULL)
+	if (TheTutor)
 	{
 		TheTutor->OnEvent(EVENT_CLIENT_CORPSE_SPAWNED, this);
 	}
@@ -8293,29 +8301,14 @@ bool CBasePlayer::IsLookingAtPosition(Vector *pos, float angleTolerance)
 
 bool CBasePlayer::CanAffordPrimary()
 {
-	int account = m_iAccount;
+	auto team = (m_iTeam == CT) ? TERRORIST : (m_iTeam == TERRORIST) ? CT : UNASSIGNED;
+	if (team == UNASSIGNED)
+		return false;
 
-	if (m_iTeam == CT)
+	for (auto& weapon : g_weaponStruct)
 	{
-		WeaponStruct *temp;
-		for (int i = 0; i < MAX_WEAPONS; ++i)
-		{
-			temp = &g_weaponStruct[ i ];
-
-			if ((temp->m_side & TERRORIST) && temp->m_slot == PRIMARY_WEAPON_SLOT && account >= temp->m_price)
-				return true;
-		}
-	}
-	else if (m_iTeam == TERRORIST)
-	{
-		WeaponStruct *temp;
-		for (int i = 0; i < MAX_WEAPONS; ++i)
-		{
-			temp = &g_weaponStruct[ i ];
-
-			if ((temp->m_side & CT) && temp->m_slot == PRIMARY_WEAPON_SLOT && account >= temp->m_price)
-				return true;
-		}
+		if ((weapon.m_side & team) && weapon.m_slot == PRIMARY_WEAPON_SLOT && m_iAccount >= weapon.m_price)
+			return true;
 	}
 
 	return false;
@@ -8325,11 +8318,9 @@ bool CBasePlayer::CanAffordPrimaryAmmo()
 {
 	CBasePlayerWeapon *primary = static_cast<CBasePlayerWeapon *>(m_rgpPlayerItems[ PRIMARY_WEAPON_SLOT ]);
 
-	for (int i = 0; i < MAX_WEAPONS; ++i)
+	for (auto& weapon : g_weaponStruct)
 	{
-		WeaponStruct *temp = &g_weaponStruct[ i ];
-
-		if (temp->m_type == primary->m_iId && m_iAccount >= temp->m_ammoPrice)
+		if (weapon.m_type == primary->m_iId && m_iAccount >= weapon.m_ammoPrice)
 			return true;
 	}
 
@@ -8340,11 +8331,9 @@ bool CBasePlayer::CanAffordSecondaryAmmo()
 {
 	CBasePlayerWeapon *secondary = static_cast<CBasePlayerWeapon *>(m_rgpPlayerItems[ PISTOL_SLOT ]);
 
-	for (int i = 0; i < MAX_WEAPONS; ++i)
+	for (auto& weapon : g_weaponStruct)
 	{
-		WeaponStruct *temp = &g_weaponStruct[ i ];
-
-		if (temp->m_type == secondary->m_iId && m_iAccount >= temp->m_ammoPrice)
+		if (weapon.m_type == secondary->m_iId && m_iAccount >= weapon.m_ammoPrice)
 			return true;
 	}
 
@@ -8596,9 +8585,10 @@ bool IsSecondaryWeaponId(int id)
 
 const char *GetWeaponAliasFromName(const char *weaponName)
 {
-	if (!Q_strncmp(weaponName, "weapon_", 7))
+	const char cut_weapon[] = "weapon_";
+	if (!Q_strncmp(weaponName, cut_weapon, sizeof(cut_weapon) - 1))
 	{
-		weaponName += 7;
+		weaponName += sizeof(cut_weapon) - 1;
 	}
 
 	return weaponName;
@@ -8674,11 +8664,7 @@ const char *CBasePlayer::PickPrimaryCareerTaskWeapon()
 	{
 		// randomize names weapons of list
 		int rand = RANDOM_LONG(0, taskNum - 1);
-
-		CCareerTask *temp = taskVector[0];
-
-		taskVector[0] = taskVector[rand];
-		taskVector[rand] = temp;
+		SWAP(taskVector[0], taskVector[rand]);
 	}
 
 	if (!taskNum)
@@ -8754,11 +8740,7 @@ const char *CBasePlayer::PickSecondaryCareerTaskWeapon()
 	{
 		// randomize names weapons of list
 		int rand = RANDOM_LONG(0, taskNum - 1);
-
-		CCareerTask *temp = taskVector[0];
-
-		taskVector[0] = taskVector[rand];
-		taskVector[rand] = temp;
+		SWAP(taskVector[0], taskVector[rand]);
 	}
 
 	if (!taskNum)

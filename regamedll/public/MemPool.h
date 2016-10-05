@@ -32,7 +32,6 @@
 #pragma once
 #endif
 
-/* <2cab3d> ../public/MemPool.h:18 */
 class CMemoryPool
 {
 public:

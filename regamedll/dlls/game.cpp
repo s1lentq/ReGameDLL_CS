@@ -16,8 +16,10 @@ cvar_t timelimit = { "mp_timelimit", "0", FCVAR_SERVER, 0.0f, NULL };
 cvar_t flashlight = { "mp_flashlight", "0", FCVAR_SERVER, 0.0f, NULL };
 cvar_t decalfrequency = { "decalfrequency", "30", FCVAR_SERVER, 0.0f, NULL };
 cvar_t fadetoblack = { "mp_fadetoblack", "0", FCVAR_SERVER, 0.0f, NULL };
-cvar_t fragsleft = { "mp_fragsleft", "0", FCVAR_SERVER | FCVAR_UNLOGGED, 0.0f, NULL };
+
+cvar_t fragsleft = { "mp_fragsleft", "0", FCVAR_SERVER | FCVAR_UNLOGGED, 0.0f, NULL };		// Don't spam console/log files/users with this changing
 cvar_t timeleft = { "mp_timeleft", "0", FCVAR_SERVER | FCVAR_UNLOGGED, 0.0f, NULL };
+
 cvar_t friendlyfire = { "mp_friendlyfire", "0", FCVAR_SERVER, 0.0f, NULL };
 cvar_t allowmonsters = { "mp_allowmonsters", "0", FCVAR_SERVER, 0.0f, NULL };
 cvar_t roundtime = { "mp_roundtime", "5", FCVAR_SERVER, 0.0f, NULL };
@@ -106,6 +108,10 @@ cvar_t refill_bpammo_weapons = { "mp_refill_bpammo_weapons", "0", 0, 0.0f, nullp
 cvar_t freeforall = { "mp_freeforall", "0", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t auto_join_team = { "mp_auto_join_team", "0", 0, 0.0f, nullptr };
 cvar_t max_teamkills = { "mp_max_teamkills", "3", 0, 3.0f, nullptr };
+cvar_t fraglimit = { "mp_fraglimit", "0", FCVAR_SERVER, 0.0f, nullptr };
+
+cvar_t showtriggers = { "showtriggers", "0", 0, 0.0f, nullptr };				// debug cvar shows triggers
+												// TODO: Maybe it's better to register in the engine?
 
 void GameDLL_Version_f()
 {
@@ -238,6 +244,9 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&freeforall);
 	CVAR_REGISTER(&auto_join_team);
 	CVAR_REGISTER(&max_teamkills);
+	CVAR_REGISTER(&fraglimit);
+
+	CVAR_REGISTER(&showtriggers);
 
 	// print version
 	CONSOLE_ECHO("ReGameDLL build: " __TIME__ " " __DATE__ " (" APP_VERSION_STRD ")\n");
@@ -245,7 +254,7 @@ void EXT_FUNC GameDLLInit()
 
 #endif // REGAMEDLL_ADD
 
-	Bot_RegisterCvars();
+	Bot_RegisterCVars();
 	Tutor_RegisterCVars();
 	Hostage_RegisterCVars();
 }

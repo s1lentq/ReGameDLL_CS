@@ -21,6 +21,7 @@ rootProject.ext.createIccConfig = { boolean release, BinaryKind binKind ->
 			linkerOptions: new GccToolchainConfig.LinkerOptions(
 				interProceduralOptimizations: true,		// -ipo
 				stripSymbolTable: true,
+				staticLibStdCpp: false,
 				staticLibGcc: true,
 				staticIntel: true,
 			),
@@ -46,6 +47,7 @@ rootProject.ext.createIccConfig = { boolean release, BinaryKind binKind ->
 			linkerOptions: new GccToolchainConfig.LinkerOptions(
 				interProceduralOptimizations: false,
 				stripSymbolTable: false,
+				staticLibStdCpp: false,
 				staticLibGcc: true,
 				staticIntel: true,
 			),

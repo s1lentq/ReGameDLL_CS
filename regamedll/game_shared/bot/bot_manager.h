@@ -67,6 +67,7 @@ class CBotManager
 {
 public:
 	CBotManager();
+	virtual ~CBotManager() {}
 
 	virtual void ClientDisconnect(CBasePlayer *pPlayer) = 0;
 	virtual BOOL ClientCommand(CBasePlayer *pPlayer, const char *pcmd) = 0;

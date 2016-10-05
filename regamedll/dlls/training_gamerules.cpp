@@ -45,7 +45,7 @@ void CHalfLifeTraining::HostageDied()
 {
 	CBasePlayer *pPlayer = UTIL_PlayerByIndex(1);
 
-	if (pPlayer != NULL)
+	if (pPlayer)
 	{
 		pPlayer->pev->radsuit_finished = gpGlobals->time + 3.0f;
 	}
@@ -134,9 +134,9 @@ void CHalfLifeTraining::__MAKE_VHOOK(PlayerThink)(CBasePlayer *pPlayer)
 	}
 
 	CGrenade *pBomb = NULL;
-	while ((pBomb = (CGrenade *)UTIL_FindEntityByClassname(pBomb, "grenade")) != NULL)
+	while ((pBomb = (CGrenade *)UTIL_FindEntityByClassname(pBomb, "grenade")))
 	{
-		if (pBomb->m_pentCurBombTarget != NULL)
+		if (pBomb->m_pentCurBombTarget)
 			pBomb->m_bStartDefuse = true;
 	}
 
@@ -194,7 +194,7 @@ void CHalfLifeTraining::__MAKE_VHOOK(PlayerThink)(CBasePlayer *pPlayer)
 	pPlayer->pev->scale = pPlayer->m_iAccount;
 	pPlayer->pev->ideal_yaw = pPlayer->m_bHasDefuser;
 
-	if (TheBots != NULL)
+	if (TheBots)
 	{
 		TheBots->OnEvent(EVENT_PLAYER_CHANGED_TEAM, pPlayer);
 	}
@@ -220,7 +220,7 @@ void CHalfLifeTraining::__MAKE_VHOOK(PlayerSpawn)(CBasePlayer *pPlayer)
 
 	CBaseEntity *pWeaponEntity = NULL;
 
-	while ((pWeaponEntity = UTIL_FindEntityByClassname(pWeaponEntity, "game_player_equip")) != NULL)
+	while ((pWeaponEntity = UTIL_FindEntityByClassname(pWeaponEntity, "game_player_equip")))
 	{
 		pWeaponEntity->Touch(pPlayer);
 	}
@@ -259,7 +259,7 @@ void CHalfLifeTraining::__MAKE_VHOOK(CheckWinConditions)()
 	{
 		CGrenade *pBomb = NULL;
 
-		while ((pBomb = (CGrenade *)UTIL_FindEntityByClassname(pBomb, "grenade")) != NULL)
+		while ((pBomb = (CGrenade *)UTIL_FindEntityByClassname(pBomb, "grenade")))
 		{
 			if (!pBomb->m_bIsC4 || !pBomb->m_bJustBlew)
 				continue;
@@ -274,7 +274,7 @@ void CHalfLifeTraining::__MAKE_VHOOK(CheckWinConditions)()
 	{
 		CGrenade *pBomb = NULL;
 
-		while ((pBomb = (CGrenade *)UTIL_FindEntityByClassname(pBomb, "grenade")) != NULL)
+		while ((pBomb = (CGrenade *)UTIL_FindEntityByClassname(pBomb, "grenade")))
 		{
 			if (!pBomb->m_bIsC4 || !pBomb->m_bJustBlew)
 				continue;
@@ -291,7 +291,7 @@ void CHalfLifeTraining::__MAKE_VHOOK(CheckWinConditions)()
 
 	pHostage = CBaseEntity::Instance(FIND_ENTITY_BY_CLASSNAME(NULL, "hostage_entity"));
 
-	while (pHostage != NULL)
+	while (pHostage)
 	{
 		if (pHostage->pev->deadflag != DEAD_RESPAWNABLE || !FStringNull(pHostage->pev->noise1))
 			continue;
@@ -304,7 +304,7 @@ void CHalfLifeTraining::__MAKE_VHOOK(CheckWinConditions)()
 		pFirstRescueArea = CBaseEntity::Instance(FIND_ENTITY_BY_CLASSNAME(NULL, "func_hostage_rescue"));
 		pRescueArea = pFirstRescueArea;
 
-		if (pFirstRescueArea != NULL)
+		if (pFirstRescueArea)
 		{
 			while (pRescueArea != pFirstRescueArea)
 			{
@@ -365,7 +365,7 @@ void CBaseGrenCatch::__MAKE_VHOOK(Think)()
 	m_fSmokeTouching = false;
 	pGrenade = NULL;
 
-	while (pGrenade = (CGrenade *)UTIL_FindEntityByClassname(pGrenade, "grenade"))
+	while ((pGrenade = (CGrenade *)UTIL_FindEntityByClassname(pGrenade, "grenade")))
 	{
 		vMin = pGrenade->pev->mins;
 		vMax = pGrenade->pev->maxs;
@@ -391,7 +391,7 @@ void CBaseGrenCatch::__MAKE_VHOOK(Think)()
 		{
 			pTrigger = NULL;
 
-			while ((pTrigger = UTIL_FindEntityByTargetname(pTrigger, STRING(sDisableOnGrenade))) != NULL)
+			while ((pTrigger = UTIL_FindEntityByTargetname(pTrigger, STRING(sDisableOnGrenade))))
 			{
 				// save solid
 				pTrigger->pev->team = pTrigger->pev->solid;
@@ -406,7 +406,7 @@ void CBaseGrenCatch::__MAKE_VHOOK(Think)()
 	{
 		pTrigger = NULL;
 
-		while (pTrigger = UTIL_FindEntityByTargetname(pTrigger, STRING(sDisableOnGrenade)))
+		while ((pTrigger = UTIL_FindEntityByTargetname(pTrigger, STRING(sDisableOnGrenade))))
 		{
 			// restore solid
 			pTrigger->pev->solid = pTrigger->pev->team;

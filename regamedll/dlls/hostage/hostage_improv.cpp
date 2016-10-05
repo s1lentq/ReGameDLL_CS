@@ -1246,7 +1246,7 @@ void CHostageImprov::__MAKE_VHOOK(OnGameEvent)(GameEventType event, CBaseEntity 
 		{
 			Frighten(TERRIFIED);
 
-			if (!entity->IsPlayer() || entity->IsPlayer() && ((CBasePlayer *)entity)->m_iTeam != TERRORIST)
+			if (!entity->IsPlayer() || (entity->IsPlayer() && ((CBasePlayer *)entity)->m_iTeam != TERRORIST))
 			{
 				DelayedChatter(RANDOM_FLOAT(0.5f, 0.7f), HOSTAGE_CHATTER_SCARED_OF_MURDER, true);
 			}

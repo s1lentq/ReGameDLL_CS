@@ -91,6 +91,7 @@ typedef float FloatRef;
 #define LINK_HOOK_CLASS_CUSTOM_CHAIN2(...)
 #define LINK_HOOK_VOID_CHAIN(...)
 #define LINK_HOOK_CHAIN(...)
+#define LINK_HOOK_CHAIN2(...)
 
 // refs
 extern void (CBaseEntity::*pCHostage__IdleThink)();
@@ -924,6 +925,9 @@ extern char pm_grgszTextureName[1024][17];
 extern char pm_grgchTextureType[1024];
 extern char *BotDifficultyName[5];
 
+extern float g_flResetTime;
+C_DLLEXPORT float g_flTimeLimit;
+
 // declared functions
 C_DLLEXPORT void WINAPI GiveFnptrsToDll(enginefuncs_t *pEnginefuncsTable, globalvars_t *pGlobals);
 bool NavAreaBuildPath__HostagePathCost__wrapper(CNavArea *startArea, CNavArea *goalArea, const Vector *goalPos, HostagePathCost &costFunc, CNavArea **closestArea);
@@ -951,7 +955,7 @@ void PM_WalkMove();
 void PM_Friction();
 void PM_AirAccelerate(vec_t *wishdir, float wishspeed, float accel);
 void PM_WaterMove();
-void PM_AirMove();
+void PM_AirMove(int playerIndex = 0);
 qboolean PM_InWater();
 qboolean PM_CheckWater();
 void PM_CatagorizePosition();

@@ -61,7 +61,7 @@ void Bot_ServerCommand()
 	}
 }
 
-void Bot_RegisterCvars()
+void Bot_RegisterCVars()
 {
 	if (!AreBotsAllowed())
 		return;
