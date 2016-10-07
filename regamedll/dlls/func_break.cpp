@@ -884,6 +884,10 @@ void CPushable::__MAKE_VHOOK(Spawn)()
 	pev->origin.z += 1;
 	UTIL_SetOrigin(pev, pev->origin);
 
+#ifdef REGAMEDLL_FIXES
+	pev->oldorigin = pev->origin;
+#endif
+
 	// Multiply by area of the box's cross-section (assume 1000 units^3 standard volume)
 	pev->skin = int((pev->skin * (pev->maxs.x - pev->mins.x) * (pev->maxs.y - pev->mins.y)) * 0.0005);
 	m_soundTime = 0;
@@ -901,6 +905,30 @@ void CPushable::__MAKE_VHOOK(Precache)()
 		CBreakable::Precache();
 	}
 }
+
+#ifdef REGAMEDLL_FIXES
+void CPushable::Restart()
+{
+	if (pev->spawnflags & SF_PUSH_BREAKABLE)
+		CBreakable::Restart();
+
+	pev->movetype = MOVETYPE_PUSHSTEP;
+	pev->solid = SOLID_BBOX;
+
+	SET_MODEL(ENT(pev), STRING(pev->model));
+
+	if (pev->friction > 399)
+		pev->friction = 399;
+
+	m_soundTime = 0;
+	m_maxSpeed = 400 - pev->friction;
+
+	pev->flags |= FL_FLOAT;
+	pev->friction = 0;
+
+	UTIL_SetOrigin(pev, pev->oldorigin);
+}
+#endif
 
 void CPushable::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {

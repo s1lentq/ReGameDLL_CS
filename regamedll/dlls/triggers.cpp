@@ -720,6 +720,13 @@ void CTriggerHurt::__MAKE_VHOOK(Spawn)()
 	UTIL_SetOrigin(pev, pev->origin);
 }
 
+#ifdef REGAMEDLL_FIXES
+void CTriggerHurt::Restart()
+{
+	Spawn();
+}
+#endif
+
 // trigger hurt that causes radiation will do a radius
 // check and set the player's geiger counter level
 // according to distance from center of trigger

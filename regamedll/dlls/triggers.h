@@ -275,6 +275,11 @@ class CTriggerHurt: public CBaseTrigger
 public:
 	virtual void Spawn();
 
+#ifdef REGAMEDLL_FIXES
+	virtual void Restart();
+	virtual int ObjectCaps() { return (CBaseTrigger::ObjectCaps() | FCAP_MUST_RESET); }
+#endif
+
 #ifdef HOOK_GAMEDLL
 
 	void Spawn_();
