@@ -3192,18 +3192,46 @@ NOXREF void CBasePlayer::ThrowPrimary()
 
 LINK_HOOK_CLASS_VOID_CHAIN(CBasePlayer, AddAccount, (int amount, RewardType type, bool bTrackChange), amount, type, bTrackChange);
 
+#ifdef REGAMEDLL_ADD
+void CBasePlayer::__API_HOOK(AddAccount)(int amount, RewardType type, bool bTrackChange)
+{
+	bool bSendMoney = true;
+	switch (type)
+	{
+	case RT_INTO_GAME:
+	case RT_PLAYER_JOIN:
+		bSendMoney = false;
+	case RT_PLAYER_RESET:
+	case RT_PLAYER_SPEC_JOIN:
+		m_iAccount = 0;
+		break;
+	}
+
+	m_iAccount += amount;
+
+	if (bSendMoney)
+	{
+		auto nMax = int(maxmoney.value);
+		if (m_iAccount > nMax)
+			m_iAccount = nMax;
+
+		else if (m_iAccount < 0)
+			m_iAccount = 0;
+
+		// Send money update to HUD
+		MESSAGE_BEGIN(MSG_ONE, gmsgMoney, NULL, pev);
+			WRITE_LONG(m_iAccount);
+			WRITE_BYTE(bTrackChange);
+		MESSAGE_END();
+	}
+}
+#else
 void CBasePlayer::__API_HOOK(AddAccount)(int amount, RewardType type, bool bTrackChange)
 {
 	m_iAccount += amount;
 
-#ifndef REGAMEDLL_ADD
 	if (m_iAccount > 16000)
 		m_iAccount = 16000;
-#else
-	auto nMax = int(maxmoney.value);
-	if (m_iAccount > nMax)
-		m_iAccount = nMax;
-#endif
 
 	else if (m_iAccount < 0)
 		m_iAccount = 0;
@@ -3214,6 +3242,7 @@ void CBasePlayer::__API_HOOK(AddAccount)(int amount, RewardType type, bool bTrac
 		WRITE_BYTE(bTrackChange);
 	MESSAGE_END();
 }
+#endif
 
 void CBasePlayer::ResetMenu()
 {
@@ -3412,7 +3441,9 @@ void CBasePlayer::JoiningThink()
 
 			if (CSGameRules()->m_bMapHasEscapeZone && m_iTeam == CT)
 			{
+#ifndef REGAMEDLL_ADD
 				m_iAccount = 0;
+#endif
 				CheckStartMoney();
 				AddAccount(startmoney.value, RT_INTO_GAME);
 			}
@@ -4128,7 +4159,11 @@ void CBasePlayer::__API_VHOOK(AddPoints)(int score, BOOL bAllowNegativeScore)
 
 	pev->frags += score;
 
+#ifdef REGAMEDLL_FIXES
+	MESSAGE_BEGIN(MSG_ALL, gmsgScoreInfo);
+#else
 	MESSAGE_BEGIN(MSG_BROADCAST, gmsgScoreInfo);
+#endif
 		WRITE_BYTE(ENTINDEX(edict()));
 		WRITE_SHORT(int(pev->frags));
 		WRITE_SHORT(m_iDeaths);
@@ -4183,7 +4218,11 @@ bool CBasePlayer::CanPlayerBuy(bool display)
 		CVAR_SET_FLOAT("mp_buytime", (MIN_BUY_TIME / 60.0f));
 	}
 
-	if (gpGlobals->time - CSGameRules()->m_fRoundStartTime > buyTime)
+	if (gpGlobals->time - CSGameRules()->m_fRoundStartTime > buyTime
+#ifdef REGAMEDLL_ADD
+		&& buytime.value != -1.0f
+#endif
+)
 	{
 		if (display)
 		{
@@ -5622,7 +5661,10 @@ void CBasePlayer::Reset()
 {
 	pev->frags = 0;
 	m_iDeaths = 0;
+
+#ifndef REGAMEDLL_ADD
 	m_iAccount = 0;
+#endif
 
 #ifndef REGAMEDLL_FIXES
 	MESSAGE_BEGIN(MSG_ONE, gmsgMoney, NULL, pev);
@@ -5709,33 +5751,12 @@ void CBasePlayer::SelectItem(const char *pstr)
 		return;
 	}
 
-	CBasePlayerItem *pItem = NULL;
-
-	for (int i = 0; i < MAX_ITEM_TYPES; ++i)
-	{
-		pItem = m_rgpPlayerItems[ i ];
-
-		if (pItem != NULL)
-		{
-			while (pItem != NULL)
-			{
-				if (FClassnameIs(pItem->pev, pstr))
-					break;
-
-				pItem = pItem->m_pNext;
-			}
-
-			if (pItem != NULL)
-			{
-				break;
-			}
-		}
-	}
+	auto pItem = ForEachItem([this, pstr](CBasePlayerItem *item) {
+		return FClassnameIs(item->pev, pstr);
+	});
 
 	if (!pItem || pItem == m_pActiveItem)
-	{
 		return;
-	}
 
 	ResetAutoaim();
 
@@ -7397,14 +7418,16 @@ void CBasePlayer::__API_HOOK(DropPlayerItem)(const char *pszItemName)
 		return;
 	}
 
+#ifndef REGAMEDLL_FIXES
+	CBasePlayerItem *pWeapon = NULL;
 	for (int i = 0; i < MAX_ITEM_TYPES; ++i)
 	{
-		CBasePlayerItem *pWeapon = m_rgpPlayerItems[i];
+		pWeapon = m_rgpPlayerItems[i];
 		while (pWeapon)
 		{
 			if (pszItemName)
 			{
-				if (!Q_strcmp(pszItemName, STRING(pWeapon->pev->classname)))
+				if (FClassnameIs(pWeapon->pev, pszItemName))
 					break;
 			}
 			else
@@ -7417,106 +7440,109 @@ void CBasePlayer::__API_HOOK(DropPlayerItem)(const char *pszItemName)
 		}
 
 		if (pWeapon)
+			break;
+	}
+#else
+	auto pWeapon = pszItemName ? GetItemByName(pszItemName) : m_pActiveItem;
+#endif
+	if (pWeapon)
+	{
+		if (!pWeapon->CanDrop())
 		{
-			if (!pWeapon->CanDrop())
+			ClientPrint(pev, HUD_PRINTCENTER, "#Weapon_Cannot_Be_Dropped");
+			return;
+		}
+
+		// take item off hud
+		pev->weapons &= ~(1 << pWeapon->m_iId);
+		g_pGameRules->GetNextBestWeapon(this, pWeapon);
+		UTIL_MakeVectors(pev->angles);
+
+		if (pWeapon->iItemSlot() == PRIMARY_WEAPON_SLOT)
+			m_bHasPrimary = false;
+
+		if (FClassnameIs(pWeapon->pev, "weapon_c4"))
+		{
+			m_bHasC4 = false;
+			pev->body = 0;
+			SetBombIcon(FALSE);
+			pWeapon->m_pPlayer->SetProgressBarTime(0);
+
+			if (!CSGameRules()->m_flRestartRoundTime)
 			{
-				ClientPrint(pev, HUD_PRINTCENTER, "#Weapon_Cannot_Be_Dropped");
-				continue;
-			}
+				UTIL_LogPrintf("\"%s<%i><%s><TERRORIST>\" triggered \"Dropped_The_Bomb\"\n", STRING(pev->netname), GETPLAYERUSERID(edict()), GETPLAYERAUTHID(edict()));
+				g_pGameRules->m_bBombDropped = TRUE;
 
-			// take item off hud
-			pev->weapons &= ~(1 << pWeapon->m_iId);
-			g_pGameRules->GetNextBestWeapon(this, pWeapon);
-			UTIL_MakeVectors(pev->angles);
-
-			if (pWeapon->iItemSlot() == PRIMARY_WEAPON_SLOT)
-				m_bHasPrimary = false;
-
-			if (FClassnameIs(pWeapon->pev, "weapon_c4"))
-			{
-				m_bHasC4 = false;
-				pev->body = 0;
-				SetBombIcon(FALSE);
-				pWeapon->m_pPlayer->SetProgressBarTime(0);
-
-				if (!CSGameRules()->m_flRestartRoundTime)
+				CBaseEntity *pEntity = NULL;
+				while ((pEntity = UTIL_FindEntityByClassname(pEntity, "player")) != NULL)
 				{
-					UTIL_LogPrintf("\"%s<%i><%s><TERRORIST>\" triggered \"Dropped_The_Bomb\"\n", STRING(pev->netname), GETPLAYERUSERID(edict()), GETPLAYERAUTHID(edict()));
-					g_pGameRules->m_bBombDropped = TRUE;
+					if (FNullEnt(pEntity->edict()))
+						break;
 
-					CBaseEntity *pEntity = NULL;
-					while ((pEntity = UTIL_FindEntityByClassname(pEntity, "player")) != NULL)
+					if (!pEntity->IsPlayer())
+						continue;
+
+					if (pEntity->pev->flags != FL_DORMANT)
 					{
-						if (FNullEnt(pEntity->edict()))
-							break;
+						CBasePlayer *pOther = GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev);
 
-						if (!pEntity->IsPlayer())
-							continue;
-
-						if (pEntity->pev->flags != FL_DORMANT)
+						if (pOther->pev->deadflag == DEAD_NO && pOther->m_iTeam == TERRORIST)
 						{
-							CBasePlayer *pOther = GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev);
+							ClientPrint(pOther->pev, HUD_PRINTCENTER, "#Game_bomb_drop", STRING(pev->netname));
 
-							if (pOther->pev->deadflag == DEAD_NO && pOther->m_iTeam == TERRORIST)
-							{
-								ClientPrint(pOther->pev, HUD_PRINTCENTER, "#Game_bomb_drop", STRING(pev->netname));
-
-								MESSAGE_BEGIN(MSG_ONE, gmsgBombDrop, NULL, pOther->pev);
-									WRITE_COORD(pev->origin.x);
-									WRITE_COORD(pev->origin.y);
-									WRITE_COORD(pev->origin.z);
-									WRITE_BYTE(0);
-								MESSAGE_END();
-							}
+							MESSAGE_BEGIN(MSG_ONE, gmsgBombDrop, NULL, pOther->pev);
+								WRITE_COORD(pev->origin.x);
+								WRITE_COORD(pev->origin.y);
+								WRITE_COORD(pev->origin.z);
+								WRITE_BYTE(0);
+							MESSAGE_END();
 						}
 					}
 				}
 			}
+		}
 
-			CWeaponBox *pWeaponBox = (CWeaponBox *)Create("weaponbox", pev->origin + gpGlobals->v_forward * 10, pev->angles, edict());
-			pWeaponBox->pev->angles.x = 0;
-			pWeaponBox->pev->angles.z = 0;
-			pWeaponBox->SetThink(&CWeaponBox::Kill);
-			pWeaponBox->pev->nextthink = gpGlobals->time + 300;
-			pWeaponBox->PackWeapon(pWeapon);
-			pWeaponBox->pev->velocity = gpGlobals->v_forward * 300 + gpGlobals->v_forward * 100;
+		CWeaponBox *pWeaponBox = (CWeaponBox *)Create("weaponbox", pev->origin + gpGlobals->v_forward * 10, pev->angles, edict());
+		pWeaponBox->pev->angles.x = 0;
+		pWeaponBox->pev->angles.z = 0;
+		pWeaponBox->SetThink(&CWeaponBox::Kill);
+		pWeaponBox->pev->nextthink = gpGlobals->time + 300;
+		pWeaponBox->PackWeapon(pWeapon);
+		pWeaponBox->pev->velocity = gpGlobals->v_forward * 300 + gpGlobals->v_forward * 100;
 
-			if (FClassnameIs(pWeapon->pev, "weapon_c4"))
+		if (FClassnameIs(pWeapon->pev, "weapon_c4"))
+		{
+			pWeaponBox->m_bIsBomb = true;
+			pWeaponBox->SetThink(&CWeaponBox::BombThink);
+			pWeaponBox->pev->nextthink = gpGlobals->time + 1.0f;
+
+			if (TheCSBots() != NULL)
 			{
-				pWeaponBox->m_bIsBomb = true;
-				pWeaponBox->SetThink(&CWeaponBox::BombThink);
-				pWeaponBox->pev->nextthink = gpGlobals->time + 1.0f;
-
-				if (TheCSBots() != NULL)
-				{
-					// tell the bots about the dropped bomb
-					TheCSBots()->SetLooseBomb(pWeaponBox);
-					TheCSBots()->OnEvent(EVENT_BOMB_DROPPED);
-				}
+				// tell the bots about the dropped bomb
+				TheCSBots()->SetLooseBomb(pWeaponBox);
+				TheCSBots()->OnEvent(EVENT_BOMB_DROPPED);
 			}
+		}
 
-			if (pWeapon->iFlags() & ITEM_FLAG_EXHAUSTIBLE)
+		if (pWeapon->iFlags() & ITEM_FLAG_EXHAUSTIBLE)
+		{
+			int iAmmoIndex = GetAmmoIndex(pWeapon->pszAmmo1());
+			if (iAmmoIndex != -1)
 			{
-				int iAmmoIndex = GetAmmoIndex(pWeapon->pszAmmo1());
-				if (iAmmoIndex != -1)
-				{
 #ifdef REGAMEDLL_FIXES
-					// why not pack the ammo more than one?
-					pWeaponBox->PackAmmo(MAKE_STRING(pWeapon->pszAmmo1()), m_rgAmmo[iAmmoIndex]);
+				// why not pack the ammo more than one?
+				pWeaponBox->PackAmmo(MAKE_STRING(pWeapon->pszAmmo1()), m_rgAmmo[iAmmoIndex]);
 #else
-					pWeaponBox->PackAmmo(MAKE_STRING(pWeapon->pszAmmo1()), m_rgAmmo[iAmmoIndex] > 0);
+				pWeaponBox->PackAmmo(MAKE_STRING(pWeapon->pszAmmo1()), m_rgAmmo[iAmmoIndex] > 0);
 #endif
-					m_rgAmmo[iAmmoIndex] = 0;
-				}
+				m_rgAmmo[iAmmoIndex] = 0;
 			}
+		}
 
-			const char *modelname = GetCSModelName(pWeapon->m_iId);
-			if (modelname != NULL)
-			{
-				SET_MODEL(ENT(pWeaponBox->pev), modelname);
-			}
-
-			return;
+		const char *modelname = GetCSModelName(pWeapon->m_iId);
+		if (modelname != NULL)
+		{
+			SET_MODEL(ENT(pWeaponBox->pev), modelname);
 		}
 	}
 }
@@ -9401,15 +9427,13 @@ void CBasePlayer::DropSecondary()
 		m_bShieldDrawn = false;
 	}
 
-	auto item = m_rgpPlayerItems[ PISTOL_SLOT ];
-
 #ifdef REGAMEDLL_ADD
-	while (item)
-	{
+	ForEachItem(PISTOL_SLOT, [this](CBasePlayerItem *item) {
 		DropPlayerItem(STRING(item->pev->classname));
-		item = item->m_pNext;
-	}
+		return false;
+	});
 #else
+	auto item = m_rgpPlayerItems[ PISTOL_SLOT ];
 	if (item)
 	{
 		DropPlayerItem(STRING(item->pev->classname));
@@ -9425,15 +9449,13 @@ void CBasePlayer::DropPrimary()
 		return;
 	}
 
-	auto item = m_rgpPlayerItems[ PRIMARY_WEAPON_SLOT ];
-
 #ifdef REGAMEDLL_ADD
-	while (item)
-	{
+	ForEachItem(PRIMARY_WEAPON_SLOT, [this](CBasePlayerItem *item) {
 		DropPlayerItem(STRING(item->pev->classname));
-		item = item->m_pNext;
-	}
+		return false;
+	});
 #else
+	auto item = m_rgpPlayerItems[ PRIMARY_WEAPON_SLOT ];
 	if (item)
 	{
 		DropPlayerItem(STRING(item->pev->classname));
@@ -9442,23 +9464,21 @@ void CBasePlayer::DropPrimary()
 
 }
 
-CBasePlayerItem *CBasePlayer::GetItemOfNamed(const char *pszItemName)
-{
-	for (auto pItem : m_rgpPlayerItems) {
-		while (pItem) {
-			if (FClassnameIs(pItem->pev, pszItemName))
-				return pItem;
+CBasePlayerItem *CBasePlayer::GetItemByName(const char *itemName) {
+	return ForEachItem([this, itemName](CBasePlayerItem *item) {
+		return FClassnameIs(item->pev, itemName);
+	});
+}
 
-			pItem = pItem->m_pNext;
-		}
-	}
-
-	return nullptr;
+CBasePlayerItem *CBasePlayer::GetItemById(WeaponIdType weaponID) {
+	return ForEachItem([this, weaponID](CBasePlayerItem *item) {
+		return item->m_iId == weaponID;
+	});
 }
 
 void CBasePlayer::RemoveBomb()
 {
-	auto pBomb = GetItemOfNamed("weapon_c4");
+	auto pBomb = GetItemByName("weapon_c4");
 	if (!pBomb)
 		return;
 

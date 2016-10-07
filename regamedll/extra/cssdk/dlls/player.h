@@ -138,6 +138,8 @@ enum RewardType
 	RT_NONE,
 	RT_ROUND_BONUS,
 	RT_PLAYER_RESET,
+	RT_PLAYER_JOIN,
+	RT_PLAYER_SPEC_JOIN,
 	RT_PLAYER_BOUGHT_SOMETHING,
 	RT_HOSTAGE_TOOK,
 	RT_HOSTAGE_RESCUED,
@@ -320,7 +322,6 @@ public:
 	virtual BOOL RemovePlayerItem(CBasePlayerItem *pItem) = 0;
 	virtual int GiveAmmo(int iAmount, char *szName, int iMax) = 0;
 	virtual void StartSneaking() = 0;
-	virtual void StopSneaking() = 0;
 	virtual BOOL IsSneaking() = 0;
 	virtual BOOL IsAlive() = 0;
 	virtual BOOL IsPlayer() = 0;
@@ -359,6 +360,36 @@ public:
 	void SetObserverAutoDirector(bool val) { m_bObserverAutoDirector = val; }
 	bool CanSwitchObserverModes() const { return m_canSwitchObserverModes; }
 	CCSPlayer *CSPlayer() const;
+
+	// templates
+	template<typename Functor>
+	CBasePlayerItem *ForEachItem(int slot, const Functor &func)
+	{
+		auto item = m_rgpPlayerItems[ slot ];
+		while (item)
+		{
+			if (func(item))
+				return item;
+
+			item = item->m_pNext;
+		}
+		return nullptr;
+	}
+	template<typename Functor>
+	CBasePlayerItem *ForEachItem(const Functor &func)
+	{
+		for (auto item : m_rgpPlayerItems)
+		{
+			while (item)
+			{
+				if (func(item))
+					return item;
+
+				item = item->m_pNext;
+			}
+		}
+		return nullptr;
+	}
 public:
 	enum { MaxLocationLen = 32 };
 

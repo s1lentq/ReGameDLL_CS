@@ -665,6 +665,12 @@ LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN2(CHalfLifeMultiplay, CSGameRules, CleanUpMap);
 
 void CHalfLifeMultiplay::__API_VHOOK(CleanUpMap)()
 {
+#ifdef REGAMEDLL_FIXES
+	// Release or reset everything entities in depending of flags ObjectCaps
+	// (FCAP_MUST_RESET / FCAP_MUST_RELEASE)
+	UTIL_ResetEntities();
+#endif
+
 	// Recreate all the map entities from the map data (preserving their indices),
 	// then remove everything else except the players.
 	UTIL_RestartOther("cycler_sprite");

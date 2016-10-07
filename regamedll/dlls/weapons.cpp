@@ -2102,7 +2102,21 @@ char *armouryItemModels[] = {
 	"models/w_kevlar.mdl",
 	"models/w_assault.mdl",
 	"models/w_smokegrenade.mdl",
-	"models/w_kevlar.mdl",
+
+#ifdef REGAMEDLL_ADD
+	"models/w_shield.mdl",
+	"models/w_famas.mdl",
+	"models/w_sg550.mdl",
+	"models/w_galil.mdl",
+	"models/w_ump45.mdl",
+	"models/w_glock18.mdl",
+	"models/w_usp.mdl",
+	"models/w_elite.mdl",
+	"models/w_fiveseven.mdl",
+	"models/w_p228.mdl",
+	"models/w_deagle.mdl"
+#endif
+
 };
 
 void CArmoury::__MAKE_VHOOK(Spawn)()
@@ -2116,7 +2130,11 @@ void CArmoury::__MAKE_VHOOK(Spawn)()
 	UTIL_SetOrigin(pev, pev->origin);
 
 	SetTouch(&CArmoury::ArmouryTouch);
-	SET_MODEL(ENT(pev), armouryItemModels[m_iItem]);
+
+	if (m_iItem < ARRAYSIZE(armouryItemModels))
+	{
+		SET_MODEL(ENT(pev), armouryItemModels[m_iItem]);
+	}
 
 	if (m_iCount <= 0)
 	{
@@ -2204,7 +2222,10 @@ void CArmoury::__MAKE_VHOOK(Restart)()
 
 void CArmoury::__MAKE_VHOOK(Precache)()
 {
-	PRECACHE_MODEL(armouryItemModels[m_iItem]);
+	if (m_iItem < ARRAYSIZE(armouryItemModels))
+	{
+		PRECACHE_MODEL(armouryItemModels[m_iItem]);
+	}
 }
 
 void CArmoury::Draw()
@@ -2231,7 +2252,7 @@ struct ArmouryItemStruct
 	const char *entityName;
 	char *ammoName;
 	int giveAmount;
-	MaxAmmoType maxRounds;
+	int maxRounds;
 } armouryItemInfo[] = {
 	{ "weapon_mp5navy",	"9mm",		60, MAX_AMMO_9MM },		// ARMOURY_MP5NAVY
 	{ "weapon_tmp",		"9mm",		60, MAX_AMMO_9MM },		// ARMOURY_TMP
@@ -2247,6 +2268,24 @@ struct ArmouryItemStruct
 	{ "weapon_m3",		"buckshot",	24, MAX_AMMO_BUCKSHOT },	// ARMOURY_M3
 	{ "weapon_xm1014",	"buckshot",	24, MAX_AMMO_BUCKSHOT },	// ARMOURY_XM1014
 	{ "weapon_m249",	"556NatoBox",	60, MAX_AMMO_556NATOBOX },	// ARMOURY_M249
+
+	{ NULL, NULL, 0, 0 }, // ARMOURY_FLASHBANG
+	{ NULL, NULL, 0, 0 }, // ARMOURY_HEGRENADE
+	{ NULL, NULL, 0, 0 }, // ARMOURY_KEVLAR
+	{ NULL, NULL, 0, 0 }, // ARMOURY_ASSAULT
+	{ NULL, NULL, 0, 0 }, // ARMOURY_SMOKEGRENADE
+	{ NULL, NULL, 0, 0 }, // ARMOURY_SHIELD
+
+	{ "weapon_famas",	"556Nato",	90,	MAX_AMMO_556NATO },	// ARMOURY_FAMAS
+	{ "weapon_sg550",	"556Nato",	90,	MAX_AMMO_556NATO },	// ARMOURY_SG550
+	{ "weapon_galil",	"556Nato",	90,	MAX_AMMO_556NATO },	// ARMOURY_GALIL
+	{ "weapon_ump45",	"45acp",	100,	MAX_AMMO_45ACP },	// ARMOURY_UMP45
+	{ "weapon_glock18",	"9mm",		120,	MAX_AMMO_9MM },		// ARMOURY_GLOCK18
+	{ "weapon_usp",		"45acp",	100,	MAX_AMMO_45ACP },	// ARMOURY_USP
+	{ "weapon_elite",	"9mm",		120,	MAX_AMMO_9MM },		// ARMOURY_ELITE
+	{ "weapon_fiveseven",	"57mm",		100,	MAX_AMMO_57MM },	// ARMOURY_FIVESEVEN
+	{ "weapon_p228",	"357SIG",	52,	MAX_AMMO_357SIG },	// ARMOURY_P228
+	{ "weapon_deagle",	"50AE",		35,	MAX_AMMO_50AE },	// ARMOURY_DEAGLE
 };
 
 void CArmoury::ArmouryTouch(CBaseEntity *pOther)
@@ -2264,8 +2303,12 @@ void CArmoury::ArmouryTouch(CBaseEntity *pOther)
 		return;
 #endif
 
-	// weapons
-	if (m_iCount > 0 && m_iItem <= ARMOURY_M249)
+	// primary weapons
+	if (m_iCount > 0 && (m_iItem <= ARMOURY_M249
+#ifdef REGAMEDLL_ADD
+		|| (m_iItem >= ARMOURY_FAMAS && m_iItem <= ARMOURY_UMP45)
+#endif
+))
 	{
 		if (p->m_bHasPrimary)
 			return;
@@ -2273,9 +2316,28 @@ void CArmoury::ArmouryTouch(CBaseEntity *pOther)
 		m_iCount--;
 		auto item = &armouryItemInfo[m_iItem];
 
+#ifdef REGAMEDLL_FIXES
+		p->GiveNamedItemEx(item->entityName);
+#else
 		p->GiveNamedItem(item->entityName);
+#endif
+
 		p->GiveAmmo(item->giveAmount, item->ammoName, item->maxRounds);
 	}
+#ifdef REGAMEDLL_ADD
+	// secondary weapons (pistols)
+	else if (m_iCount > 0 && m_iItem >= ARMOURY_GLOCK18)
+	{
+		if (p->m_rgpPlayerItems[ PISTOL_SLOT ])
+			return;
+
+		m_iCount--;
+		auto item = &armouryItemInfo[m_iItem];
+
+		p->GiveNamedItemEx(item->entityName);
+		p->GiveAmmo(item->giveAmount, item->ammoName, item->maxRounds);
+	}
+#endif
 	// items & grenades
 	else if (m_iCount > 0 && m_iItem >= ARMOURY_FLASHBANG)
 	{
@@ -2326,6 +2388,17 @@ void CArmoury::ArmouryTouch(CBaseEntity *pOther)
 			m_iCount--;
 			break;
 		}
+#ifdef REGAMEDLL_ADD
+		case ARMOURY_SHIELD:
+		{
+			if (p->m_bHasPrimary || (p->m_rgpPlayerItems[ PISTOL_SLOT ] && p->GetItemById(WEAPON_ELITE)))
+				return;
+
+			p->GiveNamedItemEx("weapon_shield");
+			m_iCount--;
+			break;
+		}
+#endif
 		}
 	}
 

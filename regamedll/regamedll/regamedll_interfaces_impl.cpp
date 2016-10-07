@@ -114,7 +114,7 @@ bool EXT_FUNC CCSPlayer::JoinTeam(TeamName team)
 		pPlayer->pev->frags++;
 	}
 
-	MESSAGE_BEGIN(MSG_BROADCAST, gmsgScoreInfo);
+	MESSAGE_BEGIN(MSG_ALL, gmsgScoreInfo);
 		WRITE_BYTE(ENTINDEX(pPlayer->edict()));
 		WRITE_SHORT(int(pPlayer->pev->frags));
 		WRITE_SHORT(pPlayer->m_iDeaths);

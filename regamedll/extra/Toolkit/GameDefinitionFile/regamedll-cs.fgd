@@ -994,6 +994,17 @@
 		16: "item_kevlar"
 		17: "item_assaultsuit"
 		18: "weapon_smokegrenade"
+		19: "weapon_shield"
+		20: "weapon_famas"
+		21: "weapon_sg550"
+		22: "weapon_galil"
+		23: "weapon_ump45"
+		24: "weapon_glock18"
+		25: "weapon_usp"
+		26: "weapon_elite"
+		27: "weapon_fiveseven"
+		28: "weapon_p228"
+		29: "weapon_deagle"
 	]
 // note: count always resets to only one item after first round
 	count(integer) : "Count" : 1

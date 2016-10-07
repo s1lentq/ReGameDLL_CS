@@ -310,6 +310,7 @@ void UTIL_Remove(CBaseEntity *pEntity);
 BOOL UTIL_IsValidEntity(edict_t *pent);
 void UTIL_PrecacheOther(const char *szClassname);
 void UTIL_RestartOther(const char *szClassname);
+void UTIL_ResetEntities();
 void UTIL_RemoveOther(const char *szClassname);
 void UTIL_LogPrintf(const char *fmt, ...);
 float UTIL_DotPoints(const Vector &vecSrc, const Vector &vecCheck, const Vector &vecDir);

@@ -148,6 +148,8 @@ enum RewardType
 	RT_NONE,
 	RT_ROUND_BONUS,
 	RT_PLAYER_RESET,
+	RT_PLAYER_JOIN,
+	RT_PLAYER_SPEC_JOIN,
 	RT_PLAYER_BOUGHT_SOMETHING,
 	RT_HOSTAGE_TOOK,
 	RT_HOSTAGE_RESCUED,
@@ -365,7 +367,11 @@ public:
 	virtual BOOL RemovePlayerItem(CBasePlayerItem *pItem);
 	virtual int GiveAmmo(int iAmount, char *szName, int iMax);
 	virtual void StartSneaking() { m_tSneaking = gpGlobals->time - 1; }
+
+#ifndef REGAMEDLL_FIXES
 	virtual void StopSneaking() { m_tSneaking = gpGlobals->time + 30; }
+#endif
+
 	virtual BOOL IsSneaking() { return m_tSneaking <= gpGlobals->time; }
 	virtual BOOL IsAlive() { return (pev->deadflag == DEAD_NO && pev->health > 0.0f); }
 	virtual BOOL IsPlayer() { return (pev->flags & FL_SPECTATOR) != FL_SPECTATOR; }
@@ -604,12 +610,42 @@ public:
 	void DropPrimary();
 
 	void RemoveBomb();
-	CBasePlayerItem *GetItemOfNamed(const char *pszItemName);
+	CBasePlayerItem *GetItemByName(const char *itemName);
+	CBasePlayerItem *GetItemById(WeaponIdType weaponID);
 
 #ifdef REGAMEDLL_API
 	CCSPlayer *CSPlayer() const;
 #endif
 
+	// templates
+	template<typename Functor>
+	CBasePlayerItem *ForEachItem(int slot, const Functor &func)
+	{
+		auto item = m_rgpPlayerItems[ slot ];
+		while (item)
+		{
+			if (func(item))
+				return item;
+
+			item = item->m_pNext;
+		}
+		return nullptr;
+	}
+	template<typename Functor>
+	CBasePlayerItem *ForEachItem(const Functor &func)
+	{
+		for (auto item : m_rgpPlayerItems)
+		{
+			while (item)
+			{
+				if (func(item))
+					return item;
+
+				item = item->m_pNext;
+			}
+		}
+		return nullptr;
+	}
 public:
 	enum { MaxLocationLen = 32 };
 

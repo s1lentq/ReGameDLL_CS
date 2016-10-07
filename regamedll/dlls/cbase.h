@@ -49,6 +49,8 @@
 #define FCAP_ONOFF_USE			0x00000020	// can be used by the player
 #define FCAP_DIRECTIONAL_USE		0x00000040	// Player sends +/- 1 when using (currently only tracktrains)
 #define FCAP_MASTER			0x00000080	// Can be used to "master" other entities (like multisource)
+#define FCAP_MUST_RESET			0x00000100	// should reset on the new round
+#define FCAP_MUST_RELEASE		0x00000200	// should release on the new round
 
 // UNDONE: This will ignore transition volumes (trigger_transition), but not the PVS!!!
 #define FCAP_FORCE_TRANSITION		0x00000080	// ALWAYS goes across transitions
@@ -257,7 +259,13 @@ public:
 	virtual int DamageDecal(int bitsDamageType);
 	virtual void SetToggleState(int state) {}
 	virtual void StartSneaking() {}
+
+#ifndef REGAMEDLL_FIXES
 	virtual void StopSneaking() {}
+#else
+	virtual void UpdateOnRemove();
+#endif
+
 	virtual BOOL OnControls(entvars_t *onpev) { return FALSE; }
 	virtual BOOL IsSneaking() { return FALSE; }
 	virtual BOOL IsAlive() { return (pev->deadflag == DEAD_NO && pev->health > 0.0f); }
@@ -314,7 +322,10 @@ public:
 	void operator delete(void *pMem, entvars_t *pevnew) { pevnew->flags |= FL_KILLME; }
 #endif
 
+#ifndef REGAMEDLL_FIXES
 	void UpdateOnRemove();
+#endif
+
 	void EXPORT SUB_Remove();
 	void EXPORT SUB_DoNothing();
 	void EXPORT SUB_StartFadeOut();

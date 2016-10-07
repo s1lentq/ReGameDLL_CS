@@ -429,7 +429,12 @@ void EXT_FUNC ClientPutInServer(edict_t *pEntity)
 
 	CheckStartMoney();
 
+#ifdef REGAMEDLL_ADD
+	pPlayer->AddAccount(startmoney.value, RT_PLAYER_JOIN);
+#else
 	pPlayer->m_iAccount = int(startmoney.value);
+#endif
+
 	pPlayer->m_fGameHUDInitialized = FALSE;
 	pPlayer->m_flDisplayHistory &= ~DHF_ROUND_STARTED;
 	pPlayer->pev->flags |= FL_SPECTATOR;
@@ -1606,12 +1611,16 @@ BOOL __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *player, int slot)
 			player->m_iJoiningState = JOINED;
 
 			// Reset money
+#ifdef REGAMEDLL_ADD
+			player->AddAccount(0, RT_PLAYER_SPEC_JOIN, false);
+#else
 			player->m_iAccount = 0;
 
 			MESSAGE_BEGIN(MSG_ONE, gmsgMoney, NULL, player->pev);
 				WRITE_LONG(player->m_iAccount);
 				WRITE_BYTE(0);
 			MESSAGE_END();
+#endif
 
 #ifndef REGAMEDLL_FIXES
 			MESSAGE_BEGIN(MSG_BROADCAST, gmsgScoreInfo);
@@ -1745,7 +1754,11 @@ BOOL __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *player, int slot)
 		CheckStartMoney();
 
 		// all players start with "mp_startmoney" bucks
+#ifdef REGAMEDLL_ADD
+		player->AddAccount(startmoney.value, RT_PLAYER_SPEC_JOIN, false);
+#else
 		player->m_iAccount = int(startmoney.value);
+#endif
 
 		player->pev->solid = SOLID_NOT;
 		player->pev->movetype = MOVETYPE_NOCLIP;

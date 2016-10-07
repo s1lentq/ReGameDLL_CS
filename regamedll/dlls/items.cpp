@@ -502,6 +502,17 @@ ItemID GetItemIdByArmoury(ArmouryItemPack armoury)
 	case ARMOURY_KEVLAR: return ITEM_KEVLAR;
 	case ARMOURY_ASSAULT: return ITEM_ASSAULT;
 	case ARMOURY_SMOKEGRENADE: return ITEM_SMOKEGRENADE;
+	case ARMOURY_SHIELD: return ITEM_SHIELDGUN;
+	case ARMOURY_GLOCK18: return ITEM_GLOCK18;
+	case ARMOURY_USP: return ITEM_USP;
+	case ARMOURY_ELITE: return ITEM_ELITE;
+	case ARMOURY_FIVESEVEN: return ITEM_FIVESEVEN;
+	case ARMOURY_P228: return ITEM_P228;
+	case ARMOURY_DEAGLE: return ITEM_DEAGLE;
+	case ARMOURY_FAMAS: return ITEM_FAMAS;
+	case ARMOURY_SG550: return ITEM_SG550;
+	case ARMOURY_GALIL: return ITEM_GALIL;
+	case ARMOURY_UMP45: return ITEM_UMP45;
 	default: return ITEM_NONE;
 	}
 }

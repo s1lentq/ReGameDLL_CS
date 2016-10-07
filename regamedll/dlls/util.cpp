@@ -1471,6 +1471,31 @@ void UTIL_RestartOther(const char *szClassname)
 	}
 }
 
+void UTIL_ResetEntities()
+{
+	edict_t *pEdict = INDEXENT(1);
+	for (int i = 1; i < gpGlobals->maxEntities; ++i, ++pEdict)
+	{
+		if (pEdict->free)
+			continue;
+
+		CBaseEntity *pEntity = CBaseEntity::Instance(pEdict);
+		if (!pEntity)
+			continue;
+
+		// only non-player entities
+		if (pEntity->IsPlayer())
+			continue;
+
+		int caps = pEntity->ObjectCaps();
+		if ((caps & FCAP_MUST_RELEASE) == FCAP_MUST_RELEASE)
+			UTIL_Remove(pEntity);
+
+		else if ((caps & FCAP_MUST_RESET) == FCAP_MUST_RESET)
+			pEntity->Restart();
+	}
+}
+
 void UTIL_RemoveOther(const char *szClassname)
 {
 	CBaseEntity *pEntity = nullptr;
