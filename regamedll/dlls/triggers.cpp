@@ -832,7 +832,11 @@ void CBaseTrigger::HurtTouch(CBaseEntity *pOther)
 	{
 		if (pev->dmgtime > gpGlobals->time)
 		{
+#ifdef REGAMEDLL_FIXES
+			if (gpGlobals->time >= pev->pain_finished)
+#else
 			if (gpGlobals->time != pev->pain_finished)
+#endif
 			{
 				// too early to hurt again, and not same frame with a different entity
 				if (!pOther->IsPlayer())
@@ -868,7 +872,11 @@ void CBaseTrigger::HurtTouch(CBaseEntity *pOther)
 	else
 	{
 		// Original code -- single player
+#ifdef REGAMEDLL_FIXES
+		if (pev->dmgtime > gpGlobals->time && gpGlobals->time >= pev->pain_finished)
+#else
 		if (pev->dmgtime > gpGlobals->time && gpGlobals->time != pev->pain_finished)
+#endif
 		{
 			// too early to hurt again, and not same frame with a different entity
 			return;
