@@ -85,4 +85,9 @@ void CMapInfo::__MAKE_VHOOK(Spawn)()
 	pev->effects |= EF_NODRAW;
 }
 
+void CMapInfo::UpdateOnRemove()
+{
+	g_pMapInfo = nullptr;
+}
+
 LINK_ENTITY_TO_CLASS(info_map_parameters, CMapInfo, CCSMapInfo);

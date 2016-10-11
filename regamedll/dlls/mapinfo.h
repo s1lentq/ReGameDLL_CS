@@ -34,6 +34,7 @@ public:
 	CMapInfo();
 	virtual void Spawn();
 	virtual void KeyValue(KeyValueData *pkvd);
+	virtual void UpdateOnRemove();
 	void CheckMapInfo();
 
 #ifdef HOOK_GAMEDLL

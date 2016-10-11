@@ -9496,3 +9496,19 @@ void CBasePlayer::RemoveBomb()
 		pBomb->Kill();
 	}
 }
+
+void CBasePlayer::Disconnect()
+{
+	SetThink(NULL);
+}
+
+#ifdef REGAMEDLL_FIXES
+void CBasePlayer::UpdateOnRemove()
+{
+	if (m_rebuyString)
+	{
+		delete[] m_rebuyString;
+		m_rebuyString = nullptr;
+	}
+}
+#endif

@@ -1085,6 +1085,4 @@ void OnFreeEntPrivateData(edict_t *pEnt)
 	}
 #endif
 
-	if (g_pMapInfo == pEntity)
-		g_pMapInfo = nullptr;
 }

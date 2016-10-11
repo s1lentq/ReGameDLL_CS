@@ -148,12 +148,15 @@
 #define TE_BEAMPOINTS				0	// beam effect between two points
 #define TE_BEAMENTPOINT				1	// beam effect between point and entity
 #define TE_GUNSHOT				2	// particle effect plus ricochet sound
+
 #define TE_EXPLOSION				3	// additive sprite, 2 dynamic lights, flickering particles, explosion sound, move vertically 8 pps
+
 #define TE_EXPLFLAG_NONE			0	// all flags clear makes default Half-Life explosion
 #define TE_EXPLFLAG_NOADDITIVE			1	// sprite will be drawn opaque (ensure that the sprite you send is a non-additive sprite)
 #define TE_EXPLFLAG_NODLIGHTS			2	// do not render dynamic lights
 #define TE_EXPLFLAG_NOSOUND			4	// do not play client explosion sound
 #define TE_EXPLFLAG_NOPARTICLES			8	// do not draw particles
+
 #define TE_TAREXPLOSION				4	// Quake1 "tarbaby" explosion with sound
 #define TE_SMOKE				5	// alphablend sprite, move vertically 30 pps
 #define TE_TRACER				6	// tracer effect from point to point
@@ -206,6 +209,7 @@
 #define TE_SPRAY				120	// Throws a shower of sprites or models
 #define TE_PLAYERSPRITES			121	// sprites emit from a player's bounding box (ONLY use for players!)
 #define TE_PARTICLEBURST			122	// very similar to lavasplash.
+
 #define TE_FIREFIELD				123	// makes a field of fire.
 
 // to keep network traffic low, this message has associated flags that fit into a byte:
@@ -215,6 +219,7 @@
 #define TEFIRE_FLAG_ALPHA			8	// if set, sprite is rendered alpha blended at 50% else, opaque
 #define TEFIRE_FLAG_PLANAR			16	// if set, all fire sprites have same initial Z instead of randomly filling a cube.
 #define TEFIRE_FLAG_ADDITIVE			32	// if set, sprite is rendered non-opaque with additive
+
 #define TE_PLAYERATTACHMENT			124	// attaches a TENT to a player (this is a high-priority tent)
 #define TE_KILLPLAYERATTACHMENTS		125	// will expire all TENTS attached to a player.
 #define TE_MULTIGUNSHOT				126	// much more compact shotgun message

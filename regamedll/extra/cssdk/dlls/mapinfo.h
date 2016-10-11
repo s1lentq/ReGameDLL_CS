@@ -33,6 +33,7 @@ class CMapInfo: public CPointEntity
 public:
 	virtual void Spawn() = 0;
 	virtual void KeyValue(KeyValueData *pkvd) = 0;
+	virtual void UpdateOnRemove() = 0;
 
 public:
 	InfoMapBuyParam m_iBuyingStatus;

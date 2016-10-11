@@ -370,6 +370,8 @@ public:
 
 #ifndef REGAMEDLL_FIXES
 	virtual void StopSneaking() { m_tSneaking = gpGlobals->time + 30; }
+#else
+	virtual void UpdateOnRemove();
 #endif
 
 	virtual BOOL IsSneaking() { return m_tSneaking <= gpGlobals->time; }
@@ -437,6 +439,7 @@ public:
 	CBasePlayer *Observer_IsValidTarget(int iPlayerIndex, bool bSameTeam);
 	CBasePlayer *Observer_IsValidTarget_(int iPlayerIndex, bool bSameTeam);
 
+	void Disconnect();
 	void Observer_HandleButtons();
 	void Observer_SetMode(int iMode);
 	void Observer_CheckTarget();

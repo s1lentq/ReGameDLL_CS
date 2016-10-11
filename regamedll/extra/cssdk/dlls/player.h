@@ -322,6 +322,7 @@ public:
 	virtual BOOL RemovePlayerItem(CBasePlayerItem *pItem) = 0;
 	virtual int GiveAmmo(int iAmount, char *szName, int iMax) = 0;
 	virtual void StartSneaking() = 0;
+	virtual void UpdateOnRemove() = 0;
 	virtual BOOL IsSneaking() = 0;
 	virtual BOOL IsAlive() = 0;
 	virtual BOOL IsPlayer() = 0;

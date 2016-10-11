@@ -127,7 +127,7 @@ void EXT_FUNC ClientDisconnect(edict_t *pEntity)
 		pEntity->v.flags = FL_DORMANT;
 
 		if (pPlayer)
-			pPlayer->SetThink(nullptr);
+			pPlayer->Disconnect();
 
 		UTIL_SetOrigin(&pEntity->v, pEntity->v.origin);
 		g_pGameRules->ClientDisconnected(pEntity);

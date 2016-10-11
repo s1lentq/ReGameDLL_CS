@@ -967,17 +967,15 @@ void RadiusFlash(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker,
 
 		vecSpot = pPlayer->BodyTarget(vecSrc);
 		UTIL_TraceLine(vecSrc, vecSpot, dont_ignore_monsters, ENT(pevInflictor), &tr);
-
 		g_ReGameHookchains.m_RadiusFlash_TraceLine.callChain(NULL, pPlayer, pevInflictor, pevAttacker, vecSrc, vecSpot, &tr);
 
 		if (tr.flFraction != 1.0f && tr.pHit != pPlayer->pev->pContainingEntity)
 			continue;
 
-#ifndef REGAMEDLL_FIXES
 		UTIL_TraceLine(vecSpot, vecSrc, dont_ignore_monsters, tr.pHit, &tr2);
+		g_ReGameHookchains.m_RadiusFlash_TraceLine.callChain(NULL, pPlayer, VARS(tr.pHit), pevAttacker, vecSpot, vecSrc, &tr2);
 
 		if (tr2.flFraction >= 1.0)
-#endif
 		{
 			if (tr.fStartSolid)
 			{
