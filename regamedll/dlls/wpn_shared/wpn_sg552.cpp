@@ -172,7 +172,7 @@ void CSG552::__MAKE_VHOOK(Reload)()
 	if (m_pPlayer->ammo_556nato <= 0)
 		return;
 
-	if (DefaultReload(SG552_MAX_CLIP, SG552_RELOAD, SG552_RELOAD_TIME))
+	if (DefaultReload(iMaxClip(), SG552_RELOAD, SG552_RELOAD_TIME))
 	{
 		if (m_pPlayer->m_iFOV != DEFAULT_FOV)
 		{

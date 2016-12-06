@@ -102,8 +102,7 @@ void CCSBotManager::__MAKE_VHOOK(RestartRound)()
 	ResetRadioMessageTimestamps();
 
 	m_lastSeenEnemyTimestamp = -9999.9f;
-
-	m_roundStartTimestamp = gpGlobals->time + CVAR_GET_FLOAT("mp_freezetime");
+	m_roundStartTimestamp = gpGlobals->time + freezetime.value;
 
 	// randomly decide if defensive team wants to "rush" as a whole
 	const float defenseRushChance = 33.3f;	// 25.0f;

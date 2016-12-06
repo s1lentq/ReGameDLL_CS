@@ -522,6 +522,7 @@ CBaseEntity *UTIL_FindEntityGeneric(const char *szWhatever, const Vector &vecSrc
 	return pEntity;
 }
 
+#ifndef REGAMEDLL_FIXES
 CBasePlayer *EXT_FUNC UTIL_PlayerByIndex(int playerIndex)
 {
 	CBasePlayer *pPlayer = nullptr;
@@ -534,6 +535,7 @@ CBasePlayer *EXT_FUNC UTIL_PlayerByIndex(int playerIndex)
 
 	return pPlayer;
 }
+#endif
 
 void UTIL_MakeVectors(const Vector &vecAngles)
 {
@@ -737,7 +739,7 @@ void UTIL_HudMessageAll(const hudtextparms_t &textparms, const char *pMessage)
 	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
 		CBaseEntity *pPlayer = UTIL_PlayerByIndex(i);
-		if (pPlayer != NULL)
+		if (pPlayer)
 			UTIL_HudMessage(pPlayer, textparms, pMessage);
 	}
 }
@@ -866,7 +868,7 @@ void UTIL_ShowMessageAll(const char *pString, bool isHint)
 	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
 		CBaseEntity *pPlayer = UTIL_PlayerByIndex(i);
-		if (pPlayer != NULL)
+		if (pPlayer)
 			UTIL_ShowMessage(pString, pPlayer, isHint);
 	}
 }
@@ -2332,8 +2334,8 @@ char UTIL_TextureHit(TraceResult *ptr, Vector vecSrc, Vector vecEnd)
 
 NOXREF int GetPlayerTeam(int index)
 {
-	CBasePlayer *pPlayer = UTIL_PlayerByIndex(index);
-	if (pPlayer != NULL)
+	CBasePlayer *pPlayer = UTIL_PlayerByIndexSafe(index);
+	if (pPlayer)
 	{
 		return pPlayer->m_iTeam;
 	}
@@ -2358,7 +2360,7 @@ bool UTIL_IsGame(const char *gameName)
 float_precision UTIL_GetPlayerGaitYaw(int playerIndex)
 {
 	CBasePlayer *pPlayer = UTIL_PlayerByIndex(playerIndex);
-	if (pPlayer != NULL)
+	if (pPlayer)
 	{
 		return pPlayer->m_flGaityaw;
 	}

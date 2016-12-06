@@ -29,8 +29,15 @@
 
 CReGameHookchains g_ReGameHookchains;
 
+int EXT_FUNC Cmd_Argc_api() {
+	return CMD_ARGC_();
+}
+
+const char *EXT_FUNC Cmd_Argv_api(int i) {
+	return CMD_ARGV_(i);
+}
+
 ReGameFuncs_t g_ReGameApiFuncs = {
-	&UTIL_PlayerByIndex,
 	&CREATE_NAMED_ENTITY,
 
 	&Regamedll_ChangeString_api,
@@ -43,80 +50,95 @@ ReGameFuncs_t g_ReGameApiFuncs = {
 	&UTIL_FindEntityByString,
 
 	&AddEntityHashValue,
-	&RemoveEntityHashValue
+	&RemoveEntityHashValue,
 
+	Cmd_Argc_api,
+	Cmd_Argv_api
 };
 
-IReGameHookRegistry_CBasePlayer_Spawn* CReGameHookchains::CBasePlayer_Spawn() { return &m_CBasePlayer_Spawn; }
-IReGameHookRegistry_CBasePlayer_Precache* CReGameHookchains::CBasePlayer_Precache() { return &m_CBasePlayer_Precache; }
-IReGameHookRegistry_CBasePlayer_ObjectCaps* CReGameHookchains::CBasePlayer_ObjectCaps() { return &m_CBasePlayer_ObjectCaps; }
-IReGameHookRegistry_CBasePlayer_Classify* CReGameHookchains::CBasePlayer_Classify() { return &m_CBasePlayer_Classify; }
-IReGameHookRegistry_CBasePlayer_TraceAttack* CReGameHookchains::CBasePlayer_TraceAttack() { return &m_CBasePlayer_TraceAttack; }
-IReGameHookRegistry_CBasePlayer_TakeDamage* CReGameHookchains::CBasePlayer_TakeDamage() { return &m_CBasePlayer_TakeDamage; }
-IReGameHookRegistry_CBasePlayer_TakeHealth* CReGameHookchains::CBasePlayer_TakeHealth() { return &m_CBasePlayer_TakeHealth; }
-IReGameHookRegistry_CBasePlayer_Killed* CReGameHookchains::CBasePlayer_Killed() { return &m_CBasePlayer_Killed; }
-IReGameHookRegistry_CBasePlayer_AddPoints* CReGameHookchains::CBasePlayer_AddPoints() { return &m_CBasePlayer_AddPoints; }
-IReGameHookRegistry_CBasePlayer_AddPointsToTeam* CReGameHookchains::CBasePlayer_AddPointsToTeam() { return &m_CBasePlayer_AddPointsToTeam; }
-IReGameHookRegistry_CBasePlayer_AddPlayerItem* CReGameHookchains::CBasePlayer_AddPlayerItem() { return &m_CBasePlayer_AddPlayerItem; }
-IReGameHookRegistry_CBasePlayer_RemovePlayerItem* CReGameHookchains::CBasePlayer_RemovePlayerItem() { return &m_CBasePlayer_RemovePlayerItem; }
-IReGameHookRegistry_CBasePlayer_GiveAmmo* CReGameHookchains::CBasePlayer_GiveAmmo() { return &m_CBasePlayer_GiveAmmo; }
-IReGameHookRegistry_CBasePlayer_ResetMaxSpeed* CReGameHookchains::CBasePlayer_ResetMaxSpeed() { return &m_CBasePlayer_ResetMaxSpeed; }
-IReGameHookRegistry_CBasePlayer_Jump* CReGameHookchains::CBasePlayer_Jump() { return &m_CBasePlayer_Jump; }
-IReGameHookRegistry_CBasePlayer_Duck* CReGameHookchains::CBasePlayer_Duck() { return &m_CBasePlayer_Duck; }
-IReGameHookRegistry_CBasePlayer_PreThink* CReGameHookchains::CBasePlayer_PreThink() { return &m_CBasePlayer_PreThink; }
-IReGameHookRegistry_CBasePlayer_PostThink* CReGameHookchains::CBasePlayer_PostThink() { return &m_CBasePlayer_PostThink; }
-IReGameHookRegistry_CBasePlayer_UpdateClientData* CReGameHookchains::CBasePlayer_UpdateClientData() { return &m_CBasePlayer_UpdateClientData; }
-IReGameHookRegistry_CBasePlayer_ImpulseCommands* CReGameHookchains::CBasePlayer_ImpulseCommands() { return &m_CBasePlayer_ImpulseCommands; }
-IReGameHookRegistry_CBasePlayer_RoundRespawn* CReGameHookchains::CBasePlayer_RoundRespawn() { return &m_CBasePlayer_RoundRespawn; }
-IReGameHookRegistry_CBasePlayer_Blind* CReGameHookchains::CBasePlayer_Blind() { return &m_CBasePlayer_Blind; }
+GAMEHOOK_REGISTRY(CBasePlayer_Spawn);
+GAMEHOOK_REGISTRY(CBasePlayer_Precache);
+GAMEHOOK_REGISTRY(CBasePlayer_ObjectCaps);
+GAMEHOOK_REGISTRY(CBasePlayer_Classify);
+GAMEHOOK_REGISTRY(CBasePlayer_TraceAttack);
+GAMEHOOK_REGISTRY(CBasePlayer_TakeDamage);
+GAMEHOOK_REGISTRY(CBasePlayer_TakeHealth);
+GAMEHOOK_REGISTRY(CBasePlayer_Killed);
+GAMEHOOK_REGISTRY(CBasePlayer_AddPoints);
+GAMEHOOK_REGISTRY(CBasePlayer_AddPointsToTeam);
+GAMEHOOK_REGISTRY(CBasePlayer_AddPlayerItem);
+GAMEHOOK_REGISTRY(CBasePlayer_RemovePlayerItem);
+GAMEHOOK_REGISTRY(CBasePlayer_GiveAmmo);
+GAMEHOOK_REGISTRY(CBasePlayer_ResetMaxSpeed);
+GAMEHOOK_REGISTRY(CBasePlayer_Jump);
+GAMEHOOK_REGISTRY(CBasePlayer_Duck);
+GAMEHOOK_REGISTRY(CBasePlayer_PreThink);
+GAMEHOOK_REGISTRY(CBasePlayer_PostThink);
+GAMEHOOK_REGISTRY(CBasePlayer_UpdateClientData);
+GAMEHOOK_REGISTRY(CBasePlayer_ImpulseCommands);
+GAMEHOOK_REGISTRY(CBasePlayer_RoundRespawn);
+GAMEHOOK_REGISTRY(CBasePlayer_Blind);
 
-IReGameHookRegistry_CBasePlayer_Observer_IsValidTarget* CReGameHookchains::CBasePlayer_Observer_IsValidTarget() { return &m_CBasePlayer_Observer_IsValidTarget; }
-IReGameHookRegistry_CBasePlayer_SetAnimation* CReGameHookchains::CBasePlayer_SetAnimation() { return &m_CBasePlayer_SetAnimation; }
-IReGameHookRegistry_CBasePlayer_GiveDefaultItems* CReGameHookchains::CBasePlayer_GiveDefaultItems() { return &m_CBasePlayer_GiveDefaultItems; }
-IReGameHookRegistry_CBasePlayer_GiveNamedItem* CReGameHookchains::CBasePlayer_GiveNamedItem() { return &m_CBasePlayer_GiveNamedItem; }
-IReGameHookRegistry_CBasePlayer_AddAccount* CReGameHookchains::CBasePlayer_AddAccount() { return &m_CBasePlayer_AddAccount; }
-IReGameHookRegistry_CBasePlayer_GiveShield* CReGameHookchains::CBasePlayer_GiveShield() { return &m_CBasePlayer_GiveShield; }
-IReGameHookRegistry_CBasePlayer_SetClientUserInfoModel* CReGameHookchains::CBasePlayer_SetClientUserInfoModel() { return &m_CBasePlayer_SetClientUserInfoModel; }
-IReGameHookRegistry_CBasePlayer_SetClientUserInfoName* CReGameHookchains::CBasePlayer_SetClientUserInfoName() { return &m_CBasePlayer_SetClientUserInfoName; }
-IReGameHookRegistry_CBasePlayer_HasRestrictItem* CReGameHookchains::CBasePlayer_HasRestrictItem() { return &m_CBasePlayer_HasRestrictItem; }
-IReGameHookRegistry_CBasePlayer_DropPlayerItem* CReGameHookchains::CBasePlayer_DropPlayerItem() { return &m_CBasePlayer_DropPlayerItem; }
-IReGameHookRegistry_CBaseAnimating_ResetSequenceInfo* CReGameHookchains::CBaseAnimating_ResetSequenceInfo() { return &m_CBaseAnimating_ResetSequenceInfo; }
+GAMEHOOK_REGISTRY(CBasePlayer_Observer_IsValidTarget);
+GAMEHOOK_REGISTRY(CBasePlayer_SetAnimation);
+GAMEHOOK_REGISTRY(CBasePlayer_GiveDefaultItems);
+GAMEHOOK_REGISTRY(CBasePlayer_GiveNamedItem);
+GAMEHOOK_REGISTRY(CBasePlayer_AddAccount);
+GAMEHOOK_REGISTRY(CBasePlayer_GiveShield);
+GAMEHOOK_REGISTRY(CBasePlayer_SetClientUserInfoModel);
+GAMEHOOK_REGISTRY(CBasePlayer_SetClientUserInfoName);
+GAMEHOOK_REGISTRY(CBasePlayer_HasRestrictItem);
+GAMEHOOK_REGISTRY(CBasePlayer_DropPlayerItem);
+GAMEHOOK_REGISTRY(CBasePlayer_DropShield);
+GAMEHOOK_REGISTRY(CBasePlayer_OnSpawnEquip);
+GAMEHOOK_REGISTRY(CBasePlayer_Radio);
+GAMEHOOK_REGISTRY(CBasePlayer_Disappear);
+GAMEHOOK_REGISTRY(CBasePlayer_MakeVIP);
+GAMEHOOK_REGISTRY(CBasePlayer_MakeBomber);
+GAMEHOOK_REGISTRY(CBasePlayer_StartObserver);
+GAMEHOOK_REGISTRY(CBasePlayer_GetIntoGame);
 
-IReGameHookRegistry_GetForceCamera* CReGameHookchains::GetForceCamera() { return &m_GetForceCamera; }
-IReGameHookRegistry_PlayerBlind* CReGameHookchains::PlayerBlind() { return &m_PlayerBlind; }
-IReGameHookRegistry_RadiusFlash_TraceLine* CReGameHookchains::RadiusFlash_TraceLine() { return &m_RadiusFlash_TraceLine; }
-IReGameHookRegistry_RoundEnd* CReGameHookchains::RoundEnd() { return &m_RoundEnd; }
-IReGameHookRegistry_InstallGameRules* CReGameHookchains::InstallGameRules() { return &m_InstallGameRules; }
-IReGameHookRegistry_PM_Init* CReGameHookchains::PM_Init() { return &m_PM_Init; }
-IReGameHookRegistry_PM_Move* CReGameHookchains::PM_Move() { return &m_PM_Move; }
-IReGameHookRegistry_PM_AirMove* CReGameHookchains::PM_AirMove() { return &m_PM_AirMove; }
-IReGameHookRegistry_HandleMenu_ChooseAppearance* CReGameHookchains::HandleMenu_ChooseAppearance() { return &m_HandleMenu_ChooseAppearance; }
-IReGameHookRegistry_HandleMenu_ChooseTeam* CReGameHookchains::HandleMenu_ChooseTeam() { return &m_HandleMenu_ChooseTeam; }
-IReGameHookRegistry_ShowMenu* CReGameHookchains::ShowMenu() { return &m_ShowMenu; }
-IReGameHookRegistry_ShowVGUIMenu* CReGameHookchains::ShowVGUIMenu() { return &m_ShowVGUIMenu; }
+GAMEHOOK_REGISTRY(CBaseAnimating_ResetSequenceInfo);
 
-IReGameHookRegistry_CSGameRules_FShouldSwitchWeapon* CReGameHookchains::CSGameRules_FShouldSwitchWeapon() { return &m_CSGameRules_FShouldSwitchWeapon; }
-IReGameHookRegistry_CSGameRules_GetNextBestWeapon* CReGameHookchains::CSGameRules_GetNextBestWeapon() { return &m_CSGameRules_GetNextBestWeapon; }
-IReGameHookRegistry_CSGameRules_FlPlayerFallDamage* CReGameHookchains::CSGameRules_FlPlayerFallDamage() { return &m_CSGameRules_FlPlayerFallDamage; }
-IReGameHookRegistry_CSGameRules_FPlayerCanTakeDamage* CReGameHookchains::CSGameRules_FPlayerCanTakeDamage() { return &m_CSGameRules_FPlayerCanTakeDamage; }
-IReGameHookRegistry_CSGameRules_PlayerSpawn* CReGameHookchains::CSGameRules_PlayerSpawn() { return &m_CSGameRules_PlayerSpawn; }
-IReGameHookRegistry_CSGameRules_FPlayerCanRespawn* CReGameHookchains::CSGameRules_FPlayerCanRespawn() { return &m_CSGameRules_FPlayerCanRespawn; }
-IReGameHookRegistry_CSGameRules_GetPlayerSpawnSpot* CReGameHookchains::CSGameRules_GetPlayerSpawnSpot() { return &m_CSGameRules_GetPlayerSpawnSpot; }
-IReGameHookRegistry_CSGameRules_ClientUserInfoChanged* CReGameHookchains::CSGameRules_ClientUserInfoChanged() { return &m_CSGameRules_ClientUserInfoChanged; }
-IReGameHookRegistry_CSGameRules_PlayerKilled* CReGameHookchains::CSGameRules_PlayerKilled() { return &m_CSGameRules_PlayerKilled; }
-IReGameHookRegistry_CSGameRules_DeathNotice* CReGameHookchains::CSGameRules_DeathNotice() { return &m_CSGameRules_DeathNotice; }
-IReGameHookRegistry_CSGameRules_CanHavePlayerItem* CReGameHookchains::CSGameRules_CanHavePlayerItem() { return &m_CSGameRules_CanHavePlayerItem; }
-IReGameHookRegistry_CSGameRules_DeadPlayerWeapons* CReGameHookchains::CSGameRules_DeadPlayerWeapons() { return &m_CSGameRules_DeadPlayerWeapons; }
-IReGameHookRegistry_CSGameRules_ServerDeactivate* CReGameHookchains::CSGameRules_ServerDeactivate() { return &m_CSGameRules_ServerDeactivate; }
-IReGameHookRegistry_CSGameRules_CheckMapConditions* CReGameHookchains::CSGameRules_CheckMapConditions() { return &m_CSGameRules_CheckMapConditions; }
-IReGameHookRegistry_CSGameRules_CleanUpMap* CReGameHookchains::CSGameRules_CleanUpMap() { return &m_CSGameRules_CleanUpMap; }
-IReGameHookRegistry_CSGameRules_RestartRound* CReGameHookchains::CSGameRules_RestartRound() { return &m_CSGameRules_RestartRound; }
-IReGameHookRegistry_CSGameRules_CheckWinConditions* CReGameHookchains::CSGameRules_CheckWinConditions() { return &m_CSGameRules_CheckWinConditions; }
-IReGameHookRegistry_CSGameRules_RemoveGuns* CReGameHookchains::CSGameRules_RemoveGuns() { return &m_CSGameRules_RemoveGuns; }
-IReGameHookRegistry_CSGameRules_GiveC4* CReGameHookchains::CSGameRules_GiveC4() { return &m_CSGameRules_GiveC4; }
-IReGameHookRegistry_CSGameRules_ChangeLevel* CReGameHookchains::CSGameRules_ChangeLevel() { return &m_CSGameRules_ChangeLevel; }
-IReGameHookRegistry_CSGameRules_GoToIntermission* CReGameHookchains::CSGameRules_GoToIntermission() { return &m_CSGameRules_GoToIntermission; }
-IReGameHookRegistry_CSGameRules_BalanceTeams* CReGameHookchains::CSGameRules_BalanceTeams() { return &m_CSGameRules_BalanceTeams; }
+GAMEHOOK_REGISTRY(GetForceCamera);
+GAMEHOOK_REGISTRY(PlayerBlind);
+GAMEHOOK_REGISTRY(RadiusFlash_TraceLine);
+GAMEHOOK_REGISTRY(RoundEnd);
+GAMEHOOK_REGISTRY(InstallGameRules);
+GAMEHOOK_REGISTRY(PM_Init);
+GAMEHOOK_REGISTRY(PM_Move);
+GAMEHOOK_REGISTRY(PM_AirMove);
+GAMEHOOK_REGISTRY(HandleMenu_ChooseAppearance);
+GAMEHOOK_REGISTRY(HandleMenu_ChooseTeam);
+GAMEHOOK_REGISTRY(ShowMenu);
+GAMEHOOK_REGISTRY(ShowVGUIMenu);
+GAMEHOOK_REGISTRY(BuyGunAmmo);
+GAMEHOOK_REGISTRY(BuyWeaponByWeaponID);
+GAMEHOOK_REGISTRY(InternalCommand);
+
+GAMEHOOK_REGISTRY(CSGameRules_FShouldSwitchWeapon);
+GAMEHOOK_REGISTRY(CSGameRules_GetNextBestWeapon);
+GAMEHOOK_REGISTRY(CSGameRules_FlPlayerFallDamage);
+GAMEHOOK_REGISTRY(CSGameRules_FPlayerCanTakeDamage);
+GAMEHOOK_REGISTRY(CSGameRules_PlayerSpawn);
+GAMEHOOK_REGISTRY(CSGameRules_FPlayerCanRespawn);
+GAMEHOOK_REGISTRY(CSGameRules_GetPlayerSpawnSpot);
+GAMEHOOK_REGISTRY(CSGameRules_ClientUserInfoChanged);
+GAMEHOOK_REGISTRY(CSGameRules_PlayerKilled);
+GAMEHOOK_REGISTRY(CSGameRules_DeathNotice);
+GAMEHOOK_REGISTRY(CSGameRules_CanHavePlayerItem);
+GAMEHOOK_REGISTRY(CSGameRules_DeadPlayerWeapons);
+GAMEHOOK_REGISTRY(CSGameRules_ServerDeactivate);
+GAMEHOOK_REGISTRY(CSGameRules_CheckMapConditions);
+GAMEHOOK_REGISTRY(CSGameRules_CleanUpMap);
+GAMEHOOK_REGISTRY(CSGameRules_RestartRound);
+GAMEHOOK_REGISTRY(CSGameRules_CheckWinConditions);
+GAMEHOOK_REGISTRY(CSGameRules_RemoveGuns);
+GAMEHOOK_REGISTRY(CSGameRules_GiveC4);
+GAMEHOOK_REGISTRY(CSGameRules_ChangeLevel);
+GAMEHOOK_REGISTRY(CSGameRules_GoToIntermission);
+GAMEHOOK_REGISTRY(CSGameRules_BalanceTeams);
+GAMEHOOK_REGISTRY(CSGameRules_OnRoundFreezeEnd);
 
 int EXT_FUNC CReGameApi::GetMajorVersion() {
 	return REGAMEDLL_API_VERSION_MAJOR;

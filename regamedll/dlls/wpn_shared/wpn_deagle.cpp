@@ -173,7 +173,7 @@ void CDEAGLE::__MAKE_VHOOK(Reload)()
 	if (m_pPlayer->ammo_50ae <= 0)
 		return;
 
-	if (DefaultReload(DEAGLE_MAX_CLIP, DEAGLE_RELOAD, DEAGLE_RELOAD_TIME))
+	if (DefaultReload(iMaxClip(), DEAGLE_RELOAD, DEAGLE_RELOAD_TIME))
 	{
 		m_pPlayer->SetAnimation(PLAYER_RELOAD);
 		m_flAccuracy = 0.9f;

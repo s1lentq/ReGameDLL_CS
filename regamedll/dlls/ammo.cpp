@@ -15,7 +15,7 @@ void C9MMAmmo::__MAKE_VHOOK(Precache)()
 
 BOOL C9MMAmmo::__MAKE_VHOOK(AddAmmo)(CBaseEntity *pOther)
 {
-	if (pOther->GiveAmmo(AMMO_9MM_BUY, "9mm", MAX_AMMO_9MM) == -1)
+	if (pOther->GiveAmmo(AMMO_9MM_BUY, "9mm") == -1)
 	{
 		return FALSE;
 	}
@@ -41,7 +41,7 @@ void CBuckShotAmmo::__MAKE_VHOOK(Precache)()
 
 BOOL CBuckShotAmmo::__MAKE_VHOOK(AddAmmo)(CBaseEntity *pOther)
 {
-	if (pOther->GiveAmmo(AMMO_BUCKSHOT_BUY, "buckshot", MAX_AMMO_BUCKSHOT) == -1)
+	if (pOther->GiveAmmo(AMMO_BUCKSHOT_BUY, "buckshot") == -1)
 	{
 		return FALSE;
 	}
@@ -67,7 +67,7 @@ void C556NatoAmmo::__MAKE_VHOOK(Precache)()
 
 BOOL C556NatoAmmo::__MAKE_VHOOK(AddAmmo)(CBaseEntity *pOther)
 {
-	if (pOther->GiveAmmo(AMMO_556NATO_BUY, "556Nato", MAX_AMMO_556NATO) == -1)
+	if (pOther->GiveAmmo(AMMO_556NATO_BUY, "556Nato") == -1)
 	{
 		return FALSE;
 	}
@@ -93,7 +93,7 @@ void C556NatoBoxAmmo::__MAKE_VHOOK(Precache)()
 
 BOOL C556NatoBoxAmmo::__MAKE_VHOOK(AddAmmo)(CBaseEntity *pOther)
 {
-	if (pOther->GiveAmmo(AMMO_556NATOBOX_BUY, "556NatoBox", MAX_AMMO_556NATOBOX) == -1)
+	if (pOther->GiveAmmo(AMMO_556NATOBOX_BUY, "556NatoBox") == -1)
 	{
 		return FALSE;
 	}
@@ -119,7 +119,7 @@ void C762NatoAmmo::__MAKE_VHOOK(Precache)()
 
 BOOL C762NatoAmmo::__MAKE_VHOOK(AddAmmo)(CBaseEntity *pOther)
 {
-	if (pOther->GiveAmmo(AMMO_762NATO_BUY, "762Nato", MAX_AMMO_762NATO) == -1)
+	if (pOther->GiveAmmo(AMMO_762NATO_BUY, "762Nato") == -1)
 	{
 		return FALSE;
 	}
@@ -145,7 +145,7 @@ void C45ACPAmmo::__MAKE_VHOOK(Precache)()
 
 BOOL C45ACPAmmo::__MAKE_VHOOK(AddAmmo)(CBaseEntity *pOther)
 {
-	if (pOther->GiveAmmo(AMMO_45ACP_BUY, "45acp", MAX_AMMO_45ACP) == -1)
+	if (pOther->GiveAmmo(AMMO_45ACP_BUY, "45acp") == -1)
 	{
 		return FALSE;
 	}
@@ -171,7 +171,7 @@ void C50AEAmmo::__MAKE_VHOOK(Precache)()
 
 BOOL C50AEAmmo::__MAKE_VHOOK(AddAmmo)(CBaseEntity *pOther)
 {
-	if (pOther->GiveAmmo(AMMO_50AE_BUY, "50AE", MAX_AMMO_50AE) == -1)
+	if (pOther->GiveAmmo(AMMO_50AE_BUY, "50AE") == -1)
 	{
 		return FALSE;
 	}
@@ -197,7 +197,7 @@ void C338MagnumAmmo::__MAKE_VHOOK(Precache)()
 
 BOOL C338MagnumAmmo::__MAKE_VHOOK(AddAmmo)(CBaseEntity *pOther)
 {
-	if (pOther->GiveAmmo(AMMO_338MAG_BUY, "338Magnum", MAX_AMMO_338MAGNUM) == -1)
+	if (pOther->GiveAmmo(AMMO_338MAG_BUY, "338Magnum") == -1)
 	{
 		return FALSE;
 	}
@@ -223,7 +223,7 @@ void C57MMAmmo::__MAKE_VHOOK(Precache)()
 
 BOOL C57MMAmmo::__MAKE_VHOOK(AddAmmo)(CBaseEntity *pOther)
 {
-	if (pOther->GiveAmmo(AMMO_57MM_BUY, "57mm", MAX_AMMO_57MM) == -1)
+	if (pOther->GiveAmmo(AMMO_57MM_BUY, "57mm") == -1)
 	{
 		return FALSE;
 	}
@@ -249,7 +249,7 @@ void C357SIGAmmo::__MAKE_VHOOK(Precache)()
 
 BOOL C357SIGAmmo::__MAKE_VHOOK(AddAmmo)(CBaseEntity *pOther)
 {
-	if (pOther->GiveAmmo(AMMO_357SIG_BUY, "357SIG", MAX_AMMO_357SIG) == -1)
+	if (pOther->GiveAmmo(AMMO_357SIG_BUY, "357SIG") == -1)
 	{
 		return FALSE;
 	}

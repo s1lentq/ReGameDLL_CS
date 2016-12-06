@@ -160,7 +160,7 @@ void CP90::__MAKE_VHOOK(Reload)()
 	if (m_pPlayer->ammo_57mm <= 0)
 		return;
 
-	if (DefaultReload(P90_MAX_CLIP, P90_RELOAD, P90_RELOAD_TIME))
+	if (DefaultReload(iMaxClip(), P90_RELOAD, P90_RELOAD_TIME))
 	{
 		m_pPlayer->SetAnimation(PLAYER_RELOAD);
 

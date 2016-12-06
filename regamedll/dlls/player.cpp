@@ -88,7 +88,6 @@ int gmsgFog = 0;
 int gmsgShowTimer = 0;
 
 BOOL gInitHUD = TRUE;
-cvar_t *sv_aim = NULL;
 
 TYPEDESCRIPTION CRevertSaved::m_SaveData[] =
 {
@@ -151,7 +150,6 @@ char *CDeadHEV::m_szPoses[] =
 #endif // HOOK_GAMEDLL
 
 int gEvilImpulse101;
-char g_szMapBriefingText[512];
 
 entvars_t *g_pevLastInflictor;
 CBaseEntity *g_pLastSpawn;
@@ -341,9 +339,9 @@ const char *GetCSModelName(int item_id)
 	return modelName;
 }
 
-LINK_HOOK_CLASS_VOID_CHAIN(CBasePlayer, SetClientUserInfoName, (char *infobuffer, char *szNewName), infobuffer, szNewName);
+LINK_HOOK_CLASS_CHAIN(bool, CBasePlayer, SetClientUserInfoName, (char *infobuffer, char *szNewName), infobuffer, szNewName);
 
-void EXT_FUNC CBasePlayer::__API_HOOK(SetClientUserInfoName)(char *infobuffer, char *szNewName)
+bool EXT_FUNC CBasePlayer::__API_HOOK(SetClientUserInfoName)(char *infobuffer, char *szNewName)
 {
 	int nClientIndex = entindex();
 	if (pev->deadflag != DEAD_NO)
@@ -351,22 +349,21 @@ void EXT_FUNC CBasePlayer::__API_HOOK(SetClientUserInfoName)(char *infobuffer, c
 		m_bHasChangedName = true;
 		Q_snprintf(m_szNewName, sizeof(m_szNewName), "%s", szNewName);
 		ClientPrint(pev, HUD_PRINTTALK, "#Name_change_at_respawn");
-		SET_CLIENT_KEY_VALUE(nClientIndex, infobuffer, "name", (char *)STRING(pev->netname));
+		return false;
 	}
-	else
-	{
-		// Set the name
-		SET_CLIENT_KEY_VALUE(nClientIndex, infobuffer, "name", szNewName);
 
-		MESSAGE_BEGIN(MSG_BROADCAST, gmsgSayText);
-			WRITE_BYTE(nClientIndex);
-			WRITE_STRING("#Cstrike_Name_Change");
-			WRITE_STRING(STRING(pev->netname));
-			WRITE_STRING(szNewName);
-		MESSAGE_END();
+	// Set the name
+	SET_CLIENT_KEY_VALUE(nClientIndex, infobuffer, "name", szNewName);
 
-		UTIL_LogPrintf("\"%s<%i><%s><%s>\" changed name to \"%s\"\n", STRING(pev->netname), GETPLAYERUSERID(edict()), GETPLAYERAUTHID(edict()), GetTeam(m_iTeam), szNewName);
-	}
+	MESSAGE_BEGIN(MSG_BROADCAST, gmsgSayText);
+		WRITE_BYTE(nClientIndex);
+		WRITE_STRING("#Cstrike_Name_Change");
+		WRITE_STRING(STRING(pev->netname));
+		WRITE_STRING(szNewName);
+	MESSAGE_END();
+
+	UTIL_LogPrintf("\"%s<%i><%s><%s>\" changed name to \"%s\"\n", STRING(pev->netname), GETPLAYERUSERID(edict()), GETPLAYERAUTHID(edict()), GetTeam(m_iTeam), szNewName);
+	return true;
 }
 
 void EXT_FUNC CBasePlayer::SetClientUserInfoModel_api(char *infobuffer, char *szNewModel)
@@ -482,7 +479,7 @@ void CBasePlayer::SetPlayerModel(BOOL HasC4)
 CBasePlayer *CBasePlayer::GetNextRadioRecipient(CBasePlayer *pStartPlayer)
 {
 	CBaseEntity *pEntity = static_cast<CBaseEntity *>(pStartPlayer);
-	while ((pEntity = UTIL_FindEntityByClassname(pEntity, "player")) != NULL)
+	while ((pEntity = UTIL_FindEntityByClassname(pEntity, "player")))
 	{
 		if (FNullEnt(pEntity->edict()))
 			break;
@@ -509,7 +506,7 @@ CBasePlayer *CBasePlayer::GetNextRadioRecipient(CBasePlayer *pStartPlayer)
 				continue;
 
 			CBasePlayer *pTarget = CBasePlayer::Instance(pPlayer->m_hObserverTarget->pev);
-			if (pTarget != NULL && pTarget->m_iTeam == m_iTeam)
+			if (pTarget && pTarget->m_iTeam == m_iTeam)
 			{
 				bSend = true;
 			}
@@ -524,7 +521,9 @@ CBasePlayer *CBasePlayer::GetNextRadioRecipient(CBasePlayer *pStartPlayer)
 	return NULL;
 }
 
-void CBasePlayer::Radio(const char *msg_id, const char *msg_verbose, short pitch, bool showIcon)
+LINK_HOOK_CLASS_VOID_CHAIN(CBasePlayer, Radio, (const char *msg_id, const char *msg_verbose, short pitch, bool showIcon), msg_id, msg_verbose, pitch, showIcon);
+
+void EXT_FUNC CBasePlayer::__API_HOOK(Radio)(const char *msg_id, const char *msg_verbose, short pitch, bool showIcon)
 {
 	// Spectators don't say radio messages.
 	if (!IsPlayer())
@@ -535,7 +534,7 @@ void CBasePlayer::Radio(const char *msg_id, const char *msg_verbose, short pitch
 		return;
 
 	CBaseEntity *pEntity = NULL;
-	while ((pEntity = UTIL_FindEntityByClassname(pEntity, "player")) != NULL)
+	while ((pEntity = UTIL_FindEntityByClassname(pEntity, "player")))
 	{
 		if (FNullEnt(pEntity->edict()))
 			break;
@@ -588,11 +587,11 @@ void CBasePlayer::Radio(const char *msg_id, const char *msg_verbose, short pitch
 				MESSAGE_END();
 
 				// radio message icon
-				if (msg_verbose != NULL)
+				if (msg_verbose)
 				{
 					// search the place name where is located the player
 					const char *placeName = NULL;
-					if (g_bIsCzeroGame && TheBotPhrases != NULL)
+					if (g_bIsCzeroGame && TheBotPhrases)
 					{
 						Place playerPlace = TheNavAreaGrid.GetPlace(&pev->origin);
 						const BotPhraseList *placeList = TheBotPhrases->GetPlaceList();
@@ -606,7 +605,7 @@ void CBasePlayer::Radio(const char *msg_id, const char *msg_verbose, short pitch
 							}
 						}
 					}
-					if (placeName != NULL)
+					if (placeName)
 						ClientPrint(pEntity->pev, HUD_PRINTRADIO, NumAsString(entindex()), "#Game_radio_location", STRING(pev->netname), placeName, msg_verbose);
 					else
 						ClientPrint(pEntity->pev, HUD_PRINTRADIO, NumAsString(entindex()), "#Game_radio", STRING(pev->netname), msg_verbose);
@@ -726,7 +725,7 @@ LINK_HOOK_CLASS_CHAIN(BOOL, CBasePlayer, TakeHealth, (float flHealth, int bitsDa
 
 // override takehealth
 // bitsDamageType indicates type of damage healed.
-BOOL CBasePlayer::__API_VHOOK(TakeHealth)(float flHealth, int bitsDamageType)
+BOOL EXT_FUNC CBasePlayer::__API_VHOOK(TakeHealth)(float flHealth, int bitsDamageType)
 {
 	return CBaseMonster::TakeHealth(flHealth, bitsDamageType);
 }
@@ -738,7 +737,7 @@ Vector CBasePlayer::__MAKE_VHOOK(GetGunPosition)()
 
 bool CBasePlayer::IsHittingShield(Vector &vecDirection, TraceResult *ptr)
 {
-	if ((m_pActiveItem != NULL && m_pActiveItem->m_iId == WEAPON_C4) || !HasShield())
+	if ((m_pActiveItem && m_pActiveItem->m_iId == WEAPON_C4) || !HasShield())
 		return false;
 
 	if (ptr->iHitgroup == HITGROUP_SHIELD)
@@ -752,7 +751,7 @@ bool CBasePlayer::IsHittingShield(Vector &vecDirection, TraceResult *ptr)
 
 LINK_HOOK_CLASS_VOID_CHAIN(CBasePlayer, TraceAttack, (entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType), pevAttacker, flDamage, vecDir, ptr, bitsDamageType);
 
-void CBasePlayer::__API_VHOOK(TraceAttack)(entvars_t *pevAttacker, float flDamage, VectorRef vecDir, TraceResult *ptr, int bitsDamageType)
+void EXT_FUNC CBasePlayer::__API_VHOOK(TraceAttack)(entvars_t *pevAttacker, float flDamage, VectorRef vecDir, TraceResult *ptr, int bitsDamageType)
 {
 	bool bShouldBleed = true;
 	bool bShouldSpark = false;
@@ -763,7 +762,7 @@ void CBasePlayer::__API_VHOOK(TraceAttack)(entvars_t *pevAttacker, float flDamag
 	if (pAttacker && pAttacker->IsPlayer() && !CSGameRules()->FPlayerCanTakeDamage(this, pAttacker))
 		bShouldBleed = false;
 #else
-	if (pAttacker && pAttacker->IsPlayer() && m_iTeam == pAttacker->m_iTeam && CVAR_GET_FLOAT("mp_friendlyfire") == 0)
+	if (pAttacker && pAttacker->IsPlayer() && m_iTeam == pAttacker->m_iTeam && !friendlyfire.value)
 		bShouldBleed = false;
 #endif
 
@@ -983,7 +982,7 @@ LINK_HOOK_CLASS_CHAIN(BOOL, CBasePlayer, TakeDamage, (entvars_t *pevInflictor, e
 // NOTE: each call to TakeDamage with bitsDamageType set to a time-based damage
 // type will cause the damage time countdown to be reset.  Thus the ongoing effects of poison, radiation
 // etc are implemented with subsequent calls to TakeDamage using DMG_GENERIC.
-BOOL CBasePlayer::__API_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, FloatRef flDamage, int bitsDamageType)
+BOOL EXT_FUNC CBasePlayer::__API_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, FloatRef flDamage, int bitsDamageType)
 {
 	BOOL bTookDamage;
 	float flRatio = ARMOR_RATIO;
@@ -1020,13 +1019,19 @@ BOOL CBasePlayer::__API_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pe
 			{
 				CGrenade *pGrenade = GetClassPtr<CCSGrenade>((CGrenade *)pevInflictor);
 
-				if (CVAR_GET_FLOAT("mp_friendlyfire"))
+				if (friendlyfire.value)
 				{
 					if (pGrenade->m_iTeam == m_iTeam)
 						bTeamAttack = TRUE;
 
 					pAttack = CBasePlayer::Instance(pevAttacker);
 				}
+#ifdef REGAMEDLL_ADD
+				else if (CSGameRules()->IsFreeForAll())
+				{
+					pAttack = CBasePlayer::Instance(pevAttacker);
+				}
+#endif
 				else if (pGrenade->m_iTeam == m_iTeam && (&edict()->v != pevAttacker))
 				{
 					return FALSE;
@@ -1091,7 +1096,7 @@ BOOL CBasePlayer::__API_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pe
 
 		if (bTookDamage)
 		{
-			if (TheBots != NULL)
+			if (TheBots)
 			{
 				TheBots->OnEvent(EVENT_PLAYER_TOOK_DAMAGE, this, pAttack);
 			}
@@ -1108,7 +1113,7 @@ BOOL CBasePlayer::__API_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pe
 					bool killedByHumanPlayer = (!pPlayer->IsBot() && pPlayer->pev == pevAttacker && pPlayer->m_iTeam != m_iTeam);
 					if (killedByHumanPlayer)
 					{
-						if (TheCareerTasks != NULL)
+						if (TheCareerTasks)
 						{
 							TheCareerTasks->HandleEnemyInjury(GetWeaponName(pevInflictor, pevAttacker), pPlayer->HasShield(), pPlayer);
 						}
@@ -1163,7 +1168,7 @@ BOOL CBasePlayer::__API_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pe
 		return FALSE;
 	}
 
-	if (bitsDamageType & DMG_BLAST && g_pGameRules->IsMultiplayer())
+	if ((bitsDamageType & DMG_BLAST) && g_pGameRules->IsMultiplayer())
 	{
 		// blasts damage armor more.
 		flBonus *= 2;
@@ -1203,7 +1208,7 @@ BOOL CBasePlayer::__API_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pe
 			if (gpGlobals->time > pAttack->m_flLastAttackedTeammate + 0.6f)
 			{
 				CBaseEntity *pBasePlayer = NULL;
-				while ((pBasePlayer = UTIL_FindEntityByClassname(pBasePlayer, "player")) != NULL)
+				while ((pBasePlayer = UTIL_FindEntityByClassname(pBasePlayer, "player")))
 				{
 					if (FNullEnt(pBasePlayer->edict()))
 						break;
@@ -1327,7 +1332,7 @@ BOOL CBasePlayer::__API_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pe
 
 	if (bTookDamage)
 	{
-		if (TheBots != NULL)
+		if (TheBots)
 		{
 			TheBots->OnEvent(EVENT_PLAYER_TOOK_DAMAGE, this, pAttack);
 		}
@@ -1342,10 +1347,9 @@ BOOL CBasePlayer::__API_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pe
 					continue;
 
 				bool killedByHumanPlayer = (!pPlayer->IsBot() && pPlayer->pev == pevAttacker && pPlayer->m_iTeam != m_iTeam);
-
 				if (killedByHumanPlayer)
 				{
-					if (TheCareerTasks != NULL)
+					if (TheCareerTasks)
 					{
 						TheCareerTasks->HandleEnemyInjury(GetWeaponName(pevInflictor, pevAttacker), pPlayer->HasShield(), pPlayer);
 					}
@@ -1407,7 +1411,7 @@ void packPlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 		return;
 
 	const char *modelName = GetCSModelName(pItem->m_iId);
-	if (modelName != NULL)
+	if (modelName)
 	{
 		// create a box to pack the stuff into.
 		CWeaponBox *pWeaponBox = (CWeaponBox *)CBaseEntity::Create("weaponbox", pPlayer->pev->origin, pPlayer->pev->angles, ENT(pPlayer->pev));
@@ -1588,7 +1592,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 		}
 		if (!HasRestrictItem(ITEM_USP, ITEM_TYPE_EQUIPPED)) {
 			GiveNamedItem("weapon_usp");
-			GiveAmmo(m_bIsVIP ? 12 : 24, "45acp", MAX_AMMO_45ACP);
+			GiveAmmo(m_bIsVIP ? 12 : 24, "45acp");
 		}
 
 		break;
@@ -1600,7 +1604,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 		}
 		if (!HasRestrictItem(ITEM_GLOCK18, ITEM_TYPE_EQUIPPED)) {
 			GiveNamedItem("weapon_glock18");
-			GiveAmmo(40, "9mm", MAX_AMMO_9MM);
+			GiveAmmo(40, "9mm");
 		}
 
 		break;
@@ -1612,15 +1616,16 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 	case CT:
 		GiveNamedItem("weapon_knife");
 		GiveNamedItem("weapon_usp");
-		GiveAmmo(m_bIsVIP ? 12 : 24, "45acp", MAX_AMMO_45ACP);
+		GiveAmmo(m_bIsVIP ? 12 : 24, "45acp");
 		break;
 	case TERRORIST:
 		GiveNamedItem("weapon_knife");
 		GiveNamedItem("weapon_glock18");
-		GiveAmmo(40, "9mm", MAX_AMMO_9MM);
+		GiveAmmo(40, "9mm");
 		break;
 	}
 #endif
+
 }
 
 void CBasePlayer::RemoveAllItems(BOOL removeSuit)
@@ -1660,7 +1665,7 @@ void CBasePlayer::RemoveAllItems(BOOL removeSuit)
 	if (bKillProgBar)
 		SetProgressBarTime(0);
 
-	if (m_pActiveItem != NULL)
+	if (m_pActiveItem)
 	{
 		ResetAutoaim();
 
@@ -1690,10 +1695,6 @@ void CBasePlayer::RemoveAllItems(BOOL removeSuit)
 	pev->viewmodel = 0;
 	pev->weaponmodel = 0;
 
-#ifdef REGAMEDLL_FIXES
-	m_iHideHUD |= HIDEHUD_WEAPONS;
-#endif
-
 	if (removeSuit)
 		pev->weapons = 0;
 	else
@@ -1703,6 +1704,10 @@ void CBasePlayer::RemoveAllItems(BOOL removeSuit)
 		m_rgAmmo[i] = 0;
 
 	UpdateClientData();
+
+#ifdef REGAMEDLL_FIXES
+	m_iHideHUD |= HIDEHUD_WEAPONS;
+#endif
 
 	// send Selected Weapon Message to our client
 	MESSAGE_BEGIN(MSG_ONE, gmsgCurWeapon, NULL, pev);
@@ -1755,7 +1760,7 @@ void CBasePlayer::SetProgressBarTime(int time)
 	CBaseEntity *pPlayer = NULL;
 	int myIndex = entindex();
 
-	while ((pPlayer = UTIL_FindEntityByClassname(pPlayer, "player")) != NULL)
+	while ((pPlayer = UTIL_FindEntityByClassname(pPlayer, "player")))
 	{
 		if (FNullEnt(pPlayer->edict()))
 			break;
@@ -1795,7 +1800,7 @@ void CBasePlayer::SetProgressBarTime2(int time, float timeElapsed)
 	CBaseEntity *pPlayer = NULL;
 	int myIndex = entindex();
 
-	while ((pPlayer = UTIL_FindEntityByClassname(pPlayer, "player")) != NULL)
+	while ((pPlayer = UTIL_FindEntityByClassname(pPlayer, "player")))
 	{
 		if (FNullEnt(pPlayer->edict()))
 			break;
@@ -1997,7 +2002,7 @@ void CBasePlayer::SendFOV(int fov)
 
 LINK_HOOK_CLASS_VOID_CHAIN(CBasePlayer, Killed, (entvars_t *pevAttacker, int iGib), pevAttacker, iGib);
 
-void CBasePlayer::__API_VHOOK(Killed)(entvars_t *pevAttacker, int iGib)
+void EXT_FUNC CBasePlayer::__API_VHOOK(Killed)(entvars_t *pevAttacker, int iGib)
 {
 	m_canSwitchObserverModes = false;
 
@@ -2006,7 +2011,7 @@ void CBasePlayer::__API_VHOOK(Killed)(entvars_t *pevAttacker, int iGib)
 
 	CBaseEntity *pAttackerEntity = CBaseEntity::Instance(pevAttacker);
 
-	if (TheBots != NULL)
+	if (TheBots)
 	{
 		TheBots->OnEvent(EVENT_PLAYER_DIED, this, pAttackerEntity);
 	}
@@ -2016,7 +2021,7 @@ void CBasePlayer::__API_VHOOK(Killed)(entvars_t *pevAttacker, int iGib)
 		bool killerHasShield = false;
 		bool wasBlind = false;
 
-		if (TheCareerTasks != NULL)
+		if (TheCareerTasks)
 		{
 			if (!IsBot())
 			{
@@ -2048,7 +2053,7 @@ void CBasePlayer::__API_VHOOK(Killed)(entvars_t *pevAttacker, int iGib)
 				bool killedByHumanPlayer = (!pPlayer->IsBot() && pPlayer->pev == pevAttacker && pPlayer->m_iTeam != m_iTeam);
 				if (killedByHumanPlayer)
 				{
-					if (TheCareerTasks != NULL)
+					if (TheCareerTasks)
 					{
 						TheCareerTasks->HandleEnemyKill(wasBlind, GetWeaponName(g_pevLastInflictor, pevAttacker), m_bHeadshotKilled, killerHasShield, this, pPlayer);
 					}
@@ -2094,7 +2099,7 @@ void CBasePlayer::__API_VHOOK(Killed)(entvars_t *pevAttacker, int iGib)
 #ifndef REGAMEDLL_FIXES
 	CSound *pSound = CSoundEnt::SoundPointerForIndex(CSoundEnt::ClientSoundIndex(edict()));
 
-	if (pSound != NULL)
+	if (pSound)
 	{
 		pSound->Reset();
 	}
@@ -2152,7 +2157,7 @@ void CBasePlayer::__API_VHOOK(Killed)(entvars_t *pevAttacker, int iGib)
 		pev->iuser2 = ENTINDEX(edict());
 		pev->iuser3 = ENTINDEX(ENT(pevAttacker));
 
-		m_hObserverTarget = UTIL_PlayerByIndex(pev->iuser3);
+		m_hObserverTarget = UTIL_PlayerByIndexSafe(pev->iuser3);
 
 		MESSAGE_BEGIN(MSG_ONE, gmsgADStop, NULL, pev);
 		MESSAGE_END();
@@ -2269,7 +2274,7 @@ void CBasePlayer::__API_VHOOK(Killed)(entvars_t *pevAttacker, int iGib)
 	BuyZoneIcon_Clear(this);
 
 	SetThink(&CBasePlayer::PlayerDeathThink);
-	pev->nextthink = gpGlobals->time + 0.1;
+	pev->nextthink = gpGlobals->time + 0.1f;
 	pev->solid = SOLID_NOT;
 
 	if (m_bPunishedForTK)
@@ -2309,7 +2314,7 @@ BOOL CBasePlayer::IsBombGuy()
 
 LINK_HOOK_CLASS_VOID_CHAIN(CBasePlayer, SetAnimation, (PLAYER_ANIM playerAnim), playerAnim);
 
-void CBasePlayer::__API_HOOK(SetAnimation)(PLAYER_ANIM playerAnim)
+void EXT_FUNC CBasePlayer::__API_HOOK(SetAnimation)(PLAYER_ANIM playerAnim)
 {
 	int animDesired;
 	float speed;
@@ -2346,7 +2351,7 @@ void CBasePlayer::__API_HOOK(SetAnimation)(PLAYER_ANIM playerAnim)
 			else
 			{
 				m_IdealActivity = ACT_HOP;
-				if (TheBots != NULL)
+				if (TheBots)
 				{
 					TheBots->OnEvent(EVENT_PLAYER_JUMPED, this);
 				}
@@ -2374,7 +2379,7 @@ void CBasePlayer::__API_HOOK(SetAnimation)(PLAYER_ANIM playerAnim)
 			else
 			{
 				m_IdealActivity = ACT_RANGE_ATTACK1;
-				if (TheBots != NULL)
+				if (TheBots)
 				{
 					TheBots->OnEvent(EVENT_WEAPON_FIRED, this);
 				}
@@ -2388,7 +2393,7 @@ void CBasePlayer::__API_HOOK(SetAnimation)(PLAYER_ANIM playerAnim)
 			else
 			{
 				m_IdealActivity = ACT_RANGE_ATTACK2;
-				if (TheBots != NULL)
+				if (TheBots)
 				{
 					TheBots->OnEvent(EVENT_WEAPON_FIRED, this);
 				}
@@ -2402,7 +2407,7 @@ void CBasePlayer::__API_HOOK(SetAnimation)(PLAYER_ANIM playerAnim)
 			else
 			{
 				m_IdealActivity = ACT_RELOAD;
-				if (TheBots != NULL)
+				if (TheBots)
 				{
 					TheBots->OnEvent(EVENT_WEAPON_RELOADED, this);
 				}
@@ -2605,7 +2610,7 @@ void CBasePlayer::__API_HOOK(SetAnimation)(PLAYER_ANIM playerAnim)
 						//if (speed > 150.0f)
 						if (pev->velocity.Length2D() > 150.0f)
 						{
-							if (TheBots != NULL)
+							if (TheBots)
 							{
 								TheBots->OnEvent(EVENT_PLAYER_FOOTSTEP, this);
 							}
@@ -3006,7 +3011,7 @@ NOXREF void CBasePlayer::ThrowWeapon(char *pszItemName)
 	{
 		CBasePlayerItem *pWeapon = m_rgpPlayerItems[i];
 
-		while (pWeapon != NULL)
+		while (pWeapon)
 		{
 			if (!Q_strcmp(pszItemName, STRING(pWeapon->pev->classname)))
 			{
@@ -3040,7 +3045,7 @@ void CWShield::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 	if (pPlayer->pev->deadflag != DEAD_NO)
 		return;
 
-	if (m_hEntToIgnoreTouchesFrom != NULL && pPlayer == (CBasePlayer *)m_hEntToIgnoreTouchesFrom)
+	if (m_hEntToIgnoreTouchesFrom && pPlayer == (CBasePlayer *)m_hEntToIgnoreTouchesFrom)
 	{
 		if (m_flTimeToIgnoreTouches > gpGlobals->time)
 			return;
@@ -3050,7 +3055,7 @@ void CWShield::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 
 	if (!pPlayer->m_bHasPrimary)
 	{
-		if (pPlayer->m_rgpPlayerItems[ PISTOL_SLOT ] != NULL && pPlayer->m_rgpPlayerItems[ PISTOL_SLOT ]->m_iId == WEAPON_ELITE)
+		if (pPlayer->m_rgpPlayerItems[ PISTOL_SLOT ] && pPlayer->m_rgpPlayerItems[ PISTOL_SLOT ]->m_iId == WEAPON_ELITE)
 			return;
 
 		if (pPlayer->m_pActiveItem)
@@ -3077,12 +3082,12 @@ void CWShield::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 
 LINK_HOOK_CLASS_VOID_CHAIN(CBasePlayer, GiveShield, (bool bDeploy), bDeploy);
 
-void CBasePlayer::__API_HOOK(GiveShield)(bool bDeploy)
+void EXT_FUNC CBasePlayer::__API_HOOK(GiveShield)(bool bDeploy)
 {
 	m_bOwnsShield = true;
 	m_bHasPrimary = true;
 
-	if (m_pActiveItem != NULL)
+	if (m_pActiveItem)
 	{
 		CBasePlayerWeapon *pWeapon = static_cast<CBasePlayerWeapon *>(m_pActiveItem);
 
@@ -3112,17 +3117,19 @@ void CBasePlayer::RemoveShield()
 	}
 }
 
-void CBasePlayer::DropShield(bool bDeploy)
+LINK_HOOK_CLASS_VOID_CHAIN(CBasePlayer, DropShield, (bool bDeploy), bDeploy);
+
+void EXT_FUNC CBasePlayer::__API_HOOK(DropShield)(bool bDeploy)
 {
 	if (!HasShield())
 		return;
 
-	if (m_pActiveItem != NULL && !m_pActiveItem->CanHolster())
+	if (m_pActiveItem && !m_pActiveItem->CanHolster())
 		return;
 
 	CBasePlayerWeapon *pWeapon = static_cast<CBasePlayerWeapon *>(m_pActiveItem);
 
-	if (pWeapon != NULL)
+	if (pWeapon)
 	{
 		if (pWeapon->m_iId == WEAPON_HEGRENADE || pWeapon->m_iId == WEAPON_FLASHBANG || pWeapon->m_iId == WEAPON_SMOKEGRENADE)
 		{
@@ -3131,7 +3138,7 @@ void CBasePlayer::DropShield(bool bDeploy)
 		}
 	}
 
-	if (m_pActiveItem != NULL)
+	if (m_pActiveItem)
 	{
 		if (m_pActiveItem->m_flStartThrow != 0.0f)
 			m_pActiveItem->Holster();
@@ -3143,14 +3150,14 @@ void CBasePlayer::DropShield(bool bDeploy)
 		m_flNextAttack = 0;
 	}
 
-	if (m_pActiveItem != NULL && IsProtectedByShield())
+	if (m_pActiveItem && IsProtectedByShield())
 		((CBasePlayerWeapon *)m_pActiveItem)->SecondaryAttack();
 
 	m_bShieldDrawn = false;
 
 	RemoveShield();
 
-	if (m_pActiveItem != NULL && bDeploy)
+	if (m_pActiveItem && bDeploy)
 		m_pActiveItem->Deploy();
 
 	UTIL_MakeVectors(pev->angles);
@@ -3193,7 +3200,7 @@ NOXREF void CBasePlayer::ThrowPrimary()
 LINK_HOOK_CLASS_VOID_CHAIN(CBasePlayer, AddAccount, (int amount, RewardType type, bool bTrackChange), amount, type, bTrackChange);
 
 #ifdef REGAMEDLL_ADD
-void CBasePlayer::__API_HOOK(AddAccount)(int amount, RewardType type, bool bTrackChange)
+void EXT_FUNC CBasePlayer::__API_HOOK(AddAccount)(int amount, RewardType type, bool bTrackChange)
 {
 	bool bSendMoney = true;
 	switch (type)
@@ -3226,7 +3233,7 @@ void CBasePlayer::__API_HOOK(AddAccount)(int amount, RewardType type, bool bTrac
 	}
 }
 #else
-void CBasePlayer::__API_HOOK(AddAccount)(int amount, RewardType type, bool bTrackChange)
+void EXT_FUNC CBasePlayer::__API_HOOK(AddAccount)(int amount, RewardType type, bool bTrackChange)
 {
 	m_iAccount += amount;
 
@@ -3261,12 +3268,28 @@ void CBasePlayer::ResetMenu()
 
 void CBasePlayer::SyncRoundTimer()
 {
-	float tmRemaining;
+	float tmRemaining = 0;
+	BOOL bFreezePeriod = g_pGameRules->IsFreezePeriod();
 
-	if (CSGameRules()->IsMultiplayer())
+	if (g_pGameRules->IsMultiplayer())
+	{
 		tmRemaining = CSGameRules()->GetRoundRemainingTime();
-	else
-		tmRemaining = 0;
+
+#ifdef REGAMEDLL_FIXES
+		// hide timer HUD because it is useless.
+		if (tmRemaining <= 0.0f && CSGameRules()->m_iRoundTime <= 0) {
+			m_iHideHUD |= HIDEHUD_TIMER;
+			return;
+		}
+
+		if (m_iHideHUD & HIDEHUD_TIMER)
+		{
+			m_iHideHUD &= ~HIDEHUD_TIMER;
+			MESSAGE_BEGIN(MSG_ONE, gmsgShowTimer, NULL, pev);
+			MESSAGE_END();
+		}
+#endif
+	}
 
 	if (tmRemaining < 0)
 		tmRemaining = 0;
@@ -3275,17 +3298,17 @@ void CBasePlayer::SyncRoundTimer()
 		WRITE_SHORT(int(tmRemaining));
 	MESSAGE_END();
 
-	if (!CSGameRules()->IsMultiplayer())
+	if (!g_pGameRules->IsMultiplayer())
 		return;
 
-	if (CSGameRules()->IsFreezePeriod() && TheTutor != NULL && !IsObserver())
+	if (bFreezePeriod && TheTutor && !IsObserver())
 	{
 		MESSAGE_BEGIN(MSG_ONE, gmsgBlinkAcct, NULL, pev);
 			WRITE_BYTE(MONEY_BLINK_AMOUNT);
 		MESSAGE_END();
 	}
 
-	if (TheCareerTasks != NULL && CSGameRules()->IsCareer())
+	if (TheCareerTasks && CSGameRules()->IsCareer())
 	{
 		int remaining = 0;
 		bool shouldCountDown = false;
@@ -3299,17 +3322,17 @@ void CBasePlayer::SyncRoundTimer()
 		if (remaining < 0)
 			remaining = 0;
 
-		if (CSGameRules()->IsFreezePeriod())
+		if (bFreezePeriod)
 			remaining = -1;
 
 		if (TheCareerTasks->GetFinishedTaskTime())
 			remaining = -TheCareerTasks->GetFinishedTaskTime();
 
-		if (!CSGameRules()->IsFreezePeriod() && !TheCareerTasks->GetFinishedTaskTime())
+		if (!bFreezePeriod && !TheCareerTasks->GetFinishedTaskTime())
 		{
 			shouldCountDown = true;
 		}
-		if (!CSGameRules()->IsFreezePeriod())
+		if (!bFreezePeriod)
 		{
 			if (TheCareerTasks->GetFinishedTaskTime() || (TheCareerTasks->GetTaskTime() <= TheCareerTasks->GetRoundElapsedTime()))
 			{
@@ -3370,7 +3393,9 @@ void CBasePlayer::MenuPrint(const char *msg)
 	MESSAGE_END();
 }
 
-void CBasePlayer::MakeVIP()
+LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, MakeVIP);
+
+void EXT_FUNC CBasePlayer::__API_HOOK(MakeVIP)()
 {
 	pev->body = 0;
 	m_iModelName = MODEL_VIP;
@@ -3424,105 +3449,34 @@ void CBasePlayer::JoiningThink()
 		}
 		case GETINTOGAME:
 		{
-			m_bNotKilled = false;
-			m_iIgnoreGlobalChat = IGNOREMSG_NONE;
-
-			m_iTeamKills = 0;
-			m_iFOV = DEFAULT_FOV;
-
-			Q_memset(&m_rebuyStruct, 0, sizeof(m_rebuyStruct));
-
-			m_bIsInRebuy = false;
-			m_bJustConnected = false;
-			m_fLastMovement = gpGlobals->time;
-
-			ResetMaxSpeed();
-			m_iJoiningState = JOINED;
-
-			if (CSGameRules()->m_bMapHasEscapeZone && m_iTeam == CT)
-			{
-#ifndef REGAMEDLL_ADD
-				m_iAccount = 0;
-#endif
-				CheckStartMoney();
-				AddAccount(startmoney.value, RT_INTO_GAME);
+			if (GetIntoGame()) {
+				return;
 			}
 
-			if (g_pGameRules->FPlayerCanRespawn(this))
-			{
-				Spawn();
-				CSGameRules()->CheckWinConditions();
-
-				if (!CSGameRules()->m_flRestartRoundTime && CSGameRules()->m_bMapHasBombTarget && !CSGameRules()->IsThereABomber() && !CSGameRules()->IsThereABomb())
-				{
-					CSGameRules()->GiveC4();
-				}
-				if (m_iTeam == TERRORIST)
-				{
-					CSGameRules()->m_iNumEscapers++;
-				}
-			}
-			else
-			{
-				pev->deadflag = DEAD_RESPAWNABLE;
-
-				MAKE_STRING_CLASS("player", pev);
-
-				pev->flags &= (FL_PROXY | FL_FAKECLIENT);
-				pev->flags |= (FL_SPECTATOR | FL_CLIENT);
-
-				edict_t *pentSpawnSpot = g_pGameRules->GetPlayerSpawnSpot(this);
-				StartObserver(pev->origin, pentSpawnSpot->v.angles);
-
-				CSGameRules()->CheckWinConditions();
-
-				MESSAGE_BEGIN(MSG_ALL, gmsgTeamInfo);
-					WRITE_BYTE(entindex());
-					WRITE_STRING(GetTeamName(m_iTeam));
-				MESSAGE_END();
-
-				MESSAGE_BEGIN(MSG_ALL, gmsgLocation);
-					WRITE_BYTE(entindex());
-					WRITE_STRING("");
-				MESSAGE_END();
-
-				MESSAGE_BEGIN(MSG_ALL, gmsgScoreInfo);
-					WRITE_BYTE(ENTINDEX(edict()));
-					WRITE_SHORT(int(pev->frags));
-					WRITE_SHORT(m_iDeaths);
-					WRITE_SHORT(0);
-					WRITE_SHORT(m_iTeam);
-				MESSAGE_END();
-
-				if (!(m_flDisplayHistory & DHF_SPEC_DUCK))
-				{
-					HintMessage("#Spec_Duck", TRUE, TRUE);
-					m_flDisplayHistory |= DHF_SPEC_DUCK;
-				}
-			}
-			return;
+			break;
 		}
 	}
 
-	if (m_pIntroCamera != NULL && gpGlobals->time >= m_fIntroCamTime)
+	if (m_pIntroCamera && gpGlobals->time >= m_fIntroCamTime)
 	{
+		// find the next another camera
 		m_pIntroCamera = UTIL_FindEntityByClassname(m_pIntroCamera, "trigger_camera");
 
+		// could not find, go back to the start
 		if (!m_pIntroCamera)
 		{
 			m_pIntroCamera = UTIL_FindEntityByClassname(NULL, "trigger_camera");
 		}
 
 		CBaseEntity *Target = UTIL_FindEntityByTargetname(NULL, STRING(m_pIntroCamera->pev->target));
-
-		if (Target != NULL)
+		if (Target)
 		{
-			Vector CamAngles = UTIL_VecToAngles((Target->pev->origin - m_pIntroCamera->pev->origin).Normalize());
+			Vector vecAngles = UTIL_VecToAngles((Target->pev->origin - m_pIntroCamera->pev->origin).Normalize());
 
-			CamAngles.x = -CamAngles.x;
+			vecAngles.x = -vecAngles.x;
 			UTIL_SetOrigin(pev, m_pIntroCamera->pev->origin);
 
-			pev->angles = CamAngles;
+			pev->angles = vecAngles;
 			pev->v_angle = pev->angles;
 
 			pev->velocity = g_vecZero;
@@ -3537,9 +3491,11 @@ void CBasePlayer::JoiningThink()
 	}
 }
 
-void CBasePlayer::Disappear()
+LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, Disappear);
+
+void EXT_FUNC CBasePlayer::__API_HOOK(Disappear)()
 {
-	if (m_pTank != NULL)
+	if (m_pTank)
 	{
 		m_pTank->Use(this, this, USE_OFF, 0);
 		m_pTank = NULL;
@@ -3657,27 +3613,42 @@ void CBasePlayer::PlayerDeathThink()
 
 	BOOL fAnyButtonDown = (pev->button & ~IN_SCORE);
 
-	// if the player has been dead for one second longer than allowed by forcerespawn,
-	// forcerespawn isn't on. Send the player off to an intermission camera until they
-	// choose to respawn.
-	if (g_pGameRules->IsMultiplayer())
+#ifdef REGAMEDLL_FIXES
+	// do not make a corpse if the player goes to respawn.
+	if (pev->deadflag != DEAD_RESPAWNABLE && forcerespawn.value <= 0)
+#endif
 	{
-		if (gpGlobals->time > m_fDeadTime + 3.0f && !(m_afPhysicsFlags & PFLAG_OBSERVER))
+		// if the player has been dead for one second longer than allowed by forcerespawn,
+		// forcerespawn isn't on. Send the player off to an intermission camera until they choose to respawn.
+		if (g_pGameRules->IsMultiplayer())
 		{
-			// Send message to everybody to spawn a corpse.
-			SpawnClientSideCorpse();
+			if (gpGlobals->time > m_fDeadTime + 3.0f && !(m_afPhysicsFlags & PFLAG_OBSERVER))
+			{
+				// Send message to everybody to spawn a corpse.
+				SpawnClientSideCorpse();
 
-			// go to dead camera.
-			StartDeathCam();
+				// go to dead camera.
+				StartDeathCam();
+			}
 		}
 	}
 
 	// wait for all buttons released
 	if (pev->deadflag == DEAD_DEAD && m_iTeam != UNASSIGNED && m_iTeam != SPECTATOR)
 	{
-		// wait for any button down,  or mp_forcerespawn is set and the respawn time is up
+#ifdef REGAMEDLL_ADD
+		// wait for any button down, or mp_forcerespawn is set and the respawn time is up
+		if (forcerespawn.value > 0 && (fAnyButtonDown || (gpGlobals->time > (m_fDeadTime + forcerespawn.value))))
+		{
+			respawn(pev, FALSE);
+			pev->button = 0;
+			pev->nextthink = -1;
+			return;
+		}
+#else
 		if (fAnyButtonDown)
 			return;
+#endif
 
 		if (g_pGameRules->FPlayerCanRespawn(this))
 		{
@@ -3688,8 +3659,10 @@ void CBasePlayer::PlayerDeathThink()
 		}
 
 		pev->nextthink = gpGlobals->time + 0.1f;
+		return;
 	}
-	else if (pev->deadflag == DEAD_RESPAWNABLE)
+
+	if (pev->deadflag == DEAD_RESPAWNABLE)
 	{
 		// don't copy a corpse if we're in deathcam.
 		respawn(pev, FALSE);
@@ -3705,20 +3678,17 @@ void EXT_FUNC CBasePlayer::__API_VHOOK(RoundRespawn)()
 	m_canSwitchObserverModes = true;
 
 	// teamkill punishment..
-	if (m_bJustKilledTeammate && CVAR_GET_FLOAT("mp_tkpunish"))
+	if (m_bJustKilledTeammate && tkpunish.value)
 	{
+		m_bPunishedForTK = true;
 		m_bJustKilledTeammate = false;
+
 #ifndef REGAMEDLL_FIXES
 		// TODO: wtf?
 		CLIENT_COMMAND(edict(), "kill\n");
-#else
-		if (pev->health > 0.0f)
-		{
-			ClientKill(ENT(pev));
-		}
 #endif
-		m_bPunishedForTK = true;
 	}
+
 	if (m_iMenu != Menu_ChooseAppearance)
 	{
 		respawn(pev);
@@ -3736,6 +3706,14 @@ void EXT_FUNC CBasePlayer::__API_VHOOK(RoundRespawn)()
 	}
 
 	m_lastLocation[0] = '\0';
+
+#ifdef REGAMEDLL_FIXES
+	if (m_bPunishedForTK && pev->health > 0)
+	{
+		ClientKill(ENT(pev));
+	}
+#endif
+
 }
 
 // StartDeathCam - find an intermission spot and send the
@@ -3750,13 +3728,15 @@ void CBasePlayer::StartDeathCam()
 
 	StartObserver(pev->origin, pev->angles);
 
-	if (TheBots != NULL)
+	if (TheBots)
 	{
 		TheBots->OnEvent(EVENT_DEATH_CAMERA_START, this);
 	}
 }
 
-void CBasePlayer::StartObserver(Vector vecPosition, Vector vecViewAngle)
+LINK_HOOK_CLASS_VOID_CHAIN(CBasePlayer, StartObserver, (Vector &vecPosition, Vector &vecViewAngle), vecPosition, vecViewAngle);
+
+void EXT_FUNC CBasePlayer::__API_HOOK(StartObserver)(Vector &vecPosition, Vector &vecViewAngle)
 {
 	// clear any clientside entities attached to this player
 	MESSAGE_BEGIN(MSG_PAS, SVC_TEMPENTITY, pev->origin);
@@ -3765,17 +3745,17 @@ void CBasePlayer::StartObserver(Vector vecPosition, Vector vecViewAngle)
 	MESSAGE_END();
 
 	// Holster weapon immediately, to allow it to cleanup
-	if (m_pActiveItem != NULL)
+	if (m_pActiveItem)
 		m_pActiveItem->Holster();
 
-	if (m_pTank != NULL)
+	if (m_pTank)
 	{
-		m_pTank->Use(this, this);
+		m_pTank->Use(this, this, USE_OFF, 0);
 		m_pTank = NULL;
 	}
 
 	// clear out the suit message cache so we don't keep chattering
-	SetSuitUpdate();
+	SetSuitUpdate(NULL, FALSE, 0);
 
 	// Tell Ammo Hud that the player is dead
 	MESSAGE_BEGIN(MSG_ONE, gmsgCurWeapon, NULL, pev);
@@ -3790,16 +3770,13 @@ void CBasePlayer::StartObserver(Vector vecPosition, Vector vecViewAngle)
 	// Setup flags
 	m_iHideHUD = (HIDEHUD_WEAPONS | HIDEHUD_HEALTH);
 	m_afPhysicsFlags |= PFLAG_OBSERVER;
-
 	pev->effects = EF_NODRAW;
+
 	// set position and viewangle
 	pev->view_ofs = g_vecZero;
-
 	pev->angles = pev->v_angle = vecViewAngle;
-
 	pev->fixangle = 1;
 	pev->solid = SOLID_NOT;
-
 	pev->takedamage = DAMAGE_NO;
 	pev->movetype = MOVETYPE_NONE;
 
@@ -3812,15 +3789,15 @@ void CBasePlayer::StartObserver(Vector vecPosition, Vector vecViewAngle)
 
 	m_iObserverC4State = 0;
 	m_bObserverHasDefuser = false;
-
 	m_iObserverWeapon = 0;
+
+	// Find a player to watch
 	m_flNextObserverInput = 0;
 
 	pev->iuser1 = OBS_NONE;
 
 	static int iFirstTime = 1;
-
-	if (iFirstTime != 0 && CSGameRules() != NULL && CSGameRules()->IsCareer() && !IsBot())
+	if (iFirstTime != 0 && CSGameRules() && CSGameRules()->IsCareer() && !IsBot())
 	{
 		Observer_SetMode(OBS_CHASE_LOCKED);
 		CLIENT_COMMAND(edict(), "spec_autodirector_internal 1\n");
@@ -3876,7 +3853,7 @@ void CBasePlayer::PlayerUse()
 	// Hit Use on a train?
 	if (m_afButtonPressed & IN_USE)
 	{
-		if (m_pTank != NULL)
+		if (m_pTank)
 		{
 			// Stop controlling the tank
 			// TODO: Send HUD Update
@@ -3945,13 +3922,13 @@ void CBasePlayer::PlayerUse()
 		if (result.flFraction < 1.0f)
 		{
 			CBaseEntity *hit = Instance(result.pHit);
-			if (hit != NULL && FClassnameIs(hit->pev, "hostage_entity") && CanSeeUseable(this, hit))
+			if (hit && FClassnameIs(hit->pev, "hostage_entity") && CanSeeUseable(this, hit))
 				pClosest = hit;
 		}
 
 		if (!pClosest)
 		{
-			while ((pObject = UTIL_FindEntityInSphere(pObject, pev->origin, useHostageRange)) != NULL)
+			while ((pObject = UTIL_FindEntityInSphere(pObject, pev->origin, useHostageRange)))
 			{
 				if (!FClassnameIs(pObject->pev, "hostage_entity"))
 					continue;
@@ -3972,7 +3949,7 @@ void CBasePlayer::PlayerUse()
 
 	if (!pClosest)
 	{
-		while ((pObject = UTIL_FindEntityInSphere(pObject, pev->origin, PLAYER_USE_RADIUS)) != NULL)
+		while ((pObject = UTIL_FindEntityInSphere(pObject, pev->origin, PLAYER_USE_RADIUS)))
 		{
 			if (pObject->ObjectCaps() & (FCAP_IMPULSE_USE | FCAP_CONTINUOUS_USE | FCAP_ONOFF_USE))
 			{
@@ -3997,7 +3974,7 @@ void CBasePlayer::PlayerUse()
 	pObject = pClosest;
 
 	// Found an object
-	if (pObject != NULL)
+	if (pObject)
 	{
 		if (!useNewHostages || CanSeeUseable(this, pObject))
 		{
@@ -4126,7 +4103,7 @@ void EXT_FUNC CBasePlayer::__API_VHOOK(Duck)()
 
 LINK_HOOK_CLASS_CHAIN2(int, CBasePlayer, ObjectCaps);
 
-int CBasePlayer::__API_VHOOK(ObjectCaps)()
+int EXT_FUNC CBasePlayer::__API_VHOOK(ObjectCaps)()
 {
 	return (CBaseMonster::ObjectCaps() & ~FCAP_ACROSS_TRANSITION);
 }
@@ -4134,14 +4111,14 @@ int CBasePlayer::__API_VHOOK(ObjectCaps)()
 LINK_HOOK_CLASS_CHAIN2(int, CBasePlayer, Classify);
 
 // ID's player as such.
-int CBasePlayer::__API_VHOOK(Classify)()
+int EXT_FUNC CBasePlayer::__API_VHOOK(Classify)()
 {
 	return CLASS_PLAYER;
 }
 
 LINK_HOOK_CLASS_VOID_CHAIN(CBasePlayer, AddPoints, (int score, BOOL bAllowNegativeScore), score, bAllowNegativeScore);
 
-void CBasePlayer::__API_VHOOK(AddPoints)(int score, BOOL bAllowNegativeScore)
+void EXT_FUNC CBasePlayer::__API_VHOOK(AddPoints)(int score, BOOL bAllowNegativeScore)
 {
 	// Positive score always adds
 	if (score < 0 && !bAllowNegativeScore)
@@ -4174,15 +4151,14 @@ void CBasePlayer::__API_VHOOK(AddPoints)(int score, BOOL bAllowNegativeScore)
 
 LINK_HOOK_CLASS_VOID_CHAIN(CBasePlayer, AddPointsToTeam, (int score, BOOL bAllowNegativeScore), score, bAllowNegativeScore);
 
-void CBasePlayer::__API_VHOOK(AddPointsToTeam)(int score, BOOL bAllowNegativeScore)
+void EXT_FUNC CBasePlayer::__API_VHOOK(AddPointsToTeam)(int score, BOOL bAllowNegativeScore)
 {
 	int index = entindex();
-
 	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
 		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
-		if (pPlayer != NULL && i != index)
+		if (pPlayer && i != index)
 		{
 			if (g_pGameRules->PlayerRelationship(this, pPlayer) == GR_TEAMMATE)
 			{
@@ -4211,25 +4187,26 @@ bool CBasePlayer::CanPlayerBuy(bool display)
 		return false;
 	}
 
-	int buyTime = int(CVAR_GET_FLOAT("mp_buytime") * 60.0f);
-	if (buyTime < MIN_BUY_TIME)
-	{
-		buyTime = MIN_BUY_TIME;
-		CVAR_SET_FLOAT("mp_buytime", (MIN_BUY_TIME / 60.0f));
-	}
-
-	if (gpGlobals->time - CSGameRules()->m_fRoundStartTime > buyTime
 #ifdef REGAMEDLL_ADD
-		&& buytime.value != -1.0f
+	if (buytime.value != -1.0f)
 #endif
-)
 	{
-		if (display)
+		int buyTime = int(buytime.value * 60.0f);
+		if (buyTime < MIN_BUY_TIME)
 		{
-			ClientPrint(pev, HUD_PRINTCENTER, "#Cant_buy", UTIL_dtos1(buyTime));
+			buyTime = MIN_BUY_TIME;
+			CVAR_SET_FLOAT("mp_buytime", (MIN_BUY_TIME / 60.0f));
 		}
 
-		return false;
+		if (gpGlobals->time - CSGameRules()->m_fRoundStartTime > buyTime)
+		{
+			if (display)
+			{
+				ClientPrint(pev, HUD_PRINTCENTER, "#Cant_buy", UTIL_dtos1(buyTime));
+			}
+
+			return false;
+		}
 	}
 
 	if (m_bIsVIP)
@@ -4287,7 +4264,7 @@ void EXT_FUNC CBasePlayer::__API_VHOOK(PreThink)()
 	m_hintMessageQueue.Update(this);
 	g_pGameRules->PlayerThink(this);
 
-	if (g_fGameOver)
+	if (g_pGameRules->IsGameOver())
 	{
 		// intermission or finale
 		return;
@@ -4350,7 +4327,7 @@ void EXT_FUNC CBasePlayer::__API_VHOOK(PreThink)()
 		}
 	}
 
-	if (g_pGameRules != NULL && g_pGameRules->FAllowFlashlight())
+	if (g_pGameRules && g_pGameRules->FAllowFlashlight())
 		m_iHideHUD &= ~HIDEHUD_FLASHLIGHT;
 	else
 		m_iHideHUD |= HIDEHUD_FLASHLIGHT;
@@ -4823,7 +4800,7 @@ void CBasePlayer::UpdatePlayerSound()
 		m_iExtraSoundTypes = 0;
 	}
 
-	if (pSound != NULL)
+	if (pSound)
 	{
 		pSound->m_vecOrigin = pev->origin;
 		pSound->m_iVolume = iVolume;
@@ -4845,14 +4822,14 @@ LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, PostThink);
 void EXT_FUNC CBasePlayer::__API_VHOOK(PostThink)()
 {
 	// intermission or finale
-	if (g_fGameOver)
+	if (g_pGameRules->IsGameOver())
 		goto pt_end;
 
 	if (!IsAlive())
 		goto pt_end;
 
 	// Handle Tank controlling
-	if (m_pTank != NULL)
+	if (m_pTank)
 	{
 		// if they've moved too far from the gun,  or selected a weapon, unuse the gun
 		if (m_pTank->OnControls(pev) && !pev->weaponmodel)
@@ -4896,7 +4873,7 @@ void EXT_FUNC CBasePlayer::__API_VHOOK(PostThink)()
 					m_LastHitGroup = HITGROUP_GENERIC;
 					TakeDamage(VARS(eoNullEntity), VARS(eoNullEntity), flFallDamage, DMG_FALL);
 					pev->punchangle.x = 0;
-					if (TheBots != NULL)
+					if (TheBots)
 					{
 						TheBots->OnEvent(EVENT_PLAYER_LANDED_FROM_HEIGHT, this);
 					}
@@ -4951,7 +4928,7 @@ pt_end:
 		{
 			CBasePlayerItem *pPlayerItem = m_rgpPlayerItems[i];
 
-			while (pPlayerItem != NULL)
+			while (pPlayerItem)
 			{
 				CBasePlayerWeapon *gun = (CBasePlayerWeapon *)pPlayerItem->GetWeaponPtr();
 
@@ -4992,7 +4969,7 @@ BOOL IsSpawnPointValid(CBaseEntity *pPlayer, CBaseEntity *pSpot)
 	if (!pSpot->IsTriggered(pPlayer))
 		return FALSE;
 
-	while ((ent = UTIL_FindEntityInSphere(ent, pSpot->pev->origin, 64)) != NULL)
+	while ((ent = UTIL_FindEntityInSphere(ent, pSpot->pev->origin, 64)))
 	{
 		// if ent is a client, don't spawn on 'em
 		if (ent->IsPlayer() && ent != pPlayer)
@@ -5009,7 +4986,7 @@ NOXREF void InitZombieSpawns()
 	g_pSelectedZombieSpawn = NULL;
 	zombieSpawnCount = 0;
 
-	while ((spot = UTIL_FindEntityByClassname(spot, "info_player_start")) != NULL)
+	while ((spot = UTIL_FindEntityByClassname(spot, "info_player_start")))
 	{
 		if (spot->pev->origin != Vector(0, 0, 0))
 		{
@@ -5043,7 +5020,7 @@ bool CBasePlayer::SelectSpawnSpot(const char *pEntClassName, CBaseEntity *&pSpot
 
 	do
 	{
-		if (pSpot != NULL)
+		if (pSpot)
 		{
 			// check if pSpot is valid
 			if (IsSpawnPointValid(this, pSpot))
@@ -5069,7 +5046,7 @@ bool CBasePlayer::SelectSpawnSpot(const char *pEntClassName, CBaseEntity *&pSpot
 	if (!FNullEnt(pSpot))
 	{
 		CBaseEntity *ent = NULL;
-		while ((ent = UTIL_FindEntityInSphere(ent, pSpot->pev->origin, 64)) != NULL)
+		while ((ent = UTIL_FindEntityInSphere(ent, pSpot->pev->origin, 64)))
 		{
 			// if ent is a client, kill em (unless they are ourselves)
 			if (ent->IsPlayer() && ent->edict() != player)
@@ -5340,7 +5317,7 @@ void EXT_FUNC CBasePlayer::__API_VHOOK(Spawn)()
 	for (i = 0; i < MAX_RECENT_PATH; ++i)
 		m_vRecentPath[ i ] = Vector(0, 0, 0);
 
-	if (m_pActiveItem != NULL && !pev->viewmodel)
+	if (m_pActiveItem && !pev->viewmodel)
 	{
 		switch (m_pActiveItem->m_iId)
 		{
@@ -5420,7 +5397,7 @@ void EXT_FUNC CBasePlayer::__API_VHOOK(Spawn)()
 		ALERT(at_console, "Couldn't alloc player sound slot!\n");
 	}
 
-	m_iHideHUD &= ~(HIDEHUD_WEAPONS | HIDEHUD_HEALTH | HIDEHUD_TIMER | HIDEHUD_MONEY);
+	m_iHideHUD &= ~(HIDEHUD_WEAPONS | HIDEHUD_HEALTH | HIDEHUD_TIMER | HIDEHUD_MONEY | HIDEHUD_CROSSHAIR);
 	m_fNoPlayerSound = FALSE;
 	m_pLastItem = NULL;
 	m_fWeapon = FALSE;
@@ -5428,9 +5405,15 @@ void EXT_FUNC CBasePlayer::__API_VHOOK(Spawn)()
 	m_iClientBattery = -1;
 	m_fInitHUD = TRUE;
 
+#ifdef REGAMEDLL_FIXES
+	m_iClientHideHUD = -1;
+#endif
+
 	if (!m_bNotKilled)
 	{
+#ifndef REGAMEDLL_FIXES
 		m_iClientHideHUD = -1;
+#endif
 
 		for (i = 0; i < MAX_AMMO_SLOTS; ++i)
 			m_rgAmmo[i] = 0;
@@ -5519,14 +5502,12 @@ void EXT_FUNC CBasePlayer::__API_VHOOK(Spawn)()
 	UTIL_ScreenFade(this, Vector(0, 0, 0), 0.001);
 	SyncRoundTimer();
 
-	if (TheBots != NULL)
+	if (TheBots)
 	{
 		TheBots->OnEvent(EVENT_PLAYER_SPAWNED, this);
 	}
 
 	m_allowAutoFollowTime = false;
-
-	sv_aim = CVAR_GET_POINTER("sv_aim");
 
 	for (i = 0; i < COMMANDS_TO_TRACK; ++i)
 		m_flLastCommandTime[i] = -1;
@@ -5594,7 +5575,7 @@ int CBasePlayer::__MAKE_VHOOK(Save)(CSave &save)
 
 void CBasePlayer::SetScoreboardAttributes(CBasePlayer *destination)
 {
-	if (destination != NULL)
+	if (destination)
 	{
 		SetScoreAttrib(destination);
 		return;
@@ -5604,7 +5585,7 @@ void CBasePlayer::SetScoreboardAttributes(CBasePlayer *destination)
 	{
 		CBasePlayer *player = UTIL_PlayerByIndex(i);
 
-		if (player != NULL && !FNullEnt(player->edict()))
+		if (player && !FNullEnt(player->edict()))
 			SetScoreboardAttributes(player);
 	}
 }
@@ -5708,7 +5689,7 @@ NOXREF void CBasePlayer::SelectNextItem(int iItem)
 
 		CBasePlayerItem *pLast = pItem;
 
-		while (pLast->m_pNext != NULL)
+		while (pLast->m_pNext)
 			pLast = pLast->m_pNext;
 
 		pLast->m_pNext = m_pActiveItem;
@@ -5718,7 +5699,7 @@ NOXREF void CBasePlayer::SelectNextItem(int iItem)
 
 	ResetAutoaim();
 
-	if (m_pActiveItem != NULL)
+	if (m_pActiveItem)
 	{
 		m_pActiveItem->Holster();
 	}
@@ -5733,7 +5714,7 @@ NOXREF void CBasePlayer::SelectNextItem(int iItem)
 	m_pLastItem = m_pActiveItem;
 	m_pActiveItem = pItem;
 
-	if (m_pActiveItem != NULL)
+	if (m_pActiveItem)
 	{
 		UpdateShieldCrosshair(true);
 
@@ -5751,17 +5732,14 @@ void CBasePlayer::SelectItem(const char *pstr)
 		return;
 	}
 
-	auto pItem = ForEachItem([this, pstr](CBasePlayerItem *item) {
-		return FClassnameIs(item->pev, pstr);
-	});
-
+	auto pItem = GetItemByName(pstr);
 	if (!pItem || pItem == m_pActiveItem)
 		return;
 
 	ResetAutoaim();
 
 	// FIX, this needs to queue them up and delay
-	if (m_pActiveItem != NULL)
+	if (m_pActiveItem)
 	{
 		m_pActiveItem->Holster();
 	}
@@ -5769,7 +5747,7 @@ void CBasePlayer::SelectItem(const char *pstr)
 	m_pLastItem = m_pActiveItem;
 	m_pActiveItem = pItem;
 
-	if (m_pActiveItem != NULL)
+	if (m_pActiveItem)
 	{
 		CBasePlayerWeapon *pWeapon = (CBasePlayerWeapon *)m_pActiveItem;
 		pWeapon->m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
@@ -5928,9 +5906,9 @@ void CBloodSplat::Spray()
 	pev->nextthink = gpGlobals->time + 0.1f;
 }
 
-LINK_HOOK_CLASS_VOID_CHAIN(CBasePlayer, GiveNamedItem, (const char *pszName), pszName);
+LINK_HOOK_CLASS_CHAIN(CBaseEntity *, CBasePlayer, GiveNamedItem, (const char *pszName), pszName);
 
-void CBasePlayer::__API_HOOK(GiveNamedItem)(const char *pszName)
+CBaseEntity *EXT_FUNC CBasePlayer::__API_HOOK(GiveNamedItem)(const char *pszName)
 {
 	string_t istr = MAKE_STRING(pszName);
 	edict_t *pent = CREATE_NAMED_ENTITY(istr);
@@ -5938,7 +5916,7 @@ void CBasePlayer::__API_HOOK(GiveNamedItem)(const char *pszName)
 	if (FNullEnt(pent))
 	{
 		ALERT(at_console, "NULL Ent in GiveNamedItem!\n");
-		return;
+		return nullptr;
 	}
 
 	pent->v.origin = pev->origin;
@@ -5946,18 +5924,20 @@ void CBasePlayer::__API_HOOK(GiveNamedItem)(const char *pszName)
 
 	DispatchSpawn(pent);
 	DispatchTouch(pent, ENT(pev));
+
+	return (CBaseEntity *)GET_PRIVATE(pent);
 }
 
 // external function for 3rd-party
-void CBasePlayer::GiveNamedItemEx(const char *pszName)
+CBaseEntity *CBasePlayer::GiveNamedItemEx(const char *pszName)
 {
 	string_t istr = ALLOC_STRING(pszName);
 	edict_t *pent = CREATE_NAMED_ENTITY(istr);
 
 	if (FNullEnt(pent))
 	{
-		ALERT(at_console, "NULL Ent in GiveNamedItem!\n");
-		return;
+		ALERT(at_console, "NULL Ent in GiveNamedItemEx!\n");
+		return nullptr;
 	}
 
 	pent->v.origin = pev->origin;
@@ -5968,11 +5948,14 @@ void CBasePlayer::GiveNamedItemEx(const char *pszName)
 
 #ifdef REGAMEDLL_FIXES
 	// not allow the item to fall to the ground.
-	if (FNullEnt(pent->v.owner))
+	if (FNullEnt(pent->v.owner) || pent->v.owner != edict())
 	{
 		pent->v.flags |= FL_KILLME;
+		return nullptr;
 	}
 #endif
+
+	return (CBaseEntity *)GET_PRIVATE(pent);
 }
 
 CBaseEntity *FindEntityForward(CBaseEntity *pMe)
@@ -6029,6 +6012,8 @@ void CBasePlayer::FlashlightTurnOff()
 	m_flFlashLightTime = gpGlobals->time + FLASH_CHARGE_TIME;
 }
 
+// When recording a demo, we need to have the server tell us the entire client state so that the client side .dll can behave correctly.
+// Reset stuff so that the state is transmitted.
 void CBasePlayer::ForceClientDllUpdate()
 {
 #ifdef REGAMEDLL_FIXES
@@ -6039,10 +6024,11 @@ void CBasePlayer::ForceClientDllUpdate()
 	m_iClientHealth = -1;
 	m_iClientBattery = -1;
 
-	m_fWeapon = FALSE;
-	m_fInitHUD = TRUE;
-	m_iTrain |= TRAIN_NEW;
+	m_fWeapon = FALSE;		// Force weapon send
+	m_fInitHUD = TRUE;		// Force HUD gmsgResetHUD message
+	m_iTrain |= TRAIN_NEW;		// Force new train message.
 
+	// Now force all the necessary messages to be sent.
 	UpdateClientData();
 	HandleSignals();
 }
@@ -6215,12 +6201,12 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 			Vector end = start + gpGlobals->v_forward * 1024;
 			UTIL_TraceLine(start, end, ignore_monsters, edict(), &tr);
 
-			if (tr.pHit != NULL)
+			if (tr.pHit)
 				pWorld = tr.pHit;
 
 			const char *pszTextureName = TRACE_TEXTURE(pWorld, start, end);
 
-			if (pszTextureName != NULL)
+			if (pszTextureName)
 				ALERT(at_console, "Texture: %s\n", pszTextureName);
 
 			break;
@@ -6263,7 +6249,7 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 			// remove creature.
 			pEntity = FindEntityForward(this);
 
-			if (pEntity != NULL && pEntity->pev->takedamage != DAMAGE_NO)
+			if (pEntity && pEntity->pev->takedamage != DAMAGE_NO)
 			{
 				pEntity->SetThink(&CBaseEntity::SUB_Remove);
 			}
@@ -6312,10 +6298,10 @@ void OLD_CheckBuyZone(CBasePlayer *player)
 	else if (player->m_iTeam == CT)
 		pszSpawnClass = "info_player_start";
 
-	if (pszSpawnClass != NULL)
+	if (pszSpawnClass)
 	{
 		CBaseEntity *pSpot = NULL;
-		while ((pSpot = UTIL_FindEntityByClassname(pSpot, pszSpawnClass)) != NULL)
+		while ((pSpot = UTIL_FindEntityByClassname(pSpot, pszSpawnClass)))
 		{
 			if ((pSpot->pev->origin - player->pev->origin).Length() < 200.0f)
 				player->m_signals.Signal(SIGNAL_BUY);
@@ -6326,7 +6312,7 @@ void OLD_CheckBuyZone(CBasePlayer *player)
 void OLD_CheckBombTarget(CBasePlayer *player)
 {
 	CBaseEntity *pSpot = NULL;
-	while ((pSpot = UTIL_FindEntityByClassname(pSpot, "info_bomb_target")) != NULL)
+	while ((pSpot = UTIL_FindEntityByClassname(pSpot, "info_bomb_target")))
 	{
 		if ((pSpot->pev->origin - player->pev->origin).Length() <= 256.0f)
 			player->m_signals.Signal(SIGNAL_BOMB);
@@ -6336,7 +6322,7 @@ void OLD_CheckBombTarget(CBasePlayer *player)
 void OLD_CheckRescueZone(CBasePlayer *player)
 {
 	CBaseEntity *pSpot = NULL;
-	while ((pSpot = UTIL_FindEntityByClassname(pSpot, "info_hostage_rescue")) != NULL)
+	while ((pSpot = UTIL_FindEntityByClassname(pSpot, "info_hostage_rescue")))
 	{
 		if ((pSpot->pev->origin - player->pev->origin).Length() <= 256.0f)
 			player->m_signals.Signal(SIGNAL_RESCUE);
@@ -6402,7 +6388,7 @@ void CBasePlayer::HandleSignals()
 LINK_HOOK_CLASS_CHAIN(BOOL, CBasePlayer, AddPlayerItem, (CBasePlayerItem *pItem), pItem);
 
 // Add a weapon to the player (Item == Weapon == Selectable Object)
-BOOL CBasePlayer::__API_VHOOK(AddPlayerItem)(CBasePlayerItem *pItem)
+BOOL EXT_FUNC CBasePlayer::__API_VHOOK(AddPlayerItem)(CBasePlayerItem *pItem)
 {
 	CBasePlayerItem *pInsert = m_rgpPlayerItems[ pItem->iItemSlot() ];
 	while (pInsert)
@@ -6469,7 +6455,7 @@ BOOL CBasePlayer::__API_VHOOK(AddPlayerItem)(CBasePlayerItem *pItem)
 
 LINK_HOOK_CLASS_CHAIN(BOOL, CBasePlayer, RemovePlayerItem, (CBasePlayerItem *pItem), pItem);
 
-BOOL CBasePlayer::__API_VHOOK(RemovePlayerItem)(CBasePlayerItem *pItem)
+BOOL EXT_FUNC CBasePlayer::__API_VHOOK(RemovePlayerItem)(CBasePlayerItem *pItem)
 {
 	if (m_pActiveItem == pItem)
 	{
@@ -6495,7 +6481,7 @@ BOOL CBasePlayer::__API_VHOOK(RemovePlayerItem)(CBasePlayerItem *pItem)
 	while (pPrev && pPrev->m_pNext != pItem)
 		pPrev = pPrev->m_pNext;
 
-	if (pPrev != NULL)
+	if (pPrev)
 	{
 		pPrev->m_pNext = pItem->m_pNext;
 		return TRUE;
@@ -6507,7 +6493,7 @@ BOOL CBasePlayer::__API_VHOOK(RemovePlayerItem)(CBasePlayerItem *pItem)
 LINK_HOOK_CLASS_CHAIN(int, CBasePlayer, GiveAmmo, (int iCount, char *szName, int iMax), iCount, szName, iMax);
 
 // Returns the unique ID for the ammo, or -1 if error
-int CBasePlayer::__API_VHOOK(GiveAmmo)(int iCount, char *szName, int iMax)
+int EXT_FUNC CBasePlayer::__API_VHOOK(GiveAmmo)(int iCount, char *szName, int iMax)
 {
 	if (pev->flags & FL_SPECTATOR)
 		return -1;
@@ -6517,6 +6503,9 @@ int CBasePlayer::__API_VHOOK(GiveAmmo)(int iCount, char *szName, int iMax)
 		// no ammo.
 		return -1;
 	}
+
+	if (iMax == -1)
+		iMax = MaxAmmoCarry(szName);
 
 	if (!g_pGameRules->CanHaveAmmo(this, szName, iMax))
 	{
@@ -6571,10 +6560,10 @@ void CBasePlayer::ItemPostFrame()
 	static int fInSelect = FALSE;
 
 	// check if the player is using a tank
-	if (m_pTank != NULL)
+	if (m_pTank)
 		return;
 
-	if (m_pActiveItem != NULL)
+	if (m_pActiveItem)
 	{
 		if (HasShield() && IsReloading())
 		{
@@ -6592,7 +6581,7 @@ void CBasePlayer::ItemPostFrame()
 
 	ImpulseCommands();
 
-	if (m_pActiveItem != NULL)
+	if (m_pActiveItem)
 		m_pActiveItem->ItemPostFrame();
 }
 
@@ -6642,7 +6631,7 @@ void CBasePlayer::SendHostagePos()
 {
 	CBaseEntity *pHostage = NULL;
 
-	while ((pHostage = UTIL_FindEntityByClassname(pHostage, "hostage_entity")) != NULL)
+	while ((pHostage = UTIL_FindEntityByClassname(pHostage, "hostage_entity")))
 	{
 		MESSAGE_BEGIN(MSG_ONE, gmsgHostagePos, NULL, pev);
 			WRITE_BYTE(1);
@@ -6665,9 +6654,9 @@ void CBasePlayer::SendHostageIcons()
 	if (!g_bIsCzeroGame)
 		return;
 
-	while ((pHostage = UTIL_FindEntityByClassname(pHostage, "hostage_entity")) != NULL)
+	while ((pHostage = UTIL_FindEntityByClassname(pHostage, "hostage_entity")))
 	{
-		if (pHostage && pHostage->pev->deadflag == DEAD_NO)
+		if (pHostage->IsAlive())
 			++numHostages;
 	}
 
@@ -6697,7 +6686,7 @@ void CBasePlayer::SendWeatherInfo()
 	CBaseEntity *pPoint = UTIL_FindEntityByClassname(NULL, "env_rain");
 	CBaseEntity *pPoint2 = UTIL_FindEntityByClassname(NULL, "func_rain");
 
-	if (pPoint != NULL || pPoint2 != NULL)
+	if (pPoint || pPoint2)
 	{
 		MESSAGE_BEGIN(MSG_ONE, gmsgReceiveW, NULL, pev);
 			WRITE_BYTE(1);		// rainy weather
@@ -6708,7 +6697,7 @@ void CBasePlayer::SendWeatherInfo()
 		pPoint = UTIL_FindEntityByClassname(NULL, "env_snow");
 		pPoint2 = UTIL_FindEntityByClassname(NULL, "func_snow");
 
-		if (pPoint != NULL || pPoint2 != NULL)
+		if (pPoint || pPoint2)
 		{
 			MESSAGE_BEGIN(MSG_ONE, gmsgReceiveW, NULL, pev);
 				WRITE_BYTE(2);		// snowy weather
@@ -6741,8 +6730,7 @@ void EXT_FUNC CBasePlayer::__API_VHOOK(UpdateClientData)()
 			MESSAGE_END();
 
 			CBaseEntity *pEntity = UTIL_FindEntityByClassname(NULL, "env_fog");
-
-			if (pEntity != NULL)
+			if (pEntity)
 			{
 				CClientFog *pFog = static_cast<CClientFog *>(pEntity);
 
@@ -6839,6 +6827,22 @@ void EXT_FUNC CBasePlayer::__API_VHOOK(UpdateClientData)()
 			WRITE_BYTE(m_iHideHUD);
 		MESSAGE_END();
 
+#ifdef REGAMEDLL_FIXES
+		if (m_iHideHUD && !(m_iHideHUD & HIDEHUD_OBSERVER_CROSSHAIR))
+		{
+			if (m_iClientHideHUD < 0)
+				m_iClientHideHUD = 0;
+
+			int hudChanged = m_iClientHideHUD ^ m_iHideHUD;
+			if (hudChanged & (HIDEHUD_FLASHLIGHT | HIDEHUD_HEALTH | HIDEHUD_TIMER | HIDEHUD_MONEY))
+			{
+				MESSAGE_BEGIN(MSG_ONE, gmsgCrosshair, NULL, pev);
+					WRITE_BYTE(0);
+				MESSAGE_END();
+			}
+		}
+#endif
+
 		m_iClientHideHUD = m_iHideHUD;
 	}
 
@@ -6903,11 +6907,11 @@ void EXT_FUNC CBasePlayer::__API_VHOOK(UpdateClientData)()
 		// causes screen to flash, and pain compass to show direction of damage
 		edict_t *other = pev->dmg_inflictor;
 
-		if (other != NULL)
+		if (other)
 		{
 			CBaseEntity *pEntity = CBaseEntity::Instance(other);
 
-			if (pEntity != NULL)
+			if (pEntity)
 			{
 				damageOrigin = pEntity->Center();
 			}
@@ -7120,11 +7124,11 @@ void EXT_FUNC CBasePlayer::__API_VHOOK(ResetMaxSpeed)()
 		speed = 1;
 	}
 	// VIP is slow due to the armour he's wearing
-	else if (m_bIsVIP != NULL)
+	else if (m_bIsVIP)
 	{
 		speed = 227;
 	}
-	else if (m_pActiveItem != NULL)
+	else if (m_pActiveItem)
 	{
 		// Get player speed from selected weapon
 		speed = m_pActiveItem->GetMaxSpeed();
@@ -7199,7 +7203,7 @@ Vector CBasePlayer::__MAKE_VHOOK(GetAutoaimVector)(float flDelta)
 	else
 		m_vecAutoAim = angles * 0.9f;
 
-	if (sv_aim && sv_aim->value > 0.0f)
+	if (g_psv_aim && g_psv_aim->value > 0.0f)
 	{
 		if (m_vecAutoAim.x != m_lastx || m_vecAutoAim.y != m_lasty)
 		{
@@ -7248,7 +7252,7 @@ int CBasePlayer::GetCustomDecalFrames()
 
 LINK_HOOK_CLASS_VOID_CHAIN(CBasePlayer, Blind, (float duration, float holdTime, float fadeTime, int alpha), duration, holdTime, fadeTime, alpha);
 
-void CBasePlayer::__API_VHOOK(Blind)(float duration, float holdTime, float fadeTime, int alpha)
+void EXT_FUNC CBasePlayer::__API_VHOOK(Blind)(float duration, float holdTime, float fadeTime, int alpha)
 {
 	m_blindUntilTime = gpGlobals->time + duration;
 	m_blindStartTime = gpGlobals->time;
@@ -7397,7 +7401,7 @@ void CBasePlayer::UpdateStatusBar()
 LINK_HOOK_CLASS_VOID_CHAIN(CBasePlayer, DropPlayerItem, (const char *pszItemName), pszItemName);
 
 // DropPlayerItem - drop the named item, or if no name, the active item.
-void CBasePlayer::__API_HOOK(DropPlayerItem)(const char *pszItemName)
+void EXT_FUNC CBasePlayer::__API_HOOK(DropPlayerItem)(const char *pszItemName)
 {
 	if (!Q_strlen(pszItemName))
 	{
@@ -7474,7 +7478,7 @@ void CBasePlayer::__API_HOOK(DropPlayerItem)(const char *pszItemName)
 				g_pGameRules->m_bBombDropped = TRUE;
 
 				CBaseEntity *pEntity = NULL;
-				while ((pEntity = UTIL_FindEntityByClassname(pEntity, "player")) != NULL)
+				while ((pEntity = UTIL_FindEntityByClassname(pEntity, "player")))
 				{
 					if (FNullEnt(pEntity->edict()))
 						break;
@@ -7494,7 +7498,7 @@ void CBasePlayer::__API_HOOK(DropPlayerItem)(const char *pszItemName)
 								WRITE_COORD(pev->origin.x);
 								WRITE_COORD(pev->origin.y);
 								WRITE_COORD(pev->origin.z);
-								WRITE_BYTE(0);
+								WRITE_BYTE(BOMB_FLAG_DROPPED);
 							MESSAGE_END();
 						}
 					}
@@ -7516,7 +7520,7 @@ void CBasePlayer::__API_HOOK(DropPlayerItem)(const char *pszItemName)
 			pWeaponBox->SetThink(&CWeaponBox::BombThink);
 			pWeaponBox->pev->nextthink = gpGlobals->time + 1.0f;
 
-			if (TheCSBots() != NULL)
+			if (TheCSBots())
 			{
 				// tell the bots about the dropped bomb
 				TheCSBots()->SetLooseBomb(pWeaponBox);
@@ -7540,7 +7544,7 @@ void CBasePlayer::__API_HOOK(DropPlayerItem)(const char *pszItemName)
 		}
 
 		const char *modelname = GetCSModelName(pWeapon->m_iId);
-		if (modelname != NULL)
+		if (modelname)
 		{
 			SET_MODEL(ENT(pWeaponBox->pev), modelname);
 		}
@@ -7668,7 +7672,7 @@ void CBasePlayer::SwitchTeam()
 		WRITE_STRING(GetTeamName(m_iTeam));
 	MESSAGE_END();
 
-	if (TheBots != NULL)
+	if (TheBots)
 	{
 		TheBots->OnEvent(EVENT_PLAYER_CHANGED_TEAM, this);
 	}
@@ -7728,7 +7732,7 @@ void CBasePlayer::SwitchTeam()
 	{
 		const BotProfile *pProfile = pBot->GetProfile();
 
-		if (pProfile != NULL)
+		if (pProfile)
 		{
 			bool bKick = false;
 
@@ -7851,7 +7855,7 @@ void CStripWeapons::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCal
 {
 	CBasePlayer *pPlayer = NULL;
 
-	if (pActivator != NULL && pActivator->IsPlayer())
+	if (pActivator && pActivator->IsPlayer())
 	{
 		pPlayer = (CBasePlayer *)pActivator;
 	}
@@ -7860,7 +7864,7 @@ void CStripWeapons::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCal
 		pPlayer = (CBasePlayer *)Instance(INDEXENT(1));
 	}
 
-	if (pPlayer != NULL)
+	if (pPlayer)
 	{
 		pPlayer->RemoveAllItems(FALSE);
 	}
@@ -8506,7 +8510,7 @@ void CBasePlayer::InitRebuyData(const char *str)
 		return;
 	}
 
-	if (m_rebuyString != NULL)
+	if (m_rebuyString)
 	{
 		delete[] m_rebuyString;
 		m_rebuyString = NULL;
@@ -8526,21 +8530,21 @@ void CBasePlayer::AutoBuy()
 
 	c = PickFlashKillWeaponString();
 
-	if (c != NULL)
+	if (c)
 	{
 		ParseAutoBuyString(c, boughtPrimary, boughtSecondary);
 	}
 
 	c = PickGrenadeKillWeaponString();
 
-	if (c != NULL)
+	if (c)
 	{
 		ParseAutoBuyString(c, boughtPrimary, boughtSecondary);
 	}
 
 	c = PickPrimaryCareerTaskWeapon();
 
-	if (c != NULL)
+	if (c)
 	{
 		Q_strcpy(prioritizedString, c);
 
@@ -8550,7 +8554,7 @@ void CBasePlayer::AutoBuy()
 
 	c = PickSecondaryCareerTaskWeapon();
 
-	if (c != NULL)
+	if (c)
 	{
 		Q_strcpy(prioritizedString, c);
 
@@ -8562,12 +8566,12 @@ void CBasePlayer::AutoBuy()
 
 	c = PickFlashKillWeaponString();
 
-	if (c != NULL)
+	if (c)
 	{
 		ParseAutoBuyString(c, boughtPrimary, boughtSecondary);
 	}
 
-	if (TheTutor != NULL)
+	if (TheTutor)
 	{
 		TheTutor->OnEvent(EVENT_PLAYER_LEFT_BUY_ZONE);
 	}
@@ -8583,7 +8587,7 @@ bool IsPrimaryWeaponId(int id)
 	int classId = WEAPONCLASS_NONE;
 	const char *alias = WeaponIDToAlias(id);
 
-	if (alias != NULL)
+	if (alias)
 	{
 		classId = AliasToWeaponClass(alias);
 	}
@@ -8601,7 +8605,7 @@ bool IsSecondaryWeaponId(int id)
 	int classId = WEAPONCLASS_NONE;
 	const char *alias = WeaponIDToAlias(id);
 
-	if (alias != NULL)
+	if (alias)
 	{
 		classId = AliasToWeaponClass(alias);
 	}
@@ -8666,7 +8670,7 @@ const char *CBasePlayer::PickPrimaryCareerTaskWeapon()
 			}
 		}
 
-		if (primary != NULL)
+		if (primary)
 		{
 			if (CurrentWeaponSatisfies(primary, pTask->GetWeaponId(), pTask->GetWeaponClassId()))
 			{
@@ -8742,7 +8746,7 @@ const char *CBasePlayer::PickSecondaryCareerTaskWeapon()
 			}
 		}
 
-		if (secondary != NULL)
+		if (secondary)
 		{
 			if (CurrentWeaponSatisfies(secondary, pTask->GetWeaponId(), pTask->GetWeaponClassId()))
 			{
@@ -8877,7 +8881,7 @@ void CBasePlayer::PrioritizeAutoBuyString(char *autobuyString, const char *prior
 		// if  it is, copy that token to the new string and blank out
 		// that token in the autobuy string.
 		char *autoBuyPosition = Q_strstr(autobuyString, priorityToken);
-		if (autoBuyPosition != NULL)
+		if (autoBuyPosition)
 		{
 			while (*autoBuyPosition != '\0' && *autoBuyPosition != ' ')
 			{
@@ -8964,7 +8968,6 @@ void CBasePlayer::ParseAutoBuyString(const char *string, bool &boughtPrimary, bo
 		}
 
 		AutoBuyInfoStruct *commandInfo = GetAutoBuyCommandInfo(command);
-
 		if (ShouldExecuteAutoBuyCommand(commandInfo, boughtPrimary, boughtSecondary))
 		{
 			ClientCommand(commandInfo->m_command);
@@ -8999,25 +9002,17 @@ bool CBasePlayer::ShouldExecuteAutoBuyCommand(AutoBuyInfoStruct *commandInfo, bo
 
 AutoBuyInfoStruct *CBasePlayer::GetAutoBuyCommandInfo(const char *command)
 {
-	int i = 0;
-	AutoBuyInfoStruct *ret = NULL;
-	AutoBuyInfoStruct *temp = NULL;
-
 	// loop through all the commands till we find the one that matches.
-	while (ret == NULL)
+	for (auto& buyInfo : g_autoBuyInfo)
 	{
-		temp = &(g_autoBuyInfo[ i ]);
+		if (buyInfo.m_class == AUTOBUYCLASS_NONE)
+			continue;
 
-		if (!temp->m_class)
-			break;
-
-		if (Q_stricmp(temp->m_command, command) == 0)
-			ret = temp;
-
-		++i;
+		if (FStrEq(buyInfo.m_command, command))
+			return &buyInfo;
 	}
 
-	return ret;
+	return nullptr;
 }
 
 void CBasePlayer::PostAutoBuyCommandProcessing(AutoBuyInfoStruct *commandInfo, bool &boughtPrimary, bool &boughtSecondary)
@@ -9030,7 +9025,7 @@ void CBasePlayer::PostAutoBuyCommandProcessing(AutoBuyInfoStruct *commandInfo, b
 	CBasePlayerWeapon *primary = static_cast<CBasePlayerWeapon *>(m_rgpPlayerItems[ PRIMARY_WEAPON_SLOT ]);
 	CBasePlayerWeapon *secondary = static_cast<CBasePlayerWeapon *>(m_rgpPlayerItems[ PISTOL_SLOT ]);
 
-	if (primary != NULL && (Q_stricmp(STRING(primary->pev->classname), commandInfo->m_classname) == 0))
+	if (primary && FClassnameIs(primary->pev, commandInfo->m_classname))
 	{
 		// I just bought the gun I was trying to buy.
 		boughtPrimary = true;
@@ -9040,7 +9035,7 @@ void CBasePlayer::PostAutoBuyCommandProcessing(AutoBuyInfoStruct *commandInfo, b
 		// the shield is a primary weapon even though it isn't a "real" weapon.
 		boughtPrimary = true;
 	}
-	else if (secondary != NULL && (Q_stricmp(STRING(secondary->pev->classname), commandInfo->m_classname) == 0))
+	else if (secondary && FClassnameIs(secondary->pev, commandInfo->m_classname))
 	{
 		// I just bought the pistol I was trying to buy.
 		boughtSecondary = true;
@@ -9161,7 +9156,7 @@ void CBasePlayer::Rebuy()
 
 	// after we're done buying, the user is done with their equipment purchasing experience.
 	// so we are effectively out of the buy zone.
-	if (TheTutor != NULL)
+	if (TheTutor)
 	{
 		TheTutor->OnEvent(EVENT_PLAYER_LEFT_BUY_ZONE);
 	}
@@ -9174,8 +9169,7 @@ void CBasePlayer::RebuyPrimaryWeapon()
 		if (m_rebuyStruct.m_primaryWeapon)
 		{
 			const char *alias = WeaponIDToAlias(m_rebuyStruct.m_primaryWeapon);
-
-			if (alias != NULL)
+			if (alias)
 				ClientCommand(alias);
 		}
 	}
@@ -9185,7 +9179,7 @@ void CBasePlayer::RebuyPrimaryAmmo()
 {
 	CBasePlayerWeapon *primary = static_cast<CBasePlayerWeapon *>(m_rgpPlayerItems[ PRIMARY_WEAPON_SLOT ]);
 
-	if (primary != NULL)
+	if (primary)
 	{
 		// if we had more ammo before than we have now, buy more.
 		if (m_rebuyStruct.m_primaryAmmo > m_rgAmmo[ primary->m_iPrimaryAmmoType ])
@@ -9198,8 +9192,7 @@ void CBasePlayer::RebuySecondaryWeapon()
 	if (m_rebuyStruct.m_secondaryWeapon)
 	{
 		const char *alias = WeaponIDToAlias(m_rebuyStruct.m_secondaryWeapon);
-
-		if (alias != NULL)
+		if (alias)
 			ClientCommand(alias);
 	}
 }
@@ -9218,12 +9211,10 @@ void CBasePlayer::RebuySecondaryAmmo()
 void CBasePlayer::RebuyHEGrenade()
 {
 	int iAmmoIndex = GetAmmoIndex("HEGrenade");
-
 	if (iAmmoIndex == -1)
 		return;
 
 	int numToBuy = m_rebuyStruct.m_heGrenade - m_rgAmmo[ iAmmoIndex ];
-
 	for (int i = 0; i < numToBuy; ++i)
 		ClientCommand("hegren");
 }
@@ -9231,12 +9222,10 @@ void CBasePlayer::RebuyHEGrenade()
 void CBasePlayer::RebuyFlashbang()
 {
 	int iAmmoIndex = GetAmmoIndex("Flashbang");
-
 	if (iAmmoIndex == -1)
 		return;
 
 	int numToBuy = m_rebuyStruct.m_flashbang - m_rgAmmo[ iAmmoIndex ];
-
 	for (int i = 0; i < numToBuy; ++i)
 		ClientCommand("flash");
 }
@@ -9244,12 +9233,10 @@ void CBasePlayer::RebuyFlashbang()
 void CBasePlayer::RebuySmokeGrenade()
 {
 	int iAmmoIndex = GetAmmoIndex("SmokeGrenade");
-
 	if (iAmmoIndex == -1)
 		return;
 
 	int numToBuy = m_rebuyStruct.m_smokeGrenade - m_rgAmmo[ iAmmoIndex ];
-
 	for (int i = 0; i < numToBuy; ++i)
 		ClientCommand("sgren");
 }
@@ -9373,7 +9360,7 @@ void CBasePlayer::ReloadWeapons(CBasePlayerItem *pWeapon, bool bForceReload, boo
 	for (int i = PRIMARY_WEAPON_SLOT; i <= PISTOL_SLOT; ++i)
 	{
 		auto item = m_rgpPlayerItems[i];
-		while (item != nullptr)
+		while (item)
 		{
 			if (pWeapon == nullptr || pWeapon == item)
 			{
@@ -9391,7 +9378,7 @@ void CBasePlayer::ReloadWeapons(CBasePlayerItem *pWeapon, bool bForceReload, boo
 			item = item->m_pNext;
 		}
 
-		if (pWeapon != nullptr && pWeapon == item)
+		if (pWeapon && pWeapon == item)
 			break;
 	}
 #endif
@@ -9465,13 +9452,13 @@ void CBasePlayer::DropPrimary()
 }
 
 CBasePlayerItem *CBasePlayer::GetItemByName(const char *itemName) {
-	return ForEachItem([this, itemName](CBasePlayerItem *item) {
+	return ForEachItem([itemName](CBasePlayerItem *item) {
 		return FClassnameIs(item->pev, itemName);
 	});
 }
 
 CBasePlayerItem *CBasePlayer::GetItemById(WeaponIdType weaponID) {
-	return ForEachItem([this, weaponID](CBasePlayerItem *item) {
+	return ForEachItem([weaponID](CBasePlayerItem *item) {
 		return item->m_iId == weaponID;
 	});
 }
@@ -9512,3 +9499,149 @@ void CBasePlayer::UpdateOnRemove()
 	}
 }
 #endif
+
+LINK_HOOK_CLASS_VOID_CHAIN(CBasePlayer, OnSpawnEquip, (bool addDefault, bool equipGame), addDefault, equipGame);
+
+void EXT_FUNC CBasePlayer::__API_HOOK(OnSpawnEquip)(bool addDefault, bool equipGame)
+{
+	if (equipGame)
+	{
+		CBaseEntity *pWeaponEntity = nullptr;
+		while ((pWeaponEntity = UTIL_FindEntityByClassname(pWeaponEntity, "game_player_equip")))
+		{
+			pWeaponEntity->Touch(this);
+			addDefault = false;
+		}
+	}
+
+	if (m_bNotKilled)
+		addDefault = false;
+
+	if (addDefault || m_bIsVIP)
+	{
+		GiveDefaultItems();
+	}
+}
+
+void CBasePlayer::HideTimer()
+{
+	// HACK HACK, we need to hide only the timer.
+	MESSAGE_BEGIN(MSG_ONE, gmsgBombDrop, NULL, pev);
+		WRITE_COORD(0);
+		WRITE_COORD(0);
+		WRITE_COORD(0);
+		WRITE_BYTE(BOMB_FLAG_PLANTED);
+	MESSAGE_END();
+
+	MESSAGE_BEGIN(MSG_ONE, gmsgBombPickup, NULL, pev);
+	MESSAGE_END();
+}
+
+LINK_HOOK_CLASS_CHAIN2(bool, CBasePlayer, MakeBomber);
+
+bool EXT_FUNC CBasePlayer::__API_HOOK(MakeBomber)()
+{
+	if (!GiveNamedItem("weapon_c4"))
+	{
+		// something happened?
+		// C4 failed to attach to the player
+		return false;
+	}
+
+	m_bHasC4 = true;
+	SetBombIcon();
+	pev->body = 1;
+
+	m_flDisplayHistory |= DHF_BOMB_RETRIEVED;
+	HintMessage("#Hint_you_have_the_bomb", FALSE, TRUE);
+
+	// Log this information
+	UTIL_LogPrintf("\"%s<%i><%s><TERRORIST>\" triggered \"Spawned_With_The_Bomb\"\n", STRING(pev->netname), GETPLAYERUSERID(edict()), GETPLAYERAUTHID(edict()));
+	g_pGameRules->m_bBombDropped = FALSE;
+
+	return true;
+}
+
+LINK_HOOK_CLASS_CHAIN2(bool, CBasePlayer, GetIntoGame);
+
+bool EXT_FUNC CBasePlayer::__API_HOOK(GetIntoGame)()
+{
+	m_bNotKilled = false;
+	m_iIgnoreGlobalChat = IGNOREMSG_NONE;
+
+	m_iTeamKills = 0;
+	m_iFOV = DEFAULT_FOV;
+
+	Q_memset(&m_rebuyStruct, 0, sizeof(m_rebuyStruct));
+
+	m_bIsInRebuy = false;
+	m_bJustConnected = false;
+	m_fLastMovement = gpGlobals->time;
+
+	ResetMaxSpeed();
+	m_iJoiningState = JOINED;
+
+	if (CSGameRules()->m_bMapHasEscapeZone && m_iTeam == CT)
+	{
+#ifndef REGAMEDLL_ADD
+		m_iAccount = 0;
+#endif
+		CheckStartMoney();
+		AddAccount(startmoney.value, RT_INTO_GAME);
+	}
+
+	if (g_pGameRules->FPlayerCanRespawn(this))
+	{
+		Spawn();
+		CSGameRules()->CheckWinConditions();
+
+		if (!CSGameRules()->m_flRestartRoundTime && CSGameRules()->m_bMapHasBombTarget && !CSGameRules()->IsThereABomber() && !CSGameRules()->IsThereABomb())
+		{
+			CSGameRules()->GiveC4();
+		}
+		if (m_iTeam == TERRORIST)
+		{
+			CSGameRules()->m_iNumEscapers++;
+		}
+	}
+	else
+	{
+		pev->deadflag = DEAD_RESPAWNABLE;
+
+		MAKE_STRING_CLASS("player", pev);
+
+		pev->flags &= (FL_PROXY | FL_FAKECLIENT);
+		pev->flags |= (FL_SPECTATOR | FL_CLIENT);
+
+		edict_t *pentSpawnSpot = g_pGameRules->GetPlayerSpawnSpot(this);
+		StartObserver(pev->origin, pentSpawnSpot->v.angles);
+
+		CSGameRules()->CheckWinConditions();
+
+		MESSAGE_BEGIN(MSG_ALL, gmsgTeamInfo);
+			WRITE_BYTE(entindex());
+			WRITE_STRING(GetTeamName(m_iTeam));
+		MESSAGE_END();
+
+		MESSAGE_BEGIN(MSG_ALL, gmsgLocation);
+			WRITE_BYTE(entindex());
+			WRITE_STRING("");
+		MESSAGE_END();
+
+		MESSAGE_BEGIN(MSG_ALL, gmsgScoreInfo);
+			WRITE_BYTE(ENTINDEX(edict()));
+			WRITE_SHORT(int(pev->frags));
+			WRITE_SHORT(m_iDeaths);
+			WRITE_SHORT(0);
+			WRITE_SHORT(m_iTeam);
+		MESSAGE_END();
+
+		if (!(m_flDisplayHistory & DHF_SPEC_DUCK))
+		{
+			HintMessage("#Spec_Duck", TRUE, TRUE);
+			m_flDisplayHistory |= DHF_SPEC_DUCK;
+		}
+	}
+
+	return true;
+}

@@ -153,7 +153,7 @@ void CMAC10::__MAKE_VHOOK(Reload)()
 	if (m_pPlayer->ammo_45acp <= 0)
 		return;
 
-	if (DefaultReload(MAC10_MAX_CLIP, MAC10_RELOAD, MAC10_RELOAD_TIME))
+	if (DefaultReload(iMaxClip(), MAC10_RELOAD, MAC10_RELOAD_TIME))
 	{
 		m_pPlayer->SetAnimation(PLAYER_RELOAD);
 

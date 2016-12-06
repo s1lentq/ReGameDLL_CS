@@ -85,6 +85,7 @@
 #define Q_pow pow
 #define Q_fmod fmod
 #define Q_fopen fopen
+#define Q_fwrite fwrite
 #define Q_fprintf fprintf
 #define Q_fclose fclose
 

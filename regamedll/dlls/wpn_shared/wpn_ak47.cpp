@@ -166,7 +166,7 @@ void CAK47::__MAKE_VHOOK(Reload)()
 		return;
 #endif
 
-	if (DefaultReload(AK47_MAX_CLIP, AK47_RELOAD, AK47_RELOAD_TIME))
+	if (DefaultReload(iMaxClip(), AK47_RELOAD, AK47_RELOAD_TIME))
 	{
 		m_pPlayer->SetAnimation(PLAYER_RELOAD);
 

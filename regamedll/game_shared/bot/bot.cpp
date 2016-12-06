@@ -12,7 +12,7 @@ float g_flBotCommandInterval = 1.0 / 30.0;
 float g_flBotFullThinkInterval = 1.0 / 10.0;
 
 // Nasty Hack.  See client.cpp/ClientCommand()
-const char *BotArgs[4] = { NULL };
+const char *BotArgs[4] = {};
 bool UseBotArgs = false;
 
 #endif
@@ -319,6 +319,7 @@ byte CBot::ThrottledMsec() const
 	return byte(iNewMsec);
 }
 
+#ifndef REGAMEDLL_FIXES
 // Do a "client command" - useful for invoking menu choices, etc.
 void CBot::ClientCommand(const char *cmd, const char *arg1, const char *arg2, const char *arg3)
 {
@@ -331,6 +332,7 @@ void CBot::ClientCommand(const char *cmd, const char *arg1, const char *arg2, co
 	::ClientCommand(ENT(pev));
 	UseBotArgs = false;
 }
+#endif
 
 // Returns TRUE if given entity is our enemy
 bool CBot::IsEnemy(CBaseEntity *ent) const

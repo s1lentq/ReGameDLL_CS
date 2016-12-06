@@ -42,5 +42,6 @@ void ResetGlobalState();
 
 extern CGlobalState gGlobalState;
 extern float g_flWeaponCheat;
+extern char g_szMapBriefingText[512];
 
 #endif // WORLD_H

@@ -157,7 +157,7 @@ void CUMP45::__MAKE_VHOOK(Reload)()
 	if (m_pPlayer->ammo_45acp <= 0)
 		return;
 
-	if (DefaultReload(UMP45_MAX_CLIP, UMP45_RELOAD, UMP45_RELOAD_TIME))
+	if (DefaultReload(iMaxClip(), UMP45_RELOAD, UMP45_RELOAD_TIME))
 	{
 		m_pPlayer->SetAnimation(PLAYER_RELOAD);
 

@@ -183,7 +183,7 @@ void CAWP::__MAKE_VHOOK(Reload)()
 	if (m_pPlayer->ammo_338mag <= 0)
 		return;
 
-	if (DefaultReload(AWP_MAX_CLIP, AWP_RELOAD, AWP_RELOAD_TIME))
+	if (DefaultReload(iMaxClip(), AWP_RELOAD, AWP_RELOAD_TIME))
 	{
 		m_pPlayer->SetAnimation(PLAYER_RELOAD);
 

@@ -97,7 +97,7 @@ void CGib::SpawnHeadGib(entvars_t *pevVictim)
 
 		edict_t *pentPlayer = FIND_CLIENT_IN_PVS(pGib->edict());
 
-		if (RANDOM_LONG(0, 100) <= 5 && pentPlayer != NULL)
+		if (RANDOM_LONG(0, 100) <= 5 && pentPlayer)
 		{
 			// 5% chance head will be thrown at player's face.
 			entvars_t *pevPlayer = VARS(pentPlayer);
@@ -905,7 +905,6 @@ void EXT_FUNC PlayerBlind(CBasePlayer *pPlayer, entvars_t *pevInflictor, entvars
 	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
 		CBasePlayer *pObserver = UTIL_PlayerByIndex(i);
-
 		if (!pObserver || !pObserver->IsObservingPlayer(pPlayer))
 			continue;
 
@@ -917,7 +916,7 @@ void EXT_FUNC PlayerBlind(CBasePlayer *pPlayer, entvars_t *pevInflictor, entvars
 
 	pPlayer->Blind(fadeTime * 0.33, fadeHold, fadeTime, alpha);
 
-	if (TheBots != NULL)
+	if (TheBots)
 	{
 		TheBots->OnEvent(EVENT_PLAYER_BLINDED_BY_FLASHBANG, pPlayer);
 	}
@@ -940,7 +939,7 @@ void RadiusFlash(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker,
 
 	vecSrc.z += 1;
 
-	while ((pEntity = UTIL_FindEntityInSphere(pEntity, vecSrc, 1500.0)) != NULL)
+	while ((pEntity = UTIL_FindEntityInSphere(pEntity, vecSrc, 1500.0)))
 	{
 		TraceResult tr2;
 		Vector vecLOS;
@@ -1121,7 +1120,7 @@ void RadiusDamage(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker
 		pevAttacker = pevInflictor;
 
 	// iterate on all entities in the vicinity.
-	while ((pEntity = UTIL_FindEntityInSphere(pEntity, vecSrc, flRadius)) != NULL)
+	while ((pEntity = UTIL_FindEntityInSphere(pEntity, vecSrc, flRadius)))
 	{
 		if (pEntity->pev->takedamage != DAMAGE_NO)
 		{
@@ -1215,7 +1214,7 @@ void RadiusDamage2(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacke
 		pevAttacker = pevInflictor;
 
 	// iterate on all entities in the vicinity.
-	while ((pEntity = UTIL_FindEntityInSphere(pEntity, vecSrc, flRadius)) != NULL)
+	while ((pEntity = UTIL_FindEntityInSphere(pEntity, vecSrc, flRadius)))
 	{
 		if (pEntity->pev->takedamage != DAMAGE_NO)
 		{
@@ -1740,7 +1739,7 @@ Vector CBaseEntity::FireBullets3(Vector vecSrc, Vector vecDirShooting, float vec
 		ClearMultiDamage();
 		UTIL_TraceLine(vecSrc, vecEnd, dont_ignore_monsters, ENT(pev), &tr);
 
-		if (TheBots != NULL && tr.flFraction != 1.0f)
+		if (TheBots && tr.flFraction != 1.0f)
 		{
 			TheBots->OnEvent(EVENT_BULLET_IMPACT, this, (CBaseEntity *)&tr.vecEndPos);
 		}

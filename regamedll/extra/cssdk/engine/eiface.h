@@ -298,8 +298,12 @@ typedef struct enginefuncs_s
 	// Added 2005/11/21 (no SDK update):
 	void(*pfnQueryClientCvarValue2)		(const edict_t *player, const char *cvarName, int requestID);
 
+// Comment out this, for compatibility with older versions metamod - s1lent
+#if !defined(CSSDK_COMPAT_OLD_METAMOD)
 	// Added 2009/06/19 (no SDK update):
-	// int(*pfnEngCheckParm)				(const char *pchCmdLineToken, char **ppnext);		// s1lent: comment out this, for compatibility with older versions metamod
+	int(*pfnEngCheckParm)				(const char *pchCmdLineToken, char **ppnext);
+#endif
+
 } enginefuncs_t;
 
 

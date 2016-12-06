@@ -172,7 +172,7 @@ void CFiveSeven::__MAKE_VHOOK(Reload)()
 	if (m_pPlayer->ammo_57mm <= 0)
 		return;
 
-	if (DefaultReload(FIVESEVEN_MAX_CLIP, FIVESEVEN_RELOAD, FIVESEVEN_RELOAD_TIME))
+	if (DefaultReload(iMaxClip(), FIVESEVEN_RELOAD, FIVESEVEN_RELOAD_TIME))
 	{
 		m_pPlayer->SetAnimation(PLAYER_RELOAD);
 		m_flAccuracy = 0.92f;

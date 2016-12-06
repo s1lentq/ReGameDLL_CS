@@ -79,8 +79,8 @@ void CHalfLifeRules::__MAKE_VHOOK(PlayerSpawn)(CBasePlayer *pPlayer)
 	pPlayer->GiveNamedItem("weapon_mp5navy");
 	pPlayer->GiveNamedItem("weapon_hegrenade");
 
-	pPlayer->GiveAmmo(60, "9mm", 120);
-	pPlayer->GiveAmmo(24, "45acp", 100);
+	pPlayer->GiveAmmo(60, "9mm");
+	pPlayer->GiveAmmo(24, "45acp");
 }
 
 BOOL CHalfLifeRules::__MAKE_VHOOK(AllowAutoTargetCrosshair)()

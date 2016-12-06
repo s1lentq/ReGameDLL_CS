@@ -588,13 +588,13 @@ void CCSBot::UpdateHostageEscortCount()
 	m_hostageEscortCount = 0;
 
 	CHostage *hostage = NULL;
-	while ((hostage = static_cast<CHostage *>(UTIL_FindEntityByClassname(hostage, "hostage_entity"))) != NULL)
+	while ((hostage = static_cast<CHostage *>(UTIL_FindEntityByClassname(hostage, "hostage_entity"))))
 	{
 		if (FNullEnt(hostage->edict()))
 			break;
 
 		// skip dead or rescued hostages
-		if (!hostage->IsValid())
+		if (!hostage->IsAlive())
 			continue;
 
 		// check if hostage has targeted us, and is following

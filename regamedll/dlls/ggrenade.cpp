@@ -57,7 +57,7 @@ void CGrenade::Explode(TraceResult *pTrace, int bitsDamageType)
 #endif
 	entvars_t *pevOwner = VARS(pev->owner);
 
-	if (TheBots != NULL)
+	if (TheBots)
 	{
 		TheBots->OnEvent(EVENT_FLASHBANG_GRENADE_EXPLODED, CBaseEntity::Instance(pev->owner), (CBaseEntity *)&pev->origin);
 	}
@@ -109,7 +109,7 @@ void CGrenade::Explode2(TraceResult *pTrace, int bitsDamageType)
 
 	if (CSGameRules()->IsCareer())
 	{
-		if (TheCareerTasks != NULL)
+		if (TheCareerTasks)
 		{
 			TheCareerTasks->LatchRoundEndMessage();
 		}
@@ -179,7 +179,7 @@ void CGrenade::Explode2(TraceResult *pTrace, int bitsDamageType)
 
 	if (CSGameRules()->IsCareer())
 	{
-		if (TheCareerTasks != NULL)
+		if (TheCareerTasks)
 		{
 			TheCareerTasks->UnlatchRoundEndMessage();
 		}
@@ -266,7 +266,7 @@ void CGrenade::Explode3(TraceResult *pTrace, int bitsDamageType)
 #endif
 	entvars_t *pevOwner = VARS(pev->owner);
 
-	if (TheBots != NULL)
+	if (TheBots)
 	{
 		TheBots->OnEvent(EVENT_HE_GRENADE_EXPLODED, CBaseEntity::Instance(pev->owner));
 	}
@@ -503,7 +503,7 @@ void CGrenade::SG_Smoke()
 	{
 		pev->effects |= EF_NODRAW;
 
-		if (TheBots != NULL)
+		if (TheBots)
 		{
 			TheBots->RemoveGrenade(this);
 		}
@@ -553,7 +553,7 @@ void CGrenade::SG_Detonate()
 
 	UTIL_TraceLine(vecSpot, vecSpot + Vector(0, 0, -40), ignore_monsters, ENT(pev), &tr);
 
-	if (TheBots != NULL)
+	if (TheBots)
 	{
 		TheBots->OnEvent(EVENT_SMOKE_GRENADE_EXPLODED, CBaseEntity::Instance(pev->owner));
 		TheBots->AddGrenade(WEAPON_SMOKEGRENADE, this);
@@ -561,14 +561,13 @@ void CGrenade::SG_Detonate()
 
 	EMIT_SOUND(ENT(pev), CHAN_WEAPON, "weapons/sg_explode.wav", VOL_NORM, ATTN_NORM);
 
-	while ((pentFind = FIND_ENTITY_BY_CLASSNAME(pentFind, "grenade")) != NULL)
+	while ((pentFind = FIND_ENTITY_BY_CLASSNAME(pentFind, "grenade")))
 	{
 		if (FNullEnt(pentFind))
 			break;
 
 		CBaseEntity *pEnt = CBaseEntity::Instance(pentFind);
-
-		if (pEnt != NULL)
+		if (pEnt)
 		{
 			float fDistance = (pEnt->pev->origin - pev->origin).Length();
 
@@ -962,14 +961,14 @@ void CGrenade::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, 
 	// freeze the player in place while defusing
 	SET_CLIENT_MAXSPEED(player->edict(), 1);
 
-	if (TheBots != NULL)
+	if (TheBots)
 	{
 		TheBots->OnEvent(EVENT_BOMB_DEFUSING, pActivator);
 	}
 
 	if (CSGameRules()->IsCareer())
 	{
-		if (TheCareerTasks != NULL)
+		if (TheCareerTasks)
 		{
 			TheCareerTasks->HandleEvent(EVENT_BOMB_DEFUSING);
 		}
@@ -1179,7 +1178,7 @@ void CGrenade::C4Think()
 
 		// let the bots hear the bomb beeping
 		// BOTPORT: Emit beep events at same time as client effects
-		if (TheBots != NULL)
+		if (TheBots)
 		{
 			TheBots->OnEvent(EVENT_BOMB_BEEP, this);
 		}
@@ -1204,7 +1203,7 @@ void CGrenade::C4Think()
 	// If the timer has expired ! blow this bomb up!
 	if (gpGlobals->time >= m_flC4Blow)
 	{
-		if (TheBots != NULL)
+		if (TheBots)
 		{
 			TheBots->OnEvent(EVENT_BOMB_EXPLODED);
 		}
@@ -1231,7 +1230,7 @@ void CGrenade::C4Think()
 		MESSAGE_BEGIN(MSG_ALL, gmsgBombPickup);
 		MESSAGE_END();
 
-		g_pGameRules->m_bBombDropped = false;
+		g_pGameRules->m_bBombDropped = FALSE;
 
 		if (pev->waterlevel != 0)
 			UTIL_Remove(this);
@@ -1240,7 +1239,7 @@ void CGrenade::C4Think()
 	}
 
 	// if the defusing process has started
-	if (m_bStartDefuse && m_pBombDefuser != NULL)
+	if (m_bStartDefuse && m_pBombDefuser)
 	{
 		CBasePlayer *pPlayer = (CBasePlayer *)m_pBombDefuser;
 
@@ -1268,7 +1267,7 @@ void CGrenade::C4Think()
 				m_flDefuseCountDown = 0;
 
 				// tell the bots someone has aborted defusing
-				if (TheBots != NULL)
+				if (TheBots)
 				{
 					TheBots->OnEvent(EVENT_BOMB_DEFUSE_ABORTED);
 				}
@@ -1279,7 +1278,7 @@ void CGrenade::C4Think()
 		{
 			Broadcast("BOMBDEF");
 
-			if (TheBots != NULL)
+			if (TheBots)
 			{
 				TheBots->OnEvent(EVENT_BOMB_DEFUSED, (CBaseEntity *)m_pBombDefuser);
 			}
@@ -1313,7 +1312,7 @@ void CGrenade::C4Think()
 
 			if (CSGameRules()->IsCareer() && !pPlayer->IsBot())
 			{
-				if (TheCareerTasks != NULL)
+				if (TheCareerTasks)
 				{
 					TheCareerTasks->HandleEvent(EVENT_BOMB_DEFUSED, pPlayer);
 				}
@@ -1343,7 +1342,7 @@ void CGrenade::C4Think()
 			m_pBombDefuser = NULL;
 
 			// tell the bots someone has aborted defusing
-			if (TheBots != NULL)
+			if (TheBots)
 			{
 				TheBots->OnEvent(EVENT_BOMB_DEFUSE_ABORTED);
 			}
@@ -1364,14 +1363,13 @@ NOXREF void CGrenade::UseSatchelCharges(entvars_t *pevOwner, SATCHELCODE code)
 	edict_t *pentFind = NULL;
 	CBaseEntity *pOwner = CBaseEntity::Instance(pevOwner);
 
-	while ((pentFind = FIND_ENTITY_BY_CLASSNAME(pentFind, "grenade")) != NULL)
+	while ((pentFind = FIND_ENTITY_BY_CLASSNAME(pentFind, "grenade")))
 	{
 		if (FNullEnt(pentFind))
 			break;
 
 		CBaseEntity *pEnt = Instance(pentFind);
-
-		if (pEnt != NULL)
+		if (pEnt)
 		{
 			if ((pEnt->pev->spawnflags & SF_DETONATE) && pEnt->pev->owner == pOwner->edict())
 			{

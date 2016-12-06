@@ -925,6 +925,7 @@ extern char pm_grgszTextureName[1024][17];
 extern char pm_grgchTextureType[1024];
 extern char *BotDifficultyName[5];
 
+extern BOOL g_fGameOver;
 extern float g_flResetTime;
 C_DLLEXPORT float g_flTimeLimit;
 

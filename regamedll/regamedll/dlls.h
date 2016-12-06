@@ -119,8 +119,8 @@ typedef float& FloatRef;
 #include "game_shared/shared_util.h"
 #include "game_shared/bot/bot_profile.h"
 
-#include "game_shared/bot/improv.h"
 #include "game_shared/bot/nav.h"
+#include "game_shared/bot/improv.h"
 #include "game_shared/bot/nav_node.h"
 #include "game_shared/bot/nav_area.h"
 #include "game_shared/bot/nav_file.h"

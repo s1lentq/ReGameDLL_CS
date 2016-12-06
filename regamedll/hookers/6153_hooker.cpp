@@ -283,7 +283,7 @@ FunctionHook g_FunctionHooks[] =
 	{ 0x01D65850, "_Z9BuyPistolP11CBasePlayeri", (size_t)&BuyPistol },
 	{ 0x01D65A30, "_Z10BuyShotgunP11CBasePlayeri", (size_t)&BuyShotgun },
 	{ 0x01D65B70, "_Z16BuySubMachineGunP11CBasePlayeri", (size_t)&BuySubMachineGun },
-	{ 0x01D65D00, "_Z19BuyWeaponByWeaponIDP11CBasePlayer12WeaponIdType", (size_t)&BuyWeaponByWeaponID },
+	//{ 0x01D65D00, "_Z19BuyWeaponByWeaponIDP11CBasePlayer12WeaponIdType", (size_t)&BuyWeaponByWeaponID },
 	{ 0x01D65E80, "_Z8BuyRifleP11CBasePlayeri", (size_t)&BuyRifle },
 	{ 0x01D66070, "_Z13BuyMachineGunP11CBasePlayeri", (size_t)&BuyMachineGun },
 	{ 0x01D66170, "_Z7BuyItemP11CBasePlayeri", (size_t)&BuyItem },
@@ -719,7 +719,7 @@ FunctionHook g_FunctionHooks[] =
 	{ 0x01DA67A0, "_ZN11CBasePlayer14SelectLastItemEv", mfunc_ptr_cast(&CBasePlayer::SelectLastItem) },
 	//{ 0x01DA8BB0, "_ZN11CBasePlayer12ItemPreFrameEv", mfunc_ptr_cast(&CBasePlayer::ItemPreFrame) },	// NOXREF
 	//{ 0x01DA8BE0, "_ZN11CBasePlayer13ItemPostFrameEv", mfunc_ptr_cast(&CBasePlayer::ItemPostFrame) },	// NOXREF
-	{ 0x01DA6CC0, "_ZN11CBasePlayer13GiveNamedItemEPKc", mfunc_ptr_cast(&CBasePlayer::GiveNamedItem) },
+	//{ 0x01DA6CC0, "_ZN11CBasePlayer13GiveNamedItemEPKc", mfunc_ptr_cast(&CBasePlayer::GiveNamedItem) },
 	{ 0x01DA9C80, "_ZN11CBasePlayer13EnableControlEi", mfunc_ptr_cast(&CBasePlayer::EnableControl) },
 	{ 0x01DA9D50, "_ZN11CBasePlayer11HintMessageEPKcii", mfunc_ptr_cast(&CBasePlayer::HintMessage) },
 	{ 0x01DA8CC0, "_ZN11CBasePlayer14SendAmmoUpdateEv", mfunc_ptr_cast(&CBasePlayer::SendAmmoUpdate) },
@@ -2399,7 +2399,7 @@ FunctionHook g_FunctionHooks[] =
 	{ 0x01DC2FB0, "_Z26UTIL_FindEntityByClassnameP11CBaseEntityPKc", (size_t)&UTIL_FindEntityByClassname },
 	{ 0x01DC2FD0, "_Z27UTIL_FindEntityByTargetnameP11CBaseEntityPKc", (size_t)&UTIL_FindEntityByTargetname },
 	//{ 0x01DC2FF0, "_Z22UTIL_FindEntityGenericPKcR6Vectorf", (size_t)&UTIL_FindEntityGeneric },	// NOXREF
-	{ 0x01DC30A0, "_Z18UTIL_PlayerByIndexi", (size_t)&UTIL_PlayerByIndex },
+	//{ 0x01DC30A0, "_Z18UTIL_PlayerByIndexi", (size_t)&UTIL_PlayerByIndex },
 	{ 0x01DC30E0, "_Z16UTIL_MakeVectorsRK6Vector", (size_t)&UTIL_MakeVectors },
 	{ 0x01DC30F0, "_Z19UTIL_MakeAimVectorsRK6Vector", (size_t)&UTIL_MakeAimVectors },
 	{ 0x01DC3120, "_Z19UTIL_MakeInvVectorsRK6VectorP12globalvars_t", (size_t)&UTIL_MakeInvVectors },
@@ -5766,7 +5766,7 @@ AddressRef g_DataRefs[] =
 	{ 0x01E22C50, "gDecals", (size_t)&pgDecals },
 	{ 0x01E31748, "stringsHashTable", (size_t)&pstringsHashTable },
 	{ 0x01E312E8, "hashItemMemPool", (size_t)&phashItemMemPool },
-	{ 0x01E3175C, "gTouchDisabled", (size_t)&pgTouchDisabled },
+	//{ 0x01E3175C, "gTouchDisabled", (size_t)&pgTouchDisabled },
 	{ 0x01E6359C, "giPrecacheGrunt", (size_t)&pgiPrecacheGrunt },
 	{ 0x01E6360C, "gmsgWeapPickup", (size_t)&pgmsgWeapPickup },
 	{ 0x01E635E0, "gmsgHudText", (size_t)&pgmsgHudText },

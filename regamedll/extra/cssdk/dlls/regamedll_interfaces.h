@@ -59,8 +59,8 @@ public:
 	virtual bool IsConnected() const;
 	virtual void SetAnimation(PLAYER_ANIM playerAnim);
 	virtual void AddAccount(int amount, RewardType type = RT_NONE, bool bTrackChange = true);
-	virtual void GiveNamedItem(const char *pszName);
-	virtual void GiveNamedItemEx(const char *pszName);
+	virtual CBaseEntity *GiveNamedItem(const char *pszName);
+	virtual CBaseEntity *GiveNamedItemEx(const char *pszName);
 	virtual void GiveDefaultItems();
 	virtual void GiveShield(bool bDeploy = true);
 	virtual void DropShield(bool bDeploy = true);
@@ -90,6 +90,11 @@ public:
 	virtual void DropPrimary();
 	virtual bool HasPlayerItem(CBasePlayerItem *pCheckItem);
 	virtual bool HasNamedPlayerItem(const char *pszItemName);
+	virtual CBasePlayerItem *GetItemById(WeaponIdType weaponID);
+	virtual CBasePlayerItem *GetItemByName(const char *itemName);
+	virtual void Disappear();
+	virtual void MakeVIP();
+	virtual bool MakeBomber();
 
 	CBasePlayer *BasePlayer() const;
 public:

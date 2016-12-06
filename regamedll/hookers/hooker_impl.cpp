@@ -214,6 +214,7 @@ CCareerTaskManager *TheCareerTasks;
 const TaskInfo taskInfo[21];
 
 // globals client.cpp
+BOOL g_fGameOver;		// moved from gamerules
 float g_flTimeLimit;		// moved from gamerules
 float g_flResetTime;		// moved from gamerules
 bool g_bClientPrintEnable;

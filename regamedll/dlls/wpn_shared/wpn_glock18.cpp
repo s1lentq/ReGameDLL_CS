@@ -256,7 +256,7 @@ void CGLOCK18::__MAKE_VHOOK(Reload)()
 	else
 		iResult = GLOCK18_RELOAD2;
 
-	if (DefaultReload(GLOCK18_MAX_CLIP, iResult, GLOCK18_RELOAD_TIME))
+	if (DefaultReload(iMaxClip(), iResult, GLOCK18_RELOAD_TIME))
 	{
 		m_pPlayer->SetAnimation(PLAYER_RELOAD);
 		m_flAccuracy = 0.9;

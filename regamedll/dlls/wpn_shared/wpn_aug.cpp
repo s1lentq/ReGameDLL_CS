@@ -173,7 +173,7 @@ void CAUG::__MAKE_VHOOK(Reload)()
 	if (m_pPlayer->ammo_556nato <= 0)
 		return;
 
-	if (DefaultReload(AUG_MAX_CLIP, AUG_RELOAD, AUG_RELOAD_TIME))
+	if (DefaultReload(iMaxClip(), AUG_RELOAD, AUG_RELOAD_TIME))
 	{
 		m_pPlayer->SetAnimation(PLAYER_RELOAD);
 

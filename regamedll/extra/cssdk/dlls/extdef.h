@@ -29,18 +29,29 @@
 
 #include "regamedll_const.h"
 
+#undef DLLEXPORT
 #ifdef _WIN32
 	// Attributes to specify an "exported" function, visible from outside the
 	// DLL.
-	#undef DLLEXPORT
 	#define DLLEXPORT	__declspec(dllexport)
 	// WINAPI should be provided in the windows compiler headers.
 	// It's usually defined to something like "__stdcall".
+
+	#define NOINLINE __declspec(noinline)
 #else
-	#undef DLLEXPORT
 	#define DLLEXPORT	__attribute__((visibility("default")))
 	#define WINAPI		/* */
+	#define NOINLINE	__attribute__((noinline))
 #endif // _WIN32
+
+// Manual branch optimization for GCC 3.0.0 and newer
+#if !defined(__GNUC__) || __GNUC__ < 3
+	#define likely(x) (x)
+	#define unlikely(x) (x)
+#else
+	#define likely(x) __builtin_expect(!!(x), 1)
+	#define unlikely(x) __builtin_expect(!!(x), 0)
+#endif
 
 // Simplified macro for declaring/defining exported DLL functions.  They
 // need to be 'extern "C"' so that the C++ compiler enforces parameter

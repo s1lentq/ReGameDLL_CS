@@ -179,7 +179,7 @@ void CSCOUT::__MAKE_VHOOK(Reload)()
 		return;
 #endif
 
-	if (DefaultReload(SCOUT_MAX_CLIP, SCOUT_RELOAD, SCOUT_RELOAD_TIME))
+	if (DefaultReload(iMaxClip(), SCOUT_RELOAD, SCOUT_RELOAD_TIME))
 	{
 		if (m_pPlayer->pev->fov != DEFAULT_FOV)
 		{

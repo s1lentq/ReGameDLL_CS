@@ -386,7 +386,7 @@ void CGamePlayerZone::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pC
 	{
 		CBaseEntity *pPlayer = UTIL_PlayerByIndex(i);
 
-		if (pPlayer == nullptr)
+		if (!pPlayer)
 			continue;
 
 		TraceResult trace;
@@ -576,7 +576,7 @@ void CGamePlayerEquip::EquipPlayer(CBaseEntity *pEntity)
 
 		for (int j = 0; j < m_weaponCount[i]; ++j)
 		{
- 			pPlayer->GiveNamedItem(STRING(m_weaponNames[i]));
+			pPlayer->GiveNamedItemEx(STRING(m_weaponNames[i]));
 		}
 	}
 }

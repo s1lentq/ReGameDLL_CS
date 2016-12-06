@@ -293,12 +293,12 @@ void CSGameState::InitializeHostageInfo()
 	m_haveSomeHostagesBeenTaken = false;
 
 	CBaseEntity *hostage = NULL;
-	while ((hostage = UTIL_FindEntityByClassname(hostage, "hostage_entity")) != NULL)
+	while ((hostage = UTIL_FindEntityByClassname(hostage, "hostage_entity")))
 	{
 		if (m_hostageCount >= MAX_HOSTAGES)
 			break;
 
-		if (hostage->pev->takedamage != DAMAGE_YES)
+		if (!hostage->IsAlive())
 			continue;
 
 		m_hostage[m_hostageCount].hostage = static_cast<CHostage *>(hostage);
@@ -338,7 +338,7 @@ CHostage *CSGameState::GetNearestFreeHostage(Vector *knowPos) const
 		if (m_owner->m_iTeam == CT)
 		{
 			// we know exactly where the hostages are, and if they are alive
-			if (!m_hostage[i].hostage || !m_hostage[i].hostage->IsValid())
+			if (!m_hostage[i].hostage || !m_hostage[i].hostage->IsAlive())
 				continue;
 
 			if (m_hostage[i].hostage->IsFollowingSomeone())
@@ -457,7 +457,7 @@ CSGameState::ValidateStatusType CSGameState::ValidateHostagePositions()
 		// if we can see a hostage, update our knowledge of it
 		if (m_owner->IsVisible(&info->hostage->pev->origin, CHECK_FOV))
 		{
-			if (info->hostage->pev->takedamage == DAMAGE_YES)
+			if (info->hostage->IsAlive())
 			{
 				// live hostage
 				// if hostage is being escorted by a CT, we don't "see" it, we see the CT
@@ -494,7 +494,7 @@ CSGameState::ValidateStatusType CSGameState::ValidateHostagePositions()
 		if (m_owner->IsVisible(&info->knownPos, CHECK_FOV))
 		{
 			// we can see where we thought the hostage was - verify it is still there and alive
-			if (info->hostage->pev->takedamage != DAMAGE_YES)
+			if (!info->hostage->IsAlive())
 			{
 				// since we have line of sight to an invalid hostage, it must be dead
 				// discovered that hostage has been killed
@@ -559,7 +559,7 @@ CHostage *CSGameState::GetNearestVisibleFreeHostage() const
 			continue;
 
 		// if the hostage is dead or rescued, its not free
-		if (info->hostage->pev->takedamage != DAMAGE_YES)
+		if (!info->hostage->IsAlive())
 			continue;
 
 		// if this hostage is following someone, its not free
@@ -591,7 +591,6 @@ bool CSGameState::AreAllHostagesBeingRescued() const
 		return false;
 
 	bool isAllDead = true;
-
 	for (int i = 0; i < m_hostageCount; ++i)
 	{
 		const HostageInfo *info = &m_hostage[i];
@@ -599,7 +598,7 @@ bool CSGameState::AreAllHostagesBeingRescued() const
 		if (m_owner->m_iTeam == CT)
 		{
 			// CT's have perfect knowledge via their radar
-			if (info->hostage != NULL && info->hostage->IsValid())
+			if (info->hostage && info->hostage->IsAlive())
 			{
 				if (!info->hostage->IsFollowingSomeone())
 					return false;
@@ -638,7 +637,7 @@ bool CSGameState::AreAllHostagesGone() const
 		if (m_owner->m_iTeam == CT)
 		{
 			// CT's have perfect knowledge via their radar
-			if (info->hostage->IsAlive())// == DAMAGE_YES)
+			if (info->hostage->IsAlive())
 				return false;
 		}
 		else

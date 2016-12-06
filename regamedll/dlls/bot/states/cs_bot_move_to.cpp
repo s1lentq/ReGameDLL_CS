@@ -172,7 +172,7 @@ void MoveToState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 				// Since CT's have a radar, they can directly look at the actual hostage state
 				// check if someone else collected our hostage, or the hostage died or was rescued
 				CHostage *hostage = static_cast<CHostage *>(me->GetGoalEntity());
-				if (hostage == NULL || !hostage->IsValid() || hostage->IsFollowingSomeone())
+				if (!hostage || !hostage->IsAlive() || hostage->IsFollowingSomeone())
 				{
 					me->Idle();
 					return;

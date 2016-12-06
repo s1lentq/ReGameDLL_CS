@@ -32,9 +32,6 @@
 #pragma once
 #endif
 
-// Improved the hostages from CZero
-#include "hostage/hostage_improv.h"
-
 #define MAX_NODES			100
 #define MAX_HOSTAGES			12
 #define MAX_HOSTAGES_NAV		20
@@ -80,6 +77,9 @@ enum HostageChatterType
 	NUM_HOSTAGE_CHATTER_TYPES,
 };
 
+// Improved the hostages from CZero
+#include "hostage/hostage_improv.h"
+
 extern CHostageManager *g_pHostages;
 extern int g_iHostageNumber;
 
@@ -94,8 +94,14 @@ public:
 	virtual void Precache();
 	virtual int ObjectCaps();		// make hostage "useable"
 	virtual int Classify() { return CLASS_HUMAN_PASSIVE; }
+	virtual void TraceAttack(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType);
 	virtual BOOL TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
 	virtual int BloodColor() { return BLOOD_COLOR_RED; }
+
+#ifndef REGAMEDLL_FIXES
+	virtual BOOL IsAlive() { return (pev->takedamage == DAMAGE_YES); }
+#endif
+
 	virtual void Touch(CBaseEntity *pOther);
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
@@ -160,10 +166,11 @@ public:
 
 		return true;
 	}
-	bool IsValid() { return (pev->takedamage == DAMAGE_YES); }
-	bool IsDead() { return (pev->deadflag == DEAD_DEAD); }
-	bool IsAtHome() { return (pev->origin - m_vStart).IsLengthGreaterThan(20) != true; }
-	const Vector *GetHomePosition() { return &m_vStart; }
+
+	bool IsValid() const { return (pev->takedamage == DAMAGE_YES); }
+	bool IsDead() const { return (pev->deadflag == DEAD_DEAD); }
+	bool IsAtHome() const { return (pev->origin - m_vStart).IsLengthGreaterThan(20) != true; }
+	const Vector *GetHomePosition() const { return &m_vStart; }
 
 public:
 	int m_Activity;

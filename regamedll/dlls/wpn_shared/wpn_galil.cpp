@@ -171,7 +171,7 @@ void CGalil::__MAKE_VHOOK(Reload)()
 		return;
 #endif
 
-	if (DefaultReload(GALIL_MAX_CLIP, GALIL_RELOAD, GALIL_RELOAD_TIME))
+	if (DefaultReload(iMaxClip(), GALIL_RELOAD, GALIL_RELOAD_TIME))
 	{
 		m_pPlayer->SetAnimation(PLAYER_RELOAD);
 

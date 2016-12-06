@@ -13,6 +13,7 @@
 **/msvc/*.user
 **/msvc/*.suo
 **/msvc/*.txt
+**/msvc/*.amplxeproj
 **/msvc/ipch
 
 regamedll/version/appversion.h

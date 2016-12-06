@@ -365,7 +365,7 @@ public:
 	virtual void AddPointsToTeam(int score, BOOL bAllowNegativeScore);
 	virtual BOOL AddPlayerItem(CBasePlayerItem *pItem);
 	virtual BOOL RemovePlayerItem(CBasePlayerItem *pItem);
-	virtual int GiveAmmo(int iAmount, char *szName, int iMax);
+	virtual int GiveAmmo(int iAmount, char *szName, int iMax = -1);
 	virtual void StartSneaking() { m_tSneaking = gpGlobals->time - 1; }
 
 #ifndef REGAMEDLL_FIXES
@@ -412,7 +412,7 @@ public:
 	void AddPointsToTeam_(int score, BOOL bAllowNegativeScore);
 	BOOL AddPlayerItem_(CBasePlayerItem *pItem);	
 	BOOL RemovePlayerItem_(CBasePlayerItem *pItem);
-	int GiveAmmo_(int iAmount,char *szName,int iMax);
+	int GiveAmmo_(int iAmount, char *szName, int iMax);
 	void ResetMaxSpeed_();
 	void Jump_();
 	void Duck_();
@@ -447,6 +447,7 @@ public:
 	int IsObserver() { return pev->iuser1; }
 	void PlantC4();
 	void Radio(const char *msg_id, const char *msg_verbose = NULL, short pitch = 100, bool showIcon = true);
+	void Radio_(const char *msg_id, const char *msg_verbose = NULL, short pitch = 100, bool showIcon = true);
 	CBasePlayer *GetNextRadioRecipient(CBasePlayer *pStartPlayer);
 	void SmartRadio();
 	void ThrowWeapon(char *pszItemName);
@@ -454,7 +455,9 @@ public:
 	void AddAccount(int amount, RewardType type = RT_NONE, bool bTrackChange = true);
 	void AddAccount_(int amount, RewardType type = RT_NONE, bool bTrackChange = true);
 	void Disappear();
+	void Disappear_();
 	void MakeVIP();
+	void MakeVIP_();
 	bool CanPlayerBuy(bool display = false);
 	void SwitchTeam();
 	void TabulateAmmo();
@@ -472,8 +475,8 @@ public:
 	void SetProgressBarTime(int time);
 	void SetProgressBarTime2(int time, float timeElapsed);
 	void SetPlayerModel(BOOL HasC4);
-	void SetClientUserInfoName(char *infobuffer, char *szNewName);
-	void SetClientUserInfoName_(char *infobuffer, char *szNewName);
+	bool SetClientUserInfoName(char *infobuffer, char *szNewName);
+	bool SetClientUserInfoName_(char *infobuffer, char *szNewName);
 	void SetClientUserInfoModel(char *infobuffer, char *szNewModel);
 	void SetClientUserInfoModel_api(char *infobuffer, char *szNewModel);
 	void SetNewPlayerModel(const char *modelName);
@@ -501,7 +504,8 @@ public:
 	void SetWeaponAnimType(const char *szExtention) { Q_strcpy(m_szAnimExtention, szExtention); }
 	void CheatImpulseCommands(int iImpulse);
 	void StartDeathCam();
-	void StartObserver(Vector vecPosition, Vector vecViewAngle);
+	void StartObserver(Vector &vecPosition, Vector &vecViewAngle);
+	void StartObserver_(Vector &vecPosition, Vector &vecViewAngle);
 	void HandleSignals();
 	void DropPlayerItem(const char *pszItemName);
 	void DropPlayerItem_(const char *pszItemName);
@@ -514,9 +518,9 @@ public:
 	void SelectItem(const char *pstr);
 	void ItemPreFrame();
 	void ItemPostFrame();
-	void GiveNamedItem(const char *pszName);
-	void GiveNamedItem_(const char *pszName);
-	void GiveNamedItemEx(const char *pszName);
+	CBaseEntity *GiveNamedItem(const char *pszName);
+	CBaseEntity *GiveNamedItem_(const char *pszName);
+	CBaseEntity *GiveNamedItemEx(const char *pszName);
 	void EnableControl(BOOL fControl);
 	bool HintMessage(const char *pMessage, BOOL bDisplayIfPlayerDead = FALSE, BOOL bOverride = FALSE);
 	void SendAmmoUpdate();
@@ -563,6 +567,7 @@ public:
 	bool IsProtectedByShield() { return HasShield() && m_bShieldDrawn; }
 	void RemoveShield();
 	void DropShield(bool bDeploy = true);
+	void DropShield_(bool bDeploy = true);
 	void GiveShield(bool bDeploy = true);
 	void GiveShield_(bool bDeploy = true);
 	bool IsHittingShield(Vector &vecDirection, TraceResult *ptr);
@@ -612,7 +617,17 @@ public:
 	void DropSecondary();
 	void DropPrimary();
 
+	void OnSpawnEquip(bool addDefault = true, bool equipGame = true);
+	void OnSpawnEquip_(bool addDefault = true, bool equipGame = true);
+
 	void RemoveBomb();
+	void HideTimer();
+	bool MakeBomber();
+	bool MakeBomber_();
+
+	bool GetIntoGame();
+	bool GetIntoGame_();
+
 	CBasePlayerItem *GetItemByName(const char *itemName);
 	CBasePlayerItem *GetItemById(WeaponIdType weaponID);
 
@@ -875,8 +890,7 @@ public:
 inline bool CBasePlayer::IsReloading() const
 {
 	CBasePlayerWeapon *weapon = static_cast<CBasePlayerWeapon *>(m_pActiveItem);
-
-	if (weapon != NULL && weapon->m_fInReload)
+	if (weapon && weapon->m_fInReload)
 		return true;
 
 	return false;
@@ -888,8 +902,27 @@ inline CCSPlayer *CBasePlayer::CSPlayer() const {
 }
 #endif
 
+#ifdef REGAMEDLL_FIXES
+
+// returns a CBaseEntity pointer to a player by index.  Only returns if the player is spawned and connected otherwise returns NULL
+// Index is 1 based
+inline CBasePlayer *UTIL_PlayerByIndex(int playerIndex)
+{
+	return (CBasePlayer *)GET_PRIVATE(INDEXENT(playerIndex));
+}
+
+#endif
+
+inline CBasePlayer *UTIL_PlayerByIndexSafe(int playerIndex)
+{
+	CBasePlayer *player = nullptr;
+	if (likely(playerIndex > 0 && playerIndex <= gpGlobals->maxClients))
+		player = UTIL_PlayerByIndex(playerIndex);
+
+	return player;
+}
+
 extern int gEvilImpulse101;
-extern char g_szMapBriefingText[512];
 extern entvars_t *g_pevLastInflictor;
 extern CBaseEntity *g_pLastSpawn;
 extern CBaseEntity *g_pLastCTSpawn;

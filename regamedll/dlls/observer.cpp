@@ -2,7 +2,7 @@
 
 LINK_HOOK_CHAIN(int, GetForceCamera, (CBasePlayer *pObserver), pObserver);
 
-int __API_HOOK(GetForceCamera)(CBasePlayer *pObserver)
+int EXT_FUNC __API_HOOK(GetForceCamera)(CBasePlayer *pObserver)
 {
 	int retVal;
 
@@ -21,7 +21,7 @@ int __API_HOOK(GetForceCamera)(CBasePlayer *pObserver)
 
 LINK_HOOK_CLASS_CHAIN(CBasePlayer *, CBasePlayer, Observer_IsValidTarget, (int iPlayerIndex, bool bSameTeam), iPlayerIndex, bSameTeam);
 
-CBasePlayer *CBasePlayer::__API_HOOK(Observer_IsValidTarget)(int iPlayerIndex, bool bSameTeam)
+CBasePlayer *EXT_FUNC CBasePlayer::__API_HOOK(Observer_IsValidTarget)(int iPlayerIndex, bool bSameTeam)
 {
 	if (iPlayerIndex > gpGlobals->maxClients || iPlayerIndex < 1)
 		return NULL;
@@ -266,8 +266,7 @@ void CBasePlayer::Observer_CheckTarget()
 
 		if (m_hObserverTarget)
 		{
-			int iPlayerIndex = ENTINDEX(m_hObserverTarget->edict());
-			CBasePlayer *target = UTIL_PlayerByIndex(iPlayerIndex);
+			CBasePlayer *target = UTIL_PlayerByIndex(m_hObserverTarget->entindex());
 
 			// check taget
 			if (!target || target->pev->deadflag == DEAD_RESPAWNABLE || (target->pev->effects & EF_NODRAW))
@@ -301,7 +300,7 @@ void CBasePlayer::Observer_CheckTarget()
 void CBasePlayer::Observer_CheckProperties()
 {
 	// try to find a traget if we have no current one
-	if (pev->iuser1 == OBS_IN_EYE && m_hObserverTarget != NULL)
+	if (pev->iuser1 == OBS_IN_EYE && m_hObserverTarget)
 	{
 		CBasePlayer *target = UTIL_PlayerByIndex(m_hObserverTarget->entindex());
 
@@ -488,9 +487,11 @@ void CBasePlayer::Observer_SetMode(int iMode)
 	if (m_hObserverTarget != NULL)
 		UTIL_SetOrigin(pev, m_hObserverTarget->pev->origin);
 
+#ifndef REGAMEDLL_FIXES
 	MESSAGE_BEGIN(MSG_ONE, gmsgCrosshair, NULL, pev);
 		WRITE_BYTE((iMode == OBS_ROAMING) != 0);
 	MESSAGE_END();
+#endif
 
 	UpdateClientEffects(this, oldMode);
 

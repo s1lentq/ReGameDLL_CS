@@ -40,13 +40,6 @@
 
 #define MAX_BOMB_RADIUS				2048
 
-#define MAP_VIP_SAFETYZONE_UNINITIALIZED	0	// uninitialized
-#define MAP_HAVE_VIP_SAFETYZONE_YES		1	// has VIP safety zone
-#define MAP_HAVE_VIP_SAFETYZONE_NO		2	// does not have VIP safetyzone
-
-#define MAP_HAS_CAMERAS_INIT			2	// initial
-#define MAP_HAS_CAMERAS_YES			1	// on map have of camera's
-
 #define ITEM_RESPAWN_TIME			30
 #define WEAPON_RESPAWN_TIME			20
 #define AMMO_RESPAWN_TIME			20
@@ -100,6 +93,8 @@ enum ScenarioEventEndRound
 	ROUND_TERRORISTS_NOT_ESCAPED,
 	ROUND_VIP_NOT_ESCAPED,
 	ROUND_GAME_COMMENCE,
+	ROUND_GAME_RESTART,
+	ROUND_GAME_OVER
 };
 
 enum RewardRules
@@ -207,13 +202,13 @@ enum
 // custom enum
 enum
 {
-	SCENARIO_BLOCK_TIME_EXPRIRED		= (1 << 0),
-	SCENARIO_BLOCK_NEED_PLAYERS		= (1 << 1),
-	SCENARIO_BLOCK_VIP_ESCAPRE		= (1 << 2),
-	SCENARIO_BLOCK_PRISON_ESCAPRE		= (1 << 3),
-	SCENARIO_BLOCK_BOMB			= (1 << 4),
-	SCENARIO_BLOCK_TEAM_EXTERMINATION	= (1 << 5),
-	SCENARIO_BLOCK_HOSTAGE_RESCUE		= (1 << 6),
+	SCENARIO_BLOCK_TIME_EXPRIRED		= (1 << 0),	// flag "a"
+	SCENARIO_BLOCK_NEED_PLAYERS		= (1 << 1),	// flag "b"
+	SCENARIO_BLOCK_VIP_ESCAPE		= (1 << 2),	// flag "c"
+	SCENARIO_BLOCK_PRISON_ESCAPE		= (1 << 3),	// flag "d"
+	SCENARIO_BLOCK_BOMB			= (1 << 4),	// flag "e"
+	SCENARIO_BLOCK_TEAM_EXTERMINATION	= (1 << 5),	// flag "f"
+	SCENARIO_BLOCK_HOSTAGE_RESCUE		= (1 << 6),	// flag "g"
 };
 
 // Player relationship return codes
@@ -346,12 +341,17 @@ public:
 
 #endif
 
+	// inline function's
+	inline bool IsGameOver() const { return m_bGameOver; }
+	inline void SetGameOver() { m_bGameOver = true; }
+
 public:
 	BOOL m_bFreezePeriod;				// TRUE at beginning of round, set to FALSE when the period expires
 	BOOL m_bBombDropped;
 
 	// custom
 	char *m_GameDesc;
+	bool m_bGameOver;				// intermission or finale (deprecated name g_fGameOver)
 };
 
 // CHalfLifeRules - rules for the single player Half-Life game.
@@ -676,7 +676,11 @@ public:
 	bool TeamExterminationCheck(int NumAliveTerrorist, int NumAliveCT, int NumDeadTerrorist, int NumDeadCT);
 
 	// for internal functions API
+	void OnRoundFreezeEnd();
+
+	bool RoundOver_internal(int winStatus, ScenarioEventEndRound event, float tmDelay);
 	bool NeededPlayersCheck_internal(int winStatus, ScenarioEventEndRound event, float tmDelay);
+	bool RestartRoundCheck_internal(int winStatus, ScenarioEventEndRound event, float tmDelay);
 
 	bool VIP_Escaped_internal(int winStatus, ScenarioEventEndRound event, float tmDelay);
 	bool VIP_Died_internal(int winStatus, ScenarioEventEndRound event, float tmDelay);
@@ -763,9 +767,10 @@ public:
 	bool IsFreeForAll() const;
 	bool HasRoundInfinite(int flags = 0) const;
 
-private:
 	VFUNC bool HasRoundTimeExpired();
 	VFUNC bool IsBombPlanted();
+
+private:
 	void MarkLivingPlayersOnTeamAsNotReceivingMoneyNextRound(int iTeam);
 
 public:
@@ -804,8 +809,8 @@ public:
 	bool m_bMapHasRescueZone;
 	bool m_bMapHasEscapeZone;
 
-	int m_iMapHasVIPSafetyZone;			// 0 = uninitialized;   1 = has VIP safety zone;   2 = DOES not have VIP safetyzone
-	int m_bMapHasCameras;
+	BOOL m_bMapHasVIPSafetyZone;			// TRUE = has VIP safety zone, FALSE = does not have VIP safetyzone
+	BOOL m_bMapHasCameras;
 	int m_iC4Timer;
 	int m_iC4Guy;					// The current Terrorist who has the C4.
 	int m_iLoserBonus;				// the amount of money the losing team gets. This scales up as they lose more rounds in a row
@@ -848,7 +853,7 @@ protected:
 	float m_flIntermissionStartTime;
 	BOOL m_iEndIntermissionButtonHit;
 	float m_tmNextPeriodicThink;
-	bool m_bFirstConnected;
+	bool m_bGameStarted;				// TRUE = the game commencing when there is at least one CT and T, FALSE = scoring will not start until both teams have players (deprecated name m_bFirstConnected)
 	bool m_bInCareerGame;
 	float m_fCareerRoundMenuTime;
 	int m_iCareerMatchWins;

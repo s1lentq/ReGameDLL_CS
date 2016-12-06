@@ -68,7 +68,6 @@ int MaxAmmoCarry(const char *szName)
 	for (int i = 0; i < MAX_WEAPONS; ++i)
 	{
 		ItemInfo *info = &IMPL_CLASS(CBasePlayerItem, ItemInfoArray)[ i ];
-
 		if (info->pszAmmo1 && !Q_strcmp(szName, info->pszAmmo1))
 		{
 			return info->iMaxAmmo1;
@@ -82,6 +81,11 @@ int MaxAmmoCarry(const char *szName)
 
 	ALERT(at_console, "MaxAmmoCarry() doesn't recognize '%s'!\n", szName);
 	return -1;
+}
+
+int MaxAmmoCarry(WeaponIdType weaponId)
+{
+	return IMPL_CLASS(CBasePlayerItem, ItemInfoArray)[ weaponId ].iMaxAmmo1;
 }
 
 int MaxAmmoCarry(int iszName)
@@ -152,7 +156,6 @@ void DecalGunshot(TraceResult *pTrace, int iBulletType, bool ClientOnly, entvars
 // EjectBrass - tosses a brass shell from passed origin at passed velocity
 void EjectBrass(const Vector &vecOrigin, const Vector &vecLeft, const Vector &vecVelocity, float rotation, int model, int soundtype, int entityIndex)
 {
-	//CBaseEntity *ent = UTIL_PlayerByIndex(entityIndex);	// unused
 	bool useNewBehavior = g_bIsCzeroGame;
 
 	MESSAGE_BEGIN(MSG_PVS, gmsgBrass, vecOrigin);
@@ -652,7 +655,9 @@ void CBasePlayerItem::DefaultTouch(CBaseEntity *pOther)
 	if (pOther->AddPlayerItem(this))
 	{
 		AttachToPlayer(pPlayer);
+#ifndef REGAMEDLL_FIXES
 		SetThink(NULL);
+#endif
 		EMIT_SOUND(ENT(pPlayer->pev), CHAN_ITEM, "items/gunpickup2.wav", VOL_NORM, ATTN_NORM);
 	}
 
@@ -945,7 +950,7 @@ void CBasePlayerWeapon::__MAKE_VHOOK(ItemPostFrame)()
 #ifdef REGAMEDLL_ADD
 		// Do not remove bpammo of the player,
 		// if cvar allows to refill bpammo on during reloading the weapons
-		if (refill_bpammo_weapons.value < 2.0f) {
+		if (refill_bpammo_weapons.value < 3.0f) {
 			m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] -= j;
 		}
 #else
@@ -1119,7 +1124,14 @@ void CBasePlayerItem::__MAKE_VHOOK(AttachToPlayer)(CBasePlayer *pPlayer)
 	pev->modelindex = 0;
 	pev->model = 0;
 	pev->owner = pPlayer->edict();
+
+#ifndef REGAMEDLL_FIXES
 	pev->nextthink = gpGlobals->time + 0.1f;
+#else
+	// Remove think - prevents futher attempts to materialize
+	pev->nextthink = 0;
+	SetThink(NULL);
+#endif
 
 	SetTouch(NULL);
 }
@@ -1630,7 +1642,7 @@ void CWeaponBox::BombThink()
 				WRITE_COORD(pev->origin.x);
 				WRITE_COORD(pev->origin.y);
 				WRITE_COORD(pev->origin.z);
-				WRITE_BYTE(0);
+				WRITE_BYTE(BOMB_FLAG_DROPPED);
 			MESSAGE_END();
 		}
 	}
@@ -1986,7 +1998,6 @@ int CWeaponBox::PackAmmo(int iszName, int iCount)
 	}
 
 	int iMaxCarry = MaxAmmoCarry(iszName);
-
 	if (iMaxCarry != -1 && iCount > 0)
 	{
 		GiveAmmo(iCount, (char *)STRING(iszName), iMaxCarry);
@@ -2345,7 +2356,7 @@ void CArmoury::ArmouryTouch(CBaseEntity *pOther)
 		{
 		case ARMOURY_FLASHBANG:
 		{
-			if (p->AmmoInventory(p->GetAmmoIndex("Flashbang")) >= MaxAmmoCarry("Flashbang"))
+			if (p->AmmoInventory(AMMO_FLASHBANG) >= MaxAmmoCarry(WEAPON_FLASHBANG))
 				return;
 
 			p->GiveNamedItem("weapon_flashbang");
@@ -2354,7 +2365,7 @@ void CArmoury::ArmouryTouch(CBaseEntity *pOther)
 		}
 		case ARMOURY_HEGRENADE:
 		{
-			if (p->AmmoInventory(p->GetAmmoIndex("HEGrenade")) >= MaxAmmoCarry("HEGrenade"))
+			if (p->AmmoInventory(AMMO_HEGRENADE) >= MaxAmmoCarry(WEAPON_HEGRENADE))
 				return;
 
 			p->GiveNamedItem("weapon_hegrenade");
@@ -2381,7 +2392,7 @@ void CArmoury::ArmouryTouch(CBaseEntity *pOther)
 		}
 		case ARMOURY_SMOKEGRENADE:
 		{
-			if (p->AmmoInventory(p->GetAmmoIndex("SmokeGrenade")) >= MaxAmmoCarry("SmokeGrenade"))
+			if (p->AmmoInventory(AMMO_SMOKEGRENADE) >= MaxAmmoCarry(WEAPON_SMOKEGRENADE))
 				return;
 
 			p->GiveNamedItem("weapon_smokegrenade");

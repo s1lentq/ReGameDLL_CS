@@ -262,8 +262,11 @@ public:
 #ifndef HOOK_GAMEDLL
 protected:
 #endif
+
+#ifndef REGAMEDLL_FIXES
 	// Do a "client command" - useful for invoking menu choices, etc.
 	void ClientCommand(const char *cmd, const char *arg1 = NULL, const char *arg2 = NULL, const char *arg3 = NULL);
+#endif
 
 	// the "personality" profile of this bot
 	const BotProfile *m_profile;

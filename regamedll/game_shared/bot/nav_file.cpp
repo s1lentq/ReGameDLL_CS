@@ -816,7 +816,6 @@ void SanityCheckNavigationMap(const char *mapName)
 		}
 
 		unsigned int bspSize = (unsigned int)GET_FILE_SIZE(bspFilename);
-
 		if (bspSize != saveBspSize)
 		{
 			// this nav file is out of date for this bsp file

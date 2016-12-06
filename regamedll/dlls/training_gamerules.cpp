@@ -95,7 +95,7 @@ void CHalfLifeTraining::__MAKE_VHOOK(PlayerThink)(CBasePlayer *pPlayer)
 	m_iHostagesRescued = 0;
 	m_iRoundTimeSecs = int(gpGlobals->time + 1.0f);
 	m_bFreezePeriod = FALSE;
-	g_fGameOver = FALSE;
+	m_bGameOver = false;
 
 	pPlayer->m_iTeam = CT;
 	pPlayer->m_bCanShoot = true;
@@ -253,8 +253,6 @@ void CHalfLifeTraining::__MAKE_VHOOK(PlayerKilled)(CBasePlayer *pVictim, entvars
 
 void CHalfLifeTraining::__MAKE_VHOOK(CheckWinConditions)()
 {
-	CBaseEntity *pHostage = NULL;
-
 	if (m_bBombDefused)
 	{
 		CGrenade *pBomb = NULL;
@@ -289,42 +287,26 @@ void CHalfLifeTraining::__MAKE_VHOOK(CheckWinConditions)()
 		}
 	}
 
-	pHostage = CBaseEntity::Instance(FIND_ENTITY_BY_CLASSNAME(NULL, "hostage_entity"));
-
-	while (pHostage)
+	CBaseEntity *pHostage = NULL;
+	while ((pHostage = UTIL_FindEntityByClassname(pHostage, "hostage_entity")))
 	{
 		if (pHostage->pev->deadflag != DEAD_RESPAWNABLE || !FStringNull(pHostage->pev->noise1))
 			continue;
 
 		UTIL_SetSize(pHostage->pev, Vector(-16, -16, 0), Vector(16, 16, 72));
 
-		CBaseEntity *pRescueArea;
-		CBaseEntity *pFirstRescueArea;
-
-		pFirstRescueArea = CBaseEntity::Instance(FIND_ENTITY_BY_CLASSNAME(NULL, "func_hostage_rescue"));
-		pRescueArea = pFirstRescueArea;
-
-		if (pFirstRescueArea)
+		CBaseEntity *pRescueArea = NULL;
+		while ((pRescueArea = UTIL_FindEntityByClassname(pRescueArea, "func_hostage_rescue")))
 		{
-			while (pRescueArea != pFirstRescueArea)
-			{
-				if (!pRescueArea->Intersects(pHostage))
-					break;
-
-				pRescueArea = UTIL_FindEntityByClassname(pRescueArea, "func_hostage_rescue");
-
-				if (!pRescueArea)
-					break;
-			}
-
-			if (pRescueArea != NULL)
-			{
-				pHostage->pev->noise1 = 1;
-				FireTargets(STRING(pRescueArea->pev->target), NULL, NULL, USE_TOGGLE, 0);
-			}
+			if (!pRescueArea->Intersects(pHostage))
+				break;
 		}
 
-		pHostage = UTIL_FindEntityByClassname(pHostage, "hostage_entity");
+		if (pRescueArea)
+		{
+			pHostage->pev->noise1 = 1;
+			FireTargets(STRING(pRescueArea->pev->target), NULL, NULL, USE_TOGGLE, 0);
+		}
 	}
 }
 

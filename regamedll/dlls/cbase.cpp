@@ -5,7 +5,7 @@
 */
 #ifndef HOOK_GAMEDLL
 
-static DLL_FUNCTIONS gFunctionTable =
+DLL_FUNCTIONS gFunctionTable =
 {
 	&GameDLLInit,
 	&DispatchSpawn,
@@ -59,7 +59,7 @@ static DLL_FUNCTIONS gFunctionTable =
 	&AllowLagCompensation
 };
 
-static NEW_DLL_FUNCTIONS gNewDLLFunctions =
+NEW_DLL_FUNCTIONS gNewDLLFunctions =
 {
 	&OnFreeEntPrivateData,
 	NULL,
@@ -79,7 +79,6 @@ TYPEDESCRIPTION	CBaseEntity::m_SaveData[] =
 };
 
 CMemoryPool hashItemMemPool(sizeof(hash_item_t), 64);
-BOOL gTouchDisabled = FALSE;
 
 #endif // HOOK_GAMEDLL
 
@@ -300,7 +299,7 @@ void REMOVE_ENTITY(edict_t *pEntity)
 {
 	if (pEntity)
 	{
-		(*g_engfuncs.pfnRemoveEntity)(pEntity);
+		g_engfuncs.pfnRemoveEntity(pEntity);
 	}
 }
 
@@ -329,16 +328,16 @@ void loopPerformance()
 	for (i = 0; i < 100; ++i)
 	{
 		CBaseEntity *pSpot;
-		for (pSpot = UTIL_FindEntityByString_Old(NULL, "classname", "info_player_start"); pSpot != NULL; pSpot = UTIL_FindEntityByString_Old(pSpot, "classname", "info_player_start"))
+		for (pSpot = UTIL_FindEntityByString_Old(NULL, "classname", "info_player_start"); pSpot; pSpot = UTIL_FindEntityByString_Old(pSpot, "classname", "info_player_start"))
 			;
 
-		for (pSpot = UTIL_FindEntityByString_Old(NULL, "classname", "info_player_deathmatch"); pSpot != NULL; pSpot = UTIL_FindEntityByString_Old(pSpot, "classname", "info_player_deathmatch"))
+		for (pSpot = UTIL_FindEntityByString_Old(NULL, "classname", "info_player_deathmatch"); pSpot; pSpot = UTIL_FindEntityByString_Old(pSpot, "classname", "info_player_deathmatch"))
 			;
 
-		for (pSpot = UTIL_FindEntityByString_Old(NULL, "classname", "player"); pSpot != NULL; pSpot = UTIL_FindEntityByString_Old(pSpot, "classname", "player"))
+		for (pSpot = UTIL_FindEntityByString_Old(NULL, "classname", "player"); pSpot; pSpot = UTIL_FindEntityByString_Old(pSpot, "classname", "player"))
 			;
 
-		for (pSpot = UTIL_FindEntityByString_Old(NULL, "classname", "bodyque"); pSpot != NULL; pSpot = UTIL_FindEntityByString_Old(pSpot, "classname", "bodyque"))
+		for (pSpot = UTIL_FindEntityByString_Old(NULL, "classname", "bodyque"); pSpot; pSpot = UTIL_FindEntityByString_Old(pSpot, "classname", "bodyque"))
 			;
 	}
 
@@ -351,16 +350,16 @@ void loopPerformance()
 	for (i = 0; i < 100; ++i)
 	{
 		CBaseEntity *pSpot;
-		for (pSpot = UTIL_FindEntityByString(NULL, "classname", "info_player_start"); pSpot != NULL; pSpot = UTIL_FindEntityByString(pSpot, "classname", "info_player_start"))
+		for (pSpot = UTIL_FindEntityByString(NULL, "classname", "info_player_start"); pSpot; pSpot = UTIL_FindEntityByString(pSpot, "classname", "info_player_start"))
 			;
 
-		for (pSpot = UTIL_FindEntityByString(NULL, "classname", "info_player_deathmatch"); pSpot != NULL; pSpot = UTIL_FindEntityByString(pSpot, "classname", "info_player_deathmatch"))
+		for (pSpot = UTIL_FindEntityByString(NULL, "classname", "info_player_deathmatch"); pSpot; pSpot = UTIL_FindEntityByString(pSpot, "classname", "info_player_deathmatch"))
 			;
 
-		for (pSpot = UTIL_FindEntityByString(NULL, "classname", "player"); pSpot != NULL; pSpot = UTIL_FindEntityByString(pSpot, "classname", "player"))
+		for (pSpot = UTIL_FindEntityByString(NULL, "classname", "player"); pSpot; pSpot = UTIL_FindEntityByString(pSpot, "classname", "player"))
 			;
 
-		for (pSpot = UTIL_FindEntityByString(NULL, "classname", "bodyque"); pSpot != NULL; pSpot = UTIL_FindEntityByString(pSpot, "classname", "bodyque"))
+		for (pSpot = UTIL_FindEntityByString(NULL, "classname", "bodyque"); pSpot; pSpot = UTIL_FindEntityByString(pSpot, "classname", "bodyque"))
 			;
 	}
 
@@ -482,7 +481,6 @@ void EXT_FUNC DispatchKeyValue(edict_t *pentKeyvalue, KeyValueData *pkvd)
 
 	// Get the actualy entity object
 	CBaseEntity *pEntity = (CBaseEntity *)GET_PRIVATE(pentKeyvalue);
-
 	if (!pEntity)
 		return;
 
@@ -493,9 +491,6 @@ void EXT_FUNC DispatchKeyValue(edict_t *pentKeyvalue, KeyValueData *pkvd)
 // while it builds the graph
 void EXT_FUNC DispatchTouch(edict_t *pentTouched, edict_t *pentOther)
 {
-	if (gTouchDisabled)
-		return;
-
 	CBaseEntity *pEntity = (CBaseEntity *)GET_PRIVATE(pentTouched);
 	CBaseEntity *pOther = (CBaseEntity *)GET_PRIVATE(pentOther);
 
@@ -712,7 +707,6 @@ int EXT_FUNC DispatchRestore(edict_t *pent, SAVERESTOREDATA *pSaveData, int glob
 void EXT_FUNC DispatchObjectCollsionBox(edict_t *pent)
 {
 	CBaseEntity *pEntity = (CBaseEntity *)GET_PRIVATE(pent);
-
 	if (pEntity)
 	{
 		pEntity->SetObjectCollisionBox();
@@ -865,7 +859,6 @@ CBaseEntity *CBaseEntity::__MAKE_VHOOK(GetNextTarget)()
 		return NULL;
 
 	edict_t *pTarget = FIND_ENTITY_BY_TARGETNAME(NULL, STRING(pev->target));
-
 	if (FNullEnt(pTarget))
 	{
 		return NULL;
@@ -886,10 +879,7 @@ int CBaseEntity::__MAKE_VHOOK(Save)(CSave &save)
 
 int CBaseEntity::__MAKE_VHOOK(Restore)(CRestore &restore)
 {
-	int status;
-
-	status = restore.ReadEntVars("ENTVARS", pev);
-
+	int status = restore.ReadEntVars("ENTVARS", pev);
 	if (status)
 	{
 		status = restore.ReadFields("BASE", this, IMPL(m_SaveData), ARRAYSIZE(IMPL(m_SaveData)));
@@ -978,18 +968,10 @@ int CBaseEntity::Intersects(CBaseEntity *pOther)
 void CBaseEntity::MakeDormant()
 {
 	pev->flags |= FL_DORMANT;
-
-	// Don't touch
-	pev->solid = SOLID_NOT;
-
-	// Don't move
-	pev->movetype = MOVETYPE_NONE;
-
-	// Don't draw
-	pev->effects |= EF_NODRAW;
-
-	// Don't think
-	pev->nextthink = 0;
+	pev->solid = SOLID_NOT;		// Don't touch
+	pev->movetype = MOVETYPE_NONE;	// Don't move
+	pev->effects |= EF_NODRAW;	// Don't draw
+	pev->nextthink = 0;		// Don't think
 
 	// Relink
 	UTIL_SetOrigin(pev, pev->origin);
@@ -1069,7 +1051,7 @@ CBaseEntity *CBaseEntity::Create(char *szName, const Vector &vecOrigin, const Ve
 	return pEntity;
 }
 
-void OnFreeEntPrivateData(edict_t *pEnt)
+void EXT_FUNC OnFreeEntPrivateData(edict_t *pEnt)
 {
 	CBaseEntity *pEntity = CBaseEntity::Instance(pEnt);
 	if (!pEntity)

@@ -142,6 +142,7 @@ public:
 };
 
 typedef std::STD_LIST<CNavLadder *> NavLadderList;
+extern NavLadderList TheNavLadderList;
 
 class HidingSpot
 {
@@ -189,6 +190,7 @@ private:
 };
 
 typedef std::STD_LIST<HidingSpot *> HidingSpotList;
+extern HidingSpotList TheHidingSpotList;
 
 struct SpotOrder
 {
@@ -551,6 +553,8 @@ private:
 		return y;
 	}
 };
+
+extern CNavAreaGrid TheNavAreaGrid;
 
 class ShortestPathCost
 {
@@ -1166,10 +1170,5 @@ int BuildArea(CNavNode *node, int width, int height);
 void BuildLadders();
 void MarkJumpAreas();
 void GenerateNavigationAreaMesh();
-
-extern NavLadderList TheNavLadderList;
-extern HidingSpotList TheHidingSpotList;
-extern NavAreaList TheNavAreaList;
-extern CNavAreaGrid TheNavAreaGrid;
 
 #endif // NAV_AREA_H

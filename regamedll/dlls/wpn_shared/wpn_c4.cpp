@@ -143,7 +143,7 @@ void CC4::__MAKE_VHOOK(PrimaryAttack)()
 					Broadcast("BOMBPL");
 					m_pPlayer->m_bHasC4 = false;
 
-					if (pev->speed != 0 && CSGameRules() != NULL)
+					if (pev->speed != 0 && CSGameRules())
 					{
 						CSGameRules()->m_iC4Timer = int(pev->speed);
 					}
@@ -162,16 +162,16 @@ void CC4::__MAKE_VHOOK(PrimaryAttack)()
 						WRITE_COORD(pBomb->pev->origin.x);
 						WRITE_COORD(pBomb->pev->origin.y);
 						WRITE_COORD(pBomb->pev->origin.z);
-						WRITE_BYTE(1);
+						WRITE_BYTE(BOMB_FLAG_PLANTED);
 					MESSAGE_END();
 
 					UTIL_ClientPrintAll(HUD_PRINTCENTER, "#Bomb_Planted");
-					if (TheBots != NULL)
+					if (TheBots)
 					{
 						TheBots->OnEvent(EVENT_BOMB_PLANTED, m_pPlayer, pBomb);
 					}
 
-					if (TheCareerTasks != NULL && CSGameRules()->IsCareer() && !m_pPlayer->IsBot())
+					if (TheCareerTasks && CSGameRules()->IsCareer() && !m_pPlayer->IsBot())
 					{
 						TheCareerTasks->HandleEvent(EVENT_BOMB_PLANTED, m_pPlayer);
 					}
@@ -302,19 +302,16 @@ void CC4::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 
 void CC4::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
-	if (m_pPlayer != NULL)
-	{
+	if (m_pPlayer)
 		return;
-	}
 
 	CBasePlayer *pPlayer = UTIL_PlayerByIndex(1);
-
-	if (pPlayer != NULL)
+	if (pPlayer)
 	{
 		edict_t *m_pentOldCurBombTarget = pPlayer->m_pentCurBombTarget;
 		pPlayer->m_pentCurBombTarget = NULL;
 
-		if (pev->speed != 0 && CSGameRules() != NULL)
+		if (pev->speed != 0 && CSGameRules())
 		{
 			CSGameRules()->m_iC4Timer = int(pev->speed);
 		}
@@ -324,7 +321,7 @@ void CC4::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_T
 		CGrenade::ShootSatchelCharge(m_pPlayer->pev, m_pPlayer->pev->origin, Vector(0, 0, 0));
 
 		CGrenade *pC4 = NULL;
-		while ((pC4 = (CGrenade *)UTIL_FindEntityByClassname(pC4, "grenade")) != NULL)
+		while ((pC4 = (CGrenade *)UTIL_FindEntityByClassname(pC4, "grenade")))
 		{
 			if (pC4->m_bIsC4 && pC4->m_flNextFreq == gpGlobals->time)
 			{

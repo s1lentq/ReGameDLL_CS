@@ -82,7 +82,7 @@ void MonitorTutorStatus()
 	{
 		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
-		if (pPlayer != NULL && !pPlayer->IsBot())
+		if (pPlayer && !pPlayer->IsBot())
 			++numHumans;
 	}
 

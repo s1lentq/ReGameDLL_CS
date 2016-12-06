@@ -320,7 +320,7 @@ public:
 	virtual void AddPointsToTeam(int score, BOOL bAllowNegativeScore) = 0;
 	virtual BOOL AddPlayerItem(CBasePlayerItem *pItem) = 0;
 	virtual BOOL RemovePlayerItem(CBasePlayerItem *pItem) = 0;
-	virtual int GiveAmmo(int iAmount, char *szName, int iMax) = 0;
+	virtual int GiveAmmo(int iAmount, char *szName, int iMax = -1) = 0;
 	virtual void StartSneaking() = 0;
 	virtual void UpdateOnRemove() = 0;
 	virtual BOOL IsSneaking() = 0;
@@ -598,8 +598,7 @@ public:
 inline bool CBasePlayer::IsReloading() const
 {
 	CBasePlayerWeapon *weapon = static_cast<CBasePlayerWeapon *>(m_pActiveItem);
-
-	if (weapon != NULL && weapon->m_fInReload)
+	if (weapon && weapon->m_fInReload)
 		return true;
 
 	return false;
@@ -607,4 +606,20 @@ inline bool CBasePlayer::IsReloading() const
 
 inline CCSPlayer *CBasePlayer::CSPlayer() const {
 	return reinterpret_cast<CCSPlayer *>(this->m_pEntity);
+}
+
+// returns a CBaseEntity pointer to a player by index.  Only returns if the player is spawned and connected otherwise returns NULL
+// Index is 1 based
+inline CBasePlayer *UTIL_PlayerByIndex(int playerIndex)
+{
+	return (CBasePlayer *)GET_PRIVATE(INDEXENT(playerIndex));
+}
+
+inline CBasePlayer *UTIL_PlayerByIndexSafe(int playerIndex)
+{
+	CBasePlayer *player = nullptr;
+	if (likely(playerIndex > 0 && playerIndex <= gpGlobals->maxClients))
+		player = UTIL_PlayerByIndex(playerIndex);
+
+	return player;
 }

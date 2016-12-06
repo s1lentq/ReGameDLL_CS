@@ -163,7 +163,7 @@ void CM249::__MAKE_VHOOK(Reload)()
 		return;
 #endif
 
-	if (DefaultReload(M249_MAX_CLIP, M249_RELOAD, M249_RELOAD_TIME))
+	if (DefaultReload(iMaxClip(), M249_RELOAD, M249_RELOAD_TIME))
 	{
 		m_pPlayer->SetAnimation(PLAYER_RELOAD);
 

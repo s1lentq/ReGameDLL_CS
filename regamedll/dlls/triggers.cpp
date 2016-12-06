@@ -1520,7 +1520,7 @@ NOXREF void NextLevel()
 		pChange = GetClassPtr<CCSChangeLevel>((CChangeLevel *)VARS(pent));
 
 	Q_strcpy(st_szNextMap, pChange->m_szMapName);
-	g_fGameOver = TRUE;
+	g_pGameRules->SetGameOver();
 
 	if (pChange->pev->nextthink < gpGlobals->time)
 	{
@@ -1817,7 +1817,7 @@ void CEscapeZone::EscapeTouch(CBaseEntity *pOther)
 			{
 				CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
-				if (pPlayer == NULL || FNullEnt(pPlayer->pev))
+				if (!pPlayer || FNullEnt(pPlayer->pev))
 					continue;
 
 				if (pPlayer->m_iTeam == p->m_iTeam)

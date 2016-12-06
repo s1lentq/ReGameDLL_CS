@@ -181,7 +181,7 @@ void CG3SG1::__MAKE_VHOOK(Reload)()
 	if (m_pPlayer->ammo_762nato <= 0)
 		return;
 
-	if (DefaultReload(G3SG1_MAX_CLIP, G3SG1_RELOAD, G3SG1_RELOAD_TIME))
+	if (DefaultReload(iMaxClip(), G3SG1_RELOAD, G3SG1_RELOAD_TIME))
 	{
 		m_flAccuracy = 0.2f;
 		m_pPlayer->SetAnimation(PLAYER_RELOAD);

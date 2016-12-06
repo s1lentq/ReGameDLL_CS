@@ -154,7 +154,7 @@ void CTMP::__MAKE_VHOOK(Reload)()
 		return;
 #endif
 
-	if (DefaultReload(TMP_MAX_CLIP, TMP_RELOAD, TMP_RELOAD_TIME))
+	if (DefaultReload(iMaxClip(), TMP_RELOAD, TMP_RELOAD_TIME))
 	{
 		m_pPlayer->SetAnimation(PLAYER_RELOAD);
 

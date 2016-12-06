@@ -237,19 +237,15 @@ void CUSP::__MAKE_VHOOK(Reload)()
 	if (m_pPlayer->ammo_45acp <= 0)
 		return;
 
-	int iResult;
+	int iAnim;
 	if (m_pPlayer->HasShield())
-	{
-		iResult = DefaultReload(USP_MAX_CLIP, USP_SHIELD_RELOAD, USP_RELOAD_TIME);
-	}
+		iAnim = USP_SHIELD_RELOAD;
 	else if (m_iWeaponState & WPNSTATE_USP_SILENCED)
-	{
-		iResult = DefaultReload(USP_MAX_CLIP, USP_RELOAD, USP_RELOAD_TIME);
-	}
+		iAnim = USP_RELOAD;
 	else
-		iResult = DefaultReload(USP_MAX_CLIP, USP_UNSIL_RELOAD, USP_RELOAD_TIME);
+		iAnim = USP_UNSIL_RELOAD;
 
-	if (iResult)
+	if (DefaultReload(iMaxClip(), iAnim, USP_RELOAD_TIME))
 	{
 		m_pPlayer->SetAnimation(PLAYER_RELOAD);
 		m_flAccuracy = 0.92f;

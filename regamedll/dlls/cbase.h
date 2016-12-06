@@ -252,7 +252,7 @@ public:
 	virtual void AddPointsToTeam(int score, BOOL bAllowNegativeScore) {}
 	virtual BOOL AddPlayerItem(CBasePlayerItem *pItem) { return FALSE; }
 	virtual BOOL RemovePlayerItem(CBasePlayerItem *pItem) { return FALSE; }
-	virtual int GiveAmmo(int iAmount, char *szName, int iMax) { return -1; }
+	virtual int GiveAmmo(int iAmount, char *szName, int iMax = -1) { return -1; }
 	virtual float GetDelay() { return 0.0f; }
 	virtual int IsMoving() { return (pev->velocity != g_vecZero); }
 	virtual void OverrideReset() {}
@@ -341,9 +341,17 @@ public:
 	BOOL IsLockedByMaster() { return FALSE; }
 
 public:
-	static CBaseEntity *Instance(edict_t *pent) { return (CBaseEntity *)GET_PRIVATE(pent ? pent : ENT(0)); }
+	static CBaseEntity *Instance(edict_t *pent)
+	{
+		if (!pent)
+			pent = ENT(0);
+
+		CBaseEntity *pEntity = (CBaseEntity *)GET_PRIVATE(pent);
+		return pEntity;
+	}
+
 	static CBaseEntity *Instance(entvars_t *pev) { return Instance(ENT(pev)); }
-	static CBaseEntity *Instance(int offset) { return Instance(ENT(offset)); }
+	static CBaseEntity *Instance(EOFFSET offset) { return Instance(ENT(offset)); }
 
 	CBaseMonster *GetMonsterPointer(entvars_t *pevMonster)
 	{
@@ -698,13 +706,13 @@ T *GetClassPtr(T *a)
 	entvars_t *pev = (entvars_t *)a;
 
 	// allocate entity if necessary
-	if (pev == NULL)
+	if (pev == nullptr)
 		pev = VARS(CREATE_ENTITY());
 
 	// get the private data
 	a = (T *)GET_PRIVATE(ENT(pev));
 
-	if (!a)
+	if (a == nullptr)
 	{
 		// allocate private data
 		a = new(pev) T;

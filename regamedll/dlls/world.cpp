@@ -69,6 +69,8 @@ TYPEDESCRIPTION gGlobalEntitySaveData[] =
 
 #endif // HOOK_GAMEDLL
 
+char g_szMapBriefingText[512];
+
 class CDecal: public CBaseEntity
 {
 public:
@@ -414,9 +416,45 @@ LINK_ENTITY_TO_CLASS(worldspawn, CWorld, CCSWorld);
 
 void CWorld::__MAKE_VHOOK(Spawn)()
 {
-	EmptyEntityHashTable();
-	g_fGameOver = FALSE;
+#ifdef REGAMEDLL_FIXES
+	static char szMapBriefingFile[64] = "";
 
+	EmptyEntityHashTable();
+	Precache();
+
+	g_flWeaponCheat = CVAR_GET_FLOAT("sv_cheats");
+	g_szMapBriefingText[0] = '\0';
+	Q_sprintf(szMapBriefingFile, "maps/%s.txt", STRING(gpGlobals->mapname));
+
+	int flength = 0;
+	char *pFile = (char *)LOAD_FILE_FOR_ME(szMapBriefingFile, &flength);
+
+	if (pFile && flength)
+	{
+		Q_strncpy(g_szMapBriefingText, pFile, ARRAYSIZE(g_szMapBriefingText) - 2);
+		g_szMapBriefingText[ ARRAYSIZE(g_szMapBriefingText) - 2 ] = '\0';
+
+		PRECACHE_GENERIC(szMapBriefingFile);
+	}
+	else
+	{
+		pFile = (char *)LOAD_FILE_FOR_ME("maps/default.txt", &flength);
+		if (pFile && flength)
+		{
+			Q_strncpy(g_szMapBriefingText, pFile, ARRAYSIZE(g_szMapBriefingText) - 2);
+			g_szMapBriefingText[ ARRAYSIZE(g_szMapBriefingText) - 2 ] = '\0';
+
+			PRECACHE_GENERIC("maps/default.txt");
+		}
+	}
+
+	if (pFile)
+	{
+		FREE_FILE(pFile);
+	}
+
+#else
+	EmptyEntityHashTable();
 	Precache();
 
 	g_flWeaponCheat = CVAR_GET_FLOAT("sv_cheats");
@@ -425,14 +463,9 @@ void CWorld::__MAKE_VHOOK(Spawn)()
 	int flength = 0;
 	char *pFile = (char *)LOAD_FILE_FOR_ME(UTIL_VarArgs("maps/%s.txt", STRING(gpGlobals->mapname)), &flength);
 
-	if (pFile != NULL && flength)
+	if (pFile && flength)
 	{
 		Q_strncpy(g_szMapBriefingText, pFile, ARRAYSIZE(g_szMapBriefingText) - 2);
-
-#ifdef REGAMEDLL_FIXES
-		g_szMapBriefingText[ ARRAYSIZE(g_szMapBriefingText) - 2 ] = '\0';
-#endif
-
 		PRECACHE_GENERIC(UTIL_VarArgs("maps/%s.txt", STRING(gpGlobals->mapname)));
 		FREE_FILE(pFile);
 	}
@@ -440,18 +473,14 @@ void CWorld::__MAKE_VHOOK(Spawn)()
 	{
 		pFile = (char *)LOAD_FILE_FOR_ME(UTIL_VarArgs("maps/default.txt"), &flength);
 
-		if (pFile != NULL && flength)
+		if (pFile && flength)
 		{
 			Q_strncpy(g_szMapBriefingText, pFile, ARRAYSIZE(g_szMapBriefingText) - 2);
-#ifdef REGAMEDLL_FIXES
-			g_szMapBriefingText[ ARRAYSIZE(g_szMapBriefingText) - 2 ] = '\0';
-#endif
-
 			PRECACHE_GENERIC(UTIL_VarArgs("maps/default.txt"));
+			FREE_FILE(pFile);
 		}
-
-		FREE_FILE(pFile);
 	}
+#endif
 }
 
 void CWorld::__MAKE_VHOOK(Precache)()
@@ -468,7 +497,7 @@ void CWorld::__MAKE_VHOOK(Precache)()
 	CVAR_SET_STRING("room_type", "0");
 
 	// Set up game rules
-	if (g_pGameRules != NULL)
+	if (g_pGameRules)
 	{
 		delete g_pGameRules;
 	}
@@ -642,11 +671,11 @@ void CWorld::__MAKE_VHOOK(Precache)()
 		}
 	}
 
-#ifndef REGAMEDLL_FIXES
+#ifdef REGAMEDLL_FIXES
 	if (!IS_DEDICATED_SERVER())
 #endif
 	{
-		// TODO: cvar v_dark there is only the client side
+		// NOTE: cvar v_dark refers for the client side
 		if (pev->spawnflags & SF_WORLD_DARK)
 			CVAR_SET_FLOAT("v_dark", 1);
 		else

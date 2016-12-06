@@ -154,7 +154,7 @@ void CMP5N::__MAKE_VHOOK(Reload)()
 	if (m_pPlayer->ammo_9mm <= 0)
 		return;
 
-	if (DefaultReload(MP5N_MAX_CLIP, MP5N_RELOAD, MP5N_RELOAD_TIME))
+	if (DefaultReload(iMaxClip(), MP5N_RELOAD, MP5N_RELOAD_TIME))
 	{
 		m_pPlayer->SetAnimation(PLAYER_RELOAD);
 

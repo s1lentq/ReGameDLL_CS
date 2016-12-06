@@ -81,7 +81,7 @@ public:
 	virtual void AddPointsToTeam(int score, BOOL bAllowNegativeScore) = 0;
 	virtual BOOL AddPlayerItem(CBasePlayerItem *pItem) = 0;
 	virtual BOOL RemovePlayerItem(CBasePlayerItem *pItem) = 0;
-	virtual int GiveAmmo(int iAmount, char *szName, int iMax) = 0;
+	virtual int GiveAmmo(int iAmount, char *szName, int iMax = -1) = 0;
 	virtual float GetDelay() = 0;
 	virtual int IsMoving() = 0;
 	virtual void OverrideReset() = 0;

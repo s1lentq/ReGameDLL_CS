@@ -113,6 +113,10 @@ cvar_t fraglimit = { "mp_fraglimit", "0", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t showtriggers = { "showtriggers", "0", 0, 0.0f, nullptr };				// debug cvar shows triggers
 												// TODO: Maybe it's better to register in the engine?
 
+cvar_t hostagehurtable = { "mp_hostage_hurtable", "1", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t roundover = { "mp_roundover", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t forcerespawn = { "mp_forcerespawn", "1", FCVAR_SERVER, 0.0f, nullptr };
+
 void GameDLL_Version_f()
 {
 	if (Q_stricmp(CMD_ARGV(1), "version") != 0)
@@ -147,12 +151,20 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&friendlyfire);
 	CVAR_REGISTER(&flashlight);
 	CVAR_REGISTER(&decalfrequency);
+
+#ifndef REGAMEDLL_FIXES
 	CVAR_REGISTER(&allowmonsters);
+#endif
+
 	CVAR_REGISTER(&roundtime);
 	CVAR_REGISTER(&buytime);
 	CVAR_REGISTER(&freezetime);
 	CVAR_REGISTER(&c4timer);
+
+#ifndef REGAMEDLL_FIXES
 	CVAR_REGISTER(&ghostfrequency);
+#endif
+
 	CVAR_REGISTER(&autokick);
 	CVAR_REGISTER(&autokick_timeout);
 	CVAR_REGISTER(&restartround);
@@ -247,6 +259,9 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&fraglimit);
 
 	CVAR_REGISTER(&showtriggers);
+	CVAR_REGISTER(&hostagehurtable);
+	CVAR_REGISTER(&roundover);
+	CVAR_REGISTER(&forcerespawn);
 
 	// print version
 	CONSOLE_ECHO("ReGameDLL build: " __TIME__ " " __DATE__ " (" APP_VERSION_STRD ")\n");

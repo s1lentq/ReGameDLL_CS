@@ -41,6 +41,7 @@
 #define HIDEHUD_TIMER			(1<<4)
 #define HIDEHUD_MONEY			(1<<5)
 #define HIDEHUD_CROSSHAIR		(1<<6)
+#define HIDEHUD_OBSERVER_CROSSHAIR	(1<<7)
 
 #define STATUSICON_HIDE			0
 #define STATUSICON_SHOW			1
@@ -68,10 +69,11 @@
 #define SIGNAL_ESCAPE			(1<<3)
 #define SIGNAL_VIPSAFETY		(1<<4)
 
-#define DATA_IUSER3_CANSHOOT		(1<<0)
-#define DATA_IUSER3_FREEZETIMEOVER	(1<<1)
-#define DATA_IUSER3_INBOMBZONE		(1<<2)
-#define DATA_IUSER3_HOLDINGSHIELD	(1<<3)
+// player data iuser3
+#define PLAYER_CAN_SHOOT		(1<<0)
+#define PLAYER_FREEZE_TIME_OVER		(1<<1)
+#define PLAYER_IN_BOMB_ZONE		(1<<2)
+#define PLAYER_HOLDING_SHIELD		(1<<3)
 
 #define MENU_KEY_1			(1<<0)
 #define MENU_KEY_2			(1<<1)

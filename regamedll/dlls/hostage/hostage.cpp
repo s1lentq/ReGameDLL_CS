@@ -411,7 +411,7 @@ void CHostage::IdleThink()
 				{
 					pSpot = NULL;
 
-					while ((pSpot = UTIL_FindEntityByClassname(pSpot, "info_player_start")) != NULL)
+					while ((pSpot = UTIL_FindEntityByClassname(pSpot, "info_player_start")))
 					{
 						if ((pSpot->pev->origin - pev->origin).Length() < RESCUE_HOSTAGES_RADIUS)
 						{
@@ -424,19 +424,19 @@ void CHostage::IdleThink()
 
 			if (m_bRescueMe)
 			{
-				if (TheBots != NULL)
+				if (TheBots)
 				{
 					TheBots->OnEvent(EVENT_HOSTAGE_RESCUED, player, this);
 				}
 
-				if (TheCareerTasks != NULL && CSGameRules()->IsCareer() && player != NULL && !player->IsBot())
+				if (TheCareerTasks && CSGameRules()->IsCareer() && player && !player->IsBot())
 				{
 					TheCareerTasks->HandleEvent(EVENT_HOSTAGE_RESCUED, player);
 				}
 
 				pev->deadflag = DEAD_RESPAWNABLE;
 
-				if (player != NULL)
+				if (player)
 				{
 					player->AddAccount(REWARD_TAKEN_HOSTAGE, RT_HOSTAGE_RESCUED);
 					UTIL_LogPrintf("\"%s<%i><%s><CT>\" triggered \"Rescued_A_Hostage\"\n", STRING(player->pev->netname),
@@ -564,6 +564,16 @@ void CHostage::RePosition()
 	m_flNextFullThink = gpGlobals->time + RANDOM_FLOAT(0.1, 0.2);
 }
 
+void CHostage::TraceAttack(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType)
+{
+#ifdef REGAMEDLL_ADD
+	if (hostagehurtable.value)
+#endif
+	{
+		CBaseMonster::TraceAttack(pevAttacker, flDamage, vecDir, ptr, bitsDamageType);
+	}
+}
+
 BOOL CHostage::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
 	float flActualDamage;
@@ -634,7 +644,7 @@ BOOL CHostage::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevA
 		pev->flags &= ~FL_ONGROUND;
 		SetDeathActivity();
 
-		if (pAttacker != NULL)
+		if (pAttacker)
 		{
 			pAttacker->AddAccount(20 * (-25 - int(flActualDamage)), RT_HOSTAGE_KILLED);
 			AnnounceDeath(pAttacker);
@@ -820,8 +830,13 @@ void CHostage::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, 
 	if (!pActivator->IsPlayer())
 		return;
 
+#ifdef REGAMEDLL_FIXES
+	if (!IsAlive())
+		return;
+#else
 	if (pev->takedamage == DAMAGE_NO)
 		return;
+#endif
 
 	CBasePlayer *pPlayer = (CBasePlayer *)pActivator;
 
@@ -1027,7 +1042,7 @@ void CHostage::DoFollow()
 		MoveToward(vecNodes[nTargetNode]);
 		m_bStuck = FALSE;
 	}
-	else if (pev->takedamage == DAMAGE_YES)
+	else if (IsAlive())
 	{
 		if (IsFollowingSomeone())
 		{
@@ -1370,7 +1385,7 @@ void CHostageManager::ServerActivate()
 	m_hostageCount = 0;
 
 	CBaseEntity *pEntity = NULL;
-	while ((pEntity = UTIL_FindEntityByClassname(pEntity, "hostage_entity")) != NULL)
+	while ((pEntity = UTIL_FindEntityByClassname(pEntity, "hostage_entity")))
 	{
 		AddHostage((CHostage *)pEntity);
 	}

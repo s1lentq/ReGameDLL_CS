@@ -135,7 +135,7 @@ void CM3::__MAKE_VHOOK(PrimaryAttack)()
 
 void CM3::__MAKE_VHOOK(Reload)()
 {
-	if (m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0 || m_iClip == M3_MAX_CLIP)
+	if (m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0 || m_iClip == iMaxClip())
 		return;
 
 	// don't reload until recoil is done
@@ -168,7 +168,7 @@ void CM3::__MAKE_VHOOK(Reload)()
 		++m_iClip;
 
 #ifdef REGAMEDLL_ADD
-		if (refill_bpammo_weapons.value < 2.0f)
+		if (refill_bpammo_weapons.value < 3.0f)
 #endif
 		{
 			--m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType];
@@ -197,7 +197,7 @@ void CM3::__MAKE_VHOOK(WeaponIdle)()
 		}
 		else if (m_fInSpecialReload != 0)
 		{
-			if (m_iClip != M3_MAX_CLIP && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType])
+			if (m_iClip != iMaxClip() && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType])
 			{
 				Reload();
 			}

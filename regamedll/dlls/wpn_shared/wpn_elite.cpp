@@ -192,7 +192,7 @@ void CELITE::__MAKE_VHOOK(Reload)()
 	if (m_pPlayer->ammo_9mm <= 0)
 		return;
 
-	if (DefaultReload(ELITE_MAX_CLIP, ELITE_RELOAD, ELITE_RELOAD_TIME))
+	if (DefaultReload(iMaxClip(), ELITE_RELOAD, ELITE_RELOAD_TIME))
 	{
 		m_pPlayer->SetAnimation(PLAYER_RELOAD);
 		m_flAccuracy = 0.88f;

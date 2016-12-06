@@ -172,7 +172,7 @@ void CP228::__MAKE_VHOOK(Reload)()
 	if (m_pPlayer->ammo_357sig <= 0)
 		return;
 
-	if (DefaultReload(P228_MAX_CLIP, m_pPlayer->HasShield() ? P228_SHIELD_RELOAD : P228_RELOAD, P228_RELOAD_TIME))
+	if (DefaultReload(iMaxClip(), m_pPlayer->HasShield() ? P228_SHIELD_RELOAD : P228_RELOAD, P228_RELOAD_TIME))
 	{
 		m_pPlayer->SetAnimation(PLAYER_RELOAD);
 		m_flAccuracy = 0.9f;

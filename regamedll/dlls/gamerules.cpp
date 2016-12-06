@@ -12,6 +12,10 @@ CGameRules *g_pGameRules = NULL;
 CGameRules::CGameRules()
 	: m_GameDesc()
 {
+	m_bFreezePeriod = FALSE;
+	m_bBombDropped = FALSE;
+	m_bGameOver = false;
+
 	m_GameDesc = new char[sizeof("Counter-Strike")];
 	Q_strcpy(m_GameDesc, AreRunningCZero() ? "Condition Zero" : "Counter-Strike");
 }
@@ -34,12 +38,9 @@ const char *CGameRules::GetGameDescription()
 
 BOOL CGameRules::__MAKE_VHOOK(CanHaveAmmo)(CBasePlayer *pPlayer, const char *pszAmmoName, int iMaxCarry)
 {
-	int iAmmoIndex;
-
-	if (pszAmmoName != NULL)
+	if (pszAmmoName)
 	{
-		iAmmoIndex = pPlayer->GetAmmoIndex(pszAmmoName);
-
+		auto iAmmoIndex = pPlayer->GetAmmoIndex(pszAmmoName);
 		if (iAmmoIndex > -1)
 		{
 			if (pPlayer->AmmoInventory(iAmmoIndex) < iMaxCarry)
@@ -138,7 +139,7 @@ void CGameRules::__MAKE_VHOOK(RefreshSkillData)()
 
 LINK_HOOK_CHAIN2(CGameRules *, InstallGameRules);
 
-CGameRules *__API_HOOK(InstallGameRules)()
+CGameRules *EXT_FUNC __API_HOOK(InstallGameRules)()
 {
 	SERVER_COMMAND("exec game.cfg\n");
 	SERVER_EXECUTE();

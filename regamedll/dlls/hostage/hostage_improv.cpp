@@ -42,7 +42,7 @@ bool CHostageImprov::__MAKE_VHOOK(GetSimpleGroundHeightWithFloor)(const Vector *
 	if (GetSimpleGroundHeight(pos, height, normal))
 	{
 		// our current nav area also serves as a ground polygon
-		if (m_lastKnownArea != NULL && m_lastKnownArea->IsOverlapping(pos))
+		if (m_lastKnownArea && m_lastKnownArea->IsOverlapping(pos))
 			*height = Q_max((*height), m_lastKnownArea->GetZ(pos));
 
 		return true;
@@ -314,11 +314,11 @@ bool CHostageImprov::__MAKE_VHOOK(IsFriendInTheWay)(const Vector &goalPos) const
 
 	CheckWayFunctor check(this, goalPos);
 
-	if (g_pHostages != NULL)
+	if (g_pHostages)
 	{
 		g_pHostages->ForEachHostage(check);
 
-		if (check.m_blocker != NULL)
+		if (check.m_blocker)
 		{
 			return m_isFriendInTheWay = true;
 		}
@@ -329,7 +329,7 @@ bool CHostageImprov::__MAKE_VHOOK(IsFriendInTheWay)(const Vector &goalPos) const
 	{
 		CBasePlayer *player = UTIL_PlayerByIndex(i);
 
-		if (player == NULL)
+		if (!player)
 			continue;
 
 		if (FNullEnt(player->pev))
@@ -646,7 +646,7 @@ void CHostageImprov::UpdateVision()
 	{
 		CBasePlayer *player = UTIL_PlayerByIndex(i);
 
-		if (player == NULL)
+		if (!player)
 			continue;
 
 		if (FNullEnt(player->pev))
@@ -780,12 +780,12 @@ bool CHostageImprov::__MAKE_VHOOK(TraverseLadder)(const CNavLadder *ladder, NavT
 	}
 	else
 	{
-		if (departPos != NULL)
+		if (departPos)
 		{
 			float closeRange = 1e6;
 			float range;
 
-			if (ladder->m_topForwardArea != NULL)
+			if (ladder->m_topForwardArea)
 			{
 				range = (*departPos - *ladder->m_topForwardArea->GetCenter()).LengthSquared();
 
@@ -800,7 +800,7 @@ bool CHostageImprov::__MAKE_VHOOK(TraverseLadder)(const CNavLadder *ladder, NavT
 					}
 				}
 			}
-			if (ladder->m_topLeftArea != NULL)
+			if (ladder->m_topLeftArea)
 			{
 				range = (*departPos - *ladder->m_topLeftArea->GetCenter()).LengthSquared();
 
@@ -814,7 +814,7 @@ bool CHostageImprov::__MAKE_VHOOK(TraverseLadder)(const CNavLadder *ladder, NavT
 					}
 				}
 			}
-			if (ladder->m_topRightArea != NULL)
+			if (ladder->m_topRightArea)
 			{
 				range = (*departPos - *ladder->m_topRightArea->GetCenter()).LengthSquared();
 
@@ -845,7 +845,7 @@ void CHostageImprov::UpdatePosition(float deltaT)
 {
 	CNavArea *area = TheNavAreaGrid.GetNavArea(&m_hostage->pev->origin);
 
-	if (area != NULL)
+	if (area)
 	{
 		m_lastKnownArea = area;
 	}
@@ -973,7 +973,7 @@ void CHostageImprov::UpdatePosition(float deltaT)
 	KeepPersonalSpace spacer(this);
 	ForEachPlayer(spacer);
 
-	if (g_pHostages != NULL)
+	if (g_pHostages)
 	{
 		g_pHostages->ForEachHostage(spacer);
 	}
@@ -1043,7 +1043,7 @@ void CHostageImprov::UpdateGrenadeReactions()
 
 		m_grenadeTimer.Start(RANDOM_FLOAT(0.4f, 0.6f));
 
-		while ((entity = UTIL_FindEntityInSphere(entity, GetCentroid(), watchGrenadeRadius)) != NULL)
+		while ((entity = UTIL_FindEntityInSphere(entity, GetCentroid(), watchGrenadeRadius)))
 		{
 			CGrenade *grenade = static_cast<CGrenade *>(entity);
 
@@ -1281,7 +1281,7 @@ void CHostageImprov::__MAKE_VHOOK(OnGameEvent)(GameEventType event, CBaseEntity 
 	PriorityType priority;
 	bool isHostile;
 
-	if (entity != NULL && IsGameEventAudible(event, entity, other, &range, &priority, &isHostile))
+	if (entity && IsGameEventAudible(event, entity, other, &range, &priority, &isHostile))
 	{
 		const float fudge = 0.4f;
 
@@ -1467,12 +1467,12 @@ bool CHostageImprov::IsAtHome() const
 
 bool CHostageImprov::CanSeeRescueZone() const
 {
-	if (TheCSBots() == NULL)
+	if (!TheCSBots())
 		return false;
 
 	const CCSBotManager::Zone *zone = TheCSBots()->GetClosestZone(&GetCentroid());
 
-	if (zone != NULL)
+	if (zone)
 		return IsVisible(zone->m_center);
 
 	return false;
@@ -1792,15 +1792,13 @@ void CHostageImprov::ClearPath()
 	if (result.flFraction == 1.0f)
 		return;
 
-	if (result.pHit != NULL)
+	if (result.pHit)
 	{
 		entvars_t *entity = VARS(result.pHit);
-
 		if (FClassnameIs(entity, "func_door") || FClassnameIs(entity, "func_door_rotating"))
 		{
 			CBaseEntity *pObject = CBaseEntity::Instance(entity);
-
-			if (pObject != NULL)
+			if (pObject)
 			{
 				pObject->Touch(m_hostage);
 			}
@@ -1808,8 +1806,7 @@ void CHostageImprov::ClearPath()
 		else if (FClassnameIs(entity, "func_breakable") && entity->takedamage == DAMAGE_YES)
 		{
 			CBaseEntity *pObject = CBaseEntity::Instance(entity);
-
-			if (pObject != NULL)
+			if (pObject)
 			{
 				pObject->TakeDamage(m_hostage->pev, m_hostage->pev, 9999.9, DMG_BULLET);
 			}

@@ -37,8 +37,6 @@
 #define FCAP_ONOFF_USE			0x00000020	// can be used by the player
 #define FCAP_DIRECTIONAL_USE		0x00000040	// Player sends +/- 1 when using (currently only tracktrains)
 #define FCAP_MASTER			0x00000080	// Can be used to "master" other entities (like multisource)
-#define FCAP_MUST_RESET			0x00000100	// should reset on the new round
-#define FCAP_MUST_RELEASE		0x00000200	// should release on the new round
 
 // UNDONE: This will ignore transition volumes (trigger_transition), but not the PVS!!!
 #define FCAP_FORCE_TRANSITION		0x00000080	// ALWAYS goes across transitions
