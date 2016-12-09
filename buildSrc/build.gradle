@@ -9,6 +9,9 @@ repositories {
 	maven {
 		url 'http://nexus.rehlds.org/nexus/content/repositories/regamedll-snapshots/'
 	}
+	maven {
+		url 'http://nexus.rehlds.org/nexus/content/repositories/regamedll-dev/'
+	}
 
 }
 

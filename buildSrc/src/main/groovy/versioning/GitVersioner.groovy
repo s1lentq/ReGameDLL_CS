@@ -1,8 +1,11 @@
 package versioning
 
+import java.util.Set;
+
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import org.eclipse.jgit.api.Git
+import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.lib.ObjectId
 import org.eclipse.jgit.lib.Repository
 import org.eclipse.jgit.lib.StoredConfig
@@ -26,18 +29,6 @@ class GitVersioner {
 		}
 
 		return count;
-	}
-	// return last commit excluding merge commit 
-	static RevCommit parseCommitLast(Repository repo) {
-		Iterable<RevCommit> commits = Git.wrap(repo).log().call()
-		for (RevCommit b : commits) {
-			if (b.getParents().length > 1) { // it's merge commit ignore it
-				continue;
-			}
-			return b;
-		}
-
-		return null;
 	}
 	static String prepareUrlToCommits(String url) {
 		if (url == null) {
@@ -64,24 +55,42 @@ class GitVersioner {
 		}
 		return sb.toString();
 	}
+	// check uncommited changes
+	static boolean getUncommittedChanges(Repository repo) {
+		Git git = new Git(repo);
+		Status status = git.status().call();
+
+		Set<String> uncommittedChanges = status.getUncommittedChanges();
+		for(String uncommitted : uncommittedChanges) {
+			return true;
+		}
+
+		return false;
+	}
 	static GitInfo versionForDir(File dir) {
-		FileRepositoryBuilder builder = new FileRepositoryBuilder()
+		FileRepositoryBuilder builder = new FileRepositoryBuilder();
 		Repository repo = builder.setWorkTree(dir)
 			.findGitDir()
 			.build()
 
-		ObjectId head = repo.resolve('HEAD')
+		ObjectId head = repo.resolve('HEAD');
 		if (!head) {
 			return null
 		}
 
 		final StoredConfig cfg = repo.getConfig();
-		def commit = new RevWalk(repo).parseCommit(head)
-		def commitLast = parseCommitLast(repo)
-		int commitCount = getCountCommit(repo)
+		def commit = new RevWalk(repo).parseCommit(head);
+		if (!commit) {
+			throw new RuntimeException("Can't find last commit.");
+		}
 
-		def branch = repo.getBranch()
-		def commitDate = new DateTime(1000L * commit.commitTime, DateTimeZone.UTC)
+		def localChanges = getUncommittedChanges(repo);
+		def commitDate = new DateTime(1000L * commit.commitTime, DateTimeZone.UTC);
+		if (localChanges) {
+			commitDate = new DateTime();
+		}
+
+		def branch = repo.getBranch();
 
 		String url = null;
 		String remote_name = cfg.getString("branch", branch, "remote");
@@ -99,31 +108,18 @@ class GitVersioner {
 			url = cfg.getString("remote", remote_name, "url");
 		}
 
-		println 'Debug: Start';
-		println '	cfg: (' + cfg + ')';
-		println '	branch: (' + branch + ')';
-		println '	remote_name: (' + remote_name + ')';
-		println '	url: (' + url + ')';
-		println 'Debug: End';
-
-		String urlCommits = prepareUrlToCommits(url);
-
-		if (!commit) {
-			throw new RuntimeException("Can't find last commit.")
-		}
-
+		String commitURL = prepareUrlToCommits(url);
 		String tag = repo.tags.find { kv -> kv.value.objectId == commit.id }?.key
-		String headCommitId = commit.getId().abbreviate(7).name();
-		String authorCommit = commitLast.getAuthorIdent().getName();
+		String commitSHA = commit.getId().abbreviate(7).name();
 
 		return new GitInfo(
-			lastCommitDate: commitDate,
+			localChanges: localChanges,
+			commitDate: commitDate,
 			branch: branch,
 			tag: tag,
-			countCommit: commitCount,
-			commitID: headCommitId,
-			authorCommit: authorCommit,
-			urlCommits: urlCommits
+			commitSHA: commitSHA,
+			commitURL: commitURL,
+			commitCount: getCountCommit(repo)
 		)
 	}
 }

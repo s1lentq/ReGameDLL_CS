@@ -1,6 +1,7 @@
 import gradlecpp.RegamedllPlayTestPlugin
 import gradlecpp.RegamedllPlayTestTask
 import gradlecpp.VelocityUtils
+
 import org.doomedsociety.gradlecpp.GradleCppUtils
 import org.doomedsociety.gradlecpp.LazyNativeDepSet
 import org.doomedsociety.gradlecpp.cfg.ToolchainConfig
@@ -377,11 +378,14 @@ task generateAppVersion {
 	def tplFile = project.file('version/appversion.vm')
 	def renderedFile = project.file('version/appversion.h')
 
+	// check to up-to-date
 	inputs.file tplFile
 	inputs.file project.file('gradle.properties')
 	outputs.file renderedFile
-	inputs.property('version', verInfo.asMavenVersion())
-	inputs.property('lastCommitDate', verInfo.lastCommitDate.toString())
+
+	// this will ensure that this task is redone when the versions change
+	inputs.property('version', rootProject.version)
+	inputs.property('commitDate', verInfo.asCommitDate())
 
 	doLast {
 		def templateCtx = [
@@ -389,10 +393,9 @@ task generateAppVersion {
 		]
 
 		def content = VelocityUtils.renderTemplate(tplFile, templateCtx)
-
 		renderedFile.delete()
 		renderedFile.write(content, 'utf-8')
 
-		println 'The current ReGameDLL version is ' + verInfo.asVersion().toString() + ', maven version is ' + verInfo.asMavenVersion().toString() + ', commit id: ' + verInfo.commitID.toString() + ', commit author: ' + verInfo.authorCommit.toString() + ', url: (' + verInfo.urlCommits.toString() + ')';
+		println 'The current ReGameDLL maven version is ' + rootProject.version + ', url: (' + verInfo.commitURL + '' + verInfo.commitSHA + ')';
 	}
 }

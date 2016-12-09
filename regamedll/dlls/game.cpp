@@ -97,7 +97,7 @@ cvar_t sk_scientist_heal3 = { "sk_scientist_heal3", "0", 0, 0.0f, NULL };
 
 #ifdef REGAMEDLL_ADD
 
-cvar_t game_version = { "game_version", APP_VERSION_STRD, FCVAR_SERVER, 0.0f, nullptr };
+cvar_t game_version = { "game_version", APP_VERSION, FCVAR_SERVER, 0.0f, nullptr };
 cvar_t maxmoney = { "mp_maxmoney", "16000", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t round_infinite = { "mp_round_infinite", "0", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t hegrenade_penetration = { "mp_hegrenade_penetration", "0", 0, 0.0f, nullptr };
@@ -123,9 +123,9 @@ void GameDLL_Version_f()
 		return;
 
 	// print version
-	CONSOLE_ECHO("ReGameDLL build: " __TIME__ " " __DATE__ " (" APP_VERSION_STRD ")\n");
-	CONSOLE_ECHO("ReGameDLL API version %i.%i\n", REGAMEDLL_API_VERSION_MAJOR, REGAMEDLL_API_VERSION_MINOR);
-	CONSOLE_ECHO("Build from: " APP_COMMITS_URL APP_COMMIT_ID " " APP_COMMIT_AUTHOR "\n");
+	CONSOLE_ECHO("ReGameDLL version: " APP_VERSION "\n");
+	CONSOLE_ECHO("Build date: " APP_COMMIT_TIME " " APP_COMMIT_DATE "\n");
+	CONSOLE_ECHO("Build from: " APP_COMMIT_URL APP_COMMIT_SHA "\n");
 }
 
 void GameDLL_EndRound_f()
@@ -264,8 +264,7 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&forcerespawn);
 
 	// print version
-	CONSOLE_ECHO("ReGameDLL build: " __TIME__ " " __DATE__ " (" APP_VERSION_STRD ")\n");
-	CONSOLE_ECHO("ReGameDLL API version %i.%i\n", REGAMEDLL_API_VERSION_MAJOR, REGAMEDLL_API_VERSION_MINOR);
+	CONSOLE_ECHO("ReGameDLL version: " APP_VERSION "\n");
 
 #endif // REGAMEDLL_ADD
 

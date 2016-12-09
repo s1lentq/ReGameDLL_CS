@@ -11,7 +11,6 @@ void _copyFile(String from, String to) {
 }
 
 task publishPrepareFiles {
-	//dependsOn ':flightrec/decoder:uberjar'
 	doLast {
 		def pubRootDir = project.file('publish/publishRoot')
 		if (pubRootDir.exists()) {
@@ -72,6 +71,11 @@ publishing {
 					resolveStrategy = DELEGATE_FIRST
 					name project.name
 					description project.description
+					properties {
+						commitDate project.ext.regamedllVersionInfo.commitDate
+						commitSHA project.ext.regamedllVersionInfo.commitSHA
+					}
+
 					//url github
 					//scm {
 					//    url "${github}.git"
@@ -79,17 +83,17 @@ publishing {
 					//}
 					/*
 					licenses {
-					license {
-					name 'The Apache Software License, Version 2.0'
-					url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-					distribution 'repo'
-					}
+						license {
+							name 'The Apache Software License, Version 2.0'
+							url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+							distribution 'repo'
+						}
 					}
 					developers {
-					developer {
-					id 'dreamstalker'
-					name 'dreamstalker'
-					}
+						developer {
+							id 'dreamstalker'
+							name 'dreamstalker'
+						}
 					}
 					*/
 				}
@@ -110,8 +114,8 @@ if (file('repo_creds.properties').exists()) {
 publishing {
 	repositories {
 		maven {
-			if (project.version.contains('SNAPSHOT')) {
-				url "http://nexus.rehlds.org/nexus/content/repositories/regamedll-snapshots/"
+			if (project.version.contains('dev')) {
+				url "http://nexus.rehlds.org/nexus/content/repositories/regamedll-dev/"
 			} else {
 				url "http://nexus.rehlds.org/nexus/content/repositories/regamedll-releases/"
 			}
@@ -127,6 +131,5 @@ task doPublish {
 	dependsOn 'publishPackage'
 	if (repoCreds.getProperty('username') && repoCreds.getProperty('password')) {
 		dependsOn 'publish'
-		//dependsOn ':flightrec/decoder_api:publish'
 	}
 }

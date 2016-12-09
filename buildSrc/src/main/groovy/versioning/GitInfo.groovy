@@ -6,11 +6,11 @@ import org.joda.time.DateTime
 
 @CompileStatic @TypeChecked
 class GitInfo {
-	DateTime lastCommitDate
+	boolean localChanges
+	DateTime commitDate
 	String branch
 	String tag
-	Integer countCommit
-	String commitID
-	String authorCommit
-	String urlCommits
+	String commitSHA
+	String commitURL
+	Integer commitCount
 }
