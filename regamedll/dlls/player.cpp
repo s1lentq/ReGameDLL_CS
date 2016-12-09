@@ -1369,11 +1369,11 @@ BOOL EXT_FUNC CBasePlayer::__API_VHOOK(TakeDamage)(entvars_t *pevInflictor, entv
 
 	// tell director about it
 	MESSAGE_BEGIN(MSG_SPEC, SVC_DIRECTOR);
-		WRITE_BYTE(9);			// command length in bytes
-		WRITE_BYTE(DRC_CMD_EVENT);	// take damage event
-		WRITE_SHORT(ENTINDEX(edict()));		// index number of primary entity
+		WRITE_BYTE(9);					// command length in bytes
+		WRITE_BYTE(DRC_CMD_EVENT);			// take damage event
+		WRITE_SHORT(ENTINDEX(edict()));			// index number of primary entity
 		WRITE_SHORT(ENTINDEX(ENT(pevInflictor)));	// index number of secondary entity
-		WRITE_LONG(5);			// eventflags (priority and flags)
+		WRITE_LONG(5);					// eventflags (priority and flags)
 	MESSAGE_END();
 
 	MESSAGE_BEGIN(MSG_SPEC, gmsgHLTV);
@@ -1395,6 +1395,12 @@ BOOL EXT_FUNC CBasePlayer::__API_VHOOK(TakeDamage)(entvars_t *pevInflictor, entv
 			MESSAGE_END();
 		}
 	}
+
+#ifdef REGAMEDLL_FIXES
+	if ((bitsDamageType & DMG_DROWN) && pev->waterlevel == 0) {
+		bitsDamageType &= ~DMG_DROWN;
+	}
+#endif
 
 	// Save this so we can report it to the client
 	m_bitsHUDDamage = -1;
@@ -2928,7 +2934,6 @@ void CBasePlayer::WaterMove()
 			m_rgbTimeBasedDamage[ itbd_DrownRecover ] = 0;
 			m_bitsDamageType |= DMG_DROWNRECOVER;
 			m_bitsDamageType &= ~DMG_DROWN;
-
 		}
 	}
 	else
@@ -2950,6 +2955,14 @@ void CBasePlayer::WaterMove()
 					pev->dmg = 5;
 
 				TakeDamage(VARS(eoNullEntity), VARS(eoNullEntity), pev->dmg, DMG_DROWN);
+
+#ifdef REGAMEDLL_FIXES
+				// NOTE: If we died after the damage of above and was followed respawn,
+				// so we should get out of code.
+				if (!(m_bitsDamageType & DMG_DROWN))
+					return;
+#endif
+
 				pev->pain_finished = gpGlobals->time + 1;
 
 				// track drowning damage, give it back when
@@ -5204,7 +5217,7 @@ void EXT_FUNC CBasePlayer::__API_VHOOK(Spawn)()
 
 	pev->flags &= FL_PROXY;
 	pev->flags |= FL_CLIENT;
-	pev->air_finished = gpGlobals->time + 12;
+	pev->air_finished = gpGlobals->time + AIRTIME;
 	pev->dmg = 2;
 	pev->effects = 0;
 	pev->deadflag = DEAD_NO;
@@ -5958,12 +5971,13 @@ CBaseEntity *CBasePlayer::GiveNamedItemEx(const char *pszName)
 	return (CBaseEntity *)GET_PRIVATE(pent);
 }
 
-CBaseEntity *FindEntityForward(CBaseEntity *pMe)
+CBaseEntity *FindEntityForward(CBaseEntity *pEntity)
 {
 	TraceResult tr;
+	Vector vecStart(pEntity->pev->origin + pEntity->pev->view_ofs);
 
-	UTIL_MakeVectors(pMe->pev->v_angle);
-	UTIL_TraceLine(pMe->pev->origin + pMe->pev->view_ofs, pMe->pev->origin + pMe->pev->view_ofs + gpGlobals->v_forward * 8192, dont_ignore_monsters, pMe->edict(), &tr);
+	UTIL_MakeVectors(pEntity->pev->v_angle);
+	UTIL_TraceLine(vecStart, vecStart + gpGlobals->v_forward * 8192, dont_ignore_monsters, pEntity->edict(), &tr);
 
 	if (tr.flFraction != 1.0f && !FNullEnt(tr.pHit))
 	{

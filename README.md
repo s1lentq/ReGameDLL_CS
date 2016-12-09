@@ -47,7 +47,7 @@ Archive's bin directory contains 2 subdirectories, 'bugfixed' and 'pure'
 * Enter '-bots' option at the command line HLDS
 
 ## Build instructions
-There are several software requirements for building rehlds:
+There are several software requirements for building Regamedll_CS:
 <ol>
 <li>Java Development Kit (JDK) 7+ (http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)</li>
 <li>For Windows: Visual Studio 2013 and later</li>
@@ -89,3 +89,7 @@ Compiled binaries will be placed in the build/binaries/ directory
 
 ### Credits
 Thanks to the project [ReHLDS](https://github.com/dreamstalker/rehlds) ( ReGameDLL_CS was created on the basis of ReHLDS )
+
+## How can I help the project?
+Just install it on your game server and report problems you faced
+Merge requests are also welcome :simple_smile:

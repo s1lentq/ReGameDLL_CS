@@ -1403,14 +1403,12 @@ bool CHalfLifeMultiplay::TeamExterminationCheck(int NumAliveTerrorist, int NumAl
 	{
 		if (NumAliveTerrorist == 0 && NumDeadTerrorist != 0 && NumAliveCT > 0)
 		{
-			CBaseEntity *temp = NULL;
+			CGrenade *pBomb = NULL;
 			bool nowin = false;
 
-			while ((temp = UTIL_FindEntityByClassname(temp, "grenade")))
+			while ((pBomb = (CGrenade *)UTIL_FindEntityByClassname(pBomb, "grenade")))
 			{
-				CGrenade *C4 = static_cast<CGrenade *>(temp);
-
-				if (C4->m_bIsC4 && !C4->m_bJustBlew)
+				if (pBomb->m_bIsC4 && !pBomb->m_bJustBlew)
 				{
 					nowin = true;
 #ifdef REGAMEDLL_FIXES
