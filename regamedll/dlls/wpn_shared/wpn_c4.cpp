@@ -20,7 +20,6 @@ void CC4::__MAKE_VHOOK(Spawn)()
 	{
 		pev->effects |= EF_NODRAW;
 		DROP_TO_FLOOR(edict());
-
 		return;
 	}
 

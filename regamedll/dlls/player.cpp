@@ -560,7 +560,6 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Radio)(const char *msg_id, const char *msg
 		{
 			// do this when spectator mode is in
 			int iSpecMode = pPlayer->IsObserver();
-
 			if (iSpecMode != OBS_CHASE_LOCKED && iSpecMode != OBS_CHASE_FREE && iSpecMode != OBS_IN_EYE)
 				continue;
 
@@ -633,7 +632,7 @@ void CBasePlayer::SmartRadio()
 	;
 }
 
-void CBasePlayer::Pain(int iLastHitGroup, bool HasArmour)
+void CBasePlayer::Pain(int iLastHitGroup, bool bHasArmour)
 {
 	int temp = RANDOM_LONG(0, 2);
 
@@ -647,8 +646,8 @@ void CBasePlayer::Pain(int iLastHitGroup, bool HasArmour)
 
 		switch (temp)
 		{
-		case 0: EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/headshot1.wav", VOL_NORM, ATTN_NORM); break;
-		case 1: EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/headshot2.wav", VOL_NORM, ATTN_NORM); break;
+		case 0:  EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/headshot1.wav", VOL_NORM, ATTN_NORM); break;
+		case 1:  EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/headshot2.wav", VOL_NORM, ATTN_NORM); break;
 		default: EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/headshot3.wav", VOL_NORM, ATTN_NORM); break;
 		}
 	}
@@ -656,7 +655,7 @@ void CBasePlayer::Pain(int iLastHitGroup, bool HasArmour)
 	{
 		if (iLastHitGroup != HITGROUP_LEFTLEG && iLastHitGroup != HITGROUP_RIGHTLEG)
 		{
-			if (HasArmour)
+			if (bHasArmour)
 			{
 				EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/bhit_kevlar-1.wav", VOL_NORM, ATTN_NORM);
 				return;
@@ -665,14 +664,14 @@ void CBasePlayer::Pain(int iLastHitGroup, bool HasArmour)
 
 		switch (temp)
 		{
-		case 0: EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/bhit_flesh-1.wav", VOL_NORM, ATTN_NORM); break;
-		case 1: EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/bhit_flesh-2.wav", VOL_NORM, ATTN_NORM); break;
+		case 0:  EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/bhit_flesh-1.wav", VOL_NORM, ATTN_NORM); break;
+		case 1:  EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/bhit_flesh-2.wav", VOL_NORM, ATTN_NORM); break;
 		default: EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/bhit_flesh-3.wav", VOL_NORM, ATTN_NORM); break;
 		}
 	}
 }
 
-Vector VecVelocityForDamage(float flDamage)
+NOXREF Vector VecVelocityForDamage(float flDamage)
 {
 	Vector vec(RANDOM_FLOAT(-100, 100), RANDOM_FLOAT(-100, 100), RANDOM_FLOAT(200, 300));
 
@@ -3286,7 +3285,7 @@ void CBasePlayer::SyncRoundTimer()
 
 	if (g_pGameRules->IsMultiplayer())
 	{
-		tmRemaining = CSGameRules()->GetRoundRemainingTime();
+		tmRemaining = CSGameRules()->GetRoundRemainingTimeReal();
 
 #ifdef REGAMEDLL_FIXES
 		// hide timer HUD because it is useless.
@@ -4875,10 +4874,10 @@ void EXT_FUNC CBasePlayer::__API_VHOOK(PostThink)()
 			{
 				float flFallDamage = g_pGameRules->FlPlayerFallDamage(this);
 
-				//splat
+				// splat
 				if (flFallDamage > pev->health)
 				{
-					// note: play on item channel because we play footstep landing on body channel
+					// NOTE: play on item channel because we play footstep landing on body channel
 					EMIT_SOUND(ENT(pev), CHAN_ITEM, "common/bodysplat.wav", VOL_NORM, ATTN_NORM);
 				}
 				if (flFallDamage > 0)
@@ -4926,7 +4925,7 @@ void EXT_FUNC CBasePlayer::__API_VHOOK(PostThink)()
 	StudioFrameAdvance();
 	CheckPowerups();
 
-	// s1lent: this is useless for CS 1.6
+	// NOTE: this is useless for CS 1.6 - s1lent
 #ifndef REGAMEDLL_FIXES
 	UpdatePlayerSound();
 #endif

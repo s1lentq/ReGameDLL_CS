@@ -552,6 +552,7 @@ public:
 	void MarkSpawnSkipped() { m_bSkipSpawn = false; }
 
 	float GetRoundRemainingTime() const { return m_iRoundTimeSecs - gpGlobals->time + m_fRoundStartTime; }
+	float GetRoundRemainingTimeReal() const { return m_iRoundTimeSecs - gpGlobals->time + m_fRoundStartTimeReal; }
 	float GetTimeLeft() const { return m_flTimeLimit - gpGlobals->time; }
 	bool IsMatchStarted() { return (m_flRestartRoundTime != 0.0f || m_fCareerRoundMenuTime != 0.0f || m_fCareerMatchMenuTime != 0.0f); }
 
@@ -565,7 +566,7 @@ public:
 	int m_iRoundTime;				// (From mp_roundtime) - How many seconds long this round is.
 	int m_iRoundTimeSecs;
 	int m_iIntroRoundTime;				// (From mp_freezetime) - How many seconds long the intro round (when players are frozen) is.
-	float m_fIntroRoundCount;			// The global time when the intro round ends and the real one starts
+	float m_fRoundStartTimeReal;			// The global time when the intro round ends and the real one starts
 							// wrote the original "m_flRoundTime" comment for this variable).
 	int m_iAccountTerrorist;
 	int m_iAccountCT;

@@ -461,7 +461,7 @@ public:
 	bool CanPlayerBuy(bool display = false);
 	void SwitchTeam();
 	void TabulateAmmo();
-	void Pain(int iLastHitGroup, bool HasArmour);
+	void Pain(int iLastHitGroup, bool bHasArmour);
 	BOOL IsBombGuy();
 	bool IsLookingAtPosition(Vector *pos, float angleTolerance = 20.0f);
 	void Reset();

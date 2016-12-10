@@ -44,6 +44,7 @@
 #define WEAPON_RESPAWN_TIME			20
 #define AMMO_RESPAWN_TIME			20
 #define ROUND_RESPAWN_TIME			20
+#define ROUND_BEGIN_DELAY			5	// delay before beginning new round
 
 // longest the intermission can last, in seconds
 #define MAX_INTERMISSION_TIME			120
@@ -727,6 +728,7 @@ public:
 	void MarkSpawnSkipped() { m_bSkipSpawn = false; }
 	void PlayerJoinedTeam(CBasePlayer *pPlayer) { }
 	float GetRoundRemainingTime() const { return m_iRoundTimeSecs - gpGlobals->time + m_fRoundStartTime; }
+	float GetRoundRemainingTimeReal() const;
 	float GetTimeLeft() const { return m_flTimeLimit - gpGlobals->time; }
 
 	BOOL TeamFull(int team_id);
@@ -783,7 +785,7 @@ public:
 	int m_iRoundTime;				// (From mp_roundtime) - How many seconds long this round is.
 	int m_iRoundTimeSecs;
 	int m_iIntroRoundTime;				// (From mp_freezetime) - How many seconds long the intro round (when players are frozen) is.
-	float m_fIntroRoundCount;			// The global time when the intro round ends and the real one starts
+	float m_fRoundStartTimeReal;			// The global time when the intro round ends and the real one starts
 							// wrote the original "m_flRoundTime" comment for this variable).
 	int m_iAccountTerrorist;
 	int m_iAccountCT;
@@ -915,6 +917,15 @@ inline void CHalfLifeMultiplay::TerminateRound(float tmDelay, int iWinStatus)
 	m_iRoundWinStatus = iWinStatus;
 	m_flRestartRoundTime = gpGlobals->time + tmDelay;
 	m_bRoundTerminating = true;
+}
+
+inline float CHalfLifeMultiplay::GetRoundRemainingTimeReal() const
+{
+#ifdef REGAMEDLL_FIXES
+	return m_iRoundTimeSecs - gpGlobals->time + m_fRoundStartTimeReal;
+#else
+	return GetRoundRemainingTime();
+#endif
 }
 
 inline float CHalfLifeMultiplay::GetRoundRespawnTime() const

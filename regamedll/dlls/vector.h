@@ -366,14 +366,6 @@ inline Vector CrossProduct(const Vector &a, const Vector &b)
 	return Vector(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
 }
 
-template<class T>
-inline void SWAP(T &first, T &second)
-{
-	T temp = first;
-	first = second;
-	second = temp;
-}
-
 template<
 	typename X,
 	typename Y,

@@ -500,7 +500,12 @@ CHalfLifeMultiplay::CHalfLifeMultiplay()
 	ReadMultiplayCvars();
 
 	m_iIntroRoundTime += 2;
-	m_fMaxIdlePeriod = m_iRoundTime * 2;
+
+#ifdef REGAMEDLL_FIXES
+	m_fMaxIdlePeriod = (((m_iRoundTime < 60) ? 60 : m_iRoundTime) * 2);
+#else
+	m_fMaxIdlePeriod = (m_iRoundTime * 2);
+#endif
 
 	float flAutoKickIdle = autokick_timeout.value;
 	if (flAutoKickIdle > 0.0)
@@ -547,7 +552,7 @@ CHalfLifeMultiplay::CHalfLifeMultiplay()
 	}
 
 	m_fRoundStartTime = 0;
-	m_fIntroRoundCount = 0;
+	m_fRoundStartTimeReal = 0;
 
 #ifndef CSTRIKE
 	InstallBotControl();
@@ -925,9 +930,15 @@ void EXT_FUNC CHalfLifeMultiplay::__API_VHOOK(CheckWinConditions)()
 	if (HasRoundInfinite())
 		return;
 
+#ifdef REGAMEDLL_FIXES
+	// If a winner has already been determined.. then get the heck out of here
+	if (m_iRoundWinStatus != WINNER_NONE)
+		return;
+#else
 	// If a winner has already been determined and game of started.. then get the heck out of here
 	if (m_bGameStarted && m_iRoundWinStatus != WINNER_NONE)
 		return;
+#endif
 
 #ifdef REGAMEDLL_ADD
 	int scenarioFlags = UTIL_ReadFlags(round_infinite.string);
@@ -1173,12 +1184,12 @@ bool CHalfLifeMultiplay::VIPRoundEndCheck()
 	{
 		if (m_pVIP->m_bEscaped)
 		{
-			return g_ReGameHookchains.m_RoundEnd.callChain(&CHalfLifeMultiplay::VIP_Escaped_internal, this, WINSTATUS_CTS, ROUND_VIP_ESCAPED, 5);
+			return g_ReGameHookchains.m_RoundEnd.callChain(&CHalfLifeMultiplay::VIP_Escaped_internal, this, WINSTATUS_CTS, ROUND_VIP_ESCAPED, ROUND_BEGIN_DELAY);
 		}
 		// The VIP is dead
 		else if (m_pVIP->pev->deadflag != DEAD_NO)
 		{
-			return g_ReGameHookchains.m_RoundEnd.callChain(&CHalfLifeMultiplay::VIP_Died_internal, this, WINSTATUS_TERRORISTS, ROUND_VIP_ASSASSINATED, 5);
+			return g_ReGameHookchains.m_RoundEnd.callChain(&CHalfLifeMultiplay::VIP_Died_internal, this, WINSTATUS_TERRORISTS, ROUND_VIP_ASSASSINATED, ROUND_BEGIN_DELAY);
 		}
 	}
 
@@ -1265,15 +1276,15 @@ bool CHalfLifeMultiplay::PrisonRoundEndCheck(int NumAliveTerrorist, int NumAlive
 
 		if (m_flEscapeRatio >= m_flRequiredEscapeRatio)
 		{
-			return g_ReGameHookchains.m_RoundEnd.callChain(&CHalfLifeMultiplay::Prison_Escaped_internal, this, WINSTATUS_TERRORISTS, ROUND_TERRORISTS_ESCAPED, 5);
+			return g_ReGameHookchains.m_RoundEnd.callChain(&CHalfLifeMultiplay::Prison_Escaped_internal, this, WINSTATUS_TERRORISTS, ROUND_TERRORISTS_ESCAPED, ROUND_BEGIN_DELAY);
 		}
 		else if (NumAliveTerrorist == 0 && m_flEscapeRatio < m_flRequiredEscapeRatio)
 		{
-			return g_ReGameHookchains.m_RoundEnd.callChain(&CHalfLifeMultiplay::Prison_PreventEscape_internal, this, WINSTATUS_CTS, ROUND_CTS_PREVENT_ESCAPE, 5);
+			return g_ReGameHookchains.m_RoundEnd.callChain(&CHalfLifeMultiplay::Prison_PreventEscape_internal, this, WINSTATUS_CTS, ROUND_CTS_PREVENT_ESCAPE, ROUND_BEGIN_DELAY);
 		}
 		else if (NumAliveTerrorist == 0 && NumDeadTerrorist != 0 && m_iNumSpawnableCT > 0)
 		{
-			return g_ReGameHookchains.m_RoundEnd.callChain(&CHalfLifeMultiplay::Prison_Neutralized_internal, this, WINSTATUS_CTS, ROUND_ESCAPING_TERRORISTS_NEUTRALIZED, 5);
+			return g_ReGameHookchains.m_RoundEnd.callChain(&CHalfLifeMultiplay::Prison_Neutralized_internal, this, WINSTATUS_CTS, ROUND_ESCAPING_TERRORISTS_NEUTRALIZED, ROUND_BEGIN_DELAY);
 		}
 		// else return true;
 	}
@@ -1333,11 +1344,11 @@ bool CHalfLifeMultiplay::BombRoundEndCheck()
 	// Check to see if the bomb target was hit or the bomb defused.. if so, then let's end the round!
 	if (m_bTargetBombed && m_bMapHasBombTarget)
 	{
-		return g_ReGameHookchains.m_RoundEnd.callChain(&CHalfLifeMultiplay::Target_Bombed_internal, this, WINSTATUS_TERRORISTS, ROUND_TARGET_BOMB, 5);
+		return g_ReGameHookchains.m_RoundEnd.callChain(&CHalfLifeMultiplay::Target_Bombed_internal, this, WINSTATUS_TERRORISTS, ROUND_TARGET_BOMB, ROUND_BEGIN_DELAY);
 	}
 	else if (m_bBombDefused && m_bMapHasBombTarget)
 	{
-		return g_ReGameHookchains.m_RoundEnd.callChain(&CHalfLifeMultiplay::Target_Defused_internal, this, WINSTATUS_CTS, ROUND_BOMB_DEFUSED, 5);
+		return g_ReGameHookchains.m_RoundEnd.callChain(&CHalfLifeMultiplay::Target_Defused_internal, this, WINSTATUS_CTS, ROUND_BOMB_DEFUSED, ROUND_BEGIN_DELAY);
 	}
 
 	return false;
@@ -1419,19 +1430,19 @@ bool CHalfLifeMultiplay::TeamExterminationCheck(int NumAliveTerrorist, int NumAl
 
 			if (!nowin)
 			{
-				return g_ReGameHookchains.m_RoundEnd.callChain(&CHalfLifeMultiplay::Round_Cts_internal, this, WINSTATUS_CTS, ROUND_CTS_WIN, 5);
+				return g_ReGameHookchains.m_RoundEnd.callChain(&CHalfLifeMultiplay::Round_Cts_internal, this, WINSTATUS_CTS, ROUND_CTS_WIN, ROUND_BEGIN_DELAY);
 			}
 		}
 
 		// Terrorists WON
 		else if (NumAliveCT == 0 && NumDeadCT != 0)
 		{
-			return g_ReGameHookchains.m_RoundEnd.callChain(&CHalfLifeMultiplay::Round_Ts_internal, this, WINSTATUS_TERRORISTS, ROUND_TERRORISTS_WIN, 5);
+			return g_ReGameHookchains.m_RoundEnd.callChain(&CHalfLifeMultiplay::Round_Ts_internal, this, WINSTATUS_TERRORISTS, ROUND_TERRORISTS_WIN, ROUND_BEGIN_DELAY);
 		}
 	}
 	else if (NumAliveCT == 0 && NumAliveTerrorist == 0)
 	{
-		return g_ReGameHookchains.m_RoundEnd.callChain(&CHalfLifeMultiplay::Round_Draw_internal, this, WINSTATUS_DRAW, ROUND_END_DRAW, 5);
+		return g_ReGameHookchains.m_RoundEnd.callChain(&CHalfLifeMultiplay::Round_Draw_internal, this, WINSTATUS_DRAW, ROUND_END_DRAW, ROUND_BEGIN_DELAY);
 	}
 
 	return false;
@@ -1499,7 +1510,7 @@ bool CHalfLifeMultiplay::HostageRescueRoundEndCheck()
 	{
 		if (m_iHostagesRescued >= (iHostages * 0.5f))
 		{
-			return g_ReGameHookchains.m_RoundEnd.callChain(&CHalfLifeMultiplay::Hostage_Rescue_internal, this, WINSTATUS_CTS, ROUND_ALL_HOSTAGES_RESCUED, 5);
+			return g_ReGameHookchains.m_RoundEnd.callChain(&CHalfLifeMultiplay::Hostage_Rescue_internal, this, WINSTATUS_CTS, ROUND_ALL_HOSTAGES_RESCUED, ROUND_BEGIN_DELAY);
 		}
 	}
 
@@ -1813,7 +1824,11 @@ void EXT_FUNC CHalfLifeMultiplay::__API_VHOOK(RestartRound)()
 	if (flAutoKickIdle > 0)
 		m_fMaxIdlePeriod = flAutoKickIdle;
 	else
+#ifdef REGAMEDLL_FIXES
+		m_fMaxIdlePeriod = (((m_iRoundTime < 60) ? 60 : m_iRoundTime) * 2);
+#else
 		m_fMaxIdlePeriod = (m_iRoundTime * 2);
+#endif
 
 	// This makes the round timer function as the intro timer on the client side
 	m_iRoundTimeSecs = m_iIntroRoundTime;
@@ -1929,7 +1944,7 @@ void EXT_FUNC CHalfLifeMultiplay::__API_VHOOK(RestartRound)()
 	// Update individual players accounts and respawn players
 
 	// the round time stamp must be set before players are spawned
-	m_fIntroRoundCount = m_fRoundStartTime = gpGlobals->time;
+	m_fRoundStartTime = m_fRoundStartTimeReal = gpGlobals->time;
 
 	// Adrian - No cash for anyone at first rounds! ( well, only the default. )
 	if (m_bCompleteReset)
@@ -2361,7 +2376,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(Think)()
 	if (!m_fRoundStartTime)
 	{
 		// initialize the timer time stamps, this happens once only
-		m_fIntroRoundCount = m_fRoundStartTime = gpGlobals->time;
+		m_fRoundStartTime = m_fRoundStartTimeReal = gpGlobals->time;
 	}
 
 	if (m_flForceCameraValue != forcecamera.value
@@ -2828,7 +2843,18 @@ bool CHalfLifeMultiplay::Target_Saved_internal(int winStatus, ScenarioEventEndRo
 
 	Broadcast("ctwin");
 	m_iAccountCT += m_rgRewardAccountRules[RR_TARGET_BOMB_SAVED];
+
+#ifdef REGAMEDLL_FIXES
+	if (!m_bNeededPlayers)
+	{
+		m_iNumCTWins++;
+
+		// Update the clients team score
+		UpdateTeamScores();
+	}
+#else
 	m_iNumCTWins++;
+#endif
 
 	EndRoundMessage("#Target_Saved", event);
 	TerminateRound(tmDelay, winStatus);
@@ -2838,9 +2864,10 @@ bool CHalfLifeMultiplay::Target_Saved_internal(int winStatus, ScenarioEventEndRo
 		QueueCareerRoundEndMenu(tmDelay, winStatus);
 	}
 
+#ifndef REGAMEDLL_FIXES
 	UpdateTeamScores();
+#endif
 	MarkLivingPlayersOnTeamAsNotReceivingMoneyNextRound(TERRORIST);
-
 	return true;
 }
 
@@ -2848,7 +2875,18 @@ bool CHalfLifeMultiplay::Hostage_NotRescued_internal(int winStatus, ScenarioEven
 
 	Broadcast("terwin");
 	m_iAccountTerrorist += m_rgRewardAccountRules[RR_HOSTAGE_NOT_RESCUED];
+
+#ifdef REGAMEDLL_FIXES
+	if (!m_bNeededPlayers)
+	{
+		m_iNumTerroristWins++;
+
+		// Update the clients team score
+		UpdateTeamScores();
+	}
+#else
 	m_iNumTerroristWins++;
+#endif
 
 	EndRoundMessage("#Hostages_Not_Rescued", event);
 	TerminateRound(tmDelay, winStatus);
@@ -2858,7 +2896,9 @@ bool CHalfLifeMultiplay::Hostage_NotRescued_internal(int winStatus, ScenarioEven
 		QueueCareerRoundEndMenu(tmDelay, winStatus);
 	}
 
+#ifndef REGAMEDLL_FIXES
 	UpdateTeamScores();
+#endif
 	MarkLivingPlayersOnTeamAsNotReceivingMoneyNextRound(CT);
 	return true;
 }
@@ -2866,7 +2906,18 @@ bool CHalfLifeMultiplay::Hostage_NotRescued_internal(int winStatus, ScenarioEven
 bool CHalfLifeMultiplay::Prison_NotEscaped_internal(int winStatus, ScenarioEventEndRound event, float tmDelay) {
 
 	Broadcast("ctwin");
+
+#ifdef REGAMEDLL_FIXES
+	if (!m_bNeededPlayers)
+	{
+		m_iNumCTWins++;
+
+		// Update the clients team score
+		UpdateTeamScores();
+	}
+#else
 	m_iNumCTWins++;
+#endif
 
 	EndRoundMessage("#Terrorists_Not_Escaped", event);
 	TerminateRound(tmDelay, winStatus);
@@ -2876,7 +2927,9 @@ bool CHalfLifeMultiplay::Prison_NotEscaped_internal(int winStatus, ScenarioEvent
 		QueueCareerRoundEndMenu(tmDelay, winStatus);
 	}
 
+#ifndef REGAMEDLL_FIXES
 	UpdateTeamScores();
+#endif
 	return true;
 }
 
@@ -2884,7 +2937,18 @@ bool CHalfLifeMultiplay::VIP_NotEscaped_internal(int winStatus, ScenarioEventEnd
 
 	Broadcast("terwin");
 	m_iAccountTerrorist += m_rgRewardAccountRules[RR_VIP_NOT_ESCAPED];
+
+#ifdef REGAMEDLL_FIXES
+	if (!m_bNeededPlayers)
+	{
+		m_iNumTerroristWins++;
+
+		// Update the clients team score
+		UpdateTeamScores();
+	}
+#else
 	m_iNumTerroristWins++;
+#endif
 
 	EndRoundMessage("#VIP_Not_Escaped", event);
 	TerminateRound(tmDelay, winStatus);
@@ -2894,7 +2958,9 @@ bool CHalfLifeMultiplay::VIP_NotEscaped_internal(int winStatus, ScenarioEventEnd
 		QueueCareerRoundEndMenu(tmDelay, winStatus);
 	}
 
+#ifndef REGAMEDLL_FIXES
 	UpdateTeamScores();
+#endif
 	return true;
 }
 
@@ -2933,29 +2999,29 @@ void CHalfLifeMultiplay::CheckRoundTimeExpired()
 	// New code to get rid of round draws!!
 	if (m_bMapHasBombTarget)
 	{
-		if (!g_ReGameHookchains.m_RoundEnd.callChain(&CHalfLifeMultiplay::Target_Saved_internal, this, WINSTATUS_CTS, ROUND_TARGET_SAVED, 5))
+		if (!g_ReGameHookchains.m_RoundEnd.callChain(&CHalfLifeMultiplay::Target_Saved_internal, this, WINSTATUS_CTS, ROUND_TARGET_SAVED, ROUND_BEGIN_DELAY))
 			return;
 	}
 	else if (UTIL_FindEntityByClassname(NULL, "hostage_entity"))
 	{
-		if (!g_ReGameHookchains.m_RoundEnd.callChain(&CHalfLifeMultiplay::Hostage_NotRescued_internal, this, WINSTATUS_TERRORISTS, ROUND_HOSTAGE_NOT_RESCUED, 5))
+		if (!g_ReGameHookchains.m_RoundEnd.callChain(&CHalfLifeMultiplay::Hostage_NotRescued_internal, this, WINSTATUS_TERRORISTS, ROUND_HOSTAGE_NOT_RESCUED, ROUND_BEGIN_DELAY))
 			return;
 	}
 	else if (m_bMapHasEscapeZone)
 	{
-		if (!g_ReGameHookchains.m_RoundEnd.callChain(&CHalfLifeMultiplay::Prison_NotEscaped_internal, this, WINSTATUS_CTS, ROUND_TERRORISTS_NOT_ESCAPED, 5))
+		if (!g_ReGameHookchains.m_RoundEnd.callChain(&CHalfLifeMultiplay::Prison_NotEscaped_internal, this, WINSTATUS_CTS, ROUND_TERRORISTS_NOT_ESCAPED, ROUND_BEGIN_DELAY))
 			return;
 	}
 	else if (m_bMapHasVIPSafetyZone)
 	{
-		if (!g_ReGameHookchains.m_RoundEnd.callChain(&CHalfLifeMultiplay::VIP_NotEscaped_internal, this, WINSTATUS_TERRORISTS, ROUND_VIP_NOT_ESCAPED, 5))
+		if (!g_ReGameHookchains.m_RoundEnd.callChain(&CHalfLifeMultiplay::VIP_NotEscaped_internal, this, WINSTATUS_TERRORISTS, ROUND_VIP_NOT_ESCAPED, ROUND_BEGIN_DELAY))
 			return;
 	}
 #ifdef REGAMEDLL_ADD
 	else if (roundover.value)
 	{
 		// round is over
-		if (!g_ReGameHookchains.m_RoundEnd.callChain(&CHalfLifeMultiplay::RoundOver_internal, this, WINSTATUS_DRAW, ROUND_GAME_OVER, 5))
+		if (!g_ReGameHookchains.m_RoundEnd.callChain(&CHalfLifeMultiplay::RoundOver_internal, this, WINSTATUS_DRAW, ROUND_GAME_OVER, ROUND_BEGIN_DELAY))
 			return;
 	}
 #endif
@@ -3659,9 +3725,13 @@ BOOL EXT_FUNC CHalfLifeMultiplay::__API_VHOOK(FPlayerCanRespawn)(CBasePlayer *pP
 		if (GetRoundRespawnTime() != -1)
 #endif
 		{
-			// TODO: to be correct, need use m_fIntroRoundCount instead of it.
+			// TODO: to be correct, need use time the real one starts of round, m_fRoundStartTimeReal instead of it.
 			// m_fRoundStartTime able to extend the time to 60 seconds when there is a remaining time of round.
+#ifdef REGAMEDLL_FIXES
+			if (gpGlobals->time > m_fRoundStartTimeReal + GetRoundRespawnTime())
+#else
 			if (gpGlobals->time > m_fRoundStartTime + GetRoundRespawnTime())
+#endif
 			{
 				// If this player just connected and fadetoblack is on, then maybe
 				// the server admin doesn't want him peeking around.

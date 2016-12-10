@@ -75,7 +75,7 @@ void PM_InitTextureTypes()
 	int i, j;
 	byte *pMemFile;
 	int fileSize, filePos;
-	static qboolean bTextureTypeInit = false;
+	static bool bTextureTypeInit = false;
 
 	if (bTextureTypeInit)
 		return;
@@ -1511,7 +1511,7 @@ void PM_ResetStuckOffsets(int nIndex, int server)
 // If pmove->origin is in a solid position,
 // try nudging slightly on all axis to
 // allow for the cut precision of the net coordinates
-int PM_CheckStuck()
+qboolean PM_CheckStuck()
 {
 	vec3_t base;
 	vec3_t offset;
@@ -1530,7 +1530,7 @@ int PM_CheckStuck()
 	if (hitent == -1)
 	{
 		PM_ResetStuckOffsets(pmove->player_index, pmove->server);
-		return 0;
+		return FALSE;
 	}
 
 	VectorCopy(pmove->origin, base);
@@ -1552,7 +1552,7 @@ int PM_CheckStuck()
 				{
 					PM_ResetStuckOffsets(pmove->player_index, pmove->server);
 					VectorCopy(test, pmove->origin);
-					return 0;
+					return FALSE;
 				}
 
 				nReps++;
@@ -1562,7 +1562,6 @@ int PM_CheckStuck()
 	}
 
 	// Only an issue on the client.
-
 	if (pmove->server)
 		idx = 0;
 	else
@@ -1573,7 +1572,7 @@ int PM_CheckStuck()
 	// Too soon?
 	if (rgStuckCheckTime[pmove->player_index][idx] >= (fTime - PM_CHECKSTUCK_MINTIME))
 	{
-		return 1;
+		return TRUE;
 	}
 
 	rgStuckCheckTime[pmove->player_index][idx] = fTime;
@@ -1592,7 +1591,7 @@ int PM_CheckStuck()
 			VectorCopy(test, pmove->origin);
 		}
 
-		return 0;
+		return FALSE;
 	}
 
 	// If player is flailing while stuck in another player (should never happen), then see
@@ -1620,14 +1619,14 @@ int PM_CheckStuck()
 					if (pmove->PM_TestPlayerPosition(test, NULL) == -1)
 					{
 						VectorCopy(test, pmove->origin);
-						return 0;
+						return FALSE;
 					}
 				}
 			}
 		}
 	}
 
-	return 1;
+	return TRUE;
 }
 
 void PM_SpectatorMove()
@@ -1657,7 +1656,7 @@ void PM_SpectatorMove()
 			iJumpSpectator = 0;
 			return;
 		}
-#endif		
+#endif
 		// Move around in normal spectator method
 		speed = Length (pmove->velocity);
 
@@ -1937,7 +1936,7 @@ void PM_LadderMove(physent_t *pLadder)
 {
 	vec3_t ladderCenter;
 	trace_t trace;
-	qboolean onFloor;
+	bool onFloor;
 	vec3_t floor;
 	vec3_t modelmins, modelmaxs;
 

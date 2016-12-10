@@ -504,7 +504,7 @@ void CWorld::__MAKE_VHOOK(Precache)()
 
 	g_pGameRules = InstallGameRules();
 
-	// s1lent: What is the essence of soundent in CS 1.6? I think this is for NPC monsters.
+	// NOTE: What is the essence of soundent in CS 1.6? I think this is for NPC monsters - s1lent
 #ifndef REGAMEDLL_FIXES
 	// UNDONE why is there so much Spawn code in the Precache function? I'll just keep it here
 

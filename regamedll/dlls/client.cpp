@@ -181,7 +181,7 @@ void EXT_FUNC ClientKill(edict_t *pEntity)
 	if (pPlayer->m_fNextSuicideTime > gpGlobals->time)
 		return;
 
-	pPlayer->m_LastHitGroup = 0;
+	pPlayer->m_LastHitGroup = HITGROUP_GENERIC;
 
 	// don't let them suicide for 5 seconds after suiciding
 	pPlayer->m_fNextSuicideTime = gpGlobals->time + 1.0f;
@@ -1494,10 +1494,6 @@ LINK_HOOK_CHAIN(BOOL, HandleMenu_ChooseTeam, (CBasePlayer *player, int slot), pl
 // can be closed...false if the menu should be displayed again
 BOOL EXT_FUNC __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *player, int slot)
 {
-	int oldTeam;
-	char *szOldTeam;
-	char *szNewTeam;
-
 	// If this player is a VIP, don't allow him to switch teams/appearances unless the following conditions are met :
 	// a) There is another TEAM_CT player who is in the queue to be a VIP
 	// b) This player is dead
@@ -1819,6 +1815,9 @@ BOOL EXT_FUNC __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *player, int slot)
 			ClientKill(player->edict());
 		}
 	}
+
+	TeamName oldTeam;
+	char *szOldTeam, *szNewTeam;
 
 	// Switch their actual team...
 	player->m_bTeamChanged = true;
@@ -4746,7 +4745,7 @@ void EXT_FUNC CreateInstancedBaselines()
 int EXT_FUNC InconsistentFile(const edict_t *player, const char *filename, char *disconnect_message)
 {
 	// Server doesn't care?
-	if (CVAR_GET_FLOAT("mp_consistency") != 1)
+	if (!CVAR_GET_FLOAT("mp_consistency"))
 		return 0;
 
 	// Default behavior is to kick the player

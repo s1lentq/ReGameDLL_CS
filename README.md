@@ -10,7 +10,7 @@ Regamedll_CS is a result of reverse engineering of original library mods HLDS (b
 ## How can use it?
 Regamedll_CS is fully compatible with official mod CS 1.6 / CZero by Valve. All you have to do is to download binaries and replace original mp.dll/cs.so
 
-Compiled binaries are available here: [link](http://nexus.rehlds.org/nexus/content/repositories/regamedll-snapshots/regamedll/regamedll/0.2-SNAPSHOT/)
+Compiled binaries are available here: [link](http://nexus.rehlds.org/nexus/content/repositories/regamedll-dev/regamedll/regamedll/)
 
 Archive's bin directory contains 2 subdirectories, 'bugfixed' and 'pure'
 * 'pure' version is designed to work exactly as official mod CS

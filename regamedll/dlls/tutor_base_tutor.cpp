@@ -70,13 +70,13 @@ void TutorMessageEvent::AddParameter(char *str)
 	param->m_next = NULL;
 	param->m_data = new char[Q_strlen(str) + 1];
 
-	if (param->m_data != NULL)
+	if (param->m_data)
 	{
 		Q_strcpy(param->m_data, str);
 		param->m_data[Q_strlen(str)] = '\0';
 		++m_numParameters;
 
-		if (m_paramList != NULL)
+		if (m_paramList)
 		{
 			TutorMessageEventParam *temp = m_paramList;
 
@@ -125,8 +125,7 @@ CBaseTutor::CBaseTutor()
 CBaseTutor::~CBaseTutor()
 {
 	TutorMessageEvent *event = m_eventList;
-
-	while (event != NULL)
+	while (event)
 	{
 		TutorMessageEvent *temp = event;
 		event = event->GetNext();
@@ -175,8 +174,7 @@ void CBaseTutor::DisplayMessageToPlayer(CBasePlayer *player, int id, const char 
 		for (int arg = 0; arg < numArgs; ++arg)
 		{
 			char *str = event->GetNextParameter(param, sizeof(param));
-
-			if (str != NULL)
+			if (str)
 				WRITE_STRING(str);
 			else
 				WRITE_STRING("");
@@ -185,7 +183,7 @@ void CBaseTutor::DisplayMessageToPlayer(CBasePlayer *player, int id, const char 
 		WRITE_SHORT(id);
 		WRITE_SHORT(player->IsAlive() == FALSE);
 
-		if (definition != NULL)
+		if (definition)
 			WRITE_SHORT(definition->m_type);
 		else
 			WRITE_SHORT(TUTORMESSAGETYPE_DEFAULT);
@@ -193,7 +191,7 @@ void CBaseTutor::DisplayMessageToPlayer(CBasePlayer *player, int id, const char 
 
 	m_deadAirStartTime = -1.0f;
 
-	if (definition != NULL)
+	if (definition)
 	{
 		if (gpGlobals->time - m_roundStartTime > 1.0f)
 		{
@@ -246,7 +244,7 @@ void CBaseTutor::CloseCurrentWindow()
 {
 	CBasePlayer *localPlayer = (CBasePlayer *)UTIL_GetLocalPlayer();
 
-	if (localPlayer != NULL)
+	if (localPlayer)
 	{
 		MESSAGE_BEGIN(MSG_ONE, gmsgTutorClose, NULL, localPlayer->pev);
 		MESSAGE_END();
@@ -319,7 +317,7 @@ bool CBaseTutor::__MAKE_VHOOK(IsPlayerLookingAtEntity)(CBaseEntity *entity, CBas
 	TraceResult result;
 	UTIL_TraceLine(srcVec, destVec, dont_ignore_monsters, ignore_glass, ENT(player->pev), &result);
 
-	if (result.pHit != NULL)
+	if (result.pHit)
 	{
 		if (!FNullEnt(result.pHit) && CBaseEntity::Instance(result.pHit) == entity)
 		{

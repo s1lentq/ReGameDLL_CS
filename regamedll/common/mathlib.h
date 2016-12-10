@@ -121,6 +121,14 @@ inline double M_sqrt(double value) {
 	return ret;
 }
 
+template<class T>
+inline void SWAP(T &first, T &second)
+{
+	T temp = first;
+	first = second;
+	second = temp;
+}
+
 #define VectorSubtract(a,b,c) {(c)[0]=(a)[0]-(b)[0];(c)[1]=(a)[1]-(b)[1];(c)[2]=(a)[2]-(b)[2];}
 #define VectorAdd(a,b,c) {(c)[0]=(a)[0]+(b)[0];(c)[1]=(a)[1]+(b)[1];(c)[2]=(a)[2]+(b)[2];}
 #define VectorCopy(a,b) {(b)[0]=(a)[0];(b)[1]=(a)[1];(b)[2]=(a)[2];}
