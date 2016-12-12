@@ -12,26 +12,15 @@
 //=============================================================================
 
 #include "precompiled.h"
-#include <assert.h>
-#include <malloc.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdarg.h>
-#include <stdlib.h>
-#include "tier0/dbg.h"
-#include <math.h>
-
-
 
 //-----------------------------------------------------------------------------
 // internal structures
 //-----------------------------------------------------------------------------
 
-#define MAX_GROUP_NAME_LENGTH 48
-//enum
-//{
-//	MAX_GROUP_NAME_LENGTH = 48
-//};
+enum
+{
+	MAX_GROUP_NAME_LENGTH = 48
+};
 
 struct SpewGroup_t
 {
@@ -180,6 +169,8 @@ SpewRetval_t  _SpewMessage(SpewType_t spewType, char const* pMsgFormat, va_list 
 	case SPEW_ABORT:
 		//		MessageBox(NULL,"Error in _SpewMessage","Error",MB_OK);
 		exit(0);
+	default:
+		break;
 	}
 
 	return ret;

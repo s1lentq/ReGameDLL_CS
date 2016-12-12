@@ -25,22 +25,27 @@
 *    version.
 *
 */
-
 #pragma once
 
 #include "const.h"
 #include "qlimits.h"
 
+#ifdef REHLDS_FIXES
+#define COM_TOKEN_LEN	2048
+#else
+#define COM_TOKEN_LEN	1024
+#endif
+
 // Don't allow overflow
-#define SIZEBUF_CHECK_OVERFLOW		0
-#define SIZEBUF_ALLOW_OVERFLOW		BIT(0)
+#define SIZEBUF_CHECK_OVERFLOW	0
+#define SIZEBUF_ALLOW_OVERFLOW	BIT(0)
 #define SIZEBUF_OVERFLOWED		BIT(1)
 
-#define MAX_NUM_ARGVS			50
-#define NUM_SAFE_ARGVS			7
+#define MAX_NUM_ARGVS	50
+#define NUM_SAFE_ARGVS	7
 
-#define COM_COPY_CHUNK_SIZE		1024
-#define COM_MAX_CMD_LINE		256
+#define COM_COPY_CHUNK_SIZE 1024
+#define COM_MAX_CMD_LINE 256
 
 typedef struct sizebuf_s
 {

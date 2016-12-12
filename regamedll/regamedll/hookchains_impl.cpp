@@ -22,25 +22,65 @@
 AbstractHookChainRegistry::AbstractHookChainRegistry()
 {
 	Q_memset(m_Hooks, 0, sizeof(m_Hooks));
+	Q_memset(m_Priorities, 0, sizeof(m_Priorities));
+
 	m_NumHooks = 0;
 }
 
-void AbstractHookChainRegistry::addHook(void* hookFunc) {
-	if (m_NumHooks >= MAX_HOOKS_IN_CHAIN) {
-		regamedll_syserror("MAX_HOOKS_IN_CHAIN limit hit");
+bool AbstractHookChainRegistry::findHook(void* hookFunc) const
+{
+	for (auto i = 0; i < m_NumHooks; i++) {
+		if (m_Hooks[i] == hookFunc)
+			return true;
 	}
 
-	m_Hooks[m_NumHooks++] = hookFunc;
+	return false;
+}
+
+void AbstractHookChainRegistry::addHook(void* hookFunc, int priority)
+{
+	if (!hookFunc) {
+		Sys_Error(__FUNCTION__ " Parameter hookFunc can't be a nullptr");
+	}
+
+	if (findHook(hookFunc)) {
+		Sys_Error(__FUNCTION__ " The same handler can't be used twice on the hookchain.");
+	}
+
+	for (auto i = 0; i < MAX_HOOKS_IN_CHAIN; i++)
+	{
+		if (m_Hooks[i] && priority <= m_Priorities[i])
+			continue;
+
+		auto swapHookFunc = m_Hooks[i];
+		auto swapPriority = m_Priorities[i];
+
+		m_Hooks[i] = hookFunc;
+		m_Priorities[i] = priority;
+
+		hookFunc = swapHookFunc;
+		priority = swapPriority;
+	}
+
+	if (m_NumHooks >= MAX_HOOKS_IN_CHAIN) {
+		Sys_Error(__FUNCTION__ " MAX_HOOKS_IN_CHAIN limit hit");
+	}
+
+	m_NumHooks++;
 }
 
 void AbstractHookChainRegistry::removeHook(void* hookFunc) {
 
 	// erase hook
-	for (int i = 0; i < m_NumHooks; i++) {
-		if (hookFunc == m_Hooks[i]) {
-			if (--m_NumHooks != i)
+	for (auto i = 0; i < m_NumHooks; i++)
+	{
+		if (hookFunc == m_Hooks[i])
+		{
+			--m_NumHooks;
+			if (m_NumHooks != i)
 			{
 				Q_memmove(&m_Hooks[i], &m_Hooks[i + 1], (m_NumHooks - i) * sizeof(m_Hooks[0]));
+				Q_memmove(&m_Priorities[i], &m_Priorities[i + 1], (m_NumHooks - i) * sizeof(m_Priorities[0]));
 				m_Hooks[m_NumHooks] = NULL;
 			}
 			else

@@ -26,6 +26,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 
+
 //-----------------------------------------------------------------------------
 // dll export stuff
 //-----------------------------------------------------------------------------
@@ -441,6 +442,7 @@ private:
 //
 // Purpose: Embed debug info in each file.
 //
+
 //#ifdef _WIN32
 //#ifdef _DEBUG
 //#pragma comment(compiler)

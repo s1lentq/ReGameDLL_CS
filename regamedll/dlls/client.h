@@ -164,7 +164,7 @@ void ParmsChangeLevel();
 void StartFrame();
 void ClientPrecache();
 const char *GetGameDescription();
-void Sys_Error(const char *error_string);
+void SysEngine_Error(const char *error_string);
 void PlayerCustomization(edict_t *pEntity, customization_t *pCust);
 void SpectatorConnect(edict_t *pEntity);
 void SpectatorDisconnect(edict_t *pEntity);

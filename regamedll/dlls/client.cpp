@@ -3986,7 +3986,7 @@ const char *EXT_FUNC GetGameDescription()
 	return "Counter-Strike";
 }
 
-void EXT_FUNC Sys_Error(const char *error_string)
+void EXT_FUNC SysEngine_Error(const char *error_string)
 {
 	;
 }

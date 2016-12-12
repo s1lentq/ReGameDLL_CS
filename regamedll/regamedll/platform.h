@@ -7,6 +7,6 @@
 #define _logf regamedll_log
 
 extern void regamedll_log(const char *fmt, ...);
-extern void __declspec(noreturn) regamedll_syserror(const char *fmt, ...);
+extern void NORETURN regamedll_syserror(const char *error, ...);
 
 #endif // PLATFORM_GAMEDLL_H

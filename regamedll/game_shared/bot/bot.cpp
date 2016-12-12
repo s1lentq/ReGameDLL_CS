@@ -240,7 +240,7 @@ bool CBot::IsActiveWeaponClipEmpty() const
 {
 	CBasePlayerWeapon *weapon = GetActiveWeapon();
 
-	if (weapon != NULL && weapon->m_iClip == 0)
+	if (weapon && weapon->m_iClip == 0)
 		return true;
 
 	return false;
@@ -250,8 +250,7 @@ bool CBot::IsActiveWeaponClipEmpty() const
 bool CBot::IsActiveWeaponOutOfAmmo() const
 {
 	CBasePlayerWeapon *weapon = GetActiveWeapon();
-
-	if (weapon == NULL)
+	if (!weapon)
 		return true;
 
 	if (weapon->m_iClip < 0)
@@ -362,8 +361,7 @@ int CBot::GetEnemiesRemaining() const
 	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
 		CBaseEntity *player = UTIL_PlayerByIndex(i);
-
-		if (player == NULL)
+		if (!player)
 			continue;
 
 		if (FNullEnt(player->pev))
@@ -391,8 +389,7 @@ int CBot::GetFriendsRemaining() const
 	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
 		CBaseEntity *player = UTIL_PlayerByIndex(i);
-
-		if (player == NULL)
+		if (!player)
 			continue;
 
 		if (FNullEnt(player->pev))
@@ -419,13 +416,13 @@ int CBot::GetFriendsRemaining() const
 bool CBot::IsLocalPlayerWatchingMe() const
 {
 	// avoid crash during spawn
-	if (pev == NULL)
+	if (!pev)
 		return false;
 
 	int myIndex = const_cast<CBot *>(this)->entindex();
 
 	CBasePlayer *player = UTIL_GetLocalPlayer();
-	if (player == NULL)
+	if (!player)
 		return false;
 
 	if (((player->pev->flags & FL_SPECTATOR) || player->m_iTeam == SPECTATOR) && player->pev->iuser2 == myIndex)
@@ -470,13 +467,8 @@ void CBot::PrintIfWatched(char *format, ...) const
 		char buffer[1024];
 
 		// prefix the message with the bot's name (this can be NULL if bot was just added)
-		const char *name;
-		if (pev == NULL)
-			name = "(NULL pev)";
-		else
-			name = STRING(pev->netname);
-
-		Q_sprintf(buffer, "%s: ", (name != NULL) ? name : "(NULL netname)");
+		const char *name = pev ? STRING(pev->netname) : "(NULL pev)";
+		Q_sprintf(buffer, "%s: ", name ? name : "(NULL netname)");
 
 		SERVER_PRINT(buffer);
 

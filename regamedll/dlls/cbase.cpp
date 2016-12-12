@@ -40,7 +40,7 @@ DLL_FUNCTIONS gFunctionTable =
 	&SpectatorConnect,
 	&SpectatorDisconnect,
 	&SpectatorThink,
-	&Sys_Error,
+	&SysEngine_Error,
 	&PM_Move,
 	&PM_Init,
 	&PM_FindTextureType,

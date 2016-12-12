@@ -337,6 +337,7 @@ int UTIL_ReadFlags(const char *c);
 bool UTIL_AreBotsAllowed();
 bool UTIL_AreHostagesImprov();
 void MAKE_STRING_CLASS(const char *str, entvars_t *pev);
+void NORETURN Sys_Error(const char *error, ...);
 
 extern int g_groupmask;
 extern int g_groupop;

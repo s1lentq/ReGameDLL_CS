@@ -2455,3 +2455,19 @@ void MAKE_STRING_CLASS(const char *str, entvars_t *pev)
 	pev->classname = MAKE_STRING(str);
 	AddEntityHashValue(pev, STRING(pev->classname), CLASSNAME);
 }
+
+void NORETURN Sys_Error(const char *error, ...)
+{
+	va_list argptr;
+	static char text[1024];
+
+	va_start(argptr, error);
+	vsnprintf(text, sizeof(text), error, argptr);
+	va_end(argptr);
+
+	CONSOLE_ECHO("FATAL ERROR (shutting down): %s\n", text);
+
+	//TerminateProcess(GetCurrentProcess(), 1);
+	*((int *)NULL) = 0;
+	while (true);
+}

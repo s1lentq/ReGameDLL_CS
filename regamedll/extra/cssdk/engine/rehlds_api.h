@@ -34,8 +34,8 @@
 #include "interface.h"
 #include "model.h"
 
-#define REHLDS_API_VERSION_MAJOR 2
-#define REHLDS_API_VERSION_MINOR 13
+#define REHLDS_API_VERSION_MAJOR 3
+#define REHLDS_API_VERSION_MINOR 0
 
 //Steam_NotifyClientConnect hook
 typedef IHookChain<qboolean, IGameClient*, const void*, unsigned int> IRehldsHook_Steam_NotifyClientConnect;
@@ -122,8 +122,8 @@ typedef IVoidHookChain<IGameClient *, struct packet_entities_s *, sizebuf_t *> I
 typedef IVoidHookChainRegistry<IGameClient *, struct packet_entities_s *, sizebuf_t *> IRehldsHookRegistry_SV_EmitEvents;
 
 //EV_PlayReliableEvent hook
-typedef IVoidHookChain<IGameClient *, int, short unsigned int, float, struct event_args_s *> IRehldsHook_EV_PlayReliableEvent;
-typedef IVoidHookChainRegistry<IGameClient *, int, short unsigned int, float, struct event_args_s *> IRehldsHookRegistry_EV_PlayReliableEvent;
+typedef IVoidHookChain<IGameClient *, int, unsigned short, float, struct event_args_s *> IRehldsHook_EV_PlayReliableEvent;
+typedef IVoidHookChainRegistry<IGameClient *, int, unsigned short, float, struct event_args_s *> IRehldsHookRegistry_EV_PlayReliableEvent;
 
 //SV_StartSound hook
 typedef IVoidHookChain<int , edict_t *, int, const char *, int, float, int, int> IRehldsHook_SV_StartSound;
@@ -257,7 +257,7 @@ struct RehldsFuncs_t {
 	cmd_source_t*(*GetCmdSource)();
 	void(*Log)(const char* prefix, const char* msg);
 	DLL_FUNCTIONS *(*GetEntityInterface)();
-	void(*EV_PlayReliableEvent)(IGameClient *cl, int entindex, short unsigned int eventindex, float delay, struct event_args_s *pargs);
+	void(*EV_PlayReliableEvent)(IGameClient *cl, int entindex, unsigned short eventindex, float delay, struct event_args_s *pargs);
 	int(*SV_LookupSoundIndex)(const char *sample);
 	void(*MSG_StartBitWriting)(sizebuf_t *buf);
 	void(*MSG_WriteBits)(uint32 data, int numbits);
@@ -280,7 +280,8 @@ struct RehldsFuncs_t {
 	void(*Steam_NotifyClientDisconnect)(IGameClient* cl);
 	void(*SV_StartSound)(int recipients, edict_t *entity, int channel, const char *sample, int volume, float attenuation, int flags, int pitch);
 	bool(*SV_EmitSound2)(edict_t *entity, IGameClient *receiver, int channel, const char *sample, float volume, float attenuation, int flags, int pitch, int emitFlags, const float *pOrigin);
-	void (* SV_UpdateUserInfo)(IGameClient *pGameClient);
+	void(*SV_UpdateUserInfo)(IGameClient *pGameClient);
+	bool(*StripUnprintableAndSpace)(char *pch);
 };
 
 class IRehldsApi {

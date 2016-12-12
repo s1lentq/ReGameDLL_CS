@@ -33,11 +33,10 @@
 #endif
 
 #include "modelgen.h"
+#include "commonmacros.h"
 
-
-#define IDSPRITEHEADER	(('P'<<24)+('S'<<16)+('D'<<8)+'I')
-#define SPRITE_VERSION	2
-
+#define SPRITE_VERSION		2				// Half-Life sprites
+#define IDSPRITEHEADER		MAKEID('I', 'D', 'S', 'P')	// little-endian "IDSP"
 
 typedef enum spriteframetype_e
 {
@@ -46,7 +45,6 @@ typedef enum spriteframetype_e
 	SPR_ANGLED
 } spriteframetype_t;
 
-/* <4aea6> ../engine/spritegn.h:50 */
 typedef struct dsprite_s
 {
 	int				ident;
@@ -61,7 +59,6 @@ typedef struct dsprite_s
 	synctype_t		synctype;
 } dsprite_t;
 
-/* <4af46> ../engine/spritegn.h:74 */
 typedef struct dspriteframe_s
 {
 	int				origin[2];
@@ -69,19 +66,16 @@ typedef struct dspriteframe_s
 	int				height;
 } dspriteframe_t;
 
-/* <4af84> ../engine/spritegn.h:80 */
 typedef struct dspritegroup_s
 {
 	int				numframes;
 } dspritegroup_t;
 
-/* <4afa6> ../engine/spritegn.h:84 */
 typedef struct dspriteinterval_s
 {
 	float			interval;
 } dspriteinterval_t;
 
-/* <4afe8> ../engine/spritegn.h:90 */
 typedef struct dspriteframetype_s
 {
 	spriteframetype_t type;

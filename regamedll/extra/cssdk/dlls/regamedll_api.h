@@ -35,8 +35,8 @@
 #include "client.h"
 #include "items.h"
 
-#define REGAMEDLL_API_VERSION_MAJOR 4
-#define REGAMEDLL_API_VERSION_MINOR 2
+#define REGAMEDLL_API_VERSION_MAJOR 5
+#define REGAMEDLL_API_VERSION_MINOR 0
 
 // CBasePlayer::Spawn hook
 typedef IVoidHookChainClass<class CBasePlayer> IReGameHook_CBasePlayer_Spawn;

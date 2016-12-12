@@ -27,19 +27,19 @@ void regamedll_log(const char *fmt, ...)
 #endif // _WIN32
 }
 
-void __declspec(noreturn) regamedll_syserror(const char *fmt, ...)
+void NORETURN regamedll_syserror(const char *error, ...)
 {
 	va_list argptr;
-	static char string[8192];
+	static char text[2048];
 
-	va_start(argptr, fmt);
-	vsnprintf(string, sizeof(string), fmt, argptr);
+	va_start(argptr, error);
+	vsnprintf(text, sizeof(text), error, argptr);
 	va_end(argptr);
 
-	printf("%s\n", string);
+	printf("%s\n", text);
 
 	FILE *fl = fopen("regamedll_error.txt", "w");
-	fprintf(fl, "%s\n", string);
+	fprintf(fl, "%s\n", text);
 	fclose(fl);
 
 	//TerminateProcess(GetCurrentProcess(), 1);

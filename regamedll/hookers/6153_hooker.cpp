@@ -309,7 +309,7 @@ FunctionHook g_FunctionHooks[] =
 	{ 0x01D6B6A0, "_Z10StartFramev", (size_t)&StartFrame },
 	{ 0x01D6B740, "_Z14ClientPrecachev", (size_t)&ClientPrecache },
 	{ 0x01D6CCE0, "_Z18GetGameDescriptionv", (size_t)&GetGameDescription },
-	{ 0x01D6CD00, "_Z9Sys_ErrorPKc", (size_t)&Sys_Error },
+	{ 0x01D6CD00, "_Z9Sys_ErrorPKc", (size_t)&SysEngine_Error },
 	{ 0x01D6CD10, "_Z19PlayerCustomizationP7edict_sP15customization_s", (size_t)&PlayerCustomization },
 	{ 0x01D6CD90, "_Z16SpectatorConnectP7edict_s", (size_t)&SpectatorConnect },
 	{ 0x01D6CDB0, "_Z19SpectatorDisconnectP7edict_s", (size_t)&SpectatorDisconnect },
