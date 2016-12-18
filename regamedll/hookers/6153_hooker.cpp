@@ -5721,6 +5721,7 @@ AddressRef g_DataRefs[] =
 	{ 0x01E23AA8, "TutorIdentifierList", (size_t)&pTutorIdentifierList },
 	{ 0x01E23678, "_ZL19g_TutorStateStrings", (size_t)&pg_TutorStateStrings },
 	{ 0x01E61E4C, "WorldGraph", (size_t)&pWorldGraph },
+	//{ 0x01E61E5C, "_ZN12CTalkMonster14g_talkWaitTimeE", mfunc_ptr_cast(&CTalkMonster::pg_talkWaitTime) },
 	{ 0x01E61B98, "g_pGameRules", (size_t)&pg_pGameRules },
 	{ 0x01E62560, "g_pMPGameRules", (size_t)&pg_pMPGameRules },
 	{ 0x01E61E70, "_ZL12mp_com_token", (size_t)&pmp_com_token },

@@ -35,9 +35,6 @@ UNTESTED dynpitchvol_t rgdpvpreset[CDPVPRESETMAX] =
 	{ 27,	128,	90,	10,	10,	10,	1,	20,	40,	1,	5,	10,	20,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0 }
 };
 
-int gcallsentences = 0;
-int fSentencesInit = FALSE;
-
 TYPEDESCRIPTION CAmbientGeneric::m_SaveData[] =
 {
 	DEFINE_FIELD(CAmbientGeneric, m_flAttenuation, FIELD_FLOAT),
@@ -63,18 +60,24 @@ TYPEDESCRIPTION CSpeaker::m_SaveData[] =
 	DEFINE_FIELD(CSpeaker, m_preset, FIELD_INTEGER),
 };
 
+int gcallsentences = 0;
+BOOL fSentencesInit = FALSE;
+
+int gcTextures = 0;
+BOOL fTextureTypeInit = FALSE;
+
 #endif // HOOK_GAMEDLL
 
 // time delay until it's ok to speak: used so that two NPCs don't talk at once
 float CTalkMonster::g_talkWaitTime = 0;
 
-char gszallsentencenames[ CVOXFILESENTENCEMAX ][ CBSENTENCENAME_MAX ];
-sentenceg rgsentenceg[ CSENTENCEG_MAX ];
+char gszallsentencenames[CVOXFILESENTENCEMAX][CBSENTENCENAME_MAX];
+sentenceg rgsentenceg[CSENTENCEG_MAX];
 
-char grgszTextureName[ CTEXTURESMAX ][ CBTEXTURENAMEMAX ];
-char grgchTextureType[ CTEXTURESMAX ];
-int fTextureTypeInit;
-int gcTextures;
+// Used to detect the texture the player is standing on, map the
+// texture name to a material type. Play footstep sound based on material type.
+char grgszTextureName[CTEXTURESMAX][CBTEXTURENAMEMAX];
+char grgchTextureType[CTEXTURESMAX];
 
 LINK_ENTITY_TO_CLASS(ambient_generic, CAmbientGeneric, CCSAmbientGeneric);
 IMPLEMENT_SAVERESTORE(CAmbientGeneric, CBaseEntity);
@@ -1473,6 +1476,9 @@ NOXREF void EMIT_GROUPNAME_SUIT(edict_t *entity, const char *groupname)
 	}
 }
 
+// open materials.txt, get size, alloc space,
+// save in array. Only works first time called,
+// ignored on subsequent calls.
 char *memfgets(byte *pMemFile, int fileSize, int &filePos, char *pBuffer, int bufferSize)
 {
 	// Bullet-proofing

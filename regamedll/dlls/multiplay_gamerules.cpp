@@ -741,7 +741,6 @@ void EXT_FUNC CHalfLifeMultiplay::__API_VHOOK(GiveC4)()
 	++m_iC4Guy;
 
 	bool giveToHumans = (cv_bot_defer_to_human.value > 0.0);
-
 	if (giveToHumans)
 	{
 		for (int i = 1; i <= gpGlobals->maxClients; ++i)
@@ -836,8 +835,8 @@ void CHalfLifeMultiplay::QueueCareerRoundEndMenu(float tmDelay, int iWinStatus)
 		return;
 
 	m_fCareerRoundMenuTime = tmDelay + gpGlobals->time;
-	bool humansAreCTs = (Q_strcmp(humans_join_team.string, "CT") == 0);
 
+	bool humansAreCTs = (Q_strcmp(humans_join_team.string, "CT") == 0);
 	if (humansAreCTs)
 	{
 		CBaseEntity *hostage = NULL;
@@ -855,7 +854,6 @@ void CHalfLifeMultiplay::QueueCareerRoundEndMenu(float tmDelay, int iWinStatus)
 				continue;
 
 			CBasePlayer *pLeader = NULL;
-
 			if (pHostage->IsFollowingSomeone())
 				pLeader = static_cast<CBasePlayer *>(pHostage->GetLeader());
 
@@ -1061,8 +1059,8 @@ void CHalfLifeMultiplay::InitializePlayerCounts(int &NumAliveTerrorist, int &Num
 	}
 }
 
-bool CHalfLifeMultiplay::NeededPlayersCheck_internal(int winStatus, ScenarioEventEndRound event, float tmDelay) {
-
+bool EXT_FUNC CHalfLifeMultiplay::NeededPlayersCheck_internal(int winStatus, ScenarioEventEndRound event, float tmDelay)
+{
 	// Start the round immediately when the first person joins
 	UTIL_LogPrintf("World triggered \"Game_Commencing\"\n");
 
@@ -1082,7 +1080,7 @@ bool CHalfLifeMultiplay::NeededPlayersCheck_internal(int winStatus, ScenarioEven
 	return true;
 }
 
-bool CHalfLifeMultiplay::NeededPlayersCheck()
+bool EXT_FUNC CHalfLifeMultiplay::NeededPlayersCheck()
 {
 	// We needed players to start scoring
 	// Do we have them now?
@@ -1111,8 +1109,8 @@ bool CHalfLifeMultiplay::NeededPlayersCheck()
 	return false;
 }
 
-bool CHalfLifeMultiplay::VIP_Escaped_internal(int winStatus, ScenarioEventEndRound event, float tmDelay) {
-
+bool EXT_FUNC CHalfLifeMultiplay::VIP_Escaped_internal(int winStatus, ScenarioEventEndRound event, float tmDelay)
+{
 	Broadcast("ctwin");
 	m_iAccountCT += m_rgRewardAccountRules[RR_VIP_ESCAPED];
 
@@ -1148,8 +1146,8 @@ bool CHalfLifeMultiplay::VIP_Escaped_internal(int winStatus, ScenarioEventEndRou
 	return true;
 }
 
-bool CHalfLifeMultiplay::VIP_Died_internal(int winStatus, ScenarioEventEndRound event, float tmDelay) {
-
+bool EXT_FUNC CHalfLifeMultiplay::VIP_Died_internal(int winStatus, ScenarioEventEndRound event, float tmDelay)
+{
 	Broadcast("terwin");
 	m_iAccountTerrorist += m_rgRewardAccountRules[RR_VIP_ASSASSINATED];
 
@@ -1177,7 +1175,7 @@ bool CHalfLifeMultiplay::VIP_Died_internal(int winStatus, ScenarioEventEndRound 
 	return true;
 }
 
-bool CHalfLifeMultiplay::VIPRoundEndCheck()
+bool EXT_FUNC CHalfLifeMultiplay::VIPRoundEndCheck()
 {
 	// checks to scenario Escaped VIP on map with vip safety zones
 	if (m_bMapHasVIPSafetyZone && m_pVIP)
@@ -1196,8 +1194,8 @@ bool CHalfLifeMultiplay::VIPRoundEndCheck()
 	return false;
 }
 
-bool CHalfLifeMultiplay::Prison_Escaped_internal(int winStatus, ScenarioEventEndRound event, float tmDelay) {
-
+bool EXT_FUNC CHalfLifeMultiplay::Prison_Escaped_internal(int winStatus, ScenarioEventEndRound event, float tmDelay)
+{
 	Broadcast("terwin");
 	m_iAccountTerrorist += m_rgRewardAccountRules[RR_TERRORISTS_ESCAPED];
 
@@ -1219,8 +1217,8 @@ bool CHalfLifeMultiplay::Prison_Escaped_internal(int winStatus, ScenarioEventEnd
 	return true;
 }
 
-bool CHalfLifeMultiplay::Prison_PreventEscape_internal(int winStatus, ScenarioEventEndRound event, float tmDelay) {
-
+bool EXT_FUNC CHalfLifeMultiplay::Prison_PreventEscape_internal(int winStatus, ScenarioEventEndRound event, float tmDelay)
+{
 	Broadcast("ctwin");
 	// CTs are rewarded based on how many terrorists have escaped...
 	m_iAccountCT += (1 - m_flEscapeRatio) * m_rgRewardAccountRules[RR_CTS_PREVENT_ESCAPE];
@@ -1243,8 +1241,8 @@ bool CHalfLifeMultiplay::Prison_PreventEscape_internal(int winStatus, ScenarioEv
 	return true;
 }
 
-bool CHalfLifeMultiplay::Prison_Neutralized_internal(int winStatus, ScenarioEventEndRound event, float tmDelay) {
-
+bool EXT_FUNC CHalfLifeMultiplay::Prison_Neutralized_internal(int winStatus, ScenarioEventEndRound event, float tmDelay)
+{
 	Broadcast("ctwin");
 	// CTs are rewarded based on how many terrorists have escaped...
 	m_iAccountCT += (1 - m_flEscapeRatio) * m_rgRewardAccountRules[RR_ESCAPING_TERRORISTS_NEUTRALIZED];
@@ -1267,7 +1265,7 @@ bool CHalfLifeMultiplay::Prison_Neutralized_internal(int winStatus, ScenarioEven
 	return true;
 }
 
-bool CHalfLifeMultiplay::PrisonRoundEndCheck(int NumAliveTerrorist, int NumAliveCT, int NumDeadTerrorist, int NumDeadCT)
+bool EXT_FUNC CHalfLifeMultiplay::PrisonRoundEndCheck(int NumAliveTerrorist, int NumAliveCT, int NumDeadTerrorist, int NumDeadCT)
 {
 	// checks to scenario Escaped Terrorist's
 	if (m_bMapHasEscapeZone)
@@ -2734,7 +2732,7 @@ bool CHalfLifeMultiplay::CheckFragLimit()
 	return false;
 }
 
-void CHalfLifeMultiplay::OnRoundFreezeEnd()
+void EXT_FUNC CHalfLifeMultiplay::OnRoundFreezeEnd()
 {
 	// Log this information
 	UTIL_LogPrintf("World triggered \"Round_Start\"\n");
@@ -2778,7 +2776,7 @@ void CHalfLifeMultiplay::OnRoundFreezeEnd()
 	}
 
 	// Reset the round time
-	m_fRoundStartTime = gpGlobals->time;
+	m_fRoundStartTimeReal = m_fRoundStartTime = gpGlobals->time;
 
 	// in seconds
 	m_iRoundTimeSecs = m_iRoundTime;
@@ -3414,7 +3412,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(InitHUD)(CBasePlayer *pl)
 
 		plr->SetScoreboardAttributes(pl);
 
-		if (i != pl->entindex())
+		if (pl->entindex() != i)
 		{
 #ifndef REGAMEDLL_FIXES
 			if (plr->pev->flags == FL_DORMANT)

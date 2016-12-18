@@ -2286,7 +2286,7 @@ BOOL HandleRadioAliasCommands(CBasePlayer *pPlayer, const char *pszCommand)
 	return FALSE;
 }
 
-bool InternalCommand(edict_t *pEntity, const char *cmd) {
+bool EXT_FUNC InternalCommand(edict_t *pEntity, const char *cmd) {
 	return true;
 }
 
@@ -2308,131 +2308,13 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 	entvars_t *pev = &pEntity->v;
 	CBasePlayer *player = GetClassPtr<CCSPlayer>((CBasePlayer *)pev);
 
-	if (FStrEq(pcmd, "vip"))
-	{
-		/*for (int i = 0; i < MAX_VIP_QUEUES; ++i)
-		{
-			if (CSGameRules()->m_pVIPQueue[i])
-			{
-				printf(" -> (%d) (%p)", i, CSGameRules()->m_pVIPQueue[i]);
-				printf(" -> (%s)", STRING(CSGameRules()->m_pVIPQueue[i]->pev->netname));
-				printf(" -> index: (%d)\n", ENTINDEX(CSGameRules()->m_pVIPQueue[i]->edict()));
-			}
-		}*/
-
-		auto pEdict = FIND_ENTITY_BY_CLASSNAME(nullptr, "trigger_zone");
-		if (pEdict)
-		{
-			printf("	-> pEdict: (%p) -> pEdict->v.solid: (%d)\n", pEdict, pEdict->v.solid);
-		} else {
-
-			printf("	-> pEdict: (%p)\n", pEdict);
-		}
-	} else
 	if (FStrEq(pcmd, "say"))
 	{
-
-		auto pcmd2 = CMD_ARGV_(1);
-
-		if (FStrEq(pcmd2, "q"))				// nety
-		{
-			//char szMessage[190];
-			//Q_snprintf(szMessage, sizeof(szMessage), "\x1[\x4Tag\x1] Hey \x3%s\x1, welcome to join us on the server\x4.", STRING(pev->netname));
-
-			//MESSAGE_BEGIN(MSG_ONE, gmsgSayText, NULL, pev);
-			//	WRITE_BYTE(player->entindex());
-			///	WRITE_STRING(UTIL_VarArgs("\1[\4Aim Detector\1] Hey \3%s\1, welcome to join us on the server\4.", STRING(pev->netname)));
-			//MESSAGE_END();
-
-
-		} else
-		if (FStrEq(pcmd2, "h"))				// nety
-		{
-			//printf("	-> m_iHideHUD: (%d)", pPlayer->m_iHideHUD);
-			UTIL_SayText(UTIL_VarArgs("	-> m_iHideHUD: (%d)", player->m_iHideHUD), player);
-
-		} else
-		if (FStrEq(pcmd2, "h_weapon"))				// nety
-		{
-			player->m_iHideHUD |= HIDEHUD_WEAPONS;
-
-		} else
-		if (FStrEq(pcmd2, "h_timer"))				// ectb spec crosshair, ecli ectb npuLleJL
-		{
-			player->m_iHideHUD |= HIDEHUD_TIMER;
-
-		} else
-		if (FStrEq(pcmd2, "h_money"))				// ectb spec crosshair, ecli ectb npuLleJL
-		{
-			player->m_iHideHUD |= HIDEHUD_MONEY;
-
-		} else
-		if (FStrEq(pcmd2, "h_all"))				// nety
-		{
-			player->m_iHideHUD |= HIDEHUD_ALL;
-
-		} else
-		if (FStrEq(pcmd2, "h_flash"))				// ectb spec crosshair, ecli ectb npuLleJL
-		{
-			player->m_iHideHUD |= HIDEHUD_FLASHLIGHT;
-
-		} else
-		if (FStrEq(pcmd2, "h_hp"))				// ectb spec crosshair, ecli ectb npuLleJL
-		{
-			player->m_iHideHUD |= HIDEHUD_HEALTH;
-
-		} else
-		if (FStrEq(pcmd2, "h_cross"))
-		{
-			player->m_iHideHUD |= HIDEHUD_CROSSHAIR;
-
-		} else
-		if (FStrEq(pcmd2, "h_7"))
-		{
-			player->m_iHideHUD |= (1<<7);
-
-		} else
-		if (FStrEq(pcmd2, "h_8"))
-		{
-			player->m_iHideHUD |= (1<<8);
-
-		} else
-		if (FStrEq(pcmd2, "h_9"))
-		{
-			player->m_iHideHUD |= (1<<9);
-
-		} else
-		if (FStrEq(pcmd2, "h_10"))
-		{
-			player->m_iHideHUD |= (1<<10);
-
-		} else
-		if (FStrEq(pcmd2, "h_clear"))
-		{
-			player->m_iHideHUD = 0;
-
-		} else
-
-
-
-
-
-
-
-
-		{
-
-
 		if (gpGlobals->time >= player->m_flLastCommandTime[CMD_SAY])
 		{
 			player->m_flLastCommandTime[CMD_SAY] = gpGlobals->time + 0.3f;
 			Host_Say(pEntity, FALSE);
 		}
-		}
-
-
-
-
 	}
 	else if (FStrEq(pcmd, "say_team"))
 	{
@@ -3425,6 +3307,8 @@ void EXT_FUNC ServerDeactivate()
 	{
 		g_pHostages->ServerDeactivate();
 	}
+
+	WeaponInfoReset();
 }
 
 void EXT_FUNC ServerActivate(edict_t *pEdictList, int edictCount, int clientMax)

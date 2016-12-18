@@ -352,7 +352,6 @@ void W_Precache()
 	Q_memset(IMPL_CLASS(CBasePlayerItem, AmmoInfoArray), 0, sizeof(IMPL_CLASS(CBasePlayerItem, AmmoInfoArray)));
 
 	giAmmoIndex = 0;
-	WeaponInfoReset();
 
 	// custom items...
 

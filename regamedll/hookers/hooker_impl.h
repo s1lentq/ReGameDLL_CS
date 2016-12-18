@@ -862,7 +862,7 @@ extern DLL_FUNCTIONS gFunctionTable;
 extern NEW_DLL_FUNCTIONS gNewDLLFunctions;
 extern char grgszTextureName[1024][17];
 extern char grgchTextureType[1024];
-extern int fTextureTypeInit;
+extern BOOL fTextureTypeInit;
 extern struct sentenceg rgsentenceg[200];
 extern int fSentencesInit;
 extern int gcallsentences;
