@@ -8465,7 +8465,29 @@ void CBasePlayer::ClientCommand(const char *cmd, const char *arg1, const char *a
 	BotArgs[3] = arg3;
 
 	UseBotArgs = true;
-	::ClientCommand(ENT(pev));
+
+	auto pEntity = ENT(pev);
+	auto addr = &::ClientCommand;
+
+	// NOTE: force __cdecl to allow cstrike amxx module to hook ClientCommand
+#if defined _MSC_VER || defined __INTEL_COMPILER
+	__asm
+	{
+		push pEntity;
+		call addr;
+		add esp, 4;
+	}
+#else
+	asm volatile (
+		"pushl %0\n\t"
+		"call %1\n\t"
+		"addl %%esp, $4\n\t"
+		::
+		"g" (pEntity),
+		"g" (addr),
+	);
+#endif // _MSC_VER || defined __INTEL_COMPILER
+
 	UseBotArgs = false;
 }
 
