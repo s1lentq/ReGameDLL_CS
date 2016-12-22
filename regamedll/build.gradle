@@ -130,6 +130,8 @@ void setupToolchain(NativeBinarySpec b)
 			cfg.linkerOptions.randomizedBaseAddress = false
 			cfg.linkerOptions.baseAddress = '0x4970000'
 		}
+		cfg.projectLibpath(project, '/lib')
+		cfg.extraLibs 'libacof32.lib'
 	}
 	else if (cfg instanceof GccToolchainConfig)
 	{
@@ -153,7 +155,8 @@ void setupToolchain(NativeBinarySpec b)
 
 		cfg.linkerOptions.args '-no-opt-class-analysis'
 		cfg.compilerOptions.args '-Qoption,cpp,--treat_func_as_string_literal_cpp', '-g0', '-fno-rtti'
-		cfg.extraLibs 'dl', 'm', 'stdc++'
+		cfg.projectLibpath(project, '/lib/linux32')
+		cfg.extraLibs 'dl', 'm', 'stdc++', 'aelf32'
 	}
 
 	if (mpLib && GradleCppUtils.windows && !unitTestExecutable) {

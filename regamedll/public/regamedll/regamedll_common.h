@@ -41,6 +41,57 @@
 #define Q_alloca alloca
 #define Q_free free
 
+#ifdef REGAMEDLL_FIXES
+#define Q_sqrt M_sqrt
+#define Q_min M_min
+#define Q_max M_max
+#define Q_clamp M_clamp
+#define Q_access _access
+#define Q_close _close
+#define Q_write _write
+#define Q_memset A_memset
+#define Q_memcpy A_memcpy
+#define Q_memcmp A_memcmp
+#define Q_memmove A_memmove
+#define Q_strlen A_strlen
+#define Q_strcpy A_strcpy
+#define Q_strncpy strncpy
+#define Q_strrchr A_strrchr
+#define Q_strcat A_strcat
+#define Q_strncat strncat
+#define Q_strcmp A_strcmp
+#define Q_strncmp strncmp
+#define Q_sscanf sscanf
+#define Q_strdup _strdup
+#define Q_stricmp _stricmp
+#define Q_strnicmp _strnicmp
+#define Q_strstr A_strstr
+#define Q_strchr strchr
+#define Q_strrchr A_strrchr
+#define Q_strlwr A_strtolower
+#define Q_sprintf sprintf
+#define Q_snprintf _snprintf
+#define Q_atoi atoi
+#define Q_atof atof
+#define Q_toupper toupper
+#define Q_vsnprintf _vsnprintf
+#define Q_vsnwprintf _vsnwprintf
+#define Q_abs abs
+#define Q_fabs fabs
+#define Q_tan tan
+#define Q_atan atan
+#define Q_atan2 atan2
+#define Q_acos acos
+#define Q_cos cos
+#define Q_sin sin
+#define Q_pow pow
+#define Q_fmod fmod
+#define Q_fopen fopen
+#define Q_fwrite fwrite
+#define Q_fprintf fprintf
+#define Q_fclose fclose
+#else
+#define Q_sqrt sqrt
 #define Q_min min
 #define Q_max max
 #define Q_clamp clamp
@@ -49,8 +100,9 @@
 #define Q_write _write
 #define Q_memset memset
 #define Q_memcpy memcpy
-#define Q_strlen strlen
 #define Q_memcmp memcmp
+#define Q_memmove memmove
+#define Q_strlen strlen
 #define Q_strcpy strcpy
 #define Q_strncpy strncpy
 #define Q_strrchr strrchr
@@ -71,7 +123,6 @@
 #define Q_atoi atoi
 #define Q_atof atof
 #define Q_toupper toupper
-#define Q_memmove memmove
 #define Q_vsnprintf _vsnprintf
 #define Q_vsnwprintf _vsnwprintf
 #define Q_abs abs
@@ -88,9 +139,4 @@
 #define Q_fwrite fwrite
 #define Q_fprintf fprintf
 #define Q_fclose fclose
-
-#ifdef REGAMEDLL_FIXES
-#define Q_sqrt M_sqrt
-#else
-#define Q_sqrt sqrt
 #endif
