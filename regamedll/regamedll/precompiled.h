@@ -6,6 +6,7 @@
 #include "basetypes.h"
 #include "archtypes.h"
 #include "sse_mathfun.h"
+#include "asmlib.h"
 
 #include "MemPool.h"
 #include "engine.h"

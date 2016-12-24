@@ -1127,6 +1127,9 @@
     <ClInclude Include="..\dlls\mapinfo.h">
       <Filter>dlls</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\asmlib.h">
+      <Filter>public</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\linux\appversion.sh">

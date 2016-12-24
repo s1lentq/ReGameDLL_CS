@@ -1075,6 +1075,7 @@
     <ClInclude Include="..\pm_shared\pm_movevars.h" />
     <ClInclude Include="..\pm_shared\pm_shared.h" />
     <ClInclude Include="..\public\archtypes.h" />
+    <ClInclude Include="..\public\asmlib.h" />
     <ClInclude Include="..\public\basetypes.h" />
     <ClInclude Include="..\public\commonmacros.h" />
     <ClInclude Include="..\public\FileSystem.h" />
