@@ -1681,7 +1681,10 @@ void EXT_FUNC CHalfLifeMultiplay::__API_VHOOK(RestartRound)()
 		g_pHostages->RestartRound();
 	}
 
+#ifndef REGAMEDLL_FIXES
 	++m_iTotalRoundsPlayed;
+#endif
+
 	ClearBodyQue();
 
 	// Hardlock the player accelaration to 5.0
@@ -1810,6 +1813,12 @@ void EXT_FUNC CHalfLifeMultiplay::__API_VHOOK(RestartRound)()
 			TheBots->OnEvent(EVENT_NEW_MATCH);
 		}
 	}
+#ifdef REGAMEDLL_FIXES
+	else
+	{
+		m_iTotalRoundsPlayed++;
+	}
+#endif
 
 	m_bFreezePeriod = TRUE;
 	m_bRoundTerminating = false;

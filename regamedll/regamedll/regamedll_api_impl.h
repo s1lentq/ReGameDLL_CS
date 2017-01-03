@@ -350,6 +350,10 @@ typedef IVoidHookChainRegistryClassEmptyImpl<class CHalfLifeMultiplay> CReGameHo
 typedef IVoidHookChainClassImpl<class CHalfLifeMultiplay> CReGameHook_CSGameRules_OnRoundFreezeEnd;
 typedef IVoidHookChainRegistryClassEmptyImpl<class CHalfLifeMultiplay> CReGameHookRegistry_CSGameRules_OnRoundFreezeEnd;
 
+// PM_UpdateStepSound hook
+typedef IVoidHookChainImpl<> CReGameHook_PM_UpdateStepSound;
+typedef IVoidHookChainRegistryImpl<> CReGameHookRegistry_PM_UpdateStepSound;
+
 class CReGameHookchains: public IReGameHookchains {
 public:
 	// CBasePlayer virtual
@@ -436,6 +440,7 @@ public:
 	CReGameHookRegistry_CSGameRules_GoToIntermission m_CSGameRules_GoToIntermission;
 	CReGameHookRegistry_CSGameRules_BalanceTeams m_CSGameRules_BalanceTeams;
 	CReGameHookRegistry_CSGameRules_OnRoundFreezeEnd m_CSGameRules_OnRoundFreezeEnd;
+	CReGameHookRegistry_PM_UpdateStepSound m_PM_UpdateStepSound;
 
 public:
 	virtual IReGameHookRegistry_CBasePlayer_Spawn* CBasePlayer_Spawn();
@@ -521,6 +526,7 @@ public:
 	virtual IReGameHookRegistry_CSGameRules_GoToIntermission* CSGameRules_GoToIntermission();
 	virtual IReGameHookRegistry_CSGameRules_BalanceTeams* CSGameRules_BalanceTeams();
 	virtual IReGameHookRegistry_CSGameRules_OnRoundFreezeEnd* CSGameRules_OnRoundFreezeEnd();
+	virtual IReGameHookRegistry_PM_UpdateStepSound* PM_UpdateStepSound();
 };
 
 extern CReGameHookchains g_ReGameHookchains;

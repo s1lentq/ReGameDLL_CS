@@ -373,7 +373,9 @@ void PM_CatagorizeTextureType()
 	pmove->chtexturetype = PM_FindTextureType(pmove->sztexturename);
 }
 
-void PM_UpdateStepSound()
+LINK_HOOK_VOID_CHAIN2(PM_UpdateStepSound);
+
+void EXT_FUNC __API_HOOK(PM_UpdateStepSound)()
 {
 	float fvol;
 	vec3_t knee;
