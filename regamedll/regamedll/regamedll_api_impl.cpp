@@ -139,6 +139,7 @@ GAMEHOOK_REGISTRY(CSGameRules_ChangeLevel);
 GAMEHOOK_REGISTRY(CSGameRules_GoToIntermission);
 GAMEHOOK_REGISTRY(CSGameRules_BalanceTeams);
 GAMEHOOK_REGISTRY(CSGameRules_OnRoundFreezeEnd);
+GAMEHOOK_REGISTRY(PM_UpdateStepSound);
 
 int EXT_FUNC CReGameApi::GetMajorVersion() {
 	return REGAMEDLL_API_VERSION_MAJOR;

@@ -516,6 +516,10 @@ void CHostage::Remove()
 	pev->solid = SOLID_NOT;
 	pev->takedamage = DAMAGE_NO;
 
+#ifdef REGAMEDLL_FIXES
+	pev->deadflag = DEAD_DEAD;
+#endif
+
 	UTIL_SetSize(pev, Vector(0, 0, 0), Vector(0, 0, 0));
 	pev->nextthink = -1;
 	m_flNextFullThink = -1;
