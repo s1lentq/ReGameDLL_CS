@@ -204,10 +204,14 @@ void CBot::__MAKE_VHOOK(ClearPrimaryAttack)()
 
 void CBot::__MAKE_VHOOK(TogglePrimaryAttack)()
 {
+#ifdef REGAMEDLL_FIXES
+	m_buttonFlags ^= IN_ATTACK;
+#else
 	if (m_buttonFlags & IN_ATTACK)
 		m_buttonFlags &= ~IN_ATTACK;
 	else
 		m_buttonFlags |= IN_ATTACK;
+#endif
 }
 
 void CBot::__MAKE_VHOOK(SecondaryAttack)()
