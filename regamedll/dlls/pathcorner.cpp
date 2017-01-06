@@ -65,10 +65,7 @@ void CPathTrack::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller
 
 		if (ShouldToggle(useType, on))
 		{
-			if (on)
-				pev->spawnflags |= SF_PATH_ALTERNATE;
-			else
-				pev->spawnflags &= ~SF_PATH_ALTERNATE;
+			pev->spawnflags ^= SF_PATH_ALTERNATE;
 		}
 	}
 	else	// Use toggles between enabled/disabled
@@ -77,10 +74,7 @@ void CPathTrack::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller
 
 		if (ShouldToggle(useType, on))
 		{
-			if (on)
-				pev->spawnflags |= SF_PATH_DISABLED;
-			else
-				pev->spawnflags &= ~SF_PATH_DISABLED;
+			pev->spawnflags ^= SF_PATH_DISABLED;
 		}
 	}
 }

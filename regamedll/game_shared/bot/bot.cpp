@@ -204,10 +204,7 @@ void CBot::__MAKE_VHOOK(ClearPrimaryAttack)()
 
 void CBot::__MAKE_VHOOK(TogglePrimaryAttack)()
 {
-	if (m_buttonFlags & IN_ATTACK)
-		m_buttonFlags &= ~IN_ATTACK;
-	else
-		m_buttonFlags |= IN_ATTACK;
+	m_buttonFlags ^= IN_ATTACK;
 }
 
 void CBot::__MAKE_VHOOK(SecondaryAttack)()
