@@ -20,7 +20,7 @@ class RegamedllVersionInfo {
 	String commitURL
 	Integer commitCount
 
-	String asMavenVersion() {
+	String asMavenVersion(boolean extra = true) {
 		StringBuilder sb = new StringBuilder()
 		sb.append(majorVersion).append('.' + minorVersion);
 		if (maintenanceVersion != null) {
@@ -31,21 +31,23 @@ class RegamedllVersionInfo {
 			sb.append('.' + commitCount)
 		}
 
-		if (suffix) {
+		if (extra && suffix) {
 			sb.append('-' + suffix)
 		}
 
 		// do mark for this build like a modified version
-		if (localChanges) {
+		if (extra && localChanges) {
 			sb.append('+m');
 		}
 
 		return sb.toString()
 	}
-	String asCommitDate() {
-		String pattern = "MMM  d yyyy";
-		if (commitDate.getDayOfMonth() >= 10) {
-			pattern = "MMM d yyyy";
+	String asCommitDate(String pattern = null) {
+		if (pattern == null) {
+			pattern = "MMM  d yyyy";
+			if (commitDate.getDayOfMonth() >= 10) {
+				pattern = "MMM d yyyy";
+			}
 		}
 
 		return DateTimeFormat.forPattern(pattern).withLocale(Locale.ENGLISH).print(commitDate);
