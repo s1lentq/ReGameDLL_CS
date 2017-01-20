@@ -26,7 +26,7 @@ DLL_FUNCTIONS gFunctionTable =
 	&ClientDisconnect,
 	&ClientKill,
 	&ClientPutInServer,
-	&ClientCommand,
+	&ClientCommand_,
 	&ClientUserInfoChanged,
 	&ServerActivate,
 	&ServerDeactivate,

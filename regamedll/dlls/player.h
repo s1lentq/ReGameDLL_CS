@@ -440,6 +440,7 @@ public:
 	CBasePlayer *Observer_IsValidTarget_(int iPlayerIndex, bool bSameTeam);
 
 	void Disconnect();
+	void Observer_Think();
 	void Observer_HandleButtons();
 	void Observer_SetMode(int iMode);
 	void Observer_CheckTarget();
@@ -527,6 +528,7 @@ public:
 	void SendFOV(int fov);
 	void WaterMove();
 	void EXPORT PlayerDeathThink();
+	void PlayerRespawnThink();
 	void PlayerUse();
 	void HostageUsed();
 	void JoiningThink();

@@ -150,12 +150,10 @@ extern globalvars_t *gpGlobals;
 #define PLAYBACK_EVENT_DELAY(flags, who, index, delay)\
 		PLAYBACK_EVENT_FULL(flags, who, index, delay, (float *)&g_vecZero, (float *)&g_vecZero, 0.0, 0.0, 0, 0, 0, 0)
 
-#ifndef HOOK_GAMEDLL
-
+#if !defined(HOOK_GAMEDLL)
 #define __MAKE_VHOOK(fname)\
 	fname
-
-#endif
+#endif // !defined(HOOK_GAMEDLL) && defined(REGAMEDLL_API)
 
 #define LINK_ENTITY_TO_CLASS(mapClassName, DLLClassName, DLLClassWrapName)\
 	C_DLLEXPORT void EXT_FUNC mapClassName(entvars_t *pev);\

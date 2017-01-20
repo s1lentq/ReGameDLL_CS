@@ -79,7 +79,7 @@ void CWorldItem::__MAKE_VHOOK(Spawn)()
 		break;
 	}
 
-	if (pEntity != NULL)
+	if (pEntity)
 	{
 		pEntity->pev->target = pev->target;
 		pEntity->pev->targetname = pev->targetname;
@@ -369,7 +369,7 @@ BOOL CItemKevlar::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
 		WRITE_BYTE(0);
 	MESSAGE_END();
 
-	if (TheTutor != NULL)
+	if (TheTutor)
 	{
 		TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, pPlayer);
 	}
@@ -411,7 +411,7 @@ BOOL CItemAssaultSuit::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
 		WRITE_BYTE(1);
 	MESSAGE_END();
 
-	if (TheTutor != NULL)
+	if (TheTutor)
 	{
 		TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, pPlayer);
 	}
@@ -459,7 +459,7 @@ BOOL CItemThighPack::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
 	pPlayer->SendItemStatus();
 	EMIT_SOUND(pPlayer->edict(), CHAN_VOICE, "items/kevlar.wav", VOL_NORM, ATTN_NORM);
 
-	if (TheTutor != NULL)
+	if (TheTutor)
 	{
 		TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, pPlayer);
 	}

@@ -580,32 +580,33 @@ void CHostage::TraceAttack(entvars_t *pevAttacker, float flDamage, Vector vecDir
 
 BOOL CHostage::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
-	float flActualDamage;
-	CBasePlayer *pAttacker = NULL;
+#ifdef REGAMEDLL_ADD
+	if (hostagehurtable.value <= 0)
+		return FALSE;
+#endif
 
-	flActualDamage = GetModifiedDamage(flDamage, m_LastHitGroup);
+	float flActualDamage = GetModifiedDamage(flDamage, m_LastHitGroup);
 
 	if (flActualDamage > pev->health)
 		flActualDamage = pev->health;
 
 	pev->health -= flActualDamage;
 
-	if (m_improv != NULL)
+	if (m_improv)
 	{
 		m_improv->OnInjury(flActualDamage);
 	}
 
 	PlayPainSound();
 
-	if (pevAttacker != NULL)
+	CBasePlayer *pAttacker = NULL;
+	if (pevAttacker)
 	{
 		CBaseEntity *pAttackingEnt = GetClassPtr<CCSEntity>((CBaseEntity *)pevAttacker);
-
 		if (pAttackingEnt->Classify() == CLASS_VEHICLE)
 		{
 			CBaseEntity *pDriver = ((CFuncVehicle *)pAttackingEnt)->m_pDriver;
-
-			if (pDriver != NULL)
+			if (pDriver)
 			{
 				pevAttacker = pDriver->pev;
 			}
@@ -622,11 +623,11 @@ BOOL CHostage::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevA
 		m_flFlinchTime = gpGlobals->time + 0.75f;
 		SetFlinchActivity();
 
-		if (pAttacker != NULL)
+		if (pAttacker)
 		{
 			pAttacker->AddAccount(-20 * int(flActualDamage), RT_HOSTAGE_DAMAGED);
 
-			if (TheBots != NULL)
+			if (TheBots)
 			{
 				TheBots->OnEvent(EVENT_HOSTAGE_DAMAGED, this, pAttacker);
 			}
@@ -659,12 +660,12 @@ BOOL CHostage::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevA
 		pev->deadflag = DEAD_DEAD;
 		pev->solid = SOLID_NOT;
 
-		if (TheBots != NULL)
+		if (TheBots)
 		{
 			TheBots->OnEvent(EVENT_HOSTAGE_KILLED, this, pAttacker);
 		}
 
-		if (m_improv != NULL)
+		if (m_improv)
 		{
 			m_improv->Chatter(HOSTAGE_CHATTER_DEATH_CRY);
 		}

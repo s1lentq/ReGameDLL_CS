@@ -65,7 +65,7 @@ CCSBotManager::CCSBotManager()
 		const char *dataFile = SharedParse(dataPointer);
 		const char *token;
 
-		while (dataFile != NULL)
+		while (dataFile)
 		{
 			token = SharedGetToken();
 			char *clone = CloneString(token);
@@ -627,7 +627,7 @@ void CCSBotManager::__MAKE_VHOOK(ServerCommand)(const char *pcmd)
 						break;
 					}
 
-					if (found != NULL)
+					if (found)
 					{
 						isAmbiguous = true;
 					}
@@ -669,10 +669,10 @@ void CCSBotManager::__MAKE_VHOOK(ServerCommand)(const char *pcmd)
 	{
 		// tell the first bot we find to go to our marked area
 		CNavArea *area = GetMarkedArea();
-		if (area != NULL)
+		if (area)
 		{
 			CBaseEntity *pEntity = NULL;
-			while ((pEntity = UTIL_FindEntityByClassname(pEntity, "player")) != NULL)
+			while ((pEntity = UTIL_FindEntityByClassname(pEntity, "player")))
 			{
 				if (!pEntity->IsPlayer())
 					continue;
@@ -685,7 +685,7 @@ void CCSBotManager::__MAKE_VHOOK(ServerCommand)(const char *pcmd)
 				if (playerOrBot->IsBot())
 				{
 					CCSBot *bot = static_cast<CCSBot *>(playerOrBot);
-					if (bot != NULL)
+					if (bot)
 					{
 						bot->MoveTo(&area->m_center, FASTEST_ROUTE);
 					}
@@ -811,7 +811,7 @@ bool CCSBotManager::BotAddCommand(BotProfileTeamType team, bool isFromConsole)
 	{
 		// in career, ignore humans
 		bool ignoreHumans = false;
-		if (CSGameRules() != NULL && CSGameRules()->IsCareer())
+		if (CSGameRules() && CSGameRules()->IsCareer())
 			ignoreHumans = true;
 
 		if (UTIL_IsNameTaken(CMD_ARGV(1), ignoreHumans))
@@ -940,7 +940,7 @@ void CCSBotManager::MaintainBotQuota()
 	}
 	else
 	{
-		if (CSGameRules() != NULL && !CSGameRules()->IsCareer())
+		if (CSGameRules() && !CSGameRules()->IsCareer())
 			return;
 
 		bool humansAreCTs = (Q_strcmp(humans_join_team.string, "CT") == 0);
@@ -1091,7 +1091,8 @@ void CCSBotManager::ValidateMapData()
 				m_zone[ m_zoneCount ].m_center = (isLegacy) ? entity->pev->origin : (entity->pev->absmax + entity->pev->absmin) / 2.0f;
 				m_zone[ m_zoneCount ].m_isLegacy = isLegacy;
 				m_zone[ m_zoneCount ].m_index = m_zoneCount;
-				m_zone[ m_zoneCount++ ].m_entity = entity;
+				m_zone[ m_zoneCount ].m_entity = entity;
+				m_zoneCount++;
 			}
 			else
 				CONSOLE_ECHO("Warning: Too many zones, some will be ignored.\n");
@@ -1104,8 +1105,13 @@ void CCSBotManager::ValidateMapData()
 	{
 		entity = NULL;
 
-		while ((entity = UTIL_FindEntityByClassname(entity, "info_player_start")) != NULL)
+		while ((entity = UTIL_FindEntityByClassname(entity, "info_player_start")))
 		{
+#ifdef REGAMEDLL_FIXES
+			if (m_zoneCount >= MAX_ZONES)
+				break;
+#endif
+
 			if (FNullEnt(entity->edict()))
 				break;
 
@@ -1114,7 +1120,8 @@ void CCSBotManager::ValidateMapData()
 				m_zone[ m_zoneCount ].m_center = entity->pev->origin;
 				m_zone[ m_zoneCount ].m_isLegacy = true;
 				m_zone[ m_zoneCount ].m_index = m_zoneCount;
-				m_zone[ m_zoneCount++ ].m_entity = entity;
+				m_zone[ m_zoneCount ].m_entity = entity;
+				m_zoneCount++;
 			}
 			else
 				CONSOLE_ECHO("Warning: Too many zones, some will be ignored.\n");
@@ -1207,9 +1214,8 @@ bool CCSBotManager::AddBot(const BotProfile *profile, BotProfileTeamType team)
 	if (HandleMenu_ChooseTeam(pBot, nTeamSlot))
 	{
 		int skin = profile->GetSkin();
-
 		if (!skin)
-			skin = 6;// MODEL_GIGN?
+			skin = 6;
 
 		HandleMenu_ChooseAppearance(pBot, skin);
 

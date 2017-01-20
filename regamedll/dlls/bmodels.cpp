@@ -158,7 +158,7 @@ LINK_ENTITY_TO_CLASS(func_illusionary, CFuncIllusionary, CCSFuncIllusionary);
 
 void CFuncIllusionary::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
-	//skin is used for content type
+	// skin is used for content type
 	if (FStrEq(pkvd->szKeyName, "skin"))
 	{
 		pev->skin = Q_atoi(pkvd->szValue);

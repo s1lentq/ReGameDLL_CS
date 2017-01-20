@@ -48,7 +48,7 @@ void DefuseBombState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 	if (!TheCSBots()->IsBombPlanted())
 	{
 #ifdef REGAMEDLL_ADD
-		if (CSGameRules()->HasRoundInfinite(SCENARIO_BLOCK_BOMB)) {
+		if (HasRoundInfinite(SCENARIO_BLOCK_BOMB)) {
 			me->GetGameState()->Reset();
 			me->Hunt();
 			return;

@@ -1013,8 +1013,7 @@ BOOL EXT_FUNC CBasePlayer::__API_VHOOK(TakeDamage)(entvars_t *pevInflictor, entv
 		if (bitsDamageType & DMG_EXPLOSION)
 		{
 			CBaseEntity *temp = GetClassPtr<CCSEntity>((CBaseEntity *)pevInflictor);
-
-			if (!Q_strcmp(STRING(temp->pev->classname), "grenade"))
+			if (FClassnameIs(temp->pev, "grenade"))
 			{
 				CGrenade *pGrenade = GetClassPtr<CCSGrenade>((CGrenade *)pevInflictor);
 
@@ -1161,7 +1160,7 @@ BOOL EXT_FUNC CBasePlayer::__API_VHOOK(TakeDamage)(entvars_t *pevInflictor, entv
 
 	pAttacker = CBaseEntity::Instance(pevAttacker);
 
-	if (!g_pGameRules->FPlayerCanTakeDamage(this, pAttacker) && Q_strcmp("grenade", STRING(pevInflictor->classname)) != 0)
+	if (!g_pGameRules->FPlayerCanTakeDamage(this, pAttacker) && !FClassnameIs(pevInflictor, "grenade"))
 	{
 		// Refuse the damage
 		return FALSE;
@@ -2278,6 +2277,10 @@ void EXT_FUNC CBasePlayer::__API_VHOOK(Killed)(entvars_t *pevAttacker, int iGib)
 	m_bIsDefusing = false;
 	BuyZoneIcon_Clear(this);
 
+#ifdef REGAMEDLL_ADD
+	CSPlayer()->m_flRespawnPending = gpGlobals->time;
+#endif
+
 	SetThink(&CBasePlayer::PlayerDeathThink);
 	pev->nextthink = gpGlobals->time + 0.1f;
 	pev->solid = SOLID_NOT;
@@ -2374,7 +2377,9 @@ void EXT_FUNC CBasePlayer::__API_HOOK(SetAnimation)(PLAYER_ANIM playerAnim)
 		case PLAYER_DIE:
 		{
 			m_IdealActivity = ACT_DIESIMPLE;
+#ifndef REGAMEDLL_FIXES
 			DeathSound();
+#endif
 			break;
 		}
 		case PLAYER_ATTACK1:
@@ -3265,17 +3270,16 @@ void EXT_FUNC CBasePlayer::__API_HOOK(AddAccount)(int amount, RewardType type, b
 
 void CBasePlayer::ResetMenu()
 {
+#ifdef REGAMEDLL_FIXES
+	m_iMenu = Menu_OFF;
+#endif
+
 	MESSAGE_BEGIN(MSG_ONE, gmsgShowMenu, NULL, pev);
 		WRITE_SHORT(0);
 		WRITE_CHAR(0);
 		WRITE_BYTE(0);
 		WRITE_STRING("");
 	MESSAGE_END();
-
-#ifdef REGAMEDLL_FIXES
-	m_iMenu = Menu_OFF;
-#endif
-
 }
 
 void CBasePlayer::SyncRoundTimer()
@@ -3586,7 +3590,6 @@ void CBasePlayer::PlayerDeathThink()
 	if (pev->flags & FL_ONGROUND)
 	{
 		float flForward = pev->velocity.Length() - 20;
-
 		if (flForward <= 0)
 			pev->velocity = g_vecZero;
 		else
@@ -3632,16 +3635,13 @@ void CBasePlayer::PlayerDeathThink()
 	{
 		// if the player has been dead for one second longer than allowed by forcerespawn,
 		// forcerespawn isn't on. Send the player off to an intermission camera until they choose to respawn.
-		if (g_pGameRules->IsMultiplayer())
+		if (g_pGameRules->IsMultiplayer() && gpGlobals->time > m_fDeadTime + 3 && !(m_afPhysicsFlags & PFLAG_OBSERVER))
 		{
-			if (gpGlobals->time > m_fDeadTime + 3.0f && !(m_afPhysicsFlags & PFLAG_OBSERVER))
-			{
-				// Send message to everybody to spawn a corpse.
-				SpawnClientSideCorpse();
+			// Send message to everybody to spawn a corpse.
+			SpawnClientSideCorpse();
 
-				// go to dead camera.
-				StartDeathCam();
-			}
+			// go to dead camera.
+			StartDeathCam();
 		}
 	}
 
@@ -3650,17 +3650,16 @@ void CBasePlayer::PlayerDeathThink()
 	{
 #ifdef REGAMEDLL_ADD
 		// wait for any button down, or mp_forcerespawn is set and the respawn time is up
-		if (forcerespawn.value > 0 && (fAnyButtonDown || (gpGlobals->time > (m_fDeadTime + forcerespawn.value))))
+		if (forcerespawn.value > 0 && gpGlobals->time > (m_fDeadTime + forcerespawn.value))
 		{
 			respawn(pev, FALSE);
 			pev->button = 0;
 			pev->nextthink = -1;
 			return;
 		}
-#else
+#endif
 		if (fAnyButtonDown)
 			return;
-#endif
 
 		if (g_pGameRules->FPlayerCanRespawn(this))
 		{
@@ -3709,13 +3708,8 @@ void EXT_FUNC CBasePlayer::__API_VHOOK(RoundRespawn)()
 		pev->nextthink = -1;
 	}
 
-	if (m_pActiveItem)
-	{
-		if (m_pActiveItem->iItemSlot() == GRENADE_SLOT)
-		{
-			SwitchWeapon(m_pActiveItem);
-		}
-	}
+	if (m_pActiveItem && m_pActiveItem->iItemSlot() == GRENADE_SLOT)
+		SwitchWeapon(m_pActiveItem);
 
 	m_lastLocation[0] = '\0';
 
@@ -3732,6 +3726,10 @@ void EXT_FUNC CBasePlayer::__API_VHOOK(RoundRespawn)()
 // player off into observer mode
 void CBasePlayer::StartDeathCam()
 {
+#ifdef REGAMEDLL_FXIES
+	m_canSwitchObserverModes = true;
+#endif
+
 	if (pev->view_ofs == g_vecZero)
 	{
 		// don't accept subsequent attempts to StartDeathCam()
@@ -4356,12 +4354,14 @@ void EXT_FUNC CBasePlayer::__API_VHOOK(PreThink)()
 	else
 		pev->flags &= ~FL_ONTRAIN;
 
+#ifdef REGAMEDLL_ADD
+	PlayerRespawnThink();
+#endif
+
 	// Observer Button Handling
 	if (IsObserver() && (m_afPhysicsFlags & PFLAG_OBSERVER))
 	{
-		Observer_HandleButtons();
-		Observer_CheckTarget();
-		Observer_CheckProperties();
+		Observer_Think();
 		return;
 	}
 
@@ -4924,6 +4924,12 @@ void EXT_FUNC CBasePlayer::__API_VHOOK(PostThink)()
 
 	StudioFrameAdvance();
 	CheckPowerups();
+
+#ifdef REGAMEDLL_ADD
+	if (m_flTimeStepSound) {
+		pev->flTimeStepSound = int(m_flTimeStepSound);
+	}
+#endif
 
 	// NOTE: this is useless for CS 1.6 - s1lent
 #ifndef REGAMEDLL_FIXES
@@ -8222,6 +8228,16 @@ int GetPlayerGaitsequence(const edict_t *pEdict)
 
 void CBasePlayer::SpawnClientSideCorpse()
 {
+#ifdef REGAMEDLL_FIXES
+	// not allow to spawn, if the player was torn to gib
+	if (pev->effects & EF_NODRAW)
+		return;
+
+	// do not make a corpse if the player goes to respawn.
+	if (pev->deadflag == DEAD_RESPAWNABLE)
+		return;
+#endif
+
 	char *infobuffer = GET_INFO_BUFFER(edict());
 	char *pModel = GET_KEY_VALUE(infobuffer, "model");
 
@@ -8467,14 +8483,13 @@ void CBasePlayer::ClientCommand(const char *cmd, const char *arg1, const char *a
 	UseBotArgs = true;
 
 	auto pEntity = ENT(pev);
-	auto addr = &::ClientCommand;
 
 	// NOTE: force __cdecl to allow cstrike amxx module to hook ClientCommand
 #if defined _MSC_VER || defined __INTEL_COMPILER
 	__asm
 	{
-		push pEntity;
-		call addr;
+		push pEntity
+		call ClientCommand_;
 		add esp, 4;
 	}
 #else
@@ -8484,7 +8499,7 @@ void CBasePlayer::ClientCommand(const char *cmd, const char *arg1, const char *a
 		"addl %%esp, $4\n\t"
 		::
 		"g" (pEntity),
-		"g" (addr),
+		"g" (ClientCommand_),
 	);
 #endif // _MSC_VER || defined __INTEL_COMPILER
 
@@ -9679,4 +9694,30 @@ bool EXT_FUNC CBasePlayer::__API_HOOK(GetIntoGame)()
 	}
 
 	return true;
+}
+
+void CBasePlayer::PlayerRespawnThink()
+{
+#ifdef REGAMEDLL_ADD
+	if (IsObserver() && (m_afPhysicsFlags & PFLAG_OBSERVER) && (m_iTeam == UNASSIGNED || m_iTeam == SPECTATOR))
+		return;
+
+	// Player cannot respawn while in the Choose Appearance menu
+	if (m_iMenu == Menu_ChooseAppearance || m_iJoiningState == SHOWTEAMSELECT)
+		return;
+
+	if (pev->deadflag < DEAD_DYING)
+		return;
+
+	if (forcerespawn.value)
+	{
+		if (gpGlobals->time > (CSPlayer()->m_flRespawnPending + forcerespawn.value))
+		{
+			Spawn();
+			pev->button = 0;
+			pev->nextthink = -1;
+			return;
+		}
+	}
+#endif
 }

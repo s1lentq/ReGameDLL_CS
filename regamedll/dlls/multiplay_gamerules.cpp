@@ -239,78 +239,78 @@ void Broadcast(const char *sentence)
 	MESSAGE_END();
 }
 
-char *GetTeam(int teamNo)
+char *GetTeam(int team)
 {
-	switch (teamNo)
+	switch (team)
 	{
-	case TERRORIST:
-		return "TERRORIST";
-	case CT:
-		return "CT";
-	case SPECTATOR:
-		return "SPECTATOR";
-	default:
-		break;
+	case CT:	return "CT";
+	case TERRORIST:	return "TERRORIST";
+	case SPECTATOR:	return "SPECTATOR";
+	default:	return "";
 	}
-
-	return "";
 }
 
 void CHalfLifeMultiplay::EndRoundMessage(const char *sentence, int event)
 {
 	char *team = NULL;
-	const char *message = &(sentence[1]);
+	const char *message = sentence;
 	bool bTeamTriggered = true;
 
-	UTIL_ClientPrintAll(HUD_PRINTCENTER, sentence);
+	if (sentence[0] == '#')
+		message = sentence + 1;
 
-	switch (event)
+	if (sentence[0])
 	{
-	case ROUND_TARGET_BOMB:
-	case ROUND_VIP_ASSASSINATED:
-	case ROUND_TERRORISTS_ESCAPED:
-	case ROUND_TERRORISTS_WIN:
-	case ROUND_HOSTAGE_NOT_RESCUED:
-	case ROUND_VIP_NOT_ESCAPED:
-		team = GetTeam(TERRORIST);
-		// tell bots the terrorists won the round
-		if (TheBots)
-		{
-			TheBots->OnEvent(EVENT_TERRORISTS_WIN);
-		}
-		break;
-	case ROUND_VIP_ESCAPED:
-	case ROUND_CTS_PREVENT_ESCAPE:
-	case ROUND_ESCAPING_TERRORISTS_NEUTRALIZED:
-	case ROUND_BOMB_DEFUSED:
-	case ROUND_CTS_WIN:
-	case ROUND_ALL_HOSTAGES_RESCUED:
-	case ROUND_TARGET_SAVED:
-	case ROUND_TERRORISTS_NOT_ESCAPED:
-		team = GetTeam(CT);
-		// tell bots the CTs won the round
-		if (TheBots)
-		{
-			TheBots->OnEvent(EVENT_CTS_WIN);
-		}
-		break;
-	default:
-		bTeamTriggered = false;
-		// tell bots the round was a draw
-		if (TheBots)
-		{
-			TheBots->OnEvent(EVENT_ROUND_DRAW);
-		}
-		break;
-	}
+		UTIL_ClientPrintAll(HUD_PRINTCENTER, sentence);
 
-	if (bTeamTriggered)
-	{
-		UTIL_LogPrintf("Team \"%s\" triggered \"%s\" (CT \"%i\") (T \"%i\")\n", team, message, m_iNumCTWins, m_iNumTerroristWins);
-	}
-	else
-	{
-		UTIL_LogPrintf("World triggered \"%s\" (CT \"%i\") (T \"%i\")\n", message, m_iNumCTWins, m_iNumTerroristWins);
+		switch (event)
+		{
+		case ROUND_TARGET_BOMB:
+		case ROUND_VIP_ASSASSINATED:
+		case ROUND_TERRORISTS_ESCAPED:
+		case ROUND_TERRORISTS_WIN:
+		case ROUND_HOSTAGE_NOT_RESCUED:
+		case ROUND_VIP_NOT_ESCAPED:
+			team = GetTeam(TERRORIST);
+			// tell bots the terrorists won the round
+			if (TheBots)
+			{
+				TheBots->OnEvent(EVENT_TERRORISTS_WIN);
+			}
+			break;
+		case ROUND_VIP_ESCAPED:
+		case ROUND_CTS_PREVENT_ESCAPE:
+		case ROUND_ESCAPING_TERRORISTS_NEUTRALIZED:
+		case ROUND_BOMB_DEFUSED:
+		case ROUND_CTS_WIN:
+		case ROUND_ALL_HOSTAGES_RESCUED:
+		case ROUND_TARGET_SAVED:
+		case ROUND_TERRORISTS_NOT_ESCAPED:
+			team = GetTeam(CT);
+			// tell bots the CTs won the round
+			if (TheBots)
+			{
+				TheBots->OnEvent(EVENT_CTS_WIN);
+			}
+			break;
+		default:
+			bTeamTriggered = false;
+			// tell bots the round was a draw
+			if (TheBots)
+			{
+				TheBots->OnEvent(EVENT_ROUND_DRAW);
+			}
+			break;
+		}
+
+		if (bTeamTriggered)
+		{
+			UTIL_LogPrintf("Team \"%s\" triggered \"%s\" (CT \"%i\") (T \"%i\")\n", team, message, m_iNumCTWins, m_iNumTerroristWins);
+		}
+		else
+		{
+			UTIL_LogPrintf("World triggered \"%s\" (CT \"%i\") (T \"%i\")\n", message, m_iNumCTWins, m_iNumTerroristWins);
+		}
 	}
 
 	UTIL_LogPrintf("World triggered \"Round_End\"\n");
@@ -1681,9 +1681,12 @@ void EXT_FUNC CHalfLifeMultiplay::__API_VHOOK(RestartRound)()
 		g_pHostages->RestartRound();
 	}
 
-#ifndef REGAMEDLL_FIXES
-	++m_iTotalRoundsPlayed;
+#ifdef REGAMEDLL_FIXES
+	if (!m_bCompleteReset)
 #endif
+	{
+		++m_iTotalRoundsPlayed;
+	}
 
 	ClearBodyQue();
 
@@ -1752,7 +1755,7 @@ void EXT_FUNC CHalfLifeMultiplay::__API_VHOOK(RestartRound)()
 		UTIL_ClientPrintAll(HUD_PRINTCENTER, "#Auto_Team_Balance_Next_Round");
 	}
 #ifdef REGAMEDLL_ADD
-	else if (autoteambalance.value > 1 && m_iUnBalancedRounds >= 1)
+	else if (autoteambalance.value >= 2 && m_iUnBalancedRounds >= 1)
 	{
 		BalanceTeams();
 	}
@@ -1813,12 +1816,6 @@ void EXT_FUNC CHalfLifeMultiplay::__API_VHOOK(RestartRound)()
 			TheBots->OnEvent(EVENT_NEW_MATCH);
 		}
 	}
-#ifdef REGAMEDLL_FIXES
-	else
-	{
-		m_iTotalRoundsPlayed++;
-	}
-#endif
 
 	m_bFreezePeriod = TRUE;
 	m_bRoundTerminating = false;
@@ -3638,20 +3635,19 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(PlayerThink)(CBasePlayer *pPlayer)
 
 	if (pPlayer->m_iMenu != Menu_ChooseTeam && pPlayer->m_iJoiningState == SHOWTEAMSELECT)
 	{
-		int team = MENU_SLOT_TEAM_UNDEFINED;
-
+		int slot = MENU_SLOT_TEAM_UNDEFINED;
 		if (!Q_stricmp(humans_join_team.string, "T"))
 		{
-			team = MENU_SLOT_TEAM_TERRORIST;
+			slot = MENU_SLOT_TEAM_TERRORIST;
 		}
 		else if (!Q_stricmp(humans_join_team.string, "CT"))
 		{
-			team = MENU_SLOT_TEAM_CT;
+			slot = MENU_SLOT_TEAM_CT;
 		}
 #ifdef REGAMEDLL_ADD
 		else if (!Q_stricmp(humans_join_team.string, "any") && auto_join_team.value != 0.0f)
 		{
-			team = MENU_SLOT_TEAM_RANDOM;
+			slot = MENU_SLOT_TEAM_RANDOM;
 		}
 #endif
 		else
@@ -3665,22 +3661,33 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(PlayerThink)(CBasePlayer *pPlayer)
 		pPlayer->m_iMenu = Menu_ChooseTeam;
 		pPlayer->m_iJoiningState = PICKINGTEAM;
 
-		if (team != MENU_SLOT_TEAM_UNDEFINED && !pPlayer->IsBot())
+		if (slot != MENU_SLOT_TEAM_UNDEFINED && !pPlayer->IsBot())
 		{
 #ifdef REGAMEDLL_ADD
-			m_bSkipShowMenu = (auto_join_team.value != 0.0f);
-			HandleMenu_ChooseTeam(pPlayer, team);
+			m_bSkipShowMenu = (auto_join_team.value != 0.0f) && !(pPlayer->pev->flags & FL_FAKECLIENT);
 
-			if (team != MENU_SLOT_TEAM_SPECT && (IsCareer() || m_bSkipShowMenu))
+			if (HandleMenu_ChooseTeam(pPlayer, slot))
 			{
-				// slot 6 - chooses randomize the appearance to model player
-				HandleMenu_ChooseAppearance(pPlayer, 6);
+				if (slot != MENU_SLOT_TEAM_SPECT && (IsCareer() || m_bSkipShowMenu))
+				{
+					// slot 6 - chooses randomize the appearance to model player
+					HandleMenu_ChooseAppearance(pPlayer, 6);
+				}
 			}
+			else
+			{
+				m_bSkipShowMenu = false;
+				if (allow_spectators.value == 0.0f)
+					ShowVGUIMenu(pPlayer, VGUI_Menu_Team, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_5), "#Team_Select");
+				else
+					ShowVGUIMenu(pPlayer, VGUI_Menu_Team, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_5 | MENU_KEY_6), "#Team_Select_Spect");
+			}
+
 			m_bSkipShowMenu = false;
 #else
-			HandleMenu_ChooseTeam(pPlayer, team);
+			HandleMenu_ChooseTeam(pPlayer, slot);
 
-			if (team != MENU_SLOT_TEAM_SPECT && IsCareer())
+			if (slot != MENU_SLOT_TEAM_SPECT && IsCareer())
 			{
 				// slot 6 - chooses randomize the appearance to model player
 				HandleMenu_ChooseAppearance(pPlayer, 6);
@@ -3709,45 +3716,45 @@ LINK_HOOK_CLASS_CUSTOM_CHAIN(BOOL, CHalfLifeMultiplay, CSGameRules, FPlayerCanRe
 BOOL EXT_FUNC CHalfLifeMultiplay::__API_VHOOK(FPlayerCanRespawn)(CBasePlayer *pPlayer)
 {
 #ifdef REGAMEDLL_ADD
-	if (forcerespawn.value)
-		return TRUE;
+	if (forcerespawn.value <= 0)
 #endif
-
-	// Player cannot respawn twice in a round
-	if (pPlayer->m_iNumSpawns > 0)
 	{
-		return FALSE;
-	}
-
-	// Player cannot respawn until next round if more than 20 seconds in
-
-	// Tabulate the number of players on each team.
-	m_iNumCT = CountTeamPlayers(CT);
-	m_iNumTerrorist = CountTeamPlayers(TERRORIST);
-
-	if (m_iNumTerrorist > 0 && m_iNumCT > 0)
-	{
-#ifdef REGAMEDLL_ADD
-		// means no time limit
-		if (GetRoundRespawnTime() != -1)
-#endif
+		// Player cannot respawn twice in a round
+		if (pPlayer->m_iNumSpawns > 0)
 		{
-			// TODO: to be correct, need use time the real one starts of round, m_fRoundStartTimeReal instead of it.
-			// m_fRoundStartTime able to extend the time to 60 seconds when there is a remaining time of round.
-#ifdef REGAMEDLL_FIXES
-			if (gpGlobals->time > m_fRoundStartTimeReal + GetRoundRespawnTime())
-#else
-			if (gpGlobals->time > m_fRoundStartTime + GetRoundRespawnTime())
+			return FALSE;
+		}
+
+		// Player cannot respawn until next round if more than 20 seconds in
+
+		// Tabulate the number of players on each team.
+		m_iNumCT = CountTeamPlayers(CT);
+		m_iNumTerrorist = CountTeamPlayers(TERRORIST);
+
+		if (m_iNumTerrorist > 0 && m_iNumCT > 0)
+		{
+#ifdef REGAMEDLL_ADD
+			// means no time limit
+			if (GetRoundRespawnTime() != -1)
 #endif
 			{
-				// If this player just connected and fadetoblack is on, then maybe
-				// the server admin doesn't want him peeking around.
-				if (fadetoblack.value != 0.0f)
+				// TODO: to be correct, need use time the real one starts of round, m_fRoundStartTimeReal instead of it.
+				// m_fRoundStartTime able to extend the time to 60 seconds when there is a remaining time of round.
+#ifdef REGAMEDLL_FIXES
+				if (gpGlobals->time > m_fRoundStartTimeReal + GetRoundRespawnTime())
+#else
+				if (gpGlobals->time > m_fRoundStartTime + GetRoundRespawnTime())
+#endif
 				{
-					UTIL_ScreenFade(pPlayer, Vector(0, 0, 0), 3, 3, 255, (FFADE_OUT | FFADE_STAYOUT));
-				}
+					// If this player just connected and fadetoblack is on, then maybe
+					// the server admin doesn't want him peeking around.
+					if (fadetoblack.value != 0.0f)
+					{
+						UTIL_ScreenFade(pPlayer, Vector(0, 0, 0), 3, 3, 255, (FFADE_OUT | FFADE_STAYOUT));
+					}
 
-				return FALSE;
+					return FALSE;
+				}
 			}
 		}
 	}
@@ -3763,7 +3770,7 @@ BOOL EXT_FUNC CHalfLifeMultiplay::__API_VHOOK(FPlayerCanRespawn)(CBasePlayer *pP
 
 float CHalfLifeMultiplay::__MAKE_VHOOK(FlPlayerSpawnTime)(CBasePlayer *pPlayer)
 {
-	return gpGlobals->time;//now!
+	return gpGlobals->time;
 }
 
 BOOL CHalfLifeMultiplay::__MAKE_VHOOK(AllowAutoTargetCrosshair)()

@@ -69,7 +69,6 @@ Place PlaceDirectory::EntryToPlace(EntryType entry) const
 		return UNDEFINED_PLACE;
 
 	unsigned int i = entry - 1;
-
 	if (i > m_directory.size())
 	{
 		assert(false && "PlaceDirectory::EntryToPlace: Invalid entry");
@@ -705,7 +704,7 @@ void LoadLocationFile(const char *filename)
 	Q_strcpy(locFilename, filename);
 
 	char *dot = Q_strchr(locFilename, '.');
-	if (dot != NULL)
+	if (dot)
 	{
 		Q_strcpy(dot, ".loc");
 
@@ -713,7 +712,7 @@ void LoadLocationFile(const char *filename)
 		char *locDataFile = (char *)LOAD_FILE_FOR_ME(const_cast<char *>(locFilename), &locDataLength);
 		char *locData = locDataFile;
 
-		if (locData != NULL)
+		if (locData)
 		{
 			CONSOLE_ECHO("Loading legacy 'location file' '%s'\n", locFilename);
 
@@ -748,7 +747,7 @@ void LoadLocationFile(const char *filename)
 					CNavArea *area = TheNavAreaGrid.GetNavAreaByID(areaID);
 					unsigned int place = (locDirIndex > 0) ? directory[locDirIndex - 1] : UNDEFINED_PLACE;
 
-					if (area != NULL)
+					if (area)
 						area->SetPlace(place);
 				}
 			}
@@ -880,7 +879,6 @@ NavErrorType LoadNavigationMap()
 			return NAV_INVALID_FILE;
 
 		unsigned int bspSize = (unsigned int)GET_FILE_SIZE(bspFilename);
-
 		if (bspSize != saveBspSize)
 		{
 			// this nav file is out of date for this bsp file

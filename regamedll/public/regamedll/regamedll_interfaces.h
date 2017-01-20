@@ -51,7 +51,7 @@ class CCSArmoury: public CCSEntity {};
 
 class CCSPlayer: public CCSMonster {
 public:
-	CCSPlayer() : m_bForceShowMenu(false)
+	CCSPlayer() : m_bForceShowMenu(false), m_flRespawnPending(0)
 	{
 		m_szModel[0] = '\0';
 	}
@@ -100,6 +100,7 @@ public:
 public:
 	char m_szModel[32];
 	bool m_bForceShowMenu;
+	float m_flRespawnPending;
 };
 
 class CAPI_Bot: public CCSPlayer {};

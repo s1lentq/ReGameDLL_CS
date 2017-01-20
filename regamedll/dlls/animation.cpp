@@ -1148,11 +1148,11 @@ void SV_StudioSetupBones(model_t *pModel, float frame, int sequence, const vec_t
 		{
 			if (!Q_strcmp(pbones[i].name, "Bip01 Spine"))
 			{
-				bCopy = 0;
+				bCopy = false;
 			}
 			else if (!Q_strcmp(pbones[pbones[i].parent].name, "Bip01 Pelvis"))
 			{
-				bCopy = 1;
+				bCopy = true;
 			}
 
 			if (bCopy)

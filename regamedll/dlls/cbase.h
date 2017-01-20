@@ -85,8 +85,6 @@
 #define CLASS_VEHICLE		14
 #define CLASS_BARNACLE		99		// special because no one pays attention to it, and it eats a wide cross-section of creatures.
 
-#define GIB_HEALTH_VALUE	-30
-
 #define ROUTE_SIZE		8
 #define MAX_OLD_ENEMIES		4
 
@@ -183,6 +181,7 @@
 #define GIB_NORMAL		0		// gib if entity was overkilled
 #define GIB_NEVER		1		// never gib, no matter how much death damage is done ( freezing, etc )
 #define GIB_ALWAYS		2		// always gib ( Houndeye Shock, Barnacle Bite )
+#define GIB_HEALTH_VALUE	-30
 
 #define SF_ITEM_USE_ONLY	256
 

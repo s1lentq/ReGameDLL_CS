@@ -255,8 +255,8 @@ typedef IHookChainImpl<CBaseEntity *, CBasePlayer *, WeaponIdType> CReGameHook_B
 typedef IHookChainRegistryImpl<CBaseEntity *, CBasePlayer *, WeaponIdType> CReGameHookRegistry_BuyWeaponByWeaponID;
 
 // InternalCommand hook
-typedef IHookChainImpl<bool, edict_t *, const char *> CReGameHook_InternalCommand;
-typedef IHookChainRegistryImpl<bool, edict_t *, const char *> CReGameHookRegistry_InternalCommand;
+typedef IHookChainImpl<void, edict_t *, const char *, const char *> CReGameHook_InternalCommand;
+typedef IHookChainRegistryImpl<void, edict_t *, const char *, const char *> CReGameHookRegistry_InternalCommand;
 
 // CHalfLifeMultiplay::FShouldSwitchWeapon hook
 typedef IHookChainClassImpl<BOOL, class CHalfLifeMultiplay, CBasePlayer *, CBasePlayerItem *> CReGameHook_CSGameRules_FShouldSwitchWeapon;

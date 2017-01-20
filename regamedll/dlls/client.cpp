@@ -152,7 +152,6 @@ void respawn(entvars_t *pev, BOOL fCopyCorpse)
 			CSGameRules()->MarkSpawnSkipped();
 
 		CBasePlayer *pPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pev);
-
 		if (CSGameRules()->IsCareer() && CSGameRules()->ShouldSkipSpawn() && pPlayer->IsAlive())
 			g_skipCareerInitialSpawn = true;
 
@@ -215,7 +214,7 @@ void EXT_FUNC __API_HOOK(ShowVGUIMenu)(CBasePlayer *pPlayer, int MenuType, int B
 #ifdef REGAMEDLL_ADD
 	if (CSGameRules()->ShouldSkipShowMenu()) {
 		CSGameRules()->MarkShowMenuSkipped();
-		pPlayer->m_iMenu = Menu_OFF;
+		pPlayer->ResetMenu();
 		return;
 	}
 
@@ -1453,14 +1452,20 @@ void EXT_FUNC __API_HOOK(HandleMenu_ChooseAppearance)(CBasePlayer *player, int s
 		appearance.model_name_index = 9;
 	}
 
+#ifdef REGAMEDLL_FIXES
+	player->ResetMenu();
+#else
 	player->m_iMenu = Menu_OFF;
+#endif
 
 	// Reset the player's state
-	if (player->m_iJoiningState == JOINED)
+	switch (player->m_iJoiningState)
 	{
+	case JOINED:
 		CSGameRules()->CheckWinConditions();
-	}
-	else if (player->m_iJoiningState == PICKINGTEAM)
+		break;
+
+	case PICKINGTEAM:
 	{
 		player->m_iJoiningState = GETINTOGAME;
 
@@ -1471,6 +1476,8 @@ void EXT_FUNC __API_HOOK(HandleMenu_ChooseAppearance)(CBasePlayer *player, int s
 				CSGameRules()->CheckWinConditions();
 			}
 		}
+		break;
+	}
 	}
 
 	player->pev->body = 0;
@@ -1713,7 +1720,6 @@ BOOL EXT_FUNC __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *player, int slot)
 	)
 	{
 		int humanTeam = UNASSIGNED;
-
 		if (!Q_stricmp(humans_join_team.string, "CT"))
 		{
 			humanTeam = CT;
@@ -1763,11 +1769,9 @@ BOOL EXT_FUNC __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *player, int slot)
 
 		player->pev->solid = SOLID_NOT;
 		player->pev->movetype = MOVETYPE_NOCLIP;
-		player->pev->effects = EF_NODRAW;
-		player->pev->effects |= EF_NOINTERP;
+		player->pev->effects = (EF_NODRAW | EF_NOINTERP);
 		player->pev->takedamage = DAMAGE_NO;
 		player->pev->deadflag = DEAD_DEAD;
-		player->pev->velocity = g_vecZero;
 		player->pev->punchangle = g_vecZero;
 
 		player->m_bHasNightVision = false;
@@ -1775,10 +1779,18 @@ BOOL EXT_FUNC __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *player, int slot)
 		player->m_fDeadTime = 0;
 		player->has_disconnected = false;
 
+#ifdef REGAMEDLL_ADD
+		player->m_iJoiningState = PICKINGTEAM;
+#else
+		player->pev->velocity = g_vecZero;
 		player->m_iJoiningState = GETINTOGAME;
+#endif
 		player->SendItemStatus();
 
+#ifndef REGAMEDLL_ADD
 		SET_CLIENT_MAXSPEED(ENT(player->pev), 1);
+#endif
+
 		SET_MODEL(ENT(player->pev), "models/player.mdl");
 	}
 
@@ -2286,25 +2298,9 @@ BOOL HandleRadioAliasCommands(CBasePlayer *pPlayer, const char *pszCommand)
 	return FALSE;
 }
 
-bool EXT_FUNC InternalCommand(edict_t *pEntity, const char *cmd) {
-	return true;
-}
-
-// Use CMD_ARGV,  CMD_ARGV, and CMD_ARGC to get pointers the character string command.
-void EXT_FUNC ClientCommand(edict_t *pEntity)
+void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *parg1)
 {
-	const char *pcmd = CMD_ARGV_(0);
 	const char *pstr = NULL;
-
-	// Is the client spawned yet?
-	if (!pEntity->pvPrivateData)
-		return;
-
-#ifdef REGAMEDLL_API
-	if (!g_ReGameHookchains.m_InternalCommand.callChain(InternalCommand, pEntity, pcmd))
-		return;
-#endif
-
 	entvars_t *pev = &pEntity->v;
 	CBasePlayer *player = GetClassPtr<CCSPlayer>((CBasePlayer *)pev);
 
@@ -2351,15 +2347,14 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 				int iVoteID;
 				int iVoteFail = 0;
 				int iNumArgs = CMD_ARGC_();
-				const char *pszArg1 = CMD_ARGV_(1);
-				int iVoteLength = Q_strlen(pszArg1);
+				int iVoteLength = Q_strlen(parg1);
 
 				if (iNumArgs != 2 || iVoteLength <= 0 || iVoteLength > 6)
 				{
 					iVoteFail = 1;
 				}
 
-				iVoteID = Q_atoi(pszArg1);
+				iVoteID = Q_atoi(parg1);
 				if (iVoteID <= 0)
 				{
 					iVoteFail = 1;
@@ -2439,15 +2434,14 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 
 				int iFailed = 0;
 				int iNumArgs = CMD_ARGC_();
-				const char *pszArg1 = CMD_ARGV_(1);
-				int iVoteLength = Q_strlen(pszArg1);
+				int iVoteLength = Q_strlen(parg1);
 
 				if (iNumArgs != 2 || iVoteLength > 5)
 				{
 					iFailed = 1;
 				}
 
-				int iVoteID = Q_atoi(pszArg1);
+				int iVoteID = Q_atoi(parg1);
 				if (iVoteID < 1 || iVoteID > MAX_VOTE_MAPS)
 				{
 					iFailed = 1;
@@ -2560,7 +2554,7 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 	}
 	else if (FStrEq(pcmd, "menuselect"))
 	{
-		int slot = Q_atoi(CMD_ARGV_(1));
+		int slot = Q_atoi(parg1);
 		if (player->m_iJoiningState == JOINED || (player->m_iMenu != Menu_ChooseAppearance && player->m_iMenu != Menu_ChooseTeam))
 		{
 			if (slot == 10)
@@ -2901,8 +2895,7 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 	else if (FStrEq(pcmd, "specmode"))
 	{
 		// new spectator mode
-		int mode = Q_atoi(CMD_ARGV_(1));
-
+		int mode = Q_atoi(parg1);
 		if (player->IsObserver() && player->CanSwitchObserverModes())
 			player->Observer_SetMode(mode);
 		else
@@ -2916,14 +2909,13 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 	}
 	else if (FStrEq(pcmd, "spec_set_ad"))
 	{
-		float val = Q_atof(CMD_ARGV_(1));
+		float val = Q_atof(parg1);
 		player->SetObserverAutoDirector(val > 0.0f);
 	}
 	else if (FStrEq(pcmd, "follownext"))
 	{
 		// follow next player
-		int arg = Q_atoi(CMD_ARGV_(1));
-
+		int arg = Q_atoi(parg1);
 		if (player->IsObserver() && player->CanSwitchObserverModes())
 		{
 			player->Observer_FindNextPlayer(arg != 0);
@@ -2933,7 +2925,7 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 	{
 		if (player->IsObserver() && player->CanSwitchObserverModes())
 		{
-			player->Observer_FindNextPlayer(false, CMD_ARGV_(1));
+			player->Observer_FindNextPlayer(false, parg1);
 		}
 	}
 	else
@@ -2949,7 +2941,7 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 
 		if (FStrEq(pcmd, "mp_debug"))
 		{
-			UTIL_SetDprintfFlags(CMD_ARGV_(1));
+			UTIL_SetDprintfFlags(parg1);
 		}
 		else if (FStrEq(pcmd, "jointeam"))
 		{
@@ -2959,12 +2951,16 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 				return;
 			}
 
-			int slot = Q_atoi(CMD_ARGV_(1));
+			int slot = Q_atoi(parg1);
 			if (HandleMenu_ChooseTeam(player, slot))
 			{
 				if (slot == MENU_SLOT_TEAM_VIP || slot == MENU_SLOT_TEAM_SPECT || player->m_bIsVIP)
 				{
+#ifdef REGAMEDLL_FIXES
+					player->ResetMenu();
+#else
 					player->m_iMenu = Menu_OFF;
+#endif
 				}
 				else
 					player->m_iMenu = Menu_ChooseAppearance;
@@ -2980,8 +2976,7 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 		}
 		else if (FStrEq(pcmd, "joinclass"))
 		{
-			int slot = Q_atoi(CMD_ARGV_(1));
-
+			int slot = Q_atoi(parg1);
 			if (player->m_iMenu != Menu_ChooseAppearance)
 			{
 				ClientPrint(player->pev, HUD_PRINTCENTER, "#Command_Not_Available");
@@ -3082,7 +3077,7 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 						player->DropShield();
 				}
 				else
-					player->DropPlayerItem(CMD_ARGV_(1));
+					player->DropPlayerItem(parg1);
 			}
 			else if (FStrEq(pcmd, "fov"))
 			{
@@ -3095,7 +3090,7 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 			}
 			else if (FStrEq(pcmd, "use"))
 			{
-				GetClassPtr<CCSPlayer>((CBasePlayer *)pev)->SelectItem(CMD_ARGV_(1));
+				GetClassPtr<CCSPlayer>((CBasePlayer *)pev)->SelectItem(parg1);
 			}
 			else if (((pstr = Q_strstr(pcmd, "weapon_"))) && (pstr == pcmd))
 			{
@@ -3184,7 +3179,7 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 			{
 				if (CMD_ARGC_() == 2)
 				{
-					player->InitRebuyData(CMD_ARGV_(1));
+					player->InitRebuyData(parg1);
 
 					bool oldval = g_bClientPrintEnable;
 					g_bClientPrintEnable = false;
@@ -3242,6 +3237,19 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 	}
 }
 
+// Use CMD_ARGV, CMD_ARGV, and CMD_ARGC to get pointers the character string command.
+void EXT_FUNC ClientCommand_(edict_t *pEntity)
+{
+	const char *pcmd = CMD_ARGV_(0);
+	const char *parg1 = CMD_ARGV_(1);
+
+	// Is the client spawned yet?
+	if (!pEntity->pvPrivateData)
+		return;
+
+	g_ReGameHookchains.m_InternalCommand.callChain(InternalCommand, pEntity, pcmd, parg1);
+}
+
 // called after the player changes userinfo - gives dll a chance to modify it before it gets sent into the rest of the engine.
 void EXT_FUNC ClientUserInfoChanged(edict_t *pEntity, char *infobuffer)
 {
@@ -3252,7 +3260,7 @@ void EXT_FUNC ClientUserInfoChanged(edict_t *pEntity, char *infobuffer)
 	CBasePlayer *pPlayer = CBasePlayer::Instance(pEntity);
 	char *szBufferName = GET_KEY_VALUE(infobuffer, "name");
 
-	// msg everyone if someone changes their name,  and it isn't the first time (changing no name to current name)
+	// msg everyone if someone changes their name, and it isn't the first time (changing no name to current name)
 	if (pEntity->v.netname && STRING(pEntity->v.netname)[0] != '\0' && !FStrEq(STRING(pEntity->v.netname), szBufferName))
 	{
 		char szName[32];
@@ -4239,7 +4247,7 @@ void Entity_Encode(struct delta_s *pFields, const unsigned char *from, const uns
 	t = (entity_state_t *)to;
 
 	// Never send origin to local player, it's sent with more resolution in clientdata_t structure
-	localplayer =  (t->number - 1) == ENGINE_CURRENT_PLAYER();
+	localplayer = (t->number - 1) == ENGINE_CURRENT_PLAYER();
 
 	if (localplayer)
 	{
@@ -4295,7 +4303,7 @@ void Player_Encode(struct delta_s *pFields, const unsigned char *from, const uns
 	t = (entity_state_t *)to;
 
 	// Never send origin to local player, it's sent with more resolution in clientdata_t structure
-	localplayer =  (t->number - 1) == ENGINE_CURRENT_PLAYER();
+	localplayer = (t->number - 1) == ENGINE_CURRENT_PLAYER();
 
 	if (localplayer)
 	{

@@ -767,7 +767,6 @@ public:
 
 	// has a style of gameplay when aren't any teams
 	bool IsFreeForAll() const;
-	bool HasRoundInfinite(int flags = 0) const;
 
 	VFUNC bool HasRoundTimeExpired();
 	VFUNC bool IsBombPlanted();
@@ -946,7 +945,7 @@ inline bool CHalfLifeMultiplay::IsFreeForAll() const
 	return false;
 }
 
-inline bool CHalfLifeMultiplay::HasRoundInfinite(int flags) const
+inline bool HasRoundInfinite(int flags = 0)
 {
 #ifdef REGAMEDLL_ADD
 	if (round_infinite.string[0] == '1')
@@ -967,7 +966,7 @@ void SV_Career_EndRound_f();
 void SV_CareerAddTask_f();
 void SV_CareerMatchLimit_f();
 void Broadcast(const char *sentence);
-char *GetTeam(int teamNo);
+char *GetTeam(int team);
 void EndRoundMessage(const char *sentence, int event);
 void DestroyMapCycle(mapcycle_t *cycle);
 

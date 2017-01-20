@@ -1973,8 +1973,14 @@ void CItemSoda::CanTouch(CBaseEntity *pOther)
 		return;
 #endif
 
+#ifdef REGAMEDLL_FIXES
 	// spoit sound here
-	pPlayer->TakeHealth(1, DMG_GENERIC); // a bit of health.
+	// if we can't take hp, go out
+	if (!pPlayer->TakeHealth(1, DMG_GENERIC))	// a bit of health.
+		return;
+#else
+	pPlayer->TakeHealth(1, DMG_GENERIC);
+#endif
 
 	if (!FNullEnt(pev->owner))
 	{

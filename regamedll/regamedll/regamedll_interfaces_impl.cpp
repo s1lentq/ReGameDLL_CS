@@ -73,7 +73,7 @@ bool EXT_FUNC CCSPlayer::JoinTeam(TeamName team)
 	case CT:
 	case TERRORIST:
 	{
-		if (pPlayer->m_iTeam == SPECTATOR)
+		if (pPlayer->m_iTeam == SPECTATOR || pPlayer->m_iTeam == UNASSIGNED)
 		{
 			// If they're switching into spectator, setup spectator properties..
 			pPlayer->m_bNotKilled = true;

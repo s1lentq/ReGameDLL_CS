@@ -504,3 +504,10 @@ void CBasePlayer::Observer_SetMode(int iMode)
 	m_iObserverLastMode = iMode;
 	m_bWasFollowing = false;
 }
+
+void CBasePlayer::Observer_Think()
+{
+	Observer_HandleButtons();
+	Observer_CheckTarget();
+	Observer_CheckProperties();
+}

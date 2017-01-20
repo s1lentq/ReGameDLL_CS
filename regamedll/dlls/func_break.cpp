@@ -381,7 +381,7 @@ void CBreakable::__MAKE_VHOOK(Precache)()
 		pGibName = STRING(m_iszGibModel);
 	}
 
-	if (pGibName != NULL)
+	if (pGibName)
 	{
 		m_idShard = PRECACHE_MODEL((char *)pGibName);
 	}
@@ -693,7 +693,7 @@ void CBreakable::Die()
 		}
 		cFlag = BREAK_GLASS;
 
-		if (TheBots != NULL)
+		if (TheBots)
 		{
 			TheBots->OnEvent(EVENT_BREAK_GLASS, this);
 		}
@@ -708,7 +708,7 @@ void CBreakable::Die()
 		}
 		cFlag = BREAK_WOOD;
 
-		if (TheBots != NULL)
+		if (TheBots)
 		{
 			TheBots->OnEvent(EVENT_BREAK_WOOD, this);
 		}
@@ -725,7 +725,7 @@ void CBreakable::Die()
 		}
 		cFlag = BREAK_METAL;
 
-		if (TheBots != NULL)
+		if (TheBots)
 		{
 			TheBots->OnEvent(EVENT_BREAK_METAL, this);
 		}
@@ -741,7 +741,7 @@ void CBreakable::Die()
 		}
 		cFlag = BREAK_FLESH;
 
-		if (TheBots != NULL)
+		if (TheBots)
 		{
 			TheBots->OnEvent(EVENT_BREAK_FLESH, this);
 		}
@@ -758,7 +758,7 @@ void CBreakable::Die()
 		}
 		cFlag = BREAK_CONCRETE;
 
-		if (TheBots != NULL)
+		if (TheBots)
 		{
 			TheBots->OnEvent(EVENT_BREAK_CONCRETE, this);
 		}

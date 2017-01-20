@@ -325,7 +325,7 @@ void CBot::ClientCommand(const char *cmd, const char *arg1, const char *arg2, co
 	BotArgs[3] = arg3;
 
 	UseBotArgs = true;
-	::ClientCommand(ENT(pev));
+	::ClientCommand_(ENT(pev));
 	UseBotArgs = false;
 }
 #endif

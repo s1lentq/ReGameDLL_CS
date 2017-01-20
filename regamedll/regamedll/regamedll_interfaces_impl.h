@@ -30,10 +30,10 @@
 #include "maintypes.h"
 #include "regamedll_interfaces.h"
 
+#if !defined(HOOK_GAMEDLL) && defined(REGAMEDLL_API)
+
 #define __API_VHOOK(fname)\
 	fname##_
-
-#ifndef HOOK_GAMEDLL
 
 #define __API_HOOK __API_VHOOK
 #define __MAKE_VHOOK(fname)\
@@ -94,5 +94,26 @@
 	ret functionName() {\
 		return g_ReGameHookchains.m_##functionName.callChain(functionName##_);\
 	}
+#else
 
-#endif
+#define __API_VHOOK(fname)\
+	fname
+
+#define __API_HOOK __API_VHOOK
+#define __MAKE_VHOOK(fname)\
+	fname
+
+#define LINK_HOOK_CLASS_VOID_CHAIN(...)
+#define LINK_HOOK_CLASS_VOID_CHAIN2(...)
+#define LINK_HOOK_CLASS_CHAIN(...)
+#define LINK_HOOK_CLASS_CHAIN2(...)
+#define LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN(...)
+#define LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN2(...)
+#define LINK_HOOK_CLASS_CUSTOM_CHAIN(...)
+#define LINK_HOOK_CLASS_CUSTOM_CHAIN2(...)
+#define LINK_HOOK_VOID_CHAIN(...)
+#define LINK_HOOK_VOID_CHAIN2(...)
+#define LINK_HOOK_CHAIN(...)
+#define LINK_HOOK_CHAIN2(...)
+
+#endif // !defined(HOOK_GAMEDLL) && defined(REGAMEDLL_API)

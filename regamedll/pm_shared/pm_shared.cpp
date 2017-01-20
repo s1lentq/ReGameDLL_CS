@@ -488,7 +488,8 @@ void EXT_FUNC __API_HOOK(PM_UpdateStepSound)()
 
 		if ((pmove->flags & FL_DUCKING) || fLadder)
 		{
-			pmove->flTimeStepSound += 100; // slower step time if ducking
+			// slower step time if ducking
+			pmove->flTimeStepSound += 100;
 
 			// play the sound
 			// 35% volume if ducking

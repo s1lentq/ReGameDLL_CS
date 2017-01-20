@@ -90,6 +90,7 @@ typedef float FloatRef;
 #define LINK_HOOK_CLASS_CUSTOM_CHAIN(...)
 #define LINK_HOOK_CLASS_CUSTOM_CHAIN2(...)
 #define LINK_HOOK_VOID_CHAIN(...)
+#define LINK_HOOK_VOID_CHAIN2(...)
 #define LINK_HOOK_CHAIN(...)
 #define LINK_HOOK_CHAIN2(...)
 

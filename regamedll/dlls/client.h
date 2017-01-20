@@ -153,7 +153,7 @@ CBaseEntity *EntityFromUserID(int userID);
 int CountPlayersInServer();
 BOOL HandleBuyAliasCommands(CBasePlayer *pPlayer, const char *pszCommand);
 BOOL HandleRadioAliasCommands(CBasePlayer *pPlayer, const char *pszCommand);
-void ClientCommand(edict_t *pEntity);
+void ClientCommand_(edict_t *pEntity);
 void ClientUserInfoChanged(edict_t *pEntity, char *infobuffer);
 void ServerDeactivate();
 void ServerActivate(edict_t *pEdictList, int edictCount, int clientMax);
@@ -197,14 +197,10 @@ inline const char *GetTeamName(int team)
 {
 	switch (team)
 	{
-	case CT:
-		return "CT";
-	case TERRORIST:
-		return "TERRORIST";
-	case SPECTATOR:
-		return "SPECTATOR";
-	default:
-		return "UNASSIGNED";
+	case CT:	return "CT";
+	case TERRORIST:	return "TERRORIST";
+	case SPECTATOR:	return "SPECTATOR";
+	default:	return "UNASSIGNED";
 	}
 }
 
