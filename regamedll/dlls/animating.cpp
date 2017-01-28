@@ -16,7 +16,7 @@ TYPEDESCRIPTION CBaseAnimating::m_SaveData[] =
 
 #endif
 
-IMPLEMENT_SAVERESTORE(CBaseAnimating, CBaseDelay);
+IMPLEMENT_SAVERESTORE(CBaseAnimating, CBaseDelay)
 
 float CBaseAnimating::StudioFrameAdvance(float flInterval)
 {
@@ -116,7 +116,7 @@ void EXT_FUNC CBaseAnimating::__API_HOOK(ResetSequenceInfo)()
 	m_flLastEventCheck = gpGlobals->time;
 }
 
-BOOL CBaseAnimating::GetSequenceFlags()
+int CBaseAnimating::GetSequenceFlags()
 {
 	void *pmodel = GET_MODEL_PTR(ENT(pev));
 	return ::GetSequenceFlags(pmodel, pev);
@@ -125,7 +125,6 @@ BOOL CBaseAnimating::GetSequenceFlags()
 float CBaseAnimating::SetBoneController(int iController, float flValue)
 {
 	void *pmodel = GET_MODEL_PTR(ENT(pev));
-
 	return SetController(pmodel, pev, iController, flValue);
 }
 

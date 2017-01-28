@@ -521,7 +521,7 @@ public:
 public:
 	// Basic Monster Animation functions
 	float StudioFrameAdvance(float flInterval = 0.0f);				// accumulate animation frame time from last time called until now
-	BOOL GetSequenceFlags();
+	int GetSequenceFlags();
 	int LookupActivity(int activity);
 	int LookupActivityHeaviest(int activity);
 	int LookupSequence(const char *label);

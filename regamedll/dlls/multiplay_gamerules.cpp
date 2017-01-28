@@ -177,7 +177,7 @@ BOOL CHalfLifeMultiplay::IsCareer()
 	return IS_CAREER_MATCH();
 }
 
-LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN2(CHalfLifeMultiplay, CSGameRules, ServerDeactivate);
+LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN2(CHalfLifeMultiplay, CSGameRules, ServerDeactivate)
 
 void EXT_FUNC CHalfLifeMultiplay::__API_VHOOK(ServerDeactivate)()
 {
@@ -638,7 +638,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(RefreshSkillData)()
 	gSkillData.plrDmgRPG = 120;
 }
 
-LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN2(CHalfLifeMultiplay, CSGameRules, RemoveGuns);
+LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN2(CHalfLifeMultiplay, CSGameRules, RemoveGuns)
 
 void EXT_FUNC CHalfLifeMultiplay::__API_VHOOK(RemoveGuns)()
 {
@@ -669,7 +669,7 @@ void CHalfLifeMultiplay::UpdateTeamScores()
 	MESSAGE_END();
 }
 
-LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN2(CHalfLifeMultiplay, CSGameRules, CleanUpMap);
+LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN2(CHalfLifeMultiplay, CSGameRules, CleanUpMap)
 
 void EXT_FUNC CHalfLifeMultiplay::__API_VHOOK(CleanUpMap)()
 {
@@ -729,7 +729,7 @@ void EXT_FUNC CHalfLifeMultiplay::__API_VHOOK(CleanUpMap)()
 	PLAYBACK_EVENT((FEV_GLOBAL | FEV_RELIABLE), 0, m_usResetDecals);
 }
 
-LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN2(CHalfLifeMultiplay, CSGameRules, GiveC4);
+LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN2(CHalfLifeMultiplay, CSGameRules, GiveC4)
 
 void EXT_FUNC CHalfLifeMultiplay::__API_VHOOK(GiveC4)()
 {
@@ -920,7 +920,7 @@ void CHalfLifeMultiplay::QueueCareerRoundEndMenu(float tmDelay, int iWinStatus)
 	}
 }
 
-LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN2(CHalfLifeMultiplay, CSGameRules, CheckWinConditions);
+LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN2(CHalfLifeMultiplay, CSGameRules, CheckWinConditions)
 
 // Check if the scenario has been won/lost.
 void EXT_FUNC CHalfLifeMultiplay::__API_VHOOK(CheckWinConditions)()
@@ -1538,7 +1538,7 @@ void CHalfLifeMultiplay::SwapAllPlayers()
 	UpdateTeamScores();
 }
 
-LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN2(CHalfLifeMultiplay, CSGameRules, BalanceTeams);
+LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN2(CHalfLifeMultiplay, CSGameRules, BalanceTeams)
 
 void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(BalanceTeams)()
 {
@@ -1631,7 +1631,7 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(BalanceTeams)()
 	}
 }
 
-LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN2(CHalfLifeMultiplay, CSGameRules, CheckMapConditions);
+LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN2(CHalfLifeMultiplay, CSGameRules, CheckMapConditions)
 
 void EXT_FUNC CHalfLifeMultiplay::__API_VHOOK(CheckMapConditions)()
 {
@@ -1666,7 +1666,7 @@ void EXT_FUNC CHalfLifeMultiplay::__API_VHOOK(CheckMapConditions)()
 	m_bMapHasVIPSafetyZone = (UTIL_FindEntityByClassname(NULL, "func_vip_safetyzone") != NULL);
 }
 
-LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN2(CHalfLifeMultiplay, CSGameRules, RestartRound);
+LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN2(CHalfLifeMultiplay, CSGameRules, RestartRound)
 
 void EXT_FUNC CHalfLifeMultiplay::__API_VHOOK(RestartRound)()
 {
@@ -3211,7 +3211,7 @@ BOOL CHalfLifeMultiplay::__MAKE_VHOOK(IsCoOp)()
 	return gpGlobals->coop;
 }
 
-LINK_HOOK_CLASS_CUSTOM_CHAIN(BOOL, CHalfLifeMultiplay, CSGameRules, FShouldSwitchWeapon, (CBasePlayer *pPlayer, CBasePlayerItem *pWeapon), pPlayer, pWeapon);
+LINK_HOOK_CLASS_CUSTOM_CHAIN(BOOL, CHalfLifeMultiplay, CSGameRules, FShouldSwitchWeapon, (CBasePlayer *pPlayer, CBasePlayerItem *pWeapon), pPlayer, pWeapon)
 
 BOOL EXT_FUNC CHalfLifeMultiplay::__API_VHOOK(FShouldSwitchWeapon)(CBasePlayer *pPlayer, CBasePlayerItem *pWeapon)
 {
@@ -3233,7 +3233,7 @@ BOOL EXT_FUNC CHalfLifeMultiplay::__API_VHOOK(FShouldSwitchWeapon)(CBasePlayer *
 	return FALSE;
 }
 
-LINK_HOOK_CLASS_CUSTOM_CHAIN(BOOL, CHalfLifeMultiplay, CSGameRules, GetNextBestWeapon, (CBasePlayer *pPlayer, CBasePlayerItem *pCurrentWeapon), pPlayer, pCurrentWeapon);
+LINK_HOOK_CLASS_CUSTOM_CHAIN(BOOL, CHalfLifeMultiplay, CSGameRules, GetNextBestWeapon, (CBasePlayer *pPlayer, CBasePlayerItem *pCurrentWeapon), pPlayer, pCurrentWeapon)
 
 BOOL EXT_FUNC CHalfLifeMultiplay::__API_VHOOK(GetNextBestWeapon)(CBasePlayer *pPlayer, CBasePlayerItem *pCurrentWeapon)
 {
@@ -3436,13 +3436,13 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(InitHUD)(CBasePlayer *pl)
 		}
 	}
 
-	auto SendMsgBombDrop = [&pl](const int iFlag, const Vector& pos)
+	auto SendMsgBombDrop = [&pl](const int flag, const Vector& pos)
 	{
 		MESSAGE_BEGIN(MSG_ONE, gmsgBombDrop, NULL, pl->edict());
 			WRITE_COORD(pos.x);
 			WRITE_COORD(pos.y);
 			WRITE_COORD(pos.z);
-			WRITE_BYTE(iFlag);
+			WRITE_BYTE(flag);
 		MESSAGE_END();
 	};
 
@@ -3578,7 +3578,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(ClientDisconnected)(edict_t *pClient)
 	CheckWinConditions();
 }
 
-LINK_HOOK_CLASS_CUSTOM_CHAIN(float, CHalfLifeMultiplay, CSGameRules, FlPlayerFallDamage, (CBasePlayer *pPlayer), pPlayer);
+LINK_HOOK_CLASS_CUSTOM_CHAIN(float, CHalfLifeMultiplay, CSGameRules, FlPlayerFallDamage, (CBasePlayer *pPlayer), pPlayer)
 
 float EXT_FUNC CHalfLifeMultiplay::__API_VHOOK(FlPlayerFallDamage)(CBasePlayer *pPlayer)
 {
@@ -3586,7 +3586,7 @@ float EXT_FUNC CHalfLifeMultiplay::__API_VHOOK(FlPlayerFallDamage)(CBasePlayer *
 	return pPlayer->m_flFallVelocity * DAMAGE_FOR_FALL_SPEED * 1.25;
 }
 
-LINK_HOOK_CLASS_CUSTOM_CHAIN(BOOL, CHalfLifeMultiplay, CSGameRules, FPlayerCanTakeDamage, (CBasePlayer *pPlayer, CBaseEntity *pAttacker), pPlayer, pAttacker);
+LINK_HOOK_CLASS_CUSTOM_CHAIN(BOOL, CHalfLifeMultiplay, CSGameRules, FPlayerCanTakeDamage, (CBasePlayer *pPlayer, CBaseEntity *pAttacker), pPlayer, pAttacker)
 
 BOOL EXT_FUNC CHalfLifeMultiplay::__API_VHOOK(FPlayerCanTakeDamage)(CBasePlayer *pPlayer, CBaseEntity *pAttacker)
 {
@@ -3697,7 +3697,7 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(PlayerThink)(CBasePlayer *pPlayer)
 	}
 }
 
-LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN(CHalfLifeMultiplay, CSGameRules, PlayerSpawn, (CBasePlayer *pPlayer), pPlayer);
+LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN(CHalfLifeMultiplay, CSGameRules, PlayerSpawn, (CBasePlayer *pPlayer), pPlayer)
 
 // Purpose: Player has just spawned. Equip them.
 void EXT_FUNC CHalfLifeMultiplay::__API_VHOOK(PlayerSpawn)(CBasePlayer *pPlayer)
@@ -3711,7 +3711,7 @@ void EXT_FUNC CHalfLifeMultiplay::__API_VHOOK(PlayerSpawn)(CBasePlayer *pPlayer)
 	pPlayer->SetPlayerModel(false);
 }
 
-LINK_HOOK_CLASS_CUSTOM_CHAIN(BOOL, CHalfLifeMultiplay, CSGameRules, FPlayerCanRespawn, (CBasePlayer *pPlayer), pPlayer);
+LINK_HOOK_CLASS_CUSTOM_CHAIN(BOOL, CHalfLifeMultiplay, CSGameRules, FPlayerCanRespawn, (CBasePlayer *pPlayer), pPlayer)
 
 BOOL EXT_FUNC CHalfLifeMultiplay::__API_VHOOK(FPlayerCanRespawn)(CBasePlayer *pPlayer)
 {
@@ -3785,7 +3785,7 @@ int CHalfLifeMultiplay::__MAKE_VHOOK(IPointsForKill)(CBasePlayer *pAttacker, CBa
 	return 1;
 }
 
-LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN(CHalfLifeMultiplay, CSGameRules, PlayerKilled, (CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor), pVictim, pKiller, pInflictor);
+LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN(CHalfLifeMultiplay, CSGameRules, PlayerKilled, (CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor), pVictim, pKiller, pInflictor)
 
 void EXT_FUNC CHalfLifeMultiplay::__API_VHOOK(PlayerKilled)(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor)
 {
@@ -3937,7 +3937,7 @@ void EXT_FUNC CHalfLifeMultiplay::__API_VHOOK(PlayerKilled)(CBasePlayer *pVictim
 	}
 }
 
-LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN(CHalfLifeMultiplay, CSGameRules, DeathNotice, (CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pevInflictor), pVictim, pKiller, pevInflictor);
+LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN(CHalfLifeMultiplay, CSGameRules, DeathNotice, (CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pevInflictor), pVictim, pKiller, pevInflictor)
 
 void EXT_FUNC CHalfLifeMultiplay::__API_VHOOK(DeathNotice)(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pevInflictor)
 {
@@ -4111,7 +4111,7 @@ int CHalfLifeMultiplay::__MAKE_VHOOK(WeaponShouldRespawn)(CBasePlayerItem *pWeap
 	return GR_WEAPON_RESPAWN_YES;
 }
 
-LINK_HOOK_CLASS_CUSTOM_CHAIN(BOOL, CHalfLifeMultiplay, CSGameRules, CanHavePlayerItem, (CBasePlayer *pPlayer, CBasePlayerItem *pItem), pPlayer, pItem);
+LINK_HOOK_CLASS_CUSTOM_CHAIN(BOOL, CHalfLifeMultiplay, CSGameRules, CanHavePlayerItem, (CBasePlayer *pPlayer, CBasePlayerItem *pItem), pPlayer, pItem)
 
 BOOL EXT_FUNC CHalfLifeMultiplay::__API_VHOOK(CanHavePlayerItem)(CBasePlayer *pPlayer, CBasePlayerItem *pItem)
 {
@@ -4188,7 +4188,7 @@ float CHalfLifeMultiplay::__MAKE_VHOOK(FlHEVChargerRechargeTime)()
 	return 30;
 }
 
-LINK_HOOK_CLASS_CUSTOM_CHAIN(int, CHalfLifeMultiplay, CSGameRules, DeadPlayerWeapons, (CBasePlayer *pPlayer), pPlayer);
+LINK_HOOK_CLASS_CUSTOM_CHAIN(int, CHalfLifeMultiplay, CSGameRules, DeadPlayerWeapons, (CBasePlayer *pPlayer), pPlayer)
 
 int EXT_FUNC CHalfLifeMultiplay::__API_VHOOK(DeadPlayerWeapons)(CBasePlayer *pPlayer)
 {
@@ -4200,7 +4200,7 @@ int CHalfLifeMultiplay::__MAKE_VHOOK(DeadPlayerAmmo)(CBasePlayer *pPlayer)
 	return GR_PLR_DROP_AMMO_ACTIVE;
 }
 
-LINK_HOOK_CLASS_CUSTOM_CHAIN(edict_t *, CHalfLifeMultiplay, CSGameRules, GetPlayerSpawnSpot, (CBasePlayer *pPlayer), pPlayer);
+LINK_HOOK_CLASS_CUSTOM_CHAIN(edict_t *, CHalfLifeMultiplay, CSGameRules, GetPlayerSpawnSpot, (CBasePlayer *pPlayer), pPlayer)
 
 edict_t *EXT_FUNC CHalfLifeMultiplay::__API_VHOOK(GetPlayerSpawnSpot)(CBasePlayer *pPlayer)
 {
@@ -4270,7 +4270,7 @@ BOOL CHalfLifeMultiplay::__MAKE_VHOOK(FAllowMonsters)()
 #endif
 }
 
-LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN2(CHalfLifeMultiplay, CSGameRules, GoToIntermission);
+LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN2(CHalfLifeMultiplay, CSGameRules, GoToIntermission)
 
 void EXT_FUNC CHalfLifeMultiplay::__API_VHOOK(GoToIntermission)()
 {

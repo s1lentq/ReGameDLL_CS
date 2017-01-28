@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-LINK_ENTITY_TO_CLASS(weapon_m3, CM3, CCSM3);
+LINK_ENTITY_TO_CLASS(weapon_m3, CM3, CCSM3)
 
 void CM3::__MAKE_VHOOK(Spawn)()
 {

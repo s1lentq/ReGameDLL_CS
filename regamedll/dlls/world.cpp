@@ -82,7 +82,7 @@ public:
 	void EXPORT TriggerDecal(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 };
 
-LINK_ENTITY_TO_CLASS(infodecal, CDecal, CCSDecal);
+LINK_ENTITY_TO_CLASS(infodecal, CDecal, CCSDecal)
 
 void CDecal::Spawn()
 {
@@ -175,7 +175,7 @@ public:
 	virtual int ObjectCaps() { return FCAP_DONT_SAVE; }
 };
 
-LINK_ENTITY_TO_CLASS(bodyque, CCorpse, CCSCorpse);
+LINK_ENTITY_TO_CLASS(bodyque, CCorpse, CCSCorpse)
 
 static void InitBodyQue()
 {
@@ -412,7 +412,7 @@ void EXT_FUNC ResetGlobalState()
 	gInitHUD = TRUE;
 }
 
-LINK_ENTITY_TO_CLASS(worldspawn, CWorld, CCSWorld);
+LINK_ENTITY_TO_CLASS(worldspawn, CWorld, CCSWorld)
 
 void CWorld::__MAKE_VHOOK(Spawn)()
 {

@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-LINK_ENTITY_TO_CLASS(weapon_ump45, CUMP45, CCSUMP45);
+LINK_ENTITY_TO_CLASS(weapon_ump45, CUMP45, CCSUMP45)
 
 void CUMP45::__MAKE_VHOOK(Spawn)()
 {

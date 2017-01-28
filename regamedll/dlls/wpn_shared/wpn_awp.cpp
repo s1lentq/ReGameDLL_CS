@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-LINK_ENTITY_TO_CLASS(weapon_awp, CAWP, CCSAWP);
+LINK_ENTITY_TO_CLASS(weapon_awp, CAWP, CCSAWP)
 
 void CAWP::__MAKE_VHOOK(Spawn)()
 {

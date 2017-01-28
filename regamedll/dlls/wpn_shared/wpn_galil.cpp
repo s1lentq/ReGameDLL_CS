@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-LINK_ENTITY_TO_CLASS(weapon_galil, CGalil, CCSGalil);
+LINK_ENTITY_TO_CLASS(weapon_galil, CGalil, CCSGalil)
 
 void CGalil::__MAKE_VHOOK(Spawn)()
 {

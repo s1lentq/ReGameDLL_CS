@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-LINK_ENTITY_TO_CLASS(weapon_aug, CAUG, CCSAUG);
+LINK_ENTITY_TO_CLASS(weapon_aug, CAUG, CCSAUG)
 
 void CAUG::__MAKE_VHOOK(Spawn)()
 {

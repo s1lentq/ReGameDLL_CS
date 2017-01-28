@@ -79,8 +79,8 @@ sentenceg rgsentenceg[CSENTENCEG_MAX];
 char grgszTextureName[CTEXTURESMAX][CBTEXTURENAMEMAX];
 char grgchTextureType[CTEXTURESMAX];
 
-LINK_ENTITY_TO_CLASS(ambient_generic, CAmbientGeneric, CCSAmbientGeneric);
-IMPLEMENT_SAVERESTORE(CAmbientGeneric, CBaseEntity);
+LINK_ENTITY_TO_CLASS(ambient_generic, CAmbientGeneric, CCSAmbientGeneric)
+IMPLEMENT_SAVERESTORE(CAmbientGeneric, CBaseEntity)
 
 // -1 : "Default"
 // 0  : "Everywhere"
@@ -854,8 +854,8 @@ void CAmbientGeneric::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CBaseEntity::KeyValue(pkvd);
 }
 
-LINK_ENTITY_TO_CLASS(env_sound, CEnvSound, CCSEnvSound);
-IMPLEMENT_SAVERESTORE(CEnvSound, CBaseEntity);
+LINK_ENTITY_TO_CLASS(env_sound, CEnvSound, CCSEnvSound)
+IMPLEMENT_SAVERESTORE(CEnvSound, CBaseEntity)
 
 void CEnvSound::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
@@ -1815,8 +1815,8 @@ float TEXTURETYPE_PlaySound(TraceResult *ptr, Vector vecSrc, Vector vecEnd, int 
 	return fvolbar;
 }
 
-LINK_ENTITY_TO_CLASS(speaker, CSpeaker, CCSSpeaker);
-IMPLEMENT_SAVERESTORE(CSpeaker, CBaseEntity);
+LINK_ENTITY_TO_CLASS(speaker, CSpeaker, CCSSpeaker)
+IMPLEMENT_SAVERESTORE(CSpeaker, CBaseEntity)
 
 // ambient_generic - general-purpose user-defined static sound
 void CSpeaker::__MAKE_VHOOK(Spawn)()

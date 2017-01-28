@@ -228,7 +228,7 @@ void CBaseTutor::DisplayNewStateDescriptionToPlayer()
 {
 	CBasePlayer *localPlayer = UTIL_GetLocalPlayer();
 
-	if (localPlayer == NULL)
+	if (!localPlayer)
 		return;
 
 	char *desc = m_stateSystem->GetCurrentStateString();
@@ -260,7 +260,7 @@ void CBaseTutor::CalculatePathForObjective(CBaseEntity *player)
 
 bool CBaseTutor::__MAKE_VHOOK(IsEntityInViewOfPlayer)(CBaseEntity *entity, CBasePlayer *player)
 {
-	if (entity == NULL || player == NULL)
+	if (!entity || !player)
 		return false;
 
 	if (cv_tutor_view_distance.value < (entity->pev->origin - player->pev->origin).Length())
@@ -284,7 +284,7 @@ bool CBaseTutor::__MAKE_VHOOK(IsEntityInViewOfPlayer)(CBaseEntity *entity, CBase
 
 bool CBaseTutor::__MAKE_VHOOK(IsPlayerLookingAtPosition)(Vector *origin, CBasePlayer *player)
 {
-	if (origin == NULL || player == NULL)
+	if (!origin || !player)
 		return false;
 
 	if (cv_tutor_look_distance.value < (*origin - player->pev->origin).Length())
@@ -306,7 +306,7 @@ bool CBaseTutor::__MAKE_VHOOK(IsPlayerLookingAtPosition)(Vector *origin, CBasePl
 
 bool CBaseTutor::__MAKE_VHOOK(IsPlayerLookingAtEntity)(CBaseEntity *entity, CBasePlayer *player)
 {
-	if (entity == NULL || player == NULL)
+	if (!entity || !player)
 		return false;
 
 	UTIL_MakeVectors(player->pev->v_angle);
@@ -330,7 +330,7 @@ bool CBaseTutor::__MAKE_VHOOK(IsPlayerLookingAtEntity)(CBaseEntity *entity, CBas
 
 bool CBaseTutor::__MAKE_VHOOK(IsBombsiteInViewOfPlayer)(CBaseEntity *entity, CBasePlayer *player)
 {
-	if (entity == NULL || player == NULL)
+	if (!entity || !player)
 		return false;
 
 	Vector bombSiteCenter = (entity->pev->absmax + entity->pev->absmin) * 0.5f;
@@ -356,7 +356,7 @@ bool CBaseTutor::__MAKE_VHOOK(IsBombsiteInViewOfPlayer)(CBaseEntity *entity, CBa
 
 bool CBaseTutor::__MAKE_VHOOK(IsEntityInBombsite)(CBaseEntity *bombsite, CBaseEntity *entity)
 {
-	if (bombsite == NULL || entity == NULL)
+	if (!bombsite || !entity)
 		return false;
 
 	if (entity->pev->origin.x <= bombsite->pev->absmax.x
@@ -380,7 +380,7 @@ bool CBaseTutor::DoMessagesHaveSameID(int id1, int id2)
 	TutorMessage *message1 = GetTutorMessageDefinition(id1);
 	TutorMessage *message2 = GetTutorMessageDefinition(id2);
 
-	if (message1 == NULL || message2 == NULL)
+	if (!message1 || !message2)
 		return false;
 
 	if (message1->m_duplicateID && message2->m_duplicateID)

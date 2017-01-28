@@ -433,13 +433,13 @@ void ProcessModuleData(Module *module)
 	int i = 0;
 	PIMAGE_DOS_HEADER dosHeader = (PIMAGE_DOS_HEADER)module->base;
 	if (dosHeader->e_magic != IMAGE_DOS_SIGNATURE) {
-		regamedll_syserror(__FUNCTION__": Invalid DOS header signature");
+		regamedll_syserror("%s: Invalid DOS header signature", __FUNCTION__);
 		return;
 	}
 
 	PIMAGE_NT_HEADERS NTHeaders = (PIMAGE_NT_HEADERS)((size_t)module->base + dosHeader->e_lfanew);
 	if (NTHeaders->Signature != 0x4550) {
-		regamedll_syserror(__FUNCTION__": Invalid NT header signature");
+		regamedll_syserror("%s: Invalid NT header signature", __FUNCTION__);
 		return;
 	}
 
@@ -453,7 +453,7 @@ void ProcessModuleData(Module *module)
 	}
 
 	if (CodeSection == NULL) {
-		regamedll_syserror(__FUNCTION__": Code section not found");
+		regamedll_syserror("%s: Code section not found", __FUNCTION__);
 		return;
 	}
 
@@ -865,14 +865,13 @@ void VirtualTableInit(void *ptr, const char *baseClass)
 	VirtualTableRef *refsVtbl = GetVirtualTableRefAddr(baseClass);
 	if (!refsVtbl)
 	{
-		regamedll_syserror(__FUNCTION__": Missing vtable for \"%s\"", baseClass);
+		regamedll_syserror("%s: Missing vtable for \"%s\"", __FUNCTION__, baseClass);
 	}
 
 	/*
 	int nCount = vtable_size(refsVtbl->originalAddress);
-
 	if (nCount != refsVtbl->size)
-		regamedll_syserror(__FUNCTION__": Invalid size virtual table, expected [%d], got [%d]", nCount, refsVtbl->size);
+		regamedll_syserror("%s: Invalid size virtual table, expected [%d], got [%d]", __FUNCTION__, nCount, refsVtbl->size);
 	*/
 
 	int **ivtable = *(int ***)ptr;
@@ -898,11 +897,11 @@ void HIDDEN GetAddressVtableByClassname(const char *szClassName, const int iOffs
 		edict_t *pObject = CREATE_ENTITY();
 
 		void *addr = GetFunctionEntity(szClassName);
-	
+
 		if (addr == NULL)
 		{
-			//can't create object. 
-			printf2(__FUNCTION__ ":: Not found export function of binaries. Presumably looks '__declspec(dllexport) void %s(entvars_t *pev)'", szClassName);
+			//can't create object.
+			printf2("%s: Not found export function of binaries. Presumably looks '__declspec(dllexport) void %s(entvars_t *pev)'", __FUNCTION__, szClassName);
 			REMOVE_ENTITY(pObject);
 			return;
 		}
@@ -918,7 +917,8 @@ void HIDDEN GetAddressVtableByClassname(const char *szClassName, const int iOffs
 		vtable = (void *)refsVtbl->originalAddress;
 	}
 
-	printf2(__FUNCTION__ "* ADDRESS VTABLE: %p | ADDRESS VIRTUAL FUNC: %p",
+	printf2("%s: ADDRESS VTABLE: %p | ADDRESS VIRTUAL FUNC: %p",
+		__FUNCTION__,
 		OffsetToRebase((size_t)vtable),
 		OffsetToRebase(*(((size_t **)&vtable)[ iOffset ])));
 }

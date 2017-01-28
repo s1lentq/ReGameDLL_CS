@@ -170,8 +170,8 @@ struct
 	{ HOSTAGE_CHATTER_DEATH_CRY, "hostage/hdie/hdeath3.wav" },
 };
 
-LINK_ENTITY_TO_CLASS(hostage_entity, CHostage, CCSHostage);
-LINK_ENTITY_TO_CLASS(monster_scientist, CHostage, CCSHostage);
+LINK_ENTITY_TO_CLASS(hostage_entity, CHostage, CCSHostage)
+LINK_ENTITY_TO_CLASS(monster_scientist, CHostage, CCSHostage)
 
 void CHostage::__MAKE_VHOOK(Spawn)()
 {

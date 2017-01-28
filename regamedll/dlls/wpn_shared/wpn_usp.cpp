@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-LINK_ENTITY_TO_CLASS(weapon_usp, CUSP, CCSUSP);
+LINK_ENTITY_TO_CLASS(weapon_usp, CUSP, CCSUSP)
 
 void CUSP::__MAKE_VHOOK(Spawn)()
 {

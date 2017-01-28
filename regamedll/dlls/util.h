@@ -39,12 +39,12 @@
 
 #define _LOG_TRACE\
 	static int iNumPassed = 0;\
-	printf2(__FUNCTION__":: iNumPassed - %d", iNumPassed++);
+	printf2("%s:: iNumPassed - %d", __FUNCTION__, iNumPassed++);
 
 #define _LOG_TRACE2\
 	static int iNumPassedt = 0;\
-	printf2(__FUNCTION__":: iNumPassed - %d", iNumPassedt++);\
-	_logf(__FUNCTION__":: iNumPassed - %d", iNumPassedt++);
+	printf2("%s:: iNumPassed - %d", __FUNCTION__, iNumPassedt++);\
+	_logf("%s:: iNumPassed - %d", __FUNCTION__, iNumPassedt++);
 
 // Makes these more explicit, and easier to find
 #ifdef HOOK_GAMEDLL

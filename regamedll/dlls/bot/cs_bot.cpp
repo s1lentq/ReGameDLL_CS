@@ -4,7 +4,7 @@
 // Give 3rd-party to get the virtual table of the object.
 // Example: AMXModX module: Hamsandwich
 // RegisterHam(Ham_Spawn, "bot", "CCSBot__Spawn", 1);
-LINK_ENTITY_TO_CLASS(bot, CCSBot, CAPI_CSBot);
+LINK_ENTITY_TO_CLASS(bot, CCSBot, CAPI_CSBot)
 #endif
 
 // Return the number of bots following the given player

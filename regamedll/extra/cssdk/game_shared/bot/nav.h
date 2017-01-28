@@ -33,6 +33,15 @@
 // to help identify nav files
 #define NAV_MAGIC_NUMBER	0xFEEDFACE
 
+// version
+// 1 = hiding spots as plain vector array
+// 2 = hiding spots as HidingSpot objects
+// 3 = Encounter spots use HidingSpot ID's instead of storing vector again
+// 4 = Includes size of source bsp file to verify nav data correlation
+// ---- Beta Release at V4 -----
+// 5 = Added Place info
+#define NAV_VERSION		5
+
 // A place is a named group of navigation areas
 typedef unsigned int Place;
 

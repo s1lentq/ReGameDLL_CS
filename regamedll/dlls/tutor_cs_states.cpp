@@ -38,21 +38,21 @@ CCSTutorStateSystem::CCSTutorStateSystem()
 
 CCSTutorStateSystem::~CCSTutorStateSystem()
 {
-	if (m_currentState != NULL)
+	if (m_currentState)
 	{
 		delete m_currentState;
-		m_currentState = NULL;
+		m_currentState = nullptr;
 	}
 }
 
 bool CCSTutorStateSystem::__MAKE_VHOOK(UpdateState)(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
 {
-	if (m_currentState == NULL)
+	if (m_currentState == nullptr)
 	{
 		m_currentState = new CCSTutorUndefinedState;
 	}
 
-	if (m_currentState != NULL)
+	if (m_currentState)
 	{
 		TutorStateType nextStateType = static_cast<TutorStateType>(m_currentState->CheckForStateTransition(event, entity, other));
 
@@ -69,7 +69,7 @@ bool CCSTutorStateSystem::__MAKE_VHOOK(UpdateState)(GameEventType event, CBaseEn
 
 char *CCSTutorStateSystem::__MAKE_VHOOK(GetCurrentStateString)()
 {
-	if (m_currentState != NULL)
+	if (m_currentState)
 	{
 		return m_currentState->GetStateString();
 	}
@@ -113,11 +113,10 @@ int CCSTutorUndefinedState::HandlePlayerSpawned(CBaseEntity *entity, CBaseEntity
 {
 	CBasePlayer *localPlayer = UTIL_GetLocalPlayer();
 
-	if (localPlayer != NULL)
+	if (localPlayer)
 	{
 		CBasePlayer *player = static_cast<CBasePlayer *>(entity);
-
-		if (player != NULL && player->IsPlayer() && player == localPlayer)
+		if (player && player->IsPlayer() && player == localPlayer)
 		{
 			// flags
 			return TUTOR_STATE_FLAG_1;
@@ -164,11 +163,10 @@ int CCSTutorWaitingForStartState::HandlePlayerSpawned(CBaseEntity *entity, CBase
 {
 	CBasePlayer *localPlayer = UTIL_GetLocalPlayer();
 
-	if (localPlayer != NULL)
+	if (localPlayer)
 	{
 		CBasePlayer *player = static_cast<CBasePlayer *>(entity);
-
-		if (player != NULL && player->IsPlayer() && player == localPlayer)
+		if (player && player->IsPlayer() && player == localPlayer)
 		{
 			// flags
 			return TUTOR_STATE_FLAG_1;

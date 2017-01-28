@@ -239,10 +239,7 @@ bool EXT_FUNC CCSPlayer::RemovePlayerItem(const char* pszItemName)
 	auto pItem = GetItemByName(pszItemName);
 	if (pItem)
 	{
-		if (pItem->iItemSlot() == PRIMARY_WEAPON_SLOT) {
-			pPlayer->m_bHasPrimary = false;
-		}
-		else if (FClassnameIs(pItem->pev, "weapon_c4")) {
+		if (FClassnameIs(pItem->pev, "weapon_c4")) {
 			pPlayer->m_bHasC4 = false;
 			pPlayer->pev->body = 0;
 			pPlayer->SetBombIcon(FALSE);
@@ -256,6 +253,11 @@ bool EXT_FUNC CCSPlayer::RemovePlayerItem(const char* pszItemName)
 		if (pPlayer->RemovePlayerItem(pItem)) {
 			pPlayer->pev->weapons &= ~(1 << pItem->m_iId);
 			pItem->Kill();
+
+			if (!pPlayer->m_rgpPlayerItems[PRIMARY_WEAPON_SLOT]) {
+				pPlayer->m_bHasPrimary = false;
+			}
+
 			return true;
 		}
 	}
@@ -294,7 +296,7 @@ void EXT_FUNC CCSPlayer::DropPlayerItem(const char *pszItemName) { BasePlayer()-
 void EXT_FUNC CCSPlayer::RemoveShield() { BasePlayer()->RemoveShield(); }
 void EXT_FUNC CCSPlayer::RemoveAllItems(bool bRemoveSuit) { BasePlayer()->RemoveAllItems(bRemoveSuit ? TRUE : FALSE); }
 void EXT_FUNC CCSPlayer::SetPlayerModel(bool bHasC4) { BasePlayer()->SetPlayerModel(bHasC4 ? TRUE : FALSE); }
-void EXT_FUNC CCSPlayer::SetPlayerModelEx(const char *modelName) { strncpy(m_szModel, modelName, sizeof(m_szModel) - 1); m_szModel[sizeof(m_szModel) - 1] = '\0'; };
+void EXT_FUNC CCSPlayer::SetPlayerModelEx(const char *modelName) { Q_strncpy(m_szModel, modelName, sizeof(m_szModel) - 1); m_szModel[sizeof(m_szModel) - 1] = '\0'; };
 void EXT_FUNC CCSPlayer::SetNewPlayerModel(const char *modelName) { BasePlayer()->SetNewPlayerModel(modelName); }
 void EXT_FUNC CCSPlayer::ClientCommand(const char *cmd, const char *arg1, const char *arg2, const char *arg3) { BasePlayer()->ClientCommand(cmd, arg1, arg2, arg3); }
 void EXT_FUNC CCSPlayer::SetProgressBarTime(int time) { BasePlayer()->SetProgressBarTime(time); }
@@ -319,3 +321,4 @@ CBasePlayerItem *EXT_FUNC CCSPlayer::GetItemByName(const char *itemName) { retur
 void EXT_FUNC CCSPlayer::Disappear() { BasePlayer()->Disappear(); }
 void EXT_FUNC CCSPlayer::MakeVIP() { BasePlayer()->MakeVIP(); }
 bool EXT_FUNC CCSPlayer::MakeBomber() { return BasePlayer()->MakeBomber(); }
+void EXT_FUNC CCSPlayer::ResetSequenceInfo() { BasePlayer()->ResetSequenceInfo(); }

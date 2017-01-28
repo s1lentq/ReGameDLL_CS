@@ -61,7 +61,7 @@ TYPEDESCRIPTION CGunTarget::m_SaveData[] =
 
 #endif // HOOK_GAMEDLL
 
-IMPLEMENT_SAVERESTORE(CBasePlatTrain, CBaseToggle);
+IMPLEMENT_SAVERESTORE(CBasePlatTrain, CBaseToggle)
 
 void CBasePlatTrain::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
@@ -232,7 +232,7 @@ void CFuncPlat::CallHitBottom()
 	HitBottom();
 }
 
-LINK_ENTITY_TO_CLASS(func_plat, CFuncPlat, CCSFuncPlat);
+LINK_ENTITY_TO_CLASS(func_plat, CFuncPlat, CCSFuncPlat)
 
 #define noiseMovement noise
 #define noiseStopMoving noise1
@@ -511,8 +511,8 @@ void CFuncPlat::__MAKE_VHOOK(Blocked)(CBaseEntity *pOther)
 	}
 }
 
-LINK_ENTITY_TO_CLASS(func_platrot, CFuncPlatRot, CCSFuncPlatRot);
-IMPLEMENT_SAVERESTORE(CFuncPlatRot, CFuncPlat);
+LINK_ENTITY_TO_CLASS(func_platrot, CFuncPlatRot, CCSFuncPlatRot)
+IMPLEMENT_SAVERESTORE(CFuncPlatRot, CFuncPlat)
 
 void CFuncPlatRot::SetupRotation()
 {
@@ -588,8 +588,8 @@ void CFuncPlatRot::RotMove(Vector &destAngle, float time)
 	}
 }
 
-LINK_ENTITY_TO_CLASS(func_train, CFuncTrain, CCSFuncTrain);
-IMPLEMENT_SAVERESTORE(CFuncTrain, CBasePlatTrain);
+LINK_ENTITY_TO_CLASS(func_train, CFuncTrain, CCSFuncTrain)
+IMPLEMENT_SAVERESTORE(CFuncTrain, CBasePlatTrain)
 
 void CFuncTrain::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
@@ -918,8 +918,8 @@ void CFuncTrain::__MAKE_VHOOK(OverrideReset)()
 	}
 }
 
-IMPLEMENT_SAVERESTORE(CFuncTrackTrain, CBaseEntity);
-LINK_ENTITY_TO_CLASS(func_tracktrain, CFuncTrackTrain, CCSFuncTrackTrain);
+IMPLEMENT_SAVERESTORE(CFuncTrackTrain, CBaseEntity)
+LINK_ENTITY_TO_CLASS(func_tracktrain, CFuncTrackTrain, CCSFuncTrackTrain)
 
 void CFuncTrackTrain::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
@@ -1580,7 +1580,7 @@ void CFuncTrackTrain::__MAKE_VHOOK(Precache)()
 	m_usAdjustPitch = PRECACHE_EVENT(1, "events/train.sc");
 }
 
-LINK_ENTITY_TO_CLASS(func_traincontrols, CFuncTrainControls, CCSFuncTrainControls);
+LINK_ENTITY_TO_CLASS(func_traincontrols, CFuncTrainControls, CCSFuncTrainControls)
 
 void CFuncTrainControls::Find()
 {
@@ -1621,8 +1621,8 @@ BOOL CFuncTrackChange::__MAKE_VHOOK(IsTogglePlat)()
 	return TRUE;
 }
 
-LINK_ENTITY_TO_CLASS(func_trackchange, CFuncTrackChange, CCSFuncTrackChange);
-IMPLEMENT_SAVERESTORE(CFuncTrackChange, CFuncPlatRot);
+LINK_ENTITY_TO_CLASS(func_trackchange, CFuncTrackChange, CCSFuncTrackChange)
+IMPLEMENT_SAVERESTORE(CFuncTrackChange, CFuncPlatRot)
 
 void CFuncTrackChange::__MAKE_VHOOK(Spawn)()
 {
@@ -1958,7 +1958,7 @@ void CFuncTrackChange::__MAKE_VHOOK(HitTop)()
 	EnableUse();
 }
 
-LINK_ENTITY_TO_CLASS(func_trackautochange, CFuncTrackAuto, CCSFuncTrackAuto);
+LINK_ENTITY_TO_CLASS(func_trackautochange, CFuncTrackAuto, CCSFuncTrackAuto)
 
 // Auto track change
 void CFuncTrackAuto::__MAKE_VHOOK(UpdateAutoTargets)(int toggleState)
@@ -2049,8 +2049,8 @@ void CFuncTrackAuto::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCa
 	}
 }
 
-LINK_ENTITY_TO_CLASS(func_guntarget, CGunTarget, CCSGunTarget);
-IMPLEMENT_SAVERESTORE(CGunTarget, CBaseMonster);
+LINK_ENTITY_TO_CLASS(func_guntarget, CGunTarget, CCSGunTarget)
+IMPLEMENT_SAVERESTORE(CGunTarget, CBaseMonster)
 
 void CGunTarget::__MAKE_VHOOK(Spawn)()
 {

@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-LINK_HOOK_CHAIN(int, GetForceCamera, (CBasePlayer *pObserver), pObserver);
+LINK_HOOK_CHAIN(int, GetForceCamera, (CBasePlayer *pObserver), pObserver)
 
 int EXT_FUNC __API_HOOK(GetForceCamera)(CBasePlayer *pObserver)
 {
@@ -19,7 +19,7 @@ int EXT_FUNC __API_HOOK(GetForceCamera)(CBasePlayer *pObserver)
 	return retVal;
 }
 
-LINK_HOOK_CLASS_CHAIN(CBasePlayer *, CBasePlayer, Observer_IsValidTarget, (int iPlayerIndex, bool bSameTeam), iPlayerIndex, bSameTeam);
+LINK_HOOK_CLASS_CHAIN(CBasePlayer *, CBasePlayer, Observer_IsValidTarget, (int iPlayerIndex, bool bSameTeam), iPlayerIndex, bSameTeam)
 
 CBasePlayer *EXT_FUNC CBasePlayer::__API_HOOK(Observer_IsValidTarget)(int iPlayerIndex, bool bSameTeam)
 {

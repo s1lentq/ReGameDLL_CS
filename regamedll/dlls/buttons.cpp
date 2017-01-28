@@ -52,8 +52,8 @@ TYPEDESCRIPTION CEnvSpark::m_SaveData[] =
 
 #endif // HOOK_GAMEDLL
 
-IMPLEMENT_SAVERESTORE(CEnvGlobal, CBaseEntity);
-LINK_ENTITY_TO_CLASS(env_global, CEnvGlobal, CCSEnvGlobal);
+IMPLEMENT_SAVERESTORE(CEnvGlobal, CBaseEntity)
+LINK_ENTITY_TO_CLASS(env_global, CEnvGlobal, CCSEnvGlobal)
 
 void CEnvGlobal::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
@@ -134,8 +134,8 @@ void CEnvGlobal::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller
 		gGlobalState.EntityAdd(m_globalstate, gpGlobals->mapname, newState);
 }
 
-IMPLEMENT_SAVERESTORE(CMultiSource, CBaseEntity);
-LINK_ENTITY_TO_CLASS(multisource, CMultiSource, CCSMultiSource);
+IMPLEMENT_SAVERESTORE(CMultiSource, CBaseEntity)
+LINK_ENTITY_TO_CLASS(multisource, CMultiSource, CCSMultiSource)
 
 // Cache user-entity-field values until spawn is called.
 void CMultiSource::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
@@ -293,7 +293,7 @@ void CMultiSource::Register()
 	pev->spawnflags &= ~SF_MULTI_INIT;
 }
 
-IMPLEMENT_SAVERESTORE(CBaseButton, CBaseToggle);
+IMPLEMENT_SAVERESTORE(CBaseButton, CBaseToggle)
 
 void CBaseButton::__MAKE_VHOOK(Precache)()
 {
@@ -445,7 +445,7 @@ BOOL CBaseButton::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *p
 // 1) wooden clunk
 // 2) metallic click
 // 3) in-out
-LINK_ENTITY_TO_CLASS(func_button, CBaseButton, CCSButton);
+LINK_ENTITY_TO_CLASS(func_button, CBaseButton, CCSButton)
 
 void CBaseButton::__MAKE_VHOOK(Spawn)()
 {
@@ -832,16 +832,14 @@ void CBaseButton::ButtonBackHome()
 	}
 }
 
-LINK_ENTITY_TO_CLASS(func_rot_button, CRotButton, CCSRotButton);
+LINK_ENTITY_TO_CLASS(func_rot_button, CRotButton, CCSRotButton)
 
 void CRotButton::__MAKE_VHOOK(Spawn)()
 {
 	char *pszSound;
 
-	//----------------------------------------------------
-	//determine sounds for buttons
-	//a sound of 0 should not make a sound
-	//----------------------------------------------------
+	// determine sounds for buttons
+	// a sound of 0 should not make a sound
 	pszSound = ButtonSound(m_sounds);
 	PRECACHE_SOUND(pszSound);
 	pev->noise = ALLOC_STRING(pszSound);
@@ -898,8 +896,8 @@ void CRotButton::__MAKE_VHOOK(Spawn)()
 	//SetTouch(ButtonTouch);
 }
 
-IMPLEMENT_SAVERESTORE(CMomentaryRotButton, CBaseToggle);
-LINK_ENTITY_TO_CLASS(momentary_rot_button, CMomentaryRotButton, CCSMomentaryRotButton);
+IMPLEMENT_SAVERESTORE(CMomentaryRotButton, CBaseToggle)
+LINK_ENTITY_TO_CLASS(momentary_rot_button, CMomentaryRotButton, CCSMomentaryRotButton)
 
 void CMomentaryRotButton::__MAKE_VHOOK(Spawn)()
 {
@@ -1113,9 +1111,9 @@ void CMomentaryRotButton::UpdateSelfReturn(float value)
 	}
 }
 
-IMPLEMENT_SAVERESTORE(CEnvSpark, CBaseEntity);
-LINK_ENTITY_TO_CLASS(env_spark, CEnvSpark, CCSEnvSpark);
-LINK_ENTITY_TO_CLASS(env_debris, CEnvSpark, CCSEnvSpark);
+IMPLEMENT_SAVERESTORE(CEnvSpark, CBaseEntity)
+LINK_ENTITY_TO_CLASS(env_spark, CEnvSpark, CCSEnvSpark)
+LINK_ENTITY_TO_CLASS(env_debris, CEnvSpark, CCSEnvSpark)
 
 void CEnvSpark::__MAKE_VHOOK(Spawn)()
 {
@@ -1197,7 +1195,7 @@ void CEnvSpark::SparkStop(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYP
 	SetThink(NULL);
 }
 
-LINK_ENTITY_TO_CLASS(button_target, CButtonTarget, CCSButtonTarget);
+LINK_ENTITY_TO_CLASS(button_target, CButtonTarget, CCSButtonTarget)
 
 void CButtonTarget::__MAKE_VHOOK(Spawn)()
 {

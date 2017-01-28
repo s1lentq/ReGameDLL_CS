@@ -440,7 +440,7 @@ void CCSBot::UpdateAnalyzeBetaProcess()
 			return;
 		}
 	}
-	
+
 	float progress = (double(_currentIndex) / double(_navAreaCount) + 1.0f) * 0.5f;
 	drawProgressMeter(progress, "#CZero_AnalyzingApproachPoints");
 }

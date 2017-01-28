@@ -16,7 +16,7 @@ TYPEDESCRIPTION CWallHealth::m_SaveData[] =
 
 #endif
 
-LINK_ENTITY_TO_CLASS(item_healthkit, CHealthKit, CCSHealthKit);
+LINK_ENTITY_TO_CLASS(item_healthkit, CHealthKit, CCSHealthKit)
 
 void CHealthKit::__MAKE_VHOOK(Spawn)()
 {
@@ -58,8 +58,8 @@ BOOL CHealthKit::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
 	return FALSE;
 }
 
-IMPLEMENT_SAVERESTORE(CWallHealth, CBaseEntity);
-LINK_ENTITY_TO_CLASS(func_healthcharger, CWallHealth, CCSWallHealth);
+IMPLEMENT_SAVERESTORE(CWallHealth, CBaseEntity)
+LINK_ENTITY_TO_CLASS(func_healthcharger, CWallHealth, CCSWallHealth)
 
 void CWallHealth::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {

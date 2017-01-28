@@ -12,8 +12,11 @@
 **/msvc/*.opensdf
 **/msvc/*.user
 **/msvc/*.suo
+**/msvc/*.db
+**/msvc/*.opendb
 **/msvc/*.txt
 **/msvc/*.amplxeproj
+**/msvc/.vs
 **/msvc/ipch
 
 regamedll/version/appversion.h

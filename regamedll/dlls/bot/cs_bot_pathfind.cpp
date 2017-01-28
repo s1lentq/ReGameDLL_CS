@@ -1584,7 +1584,7 @@ bool CCSBot::ComputePath(CNavArea *goalArea, const Vector *goal, RouteType route
 	DestroyPath();
 
 	CNavArea *startArea = m_lastKnownArea;
-	if (startArea == NULL)
+	if (!startArea)
 		return false;
 
 	// note final specific position
@@ -1622,7 +1622,7 @@ bool CCSBot::ComputePath(CNavArea *goalArea, const Vector *goal, RouteType route
 	// get count
 	int count = 0;
 	CNavArea *area;
-	for (area = effectiveGoalArea; area != NULL; area = area->GetParent())
+	for (area = effectiveGoalArea; area; area = area->GetParent())
 	{
 		++count;
 	}
@@ -1642,7 +1642,7 @@ bool CCSBot::ComputePath(CNavArea *goalArea, const Vector *goal, RouteType route
 
 	// build path
 	m_pathLength = count;
-	for (area = effectiveGoalArea; count && area != NULL; area = area->GetParent())
+	for (area = effectiveGoalArea; count && area; area = area->GetParent())
 	{
 		--count;
 		m_path[ count ].area = area;

@@ -32,7 +32,7 @@
 #include "regamedll_interfaces_impl.h"
 
 #define GAMEHOOK_REGISTRY(func)\
-	IReGameHookRegistry_##func* CReGameHookchains::##func() { return &m_##func; }
+	IReGameHookRegistry_##func* CReGameHookchains::func() { return &m_##func; }
 
 // CBasePlayer::Spawn hook
 typedef IVoidHookChainClassImpl<CBasePlayer> CReGameHook_CBasePlayer_Spawn;

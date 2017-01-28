@@ -12,7 +12,7 @@ CBaseTutorStateSystem::~CBaseTutorStateSystem()
 
 int CBaseTutorStateSystem::GetCurrentStateType() const
 {
-	if (m_currentState != NULL)
+	if (m_currentState)
 	{
 		return m_currentState->GetType();
 	}

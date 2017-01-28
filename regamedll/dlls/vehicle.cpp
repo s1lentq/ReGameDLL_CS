@@ -41,8 +41,8 @@ void FixupAngles2(Vector &v)
 	v.z = Fix2(v.z);
 }
 
-IMPLEMENT_SAVERESTORE(CFuncVehicle, CBaseEntity);
-LINK_ENTITY_TO_CLASS(func_vehicle, CFuncVehicle, CCSFuncVehicle);
+IMPLEMENT_SAVERESTORE(CFuncVehicle, CBaseEntity)
+LINK_ENTITY_TO_CLASS(func_vehicle, CFuncVehicle, CCSFuncVehicle)
 
 void CFuncVehicle::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
@@ -943,7 +943,7 @@ void CFuncVehicle::__MAKE_VHOOK(Precache)()
 	m_usAdjustPitch = PRECACHE_EVENT(1, "events/vehicle.sc");
 }
 
-LINK_ENTITY_TO_CLASS(func_vehiclecontrols, CFuncVehicleControls, CCSFuncVehicleControls);
+LINK_ENTITY_TO_CLASS(func_vehiclecontrols, CFuncVehicleControls, CCSFuncVehicleControls)
 
 void CFuncVehicleControls::Find()
 {

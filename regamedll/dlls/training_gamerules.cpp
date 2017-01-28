@@ -310,8 +310,8 @@ void CHalfLifeTraining::__MAKE_VHOOK(CheckWinConditions)()
 	}
 }
 
-IMPLEMENT_SAVERESTORE(CBaseGrenCatch, CBaseEntity);
-LINK_ENTITY_TO_CLASS(func_grencatch, CBaseGrenCatch, CCSGrenCatch);
+IMPLEMENT_SAVERESTORE(CBaseGrenCatch, CBaseEntity)
+LINK_ENTITY_TO_CLASS(func_grencatch, CBaseGrenCatch, CCSGrenCatch)
 
 void CBaseGrenCatch::__MAKE_VHOOK(Spawn)()
 {
@@ -439,8 +439,8 @@ void CFuncWeaponCheck::__MAKE_VHOOK(Spawn)()
 	SET_MODEL(ENT(pev), STRING(pev->model));
 }
 
-IMPLEMENT_SAVERESTORE(CFuncWeaponCheck, CBaseEntity);
-LINK_ENTITY_TO_CLASS(func_weaponcheck, CFuncWeaponCheck, CCSFuncWeaponCheck);
+IMPLEMENT_SAVERESTORE(CFuncWeaponCheck, CBaseEntity)
+LINK_ENTITY_TO_CLASS(func_weaponcheck, CFuncWeaponCheck, CCSFuncWeaponCheck)
 
 void CFuncWeaponCheck::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 {

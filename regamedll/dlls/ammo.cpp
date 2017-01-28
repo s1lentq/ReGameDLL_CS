@@ -24,7 +24,7 @@ BOOL C9MMAmmo::__MAKE_VHOOK(AddAmmo)(CBaseEntity *pOther)
 	return TRUE;
 }
 
-LINK_ENTITY_TO_CLASS(ammo_9mm, C9MMAmmo, CCS9MMAmmo);
+LINK_ENTITY_TO_CLASS(ammo_9mm, C9MMAmmo, CCS9MMAmmo)
 
 void CBuckShotAmmo::__MAKE_VHOOK(Spawn)()
 {
@@ -50,7 +50,7 @@ BOOL CBuckShotAmmo::__MAKE_VHOOK(AddAmmo)(CBaseEntity *pOther)
 	return TRUE;
 }
 
-LINK_ENTITY_TO_CLASS(ammo_buckshot, CBuckShotAmmo, CCSBuckShotAmmo);
+LINK_ENTITY_TO_CLASS(ammo_buckshot, CBuckShotAmmo, CCSBuckShotAmmo)
 
 void C556NatoAmmo::__MAKE_VHOOK(Spawn)()
 {
@@ -76,7 +76,7 @@ BOOL C556NatoAmmo::__MAKE_VHOOK(AddAmmo)(CBaseEntity *pOther)
 	return TRUE;
 }
 
-LINK_ENTITY_TO_CLASS(ammo_556nato, C556NatoAmmo, CCS556NatoAmmo);
+LINK_ENTITY_TO_CLASS(ammo_556nato, C556NatoAmmo, CCS556NatoAmmo)
 
 void C556NatoBoxAmmo::__MAKE_VHOOK(Spawn)()
 {
@@ -102,7 +102,7 @@ BOOL C556NatoBoxAmmo::__MAKE_VHOOK(AddAmmo)(CBaseEntity *pOther)
 	return TRUE;
 }
 
-LINK_ENTITY_TO_CLASS(ammo_556natobox, C556NatoBoxAmmo, CCS556NatoBoxAmmo);
+LINK_ENTITY_TO_CLASS(ammo_556natobox, C556NatoBoxAmmo, CCS556NatoBoxAmmo)
 
 void C762NatoAmmo::__MAKE_VHOOK(Spawn)()
 {
@@ -128,7 +128,7 @@ BOOL C762NatoAmmo::__MAKE_VHOOK(AddAmmo)(CBaseEntity *pOther)
 	return TRUE;
 }
 
-LINK_ENTITY_TO_CLASS(ammo_762nato, C762NatoAmmo, CCS762NatoAmmo);
+LINK_ENTITY_TO_CLASS(ammo_762nato, C762NatoAmmo, CCS762NatoAmmo)
 
 void C45ACPAmmo::__MAKE_VHOOK(Spawn)()
 {
@@ -154,7 +154,7 @@ BOOL C45ACPAmmo::__MAKE_VHOOK(AddAmmo)(CBaseEntity *pOther)
 	return TRUE;
 }
 
-LINK_ENTITY_TO_CLASS(ammo_45acp, C45ACPAmmo, CCS45ACPAmmo);
+LINK_ENTITY_TO_CLASS(ammo_45acp, C45ACPAmmo, CCS45ACPAmmo)
 
 void C50AEAmmo::__MAKE_VHOOK(Spawn)()
 {
@@ -180,7 +180,7 @@ BOOL C50AEAmmo::__MAKE_VHOOK(AddAmmo)(CBaseEntity *pOther)
 	return TRUE;
 }
 
-LINK_ENTITY_TO_CLASS(ammo_50ae, C50AEAmmo, CCS50AEAmmo);
+LINK_ENTITY_TO_CLASS(ammo_50ae, C50AEAmmo, CCS50AEAmmo)
 
 void C338MagnumAmmo::__MAKE_VHOOK(Spawn)()
 {
@@ -206,7 +206,7 @@ BOOL C338MagnumAmmo::__MAKE_VHOOK(AddAmmo)(CBaseEntity *pOther)
 	return TRUE;
 }
 
-LINK_ENTITY_TO_CLASS(ammo_338magnum, C338MagnumAmmo, CCS338MagnumAmmo);
+LINK_ENTITY_TO_CLASS(ammo_338magnum, C338MagnumAmmo, CCS338MagnumAmmo)
 
 void C57MMAmmo::__MAKE_VHOOK(Spawn)()
 {
@@ -232,7 +232,7 @@ BOOL C57MMAmmo::__MAKE_VHOOK(AddAmmo)(CBaseEntity *pOther)
 	return TRUE;
 }
 
-LINK_ENTITY_TO_CLASS(ammo_57mm, C57MMAmmo, CCS57MMAmmo);
+LINK_ENTITY_TO_CLASS(ammo_57mm, C57MMAmmo, CCS57MMAmmo)
 
 void C357SIGAmmo::__MAKE_VHOOK(Spawn)()
 {
@@ -258,4 +258,4 @@ BOOL C357SIGAmmo::__MAKE_VHOOK(AddAmmo)(CBaseEntity *pOther)
 	return TRUE;
 }
 
-LINK_ENTITY_TO_CLASS(ammo_357sig, C357SIGAmmo, CCS357SIGAmmo);
+LINK_ENTITY_TO_CLASS(ammo_357sig, C357SIGAmmo, CCS357SIGAmmo)

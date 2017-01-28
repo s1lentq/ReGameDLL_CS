@@ -68,8 +68,8 @@ TYPEDESCRIPTION CTriggerCamera::m_SaveData[] =
 char st_szNextMap[cchMapNameMost];
 char st_szNextSpot[cchMapNameMost];
 
-LINK_ENTITY_TO_CLASS(func_friction, CFrictionModifier, CCSFrictionModifier);
-IMPLEMENT_SAVERESTORE(CFrictionModifier, CBaseEntity);
+LINK_ENTITY_TO_CLASS(func_friction, CFrictionModifier, CCSFrictionModifier)
+IMPLEMENT_SAVERESTORE(CFrictionModifier, CBaseEntity)
 
 void CFrictionModifier::__MAKE_VHOOK(Spawn)()
 {
@@ -103,8 +103,8 @@ void CFrictionModifier::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CBaseEntity::KeyValue(pkvd);
 }
 
-LINK_ENTITY_TO_CLASS(trigger_auto, CAutoTrigger, CCSAutoTrigger);
-IMPLEMENT_SAVERESTORE(CAutoTrigger, CBaseDelay);
+LINK_ENTITY_TO_CLASS(trigger_auto, CAutoTrigger, CCSAutoTrigger)
+IMPLEMENT_SAVERESTORE(CAutoTrigger, CBaseDelay)
 
 void CAutoTrigger::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
@@ -171,8 +171,8 @@ void CAutoTrigger::Restart()
 }
 #endif
 
-LINK_ENTITY_TO_CLASS(trigger_relay, CTriggerRelay, CCSTriggerRelay);
-IMPLEMENT_SAVERESTORE(CTriggerRelay, CBaseDelay);
+LINK_ENTITY_TO_CLASS(trigger_relay, CTriggerRelay, CCSTriggerRelay)
+IMPLEMENT_SAVERESTORE(CTriggerRelay, CBaseDelay)
 
 void CTriggerRelay::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
@@ -211,8 +211,8 @@ void CTriggerRelay::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCal
 	}
 }
 
-LINK_ENTITY_TO_CLASS(multi_manager, CMultiManager, CCSMultiManager);
-IMPLEMENT_SAVERESTORE(CMultiManager, CBaseToggle);
+LINK_ENTITY_TO_CLASS(multi_manager, CMultiManager, CCSMultiManager)
+IMPLEMENT_SAVERESTORE(CMultiManager, CBaseToggle)
 
 void CMultiManager::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
@@ -396,7 +396,7 @@ void CMultiManager::ManagerUse(CBaseEntity *pActivator, CBaseEntity *pCaller, US
 	pev->nextthink = gpGlobals->time;
 }
 
-LINK_ENTITY_TO_CLASS(env_render, CRenderFxManager, CCSRenderFxManager);
+LINK_ENTITY_TO_CLASS(env_render, CRenderFxManager, CCSRenderFxManager)
 
 void CRenderFxManager::__MAKE_VHOOK(Spawn)()
 {
@@ -430,7 +430,7 @@ void CRenderFxManager::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *p
 	}
 }
 
-LINK_ENTITY_TO_CLASS(trigger, CBaseTrigger, CCSTrigger);
+LINK_ENTITY_TO_CLASS(trigger, CBaseTrigger, CCSTrigger)
 
 void CBaseTrigger::InitTrigger()
 {
@@ -475,7 +475,7 @@ void CBaseTrigger::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CBaseToggle::KeyValue(pkvd);
 }
 
-LINK_ENTITY_TO_CLASS(trigger_monsterjump, CTriggerMonsterJump, CCSTriggerMonsterJump);
+LINK_ENTITY_TO_CLASS(trigger_monsterjump, CTriggerMonsterJump, CCSTriggerMonsterJump)
 
 void CTriggerMonsterJump::__MAKE_VHOOK(Spawn)()
 {
@@ -532,7 +532,7 @@ void CTriggerMonsterJump::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 	pev->nextthink = gpGlobals->time;
 }
 
-LINK_ENTITY_TO_CLASS(trigger_cdaudio, CTriggerCDAudio, CCSTriggerCDAudio);
+LINK_ENTITY_TO_CLASS(trigger_cdaudio, CTriggerCDAudio, CCSTriggerCDAudio)
 
 // Changes tracks or stops CD when player touches
 // HACK: overloaded HEALTH to avoid adding new field
@@ -635,7 +635,7 @@ void CTriggerCDAudio::PlayTrack()
 	UTIL_Remove(this);
 }
 
-LINK_ENTITY_TO_CLASS(target_cdaudio, CTargetCDAudio, CCSTargetCDAudio);
+LINK_ENTITY_TO_CLASS(target_cdaudio, CTargetCDAudio, CCSTargetCDAudio)
 
 void CTargetCDAudio::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
@@ -688,7 +688,7 @@ void CTargetCDAudio::Play()
 	UTIL_Remove(this);
 }
 
-LINK_ENTITY_TO_CLASS(trigger_hurt, CTriggerHurt, CCSTriggerHurt);
+LINK_ENTITY_TO_CLASS(trigger_hurt, CTriggerHurt, CCSTriggerHurt)
 
 void CTriggerHurt::__MAKE_VHOOK(Spawn)()
 {
@@ -927,7 +927,7 @@ void CBaseTrigger::HurtTouch(CBaseEntity *pOther)
 	}
 }
 
-LINK_ENTITY_TO_CLASS(trigger_multiple, CTriggerMultiple, CCSTriggerMultiple);
+LINK_ENTITY_TO_CLASS(trigger_multiple, CTriggerMultiple, CCSTriggerMultiple)
 
 void CTriggerMultiple::__MAKE_VHOOK(Spawn)()
 {
@@ -961,7 +961,7 @@ void CTriggerMultiple::__MAKE_VHOOK(Spawn)()
 	}
 }
 
-LINK_ENTITY_TO_CLASS(trigger_once, CTriggerOnce, CCSTriggerOnce);
+LINK_ENTITY_TO_CLASS(trigger_once, CTriggerOnce, CCSTriggerOnce)
 
 void CTriggerOnce::__MAKE_VHOOK(Spawn)()
 {
@@ -1099,7 +1099,7 @@ void CBaseTrigger::CounterUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE
 	ActivateMultiTrigger(m_hActivator);
 }
 
-LINK_ENTITY_TO_CLASS(trigger_counter, CTriggerCounter, CCSTriggerCounter);
+LINK_ENTITY_TO_CLASS(trigger_counter, CTriggerCounter, CCSTriggerCounter)
 
 void CTriggerCounter::__MAKE_VHOOK(Spawn)()
 {
@@ -1115,7 +1115,7 @@ void CTriggerCounter::__MAKE_VHOOK(Spawn)()
 	SetUse(&CTriggerCounter::CounterUse);
 }
 
-LINK_ENTITY_TO_CLASS(trigger_transition, CTriggerVolume, CCSTriggerVolume);
+LINK_ENTITY_TO_CLASS(trigger_transition, CTriggerVolume, CCSTriggerVolume)
 
 // Define space that travels across a level transition
 void CTriggerVolume::__MAKE_VHOOK(Spawn)()
@@ -1130,7 +1130,7 @@ void CTriggerVolume::__MAKE_VHOOK(Spawn)()
 	pev->modelindex = 0;
 }
 
-LINK_ENTITY_TO_CLASS(fireanddie, CFireAndDie, CCSFireAndDie);
+LINK_ENTITY_TO_CLASS(fireanddie, CFireAndDie, CCSFireAndDie)
 
 void CFireAndDie::__MAKE_VHOOK(Spawn)()
 {
@@ -1149,8 +1149,8 @@ void CFireAndDie::__MAKE_VHOOK(Think)()
 	UTIL_Remove(this);
 }
 
-LINK_ENTITY_TO_CLASS(trigger_changelevel, CChangeLevel, CCSChangeLevel);
-IMPLEMENT_SAVERESTORE(CChangeLevel, CBaseTrigger);
+LINK_ENTITY_TO_CLASS(trigger_changelevel, CChangeLevel, CCSChangeLevel)
+IMPLEMENT_SAVERESTORE(CChangeLevel, CBaseTrigger)
 
 // Cache user-entity-field values until spawn is called.
 void CChangeLevel::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
@@ -1529,7 +1529,7 @@ NOXREF void NextLevel()
 	}
 }
 
-LINK_ENTITY_TO_CLASS(func_ladder, CLadder, CCSLadder);
+LINK_ENTITY_TO_CLASS(func_ladder, CLadder, CCSLadder)
 
 void CLadder::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
@@ -1561,7 +1561,7 @@ void CLadder::__MAKE_VHOOK(Spawn)()
 	pev->movetype = MOVETYPE_PUSH;
 }
 
-LINK_ENTITY_TO_CLASS(trigger_push, CTriggerPush, CCSTriggerPush);
+LINK_ENTITY_TO_CLASS(trigger_push, CTriggerPush, CCSTriggerPush)
 
 void CTriggerPush::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
@@ -1702,7 +1702,7 @@ void CBaseTrigger::TeleportTouch(CBaseEntity *pOther)
 	pevToucher->velocity = pevToucher->basevelocity = g_vecZero;
 }
 
-LINK_ENTITY_TO_CLASS(trigger_teleport, CTriggerTeleport, CCSTriggerTeleport);
+LINK_ENTITY_TO_CLASS(trigger_teleport, CTriggerTeleport, CCSTriggerTeleport)
 
 void CTriggerTeleport::__MAKE_VHOOK(Spawn)()
 {
@@ -1710,8 +1710,8 @@ void CTriggerTeleport::__MAKE_VHOOK(Spawn)()
 	SetTouch(&CTriggerTeleport::TeleportTouch);
 }
 
-LINK_ENTITY_TO_CLASS(info_teleport_destination, CPointEntity, CCSPointEntity);
-LINK_ENTITY_TO_CLASS(func_buyzone, CBuyZone, CCSBuyZone);
+LINK_ENTITY_TO_CLASS(info_teleport_destination, CPointEntity, CCSPointEntity)
+LINK_ENTITY_TO_CLASS(func_buyzone, CBuyZone, CCSBuyZone)
 
 void CBuyZone::__MAKE_VHOOK(Spawn)()
 {
@@ -1738,7 +1738,7 @@ void CBuyZone::BuyTouch(CBaseEntity *pOther)
 	}
 }
 
-LINK_ENTITY_TO_CLASS(func_bomb_target, CBombTarget, CCSBombTarget);
+LINK_ENTITY_TO_CLASS(func_bomb_target, CBombTarget, CCSBombTarget)
 
 void CBombTarget::__MAKE_VHOOK(Spawn)()
 {
@@ -1767,7 +1767,7 @@ void CBombTarget::BombTargetUse(CBaseEntity *pActivator, CBaseEntity *pCaller, U
 	SUB_UseTargets(NULL, USE_TOGGLE, 0);
 }
 
-LINK_ENTITY_TO_CLASS(func_hostage_rescue, CHostageRescue, CCSHostageRescue);
+LINK_ENTITY_TO_CLASS(func_hostage_rescue, CHostageRescue, CCSHostageRescue)
 
 void CHostageRescue::__MAKE_VHOOK(Spawn)()
 {
@@ -1788,7 +1788,7 @@ void CHostageRescue::HostageRescueTouch(CBaseEntity *pOther)
 	}
 }
 
-LINK_ENTITY_TO_CLASS(func_escapezone, CEscapeZone, CCSEscapeZone);
+LINK_ENTITY_TO_CLASS(func_escapezone, CEscapeZone, CCSEscapeZone)
 
 void CEscapeZone::__MAKE_VHOOK(Spawn)()
 {
@@ -1833,7 +1833,7 @@ void CEscapeZone::EscapeTouch(CBaseEntity *pOther)
 	}
 }
 
-LINK_ENTITY_TO_CLASS(func_vip_safetyzone, CVIP_SafetyZone, CCSVIP_SafetyZone);
+LINK_ENTITY_TO_CLASS(func_vip_safetyzone, CVIP_SafetyZone, CCSVIP_SafetyZone)
 
 void CVIP_SafetyZone::__MAKE_VHOOK(Spawn)()
 {
@@ -1861,7 +1861,7 @@ void CVIP_SafetyZone::VIP_SafetyTouch(CBaseEntity *pOther)
 	}
 }
 
-LINK_ENTITY_TO_CLASS(trigger_autosave, CTriggerSave, CCSTriggerSave);
+LINK_ENTITY_TO_CLASS(trigger_autosave, CTriggerSave, CCSTriggerSave)
 
 void CTriggerSave::__MAKE_VHOOK(Spawn)()
 {
@@ -1889,7 +1889,7 @@ void CTriggerSave::SaveTouch(CBaseEntity *pOther)
 	SERVER_COMMAND("autosave\n");
 }
 
-LINK_ENTITY_TO_CLASS(trigger_endsection, CTriggerEndSection, CCSTriggerEndSection);
+LINK_ENTITY_TO_CLASS(trigger_endsection, CTriggerEndSection, CCSTriggerEndSection)
 
 void CTriggerEndSection::EndSectionUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
@@ -1951,7 +1951,7 @@ void CTriggerEndSection::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CBaseTrigger::KeyValue(pkvd);
 }
 
-LINK_ENTITY_TO_CLASS(trigger_gravity, CTriggerGravity, CCSTriggerGravity);
+LINK_ENTITY_TO_CLASS(trigger_gravity, CTriggerGravity, CCSTriggerGravity)
 
 void CTriggerGravity::__MAKE_VHOOK(Spawn)()
 {
@@ -1968,8 +1968,8 @@ void CTriggerGravity::GravityTouch(CBaseEntity *pOther)
 	pOther->pev->gravity = pev->gravity;
 }
 
-LINK_ENTITY_TO_CLASS(trigger_changetarget, CTriggerChangeTarget, CCSTriggerChangeTarget);
-IMPLEMENT_SAVERESTORE(CTriggerChangeTarget, CBaseDelay);
+LINK_ENTITY_TO_CLASS(trigger_changetarget, CTriggerChangeTarget, CCSTriggerChangeTarget)
+IMPLEMENT_SAVERESTORE(CTriggerChangeTarget, CBaseDelay)
 
 void CTriggerChangeTarget::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
@@ -2004,8 +2004,8 @@ void CTriggerChangeTarget::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntit
 	}
 }
 
-LINK_ENTITY_TO_CLASS(trigger_camera, CTriggerCamera, CCSTriggerCamera);
-IMPLEMENT_SAVERESTORE(CTriggerCamera, CBaseDelay);
+LINK_ENTITY_TO_CLASS(trigger_camera, CTriggerCamera, CCSTriggerCamera)
+IMPLEMENT_SAVERESTORE(CTriggerCamera, CBaseDelay)
 
 void CTriggerCamera::__MAKE_VHOOK(Spawn)()
 {
@@ -2272,10 +2272,10 @@ void CTriggerCamera::Move()
 	pev->velocity = ((pev->movedir * pev->speed) * fraction) + (pev->velocity * (1 - fraction));
 }
 
-LINK_ENTITY_TO_CLASS(env_snow, CWeather, CCSWeather);
-LINK_ENTITY_TO_CLASS(func_snow, CWeather, CCSWeather);
-LINK_ENTITY_TO_CLASS(env_rain, CWeather, CCSWeather);
-LINK_ENTITY_TO_CLASS(func_rain, CWeather, CCSWeather);
+LINK_ENTITY_TO_CLASS(env_snow, CWeather, CCSWeather)
+LINK_ENTITY_TO_CLASS(func_snow, CWeather, CCSWeather)
+LINK_ENTITY_TO_CLASS(env_rain, CWeather, CCSWeather)
+LINK_ENTITY_TO_CLASS(func_rain, CWeather, CCSWeather)
 
 void CWeather::__MAKE_VHOOK(Spawn)()
 {
@@ -2318,4 +2318,4 @@ void CClientFog::__MAKE_VHOOK(Spawn)()
 	pev->rendermode = kRenderTransTexture;
 }
 
-LINK_ENTITY_TO_CLASS(env_fog, CClientFog, CCSClientFog);
+LINK_ENTITY_TO_CLASS(env_fog, CClientFog, CCSClientFog)

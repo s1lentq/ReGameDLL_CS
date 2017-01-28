@@ -348,7 +348,7 @@ public:
 			// compute distance travelled along path so far
 			float dist;
 
-			if (ladder != NULL)
+			if (ladder)
 			{
 				const float ladderCost = 10.0f;
 				return ladder->m_length * ladderCost + fromArea->GetCostSoFar();

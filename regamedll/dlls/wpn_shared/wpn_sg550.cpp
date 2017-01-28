@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-LINK_ENTITY_TO_CLASS(weapon_sg550, CSG550, CCSSG550);
+LINK_ENTITY_TO_CLASS(weapon_sg550, CSG550, CCSSG550)
 
 void CSG550::__MAKE_VHOOK(Spawn)()
 {

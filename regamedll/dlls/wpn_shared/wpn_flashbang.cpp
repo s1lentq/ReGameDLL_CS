@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-LINK_ENTITY_TO_CLASS(weapon_flashbang, CFlashbang, CCSFlashbang);
+LINK_ENTITY_TO_CLASS(weapon_flashbang, CFlashbang, CCSFlashbang)
 
 void CFlashbang::__MAKE_VHOOK(Spawn)()
 {

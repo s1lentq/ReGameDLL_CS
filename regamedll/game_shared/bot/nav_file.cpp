@@ -30,7 +30,7 @@ void PlaceDirectory::Reset()
 
 bool PlaceDirectory::IsKnown(Place place) const
 {
-	std::vector<Place>::const_iterator it = std::find(m_directory.begin(), m_directory.end(), place);
+	auto it = std::find(m_directory.begin(), m_directory.end(), place);
 	return (it != m_directory.end());
 }
 
@@ -39,8 +39,7 @@ PlaceDirectory::EntryType PlaceDirectory::GetEntry(Place place) const
 	if (place == UNDEFINED_PLACE)
 		return 0;
 
-	std::vector<Place>::const_iterator it = std::find(m_directory.begin(), m_directory.end(), place);
-
+	auto it = std::find(m_directory.begin(), m_directory.end(), place);
 	if (it == m_directory.end())
 	{
 		assert(false && "PlaceDirectory::GetEntry failure");
@@ -81,17 +80,16 @@ Place PlaceDirectory::EntryToPlace(EntryType entry) const
 void PlaceDirectory::Save(int fd)
 {
 	// store number of entries in directory
-	EntryType count = m_directory.size();
+	EntryType count = (EntryType)m_directory.size();
 	Q_write(fd, &count, sizeof(EntryType));
 
 	// store entries
-	std::vector<Place>::iterator it;
-	for (it = m_directory.begin(); it != m_directory.end(); ++it)
+	for (auto id : m_directory)
 	{
-		const char *placeName = TheBotPhrases->IDToName(*it);
+		auto placeName = TheBotPhrases->IDToName(id);
 
 		// store string length followed by string itself
-		unsigned short len = Q_strlen(placeName) + 1;
+		unsigned short len = (unsigned short)Q_strlen(placeName) + 1;
 		Q_write(fd, &len, sizeof(unsigned short));
 		Q_write(fd, placeName, len);
 	}
@@ -117,19 +115,10 @@ void PlaceDirectory::Load(SteamFile *file)
 	}
 }
 
-char *GetBspFilename(const char *navFilename)
+char *GetBspFilename()
 {
 	static char bspFilename[256];
-	Q_sprintf(bspFilename, "maps\\%s.bsp", STRING(gpGlobals->mapname));
-
-	int len = Q_strlen(bspFilename);
-	if (len < 3)
-		return NULL;
-
-	bspFilename[len - 3] = 'b';
-	bspFilename[len - 2] = 's';
-	bspFilename[len - 1] = 'p';
-
+	Q_snprintf(bspFilename, sizeof(bspFilename), "maps\\%s.bsp", STRING(gpGlobals->mapname));
 	return bspFilename;
 }
 
@@ -169,13 +158,10 @@ void CNavArea::Save(int fd, unsigned int version)
 	for (int d = 0; d < NUM_DIRECTIONS; ++d)
 	{
 		// save number of connections for this direction
-		unsigned int count = m_connect[d].size();
-		Q_write(fd, &count, sizeof(unsigned int));
+		size_t count = m_connect[d].size();
+		Q_write(fd, &count, sizeof(size_t));
 
-		NavConnectList::const_iterator iter;
-		for (iter = m_connect[d].begin(); iter != m_connect[d].end(); ++iter)
-		{
-			NavConnect connect = (*iter);
+		for (auto connect : m_connect[d]) {
 			Q_write(fd, &connect.area->m_id, sizeof(unsigned int));
 		}
 	}
@@ -189,16 +175,15 @@ void CNavArea::Save(int fd, unsigned int version)
 	}
 	else
 	{
-		count = m_hidingSpotList.size();
+		count = (unsigned char)m_hidingSpotList.size();
 	}
 
 	Q_write(fd, &count, sizeof(unsigned char));
 
 	// store HidingSpot objects
 	unsigned int saveCount = 0;
-	for (HidingSpotList::iterator iter = m_hidingSpotList.begin(); iter != m_hidingSpotList.end(); ++iter)
+	for (auto spot : m_hidingSpotList)
 	{
-		HidingSpot *spot = (*iter);
 		spot->Save(fd, version);
 
 		// overflow check
@@ -251,50 +236,45 @@ void CNavArea::Save(int fd, unsigned int version)
 		if (cv_bot_debug.value > 0.0f)
 			CONSOLE_ECHO("  m_spotEncounterList.size() = %d\n", count);
 
-		SpotEncounter *e;
-		for (SpotEncounterList::iterator iter = m_spotEncounterList.begin(); iter != m_spotEncounterList.end(); ++iter)
+		for (auto spote : m_spotEncounterList)
 		{
-			e = &(*iter);
-
-			if (e->from.area)
-				Q_write(fd, &e->from.area->m_id, sizeof(unsigned int));
+			if (spote.from.area)
+				Q_write(fd, &spote.from.area->m_id, sizeof(unsigned int));
 			else
 				Q_write(fd, &zero, sizeof(unsigned int));
 
-			unsigned char dir = e->fromDir;
+			unsigned char dir = spote.fromDir;
 			Q_write(fd, &dir, sizeof(unsigned char));
 
-			if (e->to.area)
-				Q_write(fd, &e->to.area->m_id, sizeof(unsigned int));
+			if (spote.to.area)
+				Q_write(fd, &spote.to.area->m_id, sizeof(unsigned int));
 			else
 				Q_write(fd, &zero, sizeof(unsigned int));
 
-			dir = e->toDir;
+			dir = spote.toDir;
 			Q_write(fd, &dir, sizeof(unsigned char));
 
 			// write list of spots along this path
 			unsigned char spotCount;
-			if (e->spotList.size() > 255)
+			if (spote.spotList.size() > 255)
 			{
 				spotCount = 255;
 				CONSOLE_ECHO("Warning: NavArea #%d: Truncated encounter spot list to 255\n", m_id);
 			}
 			else
 			{
-				spotCount = e->spotList.size();
+				spotCount = (unsigned char)spote.spotList.size();
 			}
 			Q_write(fd, &spotCount, sizeof(unsigned char));
 
 			saveCount = 0;
-			for (SpotOrderList::iterator oiter = e->spotList.begin(); oiter != e->spotList.end(); ++oiter)
+			for (auto order : spote.spotList)
 			{
-				SpotOrder *order = &(*oiter);
-
 				// order->spot may be NULL if we've loaded a nav mesh that has been edited but not re-analyzed
-				unsigned int id = (order->spot) ? order->spot->GetID() : 0;
+				unsigned int id = (order.spot) ? order.spot->GetID() : 0;
 				Q_write(fd, &id, sizeof(unsigned int));
 
-				unsigned char t = 255 * order->t;
+				unsigned char t = 255 * order.t;
 				Q_write(fd, &t, sizeof(unsigned char));
 
 				// overflow check
@@ -467,15 +447,15 @@ void CNavArea::Load(SteamFile *file, unsigned int version)
 		m_spotEncounterList.push_back(encounter);
 	}
 
-	if (version < 5)
-		return;
+	if (version >= NAV_VERSION)
+	{
+		// Load Place data
+		PlaceDirectory::EntryType entry;
+		file->Read(&entry, sizeof(entry));
 
-	// Load Place data
-	PlaceDirectory::EntryType entry;
-	file->Read(&entry, sizeof(entry));
-
-	// convert entry to actual Place
-	SetPlace(placeDirectory.EntryToPlace(entry));
+		// convert entry to actual Place
+		SetPlace(placeDirectory.EntryToPlace(entry));
+	}
 }
 
 NavErrorType CNavArea::PostLoad()
@@ -485,14 +465,10 @@ NavErrorType CNavArea::PostLoad()
 	// connect areas together
 	for (int d = 0; d < NUM_DIRECTIONS; ++d)
 	{
-		NavConnectList::iterator iter;
-		for (iter = m_connect[d].begin(); iter != m_connect[d].end(); ++iter)
+		for (auto connect : m_connect[d])
 		{
-			NavConnect *connect = &(*iter);
-
-			unsigned int id = connect->id;
-			connect->area = TheNavAreaGrid.GetNavAreaByID(id);
-			if (id && connect->area == NULL)
+			connect.area = TheNavAreaGrid.GetNavAreaByID(connect.id);
+			if (connect.id && connect.area == NULL)
 			{
 				CONSOLE_ECHO("ERROR: Corrupt navigation data. Cannot connect Navigation Areas.\n");
 				error = NAV_CORRUPT_DATA;
@@ -526,44 +502,39 @@ NavErrorType CNavArea::PostLoad()
 	}
 
 	// resolve spot encounter IDs
-	SpotEncounter *e;
-	for (SpotEncounterList::iterator iter = m_spotEncounterList.begin(); iter != m_spotEncounterList.end(); ++iter)
+	for (auto spote : m_spotEncounterList)
 	{
-		e = &(*iter);
-
-		e->from.area = TheNavAreaGrid.GetNavAreaByID(e->from.id);
-		if (e->from.area == NULL)
+		spote.from.area = TheNavAreaGrid.GetNavAreaByID(spote.from.id);
+		if (spote.from.area == NULL)
 		{
 			CONSOLE_ECHO("ERROR: Corrupt navigation data. Missing \"from\" Navigation Area for Encounter Spot.\n");
 			error = NAV_CORRUPT_DATA;
 		}
 
-		e->to.area = TheNavAreaGrid.GetNavAreaByID(e->to.id);
-		if (e->to.area == NULL)
+		spote.to.area = TheNavAreaGrid.GetNavAreaByID(spote.to.id);
+		if (spote.to.area == NULL)
 		{
 			CONSOLE_ECHO("ERROR: Corrupt navigation data. Missing \"to\" Navigation Area for Encounter Spot.\n");
 			error = NAV_CORRUPT_DATA;
 		}
 
-		if (e->from.area && e->to.area)
+		if (spote.from.area && spote.to.area)
 		{
 			// compute path
 			float halfWidth;
-			ComputePortal(e->to.area, e->toDir, &e->path.to, &halfWidth);
-			ComputePortal(e->from.area, e->fromDir, &e->path.from, &halfWidth);
+			ComputePortal(spote.to.area, spote.toDir, &spote.path.to, &halfWidth);
+			ComputePortal(spote.from.area, spote.fromDir, &spote.path.from, &halfWidth);
 
 			const float eyeHeight = HalfHumanHeight;
-			e->path.from.z = e->from.area->GetZ(&e->path.from) + eyeHeight;
-			e->path.to.z = e->to.area->GetZ(&e->path.to) + eyeHeight;
+			spote.path.from.z = spote.from.area->GetZ(&spote.path.from) + eyeHeight;
+			spote.path.to.z = spote.to.area->GetZ(&spote.path.to) + eyeHeight;
 		}
 
 		// resolve HidingSpot IDs
-		for (SpotOrderList::iterator oiter = e->spotList.begin(); oiter != e->spotList.end(); ++oiter)
+		for (auto order : spote.spotList)
 		{
-			SpotOrder *order = &(*oiter);
-
-			order->spot = GetHidingSpotByID(order->id);
-			if (order->spot == NULL)
+			order.spot = GetHidingSpotByID(order.id);
+			if (order.spot == NULL)
 			{
 				CONSOLE_ECHO("ERROR: Corrupt navigation data. Missing Hiding Spot\n");
 				error = NAV_CORRUPT_DATA;
@@ -573,10 +544,8 @@ NavErrorType CNavArea::PostLoad()
 
 	// build overlap list
 	// TODO: Optimize this
-	for (NavAreaList::iterator oiter = TheNavAreaList.begin(); oiter != TheNavAreaList.end(); ++oiter)
+	for (auto area : TheNavAreaList)
 	{
-		CNavArea *area = *oiter;
-
 		if (area == this)
 			continue;
 
@@ -630,18 +599,12 @@ bool SaveNavigationMap(const char *filename)
 	Q_write(fd, &magic, sizeof(unsigned int));
 
 	// store version number of file
-	// 1 = hiding spots as plain vector array
-	// 2 = hiding spots as HidingSpot objects
-	// 3 = Encounter spots use HidingSpot ID's instead of storing vector again
-	// 4 = Includes size of source bsp file to verify nav data correlation
-	// ---- Beta Release at V4 -----
-	// 5 = Added Place info
-	unsigned int version = 5;
+	unsigned int version = NAV_VERSION;
 	Q_write(fd, &version, sizeof(unsigned int));
 
 	// get size of source bsp file and store it in the nav file
 	// so we can test if the bsp changed since the nav file was made
-	char *bspFilename = GetBspFilename(filename);
+	char *bspFilename = GetBspFilename();
 	if (bspFilename == NULL)
 		return false;
 
@@ -653,14 +616,10 @@ bool SaveNavigationMap(const char *filename)
 	// Build a directory of the Places in this map
 	placeDirectory.Reset();
 
-	NavAreaList::iterator it;
-	for (it = TheNavAreaList.begin(); it != TheNavAreaList.end(); ++it)
+	for (auto area : TheNavAreaList)
 	{
-		CNavArea *area = (*it);
 		Place place = area->GetPlace();
-
-		if (place)
-		{
+		if (place) {
 			placeDirectory.AddPlace(place);
 		}
 	}
@@ -673,9 +632,7 @@ bool SaveNavigationMap(const char *filename)
 	Q_write(fd, &count, sizeof(unsigned int));
 
 	// store each area
-	for (it = TheNavAreaList.begin(); it != TheNavAreaList.end(); ++it)
-	{
-		CNavArea *area = (*it);
+	for (auto area : TheNavAreaList) {
 		area->Save(fd, version);
 	}
 
@@ -686,8 +643,9 @@ bool SaveNavigationMap(const char *filename)
 	FILE *fp = Q_fopen("c:\\tmp\\nav.obj", "w");
 	if (fp)
 	{
-		for (NavAreaList::iterator iter = TheNavAreaList.begin(); iter != TheNavAreaList.end(); ++iter)
-			(*iter)->Save(fp);
+		for (auto area : TheNavAreaList) {
+			area->Save(fd);
+		}
 
 		Q_fclose(fp);
 	}
@@ -795,7 +753,7 @@ void SanityCheckNavigationMap(const char *mapName)
 	// read file version number
 	unsigned int version;
 	result = navFile.Read(&version, sizeof(unsigned int));
-	if (!result || version > 5)
+	if (!result || version > NAV_VERSION)
 	{
 		CONSOLE_ECHO("ERROR: Unknown version in navigation file %s.\n", navFilename);
 		return;
@@ -861,7 +819,7 @@ NavErrorType LoadNavigationMap()
 	// read file version number
 	unsigned int version;
 	result = navFile.Read(&version, sizeof(unsigned int));
-	if (!result || version > 5)
+	if (!result || version > NAV_VERSION)
 	{
 		CONSOLE_ECHO("ERROR: Unknown navigation file version.\n");
 		return NAV_BAD_FILE_VERSION;
@@ -874,7 +832,7 @@ NavErrorType LoadNavigationMap()
 		navFile.Read(&saveBspSize, sizeof(unsigned int));
 
 		// verify size
-		char *bspFilename = GetBspFilename(filename);
+		char *bspFilename = GetBspFilename();
 		if (bspFilename == NULL)
 			return NAV_INVALID_FILE;
 
@@ -891,7 +849,7 @@ NavErrorType LoadNavigationMap()
 	}
 
 	// load Place directory
-	if (version >= 5)
+	if (version >= NAV_VERSION)
 	{
 		placeDirectory.Load(&navFile);
 	}
@@ -916,9 +874,9 @@ NavErrorType LoadNavigationMap()
 		const Extent *areaExtent = area->GetExtent();
 
 		// check validity of nav area
-		if (areaExtent->lo.x >= areaExtent->hi.x || areaExtent->lo.y >= areaExtent->hi.y)
-			CONSOLE_ECHO("WARNING: Degenerate Navigation Area #%d at ( %g, %g, %g )\n",
-				area->GetID(), area->m_center.x, area->m_center.y, area->m_center.z);
+		if (areaExtent->lo.x >= areaExtent->hi.x || areaExtent->lo.y >= areaExtent->hi.y) {
+			CONSOLE_ECHO("WARNING: Degenerate Navigation Area #%d at ( %g, %g, %g )\n", area->GetID(), area->m_center.x, area->m_center.y, area->m_center.z);
+		}
 
 		if (areaExtent->lo.x < extent.lo.x)
 			extent.lo.x = areaExtent->lo.x;
@@ -936,19 +894,17 @@ NavErrorType LoadNavigationMap()
 	// add the areas to the grid
 	TheNavAreaGrid.Initialize(extent.lo.x, extent.hi.x, extent.lo.y, extent.hi.y);
 
-	NavAreaList::iterator iter;
-	for (iter = TheNavAreaList.begin(); iter != TheNavAreaList.end(); ++iter)
-		TheNavAreaGrid.AddNavArea(*iter);
+	for (auto area : TheNavAreaList) {
+		TheNavAreaGrid.AddNavArea(area);
+	}
 
 	// allow areas to connect to each other, etc
-	for (iter = TheNavAreaList.begin(); iter != TheNavAreaList.end(); ++iter)
-	{
-		CNavArea *area = (*iter);
+	for (auto area : TheNavAreaList) {
 		area->PostLoad();
 	}
 
 	// load legacy location file (Places)
-	if (version < 5)
+	if (version < NAV_VERSION)
 	{
 		LoadLocationFile(filename);
 	}

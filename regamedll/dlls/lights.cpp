@@ -13,8 +13,8 @@ TYPEDESCRIPTION CLight::m_SaveData[] =
 
 #endif
 
-LINK_ENTITY_TO_CLASS(light, CLight, CCSLight);
-IMPLEMENT_SAVERESTORE(CLight, CPointEntity);
+LINK_ENTITY_TO_CLASS(light, CLight, CCSLight)
+IMPLEMENT_SAVERESTORE(CLight, CPointEntity)
 
 // Cache user-entity-field values until spawn is called.
 void CLight::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
@@ -106,8 +106,8 @@ void CLight::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, US
 	}
 }
 
-LINK_ENTITY_TO_CLASS(light_spot, CLight, CCSLight);
-LINK_ENTITY_TO_CLASS(light_environment, CEnvLight, CCSEnvLight);
+LINK_ENTITY_TO_CLASS(light_spot, CLight, CCSLight)
+LINK_ENTITY_TO_CLASS(light_environment, CEnvLight, CCSEnvLight)
 
 void CEnvLight::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {

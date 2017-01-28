@@ -2467,7 +2467,7 @@ void NORETURN Sys_Error(const char *error, ...)
 
 	CONSOLE_ECHO("FATAL ERROR (shutting down): %s\n", text);
 
-	//TerminateProcess(GetCurrentProcess(), 1);
-	*((int *)NULL) = 0;
-	while (true);
+	int *null = 0;
+	*null = 0;
+	exit(-1);
 }

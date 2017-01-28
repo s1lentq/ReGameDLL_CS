@@ -13,7 +13,7 @@ TYPEDESCRIPTION CEnvExplosion::m_SaveData[] =
 
 #endif
 
-LINK_ENTITY_TO_CLASS(spark_shower, CShower, CCSShower);
+LINK_ENTITY_TO_CLASS(spark_shower, CShower, CCSShower)
 
 void CShower::__MAKE_VHOOK(Spawn)()
 {
@@ -67,8 +67,8 @@ void CShower::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 	}
 }
 
-IMPLEMENT_SAVERESTORE(CEnvExplosion, CBaseMonster);
-LINK_ENTITY_TO_CLASS(env_explosion, CEnvExplosion, CCSEnvExplosion);
+IMPLEMENT_SAVERESTORE(CEnvExplosion, CBaseMonster)
+LINK_ENTITY_TO_CLASS(env_explosion, CEnvExplosion, CCSEnvExplosion)
 
 void CEnvExplosion::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {

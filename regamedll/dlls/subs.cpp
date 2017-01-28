@@ -50,15 +50,15 @@ void CNullEntity::__MAKE_VHOOK(Spawn)()
 	REMOVE_ENTITY(ENT(pev));
 }
 
-LINK_ENTITY_TO_CLASS(info_null, CNullEntity, CCSNullEntity);
+LINK_ENTITY_TO_CLASS(info_null, CNullEntity, CCSNullEntity)
 
 // These are the new entry points to entities.
-LINK_ENTITY_TO_CLASS(info_player_deathmatch, CBaseDMStart, CCSDMStart);
-LINK_ENTITY_TO_CLASS(info_player_start, CPointEntity, CCSPointEntity);
-LINK_ENTITY_TO_CLASS(info_vip_start, CBaseDMStart, CCSDMStart);
-LINK_ENTITY_TO_CLASS(info_landmark, CPointEntity, CCSPointEntity);
-LINK_ENTITY_TO_CLASS(info_hostage_rescue, CPointEntity, CCSPointEntity);
-LINK_ENTITY_TO_CLASS(info_bomb_target, CPointEntity, CCSPointEntity);
+LINK_ENTITY_TO_CLASS(info_player_deathmatch, CBaseDMStart, CCSDMStart)
+LINK_ENTITY_TO_CLASS(info_player_start, CPointEntity, CCSPointEntity)
+LINK_ENTITY_TO_CLASS(info_vip_start, CBaseDMStart, CCSDMStart)
+LINK_ENTITY_TO_CLASS(info_landmark, CPointEntity, CCSPointEntity)
+LINK_ENTITY_TO_CLASS(info_hostage_rescue, CPointEntity, CCSPointEntity)
+LINK_ENTITY_TO_CLASS(info_bomb_target, CPointEntity, CCSPointEntity)
 
 void CBaseDMStart::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
@@ -123,7 +123,7 @@ void CBaseEntity::SUB_DoNothing()
 	;
 }
 
-IMPLEMENT_SAVERESTORE(CBaseDelay, CBaseEntity);
+IMPLEMENT_SAVERESTORE(CBaseDelay, CBaseEntity)
 
 void CBaseDelay::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {
@@ -182,7 +182,7 @@ void FireTargets(const char *targetName, CBaseEntity *pActivator, CBaseEntity *p
 	}
 }
 
-LINK_ENTITY_TO_CLASS(DelayedUse, CBaseDelay, CCSDelay);
+LINK_ENTITY_TO_CLASS(DelayedUse, CBaseDelay, CCSDelay)
 
 void CBaseDelay::SUB_UseTargets(CBaseEntity *pActivator, USE_TYPE useType, float value)
 {
@@ -287,7 +287,7 @@ void CBaseDelay::DelayThink()
 	REMOVE_ENTITY(ENT(pev));
 }
 
-IMPLEMENT_SAVERESTORE(CBaseToggle, CBaseAnimating);
+IMPLEMENT_SAVERESTORE(CBaseToggle, CBaseAnimating)
 
 void CBaseToggle::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 {

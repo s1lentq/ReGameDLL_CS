@@ -195,7 +195,7 @@ void EXT_FUNC ClientKill(edict_t *pEntity)
 	}
 }
 
-LINK_HOOK_VOID_CHAIN(ShowMenu, (CBasePlayer *pPlayer, int bitsValidSlots, int nDisplayTime, BOOL fNeedMore, char *pszText), pPlayer, bitsValidSlots, nDisplayTime, fNeedMore, pszText);
+LINK_HOOK_VOID_CHAIN(ShowMenu, (CBasePlayer *pPlayer, int bitsValidSlots, int nDisplayTime, BOOL fNeedMore, char *pszText), pPlayer, bitsValidSlots, nDisplayTime, fNeedMore, pszText)
 
 void EXT_FUNC __API_HOOK(ShowMenu)(CBasePlayer *pPlayer, int bitsValidSlots, int nDisplayTime, BOOL fNeedMore, char *pszText)
 {
@@ -1282,7 +1282,7 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 	}
 }
 
-LINK_HOOK_CHAIN(CBaseEntity *, BuyWeaponByWeaponID, (CBasePlayer *pPlayer, WeaponIdType weaponID), pPlayer, weaponID);
+LINK_HOOK_CHAIN(CBaseEntity *, BuyWeaponByWeaponID, (CBasePlayer *pPlayer, WeaponIdType weaponID), pPlayer, weaponID)
 
 CBaseEntity *EXT_FUNC __API_HOOK(BuyWeaponByWeaponID)(CBasePlayer *pPlayer, WeaponIdType weaponID)
 {
@@ -1338,7 +1338,7 @@ CBaseEntity *EXT_FUNC __API_HOOK(BuyWeaponByWeaponID)(CBasePlayer *pPlayer, Weap
 	return pEntity;
 }
 
-LINK_HOOK_VOID_CHAIN(HandleMenu_ChooseAppearance, (CBasePlayer *player, int slot), player, slot);
+LINK_HOOK_VOID_CHAIN(HandleMenu_ChooseAppearance, (CBasePlayer *player, int slot), player, slot)
 
 void EXT_FUNC __API_HOOK(HandleMenu_ChooseAppearance)(CBasePlayer *player, int slot)
 {
@@ -1495,7 +1495,7 @@ void EXT_FUNC __API_HOOK(HandleMenu_ChooseAppearance)(CBasePlayer *player, int s
 	}
 }
 
-LINK_HOOK_CHAIN(BOOL, HandleMenu_ChooseTeam, (CBasePlayer *player, int slot), player, slot);
+LINK_HOOK_CHAIN(BOOL, HandleMenu_ChooseTeam, (CBasePlayer *player, int slot), player, slot)
 
 // returns true if the selection has been handled and the player's menu
 // can be closed...false if the menu should be displayed again
@@ -1984,7 +1984,7 @@ void Radio3(CBasePlayer *player, int slot)
 	}
 }
 
-LINK_HOOK_CHAIN(bool, BuyGunAmmo, (CBasePlayer *player, CBasePlayerItem *weapon, bool bBlinkMoney), player, weapon, bBlinkMoney);
+LINK_HOOK_CHAIN(bool, BuyGunAmmo, (CBasePlayer *player, CBasePlayerItem *weapon, bool bBlinkMoney), player, weapon, bBlinkMoney)
 
 bool EXT_FUNC __API_HOOK(BuyGunAmmo)(CBasePlayer *player, CBasePlayerItem *weapon, bool bBlinkMoney)
 {
@@ -2292,7 +2292,7 @@ BOOL HandleRadioAliasCommands(CBasePlayer *pPlayer, const char *pszCommand)
 		{
 			radio.func(pPlayer, radio.slot);
 			return TRUE;
-		} 
+		}
 	}
 
 	return FALSE;
@@ -3240,14 +3240,15 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 // Use CMD_ARGV, CMD_ARGV, and CMD_ARGC to get pointers the character string command.
 void EXT_FUNC ClientCommand_(edict_t *pEntity)
 {
-	const char *pcmd = CMD_ARGV_(0);
-	const char *parg1 = CMD_ARGV_(1);
-
 	// Is the client spawned yet?
 	if (!pEntity->pvPrivateData)
 		return;
 
-	g_ReGameHookchains.m_InternalCommand.callChain(InternalCommand, pEntity, pcmd, parg1);
+	static char command[128] = "";
+	Q_strncpy(command, CMD_ARGV_(0), sizeof command - 1);
+	command[sizeof command - 1] = '\0';
+
+	g_ReGameHookchains.m_InternalCommand.callChain(InternalCommand, pEntity, command, CMD_ARGV_(1));
 }
 
 // called after the player changes userinfo - gives dll a chance to modify it before it gets sent into the rest of the engine.

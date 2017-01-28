@@ -61,7 +61,6 @@ private:
 extern char *MP_COM_GetToken();
 extern char *MP_COM_Parse(char *data);
 
-char *GetBspFilename(const char *navFilename);
 bool SaveNavigationMap(const char *filename);
 void LoadLocationFile(const char *filename);
 void SanityCheckNavigationMap(const char *mapName);	// Performs a lightweight sanity-check of the specified map's nav mesh

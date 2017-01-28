@@ -9,7 +9,7 @@ CSoundEnt *pSoundEnt = NULL;
 
 #endif
 
-LINK_ENTITY_TO_CLASS(soundent, CSoundEnt, CCSSoundEnt);
+LINK_ENTITY_TO_CLASS(soundent, CSoundEnt, CCSSoundEnt)
 
 // CSound - Clear - zeros all fields for a sound
 void CSound::Clear()
