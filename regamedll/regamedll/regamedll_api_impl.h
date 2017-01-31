@@ -35,12 +35,12 @@
 	IReGameHookRegistry_##func* CReGameHookchains::func() { return &m_##func; }
 
 // CBasePlayer::Spawn hook
-typedef IVoidHookChainClassImpl<CBasePlayer> CReGameHook_CBasePlayer_Spawn;
-typedef IVoidHookChainRegistryClassImpl<CBasePlayer> CReGameHookRegistry_CBasePlayer_Spawn;
+typedef IHookChainClassImpl<void, CBasePlayer> CReGameHook_CBasePlayer_Spawn;
+typedef IHookChainRegistryClassImpl<void, CBasePlayer> CReGameHookRegistry_CBasePlayer_Spawn;
 
 // CBasePlayer::Precache hook
-typedef IVoidHookChainClassImpl<CBasePlayer> CReGameHook_CBasePlayer_Precache;
-typedef IVoidHookChainRegistryClassImpl<CBasePlayer> CReGameHookRegistry_CBasePlayer_Precache;
+typedef IHookChainClassImpl<void, CBasePlayer> CReGameHook_CBasePlayer_Precache;
+typedef IHookChainRegistryClassImpl<void, CBasePlayer> CReGameHookRegistry_CBasePlayer_Precache;
 
 // CBasePlayer::ObjectCaps hook
 typedef IHookChainClassImpl<int, CBasePlayer> CReGameHook_CBasePlayer_ObjectCaps;
@@ -51,8 +51,8 @@ typedef IHookChainClassImpl<int, CBasePlayer> CReGameHook_CBasePlayer_Classify;
 typedef IHookChainRegistryClassImpl<int, CBasePlayer> CReGameHookRegistry_CBasePlayer_Classify;
 
 // CBasePlayer::TraceAttack hook
-typedef IVoidHookChainClassImpl<CBasePlayer, entvars_t *, float, Vector &, TraceResult *, int> CReGameHook_CBasePlayer_TraceAttack;
-typedef IVoidHookChainRegistryClassImpl<CBasePlayer, entvars_t *, float, Vector &, TraceResult *, int> CReGameHookRegistry_CBasePlayer_TraceAttack;
+typedef IHookChainClassImpl<void, CBasePlayer, entvars_t *, float, Vector &, TraceResult *, int> CReGameHook_CBasePlayer_TraceAttack;
+typedef IHookChainRegistryClassImpl<void, CBasePlayer, entvars_t *, float, Vector &, TraceResult *, int> CReGameHookRegistry_CBasePlayer_TraceAttack;
 
 // CBasePlayer::TakeDamage hook
 typedef IHookChainClassImpl<BOOL, CBasePlayer, entvars_t *, entvars_t *, float&, int> CReGameHook_CBasePlayer_TakeDamage;
@@ -63,16 +63,16 @@ typedef IHookChainClassImpl<BOOL, CBasePlayer, float, int> CReGameHook_CBasePlay
 typedef IHookChainRegistryClassImpl<BOOL, CBasePlayer, float, int> CReGameHookRegistry_CBasePlayer_TakeHealth;
 
 // CBasePlayer::Killed hook
-typedef IVoidHookChainClassImpl<CBasePlayer, entvars_t *, int> CReGameHook_CBasePlayer_Killed;
-typedef IVoidHookChainRegistryClassImpl<CBasePlayer, entvars_t *, int> CReGameHookRegistry_CBasePlayer_Killed;
+typedef IHookChainClassImpl<void, CBasePlayer, entvars_t *, int> CReGameHook_CBasePlayer_Killed;
+typedef IHookChainRegistryClassImpl<void, CBasePlayer, entvars_t *, int> CReGameHookRegistry_CBasePlayer_Killed;
 
 // CBasePlayer::AddPoints hook
-typedef IVoidHookChainClassImpl<CBasePlayer, int, BOOL> CReGameHook_CBasePlayer_AddPoints;
-typedef IVoidHookChainRegistryClassImpl<CBasePlayer, int, BOOL> CReGameHookRegistry_CBasePlayer_AddPoints;
+typedef IHookChainClassImpl<void, CBasePlayer, int, BOOL> CReGameHook_CBasePlayer_AddPoints;
+typedef IHookChainRegistryClassImpl<void, CBasePlayer, int, BOOL> CReGameHookRegistry_CBasePlayer_AddPoints;
 
 // CBasePlayer::AddPointsToTeam hook
-typedef IVoidHookChainClassImpl<CBasePlayer, int, BOOL> CReGameHook_CBasePlayer_AddPointsToTeam;
-typedef IVoidHookChainRegistryClassImpl<CBasePlayer, int, BOOL> CReGameHookRegistry_CBasePlayer_AddPointsToTeam;
+typedef IHookChainClassImpl<void, CBasePlayer, int, BOOL> CReGameHook_CBasePlayer_AddPointsToTeam;
+typedef IHookChainRegistryClassImpl<void, CBasePlayer, int, BOOL> CReGameHookRegistry_CBasePlayer_AddPointsToTeam;
 
 // CBasePlayer::AddPlayerItem hook
 typedef IHookChainClassImpl<BOOL, CBasePlayer, CBasePlayerItem *> CReGameHook_CBasePlayer_AddPlayerItem;
@@ -87,68 +87,68 @@ typedef IHookChainClassImpl<int, CBasePlayer, int , char *, int> CReGameHook_CBa
 typedef IHookChainRegistryClassImpl<int, CBasePlayer, int , char *, int> CReGameHookRegistry_CBasePlayer_GiveAmmo;
 
 // CBasePlayer::ResetMaxSpeed hook
-typedef IVoidHookChainClassImpl<CBasePlayer> CReGameHook_CBasePlayer_ResetMaxSpeed;
-typedef IVoidHookChainRegistryClassImpl<CBasePlayer> CReGameHookRegistry_CBasePlayer_ResetMaxSpeed;
+typedef IHookChainClassImpl<void, CBasePlayer> CReGameHook_CBasePlayer_ResetMaxSpeed;
+typedef IHookChainRegistryClassImpl<void, CBasePlayer> CReGameHookRegistry_CBasePlayer_ResetMaxSpeed;
 
 // CBasePlayer::Jump hook
-typedef IVoidHookChainClassImpl<CBasePlayer> CReGameHook_CBasePlayer_Jump;
-typedef IVoidHookChainRegistryClassImpl<CBasePlayer> CReGameHookRegistry_CBasePlayer_Jump;
+typedef IHookChainClassImpl<void, CBasePlayer> CReGameHook_CBasePlayer_Jump;
+typedef IHookChainRegistryClassImpl<void, CBasePlayer> CReGameHookRegistry_CBasePlayer_Jump;
 
 // CBasePlayer::Duck hook
-typedef IVoidHookChainClassImpl<CBasePlayer> CReGameHook_CBasePlayer_Duck;
-typedef IVoidHookChainRegistryClassImpl<CBasePlayer> CReGameHookRegistry_CBasePlayer_Duck;
+typedef IHookChainClassImpl<void, CBasePlayer> CReGameHook_CBasePlayer_Duck;
+typedef IHookChainRegistryClassImpl<void, CBasePlayer> CReGameHookRegistry_CBasePlayer_Duck;
 
 // CBasePlayer::PreThink hook
-typedef IVoidHookChainClassImpl<CBasePlayer> CReGameHook_CBasePlayer_PreThink;
-typedef IVoidHookChainRegistryClassImpl<CBasePlayer> CReGameHookRegistry_CBasePlayer_PreThink;
+typedef IHookChainClassImpl<void, CBasePlayer> CReGameHook_CBasePlayer_PreThink;
+typedef IHookChainRegistryClassImpl<void, CBasePlayer> CReGameHookRegistry_CBasePlayer_PreThink;
 
 // CBasePlayer::PostThink hook
-typedef IVoidHookChainClassImpl<CBasePlayer> CReGameHook_CBasePlayer_PostThink;
-typedef IVoidHookChainRegistryClassImpl<CBasePlayer> CReGameHookRegistry_CBasePlayer_PostThink;
+typedef IHookChainClassImpl<void, CBasePlayer> CReGameHook_CBasePlayer_PostThink;
+typedef IHookChainRegistryClassImpl<void, CBasePlayer> CReGameHookRegistry_CBasePlayer_PostThink;
 
 // CBasePlayer::UpdateClientData hook
-typedef IVoidHookChainClassImpl<CBasePlayer> CReGameHook_CBasePlayer_UpdateClientData;
-typedef IVoidHookChainRegistryClassImpl<CBasePlayer> CReGameHookRegistry_CBasePlayer_UpdateClientData;
+typedef IHookChainClassImpl<void, CBasePlayer> CReGameHook_CBasePlayer_UpdateClientData;
+typedef IHookChainRegistryClassImpl<void, CBasePlayer> CReGameHookRegistry_CBasePlayer_UpdateClientData;
 
 // CBasePlayer::ImpulseCommands hook
-typedef IVoidHookChainClassImpl<CBasePlayer> CReGameHook_CBasePlayer_ImpulseCommands;
-typedef IVoidHookChainRegistryClassImpl<CBasePlayer> CReGameHookRegistry_CBasePlayer_ImpulseCommands;
+typedef IHookChainClassImpl<void, CBasePlayer> CReGameHook_CBasePlayer_ImpulseCommands;
+typedef IHookChainRegistryClassImpl<void, CBasePlayer> CReGameHookRegistry_CBasePlayer_ImpulseCommands;
 
 // CBasePlayer::RoundRespawn hook
-typedef IVoidHookChainClassImpl<CBasePlayer> CReGameHook_CBasePlayer_RoundRespawn;
-typedef IVoidHookChainRegistryClassImpl<CBasePlayer> CReGameHookRegistry_CBasePlayer_RoundRespawn;
+typedef IHookChainClassImpl<void, CBasePlayer> CReGameHook_CBasePlayer_RoundRespawn;
+typedef IHookChainRegistryClassImpl<void, CBasePlayer> CReGameHookRegistry_CBasePlayer_RoundRespawn;
 
 // CBasePlayer::Blind hook
-typedef IVoidHookChainClassImpl<CBasePlayer, float, float, float, int> CReGameHook_CBasePlayer_Blind;
-typedef IVoidHookChainRegistryClassImpl<CBasePlayer, float, float, float, int> CReGameHookRegistry_CBasePlayer_Blind;
+typedef IHookChainClassImpl<void, CBasePlayer, float, float, float, int> CReGameHook_CBasePlayer_Blind;
+typedef IHookChainRegistryClassImpl<void, CBasePlayer, float, float, float, int> CReGameHookRegistry_CBasePlayer_Blind;
 
 // CBasePlayer::Observer_IsValidTarget hook
 typedef IHookChainClassImpl<CBasePlayer *, CBasePlayer, int, bool> CReGameHook_CBasePlayer_Observer_IsValidTarget;
 typedef IHookChainRegistryClassImpl<CBasePlayer *, CBasePlayer, int, bool> CReGameHookRegistry_CBasePlayer_Observer_IsValidTarget;
 
 // CBasePlayer::SetAnimation hook
-typedef IVoidHookChainClassImpl<CBasePlayer, PLAYER_ANIM> CReGameHook_CBasePlayer_SetAnimation;
-typedef IVoidHookChainRegistryClassImpl<CBasePlayer, PLAYER_ANIM> CReGameHookRegistry_CBasePlayer_SetAnimation;
+typedef IHookChainClassImpl<void, CBasePlayer, PLAYER_ANIM> CReGameHook_CBasePlayer_SetAnimation;
+typedef IHookChainRegistryClassImpl<void, CBasePlayer, PLAYER_ANIM> CReGameHookRegistry_CBasePlayer_SetAnimation;
 
 // CBasePlayer::GiveDefaultItems hook
-typedef IVoidHookChainClassImpl<CBasePlayer> CReGameHook_CBasePlayer_GiveDefaultItems;
-typedef IVoidHookChainRegistryClassImpl<CBasePlayer> CReGameHookRegistry_CBasePlayer_GiveDefaultItems;
+typedef IHookChainClassImpl<void, CBasePlayer> CReGameHook_CBasePlayer_GiveDefaultItems;
+typedef IHookChainRegistryClassImpl<void, CBasePlayer> CReGameHookRegistry_CBasePlayer_GiveDefaultItems;
 
 // CBasePlayer::GiveNamedItem hook
 typedef IHookChainClassImpl<CBaseEntity *, CBasePlayer, const char *> CReGameHook_CBasePlayer_GiveNamedItem;
 typedef IHookChainRegistryClassImpl<CBaseEntity *, CBasePlayer, const char *> CReGameHookRegistry_CBasePlayer_GiveNamedItem;
 
 // CBasePlayer::AddAccount hook
-typedef IVoidHookChainClassImpl<CBasePlayer, int, RewardType, bool> CReGameHook_CBasePlayer_AddAccount;
-typedef IVoidHookChainRegistryClassImpl<CBasePlayer, int, RewardType, bool> CReGameHookRegistry_CBasePlayer_AddAccount;
+typedef IHookChainClassImpl<void, CBasePlayer, int, RewardType, bool> CReGameHook_CBasePlayer_AddAccount;
+typedef IHookChainRegistryClassImpl<void, CBasePlayer, int, RewardType, bool> CReGameHookRegistry_CBasePlayer_AddAccount;
 
 // CBasePlayer::GiveShield hook
-typedef IVoidHookChainClassImpl<CBasePlayer, bool> CReGameHook_CBasePlayer_GiveShield;
-typedef IVoidHookChainRegistryClassImpl<CBasePlayer, bool> CReGameHookRegistry_CBasePlayer_GiveShield;
+typedef IHookChainClassImpl<void, CBasePlayer, bool> CReGameHook_CBasePlayer_GiveShield;
+typedef IHookChainRegistryClassImpl<void, CBasePlayer, bool> CReGameHookRegistry_CBasePlayer_GiveShield;
 
 // CBasePlayer:SetClientUserInfoModel hook
-typedef IVoidHookChainClassImpl<CBasePlayer, char *, char *> CReGameHook_CBasePlayer_SetClientUserInfoModel;
-typedef IVoidHookChainRegistryClassImpl<CBasePlayer, char *, char *> CReGameHookRegistry_CBasePlayer_SetClientUserInfoModel;
+typedef IHookChainClassImpl<void, CBasePlayer, char *, char *> CReGameHook_CBasePlayer_SetClientUserInfoModel;
+typedef IHookChainRegistryClassImpl<void, CBasePlayer, char *, char *> CReGameHookRegistry_CBasePlayer_SetClientUserInfoModel;
 
 // CBasePlayer:SetClientUserInfoName hook
 typedef IHookChainClassImpl<bool, CBasePlayer, char *, char *> CReGameHook_CBasePlayer_SetClientUserInfoName;
@@ -159,56 +159,56 @@ typedef IHookChainClassImpl<bool, CBasePlayer, ItemID, ItemRestType> CReGameHook
 typedef IHookChainRegistryClassImpl<bool, CBasePlayer, ItemID, ItemRestType> CReGameHookRegistry_CBasePlayer_HasRestrictItem;
 
 // CBasePlayer::DropPlayerItem hook
-typedef IVoidHookChainClassImpl<CBasePlayer, const char *> CReGameHook_CBasePlayer_DropPlayerItem;
-typedef IVoidHookChainRegistryClassImpl<CBasePlayer, const char *> CReGameHookRegistry_CBasePlayer_DropPlayerItem;
+typedef IHookChainClassImpl<void, CBasePlayer, const char *> CReGameHook_CBasePlayer_DropPlayerItem;
+typedef IHookChainRegistryClassImpl<void, CBasePlayer, const char *> CReGameHookRegistry_CBasePlayer_DropPlayerItem;
 
 // CBasePlayer::DropShield hook
-typedef IVoidHookChainClassImpl<CBasePlayer, bool> CReGameHook_CBasePlayer_DropShield;
-typedef IVoidHookChainRegistryClassImpl<CBasePlayer, bool> CReGameHookRegistry_CBasePlayer_DropShield;
+typedef IHookChainClassImpl<void, CBasePlayer, bool> CReGameHook_CBasePlayer_DropShield;
+typedef IHookChainRegistryClassImpl<void, CBasePlayer, bool> CReGameHookRegistry_CBasePlayer_DropShield;
 
 // CBasePlayer::OnSpawnEquip hook
-typedef IVoidHookChainClassImpl<CBasePlayer, bool, bool> CReGameHook_CBasePlayer_OnSpawnEquip;
-typedef IVoidHookChainRegistryClassImpl<CBasePlayer, bool, bool> CReGameHookRegistry_CBasePlayer_OnSpawnEquip;
+typedef IHookChainClassImpl<void, CBasePlayer, bool, bool> CReGameHook_CBasePlayer_OnSpawnEquip;
+typedef IHookChainRegistryClassImpl<void, CBasePlayer, bool, bool> CReGameHookRegistry_CBasePlayer_OnSpawnEquip;
 
 // CBasePlayer::Radio hook
-typedef IVoidHookChainClassImpl<CBasePlayer, const char *, const char *, short, bool> CReGameHook_CBasePlayer_Radio;
-typedef IVoidHookChainRegistryClassImpl<CBasePlayer, const char *, const char *, short, bool> CReGameHookRegistry_CBasePlayer_Radio;
+typedef IHookChainClassImpl<void, CBasePlayer, const char *, const char *, short, bool> CReGameHook_CBasePlayer_Radio;
+typedef IHookChainRegistryClassImpl<void, CBasePlayer, const char *, const char *, short, bool> CReGameHookRegistry_CBasePlayer_Radio;
 
 // CBasePlayer::Disappear hook
-typedef IVoidHookChainClassImpl<CBasePlayer> CReGameHook_CBasePlayer_Disappear;
-typedef IVoidHookChainRegistryClassImpl<CBasePlayer> CReGameHookRegistry_CBasePlayer_Disappear;
+typedef IHookChainClassImpl<void, CBasePlayer> CReGameHook_CBasePlayer_Disappear;
+typedef IHookChainRegistryClassImpl<void, CBasePlayer> CReGameHookRegistry_CBasePlayer_Disappear;
 
 // CBasePlayer::MakeVIP hook
-typedef IVoidHookChainClassImpl<CBasePlayer> CReGameHook_CBasePlayer_MakeVIP;
-typedef IVoidHookChainRegistryClassImpl<CBasePlayer> CReGameHookRegistry_CBasePlayer_MakeVIP;
+typedef IHookChainClassImpl<void, CBasePlayer> CReGameHook_CBasePlayer_MakeVIP;
+typedef IHookChainRegistryClassImpl<void, CBasePlayer> CReGameHookRegistry_CBasePlayer_MakeVIP;
 
 // CBasePlayer::MakeBomber hook
 typedef IHookChainClassImpl<bool, CBasePlayer> CReGameHook_CBasePlayer_MakeBomber;
 typedef IHookChainRegistryClassImpl<bool, CBasePlayer> CReGameHookRegistry_CBasePlayer_MakeBomber;
 
 // CBasePlayer::StartObserver hook
-typedef IVoidHookChainClassImpl<CBasePlayer, Vector &, Vector &> CReGameHook_CBasePlayer_StartObserver;
-typedef IVoidHookChainRegistryClassImpl<CBasePlayer, Vector &, Vector &> CReGameHookRegistry_CBasePlayer_StartObserver;
+typedef IHookChainClassImpl<void, CBasePlayer, Vector &, Vector &> CReGameHook_CBasePlayer_StartObserver;
+typedef IHookChainRegistryClassImpl<void, CBasePlayer, Vector &, Vector &> CReGameHookRegistry_CBasePlayer_StartObserver;
 
 // CBasePlayer::GetIntoGame hook
 typedef IHookChainClassImpl<bool, CBasePlayer> CReGameHook_CBasePlayer_GetIntoGame;
 typedef IHookChainRegistryClassImpl<bool, CBasePlayer> CReGameHookRegistry_CBasePlayer_GetIntoGame;
 
 // CBaseAnimating::ResetSequenceInfo hook
-typedef IVoidHookChainClassImpl<CBaseAnimating> CReGameHook_CBaseAnimating_ResetSequenceInfo;
-typedef IVoidHookChainRegistryClassImpl<CBaseAnimating> CReGameHookRegistry_CBaseAnimating_ResetSequenceInfo;
+typedef IHookChainClassImpl<void, CBaseAnimating> CReGameHook_CBaseAnimating_ResetSequenceInfo;
+typedef IHookChainRegistryClassImpl<void, CBaseAnimating> CReGameHookRegistry_CBaseAnimating_ResetSequenceInfo;
 
 // GetForceCamera hook
 typedef IHookChainImpl<int, class CBasePlayer *> CReGameHook_GetForceCamera;
 typedef IHookChainRegistryImpl<int, class CBasePlayer *> CReGameHookRegistry_GetForceCamera;
 
 // PlayerBlind hook
-typedef IVoidHookChainImpl<CBasePlayer *, entvars_t *, entvars_t *, float, float, int, Vector &> CReGameHook_PlayerBlind;
-typedef IVoidHookChainRegistryImpl<CBasePlayer *, entvars_t *, entvars_t *, float, float, int, Vector &> CReGameHookRegistry_PlayerBlind;
+typedef IHookChainImpl<void, CBasePlayer *, entvars_t *, entvars_t *, float, float, int, Vector &> CReGameHook_PlayerBlind;
+typedef IHookChainRegistryImpl<void, CBasePlayer *, entvars_t *, entvars_t *, float, float, int, Vector &> CReGameHookRegistry_PlayerBlind;
 
 // RadiusFlash_TraceLine hook
-typedef IVoidHookChainImpl<CBasePlayer *, entvars_t *, entvars_t *, Vector &, Vector &, TraceResult *> CReGameHook_RadiusFlash_TraceLine;
-typedef IVoidHookChainRegistryImpl<CBasePlayer *, entvars_t *, entvars_t *, Vector &, Vector &, TraceResult *> CReGameHookRegistry_RadiusFlash_TraceLine;
+typedef IHookChainImpl<void, CBasePlayer *, entvars_t *, entvars_t *, Vector &, Vector &, TraceResult *> CReGameHook_RadiusFlash_TraceLine;
+typedef IHookChainRegistryImpl<void, CBasePlayer *, entvars_t *, entvars_t *, Vector &, Vector &, TraceResult *> CReGameHookRegistry_RadiusFlash_TraceLine;
 
 // RoundEnd hook
 typedef IHookChainClassImpl<bool, class CHalfLifeMultiplay, int, ScenarioEventEndRound, float> CReGameHook_RoundEnd;
@@ -219,32 +219,32 @@ typedef IHookChainImpl<CGameRules *> CReGameHook_InstallGameRules;
 typedef IHookChainRegistryImpl<CGameRules *> CReGameHookRegistry_InstallGameRules;
 
 // PM_Init hook
-typedef IVoidHookChainImpl<struct playermove_s *> CReGameHook_PM_Init;
-typedef IVoidHookChainRegistryImpl<struct playermove_s *> CReGameHookRegistry_PM_Init;
+typedef IHookChainImpl<void, struct playermove_s *> CReGameHook_PM_Init;
+typedef IHookChainRegistryImpl<void, struct playermove_s *> CReGameHookRegistry_PM_Init;
 
 // PM_Move hook
-typedef IVoidHookChainImpl<struct playermove_s *, int> CReGameHook_PM_Move;
-typedef IVoidHookChainRegistryImpl<struct playermove_s *, int> CReGameHookRegistry_PM_Move;
+typedef IHookChainImpl<void, struct playermove_s *, int> CReGameHook_PM_Move;
+typedef IHookChainRegistryImpl<void, struct playermove_s *, int> CReGameHookRegistry_PM_Move;
 
 // PM_AirMove hook
-typedef IVoidHookChainImpl<int> CReGameHook_PM_AirMove;
-typedef IVoidHookChainRegistryImpl<int> CReGameHookRegistry_PM_AirMove;
+typedef IHookChainImpl<void, int> CReGameHook_PM_AirMove;
+typedef IHookChainRegistryImpl<void, int> CReGameHookRegistry_PM_AirMove;
 
 // HandleMenu_ChooseAppearance hook
-typedef IVoidHookChainImpl<CBasePlayer *, int> CReGameHook_HandleMenu_ChooseAppearance;
-typedef IVoidHookChainRegistryImpl<CBasePlayer *, int> CReGameHookRegistry_HandleMenu_ChooseAppearance;
+typedef IHookChainImpl<void, CBasePlayer *, int> CReGameHook_HandleMenu_ChooseAppearance;
+typedef IHookChainRegistryImpl<void, CBasePlayer *, int> CReGameHookRegistry_HandleMenu_ChooseAppearance;
 
 // HandleMenu_ChooseTeam hook
 typedef IHookChainImpl<BOOL, CBasePlayer *, int> CReGameHook_HandleMenu_ChooseTeam;
 typedef IHookChainRegistryImpl<BOOL, CBasePlayer *, int> CReGameHookRegistry_HandleMenu_ChooseTeam;
 
 // ShowMenu hook
-typedef IVoidHookChainImpl<CBasePlayer *, int, int, BOOL, char *> CReGameHook_ShowMenu;
-typedef IVoidHookChainRegistryImpl<CBasePlayer *, int, int, BOOL, char *> CReGameHookRegistry_ShowMenu;
+typedef IHookChainImpl<void, CBasePlayer *, int, int, BOOL, char *> CReGameHook_ShowMenu;
+typedef IHookChainRegistryImpl<void, CBasePlayer *, int, int, BOOL, char *> CReGameHookRegistry_ShowMenu;
 
 // ShowVGUIMenu hook
-typedef IVoidHookChainImpl<CBasePlayer *, int, int, char *> CReGameHook_ShowVGUIMenu;
-typedef IVoidHookChainRegistryImpl<CBasePlayer *, int, int, char *> CReGameHookRegistry_ShowVGUIMenu;
+typedef IHookChainImpl<void, CBasePlayer *, int, int, char *> CReGameHook_ShowVGUIMenu;
+typedef IHookChainRegistryImpl<void, CBasePlayer *, int, int, char *> CReGameHookRegistry_ShowVGUIMenu;
 
 // BuyGunAmmo hook
 typedef IHookChainImpl<bool, CBasePlayer *, CBasePlayerItem *, bool> CReGameHook_BuyGunAmmo;
@@ -275,8 +275,8 @@ typedef IHookChainClassImpl<BOOL, class CHalfLifeMultiplay, CBasePlayer *, CBase
 typedef IHookChainRegistryClassEmptyImpl<BOOL, class CHalfLifeMultiplay, CBasePlayer *, CBaseEntity *> CReGameHookRegistry_CSGameRules_FPlayerCanTakeDamage;
 
 // CHalfLifeMultiplay::PlayerSpawn hook
-typedef IVoidHookChainClassImpl<class CHalfLifeMultiplay, CBasePlayer *> CReGameHook_CSGameRules_PlayerSpawn;
-typedef IVoidHookChainRegistryClassEmptyImpl<class CHalfLifeMultiplay, CBasePlayer *> CReGameHookRegistry_CSGameRules_PlayerSpawn;
+typedef IHookChainClassImpl<void, class CHalfLifeMultiplay, CBasePlayer *> CReGameHook_CSGameRules_PlayerSpawn;
+typedef IHookChainRegistryClassEmptyImpl<void, class CHalfLifeMultiplay, CBasePlayer *> CReGameHookRegistry_CSGameRules_PlayerSpawn;
 
 // CHalfLifeMultiplay::FPlayerCanRespawn hook
 typedef IHookChainClassImpl<BOOL, class CHalfLifeMultiplay, CBasePlayer *> CReGameHook_CSGameRules_FPlayerCanRespawn;
@@ -287,16 +287,16 @@ typedef IHookChainClassImpl<edict_t *, class CHalfLifeMultiplay, CBasePlayer *> 
 typedef IHookChainRegistryClassEmptyImpl<edict_t *, class CHalfLifeMultiplay, CBasePlayer *> CReGameHookRegistry_CSGameRules_GetPlayerSpawnSpot;
 
 // CHalfLifeMultiplay::ClientUserInfoChanged hook
-typedef IVoidHookChainClassImpl<class CHalfLifeMultiplay, CBasePlayer *, char *> CReGameHook_CSGameRules_ClientUserInfoChanged;
-typedef IVoidHookChainRegistryClassEmptyImpl<class CHalfLifeMultiplay, CBasePlayer *, char *> CReGameHookRegistry_CSGameRules_ClientUserInfoChanged;
+typedef IHookChainClassImpl<void, class CHalfLifeMultiplay, CBasePlayer *, char *> CReGameHook_CSGameRules_ClientUserInfoChanged;
+typedef IHookChainRegistryClassEmptyImpl<void, class CHalfLifeMultiplay, CBasePlayer *, char *> CReGameHookRegistry_CSGameRules_ClientUserInfoChanged;
 
 // CHalfLifeMultiplay::PlayerKilled hook
-typedef IVoidHookChainClassImpl<class CHalfLifeMultiplay, CBasePlayer *, entvars_t *, entvars_t *> CReGameHook_CSGameRules_PlayerKilled;
-typedef IVoidHookChainRegistryClassEmptyImpl<class CHalfLifeMultiplay, CBasePlayer *, entvars_t *, entvars_t *> CReGameHookRegistry_CSGameRules_PlayerKilled;
+typedef IHookChainClassImpl<void, class CHalfLifeMultiplay, CBasePlayer *, entvars_t *, entvars_t *> CReGameHook_CSGameRules_PlayerKilled;
+typedef IHookChainRegistryClassEmptyImpl<void, class CHalfLifeMultiplay, CBasePlayer *, entvars_t *, entvars_t *> CReGameHookRegistry_CSGameRules_PlayerKilled;
 
 // CHalfLifeMultiplay::DeathNotice hook
-typedef IVoidHookChainClassImpl<class CHalfLifeMultiplay, CBasePlayer *, entvars_t *, entvars_t *> CReGameHook_CSGameRules_DeathNotice;
-typedef IVoidHookChainRegistryClassEmptyImpl<class CHalfLifeMultiplay, CBasePlayer *, entvars_t *, entvars_t *> CReGameHookRegistry_CSGameRules_DeathNotice;
+typedef IHookChainClassImpl<void, class CHalfLifeMultiplay, CBasePlayer *, entvars_t *, entvars_t *> CReGameHook_CSGameRules_DeathNotice;
+typedef IHookChainRegistryClassEmptyImpl<void, class CHalfLifeMultiplay, CBasePlayer *, entvars_t *, entvars_t *> CReGameHookRegistry_CSGameRules_DeathNotice;
 
 // CHalfLifeMultiplay::CanHavePlayerItem hook
 typedef IHookChainClassImpl<BOOL, class CHalfLifeMultiplay, CBasePlayer *, CBasePlayerItem *> CReGameHook_CSGameRules_CanHavePlayerItem;
@@ -307,52 +307,52 @@ typedef IHookChainClassImpl<int, class CHalfLifeMultiplay, CBasePlayer *> CReGam
 typedef IHookChainRegistryClassEmptyImpl<int, class CHalfLifeMultiplay, CBasePlayer *> CReGameHookRegistry_CSGameRules_DeadPlayerWeapons;
 
 // CHalfLifeMultiplay::ServerDeactivate hook
-typedef IVoidHookChainClassImpl<class CHalfLifeMultiplay> CReGameHook_CSGameRules_ServerDeactivate;
-typedef IVoidHookChainRegistryClassEmptyImpl<class CHalfLifeMultiplay> CReGameHookRegistry_CSGameRules_ServerDeactivate;
+typedef IHookChainClassImpl<void, class CHalfLifeMultiplay> CReGameHook_CSGameRules_ServerDeactivate;
+typedef IHookChainRegistryClassEmptyImpl<void, class CHalfLifeMultiplay> CReGameHookRegistry_CSGameRules_ServerDeactivate;
 
 // CHalfLifeMultiplay::CheckMapConditions hook
-typedef IVoidHookChainClassImpl<class CHalfLifeMultiplay> CReGameHook_CSGameRules_CheckMapConditions;
-typedef IVoidHookChainRegistryClassEmptyImpl<class CHalfLifeMultiplay> CReGameHookRegistry_CSGameRules_CheckMapConditions;
+typedef IHookChainClassImpl<void, class CHalfLifeMultiplay> CReGameHook_CSGameRules_CheckMapConditions;
+typedef IHookChainRegistryClassEmptyImpl<void, class CHalfLifeMultiplay> CReGameHookRegistry_CSGameRules_CheckMapConditions;
 
 // CHalfLifeMultiplay::CleanUpMap hook
-typedef IVoidHookChainClassImpl<class CHalfLifeMultiplay> CReGameHook_CSGameRules_CleanUpMap;
-typedef IVoidHookChainRegistryClassEmptyImpl<class CHalfLifeMultiplay> CReGameHookRegistry_CSGameRules_CleanUpMap;
+typedef IHookChainClassImpl<void, class CHalfLifeMultiplay> CReGameHook_CSGameRules_CleanUpMap;
+typedef IHookChainRegistryClassEmptyImpl<void, class CHalfLifeMultiplay> CReGameHookRegistry_CSGameRules_CleanUpMap;
 
 // CHalfLifeMultiplay::RestartRound hook
-typedef IVoidHookChainClassImpl<class CHalfLifeMultiplay> CReGameHook_CSGameRules_RestartRound;
-typedef IVoidHookChainRegistryClassEmptyImpl<class CHalfLifeMultiplay> CReGameHookRegistry_CSGameRules_RestartRound;
+typedef IHookChainClassImpl<void, class CHalfLifeMultiplay> CReGameHook_CSGameRules_RestartRound;
+typedef IHookChainRegistryClassEmptyImpl<void, class CHalfLifeMultiplay> CReGameHookRegistry_CSGameRules_RestartRound;
 
 // CHalfLifeMultiplay::CheckWinConditions hook
-typedef IVoidHookChainClassImpl<class CHalfLifeMultiplay> CReGameHook_CSGameRules_CheckWinConditions;
-typedef IVoidHookChainRegistryClassEmptyImpl<class CHalfLifeMultiplay> CReGameHookRegistry_CSGameRules_CheckWinConditions;
+typedef IHookChainClassImpl<void, class CHalfLifeMultiplay> CReGameHook_CSGameRules_CheckWinConditions;
+typedef IHookChainRegistryClassEmptyImpl<void, class CHalfLifeMultiplay> CReGameHookRegistry_CSGameRules_CheckWinConditions;
 
 // CHalfLifeMultiplay::RemoveGuns hook
-typedef IVoidHookChainClassImpl<class CHalfLifeMultiplay> CReGameHook_CSGameRules_RemoveGuns;
-typedef IVoidHookChainRegistryClassEmptyImpl<class CHalfLifeMultiplay> CReGameHookRegistry_CSGameRules_RemoveGuns;
+typedef IHookChainClassImpl<void, class CHalfLifeMultiplay> CReGameHook_CSGameRules_RemoveGuns;
+typedef IHookChainRegistryClassEmptyImpl<void, class CHalfLifeMultiplay> CReGameHookRegistry_CSGameRules_RemoveGuns;
 
 // CHalfLifeMultiplay::GiveC4 hook
-typedef IVoidHookChainClassImpl<class CHalfLifeMultiplay> CReGameHook_CSGameRules_GiveC4;
-typedef IVoidHookChainRegistryClassEmptyImpl<class CHalfLifeMultiplay> CReGameHookRegistry_CSGameRules_GiveC4;
+typedef IHookChainClassImpl<void, class CHalfLifeMultiplay> CReGameHook_CSGameRules_GiveC4;
+typedef IHookChainRegistryClassEmptyImpl<void, class CHalfLifeMultiplay> CReGameHookRegistry_CSGameRules_GiveC4;
 
 // CHalfLifeMultiplay::ChangeLevel hook
-typedef IVoidHookChainClassImpl<class CHalfLifeMultiplay> CReGameHook_CSGameRules_ChangeLevel;
-typedef IVoidHookChainRegistryClassEmptyImpl<class CHalfLifeMultiplay> CReGameHookRegistry_CSGameRules_ChangeLevel;
+typedef IHookChainClassImpl<void, class CHalfLifeMultiplay> CReGameHook_CSGameRules_ChangeLevel;
+typedef IHookChainRegistryClassEmptyImpl<void, class CHalfLifeMultiplay> CReGameHookRegistry_CSGameRules_ChangeLevel;
 
 // CHalfLifeMultiplay::GoToIntermission hook
-typedef IVoidHookChainClassImpl<class CHalfLifeMultiplay> CReGameHook_CSGameRules_GoToIntermission;
-typedef IVoidHookChainRegistryClassEmptyImpl<class CHalfLifeMultiplay> CReGameHookRegistry_CSGameRules_GoToIntermission;
+typedef IHookChainClassImpl<void, class CHalfLifeMultiplay> CReGameHook_CSGameRules_GoToIntermission;
+typedef IHookChainRegistryClassEmptyImpl<void, class CHalfLifeMultiplay> CReGameHookRegistry_CSGameRules_GoToIntermission;
 
 // CHalfLifeMultiplay::BalanceTeams hook
-typedef IVoidHookChainClassImpl<class CHalfLifeMultiplay> CReGameHook_CSGameRules_BalanceTeams;
-typedef IVoidHookChainRegistryClassEmptyImpl<class CHalfLifeMultiplay> CReGameHookRegistry_CSGameRules_BalanceTeams;
+typedef IHookChainClassImpl<void, class CHalfLifeMultiplay> CReGameHook_CSGameRules_BalanceTeams;
+typedef IHookChainRegistryClassEmptyImpl<void, class CHalfLifeMultiplay> CReGameHookRegistry_CSGameRules_BalanceTeams;
 
 // CHalfLifeMultiplay::OnRoundFreezeEnd hook
-typedef IVoidHookChainClassImpl<class CHalfLifeMultiplay> CReGameHook_CSGameRules_OnRoundFreezeEnd;
-typedef IVoidHookChainRegistryClassEmptyImpl<class CHalfLifeMultiplay> CReGameHookRegistry_CSGameRules_OnRoundFreezeEnd;
+typedef IHookChainClassImpl<void, class CHalfLifeMultiplay> CReGameHook_CSGameRules_OnRoundFreezeEnd;
+typedef IHookChainRegistryClassEmptyImpl<void, class CHalfLifeMultiplay> CReGameHookRegistry_CSGameRules_OnRoundFreezeEnd;
 
 // PM_UpdateStepSound hook
-typedef IVoidHookChainImpl<> CReGameHook_PM_UpdateStepSound;
-typedef IVoidHookChainRegistryImpl<> CReGameHookRegistry_PM_UpdateStepSound;
+typedef IHookChainImpl<void> CReGameHook_PM_UpdateStepSound;
+typedef IHookChainRegistryImpl<void> CReGameHookRegistry_PM_UpdateStepSound;
 
 class CReGameHookchains: public IReGameHookchains {
 public:
