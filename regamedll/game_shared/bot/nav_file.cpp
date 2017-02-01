@@ -467,8 +467,9 @@ NavErrorType CNavArea::PostLoad()
 	{
 		for (auto connect : m_connect[d])
 		{
-			connect.area = TheNavAreaGrid.GetNavAreaByID(connect.id);
-			if (connect.id && connect.area == NULL)
+			auto id = connect.id;
+			connect.area = TheNavAreaGrid.GetNavAreaByID(id);
+			if (id && connect.area == NULL)
 			{
 				CONSOLE_ECHO("ERROR: Corrupt navigation data. Cannot connect Navigation Areas.\n");
 				error = NAV_CORRUPT_DATA;
