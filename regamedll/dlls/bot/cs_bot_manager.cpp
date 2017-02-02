@@ -860,7 +860,11 @@ void CCSBotManager::MaintainBotQuota()
 		return;
 
 	int desiredBotCount = int(cv_bot_quota.value);
-	int botsInGame = UTIL_BotsInGame();
+	int occupiedBotSlots = UTIL_BotsInGame();
+#ifdef REGAMEDLL_ADD
+	if (Q_stricmp(cv_bot_quota_mode.string, "fill") == 0)
+		occupiedBotSlots += humanPlayersInGame;
+#endif
 
 	if (cv_bot_quota_match.value > 0.0)
 	{
@@ -881,7 +885,7 @@ void CCSBotManager::MaintainBotQuota()
 		desiredBotCount = Q_min(desiredBotCount, gpGlobals->maxClients - totalHumansInGame);
 
 	// add bots if necessary
-	if (desiredBotCount > botsInGame)
+	if (desiredBotCount > occupiedBotSlots)
 	{
 		// don't try to add a bot if all teams are full
 		if (!CSGameRules()->TeamFull(TERRORIST) || !CSGameRules()->TeamFull(CT))
@@ -894,7 +898,7 @@ void CCSBotManager::MaintainBotQuota()
 			}
 		}
 	}
-	else if (desiredBotCount < botsInGame)
+	else if (desiredBotCount < occupiedBotSlots)
 	{
 		// kick a bot to maintain quota
 

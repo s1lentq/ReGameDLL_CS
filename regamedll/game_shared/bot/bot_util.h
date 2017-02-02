@@ -210,6 +210,7 @@ extern cvar_t cv_bot_profile_db;
 
 #ifdef REGAMEDLL_ADD
 extern cvar_t cv_bot_deathmatch;
+extern cvar_t cv_bot_quota_mode;
 #endif
 
 #define IS_ALIVE true
