@@ -39,6 +39,7 @@ cvar_t cv_bot_profile_db = { "bot_profile_db", "BotProfile.db", FCVAR_SERVER, 0.
 
 #ifdef REGAMEDLL_ADD
 cvar_t cv_bot_deathmatch = { "bot_deathmatch", "0", FCVAR_SERVER, 0.0f, NULL };
+cvar_t cv_bot_quota_mode = { "bot_quota_mode", "normal", FCVAR_SERVER, 0.0f, NULL };
 #endif
 
 void InstallBotControl()
@@ -98,6 +99,7 @@ void Bot_RegisterCVars()
 
 #ifdef REGAMEDLL_ADD
 	CVAR_REGISTER(&cv_bot_deathmatch);
+	CVAR_REGISTER(&cv_bot_quota_mode);
 #endif
 
 }
