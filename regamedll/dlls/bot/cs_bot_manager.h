@@ -76,6 +76,7 @@ public:
 
 public:
 	void ValidateMapData();
+	void OnFreeEntPrivateData(CBaseEntity *pEntity);
 	bool IsLearningMap() const { return IMPL(m_isLearningMap); }
 	void SetLearningMapFlag() { IMPL(m_isLearningMap) = true; }
 	bool IsAnalysisRequested() const { return IMPL(m_isAnalysisRequested); }

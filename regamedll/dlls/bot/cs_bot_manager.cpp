@@ -1500,3 +1500,23 @@ void CCSBotManager::ResetRadioMessageTimestamps()
 		}
 	}
 }
+
+void CCSBotManager::OnFreeEntPrivateData(CBaseEntity *pEntity)
+{
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	{
+		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
+		if (!pPlayer || pPlayer->IsDormant())
+			continue;
+
+		if (pPlayer->IsBot())
+		{
+			CCSBot *pBot = static_cast<CCSBot *>(pPlayer);
+			if (pBot->m_attacker == pEntity)
+				pBot->m_attacker = NULL;
+
+			if (pBot->m_bomber == pEntity)
+				pBot->m_bomber = NULL;
+		}
+	}
+}
