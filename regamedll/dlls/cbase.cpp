@@ -1067,4 +1067,9 @@ void EXT_FUNC OnFreeEntPrivateData(edict_t *pEnt)
 	}
 #endif
 
+#ifdef REGAMEDLL_FIXES
+	if (TheCSBots()) {
+		TheCSBots()->OnFreeEntPrivateData(pEntity);
+	}
+#endif
 }

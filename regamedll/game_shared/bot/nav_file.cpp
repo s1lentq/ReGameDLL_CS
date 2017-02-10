@@ -465,7 +465,7 @@ NavErrorType CNavArea::PostLoad()
 	// connect areas together
 	for (int d = 0; d < NUM_DIRECTIONS; ++d)
 	{
-		for (auto connect : m_connect[d])
+		for (auto& connect : m_connect[d])
 		{
 			auto id = connect.id;
 			connect.area = TheNavAreaGrid.GetNavAreaByID(id);
@@ -503,7 +503,7 @@ NavErrorType CNavArea::PostLoad()
 	}
 
 	// resolve spot encounter IDs
-	for (auto spote : m_spotEncounterList)
+	for (auto& spote : m_spotEncounterList)
 	{
 		spote.from.area = TheNavAreaGrid.GetNavAreaByID(spote.from.id);
 		if (spote.from.area == NULL)
@@ -532,7 +532,7 @@ NavErrorType CNavArea::PostLoad()
 		}
 
 		// resolve HidingSpot IDs
-		for (auto order : spote.spotList)
+		for (auto& order : spote.spotList)
 		{
 			order.spot = GetHidingSpotByID(order.id);
 			if (order.spot == NULL)
