@@ -764,6 +764,7 @@ public:
 
 	void TerminateRound(float tmDelay, int iWinStatus);
 	float GetRoundRespawnTime() const;
+	float GetRoundRestartDelay() const;
 
 	// has a style of gameplay when aren't any teams
 	bool IsFreeForAll() const;
@@ -943,6 +944,15 @@ inline bool CHalfLifeMultiplay::IsFreeForAll() const
 		return true;
 #endif
 	return false;
+}
+
+inline float CHalfLifeMultiplay::GetRoundRestartDelay() const
+{
+#ifdef REGAMEDLL_ADD
+	return round_restart_delay.value;
+#else
+	return ROUND_BEGIN_DELAY;
+#endif
 }
 
 inline bool HasRoundInfinite(int flags = 0)

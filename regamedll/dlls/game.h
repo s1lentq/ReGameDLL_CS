@@ -144,6 +144,7 @@ extern cvar_t freeforall;
 extern cvar_t auto_join_team;
 extern cvar_t max_teamkills;
 extern cvar_t fraglimit;
+extern cvar_t round_restart_delay;
 
 extern cvar_t showtriggers;
 extern cvar_t hostagehurtable;
