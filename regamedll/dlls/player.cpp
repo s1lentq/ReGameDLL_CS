@@ -7749,7 +7749,7 @@ void CBasePlayer::SwitchTeam()
 
 		SendItemStatus();
 		SetProgressBarTime(0);
-
+#ifndef REGAMEDLL_FIXES
 		for (int i = 0; i < MAX_ITEM_TYPES; ++i)
 		{
 			m_pActiveItem = m_rgpPlayerItems[ i ];
@@ -7760,6 +7760,7 @@ void CBasePlayer::SwitchTeam()
 				m_rgpPlayerItems[i] = NULL;
 			}
 		}
+#endif
 	}
 
 	szOldTeam = GetTeam(oldTeam);
