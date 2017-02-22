@@ -1446,6 +1446,9 @@ void packPlayerNade(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 	if (!pItem)
 		return;
 
+	if (pPlayer->m_rgAmmo[pItem->PrimaryAmmoIndex()] <= 0)
+		return;
+	
 	const char *modelName = GetCSModelName(pItem->m_iId);
 	if (modelName)
 	{
@@ -1462,17 +1465,6 @@ void packPlayerNade(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 			flOffset = -14.0f;
 			break;
 		}
-
-		auto& ammoNades = pPlayer->m_rgAmmo[ pItem->PrimaryAmmoIndex() ];
-		if (pItem->m_flStartThrow != 0)
-		{
-			if (ammoNades < 2)
-				return;
-
-			ammoNades--;
-		}
-		else if (pItem->m_flReleaseThrow > 0 && ammoNades < 1)
-			return;
 
 		Vector vecAngles = pPlayer->pev->angles;
 		Vector dir(Q_cos(vecAngles.y) * flOffset, Q_sin(vecAngles.y) * flOffset, 0.0f);
@@ -2121,26 +2113,48 @@ void EXT_FUNC CBasePlayer::__API_VHOOK(Killed)(entvars_t *pevAttacker, int iGib)
 		case WEAPON_HEGRENADE:
 		{
 			CHEGrenade *pHEGrenade = static_cast<CHEGrenade *>(m_pActiveItem);
-			if ((pev->button & IN_ATTACK) && m_rgAmmo[ pHEGrenade->m_iPrimaryAmmoType ])
+#ifdef REGAMEDLL_FIXES
+			if (pHEGrenade->m_flStartThrow != 0 && m_rgAmmo[pHEGrenade->m_iPrimaryAmmoType])
+#else
+			if ((pev->button & IN_ATTACK) && m_rgAmmo[pHEGrenade->m_iPrimaryAmmoType])
+#endif
 			{
 				CGrenade::ShootTimed2(pev, (pev->origin + pev->view_ofs), pev->angles, 1.5, m_iTeam, pHEGrenade->m_usCreateExplosion);
+#ifdef REGAMEDLL_FIXES
+				--m_rgAmmo[pHEGrenade->m_iPrimaryAmmoType];
+#endif
 			}
 			break;
 		}
 		case WEAPON_FLASHBANG:
 		{
+#ifdef REGAMEDLL_FIXES
+			CFlashbang *pFlash = static_cast<CFlashbang *>(m_pActiveItem);
+			if (pFlash->m_flStartThrow != 0 && m_rgAmmo[pFlash->m_iPrimaryAmmoType])
+#else
 			if ((pev->button & IN_ATTACK) && m_rgAmmo[ ((CBasePlayerWeapon *)m_pActiveItem)->m_iPrimaryAmmoType ])
+#endif
 			{
 				CGrenade::ShootTimed(pev, (pev->origin + pev->view_ofs), pev->angles, 1.5);
+#ifdef REGAMEDLL_FIXES
+				--m_rgAmmo[pFlash->m_iPrimaryAmmoType];
+#endif
 			}
 			break;
 		}
 		case WEAPON_SMOKEGRENADE:
 		{
 			CSmokeGrenade *pSmoke = static_cast<CSmokeGrenade *>(m_pActiveItem);
+#ifdef REGAMEDLL_FIXES
+			if (pSmoke->m_flStartThrow != 0 && m_rgAmmo[pSmoke->m_iPrimaryAmmoType])
+#else
 			if ((pev->button & IN_ATTACK) && m_rgAmmo[ pSmoke->m_iPrimaryAmmoType ])
+#endif
 			{
 				CGrenade::ShootSmokeGrenade(pev, (pev->origin + pev->view_ofs), pev->angles, 1.5, pSmoke->m_usCreateSmoke);
+#ifdef REGAMEDLL_FIXES
+				--m_rgAmmo[pSmoke->m_iPrimaryAmmoType];
+#endif
 			}
 			break;
 		}
