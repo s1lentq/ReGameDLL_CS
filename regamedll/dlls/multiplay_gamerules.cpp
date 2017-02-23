@@ -193,7 +193,11 @@ void EXT_FUNC CHalfLifeMultiplay::__API_VHOOK(ServerDeactivate)()
 
 bool CCStrikeGameMgrHelper::__MAKE_VHOOK(CanPlayerHearPlayer)(CBasePlayer *pListener, CBasePlayer *pSender)
 {
-	if (!pSender->IsPlayer() || pListener->m_iTeam != pSender->m_iTeam)
+	if (
+#ifndef REGAMEDLL_FIXES
+		!pSender->IsPlayer() ||
+#endif
+		pListener->m_iTeam != pSender->m_iTeam)
 	{
 		return false;
 	}
