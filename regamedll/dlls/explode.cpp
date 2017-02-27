@@ -9,6 +9,7 @@ TYPEDESCRIPTION CEnvExplosion::m_SaveData[] =
 {
 	DEFINE_FIELD(CEnvExplosion, m_iMagnitude, FIELD_INTEGER),
 	DEFINE_FIELD(CEnvExplosion, m_spriteScale, FIELD_INTEGER),
+	DEFINE_FIELD(CEnvExplosion, m_iOwnerEntity, FIELD_EDICT),
 };
 
 #endif
@@ -75,6 +76,15 @@ void CEnvExplosion::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 	if (FStrEq(pkvd->szKeyName, "iMagnitude"))
 	{
 		m_iMagnitude = Q_atoi(pkvd->szValue);
+		pkvd->fHandled = TRUE;
+	}
+	else if (FStrEq(pkvd->szKeyName, "iOwnerEntity"))
+	{
+		m_iOwnerEntity = ENTINDEX(ENT(Q_atoi(pkvd->szValue)));
+		
+		if (FNullEnt(m_iOwnerEntity))
+			m_iOwnerEntity = NULL;
+		
 		pkvd->fHandled = TRUE;
 	}
 	else
@@ -160,7 +170,7 @@ void CEnvExplosion::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCal
 	// do damage
 	if (!(pev->spawnflags & SF_ENVEXPLOSION_NODAMAGE))
 	{
-		RadiusDamage(pev, pev, m_iMagnitude, CLASS_NONE, DMG_BLAST);
+		RadiusDamage(pev, m_iOwnerEntity, m_iMagnitude, CLASS_NONE, DMG_BLAST);
 	}
 
 	SetThink(&CEnvExplosion::Smoke);
