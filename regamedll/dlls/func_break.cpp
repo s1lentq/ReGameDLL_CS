@@ -676,7 +676,14 @@ void CBreakable::Die()
 
 	// The more negative pev->health, the louder
 	// the sound should be.
-	fvol = RANDOM_FLOAT(0.85f, 1.0f) + (Q_abs(int(pev->health)) / 100.0f);
+	float fhealth;
+	fhealth = pev->health;
+	
+	// instead of using abs
+	if(fhealth < 0.0f)
+		fhealth *= -1.0f;
+	
+	fvol = RANDOM_FLOAT(0.85f, 1.0f) + (fhealth / 100.0f);
 
 	if (fvol > 1.0f)
 		fvol = 1.0f;
