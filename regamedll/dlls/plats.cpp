@@ -1120,7 +1120,7 @@ void CFuncTrackTrain::UpdateSound()
 
 		us_encode = us_sound | us_pitch | us_volume;
 
-		PLAYBACK_EVENT_FULL(FEV_RELIABLE | FEV_UPDATE, edict(), m_usAdjustPitch, 0.0, (float *)&g_vecZero, (float *)&g_vecZero, 0.0, 0.0, us_encode, 0, 0, 0);
+		PLAYBACK_EVENT_FULL(FEV_UPDATE, edict(), m_usAdjustPitch, 0.0, (float *)&g_vecZero, (float *)&g_vecZero, 0.0, 0.0, us_encode, 0, 0, 0);
 	}
 }
 
