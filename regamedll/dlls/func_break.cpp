@@ -676,7 +676,12 @@ void CBreakable::Die()
 
 	// The more negative pev->health, the louder
 	// the sound should be.
+	
+#ifdef REGAMEDLL_FIXES
+	fvol = RANDOM_FLOAT(0.85f, 1.0f) + (Q_abs(pev->health) / 100.0f);
+#else
 	fvol = RANDOM_FLOAT(0.85f, 1.0f) + (Q_abs(int(pev->health)) / 100.0f);
+#endif
 
 	if (fvol > 1.0f)
 		fvol = 1.0f;
