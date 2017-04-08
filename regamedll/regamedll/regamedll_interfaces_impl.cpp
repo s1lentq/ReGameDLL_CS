@@ -297,7 +297,7 @@ void EXT_FUNC CCSPlayer::RemoveShield() { BasePlayer()->RemoveShield(); }
 void EXT_FUNC CCSPlayer::RemoveAllItems(bool bRemoveSuit) { BasePlayer()->RemoveAllItems(bRemoveSuit ? TRUE : FALSE); }
 void EXT_FUNC CCSPlayer::SetPlayerModel(bool bHasC4) { BasePlayer()->SetPlayerModel(bHasC4 ? TRUE : FALSE); }
 void EXT_FUNC CCSPlayer::SetPlayerModelEx(const char *modelName) { Q_strncpy(m_szModel, modelName, sizeof(m_szModel) - 1); m_szModel[sizeof(m_szModel) - 1] = '\0'; };
-void EXT_FUNC CCSPlayer::SetNewPlayerModel(const char *modelName) { BasePlayer()->SetNewPlayerModel(modelName); }
+void EXT_FUNC CCSPlayer::SetNewPlayerModel(const char *modelName) { BasePlayer()->SetNewPlayerModel(STRING(ALLOC_STRING(modelName))); }
 void EXT_FUNC CCSPlayer::ClientCommand(const char *cmd, const char *arg1, const char *arg2, const char *arg3) { BasePlayer()->ClientCommand(cmd, arg1, arg2, arg3); }
 void EXT_FUNC CCSPlayer::SetProgressBarTime(int time) { BasePlayer()->SetProgressBarTime(time); }
 void EXT_FUNC CCSPlayer::SetProgressBarTime2(int time, float timeElapsed) { BasePlayer()->SetProgressBarTime2(time, timeElapsed); }
