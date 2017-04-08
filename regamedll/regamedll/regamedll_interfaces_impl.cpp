@@ -46,6 +46,12 @@ bool EXT_FUNC CCSPlayer::JoinTeam(TeamName team)
 		// are we already a spectator?
 		if (pPlayer->m_iTeam == SPECTATOR)
 			return false;
+		
+		if (pPlayer->pev->deadflag == DEAD_NO)
+		{
+			ClientKill(pPlayer->edict());
+			pPlayer->pev->frags++;
+		}
 
 		pPlayer->RemoveAllItems(TRUE);
 		pPlayer->m_bHasC4 = false;
