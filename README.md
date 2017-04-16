@@ -56,7 +56,7 @@ There are several software requirements for building Regamedll_CS:
 </ol>
 
 ### Checking requirements
-####JDK version
+#### JDK version
 Windows<pre>&gt; %JAVA_HOME%\bin\javac -version
 javac 1.8.0_25
 </pre>
@@ -66,10 +66,10 @@ Linux
 javac 1.7.0_65
 </pre>
 
-####Visual Studio
+#### Visual Studio
 Help -> About
 
-####ICC
+#### ICC
 <pre>$ icc --version
 icc (ICC) 15.0.1 20141023
 </pre>
