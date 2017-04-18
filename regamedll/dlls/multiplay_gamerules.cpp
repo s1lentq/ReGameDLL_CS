@@ -3504,12 +3504,12 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(ClientDisconnected)(edict_t *pClient)
 			{
 				pPlayer->DropPlayerItem("weapon_c4");
 			}
-
+#ifndef REGAMEDLL_FIXES
 			if (pPlayer->m_bHasDefuser)
 			{
 				pPlayer->DropPlayerItem("item_thighpack");
 			}
-
+#endif
 			if (pPlayer->m_bIsVIP)
 			{
 				m_pVIP = NULL;
