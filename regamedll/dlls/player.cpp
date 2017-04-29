@@ -6331,7 +6331,10 @@ void OLD_CheckBuyZone(CBasePlayer *player)
 		while ((pSpot = UTIL_FindEntityByClassname(pSpot, pszSpawnClass)))
 		{
 			if ((pSpot->pev->origin - player->pev->origin).Length() < 200.0f)
+			{
 				player->m_signals.Signal(SIGNAL_BUY);
+				break;
+			}
 		}
 	}
 }
@@ -6342,7 +6345,10 @@ void OLD_CheckBombTarget(CBasePlayer *player)
 	while ((pSpot = UTIL_FindEntityByClassname(pSpot, "info_bomb_target")))
 	{
 		if ((pSpot->pev->origin - player->pev->origin).Length() <= 256.0f)
+		{
 			player->m_signals.Signal(SIGNAL_BOMB);
+			break;
+		}
 	}
 }
 
@@ -6352,7 +6358,10 @@ void OLD_CheckRescueZone(CBasePlayer *player)
 	while ((pSpot = UTIL_FindEntityByClassname(pSpot, "info_hostage_rescue")))
 	{
 		if ((pSpot->pev->origin - player->pev->origin).Length() <= 256.0f)
+		{
 			player->m_signals.Signal(SIGNAL_RESCUE);
+			break;
+		}
 	}
 }
 
