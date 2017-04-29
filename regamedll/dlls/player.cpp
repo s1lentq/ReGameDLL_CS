@@ -6333,7 +6333,9 @@ void OLD_CheckBuyZone(CBasePlayer *player)
 			if ((pSpot->pev->origin - player->pev->origin).Length() < 200.0f)
 			{
 				player->m_signals.Signal(SIGNAL_BUY);
+#ifdef REGAMEDLL_FIXES
 				break;
+#endif
 			}
 		}
 	}
@@ -6347,7 +6349,9 @@ void OLD_CheckBombTarget(CBasePlayer *player)
 		if ((pSpot->pev->origin - player->pev->origin).Length() <= 256.0f)
 		{
 			player->m_signals.Signal(SIGNAL_BOMB);
+#ifdef REGAMEDLL_FIXES
 			break;
+#endif
 		}
 	}
 }
@@ -6360,7 +6364,9 @@ void OLD_CheckRescueZone(CBasePlayer *player)
 		if ((pSpot->pev->origin - player->pev->origin).Length() <= 256.0f)
 		{
 			player->m_signals.Signal(SIGNAL_RESCUE);
+#ifdef REGAMEDLL_FIXES
 			break;
+#endif
 		}
 	}
 }
