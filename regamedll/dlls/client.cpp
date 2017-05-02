@@ -762,6 +762,7 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 
 		if (teamonly && client->m_iTeam != player->m_iTeam)
 			continue;
+<<<<<<< HEAD
 			
 #ifdef REGAMEDLL_ADD
 		if ((bReciverDead && !bSenderDead) && !(chatFlags & CHAT_DEAD_SEE_ALIVE)
@@ -769,6 +770,10 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 #else
 		if ((client->pev->deadflag != DEAD_NO && !bSenderDead) || (client->pev->deadflag == DEAD_NO && bSenderDead))
 #endif
+=======
+
+		if ((client->pev->deadflag == DEAD_NO && bSenderDead))
+>>>>>>> origin/justgo-chat
 		{
 			if (!(player->pev->flags & FL_PROXY))
 				continue;
