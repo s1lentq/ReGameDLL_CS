@@ -2378,10 +2378,6 @@ int UTIL_ReadFlags(const char *c)
 		{
 			flags |= (1 << (*c - 'a'));
 		}
-		else
-		{
-			return 0;
-		}
 
 		c++;
 	}
