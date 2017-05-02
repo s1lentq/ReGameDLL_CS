@@ -109,7 +109,7 @@ cvar_t freeforall = { "mp_freeforall", "0", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t auto_join_team = { "mp_auto_join_team", "0", 0, 0.0f, nullptr };
 cvar_t max_teamkills = { "mp_max_teamkills", "3", 0, 3.0f, nullptr };
 cvar_t fraglimit = { "mp_fraglimit", "0", FCVAR_SERVER, 0.0f, nullptr };
-
+cvar_t chat_flags = { "mp_chat_flags", "0", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t showtriggers = { "showtriggers", "0", 0, 0.0f, nullptr };				// debug cvar shows triggers
 												// TODO: Maybe it's better to register in the engine?
 
@@ -257,7 +257,7 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&auto_join_team);
 	CVAR_REGISTER(&max_teamkills);
 	CVAR_REGISTER(&fraglimit);
-
+	CVAR_REGISTER(&chat_flags);
 	CVAR_REGISTER(&showtriggers);
 	CVAR_REGISTER(&hostagehurtable);
 	CVAR_REGISTER(&roundover);
