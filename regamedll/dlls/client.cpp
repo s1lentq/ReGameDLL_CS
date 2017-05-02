@@ -767,7 +767,7 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 		if ((bReciverDead && !bSenderDead) && !(chatFlags & CHAT_DEAD_SEE_ALIVE)
 		|| (!bReciverDead && bSenderDead)  && !(chatFlags & CHAT_ALIVE_SEE_DEAD))
 #else
-		if (bReciverDead && !bSenderDead) || (!bReciverDead && bSenderDead))
+		if ((bReciverDead && !bSenderDead) || (!bReciverDead && bSenderDead))
 #endif
 		{
 			if (!(player->pev->flags & FL_PROXY))
