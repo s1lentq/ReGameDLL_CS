@@ -212,13 +212,6 @@ enum
 	SCENARIO_BLOCK_HOSTAGE_RESCUE		= (1 << 6),	// flag "g"
 };
 
-// custom enum
-enum
-{
-	CHAT_DEAD_SEE_ALIVE	= (1 << 0),	// flag "a" dead see alive (only teammates)
-	CHAT_ALIVE_SEE_DEAD	= (1 << 1),	// flag "b" alive see dead (only teammates)
-};
-
 // Player relationship return codes
 enum
 {

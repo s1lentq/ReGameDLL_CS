@@ -548,11 +548,7 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 	const char *cpSayTeam = "say_team";
 	const char *pcmd = CMD_ARGV_(0);
 	bool bSenderDead = false;
-	bool bReciverDead = false;
-#ifdef REGAMEDLL_ADD	
-	int chatFlags = UTIL_ReadFlags(chat_flags.string);
-#endif
-	
+
 	entvars_t *pev = &pEntity->v;
 	CBasePlayer *player = GetClassPtr<CCSPlayer>((CBasePlayer *)pev);
 
@@ -756,19 +752,26 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 		// can the receiver hear the sender? or has he muted him?
 		if (gpGlobals->deathmatch != 0.0f && CSGameRules()->m_VoiceGameMgr.PlayerHasBlockedPlayer(client, player))
 			continue;
-			
-		if (client->pev->deadflag != DEAD_NO)
-			bReciverDead = true;
 
 		if (teamonly && client->m_iTeam != player->m_iTeam)
 			continue;
+<<<<<<< HEAD
+<<<<<<< HEAD
 			
-/*#ifdef REGAMEDLL_ADD
+#ifdef REGAMEDLL_ADD
 		if ((bReciverDead && !bSenderDead) && !(chatFlags & CHAT_DEAD_SEE_ALIVE)
 		|| (!bReciverDead && bSenderDead)  && !(chatFlags & CHAT_ALIVE_SEE_DEAD))
-#else*/
+#else
 		if ((bReciverDead && !bSenderDead) || (!bReciverDead && bSenderDead))
-//#endif
+#endif
+=======
+
+		if ((client->pev->deadflag != DEAD_NO && !bSenderDead) || (client->pev->deadflag == DEAD_NO && bSenderDead))
+>>>>>>> parent of d9ea9bd... added chat flags
+=======
+
+		if ((client->pev->deadflag != DEAD_NO && !bSenderDead) || (client->pev->deadflag == DEAD_NO && bSenderDead))
+>>>>>>> parent of d9ea9bd... added chat flags
 		{
 			if (!(player->pev->flags & FL_PROXY))
 				continue;
