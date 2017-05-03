@@ -755,23 +755,8 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 
 		if (teamonly && client->m_iTeam != player->m_iTeam)
 			continue;
-<<<<<<< HEAD
-<<<<<<< HEAD
-			
-#ifdef REGAMEDLL_ADD
-		if ((bReciverDead && !bSenderDead) && !(chatFlags & CHAT_DEAD_SEE_ALIVE)
-		|| (!bReciverDead && bSenderDead)  && !(chatFlags & CHAT_ALIVE_SEE_DEAD))
-#else
-		if ((bReciverDead && !bSenderDead) || (!bReciverDead && bSenderDead))
-#endif
-=======
 
 		if ((client->pev->deadflag != DEAD_NO && !bSenderDead) || (client->pev->deadflag == DEAD_NO && bSenderDead))
->>>>>>> parent of d9ea9bd... added chat flags
-=======
-
-		if ((client->pev->deadflag != DEAD_NO && !bSenderDead) || (client->pev->deadflag == DEAD_NO && bSenderDead))
->>>>>>> parent of d9ea9bd... added chat flags
 		{
 			if (!(player->pev->flags & FL_PROXY))
 				continue;
