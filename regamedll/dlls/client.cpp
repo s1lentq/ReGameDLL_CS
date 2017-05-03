@@ -760,7 +760,11 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 		if (teamonly && client->m_iTeam != player->m_iTeam)
 			continue;
 
+#ifdef REGAMEDLL_ADD			
 		if ((client->pev->deadflag != DEAD_NO && !bSenderDead) || (client->pev->deadflag == DEAD_NO && bSenderDead))
+#else
+		if ((client->pev->deadflag != DEAD_NO && !bSenderDead) || (client->pev->deadflag == DEAD_NO && bSenderDead))
+#endif
 		{
 			if (!(player->pev->flags & FL_PROXY))
 				continue;
