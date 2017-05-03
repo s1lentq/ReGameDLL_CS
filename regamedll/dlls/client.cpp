@@ -552,6 +552,8 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 	
 #ifdef REGAMEDLL_ADD
 	int chatFlags = UTIL_ReadFlags(chat_flags.string);
+#else
+	int chatFlags = 0;
 #endif
 
 	entvars_t *pev = &pEntity->v;
@@ -765,7 +767,7 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 			bReciverDead = true;
 
 #ifdef REGAMEDLL_ADD
-		if ((bReciverDead && !bSenderDead) || (!bReciverDead && bSenderDead))
+		if ((bReciverDead && !bSenderDead && !(chatFlags & CHAT_DEAD_SEE_ALIVE))  || (!bReciverDead && bSenderDead))
 #else
 		if ((bReciverDead && !bSenderDead) || (!bReciverDead && bSenderDead))
 #endif
