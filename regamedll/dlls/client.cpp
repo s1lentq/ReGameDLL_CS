@@ -764,8 +764,9 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 		if (client->pev->deadflag != DEAD_NO)
 			bReciverDead = true;
 
-#ifdef REGAMEDLL_ADD			
-		if (((bReciverDead && !bSenderDead) && !(chatFlags & CHAT_DEAD_SEE_ALIVE)) || ((!bReciverDead && bSenderDead)  && !(chatFlags & CHAT_ALIVE_SEE_DEAD)))
+#ifdef REGAMEDLL_ADD
+		if (chat_flags.string[0] == '1')
+			if (((bReciverDead && !bSenderDead) && !(chatFlags & CHAT_DEAD_SEE_ALIVE)) || ((!bReciverDead && bSenderDead)  && !(chatFlags & CHAT_ALIVE_SEE_DEAD)))
 #else
 		if ((bReciverDead && !bSenderDead) || (!bReciverDead && bSenderDead))
 #endif
