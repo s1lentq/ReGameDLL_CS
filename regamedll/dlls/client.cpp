@@ -548,6 +548,7 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 	const char *cpSayTeam = "say_team";
 	const char *pcmd = CMD_ARGV_(0);
 	bool bSenderDead = false;
+	bool bReciverDead = false;
 	
 #ifdef REGAMEDLL_ADD
 	int chatFlags = UTIL_ReadFlags(chat_flags.string);
@@ -759,6 +760,9 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 
 		if (teamonly && client->m_iTeam != player->m_iTeam)
 			continue;
+			
+		if (client->pev->deadflag != DEAD_NO)
+			bReciverDead = true;
 
 #ifdef REGAMEDLL_ADD			
 		if ((client->pev->deadflag != DEAD_NO && !bSenderDead) || (client->pev->deadflag == DEAD_NO && bSenderDead))
