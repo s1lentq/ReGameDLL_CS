@@ -765,7 +765,7 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 			bReciverDead = true;
 
 #ifdef REGAMEDLL_ADD			
-		if ((client->pev->deadflag != DEAD_NO && !bSenderDead) || (client->pev->deadflag == DEAD_NO && bSenderDead))
+		if ((bReciverDead && !bSenderDead) || (!bReciverDead && bSenderDead))
 #else
 		if ((client->pev->deadflag != DEAD_NO && !bSenderDead) || (client->pev->deadflag == DEAD_NO && bSenderDead))
 #endif
