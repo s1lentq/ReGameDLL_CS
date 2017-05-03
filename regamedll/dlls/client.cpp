@@ -767,7 +767,7 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 			bReciverDead = true;
 
 #ifdef REGAMEDLL_ADD
-		if (!(chatFlags & CHAT_DEAD_SEE_ALIVE) && (bReciverDead && !bSenderDead))
+		if ((bReciverDead && !bSenderDead) || (!bReciverDead && bSenderDead))
 #else
 		if ((bReciverDead && !bSenderDead) || (!bReciverDead && bSenderDead))
 #endif
