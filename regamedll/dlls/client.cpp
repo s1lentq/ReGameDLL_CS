@@ -548,6 +548,10 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 	const char *cpSayTeam = "say_team";
 	const char *pcmd = CMD_ARGV_(0);
 	bool bSenderDead = false;
+	
+#ifdef REGAMEDLL_ADD
+	int chatFlags = UTIL_ReadFlags(chat_flags.string);
+#endif
 
 	entvars_t *pev = &pEntity->v;
 	CBasePlayer *player = GetClassPtr<CCSPlayer>((CBasePlayer *)pev);
