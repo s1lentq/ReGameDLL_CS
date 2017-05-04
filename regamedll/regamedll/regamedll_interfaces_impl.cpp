@@ -47,6 +47,10 @@ bool EXT_FUNC CCSPlayer::JoinTeam(TeamName team)
 		if (pPlayer->m_iTeam == SPECTATOR)
 			return false;
 
+		// not necessary to trigger death event, just died quietly
+		pPlayer->pev->deadflag = DEAD_DEAD;
+		pPlayer->pev->health = 0;
+
 		pPlayer->RemoveAllItems(TRUE);
 		pPlayer->m_bHasC4 = false;
 
