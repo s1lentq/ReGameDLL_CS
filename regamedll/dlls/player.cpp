@@ -6375,8 +6375,14 @@ void CBasePlayer::HandleSignals()
 {
 	if (CSGameRules()->IsMultiplayer())
 	{
-		if (!CSGameRules()->m_bMapHasBuyZone)
-			OLD_CheckBuyZone(this);
+		
+#ifdef REGAMEDLL_ADD
+		if (buytime.value != 0.0f)
+#endif
+		{			
+			if (!CSGameRules()->m_bMapHasBuyZone)
+				OLD_CheckBuyZone(this);
+		}
 
 		if (!CSGameRules()->m_bMapHasBombZone)
 			OLD_CheckBombTarget(this);
