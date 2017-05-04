@@ -27,6 +27,7 @@ Archive's bin directory contains 2 subdirectories, 'bugfixed' and 'pure'
 | mp_maxmoney                   | 16000   | 0   | `0x7FFFFFFF` | The maximum allowable amount of money in the game |
 | mp_round_infinite             | 0       | 0   | 1            | Flags for fine grained control (choose as many as needed)<br/>`0` disabled<br/>`1` enabled<br/><br/>or flags<br/>`a` block round time round end check<br/>`b` block needed players round end check<br/>`c` block VIP assassination/success round end check<br/>`d` block prison escape round end check<br/>`e` block bomb round end check<br/>`f` block team extermination round end check<br/>`g` block hostage rescue round end check<br/><br/>`Example setting:` "ae" blocks round time and bomb round end checks |
 | mp_roundover                  | 0       | -   | -            | The round by expired time will be over, if on a map it does not have the scenario of the game.<br/>`0` disabled<br/>`1` enabled |
+| mp_restart_round_delay        | 5       | -   | -            | Number of seconds to delay before restarting a round after a win. |
 | mp_hegrenade_penetration      | 0       | 0   | 1            | Disable grenade damage through walls.<br/>`0` disabled<br/>`1` enabled |
 | mp_nadedrops                  | 0       | 0   | 2            | Drop a grenade after player death.<br/>`0` disabled<br/>`1` drop one the grenade<br/>`2` drop an everyone grenades |
 | mp_roundrespawn_time          | 20      | 0   | -            | Player cannot respawn until next round if more than N seconds has elapsed since the beginning round |
@@ -42,6 +43,7 @@ Archive's bin directory contains 2 subdirectories, 'bugfixed' and 'pure'
 | mp_hostage_hurtable           | 1       | 0   | 1            | The hostages can take the damage.<br/>`0` disabled<br/>`1` enabled |
 | showtriggers                  | 0       | 0   | 1            | Debug cvar shows triggers. |
 | bot_deathmatch                | 0       | 0   | 1            | Set's the mode for the zBot.<br/>`0` disabled<br/>`1` enable mode Deathmatch and not allow to do the scenario |
+| bot_quota_mode                | normal  | -   | -            | Determines the type of quota.<br/>`normal` default behaviour<br/>`fill` the server will adjust bots to keep `N` players in the game, where `N` is bot_quota |
 
 ## How to install zBot for CS 1.6?
 * Extract all the files from an [archive](regamedll/extra/zBot/bot_profiles.zip?raw=true)
