@@ -3653,6 +3653,10 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(PlayerThink)(CBasePlayer *pPlayer)
 		{
 			slot = MENU_SLOT_TEAM_RANDOM;
 		}
+		else if (!Q_stricmp(humans_join_team.string, "SPEC") && auto_join_team.value != 0.0f)
+		{
+			slot = MENU_SLOT_TEAM_SPECT;
+		}
 #endif
 		else
 		{
