@@ -1589,11 +1589,21 @@ bool BotChatterInterface::ShouldSpeak() const
 
 float BotChatterInterface::GetRadioSilenceDuration()
 {
-	return IMPL(m_radioSilenceInterval)[ m_me->m_iTeam - 1 ].GetElapsedTime();
+#ifdef REGAMEDLL_FIXES
+	if (m_me->m_iTeam != CT && m_me->m_iTeam != TERRORIST)
+		return 0;
+#endif
+
+	return IMPL(m_radioSilenceInterval)[m_me->m_iTeam - 1].GetElapsedTime();
 }
 
 void BotChatterInterface::ResetRadioSilenceDuration()
 {
+#ifdef REGAMEDLL_FIXES
+	if (m_me->m_iTeam != CT && m_me->m_iTeam != TERRORIST)
+		return;
+#endif
+
 	IMPL(m_radioSilenceInterval)[m_me->m_iTeam - 1].Reset();
 }
 
