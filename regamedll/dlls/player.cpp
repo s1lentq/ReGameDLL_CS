@@ -3634,7 +3634,7 @@ void CBasePlayer::PlayerDeathThink()
 
 #ifdef REGAMEDLL_FIXES
 	// do not make a corpse if the player goes to respawn.
-	if (pev->deadflag != DEAD_RESPAWNABLE && forcerespawn.value <= 0)
+	if (pev->deadflag != DEAD_RESPAWNABLE)
 #endif
 	{
 		// if the player has been dead for one second longer than allowed by forcerespawn,
@@ -3652,22 +3652,17 @@ void CBasePlayer::PlayerDeathThink()
 	// wait for all buttons released
 	if (pev->deadflag == DEAD_DEAD && m_iTeam != UNASSIGNED && m_iTeam != SPECTATOR)
 	{
-#ifdef REGAMEDLL_ADD
-		// wait for any button down, or mp_forcerespawn is set and the respawn time is up
-		if (forcerespawn.value > 0 && gpGlobals->time > (m_fDeadTime + forcerespawn.value))
-		{
-			respawn(pev, FALSE);
-			pev->button = 0;
-			pev->nextthink = -1;
-			return;
-		}
-#endif
 		if (fAnyButtonDown)
 			return;
 
 		if (g_pGameRules->FPlayerCanRespawn(this))
 		{
-			pev->deadflag = DEAD_RESPAWNABLE;
+#ifdef REGAMEDLL_ADD
+			if (forcerespawn.value <= 0 || (m_iTeam != CT && m_iTeam != TERRORIST))
+#endif
+			{
+				pev->deadflag = DEAD_RESPAWNABLE;
+			}
 
 			if (CSGameRules()->IsMultiplayer())
 				CSGameRules()->CheckWinConditions();
@@ -3677,12 +3672,26 @@ void CBasePlayer::PlayerDeathThink()
 		return;
 	}
 
-	if (pev->deadflag == DEAD_RESPAWNABLE)
+#ifdef REGAMEDLL_ADD
+	if (forcerespawn.value <= 0)
+#endif
 	{
-		// don't copy a corpse if we're in deathcam.
-		respawn(pev, FALSE);
-		pev->button = 0;
-		pev->nextthink = -1;
+		if (pev->deadflag == DEAD_RESPAWNABLE)
+		{
+#ifdef REGAMEDLL_FIXES
+			if (IsObserver() && (m_afPhysicsFlags & PFLAG_OBSERVER) && (m_iTeam == UNASSIGNED || m_iTeam == SPECTATOR))
+				return;
+
+			// Player cannot respawn while in the Choose Appearance menu
+			if (m_iMenu == Menu_ChooseAppearance || m_iJoiningState == SHOWTEAMSELECT)
+				return;
+#endif
+
+			// don't copy a corpse if we're in deathcam.
+			respawn(pev, FALSE);
+			pev->button = 0;
+			pev->nextthink = -1;
+		}
 	}
 }
 
@@ -9732,15 +9741,12 @@ void CBasePlayer::PlayerRespawnThink()
 	if (pev->deadflag < DEAD_DYING)
 		return;
 
-	if (forcerespawn.value)
+	if (forcerespawn.value && gpGlobals->time > (CSPlayer()->m_flRespawnPending + forcerespawn.value))
 	{
-		if (gpGlobals->time > (CSPlayer()->m_flRespawnPending + forcerespawn.value))
-		{
-			Spawn();
-			pev->button = 0;
-			pev->nextthink = -1;
-			return;
-		}
+		Spawn();
+		pev->button = 0;
+		pev->nextthink = -1;
+		return;
 	}
 #endif
 }
