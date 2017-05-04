@@ -306,7 +306,7 @@ void CFuncTank::ControllerPostFrame()
 	if (gpGlobals->time < m_flNextAttack)
 		return;
 
-	if (m_pController != NULL && m_pController->pev->button & IN_ATTACK)
+	if (m_pController->pev->button & IN_ATTACK)
 	{
 		Vector vecForward;
 		UTIL_MakeVectorsPrivate(pev->angles, vecForward, NULL, NULL);
@@ -314,7 +314,7 @@ void CFuncTank::ControllerPostFrame()
 		m_fireLast = gpGlobals->time - (1.0f / m_fireRate) - 0.01f;
 		Fire(BarrelPosition(), vecForward, m_pController->pev);
 
-		if (m_pController->IsPlayer())
+		if (m_pController && m_pController->IsPlayer())
 		{
 			m_pController->m_iWeaponVolume = LOUD_GUN_VOLUME;
 		}
