@@ -117,6 +117,7 @@ cvar_t showtriggers = { "showtriggers", "0", 0, 0.0f, nullptr };				// debug cva
 cvar_t hostagehurtable = { "mp_hostage_hurtable", "1", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t roundover = { "mp_roundover", "0", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t forcerespawn = { "mp_forcerespawn", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t disablebuyzone = { "mp_disable_buyzone", "0", FCVAR_SERVER, 0.0f, nullptr };
 
 void GameDLL_Version_f()
 {
@@ -264,6 +265,7 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&hostagehurtable);
 	CVAR_REGISTER(&roundover);
 	CVAR_REGISTER(&forcerespawn);
+	CVAR_REGISTER(&disablebuyzone);
 
 	// print version
 	CONSOLE_ECHO("ReGameDLL version: " APP_VERSION "\n");

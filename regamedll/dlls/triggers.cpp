@@ -1727,6 +1727,11 @@ void CBuyZone::__MAKE_VHOOK(Spawn)()
 
 void CBuyZone::BuyTouch(CBaseEntity *pOther)
 {
+#ifdef REGAMEDLL_ADD
+ 	if( disablebuyzone.value == 1.0f)
+		return;
+#endif	
+	
 	if (!pOther->IsPlayer())
 		return;
 

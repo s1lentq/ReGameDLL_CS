@@ -150,6 +150,7 @@ extern cvar_t showtriggers;
 extern cvar_t hostagehurtable;
 extern cvar_t roundover;
 extern cvar_t forcerespawn;
+extern cvar_t disablebuyzone;
 
 #endif
 
