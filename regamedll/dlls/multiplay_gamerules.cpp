@@ -4054,6 +4054,8 @@ void EXT_FUNC CHalfLifeMultiplay::__API_VHOOK(DeathNotice)(CBasePlayer *pVictim,
 			GETPLAYERAUTHID(pVictim->edict()), team, killer_weapon_name);
 	}
 
+	// TODO: It is called in CBasePlayer::Killed too, most likely,
+	// an unnecessary call. (Need investigate)
 	CheckWinConditions();
 
 	MESSAGE_BEGIN(MSG_SPEC, SVC_DIRECTOR);

@@ -439,8 +439,7 @@ void EXT_FUNC ClientPutInServer(edict_t *pEntity)
 	pPlayer->pev->flags |= FL_SPECTATOR;
 	pPlayer->pev->solid = SOLID_NOT;
 	pPlayer->pev->movetype = MOVETYPE_NOCLIP;
-	pPlayer->pev->effects = EF_NODRAW;
-	pPlayer->pev->effects |= EF_NOINTERP;
+	pPlayer->pev->effects = (EF_NODRAW | EF_NOINTERP);
 	pPlayer->pev->takedamage = DAMAGE_NO;
 	pPlayer->pev->deadflag = DEAD_DEAD;
 	pPlayer->pev->velocity = g_vecZero;

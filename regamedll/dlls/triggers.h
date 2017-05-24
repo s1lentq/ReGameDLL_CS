@@ -323,7 +323,7 @@ public:
 #endif
 
 public:
-	void PlayTrack();
+	void PlayTrack(edict_t *pEdict);
 };
 
 // This plays a CD track when fired or when the player enters it's radius
@@ -345,7 +345,7 @@ public:
 #endif
 
 public:
-	void Play();
+	void Play(edict_t *pEdict);
 };
 
 // QUAKED trigger_multiple (.5 .5 .5) ? notouch
@@ -761,7 +761,7 @@ public:
 	float m_fDensity;
 };
 
-void PlayCDTrack(int iTrack);
+void PlayCDTrack(edict_t *pClient, int iTrack);
 int BuildChangeList(LEVELLIST *pLevelList, int maxList);
 void NextLevel();
 

@@ -1090,7 +1090,7 @@ void CHostage::MoveToward(const Vector &vecLoc)
 	pFollowing = GetClassPtr<CCSEntity>((CBaseEntity *)m_hTargetEnt->pev);
 	vecMove = vecLoc - pev->origin;
 
-	Vector vecAng(0, UTIL_VecToAngles(vecMove).y, 0); 
+	Vector vecAng(0, UTIL_VecToAngles(vecMove).y, 0);
 	UTIL_MakeVectorsPrivate(vecAng, vecFwd, NULL, NULL);
 
 	if ((vecFwd * s_flStepSize_LocalNav).Length2D() <= (vecLoc - pev->origin).Length2D())

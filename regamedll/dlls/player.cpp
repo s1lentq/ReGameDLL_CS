@@ -3662,10 +3662,10 @@ void CBasePlayer::PlayerDeathThink()
 #endif
 			{
 				pev->deadflag = DEAD_RESPAWNABLE;
-			}
 
-			if (CSGameRules()->IsMultiplayer())
-				CSGameRules()->CheckWinConditions();
+				if (CSGameRules()->IsMultiplayer())
+					CSGameRules()->CheckWinConditions();
+			}
 		}
 
 		pev->nextthink = gpGlobals->time + 0.1f;
@@ -8273,6 +8273,11 @@ void CBasePlayer::SpawnClientSideCorpse()
 
 	// do not make a corpse if the player goes to respawn.
 	if (pev->deadflag == DEAD_RESPAWNABLE)
+		return;
+#endif
+
+#ifdef REGAMEDLL_ADD
+	if (forcerespawn.value > 0.0f)
 		return;
 #endif
 
