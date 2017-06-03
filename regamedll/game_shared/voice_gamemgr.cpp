@@ -186,28 +186,27 @@ void CVoiceGameMgr::UpdateMasks()
 			// Build a mask of who they can hear based on the game rules.
 			for (int iOtherClient = 0; iOtherClient < m_nMaxPlayers; ++iOtherClient)
 			{
-				auto *pOtherPlayer = (CBasePlayer *) UTIL_PlayerByIndex(iOtherClient + 1);
+				auto *pOtherPlayer = UTIL_PlayerByIndex(iOtherClient + 1);
 
 				if (!pOtherPlayer)
 					continue;
 
-				switch((int)sv_alltalk.value)
+				switch ((int)sv_alltalk.value)
 				{
-					case 0:
-						gameRulesMask[ iOtherClient ] = m_pHelper->CanPlayerHearPlayer(pPlayer, pOtherPlayer);
-						break;
-					case 1:
-						gameRulesMask[ iOtherClient ] = true;
-						break;
-					case 2:
-						gameRulesMask[ iOtherClient ] = pPlayer->m_iTeam == pOtherPlayer->m_iTeam;
-						break;
-					case 3:
-						gameRulesMask[ iOtherClient ] = pPlayer->m_iTeam == pOtherPlayer->m_iTeam || pPlayer->IsObserver();
-						break;
-					default:
-						gameRulesMask[ iOtherClient ] = true; // HLDS Behavior
-						break;
+				case 0:
+					gameRulesMask[ iOtherClient ] = m_pHelper->CanPlayerHearPlayer(pPlayer, pOtherPlayer);
+					break;
+#ifdef REGAMEDLL_ADD
+				case 2:
+					gameRulesMask[ iOtherClient ] = pPlayer->m_iTeam == pOtherPlayer->m_iTeam;
+					break;
+				case 3:
+					gameRulesMask[ iOtherClient ] = pPlayer->m_iTeam == pOtherPlayer->m_iTeam || pPlayer->IsObserver();
+					break;
+#endif
+				default:
+					gameRulesMask[ iOtherClient ] = true; // HLDS Behavior
+					break;
 				}
 			}
 		}
