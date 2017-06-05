@@ -6740,27 +6740,28 @@ void CBasePlayer::SendHostageIcons()
 
 void CBasePlayer::SendWeatherInfo()
 {
-	CBaseEntity *pPoint = UTIL_FindEntityByClassname(NULL, "env_rain");
-	CBaseEntity *pPoint2 = UTIL_FindEntityByClassname(NULL, "func_rain");
+	CBaseEntity *pEnt;
 
-	if (pPoint || pPoint2)
+	auto SendReceiveW = [&](BYTE byte)
 	{
 		MESSAGE_BEGIN(MSG_ONE, gmsgReceiveW, NULL, pev);
-			WRITE_BYTE(1);		// rainy weather
+				WRITE_BYTE(byte);		// snowy weather
 		MESSAGE_END();
-	}
-	else
-	{
-		pPoint = UTIL_FindEntityByClassname(NULL, "env_snow");
-		pPoint2 = UTIL_FindEntityByClassname(NULL, "func_snow");
+	};
 
-		if (pPoint || pPoint2)
-		{
-			MESSAGE_BEGIN(MSG_ONE, gmsgReceiveW, NULL, pev);
-				WRITE_BYTE(2);		// snowy weather
-			MESSAGE_END();
-		}
-	}
+	/* Rain */
+	if ((pEnt = UTIL_FindEntityByClassname(NULL, "env_rain")))
+		return SendReceiveW(1);
+
+	if ((pEnt = UTIL_FindEntityByClassname(NULL, "func_rain")))
+		return SendReceiveW(1);
+
+	/* Snow */
+	if ((pEnt = UTIL_FindEntityByClassname(NULL, "env_snow")))
+		return SendReceiveW(2);
+
+	if ((pEnt = UTIL_FindEntityByClassname(NULL, "func_snow")))
+		return SendReceiveW(2);
 }
 
 LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, UpdateClientData)
