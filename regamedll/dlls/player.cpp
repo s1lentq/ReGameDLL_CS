@@ -3679,7 +3679,7 @@ void CBasePlayer::PlayerDeathThink()
 		if (pev->deadflag == DEAD_RESPAWNABLE)
 		{
 #ifdef REGAMEDLL_FIXES
-			if (IsObserver() && (m_afPhysicsFlags & PFLAG_OBSERVER) && (m_iTeam == UNASSIGNED || m_iTeam == SPECTATOR))
+			if (IsObserver() && (m_iTeam == UNASSIGNED || m_iTeam == SPECTATOR))
 				return;
 
 			// Player cannot respawn while in the Choose Appearance menu
@@ -9742,7 +9742,7 @@ bool EXT_FUNC CBasePlayer::__API_HOOK(GetIntoGame)()
 void CBasePlayer::PlayerRespawnThink()
 {
 #ifdef REGAMEDLL_ADD
-	if (IsObserver() && (m_afPhysicsFlags & PFLAG_OBSERVER) && (m_iTeam == UNASSIGNED || m_iTeam == SPECTATOR))
+	if (IsObserver() && (m_iTeam == UNASSIGNED || m_iTeam == SPECTATOR))
 		return;
 
 	// Player cannot respawn while in the Choose Appearance menu
@@ -9752,7 +9752,7 @@ void CBasePlayer::PlayerRespawnThink()
 	if (pev->deadflag < DEAD_DYING)
 		return;
 
-	if (forcerespawn.value && gpGlobals->time > (CSPlayer()->m_flRespawnPending + forcerespawn.value))
+	if (forcerespawn.value > 0 && gpGlobals->time > (CSPlayer()->m_flRespawnPending + forcerespawn.value))
 	{
 		Spawn();
 		pev->button = 0;
