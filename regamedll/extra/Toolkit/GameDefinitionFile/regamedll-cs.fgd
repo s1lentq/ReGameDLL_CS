@@ -1189,44 +1189,16 @@
 
 @PointClass base(Targetname) = env_fog : "Global Fog Properties"
 [
-	fadein(integer) : "Fade in time" : 0
-	holdtime(string) : "Hold time (0 = permanent)" : "0"
-	fadeout(integer) : "Fade out time" : 0
-	startdist(integer) : "Fog start position" : 0
-	enddist(integer) : "Fog end position" : 1000
+	density(string) : "Fog density" : "0.0005"
 	rendercolor(color255) : "Fog Color (R G B)" : "255 255 255"
-	spawnflags(flags) =
-	[
-		1 : "Start active"   : 0
-	]
 ]
 
 @PointClass base(Targetname) iconsprite("sprites/CS/env_rain.spr") = env_rain : "rain Properties"
 [
-	fadein(integer) : "Fade in time" : 0
-	holdtime(string) : "Hold time (0 = permanent)" : "0"
-	fadeout(integer) : "Fade out time" : 0
-	startdist(integer) : "snow start position" : 0
-	enddist(integer) : "rain end position" : 1000
-	rendercolor(color255) : "rain Color (R G B)" : "255 255 255"
-	spawnflags(flags) =
-	[
-		1 : "Start active"   : 0
-	]
 ]
 
 @PointClass base(Targetname) = env_snow : "snow Properties"
 [
-	fadein(integer) : "Fade in time" : 0
-	holdtime(string) : "Hold time (0 = permanent)" : "0"
-	fadeout(integer) : "Fade out time" : 0
-	startdist(integer) : "snow start position" : 0
-	enddist(integer) : "snow end position" : 1000
-	rendercolor(color255) : "snow Color (R G B)" : "255 255 255"
-	spawnflags(flags) =
-	[
-		1 : "Start active"   : 0
-	]
 ]
 
 @PointClass base(Targetname) = env_lighting : "lightning Properties"

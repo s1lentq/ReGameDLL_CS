@@ -518,6 +518,11 @@ public:
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual void Touch(CBaseEntity *pOther);
 
+#ifdef REGAMEDLL_FIXES
+	virtual void Restart();
+	virtual int ObjectCaps() { return (CBaseEntity::ObjectCaps() | FCAP_MUST_RESET); }
+#endif
+
 #ifdef HOOK_GAMEDLL
 
 	void Spawn_();
@@ -526,6 +531,10 @@ public:
 
 #endif
 
+#ifdef REGAMEDLL_FIXES
+private:
+	Vector m_vecAngles;
+#endif
 };
 
 class CTriggerTeleport: public CBaseTrigger

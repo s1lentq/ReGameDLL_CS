@@ -1591,6 +1591,29 @@ void CTriggerPush::__MAKE_VHOOK(Spawn)()
 	UTIL_SetOrigin(pev, pev->origin);
 }
 
+#ifdef REGAMEDLL_FIXES
+void CTriggerPush::Restart()
+{
+	InitTrigger();
+
+	if (pev->speed == 0)
+	{
+		pev->speed = 100;
+	}
+
+	// if flagged to Start Turned Off, make trigger nonsolid.
+	if (pev->spawnflags & SF_TRIGGER_PUSH_START_OFF)
+	{
+		pev->solid = SOLID_NOT;
+	}
+
+	SetUse(&CTriggerPush::ToggleUse);
+
+	// Link into the list
+	UTIL_SetOrigin(pev, pev->origin);
+}
+#endif
+
 void CTriggerPush::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 {
 	entvars_t *pevToucher = pOther->pev;
@@ -1727,8 +1750,8 @@ void CBuyZone::BuyTouch(CBaseEntity *pOther)
 #ifdef REGAMEDLL_ADD
 	if (buytime.value == 0.0f)
 		return;
-#endif	
-	
+#endif
+
 	if (!pOther->IsPlayer())
 		return;
 

@@ -95,6 +95,7 @@ public:
 	// basic functions
 	virtual void Spawn() = 0;
 	virtual void Precache() = 0;
+	virtual void Restart() = 0;
 	virtual void KeyValue(KeyValueData *pkvd) = 0;
 	virtual int Save(CSave &save) = 0;
 	virtual int Restore(CRestore &restore) = 0;
@@ -107,6 +108,8 @@ public:
 	float m_flVolume;
 	float m_pitch;
 	int m_sounds;
+
+	Vector m_angles;
 };
 
 class CPendulum: public CBaseEntity {

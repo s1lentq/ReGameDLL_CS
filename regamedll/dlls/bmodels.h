@@ -162,8 +162,12 @@ public:
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
-	virtual int ObjectCaps() { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
+	virtual int ObjectCaps() { return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | FCAP_MUST_RESET; }
 	virtual void Blocked(CBaseEntity *pOther);
+
+#ifdef REGAMEDLL_FIXES
+	virtual void Restart();
+#endif
 
 #ifdef HOOK_GAMEDLL
 
@@ -192,6 +196,11 @@ public:
 	float m_flVolume;
 	float m_pitch;
 	int m_sounds;
+
+#ifdef REGAMEDLL_FIXES
+	Vector m_angles;
+#endif
+
 };
 
 class CPendulum: public CBaseEntity

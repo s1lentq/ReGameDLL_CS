@@ -252,6 +252,10 @@ void CFuncRotating::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 // REVERSE will cause the it to rotate in the opposite direction.
 void CFuncRotating::__MAKE_VHOOK(Spawn)()
 {
+#ifdef REGAMEDLL_FIXES
+	m_angles = pev->angles;
+#endif
+
 	// set final pitch.  Must not be PITCH_NORM, since we
 	// plan on pitch shifting later.
 	m_pitch = PITCH_NORM - 1;
@@ -549,6 +553,19 @@ void CFuncRotating::Rotate()
 {
 	pev->nextthink = pev->ltime + 10;
 }
+
+#ifdef REGAMEDLL_FIXES
+void CFuncRotating::Restart()
+{
+	// fan is spinning, so stop it.
+	SetThink(&CFuncRotating::SpinDown);
+	pev->nextthink = pev->ltime + 0.1;
+
+	// restore angles
+	pev->angles = m_angles;
+	pev->avelocity = g_vecZero;
+}
+#endif
 
 // Rotating Use - when a rotating brush is triggered
 void CFuncRotating::RotatingUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
