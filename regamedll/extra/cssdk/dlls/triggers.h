@@ -30,8 +30,12 @@
 #define GRENADETYPE_SMOKE			1
 #define GRENADETYPE_FLASH			2
 
+#define SPAWNFLAG_NOMESSAGE			1
+#define SPAWNFLAG_NOTOUCH			1
+#define SPAWNFLAG_DROIDONLY			4
+
 #define MAX_ITEM_COUNTS				32
-#define MAX_ENTITY				512	// We can only ever move 512 entities across a transition
+#define MAX_ENTITY					512	// We can only ever move 512 entities across a transition
 
 // triggers
 #define SF_TRIGGER_ALLOWMONSTERS		1	// monsters allowed to fire this trigger

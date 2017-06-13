@@ -352,6 +352,58 @@ void CFuncRotating::__MAKE_VHOOK(Spawn)()
 	Precache();
 }
 
+#ifdef REGAMEDLL_FIXES
+void CFuncRotating::Restart()
+{
+	// fan is spinning, so stop it.
+	SetThink(&CFuncRotating::SpinDown);
+	pev->nextthink = pev->ltime + 0.1;
+
+	// restore angles
+	pev->angles = m_angles;
+	pev->avelocity = g_vecZero;
+
+	// some rotating objects like fake volumetric lights will not be solid.
+	if (pev->spawnflags & SF_ROTATING_NOT_SOLID)
+	{
+		pev->solid = SOLID_NOT;
+		pev->skin = CONTENTS_EMPTY;
+		pev->movetype = MOVETYPE_PUSH;
+	}
+	else
+	{
+		pev->solid = SOLID_BSP;
+		pev->movetype = MOVETYPE_PUSH;
+	}
+
+	UTIL_SetOrigin(pev, pev->origin);
+	SET_MODEL(ENT(pev), STRING(pev->model));
+
+	SetUse(&CFuncRotating::RotatingUse);
+
+	// did level designer forget to assign speed?
+	if (pev->speed <= 0)
+	{
+		pev->speed = 0;
+	}
+
+	// instant-use brush?
+	if (pev->spawnflags & SF_BRUSH_ROTATE_INSTANT)
+	{
+		SetThink(&CFuncRotating::SUB_CallUseToggle);
+
+		// leave a magic delay for client to start up
+		pev->nextthink = pev->ltime + 0.1;
+	}
+
+	// can this brush inflict pain?
+	if (pev->spawnflags & SF_BRUSH_HURT)
+	{
+		SetTouch(&CFuncRotating::HurtTouch);
+	}
+}
+#endif
+
 void CFuncRotating::__MAKE_VHOOK(Precache)()
 {
 	char *szSoundFile = (char *)STRING(pev->message);
@@ -553,19 +605,6 @@ void CFuncRotating::Rotate()
 {
 	pev->nextthink = pev->ltime + 10;
 }
-
-#ifdef REGAMEDLL_FIXES
-void CFuncRotating::Restart()
-{
-	// fan is spinning, so stop it.
-	SetThink(&CFuncRotating::SpinDown);
-	pev->nextthink = pev->ltime + 0.1;
-
-	// restore angles
-	pev->angles = m_angles;
-	pev->avelocity = g_vecZero;
-}
-#endif
 
 // Rotating Use - when a rotating brush is triggered
 void CFuncRotating::RotatingUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)

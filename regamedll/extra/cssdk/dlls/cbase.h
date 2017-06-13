@@ -315,6 +315,10 @@ public:
 	string_t m_globalstate;
 };
 
+#define SF_WORLD_DARK       0x0001 // Fade from black at startup
+#define SF_WORLD_TITLE      0x0002 // Display game title at startup
+#define SF_WORLD_FORCETEAM  0x0004 // Force teams
+
 // This spawns first when each level begins.
 class CWorld: public CBaseEntity {
 public:
