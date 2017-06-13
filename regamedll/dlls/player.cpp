@@ -6745,7 +6745,7 @@ void CBasePlayer::SendWeatherInfo()
 	auto SendReceiveW = [&](BYTE byte)
 	{
 		MESSAGE_BEGIN(MSG_ONE, gmsgReceiveW, NULL, pev);
-				WRITE_BYTE(byte);		// snowy weather
+				WRITE_BYTE(byte);
 		MESSAGE_END();
 	};
 
