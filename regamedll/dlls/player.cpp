@@ -3735,9 +3735,12 @@ void EXT_FUNC CBasePlayer::__API_VHOOK(RoundRespawn)()
 
 }
 
+
+LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, StartDeathCam)
+
 // StartDeathCam - find an intermission spot and send the
 // player off into observer mode
-void CBasePlayer::StartDeathCam()
+void EXT_FUNC CBasePlayer::__API_HOOK(StartDeathCam)()
 {
 #ifdef REGAMEDLL_FXIES
 	m_canSwitchObserverModes = true;

@@ -36,7 +36,7 @@
 #include "items.h"
 
 #define REGAMEDLL_API_VERSION_MAJOR 5
-#define REGAMEDLL_API_VERSION_MINOR 1
+#define REGAMEDLL_API_VERSION_MINOR 2
 
 // CBasePlayer::Spawn hook
 typedef IVoidHookChainClass<class CBasePlayer> IReGameHook_CBasePlayer_Spawn;
@@ -358,6 +358,10 @@ typedef IVoidHookChainRegistry<> IReGameHookRegistry_CSGameRules_OnRoundFreezeEn
 typedef IVoidHookChain<> IReGameHook_PM_UpdateStepSound;
 typedef IVoidHookChainRegistry<> IReGameHookRegistry_PM_UpdateStepSound;
 
+// CBasePlayer::StartDeathCam hook
+typedef IVoidHookChainClass<class CBasePlayer> IReGameHook_CBasePlayer_StartDeathCam;
+typedef IVoidHookChainRegistryClass<class CBasePlayer> IReGameHookRegistry_CBasePlayer_StartDeathCam;
+
 class IReGameHookchains {
 public:
 	virtual ~IReGameHookchains() {}
@@ -447,6 +451,7 @@ public:
 	virtual IReGameHookRegistry_CSGameRules_BalanceTeams* CSGameRules_BalanceTeams() = 0;
 	virtual IReGameHookRegistry_CSGameRules_OnRoundFreezeEnd* CSGameRules_OnRoundFreezeEnd() = 0;
 	virtual IReGameHookRegistry_PM_UpdateStepSound* PM_UpdateStepSound() = 0;
+	virtual IReGameHookRegistry_CBasePlayer_StartDeathCam* CBasePlayer_StartDeathCam() = 0;
 };
 
 struct ReGameFuncs_t {

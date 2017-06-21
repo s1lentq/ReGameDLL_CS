@@ -331,3 +331,4 @@ void EXT_FUNC CCSPlayer::Disappear() { BasePlayer()->Disappear(); }
 void EXT_FUNC CCSPlayer::MakeVIP() { BasePlayer()->MakeVIP(); }
 bool EXT_FUNC CCSPlayer::MakeBomber() { return BasePlayer()->MakeBomber(); }
 void EXT_FUNC CCSPlayer::ResetSequenceInfo() { BasePlayer()->ResetSequenceInfo(); }
+void EXT_FUNC CCSPlayer::StartDeathCam() { BasePlayer()->StartDeathCam(); }

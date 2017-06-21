@@ -95,6 +95,7 @@ public:
 	virtual void Disappear();
 	virtual void MakeVIP();
 	virtual bool MakeBomber();
+	virtual void StartDeathCam();
 
 	CBasePlayer *BasePlayer() const;
 public:
