@@ -354,6 +354,10 @@ typedef IHookChainRegistryClassEmptyImpl<void, class CHalfLifeMultiplay> CReGame
 typedef IHookChainImpl<void> CReGameHook_PM_UpdateStepSound;
 typedef IHookChainRegistryImpl<void> CReGameHookRegistry_PM_UpdateStepSound;
 
+// CBasePlayer::StartDeathCam hook
+typedef IHookChainClassImpl<void, CBasePlayer> CReGameHook_CBasePlayer_StartDeathCam;
+typedef IHookChainRegistryClassImpl<void, CBasePlayer> CReGameHookRegistry_CBasePlayer_StartDeathCam;
+
 class CReGameHookchains: public IReGameHookchains {
 public:
 	// CBasePlayer virtual
@@ -441,6 +445,7 @@ public:
 	CReGameHookRegistry_CSGameRules_BalanceTeams m_CSGameRules_BalanceTeams;
 	CReGameHookRegistry_CSGameRules_OnRoundFreezeEnd m_CSGameRules_OnRoundFreezeEnd;
 	CReGameHookRegistry_PM_UpdateStepSound m_PM_UpdateStepSound;
+	CReGameHookRegistry_CBasePlayer_StartDeathCam m_CBasePlayer_StartDeathCam;
 
 public:
 	virtual IReGameHookRegistry_CBasePlayer_Spawn* CBasePlayer_Spawn();
@@ -527,6 +532,7 @@ public:
 	virtual IReGameHookRegistry_CSGameRules_BalanceTeams* CSGameRules_BalanceTeams();
 	virtual IReGameHookRegistry_CSGameRules_OnRoundFreezeEnd* CSGameRules_OnRoundFreezeEnd();
 	virtual IReGameHookRegistry_PM_UpdateStepSound* PM_UpdateStepSound();
+	virtual IReGameHookRegistry_CBasePlayer_StartDeathCam* CBasePlayer_StartDeathCam();
 };
 
 extern CReGameHookchains g_ReGameHookchains;

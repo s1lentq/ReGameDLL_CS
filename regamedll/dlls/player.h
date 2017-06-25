@@ -505,6 +505,7 @@ public:
 	void SetWeaponAnimType(const char *szExtention) { Q_strcpy(m_szAnimExtention, szExtention); }
 	void CheatImpulseCommands(int iImpulse);
 	void StartDeathCam();
+	void StartDeathCam_();
 	void StartObserver(Vector &vecPosition, Vector &vecViewAngle);
 	void StartObserver_(Vector &vecPosition, Vector &vecViewAngle);
 	void HandleSignals();

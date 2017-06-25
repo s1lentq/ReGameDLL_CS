@@ -84,6 +84,7 @@ public:
 	virtual bool SwitchWeapon(CBasePlayerItem *pWeapon);
 	virtual void SwitchTeam();
 	virtual bool JoinTeam(TeamName team);
+	virtual void StartDeathCam();
 	virtual void StartObserver(Vector& vecPosition, Vector& vecViewAngle);
 	virtual void TeamChangeUpdate();
 	virtual void DropSecondary();
