@@ -3742,7 +3742,7 @@ LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, StartDeathCam)
 // player off into observer mode
 void EXT_FUNC CBasePlayer::__API_HOOK(StartDeathCam)()
 {
-#ifdef REGAMEDLL_FXIES
+#ifdef REGAMEDLL_FIXES
 	m_canSwitchObserverModes = true;
 #endif
 
