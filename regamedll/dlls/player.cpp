@@ -5871,7 +5871,11 @@ const char *CBasePlayer::__MAKE_VHOOK(TeamID)()
 
 void CSprayCan::Spawn(entvars_t *pevOwner)
 {
+#ifdef REGAMEDLL_FIXES
+	pev->origin = pevOwner->origin + pevOwner->view_ofs;
+#else
 	pev->origin = pevOwner->origin + Vector(0, 0, 32);
+#endif
 	pev->angles = pevOwner->v_angle;
 	pev->owner = ENT(pevOwner);
 	pev->frame = 0;
