@@ -4900,7 +4900,11 @@ void EXT_FUNC CBasePlayer::__API_VHOOK(PostThink)()
 					// NOTE: play on item channel because we play footstep landing on body channel
 					EMIT_SOUND(ENT(pev), CHAN_ITEM, "common/bodysplat.wav", VOL_NORM, ATTN_NORM);
 				}
+#ifdef REGAMEDLL_FIXES
+				if (flFallDamage >= 1.0f)
+#else
 				if (flFallDamage > 0)
+#endif
 				{
 					m_LastHitGroup = HITGROUP_GENERIC;
 					TakeDamage(VARS(eoNullEntity), VARS(eoNullEntity), flFallDamage, DMG_FALL);
