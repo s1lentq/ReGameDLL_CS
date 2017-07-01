@@ -66,14 +66,11 @@ class CSaveRestoreBuffer;
 typedef Vector VectorRef;
 typedef float FloatRef;
 
+#undef CUSTOM_MEMBER
+#define CUSTOM_MEMBER static
+
 #define __API_HOOK(fname)\
 	fname
-
-#define __API_VHOOK(fname)\
-	fname##_
-
-#define __MAKE_VHOOK(fname)\
-	fname##_
 
 #define IMPL(var)\
 	(*p##var)
@@ -95,7 +92,6 @@ typedef float FloatRef;
 #define LINK_HOOK_CHAIN2(...)
 
 // refs
-extern void (CBaseEntity::*pCHostage__IdleThink)();
 extern void (*pBotPhrase__Randomize)();
 extern void (*pCCSBotManager__AddBot)();
 extern void (*pCCSBot__UpdateLookAngles)();
@@ -768,68 +764,6 @@ C_DLLEXPORT void armoury_entity(entvars_t *pev);
 C_DLLEXPORT void weaponbox(entvars_t *pev);
 C_DLLEXPORT void grenade(entvars_t *pev);
 C_DLLEXPORT void world_items(entvars_t *pev);
-
-typedef int (CGraph::*FIND_NEAREST_NODE_ENTITY)(const Vector &, CBaseEntity *);
-typedef int (CGraph::*FIND_NEAREST_NODE_INT)(const Vector &, int);
-typedef void (CBaseMonster::*RADIUSDAMAGE_ENTVARS)(entvars_t *, entvars_t *, float, int, int);
-typedef void (CBaseMonster::*RADIUSDAMAGE_VECTOR)(Vector, entvars_t *, entvars_t *, float, int, int);
-typedef BOOL (CBaseMonster::*FINVIEWCONE_ENTITY)(CBaseEntity *);
-typedef BOOL (CBaseMonster::*FINVIEWCONE_VECTOR)(const Vector *);
-typedef bool (CHostageImprov::*IS_FRIEND_IN_THE_WAY_VECTOR)(const Vector &) const;
-typedef bool (CHostageImprov::*IS_FRIEND_IN_THE_WAY_CBASE)(CBaseEntity *, const Vector &) const;
-typedef bool (CHostageImprov::*IS_FRIEND_IN_THE_WAY)() const;
-typedef BOOL (CLocalNav::*PATH_CLEAR_TRACE_RESULT)(Vector &, Vector &, int, TraceResult &);
-typedef BOOL (CLocalNav::*PATH_CLEAR_DEFAULT)(Vector &, Vector &, int);
-typedef void (HostageAnimateState::*ADD_SEQUENCE_NAME)(CHostageImprov *, const char *, float, float);
-typedef void (HostageAnimateState::*ADD_SEQUENCE_NUMBER)(CHostageImprov *, int, float, float);
-typedef int (CSaveRestoreBuffer::*ENTITYINDEX_CBASE)(CBaseEntity *);
-typedef int (CSaveRestoreBuffer::*ENTITYINDEX_ENTVARS)(entvars_t *);
-typedef int (CSaveRestoreBuffer::*ENTITYINDEX_EOFFSET)(EOFFSET);
-typedef int (CSaveRestoreBuffer::*ENTITYINDEX_EDICT)(edict_t *);
-typedef void (CSave::*WRITESTRING_)(const char *,const char *);
-typedef void (CSave::*WRITESTRING_COUNT)(const char *,const int *,int);
-typedef void (CSave::*WRITEVECTOR_)(const char *,const Vector &);
-typedef void (CSave::*WRITEVECTOR_COUNT)(const char *,const float *,int);
-typedef void (CSave::*WRITEPOSITIONVECTOR_)(const char *,const Vector &);
-typedef void (CSave::*WRITEPOSITIONVECTOR_COUNT)(const char *,const float *,int);
-typedef int (CSaveRestoreBuffer::*CSAVERESTOREBUFFER_VOID)(const char *,const Vector &);
-typedef int (CSaveRestoreBuffer::*CSAVERESTOREBUFFER_POINTER)(const char *,const float *,int);
-typedef bool (CCSBot::*CS_IS_VISIBLE_VECTOR)(const Vector *, bool) const;
-typedef bool (CCSBot::*CS_IS_VISIBLE_CBASEPLAYER)(CBasePlayer *, bool, unsigned char *) const;
-typedef const Vector *(FIND_SPOT_CSSBOT)(CCSBot *, float);
-typedef void (CCSBot::*HIDE_NAV_AREA)(CNavArea *, float, float, bool);
-typedef void (CCSBot::*HIDE_VECTOR)(const Vector *, float, bool);
-typedef const CSGameState *(CCSBot::*GETGAMESTATE_CONST)() const;
-typedef CSGameState *(CCSBot::*GETGAMESTATE_NOTCONST)();
-typedef BOOL (CBaseEntity::*FVISIBLE_ENTITY)(CBaseEntity *);
-typedef BOOL (CBaseEntity::*FVISIBLE_VECTOR)(const Vector &);
-typedef void (CGrenade::*EXPLODE_VECTOR)(Vector, Vector);
-typedef void (CGrenade::*EXPLODE_TRACERESULT)(TraceResult *, int);
-typedef CBaseEntity *(CBaseEntity::*CBASE_ISTANCE_EDICT)(edict_t *);
-typedef CBaseEntity *(CBaseEntity::*CBASE_ISTANCE_ENTVARS)(entvars_t *);
-typedef CBaseEntity *(CBaseEntity::*CBASE_ISTANCE_INT)(int);
-typedef CBasePlayer *(*UTIL_GETCLOSE_PLAYER)(const Vector *pos, float *distance);
-typedef CBasePlayer *(*UTIL_GETCLOSE_TEAM)(const Vector *pos, int team, float *distance);
-typedef Vector (*UTIL_CUMPUTE_ENTVARS)(entvars_t *pevVars);
-typedef Vector (*UTIL_CUMPUTE_CBASE)(CBaseEntity *pEntity);
-typedef Vector (*UTIL_CUMPUTE_EDICT)(edict_t *pentEdict);
-typedef bool (CBot::*IS_VISIBLE_VECTOR)(const Vector *, bool) const;
-typedef bool (CBot::*IS_VISIBLE_CBASE_PLAYER)(CBasePlayer *, bool, unsigned char *) const;
-typedef bool (CImprov::*IS_FRIEND_INT_THEWAY_VECTOR)(const Vector &goalPos) const;
-typedef bool (CImprov::*IS_FRIEND_INT_THEWAY_CBASEENTITY)(CBaseEntity *myFriend, const Vector &goalPos) const;
-typedef const Vector *(FIND_SPOT_CBASE)(CBaseEntity *, const Vector *, CNavArea *, float, int, bool);
-typedef void (CNavArea::*SAVE_FD)(int fd, unsigned int version);
-typedef void (CNavArea::*SAVE_FILE)(FILE *fp) const;
-typedef bool (CNavArea::*OVERLAP_VECTOR)(const Vector *pos) const;
-typedef bool (CNavArea::*OVERLAP_CNAV)(const CNavArea *area) const;
-typedef float (CNavArea::*GETZ_VECTOR)(const Vector *pos) const;
-typedef float (CNavArea::*GETZ_TWO_FLOAT)(float x, float y) const;
-typedef void (HidingSpot::*HIDING_SPOT_VOID)();
-typedef void (HidingSpot::*HIDING_SPOT_VECTOR)(const Vector *pos, unsigned char flags);
-typedef void (HidingSpot::*CNAV_AREA_VOID)();
-typedef void (HidingSpot::*CNAV_AREA_TWO_VECTOR)(const Vector *corner, const Vector *otherCorner);
-typedef void (HidingSpot::*CNAV_AREA_VECTOR)(const Vector *nwCorner, const Vector *neCorner, const Vector *seCorner, const Vector *swCorner);
-typedef void (HidingSpot::*CNAV_AREA_NAVNODE)(CNavNode *nwNode, class CNavNode *neNode, class CNavNode *seNode, class CNavNode *swNode);
 
 // externs
 extern struct WeaponAliasInfo weaponAliasInfo[39];

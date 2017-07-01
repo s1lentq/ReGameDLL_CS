@@ -131,13 +131,13 @@ CBotManager::CBotManager()
 }
 
 // Invoked when the round is restarting
-void CBotManager::__MAKE_VHOOK(RestartRound)()
+void CBotManager::RestartRound()
 {
 	DestroyAllGrenades();
 }
 
 // Invoked at the start of each frame
-void CBotManager::__MAKE_VHOOK(StartFrame)()
+void CBotManager::StartFrame()
 {
 	// debug smoke grenade visualization
 	if (cv_bot_debug.value == 5)
@@ -217,7 +217,7 @@ const char *CBotManager::GetNavMapFilename() const
 // Invoked when given player does given event (some events have NULL player).
 // Events are propogated to all bots.
 // TODO: This has become the game-wide event dispatcher. We should restructure this.
-void CBotManager::__MAKE_VHOOK(OnEvent)(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
+void CBotManager::OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
 {
 	// propogate event to all bots
 	for (int i = 1; i <= gpGlobals->maxClients; ++i)

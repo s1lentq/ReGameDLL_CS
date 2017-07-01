@@ -1,7 +1,7 @@
 #include "precompiled.h"
 
 // Follow our leader
-void FollowState::__MAKE_VHOOK(OnEnter)(CCSBot *me)
+void FollowState::OnEnter(CCSBot *me)
 {
 	me->StandUp();
 	me->Run();
@@ -72,7 +72,7 @@ void FollowState::ComputeLeaderMotionState(float leaderSpeed)
 
 // Follow our leader
 // TODO: Clean up this nasty mess
-void FollowState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
+void FollowState::OnUpdate(CCSBot *me)
 {
 	// if we lost our leader, give up
 	if (m_leader == NULL || !m_leader->IsAlive())
@@ -254,7 +254,7 @@ void FollowState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 	}
 }
 
-void FollowState::__MAKE_VHOOK(OnExit)(CCSBot *me)
+void FollowState::OnExit(CCSBot *me)
 {
 	;
 }

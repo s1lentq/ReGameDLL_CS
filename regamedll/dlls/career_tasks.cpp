@@ -9,27 +9,27 @@ CCareerTaskManager *TheCareerTasks = NULL;
 
 const TaskInfo taskInfo[] =
 {
-	{ "defuse",			EVENT_BOMB_DEFUSED,		&CCareerTask::NewTask },
-	{ "plant",			EVENT_BOMB_PLANTED,		&CCareerTask::NewTask },
-	{ "rescue",			EVENT_HOSTAGE_RESCUED,		&CCareerTask::NewTask },
-	{ "killall",			EVENT_KILL_ALL,			&CCareerTask::NewTask },
-	{ "kill",			EVENT_KILL,			&CCareerTask::NewTask },
-	{ "killwith",			EVENT_KILL,			&CCareerTask::NewTask },
-	{ "killblind",			EVENT_KILL_FLASHBANGED,		&CCareerTask::NewTask },
-	{ "killvip",			EVENT_KILL,			&CCareerTask::NewTask },
-	{ "headshot",			EVENT_HEADSHOT,			&CCareerTask::NewTask },
-	{ "headshotwith",		EVENT_HEADSHOT,			&CCareerTask::NewTask },
-	{ "winfast",			EVENT_ROUND_WIN,		&CCareerTask::NewTask },
-	{ "rescue",			EVENT_HOSTAGE_RESCUED,		&CCareerTask::NewTask },
-	{ "rescueall",			EVENT_ALL_HOSTAGES_RESCUED,	&CCareerTask::NewTask },
-	{ "injure",			EVENT_PLAYER_TOOK_DAMAGE,	&CCareerTask::NewTask },
-	{ "injurewith",			EVENT_PLAYER_TOOK_DAMAGE,	&CCareerTask::NewTask },
-	{ "killdefuser",		EVENT_KILL,			&CCareerTask::NewTask },
-	{ "stoprescue",			EVENT_KILL,			&CCareerTask::NewTask },
-	{ "defendhostages",		EVENT_ROUND_WIN,		&CCareerTask::NewTask },
-	{ "hostagessurvive",		EVENT_ROUND_WIN,		&CCareerTask::NewTask },
-	{ "preventdefuse",		EVENT_ROUND_WIN,		&CPreventDefuseTask::NewTask },
-	{ NULL,				EVENT_INVALID,			&CCareerTask::NewTask }
+	{ "defuse",             EVENT_BOMB_DEFUSED,        &CCareerTask::NewTask },
+	{ "plant",              EVENT_BOMB_PLANTED,         &CCareerTask::NewTask },
+	{ "rescue",             EVENT_HOSTAGE_RESCUED,      &CCareerTask::NewTask },
+	{ "killall",            EVENT_KILL_ALL,             &CCareerTask::NewTask },
+	{ "kill",               EVENT_KILL,                 &CCareerTask::NewTask },
+	{ "killwith",           EVENT_KILL,                 &CCareerTask::NewTask },
+	{ "killblind",          EVENT_KILL_FLASHBANGED,     &CCareerTask::NewTask },
+	{ "killvip",            EVENT_KILL,                 &CCareerTask::NewTask },
+	{ "headshot",           EVENT_HEADSHOT,             &CCareerTask::NewTask },
+	{ "headshotwith",       EVENT_HEADSHOT,             &CCareerTask::NewTask },
+	{ "winfast",            EVENT_ROUND_WIN,            &CCareerTask::NewTask },
+	{ "rescue",             EVENT_HOSTAGE_RESCUED,		&CCareerTask::NewTask },
+	{ "rescueall",          EVENT_ALL_HOSTAGES_RESCUED,	&CCareerTask::NewTask },
+	{ "injure",             EVENT_PLAYER_TOOK_DAMAGE,   &CCareerTask::NewTask },
+	{ "injurewith",         EVENT_PLAYER_TOOK_DAMAGE,   &CCareerTask::NewTask },
+	{ "killdefuser",        EVENT_KILL,                 &CCareerTask::NewTask },
+	{ "stoprescue",         EVENT_KILL,                 &CCareerTask::NewTask },
+	{ "defendhostages",     EVENT_ROUND_WIN,            &CCareerTask::NewTask },
+	{ "hostagessurvive",    EVENT_ROUND_WIN,            &CCareerTask::NewTask },
+	{ "preventdefuse",      EVENT_ROUND_WIN,            &CPreventDefuseTask::NewTask },
+	{ nullptr,              EVENT_INVALID,              &CCareerTask::NewTask },
 };
 
 #endif
@@ -52,7 +52,7 @@ CPreventDefuseTask::CPreventDefuseTask(const char *taskName, GameEventType event
 	m_defuseStartedThisRound = false;
 }
 
-void CPreventDefuseTask::__MAKE_VHOOK(Reset)()
+void CPreventDefuseTask::Reset()
 {
 	m_bombPlantedThisRound = false;
 	m_defuseStartedThisRound = false;
@@ -60,7 +60,7 @@ void CPreventDefuseTask::__MAKE_VHOOK(Reset)()
 	CCareerTask::Reset();
 }
 
-void CPreventDefuseTask::__MAKE_VHOOK(OnEvent)(GameEventType event, CBasePlayer *pAttacker, CBasePlayer *pVictim)
+void CPreventDefuseTask::OnEvent(GameEventType event, CBasePlayer *pAttacker, CBasePlayer *pVictim)
 {
 	if (IsComplete())
 		return;
@@ -123,7 +123,7 @@ CCareerTask::CCareerTask(const char *taskName, GameEventType event, const char *
 	}
 }
 
-void CCareerTask::__MAKE_VHOOK(Reset)()
+void CCareerTask::Reset()
 {
 	m_eventsSeen = 0;
 	m_isComplete = false;
@@ -225,7 +225,7 @@ void CCareerTask::OnWeaponInjury(int weaponId, int weaponClassId, bool attackerH
 	SendPartialNotification();
 }
 
-void CCareerTask::__MAKE_VHOOK(OnEvent)(GameEventType event, CBasePlayer *pVictim, CBasePlayer *pAttacker)
+void CCareerTask::OnEvent(GameEventType event, CBasePlayer *pVictim, CBasePlayer *pAttacker)
 {
 	if (m_isComplete)
 		return;

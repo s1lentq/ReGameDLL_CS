@@ -2,7 +2,7 @@
 
 LINK_ENTITY_TO_CLASS(weapon_ak47, CAK47, CCSAK47)
 
-void CAK47::__MAKE_VHOOK(Spawn)()
+void CAK47::Spawn()
 {
 	Precache();
 
@@ -16,7 +16,7 @@ void CAK47::__MAKE_VHOOK(Spawn)()
 	FallInit();
 }
 
-void CAK47::__MAKE_VHOOK(Precache)()
+void CAK47::Precache()
 {
 	PRECACHE_MODEL("models/v_ak47.mdl");
 	PRECACHE_MODEL("models/w_ak47.mdl");
@@ -31,7 +31,7 @@ void CAK47::__MAKE_VHOOK(Precache)()
 	m_usFireAK47 = PRECACHE_EVENT(1, "events/ak47.sc");
 }
 
-int CAK47::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
+int CAK47::GetItemInfo(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
 	p->pszAmmo1 = "762Nato";
@@ -48,7 +48,7 @@ int CAK47::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	return 1;
 }
 
-BOOL CAK47::__MAKE_VHOOK(Deploy)()
+BOOL CAK47::Deploy()
 {
 	m_flAccuracy = 0.2f;
 	m_iShotsFired = 0;
@@ -57,12 +57,12 @@ BOOL CAK47::__MAKE_VHOOK(Deploy)()
 	return DefaultDeploy("models/v_ak47.mdl", "models/p_ak47.mdl", AK47_DRAW, "ak47", UseDecrement() != FALSE);
 }
 
-void CAK47::__MAKE_VHOOK(SecondaryAttack)()
+void CAK47::SecondaryAttack()
 {
 	;
 }
 
-void CAK47::__MAKE_VHOOK(PrimaryAttack)()
+void CAK47::PrimaryAttack()
 {
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
 	{
@@ -158,7 +158,7 @@ void CAK47::AK47Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	}
 }
 
-void CAK47::__MAKE_VHOOK(Reload)()
+void CAK47::Reload()
 {
 #ifdef REGAMEDLL_FIXES
 	// to prevent reload if not enough ammo
@@ -176,7 +176,7 @@ void CAK47::__MAKE_VHOOK(Reload)()
 	}
 }
 
-void CAK47::__MAKE_VHOOK(WeaponIdle)()
+void CAK47::WeaponIdle()
 {
 	ResetEmptySound();
 	m_pPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);

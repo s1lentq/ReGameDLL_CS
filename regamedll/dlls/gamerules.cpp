@@ -10,7 +10,6 @@ CGameRules *g_pGameRules = NULL;
 #endif
 
 CGameRules::CGameRules()
-	: m_GameDesc()
 {
 	m_bFreezePeriod = FALSE;
 	m_bBombDropped = FALSE;
@@ -20,11 +19,13 @@ CGameRules::CGameRules()
 	Q_strcpy(m_GameDesc, AreRunningCZero() ? "Condition Zero" : "Counter-Strike");
 }
 
+#ifndef HOOK_GAMEDLL
 CGameRules::~CGameRules()
 {
 	delete[] m_GameDesc;
 	m_GameDesc = nullptr;
 }
+#endif
 
 // this is the game name that gets seen in the server browser
 const char *CGameRules::GetGameDescription()
@@ -36,7 +37,7 @@ const char *CGameRules::GetGameDescription()
 #endif
 }
 
-BOOL CGameRules::__MAKE_VHOOK(CanHaveAmmo)(CBasePlayer *pPlayer, const char *pszAmmoName, int iMaxCarry)
+BOOL CGameRules::CanHaveAmmo(CBasePlayer *pPlayer, const char *pszAmmoName, int iMaxCarry)
 {
 	if (pszAmmoName)
 	{
@@ -54,7 +55,7 @@ BOOL CGameRules::__MAKE_VHOOK(CanHaveAmmo)(CBasePlayer *pPlayer, const char *psz
 	return FALSE;
 }
 
-edict_t *CGameRules::__MAKE_VHOOK(GetPlayerSpawnSpot)(CBasePlayer *pPlayer)
+edict_t *CGameRules::GetPlayerSpawnSpot(CBasePlayer *pPlayer)
 {
 	// gat valid spawn point
 	edict_t *pentSpawnSpot = pPlayer->EntSelectSpawnPoint();
@@ -77,7 +78,7 @@ edict_t *CGameRules::__MAKE_VHOOK(GetPlayerSpawnSpot)(CBasePlayer *pPlayer)
 	return pentSpawnSpot;
 }
 
-BOOL CGameRules::__MAKE_VHOOK(CanHavePlayerItem)(CBasePlayer *pPlayer, CBasePlayerItem *pWeapon)
+BOOL CGameRules::CanHavePlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pWeapon)
 {
 	// only living players can have items
 	if (pPlayer->pev->deadflag != DEAD_NO)
@@ -115,7 +116,7 @@ BOOL CGameRules::__MAKE_VHOOK(CanHavePlayerItem)(CBasePlayer *pPlayer, CBasePlay
 	return TRUE;
 }
 
-void CGameRules::__MAKE_VHOOK(RefreshSkillData)()
+void CGameRules::RefreshSkillData()
 {
 	int iSkill = int(CVAR_GET_FLOAT("skill"));
 

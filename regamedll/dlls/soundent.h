@@ -84,14 +84,6 @@ public:
 	virtual int ObjectCaps() { return FCAP_DONT_SAVE; }
 	virtual void Think();
 
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	void Think_();
-
-#endif
-
 public:
 	void Initialize();
 

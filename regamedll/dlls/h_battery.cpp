@@ -19,7 +19,7 @@ TYPEDESCRIPTION CRecharge::m_SaveData[] =
 IMPLEMENT_SAVERESTORE(CRecharge, CBaseEntity)
 LINK_ENTITY_TO_CLASS(func_recharge, CRecharge, CCSRecharge)
 
-void CRecharge::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CRecharge::KeyValue(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "style")
 		|| FStrEq(pkvd->szKeyName, "height")
@@ -38,7 +38,7 @@ void CRecharge::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CBaseToggle::KeyValue(pkvd);
 }
 
-void CRecharge::__MAKE_VHOOK(Spawn)()
+void CRecharge::Spawn()
 {
 	Precache();
 
@@ -54,14 +54,14 @@ void CRecharge::__MAKE_VHOOK(Spawn)()
 	pev->frame = 0;
 }
 
-void CRecharge::__MAKE_VHOOK(Precache)()
+void CRecharge::Precache()
 {
 	PRECACHE_SOUND("items/suitcharge1.wav");
 	PRECACHE_SOUND("items/suitchargeno1.wav");
 	PRECACHE_SOUND("items/suitchargeok1.wav");
 }
 
-void CRecharge::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CRecharge::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	// if it's not a player, ignore
 	if (!FClassnameIs(pActivator->pev, "player"))

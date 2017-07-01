@@ -81,14 +81,14 @@ void BotMeme::Transmit(CCSBot *sender) const
 }
 
 // A teammate called for help - respond
-void BotHelpMeme::__MAKE_VHOOK(Interpret)(CCSBot *sender, CCSBot *receiver) const
+void BotHelpMeme::Interpret(CCSBot *sender, CCSBot *receiver) const
 {
 	const float maxHelpRange = 3000.0f; // 2000
 	receiver->RespondToHelpRequest(sender, m_place, maxHelpRange);
 }
 
 // A teammate reported information about a bombsite
-void BotBombsiteStatusMeme::__MAKE_VHOOK(Interpret)(CCSBot *sender, CCSBot *receiver) const
+void BotBombsiteStatusMeme::Interpret(CCSBot *sender, CCSBot *receiver) const
 {
 	// remember this bombsite's status
 	if (m_status == CLEAR)
@@ -108,7 +108,7 @@ void BotBombsiteStatusMeme::__MAKE_VHOOK(Interpret)(CCSBot *sender, CCSBot *rece
 }
 
 // A teammate reported information about the bomb
-void BotBombStatusMeme::__MAKE_VHOOK(Interpret)(CCSBot *sender, CCSBot *receiver) const
+void BotBombStatusMeme::Interpret(CCSBot *sender, CCSBot *receiver) const
 {
 	// update our gamestate based on teammate's report
 	switch (m_state)
@@ -138,7 +138,7 @@ void BotBombStatusMeme::__MAKE_VHOOK(Interpret)(CCSBot *sender, CCSBot *receiver
 }
 
 // A teammate has asked that we follow him
-void BotFollowMeme::__MAKE_VHOOK(Interpret)(CCSBot *sender, CCSBot *receiver) const
+void BotFollowMeme::Interpret(CCSBot *sender, CCSBot *receiver) const
 {
 	if (receiver->IsRogue())
 		return;
@@ -164,7 +164,7 @@ void BotFollowMeme::__MAKE_VHOOK(Interpret)(CCSBot *sender, CCSBot *receiver) co
 }
 
 // A teammate has asked us to defend a place
-void BotDefendHereMeme::__MAKE_VHOOK(Interpret)(CCSBot *sender, CCSBot *receiver) const
+void BotDefendHereMeme::Interpret(CCSBot *sender, CCSBot *receiver) const
 {
 	if (receiver->IsRogue())
 		return;
@@ -195,7 +195,7 @@ void BotDefendHereMeme::__MAKE_VHOOK(Interpret)(CCSBot *sender, CCSBot *receiver
 }
 
 // A teammate has asked where the bomb is planted
-void BotWhereBombMeme::__MAKE_VHOOK(Interpret)(CCSBot *sender, CCSBot *receiver) const
+void BotWhereBombMeme::Interpret(CCSBot *sender, CCSBot *receiver) const
 {
 	int zone = receiver->GetGameState()->GetPlantedBombsite();
 
@@ -204,13 +204,13 @@ void BotWhereBombMeme::__MAKE_VHOOK(Interpret)(CCSBot *sender, CCSBot *receiver)
 }
 
 // A teammate has asked us to report in
-void BotRequestReportMeme::__MAKE_VHOOK(Interpret)(CCSBot *sender, CCSBot *receiver) const
+void BotRequestReportMeme::Interpret(CCSBot *sender, CCSBot *receiver) const
 {
 	receiver->GetChatter()->ReportingIn();
 }
 
 // A teammate told us all the hostages are gone
-void BotAllHostagesGoneMeme::__MAKE_VHOOK(Interpret)(CCSBot *sender, CCSBot *receiver) const
+void BotAllHostagesGoneMeme::Interpret(CCSBot *sender, CCSBot *receiver) const
 {
 	receiver->GetGameState()->AllHostagesGone();
 
@@ -219,7 +219,7 @@ void BotAllHostagesGoneMeme::__MAKE_VHOOK(Interpret)(CCSBot *sender, CCSBot *rec
 }
 
 // A teammate told us a CT is talking to a hostage
-void BotHostageBeingTakenMeme::__MAKE_VHOOK(Interpret)(CCSBot *sender, CCSBot *receiver) const
+void BotHostageBeingTakenMeme::Interpret(CCSBot *sender, CCSBot *receiver) const
 {
 	receiver->GetGameState()->HostageWasTaken();
 

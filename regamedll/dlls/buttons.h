@@ -63,16 +63,6 @@ public:
 	virtual int Restore(CRestore &restore);
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void KeyValue_(KeyValueData *pkvd);
-	int Save_(CSave &save);
-	int Restore_(CRestore &restore);
-	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-#endif
-
 public:
 	static TYPEDESCRIPTION IMPL(m_SaveData)[3];
 
@@ -85,12 +75,6 @@ class CRotButton: public CBaseButton
 {
 public:
 	virtual void Spawn();
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-
-#endif
 };
 
 class CMomentaryRotButton: public CBaseToggle
@@ -112,16 +96,6 @@ public:
 		return (flags | FCAP_CONTINUOUS_USE);
 	}
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void KeyValue_(KeyValueData *pkvd);
-	int Save_(CSave &save);
-	int Restore_(CRestore &restore);
-	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-#endif
 
 public:
 	void EXPORT Off();
@@ -153,16 +127,6 @@ public:
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
 
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	void KeyValue_(KeyValueData *pkvd);
-	int Save_(CSave &save);
-	int Restore_(CRestore &restore);
-
-#endif
-
 public:
 	void EXPORT SparkThink();
 	void EXPORT SparkStart(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
@@ -180,16 +144,6 @@ public:
 	virtual int ObjectCaps();
 	virtual BOOL TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	int ObjectCaps_();
-	BOOL TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
-	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-#endif
-
 };
 
 char *ButtonSound(int sound);

@@ -39,13 +39,13 @@ TYPEDESCRIPTION CBaseToggle::m_SaveData[] =
 #endif
 
 // Landmark class
-void CPointEntity::__MAKE_VHOOK(Spawn)()
+void CPointEntity::Spawn()
 {
 	pev->solid = SOLID_NOT;
 }
 
 // Null Entity, remove on startup
-void CNullEntity::__MAKE_VHOOK(Spawn)()
+void CNullEntity::Spawn()
 {
 	REMOVE_ENTITY(ENT(pev));
 }
@@ -60,7 +60,7 @@ LINK_ENTITY_TO_CLASS(info_landmark, CPointEntity, CCSPointEntity)
 LINK_ENTITY_TO_CLASS(info_hostage_rescue, CPointEntity, CCSPointEntity)
 LINK_ENTITY_TO_CLASS(info_bomb_target, CPointEntity, CCSPointEntity)
 
-void CBaseDMStart::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CBaseDMStart::KeyValue(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "master"))
 	{
@@ -71,7 +71,7 @@ void CBaseDMStart::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CPointEntity::KeyValue(pkvd);
 }
 
-BOOL CBaseDMStart::__MAKE_VHOOK(IsTriggered)(CBaseEntity *pEntity)
+BOOL CBaseDMStart::IsTriggered(CBaseEntity *pEntity)
 {
 	BOOL master = UTIL_IsMasterTriggered(pev->netname, pEntity);
 
@@ -125,7 +125,7 @@ void CBaseEntity::SUB_DoNothing()
 
 IMPLEMENT_SAVERESTORE(CBaseDelay, CBaseEntity)
 
-void CBaseDelay::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CBaseDelay::KeyValue(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "delay"))
 	{
@@ -289,7 +289,7 @@ void CBaseDelay::DelayThink()
 
 IMPLEMENT_SAVERESTORE(CBaseToggle, CBaseAnimating)
 
-void CBaseToggle::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CBaseToggle::KeyValue(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "lip"))
 	{

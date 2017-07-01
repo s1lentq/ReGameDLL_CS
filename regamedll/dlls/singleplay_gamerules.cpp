@@ -6,27 +6,27 @@ CHalfLifeRules::CHalfLifeRules()
 	RefreshSkillData();
 }
 
-void CHalfLifeRules::__MAKE_VHOOK(Think)()
+void CHalfLifeRules::Think()
 {
 	;
 }
 
-BOOL CHalfLifeRules::__MAKE_VHOOK(IsMultiplayer)()
+BOOL CHalfLifeRules::IsMultiplayer()
 {
 	return FALSE;
 }
 
-BOOL CHalfLifeRules::__MAKE_VHOOK(IsDeathmatch)()
+BOOL CHalfLifeRules::IsDeathmatch()
 {
 	return FALSE;
 }
 
-BOOL CHalfLifeRules::__MAKE_VHOOK(IsCoOp)()
+BOOL CHalfLifeRules::IsCoOp()
 {
 	return FALSE;
 }
 
-BOOL CHalfLifeRules::__MAKE_VHOOK(FShouldSwitchWeapon)(CBasePlayer *pPlayer, CBasePlayerItem *pWeapon)
+BOOL CHalfLifeRules::FShouldSwitchWeapon(CBasePlayer *pPlayer, CBasePlayerItem *pWeapon)
 {
 	if (!pPlayer->m_pActiveItem)
 	{
@@ -42,27 +42,27 @@ BOOL CHalfLifeRules::__MAKE_VHOOK(FShouldSwitchWeapon)(CBasePlayer *pPlayer, CBa
 	return TRUE;
 }
 
-BOOL CHalfLifeRules::__MAKE_VHOOK(GetNextBestWeapon)(CBasePlayer *pPlayer, CBasePlayerItem *pCurrentWeapon)
+BOOL CHalfLifeRules::GetNextBestWeapon(CBasePlayer *pPlayer, CBasePlayerItem *pCurrentWeapon)
 {
 	return FALSE;
 }
 
-BOOL CHalfLifeRules::__MAKE_VHOOK(ClientConnected)(edict_t *pEntity, const char *pszName, const char *pszAddress, char *szRejectReason)
+BOOL CHalfLifeRules::ClientConnected(edict_t *pEntity, const char *pszName, const char *pszAddress, char *szRejectReason)
 {
 	return TRUE;
 }
 
-void CHalfLifeRules::__MAKE_VHOOK(InitHUD)(CBasePlayer *pl)
+void CHalfLifeRules::InitHUD(CBasePlayer *pl)
 {
 	;
 }
 
-void CHalfLifeRules::__MAKE_VHOOK(ClientDisconnected)(edict_t *pClient)
+void CHalfLifeRules::ClientDisconnected(edict_t *pClient)
 {
 	;
 }
 
-float CHalfLifeRules::__MAKE_VHOOK(FlPlayerFallDamage)(CBasePlayer *pPlayer)
+float CHalfLifeRules::FlPlayerFallDamage(CBasePlayer *pPlayer)
 {
 	// subtract off the speed at which a player is allowed to fall without being hurt,
 	// so damage will be based on speed beyond that, not the entire fall
@@ -70,7 +70,7 @@ float CHalfLifeRules::__MAKE_VHOOK(FlPlayerFallDamage)(CBasePlayer *pPlayer)
 	return pPlayer->m_flFallVelocity * DAMAGE_FOR_FALL_SPEED;
 }
 
-void CHalfLifeRules::__MAKE_VHOOK(PlayerSpawn)(CBasePlayer *pPlayer)
+void CHalfLifeRules::PlayerSpawn(CBasePlayer *pPlayer)
 {
 	pPlayer->pev->weapons |= (1 << WEAPON_SUIT);
 
@@ -83,62 +83,62 @@ void CHalfLifeRules::__MAKE_VHOOK(PlayerSpawn)(CBasePlayer *pPlayer)
 	pPlayer->GiveAmmo(24, "45acp");
 }
 
-BOOL CHalfLifeRules::__MAKE_VHOOK(AllowAutoTargetCrosshair)()
+BOOL CHalfLifeRules::AllowAutoTargetCrosshair()
 {
 	return (g_iSkillLevel == SKILL_EASY);
 }
 
-void CHalfLifeRules::__MAKE_VHOOK(PlayerThink)(CBasePlayer *pPlayer)
+void CHalfLifeRules::PlayerThink(CBasePlayer *pPlayer)
 {
 	;
 }
 
-BOOL CHalfLifeRules::__MAKE_VHOOK(FPlayerCanRespawn)(CBasePlayer *pPlayer)
+BOOL CHalfLifeRules::FPlayerCanRespawn(CBasePlayer *pPlayer)
 {
 	return TRUE;
 }
 
-float CHalfLifeRules::__MAKE_VHOOK(FlPlayerSpawnTime)(CBasePlayer *pPlayer)
+float CHalfLifeRules::FlPlayerSpawnTime(CBasePlayer *pPlayer)
 {
 	return gpGlobals->time;
 }
 
-int CHalfLifeRules::__MAKE_VHOOK(IPointsForKill)(CBasePlayer *pAttacker, CBasePlayer *pKilled)
+int CHalfLifeRules::IPointsForKill(CBasePlayer *pAttacker, CBasePlayer *pKilled)
 {
 	return 1;
 }
 
-void CHalfLifeRules::__MAKE_VHOOK(PlayerKilled)(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor)
+void CHalfLifeRules::PlayerKilled(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor)
 {
 	;
 }
 
-void CHalfLifeRules::__MAKE_VHOOK(DeathNotice)(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor)
+void CHalfLifeRules::DeathNotice(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor)
 {
 	;
 }
 
-void CHalfLifeRules::__MAKE_VHOOK(PlayerGotWeapon)(CBasePlayer *pPlayer, CBasePlayerItem *pWeapon)
+void CHalfLifeRules::PlayerGotWeapon(CBasePlayer *pPlayer, CBasePlayerItem *pWeapon)
 {
 	;
 }
 
-float CHalfLifeRules::__MAKE_VHOOK(FlWeaponRespawnTime)(CBasePlayerItem *pWeapon)
+float CHalfLifeRules::FlWeaponRespawnTime(CBasePlayerItem *pWeapon)
 {
 	return -1;
 }
 
-float CHalfLifeRules::__MAKE_VHOOK(FlWeaponTryRespawn)(CBasePlayerItem *pWeapon)
+float CHalfLifeRules::FlWeaponTryRespawn(CBasePlayerItem *pWeapon)
 {
 	return 0;
 }
 
-Vector CHalfLifeRules::__MAKE_VHOOK(VecWeaponRespawnSpot)(CBasePlayerItem *pWeapon)
+Vector CHalfLifeRules::VecWeaponRespawnSpot(CBasePlayerItem *pWeapon)
 {
 	return pWeapon->pev->origin;
 }
 
-edict_t *CHalfLifeRules::__MAKE_VHOOK(GetPlayerSpawnSpot)(CBasePlayer *pPlayer)
+edict_t *CHalfLifeRules::GetPlayerSpawnSpot(CBasePlayer *pPlayer)
 {
 	CBaseEntity *pSpot = UTIL_FindEntityByClassname(NULL, "info_player_start");
 
@@ -158,83 +158,83 @@ edict_t *CHalfLifeRules::__MAKE_VHOOK(GetPlayerSpawnSpot)(CBasePlayer *pPlayer)
 	return pSpot->edict();
 }
 
-int CHalfLifeRules::__MAKE_VHOOK(WeaponShouldRespawn)(CBasePlayerItem *pWeapon)
+int CHalfLifeRules::WeaponShouldRespawn(CBasePlayerItem *pWeapon)
 {
 	return GR_WEAPON_RESPAWN_NO;
 }
 
-BOOL CHalfLifeRules::__MAKE_VHOOK(CanHaveItem)(CBasePlayer *pPlayer, CItem *pItem)
+BOOL CHalfLifeRules::CanHaveItem(CBasePlayer *pPlayer, CItem *pItem)
 {
 	return TRUE;
 }
 
-void CHalfLifeRules::__MAKE_VHOOK(PlayerGotItem)(CBasePlayer *pPlayer, CItem *pItem)
+void CHalfLifeRules::PlayerGotItem(CBasePlayer *pPlayer, CItem *pItem)
 {
 	;
 }
 
-int CHalfLifeRules::__MAKE_VHOOK(ItemShouldRespawn)(CItem *pItem)
+int CHalfLifeRules::ItemShouldRespawn(CItem *pItem)
 {
 	return GR_ITEM_RESPAWN_NO;
 }
 
-float CHalfLifeRules::__MAKE_VHOOK(FlItemRespawnTime)(CItem *pItem)
+float CHalfLifeRules::FlItemRespawnTime(CItem *pItem)
 {
 	return -1;
 }
 
-Vector CHalfLifeRules::__MAKE_VHOOK(VecItemRespawnSpot)(CItem *pItem)
+Vector CHalfLifeRules::VecItemRespawnSpot(CItem *pItem)
 {
 	return pItem->pev->origin;
 }
 
-BOOL CHalfLifeRules::__MAKE_VHOOK(IsAllowedToSpawn)(CBaseEntity *pEntity)
+BOOL CHalfLifeRules::IsAllowedToSpawn(CBaseEntity *pEntity)
 {
 	return TRUE;
 }
 
-void CHalfLifeRules::__MAKE_VHOOK(PlayerGotAmmo)(CBasePlayer *pPlayer, char *szName, int iCount)
+void CHalfLifeRules::PlayerGotAmmo(CBasePlayer *pPlayer, char *szName, int iCount)
 {
 	;
 }
 
-int CHalfLifeRules::__MAKE_VHOOK(AmmoShouldRespawn)(CBasePlayerAmmo *pAmmo)
+int CHalfLifeRules::AmmoShouldRespawn(CBasePlayerAmmo *pAmmo)
 {
 	return GR_AMMO_RESPAWN_NO;
 }
 
-float CHalfLifeRules::__MAKE_VHOOK(FlAmmoRespawnTime)(CBasePlayerAmmo *pAmmo)
+float CHalfLifeRules::FlAmmoRespawnTime(CBasePlayerAmmo *pAmmo)
 {
 	return -1;
 }
 
-Vector CHalfLifeRules::__MAKE_VHOOK(VecAmmoRespawnSpot)(CBasePlayerAmmo *pAmmo)
+Vector CHalfLifeRules::VecAmmoRespawnSpot(CBasePlayerAmmo *pAmmo)
 {
 	return pAmmo->pev->origin;
 }
 
-float CHalfLifeRules::__MAKE_VHOOK(FlHealthChargerRechargeTime)()
+float CHalfLifeRules::FlHealthChargerRechargeTime()
 {
 	return 0;
 }
 
-int CHalfLifeRules::__MAKE_VHOOK(DeadPlayerWeapons)(CBasePlayer *pPlayer)
+int CHalfLifeRules::DeadPlayerWeapons(CBasePlayer *pPlayer)
 {
 	return GR_PLR_DROP_GUN_NO;
 }
 
-int CHalfLifeRules::__MAKE_VHOOK(DeadPlayerAmmo)(CBasePlayer *pPlayer)
+int CHalfLifeRules::DeadPlayerAmmo(CBasePlayer *pPlayer)
 {
 	return GR_PLR_DROP_AMMO_NO;
 }
 
-int CHalfLifeRules::__MAKE_VHOOK(PlayerRelationship)(CBasePlayer *pPlayer, CBaseEntity *pTarget)
+int CHalfLifeRules::PlayerRelationship(CBasePlayer *pPlayer, CBaseEntity *pTarget)
 {
 	// why would a single player in half life need this?
 	return GR_NOTTEAMMATE;
 }
 
-BOOL CHalfLifeRules::__MAKE_VHOOK(FAllowMonsters)()
+BOOL CHalfLifeRules::FAllowMonsters()
 {
 	return TRUE;
 }

@@ -28,6 +28,14 @@
 
 #include "extdll.h"
 
+#define CUSTOM_MEMBER
+
+#if defined(REGAMEDLL_ADD) && !defined(HOOK_GAMEDLL)
+#define VFUNC virtual
+#else
+#define VFUNC
+#endif
+
 // declared virtual function's and globals for hooks
 #ifdef HOOK_GAMEDLL
 #include "hooker_impl.h"
@@ -110,7 +118,7 @@ typedef float& FloatRef;
 #include "game_shared/bot/simple_state_machine.h"
 
 #include "game_shared/steam_util.h"
-#include "game_shared/perf_counter.h"
+#include "game_shared/counter.h"
 
 #include "game_shared/bot/bot_manager.h"
 #include "game_shared/bot/bot_constants.h"

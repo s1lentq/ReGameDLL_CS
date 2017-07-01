@@ -202,7 +202,7 @@ void CGib::SpawnRandomGibs(entvars_t *pevVictim, int cGibs, int human)
 	}
 }
 
-BOOL CBaseMonster::__MAKE_VHOOK(HasHumanGibs)()
+BOOL CBaseMonster::HasHumanGibs()
 {
 	int myClass = Classify();
 
@@ -215,7 +215,7 @@ BOOL CBaseMonster::__MAKE_VHOOK(HasHumanGibs)()
 	return FALSE;
 }
 
-BOOL CBaseMonster::__MAKE_VHOOK(HasAlienGibs)()
+BOOL CBaseMonster::HasAlienGibs()
 {
 	int myClass = Classify();
 	if (myClass == CLASS_ALIEN_MILITARY
@@ -229,7 +229,7 @@ BOOL CBaseMonster::__MAKE_VHOOK(HasAlienGibs)()
 	return FALSE;
 }
 
-void CBaseMonster::__MAKE_VHOOK(FadeMonster)()
+void CBaseMonster::FadeMonster()
 {
 	StopAnimation();
 
@@ -242,7 +242,7 @@ void CBaseMonster::__MAKE_VHOOK(FadeMonster)()
 	SUB_StartFadeOut();
 }
 
-void CBaseMonster::__MAKE_VHOOK(GibMonster)()
+void CBaseMonster::GibMonster()
 {
 	TraceResult tr;
 	bool gibbed = false;
@@ -288,7 +288,7 @@ void CBaseMonster::__MAKE_VHOOK(GibMonster)()
 
 // GetDeathActivity - determines the best type of death
 // anim to play.
-Activity CBaseMonster::__MAKE_VHOOK(GetDeathActivity)()
+Activity CBaseMonster::GetDeathActivity()
 {
 	Activity deathActivity;
 	BOOL fTriedDirection;
@@ -453,7 +453,7 @@ NOXREF Activity CBaseMonster::GetSmallFlinchActivity()
 	return flinchActivity;
 }
 
-void CBaseMonster::__MAKE_VHOOK(BecomeDead)()
+void CBaseMonster::BecomeDead()
 {
 	// don't let autoaim aim at corpses.
 	pev->takedamage = DAMAGE_YES;
@@ -521,7 +521,7 @@ void CBaseMonster::CallGibMonster()
 		UTIL_Remove(this);
 }
 
-void CBaseMonster::__MAKE_VHOOK(Killed)(entvars_t *pevAttacker, int iGib)
+void CBaseMonster::Killed(entvars_t *pevAttacker, int iGib)
 {
 	// unsigned int cCount = 0;
 	// BOOL fDone = FALSE;
@@ -711,7 +711,7 @@ void CGib::Spawn(const char *szGibModel)
 	m_cBloodDecals = 5;
 }
 
-BOOL CBaseMonster::__MAKE_VHOOK(TakeHealth)(float flHealth, int bitsDamageType)
+BOOL CBaseMonster::TakeHealth(float flHealth, int bitsDamageType)
 {
 	if (pev->takedamage == DAMAGE_NO)
 		return FALSE;
@@ -730,7 +730,7 @@ BOOL CBaseMonster::__MAKE_VHOOK(TakeHealth)(float flHealth, int bitsDamageType)
 //
 // Time-based damage: only occurs while the monster is within the trigger_hurt.
 // When a monster is poisoned via an arrow etc it takes all the poison damage at once.
-BOOL CBaseMonster::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
+BOOL CBaseMonster::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
 	if (pev->takedamage == DAMAGE_NO)
 		return FALSE;
@@ -1320,7 +1320,7 @@ NOXREF CBaseEntity *CBaseMonster::CheckTraceHullAttack(float flDist, int iDamage
 // FInViewCone - returns true is the passed ent is in
 // the caller's forward view cone. The dot product is performed
 // in 2d, making the view cone infinitely tall.
-BOOL CBaseMonster::__MAKE_VHOOK(FInViewCone)(CBaseEntity *pEntity)
+BOOL CBaseMonster::FInViewCone(CBaseEntity *pEntity)
 {
 	Vector2D vec2LOS;
 	float flDot;
@@ -1345,7 +1345,7 @@ BOOL CBaseMonster::__MAKE_VHOOK(FInViewCone)(CBaseEntity *pEntity)
 // FInViewCone - returns true is the passed vector is in
 // the caller's forward view cone. The dot product is performed
 // in 2d, making the view cone infinitely tall.
-BOOL CBaseMonster::__MAKE_VHOOK(FInViewCone)(const Vector *pOrigin)
+BOOL CBaseMonster::FInViewCone(const Vector *pOrigin)
 {
 	Vector2D vec2LOS;
 	float flDot;
@@ -1369,7 +1369,7 @@ BOOL CBaseMonster::__MAKE_VHOOK(FInViewCone)(const Vector *pOrigin)
 
 // FVisible - returns true if a line can be traced from
 // the caller's eyes to the target
-BOOL CBaseEntity::__MAKE_VHOOK(FVisible)(CBaseEntity *pEntity)
+BOOL CBaseEntity::FVisible(CBaseEntity *pEntity)
 {
 	TraceResult tr;
 	Vector vecLookerOrigin;
@@ -1402,7 +1402,7 @@ BOOL CBaseEntity::__MAKE_VHOOK(FVisible)(CBaseEntity *pEntity)
 
 // FVisible - returns true if a line can be traced from
 // the caller's eyes to the target vector
-BOOL CBaseEntity::__MAKE_VHOOK(FVisible)(const Vector &vecOrigin)
+BOOL CBaseEntity::FVisible(const Vector &vecOrigin)
 {
 	TraceResult tr;
 	Vector vecLookerOrigin;
@@ -1424,7 +1424,7 @@ BOOL CBaseEntity::__MAKE_VHOOK(FVisible)(const Vector &vecOrigin)
 	}
 }
 
-void CBaseEntity::__MAKE_VHOOK(TraceAttack)(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType)
+void CBaseEntity::TraceAttack(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType)
 {
 	Vector vecOrigin = ptr->vecEndPos - vecDir * 4;
 
@@ -1442,7 +1442,7 @@ void CBaseEntity::__MAKE_VHOOK(TraceAttack)(entvars_t *pevAttacker, float flDama
 	}
 }
 
-void CBaseMonster::__MAKE_VHOOK(TraceAttack)(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType)
+void CBaseMonster::TraceAttack(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType)
 {
 	Vector vecOrigin = ptr->vecEndPos - vecDir * 4;
 
@@ -1859,7 +1859,7 @@ Vector CBaseEntity::FireBullets3(Vector vecSrc, Vector vecDirShooting, float vec
 	return Vector(x * vecSpread, y * vecSpread, 0);
 }
 
-void CBaseEntity::__MAKE_VHOOK(TraceBleed)(float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType)
+void CBaseEntity::TraceBleed(float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType)
 {
 	if (BloodColor() == DONT_BLEED)
 		return;

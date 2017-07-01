@@ -19,12 +19,12 @@ CHostageImprov::CHostageImprov(CBaseEntity *entity)
 	OnReset();
 }
 
-bool CHostageImprov::__MAKE_VHOOK(IsAlive)() const
+bool CHostageImprov::IsAlive() const
 {
 	return m_hostage->pev->deadflag != DEAD_DEAD;
 }
 
-void CHostageImprov::__MAKE_VHOOK(MoveTo)(const Vector &goal)
+void CHostageImprov::MoveTo(const Vector &goal)
 {
 	m_moveGoal = goal;
 	m_path.Invalidate();
@@ -37,7 +37,7 @@ void CHostageImprov::__MAKE_VHOOK(MoveTo)(const Vector &goal)
 }
 
 // Find "simple" ground height, treating current nav area as part of the floor
-bool CHostageImprov::__MAKE_VHOOK(GetSimpleGroundHeightWithFloor)(const Vector *pos, float *height, Vector *normal)
+bool CHostageImprov::GetSimpleGroundHeightWithFloor(const Vector *pos, float *height, Vector *normal)
 {
 	if (GetSimpleGroundHeight(pos, height, normal))
 	{
@@ -74,24 +74,24 @@ bool CHostageImprov::DiscontinuityJump(float ground, bool onlyJumpDown, bool mus
 	return false;
 }
 
-void CHostageImprov::__MAKE_VHOOK(LookAt)(const Vector &target)
+void CHostageImprov::LookAt(const Vector &target)
 {
 	m_isLookingAt = true;
 	m_viewGoal = target;
 }
 
-void CHostageImprov::__MAKE_VHOOK(ClearLookAt)()
+void CHostageImprov::ClearLookAt()
 {
 	m_isLookingAt = false;
 }
 
-void CHostageImprov::__MAKE_VHOOK(FaceTo)(const Vector &goal)
+void CHostageImprov::FaceTo(const Vector &goal)
 {
 	m_isFacingTo = true;
 	m_faceGoal = goal;
 }
 
-void CHostageImprov::__MAKE_VHOOK(ClearFaceTo)()
+void CHostageImprov::ClearFaceTo()
 {
 	m_isFacingTo = false;
 }
@@ -290,18 +290,18 @@ void CHostageImprov::FaceOutwards()
 	FaceTo(to);
 }
 
-bool CHostageImprov::__MAKE_VHOOK(IsAtMoveGoal)(float error) const
+bool CHostageImprov::IsAtMoveGoal(float error) const
 {
 	return (GetFeet() - m_moveGoal).IsLengthLessThan(error);
 }
 
-bool CHostageImprov::__MAKE_VHOOK(IsAtFaceGoal)() const
+bool CHostageImprov::IsAtFaceGoal() const
 {
 	return false;
 }
 
 // Return true if a friend is between us and the given position
-bool CHostageImprov::__MAKE_VHOOK(IsFriendInTheWay)(const Vector &goalPos) const
+bool CHostageImprov::IsFriendInTheWay(const Vector &goalPos) const
 {
 	// do this check less often to ease CPU burden
 	if (!m_avoidFriendTimer.IsElapsed())
@@ -349,7 +349,7 @@ bool CHostageImprov::__MAKE_VHOOK(IsFriendInTheWay)(const Vector &goalPos) const
 }
 
 // Return true if a friend is between us and the given entity
-bool CHostageImprov::__MAKE_VHOOK(IsFriendInTheWay)(CBaseEntity *myFriend, const Vector &goalPos) const
+bool CHostageImprov::IsFriendInTheWay(CBaseEntity *myFriend, const Vector &goalPos) const
 {
 	if (m_hostage == myFriend)
 		return false;
@@ -414,7 +414,7 @@ float CHostageImprov::GetSpeed()
 	return -1.0f;
 }
 
-bool CHostageImprov::__MAKE_VHOOK(Jump)()
+bool CHostageImprov::Jump()
 {
 	if (IsCrouching() || g_pHostages->IsNearbyHostageJumping(this))
 		return false;
@@ -443,17 +443,17 @@ bool CHostageImprov::__MAKE_VHOOK(Jump)()
 	return true;
 }
 
-void CHostageImprov::__MAKE_VHOOK(Run)()
+void CHostageImprov::Run()
 {
 	m_moveType = m_moveLimit;
 }
 
-void CHostageImprov::__MAKE_VHOOK(Walk)()
+void CHostageImprov::Walk()
 {
 	m_moveType = (m_moveLimit > Walking) ? Walking : m_moveLimit;
 }
 
-void CHostageImprov::__MAKE_VHOOK(Stop)()
+void CHostageImprov::Stop()
 {
 	MoveTo(GetFeet());
 	m_hostage->pev->velocity = Vector(0, 0, 0);
@@ -464,35 +464,35 @@ void CHostageImprov::__MAKE_VHOOK(Stop)()
 		m_moveType = m_moveLimit;
 }
 
-const Vector &CHostageImprov::__MAKE_VHOOK(GetFeet)() const
+const Vector &CHostageImprov::GetFeet() const
 {
 	return m_hostage->pev->origin;
 }
 
-const Vector &CHostageImprov::__MAKE_VHOOK(GetCentroid)() const
+const Vector &CHostageImprov::GetCentroid() const
 {
 	m_centroid = m_hostage->pev->origin + Vector(0, 0, HalfHumanHeight);
 	return m_centroid;
 }
 
-const Vector &CHostageImprov::__MAKE_VHOOK(GetEyes)() const
+const Vector &CHostageImprov::GetEyes() const
 {
 	m_eye = m_hostage->pev->origin + Vector(0, 0, HumanHeight) - Vector(0, 0, 7);
 	return m_eye;
 }
 
-bool CHostageImprov::__MAKE_VHOOK(IsOnGround)() const
+bool CHostageImprov::IsOnGround() const
 {
 	return (m_hostage->pev->flags & FL_ONGROUND) != 0;
 }
 
-bool CHostageImprov::__MAKE_VHOOK(IsMoving)() const
+bool CHostageImprov::IsMoving() const
 {
 	float const epsilon = 10.0f;
 	return m_actualVel.IsLengthGreaterThan(epsilon);
 }
 
-bool CHostageImprov::__MAKE_VHOOK(IsVisible)(const Vector &pos, bool testFOV) const
+bool CHostageImprov::IsVisible(const Vector &pos, bool testFOV) const
 {
 	const Vector eye = GetEyes();
 	TraceResult result;
@@ -501,7 +501,7 @@ bool CHostageImprov::__MAKE_VHOOK(IsVisible)(const Vector &pos, bool testFOV) co
 	return result.flFraction == 1.0f;
 }
 
-bool CHostageImprov::__MAKE_VHOOK(IsPlayerLookingAtMe)(CBasePlayer *other, float cosTolerance) const
+bool CHostageImprov::IsPlayerLookingAtMe(CBasePlayer *other, float cosTolerance) const
 {
 	Vector2D toOther = (other->pev->origin - GetCentroid()).Make2D();
 	toOther.NormalizeInPlace();
@@ -522,7 +522,7 @@ bool CHostageImprov::__MAKE_VHOOK(IsPlayerLookingAtMe)(CBasePlayer *other, float
 	return false;
 }
 
-CBasePlayer *CHostageImprov::__MAKE_VHOOK(IsAnyPlayerLookingAtMe)(int team, float cosTolerance) const
+CBasePlayer *CHostageImprov::IsAnyPlayerLookingAtMe(int team, float cosTolerance) const
 {
 	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
@@ -543,7 +543,7 @@ CBasePlayer *CHostageImprov::__MAKE_VHOOK(IsAnyPlayerLookingAtMe)(int team, floa
 	return NULL;
 }
 
-CBasePlayer *CHostageImprov::__MAKE_VHOOK(GetClosestPlayerByTravelDistance)(int team, float *range) const
+CBasePlayer *CHostageImprov::GetClosestPlayerByTravelDistance(int team, float *range) const
 {
 	CBasePlayer *close = NULL;
 	float closeRange = 9.9999998e10f;
@@ -579,7 +579,7 @@ CBasePlayer *CHostageImprov::__MAKE_VHOOK(GetClosestPlayerByTravelDistance)(int 
 	return close;
 }
 
-void CHostageImprov::__MAKE_VHOOK(OnReset)()
+void CHostageImprov::OnReset()
 {
 	m_moveFlags = 0;
 	m_moveType = Stopped;
@@ -672,7 +672,7 @@ void CHostageImprov::UpdateVision()
 	m_visionTimer.Start(RANDOM_FLOAT(0.4f, 0.6f));
 }
 
-void CHostageImprov::__MAKE_VHOOK(TrackPath)(const Vector &pathGoal, float deltaT)
+void CHostageImprov::TrackPath(const Vector &pathGoal, float deltaT)
 {
 	FaceTowards(pathGoal, deltaT);
 	MoveTowards(pathGoal, deltaT);
@@ -731,12 +731,12 @@ void CHostageImprov::ResetToKnownGoodPosition()
 	Stop();
 }
 
-void CHostageImprov::__MAKE_VHOOK(StartLadder)(const CNavLadder *ladder, NavTraverseType how, const Vector *approachPos, const Vector *departPos)
+void CHostageImprov::StartLadder(const CNavLadder *ladder, NavTraverseType how, const Vector *approachPos, const Vector *departPos)
 {
 	m_traversingLadder = true;
 }
 
-bool CHostageImprov::__MAKE_VHOOK(TraverseLadder)(const CNavLadder *ladder, NavTraverseType how, const Vector *approachPos, const Vector *departPos, float deltaT)
+bool CHostageImprov::TraverseLadder(const CNavLadder *ladder, NavTraverseType how, const Vector *approachPos, const Vector *departPos, float deltaT)
 {
 	Vector goal;
 
@@ -984,7 +984,7 @@ void CHostageImprov::UpdatePosition(float deltaT)
 	m_moveFlags = 0;
 }
 
-void CHostageImprov::__MAKE_VHOOK(OnUpkeep)(float deltaT)
+void CHostageImprov::OnUpkeep(float deltaT)
 {
 	if (IsAlive())
 	{
@@ -1069,7 +1069,7 @@ void CHostageImprov::UpdateGrenadeReactions()
 	}
 }
 
-void CHostageImprov::__MAKE_VHOOK(OnUpdate)(float deltaT)
+void CHostageImprov::OnUpdate(float deltaT)
 {
 	if (!IsAlive() || cv_hostage_stop.value > 0.0f)
 		return;
@@ -1225,7 +1225,7 @@ void CHostageImprov::__MAKE_VHOOK(OnUpdate)(float deltaT)
 	m_animateState.OnUpdate(this);
 }
 
-void CHostageImprov::__MAKE_VHOOK(OnGameEvent)(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
+void CHostageImprov::OnGameEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
 {
 	switch (event)
 	{
@@ -1330,7 +1330,7 @@ void CHostageImprov::__MAKE_VHOOK(OnGameEvent)(GameEventType event, CBaseEntity 
 	}
 }
 
-void CHostageImprov::__MAKE_VHOOK(OnTouch)(CBaseEntity *other)
+void CHostageImprov::OnTouch(CBaseEntity *other)
 {
 	const char *classname;
 	Vector2D to;
@@ -1719,7 +1719,7 @@ void CHostageImprov::Wave()
 }
 
 // Invoked when an improv fails to reach a MoveTo goal
-void CHostageImprov::__MAKE_VHOOK(OnMoveToFailure)(const Vector &goal, MoveToFailureType reason)
+void CHostageImprov::OnMoveToFailure(const Vector &goal, MoveToFailureType reason)
 {
 	m_behavior.OnMoveToFailure(goal, reason);
 
@@ -1814,7 +1814,7 @@ void CHostageImprov::ClearPath()
 	}
 }
 
-void CHostageImprov::__MAKE_VHOOK(Crouch)()
+void CHostageImprov::Crouch()
 {
 	const float minCrouchTime = 1.0f;
 
@@ -1826,7 +1826,7 @@ void CHostageImprov::__MAKE_VHOOK(Crouch)()
 	UTIL_SetSize(m_hostage->pev, VEC_HOSTAGE_HULL_MIN, VEC_HOSTAGE_CROUCH);
 }
 
-void CHostageImprov::__MAKE_VHOOK(StandUp)()
+void CHostageImprov::StandUp()
 {
 	if (!IsCrouching() || !m_minCrouchTimer.IsElapsed())
 	{

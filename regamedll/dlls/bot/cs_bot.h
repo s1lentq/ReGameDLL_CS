@@ -80,13 +80,6 @@ public:
 	virtual void OnEnter(CCSBot *me);
 	virtual void OnUpdate(CCSBot *me);
 	virtual const char *GetName() const { return "Idle"; }
-
-#ifdef HOOK_GAMEDLL
-
-	void OnEnter_(CCSBot *me);
-	void OnUpdate_(CCSBot *me);
-
-#endif
 };
 
 class HuntState: public BotState
@@ -97,15 +90,8 @@ public:
 	virtual void OnExit(CCSBot *me);
 	virtual const char *GetName() const { return "Hunt"; }
 
-#ifdef HOOK_GAMEDLL
-
-	void OnEnter_(CCSBot *me);
-	void OnUpdate_(CCSBot *me);
-	void OnExit_(CCSBot *me);
-
-#endif
-
 	void ClearHuntArea() { m_huntArea = NULL; }
+
 private:
 	CNavArea *m_huntArea;
 };
@@ -117,14 +103,6 @@ public:
 	virtual void OnUpdate(CCSBot *me);
 	virtual void OnExit(CCSBot *me);
 	virtual const char *GetName() const { return "Attack"; }
-
-#ifdef HOOK_GAMEDLL
-
-	void OnEnter_(CCSBot *me);
-	void OnUpdate_(CCSBot *me);
-	void OnExit_(CCSBot *me);
-
-#endif
 
 	void SetCrouchAndHold(bool crouch) { m_crouchAndHold = crouch; }
 	void StopAttacking(CCSBot *me);
@@ -164,14 +142,6 @@ public:
 	virtual void OnExit(CCSBot *me);
 	virtual const char *GetName() const { return "InvestigateNoise"; }
 
-#ifdef HOOK_GAMEDLL
-
-	void OnEnter_(CCSBot *me);
-	void OnUpdate_(CCSBot *me);
-	void OnExit_(CCSBot *me);
-
-#endif
-
 private:
 	void AttendCurrentNoise(CCSBot *me);
 	Vector m_checkNoisePosition;
@@ -184,14 +154,6 @@ public:
 	virtual void OnUpdate(CCSBot *me);
 	virtual void OnExit(CCSBot *me);
 	virtual const char *GetName() const { return "Buy"; }
-
-#ifdef HOOK_GAMEDLL
-
-	void OnEnter_(CCSBot *me);
-	void OnUpdate_(CCSBot *me);
-	void OnExit_(CCSBot *me);
-
-#endif
 
 private:
 	bool m_isInitialDelay;
@@ -213,14 +175,6 @@ public:
 	virtual void OnExit(CCSBot *me);
 	virtual const char *GetName() const { return "MoveTo"; }
 
-#ifdef HOOK_GAMEDLL
-
-	void OnEnter_(CCSBot *me);
-	void OnUpdate_(CCSBot *me);
-	void OnExit_(CCSBot *me);
-
-#endif
-
 	void SetGoalPosition(const Vector &pos) { m_goalPosition = pos; }
 	void SetRouteType(RouteType route) { m_routeType = route; }
 
@@ -237,14 +191,6 @@ public:
 	virtual void OnEnter(CCSBot *me);
 	virtual void OnUpdate(CCSBot *me);
 	virtual const char *GetName() const { return "FetchBomb"; }
-
-#ifdef HOOK_GAMEDLL
-
-	void OnEnter_(CCSBot *me);
-	void OnUpdate_(CCSBot *me);
-
-#endif
-
 };
 
 class PlantBombState: public BotState
@@ -254,15 +200,6 @@ public:
 	virtual void OnUpdate(CCSBot *me);
 	virtual void OnExit(CCSBot *me);
 	virtual const char *GetName() const { return "PlantBomb"; }
-
-#ifdef HOOK_GAMEDLL
-
-	void OnEnter_(CCSBot *me);
-	void OnUpdate_(CCSBot *me);
-	void OnExit_(CCSBot *me);
-
-#endif
-
 };
 
 class DefuseBombState: public BotState
@@ -272,14 +209,6 @@ public:
 	virtual void OnUpdate(CCSBot *me);
 	virtual void OnExit(CCSBot *me);
 	virtual const char *GetName() const { return "DefuseBomb"; }
-
-#ifdef HOOK_GAMEDLL
-
-	void OnEnter_(CCSBot *me);
-	void OnUpdate_(CCSBot *me);
-	void OnExit_(CCSBot *me);
-
-#endif
 };
 
 class HideState: public BotState
@@ -289,14 +218,6 @@ public:
 	virtual void OnUpdate(CCSBot *me);
 	virtual void OnExit(CCSBot *me);
 	virtual const char *GetName() const { return "Hide"; }
-
-#ifdef HOOK_GAMEDLL
-
-	void OnEnter_(CCSBot *me);
-	void OnUpdate_(CCSBot *me);
-	void OnExit_(CCSBot *me);
-
-#endif
 
 public:
 	void SetHidingSpot(const Vector &pos) { m_hidingSpot = pos; }
@@ -333,15 +254,6 @@ public:
 	virtual void OnUpdate(CCSBot *me);
 	virtual void OnExit(CCSBot *me);
 	virtual const char *GetName() const { return "EscapeFromBomb"; }
-
-#ifdef HOOK_GAMEDLL
-
-	void OnEnter_(CCSBot *me);
-	void OnUpdate_(CCSBot *me);
-	void OnExit_(CCSBot *me);
-
-#endif
-
 };
 
 class FollowState: public BotState
@@ -352,19 +264,9 @@ public:
 	virtual void OnExit(CCSBot *me);
 	virtual const char *GetName() const { return "Follow"; }
 
-#ifdef HOOK_GAMEDLL
-
-	void OnEnter_(CCSBot *me);
-	void OnUpdate_(CCSBot *me);
-	void OnExit_(CCSBot *me);
-
-#endif
-
 	void SetLeader(CBaseEntity *leader) { m_leader = leader; }
 
-#ifndef HOOK_GAMEDLL
 private:
-#endif
 	void ComputeLeaderMotionState(float leaderSpeed);
 
 	EHANDLE m_leader;
@@ -402,14 +304,6 @@ public:
 	virtual void OnExit(CCSBot *me);
 	virtual const char *GetName() const { return "UseEntity"; }
 
-#ifdef HOOK_GAMEDLL
-
-	void OnEnter_(CCSBot *me);
-	void OnUpdate_(CCSBot *me);
-	void OnExit_(CCSBot *me);
-
-#endif
-
 	void SetEntity(CBaseEntity *entity) { m_entity = entity; }
 
 private:
@@ -422,47 +316,27 @@ class CCSBot: public CBot
 public:
 	CCSBot();														// constructor initializes all values to zero
 	virtual BOOL TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);		// invoked when injured by something (EXTEND) - returns the amount of damage inflicted
-	virtual void Killed(entvars_t *pevAttacker, int iGib);									// invoked when killed (EXTEND)
+	virtual void Killed(entvars_t *pevAttacker, int iGib);																// invoked when killed (EXTEND)
 	virtual void RoundRespawn();
-	virtual void Blind(float duration, float holdTime, float fadeTime, int alpha = 255);					// player blinded by a flashbang
-	virtual void OnTouchingWeapon(CWeaponBox *box);										// invoked when in contact with a CWeaponBox
+	virtual void Blind(float duration, float holdTime, float fadeTime, int alpha = 255);								// player blinded by a flashbang
+	virtual void OnTouchingWeapon(CWeaponBox *box);																		// invoked when in contact with a CWeaponBox
 
-	virtual bool Initialize(const BotProfile *profile);									// (EXTEND) prepare bot for action
+	virtual bool Initialize(const BotProfile *profile);						// (EXTEND) prepare bot for action
 	virtual void SpawnBot();												// (EXTEND) spawn the bot into the game
 
 	virtual void Upkeep();													// lightweight maintenance, invoked frequently
 	virtual void Update();													// heavyweight algorithms, invoked less often
 
 	virtual void Walk();
-	virtual bool Jump(bool mustJump = false);										// returns true if jump was started
+	virtual bool Jump(bool mustJump = false);								// returns true if jump was started
 
 	virtual void OnEvent(GameEventType event, CBaseEntity *entity = NULL, CBaseEntity *other = NULL);			// invoked when event occurs in the game (some events have NULL entity)
 
 	#define CHECK_FOV true
-	virtual bool IsVisible(const Vector *pos, bool testFOV = false) const;							// return true if we can see the point
-	virtual bool IsVisible(CBasePlayer *player, bool testFOV = false, unsigned char *visParts = NULL) const;		// return true if we can see any part of the player
+	virtual bool IsVisible(const Vector *pos, bool testFOV = false) const;										// return true if we can see the point
+	virtual bool IsVisible(CBasePlayer *player, bool testFOV = false, unsigned char *visParts = NULL) const;	// return true if we can see any part of the player
 
-	virtual bool IsEnemyPartVisible(VisiblePartType part) const;								// if enemy is visible, return the part we see for our current enemy
-
-#ifdef HOOK_GAMEDLL
-
-	bool Initialize_(const BotProfile *profile);
-	void SpawnBot_();
-	void Upkeep_();
-	void Update_();
-	void Walk_();
-	bool Jump_(bool mustJump);
-	void Blind_(float duration, float holdTime, float fadeTime, int alpha);
-	BOOL TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
-	void Killed_(entvars_t *pevAttacker, int iGib);
-	void OnTouchingWeapon_(CWeaponBox *box);
-	void OnEvent_(GameEventType event, CBaseEntity *entity, CBaseEntity *other);
-	bool IsVisible_(const Vector *pos, bool testFOV) const;
-	bool IsVisible_(CBasePlayer *player, bool testFOV, unsigned char *visParts) const;
-	bool IsEnemyPartVisible_(VisiblePartType part) const;
-	void RoundRespawn_();
-
-#endif
+	virtual bool IsEnemyPartVisible(VisiblePartType part) const;												// if enemy is visible, return the part we see for our current enemy
 
 public:
 	void Disconnect();
@@ -488,70 +362,70 @@ public:
 
 	void Hide(const Vector *hidingSpot, float duration = -1.0f, bool holdPosition = false);											// move to the given hiding place
 	bool IsHiding() const;																			// returns true if bot is currently hiding
-	bool IsAtHidingSpot() const;																		// return true if we are hiding and at our hiding spot
+	bool IsAtHidingSpot() const;																	// return true if we are hiding and at our hiding spot
 	bool TryToRetreat();																			// retreat to a nearby hiding spot, away from enemies
 
 	void Hunt();
-	bool IsHunting() const;									// returns true if bot is currently hunting
+	bool IsHunting() const;								// returns true if bot is currently hunting
 
 	void Attack(CBasePlayer *victim);
-	void FireWeaponAtEnemy();								// fire our active weapon towards our current enemy
+	void FireWeaponAtEnemy();							// fire our active weapon towards our current enemy
 	void StopAttacking();
-	bool IsAttacking() const;								// returns true if bot is currently engaging a target
+	bool IsAttacking() const;							// returns true if bot is currently engaging a target
 
-	void MoveTo(const Vector *pos, RouteType route = SAFEST_ROUTE);				// move to potentially distant position
-	bool IsMovingTo() const;								// return true if we are in the MoveTo state
+	void MoveTo(const Vector *pos, RouteType route = SAFEST_ROUTE); // move to potentially distant position
+	bool IsMovingTo() const;							// return true if we are in the MoveTo state
 
 	void PlantBomb();
 
 	void FetchBomb();									// bomb has been dropped - go get it
-	bool NoticeLooseBomb() const;								// return true if we noticed the bomb on the ground or on radar
-	bool CanSeeLooseBomb() const;								// return true if we directly see the loose bomb
+	bool NoticeLooseBomb() const;						// return true if we noticed the bomb on the ground or on radar
+	bool CanSeeLooseBomb() const;						// return true if we directly see the loose bomb
 	bool IsCarryingBomb() const;
 
 	void DefuseBomb();
-	bool IsDefusingBomb() const;								// returns true if bot is currently defusing the bomb
-	bool CanSeePlantedBomb() const;								// return true if we directly see the planted bomb
+	bool IsDefusingBomb() const;						// returns true if bot is currently defusing the bomb
+	bool CanSeePlantedBomb() const;						// return true if we directly see the planted bomb
 
 	void EscapeFromBomb();
-	bool IsEscapingFromBomb() const;							// return true if we are escaping from the bomb
+	bool IsEscapingFromBomb() const;					// return true if we are escaping from the bomb
 
 	void RescueHostages();
-	void UseEntity(CBaseEntity *entity);							// use the entity
+	void UseEntity(CBaseEntity *entity);				// use the entity
 
 	bool IsBuying() const;
 
-	void Panic(CBasePlayer *enemy);								// look around in panic
-	void Follow(CBasePlayer *player);							// begin following given Player
-	void ContinueFollowing();								// continue following our leader after finishing what we were doing
-	void StopFollowing();									// stop following
-	bool IsFollowing() const;								// return true if we are following someone (not necessarily in the follow state)
-	CBasePlayer *GetFollowLeader();								// return the leader we are following
-	float GetFollowDuration() const;							// return how long we've been following our leader
-	bool CanAutoFollow() const;								// return true if we can auto-follow
+	void Panic(CBasePlayer *enemy);						// look around in panic
+	void Follow(CBasePlayer *player);					// begin following given Player
+	void ContinueFollowing();							// continue following our leader after finishing what we were doing
+	void StopFollowing();								// stop following
+	bool IsFollowing() const;							// return true if we are following someone (not necessarily in the follow state)
+	CBasePlayer *GetFollowLeader();						// return the leader we are following
+	float GetFollowDuration() const;					// return how long we've been following our leader
+	bool CanAutoFollow() const;							// return true if we can auto-follow
 
-	bool IsNotMoving() const;								// return true if we are currently standing still
+	bool IsNotMoving() const;							// return true if we are currently standing still
 
 	void AimAtEnemy();									// point our weapon towards our enemy
 	void StopAiming();									// stop aiming at enemy
-	bool IsAimingAtEnemy() const;								// returns true if we are trying to aim at an enemy
+	bool IsAimingAtEnemy() const;						// returns true if we are trying to aim at an enemy
 
-	bool IsSurprised() const;								// return true if we are "surprised"
+	bool IsSurprised() const;							// return true if we are "surprised"
 	float GetSurpriseDelay() const;
 	void ClearSurpriseDelay();
 
-	float GetStateTimestamp() const;							// get time current state was entered
+	float GetStateTimestamp() const;					// get time current state was entered
 
-	bool IsDoingScenario() const;								// return true if we will do scenario-related tasks
+	bool IsDoingScenario() const;						// return true if we will do scenario-related tasks
 
 	// scenario / gamestate
-	CSGameState *GetGameState();								// return an interface to this bot's gamestate
-	const CSGameState *GetGameState() const;						// return an interface to this bot's gamestate
+	CSGameState *GetGameState();						// return an interface to this bot's gamestate
+	const CSGameState *GetGameState() const;			// return an interface to this bot's gamestate
 
-	bool IsAtBombsite();									// return true if we are in a bomb planting zone
-	bool GuardRandomZone(float range = 500.0f);						// pick a random zone and hide near it
+	bool IsAtBombsite();								// return true if we are in a bomb planting zone
+	bool GuardRandomZone(float range = 500.0f);			// pick a random zone and hide near it
 
-	bool IsBusy() const;									// return true if we are busy doing something important
+	bool IsBusy() const;								// return true if we are busy doing something important
 
 	// high-level tasks
 	enum TaskType
@@ -587,7 +461,7 @@ public:
 	// behavior modifiers
 	enum DispositionType
 	{
-		ENGAGE_AND_INVESTIGATE,		// engage enemies on sight and investigate enemy noises
+		ENGAGE_AND_INVESTIGATE,	// engage enemies on sight and investigate enemy noises
 		OPPORTUNITY_FIRE,		// engage enemies on sight, but only look towards enemy noises, dont investigate
 		SELF_DEFENSE,			// only engage if fired on, or very close to enemy
 		IGNORE_ENEMIES,			// ignore all enemies - useful for ducking around corners, running away, etc
@@ -595,8 +469,8 @@ public:
 		NUM_DISPOSITIONS
 	};
 
-	void SetDisposition(DispositionType disposition);					// define how we react to enemies
-	DispositionType GetDisposition() const;							// return enum describing current disposition
+	void SetDisposition(DispositionType disposition);			// define how we react to enemies
+	DispositionType GetDisposition() const;						// return enum describing current disposition
 
 	void IgnoreEnemies(float duration);							// ignore enemies for a short duration
 
@@ -616,24 +490,24 @@ public:
 	void DecreaseMorale();
 
 	// listening for noises
-	bool IsNoiseHeard() const;								// return true if we have heard a noise
+	bool IsNoiseHeard() const;									// return true if we have heard a noise
 	bool ShouldInvestigateNoise(float *retNoiseDist = NULL);
-	void InvestigateNoise();								// investigate recent enemy noise
-	const Vector *GetNoisePosition() const;							// return position of last heard noise, or NULL if none heard
+	void InvestigateNoise();									// investigate recent enemy noise
+	const Vector *GetNoisePosition() const;						// return position of last heard noise, or NULL if none heard
 	CNavArea *GetNoiseArea() const;								// return area where noise was heard
-	void ForgetNoise();									// clear the last heard noise
+	void ForgetNoise();											// clear the last heard noise
 	bool CanSeeNoisePosition() const;							// return true if we directly see where we think the noise came from
 	float GetNoiseRange() const;								// return approximate distance to last noise heard
 
-	bool CanHearNearbyEnemyGunfire(float range = -1.0f) const;				// return true if we hear nearby threatening enemy gunfire within given range (-1 == infinite)
-	PriorityType GetNoisePriority() const;							// return priority of last heard noise
+	bool CanHearNearbyEnemyGunfire(float range = -1.0f) const;	// return true if we hear nearby threatening enemy gunfire within given range (-1 == infinite)
+	PriorityType GetNoisePriority() const;						// return priority of last heard noise
 
 	// radio and chatter
-	void SendRadioMessage(GameEventType event);						// send voice chatter
+	void SendRadioMessage(GameEventType event);					// send voice chatter
 	BotChatterInterface *GetChatter();							// return an interface to this bot's chatter system
 	bool RespondToHelpRequest(CBasePlayer *them, Place place, float maxRange = -1.0f);	// decide if we should move to help the player, return true if we will
 	void StartVoiceFeedback(float duration);
-	bool IsUsingVoice() const;								// new-style "voice" chatter gets voice feedback
+	bool IsUsingVoice() const;									// new-style "voice" chatter gets voice feedback
 
 	// enemies
 	// BOTPORT: GetEnemy() collides with GetEnemy() in CBaseEntity - need to use different nomenclature
@@ -642,32 +516,32 @@ public:
 	CBasePlayer *GetEnemy();
 	int GetNearbyEnemyCount() const;							// return max number of nearby enemies we've seen recently
 	unsigned int GetEnemyPlace() const;							// return location where we see the majority of our enemies
-	bool CanSeeBomber() const;								// return true if we can see the bomb carrier
+	bool CanSeeBomber() const;									// return true if we can see the bomb carrier
 	CBasePlayer *GetBomber() const;
 
 	int GetNearbyFriendCount() const;							// return number of nearby teammates
-	CBasePlayer *GetClosestVisibleFriend() const;						// return the closest friend that we can see
-	CBasePlayer *GetClosestVisibleHumanFriend() const;					// return the closest human friend that we can see
+	CBasePlayer *GetClosestVisibleFriend() const;				// return the closest friend that we can see
+	CBasePlayer *GetClosestVisibleHumanFriend() const;			// return the closest human friend that we can see
 
-	bool IsOutnumbered() const;								// return true if we are outnumbered by enemies
+	bool IsOutnumbered() const;									// return true if we are outnumbered by enemies
 	int OutnumberedCount() const;								// return number of enemies we are outnumbered by
 
 	#define ONLY_VISIBLE_ENEMIES true
 	CBasePlayer *GetImportantEnemy(bool checkVisibility = false) const;			// return the closest "important" enemy for the given scenario (bomb carrier, VIP, hostage escorter)
 
-	void UpdateReactionQueue();								// update our reaction time queue
+	void UpdateReactionQueue();									// update our reaction time queue
 	CBasePlayer *GetRecognizedEnemy();							// return the most dangerous threat we are "conscious" of
 	bool IsRecognizedEnemyReloading();							// return true if the enemy we are "conscious" of is reloading
-	bool IsRecognizedEnemyProtectedByShield();						// return true if the enemy we are "conscious" of is hiding behind a shield
-	float GetRangeToNearestRecognizedEnemy();						// return distance to closest enemy we are "conscious" of
+	bool IsRecognizedEnemyProtectedByShield();					// return true if the enemy we are "conscious" of is hiding behind a shield
+	float GetRangeToNearestRecognizedEnemy();					// return distance to closest enemy we are "conscious" of
 
 	CBasePlayer *GetAttacker() const;							// return last enemy that hurt us
 	float GetTimeSinceAttacked() const;							// return duration since we were last injured by an attacker
-	float GetFirstSawEnemyTimestamp() const;						// time since we saw any enemies
+	float GetFirstSawEnemyTimestamp() const;					// time since we saw any enemies
 	float GetLastSawEnemyTimestamp() const;
 	float GetTimeSinceLastSawEnemy() const;
 	float GetTimeSinceAcquiredCurrentEnemy() const;
-	bool HasNotSeenEnemyForLongTime() const;						// return true if we haven't seen an enemy for "a long time"
+	bool HasNotSeenEnemyForLongTime() const;					// return true if we haven't seen an enemy for "a long time"
 	const Vector &GetLastKnownEnemyPosition() const;
 	bool IsEnemyVisible() const;								// is our current enemy visible
 	float GetEnemyDeathTimestamp() const;
@@ -679,7 +553,7 @@ public:
 	bool HasPath() const;
 	void DestroyPath();
 
-	float GetFeetZ() const;									// return Z of bottom of feet
+	float GetFeetZ() const;										// return Z of bottom of feet
 
 	enum PathResult
 	{
@@ -688,12 +562,12 @@ public:
 		PATH_FAILURE,	// we failed to reach the end of the path
 	};
 	#define NO_SPEED_CHANGE false
-	PathResult UpdatePathMovement(bool allowSpeedChange = true);					// move along our computed path - if allowSpeedChange is true, bot will walk when near goal to ensure accuracy
+	PathResult UpdatePathMovement(bool allowSpeedChange = true);				// move along our computed path - if allowSpeedChange is true, bot will walk when near goal to ensure accuracy
 
 	bool AStarSearch(CNavArea *startArea, CNavArea *goalArea);					// find shortest path from startArea to goalArea - don't actually buid the path
-	bool ComputePath(CNavArea *goalArea, const Vector *goal, RouteType route);			// compute path to goal position
+	bool ComputePath(CNavArea *goalArea, const Vector *goal, RouteType route);	// compute path to goal position
 	bool StayOnNavMesh();
-	CNavArea *GetLastKnownArea() const;								// return the last area we know we were inside of
+	CNavArea *GetLastKnownArea() const;									// return the last area we know we were inside of
 	const Vector &GetPathEndpoint() const;								// return final position of our current path
 	float GetPathDistanceRemaining() const;								// eturn estimated distance left to travel along path
 	void ResetStuckMonitor();
@@ -701,38 +575,38 @@ public:
 	const Vector &GetPathPosition(int numpath) const;
 	bool GetSimpleGroundHeightWithFloor(const Vector *pos, float *height, Vector *normal = NULL);	// find "simple" ground height, treating current nav area as part of the floor
 
-	Place GetPlace() const;										// get our current radio chatter place
+	Place GetPlace() const;												// get our current radio chatter place
 
-	bool IsUsingLadder() const;									// returns true if we are in the process of negotiating a ladder
+	bool IsUsingLadder() const;											// returns true if we are in the process of negotiating a ladder
 	void GetOffLadder();
 
 	void SetGoalEntity(CBaseEntity *entity);
 	CBaseEntity *GetGoalEntity();
 
-	bool IsNearJump() const;									// return true if nearing a jump in the path
-	float GetApproximateFallDamage(float height) const;						// return how much damage will will take from the given fall height
+	bool IsNearJump() const;											// return true if nearing a jump in the path
+	float GetApproximateFallDamage(float height) const;					// return how much damage will will take from the given fall height
 
-	void ForceRun(float duration);									// force the bot to run if it moves for the given duration
-	void Wiggle();											// random movement, for getting un-stuck
+	void ForceRun(float duration);										// force the bot to run if it moves for the given duration
+	void Wiggle();														// random movement, for getting un-stuck
 
-	bool IsFriendInTheWay(const Vector *goalPos) const;						// return true if a friend is between us and the given position
-	void FeelerReflexAdjustment(Vector *goalPosition);						// do reflex avoidance movements if our "feelers" are touched
+	bool IsFriendInTheWay(const Vector *goalPos) const;					// return true if a friend is between us and the given position
+	void FeelerReflexAdjustment(Vector *goalPosition);					// do reflex avoidance movements if our "feelers" are touched
 
 	// looking around
 	void SetLookAngles(float yaw, float pitch);			// set our desired look angles
-	void UpdateLookAngles();					// move actual view angles towards desired ones
-	void UpdateLookAround(bool updateNow = false);			// update "looking around" mechanism
+	void UpdateLookAngles();							// move actual view angles towards desired ones
+	void UpdateLookAround(bool updateNow = false);		// update "looking around" mechanism
 	void InhibitLookAround(float duration);				// block all "look at" and "looking around" behavior for given duration - just look ahead
 
 	// TODO: Clean up notion of "forward angle" and "look ahead angle"
-	void SetForwardAngle(float angle);				// define our forward facing
+	void SetForwardAngle(float angle);					// define our forward facing
 	void SetLookAheadAngle(float angle);				// define default look ahead angle
 
 	// look at the given point in space for the given duration (-1 means forever)
 	void SetLookAt(const char *desc, const Vector *pos, PriorityType pri, float duration = -1.0f, bool clearIfClose = false, float angleTolerance = 5.0f);
-	void ClearLookAt();						// stop looking at a point in space and just look ahead
+	void ClearLookAt();												// stop looking at a point in space and just look ahead
 	bool IsLookingAtSpot(PriorityType pri = PRIORITY_LOW) const;	// return true if we are looking at spot with equal or higher priority
-	bool IsViewMoving(float angleVelThreshold = 1.0f) const;	// returns true if bot's view angles are rotating (not still)
+	bool IsViewMoving(float angleVelThreshold = 1.0f) const;		// returns true if bot's view angles are rotating (not still)
 
 	const Vector &GetEyePosition() const
 	{
@@ -745,31 +619,31 @@ public:
 	void ComputeApproachPoints();						// determine the set of "approach points" representing where the enemy can enter this region
 	void UpdateApproachPoints();						// recompute the approach point set if we have moved far enough to invalidate the current ones
 	void ClearApproachPoints();
-	void DrawApproachPoints();						// for debugging
+	void DrawApproachPoints();										// for debugging
 	float GetHidingSpotCheckTimestamp(HidingSpot *spot) const;		// return time when given spot was last checked
-	void SetHidingSpotCheckTimestamp(HidingSpot *spot);			// set the timestamp of the given spot to now
+	void SetHidingSpotCheckTimestamp(HidingSpot *spot);				// set the timestamp of the given spot to now
 
 	// weapon query and equip
 	#define MUST_EQUIP true
-	void EquipBestWeapon(bool mustEquip = false);				// equip the best weapon we are carrying that has ammo
-	void EquipPistol();							// equip our pistol
-	void EquipKnife();							// equip our knife
+	void EquipBestWeapon(bool mustEquip = false);	// equip the best weapon we are carrying that has ammo
+	void EquipPistol();								// equip our pistol
+	void EquipKnife();								// equip our knife
 
 	#define DONT_USE_SMOKE_GRENADE true
-	bool EquipGrenade(bool noSmoke = false);				// equip a grenade, return false if we cant
+	bool EquipGrenade(bool noSmoke = false);		// equip a grenade, return false if we cant
 
 	bool IsUsingKnife() const;						// returns true if we have knife equipped
 	bool IsUsingPistol() const;						// returns true if we have pistol equipped
-	bool IsUsingGrenade() const;						// returns true if we have grenade equipped
-	bool IsUsingSniperRifle() const;					// returns true if using a "sniper" rifle
+	bool IsUsingGrenade() const;					// returns true if we have grenade equipped
+	bool IsUsingSniperRifle() const;				// returns true if using a "sniper" rifle
 	bool IsUsingAWP() const;						// returns true if we have AWP equipped
 
 	bool IsSniper() const;							// return true if we have a sniper rifle in our inventory
 	bool IsSniping() const;							// return true if we are actively sniping (moving to sniper spot or settled in)
-	bool IsUsingShotgun() const;						// returns true if using a shotgun
-	bool IsUsingMachinegun() const;						// returns true if using the big 'ol machinegun
-	void ThrowGrenade(const Vector *target);				// begin the process of throwing the grenade
-	bool IsThrowingGrenade() const;						// return true if we are in the process of throwing a grenade
+	bool IsUsingShotgun() const;					// returns true if using a shotgun
+	bool IsUsingMachinegun() const;					// returns true if using the big 'ol machinegun
+	void ThrowGrenade(const Vector *target);		// begin the process of throwing the grenade
+	bool IsThrowingGrenade() const;					// return true if we are in the process of throwing a grenade
 	bool HasGrenade() const;						// return true if we have a grenade in our inventory
 
 	bool DoesActiveWeaponHaveSilencer() const;
@@ -779,34 +653,32 @@ public:
 	bool IsRapidFiring() const;
 
 	enum ZoomType { NO_ZOOM, LOW_ZOOM, HIGH_ZOOM };
-	ZoomType GetZoomLevel() const;						// return the current zoom level of our weapon
+	ZoomType GetZoomLevel() const;					// return the current zoom level of our weapon
 
-	bool AdjustZoom(float range);						// change our zoom level to be appropriate for the given range
+	bool AdjustZoom(float range);					// change our zoom level to be appropriate for the given range
 
-	bool IsPrimaryWeaponEmpty() const;					// return true if primary weapon doesn't exist or is totally out of ammo
+	bool IsPrimaryWeaponEmpty() const;				// return true if primary weapon doesn't exist or is totally out of ammo
 	bool IsPistolEmpty() const;						// return true if secondary weapon doesn't exist or is totally out of ammo
 
 	int GetHostageEscortCount() const;
 	void IncreaseHostageEscortCount();
 	float GetRangeToFarthestEscortedHostage() const;
 	void ResetWaitForHostagePatience();
-	void ResetValues();							// reset internal data to initial state
+	void ResetValues();								// reset internal data to initial state
 	void BotDeathThink();
 	CBasePlayer *FindNearbyPlayer();
 	void AdjustSafeTime();							// called when enemy seen to adjust safe time for this round
 	void EXPORT BotTouch(CBaseEntity *other);
 	bool HasAnyAmmo(CBasePlayerWeapon *weapon) const;
 
-#ifndef HOOK_GAMEDLL
 private:
-#endif
 	friend class CCSBotManager;
 
 	// TODO: Get rid of these
 	friend class AttackState;
 	friend class BuyState;
 
-	char m_name[64];					// copied from STRING(pev->netname) for debugging
+	char m_name[64];						// copied from STRING(pev->netname) for debugging
 
 	// behavior properties
 	float m_combatRange;					// desired distance between us and them during gunplay
@@ -814,21 +686,21 @@ private:
 	mutable CountdownTimer m_rogueTimer;
 	MoraleType m_morale;					// our current morale, based on our win/loss history
 	bool m_diedLastRound;					// true if we died last round
-	float m_safeTime;					// duration at the beginning of the round where we feel "safe"
-	bool m_wasSafe;						// true if we were in the safe time last update
-	NavRelativeDirType m_blindMoveDir;			// which way to move when we're blind
-	bool m_blindFire;					// if true, fire weapon while blinded
+	float m_safeTime;						// duration at the beginning of the round where we feel "safe"
+	bool m_wasSafe;							// true if we were in the safe time last update
+	NavRelativeDirType m_blindMoveDir;		// which way to move when we're blind
+	bool m_blindFire;						// if true, fire weapon while blinded
 
 	// TODO: implement through CountdownTimer
 	float m_surpriseDelay;					// when we were surprised
 	float m_surpriseTimestamp;
 
-	bool m_isFollowing;					// true if we are following someone
-	EHANDLE m_leader;					// the ID of who we are following
+	bool m_isFollowing;						// true if we are following someone
+	EHANDLE m_leader;						// the ID of who we are following
 	float m_followTimestamp;				// when we started following
-	float m_allowAutoFollowTime;				// time when we can auto follow
+	float m_allowAutoFollowTime;			// time when we can auto follow
 
-	CountdownTimer m_hurryTimer;				// if valid, bot is in a hurry
+	CountdownTimer m_hurryTimer;			// if valid, bot is in a hurry
 
 	// instances of each possible behavior state, to avoid dynamic memory allocation during runtime
 	IdleState m_idleState;
@@ -846,13 +718,13 @@ private:
 	UseEntityState m_useEntityState;
 
 	// TODO: Allow multiple simultaneous state machines (look around, etc)
-	void SetState(BotState *state);						// set the current behavior state
+	void SetState(BotState *state);				// set the current behavior state
 	BotState *m_state;							// current behavior state
-	float m_stateTimestamp;							// time state was entered
+	float m_stateTimestamp;						// time state was entered
 	bool m_isAttacking;							// if true, special Attack state is overriding the state machine
 
 	TaskType m_task;							// our current task
-	EHANDLE m_taskEntity;							// an entity used for our task
+	EHANDLE m_taskEntity;						// an entity used for our task
 
 	// navigation
 	Vector m_goalPosition;
@@ -860,10 +732,10 @@ private:
 	void MoveTowardsPosition(const Vector *pos);				// move towards position, independant of view angle
 	void MoveAwayFromPosition(const Vector *pos);				// move away from position, independant of view angle
 	void StrafeAwayFromPosition(const Vector *pos);				// strafe (sidestep) away from position, independant of view angle
-	void StuckCheck();							// check if we have become stuck
+	void StuckCheck();											// check if we have become stuck
 
-	CNavArea *m_currentArea;						// the nav area we are standing on
-	CNavArea *m_lastKnownArea;						// the last area we were in
+	CNavArea *m_currentArea;					// the nav area we are standing on
+	CNavArea *m_lastKnownArea;					// the last area we were in
 	EHANDLE m_avoid;							// higher priority player we need to make way for
 	float m_avoidTimestamp;
 	bool m_isJumpCrouching;
@@ -874,16 +746,16 @@ private:
 	enum { 	MAX_PATH_LENGTH = 256 };
 	struct ConnectInfo
 	{
-		CNavArea *area;			// the area along the path
+		CNavArea *area;				// the area along the path
 		NavTraverseType how;		// how to enter this area from the previous one
-		Vector pos;			// our movement goal position at this point in the path
+		Vector pos;					// our movement goal position at this point in the path
 		const CNavLadder *ladder;	// if "how" refers to a ladder, this is it
 	}
 	m_path[MAX_PATH_LENGTH];
 	int m_pathLength;
 	int m_pathIndex;
 	float m_areaEnteredTimestamp;
-	void BuildTrivialPath(const Vector *goal);										// build trivial path to goal, assuming we are already in the same area
+	void BuildTrivialPath(const Vector *goal);									// build trivial path to goal, assuming we are already in the same area
 	bool FindGrenadeTossPathTarget(Vector *pos);
 
 	CountdownTimer m_repathTimer;												// must have elapsed before bot can pathfind again
@@ -893,11 +765,11 @@ private:
 	void SetPathIndex(int newIndex);											// set the current index along the path
 	void DrawPath();
 	int FindOurPositionOnPath(Vector *close, bool local = false) const;							// compute the closest point to our current position on our path
-	int FindPathPoint(float aheadRange, Vector *point, int *prevIndex = NULL);						// compute a point a fixed distance ahead along our path.
+	int FindPathPoint(float aheadRange, Vector *point, int *prevIndex = NULL);										// compute a point a fixed distance ahead along our path.
 	bool FindClosestPointOnPath(const Vector *worldPos, int startIndex, int endIndex, Vector *close) const;			// compute closest point on path to given point
-	bool IsStraightLinePathWalkable(const Vector *goal) const;								// test for un-jumpable height change, or unrecoverable fall
+	bool IsStraightLinePathWalkable(const Vector *goal) const;														// test for un-jumpable height change, or unrecoverable fall
 
-	mutable CountdownTimer m_avoidFriendTimer;		// used to throttle how often we check for friends in our path
+	mutable CountdownTimer m_avoidFriendTimer;	// used to throttle how often we check for friends in our path
 	mutable bool m_isFriendInTheWay;			// true if a friend is blocking our path
 	CountdownTimer m_politeTimer;				// we'll wait for friend to move until this runs out
 	bool m_isWaitingBehindFriend;				// true if we are waiting for a friend to move
@@ -913,23 +785,23 @@ private:
 		FACE_DESCENDING_LADDER,
 		MOUNT_ASCENDING_LADDER,			// move toward ladder until "on" it
 		MOUNT_DESCENDING_LADDER,		// move toward ladder until "on" it
-		ASCEND_LADDER,				// go up the ladder
-		DESCEND_LADDER,				// go down the ladder
+		ASCEND_LADDER,					// go up the ladder
+		DESCEND_LADDER,					// go down the ladder
 		DISMOUNT_ASCENDING_LADDER,		// get off of the ladder
 		DISMOUNT_DESCENDING_LADDER,		// get off of the ladder
 		MOVE_TO_DESTINATION,			// dismount ladder and move to destination area
 	}
 	m_pathLadderState;
-	bool m_pathLadderFaceIn;			// if true, face towards ladder, otherwise face away
-	const CNavLadder *m_pathLadder;			// the ladder we need to use to reach the next area
-	bool UpdateLadderMovement();			// called by UpdatePathMovement()
-	NavRelativeDirType m_pathLadderDismountDir;	// which way to dismount
-	float m_pathLadderDismountTimestamp;		// time when dismount started
-	float m_pathLadderEnd;				// if ascending, z of top, if descending z of bottom
+	bool m_pathLadderFaceIn;						// if true, face towards ladder, otherwise face away
+	const CNavLadder *m_pathLadder;					// the ladder we need to use to reach the next area
+	bool UpdateLadderMovement();					// called by UpdatePathMovement()
+	NavRelativeDirType m_pathLadderDismountDir;		// which way to dismount
+	float m_pathLadderDismountTimestamp;			// time when dismount started
+	float m_pathLadderEnd;							// if ascending, z of top, if descending z of bottom
 	void ComputeLadderEndpoint(bool isAscending);
-	float m_pathLadderTimestamp;			// time when we started using ladder - for timeout check
+	float m_pathLadderTimestamp;					// time when we started using ladder - for timeout check
 
-	CountdownTimer m_mustRunTimer;			// if nonzero, bot cannot walk
+	CountdownTimer m_mustRunTimer;					// if nonzero, bot cannot walk
 
 	// game scenario mechanisms
 	CSGameState m_gameState;
@@ -947,32 +819,32 @@ private:
 	float m_noiseTimestamp;				// when we heard it (can get zeroed)
 	CNavArea *m_noiseArea;				// the nav area containing the noise
 	float m_noiseCheckTimestamp;
-	PriorityType m_noisePriority;			// priority of currently heard noise
+	PriorityType m_noisePriority;		// priority of currently heard noise
 	bool UpdateLookAtNoise();			// return true if we decided to look towards the most recent noise source
 	bool m_isNoiseTravelRangeChecked;
 
 	// "looking around" mechanism
-	float m_lookAroundStateTimestamp;		// time of next state change
+	float m_lookAroundStateTimestamp;	// time of next state change
 	float m_lookAheadAngle;				// our desired forward look angle
 	float m_forwardAngle;				// our current forward facing direction
-	float m_inhibitLookAroundTimestamp;		// time when we can look around again
+	float m_inhibitLookAroundTimestamp;	// time when we can look around again
 
 	enum LookAtSpotState
 	{
-		NOT_LOOKING_AT_SPOT,		// not currently looking at a point in space
+		NOT_LOOKING_AT_SPOT,	// not currently looking at a point in space
 		LOOK_TOWARDS_SPOT,		// in the process of aiming at m_lookAtSpot
 		LOOK_AT_SPOT,			// looking at m_lookAtSpot
 		NUM_LOOK_AT_SPOT_STATES
 	}
 	m_lookAtSpotState;
 
-	Vector m_lookAtSpot;					// the spot we're currently looking at
+	Vector m_lookAtSpot;						// the spot we're currently looking at
 	PriorityType m_lookAtSpotPriority;
-	float m_lookAtSpotDuration;				// how long we need to look at the spot
+	float m_lookAtSpotDuration;					// how long we need to look at the spot
 	float m_lookAtSpotTimestamp;				// when we actually began looking at the spot
 	float m_lookAtSpotAngleTolerance;			// how exactly we must look at the spot
 	bool m_lookAtSpotClearIfClose;				// if true, the look at spot is cleared if it gets close to us
-	const char *m_lookAtDesc;				// for debugging
+	const char *m_lookAtDesc;					// for debugging
 	void UpdateLookAt();
 	void UpdatePeripheralVision();				// update enounter spot timestamps, etc
 	float m_peripheralTimestamp;
@@ -982,14 +854,14 @@ private:
 	unsigned char m_approachPointCount;
 	Vector m_approachPointViewPosition;			// the position used when computing current approachPoint set
 
-	bool BendLineOfSight(const Vector *eye, const Vector *point, Vector *bend) const;		// "bend" our line of sight until we can see the target point. Return bend point, false if cant bend.
-	bool FindApproachPointNearestPath(Vector *pos);							// find the approach point that is nearest to our current path, ahead of us
+	bool BendLineOfSight(const Vector *eye, const Vector *point, Vector *bend) const;	// "bend" our line of sight until we can see the target point. Return bend point, false if cant bend.
+	bool FindApproachPointNearestPath(Vector *pos);										// find the approach point that is nearest to our current path, ahead of us
 
 	bool m_isWaitingToTossGrenade;				// lining up throw
 	CountdownTimer m_tossGrenadeTimer;			// timeout timer for grenade tossing
 
 	SpotEncounter *m_spotEncounter;				// the spots we will encounter as we move thru our current area
-	float m_spotCheckTimestamp;				// when to check next encounter spot
+	float m_spotCheckTimestamp;					// when to check next encounter spot
 
 	// TODO: Add timestamp for each possible client to hiding spots
 	enum { MAX_CHECKED_SPOTS = 64 };
@@ -1002,32 +874,32 @@ private:
 	int m_checkedHidingSpotCount;
 
 	// view angle mechanism
-	float m_lookPitch;					// our desired look pitch angle
+	float m_lookPitch;						// our desired look pitch angle
 	float m_lookPitchVel;
-	float m_lookYaw;					// our desired look yaw angle
+	float m_lookYaw;						// our desired look yaw angle
 	float m_lookYawVel;
 
 	// aim angle mechanism
 	mutable Vector m_eyePos;
-	Vector m_aimOffset;					// current error added to victim's position to get actual aim spot
+	Vector m_aimOffset;						// current error added to victim's position to get actual aim spot
 	Vector m_aimOffsetGoal;					// desired aim offset
 	float m_aimOffsetTimestamp;				// time of next offset adjustment
 	float m_aimSpreadTimestamp;				// time used to determine max spread as it begins to tighten up
-	void SetAimOffset(float accuracy);			// set the current aim offset
+	void SetAimOffset(float accuracy);		// set the current aim offset
 	void UpdateAimOffset();					// wiggle aim error based on m_accuracy
-	Vector m_aimSpot;					// the spot we are currently aiming to fire at
+	Vector m_aimSpot;						// the spot we are currently aiming to fire at
 
 	// attack state data
-	DispositionType m_disposition;				// how we will react to enemies
-	CountdownTimer m_ignoreEnemiesTimer;			// how long will we ignore enemies
+	DispositionType m_disposition;			// how we will react to enemies
+	CountdownTimer m_ignoreEnemiesTimer;	// how long will we ignore enemies
 	mutable EHANDLE m_enemy;				// our current enemy
 	bool m_isEnemyVisible;					// result of last visibility test on enemy
-	unsigned char m_visibleEnemyParts;			// which parts of the visible enemy do we see
+	unsigned char m_visibleEnemyParts;		// which parts of the visible enemy do we see
 	Vector m_lastEnemyPosition;				// last place we saw the enemy
 	float m_lastSawEnemyTimestamp;
 	float m_firstSawEnemyTimestamp;
 	float m_currentEnemyAcquireTimestamp;
-	float m_enemyDeathTimestamp;				// if m_enemy is dead, this is when he died
+	float m_enemyDeathTimestamp;			// if m_enemy is dead, this is when he died
 	bool m_isLastEnemyDead;					// true if we killed or saw our last enemy die
 	int m_nearbyEnemyCount;					// max number of enemies we've seen recently
 	unsigned int m_enemyPlace;				// the location where we saw most of our enemies
@@ -1038,22 +910,22 @@ private:
 		bool isEnemy;
 	}
 	m_watchInfo[MAX_CLIENTS];
-	mutable EHANDLE m_bomber;				// points to bomber if we can see him
+	mutable EHANDLE m_bomber;						// points to bomber if we can see him
 
-	int m_nearbyFriendCount;				// number of nearby teammates
+	int m_nearbyFriendCount;						// number of nearby teammates
 	mutable EHANDLE m_closestVisibleFriend;			// the closest friend we can see
-	mutable EHANDLE m_closestVisibleHumanFriend;		// the closest human friend we can see
+	mutable EHANDLE m_closestVisibleHumanFriend;	// the closest human friend we can see
 
 	CBasePlayer *m_attacker;				// last enemy that hurt us (may not be same as m_enemy)
 	float m_attackedTimestamp;				// when we were hurt by the m_attacker
 
-	int m_lastVictimID;					// the entindex of the last victim we killed, or zero
+	int m_lastVictimID;						// the entindex of the last victim we killed, or zero
 	bool m_isAimingAtEnemy;					// if true, we are trying to aim at our enemy
 	bool m_isRapidFiring;					// if true, RunUpkeep() will toggle our primary attack as fast as it can
 	IntervalTimer m_equipTimer;				// how long have we had our current weapon equipped
-	bool DoEquip(CBasePlayerWeapon *gun);			// equip the given item
+	bool DoEquip(CBasePlayerWeapon *gun);	// equip the given item
 
-	void ReloadCheck();					// reload our weapon if we must
+	void ReloadCheck();						// reload our weapon if we must
 	void SilencerCheck();					// use silencer
 
 	float m_fireWeaponTimestamp;
@@ -1073,12 +945,12 @@ private:
 	byte m_enemyQueueCount;
 	byte m_enemyQueueAttendIndex;				// index of the timeframe we are "conscious" of
 
-	CBasePlayer *FindMostDangerousThreat();			// return most dangerous threat in my field of view (feeds into reaction time queue)
+	CBasePlayer *FindMostDangerousThreat();		// return most dangerous threat in my field of view (feeds into reaction time queue)
 
 	// stuck detection
 	bool m_isStuck;
 	float m_stuckTimestamp;					// time when we got stuck
-	Vector m_stuckSpot;					// the location where we became stuck
+	Vector m_stuckSpot;						// the location where we became stuck
 	NavRelativeDirType m_wiggleDirection;
 	float m_wiggleTimestamp;
 	float m_stuckJumpTimestamp;				// time for next jump when stuck
@@ -1090,16 +962,16 @@ private:
 	Vector m_lastOrigin;
 
 	// chatter mechanism
-	GameEventType m_lastRadioCommand;			// last radio command we recieved
+	GameEventType m_lastRadioCommand;				// last radio command we recieved
 	void RespondToRadioCommands();
-	bool IsRadioCommand(GameEventType event) const;		// returns true if the radio message is an order to do something
+	bool IsRadioCommand(GameEventType event) const;	// returns true if the radio message is an order to do something
 
 	#define NO_FORCE false
 	void EndVoiceFeedback(bool force = true);
 	float m_lastRadioRecievedTimestamp;			// time we recieved a radio message
 	float m_lastRadioSentTimestamp;				// time when we send a radio message
-	EHANDLE m_radioSubject;					// who issued the radio message
-	Vector m_radioPosition;					// position referred to in radio message
+	EHANDLE m_radioSubject;						// who issued the radio message
+	Vector m_radioPosition;						// position referred to in radio message
 	float m_voiceFeedbackStartTimestamp;
 	float m_voiceFeedbackEndTimestamp;			// new-style "voice" chatter gets voice feedback
 	BotChatterInterface m_chatter;

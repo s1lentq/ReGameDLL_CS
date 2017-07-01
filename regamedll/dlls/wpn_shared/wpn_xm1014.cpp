@@ -2,7 +2,7 @@
 
 LINK_ENTITY_TO_CLASS(weapon_xm1014, CXM1014, CCSXM1014)
 
-void CXM1014::__MAKE_VHOOK(Spawn)()
+void CXM1014::Spawn()
 {
 	Precache();
 
@@ -15,7 +15,7 @@ void CXM1014::__MAKE_VHOOK(Spawn)()
 	FallInit();
 }
 
-void CXM1014::__MAKE_VHOOK(Precache)()
+void CXM1014::Precache()
 {
 	PRECACHE_MODEL("models/v_xm1014.mdl");
 	PRECACHE_MODEL("models/w_xm1014.mdl");
@@ -29,7 +29,7 @@ void CXM1014::__MAKE_VHOOK(Precache)()
 	m_usFireXM1014 = PRECACHE_EVENT(1, "events/xm1014.sc");
 }
 
-int CXM1014::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
+int CXM1014::GetItemInfo(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
 	p->pszAmmo1 = "buckshot";
@@ -46,12 +46,12 @@ int CXM1014::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	return 1;
 }
 
-BOOL CXM1014::__MAKE_VHOOK(Deploy)()
+BOOL CXM1014::Deploy()
 {
 	return DefaultDeploy("models/v_xm1014.mdl", "models/p_xm1014.mdl", XM1014_DRAW, "m249", UseDecrement() != FALSE);
 }
 
-void CXM1014::__MAKE_VHOOK(PrimaryAttack)()
+void CXM1014::PrimaryAttack()
 {
 	Vector vecAiming, vecSrc, vecDir;
 	int flag;
@@ -67,7 +67,7 @@ void CXM1014::__MAKE_VHOOK(PrimaryAttack)()
 	if (m_iClip <= 0)
 	{
 		Reload();
-			
+
 		if (!m_iClip)
 		{
 			PlayEmptySound();
@@ -131,7 +131,7 @@ void CXM1014::__MAKE_VHOOK(PrimaryAttack)()
 		m_pPlayer->pev->punchangle.x -= UTIL_SharedRandomLong(m_pPlayer->random_seed + 1, 7, 10);
 }
 
-void CXM1014::__MAKE_VHOOK(Reload)()
+void CXM1014::Reload()
 {
 	if (m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0 || m_iClip == iMaxClip())
 		return;
@@ -183,7 +183,7 @@ void CXM1014::__MAKE_VHOOK(Reload)()
 	}
 }
 
-void CXM1014::__MAKE_VHOOK(WeaponIdle)()
+void CXM1014::WeaponIdle()
 {
 	ResetEmptySound();
 	m_pPlayer->GetAutoaimVector(AUTOAIM_5DEGREES);

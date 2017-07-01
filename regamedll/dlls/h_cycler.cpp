@@ -26,7 +26,7 @@ TYPEDESCRIPTION CWreckage::m_SaveData[] =
 
 IMPLEMENT_SAVERESTORE(CCycler, CBaseToggle)
 
-void CGenericCycler::__MAKE_VHOOK(Spawn)()
+void CGenericCycler::Spawn()
 {
 	GenericCyclerSpawn((char *)STRING(pev->model), Vector(-16, -16, 0), Vector(16, 16, 72));
 }
@@ -34,7 +34,7 @@ void CGenericCycler::__MAKE_VHOOK(Spawn)()
 LINK_ENTITY_TO_CLASS(cycler, CGenericCycler, CCSGenericCycler)
 LINK_ENTITY_TO_CLASS(cycler_prdroid, CCyclerProbe, CCSCyclerProbe)
 
-void CCyclerProbe::__MAKE_VHOOK(Spawn)()
+void CCyclerProbe::Spawn()
 {
 	pev->origin = pev->origin + Vector(0, 0, 16);
 	GenericCyclerSpawn("models/prdroid.mdl", Vector(-16, -16, -16), Vector(16, 16, 16));
@@ -60,7 +60,7 @@ void CCycler::GenericCyclerSpawn(char *szModel, Vector vecMin, Vector vecMax)
 	UTIL_SetSize(pev, vecMin, vecMax);
 }
 
-void CCycler::__MAKE_VHOOK(Spawn)()
+void CCycler::Spawn()
 {
 	InitBoneControllers();
 
@@ -95,7 +95,7 @@ void CCycler::__MAKE_VHOOK(Spawn)()
 }
 
 // cycler think
-void CCycler::__MAKE_VHOOK(Think)()
+void CCycler::Think()
 {
 	pev->nextthink = gpGlobals->time + 0.1f;
 
@@ -123,7 +123,7 @@ void CCycler::__MAKE_VHOOK(Think)()
 }
 
 // CyclerUse - starts a rotation trend
-void CCycler::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CCycler::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	m_animate = !m_animate;
 
@@ -134,7 +134,7 @@ void CCycler::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, U
 }
 
 // CyclerPain , changes sequences when shot
-BOOL CCycler::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
+BOOL CCycler::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
 	if (m_animate)
 	{
@@ -164,7 +164,7 @@ BOOL CCycler::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAt
 LINK_ENTITY_TO_CLASS(cycler_sprite, CCyclerSprite, CCSCyclerSprite)
 IMPLEMENT_SAVERESTORE(CCyclerSprite, CBaseEntity)
 
-void CCyclerSprite::__MAKE_VHOOK(Spawn)()
+void CCyclerSprite::Spawn()
 {
 	pev->solid = SOLID_SLIDEBOX;
 	pev->movetype = MOVETYPE_NONE;
@@ -187,7 +187,7 @@ void CCyclerSprite::__MAKE_VHOOK(Spawn)()
 	m_rendercolor = pev->rendercolor;
 }
 
-void CCyclerSprite::__MAKE_VHOOK(Restart)()
+void CCyclerSprite::Restart()
 {
 	pev->solid = SOLID_SLIDEBOX;
 	pev->movetype = MOVETYPE_NONE;
@@ -205,7 +205,7 @@ void CCyclerSprite::__MAKE_VHOOK(Restart)()
 	pev->rendercolor = m_rendercolor;
 }
 
-void CCyclerSprite::__MAKE_VHOOK(Think)()
+void CCyclerSprite::Think()
 {
 	if (ShouldAnimate())
 	{
@@ -216,13 +216,13 @@ void CCyclerSprite::__MAKE_VHOOK(Think)()
 	m_lastTime = gpGlobals->time;
 }
 
-void CCyclerSprite::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CCyclerSprite::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	m_animate = !m_animate;
 	ALERT(at_console, "Sprite: %s\n", STRING(pev->model));
 }
 
-BOOL CCyclerSprite::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
+BOOL CCyclerSprite::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
 	if (m_maxFrame > 1.0)
 	{
@@ -244,7 +244,7 @@ void CCyclerSprite::Animate(float frames)
 
 LINK_ENTITY_TO_CLASS(cycler_weapon, CWeaponCycler, CCSWeaponCycler)
 
-void CWeaponCycler::__MAKE_VHOOK(Spawn)()
+void CWeaponCycler::Spawn()
 {
 	pev->solid = SOLID_SLIDEBOX;
 	pev->movetype = MOVETYPE_NONE;
@@ -260,7 +260,7 @@ void CWeaponCycler::__MAKE_VHOOK(Spawn)()
 	SetTouch(&CWeaponCycler::DefaultTouch);
 }
 
-BOOL CWeaponCycler::__MAKE_VHOOK(Deploy)()
+BOOL CWeaponCycler::Deploy()
 {
 	m_pPlayer->pev->viewmodel = m_iszModel;
 	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 1.0f;
@@ -271,18 +271,18 @@ BOOL CWeaponCycler::__MAKE_VHOOK(Deploy)()
 	return TRUE;
 }
 
-void CWeaponCycler::__MAKE_VHOOK(Holster)(int skiplocal)
+void CWeaponCycler::Holster(int skiplocal)
 {
 	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5f;
 }
 
-void CWeaponCycler::__MAKE_VHOOK(PrimaryAttack)()
+void CWeaponCycler::PrimaryAttack()
 {
 	SendWeaponAnim(pev->sequence);
 	m_flNextPrimaryAttack = gpGlobals->time + 0.3f;
 }
 
-void CWeaponCycler::__MAKE_VHOOK(SecondaryAttack)()
+void CWeaponCycler::SecondaryAttack()
 {
 	float flFrameRate, flGroundSpeed;
 
@@ -305,7 +305,7 @@ void CWeaponCycler::__MAKE_VHOOK(SecondaryAttack)()
 IMPLEMENT_SAVERESTORE(CWreckage, CBaseToggle)
 LINK_ENTITY_TO_CLASS(cycler_wreckage, CWreckage, CCSWreckage)
 
-void CWreckage::__MAKE_VHOOK(Spawn)()
+void CWreckage::Spawn()
 {
 	pev->solid = SOLID_NOT;
 	pev->movetype = MOVETYPE_NONE;
@@ -325,7 +325,7 @@ void CWreckage::__MAKE_VHOOK(Spawn)()
 	m_flStartTime = int(gpGlobals->time);
 }
 
-void CWreckage::__MAKE_VHOOK(Precache)()
+void CWreckage::Precache()
 {
 	if (!FStringNull(pev->model))
 	{
@@ -333,7 +333,7 @@ void CWreckage::__MAKE_VHOOK(Precache)()
 	}
 }
 
-void CWreckage::__MAKE_VHOOK(Think)()
+void CWreckage::Think()
 {
 	StudioFrameAdvance();
 	pev->nextthink = gpGlobals->time + 0.2f;

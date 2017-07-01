@@ -116,17 +116,6 @@ public:
 	virtual int Restore(CRestore &restore);
 	virtual int ObjectCaps() { return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
 
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	void Restart_();
-	void KeyValue_(KeyValueData *pkvd);
-	int Save_(CSave &save);
-	int Restore_(CRestore &restore);
-
-#endif
-
 public:
 	void EXPORT ToggleUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 	void EXPORT RampThink();
@@ -150,16 +139,6 @@ public:
 	virtual int Restore(CRestore &restore);
 	virtual void Think();
 
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void KeyValue_(KeyValueData *pkvd);
-	int Save_(CSave &save);
-	int Restore_(CRestore &restore);
-	void Think_();
-
-#endif
-
 public:
 	static TYPEDESCRIPTION IMPL(m_SaveData)[2];
 
@@ -176,16 +155,6 @@ public:
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
 	virtual int ObjectCaps() { return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	void KeyValue_(KeyValueData *pkvd);
-	int Save_(CSave &save);
-	int Restore_(CRestore &restore);
-
-#endif
 
 public:
 	void EXPORT ToggleUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);

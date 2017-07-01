@@ -391,17 +391,6 @@ public:
 	void ResetPlayerDeathInfo();
 	void ConstructRecentDeathsList(TeamName team, char *buf, int buflen, TutorMessageEvent *event);
 
-#ifdef HOOK_GAMEDLL
-
-	void TutorThink_(float time);
-	void PurgeMessages_();
-	void CallEventHandler_(GameEventType event, CBaseEntity *entity, CBaseEntity *other);
-	void ShowTutorMessage_(TutorMessageEvent *event);
-	void HandleShotFired_(Vector source, Vector target);
-	TutorMessage *GetTutorMessageDefinition_(int messageID);
-
-#endif
-
 private:
 	float m_nextViewableCheckTime;
 	TutorMessageMap m_messageMap;

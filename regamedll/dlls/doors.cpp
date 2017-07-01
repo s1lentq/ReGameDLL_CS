@@ -113,7 +113,7 @@ void PlayLockSounds(entvars_t *pev, locksound_t *pls, int flocked, int fbutton)
 }
 
 // Cache user-entity-field values until spawn is called.
-void CBaseDoor::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CBaseDoor::KeyValue(KeyValueData *pkvd)
 {
 	//skin is used for content type
 	if (FStrEq(pkvd->szKeyName, "skin"))
@@ -192,7 +192,7 @@ LINK_ENTITY_TO_CLASS(func_door, CBaseDoor, CCSDoor)
 // func_water - same as a door.
 LINK_ENTITY_TO_CLASS(func_water, CBaseDoor, CCSDoor)
 
-void CBaseDoor::__MAKE_VHOOK(Spawn)()
+void CBaseDoor::Spawn()
 {
 	Precache();
 	SetMovedir(pev);
@@ -251,7 +251,7 @@ void CBaseDoor::__MAKE_VHOOK(Spawn)()
 	m_lastBlockedTimestamp = 0;
 }
 
-void CBaseDoor::__MAKE_VHOOK(Restart)()
+void CBaseDoor::Restart()
 {
 	SetMovedir(pev);
 	m_toggle_state = TS_AT_BOTTOM;
@@ -263,7 +263,7 @@ void CBaseDoor::__MAKE_VHOOK(Restart)()
 		SetTouch(&CBaseDoor::DoorTouch);
 }
 
-void CBaseDoor::__MAKE_VHOOK(SetToggleState)(int state)
+void CBaseDoor::SetToggleState(int state)
 {
 	if (state == TS_AT_TOP)
 		UTIL_SetOrigin(pev, m_vecPosition2);
@@ -274,7 +274,7 @@ void CBaseDoor::__MAKE_VHOOK(SetToggleState)(int state)
 #define noiseMoving noise1
 #define noiseArrived noise2
 
-void CBaseDoor::__MAKE_VHOOK(Precache)()
+void CBaseDoor::Precache()
 {
 	char *pszSound;
 
@@ -457,7 +457,7 @@ void CBaseDoor::DoorTouch(CBaseEntity *pOther)
 }
 
 // Used by SUB_UseTargets, when a door is the target of a button.
-void CBaseDoor::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CBaseDoor::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	m_hActivator = pActivator;
 
@@ -725,7 +725,7 @@ void CBaseDoor::DoorHitBottom()
 	}
 }
 
-void CBaseDoor::__MAKE_VHOOK(Blocked)(CBaseEntity *pOther)
+void CBaseDoor::Blocked(CBaseEntity *pOther)
 {
 	edict_t *pentTarget = NULL;
 	CBaseDoor *pDoor = NULL;
@@ -847,7 +847,7 @@ void CBaseDoor::__MAKE_VHOOK(Blocked)(CBaseEntity *pOther)
 // 4)	screechy metal
 LINK_ENTITY_TO_CLASS(func_door_rotating, CRotDoor, CCSRotDoor)
 
-void CRotDoor::__MAKE_VHOOK(Restart)()
+void CRotDoor::Restart()
 {
 	CBaseToggle::AxisDir(pev);
 
@@ -878,7 +878,7 @@ void CRotDoor::__MAKE_VHOOK(Restart)()
 	DoorGoDown();
 }
 
-void CRotDoor::__MAKE_VHOOK(Spawn)()
+void CRotDoor::Spawn()
 {
 	Precache();
 
@@ -941,7 +941,7 @@ void CRotDoor::__MAKE_VHOOK(Spawn)()
 	}
 }
 
-void CRotDoor::__MAKE_VHOOK(SetToggleState)(int state)
+void CRotDoor::SetToggleState(int state)
 {
 	if (state == TS_AT_TOP)
 		pev->angles = m_vecAngle2;
@@ -954,7 +954,7 @@ void CRotDoor::__MAKE_VHOOK(SetToggleState)(int state)
 LINK_ENTITY_TO_CLASS(momentary_door, CMomentaryDoor, CCSMomentaryDoor)
 IMPLEMENT_SAVERESTORE(CMomentaryDoor, CBaseToggle)
 
-void CMomentaryDoor::__MAKE_VHOOK(Spawn)()
+void CMomentaryDoor::Spawn()
 {
 	SetMovedir(pev);
 
@@ -989,7 +989,7 @@ void CMomentaryDoor::__MAKE_VHOOK(Spawn)()
 	Precache();
 }
 
-void CMomentaryDoor::__MAKE_VHOOK(Precache)()
+void CMomentaryDoor::Precache()
 {
 	// set the door's "in-motion" sound
 	switch (m_bMoveSnd)
@@ -1035,7 +1035,7 @@ void CMomentaryDoor::__MAKE_VHOOK(Precache)()
 	}
 }
 
-void CMomentaryDoor::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CMomentaryDoor::KeyValue(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "movesnd"))
 	{
@@ -1056,7 +1056,7 @@ void CMomentaryDoor::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CBaseToggle::KeyValue(pkvd);
 }
 
-void CMomentaryDoor::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CMomentaryDoor::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	// Momentary buttons will pass down a float in here
 	if (useType != USE_SET)

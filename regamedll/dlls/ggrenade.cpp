@@ -511,7 +511,7 @@ void CGrenade::SG_Smoke()
 	}
 }
 
-void CGrenade::__MAKE_VHOOK(Killed)(entvars_t *pevAttacker, int iGib)
+void CGrenade::Killed(entvars_t *pevAttacker, int iGib)
 {
 	Detonate();
 }
@@ -730,7 +730,7 @@ void CGrenade::SlideTouch(CBaseEntity *pOther)
 	}
 }
 
-void CGrenade::__MAKE_VHOOK(BounceSound)()
+void CGrenade::BounceSound()
 {
 	if (pev->dmg > 50.0f)
 	{
@@ -819,7 +819,7 @@ void CGrenade::SG_TumbleThink()
 	}
 }
 
-void CGrenade::__MAKE_VHOOK(Spawn)()
+void CGrenade::Spawn()
 {
 	m_iBounceCount = 0;
 	pev->movetype = MOVETYPE_BOUNCE;
@@ -939,7 +939,7 @@ CGrenade *CGrenade::ShootTimed(entvars_t *pevOwner, Vector vecStart, Vector vecV
 	return pGrenade;
 }
 
-void CGrenade::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CGrenade::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	if (!m_bIsC4)
 		return;

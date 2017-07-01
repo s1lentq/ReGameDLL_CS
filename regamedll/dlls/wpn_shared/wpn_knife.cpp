@@ -2,7 +2,7 @@
 
 LINK_ENTITY_TO_CLASS(weapon_knife, CKnife, CCSKnife)
 
-void CKnife::__MAKE_VHOOK(Spawn)()
+void CKnife::Spawn()
 {
 	Precache();
 
@@ -15,7 +15,7 @@ void CKnife::__MAKE_VHOOK(Spawn)()
 	FallInit();
 }
 
-void CKnife::__MAKE_VHOOK(Precache)()
+void CKnife::Precache()
 {
 	PRECACHE_MODEL("models/v_knife.mdl");
 	PRECACHE_MODEL("models/shield/v_shield_knife.mdl");
@@ -34,7 +34,7 @@ void CKnife::__MAKE_VHOOK(Precache)()
 	m_usKnife = PRECACHE_EVENT(1, "events/knife.sc");
 }
 
-int CKnife::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
+int CKnife::GetItemInfo(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
 	p->pszAmmo1 = NULL;
@@ -54,7 +54,7 @@ int CKnife::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	return 1;
 }
 
-BOOL CKnife::__MAKE_VHOOK(Deploy)()
+BOOL CKnife::Deploy()
 {
 	EMIT_SOUND(m_pPlayer->edict(), CHAN_ITEM, "weapons/knife_deploy1.wav", 0.3, 2.4);
 
@@ -72,7 +72,7 @@ BOOL CKnife::__MAKE_VHOOK(Deploy)()
 		return DefaultDeploy("models/v_knife.mdl", "models/p_knife.mdl", KNIFE_DRAW, "knife", UseDecrement() != FALSE);
 }
 
-void CKnife::__MAKE_VHOOK(Holster)(int skiplocal)
+void CKnife::Holster(int skiplocal)
 {
 	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5f;
 }
@@ -141,7 +141,7 @@ void FindHullIntersection(const Vector &vecSrc, TraceResult &tr, float *mins, fl
 	}
 }
 
-void CKnife::__MAKE_VHOOK(PrimaryAttack)()
+void CKnife::PrimaryAttack()
 {
 	Swing(TRUE);
 }
@@ -211,7 +211,7 @@ bool CKnife::ShieldSecondaryFire(int iUpAnim, int iDownAnim)
 	return true;
 }
 
-void CKnife::__MAKE_VHOOK(SecondaryAttack)()
+void CKnife::SecondaryAttack()
 {
 	if (!ShieldSecondaryFire(KNIFE_SHIELD_UP, KNIFE_SHIELD_DOWN))
 	{
@@ -230,7 +230,7 @@ void CKnife::SwingAgain()
 	Swing(FALSE);
 }
 
-void CKnife::__MAKE_VHOOK(WeaponIdle)()
+void CKnife::WeaponIdle()
 {
 	ResetEmptySound();
 	m_pPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);

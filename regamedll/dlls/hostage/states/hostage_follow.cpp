@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-void HostageFollowState::__MAKE_VHOOK(OnEnter)(CHostageImprov *improv)
+void HostageFollowState::OnEnter(CHostageImprov *improv)
 {
 	improv->Chatter(HOSTAGE_CHATTER_START_FOLLOW);
 	improv->Agree();
@@ -21,7 +21,7 @@ void HostageFollowState::__MAKE_VHOOK(OnEnter)(CHostageImprov *improv)
 	}
 }
 
-void HostageFollowState::__MAKE_VHOOK(OnUpdate)(CHostageImprov *improv)
+void HostageFollowState::OnUpdate(CHostageImprov *improv)
 {
 	// if we lost our leader, give up
 	if (m_leader == NULL)
@@ -192,12 +192,12 @@ void HostageFollowState::__MAKE_VHOOK(OnUpdate)(CHostageImprov *improv)
 	}
 }
 
-void HostageFollowState::__MAKE_VHOOK(OnExit)(CHostageImprov *improv)
+void HostageFollowState::OnExit(CHostageImprov *improv)
 {
 	improv->Stop();
 }
 
-void HostageFollowState::__MAKE_VHOOK(UpdateStationaryAnimation)(CHostageImprov *improv)
+void HostageFollowState::UpdateStationaryAnimation(CHostageImprov *improv)
 {
 	if (improv->IsScared())
 		improv->UpdateIdleActivity(ACT_FOLLOW_IDLE_SCARED, ACT_RESET);

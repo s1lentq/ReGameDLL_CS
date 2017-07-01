@@ -2,7 +2,7 @@
 
 LINK_ENTITY_TO_CLASS(weapon_g3sg1, CG3SG1, CCSG3SG1)
 
-void CG3SG1::__MAKE_VHOOK(Spawn)()
+void CG3SG1::Spawn()
 {
 	Precache();
 
@@ -15,7 +15,7 @@ void CG3SG1::__MAKE_VHOOK(Spawn)()
 	FallInit();
 }
 
-void CG3SG1::__MAKE_VHOOK(Precache)()
+void CG3SG1::Precache()
 {
 	PRECACHE_MODEL("models/v_g3sg1.mdl");
 	PRECACHE_MODEL("models/w_g3sg1.mdl");
@@ -30,7 +30,7 @@ void CG3SG1::__MAKE_VHOOK(Precache)()
 	m_usFireG3SG1 = PRECACHE_EVENT(1, "events/g3sg1.sc");
 }
 
-int CG3SG1::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
+int CG3SG1::GetItemInfo(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
 	p->pszAmmo1 = "762Nato";
@@ -47,13 +47,13 @@ int CG3SG1::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	return 1;
 }
 
-BOOL CG3SG1::__MAKE_VHOOK(Deploy)()
+BOOL CG3SG1::Deploy()
 {
 	m_flAccuracy = 0.2f;
 	return DefaultDeploy("models/v_g3sg1.mdl", "models/p_g3sg1.mdl", G3SG1_DRAW, "mp5", UseDecrement() != FALSE);
 }
 
-void CG3SG1::__MAKE_VHOOK(SecondaryAttack)()
+void CG3SG1::SecondaryAttack()
 {
 	switch (m_pPlayer->m_iFOV)
 	{
@@ -78,7 +78,7 @@ void CG3SG1::__MAKE_VHOOK(SecondaryAttack)()
 	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.3f;
 }
 
-void CG3SG1::__MAKE_VHOOK(PrimaryAttack)()
+void CG3SG1::PrimaryAttack()
 {
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
 	{
@@ -176,7 +176,7 @@ void CG3SG1::G3SG1Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	m_pPlayer->pev->punchangle.y += UTIL_SharedRandomFloat(m_pPlayer->random_seed + 5, -0.75, 0.75);
 }
 
-void CG3SG1::__MAKE_VHOOK(Reload)()
+void CG3SG1::Reload()
 {
 	if (m_pPlayer->ammo_762nato <= 0)
 		return;
@@ -194,7 +194,7 @@ void CG3SG1::__MAKE_VHOOK(Reload)()
 	}
 }
 
-void CG3SG1::__MAKE_VHOOK(WeaponIdle)()
+void CG3SG1::WeaponIdle()
 {
 	ResetEmptySound();
 	m_pPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);
@@ -209,7 +209,7 @@ void CG3SG1::__MAKE_VHOOK(WeaponIdle)()
 	}
 }
 
-float CG3SG1::__MAKE_VHOOK(GetMaxSpeed)()
+float CG3SG1::GetMaxSpeed()
 {
 	return (m_pPlayer->m_iFOV == DEFAULT_FOV) ? G3SG1_MAX_SPEED : G3SG1_MAX_SPEED_ZOOM;
 }

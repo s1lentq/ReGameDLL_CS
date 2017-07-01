@@ -40,15 +40,6 @@ public:
 	virtual int Restore(CRestore &restore);
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
-#ifdef HOOK_GAMEDLL
-
-	void KeyValue_(KeyValueData *pkvd);
-	int Save_(CSave &save);
-	int Restore_(CRestore &restore);
-	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-#endif
-
 public:
 	void EXPORT MessageThink();
 	void EXPORT LoadThink();

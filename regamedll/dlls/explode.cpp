@@ -15,7 +15,7 @@ TYPEDESCRIPTION CEnvExplosion::m_SaveData[] =
 
 LINK_ENTITY_TO_CLASS(spark_shower, CShower, CCSShower)
 
-void CShower::__MAKE_VHOOK(Spawn)()
+void CShower::Spawn()
 {
 	pev->velocity = RANDOM_FLOAT(200, 300) * pev->angles;
 	pev->velocity.x += RANDOM_FLOAT(-100, 100);
@@ -40,7 +40,7 @@ void CShower::__MAKE_VHOOK(Spawn)()
 	pev->angles = g_vecZero;
 }
 
-void CShower::__MAKE_VHOOK(Think)()
+void CShower::Think()
 {
 	UTIL_Sparks(pev->origin);
 
@@ -54,7 +54,7 @@ void CShower::__MAKE_VHOOK(Think)()
 	pev->flags &= ~FL_ONGROUND;
 }
 
-void CShower::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
+void CShower::Touch(CBaseEntity *pOther)
 {
 	if (pev->flags & FL_ONGROUND)
 		pev->velocity = pev->velocity * 0.1f;
@@ -70,7 +70,7 @@ void CShower::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 IMPLEMENT_SAVERESTORE(CEnvExplosion, CBaseMonster)
 LINK_ENTITY_TO_CLASS(env_explosion, CEnvExplosion, CCSEnvExplosion)
 
-void CEnvExplosion::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CEnvExplosion::KeyValue(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "iMagnitude"))
 	{
@@ -81,7 +81,7 @@ void CEnvExplosion::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CBaseEntity::KeyValue(pkvd);
 }
 
-void CEnvExplosion::__MAKE_VHOOK(Spawn)()
+void CEnvExplosion::Spawn()
 {
 	pev->solid = SOLID_NOT;
 	pev->effects = EF_NODRAW;
@@ -97,7 +97,7 @@ void CEnvExplosion::__MAKE_VHOOK(Spawn)()
 	m_spriteScale = int(flSpriteScale);
 }
 
-void CEnvExplosion::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CEnvExplosion::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	TraceResult tr;
 

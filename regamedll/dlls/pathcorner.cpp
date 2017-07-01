@@ -24,7 +24,7 @@ TYPEDESCRIPTION CPathTrack::m_SaveData[] =
 LINK_ENTITY_TO_CLASS(path_corner, CPathCorner, CCSPathCorner)
 IMPLEMENT_SAVERESTORE(CPathCorner, CPointEntity)
 
-void CPathCorner::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CPathCorner::KeyValue(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "wait"))
 	{
@@ -35,7 +35,7 @@ void CPathCorner::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CPointEntity::KeyValue(pkvd);
 }
 
-void CPathCorner::__MAKE_VHOOK(Spawn)()
+void CPathCorner::Spawn()
 {
 	assert(("path_corner without a targetname", !FStringNull(pev->targetname)));
 }
@@ -43,7 +43,7 @@ void CPathCorner::__MAKE_VHOOK(Spawn)()
 IMPLEMENT_SAVERESTORE(CPathTrack, CBaseEntity)
 LINK_ENTITY_TO_CLASS(path_track, CPathTrack, CCSPathTrack)
 
-void CPathTrack::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CPathTrack::KeyValue(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "altpath"))
 	{
@@ -54,7 +54,7 @@ void CPathTrack::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CPointEntity::KeyValue(pkvd);
 }
 
-void CPathTrack::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CPathTrack::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	int on;
 
@@ -117,7 +117,7 @@ void CPathTrack::Link()
 	}
 }
 
-void CPathTrack::__MAKE_VHOOK(Spawn)()
+void CPathTrack::Spawn()
 {
 	pev->solid = SOLID_TRIGGER;
 	UTIL_SetSize(pev, Vector(-8, -8, -8), Vector(8, 8, 8));
@@ -126,7 +126,7 @@ void CPathTrack::__MAKE_VHOOK(Spawn)()
 	m_pprevious = NULL;
 }
 
-void CPathTrack::__MAKE_VHOOK(Activate)()
+void CPathTrack::Activate()
 {
 	// Link to next, and back-link
 	if (!FStringNull(pev->targetname))

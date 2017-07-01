@@ -284,13 +284,6 @@ class CCSPlayer;
 class CStripWeapons: public CPointEntity {
 public:
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-#ifdef HOOK_GAMEDLL
-
-	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-#endif
-
 };
 
 // Multiplayer intermission spots.
@@ -298,14 +291,6 @@ class CInfoIntermission: public CPointEntity {
 public:
 	virtual void Spawn();
 	virtual void Think();
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Think_();
-
-#endif
-
 };
 
 // Dead HEV suit prop
@@ -314,14 +299,6 @@ public:
 	virtual void Spawn();
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual int Classify();
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void KeyValue_(KeyValueData *pkvd);
-	int Classify_();
-
-#endif
 
 public:
 	int m_iPose;				// which sequence to display -- temporary, don't need to save
@@ -332,12 +309,6 @@ class CSprayCan: public CBaseEntity {
 public:
 	virtual void Think();
 	virtual int ObjectCaps() { return FCAP_DONT_SAVE; }
-
-#ifdef HOOK_GAMEDLL
-
-	void Think_();
-
-#endif
 
 public:
 	void Spawn(entvars_t *pevOwner);
@@ -397,37 +368,50 @@ public:
 	virtual void Blind(float flUntilTime, float flHoldTime, float flFadeTime, int iAlpha);
 	virtual void OnTouchingWeapon(CWeaponBox *pWeapon) { }
 
-#if defined(REGAMEDLL_API) || defined(HOOK_GAMEDLL)
-	void Spawn_();
-	void Precache_();
-	int ObjectCaps_();
-	int Classify_();
-	int Save_(CSave &save);
-	int Restore_(CRestore &restore);
-	void TraceAttack_(entvars_t *pevAttacker, float flDamage, VectorRef vecDir, TraceResult *ptr, int bitsDamageType);
-	BOOL TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, FloatRef flDamage, int bitsDamageType);
-	BOOL TakeHealth_(float flHealth, int bitsDamageType);
-	void Killed_(entvars_t *pevAttacker, int iGib);
-	void AddPoints_(int score, BOOL bAllowNegativeScore);
-	void AddPointsToTeam_(int score, BOOL bAllowNegativeScore);
-	BOOL AddPlayerItem_(CBasePlayerItem *pItem);	
-	BOOL RemovePlayerItem_(CBasePlayerItem *pItem);
-	int GiveAmmo_(int iAmount, char *szName, int iMax);
-	void ResetMaxSpeed_();
-	void Jump_();
-	void Duck_();
-	void PreThink_();
-	void PostThink_();
-	void UpdateClientData_();
-	void ImpulseCommands_();
-	void RoundRespawn_();
-	void Blind_(float flUntilTime, float flHoldTime, float flFadeTime, int iAlpha);
-	const char *TeamID_();
-	BOOL FBecomeProne_();
-	int Illumination_();
-	Vector GetGunPosition_();
-	Vector GetAutoaimVector_(float flDelta);
-#endif
+#ifdef REGAMEDLL_API
+	void Spawn_OrigFunc();
+	void Precache_OrigFunc();
+	int ObjectCaps_OrigFunc();
+	int Classify_OrigFunc();
+	void TraceAttack_OrigFunc(entvars_t *pevAttacker, float flDamage, VectorRef vecDir, TraceResult *ptr, int bitsDamageType);
+	BOOL TakeDamage_OrigFunc(entvars_t *pevInflictor, entvars_t *pevAttacker, FloatRef flDamage, int bitsDamageType);
+	BOOL TakeHealth_OrigFunc(float flHealth, int bitsDamageType);
+	void Killed_OrigFunc(entvars_t *pevAttacker, int iGib);
+	void AddPoints_OrigFunc(int score, BOOL bAllowNegativeScore);
+	void AddPointsToTeam_OrigFunc(int score, BOOL bAllowNegativeScore);
+	BOOL AddPlayerItem_OrigFunc(CBasePlayerItem *pItem);
+	BOOL RemovePlayerItem_OrigFunc(CBasePlayerItem *pItem);
+	int GiveAmmo_OrigFunc(int iAmount, char *szName, int iMax);
+	void ResetMaxSpeed_OrigFunc();
+	void Jump_OrigFunc();
+	void Duck_OrigFunc();
+	void PreThink_OrigFunc();
+	void PostThink_OrigFunc();
+	void UpdateClientData_OrigFunc();
+	void ImpulseCommands_OrigFunc();
+	void RoundRespawn_OrigFunc();
+	void Blind_OrigFunc(float flUntilTime, float flHoldTime, float flFadeTime, int iAlpha);
+	CBasePlayer *Observer_IsValidTarget_OrigFunc(int iPlayerIndex, bool bSameTeam);
+	void Radio_OrigFunc(const char *msg_id, const char *msg_verbose = NULL, short pitch = 100, bool showIcon = true);
+	void AddAccount_OrigFunc(int amount, RewardType type = RT_NONE, bool bTrackChange = true);
+	void Disappear_OrigFunc();
+	void MakeVIP_OrigFunc();
+	void GiveDefaultItems_OrigFunc();
+	bool SetClientUserInfoName_OrigFunc(char *infobuffer, char *szNewName);
+	void SetAnimation_OrigFunc(PLAYER_ANIM playerAnim);
+	void StartObserver_OrigFunc(Vector &vecPosition, Vector &vecViewAngle);
+	void DropPlayerItem_OrigFunc(const char *pszItemName);
+	CBaseEntity *GiveNamedItem_OrigFunc(const char *pszName);
+	void DropShield_OrigFunc(bool bDeploy = true);
+	void GiveShield_OrigFunc(bool bDeploy = true);
+	bool HasRestrictItem_OrigFunc(ItemID item, ItemRestType type);
+	void OnSpawnEquip_OrigFunc(bool addDefault = true, bool equipGame = true);
+	bool MakeBomber_OrigFunc();
+	bool GetIntoGame_OrigFunc();
+	void StartDeathCam_OrigFunc();
+
+	CCSPlayer *CSPlayer() const;
+#endif // REGAMEDLL_API
 
 public:
 	static CBasePlayer *Instance(edict_t *pent) { return (CBasePlayer *)GET_PRIVATE(pent ? pent : ENT(0)); }
@@ -437,8 +421,6 @@ public:
 	void SpawnClientSideCorpse();
 	void Observer_FindNextPlayer(bool bReverse, const char *name = NULL);
 	CBasePlayer *Observer_IsValidTarget(int iPlayerIndex, bool bSameTeam);
-	CBasePlayer *Observer_IsValidTarget_(int iPlayerIndex, bool bSameTeam);
-
 	void Disconnect();
 	void Observer_Think();
 	void Observer_HandleButtons();
@@ -448,17 +430,13 @@ public:
 	int IsObserver() { return pev->iuser1; }
 	void PlantC4();
 	void Radio(const char *msg_id, const char *msg_verbose = NULL, short pitch = 100, bool showIcon = true);
-	void Radio_(const char *msg_id, const char *msg_verbose = NULL, short pitch = 100, bool showIcon = true);
 	CBasePlayer *GetNextRadioRecipient(CBasePlayer *pStartPlayer);
 	void SmartRadio();
 	void ThrowWeapon(char *pszItemName);
 	void ThrowPrimary();
 	void AddAccount(int amount, RewardType type = RT_NONE, bool bTrackChange = true);
-	void AddAccount_(int amount, RewardType type = RT_NONE, bool bTrackChange = true);
 	void Disappear();
-	void Disappear_();
 	void MakeVIP();
-	void MakeVIP_();
 	bool CanPlayerBuy(bool display = false);
 	void SwitchTeam();
 	void TabulateAmmo();
@@ -470,14 +448,12 @@ public:
 	void RenewItems();
 	void PackDeadPlayerItems();
 	void GiveDefaultItems();
-	void GiveDefaultItems_();
 	void RemoveAllItems(BOOL removeSuit);
 	void SetBombIcon(BOOL bFlash = FALSE);
 	void SetProgressBarTime(int time);
 	void SetProgressBarTime2(int time, float timeElapsed);
 	void SetPlayerModel(BOOL HasC4);
 	bool SetClientUserInfoName(char *infobuffer, char *szNewName);
-	bool SetClientUserInfoName_(char *infobuffer, char *szNewName);
 	void SetClientUserInfoModel(char *infobuffer, char *szNewModel);
 	void SetClientUserInfoModel_api(char *infobuffer, char *szNewModel);
 	void SetNewPlayerModel(const char *modelName);
@@ -501,16 +477,12 @@ public:
 	void UpdatePlayerSound();
 	void DeathSound();
 	void SetAnimation(PLAYER_ANIM playerAnim);
-	void SetAnimation_(PLAYER_ANIM playerAnim);
 	void SetWeaponAnimType(const char *szExtention) { Q_strcpy(m_szAnimExtention, szExtention); }
 	void CheatImpulseCommands(int iImpulse);
 	void StartDeathCam();
-	void StartDeathCam_();
 	void StartObserver(Vector &vecPosition, Vector &vecViewAngle);
-	void StartObserver_(Vector &vecPosition, Vector &vecViewAngle);
 	void HandleSignals();
 	void DropPlayerItem(const char *pszItemName);
-	void DropPlayerItem_(const char *pszItemName);
 	bool HasPlayerItem(CBasePlayerItem *pCheckItem);
 	bool HasNamedPlayerItem(const char *pszItemName);
 	bool HasWeapons();
@@ -521,7 +493,6 @@ public:
 	void ItemPreFrame();
 	void ItemPostFrame();
 	CBaseEntity *GiveNamedItem(const char *pszName);
-	CBaseEntity *GiveNamedItem_(const char *pszName);
 	CBaseEntity *GiveNamedItemEx(const char *pszName);
 	void EnableControl(BOOL fControl);
 	bool HintMessage(const char *pMessage, BOOL bDisplayIfPlayerDead = FALSE, BOOL bOverride = FALSE);
@@ -570,9 +541,7 @@ public:
 	bool IsProtectedByShield() { return HasShield() && m_bShieldDrawn; }
 	void RemoveShield();
 	void DropShield(bool bDeploy = true);
-	void DropShield_(bool bDeploy = true);
 	void GiveShield(bool bDeploy = true);
-	void GiveShield_(bool bDeploy = true);
 	bool IsHittingShield(Vector &vecDirection, TraceResult *ptr);
 	bool SelectSpawnSpot(const char *pEntClassName, CBaseEntity* &pSpot);
 	bool IsReloading() const;
@@ -616,27 +585,16 @@ public:
 	void ReloadWeapons(CBasePlayerItem *pWeapon = nullptr, bool bForceReload = false, bool bForceRefill = false);
 	void TeamChangeUpdate();
 	bool HasRestrictItem(ItemID item, ItemRestType type);
-	bool HasRestrictItem_(ItemID item, ItemRestType type);
 	void DropSecondary();
 	void DropPrimary();
-
 	void OnSpawnEquip(bool addDefault = true, bool equipGame = true);
-	void OnSpawnEquip_(bool addDefault = true, bool equipGame = true);
-
 	void RemoveBomb();
 	void HideTimer();
 	bool MakeBomber();
-	bool MakeBomber_();
-
 	bool GetIntoGame();
-	bool GetIntoGame_();
 
 	CBasePlayerItem *GetItemByName(const char *itemName);
 	CBasePlayerItem *GetItemById(WeaponIdType weaponID);
-
-#ifdef REGAMEDLL_API
-	CCSPlayer *CSPlayer() const;
-#endif
 
 	// templates
 	template<typename Functor>
@@ -870,13 +828,6 @@ class CWShield: public CBaseEntity
 public:
 	virtual void Spawn();
 	virtual void EXPORT Touch(CBaseEntity *pOther);
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Touch_(CBaseEntity *pOther);
-
-#endif
 
 public:
 	void SetCantBePickedUpByUser(CBaseEntity *pEntity, float time)

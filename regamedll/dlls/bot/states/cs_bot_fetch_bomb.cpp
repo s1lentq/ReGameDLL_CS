@@ -1,13 +1,13 @@
 #include "precompiled.h"
 
 // Move to the bomb on the floor and pick it up
-void FetchBombState::__MAKE_VHOOK(OnEnter)(CCSBot *me)
+void FetchBombState::OnEnter(CCSBot *me)
 {
 	me->DestroyPath();
 }
 
 // Move to the bomb on the floor and pick it up
-void FetchBombState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
+void FetchBombState::OnUpdate(CCSBot *me)
 {
 	if (me->IsCarryingBomb())
 	{

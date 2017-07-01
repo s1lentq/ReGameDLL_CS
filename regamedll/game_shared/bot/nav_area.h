@@ -175,9 +175,7 @@ public:
 
 	static void ChangeMasterMarker() { ++IMPL(m_masterMarker); }
 
-#ifndef HOOK_GAMEDLL
 private:
-#endif
 	friend void DestroyHidingSpots();
 
 	Vector m_pos;
@@ -351,9 +349,7 @@ public:
 	void AddLadderUp(CNavLadder *ladder) { m_ladder[LADDER_UP].push_back(ladder); }
 	void AddLadderDown(CNavLadder *ladder) { m_ladder[LADDER_DOWN].push_back(ladder); }
 
-#ifndef HOOK_GAMEDLL
 private:
-#endif
 	friend void ConnectGeneratedAreas();
 	friend void MergeGeneratedAreas();
 	friend void MarkJumpAreas();

@@ -60,7 +60,7 @@ void CMapInfo::CheckMapInfo()
 	CSGameRules()->m_bTCantBuy = bTCantBuy;
 }
 
-void CMapInfo::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CMapInfo::KeyValue(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "buying"))
 	{
@@ -78,7 +78,7 @@ void CMapInfo::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 	}
 }
 
-void CMapInfo::__MAKE_VHOOK(Spawn)()
+void CMapInfo::Spawn()
 {
 	pev->movetype = MOVETYPE_NONE;
 	pev->solid = SOLID_NOT;

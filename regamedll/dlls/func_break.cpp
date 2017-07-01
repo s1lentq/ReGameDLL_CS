@@ -106,7 +106,7 @@ TYPEDESCRIPTION CPushable::m_SaveData[] =
 
 #endif // HOOK_GAMEDLL
 
-void CBreakable::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CBreakable::KeyValue(KeyValueData *pkvd)
 {
 	// UNDONE_WC: explicitly ignoring these fields, but they shouldn't be in the map file!
 	if (FStrEq(pkvd->szKeyName, "explosion"))
@@ -172,7 +172,7 @@ void CBreakable::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 LINK_ENTITY_TO_CLASS(func_breakable, CBreakable, CCSBreakable)
 IMPLEMENT_SAVERESTORE(CBreakable, CBaseEntity)
 
-void CBreakable::__MAKE_VHOOK(Spawn)()
+void CBreakable::Spawn()
 {
 	Precache();
 
@@ -212,7 +212,7 @@ void CBreakable::__MAKE_VHOOK(Spawn)()
 	}
 }
 
-void CBreakable::__MAKE_VHOOK(Restart)()
+void CBreakable::Restart()
 {
 	pev->solid = SOLID_BSP;
 	pev->movetype = MOVETYPE_PUSH;
@@ -316,7 +316,7 @@ void CBreakable::MaterialSoundRandom(edict_t *pEdict, Materials soundMaterial, f
 	}
 }
 
-void CBreakable::__MAKE_VHOOK(Precache)()
+void CBreakable::Precache()
 {
 	const char *pGibName = NULL;
 
@@ -533,7 +533,7 @@ void CBreakable::BreakTouch(CBaseEntity *pOther)
 
 // Smash the our breakable object
 // Break when triggered
-void CBreakable::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CBreakable::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	if (IsBreakable())
 	{
@@ -551,7 +551,7 @@ void CBreakable::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller
 	}
 }
 
-void CBreakable::__MAKE_VHOOK(TraceAttack)(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType)
+void CBreakable::TraceAttack(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType)
 {
 	// random spark if this is a 'computer' object
 	if (RANDOM_LONG(0, 1))
@@ -587,7 +587,7 @@ void CBreakable::__MAKE_VHOOK(TraceAttack)(entvars_t *pevAttacker, float flDamag
 // Special takedamage for func_breakable. Allows us to make
 // exceptions that are breakable-specific
 // bitsDamageType indicates the type of damage sustained ie: DMG_CRUSH
-BOOL CBreakable::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
+BOOL CBreakable::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
 	Vector vecTemp;
 
@@ -676,7 +676,7 @@ void CBreakable::Die()
 
 	// The more negative pev->health, the louder
 	// the sound should be.
-	
+
 #ifdef REGAMEDLL_FIXES
 	fvol = RANDOM_FLOAT(0.85f, 1.0f) + (Q_abs(pev->health) / 100.0f);
 #else
@@ -849,7 +849,7 @@ BOOL CBreakable::IsBreakable()
 	return m_Material != matUnbreakableGlass;
 }
 
-int CBreakable::__MAKE_VHOOK(DamageDecal)(int bitsDamageType)
+int CBreakable::DamageDecal(int bitsDamageType)
 {
 	if (m_Material == matGlass)
 		return DECAL_GLASSBREAK1 + RANDOM_LONG(0, 2);
@@ -863,7 +863,7 @@ int CBreakable::__MAKE_VHOOK(DamageDecal)(int bitsDamageType)
 LINK_ENTITY_TO_CLASS(func_pushable, CPushable, CCSPushable)
 IMPLEMENT_SAVERESTORE(CPushable, CBreakable)
 
-void CPushable::__MAKE_VHOOK(Spawn)()
+void CPushable::Spawn()
 {
 	if (pev->spawnflags & SF_PUSH_BREAKABLE)
 		CBreakable::Spawn();
@@ -898,7 +898,7 @@ void CPushable::__MAKE_VHOOK(Spawn)()
 	m_soundTime = 0;
 }
 
-void CPushable::__MAKE_VHOOK(Precache)()
+void CPushable::Precache()
 {
 	for (int i = 0; i < 3; ++i)
 	{
@@ -935,7 +935,7 @@ void CPushable::Restart()
 }
 #endif
 
-void CPushable::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CPushable::KeyValue(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "size"))
 	{
@@ -972,7 +972,7 @@ void CPushable::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 }
 
 // Pull the func_pushable
-void CPushable::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CPushable::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	if (!pActivator || !pActivator->IsPlayer())
 	{
@@ -990,7 +990,7 @@ void CPushable::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller,
 	}
 }
 
-void CPushable::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
+void CPushable::Touch(CBaseEntity *pOther)
 {
 	if (FClassnameIs(pOther->pev, "worldspawn"))
 		return;
@@ -1078,7 +1078,7 @@ void CPushable::Move(CBaseEntity *pOther, int push)
 	}
 }
 
-BOOL CPushable::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
+BOOL CPushable::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
 	if (pev->spawnflags & SF_PUSH_BREAKABLE)
 	{

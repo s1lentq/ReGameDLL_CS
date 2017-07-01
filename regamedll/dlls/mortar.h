@@ -44,16 +44,6 @@ public:
 	// Bmodels don't go across transitions
 	virtual int ObjectCaps() { return CBaseToggle::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	void KeyValue_(KeyValueData *pkvd);
-	int Save_(CSave &save);
-	int Restore_(CRestore &restore);
-
-#endif
-
 public:
 	void EXPORT FieldUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
@@ -73,13 +63,6 @@ class CMortar: public CGrenade
 public:
 	virtual void Spawn();
 	virtual void Precache();
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-
-#endif
 
 	void EXPORT MortarExplode();
 

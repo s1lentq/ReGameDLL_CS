@@ -540,7 +540,7 @@ void CCSTutor::CheckForInterruptingMessageEvent(float time)
 	ConstructMessageAndDisplay();
 }
 
-void CCSTutor::__MAKE_VHOOK(TutorThink)(float time)
+void CCSTutor::TutorThink(float time)
 {
 	if (m_nextViewableCheckTime <= time)
 	{
@@ -992,7 +992,7 @@ void CCSTutor::DeleteEvent(TutorMessageEvent *event)
 	delete event;
 }
 
-void CCSTutor::__MAKE_VHOOK(PurgeMessages)()
+void CCSTutor::PurgeMessages()
 {
 	ClearCurrentEvent();
 	ClearEventList();
@@ -1083,7 +1083,7 @@ void CCSTutor::UpdateCurrentMessage(TutorMessageEvent *event)
 	}
 }
 
-void CCSTutor::__MAKE_VHOOK(ShowTutorMessage)(TutorMessageEvent *event)
+void CCSTutor::ShowTutorMessage(TutorMessageEvent *event)
 {
 	TutorMessageID mid = static_cast<TutorMessageID>(event->GetID());
 
@@ -1121,7 +1121,7 @@ void CCSTutor::ConstructMessageAndDisplay()
 	}
 }
 
-void CCSTutor::__MAKE_VHOOK(CallEventHandler)(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::CallEventHandler(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
 {
 	switch (event)
 	{
@@ -2052,7 +2052,7 @@ void CCSTutor::HandleCareerTaskDone(CBaseEntity *entity, CBaseEntity *other)
 		CreateAndAddEventToList(CAREER_TASK_DONE_ALL_DONE);
 }
 
-void CCSTutor::__MAKE_VHOOK(HandleShotFired)(Vector source, Vector target)
+void CCSTutor::HandleShotFired(Vector source, Vector target)
 {
 	CBasePlayer *localPlayer = UTIL_GetLocalPlayer();
 
@@ -2473,7 +2473,7 @@ bool CCSTutor::CheckForAllHostagesFollowingSomeone()
 	return foundUnusedOne ? false : true;
 }
 
-TutorMessage *CCSTutor::__MAKE_VHOOK(GetTutorMessageDefinition)(int messageID)
+TutorMessage *CCSTutor::GetTutorMessageDefinition(int messageID)
 {
 	if (messageID < 0 || messageID >= TUTOR_NUM_MESSAGES)
 		return NULL;

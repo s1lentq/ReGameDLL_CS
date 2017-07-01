@@ -84,26 +84,18 @@ public:
 
 	// Events are propogated to all bots.
 	virtual void OnEvent(GameEventType event, CBaseEntity *entity = NULL, CBaseEntity *other = NULL);		// Invoked when event occurs in the game (some events have NULL entity).
-	virtual unsigned int GetPlayerPriority(CBasePlayer *player) const = 0;						// return priority of player (0 = max pri)
+	virtual unsigned int GetPlayerPriority(CBasePlayer *player) const = 0;									// return priority of player (0 = max pri)
 
 public:
 	const char *GetNavMapFilename() const;										// return the filename for this map's "nav" file
 
-	void AddGrenade(int type, CGrenade *grenade);									// add an active grenade to the bot's awareness
+	void AddGrenade(int type, CGrenade *grenade);								// add an active grenade to the bot's awareness
 	void RemoveGrenade(CGrenade *grenade);										// the grenade entity in the world is going away
-	void ValidateActiveGrenades();											// destroy any invalid active grenades
+	void ValidateActiveGrenades();												// destroy any invalid active grenades
 	void DestroyAllGrenades();
 
-	bool IsLineBlockedBySmoke(const Vector *from, const Vector *to);						// return true if line intersects smoke volume
+	bool IsLineBlockedBySmoke(const Vector *from, const Vector *to);			// return true if line intersects smoke volume
 	bool IsInsideSmokeCloud(const Vector *pos);									// return true if position is inside a smoke cloud
-
-#ifdef HOOK_GAMEDLL
-
-	void RestartRound_();
-	void StartFrame_();
-	void OnEvent_(GameEventType event, CBaseEntity *entity = NULL, CBaseEntity *other = NULL);
-
-#endif
 
 private:
 	// the list of active grenades the bots are aware of

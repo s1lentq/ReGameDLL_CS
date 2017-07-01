@@ -65,20 +65,6 @@ public:
 	virtual void Fire(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker);
 	virtual Vector UpdateTargetPosition(CBaseEntity *pTarget) { return pTarget->BodyTarget(pev->origin); }
 
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	void KeyValue_(KeyValueData *pkvd);
-	int Save_(CSave &save);
-	int Restore_(CRestore &restore);
-	BOOL OnControls_(entvars_t *pevTest);
-	void Think_();
-	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-	void Fire_(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker);
-
-#endif
-
 public:
 	void TrackTarget();
 	void StartRotSound();
@@ -160,11 +146,6 @@ class CFuncTankGun: public CFuncTank
 {
 public:
 	virtual void Fire(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker);
-
-#ifdef HOOK_GAMEDLL
-	void Fire_(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker);
-#endif
-
 };
 
 class CFuncTankLaser: public CFuncTank
@@ -176,17 +157,6 @@ public:
 	virtual void Activate();
 	virtual void Think();
 	virtual void Fire(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker);
-
-#ifdef HOOK_GAMEDLL
-
-	void KeyValue_(KeyValueData *pkvd);
-	int Save_(CSave &save);
-	int Restore_(CRestore &restore);
-	void Activate_();
-	void Think_();
-	void Fire_(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker);
-
-#endif
 
 	CLaser *GetLaser();
 
@@ -203,14 +173,6 @@ class CFuncTankRocket: public CFuncTank
 public:
 	virtual void Precache();
 	virtual void Fire(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker);
-
-#ifdef HOOK_GAMEDLL
-
-	void Precache_();
-	void Fire_(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker);
-
-#endif
-
 };
 
 class CFuncTankMortar: public CFuncTank
@@ -218,14 +180,6 @@ class CFuncTankMortar: public CFuncTank
 public:
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual void Fire(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker);
-
-#ifdef HOOK_GAMEDLL
-
-	void KeyValue_(KeyValueData *pkvd);
-	void Fire_(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker);
-
-#endif
-
 };
 
 class CFuncTankControls: public CBaseEntity
@@ -237,16 +191,6 @@ public:
 	virtual int ObjectCaps() { return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | FCAP_IMPULSE_USE; }
 	virtual void Think();
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	int Save_(CSave &save);
-	int Restore_(CRestore &restore);
-	void Think_();
-	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-#endif
 
 public:
 	static TYPEDESCRIPTION IMPL(m_SaveData)[1];

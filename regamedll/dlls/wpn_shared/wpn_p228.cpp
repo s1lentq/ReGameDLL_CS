@@ -2,7 +2,7 @@
 
 LINK_ENTITY_TO_CLASS(weapon_p228, CP228, CCSP228)
 
-void CP228::__MAKE_VHOOK(Spawn)()
+void CP228::Spawn()
 {
 	Precache();
 
@@ -16,7 +16,7 @@ void CP228::__MAKE_VHOOK(Spawn)()
 	FallInit();
 }
 
-void CP228::__MAKE_VHOOK(Precache)()
+void CP228::Precache()
 {
 	PRECACHE_MODEL("models/v_p228.mdl");
 	PRECACHE_MODEL("models/w_p228.mdl");
@@ -32,7 +32,7 @@ void CP228::__MAKE_VHOOK(Precache)()
 	m_usFireP228 = PRECACHE_EVENT(1, "events/p228.sc");
 }
 
-int CP228::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
+int CP228::GetItemInfo(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
 	p->pszAmmo1 = "357SIG";
@@ -49,7 +49,7 @@ int CP228::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	return 1;
 }
 
-BOOL CP228::__MAKE_VHOOK(Deploy)()
+BOOL CP228::Deploy()
 {
 	m_flAccuracy = 0.9f;
 	m_fMaxSpeed = P228_MAX_SPEED;
@@ -62,7 +62,7 @@ BOOL CP228::__MAKE_VHOOK(Deploy)()
 		return DefaultDeploy("models/v_p228.mdl", "models/p_p228.mdl", P228_DRAW, "onehanded", UseDecrement() != FALSE);
 }
 
-void CP228::__MAKE_VHOOK(PrimaryAttack)()
+void CP228::PrimaryAttack()
 {
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
 	{
@@ -82,7 +82,7 @@ void CP228::__MAKE_VHOOK(PrimaryAttack)()
 	}
 }
 
-void CP228::__MAKE_VHOOK(SecondaryAttack)()
+void CP228::SecondaryAttack()
 {
 	ShieldSecondaryFire(SHIELDGUN_UP, SHIELDGUN_DOWN);
 }
@@ -167,7 +167,7 @@ void CP228::P228Fire(float flSpread, float flCycleTime, BOOL fUseSemi)
 	ResetPlayerShieldAnim();
 }
 
-void CP228::__MAKE_VHOOK(Reload)()
+void CP228::Reload()
 {
 	if (m_pPlayer->ammo_357sig <= 0)
 		return;
@@ -179,7 +179,7 @@ void CP228::__MAKE_VHOOK(Reload)()
 	}
 }
 
-void CP228::__MAKE_VHOOK(WeaponIdle)()
+void CP228::WeaponIdle()
 {
 	ResetEmptySound();
 	m_pPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);

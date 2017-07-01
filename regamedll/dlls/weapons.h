@@ -150,15 +150,6 @@ public:
 	virtual void SetObjectCollisionBox();
 #endif
 
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	void Restart_();
-	void KeyValue_(KeyValueData *pkvd);
-
-#endif
-
 public:
 	void EXPORT ArmouryTouch(CBaseEntity *pOther);
 
@@ -184,17 +175,6 @@ public:
 	virtual int BloodColor() { return DONT_BLEED; }
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 	virtual void BounceSound();
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	int Save_(CSave &save);
-	int Restore_(CRestore &restore);
-	void Killed_(entvars_t *pevAttacker, int iGib);
-	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-	void BounceSound_();
-
-#endif
 
 public:
 	enum SATCHELCODE
@@ -295,20 +275,6 @@ public:
 	virtual float GetMaxSpeed() { return 260.0f; }
 	virtual int iItemSlot() { return 0; }
 
-#ifdef HOOK_GAMEDLL
-
-	int Save_(CSave &save);
-	int Restore_(CRestore &restore);
-	void SetObjectCollisionBox_();
-	CBaseEntity *Respawn_();
-	int AddToPlayer_(CBasePlayer *pPlayer);
-	void Holster_(int skiplocal);
-	void Drop_();
-	void Kill_();
-	void AttachToPlayer_(CBasePlayer *pPlayer);
-
-#endif
-
 public:
 	void EXPORT DestroyItem();
 	void EXPORT DefaultTouch(CBaseEntity *pOther);
@@ -374,28 +340,6 @@ public:
 	virtual void RetireWeapon();
 	virtual BOOL ShouldWeaponIdle() { return FALSE; }
 	virtual BOOL UseDecrement() { return FALSE; }
-
-#ifdef HOOK_GAMEDLL
-
-	int Save_(CSave &save);
-	int Restore_(CRestore &restore);
-	int AddToPlayer_(CBasePlayer *pPlayer);
-	int AddDuplicate_(CBasePlayerItem *pItem);
-	BOOL CanDeploy_();
-	void Holster_(int skiplocal = 0);
-	void ItemPostFrame_();
-	int PrimaryAmmoIndex_();
-	int SecondaryAmmoIndex_();
-	int UpdateClientData_(CBasePlayer *pPlayer);
-	int ExtractAmmo_(CBasePlayerWeapon *pWeapon);
-	int ExtractClipAmmo_(CBasePlayerWeapon *pWeapon);
-	BOOL PlayEmptySound_();
-	void ResetEmptySound_();
-	void SendWeaponAnim_(int iAnim, int skiplocal = 0);
-	BOOL IsUseable_();
-	void RetireWeapon_();
-
-#endif
 
 public:
 	BOOL AddPrimaryAmmo(int iCount, char *szName, int iMaxClip, int iMaxCarry);
@@ -466,13 +410,6 @@ public:
 	virtual BOOL AddAmmo(CBaseEntity *pOther) { return TRUE; }
 	virtual CBaseEntity *Respawn();
 
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	CBaseEntity *Respawn_();
-
-#endif
-
 public:
 	void EXPORT DefaultTouch(CBaseEntity *pOther);
 	void EXPORT Materialize();
@@ -488,18 +425,6 @@ public:
 	virtual int Restore(CRestore &restore);
 	virtual void SetObjectCollisionBox();
 	virtual void Touch(CBaseEntity *pOther);
-
-#if defined(REGAMEDLL_API) || defined(HOOK_GAMEDLL)
-
-	void Spawn_();
-	void Precache_();
-	void KeyValue_(KeyValueData *pkvd);
-	int Save_(CSave &save);
-	int Restore_(CRestore &restore);
-	void SetObjectCollisionBox_();
-	void Touch_(CBaseEntity *pOther);
-
-#endif
 
 public:
 	BOOL IsEmpty();
@@ -545,19 +470,6 @@ public:
 	}
 	virtual BOOL IsPistol() { return TRUE; }
 
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	int GetItemInfo_(ItemInfo *p);
-	BOOL Deploy_();
-	void PrimaryAttack_();
-	void SecondaryAttack_();
-	void Reload_();
-	void WeaponIdle_();
-
-#endif
-
 public:
 	void USPFire(float flSpread, float flCycleTime, BOOL fUseSemi);
 	void MakeBeam();
@@ -589,18 +501,6 @@ public:
 		return FALSE;
 	#endif
 	}
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	int GetItemInfo_(ItemInfo *p);
-	BOOL Deploy_();
-	void PrimaryAttack_();
-	void Reload_();
-	void WeaponIdle_();
-
-#endif
 
 public:
 	void MP5NFire(float flSpread, float flCycleTime, BOOL fUseAutoAim);
@@ -634,20 +534,6 @@ public:
 	#endif
 	}
 
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	int GetItemInfo_(ItemInfo *p);
-	BOOL Deploy_();
-	float GetMaxSpeed_();
-	void PrimaryAttack_();
-	void SecondaryAttack_();
-	void Reload_();
-	void WeaponIdle_();
-
-#endif
-
 public:
 	void SG552Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim);
 
@@ -679,19 +565,6 @@ public:
 		return FALSE;
 	#endif
 	}
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	int GetItemInfo_(ItemInfo *p);
-	BOOL Deploy_();
-	void PrimaryAttack_();
-	void SecondaryAttack_();
-	void Reload_();
-	void WeaponIdle_();
-
-#endif
 
 public:
 	void AK47Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim);
@@ -725,19 +598,6 @@ public:
 	#endif
 	}
 
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	int GetItemInfo_(ItemInfo *p);
-	BOOL Deploy_();
-	void PrimaryAttack_();
-	void SecondaryAttack_();
-	void Reload_();
-	void WeaponIdle_();
-
-#endif
-
 public:
 	void AUGFire(float flSpread, float flCycleTime, BOOL fUseAutoAim);
 
@@ -769,20 +629,6 @@ public:
 		return FALSE;
 	#endif
 	}
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	int GetItemInfo_(ItemInfo *p);
-	BOOL Deploy_();
-	float GetMaxSpeed_();
-	void PrimaryAttack_();
-	void SecondaryAttack_();
-	void Reload_();
-	void WeaponIdle_();
-
-#endif
 
 public:
 	void AWPFire(float flSpread, float flCycleTime, BOOL fUseAutoAim);
@@ -820,21 +666,6 @@ public:
 	#endif
 	}
 
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	void KeyValue_(KeyValueData *pkvd);
-	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-	int GetItemInfo_(ItemInfo *p);
-	BOOL Deploy_();
-	void Holster_(int skiplocal);
-	float GetMaxSpeed_();
-	void PrimaryAttack_();
-	void WeaponIdle_();
-
-#endif
-
 public:
 	bool m_bStartedArming;
 	bool m_bBombPlacedAnimation;
@@ -866,19 +697,6 @@ public:
 	#endif
 	}
 	virtual BOOL IsPistol() { return TRUE; }
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	int GetItemInfo_(ItemInfo *p);
-	BOOL Deploy_();
-	void PrimaryAttack_();
-	void SecondaryAttack_();
-	void Reload_();
-	void WeaponIdle_();
-
-#endif
 
 public:
 	void DEAGLEFire(float flSpread, float flCycleTime, BOOL fUseSemi);
@@ -922,20 +740,6 @@ public:
 	#endif
 	}
 
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	int GetItemInfo_(ItemInfo *p);
-	BOOL CanDeploy_();
-	BOOL Deploy_();
-	void Holster_(int skiplocal);
-	void PrimaryAttack_();
-	void SecondaryAttack_();
-	void WeaponIdle_();
-
-#endif
-
 public:
 	bool ShieldSecondaryFire(int iUpAnim, int iDownAnim);
 	void SetPlayerShieldAnim();
@@ -963,20 +767,6 @@ public:
 		return FALSE;
 	#endif
 	}
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	int GetItemInfo_(ItemInfo *p);
-	BOOL Deploy_();
-	float GetMaxSpeed_();
-	void PrimaryAttack_();
-	void SecondaryAttack_();
-	void Reload_();
-	void WeaponIdle_();
-
-#endif
 
 public:
 	void G3SG1Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim);
@@ -1010,19 +800,6 @@ public:
 	}
 	virtual BOOL IsPistol() { return TRUE; }
 
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	int GetItemInfo_(ItemInfo *p);
-	BOOL Deploy_();
-	void PrimaryAttack_();
-	void SecondaryAttack_();
-	void Reload_();
-	void WeaponIdle_();
-
-#endif
-
 public:
 	void GLOCK18Fire(float flSpread, float flCycleTime, BOOL bFireBurst);
 
@@ -1055,20 +832,6 @@ public:
 	#endif
 	}
 
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	int GetItemInfo_(ItemInfo *p);
-	BOOL CanDeploy_();
-	BOOL Deploy_();
-	void Holster_(int skiplocal);
-	void PrimaryAttack_();
-	void SecondaryAttack_();
-	void WeaponIdle_();
-
-#endif
-
 public:
 	bool ShieldSecondaryFire(int iUpAnim, int iDownAnim);
 	void SetPlayerShieldAnim();
@@ -1100,19 +863,6 @@ public:
 	#endif
 	}
 	virtual void WeaponIdle();
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	int GetItemInfo_(ItemInfo *p);
-	BOOL Deploy_();
-	void Holster_(int skiplocal);
-	void PrimaryAttack_();
-	void SecondaryAttack_();
-	void WeaponIdle_();
-
-#endif
 
 public:
 	void EXPORT SwingAgain();
@@ -1153,18 +903,6 @@ public:
 	#endif
 	}
 
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	int GetItemInfo_(ItemInfo *p);
-	BOOL Deploy_();
-	void PrimaryAttack_();
-	void Reload_();
-	void WeaponIdle_();
-
-#endif
-
 public:
 	void M249Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim);
 
@@ -1196,18 +934,6 @@ public:
 	#endif
 	}
 
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	int GetItemInfo_(ItemInfo *p);
-	BOOL Deploy_();
-	void PrimaryAttack_();
-	void Reload_();
-	void WeaponIdle_();
-
-#endif
-
 public:
 	int m_iShell;
 	float m_flPumpTime;
@@ -1237,20 +963,6 @@ public:
 		return FALSE;
 	#endif
 	}
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	int GetItemInfo_(ItemInfo *p);
-	BOOL Deploy_();
-	float GetMaxSpeed_();
-	void PrimaryAttack_();
-	void SecondaryAttack_();
-	void Reload_();
-	void WeaponIdle_();
-
-#endif
 
 public:
 	void M4A1Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim);
@@ -1282,18 +994,6 @@ public:
 		return FALSE;
 	#endif
 	}
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	int GetItemInfo_(ItemInfo *p);
-	BOOL Deploy_();
-	void PrimaryAttack_();
-	void Reload_();
-	void WeaponIdle_();
-
-#endif
 
 public:
 	void MAC10Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim);
@@ -1328,19 +1028,6 @@ public:
 	}
 	virtual BOOL IsPistol() { return TRUE; }
 
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	int GetItemInfo_(ItemInfo *p);
-	BOOL Deploy_();
-	void PrimaryAttack_();
-	void SecondaryAttack_();
-	void Reload_();
-	void WeaponIdle_();
-
-#endif
-
 public:
 	void P228Fire(float flSpread, float flCycleTime, BOOL fUseSemi);
 	void MakeBeam();
@@ -1374,19 +1061,6 @@ public:
 	#endif
 	}
 
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	int GetItemInfo_(ItemInfo *p);
-	BOOL Deploy_();
-	float GetMaxSpeed_();
-	void PrimaryAttack_();
-	void Reload_();
-	void WeaponIdle_();
-
-#endif
-
 public:
 	void P90Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim);
 
@@ -1418,20 +1092,6 @@ public:
 		return FALSE;
 	#endif
 	}
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	int GetItemInfo_(ItemInfo *p);
-	BOOL Deploy_();
-	float GetMaxSpeed_();
-	void PrimaryAttack_();
-	void SecondaryAttack_();
-	void Reload_();
-	void WeaponIdle_();
-
-#endif
 
 public:
 	void SCOUTFire(float flSpread, float flCycleTime, BOOL fUseAutoAim);
@@ -1465,20 +1125,6 @@ public:
 	#endif
 	}
 
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	int GetItemInfo_(ItemInfo *p);
-	BOOL CanDeploy_();
-	BOOL Deploy_();
-	void Holster_(int skiplocal);
-	void PrimaryAttack_();
-	void SecondaryAttack_();
-	void WeaponIdle_();
-
-#endif
-
 public:
 	bool ShieldSecondaryFire(int iUpAnim, int iDownAnim);
 	void SetPlayerShieldAnim();
@@ -1508,18 +1154,6 @@ public:
 		return FALSE;
 	#endif
 	}
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	int GetItemInfo_(ItemInfo *p);
-	BOOL Deploy_();
-	void PrimaryAttack_();
-	void Reload_();
-	void WeaponIdle_();
-
-#endif
 
 public:
 	void TMPFire(float flSpread, float flCycleTime, BOOL fUseAutoAim);
@@ -1553,18 +1187,6 @@ public:
 	#endif
 	}
 
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	int GetItemInfo_(ItemInfo *p);
-	BOOL Deploy_();
-	void PrimaryAttack_();
-	void Reload_();
-	void WeaponIdle_();
-
-#endif
-
 public:
 	int m_iShell;
 	float m_flPumpTime;
@@ -1594,18 +1216,6 @@ public:
 	#endif
 	}
 	virtual BOOL IsPistol() { return TRUE; }
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	int GetItemInfo_(ItemInfo *p);
-	BOOL Deploy_();
-	void PrimaryAttack_();
-	void Reload_();
-	void WeaponIdle_();
-
-#endif
 
 public:
 	void ELITEFire(float flSpread, float flCycleTime, BOOL fUseSemi);
@@ -1640,19 +1250,6 @@ public:
 	}
 	virtual BOOL IsPistol() { return TRUE; }
 
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	int GetItemInfo_(ItemInfo *p);
-	BOOL Deploy_();
-	void PrimaryAttack_();
-	void SecondaryAttack_();
-	void Reload_();
-	void WeaponIdle_();
-
-#endif
-
 public:
 	void FiveSevenFire(float flSpread, float flCycleTime, BOOL fUseSemi);
 	void MakeBeam();
@@ -1686,18 +1283,6 @@ public:
 	#endif
 	}
 
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	int GetItemInfo_(ItemInfo *p);
-	BOOL Deploy_();
-	void PrimaryAttack_();
-	void Reload_();
-	void WeaponIdle_();
-
-#endif
-
 public:
 	void UMP45Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim);
 
@@ -1730,20 +1315,6 @@ public:
 	#endif
 	}
 
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	int GetItemInfo_(ItemInfo *p);
-	BOOL Deploy_();
-	float GetMaxSpeed_();
-	void PrimaryAttack_();
-	void SecondaryAttack_();
-	void Reload_();
-	void WeaponIdle_();
-
-#endif
-
 public:
 	void SG550Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim);
 	int m_iShell;
@@ -1773,19 +1344,6 @@ public:
 		return FALSE;
 	#endif
 	}
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	int GetItemInfo_(ItemInfo *p);
-	BOOL Deploy_();
-	void PrimaryAttack_();
-	void SecondaryAttack_();
-	void Reload_();
-	void WeaponIdle_();
-
-#endif
 
 public:
 	void GalilFire(float flSpread, float flCycleTime, BOOL fUseAutoAim);
@@ -1819,19 +1377,6 @@ public:
 		return FALSE;
 	#endif
 	}
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	int GetItemInfo_(ItemInfo *p);
-	BOOL Deploy_();
-	void PrimaryAttack_();
-	void SecondaryAttack_();
-	void Reload_();
-	void WeaponIdle_();
-
-#endif
 
 public:
 	void FamasFire(float flSpread, float flCycleTime, BOOL fUseAutoAim, BOOL bFireBurst);

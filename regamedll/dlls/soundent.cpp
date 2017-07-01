@@ -54,7 +54,7 @@ NOXREF BOOL CSound::FIsScent()
 	return FALSE;
 }
 
-void CSoundEnt::__MAKE_VHOOK(Spawn)()
+void CSoundEnt::Spawn()
 {
 	pev->solid = SOLID_NOT;
 	Initialize();
@@ -65,7 +65,7 @@ void CSoundEnt::__MAKE_VHOOK(Spawn)()
 // Think - at interval, the entire active sound list is checked
 // for sounds that have ExpireTimes less than or equal
 // to the current world time, and these sounds are deallocated.
-void CSoundEnt::__MAKE_VHOOK(Think)()
+void CSoundEnt::Think()
 {
 	int iSound;
 	int iPreviousSound;
@@ -102,7 +102,7 @@ void CSoundEnt::__MAKE_VHOOK(Think)()
 }
 
 // Precache - dummy function
-void CSoundEnt::__MAKE_VHOOK(Precache)()
+void CSoundEnt::Precache()
 {
 	;
 }

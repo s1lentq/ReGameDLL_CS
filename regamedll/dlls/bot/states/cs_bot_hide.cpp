@@ -2,7 +2,7 @@
 
 // Begin moving to a nearby hidey-hole.
 // NOTE: Do not forget this state may include a very long "move-to" time to get to our hidey spot!
-void HideState::__MAKE_VHOOK(OnEnter)(CCSBot *me)
+void HideState::OnEnter(CCSBot *me)
 {
 	m_isAtSpot = false;
 
@@ -40,7 +40,7 @@ void HideState::__MAKE_VHOOK(OnEnter)(CCSBot *me)
 
 // Move to a nearby hidey-hole.
 // NOTE: Do not forget this state may include a very long "move-to" time to get to our hidey spot!
-void HideState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
+void HideState::OnUpdate(CCSBot *me)
 {
 	// wait until finished reloading to leave hide state
 	if (!me->IsActiveWeaponReloading())
@@ -421,7 +421,7 @@ void HideState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 	}
 }
 
-void HideState::__MAKE_VHOOK(OnExit)(CCSBot *me)
+void HideState::OnExit(CCSBot *me)
 {
 	m_isHoldingPosition = false;
 

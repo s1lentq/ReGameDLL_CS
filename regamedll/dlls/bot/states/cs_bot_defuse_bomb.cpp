@@ -1,7 +1,7 @@
 #include "precompiled.h"
 
 // Begin defusing the bomb
-void DefuseBombState::__MAKE_VHOOK(OnEnter)(CCSBot *me)
+void DefuseBombState::OnEnter(CCSBot *me)
 {
 	me->Crouch();
 	me->SetDisposition(CCSBot::SELF_DEFENSE);
@@ -9,7 +9,7 @@ void DefuseBombState::__MAKE_VHOOK(OnEnter)(CCSBot *me)
 }
 
 // Defuse the bomb
-void DefuseBombState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
+void DefuseBombState::OnUpdate(CCSBot *me)
 {
 	const Vector *bombPos = me->GetGameState()->GetBombPosition();
 
@@ -60,7 +60,7 @@ void DefuseBombState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 	}
 }
 
-void DefuseBombState::__MAKE_VHOOK(OnExit)(CCSBot *me)
+void DefuseBombState::OnExit(CCSBot *me)
 {
 	me->StandUp();
 	me->ResetStuckMonitor();

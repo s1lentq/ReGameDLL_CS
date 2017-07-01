@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-void HostageEscapeToCoverState::__MAKE_VHOOK(OnEnter)(CHostageImprov *improv)
+void HostageEscapeToCoverState::OnEnter(CHostageImprov *improv)
 {
 	CNavPath path;
 	HostagePathCost pathCost;
@@ -35,7 +35,7 @@ void HostageEscapeToCoverState::__MAKE_VHOOK(OnEnter)(CHostageImprov *improv)
 	m_canEscape = true;
 }
 
-void HostageEscapeToCoverState::__MAKE_VHOOK(OnUpdate)(CHostageImprov *improv)
+void HostageEscapeToCoverState::OnUpdate(CHostageImprov *improv)
 {
 	if (!m_canEscape)
 	{
@@ -67,18 +67,18 @@ void HostageEscapeToCoverState::__MAKE_VHOOK(OnUpdate)(CHostageImprov *improv)
 	}
 }
 
-void HostageEscapeToCoverState::__MAKE_VHOOK(OnExit)(CHostageImprov *improv)
+void HostageEscapeToCoverState::OnExit(CHostageImprov *improv)
 {
 	;
 }
 
-void HostageEscapeToCoverState::__MAKE_VHOOK(OnMoveToFailure)(const Vector &goal, MoveToFailureType reason)
+void HostageEscapeToCoverState::OnMoveToFailure(const Vector &goal, MoveToFailureType reason)
 {
 	HostageEscapeState *escape = static_cast<HostageEscapeState *>(GetParent());
 	escape->LookAround();
 }
 
-void HostageEscapeLookAroundState::__MAKE_VHOOK(OnEnter)(CHostageImprov *improv)
+void HostageEscapeLookAroundState::OnEnter(CHostageImprov *improv)
 {
 	m_timer.Start(RANDOM_FLOAT(5, 10));
 
@@ -86,7 +86,7 @@ void HostageEscapeLookAroundState::__MAKE_VHOOK(OnEnter)(CHostageImprov *improv)
 	improv->FaceOutwards();
 }
 
-void HostageEscapeLookAroundState::__MAKE_VHOOK(OnUpdate)(CHostageImprov *improv)
+void HostageEscapeLookAroundState::OnUpdate(CHostageImprov *improv)
 {
 	improv->UpdateIdleActivity(ACT_IDLE_SNEAKY, ACT_IDLE_SNEAKY_FIDGET);
 
@@ -97,12 +97,12 @@ void HostageEscapeLookAroundState::__MAKE_VHOOK(OnUpdate)(CHostageImprov *improv
 	}
 }
 
-void HostageEscapeLookAroundState::__MAKE_VHOOK(OnExit)(CHostageImprov *improv)
+void HostageEscapeLookAroundState::OnExit(CHostageImprov *improv)
 {
 	improv->ClearFaceTo();
 }
 
-void HostageEscapeState::__MAKE_VHOOK(OnEnter)(CHostageImprov *improv)
+void HostageEscapeState::OnEnter(CHostageImprov *improv)
 {
 	const CCSBotManager::Zone *zone = TheCSBots()->GetRandomZone();
 
@@ -117,7 +117,7 @@ void HostageEscapeState::__MAKE_VHOOK(OnEnter)(CHostageImprov *improv)
 	m_canEscape = true;
 }
 
-void HostageEscapeState::__MAKE_VHOOK(OnUpdate)(CHostageImprov *improv)
+void HostageEscapeState::OnUpdate(CHostageImprov *improv)
 {
 	if (!m_canEscape || (improv->IsScared() && improv->GetScareIntensity() == CHostageImprov::TERRIFIED))
 	{
@@ -164,7 +164,7 @@ void HostageEscapeState::__MAKE_VHOOK(OnUpdate)(CHostageImprov *improv)
 	}
 }
 
-void HostageEscapeState::__MAKE_VHOOK(OnExit)(CHostageImprov *improv)
+void HostageEscapeState::OnExit(CHostageImprov *improv)
 {
 	improv->Run();
 }

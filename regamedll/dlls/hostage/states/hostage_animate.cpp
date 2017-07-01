@@ -72,12 +72,12 @@ bool HostageAnimateState::IsDoneHolding()
 	return false;
 }
 
-void HostageAnimateState::__MAKE_VHOOK(OnEnter)(CHostageImprov *improv)
+void HostageAnimateState::OnEnter(CHostageImprov *improv)
 {
 	;
 }
 
-void HostageAnimateState::__MAKE_VHOOK(OnUpdate)(CHostageImprov *improv)
+void HostageAnimateState::OnUpdate(CHostageImprov *improv)
 {
 	if (m_sequenceCount <= 0)
 		return;
@@ -103,7 +103,7 @@ void HostageAnimateState::__MAKE_VHOOK(OnUpdate)(CHostageImprov *improv)
 	StartSequence(improv, &m_sequence[m_currentSequence]);
 }
 
-void HostageAnimateState::__MAKE_VHOOK(OnExit)(CHostageImprov *improv)
+void HostageAnimateState::OnExit(CHostageImprov *improv)
 {
 	;
 }

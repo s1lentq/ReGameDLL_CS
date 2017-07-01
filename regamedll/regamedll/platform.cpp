@@ -36,7 +36,7 @@ void NORETURN regamedll_syserror(const char *error, ...)
 	vsnprintf(text, sizeof(text), error, argptr);
 	va_end(argptr);
 
-	printf("%s\n", text);
+	CONSOLE_ECHO("%s\n", text);
 
 	FILE *fl = fopen("regamedll_error.txt", "w");
 	fprintf(fl, "%s\n", text);

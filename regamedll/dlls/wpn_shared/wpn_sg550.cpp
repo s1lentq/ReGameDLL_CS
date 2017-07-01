@@ -2,7 +2,7 @@
 
 LINK_ENTITY_TO_CLASS(weapon_sg550, CSG550, CCSSG550)
 
-void CSG550::__MAKE_VHOOK(Spawn)()
+void CSG550::Spawn()
 {
 	Precache();
 
@@ -15,7 +15,7 @@ void CSG550::__MAKE_VHOOK(Spawn)()
 	FallInit();
 }
 
-void CSG550::__MAKE_VHOOK(Precache)()
+void CSG550::Precache()
 {
 	PRECACHE_MODEL("models/v_sg550.mdl");
 	PRECACHE_MODEL("models/w_sg550.mdl");
@@ -30,7 +30,7 @@ void CSG550::__MAKE_VHOOK(Precache)()
 	m_usFireSG550 = PRECACHE_EVENT(1, "events/sg550.sc");
 }
 
-int CSG550::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
+int CSG550::GetItemInfo(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
 	p->pszAmmo1 = "556Nato";
@@ -47,12 +47,12 @@ int CSG550::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	return 1;
 }
 
-BOOL CSG550::__MAKE_VHOOK(Deploy)()
+BOOL CSG550::Deploy()
 {
 	return DefaultDeploy("models/v_sg550.mdl", "models/p_sg550.mdl", SG550_DRAW, "rifle", UseDecrement() != FALSE);
 }
 
-void CSG550::__MAKE_VHOOK(SecondaryAttack)()
+void CSG550::SecondaryAttack()
 {
 	switch (m_pPlayer->m_iFOV)
 	{
@@ -77,7 +77,7 @@ void CSG550::__MAKE_VHOOK(SecondaryAttack)()
 	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.3;
 }
 
-void CSG550::__MAKE_VHOOK(PrimaryAttack)()
+void CSG550::PrimaryAttack()
 {
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
 	{
@@ -171,7 +171,7 @@ void CSG550::SG550Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	m_pPlayer->pev->punchangle.y += UTIL_SharedRandomFloat(m_pPlayer->random_seed + 5, -0.75, 0.75);
 }
 
-void CSG550::__MAKE_VHOOK(Reload)()
+void CSG550::Reload()
 {
 	if (m_pPlayer->ammo_556nato <= 0)
 		return;
@@ -188,7 +188,7 @@ void CSG550::__MAKE_VHOOK(Reload)()
 	}
 }
 
-void CSG550::__MAKE_VHOOK(WeaponIdle)()
+void CSG550::WeaponIdle()
 {
 	ResetEmptySound();
 	m_pPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);
@@ -205,7 +205,7 @@ void CSG550::__MAKE_VHOOK(WeaponIdle)()
 	}
 }
 
-float CSG550::__MAKE_VHOOK(GetMaxSpeed)()
+float CSG550::GetMaxSpeed()
 {
 	return (m_pPlayer->m_iFOV == DEFAULT_FOV) ? SG550_MAX_SPEED : SG550_MAX_SPEED_ZOOM;
 }

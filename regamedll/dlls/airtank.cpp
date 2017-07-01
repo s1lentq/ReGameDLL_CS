@@ -15,7 +15,7 @@ TYPEDESCRIPTION CAirtank::m_SaveData[] =
 LINK_ENTITY_TO_CLASS(item_airtank, CAirtank, CCSAirtank)
 IMPLEMENT_SAVERESTORE(CAirtank, CGrenade)
 
-void CAirtank::__MAKE_VHOOK(Spawn)()
+void CAirtank::Spawn()
 {
 	Precache();
 
@@ -37,13 +37,13 @@ void CAirtank::__MAKE_VHOOK(Spawn)()
 	m_state = 1;
 }
 
-void CAirtank::__MAKE_VHOOK(Precache)()
+void CAirtank::Precache()
 {
 	PRECACHE_MODEL("models/w_oxygen.mdl");
 	PRECACHE_SOUND("doors/aliendoor3.wav");
 }
 
-void CAirtank::__MAKE_VHOOK(Killed)(entvars_t *pevAttacker, int iGib)
+void CAirtank::Killed(entvars_t *pevAttacker, int iGib)
 {
 	pev->owner = ENT(pevAttacker);
 

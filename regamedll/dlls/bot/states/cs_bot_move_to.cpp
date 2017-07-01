@@ -1,7 +1,7 @@
 #include "precompiled.h"
 
 // Move to a potentially far away position.
-void MoveToState::__MAKE_VHOOK(OnEnter)(CCSBot *me)
+void MoveToState::OnEnter(CCSBot *me)
 {
 	if (me->IsUsingKnife() && me->IsWellPastSafe() && !me->IsHurrying())
 	{
@@ -35,7 +35,7 @@ void MoveToState::__MAKE_VHOOK(OnEnter)(CCSBot *me)
 }
 
 // Move to a potentially far away position.
-void MoveToState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
+void MoveToState::OnUpdate(CCSBot *me)
 {
 	// assume that we are paying attention and close enough to know our enemy died
 	if (me->GetTask() == CCSBot::MOVE_TO_LAST_KNOWN_ENEMY_POSITION)
@@ -287,7 +287,7 @@ void MoveToState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 	}
 }
 
-void MoveToState::__MAKE_VHOOK(OnExit)(CCSBot *me)
+void MoveToState::OnExit(CCSBot *me)
 {
 	// reset to run in case we were walking near our goal position
 	me->Run();

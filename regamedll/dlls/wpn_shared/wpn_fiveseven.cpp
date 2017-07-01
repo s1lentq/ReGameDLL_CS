@@ -2,7 +2,7 @@
 
 LINK_ENTITY_TO_CLASS(weapon_fiveseven, CFiveSeven, CCSFiveSeven)
 
-void CFiveSeven::__MAKE_VHOOK(Spawn)()
+void CFiveSeven::Spawn()
 {
 	Precache();
 
@@ -16,7 +16,7 @@ void CFiveSeven::__MAKE_VHOOK(Spawn)()
 	FallInit();
 }
 
-void CFiveSeven::__MAKE_VHOOK(Precache)()
+void CFiveSeven::Precache()
 {
 	PRECACHE_MODEL("models/v_fiveseven.mdl");
 	PRECACHE_MODEL("models/w_fiveseven.mdl");
@@ -32,7 +32,7 @@ void CFiveSeven::__MAKE_VHOOK(Precache)()
 	m_usFireFiveSeven = PRECACHE_EVENT(1, "events/fiveseven.sc");
 }
 
-int CFiveSeven::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
+int CFiveSeven::GetItemInfo(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
 	p->pszAmmo1 = "57mm";
@@ -49,7 +49,7 @@ int CFiveSeven::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	return 1;
 }
 
-BOOL CFiveSeven::__MAKE_VHOOK(Deploy)()
+BOOL CFiveSeven::Deploy()
 {
 	m_flAccuracy = 0.92f;
 	m_fMaxSpeed = FIVESEVEN_MAX_SPEED;
@@ -62,7 +62,7 @@ BOOL CFiveSeven::__MAKE_VHOOK(Deploy)()
 		return DefaultDeploy("models/v_fiveseven.mdl", "models/p_fiveseven.mdl", FIVESEVEN_DRAW, "onehanded", UseDecrement() != FALSE);
 }
 
-void CFiveSeven::__MAKE_VHOOK(PrimaryAttack)()
+void CFiveSeven::PrimaryAttack()
 {
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
 	{
@@ -82,7 +82,7 @@ void CFiveSeven::__MAKE_VHOOK(PrimaryAttack)()
 	}
 }
 
-void CFiveSeven::__MAKE_VHOOK(SecondaryAttack)()
+void CFiveSeven::SecondaryAttack()
 {
 	ShieldSecondaryFire(SHIELDGUN_UP, SHIELDGUN_DOWN);
 }
@@ -161,13 +161,13 @@ void CFiveSeven::FiveSevenFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 	{
 		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, FALSE);
 	}
-	
+
 	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.0f;
 	m_pPlayer->pev->punchangle.x -= 2.0f;
 	ResetPlayerShieldAnim();
 }
 
-void CFiveSeven::__MAKE_VHOOK(Reload)()
+void CFiveSeven::Reload()
 {
 	if (m_pPlayer->ammo_57mm <= 0)
 		return;
@@ -179,7 +179,7 @@ void CFiveSeven::__MAKE_VHOOK(Reload)()
 	}
 }
 
-void CFiveSeven::__MAKE_VHOOK(WeaponIdle)()
+void CFiveSeven::WeaponIdle()
 {
 	ResetEmptySound();
 	m_pPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);

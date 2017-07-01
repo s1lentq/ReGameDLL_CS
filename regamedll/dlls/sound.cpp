@@ -87,7 +87,7 @@ IMPLEMENT_SAVERESTORE(CAmbientGeneric, CBaseEntity)
 // 200 : "Small Radius"
 // 125 : "Medium Radius"
 // 80  : "Large Radius"
-void CAmbientGeneric::__MAKE_VHOOK(Spawn)()
+void CAmbientGeneric::Spawn()
 {
 	if (pev->spawnflags & AMBIENT_SOUND_EVERYWHERE)
 	{
@@ -144,7 +144,7 @@ void CAmbientGeneric::__MAKE_VHOOK(Spawn)()
 	Precache();
 }
 
-void CAmbientGeneric::__MAKE_VHOOK(Restart)()
+void CAmbientGeneric::Restart()
 {
 	if (pev->spawnflags & AMBIENT_SOUND_EVERYWHERE)
 	{
@@ -210,7 +210,7 @@ void CAmbientGeneric::__MAKE_VHOOK(Restart)()
 	}
 }
 
-void CAmbientGeneric::__MAKE_VHOOK(Precache)()
+void CAmbientGeneric::Precache()
 {
 	char *szSoundFile = (char *)STRING(pev->message);
 
@@ -658,7 +658,7 @@ void CAmbientGeneric::ToggleUse(CBaseEntity *pActivator, CBaseEntity *pCaller, U
 
 // KeyValue - load keyvalue pairs into member data of the
 // ambient generic. NOTE: called BEFORE spawn!
-void CAmbientGeneric::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CAmbientGeneric::KeyValue(KeyValueData *pkvd)
 {
 	// NOTE: changing any of the modifiers in this code
 	// NOTE: also requires changing InitModulationParms code.
@@ -857,7 +857,7 @@ void CAmbientGeneric::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 LINK_ENTITY_TO_CLASS(env_sound, CEnvSound, CCSEnvSound)
 IMPLEMENT_SAVERESTORE(CEnvSound, CBaseEntity)
 
-void CEnvSound::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CEnvSound::KeyValue(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "radius"))
 	{
@@ -913,7 +913,7 @@ BOOL FEnvSoundInRange(entvars_t *pev, entvars_t *pevTarget, float *pflRange)
 // a new in-range, visible sound entity resets a new room_type.
 //
 // CONSIDER: if player in water state, autoset roomtype to 14,15 or 16.
-void CEnvSound::__MAKE_VHOOK(Think)()
+void CEnvSound::Think()
 {
 	// get pointer to client if visible; FIND_CLIENT_IN_PVS will
 	// cycle through visible clients on consecutive calls.
@@ -1006,7 +1006,7 @@ env_sound_Think_slow:
 
 // env_sound - spawn a sound entity that will set player roomtype
 // when player moves in range and sight.
-void CEnvSound::__MAKE_VHOOK(Spawn)()
+void CEnvSound::Spawn()
 {
 	// spread think times
 	pev->nextthink = gpGlobals->time + RANDOM_FLOAT(0.0, 0.5);
@@ -1819,7 +1819,7 @@ LINK_ENTITY_TO_CLASS(speaker, CSpeaker, CCSSpeaker)
 IMPLEMENT_SAVERESTORE(CSpeaker, CBaseEntity)
 
 // ambient_generic - general-purpose user-defined static sound
-void CSpeaker::__MAKE_VHOOK(Spawn)()
+void CSpeaker::Spawn()
 {
 	char *szSoundFile = (char *)STRING(pev->message);
 
@@ -1843,7 +1843,7 @@ void CSpeaker::__MAKE_VHOOK(Spawn)()
 	Precache();
 }
 
-void CSpeaker::__MAKE_VHOOK(Precache)()
+void CSpeaker::Precache()
 {
 	if (!(pev->spawnflags & SPEAKER_START_SILENT))
 	{
@@ -1970,7 +1970,7 @@ void CSpeaker::ToggleUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE
 
 // KeyValue - load keyvalue pairs into member data
 // NOTE: called BEFORE spawn!
-void CSpeaker::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CSpeaker::KeyValue(KeyValueData *pkvd)
 {
 	// preset
 	if (FStrEq(pkvd->szKeyName, "preset"))

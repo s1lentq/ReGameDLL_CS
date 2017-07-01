@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-void CCSBot::__MAKE_VHOOK(OnEvent)(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
+void CCSBot::OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
 {
 	GetGameState()->OnEvent(event, entity, other);
 	GetChatter()->OnEvent(event, entity, other);
@@ -113,7 +113,7 @@ void CCSBot::__MAKE_VHOOK(OnEvent)(GameEventType event, CBaseEntity *entity, CBa
 						// allow us to sneak past windows, doors, etc
 						IgnoreEnemies(1.0f);
 
-						// move to last known position of enemy - this could cause us to flank if 
+						// move to last known position of enemy - this could cause us to flank if
 						// the danger has changed due to our teammate's recent death
 						SetTask(MOVE_TO_LAST_KNOWN_ENEMY_POSITION, GetEnemy());
 						MoveTo(&GetLastKnownEnemyPosition());
@@ -133,7 +133,7 @@ void CCSBot::__MAKE_VHOOK(OnEvent)(GameEventType event, CBaseEntity *entity, CBa
 						GetChatter()->EnemiesRemaining();
 
 						if (IsVisible(&victim->pev->origin, CHECK_FOV))
-						{						
+						{
 							// congratulate teammates on their kills
 							if (killer != this)
 							{

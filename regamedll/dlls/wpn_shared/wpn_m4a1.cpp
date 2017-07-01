@@ -2,7 +2,7 @@
 
 LINK_ENTITY_TO_CLASS(weapon_m4a1, CM4A1, CCSM4A1)
 
-void CM4A1::__MAKE_VHOOK(Spawn)()
+void CM4A1::Spawn()
 {
 	Precache();
 
@@ -17,7 +17,7 @@ void CM4A1::__MAKE_VHOOK(Spawn)()
 	FallInit();
 }
 
-void CM4A1::__MAKE_VHOOK(Precache)()
+void CM4A1::Precache()
 {
 	PRECACHE_MODEL("models/v_m4a1.mdl");
 	PRECACHE_MODEL("models/w_m4a1.mdl");
@@ -36,7 +36,7 @@ void CM4A1::__MAKE_VHOOK(Precache)()
 	m_usFireM4A1 = PRECACHE_EVENT(1, "events/m4a1.sc");
 }
 
-int CM4A1::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
+int CM4A1::GetItemInfo(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
 	p->pszAmmo1 = "556Nato";
@@ -53,7 +53,7 @@ int CM4A1::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	return 1;
 }
 
-BOOL CM4A1::__MAKE_VHOOK(Deploy)()
+BOOL CM4A1::Deploy()
 {
 	m_bDelayFire = true;
 	m_flAccuracy = 0.2f;
@@ -67,7 +67,7 @@ BOOL CM4A1::__MAKE_VHOOK(Deploy)()
 		return DefaultDeploy("models/v_m4a1.mdl", "models/p_m4a1.mdl", M4A1_UNSIL_DRAW, "rifle", UseDecrement() != FALSE);
 }
 
-void CM4A1::__MAKE_VHOOK(SecondaryAttack)()
+void CM4A1::SecondaryAttack()
 {
 	if (m_iWeaponState & WPNSTATE_M4A1_SILENCED)
 	{
@@ -86,7 +86,7 @@ void CM4A1::__MAKE_VHOOK(SecondaryAttack)()
 	m_flNextPrimaryAttack = GetNextAttackDelay(2.0);
 }
 
-void CM4A1::__MAKE_VHOOK(PrimaryAttack)()
+void CM4A1::PrimaryAttack()
 {
 	if (m_iWeaponState & WPNSTATE_M4A1_SILENCED)
 	{
@@ -213,7 +213,7 @@ void CM4A1::M4A1Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	}
 }
 
-void CM4A1::__MAKE_VHOOK(Reload)()
+void CM4A1::Reload()
 {
 	if (m_pPlayer->ammo_556nato <= 0)
 		return;
@@ -228,7 +228,7 @@ void CM4A1::__MAKE_VHOOK(Reload)()
 	}
 }
 
-void CM4A1::__MAKE_VHOOK(WeaponIdle)()
+void CM4A1::WeaponIdle()
 {
 	ResetEmptySound();
 	m_pPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);
@@ -242,7 +242,7 @@ void CM4A1::__MAKE_VHOOK(WeaponIdle)()
 	SendWeaponAnim((m_iWeaponState & WPNSTATE_M4A1_SILENCED) == WPNSTATE_M4A1_SILENCED ? M4A1_IDLE : M4A1_UNSIL_IDLE, UseDecrement() != FALSE);
 }
 
-float CM4A1::__MAKE_VHOOK(GetMaxSpeed)()
+float CM4A1::GetMaxSpeed()
 {
 	return M4A1_MAX_SPEED;
 }

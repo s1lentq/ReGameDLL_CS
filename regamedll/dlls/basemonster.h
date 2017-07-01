@@ -77,30 +77,6 @@ public:
 	virtual BOOL FInViewCone(CBaseEntity *pEntity);
 	virtual BOOL FInViewCone(const Vector *pOrigin);
 
-#ifdef HOOK_GAMEDLL
-
-	void KeyValue_(KeyValueData *pkvd);
-	void TraceAttack_(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType);
-	BOOL TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
-	BOOL TakeHealth_(float flHealth, int bitsDamageType);
-	void Killed_(entvars_t *pevAttacker, int iGib);
-	float ChangeYaw_(int speed);
-	BOOL HasHumanGibs_();
-	BOOL HasAlienGibs_();
-	void FadeMonster_();
-	void GibMonster_();
-	Activity GetDeathActivity_();
-	void BecomeDead_();
-	BOOL ShouldFadeOnDeath_();
-	int IRelationship_(CBaseEntity *pTarget);
-	void MonsterInitDead_();
-	void Look_(int iDistance);
-	CBaseEntity *BestVisibleEnemy_();
-	BOOL FInViewCone_(CBaseEntity *pEntity);
-	BOOL FInViewCone_(const Vector *pOrigin);
-
-#endif
-
 public:
 	void MakeIdealYaw(Vector vecTarget);
 	Activity GetSmallFlinchActivity();
@@ -134,7 +110,7 @@ public:
 public:
 	Activity m_Activity;			// what the monster is doing (animation)
 	Activity m_IdealActivity;		// monster should switch to this activity
-	int m_LastHitGroup;			// the last body region that took damage
+	int m_LastHitGroup;				// the last body region that took damage
 	int m_bitsDamageType;			// what types of damage has monster (player) taken
 	byte m_rgbTimeBasedDamage[8];
 
@@ -144,10 +120,10 @@ public:
 	int m_afMemory;
 
 	float m_flNextAttack;			// cannot attack again until this time
-	EHANDLE m_hEnemy;			// the entity that the monster is fighting.
+	EHANDLE m_hEnemy;				// the entity that the monster is fighting.
 	EHANDLE m_hTargetEnt;			// the entity that the monster is trying to reach
 	float m_flFieldOfView;			// width of monster's field of view ( dot product )
-	int m_bloodColor;			// color of blood particless
+	int m_bloodColor;				// color of blood particless
 	Vector m_HackedGunPos;			// HACK until we can query end of gun
 	Vector m_vecEnemyLKP;			// last known position of enemy. (enemy's origin)
 };

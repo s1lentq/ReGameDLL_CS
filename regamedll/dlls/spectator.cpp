@@ -89,7 +89,7 @@ void CBaseSpectator::SpectatorThink()
 	}
 }
 
-void CBaseSpectator::__MAKE_VHOOK(Spawn)()
+void CBaseSpectator::Spawn()
 {
 	pev->flags = FL_SPECTATOR;
 	pev->solid = SOLID_NOT;

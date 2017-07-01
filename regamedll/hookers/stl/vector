@@ -236,16 +236,16 @@ protected:
 	_A allocator;
 	iterator _First, _Last, _End;
 	};
-		// CLASS vector_vs6<_Bool, allocator>
+		// CLASS vector_vs6<bool, allocator>
 typedef unsigned int _Vbase;	// word type for vector<bool> representation
 const int __VBITS = CHAR_BIT * sizeof (_Vbase);	// at least CHAR_BITS bits per word
 
 typedef allocator_<_Vbase> _Bool_allocator;
 template<class _Bool_allocator>
-class vector_vs6<_Bool, _Bool_allocator> {
+class vector_vs6<bool, _Bool_allocator> {
 public:
 	typedef _Bool_allocator _A;
-	typedef _Bool _Ty;
+	typedef bool _Ty;
 	typedef vector_vs6<_Ty, _A> _Myt;
 	typedef vector_vs6<_Vbase, _A> _Vbtype;
 	typedef _A allocator_type;
@@ -281,7 +281,7 @@ public:
 	typedef bool value_type;
 		// CLASS const_iterator
 	class iterator_;
-	class const_iterator : public _Ranit<_Bool, difference_type> {
+	class const_iterator : public _Ranit<bool, difference_type> {
 	public:
 		const_iterator()
 			: _Off(0), _Ptr(0) {}
@@ -562,7 +562,7 @@ protected:
 	size_type _Size;
 	_Vbtype _Vec;
 	};
-typedef vector_vs6<_Bool, _Bool_allocator> _Bvector;
+typedef vector_vs6<bool, _Bool_allocator> _Bvector;
 		// vector_vs6 TEMPLATE OPERATORS
 template<class _Ty, class _A> inline
 	bool operator==(const vector_vs6<_Ty, _A>& _X,

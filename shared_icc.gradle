@@ -16,13 +16,17 @@ rootProject.ext.createIccConfig = { boolean release, BinaryKind binKind ->
 				intelExtensions: false,
 				asmBlocks: true,
 
-				positionIndependentCode: false
+				positionIndependentCode: false,
+
+				extraDefines: [
+					'_GLIBCXX_USE_CXX11_ABI': 0,  // don't use specific c++11 features from GCC 5.X for backward compatibility to earlier version ABI libstdc++.so.6
+				]
 			),
 			linkerOptions: new GccToolchainConfig.LinkerOptions(
 				interProceduralOptimizations: true,		// -ipo
 				stripSymbolTable: true,
 				staticLibStdCpp: false,
-				staticLibGcc: true,
+				staticLibGcc: false,
 				staticIntel: true,
 			),
 			librarianOptions: new GccToolchainConfig.LibrarianOptions(
@@ -41,14 +45,15 @@ rootProject.ext.createIccConfig = { boolean release, BinaryKind binKind ->
 				asmBlocks: true,
 
 				extraDefines: [
-					'_ITERATOR_DEBUG_LEVEL': 0,	// for std::list, disable debug iterator in debug mode
+					'_ITERATOR_DEBUG_LEVEL': 0,  // for std::list, disable debug iterator in debug mode
+					'_GLIBCXX_USE_CXX11_ABI': 0, // don't use specific c++11 features from GCC 5.X for backward compatibility to earlier version ABI libstdc++.so.6
 				]
 			),
 			linkerOptions: new GccToolchainConfig.LinkerOptions(
 				interProceduralOptimizations: false,
 				stripSymbolTable: false,
 				staticLibStdCpp: false,
-				staticLibGcc: true,
+				staticLibGcc: false,
 				staticIntel: true,
 			),
 			librarianOptions: new GccToolchainConfig.LibrarianOptions(

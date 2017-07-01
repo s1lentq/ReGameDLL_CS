@@ -44,13 +44,6 @@ public:
 	virtual void Reset();
 	virtual bool IsTaskCompletableThisRound() { return true; }
 
-#ifdef HOOK_GAMEDLL
-
-	void OnEvent_(GameEventType event, CBasePlayer *pAttacker, CBasePlayer *pVictim);
-	void Reset_();
-
-#endif
-
 public:
 	static CCareerTask *NewTask(const char *taskName, GameEventType event, const char *weaponName, int n, bool mustLive, bool crossRounds, int id, bool isComplete);
 
@@ -96,13 +89,6 @@ public:
 	virtual void OnEvent(GameEventType event, CBasePlayer *pAttacker, CBasePlayer *pVictim);
 	virtual void Reset();
 	virtual bool IsTaskCompletableThisRound() { return m_bombPlantedThisRound && !m_defuseStartedThisRound; }
-
-#ifdef HOOK_GAMEDLL
-
-	void OnEvent_(GameEventType event, CBasePlayer *pAttacker, CBasePlayer *pVictim);
-	void Reset_();
-
-#endif
 
 public:
 	static CCareerTask *NewTask(const char *taskName, GameEventType event, const char *weaponName, int n, bool mustLive, bool crossRounds, int id, bool isComplete);

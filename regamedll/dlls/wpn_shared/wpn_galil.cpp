@@ -2,7 +2,7 @@
 
 LINK_ENTITY_TO_CLASS(weapon_galil, CGalil, CCSGalil)
 
-void CGalil::__MAKE_VHOOK(Spawn)()
+void CGalil::Spawn()
 {
 	Precache();
 
@@ -14,7 +14,7 @@ void CGalil::__MAKE_VHOOK(Spawn)()
 	FallInit();
 }
 
-void CGalil::__MAKE_VHOOK(Precache)()
+void CGalil::Precache()
 {
 	PRECACHE_MODEL("models/v_galil.mdl");
 	PRECACHE_MODEL("models/w_galil.mdl");
@@ -29,7 +29,7 @@ void CGalil::__MAKE_VHOOK(Precache)()
 	m_usFireGalil = PRECACHE_EVENT(1, "events/galil.sc");
 }
 
-int CGalil::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
+int CGalil::GetItemInfo(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
 	p->pszAmmo1 = "556Nato";
@@ -46,7 +46,7 @@ int CGalil::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	return 1;
 }
 
-BOOL CGalil::__MAKE_VHOOK(Deploy)()
+BOOL CGalil::Deploy()
 {
 	m_flAccuracy = 0.2f;
 	m_iShotsFired = 0;
@@ -55,12 +55,12 @@ BOOL CGalil::__MAKE_VHOOK(Deploy)()
 	return DefaultDeploy("models/v_galil.mdl", "models/p_galil.mdl", GALIL_DRAW, "ak47", UseDecrement() != FALSE);
 }
 
-void CGalil::__MAKE_VHOOK(SecondaryAttack)()
+void CGalil::SecondaryAttack()
 {
 	;
 }
 
-void CGalil::__MAKE_VHOOK(PrimaryAttack)()
+void CGalil::PrimaryAttack()
 {
 	if (m_pPlayer->pev->waterlevel == 3)
 	{
@@ -163,7 +163,7 @@ void CGalil::GalilFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	}
 }
 
-void CGalil::__MAKE_VHOOK(Reload)()
+void CGalil::Reload()
 {
 #ifdef REGAMEDLL_FIXES
 	// to prevent reload if not enough ammo
@@ -181,7 +181,7 @@ void CGalil::__MAKE_VHOOK(Reload)()
 	}
 }
 
-void CGalil::__MAKE_VHOOK(WeaponIdle)()
+void CGalil::WeaponIdle()
 {
 	ResetEmptySound();
 	m_pPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);

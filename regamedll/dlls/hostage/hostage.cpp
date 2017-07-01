@@ -173,10 +173,9 @@ struct
 LINK_ENTITY_TO_CLASS(hostage_entity, CHostage, CCSHostage)
 LINK_ENTITY_TO_CLASS(monster_scientist, CHostage, CCSHostage)
 
-void CHostage::__MAKE_VHOOK(Spawn)()
+void CHostage::Spawn()
 {
-	if (!g_pHostages)
-	{
+	if (!g_pHostages) {
 		g_pHostages = new CHostageManager;
 	}
 
@@ -223,13 +222,7 @@ void CHostage::__MAKE_VHOOK(Spawn)()
 
 	DROP_TO_FLOOR(edict());
 
-#ifndef HOOK_GAMEDLL
 	SetThink(&CHostage::IdleThink);
-#else
-	// TODO: fix test demo
-	SetThink(pCHostage__IdleThink);
-#endif
-
 	pev->nextthink = gpGlobals->time + RANDOM_FLOAT(0.1, 0.2);
 
 	m_flNextFullThink = gpGlobals->time + RANDOM_FLOAT(0.1, 0.2);
@@ -252,7 +245,7 @@ void CHostage::__MAKE_VHOOK(Spawn)()
 	m_improv = NULL;
 }
 
-void CHostage::__MAKE_VHOOK(Precache)()
+void CHostage::Precache()
 {
 	static int which = 0;
 
@@ -551,12 +544,7 @@ void CHostage::RePosition()
 	DROP_TO_FLOOR(edict());
 	SetActivity(ACT_IDLE);
 
-#ifndef HOOK_GAMEDLL
 	SetThink(&CHostage::IdleThink);
-#else
-	// TODO: fix test demo
-	SetThink(pCHostage__IdleThink);
-#endif
 	pev->nextthink = gpGlobals->time + RANDOM_FLOAT(0.1, 0.2);
 
 	m_fHasPath = FALSE;
@@ -578,7 +566,7 @@ void CHostage::TraceAttack(entvars_t *pevAttacker, float flDamage, Vector vecDir
 	}
 }
 
-BOOL CHostage::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
+BOOL CHostage::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
 #ifdef REGAMEDLL_ADD
 	if (hostagehurtable.value <= 0)
@@ -830,7 +818,7 @@ void CHostage::ApplyHostagePenalty(CBasePlayer *pAttacker)
 	}
 }
 
-void CHostage::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CHostage::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	if (!pActivator->IsPlayer())
 		return;
@@ -936,12 +924,12 @@ void CHostage::GiveCTTouchBonus(CBasePlayer *pPlayer)
 	UTIL_LogPrintf("\"%s<%i><%s><CT>\" triggered \"Touched_A_Hostage\"\n", STRING(pPlayer->pev->netname), GETPLAYERUSERID(pPlayer->edict()), GETPLAYERAUTHID(pPlayer->edict()));
 }
 
-int CHostage::__MAKE_VHOOK(ObjectCaps)()
+int CHostage::ObjectCaps()
 {
 	return (CBaseMonster::ObjectCaps() | FCAP_MUST_SPAWN | FCAP_ONOFF_USE);
 }
 
-void CHostage::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
+void CHostage::Touch(CBaseEntity *pOther)
 {
 	Vector2D vPush;
 	const float pushForce = 50.0f;

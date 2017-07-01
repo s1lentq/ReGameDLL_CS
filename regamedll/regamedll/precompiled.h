@@ -4,26 +4,22 @@
 
 #include "osconfig.h"
 #include "basetypes.h"
+
 #include "archtypes.h"
 #include "sse_mathfun.h"
 #include "asmlib.h"
 
 #include "MemPool.h"
+
+// Hook stuff
+#include "hookers/hooklist.h"
+
 #include "engine.h"
 #include "platform.h"
+#include "RegameDLLRuntimeConfig.h"
 #include "regamedll_debug.h"
 
-#ifdef HOOK_GAMEDLL
-#include "memory.h"
-#include "hooker.h"
-#include "RegameDLLRuntimeConfig.h"
-
-// STL containers Visual Studio 6.0
-#include "stl/vector"
-#include "stl/list"
-#endif // HOOK_GAMEDLL
-
-//valve libs stuff
+// Valve libs stuff
 #include "tier0/platform.h"
 #include "tier0/dbg.h"
 
@@ -33,7 +29,4 @@
 #include "regamedll.h"
 
 #include "regamedll_interfaces.h"
-#include "regamedll_api.h"
-
-#include "regamedll_interfaces_impl.h"
 #include "regamedll_api_impl.h"

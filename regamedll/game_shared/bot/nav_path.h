@@ -42,9 +42,9 @@ public:
 
 	struct PathSegment
 	{
-		CNavArea *area;			// the area along the path
+		CNavArea *area;				// the area along the path
 		NavTraverseType how;		// how to enter this area from the previous one
-		Vector pos;			// our movement goal position at this point in the path
+		Vector pos;					// our movement goal position at this point in the path
 		const CNavLadder *ladder;	// if "how" refers to a ladder, this is it
 	};
 
@@ -52,8 +52,8 @@ public:
 	int GetSegmentCount() const { return m_segmentCount; }
 	const Vector &GetEndpoint() const { return m_path[ m_segmentCount - 1 ].pos; }
 
-	bool IsAtEnd(const Vector &pos) const;						// return true if position is at the end of the path
-	float GetLength() const;							// return length of path from start to finish
+	bool IsAtEnd(const Vector &pos) const;									// return true if position is at the end of the path
+	float GetLength() const;												// return length of path from start to finish
 	bool GetPointAlongPath(float distAlong, Vector *pointOnPath) const;		// return point a given distance along the path - if distance is out of path bounds, point is clamped to start/end
 
 	// return the node index closest to the given distance along the path without going over - returns (-1) if error
@@ -149,16 +149,15 @@ public:
 
 		return true;
 	}
-#ifndef HOOK_GAMEDLL
+
 private:
-#endif
 	enum { MAX_PATH_SEGMENTS = 256 };
 	PathSegment m_path[ MAX_PATH_SEGMENTS ];
 	int m_segmentCount;
 
-	bool ComputePathPositions();					// determine actual path positions
+	bool ComputePathPositions();									// determine actual path positions
 	bool BuildTrivialPath(const Vector *start, const Vector *goal);	// utility function for when start and goal are in the same area
-	int FindNextOccludedNode(int anchor_);				// used by Optimize()
+	int FindNextOccludedNode(int anchor_);							// used by Optimize()
 };
 
 // Monitor improv movement and determine if it becomes stuck
@@ -174,8 +173,8 @@ public:
 	float GetDuration() const { return m_isStuck ? m_stuckTimer.GetElapsedTime() : 0.0f; }
 
 private:
-	bool m_isStuck;			// if true, we are stuck
-	Vector m_stuckSpot;		// the location where we became stuck
+	bool m_isStuck;				// if true, we are stuck
+	Vector m_stuckSpot;			// the location where we became stuck
 	IntervalTimer m_stuckTimer;	// how long we have been stuck
 
 	enum { MAX_VEL_SAMPLES = 5 };
@@ -197,18 +196,16 @@ public:
 	void SetPath(CNavPath *path) { m_path = path; }
 	void Reset();
 
-	void Update(float deltaT, bool avoidObstacles = true);				// move improv along path
-	void Debug(bool status) { m_isDebug = status; }					// turn debugging on/off
+	void Update(float deltaT, bool avoidObstacles = true);						// move improv along path
+	void Debug(bool status) { m_isDebug = status; }								// turn debugging on/off
 
-	bool IsStuck() const { return m_stuckMonitor.IsStuck(); }			// return true if improv is stuck
+	bool IsStuck() const { return m_stuckMonitor.IsStuck(); }					// return true if improv is stuck
 	void ResetStuck() { m_stuckMonitor.Reset(); }
 	float GetStuckDuration() const { return m_stuckMonitor.GetDuration(); }		// return how long we've been stuck
 
 	void FeelerReflexAdjustment(Vector *goalPosition, float height = -1.0f);	// adjust goal position if "feelers" are touched
 
-#ifndef HOOK_GAMEDLL
 private:
-#endif
 	int FindOurPositionOnPath(Vector *close, bool local) const;		// return the closest point to our current position on current path
 	int FindPathPoint(float aheadRange, Vector *point, int *prevIndex);	// compute a point a fixed distance ahead along our path.
 

@@ -45,7 +45,7 @@ CCSTutorStateSystem::~CCSTutorStateSystem()
 	}
 }
 
-bool CCSTutorStateSystem::__MAKE_VHOOK(UpdateState)(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
+bool CCSTutorStateSystem::UpdateState(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
 {
 	if (m_currentState == nullptr)
 	{
@@ -67,7 +67,7 @@ bool CCSTutorStateSystem::__MAKE_VHOOK(UpdateState)(GameEventType event, CBaseEn
 	return false;
 }
 
-char *CCSTutorStateSystem::__MAKE_VHOOK(GetCurrentStateString)()
+char *CCSTutorStateSystem::GetCurrentStateString()
 {
 	if (m_currentState)
 	{
@@ -77,7 +77,7 @@ char *CCSTutorStateSystem::__MAKE_VHOOK(GetCurrentStateString)()
 	return NULL;
 }
 
-CBaseTutorState *CCSTutorStateSystem::__MAKE_VHOOK(ConstructNewState)(int stateType)
+CBaseTutorState *CCSTutorStateSystem::ConstructNewState(int stateType)
 {
 	switch (stateType)
 	{
@@ -99,7 +99,7 @@ CCSTutorUndefinedState::~CCSTutorUndefinedState()
 	;
 }
 
-int CCSTutorUndefinedState::__MAKE_VHOOK(CheckForStateTransition)(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
+int CCSTutorUndefinedState::CheckForStateTransition(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
 {
 	if (event == EVENT_PLAYER_SPAWNED)
 	{
@@ -126,7 +126,7 @@ int CCSTutorUndefinedState::HandlePlayerSpawned(CBaseEntity *entity, CBaseEntity
 	return 0;
 }
 
-char *CCSTutorUndefinedState::__MAKE_VHOOK(GetStateString)()
+char *CCSTutorUndefinedState::GetStateString()
 {
 	return NULL;
 }
@@ -141,7 +141,7 @@ CCSTutorWaitingForStartState::~CCSTutorWaitingForStartState()
 	;
 }
 
-int CCSTutorWaitingForStartState::__MAKE_VHOOK(CheckForStateTransition)(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
+int CCSTutorWaitingForStartState::CheckForStateTransition(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
 {
 	switch (event)
 	{
@@ -154,7 +154,7 @@ int CCSTutorWaitingForStartState::__MAKE_VHOOK(CheckForStateTransition)(GameEven
 	return 0;
 }
 
-char *CCSTutorWaitingForStartState::__MAKE_VHOOK(GetStateString)()
+char *CCSTutorWaitingForStartState::GetStateString()
 {
 	return g_TutorStateStrings[m_type];
 }
@@ -191,7 +191,7 @@ CCSTutorBuyMenuState::~CCSTutorBuyMenuState()
 	;
 }
 
-int CCSTutorBuyMenuState::__MAKE_VHOOK(CheckForStateTransition)(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
+int CCSTutorBuyMenuState::CheckForStateTransition(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
 {
 	if (event == EVENT_ROUND_START)
 	{
@@ -201,7 +201,7 @@ int CCSTutorBuyMenuState::__MAKE_VHOOK(CheckForStateTransition)(GameEventType ev
 	return 0;
 }
 
-char *CCSTutorBuyMenuState::__MAKE_VHOOK(GetStateString)()
+char *CCSTutorBuyMenuState::GetStateString()
 {
 	return g_TutorStateStrings[m_type];
 }

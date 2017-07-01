@@ -80,12 +80,14 @@
 void PM_Init(struct playermove_s *ppmove);
 void PM_Move(struct playermove_s *ppmove, int server);
 char PM_FindTextureType(char *name);
-
-void PM_Init_(struct playermove_s *ppmove);
-void PM_Move_(struct playermove_s *ppmove, int server);
-void PM_AirMove_(int playerIndex = 0);
 void PM_AirMove_internal();
-void PM_UpdateStepSound_();
+
+#ifdef REGAMEDLL_API
+void PM_Init_OrigFunc(struct playermove_s *ppmove);
+void PM_Move_OrigFunc(struct playermove_s *ppmove, int server);
+void PM_AirMove_OrigFunc(int playerIndex = 0);
+void PM_UpdateStepSound_OrigFunc();
+#endif
 
 extern struct playermove_s *pmove;
 

@@ -294,24 +294,6 @@ public:
 	virtual BOOL FVisible(CBaseEntity *pEntity);
 	virtual BOOL FVisible(const Vector &vecOrigin);
 
-#ifdef HOOK_GAMEDLL
-
-	int Save_(CSave &save);
-	int Restore_(CRestore &restore);
-	void SetObjectCollisionBox_();
-	void TraceAttack_(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType);
-	BOOL TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
-	BOOL TakeHealth_(float flHealth, int bitsDamageType);
-	void Killed_(entvars_t *pevAttacker, int iGib);
-	void TraceBleed_(float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType);
-	int DamageDecal_(int bitsDamageType);
-	BOOL IsInWorld_();
-	CBaseEntity *GetNextTarget_();
-	BOOL FVisible_(CBaseEntity *pEntity);
-	BOOL FVisible_(const Vector &vecOrigin);
-
-#endif
-
 public:
 	// allow engine to allocate instance data
 	void *operator new(size_t stAllocateBlock, entvars_t *pevnew) { return ALLOC_PRIVATE(ENT(pevnew), stAllocateBlock); }
@@ -433,13 +415,6 @@ class CPointEntity: public CBaseEntity {
 public:
 	virtual void Spawn();
 	virtual int ObjectCaps() { return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-
-#endif
-
 };
 
 // MultiSouce
@@ -455,17 +430,6 @@ public:
 
 #ifdef REGAMEDLL_FIXES
 	virtual void Restart();
-#endif
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void KeyValue_(KeyValueData *pkvd);
-	int Save_(CSave &save);
-	int Restore_(CRestore &restore);
-	BOOL IsTriggered_(CBaseEntity *pActivator);
-	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
 #endif
 
 public:
@@ -487,14 +451,6 @@ public:
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
 
-#ifdef HOOK_GAMEDLL
-
-	void KeyValue_(KeyValueData *pkvd);
-	int Save_(CSave &save);
-	int Restore_(CRestore &restore);
-
-#endif
-
 public:
 	void SUB_UseTargets(CBaseEntity *pActivator, USE_TYPE useType, float value);
 	void EXPORT DelayThink();
@@ -511,13 +467,6 @@ public:
 	virtual int Restore(CRestore &restore);
 	virtual void HandleAnimEvent(MonsterEvent_t *pEvent) {}
 
-#ifdef HOOK_GAMEDLL
-
-	int Save_(CSave &save);
-	int Restore_(CRestore &restore);
-
-#endif
-
 public:
 	// Basic Monster Animation functions
 	float StudioFrameAdvance(float flInterval = 0.0f);				// accumulate animation frame time from last time called until now
@@ -526,7 +475,6 @@ public:
 	int LookupActivityHeaviest(int activity);
 	int LookupSequence(const char *label);
 	void ResetSequenceInfo();
-	void ResetSequenceInfo_();
 	void DispatchAnimEvents(float flFutureInterval = 0.1f);				// Handle events that have happend since last time called up until X seconds into the future
 	float SetBoneController(int iController, float flValue = 0.0f);
 	void InitBoneControllers();
@@ -541,6 +489,11 @@ public:
 
 	int ExtractBbox(int sequence, float *mins, float *maxs);
 	void SetSequenceBox();
+
+#ifdef REGAMEDLL_API
+	void ResetSequenceInfo_OrigFunc();
+#endif
+
 public:
 	static TYPEDESCRIPTION IMPL(m_SaveData)[5];
 
@@ -560,14 +513,6 @@ public:
 	virtual int Restore(CRestore &restore);
 	virtual int GetToggleState() { return m_toggle_state; }
 	virtual float GetDelay() { return m_flWait; }
-
-#ifdef HOOK_GAMEDLL
-
-	void KeyValue_(KeyValueData *pkvd);
-	int Save_(CSave &save);
-	int Restore_(CRestore &restore);
-
-#endif
 
 public:
 	void LinearMove(Vector vecDest, float flSpeed);
@@ -606,11 +551,11 @@ public:
 
 	int m_bitsDamageInflict;	// DMG_ damage type that the door or tigger does
 
-	string_t m_sMaster;		// If this button has a master switch, this is the targetname.
-						// A master switch must be of the multisource type. If all
-						// of the switches in the multisource have been triggered, then
-						// the button will be allowed to operate. Otherwise, it will be
-						// deactivated.
+	string_t m_sMaster;			// If this button has a master switch, this is the targetname.
+								// A master switch must be of the multisource type. If all
+								// of the switches in the multisource have been triggered, then
+								// the button will be allowed to operate. Otherwise, it will be
+								// deactivated.
 };
 
 #include "basemonster.h"
@@ -636,18 +581,6 @@ public:
 
 #ifdef REGAMEDLL_FIXES
 	virtual void Restart();
-#endif
-
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	void KeyValue_(KeyValueData *pkvd);
-	BOOL TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
-	int Save_(CSave &save);
-	int Restore_(CRestore &restore);
-
 #endif
 
 public:
@@ -690,15 +623,6 @@ public:
 	virtual void Spawn();
 	virtual void Precache();
 	virtual void KeyValue(KeyValueData *pkvd);
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	void KeyValue_(KeyValueData *pkvd);
-
-#endif
-
 };
 
 // Converts a entvars_t * to a class pointer
@@ -746,7 +670,6 @@ void RemoveEntityHashValue(entvars_t *pev, const char *value, hash_types_e field
 void printEntities();
 edict_t *CREATE_NAMED_ENTITY(string_t iClass);
 void REMOVE_ENTITY(edict_t *pEntity);
-void CONSOLE_ECHO_(char *pszMsg, ...);
 void loopPerformance();
 int DispatchSpawn(edict_t *pent);
 void DispatchKeyValue(edict_t *pentKeyvalue, KeyValueData *pkvd);

@@ -32,19 +32,19 @@
 #pragma once
 #endif
 
-#define MAX_NODES			100
-#define MAX_HOSTAGES			12
-#define MAX_HOSTAGES_NAV		20
+#define MAX_NODES                   100
+#define MAX_HOSTAGES                12
+#define MAX_HOSTAGES_NAV            20
 
-#define HOSTAGE_STEPSIZE		26.0f
-#define HOSTAGE_STEPSIZE_DEFAULT	18.0f
+#define HOSTAGE_STEPSIZE            26.0f
+#define HOSTAGE_STEPSIZE_DEFAULT    18.0f
 
-#define VEC_HOSTAGE_VIEW		Vector(0, 0, 12)
-#define VEC_HOSTAGE_HULL_MIN		Vector(-10, -10, 0)
-#define VEC_HOSTAGE_HULL_MAX		Vector(10, 10, 62)
+#define VEC_HOSTAGE_VIEW            Vector(0, 0, 12)
+#define VEC_HOSTAGE_HULL_MIN        Vector(-10, -10, 0)
+#define VEC_HOSTAGE_HULL_MAX        Vector(10, 10, 62)
 
-#define VEC_HOSTAGE_CROUCH		Vector(10, 10, 30)
-#define RESCUE_HOSTAGES_RADIUS		256.0f				// rescue zones from legacy info_*
+#define VEC_HOSTAGE_CROUCH          Vector(10, 10, 30)
+#define RESCUE_HOSTAGES_RADIUS      256.0f	// rescue zones from legacy info_*
 
 class CHostage;
 class CLocalNav;
@@ -105,17 +105,6 @@ public:
 	virtual void Touch(CBaseEntity *pOther);
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	int ObjectCaps_();
-	BOOL TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
-	void Touch_(CBaseEntity *pOther);
-	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-#endif
-
 public:
 	void EXPORT IdleThink();
 	void EXPORT Remove();
@@ -144,21 +133,19 @@ public:
 	bool IsFollowingSomeone() { return IsFollowing(); }
 	CBaseEntity *GetLeader()				// return our leader, or NULL
 	{
-		if (m_improv != NULL)
-		{
+		if (m_improv) {
 			return m_improv->GetFollowLeader();
 		}
 
 		return m_hTargetEnt;
 	}
-	bool IsFollowing(const CBaseEntity *entity = NULL)
+	bool IsFollowing(const CBaseEntity *entity = nullptr)
 	{
-		if (m_improv != NULL)
-		{
+		if (m_improv) {
 			return m_improv->IsFollowing();
 		}
 
-		if ((!entity && !m_hTargetEnt) || (entity != NULL && m_hTargetEnt != entity))
+		if ((!entity && !m_hTargetEnt) || (entity && m_hTargetEnt != entity))
 			return false;
 
 		if (m_State != FOLLOW)
@@ -265,7 +252,7 @@ public:
 		{
 			CHostage *hostage = m_hostage[i];
 
-			if (hostage == NULL || hostage->pev->deadflag == DEAD_DEAD)
+			if (!hostage || hostage->pev->deadflag == DEAD_DEAD)
 				continue;
 
 			if (func(hostage) == false)
@@ -274,11 +261,11 @@ public:
 
 		return true;
 	}
-	inline CHostage *GetClosestHostage(const Vector &pos, float *resultRange = NULL)
+	inline CHostage *GetClosestHostage(const Vector &pos, float *resultRange = nullptr)
 	{
 		float range;
 		float closeRange = 1e8f;
-		CHostage *close = NULL;
+		CHostage *close = nullptr;
 
 		for (int i = 0; i < m_hostageCount; i++)
 		{

@@ -2,7 +2,7 @@
 
 LINK_ENTITY_TO_CLASS(weapon_p90, CP90, CCSP90)
 
-void CP90::__MAKE_VHOOK(Spawn)()
+void CP90::Spawn()
 {
 	Precache();
 
@@ -17,7 +17,7 @@ void CP90::__MAKE_VHOOK(Spawn)()
 	FallInit();
 }
 
-void CP90::__MAKE_VHOOK(Precache)()
+void CP90::Precache()
 {
 	PRECACHE_MODEL("models/v_p90.mdl");
 	PRECACHE_MODEL("models/w_p90.mdl");
@@ -32,7 +32,7 @@ void CP90::__MAKE_VHOOK(Precache)()
 	m_usFireP90 = PRECACHE_EVENT(1, "events/p90.sc");
 }
 
-int CP90::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
+int CP90::GetItemInfo(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
 	p->pszAmmo1 = "57mm";
@@ -49,7 +49,7 @@ int CP90::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	return 1;
 }
 
-BOOL CP90::__MAKE_VHOOK(Deploy)()
+BOOL CP90::Deploy()
 {
 	m_iShotsFired = 0;
 	m_bDelayFire = false;
@@ -60,7 +60,7 @@ BOOL CP90::__MAKE_VHOOK(Deploy)()
 	return DefaultDeploy("models/v_p90.mdl", "models/p_p90.mdl", P90_DRAW, "carbine", UseDecrement() != FALSE);
 }
 
-void CP90::__MAKE_VHOOK(PrimaryAttack)()
+void CP90::PrimaryAttack()
 {
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
 	{
@@ -155,7 +155,7 @@ void CP90::P90Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	}
 }
 
-void CP90::__MAKE_VHOOK(Reload)()
+void CP90::Reload()
 {
 	if (m_pPlayer->ammo_57mm <= 0)
 		return;
@@ -169,7 +169,7 @@ void CP90::__MAKE_VHOOK(Reload)()
 	}
 }
 
-void CP90::__MAKE_VHOOK(WeaponIdle)()
+void CP90::WeaponIdle()
 {
 	ResetEmptySound();
 	m_pPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);
@@ -183,7 +183,7 @@ void CP90::__MAKE_VHOOK(WeaponIdle)()
 	SendWeaponAnim(P90_IDLE1, UseDecrement() != FALSE);
 }
 
-float CP90::__MAKE_VHOOK(GetMaxSpeed)()
+float CP90::GetMaxSpeed()
 {
 	return P90_MAX_SPEED;
 }

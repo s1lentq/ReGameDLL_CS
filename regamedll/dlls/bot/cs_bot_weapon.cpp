@@ -793,7 +793,7 @@ void CCSBot::SilencerCheck()
 }
 
 // Invoked when in contact with a CWeaponBox
-void CCSBot::__MAKE_VHOOK(OnTouchingWeapon)(CWeaponBox *box)
+void CCSBot::OnTouchingWeapon(CWeaponBox *box)
 {
 	auto pDroppedWeapon = box->m_rgpPlayerItems[ PRIMARY_WEAPON_SLOT ];
 

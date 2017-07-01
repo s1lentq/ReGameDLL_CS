@@ -88,9 +88,9 @@ const char *shrPathGameDLL()
 #endif
 
 	if (g_ReGameDLLRuntimeConfig.IsCzero())
-		Q_strcat(szDllFilename, "\\czero\\dlls\\"ORIGINAL_GAME_DLL_NAME);
+		Q_strcat(szDllFilename, "\\czero\\dlls\\" ORIGINAL_GAME_DLL_NAME);
 	else
-		Q_strcat(szDllFilename, "\\cstrike\\dlls\\"ORIGINAL_GAME_DLL_NAME);
+		Q_strcat(szDllFilename, "\\cstrike\\dlls\\" ORIGINAL_GAME_DLL_NAME);
 
 	return (const char *)szDllFilename;
 }

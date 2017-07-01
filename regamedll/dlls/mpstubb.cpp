@@ -42,7 +42,7 @@ int CGraph::FindNearestNode(const Vector &vecOrigin, CBaseEntity *pEntity)
 	return 0;
 }
 
-float CBaseMonster::__MAKE_VHOOK(ChangeYaw)(int speed)
+float CBaseMonster::ChangeYaw(int speed)
 {
 	return 0.0f;
 }
@@ -66,7 +66,7 @@ NOXREF void CBaseMonster::CorpseFallThink()
 		pev->nextthink = gpGlobals->time + 0.1f;
 }
 
-void CBaseMonster::__MAKE_VHOOK(MonsterInitDead)()
+void CBaseMonster::MonsterInitDead()
 {
 	InitBoneControllers();
 
@@ -88,7 +88,7 @@ void CBaseMonster::__MAKE_VHOOK(MonsterInitDead)()
 	pev->nextthink = gpGlobals->time + 0.5f;
 }
 
-BOOL CBaseMonster::__MAKE_VHOOK(ShouldFadeOnDeath)()
+BOOL CBaseMonster::ShouldFadeOnDeath()
 {
 	return FALSE;
 }
@@ -98,12 +98,12 @@ BOOL CBaseMonster::FCheckAITrigger()
 	return FALSE;
 }
 
-void CBaseMonster::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CBaseMonster::KeyValue(KeyValueData *pkvd)
 {
 	CBaseToggle::KeyValue(pkvd);
 }
 
-int CBaseMonster::__MAKE_VHOOK(IRelationship)(CBaseEntity *pTarget)
+int CBaseMonster::IRelationship(CBaseEntity *pTarget)
 {
 	static int const iEnemy[14][14] =
 	{
@@ -136,7 +136,7 @@ int CBaseMonster::__MAKE_VHOOK(IRelationship)(CBaseEntity *pTarget)
 // Function also sets the Looker's m_pLink
 // to the head of a link list that contains all visible ents.
 // (linked via each ent's m_pLink field)
-void CBaseMonster::__MAKE_VHOOK(Look)(int iDistance)
+void CBaseMonster::Look(int iDistance)
 {
 	int iSighted = 0;
 
@@ -213,7 +213,7 @@ void CBaseMonster::__MAKE_VHOOK(Look)(int iDistance)
 //
 // UNDONE: currently, this only returns the closest enemy.
 // we'll want to consider distance, relationship, attack types, back turned, etc.
-CBaseEntity *CBaseMonster::__MAKE_VHOOK(BestVisibleEnemy)()
+CBaseEntity *CBaseMonster::BestVisibleEnemy()
 {
 	CBaseEntity *pReturn;
 	CBaseEntity *pNextEnt;

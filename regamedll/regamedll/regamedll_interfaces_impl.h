@@ -32,75 +32,67 @@
 
 #if !defined(HOOK_GAMEDLL) && defined(REGAMEDLL_API)
 
-#define __API_VHOOK(fname)\
-	fname##_
-
-#define __API_HOOK __API_VHOOK
-#define __MAKE_VHOOK(fname)\
-	fname
+#define __API_HOOK(fname)\
+	fname##_OrigFunc
 
 #define LINK_HOOK_CLASS_VOID_CHAIN(className, functionName, args, ...)\
 	void className::functionName args {\
-		g_ReGameHookchains.m_##className##_##functionName.callChain(&className::functionName##_, this, __VA_ARGS__);\
+		g_ReGameHookchains.m_##className##_##functionName.callChain(&className::functionName##_OrigFunc, this, __VA_ARGS__);\
 	}
 #define LINK_HOOK_CLASS_VOID_CHAIN2(className, functionName)\
 	void EXT_FUNC className::functionName() {\
-		g_ReGameHookchains.m_##className##_##functionName.callChain(&className::functionName##_, this);\
+		g_ReGameHookchains.m_##className##_##functionName.callChain(&className::functionName##_OrigFunc, this);\
 	}
 
 #define LINK_HOOK_CLASS_CHAIN(ret, className, functionName, args, ...)\
 	ret className::functionName args {\
-		return g_ReGameHookchains.m_##className##_##functionName.callChain(&className::functionName##_, this, __VA_ARGS__);\
+		return g_ReGameHookchains.m_##className##_##functionName.callChain(&className::functionName##_OrigFunc, this, __VA_ARGS__);\
 	}
 #define LINK_HOOK_CLASS_CHAIN2(ret, className, functionName)\
 	ret className::functionName() {\
-		return g_ReGameHookchains.m_##className##_##functionName.callChain(&className::functionName##_, this);\
+		return g_ReGameHookchains.m_##className##_##functionName.callChain(&className::functionName##_OrigFunc, this);\
 	}
 
 #define LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN(className, customPrefix, functionName, args, ...)\
 	void className::functionName args {\
-		g_ReGameHookchains.m_##customPrefix##_##functionName.callChain(&className::functionName##_, this, __VA_ARGS__);\
+		g_ReGameHookchains.m_##customPrefix##_##functionName.callChain(&className::functionName##_OrigFunc, this, __VA_ARGS__);\
 	}
 #define LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN2(className, customPrefix, functionName)\
 	void className::functionName() {\
-		g_ReGameHookchains.m_##customPrefix##_##functionName.callChain(&className::functionName##_, this);\
+		g_ReGameHookchains.m_##customPrefix##_##functionName.callChain(&className::functionName##_OrigFunc, this);\
 	}
 
 #define LINK_HOOK_CLASS_CUSTOM_CHAIN(ret, className, customPrefix, functionName, args, ...)\
 	ret className::functionName args {\
-		return g_ReGameHookchains.m_##customPrefix##_##functionName.callChain(&className::functionName##_, this, __VA_ARGS__);\
+		return g_ReGameHookchains.m_##customPrefix##_##functionName.callChain(&className::functionName##_OrigFunc, this, __VA_ARGS__);\
 	}
 #define LINK_HOOK_CLASS_CUSTOM_CHAIN2(ret, className, customPrefix, functionName)\
 	ret className::functionName() {\
-		return g_ReGameHookchains.m_##customPrefix##_##functionName.callChain(&className::functionName##_, this);\
+		return g_ReGameHookchains.m_##customPrefix##_##functionName.callChain(&className::functionName##_OrigFunc, this);\
 	}
 
 #define LINK_HOOK_VOID_CHAIN(functionName, args, ...)\
 	void functionName args {\
-		g_ReGameHookchains.m_##functionName.callChain(functionName##_, __VA_ARGS__);\
+		g_ReGameHookchains.m_##functionName.callChain(functionName##_OrigFunc, __VA_ARGS__);\
 	}
 
 #define LINK_HOOK_CHAIN(ret, functionName, args, ...)\
 	ret functionName args {\
-		return g_ReGameHookchains.m_##functionName.callChain(functionName##_, __VA_ARGS__);\
+		return g_ReGameHookchains.m_##functionName.callChain(functionName##_OrigFunc, __VA_ARGS__);\
 	}
 
 #define LINK_HOOK_VOID_CHAIN2(functionName)\
 	void functionName() {\
-		g_ReGameHookchains.m_##functionName.callChain(functionName##_);\
+		g_ReGameHookchains.m_##functionName.callChain(functionName##_OrigFunc);\
 	}
 
 #define LINK_HOOK_CHAIN2(ret, functionName)\
 	ret functionName() {\
-		return g_ReGameHookchains.m_##functionName.callChain(functionName##_);\
+		return g_ReGameHookchains.m_##functionName.callChain(functionName##_OrigFunc);\
 	}
 #else
 
-#define __API_VHOOK(fname)\
-	fname
-
-#define __API_HOOK __API_VHOOK
-#define __MAKE_VHOOK(fname)\
+#define __API_HOOK(fname)\
 	fname
 
 #define LINK_HOOK_CLASS_VOID_CHAIN(...)

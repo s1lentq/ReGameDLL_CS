@@ -93,13 +93,6 @@ public:
 	virtual CBaseEntity *Respawn();
 	virtual BOOL MyTouch(CBasePlayer *pPlayer) { return FALSE; }
 
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	CBaseEntity *Respawn_();
-
-#endif
-
 public:
 	void EXPORT ItemTouch(CBaseEntity *pOther);
 	void EXPORT Materialize();
@@ -111,13 +104,6 @@ public:
 	virtual void Spawn();
 	virtual void KeyValue(KeyValueData *pkvd);
 
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void KeyValue_(KeyValueData *pkvd);
-
-#endif
-
 public:
 	int m_iType;
 };
@@ -128,15 +114,6 @@ public:
 	virtual void Spawn();
 	virtual void Precache();
 	virtual BOOL MyTouch(CBasePlayer *pPlayer);
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	BOOL MyTouch_(CBasePlayer *pPlayer);
-
-#endif
-
 };
 
 class CItemBattery: public CItem
@@ -145,15 +122,6 @@ public:
 	virtual void Spawn();
 	virtual void Precache();
 	virtual BOOL MyTouch(CBasePlayer *pPlayer);
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	BOOL MyTouch_(CBasePlayer *pPlayer);
-
-#endif
-
 };
 
 class CItemAntidote: public CItem
@@ -162,15 +130,6 @@ public:
 	virtual void Spawn();
 	virtual void Precache();
 	virtual BOOL MyTouch(CBasePlayer *pPlayer);
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	BOOL MyTouch_(CBasePlayer *pPlayer);
-
-#endif
-
 };
 
 class CItemSecurity: public CItem
@@ -179,15 +138,6 @@ public:
 	virtual void Spawn();
 	virtual void Precache();
 	virtual BOOL MyTouch(CBasePlayer *pPlayer);
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	BOOL MyTouch_(CBasePlayer *pPlayer);
-
-#endif
-
 };
 
 class CItemLongJump: public CItem
@@ -196,15 +146,6 @@ public:
 	virtual void Spawn();
 	virtual void Precache();
 	virtual BOOL MyTouch(CBasePlayer *pPlayer);
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	BOOL MyTouch_(CBasePlayer *pPlayer);
-
-#endif
-
 };
 
 class CItemKevlar: public CItem
@@ -213,15 +154,6 @@ public:
 	virtual void Spawn();
 	virtual void Precache();
 	virtual BOOL MyTouch(CBasePlayer *pPlayer);
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	BOOL MyTouch_(CBasePlayer *pPlayer);
-
-#endif
-
 };
 
 class CItemAssaultSuit: public CItem
@@ -230,15 +162,6 @@ public:
 	virtual void Spawn();
 	virtual void Precache();
 	virtual BOOL MyTouch(CBasePlayer *pPlayer);
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	BOOL MyTouch_(CBasePlayer *pPlayer);
-
-#endif
-
 };
 
 class CItemThighPack: public CItem
@@ -247,15 +170,6 @@ public:
 	virtual void Spawn();
 	virtual void Precache();
 	virtual BOOL MyTouch(CBasePlayer *pPlayer);
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	BOOL MyTouch_(CBasePlayer *pPlayer);
-
-#endif
-
 };
 
 ItemID GetItemIdByName(const char *pszName);

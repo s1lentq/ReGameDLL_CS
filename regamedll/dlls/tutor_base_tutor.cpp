@@ -258,7 +258,7 @@ void CBaseTutor::CalculatePathForObjective(CBaseEntity *player)
 	;
 }
 
-bool CBaseTutor::__MAKE_VHOOK(IsEntityInViewOfPlayer)(CBaseEntity *entity, CBasePlayer *player)
+bool CBaseTutor::IsEntityInViewOfPlayer(CBaseEntity *entity, CBasePlayer *player)
 {
 	if (!entity || !player)
 		return false;
@@ -282,7 +282,7 @@ bool CBaseTutor::__MAKE_VHOOK(IsEntityInViewOfPlayer)(CBaseEntity *entity, CBase
 	return false;
 }
 
-bool CBaseTutor::__MAKE_VHOOK(IsPlayerLookingAtPosition)(Vector *origin, CBasePlayer *player)
+bool CBaseTutor::IsPlayerLookingAtPosition(Vector *origin, CBasePlayer *player)
 {
 	if (!origin || !player)
 		return false;
@@ -304,7 +304,7 @@ bool CBaseTutor::__MAKE_VHOOK(IsPlayerLookingAtPosition)(Vector *origin, CBasePl
 	return false;
 }
 
-bool CBaseTutor::__MAKE_VHOOK(IsPlayerLookingAtEntity)(CBaseEntity *entity, CBasePlayer *player)
+bool CBaseTutor::IsPlayerLookingAtEntity(CBaseEntity *entity, CBasePlayer *player)
 {
 	if (!entity || !player)
 		return false;
@@ -328,7 +328,7 @@ bool CBaseTutor::__MAKE_VHOOK(IsPlayerLookingAtEntity)(CBaseEntity *entity, CBas
 	return false;
 }
 
-bool CBaseTutor::__MAKE_VHOOK(IsBombsiteInViewOfPlayer)(CBaseEntity *entity, CBasePlayer *player)
+bool CBaseTutor::IsBombsiteInViewOfPlayer(CBaseEntity *entity, CBasePlayer *player)
 {
 	if (!entity || !player)
 		return false;
@@ -354,7 +354,7 @@ bool CBaseTutor::__MAKE_VHOOK(IsBombsiteInViewOfPlayer)(CBaseEntity *entity, CBa
 	return false;
 }
 
-bool CBaseTutor::__MAKE_VHOOK(IsEntityInBombsite)(CBaseEntity *bombsite, CBaseEntity *entity)
+bool CBaseTutor::IsEntityInBombsite(CBaseEntity *bombsite, CBaseEntity *entity)
 {
 	if (!bombsite || !entity)
 		return false;

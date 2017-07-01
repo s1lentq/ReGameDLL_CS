@@ -2,7 +2,7 @@
 
 LINK_ENTITY_TO_CLASS(weapon_mp5navy, CMP5N, CCSMP5N)
 
-void CMP5N::__MAKE_VHOOK(Spawn)()
+void CMP5N::Spawn()
 {
 	Precache();
 
@@ -16,7 +16,7 @@ void CMP5N::__MAKE_VHOOK(Spawn)()
 	FallInit();
 }
 
-void CMP5N::__MAKE_VHOOK(Precache)()
+void CMP5N::Precache()
 {
 	PRECACHE_MODEL("models/v_mp5.mdl");
 	PRECACHE_MODEL("models/w_mp5.mdl");
@@ -31,7 +31,7 @@ void CMP5N::__MAKE_VHOOK(Precache)()
 	m_usFireMP5N = PRECACHE_EVENT(1, "events/mp5n.sc");
 }
 
-int CMP5N::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
+int CMP5N::GetItemInfo(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
 	p->pszAmmo1 = "9mm";
@@ -48,7 +48,7 @@ int CMP5N::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	return 1;
 }
 
-BOOL CMP5N::__MAKE_VHOOK(Deploy)()
+BOOL CMP5N::Deploy()
 {
 	m_flAccuracy = 0.0f;
 	m_bDelayFire = false;
@@ -57,7 +57,7 @@ BOOL CMP5N::__MAKE_VHOOK(Deploy)()
 	return DefaultDeploy("models/v_mp5.mdl", "models/p_mp5.mdl", MP5N_DRAW, "mp5", UseDecrement() != FALSE);
 }
 
-void CMP5N::__MAKE_VHOOK(PrimaryAttack)()
+void CMP5N::PrimaryAttack()
 {
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
 	{
@@ -149,7 +149,7 @@ void CMP5N::MP5NFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	}
 }
 
-void CMP5N::__MAKE_VHOOK(Reload)()
+void CMP5N::Reload()
 {
 	if (m_pPlayer->ammo_9mm <= 0)
 		return;
@@ -163,7 +163,7 @@ void CMP5N::__MAKE_VHOOK(Reload)()
 	}
 }
 
-void CMP5N::__MAKE_VHOOK(WeaponIdle)()
+void CMP5N::WeaponIdle()
 {
 	ResetEmptySound();
 	m_pPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);

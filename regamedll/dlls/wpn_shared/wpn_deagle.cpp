@@ -2,7 +2,7 @@
 
 LINK_ENTITY_TO_CLASS(weapon_deagle, CDEAGLE, CCSDEAGLE)
 
-void CDEAGLE::__MAKE_VHOOK(Spawn)()
+void CDEAGLE::Spawn()
 {
 	Precache();
 
@@ -17,7 +17,7 @@ void CDEAGLE::__MAKE_VHOOK(Spawn)()
 	FallInit();
 }
 
-void CDEAGLE::__MAKE_VHOOK(Precache)()
+void CDEAGLE::Precache()
 {
 	PRECACHE_MODEL("models/v_deagle.mdl");
 	PRECACHE_MODEL("models/shield/v_shield_deagle.mdl");
@@ -33,7 +33,7 @@ void CDEAGLE::__MAKE_VHOOK(Precache)()
 	m_usFireDeagle = PRECACHE_EVENT(1, "events/deagle.sc");
 }
 
-int CDEAGLE::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
+int CDEAGLE::GetItemInfo(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
 	p->pszAmmo1 = "50AE";
@@ -50,7 +50,7 @@ int CDEAGLE::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	return 1;
 }
 
-BOOL CDEAGLE::__MAKE_VHOOK(Deploy)()
+BOOL CDEAGLE::Deploy()
 {
 	m_flAccuracy = 0.9f;
 	m_fMaxSpeed = DEAGLE_MAX_SPEED;
@@ -63,7 +63,7 @@ BOOL CDEAGLE::__MAKE_VHOOK(Deploy)()
 		return DefaultDeploy("models/v_deagle.mdl", "models/p_deagle.mdl", DEAGLE_DRAW, "onehanded", UseDecrement() != FALSE);
 }
 
-void CDEAGLE::__MAKE_VHOOK(PrimaryAttack)()
+void CDEAGLE::PrimaryAttack()
 {
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
 	{
@@ -83,7 +83,7 @@ void CDEAGLE::__MAKE_VHOOK(PrimaryAttack)()
 	}
 }
 
-void CDEAGLE::__MAKE_VHOOK(SecondaryAttack)()
+void CDEAGLE::SecondaryAttack()
 {
 	ShieldSecondaryFire(SHIELDGUN_UP, SHIELDGUN_DOWN);
 }
@@ -162,13 +162,13 @@ void CDEAGLE::DEAGLEFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 	{
 		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, FALSE);
 	}
-	
+
 	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.8f;
 	m_pPlayer->pev->punchangle.x -= 2;
 	ResetPlayerShieldAnim();
 }
 
-void CDEAGLE::__MAKE_VHOOK(Reload)()
+void CDEAGLE::Reload()
 {
 	if (m_pPlayer->ammo_50ae <= 0)
 		return;
@@ -180,7 +180,7 @@ void CDEAGLE::__MAKE_VHOOK(Reload)()
 	}
 }
 
-void CDEAGLE::__MAKE_VHOOK(WeaponIdle)()
+void CDEAGLE::WeaponIdle()
 {
 	ResetEmptySound();
 	m_pPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);

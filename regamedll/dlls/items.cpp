@@ -46,7 +46,7 @@ ItemInfo itemInfo[] = {
 #ifndef REGAMEDLL_FIXES
 LINK_ENTITY_TO_CLASS(world_items, CWorldItem, CCSWorldItem)
 
-void CWorldItem::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CWorldItem::KeyValue(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "type"))
 	{
@@ -57,7 +57,7 @@ void CWorldItem::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CBaseEntity::KeyValue(pkvd);
 }
 
-void CWorldItem::__MAKE_VHOOK(Spawn)()
+void CWorldItem::Spawn()
 {
 	CBaseEntity *pEntity = NULL;
 
@@ -90,7 +90,7 @@ void CWorldItem::__MAKE_VHOOK(Spawn)()
 }
 #endif
 
-void CItem::__MAKE_VHOOK(Spawn)()
+void CItem::Spawn()
 {
 	pev->movetype = MOVETYPE_TOSS;
 	pev->solid = SOLID_TRIGGER;
@@ -132,7 +132,7 @@ void CItem::ItemTouch(CBaseEntity *pOther)
 		UTIL_Remove(this);
 }
 
-CBaseEntity *CItem::__MAKE_VHOOK(Respawn)()
+CBaseEntity *CItem::Respawn()
 {
 	SetTouch(NULL);
 
@@ -163,20 +163,20 @@ void CItem::Materialize()
 
 // NOTE: useless thing
 #ifndef REGAMEDLL_FIXES
-void CItemSuit::__MAKE_VHOOK(Spawn)()
+void CItemSuit::Spawn()
 {
 	Precache();
 	SET_MODEL(ENT(pev), "models/w_kevlar.mdl");
 	CItem::Spawn();
 }
 
-void CItemSuit::__MAKE_VHOOK(Precache)()
+void CItemSuit::Precache()
 {
 	PRECACHE_MODEL("models/w_kevlar.mdl");
 	PRECACHE_SOUND("items/tr_kevlar.wav");
 }
 
-BOOL CItemSuit::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
+BOOL CItemSuit::MyTouch(CBasePlayer *pPlayer)
 {
 	if (pPlayer->pev->weapons & (1 << WEAPON_SUIT))
 		return FALSE;
@@ -192,20 +192,20 @@ BOOL CItemSuit::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
 LINK_ENTITY_TO_CLASS(item_suit, CItemSuit, CCSItemSuit)
 #endif
 
-void CItemBattery::__MAKE_VHOOK(Spawn)()
+void CItemBattery::Spawn()
 {
 	Precache();
 	SET_MODEL(ENT(pev), "models/w_battery.mdl");
 	CItem::Spawn();
 }
 
-void CItemBattery::__MAKE_VHOOK(Precache)()
+void CItemBattery::Precache()
 {
 	PRECACHE_MODEL("models/w_battery.mdl");
 	PRECACHE_SOUND("items/gunpickup2.wav");
 }
 
-BOOL CItemBattery::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
+BOOL CItemBattery::MyTouch(CBasePlayer *pPlayer)
 {
 #ifdef REGAMEDLL_ADD
 	if (pPlayer->HasRestrictItem(ITEM_BATTERY, ITEM_TYPE_TOUCHED))
@@ -244,19 +244,19 @@ BOOL CItemBattery::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
 
 LINK_ENTITY_TO_CLASS(item_battery, CItemBattery, CCSItemBattery)
 
-void CItemAntidote::__MAKE_VHOOK(Spawn)()
+void CItemAntidote::Spawn()
 {
 	Precache();
 	SET_MODEL(ENT(pev), "models/w_antidote.mdl");
 	CItem::Spawn();
 }
 
-void CItemAntidote::__MAKE_VHOOK(Precache)()
+void CItemAntidote::Precache()
 {
 	PRECACHE_MODEL("models/w_antidote.mdl");
 }
 
-BOOL CItemAntidote::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
+BOOL CItemAntidote::MyTouch(CBasePlayer *pPlayer)
 {
 #ifdef REGAMEDLL_ADD
 	if (pPlayer->HasRestrictItem(ITEM_ANTIDOTE, ITEM_TYPE_TOUCHED))
@@ -273,19 +273,19 @@ LINK_ENTITY_TO_CLASS(item_antidote, CItemAntidote, CCSItemAntidote)
 
 // NOTE: useless thing
 #ifndef REGAMEDLL_FIXES
-void CItemSecurity::__MAKE_VHOOK(Spawn)()
+void CItemSecurity::Spawn()
 {
 	Precache();
 	SET_MODEL(ENT(pev), "models/w_security.mdl");
 	CItem::Spawn();
 }
 
-void CItemSecurity::__MAKE_VHOOK(Precache)()
+void CItemSecurity::Precache()
 {
 	PRECACHE_MODEL("models/w_security.mdl");
 }
 
-BOOL CItemSecurity::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
+BOOL CItemSecurity::MyTouch(CBasePlayer *pPlayer)
 {
 	pPlayer->m_rgItems[ ITEM_ID_SECURITY ] += 1;
 	return TRUE;
@@ -294,19 +294,19 @@ BOOL CItemSecurity::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
 LINK_ENTITY_TO_CLASS(item_security, CItemSecurity, CCSItemSecurity)
 #endif
 
-void CItemLongJump::__MAKE_VHOOK(Spawn)()
+void CItemLongJump::Spawn()
 {
 	Precache();
 	SET_MODEL(ENT(pev), "models/w_longjump.mdl");
 	CItem::Spawn();
 }
 
-void CItemLongJump::__MAKE_VHOOK(Precache)()
+void CItemLongJump::Precache()
 {
 	PRECACHE_MODEL("models/w_longjump.mdl");
 }
 
-BOOL CItemLongJump::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
+BOOL CItemLongJump::MyTouch(CBasePlayer *pPlayer)
 {
 #ifdef REGAMEDLL_ADD
 	if (pPlayer->HasRestrictItem(ITEM_LONGJUMP, ITEM_TYPE_TOUCHED))
@@ -336,19 +336,19 @@ BOOL CItemLongJump::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
 
 LINK_ENTITY_TO_CLASS(item_longjump, CItemLongJump, CCSItemLongJump)
 
-void CItemKevlar::__MAKE_VHOOK(Spawn)()
+void CItemKevlar::Spawn()
 {
 	Precache();
 	SET_MODEL(ENT(pev), "models/w_kevlar.mdl");
 	CItem::Spawn();
 }
 
-void CItemKevlar::__MAKE_VHOOK(Precache)()
+void CItemKevlar::Precache()
 {
 	PRECACHE_MODEL("models/w_kevlar.mdl");
 }
 
-BOOL CItemKevlar::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
+BOOL CItemKevlar::MyTouch(CBasePlayer *pPlayer)
 {
 #ifdef REGAMEDLL_ADD
 	if (pPlayer->HasRestrictItem(ITEM_KEVLAR, ITEM_TYPE_TOUCHED))
@@ -379,19 +379,19 @@ BOOL CItemKevlar::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
 
 LINK_ENTITY_TO_CLASS(item_kevlar, CItemKevlar, CCSItemKevlar)
 
-void CItemAssaultSuit::__MAKE_VHOOK(Spawn)()
+void CItemAssaultSuit::Spawn()
 {
 	Precache();
 	SET_MODEL(ENT(pev), "models/w_assault.mdl");
 	CItem::Spawn();
 }
 
-void CItemAssaultSuit::__MAKE_VHOOK(Precache)()
+void CItemAssaultSuit::Precache()
 {
 	PRECACHE_MODEL("models/w_assault.mdl");
 }
 
-BOOL CItemAssaultSuit::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
+BOOL CItemAssaultSuit::MyTouch(CBasePlayer *pPlayer)
 {
 #ifdef REGAMEDLL_ADD
 	if (pPlayer->HasRestrictItem(ITEM_ASSAULT, ITEM_TYPE_TOUCHED))
@@ -421,19 +421,19 @@ BOOL CItemAssaultSuit::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
 
 LINK_ENTITY_TO_CLASS(item_assaultsuit, CItemAssaultSuit, CCSItemAssaultSuit)
 
-void CItemThighPack::__MAKE_VHOOK(Spawn)()
+void CItemThighPack::Spawn()
 {
 	Precache();
 	SET_MODEL(ENT(pev), "models/w_thighpack.mdl");
 	CItem::Spawn();
 }
 
-void CItemThighPack::__MAKE_VHOOK(Precache)()
+void CItemThighPack::Precache()
 {
 	PRECACHE_MODEL("models/w_thighpack.mdl");
 }
 
-BOOL CItemThighPack::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
+BOOL CItemThighPack::MyTouch(CBasePlayer *pPlayer)
 {
 	if (pPlayer->m_iTeam != CT || pPlayer->m_bHasDefuser)
 		return FALSE;

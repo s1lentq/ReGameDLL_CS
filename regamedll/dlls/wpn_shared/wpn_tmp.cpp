@@ -2,7 +2,7 @@
 
 LINK_ENTITY_TO_CLASS(weapon_tmp, CTMP, CCSTMP)
 
-void CTMP::__MAKE_VHOOK(Spawn)()
+void CTMP::Spawn()
 {
 	Precache();
 
@@ -17,7 +17,7 @@ void CTMP::__MAKE_VHOOK(Spawn)()
 	FallInit();
 }
 
-void CTMP::__MAKE_VHOOK(Precache)()
+void CTMP::Precache()
 {
 	PRECACHE_MODEL("models/v_tmp.mdl");
 	PRECACHE_MODEL("models/w_tmp.mdl");
@@ -29,7 +29,7 @@ void CTMP::__MAKE_VHOOK(Precache)()
 	m_usFireTMP = PRECACHE_EVENT(1, "events/tmp.sc");
 }
 
-int CTMP::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
+int CTMP::GetItemInfo(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
 	p->pszAmmo1 = "9mm";
@@ -46,7 +46,7 @@ int CTMP::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	return 1;
 }
 
-BOOL CTMP::__MAKE_VHOOK(Deploy)()
+BOOL CTMP::Deploy()
 {
 	m_flAccuracy = 0.2f;
 	m_iShotsFired = 0;
@@ -56,7 +56,7 @@ BOOL CTMP::__MAKE_VHOOK(Deploy)()
 	return DefaultDeploy("models/v_tmp.mdl", "models/p_tmp.mdl", TMP_DRAW, "onehanded", UseDecrement() != FALSE);
 }
 
-void CTMP::__MAKE_VHOOK(PrimaryAttack)()
+void CTMP::PrimaryAttack()
 {
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
 	{
@@ -146,7 +146,7 @@ void CTMP::TMPFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	}
 }
 
-void CTMP::__MAKE_VHOOK(Reload)()
+void CTMP::Reload()
 {
 #ifdef REGAMEDLL_FIXES
 	// to prevent reload if not enough ammo
@@ -163,7 +163,7 @@ void CTMP::__MAKE_VHOOK(Reload)()
 	}
 }
 
-void CTMP::__MAKE_VHOOK(WeaponIdle)()
+void CTMP::WeaponIdle()
 {
 	ResetEmptySound();
 	m_pPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);

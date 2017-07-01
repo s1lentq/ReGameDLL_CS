@@ -31,12 +31,12 @@ CHalfLifeTraining::CHalfLifeTraining()
 	PRECACHE_MODEL("models/w_weaponbox.mdl");
 }
 
-BOOL CHalfLifeTraining::__MAKE_VHOOK(IsDeathmatch)()
+BOOL CHalfLifeTraining::IsDeathmatch()
 {
 	return FALSE;
 }
 
-void CHalfLifeTraining::__MAKE_VHOOK(InitHUD)(CBasePlayer *pl)
+void CHalfLifeTraining::InitHUD(CBasePlayer *pl)
 {
 	;
 }
@@ -51,7 +51,7 @@ void CHalfLifeTraining::HostageDied()
 	}
 }
 
-edict_t *CHalfLifeTraining::__MAKE_VHOOK(GetPlayerSpawnSpot)(CBasePlayer *pPlayer)
+edict_t *CHalfLifeTraining::GetPlayerSpawnSpot(CBasePlayer *pPlayer)
 {
 	CBaseEntity *pSpot = UTIL_FindEntityByClassname(NULL, "info_player_start");
 
@@ -71,7 +71,7 @@ edict_t *CHalfLifeTraining::__MAKE_VHOOK(GetPlayerSpawnSpot)(CBasePlayer *pPlaye
 	return pSpot->edict();
 }
 
-void CHalfLifeTraining::__MAKE_VHOOK(PlayerThink)(CBasePlayer *pPlayer)
+void CHalfLifeTraining::PlayerThink(CBasePlayer *pPlayer)
 {
 	if (pPlayer->pev->radsuit_finished && gpGlobals->time > pPlayer->pev->radsuit_finished)
 	{
@@ -200,7 +200,7 @@ void CHalfLifeTraining::__MAKE_VHOOK(PlayerThink)(CBasePlayer *pPlayer)
 	}
 }
 
-void CHalfLifeTraining::__MAKE_VHOOK(PlayerSpawn)(CBasePlayer *pPlayer)
+void CHalfLifeTraining::PlayerSpawn(CBasePlayer *pPlayer)
 {
 	if (pPlayer->m_bNotKilled)
 		return;
@@ -230,12 +230,12 @@ void CHalfLifeTraining::__MAKE_VHOOK(PlayerSpawn)(CBasePlayer *pPlayer)
 	pPlayer->m_iHideHUD |= (HIDEHUD_WEAPONS | HIDEHUD_HEALTH | HIDEHUD_TIMER | HIDEHUD_MONEY);
 }
 
-int CHalfLifeTraining::__MAKE_VHOOK(ItemShouldRespawn)(CItem *pItem)
+int CHalfLifeTraining::ItemShouldRespawn(CItem *pItem)
 {
 	return GR_ITEM_RESPAWN_NO;
 }
 
-BOOL CHalfLifeTraining::__MAKE_VHOOK(FPlayerCanRespawn)(CBasePlayer *pPlayer)
+BOOL CHalfLifeTraining::FPlayerCanRespawn(CBasePlayer *pPlayer)
 {
 	return TRUE;
 }
@@ -245,13 +245,13 @@ bool CHalfLifeTraining::PlayerCanBuy(CBasePlayer *pPlayer)
 	return (pPlayer->m_signals.GetState() & SIGNAL_BUY) != 0;
 }
 
-void CHalfLifeTraining::__MAKE_VHOOK(PlayerKilled)(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor)
+void CHalfLifeTraining::PlayerKilled(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor)
 {
 	SET_VIEW(pVictim->edict(), pVictim->edict());
 	FireTargets("game_playerdie", pVictim, pVictim, USE_TOGGLE, 0);
 }
 
-void CHalfLifeTraining::__MAKE_VHOOK(CheckWinConditions)()
+void CHalfLifeTraining::CheckWinConditions()
 {
 	if (m_bBombDefused)
 	{
@@ -313,7 +313,7 @@ void CHalfLifeTraining::__MAKE_VHOOK(CheckWinConditions)()
 IMPLEMENT_SAVERESTORE(CBaseGrenCatch, CBaseEntity)
 LINK_ENTITY_TO_CLASS(func_grencatch, CBaseGrenCatch, CCSGrenCatch)
 
-void CBaseGrenCatch::__MAKE_VHOOK(Spawn)()
+void CBaseGrenCatch::Spawn()
 {
 	pev->solid = SOLID_TRIGGER;
 	pev->flags |= FL_WORLDBRUSH;
@@ -323,7 +323,7 @@ void CBaseGrenCatch::__MAKE_VHOOK(Spawn)()
 	pev->nextthink = gpGlobals->time + 0.1f;
 }
 
-void CBaseGrenCatch::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
+void CBaseGrenCatch::Touch(CBaseEntity *pOther)
 {
 	if (!pOther)
 	{
@@ -336,7 +336,7 @@ void CBaseGrenCatch::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 	}
 }
 
-void CBaseGrenCatch::__MAKE_VHOOK(Think)()
+void CBaseGrenCatch::Think()
 {
 	CGrenade *pGrenade;
 	bool m_fSmokeTouchingLastFrame;
@@ -400,7 +400,7 @@ void CBaseGrenCatch::__MAKE_VHOOK(Think)()
 	pev->nextthink = gpGlobals->time + 0.1f;
 }
 
-void CBaseGrenCatch::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CBaseGrenCatch::KeyValue(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "triggerongrenade"))
 	{
@@ -429,7 +429,7 @@ void CBaseGrenCatch::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CBaseEntity::KeyValue(pkvd);
 }
 
-void CFuncWeaponCheck::__MAKE_VHOOK(Spawn)()
+void CFuncWeaponCheck::Spawn()
 {
 	pev->dmgtime = 0;
 	pev->solid = SOLID_TRIGGER;
@@ -442,7 +442,7 @@ void CFuncWeaponCheck::__MAKE_VHOOK(Spawn)()
 IMPLEMENT_SAVERESTORE(CFuncWeaponCheck, CBaseEntity)
 LINK_ENTITY_TO_CLASS(func_weaponcheck, CFuncWeaponCheck, CCSFuncWeaponCheck)
 
-void CFuncWeaponCheck::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
+void CFuncWeaponCheck::Touch(CBaseEntity *pOther)
 {
 	if (!UTIL_IsMasterTriggered(sMaster, pOther))
 		return;
@@ -488,7 +488,7 @@ void CFuncWeaponCheck::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 	SUB_Remove();
 }
 
-void CFuncWeaponCheck::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CFuncWeaponCheck::KeyValue(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "trigger_items"))
 	{

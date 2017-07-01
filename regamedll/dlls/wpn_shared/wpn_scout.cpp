@@ -2,7 +2,7 @@
 
 LINK_ENTITY_TO_CLASS(weapon_scout, CSCOUT, CCSSCOUT)
 
-void CSCOUT::__MAKE_VHOOK(Spawn)()
+void CSCOUT::Spawn()
 {
 	Precache();
 
@@ -14,7 +14,7 @@ void CSCOUT::__MAKE_VHOOK(Spawn)()
 	FallInit();
 }
 
-void CSCOUT::__MAKE_VHOOK(Precache)()
+void CSCOUT::Precache()
 {
 	PRECACHE_MODEL("models/v_scout.mdl");
 	PRECACHE_MODEL("models/w_scout.mdl");
@@ -29,7 +29,7 @@ void CSCOUT::__MAKE_VHOOK(Precache)()
 	m_usFireScout = PRECACHE_EVENT(1, "events/scout.sc");
 }
 
-int CSCOUT::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
+int CSCOUT::GetItemInfo(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
 	p->pszAmmo1 = "762Nato";
@@ -46,7 +46,7 @@ int CSCOUT::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	return 1;
 }
 
-BOOL CSCOUT::__MAKE_VHOOK(Deploy)()
+BOOL CSCOUT::Deploy()
 {
 	if (DefaultDeploy("models/v_scout.mdl", "models/p_scout.mdl", SCOUT_DRAW, "rifle", UseDecrement() != FALSE))
 	{
@@ -59,7 +59,7 @@ BOOL CSCOUT::__MAKE_VHOOK(Deploy)()
 	return FALSE;
 }
 
-void CSCOUT::__MAKE_VHOOK(SecondaryAttack)()
+void CSCOUT::SecondaryAttack()
 {
 	switch (m_pPlayer->m_iFOV)
 	{
@@ -83,7 +83,7 @@ void CSCOUT::__MAKE_VHOOK(SecondaryAttack)()
 	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.3;
 }
 
-void CSCOUT::__MAKE_VHOOK(PrimaryAttack)()
+void CSCOUT::PrimaryAttack()
 {
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
 	{
@@ -171,7 +171,7 @@ void CSCOUT::SCOUTFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	m_pPlayer->pev->punchangle.x -= 2.0f;
 }
 
-void CSCOUT::__MAKE_VHOOK(Reload)()
+void CSCOUT::Reload()
 {
 #ifdef REGAMEDLL_FIXES
 	// to prevent reload if not enough ammo
@@ -191,7 +191,7 @@ void CSCOUT::__MAKE_VHOOK(Reload)()
 	}
 }
 
-void CSCOUT::__MAKE_VHOOK(WeaponIdle)()
+void CSCOUT::WeaponIdle()
 {
 	ResetEmptySound();
 	m_pPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);
@@ -208,7 +208,7 @@ void CSCOUT::__MAKE_VHOOK(WeaponIdle)()
 	}
 }
 
-float CSCOUT::__MAKE_VHOOK(GetMaxSpeed)()
+float CSCOUT::GetMaxSpeed()
 {
 	return (m_pPlayer->m_iFOV == DEFAULT_FOV) ? SCOUT_MAX_SPEED : SCOUT_MAX_SPEED_ZOOM;
 }

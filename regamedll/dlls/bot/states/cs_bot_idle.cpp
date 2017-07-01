@@ -6,7 +6,7 @@ const float sniperHideRange = 2000.0f;
 // The Idle state.
 // We never stay in the Idle state - it is a "home base" for the state machine that
 // does various checks to determine what we should do next.
-void IdleState::__MAKE_VHOOK(OnEnter)(CCSBot *me)
+void IdleState::OnEnter(CCSBot *me)
 {
 	me->DestroyPath();
 	me->SetEnemy(NULL);
@@ -21,7 +21,7 @@ void IdleState::__MAKE_VHOOK(OnEnter)(CCSBot *me)
 }
 
 // Determine what we should do next
-void IdleState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
+void IdleState::OnUpdate(CCSBot *me)
 {
 	// all other states assume GetLastKnownArea() is valid, ensure that it is
 	if (!me->GetLastKnownArea() && me->StayOnNavMesh() == false)

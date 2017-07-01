@@ -2,7 +2,7 @@
 
 LINK_ENTITY_TO_CLASS(weapon_hegrenade, CHEGrenade, CCSHEGrenade)
 
-void CHEGrenade::__MAKE_VHOOK(Spawn)()
+void CHEGrenade::Spawn()
 {
 	Precache();
 
@@ -20,7 +20,7 @@ void CHEGrenade::__MAKE_VHOOK(Spawn)()
 	FallInit();
 }
 
-void CHEGrenade::__MAKE_VHOOK(Precache)()
+void CHEGrenade::Precache()
 {
 	PRECACHE_MODEL("models/v_hegrenade.mdl");
 	PRECACHE_MODEL("models/shield/v_shield_hegrenade.mdl");
@@ -33,7 +33,7 @@ void CHEGrenade::__MAKE_VHOOK(Precache)()
 	m_usCreateExplosion = PRECACHE_EVENT(1, "events/createexplo.sc");
 }
 
-int CHEGrenade::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
+int CHEGrenade::GetItemInfo(ItemInfo *p)
 {
 	auto info = GetWeaponInfo(WEAPON_HEGRENADE);
 
@@ -54,7 +54,7 @@ int CHEGrenade::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	return 1;
 }
 
-BOOL CHEGrenade::__MAKE_VHOOK(Deploy)()
+BOOL CHEGrenade::Deploy()
 {
 	m_flReleaseThrow = -1.0f;
 	m_fMaxSpeed = HEGRENADE_MAX_SPEED;
@@ -68,7 +68,7 @@ BOOL CHEGrenade::__MAKE_VHOOK(Deploy)()
 		return DefaultDeploy("models/v_hegrenade.mdl", "models/p_hegrenade.mdl", HEGRENADE_DRAW, "grenade", UseDecrement() != FALSE);
 }
 
-void CHEGrenade::__MAKE_VHOOK(Holster)(int skiplocal)
+void CHEGrenade::Holster(int skiplocal)
 {
 	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5f;
 
@@ -82,7 +82,7 @@ void CHEGrenade::__MAKE_VHOOK(Holster)(int skiplocal)
 	m_flReleaseThrow = -1.0f;
 }
 
-void CHEGrenade::__MAKE_VHOOK(PrimaryAttack)()
+void CHEGrenade::PrimaryAttack()
 {
 	if (m_iWeaponState & WPNSTATE_SHIELD_DRAWN)
 	{
@@ -135,7 +135,7 @@ bool CHEGrenade::ShieldSecondaryFire(int iUpAnim, int iDownAnim)
 	return true;
 }
 
-void CHEGrenade::__MAKE_VHOOK(SecondaryAttack)()
+void CHEGrenade::SecondaryAttack()
 {
 	ShieldSecondaryFire(SHIELDGUN_DRAW, SHIELDGUN_DRAWN_IDLE);
 }
@@ -162,7 +162,7 @@ void CHEGrenade::ResetPlayerShieldAnim()
 	}
 }
 
-void CHEGrenade::__MAKE_VHOOK(WeaponIdle)()
+void CHEGrenade::WeaponIdle()
 {
 	if (m_flReleaseThrow == 0 && m_flStartThrow != 0.0f)
 		m_flReleaseThrow = gpGlobals->time;
@@ -253,7 +253,7 @@ void CHEGrenade::__MAKE_VHOOK(WeaponIdle)()
 	}
 }
 
-BOOL CHEGrenade::__MAKE_VHOOK(CanDeploy)()
+BOOL CHEGrenade::CanDeploy()
 {
 	return m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] != 0;
 }

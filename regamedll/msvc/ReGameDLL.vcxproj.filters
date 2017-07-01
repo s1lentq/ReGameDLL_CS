@@ -1,10 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
     <Filter Include="Resource Files">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
@@ -125,9 +121,6 @@
     </ClCompile>
     <ClCompile Include="..\dlls\util.cpp">
       <Filter>dlls</Filter>
-    </ClCompile>
-    <ClCompile Include="..\hookers\6153_hooker.cpp">
-      <Filter>hookers</Filter>
     </ClCompile>
     <ClCompile Include="..\dlls\world.cpp">
       <Filter>dlls</Filter>
@@ -549,9 +542,6 @@
     <ClCompile Include="..\hookers\hooker_impl.cpp">
       <Filter>hookers</Filter>
     </ClCompile>
-    <ClCompile Include="..\hookers\RegameDLLRuntimeConfig.cpp">
-      <Filter>hookers</Filter>
-    </ClCompile>
     <ClCompile Include="..\regamedll\platform.cpp">
       <Filter>regamedll</Filter>
     </ClCompile>
@@ -563,6 +553,12 @@
     </ClCompile>
     <ClCompile Include="..\dlls\mapinfo.cpp">
       <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\regamedll\RegameDLLRuntimeConfig.cpp">
+      <Filter>regamedll</Filter>
+    </ClCompile>
+    <ClCompile Include="..\hookers\hooklist.cpp">
+      <Filter>hookers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -674,9 +670,6 @@
     <ClInclude Include="..\game_shared\bot\bot_util.h">
       <Filter>game_shared\bot</Filter>
     </ClInclude>
-    <ClInclude Include="..\extra\IDA structures\goldsource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\regamedll\dlls.h">
       <Filter>regamedll</Filter>
     </ClInclude>
@@ -685,9 +678,6 @@
     </ClInclude>
     <ClInclude Include="..\dlls\subs.h">
       <Filter>dlls</Filter>
-    </ClInclude>
-    <ClInclude Include="..\game_shared\perf_counter.h">
-      <Filter>game_shared</Filter>
     </ClInclude>
     <ClInclude Include="..\public\MemPool.h">
       <Filter>public</Filter>
@@ -1106,9 +1096,6 @@
     <ClInclude Include="..\hookers\hooker_impl.h">
       <Filter>hookers</Filter>
     </ClInclude>
-    <ClInclude Include="..\hookers\RegameDLLRuntimeConfig.h">
-      <Filter>hookers</Filter>
-    </ClInclude>
     <ClInclude Include="..\regamedll\platform.h">
       <Filter>regamedll</Filter>
     </ClInclude>
@@ -1129,6 +1116,21 @@
     </ClInclude>
     <ClInclude Include="..\public\asmlib.h">
       <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game_shared\counter.h">
+      <Filter>game_shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\regamedll\RegameDLLRuntimeConfig.h">
+      <Filter>regamedll</Filter>
+    </ClInclude>
+    <ClInclude Include="..\hookers\helper.h">
+      <Filter>hookers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\hookers\hooklist.h">
+      <Filter>hookers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\revert_saved.h">
+      <Filter>dlls</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

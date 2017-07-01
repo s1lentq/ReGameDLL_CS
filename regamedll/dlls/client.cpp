@@ -526,16 +526,6 @@ void EXT_FUNC ClientPutInServer(edict_t *pEntity)
 	UTIL_ClientPrintAll(HUD_PRINTNOTIFY, "#Game_connected", (sName[0] != '\0') ? sName : "<unconnected>");
 }
 
-NOXREF int Q_strlen_(const char *str)
-{
-	int count = 0;
-	if (str && *str) {
-		while (str[count++ + 1]);
-	}
-
-	return count;
-}
-
 void Host_Say(edict_t *pEntity, BOOL teamonly)
 {
 	CBasePlayer *client;

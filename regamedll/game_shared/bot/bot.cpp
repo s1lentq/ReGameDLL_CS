@@ -34,13 +34,13 @@ CBot::CBot()
 }
 
 // Prepare bot for action
-bool CBot::__MAKE_VHOOK(Initialize)(const BotProfile *profile)
+bool CBot::Initialize(const BotProfile *profile)
 {
 	m_profile = profile;
 	return true;
 }
 
-void CBot::__MAKE_VHOOK(Spawn)()
+void CBot::Spawn()
 {
 	// Let CBasePlayer set some things up
 	CBasePlayer::Spawn();
@@ -69,7 +69,7 @@ void CBot::__MAKE_VHOOK(Spawn)()
 	SpawnBot();
 }
 
-Vector CBot::__MAKE_VHOOK(GetAutoaimVector)(float flDelta)
+Vector CBot::GetAutoaimVector(float flDelta)
 {
 	UTIL_MakeVectors(pev->v_angle + pev->punchangle);
 	return gpGlobals->v_forward;
@@ -94,7 +94,7 @@ void CBot::BotThink()
 	}
 }
 
-void CBot::__MAKE_VHOOK(MoveForward)()
+void CBot::MoveForward()
 {
 	m_forwardSpeed = GetMoveSpeed();
 	m_buttonFlags |= IN_FORWARD;
@@ -103,7 +103,7 @@ void CBot::__MAKE_VHOOK(MoveForward)()
 	m_buttonFlags &= ~IN_BACK;
 }
 
-void CBot::__MAKE_VHOOK(MoveBackward)()
+void CBot::MoveBackward()
 {
 	m_forwardSpeed = -GetMoveSpeed();
 	m_buttonFlags |= IN_BACK;
@@ -112,7 +112,7 @@ void CBot::__MAKE_VHOOK(MoveBackward)()
 	m_buttonFlags &= ~IN_FORWARD;
 }
 
-void CBot::__MAKE_VHOOK(StrafeLeft)()
+void CBot::StrafeLeft()
 {
 	m_strafeSpeed = -GetMoveSpeed();
 	m_buttonFlags |= IN_MOVELEFT;
@@ -121,7 +121,7 @@ void CBot::__MAKE_VHOOK(StrafeLeft)()
 	m_buttonFlags &= ~IN_MOVERIGHT;
 }
 
-void CBot::__MAKE_VHOOK(StrafeRight)()
+void CBot::StrafeRight()
 {
 	m_strafeSpeed = GetMoveSpeed();
 	m_buttonFlags |= IN_MOVERIGHT;
@@ -130,7 +130,7 @@ void CBot::__MAKE_VHOOK(StrafeRight)()
 	m_buttonFlags &= ~IN_MOVELEFT;
 }
 
-bool CBot::__MAKE_VHOOK(Jump)(bool mustJump)
+bool CBot::Jump(bool mustJump)
 {
 	if (IsJumping() || IsCrouching())
 		return false;
@@ -154,7 +154,7 @@ bool CBot::__MAKE_VHOOK(Jump)(bool mustJump)
 }
 
 // Zero any MoveForward(), Jump(), etc
-void CBot::__MAKE_VHOOK(ClearMovement)()
+void CBot::ClearMovement()
 {
 	ResetCommand();
 }
@@ -177,42 +177,42 @@ bool CBot::IsJumping()
 	return true;
 }
 
-void CBot::__MAKE_VHOOK(Crouch)()
+void CBot::Crouch()
 {
 	m_isCrouching = true;
 }
 
-void CBot::__MAKE_VHOOK(StandUp)()
+void CBot::StandUp()
 {
 	m_isCrouching = false;
 }
 
-void CBot::__MAKE_VHOOK(UseEnvironment)()
+void CBot::UseEnvironment()
 {
 	m_buttonFlags |= IN_USE;
 }
 
-void CBot::__MAKE_VHOOK(PrimaryAttack)()
+void CBot::PrimaryAttack()
 {
 	m_buttonFlags |= IN_ATTACK;
 }
 
-void CBot::__MAKE_VHOOK(ClearPrimaryAttack)()
+void CBot::ClearPrimaryAttack()
 {
 	m_buttonFlags &= ~IN_ATTACK;
 }
 
-void CBot::__MAKE_VHOOK(TogglePrimaryAttack)()
+void CBot::TogglePrimaryAttack()
 {
 	m_buttonFlags ^= IN_ATTACK;
 }
 
-void CBot::__MAKE_VHOOK(SecondaryAttack)()
+void CBot::SecondaryAttack()
 {
 	m_buttonFlags |= IN_ATTACK2;
 }
 
-void CBot::__MAKE_VHOOK(Reload)()
+void CBot::Reload()
 {
 	m_buttonFlags |= IN_RELOAD;
 }
@@ -269,7 +269,7 @@ bool CBot::IsUsingScope() const
 	return false;
 }
 
-void CBot::__MAKE_VHOOK(ExecuteCommand)()
+void CBot::ExecuteCommand()
 {
 	byte adjustedMSec;
 

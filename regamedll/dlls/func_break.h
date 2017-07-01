@@ -88,21 +88,6 @@ public:
 	virtual int DamageDecal(int bitsDamageType);
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	void Restart_();
-	void KeyValue_(KeyValueData *pkvd);
-	int Save_(CSave &save);
-	int Restore_(CRestore &restore);
-	void TraceAttack_(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType);
-	BOOL TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
-	int DamageDecal_(int bitsDamageType);
-	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-#endif
-
 public:
 	void EXPORT BreakTouch(CBaseEntity *pOther);
 	void DamageSound();
@@ -157,27 +142,13 @@ public:
 	virtual void Restart();
 #endif
 
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	void KeyValue_(KeyValueData *pkvd);
-	int Save_(CSave &save);
-	int Restore_(CRestore &restore);
-	BOOL TakeDamage_(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
-	void Touch_(CBaseEntity *pOther);
-	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-#endif
-
 public:
 	void Move(CBaseEntity *pMover, int push);
 	void EXPORT StopSound()
 	{
 #if 0
 		Vector dist = pev->oldorigin - pev->origin;
-		if (dist.Length() <= 0)
-		{
+		if (dist.Length() <= 0) {
 			STOP_SOUND(ENT(pev), CHAN_WEAPON, m_soundNames[m_lastSound]);
 		}
 #endif

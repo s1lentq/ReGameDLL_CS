@@ -86,17 +86,6 @@ public:
 	}
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	void Restart_();
-	int Save_(CSave &save);
-	int Restore_(CRestore &restore);
-	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-#endif
-
 public:
 	void EXPORT AnimateThink();
 	void EXPORT ExpandThink();
@@ -168,13 +157,6 @@ public:
 	}
 	virtual Vector Center() { return (GetStartPos() + GetEndPos()) * 0.5f; }
 
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-
-#endif
-
 public:
 	void EXPORT TriggerTouch(CBaseEntity *pOther);
 
@@ -245,17 +227,6 @@ public:
 	virtual int Restore(CRestore &restore);
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	void KeyValue_(KeyValueData *pkvd);
-	int Save_(CSave &save);
-	int Restore_(CRestore &restore);
-	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-#endif
-
 public:
 	void TurnOn();
 	void TurnOff();
@@ -283,17 +254,6 @@ public:
 	virtual int ObjectCaps() { return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	void KeyValue_(KeyValueData *pkvd);
-	int Save_(CSave &save);
-	int Restore_(CRestore &restore);
-	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-#endif
-
 public:
 	void EXPORT FizzThink();
 
@@ -315,17 +275,6 @@ public:
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
 	virtual void Activate();
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	void KeyValue_(KeyValueData *pkvd);
-	int Save_(CSave &save);
-	int Restore_(CRestore &restore);
-	void Activate_();
-
-#endif
 
 public:
 	void EXPORT StrikeThink();
@@ -371,15 +320,6 @@ public:
 	virtual int Restore(CRestore &restore);
 	virtual void Think();
 
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	int Save_(CSave &save);
-	int Restore_(CRestore &restore);
-	void Think_();
-
-#endif
-
 	void Animate(float frames);
 
 public:
@@ -394,13 +334,6 @@ class CBombGlow: public CSprite
 public:
 	virtual void Spawn();
 	virtual void Think();
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Think_();
-
-#endif
 
 public:
 	float m_lastTime;
@@ -418,18 +351,6 @@ public:
 	virtual int Restore(CRestore &restore);
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 	virtual CGib *CreateGib();
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	void KeyValue_(KeyValueData *pkvd);
-	int Save_(CSave &save);
-	int Restore_(CRestore &restore);
-	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-	CGib *CreateGib_();
-
-#endif
 
 public:
 	void EXPORT ShootThink();
@@ -453,15 +374,6 @@ public:
 	virtual void Precache();
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual CGib *CreateGib();
-
-#ifdef HOOK_GAMEDLL
-
-	void Precache_();
-	void KeyValue_(KeyValueData *pkvd);
-	CGib *CreateGib_();
-
-#endif
-
 };
 
 #define MAX_BEAM 24
@@ -472,14 +384,6 @@ public:
 	virtual void Spawn();
 	virtual void Precache();
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-#endif
 
 public:
 	void EXPORT TestThink();
@@ -501,14 +405,6 @@ public:
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void KeyValue_(KeyValueData *pkvd);
-	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-#endif
-
 public:
 	int Color() const { return pev->impulse; }
 	float BloodAmount() const { return pev->dmg; }
@@ -527,14 +423,6 @@ public:
 	virtual void Spawn();
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void KeyValue_(KeyValueData *pkvd);
-	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-#endif
 
 public:
 	float Amplitude() const { return pev->scale; }
@@ -555,14 +443,6 @@ public:
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void KeyValue_(KeyValueData *pkvd);
-	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-#endif
-
 public:
 	float Duration() const { return pev->dmg_take; }
 	float HoldTime() const { return pev->dmg_save; }
@@ -578,16 +458,6 @@ public:
 	virtual void Precache();
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	void KeyValue_(KeyValueData *pkvd);
-	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-#endif
-
 };
 
 class CEnvFunnel: public CBaseDelay
@@ -596,14 +466,6 @@ public:
 	virtual void Spawn();
 	virtual void Precache();
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-#endif
 
 public:
 	int m_iSprite;
@@ -615,15 +477,6 @@ public:
 	virtual void Spawn();
 	virtual void Precache();
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-#endif
-
 };
 
 class CItemSoda: public CBaseEntity
@@ -631,13 +484,6 @@ class CItemSoda: public CBaseEntity
 public:
 	virtual void Spawn();
 	virtual void Precache();
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-
-#endif
 
 public:
 	void EXPORT CanThink();

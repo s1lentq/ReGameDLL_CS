@@ -2,7 +2,7 @@
 
 LINK_ENTITY_TO_CLASS(weapon_m3, CM3, CCSM3)
 
-void CM3::__MAKE_VHOOK(Spawn)()
+void CM3::Spawn()
 {
 	Precache();
 
@@ -14,7 +14,7 @@ void CM3::__MAKE_VHOOK(Spawn)()
 	FallInit();
 }
 
-void CM3::__MAKE_VHOOK(Precache)()
+void CM3::Precache()
 {
 	PRECACHE_MODEL("models/v_m3.mdl");
 	PRECACHE_MODEL("models/w_m3.mdl");
@@ -30,7 +30,7 @@ void CM3::__MAKE_VHOOK(Precache)()
 	m_usFireM3 = PRECACHE_EVENT(1, "events/m3.sc");
 }
 
-int CM3::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
+int CM3::GetItemInfo(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
 	p->pszAmmo1 = "buckshot";
@@ -47,12 +47,12 @@ int CM3::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	return 1;
 }
 
-BOOL CM3::__MAKE_VHOOK(Deploy)()
+BOOL CM3::Deploy()
 {
 	return DefaultDeploy("models/v_m3.mdl", "models/p_m3.mdl", M3_DRAW, "shotgun", UseDecrement() != FALSE);
 }
 
-void CM3::__MAKE_VHOOK(PrimaryAttack)()
+void CM3::PrimaryAttack()
 {
 	Vector vecAiming, vecSrc, vecDir;
 	int flag;
@@ -133,7 +133,7 @@ void CM3::__MAKE_VHOOK(PrimaryAttack)()
 	m_pPlayer->m_flEjectBrass = gpGlobals->time + 0.45f;
 }
 
-void CM3::__MAKE_VHOOK(Reload)()
+void CM3::Reload()
 {
 	if (m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0 || m_iClip == iMaxClip())
 		return;
@@ -179,7 +179,7 @@ void CM3::__MAKE_VHOOK(Reload)()
 	}
 }
 
-void CM3::__MAKE_VHOOK(WeaponIdle)()
+void CM3::WeaponIdle()
 {
 	ResetEmptySound();
 	m_pPlayer->GetAutoaimVector(AUTOAIM_5DEGREES);

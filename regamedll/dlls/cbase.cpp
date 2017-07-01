@@ -303,22 +303,10 @@ void REMOVE_ENTITY(edict_t *pEntity)
 	}
 }
 
-void CONSOLE_ECHO_(char *pszMsg, ...)
-{
-	va_list argptr;
-	static char szStr[1024];
-
-	va_start(argptr, pszMsg);
-	vsprintf(szStr, pszMsg, argptr);
-	va_end(argptr);
-
-	SERVER_PRINT(szStr);
-}
-
 void loopPerformance()
 {
-	CPerformanceCounter loopCounter;
-	loopCounter.InitializePerformanceCounter();
+	CCounter loopCounter;
+	loopCounter.Init();
 
 	double start, end;
 	int i;
@@ -777,7 +765,7 @@ CBaseEntity *EHANDLE::operator->()
 	return (CBaseEntity *)GET_PRIVATE(Get());
 }
 
-BOOL CBaseEntity::__MAKE_VHOOK(TakeHealth)(float flHealth, int bitsDamageType)
+BOOL CBaseEntity::TakeHealth(float flHealth, int bitsDamageType)
 {
 	if (pev->takedamage == DAMAGE_NO)
 		return FALSE;
@@ -795,7 +783,7 @@ BOOL CBaseEntity::__MAKE_VHOOK(TakeHealth)(float flHealth, int bitsDamageType)
 	return TRUE;
 }
 
-BOOL CBaseEntity::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
+BOOL CBaseEntity::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
 	Vector vecTemp;
 
@@ -846,14 +834,14 @@ BOOL CBaseEntity::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *p
 	return TRUE;
 }
 
-void CBaseEntity::__MAKE_VHOOK(Killed)(entvars_t *pevAttacker, int iGib)
+void CBaseEntity::Killed(entvars_t *pevAttacker, int iGib)
 {
 	pev->takedamage = DAMAGE_NO;
 	pev->deadflag = DEAD_DEAD;
 	UTIL_Remove(this);
 }
 
-CBaseEntity *CBaseEntity::__MAKE_VHOOK(GetNextTarget)()
+CBaseEntity *CBaseEntity::GetNextTarget()
 {
 	if (FStringNull(pev->target))
 		return NULL;
@@ -867,7 +855,7 @@ CBaseEntity *CBaseEntity::__MAKE_VHOOK(GetNextTarget)()
 	return Instance(pTarget);
 }
 
-int CBaseEntity::__MAKE_VHOOK(Save)(CSave &save)
+int CBaseEntity::Save(CSave &save)
 {
 	if (save.WriteEntVars("ENTVARS", pev))
 	{
@@ -877,7 +865,7 @@ int CBaseEntity::__MAKE_VHOOK(Save)(CSave &save)
 	return 0;
 }
 
-int CBaseEntity::__MAKE_VHOOK(Restore)(CRestore &restore)
+int CBaseEntity::Restore(CRestore &restore)
 {
 	int status = restore.ReadEntVars("ENTVARS", pev);
 	if (status)
@@ -948,7 +936,7 @@ void SetObjectCollisionBox(entvars_t *pev)
 	pev->absmax.z += 1;
 }
 
-void CBaseEntity::__MAKE_VHOOK(SetObjectCollisionBox)()
+void CBaseEntity::SetObjectCollisionBox()
 {
 	::SetObjectCollisionBox(pev);
 }
@@ -982,7 +970,7 @@ int CBaseEntity::IsDormant()
 	return (pev->flags & FL_DORMANT) == FL_DORMANT;
 }
 
-BOOL CBaseEntity::__MAKE_VHOOK(IsInWorld)()
+BOOL CBaseEntity::IsInWorld()
 {
 	// position
 	if (pev->origin.x >= 4096.0 || pev->origin.y >= 4096.0 || pev->origin.z >= 4096.0)
@@ -1018,7 +1006,7 @@ int CBaseEntity::ShouldToggle(USE_TYPE useType, BOOL currentState)
 	return 1;
 }
 
-int CBaseEntity::__MAKE_VHOOK(DamageDecal)(int bitsDamageType)
+int CBaseEntity::DamageDecal(int bitsDamageType)
 {
 	if (pev->rendermode == kRenderTransAlpha)
 		return -1;

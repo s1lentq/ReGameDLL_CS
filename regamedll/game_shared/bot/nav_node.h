@@ -55,29 +55,27 @@ public:
 	void ConnectTo(CNavNode *node, NavDirType dir);
 	CNavNode *GetParent() const;
 
-	void MarkAsVisited(NavDirType dir);		// mark the given direction as having been visited
-	BOOL HasVisited(NavDirType dir);		// return TRUE if the given direction has already been searched
+	void MarkAsVisited(NavDirType dir);			// mark the given direction as having been visited
+	BOOL HasVisited(NavDirType dir);			// return TRUE if the given direction has already been searched
 	BOOL IsBiLinked(NavDirType dir) const;		// node is bidirectionally linked to another node in the given direction
-	BOOL IsClosedCell() const;			// node is the NW corner of a bi-linked quad of nodes
+	BOOL IsClosedCell() const;					// node is the NW corner of a bi-linked quad of nodes
 
-	void Cover() { m_isCovered = true; }		// TODO: Should pass in area that is covering
+	void Cover() { m_isCovered = true; }			// TODO: Should pass in area that is covering
 	BOOL IsCovered() const { return m_isCovered; }	// return true if this node has been covered by an area
 
 	void AssignArea(CNavArea *area);		// assign the given area to this node
-	CNavArea *GetArea() const;			// return associated area
+	CNavArea *GetArea() const;				// return associated area
 
 	void SetAttributes(unsigned char bits) { m_attributeFlags = bits; }
 	unsigned char GetAttributes() const { return m_attributeFlags; }
 
-#ifndef HOOK_GAMEDLL
 private:
-#endif
 	friend void DestroyNavigationMap();
 
-	Vector m_pos;				// position of this node in the world
-	Vector m_normal;			// surface normal at this location
+	Vector m_pos;						// position of this node in the world
+	Vector m_normal;					// surface normal at this location
 	CNavNode *m_to[ NUM_DIRECTIONS ];	// links to north, south, east, and west. NULL if no link
-	unsigned int m_id;			// unique ID of this node
+	unsigned int m_id;					// unique ID of this node
 	unsigned char m_attributeFlags;		// set of attribute bit flags (see NavAttributeType)
 
 	static CNavNode *IMPL(m_list);		// the master list of all nodes for this map

@@ -77,14 +77,6 @@ public:
 	// Bmodels don't go across transitions
 	virtual int ObjectCaps() { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-#endif
-
 };
 
 class CFuncWallToggle: public CFuncWall
@@ -92,13 +84,6 @@ class CFuncWallToggle: public CFuncWall
 public:
 	virtual void Spawn();
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-#endif
 
 public:
 	void TurnOff();
@@ -112,13 +97,6 @@ public:
 	virtual void Spawn();
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-#endif
-
 public:
 	void UpdateSpeed(float speed);
 };
@@ -130,13 +108,6 @@ public:
 	virtual void Spawn();
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual int ObjectCaps() { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void KeyValue_(KeyValueData *pkvd);
-
-#endif
 
 public:
 	void EXPORT SloshTouch(CBaseEntity *pOther);
@@ -156,14 +127,6 @@ public:
 
 	// Clear out func_wall's use function
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value) {}
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-#endif
-
 };
 
 class CFuncRotating: public CBaseEntity
@@ -180,17 +143,6 @@ public:
 
 #ifdef REGAMEDLL_FIXES
 	virtual void Restart();
-#endif
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	void KeyValue_(KeyValueData *pkvd);
-	int Save_(CSave &save);
-	int Restore_(CRestore &restore);
-	void Blocked_(CBaseEntity *pOther);
-
 #endif
 
 public:
@@ -227,17 +179,6 @@ public:
 	virtual void Touch(CBaseEntity *pOther);
 	virtual void Blocked(CBaseEntity *pOther);
 
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void KeyValue_(KeyValueData *pkvd);
-	int Save_(CSave &save);
-	int Restore_(CRestore &restore);
-	void Touch_(CBaseEntity *pOther);
-	void Blocked_(CBaseEntity *pOther);
-
-#endif
-
 public:
 	void EXPORT Swing();
 	void EXPORT PendulumUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
@@ -249,7 +190,7 @@ public:
 public:
 	static TYPEDESCRIPTION IMPL(m_SaveData)[8];
 
-	float m_accel;		// Acceleration
+	float m_accel;		// acceleration
 	float m_distance;
 	float m_time;
 	float m_damp;

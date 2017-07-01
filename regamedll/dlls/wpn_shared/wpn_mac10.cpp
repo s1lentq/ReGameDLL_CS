@@ -2,7 +2,7 @@
 
 LINK_ENTITY_TO_CLASS(weapon_mac10, CMAC10, CCSMAC10)
 
-void CMAC10::__MAKE_VHOOK(Spawn)()
+void CMAC10::Spawn()
 {
 	Precache();
 
@@ -16,7 +16,7 @@ void CMAC10::__MAKE_VHOOK(Spawn)()
 	FallInit();
 }
 
-void CMAC10::__MAKE_VHOOK(Precache)()
+void CMAC10::Precache()
 {
 	PRECACHE_MODEL("models/v_mac10.mdl");
 	PRECACHE_MODEL("models/w_mac10.mdl");
@@ -30,7 +30,7 @@ void CMAC10::__MAKE_VHOOK(Precache)()
 	m_usFireMAC10 = PRECACHE_EVENT(1, "events/mac10.sc");
 }
 
-int CMAC10::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
+int CMAC10::GetItemInfo(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
 	p->pszAmmo1 = "45acp";
@@ -47,7 +47,7 @@ int CMAC10::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	return 1;
 }
 
-BOOL CMAC10::__MAKE_VHOOK(Deploy)()
+BOOL CMAC10::Deploy()
 {
 	m_flAccuracy = 0.15f;
 	iShellOn = 1;
@@ -56,7 +56,7 @@ BOOL CMAC10::__MAKE_VHOOK(Deploy)()
 	return DefaultDeploy("models/v_mac10.mdl", "models/p_mac10.mdl", MAC10_DRAW, "onehanded", UseDecrement() != FALSE);
 }
 
-void CMAC10::__MAKE_VHOOK(PrimaryAttack)()
+void CMAC10::PrimaryAttack()
 {
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
 	{
@@ -148,7 +148,7 @@ void CMAC10::MAC10Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	}
 }
 
-void CMAC10::__MAKE_VHOOK(Reload)()
+void CMAC10::Reload()
 {
 	if (m_pPlayer->ammo_45acp <= 0)
 		return;
@@ -162,7 +162,7 @@ void CMAC10::__MAKE_VHOOK(Reload)()
 	}
 }
 
-void CMAC10::__MAKE_VHOOK(WeaponIdle)()
+void CMAC10::WeaponIdle()
 {
 	ResetEmptySound();
 	m_pPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);

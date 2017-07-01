@@ -31,11 +31,12 @@
 HIDDEN Module g_GameDLLModule = { NULL, NULL, NULL, NULL };
 HIDDEN Module g_EngineModule = { NULL, NULL, NULL, NULL };
 
-extern const size_t g_BaseOffset;
-extern FunctionHook g_FunctionHooks[];
-extern VirtualTableRef g_TableRefs[];
-extern AddressRef g_FunctionRefs[];
-extern AddressRef g_DataRefs[];
+// Offset where module assumed be loaded to ajust hooks offsets. NULL for the Linux to trigger symbols searching.
+#ifdef _WIN32
+const size_t g_BaseOffset = 0x01D00000;
+#else
+const size_t g_BaseOffset = NULL;
+#endif
 
 VirtualTableRef *GetVirtualTableRefAddr(const char *szClassName)
 {
@@ -233,33 +234,40 @@ int HookGameDLL(size_t gameAddr, size_t engAddr)
 }
 
 #ifdef _WIN32
-void *_malloc_mhook_(size_t n)
+
+void *malloc_wrapper(size_t n)
 {
 	return malloc(n);
 }
 
-void *_realloc_mhook_(void *memblock, size_t size)
+void *_nh_malloc_wrapper(size_t n)
+{
+	return malloc(n);
+}
+
+void *realloc_wrapper(void *memblock, size_t size)
 {
 	return realloc(memblock, size);
 }
 
-void _free_mhook_(void *p)
+void free_wrapper(void *p)
 {
 	free(p);
 }
 
-void *_calloc_mhook_(size_t n, size_t s)
+void *calloc_wrapper(size_t n, size_t s)
 {
 	return calloc(n, s);
 }
 
-void *__nh_malloc_mhook_(size_t n)
-{
-	return malloc(n);
-}
-
-char *_strdup_mhook_(const char *s)
+char *strdup_wrapper(const char *s)
 {
 	return _strdup(s);
 }
+
+int rand_wrapper()
+{
+	return rand();
+}
+
 #endif // _WIN32

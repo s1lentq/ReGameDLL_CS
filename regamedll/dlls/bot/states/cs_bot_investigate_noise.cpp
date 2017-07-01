@@ -21,13 +21,13 @@ void InvestigateNoiseState::AttendCurrentNoise(CCSBot *me)
 	me->ForgetNoise();
 }
 
-void InvestigateNoiseState::__MAKE_VHOOK(OnEnter)(CCSBot *me)
+void InvestigateNoiseState::OnEnter(CCSBot *me)
 {
 	AttendCurrentNoise(me);
 }
 
 // Use TravelDistance instead of distance...
-void InvestigateNoiseState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
+void InvestigateNoiseState::OnUpdate(CCSBot *me)
 {
 	float newNoiseDist;
 	if (me->ShouldInvestigateNoise(&newNoiseDist))
@@ -104,7 +104,7 @@ void InvestigateNoiseState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 	}
 }
 
-void InvestigateNoiseState::__MAKE_VHOOK(OnExit)(CCSBot *me)
+void InvestigateNoiseState::OnExit(CCSBot *me)
 {
 	// reset to run mode in case we were sneaking about
 	me->Run();

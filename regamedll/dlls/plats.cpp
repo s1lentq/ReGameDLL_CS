@@ -63,7 +63,7 @@ TYPEDESCRIPTION CGunTarget::m_SaveData[] =
 
 IMPLEMENT_SAVERESTORE(CBasePlatTrain, CBaseToggle)
 
-void CBasePlatTrain::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CBasePlatTrain::KeyValue(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "lip"))
 	{
@@ -107,7 +107,7 @@ void CBasePlatTrain::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 #define noiseMoving noise
 #define noiseArrived noise1
 
-void CBasePlatTrain::__MAKE_VHOOK(Precache)()
+void CBasePlatTrain::Precache()
 {
 	// set the plat's "in-motion" sound
 	switch (m_bMoveSnd)
@@ -292,7 +292,7 @@ void CFuncPlat::Setup()
 	}
 }
 
-void CFuncPlat::__MAKE_VHOOK(Precache)()
+void CFuncPlat::Precache()
 {
 	CBasePlatTrain::Precache();
 
@@ -303,7 +303,7 @@ void CFuncPlat::__MAKE_VHOOK(Precache)()
 	}
 }
 
-void CFuncPlat::__MAKE_VHOOK(Spawn)()
+void CFuncPlat::Spawn()
 {
 	Setup();
 	Precache();
@@ -359,7 +359,7 @@ void CPlatTrigger::SpawnInsideTrigger(CFuncPlat *pPlatform)
 	UTIL_SetSize(pev, vecTMin, vecTMax);
 }
 
-void CPlatTrigger::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
+void CPlatTrigger::Touch(CBaseEntity *pOther)
 {
 	// Ignore touches by non-players
 	entvars_t *pevToucher = pOther->pev;
@@ -418,7 +418,7 @@ void CFuncPlat::PlatUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE 
 }
 
 // Platform is at top, now starts moving down.
-void CFuncPlat::__MAKE_VHOOK(GoDown)()
+void CFuncPlat::GoDown()
 {
 	if (pev->noiseMovement)
 	{
@@ -432,7 +432,7 @@ void CFuncPlat::__MAKE_VHOOK(GoDown)()
 }
 
 // Platform has hit bottom.  Stops and waits forever.
-void CFuncPlat::__MAKE_VHOOK(HitBottom)()
+void CFuncPlat::HitBottom()
 {
 	if (pev->noiseMovement)
 	{
@@ -449,7 +449,7 @@ void CFuncPlat::__MAKE_VHOOK(HitBottom)()
 }
 
 // Platform is at bottom, now starts moving up
-void CFuncPlat::__MAKE_VHOOK(GoUp)()
+void CFuncPlat::GoUp()
 {
 	if (pev->noiseMovement)
 	{
@@ -463,7 +463,7 @@ void CFuncPlat::__MAKE_VHOOK(GoUp)()
 }
 
 // Platform has hit top.  Pauses, then starts back down again.
-void CFuncPlat::__MAKE_VHOOK(HitTop)()
+void CFuncPlat::HitTop()
 {
 	if (pev->noiseMovement)
 	{
@@ -486,7 +486,7 @@ void CFuncPlat::__MAKE_VHOOK(HitTop)()
 	}
 }
 
-void CFuncPlat::__MAKE_VHOOK(Blocked)(CBaseEntity *pOther)
+void CFuncPlat::Blocked(CBaseEntity *pOther)
 {
 	ALERT(at_aiconsole, "%s Blocked by %s\n", STRING(pev->classname), STRING(pOther->pev->classname));
 
@@ -536,20 +536,20 @@ void CFuncPlatRot::SetupRotation()
 	}
 }
 
-void CFuncPlatRot::__MAKE_VHOOK(Spawn)()
+void CFuncPlatRot::Spawn()
 {
 	CFuncPlat::Spawn();
 	SetupRotation();
 }
 
-void CFuncPlatRot::__MAKE_VHOOK(GoDown)()
+void CFuncPlatRot::GoDown()
 {
 	CFuncPlat::GoDown();
 	RotMove(m_start, pev->nextthink - pev->ltime);
 }
 
 // Platform has hit bottom.  Stops and waits forever.
-void CFuncPlatRot::__MAKE_VHOOK(HitBottom)()
+void CFuncPlatRot::HitBottom()
 {
 	CFuncPlat::HitBottom();
 	pev->avelocity = g_vecZero;
@@ -557,14 +557,14 @@ void CFuncPlatRot::__MAKE_VHOOK(HitBottom)()
 }
 
 // Platform is at bottom, now starts moving up
-void CFuncPlatRot::__MAKE_VHOOK(GoUp)()
+void CFuncPlatRot::GoUp()
 {
 	CFuncPlat::GoUp();
 	RotMove(m_end, pev->nextthink - pev->ltime);
 }
 
 // Platform has hit top.  Pauses, then starts back down again.
-void CFuncPlatRot::__MAKE_VHOOK(HitTop)()
+void CFuncPlatRot::HitTop()
 {
 	CFuncPlat::HitTop();
 	pev->avelocity = g_vecZero;
@@ -591,7 +591,7 @@ void CFuncPlatRot::RotMove(Vector &destAngle, float time)
 LINK_ENTITY_TO_CLASS(func_train, CFuncTrain, CCSFuncTrain)
 IMPLEMENT_SAVERESTORE(CFuncTrain, CBasePlatTrain)
 
-void CFuncTrain::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CFuncTrain::KeyValue(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "sounds"))
 	{
@@ -602,7 +602,7 @@ void CFuncTrain::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CBasePlatTrain::KeyValue(pkvd);
 }
 
-void CFuncTrain::__MAKE_VHOOK(Blocked)(CBaseEntity *pOther)
+void CFuncTrain::Blocked(CBaseEntity *pOther)
 {
 	if (gpGlobals->time < m_flActivateFinished)
 		return;
@@ -611,7 +611,7 @@ void CFuncTrain::__MAKE_VHOOK(Blocked)(CBaseEntity *pOther)
 	pOther->TakeDamage(pev, pev, pev->dmg, DMG_CRUSH);
 }
 
-void CFuncTrain::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CFuncTrain::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	if (pev->spawnflags & SF_TRAIN_WAIT_RETRIGGER)
 	{
@@ -765,7 +765,7 @@ void CFuncTrain::Next()
 	}
 }
 
-void CFuncTrain::__MAKE_VHOOK(Activate)()
+void CFuncTrain::Activate()
 {
 	// Not yet active, so teleport to first target
 	if (!m_activated)
@@ -803,7 +803,7 @@ void CFuncTrain::__MAKE_VHOOK(Activate)()
 // dmg		default	2
 // sounds
 // 1) ratchet metal
-void CFuncTrain::__MAKE_VHOOK(Spawn)()
+void CFuncTrain::Spawn()
 {
 	Precache();
 
@@ -846,7 +846,7 @@ void CFuncTrain::__MAKE_VHOOK(Spawn)()
 		m_volume = 0.85f;
 }
 
-void CFuncTrain::__MAKE_VHOOK(Restart)()
+void CFuncTrain::Restart()
 {
 	if (pev->speed == 0)
 		pev->speed = 100;
@@ -888,12 +888,12 @@ void CFuncTrain::__MAKE_VHOOK(Restart)()
 #endif
 }
 
-void CFuncTrain::__MAKE_VHOOK(Precache)()
+void CFuncTrain::Precache()
 {
 	CBasePlatTrain::Precache();
 }
 
-void CFuncTrain::__MAKE_VHOOK(OverrideReset)()
+void CFuncTrain::OverrideReset()
 {
 	CBaseEntity *pTarg;
 
@@ -921,7 +921,7 @@ void CFuncTrain::__MAKE_VHOOK(OverrideReset)()
 IMPLEMENT_SAVERESTORE(CFuncTrackTrain, CBaseEntity)
 LINK_ENTITY_TO_CLASS(func_tracktrain, CFuncTrackTrain, CCSFuncTrackTrain)
 
-void CFuncTrackTrain::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CFuncTrackTrain::KeyValue(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "wheels"))
 	{
@@ -970,7 +970,7 @@ void CFuncTrackTrain::NextThink(float thinkTime, BOOL alwaysThink)
 	pev->nextthink = thinkTime;
 }
 
-void CFuncTrackTrain::__MAKE_VHOOK(Blocked)(CBaseEntity *pOther)
+void CFuncTrackTrain::Blocked(CBaseEntity *pOther)
 {
 	entvars_t *pevOther = pOther->pev;
 
@@ -1007,7 +1007,7 @@ void CFuncTrackTrain::__MAKE_VHOOK(Blocked)(CBaseEntity *pOther)
 #endif
 }
 
-void CFuncTrackTrain::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CFuncTrackTrain::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	if (useType != USE_SET)
 	{
@@ -1356,7 +1356,7 @@ void CFuncTrackTrain::SetControls(entvars_t *pevControls)
 	m_controlMaxs = pevControls->maxs + offset;
 }
 
-BOOL CFuncTrackTrain::__MAKE_VHOOK(OnControls)(entvars_t *pevTest)
+BOOL CFuncTrackTrain::OnControls(entvars_t *pevTest)
 {
 	Vector offset = pevTest->origin - pev->origin;
 
@@ -1474,7 +1474,7 @@ void CFuncTrackTrain::NearestPath()
 	}
 }
 
-void CFuncTrackTrain::__MAKE_VHOOK(OverrideReset)()
+void CFuncTrackTrain::OverrideReset()
 {
 	NextThink(pev->ltime + 0.1f, FALSE);
 	SetThink(&CFuncTrackTrain::NearestPath);
@@ -1490,7 +1490,7 @@ CFuncTrackTrain *CFuncTrackTrain::Instance(edict_t *pent)
 	return NULL;
 }
 
-void CFuncTrackTrain::__MAKE_VHOOK(Spawn)()
+void CFuncTrackTrain::Spawn()
 {
 	if (pev->speed == 0)
 		m_speed = 165;
@@ -1535,7 +1535,7 @@ void CFuncTrackTrain::__MAKE_VHOOK(Spawn)()
 	Precache();
 }
 
-void CFuncTrackTrain::__MAKE_VHOOK(Restart)()
+void CFuncTrackTrain::Restart()
 {
 	ALERT(at_console, "M_speed = %f\n", m_speed);
 
@@ -1555,7 +1555,7 @@ void CFuncTrackTrain::__MAKE_VHOOK(Restart)()
 	SetThink(&CFuncTrackTrain::Find);
 }
 
-void CFuncTrackTrain::__MAKE_VHOOK(Precache)()
+void CFuncTrackTrain::Precache()
 {
 	if (m_flVolume == 0.0f)
 		m_flVolume = 1.0f;
@@ -1603,7 +1603,7 @@ void CFuncTrainControls::Find()
 	UTIL_Remove(this);
 }
 
-void CFuncTrainControls::__MAKE_VHOOK(Spawn)()
+void CFuncTrainControls::Spawn()
 {
 	pev->solid = SOLID_NOT;
 	pev->movetype = MOVETYPE_NONE;
@@ -1616,7 +1616,7 @@ void CFuncTrainControls::__MAKE_VHOOK(Spawn)()
 	pev->nextthink = gpGlobals->time;
 }
 
-BOOL CFuncTrackChange::__MAKE_VHOOK(IsTogglePlat)()
+BOOL CFuncTrackChange::IsTogglePlat()
 {
 	return TRUE;
 }
@@ -1624,7 +1624,7 @@ BOOL CFuncTrackChange::__MAKE_VHOOK(IsTogglePlat)()
 LINK_ENTITY_TO_CLASS(func_trackchange, CFuncTrackChange, CCSFuncTrackChange)
 IMPLEMENT_SAVERESTORE(CFuncTrackChange, CFuncPlatRot)
 
-void CFuncTrackChange::__MAKE_VHOOK(Spawn)()
+void CFuncTrackChange::Spawn()
 {
 	Setup();
 	if (pev->spawnflags & SF_TRACK_DONT_MOVE)
@@ -1655,7 +1655,7 @@ void CFuncTrackChange::__MAKE_VHOOK(Spawn)()
 	Precache();
 }
 
-void CFuncTrackChange::__MAKE_VHOOK(Precache)()
+void CFuncTrackChange::Precache()
 {
 	// Can't trigger sound
 	PRECACHE_SOUND("buttons/button11.wav");
@@ -1664,7 +1664,7 @@ void CFuncTrackChange::__MAKE_VHOOK(Precache)()
 }
 
 // UNDONE: Filter touches before re-evaluating the train.
-void CFuncTrackChange::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
+void CFuncTrackChange::Touch(CBaseEntity *pOther)
 {
 #if 0
 	TRAIN_CODE code;
@@ -1672,7 +1672,7 @@ void CFuncTrackChange::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 #endif
 }
 
-void CFuncTrackChange::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CFuncTrackChange::KeyValue(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "train"))
 	{
@@ -1696,7 +1696,7 @@ void CFuncTrackChange::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 	}
 }
 
-void CFuncTrackChange::__MAKE_VHOOK(OverrideReset)()
+void CFuncTrackChange::OverrideReset()
 {
 	pev->nextthink = pev->ltime + 1.0f;
 	SetThink(&CFuncTrackChange::Find);
@@ -1804,7 +1804,7 @@ void CFuncTrackChange::UpdateTrain(Vector &dest)
 	m_train->pev->velocity = pev->velocity + (local * (1.0 / time));
 }
 
-void CFuncTrackChange::__MAKE_VHOOK(GoDown)()
+void CFuncTrackChange::GoDown()
 {
 	if (m_code == TRAIN_BLOCKING)
 		return;
@@ -1837,7 +1837,7 @@ void CFuncTrackChange::__MAKE_VHOOK(GoDown)()
 }
 
 // Platform is at bottom, now starts moving up
-void CFuncTrackChange::__MAKE_VHOOK(GoUp)()
+void CFuncTrackChange::GoUp()
 {
 	if (m_code == TRAIN_BLOCKING)
 		return;
@@ -1871,7 +1871,7 @@ void CFuncTrackChange::__MAKE_VHOOK(GoUp)()
 }
 
 // Normal track change
-void CFuncTrackChange::__MAKE_VHOOK(UpdateAutoTargets)(int toggleState)
+void CFuncTrackChange::UpdateAutoTargets(int toggleState)
 {
 	if (!m_trackTop || !m_trackBottom)
 		return;
@@ -1887,7 +1887,7 @@ void CFuncTrackChange::__MAKE_VHOOK(UpdateAutoTargets)(int toggleState)
 		m_trackBottom->pev->spawnflags |= SF_PATH_DISABLED;
 }
 
-void CFuncTrackChange::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CFuncTrackChange::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	if (m_toggle_state != TS_AT_TOP && m_toggle_state != TS_AT_BOTTOM)
 		return;
@@ -1925,7 +1925,7 @@ void CFuncTrackChange::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *p
 }
 
 // Platform has hit bottom.  Stops and waits forever.
-void CFuncTrackChange::__MAKE_VHOOK(HitBottom)()
+void CFuncTrackChange::HitBottom()
 {
 	CFuncPlatRot::HitBottom();
 	if (m_code == TRAIN_FOLLOWING)
@@ -1941,7 +1941,7 @@ void CFuncTrackChange::__MAKE_VHOOK(HitBottom)()
 }
 
 // Platform has hit bottom.  Stops and waits forever.
-void CFuncTrackChange::__MAKE_VHOOK(HitTop)()
+void CFuncTrackChange::HitTop()
 {
 	CFuncPlatRot::HitTop();
 	if (m_code == TRAIN_FOLLOWING)
@@ -1961,7 +1961,7 @@ void CFuncTrackChange::__MAKE_VHOOK(HitTop)()
 LINK_ENTITY_TO_CLASS(func_trackautochange, CFuncTrackAuto, CCSFuncTrackAuto)
 
 // Auto track change
-void CFuncTrackAuto::__MAKE_VHOOK(UpdateAutoTargets)(int toggleState)
+void CFuncTrackAuto::UpdateAutoTargets(int toggleState)
 {
 	CPathTrack *pTarget, *pNextTarget;
 
@@ -1995,7 +1995,7 @@ void CFuncTrackAuto::__MAKE_VHOOK(UpdateAutoTargets)(int toggleState)
 	}
 }
 
-void CFuncTrackAuto::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CFuncTrackAuto::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	CPathTrack *pTarget;
 
@@ -2052,7 +2052,7 @@ void CFuncTrackAuto::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCa
 LINK_ENTITY_TO_CLASS(func_guntarget, CGunTarget, CCSGunTarget)
 IMPLEMENT_SAVERESTORE(CGunTarget, CBaseMonster)
 
-void CGunTarget::__MAKE_VHOOK(Spawn)()
+void CGunTarget::Spawn()
 {
 	pev->solid = SOLID_BSP;
 	pev->movetype = MOVETYPE_PUSH;
@@ -2079,7 +2079,7 @@ void CGunTarget::__MAKE_VHOOK(Spawn)()
 	}
 }
 
-void CGunTarget::__MAKE_VHOOK(Activate)()
+void CGunTarget::Activate()
 {
 	CBaseEntity *pTarg;
 
@@ -2159,7 +2159,7 @@ void CGunTarget::Stop()
 	pev->takedamage = DAMAGE_NO;
 }
 
-BOOL CGunTarget::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
+BOOL CGunTarget::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
 	if (pev->health > 0)
 	{
@@ -2180,7 +2180,7 @@ BOOL CGunTarget::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pe
 	return FALSE;
 }
 
-void CGunTarget::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CGunTarget::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	if (!ShouldToggle(useType, m_on))
 		return;

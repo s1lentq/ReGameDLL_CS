@@ -71,7 +71,7 @@ char st_szNextSpot[cchMapNameMost];
 LINK_ENTITY_TO_CLASS(func_friction, CFrictionModifier, CCSFrictionModifier)
 IMPLEMENT_SAVERESTORE(CFrictionModifier, CBaseEntity)
 
-void CFrictionModifier::__MAKE_VHOOK(Spawn)()
+void CFrictionModifier::Spawn()
 {
 	pev->solid = SOLID_TRIGGER;
 
@@ -92,7 +92,7 @@ void CFrictionModifier::ChangeFriction(CBaseEntity *pOther)
 }
 
 // Sets toucher's friction to m_frictionFraction (1.0 = normal friction)
-void CFrictionModifier::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CFrictionModifier::KeyValue(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "modifier"))
 	{
@@ -106,7 +106,7 @@ void CFrictionModifier::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 LINK_ENTITY_TO_CLASS(trigger_auto, CAutoTrigger, CCSAutoTrigger)
 IMPLEMENT_SAVERESTORE(CAutoTrigger, CBaseDelay)
 
-void CAutoTrigger::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CAutoTrigger::KeyValue(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "globalstate"))
 	{
@@ -134,17 +134,17 @@ void CAutoTrigger::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CBaseDelay::KeyValue(pkvd);
 }
 
-void CAutoTrigger::__MAKE_VHOOK(Spawn)()
+void CAutoTrigger::Spawn()
 {
 	Precache();
 }
 
-void CAutoTrigger::__MAKE_VHOOK(Precache)()
+void CAutoTrigger::Precache()
 {
 	pev->nextthink = gpGlobals->time + 0.1f;
 }
 
-void CAutoTrigger::__MAKE_VHOOK(Think)()
+void CAutoTrigger::Think()
 {
 	if (!m_globalstate || gGlobalState.EntityGetState(m_globalstate) == GLOBAL_ON)
 	{
@@ -174,7 +174,7 @@ void CAutoTrigger::Restart()
 LINK_ENTITY_TO_CLASS(trigger_relay, CTriggerRelay, CCSTriggerRelay)
 IMPLEMENT_SAVERESTORE(CTriggerRelay, CBaseDelay)
 
-void CTriggerRelay::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CTriggerRelay::KeyValue(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "triggerstate"))
 	{
@@ -197,12 +197,12 @@ void CTriggerRelay::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CBaseDelay::KeyValue(pkvd);
 }
 
-void CTriggerRelay::__MAKE_VHOOK(Spawn)()
+void CTriggerRelay::Spawn()
 {
 	;
 }
 
-void CTriggerRelay::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CTriggerRelay::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	SUB_UseTargets(this, triggerType, 0);
 	if (pev->spawnflags & SF_RELAY_FIREONCE)
@@ -214,7 +214,7 @@ void CTriggerRelay::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCal
 LINK_ENTITY_TO_CLASS(multi_manager, CMultiManager, CCSMultiManager)
 IMPLEMENT_SAVERESTORE(CMultiManager, CBaseToggle)
 
-void CMultiManager::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CMultiManager::KeyValue(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "wait"))
 	{
@@ -238,7 +238,7 @@ void CMultiManager::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 	}
 }
 
-void CMultiManager::__MAKE_VHOOK(Spawn)()
+void CMultiManager::Spawn()
 {
 	pev->solid = SOLID_NOT;
 	SetUse(&CMultiManager::ManagerUse);
@@ -269,7 +269,7 @@ void CMultiManager::__MAKE_VHOOK(Spawn)()
 	}
 }
 
-void CMultiManager::__MAKE_VHOOK(Restart)()
+void CMultiManager::Restart()
 {
 #ifndef REGAMEDLL_FIXES
 	edict_t *pentTarget = NULL;
@@ -307,7 +307,7 @@ void CMultiManager::__MAKE_VHOOK(Restart)()
 	m_index = 0;
 }
 
-BOOL CMultiManager::__MAKE_VHOOK(HasTarget)(string_t targetname)
+BOOL CMultiManager::HasTarget(string_t targetname)
 {
 	for (int i = 0; i < m_cTargets; ++i)
 	{
@@ -398,12 +398,12 @@ void CMultiManager::ManagerUse(CBaseEntity *pActivator, CBaseEntity *pCaller, US
 
 LINK_ENTITY_TO_CLASS(env_render, CRenderFxManager, CCSRenderFxManager)
 
-void CRenderFxManager::__MAKE_VHOOK(Spawn)()
+void CRenderFxManager::Spawn()
 {
 	pev->solid = SOLID_NOT;
 }
 
-void CRenderFxManager::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CRenderFxManager::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	if (!FStringNull(pev->target))
 	{
@@ -454,7 +454,7 @@ void CBaseTrigger::InitTrigger()
 }
 
 // Cache user-entity-field values until spawn is called.
-void CBaseTrigger::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CBaseTrigger::KeyValue(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "damage"))
 	{
@@ -477,7 +477,7 @@ void CBaseTrigger::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 
 LINK_ENTITY_TO_CLASS(trigger_monsterjump, CTriggerMonsterJump, CCSTriggerMonsterJump)
 
-void CTriggerMonsterJump::__MAKE_VHOOK(Spawn)()
+void CTriggerMonsterJump::Spawn()
 {
 	SetMovedir(pev);
 
@@ -498,7 +498,7 @@ void CTriggerMonsterJump::__MAKE_VHOOK(Spawn)()
 	}
 }
 
-void CTriggerMonsterJump::__MAKE_VHOOK(Think)()
+void CTriggerMonsterJump::Think()
 {
 	// kill the trigger for now UNDONE
 	pev->solid = SOLID_NOT;
@@ -508,7 +508,7 @@ void CTriggerMonsterJump::__MAKE_VHOOK(Think)()
 	SetThink(NULL);
 }
 
-void CTriggerMonsterJump::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
+void CTriggerMonsterJump::Touch(CBaseEntity *pOther)
 {
 	entvars_t *pevOther = pOther->pev;
 
@@ -536,7 +536,7 @@ LINK_ENTITY_TO_CLASS(trigger_cdaudio, CTriggerCDAudio, CCSTriggerCDAudio)
 
 // Changes tracks or stops CD when player touches
 // HACK: overloaded HEALTH to avoid adding new field
-void CTriggerCDAudio::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
+void CTriggerCDAudio::Touch(CBaseEntity *pOther)
 {
 	// only clients may trigger these events
 	if (!pOther->IsPlayer())
@@ -547,12 +547,12 @@ void CTriggerCDAudio::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
 	PlayTrack(pOther->edict());
 }
 
-void CTriggerCDAudio::__MAKE_VHOOK(Spawn)()
+void CTriggerCDAudio::Spawn()
 {
 	InitTrigger();
 }
 
-void CTriggerCDAudio::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CTriggerCDAudio::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	PlayTrack(pCaller->edict());
 }
@@ -634,7 +634,7 @@ void CTriggerCDAudio::PlayTrack(edict_t *pEdict)
 
 LINK_ENTITY_TO_CLASS(target_cdaudio, CTargetCDAudio, CCSTargetCDAudio)
 
-void CTargetCDAudio::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CTargetCDAudio::KeyValue(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "radius"))
 	{
@@ -645,7 +645,7 @@ void CTargetCDAudio::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CPointEntity::KeyValue(pkvd);
 }
 
-void CTargetCDAudio::__MAKE_VHOOK(Spawn)()
+void CTargetCDAudio::Spawn()
 {
 	pev->solid = SOLID_NOT;
 	pev->movetype = MOVETYPE_NONE;
@@ -656,13 +656,13 @@ void CTargetCDAudio::__MAKE_VHOOK(Spawn)()
 	}
 }
 
-void CTargetCDAudio::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CTargetCDAudio::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	Play(pCaller->edict());
 }
 
 // only plays for ONE client, so only use in single play!
-void CTargetCDAudio::__MAKE_VHOOK(Think)()
+void CTargetCDAudio::Think()
 {
 	// manually find the single player.
 	edict_t *pClient = INDEXENT(1);
@@ -687,7 +687,7 @@ void CTargetCDAudio::Play(edict_t *pEdict)
 
 LINK_ENTITY_TO_CLASS(trigger_hurt, CTriggerHurt, CCSTriggerHurt)
 
-void CTriggerHurt::__MAKE_VHOOK(Spawn)()
+void CTriggerHurt::Spawn()
 {
 	InitTrigger();
 	SetTouch(&CTriggerHurt::HurtTouch);
@@ -926,7 +926,7 @@ void CBaseTrigger::HurtTouch(CBaseEntity *pOther)
 
 LINK_ENTITY_TO_CLASS(trigger_multiple, CTriggerMultiple, CCSTriggerMultiple)
 
-void CTriggerMultiple::__MAKE_VHOOK(Spawn)()
+void CTriggerMultiple::Spawn()
 {
 	if (m_flWait == 0.0f)
 		m_flWait = 0.2f;
@@ -960,7 +960,7 @@ void CTriggerMultiple::__MAKE_VHOOK(Spawn)()
 
 LINK_ENTITY_TO_CLASS(trigger_once, CTriggerOnce, CCSTriggerOnce)
 
-void CTriggerOnce::__MAKE_VHOOK(Spawn)()
+void CTriggerOnce::Spawn()
 {
 #ifdef REGAMEDLL_FIXES
 	m_flWait = -2;
@@ -1098,7 +1098,7 @@ void CBaseTrigger::CounterUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE
 
 LINK_ENTITY_TO_CLASS(trigger_counter, CTriggerCounter, CCSTriggerCounter)
 
-void CTriggerCounter::__MAKE_VHOOK(Spawn)()
+void CTriggerCounter::Spawn()
 {
 	// By making the flWait be -1, this counter-trigger will disappear after it's activated
 	// (but of course it needs cTriggersLeft "uses" before that happens).
@@ -1115,7 +1115,7 @@ void CTriggerCounter::__MAKE_VHOOK(Spawn)()
 LINK_ENTITY_TO_CLASS(trigger_transition, CTriggerVolume, CCSTriggerVolume)
 
 // Define space that travels across a level transition
-void CTriggerVolume::__MAKE_VHOOK(Spawn)()
+void CTriggerVolume::Spawn()
 {
 	pev->solid = SOLID_NOT;
 	pev->movetype = MOVETYPE_NONE;
@@ -1129,18 +1129,18 @@ void CTriggerVolume::__MAKE_VHOOK(Spawn)()
 
 LINK_ENTITY_TO_CLASS(fireanddie, CFireAndDie, CCSFireAndDie)
 
-void CFireAndDie::__MAKE_VHOOK(Spawn)()
+void CFireAndDie::Spawn()
 {
 	MAKE_STRING_CLASS("fireanddie", pev);
 	// Don't call Precache() - it should be called on restore
 }
 
-void CFireAndDie::__MAKE_VHOOK(Precache)()
+void CFireAndDie::Precache()
 {
 	pev->nextthink = gpGlobals->time + m_flDelay;
 }
 
-void CFireAndDie::__MAKE_VHOOK(Think)()
+void CFireAndDie::Think()
 {
 	SUB_UseTargets(this, USE_TOGGLE, 0);
 	UTIL_Remove(this);
@@ -1150,7 +1150,7 @@ LINK_ENTITY_TO_CLASS(trigger_changelevel, CChangeLevel, CCSChangeLevel)
 IMPLEMENT_SAVERESTORE(CChangeLevel, CBaseTrigger)
 
 // Cache user-entity-field values until spawn is called.
-void CChangeLevel::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CChangeLevel::KeyValue(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "map"))
 	{
@@ -1186,7 +1186,7 @@ void CChangeLevel::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CBaseTrigger::KeyValue(pkvd);
 }
 
-void CChangeLevel::__MAKE_VHOOK(Spawn)()
+void CChangeLevel::Spawn()
 {
 	if (FStrEq(m_szMapName, ""))
 	{
@@ -1528,13 +1528,13 @@ NOXREF void NextLevel()
 
 LINK_ENTITY_TO_CLASS(func_ladder, CLadder, CCSLadder)
 
-void CLadder::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CLadder::KeyValue(KeyValueData *pkvd)
 {
 	CBaseTrigger::KeyValue(pkvd);
 }
 
 // func_ladder - makes an area vertically negotiable
-void CLadder::__MAKE_VHOOK(Precache)()
+void CLadder::Precache()
 {
 	// Do all of this in here because we need to 'convert' old saved games
 	pev->solid = SOLID_NOT;
@@ -1549,7 +1549,7 @@ void CLadder::__MAKE_VHOOK(Precache)()
 	pev->effects &= ~EF_NODRAW;
 }
 
-void CLadder::__MAKE_VHOOK(Spawn)()
+void CLadder::Spawn()
 {
 	Precache();
 
@@ -1560,12 +1560,12 @@ void CLadder::__MAKE_VHOOK(Spawn)()
 
 LINK_ENTITY_TO_CLASS(trigger_push, CTriggerPush, CCSTriggerPush)
 
-void CTriggerPush::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CTriggerPush::KeyValue(KeyValueData *pkvd)
 {
 	CBaseTrigger::KeyValue(pkvd);
 }
 
-void CTriggerPush::__MAKE_VHOOK(Spawn)()
+void CTriggerPush::Spawn()
 {
 	if (pev->angles == g_vecZero)
 	{
@@ -1614,7 +1614,7 @@ void CTriggerPush::Restart()
 }
 #endif
 
-void CTriggerPush::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
+void CTriggerPush::Touch(CBaseEntity *pOther)
 {
 	entvars_t *pevToucher = pOther->pev;
 
@@ -1724,7 +1724,7 @@ void CBaseTrigger::TeleportTouch(CBaseEntity *pOther)
 
 LINK_ENTITY_TO_CLASS(trigger_teleport, CTriggerTeleport, CCSTriggerTeleport)
 
-void CTriggerTeleport::__MAKE_VHOOK(Spawn)()
+void CTriggerTeleport::Spawn()
 {
 	InitTrigger();
 	SetTouch(&CTriggerTeleport::TeleportTouch);
@@ -1733,7 +1733,7 @@ void CTriggerTeleport::__MAKE_VHOOK(Spawn)()
 LINK_ENTITY_TO_CLASS(info_teleport_destination, CPointEntity, CCSPointEntity)
 LINK_ENTITY_TO_CLASS(func_buyzone, CBuyZone, CCSBuyZone)
 
-void CBuyZone::__MAKE_VHOOK(Spawn)()
+void CBuyZone::Spawn()
 {
 	InitTrigger();
 	SetTouch(&CBuyZone::BuyTouch);
@@ -1765,7 +1765,7 @@ void CBuyZone::BuyTouch(CBaseEntity *pOther)
 
 LINK_ENTITY_TO_CLASS(func_bomb_target, CBombTarget, CCSBombTarget)
 
-void CBombTarget::__MAKE_VHOOK(Spawn)()
+void CBombTarget::Spawn()
 {
 	InitTrigger();
 
@@ -1794,7 +1794,7 @@ void CBombTarget::BombTargetUse(CBaseEntity *pActivator, CBaseEntity *pCaller, U
 
 LINK_ENTITY_TO_CLASS(func_hostage_rescue, CHostageRescue, CCSHostageRescue)
 
-void CHostageRescue::__MAKE_VHOOK(Spawn)()
+void CHostageRescue::Spawn()
 {
 	InitTrigger();
 	SetTouch(&CHostageRescue::HostageRescueTouch);
@@ -1815,7 +1815,7 @@ void CHostageRescue::HostageRescueTouch(CBaseEntity *pOther)
 
 LINK_ENTITY_TO_CLASS(func_escapezone, CEscapeZone, CCSEscapeZone)
 
-void CEscapeZone::__MAKE_VHOOK(Spawn)()
+void CEscapeZone::Spawn()
 {
 	InitTrigger();
 	SetTouch(&CEscapeZone::EscapeTouch);
@@ -1860,7 +1860,7 @@ void CEscapeZone::EscapeTouch(CBaseEntity *pOther)
 
 LINK_ENTITY_TO_CLASS(func_vip_safetyzone, CVIP_SafetyZone, CCSVIP_SafetyZone)
 
-void CVIP_SafetyZone::__MAKE_VHOOK(Spawn)()
+void CVIP_SafetyZone::Spawn()
 {
 	InitTrigger();
 	SetTouch(&CVIP_SafetyZone::VIP_SafetyTouch);
@@ -1888,7 +1888,7 @@ void CVIP_SafetyZone::VIP_SafetyTouch(CBaseEntity *pOther)
 
 LINK_ENTITY_TO_CLASS(trigger_autosave, CTriggerSave, CCSTriggerSave)
 
-void CTriggerSave::__MAKE_VHOOK(Spawn)()
+void CTriggerSave::Spawn()
 {
 	if (g_pGameRules->IsDeathmatch())
 	{
@@ -1931,7 +1931,7 @@ void CTriggerEndSection::EndSectionUse(CBaseEntity *pActivator, CBaseEntity *pCa
 	UTIL_Remove(this);
 }
 
-void CTriggerEndSection::__MAKE_VHOOK(Spawn)()
+void CTriggerEndSection::Spawn()
 {
 	if (g_pGameRules->IsDeathmatch())
 	{
@@ -1964,7 +1964,7 @@ void CTriggerEndSection::EndSectionTouch(CBaseEntity *pOther)
 	UTIL_Remove(this);
 }
 
-void CTriggerEndSection::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CTriggerEndSection::KeyValue(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "section"))
 	{
@@ -1978,7 +1978,7 @@ void CTriggerEndSection::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 
 LINK_ENTITY_TO_CLASS(trigger_gravity, CTriggerGravity, CCSTriggerGravity)
 
-void CTriggerGravity::__MAKE_VHOOK(Spawn)()
+void CTriggerGravity::Spawn()
 {
 	InitTrigger();
 	SetTouch(&CTriggerGravity::GravityTouch);
@@ -1996,7 +1996,7 @@ void CTriggerGravity::GravityTouch(CBaseEntity *pOther)
 LINK_ENTITY_TO_CLASS(trigger_changetarget, CTriggerChangeTarget, CCSTriggerChangeTarget)
 IMPLEMENT_SAVERESTORE(CTriggerChangeTarget, CBaseDelay)
 
-void CTriggerChangeTarget::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CTriggerChangeTarget::KeyValue(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "m_iszNewTarget"))
 	{
@@ -2007,12 +2007,12 @@ void CTriggerChangeTarget::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CBaseDelay::KeyValue(pkvd);
 }
 
-void CTriggerChangeTarget::__MAKE_VHOOK(Spawn)()
+void CTriggerChangeTarget::Spawn()
 {
 	;
 }
 
-void CTriggerChangeTarget::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CTriggerChangeTarget::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	CBaseEntity *pTarget = UTIL_FindEntityByString(NULL, "targetname", STRING(pev->target));
 
@@ -2032,7 +2032,7 @@ void CTriggerChangeTarget::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntit
 LINK_ENTITY_TO_CLASS(trigger_camera, CTriggerCamera, CCSTriggerCamera)
 IMPLEMENT_SAVERESTORE(CTriggerCamera, CBaseDelay)
 
-void CTriggerCamera::__MAKE_VHOOK(Spawn)()
+void CTriggerCamera::Spawn()
 {
 	pev->movetype = MOVETYPE_NOCLIP;
 
@@ -2055,7 +2055,7 @@ void CTriggerCamera::__MAKE_VHOOK(Spawn)()
 	}
 }
 
-void CTriggerCamera::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CTriggerCamera::KeyValue(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "wait"))
 	{
@@ -2081,7 +2081,7 @@ void CTriggerCamera::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CBaseDelay::KeyValue(pkvd);
 }
 
-void CTriggerCamera::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CTriggerCamera::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	if (!ShouldToggle(useType, m_state))
 		return;
@@ -2302,12 +2302,12 @@ LINK_ENTITY_TO_CLASS(func_snow, CWeather, CCSWeather)
 LINK_ENTITY_TO_CLASS(env_rain, CWeather, CCSWeather)
 LINK_ENTITY_TO_CLASS(func_rain, CWeather, CCSWeather)
 
-void CWeather::__MAKE_VHOOK(Spawn)()
+void CWeather::Spawn()
 {
 	InitTrigger();
 }
 
-void CClientFog::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CClientFog::KeyValue(KeyValueData *pkvd)
 {
 #if 0
 	if (FStrEq(pkvd->szKeyName, "startdist"))
@@ -2335,7 +2335,7 @@ void CClientFog::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CBaseEntity::KeyValue(pkvd);
 }
 
-void CClientFog::__MAKE_VHOOK(Spawn)()
+void CClientFog::Spawn()
 {
 	pev->movetype = MOVETYPE_NOCLIP;
 	pev->solid = SOLID_NOT;				// Remove model & collisions

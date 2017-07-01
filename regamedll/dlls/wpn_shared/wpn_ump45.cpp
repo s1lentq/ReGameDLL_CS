@@ -2,7 +2,7 @@
 
 LINK_ENTITY_TO_CLASS(weapon_ump45, CUMP45, CCSUMP45)
 
-void CUMP45::__MAKE_VHOOK(Spawn)()
+void CUMP45::Spawn()
 {
 	Precache();
 
@@ -16,7 +16,7 @@ void CUMP45::__MAKE_VHOOK(Spawn)()
 	FallInit();
 }
 
-void CUMP45::__MAKE_VHOOK(Precache)()
+void CUMP45::Precache()
 {
 	PRECACHE_MODEL("models/v_ump45.mdl");
 	PRECACHE_MODEL("models/w_ump45.mdl");
@@ -30,7 +30,7 @@ void CUMP45::__MAKE_VHOOK(Precache)()
 	m_usFireUMP45 = PRECACHE_EVENT(1, "events/ump45.sc");
 }
 
-int CUMP45::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
+int CUMP45::GetItemInfo(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
 #ifdef REGAMEDLL_FIXES
@@ -51,7 +51,7 @@ int CUMP45::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	return 1;
 }
 
-BOOL CUMP45::__MAKE_VHOOK(Deploy)()
+BOOL CUMP45::Deploy()
 {
 	m_flAccuracy = 0.0f;
 	m_bDelayFire = false;
@@ -60,7 +60,7 @@ BOOL CUMP45::__MAKE_VHOOK(Deploy)()
 	return DefaultDeploy("models/v_ump45.mdl", "models/p_ump45.mdl", UMP45_DRAW, "carbine", UseDecrement() != FALSE);
 }
 
-void CUMP45::__MAKE_VHOOK(PrimaryAttack)()
+void CUMP45::PrimaryAttack()
 {
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
 	{
@@ -152,7 +152,7 @@ void CUMP45::UMP45Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	}
 }
 
-void CUMP45::__MAKE_VHOOK(Reload)()
+void CUMP45::Reload()
 {
 	if (m_pPlayer->ammo_45acp <= 0)
 		return;
@@ -166,7 +166,7 @@ void CUMP45::__MAKE_VHOOK(Reload)()
 	}
 }
 
-void CUMP45::__MAKE_VHOOK(WeaponIdle)()
+void CUMP45::WeaponIdle()
 {
 	ResetEmptySound();
 	m_pPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);

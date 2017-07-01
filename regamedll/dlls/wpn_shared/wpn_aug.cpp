@@ -2,7 +2,7 @@
 
 LINK_ENTITY_TO_CLASS(weapon_aug, CAUG, CCSAUG)
 
-void CAUG::__MAKE_VHOOK(Spawn)()
+void CAUG::Spawn()
 {
 	Precache();
 
@@ -16,7 +16,7 @@ void CAUG::__MAKE_VHOOK(Spawn)()
 	FallInit();
 }
 
-void CAUG::__MAKE_VHOOK(Precache)()
+void CAUG::Precache()
 {
 	PRECACHE_MODEL("models/v_aug.mdl");
 	PRECACHE_MODEL("models/w_aug.mdl");
@@ -32,7 +32,7 @@ void CAUG::__MAKE_VHOOK(Precache)()
 	m_usFireAug = PRECACHE_EVENT(1, "events/aug.sc");
 }
 
-int CAUG::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
+int CAUG::GetItemInfo(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
 	p->pszAmmo1 = "556Nato";
@@ -49,7 +49,7 @@ int CAUG::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	return 1;
 }
 
-BOOL CAUG::__MAKE_VHOOK(Deploy)()
+BOOL CAUG::Deploy()
 {
 	m_flAccuracy = 0.2f;
 	m_iShotsFired = 0;
@@ -58,7 +58,7 @@ BOOL CAUG::__MAKE_VHOOK(Deploy)()
 	return DefaultDeploy("models/v_aug.mdl", "models/p_aug.mdl", AUG_DRAW, "carbine", UseDecrement() != FALSE);
 }
 
-void CAUG::__MAKE_VHOOK(SecondaryAttack)()
+void CAUG::SecondaryAttack()
 {
 	if (m_pPlayer->m_iFOV == DEFAULT_FOV)
 		m_pPlayer->pev->fov = m_pPlayer->m_iFOV = 55;
@@ -68,7 +68,7 @@ void CAUG::__MAKE_VHOOK(SecondaryAttack)()
 	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.3f;
 }
 
-void CAUG::__MAKE_VHOOK(PrimaryAttack)()
+void CAUG::PrimaryAttack()
 {
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
 	{
@@ -168,7 +168,7 @@ void CAUG::AUGFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	}
 }
 
-void CAUG::__MAKE_VHOOK(Reload)()
+void CAUG::Reload()
 {
 	if (m_pPlayer->ammo_556nato <= 0)
 		return;
@@ -188,7 +188,7 @@ void CAUG::__MAKE_VHOOK(Reload)()
 	}
 }
 
-void CAUG::__MAKE_VHOOK(WeaponIdle)()
+void CAUG::WeaponIdle()
 {
 	ResetEmptySound();
 	m_pPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);

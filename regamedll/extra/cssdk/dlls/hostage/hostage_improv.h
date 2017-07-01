@@ -36,6 +36,8 @@ enum HostageChatterType;
 // A Counter-Strike Hostage improved
 class CHostageImprov: public CImprov {
 public:
+	virtual ~CHostageImprov() {};
+
 	// invoked when an improv reaches its MoveTo goal
 	virtual void OnMoveToSuccess(const Vector &goal) = 0;
 

@@ -158,32 +158,6 @@ public:
 	virtual void ExecuteCommand();
 	virtual void SetModel(const char *modelName);
 
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	Vector GetAutoaimVector_(float flDelta);
-	bool Initialize_(const BotProfile *profile);
-	void Crouch_();
-	void StandUp_();
-	void MoveForward_();
-	void MoveBackward_();
-	void StrafeLeft_();
-	void StrafeRight_();
-	bool Jump_(bool mustJump = false);
-	void ClearMovement_();
-	void UseEnvironment_();
-	void PrimaryAttack_();
-	void ClearPrimaryAttack_();
-	void TogglePrimaryAttack_();
-	void SecondaryAttack_();
-	bool IsPlayerFacingMe_(CBasePlayer *other) const;
-	bool IsPlayerLookingAtMe_(CBasePlayer *other) const;
-	void Reload_();
-	void ExecuteCommand_();
-	void SetModel_(const char *modelName);
-
-#endif
-
 public:
 	// return bot's unique ID
 	unsigned int GetID() const { return m_id; }
@@ -259,10 +233,7 @@ public:
 	};
 	BotRelationshipTeam BotRelationship(CBasePlayer *pTarget) const;
 
-#ifndef HOOK_GAMEDLL
 protected:
-#endif
-
 #ifndef REGAMEDLL_FIXES
 	// Do a "client command" - useful for invoking menu choices, etc.
 	void ClientCommand(const char *cmd, const char *arg1 = NULL, const char *arg2 = NULL, const char *arg3 = NULL);
@@ -317,7 +288,7 @@ private:
 	int m_postureStackIndex;
 };
 
-inline void CBot::__MAKE_VHOOK(SetModel)(const char *modelName)
+inline void CBot::SetModel(const char *modelName)
 {
 	SET_CLIENT_KEY_VALUE(entindex(), GET_INFO_BUFFER(edict()), "model", (char *)modelName);
 }
@@ -400,7 +371,7 @@ inline void CBot::PopPostureContext()
 	m_isCrouching = m_postureStack[m_postureStackIndex].isCrouching;
 }
 
-inline bool CBot::__MAKE_VHOOK(IsPlayerFacingMe)(CBasePlayer *other) const
+inline bool CBot::IsPlayerFacingMe(CBasePlayer *other) const
 {
 	Vector toOther = other->pev->origin - pev->origin;
 	UTIL_MakeVectors(other->pev->v_angle + other->pev->punchangle);
@@ -412,7 +383,7 @@ inline bool CBot::__MAKE_VHOOK(IsPlayerFacingMe)(CBasePlayer *other) const
 	return false;
 }
 
-inline bool CBot::__MAKE_VHOOK(IsPlayerLookingAtMe)(CBasePlayer *other) const
+inline bool CBot::IsPlayerLookingAtMe(CBasePlayer *other) const
 {
 	Vector toOther = other->pev->origin - pev->origin;
 	toOther.NormalizeInPlace();

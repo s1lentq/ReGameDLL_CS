@@ -37,36 +37,8 @@
 #include "enginecallback.h"
 #include "utlvector.h"
 
-#define _LOG_TRACE\
-	static int iNumPassed = 0;\
-	printf2("%s:: iNumPassed - %d", __FUNCTION__, iNumPassed++);
-
-#define _LOG_TRACE2\
-	static int iNumPassedt = 0;\
-	printf2("%s:: iNumPassed - %d", __FUNCTION__, iNumPassedt++);\
-	_logf("%s:: iNumPassed - %d", __FUNCTION__, iNumPassedt++);
-
-// Makes these more explicit, and easier to find
-#ifdef HOOK_GAMEDLL
-
-#define STD_LIST list_vs6		// use STL containers of the old version from Visual Studio 6.0 sp6
-#define STD_VECTOR vector_vs6
-
-#define FILE_GLOBAL static
-#define DLL_GLOBAL
-
-#else
-
-#define STD_LIST list
-#define STD_VECTOR vector
-
-#define FILE_GLOBAL
-#define DLL_GLOBAL
-
-#endif
-
 #define eoNullEntity		0	// Testing the three types of "entity" for nullity
-#define iStringNull		0	// Testing strings for nullity
+#define iStringNull			0	// Testing strings for nullity
 
 #define cchMapNameMost		32
 
@@ -85,11 +57,11 @@ extern globalvars_t *gpGlobals;
 
 #define VIEW_FIELD_FULL		-1.0		// +-180 degrees
 #define VIEW_FIELD_WIDE		-0.7		// +-135 degrees 0.1 // +-85 degrees, used for full FOV checks
-#define VIEW_FIELD_NARROW	0.7		// +-45 degrees, more narrow check used to set up ranged attacks
+#define VIEW_FIELD_NARROW	0.7			// +-45 degrees, more narrow check used to set up ranged attacks
 #define VIEW_FIELD_ULTRA_NARROW	0.9		// +-25 degrees, more narrow check used to set up ranged attacks
 
 #define SND_SPAWNING		(1<<8)		// duplicated in protocol.h we're spawing, used in some cases for ambients
-#define SND_STOP		(1<<5)		// duplicated in protocol.h stop sound
+#define SND_STOP			(1<<5)		// duplicated in protocol.h stop sound
 #define SND_CHANGE_VOL		(1<<6)		// duplicated in protocol.h change sound vol
 #define SND_CHANGE_PITCH	(1<<7)		// duplicated in protocol.h change sound pitch
 
@@ -121,7 +93,7 @@ extern globalvars_t *gpGlobals;
 #define VEC_HULL_MIN		Vector(-16, -16, -36)
 #define VEC_HULL_MAX		Vector(16, 16, 36)
 
-#define VEC_VIEW		Vector(0, 0, 17)
+#define VEC_VIEW			Vector(0, 0, 17)
 
 #define VEC_DUCK_HULL_MIN	Vector(-16, -16, -18)
 #define VEC_DUCK_HULL_MAX	Vector(16, 16, 32)
@@ -132,11 +104,6 @@ extern globalvars_t *gpGlobals;
 
 #define PLAYBACK_EVENT_DELAY(flags, who, index, delay)\
 		PLAYBACK_EVENT_FULL(flags, who, index, delay, (float *)&g_vecZero, (float *)&g_vecZero, 0.0, 0.0, 0, 0, 0, 0)
-
-#if !defined(HOOK_GAMEDLL)
-#define __MAKE_VHOOK(fname)\
-	fname
-#endif // !defined(HOOK_GAMEDLL) && defined(REGAMEDLL_API)
 
 #define LINK_ENTITY_TO_CLASS(mapClassName, DLLClassName, DLLClassWrapName)\
 	C_DLLEXPORT void EXT_FUNC mapClassName(entvars_t *pev);\

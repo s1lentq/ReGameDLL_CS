@@ -2,7 +2,7 @@
 
 LINK_ENTITY_TO_CLASS(weapon_smokegrenade, CSmokeGrenade, CCSSmokeGrenade)
 
-void CSmokeGrenade::__MAKE_VHOOK(Spawn)()
+void CSmokeGrenade::Spawn()
 {
 	Precache();
 
@@ -20,7 +20,7 @@ void CSmokeGrenade::__MAKE_VHOOK(Spawn)()
 	FallInit();
 }
 
-void CSmokeGrenade::__MAKE_VHOOK(Precache)()
+void CSmokeGrenade::Precache()
 {
 	PRECACHE_MODEL("models/v_smokegrenade.mdl");
 	PRECACHE_MODEL("models/shield/v_shield_smokegrenade.mdl");
@@ -31,7 +31,7 @@ void CSmokeGrenade::__MAKE_VHOOK(Precache)()
 	m_usCreateSmoke = PRECACHE_EVENT(1, "events/createsmoke.sc");
 }
 
-int CSmokeGrenade::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
+int CSmokeGrenade::GetItemInfo(ItemInfo *p)
 {
 	auto info = GetWeaponInfo(WEAPON_SMOKEGRENADE);
 
@@ -52,7 +52,7 @@ int CSmokeGrenade::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	return 1;
 }
 
-BOOL CSmokeGrenade::__MAKE_VHOOK(Deploy)()
+BOOL CSmokeGrenade::Deploy()
 {
 	m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
 
@@ -67,10 +67,10 @@ BOOL CSmokeGrenade::__MAKE_VHOOK(Deploy)()
 		return DefaultDeploy("models/v_smokegrenade.mdl", "models/p_smokegrenade.mdl", SMOKEGRENADE_DRAW, "grenade", UseDecrement() != FALSE);
 }
 
-void CSmokeGrenade::__MAKE_VHOOK(Holster)(int skiplocal)
+void CSmokeGrenade::Holster(int skiplocal)
 {
 	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5f;
-	
+
 	if (!m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType])
 	{
 		// no more smokegrenades!
@@ -83,7 +83,7 @@ void CSmokeGrenade::__MAKE_VHOOK(Holster)(int skiplocal)
 	m_flReleaseThrow = -1;
 }
 
-void CSmokeGrenade::__MAKE_VHOOK(PrimaryAttack)()
+void CSmokeGrenade::PrimaryAttack()
 {
 	if (m_iWeaponState & WPNSTATE_SHIELD_DRAWN)
 		return;
@@ -136,7 +136,7 @@ bool CSmokeGrenade::ShieldSecondaryFire(int iUpAnim, int iDownAnim)
 	return true;
 }
 
-void CSmokeGrenade::__MAKE_VHOOK(SecondaryAttack)()
+void CSmokeGrenade::SecondaryAttack()
 {
 	ShieldSecondaryFire(SHIELDGUN_DRAW, SHIELDGUN_DRAWN_IDLE);
 }
@@ -163,7 +163,7 @@ void CSmokeGrenade::ResetPlayerShieldAnim()
 	}
 }
 
-void CSmokeGrenade::__MAKE_VHOOK(WeaponIdle)()
+void CSmokeGrenade::WeaponIdle()
 {
 	if (m_flReleaseThrow == 0)
 		m_flReleaseThrow = gpGlobals->time;
@@ -267,7 +267,7 @@ void CSmokeGrenade::__MAKE_VHOOK(WeaponIdle)()
 	}
 }
 
-BOOL CSmokeGrenade::__MAKE_VHOOK(CanDeploy)()
+BOOL CSmokeGrenade::CanDeploy()
 {
 	return m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] != 0;
 }

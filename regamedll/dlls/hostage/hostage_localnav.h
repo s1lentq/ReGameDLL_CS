@@ -53,9 +53,7 @@ typedef struct localnode_s
 } localnode_t;
 
 #ifndef HOOK_GAMEDLL
-
 #define s_flStepSize_LocalNav m_LocalNav->s_flStepSize
-
 #endif
 
 class CLocalNav
@@ -101,10 +99,7 @@ public:
 	static void HostagePrethink();
 	static float s_flStepSize;
 
-#ifndef HOOK_GAMEDLL
 private:
-#endif
-
 	static EHANDLE _queue[MAX_HOSTAGES_NAV];
 	static int qptr;
 	static int tot_inqueue;

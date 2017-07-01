@@ -19,7 +19,7 @@ TEST(AngleQuaternion, AnimationFuncs, 10000) {
 	};
 
 	for (int i = 0; i < ARRAYSIZE(testdata); i++) {
-		vec3_t a = { testdata[i].angles[0] * 2.0 / M_PI, testdata[i].angles[1] * 2.0 / M_PI, testdata[i].angles[2] * 2.0 / M_PI, };
+		vec3_t a = { testdata[i].angles[0] * 2.0f / float(M_PI), testdata[i].angles[1] * 2.0f / float(M_PI), testdata[i].angles[2] * 2.0f / float(M_PI), };
 		vec4_t q;
 		AngleQuaternion(a, q);
 

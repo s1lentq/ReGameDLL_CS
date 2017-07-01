@@ -39,7 +39,7 @@ int GetBotFollowCount(CBasePlayer *leader)
 }
 
 // Change movement speed to walking
-void CCSBot::__MAKE_VHOOK(Walk)()
+void CCSBot::Walk()
 {
 	if (m_mustRunTimer.IsElapsed())
 	{
@@ -53,7 +53,7 @@ void CCSBot::__MAKE_VHOOK(Walk)()
 
 // Return true if jump was started.
 // This is extended from the base jump to disallow jumping when in a crouch area.
-bool CCSBot::__MAKE_VHOOK(Jump)(bool mustJump)
+bool CCSBot::Jump(bool mustJump)
 {
 	// prevent jumping if we're crouched, unless we're in a crouchjump area - jump wins
 	bool inCrouchJumpArea = (m_lastKnownArea &&
@@ -70,7 +70,7 @@ bool CCSBot::__MAKE_VHOOK(Jump)(bool mustJump)
 
 // Invoked when injured by something
 // NOTE: We dont want to directly call Attack() here, or the bots will have super-human reaction times when injured
-BOOL CCSBot::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
+BOOL CCSBot::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
 	CBaseEntity *attacker = GetClassPtr<CCSEntity>((CBaseEntity *)pevInflictor);
 
@@ -146,7 +146,7 @@ BOOL CCSBot::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAtt
 }
 
 // Invoked when killed
-void CCSBot::__MAKE_VHOOK(Killed)(entvars_t *pevAttacker, int iGib)
+void CCSBot::Killed(entvars_t *pevAttacker, int iGib)
 {
 	PrintIfWatched("Killed( attacker = %s )\n", STRING(pevAttacker->netname));
 

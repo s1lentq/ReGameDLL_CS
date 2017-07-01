@@ -154,7 +154,7 @@ void setupToolchain(NativeBinarySpec b)
 		])
 
 		cfg.linkerOptions.args '-no-opt-class-analysis'
-		cfg.compilerOptions.args '-Qoption,cpp,--treat_func_as_string_literal_cpp', '-g0', '-fno-rtti'
+		cfg.compilerOptions.args '-Qoption,cpp,--treat_func_as_string_literal_cpp', '-g0', '-fno-rtti', '-fno-exceptions'
 		cfg.projectLibpath(project, '/lib/linux32')
 		cfg.extraLibs 'dl', 'm', 'stdc++', 'aelf32'
 	}

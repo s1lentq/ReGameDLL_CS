@@ -86,15 +86,6 @@ public:
 	virtual int Restore(CRestore &restore);
 	virtual int ObjectCaps() { return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
 
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void KeyValue_(KeyValueData *pkvd);
-	int Save_(CSave &save);
-	int Restore_(CRestore &restore);
-
-#endif
-
 public:
 	void EXPORT ChangeFriction(CBaseEntity *pOther);
 	static TYPEDESCRIPTION IMPL(m_SaveData)[1];
@@ -119,17 +110,6 @@ public:
 	virtual void Restart();
 #endif
 
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	void KeyValue_(KeyValueData *pkvd);
-	int Save_(CSave &save);
-	int Restore_(CRestore &restore);
-	void Think_();
-
-#endif
-
 public:
 	static TYPEDESCRIPTION IMPL(m_SaveData)[2];
 
@@ -146,16 +126,6 @@ public:
 	virtual int Restore(CRestore &restore);
 	virtual int ObjectCaps() { return (CBaseDelay::ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void KeyValue_(KeyValueData *pkvd);
-	int Save_(CSave &save);
-	int Restore_(CRestore &restore);
-	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-#endif
 
 public:
 	static TYPEDESCRIPTION IMPL(m_SaveData)[1];
@@ -177,17 +147,6 @@ public:
 	virtual int Restore(CRestore &restore);
 	virtual int ObjectCaps() { return (CBaseToggle::ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
 	virtual BOOL HasTarget(string_t targetname);
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Restart_();
-	void KeyValue_(KeyValueData *pkvd);
-	int Save_(CSave &save);
-	int Restore_(CRestore &restore);
-	BOOL HasTarget_(string_t targetname);
-
-#endif
 
 public:
 	void EXPORT ManagerThink();
@@ -238,14 +197,6 @@ class CRenderFxManager: public CBaseEntity
 public:
 	virtual void Spawn();
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-#endif
-
 };
 
 class CBaseTrigger: public CBaseToggle
@@ -253,12 +204,6 @@ class CBaseTrigger: public CBaseToggle
 public:
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual int ObjectCaps() { return (CBaseToggle::ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
-
-#ifdef HOOK_GAMEDLL
-
-	void KeyValue_(KeyValueData *pkvd);
-
-#endif
 
 public:
 	void EXPORT TeleportTouch(CBaseEntity *pOther);
@@ -284,12 +229,6 @@ public:
 	virtual int ObjectCaps() { return (CBaseTrigger::ObjectCaps() | FCAP_MUST_RESET); }
 #endif
 
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-
-#endif
-
 	void EXPORT RadiationThink();
 };
 
@@ -299,15 +238,6 @@ public:
 	virtual void Spawn();
 	virtual void Think();
 	virtual void Touch(CBaseEntity *pOther);
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Think_();
-	void Touch_(CBaseEntity *pOther);
-
-#endif
-
 };
 
 // trigger_cdaudio - starts/stops cd audio tracks
@@ -317,14 +247,6 @@ public:
 	virtual void Spawn();
 	virtual void Touch(CBaseEntity *pOther);
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Touch_(CBaseEntity *pOther);
-	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-#endif
 
 public:
 	void PlayTrack(edict_t *pEdict);
@@ -338,15 +260,6 @@ public:
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual void Think();
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void KeyValue_(KeyValueData *pkvd);
-	void Think_();
-	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-#endif
 
 public:
 	void Play(edict_t *pEdict);
@@ -370,13 +283,6 @@ class CTriggerMultiple: public CBaseTrigger
 {
 public:
 	virtual void Spawn();
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-
-#endif
-
 };
 
 // QUAKED trigger_once (.5 .5 .5) ? notouch
@@ -398,13 +304,6 @@ public:
 #ifdef REGAMEDLL_FIXES
 	virtual void Restart();
 #endif
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-
-#endif
-
 };
 
 // QUAKED trigger_counter (.5 .5 .5) ? nomessage
@@ -416,13 +315,6 @@ class CTriggerCounter: public CBaseTrigger
 {
 public:
 	virtual void Spawn();
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-
-#endif
-
 };
 
 // Derive from point entity so this doesn't move across levels
@@ -430,13 +322,6 @@ class CTriggerVolume: public CPointEntity
 {
 public:
 	virtual void Spawn();
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-
-#endif
-
 };
 
 // Fires a target after level transition and then dies
@@ -447,15 +332,6 @@ public:
 	virtual void Precache();
 	virtual int ObjectCaps() { return (CBaseDelay::ObjectCaps() | FCAP_FORCE_TRANSITION); }		// Always go across transitions
 	virtual void Think();
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	void Think_();
-
-#endif
-
 };
 
 // QUAKED trigger_changelevel (0.5 0.5 0.5) ? NO_INTERMISSION
@@ -467,15 +343,6 @@ public:
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void KeyValue_(KeyValueData *pkvd);
-	int Save_(CSave &save);
-	int Restore_(CRestore &restore);
-
-#endif
 
 public:
 	void EXPORT UseChangeLevel(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
@@ -504,15 +371,6 @@ public:
 	virtual void Spawn();
 	virtual void Precache();
 	virtual void KeyValue(KeyValueData *pkvd);
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	void KeyValue_(KeyValueData *pkvd);
-
-#endif
-
 };
 
 class CTriggerPush: public CBaseTrigger
@@ -526,40 +384,18 @@ public:
 	virtual void Restart();
 	virtual int ObjectCaps() { return (CBaseEntity::ObjectCaps() | FCAP_MUST_RESET); }
 #endif
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void KeyValue_(KeyValueData *pkvd);
-	void Touch_(CBaseEntity *pOther);
-
-#endif
-
 };
 
 class CTriggerTeleport: public CBaseTrigger
 {
 public:
 	virtual void Spawn();
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-
-#endif
-
 };
 
 class CBuyZone: public CBaseTrigger
 {
 public:
 	virtual void Spawn();
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-
-#endif
 
 	void EXPORT BuyTouch(CBaseEntity *pOther);
 };
@@ -568,12 +404,6 @@ class CBombTarget: public CBaseTrigger
 {
 public:
 	virtual void Spawn();
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-
-#endif
 
 public:
 	void EXPORT BombTargetTouch(CBaseEntity *pOther);
@@ -585,12 +415,6 @@ class CHostageRescue: public CBaseTrigger
 public:
 	virtual void Spawn();
 
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-
-#endif
-
 public:
 	void EXPORT HostageRescueTouch(CBaseEntity *pOther);
 };
@@ -600,12 +424,6 @@ class CEscapeZone: public CBaseTrigger
 public:
 	virtual void Spawn();
 
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-
-#endif
-
 	void EXPORT EscapeTouch(CBaseEntity *pOther);
 };
 
@@ -614,12 +432,6 @@ class CVIP_SafetyZone: public CBaseTrigger
 public:
 	virtual void Spawn();
 
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-
-#endif
-
 	void EXPORT VIP_SafetyTouch(CBaseEntity *pOther);
 };
 
@@ -627,12 +439,6 @@ class CTriggerSave: public CBaseTrigger
 {
 public:
 	virtual void Spawn();
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-
-#endif
 
 	void EXPORT SaveTouch(CBaseEntity *pOther);
 };
@@ -643,13 +449,6 @@ public:
 	virtual void Spawn();
 	virtual void KeyValue(KeyValueData *pkvd);
 
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void KeyValue_(KeyValueData *pkvd);
-
-#endif
-
 public:
 	void EXPORT EndSectionTouch(CBaseEntity *pOther);
 	void EXPORT EndSectionUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
@@ -659,12 +458,6 @@ class CTriggerGravity: public CBaseTrigger
 {
 public:
 	virtual void Spawn();
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-
-#endif
 
 	void EXPORT GravityTouch(CBaseEntity *pOther);
 };
@@ -679,16 +472,6 @@ public:
 	virtual int Restore(CRestore &restore);
 	virtual int ObjectCaps() { return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void KeyValue_(KeyValueData *pkvd);
-	int Save_(CSave &save);
-	int Restore_(CRestore &restore);
-	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-#endif
 
 public:
 	static TYPEDESCRIPTION IMPL(m_SaveData)[1];
@@ -706,16 +489,6 @@ public:
 	virtual int Restore(CRestore &restore);
 	virtual int ObjectCaps() { return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void KeyValue_(KeyValueData *pkvd);
-	int Save_(CSave &save);
-	int Restore_(CRestore &restore);
-	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-#endif
 
 public:
 	void EXPORT FollowTarget();
@@ -742,13 +515,6 @@ class CWeather: public CBaseTrigger
 {
 public:
 	virtual void Spawn();
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-
-#endif
-
 };
 
 class CClientFog: public CBaseEntity
@@ -756,13 +522,6 @@ class CClientFog: public CBaseEntity
 public:
 	virtual void Spawn();
 	virtual void KeyValue(KeyValueData *pkvd);
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void KeyValue_(KeyValueData *pkvd);
-
-#endif
 
 public:
 	int m_iStartDist;

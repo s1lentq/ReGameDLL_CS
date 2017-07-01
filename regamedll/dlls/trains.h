@@ -60,17 +60,6 @@ public:
 	virtual void Activate();
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void KeyValue_(KeyValueData* pkvd);
-	int Save_(CSave &save);
-	int Restore_(CRestore &restore);
-	void Activate_();
-	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-#endif
-
 	void SetPrevious(CPathTrack *pprevious);
 	void Link();
 
@@ -110,21 +99,6 @@ public:
 	virtual BOOL OnControls(entvars_t *pev);
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 	virtual void Blocked(CBaseEntity *pOther);
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	void Restart_();
-	void KeyValue_(KeyValueData* pkvd);
-	int Save_(CSave &save);
-	int Restore_(CRestore &restore);
-	void OverrideReset_();
-	BOOL OnControls_(entvars_t *pev);
-	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-	void Blocked_(CBaseEntity *pOther);
-
-#endif
 
 public:
 	void EXPORT Next();
@@ -177,22 +151,6 @@ public:
 	virtual BOOL OnControls(entvars_t *pev);
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 	virtual void Blocked(CBaseEntity *pOther);
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	void Restart_();
-	void KeyValue_(KeyValueData *pkvd);
-	int Save_(CSave &save);
-	int Restore_(CRestore &restore);
-	int Classify_();
-	void OverrideReset_();
-	BOOL OnControls_(entvars_t *pev);
-	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-	void Blocked_(CBaseEntity *pOther);
-
-#endif
 
 public:
 	void EXPORT Next();

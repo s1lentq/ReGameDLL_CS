@@ -20,7 +20,7 @@ TYPEDESCRIPTION CFuncMortarField::m_SaveData[] =
 LINK_ENTITY_TO_CLASS(func_mortar_field, CFuncMortarField, CCSFuncMortarField)
 IMPLEMENT_SAVERESTORE(CFuncMortarField, CBaseToggle)
 
-void CFuncMortarField::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CFuncMortarField::KeyValue(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "m_iszXController"))
 	{
@@ -50,7 +50,7 @@ void CFuncMortarField::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 }
 
 // Drop bombs from above
-void CFuncMortarField::__MAKE_VHOOK(Spawn)()
+void CFuncMortarField::Spawn()
 {
 	pev->solid = SOLID_NOT;
 
@@ -63,7 +63,7 @@ void CFuncMortarField::__MAKE_VHOOK(Spawn)()
 	Precache();
 }
 
-void CFuncMortarField::__MAKE_VHOOK(Precache)()
+void CFuncMortarField::Precache()
 {
 	PRECACHE_SOUND("weapons/mortar.wav");
 	PRECACHE_SOUND("weapons/mortarhit.wav");
@@ -155,7 +155,7 @@ void CFuncMortarField::FieldUse(CBaseEntity *pActivator, CBaseEntity *pCaller, U
 
 LINK_ENTITY_TO_CLASS(monster_mortar, CMortar, CCSMortar)
 
-void CMortar::__MAKE_VHOOK(Spawn)()
+void CMortar::Spawn()
 {
 	pev->movetype = MOVETYPE_NONE;
 	pev->solid = SOLID_NOT;
@@ -166,7 +166,7 @@ void CMortar::__MAKE_VHOOK(Spawn)()
 	Precache();
 }
 
-void CMortar::__MAKE_VHOOK(Precache)()
+void CMortar::Precache()
 {
 	m_spriteTexture = PRECACHE_MODEL("sprites/lgtning.spr");
 }

@@ -1,12 +1,12 @@
 #include "precompiled.h"
 
-void HostageRetreatState::__MAKE_VHOOK(OnEnter)(CHostageImprov *improv)
+void HostageRetreatState::OnEnter(CHostageImprov *improv)
 {
 	improv->Walk();
 	improv->MoveTo(improv->GetEntity()->m_vStart);
 }
 
-void HostageRetreatState::__MAKE_VHOOK(OnUpdate)(CHostageImprov *improv)
+void HostageRetreatState::OnUpdate(CHostageImprov *improv)
 {
 	if (improv->IsAtHome())
 	{
@@ -37,7 +37,7 @@ void HostageRetreatState::__MAKE_VHOOK(OnUpdate)(CHostageImprov *improv)
 		improv->Walk();
 }
 
-void HostageRetreatState::__MAKE_VHOOK(OnExit)(CHostageImprov *improv)
+void HostageRetreatState::OnExit(CHostageImprov *improv)
 {
 	;
 }

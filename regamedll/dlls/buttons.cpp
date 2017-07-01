@@ -55,7 +55,7 @@ TYPEDESCRIPTION CEnvSpark::m_SaveData[] =
 IMPLEMENT_SAVERESTORE(CEnvGlobal, CBaseEntity)
 LINK_ENTITY_TO_CLASS(env_global, CEnvGlobal, CCSEnvGlobal)
 
-void CEnvGlobal::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CEnvGlobal::KeyValue(KeyValueData *pkvd)
 {
 	pkvd->fHandled = TRUE;
 
@@ -76,7 +76,7 @@ void CEnvGlobal::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CPointEntity::KeyValue(pkvd);
 }
 
-void CEnvGlobal::__MAKE_VHOOK(Spawn)()
+void CEnvGlobal::Spawn()
 {
 	if (!m_globalstate)
 	{
@@ -93,7 +93,7 @@ void CEnvGlobal::__MAKE_VHOOK(Spawn)()
 	}
 }
 
-void CEnvGlobal::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CEnvGlobal::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	GLOBALESTATE oldState = gGlobalState.EntityGetState(m_globalstate);
 	GLOBALESTATE newState;
@@ -138,7 +138,7 @@ IMPLEMENT_SAVERESTORE(CMultiSource, CBaseEntity)
 LINK_ENTITY_TO_CLASS(multisource, CMultiSource, CCSMultiSource)
 
 // Cache user-entity-field values until spawn is called.
-void CMultiSource::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CMultiSource::KeyValue(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "style")
 			|| FStrEq(pkvd->szKeyName, "height")
@@ -157,7 +157,7 @@ void CMultiSource::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CPointEntity::KeyValue(pkvd);
 }
 
-void CMultiSource::__MAKE_VHOOK(Spawn)()
+void CMultiSource::Spawn()
 {
 	// set up think for later registration
 	pev->solid = SOLID_NOT;
@@ -178,7 +178,7 @@ void CMultiSource::Restart()
 }
 #endif
 
-void CMultiSource::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CMultiSource::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	int i = 0;
 
@@ -214,7 +214,7 @@ void CMultiSource::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCall
 	}
 }
 
-BOOL CMultiSource::__MAKE_VHOOK(IsTriggered)(CBaseEntity *)
+BOOL CMultiSource::IsTriggered(CBaseEntity *)
 {
 	// Is everything triggered?
 	int i = 0;
@@ -295,7 +295,7 @@ void CMultiSource::Register()
 
 IMPLEMENT_SAVERESTORE(CBaseButton, CBaseToggle)
 
-void CBaseButton::__MAKE_VHOOK(Precache)()
+void CBaseButton::Precache()
 {
 	char *pszSound;
 
@@ -355,7 +355,7 @@ void CBaseButton::__MAKE_VHOOK(Precache)()
 }
 
 // Cache user-entity-field values until spawn is called.
-void CBaseButton::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CBaseButton::KeyValue(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "changetarget"))
 	{
@@ -392,7 +392,7 @@ void CBaseButton::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 }
 
 // ButtonShot
-BOOL CBaseButton::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
+BOOL CBaseButton::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
 	BUTTON_CODE code = ButtonResponseToTouch();
 
@@ -447,7 +447,7 @@ BOOL CBaseButton::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *p
 // 3) in-out
 LINK_ENTITY_TO_CLASS(func_button, CBaseButton, CCSButton)
 
-void CBaseButton::__MAKE_VHOOK(Spawn)()
+void CBaseButton::Spawn()
 {
 	char  *pszSound;
 
@@ -834,7 +834,7 @@ void CBaseButton::ButtonBackHome()
 
 LINK_ENTITY_TO_CLASS(func_rot_button, CRotButton, CCSRotButton)
 
-void CRotButton::__MAKE_VHOOK(Spawn)()
+void CRotButton::Spawn()
 {
 	char *pszSound;
 
@@ -899,7 +899,7 @@ void CRotButton::__MAKE_VHOOK(Spawn)()
 IMPLEMENT_SAVERESTORE(CMomentaryRotButton, CBaseToggle)
 LINK_ENTITY_TO_CLASS(momentary_rot_button, CMomentaryRotButton, CCSMomentaryRotButton)
 
-void CMomentaryRotButton::__MAKE_VHOOK(Spawn)()
+void CMomentaryRotButton::Spawn()
 {
 	CBaseToggle::AxisDir(pev);
 
@@ -939,7 +939,7 @@ void CMomentaryRotButton::__MAKE_VHOOK(Spawn)()
 	m_lastUsed = 0;
 }
 
-void CMomentaryRotButton::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CMomentaryRotButton::KeyValue(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "returnspeed"))
 	{
@@ -963,7 +963,7 @@ void CMomentaryRotButton::PlaySound()
 // BUGBUG: This design causes a latentcy.  When the button is retriggered, the first impulse
 // will send the target in the wrong direction because the parameter is calculated based on the
 // current, not future position.
-void CMomentaryRotButton::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CMomentaryRotButton::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	pev->ideal_yaw = CBaseToggle::AxisDelta(pev->spawnflags, pev->angles, m_start) / m_flMoveDistance;
 
@@ -1115,7 +1115,7 @@ IMPLEMENT_SAVERESTORE(CEnvSpark, CBaseEntity)
 LINK_ENTITY_TO_CLASS(env_spark, CEnvSpark, CCSEnvSpark)
 LINK_ENTITY_TO_CLASS(env_debris, CEnvSpark, CCSEnvSpark)
 
-void CEnvSpark::__MAKE_VHOOK(Spawn)()
+void CEnvSpark::Spawn()
 {
 	SetThink(NULL);
 	SetUse(NULL);
@@ -1148,7 +1148,7 @@ void CEnvSpark::__MAKE_VHOOK(Spawn)()
 	Precache();
 }
 
-void CEnvSpark::__MAKE_VHOOK(Precache)()
+void CEnvSpark::Precache()
 {
 	PRECACHE_SOUND("buttons/spark1.wav");
 	PRECACHE_SOUND("buttons/spark2.wav");
@@ -1158,7 +1158,7 @@ void CEnvSpark::__MAKE_VHOOK(Precache)()
 	PRECACHE_SOUND("buttons/spark6.wav");
 }
 
-void CEnvSpark::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CEnvSpark::KeyValue(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "MaxDelay"))
 	{
@@ -1197,7 +1197,7 @@ void CEnvSpark::SparkStop(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYP
 
 LINK_ENTITY_TO_CLASS(button_target, CButtonTarget, CCSButtonTarget)
 
-void CButtonTarget::__MAKE_VHOOK(Spawn)()
+void CButtonTarget::Spawn()
 {
 	pev->movetype = MOVETYPE_PUSH;
 	pev->solid = SOLID_BSP;
@@ -1211,7 +1211,7 @@ void CButtonTarget::__MAKE_VHOOK(Spawn)()
 	}
 }
 
-void CButtonTarget::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CButtonTarget::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	if (!ShouldToggle(useType, int(pev->frame)))
 		return;
@@ -1226,7 +1226,7 @@ void CButtonTarget::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCal
 		SUB_UseTargets(pActivator, USE_OFF, 0);
 }
 
-int CButtonTarget::__MAKE_VHOOK(ObjectCaps)()
+int CButtonTarget::ObjectCaps()
 {
 	int caps = (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION);
 
@@ -1236,7 +1236,7 @@ int CButtonTarget::__MAKE_VHOOK(ObjectCaps)()
 		return caps;
 }
 
-BOOL CButtonTarget::__MAKE_VHOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
+BOOL CButtonTarget::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
 	Use(Instance(pevAttacker), this, USE_TOGGLE, 0);
 	return TRUE;

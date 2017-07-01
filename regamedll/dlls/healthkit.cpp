@@ -18,7 +18,7 @@ TYPEDESCRIPTION CWallHealth::m_SaveData[] =
 
 LINK_ENTITY_TO_CLASS(item_healthkit, CHealthKit, CCSHealthKit)
 
-void CHealthKit::__MAKE_VHOOK(Spawn)()
+void CHealthKit::Spawn()
 {
 	Precache();
 	SET_MODEL(ENT(pev), "models/w_medkit.mdl");
@@ -26,13 +26,13 @@ void CHealthKit::__MAKE_VHOOK(Spawn)()
 	CItem::Spawn();
 }
 
-void CHealthKit::__MAKE_VHOOK(Precache)()
+void CHealthKit::Precache()
 {
 	PRECACHE_MODEL("models/w_medkit.mdl");
 	PRECACHE_SOUND("items/smallmedkit1.wav");
 }
 
-BOOL CHealthKit::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
+BOOL CHealthKit::MyTouch(CBasePlayer *pPlayer)
 {
 #ifdef REGAMEDLL_ADD
 	if (pPlayer->HasRestrictItem(ITEM_HEALTHKIT, ITEM_TYPE_TOUCHED))
@@ -61,7 +61,7 @@ BOOL CHealthKit::__MAKE_VHOOK(MyTouch)(CBasePlayer *pPlayer)
 IMPLEMENT_SAVERESTORE(CWallHealth, CBaseEntity)
 LINK_ENTITY_TO_CLASS(func_healthcharger, CWallHealth, CCSWallHealth)
 
-void CWallHealth::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CWallHealth::KeyValue(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "style") || FStrEq(pkvd->szKeyName, "height") || FStrEq(pkvd->szKeyName, "value1") || FStrEq(pkvd->szKeyName, "value2") || FStrEq(pkvd->szKeyName, "value3"))
 	{
@@ -76,7 +76,7 @@ void CWallHealth::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CBaseToggle::KeyValue(pkvd);
 }
 
-void CWallHealth::__MAKE_VHOOK(Spawn)()
+void CWallHealth::Spawn()
 {
 	Precache();
 
@@ -93,14 +93,14 @@ void CWallHealth::__MAKE_VHOOK(Spawn)()
 	pev->frame = 0.0f;
 }
 
-void CWallHealth::__MAKE_VHOOK(Precache)()
+void CWallHealth::Precache()
 {
 	PRECACHE_SOUND("items/medshot4.wav");
 	PRECACHE_SOUND("items/medshotno1.wav");
 	PRECACHE_SOUND("items/medcharge4.wav");
 }
 
-void CWallHealth::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CWallHealth::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	// Make sure that we have a caller
 	if (!pActivator)

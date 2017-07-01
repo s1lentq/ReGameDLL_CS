@@ -76,9 +76,7 @@ public:
 	// Returns true if the receiver has blocked the sender
 	bool PlayerHasBlockedPlayer(CBasePlayer *pReceiver, CBasePlayer *pSender);
 
-#ifndef HOOK_GAMEDLL
 private:
-#endif
 	// Force it to update the client masks.
 	void UpdateMasks();
 

@@ -37,13 +37,6 @@ public:
 	virtual void UpdateOnRemove();
 	void CheckMapInfo();
 
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void KeyValue_(KeyValueData *pkvd);
-
-#endif
-
 public:
 	InfoMapBuyParam m_iBuyingStatus;
 	float m_flBombRadius;

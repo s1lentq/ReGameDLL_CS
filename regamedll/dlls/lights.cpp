@@ -17,7 +17,7 @@ LINK_ENTITY_TO_CLASS(light, CLight, CCSLight)
 IMPLEMENT_SAVERESTORE(CLight, CPointEntity)
 
 // Cache user-entity-field values until spawn is called.
-void CLight::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CLight::KeyValue(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "style"))
 	{
@@ -38,7 +38,7 @@ void CLight::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CPointEntity::KeyValue(pkvd);
 }
 
-void CLight::__MAKE_VHOOK(Spawn)()
+void CLight::Spawn()
 {
 	// inert light
 	if (FStringNull(pev->targetname))
@@ -61,7 +61,7 @@ void CLight::__MAKE_VHOOK(Spawn)()
 	}
 }
 
-void CLight::__MAKE_VHOOK(Restart)()
+void CLight::Restart()
 {
 	if (m_iStyle >= 32)
 	{
@@ -82,7 +82,7 @@ void CLight::__MAKE_VHOOK(Restart)()
 	}
 }
 
-void CLight::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CLight::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	if (m_iStyle >= 32)
 	{
@@ -109,7 +109,7 @@ void CLight::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, US
 LINK_ENTITY_TO_CLASS(light_spot, CLight, CCSLight)
 LINK_ENTITY_TO_CLASS(light_environment, CEnvLight, CCSEnvLight)
 
-void CEnvLight::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CEnvLight::KeyValue(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "_light"))
 	{
@@ -145,7 +145,7 @@ void CEnvLight::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CLight::KeyValue(pkvd);
 }
 
-void CEnvLight::__MAKE_VHOOK(Spawn)()
+void CEnvLight::Spawn()
 {
 #ifdef HOOK_GAMEDLL
 // NOTE: fix negative the values for function sprintf from STD C++:

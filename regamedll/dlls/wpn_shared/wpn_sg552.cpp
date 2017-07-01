@@ -2,7 +2,7 @@
 
 LINK_ENTITY_TO_CLASS(weapon_sg552, CSG552, CCSSG552)
 
-void CSG552::__MAKE_VHOOK(Spawn)()
+void CSG552::Spawn()
 {
 	Precache();
 
@@ -16,7 +16,7 @@ void CSG552::__MAKE_VHOOK(Spawn)()
 	FallInit();
 }
 
-void CSG552::__MAKE_VHOOK(Precache)()
+void CSG552::Precache()
 {
 	PRECACHE_MODEL("models/v_sg552.mdl");
 	PRECACHE_MODEL("models/w_sg552.mdl");
@@ -31,7 +31,7 @@ void CSG552::__MAKE_VHOOK(Precache)()
 	m_usFireSG552 = PRECACHE_EVENT(1, "events/sg552.sc");
 }
 
-int CSG552::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
+int CSG552::GetItemInfo(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
 	p->pszAmmo1 = "556Nato";
@@ -48,7 +48,7 @@ int CSG552::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	return 1;
 }
 
-BOOL CSG552::__MAKE_VHOOK(Deploy)()
+BOOL CSG552::Deploy()
 {
 	m_flAccuracy = 0.2f;
 	m_iShotsFired = 0;
@@ -57,7 +57,7 @@ BOOL CSG552::__MAKE_VHOOK(Deploy)()
 	return DefaultDeploy("models/v_sg552.mdl", "models/p_sg552.mdl", SG552_DRAW, "mp5", UseDecrement() != FALSE);
 }
 
-void CSG552::__MAKE_VHOOK(SecondaryAttack)()
+void CSG552::SecondaryAttack()
 {
 	if (m_pPlayer->m_iFOV == DEFAULT_FOV)
 		m_pPlayer->pev->fov = m_pPlayer->m_iFOV = 55;
@@ -67,7 +67,7 @@ void CSG552::__MAKE_VHOOK(SecondaryAttack)()
 	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.3f;
 }
 
-void CSG552::__MAKE_VHOOK(PrimaryAttack)()
+void CSG552::PrimaryAttack()
 {
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
 	{
@@ -167,7 +167,7 @@ void CSG552::SG552Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	}
 }
 
-void CSG552::__MAKE_VHOOK(Reload)()
+void CSG552::Reload()
 {
 	if (m_pPlayer->ammo_556nato <= 0)
 		return;
@@ -186,7 +186,7 @@ void CSG552::__MAKE_VHOOK(Reload)()
 	}
 }
 
-void CSG552::__MAKE_VHOOK(WeaponIdle)()
+void CSG552::WeaponIdle()
 {
 	ResetEmptySound();
 	m_pPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);
@@ -200,7 +200,7 @@ void CSG552::__MAKE_VHOOK(WeaponIdle)()
 	SendWeaponAnim(SG552_IDLE1, UseDecrement() != FALSE);
 }
 
-float CSG552::__MAKE_VHOOK(GetMaxSpeed)()
+float CSG552::GetMaxSpeed()
 {
 	if (m_pPlayer->m_iFOV == DEFAULT_FOV)
 		return SG552_MAX_SPEED;

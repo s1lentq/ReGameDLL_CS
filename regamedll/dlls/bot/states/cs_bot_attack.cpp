@@ -1,7 +1,7 @@
 #include "precompiled.h"
 
 // Begin attacking
-void AttackState::__MAKE_VHOOK(OnEnter)(CCSBot *me)
+void AttackState::OnEnter(CCSBot *me)
 {
 	CBasePlayer *enemy = me->GetEnemy();
 
@@ -125,7 +125,7 @@ void AttackState::StopAttacking(CCSBot *me)
 }
 
 // Perform attack behavior
-void AttackState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
+void AttackState::OnUpdate(CCSBot *me)
 {
 	// can't be stuck while attacking
 	me->ResetStuckMonitor();
@@ -534,7 +534,7 @@ void AttackState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 }
 
 // Finish attack
-void AttackState::__MAKE_VHOOK(OnExit)(CCSBot *me)
+void AttackState::OnExit(CCSBot *me)
 {
 	me->PrintIfWatched("AttackState:OnExit()\n");
 

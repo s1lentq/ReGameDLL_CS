@@ -36,13 +36,6 @@ class CNullEntity: public CBaseEntity
 {
 public:
 	virtual void Spawn();
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-
-#endif
-
 };
 
 class CBaseDMStart: public CPointEntity
@@ -50,14 +43,6 @@ class CBaseDMStart: public CPointEntity
 public:
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual BOOL IsTriggered(CBaseEntity *pEntity);
-
-#ifdef HOOK_GAMEDLL
-
-	void KeyValue_(KeyValueData *pkvd);
-	BOOL IsTriggered_(CBaseEntity *pEntity);
-
-#endif
-
 };
 
 void FireTargets(const char *targetName, CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);

@@ -46,15 +46,6 @@ public:
 	virtual int ObjectCaps() { return FCAP_DONT_SAVE; }
 	virtual void Think();
 	virtual void Touch(CBaseEntity *pOther);
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Think_();
-	void Touch_(CBaseEntity *pOther);
-
-#endif
-
 };
 
 class CEnvExplosion: public CBaseMonster
@@ -65,16 +56,6 @@ public:
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void KeyValue_(KeyValueData *pkvd);
-	int Save_(CSave &save);
-	int Restore_(CRestore &restore);
-	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-#endif
 
 public:
 	void EXPORT Smoke();

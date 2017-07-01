@@ -42,16 +42,16 @@
 #define IMPL_CLASS(baseClass,var)\
 	baseClass::var
 
-#endif
+#endif // HOOK_GAMEDLL
 
 #define IMPLEMENT_SAVERESTORE(derivedClass, baseClass)\
-	int derivedClass::__MAKE_VHOOK(Save)(CSave &save)\
+	int derivedClass::Save(CSave &save)\
 	{\
 		if (!baseClass::Save(save))\
 			return 0;\
 		return save.WriteFields(#derivedClass, this, IMPL(m_SaveData), ARRAYSIZE(IMPL(m_SaveData)));\
 	}\
-	int derivedClass::__MAKE_VHOOK(Restore)(CRestore &restore)\
+	int derivedClass::Restore(CRestore &restore)\
 	{\
 		if (!baseClass::Restore(restore))\
 			return 0;\
@@ -126,12 +126,8 @@ public:
 	void WriteFunction(const char *pname, void **data, int count);
 	int WriteEntVars(const char *pname, entvars_t *pev);
 	int WriteFields(const char *pname, void *pBaseData, TYPEDESCRIPTION *pFields, int fieldCount);
+
 private:
-
-#ifdef HOOK_GAMEDLL
-public:
-#endif
-
 	int DataEmpty(const char *pdata, int size);
 	void BufferField(const char *pname, int size, const char *pdata);
 	void BufferString(char *pdata, int len);

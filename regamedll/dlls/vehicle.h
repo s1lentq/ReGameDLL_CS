@@ -57,12 +57,6 @@ public:
 	virtual void Spawn();
 	virtual int ObjectCaps() { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-
-#endif
-
 public:
 	void EXPORT Find();
 };

@@ -13,13 +13,19 @@ extern void *GetOriginalFuncAddrOrDefault(const char *funcName, void *def);
 extern void *GetFuncRefAddrOrDie(const char *funcName);
 extern void *GetFuncRefAddrOrDefault(const char *funcName, void *def);
 
+extern FunctionHook g_FunctionHooks[];
+extern VirtualTableRef g_TableRefs[];
+extern AddressRef g_FunctionRefs[];
+extern AddressRef g_DataRefs[];
+
 #ifdef _WIN32
 
-void *_malloc_mhook_(size_t n);
-void *_realloc_mhook_(void *memblock, size_t size);
-void _free_mhook_(void *p);
-void *_calloc_mhook_(size_t n, size_t s);
-void *__nh_malloc_mhook_(size_t n);
-char *_strdup_mhook_(const char *s);
+void *malloc_wrapper(size_t size);
+void *_nh_malloc_wrapper(size_t n);
+void *realloc_wrapper(void *orig, size_t newSize);
+void free_wrapper(void *mem);
+void *calloc_wrapper(size_t count, size_t size);
+char *strdup_wrapper(const char *s);
+int rand_wrapper();
 
 #endif // _WIN32

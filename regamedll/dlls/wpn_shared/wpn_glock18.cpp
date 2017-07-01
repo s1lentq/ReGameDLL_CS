@@ -2,7 +2,7 @@
 
 LINK_ENTITY_TO_CLASS(weapon_glock18, CGLOCK18, CCSGLOCK18)
 
-void CGLOCK18::__MAKE_VHOOK(Spawn)()
+void CGLOCK18::Spawn()
 {
 	Precache();
 
@@ -20,7 +20,7 @@ void CGLOCK18::__MAKE_VHOOK(Spawn)()
 	FallInit();
 }
 
-void CGLOCK18::__MAKE_VHOOK(Precache)()
+void CGLOCK18::Precache()
 {
 	PRECACHE_MODEL("models/v_glock18.mdl");
 	PRECACHE_MODEL("models/w_glock18.mdl");
@@ -40,7 +40,7 @@ void CGLOCK18::__MAKE_VHOOK(Precache)()
 	m_usFireGlock18 = PRECACHE_EVENT(1, "events/glock18.sc");
 }
 
-int CGLOCK18::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
+int CGLOCK18::GetItemInfo(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
 	p->pszAmmo1 = "9mm";
@@ -57,7 +57,7 @@ int CGLOCK18::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	return 1;
 }
 
-BOOL CGLOCK18::__MAKE_VHOOK(Deploy)()
+BOOL CGLOCK18::Deploy()
 {
 	m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
 
@@ -82,7 +82,7 @@ BOOL CGLOCK18::__MAKE_VHOOK(Deploy)()
 	return DefaultDeploy("models/v_glock18.mdl", "models/p_glock18.mdl", GLOCK18_DRAW2, "onehanded", UseDecrement() != FALSE);
 }
 
-void CGLOCK18::__MAKE_VHOOK(SecondaryAttack)()
+void CGLOCK18::SecondaryAttack()
 {
 	if (ShieldSecondaryFire(GLOCK18_SHIELD_UP, GLOCK18_SHIELD_DOWN))
 	{
@@ -99,11 +99,11 @@ void CGLOCK18::__MAKE_VHOOK(SecondaryAttack)()
 		ClientPrint(m_pPlayer->pev, HUD_PRINTCENTER, "#Switch_To_BurstFire");
 		m_iWeaponState |= WPNSTATE_GLOCK18_BURST_MODE;
 	}
-	
+
 	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.3f;
 }
 
-void CGLOCK18::__MAKE_VHOOK(PrimaryAttack)()
+void CGLOCK18::PrimaryAttack()
 {
 	if (m_iWeaponState & WPNSTATE_GLOCK18_BURST_MODE)
 	{
@@ -230,7 +230,7 @@ void CGLOCK18::GLOCK18Fire(float flSpread, float flCycleTime, BOOL bFireBurst)
 		// HEV suit - indicate out of ammo condition
 		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, FALSE);
 	}
-	
+
 	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.5f;
 
 	if (bFireBurst)
@@ -243,7 +243,7 @@ void CGLOCK18::GLOCK18Fire(float flSpread, float flCycleTime, BOOL bFireBurst)
 	ResetPlayerShieldAnim();
 }
 
-void CGLOCK18::__MAKE_VHOOK(Reload)()
+void CGLOCK18::Reload()
 {
 	int iResult;
 	if (m_pPlayer->ammo_9mm <= 0)
@@ -263,7 +263,7 @@ void CGLOCK18::__MAKE_VHOOK(Reload)()
 	}
 }
 
-void CGLOCK18::__MAKE_VHOOK(WeaponIdle)()
+void CGLOCK18::WeaponIdle()
 {
 	int iAnim;
 	float flRand;

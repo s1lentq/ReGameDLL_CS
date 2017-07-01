@@ -111,7 +111,7 @@ CCSBot::CCSBot() : m_chatter(this), m_gameState(this)
 }
 
 // Prepare bot for action
-bool CCSBot::__MAKE_VHOOK(Initialize)(const BotProfile *profile)
+bool CCSBot::Initialize(const BotProfile *profile)
 {
 	// extend
 	CBot::Initialize(profile);
@@ -292,7 +292,7 @@ void CCSBot::ResetValues()
 
 // Called when bot is placed in map, and when bots are reset after a round ends.
 // NOTE: For some reason, this can be called twice when a bot is added.
-void CCSBot::__MAKE_VHOOK(SpawnBot)()
+void CCSBot::SpawnBot()
 {
 	TheCSBots()->ValidateMapData();
 	ResetValues();
@@ -309,7 +309,7 @@ void CCSBot::__MAKE_VHOOK(SpawnBot)()
 	}
 }
 
-void CCSBot::__MAKE_VHOOK(RoundRespawn)()
+void CCSBot::RoundRespawn()
 {
 	// do the normal player spawn process
 	CBasePlayer::RoundRespawn();

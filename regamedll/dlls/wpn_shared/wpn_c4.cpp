@@ -2,7 +2,7 @@
 
 LINK_ENTITY_TO_CLASS(weapon_c4, CC4, CCSC4)
 
-void CC4::__MAKE_VHOOK(Spawn)()
+void CC4::Spawn()
 {
 	SET_MODEL(edict(), "models/w_backpack.mdl");
 
@@ -28,7 +28,7 @@ void CC4::__MAKE_VHOOK(Spawn)()
 	pev->nextthink = UTIL_WeaponTimeBase() + 0.1f;
 }
 
-void CC4::__MAKE_VHOOK(Precache)()
+void CC4::Precache()
 {
 	PRECACHE_MODEL("models/v_c4.mdl");
 	PRECACHE_MODEL("models/w_backpack.mdl");
@@ -36,7 +36,7 @@ void CC4::__MAKE_VHOOK(Precache)()
 	PRECACHE_SOUND("weapons/c4_click.wav");
 }
 
-int CC4::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
+int CC4::GetItemInfo(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
 	p->pszAmmo1 = "C4";
@@ -53,7 +53,7 @@ int CC4::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	return 1;
 }
 
-BOOL CC4::__MAKE_VHOOK(Deploy)()
+BOOL CC4::Deploy()
 {
 	pev->body = 0;
 
@@ -69,7 +69,7 @@ BOOL CC4::__MAKE_VHOOK(Deploy)()
 	return DefaultDeploy("models/v_c4.mdl", "models/p_c4.mdl", C4_DRAW, "c4", UseDecrement() != FALSE);
 }
 
-void CC4::__MAKE_VHOOK(Holster)(int skiplocal)
+void CC4::Holster(int skiplocal)
 {
 	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5f;
 	m_bStartedArming = false;	// stop arming sequence
@@ -87,7 +87,7 @@ void CC4::__MAKE_VHOOK(Holster)(int skiplocal)
 	}
 }
 
-void CC4::__MAKE_VHOOK(PrimaryAttack)()
+void CC4::PrimaryAttack()
 {
 	if (m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
 		return;
@@ -243,7 +243,7 @@ void CC4::__MAKE_VHOOK(PrimaryAttack)()
 	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + RANDOM_FLOAT(10, 15);
 }
 
-void CC4::__MAKE_VHOOK(WeaponIdle)()
+void CC4::WeaponIdle()
 {
 	if (m_bStartedArming)
 	{
@@ -276,7 +276,7 @@ void CC4::__MAKE_VHOOK(WeaponIdle)()
 	}
 }
 
-void CC4::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CC4::KeyValue(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "detonatedelay"))
 	{
@@ -299,7 +299,7 @@ void CC4::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 	}
 }
 
-void CC4::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CC4::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	if (m_pPlayer)
 		return;
@@ -335,7 +335,7 @@ void CC4::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_T
 	}
 }
 
-float CC4::__MAKE_VHOOK(GetMaxSpeed)()
+float CC4::GetMaxSpeed()
 {
 	return C4_MAX_SPEED;
 }

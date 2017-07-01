@@ -60,12 +60,6 @@
 #define WINNER_NONE			0
 #define WINNER_DRAW			1
 
-#if defined(REGAMEDLL_ADD) && !defined(HOOK_GAMEDLL)
-#define VFUNC virtual
-#else
-#define VFUNC
-#endif
-
 enum
 {
 	WINSTATUS_CTS = 1,
@@ -128,44 +122,44 @@ enum RewardRules
 // custom enum
 enum RewardAccount
 {
-	REWARD_TARGET_BOMB		= 3500,
-	REWARD_VIP_ESCAPED		= 3500,
-	REWARD_VIP_ASSASSINATED		= 3250,
-	REWARD_TERRORISTS_ESCAPED	= 3150,
-	REWARD_CTS_PREVENT_ESCAPE	= 3500,
-	REWARD_ESCAPING_TERRORISTS_NEUTRALIZED	= 3250,
-	REWARD_BOMB_DEFUSED		= 3250,
-	REWARD_BOMB_PLANTED		= 800,
-	REWARD_BOMB_EXPLODED		= 3250,
-	REWARD_CTS_WIN			= 3000,
-	REWARD_TERRORISTS_WIN		= 3000,
-	REWARD_ALL_HOSTAGES_RESCUED	= 2500,
+	REWARD_TARGET_BOMB              = 3500,
+	REWARD_VIP_ESCAPED              = 3500,
+	REWARD_VIP_ASSASSINATED         = 3250,
+	REWARD_TERRORISTS_ESCAPED       = 3150,
+	REWARD_CTS_PREVENT_ESCAPE       = 3500,
+	REWARD_ESCAPING_TERRORISTS_NEUTRALIZED = 3250,
+	REWARD_BOMB_DEFUSED             = 3250,
+	REWARD_BOMB_PLANTED             = 800,
+	REWARD_BOMB_EXPLODED            = 3250,
+	REWARD_CTS_WIN                  = 3000,
+	REWARD_TERRORISTS_WIN           = 3000,
+	REWARD_ALL_HOSTAGES_RESCUED     = 2500,
 
 	// the end round was by the expiration time
-	REWARD_TARGET_BOMB_SAVED	= 3250,
-	REWARD_HOSTAGE_NOT_RESCUED	= 3250,
-	REWARD_VIP_NOT_ESCAPED		= 3250,
+	REWARD_TARGET_BOMB_SAVED        = 3250,
+	REWARD_HOSTAGE_NOT_RESCUED      = 3250,
+	REWARD_VIP_NOT_ESCAPED          = 3250,
 
 	// loser bonus
-	REWARD_LOSER_BONUS_DEFAULT	= 1400,
-	REWARD_LOSER_BONUS_MIN		= 1500,
-	REWARD_LOSER_BONUS_MAX		= 3000,
-	REWARD_LOSER_BONUS_ADD		= 500,
+	REWARD_LOSER_BONUS_DEFAULT      = 1400,
+	REWARD_LOSER_BONUS_MIN          = 1500,
+	REWARD_LOSER_BONUS_MAX          = 3000,
+	REWARD_LOSER_BONUS_ADD          = 500,
 
-	REWARD_RESCUED_HOSTAGE		= 750,
-	REWARD_KILLED_ENEMY		= 300,
-	REWARD_KILLED_VIP		= 2500,
-	REWARD_VIP_HAVE_SELF_RESCUED	= 2500,
+	REWARD_RESCUED_HOSTAGE          = 750,
+	REWARD_KILLED_ENEMY             = 300,
+	REWARD_KILLED_VIP               = 2500,
+	REWARD_VIP_HAVE_SELF_RESCUED    = 2500,
 
-	REWARD_TAKEN_HOSTAGE		= 1000,
-	REWARD_TOOK_HOSTAGE_ACC		= 100,
-	REWARD_TOOK_HOSTAGE		= 150,
+	REWARD_TAKEN_HOSTAGE            = 1000,
+	REWARD_TOOK_HOSTAGE_ACC         = 100,
+	REWARD_TOOK_HOSTAGE             = 150,
 };
 
 // custom enum
 enum PaybackForBadThing
 {
-	PAYBACK_FOR_KILLED_TEAMMATES	= -3300,
+	PAYBACK_FOR_KILLED_TEAMMATES    = -3300,
 };
 
 // custom enum
@@ -203,13 +197,13 @@ enum
 // custom enum
 enum
 {
-	SCENARIO_BLOCK_TIME_EXPRIRED		= (1 << 0),	// flag "a"
-	SCENARIO_BLOCK_NEED_PLAYERS		= (1 << 1),	// flag "b"
-	SCENARIO_BLOCK_VIP_ESCAPE		= (1 << 2),	// flag "c"
-	SCENARIO_BLOCK_PRISON_ESCAPE		= (1 << 3),	// flag "d"
-	SCENARIO_BLOCK_BOMB			= (1 << 4),	// flag "e"
-	SCENARIO_BLOCK_TEAM_EXTERMINATION	= (1 << 5),	// flag "f"
-	SCENARIO_BLOCK_HOSTAGE_RESCUE		= (1 << 6),	// flag "g"
+	SCENARIO_BLOCK_TIME_EXPRIRED        = (1 << 0), // flag "a"
+	SCENARIO_BLOCK_NEED_PLAYERS         = (1 << 1), // flag "b"
+	SCENARIO_BLOCK_VIP_ESCAPE           = (1 << 2), // flag "c"
+	SCENARIO_BLOCK_PRISON_ESCAPE        = (1 << 3), // flag "d"
+	SCENARIO_BLOCK_BOMB                 = (1 << 4), // flag "e"
+	SCENARIO_BLOCK_TEAM_EXTERMINATION   = (1 << 5), // flag "f"
+	SCENARIO_BLOCK_HOSTAGE_RESCUE       = (1 << 6), // flag "g"
 };
 
 // Player relationship return codes
@@ -228,49 +222,53 @@ class CGameRules
 {
 public:
 	CGameRules();
+
+#ifndef HOOK_GAMEDLL
 	virtual ~CGameRules();
-	virtual void RefreshSkillData();												// fill skill data struct with proper values
-	virtual void Think() = 0;													// runs every server frame, should handle any timer tasks, periodic events, etc.
+#endif
+
+	virtual void RefreshSkillData();															// fill skill data struct with proper values
+	virtual void Think() = 0;																	// runs every server frame, should handle any timer tasks, periodic events, etc.
 	virtual BOOL IsAllowedToSpawn(CBaseEntity *pEntity) = 0;									// Can this item spawn (eg monsters don't spawn in deathmatch).
 
-	virtual BOOL FAllowFlashlight() = 0;												// Are players allowed to switch on their flashlight?
-	virtual BOOL FShouldSwitchWeapon(CBasePlayer *pPlayer, CBasePlayerItem *pWeapon) = 0;						// should the player switch to this weapon?
-	virtual BOOL GetNextBestWeapon(CBasePlayer *pPlayer, CBasePlayerItem *pCurrentWeapon) = 0;					// I can't use this weapon anymore, get me the next best one.
+	virtual BOOL FAllowFlashlight() = 0;														// Are players allowed to switch on their flashlight?
+	virtual BOOL FShouldSwitchWeapon(CBasePlayer *pPlayer, CBasePlayerItem *pWeapon) = 0;		// should the player switch to this weapon?
+	virtual BOOL GetNextBestWeapon(CBasePlayer *pPlayer, CBasePlayerItem *pCurrentWeapon) = 0;	// I can't use this weapon anymore, get me the next best one.
 
 	// Functions to verify the single/multiplayer status of a game
 	virtual BOOL IsMultiplayer() = 0;												// is this a multiplayer game? (either coop or deathmatch)
 	virtual BOOL IsDeathmatch() = 0;												// is this a deathmatch game?
-	virtual BOOL IsTeamplay() { return FALSE; }											// is this deathmatch game being played with team rules?
-	virtual BOOL IsCoOp() = 0;													// is this a coop game?
-	virtual const char *GetGameDescription();											// this is the game name that gets seen in the server browser
+	virtual BOOL IsTeamplay() { return FALSE; }										// is this deathmatch game being played with team rules?
+	virtual BOOL IsCoOp() = 0;														// is this a coop game?
+	virtual const char *GetGameDescription();										// this is the game name that gets seen in the server browser
 
 	// Client connection/disconnection
 	virtual BOOL ClientConnected(edict_t *pEntity, const char *pszName, const char *pszAddress, char *szRejectReason) = 0;		// a client just connected to the server (player hasn't spawned yet)
 	virtual void InitHUD(CBasePlayer *pl) = 0;											// the client dll is ready for updating
-	virtual void ClientDisconnected(edict_t *pClient) = 0;										// a client just disconnected from the server
-	virtual void UpdateGameMode(CBasePlayer *pPlayer) {};										// the client needs to be informed of the current game mode
+	virtual void ClientDisconnected(edict_t *pClient) = 0;								// a client just disconnected from the server
+	virtual void UpdateGameMode(CBasePlayer *pPlayer) {};								// the client needs to be informed of the current game mode
 
 	// Client damage rules
 	virtual float FlPlayerFallDamage(CBasePlayer *pPlayer) = 0;
-	virtual BOOL FPlayerCanTakeDamage(CBasePlayer *pPlayer, CBaseEntity *pAttacker) { return TRUE; }				// can this player take damage from this attacker?
+	virtual BOOL FPlayerCanTakeDamage(CBasePlayer *pPlayer, CBaseEntity *pAttacker) { return TRUE; }		// can this player take damage from this attacker?
 	virtual BOOL ShouldAutoAim(CBasePlayer *pPlayer, edict_t *target) { return TRUE; }
 
 	// Client spawn/respawn control
 	virtual void PlayerSpawn(CBasePlayer *pPlayer) = 0;										// called by CBasePlayer::Spawn just before releasing player into the game
 	virtual void PlayerThink(CBasePlayer *pPlayer) = 0;										// called by CBasePlayer::PreThink every frame, before physics are run and after keys are accepted
-	virtual BOOL FPlayerCanRespawn(CBasePlayer *pPlayer) = 0;									// is this player allowed to respawn now?
-	virtual float FlPlayerSpawnTime(CBasePlayer *pPlayer) = 0;									// When in the future will this player be able to spawn?
-	virtual edict_t *GetPlayerSpawnSpot(CBasePlayer *pPlayer);									// Place this player on their spawnspot and face them the proper direction.
+	virtual BOOL FPlayerCanRespawn(CBasePlayer *pPlayer) = 0;								// is this player allowed to respawn now?
+	virtual float FlPlayerSpawnTime(CBasePlayer *pPlayer) = 0;								// When in the future will this player be able to spawn?
+	virtual edict_t *GetPlayerSpawnSpot(CBasePlayer *pPlayer);								// Place this player on their spawnspot and face them the proper direction.
 
 	virtual BOOL AllowAutoTargetCrosshair() { return TRUE; }
 	virtual BOOL ClientCommand_DeadOrAlive(CBasePlayer *pPlayer, const char *pcmd) { return FALSE; }
-	virtual BOOL ClientCommand(CBasePlayer *pPlayer, const char *pcmd) { return FALSE; }						// handles the user commands;  returns TRUE if command handled properly
+	virtual BOOL ClientCommand(CBasePlayer *pPlayer, const char *pcmd) { return FALSE; }					// handles the user commands;  returns TRUE if command handled properly
 	virtual void ClientUserInfoChanged(CBasePlayer *pPlayer, char *infobuffer) {};							// the player has changed userinfo;  can change it now
 
 	// Client kills/scoring
 	virtual int IPointsForKill(CBasePlayer *pAttacker, CBasePlayer *pKilled) = 0;							// how many points do I award whoever kills this player?
-	virtual void PlayerKilled(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor) = 0;					// Called each time a player dies
-	virtual void DeathNotice(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pevInflictor) = 0;				// Call this from within a GameRules class to report an obituary.
+	virtual void PlayerKilled(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor) = 0;			// Called each time a player dies
+	virtual void DeathNotice(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pevInflictor) = 0;		// Call this from within a GameRules class to report an obituary.
 
 	// Weapon retrieval
 	virtual BOOL CanHavePlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pItem);							// The player is touching an CBasePlayerItem, do I give it to him?
@@ -287,21 +285,21 @@ public:
 	virtual void PlayerGotItem(CBasePlayer *pPlayer, CItem *pItem) = 0;								// call each time a player picks up an item (battery, healthkit, longjump)
 
 	// Item spawn/respawn control
-	virtual int ItemShouldRespawn(CItem *pItem) = 0;										// Should this item respawn?
-	virtual float FlItemRespawnTime(CItem *pItem) = 0;										// when may this item respawn?
+	virtual int ItemShouldRespawn(CItem *pItem) = 0;											// Should this item respawn?
+	virtual float FlItemRespawnTime(CItem *pItem) = 0;											// when may this item respawn?
 	virtual Vector VecItemRespawnSpot(CItem *pItem) = 0;										// where in the world should this item respawn?
 
 	// Ammo retrieval
-	virtual BOOL CanHaveAmmo(CBasePlayer *pPlayer, const char *pszAmmoName, int iMaxCarry);						// can this player take more of this ammo?
-	virtual void PlayerGotAmmo(CBasePlayer *pPlayer, char *szName, int iCount) = 0;							// called each time a player picks up some ammo in the world
+	virtual BOOL CanHaveAmmo(CBasePlayer *pPlayer, const char *pszAmmoName, int iMaxCarry);		// can this player take more of this ammo?
+	virtual void PlayerGotAmmo(CBasePlayer *pPlayer, char *szName, int iCount) = 0;				// called each time a player picks up some ammo in the world
 
 	// Ammo spawn/respawn control
 	virtual int AmmoShouldRespawn(CBasePlayerAmmo *pAmmo) = 0;									// should this ammo item respawn?
-	virtual float FlAmmoRespawnTime(CBasePlayerAmmo *pAmmo) = 0;									// when should this ammo item respawn?
-	virtual Vector VecAmmoRespawnSpot(CBasePlayerAmmo *pAmmo) = 0;									// where in the world should this ammo item respawn?
+	virtual float FlAmmoRespawnTime(CBasePlayerAmmo *pAmmo) = 0;								// when should this ammo item respawn?
+	virtual Vector VecAmmoRespawnSpot(CBasePlayerAmmo *pAmmo) = 0;								// where in the world should this ammo item respawn?
 
 	// Healthcharger respawn control
-	virtual float FlHealthChargerRechargeTime() = 0;										// how long until a depleted HealthCharger recharges itself?
+	virtual float FlHealthChargerRechargeTime() = 0;											// how long until a depleted HealthCharger recharges itself?
 	virtual float FlHEVChargerRechargeTime() { return 0.0f; }									// how long until a depleted HealthCharger recharges itself?
 
 	// What happens to a dead player's weapons
@@ -312,7 +310,7 @@ public:
 
 	// Teamplay stuff
 	virtual const char *GetTeamID(CBaseEntity *pEntity) = 0;									// what team is this entity on?
-	virtual int PlayerRelationship(CBasePlayer *pPlayer, CBaseEntity *pTarget) = 0;							// What is the player's relationship with this entity?
+	virtual int PlayerRelationship(CBasePlayer *pPlayer, CBaseEntity *pTarget) = 0;				// What is the player's relationship with this entity?
 	virtual int GetTeamIndex(const char *pTeamName) { return -1; }
 	virtual const char *GetIndexedTeamName(int teamIndex) { return ""; }
 	virtual BOOL IsValidTeam(const char *pTeamName) { return TRUE; }
@@ -333,26 +331,17 @@ public:
 	virtual void ServerDeactivate() {};
 	virtual void CheckMapConditions() {};
 
-#ifdef HOOK_GAMEDLL
-
-	void RefreshSkillData_();
-	edict_t *GetPlayerSpawnSpot_(CBasePlayer *pPlayer);
-	BOOL CanHavePlayerItem_(CBasePlayer *pPlayer, CBasePlayerItem *pItem);
-	BOOL CanHaveAmmo_(CBasePlayer *pPlayer, const char *pszAmmoName, int iMaxCarry);
-
-#endif
-
 	// inline function's
 	inline bool IsGameOver() const { return m_bGameOver; }
 	inline void SetGameOver() { m_bGameOver = true; }
 
 public:
-	BOOL m_bFreezePeriod;				// TRUE at beginning of round, set to FALSE when the period expires
+	BOOL m_bFreezePeriod;	// TRUE at beginning of round, set to FALSE when the period expires
 	BOOL m_bBombDropped;
 
 	// custom
-	char *m_GameDesc;
-	bool m_bGameOver;				// intermission or finale (deprecated name g_fGameOver)
+	CUSTOM_MEMBER char *m_GameDesc;
+	CUSTOM_MEMBER bool m_bGameOver; // intermission or finale (deprecated name g_fGameOver)
 };
 
 // CHalfLifeRules - rules for the single player Half-Life game.
@@ -360,7 +349,10 @@ class CHalfLifeRules: public CGameRules
 {
 public:
 	CHalfLifeRules();
+
+#ifndef HOOK_GAMEDLL
 	virtual ~CHalfLifeRules() {};
+#endif
 
 	virtual void Think();
 	virtual BOOL IsAllowedToSpawn(CBaseEntity *pEntity);
@@ -437,50 +429,6 @@ public:
 
 	// Monsters
 	virtual BOOL FAllowMonsters();
-
-#ifdef HOOK_GAMEDLL
-
-	void Think_();
-	BOOL IsAllowedToSpawn_(CBaseEntity *pEntity);
-	BOOL FShouldSwitchWeapon_(CBasePlayer *pPlayer, CBasePlayerItem *pWeapon);
-	BOOL GetNextBestWeapon_(CBasePlayer *pPlayer, CBasePlayerItem *pCurrentWeapon);
-	BOOL IsMultiplayer_();
-	BOOL IsDeathmatch_();
-	BOOL IsCoOp_();
-	BOOL ClientConnected_(edict_t *pEntity, const char *pszName, const char *pszAddress, char szRejectReason[128]);
-	void InitHUD_(CBasePlayer *pl);
-	void ClientDisconnected_(edict_t *pClient);
-	float FlPlayerFallDamage_(CBasePlayer *pPlayer);
-	void PlayerSpawn_(CBasePlayer *pPlayer);
-	void PlayerThink_(CBasePlayer *pPlayer);
-	BOOL FPlayerCanRespawn_(CBasePlayer *pPlayer);
-	float FlPlayerSpawnTime_(CBasePlayer *pPlayer);
-	edict_t *GetPlayerSpawnSpot_(CBasePlayer *pPlayer);
-	BOOL AllowAutoTargetCrosshair_();
-	int IPointsForKill_(CBasePlayer *pAttacker, CBasePlayer *pKilled);
-	void PlayerKilled_(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor);
-	void DeathNotice_(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor);
-	void PlayerGotWeapon_(CBasePlayer *pPlayer, CBasePlayerItem *pWeapon);
-	int WeaponShouldRespawn_(CBasePlayerItem *pWeapon);
-	float FlWeaponRespawnTime_(CBasePlayerItem *pWeapon);
-	float FlWeaponTryRespawn_(CBasePlayerItem *pWeapon);
-	Vector VecWeaponRespawnSpot_(CBasePlayerItem *pWeapon);
-	BOOL CanHaveItem_(CBasePlayer *pPlayer, CItem *pItem);
-	void PlayerGotItem_(CBasePlayer *pPlayer, CItem *pItem);
-	int ItemShouldRespawn_(CItem *pItem);
-	float FlItemRespawnTime_(CItem *pItem);
-	Vector VecItemRespawnSpot_(CItem *pItem);
-	void PlayerGotAmmo_(CBasePlayer *pPlayer, char *szName, int iCount);
-	int AmmoShouldRespawn_(CBasePlayerAmmo *pAmmo);
-	float FlAmmoRespawnTime_(CBasePlayerAmmo *pAmmo);
-	Vector VecAmmoRespawnSpot_(CBasePlayerAmmo *pAmmo);
-	float FlHealthChargerRechargeTime_();
-	int DeadPlayerWeapons_(CBasePlayer *pPlayer);
-	int DeadPlayerAmmo_(CBasePlayer *pPlayer);
-	int PlayerRelationship_(CBasePlayer *pPlayer, CBaseEntity *pTarget);
-	BOOL FAllowMonsters_();
-
-#endif // HOOK_GAMEDLL
 };
 
 // CHalfLifeMultiplay - rules for the basic half life multiplayer competition
@@ -508,7 +456,7 @@ public:
 	virtual BOOL ClientConnected(edict_t *pEntity, const char *pszName, const char *pszAddress, char szRejectReason[128]);
 	virtual void InitHUD(CBasePlayer *pl);													// the client dll is ready for updating
 	virtual void ClientDisconnected(edict_t *pClient);
-	virtual void UpdateGameMode(CBasePlayer *pPlayer);											// the client needs to be informed of the current game mode
+	virtual void UpdateGameMode(CBasePlayer *pPlayer);										// the client needs to be informed of the current game mode
 
 	// Client damage rules
 	virtual float FlPlayerFallDamage(CBasePlayer *pPlayer);
@@ -595,64 +543,29 @@ public:
 	virtual void ChangeLevel();
 	virtual void GoToIntermission();
 
-#if defined(REGAMEDLL_API) || defined(HOOK_GAMEDLL)
-	void RefreshSkillData_();
-	void Think_();
-	BOOL IsAllowedToSpawn_(CBaseEntity *pEntity);
-	BOOL FAllowFlashlight_();
-	BOOL FShouldSwitchWeapon_(CBasePlayer *pPlayer, CBasePlayerItem *pWeapon);
-	BOOL GetNextBestWeapon_(CBasePlayer *pPlayer, CBasePlayerItem *pCurrentWeapon);
-	BOOL IsMultiplayer_();
-	BOOL IsDeathmatch_();
-	BOOL IsCoOp_();
-	BOOL ClientConnected_(edict_t *pEntity, const char *pszName, const char *pszAddress, char szRejectReason[128]);
-	void InitHUD_(CBasePlayer *pl);
-	void ClientDisconnected_(edict_t *pClient);
-	void UpdateGameMode_(CBasePlayer *pPlayer);
-	float FlPlayerFallDamage_(CBasePlayer *pPlayer);
-	BOOL FPlayerCanTakeDamage_(CBasePlayer *pPlayer, CBaseEntity *pAttacker);
-	void PlayerSpawn_(CBasePlayer *pPlayer);
-	void PlayerThink_(CBasePlayer *pPlayer);
-	BOOL FPlayerCanRespawn_(CBasePlayer *pPlayer);
-	float FlPlayerSpawnTime_(CBasePlayer *pPlayer);
-	edict_t *GetPlayerSpawnSpot_(CBasePlayer *pPlayer);
-	BOOL AllowAutoTargetCrosshair_();
-	BOOL ClientCommand_DeadOrAlive_(CBasePlayer *pPlayer, const char *pcmd);
-	BOOL ClientCommand_(CBasePlayer *pPlayer, const char *pcmd);
-	void ClientUserInfoChanged_(CBasePlayer *pPlayer, char *infobuffer);
-	int IPointsForKill_(CBasePlayer *pAttacker, CBasePlayer *pKilled);
-	void PlayerKilled_(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor);
-	void DeathNotice_(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor);
-	BOOL CanHavePlayerItem_(CBasePlayer *pPlayer, CBasePlayerItem *pWeapon);
-	void PlayerGotWeapon_(CBasePlayer *pPlayer, CBasePlayerItem *pWeapon);
-	int WeaponShouldRespawn_(CBasePlayerItem *pWeapon);
-	float FlWeaponRespawnTime_(CBasePlayerItem *pWeapon);
-	float FlWeaponTryRespawn_(CBasePlayerItem *pWeapon);
-	Vector VecWeaponRespawnSpot_(CBasePlayerItem *pWeapon);
-	BOOL CanHaveItem_(CBasePlayer *pPlayer, CItem *pItem);
-	void PlayerGotItem_(CBasePlayer *pPlayer, CItem *pItem);
-	int ItemShouldRespawn_(CItem *pItem);
-	float FlItemRespawnTime_(CItem *pItem);
-	Vector VecItemRespawnSpot_(CItem *pItem);
-	void PlayerGotAmmo_(CBasePlayer *pPlayer, char *szName, int iCount);
-	int AmmoShouldRespawn_(CBasePlayerAmmo *pAmmo);
-	float FlAmmoRespawnTime_(CBasePlayerAmmo *pAmmo);
-	Vector VecAmmoRespawnSpot_(CBasePlayerAmmo *pAmmo);
-	float FlHealthChargerRechargeTime_();
-	float FlHEVChargerRechargeTime_();
-	int DeadPlayerWeapons_(CBasePlayer *pPlayer);
-	int DeadPlayerAmmo_(CBasePlayer *pPlayer);
-	int PlayerRelationship_(CBasePlayer *pPlayer, CBaseEntity *pTarget);
-	BOOL FAllowMonsters_();
-	void ServerDeactivate_();
-	void CheckMapConditions_();
-	void CleanUpMap_();
-	void RestartRound_();
-	void CheckWinConditions_();
-	void RemoveGuns_();
-	void GiveC4_();
-	void ChangeLevel_();
-	void GoToIntermission_();
+#ifdef REGAMEDLL_API
+	BOOL FShouldSwitchWeapon_OrigFunc(CBasePlayer *pPlayer, CBasePlayerItem *pWeapon);
+	BOOL GetNextBestWeapon_OrigFunc(CBasePlayer *pPlayer, CBasePlayerItem *pCurrentWeapon);
+	float FlPlayerFallDamage_OrigFunc(CBasePlayer *pPlayer);
+	BOOL FPlayerCanTakeDamage_OrigFunc(CBasePlayer *pPlayer, CBaseEntity *pAttacker);
+	void PlayerSpawn_OrigFunc(CBasePlayer *pPlayer);
+	BOOL FPlayerCanRespawn_OrigFunc(CBasePlayer *pPlayer);
+	edict_t *GetPlayerSpawnSpot_OrigFunc(CBasePlayer *pPlayer);
+	void ClientUserInfoChanged_OrigFunc(CBasePlayer *pPlayer, char *infobuffer);
+	void PlayerKilled_OrigFunc(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor);
+	void DeathNotice_OrigFunc(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor);
+	BOOL CanHavePlayerItem_OrigFunc(CBasePlayer *pPlayer, CBasePlayerItem *pWeapon);
+	int DeadPlayerWeapons_OrigFunc(CBasePlayer *pPlayer);
+	void ServerDeactivate_OrigFunc();
+	void CheckMapConditions_OrigFunc();
+	void CleanUpMap_OrigFunc();
+	void RestartRound_OrigFunc();
+	void CheckWinConditions_OrigFunc();
+	void RemoveGuns_OrigFunc();
+	void GiveC4_OrigFunc();
+	void ChangeLevel_OrigFunc();
+	void GoToIntermission_OrigFunc();
+	void BalanceTeams_OrigFunc();
 #endif
 
 public:
@@ -742,8 +655,6 @@ public:
 	void ResetCurrentVIP();
 
 	VFUNC void BalanceTeams();
-	void BalanceTeams_();
-
 	VFUNC void SwapAllPlayers();
 	VFUNC void UpdateTeamScores();
 	VFUNC void EndRoundMessage(const char *sentence, int event);
@@ -782,18 +693,18 @@ public:
 	float m_flRestartRoundTime;			// The global time when the round is supposed to end, if this is not 0 (deprecated name m_fTeamCount)
 	float m_flCheckWinConditions;
 	float m_fRoundStartTime;			// Time round has started (deprecated name m_fRoundCount)
-	int m_iRoundTime;				// (From mp_roundtime) - How many seconds long this round is.
+	int m_iRoundTime;					// (From mp_roundtime) - How many seconds long this round is.
 	int m_iRoundTimeSecs;
 	int m_iIntroRoundTime;				// (From mp_freezetime) - How many seconds long the intro round (when players are frozen) is.
-	float m_fRoundStartTimeReal;			// The global time when the intro round ends and the real one starts
-							// wrote the original "m_flRoundTime" comment for this variable).
+	float m_fRoundStartTimeReal;		// The global time when the intro round ends and the real one starts
+										// wrote the original "m_flRoundTime" comment for this variable).
 	int m_iAccountTerrorist;
 	int m_iAccountCT;
 	int m_iNumTerrorist;				// The number of terrorists on the team (this is generated at the end of a round)
-	int m_iNumCT;					// The number of CTs on the team (this is generated at the end of a round)
+	int m_iNumCT;						// The number of CTs on the team (this is generated at the end of a round)
 	int m_iNumSpawnableTerrorist;
 	int m_iNumSpawnableCT;
-	int m_iSpawnPointCount_Terrorist;		// Number of Terrorist spawn points
+	int m_iSpawnPointCount_Terrorist;	// Number of Terrorist spawn points
 	int m_iSpawnPointCount_CT;			// Number of CT spawn points
 	int m_iHostagesRescued;
 	int m_iHostagesTouched;
@@ -814,22 +725,22 @@ public:
 	BOOL m_bMapHasVIPSafetyZone;			// TRUE = has VIP safety zone, FALSE = does not have VIP safetyzone
 	BOOL m_bMapHasCameras;
 	int m_iC4Timer;
-	int m_iC4Guy;					// The current Terrorist who has the C4.
-	int m_iLoserBonus;				// the amount of money the losing team gets. This scales up as they lose more rounds in a row
+	int m_iC4Guy;							// The current Terrorist who has the C4.
+	int m_iLoserBonus;						// the amount of money the losing team gets. This scales up as they lose more rounds in a row
 	int m_iNumConsecutiveCTLoses;			// the number of rounds the CTs have lost in a row.
-	int m_iNumConsecutiveTerroristLoses;		// the number of rounds the Terrorists have lost in a row.
+	int m_iNumConsecutiveTerroristLoses;	// the number of rounds the Terrorists have lost in a row.
 
-	float m_fMaxIdlePeriod;				// For the idle kick functionality. This is tha max amount of time that the player has to be idle before being kicked
+	float m_fMaxIdlePeriod;					// For the idle kick functionality. This is tha max amount of time that the player has to be idle before being kicked
 
 	int m_iLimitTeams;
 	bool m_bLevelInitialized;
 	bool m_bRoundTerminating;
-	bool m_bCompleteReset;				// Set to TRUE to have the scores reset next time round restarts
+	bool m_bCompleteReset;					// Set to TRUE to have the scores reset next time round restarts
 	float m_flRequiredEscapeRatio;
 	int m_iNumEscapers;
 	int m_iHaveEscaped;
 	bool m_bCTCantBuy;
-	bool m_bTCantBuy;				// Who can and can't buy.
+	bool m_bTCantBuy;					// Who can and can't buy.
 	float m_flBombRadius;
 	int m_iConsecutiveVIP;
 	int m_iTotalGunCount;
@@ -864,11 +775,11 @@ protected:
 	bool m_bSkipSpawn;
 
 	// custom
-	bool m_bSkipShowMenu;
-	bool m_bNeededPlayers;
-	float m_flEscapeRatio;
-	float m_flTimeLimit;
-	float m_flGameStartTime;
+	CUSTOM_MEMBER bool m_bSkipShowMenu;
+	CUSTOM_MEMBER bool m_bNeededPlayers;
+	CUSTOM_MEMBER float m_flEscapeRatio;
+	CUSTOM_MEMBER float m_flTimeLimit;
+	CUSTOM_MEMBER float m_flGameStartTime;
 };
 
 typedef struct mapcycle_item_s
@@ -892,19 +803,15 @@ class CCStrikeGameMgrHelper: public IVoiceGameMgrHelper
 {
 public:
 	virtual bool CanPlayerHearPlayer(CBasePlayer *pListener, CBasePlayer *pSender);
-
-#ifdef HOOK_GAMEDLL
-
-	bool CanPlayerHearPlayer_(CBasePlayer *pListener, CBasePlayer *pSender);
-
-#endif
-
 };
 
 extern CGameRules DLLEXPORT *g_pGameRules;
 
+#ifdef REGAMEDLL_API
+CGameRules *InstallGameRules_OrigFunc();
+#endif
+
 CGameRules *InstallGameRules();
-CGameRules *InstallGameRules_();
 
 // Gets us at the CS game rules
 inline CHalfLifeMultiplay *CSGameRules()

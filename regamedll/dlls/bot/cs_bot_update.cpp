@@ -1,7 +1,7 @@
 #include "precompiled.h"
 
 // Lightweight maintenance, invoked frequently
-void CCSBot::__MAKE_VHOOK(Upkeep)()
+void CCSBot::Upkeep()
 {
 	if (TheCSBots()->IsLearningMap() || !IsAlive())
 		return;
@@ -147,7 +147,7 @@ void CCSBot::__MAKE_VHOOK(Upkeep)()
 }
 
 // Heavyweight processing, invoked less often
-void CCSBot::__MAKE_VHOOK(Update)()
+void CCSBot::Update()
 {
 	if (TheCSBots()->IsAnalysisRequested() && m_processMode == PROCESS_NORMAL)
 	{

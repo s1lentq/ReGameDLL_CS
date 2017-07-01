@@ -38,15 +38,6 @@ public:
 	virtual void Spawn();
 	virtual void Precache();
 	virtual BOOL AddAmmo(CBaseEntity *pOther);
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	BOOL AddAmmo_(CBaseEntity *pOther);
-
-#endif
-
 };
 
 class CBuckShotAmmo: public CBasePlayerAmmo
@@ -55,15 +46,6 @@ public:
 	virtual void Spawn();
 	virtual void Precache();
 	virtual BOOL AddAmmo(CBaseEntity *pOther);
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	BOOL AddAmmo_(CBaseEntity *pOther);
-
-#endif
-
 };
 
 class C556NatoAmmo: public CBasePlayerAmmo
@@ -72,15 +54,6 @@ public:
 	virtual void Spawn();
 	virtual void Precache();
 	virtual BOOL AddAmmo(CBaseEntity *pOther);
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	BOOL AddAmmo_(CBaseEntity *pOther);
-
-#endif
-
 };
 
 class C556NatoBoxAmmo: public CBasePlayerAmmo
@@ -89,15 +62,6 @@ public:
 	virtual void Spawn();
 	virtual void Precache();
 	virtual BOOL AddAmmo(CBaseEntity *pOther);
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	BOOL AddAmmo_(CBaseEntity *pOther);
-
-#endif
-
 };
 
 class C762NatoAmmo: public CBasePlayerAmmo
@@ -106,15 +70,6 @@ public:
 	virtual void Spawn();
 	virtual void Precache();
 	virtual BOOL AddAmmo(CBaseEntity *pOther);
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	BOOL AddAmmo_(CBaseEntity *pOther);
-
-#endif
-
 };
 
 class C45ACPAmmo: public CBasePlayerAmmo
@@ -123,15 +78,6 @@ public:
 	virtual void Spawn();
 	virtual void Precache();
 	virtual BOOL AddAmmo(CBaseEntity *pOther);
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	BOOL AddAmmo_(CBaseEntity *pOther);
-
-#endif
-
 };
 
 class C50AEAmmo: public CBasePlayerAmmo
@@ -140,15 +86,6 @@ public:
 	virtual void Spawn();
 	virtual void Precache();
 	virtual BOOL AddAmmo(CBaseEntity *pOther);
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	BOOL AddAmmo_(CBaseEntity *pOther);
-
-#endif
-
 };
 
 class C338MagnumAmmo: public CBasePlayerAmmo
@@ -157,15 +94,6 @@ public:
 	virtual void Spawn();
 	virtual void Precache();
 	virtual BOOL AddAmmo(CBaseEntity *pOther);
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	BOOL AddAmmo_(CBaseEntity *pOther);
-
-#endif
-
 };
 
 class C57MMAmmo: public CBasePlayerAmmo
@@ -174,14 +102,6 @@ public:
 	virtual void Spawn();
 	virtual void Precache();
 	virtual BOOL AddAmmo(CBaseEntity *pOther);
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	BOOL AddAmmo_(CBaseEntity *pOther);
-
-#endif
 };
 
 class C357SIGAmmo: public CBasePlayerAmmo
@@ -190,15 +110,6 @@ public:
 	virtual void Spawn();
 	virtual void Precache();
 	virtual BOOL AddAmmo(CBaseEntity *pOther);
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	BOOL AddAmmo_(CBaseEntity *pOther);
-
-#endif
-
 };
 
 #endif // AMMO_H

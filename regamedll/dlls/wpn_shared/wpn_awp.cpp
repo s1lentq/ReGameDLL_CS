@@ -2,7 +2,7 @@
 
 LINK_ENTITY_TO_CLASS(weapon_awp, CAWP, CCSAWP)
 
-void CAWP::__MAKE_VHOOK(Spawn)()
+void CAWP::Spawn()
 {
 	Precache();
 
@@ -13,7 +13,7 @@ void CAWP::__MAKE_VHOOK(Spawn)()
 	FallInit();
 }
 
-void CAWP::__MAKE_VHOOK(Precache)()
+void CAWP::Precache()
 {
 	PRECACHE_MODEL("models/v_awp.mdl");
 	PRECACHE_MODEL("models/w_awp.mdl");
@@ -32,7 +32,7 @@ void CAWP::__MAKE_VHOOK(Precache)()
 	m_usFireAWP = PRECACHE_EVENT(1, "events/awp.sc");
 }
 
-int CAWP::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
+int CAWP::GetItemInfo(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
 	p->pszAmmo1 = "338Magnum";
@@ -49,7 +49,7 @@ int CAWP::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	return 1;
 }
 
-BOOL CAWP::__MAKE_VHOOK(Deploy)()
+BOOL CAWP::Deploy()
 {
 	if (DefaultDeploy("models/v_awp.mdl", "models/p_awp.mdl", AWP_DRAW, "rifle", UseDecrement() != FALSE))
 	{
@@ -63,7 +63,7 @@ BOOL CAWP::__MAKE_VHOOK(Deploy)()
 	return FALSE;
 }
 
-void CAWP::__MAKE_VHOOK(SecondaryAttack)()
+void CAWP::SecondaryAttack()
 {
 	switch (m_pPlayer->m_iFOV)
 	{
@@ -83,7 +83,7 @@ void CAWP::__MAKE_VHOOK(SecondaryAttack)()
 	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.3;
 }
 
-void CAWP::__MAKE_VHOOK(PrimaryAttack)()
+void CAWP::PrimaryAttack()
 {
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
 	{
@@ -178,7 +178,7 @@ void CAWP::AWPFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	m_pPlayer->pev->punchangle.x -= 2.0f;
 }
 
-void CAWP::__MAKE_VHOOK(Reload)()
+void CAWP::Reload()
 {
 	if (m_pPlayer->ammo_338mag <= 0)
 		return;
@@ -197,7 +197,7 @@ void CAWP::__MAKE_VHOOK(Reload)()
 	}
 }
 
-void CAWP::__MAKE_VHOOK(WeaponIdle)()
+void CAWP::WeaponIdle()
 {
 	ResetEmptySound();
 	m_pPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);
@@ -209,7 +209,7 @@ void CAWP::__MAKE_VHOOK(WeaponIdle)()
 	}
 }
 
-float CAWP::__MAKE_VHOOK(GetMaxSpeed)()
+float CAWP::GetMaxSpeed()
 {
 	if (m_pPlayer->m_iFOV == DEFAULT_FOV)
 		return AWP_MAX_SPEED;

@@ -27,10 +27,10 @@
 */
 #pragma once
 
-#define UNDEFINED_COUNT		0xFFFF
-#define MAX_PLACES_PER_MAP	64
-#define UNDEFINED_SUBJECT	(-1)
-#define COUNT_MANY		4		// equal to or greater than this is "many"
+#define UNDEFINED_COUNT     0xFFFF
+#define MAX_PLACES_PER_MAP  64
+#define UNDEFINED_SUBJECT   (-1)
+#define COUNT_MANY          4		// equal to or greater than this is "many"
 
 class CCSBot;
 class BotChatterInterface;
@@ -58,6 +58,7 @@ public:
 class BotHelpMeme: public BotMeme {
 public:
 	virtual void Interpret(CCSBot *sender, CCSBot *receiver) const;			// cause the given bot to act on this meme
+
 public:
 	Place m_place;
 };
@@ -65,9 +66,10 @@ public:
 class BotBombsiteStatusMeme: public BotMeme {
 public:
 	virtual void Interpret(CCSBot *sender, CCSBot *receiver) const;			// cause the given bot to act on this meme
+
 public:
 	enum StatusType { CLEAR, PLANTED };
-	int m_zoneIndex;	// the bombsite
+	int m_zoneIndex;		// the bombsite
 	StatusType m_status;	// whether it is cleared or the bomb is there (planted)
 };
 
@@ -87,7 +89,8 @@ public:
 
 class BotDefendHereMeme: public BotMeme {
 public:
-	virtual void Interpret(CCSBot *sender, CCSBot *receiver) const;				// cause the given bot to act on this meme
+	virtual void Interpret(CCSBot *sender, CCSBot *receiver) const;			// cause the given bot to act on this meme
+
 public:
 	Vector m_pos;
 };
@@ -115,7 +118,7 @@ enum BotStatementType
 	REPORT_MY_PLAN,
 	REPORT_INFORMATION,
 	REPORT_EMOTE,
-	REPORT_ACKNOWLEDGE,			//  affirmative or negative
+	REPORT_ACKNOWLEDGE,			// affirmative or negative
 	REPORT_ENEMIES_REMAINING,
 	REPORT_FRIENDLY_FIRE,
 	REPORT_KILLED_FRIEND,
@@ -145,18 +148,19 @@ public:
 	GameEventType GetRadioEquivalent() const { return m_radioEvent; }
 	bool IsImportant() const { return m_isImportant; }				// return true if this phrase is part of an important statement
 	bool IsPlace() const { return m_isPlace; }
+
 public:
 	friend class BotPhraseManager;
 	char *m_name;
 	Place m_id;
-	bool m_isPlace;						// true if this is a Place phrase
+	bool m_isPlace;								// true if this is a Place phrase
 	GameEventType m_radioEvent;
-	bool m_isImportant;					// mission-critical statement
+	bool m_isImportant;							// mission-critical statement
 
-	mutable BotVoiceBankVector m_voiceBank;			// array of voice banks (arrays of speakables)
-	std::vector<int> m_count;				// number of speakables
+	mutable BotVoiceBankVector m_voiceBank;		// array of voice banks (arrays of speakables)
+	std::vector<int> m_count;					// number of speakables
 	mutable std::vector< int > m_index;			// index of next speakable to return
-	int m_numVoiceBanks;					// number of voice banks that have been initialized
+	int m_numVoiceBanks;						// number of voice banks that have been initialized
 
 	mutable PlaceCriteria m_placeCriteria;
 	mutable CountCriteria m_countCriteria;
@@ -244,11 +248,11 @@ public:
 	BotChatterInterface *GetChatter() const { return m_chatter; }
 	BotStatementType GetType() const { return m_type; }							// return the type of statement this is
 	bool HasSubject() const { return (m_subject != UNDEFINED_SUBJECT); }
-	void SetSubject(int playerID) { m_subject = playerID; }							// who this statement is about
+	void SetSubject(int playerID) { m_subject = playerID; }						// who this statement is about
 	int GetSubject() const { return m_subject; }								// who this statement is about
 	void SetPlace(Place where) { m_place = where; }								// explicitly set place
 
-	void SetStartTime(float timestamp) { m_startTime = timestamp; }						// define the earliest time this statement can be spoken
+	void SetStartTime(float timestamp) { m_startTime = timestamp; }				// define the earliest time this statement can be spoken
 	float GetStartTime() const { return m_startTime; }
 	bool IsSpeaking() const { return m_isSpeaking; }			// return true if this statement is currently being spoken
 	float GetTimestamp() const { return m_timestamp; }			// get time statement was created (but not necessarily started talking)
@@ -256,10 +260,9 @@ public:
 public:
 	friend class BotChatterInterface;
 
-	BotChatterInterface *m_chatter;				// the chatter system this statement is part of
-	BotStatement *m_next, *m_prev;				// linked list hooks
-
-	BotStatementType m_type;				// what kind of statement this is
+	BotChatterInterface *m_chatter;		// the chatter system this statement is part of
+	BotStatement *m_next, *m_prev;		// linked list hooks
+	BotStatementType m_type;			// what kind of statement this is
 	int m_subject;						// who this subject is about
 	Place m_place;						// explicit place - note some phrases have implicit places as well
 	BotMeme *m_meme;					// a statement can only have a single meme for now
@@ -267,7 +270,7 @@ public:
 	float m_timestamp;					// time when message was created
 	float m_startTime;					// the earliest time this statement can be spoken
 	float m_expireTime;					// time when this statement is no longer valid
-	float m_speakTimestamp;					// time when message began being spoken
+	float m_speakTimestamp;				// time when message began being spoken
 	bool m_isSpeaking;					// true if this statement is current being spoken
 
 	float m_nextTime;					// time for next phrase to begin
@@ -315,15 +318,14 @@ public:
 	CCSBot *GetOwner() const { return m_me; }
 	int GetPitch() const { return m_pitch; }
 	bool SeesAtLeastOneEnemy() const { return m_seeAtLeastOneEnemy; }
+
 public:
-	BotStatement *m_statementList;				// list of all active/pending messages for this bot
-	void ReportEnemies();					// track nearby enemy count and generate enemy activity statements
-	bool ShouldSpeak() const;				// return true if we speaking makes sense now
+	BotStatement *m_statementList;		// list of all active/pending messages for this bot
 	CCSBot *m_me;						// the bot this chatter is for
 	bool m_seeAtLeastOneEnemy;
 	float m_timeWhenSawFirstEnemy;
 	bool m_reportedEnemies;
-	bool m_requestedBombLocation;				// true if we already asked where the bomb has been planted
+	bool m_requestedBombLocation;		// true if we already asked where the bomb has been planted
 	int m_pitch;
 	IntervalTimer m_needBackupInterval;
 	IntervalTimer m_spottedBomberInterval;

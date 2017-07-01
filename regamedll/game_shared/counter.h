@@ -25,9 +25,11 @@
 *   version.
 *
 */
+
 #pragma once
 
 #ifdef _WIN32
+	#define WIN32_LEAN_AND_MEAN // Exclude rarely-used stuff from Windows headers
 	#include <windows.h>
 	#include <io.h>
 	#include <direct.h>
@@ -50,12 +52,12 @@
 #include <stdlib.h>
 #include <math.h>
 
-class CPerformanceCounter
+class CCounter
 {
 public:
-	CPerformanceCounter();
+	CCounter();
 
-	void InitializePerformanceCounter();
+	bool Init();
 	double GetCurTime();
 
 private:
@@ -65,21 +67,22 @@ private:
 	double m_flLastCurrentTime;
 };
 
-inline CPerformanceCounter::CPerformanceCounter() :
+inline CCounter::CCounter() :
 	m_iLowShift(0),
 	m_flPerfCounterFreq(0),
 	m_flCurrentTime(0),
 	m_flLastCurrentTime(0)
 {
-	InitializePerformanceCounter();
+	Init();
 }
 
-inline void CPerformanceCounter::InitializePerformanceCounter()
+inline bool CCounter::Init()
 {
 #ifdef _WIN32
 
 	LARGE_INTEGER performanceFreq;
-	QueryPerformanceFrequency(&performanceFreq);
+	if (!QueryPerformanceFrequency(&performanceFreq))
+		return false;
 
 	// get 32 out of the 64 time bits such that we have around
 	// 1 microsecond resolution
@@ -99,9 +102,11 @@ inline void CPerformanceCounter::InitializePerformanceCounter()
 	m_flPerfCounterFreq = 1.0 / (double)lowpart;
 
 #endif // _WIN32
+
+	return true;
 }
 
-inline double CPerformanceCounter::GetCurTime()
+inline double CCounter::GetCurTime()
 {
 #ifdef _WIN32
 

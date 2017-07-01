@@ -17,7 +17,7 @@ bool HasDefaultPistol(CCSBot *me)
 }
 
 // Buy weapons, armor, etc.
-void BuyState::__MAKE_VHOOK(OnEnter)(CCSBot *me)
+void BuyState::OnEnter(CCSBot *me)
 {
 	m_retries = 0;
 	m_prefRetries = 0;
@@ -125,64 +125,64 @@ enum WeaponType
 struct BuyInfo
 {
 	WeaponType type;
-	bool preferred;		// more challenging bots prefer these weapons
-	char *buyAlias;		// the buy alias for this equipment
+	bool preferred; // more challenging bots prefer these weapons
+	char *buyAlias; // the buy alias for this equipment
 };
 
 // These tables MUST be kept in sync with the CT and T buy aliases
 
 #ifndef HOOK_GAMEDLL
 
-static BuyInfo primaryWeaponBuyInfoCT[ PRIMARY_WEAPON_BUY_COUNT ] =
+BuyInfo primaryWeaponBuyInfoCT[ PRIMARY_WEAPON_BUY_COUNT ] =
 {
-	{ SHOTGUN,		false, "m3" },			// WEAPON_M3
-	{ SHOTGUN,		false, "xm1014" },		// WEAPON_XM1014
-	{ SUB_MACHINE_GUN,	false, "tmp" },			// WEAPON_TMP
-	{ SUB_MACHINE_GUN,	false, "mp5" },			// WEAPON_MP5N
-	{ SUB_MACHINE_GUN,	false, "ump45" },		// WEAPON_UMP45
-	{ SUB_MACHINE_GUN,	false, "p90" },			// WEAPON_P90
-	{ RIFLE,		true,  "famas" },		// WEAPON_FAMAS
-	{ SNIPER_RIFLE,		false, "scout" },		// WEAPON_SCOUT
-	{ RIFLE,		true,  "m4a1" },		// WEAPON_M4A1
-	{ RIFLE,		false, "aug" },			// WEAPON_AUG
-	{ SNIPER_RIFLE,		true,  "sg550" },		// WEAPON_SG550
-	{ SNIPER_RIFLE,		true,  "awp" },			// WEAPON_AWP
-	{ MACHINE_GUN,		false, "m249" }			// WEAPON_M249
+	{ SHOTGUN,          false, "m3"     }, // WEAPON_M3
+	{ SHOTGUN,          false, "xm1014" }, // WEAPON_XM1014
+	{ SUB_MACHINE_GUN,  false, "tmp"    }, // WEAPON_TMP
+	{ SUB_MACHINE_GUN,  false, "mp5"    }, // WEAPON_MP5N
+	{ SUB_MACHINE_GUN,  false, "ump45"  }, // WEAPON_UMP45
+	{ SUB_MACHINE_GUN,  false, "p90"    }, // WEAPON_P90
+	{ RIFLE,            true,  "famas"  }, // WEAPON_FAMAS
+	{ SNIPER_RIFLE,     false, "scout"  }, // WEAPON_SCOUT
+	{ RIFLE,            true,  "m4a1"   }, // WEAPON_M4A1
+	{ RIFLE,            false, "aug"    }, // WEAPON_AUG
+	{ SNIPER_RIFLE,     true,  "sg550"  }, // WEAPON_SG550
+	{ SNIPER_RIFLE,     true,  "awp"    }, // WEAPON_AWP
+	{ MACHINE_GUN,      false, "m249"   }, // WEAPON_M249
 };
 
-static BuyInfo secondaryWeaponBuyInfoCT[ SECONDARY_WEAPON_BUY_COUNT ] =
+BuyInfo secondaryWeaponBuyInfoCT[ SECONDARY_WEAPON_BUY_COUNT ] =
 {
-//	{ PISTOL, false,	"glock" },
-//	{ PISTOL, false,	"usp" },
-	{ PISTOL, true,		"p228" },
-	{ PISTOL, true,		"deagle" },
-	{ PISTOL, true,		"fn57" }
+//	{ PISTOL, false, "glock"  },
+//	{ PISTOL, false, "usp"    },
+	{ PISTOL, true,  "p228"   },
+	{ PISTOL, true,  "deagle" },
+	{ PISTOL, true,  "fn57"   },
 };
 
-static BuyInfo primaryWeaponBuyInfoT[ PRIMARY_WEAPON_BUY_COUNT ] =
+BuyInfo primaryWeaponBuyInfoT[ PRIMARY_WEAPON_BUY_COUNT ] =
 {
-	{ SHOTGUN,		false, "m3" },			// WEAPON_M3
-	{ SHOTGUN,		false, "xm1014" },		// WEAPON_XM1014
-	{ SUB_MACHINE_GUN,	false, "mac10" },		// WEAPON_MAC10
-	{ SUB_MACHINE_GUN,	false, "mp5" },			// WEAPON_MP5N
-	{ SUB_MACHINE_GUN,	false, "ump45" },		// WEAPON_UMP45
-	{ SUB_MACHINE_GUN,	false, "p90" },			// WEAPON_P90
-	{ RIFLE,		true,  "galil" },		// WEAPON_GALIL
-	{ RIFLE,		true,  "ak47" },		// WEAPON_AK47
-	{ SNIPER_RIFLE,		false, "scout" },		// WEAPON_SCOUT
-	{ RIFLE,		true,  "sg552" },		// WEAPON_SG552
-	{ SNIPER_RIFLE,		true,  "awp" },			// WEAPON_AWP
-	{ SNIPER_RIFLE,		true,  "g3sg1" },		// WEAPON_G3SG1
-	{ MACHINE_GUN,		false, "m249" }			// WEAPON_M249
+	{ SHOTGUN,          false, "m3"     }, // WEAPON_M3
+	{ SHOTGUN,          false, "xm1014" }, // WEAPON_XM1014
+	{ SUB_MACHINE_GUN,  false, "mac10"  }, // WEAPON_MAC10
+	{ SUB_MACHINE_GUN,  false, "mp5"    }, // WEAPON_MP5N
+	{ SUB_MACHINE_GUN,  false, "ump45"  }, // WEAPON_UMP45
+	{ SUB_MACHINE_GUN,  false, "p90"    }, // WEAPON_P90
+	{ RIFLE,            true,  "galil"  }, // WEAPON_GALIL
+	{ RIFLE,            true,  "ak47"   }, // WEAPON_AK47
+	{ SNIPER_RIFLE,     false, "scout"  }, // WEAPON_SCOUT
+	{ RIFLE,            true,  "sg552"  }, // WEAPON_SG552
+	{ SNIPER_RIFLE,     true,  "awp"    }, // WEAPON_AWP
+	{ SNIPER_RIFLE,     true,  "g3sg1"  }, // WEAPON_G3SG1
+	{ MACHINE_GUN,      false, "m249"   }, // WEAPON_M249
 };
 
-static BuyInfo secondaryWeaponBuyInfoT[ SECONDARY_WEAPON_BUY_COUNT ] =
+BuyInfo secondaryWeaponBuyInfoT[ SECONDARY_WEAPON_BUY_COUNT ] =
 {
-//	{ PISTOL, false,	"glock" },
-//	{ PISTOL, false,	"usp" },
-	{ PISTOL, true,		"p228" },
-	{ PISTOL, true,		"deagle" },
-	{ PISTOL, true,		"elites" }
+//	{ PISTOL, false, "glock"  },
+//	{ PISTOL, false, "usp"    },
+	{ PISTOL, true,  "p228"   },
+	{ PISTOL, true,  "deagle" },
+	{ PISTOL, true,  "elites" },
 };
 
 #else // HOOK_GAMEDLL
@@ -220,7 +220,7 @@ inline WeaponType GetWeaponType(const char *alias)
 	return NUM_WEAPON_TYPES;
 }
 
-void BuyState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
+void BuyState::OnUpdate(CCSBot *me)
 {
 	// wait for a Navigation Mesh
 	if (!TheNavAreaList.size())
@@ -516,7 +516,7 @@ void BuyState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 	}
 }
 
-void BuyState::__MAKE_VHOOK(OnExit)(CCSBot *me)
+void BuyState::OnExit(CCSBot *me)
 {
 	me->ResetStuckMonitor();
 	me->EquipBestWeapon();

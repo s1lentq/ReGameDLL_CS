@@ -36,7 +36,7 @@ Vector VecBModelOrigin(entvars_t *pevBModel)
 
 LINK_ENTITY_TO_CLASS(func_wall, CFuncWall, CCSFuncWall)
 
-void CFuncWall::__MAKE_VHOOK(Spawn)()
+void CFuncWall::Spawn()
 {
 	pev->angles = g_vecZero;
 
@@ -50,7 +50,7 @@ void CFuncWall::__MAKE_VHOOK(Spawn)()
 	pev->flags |= FL_WORLDBRUSH;
 }
 
-void CFuncWall::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CFuncWall::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	if (ShouldToggle(useType, int(pev->frame)))
 	{
@@ -60,7 +60,7 @@ void CFuncWall::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller,
 
 LINK_ENTITY_TO_CLASS(func_wall_toggle, CFuncWallToggle, CCSFuncWallToggle)
 
-void CFuncWallToggle::__MAKE_VHOOK(Spawn)()
+void CFuncWallToggle::Spawn()
 {
 	CFuncWall::Spawn();
 
@@ -94,7 +94,7 @@ BOOL CFuncWallToggle::IsOn()
 	return TRUE;
 }
 
-void CFuncWallToggle::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CFuncWallToggle::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	int status = IsOn();
 
@@ -109,7 +109,7 @@ void CFuncWallToggle::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pC
 
 LINK_ENTITY_TO_CLASS(func_conveyor, CFuncConveyor, CCSFuncConveyor)
 
-void CFuncConveyor::__MAKE_VHOOK(Spawn)()
+void CFuncConveyor::Spawn()
 {
 	SetMovedir(pev);
 	CFuncWall::Spawn();
@@ -148,7 +148,7 @@ void CFuncConveyor::UpdateSpeed(float speed)
 	pev->rendercolor.z = (speedCode & 0xFF);
 }
 
-void CFuncConveyor::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CFuncConveyor::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	pev->speed = -pev->speed;
 	UpdateSpeed(pev->speed);
@@ -156,7 +156,7 @@ void CFuncConveyor::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCal
 
 LINK_ENTITY_TO_CLASS(func_illusionary, CFuncIllusionary, CCSFuncIllusionary)
 
-void CFuncIllusionary::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CFuncIllusionary::KeyValue(KeyValueData *pkvd)
 {
 	// skin is used for content type
 	if (FStrEq(pkvd->szKeyName, "skin"))
@@ -168,7 +168,7 @@ void CFuncIllusionary::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CBaseToggle::KeyValue(pkvd);
 }
 
-void CFuncIllusionary::__MAKE_VHOOK(Spawn)()
+void CFuncIllusionary::Spawn()
 {
 	pev->angles = g_vecZero;
 	pev->movetype = MOVETYPE_NONE;
@@ -186,7 +186,7 @@ void CFuncIllusionary::__MAKE_VHOOK(Spawn)()
 
 LINK_ENTITY_TO_CLASS(func_monsterclip, CFuncMonsterClip, CCSFuncMonsterClip)
 
-void CFuncMonsterClip::__MAKE_VHOOK(Spawn)()
+void CFuncMonsterClip::Spawn()
 {
 	CFuncWall::Spawn();
 
@@ -201,7 +201,7 @@ void CFuncMonsterClip::__MAKE_VHOOK(Spawn)()
 LINK_ENTITY_TO_CLASS(func_rotating, CFuncRotating, CCSFuncRotating)
 IMPLEMENT_SAVERESTORE(CFuncRotating, CBaseEntity)
 
-void CFuncRotating::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CFuncRotating::KeyValue(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "fanfriction"))
 	{
@@ -250,7 +250,7 @@ void CFuncRotating::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 // "dmg"	damage to inflict when blocked (2 default)
 
 // REVERSE will cause the it to rotate in the opposite direction.
-void CFuncRotating::__MAKE_VHOOK(Spawn)()
+void CFuncRotating::Spawn()
 {
 #ifdef REGAMEDLL_FIXES
 	m_angles = pev->angles;
@@ -404,7 +404,7 @@ void CFuncRotating::Restart()
 }
 #endif
 
-void CFuncRotating::__MAKE_VHOOK(Precache)()
+void CFuncRotating::Precache()
 {
 	char *szSoundFile = (char *)STRING(pev->message);
 
@@ -652,7 +652,7 @@ void CFuncRotating::RotatingUse(CBaseEntity *pActivator, CBaseEntity *pCaller, U
 }
 
 // RotatingBlocked - An entity has blocked the brush
-void CFuncRotating::__MAKE_VHOOK(Blocked)(CBaseEntity *pOther)
+void CFuncRotating::Blocked(CBaseEntity *pOther)
 {
 	pOther->TakeDamage(pev, pev, pev->dmg, DMG_CRUSH);
 }
@@ -660,7 +660,7 @@ void CFuncRotating::__MAKE_VHOOK(Blocked)(CBaseEntity *pOther)
 LINK_ENTITY_TO_CLASS(func_pendulum, CPendulum, CCSPendulum)
 IMPLEMENT_SAVERESTORE(CPendulum, CBaseEntity)
 
-void CPendulum::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CPendulum::KeyValue(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "distance"))
 	{
@@ -676,7 +676,7 @@ void CPendulum::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CBaseEntity::KeyValue(pkvd);
 }
 
-void CPendulum::__MAKE_VHOOK(Spawn)()
+void CPendulum::Spawn()
 {
 	// set the axis of rotation
 	CBaseToggle::AxisDir(pev);
@@ -760,7 +760,7 @@ void CPendulum::Stop()
 	pev->avelocity = g_vecZero;
 }
 
-void CPendulum::__MAKE_VHOOK(Blocked)(CBaseEntity *pOther)
+void CPendulum::Blocked(CBaseEntity *pOther)
 {
 	m_time = gpGlobals->time;
 }
@@ -816,7 +816,7 @@ void CPendulum::Swing()
 	}
 }
 
-void CPendulum::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
+void CPendulum::Touch(CBaseEntity *pOther)
 {
 	entvars_t *pevOther = pOther->pev;
 

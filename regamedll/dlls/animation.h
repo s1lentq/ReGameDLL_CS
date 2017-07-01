@@ -32,11 +32,11 @@
 #pragma once
 #endif
 
-#define NUM_BLENDING			9
+#define NUM_BLENDING                9
 
-#define ANIM_SWIM_1			8
-#define ANIM_SWIM_2			9
-#define ANIM_FIRST_DEATH_SEQUENCE	101
+#define ANIM_SWIM_1                 8
+#define ANIM_SWIM_2                 9
+#define ANIM_FIRST_DEATH_SEQUENCE   101
 
 #include "monsterevent.h"
 

@@ -44,17 +44,6 @@ public:
 	virtual int Restore(CRestore &restore);
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Restart_();
-	int Save_(CSave &save);
-	int Restore_(CRestore &restore);
-	void KeyValue_(KeyValueData *pkvd);
-	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-#endif
-
 	static TYPEDESCRIPTION IMPL(m_SaveData)[2];
 
 private:
@@ -68,14 +57,6 @@ class CEnvLight: public CLight
 public:
 	virtual void Spawn();
 	virtual void KeyValue(KeyValueData *pkvd);
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void KeyValue_(KeyValueData *pkvd);
-
-#endif
-
 };
 
 #endif // LIGHT_H

@@ -73,4 +73,3 @@ inline wchar_t *CloneWString(const wchar_t *str)
 	wcscpy(cloneStr, str);
 	return cloneStr;
 }
-	

@@ -61,7 +61,7 @@ const int MAX_FIRING_SPREADS = ARRAYSIZE(gTankSpread);
 
 IMPLEMENT_SAVERESTORE(CFuncTank, CBaseEntity)
 
-void CFuncTank::__MAKE_VHOOK(Spawn)()
+void CFuncTank::Spawn()
 {
 	Precache();
 
@@ -90,7 +90,7 @@ void CFuncTank::__MAKE_VHOOK(Spawn)()
 	pev->oldorigin = pev->origin;
 }
 
-void CFuncTank::__MAKE_VHOOK(Precache)()
+void CFuncTank::Precache()
 {
 	if (m_iszSpriteSmoke)
 	{
@@ -108,7 +108,7 @@ void CFuncTank::__MAKE_VHOOK(Precache)()
 	}
 }
 
-void CFuncTank::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CFuncTank::KeyValue(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "yawrate"))
 	{
@@ -219,7 +219,7 @@ void CFuncTank::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CBaseEntity::KeyValue(pkvd);
 }
 
-BOOL CFuncTank::__MAKE_VHOOK(OnControls)(entvars_t *pevTest)
+BOOL CFuncTank::OnControls(entvars_t *pevTest)
 {
 	if (!(pev->spawnflags & SF_TANK_CANCONTROL))
 		return FALSE;
@@ -323,7 +323,7 @@ void CFuncTank::ControllerPostFrame()
 	}
 }
 
-void CFuncTank::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CFuncTank::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	// player controlled turret
 	if (pev->spawnflags & SF_TANK_CANCONTROL)
@@ -373,7 +373,7 @@ BOOL CFuncTank::InRange(float range)
 	return TRUE;
 }
 
-void CFuncTank::__MAKE_VHOOK(Think)()
+void CFuncTank::Think()
 {
 	pev->avelocity = g_vecZero;
 	TrackTarget();
@@ -580,7 +580,7 @@ void CFuncTank::AdjustAnglesForBarrel(Vector &angles, float distance)
 }
 
 // Fire targets and spawn sprites
-void CFuncTank::__MAKE_VHOOK(Fire)(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker)
+void CFuncTank::Fire(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker)
 {
 	if (m_fireLast != 0.0f)
 	{
@@ -656,7 +656,7 @@ void CFuncTank::StopRotSound()
 
 LINK_ENTITY_TO_CLASS(func_tank, CFuncTankGun, CCSFuncTankGun)
 
-void CFuncTankGun::__MAKE_VHOOK(Fire)(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker)
+void CFuncTankGun::Fire(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker)
 {
 	if (m_fireLast != 0.0f)
 	{
@@ -696,7 +696,7 @@ void CFuncTankGun::__MAKE_VHOOK(Fire)(const Vector &barrelEnd, const Vector &for
 LINK_ENTITY_TO_CLASS(func_tanklaser, CFuncTankLaser, CCSFuncTankLaser)
 IMPLEMENT_SAVERESTORE(CFuncTankLaser, CFuncTank)
 
-void CFuncTankLaser::__MAKE_VHOOK(Activate)()
+void CFuncTankLaser::Activate()
 {
 	if (!GetLaser())
 	{
@@ -709,7 +709,7 @@ void CFuncTankLaser::__MAKE_VHOOK(Activate)()
 	}
 }
 
-void CFuncTankLaser::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CFuncTankLaser::KeyValue(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "laserentity"))
 	{
@@ -744,7 +744,7 @@ CLaser *CFuncTankLaser::GetLaser()
 	return m_pLaser;
 }
 
-void CFuncTankLaser::__MAKE_VHOOK(Think)()
+void CFuncTankLaser::Think()
 {
 	if (m_pLaser != NULL && gpGlobals->time > m_laserTime)
 	{
@@ -754,7 +754,7 @@ void CFuncTankLaser::__MAKE_VHOOK(Think)()
 	CFuncTank::Think();
 }
 
-void CFuncTankLaser::__MAKE_VHOOK(Fire)(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker)
+void CFuncTankLaser::Fire(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker)
 {
 	int i;
 	TraceResult tr;
@@ -791,13 +791,13 @@ void CFuncTankLaser::__MAKE_VHOOK(Fire)(const Vector &barrelEnd, const Vector &f
 
 LINK_ENTITY_TO_CLASS(func_tankrocket, CFuncTankRocket, CCSFuncTankRocket)
 
-void CFuncTankRocket::__MAKE_VHOOK(Precache)()
+void CFuncTankRocket::Precache()
 {
 	UTIL_PrecacheOther("rpg_rocket");
 	CFuncTank::Precache();
 }
 
-void CFuncTankRocket::__MAKE_VHOOK(Fire)(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker)
+void CFuncTankRocket::Fire(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker)
 {
 	int i;
 
@@ -821,7 +821,7 @@ void CFuncTankRocket::__MAKE_VHOOK(Fire)(const Vector &barrelEnd, const Vector &
 
 LINK_ENTITY_TO_CLASS(func_tankmortar, CFuncTankMortar, CCSFuncTankMortar)
 
-void CFuncTankMortar::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CFuncTankMortar::KeyValue(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "iMagnitude"))
 	{
@@ -832,7 +832,7 @@ void CFuncTankMortar::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CFuncTank::KeyValue(pkvd);
 }
 
-void CFuncTankMortar::__MAKE_VHOOK(Fire)(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker)
+void CFuncTankMortar::Fire(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker)
 {
 	if (m_fireLast != 0.0f)
 	{
@@ -858,7 +858,7 @@ void CFuncTankMortar::__MAKE_VHOOK(Fire)(const Vector &barrelEnd, const Vector &
 LINK_ENTITY_TO_CLASS(func_tankcontrols, CFuncTankControls, CCSFuncTankControls)
 IMPLEMENT_SAVERESTORE(CFuncTankControls, CBaseEntity)
 
-void CFuncTankControls::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CFuncTankControls::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	// pass the Use command onto the controls
 	if (m_pTank != NULL)
@@ -870,7 +870,7 @@ void CFuncTankControls::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *
 	assert(m_pTank != NULL);
 }
 
-void CFuncTankControls::__MAKE_VHOOK(Think)()
+void CFuncTankControls::Think()
 {
 	edict_t *pTarget = NULL;
 
@@ -889,7 +889,7 @@ void CFuncTankControls::__MAKE_VHOOK(Think)()
 	m_pTank = static_cast<CFuncTank *>(Instance(pTarget));
 }
 
-void CFuncTankControls::__MAKE_VHOOK(Spawn)()
+void CFuncTankControls::Spawn()
 {
 	pev->solid = SOLID_TRIGGER;
 	pev->movetype = MOVETYPE_NONE;

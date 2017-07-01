@@ -1,13 +1,13 @@
 #include "precompiled.h"
 
-void HostageIdleState::__MAKE_VHOOK(OnEnter)(CHostageImprov *improv)
+void HostageIdleState::OnEnter(CHostageImprov *improv)
 {
 	m_moveState = MoveDone;
 	m_fleeTimer.Invalidate();
 	m_mustFlee = false;
 }
 
-void HostageIdleState::__MAKE_VHOOK(OnUpdate)(CHostageImprov *improv)
+void HostageIdleState::OnUpdate(CHostageImprov *improv)
 {
 	if (!UTIL_ActivePlayersInGame())
 		return;
@@ -57,7 +57,7 @@ void HostageIdleState::__MAKE_VHOOK(OnUpdate)(CHostageImprov *improv)
 
 		improv->Stop();
 		improv->FaceOutwards();
-		
+
 		const float crouchChance = 33.3f;
 		if (improv->IsScared() && !improv->IsAtHome() && RANDOM_FLOAT(0, 100) <= crouchChance)
 		{
@@ -92,7 +92,7 @@ void HostageIdleState::__MAKE_VHOOK(OnUpdate)(CHostageImprov *improv)
 		{
 			const float attentionRange = 700.0f;
 			float rangeT = (improv->GetCentroid() - captor->pev->origin).Length();
-			
+
 			if (rangeT < attentionRange)
 			{
 				const float cosTolerance = 0.95f;
@@ -228,13 +228,13 @@ void HostageIdleState::__MAKE_VHOOK(OnUpdate)(CHostageImprov *improv)
 	}
 }
 
-void HostageIdleState::__MAKE_VHOOK(OnExit)(CHostageImprov *improv)
+void HostageIdleState::OnExit(CHostageImprov *improv)
 {
 	improv->StandUp();
 	improv->ClearFaceTo();
 }
 
-void HostageIdleState::__MAKE_VHOOK(UpdateStationaryAnimation)(CHostageImprov *improv)
+void HostageIdleState::UpdateStationaryAnimation(CHostageImprov *improv)
 {
 	if (improv->IsScared())
 	{

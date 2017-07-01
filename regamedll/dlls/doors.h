@@ -69,20 +69,6 @@ public:
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 	virtual void Blocked(CBaseEntity *pOther);
 
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	void Restart_();
-	void KeyValue_(KeyValueData *pkvd);
-	int Save_(CSave &save);
-	int Restore_(CRestore &restore);
-	void SetToggleState_(int state);
-	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-	void Blocked_(CBaseEntity *pOther);
-
-#endif
-
 public:
 	static TYPEDESCRIPTION IMPL(m_SaveData)[7];
 
@@ -97,10 +83,10 @@ public:
 public:
 	byte m_bHealthValue;		// some doors are medi-kit doors, they give players health
 
-	byte m_bMoveSnd;		// sound a door makes while moving
-	byte m_bStopSnd;		// sound a door makes when it stops
+	byte m_bMoveSnd;			// sound a door makes while moving
+	byte m_bStopSnd;			// sound a door makes when it stops
 
-	locksound_t m_ls;		// door lock sounds
+	locksound_t m_ls;			// door lock sounds
 
 	byte m_bLockedSound;		// ordinals from entity selection
 	byte m_bLockedSentence;
@@ -116,15 +102,6 @@ public:
 	virtual void Spawn();
 	virtual void Restart();
 	virtual void SetToggleState(int state);
-
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Restart_();
-	void SetToggleState_(int state);
-
-#endif
-
 };
 
 class CMomentaryDoor: public CBaseToggle
@@ -138,21 +115,10 @@ public:
 	virtual int ObjectCaps() { return (CBaseToggle::ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
-#ifdef HOOK_GAMEDLL
-
-	void Spawn_();
-	void Precache_();
-	void KeyValue_(KeyValueData *pkvd);
-	int Save_(CSave &save);
-	int Restore_(CRestore &restore);
-	void Use_(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-
-#endif
-
 public:
 	static TYPEDESCRIPTION IMPL(m_SaveData)[1];
 
-	byte m_bMoveSnd;	// sound a door makes while moving
+	byte m_bMoveSnd; // sound a door makes while moving
 };
 
 void PlayLockSounds(entvars_t *pev, locksound_t *pls, int flocked, int fbutton);

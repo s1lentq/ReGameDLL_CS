@@ -42,7 +42,7 @@ enum HostageChatterType;
 class CHostageImprov: public CImprov
 {
 public:
-	CHostageImprov(CBaseEntity *entity);
+	CHostageImprov(CBaseEntity *entity = nullptr);
 	~CHostageImprov() {};
 
 	// invoked when an improv reaches its MoveTo goal
@@ -81,7 +81,7 @@ public:
 	virtual void TrackPath(const Vector &pathGoal, float deltaT);												// move along path by following "pathGoal"
 	virtual void StartLadder(const CNavLadder *ladder, NavTraverseType how, const Vector *approachPos, const Vector *departPos);
 	virtual bool TraverseLadder(const CNavLadder *ladder, NavTraverseType how, const Vector *approachPos, const Vector *departPos, float deltaT);
-	virtual bool GetSimpleGroundHeightWithFloor(const Vector *pos, float *height, Vector *normal = NULL);
+	virtual bool GetSimpleGroundHeightWithFloor(const Vector *pos, float *height, Vector *normal = nullptr);
 	virtual void Run();
 	virtual void Walk();
 	virtual void Stop();
@@ -104,53 +104,13 @@ public:
 	virtual bool IsVisible(const Vector &pos, bool testFOV = false) const;						// return true if hostage can see position
 	virtual bool IsPlayerLookingAtMe(CBasePlayer *other, float cosTolerance = 0.95f) const;
 	virtual CBasePlayer *IsAnyPlayerLookingAtMe(int team = 0, float cosTolerance = 0.95f) const;
-	virtual CBasePlayer *GetClosestPlayerByTravelDistance(int team = 0, float *range = NULL) const;
+	virtual CBasePlayer *GetClosestPlayerByTravelDistance(int team = 0, float *range = nullptr) const;
 	virtual CNavArea *GetLastKnownArea() const { return m_lastKnownArea; }
 	virtual void OnUpdate(float deltaT);
 	virtual void OnUpkeep(float deltaT);
 	virtual void OnReset();
-	virtual void OnGameEvent(GameEventType event, CBaseEntity *entity = NULL, CBaseEntity *other = NULL);
+	virtual void OnGameEvent(GameEventType event, CBaseEntity *entity = nullptr, CBaseEntity *other = nullptr);
 	virtual void OnTouch(CBaseEntity *other);									// in contact with "other"
-
-#ifdef HOOK_GAMEDLL
-
-	void OnMoveToFailure_(const Vector &goal, MoveToFailureType reason);
-	bool IsAlive_() const;
-	void MoveTo_(const Vector &goal);
-	void LookAt_(const Vector &target);
-	void ClearLookAt_();
-	void FaceTo_(const Vector &goal);
-	void ClearFaceTo_();
-	bool IsAtMoveGoal_(float error = 20.0f) const;
-	bool IsAtFaceGoal_() const;
-	bool IsFriendInTheWay_(const Vector &goalPos) const;
-	bool IsFriendInTheWay_(CBaseEntity *myFriend, const Vector &goalPos) const;
-	bool Jump_();
-	void Crouch_();
-	void StandUp_();
-	void TrackPath_(const Vector &pathGoal, float deltaT);
-	void StartLadder_(const CNavLadder *ladder, NavTraverseType how, const Vector *approachPos, const Vector *departPos);
-	bool TraverseLadder_(const CNavLadder *ladder, NavTraverseType how, const Vector *approachPos, const Vector *departPos, float deltaT);
-	bool GetSimpleGroundHeightWithFloor_(const Vector *pos, float *height, Vector *normal = NULL);
-	void Run_();
-	void Walk_();
-	void Stop_();
-	const Vector &GetFeet_() const;
-	const Vector &GetCentroid_() const;
-	const Vector &GetEyes_() const;
-	bool IsOnGround_() const;
-	bool IsMoving_() const;
-	bool IsVisible_(const Vector &pos, bool testFOV = false) const;
-	bool IsPlayerLookingAtMe_(CBasePlayer *other, float cosTolerance = 0.95f) const;
-	CBasePlayer *IsAnyPlayerLookingAtMe_(int team = 0, float cosTolerance = 0.95f) const;
-	CBasePlayer *GetClosestPlayerByTravelDistance_(int team = 0, float *range = NULL) const;
-	void OnUpdate_(float deltaT);
-	void OnUpkeep_(float deltaT);
-	void OnReset_();
-	void OnGameEvent_(GameEventType event, CBaseEntity *entity = NULL, CBaseEntity *other = NULL);
-	void OnTouch_(CBaseEntity *other);
-
-#endif // HOOK_GAMEDLL
 
 #ifdef PLAY_GAMEDLL
 	void ApplyForce2(float_precision x, float_precision y);
@@ -180,7 +140,7 @@ public:
 
 	// begin following "leader"
 	void Follow(CBasePlayer *leader) { m_followState.SetLeader(leader); m_behavior.SetState(&m_followState); }
-	bool IsFollowing(const CBaseEntity *leader = NULL) const { return m_behavior.IsState(&m_followState); }
+	bool IsFollowing(const CBaseEntity *leader = nullptr) const { return m_behavior.IsState(&m_followState); }
 
 	// Escape
 	void Escape() { m_behavior.SetState(&m_escapeState); }
@@ -223,7 +183,7 @@ public:
 	bool FaceTowards(const Vector &target, float deltaT);	// rotate body to face towards "target"
 	float GetSpeed();
 	void SetMoveAngle(float angle) { m_moveAngle = angle; }
-	void Wiggle();						// attempt to wiggle-out of begin stuck
+	void Wiggle();											// attempt to wiggle-out of begin stuck
 	void ClearPath();
 
 	#define HOSTAGE_ONLY_JUMP_DOWN true
@@ -281,12 +241,12 @@ private:
 	bool m_isLookingAt;
 	Vector m_faceGoal;
 	bool m_isFacingTo;
-	CNavPath m_path;			// current path to follow
+	CNavPath m_path;					// current path to follow
 	CNavPathFollower m_follower;
 	Vector m_lastPosition;
 	MoveType m_moveType;
 	MoveType m_moveLimit;
-	bool m_isCrouching;			// true if hostage is crouching
+	bool m_isCrouching;					// true if hostage is crouching
 	CountdownTimer m_minCrouchTimer;
 	float m_moveAngle;
 	NavRelativeDirType m_wiggleDirection;
@@ -294,7 +254,7 @@ private:
 	CountdownTimer m_wiggleTimer;		// for wiggling
 	CountdownTimer m_wiggleJumpTimer;
 	CountdownTimer m_inhibitObstacleAvoidance;
-	CountdownTimer m_jumpTimer;		// if zero, we can jump
+	CountdownTimer m_jumpTimer;			// if zero, we can jump
 
 	bool m_hasJumped;
 	bool m_hasJumpedIntoAir;
@@ -313,7 +273,7 @@ public:
 	{
 		m_me = me;
 		m_goalPos = goalPos;
-		m_blocker = NULL;
+		m_blocker = nullptr;
 	}
 	bool operator()(CHostage *them)
 	{
@@ -338,7 +298,7 @@ class HostagePathCost
 public:
 	float operator()(CNavArea *area, CNavArea *fromArea, const CNavLadder *ladder)
 	{
-		if (fromArea == NULL)
+		if (fromArea == nullptr)
 		{
 			// first area in path, no cost
 			return 0.0f;

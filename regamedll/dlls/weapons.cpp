@@ -474,7 +474,7 @@ void W_Precache()
 IMPLEMENT_SAVERESTORE(CBasePlayerItem, CBaseAnimating)
 IMPLEMENT_SAVERESTORE(CBasePlayerWeapon, CBasePlayerItem)
 
-void CBasePlayerItem::__MAKE_VHOOK(SetObjectCollisionBox)()
+void CBasePlayerItem::SetObjectCollisionBox()
 {
 	pev->absmin = pev->origin + Vector(-24, -24, 0);
 	pev->absmax = pev->origin + Vector(24, 24, 16);
@@ -589,7 +589,7 @@ void CBasePlayerItem::CheckRespawn()
 
 // Respawn - this item is already in the world, but it is
 // invisible and intangible. Make it visible and tangible.
-CBaseEntity *CBasePlayerItem::__MAKE_VHOOK(Respawn)()
+CBaseEntity *CBasePlayerItem::Respawn()
 {
 	// make a copy of this weapon that is invisible and inaccessible to players (no touch function). The weapon spawn/respawn code
 	// will decide when to make the weapon visible and touchable.
@@ -881,7 +881,7 @@ bool CBasePlayerWeapon::HasSecondaryAttack()
 	return true;
 }
 
-void CBasePlayerWeapon::__MAKE_VHOOK(ItemPostFrame)()
+void CBasePlayerWeapon::ItemPostFrame()
 {
 	int usableButtons = m_pPlayer->pev->button;
 
@@ -1081,7 +1081,7 @@ void CBasePlayerItem::DestroyItem()
 	Kill();
 }
 
-int CBasePlayerItem::__MAKE_VHOOK(AddToPlayer)(CBasePlayer *pPlayer)
+int CBasePlayerItem::AddToPlayer(CBasePlayer *pPlayer)
 {
 	m_pPlayer = pPlayer;
 
@@ -1092,27 +1092,27 @@ int CBasePlayerItem::__MAKE_VHOOK(AddToPlayer)(CBasePlayer *pPlayer)
 	return TRUE;
 }
 
-void CBasePlayerItem::__MAKE_VHOOK(Drop)()
+void CBasePlayerItem::Drop()
 {
 	SetTouch(NULL);
 	SetThink(&CBaseEntity::SUB_Remove);
 	pev->nextthink = gpGlobals->time + 0.1f;
 }
 
-void CBasePlayerItem::__MAKE_VHOOK(Kill)()
+void CBasePlayerItem::Kill()
 {
 	SetTouch(NULL);
 	SetThink(&CBaseEntity::SUB_Remove);
 	pev->nextthink = gpGlobals->time + 0.1f;
 }
 
-void CBasePlayerItem::__MAKE_VHOOK(Holster)(int skiplocal)
+void CBasePlayerItem::Holster(int skiplocal)
 {
 	m_pPlayer->pev->viewmodel = 0;
 	m_pPlayer->pev->weaponmodel = 0;
 }
 
-void CBasePlayerItem::__MAKE_VHOOK(AttachToPlayer)(CBasePlayer *pPlayer)
+void CBasePlayerItem::AttachToPlayer(CBasePlayer *pPlayer)
 {
 	pev->movetype = MOVETYPE_FOLLOW;
 	pev->solid = SOLID_NOT;
@@ -1136,7 +1136,7 @@ void CBasePlayerItem::__MAKE_VHOOK(AttachToPlayer)(CBasePlayer *pPlayer)
 }
 
 // CALLED THROUGH the newly-touched weapon's instance. The existing player weapon is pOriginal
-int CBasePlayerWeapon::__MAKE_VHOOK(AddDuplicate)(CBasePlayerItem *pOriginal)
+int CBasePlayerWeapon::AddDuplicate(CBasePlayerItem *pOriginal)
 {
 	if (m_iDefaultAmmo)
 	{
@@ -1149,7 +1149,7 @@ int CBasePlayerWeapon::__MAKE_VHOOK(AddDuplicate)(CBasePlayerItem *pOriginal)
 	}
 }
 
-int CBasePlayerWeapon::__MAKE_VHOOK(AddToPlayer)(CBasePlayer *pPlayer)
+int CBasePlayerWeapon::AddToPlayer(CBasePlayer *pPlayer)
 {
 	m_pPlayer = pPlayer;
 	pPlayer->pev->weapons |= (1 << m_iId);
@@ -1168,7 +1168,7 @@ int CBasePlayerWeapon::__MAKE_VHOOK(AddToPlayer)(CBasePlayer *pPlayer)
 	return FALSE;
 }
 
-int CBasePlayerWeapon::__MAKE_VHOOK(UpdateClientData)(CBasePlayer *pPlayer)
+int CBasePlayerWeapon::UpdateClientData(CBasePlayer *pPlayer)
 {
 	bool bSend = false;
 	int state = 0;
@@ -1214,7 +1214,7 @@ int CBasePlayerWeapon::__MAKE_VHOOK(UpdateClientData)(CBasePlayer *pPlayer)
 	return 1;
 }
 
-void CBasePlayerWeapon::__MAKE_VHOOK(SendWeaponAnim)(int iAnim, int skiplocal)
+void CBasePlayerWeapon::SendWeaponAnim(int iAnim, int skiplocal)
 {
 	m_pPlayer->pev->weaponanim = iAnim;
 
@@ -1282,7 +1282,7 @@ BOOL CBasePlayerWeapon::AddSecondaryAmmo(int iCount, char *szName, int iMax)
 // weapon is useable by the player in its current state.
 // (does it have ammo loaded? do I have any ammo for the
 // weapon?, etc)
-BOOL CBasePlayerWeapon::__MAKE_VHOOK(IsUseable)()
+BOOL CBasePlayerWeapon::IsUseable()
 {
 	if (m_iClip <= 0)
 	{
@@ -1296,7 +1296,7 @@ BOOL CBasePlayerWeapon::__MAKE_VHOOK(IsUseable)()
 	return TRUE;
 }
 
-BOOL CBasePlayerWeapon::__MAKE_VHOOK(CanDeploy)()
+BOOL CBasePlayerWeapon::CanDeploy()
 {
 	return TRUE;
 }
@@ -1379,7 +1379,7 @@ int CBasePlayerWeapon::DefaultReload(int iClipSize, int iAnim, float fDelay)
 	return TRUE;
 }
 
-BOOL CBasePlayerWeapon::__MAKE_VHOOK(PlayEmptySound)()
+BOOL CBasePlayerWeapon::PlayEmptySound()
 {
 	if (m_iPlayEmptySound)
 	{
@@ -1402,22 +1402,22 @@ BOOL CBasePlayerWeapon::__MAKE_VHOOK(PlayEmptySound)()
 	return FALSE;
 }
 
-void CBasePlayerWeapon::__MAKE_VHOOK(ResetEmptySound)()
+void CBasePlayerWeapon::ResetEmptySound()
 {
 	m_iPlayEmptySound = 1;
 }
 
-int CBasePlayerWeapon::__MAKE_VHOOK(PrimaryAmmoIndex)()
+int CBasePlayerWeapon::PrimaryAmmoIndex()
 {
 	return m_iPrimaryAmmoType;
 }
 
-int CBasePlayerWeapon::__MAKE_VHOOK(SecondaryAmmoIndex)()
+int CBasePlayerWeapon::SecondaryAmmoIndex()
 {
 	return -1;
 }
 
-void CBasePlayerWeapon::__MAKE_VHOOK(Holster)(int skiplocal)
+void CBasePlayerWeapon::Holster(int skiplocal)
 {
 	// cancel any reload in progress.
 	m_fInReload = FALSE;
@@ -1425,7 +1425,7 @@ void CBasePlayerWeapon::__MAKE_VHOOK(Holster)(int skiplocal)
 	m_pPlayer->pev->weaponmodel = 0;
 }
 
-void CBasePlayerAmmo::__MAKE_VHOOK(Spawn)()
+void CBasePlayerAmmo::Spawn()
 {
 	pev->movetype = MOVETYPE_TOSS;
 	pev->solid = SOLID_TRIGGER;
@@ -1442,7 +1442,7 @@ void CBasePlayerAmmo::__MAKE_VHOOK(Spawn)()
 	}
 }
 
-CBaseEntity *CBasePlayerAmmo::__MAKE_VHOOK(Respawn)()
+CBaseEntity *CBasePlayerAmmo::Respawn()
 {
 	pev->effects |= EF_NODRAW;
 	SetTouch(NULL);
@@ -1506,7 +1506,7 @@ void CBasePlayerAmmo::DefaultTouch(CBaseEntity *pOther)
 // the first time. If it is spawned by the world, m_iDefaultAmmo will have a default ammo amount in it.
 // if  this is a weapon dropped by a dying player, has 0 m_iDefaultAmmo, which means only the ammo in
 // the weapon clip comes along.
-int CBasePlayerWeapon::__MAKE_VHOOK(ExtractAmmo)(CBasePlayerWeapon *pWeapon)
+int CBasePlayerWeapon::ExtractAmmo(CBasePlayerWeapon *pWeapon)
 {
 	int iReturn = 0;
 
@@ -1527,7 +1527,7 @@ int CBasePlayerWeapon::__MAKE_VHOOK(ExtractAmmo)(CBasePlayerWeapon *pWeapon)
 }
 
 // called by the new item's class with the existing item as parameter
-int CBasePlayerWeapon::__MAKE_VHOOK(ExtractClipAmmo)(CBasePlayerWeapon *pWeapon)
+int CBasePlayerWeapon::ExtractClipAmmo(CBasePlayerWeapon *pWeapon)
 {
 	int iAmmo;
 	if (m_iClip == WEAPON_NOCLIP)
@@ -1544,7 +1544,7 @@ int CBasePlayerWeapon::__MAKE_VHOOK(ExtractClipAmmo)(CBasePlayerWeapon *pWeapon)
 }
 
 // RetireWeapon - no more ammo for this gun, put it away.
-void CBasePlayerWeapon::__MAKE_VHOOK(RetireWeapon)()
+void CBasePlayerWeapon::RetireWeapon()
 {
 	// first, no viewmodel at all.
 	m_pPlayer->pev->viewmodel = iStringNull;
@@ -1599,12 +1599,12 @@ float CBasePlayerWeapon::GetNextAttackDelay(float delay)
 LINK_ENTITY_TO_CLASS(weaponbox, CWeaponBox, CCSWeaponBox)
 IMPLEMENT_SAVERESTORE(CWeaponBox, CBaseEntity)
 
-void CWeaponBox::__MAKE_VHOOK(Precache)()
+void CWeaponBox::Precache()
 {
 	PRECACHE_MODEL("models/w_weaponbox.mdl");
 }
 
-void CWeaponBox::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CWeaponBox::KeyValue(KeyValueData *pkvd)
 {
 	if (m_cAmmoTypes >= MAX_AMMO_SLOTS)
 	{
@@ -1649,7 +1649,7 @@ void CWeaponBox::BombThink()
 	pev->nextthink = gpGlobals->time + 1.0f;
 }
 
-void CWeaponBox::__MAKE_VHOOK(Spawn)()
+void CWeaponBox::Spawn()
 {
 	Precache();
 
@@ -1688,7 +1688,7 @@ void CWeaponBox::Kill()
 
 // CWeaponBox - Touch: try to add my contents to the toucher
 // if the toucher is a player.
-void CWeaponBox::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
+void CWeaponBox::Touch(CBaseEntity *pOther)
 {
 	if (!(pev->flags & FL_ONGROUND))
 	{
@@ -2086,7 +2086,7 @@ BOOL CWeaponBox::IsEmpty()
 	return TRUE;
 }
 
-void CWeaponBox::__MAKE_VHOOK(SetObjectCollisionBox)()
+void CWeaponBox::SetObjectCollisionBox()
 {
 	pev->absmin = pev->origin + Vector(-16, -16, 0);
 	pev->absmax = pev->origin + Vector(16, 16, 16);
@@ -2129,7 +2129,7 @@ char *armouryItemModels[] = {
 
 };
 
-void CArmoury::__MAKE_VHOOK(Spawn)()
+void CArmoury::Spawn()
 {
 	Precache();
 
@@ -2160,7 +2160,7 @@ void CArmoury::__MAKE_VHOOK(Spawn)()
 	m_iInitialCount = m_iCount;
 }
 
-void CArmoury::__MAKE_VHOOK(Restart)()
+void CArmoury::Restart()
 {
 #ifdef REGAMEDLL_FIXES
 	// This code refers to the mode of Escape. (Because there is relationship to the team Terrorists)
@@ -2230,7 +2230,7 @@ void CArmoury::__MAKE_VHOOK(Restart)()
 #endif
 }
 
-void CArmoury::__MAKE_VHOOK(Precache)()
+void CArmoury::Precache()
 {
 	if (m_iItem < ARRAYSIZE(armouryItemModels))
 	{
@@ -2416,7 +2416,7 @@ void CArmoury::ArmouryTouch(CBaseEntity *pOther)
 		Hide();
 }
 
-void CArmoury::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CArmoury::KeyValue(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "item"))
 	{
@@ -2433,7 +2433,7 @@ void CArmoury::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 }
 
 #ifdef REGAMEDLL_ADD
-void CArmoury::__MAKE_VHOOK(SetObjectCollisionBox)()
+void CArmoury::SetObjectCollisionBox()
 {
 	pev->absmin = pev->origin + Vector(-16, -16, 0);
 	pev->absmax = pev->origin + Vector(16, 16, 16);

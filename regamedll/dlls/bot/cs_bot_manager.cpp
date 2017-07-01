@@ -87,7 +87,7 @@ CCSBotManager::CCSBotManager()
 }
 
 // Invoked when a new round begins
-void CCSBotManager::__MAKE_VHOOK(RestartRound)()
+void CCSBotManager::RestartRound()
 {
 	// extend
 	CBotManager::RestartRound();
@@ -168,7 +168,7 @@ void UTIL_DrawBox(Extent *extent, int lifetime, int red, int green, int blue)
 
 // Called each frame
 
-void CCSBotManager::__MAKE_VHOOK(StartFrame)()
+void CCSBotManager::StartFrame()
 {
 	// EXTEND
 	CBotManager::StartFrame();
@@ -242,7 +242,7 @@ bool CCSBotManager::IsOnOffense(CBasePlayer *player) const
 }
 
 // Invoked when a map has just been loaded
-void CCSBotManager::__MAKE_VHOOK(ServerActivate)()
+void CCSBotManager::ServerActivate()
 {
 	DestroyNavigationMap();
 	IMPL(m_isMapDataLoaded) = false;
@@ -262,12 +262,12 @@ void CCSBotManager::__MAKE_VHOOK(ServerActivate)()
 	TheBotPhrases->OnMapChange();
 }
 
-void CCSBotManager::__MAKE_VHOOK(AddServerCommand)(const char *cmd)
+void CCSBotManager::AddServerCommand(const char *cmd)
 {
 	ADD_SERVER_COMMAND((char *)cmd, Bot_ServerCommand);
 }
 
-void CCSBotManager::__MAKE_VHOOK(AddServerCommands)()
+void CCSBotManager::AddServerCommands()
 {
 	static bool fFirstTime = true;
 
@@ -322,12 +322,12 @@ void CCSBotManager::__MAKE_VHOOK(AddServerCommands)()
 	AddServerCommand("bot_nav_check_consistency");
 }
 
-void CCSBotManager::__MAKE_VHOOK(ServerDeactivate)()
+void CCSBotManager::ServerDeactivate()
 {
 	m_bServerActive = false;
 }
 
-void CCSBotManager::__MAKE_VHOOK(ClientDisconnect)(CBasePlayer *pPlayer)
+void CCSBotManager::ClientDisconnect(CBasePlayer *pPlayer)
 {
 	if (!pPlayer || !pPlayer->IsBot())
 		return;
@@ -362,7 +362,7 @@ void PrintAllEntities()
 	}
 }
 
-void CCSBotManager::__MAKE_VHOOK(ServerCommand)(const char *pcmd)
+void CCSBotManager::ServerCommand(const char *pcmd)
 {
 	if (!m_bServerActive || !AreBotsAllowed())
 		return;
@@ -756,7 +756,7 @@ void CCSBotManager::__MAKE_VHOOK(ServerCommand)(const char *pcmd)
 	}
 }
 
-BOOL CCSBotManager::__MAKE_VHOOK(ClientCommand)(CBasePlayer *pPlayer, const char *pcmd)
+BOOL CCSBotManager::ClientCommand(CBasePlayer *pPlayer, const char *pcmd)
 {
 #ifndef REGAMEDLL_FIXES
 	if (pPlayer && UTIL_GetLocalPlayer())
@@ -1319,7 +1319,7 @@ CNavArea *CCSBotManager::GetRandomAreaInZone(const Zone *zone) const
 	return zone->m_area[ RANDOM_LONG(0, zone->m_areaCount - 1) ];
 }
 
-void CCSBotManager::__MAKE_VHOOK(OnEvent)(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
+void CCSBotManager::OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
 {
 	switch (event)
 	{
@@ -1380,7 +1380,7 @@ void CCSBotManager::SetLooseBomb(CBaseEntity *bomb)
 }
 
 // Return true if player is important to scenario (VIP, bomb carrier, etc)
-bool CCSBotManager::__MAKE_VHOOK(IsImportantPlayer)(CBasePlayer *player) const
+bool CCSBotManager::IsImportantPlayer(CBasePlayer *player) const
 {
 	switch (GetScenario())
 	{
@@ -1411,7 +1411,7 @@ bool CCSBotManager::__MAKE_VHOOK(IsImportantPlayer)(CBasePlayer *player) const
 }
 
 // Return priority of player (0 = max pri)
-unsigned int CCSBotManager::__MAKE_VHOOK(GetPlayerPriority)(CBasePlayer *player) const
+unsigned int CCSBotManager::GetPlayerPriority(CBasePlayer *player) const
 {
 	const unsigned int lowestPriority = 0xFFFFFFFF;
 

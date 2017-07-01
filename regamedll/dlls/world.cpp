@@ -414,7 +414,7 @@ void EXT_FUNC ResetGlobalState()
 
 LINK_ENTITY_TO_CLASS(worldspawn, CWorld, CCSWorld)
 
-void CWorld::__MAKE_VHOOK(Spawn)()
+void CWorld::Spawn()
 {
 #ifdef REGAMEDLL_FIXES
 	static char szMapBriefingFile[64] = "";
@@ -483,7 +483,7 @@ void CWorld::__MAKE_VHOOK(Spawn)()
 #endif
 }
 
-void CWorld::__MAKE_VHOOK(Precache)()
+void CWorld::Precache()
 {
 	g_pLastSpawn = NULL;
 	g_pLastCTSpawn = NULL;
@@ -691,7 +691,7 @@ void CWorld::__MAKE_VHOOK(Precache)()
 		gDisplayTitle = FALSE;
 }
 
-void CWorld::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CWorld::KeyValue(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "skyname"))
 	{

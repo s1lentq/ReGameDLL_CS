@@ -280,26 +280,7 @@ public:
 		return (LengthSquared() > length * length);
 	}
 #ifdef PLAY_GAMEDLL
-	float_precision NormalizeInPlace()
-	{
-		float_precision flLen = Length();
-
-		if (flLen > 0)
-		{
-			x = vec_t(1 / flLen * x);
-			y = vec_t(1 / flLen * y);
-			z = vec_t(1 / flLen * z);
-		}
-		else
-		{
-			x = 0;
-			y = 0;
-			z = 1;
-		}
-
-		return flLen;
-	}
-	template<typename T>
+	template<typename T = float_precision>
 	float_precision NormalizeInPlace()
 	{
 		T flLen = Length();

@@ -761,12 +761,6 @@
     <ClCompile Include="..\game_shared\bot\nav_path.cpp" />
     <ClCompile Include="..\game_shared\shared_util.cpp" />
     <ClCompile Include="..\game_shared\voice_gamemgr.cpp" />
-    <ClCompile Include="..\hookers\6153_hooker.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug MP|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release MP|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release MP Play|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug MP Play|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="..\hookers\hooker.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug MP|Win32'">true</ExcludedFromBuild>
@@ -779,6 +773,12 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug MP Play|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release MP|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release MP Play|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\hookers\hooklist.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug MP|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release MP|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release MP Play|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug MP Play|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\hookers\main.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug MP|Win32'">true</ExcludedFromBuild>
@@ -805,12 +805,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug MP|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release MP|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release MP Play|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug MP Play|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\hookers\RegameDLLRuntimeConfig.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release MP Play|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug MP|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release MP|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug MP Play|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\pm_shared\pm_debug.cpp" />
@@ -866,6 +860,12 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Tests|Win32'">precompiled.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="..\regamedll\regamedll.cpp" />
+    <ClCompile Include="..\regamedll\RegameDLLRuntimeConfig.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release MP Play|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug MP|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release MP|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug MP Play|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\regamedll\regamedll_api_impl.cpp" />
     <ClCompile Include="..\regamedll\regamedll_debug.cpp" />
     <ClCompile Include="..\regamedll\regamedll_interfaces_impl.cpp" />
@@ -1005,6 +1005,7 @@
     <ClInclude Include="..\dlls\plane.h" />
     <ClInclude Include="..\dlls\plats.h" />
     <ClInclude Include="..\dlls\player.h" />
+    <ClInclude Include="..\dlls\revert_saved.h" />
     <ClInclude Include="..\dlls\saverestore.h" />
     <ClInclude Include="..\dlls\schedule.h" />
     <ClInclude Include="..\dlls\scriptevent.h" />
@@ -1041,7 +1042,6 @@
     <ClInclude Include="..\engine\shake.h" />
     <ClInclude Include="..\engine\studio.h" />
     <ClInclude Include="..\engine\unicode_strtools.h" />
-    <ClInclude Include="..\extra\IDA structures\goldsource.h" />
     <ClInclude Include="..\game_shared\bitvec.h" />
     <ClInclude Include="..\game_shared\bot\bot.h" />
     <ClInclude Include="..\game_shared\bot\bot_constants.h" />
@@ -1055,17 +1055,18 @@
     <ClInclude Include="..\game_shared\bot\nav_node.h" />
     <ClInclude Include="..\game_shared\bot\nav_path.h" />
     <ClInclude Include="..\game_shared\bot\simple_state_machine.h" />
+    <ClInclude Include="..\game_shared\counter.h" />
     <ClInclude Include="..\game_shared\GameEvent.h" />
-    <ClInclude Include="..\game_shared\perf_counter.h" />
     <ClInclude Include="..\game_shared\shared_util.h" />
     <ClInclude Include="..\game_shared\simple_checksum.h" />
     <ClInclude Include="..\game_shared\steam_util.h" />
     <ClInclude Include="..\game_shared\voice_gamemgr.h" />
+    <ClInclude Include="..\hookers\helper.h" />
     <ClInclude Include="..\hookers\hooker.h" />
     <ClInclude Include="..\hookers\hooker_impl.h" />
+    <ClInclude Include="..\hookers\hooklist.h" />
     <ClInclude Include="..\hookers\memory.h" />
     <ClInclude Include="..\hookers\osconfig.h" />
-    <ClInclude Include="..\hookers\RegameDLLRuntimeConfig.h" />
     <ClInclude Include="..\hookers\stl\use_ansi.h" />
     <ClInclude Include="..\pm_shared\pm_debug.h" />
     <ClInclude Include="..\pm_shared\pm_defs.h" />
@@ -1119,6 +1120,7 @@
     <ClInclude Include="..\regamedll\platform.h" />
     <ClInclude Include="..\regamedll\precompiled.h" />
     <ClInclude Include="..\regamedll\regamedll.h" />
+    <ClInclude Include="..\regamedll\RegameDLLRuntimeConfig.h" />
     <ClInclude Include="..\regamedll\regamedll_api_impl.h" />
     <ClInclude Include="..\regamedll\regamedll_debug.h" />
     <ClInclude Include="..\regamedll\regamedll_interfaces_impl.h" />
@@ -1354,7 +1356,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(ProjectDir)../lib/libacof32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <MinimumRequiredVersion />
       <ModuleDefinitionFile>
       </ModuleDefinitionFile>

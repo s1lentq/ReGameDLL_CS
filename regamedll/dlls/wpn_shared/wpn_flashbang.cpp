@@ -2,7 +2,7 @@
 
 LINK_ENTITY_TO_CLASS(weapon_flashbang, CFlashbang, CCSFlashbang)
 
-void CFlashbang::__MAKE_VHOOK(Spawn)()
+void CFlashbang::Spawn()
 {
 	Precache();
 
@@ -20,7 +20,7 @@ void CFlashbang::__MAKE_VHOOK(Spawn)()
 	FallInit();
 }
 
-void CFlashbang::__MAKE_VHOOK(Precache)()
+void CFlashbang::Precache()
 {
 	PRECACHE_MODEL("models/v_flashbang.mdl");
 	PRECACHE_MODEL("models/shield/v_shield_flashbang.mdl");
@@ -30,7 +30,7 @@ void CFlashbang::__MAKE_VHOOK(Precache)()
 	PRECACHE_SOUND("weapons/pinpull.wav");
 }
 
-int CFlashbang::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
+int CFlashbang::GetItemInfo(ItemInfo *p)
 {
 	auto info = GetWeaponInfo(WEAPON_FLASHBANG);
 
@@ -51,7 +51,7 @@ int CFlashbang::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	return 1;
 }
 
-BOOL CFlashbang::__MAKE_VHOOK(Deploy)()
+BOOL CFlashbang::Deploy()
 {
 	m_flReleaseThrow = -1.0f;
 	m_fMaxSpeed = FLASHBANG_MAX_SPEED;
@@ -65,7 +65,7 @@ BOOL CFlashbang::__MAKE_VHOOK(Deploy)()
 		return DefaultDeploy("models/v_flashbang.mdl", "models/p_flashbang.mdl", FLASHBANG_DRAW, "grenade", UseDecrement() != FALSE);
 }
 
-void CFlashbang::__MAKE_VHOOK(Holster)(int skiplocal)
+void CFlashbang::Holster(int skiplocal)
 {
 	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5f;
 
@@ -79,7 +79,7 @@ void CFlashbang::__MAKE_VHOOK(Holster)(int skiplocal)
 	m_flReleaseThrow = -1.0f;
 }
 
-void CFlashbang::__MAKE_VHOOK(PrimaryAttack)()
+void CFlashbang::PrimaryAttack()
 {
 	if (m_iWeaponState & WPNSTATE_SHIELD_DRAWN)
 	{
@@ -134,7 +134,7 @@ bool CFlashbang::ShieldSecondaryFire(int iUpAnim, int iDownAnim)
 	return true;
 }
 
-void CFlashbang::__MAKE_VHOOK(SecondaryAttack)()
+void CFlashbang::SecondaryAttack()
 {
 	ShieldSecondaryFire(SHIELDGUN_DRAW, SHIELDGUN_DRAWN_IDLE);
 }
@@ -161,7 +161,7 @@ void CFlashbang::ResetPlayerShieldAnim()
 	}
 }
 
-void CFlashbang::__MAKE_VHOOK(WeaponIdle)()
+void CFlashbang::WeaponIdle()
 {
 	if (m_flReleaseThrow == 0 && m_flStartThrow != 0.0f)
 		m_flReleaseThrow = gpGlobals->time;
@@ -258,7 +258,7 @@ void CFlashbang::__MAKE_VHOOK(WeaponIdle)()
 	}
 }
 
-BOOL CFlashbang::__MAKE_VHOOK(CanDeploy)()
+BOOL CFlashbang::CanDeploy()
 {
 	return m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] != 0;
 }

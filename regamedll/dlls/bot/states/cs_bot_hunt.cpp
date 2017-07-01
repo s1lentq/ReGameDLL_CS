@@ -1,7 +1,7 @@
 #include "precompiled.h"
 
 // Begin the hunt
-void HuntState::__MAKE_VHOOK(OnEnter)(CCSBot *me)
+void HuntState::OnEnter(CCSBot *me)
 {
 	// lurking death
 	if (me->IsUsingKnife() && me->IsWellPastSafe() && !me->IsHurrying())
@@ -16,7 +16,7 @@ void HuntState::__MAKE_VHOOK(OnEnter)(CCSBot *me)
 }
 
 // Hunt down our enemies
-void HuntState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
+void HuntState::OnUpdate(CCSBot *me)
 {
 	// if we've been hunting for a long time, drop into Idle for a moment to
 	// select something else to do
@@ -188,7 +188,7 @@ void HuntState::__MAKE_VHOOK(OnUpdate)(CCSBot *me)
 }
 
 // Done hunting
-void HuntState::__MAKE_VHOOK(OnExit)(CCSBot *me)
+void HuntState::OnExit(CCSBot *me)
 {
 	;
 }

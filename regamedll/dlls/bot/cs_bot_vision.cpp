@@ -194,7 +194,7 @@ void CCSBot::UpdateLookAngles()
 #endif // HOOK_GAMEDLL
 
 // Return true if we can see the point
-bool CCSBot::__MAKE_VHOOK(IsVisible)(const Vector *pos, bool testFOV) const
+bool CCSBot::IsVisible(const Vector *pos, bool testFOV) const
 {
 	// we can't see anything if we're blind
 	if (IsBlind())
@@ -221,7 +221,7 @@ bool CCSBot::__MAKE_VHOOK(IsVisible)(const Vector *pos, bool testFOV) const
 
 // Return true if we can see any part of the player
 // Check parts in order of importance. Return the first part seen in "visParts" if it is non-NULL.
-bool CCSBot::__MAKE_VHOOK(IsVisible)(CBasePlayer *player, bool testFOV, unsigned char *visParts) const
+bool CCSBot::IsVisible(CBasePlayer *player, bool testFOV, unsigned char *visParts) const
 {
 	Vector spot = player->pev->origin;
 	VisiblePartType testVisParts = NONE;
@@ -275,7 +275,7 @@ bool CCSBot::__MAKE_VHOOK(IsVisible)(CBasePlayer *player, bool testFOV, unsigned
 	return false;
 }
 
-bool CCSBot::__MAKE_VHOOK(IsEnemyPartVisible)(VisiblePartType part) const
+bool CCSBot::IsEnemyPartVisible(VisiblePartType part) const
 {
 	if (!IsEnemyVisible())
 		return false;
@@ -974,7 +974,7 @@ float CCSBot::GetRangeToNearestRecognizedEnemy()
 }
 
 // Blind the bot for the given duration
-void CCSBot::__MAKE_VHOOK(Blind)(float duration, float holdTime, float fadeTime, int alpha)
+void CCSBot::Blind(float duration, float holdTime, float fadeTime, int alpha)
 {
 	// extend
 	CBasePlayer::Blind(duration, holdTime, fadeTime, alpha);

@@ -29,14 +29,14 @@ TYPEDESCRIPTION CGamePlayerZone::m_SaveData[] =
 
 IMPLEMENT_SAVERESTORE(CRuleEntity, CBaseEntity)
 
-void CRuleEntity::__MAKE_VHOOK(Spawn)()
+void CRuleEntity::Spawn()
 {
 	pev->solid = SOLID_NOT;
 	pev->movetype = MOVETYPE_NONE;
 	pev->effects = EF_NODRAW;
 }
 
-void CRuleEntity::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CRuleEntity::KeyValue(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "master"))
 	{
@@ -60,14 +60,14 @@ BOOL CRuleEntity::CanFireForActivator(CBaseEntity *pActivator)
 	return TRUE;
 }
 
-void CRulePointEntity::__MAKE_VHOOK(Spawn)()
+void CRulePointEntity::Spawn()
 {
 	CRuleEntity::Spawn();
 	pev->frame = 0;
 	pev->model = 0;
 }
 
-void CRuleBrushEntity::__MAKE_VHOOK(Spawn)()
+void CRuleBrushEntity::Spawn()
 {
 	SET_MODEL(edict(), STRING(pev->model));
 	CRuleEntity::Spawn();
@@ -75,12 +75,12 @@ void CRuleBrushEntity::__MAKE_VHOOK(Spawn)()
 
 LINK_ENTITY_TO_CLASS(game_score, CGameScore, CCSGameScore)
 
-void CGameScore::__MAKE_VHOOK(Spawn)()
+void CGameScore::Spawn()
 {
 	CRulePointEntity::Spawn();
 }
 
-void CGameScore::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CGameScore::KeyValue(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "points"))
 	{
@@ -91,7 +91,7 @@ void CGameScore::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CRulePointEntity::KeyValue(pkvd);
 }
 
-void CGameScore::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CGameScore::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	if (!CanFireForActivator(pActivator))
 		return;
@@ -112,7 +112,7 @@ void CGameScore::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller
 
 LINK_ENTITY_TO_CLASS(game_end, CGameEnd, CCSGameEnd)
 
-void CGameEnd::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CGameEnd::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	if (!CanFireForActivator(pActivator))
 		return;
@@ -123,7 +123,7 @@ void CGameEnd::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, 
 LINK_ENTITY_TO_CLASS(game_text, CGameText, CCSGameText)
 IMPLEMENT_SAVERESTORE(CGameText, CRulePointEntity)
 
-void CGameText::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CGameText::KeyValue(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "channel"))
 	{
@@ -193,7 +193,7 @@ void CGameText::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CRulePointEntity::KeyValue(pkvd);
 }
 
-void CGameText::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CGameText::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	if (!CanFireForActivator(pActivator))
 		return;
@@ -213,7 +213,7 @@ void CGameText::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller,
 
 LINK_ENTITY_TO_CLASS(game_team_master, CGameTeamMaster, CCSGameTeamMaster)
 
-void CGameTeamMaster::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CGameTeamMaster::KeyValue(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "teamindex"))
 	{
@@ -243,7 +243,7 @@ void CGameTeamMaster::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CRulePointEntity::KeyValue(pkvd);
 }
 
-void CGameTeamMaster::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CGameTeamMaster::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	if (!CanFireForActivator(pActivator))
 		return;
@@ -281,12 +281,12 @@ void CGameTeamMaster::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pC
 	}
 }
 
-BOOL CGameTeamMaster::__MAKE_VHOOK(IsTriggered)(CBaseEntity *pActivator)
+BOOL CGameTeamMaster::IsTriggered(CBaseEntity *pActivator)
 {
 	return TeamMatch(pActivator);
 }
 
-const char *CGameTeamMaster::__MAKE_VHOOK(TeamID)()
+const char *CGameTeamMaster::TeamID()
 {
 	// Currently set to "no team"
 	if (m_teamIndex < 0)
@@ -323,7 +323,7 @@ BOOL CGameTeamMaster::TeamMatch(CBaseEntity *pActivator)
 
 LINK_ENTITY_TO_CLASS(game_team_set, CGameTeamSet, CCSGameTeamSet)
 
-void CGameTeamSet::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CGameTeamSet::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	if (!CanFireForActivator(pActivator))
 		return;
@@ -348,7 +348,7 @@ void CGameTeamSet::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCall
 LINK_ENTITY_TO_CLASS(game_zone_player, CGamePlayerZone, CCSGamePlayerZone)
 IMPLEMENT_SAVERESTORE(CGamePlayerZone, CRuleBrushEntity)
 
-void CGamePlayerZone::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CGamePlayerZone::KeyValue(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "intarget"))
 	{
@@ -374,7 +374,7 @@ void CGamePlayerZone::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 		CRuleBrushEntity::KeyValue(pkvd);
 }
 
-void CGamePlayerZone::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CGamePlayerZone::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	int playersInCount = 0;
 	int playersOutCount = 0;
@@ -432,7 +432,7 @@ void CGamePlayerZone::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pC
 
 LINK_ENTITY_TO_CLASS(game_player_hurt, CGamePlayerHurt, CCSGamePlayerHurt)
 
-void CGamePlayerHurt::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CGamePlayerHurt::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	if (!CanFireForActivator(pActivator))
 		return;
@@ -455,14 +455,14 @@ void CGamePlayerHurt::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pC
 
 LINK_ENTITY_TO_CLASS(game_counter, CGameCounter, CCSGameCounter)
 
-void CGameCounter::__MAKE_VHOOK(Spawn)()
+void CGameCounter::Spawn()
 {
 	// Save off the initial count
 	SetInitialValue(CountValue());
 	CRulePointEntity::Spawn();
 }
 
-void CGameCounter::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CGameCounter::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	if (!CanFireForActivator(pActivator))
 		return;
@@ -501,7 +501,7 @@ void CGameCounter::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCall
 
 LINK_ENTITY_TO_CLASS(game_counter_set, CGameCounterSet, CCSGameCounterSet)
 
-void CGameCounterSet::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CGameCounterSet::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	if (!CanFireForActivator(pActivator))
 		return;
@@ -516,7 +516,7 @@ void CGameCounterSet::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pC
 
 LINK_ENTITY_TO_CLASS(game_player_equip, CGamePlayerEquip, CCSGamePlayerEquip)
 
-void CGamePlayerEquip::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CGamePlayerEquip::KeyValue(KeyValueData *pkvd)
 {
 	CRulePointEntity::KeyValue(pkvd);
 
@@ -540,7 +540,7 @@ void CGamePlayerEquip::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
 	}
 }
 
-void CGamePlayerEquip::__MAKE_VHOOK(Touch)(CBaseEntity *pOther)
+void CGamePlayerEquip::Touch(CBaseEntity *pOther)
 {
 	if (!CanFireForActivator(pOther))
 		return;
@@ -581,7 +581,7 @@ void CGamePlayerEquip::EquipPlayer(CBaseEntity *pEntity)
 	}
 }
 
-void CGamePlayerEquip::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CGamePlayerEquip::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	EquipPlayer(pActivator);
 }
@@ -601,7 +601,7 @@ const char *CGamePlayerTeam::TargetTeamName(const char *pszTargetName)
 	return NULL;
 }
 
-void CGamePlayerTeam::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CGamePlayerTeam::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	if (!CanFireForActivator(pActivator))
 		return;

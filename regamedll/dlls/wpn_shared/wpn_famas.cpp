@@ -2,7 +2,7 @@
 
 LINK_ENTITY_TO_CLASS(weapon_famas, CFamas, CCSFamas)
 
-void CFamas::__MAKE_VHOOK(Spawn)()
+void CFamas::Spawn()
 {
 	Precache();
 
@@ -16,7 +16,7 @@ void CFamas::__MAKE_VHOOK(Spawn)()
 	FallInit();
 }
 
-void CFamas::__MAKE_VHOOK(Precache)()
+void CFamas::Precache()
 {
 	PRECACHE_MODEL("models/v_famas.mdl");
 	PRECACHE_MODEL("models/w_famas.mdl");
@@ -34,7 +34,7 @@ void CFamas::__MAKE_VHOOK(Precache)()
 	m_usFireFamas = PRECACHE_EVENT(1, "events/famas.sc");
 }
 
-int CFamas::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
+int CFamas::GetItemInfo(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
 	p->pszAmmo1 = "556Nato";
@@ -51,19 +51,19 @@ int CFamas::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	return 1;
 }
 
-BOOL CFamas::__MAKE_VHOOK(Deploy)()
+BOOL CFamas::Deploy()
 {
 	m_iShotsFired = 0;
 	m_iFamasShotsFired = 0;
 	m_flFamasShoot = 0;
 	m_flAccuracy = 0.2f;
-	
+
 	iShellOn = 1;
 
 	return DefaultDeploy("models/v_famas.mdl", "models/p_famas.mdl", FAMAS_DRAW, "carbine", UseDecrement() != FALSE);
 }
 
-void CFamas::__MAKE_VHOOK(SecondaryAttack)()
+void CFamas::SecondaryAttack()
 {
 	if (m_iWeaponState & WPNSTATE_FAMAS_BURST_MODE)
 	{
@@ -79,7 +79,7 @@ void CFamas::__MAKE_VHOOK(SecondaryAttack)()
 	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.3f;
 }
 
-void CFamas::__MAKE_VHOOK(PrimaryAttack)()
+void CFamas::PrimaryAttack()
 {
 	if (m_pPlayer->pev->waterlevel == 3)
 	{
@@ -201,7 +201,7 @@ void CFamas::FamasFire(float flSpread, float flCycleTime, BOOL fUseAutoAim, BOOL
 	}
 }
 
-void CFamas::__MAKE_VHOOK(Reload)()
+void CFamas::Reload()
 {
 	if (m_pPlayer->ammo_556nato <= 0)
 		return;
@@ -221,7 +221,7 @@ void CFamas::__MAKE_VHOOK(Reload)()
 	}
 }
 
-void CFamas::__MAKE_VHOOK(WeaponIdle)()
+void CFamas::WeaponIdle()
 {
 	ResetEmptySound();
 	m_pPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);

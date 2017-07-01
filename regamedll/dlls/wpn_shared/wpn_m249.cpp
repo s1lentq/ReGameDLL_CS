@@ -2,7 +2,7 @@
 
 LINK_ENTITY_TO_CLASS(weapon_m249, CM249, CCSM249)
 
-void CM249::__MAKE_VHOOK(Spawn)()
+void CM249::Spawn()
 {
 	Precache();
 
@@ -16,7 +16,7 @@ void CM249::__MAKE_VHOOK(Spawn)()
 	FallInit();
 }
 
-void CM249::__MAKE_VHOOK(Precache)()
+void CM249::Precache()
 {
 	PRECACHE_MODEL("models/v_m249.mdl");
 	PRECACHE_MODEL("models/w_m249.mdl");
@@ -33,7 +33,7 @@ void CM249::__MAKE_VHOOK(Precache)()
 	m_usFireM249 = PRECACHE_EVENT(1, "events/m249.sc");
 }
 
-int CM249::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
+int CM249::GetItemInfo(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
 	p->pszAmmo1 = "556NatoBox";
@@ -50,7 +50,7 @@ int CM249::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	return 1;
 }
 
-BOOL CM249::__MAKE_VHOOK(Deploy)()
+BOOL CM249::Deploy()
 {
 	m_flAccuracy = 0.2f;
 	m_iShotsFired = 0;
@@ -59,7 +59,7 @@ BOOL CM249::__MAKE_VHOOK(Deploy)()
 	return DefaultDeploy("models/v_m249.mdl", "models/p_m249.mdl", M249_DRAW, "m249", UseDecrement() != FALSE);
 }
 
-void CM249::__MAKE_VHOOK(PrimaryAttack)()
+void CM249::PrimaryAttack()
 {
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
 	{
@@ -155,7 +155,7 @@ void CM249::M249Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	}
 }
 
-void CM249::__MAKE_VHOOK(Reload)()
+void CM249::Reload()
 {
 #ifdef REGAMEDLL_FIXES
 	// to prevent reload if not enough ammo
@@ -173,7 +173,7 @@ void CM249::__MAKE_VHOOK(Reload)()
 	}
 }
 
-void CM249::__MAKE_VHOOK(WeaponIdle)()
+void CM249::WeaponIdle()
 {
 	ResetEmptySound();
 	m_pPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);

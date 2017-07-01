@@ -44,7 +44,7 @@ void FixupAngles2(Vector &v)
 IMPLEMENT_SAVERESTORE(CFuncVehicle, CBaseEntity)
 LINK_ENTITY_TO_CLASS(func_vehicle, CFuncVehicle, CCSFuncVehicle)
 
-void CFuncVehicle::__MAKE_VHOOK(KeyValue)(KeyValueData *pkvd)
+void CFuncVehicle::KeyValue(KeyValueData *pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "length"))
 	{
@@ -110,7 +110,7 @@ void CFuncVehicle::NextThink(float thinkTime, BOOL alwaysThink)
 	pev->nextthink = thinkTime;
 }
 
-void CFuncVehicle::__MAKE_VHOOK(Blocked)(CBaseEntity *pOther)
+void CFuncVehicle::Blocked(CBaseEntity *pOther)
 {
 	entvars_t *pevOther = pOther->pev;
 
@@ -153,7 +153,7 @@ void CFuncVehicle::__MAKE_VHOOK(Blocked)(CBaseEntity *pOther)
 	}
 }
 
-void CFuncVehicle::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void CFuncVehicle::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	float delta = value;
 
@@ -722,7 +722,7 @@ void CFuncVehicle::SetControls(entvars_t *pevControls)
 	m_controlMaxs = pevControls->maxs + offset;
 }
 
-BOOL CFuncVehicle::__MAKE_VHOOK(OnControls)(entvars_t *pevTest)
+BOOL CFuncVehicle::OnControls(entvars_t *pevTest)
 {
 	Vector offset = pevTest->origin - pev->origin;
 
@@ -826,7 +826,7 @@ void CFuncVehicle::NearestPath()
 	}
 }
 
-void CFuncVehicle::__MAKE_VHOOK(OverrideReset)()
+void CFuncVehicle::OverrideReset()
 {
 	NextThink(pev->ltime + 0.1, FALSE);
 	SetThink(&CFuncVehicle::NearestPath);
@@ -842,12 +842,12 @@ CFuncVehicle *CFuncVehicle::Instance(edict_t *pent)
 	return NULL;
 }
 
-int CFuncVehicle::__MAKE_VHOOK(Classify)()
+int CFuncVehicle::Classify()
 {
 	return CLASS_VEHICLE;
 }
 
-void CFuncVehicle::__MAKE_VHOOK(Spawn)()
+void CFuncVehicle::Spawn()
 {
 	if (pev->speed == 0)
 		m_speed = 165;
@@ -896,7 +896,7 @@ void CFuncVehicle::__MAKE_VHOOK(Spawn)()
 	Precache();
 }
 
-void CFuncVehicle::__MAKE_VHOOK(Restart)()
+void CFuncVehicle::Restart()
 {
 	ALERT(at_console, "M_speed = %f\n", m_speed);
 
@@ -922,7 +922,7 @@ void CFuncVehicle::__MAKE_VHOOK(Restart)()
 	SetThink(&CFuncVehicle::Find);
 }
 
-void CFuncVehicle::__MAKE_VHOOK(Precache)()
+void CFuncVehicle::Precache()
 {
 	if (m_flVolume == 0.0f)
 		m_flVolume = 1.0f;
@@ -967,7 +967,7 @@ void CFuncVehicleControls::Find()
 	UTIL_Remove(this);
 }
 
-void CFuncVehicleControls::__MAKE_VHOOK(Spawn)()
+void CFuncVehicleControls::Spawn()
 {
 	pev->solid = SOLID_NOT;
 	pev->movetype = MOVETYPE_NONE;

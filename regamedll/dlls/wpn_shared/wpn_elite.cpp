@@ -2,7 +2,7 @@
 
 LINK_ENTITY_TO_CLASS(weapon_elite, CELITE, CCSELITE)
 
-void CELITE::__MAKE_VHOOK(Spawn)()
+void CELITE::Spawn()
 {
 	Precache();
 
@@ -15,7 +15,7 @@ void CELITE::__MAKE_VHOOK(Spawn)()
 	FallInit();
 }
 
-void CELITE::__MAKE_VHOOK(Precache)()
+void CELITE::Precache()
 {
 	PRECACHE_MODEL("models/v_elite.mdl");
 	PRECACHE_MODEL("models/w_elite.mdl");
@@ -34,7 +34,7 @@ void CELITE::__MAKE_VHOOK(Precache)()
 	m_usFireELITE_RIGHT = PRECACHE_EVENT(1, "events/elite_right.sc");
 }
 
-int CELITE::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
+int CELITE::GetItemInfo(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
 	p->pszAmmo1 = "9mm";
@@ -51,7 +51,7 @@ int CELITE::__MAKE_VHOOK(GetItemInfo)(ItemInfo *p)
 	return 1;
 }
 
-BOOL CELITE::__MAKE_VHOOK(Deploy)()
+BOOL CELITE::Deploy()
 {
 	m_flAccuracy = 0.88f;
 
@@ -63,7 +63,7 @@ BOOL CELITE::__MAKE_VHOOK(Deploy)()
 	return DefaultDeploy("models/v_elite.mdl", "models/p_elite.mdl", ELITE_DRAW, "dualpistols", UseDecrement() != FALSE);
 }
 
-void CELITE::__MAKE_VHOOK(PrimaryAttack)()
+void CELITE::PrimaryAttack()
 {
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
 	{
@@ -187,7 +187,7 @@ void CELITE::ELITEFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 	m_pPlayer->pev->punchangle.x -= 2.0f;
 }
 
-void CELITE::__MAKE_VHOOK(Reload)()
+void CELITE::Reload()
 {
 	if (m_pPlayer->ammo_9mm <= 0)
 		return;
@@ -199,7 +199,7 @@ void CELITE::__MAKE_VHOOK(Reload)()
 	}
 }
 
-void CELITE::__MAKE_VHOOK(WeaponIdle)()
+void CELITE::WeaponIdle()
 {
 	ResetEmptySound();
 	m_pPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);
