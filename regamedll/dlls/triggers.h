@@ -382,7 +382,6 @@ public:
 
 #ifdef REGAMEDLL_FIXES
 	virtual void Restart();
-	virtual int ObjectCaps() { return (CBaseEntity::ObjectCaps() | FCAP_MUST_RESET); }
 #endif
 };
 

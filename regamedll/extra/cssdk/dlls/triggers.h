@@ -270,7 +270,6 @@ public:
 	virtual void Spawn() = 0;
 	virtual void Restart() = 0;
 	virtual void KeyValue(KeyValueData *pkvd) = 0;
-	virtual int ObjectCaps() = 0;
 	virtual void Touch(CBaseEntity *pOther) = 0;
 };
 

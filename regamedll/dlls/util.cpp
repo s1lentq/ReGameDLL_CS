@@ -1498,11 +1498,17 @@ void UTIL_ResetEntities()
 	}
 }
 
-void UTIL_RemoveOther(const char *szClassname)
+void UTIL_RemoveOther(const char *szClassname, int nRemoveCount)
 {
+	int num = 0;
 	CBaseEntity *pEntity = nullptr;
-	while ((pEntity = UTIL_FindEntityByClassname(pEntity, szClassname)) != nullptr)
+	while ((pEntity = UTIL_FindEntityByClassname(pEntity, szClassname)))
 	{
+#ifndef REGAMEDLL_FIXES
+		if (nRemoveCount > 0 && num++ >= nRemoveCount)
+			break;
+#endif
+
 		UTIL_Remove(pEntity);
 	}
 }

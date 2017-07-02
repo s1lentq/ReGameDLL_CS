@@ -1594,23 +1594,9 @@ void CTriggerPush::Spawn()
 #ifdef REGAMEDLL_FIXES
 void CTriggerPush::Restart()
 {
-	InitTrigger();
-
-	if (pev->speed == 0)
-	{
-		pev->speed = 100;
-	}
-
-	// if flagged to Start Turned Off, make trigger nonsolid.
-	if (pev->spawnflags & SF_TRIGGER_PUSH_START_OFF)
-	{
-		pev->solid = SOLID_NOT;
-	}
-
-	SetUse(&CTriggerPush::ToggleUse);
-
-	// Link into the list
-	UTIL_SetOrigin(pev, pev->origin);
+	auto tempDir = pev->movedir;
+	Spawn();
+	pev->movedir = tempDir;
 }
 #endif
 

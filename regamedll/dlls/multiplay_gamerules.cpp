@@ -691,6 +691,13 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(CleanUpMap)()
 	UTIL_RestartOther("light");
 	UTIL_RestartOther("func_breakable");
 	UTIL_RestartOther("func_door");
+
+#ifdef REGAMEDLL_FIXES
+	UTIL_RestartOther("func_button");
+	UTIL_RestartOther("func_rot_button");
+	UTIL_RestartOther("trigger_push");
+#endif
+
 	UTIL_RestartOther("func_water");
 	UTIL_RestartOther("func_door_rotating");
 	UTIL_RestartOther("func_tracktrain");
@@ -701,25 +708,14 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(CleanUpMap)()
 	UTIL_RestartOther("env_sprite");
 
 #ifdef REGAMEDLL_FIXES
-	UTIL_RestartOther("multisource");
-	UTIL_RestartOther("func_button");
-	UTIL_RestartOther("trigger_auto");
 	UTIL_RestartOther("trigger_once");
+	UTIL_RestartOther("multisource");
+	UTIL_RestartOther("trigger_auto");
 #endif
 
 	// Remove grenades and C4
-#ifdef REGAMEDLL_FIXES
-	UTIL_RemoveOther("grenade");
-#else
-	int icount = 0;
-	CBaseEntity *toremove = UTIL_FindEntityByClassname(NULL, "grenade");
-	while (toremove && icount < 20)
-	{
-		UTIL_Remove(toremove);
-		toremove = UTIL_FindEntityByClassname(toremove, "grenade");
-		++icount;
-	}
-#endif
+	const int grenadesRemoveCount = 20;
+	UTIL_RemoveOther("grenade", grenadesRemoveCount);
 
 	// Remove defuse kit
 	// Old code only removed 4 kits and stopped.

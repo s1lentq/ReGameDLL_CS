@@ -52,6 +52,16 @@ TYPEDESCRIPTION CEnvSpark::m_SaveData[] =
 
 #endif // HOOK_GAMEDLL
 
+
+#ifdef REGAMEDLL_FIXES
+
+TYPEDESCRIPTION CRotButton::m_SaveData[] =
+{
+	DEFINE_FIELD(CRotButton, m_vecSpawn, FIELD_VECTOR),
+};
+
+#endif
+
 IMPLEMENT_SAVERESTORE(CEnvGlobal, CBaseEntity)
 LINK_ENTITY_TO_CLASS(env_global, CEnvGlobal, CCSEnvGlobal)
 
@@ -875,6 +885,10 @@ void CRotButton::Spawn()
 		pev->takedamage = DAMAGE_YES;
 	}
 
+#ifdef REGAMEDLL_FIXES
+	m_vecSpawn = pev->angles;
+#endif
+
 	m_toggle_state = TS_AT_BOTTOM;
 	m_vecAngle1 = pev->angles;
 	m_vecAngle2 = pev->angles + pev->movedir * m_flMoveDistance;
@@ -892,9 +906,15 @@ void CRotButton::Spawn()
 	}
 	else // touchable button
 		SetTouch(&CRotButton::ButtonTouch);
-
-	//SetTouch(ButtonTouch);
 }
+
+#ifdef REGAMEDLL_FIXES
+void CRotButton::Restart()
+{
+	pev->angles = m_vecSpawn;
+	Spawn();
+}
+#endif
 
 IMPLEMENT_SAVERESTORE(CMomentaryRotButton, CBaseToggle)
 LINK_ENTITY_TO_CLASS(momentary_rot_button, CMomentaryRotButton, CCSMomentaryRotButton)

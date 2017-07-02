@@ -75,6 +75,15 @@ class CRotButton: public CBaseButton
 {
 public:
 	virtual void Spawn();
+
+#ifdef REGAMEDLL_FIXES
+	virtual void Restart();
+
+public:
+	static TYPEDESCRIPTION m_SaveData[1];
+	Vector m_vecSpawn;
+#endif
+
 };
 
 class CMomentaryRotButton: public CBaseToggle
