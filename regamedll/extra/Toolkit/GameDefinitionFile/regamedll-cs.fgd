@@ -2717,6 +2717,7 @@
 	spawnflags(flags) =
 	[
 		1 : "Starts Invisible" : 0
+		8 : "Not Solid" : 0
 	]
 ]
 

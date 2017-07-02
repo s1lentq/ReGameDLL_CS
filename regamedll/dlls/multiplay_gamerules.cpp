@@ -709,6 +709,7 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(CleanUpMap)()
 
 #ifdef REGAMEDLL_FIXES
 	UTIL_RestartOther("trigger_once");
+	UTIL_RestartOther("func_wall_toggle");
 	UTIL_RestartOther("multisource");
 	UTIL_RestartOther("trigger_auto");
 #endif

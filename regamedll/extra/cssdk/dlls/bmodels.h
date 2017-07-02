@@ -53,6 +53,7 @@
 
 // func_wall_toggle
 #define SF_WALL_START_OFF               0x0001
+#define SF_WALL_NOTSOLID                0x0008
 
 // func_conveyor
 #define SF_CONVEYOR_VISUAL              0x0001
@@ -71,6 +72,8 @@ public:
 class CFuncWallToggle: public CFuncWall {
 public:
 	virtual void Spawn() = 0;
+	virtual void Restart() = 0;
+	virtual int ObjectCaps() = 0;
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value) = 0;
 };
 

@@ -58,6 +58,7 @@
 
 // func_wall_toggle
 #define SF_WALL_START_OFF               0x0001
+#define SF_WALL_NOTSOLID                0x0008
 
 // func_conveyor
 #define SF_CONVEYOR_VISUAL              0x0001
@@ -84,6 +85,11 @@ class CFuncWallToggle: public CFuncWall
 public:
 	virtual void Spawn();
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+
+#ifdef REGAMEDLL_FIXES
+	virtual void Restart();
+	virtual int ObjectCaps() { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
+#endif
 
 public:
 	void TurnOff();

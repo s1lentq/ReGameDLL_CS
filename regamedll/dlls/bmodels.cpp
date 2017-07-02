@@ -68,7 +68,30 @@ void CFuncWallToggle::Spawn()
 	{
 		TurnOff();
 	}
+
+#ifdef REGAMEDLL_ADD
+	if (pev->spawnflags & SF_WALL_NOTSOLID)
+	{
+		pev->solid = SOLID_NOT;
+	}
+#endif
+
 }
+
+#ifdef REGAMEDLL_FIXES
+void CFuncWallToggle::Restart()
+{
+	CFuncWall::Spawn();
+
+	if (pev->spawnflags & SF_WALL_START_OFF)
+	{
+		TurnOff();
+		return;
+	}
+
+	TurnOn();
+}
+#endif
 
 void CFuncWallToggle::TurnOff()
 {
