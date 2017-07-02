@@ -178,7 +178,7 @@ void BotDefendHereMeme::Interpret(CCSBot *sender, CCSBot *receiver) const
 	{
 		// pick a random hiding spot in this place
 		const Vector *spot = FindRandomHidingSpot(receiver, place, receiver->IsSniper());
-		if (spot != NULL)
+		if (spot)
 		{
 			receiver->SetTask(CCSBot::HOLD_POSITION);
 			receiver->Hide(spot);
@@ -240,7 +240,7 @@ BotSpeakable::BotSpeakable()
 
 BotSpeakable::~BotSpeakable()
 {
-	if (m_phrase != NULL)
+	if (m_phrase)
 	{
 		delete[] m_phrase;
 		m_phrase = NULL;
@@ -272,7 +272,7 @@ BotPhrase::~BotPhrase()
 		delete m_voiceBank[bank];
 	}
 
-	if (m_name != NULL)
+	if (m_name)
 	{
 		delete[] m_name;
 		m_name = NULL;
@@ -295,7 +295,7 @@ char *BotPhrase::GetSpeakable(int bankIndex, float *duration) const
 {
 	if (bankIndex < 0 || bankIndex >= m_numVoiceBanks || m_count[bankIndex] == 0)
 	{
-		if (duration != NULL)
+		if (duration)
 			*duration = 0.0f;
 
 		return NULL;
@@ -335,7 +335,7 @@ char *BotPhrase::GetSpeakable(int bankIndex, float *duration) const
 		// check if we exhausted all speakables
 		if (m_index[bankIndex] == start)
 		{
-			if (duration != NULL)
+			if (duration)
 				*duration = 0.0f;
 
 			return NULL;
@@ -398,7 +398,7 @@ bool BotPhraseManager::Initialize(const char *filename, int bankIndex)
 
 	if (phraseDataFile == NULL)
 	{
-		if (g_bIsCzeroGame)
+		if (AreBotsAllowed())
 		{
 			CONSOLE_ECHO("WARNING: Cannot access bot phrase database '%s'\n", filename);
 		}
@@ -798,7 +798,7 @@ BotStatement::BotStatement(BotChatterInterface *chatter, BotStatementType type, 
 
 BotStatement::~BotStatement()
 {
-	if (m_meme != NULL)
+	if (m_meme)
 	{
 		delete m_meme;
 		m_meme = NULL;
@@ -1015,7 +1015,7 @@ bool BotStatement::Update()
 		if (++m_index == m_count)
 		{
 			// transmit any memes carried in this statement to our teammates
-			if (m_meme != NULL)
+			if (m_meme)
 			{
 				m_meme->Transmit(me);
 			}
@@ -1050,7 +1050,12 @@ bool BotStatement::Update()
 					else if (enemyCount > 1)
 					{
 						phrase = TheBotPhrases->GetPhrase("EnemySpotted");
-						phrase->SetCountCriteria(enemyCount);
+#ifdef REGAMEDLL_FIXES
+						if (phrase)
+#endif
+						{
+							phrase->SetCountCriteria(enemyCount);
+						}
 					}
 					break;
 				}
@@ -1093,7 +1098,7 @@ bool BotStatement::Update()
 			}
 		}
 
-		if (phrase != NULL)
+		if (phrase)
 		{
 			// if chatter system is in "standard radio" mode, send the equivalent radio command
 			if (me->GetChatter()->GetVerbosity() == BotChatterInterface::RADIO)
@@ -1236,7 +1241,7 @@ BotChatterInterface::~BotChatterInterface()
 {
 	// free pending statements
 	BotStatement *next;
-	for (BotStatement *msg = m_statementList; msg != NULL; msg = next)
+	for (BotStatement *msg = m_statementList; msg; msg = next)
 	{
 		next = msg->m_next;
 		delete msg;
@@ -1307,7 +1312,7 @@ void BotChatterInterface::AddStatement(BotStatement *statement, bool mustAdd)
 
 	// don't add statements that are redundant with something we're already waiting to say
 	BotStatement *s;
-	for (s = m_statementList; s != NULL; s = s->m_next)
+	for (s = m_statementList; s; s = s->m_next)
 	{
 		if (statement->IsRedundant(s))
 		{
@@ -1332,7 +1337,7 @@ void BotChatterInterface::AddStatement(BotStatement *statement, bool mustAdd)
 
 	// insert into list in order
 	BotStatement *earlier = NULL;
-	for (s = m_statementList; s != NULL; s = s->m_next)
+	for (s = m_statementList; s; s = s->m_next)
 	{
 		if (s->GetStartTime() > statement->GetStartTime())
 			break;
@@ -1341,9 +1346,9 @@ void BotChatterInterface::AddStatement(BotStatement *statement, bool mustAdd)
 	}
 
 	// insert just after "earlier"
-	if (earlier != NULL)
+	if (earlier)
 	{
-		if (earlier->m_next != NULL)
+		if (earlier->m_next)
 			earlier->m_next->m_prev = statement;
 
 		statement->m_next = earlier->m_next;
@@ -1364,10 +1369,10 @@ void BotChatterInterface::AddStatement(BotStatement *statement, bool mustAdd)
 // Remove a statement
 void BotChatterInterface::RemoveStatement(BotStatement *statement)
 {
-	if (statement->m_next != NULL)
+	if (statement->m_next)
 		statement->m_next->m_prev = statement->m_prev;
 
-	if (statement->m_prev != NULL)
+	if (statement->m_prev)
 		statement->m_prev->m_next = statement->m_next;
 	else
 		m_statementList = statement->m_next;
@@ -1423,7 +1428,7 @@ void BotChatterInterface::OnDeath()
 			// we've died mid-sentance - emit a gargle of pain
 			static const BotPhrase *pain = TheBotPhrases->GetPhrase("pain");
 
-			if (pain != NULL)
+			if (pain)
 			{
 				m_me->Radio(pain->GetSpeakable(m_me->GetProfile()->GetVoiceBank()), NULL, m_me->GetProfile()->GetVoicePitch());
 				m_me->GetChatter()->ResetRadioSilenceDuration();
@@ -1453,7 +1458,7 @@ void BotChatterInterface::Update()
 
 	// speak if it is our turn
 	BotStatement *say = GetActiveStatement();
-	if (say != NULL)
+	if (say)
 	{
 		// if our statement is active, speak it
 		if (say->GetOwner() == m_me)
@@ -1470,11 +1475,11 @@ void BotChatterInterface::Update()
 	// Removed expired statements, re-order statements according to their relavence and importance
 	// Remove redundant statements (ie: our teammates already said them)
 	const BotStatement *friendSay = GetActiveStatement();
-	if (friendSay != NULL && friendSay->GetOwner() == m_me)
+	if (friendSay && friendSay->GetOwner() == m_me)
 		friendSay = NULL;
 
 	BotStatement *nextSay;
-	for (say = m_statementList; say != NULL; say = nextSay)
+	for (say = m_statementList; say; say = nextSay)
 	{
 		nextSay = say->m_next;
 
@@ -1498,7 +1503,7 @@ void BotChatterInterface::Update()
 		}
 
 		// if a teammate is saying what we were going to say, dont repeat it
-		if (friendSay != NULL)
+		if (friendSay)
 		{
 			// convert what we're about to say based on what our teammate is currently saying
 			say->Convert(friendSay);
@@ -1918,7 +1923,7 @@ void BotChatterInterface::SpottedBomber(CBasePlayer *bomber)
 		// if we knew where the bomber was, this is old news
 		const Vector *bomberPos = m_me->GetGameState()->GetBombPosition();
 		const float closeRangeSq = 1000.0f * 1000.0f;
-		if (bomberPos != NULL && (bomber->pev->origin - *bomberPos).LengthSquared() < closeRangeSq)
+		if (bomberPos && (bomber->pev->origin - *bomberPos).LengthSquared() < closeRangeSq)
 			return;
 	}
 

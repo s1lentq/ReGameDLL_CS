@@ -84,7 +84,7 @@ void BotProfileManager::Init(const char *filename, unsigned int *checksum)
 
 	if (dataFile == NULL)
 	{
-		if (g_bIsCzeroGame)
+		if (AreBotsAllowed())
 		{
 			CONSOLE_ECHO("WARNING: Cannot access bot profile database '%s'\n", filename);
 		}

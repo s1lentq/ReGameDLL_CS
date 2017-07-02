@@ -249,7 +249,7 @@ public:
 	~BotPhraseManager();
 
 	// initialize phrase system from database file for a specific voice bank (0 is the default voice bank)
-	bool Initialize(const char *filename, int bankIndex);
+	bool Initialize(const char *filename, int bankIndex = 0);
 
 	// invoked when round resets
 	void OnRoundRestart();
