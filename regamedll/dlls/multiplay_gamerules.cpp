@@ -721,8 +721,21 @@ void EXT_FUNC CHalfLifeMultiplay::__API_VHOOK(CleanUpMap)()
 #endif
 
 	// Remove defuse kit
+#ifndef REGAMEDLL_FIXES
 	// Old code only removed 4 kits and stopped.
 	UTIL_RemoveOther("item_thighpack");
+#else
+	// Don't remove level items
+	CBaseEntity *thighpack = NULL;
+	while ((thighpack = UTIL_FindEntityByClassname(thighpack, "item_thighpack")) != NULL)
+	{
+		if (thighpack->pev->spawnflags & SF_NORESPAWN)
+		{
+			thighpack->SetThink(&CBaseEntity::SUB_Remove);
+			thighpack->pev->nextthink = gpGlobals->time + 0.1;
+		}
+	}
+#endif
 
 #ifdef REGAMEDLL_FIXES
 	UTIL_RemoveOther("gib");
@@ -3504,12 +3517,12 @@ void CHalfLifeMultiplay::__MAKE_VHOOK(ClientDisconnected)(edict_t *pClient)
 			{
 				pPlayer->DropPlayerItem("weapon_c4");
 			}
-
+#ifndef REGAMEDLL_FIXES
 			if (pPlayer->m_bHasDefuser)
 			{
 				pPlayer->DropPlayerItem("item_thighpack");
 			}
-
+#endif
 			if (pPlayer->m_bIsVIP)
 			{
 				m_pVIP = NULL;

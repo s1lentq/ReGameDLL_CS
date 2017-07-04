@@ -1887,8 +1887,7 @@ void CEnvFunnel::__MAKE_VHOOK(Spawn)()
 
 void CEnvBeverage::__MAKE_VHOOK(Precache)()
 {
-	PRECACHE_MODEL("models/can.mdl");
-	PRECACHE_SOUND("weapons/g_bounce3.wav");
+	;
 }
 
 LINK_ENTITY_TO_CLASS(env_beverage, CEnvBeverage, CCSEnvBeverage)
@@ -1917,7 +1916,8 @@ void CEnvBeverage::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCall
 
 void CEnvBeverage::__MAKE_VHOOK(Spawn)()
 {
-	Precache();
+	// Precache();
+
 	pev->solid = SOLID_NOT;
 	pev->effects = EF_NODRAW;
 	pev->frags = 0;
@@ -1930,7 +1930,9 @@ void CEnvBeverage::__MAKE_VHOOK(Spawn)()
 
 void CItemSoda::__MAKE_VHOOK(Precache)()
 {
-	;
+	// used by func_break.cpp pSpawnObjects
+	PRECACHE_MODEL("models/can.mdl");
+	PRECACHE_SOUND("weapons/g_bounce3.wav");
 }
 
 LINK_ENTITY_TO_CLASS(item_sodacan, CItemSoda, CCSItemSoda)

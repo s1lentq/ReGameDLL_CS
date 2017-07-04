@@ -72,6 +72,13 @@ BOOL CC4::__MAKE_VHOOK(Deploy)()
 void CC4::__MAKE_VHOOK(Holster)(int skiplocal)
 {
 	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5f;
+
+#ifdef REGAMEDLL_FIXES
+	if (m_bStartedArming) {
+		m_pPlayer->SetProgressBarTime(0);
+	}
+#endif
+
 	m_bStartedArming = false;	// stop arming sequence
 
 	if (!m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType])
@@ -317,7 +324,11 @@ void CC4::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_T
 
 		EMIT_SOUND(edict(), CHAN_WEAPON, "weapons/c4_plant.wav", VOL_NORM, ATTN_NORM);
 
+#ifdef REGAMEDLL_FIXES
+		CGrenade::ShootSatchelCharge(pPlayer->pev, pPlayer->pev->origin, Vector(0, 0, 0));
+#else
 		CGrenade::ShootSatchelCharge(m_pPlayer->pev, m_pPlayer->pev->origin, Vector(0, 0, 0));
+#endif
 
 		CGrenade *pC4 = NULL;
 		while ((pC4 = (CGrenade *)UTIL_FindEntityByClassname(pC4, "grenade")))

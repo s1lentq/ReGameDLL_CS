@@ -89,7 +89,11 @@ void CWallHealth::__MAKE_VHOOK(Spawn)()
 
 	SET_MODEL(ENT(pev), STRING(pev->model));
 
+#ifdef REGAMEDLL_ADD
+	m_iJuice = int(pev->health ? pev->health : gSkillData.suitchargerCapacity); // "health" - 0 = default, > 0 = use my value
+#else
 	m_iJuice = int(gSkillData.healthchargerCapacity);
+#endif
 	pev->frame = 0.0f;
 }
 
@@ -111,14 +115,22 @@ void CWallHealth::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCalle
 		return;
 
 	// if there is no juice left, turn it off
-	if (m_iJuice <= 0)
+	if (m_iJuice <= 0 
+#ifdef REGAMEDLL_FIXES
+		&& pev->frame != 1.0f // don't update ltime
+#endif
+	)
 	{
 		pev->frame = 1.0f;
 		Off();
 	}
 
 	// if the player doesn't have the suit, or there is no juice left, make the deny noise
-	if (m_iJuice <= 0 || !(pActivator->pev->weapons & (1 << WEAPON_SUIT)))
+	if (m_iJuice <= 0 || !(pActivator->pev->weapons & (1 << WEAPON_SUIT))
+#ifdef REGAMEDLL_FIXES
+		|| pActivator->pev->health >= pActivator->pev->max_health
+#endif
+	)
 	{
 		if (gpGlobals->time >= m_flSoundTime)
 		{
@@ -160,7 +172,13 @@ void CWallHealth::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCalle
 void CWallHealth::Recharge()
 {
 	EMIT_SOUND(ENT(pev), CHAN_ITEM, "items/medshot4.wav", VOL_NORM, ATTN_NORM);
-	m_iJuice = gSkillData.healthchargerCapacity;
+	
+#ifdef REGAMEDLL_ADD
+	m_iJuice = int(pev->health ? pev->health : gSkillData.suitchargerCapacity);
+#else
+	m_iJuice = int(gSkillData.healthchargerCapacity);
+#endif
+
 	pev->frame = 0.0f;
 	SetThink(&CWallHealth::SUB_DoNothing);
 }
@@ -173,7 +191,12 @@ void CWallHealth::Off()
 
 	m_iOn = 0;
 
-	if (!m_iJuice &&  ((m_iReactivate = g_pGameRules->FlHealthChargerRechargeTime()) > 0))
+	if (!m_iJuice && 
+#ifdef REGAMEDLL_FIXES
+		(m_iReactivate > 0 ||		// "dmdelay" - 0 = default, > 0 = use my value
+#endif
+		(m_iReactivate = g_pGameRules->FlHealthChargerRechargeTime()) > 0)
+	)
 	{
 		pev->nextthink = pev->ltime + m_iReactivate;
 		SetThink(&CWallHealth::Recharge);

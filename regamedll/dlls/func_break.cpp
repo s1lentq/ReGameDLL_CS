@@ -13,6 +13,7 @@ const char *CBreakable::pSpawnObjects[] =
 	NULL,
 	"item_battery",
 	"item_healthkit",
+#ifndef REGAMEDLL_FIXES
 	"weapon_9mmhandgun",
 	"ammo_9mmclip",
 	"weapon_9mmAR",
@@ -42,6 +43,14 @@ const char *CBreakable::pSpawnObjects[] =
 	"weapon_tmp",
 	"weapon_g3sg1",
 	"weapon_flashbang"
+#else
+	"item_kevlar",
+	"item_assaultsuit",
+	"item_longjump",
+	"item_sodacan",
+	"item_antidote",
+	"item_thighpack"
+#endif
 };
 
 const char *CBreakable::pSoundsWood[] =
@@ -835,7 +844,18 @@ void CBreakable::Die()
 
 	if (m_iszSpawnObject)
 	{
+#ifndef REGAMEDLL_FIXES
 		CBaseEntity::Create((char *)STRING(m_iszSpawnObject), VecBModelOrigin(pev), pev->angles, edict());
+#else
+		// FIX: entity leak!
+		CItem *pItem = (CItem *)CBaseEntity::Create((char *)STRING(m_iszSpawnObject), VecBModelOrigin(pev), pev->angles, edict());
+		if (pItem)
+		{
+			pItem->pev->spawnflags |= SF_NORESPAWN;
+			pItem->SetThink(&CBaseEntity::SUB_Remove);
+			pItem->pev->nextthink = gpGlobals->time + 300;
+		}
+#endif
 	}
 
 	if (Explodable())

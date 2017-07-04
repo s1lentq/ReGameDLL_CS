@@ -85,7 +85,7 @@ BOOL CGameRules::__MAKE_VHOOK(CanHavePlayerItem)(CBasePlayer *pPlayer, CBasePlay
 		return FALSE;
 	}
 
-	if (pPlayer->IsBot() && TheCSBots() != NULL && !TheCSBots()->IsWeaponUseable(pWeapon))
+	if (pPlayer->IsBot() && TheCSBots() != NULL && !TheCSBots()->IsWeaponUseable((WeaponIdType)pWeapon->m_iId))
 	{
 		return FALSE;
 	}

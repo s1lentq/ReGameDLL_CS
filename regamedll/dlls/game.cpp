@@ -97,7 +97,7 @@ cvar_t sk_scientist_heal3 = { "sk_scientist_heal3", "0", 0, 0.0f, NULL };
 
 #ifdef REGAMEDLL_ADD
 
-cvar_t game_version = { "game_version", APP_VERSION, FCVAR_SERVER, 0.0f, nullptr };
+cvar_t game_version = { "game_version", APP_VERSION, FCVAR_SPONLY | FCVAR_UNLOGGED, 0.0f, nullptr };
 cvar_t maxmoney = { "mp_maxmoney", "16000", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t round_infinite = { "mp_round_infinite", "0", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t hegrenade_penetration = { "mp_hegrenade_penetration", "0", 0, 0.0f, nullptr };
@@ -133,7 +133,7 @@ void GameDLL_EndRound_f()
 {
 	CSGameRules()->EndRoundMessage("#Round_Draw", ROUND_END_DRAW);
 	Broadcast("rounddraw");
-	CSGameRules()->TerminateRound(5, WINSTATUS_DRAW);
+	CSGameRules()->TerminateRound(ROUND_BEGIN_DELAY, WINSTATUS_DRAW);
 }
 
 #endif // REGAMEDLL_ADD

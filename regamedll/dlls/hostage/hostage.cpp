@@ -932,7 +932,7 @@ void CHostage::GiveCTTouchBonus(CBasePlayer *pPlayer)
 	m_bTouched = TRUE;
 	CSGameRules()->m_iAccountCT += CSGameRules()->m_rgRewardAccountRules[RR_TOOK_HOSTAGE_ACC];
 
-	pPlayer->AddAccount(REWARD_TOOK_HOSTAGE, RT_HOSTAGE_TOOK);
+	pPlayer->AddAccount(CSGameRules()->m_rgRewardAccountRules[RR_TOOK_HOSTAGE], RT_HOSTAGE_TOOK);
 	UTIL_LogPrintf("\"%s<%i><%s><CT>\" triggered \"Touched_A_Hostage\"\n", STRING(pPlayer->pev->netname), GETPLAYERUSERID(pPlayer->edict()), GETPLAYERAUTHID(pPlayer->edict()));
 }
 

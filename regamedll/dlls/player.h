@@ -611,6 +611,7 @@ public:
 	bool IsObservingPlayer(CBasePlayer *pPlayer);
 	bool CanSwitchObserverModes() const { return m_canSwitchObserverModes; }
 	void SendItemStatus();
+	void NightVisionToggle(int status, bool playSound);
 	edict_t *EntSelectSpawnPoint();
 	void SetScoreAttrib(CBasePlayer *dest);
 	void ReloadWeapons(CBasePlayerItem *pWeapon = nullptr, bool bForceReload = false, bool bForceRefill = false);

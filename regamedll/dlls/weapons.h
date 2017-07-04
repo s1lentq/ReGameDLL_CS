@@ -1883,4 +1883,6 @@ void UTIL_PrecacheOtherWeapon2(const char *szClassname);
 void W_Precache();
 BOOL CanAttack(float attack_time, float curtime, BOOL isPredicted);
 
+WeaponIdType GetWeaponIdByArmoury(ArmouryItemPack armoury);
+
 #endif // WEAPONS_H

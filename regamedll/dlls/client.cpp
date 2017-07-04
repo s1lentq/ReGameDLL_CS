@@ -426,6 +426,9 @@ void EXT_FUNC ClientPutInServer(edict_t *pEntity)
 	pPlayer->m_bTeamChanged = false;
 	pPlayer->m_iNumSpawns = 0;
 
+#ifdef REGAMEDLL_FIXES
+	pPlayer->m_bHasPrimary = false;
+#endif
 	CheckStartMoney();
 
 #ifdef REGAMEDLL_ADD
@@ -1324,8 +1327,13 @@ CBaseEntity *EXT_FUNC __API_HOOK(BuyWeaponByWeaponID)(CBasePlayer *pPlayer, Weap
 	pPlayer->AddAccount(-info->cost, RT_PLAYER_BOUGHT_SOMETHING);
 
 #ifdef REGAMEDLL_ADD
-	if (refill_bpammo_weapons.value > 1 && info->ammoType >= AMMO_338MAGNUM && info->ammoType <= AMMO_9MM) {
-		pPlayer->m_rgAmmo[info->ammoType] = info->maxRounds;
+	if (refill_bpammo_weapons.value > 1)
+	{
+		CBasePlayerItem *pItem = static_cast<CBasePlayerItem *>(pEntity);
+
+		if (pItem) {
+			pPlayer->GiveAmmo(pItem->iMaxAmmo1(), (char *)pItem->pszAmmo1(), pItem->iMaxAmmo1());
+		}
 	}
 #endif
 
@@ -2009,8 +2017,16 @@ bool EXT_FUNC __API_HOOK(BuyGunAmmo)(CBasePlayer *player, CBasePlayerItem *weapo
 	// Purchase the ammo if the player has enough money
 	if (player->m_iAccount >= info->clipCost)
 	{
-		player->GiveNamedItem(info->ammoName);
+#ifndef REGAMEDLL_ADD
+		player->GiveNamedItem(info->ammoName); // hardcoded buyClipSize & maxRounds
+#else
+		if (player->GiveAmmo(info->buyClipSize, (char *)weapon->pszAmmo1(), weapon->iMaxAmmo1()) == -1)
+			return false;
+
+		EMIT_SOUND(weapon->edict(), CHAN_ITEM, "items/9mmclip1.wav", VOL_NORM, ATTN_NORM);
+#endif
 		player->AddAccount(-info->clipCost, RT_PLAYER_BOUGHT_SOMETHING);
+		
 		return true;
 	}
 
@@ -2997,53 +3013,11 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 
 					if (player->m_bNightVisionOn)
 					{
-						EMIT_SOUND(ENT(player->pev), CHAN_ITEM, "items/nvg_off.wav", RANDOM_FLOAT(0.92, 1), ATTN_NORM);
-
-						MESSAGE_BEGIN(MSG_ONE, gmsgNVGToggle, NULL, player->pev);
-							WRITE_BYTE(0); // disable nightvision
-						MESSAGE_END();
-
-						player->m_bNightVisionOn = false;
-
-						for (int i = 1; i <= gpGlobals->maxClients; ++i)
-						{
-							CBasePlayer *pObserver = UTIL_PlayerByIndex(i);
-							if (pObserver && pObserver->IsObservingPlayer(player))
-							{
-								EMIT_SOUND(ENT(pObserver->pev), CHAN_ITEM, "items/nvg_off.wav", RANDOM_FLOAT(0.92, 1), ATTN_NORM);
-
-								MESSAGE_BEGIN(MSG_ONE, gmsgNVGToggle, NULL, pObserver->pev);
-									WRITE_BYTE(0); // disable nightvision
-								MESSAGE_END();
-
-								pObserver->m_bNightVisionOn = false;
-							}
-						}
+						player->NightVisionToggle(STATUS_NIGHTVISION_OFF, true);
 					}
 					else
 					{
-						EMIT_SOUND(ENT(player->pev), CHAN_ITEM, "items/nvg_on.wav", RANDOM_FLOAT(0.92, 1), ATTN_NORM);
-
-						MESSAGE_BEGIN(MSG_ONE, gmsgNVGToggle, NULL, player->pev);
-							WRITE_BYTE(1); // enable nightvision
-						MESSAGE_END();
-
-						player->m_bNightVisionOn = true;
-
-						for (int i = 1; i <= gpGlobals->maxClients; ++i)
-						{
-							CBasePlayer *pObserver = UTIL_PlayerByIndex(i);
-							if (pObserver && pObserver->IsObservingPlayer(player))
-							{
-								EMIT_SOUND(ENT(pObserver->pev), CHAN_ITEM, "items/nvg_on.wav", RANDOM_FLOAT(0.92, 1), ATTN_NORM);
-
-								MESSAGE_BEGIN(MSG_ONE, gmsgNVGToggle, NULL, pObserver->pev);
-									WRITE_BYTE(1);  // enable nightvision
-								MESSAGE_END();
-
-								pObserver->m_bNightVisionOn = true;
-							}
-						}
+						player->NightVisionToggle(STATUS_NIGHTVISION_ON, true);
 					}
 				}
 			}
