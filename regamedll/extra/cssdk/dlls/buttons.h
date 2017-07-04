@@ -66,6 +66,8 @@ class CRotButton: public CBaseButton {
 public:
 	virtual void Spawn() = 0;
 	virtual void Restart() = 0;
+	virtual int Save(CSave &save) = 0;
+	virtual int Restore(CRestore &restore) = 0;
 public:
 	Vector m_vecSpawn;
 };

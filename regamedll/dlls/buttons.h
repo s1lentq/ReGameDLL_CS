@@ -78,7 +78,8 @@ public:
 
 #ifdef REGAMEDLL_FIXES
 	virtual void Restart();
-
+	virtual int Save(CSave &save);
+	virtual int Restore(CRestore &restore);
 public:
 	static TYPEDESCRIPTION m_SaveData[1];
 	Vector m_vecSpawn;

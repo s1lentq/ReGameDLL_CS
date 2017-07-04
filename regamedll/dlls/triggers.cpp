@@ -403,30 +403,87 @@ void CRenderFxManager::Spawn()
 	pev->solid = SOLID_NOT;
 }
 
+#ifdef REGAMEDLL_FIXES
+
+void CRenderFxManager::UpdateOnRemove()
+{
+	m_RenderGroups.RemoveAll();
+}
+
+void CRenderFxManager::Restart()
+{
+	if (FStringNull(pev->target))
+		return;
+
+	edict_t *pentTarget = nullptr;
+	while ((pentTarget = FIND_ENTITY_BY_TARGETNAME(pentTarget, STRING(pev->target))))
+	{
+		if (FNullEnt(pentTarget))
+			break;
+
+		entvars_t *pevTarget = VARS(pentTarget);
+
+		// find render groups in our list of backup
+		int index = m_RenderGroups.Find(ENTINDEX(pevTarget));
+		if (index == m_RenderGroups.InvalidIndex()) {
+			// not found
+			continue;
+		}
+
+		RenderGroup_t *pGroup = &m_RenderGroups[ index ];
+		if (!(pev->spawnflags & SF_RENDER_MASKFX))
+			pevTarget->renderfx = pGroup->renderfx;
+
+		if (!(pev->spawnflags & SF_RENDER_MASKAMT))
+			pevTarget->renderamt = pGroup->renderamt;
+
+		if (!(pev->spawnflags & SF_RENDER_MASKMODE))
+			pevTarget->rendermode = pGroup->rendermode;
+
+		if (!(pev->spawnflags & SF_RENDER_MASKCOLOR))
+			pevTarget->rendercolor = pGroup->rendercolor;
+	}
+}
+
+#endif // REGAMEDLL_FIXES
+
 void CRenderFxManager::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
-	if (!FStringNull(pev->target))
+	if (FStringNull(pev->target))
+		return;
+
+	edict_t *pentTarget = nullptr;
+	while ((pentTarget = FIND_ENTITY_BY_TARGETNAME(pentTarget, STRING(pev->target))))
 	{
-		edict_t *pentTarget = NULL;
-		while ((pentTarget = FIND_ENTITY_BY_TARGETNAME(pentTarget, STRING(pev->target))) != NULL)
-		{
-			if (FNullEnt(pentTarget))
-				break;
+		if (FNullEnt(pentTarget))
+			break;
 
-			entvars_t *pevTarget = VARS(pentTarget);
+		entvars_t *pevTarget = VARS(pentTarget);
 
-			if (!(pev->spawnflags & SF_RENDER_MASKFX))
-				pevTarget->renderfx = pev->renderfx;
+#ifdef REGAMEDLL_FIXES
+		RenderGroup_t group;
+		group.renderfx = pevTarget->renderfx;
+		group.renderamt = pevTarget->renderamt;
+		group.rendermode = pevTarget->rendermode;
+		group.rendercolor = pevTarget->rendercolor;
 
-			if (!(pev->spawnflags & SF_RENDER_MASKAMT))
-				pevTarget->renderamt = pev->renderamt;
-
-			if (!(pev->spawnflags & SF_RENDER_MASKMODE))
-				pevTarget->rendermode = pev->rendermode;
-
-			if (!(pev->spawnflags & SF_RENDER_MASKCOLOR))
-				pevTarget->rendercolor = pev->rendercolor;
+		int entityIndex = ENTINDEX(pevTarget);
+		if (m_RenderGroups.Find(entityIndex) == m_RenderGroups.InvalidIndex()) {
+			m_RenderGroups.Insert(entityIndex, group);
 		}
+#endif
+
+		if (!(pev->spawnflags & SF_RENDER_MASKFX))
+			pevTarget->renderfx = pev->renderfx;
+
+		if (!(pev->spawnflags & SF_RENDER_MASKAMT))
+			pevTarget->renderamt = pev->renderamt;
+
+		if (!(pev->spawnflags & SF_RENDER_MASKMODE))
+			pevTarget->rendermode = pev->rendermode;
+
+		if (!(pev->spawnflags & SF_RENDER_MASKCOLOR))
+			pevTarget->rendercolor = pev->rendercolor;
 	}
 }
 

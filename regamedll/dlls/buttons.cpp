@@ -52,16 +52,6 @@ TYPEDESCRIPTION CEnvSpark::m_SaveData[] =
 
 #endif // HOOK_GAMEDLL
 
-
-#ifdef REGAMEDLL_FIXES
-
-TYPEDESCRIPTION CRotButton::m_SaveData[] =
-{
-	DEFINE_FIELD(CRotButton, m_vecSpawn, FIELD_VECTOR),
-};
-
-#endif
-
 IMPLEMENT_SAVERESTORE(CEnvGlobal, CBaseEntity)
 LINK_ENTITY_TO_CLASS(env_global, CEnvGlobal, CCSEnvGlobal)
 
@@ -841,6 +831,17 @@ void CBaseButton::ButtonBackHome()
 		pev->nextthink = gpGlobals->time + 0.5f;
 	}
 }
+
+#ifdef REGAMEDLL_FIXES
+
+TYPEDESCRIPTION CRotButton::m_SaveData[] =
+{
+	DEFINE_FIELD(CRotButton, m_vecSpawn, FIELD_VECTOR),
+};
+
+IMPLEMENT_SAVERESTORE(CRotButton, CBaseButton)
+
+#endif
 
 LINK_ENTITY_TO_CLASS(func_rot_button, CRotButton, CCSRotButton)
 

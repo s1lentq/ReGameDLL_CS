@@ -27,6 +27,8 @@
 */
 #pragma once
 
+#include "utlmap.h"
+
 #define GRENADETYPE_SMOKE			1
 #define GRENADETYPE_FLASH			2
 
@@ -140,7 +142,18 @@ public:
 class CRenderFxManager: public CBaseEntity {
 public:
 	virtual void Spawn() = 0;
+	virtual void Restart() = 0;
+	virtual void UpdateOnRemove() = 0;
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value) = 0;
+public:
+	struct RenderGroup_t
+	{
+		int rendermode;
+		float renderamt;
+		Vector rendercolor;
+		int renderfx;
+	};
+	CUtlMap<int, RenderGroup_t> m_RenderGroups;
 };
 
 class CBaseTrigger: public CBaseToggle {
