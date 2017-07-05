@@ -902,15 +902,15 @@ void EXT_FUNC PlayerBlind(CBasePlayer *pPlayer, entvars_t *pevInflictor, entvars
 {
 	UTIL_ScreenFade(pPlayer, color, fadeTime, fadeHold, alpha, 0);
 
-	for (int i = 1; i <= gpGlobals->maxClients; ++i)
+	if (fadetoblack.value)
 	{
-		CBasePlayer *pObserver = UTIL_PlayerByIndex(i);
-		if (!pObserver || !pObserver->IsObservingPlayer(pPlayer))
-			continue;
-
-		if (!fadetoblack.value)
+		for (int i = 1; i <= gpGlobals->maxClients; ++i)
 		{
-			UTIL_ScreenFade(pObserver, color, fadeTime, fadeHold, alpha, 0);
+			CBasePlayer *pObserver = UTIL_PlayerByIndex(i);
+			if (pObserver && pObserver->IsObservingPlayer(pPlayer))
+			{
+				UTIL_ScreenFade(pObserver, color, fadeTime, fadeHold, alpha, 0);
+			}
 		}
 	}
 
