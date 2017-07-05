@@ -902,7 +902,7 @@ void EXT_FUNC PlayerBlind(CBasePlayer *pPlayer, entvars_t *pevInflictor, entvars
 {
 	UTIL_ScreenFade(pPlayer, color, fadeTime, fadeHold, alpha, 0);
 
-	if (fadetoblack.value)
+	if (!fadetoblack.value)
 	{
 		for (int i = 1; i <= gpGlobals->maxClients; ++i)
 		{
