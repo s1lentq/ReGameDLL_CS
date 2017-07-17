@@ -15,6 +15,7 @@
 #include "protected_things.h"
 #include "commonmacros.h"
 
+#include "mathlib.h"
 
 // For backward compatibilty only...
 #include "tier0/platform.h"
@@ -43,19 +44,6 @@
 // So PAD_NUMBER(0,4) is 0 and PAD_NUMBER(1,4) is 4
 #define PAD_NUMBER(number, boundary) \
 	( ((number) + ((boundary)-1)) / (boundary) ) * (boundary)
-
-#ifndef MATHLIB_H
-// In case this ever changes
-#define M_PI			3.14159265358979323846
-
-#ifndef min
-#define min(a,b)  (((a) < (b)) ? (a) : (b))
-#endif
-
-#ifndef max
-#define max(a,b)  (((a) > (b)) ? (a) : (b))
-#endif
-#endif // MATHLIB_H
 
 #ifndef FALSE
 #define FALSE 0
