@@ -3217,6 +3217,12 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 					// max total length is 192 ...and we're adding a string below ("Unknown command: %s\n")
 					Q_strncpy(command, pcmd, sizeof(command) - 1);
 					command[sizeof(command) - 1] = '\0';
+#ifdef REGAMEDLL_FIXES
+					// Add extra '\n' to make command string safe
+					// This extra '\n' is removed by the client, so it is ok
+					command[sizeof(command) - 2] = '\0';
+					command[Q_strlen(command)] = '\n';
+#endif
 
 					// tell the user they entered an unknown command
 					ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, "#Game_unknown_command", command);
