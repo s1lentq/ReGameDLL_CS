@@ -6536,7 +6536,10 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(RemovePlayerItem)(CBasePlayerItem *pItem)
 		pev->viewmodel = 0;
 		pev->weaponmodel = 0;
 	}
-	else if (m_pLastItem == pItem)
+#ifndef REGAMEDLL_FIXES
+	else
+#endif
+	if (m_pLastItem == pItem)
 		m_pLastItem = NULL;
 
 	CBasePlayerItem *pPrev = m_rgpPlayerItems[pItem->iItemSlot()];
