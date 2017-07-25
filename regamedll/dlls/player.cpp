@@ -1585,12 +1585,20 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 {
 	RemoveAllItems(FALSE);
 
-// NOTE: NOTE: It is already does reset inside RemoveAllItems
+// NOTE: It is already does reset inside RemoveAllItems
 #ifndef REGAMEDLL_FIXES
 	m_bHasPrimary = false;
 #endif
 
 #ifdef REGAMEDLL_ADD
+	auto GiveWeapon = [&](int ammo, char* pszWeaponName) {
+		GiveNamedItem(pszWeaponName);
+		const WeaponInfoStruct *info = GetWeaponInfo(pszWeaponName);
+		if (info) {
+			GiveAmmo(refill_bpammo_weapons.value != 0.0f ? info->maxRounds : ammo, info->ammoName + 5/*ammo_*/);
+		}
+	};
+
 	switch (m_iTeam)
 	{
 	case CT:
@@ -1599,8 +1607,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 			GiveNamedItem("weapon_knife");
 		}
 		if (!HasRestrictItem(ITEM_USP, ITEM_TYPE_EQUIPPED)) {
-			GiveNamedItem("weapon_usp");
-			GiveAmmo(m_bIsVIP ? 12 : 24, "45acp");
+			GiveWeapon(m_bIsVIP ? 12 : 24, "weapon_usp");
 		}
 
 		break;
@@ -1611,8 +1618,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 			GiveNamedItem("weapon_knife");
 		}
 		if (!HasRestrictItem(ITEM_GLOCK18, ITEM_TYPE_EQUIPPED)) {
-			GiveNamedItem("weapon_glock18");
-			GiveAmmo(40, "9mm");
+			GiveWeapon(40, "weapon_glock18");
 		}
 
 		break;
@@ -6561,10 +6567,10 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(RemovePlayerItem)(CBasePlayerItem *pItem)
 	return FALSE;
 }
 
-LINK_HOOK_CLASS_CHAIN(int, CBasePlayer, GiveAmmo, (int iCount, char *szName, int iMax), iCount, szName, iMax)
+LINK_HOOK_CLASS_CHAIN(int, CBasePlayer, GiveAmmo, (int iCount, const char *szName, int iMax), iCount, szName, iMax)
 
 // Returns the unique ID for the ammo, or -1 if error
-int EXT_FUNC CBasePlayer::__API_HOOK(GiveAmmo)(int iCount, char *szName, int iMax)
+int EXT_FUNC CBasePlayer::__API_HOOK(GiveAmmo)(int iCount, const char *szName, int iMax)
 {
 	if (pev->flags & FL_SPECTATOR)
 		return -1;

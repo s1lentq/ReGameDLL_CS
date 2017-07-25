@@ -320,7 +320,7 @@ public:
 	virtual void AddPointsToTeam(int score, BOOL bAllowNegativeScore) = 0;
 	virtual BOOL AddPlayerItem(CBasePlayerItem *pItem) = 0;
 	virtual BOOL RemovePlayerItem(CBasePlayerItem *pItem) = 0;
-	virtual int GiveAmmo(int iAmount, char *szName, int iMax = -1) = 0;
+	virtual int GiveAmmo(int iAmount, const char *szName, int iMax = -1) = 0;
 	virtual void StartSneaking() = 0;
 	virtual void UpdateOnRemove() = 0;
 	virtual BOOL IsSneaking() = 0;

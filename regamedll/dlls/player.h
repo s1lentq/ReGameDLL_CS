@@ -336,7 +336,7 @@ public:
 	virtual void AddPointsToTeam(int score, BOOL bAllowNegativeScore);
 	virtual BOOL AddPlayerItem(CBasePlayerItem *pItem);
 	virtual BOOL RemovePlayerItem(CBasePlayerItem *pItem);
-	virtual int GiveAmmo(int iAmount, char *szName, int iMax = -1);
+	virtual int GiveAmmo(int iAmount, const char *szName, int iMax = -1);
 	virtual void StartSneaking() { m_tSneaking = gpGlobals->time - 1; }
 
 #ifndef REGAMEDLL_FIXES
@@ -381,7 +381,7 @@ public:
 	void AddPointsToTeam_OrigFunc(int score, BOOL bAllowNegativeScore);
 	BOOL AddPlayerItem_OrigFunc(CBasePlayerItem *pItem);
 	BOOL RemovePlayerItem_OrigFunc(CBasePlayerItem *pItem);
-	int GiveAmmo_OrigFunc(int iAmount, char *szName, int iMax);
+	int GiveAmmo_OrigFunc(int iAmount, const char *szName, int iMax);
 	void ResetMaxSpeed_OrigFunc();
 	void Jump_OrigFunc();
 	void Duck_OrigFunc();

@@ -83,8 +83,8 @@ typedef IHookChainClassImpl<BOOL, CBasePlayer, CBasePlayerItem *> CReGameHook_CB
 typedef IHookChainRegistryClassImpl<BOOL, CBasePlayer, CBasePlayerItem *> CReGameHookRegistry_CBasePlayer_RemovePlayerItem;
 
 // CBasePlayer::GiveAmmo hook
-typedef IHookChainClassImpl<int, CBasePlayer, int , char *, int> CReGameHook_CBasePlayer_GiveAmmo;
-typedef IHookChainRegistryClassImpl<int, CBasePlayer, int , char *, int> CReGameHookRegistry_CBasePlayer_GiveAmmo;
+typedef IHookChainClassImpl<int, CBasePlayer, int , const char *, int> CReGameHook_CBasePlayer_GiveAmmo;
+typedef IHookChainRegistryClassImpl<int, CBasePlayer, int , const char *, int> CReGameHookRegistry_CBasePlayer_GiveAmmo;
 
 // CBasePlayer::ResetMaxSpeed hook
 typedef IHookChainClassImpl<void, CBasePlayer> CReGameHook_CBasePlayer_ResetMaxSpeed;
