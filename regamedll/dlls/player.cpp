@@ -1585,13 +1585,14 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 {
 	RemoveAllItems(FALSE);
 
-// NOTE: NOTE: It is already does reset inside RemoveAllItems
+// NOTE: It is already does reset inside RemoveAllItems
 #ifndef REGAMEDLL_FIXES
 	m_bHasPrimary = false;
 #endif
 
 #ifdef REGAMEDLL_ADD
-	auto GiveDefaultItemAmmo = [&](int ammo, char* pszWeaponName) {
+	auto GiveWeapon = [&](int ammo, char* pszWeaponName) {
+			GiveNamedItem(pszWeaponName);
 			const WeaponInfoStruct *info = GetWeaponInfo(pszWeaponName);
 			if (info) {
 				GiveAmmo(refill_bpammo_weapons.value != 0.0f ? info->maxRounds : ammo, info->ammoName + 5/*ammo_*/);
@@ -1606,8 +1607,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 			GiveNamedItem("weapon_knife");
 		}
 		if (!HasRestrictItem(ITEM_USP, ITEM_TYPE_EQUIPPED)) {
-			GiveNamedItem("weapon_usp");
-			GiveDefaultItemAmmo(m_bIsVIP ? 12 : 24, "weapon_usp");
+			GiveWeapon(m_bIsVIP ? 12 : 24, "weapon_usp");
 		}
 
 		break;
@@ -1618,8 +1618,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 			GiveNamedItem("weapon_knife");
 		}
 		if (!HasRestrictItem(ITEM_GLOCK18, ITEM_TYPE_EQUIPPED)) {
-			GiveNamedItem("weapon_glock18");
-			GiveDefaultItemAmmo(40, "weapon_glock18");
+			GiveWeapon(40, "weapon_glock18");
 		}
 
 		break;
