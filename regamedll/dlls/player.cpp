@@ -1592,11 +1592,11 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 
 #ifdef REGAMEDLL_ADD
 	auto GiveWeapon = [&](int ammo, char* pszWeaponName) {
-			GiveNamedItem(pszWeaponName);
-			const WeaponInfoStruct *info = GetWeaponInfo(pszWeaponName);
-			if (info) {
-				GiveAmmo(refill_bpammo_weapons.value != 0.0f ? info->maxRounds : ammo, info->ammoName + 5/*ammo_*/);
-			}
+		GiveNamedItem(pszWeaponName);
+		const WeaponInfoStruct *info = GetWeaponInfo(pszWeaponName);
+		if (info) {
+			GiveAmmo(refill_bpammo_weapons.value != 0.0f ? info->maxRounds : ammo, info->ammoName + 5/*ammo_*/);
+		}
 	};
 
 	switch (m_iTeam)
