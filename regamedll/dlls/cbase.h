@@ -251,7 +251,7 @@ public:
 	virtual void AddPointsToTeam(int score, BOOL bAllowNegativeScore) {}
 	virtual BOOL AddPlayerItem(CBasePlayerItem *pItem) { return FALSE; }
 	virtual BOOL RemovePlayerItem(CBasePlayerItem *pItem) { return FALSE; }
-	virtual int GiveAmmo(int iAmount, char *szName, int iMax = -1) { return -1; }
+	virtual int GiveAmmo(int iAmount, const char *szName, int iMax = -1) { return -1; }
 	virtual float GetDelay() { return 0.0f; }
 	virtual int IsMoving() { return (pev->velocity != g_vecZero); }
 	virtual void OverrideReset() {}
