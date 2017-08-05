@@ -687,7 +687,7 @@ private:
 	void MarkLivingPlayersOnTeamAsNotReceivingMoneyNextRound(int iTeam);
 
 public:
-	static RewardAccount m_rgRewardAccountRules[];
+	static RewardAccount m_rgRewardAccountRules[RR_END];
 
 	CVoiceGameMgr m_VoiceGameMgr;
 	float m_flRestartRoundTime;			// The global time when the round is supposed to end, if this is not 0 (deprecated name m_fTeamCount)
