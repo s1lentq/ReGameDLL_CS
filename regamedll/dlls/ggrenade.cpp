@@ -1201,7 +1201,11 @@ void CGrenade::C4Think()
 	}
 
 	// If the timer has expired ! blow this bomb up!
+#ifdef REGAMEDLL_FIXES
+	if(gpGlobals->time >= m_flC4Blow && (!(m_bStartDefuse && m_pBombDefuser) || gpGlobals->time < m_flDefuseCountDown)) // Prevent exploding after defusing.
+#else
 	if (gpGlobals->time >= m_flC4Blow)
+#endif
 	{
 		if (TheBots)
 		{
