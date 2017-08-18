@@ -72,6 +72,14 @@ BOOL CC4::Deploy()
 void CC4::Holster(int skiplocal)
 {
 	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5f;
+
+#ifdef REGAMEDLL_FIXES
+	if(m_bStartedArming)
+	{
+		m_pPlayer->SetProgressBarTime(0);
+	}
+#endif
+
 	m_bStartedArming = false;	// stop arming sequence
 
 	if (!m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType])
