@@ -1232,10 +1232,15 @@ void CGrenade::C4Think()
 
 		g_pGameRules->m_bBombDropped = FALSE;
 
+#ifndef REGAMEDLL_FIXES
 		if (pev->waterlevel != 0)
-			UTIL_Remove(this);
+			UTIL_Remove(this); // Causes infinite round
 		else
+#endif
+		{
 			SetThink(&CGrenade::Detonate2);
+		}
+
 	}
 
 	// if the defusing process has started
