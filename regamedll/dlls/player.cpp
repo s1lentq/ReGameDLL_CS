@@ -611,7 +611,11 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Radio)(const char *msg_id, const char *msg
 				}
 
 				// icon over the head for teammates
+#ifdef REGAMEDLL_ADD
+				if (showIcon && show_radioicon.value)
+#else
 				if (showIcon)
+#endif
 				{
 					// put an icon over this guys head to show that he used the radio
 					MESSAGE_BEGIN(MSG_ONE, SVC_TEMPENTITY, NULL, pEntity->pev);
