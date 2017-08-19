@@ -12,19 +12,20 @@ cvar_t *sv_clienttrace = NULL;
 
 CCStrikeGameMgrHelper g_GameMgrHelper;
 CHalfLifeMultiplay *g_pMPGameRules = nullptr;
-RewardAccount CHalfLifeMultiplay::m_rgRewardAccountRules[] = {
-	REWARD_CTS_WIN,					// RR_CTS_WIN
+RewardAccount CHalfLifeMultiplay::m_rgRewardAccountRules[RR_END];
+RewardAccount m_rgRewardAccountRules_default[] = {
+	REWARD_CTS_WIN,						// RR_CTS_WIN
 	REWARD_TERRORISTS_WIN,				// RR_TERRORISTS_WIN
-	REWARD_TARGET_BOMB,				// RR_TARGET_BOMB
-	REWARD_VIP_ESCAPED,				// RR_VIP_ESCAPED
+	REWARD_TARGET_BOMB,					// RR_TARGET_BOMB
+	REWARD_VIP_ESCAPED,					// RR_VIP_ESCAPED
 	REWARD_VIP_ASSASSINATED,			// RR_VIP_ASSASSINATED
 	REWARD_TERRORISTS_ESCAPED,			// RR_TERRORISTS_ESCAPED
 	REWARD_CTS_PREVENT_ESCAPE,			// RR_CTS_PREVENT_ESCAPE
-	REWARD_ESCAPING_TERRORISTS_NEUTRALIZED,		// RR_ESCAPING_TERRORISTS_NEUTRALIZED
+	REWARD_ESCAPING_TERRORISTS_NEUTRALIZED,	// RR_ESCAPING_TERRORISTS_NEUTRALIZED
 	REWARD_BOMB_DEFUSED,				// RR_BOMB_DEFUSED
 	REWARD_BOMB_PLANTED,				// RR_BOMB_PLANTED
 	REWARD_BOMB_EXPLODED,				// RR_BOMB_EXPLODED
-	REWARD_ALL_HOSTAGES_RESCUED,			// RR_ALL_HOSTAGES_RESCUED
+	REWARD_ALL_HOSTAGES_RESCUED,		// RR_ALL_HOSTAGES_RESCUED
 	REWARD_TARGET_BOMB_SAVED,			// RR_TARGET_BOMB_SAVED
 	REWARD_HOSTAGE_NOT_RESCUED,			// RR_HOSTAGE_NOT_RESCUED
 	REWARD_VIP_NOT_ESCAPED,				// RR_VIP_NOT_ESCAPED
@@ -416,6 +417,7 @@ CHalfLifeMultiplay::CHalfLifeMultiplay()
 
 	m_VoiceGameMgr.Init(&g_GameMgrHelper, gpGlobals->maxClients);
 	RefreshSkillData();
+	Q_memcpy(m_rgRewardAccountRules, m_rgRewardAccountRules_default, sizeof(m_rgRewardAccountRules));
 
 	m_flIntermissionEndTime = 0;
 	m_flIntermissionStartTime = 0;
@@ -3504,10 +3506,13 @@ void CHalfLifeMultiplay::ClientDisconnected(edict_t *pClient)
 				pPlayer->DropPlayerItem("weapon_c4");
 			}
 
+#ifndef REGAMEDLL_FIXES
+			// Why ? DropPlayerItem didn't handle item_thighpack
 			if (pPlayer->m_bHasDefuser)
 			{
 				pPlayer->DropPlayerItem("item_thighpack");
 			}
+#endif
 
 			if (pPlayer->m_bIsVIP)
 			{
