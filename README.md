@@ -41,6 +41,7 @@ Archive's bin directory contains 2 subdirectories, 'bugfixed' and 'pure'
 | mp_timelimit                  | 0       | -   | -            | Period between map rotations.<br />`0` means no limit |
 | mp_forcerespawn               | 0       | 0   | -            | Players will automatically respawn when killed.<br/>`0` disabled<br/>`>0.00001` time delay to respawn |
 | mp_hostage_hurtable           | 1       | 0   | 1            | The hostages can take the damage.<br/>`0` disabled<br/>`1` enabled |
+| mp_show_radioicon           | 1       | 0   | 1            | Show radio icon.<br/>`0` disabled<br/>`1` enabled |
 | showtriggers                  | 0       | 0   | 1            | Debug cvar shows triggers. |
 | bot_deathmatch                | 0       | 0   | 1            | Set's the mode for the zBot.<br/>`0` disabled<br/>`1` enable mode Deathmatch and not allow to do the scenario |
 | bot_quota_mode                | normal  | -   | -            | Determines the type of quota.<br/>`normal` default behaviour<br/>`fill` the server will adjust bots to keep `N` players in the game, where `N` is bot_quota |
