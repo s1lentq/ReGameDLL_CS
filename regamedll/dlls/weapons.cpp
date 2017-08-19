@@ -960,7 +960,11 @@ void CBasePlayerWeapon::ItemPostFrame()
 		m_fInReload = FALSE;
 	}
 
-	if ((usableButtons & IN_ATTACK2) && CanAttack(m_flNextSecondaryAttack, UTIL_WeaponTimeBase(), UseDecrement()))
+	if ((usableButtons & IN_ATTACK2) && CanAttack(m_flNextSecondaryAttack, UTIL_WeaponTimeBase(), UseDecrement())
+#ifdef REGAMEDLL_FIXES
+		&& !m_pPlayer->m_bIsDefusing // In-line: I think it's fine to block secondary attack, when defusing. It's better then blocking speed resets in weapons.
+#endif
+    )
 	{
 		if (pszAmmo2() && !m_pPlayer->m_rgAmmo[SecondaryAmmoIndex()])
 		{
