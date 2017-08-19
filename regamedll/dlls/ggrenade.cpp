@@ -983,7 +983,9 @@ void CGrenade::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useTy
 
 		// TODO show messages on clients on event
 		ClientPrint(player->pev, HUD_PRINTCENTER, "#Defusing_Bomb_With_Defuse_Kit");
+#ifndef REGAMEDLL_FIXES
 		EMIT_SOUND(ENT(player->pev), CHAN_ITEM, "weapons/c4_disarm.wav", VOL_NORM, ATTN_NORM);
+#endif
 
 		player->m_bIsDefusing = true;
 		m_pBombDefuser = pActivator;
@@ -1003,7 +1005,9 @@ void CGrenade::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useTy
 
 		// TODO: show messages on clients on event
 		ClientPrint(player->pev, HUD_PRINTCENTER, "#Defusing_Bomb_Without_Defuse_Kit");
+#ifndef REGAMEDLL_FIXES
 		EMIT_SOUND(ENT(player->pev), CHAN_ITEM, "weapons/c4_disarm.wav", VOL_NORM, ATTN_NORM);
+#endif	
 
 		player->m_bIsDefusing = true;
 		m_pBombDefuser = pActivator;
@@ -1014,6 +1018,10 @@ void CGrenade::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useTy
 		// start the progress bar
 		player->SetProgressBarTime(10);
 	}
+
+#ifdef REGAMEDLL_FIXES
+	EMIT_SOUND(edict(), CHAN_ITEM, "weapons/c4_disarm.wav", VOL_NORM, ATTN_NORM); // Emit sound using bomb.
+#endif
 }
 
 CGrenade *CGrenade::ShootSatchelCharge(entvars_t *pevOwner, Vector vecStart, Vector vecAngles)
