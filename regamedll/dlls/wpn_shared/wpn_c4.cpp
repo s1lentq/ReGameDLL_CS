@@ -317,7 +317,7 @@ void CC4::__MAKE_VHOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_T
 
 		EMIT_SOUND(edict(), CHAN_WEAPON, "weapons/c4_plant.wav", VOL_NORM, ATTN_NORM);
 
-		CGrenade::ShootSatchelCharge(m_pPlayer->pev, m_pPlayer->pev->origin, Vector(0, 0, 0));
+		CGrenade::ShootSatchelCharge(pPlayer->pev, pev->origin, Vector(0, 0, 0));
 
 		CGrenade *pC4 = NULL;
 		while ((pC4 = (CGrenade *)UTIL_FindEntityByClassname(pC4, "grenade")))
