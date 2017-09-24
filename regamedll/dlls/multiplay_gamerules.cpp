@@ -2607,8 +2607,13 @@ bool CHalfLifeMultiplay::CheckGameOver()
 		if (time < 1)
 			CVAR_SET_STRING("mp_chattime", "1");
 
+#ifdef REGAMEDLL_ADD
+		else if (time > max_intermission_time.value)
+			CVAR_SET_STRING("mp_chattime", UTIL_dtos1(max_intermission_time.value));
+#else
 		else if (time > MAX_INTERMISSION_TIME)
 			CVAR_SET_STRING("mp_chattime", UTIL_dtos1(MAX_INTERMISSION_TIME));
+#endif
 
 		m_flIntermissionEndTime = m_flIntermissionStartTime + mp_chattime.value;
 
@@ -2617,7 +2622,11 @@ bool CHalfLifeMultiplay::CheckGameOver()
 		{
 			if (!UTIL_HumansInGame()			// if only bots, just change immediately
 				|| m_iEndIntermissionButtonHit		// check that someone has pressed a key, or the max intermission time is over
+#ifdef REGAMEDLL_ADD
+				|| ((m_flIntermissionStartTime + max_intermission_time.value) < gpGlobals->time))			
+#else
 				|| ((m_flIntermissionStartTime + MAX_INTERMISSION_TIME) < gpGlobals->time))
+#endif
 			{
 				// intermission is over
 				ChangeLevel();
@@ -4329,9 +4338,13 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(GoToIntermission)()
 
 	if (time < 1)
 		CVAR_SET_STRING("mp_chattime", "1");
-
+#ifdef REGAMEDLL_ADD
+	else if (time > max_intermission_time.value)
+		CVAR_SET_STRING("mp_chattime", UTIL_dtos1(max_intermission_time.value));
+#else
 	else if (time > MAX_INTERMISSION_TIME)
 		CVAR_SET_STRING("mp_chattime", UTIL_dtos1(MAX_INTERMISSION_TIME));
+#endif
 
 	m_flIntermissionEndTime = gpGlobals->time + int(mp_chattime.value);
 	m_flIntermissionStartTime = gpGlobals->time;
