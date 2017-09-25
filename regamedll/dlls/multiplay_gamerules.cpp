@@ -3408,7 +3408,11 @@ void CHalfLifeMultiplay::InitHUD(CBasePlayer *pl)
 		WRITE_BYTE(fadetoblack.value != 0);
 	MESSAGE_END();
 
-	if (m_bGameOver)
+#ifdef REGAMEDLL_ADD
+	if (m_bGameOver && max_intermission_time.value > 0.0f)
+#else
+	if (m_bGameOver)	
+#endif
 	{
 		MESSAGE_BEGIN(MSG_ONE, SVC_INTERMISSION, NULL, pl->edict());
 		MESSAGE_END();
@@ -4326,8 +4330,14 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(GoToIntermission)()
 		}
 	}
 
-	MESSAGE_BEGIN(MSG_ALL, SVC_INTERMISSION);
-	MESSAGE_END();
+#ifdef REGAMEDLL_ADD
+	if (max_intermission_time.value > 0.0f)
+#endif
+	{
+		MESSAGE_BEGIN(MSG_ALL, SVC_INTERMISSION);
+		MESSAGE_END();
+	}
+
 
 	if (IsCareer())
 	{
