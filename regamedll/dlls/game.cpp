@@ -118,6 +118,7 @@ cvar_t hostagehurtable = { "mp_hostage_hurtable", "1", FCVAR_SERVER, 0.0f, nullp
 cvar_t roundover = { "mp_roundover", "0", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t forcerespawn = { "mp_forcerespawn", "0", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t show_radioicon = { "mp_show_radioicon", "1", FCVAR_SERVER, 1.0f, nullptr };
+cvar_t old_bomb_defused_sound = { "mp_old_bomb_defused_sound", "0", FCVAR_SERVER, 0.0f, nullptr };
 
 void GameDLL_Version_f()
 {
@@ -266,6 +267,7 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&roundover);
 	CVAR_REGISTER(&forcerespawn);
 	CVAR_REGISTER(&show_radioicon);
+	CVAR_REGISTER(&old_bomb_defused_sound);
 
 	// print version
 	CONSOLE_ECHO("ReGameDLL version: " APP_VERSION "\n");
