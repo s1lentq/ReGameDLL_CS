@@ -1320,7 +1320,12 @@ bool CHalfLifeMultiplay::Target_Bombed_internal(int winStatus, ScenarioEventEndR
 
 bool CHalfLifeMultiplay::Target_Defused_internal(int winStatus, ScenarioEventEndRound event, float tmDelay) {
 
-	Broadcast("ctwin");
+#ifdef REGAMEDLL_ADD
+	if (!old_bomb_defused_sound.value)
+#endif	
+	{
+		Broadcast("ctwin");
+	}	
 	m_iAccountCT += m_rgRewardAccountRules[RR_BOMB_DEFUSED];
 	m_iAccountTerrorist += m_rgRewardAccountRules[RR_BOMB_PLANTED];
 
