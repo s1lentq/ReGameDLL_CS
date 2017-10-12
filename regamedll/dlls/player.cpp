@@ -5761,7 +5761,7 @@ CBaseEntity *CBasePlayer::GiveNamedItemEx(const char *pszName)
 
 	if (FNullEnt(pent))
 	{
-		ALERT(at_console, "NULL Ent in GiveNamedItemEx!\n");
+		ALERT(at_console, "NULL Ent in GiveNamedItemEx classname `%s`!\n", pszName);
 		return nullptr;
 	}
 

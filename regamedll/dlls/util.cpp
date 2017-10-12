@@ -1578,7 +1578,7 @@ void UTIL_PrecacheOther(const char *szClassname)
 	edict_t *pent = CREATE_NAMED_ENTITY(MAKE_STRING(szClassname));
 	if (FNullEnt(pent))
 	{
-		ALERT(at_console, "NULL Ent in UTIL_PrecacheOther\n");
+		ALERT(at_console, "NULL Ent in UTIL_PrecacheOther classname `%s`\n", szClassname);
 		return;
 	}
 
@@ -1594,7 +1594,7 @@ void UTIL_PrecacheOther(const char *szClassname)
 void UTIL_RestartOther(const char *szClassname)
 {
 	CBaseEntity *pEntity = nullptr;
-	while ((pEntity = UTIL_FindEntityByClassname(pEntity, szClassname)) != nullptr)
+	while ((pEntity = UTIL_FindEntityByClassname(pEntity, szClassname)))
 	{
 		pEntity->Restart();
 	}
