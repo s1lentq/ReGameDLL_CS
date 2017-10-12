@@ -969,7 +969,7 @@
 	]
 ]
 
-@PointClass iconsprite("sprites/CS/armoury_entity.spr") size(-16 -16 0, 16 16 16) = armoury_entity : "Items in the armoury"
+@BaseClass base(RenderFields) = ArmouryEntity
 [
 	item(choices)  : "Item" : 0 =
 	[
@@ -1006,6 +1006,10 @@
 	]
 // note: count always resets to only one item after first round
 	count(integer) : "Count" : 1
+]
+
+@PointClass base(ArmouryEntity) iconsprite("sprites/CS/armoury_entity.spr") size(-16 -16 0, 16 16 16) = armoury_entity : "Items in the armoury"
+[
 ]
 
 // line below edited by Dmitrich! -->
@@ -2872,4 +2876,51 @@
 		0 : "No"
 		1 : "Yes"
 	]
+]
+
+@PointClass base(ArmouryEntity) size(-16 -16 0, 16 16 16) iconsprite("sprites/CS/armoury_entity.spr") = item_airbox : "Items in the armoury and float in the air"
+[
+    angles(string) : "Pitch Yaw Roll (Y Z X)" : "-90 0 0"
+    avelocity(string) : "Angular velocity (Y Z X)" : "0 150 0"
+    flyup(string) : "Speed fly up" : "5"
+    delay(string) : "Delay before fly down" : "1"
+	sprite_model(string) : "Sprite Name " : ""
+	sprite_renderfx(choices) :"Sprite Render FX" : 0 =
+	[
+		0: "Normal"
+		1: "Slow Pulse"
+		2: "Fast Pulse"
+		3: "Slow Wide Pulse"
+		4: "Fast Wide Pulse"
+		9: "Slow Strobe"
+		10: "Fast Strobe"
+		11: "Faster Strobe"
+		12: "Slow Flicker"
+		13: "Fast Flicker"
+//		5: "Slow Fade Away"
+//		6: "Fast Fade Away"
+//		7: "Slow Become Solid"
+//		8: "Fast Become Solid"
+		14: "Constant Glow (Sprites)"
+		15: "Distort (Models)"
+		16: "Hologram (Distort + fade)"
+		17: "Dead Player"
+		18: "Explode"
+		19: "Glow Shell"
+		20 : "Clamp Min Scale"
+		21 : "Light Multiplier"
+	]
+	sprite_rendermode(choices) : "Sprite Render Mode" : 0 =
+	[
+		0: "Normal - no light"
+		1: "Pure Color"
+		2: "Texture - some light"
+		3: "Glow (sprites only)"
+		4: "Solid - no light"
+		5: "Additive"
+	]
+	sprite_renderamt(integer) : "Sprite FX Amount (1 - 255)" : 255
+	sprite_rendercolor(color255) : "Sprite FX Color (R G B)" : "0 0 0"
+	sprite_scale(string) : "Sprite scale" : "1.0"
+	sprite_framerate(string) : "Sprite framerate" : "10"
 ]

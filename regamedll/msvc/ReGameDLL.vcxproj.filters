@@ -557,6 +557,9 @@
     <ClCompile Include="..\dlls\addons\trigger_setorigin.cpp">
       <Filter>dlls\addons</Filter>
     </ClCompile>
+    <ClCompile Include="..\dlls\addons\item_airbox.cpp">
+      <Filter>dlls\addons</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\hookers\memory.h">
@@ -1058,6 +1061,9 @@
       <Filter>dlls</Filter>
     </ClInclude>
     <ClInclude Include="..\dlls\addons\trigger_setorigin.h">
+      <Filter>dlls\addons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\addons\item_airbox.h">
       <Filter>dlls\addons</Filter>
     </ClInclude>
   </ItemGroup>

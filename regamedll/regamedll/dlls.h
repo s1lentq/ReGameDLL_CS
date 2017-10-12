@@ -132,6 +132,7 @@ typedef float& FloatRef;
 #include "bot/cs_bot.h"
 
 // Addons
+#include "addons/item_airbox.h"
 #include "addons/trigger_setorigin.h"
 
 // Tutor

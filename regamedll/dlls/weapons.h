@@ -155,6 +155,8 @@ private:
 	void Hide();
 
 public:
+	static char *m_ItemModels[];
+
 	ArmouryItemPack m_iItem;
 	int m_iCount;
 	int m_iInitialCount;
