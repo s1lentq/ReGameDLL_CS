@@ -64,13 +64,13 @@ void CFuncWallToggle::Spawn()
 {
 	CFuncWall::Spawn();
 
-	if (pev->spawnflags & SF_WALL_START_OFF)
+	if (pev->spawnflags & SF_WALL_TOOGLE_START_OFF)
 	{
 		TurnOff();
 	}
 
 #ifdef REGAMEDLL_ADD
-	if (pev->spawnflags & SF_WALL_NOTSOLID)
+	if (pev->spawnflags & SF_WALL_TOOGLE_NOTSOLID)
 	{
 		pev->solid = SOLID_NOT;
 	}
@@ -83,7 +83,7 @@ void CFuncWallToggle::Restart()
 {
 	CFuncWall::Spawn();
 
-	if (pev->spawnflags & SF_WALL_START_OFF)
+	if (pev->spawnflags & SF_WALL_TOOGLE_START_OFF)
 	{
 		TurnOff();
 		return;
@@ -188,7 +188,9 @@ void CFuncIllusionary::KeyValue(KeyValueData *pkvd)
 		pkvd->fHandled = TRUE;
 	}
 	else
+	{
 		CBaseToggle::KeyValue(pkvd);
+	}
 }
 
 void CFuncIllusionary::Spawn()
@@ -231,7 +233,11 @@ void CFuncRotating::KeyValue(KeyValueData *pkvd)
 		m_flFanFriction = Q_atof(pkvd->szValue) / 100;
 		pkvd->fHandled = TRUE;
 	}
+#ifdef REGAMEDLL_FIXES
+	else if (FStrEq(pkvd->szKeyName, "volume"))
+#else
 	else if (FStrEq(pkvd->szKeyName, "Volume"))
+#endif
 	{
 		m_flVolume = Q_atof(pkvd->szValue) / 10.0;
 
@@ -259,7 +265,9 @@ void CFuncRotating::KeyValue(KeyValueData *pkvd)
 		pkvd->fHandled = TRUE;
 	}
 	else
+	{
 		CBaseEntity::KeyValue(pkvd);
+	}
 }
 
 // QUAKED func_rotating (0 .5 .8) ? START_ON REVERSE X_AXIS Y_AXIS
@@ -330,7 +338,7 @@ void CFuncRotating::Spawn()
 	}
 
 	// some rotating objects like fake volumetric lights will not be solid.
-	if (pev->spawnflags & SF_ROTATING_NOT_SOLID)
+	if (pev->spawnflags & SF_BRUSH_ROTATE_NOT_SOLID)
 	{
 		pev->solid = SOLID_NOT;
 		pev->skin = CONTENTS_EMPTY;
@@ -358,12 +366,12 @@ void CFuncRotating::Spawn()
 	//		pev->dmg = 2;
 
 	// instant-use brush?
-	if (pev->spawnflags & SF_BRUSH_ROTATE_INSTANT)
+	if (pev->spawnflags & SF_BRUSH_ROTATE_START_ON)
 	{
 		SetThink(&CFuncRotating::SUB_CallUseToggle);
 
 		// leave a magic delay for client to start up
-		pev->nextthink = pev->ltime + 1.5;
+		pev->nextthink = pev->ltime + 1.5f;
 	}
 
 	// can this brush inflict pain?
@@ -378,16 +386,15 @@ void CFuncRotating::Spawn()
 #ifdef REGAMEDLL_FIXES
 void CFuncRotating::Restart()
 {
-	// fan is spinning, so stop it.
-	SetThink(&CFuncRotating::SpinDown);
-	pev->nextthink = pev->ltime + 0.1;
+	// stop sound, we're done
+	EMIT_SOUND_DYN(ENT(pev), CHAN_STATIC, (char *)STRING(pev->noiseRunning), 0, ATTN_NONE, SND_STOP, m_pitch);
 
 	// restore angles
 	pev->angles = m_angles;
 	pev->avelocity = g_vecZero;
 
 	// some rotating objects like fake volumetric lights will not be solid.
-	if (pev->spawnflags & SF_ROTATING_NOT_SOLID)
+	if (pev->spawnflags & SF_BRUSH_ROTATE_NOT_SOLID)
 	{
 		pev->solid = SOLID_NOT;
 		pev->skin = CONTENTS_EMPTY;
@@ -411,12 +418,12 @@ void CFuncRotating::Restart()
 	}
 
 	// instant-use brush?
-	if (pev->spawnflags & SF_BRUSH_ROTATE_INSTANT)
+	if (pev->spawnflags & SF_BRUSH_ROTATE_START_ON)
 	{
 		SetThink(&CFuncRotating::SUB_CallUseToggle);
 
 		// leave a magic delay for client to start up
-		pev->nextthink = pev->ltime + 0.1;
+		pev->nextthink = pev->ltime + 0.1f;
 	}
 
 	// can this brush inflict pain?
@@ -485,7 +492,7 @@ void CFuncRotating::Precache()
 		// if fan was spinning, and we went through transition or save/restore,
 		// make sure we restart the sound.  1.5 sec delay is magic number. KDB
 		SetThink(&CFuncRotating::SpinUp);
-		pev->nextthink = pev->ltime + 1.5;
+		pev->nextthink = pev->ltime + 1.5f;
 	}
 }
 
@@ -508,8 +515,7 @@ void CFuncRotating::HurtTouch(CBaseEntity *pOther)
 
 // RampPitchVol - ramp pitch and volume up to final values, based on difference
 // between how fast we're going vs how fast we plan to go
-
-void CFuncRotating::RampPitchVol(int fUp)
+void CFuncRotating::RampPitchVol(BOOL fUp)
 {
 	Vector vecAVel = pev->avelocity;
 	float_precision vecCur;
@@ -541,7 +547,7 @@ void CFuncRotating::RampPitchVol(int fUp)
 		fvol = m_flVolume * fpct;
 	}
 
-	fpitch = FANPITCHMIN + (FANPITCHMAX - FANPITCHMIN) * fpct;
+	fpitch = MIN_FANPITCH + (MAX_FANPITCH - MIN_FANPITCH) * fpct;
 
 	pitch = int(fpitch);
 	if (pitch == PITCH_NORM)
@@ -556,7 +562,7 @@ void CFuncRotating::RampPitchVol(int fUp)
 // SpinUp - accelerates a non-moving func_rotating up to it's speed
 void CFuncRotating::SpinUp()
 {
-	//rotational velocity
+	// rotational velocity
 	Vector vecAVel;
 
 	pev->nextthink = pev->ltime + 0.1;
@@ -572,7 +578,7 @@ void CFuncRotating::SpinUp()
 	{
 		// set speed in case we overshot
 		pev->avelocity = pev->movedir * pev->speed;
-		EMIT_SOUND_DYN(ENT(pev), CHAN_STATIC, (char *)STRING(pev->noiseRunning), m_flVolume, m_flAttenuation, (SND_CHANGE_PITCH | SND_CHANGE_VOL), FANPITCHMAX);
+		EMIT_SOUND_DYN(ENT(pev), CHAN_STATIC, (char *)STRING(pev->noiseRunning), m_flVolume, m_flAttenuation, (SND_CHANGE_PITCH | SND_CHANGE_VOL), MAX_FANPITCH);
 
 		SetThink(&CFuncRotating::Rotate);
 		Rotate();
@@ -585,13 +591,13 @@ void CFuncRotating::SpinUp()
 
 void CFuncRotating::SpinDown()
 {
-	//rotational velocity
+	// rotational velocity
 	Vector vecAVel;
 	vec_t vecdir;
 
-	pev->nextthink = pev->ltime + 0.1;
+	pev->nextthink = pev->ltime + 0.1f;
 
-	//spin down slower than spinup
+	// spin down slower than spinup
 	pev->avelocity = pev->avelocity - (pev->movedir * (pev->speed * m_flFanFriction));
 
 	// cache entity's rotational velocity
@@ -641,12 +647,13 @@ void CFuncRotating::RotatingUse(CBaseEntity *pActivator, CBaseEntity *pCaller, U
 			SetThink(&CFuncRotating::SpinDown);
 
 			//EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, (char *)STRING(pev->noiseStop), m_flVolume, m_flAttenuation, 0, m_pitch);
-			pev->nextthink = pev->ltime + 0.1;
+			pev->nextthink = pev->ltime + 0.1f;
 		}
-		else // fan is not moving, so start it
+		// fan is not moving, so start it
+		else
 		{
 			SetThink(&CFuncRotating::SpinUp);
-			EMIT_SOUND_DYN(ENT(pev), CHAN_STATIC, (char *)STRING(pev->noiseRunning), 0.01, m_flAttenuation, 0, FANPITCHMIN);
+			EMIT_SOUND_DYN(ENT(pev), CHAN_STATIC, (char *)STRING(pev->noiseRunning), 0.01, m_flAttenuation, 0, MIN_FANPITCH);
 
 			pev->nextthink = pev->ltime + 0.1;
 		}
@@ -660,12 +667,12 @@ void CFuncRotating::RotatingUse(CBaseEntity *pActivator, CBaseEntity *pCaller, U
 
 			// EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, (char *)STRING(pev->noiseStop), m_flVolume, m_flAttenuation, 0, m_pitch);
 
-			pev->nextthink = pev->ltime + 0.1;
+			pev->nextthink = pev->ltime + 0.1f;
 			// pev->avelocity = g_vecZero;
 		}
 		else
 		{
-			EMIT_SOUND_DYN(ENT(pev), CHAN_STATIC, (char *)STRING(pev->noiseRunning), m_flVolume, m_flAttenuation, 0, FANPITCHMAX);
+			EMIT_SOUND_DYN(ENT(pev), CHAN_STATIC, (char *)STRING(pev->noiseRunning), m_flVolume, m_flAttenuation, 0, MAX_FANPITCH);
 			pev->avelocity = pev->movedir * pev->speed;
 
 			SetThink(&CFuncRotating::Rotate);
@@ -696,7 +703,9 @@ void CPendulum::KeyValue(KeyValueData *pkvd)
 		pkvd->fHandled = TRUE;
 	}
 	else
+	{
 		CBaseEntity::KeyValue(pkvd);
+	}
 }
 
 void CPendulum::Spawn()
@@ -704,7 +713,7 @@ void CPendulum::Spawn()
 	// set the axis of rotation
 	CBaseToggle::AxisDir(pev);
 
-	if (pev->spawnflags & SF_DOOR_PASSABLE)
+	if (pev->spawnflags & SF_PENDULUM_PASSABLE)
 		pev->solid = SOLID_NOT;
 	else
 		pev->solid = SOLID_BSP;
@@ -725,18 +734,22 @@ void CPendulum::Spawn()
 	m_start = pev->angles;
 	m_center = pev->angles + (m_distance * 0.5) * pev->movedir;
 
-	if (pev->spawnflags & SF_BRUSH_ROTATE_INSTANT)
+	// instant-use brush?
+	if (pev->spawnflags & SF_PENDULUM_START_ON)
 	{
 		SetThink(&CPendulum::SUB_CallUseToggle);
+
+		// leave a magic delay for client to start up
 		pev->nextthink = gpGlobals->time + 0.1f;
 	}
 
 	pev->speed = 0;
 	SetUse(&CPendulum::PendulumUse);
 
+	// this brush makes a pendulum a rope swing
 	if (pev->spawnflags & SF_PENDULUM_SWING)
 	{
-		SetTouch (&CPendulum::RopeTouch);
+		SetTouch(&CPendulum::RopeTouch);
 	}
 }
 
@@ -818,7 +831,7 @@ void CPendulum::Swing()
 	pev->avelocity = pev->speed * pev->movedir;
 
 	// Call this again
-	pev->nextthink = pev->ltime + 0.1;
+	pev->nextthink = pev->ltime + 0.1f;
 
 	if (m_damp)
 	{

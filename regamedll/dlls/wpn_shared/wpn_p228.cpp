@@ -37,7 +37,7 @@ int CP228::GetItemInfo(ItemInfo *p)
 	p->pszName = STRING(pev->classname);
 	p->pszAmmo1 = "357SIG";
 	p->iMaxAmmo1 = MAX_AMMO_357SIG;
-	p->pszAmmo2 = NULL;
+	p->pszAmmo2 = nullptr;
 	p->iMaxAmmo2 = -1;
 	p->iMaxClip = P228_MAX_CLIP;
 	p->iSlot = 1;
@@ -123,7 +123,7 @@ void CP228::P228Fire(float flSpread, float flCycleTime, BOOL fUseSemi)
 			m_flNextPrimaryAttack = GetNextAttackDelay(0.2);
 		}
 
-		if (TheBots != NULL)
+		if (TheBots)
 		{
 			TheBots->OnEvent(EVENT_WEAPON_FIRED_ON_EMPTY, m_pPlayer);
 		}
@@ -131,7 +131,7 @@ void CP228::P228Fire(float flSpread, float flCycleTime, BOOL fUseSemi)
 		return;
 	}
 
-	--m_iClip;
+	m_iClip--;
 	m_pPlayer->pev->effects |= EF_MUZZLEFLASH;
 	SetPlayerShieldAnim();
 
@@ -159,7 +159,7 @@ void CP228::P228Fire(float flSpread, float flCycleTime, BOOL fUseSemi)
 
 	if (!m_iClip && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
 	{
-		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, FALSE);
+		m_pPlayer->SetSuitUpdate("!HEV_AMO0", SUIT_SENTENCE, SUIT_REPEAT_OK);
 	}
 
 	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.0f;

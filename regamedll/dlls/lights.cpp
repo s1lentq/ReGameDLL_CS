@@ -35,7 +35,9 @@ void CLight::KeyValue(KeyValueData *pkvd)
 		pkvd->fHandled = TRUE;
 	}
 	else
+	{
 		CPointEntity::KeyValue(pkvd);
+	}
 }
 
 void CLight::Spawn()
@@ -114,7 +116,7 @@ void CEnvLight::KeyValue(KeyValueData *pkvd)
 	if (FStrEq(pkvd->szKeyName, "_light"))
 	{
 		int r, g, b, v, j;
-		j = Q_sscanf(pkvd->szValue, "%d %d %d %d\n", &r, &g, &b, &v);
+		j = sscanf(pkvd->szValue, "%d %d %d %d\n", &r, &g, &b, &v);
 
 		if (j == 1)
 			g = b = r;
@@ -142,7 +144,9 @@ void CEnvLight::KeyValue(KeyValueData *pkvd)
 		CVAR_SET_STRING("sv_skycolor_b", szColor);
 	}
 	else
+	{
 		CLight::KeyValue(pkvd);
+	}
 }
 
 void CEnvLight::Spawn()

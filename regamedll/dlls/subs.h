@@ -26,11 +26,7 @@
 *
 */
 
-#ifndef SUBS_H
-#define SUBS_H
-#ifdef _WIN32
 #pragma once
-#endif
 
 class CNullEntity: public CBaseEntity
 {
@@ -48,5 +44,3 @@ public:
 void FireTargets(const char *targetName, CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 void SetMovedir(entvars_t *pev);
 BOOL FEntIsVisible(entvars_t *pev, entvars_t *pevTarget);
-
-#endif // SUBS_H

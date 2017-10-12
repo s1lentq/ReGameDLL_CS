@@ -33,7 +33,7 @@ void CCSBot::OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *othe
 	if (!IsAlive())
 		return;
 
-	CBasePlayer *player = static_cast<CBasePlayer *>(entity);
+	CBasePlayer *pPlayer = static_cast<CBasePlayer *>(entity);
 
 	// If we just saw a nearby friend die, and we haven't yet acquired an enemy
 	// automatically acquire our dead friend's killer
@@ -41,16 +41,16 @@ void CCSBot::OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *othe
 	{
 		if (event == EVENT_PLAYER_DIED)
 		{
-			if (BotRelationship(player) == BOT_TEAMMATE)
+			if (BotRelationship(pPlayer) == BOT_TEAMMATE)
 			{
-				CBasePlayer *killer = static_cast<CBasePlayer *>(other);
+				CBasePlayer *pKiller = static_cast<CBasePlayer *>(other);
 
 				// check that attacker is an enemy (for friendly fire, etc)
-				if (killer != NULL && killer->IsPlayer())
+				if (pKiller && pKiller->IsPlayer())
 				{
 					// check if we saw our friend die - dont check FOV - assume we're aware of our surroundings in combat
 					// snipers stay put
-					if (!IsSniper() && IsVisible(&player->pev->origin))
+					if (!IsSniper() && IsVisible(&pPlayer->pev->origin))
 					{
 						// people are dying - we should hurry
 						Hurry(RANDOM_FLOAT(10.0f, 15.0f));
@@ -60,7 +60,7 @@ void CCSBot::OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *othe
 						if (!IsHiding() || !IsUsingKnife() || RANDOM_FLOAT(0, 100) < knifeAmbushChance)
 						{
 							PrintIfWatched("Attacking our friend's killer!\n");
-							Attack(killer);
+							Attack(pKiller);
 							return;
 						}
 					}
@@ -73,26 +73,26 @@ void CCSBot::OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *othe
 	{
 		case EVENT_PLAYER_DIED:
 		{
-			CBasePlayer *victim = player;
-			CBasePlayer *killer = (other != NULL && other->IsPlayer()) ? static_cast<CBasePlayer *>(other) : NULL;
+			CBasePlayer *pVictim = pPlayer;
+			CBasePlayer *pKiller = (other && other->IsPlayer()) ? static_cast<CBasePlayer *>(other) : nullptr;
 
 			// if the human player died in the single player game, tell the team
-			if (CSGameRules()->IsCareer() && !victim->IsBot() && BotRelationship(victim) == BOT_TEAMMATE)
+			if (CSGameRules()->IsCareer() && !pVictim->IsBot() && BotRelationship(pVictim) == BOT_TEAMMATE)
 			{
 				GetChatter()->Say("CommanderDown", 20.0f);
 			}
 
 			// keep track of the last player we killed
-			if (killer == this)
+			if (pKiller == this)
 			{
-				m_lastVictimID = victim->entindex();
+				m_lastVictimID = pVictim->entindex();
 			}
 
 			// react to teammate death
-			if (BotRelationship(victim) == BOT_TEAMMATE)
+			if (BotRelationship(pVictim) == BOT_TEAMMATE)
 			{
 				// chastise friendly fire from humans
-				if (killer != NULL && !killer->IsBot() && BotRelationship(killer) == BOT_TEAMMATE && killer != this)
+				if (pKiller && !pKiller->IsBot() && BotRelationship(pKiller) == BOT_TEAMMATE && pKiller != this)
 				{
 					GetChatter()->KilledFriend();
 				}
@@ -124,7 +124,7 @@ void CCSBot::OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *othe
 			// an enemy was killed
 			else
 			{
-				if (killer != NULL && BotRelationship(killer) == BOT_TEAMMATE)
+				if (pKiller && BotRelationship(pKiller) == BOT_TEAMMATE)
 				{
 					// only chatter about enemy kills if we see them occur, and they were the last one we see
 					if (GetNearbyEnemyCount() <= 1)
@@ -132,13 +132,13 @@ void CCSBot::OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *othe
 						// report if number of enemies left is few and we killed the last one we saw locally
 						GetChatter()->EnemiesRemaining();
 
-						if (IsVisible(&victim->pev->origin, CHECK_FOV))
+						if (IsVisible(&pVictim->pev->origin, CHECK_FOV))
 						{
 							// congratulate teammates on their kills
-							if (killer != this)
+							if (pKiller != this)
 							{
 								float delay = RANDOM_FLOAT(2.0f, 3.0f);
-								if (killer->IsBot())
+								if (pKiller->IsBot())
 								{
 									if (RANDOM_FLOAT(0.0f, 100.0f) < 40.0f)
 										GetChatter()->Say("NiceShot", 3.0f, delay);
@@ -172,11 +172,11 @@ void CCSBot::OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *othe
 			return;
 		case EVENT_BOMB_PICKED_UP:
 		{
-			if (m_iTeam == CT && player != NULL)
+			if (m_iTeam == CT && pPlayer)
 			{
 				// check if we're close enough to hear it
 				const float bombPickupHearRangeSq = 1000.0f * 1000.0f;
-				if ((pev->origin - player->pev->origin).LengthSquared() < bombPickupHearRangeSq)
+				if ((pev->origin - pPlayer->pev->origin).LengthSquared() < bombPickupHearRangeSq)
 				{
 					GetChatter()->TheyPickedUpTheBomb();
 				}
@@ -196,8 +196,10 @@ void CCSBot::OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *othe
 					if (m_iTeam == CT && GetGameState()->GetPlantedBombsite() == CSGameState::UNKNOWN)
 					{
 						const CCSBotManager::Zone *zone = TheCSBots()->GetZone(&entity->pev->origin);
-						if (zone != NULL)
+						if (zone)
+						{
 							GetChatter()->FoundPlantedBomb(zone->m_index);
+						}
 					}
 
 					// remember where the bomb is
@@ -240,20 +242,20 @@ void CCSBot::OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *othe
 	}
 
 	// Process radio events from our team
-	if (player != NULL && BotRelationship(player) == BOT_TEAMMATE && event > EVENT_START_RADIO_1 && event < EVENT_END_RADIO)
+	if (pPlayer && BotRelationship(pPlayer) == BOT_TEAMMATE && event > EVENT_START_RADIO_1 && event < EVENT_END_RADIO)
 	{
 		// TODO: Distinguish between radio commands and responses
 		if (event != EVENT_RADIO_AFFIRMATIVE && event != EVENT_RADIO_NEGATIVE && event != EVENT_RADIO_REPORTING_IN)
 		{
 			m_lastRadioCommand = event;
 			m_lastRadioRecievedTimestamp = gpGlobals->time;
-			m_radioSubject = player;
-			m_radioPosition = player->pev->origin;
+			m_radioSubject = pPlayer;
+			m_radioPosition = pPlayer->pev->origin;
 		}
 	}
 
 	// player_follows needs a player
-	if (player == NULL)
+	if (!pPlayer)
 		return;
 
 	if (!IsRogue() && event == EVENT_HOSTAGE_CALLED_FOR_HELP && m_iTeam == CT && IsHunting())
@@ -264,7 +266,7 @@ void CCSBot::OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *othe
 		if (IsVisible(&entity->Center()))
 		{
 			m_task = COLLECT_HOSTAGES;
-			m_taskEntity = NULL;
+			m_taskEntity = nullptr;
 
 			Run();
 			m_goalEntity = entity;
@@ -277,7 +279,7 @@ void CCSBot::OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *othe
 	}
 
 	// don't pay attention to noise that friends make
-	if (!IsEnemy(player))
+	if (!IsEnemy(pPlayer))
 		return;
 
 	float range;
@@ -300,7 +302,7 @@ void CCSBot::OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *othe
 		if (!GetGameState()->GetNearestVisibleFreeHostage() && m_task != GUARD_HOSTAGE_RESCUE_ZONE && GuardRandomZone())
 		{
 			m_task = GUARD_HOSTAGE_RESCUE_ZONE;
-			m_taskEntity = NULL;
+			m_taskEntity = nullptr;
 
 			SetDisposition(OPPORTUNITY_FIRE);
 			PrintIfWatched("Trying to beat them to an escape zone!\n");
@@ -308,7 +310,7 @@ void CCSBot::OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *othe
 	}
 
 	// check if noise is close enough for us to hear
-	const Vector *newNoisePosition = &player->pev->origin;
+	const Vector *newNoisePosition = &pPlayer->pev->origin;
 	float newNoiseDist = (pev->origin - *newNoisePosition).Length();
 	if (newNoiseDist < range)
 	{
@@ -317,7 +319,7 @@ void CCSBot::OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *othe
 		{
 			PrintIfWatched("Heard noise (%s from %s, pri %s, time %3.1f)\n",
 				(event == EVENT_WEAPON_FIRED) ? "Weapon fire " : "",
-				STRING(player->pev->netname),
+				STRING(pPlayer->pev->netname),
 				(priority == PRIORITY_HIGH) ? "HIGH" : ((priority == PRIORITY_MEDIUM) ? "MEDIUM" : "LOW"),
 				gpGlobals->time);
 		}
@@ -343,16 +345,15 @@ void CCSBot::OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *othe
 			}
 		}
 
-
 		// find the area in which the noise occured
 		// TODO: Better handle when noise occurs off the nav mesh
 		// TODO: Make sure noise area is not through a wall or ceiling from source of noise
 		// TODO: Change GetNavTravelTime to better deal with NULL destination areas
 		CNavArea *noiseArea = TheNavAreaGrid.GetNavArea(newNoisePosition);
-		if (noiseArea == NULL)
+		if (!noiseArea)
 			noiseArea = TheNavAreaGrid.GetNearestNavArea(newNoisePosition);
 
-		if (noiseArea == NULL)
+		if (!noiseArea)
 		{
 			PrintIfWatched("  *** Noise occurred off the nav mesh - ignoring!\n");
 			return;
@@ -377,6 +378,7 @@ void CCSBot::OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *othe
 		m_noiseArea->GetClosestPointOnArea(&m_noisePosition, &m_noisePosition);
 
 		m_isNoiseTravelRangeChecked = false;
+
 		// note when we heard the noise
 		m_noiseTimestamp = gpGlobals->time;
 	}

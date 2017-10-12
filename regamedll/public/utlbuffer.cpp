@@ -1,15 +1,30 @@
-//========= Copyright  1996-2001, Valve LLC, All rights reserved. ============
-//
-// The copyright to the contents herein is the property of Valve, L.L.C.
-// The contents may be used and/or copied only with the written permission of
-// Valve, L.L.C., or in accordance with the terms and conditions stipulated in
-// the agreement/contract under which the contents have been supplied.
-//
-// $Header: $
-// $NoKeywords: $
-//
-// Serialization buffer
-//=============================================================================
+/*
+*
+*    This program is free software; you can redistribute it and/or modify it
+*    under the terms of the GNU General Public License as published by the
+*    Free Software Foundation; either version 2 of the License, or (at
+*    your option) any later version.
+*
+*    This program is distributed in the hope that it will be useful, but
+*    WITHOUT ANY WARRANTY; without even the implied warranty of
+*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+*    General Public License for more details.
+*
+*    You should have received a copy of the GNU General Public License
+*    along with this program; if not, write to the Free Software Foundation,
+*    Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*
+*    In addition, as a special exception, the author gives permission to
+*    link the code of this program with the Half-Life Game Engine ("HL
+*    Engine") and Modified Game Libraries ("MODs") developed by Valve,
+*    L.L.C ("Valve").  You must obey the GNU General Public License in all
+*    respects for all of the code used other than the HL Engine and MODs
+*    from Valve.  If you modify this file, you may extend this exception
+*    to your version of the file, but you are not obligated to do so.  If
+*    you do not wish to do so, delete this exception statement from your
+*    version.
+*
+*/
 
 #include "precompiled.h"
 
@@ -19,11 +34,10 @@
 #include <stdlib.h>
 #include <limits.h>
 
-//-----------------------------------------------------------------------------
-// constructors
-//-----------------------------------------------------------------------------
+// Constructors
 CUtlBuffer::CUtlBuffer(int growSize, int initSize, bool text) :
-m_Memory(growSize, initSize), m_Error(0)
+	m_Memory(growSize, initSize),
+	m_Error(0)
 {
 	m_Get = 0;
 	m_Put = 0;
@@ -34,56 +48,51 @@ m_Memory(growSize, initSize), m_Error(0)
 	}
 }
 
-CUtlBuffer::CUtlBuffer(void const* pBuffer, int size, bool text) :
-m_Memory((unsigned char*)pBuffer, size), m_Error(0)
+CUtlBuffer::CUtlBuffer(void const *pBuffer, int size, bool text) :
+	m_Memory((unsigned char *)pBuffer, size),
+	m_Error(0)
 {
 	m_Get = 0;
 	m_Put = 0;
 	m_Flags = 0;
+
 	if (text)
+	{
 		m_Flags |= TEXT_BUFFER;
+	}
 }
 
-
-//-----------------------------------------------------------------------------
 // Attaches the buffer to external memory....
-//-----------------------------------------------------------------------------
-void CUtlBuffer::SetExternalBuffer(void* pMemory, int numElements, bool text)
+void CUtlBuffer::SetExternalBuffer(void *pMemory, int numElements, bool text)
 {
-	m_Memory.SetExternalBuffer((unsigned char*)pMemory, numElements);
+	m_Memory.SetExternalBuffer((unsigned char *)pMemory, numElements);
 
 	// Reset all indices; we just changed memory
 	m_Get = 0;
 	m_Put = 0;
 	m_Flags = 0;
+
 	if (text)
+	{
 		m_Flags |= TEXT_BUFFER;
+	}
 }
 
-
-//-----------------------------------------------------------------------------
 // Makes sure we've got at least this much memory
-//-----------------------------------------------------------------------------
 void CUtlBuffer::EnsureCapacity(int num)
 {
 	m_Memory.EnsureCapacity(num);
 }
 
-
-//-----------------------------------------------------------------------------
 // Base get method from which all others derive
-//-----------------------------------------------------------------------------
-void CUtlBuffer::Get(void* pMem, int size)
+void CUtlBuffer::Get(void *pMem, int size)
 {
 	Assert(m_Get + size <= m_Memory.NumAllocated());
 	memcpy(pMem, &m_Memory[m_Get], size);
 	m_Get += size;
 }
 
-
-//-----------------------------------------------------------------------------
 // Eats whitespace
-//-----------------------------------------------------------------------------
 void CUtlBuffer::EatWhiteSpace()
 {
 	if (IsText() && IsValid())
@@ -91,22 +100,20 @@ void CUtlBuffer::EatWhiteSpace()
 		int lastpos = Size();
 		while (m_Get < lastpos)
 		{
-			if (!isspace(*(char*)&m_Memory[m_Get]))
+			if (!isspace(*(char *)&m_Memory[m_Get]))
 				break;
+
 			m_Get += sizeof(char);
 		}
 	}
 }
 
-
-//-----------------------------------------------------------------------------
 // Reads a null-terminated string
-//-----------------------------------------------------------------------------
-void CUtlBuffer::GetString(char* pString, int nMaxLen)
+void CUtlBuffer::GetString(char *pString, int nMaxLen)
 {
 	if (!IsValid())
 	{
-		*pString = 0;
+		*pString = '\0';
 		return;
 	}
 
@@ -117,7 +124,7 @@ void CUtlBuffer::GetString(char* pString, int nMaxLen)
 
 	if (!IsText())
 	{
-		int len = strlen((char*)&m_Memory[m_Get]) + 1;
+		int len = strlen((char *)&m_Memory[m_Get]) + 1;
 		if (len <= nMaxLen)
 		{
 			Get(pString, len);
@@ -125,7 +132,7 @@ void CUtlBuffer::GetString(char* pString, int nMaxLen)
 		else
 		{
 			Get(pString, nMaxLen);
-			pString[nMaxLen - 1] = 0;
+			pString[nMaxLen - 1] = '\0';
 			SeekGet(SEEK_CURRENT, len - nMaxLen);
 		}
 	}
@@ -139,7 +146,7 @@ void CUtlBuffer::GetString(char* pString, int nMaxLen)
 		int nLastPos = Size();
 		while (m_Get < nLastPos)
 		{
-			char c = *(char*)&m_Memory[m_Get];
+			char c = *(char *)&m_Memory[m_Get];
 			if (isspace(c) || (!c))
 				break;
 
@@ -147,19 +154,17 @@ void CUtlBuffer::GetString(char* pString, int nMaxLen)
 			{
 				*pString++ = c;
 			}
-			++nCount;
-			++m_Get;
+
+			nCount++;
+			m_Get++;
 		}
 
 		// Terminate
-		*pString = 0;
+		*pString = '\0';
 	}
 }
 
-
-//-----------------------------------------------------------------------------
 // Checks if a get is ok
-//-----------------------------------------------------------------------------
 bool CUtlBuffer::CheckGet(int size)
 {
 	if (m_Error)
@@ -172,10 +177,7 @@ bool CUtlBuffer::CheckGet(int size)
 	return false;
 }
 
-
-//-----------------------------------------------------------------------------
 // Change where I'm reading
-//-----------------------------------------------------------------------------
 void CUtlBuffer::SeekGet(SeekType_t type, int offset)
 {
 	switch (type)
@@ -194,14 +196,10 @@ void CUtlBuffer::SeekGet(SeekType_t type, int offset)
 	}
 }
 
-
-//-----------------------------------------------------------------------------
 // Parse...
-//-----------------------------------------------------------------------------
+#pragma warning(disable:4706)
 
-#pragma warning ( disable : 4706 )
-
-int CUtlBuffer::VaScanf(char const* pFmt, va_list list)
+int CUtlBuffer::VaScanf(char const *pFmt, va_list list)
 {
 	Assert(pFmt);
 	if (m_Error || !IsText())
@@ -210,7 +208,7 @@ int CUtlBuffer::VaScanf(char const* pFmt, va_list list)
 	int numScanned = 0;
 
 	char c;
-	char* pEnd;
+	char *pEnd;
 	while (c = *pFmt++)
 	{
 		// Stop if we hit the end of the buffer
@@ -238,17 +236,17 @@ int CUtlBuffer::VaScanf(char const* pFmt, va_list list)
 			{
 			case 'c':
 			{
-				char* ch = va_arg(list, char *);
+				char *ch = va_arg(list, char *);
 				*ch = (char)m_Memory[m_Get];
-				++m_Get;
+				m_Get++;
 			}
 				break;
 
 			case 'i':
 			case 'd':
 			{
-				int* i = va_arg(list, int *);
-				*i = strtol((char*)PeekGet(), &pEnd, 10);
+				int *i = va_arg(list, int *);
+				*i = strtol((char *)PeekGet(), &pEnd, 10);
 				if (pEnd == PeekGet())
 					return numScanned;
 				m_Get = (int)pEnd - (int)Base();
@@ -257,8 +255,8 @@ int CUtlBuffer::VaScanf(char const* pFmt, va_list list)
 
 			case 'x':
 			{
-				int* i = va_arg(list, int *);
-				*i = strtol((char*)PeekGet(), &pEnd, 16);
+				int *i = va_arg(list, int *);
+				*i = strtol((char *)PeekGet(), &pEnd, 16);
 				if (pEnd == PeekGet())
 					return numScanned;
 				m_Get = (int)pEnd - (int)Base();
@@ -267,8 +265,8 @@ int CUtlBuffer::VaScanf(char const* pFmt, va_list list)
 
 			case 'u':
 			{
-				unsigned int* u = va_arg(list, unsigned int *);
-				*u = strtoul((char*)PeekGet(), &pEnd, 10);
+				unsigned int *u = va_arg(list, unsigned int *);
+				*u = strtoul((char *)PeekGet(), &pEnd, 10);
 				if (pEnd == PeekGet())
 					return numScanned;
 				m_Get = (int)pEnd - (int)Base();
@@ -277,8 +275,8 @@ int CUtlBuffer::VaScanf(char const* pFmt, va_list list)
 
 			case 'f':
 			{
-				float* f = va_arg(list, float *);
-				*f = (float)strtod((char*)PeekGet(), &pEnd);
+				float *f = va_arg(list, float *);
+				*f = (float)strtod((char *)PeekGet(), &pEnd);
 				if (pEnd == PeekGet())
 					return numScanned;
 				m_Get = (int)pEnd - (int)Base();
@@ -287,7 +285,7 @@ int CUtlBuffer::VaScanf(char const* pFmt, va_list list)
 
 			case 's':
 			{
-				char* s = va_arg(list, char *);
+				char *s = va_arg(list, char *);
 				GetString(s);
 			}
 				break;
@@ -301,7 +299,7 @@ int CUtlBuffer::VaScanf(char const* pFmt, va_list list)
 				break;
 			}
 
-			++numScanned;
+			numScanned++;
 		}
 			break;
 
@@ -311,16 +309,17 @@ int CUtlBuffer::VaScanf(char const* pFmt, va_list list)
 			// against what's in the buffer or we're done.
 			if (c != m_Memory[m_Get])
 				return numScanned;
-			++m_Get;
+			m_Get++;
 		}
 		}
 	}
+
 	return numScanned;
 }
 
-#pragma warning ( default : 4706 )
+#pragma warning(default:4706)
 
-int CUtlBuffer::Scanf(char const* pFmt, ...)
+int CUtlBuffer::Scanf(char const *pFmt, ...)
 {
 	va_list args;
 
@@ -331,12 +330,8 @@ int CUtlBuffer::Scanf(char const* pFmt, ...)
 	return count;
 }
 
-
-//-----------------------------------------------------------------------------
 // Serialization
-//-----------------------------------------------------------------------------
-
-void CUtlBuffer::Put(void const* pMem, int size)
+void CUtlBuffer::Put(void const *pMem, int size)
 {
 	if (CheckPut(size))
 	{
@@ -345,23 +340,19 @@ void CUtlBuffer::Put(void const* pMem, int size)
 	}
 }
 
-
-//-----------------------------------------------------------------------------
 // Writes a null-terminated string
-//-----------------------------------------------------------------------------
-
-void CUtlBuffer::PutString(char const* pString)
+void CUtlBuffer::PutString(char const *pString)
 {
 	int len = strlen(pString);
 
 	// Not text? append a null at the end.
 	if (!IsText())
-		++len;
+		len++;
 
 	Put(pString, len);
 }
 
-void CUtlBuffer::VaPrintf(char const* pFmt, va_list list)
+void CUtlBuffer::VaPrintf(char const *pFmt, va_list list)
 {
 	char temp[2048];
 	int len = vsprintf(temp, pFmt, list);
@@ -369,12 +360,12 @@ void CUtlBuffer::VaPrintf(char const* pFmt, va_list list)
 
 	// Not text? append a null at the end.
 	if (!IsText())
-		++len;
+		len++;
 
 	Put(temp, len);
 }
 
-void CUtlBuffer::Printf(char const* pFmt, ...)
+void CUtlBuffer::Printf(char const *pFmt, ...)
 {
 	va_list args;
 
@@ -383,11 +374,7 @@ void CUtlBuffer::Printf(char const* pFmt, ...)
 	va_end(args);
 }
 
-
-//-----------------------------------------------------------------------------
 // Checks if a put is ok
-//-----------------------------------------------------------------------------
-
 bool CUtlBuffer::CheckPut(int size)
 {
 	if (m_Error)
@@ -403,6 +390,7 @@ bool CUtlBuffer::CheckPut(int size)
 
 		m_Memory.Grow();
 	}
+
 	return true;
 }
 

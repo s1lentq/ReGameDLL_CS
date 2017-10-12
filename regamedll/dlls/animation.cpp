@@ -5,7 +5,7 @@
 */
 #ifndef HOOK_GAMEDLL
 
-void SV_StudioSetupBones(model_t *pModel, float frame, int sequence, const vec_t *angles, const vec_t *origin, const byte *pcontroller, const byte *pblending, int iBone, const edict_t *pEdict);
+void EXT_FUNC SV_StudioSetupBones(model_t *pModel, float frame, int sequence, const vec_t *angles, const vec_t *origin, const byte *pcontroller, const byte *pblending, int iBone, const edict_t *pEdict);
 
 sv_blending_interface_t svBlending =
 {
@@ -687,7 +687,7 @@ mstudioanim_t *StudioGetAnim(model_t *m_pSubModel, mstudioseqdesc_t *pseqdesc)
 
 	paSequences = (cache_user_t *)m_pSubModel->submodels;
 
-	if (paSequences == NULL)
+	if (!paSequences)
 	{
 		paSequences = (cache_user_t *)IEngineStudio.Mem_Calloc(16, sizeof(cache_user_t)); // UNDONE: leak!
 		m_pSubModel->submodels = (dmodel_t *)paSequences;
@@ -1140,7 +1140,6 @@ void SV_StudioSetupBones(model_t *pModel, float frame, int sequence, const vec_t
 			gaitsequence = 0;
 
 		pseqdesc = (mstudioseqdesc_t *)((byte *)g_pstudiohdr + g_pstudiohdr->seqindex) + gaitsequence;
-
 		panim = StudioGetAnim(pModel, pseqdesc);
 		StudioCalcRotations(pbones, chain, chainlength, adj, pos2, q2, pseqdesc, panim, 0, 0);
 

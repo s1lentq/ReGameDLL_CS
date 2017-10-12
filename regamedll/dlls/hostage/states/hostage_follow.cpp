@@ -24,7 +24,7 @@ void HostageFollowState::OnEnter(CHostageImprov *improv)
 void HostageFollowState::OnUpdate(CHostageImprov *improv)
 {
 	// if we lost our leader, give up
-	if (m_leader == NULL)
+	if (!m_leader)
 	{
 		improv->Idle();
 		return;
@@ -180,11 +180,10 @@ void HostageFollowState::OnUpdate(CHostageImprov *improv)
 
 	improv->Stop();
 
-	CBasePlayer *terrorist = improv->GetClosestVisiblePlayer(TERRORIST);
-
-	if (terrorist != NULL)
+	CBasePlayer *pTerrorist = improv->GetClosestVisiblePlayer(TERRORIST);
+	if (pTerrorist)
 	{
-		improv->LookAt(terrorist->EyePosition());
+		improv->LookAt(pTerrorist->EyePosition());
 	}
 	else
 	{

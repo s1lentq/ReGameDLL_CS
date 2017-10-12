@@ -26,11 +26,7 @@
 *
 */
 
-#ifndef BOT_MANAGER_H
-#define BOT_MANAGER_H
-#ifdef _WIN32
 #pragma once
-#endif
 
 // STL uses exceptions, but we are not compiling with them - ignore warning
 #pragma warning(disable : 4530)
@@ -51,7 +47,6 @@ public:
 	bool IsEntity(CGrenade *grenade) const { return (grenade == m_entity) ? true : false; }
 	int GetID() const { return m_id; }
 	const Vector *GetDetonationPosition() const { return &m_detonationPosition; }
-
 	const Vector *GetPosition() const;
 
 private:
@@ -83,7 +78,7 @@ public:
 	virtual void StartFrame();
 
 	// Events are propogated to all bots.
-	virtual void OnEvent(GameEventType event, CBaseEntity *entity = NULL, CBaseEntity *other = NULL);		// Invoked when event occurs in the game (some events have NULL entity).
+	virtual void OnEvent(GameEventType event, CBaseEntity *entity = nullptr, CBaseEntity *other = nullptr);	// Invoked when event occurs in the game (some events have NULL entity).
 	virtual unsigned int GetPlayerPriority(CBasePlayer *player) const = 0;									// return priority of player (0 = max pri)
 
 public:
@@ -103,5 +98,3 @@ private:
 };
 
 GameEventType NameToGameEvent(const char *name);
-
-#endif // BOT_MANAGER_H

@@ -18,14 +18,15 @@ void HostageEscapeToCoverState::OnEnter(CHostageImprov *improv)
 		return;
 
 	if (idx < path.GetSegmentCount() - 1)
-		++idx;
+		idx++;
 
 	Vector pathPos = path[idx]->pos;
 	const float hidingRange = 450.0f;
 	const Vector *spot = FindNearbyHidingSpot(improv->GetEntity(), &pathPos, TheNavAreaGrid.GetNearestNavArea(&pathPos), hidingRange);
-
-	if (spot == NULL)
+	if (!spot)
+	{
 		spot = &pathPos;
+	}
 
 	m_spot = *spot;
 
@@ -48,7 +49,7 @@ void HostageEscapeToCoverState::OnUpdate(CHostageImprov *improv)
 		const float emergencyHidingRange = 300.0f;
 		const Vector *spot = FindNearbyHidingSpot(improv->GetEntity(), &improv->GetFeet(), improv->GetLastKnownArea(), emergencyHidingRange);
 
-		if (spot == NULL)
+		if (!spot)
 		{
 			HostageEscapeState *escape = static_cast<HostageEscapeState *>(GetParent());
 			escape->LookAround();
@@ -105,8 +106,7 @@ void HostageEscapeLookAroundState::OnExit(CHostageImprov *improv)
 void HostageEscapeState::OnEnter(CHostageImprov *improv)
 {
 	const CCSBotManager::Zone *zone = TheCSBots()->GetRandomZone();
-
-	if (zone != NULL)
+	if (zone)
 	{
 		m_toCoverState.SetRescueGoal(zone->m_center);
 
@@ -132,8 +132,7 @@ void HostageEscapeState::OnUpdate(CHostageImprov *improv)
 		improv->Run();
 
 	CBasePlayer *player = improv->GetClosestVisiblePlayer(UNASSIGNED);
-
-	if (player != NULL)
+	if (player)
 	{
 		if (player->m_iTeam != TERRORIST)
 		{
@@ -143,7 +142,7 @@ void HostageEscapeState::OnUpdate(CHostageImprov *improv)
 		}
 
 		const float farRange = 750.0f;
-		if ((player->pev->origin - improv->GetCentroid().IsLengthGreaterThan(farRange)))
+		if ((player->pev->origin - improv->GetCentroid()).IsLengthGreaterThan(farRange))
 		{
 			improv->Frighten(CHostageImprov::NERVOUS);
 

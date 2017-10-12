@@ -25,6 +25,7 @@
 *    version.
 *
 */
+
 #pragma once
 
 #include "archtypes.h"
@@ -32,7 +33,7 @@
 #include "regamedll_interfaces_impl.h"
 
 #define GAMEHOOK_REGISTRY(func)\
-	IReGameHookRegistry_##func* CReGameHookchains::func() { return &m_##func; }
+	IReGameHookRegistry_##func *CReGameHookchains::func() { return &m_##func; }
 
 // CBasePlayer::Spawn hook
 typedef IHookChainClassImpl<void, CBasePlayer> CReGameHook_CBasePlayer_Spawn;
@@ -159,12 +160,12 @@ typedef IHookChainClassImpl<bool, CBasePlayer, ItemID, ItemRestType> CReGameHook
 typedef IHookChainRegistryClassImpl<bool, CBasePlayer, ItemID, ItemRestType> CReGameHookRegistry_CBasePlayer_HasRestrictItem;
 
 // CBasePlayer::DropPlayerItem hook
-typedef IHookChainClassImpl<void, CBasePlayer, const char *> CReGameHook_CBasePlayer_DropPlayerItem;
-typedef IHookChainRegistryClassImpl<void, CBasePlayer, const char *> CReGameHookRegistry_CBasePlayer_DropPlayerItem;
+typedef IHookChainClassImpl<CBaseEntity *, CBasePlayer, const char *> CReGameHook_CBasePlayer_DropPlayerItem;
+typedef IHookChainRegistryClassImpl<CBaseEntity *, CBasePlayer, const char *> CReGameHookRegistry_CBasePlayer_DropPlayerItem;
 
 // CBasePlayer::DropShield hook
-typedef IHookChainClassImpl<void, CBasePlayer, bool> CReGameHook_CBasePlayer_DropShield;
-typedef IHookChainRegistryClassImpl<void, CBasePlayer, bool> CReGameHookRegistry_CBasePlayer_DropShield;
+typedef IHookChainClassImpl<CBaseEntity *, CBasePlayer, bool> CReGameHook_CBasePlayer_DropShield;
+typedef IHookChainRegistryClassImpl<CBaseEntity *, CBasePlayer, bool> CReGameHookRegistry_CBasePlayer_DropShield;
 
 // CBasePlayer::OnSpawnEquip hook
 typedef IHookChainClassImpl<void, CBasePlayer, bool, bool> CReGameHook_CBasePlayer_OnSpawnEquip;
@@ -448,91 +449,91 @@ public:
 	CReGameHookRegistry_CBasePlayer_StartDeathCam m_CBasePlayer_StartDeathCam;
 
 public:
-	virtual IReGameHookRegistry_CBasePlayer_Spawn* CBasePlayer_Spawn();
-	virtual IReGameHookRegistry_CBasePlayer_Precache* CBasePlayer_Precache();
-	virtual IReGameHookRegistry_CBasePlayer_ObjectCaps* CBasePlayer_ObjectCaps();
-	virtual IReGameHookRegistry_CBasePlayer_Classify* CBasePlayer_Classify();
-	virtual IReGameHookRegistry_CBasePlayer_TraceAttack* CBasePlayer_TraceAttack();
-	virtual IReGameHookRegistry_CBasePlayer_TakeDamage* CBasePlayer_TakeDamage();
-	virtual IReGameHookRegistry_CBasePlayer_TakeHealth* CBasePlayer_TakeHealth();
-	virtual IReGameHookRegistry_CBasePlayer_Killed* CBasePlayer_Killed();
-	virtual IReGameHookRegistry_CBasePlayer_AddPoints* CBasePlayer_AddPoints();
-	virtual IReGameHookRegistry_CBasePlayer_AddPointsToTeam* CBasePlayer_AddPointsToTeam();
-	virtual IReGameHookRegistry_CBasePlayer_AddPlayerItem* CBasePlayer_AddPlayerItem();
-	virtual IReGameHookRegistry_CBasePlayer_RemovePlayerItem* CBasePlayer_RemovePlayerItem();
-	virtual IReGameHookRegistry_CBasePlayer_GiveAmmo* CBasePlayer_GiveAmmo();
-	virtual IReGameHookRegistry_CBasePlayer_ResetMaxSpeed* CBasePlayer_ResetMaxSpeed();
-	virtual IReGameHookRegistry_CBasePlayer_Jump* CBasePlayer_Jump();
-	virtual IReGameHookRegistry_CBasePlayer_Duck* CBasePlayer_Duck();
-	virtual IReGameHookRegistry_CBasePlayer_PreThink* CBasePlayer_PreThink();
-	virtual IReGameHookRegistry_CBasePlayer_PostThink* CBasePlayer_PostThink();
-	virtual IReGameHookRegistry_CBasePlayer_UpdateClientData* CBasePlayer_UpdateClientData();
-	virtual IReGameHookRegistry_CBasePlayer_ImpulseCommands* CBasePlayer_ImpulseCommands();
-	virtual IReGameHookRegistry_CBasePlayer_RoundRespawn* CBasePlayer_RoundRespawn();
-	virtual IReGameHookRegistry_CBasePlayer_Blind* CBasePlayer_Blind();
+	virtual IReGameHookRegistry_CBasePlayer_Spawn *CBasePlayer_Spawn();
+	virtual IReGameHookRegistry_CBasePlayer_Precache *CBasePlayer_Precache();
+	virtual IReGameHookRegistry_CBasePlayer_ObjectCaps *CBasePlayer_ObjectCaps();
+	virtual IReGameHookRegistry_CBasePlayer_Classify *CBasePlayer_Classify();
+	virtual IReGameHookRegistry_CBasePlayer_TraceAttack *CBasePlayer_TraceAttack();
+	virtual IReGameHookRegistry_CBasePlayer_TakeDamage *CBasePlayer_TakeDamage();
+	virtual IReGameHookRegistry_CBasePlayer_TakeHealth *CBasePlayer_TakeHealth();
+	virtual IReGameHookRegistry_CBasePlayer_Killed *CBasePlayer_Killed();
+	virtual IReGameHookRegistry_CBasePlayer_AddPoints *CBasePlayer_AddPoints();
+	virtual IReGameHookRegistry_CBasePlayer_AddPointsToTeam *CBasePlayer_AddPointsToTeam();
+	virtual IReGameHookRegistry_CBasePlayer_AddPlayerItem *CBasePlayer_AddPlayerItem();
+	virtual IReGameHookRegistry_CBasePlayer_RemovePlayerItem *CBasePlayer_RemovePlayerItem();
+	virtual IReGameHookRegistry_CBasePlayer_GiveAmmo *CBasePlayer_GiveAmmo();
+	virtual IReGameHookRegistry_CBasePlayer_ResetMaxSpeed *CBasePlayer_ResetMaxSpeed();
+	virtual IReGameHookRegistry_CBasePlayer_Jump *CBasePlayer_Jump();
+	virtual IReGameHookRegistry_CBasePlayer_Duck *CBasePlayer_Duck();
+	virtual IReGameHookRegistry_CBasePlayer_PreThink *CBasePlayer_PreThink();
+	virtual IReGameHookRegistry_CBasePlayer_PostThink *CBasePlayer_PostThink();
+	virtual IReGameHookRegistry_CBasePlayer_UpdateClientData *CBasePlayer_UpdateClientData();
+	virtual IReGameHookRegistry_CBasePlayer_ImpulseCommands *CBasePlayer_ImpulseCommands();
+	virtual IReGameHookRegistry_CBasePlayer_RoundRespawn *CBasePlayer_RoundRespawn();
+	virtual IReGameHookRegistry_CBasePlayer_Blind *CBasePlayer_Blind();
 
-	virtual IReGameHookRegistry_CBasePlayer_Observer_IsValidTarget* CBasePlayer_Observer_IsValidTarget();
-	virtual IReGameHookRegistry_CBasePlayer_SetAnimation* CBasePlayer_SetAnimation();
-	virtual IReGameHookRegistry_CBasePlayer_GiveDefaultItems* CBasePlayer_GiveDefaultItems();
-	virtual IReGameHookRegistry_CBasePlayer_GiveNamedItem* CBasePlayer_GiveNamedItem();
-	virtual IReGameHookRegistry_CBasePlayer_AddAccount* CBasePlayer_AddAccount();
-	virtual IReGameHookRegistry_CBasePlayer_GiveShield* CBasePlayer_GiveShield();
-	virtual IReGameHookRegistry_CBasePlayer_SetClientUserInfoModel* CBasePlayer_SetClientUserInfoModel();
-	virtual IReGameHookRegistry_CBasePlayer_SetClientUserInfoName* CBasePlayer_SetClientUserInfoName();
-	virtual IReGameHookRegistry_CBasePlayer_HasRestrictItem* CBasePlayer_HasRestrictItem();
-	virtual IReGameHookRegistry_CBasePlayer_DropPlayerItem* CBasePlayer_DropPlayerItem();
-	virtual IReGameHookRegistry_CBasePlayer_DropShield* CBasePlayer_DropShield();
-	virtual IReGameHookRegistry_CBasePlayer_OnSpawnEquip* CBasePlayer_OnSpawnEquip();
-	virtual IReGameHookRegistry_CBasePlayer_Radio* CBasePlayer_Radio();
-	virtual IReGameHookRegistry_CBasePlayer_Disappear* CBasePlayer_Disappear();
-	virtual IReGameHookRegistry_CBasePlayer_MakeVIP* CBasePlayer_MakeVIP();
-	virtual IReGameHookRegistry_CBasePlayer_MakeBomber* CBasePlayer_MakeBomber();
-	virtual IReGameHookRegistry_CBasePlayer_StartObserver* CBasePlayer_StartObserver();
-	virtual IReGameHookRegistry_CBasePlayer_GetIntoGame* CBasePlayer_GetIntoGame();
+	virtual IReGameHookRegistry_CBasePlayer_Observer_IsValidTarget *CBasePlayer_Observer_IsValidTarget();
+	virtual IReGameHookRegistry_CBasePlayer_SetAnimation *CBasePlayer_SetAnimation();
+	virtual IReGameHookRegistry_CBasePlayer_GiveDefaultItems *CBasePlayer_GiveDefaultItems();
+	virtual IReGameHookRegistry_CBasePlayer_GiveNamedItem *CBasePlayer_GiveNamedItem();
+	virtual IReGameHookRegistry_CBasePlayer_AddAccount *CBasePlayer_AddAccount();
+	virtual IReGameHookRegistry_CBasePlayer_GiveShield *CBasePlayer_GiveShield();
+	virtual IReGameHookRegistry_CBasePlayer_SetClientUserInfoModel *CBasePlayer_SetClientUserInfoModel();
+	virtual IReGameHookRegistry_CBasePlayer_SetClientUserInfoName *CBasePlayer_SetClientUserInfoName();
+	virtual IReGameHookRegistry_CBasePlayer_HasRestrictItem *CBasePlayer_HasRestrictItem();
+	virtual IReGameHookRegistry_CBasePlayer_DropPlayerItem *CBasePlayer_DropPlayerItem();
+	virtual IReGameHookRegistry_CBasePlayer_DropShield *CBasePlayer_DropShield();
+	virtual IReGameHookRegistry_CBasePlayer_OnSpawnEquip *CBasePlayer_OnSpawnEquip();
+	virtual IReGameHookRegistry_CBasePlayer_Radio *CBasePlayer_Radio();
+	virtual IReGameHookRegistry_CBasePlayer_Disappear *CBasePlayer_Disappear();
+	virtual IReGameHookRegistry_CBasePlayer_MakeVIP *CBasePlayer_MakeVIP();
+	virtual IReGameHookRegistry_CBasePlayer_MakeBomber *CBasePlayer_MakeBomber();
+	virtual IReGameHookRegistry_CBasePlayer_StartObserver *CBasePlayer_StartObserver();
+	virtual IReGameHookRegistry_CBasePlayer_GetIntoGame *CBasePlayer_GetIntoGame();
 
-	virtual IReGameHookRegistry_CBaseAnimating_ResetSequenceInfo* CBaseAnimating_ResetSequenceInfo();
+	virtual IReGameHookRegistry_CBaseAnimating_ResetSequenceInfo *CBaseAnimating_ResetSequenceInfo();
 
-	virtual IReGameHookRegistry_GetForceCamera* GetForceCamera();
-	virtual IReGameHookRegistry_PlayerBlind* PlayerBlind();
-	virtual IReGameHookRegistry_RadiusFlash_TraceLine* RadiusFlash_TraceLine();
-	virtual IReGameHookRegistry_RoundEnd* RoundEnd();
-	virtual IReGameHookRegistry_InstallGameRules* InstallGameRules();
-	virtual IReGameHookRegistry_PM_Init* PM_Init();
-	virtual IReGameHookRegistry_PM_Move* PM_Move();
-	virtual IReGameHookRegistry_PM_AirMove* PM_AirMove();
-	virtual IReGameHookRegistry_HandleMenu_ChooseAppearance* HandleMenu_ChooseAppearance();
-	virtual IReGameHookRegistry_HandleMenu_ChooseTeam* HandleMenu_ChooseTeam();
-	virtual IReGameHookRegistry_ShowMenu* ShowMenu();
-	virtual IReGameHookRegistry_ShowVGUIMenu* ShowVGUIMenu();
-	virtual IReGameHookRegistry_BuyGunAmmo* BuyGunAmmo();
-	virtual IReGameHookRegistry_BuyWeaponByWeaponID* BuyWeaponByWeaponID();
-	virtual IReGameHookRegistry_InternalCommand* InternalCommand();
+	virtual IReGameHookRegistry_GetForceCamera *GetForceCamera();
+	virtual IReGameHookRegistry_PlayerBlind *PlayerBlind();
+	virtual IReGameHookRegistry_RadiusFlash_TraceLine *RadiusFlash_TraceLine();
+	virtual IReGameHookRegistry_RoundEnd *RoundEnd();
+	virtual IReGameHookRegistry_InstallGameRules *InstallGameRules();
+	virtual IReGameHookRegistry_PM_Init *PM_Init();
+	virtual IReGameHookRegistry_PM_Move *PM_Move();
+	virtual IReGameHookRegistry_PM_AirMove *PM_AirMove();
+	virtual IReGameHookRegistry_HandleMenu_ChooseAppearance *HandleMenu_ChooseAppearance();
+	virtual IReGameHookRegistry_HandleMenu_ChooseTeam *HandleMenu_ChooseTeam();
+	virtual IReGameHookRegistry_ShowMenu *ShowMenu();
+	virtual IReGameHookRegistry_ShowVGUIMenu *ShowVGUIMenu();
+	virtual IReGameHookRegistry_BuyGunAmmo *BuyGunAmmo();
+	virtual IReGameHookRegistry_BuyWeaponByWeaponID *BuyWeaponByWeaponID();
+	virtual IReGameHookRegistry_InternalCommand *InternalCommand();
 
-	virtual IReGameHookRegistry_CSGameRules_FShouldSwitchWeapon* CSGameRules_FShouldSwitchWeapon();
-	virtual IReGameHookRegistry_CSGameRules_GetNextBestWeapon* CSGameRules_GetNextBestWeapon();
-	virtual IReGameHookRegistry_CSGameRules_FlPlayerFallDamage* CSGameRules_FlPlayerFallDamage();
-	virtual IReGameHookRegistry_CSGameRules_FPlayerCanTakeDamage* CSGameRules_FPlayerCanTakeDamage();
-	virtual IReGameHookRegistry_CSGameRules_PlayerSpawn* CSGameRules_PlayerSpawn();
-	virtual IReGameHookRegistry_CSGameRules_FPlayerCanRespawn* CSGameRules_FPlayerCanRespawn();
-	virtual IReGameHookRegistry_CSGameRules_GetPlayerSpawnSpot* CSGameRules_GetPlayerSpawnSpot();
-	virtual IReGameHookRegistry_CSGameRules_ClientUserInfoChanged* CSGameRules_ClientUserInfoChanged();
-	virtual IReGameHookRegistry_CSGameRules_PlayerKilled* CSGameRules_PlayerKilled();
-	virtual IReGameHookRegistry_CSGameRules_DeathNotice* CSGameRules_DeathNotice();
-	virtual IReGameHookRegistry_CSGameRules_CanHavePlayerItem* CSGameRules_CanHavePlayerItem();
-	virtual IReGameHookRegistry_CSGameRules_DeadPlayerWeapons* CSGameRules_DeadPlayerWeapons();
-	virtual IReGameHookRegistry_CSGameRules_ServerDeactivate* CSGameRules_ServerDeactivate();
-	virtual IReGameHookRegistry_CSGameRules_CheckMapConditions* CSGameRules_CheckMapConditions();
-	virtual IReGameHookRegistry_CSGameRules_CleanUpMap* CSGameRules_CleanUpMap();
-	virtual IReGameHookRegistry_CSGameRules_RestartRound* CSGameRules_RestartRound();
-	virtual IReGameHookRegistry_CSGameRules_CheckWinConditions* CSGameRules_CheckWinConditions();
-	virtual IReGameHookRegistry_CSGameRules_RemoveGuns* CSGameRules_RemoveGuns();
-	virtual IReGameHookRegistry_CSGameRules_GiveC4* CSGameRules_GiveC4();
-	virtual IReGameHookRegistry_CSGameRules_ChangeLevel* CSGameRules_ChangeLevel();
-	virtual IReGameHookRegistry_CSGameRules_GoToIntermission* CSGameRules_GoToIntermission();
-	virtual IReGameHookRegistry_CSGameRules_BalanceTeams* CSGameRules_BalanceTeams();
-	virtual IReGameHookRegistry_CSGameRules_OnRoundFreezeEnd* CSGameRules_OnRoundFreezeEnd();
-	virtual IReGameHookRegistry_PM_UpdateStepSound* PM_UpdateStepSound();
-	virtual IReGameHookRegistry_CBasePlayer_StartDeathCam* CBasePlayer_StartDeathCam();
+	virtual IReGameHookRegistry_CSGameRules_FShouldSwitchWeapon *CSGameRules_FShouldSwitchWeapon();
+	virtual IReGameHookRegistry_CSGameRules_GetNextBestWeapon *CSGameRules_GetNextBestWeapon();
+	virtual IReGameHookRegistry_CSGameRules_FlPlayerFallDamage *CSGameRules_FlPlayerFallDamage();
+	virtual IReGameHookRegistry_CSGameRules_FPlayerCanTakeDamage *CSGameRules_FPlayerCanTakeDamage();
+	virtual IReGameHookRegistry_CSGameRules_PlayerSpawn *CSGameRules_PlayerSpawn();
+	virtual IReGameHookRegistry_CSGameRules_FPlayerCanRespawn *CSGameRules_FPlayerCanRespawn();
+	virtual IReGameHookRegistry_CSGameRules_GetPlayerSpawnSpot *CSGameRules_GetPlayerSpawnSpot();
+	virtual IReGameHookRegistry_CSGameRules_ClientUserInfoChanged *CSGameRules_ClientUserInfoChanged();
+	virtual IReGameHookRegistry_CSGameRules_PlayerKilled *CSGameRules_PlayerKilled();
+	virtual IReGameHookRegistry_CSGameRules_DeathNotice *CSGameRules_DeathNotice();
+	virtual IReGameHookRegistry_CSGameRules_CanHavePlayerItem *CSGameRules_CanHavePlayerItem();
+	virtual IReGameHookRegistry_CSGameRules_DeadPlayerWeapons *CSGameRules_DeadPlayerWeapons();
+	virtual IReGameHookRegistry_CSGameRules_ServerDeactivate *CSGameRules_ServerDeactivate();
+	virtual IReGameHookRegistry_CSGameRules_CheckMapConditions *CSGameRules_CheckMapConditions();
+	virtual IReGameHookRegistry_CSGameRules_CleanUpMap *CSGameRules_CleanUpMap();
+	virtual IReGameHookRegistry_CSGameRules_RestartRound *CSGameRules_RestartRound();
+	virtual IReGameHookRegistry_CSGameRules_CheckWinConditions *CSGameRules_CheckWinConditions();
+	virtual IReGameHookRegistry_CSGameRules_RemoveGuns *CSGameRules_RemoveGuns();
+	virtual IReGameHookRegistry_CSGameRules_GiveC4 *CSGameRules_GiveC4();
+	virtual IReGameHookRegistry_CSGameRules_ChangeLevel *CSGameRules_ChangeLevel();
+	virtual IReGameHookRegistry_CSGameRules_GoToIntermission *CSGameRules_GoToIntermission();
+	virtual IReGameHookRegistry_CSGameRules_BalanceTeams *CSGameRules_BalanceTeams();
+	virtual IReGameHookRegistry_CSGameRules_OnRoundFreezeEnd *CSGameRules_OnRoundFreezeEnd();
+	virtual IReGameHookRegistry_PM_UpdateStepSound *PM_UpdateStepSound();
+	virtual IReGameHookRegistry_CBasePlayer_StartDeathCam *CBasePlayer_StartDeathCam();
 };
 
 extern CReGameHookchains g_ReGameHookchains;
@@ -546,14 +547,14 @@ public:
 	virtual const ReGameFuncs_t *GetFuncs();
 	virtual IReGameHookchains *GetHookchains();
 
-	virtual CGameRules* GetGameRules();
-	virtual WeaponInfoStruct* GetWeaponInfo(int weaponID);
-	virtual WeaponInfoStruct* GetWeaponInfo(const char* weaponName);
-	virtual playermove_t* GetPlayerMove();
-	virtual WeaponSlotInfo* GetWeaponSlot(WeaponIdType weaponID);
-	virtual WeaponSlotInfo* GetWeaponSlot(const char* weaponName);
-	virtual ItemInfo* GetItemInfo(WeaponIdType weaponID);
-	virtual AmmoInfo* GetAmmoInfo(AmmoType ammoID);
+	virtual CGameRules *GetGameRules();
+	virtual WeaponInfoStruct *GetWeaponInfo(int weaponID);
+	virtual WeaponInfoStruct *GetWeaponInfo(const char *weaponName);
+	virtual playermove_t *GetPlayerMove();
+	virtual WeaponSlotInfo *GetWeaponSlot(WeaponIdType weaponID);
+	virtual WeaponSlotInfo *GetWeaponSlot(const char *weaponName);
+	virtual ItemInfo *GetItemInfo(WeaponIdType weaponID);
+	virtual AmmoInfo *GetAmmoInfo(AmmoType ammoID);
 };
 
 void Regamedll_ChangeString_api(char *&dest, const char *source);

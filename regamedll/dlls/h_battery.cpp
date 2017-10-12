@@ -35,7 +35,9 @@ void CRecharge::KeyValue(KeyValueData *pkvd)
 		pkvd->fHandled = TRUE;
 	}
 	else
+	{
 		CBaseToggle::KeyValue(pkvd);
+	}
 }
 
 void CRecharge::Spawn()
@@ -50,7 +52,14 @@ void CRecharge::Spawn()
 	UTIL_SetSize(pev, pev->mins, pev->maxs);
 	SET_MODEL(ENT(pev), STRING(pev->model));
 
-	m_iJuice = int(gSkillData.suitchargerCapacity);
+	int armorValue = (int)gSkillData.suitchargerCapacity;
+#ifdef REGAMEDLL_FIXES
+	if (pev->armorvalue != 0.0f) {
+		armorValue = (int)pev->armorvalue;
+	}
+#endif
+
+	m_iJuice = armorValue;
 	pev->frame = 0;
 }
 
@@ -120,6 +129,12 @@ void CRecharge::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useT
 	// charge the player
 	if (m_hActivator->pev->armorvalue < 100)
 	{
+#ifdef REGAMEDLL_FIXES
+		CBasePlayer *pPlayer = m_hActivator.Get<CBasePlayer>();
+		if (pPlayer->m_iKevlar == ARMOR_NONE)
+			pPlayer->m_iKevlar = ARMOR_KEVLAR;
+#endif
+
 		m_iJuice--;
 		m_hActivator->pev->armorvalue += 1.0f;
 
@@ -133,7 +148,15 @@ void CRecharge::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useT
 
 void CRecharge::Recharge()
 {
-	m_iJuice = gSkillData.suitchargerCapacity;
+	int armorValue = (int)gSkillData.suitchargerCapacity;
+#ifdef REGAMEDLL_FIXES
+	if (pev->armorvalue != 0.0f) {
+		armorValue = (int)pev->armorvalue;
+	}
+#endif
+
+	m_iJuice = armorValue;
+
 	pev->frame = 0;
 	SetThink(&CRecharge::SUB_DoNothing);
 }
@@ -152,5 +175,7 @@ void CRecharge::Off()
 		SetThink(&CRecharge::Recharge);
 	}
 	else
+	{
 		SetThink(&CRecharge::SUB_DoNothing);
+	}
 }

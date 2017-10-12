@@ -26,11 +26,7 @@
 *
 */
 
-#ifndef BOT_H
-#define BOT_H
-#ifdef _WIN32
 #pragma once
-#endif
 
 #include "gamerules.h"
 
@@ -137,7 +133,7 @@ public:
 	// return true if we can see any part of the player
 	virtual bool IsVisible(CBasePlayer *player, bool testFOV = false, unsigned char *visParts = NULL) const = 0;
 
-	enum VisiblePartType:uint8
+	enum VisiblePartType : uint8
 	{
 		NONE = 0x00,
 		CHEST = 0x01,
@@ -419,5 +415,3 @@ extern const char *BotArgs[4];
 extern bool UseBotArgs;
 
 extern bool AreBotsAllowed();
-
-#endif // BOT_H

@@ -10,7 +10,7 @@
 // be spawned, and still remain fairly flexible
 const char *CBreakable::pSpawnObjects[] =
 {
-	NULL,
+	nullptr,
 	"item_battery",
 	"item_healthkit",
 	"weapon_9mmhandgun",
@@ -126,7 +126,6 @@ void CBreakable::KeyValue(KeyValueData *pkvd)
 		Materials type = (Materials)Q_atoi(pkvd->szValue);
 
 		// 0:glass, 1:wood, 2:metal, 3:flesh etc
-
 		if (type < 0 || type >= matLastMaterial)
 			m_Material = matWood;
 		else
@@ -164,9 +163,13 @@ void CBreakable::KeyValue(KeyValueData *pkvd)
 		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "lip"))
+	{
 		pkvd->fHandled = TRUE;
+	}
 	else
+	{
 		CBaseDelay::KeyValue(pkvd);
+	}
 }
 
 LINK_ENTITY_TO_CLASS(func_breakable, CBreakable, CCSBreakable)
@@ -318,7 +321,7 @@ void CBreakable::MaterialSoundRandom(edict_t *pEdict, Materials soundMaterial, f
 
 void CBreakable::Precache()
 {
-	const char *pGibName = NULL;
+	const char *pGibName = nullptr;
 
 	switch (m_Material)
 	{
@@ -658,7 +661,7 @@ void CBreakable::Die()
 {
 	Vector vecSpot;	// shard origin
 	Vector vecVelocity;	// shard velocity
-	CBaseEntity *pEntity = NULL;
+	CBaseEntity *pEntity = nullptr;
 	char cFlag = 0;
 	int pitch;
 	float fvol;
@@ -798,11 +801,11 @@ void CBreakable::Die()
 		WRITE_COORD(vecVelocity.x);	// velocity
 		WRITE_COORD(vecVelocity.y);
 		WRITE_COORD(vecVelocity.z);
-		WRITE_BYTE(10);			// randomization
+		WRITE_BYTE(10);				// randomization
 		WRITE_SHORT(m_idShard);		// model id#
-		WRITE_BYTE(0);			// # of shards, let client decide
-		WRITE_BYTE(25);			// duration, 2.5 seconds
-		WRITE_BYTE(cFlag);		// flags
+		WRITE_BYTE(0);				// # of shards, let client decide
+		WRITE_BYTE(25);				// duration, 2.5 seconds
+		WRITE_BYTE(cFlag);			// flags
 	MESSAGE_END();
 
 	float size = pev->size.x;
@@ -824,7 +827,7 @@ void CBreakable::Die()
 	for (int i = 0; i < count; ++i)
 	{
 		pList[i]->pev->flags &= ~FL_ONGROUND;
-		pList[i]->pev->groundentity = NULL;
+		pList[i]->pev->groundentity = nullptr;
 	}
 
 	pev->solid = SOLID_NOT;
@@ -968,7 +971,9 @@ void CPushable::KeyValue(KeyValueData *pkvd)
 		pkvd->fHandled = TRUE;
 	}
 	else
+	{
 		CBreakable::KeyValue(pkvd);
+	}
 }
 
 // Pull the func_pushable

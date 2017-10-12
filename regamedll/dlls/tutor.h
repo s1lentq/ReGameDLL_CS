@@ -26,11 +26,7 @@
 *
 */
 
-#ifndef TUTOR_H
-#define TUTOR_H
-#ifdef _WIN32
 #pragma once
-#endif
 
 extern cvar_t cv_tutor_message_repeats;
 extern cvar_t cv_tutor_debug_level;
@@ -46,5 +42,3 @@ extern cvar_t cv_tutor_hint_interval_time;
 void InstallTutor(bool start);
 void Tutor_RegisterCVars();
 void MonitorTutorStatus();
-
-#endif // TUTOR_H

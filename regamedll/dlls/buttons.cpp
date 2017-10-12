@@ -15,8 +15,8 @@ TYPEDESCRIPTION CEnvGlobal::m_SaveData[] =
 TYPEDESCRIPTION CMultiSource::m_SaveData[] =
 {
 	// BUGBUG FIX
-	DEFINE_ARRAY(CMultiSource, m_rgEntities, FIELD_EHANDLE, MS_MAX_TARGETS),
-	DEFINE_ARRAY(CMultiSource, m_rgTriggered, FIELD_INTEGER, MS_MAX_TARGETS),
+	DEFINE_ARRAY(CMultiSource, m_rgEntities, FIELD_EHANDLE, MAX_MS_TARGETS),
+	DEFINE_ARRAY(CMultiSource, m_rgTriggered, FIELD_INTEGER, MAX_MS_TARGETS),
 	DEFINE_FIELD(CMultiSource, m_iTotal, FIELD_INTEGER),
 	DEFINE_FIELD(CMultiSource, m_globalstate, FIELD_STRING),
 };
@@ -73,7 +73,9 @@ void CEnvGlobal::KeyValue(KeyValueData *pkvd)
 		m_initialstate = Q_atoi(pkvd->szValue);
 	}
 	else
+	{
 		CPointEntity::KeyValue(pkvd);
+	}
 }
 
 void CEnvGlobal::Spawn()
@@ -154,7 +156,9 @@ void CMultiSource::KeyValue(KeyValueData *pkvd)
 		pkvd->fHandled = TRUE;
 	}
 	else
+	{
 		CPointEntity::KeyValue(pkvd);
+	}
 }
 
 void CMultiSource::Spawn()
@@ -244,32 +248,32 @@ BOOL CMultiSource::IsTriggered(CBaseEntity *)
 void CMultiSource::Register()
 {
 	m_iTotal = 0;
-	Q_memset(m_rgEntities, 0, MS_MAX_TARGETS * sizeof(EHANDLE));
+	Q_memset(m_rgEntities, 0, MAX_MS_TARGETS * sizeof(EHANDLE));
 
 	SetThink(&CMultiSource::SUB_DoNothing);
 
 	// search for all entities which target this multisource (pev->targetname)
 #ifdef REGAMEDLL_FIXES
 	CBaseEntity *pTarget = nullptr;
-	while (m_iTotal < MS_MAX_TARGETS && (pTarget = UTIL_FindEntityByString(pTarget, "target", STRING(pev->targetname)))) {
+	while (m_iTotal < MAX_MS_TARGETS && (pTarget = UTIL_FindEntityByString(pTarget, "target", STRING(pev->targetname)))) {
 		m_rgEntities[m_iTotal++] = pTarget;
 	}
 
 	pTarget = nullptr;
-	while (m_iTotal < MS_MAX_TARGETS && (pTarget = UTIL_FindEntityByClassname(pTarget, "multi_manager")))
+	while (m_iTotal < MAX_MS_TARGETS && (pTarget = UTIL_FindEntityByClassname(pTarget, "multi_manager")))
 	{
 		if (pTarget->HasTarget(pev->targetname)) {
 			m_rgEntities[m_iTotal++] = pTarget;
 		}
 	}
 #else
-	edict_t *pentTarget = FIND_ENTITY_BY_STRING(NULL, "target", STRING(pev->targetname));
+	edict_t *pentTarget = FIND_ENTITY_BY_STRING(nullptr, "target", STRING(pev->targetname));
 
-	while (!FNullEnt(pentTarget) && m_iTotal < MS_MAX_TARGETS)
+	while (!FNullEnt(pentTarget) && m_iTotal < MAX_MS_TARGETS)
 	{
 		CBaseEntity *pTarget = CBaseEntity::Instance(pentTarget);
 
-		if (pTarget != NULL)
+		if (pTarget)
 		{
 			m_rgEntities[m_iTotal++] = pTarget;
 		}
@@ -277,12 +281,12 @@ void CMultiSource::Register()
 		pentTarget = FIND_ENTITY_BY_STRING(pentTarget, "target", STRING(pev->targetname));
 	}
 
-	pentTarget = FIND_ENTITY_BY_STRING(NULL, "classname", "multi_manager");
+	pentTarget = FIND_ENTITY_BY_STRING(nullptr, "classname", "multi_manager");
 
-	while (!FNullEnt(pentTarget) && m_iTotal < MS_MAX_TARGETS)
+	while (!FNullEnt(pentTarget) && m_iTotal < MAX_MS_TARGETS)
 	{
 		CBaseEntity *pTarget = CBaseEntity::Instance(pentTarget);
-		if (pTarget != NULL && pTarget->HasTarget(pev->targetname))
+		if (pTarget && pTarget->HasTarget(pev->targetname))
 		{
 			m_rgEntities[m_iTotal++] = pTarget;
 		}
@@ -388,7 +392,9 @@ void CBaseButton::KeyValue(KeyValueData *pkvd)
 		pkvd->fHandled = TRUE;
 	}
 	else
+	{
 		CBaseToggle::KeyValue(pkvd);
+	}
 }
 
 // ButtonShot
@@ -405,7 +411,7 @@ BOOL CBaseButton::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, fl
 	SetTouch(NULL);
 
 	m_hActivator = CBaseEntity::Instance(pevAttacker);
-	if (m_hActivator == NULL)
+	if (!m_hActivator)
 		return FALSE;
 
 	if (code == BUTTON_RETURN)
@@ -759,7 +765,7 @@ void CBaseButton::ButtonReturn()
 #ifdef REGAMEDLL_FIXES
 void CBaseButton::Restart()
 {
-	m_hActivator = NULL;
+	m_hActivator = nullptr;
 	SetMovedir(pev);
 	ButtonReturn();
 
@@ -793,9 +799,8 @@ void CBaseButton::ButtonBackHome()
 
 	if (!FStringNull(pev->target))
 	{
-		edict_t *pentTarget = NULL;
-
-		while ((pentTarget = FIND_ENTITY_BY_TARGETNAME(pentTarget, STRING(pev->target))) != NULL)
+		edict_t *pentTarget = nullptr;
+		while ((pentTarget = FIND_ENTITY_BY_TARGETNAME(pentTarget, STRING(pev->target))))
 		{
 			if (FNullEnt(pentTarget))
 				break;
@@ -805,7 +810,7 @@ void CBaseButton::ButtonBackHome()
 
 			CBaseEntity *pTarget = CBaseEntity::Instance(pentTarget);
 
-			if (pTarget != NULL)
+			if (pTarget)
 			{
 				pTarget->Use(m_hActivator, this, USE_TOGGLE, 0);
 			}
@@ -859,7 +864,7 @@ void CRotButton::Spawn()
 	CBaseToggle::AxisDir(pev);
 
 	// check for clockwise rotation
-	if (pev->spawnflags & SF_DOOR_ROTATE_BACKWARDS)
+	if (pev->spawnflags & SF_ROTBUTTON_BACKWARDS)
 	{
 		pev->movedir = pev->movedir * -1;
 	}
@@ -973,7 +978,9 @@ void CMomentaryRotButton::KeyValue(KeyValueData *pkvd)
 		pkvd->fHandled = TRUE;
 	}
 	else
+	{
 		CBaseToggle::KeyValue(pkvd);
+	}
 }
 
 void CMomentaryRotButton::PlaySound()
@@ -1002,7 +1009,7 @@ void CMomentaryRotButton::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE
 void CMomentaryRotButton::UpdateAllButtons(float value, int start)
 {
 	// Update all rot buttons attached to the same target
-	edict_t *pentTarget = NULL;
+	edict_t *pentTarget = nullptr;
 	while (true)
 	{
 
@@ -1015,7 +1022,7 @@ void CMomentaryRotButton::UpdateAllButtons(float value, int start)
 		{
 			CMomentaryRotButton *pEntity = CMomentaryRotButton::Instance(pentTarget);
 
-			if (pEntity != NULL)
+			if (pEntity)
 			{
 				if (start)
 					pEntity->UpdateSelf(value);
@@ -1071,16 +1078,14 @@ void CMomentaryRotButton::UpdateTarget(float value)
 {
 	if (!FStringNull(pev->target))
 	{
-		edict_t *pentTarget = NULL;
-
-		while ((pentTarget = FIND_ENTITY_BY_TARGETNAME(pentTarget, STRING(pev->target))) != NULL)
+		edict_t *pentTarget = nullptr;
+		while ((pentTarget = FIND_ENTITY_BY_TARGETNAME(pentTarget, STRING(pev->target))))
 		{
 			if (FNullEnt(pentTarget))
 				break;
 
 			CBaseEntity *pEntity = CBaseEntity::Instance(pentTarget);
-
-			if (pEntity != NULL)
+			if (pEntity)
 			{
 				pEntity->Use(this, this, USE_SET, value);
 			}
@@ -1194,7 +1199,9 @@ void CEnvSpark::KeyValue(KeyValueData *pkvd)
 			|| FStrEq(pkvd->szKeyName, "value3"))
 		pkvd->fHandled = TRUE;
 	else
+	{
 		CBaseEntity::KeyValue(pkvd);
+	}
 }
 
 void CEnvSpark::SparkThink()

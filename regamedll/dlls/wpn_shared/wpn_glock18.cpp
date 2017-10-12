@@ -45,7 +45,7 @@ int CGLOCK18::GetItemInfo(ItemInfo *p)
 	p->pszName = STRING(pev->classname);
 	p->pszAmmo1 = "9mm";
 	p->iMaxAmmo1 = MAX_AMMO_9MM;
-	p->pszAmmo2 = NULL;
+	p->pszAmmo2 = nullptr;
 	p->iMaxAmmo2 = -1;
 	p->iMaxClip = GLOCK18_MAX_CLIP;
 	p->iSlot = 1;
@@ -189,7 +189,7 @@ void CGLOCK18::GLOCK18Fire(float flSpread, float flCycleTime, BOOL bFireBurst)
 			m_flNextPrimaryAttack = GetNextAttackDelay(0.2);
 		}
 
-		if (TheBots != NULL)
+		if (TheBots)
 		{
 			TheBots->OnEvent(EVENT_WEAPON_FIRED_ON_EMPTY, m_pPlayer);
 		}
@@ -197,7 +197,7 @@ void CGLOCK18::GLOCK18Fire(float flSpread, float flCycleTime, BOOL bFireBurst)
 		return;
 	}
 
-	--m_iClip;
+	m_iClip--;
 	m_pPlayer->pev->effects |= EF_MUZZLEFLASH;
 
 	// player "shoot" animation
@@ -228,7 +228,7 @@ void CGLOCK18::GLOCK18Fire(float flSpread, float flCycleTime, BOOL bFireBurst)
 	if (!m_iClip && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
 	{
 		// HEV suit - indicate out of ammo condition
-		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, FALSE);
+		m_pPlayer->SetSuitUpdate("!HEV_AMO0", SUIT_SENTENCE, SUIT_REPEAT_OK);
 	}
 
 	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.5f;
@@ -236,7 +236,7 @@ void CGLOCK18::GLOCK18Fire(float flSpread, float flCycleTime, BOOL bFireBurst)
 	if (bFireBurst)
 	{
 		// Fire off the next two rounds
-		++m_iGlock18ShotsFired;
+		m_iGlock18ShotsFired++;
 		m_flGlock18Shoot = gpGlobals->time + 0.1f;
 	}
 

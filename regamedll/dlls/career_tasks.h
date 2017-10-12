@@ -26,11 +26,7 @@
 *
 */
 
-#ifndef CAREER_TASK_H
-#define CAREER_TASK_H
-#ifdef _WIN32
 #pragma once
-#endif
 
 #include <list>
 
@@ -148,5 +144,3 @@ struct TaskInfo
 };
 
 extern CCareerTaskManager *TheCareerTasks;
-
-#endif // CAREER_TASK_H

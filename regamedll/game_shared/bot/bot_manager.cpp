@@ -102,7 +102,7 @@ const char *GameEventName[NUM_GAME_EVENTS + 1] =
 	"EVENT_GAME_COMMENCE",
 	"EVENT_WEAPON_ZOOMED",
 	"EVENT_HOSTAGE_CALLED_FOR_HELP",
-	NULL,
+	nullptr,
 };
 
 #endif // HOOK_GAMEDLL
@@ -116,10 +116,13 @@ const float smokeRadius = 115.0f;		// for smoke grenades
 // TODO: Find more appropriate place for this function
 GameEventType NameToGameEvent(const char *name)
 {
-	for (int i = 0; GameEventName[i] != NULL; ++i)
+	int index = 0;
+	for (auto event : GameEventName)
 	{
-		if (!Q_stricmp(GameEventName[i], name))
-			return static_cast<GameEventType>(i);
+		if (!Q_stricmp(event, name))
+			return static_cast<GameEventType>(index);
+
+		index++;
 	}
 
 	return EVENT_INVALID;
@@ -144,7 +147,7 @@ void CBotManager::StartFrame()
 	{
 		Vector edge, lastEdge;
 
-		ActiveGrenadeList::iterator iter = m_activeGrenadeList.begin();
+		auto iter = m_activeGrenadeList.begin();
 		while (iter != m_activeGrenadeList.end())
 		{
 			ActiveGrenade *ag = (*iter);
@@ -157,7 +160,9 @@ void CBotManager::StartFrame()
 				continue;
 			}
 			else
-				++iter;
+			{
+				iter++;
+			}
 
 			const Vector *pos = ag->GetDetonationPosition();
 
@@ -191,7 +196,7 @@ void CBotManager::StartFrame()
 	}
 
 	// Process each active bot
-	for (int i = 1; i <= gpGlobals->maxClients; ++i)
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{
 		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
@@ -220,7 +225,7 @@ const char *CBotManager::GetNavMapFilename() const
 void CBotManager::OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
 {
 	// propogate event to all bots
-	for (int i = 1; i <= gpGlobals->maxClients; ++i)
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{
 		CBasePlayer *player = UTIL_PlayerByIndex(i);
 
@@ -266,7 +271,7 @@ void CBotManager::AddGrenade(int type, CGrenade *grenade)
 // The grenade entity in the world is going away
 void CBotManager::RemoveGrenade(CGrenade *grenade)
 {
-	for (ActiveGrenadeList::iterator iter = m_activeGrenadeList.begin(); iter != m_activeGrenadeList.end(); ++iter)
+	for (auto iter = m_activeGrenadeList.begin(); iter != m_activeGrenadeList.end(); iter++)
 	{
 		ActiveGrenade *ag = (*iter);
 
@@ -281,7 +286,7 @@ void CBotManager::RemoveGrenade(CGrenade *grenade)
 // Destroy any invalid active grenades
 NOXREF void CBotManager::ValidateActiveGrenades()
 {
-	ActiveGrenadeList::iterator iter = m_activeGrenadeList.begin();
+	auto iter = m_activeGrenadeList.begin();
 	while (iter != m_activeGrenadeList.end())
 	{
 		ActiveGrenade *ag = (*iter);
@@ -292,14 +297,16 @@ NOXREF void CBotManager::ValidateActiveGrenades()
 			iter = m_activeGrenadeList.erase(iter);
 		}
 		else
-			++iter;
+		{
+			iter++;
+		}
 	}
 }
 
 void CBotManager::DestroyAllGrenades()
 {
-	for (ActiveGrenadeList::iterator iter = m_activeGrenadeList.begin(); iter != m_activeGrenadeList.end(); iter++)
-		delete (*iter);
+	for (auto grenade : m_activeGrenadeList)
+		delete grenade;
 
 	m_activeGrenadeList.clear();
 }
@@ -307,7 +314,7 @@ void CBotManager::DestroyAllGrenades()
 // Return true if position is inside a smoke cloud
 bool CBotManager::IsInsideSmokeCloud(const Vector *pos)
 {
-	ActiveGrenadeList::iterator iter = m_activeGrenadeList.begin();
+	auto iter = m_activeGrenadeList.begin();
 	while (iter != m_activeGrenadeList.end())
 	{
 		ActiveGrenade *ag = (*iter);
@@ -320,7 +327,9 @@ bool CBotManager::IsInsideSmokeCloud(const Vector *pos)
 			continue;
 		}
 		else
-			++iter;
+		{
+			iter++;
+		}
 
 		if (ag->GetID() == WEAPON_SMOKEGRENADE)
 		{
@@ -349,7 +358,7 @@ bool CBotManager::IsLineBlockedBySmoke(const Vector *from, const Vector *to)
 	Vector sightDir = *to - *from;
 	float sightLength = sightDir.NormalizeInPlace();
 
-	ActiveGrenadeList::iterator iter = m_activeGrenadeList.begin();
+	auto iter = m_activeGrenadeList.begin();
 	while (iter != m_activeGrenadeList.end())
 	{
 		ActiveGrenade *ag = (*iter);
@@ -362,7 +371,9 @@ bool CBotManager::IsLineBlockedBySmoke(const Vector *from, const Vector *to)
 			continue;
 		}
 		else
-			++iter;
+		{
+			iter++;
+		}
 
 		if (ag->GetID() == WEAPON_SMOKEGRENADE)
 		{

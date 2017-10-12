@@ -8,14 +8,14 @@ CHintMessage::CHintMessage(const char *hintString, bool isHint, CUtlVector<const
 
 	if (args)
 	{
-		for (int i = 0; i < args->Count(); ++i)
+		for (int i = 0; i < args->Count(); i++)
 			m_args.AddToTail(CloneString((*args)[i]));
 	}
 }
 
 CHintMessage::~CHintMessage()
 {
-	for (int i = 0; i < m_args.Count(); ++i)
+	for (int i = 0; i < m_args.Count(); i++)
 		delete[] m_args[i];
 
 	m_args.RemoveAll();
@@ -30,7 +30,7 @@ void CHintMessageQueue::Reset()
 {
 	m_tmMessageEnd = 0;
 
-	for (int i = 0; i < m_messages.Count(); ++i)
+	for (int i = 0; i < m_messages.Count(); i++)
 		delete m_messages[i];
 
 	m_messages.RemoveAll();

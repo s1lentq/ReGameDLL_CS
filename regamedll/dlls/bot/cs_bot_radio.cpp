@@ -20,10 +20,9 @@ bool CCSBot::IsRadioCommand(GameEventType event) const
 void CCSBot::RespondToRadioCommands()
 {
 	// bots use the chatter system to respond to each other
-	if (m_radioSubject != NULL && m_radioSubject->IsPlayer())
+	if (m_radioSubject.IsValid() && m_radioSubject->IsPlayer())
 	{
-		CBasePlayer *player = m_radioSubject;
-		if (player->IsBot())
+		if (m_radioSubject->IsBot())
 		{
 			m_lastRadioCommand = EVENT_INVALID;
 			return;
@@ -71,8 +70,7 @@ void CCSBot::RespondToRadioCommands()
 		return;
 	}
 
-	CBasePlayer *player = m_radioSubject;
-	if (player == NULL)
+	if (!m_radioSubject)
 		return;
 
 	// respond to command
@@ -92,8 +90,8 @@ void CCSBot::RespondToRadioCommands()
 		{
 			if (!IsFollowing())
 			{
-				Follow(player);
-				player->AllowAutoFollow();
+				Follow(m_radioSubject);
+				m_radioSubject->AllowAutoFollow();
 				canDo = true;
 			}
 			break;
@@ -104,9 +102,9 @@ void CCSBot::RespondToRadioCommands()
 		{
 			if (!IsFollowing())
 			{
-				Follow(player);
+				Follow(m_radioSubject);
 				GetChatter()->Say("OnMyWay");
-				player->AllowAutoFollow();
+				m_radioSubject->AllowAutoFollow();
 				canDo = false;
 			}
 			break;
@@ -122,7 +120,7 @@ void CCSBot::RespondToRadioCommands()
 			// find the leader's area
 			SetTask(HOLD_POSITION);
 			StopFollowing();
-			player->InhibitAutoFollow(inhibitAutoFollowDuration);
+			m_radioSubject->InhibitAutoFollow(inhibitAutoFollowDuration);
 			Hide(TheNavAreaGrid.GetNearestNavArea(&m_radioPosition));
 			canDo = true;
 			break;
@@ -133,7 +131,7 @@ void CCSBot::RespondToRadioCommands()
 			StopFollowing();
 			Hunt();
 			canDo = true;
-			player->InhibitAutoFollow(inhibitAutoFollowDuration);
+			m_radioSubject->InhibitAutoFollow(inhibitAutoFollowDuration);
 			break;
 		}
 		case EVENT_RADIO_GET_OUT_OF_THERE:
@@ -141,7 +139,7 @@ void CCSBot::RespondToRadioCommands()
 			if (TheCSBots()->IsBombPlanted())
 			{
 				EscapeFromBomb();
-				player->InhibitAutoFollow(inhibitAutoFollowDuration);
+				m_radioSubject->InhibitAutoFollow(inhibitAutoFollowDuration);
 				canDo = true;
 			}
 			break;
@@ -154,9 +152,8 @@ void CCSBot::RespondToRadioCommands()
 			{
 				if (m_iTeam == CT && TheCSBots()->IsBombPlanted())
 				{
-					const CCSBotManager::Zone *zone = TheCSBots()->GetClosestZone(player);
-
-					if (zone != NULL)
+					const CCSBotManager::Zone *zone = TheCSBots()->GetClosestZone(m_radioSubject);
+					if (zone)
 					{
 						GetGameState()->ClearBombsite(zone->m_index);
 
@@ -197,11 +194,11 @@ void CCSBot::StartVoiceFeedback(float duration)
 	m_voiceFeedbackStartTimestamp = gpGlobals->time;
 	m_voiceFeedbackEndTimestamp = duration + gpGlobals->time;
 
-	CBasePlayer *pPlayer = NULL;
-	while ((pPlayer = GetNextRadioRecipient(pPlayer)) != NULL)
+	CBasePlayer *pPlayer = nullptr;
+	while ((pPlayer = GetNextRadioRecipient(pPlayer)))
 	{
-		MESSAGE_BEGIN(MSG_ONE, gmsgBotVoice, NULL, pPlayer->pev);
-			WRITE_BYTE(1);		// active is talking
+		MESSAGE_BEGIN(MSG_ONE, gmsgBotVoice, nullptr, pPlayer->pev);
+			WRITE_BYTE(1);				// active is talking
 			WRITE_BYTE(entindex());		// client index speaking
 		MESSAGE_END();
 	}
@@ -264,7 +261,7 @@ bool CCSBot::RespondToHelpRequest(CBasePlayer *them, Place place, float maxRange
 
 		// go to where help is needed
 		const Vector *pos = GetRandomSpotAtPlace(place);
-		if (pos != NULL)
+		if (pos)
 		{
 			MoveTo(pos, FASTEST_ROUTE);
 		}

@@ -43,7 +43,7 @@ int CHEGrenade::GetItemInfo(ItemInfo *p)
 	p->iMaxAmmo1 = info ? info->maxRounds : MAX_AMMO_HEGRENADE;
 	p->iMaxClip = info ? info->gunClipSize : WEAPON_NOCLIP;
 
-	p->pszAmmo2 = NULL;
+	p->pszAmmo2 = nullptr;
 	p->iMaxAmmo2 = -1;
 	p->iSlot = 3;
 	p->iPosition = 1;

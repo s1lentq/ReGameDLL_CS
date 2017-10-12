@@ -26,11 +26,7 @@
 *
 */
 
-#ifndef NAV_FILE_H
-#define NAV_FILE_H
-#ifdef _WIN32
 #pragma once
-#endif
 
 // The 'place directory' is used to save and load places from
 // nav files in a size-efficient manner that also allows for the
@@ -47,23 +43,18 @@ public:
 	typedef unsigned short EntryType;
 
 	void Reset();
-	bool IsKnown(Place place) const;		// return true if this place is already in the directory
+	bool IsKnown(Place place) const;			// return true if this place is already in the directory
 	EntryType GetEntry(Place place) const;		// return the directory entry corresponding to this Place (0 = no entry)
-	void AddPlace(Place place);			// add the place to the directory if not already known
+	void AddPlace(Place place);					// add the place to the directory if not already known
 	Place EntryToPlace(EntryType entry) const;	// given an entry, return the Place
-	void Save(int fd);				// store the directory
-	void Load(SteamFile *file);			// load the directory
+	void Save(int fd);							// store the directory
+	void Load(SteamFile *file);					// load the directory
 
 private:
 	std::vector<Place> m_directory;
 };
 
-extern char *MP_COM_GetToken();
-extern char *MP_COM_Parse(char *data);
-
 bool SaveNavigationMap(const char *filename);
 void LoadLocationFile(const char *filename);
 void SanityCheckNavigationMap(const char *mapName);	// Performs a lightweight sanity-check of the specified map's nav mesh
 NavErrorType LoadNavigationMap();
-
-#endif // NAV_FILE_H

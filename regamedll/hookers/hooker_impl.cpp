@@ -85,7 +85,7 @@ TYPEDESCRIPTION gGlobalEntitySaveData[3];
 
 // globals gamerules
 CGameRules *g_pGameRules;
-char mp_com_token[ 1500 ];
+//char mp_com_token[1500];
 cvar_t *sv_clienttrace;
 
 // globals player.cpp
@@ -144,7 +144,7 @@ const int gSizes[18];
 // globals bots
 CBotManager *TheBots;
 BotPhraseManager *TheBotPhrases;
-CBaseEntity *g_pSelectedZombieSpawn;
+//CBaseEntity *g_pSelectedZombieSpawn;
 
 CountdownTimer IMPL_CLASS(BotChatterInterface, m_encourageTimer);
 IntervalTimer IMPL_CLASS(BotChatterInterface, m_radioSilenceInterval)[ 2 ];
@@ -237,12 +237,12 @@ entity_field_alias_t custom_entity_field_alias[9];
 int g_serveractive;
 
 // globals debug.cpp
-DebugOutputLevel outputLevel[ NUM_LEVELS ];
+DebugOutputLevel outputLevel[6];
 unsigned int theDebugOutputTypes;
-char theDebugBuffer[ DebugBufferSize ];
+char theDebugBuffer[MAX_DEBUG_BUFF_SIZE];
 
 // globals tutors
-char *const g_TutorStateStrings[20];
+const char *g_TutorStateStrings[20];
 const char *TutorIdentifierList[150];
 
 bool s_tutorDisabledThisGame;

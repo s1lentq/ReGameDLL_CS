@@ -26,17 +26,13 @@
 *
 */
 
-#ifndef UTL_SYMBOL_H
-#define UTL_SYMBOL_H
-#ifdef _WIN32
 #pragma once
-#endif
 
 class CUtlSymbolTable;
 
 typedef unsigned short UtlSymId_t;
 
-#define UTL_INVAL_SYMBOL  ((UtlSymId_t)~0)
+#define UTL_INVAL_SYMBOL ((UtlSymId_t)~0)
 
 struct LessCtx_t
 {
@@ -49,7 +45,7 @@ struct LessCtx_t
 class CUtlSymbol
 {
 public:
-	// constructor, destructor
+	// Constructor, Destructor
 	CUtlSymbol() : m_Id(UTL_INVAL_SYMBOL) {}
 	CUtlSymbol(UtlSymId_t id) : m_Id(id) {}
 	CUtlSymbol(const char* pStr);
@@ -59,7 +55,7 @@ public:
 	CUtlSymbol &operator=(CUtlSymbol const &src)
 	{
 		m_Id = src.m_Id;
-		return *this;
+		return (*this);
 	}
 
 	// operator==
@@ -69,12 +65,12 @@ public:
 	// Is valid?
 	bool IsValid() const { return m_Id != UTL_INVAL_SYMBOL; }
 
-	operator UtlSymId_t/* const*/() const { return m_Id; }	// Gets at the symbol
-	const char *String() const;				// Gets the string associated with the symbol
+	operator UtlSymId_t/* const*/() const { return m_Id; } // Gets at the symbol
+	const char *String() const;                            // Gets the string associated with the symbol
 
 protected:
-	static void Initialize();				// Initializes the symbol table
-	static CUtlSymbolTable *CurrTable();			// returns the current symbol table
+	static void Initialize();            // Initializes the symbol table
+	static CUtlSymbolTable *CurrTable(); // returns the current symbol table
 
 	UtlSymId_t m_Id;
 	static CUtlSymbolTable *s_pSymbolTable;
@@ -83,23 +79,21 @@ protected:
 class CUtlSymbolTable
 {
 public:
-	// constructor, destructor
+	// Constructor, Destructor
 	CUtlSymbolTable(int growSize = 0,int initSize = 32,bool caseInsensitive = false);
 	~CUtlSymbolTable();
 
-	CUtlSymbol AddString(const char *pString);		// Finds and/or creates a symbol based on the string
-	CUtlSymbol Find(const char *pString) const;		// Finds the symbol for pString
+	CUtlSymbol AddString(const char *pString);  // Finds and/or creates a symbol based on the string
+	CUtlSymbol Find(const char *pString) const; // Finds the symbol for pString
 
-	const char *String(CUtlSymbol id) const;		// Look up the string associated with a particular symbol
-	void RemoveAll();					// Remove all symbols in the table
+	const char *String(CUtlSymbol id) const;    // Look up the string associated with a particular symbol
+	void RemoveAll();                           // Remove all symbols in the table
 
 public:
 	static bool SymLess(const unsigned int &i1, const unsigned int &i2);
 	static bool SymLessi(const unsigned int &i1, const unsigned int &i2);
 
 protected:
-	CUtlRBTree<unsigned int, unsigned short> m_Lookup;
+	CUtlRBTree<unsigned int, UtlSymId_t> m_Lookup;
 	CUtlVector<char> m_Strings;
 };
-
-#endif // UTL_SYMBOL_H

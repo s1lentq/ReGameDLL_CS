@@ -16,13 +16,13 @@ void FetchBombState::OnUpdate(CCSBot *me)
 		return;
 	}
 
-	CBaseEntity *bomb = TheCSBots()->GetLooseBomb();
-	if (bomb != NULL)
+	CBaseEntity *pBomb = TheCSBots()->GetLooseBomb();
+	if (pBomb)
 	{
 		if (!me->HasPath())
 		{
 			// build a path to the bomb
-			if (me->ComputePath(TheNavAreaGrid.GetNavArea(&bomb->pev->origin), &bomb->pev->origin, SAFEST_ROUTE) == false)
+			if (me->ComputePath(TheNavAreaGrid.GetNavArea(&pBomb->pev->origin), &pBomb->pev->origin, SAFEST_ROUTE) == false)
 			{
 				me->PrintIfWatched("Fetch bomb pathfind failed\n");
 

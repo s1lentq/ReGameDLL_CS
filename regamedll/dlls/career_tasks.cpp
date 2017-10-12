@@ -5,11 +5,11 @@
 */
 #ifndef HOOK_GAMEDLL
 
-CCareerTaskManager *TheCareerTasks = NULL;
+CCareerTaskManager *TheCareerTasks = nullptr;
 
 const TaskInfo taskInfo[] =
 {
-	{ "defuse",             EVENT_BOMB_DEFUSED,        &CCareerTask::NewTask },
+	{ "defuse",             EVENT_BOMB_DEFUSED,         &CCareerTask::NewTask },
 	{ "plant",              EVENT_BOMB_PLANTED,         &CCareerTask::NewTask },
 	{ "rescue",             EVENT_HOSTAGE_RESCUED,      &CCareerTask::NewTask },
 	{ "killall",            EVENT_KILL_ALL,             &CCareerTask::NewTask },
@@ -20,8 +20,8 @@ const TaskInfo taskInfo[] =
 	{ "headshot",           EVENT_HEADSHOT,             &CCareerTask::NewTask },
 	{ "headshotwith",       EVENT_HEADSHOT,             &CCareerTask::NewTask },
 	{ "winfast",            EVENT_ROUND_WIN,            &CCareerTask::NewTask },
-	{ "rescue",             EVENT_HOSTAGE_RESCUED,		&CCareerTask::NewTask },
-	{ "rescueall",          EVENT_ALL_HOSTAGES_RESCUED,	&CCareerTask::NewTask },
+	{ "rescue",             EVENT_HOSTAGE_RESCUED,      &CCareerTask::NewTask },
+	{ "rescueall",          EVENT_ALL_HOSTAGES_RESCUED, &CCareerTask::NewTask },
 	{ "injure",             EVENT_PLAYER_TOOK_DAMAGE,   &CCareerTask::NewTask },
 	{ "injurewith",         EVENT_PLAYER_TOOK_DAMAGE,   &CCareerTask::NewTask },
 	{ "killdefuser",        EVENT_KILL,                 &CCareerTask::NewTask },
@@ -162,7 +162,7 @@ void CCareerTask::OnWeaponKill(int weaponId, int weaponClassId, bool headshot, b
 	if (m_rescuer)
 	{
 		int hostages_ = 0;
-		CHostage *hostageEntity = NULL;
+		CHostage *hostageEntity = nullptr;
 
 		while ((hostageEntity = (CHostage *)UTIL_FindEntityByClassname(hostageEntity, "hostage_entity")))
 		{
@@ -238,7 +238,7 @@ void CCareerTask::OnEvent(GameEventType event, CBasePlayer *pVictim, CBasePlayer
 		if (m_rescuer)
 		{
 			int hostages_ = 0;
-			CHostage *hostageEntity = NULL;
+			CHostage *hostageEntity = nullptr;
 
 			while ((hostageEntity = (CHostage *)UTIL_FindEntityByClassname(hostageEntity, "hostage_entity")))
 			{
@@ -267,7 +267,7 @@ void CCareerTask::OnEvent(GameEventType event, CBasePlayer *pVictim, CBasePlayer
 				if (!Q_strcmp(m_name, "defendhostages"))
 				{
 					int hostages_ = 0;
-					CHostage *hostageEntity = NULL;
+					CHostage *hostageEntity = nullptr;
 
 					while ((hostageEntity = (CHostage *)UTIL_FindEntityByClassname(hostageEntity, "hostage_entity")))
 					{
@@ -284,7 +284,7 @@ void CCareerTask::OnEvent(GameEventType event, CBasePlayer *pVictim, CBasePlayer
 				else if (!Q_strcmp(m_name, "hostagessurvive"))
 				{
 					int hostages_ = 0;
-					CHostage *hostageEntity = NULL;
+					CHostage *hostageEntity = nullptr;
 
 					while ((hostageEntity = (CHostage *)UTIL_FindEntityByClassname(hostageEntity, "hostage_entity")))
 					{

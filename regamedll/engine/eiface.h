@@ -12,8 +12,7 @@
 *   without written permission from Valve LLC.
 *
 ****/
-#ifndef EIFACE_H
-#define EIFACE_H
+#pragma once
 
 #include "archtypes.h"     // DAL
 
@@ -38,9 +37,9 @@
 
 /*
 #ifdef _WIN32
-#define DLLEXPORT __stdcall
+#define DLLEXPORT __stdcall EXT_FUNC
 #else
-#define DLLEXPORT  __attribute__ ((visibility("default")))
+#define DLLEXPORT  __attribute__ ((visibility("default"))) EXT_FUNC
 #endif
 */
 
@@ -79,9 +78,9 @@ struct TraceResult
 	int		fInOpen;
 	int		fInWater;
 	float	flFraction;			// time completed, 1.0 = didn't hit anything
-	Vector	vecEndPos;			// final position
+	vec3_t	vecEndPos;			// final position
 	float	flPlaneDist;
-	Vector	vecPlaneNormal;		// surface normal at impact
+	vec3_t	vecPlaneNormal;		// surface normal at impact
 	edict_t	*pHit;				// entity the surface is on
 	int		iHitgroup;			// 0 == generic, non zero is specific body part
 };
@@ -95,7 +94,7 @@ typedef struct
 	int	fEnabled;
 	int	fPlayLooping;
 	float	cdvolume;
-	//byte 	remap[100];
+	//BYTE 	remap[100];
 	int	fCDRom;
 	int	fPlayTrack;
 } CDStatus;
@@ -106,13 +105,13 @@ typedef struct
 // Engine hands this to DLLs for functionality callbacks
 typedef struct enginefuncs_s
 {
-	int			(*pfnPrecacheModel)			(char* s);
-	int			(*pfnPrecacheSound)			(char* s);
+	int			(*pfnPrecacheModel)			(const char* s);
+	int			(*pfnPrecacheSound)			(const char* s);
 	void		(*pfnSetModel)				(edict_t *e, const char *m);
 	int			(*pfnModelIndex)			(const char *m);
 	int			(*pfnModelFrames)			(int modelIndex);
 	void		(*pfnSetSize)				(edict_t *e, const float *rgflMin, const float *rgflMax);
-	void		(*pfnChangeLevel)			(char* s1, char* s2);
+	void		(*pfnChangeLevel)			(const char* s1, const char* s2);
 	void		(*pfnGetSpawnParms)			(edict_t *ent);
 	void		(*pfnSaveSpawnParms)		(edict_t *ent);
 	float		(*pfnVecToYaw)				(const float *rgflVector);
@@ -145,11 +144,11 @@ typedef struct enginefuncs_s
 	const char *(*pfnTraceTexture)			(edict_t *pTextureEntity, const float *v1, const float *v2 );
 	void		(*pfnTraceSphere)			(const float *v1, const float *v2, int fNoMonsters, float radius, edict_t *pentToSkip, TraceResult *ptr);
 	void		(*pfnGetAimVector)			(edict_t* ent, float speed, float *rgflReturn);
-	void		(*pfnServerCommand)			(char* str);
+	void		(*pfnServerCommand)			(const char* str);
 	void		(*pfnServerExecute)			(void);
-	void		(*pfnClientCommand)			(edict_t* pEdict, char* szFmt, ...);
+	void		(*pfnClientCommand)			(edict_t* pEdict, const char* szFmt, ...);
 	void		(*pfnParticleEffect)		(const float *org, const float *dir, float color, float count);
-	void		(*pfnLightStyle)			(int style, char* val);
+	void		(*pfnLightStyle)			(int style, const char* val);
 	int			(*pfnDecalIndex)			(const char *name);
 	int			(*pfnPointContents)			(const float *rgflVector);
 	void		(*pfnMessageBegin)			(int msg_dest, int msg_type, const float *pOrigin, edict_t *ed);
@@ -201,7 +200,7 @@ typedef struct enginefuncs_s
 	void		(*pfnSetView)				(const edict_t *pClient, const edict_t *pViewent );
 	float		(*pfnTime)					( void );
 	void		(*pfnCrosshairAngle)		(const edict_t *pClient, float pitch, float yaw);
-	byte *      (*pfnLoadFileForMe)         (char *filename, int *pLength);
+	byte *      (*pfnLoadFileForMe)         (const char *filename, int *pLength);
 	void        (*pfnFreeFile)              (void *buffer);
 	void        (*pfnEndSection)            (const char *pszSectionName); // trigger_endsection
 	int 		(*pfnCompareFileTime)       (char *filename1, char *filename2, int *iCompare);
@@ -213,12 +212,12 @@ typedef struct enginefuncs_s
 	void		(*pfnRunPlayerMove)			(edict_t *fakeclient, const float *viewangles, float forwardmove, float sidemove, float upmove, unsigned short buttons, byte impulse, byte msec );
 	int			(*pfnNumberOfEntities)		(void);
 	char*		(*pfnGetInfoKeyBuffer)		(edict_t *e);	// passing in NULL gets the serverinfo
-	char*		(*pfnInfoKeyValue)			(char *infobuffer, char *key);
-	void		(*pfnSetKeyValue)			(char *infobuffer, char *key, char *value);
-	void		(*pfnSetClientKeyValue)		(int clientIndex, char *infobuffer, char *key, char *value);
-	int			(*pfnIsMapValid)			(char *filename);
+	char*		(*pfnInfoKeyValue)			(char *infobuffer, const char *key);
+	void		(*pfnSetKeyValue)			(char *infobuffer, const char *key, const char *value);
+	void		(*pfnSetClientKeyValue)		(int clientIndex, char *infobuffer, const char *key, const char *value);
+	int			(*pfnIsMapValid)			(const char *filename);
 	void		(*pfnStaticDecal)			( const float *origin, int decalIndex, int entityIndex, int modelIndex );
-	int			(*pfnPrecacheGeneric)		(char* s);
+	int			(*pfnPrecacheGeneric)		(const char* s);
 	int			(*pfnGetPlayerUserId)		(edict_t *e ); // returns the server assigned userid for this player.  useful for logging frags, etc.  returns -1 if the edict couldn't be found in the list of clients
 	void		(*pfnBuildSoundMsg)			(edict_t *entity, int channel, const char *sample, /*int*/float volume, float attenuation, int fFlags, int pitch, int msg_dest, int msg_type, const float *pOrigin, edict_t *ed);
 	int			(*pfnIsDedicatedServer)		(void);// is this a dedicated server?
@@ -240,7 +239,7 @@ typedef struct enginefuncs_s
 
 	void		(*pfnDeltaSetField)			( struct delta_s *pFields, const char *fieldname );
 	void		(*pfnDeltaUnsetField)		( struct delta_s *pFields, const char *fieldname );
-	void		(*pfnDeltaAddEncoder)		( char *name, void (*conditionalencode)( struct delta_s *pFields, const unsigned char *from, const unsigned char *to ) );
+	void		(*pfnDeltaAddEncoder)		( const char *name, void (*conditionalencode)( struct delta_s *pFields, const unsigned char *from, const unsigned char *to ) );
 	int			(*pfnGetCurrentPlayer)		( void );
 	int			(*pfnCanSkipPlayer)			( const edict_t *player );
 	int			(*pfnDeltaFindField)		( struct delta_s *pFields, const char *fieldname );
@@ -250,7 +249,7 @@ typedef struct enginefuncs_s
 	void		(*pfnSetGroupMask)			( int mask, int op );
 
 	int			(*pfnCreateInstancedBaseline) ( int classname, struct entity_state_s *baseline );
-	void		(*pfnCvar_DirectSet)		( struct cvar_s *var, char *value );
+	void		(*pfnCvar_DirectSet)		( struct cvar_s *var, const char *value );
 
 	// Forces the client and server to be running with the same version of the specified file
 	//  ( e.g., a player model ).
@@ -259,7 +258,7 @@ typedef struct enginefuncs_s
 
 	void		(*pfnGetPlayerStats)		( const edict_t *pClient, int *ping, int *packet_loss );
 
-	void		(*pfnAddServerCommand)		( char *cmd_name, void (*function) (void) );
+	void		(*pfnAddServerCommand)		( const char *cmd_name, void (*function) (void) );
 
 	// For voice communications, set which clients hear eachother.
 	// NOTE: these functions take player entity indices (starting at 1).
@@ -275,7 +274,7 @@ typedef struct enginefuncs_s
 	sentenceEntry_s*	(*pfnSequencePickSentence)		( const char* groupName, int pickMethod, int *picked );
 
 	// LH: Give access to filesize via filesystem
-	int			(*pfnGetFileSize)						( char *filename );
+	int			(*pfnGetFileSize)						( const char *filename );
 
 	unsigned int (*pfnGetApproxWavePlayLen)				(const char *filepath);
 	// MDC: Added for CZ career-mode
@@ -321,7 +320,7 @@ typedef struct
 	char		mapName[ 32 ];
 	char		landmarkName[ 32 ];
 	edict_t		*pentLandmark;
-	Vector		vecLandmarkOrigin;
+	vec3_t		vecLandmarkOrigin;
 } LEVELLIST;
 #define MAX_LEVEL_CONNECTIONS	16		// These are encoded in the lower 16bits of ENTITYTABLE->flags
 
@@ -365,7 +364,7 @@ struct saverestore_s
 	// smooth transition
 	int			fUseLandmark;
 	char		szLandmarkName[20];// landmark we'll spawn near in next level
-	Vector		vecLandmarkOffset;// for landmark transitions
+	vec3_t		vecLandmarkOffset;// for landmark transitions
 	float		time;
 	char		szCurrentMapName[32];	// To check global entities
 
@@ -395,6 +394,7 @@ typedef enum _fieldtypes
 	FIELD_TIME,				// a floating point time (these are fixed up automatically too!)
 	FIELD_MODELNAME,		// Engine string that is a model name (needs precache)
 	FIELD_SOUNDNAME,		// Engine string that is a sound name (needs precache)
+
 	FIELD_TYPECOUNT,		// MUST BE LAST
 } FIELDTYPE;
 
@@ -484,7 +484,7 @@ typedef struct
 	void			(*pfnSetupVisibility)( struct edict_s *pViewEntity, struct edict_s *pClient, unsigned char **pvs, unsigned char **pas );
 	void			(*pfnUpdateClientData) ( const struct edict_s *ent, int sendweapons, struct clientdata_s *cd );
 	int				(*pfnAddToFullPack)( struct entity_state_s *state, int e, edict_t *ent, edict_t *host, int hostflags, int player, unsigned char *pSet );
-	void			(*pfnCreateBaseline) ( int player, int eindex, struct entity_state_s *baseline, struct edict_s *entity, int playermodelindex, Vector player_mins, Vector player_maxs );
+	void			(*pfnCreateBaseline) ( int player, int eindex, struct entity_state_s *baseline, struct edict_s *entity, int playermodelindex, vec3_t player_mins, vec3_t player_maxs );
 	void			(*pfnRegisterEncoders)	( void );
 	int				(*pfnGetWeaponData)		( struct edict_s *player, struct weapon_data_s *info );
 
@@ -493,7 +493,7 @@ typedef struct
 
 	// Return 1 if the packet is valid.  Set response_buffer_size if you want to send a response packet.  Incoming, it holds the max
 	//  size of the response_buffer, so you must zero it out if you choose not to respond.
-	int				(*pfnConnectionlessPacket )	( const struct netadr_s *net_from, const char *args, char *response_buffer, int *response_buffer_size );
+	int				(*pfnConnectionlessPacket )	( const struct netadr_s *net_from_, const char *args, char *response_buffer, int *response_buffer_size );
 
 	// Enumerates player hulls.  Returns 0 if the hull number doesn't exist, 1 otherwise
 	int				(*pfnGetHullBounds)	( int hullnumber, float *mins, float *maxs );
@@ -534,5 +534,3 @@ extern NEW_DLL_FUNCTIONS	gNewDLLFunctions;
 
 typedef int(*APIFUNCTION)(DLL_FUNCTIONS *pFunctionTable, int interfaceVersion);
 typedef int(*APIFUNCTION2)(DLL_FUNCTIONS *pFunctionTable, int *interfaceVersion);
-
-#endif /* EIFACE_H */

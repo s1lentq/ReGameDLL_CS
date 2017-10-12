@@ -26,23 +26,19 @@
 *
 */
 
-#ifndef GAME_H
-#define GAME_H
-#ifdef _WIN32
 #pragma once
-#endif
 
-#define LOG_ENEMYATTACK		1
-#define LOG_TEAMMATEATTACK	2
+#define LOG_ENEMYATTACK         1
+#define LOG_TEAMMATEATTACK      2
 
 // playerid
-#define PLAYERID_MODE_EVERYONE	0
-#define PLAYERID_MODE_TEAMONLY	1
-#define PLAYERID_MODE_OFF	2
+#define PLAYERID_MODE_EVERYONE  0
+#define PLAYERID_MODE_TEAMONLY  1
+#define PLAYERID_MODE_OFF       2
 
-#define PLAYERID_EVERYONE 0
-#define PLAYERID_TEAMONLY 1
-#define PLAYERID_OFF 2
+#define PLAYERID_EVERYONE       0
+#define PLAYERID_TEAMONLY       1
+#define PLAYERID_OFF            2
 
 extern cvar_t *g_psv_gravity;
 extern cvar_t *g_psv_aim;
@@ -155,5 +151,3 @@ extern cvar_t show_radioicon;
 #endif
 
 void GameDLLInit();
-
-#endif // GAME_H

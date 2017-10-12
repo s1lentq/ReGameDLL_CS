@@ -32,7 +32,9 @@ void CPathCorner::KeyValue(KeyValueData *pkvd)
 		pkvd->fHandled = TRUE;
 	}
 	else
+	{
 		CPointEntity::KeyValue(pkvd);
+	}
 }
 
 void CPathCorner::Spawn()
@@ -51,7 +53,9 @@ void CPathTrack::KeyValue(KeyValueData *pkvd)
 		pkvd->fHandled = TRUE;
 	}
 	else
+	{
 		CPointEntity::KeyValue(pkvd);
+	}
 }
 
 void CPathTrack::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
@@ -85,31 +89,33 @@ void CPathTrack::Link()
 
 	if (!FStringNull(pev->target))
 	{
-		pentTarget = FIND_ENTITY_BY_TARGETNAME(NULL, STRING(pev->target));
+		pentTarget = FIND_ENTITY_BY_TARGETNAME(nullptr, STRING(pev->target));
 		if (!FNullEnt(pentTarget))
 		{
 			m_pnext = CPathTrack::Instance(pentTarget);
 
 			// If no next pointer, this is the end of a path
-			if (m_pnext != NULL)
+			if (m_pnext)
 			{
 				m_pnext->SetPrevious(this);
 			}
 		}
 		else
+		{
 			ALERT(at_console, "Dead end link %s\n", STRING(pev->target));
+		}
 	}
 
 	// Find "alternate" path
 	if (!FStringNull(m_altName))
 	{
-		pentTarget = FIND_ENTITY_BY_TARGETNAME(NULL, STRING(m_altName));
+		pentTarget = FIND_ENTITY_BY_TARGETNAME(nullptr, STRING(m_altName));
 		if (!FNullEnt(pentTarget))
 		{
 			m_paltpath = CPathTrack::Instance(pentTarget);
 
 			// If no next pointer, this is the end of a path
-			if (m_paltpath != NULL)
+			if (m_paltpath)
 			{
 				m_paltpath->SetPrevious(this);
 			}
@@ -122,8 +128,8 @@ void CPathTrack::Spawn()
 	pev->solid = SOLID_TRIGGER;
 	UTIL_SetSize(pev, Vector(-8, -8, -8), Vector(8, 8, 8));
 
-	m_pnext = NULL;
-	m_pprevious = NULL;
+	m_pnext = nullptr;
+	m_pprevious = nullptr;
 }
 
 void CPathTrack::Activate()
@@ -138,10 +144,10 @@ void CPathTrack::Activate()
 CPathTrack *CPathTrack::ValidPath(CPathTrack *ppath, int testFlag)
 {
 	if (!ppath)
-		return NULL;
+		return nullptr;
 
 	if (testFlag && (ppath->pev->spawnflags & SF_PATH_DISABLED))
-		return NULL;
+		return nullptr;
 
 	return ppath;
 }
@@ -159,7 +165,7 @@ void CPathTrack::Project(CPathTrack *pstart, CPathTrack *pend, Vector *origin, f
 
 CPathTrack *CPathTrack::GetNext()
 {
-	if (m_paltpath != NULL && (pev->spawnflags & SF_PATH_ALTERNATE) && !(pev->spawnflags & SF_PATH_ALTREVERSE))
+	if (m_paltpath && (pev->spawnflags & SF_PATH_ALTERNATE) && !(pev->spawnflags & SF_PATH_ALTREVERSE))
 	{
 		return m_paltpath;
 	}
@@ -169,7 +175,7 @@ CPathTrack *CPathTrack::GetNext()
 
 CPathTrack *CPathTrack::GetPrevious()
 {
-	if (m_paltpath != NULL && (pev->spawnflags & SF_PATH_ALTERNATE) && (pev->spawnflags & SF_PATH_ALTREVERSE))
+	if (m_paltpath && (pev->spawnflags & SF_PATH_ALTERNATE) && (pev->spawnflags & SF_PATH_ALTREVERSE))
 	{
 		return m_paltpath;
 	}
@@ -180,7 +186,7 @@ CPathTrack *CPathTrack::GetPrevious()
 void CPathTrack::SetPrevious(CPathTrack *pprev)
 {
 	// Only set previous if this isn't my alternate path
-	if (pprev != NULL && !FStrEq(STRING(pprev->pev->targetname), STRING(m_altName)))
+	if (pprev && !FStrEq(STRING(pprev->pev->targetname), STRING(m_altName)))
 	{
 		m_pprevious = pprev;
 	}
@@ -214,7 +220,7 @@ CPathTrack *CPathTrack::LookAhead(Vector *origin, float dist, int move)
 						Project(pcurrent->GetNext(), pcurrent, origin, dist);
 					}
 
-					return NULL;
+					return nullptr;
 				}
 
 				pcurrent = pcurrent->GetPrevious();
@@ -234,7 +240,7 @@ CPathTrack *CPathTrack::LookAhead(Vector *origin, float dist, int move)
 				// If there is no previous node, or it's disabled, return now.
 				if (!ValidPath(pcurrent->GetPrevious(), move))
 				{
-					return NULL;
+					return nullptr;
 				}
 
 				pcurrent = pcurrent->GetPrevious();
@@ -257,7 +263,7 @@ CPathTrack *CPathTrack::LookAhead(Vector *origin, float dist, int move)
 					Project(pcurrent->GetPrevious(), pcurrent, origin, dist);
 				}
 
-				return NULL;
+				return nullptr;
 			}
 
 			Vector dir = pcurrent->GetNext()->pev->origin - currentPos;
@@ -265,9 +271,9 @@ CPathTrack *CPathTrack::LookAhead(Vector *origin, float dist, int move)
 
 			if (!length  && !ValidPath(pcurrent->GetNext()->GetNext(), move))
 			{
-				// HACK -- up against a dead end
+				// HACK: up against a dead end
 				if (dist == originalDist)
-					return NULL;
+					return nullptr;
 
 				return pcurrent;
 			}
@@ -310,12 +316,12 @@ CPathTrack *CPathTrack::Nearest(Vector origin)
 
 	// Hey, I could use the old 2 racing pointers solution to this, but I'm lazy :)
 	deadCount = 0;
-	while (ppath != NULL && ppath != this)
+	while (ppath && ppath != this)
 	{
 		if (++deadCount > 9999)
 		{
 			ALERT(at_error, "Bad sequence of path_tracks from %s", STRING(pev->targetname));
-			return NULL;
+			return nullptr;
 		}
 
 		delta = origin - ppath->pev->origin;
@@ -341,5 +347,5 @@ CPathTrack *CPathTrack::Instance(edict_t *pent)
 		return (CPathTrack *)GET_PRIVATE(pent);
 	}
 
-	return NULL;
+	return nullptr;
 }

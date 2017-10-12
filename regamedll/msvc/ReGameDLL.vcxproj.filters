@@ -48,9 +48,6 @@
     <Filter Include="pm_shared">
       <UniqueIdentifier>{b9e4d175-16d0-4f51-8520-896826a345dc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="public\steam">
-      <UniqueIdentifier>{d07d80e2-b454-42b8-ba76-160e7b054875}</UniqueIdentifier>
-    </Filter>
     <Filter Include="engine\client">
       <UniqueIdentifier>{58f96e92-9d4b-4a0d-91e4-10f9cdc18ce1}</UniqueIdentifier>
     </Filter>
@@ -248,9 +245,6 @@
     <ClCompile Include="..\game_shared\voice_gamemgr.cpp">
       <Filter>game_shared</Filter>
     </ClCompile>
-    <ClCompile Include="..\dlls\mpstubb.cpp">
-      <Filter>dlls</Filter>
-    </ClCompile>
     <ClCompile Include="..\dlls\bot\cs_bot_manager.cpp">
       <Filter>dlls\bot</Filter>
     </ClCompile>
@@ -315,9 +309,6 @@
       <Filter>dlls</Filter>
     </ClCompile>
     <ClCompile Include="..\dlls\globals.cpp">
-      <Filter>dlls</Filter>
-    </ClCompile>
-    <ClCompile Include="..\dlls\h_ai.cpp">
       <Filter>dlls</Filter>
     </ClCompile>
     <ClCompile Include="..\engine\unicode_strtools.cpp">
@@ -485,9 +476,6 @@
     <ClCompile Include="..\dlls\maprules.cpp">
       <Filter>dlls</Filter>
     </ClCompile>
-    <ClCompile Include="..\dlls\plane.cpp">
-      <Filter>dlls</Filter>
-    </ClCompile>
     <ClCompile Include="..\dlls\soundent.cpp">
       <Filter>dlls</Filter>
     </ClCompile>
@@ -542,12 +530,6 @@
     <ClCompile Include="..\hookers\hooker_impl.cpp">
       <Filter>hookers</Filter>
     </ClCompile>
-    <ClCompile Include="..\regamedll\platform.cpp">
-      <Filter>regamedll</Filter>
-    </ClCompile>
-    <ClCompile Include="..\regamedll\regamedll_debug.cpp">
-      <Filter>regamedll</Filter>
-    </ClCompile>
     <ClCompile Include="..\regamedll\regamedll.cpp">
       <Filter>regamedll</Filter>
     </ClCompile>
@@ -559,6 +541,15 @@
     </ClCompile>
     <ClCompile Include="..\hookers\hooklist.cpp">
       <Filter>hookers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\cmdhandler.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\basemonster.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\gib.cpp">
+      <Filter>dlls</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -581,9 +572,6 @@
       <Filter>hookers</Filter>
     </ClInclude>
     <ClInclude Include="..\public\basetypes.h">
-      <Filter>public</Filter>
-    </ClInclude>
-    <ClInclude Include="..\public\protected_things.h">
       <Filter>public</Filter>
     </ClInclude>
     <ClInclude Include="..\public\commonmacros.h">
@@ -732,72 +720,6 @@
     </ClInclude>
     <ClInclude Include="..\pm_shared\pm_shared.h">
       <Filter>pm_shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\public\steam\isteamapps.h">
-      <Filter>public\steam</Filter>
-    </ClInclude>
-    <ClInclude Include="..\public\steam\isteambilling.h">
-      <Filter>public\steam</Filter>
-    </ClInclude>
-    <ClInclude Include="..\public\steam\isteamclient.h">
-      <Filter>public\steam</Filter>
-    </ClInclude>
-    <ClInclude Include="..\public\steam\isteamcontroller.h">
-      <Filter>public\steam</Filter>
-    </ClInclude>
-    <ClInclude Include="..\public\steam\isteamfriends.h">
-      <Filter>public\steam</Filter>
-    </ClInclude>
-    <ClInclude Include="..\public\steam\isteamgameserver.h">
-      <Filter>public\steam</Filter>
-    </ClInclude>
-    <ClInclude Include="..\public\steam\isteamgameserverstats.h">
-      <Filter>public\steam</Filter>
-    </ClInclude>
-    <ClInclude Include="..\public\steam\isteamhttp.h">
-      <Filter>public\steam</Filter>
-    </ClInclude>
-    <ClInclude Include="..\public\steam\isteammatchmaking.h">
-      <Filter>public\steam</Filter>
-    </ClInclude>
-    <ClInclude Include="..\public\steam\isteamnetworking.h">
-      <Filter>public\steam</Filter>
-    </ClInclude>
-    <ClInclude Include="..\public\steam\isteamremotestorage.h">
-      <Filter>public\steam</Filter>
-    </ClInclude>
-    <ClInclude Include="..\public\steam\isteamscreenshots.h">
-      <Filter>public\steam</Filter>
-    </ClInclude>
-    <ClInclude Include="..\public\steam\isteamunifiedmessages.h">
-      <Filter>public\steam</Filter>
-    </ClInclude>
-    <ClInclude Include="..\public\steam\isteamuser.h">
-      <Filter>public\steam</Filter>
-    </ClInclude>
-    <ClInclude Include="..\public\steam\isteamuserstats.h">
-      <Filter>public\steam</Filter>
-    </ClInclude>
-    <ClInclude Include="..\public\steam\isteamutils.h">
-      <Filter>public\steam</Filter>
-    </ClInclude>
-    <ClInclude Include="..\public\steam\matchmakingtypes.h">
-      <Filter>public\steam</Filter>
-    </ClInclude>
-    <ClInclude Include="..\public\steam\steam_api.h">
-      <Filter>public\steam</Filter>
-    </ClInclude>
-    <ClInclude Include="..\public\steam\steam_gameserver.h">
-      <Filter>public\steam</Filter>
-    </ClInclude>
-    <ClInclude Include="..\public\steam\steamclientpublic.h">
-      <Filter>public\steam</Filter>
-    </ClInclude>
-    <ClInclude Include="..\public\steam\steamhttpenums.h">
-      <Filter>public\steam</Filter>
-    </ClInclude>
-    <ClInclude Include="..\public\steam\steamtypes.h">
-      <Filter>public\steam</Filter>
     </ClInclude>
     <ClInclude Include="..\engine\cdll_int.h">
       <Filter>engine\client</Filter>
@@ -952,9 +874,6 @@
     <ClInclude Include="..\dlls\unisignals.h">
       <Filter>dlls</Filter>
     </ClInclude>
-    <ClInclude Include="..\dlls\plane.h">
-      <Filter>dlls</Filter>
-    </ClInclude>
     <ClInclude Include="..\game_shared\bitvec.h">
       <Filter>game_shared</Filter>
     </ClInclude>
@@ -1036,9 +955,6 @@
     <ClInclude Include="..\dlls\sound.h">
       <Filter>dlls</Filter>
     </ClInclude>
-    <ClInclude Include="..\dlls\h_ai.h">
-      <Filter>dlls</Filter>
-    </ClInclude>
     <ClInclude Include="..\engine\cmd.h">
       <Filter>engine</Filter>
     </ClInclude>
@@ -1058,9 +974,6 @@
       <Filter>dlls</Filter>
     </ClInclude>
     <ClInclude Include="..\dlls\scriptevent.h">
-      <Filter>dlls</Filter>
-    </ClInclude>
-    <ClInclude Include="..\dlls\wpn_shared.h">
       <Filter>dlls</Filter>
     </ClInclude>
     <ClInclude Include="..\hookers\stl\use_ansi.h">
@@ -1096,13 +1009,7 @@
     <ClInclude Include="..\hookers\hooker_impl.h">
       <Filter>hookers</Filter>
     </ClInclude>
-    <ClInclude Include="..\regamedll\platform.h">
-      <Filter>regamedll</Filter>
-    </ClInclude>
     <ClInclude Include="..\regamedll\engine.h">
-      <Filter>regamedll</Filter>
-    </ClInclude>
-    <ClInclude Include="..\regamedll\regamedll_debug.h">
       <Filter>regamedll</Filter>
     </ClInclude>
     <ClInclude Include="..\regamedll\regamedll.h">
@@ -1130,6 +1037,18 @@
       <Filter>hookers</Filter>
     </ClInclude>
     <ClInclude Include="..\dlls\revert_saved.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\cmdhandler.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\ehandle.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\gib.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\qstring.h">
       <Filter>dlls</Filter>
     </ClInclude>
   </ItemGroup>

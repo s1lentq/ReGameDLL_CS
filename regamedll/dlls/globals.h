@@ -26,23 +26,15 @@
 *
 */
 
-#ifndef GLOBALS_H
-#define GLOBALS_H
-#ifdef _WIN32
 #pragma once
-#endif
 
 extern const Vector g_vecZero;
 extern int g_Language;
-
-extern u_long g_ulFrameCount;
-extern u_long g_ulModelIndexEyes;
+extern int g_iSkillLevel;
 
 extern Vector g_vecAttackDir;
-extern int g_iSkillLevel;
-extern int gDisplayTitle;
+
+extern BOOL gDisplayTitle;
 extern bool g_bIsCzeroGame;
 extern bool g_bAllowedCSBot;
 extern bool g_bHostageImprov;
-
-#endif // GLOBALS_H

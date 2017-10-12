@@ -2,7 +2,7 @@ import org.doomedsociety.gradlecpp.GradleCppUtils
 import org.apache.commons.io.FilenameUtils
 
 void _copyFileToDir(String from, String to) {
-   	 def dst = new File(project.file(to), FilenameUtils.getName(from))
+	def dst = new File(project.file(to), FilenameUtils.getName(from))
 	GradleCppUtils.copyFile(project.file(from), dst, false)
 }
 

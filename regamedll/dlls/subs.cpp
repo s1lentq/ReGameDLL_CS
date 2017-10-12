@@ -68,7 +68,9 @@ void CBaseDMStart::KeyValue(KeyValueData *pkvd)
 		pkvd->fHandled = TRUE;
 	}
 	else
+	{
 		CPointEntity::KeyValue(pkvd);
+	}
 }
 
 BOOL CBaseDMStart::IsTriggered(CBaseEntity *pEntity)
@@ -81,22 +83,6 @@ BOOL CBaseDMStart::IsTriggered(CBaseEntity *pEntity)
 // This updates global tables that need to know about entities being removed
 void CBaseEntity::UpdateOnRemove()
 {
-#ifndef REGAMEDLL_FIXES
-	if (pev->flags & FL_GRAPHED)
-	{
-		// this entity was a LinkEnt in the world node graph, so we must remove it from
-		// the graph since we are removing it from the world.
-		for (int i = 0; i < WorldGraph.m_cLinks; ++i)
-		{
-			if (WorldGraph.m_pLinkPool[i].m_pLinkEnt == pev)
-			{
-				// if this link has a link ent which is the same ent that is removing itself, remove it!
-				WorldGraph.m_pLinkPool[i].m_pLinkEnt = NULL;
-			}
-		}
-	}
-#endif
-
 	if (pev->globalname)
 	{
 		gGlobalState.EntitySetState(pev->globalname, GLOBAL_DEAD);
@@ -106,7 +92,10 @@ void CBaseEntity::UpdateOnRemove()
 // Convenient way to delay removing oneself
 void CBaseEntity::SUB_Remove()
 {
+#ifndef REGAMEDLL_FIXES
 	UpdateOnRemove();
+#endif
+
 	if (pev->health > 0)
 	{
 		// this situation can screw up monsters who can't tell their entity pointers are invalid.
@@ -138,7 +127,9 @@ void CBaseDelay::KeyValue(KeyValueData *pkvd)
 		pkvd->fHandled = TRUE;
 	}
 	else
+	{
 		CBaseEntity::KeyValue(pkvd);
+	}
 }
 
 // If self.delay is set, a DelayedUse entity will be created that will actually
@@ -160,9 +151,14 @@ void CBaseEntity::SUB_UseTargets(CBaseEntity *pActivator, USE_TYPE useType, floa
 
 void FireTargets(const char *targetName, CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
-	edict_t *pentTarget = NULL;
+	edict_t *pentTarget = nullptr;
 	if (!targetName)
 		return;
+
+#ifdef REGAMEDLL_FIXES
+	if (targetName[0] == '\0')
+		return;
+#endif
 
 	ALERT(at_aiconsole, "Firing: (%s)\n", targetName);
 	while (true)
@@ -174,7 +170,7 @@ void FireTargets(const char *targetName, CBaseEntity *pActivator, CBaseEntity *p
 		CBaseEntity *pTarget = CBaseEntity::Instance(pentTarget);
 
 		// Don't use dying ents
-		if (pTarget != NULL && !(pTarget->pev->flags & FL_KILLME))
+		if (pTarget && !(pTarget->pev->flags & FL_KILLME))
 		{
 			ALERT(at_aiconsole, "Found: %s, firing (%s)\n", STRING(pTarget->pev->classname), targetName);
 			pTarget->Use(pActivator, pCaller, useType, value);
@@ -194,7 +190,7 @@ void CBaseDelay::SUB_UseTargets(CBaseEntity *pActivator, USE_TYPE useType, float
 	if (m_flDelay != 0)
 	{
 		// create a temp object to fire at a later time
-		CBaseDelay *pTemp = GetClassPtr<CCSDelay>((CBaseDelay *)NULL);
+		CBaseDelay *pTemp = GetClassPtr<CCSDelay>((CBaseDelay *)nullptr);
 
 		MAKE_STRING_CLASS("DelayedUse", pTemp->pev);
 
@@ -221,7 +217,7 @@ void CBaseDelay::SUB_UseTargets(CBaseEntity *pActivator, USE_TYPE useType, float
 		}
 		else
 		{
-			pTemp->pev->owner = NULL;
+			pTemp->pev->owner = nullptr;
 		}
 
 		return;
@@ -230,10 +226,10 @@ void CBaseDelay::SUB_UseTargets(CBaseEntity *pActivator, USE_TYPE useType, float
 	// kill the killtargets
 	if (m_iszKillTarget)
 	{
-		edict_t *pentKillTarget = NULL;
+		edict_t *pentKillTarget = nullptr;
 
 		ALERT(at_aiconsole, "KillTarget: %s\n", STRING(m_iszKillTarget));
-		pentKillTarget = FIND_ENTITY_BY_TARGETNAME(NULL, STRING(m_iszKillTarget));
+		pentKillTarget = FIND_ENTITY_BY_TARGETNAME(nullptr, STRING(m_iszKillTarget));
 
 		while (!FNullEnt(pentKillTarget))
 		{
@@ -274,10 +270,10 @@ void SetMovedir(entvars_t *pev)
 
 void CBaseDelay::DelayThink()
 {
-	CBaseEntity *pActivator = NULL;
+	CBaseEntity *pActivator = nullptr;
 
 	// A player activated this on delay
-	if (pev->owner != NULL)
+	if (pev->owner)
 	{
 		pActivator = CBaseEntity::Instance(pev->owner);
 	}
@@ -312,7 +308,9 @@ void CBaseToggle::KeyValue(KeyValueData *pkvd)
 		pkvd->fHandled = TRUE;
 	}
 	else
+	{
 		CBaseDelay::KeyValue(pkvd);
+	}
 }
 
 // calculate pev->velocity and pev->nextthink to reach vecDest from
@@ -320,7 +318,7 @@ void CBaseToggle::KeyValue(KeyValueData *pkvd)
 void CBaseToggle::LinearMove(Vector vecDest, float flSpeed)
 {
 	assert(("LinearMove:  no speed is defined!", flSpeed != 0));
-	//assert(("LinearMove: no post-move function defined", m_pfnCallWhenMoveDone != NULL));
+	//assert(("LinearMove: no post-move function defined", m_pfnCallWhenMoveDone != nullptr));
 
 	m_vecFinalDest = vecDest;
 
@@ -372,7 +370,7 @@ NOXREF BOOL CBaseToggle::IsLockedByMaster()
 void CBaseToggle::AngularMove(Vector vecDestAngle, float flSpeed)
 {
 	assert(("AngularMove:  no speed is defined!", flSpeed != 0));
-	//assert(("AngularMove: no post-move function defined", m_pfnCallWhenMoveDone != NULL));
+	//assert(("AngularMove: no post-move function defined", m_pfnCallWhenMoveDone != nullptr));
 
 	m_vecFinalAngle = vecDestAngle;
 
@@ -410,7 +408,7 @@ void CBaseToggle::AngularMoveDone()
 	}
 }
 
-float CBaseToggle::AxisValue(int flags, const Vector &angles)
+NOXREF float CBaseToggle::AxisValue(int flags, const Vector &angles)
 {
 	if (flags & SF_DOOR_ROTATE_Z)
 		return angles.z;

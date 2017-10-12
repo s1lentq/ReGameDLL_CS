@@ -26,11 +26,7 @@
 *
 */
 
-#ifndef SPECTATOR_H
-#define SPECTATOR_H
-#ifdef _WIN32
 #pragma once
-#endif
 
 class CBaseSpectator: public CBaseEntity
 {
@@ -45,5 +41,3 @@ public:
 private:
 	void SpectatorImpulseCommand();
 };
-
-#endif // SPECTATOR_H

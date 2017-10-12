@@ -122,9 +122,9 @@ extern void (*pCCSBot__UpdateLookAngles)();
 #define g_pLastTerroristSpawn (*pg_pLastTerroristSpawn)
 #define gInitHUD (*pgInitHUD)
 #define sv_aim (*psv_aim)
-#define zombieSpawnCount (*pzombieSpawnCount)
-#define zombieSpawn (*pzombieSpawn)
-#define g_pSelectedZombieSpawn (*pg_pSelectedZombieSpawn)
+//#define zombieSpawnCount (*pzombieSpawnCount)
+//#define zombieSpawn (*pzombieSpawn)
+//#define g_pSelectedZombieSpawn (*pg_pSelectedZombieSpawn)
 #define giPrecacheGrunt (*pgiPrecacheGrunt)
 #define gmsgWeapPickup (*pgmsgWeapPickup)
 #define gmsgHudText (*pgmsgHudText)
@@ -358,7 +358,7 @@ extern void (*pCCSBot__UpdateLookAngles)();
 #define g_GameMgrHelper (*pg_GameMgrHelper)
 #define sv_clienttrace (*psv_clienttrace)
 #define g_pMPGameRules (*pg_pMPGameRules)
-#define mp_com_token (*pmp_com_token)
+//#define mp_com_token (*pmp_com_token)
 
 // globals soundent
 #define pSoundEnt (*ppSoundEnt)
@@ -401,8 +401,8 @@ extern void (*pCCSBot__UpdateLookAngles)();
 #define g_vecZero (*pg_vecZero)
 #define g_Language (*pg_Language)
 
-#define g_ulFrameCount (*pg_ulFrameCount)
-#define g_ulModelIndexEyes (*pg_ulModelIndexEyes)
+//#define g_ulFrameCount (*pg_ulFrameCount)
+//#define g_ulModelIndexEyes (*pg_ulModelIndexEyes)
 
 #define g_vecAttackDir (*pg_vecAttackDir)
 #define g_iSkillLevel (*pg_iSkillLevel)
@@ -464,7 +464,6 @@ extern void (*pCCSBot__UpdateLookAngles)();
 #define primaryWeaponBuyInfoT (*pprimaryWeaponBuyInfoT)
 #define secondaryWeaponBuyInfoT (*psecondaryWeaponBuyInfoT)
 #define TheBotPhrases (*pTheBotPhrases)
-#define g_pSelectedZombieSpawn (*pg_pSelectedZombieSpawn)
 #define TheBots (*pTheBots)
 
 // bot_util
@@ -526,7 +525,7 @@ extern void (*pCCSBot__UpdateLookAngles)();
 #define BotDifficultyName (*pBotDifficultyName)
 
 // utlsymbol
-#define g_LessCtx (*pg_LessCtx)
+//#define g_LessCtx (*pg_LessCtx)
 
 // bot_profile
 #define TheBotProfiles (*pTheBotProfiles)
@@ -778,7 +777,7 @@ extern unsigned int glSeed;
 extern const int gSizes[18];
 extern bool s_tutorDisabledThisGame;
 extern float s_nextCvarCheckTime;
-extern char *const g_TutorStateStrings[20];
+extern const char *g_TutorStateStrings[20];
 extern const char *TutorIdentifierList[150];
 extern struct sv_blending_interface_s svBlending;
 extern struct server_studio_api_s IEngineStudio;
@@ -816,13 +815,13 @@ extern Vector gTankSpread[5];
 extern class CCStrikeGameMgrHelper g_GameMgrHelper;
 extern cvar_t *sv_clienttrace;
 extern class CHalfLifeMultiplay *g_pMPGameRules;
-extern char mp_com_token[1500];
+//extern char mp_com_token[1500];
 extern int giAmmoIndex;
 extern char *m_szPoses[4];
 extern struct WeaponStruct g_weaponStruct[32];
-extern int zombieSpawnCount;
-extern struct ZombieSpawn zombieSpawn[256];
-extern CBaseEntity *g_pSelectedZombieSpawn;
+//extern int zombieSpawnCount;
+//extern struct ZombieSpawn zombieSpawn[256];
+//extern CBaseEntity *g_pSelectedZombieSpawn;
 extern char st_szNextMap[32];
 extern char st_szNextSpot[32];
 extern char s_shared_token[1500];
@@ -830,11 +829,11 @@ extern char s_shared_quote;
 extern cvar_t voice_serverdebug;
 extern cvar_t sv_alltalk;
 extern CPlayerBitVec g_PlayerModEnable;
-extern CBitVec< VOICE_MAX_PLAYERS > g_BanMasks[ VOICE_MAX_PLAYERS ];
-extern CBitVec< VOICE_MAX_PLAYERS > g_SentGameRulesMasks[ VOICE_MAX_PLAYERS ];
-extern CBitVec< VOICE_MAX_PLAYERS > g_SentBanMasks[ VOICE_MAX_PLAYERS ];
+extern CBitVec<VOICE_MAX_PLAYERS> g_BanMasks[VOICE_MAX_PLAYERS];
+extern CBitVec<VOICE_MAX_PLAYERS> g_SentGameRulesMasks[VOICE_MAX_PLAYERS];
+extern CBitVec<VOICE_MAX_PLAYERS> g_SentBanMasks[VOICE_MAX_PLAYERS];
 extern CPlayerBitVec g_bWantModEnable;
-extern struct LessCtx_t g_LessCtx;
+//extern struct LessCtx_t g_LessCtx;
 extern short s_iBeamSprite;
 extern float cosTable[256];
 extern float lastDrawTimestamp;
@@ -873,7 +872,7 @@ float_precision NavAreaTravelDistance__PathCost__wrapper(CNavArea *startArea, CN
 
 // PM
 void PM_SwapTextures(int i, int j);
-int PM_IsThereGrassTexture();
+qboolean PM_IsThereGrassTexture();
 void PM_SortTextures();
 void PM_InitTextureTypes();
 void PM_PlayStepSound(int step, float fvol);
@@ -894,7 +893,7 @@ void PM_WaterMove();
 void PM_AirMove(int playerIndex = 0);
 qboolean PM_InWater();
 qboolean PM_CheckWater();
-void PM_CatagorizePosition();
+void PM_CategorizePosition();
 int PM_GetRandomStuckOffsets(int nIndex, int server, vec_t *offset);
 void PM_ResetStuckOffsets(int nIndex, int server);
 qboolean PM_CheckStuck();
@@ -917,7 +916,7 @@ void PM_CheckFalling();
 void PM_PlayWaterSounds();
 float PM_CalcRoll(vec_t *angles, vec_t *velocity, float rollangle, float rollspeed);
 void PM_DropPunchAngle(vec_t *punchangle);
-void PM_CheckParamters();
+void PM_CheckParameters();
 void PM_ReduceTimers();
 qboolean PM_ShouldDoSpectMode();
 void PM_PlayerMove(qboolean server);

@@ -48,11 +48,11 @@ TYPEDESCRIPTION CFuncTankControls::m_SaveData[] =
 
 Vector gTankSpread[] =
 {
-	Vector(0, 0, 0),		// perfect
+	Vector(0, 0, 0),				// perfect
 	Vector(0.025, 0.025, 0.025),	// small cone
-	Vector(0.05, 0.05, 0.05),	// medium cone
-	Vector(0.1, 0.1, 0.1),		// large cone
-	Vector(0.25, 0.25, 0.25),	// extra-large cone
+	Vector(0.05, 0.05, 0.05),		// medium cone
+	Vector(0.1, 0.1, 0.1),			// large cone
+	Vector(0.25, 0.25, 0.25),		// extra-large cone
 };
 
 #endif // HOOK_GAMEDLL
@@ -216,7 +216,9 @@ void CFuncTank::KeyValue(KeyValueData *pkvd)
 		pkvd->fHandled = TRUE;
 	}
 	else
+	{
 		CBaseEntity::KeyValue(pkvd);
+	}
 }
 
 BOOL CFuncTank::OnControls(entvars_t *pevTest)
@@ -225,7 +227,6 @@ BOOL CFuncTank::OnControls(entvars_t *pevTest)
 		return FALSE;
 
 	Vector offset = pevTest->origin - pev->origin;
-
 	if ((m_vecControllerUsePos - pevTest->origin).Length() < 30.0f)
 	{
 		return TRUE;
@@ -236,7 +237,7 @@ BOOL CFuncTank::OnControls(entvars_t *pevTest)
 
 BOOL CFuncTank::StartControl(CBasePlayer *pController)
 {
-	if (m_pController != NULL)
+	if (m_pController)
 		return FALSE;
 
 	// Team only or disabled?
@@ -252,7 +253,7 @@ BOOL CFuncTank::StartControl(CBasePlayer *pController)
 
 	m_pController = pController;
 
-	if (m_pController->m_pActiveItem != NULL)
+	if (m_pController->m_pActiveItem)
 	{
 		m_pController->m_pActiveItem->Holster();
 		m_pController->pev->weaponmodel = 0;
@@ -276,7 +277,7 @@ void CFuncTank::StopControl()
 	if (!m_pController)
 		return;
 
-	if (m_pController->m_pActiveItem != NULL)
+	if (m_pController->m_pActiveItem)
 	{
 		m_pController->m_pActiveItem->Deploy();
 
@@ -291,7 +292,7 @@ void CFuncTank::StopControl()
 	m_pController->m_iHideHUD &= ~HIDEHUD_WEAPONS;
 
 	pev->nextthink = 0;
-	m_pController = NULL;
+	m_pController = nullptr;
 
 	if (IsActive())
 	{
@@ -301,7 +302,7 @@ void CFuncTank::StopControl()
 
 void CFuncTank::ControllerPostFrame()
 {
-	assert(m_pController != NULL);
+	assert(m_pController != nullptr);
 
 	if (gpGlobals->time < m_flNextAttack)
 		return;
@@ -309,7 +310,7 @@ void CFuncTank::ControllerPostFrame()
 	if (m_pController->pev->button & IN_ATTACK)
 	{
 		Vector vecForward;
-		UTIL_MakeVectorsPrivate(pev->angles, vecForward, NULL, NULL);
+		UTIL_MakeVectorsPrivate(pev->angles, vecForward, nullptr, nullptr);
 
 		m_fireLast = gpGlobals->time - (1.0f / m_fireRate) - 0.01f;
 		Fire(BarrelPosition(), vecForward, m_pController->pev);
@@ -390,10 +391,10 @@ void CFuncTank::TrackTarget()
 	edict_t *pPlayer = FIND_CLIENT_IN_PVS(edict());
 	bool updateTime = false, lineOfSight = false;
 	Vector angles, direction, targetPosition, barrelEnd;
-	edict_t *pTarget = NULL;
+	edict_t *pTarget = nullptr;
 
 	// Get a position to aim for
-	if (m_pController != NULL)
+	if (m_pController)
 	{
 		// Tanks attempt to mirror the player's angles
 		angles = m_pController->pev->v_angle;
@@ -520,7 +521,7 @@ void CFuncTank::TrackTarget()
 		pev->avelocity.x = -m_pitchRate;
 	}
 
-	if (m_pController != NULL)
+	if (m_pController)
 	{
 		return;
 	}
@@ -529,7 +530,7 @@ void CFuncTank::TrackTarget()
 	{
 		bool fire = false;
 		Vector forward;
-		UTIL_MakeVectorsPrivate(pev->angles, forward, NULL, NULL);
+		UTIL_MakeVectorsPrivate(pev->angles, forward, nullptr, nullptr);
 
 		if (pev->spawnflags & SF_TANK_LINEOFSIGHT)
 		{
@@ -603,7 +604,7 @@ void CFuncTank::Fire(const Vector &barrelEnd, const Vector &forward, entvars_t *
 			pSprite->SetScale(m_spriteScale);
 
 			// Hack Hack, make it stick around for at least 100 ms.
-			pSprite->pev->nextthink += 0.1;
+			pSprite->pev->nextthink += 0.1f;
 		}
 
 		SUB_UseTargets(this, USE_TOGGLE, 0);
@@ -667,7 +668,7 @@ void CFuncTankGun::Fire(const Vector &barrelEnd, const Vector &forward, entvars_
 
 		if (bulletCount > 0)
 		{
-			for (int i = 0; i < bulletCount; ++i)
+			for (int i = 0; i < bulletCount; i++)
 			{
 				switch (m_bulletType)
 				{
@@ -690,7 +691,9 @@ void CFuncTankGun::Fire(const Vector &barrelEnd, const Vector &forward, entvars_
 		}
 	}
 	else
+	{
 		CFuncTank::Fire(barrelEnd, forward, pevAttacker);
+	}
 }
 
 LINK_ENTITY_TO_CLASS(func_tanklaser, CFuncTankLaser, CCSFuncTankLaser)
@@ -717,17 +720,19 @@ void CFuncTankLaser::KeyValue(KeyValueData *pkvd)
 		pkvd->fHandled = TRUE;
 	}
 	else
+	{
 		CFuncTank::KeyValue(pkvd);
+	}
 }
 
 CLaser *CFuncTankLaser::GetLaser()
 {
-	if (m_pLaser != NULL)
+	if (m_pLaser)
 	{
 		return m_pLaser;
 	}
 
-	edict_t *pentLaser = FIND_ENTITY_BY_TARGETNAME(NULL, STRING(pev->message));
+	edict_t *pentLaser = FIND_ENTITY_BY_TARGETNAME(nullptr, STRING(pev->message));
 
 	while (!FNullEnt(pentLaser))
 	{
@@ -746,7 +751,7 @@ CLaser *CFuncTankLaser::GetLaser()
 
 void CFuncTankLaser::Think()
 {
-	if (m_pLaser != NULL && gpGlobals->time > m_laserTime)
+	if (m_pLaser && gpGlobals->time > m_laserTime)
 	{
 		m_pLaser->TurnOff();
 	}
@@ -768,7 +773,7 @@ void CFuncTankLaser::Fire(const Vector &barrelEnd, const Vector &forward, entvar
 
 		if (bulletCount)
 		{
-			for (i = 0; i < bulletCount; ++i)
+			for (i = 0; i < bulletCount; i++)
 			{
 				m_pLaser->pev->origin = barrelEnd;
 				TankTrace(barrelEnd, forward, gTankSpread[m_spread], tr);
@@ -804,10 +809,9 @@ void CFuncTankRocket::Fire(const Vector &barrelEnd, const Vector &forward, entva
 	if (m_fireLast != 0.0f)
 	{
 		int bulletCount = int((gpGlobals->time - m_fireLast) * m_fireRate);
-
 		if (bulletCount > 0)
 		{
-			for (i = 0; i < bulletCount; ++i)
+			for (i = 0; i < bulletCount; i++)
 			{
 				CBaseEntity *pRocket = CBaseEntity::Create("rpg_rocket", barrelEnd, pev->angles, edict());
 			}
@@ -816,7 +820,9 @@ void CFuncTankRocket::Fire(const Vector &barrelEnd, const Vector &forward, entva
 		}
 	}
 	else
+	{
 		CFuncTank::Fire(barrelEnd, forward, pev);
+	}
 }
 
 LINK_ENTITY_TO_CLASS(func_tankmortar, CFuncTankMortar, CCSFuncTankMortar)
@@ -829,7 +835,9 @@ void CFuncTankMortar::KeyValue(KeyValueData *pkvd)
 		pkvd->fHandled = TRUE;
 	}
 	else
+	{
 		CFuncTank::KeyValue(pkvd);
+	}
 }
 
 void CFuncTankMortar::Fire(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker)
@@ -852,7 +860,9 @@ void CFuncTankMortar::Fire(const Vector &barrelEnd, const Vector &forward, entva
 		}
 	}
 	else
+	{
 		CFuncTank::Fire(barrelEnd, forward, pev);
+	}
 }
 
 LINK_ENTITY_TO_CLASS(func_tankcontrols, CFuncTankControls, CCSFuncTankControls)
@@ -861,18 +871,18 @@ IMPLEMENT_SAVERESTORE(CFuncTankControls, CBaseEntity)
 void CFuncTankControls::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	// pass the Use command onto the controls
-	if (m_pTank != NULL)
+	if (m_pTank)
 	{
 		m_pTank->Use(pActivator, pCaller, useType, value);
 	}
 
 	// if this fails,  most likely means save/restore hasn't worked properly
-	assert(m_pTank != NULL);
+	assert(m_pTank != nullptr);
 }
 
 void CFuncTankControls::Think()
 {
-	edict_t *pTarget = NULL;
+	edict_t *pTarget = nullptr;
 
 	do
 	{

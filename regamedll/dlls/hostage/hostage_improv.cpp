@@ -112,7 +112,7 @@ void CHostageImprov::MoveTowards(const Vector &pos, float deltaT)
 	// TODO: Look ahead *along path* instead of straight line
 	ClearPath();
 
-	if ((m_lastKnownArea == NULL || !(m_lastKnownArea->GetAttributes() & NAV_NO_JUMP))
+	if ((!m_lastKnownArea || !(m_lastKnownArea->GetAttributes() & NAV_NO_JUMP))
 		&& !IsUsingLadder() && !IsJumping() && IsOnGround() && !IsCrouching())
 	{
 		float ground;
@@ -540,16 +540,16 @@ CBasePlayer *CHostageImprov::IsAnyPlayerLookingAtMe(int team, float cosTolerance
 		}
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 CBasePlayer *CHostageImprov::GetClosestPlayerByTravelDistance(int team, float *range) const
 {
-	CBasePlayer *close = NULL;
+	CBasePlayer *close = nullptr;
 	float closeRange = 9.9999998e10f;
 
-	if (GetLastKnownArea() == NULL)
-		return NULL;
+	if (!GetLastKnownArea())
+		return nullptr;
 
 	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
@@ -591,7 +591,7 @@ void CHostageImprov::OnReset()
 	m_actualVel = Vector(0, 0, 0);
 	m_checkNearbyTerroristTimer.Invalidate();
 
-	m_lastKnownArea = NULL;
+	m_lastKnownArea = nullptr;
 	m_hasKnownGoodPos = false;
 	m_hasPriorKnownGoodPos = false;
 	m_isTerroristNearby = false;
@@ -1038,29 +1038,31 @@ void CHostageImprov::UpdateGrenadeReactions()
 
 	if (m_grenadeTimer.IsElapsed())
 	{
-		CBaseEntity *entity = NULL;
+		CBaseEntity *pEntity = nullptr;
 		const float watchGrenadeRadius = 500.0f;
 
 		m_grenadeTimer.Start(RANDOM_FLOAT(0.4f, 0.6f));
 
-		while ((entity = UTIL_FindEntityInSphere(entity, GetCentroid(), watchGrenadeRadius)))
+		while ((pEntity = UTIL_FindEntityInSphere(pEntity, GetCentroid(), watchGrenadeRadius)))
 		{
-			CGrenade *grenade = static_cast<CGrenade *>(entity);
+			CGrenade *pGrenade = static_cast<CGrenade *>(pEntity);
 
-			if (!FClassnameIs(grenade->pev, "grenade") || grenade->m_SGSmoke > 1)
+			if (!FClassnameIs(pGrenade->pev, "grenade") || pGrenade->m_SGSmoke > 1)
 				continue;
 
-			if (IsVisible(grenade->Center()))
+			if (IsVisible(pGrenade->Center()))
 			{
 				Chatter(HOSTAGE_CHATTER_SAW_HE_GRENADE);
 
-				if (grenade->pev->dmg > 50.0f)
+				if (pGrenade->pev->dmg > 50.0f)
 				{
 					m_idleState.OnInjury();
 					Frighten(TERRIFIED);
 				}
 				else
+				{
 					Frighten(SCARED);
+				}
 
 				m_grenadeTimer.Start(10);
 				break;
@@ -1480,22 +1482,22 @@ bool CHostageImprov::CanSeeRescueZone() const
 
 CBasePlayer *CHostageImprov::GetClosestVisiblePlayer(int team)
 {
-	CBasePlayer *close = NULL;
+	CBasePlayer *close = nullptr;
 	float closeRangeSq = 1e8f;
 
 	for (int i = 0; i < m_visiblePlayerCount; ++i)
 	{
-		CBasePlayer *player = (CBasePlayer *)m_visiblePlayer[i];
+		CBasePlayer *pPlayer = m_visiblePlayer[i];
 
-		if (player == NULL || (team > 0 && player->m_iTeam != team))
+		if (!pPlayer || (team > 0 && pPlayer->m_iTeam != team))
 			continue;
 
-		float_precision rangeSq = (GetCentroid() - player->pev->origin).LengthSquared();
+		float_precision rangeSq = (GetCentroid() - pPlayer->pev->origin).LengthSquared();
 
 		if (rangeSq < closeRangeSq)
 		{
 			closeRangeSq = rangeSq;
-			close = player;
+			close = pPlayer;
 		}
 	}
 

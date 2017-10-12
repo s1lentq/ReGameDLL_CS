@@ -26,11 +26,7 @@
 *
 */
 
-#ifndef ANIMATION_H
-#define ANIMATION_H
-#ifdef _WIN32
 #pragma once
-#endif
 
 #define NUM_BLENDING                9
 
@@ -57,5 +53,3 @@ int GetBodygroup(void *pmodel, entvars_t *pev, int iGroup);
 
 int GetAnimationEvent(void *pmodel, entvars_t *pev, MonsterEvent_t *pMonsterEvent, float flStart, float flEnd, int index);
 int ExtractBbox(void *pmodel, int sequence, float *mins, float *maxs);
-
-#endif // ANIMATION_H

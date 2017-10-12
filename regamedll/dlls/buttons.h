@@ -26,33 +26,9 @@
 *
 */
 
-#ifndef BUTTON_H
-#define BUTTON_H
-#ifdef _WIN32
 #pragma once
-#endif
 
-#define SF_BUTTON_DONTMOVE		1
-#define SF_ROTBUTTON_NOTSOLID		1
-#define SF_BUTTON_TOGGLE		32	// button stays pushed until reactivated
-#define SF_BUTTON_SPARK_IF_OFF		64	// button sparks in OFF state
-#define SF_BUTTON_TOUCH_ONLY		256	// button only fires as a result of USE key.
-
-#define SF_GLOBAL_SET			1	// Set global state to initial state on spawn
-
-#define SF_MULTI_INIT			1
-
-// Make this button behave like a door (HACKHACK)
-// This will disable use and make the button solid
-// rotating buttons were made SOLID_NOT by default since their were some
-// collision problems with them...
-#define SF_MOMENTARY_DOOR		0x0001
-
-#define SF_SPARK_TOOGLE			32
-#define SF_SPARK_IF_OFF			64
-
-#define SF_BTARGET_USE			0x0001
-#define SF_BTARGET_ON			0x0002
+#define SF_GLOBAL_SET BIT(0) // Set global state to initial state on spawn
 
 class CEnvGlobal: public CPointEntity
 {
@@ -71,6 +47,9 @@ public:
 	int m_initialstate;
 };
 
+#define SF_ROTBUTTON_NOTSOLID  BIT(0)
+#define SF_ROTBUTTON_BACKWARDS BIT(1)
+
 class CRotButton: public CBaseButton
 {
 public:
@@ -86,6 +65,12 @@ public:
 #endif
 
 };
+
+// Make this button behave like a door (HACKHACK)
+// This will disable use and make the button solid
+// rotating buttons were made SOLID_NOT by default since their were some
+// collision problems with them...
+#define SF_MOMENTARY_DOOR BIT(0)
 
 class CMomentaryRotButton: public CBaseToggle
 {
@@ -128,6 +113,9 @@ public:
 	int m_sounds;
 };
 
+#define SF_SPARK_TOOGLE BIT(5)
+#define SF_SPARK_IF_OFF BIT(6)
+
 class CEnvSpark: public CBaseEntity
 {
 public:
@@ -147,6 +135,9 @@ public:
 	float m_flDelay;
 };
 
+#define SF_BTARGET_USE BIT(0)
+#define SF_BTARGET_ON  BIT(1)
+
 class CButtonTarget: public CBaseEntity
 {
 public:
@@ -158,5 +149,3 @@ public:
 
 char *ButtonSound(int sound);
 void DoSpark(entvars_t *pev, const Vector &location);
-
-#endif // BUTTON_H

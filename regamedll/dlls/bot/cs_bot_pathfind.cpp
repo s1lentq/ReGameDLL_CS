@@ -8,10 +8,10 @@ bool CCSBot::ComputePathPositions()
 
 	// start in first area's center
 	m_path[0].pos = *m_path[0].area->GetCenter();
-	m_path[0].ladder = NULL;
+	m_path[0].ladder = nullptr;
 	m_path[0].how = NUM_TRAVERSE_TYPES;
 
-	for (int i = 1; i < m_pathLength; ++i)
+	for (int i = 1; i < m_pathLength; i++)
 	{
 		const ConnectInfo *from = &m_path[i - 1];
 		ConnectInfo *to = &m_path[ i ];
@@ -19,7 +19,7 @@ bool CCSBot::ComputePathPositions()
 		// walk along the floor to the next area
 		if (to->how <= GO_WEST)
 		{
-			to->ladder = NULL;
+			to->ladder = nullptr;
 
 			// compute next point, keeping path as straight as possible
 			from->area->ComputeClosestPointInPortal(to->area, (NavDirType)to->how, &from->pos, &to->pos);
@@ -49,14 +49,14 @@ bool CCSBot::ComputePathPositions()
 				if (m_pathLength < MAX_PATH_LENGTH - 1)
 				{
 					// copy nodes down
-					for (int j = m_pathLength; j > i; --j)
+					for (int j = m_pathLength; j > i; j--)
 						m_path[j] = m_path[j - 1];
 
 					// path is one node longer
-					++m_pathLength;
+					m_pathLength++;
 
 					// move index ahead into the new node we just duplicated
-					++i;
+					i++;
 
 					m_path[i].pos.x = to->pos.x + pushDist * dir.x;
 					m_path[i].pos.y = to->pos.y + pushDist * dir.y;
@@ -72,7 +72,7 @@ bool CCSBot::ComputePathPositions()
 			// find our ladder
 			const NavLadderList *list = from->area->GetLadderList(LADDER_UP);
 			NavLadderList::const_iterator iter;
-			for (iter = list->begin(); iter != list->end(); ++iter)
+			for (iter = list->begin(); iter != list->end(); iter++)
 			{
 				CNavLadder *ladder = (*iter);
 
@@ -98,7 +98,7 @@ bool CCSBot::ComputePathPositions()
 			// find our ladder
 			const NavLadderList *list = from->area->GetLadderList(LADDER_DOWN);
 			NavLadderList::const_iterator iter;
-			for (iter = list->begin(); iter != list->end(); ++iter)
+			for (iter = list->begin(); iter != list->end(); iter++)
 			{
 				CNavLadder *ladder = (*iter);
 
@@ -130,9 +130,9 @@ void CCSBot::SetupLadderMovement()
 
 	const ConnectInfo *to = &m_path[ m_pathIndex ];
 
-	if (to->ladder != NULL)
+	if (to->ladder)
 	{
-		m_spotEncounter = NULL;
+		m_spotEncounter = nullptr;
 		m_areaEnteredTimestamp = gpGlobals->time;
 
 		m_pathLadder = to->ladder;
@@ -217,7 +217,7 @@ void CCSBot::ComputeLadderEndpoint(bool isAscending)
 // TODO: Need Push() and Pop() for run/walk context to keep ladder speed contained.
 bool CCSBot::UpdateLadderMovement()
 {
-	if (m_pathLadder == NULL)
+	if (!m_pathLadder)
 		return false;
 
 	bool giveUp = false;
@@ -556,7 +556,7 @@ bool CCSBot::UpdateLadderMovement()
 				// successfully traversed ladder and reached destination area
 				// exit ladder state machine
 				PrintIfWatched("Ladder traversed.\n");
-				m_pathLadder = NULL;
+				m_pathLadder = nullptr;
 
 				// incrememnt path index to next step beyond this ladder
 				SetPathIndex(m_pathIndex + 1);
@@ -576,7 +576,7 @@ bool CCSBot::UpdateLadderMovement()
 // NOTE: This does not do line-of-sight tests, so closest point may be thru the floor, etc
 bool CCSBot::FindClosestPointOnPath(const Vector *worldPos, int startIndex, int endIndex, Vector *close) const
 {
-	if (!HasPath() || close == NULL)
+	if (!HasPath() || !close)
 		return false;
 
 	Vector along, toWorldPos;
@@ -587,7 +587,7 @@ bool CCSBot::FindClosestPointOnPath(const Vector *worldPos, int startIndex, int 
 	float closeDistSq = 9999999999.9f;
 	float distSq;
 
-	for (int i = startIndex; i <= endIndex; ++i)
+	for (int i = startIndex; i <= endIndex; i++)
 	{
 		from = &m_path[i - 1].pos;
 		to = &m_path[i].pos;
@@ -661,7 +661,7 @@ int CCSBot::FindOurPositionOnPath(Vector *close, bool local) const
 		end = m_pathLength;
 	}
 
-	for (int i = start; i < end; ++i)
+	for (int i = start; i < end; i++)
 	{
 		from = &m_path[i - 1].pos;
 		to = &m_path[i].pos;
@@ -803,7 +803,7 @@ int CCSBot::FindPathPoint(float aheadRange, Vector *point, int *prevIndex)
 		const float closeEpsilon = 20.0f; // 10.0f
 		while ((*point - close).Make2D().IsLengthLessThan(closeEpsilon))
 		{
-			++index;
+			index++;
 
 			if (index >= m_pathLength)
 			{
@@ -826,7 +826,7 @@ int CCSBot::FindPathPoint(float aheadRange, Vector *point, int *prevIndex)
 		const float closeEpsilon = 20.0f;
 		if ((pos - close).Make2D().IsLengthLessThan(closeEpsilon))
 		{
-			++startIndex;
+			startIndex++;
 		}
 		else
 		{
@@ -836,7 +836,7 @@ int CCSBot::FindPathPoint(float aheadRange, Vector *point, int *prevIndex)
 
 	// if we hit a ladder, stop, or jump area, must stop (dont use ladder behind us)
 	if (startIndex > m_pathIndex && startIndex < m_pathLength
-		&& (m_path[ startIndex ].ladder != NULL || (m_path[ startIndex ].area->GetAttributes() & NAV_JUMP)))
+		&& (m_path[ startIndex ].ladder || (m_path[ startIndex ].area->GetAttributes() & NAV_JUMP)))
 	{
 		*point = m_path[ startIndex ].pos;
 		return startIndex;
@@ -847,7 +847,7 @@ int CCSBot::FindPathPoint(float aheadRange, Vector *point, int *prevIndex)
 		startIndex = m_pathLength - 1;
 
 	// if we hit a ladder, stop, or jump area, must stop
-	if (startIndex < m_pathLength && (m_path[ startIndex ].ladder != NULL || (m_path[ startIndex ].area->GetAttributes() & NAV_JUMP)))
+	if (startIndex < m_pathLength && (m_path[ startIndex ].ladder || (m_path[ startIndex ].area->GetAttributes() & NAV_JUMP)))
 	{
 		*point = m_path[ startIndex ].pos;
 		return startIndex;
@@ -868,7 +868,7 @@ int CCSBot::FindPathPoint(float aheadRange, Vector *point, int *prevIndex)
 	// step along the path until we pass aheadRange
 	bool isCorner = false;
 	int i;
-	for (i = startIndex; i < m_pathLength; ++i)
+	for (i = startIndex; i < m_pathLength; i++)
 	{
 		Vector pos = m_path[i].pos;
 		Vector to = pos - m_path[i - 1].pos;
@@ -878,7 +878,7 @@ int CCSBot::FindPathPoint(float aheadRange, Vector *point, int *prevIndex)
 		// don't allow path to double-back from our starting direction (going upstairs, down curved passages, etc)
 		if (DotProduct(dir, initDir) < 0.0f) // -0.25f
 		{
-			--i;
+			i--;
 			break;
 		}
 
@@ -886,7 +886,7 @@ int CCSBot::FindPathPoint(float aheadRange, Vector *point, int *prevIndex)
 		if (DotProduct(dir, prevDir) < 0.5f)
 		{
 			isCorner = true;
-			--i;
+			i--;
 			break;
 		}
 
@@ -902,14 +902,14 @@ int CCSBot::FindPathPoint(float aheadRange, Vector *point, int *prevIndex)
 		}
 
 		// if we encounter a ladder or jump area, we must stop
-		if (i < m_pathLength && (m_path[ i ].ladder != NULL || (m_path[ i ].area->GetAttributes() & NAV_JUMP)))
+		if (i < m_pathLength && (m_path[ i ].ladder || (m_path[ i ].area->GetAttributes() & NAV_JUMP)))
 			break;
 
 		// Check straight-line path from our current position to this position
 		// Test for un-jumpable height change, or unrecoverable fall
 		if (!IsStraightLinePathWalkable(&pos))
 		{
-			--i;
+			i--;
 			break;
 		}
 
@@ -979,11 +979,11 @@ int CCSBot::FindPathPoint(float aheadRange, Vector *point, int *prevIndex)
 		if (DotProduct(toPoint, initDir.Make2D()) < 0.0f || toPoint.IsLengthLessThan(epsilon))
 		{
 			int i;
-			for (i = startIndex; i < m_pathLength; ++i)
+			for (i = startIndex; i < m_pathLength; i++)
 			{
 				toPoint.x = m_path[i].pos.x - pev->origin.x;
 				toPoint.y = m_path[i].pos.y - pev->origin.y;
-				if (m_path[i].ladder != NULL || (m_path[i].area->GetAttributes() & NAV_JUMP) || toPoint.IsLengthGreaterThan(epsilon))
+				if (m_path[i].ladder || (m_path[i].area->GetAttributes() & NAV_JUMP) || toPoint.IsLengthGreaterThan(epsilon))
 				{
 					*point = m_path[i].pos;
 					startIndex = i;
@@ -1019,9 +1019,9 @@ void CCSBot::SetPathIndex(int newIndex)
 		if (m_pathIndex < m_pathLength && m_pathIndex >= 2)
 			m_spotEncounter = m_path[ m_pathIndex - 1 ].area->GetSpotEncounter(m_path[ m_pathIndex - 2 ].area, m_path[ m_pathIndex ].area);
 		else
-			m_spotEncounter = NULL;
+			m_spotEncounter = nullptr;
 
-		m_pathLadder = NULL;
+		m_pathLadder = nullptr;
 	}
 }
 
@@ -1031,14 +1031,15 @@ bool CCSBot::IsNearJump() const
 	if (m_pathIndex == 0 || m_pathIndex >= m_pathLength)
 		return false;
 
-	for (int i = m_pathIndex - 1; i < m_pathIndex; ++i)
+	for (int i = m_pathIndex - 1; i < m_pathIndex; i++)
 	{
 		if (m_path[ i ].area->GetAttributes() & NAV_JUMP)
 		{
 			float dz = m_path[ i + 1 ].pos.z - m_path[ i ].pos.z;
-
 			if (dz > 0.0f)
+			{
 				return true;
+			}
 		}
 	}
 
@@ -1081,11 +1082,11 @@ bool CCSBot::IsFriendInTheWay(const Vector *goalPos) const
 	m_isFriendInTheWay = false;
 
 	// check if any friends are overlapping this linear path
-	for (int i = 1; i <= gpGlobals->maxClients; ++i)
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{
 		CBasePlayer *player = UTIL_PlayerByIndex(i);
 
-		if (player == NULL)
+		if (!player)
 			continue;
 
 		if (FNullEnt(player->pev))
@@ -1140,7 +1141,7 @@ bool CCSBot::IsFriendInTheWay(const Vector *goalPos) const
 void CCSBot::FeelerReflexAdjustment(Vector *goalPosition)
 {
 	// if we are in a "precise" area, do not do feeler adjustments
-	if (m_lastKnownArea != NULL && (m_lastKnownArea->GetAttributes() & NAV_PRECISE))
+	if (m_lastKnownArea && (m_lastKnownArea->GetAttributes() & NAV_PRECISE))
 		return;
 
 	Vector dir(BotCOS(m_forwardAngle), BotSIN(m_forwardAngle), 0.0f);
@@ -1330,7 +1331,7 @@ CCSBot::PathResult CCSBot::UpdatePathMovement(bool allowSpeedChange)
 		// if there are no crouch areas coming up, stand
 		const float crouchRange = 50.0f;
 		bool didCrouch = false;
-		for (int i = prevIndex; i < m_pathLength; ++i)
+		for (int i = prevIndex; i < m_pathLength; i++)
 		{
 			const CNavArea *to = m_path[i].area;
 
@@ -1381,7 +1382,7 @@ CCSBot::PathResult CCSBot::UpdatePathMovement(bool allowSpeedChange)
 		{
 			float along = toGoal.Length2D();
 			int i;
-			for (i = m_pathIndex + 1; i < m_pathLength; ++i)
+			for (i = m_pathIndex + 1; i < m_pathLength; i++)
 			{
 				Vector delta = m_path[i].pos - m_path[i - 1].pos;
 				float segmentLength = delta.Length2D();
@@ -1414,7 +1415,9 @@ CCSBot::PathResult CCSBot::UpdatePathMovement(bool allowSpeedChange)
 			}
 
 			if (i == m_pathLength)
+			{
 				toGoal = GetPathEndpoint() - pev->origin;
+			}
 		}
 	}
 	else
@@ -1554,18 +1557,18 @@ void CCSBot::BuildTrivialPath(const Vector *goal)
 	m_path[0].area = m_lastKnownArea;
 	m_path[0].pos = pev->origin;
 	m_path[0].pos.z = m_lastKnownArea->GetZ(&pev->origin);
-	m_path[0].ladder = NULL;
+	m_path[0].ladder = nullptr;
 	m_path[0].how = NUM_TRAVERSE_TYPES;
 
 	m_path[1].area = m_lastKnownArea;
 	m_path[1].pos = *goal;
 	m_path[1].pos.z = m_lastKnownArea->GetZ(goal);
-	m_path[1].ladder = NULL;
+	m_path[1].ladder = nullptr;
 	m_path[1].how = NUM_TRAVERSE_TYPES;
 
 	m_areaEnteredTimestamp = gpGlobals->time;
-	m_spotEncounter = NULL;
-	m_pathLadder = NULL;
+	m_spotEncounter = nullptr;
+	m_pathLadder = nullptr;
 
 	m_goalPosition = *goal;
 }
@@ -1590,16 +1593,16 @@ bool CCSBot::ComputePath(CNavArea *goalArea, const Vector *goal, RouteType route
 	// note final specific position
 	Vector pathEndPosition;
 
-	if (goal == NULL && goalArea == NULL)
+	if (!goal && !goalArea)
 		return false;
 
-	if (goal == NULL)
+	if (!goal)
 		pathEndPosition = *goalArea->GetCenter();
 	else
 		pathEndPosition = *goal;
 
 	// make sure path end position is on the ground
-	if (goalArea != NULL)
+	if (goalArea)
 		pathEndPosition.z = goalArea->GetZ(&pathEndPosition);
 	else
 		GetGroundHeight(&pathEndPosition, &pathEndPosition.z);
@@ -1612,7 +1615,7 @@ bool CCSBot::ComputePath(CNavArea *goalArea, const Vector *goal, RouteType route
 	}
 
 	// Compute shortest path to goal
-	CNavArea *closestArea = NULL;
+	CNavArea *closestArea = nullptr;
 	PathCost pathCost(this, route);
 	bool pathToGoalExists = NavAreaBuildPath(startArea, goalArea, goal, pathCost, &closestArea);
 
@@ -1624,7 +1627,7 @@ bool CCSBot::ComputePath(CNavArea *goalArea, const Vector *goal, RouteType route
 	CNavArea *area;
 	for (area = effectiveGoalArea; area; area = area->GetParent())
 	{
-		++count;
+		count++;
 	}
 
 	// save room for endpoint
@@ -1644,7 +1647,7 @@ bool CCSBot::ComputePath(CNavArea *goalArea, const Vector *goal, RouteType route
 	m_pathLength = count;
 	for (area = effectiveGoalArea; count && area; area = area->GetParent())
 	{
-		--count;
+		count--;
 		m_path[ count ].area = area;
 		m_path[ count ].how = area->GetParentHow();
 	}
@@ -1657,7 +1660,7 @@ bool CCSBot::ComputePath(CNavArea *goalArea, const Vector *goal, RouteType route
 		return false;
 	}
 
-	if (goal == NULL)
+	if (!goal)
 	{
 		switch (m_path[m_pathLength - 1].how)
 		{
@@ -1680,20 +1683,20 @@ bool CCSBot::ComputePath(CNavArea *goalArea, const Vector *goal, RouteType route
 	// append path end position
 	m_path[ m_pathLength ].area = effectiveGoalArea;
 	m_path[ m_pathLength ].pos = pathEndPosition;
-	m_path[ m_pathLength ].ladder = NULL;
+	m_path[ m_pathLength ].ladder = nullptr;
 	m_path[ m_pathLength ].how = NUM_TRAVERSE_TYPES;
-	++m_pathLength;
+	m_pathLength++;
 
 	// do movement setup
 	m_pathIndex = 1;
 	m_areaEnteredTimestamp = gpGlobals->time;
-	m_spotEncounter = NULL;
+	m_spotEncounter = nullptr;
 	m_goalPosition = m_path[1].pos;
 
-	if (m_path[1].ladder != NULL)
+	if (m_path[1].ladder)
 		SetupLadderMovement();
 	else
-		m_pathLadder = NULL;
+		m_pathLadder = nullptr;
 
 	return true;
 }
@@ -1709,7 +1712,7 @@ float CCSBot::GetPathDistanceRemaining() const
 	float dist = 0.0f;
 	const Vector *prevCenter = m_path[m_pathIndex].area->GetCenter();
 
-	for (int i = idx + 1; i < m_pathLength; ++i)
+	for (int i = idx + 1; i < m_pathLength; i++)
 	{
 		dist += (*m_path[i].area->GetCenter() - *prevCenter).Length();
 		prevCenter = m_path[i].area->GetCenter();
@@ -1724,7 +1727,7 @@ void CCSBot::DrawPath()
 	if (!HasPath())
 		return;
 
-	for (int i = 1; i < m_pathLength; ++i)
+	for (int i = 1; i < m_pathLength; i++)
 	{
 		UTIL_DrawBeamPoints(m_path[i - 1].pos, m_path[i].pos, 2, 255, 75, 0);
 	}

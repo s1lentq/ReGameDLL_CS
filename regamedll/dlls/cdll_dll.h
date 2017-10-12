@@ -26,80 +26,68 @@
 *
 */
 
-#ifndef CDLL_DLL_H
-#define CDLL_DLL_H
-#ifdef _WIN32
 #pragma once
-#endif
 
-#define MAX_WEAPON_SLOTS		5		// hud item selection slots
-#define MAX_ITEM_TYPES			6		// hud item selection slots
+const int MAX_WEAPON_SLOTS = 5;		// hud item selection slots
+const int MAX_ITEM_TYPES   = 6;		// hud item selection slots
+const int MAX_AMMO_SLOTS   = 32;	// not really slots
+const int MAX_ITEMS        = 4;		// hard coded item types
 
-#define MAX_ITEMS			4		// hard coded item types
+const int DEFAULT_FOV      = 90;	// the default field of view
 
-#define DEFAULT_FOV			90		// the default field of view
+#define HIDEHUD_WEAPONS             BIT(0)
+#define HIDEHUD_FLASHLIGHT          BIT(1)
+#define HIDEHUD_ALL                 BIT(2)
+#define HIDEHUD_HEALTH              BIT(3)
+#define HIDEHUD_TIMER               BIT(4)
+#define HIDEHUD_MONEY               BIT(5)
+#define HIDEHUD_CROSSHAIR           BIT(6)
+#define HIDEHUD_OBSERVER_CROSSHAIR  BIT(7)
 
-#define HIDEHUD_WEAPONS			(1<<0)
-#define HIDEHUD_FLASHLIGHT		(1<<1)
-#define HIDEHUD_ALL			(1<<2)
-#define HIDEHUD_HEALTH			(1<<3)
-#define HIDEHUD_TIMER			(1<<4)
-#define HIDEHUD_MONEY			(1<<5)
-#define HIDEHUD_CROSSHAIR		(1<<6)
-#define HIDEHUD_OBSERVER_CROSSHAIR	(1<<7)
+#define STATUSICON_HIDE  0
+#define STATUSICON_SHOW  1
+#define STATUSICON_FLASH 2
 
-#define STATUSICON_HIDE			0
-#define STATUSICON_SHOW			1
-#define STATUSICON_FLASH		2
+#define HUD_PRINTNOTIFY  1
+#define HUD_PRINTCONSOLE 2
+#define HUD_PRINTTALK    3
+#define HUD_PRINTCENTER  4
+#define HUD_PRINTRADIO   5
 
-#define HUD_PRINTNOTIFY			1
-#define HUD_PRINTCONSOLE		2
-#define HUD_PRINTTALK			3
-#define HUD_PRINTCENTER			4
-#define HUD_PRINTRADIO			5
+#define STATUS_NIGHTVISION_ON  1
+#define STATUS_NIGHTVISION_OFF 0
 
-#define STATUS_NIGHTVISION_ON		1
-#define STATUS_NIGHTVISION_OFF		0
+#define ITEM_STATUS_NIGHTVISION BIT(0)
+#define ITEM_STATUS_DEFUSER     BIT(1)
 
-#define ITEM_STATUS_NIGHTVISION		(1<<0)
-#define ITEM_STATUS_DEFUSER		(1<<1)
-
-#define SCORE_STATUS_DEAD		(1<<0)
-#define SCORE_STATUS_BOMB		(1<<1)
-#define SCORE_STATUS_VIP		(1<<2)
-
-#define SIGNAL_BUY			(1<<0)
-#define SIGNAL_BOMB			(1<<1)
-#define SIGNAL_RESCUE			(1<<2)
-#define SIGNAL_ESCAPE			(1<<3)
-#define SIGNAL_VIPSAFETY		(1<<4)
+#define SCORE_STATUS_DEAD BIT(0)
+#define SCORE_STATUS_BOMB BIT(1)
+#define SCORE_STATUS_VIP  BIT(2)
 
 // player data iuser3
-#define PLAYER_CAN_SHOOT		(1<<0)
-#define PLAYER_FREEZE_TIME_OVER		(1<<1)
-#define PLAYER_IN_BOMB_ZONE		(1<<2)
-#define PLAYER_HOLDING_SHIELD		(1<<3)
+#define PLAYER_CAN_SHOOT        BIT(0)
+#define PLAYER_FREEZE_TIME_OVER BIT(1)
+#define PLAYER_IN_BOMB_ZONE     BIT(2)
+#define PLAYER_HOLDING_SHIELD   BIT(3)
 
-#define MENU_KEY_1			(1<<0)
-#define MENU_KEY_2			(1<<1)
-#define MENU_KEY_3			(1<<2)
-#define MENU_KEY_4			(1<<3)
-#define MENU_KEY_5			(1<<4)
-#define MENU_KEY_6			(1<<5)
-#define MENU_KEY_7			(1<<6)
-#define MENU_KEY_8			(1<<7)
-#define MENU_KEY_9			(1<<8)
-#define MENU_KEY_0			(1<<9)
+#define MENU_KEY_1 BIT(0)
+#define MENU_KEY_2 BIT(1)
+#define MENU_KEY_3 BIT(2)
+#define MENU_KEY_4 BIT(3)
+#define MENU_KEY_5 BIT(4)
+#define MENU_KEY_6 BIT(5)
+#define MENU_KEY_7 BIT(6)
+#define MENU_KEY_8 BIT(7)
+#define MENU_KEY_9 BIT(8)
+#define MENU_KEY_0 BIT(9)
 
-#define MAX_AMMO_SLOTS			32		// not really slots
+#define HUD_PRINTNOTIFY  1
+#define HUD_PRINTCONSOLE 2
+#define HUD_PRINTTALK    3
+#define HUD_PRINTCENTER  4
 
-#define HUD_PRINTNOTIFY			1
-#define HUD_PRINTCONSOLE		2
-#define HUD_PRINTTALK			3
-#define HUD_PRINTCENTER			4
-
-#define WEAPON_SUIT			31
-#define WEAPON_ALLWEAPONS		(~(1 << WEAPON_SUIT))
+#define WEAPON_SUIT       31
+#define WEAPON_ALLWEAPONS (~(1<<WEAPON_SUIT))
 
 // custom enum
 enum VGUIMenu
@@ -130,5 +118,3 @@ enum VGUIMenuSlot
 	VGUI_MenuSlot_Buy_SecAmmo,
 	VGUI_MenuSlot_Buy_Item,
 };
-
-#endif // CDLL_DLL_H

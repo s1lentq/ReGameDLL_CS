@@ -41,7 +41,7 @@ const wchar_t *NumAsWString(int val);
 const char *NumAsString(int val);
 char *SharedGetToken();
 void SharedSetQuoteChar(char c);
-const char *SharedParse(const char *data);
+char *SharedParse(char *data);
 bool SharedTokenWaiting(const char *buffer);
 
 // Simple utility function to allocate memory and duplicate a string

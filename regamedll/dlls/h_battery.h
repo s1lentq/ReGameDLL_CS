@@ -26,11 +26,7 @@
 *
 */
 
-#ifndef H_BATTERY_H
-#define H_BATTERY_H
-#ifdef _WIN32
 #pragma once
-#endif
 
 class CRecharge: public CBaseToggle
 {
@@ -56,5 +52,3 @@ public:
 	int m_iOn;
 	float m_flSoundTime;
 };
-
-#endif // H_BATTERY_H

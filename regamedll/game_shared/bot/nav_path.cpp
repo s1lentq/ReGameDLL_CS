@@ -8,18 +8,18 @@ bool CNavPath::ComputePathPositions()
 
 	// start in first area's center
 	m_path[0].pos = *m_path[0].area->GetCenter();
-	m_path[0].ladder = NULL;
+	m_path[0].ladder = nullptr;
 	m_path[0].how = NUM_TRAVERSE_TYPES;
 
-	for (int i = 1; i < m_segmentCount; ++i)
+	for (int i = 1; i < m_segmentCount; i++)
 	{
 		const PathSegment *from = &m_path[i - 1];
-		PathSegment *to = &m_path[ i ];
+		PathSegment *to = &m_path[i];
 
 		// walk along the floor to the next area
 		if (to->how <= GO_WEST)
 		{
-			to->ladder = NULL;
+			to->ladder = nullptr;
 
 			// compute next point, keeping path as straight as possible
 			from->area->ComputeClosestPointInPortal(to->area, (NavDirType)to->how, &from->pos, &to->pos);
@@ -49,14 +49,14 @@ bool CNavPath::ComputePathPositions()
 				if (m_segmentCount < MAX_PATH_SEGMENTS - 1)
 				{
 					// copy nodes down
-					for (int j = m_segmentCount; j > i; --j)
+					for (int j = m_segmentCount; j > i; j--)
 						m_path[j] = m_path[j - 1];
 
 					// path is one node longer
-					++m_segmentCount;
+					m_segmentCount++;
 
 					// move index ahead into the new node we just duplicated
-					++i;
+					i++;
 
 					m_path[i].pos.x = to->pos.x + pushDist * dir.x;
 					m_path[i].pos.y = to->pos.y + pushDist * dir.y;
@@ -72,7 +72,7 @@ bool CNavPath::ComputePathPositions()
 			// find our ladder
 			const NavLadderList *list = from->area->GetLadderList(LADDER_UP);
 			NavLadderList::const_iterator iter;
-			for (iter = list->begin(); iter != list->end(); ++iter)
+			for (iter = list->begin(); iter != list->end(); iter++)
 			{
 				CNavLadder *ladder = (*iter);
 
@@ -98,7 +98,7 @@ bool CNavPath::ComputePathPositions()
 			// find our ladder
 			const NavLadderList *list = from->area->GetLadderList(LADDER_DOWN);
 			NavLadderList::const_iterator iter;
-			for (iter = list->begin(); iter != list->end(); ++iter)
+			for (iter = list->begin(); iter != list->end(); iter++)
 			{
 				CNavLadder *ladder = (*iter);
 
@@ -135,7 +135,7 @@ bool CNavPath::IsAtEnd(const Vector &pos) const
 float CNavPath::GetLength() const
 {
 	float length = 0.0f;
-	for (int i = 1; i < GetSegmentCount(); ++i)
+	for (int i = 1; i < GetSegmentCount(); i++)
 	{
 		length += (m_path[i].pos - m_path[i - 1].pos).Length();
 	}
@@ -147,7 +147,7 @@ float CNavPath::GetLength() const
 // TODO: Be careful of returning "positions" along one-way drops, ladders, etc.
 NOXREF bool CNavPath::GetPointAlongPath(float distAlong, Vector *pointOnPath) const
 {
-	if (!IsValid() || pointOnPath == NULL)
+	if (!IsValid() || !pointOnPath)
 		return false;
 
 	if (distAlong <= 0.0f)
@@ -159,7 +159,7 @@ NOXREF bool CNavPath::GetPointAlongPath(float distAlong, Vector *pointOnPath) co
 	float lengthSoFar = 0.0f;
 	float segmentLength;
 	Vector dir;
-	for (int i = 1; i < GetSegmentCount(); ++i)
+	for (int i = 1; i < GetSegmentCount(); i++)
 	{
 		dir = m_path[i].pos - m_path[i - 1].pos;
 		segmentLength = dir.Length();
@@ -178,7 +178,7 @@ NOXREF bool CNavPath::GetPointAlongPath(float distAlong, Vector *pointOnPath) co
 		lengthSoFar += segmentLength;
 	}
 
-	*pointOnPath = m_path[ GetSegmentCount() - 1 ].pos;
+	*pointOnPath = m_path[GetSegmentCount() - 1].pos;
 	return true;
 }
 
@@ -195,7 +195,7 @@ int CNavPath::GetSegmentIndexAlongPath(float distAlong) const
 
 	float lengthSoFar = 0.0f;
 	Vector dir;
-	for (int i = 1; i < GetSegmentCount(); ++i)
+	for (int i = 1; i < GetSegmentCount(); i++)
 	{
 		lengthSoFar += (m_path[i].pos - m_path[i - 1].pos).Length();
 
@@ -212,7 +212,7 @@ int CNavPath::GetSegmentIndexAlongPath(float distAlong) const
 // NOTE: This does not do line-of-sight tests, so closest point may be thru the floor, etc
 NOXREF bool CNavPath::FindClosestPointOnPath(const Vector *worldPos, int startIndex, int endIndex, Vector *close) const
 {
-	if (!IsValid() || close == NULL)
+	if (!IsValid() || !close)
 		return false;
 
 	Vector along, toWorldPos;
@@ -223,7 +223,7 @@ NOXREF bool CNavPath::FindClosestPointOnPath(const Vector *worldPos, int startIn
 	float closeDistSq = 9999999999.9;
 	float distSq;
 
-	for (int i = startIndex; i <= endIndex; ++i)
+	for (int i = startIndex; i <= endIndex; i++)
 	{
 		from = &m_path[i - 1].pos;
 		to = &m_path[i].pos;
@@ -267,11 +267,11 @@ bool CNavPath::BuildTrivialPath(const Vector *start, const Vector *goal)
 	m_segmentCount = 0;
 
 	CNavArea *startArea = TheNavAreaGrid.GetNearestNavArea(start);
-	if (startArea == NULL)
+	if (!startArea)
 		return false;
 
 	CNavArea *goalArea = TheNavAreaGrid.GetNearestNavArea(goal);
-	if (goalArea == NULL)
+	if (!goalArea)
 		return false;
 
 	m_segmentCount = 2;
@@ -280,14 +280,14 @@ bool CNavPath::BuildTrivialPath(const Vector *start, const Vector *goal)
 	m_path[0].pos.x = start->x;
 	m_path[0].pos.y = start->y;
 	m_path[0].pos.z = startArea->GetZ(start);
-	m_path[0].ladder = NULL;
+	m_path[0].ladder = nullptr;
 	m_path[0].how = NUM_TRAVERSE_TYPES;
 
 	m_path[1].area = goalArea;
 	m_path[1].pos.x = goal->x;
 	m_path[1].pos.y = goal->y;
 	m_path[1].pos.z = goalArea->GetZ(goal);
-	m_path[1].ladder = NULL;
+	m_path[1].ladder = nullptr;
 	m_path[1].how = NUM_TRAVERSE_TYPES;
 
 	return true;
@@ -299,7 +299,7 @@ void CNavPath::Draw()
 	if (!IsValid())
 		return;
 
-	for (int i = 1; i < m_segmentCount; ++i)
+	for (int i = 1; i < m_segmentCount; i++)
 	{
 		UTIL_DrawBeamPoints(m_path[i - 1].pos + Vector(0, 0, HalfHumanHeight), m_path[i].pos + Vector(0, 0, HalfHumanHeight), 2, 255, 75, 0);
 	}
@@ -310,28 +310,28 @@ void CNavPath::Draw()
 int CNavPath::FindNextOccludedNode(int anchor_)
 {
 	int lastVisible = anchor_;
-	for (int i = anchor_ + 1; i < m_segmentCount; ++i)
+	for (int i = anchor_ + 1; i < m_segmentCount; i++)
 	{
 		// don't remove ladder nodes
 		if (m_path[i].ladder)
 			return i;
 
-		if (!IsWalkableTraceLineClear(m_path[ anchor_ ].pos, m_path[ i ].pos))
+		if (!IsWalkableTraceLineClear(m_path[anchor_].pos, m_path[i].pos))
 		{
 			// cant see this node from anchor node
 			return i;
 		}
 
-		Vector anchorPlusHalf =  m_path[ anchor_ ].pos + Vector(0, 0, HalfHumanHeight);
-		Vector iPlusHalf =  m_path[ i ].pos + Vector(0, 0, HalfHumanHeight);
+		Vector anchorPlusHalf =  m_path[anchor_].pos + Vector(0, 0, HalfHumanHeight);
+		Vector iPlusHalf =  m_path[i].pos + Vector(0, 0, HalfHumanHeight);
 		if (!IsWalkableTraceLineClear(anchorPlusHalf, iPlusHalf))
 		{
 			// cant see this node from anchor node
 			return i;
 		}
 
-		Vector anchorPlusFull =  m_path[ anchor_ ].pos + Vector(0, 0, HumanHeight);
-		Vector iPlusFull = m_path[ i ].pos + Vector(0, 0, HumanHeight);
+		Vector anchorPlusFull =  m_path[anchor_].pos + Vector(0, 0, HumanHeight);
+		Vector iPlusFull = m_path[i].pos + Vector(0, 0, HumanHeight);
 		if (!IsWalkableTraceLineClear(anchorPlusFull, iPlusFull))
 		{
 			// cant see this node from anchor node
@@ -362,7 +362,7 @@ void CNavPath::Optimize()
 			int removeCount = nextAnchor - anchor_ - 1;
 			if (removeCount > 0)
 			{
-				for (int i = nextAnchor; i < m_segmentCount; ++i)
+				for (int i = nextAnchor; i < m_segmentCount; i++)
 				{
 					m_path[i - removeCount] = m_path[i];
 				}
@@ -370,15 +370,15 @@ void CNavPath::Optimize()
 			}
 		}
 
-		++anchor_;
+		anchor_++;
 	}
 #endif
 }
 
 CNavPathFollower::CNavPathFollower()
 {
-	m_improv = NULL;
-	m_path = NULL;
+	m_improv = nullptr;
+	m_path = nullptr;
 
 	m_segmentIndex = 0;
 	m_isLadderStarted = false;
@@ -397,12 +397,12 @@ void CNavPathFollower::Reset()
 // Move improv along path
 void CNavPathFollower::Update(float deltaT, bool avoidObstacles)
 {
-	if (m_path == NULL || m_path->IsValid() == false)
+	if (!m_path || m_path->IsValid() == false)
 		return;
 
 	const CNavPath::PathSegment *node = (*m_path)[m_segmentIndex];
 
-	if (node == NULL)
+	if (!node)
 	{
 		m_improv->OnMoveToFailure(m_path->GetEndpoint(), IImprovEvent::FAIL_INVALID_PATH);
 		m_path->Invalidate();
@@ -412,8 +412,8 @@ void CNavPathFollower::Update(float deltaT, bool avoidObstacles)
 	// handle ladders
 	if (node->ladder)
 	{
-		const Vector *approachPos = NULL;
-		const Vector *departPos = NULL;
+		const Vector *approachPos = nullptr;
+		const Vector *departPos = nullptr;
 
 		if (m_segmentIndex)
 			approachPos = &(*m_path)[m_segmentIndex - 1]->pos;
@@ -432,7 +432,7 @@ void CNavPathFollower::Update(float deltaT, bool avoidObstacles)
 		if (m_improv->TraverseLadder(node->ladder, node->how, approachPos, departPos, deltaT))
 		{
 			// completed ladder
-			++m_segmentIndex;
+			m_segmentIndex++;
 		}
 
 		return;
@@ -445,7 +445,7 @@ void CNavPathFollower::Update(float deltaT, bool avoidObstacles)
 	const float closeRange = 20.0f;
 	if ((m_improv->GetFeet() - node->pos).IsLengthLessThan(closeRange))
 	{
-		++m_segmentIndex;
+		m_segmentIndex++;
 
 		if (m_segmentIndex >= m_path->GetSegmentCount())
 		{
@@ -469,7 +469,7 @@ void CNavPathFollower::Update(float deltaT, bool avoidObstacles)
 	{
 		// because hostage crouching is not really supported by the engine,
 		// if we are standing in a crouch area, we must crouch to avoid collisions
-		if (m_improv->GetLastKnownArea() != NULL && (m_improv->GetLastKnownArea()->GetAttributes() & NAV_CROUCH) && !(m_improv->GetLastKnownArea()->GetAttributes() & NAV_JUMP))
+		if (m_improv->GetLastKnownArea() && (m_improv->GetLastKnownArea()->GetAttributes() & NAV_CROUCH) && !(m_improv->GetLastKnownArea()->GetAttributes() & NAV_JUMP))
 		{
 			m_improv->Crouch();
 		}
@@ -478,7 +478,7 @@ void CNavPathFollower::Update(float deltaT, bool avoidObstacles)
 		// if there are no crouch areas coming up, stand
 		const float crouchRange = 50.0f;
 		bool didCrouch = false;
-		for (int i = m_segmentIndex; i < m_path->GetSegmentCount(); ++i)
+		for (int i = m_segmentIndex; i < m_path->GetSegmentCount(); i++)
 		{
 			const CNavArea *to = (*m_path)[i]->area;
 
@@ -616,7 +616,7 @@ int CNavPathFollower::FindOurPositionOnPath(Vector *close, bool local) const
 		end = m_path->GetSegmentCount();
 	}
 
-	for (int i = start; i < end; ++i)
+	for (int i = start; i < end; i++)
 	{
 		from = &(*m_path)[i - 1]->pos;
 		to = &(*m_path)[i]->pos;
@@ -702,7 +702,7 @@ int CNavPathFollower::FindPathPoint(float aheadRange, Vector *point, int *prevIn
 		const float closeEpsilon = 20.0f;
 		while ((*point - close).Make2D().IsLengthLessThan(closeEpsilon))
 		{
-			++index;
+			index++;
 
 			if (index >= m_path->GetSegmentCount())
 			{
@@ -725,7 +725,7 @@ int CNavPathFollower::FindPathPoint(float aheadRange, Vector *point, int *prevIn
 		const float closeEpsilon = 20.0f;
 		if ((pos - close).Make2D().IsLengthLessThan(closeEpsilon))
 		{
-			++startIndex;
+			startIndex++;
 		}
 		else
 		{
@@ -767,7 +767,7 @@ int CNavPathFollower::FindPathPoint(float aheadRange, Vector *point, int *prevIn
 	// step along the path until we pass aheadRange
 	bool isCorner = false;
 	int i;
-	for (i = startIndex; i < m_path->GetSegmentCount(); ++i)
+	for (i = startIndex; i < m_path->GetSegmentCount(); i++)
 	{
 		Vector pos = (*m_path)[i]->pos;
 		Vector to = pos - (*m_path)[i - 1]->pos;
@@ -776,7 +776,7 @@ int CNavPathFollower::FindPathPoint(float aheadRange, Vector *point, int *prevIn
 		// don't allow path to double-back from our starting direction (going upstairs, down curved passages, etc)
 		if (DotProduct(dir, initDir) < 0.0f) // -0.25f
 		{
-			--i;
+			i--;
 			break;
 		}
 
@@ -784,7 +784,7 @@ int CNavPathFollower::FindPathPoint(float aheadRange, Vector *point, int *prevIn
 		if (DotProduct(dir, prevDir) < 0.5f)
 		{
 			isCorner = true;
-			--i;
+			i--;
 			break;
 		}
 		prevDir = dir;
@@ -806,7 +806,7 @@ int CNavPathFollower::FindPathPoint(float aheadRange, Vector *point, int *prevIn
 		// Test for un-jumpable height change, or unrecoverable fall
 		//if (!IsStraightLinePathWalkable(&pos))
 		//{
-		//	--i;
+		//	i--;
 		//	break;
 		//}
 
@@ -879,7 +879,7 @@ int CNavPathFollower::FindPathPoint(float aheadRange, Vector *point, int *prevIn
 		if (DotProduct(toPoint, initDir.Make2D()) < 0.0f || toPoint.IsLengthLessThan(epsilon))
 		{
 			int i;
-			for (i = startIndex; i < m_path->GetSegmentCount(); ++i)
+			for (i = startIndex; i < m_path->GetSegmentCount(); i++)
 			{
 				toPoint.x = (*m_path)[i]->pos.x - centroid.x;
 				toPoint.y = (*m_path)[i]->pos.y - centroid.y;
@@ -1067,14 +1067,13 @@ void CStuckMonitor::Update(CImprov *improv)
 
 		if (m_avgVelCount < MAX_VEL_SAMPLES)
 		{
-			++m_avgVelCount;
+			m_avgVelCount++;
 		}
 		else
 		{
 			// we have enough samples to know if we're stuck
-
 			float avgVel = 0.0f;
-			for (int t = 0; t < m_avgVelCount; ++t)
+			for (int t = 0; t < m_avgVelCount; t++)
 				avgVel += m_avgVel[t];
 
 			avgVel /= m_avgVelCount;

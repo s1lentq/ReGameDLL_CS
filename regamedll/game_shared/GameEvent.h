@@ -26,11 +26,7 @@
 *
 */
 
-#ifndef GAME_EVENT_H
-#define GAME_EVENT_H
-#ifdef _WIN32
 #pragma once
-#endif
 
 enum GameEventType
 {
@@ -141,5 +137,3 @@ enum GameEventType
 };
 
 extern const char *GameEventName[ NUM_GAME_EVENTS + 1 ];
-
-#endif // GAME_EVENT_H

@@ -26,13 +26,19 @@
 *
 */
 
-#ifndef WORLD_H
-#define WORLD_H
-#ifdef _WIN32
 #pragma once
-#endif
 
-#define SF_DECAL_NOTINDEATHMATCH	2048
+#define SF_WORLD_DARK       BIT(0) // Fade from black at startup
+#define SF_WORLD_TITLE      BIT(1) // Display game title at startup
+#define SF_WORLD_FORCETEAM  BIT(2) // Force teams
+
+// This spawns first when each level begins.
+class CWorld: public CBaseEntity {
+public:
+	virtual void Spawn();
+	virtual void Precache();
+	virtual void KeyValue(KeyValueData *pkvd);
+};
 
 void CopyToBodyQue(entvars_t *pev);
 void ClearBodyQue();
@@ -43,5 +49,3 @@ void ResetGlobalState();
 extern CGlobalState gGlobalState;
 extern float g_flWeaponCheat;
 extern char g_szMapBriefingText[512];
-
-#endif // WORLD_H

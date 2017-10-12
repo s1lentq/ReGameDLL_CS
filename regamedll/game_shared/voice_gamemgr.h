@@ -26,13 +26,9 @@
 *
 */
 
-#ifndef VOICE_GAMEMGR_H
-#define VOICE_GAMEMGR_H
-#ifdef _WIN32
 #pragma once
-#endif
 
-#define UPDATE_INTERVAL		0.3
+#define UPDATE_INTERVAL 0.3
 
 #include "voice_common.h"
 
@@ -85,9 +81,7 @@ private:
 	int m_msgRequestState;
 	IVoiceGameMgrHelper *m_pHelper;
 	int m_nMaxPlayers;
-	double m_UpdateInterval;			// How long since the last update.
+	double m_UpdateInterval; // How long since the last update.
 };
 
 void VoiceServerDebug(const char *pFmt, ...);
-
-#endif // VOICE_GAMEMGR_H

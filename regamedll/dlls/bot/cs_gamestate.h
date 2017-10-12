@@ -26,11 +26,7 @@
 *
 */
 
-#ifndef CS_GAMESTATE_H
-#define CS_GAMESTATE_H
-#ifdef _WIN32
 #pragma once
-#endif
 
 class CCSBot;
 
@@ -94,7 +90,7 @@ public:
 	CHostage *GetNearestVisibleFreeHostage() const;
 
 	// hostage rescue scenario
-	enum ValidateStatusType:uint8
+	enum ValidateStatusType : uint8
 	{
 		NO_CHANGE = 0x00,
 		HOSTAGE_DIED = 0x01,
@@ -147,5 +143,3 @@ private:
 	bool m_allHostagesRescued;					// if true, so every hostages been is rescued
 	bool m_haveSomeHostagesBeenTaken;			// true if a hostage has been moved by a CT (and we've seen it)
 };
-
-#endif // CS_GAMESTATE_H

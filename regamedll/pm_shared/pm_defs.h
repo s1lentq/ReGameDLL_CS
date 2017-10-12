@@ -26,11 +26,7 @@
 *
 */
 
-#ifndef PM_DEFS_H
-#define PM_DEFS_H
-#ifdef _WIN32
 #pragma once
-#endif
 
 #include "pm_info.h"
 #include "pmtrace.h"
@@ -45,7 +41,7 @@
 #define MAX_MOVEENTS 64
 #define MAX_CLIP_PLANES	5
 
-#define PM_NORMAL			0x00000000
+#define PM_NORMAL				0x00000000
 #define PM_STUDIO_IGNORE		0x00000001	// Skip studio models
 #define PM_STUDIO_BOX			0x00000002	// Use boxes for non-complex studio models (even in traceline)
 #define PM_GLASS_IGNORE			0x00000004	// Ignore entities with non-normal rendermode
@@ -59,14 +55,14 @@ typedef struct physent_s
 	char name[32];					// Name of model, or "player" or "world".
 	int player;
 	vec3_t origin;					// Model's origin in world coordinates.
-	struct model_s *model;				// only for bsp models
-	struct model_s *studiomodel;			// SOLID_BBOX, but studio clip intersections.
+	struct model_s *model;			// only for bsp models
+	struct model_s *studiomodel;	// SOLID_BBOX, but studio clip intersections.
 	vec3_t mins, maxs;				// only for non-bsp models
-	int info;					// For client or server to use to identify (index into edicts or cl_entities)
+	int info;						// For client or server to use to identify (index into edicts or cl_entities)
 	vec3_t angles;					// rotated entities need this info for hull testing to work.
 
-	int solid;					// Triggers and func_door type WATER brushes are SOLID_NOT
-	int skin;					// BSP Contents for such things like fun_door water brushes.
+	int solid;						// Triggers and func_door type WATER brushes are SOLID_NOT
+	int skin;						// BSP Contents for such things like fun_door water brushes.
 	int rendermode;					// So we can ignore glass
 
 	float frame;
@@ -99,34 +95,34 @@ typedef struct playermove_s
 {
 	int player_index;				// So we don't try to run the PM_CheckStuck nudging too quickly.
 	qboolean server;				// For debugging, are we running physics code on server side?
-	qboolean multiplayer;				// 1 == multiplayer server
-	float time;					// realtime on host, for reckoning duck timing
+	qboolean multiplayer;			// 1 == multiplayer server
+	float time;						// realtime on host, for reckoning duck timing
 	float frametime;				// Duration of this frame
-	vec3_t forward, right, up;			// Vectors for angles
+	vec3_t forward, right, up;		// Vectors for angles
 	vec3_t origin;					// Movement origin.
 	vec3_t angles;					// Movement view angles.
 	vec3_t oldangles;				// Angles before movement view angles were looked at.
 	vec3_t velocity;				// Current movement direction.
 	vec3_t movedir;					// For waterjumping, a forced forward velocity so we can fly over lip of ledge.
-	vec3_t basevelocity;				// Velocity of the conveyor we are standing, e.g.
+	vec3_t basevelocity;			// Velocity of the conveyor we are standing, e.g.
 	vec3_t view_ofs;				// For ducking/dead
-							// Our eye position.
+									// Our eye position.
 	float flDuckTime;				// Time we started duck
 	qboolean bInDuck;				// In process of ducking or ducked already?
-	int flTimeStepSound;				// For walking/falling
-							// Next time we can play a step sound
+	int flTimeStepSound;			// For walking/falling
+									// Next time we can play a step sound
 	int iStepLeft;
 	float flFallVelocity;
 	vec3_t punchangle;
 	float flSwimTime;
 	float flNextPrimaryAttack;
 	int effects;					// MUZZLE FLASH, e.g.
-	int flags;					// FL_ONGROUND, FL_DUCKING, etc.
+	int flags;						// FL_ONGROUND, FL_DUCKING, etc.
 	int usehull;					// 0 = regular player hull, 1 = ducked player hull, 2 = point hull
 	float gravity;					// Our current gravity and friction.
 	float friction;
 	int oldbuttons;					// Buttons last usercmd
-	float waterjumptime;				// Amount of time left in jumping out of water cycle.
+	float waterjumptime;			// Amount of time left in jumping out of water cycle.
 	qboolean dead;					// Are we a dead player?
 	int deadflag;
 	int spectator;					// Should we use spectator physics model?
@@ -151,17 +147,17 @@ typedef struct playermove_s
 	vec3_t vuser2;
 	vec3_t vuser3;
 	vec3_t vuser4;
-	int numphysent;					// world state
-							// Number of entities to clip against.
+	int numphysent;						// world state
+										// Number of entities to clip against.
 	physent_t physents[MAX_PHYSENTS];
-	int nummoveent;					// Number of momvement entities (ladders)
-	physent_t moveents[MAX_MOVEENTS];		// just a list of ladders
-	int numvisent;					// All things being rendered, for tracing against things you don't actually collide with
+	int nummoveent;						// Number of momvement entities (ladders)
+	physent_t moveents[MAX_MOVEENTS];	// just a list of ladders
+	int numvisent;						// All things being rendered, for tracing against things you don't actually collide with
 	physent_t visents[MAX_PHYSENTS];
-	usercmd_t cmd;					// input to run through physics.
-	int numtouch;					// Trace results for objects we collided with.
+	usercmd_t cmd;						// input to run through physics.
+	int numtouch;						// Trace results for objects we collided with.
 	pmtrace_t touchindex[MAX_PHYSENTS];
-	char physinfo[MAX_PHYSINFO_STRING];		// Physics info string
+	char physinfo[MAX_PHYSINFO_STRING];	// Physics info string
 	struct movevars_s *movevars;
 	vec_t _player_mins[4][3];
 	vec_t _player_maxs[4][3];
@@ -194,6 +190,8 @@ typedef struct playermove_s
 	const char *(*PM_TraceTexture)(int ground, float *vstart, float *vend);
 	void (*PM_PlaybackEventFull)(int flags, int clientindex, unsigned short eventindex, float delay, float *origin, float *angles, float fparam1, float fparam2, int iparam1, int iparam2, int bparam1, int bparam2);
 
-} playermove_t;
+	pmtrace_t (*PM_PlayerTraceEx)(float *start, float *end, int traceFlags, int (*pfnIgnore)(physent_t *pe));
+	int (*PM_TestPlayerPositionEx)(float *pos, pmtrace_t *ptrace, int (*pfnIgnore)(physent_t *pe));
+	struct pmtrace_s *(*PM_TraceLineEx)(float *start, float *end, int flags, int usehulll, int (*pfnIgnore)(physent_t *pe));
 
-#endif // PM_DEFS_H
+} playermove_t;

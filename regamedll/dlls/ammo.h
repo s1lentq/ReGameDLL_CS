@@ -26,11 +26,7 @@
 *
 */
 
-#ifndef AMMO_H
-#define AMMO_H
-#ifdef _WIN32
 #pragma once
-#endif
 
 class C9MMAmmo: public CBasePlayerAmmo
 {
@@ -111,5 +107,3 @@ public:
 	virtual void Precache();
 	virtual BOOL AddAmmo(CBaseEntity *pOther);
 };
-
-#endif // AMMO_H

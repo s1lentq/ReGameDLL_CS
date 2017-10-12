@@ -14,6 +14,16 @@
 *    along with this program; if not, write to the Free Software Foundation,
 *    Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 *
+*    In addition, as a special exception, the author gives permission to
+*    link the code of this program with the Half-Life Game Engine ("HL
+*    Engine") and Modified Game Libraries ("MODs") developed by Valve,
+*    L.L.C ("Valve").  You must obey the GNU General Public License in all
+*    respects for all of the code used other than the HL Engine and MODs
+*    from Valve.  If you modify this file, you may extend this exception
+*    to your version of the file, but you are not obligated to do so.  If
+*    you do not wish to do so, delete this exception statement from your
+*    version.
+*
 */
 
 #include "precompiled.h"
@@ -39,11 +49,11 @@ bool AbstractHookChainRegistry::findHook(void* hookFunc) const
 void AbstractHookChainRegistry::addHook(void* hookFunc, int priority)
 {
 	if (!hookFunc) {
-		Sys_Error("%s: Parameter hookFunc can't be a nullptr", __FUNCTION__);
+		Sys_Error("%s: Parameter hookFunc can't be a nullptr", __func__);
 	}
 
 	if (findHook(hookFunc)) {
-		Sys_Error("%s: The same handler can't be used twice on the hookchain.", __FUNCTION__);
+		Sys_Error("%s: The same handler can't be used twice on the hookchain.", __func__);
 	}
 
 	for (auto i = 0; i < MAX_HOOKS_IN_CHAIN; i++)
@@ -62,7 +72,7 @@ void AbstractHookChainRegistry::addHook(void* hookFunc, int priority)
 	}
 
 	if (m_NumHooks >= MAX_HOOKS_IN_CHAIN) {
-		Sys_Error("%s: MAX_HOOKS_IN_CHAIN limit hit", __FUNCTION__);
+		Sys_Error("%s: MAX_HOOKS_IN_CHAIN limit hit", __func__);
 	}
 
 	m_NumHooks++;

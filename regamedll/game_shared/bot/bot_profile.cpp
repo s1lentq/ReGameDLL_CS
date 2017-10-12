@@ -6,8 +6,8 @@
 */
 #ifndef HOOK_GAMEDLL
 
-BotProfileManager *TheBotProfiles = NULL;
-char *BotDifficultyName[] = { "EASY", "NORMAL", "HARD", "EXPERT", NULL };
+BotProfileManager *TheBotProfiles = nullptr;
+char *BotDifficultyName[] = { "EASY", "NORMAL", "HARD", "EXPERT", nullptr };
 
 #endif
 
@@ -23,7 +23,7 @@ const char *GetDecoratedSkinName(const char *name, const char *filename)
 const char *BotProfile::GetWeaponPreferenceAsString(int i) const
 {
 	if (i < 0 || i >= m_weaponPreferenceCount)
-		return NULL;
+		return nullptr;
 
 	return WeaponIDToAlias(m_weaponPreference[i]);
 }
@@ -31,7 +31,7 @@ const char *BotProfile::GetWeaponPreferenceAsString(int i) const
 // Return true if this profile has a primary weapon preference
 bool BotProfile::HasPrimaryPreference() const
 {
-	for (int i = 0; i < m_weaponPreferenceCount; ++i)
+	for (int i = 0; i < m_weaponPreferenceCount; i++)
 	{
 		int weaponClass = AliasToWeaponClass(WeaponIDToAlias(m_weaponPreference[i]));
 
@@ -49,7 +49,7 @@ bool BotProfile::HasPrimaryPreference() const
 // Return true if this profile has a pistol weapon preference
 bool BotProfile::HasPistolPreference() const
 {
-	for (int i = 0; i < m_weaponPreferenceCount; ++i)
+	for (int i = 0; i < m_weaponPreferenceCount; i++)
 	{
 		if (AliasToWeaponClass(WeaponIDToAlias(m_weaponPreference[i])) == WEAPONCLASS_PISTOL)
 			return true;
@@ -67,11 +67,11 @@ bool BotProfile::IsValidForTeam(BotProfileTeamType team) const
 BotProfileManager::BotProfileManager()
 {
 	m_nextSkin = 0;
-	for (int i = 0; i < NumCustomSkins; ++i)
+	for (int i = 0; i < NumCustomSkins; i++)
 	{
-		m_skins[i] = NULL;
-		m_skinFilenames[i] = NULL;
-		m_skinModelnames[i] = NULL;
+		m_skins[i] = nullptr;
+		m_skinFilenames[i] = nullptr;
+		m_skinModelnames[i] = nullptr;
 	}
 }
 
@@ -80,9 +80,9 @@ void BotProfileManager::Init(const char *filename, unsigned int *checksum)
 {
 	int dataLength;
 	char *dataPointer = (char *)LOAD_FILE_FOR_ME(const_cast<char *>(filename), &dataLength);
-	const char *dataFile = dataPointer;
+	char *dataFile = dataPointer;
 
-	if (dataFile == NULL)
+	if (!dataFile)
 	{
 		if (AreBotsAllowed())
 		{
@@ -182,13 +182,13 @@ void BotProfileManager::Init(const char *filename, unsigned int *checksum)
 			if (m_nextSkin < NumCustomSkins && !skinExists)
 			{
 				// decorate the name
-				m_skins[ m_nextSkin ] = CloneString(decoratedName);
+				m_skins[m_nextSkin] = CloneString(decoratedName);
 
 				// construct the model filename
-				m_skinModelnames[ m_nextSkin ] = CloneString(token);
-				m_skinFilenames[ m_nextSkin ] = new char[ Q_strlen(token) * 2 + Q_strlen("models/player//.mdl") + 1 ];
-				Q_sprintf(m_skinFilenames[ m_nextSkin ], "models/player/%s/%s.mdl", token, token);
-				++m_nextSkin;
+				m_skinModelnames[m_nextSkin] = CloneString(token);
+				m_skinFilenames[m_nextSkin] = new char[Q_strlen(token) * 2 + Q_strlen("models/player//.mdl") + 1];
+				Q_sprintf(m_skinFilenames[m_nextSkin], "models/player/%s/%s.mdl", token, token);
+				m_nextSkin++;
 			}
 
 			// eat 'End'
@@ -228,7 +228,7 @@ void BotProfileManager::Init(const char *filename, unsigned int *checksum)
 		// do inheritance in order of appearance
 		if (!isTemplate && !isDefault)
 		{
-			const BotProfile *inherit = NULL;
+			const BotProfile *inherit = nullptr;
 
 			// template names are separated by "+"
 			while (true)
@@ -238,16 +238,16 @@ void BotProfileManager::Init(const char *filename, unsigned int *checksum)
 					*c = '\0';
 
 				// find the given template name
-				for (BotProfileList::iterator iter = templateList.begin(); iter != templateList.end(); ++iter)
+				for (auto templates : templateList)
 				{
-					if (!Q_stricmp((*iter)->GetName(), token))
+					if (!Q_stricmp(templates->GetName(), token))
 					{
-						inherit = (*iter);
+						inherit = templates;
 						break;
 					}
 				}
 
-				if (inherit == NULL)
+				if (!inherit)
 				{
 					CONSOLE_ECHO("Error parsing '%s' - invalid template reference '%s'\n", filename, token);
 					FREE_FILE(dataPointer);
@@ -257,7 +257,7 @@ void BotProfileManager::Init(const char *filename, unsigned int *checksum)
 				// inherit the data
 				profile->Inherit(inherit, &defaultProfile);
 
-				if (c == NULL)
+				if (c == nullptr)
 					break;
 
 				token = c + 1;
@@ -389,7 +389,7 @@ void BotProfileManager::Init(const char *filename, unsigned int *checksum)
 				{
 					if (profile->m_weaponPreferenceCount < BotProfile::MAX_WEAPON_PREFS)
 					{
-						profile->m_weaponPreference[ profile->m_weaponPreferenceCount++ ] = AliasToWeaponID(token);
+						profile->m_weaponPreference[profile->m_weaponPreferenceCount++] = AliasToWeaponID(token);
 					}
 				}
 			}
@@ -420,13 +420,13 @@ void BotProfileManager::Init(const char *filename, unsigned int *checksum)
 					if (c)
 						*c = '\0';
 
-					for (int i = 0; i < NUM_DIFFICULTY_LEVELS; ++i)
+					for (int i = 0; i < NUM_DIFFICULTY_LEVELS; i++)
 					{
 						if (!Q_stricmp(BotDifficultyName[i], token))
-							profile->m_difficultyFlags |= (1 << i);
+							profile->m_difficultyFlags |= (1<<i);
 					}
 
-					if (c == NULL)
+					if (c == nullptr)
 						break;
 
 					token = c + 1;
@@ -471,8 +471,8 @@ void BotProfileManager::Init(const char *filename, unsigned int *checksum)
 	FREE_FILE(dataPointer);
 
 	// free the templates
-	for (BotProfileList::iterator iter = templateList.begin(); iter != templateList.end(); ++iter)
-		delete (*iter);
+	for (auto templates : templateList)
+		delete templates;
 
 	templateList.clear();
 }
@@ -481,8 +481,8 @@ BotProfileManager::~BotProfileManager()
 {
 	Reset();
 
-	for (VoiceBankList::iterator it = m_voiceBanks.begin(); it != m_voiceBanks.end(); ++it)
-		delete[] (*it);
+	for (auto phrase : m_voiceBanks)
+		delete[] phrase;
 
 	m_voiceBanks.clear();
 }
@@ -490,27 +490,27 @@ BotProfileManager::~BotProfileManager()
 // Free all bot profiles
 void BotProfileManager::Reset()
 {
-	for (BotProfileList::iterator iter = m_profileList.begin(); iter != m_profileList.end(); ++iter)
-		delete (*iter);
+	for (auto profile : m_profileList)
+		delete profile;
 
 	m_profileList.clear();
 
-	for (int i = 0; i < NumCustomSkins; ++i)
+	for (int i = 0; i < NumCustomSkins; i++)
 	{
 		if (m_skins[i])
 		{
 			delete[] m_skins[i];
-			m_skins[i] = NULL;
+			m_skins[i] = nullptr;
 		}
 		if (m_skinFilenames[i])
 		{
 			delete[] m_skinFilenames[i];
-			m_skinFilenames[i] = NULL;
+			m_skinFilenames[i] = nullptr;
 		}
 		if (m_skinModelnames[i])
 		{
 			delete[] m_skinModelnames[i];
-			m_skinModelnames[i] = NULL;
+			m_skinModelnames[i] = nullptr;
 		}
 	}
 }
@@ -520,10 +520,10 @@ const char *BotProfileManager::GetCustomSkin(int index)
 {
 	if (index < FirstCustomSkin || index > LastCustomSkin)
 	{
-		return NULL;
+		return nullptr;
 	}
 
-	return m_skins[ index - FirstCustomSkin ];
+	return m_skins[index - FirstCustomSkin];
 }
 
 // Returns custom skin filename at a particular index
@@ -531,10 +531,10 @@ const char *BotProfileManager::GetCustomSkinFname(int index)
 {
 	if (index < FirstCustomSkin || index > LastCustomSkin)
 	{
-		return NULL;
+		return nullptr;
 	}
 
-	return m_skinFilenames[ index - FirstCustomSkin ];
+	return m_skinFilenames[index - FirstCustomSkin];
 }
 
 // Returns custom skin modelname at a particular index
@@ -542,22 +542,22 @@ const char *BotProfileManager::GetCustomSkinModelname(int index)
 {
 	if (index < FirstCustomSkin || index > LastCustomSkin)
 	{
-		return NULL;
+		return nullptr;
 	}
 
-	return m_skinModelnames[ index - FirstCustomSkin ];
+	return m_skinModelnames[index - FirstCustomSkin];
 }
 
 // Looks up a custom skin index by filename-decorated name (will decorate the name if filename is given)
 int BotProfileManager::GetCustomSkinIndex(const char *name, const char *filename)
 {
 	const char *skinName = name;
-	if (filename != NULL)
+	if (filename)
 	{
 		skinName = GetDecoratedSkinName(name, filename);
 	}
 
-	for (int i = 0; i < NumCustomSkins; ++i)
+	for (int i = 0; i < NumCustomSkins; i++)
 	{
 		if (m_skins[i])
 		{
@@ -575,12 +575,12 @@ int BotProfileManager::GetCustomSkinIndex(const char *name, const char *filename
 int BotProfileManager::FindVoiceBankIndex(const char *filename)
 {
 	int index = 0;
-	for (VoiceBankList::const_iterator it = m_voiceBanks.begin(); it != m_voiceBanks.end(); ++it, ++index)
+	for (auto phrase : m_voiceBanks)
 	{
-		if (!Q_stricmp(filename, *it))
-		{
+		if (!Q_stricmp(filename, phrase))
 			return index;
-		}
+
+		index++;
 	}
 
 	m_voiceBanks.push_back(CloneString(filename));
@@ -595,24 +595,19 @@ const BotProfile *BotProfileManager::GetRandomProfile(BotDifficultyType difficul
 
 	// count up valid profiles
 	int validCount = 0;
-	for (iter = m_profileList.begin(); iter != m_profileList.end(); ++iter)
+	for (auto profile : m_profileList)
 	{
-		const BotProfile *profile = (*iter);
-
 		if (profile->IsDifficulty(difficulty) && !UTIL_IsNameTaken(profile->GetName()) && profile->IsValidForTeam(team))
-			++validCount;
+			validCount++;
 	}
 
 	if (validCount == 0)
-		return NULL;
+		return nullptr;
 
 	// select one at random
 	int which = RANDOM_LONG(0, validCount - 1);
-
-	for (iter = m_profileList.begin(); iter != m_profileList.end(); ++iter)
+	for (auto profile : m_profileList)
 	{
-		const BotProfile *profile = (*iter);
-
 		if (profile->IsDifficulty(difficulty) && !UTIL_IsNameTaken(profile->GetName()) && profile->IsValidForTeam(team))
 		{
 			if (which-- == 0)
@@ -620,9 +615,9 @@ const BotProfile *BotProfileManager::GetRandomProfile(BotDifficultyType difficul
 		}
 	}
 
-	return NULL;
+	return nullptr;
 #else
 	// we don't need random profiles when we're not in the game dll
-	return NULL;
+	return nullptr;
 #endif // RANDOM_LONG
 }

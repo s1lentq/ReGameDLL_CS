@@ -26,11 +26,7 @@
 *
 */
 
-#ifndef AIRTANK_H
-#define AIRTANK_H
-#ifdef _WIN32
 #pragma once
-#endif
 
 class CAirtank: public CGrenade
 {
@@ -52,5 +48,3 @@ public:
 private:
 	int m_state;
 };
-
-#endif // AIRTANK_H

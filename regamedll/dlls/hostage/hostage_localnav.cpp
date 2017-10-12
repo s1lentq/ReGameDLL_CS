@@ -20,7 +20,7 @@ int CLocalNav::tot_hostages;
 CLocalNav::CLocalNav(CHostage *pOwner)
 {
 	m_pOwner = pOwner;
-	m_pTargetEnt = NULL;
+	m_pTargetEnt = nullptr;
 	m_nodeArr = new localnode_t[MAX_NODES];
 
 	if (tot_hostages >= MAX_HOSTAGES_NAV)
@@ -33,8 +33,11 @@ CLocalNav::CLocalNav(CHostage *pOwner)
 
 CLocalNav::~CLocalNav()
 {
-	delete[] m_nodeArr;
-	m_nodeArr = NULL;
+	if (m_nodeArr)
+	{
+		delete[] m_nodeArr;
+		m_nodeArr = nullptr;
+	}
 }
 
 node_index_t CLocalNav::AddNode(node_index_t nindexParent, Vector &vecLoc, int offsetX, int offsetY, byte bDepth)
@@ -654,11 +657,8 @@ BOOL CLocalNav::StepJumpable(Vector &vecSource, Vector &vecDest, int fNoMonsters
 {
 	Vector vecStepStart;
 	Vector vecStepDest;
-	//BOOL fFwdTrace = FALSE; // unused?
 	float flFwdFraction;
 	float flJumpHeight = s_flStepSize + 1.0f;
-	//BOOL fJumpClear = FALSE; // unused?
-	//edict_t *hit = NULL; // unused?
 
 	vecStepStart = vecSource;
 	vecStepStart.z += flJumpHeight;
@@ -747,11 +747,11 @@ BOOL CLocalNav::LadderHit(Vector &vecSource, Vector &vecDest, TraceResult &tr)
 void CLocalNav::Think()
 {
 	EHANDLE hCallback;
-	static cvar_t *sv_stepsize = NULL;
+	static cvar_t *sv_stepsize = nullptr;
 
 	if (gpGlobals->time >= flNextCvarCheck)
 	{
-		if (sv_stepsize != NULL)
+		if (sv_stepsize)
 			s_flStepSize = sv_stepsize->value;
 		else
 		{
@@ -788,7 +788,7 @@ void CLocalNav::Think()
 				tot_inqueue--;
 				if (!tot_inqueue)
 				{
-					hCallback = NULL;
+					hCallback = nullptr;
 					break;
 				}
 
@@ -857,7 +857,7 @@ void CLocalNav::HostagePrethink()
 {
 	for (int iCount = 0; iCount < tot_hostages; ++iCount)
 	{
-		if (hostages[ iCount ] != NULL)
+		if (hostages[ iCount ])
 		{
 			GetClassPtr<CCSHostage>((CHostage *)hostages[ iCount ]->pev)->PreThink();
 		}

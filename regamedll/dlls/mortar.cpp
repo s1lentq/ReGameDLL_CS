@@ -87,7 +87,7 @@ void CFuncMortarField::FieldUse(CBaseEntity *pActivator, CBaseEntity *pCaller, U
 	// Trigger Activator
 	case 1:
 	{
-		if (pActivator != NULL)
+		if (pActivator)
 		{
 			vecStart.x = pActivator->pev->origin.x;
 			vecStart.y = pActivator->pev->origin.y;
@@ -101,18 +101,18 @@ void CFuncMortarField::FieldUse(CBaseEntity *pActivator, CBaseEntity *pCaller, U
 
 		if (!FStringNull(m_iszXController))
 		{
-			pController = UTIL_FindEntityByTargetname(NULL, STRING(m_iszXController));
+			pController = UTIL_FindEntityByTargetname(nullptr, STRING(m_iszXController));
 
-			if (pController != NULL)
+			if (pController)
 			{
 				vecStart.x = pev->mins.x + pController->pev->ideal_yaw * pev->size.x;
 			}
 		}
 		if (!FStringNull(m_iszYController))
 		{
-			pController = UTIL_FindEntityByTargetname(NULL, STRING(m_iszYController));
+			pController = UTIL_FindEntityByTargetname(nullptr, STRING(m_iszYController));
 
-			if (pController != NULL)
+			if (pController)
 			{
 				vecStart.y = pev->mins.y + pController->pev->ideal_yaw * pev->size.y;
 			}
@@ -126,7 +126,7 @@ void CFuncMortarField::FieldUse(CBaseEntity *pActivator, CBaseEntity *pCaller, U
 	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "weapons/mortar.wav", VOL_NORM, ATTN_NONE, 0, pitch);
 
 	float t = 2.5f;
-	for (int i = 0; i < m_iCount; ++i)
+	for (int i = 0; i < m_iCount; i++)
 	{
 		Vector vecSpot = vecStart;
 		vecSpot.x += RANDOM_FLOAT(-m_flSpread, m_flSpread);
@@ -135,7 +135,7 @@ void CFuncMortarField::FieldUse(CBaseEntity *pActivator, CBaseEntity *pCaller, U
 		TraceResult tr;
 		UTIL_TraceLine(vecSpot, vecSpot + Vector(0, 0, -1) * 4096, ignore_monsters, ENT(pev), &tr);
 
-		edict_t *pentOwner = NULL;
+		edict_t *pentOwner = nullptr;
 		if (pActivator)
 		{
 			pentOwner = pActivator->edict();
@@ -183,16 +183,16 @@ void CMortar::MortarExplode()
 		WRITE_COORD(pev->origin.y);
 		WRITE_COORD(pev->origin.z + 1024);
 		WRITE_SHORT(m_spriteTexture);
-		WRITE_BYTE(0); // framerate
-		WRITE_BYTE(0); // framerate
-		WRITE_BYTE(1); // life
-		WRITE_BYTE(40); // width
-		WRITE_BYTE(0); // noise
-		WRITE_BYTE(255); // r, g, b
-		WRITE_BYTE(160); // r, g, b
-		WRITE_BYTE(100); // r, g, b
-		WRITE_BYTE(128); // brightness
-		WRITE_BYTE(0); // speed
+		WRITE_BYTE(0);		// framerate
+		WRITE_BYTE(0);		// framerate
+		WRITE_BYTE(1);		// life
+		WRITE_BYTE(40);		// width
+		WRITE_BYTE(0);		// noise
+		WRITE_BYTE(255);	// r, g, b
+		WRITE_BYTE(160);	// r, g, b
+		WRITE_BYTE(100);	// r, g, b
+		WRITE_BYTE(128);	// brightness
+		WRITE_BYTE(0);		// speed
 	MESSAGE_END();
 
 	TraceResult tr;

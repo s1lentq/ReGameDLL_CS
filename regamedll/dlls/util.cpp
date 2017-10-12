@@ -239,7 +239,7 @@ NOXREF BOOL UTIL_GetNextBestWeapon(CBasePlayer *pPlayer, CBasePlayerItem *pCurre
 	return g_pGameRules->GetNextBestWeapon(pPlayer,pCurrentWeapon);
 }
 
-NOXREF float UTIL_AngleMod(float a)
+float UTIL_AngleMod(float a)
 {
 	if (a < 0.0f)
 		a = a + 360.0f * (int(a / 360.0f) + 1);
@@ -282,13 +282,12 @@ NOXREF void UTIL_MoveToOrigin(edict_t *pent, const Vector &vecGoal, float flDist
 int UTIL_EntitiesInBox(CBaseEntity **pList, int listMax, const Vector &mins, const Vector &maxs, int flagMask)
 {
 	edict_t *pEdict = INDEXENT(1);
-	CBaseEntity *pEntity;
 	int count = 0;
 
 	if (!pEdict)
 		return 0;
 
-	for (int i = 1; i < gpGlobals->maxEntities; ++i, ++pEdict)
+	for (int i = 1; i < gpGlobals->maxEntities; i++, pEdict++)
 	{
 		if (pEdict->free)
 			continue;
@@ -296,16 +295,11 @@ int UTIL_EntitiesInBox(CBaseEntity **pList, int listMax, const Vector &mins, con
 		if (flagMask && !(pEdict->v.flags & flagMask))
 			continue;
 
-		if (mins.x > pEdict->v.absmax.x
-			|| mins.y > pEdict->v.absmax.y
-			|| mins.z > pEdict->v.absmax.z
-			|| maxs.x < pEdict->v.absmin.x
-			|| maxs.y < pEdict->v.absmin.y
-			|| maxs.z < pEdict->v.absmin.z)
+		CBaseEntity *pEntity = CBaseEntity::Instance(pEdict);
+		if (!pEntity)
 			continue;
 
-		pEntity = CBaseEntity::Instance(pEdict);
-		if (!pEntity)
+		if (!pEntity->Intersects(mins, maxs))
 			continue;
 
 		pList[count++] = pEntity;
@@ -331,7 +325,7 @@ NOXREF int UTIL_MonstersInSphere(CBaseEntity ** pList, int listMax, const Vector
 	if (!pEdict)
 		return count;
 
-	for (int i = 1; i < gpGlobals->maxEntities; ++i, ++pEdict)
+	for (int i = 1; i < gpGlobals->maxEntities; i++, pEdict++)
 	{
 		if (pEdict->free)
 			continue;
@@ -365,8 +359,7 @@ NOXREF int UTIL_MonstersInSphere(CBaseEntity ** pList, int listMax, const Vector
 		if (!pEntity)
 			continue;
 
-		pList[count] = pEntity;
-		count++;
+		pList[count++] = pEntity;
 
 		if (count >= listMax)
 			return count;
@@ -378,10 +371,10 @@ NOXREF int UTIL_MonstersInSphere(CBaseEntity ** pList, int listMax, const Vector
 CBaseEntity *UTIL_FindEntityInSphere(CBaseEntity *pStartEntity, const Vector &vecCenter, float flRadius)
 {
 	edict_t	*pentEntity;
-	if (pStartEntity != NULL)
+	if (pStartEntity)
 		pentEntity = pStartEntity->edict();
 	else
-		pentEntity = NULL;
+		pentEntity = nullptr;
 
 	pentEntity = FIND_ENTITY_IN_SPHERE(pentEntity, vecCenter, flRadius);
 	if (!FNullEnt(pentEntity))
@@ -389,16 +382,16 @@ CBaseEntity *UTIL_FindEntityInSphere(CBaseEntity *pStartEntity, const Vector &ve
 		return CBaseEntity::Instance(pentEntity);
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 CBaseEntity *UTIL_FindEntityByString_Old(CBaseEntity *pStartEntity, const char *szKeyword, const char *szValue)
 {
 	edict_t	*pentEntity;
-	if (pStartEntity != NULL)
+	if (pStartEntity)
 		pentEntity = pStartEntity->edict();
 	else
-		pentEntity = NULL;
+		pentEntity = nullptr;
 
 	pentEntity = FIND_ENTITY_BY_STRING(pentEntity, szKeyword, szValue);
 	if (!FNullEnt(pentEntity))
@@ -406,7 +399,7 @@ CBaseEntity *UTIL_FindEntityByString_Old(CBaseEntity *pStartEntity, const char *
 		return CBaseEntity::Instance(pentEntity);
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 CBaseEntity *EXT_FUNC UTIL_FindEntityByString(CBaseEntity *pStartEntity, const char *szKeyword, const char *szValue)
@@ -417,7 +410,7 @@ CBaseEntity *EXT_FUNC UTIL_FindEntityByString(CBaseEntity *pStartEntity, const c
 	if (pStartEntity)
 		pentEntity = pStartEntity->edict();
 	else
-		pentEntity = NULL;
+		pentEntity = nullptr;
 
 	startEntityIndex = ENTINDEX(pentEntity);
 
@@ -434,11 +427,11 @@ CBaseEntity *EXT_FUNC UTIL_FindEntityByString(CBaseEntity *pStartEntity, const c
 
 		if (!item->pev)
 		{
-			item->lastHash = NULL;
-			return NULL;
+			item->lastHash = nullptr;
+			return nullptr;
 		}
 
-		while (item->pev != NULL)
+		while (item->pev)
 		{
 			if (!Q_strcmp(STRING(item->pev->classname), szValue))
 				break;
@@ -449,11 +442,11 @@ CBaseEntity *EXT_FUNC UTIL_FindEntityByString(CBaseEntity *pStartEntity, const c
 
 		if (!item->pev)
 		{
-			item->lastHash = NULL;
-			return NULL;
+			item->lastHash = nullptr;
+			return nullptr;
 		}
 
-		if (pStartEntity != NULL)
+		if (pStartEntity)
 		{
 			if (item->lastHash && item->lastHash->pevIndex <= startEntityIndex)
 				item = item->lastHash;
@@ -470,8 +463,8 @@ CBaseEntity *EXT_FUNC UTIL_FindEntityByString(CBaseEntity *pStartEntity, const c
 
 				if (item->pevIndex == startEntityIndex)
 				{
-					stringsHashTable[ hash ].lastHash = NULL;
-					return NULL;
+					stringsHashTable[ hash ].lastHash = nullptr;
+					return nullptr;
 				}
 			}
 		}
@@ -487,7 +480,7 @@ CBaseEntity *EXT_FUNC UTIL_FindEntityByString(CBaseEntity *pStartEntity, const c
 		return CBaseEntity::Instance(pentEntity);
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 CBaseEntity *UTIL_FindEntityByClassname(CBaseEntity *pStartEntity, const char *szName)
@@ -502,13 +495,13 @@ CBaseEntity *UTIL_FindEntityByTargetname(CBaseEntity *pStartEntity, const char *
 
 CBaseEntity *UTIL_FindEntityGeneric(const char *szWhatever, const Vector &vecSrc, float flRadius)
 {
-	CBaseEntity *pSearch = NULL;
-	CBaseEntity *pEntity = UTIL_FindEntityByTargetname(NULL, szWhatever);
-	if (pEntity != NULL)
+	CBaseEntity *pSearch = nullptr;
+	CBaseEntity *pEntity = UTIL_FindEntityByTargetname(nullptr, szWhatever);
+	if (pEntity)
 		return pEntity;
 
 	float flMaxDist2 = flRadius * flRadius;
-	while ((pSearch = UTIL_FindEntityByClassname(pSearch, szWhatever)) != NULL)
+	while ((pSearch = UTIL_FindEntityByClassname(pSearch, szWhatever)))
 	{
 		float flDist2 = (pSearch->pev->origin - vecSrc).Length();
 		flDist2 = flDist2 * flDist2;
@@ -606,10 +599,10 @@ void UTIL_ScreenShake(const Vector &center, float amplitude, float frequency, fl
 	float localAmplitude;
 	ScreenShake shake;
 
-	shake.duration = FixedUnsigned16(duration, 1<<12);
-	shake.frequency = FixedUnsigned16(frequency, 1<<8);
+	shake.duration = FixedUnsigned16(duration, (1<<12));
+	shake.frequency = FixedUnsigned16(frequency, (1<<8));
 
-	for (i = 1; i <= gpGlobals->maxClients; ++i)
+	for (i = 1; i <= gpGlobals->maxClients; i++)
 	{
 		CBaseEntity *pPlayer = UTIL_PlayerByIndex(i);
 		if (!pPlayer || !(pPlayer->pev->flags & FL_ONGROUND))
@@ -631,7 +624,7 @@ void UTIL_ScreenShake(const Vector &center, float amplitude, float frequency, fl
 		{
 			shake.amplitude = FixedUnsigned16(localAmplitude, 1<<12);
 
-			MESSAGE_BEGIN(MSG_ONE, gmsgShake, NULL, pPlayer->edict());
+			MESSAGE_BEGIN(MSG_ONE, gmsgShake, nullptr, pPlayer->edict());
 				WRITE_SHORT(shake.amplitude);
 				WRITE_SHORT(shake.duration);
 				WRITE_SHORT(shake.frequency);
@@ -661,7 +654,7 @@ void UTIL_ScreenFadeWrite(const ScreenFade &fade, CBaseEntity *pEntity)
 	if (!pEntity || !pEntity->IsNetClient())
 		return;
 
-	MESSAGE_BEGIN(MSG_ONE, gmsgFade, NULL, pEntity->edict());
+	MESSAGE_BEGIN(MSG_ONE, gmsgFade, nullptr, pEntity->edict());
 		WRITE_SHORT(fade.duration);
 		WRITE_SHORT(fade.holdTime);
 		WRITE_SHORT(fade.fadeFlags);
@@ -677,7 +670,7 @@ void UTIL_ScreenFadeAll(const Vector &color, float fadeTime, float fadeHold, int
 	int i;
 	ScreenFade fade;
 	UTIL_ScreenFadeBuild(fade, color, fadeTime, fadeHold, alpha, flags);
-	for (i = 1; i <= gpGlobals->maxClients; ++i)
+	for (i = 1; i <= gpGlobals->maxClients; i++)
 	{
 		CBaseEntity *pPlayer = UTIL_PlayerByIndex(i);
 		UTIL_ScreenFadeWrite(fade, pPlayer);
@@ -696,51 +689,54 @@ void UTIL_HudMessage(CBaseEntity *pEntity, const hudtextparms_t &textparms, cons
 	if (!pEntity || !pEntity->IsNetClient())
 		return;
 
-	MESSAGE_BEGIN(MSG_ONE, SVC_TEMPENTITY, NULL, pEntity->edict());
-	WRITE_BYTE(TE_TEXTMESSAGE);
-	WRITE_BYTE(textparms.channel & 0xFF);
-	WRITE_SHORT(FixedSigned16(textparms.x,1<<13));
-	WRITE_SHORT(FixedSigned16(textparms.y,1<<13));
-	WRITE_BYTE(textparms.effect);
-	WRITE_BYTE(textparms.r1);
-	WRITE_BYTE(textparms.g1);
-	WRITE_BYTE(textparms.b1);
-	WRITE_BYTE(textparms.a1);
-	WRITE_BYTE(textparms.r2);
-	WRITE_BYTE(textparms.g2);
-	WRITE_BYTE(textparms.b2);
-	WRITE_BYTE(textparms.a2);
-	WRITE_SHORT(FixedUnsigned16(textparms.fadeinTime,1<<8));
-	WRITE_SHORT(FixedUnsigned16(textparms.fadeoutTime,1<<8));
-	WRITE_SHORT(FixedUnsigned16(textparms.holdTime,1<<8));
+	MESSAGE_BEGIN(MSG_ONE, SVC_TEMPENTITY, nullptr, pEntity->edict());
+		WRITE_BYTE(TE_TEXTMESSAGE);
+		WRITE_BYTE(textparms.channel & 0xFF);
+		WRITE_SHORT(FixedSigned16(textparms.x, (1<<13)));
+		WRITE_SHORT(FixedSigned16(textparms.y, (1<<13)));
+		WRITE_BYTE(textparms.effect);
+		WRITE_BYTE(textparms.r1);
+		WRITE_BYTE(textparms.g1);
+		WRITE_BYTE(textparms.b1);
+		WRITE_BYTE(textparms.a1);
+		WRITE_BYTE(textparms.r2);
+		WRITE_BYTE(textparms.g2);
+		WRITE_BYTE(textparms.b2);
+		WRITE_BYTE(textparms.a2);
+		WRITE_SHORT(FixedUnsigned16(textparms.fadeinTime, (1<<8)));
+		WRITE_SHORT(FixedUnsigned16(textparms.fadeoutTime, (1<<8)));
+		WRITE_SHORT(FixedUnsigned16(textparms.holdTime, (1<<8)));
 
-	if (textparms.effect == 2)
-		WRITE_SHORT(FixedUnsigned16(textparms.fxTime,1<<8));
+		if (textparms.effect == 2)
+			WRITE_SHORT(FixedUnsigned16(textparms.fxTime, (1<<8)));
 
-	if (!pMessage)
-		WRITE_STRING(" ");	//TODO: oh yeah
-	else
-	{
-		if (Q_strlen(pMessage) >= 512)
-		{
-			char tmp[512];
-			Q_strncpy(tmp, pMessage, 511);
-			tmp[511] = 0;
-			WRITE_STRING(tmp);
-		}
+		if (!pMessage)
+			WRITE_STRING(" ");
 		else
-			WRITE_STRING(pMessage);
-	}
+		{
+			if (Q_strlen(pMessage) >= 512)
+			{
+				char tmp[512];
+				Q_strlcpy(tmp, pMessage);
+				WRITE_STRING(tmp);
+			}
+			else
+			{
+				WRITE_STRING(pMessage);
+			}
+		}
 	MESSAGE_END();
 }
 
 void UTIL_HudMessageAll(const hudtextparms_t &textparms, const char *pMessage)
 {
-	for (int i = 1; i <= gpGlobals->maxClients; ++i)
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{
 		CBaseEntity *pPlayer = UTIL_PlayerByIndex(i);
 		if (pPlayer)
+		{
 			UTIL_HudMessage(pPlayer, textparms, pMessage);
+		}
 	}
 }
 
@@ -762,7 +758,7 @@ void UTIL_ClientPrintAll(int msg_dest, const char *msg_name, const char *param1,
 
 void ClientPrint(entvars_t *client, int msg_dest, const char *msg_name, const char *param1, const char *param2, const char *param3, const char *param4)
 {
-	MESSAGE_BEGIN(MSG_ONE, gmsgTextMsg, NULL, client);
+	MESSAGE_BEGIN(MSG_ONE, gmsgTextMsg, nullptr, client);
 		WRITE_BYTE(msg_dest);
 		WRITE_STRING(msg_name);
 	if (param1)
@@ -776,15 +772,88 @@ void ClientPrint(entvars_t *client, int msg_dest, const char *msg_name, const ch
 	MESSAGE_END();
 }
 
-NOXREF void UTIL_SayText(const char *pText, CBaseEntity *pEntity)
+void UTIL_Log(const char *fmt, ...)
 {
-	if (pEntity->IsNetClient())
-	{
-		MESSAGE_BEGIN(MSG_ONE, gmsgSayText, NULL, pEntity->edict());
-			WRITE_BYTE(pEntity->entindex());
-			WRITE_STRING(pText);
-		MESSAGE_END();
-	}
+	va_list ap;
+	static char string[1024];
+
+	va_start(ap, fmt);
+	Q_vsnprintf(string, sizeof(string), fmt, ap);
+	va_end(ap);
+
+	if (Q_strlen(string) < sizeof(string) - 2)
+		Q_strcat(string, "\n");
+	else
+		string[Q_strlen(string) - 1] = '\n';
+
+	FILE *fp = fopen("regamedll.log", "at");
+	fprintf(fp, "%s", string);
+	fclose(fp);
+}
+
+void UTIL_ServerPrint(const char *fmt, ...)
+{
+	// Check is null, test the demo started before than searches pointer to refs
+	if (&g_engfuncs == nullptr || g_engfuncs.pfnServerPrint == nullptr)
+		return;
+
+	static char string[1024];
+	va_list ap;
+	va_start(ap, fmt);
+	Q_vsnprintf(string, sizeof(string), fmt, ap);
+	va_end(ap);
+
+	if (Q_strlen(string) < sizeof(string) - 2)
+		Q_strcat(string, "\n");
+	else
+		string[Q_strlen(string) - 1] = '\n';
+
+	SERVER_PRINT(string);
+}
+
+void UTIL_PrintConsole(edict_t *pEdict, const char *fmt, ...)
+{
+	CBaseEntity *pEntity = GET_PRIVATE<CBaseEntity>(pEdict);
+	if (!pEntity || !pEntity->IsNetClient())
+		return;
+
+	static char string[1024];
+
+	va_list ap;
+	va_start(ap, fmt);
+	Q_vsnprintf(string, sizeof(string), fmt, ap);
+	va_end(ap);
+
+	if (Q_strlen(string) < sizeof(string) - 2)
+		Q_strcat(string, "\n");
+	else
+		string[Q_strlen(string) - 1] = '\n';
+
+	ClientPrint(pEntity->pev, HUD_PRINTCONSOLE, string);
+}
+
+void UTIL_SayText(edict_t *pEdict, const char *fmt, ...)
+{
+	CBaseEntity *pEntity = GET_PRIVATE<CBaseEntity>(pEdict);
+	if (!pEntity || !pEntity->IsNetClient())
+		return;
+
+	static char string[1024];
+
+	va_list ap;
+	va_start(ap, fmt);
+	Q_vsnprintf(string, sizeof(string), fmt, ap);
+	va_end(ap);
+
+	if (Q_strlen(string) < sizeof(string) - 2)
+		Q_strcat(string, "\n");
+	else
+		string[Q_strlen(string) - 1] = '\n';
+
+	MESSAGE_BEGIN(MSG_ONE, gmsgSayText, nullptr, pEntity->edict());
+		WRITE_BYTE(pEntity->entindex());
+		WRITE_STRING(string);
+	MESSAGE_END();
 }
 
 void UTIL_SayTextAll(const char *pText, CBaseEntity *pEntity)
@@ -833,19 +902,19 @@ void UTIL_ShowMessageArgs(const char *pString, CBaseEntity *pPlayer, CUtlVector<
 
 	if (args)
 	{
-		MESSAGE_BEGIN(MSG_ONE, gmsgHudTextArgs, NULL, pPlayer->pev);
+		MESSAGE_BEGIN(MSG_ONE, gmsgHudTextArgs, nullptr, pPlayer->pev);
 			WRITE_STRING(pString);
 			WRITE_BYTE(isHint);
 			WRITE_BYTE(args->Count());
 
-		for (int i = 0; i < args->Count(); ++i)
+		for (int i = 0; i < args->Count(); i++)
 			WRITE_STRING((*args)[i]);
 
 		MESSAGE_END();
 	}
 	else
 	{
-		MESSAGE_BEGIN(MSG_ONE, gmsgHudText, NULL, pPlayer->pev);
+		MESSAGE_BEGIN(MSG_ONE, gmsgHudText, nullptr, pPlayer->pev);
 			WRITE_STRING(pString);
 			WRITE_BYTE(isHint);
 		MESSAGE_END();
@@ -857,7 +926,7 @@ void UTIL_ShowMessage(const char *pString, CBaseEntity *pEntity, bool isHint)
 	if (!pEntity || !pEntity->IsNetClient())
 		return;
 
-	MESSAGE_BEGIN(MSG_ONE, gmsgHudText, NULL, pEntity->edict());
+	MESSAGE_BEGIN(MSG_ONE, gmsgHudText, nullptr, pEntity->edict());
 		WRITE_STRING(pString);
 		WRITE_BYTE(int(isHint));
 	MESSAGE_END();
@@ -865,7 +934,7 @@ void UTIL_ShowMessage(const char *pString, CBaseEntity *pEntity, bool isHint)
 
 void UTIL_ShowMessageAll(const char *pString, bool isHint)
 {
-	for (int i = 1; i <= gpGlobals->maxClients; ++i)
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{
 		CBaseEntity *pPlayer = UTIL_PlayerByIndex(i);
 		if (pPlayer)
@@ -924,10 +993,11 @@ float UTIL_VecToYaw(const Vector &vec)
 
 void UTIL_SetOrigin(entvars_t *pev, const Vector &vecOrigin)
 {
-	edict_t *ent = ENT(pev);
-
-	if (ent != NULL)
-		SET_ORIGIN(ent, vecOrigin);
+	edict_t *pEdict = ENT(pev);
+	if (pEdict)
+	{
+		SET_ORIGIN(pEdict, vecOrigin);
+	}
 }
 
 NOXREF void UTIL_ParticleEffect(const Vector &vecOrigin, const Vector &vecDirection, ULONG ulColor, ULONG ulCount)
@@ -951,7 +1021,12 @@ float UTIL_Approach(float target, float value, float speed)
 float_precision UTIL_ApproachAngle(float target, float value, float speed)
 {
 	target = UTIL_AngleMod(target);
+
+#ifdef REGAMEDLL_FIXES
+	value = UTIL_AngleMod(value);
+#else
 	value = UTIL_AngleMod(target);
+#endif
 
 	float delta = target - value;
 	if (speed < 0.0f)
@@ -1012,21 +1087,22 @@ NOXREF Vector UTIL_GetAimVector(edict_t *pent, float flSpeed)
 	return tmp;
 }
 
-int UTIL_IsMasterTriggered(string_t sMaster, CBaseEntity *pActivator)
+bool UTIL_IsMasterTriggered(string_t sMaster, CBaseEntity *pActivator)
 {
 	if (sMaster)
 	{
-		edict_t *pentTarget = FIND_ENTITY_BY_TARGETNAME(NULL, STRING(sMaster));
+		edict_t *pentTarget = FIND_ENTITY_BY_TARGETNAME(nullptr, STRING(sMaster));
 		if (!FNullEnt(pentTarget))
 		{
 			CBaseEntity *pMaster = CBaseEntity::Instance(pentTarget);
 			if (pMaster && (pMaster->ObjectCaps() & FCAP_MASTER))
-				return pMaster->IsTriggered(pActivator);
+				return pMaster->IsTriggered(pActivator) != FALSE;
 		}
+
 		ALERT(at_console, "Master was null or not a master!\n");
 	}
 
-	return 1;
+	return true;
 }
 
 BOOL UTIL_ShouldShowBlood(int color)
@@ -1250,18 +1326,18 @@ void UTIL_Ricochet(const Vector &position, float scale)
 	MESSAGE_END();
 }
 
-BOOL UTIL_TeamsMatch(const char *pTeamName1, const char *pTeamName2)
+bool UTIL_TeamsMatch(const char *pTeamName1, const char *pTeamName2)
 {
 	if (!g_pGameRules->IsTeamplay())
-		return TRUE;
+		return true;
 
 	if (*pTeamName1 != '\0' && *pTeamName2 != '\0')
 	{
 		if (!Q_stricmp(pTeamName1, pTeamName2))
-			return TRUE;
+			return true;
 	}
 
-	return FALSE;
+	return false;
 }
 
 void UTIL_StringToVector(float *pVector, const char *pString)
@@ -1292,6 +1368,43 @@ void UTIL_StringToVector(float *pVector, const char *pString)
 
 	for (j++; j < 3; j++)
 		pVector[j] = 0;
+}
+
+void UTIL_StringToVector(Vector &vecIn, const char *pString, char cSeparator)
+{
+	return UTIL_StringToVectorND(vecIn, 3, pString, cSeparator);
+}
+
+void UTIL_StringToVectorND(Vector &vecIn, int nCount, const char *pString, char cSeparator)
+{
+	int i;
+	char *pstr;
+	char *pfront;
+	char tempString[128];
+
+	Q_strlcpy(tempString, pString);
+
+	pstr = tempString;
+	pfront = tempString;
+
+	for (i = 0; i < nCount; i++)
+	{
+		vecIn[i] = Q_atof(pfront);
+
+		while (*pstr && *pstr != cSeparator)
+			pstr++;
+
+		if (!*pstr)
+			break;
+
+		pstr++;
+		pfront = pstr;
+	}
+
+	if (++i < nCount)
+	{
+		Q_memset(&vecIn[i], 0, sizeof(float) * (nCount - i));
+	}
 }
 
 void UTIL_StringToIntArray(int *pVector, int count, const char *pString)
@@ -1374,6 +1487,7 @@ float UTIL_WaterLevel(const Vector &position, float minz, float maxz)
 
 		diff = maxz - minz;
 	}
+
 	return midUp.z;
 }
 
@@ -1433,6 +1547,19 @@ void UTIL_Remove(CBaseEntity *pEntity)
 	if (!pEntity)
 		return;
 
+#if 0
+	// TODO: Some safe checks.
+	if (pEntity == VARS(eoNullEntity))
+		return;
+
+	if (pEntity->IsPlayer())
+	{
+		pEntity->pev->health = 1.0f;
+		pEntity->TakeDamage(VARS(eoNullEntity), VARS(eoNullEntity), 9999, DMG_ALWAYSGIB);
+		return;
+	}
+#endif
+
 	pEntity->UpdateOnRemove();
 	pEntity->pev->flags |= FL_KILLME;
 	pEntity->pev->targetname = 0;
@@ -1456,7 +1583,7 @@ void UTIL_PrecacheOther(const char *szClassname)
 	}
 
 	CBaseEntity *pEntity = CBaseEntity::Instance(VARS(pent));
-	if (pEntity != NULL)
+	if (pEntity)
 	{
 		pEntity->Precache();
 	}
@@ -1476,7 +1603,7 @@ void UTIL_RestartOther(const char *szClassname)
 void UTIL_ResetEntities()
 {
 	edict_t *pEdict = INDEXENT(1);
-	for (int i = 1; i < gpGlobals->maxEntities; ++i, ++pEdict)
+	for (int i = 1; i < gpGlobals->maxEntities; i++, pEdict++)
 	{
 		if (pEdict->free)
 			continue;
@@ -1532,20 +1659,9 @@ NOXREF float UTIL_DotPoints(const Vector &vecSrc, const Vector &vecCheck, const 
 	return DotProduct(vec2LOS, (vecDir.Make2D()));
 }
 
-void UTIL_StripToken(const char *pKey, char *pDest)
-{
-	int i = 0;
-	while (pKey[i] && pKey[i] != '#')
-	{
-		pDest[i] = pKey[i];
-		++i;
-	}
-	pDest[i] = '\0';
-}
-
 CSaveRestoreBuffer::CSaveRestoreBuffer()
 {
-	m_pdata = NULL;
+	m_pdata = nullptr;
 }
 
 CSaveRestoreBuffer::CSaveRestoreBuffer(SAVERESTOREDATA *pdata)
@@ -1584,7 +1700,7 @@ int CSaveRestoreBuffer::EntityIndex(edict_t *pentLookup)
 	if (!m_pdata || !pentLookup)
 		return -1;
 
-	for (int i = 0; i < m_pdata->tableCount; ++i)
+	for (int i = 0; i < m_pdata->tableCount; i++)
 	{
 		ENTITYTABLE *pTable = &m_pdata->pTable[i];
 		if (pTable->pent == pentLookup)
@@ -1597,16 +1713,16 @@ int CSaveRestoreBuffer::EntityIndex(edict_t *pentLookup)
 edict_t *CSaveRestoreBuffer::EntityFromIndex(int entityIndex)
 {
 	if (!m_pdata || entityIndex < 0)
-		return NULL;
+		return nullptr;
 
-	for (int i = 0; i < m_pdata->tableCount; ++i)
+	for (int i = 0; i < m_pdata->tableCount; i++)
 	{
 		ENTITYTABLE *pTable = &m_pdata->pTable[i];
 		if (pTable->id == entityIndex)
 			return pTable->pent;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 int CSaveRestoreBuffer::EntityFlagsSet(int entityIndex, int flags)
@@ -1668,7 +1784,7 @@ unsigned int CSaveRestoreBuffer::HashString(const char *pszToken)
 unsigned short CSaveRestoreBuffer::TokenHash(const char *pszToken)
 {
 	unsigned short hash = (unsigned short)(HashString(pszToken) % (unsigned)m_pdata->tokenCount);
-	for (int i = 0; i < m_pdata->tokenCount; ++i)
+	for (int i = 0; i < m_pdata->tokenCount; i++)
 	{
 		int index = hash + i;
 		if (index >= m_pdata->tokenCount)
@@ -1710,7 +1826,7 @@ void CSave::WriteTime(const char *pname, const float *data, int count)
 	int i;
 	BufferHeader(pname, sizeof(float) * count);
 
-	for (i = 0; i < count; ++i)
+	for (i = 0; i < count; i++)
 	{
 		float tmp = data[0];
 
@@ -1732,11 +1848,11 @@ void CSave::WriteString(const char *pname, const int *stringId, int count)
 	int i;
 	int size = 0;
 
-	for (i = 0; i < count; ++i)
+	for (i = 0; i < count; i++)
 		size += Q_strlen(STRING(stringId[i])) + 1;
 
 	BufferHeader(pname, size);
-	for (i = 0; i < count; ++i)
+	for (i = 0; i < count; i++)
 	{
 		const char *pString = STRING(stringId[i]);
 		BufferData(pString, Q_strlen(pString) + 1);
@@ -1767,7 +1883,7 @@ NOXREF void CSave::WritePositionVector(const char *pname, const Vector &value)
 void CSave::WritePositionVector(const char *pname, const float *value, int count)
 {
 	BufferHeader(pname, sizeof(float) * 3 * count);
-	for (int i = 0; i < count; ++i)
+	for (int i = 0; i < count; i++)
 	{
 		Vector tmp(value[0], value[1], value[2]);
 
@@ -1791,7 +1907,7 @@ void CSave::WriteFunction(const char *pname, void **data, int count)
 
 void EntvarsKeyvalue(entvars_t *pev, KeyValueData *pkvd)
 {
-	for (int i = 0; i < ARRAYSIZE(gEntvarsDescription); ++i)
+	for (int i = 0; i < ARRAYSIZE(gEntvarsDescription); i++)
 	{
 		TYPEDESCRIPTION *pField = &gEntvarsDescription[i];
 
@@ -1841,7 +1957,7 @@ int CSave::WriteFields(const char *pname, void *pBaseData, TYPEDESCRIPTION *pFie
 	int i;
 	int emptyCount = 0;
 
-	for (i = 0; i < fieldCount; ++i)
+	for (i = 0; i < fieldCount; i++)
 	{
 		void *pOutputData = ((char *)pBaseData + pFields[i].fieldOffset);
 		if (DataEmpty((const char *)pOutputData, pFields[i].fieldSize * gSizes[pFields[i].fieldType]))
@@ -1852,7 +1968,7 @@ int CSave::WriteFields(const char *pname, void *pBaseData, TYPEDESCRIPTION *pFie
 	int actualCount = fieldCount - emptyCount;
 
 	WriteInt(pname, &actualCount, 1);
-	for (i = 0; i < fieldCount; ++i)
+	for (i = 0; i < fieldCount; i++)
 	{
 		TYPEDESCRIPTION *pTest = &pFields[i];
 		void *pOutputData = ((char *)pBaseData + pTest->fieldOffset);
@@ -1950,7 +2066,7 @@ NOXREF void CSave::BufferString(char *pdata, int len)
 
 int CSave::DataEmpty(const char *pdata, int size)
 {
-	for (int i = 0; i < size; ++i)
+	for (int i = 0; i < size; i++)
 	{
 		if (pdata[i])
 			return 0;
@@ -2003,7 +2119,7 @@ int CRestore::ReadField(void *pBaseData, TYPEDESCRIPTION *pFields, int fieldCoun
 		if (m_pdata->fUseLandmark)
 			position = m_pdata->vecLandmarkOffset;
 	}
-	for (int i = 0; i < fieldCount; ++i)
+	for (int i = 0; i < fieldCount; i++)
 	{
 		int fieldNumber = (i + startField) % fieldCount;
 		TYPEDESCRIPTION *pTest = &pFields[fieldNumber];
@@ -2066,7 +2182,7 @@ int CRestore::ReadField(void *pBaseData, TYPEDESCRIPTION *pFields, int fieldCoun
 							if (pent)
 								*((entvars_t **)pOutputData) = VARS(pent);
 							else
-								*((entvars_t **)pOutputData) = NULL;
+								*((entvars_t **)pOutputData) = nullptr;
 
 							break;
 						}
@@ -2078,7 +2194,7 @@ int CRestore::ReadField(void *pBaseData, TYPEDESCRIPTION *pFields, int fieldCoun
 							if (pent)
 								*((CBaseEntity **)pOutputData) = CBaseEntity::Instance(pent);
 							else
-								*((CBaseEntity **)pOutputData) = NULL;
+								*((CBaseEntity **)pOutputData) = nullptr;
 
 							break;
 						}
@@ -2098,7 +2214,7 @@ int CRestore::ReadField(void *pBaseData, TYPEDESCRIPTION *pFields, int fieldCoun
 							if (pent)
 								*((EHANDLE *)pOutputData) = CBaseEntity::Instance(pent);
 							else
-								*((EHANDLE *)pOutputData) = NULL;
+								*((EHANDLE *)pOutputData) = nullptr;
 
 							break;
 						}
@@ -2181,12 +2297,12 @@ int CRestore::ReadFields(const char *pname, void *pBaseData, TYPEDESCRIPTION *pF
 	int fileCount = ReadInt();
 	int lastField = 0;
 
-	for (i = 0; i < fieldCount; ++i)
+	for (i = 0; i < fieldCount; i++)
 	{
 		if (!m_global || !(pFields[i].flags & FTYPEDESC_GLOBAL))
 			Q_memset(((char *)pBaseData + pFields[i].fieldOffset), 0, pFields[i].fieldSize * gSizes[pFields[i].fieldType]);
 	}
-	for (i = 0; i < fileCount; ++i)
+	for (i = 0; i < fileCount; i++)
 	{
 		HEADER header;
 		BufferReadHeader(&header);
@@ -2194,6 +2310,7 @@ int CRestore::ReadFields(const char *pname, void *pBaseData, TYPEDESCRIPTION *pF
 		lastField = ReadField(pBaseData, pFields, fieldCount, lastField, header.size, m_pdata->pTokens[header.token], header.pData);
 		lastField++;
 	}
+
 	return 1;
 }
 
@@ -2237,7 +2354,7 @@ NOXREF char *CRestore::ReadNamedString(const char *pName)
 char *CRestore::BufferPointer()
 {
 	if (!m_pdata)
-		return NULL;
+		return nullptr;
 
 	return m_pdata->pCurrentData;
 }
@@ -2263,7 +2380,7 @@ void CRestore::BufferReadBytes(char *pOutput, int size)
 
 void CRestore::BufferSkipBytes(int bytes)
 {
-	BufferReadBytes(NULL, bytes);
+	BufferReadBytes(nullptr, bytes);
 }
 
 NOXREF int CRestore::BufferSkipZString()
@@ -2349,14 +2466,14 @@ NOXREF int GetPlayerTeam(int index)
 	return 0;
 }
 
-bool UTIL_IsGame(const char *gameName)
+bool UTIL_IsGame(const char *pszGameName)
 {
 #ifndef CSTRIKE
-	if (gameName != NULL)
+	if (pszGameName)
 	{
-		static char gameDir[256];
-		GET_GAME_DIR(gameDir);
-		return (Q_stricmp(gameDir, gameName) == 0);
+		char szGameDir[256];
+		GET_GAME_DIR(szGameDir);
+		return (Q_stricmp(szGameDir, pszGameName) == 0);
 	}
 #endif
 
@@ -2395,16 +2512,16 @@ int UTIL_ReadFlags(const char *c)
 bool UTIL_AreBotsAllowed()
 {
 #ifdef REGAMEDLL_ADD
-	if (g_engfuncs.pfnEngCheckParm == NULL)
+	if (g_engfuncs.pfnEngCheckParm == nullptr)
 		return false;
 #endif
 
-	if (g_bIsCzeroGame)
+	if (AreRunningCZero())
 	{
 #ifdef REGAMEDLL_ADD
 		// If they pass in -nobots, don't allow bots.  This is for people who host servers, to
 		// allow them to disallow bots to enforce CPU limits.
-		int nobots = ENG_CHECK_PARM("-nobots", NULL);
+		int nobots = ENG_CHECK_PARM("-nobots", nullptr);
 		if (nobots)
 		{
 			return false;
@@ -2422,7 +2539,7 @@ bool UTIL_AreBotsAllowed()
 	}
 
 	// allow the using of bots for CS 1.6
-	int bots = ENG_CHECK_PARM("-bots", NULL);
+	int bots = ENG_CHECK_PARM("-bots", nullptr);
 	if (bots)
 	{
 		return true;
@@ -2434,19 +2551,55 @@ bool UTIL_AreBotsAllowed()
 
 bool UTIL_AreHostagesImprov()
 {
-	if (g_bIsCzeroGame)
+	if (AreRunningCZero())
 	{
 		return true;
 	}
 
 #ifdef REGAMEDLL_ADD
 	// someday in CS 1.6
-	int improv = ENG_CHECK_PARM("-host-improv", NULL);
+	int improv = ENG_CHECK_PARM("-host-improv", nullptr);
 	if (improv)
 	{
 		return true;
 	}
 #endif
+
+	return false;
+}
+
+int UTIL_GetNumPlayers()
+{
+	int nNumPlayers = 0;
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	{
+		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
+		if (pPlayer)
+		{
+			nNumPlayers++;
+		}
+	}
+
+	return nNumPlayers;
+}
+
+bool UTIL_IsSpawnPointOccupied(CBaseEntity *pSpot)
+{
+	if (!pSpot)
+		return false;
+
+	const int maxList = 8;
+	CBaseEntity *pList[maxList];
+
+	Vector mins(pSpot->pev->origin + VEC_SPOT_HULL_MIN - 8.0);
+	Vector maxs(pSpot->pev->origin + VEC_SPOT_HULL_MAX + 8.0);
+
+	int nCount = UTIL_EntitiesInBox(pList, maxList, mins, maxs, FL_MONSTER | FL_CLIENT);
+	for (int i = 0; i < nCount; i++)
+	{
+		if (pList[i]->pev->solid != SOLID_NOT)
+			return false;
+	}
 
 	return false;
 }
@@ -2471,9 +2624,58 @@ void NORETURN Sys_Error(const char *error, ...)
 	vsnprintf(text, sizeof(text), error, argptr);
 	va_end(argptr);
 
+	FILE *fl = fopen("regamedll_error.txt", "w");
+	fprintf(fl, "%s\n", text);
+	fclose(fl);
+
 	CONSOLE_ECHO("FATAL ERROR (shutting down): %s\n", text);
 
+	//TerminateProcess(GetCurrentProcess(), 1);
 	int *null = 0;
 	*null = 0;
 	exit(-1);
+}
+
+int UTIL_CountPlayersInBrushVolume(bool bOnlyAlive, CBaseEntity *pBrushEntity, int &playersInCount, int &playersOutCount, CPlayerInVolumeAdapter *pAdapter)
+{
+	playersInCount = 0;
+	playersOutCount = 0;
+
+	if (pBrushEntity)
+	{
+		for (int i = 1; i <= gpGlobals->maxClients; i++)
+		{
+			CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
+
+			if (!pPlayer || !pPlayer->IsInWorld())
+				continue;
+
+			if (bOnlyAlive && !pPlayer->IsAlive())
+				continue;
+
+			TraceResult trace;
+			int hullNumber = (pPlayer->pev->flags & FL_DUCKING) ? head_hull : human_hull;
+			UTIL_TraceModel(pPlayer->pev->origin, pPlayer->pev->origin, hullNumber, pBrushEntity->edict(), &trace);
+
+			bool fInVolume = trace.fStartSolid > 0.0f;
+			if (fInVolume)
+			{
+				playersInCount++;
+			}
+			else
+			{
+				playersOutCount++;
+			}
+
+			if (pAdapter) {
+				pAdapter->PlayerDetected(fInVolume, pPlayer);
+			}
+		}
+	}
+	else
+	{
+		playersOutCount = UTIL_GetNumPlayers();
+	}
+
+	return playersInCount + playersOutCount;
 }

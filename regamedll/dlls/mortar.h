@@ -26,11 +26,7 @@
 *
 */
 
-#ifndef MORTAR_H
-#define MORTAR_H
-#ifdef _WIN32
 #pragma once
-#endif
 
 class CFuncMortarField: public CBaseToggle
 {
@@ -69,5 +65,3 @@ public:
 public:
 	int m_spriteTexture;
 };
-
-#endif // MORTAR_H

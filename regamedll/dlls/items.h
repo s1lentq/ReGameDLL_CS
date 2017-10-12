@@ -25,6 +25,7 @@
 *   version.
 *
 */
+
 #pragma once
 
 #define DEFINE_ITEMINFO(id, classname)\
@@ -32,14 +33,14 @@
 
 enum ItemRestType
 {
-	ITEM_TYPE_BUYING,	// when a player buying items
-	ITEM_TYPE_TOUCHED,	// when the player touches with a weaponbox or armoury_entity
-	ITEM_TYPE_EQUIPPED	// when an entity game_player_equip gives item to player or default item's on player spawn
+	ITEM_TYPE_BUYING,  // When a player is buying items
+	ITEM_TYPE_TOUCHED, // When the player touches with a weaponbox or armoury_entity
+	ITEM_TYPE_EQUIPPED // When an entity game_player_equip gives item to player or default items on player spawn
 };
 
 // constant items
-#define ITEM_ID_ANTIDOTE	2
-#define ITEM_ID_SECURITY	3
+#define ITEM_ID_ANTIDOTE 2
+#define ITEM_ID_SECURITY 3
 
 enum ItemID
 {

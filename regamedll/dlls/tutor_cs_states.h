@@ -26,40 +26,7 @@
 *
 */
 
-#ifndef TUTOR_CS_STATES_H
-#define TUTOR_CS_STATES_H
-#ifdef _WIN32
 #pragma once
-#endif
-
-// unknown flags
-#define TUTOR_STATE_FLAG_1		0x00000014
-#define TUTOR_STATE_FLAG_2		0x00000013
-
-enum TutorStateType
-{
-	TUTORSTATE_UNDEFINED = 0,
-	TUTORSTATE_LOOKING_FOR_HOSTAGE,
-	TUTORSTATE_ESCORTING_HOSTAGE,
-	TUTORSTATE_LOOKING_FOR_LOST_HOSTAGE,
-	TUTORSTATE_FOLLOWING_HOSTAGE_ESCORT,
-	TUTORSTATE_MOVING_TO_BOMBSITE,
-	TUTORSTATE_LOOKING_FOR_BOMB_CARRIER,
-	TUTORSTATE_GUARDING_LOOSE_BOMB,
-	TUTORSTATE_DEFUSING_BOMB,
-	TUTORSTATE_GUARDING_HOSTAGE,
-	TUTORSTATE_MOVING_TO_INTERCEPT_ENEMY,
-	TUTORSTATE_LOOKING_FOR_HOSTAGE_ESCORT,
-	TUTORSTATE_ATTACKING_HOSTAGE_ESCORT,
-	TUTORSTATE_ESCORTING_BOMB_CARRIER,
-	TUTORSTATE_MOVING_TO_BOMB_SITE,
-	TUTORSTATE_PLANTING_BOMB,
-	TUTORSTATE_GUARDING_BOMB,
-	TUTORSTATE_LOOKING_FOR_LOOSE_BOMB,
-	TUTORSTATE_RUNNING_AWAY_FROM_TICKING_BOMB,
-	TUTORSTATE_BUYTIME,
-	TUTORSTATE_WAITING_FOR_START,
-};
 
 class CCSTutorStateSystem: public CBaseTutorStateSystem
 {
@@ -68,10 +35,10 @@ public:
 
 	virtual ~CCSTutorStateSystem();
 	virtual bool UpdateState(GameEventType event, CBaseEntity *entity, CBaseEntity *other);
-	virtual char *GetCurrentStateString();
+	virtual const char *GetCurrentStateString();
 
 protected:
-	virtual CBaseTutorState *ConstructNewState(int stateType);
+	virtual CBaseTutorState *ConstructNewState(TutorStateType stateType);
 };
 
 class CCSTutorUndefinedState: public CBaseTutorState
@@ -80,11 +47,11 @@ public:
 	CCSTutorUndefinedState();
 
 	virtual ~CCSTutorUndefinedState();
-	virtual int CheckForStateTransition(GameEventType event, CBaseEntity *entity, CBaseEntity *other);
-	virtual char *GetStateString();
+	virtual TutorStateType CheckForStateTransition(GameEventType event, CBaseEntity *entity, CBaseEntity *other);
+	virtual const char *GetStateString();
 
 protected:
-	int HandlePlayerSpawned(CBaseEntity *entity, CBaseEntity *other);
+	TutorStateType HandlePlayerSpawned(CBaseEntity *entity, CBaseEntity *other);
 };
 
 class CCSTutorWaitingForStartState: public CBaseTutorState
@@ -93,12 +60,12 @@ public:
 	CCSTutorWaitingForStartState();
 
 	virtual ~CCSTutorWaitingForStartState();
-	virtual int CheckForStateTransition(GameEventType event, CBaseEntity *entity, CBaseEntity *other);
-	virtual char *GetStateString();
+	virtual TutorStateType CheckForStateTransition(GameEventType event, CBaseEntity *entity, CBaseEntity *other);
+	virtual const char *GetStateString();
 
 protected:
-	int HandlePlayerSpawned(CBaseEntity *entity, CBaseEntity *other);
-	int HandleBuyTimeStart(CBaseEntity *entity, CBaseEntity *other);
+	TutorStateType HandlePlayerSpawned(CBaseEntity *entity, CBaseEntity *other);
+	TutorStateType HandleBuyTimeStart(CBaseEntity *entity, CBaseEntity *other);
 };
 
 class CCSTutorBuyMenuState: public CBaseTutorState
@@ -107,11 +74,9 @@ public:
 	CCSTutorBuyMenuState();
 
 	virtual ~CCSTutorBuyMenuState();
-	virtual int CheckForStateTransition(GameEventType event, CBaseEntity *entity, CBaseEntity *other);
-	virtual char *GetStateString();
+	virtual TutorStateType CheckForStateTransition(GameEventType event, CBaseEntity *entity, CBaseEntity *other);
+	virtual const char *GetStateString();
 
 protected:
-	int HandleRoundStart(CBaseEntity *entity, CBaseEntity *other);
+	TutorStateType HandleRoundStart(CBaseEntity *entity, CBaseEntity *other);
 };
-
-#endif // TUTOR_CS_STATES_H

@@ -47,8 +47,7 @@
 
 #define BIT(n) (1<<(n))
 
-
-typedef unsigned int string_t;		// from engine's pr_comp.h;
+typedef unsigned int string_t;
 typedef int EOFFSET;
 typedef int BOOL;
 

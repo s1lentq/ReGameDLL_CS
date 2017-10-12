@@ -26,11 +26,7 @@
 *
 */
 
-#ifndef TUTOR_BASE_TUTOR_H
-#define TUTOR_BASE_TUTOR_H
-#ifdef _WIN32
 #pragma once
-#endif
 
 class TutorMessageEvent
 {
@@ -83,7 +79,7 @@ public:
 
 public:
 	void StartFrame(float time);
-	void OnEvent(GameEventType event, CBaseEntity *entity = NULL, CBaseEntity *other = NULL);
+	void OnEvent(GameEventType event, CBaseEntity *entity = nullptr, CBaseEntity *other = nullptr);
 
 	void ShotFired(Vector source, Vector target);
 	void DisplayMessageToPlayer(CBasePlayer *player, int id, const char *szMessage, TutorMessageEvent *event);
@@ -102,5 +98,3 @@ protected:
 };
 
 extern CBaseTutor *TheTutor;
-
-#endif // TUTOR_BASE_TUTOR_H

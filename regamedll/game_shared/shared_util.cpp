@@ -5,7 +5,7 @@
 */
 #ifndef HOOK_GAMEDLL
 
-char s_shared_token[ 1500 ];
+char s_shared_token[1500];
 char s_shared_quote = '\"';
 
 #endif
@@ -58,13 +58,13 @@ char *BufPrintf(char *buf, int &len, const char *fmt, ...)
 		return buf + Q_strlen(buf);
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 wchar_t *BufWPrintf(wchar_t *buf, int &len, const wchar_t *fmt, ...)
 {
 	if (len <= 0)
-		return NULL;
+		return nullptr;
 
 	va_list argptr;
 
@@ -100,7 +100,7 @@ const char *NumAsString(int val)
 
 	int len = 16;
 
-	curstring = (curstring + 1) % 4;
+	curstring = (curstring + 1) % NumBuffers;
 	BufPrintf(string[curstring], len, "%d", val);
 
 	return string[curstring];
@@ -119,7 +119,7 @@ NOXREF void SharedSetQuoteChar(char c)
 }
 
 // Parse a token out of a string
-const char *SharedParse(const char *data)
+char *SharedParse(char *data)
 {
 	int c;
 	int len;
@@ -128,7 +128,7 @@ const char *SharedParse(const char *data)
 	s_shared_token[0] = '\0';
 
 	if (!data)
-		return NULL;
+		return nullptr;
 
 // skip whitespace
 skipwhite:
@@ -137,28 +137,31 @@ skipwhite:
 		if (c == 0)
 		{
 			// end of file;
-			return NULL;
+			return nullptr;
 		}
 
 		data++;
 	}
 
-	// skip // comments
+	// skip // comments till the next line
 	if (c == '/' && data[1] == '/')
 	{
 		while (*data && *data != '\n')
 			data++;
 
+		// start over new line
 		goto skipwhite;
 	}
 
-	// handle quoted strings specially
+	// handle quoted strings specially: copy till the end or another quote
 	if (c == s_shared_quote)
 	{
+		// skip starting quote
 		data++;
 
 		while (true)
 		{
+			// get char and advance
 			c = *data++;
 			if (c == s_shared_quote || !c)
 			{
@@ -166,16 +169,14 @@ skipwhite:
 				return data;
 			}
 
-			s_shared_token[len] = c;
-			len++;
+			s_shared_token[len++] = c;
 		}
 	}
 
 	// parse single characters
 	if (c == '{' || c == '}'|| c == ')'|| c == '(' || c == '\'' || c == ',')
 	{
-		s_shared_token[len] = c;
-		len++;
+		s_shared_token[len++] = c;
 		s_shared_token[len] = '\0';
 		return data + 1;
 	}
@@ -199,14 +200,14 @@ skipwhite:
 }
 
 // Returns true if additional data is waiting to be processed on this line
-NOXREF bool SharedTokenWaiting(const char *buffer)
+bool SharedTokenWaiting(const char *buffer)
 {
 	const char *p;
 
 	p = buffer;
-	while (*p && *p!='\n')
+	while (*p && *p != '\n')
 	{
-		if (!Q_isspace(*p) || Q_isalnum(*p))
+		if (!isspace(*p) || isalnum(*p))
 			return true;
 
 		p++;

@@ -3,13 +3,13 @@
 // This method is the ONLY legal way to change a bot's current state
 void CCSBot::SetState(BotState *state)
 {
-	PrintIfWatched("SetState: %s -> %s\n", (m_state != NULL) ? m_state->GetName() : "NULL", state->GetName());
+	PrintIfWatched("SetState: %s -> %s\n", m_state ? m_state->GetName() : "NULL", state->GetName());
 
 	// if we changed state from within the special Attack state, we are no longer attacking
 	if (m_isAttacking)
 		StopAttacking();
 
-	if (m_state != NULL)
+	if (m_state)
 		m_state->OnExit(this);
 
 	state->OnEnter(this);
@@ -32,7 +32,7 @@ void CCSBot::EscapeFromBomb()
 
 void CCSBot::Follow(CBasePlayer *player)
 {
-	if (player == NULL)
+	if (!player)
 		return;
 
 	// note when we began following
@@ -59,7 +59,7 @@ void CCSBot::ContinueFollowing()
 void CCSBot::StopFollowing()
 {
 	m_isFollowing = false;
-	m_leader = NULL;
+	m_leader = nullptr;
 	m_allowAutoFollowTime = gpGlobals->time + 10.0f;
 }
 
@@ -96,7 +96,7 @@ void CCSBot::Hide(CNavArea *searchFromArea, float duration, float hideRange, boo
 		sourcePos = pev->origin;
 	}
 
-	if (source == NULL)
+	if (!source)
 	{
 		PrintIfWatched("Hide from area is NULL.\n");
 		Idle();
@@ -112,7 +112,7 @@ void CCSBot::Hide(CNavArea *searchFromArea, float duration, float hideRange, boo
 	Vector useSpot;
 
 	const Vector *pos = FindNearbyHidingSpot(this, &sourcePos, source, hideRange, IsSniper());
-	if (pos == NULL)
+	if (!pos)
 	{
 		PrintIfWatched("No available hiding spots.\n");
 		// hide at our current position
@@ -140,7 +140,7 @@ void CCSBot::Hide(CNavArea *searchFromArea, float duration, float hideRange, boo
 void CCSBot::Hide(const Vector *hidingSpot, float duration, bool holdPosition)
 {
 	CNavArea *hideArea = TheNavAreaGrid.GetNearestNavArea(hidingSpot);
-	if (hideArea == NULL)
+	if (!hideArea)
 	{
 		PrintIfWatched("Hiding spot off nav mesh\n");
 		Idle();
@@ -183,7 +183,7 @@ bool CCSBot::TryToHide(CNavArea *searchFromArea, float duration, float hideRange
 		sourcePos = pev->origin;
 	}
 
-	if (source == NULL)
+	if (!source)
 	{
 		PrintIfWatched("Hide from area is NULL.\n");
 		return false;
@@ -196,7 +196,7 @@ bool CCSBot::TryToHide(CNavArea *searchFromArea, float duration, float hideRange
 
 	// search around source area for a good hiding spot
 	const Vector *pos = FindNearbyHidingSpot(this, &sourcePos, source, hideRange, IsSniper(), useNearest);
-	if (pos == NULL)
+	if (!pos)
 	{
 		PrintIfWatched("No available hiding spots.\n");
 		return false;
@@ -221,7 +221,7 @@ bool CCSBot::TryToRetreat()
 	const float maxRange = 1000.0f;
 	const Vector *spot = FindNearbyRetreatSpot(this, maxRange);
 
-	if (spot != NULL)
+	if (spot)
 	{
 		// ignore enemies for a second to give us time to hide
 		// reaching our hiding spot clears our disposition
@@ -249,7 +249,7 @@ void CCSBot::Hunt()
 // NOTE: Attacking does not change our task.
 void CCSBot::Attack(CBasePlayer *victim)
 {
-	if (victim == NULL)
+	if (!victim)
 		return;
 
 	// zombies never attack

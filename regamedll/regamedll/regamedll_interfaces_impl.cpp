@@ -140,7 +140,7 @@ bool EXT_FUNC CCSPlayer::JoinTeam(TeamName team)
 	return true;
 }
 
-bool EXT_FUNC CCSPlayer::RemovePlayerItem(const char* pszItemName)
+bool EXT_FUNC CCSPlayer::RemovePlayerItem(const char *pszItemName)
 {
 	if (!pszItemName)
 		return false;
@@ -316,7 +316,7 @@ void EXT_FUNC CCSPlayer::SetBombIcon(bool bFlash) { BasePlayer()->SetBombIcon(bF
 void EXT_FUNC CCSPlayer::SetScoreAttrib(CBasePlayer *dest) { BasePlayer()->SetScoreAttrib(dest); }
 void EXT_FUNC CCSPlayer::ReloadWeapons(CBasePlayerItem *pWeapon, bool bForceReload, bool bForceRefill) { BasePlayer()->ReloadWeapons(pWeapon, bForceReload, bForceRefill); }
 void EXT_FUNC CCSPlayer::Observer_SetMode(int iMode) { BasePlayer()->Observer_SetMode(iMode); }
-bool EXT_FUNC CCSPlayer::SelectSpawnSpot(const char *pEntClassName, CBaseEntity* &pSpot) { return BasePlayer()->SelectSpawnSpot(pEntClassName, pSpot); }
+bool EXT_FUNC CCSPlayer::SelectSpawnSpot(const char *pEntClassName, CBaseEntity *&pSpot) { return BasePlayer()->SelectSpawnSpot(pEntClassName, pSpot); }
 bool EXT_FUNC CCSPlayer::SwitchWeapon(CBasePlayerItem *pWeapon) { return BasePlayer()->SwitchWeapon(pWeapon) != FALSE; }
 void EXT_FUNC CCSPlayer::SwitchTeam() { BasePlayer()->SwitchTeam(); }
 void EXT_FUNC CCSPlayer::StartObserver(Vector& vecPosition, Vector& vecViewAngle) { BasePlayer()->StartObserver(vecPosition, vecViewAngle); }

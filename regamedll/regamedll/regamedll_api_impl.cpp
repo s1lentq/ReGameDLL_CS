@@ -25,6 +25,7 @@
 *    version.
 *
 */
+
 #include "precompiled.h"
 
 CReGameHookchains g_ReGameHookchains;
@@ -154,31 +155,31 @@ const EXT_FUNC ReGameFuncs_t *CReGameApi::GetFuncs() {
 	return &g_ReGameApiFuncs;
 }
 
-IReGameHookchains* EXT_FUNC CReGameApi::GetHookchains() {
+IReGameHookchains *EXT_FUNC CReGameApi::GetHookchains() {
 	return &g_ReGameHookchains;
 }
 
-CGameRules* EXT_FUNC CReGameApi::GetGameRules() {
+CGameRules *EXT_FUNC CReGameApi::GetGameRules() {
 	return g_pGameRules;
 }
 
-WeaponInfoStruct* EXT_FUNC CReGameApi::GetWeaponInfo(int weaponID) {
+WeaponInfoStruct *EXT_FUNC CReGameApi::GetWeaponInfo(int weaponID) {
 	return ::GetWeaponInfo(weaponID);
 }
 
-WeaponInfoStruct* EXT_FUNC CReGameApi::GetWeaponInfo(const char* weaponName) {
+WeaponInfoStruct *EXT_FUNC CReGameApi::GetWeaponInfo(const char *weaponName) {
 	return ::GetWeaponInfo(weaponName);
 }
 
-playermove_t* EXT_FUNC CReGameApi::GetPlayerMove() {
+playermove_t *EXT_FUNC CReGameApi::GetPlayerMove() {
 	return pmove;
 }
 
-WeaponSlotInfo* EXT_FUNC CReGameApi::GetWeaponSlot(WeaponIdType weaponID) { return ::GetWeaponSlot(weaponID); }
-WeaponSlotInfo* EXT_FUNC CReGameApi::GetWeaponSlot(const char* weaponName) { return ::GetWeaponSlot(weaponName); }
+WeaponSlotInfo *EXT_FUNC CReGameApi::GetWeaponSlot(WeaponIdType weaponID) { return ::GetWeaponSlot(weaponID); }
+WeaponSlotInfo *EXT_FUNC CReGameApi::GetWeaponSlot(const char *weaponName) { return ::GetWeaponSlot(weaponName); }
 
-ItemInfo* EXT_FUNC CReGameApi::GetItemInfo(WeaponIdType weaponID) { return &IMPL_CLASS(CBasePlayerItem, ItemInfoArray)[ weaponID ]; }
-AmmoInfo* EXT_FUNC CReGameApi::GetAmmoInfo(AmmoType ammoID) { return &IMPL_CLASS(CBasePlayerItem, AmmoInfoArray)[ ammoID ]; }
+ItemInfo *EXT_FUNC CReGameApi::GetItemInfo(WeaponIdType weaponID) { return &IMPL_CLASS(CBasePlayerItem, ItemInfoArray)[ weaponID ]; }
+AmmoInfo *EXT_FUNC CReGameApi::GetAmmoInfo(AmmoType ammoID) { return &IMPL_CLASS(CBasePlayerItem, AmmoInfoArray)[ ammoID ]; }
 
 void EXT_FUNC Regamedll_ChangeString_api(char *&dest, const char *source)
 {

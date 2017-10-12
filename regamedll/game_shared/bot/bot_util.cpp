@@ -6,30 +6,30 @@
 #ifndef HOOK_GAMEDLL
 
 short s_iBeamSprite = 0;
-float cosTable[ COS_TABLE_SIZE ];
+float cosTable[COS_TABLE_SIZE];
 
 #endif
 
 bool UTIL_IsNameTaken(const char *name, bool ignoreHumans)
 {
-	for (int i = 1; i <= gpGlobals->maxClients; ++i)
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{
-		CBaseEntity *player = UTIL_PlayerByIndex(i);
+		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
-		if (player == NULL)
+		if (!pPlayer)
 			continue;
 
-		if (FNullEnt(player->pev))
+		if (FNullEnt(pPlayer->pev))
 			continue;
 
-		if (FStrEq(STRING(player->pev->netname), ""))
+		if (FStrEq(STRING(pPlayer->pev->netname), ""))
 			continue;
 
-		if (player->IsPlayer() && ((CBasePlayer *)player)->IsBot())
+		if (pPlayer->IsPlayer() && pPlayer->IsBot())
 		{
 			// bots can have prefixes so we need to check the name
 			// against the profile name instead.
-			CBot *bot = static_cast<CBot *>(player);
+			CBot *bot = static_cast<CBot *>(pPlayer);
 			if (FStrEq(name, bot->GetProfile()->GetName()))
 			{
 				return true;
@@ -39,7 +39,7 @@ bool UTIL_IsNameTaken(const char *name, bool ignoreHumans)
 		{
 			if (!ignoreHumans)
 			{
-				if (FStrEq(name, STRING(player->pev->netname)))
+				if (FStrEq(name, STRING(pPlayer->pev->netname)))
 					return true;
 			}
 		}
@@ -51,11 +51,11 @@ bool UTIL_IsNameTaken(const char *name, bool ignoreHumans)
 int UTIL_ClientsInGame()
 {
 	int iCount = 0;
-	for (int iIndex = 1; iIndex <= gpGlobals->maxClients; ++iIndex)
+	for (int iIndex = 1; iIndex <= gpGlobals->maxClients; iIndex++)
 	{
 		CBaseEntity *pPlayer = UTIL_PlayerByIndex(iIndex);
 
-		if (pPlayer == NULL)
+		if (!pPlayer)
 			continue;
 
 		if (FNullEnt(pPlayer->pev))
@@ -64,7 +64,7 @@ int UTIL_ClientsInGame()
 		if (FStrEq(STRING(pPlayer->pev->netname), ""))
 			continue;
 
-		++iCount;
+		iCount++;
 	}
 
 	return iCount;
@@ -73,27 +73,27 @@ int UTIL_ClientsInGame()
 int UTIL_ActivePlayersInGame()
 {
 	int iCount = 0;
-	for (int iIndex = 1; iIndex <= gpGlobals->maxClients; ++iIndex)
+	for (int iIndex = 1; iIndex <= gpGlobals->maxClients; iIndex++)
 	{
-		CBasePlayer *player = UTIL_PlayerByIndex(iIndex);
+		CBasePlayer *pPlayer = UTIL_PlayerByIndex(iIndex);
 
-		if (player == NULL)
+		if (!pPlayer)
 			continue;
 
-		if (FNullEnt(player->pev))
+		if (FNullEnt(pPlayer->pev))
 			continue;
 
-		if (FStrEq(STRING(player->pev->netname), ""))
+		if (FStrEq(STRING(pPlayer->pev->netname), ""))
 			continue;
 
 		// ignore spectators
-		if (player->m_iTeam != TERRORIST && player->m_iTeam != CT)
+		if (pPlayer->m_iTeam != TERRORIST && pPlayer->m_iTeam != CT)
 			continue;
 
-		if (player->m_iJoiningState != JOINED)
+		if (pPlayer->m_iJoiningState != JOINED)
 			continue;
 
-		++iCount;
+		iCount++;
 	}
 
 	return iCount;
@@ -103,29 +103,29 @@ int UTIL_HumansInGame(bool ignoreSpectators)
 {
 	int iCount = 0;
 
-	for (int iIndex = 1; iIndex <= gpGlobals->maxClients; ++iIndex)
+	for (int iIndex = 1; iIndex <= gpGlobals->maxClients; iIndex++)
 	{
-		CBasePlayer *player = UTIL_PlayerByIndex(iIndex);
+		CBasePlayer *pPlayer = UTIL_PlayerByIndex(iIndex);
 
-		if (player == NULL)
+		if (!pPlayer)
 			continue;
 
-		if (FNullEnt(player->pev))
+		if (FNullEnt(pPlayer->pev))
 			continue;
 
-		if (FStrEq(STRING(player->pev->netname), ""))
+		if (FStrEq(STRING(pPlayer->pev->netname), ""))
 			continue;
 
-		if (player->IsBot())
+		if (pPlayer->IsBot())
 			continue;
 
-		if (ignoreSpectators && player->m_iTeam != TERRORIST && player->m_iTeam != CT)
+		if (ignoreSpectators && pPlayer->m_iTeam != TERRORIST && pPlayer->m_iTeam != CT)
 			continue;
 
-		if (ignoreSpectators && player->m_iJoiningState != JOINED)
+		if (ignoreSpectators && pPlayer->m_iJoiningState != JOINED)
 			continue;
 
-		++iCount;
+		iCount++;
 	}
 
 	return iCount;
@@ -134,29 +134,29 @@ int UTIL_HumansInGame(bool ignoreSpectators)
 int UTIL_HumansOnTeam(int teamID, bool isAlive)
 {
 	int iCount = 0;
-	for (int iIndex = 1; iIndex <= gpGlobals->maxClients; ++iIndex)
+	for (int iIndex = 1; iIndex <= gpGlobals->maxClients; iIndex++)
 	{
-		CBasePlayer *player = UTIL_PlayerByIndex(iIndex);
+		CBasePlayer *pPlayer = UTIL_PlayerByIndex(iIndex);
 
-		if (player == NULL)
+		if (!pPlayer)
 			continue;
 
-		if (FNullEnt(player->pev))
+		if (FNullEnt(pPlayer->pev))
 			continue;
 
-		if (FStrEq(STRING(player->pev->netname), ""))
+		if (FStrEq(STRING(pPlayer->pev->netname), ""))
 			continue;
 
-		if (player->IsBot())
+		if (pPlayer->IsBot())
 			continue;
 
-		if (player->m_iTeam != teamID)
+		if (pPlayer->m_iTeam != teamID)
 			continue;
 
-		if (isAlive && !player->IsAlive())
+		if (isAlive && !pPlayer->IsAlive())
 			continue;
 
-		++iCount;
+		iCount++;
 	}
 
 	return iCount;
@@ -166,11 +166,11 @@ int UTIL_BotsInGame()
 {
 	int iCount = 0;
 
-	for (int iIndex = 1; iIndex <= gpGlobals->maxClients; ++iIndex)
+	for (int iIndex = 1; iIndex <= gpGlobals->maxClients; iIndex++)
 	{
 		CBasePlayer *pPlayer = UTIL_PlayerByIndex(iIndex);
 
-		if (pPlayer == NULL)
+		if (!pPlayer)
 			continue;
 
 		if (FNullEnt(pPlayer->pev))
@@ -182,7 +182,7 @@ int UTIL_BotsInGame()
 		if (!pPlayer->IsBot())
 			continue;
 
-		++iCount;
+		iCount++;
 	}
 
 	return iCount;
@@ -193,53 +193,53 @@ bool UTIL_KickBotFromTeam(TeamName kickTeam)
 	int i;
 
 	// try to kick a dead bot first
-	for (i = 1; i <= gpGlobals->maxClients; ++i)
+	for (i = 1; i <= gpGlobals->maxClients; i++)
 	{
-		CBasePlayer *player = UTIL_PlayerByIndex(i);
+		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
-		if (player == NULL)
+		if (!pPlayer)
 			continue;
 
-		if (FNullEnt(player->pev))
+		if (FNullEnt(pPlayer->pev))
 			continue;
 
-		const char *name = STRING(player->pev->netname);
+		const char *name = STRING(pPlayer->pev->netname);
 		if (FStrEq(name, ""))
 			continue;
 
-		if (!player->IsBot())
+		if (!pPlayer->IsBot())
 			continue;
 
-		if (!player->IsAlive() && player->m_iTeam == kickTeam)
+		if (!pPlayer->IsAlive() && pPlayer->m_iTeam == kickTeam)
 		{
 			// its a bot on the right team - kick it
-			SERVER_COMMAND(UTIL_VarArgs("kick \"%s\"\n", STRING(player->pev->netname)));
+			SERVER_COMMAND(UTIL_VarArgs("kick \"%s\"\n", STRING(pPlayer->pev->netname)));
 			return true;
 		}
 	}
 
 	// no dead bots, kick any bot on the given team
-	for (i = 1; i <= gpGlobals->maxClients; ++i)
+	for (i = 1; i <= gpGlobals->maxClients; i++)
 	{
-		CBasePlayer *player = UTIL_PlayerByIndex(i);
+		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
-		if (player == NULL)
+		if (!pPlayer)
 			continue;
 
-		if (FNullEnt(player->pev))
+		if (FNullEnt(pPlayer->pev))
 			continue;
 
-		const char *name = STRING(player->pev->netname);
+		const char *name = STRING(pPlayer->pev->netname);
 		if (FStrEq(name, ""))
 			continue;
 
-		if (!player->IsBot())
+		if (!pPlayer->IsBot())
 			continue;
 
-		if (player->m_iTeam == kickTeam)
+		if (pPlayer->m_iTeam == kickTeam)
 		{
 			// its a bot on the right team - kick it
-			SERVER_COMMAND(UTIL_VarArgs("kick \"%s\"\n", STRING(player->pev->netname)));
+			SERVER_COMMAND(UTIL_VarArgs("kick \"%s\"\n", STRING(pPlayer->pev->netname)));
 			return true;
 		}
 	}
@@ -250,26 +250,26 @@ bool UTIL_KickBotFromTeam(TeamName kickTeam)
 bool UTIL_IsTeamAllBots(int team)
 {
 	int botCount = 0;
-	for (int i = 1; i <= gpGlobals->maxClients; ++i)
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{
-		CBasePlayer *player = UTIL_PlayerByIndex(i);
+		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
-		if (player == NULL)
+		if (!pPlayer)
 			continue;
 
-		if (player->m_iTeam != team)
+		if (pPlayer->m_iTeam != team)
 			continue;
 
-		if (FNullEnt(player->pev))
+		if (FNullEnt(pPlayer->pev))
 			continue;
 
-		if (FStrEq(STRING(player->pev->netname), ""))
+		if (FStrEq(STRING(pPlayer->pev->netname), ""))
 			continue;
 
-		if (!(player->pev->flags & FL_FAKECLIENT))
+		if (!(pPlayer->pev->flags & FL_FAKECLIENT))
 			return false;
 
-		++botCount;
+		botCount++;
 	}
 
 	return botCount ? true : false;
@@ -279,24 +279,24 @@ bool UTIL_IsTeamAllBots(int team)
 // If 'distance' is non-NULL, the distance to the closest player is returned in it.
 extern CBasePlayer *UTIL_GetClosestPlayer(const Vector *pos, float *distance)
 {
-	CBasePlayer *closePlayer = NULL;
+	CBasePlayer *closePlayer = nullptr;
 	float closeDistSq = 1.0e12f;	// 999999999999.9f
 
-	for (int i = 1; i <= gpGlobals->maxClients; ++i)
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{
-		CBasePlayer *player = UTIL_PlayerByIndex(i);
+		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
-		if (!IsEntityValid(player))
+		if (!IsEntityValid(pPlayer))
 			continue;
 
-		if (!player->IsAlive())
+		if (!pPlayer->IsAlive())
 			continue;
 
-		float distSq = (player->pev->origin - *pos).LengthSquared();
+		float distSq = (pPlayer->pev->origin - *pos).LengthSquared();
 		if (distSq < closeDistSq)
 		{
 			closeDistSq = distSq;
-			closePlayer = player;
+			closePlayer = pPlayer;
 		}
 	}
 
@@ -310,27 +310,27 @@ extern CBasePlayer *UTIL_GetClosestPlayer(const Vector *pos, float *distance)
 // If 'distance' is non-NULL, the distance to the closest player is returned in it.
 extern CBasePlayer *UTIL_GetClosestPlayer(const Vector *pos, int team, float *distance)
 {
-	CBasePlayer *closePlayer = NULL;
+	CBasePlayer *closePlayer = nullptr;
 	float closeDistSq = 1.0e12f;	// 999999999999.9f
 
-	for (int i = 1; i <= gpGlobals->maxClients; ++i)
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{
-		CBasePlayer *player = UTIL_PlayerByIndex(i);
+		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
-		if (!IsEntityValid(player))
+		if (!IsEntityValid(pPlayer))
 			continue;
 
-		if (!player->IsAlive())
+		if (!pPlayer->IsAlive())
 			continue;
 
-		if (player->m_iTeam != team)
+		if (pPlayer->m_iTeam != team)
 			continue;
 
-		float distSq = (player->pev->origin - *pos).LengthSquared();
+		float distSq = (pPlayer->pev->origin - *pos).LengthSquared();
 		if (distSq < closeDistSq)
 		{
 			closeDistSq = distSq;
-			closePlayer = player;
+			closePlayer = pPlayer;
 		}
 	}
 
@@ -347,16 +347,17 @@ const char *UTIL_GetBotPrefix()
 
 void UTIL_ConstructBotNetName(char *name, int nameLength, const BotProfile *profile)
 {
-	if (profile == NULL)
+	if (!profile)
 	{
 		name[0] = '\0';
 		return;
 	}
 
 	// if there is no bot prefix just use the profile name.
-	if ((UTIL_GetBotPrefix() == NULL) || (Q_strlen(UTIL_GetBotPrefix()) == 0))
+	if (!UTIL_GetBotPrefix() || Q_strlen(UTIL_GetBotPrefix()) == 0)
 	{
-		Q_strncpy(name, profile->GetName(), nameLength);
+		Q_strncpy(name, profile->GetName(), nameLength - 1);
+		name[nameLength - 1] = '\0';
 		return;
 	}
 
@@ -365,30 +366,30 @@ void UTIL_ConstructBotNetName(char *name, int nameLength, const BotProfile *prof
 
 bool UTIL_IsVisibleToTeam(const Vector &spot, int team, float maxRange)
 {
-	for (int i = 1; i <= gpGlobals->maxClients; ++i)
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{
-		CBasePlayer *player = UTIL_PlayerByIndex(i);
+		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
-		if (player == NULL)
+		if (!pPlayer)
 			continue;
 
-		if (FNullEnt(player->pev))
+		if (FNullEnt(pPlayer->pev))
 			continue;
 
-		if (FStrEq(STRING(player->pev->netname), ""))
+		if (FStrEq(STRING(pPlayer->pev->netname), ""))
 			continue;
 
-		if (!player->IsAlive())
+		if (!pPlayer->IsAlive())
 			continue;
 
-		if (player->m_iTeam != team)
+		if (pPlayer->m_iTeam != team)
 			continue;
 
-		if (maxRange > 0.0f && (spot - player->Center()).IsLengthGreaterThan(maxRange))
+		if (maxRange > 0.0f && (spot - pPlayer->Center()).IsLengthGreaterThan(maxRange))
 			continue;
 
 		TraceResult result;
-		UTIL_TraceLine(player->EyePosition(), spot, ignore_monsters, ignore_glass, ENT(player->pev), &result);
+		UTIL_TraceLine(pPlayer->EyePosition(), spot, ignore_monsters, ignore_glass, ENT(pPlayer->pev), &result);
 
 		if (result.flFraction == 1.0f)
 			return true;
@@ -402,7 +403,7 @@ CBasePlayer *UTIL_GetLocalPlayer()
 	if (!IS_DEDICATED_SERVER())
 		return UTIL_PlayerByIndex(1);
 
-	return NULL;
+	return nullptr;
 }
 
 NOXREF Vector UTIL_ComputeOrigin(entvars_t *pevVars)
@@ -514,7 +515,7 @@ void BotPrecache()
 
 void InitBotTrig()
 {
-	for (int i = 0; i < COS_TABLE_SIZE; ++i)
+	for (int i = 0; i < COS_TABLE_SIZE; i++)
 	{
 		float_precision angle = 2.0f * M_PI * float(i) / float(COS_TABLE_SIZE - 1);
 		cosTable[i] = Q_cos(angle);
@@ -525,23 +526,23 @@ float BotCOS(float angle)
 {
 	angle = NormalizeAnglePositive(angle);
 	int i = angle * ((COS_TABLE_SIZE - 1) / 360.0f);
-	return cosTable[ i ];
+	return cosTable[i];
 }
 
 float BotSIN(float angle)
 {
 	angle = NormalizeAnglePositive(angle - 90);
 	int i = angle * ((COS_TABLE_SIZE - 1) / 360.0f);
-	return cosTable[ i ];
+	return cosTable[i];
 }
 
 // Determine if this event is audible, and if so, return its audible range and priority
 bool IsGameEventAudible(GameEventType event, CBaseEntity *entity, CBaseEntity *other, float *range, PriorityType *priority, bool *isHostile)
 {
-	CBasePlayer *player = static_cast<CBasePlayer *>(entity);
+	CBasePlayer *pPlayer = static_cast<CBasePlayer *>(entity);
 
-	if (entity == NULL || !player->IsPlayer())
-		player = NULL;
+	if (!entity || !pPlayer->IsPlayer())
+		pPlayer = nullptr;
 
 	const float ShortRange = 1000.0f;
 	const float NormalRange = 2000.0f;
@@ -552,10 +553,10 @@ bool IsGameEventAudible(GameEventType event, CBaseEntity *entity, CBaseEntity *o
 	// TODO: Use actual volume, account for silencers, etc.
 	case EVENT_WEAPON_FIRED:
 	{
-		if (player->m_pActiveItem == NULL)
+		if (!pPlayer->m_pActiveItem)
 			return false;
 
-		switch (player->m_pActiveItem->m_iId)
+		switch (pPlayer->m_pActiveItem->m_iId)
 		{
 		// silent "firing"
 		case WEAPON_HEGRENADE:
@@ -572,7 +573,7 @@ bool IsGameEventAudible(GameEventType event, CBaseEntity *entity, CBaseEntity *o
 		// M4A1 - check for silencer
 		case WEAPON_M4A1:
 		{
-			CBasePlayerWeapon *pWeapon = static_cast<CBasePlayerWeapon *>(player->m_pActiveItem);
+			CBasePlayerWeapon *pWeapon = static_cast<CBasePlayerWeapon *>(pPlayer->m_pActiveItem);
 			if (pWeapon->m_iWeaponState & WPNSTATE_M4A1_SILENCED)
 				*range = ShortRange;
 			else
@@ -582,7 +583,7 @@ bool IsGameEventAudible(GameEventType event, CBaseEntity *entity, CBaseEntity *o
 		// USP - check for silencer
 		case WEAPON_USP:
 		{
-			CBasePlayerWeapon *pWeapon = static_cast<CBasePlayerWeapon *>(player->m_pActiveItem);
+			CBasePlayerWeapon *pWeapon = static_cast<CBasePlayerWeapon *>(pPlayer->m_pActiveItem);
 			if (pWeapon->m_iWeaponState & WPNSTATE_USP_SILENCED)
 				*range = ShortRange;
 			else

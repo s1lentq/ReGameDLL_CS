@@ -91,20 +91,20 @@ const T& clamp(const T& a, const T& min, const T& max) { return (a > max) ? max 
 #endif // __cplusplus
 
 // bitwise operators templates
-template<class T, class type=typename std::underlying_type<T>::type>
-inline T operator~ (T a) { return (T)~(type)a; }
-template<class T, class type=typename std::underlying_type<T>::type>
-inline T operator| (T a, T b) { return (T)((type)a | (type)b); }
-template<class T, class type=typename std::underlying_type<T>::type>
-inline T operator& (T a, T b) { return (T)((type)a & (type)b); }
-template<class T, class type=typename std::underlying_type<T>::type>
-inline T operator^ (T a, T b) { return (T)((type)a ^ (type)b); }
-template<class T, class type=typename std::underlying_type<T>::type>
-inline T& operator|= (T& a, T b) { return (T&)((type&)a |= (type)b); }
-template<class T, class type=typename std::underlying_type<T>::type>
-inline T& operator&= (T& a, T b) { return (T&)((type&)a &= (type)b); }
-template<class T, class type=typename std::underlying_type<T>::type>
-inline T& operator^= (T& a, T b) { return (T&)((type&)a ^= (type)b); }
+//template<class T, class type=typename std::underlying_type<T>::type>
+//inline T operator~ (T a) { return (T)~(type)a; }
+//template<class T, class type=typename std::underlying_type<T>::type>
+//inline T operator| (T a, T b) { return (T)((type)a | (type)b); }
+//template<class T, class type=typename std::underlying_type<T>::type>
+//inline T operator& (T a, T b) { return (T)((type)a & (type)b); }
+//template<class T, class type=typename std::underlying_type<T>::type>
+//inline T operator^ (T a, T b) { return (T)((type)a ^ (type)b); }
+//template<class T, class type=typename std::underlying_type<T>::type>
+//inline T& operator|= (T& a, T b) { return (T&)((type&)a |= (type)b); }
+//template<class T, class type=typename std::underlying_type<T>::type>
+//inline T& operator&= (T& a, T b) { return (T&)((type&)a &= (type)b); }
+//template<class T, class type=typename std::underlying_type<T>::type>
+//inline T& operator^= (T& a, T b) { return (T&)((type&)a ^= (type)b); }
 
 inline float M_sqrt(float value) {
 	return _mm_cvtss_f32(_mm_sqrt_ss(_mm_load_ss(&value)));

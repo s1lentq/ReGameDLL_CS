@@ -43,6 +43,7 @@
     <ClCompile Include="..\dlls\ammo.cpp" />
     <ClCompile Include="..\dlls\animating.cpp" />
     <ClCompile Include="..\dlls\animation.cpp" />
+    <ClCompile Include="..\dlls\basemonster.cpp" />
     <ClCompile Include="..\dlls\bmodels.cpp" />
     <ClCompile Include="..\dlls\bot\cs_bot.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
@@ -345,6 +346,7 @@
     <ClCompile Include="..\dlls\career_tasks.cpp" />
     <ClCompile Include="..\dlls\cbase.cpp" />
     <ClCompile Include="..\dlls\client.cpp" />
+    <ClCompile Include="..\dlls\cmdhandler.cpp" />
     <ClCompile Include="..\dlls\combat.cpp" />
     <ClCompile Include="..\dlls\debug.cpp" />
     <ClCompile Include="..\dlls\doors.cpp" />
@@ -355,6 +357,7 @@
     <ClCompile Include="..\dlls\game.cpp" />
     <ClCompile Include="..\dlls\gamerules.cpp" />
     <ClCompile Include="..\dlls\ggrenade.cpp" />
+    <ClCompile Include="..\dlls\gib.cpp" />
     <ClCompile Include="..\dlls\globals.cpp" />
     <ClCompile Include="..\dlls\healthkit.cpp" />
     <ClCompile Include="..\dlls\hintmessage.cpp" />
@@ -422,7 +425,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release MP Play|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug MP Play|Win32'">false</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\dlls\h_ai.cpp" />
     <ClCompile Include="..\dlls\h_battery.cpp" />
     <ClCompile Include="..\dlls\h_cycler.cpp" />
     <ClCompile Include="..\dlls\h_export.cpp" />
@@ -431,11 +433,9 @@
     <ClCompile Include="..\dlls\mapinfo.cpp" />
     <ClCompile Include="..\dlls\maprules.cpp" />
     <ClCompile Include="..\dlls\mortar.cpp" />
-    <ClCompile Include="..\dlls\mpstubb.cpp" />
     <ClCompile Include="..\dlls\multiplay_gamerules.cpp" />
     <ClCompile Include="..\dlls\observer.cpp" />
     <ClCompile Include="..\dlls\pathcorner.cpp" />
-    <ClCompile Include="..\dlls\plane.cpp" />
     <ClCompile Include="..\dlls\plats.cpp" />
     <ClCompile Include="..\dlls\player.cpp" />
     <ClCompile Include="..\dlls\singleplay_gamerules.cpp" />
@@ -838,7 +838,6 @@
     </ClCompile>
     <ClCompile Include="..\regamedll\classes_dummy.cpp" />
     <ClCompile Include="..\regamedll\hookchains_impl.cpp" />
-    <ClCompile Include="..\regamedll\platform.cpp" />
     <ClCompile Include="..\regamedll\precompiled.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">precompiled.h</PrecompiledHeaderFile>
@@ -867,7 +866,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug MP Play|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\regamedll\regamedll_api_impl.cpp" />
-    <ClCompile Include="..\regamedll\regamedll_debug.cpp" />
     <ClCompile Include="..\regamedll\regamedll_interfaces_impl.cpp" />
     <ClCompile Include="..\regamedll\sse_mathfun.cpp" />
     <ClCompile Include="..\unittests\animation_tests.cpp">
@@ -970,10 +968,12 @@
     <ClInclude Include="..\dlls\cbase.h" />
     <ClInclude Include="..\dlls\cdll_dll.h" />
     <ClInclude Include="..\dlls\client.h" />
+    <ClInclude Include="..\dlls\cmdhandler.h" />
     <ClInclude Include="..\dlls\debug.h" />
     <ClInclude Include="..\dlls\decals.h" />
     <ClInclude Include="..\dlls\doors.h" />
     <ClInclude Include="..\dlls\effects.h" />
+    <ClInclude Include="..\dlls\ehandle.h" />
     <ClInclude Include="..\dlls\enginecallback.h" />
     <ClInclude Include="..\dlls\explode.h" />
     <ClInclude Include="..\dlls\extdef.h" />
@@ -982,6 +982,7 @@
     <ClInclude Include="..\dlls\func_tank.h" />
     <ClInclude Include="..\dlls\game.h" />
     <ClInclude Include="..\dlls\gamerules.h" />
+    <ClInclude Include="..\dlls\gib.h" />
     <ClInclude Include="..\dlls\globals.h" />
     <ClInclude Include="..\dlls\healthkit.h" />
     <ClInclude Include="..\dlls\hintmessage.h" />
@@ -989,7 +990,6 @@
     <ClInclude Include="..\dlls\hostage\hostage_improv.h" />
     <ClInclude Include="..\dlls\hostage\hostage_localnav.h" />
     <ClInclude Include="..\dlls\hostage\hostage_states.h" />
-    <ClInclude Include="..\dlls\h_ai.h" />
     <ClInclude Include="..\dlls\h_battery.h" />
     <ClInclude Include="..\dlls\h_cycler.h" />
     <ClInclude Include="..\dlls\items.h" />
@@ -1002,9 +1002,9 @@
     <ClInclude Include="..\dlls\nodes.h" />
     <ClInclude Include="..\dlls\observer.h" />
     <ClInclude Include="..\dlls\pathcorner.h" />
-    <ClInclude Include="..\dlls\plane.h" />
     <ClInclude Include="..\dlls\plats.h" />
     <ClInclude Include="..\dlls\player.h" />
+    <ClInclude Include="..\dlls\qstring.h" />
     <ClInclude Include="..\dlls\revert_saved.h" />
     <ClInclude Include="..\dlls\saverestore.h" />
     <ClInclude Include="..\dlls\schedule.h" />
@@ -1030,7 +1030,6 @@
     <ClInclude Include="..\dlls\weapons.h" />
     <ClInclude Include="..\dlls\weapontype.h" />
     <ClInclude Include="..\dlls\world.h" />
-    <ClInclude Include="..\dlls\wpn_shared.h" />
     <ClInclude Include="..\engine\cdll_int.h" />
     <ClInclude Include="..\engine\cmd.h" />
     <ClInclude Include="..\engine\common.h" />
@@ -1082,32 +1081,9 @@
     <ClInclude Include="..\public\FileSystem.h" />
     <ClInclude Include="..\public\interface.h" />
     <ClInclude Include="..\public\MemPool.h" />
-    <ClInclude Include="..\public\protected_things.h" />
     <ClInclude Include="..\public\regamedll\hookchains.h" />
     <ClInclude Include="..\public\regamedll\regamedll_api.h" />
     <ClInclude Include="..\public\regamedll\regamedll_interfaces.h" />
-    <ClInclude Include="..\public\steam\isteamapps.h" />
-    <ClInclude Include="..\public\steam\isteambilling.h" />
-    <ClInclude Include="..\public\steam\isteamclient.h" />
-    <ClInclude Include="..\public\steam\isteamcontroller.h" />
-    <ClInclude Include="..\public\steam\isteamfriends.h" />
-    <ClInclude Include="..\public\steam\isteamgameserver.h" />
-    <ClInclude Include="..\public\steam\isteamgameserverstats.h" />
-    <ClInclude Include="..\public\steam\isteamhttp.h" />
-    <ClInclude Include="..\public\steam\isteammatchmaking.h" />
-    <ClInclude Include="..\public\steam\isteamnetworking.h" />
-    <ClInclude Include="..\public\steam\isteamremotestorage.h" />
-    <ClInclude Include="..\public\steam\isteamscreenshots.h" />
-    <ClInclude Include="..\public\steam\isteamunifiedmessages.h" />
-    <ClInclude Include="..\public\steam\isteamuser.h" />
-    <ClInclude Include="..\public\steam\isteamuserstats.h" />
-    <ClInclude Include="..\public\steam\isteamutils.h" />
-    <ClInclude Include="..\public\steam\matchmakingtypes.h" />
-    <ClInclude Include="..\public\steam\steamclientpublic.h" />
-    <ClInclude Include="..\public\steam\steamhttpenums.h" />
-    <ClInclude Include="..\public\steam\steamtypes.h" />
-    <ClInclude Include="..\public\steam\steam_api.h" />
-    <ClInclude Include="..\public\steam\steam_gameserver.h" />
     <ClInclude Include="..\public\tier0\dbg.h" />
     <ClInclude Include="..\public\tier0\platform.h" />
     <ClInclude Include="..\public\utlmemory.h" />
@@ -1117,12 +1093,10 @@
     <ClInclude Include="..\regamedll\dlls.h" />
     <ClInclude Include="..\regamedll\engine.h" />
     <ClInclude Include="..\regamedll\hookchains_impl.h" />
-    <ClInclude Include="..\regamedll\platform.h" />
     <ClInclude Include="..\regamedll\precompiled.h" />
     <ClInclude Include="..\regamedll\regamedll.h" />
     <ClInclude Include="..\regamedll\RegameDLLRuntimeConfig.h" />
     <ClInclude Include="..\regamedll\regamedll_api_impl.h" />
-    <ClInclude Include="..\regamedll\regamedll_debug.h" />
     <ClInclude Include="..\regamedll\regamedll_interfaces_impl.h" />
     <ClInclude Include="..\regamedll\sse_mathfun.h" />
     <ClInclude Include="..\version\version.h" />
@@ -1346,7 +1320,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>HOOK_GAMEDLL;REGAMEDLL_API;REGAMEDLL_SELF;REGAMEDLL_FIXES;REGAMEDLL_CHECKS;CLIENT_WEAPONS;USE_BREAKPAD_HANDLER;DEDICATED;_CRT_SECURE_NO_WARNINGS;_DEBUG;_ITERATOR_DEBUG_LEVEL=0;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>HOOK_GAMEDLL;REGAMEDLL_API;REGAMEDLL_SELF;REGAMEDLL_FIXES;REGAMEDLL_CHECKS;CLIENT_WEAPONS;USE_BREAKPAD_HANDLER;USE_QSTRING;DEDICATED;_CRT_SECURE_NO_WARNINGS;_DEBUG;_ITERATOR_DEBUG_LEVEL=0;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <FloatingPointModel>Precise</FloatingPointModel>
       <AdditionalOptions>/arch:IA32 %(AdditionalOptions)</AdditionalOptions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -1383,7 +1357,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>PLAY_GAMEDLL;HOOK_GAMEDLL;REGAMEDLL_SELF;REGAMEDLL_CHECKS;CLIENT_WEAPONS;USE_BREAKPAD_HANDLER;DEDICATED;_CRT_SECURE_NO_WARNINGS;_DEBUG;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>PLAY_GAMEDLL;HOOK_GAMEDLL;REGAMEDLL_SELF;REGAMEDLL_CHECKS;CLIENT_WEAPONS;USE_BREAKPAD_HANDLER;USE_QSTRING;DEDICATED;_CRT_SECURE_NO_WARNINGS;_DEBUG;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <FloatingPointModel>Precise</FloatingPointModel>
       <AdditionalOptions>/arch:IA32 %(AdditionalOptions)</AdditionalOptions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -1419,7 +1393,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>REGAMEDLL_ADD;REGAMEDLL_API;REGAMEDLL_FIXES;REGAMEDLL_SELF;REGAMEDLL_CHECKS;CLIENT_WEAPONS;USE_BREAKPAD_HANDLER;DEDICATED;_CRT_SECURE_NO_WARNINGS;_DEBUG;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>REGAMEDLL_ADD;REGAMEDLL_API;REGAMEDLL_FIXES;REGAMEDLL_SELF;REGAMEDLL_CHECKS;CLIENT_WEAPONS;USE_BREAKPAD_HANDLER;USE_QSTRING;DEDICATED;_CRT_SECURE_NO_WARNINGS;_DEBUG;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <FloatingPointModel>Precise</FloatingPointModel>
       <AdditionalOptions>/arch:IA32 %(AdditionalOptions)</AdditionalOptions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -1455,8 +1429,8 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Full</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>REGAMEDLL_ADD;REGAMEDLL_FIXES;REGAMEDLL_SELF;REGAMEDLL_CHECKS;REGAMEDLL_API;CLIENT_WEAPONS;USE_BREAKPAD_HANDLER;DEDICATED;_CRT_SECURE_NO_WARNINGS;NDEBUG;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <FloatingPointModel>Precise</FloatingPointModel>
+      <PreprocessorDefinitions>REGAMEDLL_ADD;REGAMEDLL_FIXES;REGAMEDLL_SELF;REGAMEDLL_CHECKS;REGAMEDLL_API;CLIENT_WEAPONS;USE_BREAKPAD_HANDLER;USE_QSTRING;DEDICATED;_CRT_SECURE_NO_WARNINGS;NDEBUG;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <FloatingPointModel>Fast</FloatingPointModel>
       <AdditionalOptions>/arch:IA32 %(AdditionalOptions)</AdditionalOptions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -1500,7 +1474,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Full</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>REGAMEDLL_SELF;PLAY_GAMEDLL;REGAMEDLL_API;REGAMEDLL_CHECKS;CLIENT_WEAPONS;USE_BREAKPAD_HANDLER;DEDICATED;_CRT_SECURE_NO_WARNINGS;NDEBUG;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>REGAMEDLL_SELF;PLAY_GAMEDLL;REGAMEDLL_API;REGAMEDLL_CHECKS;CLIENT_WEAPONS;USE_BREAKPAD_HANDLER;USE_QSTRING;DEDICATED;_CRT_SECURE_NO_WARNINGS;NDEBUG;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <FloatingPointModel>Precise</FloatingPointModel>
       <AdditionalOptions>/arch:IA32 %(AdditionalOptions)</AdditionalOptions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -1545,7 +1519,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>REGAMEDLL_SELF;PLAY_GAMEDLL;REGAMEDLL_CHECKS;REGAMEDLL_API;CLIENT_WEAPONS;USE_BREAKPAD_HANDLER;DEDICATED;_CRT_SECURE_NO_WARNINGS;_DEBUG;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>REGAMEDLL_SELF;PLAY_GAMEDLL;REGAMEDLL_CHECKS;REGAMEDLL_API;CLIENT_WEAPONS;USE_BREAKPAD_HANDLER;USE_QSTRING;DEDICATED;_CRT_SECURE_NO_WARNINGS;_DEBUG;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <FloatingPointModel>Precise</FloatingPointModel>
       <AdditionalOptions>/arch:IA32 %(AdditionalOptions)</AdditionalOptions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -1581,7 +1555,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>REGAMEDLL_SELF;REGAMEDLL_FIXES;DEDICATED;REGAMEDLL_SELF;HOOK_GAMEDLL;_BUILD_FROM_IDE;USE_BREAKPAD_HANDLER;DEDICATED;_CRT_SECURE_NO_WARNINGS;_ITERATOR_DEBUG_LEVEL=0;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>REGAMEDLL_SELF;REGAMEDLL_FIXES;DEDICATED;REGAMEDLL_SELF;HOOK_GAMEDLL;_BUILD_FROM_IDE;USE_BREAKPAD_HANDLER;USE_QSTRING;DEDICATED;_CRT_SECURE_NO_WARNINGS;_ITERATOR_DEBUG_LEVEL=0;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>precompiled.h</PrecompiledHeaderFile>
@@ -1620,7 +1594,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>HOOK_GAMEDLL;REGAMEDLL_SELF;REGAMEDLL_FIXES;REGAMEDLL_CHECKS;CLIENT_WEAPONS;USE_BREAKPAD_HANDLER;DEDICATED;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>HOOK_GAMEDLL;REGAMEDLL_SELF;REGAMEDLL_FIXES;REGAMEDLL_CHECKS;CLIENT_WEAPONS;USE_BREAKPAD_HANDLER;USE_QSTRING;DEDICATED;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <AdditionalOptions>/arch:IA32 %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -1659,7 +1633,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>REGAMEDLL_SELF;PLAY_GAMEDLL;HOOK_GAMEDLL;REGAMEDLL_CHECKS;CLIENT_WEAPONS;USE_BREAKPAD_HANDLER;DEDICATED;_CRT_SECURE_NO_WARNINGS;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>REGAMEDLL_SELF;PLAY_GAMEDLL;HOOK_GAMEDLL;REGAMEDLL_CHECKS;CLIENT_WEAPONS;USE_BREAKPAD_HANDLER;USE_QSTRING;DEDICATED;_CRT_SECURE_NO_WARNINGS;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <AdditionalOptions>/arch:IA32 %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeader>Use</PrecompiledHeader>

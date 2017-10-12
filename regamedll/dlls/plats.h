@@ -26,25 +26,10 @@
 *
 */
 
-#ifndef PLATS_H
-#define PLATS_H
-#ifdef _WIN32
 #pragma once
-#endif
 
-#define SF_PLAT_TOGGLE		0x0001
-
-#define TRAIN_STARTPITCH	60
-#define TRAIN_MAXPITCH		200
-#define TRAIN_MAXSPEED		1000
-
-#define SF_TRACK_ACTIVATETRAIN	0x00000001
-#define SF_TRACK_RELINK		0x00000002
-#define SF_TRACK_ROTMOVE	0x00000004
-#define SF_TRACK_STARTBOTTOM	0x00000008
-#define SF_TRACK_DONT_MOVE	0x00000010
-
-#define FGUNTARGET_START_ON	0x0001
+#define SF_PLAT_TOGGLE BIT(0) // The lift is no more automatically called from top and activated by stepping on it.
+                              // It required trigger to do so.
 
 class CBasePlatTrain: public CBaseToggle
 {
@@ -120,6 +105,10 @@ public:
 	Vector m_start;
 };
 
+#define SF_TRAIN_WAIT_RETRIGGER BIT(0)
+#define SF_TRAIN_START_ON       BIT(2) // Train is initially moving
+#define SF_TRAIN_PASSABLE       BIT(3) // Train is not solid -- used to make water trains
+
 class CFuncTrain: public CBasePlatTrain
 {
 public:
@@ -148,6 +137,7 @@ public:
 	BOOL m_activated;
 };
 
+// This class defines the volume of space that the player must stand in to control the train
 class CFuncTrainControls: public CBaseEntity
 {
 public:
@@ -158,6 +148,17 @@ public:
 	void EXPORT Find();
 };
 
+#define SF_TRACK_ACTIVATETRAIN BIT(0)
+#define SF_TRACK_RELINK        BIT(1)
+#define SF_TRACK_ROTMOVE       BIT(2)
+#define SF_TRACK_STARTBOTTOM   BIT(3)
+#define SF_TRACK_DONT_MOVE     BIT(4)
+
+enum TRAIN_CODE { TRAIN_SAFE, TRAIN_BLOCKING, TRAIN_FOLLOWING };
+
+// This entity is a rotating/moving platform that will carry a train to a new track.
+// It must be larger in X-Y planar area than the train, since it must contain the
+// train within these dimensions in order to operate when the train is near it.
 class CFuncTrackChange: public CFuncPlatRot
 {
 public:
@@ -211,6 +212,12 @@ public:
 	virtual void UpdateAutoTargets(int toggleState);
 };
 
+// pev->speed is the travel speed
+// pev->health is current health
+// pev->max_health is the amount to reset to each time it starts
+
+#define SF_GUNTARGET_START_ON BIT(0)
+
 class CGunTarget: public CBaseMonster
 {
 public:
@@ -237,8 +244,3 @@ public:
 private:
 	BOOL m_on;
 };
-
-void PlatSpawnInsideTrigger(entvars_t *pevPlatform);
-void FixupAngles(Vector &v);
-
-#endif // PLATS_H

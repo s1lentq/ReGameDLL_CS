@@ -88,7 +88,7 @@ bool CCSBot::CanHearNearbyEnemyGunfire(float range) const
 	if (!CanSeeNoisePosition())
 		return false;
 
-	if (IsAttacking() && m_enemy != NULL)
+	if (IsAttacking() && m_enemy)
 	{
 		// gunfire is only threatening if it is closer than our current enemy
 		float gunfireDistSq = (m_noisePosition - pev->origin).LengthSquared();
@@ -148,14 +148,13 @@ bool CCSBot::UpdateLookAtNoise()
 	else
 	{
 		// line of sight is blocked, bend it
-
 		if (m_approachPointCount == 0)
 			return false;
 
 		int nearIdx = -1;
 		float nearRangeSq = 9.9999998e10f;
 
-		for (int i = 0; i < m_approachPointCount; ++i)
+		for (int i = 0; i < m_approachPointCount; i++)
 		{
 			float distanceSq = (m_approachPoint[i] - m_noisePosition).LengthSquared();
 

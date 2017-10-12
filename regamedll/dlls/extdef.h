@@ -25,7 +25,10 @@
 *   version.
 *
 */
+
 #pragma once
+
+#include "regamedll_const.h"
 
 #undef DLLEXPORT
 #ifdef _WIN32
@@ -50,6 +53,8 @@
 	#define likely(x) __builtin_expect(!!(x), 1)
 	#define unlikely(x) __builtin_expect(!!(x), 0)
 #endif
+
+const int MAX_MAPNAME_LENGHT = 32;
 
 // Simplified macro for declaring/defining exported DLL functions.  They
 // need to be 'extern "C"' so that the C++ compiler enforces parameter
@@ -105,7 +110,6 @@ typedef struct hudtextparms_s
 } hudtextparms_t;
 
 enum USE_TYPE { USE_OFF, USE_ON, USE_SET, USE_TOGGLE };
-enum TRAIN_CODE { TRAIN_SAFE, TRAIN_BLOCKING, TRAIN_FOLLOWING };
 enum IGNORE_MONSTERS { ignore_monsters = 1, dont_ignore_monsters = 0, missile = 2 };
 enum IGNORE_GLASS { ignore_glass = 1, dont_ignore_glass = 0 };
 enum { point_hull = 0, human_hull = 1, large_hull = 2, head_hull = 3 };

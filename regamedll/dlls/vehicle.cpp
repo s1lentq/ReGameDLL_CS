@@ -23,24 +23,6 @@ TYPEDESCRIPTION CFuncVehicle::m_SaveData[] =
 
 #endif
 
-float_precision Fix2(float angle)
-{
-	while (angle < 0)
-		angle += 360;
-
-	while (angle > 360)
-		angle -= 360;
-
-	return angle;
-}
-
-void FixupAngles2(Vector &v)
-{
-	v.x = Fix2(v.x);
-	v.y = Fix2(v.y);
-	v.z = Fix2(v.z);
-}
-
 IMPLEMENT_SAVERESTORE(CFuncVehicle, CBaseEntity)
 LINK_ENTITY_TO_CLASS(func_vehicle, CFuncVehicle, CCSFuncVehicle)
 
@@ -97,7 +79,9 @@ void CFuncVehicle::KeyValue(KeyValueData *pkvd)
 		pkvd->fHandled = TRUE;
 	}
 	else
+	{
 		CBaseEntity::KeyValue(pkvd);
+	}
 }
 
 void CFuncVehicle::NextThink(float thinkTime, BOOL alwaysThink)
@@ -596,8 +580,8 @@ void CFuncVehicle::Next()
 			vTargetAngle.y += m_iTurnAngle;
 		}
 
-		FixupAngles2(vTargetAngle);
-		FixupAngles2(vAngle);
+		UTIL_FixupAngles(vTargetAngle);
+		UTIL_FixupAngles(vAngle);
 
 		vx = UTIL_AngleDistance(vTargetAngle.x, vAngle.x);
 		vy = UTIL_AngleDistance(vTargetAngle.y, vAngle.y);
@@ -667,7 +651,7 @@ void CFuncVehicle::DeadEnd()
 	CPathTrack *pTrack = m_ppath;
 	ALERT(at_aiconsole, "TRAIN(%s): Dead end ", STRING(pev->targetname));
 
-	if (pTrack != NULL)
+	if (pTrack)
 	{
 		CPathTrack *pNext;
 
@@ -676,33 +660,31 @@ void CFuncVehicle::DeadEnd()
 			do
 			{
 				pNext = pTrack->ValidPath(pTrack->GetPrevious(), TRUE);
-
-				if (pNext != NULL)
+				if (pNext)
 				{
 					pTrack = pNext;
 				}
 			}
-			while (pNext != NULL);
+			while (pNext);
 		}
 		else
 		{
 			do
 			{
 				pNext = pTrack->ValidPath(pTrack->GetNext(), TRUE);
-
-				if (pNext != NULL)
+				if (pNext)
 				{
 					pTrack = pNext;
 				}
 			}
-			while (pNext != NULL);
+			while (pNext);
 		}
 	}
 
 	pev->velocity = g_vecZero;
 	pev->avelocity = g_vecZero;
 
-	if (pTrack != NULL)
+	if (pTrack)
 	{
 		ALERT(at_aiconsole, "at %s\n", STRING(pTrack->pev->targetname));
 
@@ -742,7 +724,7 @@ BOOL CFuncVehicle::OnControls(entvars_t *pevTest)
 
 void CFuncVehicle::Find()
 {
-	m_ppath = CPathTrack::Instance(FIND_ENTITY_BY_TARGETNAME(NULL, STRING(pev->target)));
+	m_ppath = CPathTrack::Instance(FIND_ENTITY_BY_TARGETNAME(nullptr, STRING(pev->target)));
 
 	if (!m_ppath)
 		return;
@@ -752,7 +734,7 @@ void CFuncVehicle::Find()
 	if (!FClassnameIs(pevTarget, "path_track"))
 	{
 		ALERT(at_error, "func_track_train must be on a path of path_track\n");
-		m_ppath = NULL;
+		m_ppath = nullptr;
 		return;
 	}
 
@@ -781,12 +763,12 @@ void CFuncVehicle::Find()
 
 void CFuncVehicle::NearestPath()
 {
-	CBaseEntity *pTrack = NULL;
-	CBaseEntity *pNearest = NULL;
+	CBaseEntity *pTrack = nullptr;
+	CBaseEntity *pNearest = nullptr;
 	float_precision dist;
 	float closest = 1024;
 
-	while ((pTrack = UTIL_FindEntityInSphere(pTrack, pev->origin, 1024)) != NULL)
+	while ((pTrack = UTIL_FindEntityInSphere(pTrack, pev->origin, 1024)))
 	{
 		if (!(pTrack->pev->flags & (FL_CLIENT | FL_MONSTER)) && FClassnameIs(pTrack->pev, "path_track"))
 		{
@@ -808,9 +790,9 @@ void CFuncVehicle::NearestPath()
 	}
 
 	ALERT(at_aiconsole, "TRAIN: %s, Nearest track is %s\n", STRING(pev->targetname), STRING(pNearest->pev->targetname));
-	pTrack = ((CPathTrack *)pNearest)->GetNext();
 
-	if (pTrack != NULL)
+	pTrack = ((CPathTrack *)pNearest)->GetNext();
+	if (pTrack)
 	{
 		if ((pev->origin - pTrack->pev->origin).Length() < (pev->origin - pNearest->pev->origin).Length())
 		{
@@ -839,7 +821,7 @@ CFuncVehicle *CFuncVehicle::Instance(edict_t *pent)
 		return (CFuncVehicle *)GET_PRIVATE(pent);
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 int CFuncVehicle::Classify()
@@ -908,7 +890,7 @@ void CFuncVehicle::Restart()
 	m_flTurnStartTime = -1;
 	m_flUpdateSound = -1;
 	m_dir = 1;
-	m_pDriver = NULL;
+	m_pDriver = nullptr;
 
 	if (FStringNull(pev->target))
 	{
@@ -947,7 +929,7 @@ LINK_ENTITY_TO_CLASS(func_vehiclecontrols, CFuncVehicleControls, CCSFuncVehicleC
 
 void CFuncVehicleControls::Find()
 {
-	edict_t *pTarget = NULL;
+	edict_t *pTarget = nullptr;
 
 	do
 	{

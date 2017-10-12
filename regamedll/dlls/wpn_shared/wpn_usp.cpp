@@ -45,7 +45,7 @@ int CUSP::GetItemInfo(ItemInfo *p)
 	p->pszAmmo1 = "45ACP";
 #endif // REGAMEDLL_FIXES
 	p->iMaxAmmo1 = MAX_AMMO_45ACP;
-	p->pszAmmo2 = NULL;
+	p->pszAmmo2 = nullptr;
 	p->iMaxAmmo2 = -1;
 	p->iMaxClip = USP_MAX_CLIP;
 	p->iSlot = 1;
@@ -182,7 +182,7 @@ void CUSP::USPFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 			m_flNextPrimaryAttack = GetNextAttackDelay(0.2);
 		}
 
-		if (TheBots != NULL)
+		if (TheBots)
 		{
 			TheBots->OnEvent(EVENT_WEAPON_FIRED_ON_EMPTY, m_pPlayer);
 		}
@@ -192,7 +192,7 @@ void CUSP::USPFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 
 	m_flNextPrimaryAttack = m_flNextSecondaryAttack = GetNextAttackDelay(flCycleTime);
 
-	--m_iClip;
+	m_iClip--;
 	SetPlayerShieldAnim();
 
 	m_pPlayer->SetAnimation(PLAYER_ATTACK1);
@@ -224,7 +224,7 @@ void CUSP::USPFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 
 	if (!m_iClip && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
 	{
-		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, FALSE);
+		m_pPlayer->SetSuitUpdate("!HEV_AMO0", SUIT_SENTENCE, SUIT_REPEAT_OK);
 	}
 
 	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.0f;

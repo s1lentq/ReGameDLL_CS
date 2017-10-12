@@ -30,14 +30,16 @@ void HostageAnimateState::AddSequence(CHostageImprov *improv, const char *seqNam
 	if (m_sequenceCount >= MAX_SEQUENCES)
 		return;
 
-	if (seqName != NULL)
+	if (seqName)
 		seqIndex = hostage->LookupSequence(seqName);
 	else
 		seqIndex = -1;
 
 	m_sequence[m_sequenceCount].seqID = seqIndex;
 	m_sequence[m_sequenceCount].holdTime = holdTime;
-	m_sequence[m_sequenceCount++].rate = rate;
+	m_sequence[m_sequenceCount].rate = rate;
+
+	m_sequenceCount++;
 	m_currentSequence = 0;
 
 	StartSequence(improv, m_sequence);
@@ -46,13 +48,15 @@ void HostageAnimateState::AddSequence(CHostageImprov *improv, const char *seqNam
 void HostageAnimateState::AddSequence(CHostageImprov *improv, int activity, float holdTime, float rate)
 {
 	CHostage *hostage = improv->GetEntity();
-	void *model = GET_MODEL_PTR(hostage->edict());
 
-	if (model != NULL)
+	void *model = GET_MODEL_PTR(hostage->edict());
+	if (model)
 	{
 		m_sequence[m_sequenceCount].seqID = LookupActivity(model, hostage->pev, activity);
 		m_sequence[m_sequenceCount].holdTime = holdTime;
-		m_sequence[m_sequenceCount++].rate = rate;
+		m_sequence[m_sequenceCount].rate = rate;
+
+		m_sequenceCount++;
 		m_currentSequence = 0;
 	}
 

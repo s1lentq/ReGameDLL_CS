@@ -156,7 +156,7 @@ FunctionHook g_FunctionHooks[] =
 	HOOK_DEF(0x01DB30C0, PM_AirMove_internal),
 	//HOOK_DEF(0x01DB3200, PM_InWater),					// NOXREF
 	HOOK_DEF(0x01DB3220, PM_CheckWater),
-	HOOK_DEF(0x01DB33E0, PM_CatagorizePosition),
+	HOOK_DEF(0x01DB33E0, PM_CategorizePosition),
 	//HOOK_DEF(0x01DB3590, PM_GetRandomStuckOffsets),	// NOXREF
 	//HOOK_DEF(0x01DB35E0, PM_ResetStuckOffsets),		// NOXREF
 	HOOK_DEF(0x01DB3600, PM_CheckStuck),
@@ -179,7 +179,7 @@ FunctionHook g_FunctionHooks[] =
 	//HOOK_DEF(0x01DB5810, PM_PlayWaterSounds),			// NOXREF
 	//HOOK_DEF(0x01DB5810, PM_CalcRoll),				// NOXREF
 	//HOOK_DEF(0x01DB58A0, PM_DropPunchAngle),			// NOXREF
-	HOOK_DEF(0x01DB58F0, PM_CheckParamters),
+	HOOK_DEF(0x01DB58F0, PM_CheckParameters),
 	HOOK_DEF(0x01DB5BE0, PM_ReduceTimers),
 	//HOOK_DEF(0x01DB5D20, PM_ShouldDoSpectMode),		// NOXREF
 	HOOK_DEF(0x01DB5D50, PM_PlayerMove),
@@ -335,11 +335,11 @@ FunctionHook g_FunctionHooks[] =
 	HOOK_SYMBOLDEF(0x01D61A70, "_Z20EmptyEntityHashTablev", EmptyEntityHashTable),
 	HOOK_SYMBOLDEF(0x01D61AE0, "_Z18AddEntityHashValueP9entvars_sPKc12hash_types_e", AddEntityHashValue),
 	HOOK_SYMBOLDEF(0x01D61CA0, "_Z21RemoveEntityHashValueP9entvars_sPKc12hash_types_e", RemoveEntityHashValue),
-	HOOK_SYMBOLDEF(0x01D61E20, "_Z13printEntitiesv", printEntities),
+	HOOK_SYMBOLDEF(0x01D61E20, "_Z13printEntitiesv", SV_PrintEntities_f),
 	HOOK_SYMBOLDEF(0x01D61ED0, "_Z19CREATE_NAMED_ENTITYj", CREATE_NAMED_ENTITY),
 	HOOK_SYMBOLDEF(0x01D61F10, "_Z13REMOVE_ENTITYP7edict_s", REMOVE_ENTITY),
 	HOOK_SYMBOLDEF(0x01D62540, "_Z12CONSOLE_ECHOPcz", CONSOLE_ECHO),
-	HOOK_SYMBOLDEF(0x01D61F30, "_Z15loopPerformancev", loopPerformance),
+	HOOK_SYMBOLDEF(0x01D61F30, "_Z15loopPerformancev", SV_LoopPerformance_f),
 	HOOK_DEF(0x01D62570, GetEntityAPI),
 	//HOOK_SYMBOLDEF(0x01D62670, "_Z13GetEntityAPI2P13DLL_FUNCTIONSPi", GetEntityAPI2),	// NOXREF
 	HOOK_DEF(0x01D626B0, GetNewDLLFunctions),
@@ -434,7 +434,7 @@ FunctionHook g_FunctionHooks[] =
 	HOOK_SYMBOLDEF(0x01D72480, "_ZN11CBaseEntity12FireBullets3E6VectorS0_ffiiifP9entvars_sbi", CBaseEntity::FireBullets3),
 	HOOK_SYMBOLDEF(0x01DBB190, "_ZN11CBaseEntity14SUB_UseTargetsEPS_8USE_TYPEf", CBaseEntity::SUB_UseTargets),
 	HOOK_SYMBOLDEF(0x01DBB260, "_Z11FireTargetsPKcP11CBaseEntityS2_8USE_TYPEf", FireTargets),
-	HOOK_SYMBOLDEF(0x01D638C0, "_ZN11CBaseEntity10IntersectsEPS_", CBaseEntity::Intersects),
+	//HOOK_SYMBOLDEF(0x01D638C0, "_ZN11CBaseEntity10IntersectsEPS_", CBaseEntity::Intersects),
 	//HOOK_SYMBOLDEF(0x01D63950, "_ZN11CBaseEntity11MakeDormantEv", CBaseEntity::MakeDormant), // NOXREF
 	HOOK_SYMBOLDEF(0x01D639B0, "_ZN11CBaseEntity9IsDormantEv", CBaseEntity::IsDormant),
 	//HOOK_SYMBOLDEF(0x0, "_ZN11CBaseEntity16IsLockedByMasterEv", CBaseEntity::IsLockedByMaster), // NOXREF
@@ -1246,7 +1246,7 @@ FunctionHook g_FunctionHooks[] =
 	HOOK_SYMBOLDEF(0x01D9A6E0, "_ZN10CGunTarget4WaitEv", CGunTarget::Wait),
 	//HOOK_SYMBOLDEF(0x01D9A890, "_ZN10CGunTarget4StopEv", CGunTarget::Stop),	// NOXREF
 //CPlane
-	//HOOK_SYMBOLDEF(0x01D952F0, "_ZN6CPlaneC2Ev", CPlane::CPlane),	// NOXREF
+	//HOOK_SYMBOLDEF(0x01D952F0, "_ZN6CPlaneC2Ev", CPlane::CPlane),										// NOXREF
 	//HOOK_SYMBOLDEF(0x01D95300, "_ZN6CPlane15InitializePlaneERK6VectorS2_", CPlane::InitializePlane),	// NOXREF
 	//HOOK_SYMBOLDEF(0x01D95340, "_ZN6CPlane12PointInFrontERK6Vector", CPlane::PointInFront),			// NOXREF
 //linked objects
@@ -1328,7 +1328,7 @@ FunctionHook g_FunctionHooks[] =
 	//HOOK_DEF(0x0, FixupAngles2),	// NOXREF
 
 #ifdef _WIN32
-	HOOK_DEF(0x01DCB7B0, Fix2),
+	//HOOK_DEF(0x01DCB7B0, Fix2),
 #endif // _WIN32
 
 	//linked objects
@@ -2268,7 +2268,7 @@ FunctionHook g_FunctionHooks[] =
 	//HOOK_SYMBOLDEF(0x01D8ABB0, "_ZN6CGraph17FSetGraphPointersEv", CGraph::FSetGraphPointers), // pure
 	//HOOK_SYMBOLDEF(0x01D8ABC0, "_ZN6CGraph19ShowNodeConnectionsEi", CGraph::ShowNodeConnections), // pure
 	//HOOK_SYMBOLDEF(0x0, "_ZN6CGraph15FindNearestNodeERK6VectorP11CBaseEntity", CGraph::FindNearestNode, int(const Vector &, CBaseEntity *)),	// NOXREF
-	HOOK_SYMBOLDEF(0x01D8ABD0, "_ZN6CGraph15FindNearestNodeERK6Vectori", CGraph::FindNearestNode, int(const Vector &, int)),
+	//HOOK_SYMBOLDEF(0x01D8ABD0, "_ZN6CGraph15FindNearestNodeERK6Vectori", CGraph::FindNearestNode, int(const Vector &, int)),
 
 #endif // Graph_Region
 
@@ -2389,8 +2389,8 @@ FunctionHook g_FunctionHooks[] =
 	HOOK_SYMBOLDEF(0x01DC2D90, "_Z23UTIL_FindEntityInSphereP11CBaseEntityRK6Vectorf", UTIL_FindEntityInSphere),
 	HOOK_SYMBOLDEF(0x01DC2DE0, "_Z27UTIL_FindEntityByString_OldP11CBaseEntityPKcS2_", UTIL_FindEntityByString_Old),
 	HOOK_SYMBOLDEF(0x01DC2E30, "_Z23UTIL_FindEntityByStringP11CBaseEntityPKcS2_", UTIL_FindEntityByString),
-	HOOK_SYMBOLDEF(0x01DC2FB0, "_Z26UTIL_FindEntityByClassnameP11CBaseEntityPKc", UTIL_FindEntityByClassname),
-	HOOK_SYMBOLDEF(0x01DC2FD0, "_Z27UTIL_FindEntityByTargetnameP11CBaseEntityPKc", UTIL_FindEntityByTargetname),
+	//HOOK_SYMBOLDEF(0x01DC2FB0, "_Z26UTIL_FindEntityByClassnameP11CBaseEntityPKc", UTIL_FindEntityByClassname),
+	//HOOK_SYMBOLDEF(0x01DC2FD0, "_Z27UTIL_FindEntityByTargetnameP11CBaseEntityPKc", UTIL_FindEntityByTargetname),
 	//HOOK_SYMBOLDEF(0x01DC2FF0, "_Z22UTIL_FindEntityGenericPKcR6Vectorf", UTIL_FindEntityGeneric),	// NOXREF
 	//HOOK_SYMBOLDEF(0x01DC30A0, "_Z18UTIL_PlayerByIndexi", UTIL_PlayerByIndex),
 	HOOK_SYMBOLDEF(0x01DC30E0, "_Z16UTIL_MakeVectorsRK6Vector", UTIL_MakeVectors),
@@ -2431,7 +2431,7 @@ FunctionHook g_FunctionHooks[] =
 	HOOK_SYMBOLDEF(0x01DC4330, "_Z19UTIL_SplineFractionff", UTIL_SplineFraction),
 	HOOK_SYMBOLDEF(0x01DC4350, "_Z12UTIL_VarArgsPcz", UTIL_VarArgs),
 	//HOOK_SYMBOLDEF(0x01DC4370, "_Z17UTIL_GetAimVectorP7edict_sf", UTIL_GetAimVector),	// NOXREF
-	HOOK_SYMBOLDEF(0x01DC43B0, "_Z22UTIL_IsMasterTriggeredjP11CBaseEntity", UTIL_IsMasterTriggered),
+	//HOOK_SYMBOLDEF(0x01DC43B0, "_Z22UTIL_IsMasterTriggeredjP11CBaseEntity", UTIL_IsMasterTriggered),
 	//HOOK_SYMBOLDEF(0x01DC4430, "_Z20UTIL_ShouldShowBloodi", UTIL_ShouldShowBlood),	// NOXREF
 	HOOK_SYMBOLDEF(0x01DC4490, "_Z18UTIL_PointContentsRK6Vector", UTIL_PointContents),
 	HOOK_SYMBOLDEF(0x01DC44A0, "_Z16UTIL_BloodStreamRK6VectorS1_ii", UTIL_BloodStream),
@@ -2443,8 +2443,8 @@ FunctionHook g_FunctionHooks[] =
 	//HOOK_SYMBOLDEF(0x01DC4940, "_Z22UTIL_GunshotDecalTraceP11TraceResultibP9entvars_s", UTIL_GunshotDecalTrace),	// NOXREF
 	HOOK_SYMBOLDEF(0x01DC4A40, "_Z11UTIL_SparksRK6Vector", UTIL_Sparks),
 	HOOK_SYMBOLDEF(0x01DC4A90, "_Z13UTIL_RicochetRK6Vectorf", UTIL_Ricochet),
-	HOOK_SYMBOLDEF(0x01DC4AF0, "_Z15UTIL_TeamsMatchPKcS0_", UTIL_TeamsMatch),
-	HOOK_SYMBOLDEF(0x01DC4B30, "_Z19UTIL_StringToVectorPfPKc", UTIL_StringToVector),
+	//HOOK_SYMBOLDEF(0x01DC4AF0, "_Z15UTIL_TeamsMatchPKcS0_", UTIL_TeamsMatch),
+	//HOOK_SYMBOLDEF(0x01DC4B30, "_Z19UTIL_StringToVectorPfPKc", UTIL_StringToVector),
 	HOOK_SYMBOLDEF(0x01DC4BB0, "_Z21UTIL_StringToIntArrayPiiPKc", UTIL_StringToIntArray),
 	//HOOK_SYMBOLDEF(0x01DC4C40, "_Z21UTIL_ClampVectorToBoxRK6VectorS1_", UTIL_ClampVectorToBox),	// NOXREF
 	//HOOK_SYMBOLDEF(0x01DC4D80, "_Z15UTIL_WaterLevelRK6Vectorff", UTIL_WaterLevel),	// NOXREF
@@ -2455,7 +2455,7 @@ FunctionHook g_FunctionHooks[] =
 	HOOK_SYMBOLDEF(0x01DC5300, "_Z18UTIL_PrecacheOtherPKc", UTIL_PrecacheOther),
 	HOOK_SYMBOLDEF(0x01DC5380, "_Z14UTIL_LogPrintfPcz", UTIL_LogPrintf),
 	//HOOK_SYMBOLDEF(0x01DC53B0, "_Z14UTIL_DotPointsRK6VectorS1_S1_", UTIL_DotPoints),	// NOXREF
-	HOOK_SYMBOLDEF(0x01DC5430, "_Z15UTIL_StripTokenPKcPc", UTIL_StripToken),
+	//HOOK_SYMBOLDEF(0x01DC5430, "_Z15UTIL_StripTokenPKcPc", UTIL_StripToken),
 	//HOOK_SYMBOLDEF(0x01DC5470, "_ZN18CSaveRestoreBufferC2Ev", (MethodThunk<CSaveRestoreBuffer>::Constructor), void()),														// NOXREF
 	//HOOK_SYMBOLDEF(0x01DC5480, "_ZN18CSaveRestoreBufferC2EP13saverestore_s", (MethodThunk<CSaveRestoreBuffer, SAVERESTOREDATA *>::Constructor), void(SAVERESTOREDATA *)),		// NOXREF
 	//HOOK_SYMBOLDEF(0x01DC5490, "_ZN18CSaveRestoreBufferD2Ev", CSaveRestoreBuffer::~CSaveRestoreBuffer),					// NOXREF
@@ -2711,8 +2711,8 @@ FunctionHook g_FunctionHooks[] =
 	//HOOK_SYMBOLDEF(0x01D8B7B0, "_Z15EndRoundMessagePKci", EndRoundMessage),
 	//HOOK_SYMBOLDEF(0x01D8BD80, "_ZL18ReadMultiplayCvarsP18CHalfLifeMultiplay", ReadMultiplayCvars),
 	//HOOK_SYMBOLDEF(0x01D92670, "_Z15DestroyMapCycleP10mapcycle_s", DestroyMapCycle),	// NOXREF
-	HOOK_SYMBOLDEF(0x01D926B0, "_Z15MP_COM_GetTokenv", MP_COM_GetToken),
-	HOOK_SYMBOLDEF(0x01D926C0, "_Z12MP_COM_ParsePc", MP_COM_Parse),
+	//HOOK_SYMBOLDEF(0x01D926B0, "_Z15MP_COM_GetTokenv", MP_COM_GetToken),
+	//HOOK_SYMBOLDEF(0x01D926C0, "_Z12MP_COM_ParsePc", MP_COM_Parse),
 	//HOOK_SYMBOLDEF(0x01D927A0, "_Z19MP_COM_TokenWaitingPc", MP_COM_TokenWaiting),	// NOXREF
 	HOOK_SYMBOLDEF(0x01D927F0, "_Z18ReloadMapCycleFilePcP10mapcycle_s", ReloadMapCycleFile),
 	//HOOK_SYMBOLDEF(0x01D92AB0, "_Z12CountPlayersv", CountPlayers),	// NOXREF
@@ -4459,8 +4459,8 @@ FunctionHook g_FunctionHooks[] =
 #ifndef H_Region
 
 //AI
-	//HOOK_SYMBOLDEF(0x01D848B0, "_Z11FBoxVisibleP9entvars_sS0_R6Vectorf", FBoxVisible),		// NOXREF
-	//HOOK_SYMBOLDEF(0x01D84A10, "_Z12VecCheckTossP9entvars_sRK6VectorS1_f", VecCheckToss),		// NOXREF
+	//HOOK_SYMBOLDEF(0x01D848B0, "_Z11FBoxVisibleP9entvars_sS0_R6Vectorf", FBoxVisible),			// NOXREF
+	//HOOK_SYMBOLDEF(0x01D84A10, "_Z12VecCheckTossP9entvars_sRK6VectorS1_f", VecCheckToss),			// NOXREF
 	//HOOK_SYMBOLDEF(0x01D84EB0, "_Z13VecCheckThrowP9entvars_sRK6VectorS1_ff", VecCheckThrow),		// NOXREF
 //CRecharge
 	// virtual func
@@ -5727,11 +5727,11 @@ AddressRef g_DataRefs[] =
 	GLOBALVAR_LINK(0x01E29480, "_ZL8cosTable", pcosTable),
 	GLOBALVAR_LINK(0x01E23AA8, "TutorIdentifierList", pTutorIdentifierList),
 	GLOBALVAR_LINK(0x01E23678, "_ZL19g_TutorStateStrings", pg_TutorStateStrings),
-	GLOBALVAR_LINK(0x01E61E4C, "WorldGraph", pWorldGraph),
+	//GLOBALVAR_LINK(0x01E61E4C, "WorldGraph", pWorldGraph),
 	//GLOBALVAR_LINK(0x01E61E5C, "_ZN12CTalkMonster14g_talkWaitTimeE", CTalkMonster::pg_talkWaitTime),
 	GLOBALVAR_LINK(0x01E61B98, "g_pGameRules", pg_pGameRules),
 	GLOBALVAR_LINK(0x01E62560, "g_pMPGameRules", pg_pMPGameRules),
-	GLOBALVAR_LINK(0x01E61E70, "_ZL12mp_com_token", pmp_com_token),
+	//GLOBALVAR_LINK(0x01E61E70, "_ZL12mp_com_token", pmp_com_token),
 	GLOBALVAR_LINK(0x01E636F0, "vec3_origin", pvec3_origin),
 	GLOBALVAR_LINK(0x01E1F420, "nanmask", pnanmask),
 	GLOBALVAR_LINK(0x01E0B0B0, "_ZL15weaponAliasInfo", pweaponAliasInfo),
@@ -6146,7 +6146,7 @@ AddressRef g_DataRefs[] =
 	GLOBALVAR_LINK(0x01E24950, "_ZL8taskInfo", ptaskInfo),
 	GLOBALVAR_LINK(0x01E76594, "TheCareerTasks", pTheCareerTasks),
 	GLOBALVAR_LINK(0x01E28C7C, "TheBotProfiles", pTheBotProfiles),
-	GLOBALVAR_LINK(0x01E287CC, "g_pSelectedZombieSpawn", pg_pSelectedZombieSpawn),
+	//GLOBALVAR_LINK(0x01E287CC, "g_pSelectedZombieSpawn", pg_pSelectedZombieSpawn),
 	GLOBALVAR_LINK(0x01E287F0, "TheBotPhrases", pTheBotPhrases),
 	GLOBALVAR_LINK(0x01E7657C, "TheTutor", pTheTutor),
 	GLOBALVAR_LINK(0x01E2A25C, "g_pHostages", pg_pHostages),
@@ -6154,13 +6154,13 @@ AddressRef g_DataRefs[] =
 	GLOBALVAR_LINK(0x01E16EE0, "_ZL11outputLevel", poutputLevel),
 	GLOBALVAR_LINK(0x01E61B40, "_ZL19theDebugOutputTypes", ptheDebugOutputTypes),
 	GLOBALVAR_LINK(0x01E61740, "_ZL14theDebugBuffer", ptheDebugBuffer),
-	GLOBALVAR_LINK(0x01E75D04, "_ZL9g_LessCtx", pg_LessCtx),
+	//GLOBALVAR_LINK(0x01E75D04, "_ZL9g_LessCtx", pg_LessCtx),
 	GLOBALVAR_LINK(0x01E62670, "g_pevLastInflictor", pg_pevLastInflictor),
 	GLOBALVAR_LINK(0x01E62788, "g_pLastSpawn", pg_pLastSpawn),
 	GLOBALVAR_LINK(0x01E63590, "g_pLastCTSpawn", pg_pLastCTSpawn),
 	GLOBALVAR_LINK(0x01E63594, "g_pLastTerroristSpawn", pg_pLastTerroristSpawn),
-	GLOBALVAR_LINK(0x01E62990, "_ZL11zombieSpawn", pzombieSpawn),
-	GLOBALVAR_LINK(0x01E636E8, "_ZL16zombieSpawnCount", pzombieSpawnCount),
+	//GLOBALVAR_LINK(0x01E62990, "_ZL11zombieSpawn", pzombieSpawn),
+	//GLOBALVAR_LINK(0x01E636E8, "_ZL16zombieSpawnCount", pzombieSpawnCount),
 	GLOBALVAR_LINK(0x01E13838, "svBlending", psvBlending),
 	GLOBALVAR_LINK(0x01E312D0, "IEngineStudio", pIEngineStudio),
 	GLOBALVAR_LINK(0x01E2DAA8, "g_pstudiohdr", pg_pstudiohdr),

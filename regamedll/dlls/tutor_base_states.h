@@ -26,11 +26,32 @@
 *
 */
 
-#ifndef TUTOR_BASE_STATES_H
-#define TUTOR_BASE_STATES_H
-#ifdef _WIN32
 #pragma once
-#endif
+
+enum TutorStateType
+{
+	TUTORSTATE_UNDEFINED = 0,
+	TUTORSTATE_LOOKING_FOR_HOSTAGE,
+	TUTORSTATE_ESCORTING_HOSTAGE,
+	//TUTORSTATE_LOOKING_FOR_LOST_HOSTAGE,
+	TUTORSTATE_FOLLOWING_HOSTAGE_ESCORT,
+	TUTORSTATE_MOVING_TO_BOMBSITE,
+	TUTORSTATE_LOOKING_FOR_BOMB_CARRIER,
+	TUTORSTATE_GUARDING_LOOSE_BOMB,
+	TUTORSTATE_DEFUSING_BOMB,
+	TUTORSTATE_GUARDING_HOSTAGE,
+	TUTORSTATE_MOVING_TO_INTERCEPT_ENEMY,
+	TUTORSTATE_LOOKING_FOR_HOSTAGE_ESCORT,
+	TUTORSTATE_ATTACKING_HOSTAGE_ESCORT,
+	TUTORSTATE_ESCORTING_BOMB_CARRIER,
+	TUTORSTATE_MOVING_TO_BOMB_SITE,
+	TUTORSTATE_PLANTING_BOMB,
+	TUTORSTATE_GUARDING_BOMB,
+	TUTORSTATE_LOOKING_FOR_LOOSE_BOMB,
+	TUTORSTATE_RUNNING_AWAY_FROM_TICKING_BOMB,
+	TUTORSTATE_BUYTIME,
+	TUTORSTATE_WAITING_FOR_START,
+};
 
 class CBaseTutorState
 {
@@ -38,14 +59,14 @@ public:
 	CBaseTutorState();
 
 	virtual ~CBaseTutorState();
-	virtual int CheckForStateTransition(GameEventType event, CBaseEntity *entity, CBaseEntity *other) = 0;
-	virtual char *GetStateString() = 0;
+	virtual TutorStateType CheckForStateTransition(GameEventType event, CBaseEntity *entity, CBaseEntity *other) = 0;
+	virtual const char *GetStateString() = 0;
 
 public:
-	int GetType() const;
+	TutorStateType GetType() const;
 
 protected:
-	int m_type;
+	TutorStateType m_type;
 };
 
 class CBaseTutorStateSystem
@@ -55,14 +76,12 @@ public:
 
 	virtual ~CBaseTutorStateSystem();
 	virtual bool UpdateState(GameEventType event, CBaseEntity *entity, CBaseEntity *other) = 0;
-	virtual char *GetCurrentStateString() = 0;
-	virtual CBaseTutorState *ConstructNewState(int stateType) = 0;
+	virtual const char *GetCurrentStateString() = 0;
+	virtual CBaseTutorState *ConstructNewState(TutorStateType stateType) = 0;
 
 public:
-	int GetCurrentStateType() const;
+	TutorStateType GetCurrentStateType() const;
 
 protected:
 	CBaseTutorState *m_currentState;
 };
-
-#endif // TUTOR_BASE_STATES_H

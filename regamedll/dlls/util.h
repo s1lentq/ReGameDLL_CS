@@ -26,47 +26,30 @@
 *
 */
 
-#ifndef UTIL_H
-#define UTIL_H
-#ifdef _WIN32
 #pragma once
-#endif
 
 #include "shake.h"
 #include "activity.h"
 #include "enginecallback.h"
 #include "utlvector.h"
 
-#define eoNullEntity		0	// Testing the three types of "entity" for nullity
-#define iStringNull			0	// Testing strings for nullity
-
-#define cchMapNameMost		32
-
-#define CBSENTENCENAME_MAX	16
-#define CVOXFILESENTENCEMAX	1536	// max number of sentences in game. NOTE: this must match CVOXFILESENTENCEMAX in engine\sound.h
-
-#define GROUP_OP_AND		0
-#define GROUP_OP_NAND		1
-
-extern globalvars_t *gpGlobals;
-
-#define STRING(offset)		((const char *)(gpGlobals->pStringBase + (unsigned int)(offset)))
-#define MAKE_STRING(str)	((uint64)(str) - (uint64)(STRING(0)))
+#define GROUP_OP_AND	0
+#define GROUP_OP_NAND	1
 
 // Dot products for view cone checking
-
-#define VIEW_FIELD_FULL		-1.0		// +-180 degrees
-#define VIEW_FIELD_WIDE		-0.7		// +-135 degrees 0.1 // +-85 degrees, used for full FOV checks
-#define VIEW_FIELD_NARROW	0.7			// +-45 degrees, more narrow check used to set up ranged attacks
+#define VIEW_FIELD_FULL			-1.0	// +-180 degrees
+#define VIEW_FIELD_WIDE			-0.7	// +-135 degrees 0.1 // +-85 degrees, used for full FOV checks
+#define VIEW_FIELD_NARROW		0.7		// +-45 degrees, more narrow check used to set up ranged attacks
 #define VIEW_FIELD_ULTRA_NARROW	0.9		// +-25 degrees, more narrow check used to set up ranged attacks
 
-#define SND_SPAWNING		(1<<8)		// duplicated in protocol.h we're spawing, used in some cases for ambients
-#define SND_STOP			(1<<5)		// duplicated in protocol.h stop sound
-#define SND_CHANGE_VOL		(1<<6)		// duplicated in protocol.h change sound vol
-#define SND_CHANGE_PITCH	(1<<7)		// duplicated in protocol.h change sound pitch
+#define SND_STOP				BIT(5)	// duplicated in protocol.h stop sound
+#define SND_CHANGE_VOL			BIT(6)	// duplicated in protocol.h change sound vol
+#define SND_CHANGE_PITCH		BIT(7)	// duplicated in protocol.h change sound pitch
+#define SND_SPAWNING			BIT(8)	// duplicated in protocol.h we're spawing, used in some cases for ambients
 
 // All monsters need this data
-#define DONT_BLEED		-1
+#define DONT_BLEED			-1
+#define BLOOD_COLOR_DARKRED	(byte)223
 #define BLOOD_COLOR_RED		(byte)247
 #define BLOOD_COLOR_YELLOW	(byte)195
 #define BLOOD_COLOR_GREEN	BLOOD_COLOR_YELLOW
@@ -80,9 +63,11 @@ extern globalvars_t *gpGlobals;
 #define LANGUAGE_FRENCH		2
 #define LANGUAGE_BRITISH	3
 
+#define SVC_NOP				1
+#define SVC_SOUND			6
 #define SVC_TEMPENTITY		23
 #define SVC_INTERMISSION	30
-#define SVC_CDTRACK		32
+#define SVC_CDTRACK			32
 #define SVC_WEAPONANIM		35
 #define SVC_ROOMTYPE		37
 #define SVC_DIRECTOR		51
@@ -95,9 +80,15 @@ extern globalvars_t *gpGlobals;
 
 #define VEC_VIEW			Vector(0, 0, 17)
 
+#define VEC_SPOT_HULL_MIN	Vector(-16, -16, 0)
+#define VEC_SPOT_HULL_MAX	Vector(16, 16, 72)
+
 #define VEC_DUCK_HULL_MIN	Vector(-16, -16, -18)
 #define VEC_DUCK_HULL_MAX	Vector(16, 16, 32)
 #define VEC_DUCK_VIEW		Vector(0, 0, 12)
+
+#define PRECACHE_SOUND_ARRAY(a) \
+	{ for (int i = 0; i < ARRAYSIZE(a); ++i) PRECACHE_SOUND((char *)a[i]); }
 
 #define PLAYBACK_EVENT(flags, who, index)\
 		PLAYBACK_EVENT_FULL(flags, who, index, 0, (float *)&g_vecZero, (float *)&g_vecZero, 0.0, 0.0, 0, 0, 0, 0)
@@ -111,6 +102,9 @@ extern globalvars_t *gpGlobals;
 	{\
 		GetClassPtr<DLLClassWrapName>((DLLClassName *)pev);\
 	}
+
+const EOFFSET eoNullEntity = (EOFFSET)0;	// Testing the three types of "entity" for nullity
+const string_t iStringNull = (string_t)0;	// Testing strings for nullity
 
 class UTIL_GroupTrace
 {
@@ -134,7 +128,7 @@ inline EOFFSET OFFSET(const entvars_t *pev) { return OFFSET(ENT(pev)); }
 inline entvars_t *VARS(edict_t *pent)
 {
 	if (!pent)
-		return NULL;
+		return nullptr;
 
 	return &pent->v;
 }
@@ -154,14 +148,16 @@ inline edict_t *INDEXENT(int iEdictNum) { return (*g_engfuncs.pfnPEntityOfEntInd
 #endif // INDEXENT
 
 inline void MESSAGE_BEGIN(int msg_dest, int msg_type, const float *pOrigin, entvars_t *ent) { MESSAGE_BEGIN(msg_dest, msg_type, pOrigin, ENT(ent)); }
-inline BOOL FNullEnt(EOFFSET eoffset) { return (eoffset == 0); }
-inline BOOL FNullEnt(entvars_t *pev) { return (pev == NULL || FNullEnt(OFFSET(pev))); }
-inline BOOL FNullEnt(const edict_t *pent) { return (pent == NULL || FNullEnt(OFFSET(pent))); }
-inline BOOL FStringNull(int iString) { return (iString == iStringNull); }
-inline BOOL FStrEq(const char *sz1, const char *sz2) { return (Q_strcmp(sz1, sz2) == 0); }
-inline BOOL FClassnameIs(entvars_t *pev, const char *szClassname) { return FStrEq(STRING(pev->classname), szClassname); }
-inline BOOL FClassnameIs(edict_t *pent, const char *szClassname) { return FStrEq(STRING(VARS(pent)->classname), szClassname); }
+inline bool FNullEnt(EOFFSET eoffset) { return (eoffset == 0); }
+inline bool FNullEnt(entvars_t *pev) { return (pev == nullptr || FNullEnt(OFFSET(pev))); }
+inline bool FNullEnt(const edict_t *pent) { return (pent == nullptr || pent->free || FNullEnt(OFFSET(pent))); }
+inline bool FStringNull(string_t iString) { return (iString == iStringNull); }
+inline bool FStrEq(const char *sz1, const char *sz2) { return (Q_strcmp(sz1, sz2) == 0); }
+inline bool FClassnameIs(entvars_t *pev, const char *szClassname) { return FStrEq(STRING(pev->classname), szClassname); }
+inline bool FClassnameIs(edict_t *pent, const char *szClassname) { return FStrEq(STRING(VARS(pent)->classname), szClassname); }
 inline void UTIL_MakeVectorsPrivate(Vector vecAngles, float *p_vForward, float *p_vRight, float *p_vUp) { g_engfuncs.pfnAngleVectors(vecAngles, p_vForward, p_vRight, p_vUp); }
+
+#include "ehandle.h"
 
 extern void EMIT_SOUND_DYN(edict_t *entity, int channel, const char *sample, float volume, float attenuation, int flags, int pitch);
 
@@ -178,6 +174,16 @@ inline void EMIT_SOUND(edict_t *entity, int channel, const char *sample, float v
 inline void STOP_SOUND(edict_t *entity, int channel, const char *sample)
 {
 	EMIT_SOUND_DYN(entity, channel, sample, 0, 0, SND_STOP, PITCH_NORM);
+}
+
+inline void EMIT_SOUND_MSG(edict_t *entity, int msg_type, int channel, const char *sample, float volume, float attenuation, int flags, int pitch = PITCH_NORM, Vector vecOrigin = g_vecZero, edict_t *player = nullptr)
+{
+	BUILD_SOUND_MSG(entity, channel, sample, (volume * 255.0f), attenuation, flags, pitch, msg_type, SVC_NOP, vecOrigin, player);
+}
+
+inline void STOP_SOUND_MSG(edict_t *entity, int msg_type, int channel, const char *sample, edict_t *player)
+{
+	BUILD_SOUND_MSG(entity, channel, sample, 0, 0, SND_STOP, PITCH_NORM, msg_type, SVC_NOP, g_vecZero, player);
 }
 
 class CBaseEntity;
@@ -222,9 +228,12 @@ void UTIL_ScreenFadeAll(const Vector &color, float fadeTime, float fadeHold, int
 void UTIL_ScreenFade(CBaseEntity *pEntity, const Vector &color, float fadeTime, float fadeHold = 0.0f, int alpha = 0, int flags = 0);
 void UTIL_HudMessage(CBaseEntity *pEntity, const hudtextparms_t &textparms, const char *pMessage);
 void UTIL_HudMessageAll(const hudtextparms_t &textparms, const char *pMessage);
-void UTIL_ClientPrintAll(int msg_dest, const char *msg_name, const char *param1 = NULL, const char *param2 = NULL, const char *param3 = NULL, const char *param4 = NULL);
-void ClientPrint(entvars_t *client, int msg_dest, const char *msg_name, const char *param1 = NULL, const char *param2 = NULL, const char *param3 = NULL, const char *param4 = NULL);
-void UTIL_SayText(const char *pText, CBaseEntity *pEntity);
+void UTIL_ClientPrintAll(int msg_dest, const char *msg_name, const char *param1 = nullptr, const char *param2 = nullptr, const char *param3 = nullptr, const char *param4 = nullptr);
+void ClientPrint(entvars_t *client, int msg_dest, const char *msg_name, const char *param1 = nullptr, const char *param2 = nullptr, const char *param3 = nullptr, const char *param4 = nullptr);
+void UTIL_Log(const char *fmt, ...);
+void UTIL_ServerPrint(const char *fmt, ...);
+void UTIL_PrintConsole(edict_t *pEdict, const char *fmt, ...);
+void UTIL_SayText(CBaseEntity *pEntity, const char *fmt, ...);
 void UTIL_SayTextAll(const char *pText, CBaseEntity *pEntity);
 char *UTIL_dtos1(int d);
 char *UTIL_dtos2(int d);
@@ -248,7 +257,7 @@ float_precision UTIL_AngleDistance(float next, float cur);
 float UTIL_SplineFraction(float value, float scale);
 char *UTIL_VarArgs(char *format, ...);
 Vector UTIL_GetAimVector(edict_t *pent, float flSpeed);
-int UTIL_IsMasterTriggered(string_t sMaster, CBaseEntity *pActivator);
+bool UTIL_IsMasterTriggered(string_t sMaster, CBaseEntity *pActivator);
 BOOL UTIL_ShouldShowBlood(int color);
 int UTIL_PointContents(const Vector &vec);
 void UTIL_BloodStream(const Vector &origin, const Vector &direction, int color, int amount);
@@ -260,8 +269,10 @@ void UTIL_PlayerDecalTrace(TraceResult *pTrace, int playernum, int decalNumber, 
 void UTIL_GunshotDecalTrace(TraceResult *pTrace, int decalNumber, bool ClientOnly, entvars_t *pShooter);
 void UTIL_Sparks(const Vector &position);
 void UTIL_Ricochet(const Vector &position, float scale);
-BOOL UTIL_TeamsMatch(const char *pTeamName1, const char *pTeamName2);
+bool UTIL_TeamsMatch(const char *pTeamName1, const char *pTeamName2);
 void UTIL_StringToVector(float *pVector, const char *pString);
+void UTIL_StringToVector(Vector &vecIn, const char *pString, char cSeparator);
+void UTIL_StringToVectorND(Vector &vecIn, int nCount, const char *pString, char cSeparator);
 void UTIL_StringToIntArray(int *pVector, int count, const char *pString);
 Vector UTIL_ClampVectorToBox(const Vector &input, const Vector &clampSize);
 float UTIL_WaterLevel(const Vector &position, float minz, float maxz);
@@ -275,19 +286,73 @@ void UTIL_ResetEntities();
 void UTIL_RemoveOther(const char *szClassname, int nCount = 0);
 void UTIL_LogPrintf(const char *fmt, ...);
 float UTIL_DotPoints(const Vector &vecSrc, const Vector &vecCheck, const Vector &vecDir);
-void UTIL_StripToken(const char *pKey, char *pDest);
 void EntvarsKeyvalue(entvars_t *pev, KeyValueData *pkvd);
 char UTIL_TextureHit(TraceResult *ptr, Vector vecSrc, Vector vecEnd);
 int GetPlayerTeam(int index);
-bool UTIL_IsGame(const char *gameName);
+bool UTIL_IsGame(const char *pszGameName);
 float_precision UTIL_GetPlayerGaitYaw(int playerIndex);
 int UTIL_ReadFlags(const char *c);
 bool UTIL_AreBotsAllowed();
 bool UTIL_AreHostagesImprov();
+int UTIL_GetNumPlayers();
+bool UTIL_IsSpawnPointOccupied(CBaseEntity *pSpot);
 void MAKE_STRING_CLASS(const char *str, entvars_t *pev);
 void NORETURN Sys_Error(const char *error, ...);
 
+// Inlines
+template <typename T = CBaseEntity>
+inline T *UTIL_FindEntityByClassname(T *pStartEntity, const char *szName)
+{
+	return (T *)UTIL_FindEntityByString(pStartEntity, "classname", szName);
+}
+
+template <typename T = CBaseEntity>
+inline T *UTIL_FindEntityByTargetname(T *pStartEntity, const char *szName)
+{
+	return (T *)UTIL_FindEntityByString(pStartEntity, "targetname", szName);
+}
+
+template <size_t nSize>
+void UTIL_StripToken(const char *pKey, char (&pDest)[nSize])
+{
+	int i = 0;
+	while (i < nSize && pKey[i] && pKey[i] != '#')
+	{
+		pDest[i] = pKey[i];
+		i++;
+	}
+
+	pDest[i] = '\0';
+}
+
+class CPlayerInVolumeAdapter
+{
+public:
+	virtual ~CPlayerInVolumeAdapter() {};
+	virtual void PlayerDetected(const bool fInVolume, CBasePlayer *pPlayer) = 0;
+};
+
+int UTIL_CountPlayersInBrushVolume(bool bOnlyAlive, CBaseEntity *pBrushEntity, int &playersInCount, int &playersOutCount, CPlayerInVolumeAdapter *pAdapter);
+
+inline float_precision UTIL_FixupAngle(float_precision v)
+{
+	float_precision angle = v;
+
+	while (angle < 0)
+		angle += 360;
+
+	while (angle > 360)
+		angle -= 360;
+
+	return angle;
+}
+
+inline void UTIL_FixupAngles(Vector &v)
+{
+	v.x = UTIL_FixupAngle(v.x);
+	v.y = UTIL_FixupAngle(v.y);
+	v.z = UTIL_FixupAngle(v.z);
+}
+
 extern int g_groupmask;
 extern int g_groupop;
-
-#endif // UTIL_H

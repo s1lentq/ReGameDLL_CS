@@ -26,11 +26,7 @@
 *
 */
 
-#ifndef REVERT_SAVED_H
-#define REVERT_SAVED_H
-#ifdef _WIN32
 #pragma once
-#endif
 
 class CRevertSaved: public CPointEntity
 {
@@ -61,5 +57,3 @@ public:
 	float m_messageTime;
 	float m_loadTime;
 };
-
-#endif // REVERT_SAVED_H

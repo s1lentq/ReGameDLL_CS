@@ -26,47 +26,11 @@
 *
 */
 
-#ifndef EFFECTS_H
-#define EFFECTS_H
-#ifdef _WIN32
 #pragma once
-#endif
 
-#define SF_BEAM_STARTON			0x0001
-#define SF_BEAM_TOGGLE			0x0002
-#define SF_BEAM_RANDOM			0x0004
-#define SF_BEAM_RING			0x0008
-#define SF_BEAM_SPARKSTART		0x0010
-#define SF_BEAM_SPARKEND		0x0020
-#define SF_BEAM_DECALS			0x0040
-#define SF_BEAM_SHADEIN			0x0080
-#define SF_BEAM_SHADEOUT		0x0100
-#define SF_BEAM_TEMPORARY		0x8000
-
-#define SF_GIBSHOOTER_REPEATABLE	1
-#define SF_FUNNEL_REVERSE		1
-
-#define SF_BUBBLES_STARTOFF		0x0001
-
-#define SF_BLOOD_RANDOM			0x0001
-#define SF_BLOOD_STREAM			0x0002
-#define SF_BLOOD_PLAYER			0x0004
-#define SF_BLOOD_DECAL			0x0008
-
-#define SF_SHAKE_EVERYONE		0x0001
-#define SF_SHAKE_DISRUPT		0x0002
-#define SF_SHAKE_INAIR			0x0004
-
-#define SF_FADE_IN			0x0001
-#define SF_FADE_MODULATE		0x0002
-#define SF_FADE_ONLYONE			0x0004
-
-#define SF_SPRITE_STARTON		0x0001
-#define SF_SPRITE_ONCE			0x0002
-#define SF_SPRITE_TEMPORARY		0x8000
-
-#define SF_MESSAGE_ONCE			0x0001	// Fade in, not out
-#define SF_MESSAGE_ALL			0x0002	// Send to all clients
+#define SF_SPRITE_STARTON   BIT(0)
+#define SF_SPRITE_ONCE      BIT(1)
+#define SF_SPRITE_TEMPORARY BIT(15)
 
 class CSprite: public CPointEntity
 {
@@ -96,7 +60,7 @@ public:
 
 	void SetAttachment(edict_t *pEntity, int attachment)
 	{
-		if (pEntity != NULL)
+		if (pEntity)
 		{
 			pev->skin = ENTINDEX(pEntity);
 			pev->body = attachment;
@@ -141,6 +105,17 @@ private:
 	float m_lastTime;
 	float m_maxFrame;
 };
+
+#define SF_BEAM_STARTON    BIT(0)
+#define SF_BEAM_TOGGLE     BIT(1)
+#define SF_BEAM_RANDOM     BIT(2)
+#define SF_BEAM_RING       BIT(3)
+#define SF_BEAM_SPARKSTART BIT(4)
+#define SF_BEAM_SPARKEND   BIT(5)
+#define SF_BEAM_DECALS     BIT(6)
+#define SF_BEAM_SHADEIN    BIT(7)
+#define SF_BEAM_SHADEOUT   BIT(8)
+#define SF_BEAM_TEMPORARY  BIT(15)
 
 class CBeam: public CBaseEntity
 {
@@ -243,6 +218,8 @@ public:
 	Vector m_firePosition;
 };
 
+#define SF_BUBBLES_STARTOFF BIT(0)
+
 class CBubbling: public CBaseEntity
 {
 public:
@@ -341,6 +318,8 @@ public:
 	bool m_bSetModel;
 };
 
+#define SF_GIBSHOOTER_REPEATABLE BIT(0) // Allows a gibshooter to be refired
+
 class CGibShooter: public CBaseDelay
 {
 public:
@@ -376,7 +355,7 @@ public:
 	virtual CGib *CreateGib();
 };
 
-#define MAX_BEAM 24
+const int MAX_BEAM = 24;
 
 class CTestEffect: public CBaseDelay
 {
@@ -392,11 +371,16 @@ public:
 	int m_iLoop;
 	int m_iBeam;
 
-	CBeam *m_pBeam[ MAX_BEAM ];
+	CBeam *m_pBeam[MAX_BEAM];
 
-	float m_flBeamTime[ MAX_BEAM ];
+	float m_flBeamTime[MAX_BEAM];
 	float m_flStartTime;
 };
+
+#define SF_BLOOD_RANDOM BIT(0)
+#define SF_BLOOD_STREAM BIT(1)
+#define SF_BLOOD_PLAYER BIT(2)
+#define SF_BLOOD_DECAL  BIT(3)
 
 class CBlood: public CPointEntity
 {
@@ -417,6 +401,10 @@ public:
 	Vector BloodPosition(CBaseEntity *pActivator);
 };
 
+#define SF_SHAKE_EVERYONE BIT(0) // Don't check radius
+#define SF_SHAKE_DISRUPT  BIT(1) // Disrupt controls
+#define SF_SHAKE_INAIR    BIT(2) // Shake players in air
+
 class CShake: public CPointEntity
 {
 public:
@@ -436,6 +424,10 @@ public:
 	void SetRadius(float radius) { pev->dmg = radius; }
 };
 
+#define SF_FADE_IN       BIT(0) // Fade in, not out
+#define SF_FADE_MODULATE BIT(1) // Modulate, don't blend
+#define SF_FADE_ONLYONE  BIT(2)
+
 class CFade: public CPointEntity
 {
 public:
@@ -451,6 +443,9 @@ public:
 	void SetHoldTime(float hold) { pev->dmg_save = hold; }
 };
 
+#define SF_MESSAGE_ONCE BIT(0) // Fade in, not out
+#define SF_MESSAGE_ALL  BIT(1) // Send to all clients
+
 class CMessage: public CPointEntity
 {
 public:
@@ -459,6 +454,8 @@ public:
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 };
+
+#define SF_FUNNEL_REVERSE BIT(0) // Funnel effect repels particles instead of attracting them
 
 class CEnvFunnel: public CBaseDelay
 {
@@ -491,5 +488,3 @@ public:
 };
 
 int IsPointEntity(CBaseEntity *pEnt);
-
-#endif // EFFECTS_H

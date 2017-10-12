@@ -26,18 +26,14 @@
 *
 */
 
-#ifndef HOSTAGE_LOCALNAV_H
-#define HOSTAGE_LOCALNAV_H
-#ifdef _WIN32
 #pragma once
-#endif
 
-#define NODE_INVALID_EMPTY		-1
+#define NODE_INVALID_EMPTY            -1
 
-#define PATH_TRAVERSABLE_EMPTY		0
-#define PATH_TRAVERSABLE_SLOPE		1
-#define PATH_TRAVERSABLE_STEP		2
-#define PATH_TRAVERSABLE_STEPJUMPABLE	3
+#define PATH_TRAVERSABLE_EMPTY        0
+#define PATH_TRAVERSABLE_SLOPE        1
+#define PATH_TRAVERSABLE_STEP         2
+#define PATH_TRAVERSABLE_STEPJUMPABLE 3
 
 typedef int node_index_t;
 
@@ -64,10 +60,10 @@ public:
 
 	void SetTargetEnt(CBaseEntity *pTarget)
 	{
-		if (pTarget != NULL)
+		if (pTarget)
 			m_pTargetEnt = pTarget->edict();
 		else
-			m_pTargetEnt = NULL;
+			m_pTargetEnt = nullptr;
 	}
 
 	node_index_t FindPath(Vector &vecStart, Vector &vecDest, float flTargetRadius, int fNoMonsters);
@@ -116,5 +112,3 @@ private:
 	node_index_t m_nindexAvailableNode;
 	Vector m_vecStartingLoc;
 };
-
-#endif // HOSTAGE_LOCALNAV_H

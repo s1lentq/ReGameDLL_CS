@@ -26,11 +26,11 @@
 *
 */
 
-#ifndef PATHCORNER_H
-#define PATHCORNER_H
-#ifdef _WIN32
 #pragma once
-#endif
+
+#define SF_CORNER_WAITFORTRIG BIT(0)
+#define SF_CORNER_TELEPORT    BIT(1)
+#define SF_CORNER_FIREONCE    BIT(2)
 
 class CPathCorner: public CPointEntity
 {
@@ -47,5 +47,3 @@ public:
 private:
 	float m_flWait;
 };
-
-#endif // PATHCORNER_H

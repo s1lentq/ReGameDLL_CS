@@ -26,11 +26,7 @@
 *
 */
 
-#ifndef H_CYCLER_H
-#define H_CYCLER_H
-#ifdef _WIN32
 #pragma once
-#endif
 
 class CCycler: public CBaseMonster
 {
@@ -55,7 +51,7 @@ public:
 	int m_animate;
 };
 
-// we should get rid of all the other cyclers and replace them with this.
+// We should get rid of all the other cyclers and replace them with this.
 class CGenericCycler: public CCycler
 {
 public:
@@ -128,5 +124,3 @@ public:
 
 	int m_flStartTime;
 };
-
-#endif // H_CYCLER_H

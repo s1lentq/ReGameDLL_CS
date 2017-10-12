@@ -26,11 +26,7 @@
 *
 */
 
-#ifndef SAVERESTORE_H
-#define SAVERESTORE_H
-#ifdef _WIN32
 #pragma once
-#endif
 
 #define MAX_ENTITY_ARRAY	64
 
@@ -194,5 +190,3 @@ private:
 	globalentity_t *m_pList;
 	int m_listCount;
 };
-
-#endif // SAVERESTORE_H

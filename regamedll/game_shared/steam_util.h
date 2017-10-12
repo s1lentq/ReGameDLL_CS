@@ -26,11 +26,7 @@
 *
 */
 
-#ifndef STEAM_UTIL_H
-#define STEAM_UTIL_H
-#ifdef _WIN32
 #pragma once
-#endif
 
 class SteamFile
 {
@@ -61,23 +57,21 @@ inline SteamFile::~SteamFile()
 	if (m_fileData)
 	{
 		FREE_FILE(m_fileData);
-		m_fileData = NULL;
+		m_fileData = nullptr;
 	}
 }
 
 inline bool SteamFile::Read(void *data, int length)
 {
-	if (length > m_bytesLeft || m_cursor == NULL || m_bytesLeft <= 0)
+	if (length > m_bytesLeft || !m_cursor || m_bytesLeft <= 0)
 		return false;
 
 	byte *readCursor = static_cast<byte *>(data);
-	for (int i = 0; i < length; ++i)
+	for (int i = 0; i < length; i++)
 	{
 		*readCursor++ = *m_cursor++;
-		--m_bytesLeft;
+		m_bytesLeft--;
 	}
 
 	return true;
 }
-
-#endif // STEAM_UTIL_H

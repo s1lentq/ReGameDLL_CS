@@ -9,7 +9,7 @@ const float sniperHideRange = 2000.0f;
 void IdleState::OnEnter(CCSBot *me)
 {
 	me->DestroyPath();
-	me->SetEnemy(NULL);
+	me->SetEnemy(nullptr);
 
 	// lurking death
 	if (me->IsUsingKnife() && me->IsWellPastSafe() && !me->IsHurrying())
@@ -192,7 +192,7 @@ void IdleState::OnUpdate(CCSBot *me)
 					}
 
 					// if bomb has been planted, and we hear it, move to a hiding spot near the bomb and guard it
-					if (!me->IsRogue() && me->GetGameState()->IsBombPlanted() && me->GetGameState()->GetBombPosition() != NULL)
+					if (!me->IsRogue() && me->GetGameState()->IsBombPlanted() && me->GetGameState()->GetBombPosition())
 					{
 						const Vector *bombPos = me->GetGameState()->GetBombPosition();
 
@@ -271,7 +271,7 @@ void IdleState::OnUpdate(CCSBot *me)
 						const CCSBotManager::Zone *zone = nullptr;
 						float travelDistance = 9999999.9f;
 
-						for (int z = 0; z < TheCSBots()->GetZoneCount(); ++z)
+						for (int z = 0; z < TheCSBots()->GetZoneCount(); z++)
 						{
 							if (TheCSBots()->GetZone(z)->m_areaCount == 0)
 								continue;
@@ -333,7 +333,7 @@ void IdleState::OnUpdate(CCSBot *me)
 				{
 					if (RANDOM_FLOAT(0, 100) <= defenseSniperCampChance)
 					{
-						CNavArea *snipingArea = NULL;
+						CNavArea *snipingArea = nullptr;
 
 						// if the bomb is loose, snipe near it
 						if (me->GetGameState()->IsLooseBombLocationKnown())
@@ -463,7 +463,7 @@ void IdleState::OnUpdate(CCSBot *me)
 				{
 					// if early in round, pick a random zone, otherwise pick closest zone
 					const float earlyTime = 20.0f;
-					const CCSBotManager::Zone *zone = NULL;
+					const CCSBotManager::Zone *zone = nullptr;
 
 					if (TheCSBots()->GetElapsedRoundTime() < earlyTime)
 					{
@@ -563,11 +563,11 @@ void IdleState::OnUpdate(CCSBot *me)
 				// if safe time is up, and we stumble across a hostage, guard it
 				if (!me->IsSafe() && !me->IsRogue())
 				{
-					CBaseEntity *hostage = me->GetGameState()->GetNearestVisibleFreeHostage();
-					if (hostage)
+					CBaseEntity *pHostage = me->GetGameState()->GetNearestVisibleFreeHostage();
+					if (pHostage)
 					{
 						// we see a free hostage, guard it
-						CNavArea *area = TheNavAreaGrid.GetNearestNavArea(&hostage->pev->origin);
+						CNavArea *area = TheNavAreaGrid.GetNearestNavArea(&pHostage->pev->origin);
 						if (area)
 						{
 							me->SetTask(CCSBot::GUARD_HOSTAGES);
@@ -655,14 +655,14 @@ void IdleState::OnUpdate(CCSBot *me)
 				}
 
 				// look for free hostages - CT's have radar so they know where hostages are at all times
-				CHostage *hostage = me->GetGameState()->GetNearestFreeHostage();
+				CHostage *pHostage = me->GetGameState()->GetNearestFreeHostage();
 
 				// if we are not allowed to do the scenario, guard the hostages to clear the area for the human(s)
 				if (!me->IsDoingScenario())
 				{
-					if (hostage)
+					if (pHostage)
 					{
-						CNavArea *area = TheNavAreaGrid.GetNearestNavArea(&hostage->pev->origin);
+						CNavArea *area = TheNavAreaGrid.GetNearestNavArea(&pHostage->pev->origin);
 						if (area)
 						{
 							me->SetTask(CCSBot::GUARD_HOSTAGES);
@@ -678,8 +678,8 @@ void IdleState::OnUpdate(CCSBot *me)
 
 				bool fetchHostages = false;
 				bool rescueHostages = false;
-				const CCSBotManager::Zone *zone = NULL;
-				me->SetGoalEntity(NULL);
+				const CCSBotManager::Zone *zone = nullptr;
+				me->SetGoalEntity(nullptr);
 
 				// if we are escorting hostages, determine where to take them
 				if (me->GetHostageEscortCount())
@@ -687,13 +687,13 @@ void IdleState::OnUpdate(CCSBot *me)
 
 				// if we are escorting hostages and there are more hostages to rescue,
 				// determine whether it's faster to rescue the ones we have, or go get the remaining ones
-				if (hostage)
+				if (pHostage)
 				{
 					if (zone)
 					{
 						PathCost pathCost(me, FASTEST_ROUTE);
 						float toZone = NavAreaTravelDistance(me->GetLastKnownArea(), zone->m_area[0], pathCost);
-						float toHostage = NavAreaTravelDistance(me->GetLastKnownArea(), TheNavAreaGrid.GetNearestNavArea(&hostage->pev->origin), pathCost);
+						float toHostage = NavAreaTravelDistance(me->GetLastKnownArea(), TheNavAreaGrid.GetNearestNavArea(&pHostage->pev->origin), pathCost);
 
 						if (toHostage < 0.0f)
 						{
@@ -722,12 +722,12 @@ void IdleState::OnUpdate(CCSBot *me)
 					// go get hostages
 					me->SetTask(CCSBot::COLLECT_HOSTAGES);
 					me->Run();
-					me->SetGoalEntity(hostage);
+					me->SetGoalEntity(pHostage);
 					me->ResetWaitForHostagePatience();
 
 					// if we already have some hostages, move to the others by the quickest route
 					RouteType route = (me->GetHostageEscortCount()) ? FASTEST_ROUTE : SAFEST_ROUTE;
-					me->MoveTo(&hostage->pev->origin, route);
+					me->MoveTo(&pHostage->pev->origin, route);
 					me->PrintIfWatched("I'm collecting hostages\n");
 					return;
 				}

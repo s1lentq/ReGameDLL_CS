@@ -109,11 +109,13 @@ void CXM1014::PrimaryAttack()
 	if (!m_iClip && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
 	{
 		// HEV suit - indicate out of ammo condition
-		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
+		m_pPlayer->SetSuitUpdate("!HEV_AMO0", SUIT_SENTENCE, SUIT_REPEAT_OK);
 	}
 
+#ifndef REGAMEDLL_FIXES
 	if (m_iClip != 0)
 		m_flPumpTime = UTIL_WeaponTimeBase() + 0.125f;
+#endif
 
 	m_flNextPrimaryAttack = GetNextAttackDelay(0.25);
 	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.25f;
@@ -169,14 +171,14 @@ void CXM1014::Reload()
 	}
 	else
 	{
-		++m_iClip;
+		m_iClip++;
 
 #ifdef REGAMEDLL_ADD
 		if (refill_bpammo_weapons.value < 3.0f)
 #endif
 		{
-			--m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType];
-			--m_pPlayer->ammo_buckshot;
+			m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]--;
+			m_pPlayer->ammo_buckshot--;
 		}
 
 		m_fInSpecialReload = 1;
@@ -188,10 +190,12 @@ void CXM1014::WeaponIdle()
 	ResetEmptySound();
 	m_pPlayer->GetAutoaimVector(AUTOAIM_5DEGREES);
 
+#ifndef REGAMEDLL_FIXES
 	if (m_flPumpTime && m_flPumpTime < UTIL_WeaponTimeBase())
 	{
 		m_flPumpTime = 0;
 	}
+#endif
 
 	if (m_flTimeWeaponIdle < UTIL_WeaponTimeBase())
 	{

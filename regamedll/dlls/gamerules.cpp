@@ -5,7 +5,7 @@
 */
 #ifndef HOOK_GAMEDLL
 
-CGameRules *g_pGameRules = NULL;
+CGameRules *g_pGameRules = nullptr;
 
 #endif
 
@@ -86,7 +86,7 @@ BOOL CGameRules::CanHavePlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pWeapo
 		return FALSE;
 	}
 
-	if (pPlayer->IsBot() && TheCSBots() != NULL && !TheCSBots()->IsWeaponUseable(pWeapon))
+	if (pPlayer->IsBot() && TheCSBots() && !TheCSBots()->IsWeaponUseable(pWeapon))
 	{
 		return FALSE;
 	}

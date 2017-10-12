@@ -31,9 +31,8 @@ void HostageIdleState::OnUpdate(CHostageImprov *improv)
 			{
 				m_mustFlee = false;
 
-				const Vector *spot = FindNearbyRetreatSpot(NULL, &improv->GetFeet(), improv->GetLastKnownArea(), 500.0, TERRORIST, false);
-
-				if (spot != NULL)
+				const Vector *spot = FindNearbyRetreatSpot(nullptr, &improv->GetFeet(), improv->GetLastKnownArea(), 500.0, TERRORIST, false);
+				if (spot)
 				{
 					improv->MoveTo(*spot);
 					improv->Run();
@@ -80,30 +79,30 @@ void HostageIdleState::OnUpdate(CHostageImprov *improv)
 		return;
 	}
 
-	CBasePlayer *rescuer = improv->GetClosestVisiblePlayer(CT);
-	CBasePlayer *captor = improv->GetClosestVisiblePlayer(TERRORIST);
+	CBasePlayer *pRescuer = improv->GetClosestVisiblePlayer(CT);
+	CBasePlayer *pCaptor = improv->GetClosestVisiblePlayer(TERRORIST);
 
-	if (rescuer != NULL)
+	if (pRescuer)
 	{
-		improv->LookAt(rescuer->EyePosition());
+		improv->LookAt(pRescuer->EyePosition());
 		improv->Stop();
 
-		if (captor != NULL)
+		if (pCaptor)
 		{
 			const float attentionRange = 700.0f;
-			float rangeT = (improv->GetCentroid() - captor->pev->origin).Length();
+			float rangeT = (improv->GetCentroid() - pCaptor->pev->origin).Length();
 
 			if (rangeT < attentionRange)
 			{
 				const float cosTolerance = 0.95f;
 				if (improv->IsAnyPlayerLookingAtMe(TERRORIST, cosTolerance))
 				{
-					improv->LookAt(captor->EyePosition());
+					improv->LookAt(pCaptor->EyePosition());
 				}
 				else
 				{
 					TraceResult result;
-					UTIL_TraceLine(rescuer->pev->origin, captor->pev->origin, ignore_monsters, ignore_glass, captor->edict(), &result);
+					UTIL_TraceLine(pRescuer->pev->origin, pCaptor->pev->origin, ignore_monsters, ignore_glass, pCaptor->edict(), &result);
 
 					if (result.flFraction != 1.0f && m_disagreeTimer.IsElapsed())
 					{
@@ -118,9 +117,9 @@ void HostageIdleState::OnUpdate(CHostageImprov *improv)
 		else if (!TheCSBots()->IsRoundOver() && m_askTimer.IsElapsed())
 		{
 			const float closeRange = 200.0f;
-			if ((rescuer->pev->origin - improv->GetCentroid()).IsLengthLessThan(closeRange))
+			if ((pRescuer->pev->origin - improv->GetCentroid()).IsLengthLessThan(closeRange))
 			{
-				if (improv->IsPlayerLookingAtMe(rescuer, 0.99))
+				if (improv->IsPlayerLookingAtMe(pRescuer, 0.99))
 				{
 					HostageChatterType say;
 					if (improv->IsTerroristNearby())
@@ -139,12 +138,12 @@ void HostageIdleState::OnUpdate(CHostageImprov *improv)
 			CHostage *hostage = improv->GetEntity();
 
 			const float waveRange = 250.0f;
-			if ((rescuer->pev->origin - hostage->pev->origin).IsLengthGreaterThan(waveRange))
+			if ((pRescuer->pev->origin - hostage->pev->origin).IsLengthGreaterThan(waveRange))
 			{
 				improv->Stop();
 				improv->Wave();
 
-				improv->LookAt(rescuer->EyePosition());
+				improv->LookAt(pRescuer->EyePosition());
 				improv->Chatter(HOSTAGE_CHATTER_CALL_TO_RESCUER, false);
 
 				m_moveState = NotMoving;
@@ -152,13 +151,13 @@ void HostageIdleState::OnUpdate(CHostageImprov *improv)
 			}
 		}
 	}
-	else if (captor != NULL)
+	else if (pCaptor)
 	{
-		improv->LookAt(captor->EyePosition());
+		improv->LookAt(pCaptor->EyePosition());
 		improv->Stop();
 
 		const float closeRange = 200.0f;
-		if ((captor->pev->origin - improv->GetCentroid()).IsLengthLessThan(closeRange) && improv->IsPlayerLookingAtMe(captor, 0.99))
+		if ((pCaptor->pev->origin - improv->GetCentroid()).IsLengthLessThan(closeRange) && improv->IsPlayerLookingAtMe(pCaptor, 0.99))
 		{
 			if (!m_intimidatedTimer.HasStarted())
 			{
@@ -248,5 +247,7 @@ void HostageIdleState::UpdateStationaryAnimation(CHostageImprov *improv)
 		improv->UpdateIdleActivity(ACT_IDLE, ACT_IDLE_FIDGET);
 	}
 	else
+	{
 		improv->UpdateIdleActivity(ACT_IDLE_SNEAKY, ACT_IDLE_SNEAKY_FIDGET);
+	}
 }
