@@ -75,6 +75,9 @@
     <Filter Include="public\tier0">
       <UniqueIdentifier>{00d15c50-66d7-4210-9239-e8cd8fb9f052}</UniqueIdentifier>
     </Filter>
+    <Filter Include="dlls\addons">
+      <UniqueIdentifier>{cc40695f-5d17-4ee9-b410-1be65c49c099}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\hookers\memory.cpp">
@@ -550,6 +553,9 @@
     </ClCompile>
     <ClCompile Include="..\dlls\gib.cpp">
       <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\addons\trigger_setorigin.cpp">
+      <Filter>dlls\addons</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1050,6 +1056,9 @@
     </ClInclude>
     <ClInclude Include="..\dlls\qstring.h">
       <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\addons\trigger_setorigin.h">
+      <Filter>dlls\addons</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
