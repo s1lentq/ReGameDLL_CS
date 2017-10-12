@@ -30,14 +30,17 @@
 
 #define QSTRING_DEFINE
 
+constexpr auto iStringNull = 0u;
+
 // Quake string (helper class)
 template <typename T = unsigned int>
 class QString final
 {
 public:
-	QString(): m_string(0) {};
+	QString(): m_string(iStringNull) {};
 	QString(T string): m_string(string) {};
 
+	bool IsEmpty() const;
 	bool operator==(T string) const;
 	bool operator==(const QString<T> &s) const;
 	bool operator==(const char *pszString) const;
@@ -65,6 +68,12 @@ extern globalvars_t *gpGlobals;
 #define MAKE_STRING(str) ((unsigned int)(str) - (unsigned int)(STRING(0)))
 
 // Inlines
+template <typename T>
+inline bool QString<T>::IsEmpty() const
+{
+	return m_string == iStringNull;
+}
+
 template <typename T>
 inline bool QString<T>::operator==(T string) const
 {

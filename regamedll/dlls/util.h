@@ -104,7 +104,6 @@
 	}
 
 const EOFFSET eoNullEntity = (EOFFSET)0;	// Testing the three types of "entity" for nullity
-const string_t iStringNull = (string_t)0;	// Testing strings for nullity
 
 class UTIL_GroupTrace
 {
