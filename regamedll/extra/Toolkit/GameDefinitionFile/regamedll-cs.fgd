@@ -2813,3 +2813,63 @@
 
 // added by Dmitrich! - February 21, 2004 ;-)
 @PointClass color(255 128 0) = info_texlights : "Texture Light Config" []
+
+// Set the origin of an entity dynamically
+@PointClass base(Targetname, Target) size(-8 -8 -8, 8 8 8) iconsprite("sprites/CS/trigger_setorigin.spr") = trigger_setorigin : "Trigger Set Origin"
+[
+	spawnflags(flags) =
+	[
+		// Will constantly update position if set.
+		1: "Constant" : 0
+
+		// Trigger_setorigin entity will be removed after firing.
+		4: "Set Once" : 0
+
+		// Save the offset between the Target entity and the Copy pointer, apply offset when updating the Target entity's position
+		// Requires "Constant" flag
+		8: "Lock Offsets" : 0
+
+		16: "Copy X Angle" : 0
+		32: "Copy Y Angle" : 0
+		64: "Copy Z Angle" : 0
+
+		128: "Copy X Axis" : 1
+		256: "Copy Y Axis" : 1
+		512: "Copy Z Axis" : 1
+
+		// If you're using the Constant flag, check this box to NOT move the origin of the entity or set the angles initially.
+		// If you're not using the Constant flag, make sure this isn't enabled or trigger_setorigin won't do anything.
+		//
+		// This allows the "Constant" + "offset difference" combination to work as intended from the entity's original location.
+		//
+		// You would leave this off if you needed to move the entity to an initial position before having it follow another entity.
+		// (If this isn't set, trigger_setorigin will move the entity to it's copypointer's origin before doing the offset difference calculation)
+		1024: "Skip Initial Set" : 0
+	]
+
+	// The entity we wish to copy coordinates/angles from
+	copypointer(string) : "Copy Pointer"
+
+	// Manual Offset to copied coordinates
+	offset(string) : "Position Offset (X Y Z)" : "0 0 0"
+
+	// Applied once on first use
+	// After first use - Applied if "constant" flag is checked, and for each "Copy [x, y, z] Angle" checked.
+	angleoffset(string) : "Angle Offset (X Y Z)" : "0 0 0"
+
+	invert_x(choices) : "Invert X Angle" :  0 =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	invert_y(choices) : "Invert Y Angle" :  0 =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	invert_z(choices) : "Invert Z Angle" :  0 =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+]

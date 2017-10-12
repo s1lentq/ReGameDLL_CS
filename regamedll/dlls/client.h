@@ -164,6 +164,7 @@ void PlayerPostThink(edict_t *pEntity);
 void ParmsNewLevel();
 void ParmsChangeLevel();
 void StartFrame();
+void EndFrame();
 void ClientPrecache();
 const char *GetGameDescription();
 void SysEngine_Error(const char *error_string);

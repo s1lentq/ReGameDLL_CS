@@ -298,6 +298,7 @@ class CCSTriggerChangeTarget: public CCSDelay {};
 class CCSTriggerCamera: public CCSDelay {};
 class CCSWeather: public CCSTrigger {};
 class CCSClientFog: public CCSEntity {};
+class CCSTriggerSetOrigin: public CCSDelay {};
 
 inline CBasePlayer *CCSPlayer::BasePlayer() const {
 	return reinterpret_cast<CBasePlayer *>(this->m_pContainingEntity);

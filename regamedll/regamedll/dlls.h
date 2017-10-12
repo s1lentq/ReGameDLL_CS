@@ -131,6 +131,9 @@ typedef float& FloatRef;
 
 #include "bot/cs_bot.h"
 
+// Addons
+#include "addons/trigger_setorigin.h"
+
 // Tutor
 #include "tutor.h"
 #include "tutor_base_states.h"

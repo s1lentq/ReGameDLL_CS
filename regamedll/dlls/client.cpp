@@ -3642,6 +3642,13 @@ void EXT_FUNC StartFrame()
 	if (TheTutor) {
 		TheTutor->StartFrame(gpGlobals->time);
 	}
+
+	EndFrame();
+}
+
+void EndFrame()
+{
+	CTriggerSetOriginManager::getInstance()->Update();
 }
 
 void ClientPrecache()

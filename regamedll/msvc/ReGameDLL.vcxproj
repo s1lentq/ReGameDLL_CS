@@ -39,6 +39,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\dlls\addons\trigger_setorigin.cpp" />
     <ClCompile Include="..\dlls\airtank.cpp" />
     <ClCompile Include="..\dlls\ammo.cpp" />
     <ClCompile Include="..\dlls\animating.cpp" />
@@ -915,6 +916,7 @@
     <ClInclude Include="..\common\winsani_in.h" />
     <ClInclude Include="..\common\winsani_out.h" />
     <ClInclude Include="..\dlls\activity.h" />
+    <ClInclude Include="..\dlls\addons\trigger_setorigin.h" />
     <ClInclude Include="..\dlls\airtank.h" />
     <ClInclude Include="..\dlls\ammo.h" />
     <ClInclude Include="..\dlls\animation.h" />

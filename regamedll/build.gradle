@@ -186,7 +186,7 @@ class RegamedllSrc {
 		h.regamedll_src(CppSourceSet) {
 
 			source {
-				srcDirs "engine", "dlls", "game_shared", "pm_shared", "regamedll", "public", "version"
+				srcDirs "engine", "dlls", "dlls/addons", "game_shared", "pm_shared", "regamedll", "public", "version"
 
 				include "**/*.cpp"
 				exclude "precompiled.cpp"
