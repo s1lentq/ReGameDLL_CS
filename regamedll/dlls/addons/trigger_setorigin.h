@@ -54,13 +54,13 @@ const int MAX_SETORIGIN_ENTITIES = 64;
 
 class CTriggerSetOrigin: public CBaseDelay {
 public:
-	virtual void Spawn() {};
-	virtual void KeyValue(KeyValueData *pkvd);
-	virtual int ObjectCaps() { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
-	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	void Spawn() {};
+	void KeyValue(KeyValueData *pkvd);
+	int ObjectCaps() { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
+	void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
-	virtual void OnCreate();
-	virtual void OnDestroy();
+	void OnCreate();
+	void OnDestroy();
 
 protected:
 	friend class CTriggerSetOriginManager;

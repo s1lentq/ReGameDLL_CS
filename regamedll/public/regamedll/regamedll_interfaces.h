@@ -299,6 +299,7 @@ class CCSTriggerCamera: public CCSDelay {};
 class CCSWeather: public CCSTrigger {};
 class CCSClientFog: public CCSEntity {};
 class CCSTriggerSetOrigin: public CCSDelay {};
+class CCSItemAirBox: public CCSArmoury {};
 
 inline CBasePlayer *CCSPlayer::BasePlayer() const {
 	return reinterpret_cast<CBasePlayer *>(this->m_pContainingEntity);

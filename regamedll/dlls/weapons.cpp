@@ -2091,7 +2091,7 @@ void CWeaponBox::SetObjectCollisionBox()
 	pev->absmax = pev->origin + Vector(16, 16, 16);
 }
 
-char *armouryItemModels[] = {
+char *CArmoury::m_ItemModels[] = {
 	"models/w_mp5.mdl",
 	"models/w_tmp.mdl",
 	"models/w_p90.mdl",
@@ -2140,9 +2140,9 @@ void CArmoury::Spawn()
 
 	SetTouch(&CArmoury::ArmouryTouch);
 
-	if (m_iItem < ARRAYSIZE(armouryItemModels))
+	if (m_iItem < ARRAYSIZE(m_ItemModels))
 	{
-		SET_MODEL(ENT(pev), armouryItemModels[m_iItem]);
+		SET_MODEL(ENT(pev), m_ItemModels[m_iItem]);
 	}
 
 	if (m_iCount <= 0)
@@ -2231,9 +2231,9 @@ void CArmoury::Restart()
 
 void CArmoury::Precache()
 {
-	if (m_iItem < ARRAYSIZE(armouryItemModels))
+	if (m_iItem < ARRAYSIZE(m_ItemModels))
 	{
-		PRECACHE_MODEL(armouryItemModels[m_iItem]);
+		PRECACHE_MODEL(m_ItemModels[m_iItem]);
 	}
 }
 
