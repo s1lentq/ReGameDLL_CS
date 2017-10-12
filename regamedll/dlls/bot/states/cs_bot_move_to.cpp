@@ -41,8 +41,8 @@ void MoveToState::OnUpdate(CCSBot *me)
 	if (me->GetTask() == CCSBot::MOVE_TO_LAST_KNOWN_ENEMY_POSITION)
 	{
 		// TODO: Account for reaction time so we take some time to realized the enemy is dead
-		CBasePlayer *victim = static_cast<CBasePlayer *>(me->GetTaskEntity());
-		if (victim == NULL || !victim->IsAlive())
+		CBaseEntity *pVictim = me->GetTaskEntity();
+		if (!pVictim || !pVictim->IsAlive())
 		{
 			me->PrintIfWatched("The enemy I was chasing was killed - giving up.\n");
 			me->Idle();
@@ -77,7 +77,7 @@ void MoveToState::OnUpdate(CCSBot *me)
 				}
 
 				// check off bombsites that we explore or happen to stumble into
-				for (int z = 0; z < TheCSBots()->GetZoneCount(); ++z)
+				for (int z = 0; z < TheCSBots()->GetZoneCount(); z++)
 				{
 					// don't re-check zones
 					if (me->GetGameState()->IsBombsiteClear(z))
@@ -171,8 +171,8 @@ void MoveToState::OnUpdate(CCSBot *me)
 			{
 				// Since CT's have a radar, they can directly look at the actual hostage state
 				// check if someone else collected our hostage, or the hostage died or was rescued
-				CHostage *hostage = static_cast<CHostage *>(me->GetGoalEntity());
-				if (!hostage || !hostage->IsAlive() || hostage->IsFollowingSomeone())
+				CHostage *pHostage = me->GetGoalEntity<CHostage>();
+				if (!pHostage || !pHostage->IsAlive() || pHostage->IsFollowingSomeone())
 				{
 					me->Idle();
 					return;
@@ -180,17 +180,17 @@ void MoveToState::OnUpdate(CCSBot *me)
 
 				// if our hostage has moved, repath
 				const float repathToleranceSq = 75.0f * 75.0f;
-				float error = (hostage->pev->origin - m_goalPosition).LengthSquared();
+				float error = (pHostage->pev->origin - m_goalPosition).LengthSquared();
 				if (error > repathToleranceSq)
 				{
-					m_goalPosition = hostage->pev->origin;
+					m_goalPosition = pHostage->pev->origin;
 					me->ComputePath(TheNavAreaGrid.GetNavArea(&m_goalPosition), &m_goalPosition, SAFEST_ROUTE);
 				}
 
 				// TODO: Generalize ladder priorities over other tasks
 				if (!me->IsUsingLadder())
 				{
-					Vector pos = hostage->pev->origin + Vector(0, 0, HumanHeight * 0.75f);
+					Vector pos = pHostage->pev->origin + Vector(0, 0, HumanHeight * 0.75f);
 					Vector to = pos - me->pev->origin;
 
 					// look at the hostage as we approach
@@ -210,7 +210,7 @@ void MoveToState::OnUpdate(CCSBot *me)
 						}
 
 						// check if we are close enough to the hostage to talk to him
-						const float useRange = PLAYER_USE_RADIUS - 14.0f; // shave off a fudge factor to make sure we're within range
+						const float useRange = MAX_PLAYER_USE_RADIUS - 14.0f; // shave off a fudge factor to make sure we're within range
 						if (to.IsLengthLessThan(useRange))
 						{
 							me->UseEntity(me->GetGoalEntity());
@@ -254,7 +254,7 @@ void MoveToState::OnUpdate(CCSBot *me)
 				{
 					// if we are near the bomb, defuse it (if we are reloading, don't try to defuse until we finish)
 					const Vector *bombPos = me->GetGameState()->GetBombPosition();
-					if (bombPos != NULL)
+					if (bombPos)
 					{
 						const float defuseRange = 100.0f;
 						Vector toBomb = *bombPos - me->pev->origin;
@@ -271,8 +271,8 @@ void MoveToState::OnUpdate(CCSBot *me)
 			}
 			case CCSBot::MOVE_TO_LAST_KNOWN_ENEMY_POSITION:
 			{
-				CBasePlayer *victim = static_cast<CBasePlayer *>(me->GetTaskEntity());
-				if (victim != NULL && victim->IsAlive())
+				CBaseEntity *pVictim = me->GetTaskEntity();
+				if (pVictim && pVictim->IsAlive())
 				{
 					// if we got here and haven't re-acquired the enemy, we lost him
 					me->GetChatter()->Say("LostEnemy");

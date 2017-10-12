@@ -6,12 +6,12 @@
 
 #define _LOG_TRACE\
 	static int iNumPassed = 0;\
-	printf2("%s:: iNumPassed - %d", __FUNCTION__, iNumPassed++);
+	UTIL_ServerPrint("%s:: iNumPassed - %d", __func__, iNumPassed++);
 
 #define _LOG_TRACE2\
 	static int iNumPassed2 = 0;\
-	printf2("%s:: iNumPassed - %d", __FUNCTION__, iNumPassed2++);\
-	_logf("%s:: iNumPassed - %d", __FUNCTION__, iNumPassed2++);
+	UTIL_ServerPrint("%s:: iNumPassed - %d", __func__, iNumPassed2++);\
+	UTIL_Log("%s:: iNumPassed - %d", __func__, iNumPassed2++);
 
 #ifdef HOOK_GAMEDLL
 	// STL containers Visual Studio 6.0

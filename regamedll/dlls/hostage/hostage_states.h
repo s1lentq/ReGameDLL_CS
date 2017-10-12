@@ -26,11 +26,7 @@
 *
 */
 
-#ifndef HOSTAGE_STATES_H
-#define HOSTAGE_STATES_H
-#ifdef _WIN32
 #pragma once
-#endif
 
 class CHostageImprov;
 
@@ -185,11 +181,11 @@ public:
 	virtual void UpdateStationaryAnimation(CHostageImprov *improv);
 
 public:
-	void SetLeader(CBaseEntity *leader) { m_leader = leader; }
-	CBaseEntity *GetLeader() const { return m_leader; }
+	void SetLeader(CBasePlayer *leader) { m_leader = leader; }
+	CBasePlayer *GetLeader() const { return m_leader; }
 
 private:
-	mutable EHANDLE m_leader;
+	mutable EntityHandle<CBasePlayer> m_leader;
 	Vector m_lastLeaderPos;
 	bool m_isWaiting;
 	float m_stopRange;
@@ -259,5 +255,3 @@ private:
 	bool m_isHolding;
 	CountdownTimer m_holdTimer;
 };
-
-#endif // HOSTAGE_STATES_H

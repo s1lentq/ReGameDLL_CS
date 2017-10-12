@@ -15,7 +15,7 @@ void CCSBot::Upkeep()
 		UpdateAimOffset();
 
 		// aim at enemy, if he's still alive
-		if (m_enemy != NULL)
+		if (m_enemy.IsValid())
 		{
 			float feetOffset = pev->origin.z - GetFeetZ();
 
@@ -70,11 +70,15 @@ void CCSBot::Upkeep()
 						m_aimSpot.z -= feetOffset * 0.5f;
 					}
 					else // FEET
+					{
 						m_aimSpot.z -= (feetOffset + feetOffset);
+					}
 				}
 			}
 			else
+			{
 				m_aimSpot = m_lastEnemyPosition;
+			}
 
 			// add in aim error
 			m_aimSpot.x += m_aimOffset.x;
@@ -157,10 +161,10 @@ void CCSBot::Update()
 
 	switch (m_processMode)
 	{
-	case PROCESS_LEARN:		UpdateLearnProcess(); return;
+	case PROCESS_LEARN:			UpdateLearnProcess();        return;
 	case PROCESS_ANALYZE_ALPHA:	UpdateAnalyzeAlphaProcess(); return;
-	case PROCESS_ANALYZE_BETA:	UpdateAnalyzeBetaProcess(); return;
-	case PROCESS_SAVE:		UpdateSaveProcess(); return;
+	case PROCESS_ANALYZE_BETA:	UpdateAnalyzeBetaProcess();  return;
+	case PROCESS_SAVE:			UpdateSaveProcess();         return;
 	}
 
 	// update our radio chatter
@@ -210,23 +214,15 @@ void CCSBot::Update()
 	// show encounter spot data
 	if ((cv_bot_traceview.value == 4.0f && IsLocalPlayerWatchingMe()) || cv_bot_traceview.value == 5.0f)
 	{
-		if (m_spotEncounter != NULL)
+		if (m_spotEncounter)
 		{
 			UTIL_DrawBeamPoints(m_spotEncounter->path.from, m_spotEncounter->path.to, 3, 0, 0, 255);
 
 			Vector dir = m_spotEncounter->path.to - m_spotEncounter->path.from;
 			float length = dir.NormalizeInPlace();
 
-			const SpotOrder *order;
-			Vector along;
-
-			for (SpotOrderList::const_iterator iter = m_spotEncounter->spotList.begin(); iter != m_spotEncounter->spotList.end(); ++iter)
-			{
-				order = &(*iter);
-
-				along = m_spotEncounter->path.from + order->t * length * dir;
-
-				UTIL_DrawBeamPoints(along, *order->spot->GetPosition(), 3, 0, 255, 255);
+			for (auto &order : m_spotEncounter->spotList) {
+				UTIL_DrawBeamPoints(m_spotEncounter->path.from + order.t * length * dir, *order.spot->GetPosition(), 3, 0, 255, 255);
 			}
 		}
 	}
@@ -261,7 +257,7 @@ void CCSBot::Update()
 	}
 
 	// track the last known area we were in
-	if (m_currentArea != NULL && m_currentArea != m_lastKnownArea)
+	if (m_currentArea && m_currentArea != m_lastKnownArea)
 	{
 		m_lastKnownArea = m_currentArea;
 		// assume that we "clear" an area of enemies when we enter it
@@ -276,7 +272,7 @@ void CCSBot::Update()
 		m_approachPointViewPosition = pev->origin;
 	}
 
-	if (cv_bot_show_nav.value > 0.0f && m_lastKnownArea != NULL)
+	if (cv_bot_show_nav.value > 0.0f && m_lastKnownArea)
 	{
 		m_lastKnownArea->DrawConnectedAreas();
 	}
@@ -310,7 +306,7 @@ void CCSBot::Update()
 
 	// "threat" may be the same as our current enemy
 	CBasePlayer *threat = GetRecognizedEnemy();
-	if (threat != NULL)
+	if (threat)
 	{
 		// adjust our personal "safe" time
 		AdjustSafeTime();
@@ -355,7 +351,7 @@ void CCSBot::Update()
 
 			if (doAttack)
 			{
-				if (GetEnemy() == NULL || threat != GetEnemy() || !IsAttacking())
+				if (!GetEnemy() || threat != GetEnemy() || !IsAttacking())
 				{
 					if (IsUsingKnife() && IsHiding())
 					{
@@ -397,12 +393,12 @@ void CCSBot::Update()
 	}
 
 	// Validate existing enemy, if any
-	if (m_enemy != NULL)
+	if (m_enemy.IsValid())
 	{
 		if (IsAwareOfEnemyDeath())
 		{
 			// we have noticed that our enemy has died
-			m_enemy = NULL;
+			m_enemy = nullptr;
 			m_isEnemyVisible = false;
 		}
 		else
@@ -442,7 +438,7 @@ void CCSBot::Update()
 
 	// if we have seen an enemy recently, keep an eye on him if we can
 	const float seenRecentTime = 3.0f;
-	if (m_enemy != NULL && GetTimeSinceLastSawEnemy() < seenRecentTime)
+	if (m_enemy.IsValid() && GetTimeSinceLastSawEnemy() < seenRecentTime)
 	{
 		AimAtEnemy();
 	}
@@ -523,13 +519,13 @@ void CCSBot::Update()
 
 	// make way
 	const float avoidTime = 0.33f;
-	if (gpGlobals->time - m_avoidTimestamp < avoidTime && m_avoid != NULL)
+	if (gpGlobals->time - m_avoidTimestamp < avoidTime && m_avoid)
 	{
 		StrafeAwayFromPosition(&m_avoid->pev->origin);
 	}
 	else
 	{
-		m_avoid = NULL;
+		m_avoid = nullptr;
 	}
 
 	if (m_isJumpCrouching)
@@ -559,11 +555,15 @@ void CCSBot::Update()
 	UpdatePeripheralVision();
 
 	// Update gamestate
-	if (m_bomber != NULL)
+	if (m_bomber)
+	{
 		GetChatter()->SpottedBomber(GetBomber());
+	}
 
 	if (CanSeeLooseBomb())
+	{
 		GetChatter()->SpottedLooseBomb(TheCSBots()->GetLooseBomb());
+	}
 
 	// Scenario interrupts
 	switch (TheCSBots()->GetScenario())
@@ -632,7 +632,7 @@ void CCSBot::Update()
 		if (GetProfile()->GetTeamwork() > RANDOM_FLOAT(0.0f, 1.0f))
 		{
 			CBasePlayer *leader = GetClosestVisibleHumanFriend();
-			if (leader != NULL && leader->IsAutoFollowAllowed())
+			if (leader && leader->IsAutoFollowAllowed())
 			{
 				// count how many bots are already following this player
 				const float maxFollowCount = 2;
@@ -642,7 +642,7 @@ void CCSBot::Update()
 					if ((leader->pev->origin - pev->origin).IsLengthLessThan(autoFollowRange))
 					{
 						CNavArea *leaderArea = TheNavAreaGrid.GetNavArea(&leader->pev->origin);
-						if (leaderArea != NULL)
+						if (leaderArea)
 						{
 							PathCost cost(this, FASTEST_ROUTE);
 							float travelRange = NavAreaTravelDistance(GetLastKnownArea(), leaderArea, cost);
@@ -676,8 +676,8 @@ void CCSBot::Update()
 	if (IsFollowing())
 	{
 		// if we are following someone, make sure they are still alive
-		CBaseEntity *leader = m_leader;
-		if (leader == NULL || !leader->IsAlive())
+		CBaseEntity *pLeader = m_leader;
+		if (!pLeader || !pLeader->IsAlive())
 		{
 			StopFollowing();
 		}

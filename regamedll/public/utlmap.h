@@ -38,7 +38,7 @@
 
 // faster iteration, but in an unspecified order
 #define FOR_EACH_MAP_FAST(mapName, iteratorName)\
-	for (int iteratorName = 0; (mapName).IsUtlMap && iteratorName < (mapName).MaxElement(); ++iteratorName) if (!(mapName).IsValidIndex(iteratorName)) continue; else
+	for (int iteratorName = 0; (mapName).IsUtlMap && iteratorName < (mapName).MaxElement(); iteratorName++) if (!(mapName).IsValidIndex(iteratorName)) continue; else
 
 struct base_utlmap_t
 {
@@ -89,28 +89,27 @@ public:
 	void EnsureCapacity(int num)							{ m_Tree.EnsureCapacity(num); }
 
 	// gets particular elements
-	ElemType_t &		Element(IndexType_t i)				{ return m_Tree.Element(i).elem; }
-	const ElemType_t &	Element(IndexType_t i) const		{ return m_Tree.Element(i).elem; }
-	ElemType_t &		operator[](IndexType_t i)			{ return m_Tree.Element(i).elem; }
-	const ElemType_t &	operator[](IndexType_t i) const		{ return m_Tree.Element(i).elem; }
-	KeyType_t &			Key(IndexType_t i)					{ return m_Tree.Element(i).key; }
-	const KeyType_t &	Key(IndexType_t i) const			{ return m_Tree.Element(i).key; }
-
+	ElemType_t&       Element(IndexType_t i)          { return m_Tree.Element(i).elem; }
+	const ElemType_t& Element(IndexType_t i) const    { return m_Tree.Element(i).elem; }
+	ElemType_t&       operator[](IndexType_t i)       { return m_Tree.Element(i).elem; }
+	const ElemType_t& operator[](IndexType_t i) const { return m_Tree.Element(i).elem; }
+	KeyType_t&        Key(IndexType_t i)              { return m_Tree.Element(i).key; }
+	const KeyType_t&  Key(IndexType_t i) const        { return m_Tree.Element(i).key; }
 
 	// Num elements
-	unsigned int Count() const								{ return m_Tree.Count(); }
+	unsigned int Count() const                              { return m_Tree.Count(); }
 
 	// Max "size" of the vector
-	IndexType_t  MaxElement() const							{ return m_Tree.MaxElement(); }
+	IndexType_t MaxElement() const                          { return m_Tree.MaxElement(); }
 
 	// Checks if a node is valid and in the map
-	bool IsValidIndex(IndexType_t i) const					{ return m_Tree.IsValidIndex(i); }
+	bool IsValidIndex(IndexType_t i) const                  { return m_Tree.IsValidIndex(i); }
 
 	// Checks if the map as a whole is valid
-	bool IsValid() const									{ return m_Tree.IsValid(); }
+	bool IsValid() const                                    { return m_Tree.IsValid(); }
 
 	// Invalid index
-	static IndexType_t InvalidIndex()						{ return CTree::InvalidIndex(); }
+	static IndexType_t InvalidIndex()                       { return CTree::InvalidIndex(); }
 
 	// Sets the less func
 	void SetLessFunc(LessFunc_t func)
@@ -143,7 +142,7 @@ public:
 	}
 
 	// Remove methods
-	void RemoveAt(IndexType_t i)						{ m_Tree.RemoveAt(i); }
+	void RemoveAt(IndexType_t i) { m_Tree.RemoveAt(i); }
 	bool Remove(const KeyType_t &key)
 	{
 		Node_t dummyNode;
@@ -151,17 +150,17 @@ public:
 		return m_Tree.Remove(dummyNode);
 	}
 
-	void RemoveAll()									{ m_Tree.RemoveAll(); }
-	void Purge()										{ m_Tree.Purge(); }
+	void RemoveAll() { m_Tree.RemoveAll(); }
+	void Purge()     { m_Tree.Purge(); }
 
 	// Purges the list and calls delete on each element in it.
 	void PurgeAndDeleteElements();
 
 	// Iteration
-	IndexType_t FirstInorder() const						{ return m_Tree.FirstInorder(); }
-	IndexType_t NextInorder(IndexType_t i) const			{ return m_Tree.NextInorder(i); }
-	IndexType_t PrevInorder(IndexType_t i) const			{ return m_Tree.PrevInorder(i); }
-	IndexType_t LastInorder() const							{ return m_Tree.LastInorder(); }
+	IndexType_t FirstInorder() const             { return m_Tree.FirstInorder(); }
+	IndexType_t NextInorder(IndexType_t i) const { return m_Tree.NextInorder(i); }
+	IndexType_t PrevInorder(IndexType_t i) const { return m_Tree.PrevInorder(i); }
+	IndexType_t LastInorder() const              { return m_Tree.LastInorder(); }
 
 	// If you change the search key, this can be used to reinsert the
 	// element into the map.
@@ -234,7 +233,7 @@ protected:
 template <typename K, typename T, typename I>
 inline void CUtlMap<K, T, I>::PurgeAndDeleteElements()
 {
-	for (I i = 0; i < MaxElement(); ++i)
+	for (I i = 0; i < MaxElement(); i++)
 	{
 		if (!IsValidIndex(i))
 			continue;

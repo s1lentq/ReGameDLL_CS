@@ -64,7 +64,7 @@ void CCSBot::StuckCheck()
 		{
 			// we have enough samples to know if we're stuck
 			float avgVel = 0.0f;
-			for (int t = 0; t < m_avgVelCount; ++t)
+			for (int t = 0; t < m_avgVelCount; t++)
 				avgVel += m_avgVel[t];
 
 			avgVel /= m_avgVelCount;
@@ -140,7 +140,7 @@ bool CCSBot::GetSimpleGroundHeightWithFloor(const Vector *pos, float *height, Ve
 	if (GetSimpleGroundHeight(pos, height, normal))
 	{
 		// our current nav area also serves as a ground polygon
-		if (m_lastKnownArea != NULL && m_lastKnownArea->IsOverlapping(pos))
+		if (m_lastKnownArea && m_lastKnownArea->IsOverlapping(pos))
 		{
 			*height = Q_max((*height), m_lastKnownArea->GetZ(pos));
 		}
@@ -153,8 +153,10 @@ bool CCSBot::GetSimpleGroundHeightWithFloor(const Vector *pos, float *height, Ve
 
 Place CCSBot::GetPlace() const
 {
-	if (m_lastKnownArea != NULL)
+	if (m_lastKnownArea)
+	{
 		return m_lastKnownArea->GetPlace();
+	}
 
 	return UNDEFINED_PLACE;
 }
@@ -169,7 +171,7 @@ void CCSBot::MoveTowardsPosition(const Vector *pos)
 
 	// NOTE: We need to do this frequently to catch edges at the right time
 	// TODO: Look ahead *along path* instead of straight line
-	if ((m_lastKnownArea == NULL || !(m_lastKnownArea->GetAttributes() & NAV_NO_JUMP))
+	if ((!m_lastKnownArea || !(m_lastKnownArea->GetAttributes() & NAV_NO_JUMP))
 		&& !IsOnLadder() && !m_isJumpCrouching)
 	{
 		float ground;
@@ -243,7 +245,7 @@ void CCSBot::MoveTowardsPosition(const Vector *pos)
 		MoveBackward();
 
 	// if we are avoiding someone via strafing, don't override
-	if (m_avoid != NULL)
+	if (m_avoid)
 		return;
 
 	if (latProj >= c)
@@ -294,12 +296,27 @@ void CCSBot::StrafeAwayFromPosition(const Vector *pos)
 	Vector2D to(pos->x - pev->origin.x, pos->y - pev->origin.y);
 	to.NormalizeInPlace();
 
+	// move away from the position independant of our view direction
+	float toProj = to.x * dir.x + to.y * dir.y;
 	float latProj = to.x * lat.x + to.y * lat.y;
 
+#ifdef REGAMEDLL_FIXES
+	const float c = 0.5f;
+	if (toProj > c)
+		MoveBackward();
+	else if (toProj < -c)
+		MoveForward();
+
+	if (latProj >= c)
+		StrafeRight();
+	else if (latProj <= -c)
+		StrafeLeft();
+#else
 	if (latProj >= 0.0f)
 		StrafeRight();
 	else
 		StrafeLeft();
+#endif
 }
 
 // For getting un-stuck
@@ -349,7 +366,7 @@ void CCSBot::ComputeApproachPoints()
 {
 	m_approachPointCount = 0;
 
-	if (m_lastKnownArea == NULL)
+	if (!m_lastKnownArea)
 	{
 		return;
 	}
@@ -359,11 +376,10 @@ void CCSBot::ComputeApproachPoints()
 
 	Vector ap;
 	float halfWidth;
-	for (int i = 0; i < m_lastKnownArea->GetApproachInfoCount() && m_approachPointCount < MAX_APPROACH_POINTS; ++i)
+	for (int i = 0; i < m_lastKnownArea->GetApproachInfoCount() && m_approachPointCount < MAX_APPROACH_POINTS; i++)
 	{
 		const CNavArea::ApproachInfo *info = m_lastKnownArea->GetApproachInfo(i);
-
-		if (info->here.area == NULL || info->prev.area == NULL)
+		if (!info->here.area || !info->prev.area)
 		{
 			continue;
 		}
@@ -391,7 +407,7 @@ void CCSBot::ComputeApproachPoints()
 
 void CCSBot::DrawApproachPoints()
 {
-	for (int i = 0; i < m_approachPointCount; ++i)
+	for (int i = 0; i < m_approachPointCount; i++)
 	{
 		UTIL_DrawBeamPoints(m_approachPoint[i], m_approachPoint[i] + Vector(0, 0, 50), 3, 0, 255, 255);
 	}
@@ -420,7 +436,7 @@ NOXREF bool CCSBot::FindApproachPointNearestPath(Vector *pos)
 	// from us that is near our path
 	const float nearPathSq = 10000.0f;
 
-	for (int i = 0; i < m_approachPointCount; ++i)
+	for (int i = 0; i < m_approachPointCount; i++)
 	{
 		if (FindClosestPointOnPath(&m_approachPoint[i], start, end, &close) == false)
 			continue;

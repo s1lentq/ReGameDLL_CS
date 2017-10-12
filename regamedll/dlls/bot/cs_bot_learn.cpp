@@ -42,13 +42,13 @@ inline CNavNode *LadderEndSearch(CBaseEntity *entity, const Vector *pos, NavDirT
 			continue;
 
 		// if no node exists here, create one and continue the search
-		if (CNavNode::GetNode(&tryPos) == NULL)
+		if (!CNavNode::GetNode(&tryPos))
 		{
-			return new CNavNode(&tryPos, &tryNormal, NULL);
+			return new CNavNode(&tryPos, &tryNormal, nullptr);
 		}
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 CNavNode *CCSBot::AddNode(const Vector *destPos, const Vector *normal, NavDirType dir, CNavNode *source)
@@ -58,7 +58,7 @@ CNavNode *CCSBot::AddNode(const Vector *destPos, const Vector *normal, NavDirTyp
 
 	// if no node exists, create one
 	bool useNew = false;
-	if (node == NULL)
+	if (!node)
 	{
 		node = new CNavNode(destPos, normal, source);
 		useNew = true;
@@ -118,7 +118,7 @@ CNavNode *CCSBot::AddNode(const Vector *destPos, const Vector *normal, NavDirTyp
 void drawProgressMeter(float progress, char *title)
 {
 	MESSAGE_BEGIN(MSG_ALL, gmsgBotProgress);
-		WRITE_BYTE(FLAG_PROGRESS_DRAW);
+		WRITE_BYTE(BOT_PROGGRESS_DRAW);
 		WRITE_BYTE(int(progress * 100.0f));
 		WRITE_STRING(title);
 	MESSAGE_END();
@@ -127,7 +127,7 @@ void drawProgressMeter(float progress, char *title)
 void startProgressMeter(const char *title)
 {
 	MESSAGE_BEGIN(MSG_ALL, gmsgBotProgress);
-		WRITE_BYTE(FLAG_PROGRESS_START);
+		WRITE_BYTE(BOT_PROGGRESS_START);
 		WRITE_STRING(title);
 	MESSAGE_END();
 }
@@ -135,7 +135,7 @@ void startProgressMeter(const char *title)
 void hideProgressMeter()
 {
 	MESSAGE_BEGIN(MSG_ALL, gmsgBotProgress);
-		WRITE_BYTE(FLAG_PROGRESS_HIDE);
+		WRITE_BYTE(BOT_PROGGRESS_HIDE);
 	MESSAGE_END();
 }
 
@@ -173,14 +173,11 @@ bool CCSBot::LearnStep()
 	// take a step
 	while (true)
 	{
-		if (m_currentNode == NULL)
+		if (!m_currentNode)
 		{
 			// search is exhausted - continue search from ends of ladders
-			NavLadderList::iterator iter;
-			for (iter = TheNavLadderList.begin(); iter != TheNavLadderList.end(); ++iter)
+			for (auto ladder : TheNavLadderList)
 			{
-				CNavLadder *ladder = (*iter);
-
 				// check ladder bottom
 				if ((m_currentNode = LadderEndSearch(ladder->m_entity, &ladder->m_bottom, ladder->m_dir)) != 0)
 					break;
@@ -190,7 +187,7 @@ bool CCSBot::LearnStep()
 					break;
 			}
 
-			if (m_currentNode == NULL)
+			if (!m_currentNode)
 			{
 				// all seeds exhausted, sampling complete
 				GenerateNavigationAreaMesh();
@@ -215,10 +212,10 @@ bool CCSBot::LearnStep()
 				// attempt to move to adjacent node
 				switch (dir)
 				{
-					case NORTH:		cy -= GenerationStepSize; break;
-					case SOUTH:		cy += GenerationStepSize; break;
-					case EAST:		cx += GenerationStepSize; break;
-					case WEST:		cx -= GenerationStepSize; break;
+				case NORTH: cy -= GenerationStepSize; break;
+				case SOUTH: cy += GenerationStepSize; break;
+				case EAST:  cx += GenerationStepSize; break;
+				case WEST:  cx -= GenerationStepSize; break;
 				}
 
 				pos.x = cx;
@@ -324,7 +321,7 @@ bool CCSBot::LearnStep()
 #ifdef REGAMEDLL_FIXES
 				// if we're incrementally generating, don't overlap existing nav areas
 				CNavArea *overlap = TheNavAreaGrid.GetNavArea(&to, HumanHeight);
-				if (overlap != NULL)
+				if (overlap)
 				{
 					walkable = false;
 				}
@@ -375,14 +372,14 @@ void CCSBot::StartAnalyzeAlphaProcess()
 
 bool CCSBot::AnalyzeAlphaStep()
 {
-	++_currentIndex;
+	_currentIndex++;
 	if (m_analyzeIter == TheNavAreaList.end())
 		return false;
 
 	CNavArea *area = (*m_analyzeIter);
 	area->ComputeHidingSpots();
 	area->ComputeApproachAreas();
-	++m_analyzeIter;
+	m_analyzeIter++;
 
 	return true;
 }
@@ -416,14 +413,14 @@ void CCSBot::StartAnalyzeBetaProcess()
 
 bool CCSBot::AnalyzeBetaStep()
 {
-	++_currentIndex;
+	_currentIndex++;
 	if (m_analyzeIter == TheNavAreaList.end())
 		return false;
 
 	CNavArea *area = (*m_analyzeIter);
 	area->ComputeSpotEncounters();
 	area->ComputeSniperSpots();
-	++m_analyzeIter;
+	m_analyzeIter++;
 
 	return true;
 }
@@ -473,7 +470,7 @@ void CCSBot::UpdateSaveProcess()
 #ifndef REGAMEDLL_FIXES
 	Q_sprintf(cmd, "map %s\n", STRING(gpGlobals->mapname));
 #else
-	Q_sprintf(cmd, "changelevel %s\n", STRING(gpGlobals->mapname));
+	Q_snprintf(cmd, sizeof(cmd), "changelevel %s\n", STRING(gpGlobals->mapname));
 #endif
 
 	SERVER_COMMAND(cmd);

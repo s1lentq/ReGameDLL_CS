@@ -26,48 +26,12 @@
 *
 */
 
-#ifndef BMODELS_H
-#define BMODELS_H
-#ifdef _WIN32
 #pragma once
-#endif
-
-// func_rotating
-#define SF_BRUSH_ROTATE_Y_AXIS          0
-#define SF_BRUSH_ROTATE_INSTANT         1
-#define SF_BRUSH_ROTATE_BACKWARDS       2
-#define SF_BRUSH_ROTATE_Z_AXIS          4
-#define SF_BRUSH_ROTATE_X_AXIS          8
-
-#define SF_BRUSH_ACCDCC                 16 // brush should accelerate and decelerate when toggled
-#define SF_BRUSH_HURT                   32 // rotating brush that inflicts pain based on rotation speed
-
-#define SF_ROTATING_NOT_SOLID           64 // some special rotating objects are not solid.
-
-#define SF_BRUSH_ROTATE_SMALLRADIUS     128
-#define SF_BRUSH_ROTATE_MEDIUMRADIUS    256
-#define SF_BRUSH_ROTATE_LARGERADIUS     512
-
-#define FANPITCHMIN                     30
-#define FANPITCHMAX                     100
-
-// func_pendulum
-#define SF_PENDULUM_SWING               2  // spawnflag that makes a pendulum a rope swing.
-#define SF_PENDULUM_AUTO_RETURN         16
-#define SF_PENDULUM_PASSABLE            32
-
-// func_wall_toggle
-#define SF_WALL_START_OFF               0x0001
-#define SF_WALL_NOTSOLID                0x0008
-
-// func_conveyor
-#define SF_CONVEYOR_VISUAL              0x0001
-#define SF_CONVEYOR_NOTSOLID            0x0002
 
 // covering cheesy noise1, noise2, & noise3 fields so they make more sense (for rotating fans)
-#define noiseStart          noise1
-#define noiseStop           noise2
-#define noiseRunning        noise3
+#define noiseStart   noise1
+#define noiseStop    noise2
+#define noiseRunning noise3
 
 // This is just a solid wall if not inhibited
 class CFuncWall: public CBaseEntity
@@ -79,6 +43,9 @@ public:
 	virtual int ObjectCaps() { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 };
+
+#define SF_WALL_TOOGLE_START_OFF BIT(0)
+#define SF_WALL_TOOGLE_NOTSOLID  BIT(3)
 
 class CFuncWallToggle: public CFuncWall
 {
@@ -96,6 +63,9 @@ public:
 	void TurnOn();
 	BOOL IsOn();
 };
+
+#define SF_CONVEYOR_VISUAL   BIT(0)
+#define SF_CONVEYOR_NOTSOLID BIT(1)
 
 class CFuncConveyor: public CFuncWall
 {
@@ -135,6 +105,20 @@ public:
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value) {}
 };
 
+#define SF_BRUSH_ROTATE_START_ON        BIT(0)
+#define SF_BRUSH_ROTATE_BACKWARDS       BIT(1)
+#define SF_BRUSH_ROTATE_Z_AXIS          BIT(2)
+#define SF_BRUSH_ROTATE_X_AXIS          BIT(3)
+#define SF_BRUSH_ACCDCC                 BIT(4) // Brush should accelerate and decelerate when toggled
+#define SF_BRUSH_HURT                   BIT(5) // Rotating brush that inflicts pain based on rotation speed
+#define SF_BRUSH_ROTATE_NOT_SOLID       BIT(6) // Some special rotating objects are not solid.
+#define SF_BRUSH_ROTATE_SMALLRADIUS     BIT(7)
+#define SF_BRUSH_ROTATE_MEDIUMRADIUS    BIT(8)
+#define SF_BRUSH_ROTATE_LARGERADIUS     BIT(9)
+
+const int MAX_FANPITCH = 100;
+const int MIN_FANPITCH = 30;
+
 class CFuncRotating: public CBaseEntity
 {
 public:
@@ -157,7 +141,7 @@ public:
 	void EXPORT HurtTouch(CBaseEntity *pOther);
 	void EXPORT RotatingUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 	void EXPORT Rotate();
-	void RampPitchVol(int fUp);
+	void RampPitchVol(BOOL fUp);
 
 public:
 	static TYPEDESCRIPTION IMPL(m_SaveData)[5];
@@ -173,6 +157,11 @@ public:
 #endif
 
 };
+
+#define SF_PENDULUM_START_ON    BIT(0)
+#define SF_PENDULUM_SWING       BIT(1) // Spawnflag that makes a pendulum a rope swing
+#define SF_PENDULUM_PASSABLE    BIT(3)
+#define SF_PENDULUM_AUTO_RETURN BIT(4)
 
 class CPendulum: public CBaseEntity
 {
@@ -208,5 +197,3 @@ public:
 };
 
 Vector VecBModelOrigin(entvars_t *pevBModel);
-
-#endif // BMODELS_H

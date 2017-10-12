@@ -20,7 +20,7 @@ bool UseBotArgs = false;
 CBot::CBot()
 {
 	// the profile will be attached after this instance is constructed
-	m_profile = NULL;
+	m_profile = nullptr;
 
 	// assign this bot a unique ID
 	static unsigned int nextID = 1;
@@ -49,7 +49,7 @@ void CBot::Spawn()
 	pev->flags |= (FL_CLIENT | FL_FAKECLIENT);
 
 	// Bots use their own thinking mechanism
-	SetThink(NULL);
+	SetThink(nullptr);
 	pev->nextthink = -1;
 
 	m_flNextBotThink = gpGlobals->time + g_flBotCommandInterval;
@@ -494,7 +494,7 @@ void ActiveGrenade::OnEntityGone()
 		m_dieTimestamp = gpGlobals->time + smokeLingerTime;
 	}
 
-	m_entity = NULL;
+	m_entity = nullptr;
 }
 
 bool ActiveGrenade::IsValid() const

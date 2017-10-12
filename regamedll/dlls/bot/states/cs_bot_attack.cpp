@@ -3,14 +3,14 @@
 // Begin attacking
 void AttackState::OnEnter(CCSBot *me)
 {
-	CBasePlayer *enemy = me->GetEnemy();
+	CBasePlayer *pEnemy = me->GetEnemy();
 
 	// store our posture when the attack began
 	me->PushPostureContext();
 	me->DestroyPath();
 
 	// if we are using a knife, try to sneak up on the enemy
-	if (enemy != NULL && me->IsUsingKnife() && !me->IsPlayerFacingMe(enemy))
+	if (pEnemy && me->IsUsingKnife() && !me->IsPlayerFacingMe(pEnemy))
 		me->Walk();
 	else
 		me->Run();
@@ -44,7 +44,7 @@ void AttackState::OnEnter(CCSBot *me)
 		// decide whether to crouch where we are, or run and gun (if we havent already - see CCSBot::Attack())
 		if (!m_crouchAndHold)
 		{
-			if (enemy != NULL)
+			if (pEnemy)
 			{
 				const float crouchFarRange = 750.0f;
 				float crouchChance;
@@ -52,7 +52,7 @@ void AttackState::OnEnter(CCSBot *me)
 				// more likely to crouch if using sniper rifle or if enemy is far away
 				if (me->IsUsingSniperRifle())
 					crouchChance = 50.0f;
-				else if ((me->pev->origin - enemy->pev->origin).IsLengthGreaterThan(crouchFarRange))
+				else if ((me->pev->origin - pEnemy->pev->origin).IsLengthGreaterThan(crouchFarRange))
 					crouchChance = 50.0f;
 				else
 					crouchChance = 20.0f * (1.0f - me->GetProfile()->GetAggression());
@@ -69,7 +69,7 @@ void AttackState::OnEnter(CCSBot *me)
 						origin.z -= 20.0f;
 					}
 
-					UTIL_TraceLine(origin, enemy->EyePosition(), ignore_monsters, ignore_glass, ENT(me->pev), &result);
+					UTIL_TraceLine(origin, pEnemy->EyePosition(), ignore_monsters, ignore_glass, ENT(me->pev), &result);
 
 					if (result.flFraction == 1.0f)
 					{
@@ -131,20 +131,20 @@ void AttackState::OnUpdate(CCSBot *me)
 	me->ResetStuckMonitor();
 	me->StopRapidFire();
 
-	CBasePlayerWeapon *weapon = me->GetActiveWeapon();
-	if (weapon != NULL)
+	CBasePlayerWeapon *pWeapon = me->GetActiveWeapon();
+	if (pWeapon)
 	{
-		if (weapon->m_iId == WEAPON_C4 ||
-			weapon->m_iId == WEAPON_HEGRENADE ||
-			weapon->m_iId == WEAPON_FLASHBANG ||
-			weapon->m_iId == WEAPON_SMOKEGRENADE)
+		if (pWeapon->m_iId == WEAPON_C4 ||
+			pWeapon->m_iId == WEAPON_HEGRENADE ||
+			pWeapon->m_iId == WEAPON_FLASHBANG ||
+			pWeapon->m_iId == WEAPON_SMOKEGRENADE)
 		{
 			me->EquipBestWeapon();
 		}
 	}
 
-	CBasePlayer *enemy = me->GetEnemy();
-	if (enemy == NULL)
+	CBasePlayer *pEnemy = me->GetEnemy();
+	if (!pEnemy)
 	{
 		StopAttacking(me);
 		return;
@@ -200,7 +200,7 @@ void AttackState::OnUpdate(CCSBot *me)
 		me->StandUp();
 
 		// if we are using a knife and our prey is looking towards us, run at him
-		if (me->IsPlayerFacingMe(enemy))
+		if (me->IsPlayerFacingMe(pEnemy))
 		{
 			me->ForceRun(5.0f);
 			me->Hurry(10.0f);
@@ -218,7 +218,7 @@ void AttackState::OnUpdate(CCSBot *me)
 		if (me->HasPath())
 		{
 			const float repathRange = 100.0f;
-			if ((me->GetPathEndpoint() - enemy->pev->origin).IsLengthGreaterThan(repathRange))
+			if ((me->GetPathEndpoint() - pEnemy->pev->origin).IsLengthGreaterThan(repathRange))
 			{
 				repath = true;
 			}
@@ -230,7 +230,7 @@ void AttackState::OnUpdate(CCSBot *me)
 
 		if (repath && m_repathTimer.IsElapsed())
 		{
-			me->ComputePath(TheNavAreaGrid.GetNearestNavArea(&enemy->pev->origin), &enemy->pev->origin, FASTEST_ROUTE);
+			me->ComputePath(TheNavAreaGrid.GetNearestNavArea(&pEnemy->pev->origin), &pEnemy->pev->origin, FASTEST_ROUTE);
 
 			const float repathInterval = 0.5f;
 			m_repathTimer.Start(repathInterval);
@@ -250,7 +250,7 @@ void AttackState::OnUpdate(CCSBot *me)
 	{
 		if (me->IsEnemyVisible() && !m_shieldForceOpen)
 		{
-			if (!me->IsRecognizedEnemyReloading() && !me->IsReloading() && me->IsPlayerLookingAtMe(enemy))
+			if (!me->IsRecognizedEnemyReloading() && !me->IsReloading() && me->IsPlayerLookingAtMe(pEnemy))
 			{
 				// close up - enemy is pointing his gun at us
 				if (!me->IsProtectedByShield())
@@ -285,14 +285,14 @@ void AttackState::OnUpdate(CCSBot *me)
 		// if we have a sniper rifle and our enemy is too close, switch to pistol
 		// NOTE: Must be larger than NO_ZOOM range in AdjustZoom()
 		const float sniperMinRange = 310.0f;
-		if ((enemy->pev->origin - me->pev->origin).IsLengthLessThan(sniperMinRange))
+		if ((pEnemy->pev->origin - me->pev->origin).IsLengthLessThan(sniperMinRange))
 			me->EquipPistol();
 	}
 	else if (me->IsUsingShotgun())
 	{
 		// if we have a shotgun equipped and enemy is too far away, switch to pistol
 		const float shotgunMaxRange = 1000.0f;
-		if ((enemy->pev->origin - me->pev->origin).IsLengthGreaterThan(shotgunMaxRange))
+		if ((pEnemy->pev->origin - me->pev->origin).IsLengthGreaterThan(shotgunMaxRange))
 			me->EquipPistol();
 	}
 
@@ -325,9 +325,9 @@ void AttackState::OnUpdate(CCSBot *me)
 	if (me->IsAwareOfEnemyDeath())
 	{
 		// let team know if we killed the last enemy
-		if (me->GetLastVictimID() == enemy->entindex() && me->GetNearbyEnemyCount() <= 1)
+		if (me->GetLastVictimID() == pEnemy->entindex() && me->GetNearbyEnemyCount() <= 1)
 		{
-			me->GetChatter()->KilledMyEnemy(enemy->entindex());
+			me->GetChatter()->KilledMyEnemy(pEnemy->entindex());
 		}
 
 		StopAttacking(me);
@@ -372,7 +372,7 @@ void AttackState::OnUpdate(CCSBot *me)
 						// hide in ambush nearby
 						// TODO: look towards where we know enemy is
 						const Vector *spot = FindNearbyRetreatSpot(me, 200.0f);
-						if (spot != NULL)
+						if (spot)
 						{
 							me->IgnoreEnemies(1.0f);
 							me->Run();
@@ -430,7 +430,7 @@ void AttackState::OnUpdate(CCSBot *me)
 		else
 		{
 			// move to last known position of enemy
-			me->SetTask(CCSBot::MOVE_TO_LAST_KNOWN_ENEMY_POSITION, enemy);
+			me->SetTask(CCSBot::MOVE_TO_LAST_KNOWN_ENEMY_POSITION, pEnemy);
 			me->MoveTo(&me->GetLastKnownEnemyPosition());
 			return;
 		}
@@ -441,7 +441,7 @@ void AttackState::OnUpdate(CCSBot *me)
 	const float hurtRecentlyTime = 3.0f;
 	if (!me->IsEnemyVisible() &&
 		me->GetTimeSinceAttacked() < hurtRecentlyTime &&
-		me->GetAttacker() != NULL &&
+		me->GetAttacker() &&
 		me->GetAttacker() != me->GetEnemy())
 	{
 		// if we can see them, attack, otherwise panic
@@ -460,7 +460,7 @@ void AttackState::OnUpdate(CCSBot *me)
 	// If sniping or crouching, stand still.
 	if (m_dodge && !me->IsUsingSniperRifle() && !m_crouchAndHold)
 	{
-		Vector toEnemy = enemy->pev->origin - me->pev->origin;
+		Vector toEnemy = pEnemy->pev->origin - me->pev->origin;
 		float range = toEnemy.Length2D();
 
 		const float hysterisRange = 125.0f;		// (+/-) m_combatRange
@@ -479,7 +479,7 @@ void AttackState::OnUpdate(CCSBot *me)
 
 		// don't dodge if enemy is facing away
 		const float dodgeRange = 2000.0f;
-		if (range > dodgeRange || !me->IsPlayerFacingMe(enemy))
+		if (range > dodgeRange || !me->IsPlayerFacingMe(pEnemy))
 		{
 			m_dodgeState = STEADY_ON;
 			m_nextDodgeStateTimestamp = 0.0f;

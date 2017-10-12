@@ -26,11 +26,7 @@
 *
 */
 
-#ifndef HEALTKIT_H
-#define HEALTKIT_H
-#ifdef _WIN32
 #pragma once
-#endif
 
 class CHealthKit: public CItem
 {
@@ -63,5 +59,3 @@ public:
 	int m_iOn;
 	float m_flSoundTime;
 };
-
-#endif // HEALTKIT_H

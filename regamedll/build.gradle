@@ -105,7 +105,7 @@ void setupToolchain(NativeBinarySpec b)
 		b.lib LazyNativeDepSet.create(dep_cppunitlite, 'cppunitlite', b.buildType.name, true)
 	}
 
-	cfg.singleDefines 'USE_BREAKPAD_HANDLER', 'DEDICATED', 'REGAMEDLL_SELF', 'REGAMEDLL_API', 'CLIENT_WEAPONS'
+	cfg.singleDefines 'USE_BREAKPAD_HANDLER', 'DEDICATED', 'REGAMEDLL_SELF', 'REGAMEDLL_API', 'CLIENT_WEAPONS', 'USE_QSTRING'
 
 	if (cfg instanceof MsvcToolchainConfig)
 	{
@@ -140,7 +140,7 @@ void setupToolchain(NativeBinarySpec b)
 			pchSourceSet: 'regamedll_pch'
 		);
 
-		cfg.compilerOptions.languageStandard = 'c++0x'
+		cfg.compilerOptions.languageStandard = 'c++14'
 		cfg.defines([
 			'_stricmp': 'strcasecmp',
 			'_strnicmp': 'strncasecmp',

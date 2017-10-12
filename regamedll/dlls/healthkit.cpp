@@ -39,9 +39,17 @@ BOOL CHealthKit::MyTouch(CBasePlayer *pPlayer)
 		return FALSE;
 #endif
 
-	if (pPlayer->TakeHealth(gSkillData.healthkitCapacity, DMG_GENERIC))
+	auto healthValue = gSkillData.healthkitCapacity;
+
+#ifdef REGAMEDLL_FIXES
+	if (pev->health != 0.0f) {
+		healthValue = pev->health;
+	}
+#endif
+
+	if (pPlayer->TakeHealth(healthValue, DMG_GENERIC))
 	{
-		MESSAGE_BEGIN(MSG_ONE, gmsgItemPickup, NULL, pPlayer->pev);
+		MESSAGE_BEGIN(MSG_ONE, gmsgItemPickup, nullptr, pPlayer->pev);
 			WRITE_STRING(STRING(pev->classname));
 		MESSAGE_END();
 
@@ -73,7 +81,9 @@ void CWallHealth::KeyValue(KeyValueData *pkvd)
 		pkvd->fHandled = TRUE;
 	}
 	else
+	{
 		CBaseToggle::KeyValue(pkvd);
+	}
 }
 
 void CWallHealth::Spawn()
@@ -89,7 +99,14 @@ void CWallHealth::Spawn()
 
 	SET_MODEL(ENT(pev), STRING(pev->model));
 
-	m_iJuice = int(gSkillData.healthchargerCapacity);
+	int healthValue = (int)gSkillData.healthchargerCapacity;
+#ifdef REGAMEDLL_FIXES
+	if (pev->health != 0.0f) {
+		healthValue = (int)pev->health;
+	}
+#endif
+
+	m_iJuice = healthValue;
 	pev->frame = 0.0f;
 }
 
@@ -160,7 +177,16 @@ void CWallHealth::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE us
 void CWallHealth::Recharge()
 {
 	EMIT_SOUND(ENT(pev), CHAN_ITEM, "items/medshot4.wav", VOL_NORM, ATTN_NORM);
-	m_iJuice = gSkillData.healthchargerCapacity;
+
+	int healthValue = (int)gSkillData.healthchargerCapacity;
+#ifdef REGAMEDLL_FIXES
+	if (pev->health != 0.0f) {
+		healthValue = (int)pev->health;
+	}
+#endif
+
+	m_iJuice = healthValue;
+
 	pev->frame = 0.0f;
 	SetThink(&CWallHealth::SUB_DoNothing);
 }
@@ -173,11 +199,13 @@ void CWallHealth::Off()
 
 	m_iOn = 0;
 
-	if (!m_iJuice &&  ((m_iReactivate = g_pGameRules->FlHealthChargerRechargeTime()) > 0))
+	if (!m_iJuice && ((m_iReactivate = g_pGameRules->FlHealthChargerRechargeTime()) > 0))
 	{
 		pev->nextthink = pev->ltime + m_iReactivate;
 		SetThink(&CWallHealth::Recharge);
 	}
 	else
+	{
 		SetThink(&CWallHealth::SUB_DoNothing);
+	}
 }

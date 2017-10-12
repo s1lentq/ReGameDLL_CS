@@ -26,21 +26,15 @@
 *
 */
 
-#ifndef OBSERVER_H
-#define OBSERVER_H
-#ifdef _WIN32
 #pragma once
-#endif
 
-#define CAMERA_MODE_SPEC_ANYONE			0
-#define CAMERA_MODE_SPEC_ONLY_TEAM		1
-#define CAMERA_MODE_SPEC_ONLY_FRIST_PERSON	2
+#define CAMERA_MODE_SPEC_ANYONE            0
+#define CAMERA_MODE_SPEC_ONLY_TEAM         1
+#define CAMERA_MODE_SPEC_ONLY_FRIST_PERSON 2
 
 int GetForceCamera(CBasePlayer *pObserver);
 void UpdateClientEffects(CBasePlayer *pObserver, int oldMode);
 
 #ifdef REGAMEDLL_API
-int GetForceCamera_OrigFunc(CBasePlayer *pObserver);
+EXT_FUNC int GetForceCamera_OrigFunc(CBasePlayer *pObserver);
 #endif
-
-#endif // OBSERVER_H

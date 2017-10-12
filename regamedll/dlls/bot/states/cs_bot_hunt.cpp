@@ -55,7 +55,7 @@ void HuntState::OnUpdate(CCSBot *me)
 
 			// if bomb has been planted, and we hear it, move to a hiding spot near the bomb and watch it
 			const Vector *bombPos = me->GetGameState()->GetBombPosition();
-			if (!me->IsRogue() && me->GetGameState()->IsBombPlanted() && bombPos != NULL)
+			if (!me->IsRogue() && me->GetGameState()->IsBombPlanted() && bombPos)
 			{
 				me->SetTask(CCSBot::GUARD_TICKING_BOMB);
 				me->Hide(TheNavAreaGrid.GetNavArea(bombPos));
@@ -105,11 +105,11 @@ void HuntState::OnUpdate(CCSBot *me)
 			// if safe time is up, and we stumble across a hostage, guard it
 			if (!me->IsRogue() && !me->IsSafe())
 			{
-				CHostage *hostage = me->GetGameState()->GetNearestVisibleFreeHostage();
-				if (hostage != NULL)
+				CHostage *pHostage = me->GetGameState()->GetNearestVisibleFreeHostage();
+				if (pHostage)
 				{
-					CNavArea *area = TheNavAreaGrid.GetNearestNavArea(&hostage->pev->origin);
-					if (area != NULL)
+					CNavArea *area = TheNavAreaGrid.GetNearestNavArea(&pHostage->pev->origin);
+					if (area)
 					{
 						// we see a free hostage, guard it
 						me->SetTask(CCSBot::GUARD_HOSTAGES);
@@ -137,19 +137,14 @@ void HuntState::OnUpdate(CCSBot *me)
 	// if our path fails, pick a new one
 	if (me->GetLastKnownArea() == m_huntArea || me->UpdatePathMovement() != CCSBot::PROGRESSING)
 	{
-		m_huntArea = NULL;
+		m_huntArea = nullptr;
 		float oldest = 0.0f;
 
 		int areaCount = 0;
 		const float minSize = 150.0f;
-
-		NavAreaList::iterator iter;
-
-		for (iter = TheNavAreaList.begin(); iter != TheNavAreaList.end(); ++iter)
+		for (auto area : TheNavAreaList)
 		{
-			CNavArea *area = (*iter);
-
-			++areaCount;
+			areaCount++;
 
 			// skip the small areas
 			const Extent *extent = area->GetExtent();
@@ -169,20 +164,20 @@ void HuntState::OnUpdate(CCSBot *me)
 		int which = RANDOM_LONG(0, areaCount - 1);
 
 		areaCount = 0;
-		for (iter = TheNavAreaList.begin(); iter != TheNavAreaList.end(); ++iter)
+		for (auto area : TheNavAreaList)
 		{
-			m_huntArea = (*iter);
+			m_huntArea = area;
 
 			if (which == areaCount)
 				break;
 
-			--which;
+			which--;
 		}
 
-		if (m_huntArea != NULL)
+		if (m_huntArea)
 		{
 			// create a new path to a far away area of the map
-			me->ComputePath(m_huntArea, NULL, SAFEST_ROUTE);
+			me->ComputePath(m_huntArea, nullptr, SAFEST_ROUTE);
 		}
 	}
 }

@@ -26,49 +26,44 @@
 *
 */
 
-#ifndef GAMERULES_H
-#define GAMERULES_H
-#ifdef _WIN32
 #pragma once
-#endif
 
 #include "game_shared/voice_gamemgr.h"
+#include "cmdhandler.h"
 
-#define MAX_RULE_BUFFER				1024
-#define MAX_VOTE_MAPS				100
-#define MAX_VIP_QUEUES				5
+const int MAX_RULE_BUFFER       = 1024;
+const int MAX_VOTE_MAPS         = 100;
+const int MAX_VIP_QUEUES        = 5;
 
-#define MAX_BOMB_RADIUS				2048
+const int MAX_MOTD_CHUNK        = 60;
+const int MAX_MOTD_LENGTH       = 1536;	// (MAX_MOTD_CHUNK * 4)
 
-#define ITEM_RESPAWN_TIME			30
-#define WEAPON_RESPAWN_TIME			20
-#define AMMO_RESPAWN_TIME			20
-#define ROUND_RESPAWN_TIME			20
-#define ROUND_BEGIN_DELAY			5	// delay before beginning new round
+const float ITEM_RESPAWN_TIME   = 30;
+const float WEAPON_RESPAWN_TIME = 20;
+const float AMMO_RESPAWN_TIME   = 20;
+const float ROUND_RESPAWN_TIME  = 20;
+const float ROUND_BEGIN_DELAY   = 5;	// delay before beginning new round
 
-// longest the intermission can last, in seconds
-#define MAX_INTERMISSION_TIME			120
+const int MAX_INTERMISSION_TIME = 120;	// longest the intermission can last, in seconds
 
-// when we are within this close to running out of entities,  items
+// when we are within this close to running out of entities, items
 // marked with the ITEM_FLAG_LIMITINWORLD will delay their respawn
-#define ENTITY_INTOLERANCE			100
-
-#define MAX_MOTD_CHUNK				60
-#define MAX_MOTD_LENGTH				1536 // (MAX_MOTD_CHUNK * 4)
+const int ENTITY_INTOLERANCE    = 100;
 
 // custom enum
-#define WINNER_NONE			0
-#define WINNER_DRAW			1
+#define WINNER_NONE 0
+#define WINNER_DRAW 1
 
 enum
 {
-	WINSTATUS_CTS = 1,
+	WINSTATUS_NONE = 0,
+	WINSTATUS_CTS,
 	WINSTATUS_TERRORISTS,
 	WINSTATUS_DRAW,
 };
 
-// custom enum
-// used for EndRoundMessage() logged messages
+// Custom enum
+// Used for EndRoundMessage() logged messages
 enum ScenarioEventEndRound
 {
 	ROUND_NONE,
@@ -197,13 +192,13 @@ enum
 // custom enum
 enum
 {
-	SCENARIO_BLOCK_TIME_EXPRIRED        = (1 << 0), // flag "a"
-	SCENARIO_BLOCK_NEED_PLAYERS         = (1 << 1), // flag "b"
-	SCENARIO_BLOCK_VIP_ESCAPE           = (1 << 2), // flag "c"
-	SCENARIO_BLOCK_PRISON_ESCAPE        = (1 << 3), // flag "d"
-	SCENARIO_BLOCK_BOMB                 = (1 << 4), // flag "e"
-	SCENARIO_BLOCK_TEAM_EXTERMINATION   = (1 << 5), // flag "f"
-	SCENARIO_BLOCK_HOSTAGE_RESCUE       = (1 << 6), // flag "g"
+	SCENARIO_BLOCK_TIME_EXPRIRED      = BIT(0), // flag "a"
+	SCENARIO_BLOCK_NEED_PLAYERS       = BIT(1), // flag "b"
+	SCENARIO_BLOCK_VIP_ESCAPE         = BIT(2), // flag "c"
+	SCENARIO_BLOCK_PRISON_ESCAPE      = BIT(3), // flag "d"
+	SCENARIO_BLOCK_BOMB               = BIT(4), // flag "e"
+	SCENARIO_BLOCK_TEAM_EXTERMINATION = BIT(5), // flag "f"
+	SCENARIO_BLOCK_HOSTAGE_RESCUE     = BIT(6), // flag "g"
 };
 
 // Player relationship return codes
@@ -519,6 +514,7 @@ public:
 	// Teamplay stuff
 	virtual const char *GetTeamID(CBaseEntity *pEntity) { return ""; }
 	virtual int PlayerRelationship(CBasePlayer *pPlayer, CBaseEntity *pTarget);
+	virtual void ChangePlayerTeam(CBasePlayer *pPlayer, const char *pTeamName, BOOL bKill, BOOL bGib);
 
 	virtual BOOL PlayTextureSounds() { return FALSE; }
 
@@ -591,31 +587,33 @@ public:
 
 	// for internal functions API
 	void OnRoundFreezeEnd();
+	bool OnRoundEnd(int winStatus, ScenarioEventEndRound event, float tmDelay);
+	bool OnRoundEnd_Intercept(int winStatus, ScenarioEventEndRound event, float tmDelay);
 
-	bool RoundOver_internal(int winStatus, ScenarioEventEndRound event, float tmDelay);
-	bool NeededPlayersCheck_internal(int winStatus, ScenarioEventEndRound event, float tmDelay);
-	bool RestartRoundCheck_internal(int winStatus, ScenarioEventEndRound event, float tmDelay);
+	bool RoundOver(float tmDelay);
+	bool NeededPlayersCheck(float tmDelay);
+	bool RestartRoundCheck(float tmDelay);
 
-	bool VIP_Escaped_internal(int winStatus, ScenarioEventEndRound event, float tmDelay);
-	bool VIP_Died_internal(int winStatus, ScenarioEventEndRound event, float tmDelay);
-	bool VIP_NotEscaped_internal(int winStatus, ScenarioEventEndRound event, float tmDelay);
+	bool VIP_Escaped(float tmDelay);
+	bool VIP_Died(float tmDelay);
+	bool VIP_NotEscaped(float tmDelay);
 
-	bool Prison_Escaped_internal(int winStatus, ScenarioEventEndRound event, float tmDelay);
-	bool Prison_PreventEscape_internal(int winStatus, ScenarioEventEndRound event, float tmDelay);
-	bool Prison_NotEscaped_internal(int winStatus, ScenarioEventEndRound event, float tmDelay);
-	bool Prison_Neutralized_internal(int winStatus, ScenarioEventEndRound event, float tmDelay);
+	bool Prison_Escaped(float tmDelay);
+	bool Prison_PreventEscape(float tmDelay);
+	bool Prison_NotEscaped(float tmDelay);
+	bool Prison_Neutralized(float tmDelay);
 
-	bool Target_Bombed_internal(int winStatus, ScenarioEventEndRound event, float tmDelay);
-	bool Target_Saved_internal(int winStatus, ScenarioEventEndRound event, float tmDelay);
-	bool Target_Defused_internal(int winStatus, ScenarioEventEndRound event, float tmDelay);
+	bool Target_Bombed(float tmDelay);
+	bool Target_Saved(float tmDelay);
+	bool Target_Defused(float tmDelay);
 
 	// Team extermination
-	bool Round_Cts_internal(int winStatus, ScenarioEventEndRound event, float tmDelay);
-	bool Round_Ts_internal(int winStatus, ScenarioEventEndRound event, float tmDelay);
-	bool Round_Draw_internal(int winStatus, ScenarioEventEndRound event, float tmDelay);
+	bool Round_Cts(float tmDelay);
+	bool Round_Ts(float tmDelay);
+	bool Round_Draw(float tmDelay);
 
-	bool Hostage_Rescue_internal(int winStatus, ScenarioEventEndRound event, float tmDelay);
-	bool Hostage_NotRescued_internal(int winStatus, ScenarioEventEndRound event, float tmDelay);
+	bool Hostage_Rescue(float tmDelay);
+	bool Hostage_NotRescued(float tmDelay);
 
 	// Check various conditions to end the map.
 	bool CheckGameOver();
@@ -785,7 +783,7 @@ protected:
 typedef struct mapcycle_item_s
 {
 	struct mapcycle_item_s *next;
-	char mapname[32];
+	char mapname[MAX_MAPNAME_LENGHT];
 	int minplayers;
 	int maxplayers;
 	char rulebuffer[MAX_RULE_BUFFER];
@@ -886,14 +884,7 @@ void Broadcast(const char *sentence);
 char *GetTeam(int team);
 void EndRoundMessage(const char *sentence, int event);
 void DestroyMapCycle(mapcycle_t *cycle);
-
-char *MP_COM_GetToken();
-char *MP_COM_Parse(char *data);
-int MP_COM_TokenWaiting(char *buffer);
-
 int ReloadMapCycleFile(char *filename, mapcycle_t *cycle);
 int CountPlayers();
 void ExtractCommandString(char *s, char *szCommand);
 int GetMapCount();
-
-#endif // GAMERULES_H

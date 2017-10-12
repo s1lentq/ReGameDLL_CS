@@ -36,7 +36,7 @@
 
 #include "archtypes.h"
 #include "maintypes.h"
-#include "regamedll_common.h"
+#include "strtools.h"
 
 #ifdef _WIN32
 	#define WIN32_LEAN_AND_MEAN
@@ -61,15 +61,17 @@
 
 // Header file containing definition of globalvars_t and entvars_t
 typedef unsigned int func_t;
-typedef unsigned int string_t;				// from engine's pr_comp.h;
 typedef float vec_t;					// needed before including progdefs.h
 
 // Vector class
 #include "vector.h"
 // Defining it as a (bogus) struct helps enforce type-checking
 #define vec3_t Vector
-// Shared engine/DLL constants
 
+// QString class
+#include "qstring.h"
+
+// Shared engine/DLL constants
 #include "const.h"
 #include "edict.h"
 

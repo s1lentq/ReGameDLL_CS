@@ -39,7 +39,7 @@ int CFamas::GetItemInfo(ItemInfo *p)
 	p->pszName = STRING(pev->classname);
 	p->pszAmmo1 = "556Nato";
 	p->iMaxAmmo1 = MAX_AMMO_556NATO;
-	p->pszAmmo2 = NULL;
+	p->pszAmmo2 = nullptr;
 	p->iMaxAmmo2 = -1;
 	p->iMaxClip = FAMAS_MAX_CLIP;
 	p->iSlot = 0;
@@ -120,7 +120,7 @@ void CFamas::FamasFire(float flSpread, float flCycleTime, BOOL fUseAutoAim, BOOL
 	}
 
 	m_bDelayFire = true;
-	++m_iShotsFired;
+	m_iShotsFired++;
 
 	m_flAccuracy = (m_iShotsFired * m_iShotsFired * m_iShotsFired / 215) + 0.3f;
 
@@ -135,7 +135,7 @@ void CFamas::FamasFire(float flSpread, float flCycleTime, BOOL fUseAutoAim, BOOL
 			m_flNextPrimaryAttack = GetNextAttackDelay(0.2);
 		}
 
-		if (TheBots != NULL)
+		if (TheBots)
 		{
 			TheBots->OnEvent(EVENT_WEAPON_FIRED_ON_EMPTY, m_pPlayer);
 		}
@@ -143,7 +143,7 @@ void CFamas::FamasFire(float flSpread, float flCycleTime, BOOL fUseAutoAim, BOOL
 		return;
 	}
 
-	--m_iClip;
+	m_iClip--;
 	m_pPlayer->pev->effects |= EF_MUZZLEFLASH;
 	m_pPlayer->SetAnimation(PLAYER_ATTACK1);
 
@@ -171,7 +171,7 @@ void CFamas::FamasFire(float flSpread, float flCycleTime, BOOL fUseAutoAim, BOOL
 
 	if (!m_iClip && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
 	{
-		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
+		m_pPlayer->SetSuitUpdate("!HEV_AMO0", SUIT_SENTENCE, SUIT_REPEAT_OK);
 	}
 
 	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.1f;
@@ -195,7 +195,7 @@ void CFamas::FamasFire(float flSpread, float flCycleTime, BOOL fUseAutoAim, BOOL
 
 	if (bFireBurst)
 	{
-		++m_iFamasShotsFired;
+		m_iFamasShotsFired++;
 		m_fBurstSpread = flSpread;
 		m_flFamasShoot = gpGlobals->time + 0.05f;
 	}

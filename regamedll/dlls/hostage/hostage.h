@@ -26,11 +26,7 @@
 *
 */
 
-#ifndef HOSTAGE_H
-#define HOSTAGE_H
-#ifdef _WIN32
 #pragma once
-#endif
 
 #define MAX_NODES                   100
 #define MAX_HOSTAGES                12
@@ -298,5 +294,3 @@ inline bool AreImprovAllowed()
 
 void Hostage_RegisterCVars();
 void InstallHostageManager();
-
-#endif // HOSTAGE_H

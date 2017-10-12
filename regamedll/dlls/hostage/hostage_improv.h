@@ -26,11 +26,7 @@
 *
 */
 
-#ifndef HOSTAGE_IMPROV_H
-#define HOSTAGE_IMPROV_H
-#ifdef _WIN32
 #pragma once
-#endif
 
 #include "hostage/hostage.h"
 #include "hostage/hostage_states.h"
@@ -152,7 +148,7 @@ public:
 
 	bool IsAtHome() const;
 	bool CanSeeRescueZone() const;
-	CBaseEntity *GetFollowLeader() const { return m_followState.GetLeader(); }
+	CBasePlayer *GetFollowLeader() const { return m_followState.GetLeader(); }
 	CBasePlayer *GetClosestVisiblePlayer(int team);
 	float GetTimeSinceLastSawPlayer(int team);
 	float GetTimeSinceLastInjury();
@@ -261,7 +257,7 @@ private:
 	Vector m_jumpTarget;
 	CountdownTimer m_clearPathTimer;
 	bool m_traversingLadder;
-	EHANDLE m_visiblePlayer[MAX_CLIENTS];
+	EntityHandle<CBasePlayer> m_visiblePlayer[MAX_CLIENTS];
 	int m_visiblePlayerCount;
 	CountdownTimer m_visionTimer;
 };
@@ -445,6 +441,7 @@ inline void CHostageImprov::ApplyForce2(float_precision x, float_precision y)
 	m_vel.y += y;
 }
 #endif
+
 inline void CHostageImprov::ResetJump()
 {
 	if (m_hasJumpedIntoAir)
@@ -459,5 +456,3 @@ inline void CHostageImprov::ResetJump()
 		m_hasJumpedIntoAir = true;
 	}
 }
-
-#endif // HOSTAGE_IMPROV_H

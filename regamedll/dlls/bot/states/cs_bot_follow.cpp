@@ -75,7 +75,7 @@ void FollowState::ComputeLeaderMotionState(float leaderSpeed)
 void FollowState::OnUpdate(CCSBot *me)
 {
 	// if we lost our leader, give up
-	if (m_leader == NULL || !m_leader->IsAlive())
+	if (!m_leader || !m_leader->IsAlive())
 	{
 		me->Idle();
 		return;
@@ -159,7 +159,7 @@ void FollowState::OnUpdate(CCSBot *me)
 		if ((m_leader->pev->origin - me->pev->origin).IsLengthLessThan(nearLeaderRange))
 		{
 			const float hideRange = 250.0f;
-			if (me->TryToHide(NULL, -1.0f, hideRange, false, USE_NEAREST))
+			if (me->TryToHide(nullptr, -1.0f, hideRange, false, USE_NEAREST))
 			{
 				me->ResetStuckMonitor();
 				return;
@@ -203,14 +203,14 @@ void FollowState::OnUpdate(CCSBot *me)
 
 		if (cv_bot_debug.value > 0.0f)
 		{
-			for (int i = 0; i < collector.m_targetAreaCount; ++i)
+			for (int i = 0; i < collector.m_targetAreaCount; i++)
 				collector.m_targetArea[i]->Draw(255, 0, 0, 2);
 		}
 
 		// move to one of the collected areas
 		if (collector.m_targetAreaCount)
 		{
-			CNavArea *target = NULL;
+			CNavArea *target = nullptr;
 			Vector targetPos;
 
 			// if we are idle, pick a random area
@@ -229,7 +229,7 @@ void FollowState::OnUpdate(CCSBot *me)
 				float closeRangeSq = 9999999999.9f;
 				Vector close;
 
-				for (int a = 0; a < collector.m_targetAreaCount; ++a)
+				for (int a = 0; a < collector.m_targetAreaCount; a++)
 				{
 					area = collector.m_targetArea[a];
 					area->GetClosestPointOnArea(&me->pev->origin, &close);
@@ -244,8 +244,10 @@ void FollowState::OnUpdate(CCSBot *me)
 				}
 			}
 
-			if (me->ComputePath(target, NULL, FASTEST_ROUTE) == NULL)
+			if (!me->ComputePath(target, nullptr, FASTEST_ROUTE))
+			{
 				me->PrintIfWatched("Pathfind to leader failed.\n");
+			}
 
 			// throttle how often we repath
 			m_repathInterval.Start(0.5f);

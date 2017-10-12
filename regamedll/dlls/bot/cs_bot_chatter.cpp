@@ -6,8 +6,7 @@
 */
 #ifndef HOOK_GAMEDLL
 
-BotPhraseManager *TheBotPhrases = NULL;
-CBaseEntity *g_pSelectedZombieSpawn = NULL;
+BotPhraseManager *TheBotPhrases = nullptr;
 CountdownTimer BotChatterInterface::m_encourageTimer;
 IntervalTimer BotChatterInterface::m_radioSilenceInterval[ 2 ];
 
@@ -16,37 +15,32 @@ IntervalTimer BotChatterInterface::m_radioSilenceInterval[ 2 ];
 const Vector *GetRandomSpotAtPlace(Place place)
 {
 	int count = 0;
-	NavAreaList::iterator iter;
 	int which;
 
-	for (iter = TheNavAreaList.begin(); iter != TheNavAreaList.end(); ++iter)
+	for (auto area : TheNavAreaList)
 	{
-		CNavArea *area = (*iter);
-
 		if (area->GetPlace() == place)
-			++count;
+			count++;
 	}
 
 	if (count == 0)
-		return NULL;
+		return nullptr;
 
 	which = RANDOM_LONG(0, count - 1);
 
-	for (iter = TheNavAreaList.begin(); iter != TheNavAreaList.end(); ++iter)
+	for (auto area : TheNavAreaList)
 	{
-		CNavArea *area = (*iter);
-
 		if (area->GetPlace() == place && which == 0)
 			return area->GetCenter();
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 // Transmit meme to other bots
 void BotMeme::Transmit(CCSBot *sender) const
 {
-	for (int i = 1; i <= gpGlobals->maxClients; ++i)
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{
 		CBasePlayer *player = UTIL_PlayerByIndex(i);
 
@@ -235,7 +229,7 @@ void BotHostageBeingTakenMeme::Interpret(CCSBot *sender, CCSBot *receiver) const
 
 BotSpeakable::BotSpeakable()
 {
-	m_phrase = NULL;
+	m_phrase = nullptr;
 }
 
 BotSpeakable::~BotSpeakable()
@@ -243,13 +237,13 @@ BotSpeakable::~BotSpeakable()
 	if (m_phrase)
 	{
 		delete[] m_phrase;
-		m_phrase = NULL;
+		m_phrase = nullptr;
 	}
 }
 
 BotPhrase::BotPhrase(unsigned int id, bool isPlace)
 {
-	m_name = NULL;
+	m_name = nullptr;
 	m_id = id;
 	m_isPlace = isPlace;
 	m_radioEvent = EVENT_INVALID;
@@ -263,19 +257,20 @@ BotPhrase::BotPhrase(unsigned int id, bool isPlace)
 
 BotPhrase::~BotPhrase()
 {
-	for (size_t bank = 0; bank < m_voiceBank.size(); ++bank)
+	for (size_t bank = 0; bank < m_voiceBank.size(); bank++)
 	{
-		for (size_t speakable = 0; speakable < m_voiceBank[bank]->size(); ++speakable)
+		for (size_t speakable = 0; speakable < m_voiceBank[bank]->size(); speakable++)
 		{
 			delete (*m_voiceBank[bank])[speakable];
 		}
+
 		delete m_voiceBank[bank];
 	}
 
 	if (m_name)
 	{
 		delete[] m_name;
-		m_name = NULL;
+		m_name = nullptr;
 	}
 }
 
@@ -286,7 +281,7 @@ void BotPhrase::InitVoiceBank(int bankIndex)
 		m_count.push_back(0);
 		m_index.push_back(0);
 		m_voiceBank.push_back(new BotSpeakableVector);
-		++m_numVoiceBanks;
+		m_numVoiceBanks++;
 	}
 }
 
@@ -298,7 +293,7 @@ char *BotPhrase::GetSpeakable(int bankIndex, float *duration) const
 		if (duration)
 			*duration = 0.0f;
 
-		return NULL;
+		return nullptr;
 	}
 
 	// find phrase that meets the current criteria
@@ -338,18 +333,18 @@ char *BotPhrase::GetSpeakable(int bankIndex, float *duration) const
 			if (duration)
 				*duration = 0.0f;
 
-			return NULL;
+			return nullptr;
 		}
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 // Randomly shuffle the speakable order
 #ifndef HOOK_GAMEDLL
 void BotPhrase::Randomize()
 {
-	for (size_t i = 0; i < m_voiceBank.size(); ++i)
+	for (size_t i = 0; i < m_voiceBank.size(); i++)
 	{
 		std::random_shuffle(m_voiceBank[i]->begin(), m_voiceBank[i]->end());
 	}
@@ -358,7 +353,7 @@ void BotPhrase::Randomize()
 
 BotPhraseManager::BotPhraseManager()
 {
-	for (int i = 0; i < MAX_PLACES_PER_MAP; ++i)
+	for (int i = 0; i < MAX_PLACES_PER_MAP; i++)
 		m_placeStatementHistory[i].timer.Invalidate();
 
 	m_placeCount = 0;
@@ -375,18 +370,13 @@ void BotPhraseManager::OnRoundRestart()
 {
 	// effectively reset all interval timers
 	m_placeCount = 0;
-	BotPhraseList::const_iterator iter;
 
 	// shuffle all the speakables
-	for (iter = m_placeList.begin(); iter != m_placeList.end(); ++iter)
-	{
-		(*iter)->Randomize();
-	}
+	for (auto phrase : m_placeList)
+		phrase->Randomize();
 
-	for (iter = m_list.begin(); iter != m_list.end(); ++iter)
-	{
-		(*iter)->Randomize();
-	}
+	for (auto phrase : m_list)
+		phrase->Randomize();
 }
 
 // Initialize phrase system from database file
@@ -396,7 +386,7 @@ bool BotPhraseManager::Initialize(const char *filename, int bankIndex)
 	int phraseDataLength;
 	char *phraseDataFile = (char *)LOAD_FILE_FOR_ME((char *)filename, &phraseDataLength);
 
-	if (phraseDataFile == NULL)
+	if (!phraseDataFile)
 	{
 		if (AreBotsAllowed())
 		{
@@ -406,6 +396,7 @@ bool BotPhraseManager::Initialize(const char *filename, int bankIndex)
 		return false;
 	}
 
+	char *token;
 	char *phraseData = phraseDataFile;
 	unsigned int nextID = 1;
 
@@ -425,16 +416,15 @@ bool BotPhraseManager::Initialize(const char *filename, int bankIndex)
 	// Parse the BotChatter.db into BotPhrase collections
 	while (true)
 	{
-		phraseData = MP_COM_Parse(phraseData);
+		phraseData = SharedParse(phraseData);
 		if (!phraseData)
 			break;
 
-		char *token = MP_COM_GetToken();
-
+		token = SharedGetToken();
 		if (!Q_stricmp(token, "BaseDir"))
 		{
 			// get name of this output device
-			phraseData = MP_COM_Parse(phraseData);
+			phraseData = SharedParse(phraseData);
 			if (!phraseData)
 			{
 				CONSOLE_ECHO("Error parsing '%s' - expected identifier\n", filename);
@@ -442,7 +432,7 @@ bool BotPhraseManager::Initialize(const char *filename, int bankIndex)
 				return false;
 			}
 
-			char *token = MP_COM_GetToken();
+			token = SharedGetToken();
 			Q_strncpy(baseDir, token, RadioPathLen);
 			baseDir[RadioPathLen - 1] = '\0';
 		}
@@ -451,14 +441,14 @@ bool BotPhraseManager::Initialize(const char *filename, int bankIndex)
 			bool isPlace = (Q_stricmp(token, "Place") == 0);
 
 			// encountered a new phrase collection
-			BotPhrase *phrase = NULL;
+			BotPhrase *phrase = nullptr;
 			if (isDefault)
 			{
 				phrase = new BotPhrase(nextID++, isPlace);
 			}
 
 			// get name of this phrase
-			phraseData = MP_COM_Parse(phraseData);
+			phraseData = SharedParse(phraseData);
 			if (!phraseData)
 			{
 				CONSOLE_ECHO("Error parsing '%s' - expected identifier\n", filename);
@@ -466,25 +456,26 @@ bool BotPhraseManager::Initialize(const char *filename, int bankIndex)
 				return false;
 			}
 
+			token = SharedGetToken();
 			if (isDefault)
 			{
-				phrase->m_name = CloneString(MP_COM_GetToken());
+				phrase->m_name = CloneString(token);
 			}
 			// look up the existing phrase
 			else
 			{
 				if (isPlace)
 				{
-					phrase = const_cast<BotPhrase *>(GetPlace(MP_COM_GetToken()));
+					phrase = const_cast<BotPhrase *>(GetPlace(token));
 				}
 				else
 				{
-					phrase = const_cast<BotPhrase *>(GetPhrase(MP_COM_GetToken()));
+					phrase = const_cast<BotPhrase *>(GetPhrase(token));
 				}
 
 				if (!phrase)
 				{
-					CONSOLE_ECHO("Error parsing '%s' - phrase '%s' is invalid\n", filename, MP_COM_GetToken());
+					CONSOLE_ECHO("Error parsing '%s' - phrase '%s' is invalid\n", filename, token);
 					FREE_FILE(phraseDataFile);
 					return false;
 				}
@@ -501,7 +492,7 @@ bool BotPhraseManager::Initialize(const char *filename, int bankIndex)
 			while (true)
 			{
 				// get next token
-				phraseData = MP_COM_Parse(phraseData);
+				phraseData = SharedParse(phraseData);
 				if (!phraseData)
 				{
 					CONSOLE_ECHO("Error parsing %s - expected 'End'\n", filename);
@@ -509,12 +500,12 @@ bool BotPhraseManager::Initialize(const char *filename, int bankIndex)
 					return false;
 				}
 
-				token = MP_COM_GetToken();
+				token = SharedGetToken();
 
 				// check for Place criteria
 				if (!Q_stricmp(token, "Place"))
 				{
-					phraseData = MP_COM_Parse(phraseData);
+					phraseData = SharedParse(phraseData);
 					if (!phraseData)
 					{
 						CONSOLE_ECHO("Error parsing %s - expected Place name\n", filename);
@@ -522,7 +513,7 @@ bool BotPhraseManager::Initialize(const char *filename, int bankIndex)
 						return false;
 					}
 
-					token = MP_COM_GetToken();
+					token = SharedGetToken();
 
 					// update place criteria for subsequent speak lines
 					// NOTE: this assumes places must be first in the chatter database
@@ -541,7 +532,7 @@ bool BotPhraseManager::Initialize(const char *filename, int bankIndex)
 				// check for Count criteria
 				if (!Q_stricmp(token, "Count"))
 				{
-					phraseData = MP_COM_Parse(phraseData);
+					phraseData = SharedParse(phraseData);
 					if (!phraseData)
 					{
 						CONSOLE_ECHO("Error parsing %s - expected Count value\n", filename);
@@ -549,7 +540,7 @@ bool BotPhraseManager::Initialize(const char *filename, int bankIndex)
 						return false;
 					}
 
-					token = MP_COM_GetToken();
+					token = SharedGetToken();
 
 					// update count criteria for subsequent speak lines
 					if (!Q_stricmp(token, "Many"))
@@ -563,7 +554,7 @@ bool BotPhraseManager::Initialize(const char *filename, int bankIndex)
 				// check for radio equivalent
 				if (!Q_stricmp(token, "Radio"))
 				{
-					phraseData = MP_COM_Parse(phraseData);
+					phraseData = SharedParse(phraseData);
 					if (!phraseData)
 					{
 						CONSOLE_ECHO("Error parsing %s - expected radio event\n", filename);
@@ -571,7 +562,7 @@ bool BotPhraseManager::Initialize(const char *filename, int bankIndex)
 						return false;
 					}
 
-					token = MP_COM_GetToken();
+					token = SharedGetToken();
 					GameEventType event = NameToGameEvent(token);
 					if (event <= EVENT_START_RADIO_1 || event >= EVENT_END_RADIO)
 					{
@@ -598,7 +589,7 @@ bool BotPhraseManager::Initialize(const char *filename, int bankIndex)
 #ifdef REGAMEDLL_ADD
 				Q_snprintf(filePath, sizeof(filePath), "%s%s%s", soundDir, baseDir, token);
 
-				if (Q_access(filePath, 0) != 0)
+				if (_access(filePath, 0) != 0)
 					continue;
 #endif
 
@@ -629,7 +620,7 @@ bool BotPhraseManager::Initialize(const char *filename, int bankIndex)
 				BotSpeakableVector *speakables = phrase->m_voiceBank[ bankIndex ];
 				speakables->push_back(speak);
 
-				++phrase->m_count[ bankIndex ];
+				phrase->m_count[ bankIndex ]++;
 			}
 
 			if (isDefault)
@@ -652,12 +643,11 @@ bool BotPhraseManager::Initialize(const char *filename, int bankIndex)
 
 BotPhraseManager::~BotPhraseManager()
 {
-	BotPhraseList::iterator iter;
-	for (iter = m_list.begin(); iter != m_list.end(); ++iter)
-		delete (*iter);
+	for (auto phrase : m_list)
+		delete phrase;
 
-	for (iter = m_placeList.begin(); iter != m_placeList.end(); ++iter)
-		delete (*iter);
+	for (auto phrase : m_placeList)
+		delete phrase;
 
 	m_list.clear();
 	m_placeList.clear();
@@ -665,125 +655,107 @@ BotPhraseManager::~BotPhraseManager()
 
 Place BotPhraseManager::NameToID(const char *name) const
 {
-	for (BotPhraseList::const_iterator iter = m_placeList.begin(); iter != m_placeList.end(); ++iter)
+	for (auto phrase : m_placeList)
 	{
-		const BotPhrase *phrase = (*iter);
-
 		if (!Q_stricmp(phrase->m_name, name))
 			return phrase->m_id;
 	}
 
-	for (BotPhraseList::const_iterator iter = m_list.begin(); iter != m_list.end(); ++iter)
+	for (auto phrase : m_list)
 	{
-		const BotPhrase *phrase = (*iter);
-
 		if (!Q_stricmp(phrase->m_name, name))
 			return phrase->m_id;
 	}
 
-	return 0;
+	return UNDEFINED_PLACE;
 }
 
 const char *BotPhraseManager::IDToName(Place id) const
 {
-	for (BotPhraseList::const_iterator iter = m_placeList.begin(); iter != m_placeList.end(); ++iter)
+	for (auto phrase : m_placeList)
 	{
-		const BotPhrase *phrase = (*iter);
-
 		if (phrase->m_id == id)
 			return phrase->m_name;
 	}
 
-	for (BotPhraseList::const_iterator iter = m_list.begin(); iter != m_list.end(); ++iter)
+	for (auto phrase : m_list)
 	{
-		const BotPhrase *phrase = (*iter);
-
 		if (phrase->m_id == id)
 			return phrase->m_name;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 // Given a name, return the associated phrase collection
 const BotPhrase *BotPhraseManager::GetPhrase(const char *name) const
 {
-	for (BotPhraseList::const_iterator iter = m_list.begin(); iter != m_list.end(); ++iter)
+	for (auto phrase : m_list)
 	{
-		const BotPhrase *phrase = (*iter);
-
 		if (!Q_stricmp(phrase->m_name, name))
 			return phrase;
 	}
 
 	//CONSOLE_ECHO("GetPhrase: ERROR - Invalid phrase '%s'\n", name);
-	return NULL;
+	return nullptr;
 }
 
-/*
 // Given an id, return the associated phrase collection
 // TODO: Store phrases in a vector to make this fast
 const BotPhrase *BotPhraseManager::GetPhrase(unsigned int id) const
 {
-	for (BotPhraseList::const_iterator iter = m_list.begin(); iter != m_list.end(); ++iter)
+	for (auto phrase : m_list)
 	{
-		const BotPhrase *phrase = (*iter);
-
 		if (phrase->m_id == id)
 			return phrase;
 	}
 
 	CONSOLE_ECHO("GetPhrase: ERROR - Invalid phrase id #%d\n", id);
-	return NULL;
+	return nullptr;
 }
-*/
 
 // Given a name, return the associated Place phrase collection
 const BotPhrase *BotPhraseManager::GetPlace(const char *name) const
 {
-	if (name == NULL)
-		return NULL;
+	if (!name)
+		return nullptr;
 
-	for (BotPhraseList::const_iterator iter = m_placeList.begin(); iter != m_placeList.end(); ++iter)
+	for (auto phrase : m_placeList)
 	{
-		const BotPhrase *phrase = (*iter);
-
 		if (!Q_stricmp(phrase->m_name, name))
 			return phrase;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 // Given a place, return the associated Place phrase collection
 const BotPhrase *BotPhraseManager::GetPlace(PlaceCriteria place) const
 {
 	if (place == UNDEFINED_PLACE)
-		return NULL;
+		return nullptr;
 
-	for (BotPhraseList::const_iterator iter = m_placeList.begin(); iter != m_placeList.end(); ++iter)
+	for (auto phrase : m_placeList)
 	{
-		const BotPhrase *phrase = (*iter);
-
 		if (phrase->m_id == place)
 			return phrase;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 BotStatement::BotStatement(BotChatterInterface *chatter, BotStatementType type, float expireDuration)
 {
 	m_chatter = chatter;
 
-	m_prev = m_next = NULL;
+	m_prev = m_next = nullptr;
 	m_timestamp = gpGlobals->time;
 	m_speakTimestamp = 0.0f;
 
 	m_type = type;
 	m_subject = UNDEFINED_SUBJECT;
 	m_place = UNDEFINED_PLACE;
-	m_meme = NULL;
+	m_meme = nullptr;
 
 	m_startTime = gpGlobals->time;
 	m_expireTime = gpGlobals->time + expireDuration;
@@ -801,7 +773,7 @@ BotStatement::~BotStatement()
 	if (m_meme)
 	{
 		delete m_meme;
-		m_meme = NULL;
+		m_meme = nullptr;
 	}
 }
 
@@ -827,7 +799,7 @@ void BotStatement::AddCondition(ConditionType condition)
 bool BotStatement::IsImportant() const
 {
 	// if a statement contains any important phrases, it is important
-	for (int i = 0; i < m_count; ++i)
+	for (int i = 0; i < m_count; i++)
 	{
 		if (m_statement[i].isPhrase && m_statement[i].phrase->IsImportant())
 			return true;
@@ -843,7 +815,7 @@ bool BotStatement::IsImportant() const
 // Verify all attached conditions
 bool BotStatement::IsValid() const
 {
-	for (int i = 0; i < m_conditionCount; ++i)
+	for (int i = 0; i < m_conditionCount; i++)
 	{
 		switch (m_condition[i])
 		{
@@ -961,7 +933,7 @@ void BotStatement::Convert(const BotStatement *say)
 
 void BotStatement::AppendPhrase(const BotPhrase *phrase)
 {
-	if (phrase == NULL)
+	if (!phrase)
 		return;
 
 	if (m_count < MAX_BOT_PHRASES)
@@ -1025,7 +997,7 @@ bool BotStatement::Update()
 
 		// start next part of statement
 		float duration = 0.0f;
-		const BotPhrase *phrase = NULL;
+		const BotPhrase *phrase = nullptr;
 
 		if (m_statement[ m_index ].isPhrase)
 		{
@@ -1071,7 +1043,7 @@ bool BotStatement::Update()
 					// dont report if there are lots of enemies left
 					if (enemyCount < 0 || enemyCount > 3)
 					{
-						phrase = NULL;
+						phrase = nullptr;
 					}
 					else
 					{
@@ -1144,7 +1116,7 @@ bool BotStatement::Update()
 
 				if (sayIt)
 				{
-					if (filename == NULL)
+					if (!filename)
 					{
 						GameEventType radioEvent = phrase->GetRadioEquivalent();
 						if (radioEvent == EVENT_INVALID)
@@ -1161,7 +1133,7 @@ bool BotStatement::Update()
 					}
 					else
 					{
-						me->Radio(filename, NULL, me->GetProfile()->GetVoicePitch(), false);
+						me->Radio(filename, nullptr, me->GetProfile()->GetVoicePitch(), false);
 						me->GetChatter()->ResetRadioSilenceDuration();
 						me->StartVoiceFeedback(duration + 1.0f);
 					}
@@ -1190,7 +1162,7 @@ Place BotStatement::GetPlace() const
 		return m_place;
 
 	// look for an implicit place in our statement
-	for (int i = 0; i < m_count; ++i)
+	for (int i = 0; i < m_count; i++)
 	{
 		if (m_statement[i].isPhrase && m_statement[i].phrase->IsPlace())
 			return m_statement[i].phrase->GetID();
@@ -1202,7 +1174,7 @@ Place BotStatement::GetPlace() const
 // Return true if this statement has an associated count
 bool BotStatement::HasCount() const
 {
-	for (int i = 0; i < m_count; ++i)
+	for (int i = 0; i < m_count; i++)
 	{
 		if (!m_statement[i].isPhrase && m_statement[i].context == CURRENT_ENEMY_COUNT)
 			return true;
@@ -1218,7 +1190,7 @@ static int nextPitch = P_HI;
 BotChatterInterface::BotChatterInterface(CCSBot *me)
 {
 	m_me = me;
-	m_statementList = NULL;
+	m_statementList = nullptr;
 
 	switch (nextPitch)
 	{
@@ -1325,10 +1297,10 @@ void BotChatterInterface::AddStatement(BotStatement *statement, bool mustAdd)
 	// keep statements in order of start time
 
 	// check list is empty
-	if (m_statementList == NULL)
+	if (!m_statementList)
 	{
-		statement->m_next = NULL;
-		statement->m_prev = NULL;
+		statement->m_next = nullptr;
+		statement->m_prev = nullptr;
 		m_statementList = statement;
 		return;
 	}
@@ -1336,7 +1308,7 @@ void BotChatterInterface::AddStatement(BotStatement *statement, bool mustAdd)
 	// list has at least one statement on it
 
 	// insert into list in order
-	BotStatement *earlier = NULL;
+	BotStatement *earlier = nullptr;
 	for (s = m_statementList; s; s = s->m_next)
 	{
 		if (s->GetStartTime() > statement->GetStartTime())
@@ -1359,7 +1331,7 @@ void BotChatterInterface::AddStatement(BotStatement *statement, bool mustAdd)
 	else
 	{
 		// insert at head
-		statement->m_prev = NULL;
+		statement->m_prev = nullptr;
 		statement->m_next = m_statementList;
 		m_statementList->m_prev = statement;
 		m_statementList = statement;
@@ -1430,7 +1402,7 @@ void BotChatterInterface::OnDeath()
 
 			if (pain)
 			{
-				m_me->Radio(pain->GetSpeakable(m_me->GetProfile()->GetVoiceBank()), NULL, m_me->GetProfile()->GetVoicePitch());
+				m_me->Radio(pain->GetSpeakable(m_me->GetProfile()->GetVoiceBank()), nullptr, m_me->GetProfile()->GetVoicePitch());
 				m_me->GetChatter()->ResetRadioSilenceDuration();
 			}
 		}
@@ -1476,7 +1448,7 @@ void BotChatterInterface::Update()
 	// Remove redundant statements (ie: our teammates already said them)
 	const BotStatement *friendSay = GetActiveStatement();
 	if (friendSay && friendSay->GetOwner() == m_me)
-		friendSay = NULL;
+		friendSay = nullptr;
 
 	BotStatement *nextSay;
 	for (say = m_statementList; say; say = nextSay)
@@ -1526,7 +1498,7 @@ BotStatement *BotChatterInterface::GetActiveStatement()
 	BotStatement *earliest = nullptr;
 	float earlyTime = 999999999.9f;
 
-	for (int i = 1; i <= gpGlobals->maxClients; ++i)
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{
 		CBasePlayer *player = UTIL_PlayerByIndex(i);
 
@@ -2027,7 +1999,7 @@ void BotChatterInterface::RequestBombLocation()
 void BotChatterInterface::BombsiteClear(int zoneIndex)
 {
 	const CCSBotManager::Zone *zone = TheCSBots()->GetZone(zoneIndex);
-	if (zone == NULL)
+	if (!zone)
 		return;
 
 	BotStatement *say = new BotStatement(this, REPORT_INFORMATION, 10.0f);
@@ -2041,7 +2013,7 @@ void BotChatterInterface::BombsiteClear(int zoneIndex)
 void BotChatterInterface::FoundPlantedBomb(int zoneIndex)
 {
 	const CCSBotManager::Zone *zone = TheCSBots()->GetZone(zoneIndex);
-	if (zone == NULL)
+	if (!zone)
 		return;
 
 	BotStatement *say = new BotStatement(this, REPORT_INFORMATION, 3.0f);

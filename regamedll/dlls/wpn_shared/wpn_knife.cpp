@@ -37,9 +37,9 @@ void CKnife::Precache()
 int CKnife::GetItemInfo(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
-	p->pszAmmo1 = NULL;
+	p->pszAmmo1 = nullptr;
 	p->iMaxAmmo1 = -1;
-	p->pszAmmo2 = NULL;
+	p->pszAmmo2 = nullptr;
 	p->iMaxAmmo2 = -1;
 	p->iMaxClip = WEAPON_NOCLIP;
 	p->iSlot = 2;
@@ -114,11 +114,11 @@ void FindHullIntersection(const Vector &vecSrc, TraceResult &tr, float *mins, fl
 		return;
 	}
 
-	for (i = 0; i < 2; ++i)
+	for (i = 0; i < 2; i++)
 	{
-		for (j = 0; j < 2; ++j)
+		for (j = 0; j < 2; j++)
 		{
-			for (k = 0; k < 2; ++k)
+			for (k = 0; k < 2; k++)
 			{
 				vecEnd.x = vecHullEnd.x + minmaxs[i][0];
 				vecEnd.y = vecHullEnd.y + minmaxs[j][1];
@@ -361,7 +361,7 @@ int CKnife::Swing(int fFirst)
 		ApplyMultiDamage(m_pPlayer->pev, m_pPlayer->pev);
 
 #ifndef REGAMEDLL_FIXES
-		if (pEntity != NULL)	// -V595
+		if (pEntity)	// -V595
 #endif
 		{
 			if (pEntity->Classify() != CLASS_NONE && pEntity->Classify() != CLASS_MACHINE)
@@ -494,7 +494,7 @@ int CKnife::Stab(int fFirst)
 
 		float flDamage = 65.0f;
 
-		if (pEntity != NULL && pEntity->IsPlayer())
+		if (pEntity && pEntity->IsPlayer())
 		{
 			Vector2D vec2LOS;
 			float flDot;
@@ -521,7 +521,7 @@ int CKnife::Stab(int fFirst)
 		ApplyMultiDamage(m_pPlayer->pev, m_pPlayer->pev);
 
 #ifndef REGAMEDLL_FIXES
-		if (pEntity != NULL)	// -V595
+		if (pEntity)	// -V595
 #endif
 		{
 			if (pEntity->Classify() != CLASS_NONE && pEntity->Classify() != CLASS_MACHINE)

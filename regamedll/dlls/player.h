@@ -26,121 +26,119 @@
 *
 */
 
-#ifndef PLAYER_H
-#define PLAYER_H
-#ifdef _WIN32
 #pragma once
-#endif
 
+#include "weapons.h"
 #include "pm_materials.h"
 #include "hintmessage.h"
 #include "unisignals.h"
-#include "weapons.h"
 
-#ifdef REGAMEDLL_ADD
-#define MIN_BUY_TIME			0
+#define SOUND_FLASHLIGHT_ON  "items/flashlight1.wav"
+#define SOUND_FLASHLIGHT_OFF "items/flashlight1.wav"
+
+#ifdef REGAMEDLL_FIXES
+const int MIN_BUY_TIME = 0;
 #else
-#define MIN_BUY_TIME			15	// the minimum threshold values for cvar mp_buytime 15 sec's
+const int MIN_BUY_TIME = 15; // the minimum threshold values for cvar mp_buytime 15 sec's
 #endif
 
-#define MAX_BUFFER_MENU			175
-#define MAX_BUFFER_MENU_BRIEFING	50
+const int MAX_PLAYER_NAME_LENGTH    = 32;
+const int MAX_AUTOBUY_LENGTH        = 256;
+const int MAX_REBUY_LENGTH          = 256;
 
-#define MAX_PLAYER_NAME_LENGTH		32
-#define MAX_AUTOBUY_LENGTH		256
-#define MAX_REBUY_LENGTH		256
+const int MAX_RECENT_PATH           = 20;
+const int MAX_HOSTAGE_ICON          = 4;	// the maximum number of icons of the hostages in the HUD
 
-#define MAX_RECENT_PATH			20
-#define MAX_HOSTAGE_ICON		4	// the maximum number of icons of the hostages in the HUD
+const int MAX_SUIT_NOREPEAT         = 32;
+const int MAX_SUIT_PLAYLIST         = 4;	// max of 4 suit sentences queued up at any time
 
-#define SUITUPDATETIME			3.5
-#define SUITFIRSTUPDATETIME		0.1
+const int MAX_BUFFER_MENU           = 175;
+const int MAX_BUFFER_MENU_BRIEFING  = 50;
 
-#define PLAYER_FATAL_FALL_SPEED		1100.0f
-#define PLAYER_MAX_SAFE_FALL_SPEED	500.0f
-#define PLAYER_USE_RADIUS		64.0f
+const float SUIT_UPDATE_TIME        = 3.5f;
+const float SUIT_FIRST_UPDATE_TIME  = 0.1f;
 
-#define ARMOR_RATIO			0.5	// Armor Takes 50% of the damage
-#define ARMOR_BONUS			0.5	// Each Point of Armor is work 1/x points of health
+const float MAX_PLAYER_FATAL_FALL_SPEED = 1100.0f;
+const float MAX_PLAYER_SAFE_FALL_SPEED  = 500.0f;
+const float MAX_PLAYER_USE_RADIUS       = 64.0f;
 
-#define FLASH_DRAIN_TIME		1.2	// 100 units/3 minutes
-#define FLASH_CHARGE_TIME		0.2	// 100 units/20 seconds  (seconds per unit)
+const float ARMOR_RATIO = 0.5f;			// Armor Takes 50% of the damage
+const float ARMOR_BONUS = 0.5f;			// Each Point of Armor is work 1/x points of health
+
+const float FLASH_DRAIN_TIME = 1.2f;	// 100 units/3 minutes
+const float FLASH_CHARGE_TIME = 0.2f;	// 100 units/20 seconds (seconds per unit)
 
 // damage per unit per second.
-#define DAMAGE_FOR_FALL_SPEED		100.0f / (PLAYER_FATAL_FALL_SPEED - PLAYER_MAX_SAFE_FALL_SPEED)
-#define PLAYER_MIN_BOUNCE_SPEED		350.0f
+const float DAMAGE_FOR_FALL_SPEED   = 100.0f / (MAX_PLAYER_FATAL_FALL_SPEED - MAX_PLAYER_SAFE_FALL_SPEED);
+const float PLAYER_MIN_BOUNCE_SPEED = 350.0f;
 
 // won't punch player's screen/make scrape noise unless player falling at least this fast.
-#define PLAYER_FALL_PUNCH_THRESHHOLD	250.0f
+const float PLAYER_FALL_PUNCH_THRESHHOLD = 250.0f;
 
 // Money blinks few of times on the freeze period
 // NOTE: It works for CZ
-#define MONEY_BLINK_AMOUNT		30
+const int MONEY_BLINK_AMOUNT = 30;
+
+// Player time based damage
+#define AIRTIME                 12		// lung full of air lasts this many seconds
+#define PARALYZE_DURATION       2		// number of 2 second intervals to take damage
+#define PARALYZE_DAMAGE         1.0f	// damage to take each 2 second interval
+
+#define NERVEGAS_DURATION       2
+#define NERVEGAS_DAMAGE         5.0f
+
+#define POISON_DURATION         5
+#define POISON_DAMAGE           2.0f
+
+#define RADIATION_DURATION      2
+#define RADIATION_DAMAGE        1.0f
+
+#define ACID_DURATION           2
+#define ACID_DAMAGE             5.0f
+
+#define SLOWBURN_DURATION       2
+#define SLOWBURN_DAMAGE         1.0f
+
+#define SLOWFREEZE_DURATION     2
+#define SLOWFREEZE_DAMAGE       1.0f
 
 // Player physics flags bits
 // CBasePlayer::m_afPhysicsFlags
-#define PFLAG_ONLADDER			(1<<0)
-#define PFLAG_ONSWING			(1<<0)
-#define PFLAG_ONTRAIN			(1<<1)
-#define PFLAG_ONBARNACLE		(1<<2)
-#define PFLAG_DUCKING			(1<<3)	// In the process of ducking, but totally squatted yet
-#define PFLAG_USING			(1<<4)	// Using a continuous entity
-#define PFLAG_OBSERVER			(1<<5)	// player is locked in stationary cam mode. Spectators can move, observers can't.
+#define PFLAG_ONLADDER          BIT(0)
+#define PFLAG_ONSWING           BIT(0)
+#define PFLAG_ONTRAIN           BIT(1)
+#define PFLAG_ONBARNACLE        BIT(2)
+#define PFLAG_DUCKING           BIT(3) // In the process of ducking, but not totally squatted yet
+#define PFLAG_USING             BIT(4) // Using a continuous entity
+#define PFLAG_OBSERVER          BIT(5) // Player is locked in stationary cam mode. Spectators can move, observers can't.
 
-#define TRAIN_OFF			0x00
-#define TRAIN_NEUTRAL			0x01
-#define TRAIN_SLOW			0x02
-#define TRAIN_MEDIUM			0x03
-#define TRAIN_FAST			0x04
-#define TRAIN_BACK			0x05
+#define TRAIN_OFF               0x00
+#define TRAIN_NEUTRAL           0x01
+#define TRAIN_SLOW              0x02
+#define TRAIN_MEDIUM            0x03
+#define TRAIN_FAST              0x04
+#define TRAIN_BACK              0x05
 
-#define TRAIN_ACTIVE			0x80
-#define TRAIN_NEW			0xc0
+#define TRAIN_ACTIVE            0x80
+#define TRAIN_NEW               0xc0
 
-#define SIGNAL_BUY			(1<<0)
-#define SIGNAL_BOMB			(1<<1)
-#define SIGNAL_RESCUE			(1<<2)
-#define SIGNAL_ESCAPE			(1<<3)
-#define SIGNAL_VIPSAFETY		(1<<4)
+const bool SUIT_GROUP           = true;
+const bool SUIT_SENTENCE        = false;
 
-#define IGNOREMSG_NONE			0
-#define IGNOREMSG_ENEMY			1
-#define IGNOREMSG_TEAM			2
+const int  SUIT_REPEAT_OK       = 0;
+const int  SUIT_NEXT_IN_30SEC	= 30;
+const int  SUIT_NEXT_IN_1MIN    = 60;
+const int  SUIT_NEXT_IN_5MIN    = 300;
+const int  SUIT_NEXT_IN_10MIN   = 600;
+const int  SUIT_NEXT_IN_30MIN   = 1800;
+const int  SUIT_NEXT_IN_1HOUR   = 3600;
 
-// max of 4 suit sentences queued up at any time
-#define CSUITPLAYLIST			4
+const int MAX_TEAM_NAME_LENGTH  = 16;
 
-#define SUIT_GROUP			TRUE
-#define SUIT_SENTENCE			FALSE
-
-#define SUIT_REPEAT_OK			0
-#define SUIT_NEXT_IN_30SEC		30
-#define SUIT_NEXT_IN_1MIN		60
-#define SUIT_NEXT_IN_5MIN		300
-#define SUIT_NEXT_IN_10MIN		600
-#define SUIT_NEXT_IN_30MIN		1800
-#define SUIT_NEXT_IN_1HOUR		3600
-
-#define TEAM_NAME_LENGTH		16
-
-#define MAX_ID_RANGE			2048.0f
-#define MAX_SPECTATOR_ID_RANGE		8192.0f
-#define SBAR_STRING_SIZE		128
-
-#define SBAR_TARGETTYPE_TEAMMATE	1
-#define SBAR_TARGETTYPE_ENEMY		2
-#define SBAR_TARGETTYPE_HOSTAGE		3
-
-#define CHAT_INTERVAL			1.0f
-#define CSUITNOREPEAT			32
-
-#define AUTOAIM_2DEGREES		0.0348994967025
-#define AUTOAIM_5DEGREES		0.08715574274766
-#define AUTOAIM_8DEGREES		0.1391731009601
-#define AUTOAIM_10DEGREES		0.1736481776669
-
-#define SOUND_FLASHLIGHT_ON		"items/flashlight1.wav"
-#define SOUND_FLASHLIGHT_OFF		"items/flashlight1.wav"
+const auto AUTOAIM_2DEGREES     = 0.0348994967025;
+const auto AUTOAIM_5DEGREES     = 0.08715574274766;
+const auto AUTOAIM_8DEGREES     = 0.1391731009601;
+const auto AUTOAIM_10DEGREES    = 0.1736481776669;
 
 // custom enum
 enum RewardType
@@ -244,6 +242,13 @@ enum TrackCommands
 	COMMANDS_TO_TRACK,
 };
 
+enum IgnoreChatMsg : int
+{
+	IGNOREMSG_NONE,  // Nothing to do
+	IGNOREMSG_ENEMY, // To ignore any chat messages from the enemy
+	IGNOREMSG_TEAM   // Same as IGNOREMSG_ENEMY but ignore teammates
+};
+
 struct RebuyStruct
 {
 	int m_primaryWeapon;
@@ -268,6 +273,14 @@ enum ThrowDirection
 	THROW_GRENADE,
 	THROW_HITVEL_MINUS_AIRVEL
 };
+
+const float MAX_ID_RANGE            = 2048.0f;
+const float MAX_SPEC_ID_RANGE       = 8192.0f;
+const int   MAX_SBAR_STRING         = 128;
+
+const int SBAR_TARGETTYPE_TEAMMATE  = 1;
+const int SBAR_TARGETTYPE_ENEMY     = 2;
+const int SBAR_TARGETTYPE_HOSTAGE   = 3;
 
 enum sbar_data
 {
@@ -391,8 +404,8 @@ public:
 	void ImpulseCommands_OrigFunc();
 	void RoundRespawn_OrigFunc();
 	void Blind_OrigFunc(float flUntilTime, float flHoldTime, float flFadeTime, int iAlpha);
-	CBasePlayer *Observer_IsValidTarget_OrigFunc(int iPlayerIndex, bool bSameTeam);
-	void Radio_OrigFunc(const char *msg_id, const char *msg_verbose = NULL, short pitch = 100, bool showIcon = true);
+	EXT_FUNC CBasePlayer *Observer_IsValidTarget_OrigFunc(int iPlayerIndex, bool bSameTeam);
+	void Radio_OrigFunc(const char *msg_id, const char *msg_verbose = nullptr, short pitch = 100, bool showIcon = true);
 	void AddAccount_OrigFunc(int amount, RewardType type = RT_NONE, bool bTrackChange = true);
 	void Disappear_OrigFunc();
 	void MakeVIP_OrigFunc();
@@ -400,9 +413,9 @@ public:
 	bool SetClientUserInfoName_OrigFunc(char *infobuffer, char *szNewName);
 	void SetAnimation_OrigFunc(PLAYER_ANIM playerAnim);
 	void StartObserver_OrigFunc(Vector &vecPosition, Vector &vecViewAngle);
-	void DropPlayerItem_OrigFunc(const char *pszItemName);
+	CBaseEntity *DropPlayerItem_OrigFunc(const char *pszItemName);
 	CBaseEntity *GiveNamedItem_OrigFunc(const char *pszName);
-	void DropShield_OrigFunc(bool bDeploy = true);
+	CBaseEntity *DropShield_OrigFunc(bool bDeploy = true);
 	void GiveShield_OrigFunc(bool bDeploy = true);
 	bool HasRestrictItem_OrigFunc(ItemID item, ItemRestType type);
 	void OnSpawnEquip_OrigFunc(bool addDefault = true, bool equipGame = true);
@@ -419,7 +432,7 @@ public:
 	static CBasePlayer *Instance(int offset) { return Instance(ENT(offset)); }
 
 	void SpawnClientSideCorpse();
-	void Observer_FindNextPlayer(bool bReverse, const char *name = NULL);
+	void Observer_FindNextPlayer(bool bReverse, const char *name = nullptr);
 	CBasePlayer *Observer_IsValidTarget(int iPlayerIndex, bool bSameTeam);
 	void Disconnect();
 	void Observer_Think();
@@ -429,7 +442,7 @@ public:
 	void Observer_CheckProperties();
 	int IsObserver() { return pev->iuser1; }
 	void PlantC4();
-	void Radio(const char *msg_id, const char *msg_verbose = NULL, short pitch = 100, bool showIcon = true);
+	void Radio(const char *msg_id, const char *msg_verbose = nullptr, short pitch = 100, bool showIcon = true);
 	CBasePlayer *GetNextRadioRecipient(CBasePlayer *pStartPlayer);
 	void SmartRadio();
 	void ThrowWeapon(char *pszItemName);
@@ -444,7 +457,7 @@ public:
 	BOOL IsBombGuy();
 	bool IsLookingAtPosition(Vector *pos, float angleTolerance = 20.0f);
 	void Reset();
-	void SetScoreboardAttributes(CBasePlayer *destination = NULL);
+	void SetScoreboardAttributes(CBasePlayer *destination = nullptr);
 	void RenewItems();
 	void PackDeadPlayerItems();
 	void GiveDefaultItems();
@@ -482,7 +495,7 @@ public:
 	void StartDeathCam();
 	void StartObserver(Vector &vecPosition, Vector &vecViewAngle);
 	void HandleSignals();
-	void DropPlayerItem(const char *pszItemName);
+	CBaseEntity *DropPlayerItem(const char *pszItemName);
 	bool HasPlayerItem(CBasePlayerItem *pCheckItem);
 	bool HasNamedPlayerItem(const char *pszItemName);
 	bool HasWeapons();
@@ -509,7 +522,7 @@ public:
 	void ResetMenu();
 	void SyncRoundTimer();
 	void CheckSuitUpdate();
-	void SetSuitUpdate(char *name = NULL, int fgroup = 0, int iNoRepeatTime = 0);
+	void SetSuitUpdate(char *name = nullptr, bool group = SUIT_SENTENCE, int iNoRepeatTime = SUIT_REPEAT_OK);
 	void UpdateGeigerCounter();
 	void CheckTimeBasedDamage();
 	void BarnacleVictimBitten(entvars_t *pevBarnacle);
@@ -540,7 +553,7 @@ public:
 	bool HasShield();
 	bool IsProtectedByShield() { return HasShield() && m_bShieldDrawn; }
 	void RemoveShield();
-	void DropShield(bool bDeploy = true);
+	CBaseEntity *DropShield(bool bDeploy = true);
 	void GiveShield(bool bDeploy = true);
 	bool IsHittingShield(Vector &vecDirection, TraceResult *ptr);
 	bool SelectSpawnSpot(const char *pEntClassName, CBaseEntity* &pSpot);
@@ -552,7 +565,7 @@ public:
 	void ClearAutoBuyData();
 	void AddAutoBuyData(const char *str);
 	void AutoBuy();
-	void ClientCommand(const char *cmd, const char *arg1 = NULL, const char *arg2 = NULL, const char *arg3 = NULL);
+	void ClientCommand(const char *cmd, const char *arg1 = nullptr, const char *arg2 = nullptr, const char *arg3 = nullptr);
 	void PrioritizeAutoBuyString(char *autobuyString, const char *priorityString);
 	const char *PickPrimaryCareerTaskWeapon();
 	const char *PickSecondaryCareerTaskWeapon();
@@ -597,34 +610,60 @@ public:
 	CBasePlayerItem *GetItemById(WeaponIdType weaponID);
 
 	// templates
-	template<typename Functor>
-	CBasePlayerItem *ForEachItem(int slot, const Functor &func)
+	template<typename T = CBasePlayerItem, typename Functor>
+	T *ForEachItem(int slot, const Functor &func) const
 	{
 		auto item = m_rgpPlayerItems[ slot ];
 		while (item)
 		{
-			if (func(item))
-				return item;
+			if (func(static_cast<T *>(item)))
+				return static_cast<T *>(item);
 
 			item = item->m_pNext;
 		}
+
 		return nullptr;
 	}
-	template<typename Functor>
-	CBasePlayerItem *ForEachItem(const Functor &func)
+
+	template<typename T = CBasePlayerItem, typename Functor>
+	T *ForEachItem(const Functor &func) const
 	{
 		for (auto item : m_rgpPlayerItems)
 		{
 			while (item)
 			{
-				if (func(item))
-					return item;
+				if (func(static_cast<T *>(item)))
+					return static_cast<T *>(item);
 
 				item = item->m_pNext;
 			}
 		}
+
 		return nullptr;
 	}
+
+	template<typename T = CBasePlayerItem, typename Functor>
+	T *ForEachItem(const char *pszItemName, const Functor &func) const
+	{
+		if (!pszItemName) {
+			return nullptr;
+		}
+
+		for (auto item : m_rgpPlayerItems)
+		{
+			while (item)
+			{
+				if (FClassnameIs(pszItemName, STRING(item->pev->classname)) && func(static_cast<T *>(item))) {
+					return static_cast<T *>(item);
+				}
+
+				item = item->m_pNext;
+			}
+		}
+
+		return nullptr;
+	}
+
 public:
 	enum { MaxLocationLen = 32 };
 
@@ -661,7 +700,7 @@ public:
 	bool m_bTeamChanged;
 	ModelName m_iModelName;
 	int m_iTeamKills;
-	int m_iIgnoreGlobalChat;
+	IgnoreChatMsg m_iIgnoreGlobalChat;
 	bool m_bHasNightVision;
 	bool m_bNightVisionOn;
 	Vector m_vRecentPath[MAX_RECENT_PATH];
@@ -727,10 +766,10 @@ public:
 	float m_flDuckTime;
 	float m_flWallJumpTime;
 	float m_flSuitUpdate;
-	int m_rgSuitPlayList[CSUITPLAYLIST];
+	int m_rgSuitPlayList[MAX_SUIT_PLAYLIST];
 	int m_iSuitPlayNext;
-	int m_rgiSuitNoRepeat[CSUITNOREPEAT];
-	float m_rgflSuitNoRepeatTime[CSUITNOREPEAT];
+	int m_rgiSuitNoRepeat[MAX_SUIT_NOREPEAT];
+	float m_rgflSuitNoRepeatTime[MAX_SUIT_NOREPEAT];
 	int m_lastDamageAmount;
 	float m_tbdPrev;
 	float m_flgeigerRange;
@@ -772,12 +811,12 @@ public:
 	int m_izSBarState[SBAR_END];
 	float m_flNextSBarUpdateTime;
 	float m_flStatusBarDisappearDelay;
-	char m_SbarString0[SBAR_STRING_SIZE];
+	char m_SbarString0[MAX_SBAR_STRING];
 	int m_lastx;
 	int m_lasty;
 	int m_nCustomSprayFrames;
 	float m_flNextDecalTime;
-	char m_szTeamName[TEAM_NAME_LENGTH];
+	char m_szTeamName[MAX_TEAM_NAME_LENGTH];
 
 	static TYPEDESCRIPTION IMPL(m_playerSaveData)[40];
 
@@ -830,14 +869,14 @@ public:
 	virtual void EXPORT Touch(CBaseEntity *pOther);
 
 public:
-	void SetCantBePickedUpByUser(CBaseEntity *pEntity, float time)
+	void SetCantBePickedUpByUser(CBasePlayer *pPlayer, float time)
 	{
-		m_hEntToIgnoreTouchesFrom = pEntity;
+		m_hEntToIgnoreTouchesFrom = pPlayer;
 		m_flTimeToIgnoreTouches = gpGlobals->time + time;
 	}
 
 public:
-	EHANDLE m_hEntToIgnoreTouchesFrom;
+	EntityHandle<CBasePlayer> m_hEntToIgnoreTouchesFrom;
 	float m_flTimeToIgnoreTouches;
 };
 
@@ -884,88 +923,6 @@ extern CBaseEntity *g_pLastTerroristSpawn;
 extern BOOL gInitHUD;
 extern cvar_t *sv_aim;
 
-extern int giPrecacheGrunt;
-extern int gmsgWeapPickup;
-extern int gmsgHudText;
-extern int gmsgHudTextArgs;
-extern int gmsgShake;
-extern int gmsgFade;
-extern int gmsgFlashlight;
-extern int gmsgFlashBattery;
-extern int gmsgResetHUD;
-extern int gmsgInitHUD;
-extern int gmsgViewMode;
-extern int gmsgShowGameTitle;
-extern int gmsgCurWeapon;
-extern int gmsgHealth;
-extern int gmsgDamage;
-extern int gmsgBattery;
-extern int gmsgTrain;
-extern int gmsgLogo;
-extern int gmsgWeaponList;
-extern int gmsgAmmoX;
-extern int gmsgDeathMsg;
-extern int gmsgScoreAttrib;
-extern int gmsgScoreInfo;
-extern int gmsgTeamInfo;
-extern int gmsgTeamScore;
-extern int gmsgGameMode;
-extern int gmsgMOTD;
-extern int gmsgServerName;
-extern int gmsgAmmoPickup;
-extern int gmsgItemPickup;
-extern int gmsgHideWeapon;
-extern int gmsgSayText;
-extern int gmsgTextMsg;
-extern int gmsgSetFOV;
-extern int gmsgShowMenu;
-extern int gmsgSendAudio;
-extern int gmsgRoundTime;
-extern int gmsgMoney;
-extern int gmsgBlinkAcct;
-extern int gmsgArmorType;
-extern int gmsgStatusValue;
-extern int gmsgStatusText;
-extern int gmsgStatusIcon;
-extern int gmsgBarTime;
-extern int gmsgReloadSound;
-extern int gmsgCrosshair;
-extern int gmsgNVGToggle;
-extern int gmsgRadar;
-extern int gmsgSpectator;
-extern int gmsgVGUIMenu;
-extern int gmsgCZCareer;
-extern int gmsgCZCareerHUD;
-extern int gmsgTaskTime;
-extern int gmsgTutorText;
-extern int gmsgTutorLine;
-extern int gmsgShadowIdx;
-extern int gmsgTutorState;
-extern int gmsgTutorClose;
-extern int gmsgAllowSpec;
-extern int gmsgBombDrop;
-extern int gmsgBombPickup;
-extern int gmsgHostagePos;
-extern int gmsgHostageK;
-extern int gmsgGeigerRange;
-extern int gmsgSendCorpse;
-extern int gmsgHLTV;
-extern int gmsgSpecHealth;
-extern int gmsgForceCam;
-extern int gmsgADStop;
-extern int gmsgReceiveW;
-extern int gmsgScenarioIcon;
-extern int gmsgBotVoice;
-extern int gmsgBuyClose;
-extern int gmsgItemStatus;
-extern int gmsgLocation;
-extern int gmsgSpecHealth2;
-extern int gmsgBarTime2;
-extern int gmsgBotProgress;
-extern int gmsgBrass;
-extern int gmsgFog;
-extern int gmsgShowTimer;
-
 void OLD_CheckBuyZone(CBasePlayer *player);
 void OLD_CheckBombTarget(CBasePlayer *player);
 void OLD_CheckRescueZone(CBasePlayer *player);
@@ -983,8 +940,6 @@ void EscapeZoneIcon_Clear(CBasePlayer *player);
 void VIP_SafetyZoneIcon_Set(CBasePlayer *player);
 void VIP_SafetyZoneIcon_Clear(CBasePlayer *player);
 
-void LinkUserMessages();
-void WriteSigonMessages();
 void SendItemStatus(CBasePlayer *pPlayer);
 const char *GetCSModelName(int item_id);
 Vector VecVelocityForDamage(float flDamage);
@@ -995,7 +950,6 @@ void packPlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 bool CanSeeUseable(CBasePlayer *me, CBaseEntity *entity);
 void FixPlayerCrouchStuck(edict_t *pPlayer);
 BOOL IsSpawnPointValid(CBaseEntity *pPlayer, CBaseEntity *pSpot);
-void InitZombieSpawns();
 CBaseEntity *FindZombieSpawn(CBaseEntity *player, bool forceSpawn);
 CBaseEntity *FindEntityForward(CBaseEntity *pMe);
 float_precision GetPlayerPitch(const edict_t *pEdict);
@@ -1008,5 +962,3 @@ bool IsSecondaryWeaponClass(int classId);
 bool IsSecondaryWeaponId(int id);
 const char *GetWeaponAliasFromName(const char *weaponName);
 bool CurrentWeaponSatisfies(CBasePlayerWeapon *pWeapon, int id, int classId);
-
-#endif // PLAYER_H

@@ -16,11 +16,11 @@ void PlantBombState::OnEnter(CCSBot *me)
 // Plant the bomb.
 void PlantBombState::OnUpdate(CCSBot *me)
 {
-	CBasePlayerWeapon *gun = me->GetActiveWeapon();
+	CBasePlayerWeapon *pCurrentWeapon = me->GetActiveWeapon();
 	bool holdingC4 = false;
-	if (gun != NULL)
+	if (pCurrentWeapon)
 	{
-		if (FStrEq(STRING(gun->pev->classname), "weapon_c4"))
+		if (FClassnameIs(pCurrentWeapon->pev, "weapon_c4"))
 			holdingC4 = true;
 	}
 

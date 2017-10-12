@@ -5,18 +5,18 @@
 */
 #ifndef HOOK_GAMEDLL
 
-DebugOutputLevel outputLevel[ NUM_LEVELS ] =
+DebugOutputLevel outputLevel[] =
 {
-	{ "bot",     DEBUG_BOT },
-	{ "career",  DEBUG_CAREER },
-	{ "tutor",   DEBUG_TUTOR },
-	{ "stats",   DEBUG_STATS },
+	{ "bot",     DEBUG_BOT     },
+	{ "career",  DEBUG_CAREER  },
+	{ "tutor",   DEBUG_TUTOR   },
+	{ "stats",   DEBUG_STATS   },
 	{ "hostage", DEBUG_HOSTAGE },
-	{ "all",     DEBUG_ALL }
+	{ "all",     DEBUG_ALL     },
 };
 
 unsigned int theDebugOutputTypes;
-static char theDebugBuffer[ DebugBufferSize ];
+static char theDebugBuffer[MAX_DEBUG_BUFF_SIZE];
 
 #endif
 
@@ -57,7 +57,7 @@ void UTIL_DPrintf(char *pszMsg, ...)
 void PrintDebugFlags()
 {
 	char *tmp;
-	int remainder = DebugBufferSize;
+	int remainder = MAX_DEBUG_BUFF_SIZE;
 
 	theDebugBuffer[0] = '\0';
 	tmp = BufPrintf(theDebugBuffer, remainder, "mp_debug:\n");

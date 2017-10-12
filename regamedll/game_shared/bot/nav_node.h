@@ -26,16 +26,12 @@
 *
 */
 
-#ifndef NAV_NODE_H
-#define NAV_NODE_H
-#ifdef _WIN32
 #pragma once
-#endif
 
 class CNavNode
 {
 public:
-	CNavNode(const Vector *pos, const Vector *normal, CNavNode *parent = NULL);
+	CNavNode(const Vector *pos, const Vector *normal, CNavNode *parent = nullptr);
 
 	// return navigation node at the position, or NULL if none exists
 	static const CNavNode *GetNode(const Vector *pos);
@@ -128,5 +124,3 @@ inline CNavArea *CNavNode::GetArea() const
 {
 	return m_area;
 }
-
-#endif // NAV_NODE_H

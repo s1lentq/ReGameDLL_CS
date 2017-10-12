@@ -26,13 +26,9 @@
 *
 */
 
-#ifndef LIGHT_H
-#define LIGHT_H
-#ifdef _WIN32
 #pragma once
-#endif
 
-#define SF_LIGHT_START_OFF		1
+#define SF_LIGHT_START_OFF BIT(0)
 
 class CLight: public CPointEntity
 {
@@ -58,5 +54,3 @@ public:
 	virtual void Spawn();
 	virtual void KeyValue(KeyValueData *pkvd);
 };
-
-#endif // LIGHT_H

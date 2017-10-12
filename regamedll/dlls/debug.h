@@ -26,32 +26,26 @@
 *
 */
 
-#ifndef DEBUG_H
-#define DEBUG_H
-#ifdef _WIN32
 #pragma once
-#endif
 
-const int NUM_LEVELS = 6;
-const int DebugBufferSize = 1024;
-
-typedef enum
+enum DebugOutputType
 {
-	DEBUG_NONE	= 0,
-	DEBUG_BOT	= (1 << 0),
-	DEBUG_CAREER	= (1 << 1),
-	DEBUG_TUTOR	= (1 << 2),
-	DEBUG_STATS	= (1 << 3),
-	DEBUG_HOSTAGE	= (1 << 4),
-	DEBUG_ALL	= 0xFFFFFFFF,
-
-} DebugOutputType;
+	DEBUG_NONE    = 0,
+	DEBUG_BOT     = BIT(0),
+	DEBUG_CAREER  = BIT(1),
+	DEBUG_TUTOR   = BIT(2),
+	DEBUG_STATS   = BIT(3),
+	DEBUG_HOSTAGE = BIT(4),
+	DEBUG_ALL     = 0xFFFFFFFF,
+};
 
 struct DebugOutputLevel
 {
 	const char *name;
 	DebugOutputType value;
 };
+
+const int MAX_DEBUG_BUFF_SIZE = 1024;
 
 bool IsDeveloper();
 void UTIL_DPrintf(DebugOutputType outputType, char *pszMsg, ...);
@@ -67,5 +61,3 @@ void UTIL_CareerDPrintf(char *pszMsg, ...);
 void UTIL_TutorDPrintf(char *pszMsg, ...);
 void UTIL_StatsDPrintf(char *pszMsg, ...);
 void UTIL_HostageDPrintf(char *pszMsg, ...);
-
-#endif // DEBUG_H

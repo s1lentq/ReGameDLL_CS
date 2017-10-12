@@ -11,48 +11,48 @@ float g_flWeaponCheat;
 
 DLL_DECALLIST gDecals[] =
 {
-	{ "{shot1", 0 },		// DECAL_GUNSHOT1
-	{ "{shot2", 0 },		// DECAL_GUNSHOT2
-	{ "{shot3", 0 },		// DECAL_GUNSHOT3
-	{ "{shot4", 0 },		// DECAL_GUNSHOT4
-	{ "{shot5", 0 },		// DECAL_GUNSHOT5
-	{ "{lambda01", 0 },		// DECAL_LAMBDA1
-	{ "{lambda02", 0 },		// DECAL_LAMBDA2
-	{ "{lambda03", 0 },		// DECAL_LAMBDA3
-	{ "{lambda04", 0 },		// DECAL_LAMBDA4
-	{ "{lambda05", 0 },		// DECAL_LAMBDA5
-	{ "{lambda06", 0 },		// DECAL_LAMBDA6
-	{ "{scorch1", 0 },		// DECAL_SCORCH1
-	{ "{scorch2", 0 },		// DECAL_SCORCH2
-	{ "{blood1", 0 },		// DECAL_BLOOD1
-	{ "{blood2", 0 },		// DECAL_BLOOD2
-	{ "{blood3", 0 },		// DECAL_BLOOD3
-	{ "{blood4", 0 },		// DECAL_BLOOD4
-	{ "{blood5", 0 },		// DECAL_BLOOD5
-	{ "{blood6", 0 },		// DECAL_BLOOD6
-	{ "{yblood1", 0 },		// DECAL_YBLOOD1
-	{ "{yblood2", 0 },		// DECAL_YBLOOD2
-	{ "{yblood3", 0 },		// DECAL_YBLOOD3
-	{ "{yblood4", 0 },		// DECAL_YBLOOD4
-	{ "{yblood5", 0 },		// DECAL_YBLOOD5
-	{ "{yblood6", 0 },		// DECAL_YBLOOD6
-	{ "{break1", 0 },		// DECAL_GLASSBREAK1
-	{ "{break2", 0 },		// DECAL_GLASSBREAK2
-	{ "{break3", 0 },		// DECAL_GLASSBREAK3
-	{ "{bigshot1", 0 },		// DECAL_BIGSHOT1
-	{ "{bigshot2", 0 },		// DECAL_BIGSHOT2
-	{ "{bigshot3", 0 },		// DECAL_BIGSHOT3
-	{ "{bigshot4", 0 },		// DECAL_BIGSHOT4
-	{ "{bigshot5", 0 },		// DECAL_BIGSHOT5
-	{ "{spit1", 0 },		// DECAL_SPIT1
-	{ "{spit2", 0 },		// DECAL_SPIT2
-	{ "{bproof1", 0 },		// DECAL_BPROOF1
-	{ "{gargstomp", 0 },		// DECAL_GARGSTOMP1,		// Gargantua stomp crack
-	{ "{smscorch1", 0 },		// DECAL_SMALLSCORCH1,		// Small scorch mark
-	{ "{smscorch2", 0 },		// DECAL_SMALLSCORCH2,		// Small scorch mark
-	{ "{smscorch3", 0 },		// DECAL_SMALLSCORCH3,		// Small scorch mark
-	{ "{mommablob", 0 },		// DECAL_MOMMABIRTH		// BM Birth spray
-	{ "{mommablob", 0 },		// DECAL_MOMMASPLAT		// BM Mortar spray?? need decal*/
+	DEFINE_DECAL("{shot1"),		// DECAL_GUNSHOT1
+	DEFINE_DECAL("{shot2"),		// DECAL_GUNSHOT2
+	DEFINE_DECAL("{shot3"),		// DECAL_GUNSHOT3
+	DEFINE_DECAL("{shot4"),		// DECAL_GUNSHOT4
+	DEFINE_DECAL("{shot5"),		// DECAL_GUNSHOT5
+	DEFINE_DECAL("{lambda01"),	// DECAL_LAMBDA1
+	DEFINE_DECAL("{lambda02"),	// DECAL_LAMBDA2
+	DEFINE_DECAL("{lambda03"),	// DECAL_LAMBDA3
+	DEFINE_DECAL("{lambda04"),	// DECAL_LAMBDA4
+	DEFINE_DECAL("{lambda05"),	// DECAL_LAMBDA5
+	DEFINE_DECAL("{lambda06"),	// DECAL_LAMBDA6
+	DEFINE_DECAL("{scorch1"),	// DECAL_SCORCH1
+	DEFINE_DECAL("{scorch2"),	// DECAL_SCORCH2
+	DEFINE_DECAL("{blood1"),	// DECAL_BLOOD1
+	DEFINE_DECAL("{blood2"),	// DECAL_BLOOD2
+	DEFINE_DECAL("{blood3"),	// DECAL_BLOOD3
+	DEFINE_DECAL("{blood4"),	// DECAL_BLOOD4
+	DEFINE_DECAL("{blood5"),	// DECAL_BLOOD5
+	DEFINE_DECAL("{blood6"),	// DECAL_BLOOD6
+	DEFINE_DECAL("{yblood1"),	// DECAL_YBLOOD1
+	DEFINE_DECAL("{yblood2"),	// DECAL_YBLOOD2
+	DEFINE_DECAL("{yblood3"),	// DECAL_YBLOOD3
+	DEFINE_DECAL("{yblood4"),	// DECAL_YBLOOD4
+	DEFINE_DECAL("{yblood5"),	// DECAL_YBLOOD5
+	DEFINE_DECAL("{yblood6"),	// DECAL_YBLOOD6
+	DEFINE_DECAL("{break1"),	// DECAL_GLASSBREAK1
+	DEFINE_DECAL("{break2"),	// DECAL_GLASSBREAK2
+	DEFINE_DECAL("{break3"),	// DECAL_GLASSBREAK3
+	DEFINE_DECAL("{bigshot1"),	// DECAL_BIGSHOT1
+	DEFINE_DECAL("{bigshot2"),	// DECAL_BIGSHOT2
+	DEFINE_DECAL("{bigshot3"),	// DECAL_BIGSHOT3
+	DEFINE_DECAL("{bigshot4"),	// DECAL_BIGSHOT4
+	DEFINE_DECAL("{bigshot5"),	// DECAL_BIGSHOT5
+	DEFINE_DECAL("{spit1"),		// DECAL_SPIT1
+	DEFINE_DECAL("{spit2"),		// DECAL_SPIT2
+	DEFINE_DECAL("{bproof1"),	// DECAL_BPROOF1
+	DEFINE_DECAL("{gargstomp"),	// DECAL_GARGSTOMP1,	// Gargantua stomp crack
+	DEFINE_DECAL("{smscorch1"),	// DECAL_SMALLSCORCH1,	// Small scorch mark
+	DEFINE_DECAL("{smscorch2"),	// DECAL_SMALLSCORCH2,	// Small scorch mark
+	DEFINE_DECAL("{smscorch3"),	// DECAL_SMALLSCORCH3,	// Small scorch mark
+	DEFINE_DECAL("{mommablob"),	// DECAL_MOMMABIRTH		// BM Birth spray
+	DEFINE_DECAL("{mommablob"),	// DECAL_MOMMASPLAT		// BM Mortar spray?? need decal*/
 };
 
 TYPEDESCRIPTION CGlobalState::m_SaveData[] =
@@ -70,6 +70,8 @@ TYPEDESCRIPTION gGlobalEntitySaveData[] =
 #endif // HOOK_GAMEDLL
 
 char g_szMapBriefingText[512];
+
+#define SF_DECAL_NOTINDEATHMATCH BIT(11)
 
 class CDecal: public CBaseEntity
 {
@@ -165,7 +167,9 @@ void CDecal::KeyValue(KeyValueData *pkvd)
 		ALERT(at_console, "Can't find decal %s\n", pkvd->szValue);
 	}
 	else
+	{
 		CBaseEntity::KeyValue(pkvd);
+	}
 }
 
 // Body queue class here.... It's really just CBaseEntity
@@ -179,7 +183,7 @@ LINK_ENTITY_TO_CLASS(bodyque, CCorpse, CCSCorpse)
 
 static void InitBodyQue()
 {
-	g_pBodyQueueHead = NULL;
+	g_pBodyQueueHead = nullptr;
 }
 
 // make a body que entry for the given ent so the ent can be respawned elsewhere
@@ -228,19 +232,19 @@ CGlobalState::CGlobalState()
 
 void CGlobalState::Reset()
 {
-	m_pList = NULL;
+	m_pList = nullptr;
 	m_listCount = 0;
 }
 
 globalentity_t *CGlobalState::Find(string_t globalname)
 {
 	if (!globalname)
-		return NULL;
+		return nullptr;
 
 	globalentity_t *pTest = m_pList;
 	const char *pEntityName = STRING(globalname);
 
-	while (pTest != NULL)
+	while (pTest)
 	{
 		if (!Q_strcmp(pEntityName, pTest->name))
 			break;
@@ -260,7 +264,7 @@ void CGlobalState::DumpGlobals()
 	ALERT(at_console, "-- Globals --\n");
 	pTest = m_pList;
 
-	while (pTest != NULL)
+	while (pTest)
 	{
 		ALERT(at_console, "%s: %s (%s)\n", pTest->name, pTest->levelName, estates[ pTest->state ]);
 		pTest = pTest->pNext;
@@ -271,8 +275,8 @@ void CGlobalState::EntityAdd(string_t globalname, string_t mapName, GLOBALESTATE
 {
 	assert(!Find(globalname));
 
-	globalentity_t *pNewEntity = (globalentity_t *)Q_calloc(sizeof(globalentity_t), 1);
-	assert(pNewEntity != NULL);
+	globalentity_t *pNewEntity = (globalentity_t *)calloc(sizeof(globalentity_t), 1);
+	assert(pNewEntity != nullptr);
 
 	pNewEntity->pNext = m_pList;
 	m_pList = pNewEntity;
@@ -286,8 +290,7 @@ void CGlobalState::EntityAdd(string_t globalname, string_t mapName, GLOBALESTATE
 void CGlobalState::EntitySetState(string_t globalname, GLOBALESTATE state)
 {
 	globalentity_t *pEnt = Find(globalname);
-
-	if (pEnt != NULL)
+	if (pEnt)
 	{
 		pEnt->state = state;
 	}
@@ -303,8 +306,7 @@ const globalentity_t *CGlobalState::EntityFromTable(string_t globalname)
 GLOBALESTATE CGlobalState::EntityGetState(string_t globalname)
 {
 	globalentity_t *pEnt = Find(globalname);
-
-	if (pEnt != NULL)
+	if (pEnt)
 	{
 		return pEnt->state;
 	}
@@ -323,7 +325,7 @@ int CGlobalState::Save(CSave &save)
 	}
 
 	pEntity = m_pList;
-	for (i = 0; i < m_listCount && pEntity != NULL; ++i)
+	for (i = 0; i < m_listCount && pEntity; i++)
 	{
 		if (!save.WriteFields("GENT", pEntity, gGlobalEntitySaveData, ARRAYSIZE(gGlobalEntitySaveData)))
 		{
@@ -370,8 +372,7 @@ int CGlobalState::Restore(CRestore &restore)
 void CGlobalState::EntityUpdate(string_t globalname, string_t mapname)
 {
 	globalentity_t *pEnt = Find(globalname);
-
-	if (pEnt != NULL)
+	if (pEnt)
 	{
 		Q_strcpy(pEnt->levelName, STRING(mapname));
 	}
@@ -380,12 +381,11 @@ void CGlobalState::EntityUpdate(string_t globalname, string_t mapname)
 void CGlobalState::ClearStates()
 {
 	globalentity_t *pFree = m_pList;
-
-	while (pFree != NULL)
+	while (pFree)
 	{
 		globalentity_t *pNext = pFree->pNext;
 
-		Q_free(pFree);
+		free(pFree);
 		pFree = pNext;
 	}
 
@@ -485,9 +485,9 @@ void CWorld::Spawn()
 
 void CWorld::Precache()
 {
-	g_pLastSpawn = NULL;
-	g_pLastCTSpawn = NULL;
-	g_pLastTerroristSpawn = NULL;
+	g_pLastSpawn = nullptr;
+	g_pLastCTSpawn = nullptr;
+	g_pLastTerroristSpawn = nullptr;
 
 	CVAR_SET_STRING("sv_gravity", "800");
 	CVAR_SET_STRING("sv_maxspeed", "900");
@@ -510,9 +510,9 @@ void CWorld::Precache()
 
 	// LATER - do we want a sound ent in deathmatch? (sjb)
 	//pSoundEnt = CBaseEntity::Create("soundent", g_vecZero, g_vecZero, edict());
-	pSoundEnt = GetClassPtr<CCSSoundEnt>((CSoundEnt *)NULL);
+	pSoundEnt = GetClassPtr<CCSSoundEnt>((CSoundEnt *)nullptr);
 
-	if (pSoundEnt == NULL)
+	if (pSoundEnt == nullptr)
 	{
 		ALERT(at_console, "**COULD NOT CREATE SOUNDENT**\n");
 	}
@@ -621,34 +621,8 @@ void CWorld::Precache()
 	// 63 testing
 	LIGHT_STYLE(63, "a");
 
-	for (int i = 0; i < ARRAYSIZE(gDecals); ++i)
+	for (int i = 0; i < ARRAYSIZE(gDecals); i++)
 		gDecals[i].index = DECAL_INDEX(gDecals[i].name);
-
-#ifndef REGAMEDLL_FIXES
-	// init the WorldGraph.
-	WorldGraph.InitGraph();
-
-	// make sure the .NOD file is newer than the .BSP file.
-	if (!WorldGraph.CheckNODFile((char *)STRING(gpGlobals->mapname)))
-	{
-		// NOD file is not present, or is older than the BSP file.
-		WorldGraph.AllocNodes();
-	}
-	else
-	{
-		// Load the node graph for this level
-		if (!WorldGraph.FLoadGraph((char *)STRING(gpGlobals->mapname)))
-		{
-			// couldn't load, so alloc and prepare to build a graph.
-			ALERT(at_console, "*Error opening .NOD file\n");
-			WorldGraph.AllocNodes();
-		}
-		else
-		{
-			ALERT(at_console, "\n*Graph Loaded!\n");
-		}
-	}
-#endif
 
 	if (pev->speed > 0)
 		CVAR_SET_FLOAT("sv_zmax", pev->speed);
@@ -659,9 +633,8 @@ void CWorld::Precache()
 	{
 		ALERT(at_aiconsole, "Chapter title: %s\n", STRING(pev->netname));
 
-		CBaseEntity *pEntity = CBaseEntity::Create("env_message", g_vecZero, g_vecZero, NULL);
-
-		if (pEntity != NULL)
+		CBaseEntity *pEntity = CBaseEntity::Create("env_message", g_vecZero, g_vecZero, nullptr);
+		if (pEntity)
 		{
 			pEntity->SetThink(&CBaseEntity::SUB_CallUseToggle);
 			pEntity->pev->message = pev->netname;
@@ -755,5 +728,7 @@ void CWorld::KeyValue(KeyValueData *pkvd)
 		pkvd->fHandled = TRUE;
 	}
 	else
+	{
 		CBaseEntity::KeyValue(pkvd);
+	}
 }

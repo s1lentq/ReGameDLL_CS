@@ -26,11 +26,7 @@
 *
 */
 
-#ifndef NAV_PATH_H
-#define NAV_PATH_H
-#ifdef _WIN32
 #pragma once
-#endif
 
 // STL uses exceptions, but we are not compiling with them - ignore warning
 #pragma warning(disable : 4530)
@@ -48,9 +44,9 @@ public:
 		const CNavLadder *ladder;	// if "how" refers to a ladder, this is it
 	};
 
-	const PathSegment *operator[](int i) { return (i >= 0 && i < m_segmentCount) ? &m_path[i] : NULL; }
+	const PathSegment *operator[](int i) { return (i >= 0 && i < m_segmentCount) ? &m_path[i] : nullptr; }
 	int GetSegmentCount() const { return m_segmentCount; }
-	const Vector &GetEndpoint() const { return m_path[ m_segmentCount - 1 ].pos; }
+	const Vector &GetEndpoint() const { return m_path[m_segmentCount - 1].pos; }
 
 	bool IsAtEnd(const Vector &pos) const;									// return true if position is at the end of the path
 	float GetLength() const;												// return length of path from start to finish
@@ -76,11 +72,11 @@ public:
 	{
 		Invalidate();
 
-		if (start == NULL || goal == NULL)
+		if (!start || !goal)
 			return false;
 
 		CNavArea *startArea = TheNavAreaGrid.GetNearestNavArea(start);
-		if (startArea == NULL)
+		if (!startArea)
 			return false;
 
 		CNavArea *goalArea = TheNavAreaGrid.GetNavArea(goal);
@@ -110,7 +106,7 @@ public:
 		int count = 0;
 		CNavArea *area;
 		for (area = effectiveGoalArea; area; area = area->GetParent())
-			++count;
+			count++;
 
 		// save room for endpoint
 		if (count > MAX_PATH_SEGMENTS - 1)
@@ -128,9 +124,9 @@ public:
 		m_segmentCount = count;
 		for (area = effectiveGoalArea; count && area; area = area->GetParent())
 		{
-			--count;
-			m_path[ count ].area = area;
-			m_path[ count ].how = area->GetParentHow();
+			count--;
+			m_path[count].area = area;
+			m_path[count].how = area->GetParentHow();
 		}
 
 		// compute path positions
@@ -141,18 +137,18 @@ public:
 		}
 
 		// append path end position
-		m_path[ m_segmentCount ].area = effectiveGoalArea;
-		m_path[ m_segmentCount ].pos = pathEndPosition;
-		m_path[ m_segmentCount ].ladder = NULL;
-		m_path[ m_segmentCount ].how = NUM_TRAVERSE_TYPES;
-		++m_segmentCount;
+		m_path[m_segmentCount].area = effectiveGoalArea;
+		m_path[m_segmentCount].pos = pathEndPosition;
+		m_path[m_segmentCount].ladder = nullptr;
+		m_path[m_segmentCount].how = NUM_TRAVERSE_TYPES;
+		m_segmentCount++;
 
 		return true;
 	}
 
 private:
 	enum { MAX_PATH_SEGMENTS = 256 };
-	PathSegment m_path[ MAX_PATH_SEGMENTS ];
+	PathSegment m_path[MAX_PATH_SEGMENTS];
 	int m_segmentCount;
 
 	bool ComputePathPositions();									// determine actual path positions
@@ -169,7 +165,7 @@ public:
 	void Reset();
 	void Update(CImprov *improv);
 
-	bool IsStuck() const { return m_isStuck; }
+	bool IsStuck()      const { return m_isStuck; }
 	float GetDuration() const { return m_isStuck ? m_stuckTimer.GetElapsedTime() : 0.0f; }
 
 private:
@@ -179,7 +175,7 @@ private:
 
 	enum { MAX_VEL_SAMPLES = 5 };
 
-	float m_avgVel[ MAX_VEL_SAMPLES ];
+	float m_avgVel[MAX_VEL_SAMPLES];
 	int m_avgVelIndex;
 	int m_avgVelCount;
 	Vector m_lastCentroid;
@@ -206,7 +202,7 @@ public:
 	void FeelerReflexAdjustment(Vector *goalPosition, float height = -1.0f);	// adjust goal position if "feelers" are touched
 
 private:
-	int FindOurPositionOnPath(Vector *close, bool local) const;		// return the closest point to our current position on current path
+	int FindOurPositionOnPath(Vector *close, bool local) const;			// return the closest point to our current position on current path
 	int FindPathPoint(float aheadRange, Vector *point, int *prevIndex);	// compute a point a fixed distance ahead along our path.
 
 	CImprov *m_improv;		// who is doing the path following
@@ -218,5 +214,3 @@ private:
 	bool m_isDebug;
 	CStuckMonitor m_stuckMonitor;
 };
-
-#endif // NAV_PATH_H

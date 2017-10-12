@@ -10,8 +10,8 @@ TYPEDESCRIPTION CFuncWeaponCheck::m_SaveData[] =
 	DEFINE_FIELD(CFuncWeaponCheck, sTriggerWithItems, FIELD_STRING),
 	DEFINE_FIELD(CFuncWeaponCheck, sTriggerNoItems, FIELD_STRING),
 	DEFINE_FIELD(CFuncWeaponCheck, iItemCount, FIELD_INTEGER),
-	DEFINE_ARRAY(CFuncWeaponCheck, sMaster, FIELD_STRING, MAX_ITEM_COUNTS),
-	DEFINE_FIELD(CFuncWeaponCheck, sItemName, FIELD_STRING),
+	DEFINE_FIELD(CFuncWeaponCheck, sMaster, FIELD_STRING),
+	DEFINE_ARRAY(CFuncWeaponCheck, sItemName, FIELD_STRING, MAX_ITEM_COUNTS),
 	DEFINE_FIELD(CFuncWeaponCheck, iAnyWeapon, FIELD_INTEGER),
 };
 
@@ -53,7 +53,7 @@ void CHalfLifeTraining::HostageDied()
 
 edict_t *CHalfLifeTraining::GetPlayerSpawnSpot(CBasePlayer *pPlayer)
 {
-	CBaseEntity *pSpot = UTIL_FindEntityByClassname(NULL, "info_player_start");
+	CBaseEntity *pSpot = UTIL_FindEntityByClassname(nullptr, "info_player_start");
 
 	if (FNullEnt(pSpot))
 	{
@@ -133,7 +133,7 @@ void CHalfLifeTraining::PlayerThink(CBasePlayer *pPlayer)
 		}
 	}
 
-	CGrenade *pBomb = NULL;
+	CGrenade *pBomb = nullptr;
 	while ((pBomb = (CGrenade *)UTIL_FindEntityByClassname(pBomb, "grenade")))
 	{
 		if (pBomb->m_pentCurBombTarget)
@@ -148,7 +148,7 @@ void CHalfLifeTraining::PlayerThink(CBasePlayer *pPlayer)
 
 			if (!fVisitedBuyArea)
 			{
-				MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, NULL, pPlayer->pev);
+				MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pPlayer->pev);
 					WRITE_BYTE(STATUSICON_FLASH);
 					WRITE_STRING("buyzone");
 					WRITE_BYTE(0);
@@ -167,11 +167,11 @@ void CHalfLifeTraining::PlayerThink(CBasePlayer *pPlayer)
 		{
 			if (!fVisitedBuyArea)
 			{
-				MESSAGE_BEGIN(MSG_ONE, gmsgBlinkAcct, NULL, pPlayer->pev);
+				MESSAGE_BEGIN(MSG_ONE, gmsgBlinkAcct, nullptr, pPlayer->pev);
 					WRITE_BYTE(3);
 				MESSAGE_END();
 
-				MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, NULL, pPlayer->pev);
+				MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pPlayer->pev);
 					WRITE_BYTE(STATUSICON_SHOW);
 					WRITE_STRING("buyzone");
 					WRITE_BYTE(0);
@@ -218,7 +218,7 @@ void CHalfLifeTraining::PlayerSpawn(CBasePlayer *pPlayer)
 	fVGUIMenus = pPlayer->m_bVGUIMenus;
 	SET_MODEL(ENT(pPlayer->pev), "models/player.mdl");
 
-	CBaseEntity *pWeaponEntity = NULL;
+	CBaseEntity *pWeaponEntity = nullptr;
 
 	while ((pWeaponEntity = UTIL_FindEntityByClassname(pWeaponEntity, "game_player_equip")))
 	{
@@ -255,7 +255,7 @@ void CHalfLifeTraining::CheckWinConditions()
 {
 	if (m_bBombDefused)
 	{
-		CGrenade *pBomb = NULL;
+		CGrenade *pBomb = nullptr;
 
 		while ((pBomb = (CGrenade *)UTIL_FindEntityByClassname(pBomb, "grenade")))
 		{
@@ -270,7 +270,7 @@ void CHalfLifeTraining::CheckWinConditions()
 	}
 	else if (m_bTargetBombed)
 	{
-		CGrenade *pBomb = NULL;
+		CGrenade *pBomb = nullptr;
 
 		while ((pBomb = (CGrenade *)UTIL_FindEntityByClassname(pBomb, "grenade")))
 		{
@@ -287,7 +287,7 @@ void CHalfLifeTraining::CheckWinConditions()
 		}
 	}
 
-	CBaseEntity *pHostage = NULL;
+	CBaseEntity *pHostage = nullptr;
 	while ((pHostage = UTIL_FindEntityByClassname(pHostage, "hostage_entity")))
 	{
 		if (pHostage->pev->deadflag != DEAD_RESPAWNABLE || !FStringNull(pHostage->pev->noise1))
@@ -295,7 +295,7 @@ void CHalfLifeTraining::CheckWinConditions()
 
 		UTIL_SetSize(pHostage->pev, Vector(-16, -16, 0), Vector(16, 16, 72));
 
-		CBaseEntity *pRescueArea = NULL;
+		CBaseEntity *pRescueArea = nullptr;
 		while ((pRescueArea = UTIL_FindEntityByClassname(pRescueArea, "func_hostage_rescue")))
 		{
 			if (!pRescueArea->Intersects(pHostage))
@@ -305,7 +305,7 @@ void CHalfLifeTraining::CheckWinConditions()
 		if (pRescueArea)
 		{
 			pHostage->pev->noise1 = 1;
-			FireTargets(STRING(pRescueArea->pev->target), NULL, NULL, USE_TOGGLE, 0);
+			FireTargets(STRING(pRescueArea->pev->target), nullptr, nullptr, USE_TOGGLE, 0);
 		}
 	}
 }
@@ -330,7 +330,7 @@ void CBaseGrenCatch::Touch(CBaseEntity *pOther)
 		return;
 	}
 
-	if (Q_strstr(STRING(pev->model), "flash") != NULL)
+	if (Q_strstr(STRING(pev->model), "flash"))
 	{
 		m_fFlashTouched = true;
 	}
@@ -345,7 +345,7 @@ void CBaseGrenCatch::Think()
 
 	m_fSmokeTouchingLastFrame = m_fSmokeTouching;
 	m_fSmokeTouching = false;
-	pGrenade = NULL;
+	pGrenade = nullptr;
 
 	while ((pGrenade = (CGrenade *)UTIL_FindEntityByClassname(pGrenade, "grenade")))
 	{
@@ -354,7 +354,7 @@ void CBaseGrenCatch::Think()
 
 		UTIL_SetSize(pGrenade->pev, Vector(-8, -8, 0), Vector(8, 8, 0));
 
-		if (pGrenade->Intersects(this) && Q_strstr(STRING(pGrenade->pev->model), "smoke") != NULL)
+		if (pGrenade->Intersects(this) && Q_strstr(STRING(pGrenade->pev->model), "smoke"))
 		{
 			if (pGrenade->pev->velocity.Length() == 0)
 				m_fSmokeTouching = true;
@@ -371,7 +371,7 @@ void CBaseGrenCatch::Think()
 
 		if (m_NeedGrenadeType == GRENADETYPE_SMOKE)
 		{
-			pTrigger = NULL;
+			pTrigger = nullptr;
 
 			while ((pTrigger = UTIL_FindEntityByTargetname(pTrigger, STRING(sDisableOnGrenade))))
 			{
@@ -381,12 +381,14 @@ void CBaseGrenCatch::Think()
 			}
 		}
 		else if (m_NeedGrenadeType == GRENADETYPE_FLASH)
+		{
 			pev->flags |= FL_KILLME;
+		}
 	}
 
 	if (m_fSmokeTouchingLastFrame && !m_fSmokeTouching)
 	{
-		pTrigger = NULL;
+		pTrigger = nullptr;
 
 		while ((pTrigger = UTIL_FindEntityByTargetname(pTrigger, STRING(sDisableOnGrenade))))
 		{
@@ -426,7 +428,9 @@ void CBaseGrenCatch::KeyValue(KeyValueData *pkvd)
 		}
 	}
 	else
+	{
 		CBaseEntity::KeyValue(pkvd);
+	}
 }
 
 void CFuncWeaponCheck::Spawn()
@@ -505,7 +509,7 @@ void CFuncWeaponCheck::KeyValue(KeyValueData *pkvd)
 		pev->speed = Q_atof(pkvd->szValue);
 		pkvd->fHandled = TRUE;
 	}
-	else if (Q_strstr(pkvd->szKeyName, "item") != NULL)
+	else if (Q_strstr(pkvd->szKeyName, "item"))
 	{
 		if (iItemCount < MAX_ITEM_COUNTS)
 		{
@@ -525,5 +529,7 @@ void CFuncWeaponCheck::KeyValue(KeyValueData *pkvd)
 		pkvd->fHandled = TRUE;
 	}
 	else
+	{
 		CBaseEntity::KeyValue(pkvd);
+	}
 }

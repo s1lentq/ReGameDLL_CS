@@ -6,7 +6,7 @@ void CBaseSpectator::SpectatorConnect()
 	pev->solid = SOLID_NOT;
 	pev->movetype = MOVETYPE_NOCLIP;
 
-	m_pGoalEnt = NULL;
+	m_pGoalEnt = nullptr;
 }
 
 void CBaseSpectator::SpectatorDisconnect()
@@ -16,7 +16,7 @@ void CBaseSpectator::SpectatorDisconnect()
 
 void CBaseSpectator::SpectatorImpulseCommand()
 {
-	static edict_t *pGoal = NULL;
+	static edict_t *pGoal = nullptr;
 
 	edict_t *pPreviousGoal;
 	edict_t *pCurrentGoal;
@@ -95,5 +95,5 @@ void CBaseSpectator::Spawn()
 	pev->solid = SOLID_NOT;
 	pev->movetype = MOVETYPE_NOCLIP;
 
-	m_pGoalEnt = NULL;
+	m_pGoalEnt = nullptr;
 }

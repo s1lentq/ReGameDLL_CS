@@ -26,11 +26,7 @@
 *
 */
 
-#ifndef BOT_PROFILE
-#define BOT_PROFILE
-#ifdef _WIN32
 #pragma once
-#endif
 
 // long STL names get truncated in browse info.
 #pragma warning(disable : 4786)
@@ -67,7 +63,7 @@ class BotProfile
 public:
 	BotProfile()
 	{
-		m_name = NULL;
+		m_name = nullptr;
 		m_aggression = 0.0f;
 		m_skill = 0.0f;
 		m_teamwork = 0.0f;
@@ -183,7 +179,7 @@ public:
 	BotProfileManager();
 	~BotProfileManager();
 
-	void Init(const char *filename, unsigned int *checksum = NULL);
+	void Init(const char *filename, unsigned int *checksum = nullptr);
 	void Reset();
 
 	const BotProfile *GetProfile(const char *name, BotProfileTeamType team) const
@@ -194,7 +190,7 @@ public:
 				return (*iter);
 		}
 
-		return NULL;
+		return nullptr;
 	}
 	const BotProfileList *GetProfileList() const { return &m_profileList; }
 	const BotProfile *GetRandomProfile(BotDifficultyType difficulty, BotProfileTeamType team) const;
@@ -202,7 +198,7 @@ public:
 	const char *GetCustomSkin(int index);
 	const char *GetCustomSkinModelname(int index);
 	const char *GetCustomSkinFname(int index);
-	int GetCustomSkinIndex(const char *name, const char *filename = NULL);
+	int GetCustomSkinIndex(const char *name, const char *filename = nullptr);
 
 	typedef std::STD_VECTOR<char *> VoiceBankList;
 
@@ -220,5 +216,3 @@ protected:
 };
 
 extern BotProfileManager *TheBotProfiles;
-
-#endif // BOT_PROFILE

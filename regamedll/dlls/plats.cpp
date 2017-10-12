@@ -101,7 +101,9 @@ void CBasePlatTrain::KeyValue(KeyValueData *pkvd)
 		pkvd->fHandled = TRUE;
 	}
 	else
+	{
 		CBaseToggle::KeyValue(pkvd);
+	}
 }
 
 #define noiseMoving noise
@@ -292,13 +294,18 @@ void CFuncPlat::Setup()
 	}
 }
 
+void PlatSpawnInsideTrigger(entvars_t *pevPlatform)
+{
+	GetClassPtr<CCSPlatTrigger>((CPlatTrigger *)nullptr)->SpawnInsideTrigger(GetClassPtr<CCSFuncPlat>((CFuncPlat *)pevPlatform));
+}
+
 void CFuncPlat::Precache()
 {
 	CBasePlatTrain::Precache();
 
 	if (!IsTogglePlat())
 	{
-		// the "start moving" trigger
+		// The "start moving" trigger
 		PlatSpawnInsideTrigger(pev);
 	}
 }
@@ -321,11 +328,6 @@ void CFuncPlat::Spawn()
 		UTIL_SetOrigin(pev, m_vecPosition2);
 		m_toggle_state = TS_AT_BOTTOM;
 	}
-}
-
-void PlatSpawnInsideTrigger(entvars_t *pevPlatform)
-{
-	GetClassPtr<CCSPlatTrigger>((CPlatTrigger *)NULL)->SpawnInsideTrigger(GetClassPtr<CCSFuncPlat>((CFuncPlat *)pevPlatform));
 }
 
 // Create a trigger entity for a platform.
@@ -599,7 +601,9 @@ void CFuncTrain::KeyValue(KeyValueData *pkvd)
 		pkvd->fHandled = TRUE;
 	}
 	else
+	{
 		CBasePlatTrain::KeyValue(pkvd);
+	}
 }
 
 void CFuncTrain::Blocked(CBaseEntity *pOther)
@@ -771,7 +775,7 @@ void CFuncTrain::Activate()
 	if (!m_activated)
 	{
 		m_activated = TRUE;
-		entvars_t *pevTarg = VARS(FIND_ENTITY_BY_TARGETNAME(NULL, STRING(pev->target)));
+		entvars_t *pevTarg = VARS(FIND_ENTITY_BY_TARGETNAME(nullptr, STRING(pev->target)));
 
 		pev->target = pevTarg->target;
 
@@ -820,7 +824,7 @@ void CFuncTrain::Spawn()
 	m_pevFirstTarget = m_pevCurrentTarget;
 #else
 	// keep track of this since path corners change our target for us.
-	m_pevFirstTarget = VARS(FIND_ENTITY_BY_TARGETNAME(NULL, STRING(pev->target)));
+	m_pevFirstTarget = VARS(FIND_ENTITY_BY_TARGETNAME(nullptr, STRING(pev->target)));
 #endif
 
 	// TODO: brush-entity is always zero origin, use (mins+max)*0.5f
@@ -957,7 +961,9 @@ void CFuncTrackTrain::KeyValue(KeyValueData *pkvd)
 		pkvd->fHandled = TRUE;
 	}
 	else
+	{
 		CBaseEntity::KeyValue(pkvd);
+	}
 }
 
 void CFuncTrackTrain::NextThink(float thinkTime, BOOL alwaysThink)
@@ -1048,26 +1054,6 @@ void CFuncTrackTrain::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYP
 		Next();
 		ALERT(at_aiconsole, "TRAIN(%s), speed to %.2f\n", STRING(pev->targetname), pev->speed);
 	}
-}
-
-float_precision Fix(float_precision v)
-{
-	float_precision angle = v;
-
-	while (angle < 0)
-		angle += 360;
-
-	while (angle > 360)
-		angle -= 360;
-
-	return angle;
-}
-
-void FixupAngles(Vector &v)
-{
-	v.x = Fix(v.x);
-	v.y = Fix(v.y);
-	v.z = Fix(v.z);
 }
 
 void CFuncTrackTrain::StopSound()
@@ -1177,18 +1163,16 @@ void CFuncTrackTrain::Next()
 	angles.y += 180.0f;
 
 	// TODO: All of this crap has to be done to make the angles not wrap around, revisit this.
-	FixupAngles(angles);
-	FixupAngles(pev->angles);
+	UTIL_FixupAngles(angles);
 #else
 	float_precision fixAngleY = angles.y + 180.0f;
 
-	angles.x = Fix(angles.x);
-	angles.y = Fix(fixAngleY);	// TODO: fix test demo
-	angles.z = Fix(angles.z);
-
-	FixupAngles(pev->angles);
+	angles.x = UTIL_FixupAngle(angles.x);
+	angles.y = UTIL_FixupAngle(fixAngleY);	// TODO: fix test demo
+	angles.z = UTIL_FixupAngle(angles.z);
 #endif
 
+	UTIL_FixupAngles(pev->angles);
 	if (!pnext || (delta.x == 0 && delta.y == 0))
 		angles = pev->angles;
 
@@ -1302,40 +1286,38 @@ void CFuncTrackTrain::DeadEnd()
 	// Find the dead end path node
 	// HACKHACK -- This is bugly, but the train can actually stop moving at a different node depending on it's speed
 	// so we have to traverse the list to it's end.
-	if (pTrack != NULL)
+	if (pTrack)
 	{
 		if (m_oldSpeed < 0)
 		{
 			do
 			{
 				pNext = pTrack->ValidPath(pTrack->GetPrevious(), TRUE);
-
 				if (pNext)
 				{
 					pTrack = pNext;
 				}
 			}
-			while (pNext != NULL);
+			while (pNext);
 		}
 		else
 		{
 			do
 			{
 				pNext = pTrack->ValidPath(pTrack->GetNext(), TRUE);
-
-				if (pNext != NULL)
+				if (pNext)
 				{
 					pTrack = pNext;
 				}
 			}
-			while (pNext != NULL);
+			while (pNext);
 		}
 	}
 
 	pev->velocity = g_vecZero;
 	pev->avelocity = g_vecZero;
 
-	if (pTrack != NULL)
+	if (pTrack)
 	{
 		ALERT(at_aiconsole, "at %s\n", STRING(pTrack->pev->targetname));
 
@@ -1380,7 +1362,7 @@ BOOL CFuncTrackTrain::OnControls(entvars_t *pevTest)
 
 void CFuncTrackTrain::Find()
 {
-	m_ppath = CPathTrack::Instance(FIND_ENTITY_BY_TARGETNAME(NULL, STRING(pev->target)));
+	m_ppath = CPathTrack::Instance(FIND_ENTITY_BY_TARGETNAME(nullptr, STRING(pev->target)));
 
 	if (!m_ppath)
 	{
@@ -1391,7 +1373,7 @@ void CFuncTrackTrain::Find()
 	if (!FClassnameIs(pevTarget, "path_track"))
 	{
 		ALERT(at_error, "func_track_train must be on a path of path_track\n");
-		m_ppath = NULL;
+		m_ppath = nullptr;
 		return;
 	}
 
@@ -1423,14 +1405,12 @@ void CFuncTrackTrain::Find()
 
 void CFuncTrackTrain::NearestPath()
 {
-	CBaseEntity *pTrack = NULL;
-	CBaseEntity *pNearest = NULL;
+	CBaseEntity *pTrack = nullptr;
+	CBaseEntity *pNearest = nullptr;
 	float_precision dist;
-	float closest;
+	float closest = 1024;
 
-	closest = 1024;
-
-	while ((pTrack = UTIL_FindEntityInSphere(pTrack, pev->origin, 1024)) != NULL)
+	while ((pTrack = UTIL_FindEntityInSphere(pTrack, pev->origin, 1024)))
 	{
 		// filter out non-tracks
 		if (!(pTrack->pev->flags & (FL_CLIENT | FL_MONSTER)) && FClassnameIs(pTrack->pev, "path_track"))
@@ -1457,7 +1437,7 @@ void CFuncTrackTrain::NearestPath()
 	// If I'm closer to the next path_track on this path, then it's my real path
 	pTrack = ((CPathTrack *)pNearest)->GetNext();
 
-	if (pTrack != NULL)
+	if (pTrack)
 	{
 		if ((pev->origin - pTrack->pev->origin).Length() < (pev->origin - pNearest->pev->origin).Length())
 		{
@@ -1487,7 +1467,7 @@ CFuncTrackTrain *CFuncTrackTrain::Instance(edict_t *pent)
 		return (CFuncTrackTrain *)GET_PRIVATE(pent);
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 void CFuncTrackTrain::Spawn()
@@ -1584,7 +1564,7 @@ LINK_ENTITY_TO_CLASS(func_traincontrols, CFuncTrainControls, CCSFuncTrainControl
 
 void CFuncTrainControls::Find()
 {
-	edict_t *pTarget = NULL;
+	edict_t *pTarget = nullptr;
 
 	do
 	{
@@ -1707,20 +1687,20 @@ void CFuncTrackChange::Find()
 	// Find track entities
 	edict_t *target;
 
-	target = FIND_ENTITY_BY_TARGETNAME(NULL, STRING(m_trackTopName));
+	target = FIND_ENTITY_BY_TARGETNAME(nullptr, STRING(m_trackTopName));
 	if (!FNullEnt(target))
 	{
 		m_trackTop = CPathTrack::Instance(target);
-		target = FIND_ENTITY_BY_TARGETNAME(NULL, STRING(m_trackBottomName));
+		target = FIND_ENTITY_BY_TARGETNAME(nullptr, STRING(m_trackBottomName));
 
 		if (!FNullEnt(target))
 		{
 			m_trackBottom = CPathTrack::Instance(target);
-			target = FIND_ENTITY_BY_TARGETNAME(NULL, STRING(m_trainName));
+			target = FIND_ENTITY_BY_TARGETNAME(nullptr, STRING(m_trainName));
 
 			if (!FNullEnt(target))
 			{
-				m_train = CFuncTrackTrain::Instance(FIND_ENTITY_BY_TARGETNAME(NULL, STRING(m_trainName)));
+				m_train = CFuncTrackTrain::Instance(FIND_ENTITY_BY_TARGETNAME(nullptr, STRING(m_trainName)));
 
 				if (!m_train)
 				{
@@ -1738,7 +1718,7 @@ void CFuncTrackChange::Find()
 			else
 			{
 				ALERT(at_error, "Can't find train for track change! %s\n", STRING(m_trainName));
-				target = FIND_ENTITY_BY_TARGETNAME(NULL, STRING(m_trainName));
+				target = FIND_ENTITY_BY_TARGETNAME(nullptr, STRING(m_trainName));
 			}
 		}
 		else
@@ -1832,7 +1812,7 @@ void CFuncTrackChange::GoDown()
 	if (m_code == TRAIN_FOLLOWING)
 	{
 		UpdateTrain(m_start);
-		m_train->m_ppath = NULL;
+		m_train->m_ppath = nullptr;
 	}
 }
 
@@ -1866,7 +1846,7 @@ void CFuncTrackChange::GoUp()
 	if (m_code == TRAIN_FOLLOWING)
 	{
 		UpdateTrain(m_end);
-		m_train->m_ppath = NULL;
+		m_train->m_ppath = nullptr;
 	}
 }
 
@@ -1979,7 +1959,7 @@ void CFuncTrackAuto::UpdateAutoTargets(int toggleState)
 		pNextTarget = m_trackTop->GetNext();
 	}
 
-	if (pTarget != NULL)
+	if (pTarget)
 	{
 		pTarget->pev->spawnflags &= ~SF_PATH_DISABLED;
 
@@ -1989,7 +1969,7 @@ void CFuncTrackAuto::UpdateAutoTargets(int toggleState)
 		}
 	}
 
-	if (pNextTarget != NULL)
+	if (pNextTarget)
 	{
 		pNextTarget->pev->spawnflags |= SF_PATH_DISABLED;
 	}
@@ -2011,7 +1991,7 @@ void CFuncTrackAuto::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE
 		pTarget = m_trackBottom;
 		break;
 	default:
-		pTarget = NULL;
+		pTarget = nullptr;
 		break;
 	}
 
@@ -2032,12 +2012,12 @@ void CFuncTrackAuto::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE
 	}
 	else
 	{
-		if (pTarget != NULL)
+		if (pTarget)
 		{
 			pTarget = pTarget->GetNext();
 		}
 
-		if (pTarget != NULL && m_train->m_ppath != pTarget && ShouldToggle(useType, m_targetState))
+		if (pTarget && m_train->m_ppath != pTarget && ShouldToggle(useType, m_targetState))
 		{
 			if (m_targetState == TS_AT_TOP)
 				m_targetState = TS_AT_BOTTOM;
@@ -2072,7 +2052,7 @@ void CGunTarget::Spawn()
 	m_on = FALSE;
 	pev->max_health = pev->health;
 
-	if (pev->spawnflags & FGUNTARGET_START_ON)
+	if (pev->spawnflags & SF_GUNTARGET_START_ON)
 	{
 		SetThink(&CGunTarget::Start);
 		pev->nextthink = pev->ltime + 0.3f;
@@ -2086,7 +2066,7 @@ void CGunTarget::Activate()
 	// now find our next target
 	pTarg = GetNextTarget();
 
-	if (pTarg != NULL)
+	if (pTarg)
 	{
 		m_hTargetEnt = pTarg;
 		UTIL_SetOrigin(pev, pTarg->pev->origin - (pev->mins + pev->maxs) * 0.5f);
@@ -2193,7 +2173,7 @@ void CGunTarget::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE use
 	{
 		pev->takedamage = DAMAGE_AIM;
 		m_hTargetEnt = GetNextTarget();
-		if (m_hTargetEnt == NULL)
+		if (!m_hTargetEnt)
 			return;
 
 		pev->health = pev->max_health;

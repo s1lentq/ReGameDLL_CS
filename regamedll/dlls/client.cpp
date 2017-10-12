@@ -5,6 +5,88 @@
 */
 #ifndef HOOK_GAMEDLL
 
+int giPrecacheGrunt = 0;
+int gmsgWeapPickup = 0;
+int gmsgHudText = 0;
+int gmsgHudTextArgs = 0;
+int gmsgShake = 0;
+int gmsgFade = 0;
+int gmsgFlashlight = 0;
+int gmsgFlashBattery = 0;
+int gmsgResetHUD = 0;
+int gmsgInitHUD = 0;
+int gmsgViewMode = 0;
+int gmsgShowGameTitle = 0;
+int gmsgCurWeapon = 0;
+int gmsgHealth = 0;
+int gmsgDamage = 0;
+int gmsgBattery = 0;
+int gmsgTrain = 0;
+int gmsgLogo = 0;
+int gmsgWeaponList = 0;
+int gmsgAmmoX = 0;
+int gmsgDeathMsg = 0;
+int gmsgScoreAttrib = 0;
+int gmsgScoreInfo = 0;
+int gmsgTeamInfo = 0;
+int gmsgTeamScore = 0;
+int gmsgGameMode = 0;
+int gmsgMOTD = 0;
+int gmsgServerName = 0;
+int gmsgAmmoPickup = 0;
+int gmsgItemPickup = 0;
+int gmsgHideWeapon = 0;
+int gmsgSayText = 0;
+int gmsgTextMsg = 0;
+int gmsgSetFOV = 0;
+int gmsgShowMenu = 0;
+int gmsgSendAudio = 0;
+int gmsgRoundTime = 0;
+int gmsgMoney = 0;
+int gmsgBlinkAcct = 0;
+int gmsgArmorType = 0;
+int gmsgStatusValue = 0;
+int gmsgStatusText = 0;
+int gmsgStatusIcon = 0;
+int gmsgBarTime = 0;
+int gmsgReloadSound = 0;
+int gmsgCrosshair = 0;
+int gmsgNVGToggle = 0;
+int gmsgRadar = 0;
+int gmsgSpectator = 0;
+int gmsgVGUIMenu = 0;
+int gmsgCZCareer = 0;
+int gmsgCZCareerHUD = 0;
+int gmsgTaskTime = 0;
+int gmsgTutorText = 0;
+int gmsgTutorLine = 0;
+int gmsgShadowIdx = 0;
+int gmsgTutorState = 0;
+int gmsgTutorClose = 0;
+int gmsgAllowSpec = 0;
+int gmsgBombDrop = 0;
+int gmsgBombPickup = 0;
+int gmsgHostagePos = 0;
+int gmsgHostageK = 0;
+int gmsgGeigerRange = 0;
+int gmsgSendCorpse = 0;
+int gmsgHLTV = 0;
+int gmsgSpecHealth = 0;
+int gmsgForceCam = 0;
+int gmsgADStop = 0;
+int gmsgReceiveW = 0;
+int gmsgScenarioIcon = 0;
+int gmsgBotVoice = 0;
+int gmsgBuyClose = 0;
+int gmsgItemStatus = 0;
+int gmsgLocation = 0;
+int gmsgSpecHealth2 = 0;
+int gmsgBarTime2 = 0;
+int gmsgBotProgress = 0;
+int gmsgBrass = 0;
+int gmsgFog = 0;
+int gmsgShowTimer = 0;
+
 bool g_bClientPrintEnable = true;
 
 char *sPlayerModelFiles[] =
@@ -19,40 +101,40 @@ char *sPlayerModelFiles[] =
 	"models/player/sas/sas.mdl",
 	"models/player/terror/terror.mdl",
 	"models/player/urban/urban.mdl",
-	"models/player/spetsnaz/spetsnaz.mdl",	// CZ
-	"models/player/militia/militia.mdl"	// CZ
+	"models/player/spetsnaz/spetsnaz.mdl", // CZ
+	"models/player/militia/militia.mdl"    // CZ
 };
 
 bool g_skipCareerInitialSpawn = false;
 
 static entity_field_alias_t entity_field_alias[] =
 {
-	{ "origin[0]",	0 },
-	{ "origin[1]",	0 },
-	{ "origin[2]",	0 },
-	{ "angles[0]",	0 },
-	{ "angles[1]",	0 },
-	{ "angles[2]",	0 },
+	{ "origin[0]", 0 },
+	{ "origin[1]", 0 },
+	{ "origin[2]", 0 },
+	{ "angles[0]", 0 },
+	{ "angles[1]", 0 },
+	{ "angles[2]", 0 },
 };
 
 static entity_field_alias_t player_field_alias[] =
 {
-	{ "origin[0]",	0 },
-	{ "origin[1]",	0 },
-	{ "origin[2]",	0 },
+	{ "origin[0]", 0 },
+	{ "origin[1]", 0 },
+	{ "origin[2]", 0 },
 };
 
 static entity_field_alias_t custom_entity_field_alias[] =
 {
-	{ "origin[0]",	0 },
-	{ "origin[1]",	0 },
-	{ "origin[2]",	0 },
-	{ "angles[0]",	0 },
-	{ "angles[1]",	0 },
-	{ "angles[2]",	0 },
-	{ "skin",	0 },
-	{ "sequence",	0 },
-	{ "animtime",	0 },
+	{ "origin[0]", 0 },
+	{ "origin[1]", 0 },
+	{ "origin[2]", 0 },
+	{ "angles[0]", 0 },
+	{ "angles[1]", 0 },
+	{ "angles[2]", 0 },
+	{ "skin",      0 },
+	{ "sequence",  0 },
+	{ "animtime",  0 },
 };
 
 #endif // HOOK_GAMEDLL
@@ -62,15 +144,130 @@ PLAYERPVSSTATUS g_PVSStatus[MAX_CLIENTS];
 unsigned short m_usResetDecals;
 unsigned short g_iShadowSprite;
 
+void LinkUserMessages()
+{
+	if (gmsgCurWeapon)
+		return;
+
+	gmsgCurWeapon = REG_USER_MSG("CurWeapon", 3);
+	gmsgGeigerRange = REG_USER_MSG("Geiger", 1);
+	gmsgFlashlight = REG_USER_MSG("Flashlight", 2);
+	gmsgFlashBattery = REG_USER_MSG("FlashBat", 1);
+	gmsgHealth = REG_USER_MSG("Health", 1);
+	gmsgDamage = REG_USER_MSG("Damage", 12);
+	gmsgBattery = REG_USER_MSG("Battery", 2);
+	gmsgTrain = REG_USER_MSG("Train", 1);
+	gmsgHudText = REG_USER_MSG("HudTextPro", -1);
+	REG_USER_MSG("HudText", -1);
+	gmsgSayText = REG_USER_MSG("SayText", -1);
+	gmsgTextMsg = REG_USER_MSG("TextMsg", -1);
+	gmsgWeaponList = REG_USER_MSG("WeaponList", -1);
+	gmsgResetHUD = REG_USER_MSG("ResetHUD", 0);
+	gmsgInitHUD = REG_USER_MSG("InitHUD", 0);
+	gmsgViewMode = REG_USER_MSG("ViewMode", 0);
+	gmsgShowGameTitle = REG_USER_MSG("GameTitle", 1);
+	gmsgDeathMsg = REG_USER_MSG("DeathMsg", -1);
+	gmsgScoreAttrib = REG_USER_MSG("ScoreAttrib", 2);
+	gmsgScoreInfo = REG_USER_MSG("ScoreInfo", 9);
+	gmsgTeamInfo = REG_USER_MSG("TeamInfo", -1);
+	gmsgTeamScore = REG_USER_MSG("TeamScore", -1);
+	gmsgGameMode = REG_USER_MSG("GameMode", 1);
+	gmsgMOTD = REG_USER_MSG("MOTD", -1);
+	gmsgServerName = REG_USER_MSG("ServerName", -1);
+	gmsgAmmoPickup = REG_USER_MSG("AmmoPickup", 2);
+	gmsgWeapPickup = REG_USER_MSG("WeapPickup", 1);
+	gmsgItemPickup = REG_USER_MSG("ItemPickup", -1);
+	gmsgHideWeapon = REG_USER_MSG("HideWeapon", 1);
+	gmsgSetFOV = REG_USER_MSG("SetFOV", 1);
+	gmsgShowMenu = REG_USER_MSG("ShowMenu", -1);
+	gmsgShake = REG_USER_MSG("ScreenShake", 6);
+	gmsgFade = REG_USER_MSG("ScreenFade", 10);
+	gmsgAmmoX = REG_USER_MSG("AmmoX", 2);
+	gmsgSendAudio = REG_USER_MSG("SendAudio", -1);
+	gmsgRoundTime = REG_USER_MSG("RoundTime", 2);
+	gmsgMoney = REG_USER_MSG("Money", 5);
+	gmsgArmorType = REG_USER_MSG("ArmorType", 1);
+	gmsgBlinkAcct = REG_USER_MSG("BlinkAcct", 1);
+	gmsgStatusValue = REG_USER_MSG("StatusValue", -1);
+	gmsgStatusText = REG_USER_MSG("StatusText", -1);
+	gmsgStatusIcon = REG_USER_MSG("StatusIcon", -1);
+	gmsgBarTime = REG_USER_MSG("BarTime", 2);
+	gmsgReloadSound = REG_USER_MSG("ReloadSound", 2);
+	gmsgCrosshair = REG_USER_MSG("Crosshair", 1);
+	gmsgNVGToggle = REG_USER_MSG("NVGToggle", 1);
+	gmsgRadar = REG_USER_MSG("Radar", 7);
+	gmsgSpectator = REG_USER_MSG("Spectator", 2);
+	gmsgVGUIMenu = REG_USER_MSG("VGUIMenu", -1);
+	gmsgTutorText = REG_USER_MSG("TutorText", -1);
+	gmsgTutorLine = REG_USER_MSG("TutorLine", -1);
+	gmsgTutorState = REG_USER_MSG("TutorState", -1);
+	gmsgTutorClose = REG_USER_MSG("TutorClose", -1);
+	gmsgAllowSpec = REG_USER_MSG("AllowSpec", 1);
+	gmsgBombDrop = REG_USER_MSG("BombDrop", 7);
+	gmsgBombPickup = REG_USER_MSG("BombPickup", 0);
+	gmsgSendCorpse = REG_USER_MSG("ClCorpse", -1);
+	gmsgHostagePos = REG_USER_MSG("HostagePos", 8);
+	gmsgHostageK = REG_USER_MSG("HostageK", 1);
+	gmsgHLTV = REG_USER_MSG("HLTV", 2);
+	gmsgSpecHealth = REG_USER_MSG("SpecHealth", 1);
+	gmsgForceCam = REG_USER_MSG("ForceCam", 3);
+	gmsgADStop = REG_USER_MSG("ADStop", 0);
+	gmsgReceiveW = REG_USER_MSG("ReceiveW", 1);
+	gmsgCZCareer = REG_USER_MSG("CZCareer", -1);
+	gmsgCZCareerHUD = REG_USER_MSG("CZCareerHUD", -1);
+	gmsgShadowIdx = REG_USER_MSG("ShadowIdx", 4);
+	gmsgTaskTime = REG_USER_MSG("TaskTime", 4);
+	gmsgScenarioIcon = REG_USER_MSG("Scenario", -1);
+	gmsgBotVoice = REG_USER_MSG("BotVoice", 2);
+	gmsgBuyClose = REG_USER_MSG("BuyClose", 0);
+	gmsgSpecHealth2 = REG_USER_MSG("SpecHealth2", 2);
+	gmsgBarTime2 = REG_USER_MSG("BarTime2", 4);
+	gmsgItemStatus = REG_USER_MSG("ItemStatus", 1);
+	gmsgLocation = REG_USER_MSG("Location", -1);
+	gmsgBotProgress = REG_USER_MSG("BotProgress", -1);
+	gmsgBrass = REG_USER_MSG("Brass", -1);
+	gmsgFog = REG_USER_MSG("Fog", 7);
+	gmsgShowTimer = REG_USER_MSG("ShowTimer", 0);
+	gmsgHudTextArgs = REG_USER_MSG("HudTextArgs", -1);
+}
+
+void WriteSigonMessages()
+{
+	for (int i = 0; i < MAX_WEAPONS; ++i)
+	{
+		ItemInfo &II = IMPL_CLASS(CBasePlayerItem, ItemInfoArray)[i];
+
+		if (!II.iId)
+			continue;
+
+		const char *pszName;
+		if (!II.pszName)
+			pszName = "Empty";
+		else
+			pszName = II.pszName;
+
+		MESSAGE_BEGIN(MSG_INIT, gmsgWeaponList);
+			WRITE_STRING(pszName);
+			WRITE_BYTE(CBasePlayer::GetAmmoIndex(II.pszAmmo1));
+			WRITE_BYTE(II.iMaxAmmo1);
+			WRITE_BYTE(CBasePlayer::GetAmmoIndex(II.pszAmmo2));
+			WRITE_BYTE(II.iMaxAmmo2);
+			WRITE_BYTE(II.iSlot);
+			WRITE_BYTE(II.iPosition);
+			WRITE_BYTE(II.iId);
+			WRITE_BYTE(II.iFlags);
+		MESSAGE_END();
+	}
+}
+
 int CMD_ARGC_()
 {
 	if (!UseBotArgs)
 		return CMD_ARGC();
 
 	int i = 0;
-
 	while (BotArgs[i])
-		++i;
+		i++;
 
 	return i;
 }
@@ -83,7 +280,7 @@ const char *CMD_ARGV_(int i)
 	if (i < 4)
 		return BotArgs[i];
 
-	return NULL;
+	return nullptr;
 }
 
 NOXREF void set_suicide_frame(entvars_t *pev)
@@ -99,7 +296,7 @@ NOXREF void set_suicide_frame(entvars_t *pev)
 
 void BlinkAccount(CBasePlayer *player, int numBlinks)
 {
-	MESSAGE_BEGIN(MSG_ONE, gmsgBlinkAcct, NULL, player->pev);
+	MESSAGE_BEGIN(MSG_ONE, gmsgBlinkAcct, nullptr, player->pev);
 		WRITE_BYTE(numBlinks);
 	MESSAGE_END();
 }
@@ -127,7 +324,9 @@ void EXT_FUNC ClientDisconnect(edict_t *pEntity)
 		pEntity->v.flags = FL_DORMANT;
 
 		if (pPlayer)
+		{
 			pPlayer->Disconnect();
+		}
 
 		UTIL_SetOrigin(&pEntity->v, pEntity->v.origin);
 		g_pGameRules->ClientDisconnected(pEntity);
@@ -199,7 +398,7 @@ LINK_HOOK_VOID_CHAIN(ShowMenu, (CBasePlayer *pPlayer, int bitsValidSlots, int nD
 
 void EXT_FUNC __API_HOOK(ShowMenu)(CBasePlayer *pPlayer, int bitsValidSlots, int nDisplayTime, BOOL fNeedMore, char *pszText)
 {
-	MESSAGE_BEGIN(MSG_ONE, gmsgShowMenu, NULL, pPlayer->pev);
+	MESSAGE_BEGIN(MSG_ONE, gmsgShowMenu, nullptr, pPlayer->pev);
 		WRITE_SHORT(bitsValidSlots);
 		WRITE_CHAR(nDisplayTime);
 		WRITE_BYTE(fNeedMore);
@@ -227,7 +426,7 @@ void EXT_FUNC __API_HOOK(ShowVGUIMenu)(CBasePlayer *pPlayer, int MenuType, int B
 
 	if (pPlayer->m_bVGUIMenus || MenuType > VGUI_Menu_Buy_Item)
 	{
-		MESSAGE_BEGIN(MSG_ONE, gmsgVGUIMenu, NULL, pPlayer->pev);
+		MESSAGE_BEGIN(MSG_ONE, gmsgVGUIMenu, nullptr, pPlayer->pev);
 			WRITE_BYTE(MenuType);
 			WRITE_SHORT(BitMask);
 			WRITE_CHAR(-1);
@@ -242,28 +441,28 @@ void EXT_FUNC __API_HOOK(ShowVGUIMenu)(CBasePlayer *pPlayer, int MenuType, int B
 NOXREF int CountTeams()
 {
 	int iNumCT = 0, iNumTerrorist = 0;
-	CBaseEntity *pPlayer = NULL;
+	CBaseEntity *pEntity = nullptr;
 
-	while ((pPlayer = UTIL_FindEntityByClassname(pPlayer, "player")))
+	while ((pEntity = UTIL_FindEntityByClassname(pEntity, "player")))
 	{
-		if (FNullEnt(pPlayer->edict()))
+		if (FNullEnt(pEntity->edict()))
 			break;
 
-		CBasePlayer *player = GetClassPtr<CCSPlayer>((CBasePlayer *)pPlayer->pev);
+		CBasePlayer *pPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev);
 
-		if (player->m_iTeam == UNASSIGNED)
+		if (pPlayer->m_iTeam == UNASSIGNED)
 			continue;
 
-		if (player->pev->flags & FL_DORMANT)
+		if (pPlayer->pev->flags & FL_DORMANT)
 			continue;
 
-		if (player->m_iTeam == SPECTATOR)
+		if (pPlayer->m_iTeam == SPECTATOR)
 			continue;
 
-		if (player->m_iTeam == CT)
+		if (pPlayer->m_iTeam == CT)
 			iNumCT++;
 
-		else if (player->m_iTeam == TERRORIST)
+		else if (pPlayer->m_iTeam == TERRORIST)
 			iNumTerrorist++;
 	}
 
@@ -274,23 +473,23 @@ void ListPlayers(CBasePlayer *current)
 {
 	char message[120] = "", cNumber[12];
 
-	CBaseEntity *pPlayer = NULL;
-	while ((pPlayer = UTIL_FindEntityByClassname(pPlayer, "player")))
+	CBaseEntity *pEntity = nullptr;
+	while ((pEntity = UTIL_FindEntityByClassname(pEntity, "player")))
 	{
-		if (FNullEnt(pPlayer->edict()))
+		if (FNullEnt(pEntity->edict()))
 			break;
 
-		if (pPlayer->pev->flags & FL_DORMANT)
+		if (pEntity->pev->flags & FL_DORMANT)
 			continue;
 
-		CBasePlayer *player = GetClassPtr<CCSPlayer>((CBasePlayer *)pPlayer->pev);
-		int iUserID = GETPLAYERUSERID(ENT(player->pev));
+		CBasePlayer *pPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev);
+		int iUserID = GETPLAYERUSERID(ENT(pPlayer->pev));
 
 		Q_sprintf(cNumber, "%d", iUserID);
 		Q_strcpy(message, "\n");
 		Q_strcat(message, cNumber);
 		Q_strcat(message, " : ");
-		Q_strcat(message, STRING(player->pev->netname));
+		Q_strcat(message, STRING(pPlayer->pev->netname));
 
 		ClientPrint(current->pev, HUD_PRINTCONSOLE, message);
 	}
@@ -300,22 +499,23 @@ void ListPlayers(CBasePlayer *current)
 
 int CountTeamPlayers(int iTeam)
 {
-	CBaseEntity *pPlayer = NULL;
-	int i = 0;
-
-	while ((pPlayer = UTIL_FindEntityByClassname(pPlayer, "player")))
+	int nCount = 0;
+	CBaseEntity *pEntity = nullptr;
+	while ((pEntity = UTIL_FindEntityByClassname(pEntity, "player")))
 	{
-		if (FNullEnt(pPlayer->edict()))
+		if (FNullEnt(pEntity->edict()))
 			break;
 
-		if (pPlayer->pev->flags & FL_DORMANT)
+		if (pEntity->pev->flags & FL_DORMANT)
 			continue;
 
-		if (GetClassPtr<CCSPlayer>((CBasePlayer *)pPlayer->pev)->m_iTeam == iTeam)
-			++i;
+		if (GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev)->m_iTeam == iTeam)
+		{
+			nCount++;
+		}
 	}
 
-	return i;
+	return nCount;
 }
 
 void ProcessKickVote(CBasePlayer *pVotingPlayer, CBasePlayer *pKickPlayer)
@@ -336,7 +536,7 @@ void ProcessKickVote(CBasePlayer *pVotingPlayer, CBasePlayer *pKickPlayer)
 		return;
 
 	iValidVotes = 0;
-	pTempEntity = NULL;
+	pTempEntity = nullptr;
 	iVoteID = pVotingPlayer->m_iCurrentKickVote;
 
 	while ((pTempEntity = UTIL_FindEntityByClassname(pTempEntity, "player")))
@@ -366,7 +566,7 @@ void ProcessKickVote(CBasePlayer *pVotingPlayer, CBasePlayer *pKickPlayer)
 	{
 		UTIL_ClientPrintAll(HUD_PRINTCENTER, "#Game_kicked", STRING(pKickPlayer->pev->netname));
 		SERVER_COMMAND(UTIL_VarArgs("kick # %d\n", iVoteID));
-		pTempEntity = NULL;
+		pTempEntity = nullptr;
 
 		while ((pTempEntity = UTIL_FindEntityByClassname(pTempEntity, "player")))
 		{
@@ -457,25 +657,25 @@ void EXT_FUNC ClientPutInServer(edict_t *pEntity)
 	pPlayer->has_disconnected = false;
 	pPlayer->m_iMenu = Menu_OFF;
 	pPlayer->ClearAutoBuyData();
-	pPlayer->m_rebuyString = NULL;
+	pPlayer->m_rebuyString = nullptr;
 
 	SET_CLIENT_MAXSPEED(ENT(pPlayer->pev), 1);
 	SET_MODEL(ENT(pPlayer->pev), "models/player.mdl");
 
 	pPlayer->SetThink(NULL);
 
-	CBaseEntity *pTarget = NULL;
-	pPlayer->m_pIntroCamera = UTIL_FindEntityByClassname(NULL, "trigger_camera");
+	CBaseEntity *pTarget = nullptr;
+	pPlayer->m_pIntroCamera = UTIL_FindEntityByClassname(nullptr, "trigger_camera");
 
 	if (g_pGameRules && g_pGameRules->IsMultiplayer())
 	{
-		CSGameRules()->m_bMapHasCameras = (pPlayer->m_pIntroCamera != NULL);
+		CSGameRules()->m_bMapHasCameras = (pPlayer->m_pIntroCamera != nullptr);
 	}
 
 	if (pPlayer->m_pIntroCamera)
 	{
 		// find the target (by default info_target) for the camera view direction.
-		pTarget = UTIL_FindEntityByTargetname(NULL, STRING(pPlayer->m_pIntroCamera->pev->target));
+		pTarget = UTIL_FindEntityByTargetname(nullptr, STRING(pPlayer->m_pIntroCamera->pev->target));
 	}
 
 	if (pPlayer->m_pIntroCamera && pTarget)
@@ -599,15 +799,15 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 	if (Q_strlen(p) <= 0)
 		return;
 
-	const char *placeName = NULL;
-	char *pszFormat = NULL;
-	char *pszConsoleFormat = NULL;
+	const char *placeName = nullptr;
+	char *pszFormat = nullptr;
+	char *pszConsoleFormat = nullptr;
 	bool consoleUsesPlaceName = false;
 
 	// team only
 	if (teamonly)
 	{
-		if (g_bIsCzeroGame && (player->m_iTeam == CT || player->m_iTeam == TERRORIST))
+		if (AreRunningCZero() && (player->m_iTeam == CT || player->m_iTeam == TERRORIST))
 		{
 			// search the place name where is located the player
 			Place playerPlace = TheNavAreaGrid.GetPlace(&player->pev->origin);
@@ -722,7 +922,7 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 	// This may return the world in single player if the client types something between levels or during spawn
 	// so check it, or it will infinite loop
 
-	client = NULL;
+	client = nullptr;
 	while ((client = (CBasePlayer *)UTIL_FindEntityByClassname(client, "player")))
 	{
 		if (FNullEnt(client->edict()))
@@ -754,7 +954,7 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 		if ((client->m_iIgnoreGlobalChat == IGNOREMSG_ENEMY && client->m_iTeam == player->m_iTeam)
 			|| client->m_iIgnoreGlobalChat == IGNOREMSG_NONE)
 		{
-			MESSAGE_BEGIN(MSG_ONE, gmsgSayText, NULL, client->pev);
+			MESSAGE_BEGIN(MSG_ONE, gmsgSayText, nullptr, client->pev);
 				WRITE_BYTE(ENTINDEX(pEntity));
 				WRITE_STRING(pszFormat);
 				WRITE_STRING("");
@@ -772,7 +972,7 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 	char *fullText = p;
 
 	// print to the sending client
-	MESSAGE_BEGIN(MSG_ONE, gmsgSayText, NULL, &pEntity->v);
+	MESSAGE_BEGIN(MSG_ONE, gmsgSayText, nullptr, &pEntity->v);
 		WRITE_BYTE(ENTINDEX(pEntity));
 		WRITE_STRING(pszFormat);
 		WRITE_STRING("");
@@ -968,7 +1168,7 @@ void BuyMachineGun(CBasePlayer *pPlayer, int iSlot)
 void BuyItem(CBasePlayer *pPlayer, int iSlot)
 {
 	int iItemPrice = 0;
-	const char *pszItem = NULL;
+	const char *pszItem = nullptr;
 
 	if (!pPlayer->CanPlayerBuy(true))
 		return;
@@ -1208,7 +1408,7 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 				bEnoughMoney = true;
 				pPlayer->m_bHasDefuser = true;
 
-				MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, NULL, pPlayer->pev);
+				MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pPlayer->pev);
 					WRITE_BYTE(STATUSICON_SHOW);
 					WRITE_STRING("defuser");
 					WRITE_BYTE(0);
@@ -1331,7 +1531,7 @@ LINK_HOOK_VOID_CHAIN(HandleMenu_ChooseAppearance, (CBasePlayer *player, int slot
 
 void EXT_FUNC __API_HOOK(HandleMenu_ChooseAppearance)(CBasePlayer *player, int slot)
 {
-	int numSkins = g_bIsCzeroGame ? CZ_NUM_SKIN : CS_NUM_SKIN;
+	int numSkins = AreRunningCZero() ? CZ_NUM_SKIN : CS_NUM_SKIN;
 
 	struct
 	{
@@ -1369,7 +1569,7 @@ void EXT_FUNC __API_HOOK(HandleMenu_ChooseAppearance)(CBasePlayer *player, int s
 			appearance.model_name = "guerilla";
 			break;
 		case 5:
-			if (g_bIsCzeroGame)
+			if (AreRunningCZero())
 			{
 				appearance.model_id = MODEL_MILITIA;
 				appearance.model_name = "militia";
@@ -1418,7 +1618,7 @@ void EXT_FUNC __API_HOOK(HandleMenu_ChooseAppearance)(CBasePlayer *player, int s
 			appearance.model_name = "gign";
 			break;
 		case 5:
-			if (g_bIsCzeroGame)
+			if (AreRunningCZero())
 			{
 				appearance.model_id = MODEL_SPETSNAZ;
 				appearance.model_name = "spetsnaz";
@@ -1613,7 +1813,7 @@ BOOL EXT_FUNC __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *player, int slot)
 #else
 			player->m_iAccount = 0;
 
-			MESSAGE_BEGIN(MSG_ONE, gmsgMoney, NULL, player->pev);
+			MESSAGE_BEGIN(MSG_ONE, gmsgMoney, nullptr, player->pev);
 				WRITE_LONG(player->m_iAccount);
 				WRITE_BYTE(0);
 			MESSAGE_END();
@@ -1631,7 +1831,7 @@ BOOL EXT_FUNC __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *player, int slot)
 				WRITE_SHORT(0);
 			MESSAGE_END();
 
-			player->m_pIntroCamera = NULL;
+			player->m_pIntroCamera = nullptr;
 			player->m_bTeamChanged = true;
 
 			if (TheBots)
@@ -1792,14 +1992,14 @@ BOOL EXT_FUNC __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *player, int slot)
 			switch (team)
 			{
 			case CT:
-				if (g_bIsCzeroGame)
+				if (AreRunningCZero())
 					ShowVGUIMenu(player, VGUI_Menu_Class_CT, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6), "#CT_Select");
 				else
 					ShowVGUIMenu(player, VGUI_Menu_Class_CT, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5), "#CT_Select");
 				break;
 
 			case TERRORIST:
-				if (g_bIsCzeroGame)
+				if (AreRunningCZero())
 					ShowVGUIMenu(player, VGUI_Menu_Class_T, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6), "#Terrorist_Select");
 				else
 					ShowVGUIMenu(player, VGUI_Menu_Class_T, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5), "#Terrorist_Select");
@@ -2056,7 +2256,7 @@ bool BuyAmmo(CBasePlayer *player, int nSlot, bool bBlinkMoney)
 
 CBaseEntity *EntityFromUserID(int userID)
 {
-	CBaseEntity *pTempEntity = NULL;
+	CBaseEntity *pTempEntity = nullptr;
 
 	while ((pTempEntity = UTIL_FindEntityByClassname(pTempEntity, "player")))
 	{
@@ -2071,13 +2271,13 @@ CBaseEntity *EntityFromUserID(int userID)
 		}
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 NOXREF int CountPlayersInServer()
 {
 	int count = 0;
-	CBaseEntity *pTempEntity = NULL;
+	CBaseEntity *pTempEntity = nullptr;
 
 	while ((pTempEntity = UTIL_FindEntityByClassname(pTempEntity, "player")))
 	{
@@ -2102,7 +2302,7 @@ BOOL HandleBuyAliasCommands(CBasePlayer *pPlayer, const char *pszCommand)
 {
 	// Let them buy it if it's got a weapon data string.
 	BOOL bRetVal = FALSE;
-	const char *pszFailItem = NULL;
+	const char *pszFailItem = nullptr;
 
 	WeaponIdType weaponID = WEAPON_NONE;
 	const char *weaponFailName = BuyAliasToWeaponID(pszCommand, weaponID);
@@ -2289,7 +2489,7 @@ BOOL HandleRadioAliasCommands(CBasePlayer *pPlayer, const char *pszCommand)
 
 void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *parg1)
 {
-	const char *pstr = NULL;
+	const char *pstr = nullptr;
 	entvars_t *pev = &pEntity->v;
 	CBasePlayer *player = GetClassPtr<CCSPlayer>((CBasePlayer *)pev);
 
@@ -2530,7 +2730,7 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 		}
 		else
 		{
-			MESSAGE_BEGIN(MSG_ONE, gmsgBuyClose, NULL, player->pev);
+			MESSAGE_BEGIN(MSG_ONE, gmsgBuyClose, nullptr, player->pev);
 			MESSAGE_END();
 		}
 	}
@@ -2892,7 +3092,7 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 
 		if (mode == OBS_CHASE_FREE)
 		{
-			MESSAGE_BEGIN(MSG_ONE, gmsgADStop, NULL, player->pev);
+			MESSAGE_BEGIN(MSG_ONE, gmsgADStop, nullptr, player->pev);
 			MESSAGE_END();
 		}
 	}
@@ -2989,7 +3189,7 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 					{
 						EMIT_SOUND(ENT(player->pev), CHAN_ITEM, "items/nvg_off.wav", RANDOM_FLOAT(0.92, 1), ATTN_NORM);
 
-						MESSAGE_BEGIN(MSG_ONE, gmsgNVGToggle, NULL, player->pev);
+						MESSAGE_BEGIN(MSG_ONE, gmsgNVGToggle, nullptr, player->pev);
 							WRITE_BYTE(0); // disable nightvision
 						MESSAGE_END();
 
@@ -3002,7 +3202,7 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 							{
 								EMIT_SOUND(ENT(pObserver->pev), CHAN_ITEM, "items/nvg_off.wav", RANDOM_FLOAT(0.92, 1), ATTN_NORM);
 
-								MESSAGE_BEGIN(MSG_ONE, gmsgNVGToggle, NULL, pObserver->pev);
+								MESSAGE_BEGIN(MSG_ONE, gmsgNVGToggle, nullptr, pObserver->pev);
 									WRITE_BYTE(0); // disable nightvision
 								MESSAGE_END();
 
@@ -3014,7 +3214,7 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 					{
 						EMIT_SOUND(ENT(player->pev), CHAN_ITEM, "items/nvg_on.wav", RANDOM_FLOAT(0.92, 1), ATTN_NORM);
 
-						MESSAGE_BEGIN(MSG_ONE, gmsgNVGToggle, NULL, player->pev);
+						MESSAGE_BEGIN(MSG_ONE, gmsgNVGToggle, nullptr, player->pev);
 							WRITE_BYTE(1); // enable nightvision
 						MESSAGE_END();
 
@@ -3027,7 +3227,7 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 							{
 								EMIT_SOUND(ENT(pObserver->pev), CHAN_ITEM, "items/nvg_on.wav", RANDOM_FLOAT(0.92, 1), ATTN_NORM);
 
-								MESSAGE_BEGIN(MSG_ONE, gmsgNVGToggle, NULL, pObserver->pev);
+								MESSAGE_BEGIN(MSG_ONE, gmsgNVGToggle, nullptr, pObserver->pev);
 									WRITE_BYTE(1);  // enable nightvision
 								MESSAGE_END();
 
@@ -3370,7 +3570,6 @@ void EXT_FUNC ServerActivate(edict_t *pEdictList, int edictCount, int clientMax)
 #ifdef REGAMEDLL_ADD
 	CSGameRules()->ServerActivate();
 #endif
-
 }
 
 void EXT_FUNC PlayerPreThink(edict_t *pEntity)
@@ -3422,7 +3621,7 @@ void EXT_FUNC StartFrame()
 
 	CLocalNav::Think();
 
-	static cvar_t *skill = NULL;
+	static cvar_t *skill = nullptr;
 	if (!skill)
 	{
 		skill = CVAR_GET_POINTER("skill");
@@ -3443,11 +3642,6 @@ void EXT_FUNC StartFrame()
 	if (TheTutor) {
 		TheTutor->StartFrame(gpGlobals->time);
 	}
-
-#ifndef REGAMEDLL_FIXES
-	// it is noxref
-	++g_ulFrameCount;
-#endif
 }
 
 void ClientPrecache()
@@ -3557,8 +3751,8 @@ void ClientPrecache()
 	PRECACHE_SOUND("debris/glass1.wav");
 	PRECACHE_SOUND("debris/glass2.wav");
 	PRECACHE_SOUND("debris/glass3.wav");
-	PRECACHE_SOUND("items/flashlight1.wav");
-	PRECACHE_SOUND("items/flashlight1.wav");
+	PRECACHE_SOUND(SOUND_FLASHLIGHT_ON);
+	PRECACHE_SOUND(SOUND_FLASHLIGHT_OFF);
 	PRECACHE_SOUND("common/bodysplat.wav");
 	PRECACHE_SOUND("player/pl_pain2.wav");
 	PRECACHE_SOUND("player/pl_pain4.wav");
@@ -3567,7 +3761,7 @@ void ClientPrecache()
 	PRECACHE_SOUND("player/pl_pain7.wav");
 
 	int numPlayerModels;
-	if (g_bIsCzeroGame)
+	if (AreRunningCZero())
 		numPlayerModels = ARRAYSIZE(sPlayerModelFiles);
 	else
 		numPlayerModels = ARRAYSIZE(sPlayerModelFiles) - 2;
@@ -3575,7 +3769,7 @@ void ClientPrecache()
 	for (i = 0; i < numPlayerModels; ++i)
 		PRECACHE_MODEL(sPlayerModelFiles[i]);
 
-	if (g_bIsCzeroGame)
+	if (AreRunningCZero())
 	{
 		for (i = FirstCustomSkin; i <= LastCustomSkin; ++i)
 		{
@@ -3640,7 +3834,7 @@ void ClientPrecache()
 	for (i = 0; i < numPlayerModels; ++i)
 		ENGINE_FORCE_UNMODIFIED(force_model_specifybounds, (float *)&vMin, (float *)&vMax, sPlayerModelFiles[i]);
 
-	if (g_bIsCzeroGame)
+	if (AreRunningCZero())
 	{
 		for (i = FirstCustomSkin; i <= LastCustomSkin; ++i)
 		{
@@ -3664,7 +3858,7 @@ void ClientPrecache()
 	ENGINE_FORCE_UNMODIFIED(force_exactfile, (float *)&temp, (float *)&temp, "sprites/scope_arc_ne.tga");
 	ENGINE_FORCE_UNMODIFIED(force_exactfile, (float *)&temp, (float *)&temp, "sprites/scope_arc_sw.tga");
 
-	if (g_bIsCzeroGame)
+	if (AreRunningCZero())
 	{
 		vMin = Vector(-13, -6, -22);
 		vMax = Vector(13, 6, 22);
@@ -3682,7 +3876,7 @@ void ClientPrecache()
 	ENGINE_FORCE_UNMODIFIED(force_model_specifybounds, (float *)&vMin, (float *)&vMax, "models/p_fiveseven.mdl");
 	ENGINE_FORCE_UNMODIFIED(force_model_specifybounds, (float *)&vMin, (float *)&vMax, "models/p_glock18.mdl");
 
-	if (g_bIsCzeroGame)
+	if (AreRunningCZero())
 	{
 		vMin = Vector(-26, -19, -21);
 		vMax = Vector(26, 23, 21);
@@ -3696,7 +3890,7 @@ void ClientPrecache()
 	ENGINE_FORCE_UNMODIFIED(force_model_specifybounds, (float *)&vMin, (float *)&vMax, "models/p_xm1014.mdl");
 	ENGINE_FORCE_UNMODIFIED(force_model_specifybounds, (float *)&vMin, (float *)&vMax, "models/p_m3.mdl");
 
-	if (g_bIsCzeroGame)
+	if (AreRunningCZero())
 	{
 		vMin = Vector(-23, -9, -20);
 		vMax = Vector(23, 17, 20);
@@ -3713,7 +3907,7 @@ void ClientPrecache()
 	ENGINE_FORCE_UNMODIFIED(force_model_specifybounds, (float *)&vMin, (float *)&vMax, "models/p_tmp.mdl");
 	ENGINE_FORCE_UNMODIFIED(force_model_specifybounds, (float *)&vMin, (float *)&vMax, "models/p_p90.mdl");
 
-	if (g_bIsCzeroGame)
+	if (AreRunningCZero())
 	{
 		vMin = Vector(-38, -33, -22);
 		vMax = Vector(38, 15, 35);
@@ -3735,7 +3929,7 @@ void ClientPrecache()
 	ENGINE_FORCE_UNMODIFIED(force_model_specifybounds, (float *)&vMin, (float *)&vMax, "models/p_famas.mdl");
 	ENGINE_FORCE_UNMODIFIED(force_model_specifybounds, (float *)&vMin, (float *)&vMax, "models/p_galil.mdl");
 
-	if (g_bIsCzeroGame)
+	if (AreRunningCZero())
 	{
 		vMin = Vector(-30, -10, -20);
 		vMax = Vector(30, 11, 20);
@@ -3756,7 +3950,7 @@ void ClientPrecache()
 	vMin = Vector(-4, -8, -3);
 	vMax = Vector(3, 7, 3);
 
-	if (g_bIsCzeroGame)
+	if (AreRunningCZero())
 	{
 		vMin = Vector(-17, -8, -3);
 		vMax = Vector(17, 7, 3);
@@ -3769,7 +3963,7 @@ void ClientPrecache()
 
 	ENGINE_FORCE_UNMODIFIED(force_model_specifybounds, (float *)&vMin, (float *)&vMax, "models/w_c4.mdl");
 
-	if (g_bIsCzeroGame)
+	if (AreRunningCZero())
 	{
 		vMin = Vector(-7, -3, -18);
 		vMax = Vector(7, 2, 18);
@@ -3784,7 +3978,7 @@ void ClientPrecache()
 	ENGINE_FORCE_UNMODIFIED(force_model_specifybounds, (float *)&vMin, (float *)&vMax, "models/p_hegrenade.mdl");
 	ENGINE_FORCE_UNMODIFIED(force_model_specifybounds, (float *)&vMin, (float *)&vMax, "models/p_smokegrenade.mdl");
 
-	if (g_bIsCzeroGame)
+	if (AreRunningCZero())
 		vMin = Vector(-5, -5, -7);
 	else
 		vMin = Vector(-5, -5, -5);
@@ -3800,7 +3994,7 @@ void ClientPrecache()
 
 	ENGINE_FORCE_UNMODIFIED(force_model_specifybounds, (float *)&vMin, (float *)&vMax, "models/p_knife.mdl");
 
-	if (g_bIsCzeroGame)
+	if (AreRunningCZero())
 	{
 		vMin = Vector(-21, -25, -54);
 		vMax = Vector(21, 23, 24);
@@ -3867,7 +4061,7 @@ const char *EXT_FUNC GetGameDescription()
 		return CSGameRules()->GetGameDescription();
 	}
 #else
-	if (g_bIsCzeroGame) {
+	if (AreRunningCZero()) {
 		return "Condition Zero";
 	}
 #endif
@@ -4045,7 +4239,6 @@ int EXT_FUNC AddToFullPack(struct entity_state_s *state, int e, edict_t *ent, ed
 
 	int i;
 	int hostnum = ENTINDEX(host) - 1;
-
 	if (CheckPlayerPVSLeafChanged(host, hostnum))
 		ResetPlayerPVS(host, hostnum);
 
@@ -4400,10 +4593,10 @@ int EXT_FUNC GetWeaponData(edict_t *player, struct weapon_data_s *info)
 		return 1;
 
 	// go through all of the weapons and make a list of the ones to pack
-	for (int i = 0; i < MAX_ITEM_TYPES; ++i)
+	for (int i = 0; i < MAX_ITEM_TYPES; i++)
 	{
 		auto pPlayerItem = pPlayer->m_rgpPlayerItems[i];
-		while (pPlayerItem != nullptr)
+		while (pPlayerItem)
 		{
 			// there's a weapon here. Should I pack it?
 			auto weapon = (CBasePlayerWeapon *)pPlayerItem->GetWeaponPtr();

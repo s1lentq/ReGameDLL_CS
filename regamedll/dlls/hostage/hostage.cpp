@@ -5,10 +5,10 @@
 */
 #ifndef HOOK_GAMEDLL
 
-cvar_t cv_hostage_debug = { "hostage_debug", "0", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_hostage_stop = { "hostage_stop", "0", FCVAR_SERVER, 0.0f, NULL };
+cvar_t cv_hostage_debug = { "hostage_debug", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_hostage_stop = { "hostage_stop", "0", FCVAR_SERVER, 0.0f, nullptr };
 
-CHostageManager *g_pHostages = NULL;
+CHostageManager *g_pHostages = nullptr;
 int g_iHostageNumber = 0;
 
 #endif
@@ -205,8 +205,8 @@ void CHostage::Spawn()
 
 	m_flNextChange = 0;
 	m_State = STAND;
-	m_hTargetEnt = NULL;
-	m_hStoppedTargetEnt = NULL;
+	m_hTargetEnt = nullptr;
+	m_hStoppedTargetEnt = nullptr;
 	m_vPathToFollow[0] = Vector(0, 0, 0);
 	m_flFlinchTime = 0;
 	m_bRescueMe = FALSE;
@@ -242,7 +242,7 @@ void CHostage::Spawn()
 	m_LocalNav = new CLocalNav(this);
 	m_bStuck = FALSE;
 	m_flStuckTime = 0;
-	m_improv = NULL;
+	m_improv = nullptr;
 }
 
 void CHostage::Precache()
@@ -332,10 +332,10 @@ void CHostage::IdleThink()
 	}
 	else
 	{
-		if (m_improv != NULL)
+		if (m_improv)
 		{
 			delete m_improv;
-			m_improv = NULL;
+			m_improv = nullptr;
 		}
 	}
 
@@ -344,7 +344,7 @@ void CHostage::IdleThink()
 	flInterval = StudioFrameAdvance();
 	DispatchAnimEvents(flInterval);
 
-	if (m_improv != NULL)
+	if (m_improv)
 	{
 		m_improv->OnUpkeep(upkeepRate);
 	}
@@ -362,36 +362,36 @@ void CHostage::IdleThink()
 		return;
 	}
 
-	if (m_hTargetEnt != NULL && (m_bStuck && gpGlobals->time - m_flStuckTime > 5.0f || m_hTargetEnt->pev->deadflag != DEAD_NO))
+	if (m_hTargetEnt && (m_bStuck && gpGlobals->time - m_flStuckTime > 5.0f || m_hTargetEnt->pev->deadflag != DEAD_NO))
 	{
 		m_State = STAND;
-		m_hTargetEnt = NULL;
+		m_hTargetEnt = nullptr;
 		m_bStuck = FALSE;
 	}
 
-	if (m_hTargetEnt != NULL || m_improv != NULL)
+	if (m_hTargetEnt || m_improv)
 	{
-		CBasePlayer *player = NULL;
+		CBasePlayer *pPlayer = nullptr;
 
-		if (m_improv != NULL)
+		if (m_improv)
 		{
 			if (m_improv->IsFollowing())
-				player = (CBasePlayer *)m_improv->GetFollowLeader();
+				pPlayer = m_improv->GetFollowLeader();
 		}
 		else
-			player = GetClassPtr<CCSPlayer>((CBasePlayer *)m_hTargetEnt->pev);
+			pPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)m_hTargetEnt->pev);
 
-		if (player == NULL || player->m_iTeam == CT)
+		if (!pPlayer || pPlayer->m_iTeam == CT)
 		{
 			if (!CSGameRules()->m_bMapHasRescueZone)
 			{
 				bool bResHostagePt = false;
 
-				if (UTIL_FindEntityByClassname(NULL, "info_hostage_rescue"))
+				if (UTIL_FindEntityByClassname(nullptr, "info_hostage_rescue"))
 					bResHostagePt = true;
 
-				CBaseEntity *pSpot = NULL;
-				while ((pSpot = UTIL_FindEntityByClassname(pSpot, "info_hostage_rescue")) != NULL)
+				CBaseEntity *pSpot = nullptr;
+				while ((pSpot = UTIL_FindEntityByClassname(pSpot, "info_hostage_rescue")))
 				{
 					if ((pSpot->pev->origin - pev->origin).Length() < RESCUE_HOSTAGES_RADIUS)
 					{
@@ -402,7 +402,7 @@ void CHostage::IdleThink()
 
 				if (!bResHostagePt)
 				{
-					pSpot = NULL;
+					pSpot = nullptr;
 
 					while ((pSpot = UTIL_FindEntityByClassname(pSpot, "info_player_start")))
 					{
@@ -419,21 +419,21 @@ void CHostage::IdleThink()
 			{
 				if (TheBots)
 				{
-					TheBots->OnEvent(EVENT_HOSTAGE_RESCUED, player, this);
+					TheBots->OnEvent(EVENT_HOSTAGE_RESCUED, pPlayer, this);
 				}
 
-				if (TheCareerTasks && CSGameRules()->IsCareer() && player && !player->IsBot())
+				if (TheCareerTasks && CSGameRules()->IsCareer() && pPlayer && !pPlayer->IsBot())
 				{
-					TheCareerTasks->HandleEvent(EVENT_HOSTAGE_RESCUED, player);
+					TheCareerTasks->HandleEvent(EVENT_HOSTAGE_RESCUED, pPlayer);
 				}
 
 				pev->deadflag = DEAD_RESPAWNABLE;
 
-				if (player)
+				if (pPlayer)
 				{
-					player->AddAccount(REWARD_TAKEN_HOSTAGE, RT_HOSTAGE_RESCUED);
-					UTIL_LogPrintf("\"%s<%i><%s><CT>\" triggered \"Rescued_A_Hostage\"\n", STRING(player->pev->netname),
-						GETPLAYERUSERID(player->edict()), GETPLAYERAUTHID(player->edict()));
+					pPlayer->AddAccount(REWARD_TAKEN_HOSTAGE, RT_HOSTAGE_RESCUED);
+					UTIL_LogPrintf("\"%s<%i><%s><CT>\" triggered \"Rescued_A_Hostage\"\n", STRING(pPlayer->pev->netname),
+						GETPLAYERUSERID(pPlayer->edict()), GETPLAYERAUTHID(pPlayer->edict()));
 				}
 
 				SendHostageEventMsg();
@@ -441,7 +441,7 @@ void CHostage::IdleThink()
 				MESSAGE_BEGIN(MSG_SPEC, SVC_DIRECTOR);
 					WRITE_BYTE(9);
 					WRITE_BYTE(DRC_CMD_EVENT);
-					WRITE_SHORT(player != NULL ? player->entindex() : 0);
+					WRITE_SHORT(pPlayer ? pPlayer->entindex() : 0);
 					WRITE_SHORT(entindex());
 					WRITE_LONG(15);
 				MESSAGE_END();
@@ -452,12 +452,12 @@ void CHostage::IdleThink()
 				CSGameRules()->m_iHostagesRescued++;
 				CSGameRules()->CheckWinConditions();
 
-				Broadcast((player != NULL) ? "rescued" : "escaped");
+				Broadcast(pPlayer ? "rescued" : "escaped");
 			}
 		}
 	}
 
-	if (m_improv != NULL)
+	if (m_improv)
 	{
 		m_improv->OnUpdate(updateRate);
 	}
@@ -529,8 +529,8 @@ void CHostage::RePosition()
 	pev->angles = m_vStartAngles;
 	pev->effects &= ~EF_NODRAW;
 
-	m_hTargetEnt = NULL;
-	m_hStoppedTargetEnt = NULL;
+	m_hTargetEnt = nullptr;
+	m_hStoppedTargetEnt = nullptr;
 
 	m_bTouched = FALSE;
 	m_bRescueMe = FALSE;
@@ -587,7 +587,7 @@ BOOL CHostage::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float
 
 	PlayPainSound();
 
-	CBasePlayer *pAttacker = NULL;
+	CBasePlayer *pAttacker = nullptr;
 	if (pevAttacker)
 	{
 		CBaseEntity *pAttackingEnt = GetClassPtr<CCSEntity>((CBaseEntity *)pevAttacker);
@@ -704,7 +704,7 @@ void CHostage::SetFlinchActivity()
 {
 	Activity activity = ACT_SMALL_FLINCH;
 
-	if (m_improv != NULL)
+	if (m_improv)
 	{
 		m_improv->Flinch(activity);
 		return;
@@ -715,7 +715,7 @@ void CHostage::SetFlinchActivity()
 
 void CHostage::SetDeathActivity()
 {
-	if (m_improv != NULL && m_improv->IsCrouching())
+	if (m_improv && m_improv->IsCrouching())
 	{
 		m_improv->CrouchDie();
 		return;
@@ -809,11 +809,11 @@ void CHostage::ApplyHostagePenalty(CBasePlayer *pAttacker)
 		}
 		else if (pAttacker->m_iHostagesKilled >= iHostagePenalty)
 		{
-		#ifdef REGAMEDLL_FIXES
+#ifdef REGAMEDLL_FIXES
 			SERVER_COMMAND(UTIL_VarArgs("kick #%d\n", GETPLAYERUSERID(pAttacker->edict())));
-		#else
+#else
 			CLIENT_COMMAND(pAttacker->edict(), "disconnect\n");
-		#endif
+#endif
 		}
 	}
 }
@@ -832,7 +832,6 @@ void CHostage::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useTy
 #endif
 
 	CBasePlayer *pPlayer = (CBasePlayer *)pActivator;
-
 	if (pPlayer->m_iTeam != CT)
 	{
 		if (!(pPlayer->m_flDisplayHistory & DHF_HOSTAGE_CTMOVE))
@@ -848,7 +847,7 @@ void CHostage::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useTy
 	{
 		m_flNextChange = gpGlobals->time + 1.0f;
 
-		if (m_improv != NULL)
+		if (m_improv)
 		{
 			if (m_improv->IsFollowing() && pActivator == m_improv->GetFollowLeader())
 			{
@@ -860,7 +859,7 @@ void CHostage::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useTy
 			{
 				m_improv->Follow(pPlayer);
 
-				if (TheBots != NULL)
+				if (TheBots)
 				{
 					TheBots->OnEvent(EVENT_HOSTAGE_USED, pActivator);
 				}
@@ -874,12 +873,12 @@ void CHostage::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useTy
 			{
 				m_State = FOLLOW;
 				m_hTargetEnt = pActivator;
-				m_hStoppedTargetEnt = NULL;
+				m_hStoppedTargetEnt = nullptr;
 			}
 			else if (m_State == FOLLOW)
 			{
 				m_State = STAND;
-				m_hTargetEnt = NULL;
+				m_hTargetEnt = nullptr;
 				m_hStoppedTargetEnt = pActivator;
 			}
 			else
@@ -888,7 +887,7 @@ void CHostage::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useTy
 			if (m_State == FOLLOW)
 			{
 				PlayFollowRescueSound();
-				if (TheBots != NULL)
+				if (TheBots)
 				{
 					TheBots->OnEvent(EVENT_HOSTAGE_USED, pActivator);
 				}
@@ -934,7 +933,7 @@ void CHostage::Touch(CBaseEntity *pOther)
 	Vector2D vPush;
 	const float pushForce = 50.0f;
 
-	if (m_improv != NULL)
+	if (m_improv)
 	{
 		m_improv->OnTouch(pOther);
 		return;
@@ -972,14 +971,14 @@ void CHostage::DoFollow()
 	float flRadius = 0;
 	float flDistToDest;
 
-	if (m_hTargetEnt == NULL)
+	if (!m_hTargetEnt)
 		return;
 
 	if (cv_hostage_stop.value > 0.0f)
 	{
 		m_State = STAND;
-		m_hTargetEnt = NULL;
-		m_hStoppedTargetEnt = NULL;
+		m_hTargetEnt = nullptr;
+		m_hStoppedTargetEnt = nullptr;
 		return;
 	}
 
@@ -1079,7 +1078,7 @@ void CHostage::MoveToward(const Vector &vecLoc)
 	vecMove = vecLoc - pev->origin;
 
 	Vector vecAng(0, UTIL_VecToAngles(vecMove).y, 0);
-	UTIL_MakeVectorsPrivate(vecAng, vecFwd, NULL, NULL);
+	UTIL_MakeVectorsPrivate(vecAng, vecFwd, nullptr, nullptr);
 
 	if ((vecFwd * s_flStepSize_LocalNav).Length2D() <= (vecLoc - pev->origin).Length2D())
 		flDist = (vecFwd * s_flStepSize_LocalNav).Length2D();
@@ -1184,8 +1183,8 @@ void CHostage::NavReady()
 
 void CHostage::SendHostagePositionMsg()
 {
-	CBaseEntity *pEntity = NULL;
-	while ((pEntity = UTIL_FindEntityByClassname(pEntity, "player")) != NULL)
+	CBaseEntity *pEntity = nullptr;
+	while ((pEntity = UTIL_FindEntityByClassname(pEntity, "player")))
 	{
 		if (FNullEnt(pEntity->edict()))
 			break;
@@ -1200,7 +1199,7 @@ void CHostage::SendHostagePositionMsg()
 
 		if (pTempPlayer->pev->deadflag == DEAD_NO && pTempPlayer->m_iTeam == CT)
 		{
-			MESSAGE_BEGIN(MSG_ONE, gmsgHostagePos, NULL, pTempPlayer->pev);
+			MESSAGE_BEGIN(MSG_ONE, gmsgHostagePos, nullptr, pTempPlayer->pev);
 				WRITE_BYTE(0);
 				WRITE_BYTE(m_iHostageIndex);
 				WRITE_COORD(pev->origin.x);
@@ -1213,8 +1212,8 @@ void CHostage::SendHostagePositionMsg()
 
 void CHostage::SendHostageEventMsg()
 {
-	CBaseEntity *pEntity = NULL;
-	while ((pEntity = UTIL_FindEntityByClassname(pEntity, "player")) != NULL)
+	CBaseEntity *pEntity = nullptr;
+	while ((pEntity = UTIL_FindEntityByClassname(pEntity, "player")))
 	{
 		if (FNullEnt(pEntity->edict()))
 			break;
@@ -1229,7 +1228,7 @@ void CHostage::SendHostageEventMsg()
 
 		if (pTempPlayer->pev->deadflag == DEAD_NO && pTempPlayer->m_iTeam == CT)
 		{
-			MESSAGE_BEGIN(MSG_ONE, gmsgHostageK, NULL, pTempPlayer->pev);
+			MESSAGE_BEGIN(MSG_ONE, gmsgHostageK, nullptr, pTempPlayer->pev);
 				WRITE_BYTE(m_iHostageIndex);
 			MESSAGE_END();
 		}
@@ -1281,7 +1280,7 @@ void CHostage::PreThink()
 	float flRaisedDist;
 	float flInterval;
 
-	if (m_improv != NULL)
+	if (m_improv)
 	{
 		return;
 	}
@@ -1358,10 +1357,10 @@ void Hostage_RegisterCVars()
 
 void InstallHostageManager()
 {
-	if (g_pHostages != NULL)
+	if (g_pHostages)
 	{
 		delete g_pHostages;
-		g_pHostages = NULL;
+		g_pHostages = nullptr;
 	}
 
 	g_pHostages = new CHostageManager;
@@ -1377,7 +1376,7 @@ void CHostageManager::ServerActivate()
 {
 	m_hostageCount = 0;
 
-	CBaseEntity *pEntity = NULL;
+	CBaseEntity *pEntity = nullptr;
 	while ((pEntity = UTIL_FindEntityByClassname(pEntity, "hostage_entity")))
 	{
 		AddHostage((CHostage *)pEntity);
@@ -1403,9 +1402,9 @@ void CHostageManager::ServerDeactivate()
 
 void CHostageManager::RestartRound()
 {
-	for (int i = 0; i < m_hostageCount; ++i)
+	for (int i = 0; i < m_hostageCount; i++)
 	{
-		if (m_hostage[i]->m_improv != NULL)
+		if (m_hostage[i]->m_improv)
 		{
 			m_hostage[i]->m_improv->OnReset();
 		}
@@ -1418,7 +1417,7 @@ void CHostageManager::AddHostage(CHostage *hostage)
 		return;
 
 	int i;
-	for (i = 0; i < m_hostageCount; ++i)
+	for (i = 0; i < m_hostageCount; i++)
 	{
 		if (m_hostage[i] == hostage)
 		{
@@ -1435,12 +1434,12 @@ void CHostageManager::AddHostage(CHostage *hostage)
 
 bool CHostageManager::IsNearbyHostageTalking(CHostageImprov *improv)
 {
-	for (int i = 0; i < m_hostageCount; ++i)
+	for (int i = 0; i < m_hostageCount; i++)
 	{
 		const float closeRange = 500.0f;
 		const CHostageImprov *other = m_hostage[i]->m_improv;
 
-		if (other == NULL)
+		if (!other)
 			continue;
 
 		if (!other->IsAlive() || other == improv)
@@ -1457,11 +1456,11 @@ bool CHostageManager::IsNearbyHostageTalking(CHostageImprov *improv)
 
 bool CHostageManager::IsNearbyHostageJumping(CHostageImprov *improv)
 {
-	for (int i = 0; i < m_hostageCount; ++i)
+	for (int i = 0; i < m_hostageCount; i++)
 	{
 		const CHostageImprov *other = m_hostage[i]->m_improv;
 
-		if (other == NULL)
+		if (!other)
 			continue;
 
 		if (!other->IsAlive() || other == improv)
@@ -1479,11 +1478,10 @@ bool CHostageManager::IsNearbyHostageJumping(CHostageImprov *improv)
 
 void CHostageManager::OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
 {
-	for (int i = 0; i < m_hostageCount; ++i)
+	for (int i = 0; i < m_hostageCount; i++)
 	{
 		CHostageImprov *improv = m_hostage[ i ]->m_improv;
-
-		if (improv != NULL)
+		if (improv)
 		{
 			improv->OnGameEvent(event, entity, other);
 		}
@@ -1533,7 +1531,7 @@ void SimpleChatter::Shuffle(ChatterSet *chatter)
 	if (!chatter->needsShuffle)
 		return;
 
-	for (int i = 1; i < chatter->count; ++i)
+	for (int i = 1; i < chatter->count; i++)
 	{
 		for (int j = i; j < chatter->count; j++)
 		{
@@ -1581,7 +1579,7 @@ float SimpleChatter::PlaySound(CBaseEntity *entity, HostageChatterType type)
 	sound = GetSound(type, &duration);
 	hostage = static_cast<CHostage *>(entity);
 
-	if (sound == NULL)
+	if (!sound)
 	{
 		return 0;
 	}
@@ -1607,7 +1605,7 @@ float SimpleChatter::PlaySound(CBaseEntity *entity, HostageChatterType type)
 
 	if (type == HOSTAGE_CHATTER_CALL_TO_RESCUER)
 	{
-		if (TheBots != NULL)
+		if (TheBots)
 		{
 			TheBots->OnEvent(EVENT_HOSTAGE_CALLED_FOR_HELP, hostage);
 		}

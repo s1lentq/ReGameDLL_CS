@@ -26,19 +26,11 @@
 *
 */
 
-#ifndef BOT_CONSTANTS_H
-#define BOT_CONSTANTS_H
-#ifdef _WIN32
 #pragma once
-#endif
-
-// We'll define our own version of this, because everyone else does.
-// This needs to stay in sync with MAX_CLIENTS, but there's no header with the #define.
-#define BOT_MAX_CLIENTS		32
 
 // version number is MAJOR.MINOR
-#define BOT_VERSION_MAJOR	1
-#define BOT_VERSION_MINOR	50
+const int BOT_VERSION_MAJOR = 1;
+const int BOT_VERSION_MINOR = 50;
 
 // Difficulty levels
 enum BotDifficultyType
@@ -50,5 +42,3 @@ enum BotDifficultyType
 
 	NUM_DIFFICULTY_LEVELS
 };
-
-#endif // BOT_CONSTANTS_H

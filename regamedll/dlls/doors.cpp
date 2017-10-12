@@ -162,7 +162,9 @@ void CBaseDoor::KeyValue(KeyValueData *pkvd)
 		pkvd->fHandled = TRUE;
 	}
 	else
+	{
 		CBaseToggle::KeyValue(pkvd);
+	}
 }
 
 // QUAKED func_door (0 .5 .8) ? START_OPEN x DOOR_DONT_LINK TOGGLE
@@ -210,7 +212,7 @@ void CBaseDoor::Spawn()
 		pev->solid = SOLID_NOT;
 
 		// water is silent for now
-		pev->spawnflags |= SF_DOOR_SILENT;
+		pev->spawnflags |= SF_DOOR_ACTUALLY_WATER;
 	}
 
 	pev->movetype = MOVETYPE_PUSH;
@@ -482,7 +484,7 @@ int CBaseDoor::DoorActivate()
 	else // door should open
 	{
 		// give health if player opened the door (medikit)
-		if (m_hActivator != NULL && m_hActivator->IsPlayer())
+		if (m_hActivator && m_hActivator->IsPlayer())
 		{
 			// VARS(m_eoActivator)->health += m_bHealthValue;
 			m_hActivator->TakeHealth(m_bHealthValue, DMG_GENERIC);
@@ -510,14 +512,15 @@ void CBaseDoor::DoorGoUp()
 	// filter them out and leave a client stuck with looping door sounds!
 	if (!isReversing)
 	{
-		if (!(pev->spawnflags & SF_DOOR_SILENT))
+		// water is silent
+		if (!(pev->spawnflags & SF_DOOR_ACTUALLY_WATER))
 		{
 			if (m_toggle_state != TS_GOING_UP && m_toggle_state != TS_GOING_DOWN)
 			{
 				EMIT_SOUND(ENT(pev), CHAN_STATIC, (char *)STRING(pev->noiseMoving), VOL_NORM, ATTN_NORM);
 			}
 
-			if (TheBots != NULL)
+			if (TheBots)
 			{
 				TheBots->OnEvent(EVENT_DOOR, m_hActivator);
 			}
@@ -533,12 +536,12 @@ void CBaseDoor::DoorGoUp()
 	{
 		float sign = 1.0;
 
-		if (m_hActivator != NULL)
+		if (m_hActivator)
 		{
 			pevActivator = m_hActivator->pev;
 
 			// Y axis rotation, move away from the player
-			if (!(pev->spawnflags & SF_DOOR_ONEWAY) && pev->movedir.y)
+			if (!(pev->spawnflags & SF_DOOR_ROTATE_ONEWAY) && pev->movedir.y)
 			{
 				Vector2D toActivator = pevActivator->origin.Make2D();
 
@@ -613,7 +616,8 @@ void CBaseDoor::DoorGoUp()
 // The door has reached the "up" position.  Either go back down, or wait for another activation.
 void CBaseDoor::DoorHitTop()
 {
-	if (!(pev->spawnflags & SF_DOOR_SILENT))
+	// water is silent
+	if (!(pev->spawnflags & SF_DOOR_ACTUALLY_WATER))
 	{
 		STOP_SOUND(ENT(pev), CHAN_STATIC, (char *)STRING(pev->noiseMoving));
 		EMIT_SOUND(ENT(pev), CHAN_STATIC, (char *)STRING(pev->noiseArrived), VOL_NORM, ATTN_NORM);
@@ -660,14 +664,15 @@ void CBaseDoor::DoorGoDown()
 
 	if (!isReversing)
 	{
-		if (!(pev->spawnflags & SF_DOOR_SILENT))
+		// water is silent
+		if (!(pev->spawnflags & SF_DOOR_ACTUALLY_WATER))
 		{
 			if (m_toggle_state != TS_GOING_UP && m_toggle_state != TS_GOING_DOWN)
 			{
 				EMIT_SOUND(ENT(pev), CHAN_STATIC, (char *)STRING(pev->noiseMoving), VOL_NORM, ATTN_NORM);
 			}
 
-			if (TheBots != NULL)
+			if (TheBots)
 			{
 				TheBots->OnEvent(EVENT_DOOR, m_hActivator);
 			}
@@ -694,7 +699,8 @@ void CBaseDoor::DoorGoDown()
 // The door has reached the "down" position.  Back to quiescence.
 void CBaseDoor::DoorHitBottom()
 {
-	if (!(pev->spawnflags & SF_DOOR_SILENT))
+	// water is silent
+	if (!(pev->spawnflags & SF_DOOR_ACTUALLY_WATER))
 	{
 		STOP_SOUND(ENT(pev), CHAN_STATIC, (char *)STRING(pev->noiseMoving));
 		EMIT_SOUND(ENT(pev), CHAN_STATIC, (char *)STRING(pev->noiseArrived), VOL_NORM, ATTN_NORM);
@@ -727,8 +733,8 @@ void CBaseDoor::DoorHitBottom()
 
 void CBaseDoor::Blocked(CBaseEntity *pOther)
 {
-	edict_t *pentTarget = NULL;
-	CBaseDoor *pDoor = NULL;
+	edict_t *pentTarget = nullptr;
+	CBaseDoor *pDoor = nullptr;
 	const float checkBlockedInterval = 0.25f;
 
 	// Hurt the blocker a little.
@@ -795,7 +801,7 @@ void CBaseDoor::Blocked(CBaseEntity *pOther)
 							}
 						}
 
-						if (!(pev->spawnflags & SF_DOOR_SILENT))
+						if (!(pev->spawnflags & SF_DOOR_ACTUALLY_WATER))
 						{
 							STOP_SOUND(ENT(pev), CHAN_STATIC, (char *)STRING(pev->noiseMoving));
 						}

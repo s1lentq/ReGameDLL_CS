@@ -44,12 +44,9 @@ typedef Vector& VectorRef;
 typedef float& FloatRef;
 #endif // HOOK_GAMEDLL
 
-#include "schedule.h"
 #include "archtypes.h"
-#include "scriptevent.h"
 #include "enginecallback.h"
 #include "entity_state.h"
-#include "nodes.h"
 #include "screenfade.h"
 #include "utlvector.h"
 
@@ -65,9 +62,6 @@ typedef float& FloatRef;
 // GameInit
 #include "game.h"
 
-// weapon shared
-#include "wpn_shared.h"
-
 //PM
 #include "pm_shared/pm_defs.h"
 #include "pm_shared/pm_materials.h"
@@ -76,24 +70,19 @@ typedef float& FloatRef;
 #include "pm_shared/pm_shared.h"
 #include "pm_shared/pm_math.h"
 
-#include "shake.h"
-#include "util.h"
 #include "decals.h"
 #include "hltv.h"
 #include "cbase.h"
-#include "world.h"
 
 #include "sound.h"
 #include "basemonster.h"
 #include "monsters.h"
 #include "unisignals.h"
-#include "weapons.h"
 #include "maprules.h"
 #include "ammo.h"
 #include "mortar.h"
 #include "effects.h"
 #include "lights.h"
-#include "items.h"
 #include "healthkit.h"
 #include "vehicle.h"
 #include "func_tank.h"
@@ -102,8 +91,6 @@ typedef float& FloatRef;
 #include "bmodels.h"
 
 #include "debug.h"
-
-#include "player.h"
 #include "observer.h"
 #include "client.h"
 
@@ -135,7 +122,6 @@ typedef float& FloatRef;
 #include "game_shared/bot/nav_path.h"
 
 #include "airtank.h"
-#include "h_ai.h"
 #include "h_cycler.h"
 #include "h_battery.h"
 
@@ -163,7 +149,6 @@ typedef float& FloatRef;
 #include "training_gamerules.h"
 #include "maprules.h"
 #include "monsterevent.h"
-#include "plane.h"
 #include "skill.h"
 #include "soundent.h"
 #include "spectator.h"

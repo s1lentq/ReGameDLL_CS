@@ -26,16 +26,10 @@
 *
 */
 
-#ifndef TALKMONSTER_H
-#define TALKMONSTER_H
-#ifdef _WIN32
 #pragma once
-#endif
 
 class CTalkMonster: public CBaseMonster
 {
 public:
 	static float g_talkWaitTime;
 };
-
-#endif // TALKMONSTER_H

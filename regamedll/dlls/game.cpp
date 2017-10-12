@@ -111,8 +111,8 @@ cvar_t max_teamkills = { "mp_max_teamkills", "3", 0, 3.0f, nullptr };
 cvar_t fraglimit = { "mp_fraglimit", "0", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t round_restart_delay = { "mp_round_restart_delay", "5", FCVAR_SERVER, 0.0f, nullptr };
 
-cvar_t showtriggers = { "showtriggers", "0", 0, 0.0f, nullptr };				// debug cvar shows triggers
-												// TODO: Maybe it's better to register in the engine?
+cvar_t showtriggers = { "showtriggers", "0", 0, 0.0f, nullptr };	// debug cvar shows triggers
+																	// TODO: Maybe it's better to register in the engine?
 
 cvar_t hostagehurtable = { "mp_hostage_hurtable", "1", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t roundover = { "mp_roundover", "0", FCVAR_SERVER, 0.0f, nullptr };

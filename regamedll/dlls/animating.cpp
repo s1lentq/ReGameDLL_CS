@@ -157,8 +157,7 @@ NOXREF void CBaseAnimating::GetAttachment(int iAttachment, Vector &origin, Vecto
 NOXREF int CBaseAnimating::FindTransition(int iEndingSequence, int iGoalSequence, int *piDir)
 {
 	void *pmodel = GET_MODEL_PTR(ENT(pev));
-
-	if (piDir == NULL)
+	if (!piDir)
 	{
 		int iDir;
 		int sequence = ::FindTransition(pmodel, iEndingSequence, iGoalSequence, &iDir);

@@ -351,17 +351,16 @@ void CWreckage::Think()
 		}
 	}
 
-	Vector VecSrc;
+	Vector vecSrc;
+	vecSrc.x = RANDOM_FLOAT(pev->absmin.x, pev->absmax.x);
+	vecSrc.y = RANDOM_FLOAT(pev->absmin.y, pev->absmax.y);
+	vecSrc.z = RANDOM_FLOAT(pev->absmin.z, pev->absmax.z);
 
-	VecSrc.x = RANDOM_FLOAT(pev->absmin.x, pev->absmax.x);
-	VecSrc.y = RANDOM_FLOAT(pev->absmin.y, pev->absmax.y);
-	VecSrc.z = RANDOM_FLOAT(pev->absmin.z, pev->absmax.z);
-
-	MESSAGE_BEGIN(MSG_PVS, SVC_TEMPENTITY, VecSrc);
+	MESSAGE_BEGIN(MSG_PVS, SVC_TEMPENTITY, vecSrc);
 		WRITE_BYTE(TE_SMOKE);
-		WRITE_COORD(VecSrc.x);
-		WRITE_COORD(VecSrc.y);
-		WRITE_COORD(VecSrc.z);
+		WRITE_COORD(vecSrc.x);
+		WRITE_COORD(vecSrc.y);
+		WRITE_COORD(vecSrc.z);
 		WRITE_SHORT(g_sModelIndexSmoke);
 		WRITE_BYTE(RANDOM_LONG(0, 49) + 50);	// scale * 10
 		WRITE_BYTE(RANDOM_LONG(0, 3) + 8);		// framerate

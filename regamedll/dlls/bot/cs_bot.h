@@ -26,41 +26,30 @@
 *
 */
 
-#ifndef CS_BOT_H
-#define CS_BOT_H
-#ifdef _WIN32
 #pragma once
-#endif
 
 #include "bot/cs_gamestate.h"
 #include "bot/cs_bot_manager.h"
 #include "bot/cs_bot_chatter.h"
 
-#define CSBOT_VERSION_MAJOR		1
-#define CSBOT_VERSION_MINOR		50
+const int MAX_BUY_WEAPON_PRIMARY   = 13;
+const int MAX_BUY_WEAPON_SECONDARY = 3;
 
-#define PRIMARY_WEAPON_BUY_COUNT	13
-#define SECONDARY_WEAPON_BUY_COUNT	3
-
-#define FLAG_PROGRESS_DRAW		0x0	// draw status bar progress
-#define FLAG_PROGRESS_START		0x1	// init status bar progress
-#define FLAG_PROGRESS_HIDE		0x2	// hide status bar progress
-
-#define HI_X				0x01
-#define LO_X				0x02
-#define HI_Y				0x04
-#define LO_Y				0x08
-#define HI_Z				0x10
-#define LO_Z				0x20
+enum
+{
+	BOT_PROGGRESS_DRAW = 0, // draw status bar progress
+	BOT_PROGGRESS_START,    // init status bar progress
+	BOT_PROGGRESS_HIDE,     // hide status bar progress
+};
 
 extern int _navAreaCount;
 extern int _currentIndex;
 
-extern struct BuyInfo primaryWeaponBuyInfoCT[PRIMARY_WEAPON_BUY_COUNT];
-extern struct BuyInfo secondaryWeaponBuyInfoCT[SECONDARY_WEAPON_BUY_COUNT];
+extern struct BuyInfo primaryWeaponBuyInfoCT[MAX_BUY_WEAPON_PRIMARY];
+extern struct BuyInfo secondaryWeaponBuyInfoCT[MAX_BUY_WEAPON_SECONDARY];
 
-extern struct BuyInfo primaryWeaponBuyInfoT[PRIMARY_WEAPON_BUY_COUNT];
-extern struct BuyInfo secondaryWeaponBuyInfoT[SECONDARY_WEAPON_BUY_COUNT];
+extern struct BuyInfo primaryWeaponBuyInfoT[MAX_BUY_WEAPON_PRIMARY];
+extern struct BuyInfo secondaryWeaponBuyInfoT[MAX_BUY_WEAPON_SECONDARY];
 
 class CCSBot;
 class BotChatterInterface;
@@ -90,7 +79,7 @@ public:
 	virtual void OnExit(CCSBot *me);
 	virtual const char *GetName() const { return "Hunt"; }
 
-	void ClearHuntArea() { m_huntArea = NULL; }
+	void ClearHuntArea() { m_huntArea = nullptr; }
 
 private:
 	CNavArea *m_huntArea;
@@ -264,12 +253,12 @@ public:
 	virtual void OnExit(CCSBot *me);
 	virtual const char *GetName() const { return "Follow"; }
 
-	void SetLeader(CBaseEntity *leader) { m_leader = leader; }
+	void SetLeader(CBasePlayer *leader) { m_leader = leader; }
 
 private:
 	void ComputeLeaderMotionState(float leaderSpeed);
 
-	EHANDLE m_leader;
+	EntityHandle<CBasePlayer> m_leader;
 	Vector m_lastLeaderPos;
 	bool m_isStopped;
 	float m_stoppedTimestamp;
@@ -307,14 +296,14 @@ public:
 	void SetEntity(CBaseEntity *entity) { m_entity = entity; }
 
 private:
-	EHANDLE m_entity;
+	EntityHandle<CBaseEntity> m_entity;
 };
 
 // The Counter-strike Bot
 class CCSBot: public CBot
 {
 public:
-	CCSBot();														// constructor initializes all values to zero
+	CCSBot();																											// constructor initializes all values to zero
 	virtual BOOL TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);		// invoked when injured by something (EXTEND) - returns the amount of damage inflicted
 	virtual void Killed(entvars_t *pevAttacker, int iGib);																// invoked when killed (EXTEND)
 	virtual void RoundRespawn();
@@ -330,11 +319,11 @@ public:
 	virtual void Walk();
 	virtual bool Jump(bool mustJump = false);								// returns true if jump was started
 
-	virtual void OnEvent(GameEventType event, CBaseEntity *entity = NULL, CBaseEntity *other = NULL);			// invoked when event occurs in the game (some events have NULL entity)
+	virtual void OnEvent(GameEventType event, CBaseEntity *entity = nullptr, CBaseEntity *other = nullptr);		// invoked when event occurs in the game (some events have NULL entity)
 
 	#define CHECK_FOV true
 	virtual bool IsVisible(const Vector *pos, bool testFOV = false) const;										// return true if we can see the point
-	virtual bool IsVisible(CBasePlayer *player, bool testFOV = false, unsigned char *visParts = NULL) const;	// return true if we can see any part of the player
+	virtual bool IsVisible(CBasePlayer *player, bool testFOV = false, unsigned char *visParts = nullptr) const;	// return true if we can see any part of the player
 
 	virtual bool IsEnemyPartVisible(VisiblePartType part) const;												// if enemy is visible, return the part we see for our current enemy
 
@@ -348,19 +337,19 @@ public:
 	bool IsHurrying() const;				// return true if we are in a hurry
 	void Hurry(float duration);				// force bot to hurry
 	bool IsSafe() const;					// return true if we are in a safe region
-	bool IsWellPastSafe() const;				// return true if it is well past the early, "safe", part of the round
-	bool IsEndOfSafeTime() const;				// return true if we were in the safe time last update, but not now
-	float GetSafeTimeRemaining() const;			// return the amount of "safe time" we have left
+	bool IsWellPastSafe() const;			// return true if it is well past the early, "safe", part of the round
+	bool IsEndOfSafeTime() const;			// return true if we were in the safe time last update, but not now
+	float GetSafeTimeRemaining() const;		// return the amount of "safe time" we have left
 	float GetSafeTime() const;				// return what we think the total "safe time" for this map is
 	//bool IsUnhealthy() const;				// returns true if bot is low on health
 
 	// behaviors
 	void Idle();
-	void Hide(CNavArea *searchFromArea = NULL, float duration = -1.0f, float hideRange = 750.0f, bool holdPosition = false);						// DEPRECATED: Use TryToHide() instead
+	void Hide(CNavArea *searchFromArea = nullptr, float duration = -1.0f, float hideRange = 750.0f, bool holdPosition = false);						// DEPRECATED: Use TryToHide() instead
 	#define USE_NEAREST true
-	bool TryToHide(CNavArea *searchFromArea = NULL, float duration = -1.0f, float hideRange = 750.0f, bool holdPosition = false, bool useNearest = false);			// try to hide nearby, return false if cannot
+	bool TryToHide(CNavArea *searchFromArea = nullptr, float duration = -1.0f, float hideRange = 750.0f, bool holdPosition = false, bool useNearest = false);			// try to hide nearby, return false if cannot
 
-	void Hide(const Vector *hidingSpot, float duration = -1.0f, bool holdPosition = false);											// move to the given hiding place
+	void Hide(const Vector *hidingSpot, float duration = -1.0f, bool holdPosition = false);			// move to the given hiding place
 	bool IsHiding() const;																			// returns true if bot is currently hiding
 	bool IsAtHidingSpot() const;																	// return true if we are hiding and at our hiding spot
 	bool TryToRetreat();																			// retreat to a nearby hiding spot, away from enemies
@@ -454,7 +443,7 @@ public:
 		NUM_TASKS
 	};
 
-	void SetTask(TaskType task, CBaseEntity *entity = NULL);				// set our current "task"
+	void SetTask(TaskType task, CBaseEntity *entity = nullptr);				// set our current "task"
 	TaskType GetTask() const;
 	CBaseEntity *GetTaskEntity();
 
@@ -491,7 +480,7 @@ public:
 
 	// listening for noises
 	bool IsNoiseHeard() const;									// return true if we have heard a noise
-	bool ShouldInvestigateNoise(float *retNoiseDist = NULL);
+	bool ShouldInvestigateNoise(float *retNoiseDist = nullptr);
 	void InvestigateNoise();									// investigate recent enemy noise
 	const Vector *GetNoisePosition() const;						// return position of last heard noise, or NULL if none heard
 	CNavArea *GetNoiseArea() const;								// return area where noise was heard
@@ -573,7 +562,7 @@ public:
 	void ResetStuckMonitor();
 	bool IsAreaVisible(CNavArea *area) const;							// is any portion of the area visible to this bot
 	const Vector &GetPathPosition(int numpath) const;
-	bool GetSimpleGroundHeightWithFloor(const Vector *pos, float *height, Vector *normal = NULL);	// find "simple" ground height, treating current nav area as part of the floor
+	bool GetSimpleGroundHeightWithFloor(const Vector *pos, float *height, Vector *normal = nullptr);	// find "simple" ground height, treating current nav area as part of the floor
 
 	Place GetPlace() const;												// get our current radio chatter place
 
@@ -581,7 +570,9 @@ public:
 	void GetOffLadder();
 
 	void SetGoalEntity(CBaseEntity *entity);
-	CBaseEntity *GetGoalEntity();
+
+	template <typename T = CBaseEntity>
+	T *GetGoalEntity();
 
 	bool IsNearJump() const;											// return true if nearing a jump in the path
 	float GetApproximateFallDamage(float height) const;					// return how much damage will will take from the given fall height
@@ -614,6 +605,7 @@ public:
 		return m_eyePos;
 	}
 	float ComputeWeaponSightRange();					// return line-of-sight distance to obstacle along weapon fire ray
+	bool IsSignificantlyCloser(const CBasePlayer *testPlayer, const CBasePlayer *referencePlayer) const;	// return true if testPlayer is significantly closer than referencePlayer
 
 	// approach points
 	void ComputeApproachPoints();						// determine the set of "approach points" representing where the enemy can enter this region
@@ -696,7 +688,7 @@ private:
 	float m_surpriseTimestamp;
 
 	bool m_isFollowing;						// true if we are following someone
-	EHANDLE m_leader;						// the ID of who we are following
+	EntityHandle<CBasePlayer> m_leader;		// the ID of who we are following
 	float m_followTimestamp;				// when we started following
 	float m_allowAutoFollowTime;			// time when we can auto follow
 
@@ -724,11 +716,11 @@ private:
 	bool m_isAttacking;							// if true, special Attack state is overriding the state machine
 
 	TaskType m_task;							// our current task
-	EHANDLE m_taskEntity;						// an entity used for our task
+	EntityHandle<CBaseEntity> m_taskEntity;		// an entity used for our task
 
 	// navigation
 	Vector m_goalPosition;
-	EHANDLE m_goalEntity;
+	EHandle m_goalEntity;
 	void MoveTowardsPosition(const Vector *pos);				// move towards position, independant of view angle
 	void MoveAwayFromPosition(const Vector *pos);				// move away from position, independant of view angle
 	void StrafeAwayFromPosition(const Vector *pos);				// strafe (sidestep) away from position, independant of view angle
@@ -736,7 +728,7 @@ private:
 
 	CNavArea *m_currentArea;					// the nav area we are standing on
 	CNavArea *m_lastKnownArea;					// the last area we were in
-	EHANDLE m_avoid;							// higher priority player we need to make way for
+	EntityHandle<CBasePlayer> m_avoid;			// higher priority player we need to make way for
 	float m_avoidTimestamp;
 	bool m_isJumpCrouching;
 	bool m_isJumpCrouched;
@@ -765,7 +757,7 @@ private:
 	void SetPathIndex(int newIndex);											// set the current index along the path
 	void DrawPath();
 	int FindOurPositionOnPath(Vector *close, bool local = false) const;							// compute the closest point to our current position on our path
-	int FindPathPoint(float aheadRange, Vector *point, int *prevIndex = NULL);										// compute a point a fixed distance ahead along our path.
+	int FindPathPoint(float aheadRange, Vector *point, int *prevIndex = nullptr);									// compute a point a fixed distance ahead along our path.
 	bool FindClosestPointOnPath(const Vector *worldPos, int startIndex, int endIndex, Vector *close) const;			// compute closest point on path to given point
 	bool IsStraightLinePathWalkable(const Vector *goal) const;														// test for un-jumpable height change, or unrecoverable fall
 
@@ -890,12 +882,12 @@ private:
 	Vector m_aimSpot;						// the spot we are currently aiming to fire at
 
 	// attack state data
-	DispositionType m_disposition;			// how we will react to enemies
-	CountdownTimer m_ignoreEnemiesTimer;	// how long will we ignore enemies
-	mutable EHANDLE m_enemy;				// our current enemy
-	bool m_isEnemyVisible;					// result of last visibility test on enemy
-	unsigned char m_visibleEnemyParts;		// which parts of the visible enemy do we see
-	Vector m_lastEnemyPosition;				// last place we saw the enemy
+	DispositionType m_disposition;				// how we will react to enemies
+	CountdownTimer m_ignoreEnemiesTimer;		// how long will we ignore enemies
+	mutable EntityHandle<CBasePlayer> m_enemy;	// our current enemy
+	bool m_isEnemyVisible;						// result of last visibility test on enemy
+	unsigned char m_visibleEnemyParts;			// which parts of the visible enemy do we see
+	Vector m_lastEnemyPosition;					// last place we saw the enemy
 	float m_lastSawEnemyTimestamp;
 	float m_firstSawEnemyTimestamp;
 	float m_currentEnemyAcquireTimestamp;
@@ -910,11 +902,15 @@ private:
 		bool isEnemy;
 	}
 	m_watchInfo[MAX_CLIENTS];
-	mutable EHANDLE m_bomber;						// points to bomber if we can see him
+	mutable EntityHandle<CBasePlayer> m_bomber;						// points to bomber if we can see him
 
-	int m_nearbyFriendCount;						// number of nearby teammates
-	mutable EHANDLE m_closestVisibleFriend;			// the closest friend we can see
-	mutable EHANDLE m_closestVisibleHumanFriend;	// the closest human friend we can see
+	int m_nearbyFriendCount;										// number of nearby teammates
+	mutable EntityHandle<CBasePlayer> m_closestVisibleFriend;		// the closest friend we can see
+	mutable EntityHandle<CBasePlayer> m_closestVisibleHumanFriend;	// the closest human friend we can see
+
+#ifdef REGAMEDLL_ADD
+	IntervalTimer m_attentionInterval;								// time between attention checks
+#endif
 
 	CBasePlayer *m_attacker;				// last enemy that hurt us (may not be same as m_enemy)
 	float m_attackedTimestamp;				// when we were hurt by the m_attacker
@@ -923,7 +919,7 @@ private:
 	bool m_isAimingAtEnemy;					// if true, we are trying to aim at our enemy
 	bool m_isRapidFiring;					// if true, RunUpkeep() will toggle our primary attack as fast as it can
 	IntervalTimer m_equipTimer;				// how long have we had our current weapon equipped
-	bool DoEquip(CBasePlayerWeapon *gun);	// equip the given item
+	bool DoEquip(CBasePlayerWeapon *pWeapon);	// equip the given item
 
 	void ReloadCheck();						// reload our weapon if we must
 	void SilencerCheck();					// use silencer
@@ -935,7 +931,7 @@ private:
 	struct ReactionState
 	{
 		// NOTE: player position & orientation is not currently stored separately
-		EHANDLE player;
+		EntityHandle<CBasePlayer> player;
 		bool isReloading;
 		bool isProtectedByShield;
 	}
@@ -962,7 +958,7 @@ private:
 	Vector m_lastOrigin;
 
 	// chatter mechanism
-	GameEventType m_lastRadioCommand;				// last radio command we recieved
+	GameEventType m_lastRadioCommand;			// last radio command we recieved
 	void RespondToRadioCommands();
 	bool IsRadioCommand(GameEventType event) const;	// returns true if the radio message is an order to do something
 
@@ -970,7 +966,7 @@ private:
 	void EndVoiceFeedback(bool force = true);
 	float m_lastRadioRecievedTimestamp;			// time we recieved a radio message
 	float m_lastRadioSentTimestamp;				// time when we send a radio message
-	EHANDLE m_radioSubject;						// who issued the radio message
+	EntityHandle<CBasePlayer> m_radioSubject;	// who issued the radio message
 	Vector m_radioPosition;						// position referred to in radio message
 	float m_voiceFeedbackStartTimestamp;
 	float m_voiceFeedbackEndTimestamp;			// new-style "voice" chatter gets voice feedback
@@ -1008,6 +1004,10 @@ private:
 	void StartSaveProcess();
 	void UpdateSaveProcess();
 	void StartNormalProcess();
+
+#ifdef REGAMEDLL_ADD
+	bool IsNoticable(const CBasePlayer *player, unsigned char visibleParts) const;	// return true if we "notice" given player
+#endif
 };
 
 // Inlines
@@ -1188,7 +1188,7 @@ inline unsigned int CCSBot::GetEnemyPlace() const
 
 inline bool CCSBot::CanSeeBomber() const
 {
-	return (m_bomber == NULL) ? false : true;
+	return m_bomber.IsValid();
 }
 
 inline CBasePlayer *CCSBot::GetBomber() const
@@ -1264,7 +1264,7 @@ inline bool CCSBot::HasPath() const
 inline void CCSBot::DestroyPath()
 {
 	m_pathLength = 0;
-	m_pathLadder = NULL;
+	m_pathLadder = nullptr;
 }
 
 inline CNavArea *CCSBot::GetLastKnownArea() const
@@ -1284,7 +1284,7 @@ inline const Vector &CCSBot::GetPathPosition(int numpath) const
 
 inline bool CCSBot::IsUsingLadder() const
 {
-	return m_pathLadder != NULL;
+	return m_pathLadder != nullptr;
 }
 
 inline void CCSBot::SetGoalEntity(CBaseEntity *entity)
@@ -1292,9 +1292,10 @@ inline void CCSBot::SetGoalEntity(CBaseEntity *entity)
 	m_goalEntity = entity;
 }
 
-inline CBaseEntity *CCSBot::GetGoalEntity()
+template <typename T>
+inline T *CCSBot::GetGoalEntity()
 {
-	return m_goalEntity;
+	return m_goalEntity.Get<T>();
 }
 
 inline void CCSBot::ForceRun(float duration)
@@ -1323,7 +1324,7 @@ inline void CCSBot::ClearLookAt()
 {
 	//PrintIfWatched("ClearLookAt()\n");
 	m_lookAtSpotState = NOT_LOOKING_AT_SPOT;
-	m_lookAtDesc = NULL;
+	m_lookAtDesc = nullptr;
 }
 
 inline bool CCSBot::IsLookingAtSpot(PriorityType pri) const
@@ -1343,6 +1344,21 @@ inline bool CCSBot::IsViewMoving(float angleVelThreshold) const
 	}
 
 	return true;
+}
+
+inline bool CCSBot::IsSignificantlyCloser(const CBasePlayer *testPlayer, const CBasePlayer *referencePlayer) const
+{
+	if (!referencePlayer || !testPlayer)
+		return true;
+
+	float testDist = (pev->origin - testPlayer->pev->origin).Length();
+	float referenceDist = (pev->origin - referencePlayer->pev->origin).Length();
+
+	const float significantRangeFraction = 0.7f;
+	if (testDist < referenceDist * significantRangeFraction)
+		return true;
+
+	return false;
 }
 
 inline void CCSBot::ClearApproachPoints()
@@ -1411,7 +1427,7 @@ inline const Vector *CCSBot::GetNoisePosition() const
 	if (m_noiseTimestamp > 0.0f)
 		return &m_noisePosition;
 
-	return NULL;
+	return nullptr;
 }
 
 inline bool CCSBot::IsAwareOfEnemyDeath() const
@@ -1419,7 +1435,7 @@ inline bool CCSBot::IsAwareOfEnemyDeath() const
 	if (GetEnemyDeathTimestamp() == 0.0f)
 		return false;
 
-	if (m_enemy == NULL)
+	if (!m_enemy.IsValid())
 		return true;
 
 	if (!m_enemy->IsAlive() && gpGlobals->time - GetEnemyDeathTimestamp() > (1.0f - GetProfile()->GetSkill()))
@@ -1484,7 +1500,7 @@ public:
 
 			// don't select spot if it is closest to an enemy
 			CBasePlayer *owner = UTIL_GetClosestPlayer(spot->GetPosition());
-			if (owner != NULL && m_me->m_iTeam != owner->m_iTeam)
+			if (owner && m_me->m_iTeam != owner->m_iTeam)
 				continue;
 
 			m_spot[m_count++] = spot->GetPosition();
@@ -1547,7 +1563,7 @@ public:
 		// respond to the danger modulated by our aggression (even super-aggressives pay SOME attention to danger)
 		float dangerFactor = (1.0f - (0.95f * m_bot->GetProfile()->GetAggression())) * baseDangerFactor;
 
-		if (fromArea == NULL)
+		if (fromArea == nullptr)
 		{
 			if (m_route == FASTEST_ROUTE)
 				return 0.0f;
@@ -1753,5 +1769,3 @@ void hideProgressMeter();
 
 bool isSniperRifle(CBasePlayerItem *item);
 float StayOnLadderLine(CCSBot *me, const CNavLadder *ladder);
-
-#endif // CS_BOT_H

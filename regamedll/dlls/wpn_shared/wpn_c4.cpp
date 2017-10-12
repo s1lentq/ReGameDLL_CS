@@ -41,7 +41,7 @@ int CC4::GetItemInfo(ItemInfo *p)
 	p->pszName = STRING(pev->classname);
 	p->pszAmmo1 = "C4";
 	p->iMaxAmmo1 = C4_MAX_AMMO;
-	p->pszAmmo2 = NULL;
+	p->pszAmmo2 = nullptr;
 	p->iMaxAmmo2 = -1;
 	p->iMaxClip = WEAPON_NOCLIP;
 	p->iSlot = 4;
@@ -137,8 +137,8 @@ void CC4::PrimaryAttack()
 	{
 		if (bPlaceBomb)
 		{
-			CBaseEntity *pEntity = NULL;
-			CBasePlayer *pTempPlayer = NULL;
+			CBaseEntity *pEntity = nullptr;
+			CBasePlayer *pTempPlayer = nullptr;
 
 			if (m_fArmedTime <= gpGlobals->time)
 			{
@@ -316,7 +316,7 @@ void CC4::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, f
 	if (pPlayer)
 	{
 		edict_t *m_pentOldCurBombTarget = pPlayer->m_pentCurBombTarget;
-		pPlayer->m_pentCurBombTarget = NULL;
+		pPlayer->m_pentCurBombTarget = nullptr;
 
 		if (pev->speed != 0 && CSGameRules())
 		{
@@ -327,13 +327,13 @@ void CC4::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, f
 
 		CGrenade::ShootSatchelCharge(pPlayer->pev, pev->origin, Vector(0, 0, 0));
 
-		CGrenade *pC4 = NULL;
-		while ((pC4 = (CGrenade *)UTIL_FindEntityByClassname(pC4, "grenade")))
+		CGrenade *pBomb = nullptr;
+		while ((pBomb = (CGrenade *)UTIL_FindEntityByClassname(pBomb, "grenade")))
 		{
-			if (pC4->m_bIsC4 && pC4->m_flNextFreq == gpGlobals->time)
+			if (pBomb->m_bIsC4 && pBomb->m_flNextFreq == gpGlobals->time)
 			{
-				pC4->pev->target = pev->target;
-				pC4->pev->noise1 = pev->noise1;
+				pBomb->pev->target = pev->target;
+				pBomb->pev->noise1 = pev->noise1;
 				break;
 			}
 		}

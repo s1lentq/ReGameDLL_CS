@@ -26,19 +26,15 @@
 *
 */
 
-#ifndef BOT_UTIL_H
-#define BOT_UTIL_H
-#ifdef _WIN32
 #pragma once
-#endif
 
-#define COS_TABLE_SIZE		256
+#define COS_TABLE_SIZE  256
 
-#define RAD_TO_DEG(deg)		((deg) * 180.0 / M_PI)
-#define DEG_TO_RAD(rad)		((rad) * M_PI / 180.0)
+#define RAD_TO_DEG(deg) ((deg) * 180.0 / M_PI)
+#define DEG_TO_RAD(rad) ((rad) * M_PI / 180.0)
 
-#define SIGN(num)		(((num) < 0) ? -1 : 1)
-#define ABS(num)		(SIGN(num) * (num))
+#define SIGN(num)       (((num) < 0) ? -1 : 1)
+#define ABS(num)        (SIGN(num) * (num))
 
 class CBasePlayer;
 class BotProfile;
@@ -89,7 +85,7 @@ private:
 // Return true if the given entity is valid
 inline bool IsEntityValid(CBaseEntity *entity)
 {
-	if (entity == NULL)
+	if (!entity)
 		return false;
 
 	if (FNullEnt(entity->pev))
@@ -107,7 +103,7 @@ inline bool IsEntityValid(CBaseEntity *entity)
 // Given two line segments: startA to endA, and startB to endB, return true if they intesect
 // and put the intersection point in "result".
 // Note that this computes the intersection of the 2D (x,y) projection of the line segments.
-inline bool IsIntersecting2D(const Vector &startA, const Vector &endA, const Vector &startB, const Vector &endB, Vector *result = NULL)
+inline bool IsIntersecting2D(const Vector &startA, const Vector &endA, const Vector &startB, const Vector &endB, Vector *result = nullptr)
 {
 	float denom = (endA.x - startA.x) * (endB.y - startB.y) - (endA.y - startA.y) * (endB.x - startB.x);
 	if (denom == 0.0f)
@@ -139,7 +135,7 @@ inline bool IsIntersecting2D(const Vector &startA, const Vector &endA, const Vec
 	}
 
 	// compute intesection point
-	if (result != NULL)
+	if (result)
 	{
 		*result = startA + s * (endA - startA);
 	}
@@ -225,8 +221,8 @@ int UTIL_ActivePlayersInGame();
 int UTIL_BotsInGame();
 bool UTIL_KickBotFromTeam(TeamName kickTeam);
 bool UTIL_IsTeamAllBots(int team);
-CBasePlayer *UTIL_GetClosestPlayer(const Vector *pos, float *distance = NULL);
-CBasePlayer *UTIL_GetClosestPlayer(const Vector *pos, int team, float *distance = NULL);
+CBasePlayer *UTIL_GetClosestPlayer(const Vector *pos, float *distance = nullptr);
+CBasePlayer *UTIL_GetClosestPlayer(const Vector *pos, int team, float *distance = nullptr);
 const char *UTIL_GetBotPrefix();
 void UTIL_ConstructBotNetName(char *name, int nameLength, const BotProfile *profile);
 bool UTIL_IsVisibleToTeam(const Vector &spot, int team, float maxRange = -1.0f);
@@ -248,5 +244,3 @@ float BotCOS(float angle);
 float BotSIN(float angle);
 bool IsGameEventAudible(enum GameEventType event, CBaseEntity *entity, CBaseEntity *other, float *range, PriorityType *priority, bool *isHostile);
 void HintMessageToAllPlayers(const char *message);
-
-#endif // BOT_UTIL_H

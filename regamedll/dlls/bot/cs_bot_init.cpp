@@ -5,46 +5,46 @@
 */
 #ifndef HOOK_GAMEDLL
 
-cvar_t cv_bot_traceview = { "bot_traceview", "0", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_stop = { "bot_stop", "0", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_show_nav = { "bot_show_nav", "0", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_show_danger = { "bot_show_danger", "0", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_nav_edit = { "bot_nav_edit", "0", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_nav_zdraw = { "bot_nav_zdraw", "4", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_walk = { "bot_walk", "0", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_difficulty = { "bot_difficulty", "0", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_debug = { "bot_debug", "0", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_quicksave = { "bot_quicksave", "0", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_quota = { "bot_quota", "0", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_quota_match = { "bot_quota_match", "0", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_prefix = { "bot_prefix", "", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_allow_rogues = { "bot_allow_rogues", "1", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_allow_pistols = { "bot_allow_pistols", "1", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_allow_shotguns = { "bot_allow_shotguns", "1", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_allow_sub_machine_guns = { "bot_allow_sub_machine_guns", "1", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_allow_rifles = { "bot_allow_rifles", "1", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_allow_machine_guns = { "bot_allow_machine_guns", "1", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_allow_grenades = { "bot_allow_grenades", "1", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_allow_snipers = { "bot_allow_snipers", "1", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_allow_shield = { "bot_allow_shield", "1", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_join_team = { "bot_join_team", "any", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_join_after_player = { "bot_join_after_player", "1", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_auto_vacate = { "bot_auto_vacate", "1", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_zombie = { "bot_zombie", "0", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_defer_to_human = { "bot_defer_to_human", "0", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_chatter = { "bot_chatter", "normal", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_profile_db = { "bot_profile_db", "BotProfile.db", FCVAR_SERVER, 0.0f, NULL };
+cvar_t cv_bot_traceview = { "bot_traceview", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_stop = { "bot_stop", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_show_nav = { "bot_show_nav", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_show_danger = { "bot_show_danger", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_nav_edit = { "bot_nav_edit", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_nav_zdraw = { "bot_nav_zdraw", "4", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_walk = { "bot_walk", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_difficulty = { "bot_difficulty", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_debug = { "bot_debug", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_quicksave = { "bot_quicksave", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_quota = { "bot_quota", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_quota_match = { "bot_quota_match", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_prefix = { "bot_prefix", "", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_allow_rogues = { "bot_allow_rogues", "1", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_allow_pistols = { "bot_allow_pistols", "1", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_allow_shotguns = { "bot_allow_shotguns", "1", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_allow_sub_machine_guns = { "bot_allow_sub_machine_guns", "1", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_allow_rifles = { "bot_allow_rifles", "1", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_allow_machine_guns = { "bot_allow_machine_guns", "1", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_allow_grenades = { "bot_allow_grenades", "1", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_allow_snipers = { "bot_allow_snipers", "1", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_allow_shield = { "bot_allow_shield", "1", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_join_team = { "bot_join_team", "any", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_join_after_player = { "bot_join_after_player", "1", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_auto_vacate = { "bot_auto_vacate", "1", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_zombie = { "bot_zombie", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_defer_to_human = { "bot_defer_to_human", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_chatter = { "bot_chatter", "normal", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_profile_db = { "bot_profile_db", "BotProfile.db", FCVAR_SERVER, 0.0f, nullptr };
 
 #endif
 
 #ifdef REGAMEDLL_ADD
-cvar_t cv_bot_deathmatch = { "bot_deathmatch", "0", FCVAR_SERVER, 0.0f, NULL };
-cvar_t cv_bot_quota_mode = { "bot_quota_mode", "normal", FCVAR_SERVER, 0.0f, NULL };
+cvar_t cv_bot_deathmatch = { "bot_deathmatch", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_quota_mode = { "bot_quota_mode", "normal", FCVAR_SERVER, 0.0f, nullptr };
 #endif
 
 void InstallBotControl()
 {
-	if (TheBots != NULL)
+	if (TheBots)
 	{
 		delete TheBots;
 	}
@@ -55,7 +55,7 @@ void InstallBotControl()
 // Engine callback for custom server commands
 void Bot_ServerCommand()
 {
-	if (TheBots != NULL)
+	if (TheBots)
 	{
 		const char *pcmd = CMD_ARGV(0);
 		TheBots->ServerCommand(pcmd);
@@ -122,8 +122,8 @@ bool CCSBot::Initialize(const BotProfile *profile)
 
 	m_combatRange = RANDOM_FLOAT(325, 425);
 
-	m_navNodeList = NULL;
-	m_currentNode = NULL;
+	m_navNodeList = nullptr;
+	m_currentNode = nullptr;
 
 	// set initial safe time guess for this map
 	m_safeTime = 15.0f + 5.0f * GetProfile()->GetAggression();
@@ -142,7 +142,7 @@ void CCSBot::ResetValues()
 	m_chatter.Reset();
 	m_gameState.Reset();
 
-	m_avoid = NULL;
+	m_avoid = nullptr;
 	m_avoidTimestamp = 0.0f;
 
 	m_hurryTimer.Invalidate();
@@ -155,8 +155,8 @@ void CCSBot::ResetValues()
 	m_pathLength = 0;
 	m_pathIndex = 0;
 	m_areaEnteredTimestamp = 0.0f;
-	m_currentArea = NULL;
-	m_lastKnownArea = NULL;
+	m_currentArea = nullptr;
+	m_lastKnownArea = nullptr;
 
 	m_avoidFriendTimer.Invalidate();
 	m_isFriendInTheWay = false;
@@ -164,7 +164,7 @@ void CCSBot::ResetValues()
 
 	m_disposition = ENGAGE_AND_INVESTIGATE;
 
-	m_enemy = NULL;
+	m_enemy = nullptr;
 
 	m_isWaitingToTossGrenade = false;
 	m_wasSafe = true;
@@ -172,10 +172,10 @@ void CCSBot::ResetValues()
 	m_nearbyEnemyCount = 0;
 	m_enemyPlace = 0;
 	m_nearbyFriendCount = 0;
-	m_closestVisibleFriend = NULL;
-	m_closestVisibleHumanFriend = NULL;
+	m_closestVisibleFriend = nullptr;
+	m_closestVisibleHumanFriend = nullptr;
 
-	for (int w = 0; w < ARRAYSIZE(m_watchInfo); ++w)
+	for (int w = 0; w < ARRAYSIZE(m_watchInfo); w++)
 	{
 		m_watchInfo[w].timestamp = 0.0f;
 		m_watchInfo[w].isEnemy = false;
@@ -187,7 +187,7 @@ void CCSBot::ResetValues()
 	m_firstSawEnemyTimestamp = 0.0f;
 	m_currentEnemyAcquireTimestamp = 0.0f;
 	m_isLastEnemyDead = true;
-	m_attacker = NULL;
+	m_attacker = nullptr;
 	m_attackedTimestamp = 0.0f;
 	m_enemyDeathTimestamp = 0.0f;
 	m_lastVictimID = 0;
@@ -196,14 +196,14 @@ void CCSBot::ResetValues()
 	m_equipTimer.Invalidate();
 
 	m_isFollowing = false;
-	m_leader = NULL;
+	m_leader = nullptr;
 	m_followTimestamp = 0.0f;
 	m_allowAutoFollowTime = 0.0f;
 
 	m_enemyQueueIndex = 0;
 	m_enemyQueueCount = 0;
 	m_enemyQueueAttendIndex = 0;
-	m_bomber = NULL;
+	m_bomber = nullptr;
 
 	m_lookAroundStateTimestamp = 0.0f;
 	m_inhibitLookAroundTimestamp = 0.0f;
@@ -217,19 +217,19 @@ void CCSBot::ResetValues()
 	m_aimSpreadTimestamp = 0.0f;
 	m_lookAtSpotState = NOT_LOOKING_AT_SPOT;
 
-	m_spotEncounter = NULL;
+	m_spotEncounter = nullptr;
 	m_spotCheckTimestamp = 0.0f;
 	m_peripheralTimestamp = 0.0f;
 
 	m_avgVelIndex = 0;
 	m_avgVelCount = 0;
 
-	m_lastOrigin = (pev != NULL) ? pev->origin : Vector(0, 0, 0);
+	m_lastOrigin = pev ? pev->origin : Vector(0, 0, 0);
 
 	m_lastRadioCommand = EVENT_INVALID;
 	m_lastRadioRecievedTimestamp = 0.0f;
 	m_lastRadioSentTimestamp = 0.0f;
-	m_radioSubject = NULL;
+	m_radioSubject = nullptr;
 	m_voiceFeedbackEndTimestamp = 0.0f;
 
 	m_hostageEscortCount = 0;
@@ -242,7 +242,7 @@ void CCSBot::ResetValues()
 
 	m_stateTimestamp = 0.0f;
 	m_task = SEEK_AND_DESTROY;
-	m_taskEntity = NULL;
+	m_taskEntity = nullptr;
 
 	m_approachPointCount = 0;
 	m_approachPointViewPosition = Vector(0, 0, 0);
@@ -254,7 +254,7 @@ void CCSBot::ResetValues()
 	Run();
 	m_mustRunTimer.Invalidate();
 	m_repathTimer.Invalidate();
-	m_pathLadder = NULL;
+	m_pathLadder = nullptr;
 
 	m_huntState.ClearHuntArea();
 
@@ -272,14 +272,14 @@ void CCSBot::ResetValues()
 	m_surpriseTimestamp = 0.0f;
 
 	// even though these are EHANDLEs, they need to be NULL-ed
-	m_goalEntity = NULL;
-	m_avoid = NULL;
-	m_enemy = NULL;
+	m_goalEntity = nullptr;
+	m_avoid = nullptr;
+	m_enemy = nullptr;
 
 #ifdef REGAMEDLL_FIXES
-	for (int i = 0; i < MAX_ENEMY_QUEUE; ++i)
+	for (int i = 0; i < MAX_ENEMY_QUEUE; i++)
 	{
-		m_enemyQueue[i].player = NULL;
+		m_enemyQueue[i].player = nullptr;
 		m_enemyQueue[i].isReloading = false;
 		m_enemyQueue[i].isProtectedByShield = false;
 	}

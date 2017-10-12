@@ -2,7 +2,7 @@
 
 CBaseTutorStateSystem::CBaseTutorStateSystem()
 {
-	;
+	m_currentState = nullptr;
 }
 
 CBaseTutorStateSystem::~CBaseTutorStateSystem()
@@ -10,19 +10,19 @@ CBaseTutorStateSystem::~CBaseTutorStateSystem()
 	;
 }
 
-int CBaseTutorStateSystem::GetCurrentStateType() const
+TutorStateType CBaseTutorStateSystem::GetCurrentStateType() const
 {
 	if (m_currentState)
 	{
 		return m_currentState->GetType();
 	}
 
-	return 0;
+	return TUTORSTATE_UNDEFINED;
 }
 
 CBaseTutorState::CBaseTutorState()
 {
-	;
+	m_type = TUTORSTATE_UNDEFINED;
 }
 
 CBaseTutorState::~CBaseTutorState()
@@ -30,7 +30,7 @@ CBaseTutorState::~CBaseTutorState()
 	;
 }
 
-int CBaseTutorState::GetType() const
+TutorStateType CBaseTutorState::GetType() const
 {
 	return m_type;
 }

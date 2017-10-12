@@ -26,11 +26,7 @@
 *
 */
 
-#ifndef TUTOR_CS_TUTOR_H
-#define TUTOR_CS_TUTOR_H
-#ifdef _WIN32
 #pragma once
-#endif
 
 #include <map>
 
@@ -42,18 +38,18 @@ enum TutorMessageClass
 
 enum TutorMessageType
 {
-	TUTORMESSAGETYPE_DEFAULT	= (1 << 0),	// icon info  | color green
-	TUTORMESSAGETYPE_FRIEND_DEATH	= (1 << 1),	// icon skull | color red
-	TUTORMESSAGETYPE_ENEMY_DEATH	= (1 << 2),	// icon skull | color blue
-	TUTORMESSAGETYPE_SCENARIO	= (1 << 3),	// icon info  | color yellow
-	TUTORMESSAGETYPE_BUY		= (1 << 4),	// icon info  | color green
-	TUTORMESSAGETYPE_CAREER		= (1 << 5),	// icon info  | color green
-	TUTORMESSAGETYPE_HINT		= (1 << 6),	// icon info  | color green
-	TUTORMESSAGETYPE_INGAME_HINT	= (1 << 7),	// icon info  | color green
-	TUTORMESSAGETYPE_END_GAME	= (1 << 8),	// icon info  | color yellow
+	TUTORMESSAGETYPE_DEFAULT      = BIT(0), // icon info  | color green
+	TUTORMESSAGETYPE_FRIEND_DEATH = BIT(1), // icon skull | color red
+	TUTORMESSAGETYPE_ENEMY_DEATH  = BIT(2), // icon skull | color blue
+	TUTORMESSAGETYPE_SCENARIO     = BIT(3), // icon info  | color yellow
+	TUTORMESSAGETYPE_BUY          = BIT(4), // icon info  | color green
+	TUTORMESSAGETYPE_CAREER       = BIT(5), // icon info  | color green
+	TUTORMESSAGETYPE_HINT         = BIT(6), // icon info  | color green
+	TUTORMESSAGETYPE_INGAME_HINT  = BIT(7), // icon info  | color green
+	TUTORMESSAGETYPE_END_GAME     = BIT(8), // icon info  | color yellow
 
 	TUTORMESSAGETYPE_LAST,
-	TUTORMESSAGETYPE_ALL		= (1 << 9) - 1
+	TUTORMESSAGETYPE_ALL          = (TUTORMESSAGETYPE_DEFAULT | TUTORMESSAGETYPE_FRIEND_DEATH | TUTORMESSAGETYPE_ENEMY_DEATH | TUTORMESSAGETYPE_SCENARIO | TUTORMESSAGETYPE_BUY | TUTORMESSAGETYPE_CAREER | TUTORMESSAGETYPE_HINT | TUTORMESSAGETYPE_INGAME_HINT | TUTORMESSAGETYPE_END_GAME)
 };
 
 enum TutorMessageInterruptFlag
@@ -385,6 +381,7 @@ public:
 	bool CanLocalPlayerBuyStuff();
 	void CheckBuyZoneMessages();
 	bool IsBombPlantedInBombsite(CBaseEntity *bombTarget);
+	bool IsBombPlantedInBombZone(const char *pszBombZone);
 	void ReadTutorMessageFile();
 	void ApplyPersistentDecay();
 	CBaseEntity *GetEntityForMessageID(int messageID, CBaseEntity *last = NULL);
@@ -412,16 +409,15 @@ void ParseMessageParameters(char *&messageData, TutorMessage *ret);
 TutorMessage *ConstructTutorMessage(char *&messageData, TutorMessage *defaults);
 void ReadDefaultValues(char *&messageData, TutorMessage *defaults);
 
-// custom operator
-inline TutorMessageID operator++(TutorMessageID &e, int)
+// custom operator++
+inline TutorMessageID operator++(TutorMessageID &iter, int)
 {
-	if (e == TUTOR_NUM_MESSAGES)
+	// bounds checking
+	if (iter == TUTOR_NUM_MESSAGES)
 	{
 		return YOU_FIRED_A_SHOT;
 	}
 
-	const int i = static_cast<int>(e);
-	return e = static_cast<TutorMessageID>(i + 1);
+	iter = static_cast<TutorMessageID>(static_cast<int>(iter) + 1);
+	return iter;
 }
-
-#endif // TUTOR_CS_TUTOR_H

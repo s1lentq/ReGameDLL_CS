@@ -96,8 +96,8 @@ typedef struct entvars_s
 
 	int modelindex;
 	string_t model;
-	int viewmodel;			// player's viewmodel
-	int weaponmodel;		// what other players see
+	string_t viewmodel;		// player's viewmodel
+	string_t weaponmodel;	// what other players see
 
 	Vector absmin;			// BB max translated to world coord
 	Vector absmax;			// BB max translated to world coord

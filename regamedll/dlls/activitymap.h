@@ -107,5 +107,5 @@ activity_map_t activity_map[] =
 	_A(ACT_FLINCH_RIGHTARM),
 	_A(ACT_FLINCH_LEFTLEG),
 	_A(ACT_FLINCH_RIGHTLEG),
-	0, NULL
+	0, nullptr
 };

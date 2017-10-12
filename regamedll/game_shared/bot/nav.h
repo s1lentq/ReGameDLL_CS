@@ -26,17 +26,13 @@
 *
 */
 
-#ifndef NAV_H
-#define NAV_H
-#ifdef _WIN32
 #pragma once
-#endif
 
 // STL uses exceptions, but we are not compiling with them - ignore warning
 #pragma warning(disable : 4530)
 
 // to help identify nav files
-#define NAV_MAGIC_NUMBER	0xFEEDFACE
+#define NAV_MAGIC_NUMBER     0xFEEDFACE
 
 // version
 // 1 = hiding spots as plain vector array
@@ -45,18 +41,18 @@
 // 4 = Includes size of source bsp file to verify nav data correlation
 // ---- Beta Release at V4 -----
 // 5 = Added Place info
-#define NAV_VERSION		5
+#define NAV_VERSION          5
 
 // A place is a named group of navigation areas
 typedef unsigned int Place;
 
 // ie: "no place"
-#define UNDEFINED_PLACE		0
-#define ANY_PLACE		0xFFFF
+#define UNDEFINED_PLACE      0
+#define ANY_PLACE            0xFFFF
 
-#define WALK_THRU_DOORS		0x01
-#define WALK_THRU_BREAKABLES	0x02
-#define WALK_THRU_EVERYTHING	(WALK_THRU_DOORS | WALK_THRU_BREAKABLES)
+#define WALK_THRU_DOORS      0x01
+#define WALK_THRU_BREAKABLES 0x02
+#define WALK_THRU_EVERYTHING (WALK_THRU_DOORS | WALK_THRU_BREAKABLES)
 
 enum NavErrorType
 {
@@ -69,10 +65,10 @@ enum NavErrorType
 
 enum NavAttributeType
 {
-	NAV_CROUCH = 0x01,	// must crouch to use this node/area
-	NAV_JUMP = 0x02,	// must jump to traverse this area
-	NAV_PRECISE = 0x04,	// do not adjust for obstacles, just move along area
-	NAV_NO_JUMP = 0x08,	// inhibit discontinuity jumping
+	NAV_CROUCH  = 0x01, // must crouch to use this node/area
+	NAV_JUMP    = 0x02, // must jump to traverse this area
+	NAV_PRECISE = 0x04, // do not adjust for obstacles, just move along area
+	NAV_NO_JUMP = 0x08, // inhibit discontinuity jumping
 };
 
 enum NavDirType
@@ -122,25 +118,25 @@ enum NavRelativeDirType
 	NUM_RELATIVE_DIRECTIONS
 };
 
-const float GenerationStepSize = 25.0f;		// (30) was 20, but bots can't fit always fit
-const float StepHeight = 18.0f;			// if delta Z is greater than this, we have to jump to get up
-const float JumpHeight = 41.8f;			// if delta Z is less than this, we can jump up on it
-const float JumpCrouchHeight = 58.0f;		// (48) if delta Z is less than or equal to this, we can jumpcrouch up on it
+const double GenerationStepSize = 25.0;  // (30) was 20, but bots can't fit always fit
+const float StepHeight          = 18.0f; // if delta Z is greater than this, we have to jump to get up
+const float JumpHeight          = 41.8f; // if delta Z is less than this, we can jump up on it
+const float JumpCrouchHeight    = 58.0f; // (48) if delta Z is less than or equal to this, we can jumpcrouch up on it
 
 // Strictly speaking, you CAN get up a slope of 1.643 (about 59 degrees), but you move very, very slowly
 // This slope will represent the slope you can navigate without much slowdown
 // rise/run - if greater than this, we can't move up it (de_survivor canyon ramps)
-const float MaxSlope = 1.4f;
+const float MaxSlope      = 1.4f;
 
 // instead of MaxSlope, we are using the following max Z component of a unit normal
 const float MaxUnitZSlope = 0.7f;
 
-const float BotRadius = 10.0f;		// circular extent that contains bot
-const float DeathDrop = 200.0f;		// (300) distance at which we will die if we fall - should be about 600, and pay attention to fall damage during pathfind
+const float BotRadius = 10.0f;  // circular extent that contains bot
+const float DeathDrop = 200.0f; // (300) distance at which we will die if we fall - should be about 600, and pay attention to fall damage during pathfind
 
-const float HalfHumanWidth = 16.0f;
+const float HalfHumanWidth  = 16.0f;
 const float HalfHumanHeight = 36.0f;
-const float HumanHeight = 72.0f;
+const float HumanHeight     = 72.0f;
 
 struct Extent
 {
@@ -311,7 +307,6 @@ inline void SnapToGrid(float *value)
 	*value = c * GenerationStepSize;
 }
 
-// custom
 inline float SnapToGrid(float value)
 {
 	int c = value / GenerationStepSize;
@@ -388,16 +383,16 @@ inline bool IsEntityWalkable(entvars_t *entity, unsigned int flags)
 inline bool IsWalkableTraceLineClear(Vector &from, Vector &to, unsigned int flags = 0)
 {
 	TraceResult result;
-	edict_t *ignore = NULL;
+	edict_t *pEntIgnore = nullptr;
 	Vector useFrom = from;
 
 	while (true)
 	{
-		UTIL_TraceLine(useFrom, to, ignore_monsters, ignore, &result);
+		UTIL_TraceLine(useFrom, to, ignore_monsters, pEntIgnore, &result);
 
 		if (result.flFraction != 1.0f && IsEntityWalkable(VARS(result.pHit), flags))
 		{
-			ignore = result.pHit;
+			pEntIgnore = result.pHit;
 
 			Vector dir = to - from;
 			dir.NormalizeInPlace();
@@ -412,5 +407,3 @@ inline bool IsWalkableTraceLineClear(Vector &from, Vector &to, unsigned int flag
 
 	return false;
 }
-
-#endif // NAV_H

@@ -26,29 +26,13 @@
 *
 */
 
-#ifndef TRAINS_H
-#define TRAINS_H
-#ifdef _WIN32
 #pragma once
-#endif
 
-// Tracktrain spawn flags
-#define SF_TRACKTRAIN_NOPITCH		0x0001
-#define SF_TRACKTRAIN_NOCONTROL		0x0002
-#define SF_TRACKTRAIN_FORWARDONLY	0x0004
-#define SF_TRACKTRAIN_PASSABLE		0x0008
-
-// Spawnflag for CPathTrack
-#define SF_PATH_DISABLED		0x00000001
-#define SF_PATH_FIREONCE		0x00000002
-#define SF_PATH_ALTREVERSE		0x00000004
-#define SF_PATH_DISABLE_TRAIN		0x00000008
-#define SF_PATH_ALTERNATE		0x00008000
-
-// Spawnflags of CPathCorner
-#define SF_CORNER_WAITFORTRIG		0x001
-#define SF_CORNER_TELEPORT		0x002
-#define SF_CORNER_FIREONCE		0x004
+#define SF_PATH_DISABLED      BIT(0)
+#define SF_PATH_FIREONCE      BIT(1)
+#define SF_PATH_ALTREVERSE    BIT(2)
+#define SF_PATH_DISABLE_TRAIN BIT(3)
+#define SF_PATH_ALTERNATE     BIT(15)
 
 class CPathTrack: public CPointEntity
 {
@@ -84,6 +68,15 @@ public:
 	CPathTrack *m_pprevious;
 	CPathTrack *m_paltpath;
 };
+
+const float TRAIN_STARTPITCH = 60.0f;
+const float TRAIN_MAXPITCH   = 200.0f;
+const float TRAIN_MAXSPEED   = 1000.0f;
+
+#define SF_TRACKTRAIN_NOPITCH     BIT(0)
+#define SF_TRACKTRAIN_NOCONTROL   BIT(1)
+#define SF_TRACKTRAIN_FORWARDONLY BIT(2)
+#define SF_TRACKTRAIN_PASSABLE    BIT(3)
 
 class CFuncTrackTrain: public CBaseEntity
 {
@@ -209,5 +202,3 @@ public:
 private:
 	unsigned short m_usAdjustPitch;
 };
-
-#endif // TRAINS_H

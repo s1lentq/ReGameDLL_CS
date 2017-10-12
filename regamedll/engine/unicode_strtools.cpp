@@ -412,7 +412,7 @@ NOXREF char *Q_UnicodeAdvance(char *pUTF8, int nChars)
 //			behavior when used in names, web pages, chat windows, etc.
 //
 //			characters in this set are removed from the beginning and/or end of strings
-//			by Q_AggressiveStripPrecedingAndTrailingWhitespaceW() 
+//			by Q_AggressiveStripPrecedingAndTrailingWhitespaceW()
 //-----------------------------------------------------------------------------
 bool Q_IsMeanSpaceW(uchar32 wch)
 {
@@ -541,7 +541,7 @@ qboolean Q_StripUnprintableAndSpace(char *pch)
 	int cch = Q_strlen(pch);
 	int cubDest = (cch + 1) * sizeof(uchar16);
 
-	uchar16 *pwch_alloced = (uchar16 *)Q_alloca(cubDest);
+	uchar16 *pwch_alloced = (uchar16 *)alloca(cubDest);
 	bStrippedAny = false;
 	bStrippedWhitespace = false;
 

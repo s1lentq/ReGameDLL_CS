@@ -26,11 +26,7 @@
 *
 */
 
-#ifndef CS_BOT_MANAGER_H
-#define CS_BOT_MANAGER_H
-#ifdef _WIN32
 #pragma once
-#endif
 
 extern CBotManager *TheBots;
 
@@ -134,7 +130,7 @@ public:
 		if (startArea == nullptr)
 			return nullptr;
 
-		for (int i = 0; i < m_zoneCount; ++i)
+		for (int i = 0; i < m_zoneCount; i++)
 		{
 			if (m_zone[i].m_areaCount == 0)
 				continue;
@@ -269,5 +265,3 @@ inline bool AreBotsAllowed()
 
 void PrintAllEntities();
 void UTIL_DrawBox(Extent *extent, int lifetime, int red, int green, int blue);
-
-#endif // CS_BOT_MANAGER_H

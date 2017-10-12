@@ -15,14 +15,13 @@ void HostageRetreatState::OnUpdate(CHostageImprov *improv)
 		return;
 	}
 
-	CBasePlayer *player = improv->GetClosestVisiblePlayer(UNASSIGNED);
-
-	if (player != NULL)
+	CBasePlayer *pPlayer = improv->GetClosestVisiblePlayer(UNASSIGNED);
+	if (pPlayer)
 	{
 		const float farRange = 400.0f;
-		if ((player->pev->origin - improv->GetCentroid()).IsLengthGreaterThan(farRange))
+		if ((pPlayer->pev->origin - improv->GetCentroid()).IsLengthGreaterThan(farRange))
 		{
-			if (player->m_iTeam == CT && !improv->IsScared())
+			if (pPlayer->m_iTeam == CT && !improv->IsScared())
 			{
 				improv->Stop();
 				improv->Idle();

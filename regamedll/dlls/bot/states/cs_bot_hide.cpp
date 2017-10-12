@@ -57,10 +57,10 @@ void HideState::OnUpdate(CCSBot *me)
 			{
 				// if we're guarding a bombsite, continue to guard it but pick a new spot
 				const CCSBotManager::Zone *zone = TheCSBots()->GetClosestZone(&me->pev->origin);
-				if (zone != NULL)
+				if (zone)
 				{
 					CNavArea *area = TheCSBots()->GetRandomAreaInZone(zone);
-					if (area != NULL)
+					if (area)
 					{
 						me->Hide(area);
 						return;
@@ -127,14 +127,14 @@ void HideState::OnUpdate(CCSBot *me)
 					}
 
 					// if we are guarding the defuser and he dies/gives up, stop hiding (to choose another defuser)
-					if (me->GetTask() == CCSBot::GUARD_BOMB_DEFUSER && TheCSBots()->GetBombDefuser() == NULL)
+					if (me->GetTask() == CCSBot::GUARD_BOMB_DEFUSER && !TheCSBots()->GetBombDefuser())
 					{
 						me->Idle();
 						return;
 					}
 
 					// if we are guarding the loose bomb and it is picked up, stop hiding
-					if (me->GetTask() == CCSBot::GUARD_LOOSE_BOMB && TheCSBots()->GetLooseBomb() == NULL)
+					if (me->GetTask() == CCSBot::GUARD_LOOSE_BOMB && !TheCSBots()->GetLooseBomb())
 					{
 						me->GetChatter()->TheyPickedUpTheBomb();
 						me->Idle();
@@ -197,12 +197,12 @@ void HideState::OnUpdate(CCSBot *me)
 				else if (me->GetTask() == CCSBot::GUARD_HOSTAGE_RESCUE_ZONE)
 				{
 					// if we stumble across a hostage, guard it
-					CHostage *hostage = me->GetGameState()->GetNearestVisibleFreeHostage();
-					if (hostage != NULL)
+					CHostage *pHostage = me->GetGameState()->GetNearestVisibleFreeHostage();
+					if (pHostage)
 					{
 						// we see a free hostage, guard it
-						CNavArea *area = TheNavAreaGrid.GetNearestNavArea(&hostage->pev->origin);
-						if (area != NULL)
+						CNavArea *area = TheNavAreaGrid.GetNearestNavArea(&pHostage->pev->origin);
+						if (area)
 						{
 							me->SetTask(CCSBot::GUARD_HOSTAGES);
 							me->Hide(area);
@@ -300,8 +300,8 @@ void HideState::OnUpdate(CCSBot *me)
 				{
 					if (me->GetNearbyEnemyCount() == 0)
 					{
-						CHostage *hostage = me->GetGameState()->GetNearestVisibleFreeHostage();
-						if (hostage != NULL)
+						CHostage *pHostage = me->GetGameState()->GetNearestVisibleFreeHostage();
+						if (pHostage)
 						{
 							me->GetChatter()->Encourage("WaitingForHumanToRescueHostages", RANDOM_FLOAT(10.0f, 15.0f));
 						}
@@ -314,10 +314,10 @@ void HideState::OnUpdate(CCSBot *me)
 	{
 		// if a Player is using this hiding spot, give up
 		float range;
-		CBasePlayer *camper = UTIL_GetClosestPlayer(&m_hidingSpot, &range);
+		CBasePlayer *pCamper = UTIL_GetClosestPlayer(&m_hidingSpot, &range);
 
 		const float closeRange = 75.0f;
-		if (camper != NULL && camper != me && range < closeRange && me->IsVisible(camper, CHECK_FOV))
+		if (pCamper && pCamper != me && range < closeRange && me->IsVisible(pCamper, CHECK_FOV))
 		{
 			// player is in our hiding spot
 			me->PrintIfWatched("Someone's in my hiding spot - picking another...\n");
@@ -389,7 +389,7 @@ void HideState::OnUpdate(CCSBot *me)
 
 			// search from hiding spot, since we know it was valid
 			const Vector *pos = FindNearbyHidingSpot(me, &m_hidingSpot, m_searchFromArea, m_range, me->IsSniper());
-			if (pos == NULL)
+			if (!pos)
 			{
 				// no available hiding spots
 				me->PrintIfWatched("No available hiding spots - hiding where I'm at.\n");

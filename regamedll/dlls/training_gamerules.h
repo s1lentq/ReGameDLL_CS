@@ -26,11 +26,7 @@
 *
 */
 
-#ifndef TRAINING_GAMERULES_H
-#define TRAINING_GAMERULES_H
-#ifdef _WIN32
 #pragma once
-#endif
 
 class CHalfLifeTraining: public CHalfLifeMultiplay
 {
@@ -61,6 +57,13 @@ public:
 	bool fVGUIMenus;
 };
 
+enum GrenCatchType : int
+{
+	GRENADETYPE_NONE  = 0,
+	GRENADETYPE_SMOKE,
+	GRENADETYPE_FLASH,
+};
+
 class CBaseGrenCatch: public CBaseEntity
 {
 public:
@@ -75,12 +78,14 @@ public:
 public:
 	static TYPEDESCRIPTION IMPL(m_SaveData)[5];
 
-	int m_NeedGrenadeType;
+	GrenCatchType m_NeedGrenadeType;
 	string_t sTriggerOnGrenade;
 	string_t sDisableOnGrenade;
 	bool m_fSmokeTouching;
 	bool m_fFlashTouched;
 };
+
+const int MAX_ITEM_COUNTS = 32;
 
 class CFuncWeaponCheck: public CBaseEntity
 {
@@ -98,9 +103,7 @@ private:
 	string_t sTriggerWithItems;
 	string_t sTriggerNoItems;
 	string_t sMaster;
-	unsigned int sItemName[32];
+	string_t sItemName[MAX_ITEM_COUNTS];
 	int iItemCount;
 	int iAnyWeapon;
 };
-
-#endif // TRAINING_GAMERULES_H

@@ -3,36 +3,36 @@
 #ifndef HOOK_GAMEDLL
 
 // presets for runtime pitch and vol modulation of ambient sounds
-UNTESTED dynpitchvol_t rgdpvpreset[CDPVPRESETMAX] =
+dynpitchvol_t rgdpvpreset[MAX_SENTENCE_DPV_RESET] =
 {
-	// pitch prun	pstart	spinup	spindwn	volrun	volstrt	fadein	fadeout	lfotype	lforate	lfomodp modvol	cspnup	cspnct	pitch	spupsv	spdwnsv	pfrac	vol	fdinsv	fdotsv	volfrac	lfofrac	lfomult
-	{ 1,	255,	75,	95,	95,	10,	1,	50,	95,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0 },
-	{ 2,	255,	85,	70,	88,	10,	1,	20,	88,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0 },
-	{ 3,	255,	100,	50,	75,	10,	1,	10,	75,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0 },
-	{ 4,	100,	100,	0,	0,	10,	1,	90,	90,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0 },
-	{ 5,	100,	100,	0,	0,	10,	1,	80,	80,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0 },
-	{ 6,	100,	100,	0,	0,	10,	1,	50,	70,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0 },
-	{ 7,	100,	100,	0,	0,	5,	1,	40,	50,	1,	50,	0,	10,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0 },
-	{ 8,	100,	100,	0,	0,	5,	1,	40,	50,	1,	150,	0,	10,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0 },
-	{ 9,	100,	100,	0,	0,	5,	1,	40,	50,	1,	750,	0,	10,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0 },
-	{ 10,	128,	100,	50,	75,	10,	1,	30,	40,	2,	8,	20,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0 },
-	{ 11,	128,	100,	50,	75,	10,	1,	30,	40,	2,	25,	20,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0 },
-	{ 12,	128,	100,	50,	75,	10,	1,	30,	40,	2,	70,	20,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0 },
-	{ 13,	50,	50,	0,	0,	10,	1,	20,	50,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0 },
-	{ 14,	70,	70,	0,	0,	10,	1,	20,	50,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0 },
-	{ 15,	90,	90,	0,	0,	10,	1,	20,	50,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0 },
-	{ 16,	120,	120,	0,	0,	10,	1,	20,	50,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0 },
-	{ 17,	180,	180,	0,	0,	10,	1,	20,	50,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0 },
-	{ 18,	255,	255,	0,	0,	10,	1,	20,	50,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0 },
-	{ 19,	200,	75,	90,	90,	10,	1,	50,	90,	2,	100,	20,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0 },
-	{ 20,	255,	75,	97,	90,	10,	1,	50,	90,	1,	40,	50,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0 },
-	{ 21,	100,	100,	0,	0,	10,	1,	30,	50,	3,	15,	20,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0 },
-	{ 22,	160,	160,	0,	0,	10,	1,	50,	50,	3,	500,	25,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0 },
-	{ 23,	255,	75,	88,	0,	10,	1,	40,	0,	0,	0,	0,	0,	5,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0 },
-	{ 24,	200,	20,	95,	70,	10,	1,	70,	70,	3,	20,	50,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0 },
-	{ 25,	180,	100,	50,	60,	10,	1,	40,	60,	2,	90,	100,	100,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0 },
-	{ 26,	60,	60,	0,	0,	10,	1,	40,	70,	3,	80,	20,	50,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0 },
-	{ 27,	128,	90,	10,	10,	10,	1,	20,	40,	1,	5,	10,	20,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0 }
+	// pitch prun   pstart  spinup  spindwn volrun  volstrt fadein  fadeout lfotype        lforate lfomodp modvol cspnup   cspnct  pitch   spupsv  spdwnsv pfrac   vol     fdinsv fdotsv   volfrac lfofrac lfomult
+	{ 1,    255,    75,     95,     95,     10,     1,      50,     95,     LFO_OFF,       0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0 },
+	{ 2,    255,    85,     70,     88,     10,     1,      20,     88,     LFO_OFF,       0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0 },
+	{ 3,    255,    100,    50,     75,     10,     1,      10,     75,     LFO_OFF,       0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0 },
+	{ 4,    100,    100,    0,      0,      10,     1,      90,     90,     LFO_OFF,       0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0 },
+	{ 5,    100,    100,    0,      0,      10,     1,      80,     80,     LFO_OFF,       0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0 },
+	{ 6,    100,    100,    0,      0,      10,     1,      50,     70,     LFO_OFF,       0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0 },
+	{ 7,    100,    100,    0,      0,      5,      1,      40,     50,     LFO_SQUARE,    50,     0,      10,     0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0 },
+	{ 8,    100,    100,    0,      0,      5,      1,      40,     50,     LFO_SQUARE,    150,    0,      10,     0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0 },
+	{ 9,    100,    100,    0,      0,      5,      1,      40,     50,     LFO_SQUARE,    750,    0,      10,     0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0 },
+	{ 10,   128,    100,    50,     75,     10,     1,      30,     40,     LFO_TRIANGLE,  8,      20,     0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0 },
+	{ 11,   128,    100,    50,     75,     10,     1,      30,     40,     LFO_TRIANGLE,  25,     20,     0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0 },
+	{ 12,   128,    100,    50,     75,     10,     1,      30,     40,     LFO_TRIANGLE,  0,      20,     0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0 },
+	{ 13,   50,     50,     0,      0,      10,     1,      20,     50,     LFO_OFF,       0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0 },
+	{ 14,   70,     70,     0,      0,      10,     1,      20,     50,     LFO_OFF,       0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0 },
+	{ 15,   90,     90,     0,      0,      10,     1,      20,     50,     LFO_OFF,       0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0 },
+	{ 16,   120,    120,    0,      0,      10,     1,      20,     50,     LFO_OFF,       0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0 },
+	{ 17,   180,    180,    0,      0,      10,     1,      20,     50,     LFO_OFF,       0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0 },
+	{ 18,   255,    255,    0,      0,      10,     1,      20,     50,     LFO_OFF,       0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0 },
+	{ 19,   200,    75,     90,     90,     10,     1,      50,     90,     LFO_TRIANGLE,  100,    20,     0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0 },
+	{ 20,   255,    75,     97,     90,     10,     1,      50,     90,     LFO_SQUARE,    40,     50,     0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0 },
+	{ 21,   100,    100,    0,      0,      10,     1,      30,     50,     LFO_RANDOM,    15,     20,     0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0 },
+	{ 22,   160,    160,    0,      0,      10,     1,      50,     50,     LFO_RANDOM,    500,    25,     0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0 },
+	{ 23,   255,    75,     88,     0,      10,     1,      40,     0,      LFO_OFF,       0,      0,      0,      5,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0 },
+	{ 24,   200,    20,     95,     70,     10,     1,      70,     70,     LFO_RANDOM,    20,     50,     0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0 },
+	{ 25,   180,    100,    50,     60,     10,     1,      40,     60,     LFO_TRIANGLE,  90,     100,    100,    0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0 },
+	{ 26,   60,     60,     0,      0,      10,     1,      40,     70,     LFO_RANDOM,    80,     20,     50,     0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0 },
+	{ 27,   128,    90,     10,     10,     10,     1,      20,     40,     LFO_SQUARE,    5,      10,     20,     0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0 },
 };
 
 TYPEDESCRIPTION CAmbientGeneric::m_SaveData[] =
@@ -71,8 +71,8 @@ BOOL fTextureTypeInit = FALSE;
 // time delay until it's ok to speak: used so that two NPCs don't talk at once
 float CTalkMonster::g_talkWaitTime = 0;
 
-char gszallsentencenames[CVOXFILESENTENCEMAX][CBSENTENCENAME_MAX];
-sentenceg rgsentenceg[CSENTENCEG_MAX];
+char gszallsentencenames[MAX_SENTENCE_VOXFILE][MAX_SENTENCE_NAME];
+sentenceg rgsentenceg[MAX_SENTENCE_GROUPS];
 
 // Used to detect the texture the player is standing on, map the
 // texture name to a material type. Play footstep sound based on material type.
@@ -89,19 +89,19 @@ IMPLEMENT_SAVERESTORE(CAmbientGeneric, CBaseEntity)
 // 80  : "Large Radius"
 void CAmbientGeneric::Spawn()
 {
-	if (pev->spawnflags & AMBIENT_SOUND_EVERYWHERE)
+	if (pev->spawnflags & SF_AMBIENT_SOUND_EVERYWHERE)
 	{
 		m_flAttenuation = ATTN_NONE;
 	}
-	else if (pev->spawnflags & AMBIENT_SOUND_SMALLRADIUS)
+	else if (pev->spawnflags & SF_AMBIENT_SOUND_SMALLRADIUS)
 	{
 		m_flAttenuation = ATTN_IDLE;
 	}
-	else if (pev->spawnflags & AMBIENT_SOUND_MEDIUMRADIUS)
+	else if (pev->spawnflags & SF_AMBIENT_SOUND_MEDIUMRADIUS)
 	{
 		m_flAttenuation = ATTN_STATIC;
 	}
-	else if (pev->spawnflags & AMBIENT_SOUND_LARGERADIUS)
+	else if (pev->spawnflags & SF_AMBIENT_SOUND_LARGERADIUS)
 	{
 		m_flAttenuation = ATTN_NORM;
 	}
@@ -136,7 +136,7 @@ void CAmbientGeneric::Spawn()
 
 	m_fActive = FALSE;
 
-	if (pev->spawnflags & AMBIENT_SOUND_NOT_LOOPING)
+	if (pev->spawnflags & SF_AMBIENT_SOUND_NOT_LOOPING)
 		m_fLooping = FALSE;
 	else
 		m_fLooping = TRUE;
@@ -146,19 +146,19 @@ void CAmbientGeneric::Spawn()
 
 void CAmbientGeneric::Restart()
 {
-	if (pev->spawnflags & AMBIENT_SOUND_EVERYWHERE)
+	if (pev->spawnflags & SF_AMBIENT_SOUND_EVERYWHERE)
 	{
 		m_flAttenuation = ATTN_NONE;
 	}
-	else if (pev->spawnflags & AMBIENT_SOUND_SMALLRADIUS)
+	else if (pev->spawnflags & SF_AMBIENT_SOUND_SMALLRADIUS)
 	{
 		m_flAttenuation = ATTN_IDLE;
 	}
-	else if (pev->spawnflags & AMBIENT_SOUND_MEDIUMRADIUS)
+	else if (pev->spawnflags & SF_AMBIENT_SOUND_MEDIUMRADIUS)
 	{
 		m_flAttenuation = ATTN_STATIC;
 	}
-	else if (pev->spawnflags & AMBIENT_SOUND_LARGERADIUS)
+	else if (pev->spawnflags & SF_AMBIENT_SOUND_LARGERADIUS)
 	{
 		m_flAttenuation = ATTN_NORM;
 	}
@@ -196,7 +196,7 @@ void CAmbientGeneric::Restart()
 	InitModulationParms();
 	pev->nextthink = gpGlobals->time + 0.1f;
 
-	if (!(pev->spawnflags & AMBIENT_SOUND_NOT_LOOPING))
+	if (!(pev->spawnflags & SF_AMBIENT_SOUND_NOT_LOOPING))
 	{
 		m_fLooping = TRUE;
 		m_fActive = TRUE;
@@ -225,7 +225,7 @@ void CAmbientGeneric::Precache()
 	// init all dynamic modulation parms
 	InitModulationParms();
 
-	if (!(pev->spawnflags & AMBIENT_SOUND_START_SILENT))
+	if (!(pev->spawnflags & SF_AMBIENT_SOUND_START_SILENT))
 	{
 		// start the sound ASAP
 		if (m_fLooping)
@@ -471,7 +471,7 @@ void CAmbientGeneric::InitModulationParms()
 		m_dpv.volrun = 0;
 
 	// get presets
-	if (m_dpv.preset != 0 && m_dpv.preset <= CDPVPRESETMAX)
+	if (m_dpv.preset != 0 && m_dpv.preset <= MAX_SENTENCE_DPV_RESET)
 	{
 		// load preset values
 		m_dpv = rgdpvpreset[m_dpv.preset - 1];
@@ -619,7 +619,7 @@ void CAmbientGeneric::ToggleUse(CBaseEntity *pActivator, CBaseEntity *pCaller, U
 			m_fActive = FALSE;
 
 			// HACKHACK - this makes the code in Precache() work properly after a save/restore
-			pev->spawnflags |= AMBIENT_SOUND_START_SILENT;
+			pev->spawnflags |= SF_AMBIENT_SOUND_START_SILENT;
 			if (m_dpv.spindownsav || m_dpv.fadeoutsav)
 			{
 				// spin it down (or fade it) before shutoff if spindown is set
@@ -787,7 +787,7 @@ void CAmbientGeneric::KeyValue(KeyValueData *pkvd)
 	// lfotype
 	else if (FStrEq(pkvd->szKeyName, "lfotype"))
 	{
-		m_dpv.lfotype = Q_atoi(pkvd->szValue);
+		m_dpv.lfotype = (LowFreqOsc)Q_atoi(pkvd->szValue);
 
 		if (m_dpv.lfotype > 4)
 			m_dpv.lfotype = LFO_TRIANGLE;
@@ -851,7 +851,9 @@ void CAmbientGeneric::KeyValue(KeyValueData *pkvd)
 		pkvd->fHandled = TRUE;
 	}
 	else
+	{
 		CBaseEntity::KeyValue(pkvd);
+	}
 }
 
 LINK_ENTITY_TO_CLASS(env_sound, CEnvSound, CCSEnvSound)
@@ -980,8 +982,8 @@ void CEnvSound::Think()
 			// only!
 
 			//CLIENT_COMMAND(pentPlayer, "room_type %f", m_flRoomtype);
-			MESSAGE_BEGIN(MSG_ONE, SVC_ROOMTYPE, NULL, pentPlayer);	// use the magic #1 for "one client"
-				WRITE_SHORT((short)m_flRoomtype);			// sequence number
+			MESSAGE_BEGIN(MSG_ONE, SVC_ROOMTYPE, nullptr, pentPlayer);	// use the magic #1 for "one client"
+				WRITE_SHORT((short)m_flRoomtype);						// sequence number
 			MESSAGE_END();
 
 			// crank up nextthink rate for new active sound entity
@@ -1021,8 +1023,8 @@ void USENTENCEG_InitLRU(unsigned char *plru, int count)
 	if (!fSentencesInit)
 		return;
 
-	if (count > CSENTENCE_LRU_MAX)
-		count = CSENTENCE_LRU_MAX;
+	if (count > MAX_SENTENCE_LRU)
+		count = MAX_SENTENCE_LRU;
 
 	for (i = 0; i < count; ++i)
 		plru[i] = (unsigned char)i;
@@ -1154,7 +1156,7 @@ int SENTENCEG_GetIndex(const char *szgroupname)
 		if (!Q_strcmp(szgroupname, rgsentenceg[i].szgroupname))
 			return i;
 
-		++i;
+		i++;
 	}
 
 	return -1;
@@ -1279,7 +1281,7 @@ void SENTENCEG_Init()
 	Q_memset(gszallsentencenames, 0, sizeof(gszallsentencenames));
 	gcallsentences = 0;
 
-	Q_memset(rgsentenceg, 0, CSENTENCEG_MAX * sizeof(sentenceg));
+	Q_memset(rgsentenceg, 0, MAX_SENTENCE_GROUPS * sizeof(sentenceg));
 	Q_memset(buffer, 0, sizeof(buffer));
 	Q_memset(szgroup, 0, sizeof(szgroup));
 
@@ -1291,17 +1293,17 @@ void SENTENCEG_Init()
 		return;
 
 	// for each line in the file...
-	while (memfgets(pMemFile, fileSize, filePos, buffer, sizeof(buffer) - 1) != NULL)
+	while (memfgets(pMemFile, fileSize, filePos, buffer, sizeof(buffer) - 1))
 	{
 		// skip whitespace
 		i = 0;
 		while (buffer[i] && buffer[i] == ' ')
-			++i;
+			i++;
 
 		if (!buffer[i])
 			continue;
 
-		if (buffer[i] == '/' || !Q_isalpha(buffer[i]))
+		if (buffer[i] == '/' || !isalpha(buffer[i]))
 			continue;
 
 		// get sentence name
@@ -1312,7 +1314,7 @@ void SENTENCEG_Init()
 		if (!buffer[j])
 			continue;
 
-		if (gcallsentences > CVOXFILESENTENCEMAX)
+		if (gcallsentences > MAX_SENTENCE_VOXFILE)
 		{
 			ALERT(at_error, "Too many sentences in sentences.txt!\n");
 			break;
@@ -1322,9 +1324,9 @@ void SENTENCEG_Init()
 		buffer[j] = 0;
 		const char *pString = buffer + i;
 
-		if (Q_strlen(pString) >= CBSENTENCENAME_MAX)
+		if (Q_strlen(pString) >= MAX_SENTENCE_NAME)
 		{
-			ALERT(at_warning, "Sentence %s longer than %d letters\n", pString, CBSENTENCENAME_MAX - 1);
+			ALERT(at_warning, "Sentence %s longer than %d letters\n", pString, MAX_SENTENCE_NAME - 1);
 		}
 
 		Q_strcpy(gszallsentencenames[gcallsentences++], pString);
@@ -1352,7 +1354,7 @@ void SENTENCEG_Init()
 			// name doesn't match with prev name,
 			// copy name into group, init count to 1
 			isentencegs++;
-			if (isentencegs >= CSENTENCEG_MAX)
+			if (isentencegs >= MAX_SENTENCE_GROUPS)
 			{
 				ALERT(at_error, "Too many sentence groups in sentences.txt!\n");
 				break;
@@ -1381,10 +1383,10 @@ void SENTENCEG_Init()
 
 	i = 0;
 
-	while (rgsentenceg[i].count && i < CSENTENCEG_MAX)
+	while (rgsentenceg[i].count && i < MAX_SENTENCE_GROUPS)
 	{
 		USENTENCEG_InitLRU(&(rgsentenceg[i].rgblru[0]), rgsentenceg[i].count);
-		++i;
+		i++;
 	}
 }
 
@@ -1396,7 +1398,7 @@ int SENTENCEG_Lookup(const char *sample, char *sentencenum)
 
 	// this is a sentence name; lookup sentence number
 	// and give to engine as string.
-	for (i = 0; i < gcallsentences; ++i)
+	for (i = 0; i < gcallsentences; i++)
 	{
 		if (!Q_stricmp(gszallsentencenames[i], sample + 1))
 		{
@@ -1483,10 +1485,10 @@ char *memfgets(byte *pMemFile, int fileSize, int &filePos, char *pBuffer, int bu
 {
 	// Bullet-proofing
 	if (!pMemFile || !pBuffer)
-		return NULL;
+		return nullptr;
 
 	if (filePos >= fileSize)
-		return NULL;
+		return nullptr;
 
 	int i = filePos;
 	int last = fileSize;
@@ -1502,7 +1504,7 @@ char *memfgets(byte *pMemFile, int fileSize, int &filePos, char *pBuffer, int bu
 	{
 		if (pMemFile[i] == '\n')
 			stop = 1;
-		++i;
+		i++;
 	}
 
 	// If we actually advanced the pointer, copy it over
@@ -1523,7 +1525,7 @@ char *memfgets(byte *pMemFile, int fileSize, int &filePos, char *pBuffer, int bu
 	}
 
 	// No data read, bail
-	return NULL;
+	return nullptr;
 }
 
 void TEXTURETYPE_Init()
@@ -1548,33 +1550,33 @@ void TEXTURETYPE_Init()
 		return;
 
 	// for each line in the file...
-	while (memfgets(pMemFile, fileSize, filePos, buffer, sizeof(buffer) - 1) != NULL && (gcTextures < CTEXTURESMAX))
+	while (memfgets(pMemFile, fileSize, filePos, buffer, sizeof(buffer) - 1) && (gcTextures < CTEXTURESMAX))
 	{
 		// skip whitespace
 		i = 0;
-		while (buffer[i] && Q_isspace(buffer[i]))
-			++i;
+		while (buffer[i] && isspace(buffer[i]))
+			i++;
 
 		if (!buffer[i])
 			continue;
 
 		// skip comment lines
-		if (buffer[i] == '/' || !Q_isalpha(buffer[i]))
+		if (buffer[i] == '/' || !isalpha(buffer[i]))
 			continue;
 
 		// get texture type
-		grgchTextureType[gcTextures] = Q_toupper(buffer[i++]);
+		grgchTextureType[gcTextures] = toupper(buffer[i++]);
 
 		// skip whitespace
-		while (buffer[i] && Q_isspace(buffer[i]))
-			++i;
+		while (buffer[i] && isspace(buffer[i]))
+			i++;
 
 		if (!buffer[i])
 			continue;
 
 		// get sentence name
 		j = i;
-		while (buffer[j] && !Q_isspace(buffer[j]))
+		while (buffer[j] && !isspace(buffer[j]))
 			j++;
 
 		if (!buffer[j])
@@ -1845,7 +1847,7 @@ void CSpeaker::Spawn()
 
 void CSpeaker::Precache()
 {
-	if (!(pev->spawnflags & SPEAKER_START_SILENT))
+	if (!(pev->spawnflags & SF_SPEAKER_START_SILENT))
 	{
 		// set first announcement time for random n second
 		pev->nextthink = gpGlobals->time + RANDOM_FLOAT(5, 15);
@@ -1854,7 +1856,7 @@ void CSpeaker::Precache()
 
 void CSpeaker::SpeakerThink()
 {
-	char *szSoundFile = NULL;
+	char *szSoundFile = nullptr;
 	float flvolume = pev->health * 0.1f;
 	float flattenuation = 0.3f;
 	int flags = 0;
@@ -1890,7 +1892,7 @@ void CSpeaker::SpeakerThink()
 		szSoundFile = (char *)STRING(pev->message);
 
 #ifdef REGAMEDLL_FIXES
-	if (szSoundFile == NULL)
+	if (szSoundFile == nullptr)
 	{
 		// if is null - return;
 		return;
@@ -1915,7 +1917,7 @@ void CSpeaker::SpeakerThink()
 		}
 
 		// set next announcement time for random 5 to 10 minute delay
-		pev->nextthink = gpGlobals->time + RANDOM_FLOAT(ANNOUNCE_MINUTES_MIN * 60.0f, ANNOUNCE_MINUTES_MAX * 60.0f);
+		pev->nextthink = gpGlobals->time + RANDOM_FLOAT(MIN_ANNOUNCE_MINS * 60.0f, MAX_ANNOUNCE_MINS * 60.0f);
 
 		// time delay until it's ok to speak: used so that two NPCs don't talk at once
 		CTalkMonster::g_talkWaitTime = gpGlobals->time + 5.0f;
@@ -1979,5 +1981,7 @@ void CSpeaker::KeyValue(KeyValueData *pkvd)
 		pkvd->fHandled = TRUE;
 	}
 	else
+	{
 		CBaseEntity::KeyValue(pkvd);
+	}
 }

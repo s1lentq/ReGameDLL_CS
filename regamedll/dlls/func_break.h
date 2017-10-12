@@ -26,32 +26,15 @@
 *
 */
 
-#ifndef FUNC_BREAK_H
-#define FUNC_BREAK_H
-#ifdef _WIN32
 #pragma once
-#endif
 
-// this many shards spawned when breakable objects break;
-#define NUM_SHARDS 6
-
-// func breakable
-#define SF_BREAK_TRIGGER_ONLY		1	// may only be broken by trigger
-#define SF_BREAK_TOUCH			2	// can be 'crashed through' by running player (plate glass)
-#define SF_BREAK_PRESSURE		4	// can be broken by a player standing on it
-#define SF_BREAK_CROWBAR		256	// instant break if hit with crowbar
-
-// func_pushable (it's also func_breakable, so don't collide with those flags)
-#define SF_PUSH_BREAKABLE		128
-
-typedef enum
+enum Explosions
 {
 	expRandom = 0,
 	expDirected,
+};
 
-} Explosions;
-
-typedef enum
+enum Materials
 {
 	matGlass = 0,
 	matWood,
@@ -64,8 +47,16 @@ typedef enum
 	matRocks,
 	matNone,
 	matLastMaterial,
+};
 
-} Materials;
+// this many shards spawned when breakable objects break
+#define NUM_SHARDS            6      // this many shards spawned when breakable objects break
+
+// func breakable
+#define SF_BREAK_TRIGGER_ONLY BIT(0) // may only be broken by trigger
+#define SF_BREAK_TOUCH        BIT(1) // can be 'crashed through' by running player (plate glass)
+#define SF_BREAK_PRESSURE     BIT(2) // can be broken by a player standing on it
+#define SF_BREAK_CROWBAR      BIT(8) // instant break if hit with crowbar
 
 class CBreakable: public CBaseDelay
 {
@@ -125,6 +116,8 @@ public:
 	float m_flHealth;
 };
 
+#define SF_PUSH_BREAKABLE BIT(7) // func_pushable (it's also func_breakable, so don't collide with those flags)
+
 class CPushable: public CBreakable
 {
 public:
@@ -163,5 +156,3 @@ public:
 	float m_maxSpeed;
 	float m_soundTime;
 };
-
-#endif // FUNC_BREAK_H

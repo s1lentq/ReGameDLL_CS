@@ -26,11 +26,7 @@
 *
 */
 
-#ifndef CS_BOT_CHATTER_H
-#define CS_BOT_CHATTER_H
-#ifdef _WIN32
 #pragma once
-#endif
 
 #define UNDEFINED_COUNT     0xFFFF
 #define MAX_PLACES_PER_MAP  64
@@ -261,6 +257,9 @@ public:
 
 	// given a name, return the associated phrase collection
 	const BotPhrase *GetPhrase(const char *name) const;
+
+	// given an id, return the associated phrase collection
+	const BotPhrase *GetPhrase(unsigned int id) const;
 
 	// given a name, return the associated Place phrase collection
 	const BotPhrase *GetPlace(const char *name) const;
@@ -585,7 +584,6 @@ inline BotStatement *BotChatterInterface::GetStatement() const
 }
 
 extern BotPhraseManager *TheBotPhrases;
-extern CBaseEntity *g_pSelectedZombieSpawn;
 
 inline void BotChatterInterface::Say(const char *phraseName, float lifetime, float delay)
 {
@@ -600,5 +598,3 @@ inline void BotChatterInterface::Say(const char *phraseName, float lifetime, flo
 }
 
 const Vector *GetRandomSpotAtPlace(Place place);
-
-#endif // CS_BOT_CHATTER_H

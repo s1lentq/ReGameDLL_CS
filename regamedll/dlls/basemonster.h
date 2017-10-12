@@ -26,11 +26,24 @@
 *
 */
 
-#ifndef BASEMONSTER_H
-#define BASEMONSTER_H
-#ifdef _WIN32
 #pragma once
-#endif
+
+#include "gib.h"
+#include "combat.h"
+#include "activity.h"
+
+enum
+{
+	ITBD_PARALLYZE = 0,
+	ITBD_NERVE_GAS,
+	ITBD_POISON,
+	ITBD_RADIATION,
+	ITBD_DROWN_RECOVER,
+	ITBD_ACID,
+	ITBD_SLOW_BURN,
+	ITBD_SLOW_FREEZE,
+	ITBD_END
+};
 
 enum MONSTERSTATE
 {
@@ -44,10 +57,6 @@ enum MONSTERSTATE
 	MONSTERSTATE_PLAYDEAD,
 	MONSTERSTATE_DEAD
 };
-
-void RadiusFlash(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int iClassIgnore = 0, int bitsDamageType = 0);
-void RadiusDamage(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, float flRadius, int iClassIgnore, int bitsDamageType);
-void RadiusDamage2(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, float flRadius, int iClassIgnore, int bitsDamageType);
 
 class CBaseMonster: public CBaseToggle
 {
@@ -112,20 +121,18 @@ public:
 	Activity m_IdealActivity;		// monster should switch to this activity
 	int m_LastHitGroup;				// the last body region that took damage
 	int m_bitsDamageType;			// what types of damage has monster (player) taken
-	byte m_rgbTimeBasedDamage[8];
+	byte m_rgbTimeBasedDamage[ITBD_END];
 
 	MONSTERSTATE m_MonsterState;		// monster's current state
 	MONSTERSTATE m_IdealMonsterState;	// monster should change to this state
 	int m_afConditions;
 	int m_afMemory;
 
-	float m_flNextAttack;			// cannot attack again until this time
-	EHANDLE m_hEnemy;				// the entity that the monster is fighting.
-	EHANDLE m_hTargetEnt;			// the entity that the monster is trying to reach
-	float m_flFieldOfView;			// width of monster's field of view ( dot product )
-	int m_bloodColor;				// color of blood particless
-	Vector m_HackedGunPos;			// HACK until we can query end of gun
-	Vector m_vecEnemyLKP;			// last known position of enemy. (enemy's origin)
+	float m_flNextAttack;	// cannot attack again until this time
+	EHANDLE m_hEnemy;		// the entity that the monster is fighting.
+	EHANDLE m_hTargetEnt;	// the entity that the monster is trying to reach
+	float m_flFieldOfView;	// width of monster's field of view (dot product)
+	int m_bloodColor;		// color of blood particless
+	Vector m_HackedGunPos;	// HACK until we can query end of gun
+	Vector m_vecEnemyLKP;	// last known position of enemy. (enemy's origin)
 };
-
-#endif // BASEMONSTER_H

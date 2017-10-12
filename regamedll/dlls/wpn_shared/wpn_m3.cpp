@@ -35,7 +35,7 @@ int CM3::GetItemInfo(ItemInfo *p)
 	p->pszName = STRING(pev->classname);
 	p->pszAmmo1 = "buckshot";
 	p->iMaxAmmo1 = MAX_AMMO_BUCKSHOT;
-	p->pszAmmo2 = NULL;
+	p->pszAmmo2 = nullptr;
 	p->iMaxAmmo2 = -1;
 	p->iMaxClip = M3_MAX_CLIP;
 	p->iSlot = 0;
@@ -74,7 +74,7 @@ void CM3::PrimaryAttack()
 			PlayEmptySound();
 		}
 
-		if (TheBots != NULL)
+		if (TheBots)
 		{
 			TheBots->OnEvent(EVENT_WEAPON_FIRED_ON_EMPTY, m_pPlayer);
 		}
@@ -83,9 +83,9 @@ void CM3::PrimaryAttack()
 		return;
 	}
 
+	m_iClip--;
 	m_pPlayer->m_iWeaponVolume = LOUD_GUN_VOLUME;
 	m_pPlayer->m_iWeaponFlash = BRIGHT_GUN_FLASH;
-	--m_iClip;
 
 	m_pPlayer->pev->effects |= EF_MUZZLEFLASH;
 	// player "shoot" animation
@@ -109,11 +109,13 @@ void CM3::PrimaryAttack()
 	if (!m_iClip && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
 	{
 		// HEV suit - indicate out of ammo condition
-		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
+		m_pPlayer->SetSuitUpdate("!HEV_AMO0", SUIT_SENTENCE, SUIT_REPEAT_OK);
 	}
 
+#ifndef REGAMEDLL_FIXES
 	if (m_iClip != 0)
 		m_flPumpTime = UTIL_WeaponTimeBase() + 0.5f;
+#endif
 
 	m_flNextPrimaryAttack = GetNextAttackDelay(0.875);
 	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.875f;
@@ -165,14 +167,14 @@ void CM3::Reload()
 	}
 	else
 	{
-		++m_iClip;
+		m_iClip++;
 
 #ifdef REGAMEDLL_ADD
 		if (refill_bpammo_weapons.value < 3.0f)
 #endif
 		{
-			--m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType];
-			--m_pPlayer->ammo_buckshot;
+			m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]--;
+			m_pPlayer->ammo_buckshot--;
 		}
 
 		m_fInSpecialReload = 1;
@@ -184,10 +186,12 @@ void CM3::WeaponIdle()
 	ResetEmptySound();
 	m_pPlayer->GetAutoaimVector(AUTOAIM_5DEGREES);
 
+#ifndef REGAMEDLL_FIXES
 	if (m_flPumpTime && m_flPumpTime < UTIL_WeaponTimeBase())
 	{
 		m_flPumpTime = 0;
 	}
+#endif
 
 	if (m_flTimeWeaponIdle < UTIL_WeaponTimeBase())
 	{

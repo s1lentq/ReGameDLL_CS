@@ -62,10 +62,10 @@ DLL_FUNCTIONS gFunctionTable =
 NEW_DLL_FUNCTIONS gNewDLLFunctions =
 {
 	&OnFreeEntPrivateData,
-	NULL,
-	NULL,
-	NULL,
-	NULL
+	nullptr,
+	nullptr,
+	nullptr,
+	nullptr
 };
 
 // Global Savedata for Delay
@@ -112,10 +112,10 @@ void EmptyEntityHashTable()
 		item = &stringsHashTable[i];
 		temp = item->next;
 
-		item->pev = NULL;
+		item->pev = nullptr;
 		item->pevIndex = 0;
 		item->lastHash = 0;
-		item->next = NULL;
+		item->next = nullptr;
 
 		while (temp)
 		{
@@ -126,7 +126,7 @@ void EmptyEntityHashTable()
 	}
 }
 
-void EXT_FUNC AddEntityHashValue(entvars_t *pev, const char *value, hash_types_e fieldType)
+void AddEntityHashValue(entvars_t *pev, const char *value, hash_types_e fieldType)
 {
 	int count;
 	hash_item_t *item, *next, *temp, *newp;
@@ -167,7 +167,7 @@ void EXT_FUNC AddEntityHashValue(entvars_t *pev, const char *value, hash_types_e
 		{
 			pevtemp = item->pev;
 			item->pev = pev;
-			item->lastHash = NULL;
+			item->lastHash = nullptr;
 			item->pevIndex = pevIndex;
 
 			pevIndex = ENTINDEX(ENT(pevtemp));
@@ -182,24 +182,24 @@ void EXT_FUNC AddEntityHashValue(entvars_t *pev, const char *value, hash_types_e
 
 			item->next = newp;
 			newp->pev = pevtemp;
-			newp->lastHash = NULL;
+			newp->lastHash = nullptr;
 			newp->pevIndex = pevIndex;
 
 			if (next)
 				newp->next = temp;
 			else
-				newp->next = NULL;
+				newp->next = nullptr;
 		}
 	}
 	else
 	{
 		item->pev = pev;
-		item->lastHash = NULL;
+		item->lastHash = nullptr;
 		item->pevIndex = ENTINDEX(ENT(pev));
 	}
 }
 
-void EXT_FUNC RemoveEntityHashValue(entvars_t *pev, const char *value, hash_types_e fieldType)
+void RemoveEntityHashValue(entvars_t *pev, const char *value, hash_types_e fieldType)
 {
 	int hash;
 	hash_item_t *item;
@@ -244,20 +244,20 @@ void EXT_FUNC RemoveEntityHashValue(entvars_t *pev, const char *value, hash_type
 				{
 					item->pev = item->next->pev;
 					item->pevIndex = item->next->pevIndex;
-					item->lastHash = NULL;
+					item->lastHash = nullptr;
 					item->next = item->next->next;
 				}
 				else
 				{
-					item->pev = NULL;
-					item->lastHash = NULL;
+					item->pev = nullptr;
+					item->lastHash = nullptr;
 					item->pevIndex = 0;
 				}
 			}
 			else
 			{
 				if (stringsHashTable[hash].lastHash == item)
-					stringsHashTable[hash].lastHash = NULL;
+					stringsHashTable[hash].lastHash = nullptr;
 
 				last->next = item->next;
 				hashItemMemPool.Free(item);
@@ -266,25 +266,7 @@ void EXT_FUNC RemoveEntityHashValue(entvars_t *pev, const char *value, hash_type
 	}
 }
 
-void printEntities()
-{
-	for (int i = 0; i < stringsHashTable.Count(); ++i)
-	{
-		hash_item_t *item = &stringsHashTable[i];
-
-		if (item->pev)
-		{
-			UTIL_LogPrintf("Print: %s %i %p\n", STRING(stringsHashTable[i].pev->classname), ENTINDEX(ENT(item->pev)), item->pev);
-		}
-
-		for (item = stringsHashTable[i].next; item; item = item->next)
-		{
-			UTIL_LogPrintf("Print: %s %i %p\n", STRING(item->pev->classname), ENTINDEX(ENT(item->pev)), item->pev);
-		}
-	}
-}
-
-NOINLINE edict_t *EXT_FUNC CREATE_NAMED_ENTITY(string_t iClass)
+NOINLINE edict_t *CREATE_NAMED_ENTITY(string_t iClass)
 {
 	edict_t *named = g_engfuncs.pfnCreateNamedEntity(iClass);
 	if (named)
@@ -303,58 +285,6 @@ void REMOVE_ENTITY(edict_t *pEntity)
 	}
 }
 
-void loopPerformance()
-{
-	CCounter loopCounter;
-	loopCounter.Init();
-
-	double start, end;
-	int i;
-
-	start = loopCounter.GetCurTime();
-
-	for (i = 0; i < 100; ++i)
-	{
-		CBaseEntity *pSpot;
-		for (pSpot = UTIL_FindEntityByString_Old(NULL, "classname", "info_player_start"); pSpot; pSpot = UTIL_FindEntityByString_Old(pSpot, "classname", "info_player_start"))
-			;
-
-		for (pSpot = UTIL_FindEntityByString_Old(NULL, "classname", "info_player_deathmatch"); pSpot; pSpot = UTIL_FindEntityByString_Old(pSpot, "classname", "info_player_deathmatch"))
-			;
-
-		for (pSpot = UTIL_FindEntityByString_Old(NULL, "classname", "player"); pSpot; pSpot = UTIL_FindEntityByString_Old(pSpot, "classname", "player"))
-			;
-
-		for (pSpot = UTIL_FindEntityByString_Old(NULL, "classname", "bodyque"); pSpot; pSpot = UTIL_FindEntityByString_Old(pSpot, "classname", "bodyque"))
-			;
-	}
-
-	end = loopCounter.GetCurTime();
-	CONSOLE_ECHO(" Time in old search loop %.4f\n", (end - start) * 1000.0);
-
-	// check time new search loop
-	start = loopCounter.GetCurTime();
-
-	for (i = 0; i < 100; ++i)
-	{
-		CBaseEntity *pSpot;
-		for (pSpot = UTIL_FindEntityByString(NULL, "classname", "info_player_start"); pSpot; pSpot = UTIL_FindEntityByString(pSpot, "classname", "info_player_start"))
-			;
-
-		for (pSpot = UTIL_FindEntityByString(NULL, "classname", "info_player_deathmatch"); pSpot; pSpot = UTIL_FindEntityByString(pSpot, "classname", "info_player_deathmatch"))
-			;
-
-		for (pSpot = UTIL_FindEntityByString(NULL, "classname", "player"); pSpot; pSpot = UTIL_FindEntityByString(pSpot, "classname", "player"))
-			;
-
-		for (pSpot = UTIL_FindEntityByString(NULL, "classname", "bodyque"); pSpot; pSpot = UTIL_FindEntityByString(pSpot, "classname", "bodyque"))
-			;
-	}
-
-	end = loopCounter.GetCurTime();
-	CONSOLE_ECHO(" Time in new search loop %.4f\n", (end - start) * 1000.0);
-}
-
 C_DLLEXPORT int GetEntityAPI(DLL_FUNCTIONS *pFunctionTable, int interfaceVersion)
 {
 	if (!pFunctionTable || interfaceVersion != INTERFACE_VERSION)
@@ -364,7 +294,7 @@ C_DLLEXPORT int GetEntityAPI(DLL_FUNCTIONS *pFunctionTable, int interfaceVersion
 	stringsHashTable.AddMultipleToTail(2048);
 	for (int i = 0; i < stringsHashTable.Count(); ++i)
 	{
-		stringsHashTable[i].next = NULL;
+		stringsHashTable[i].next = nullptr;
 	}
 
 	EmptyEntityHashTable();
@@ -395,10 +325,9 @@ C_DLLEXPORT int GetNewDLLFunctions(NEW_DLL_FUNCTIONS *pFunctionTable, int *inter
 	return 1;
 }
 
-int EXT_FUNC DispatchSpawn(edict_t *pent)
+int DispatchSpawn(edict_t *pent)
 {
-	CBaseEntity *pEntity = (CBaseEntity *)GET_PRIVATE(pent);
-
+	CBaseEntity *pEntity = GET_PRIVATE<CBaseEntity>(pent);
 	if (pEntity)
 	{
 		// Initialize these or entities who don't link to the world won't have anything in here
@@ -455,7 +384,7 @@ int EXT_FUNC DispatchSpawn(edict_t *pent)
 	return 0;
 }
 
-void EXT_FUNC DispatchKeyValue(edict_t *pentKeyvalue, KeyValueData *pkvd)
+void DispatchKeyValue(edict_t *pentKeyvalue, KeyValueData *pkvd)
 {
 	if (!pkvd || !pentKeyvalue)
 		return;
@@ -477,7 +406,7 @@ void EXT_FUNC DispatchKeyValue(edict_t *pentKeyvalue, KeyValueData *pkvd)
 
 // HACKHACK -- this is a hack to keep the node graph entity from "touching" things (like triggers)
 // while it builds the graph
-void EXT_FUNC DispatchTouch(edict_t *pentTouched, edict_t *pentOther)
+void DispatchTouch(edict_t *pentTouched, edict_t *pentOther)
 {
 	CBaseEntity *pEntity = (CBaseEntity *)GET_PRIVATE(pentTouched);
 	CBaseEntity *pOther = (CBaseEntity *)GET_PRIVATE(pentOther);
@@ -486,7 +415,7 @@ void EXT_FUNC DispatchTouch(edict_t *pentTouched, edict_t *pentOther)
 		pEntity->Touch(pOther);
 }
 
-void EXT_FUNC DispatchUse(edict_t *pentUsed, edict_t *pentOther)
+void DispatchUse(edict_t *pentUsed, edict_t *pentOther)
 {
 	CBaseEntity *pEntity = (CBaseEntity *)GET_PRIVATE(pentUsed);
 	CBaseEntity *pOther = (CBaseEntity *)GET_PRIVATE(pentOther);
@@ -495,7 +424,7 @@ void EXT_FUNC DispatchUse(edict_t *pentUsed, edict_t *pentOther)
 		pEntity->Use(pOther, pOther, USE_TOGGLE, 0);
 }
 
-void EXT_FUNC DispatchThink(edict_t *pent)
+void DispatchThink(edict_t *pent)
 {
 	CBaseEntity *pEntity = (CBaseEntity *)GET_PRIVATE(pent);
 
@@ -510,7 +439,7 @@ void EXT_FUNC DispatchThink(edict_t *pent)
 	}
 }
 
-void EXT_FUNC DispatchBlocked(edict_t *pentBlocked, edict_t *pentOther)
+void DispatchBlocked(edict_t *pentBlocked, edict_t *pentOther)
 {
 	CBaseEntity *pEntity = (CBaseEntity *)GET_PRIVATE(pentBlocked);
 	CBaseEntity *pOther = (CBaseEntity *)GET_PRIVATE(pentOther);
@@ -521,7 +450,7 @@ void EXT_FUNC DispatchBlocked(edict_t *pentBlocked, edict_t *pentOther)
 	}
 }
 
-void EXT_FUNC DispatchSave(edict_t *pent, SAVERESTOREDATA *pSaveData)
+void DispatchSave(edict_t *pent, SAVERESTOREDATA *pSaveData)
 {
 	CBaseEntity *pEntity = (CBaseEntity *)GET_PRIVATE(pent);
 
@@ -563,7 +492,7 @@ void EXT_FUNC DispatchSave(edict_t *pent, SAVERESTOREDATA *pSaveData)
 // different classes with the same global name
 CBaseEntity *FindGlobalEntity(string_t classname, string_t globalname)
 {
-	edict_t *pent = FIND_ENTITY_BY_STRING(NULL, "globalname", STRING(globalname));
+	edict_t *pent = FIND_ENTITY_BY_STRING(nullptr, "globalname", STRING(globalname));
 	CBaseEntity *pReturn = CBaseEntity::Instance(pent);
 
 	if (pReturn)
@@ -571,14 +500,14 @@ CBaseEntity *FindGlobalEntity(string_t classname, string_t globalname)
 		if (!FClassnameIs(pReturn->pev, STRING(classname)))
 		{
 			ALERT(at_console, "Global entity found %s, wrong class %s\n", STRING(globalname), STRING(pReturn->pev->classname));
-			pReturn = NULL;
+			pReturn = nullptr;
 		}
 	}
 
 	return pReturn;
 }
 
-int EXT_FUNC DispatchRestore(edict_t *pent, SAVERESTOREDATA *pSaveData, int globalEntity)
+int DispatchRestore(edict_t *pent, SAVERESTOREDATA *pSaveData, int globalEntity)
 {
 	CBaseEntity *pEntity = (CBaseEntity *)GET_PRIVATE(pent);
 
@@ -692,7 +621,7 @@ int EXT_FUNC DispatchRestore(edict_t *pent, SAVERESTOREDATA *pSaveData, int glob
 	return 0;
 }
 
-void EXT_FUNC DispatchObjectCollsionBox(edict_t *pent)
+void DispatchObjectCollsionBox(edict_t *pent)
 {
 	CBaseEntity *pEntity = (CBaseEntity *)GET_PRIVATE(pent);
 	if (pEntity)
@@ -704,65 +633,16 @@ void EXT_FUNC DispatchObjectCollsionBox(edict_t *pent)
 
 }
 
-void EXT_FUNC SaveWriteFields(SAVERESTOREDATA *pSaveData, const char *pname, void *pBaseData, TYPEDESCRIPTION *pFields, int fieldCount)
+void SaveWriteFields(SAVERESTOREDATA *pSaveData, const char *pname, void *pBaseData, TYPEDESCRIPTION *pFields, int fieldCount)
 {
 	CSave saveHelper(pSaveData);
 	saveHelper.WriteFields(pname, pBaseData, pFields, fieldCount);
 }
 
-void EXT_FUNC SaveReadFields(SAVERESTOREDATA *pSaveData, const char *pname, void *pBaseData, TYPEDESCRIPTION *pFields, int fieldCount)
+void SaveReadFields(SAVERESTOREDATA *pSaveData, const char *pname, void *pBaseData, TYPEDESCRIPTION *pFields, int fieldCount)
 {
 	CRestore restoreHelper(pSaveData);
 	restoreHelper.ReadFields(pname, pBaseData, pFields, fieldCount);
-}
-
-edict_t *EHANDLE::Get()
-{
-	if (!m_pent || m_pent->serialnumber != m_serialnumber)
-		return NULL;
-
-	return m_pent;
-}
-
-edict_t *EHANDLE::Set(edict_t *pent)
-{
-	m_pent = pent;
-	if (pent)
-		m_serialnumber = pent->serialnumber;
-
-	return pent;
-}
-
-EHANDLE::operator CBaseEntity *()
-{
-	return (CBaseEntity *)GET_PRIVATE(Get());
-}
-
-CBaseEntity *EHANDLE::operator=(CBaseEntity *pEntity)
-{
-	if (pEntity)
-	{
-		m_pent = ENT(pEntity->pev);
-		if (m_pent)
-			m_serialnumber = m_pent->serialnumber;
-	}
-	else
-	{
-		m_pent = NULL;
-		m_serialnumber = 0;
-	}
-
-	return pEntity;
-}
-
-EHANDLE::operator int()
-{
-	return Get() != NULL;
-}
-
-CBaseEntity *EHANDLE::operator->()
-{
-	return (CBaseEntity *)GET_PRIVATE(Get());
 }
 
 BOOL CBaseEntity::TakeHealth(float flHealth, int bitsDamageType)
@@ -844,12 +724,12 @@ void CBaseEntity::Killed(entvars_t *pevAttacker, int iGib)
 CBaseEntity *CBaseEntity::GetNextTarget()
 {
 	if (FStringNull(pev->target))
-		return NULL;
+		return nullptr;
 
-	edict_t *pTarget = FIND_ENTITY_BY_TARGETNAME(NULL, STRING(pev->target));
+	edict_t *pTarget = FIND_ENTITY_BY_TARGETNAME(nullptr, STRING(pev->target));
 	if (FNullEnt(pTarget))
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	return Instance(pTarget);
@@ -941,16 +821,24 @@ void CBaseEntity::SetObjectCollisionBox()
 	::SetObjectCollisionBox(pev);
 }
 
-int CBaseEntity::Intersects(CBaseEntity *pOther)
+bool CBaseEntity::Intersects(CBaseEntity *pOther)
 {
-	if (pOther->pev->absmin.x > pev->absmax.x
-		|| pOther->pev->absmin.y > pev->absmax.y
-		|| pOther->pev->absmin.z > pev->absmax.z
-		|| pOther->pev->absmax.x < pev->absmin.x
-		|| pOther->pev->absmax.y < pev->absmin.y
-		|| pOther->pev->absmax.z < pev->absmin.z)
-		 return 0;
-	return 1;
+	return Intersects(pOther->pev->absmin, pOther->pev->absmax);
+}
+
+bool CBaseEntity::Intersects(const Vector &mins, const Vector &maxs)
+{
+	if (mins.x > pev->absmax.x
+		|| mins.y > pev->absmax.y
+		|| mins.z > pev->absmax.z
+		|| maxs.x < pev->absmin.x
+		|| maxs.y < pev->absmin.y
+		|| maxs.z < pev->absmin.z)
+	{
+		return false;
+	}
+
+	return true;
 }
 
 void CBaseEntity::MakeDormant()
@@ -1025,7 +913,7 @@ CBaseEntity *CBaseEntity::Create(char *szName, const Vector &vecOrigin, const Ve
 	if (FNullEnt(pent))
 	{
 		ALERT(at_console, "NULL Ent in Create!\n");
-		return NULL;
+		return nullptr;
 	}
 
 	CBaseEntity *pEntity = Instance(pent);
@@ -1039,13 +927,534 @@ CBaseEntity *CBaseEntity::Create(char *szName, const Vector &vecOrigin, const Ve
 	return pEntity;
 }
 
-void EXT_FUNC OnFreeEntPrivateData(edict_t *pEnt)
+// Returns true if a line can be traced from the caller's eyes to the target
+BOOL CBaseEntity::FVisible(CBaseEntity *pEntity)
 {
-	CBaseEntity *pEntity = CBaseEntity::Instance(pEnt);
+	TraceResult tr;
+	Vector vecLookerOrigin;
+	Vector vecTargetOrigin;
+
+	if (pEntity->pev->flags & FL_NOTARGET)
+		return FALSE;
+
+	// don't look through water
+	if ((pev->waterlevel != 3 && pEntity->pev->waterlevel == 3) || (pev->waterlevel == 3 && pEntity->pev->waterlevel == 0))
+		return FALSE;
+
+	//look through the caller's 'eyes'
+	vecLookerOrigin = pev->origin + pev->view_ofs;
+	vecTargetOrigin = pEntity->EyePosition();
+
+	UTIL_TraceLine(vecLookerOrigin, vecTargetOrigin, ignore_monsters, ignore_glass, ENT(pev), &tr);
+
+	if (tr.flFraction != 1.0f)
+	{
+		// Line of sight is not established
+		return FALSE;
+	}
+	else
+	{
+		// line of sight is valid.
+		return TRUE;
+	}
+}
+
+// Returns true if a line can be traced from the caller's eyes to the target vector
+BOOL CBaseEntity::FVisible(const Vector &vecOrigin)
+{
+	TraceResult tr;
+	Vector vecLookerOrigin;
+
+	//look through the caller's 'eyes'
+	vecLookerOrigin = EyePosition();
+
+	UTIL_TraceLine(vecLookerOrigin, vecOrigin, ignore_monsters, ignore_glass, ENT(pev), &tr);
+
+	if (tr.flFraction != 1.0f)
+	{
+		// Line of sight is not established
+		return FALSE;
+	}
+	else
+	{
+		// line of sight is valid.
+		return TRUE;
+	}
+}
+
+void CBaseEntity::TraceAttack(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType)
+{
+	Vector vecOrigin = ptr->vecEndPos - vecDir * 4;
+
+	if (pev->takedamage != DAMAGE_NO)
+	{
+		AddMultiDamage(pevAttacker, this, flDamage, bitsDamageType);
+
+		int blood = BloodColor();
+		if (blood != DONT_BLEED)
+		{
+			// a little surface blood.
+			SpawnBlood(vecOrigin, blood, flDamage);
+			TraceBleed(flDamage, vecDir, ptr, bitsDamageType);
+		}
+	}
+}
+
+void CBaseEntity::FireBullets(ULONG cShots, Vector vecSrc, Vector vecDirShooting, Vector vecSpread, float flDistance, int iBulletType, int iTracerFreq, int iDamage, entvars_t *pevAttacker)
+{
+	static int tracerCount;
+	int tracer;
+
+	TraceResult tr;
+	Vector vecRight, vecUp;
+	bool m_bCreatedShotgunSpark = true;
+
+	vecRight = gpGlobals->v_right;
+	vecUp = gpGlobals->v_up;
+
+	if (!pevAttacker)
+	{
+		// the default attacker is ourselves
+		pevAttacker = pev;
+	}
+
+	ClearMultiDamage();
+	gMultiDamage.type = (DMG_BULLET | DMG_NEVERGIB);
+
+	for (ULONG iShot = 1; iShot <= cShots; ++iShot)
+	{
+		int spark = 0;
+
+		// get circular gaussian spread
+		float x, y, z;
+
+		do
+		{
+			x = RANDOM_FLOAT(-0.5, 0.5) + RANDOM_FLOAT(-0.5, 0.5);
+			y = RANDOM_FLOAT(-0.5, 0.5) + RANDOM_FLOAT(-0.5, 0.5);
+			z = x * x + y * y;
+		}
+		while (z > 1);
+
+		Vector vecDir, vecEnd;
+
+		vecDir = vecDirShooting + x * vecSpread.x * vecRight + y * vecSpread.y * vecUp;
+		vecEnd = vecSrc + vecDir * flDistance;
+
+		UTIL_TraceLine(vecSrc, vecEnd, dont_ignore_monsters, ENT(pev), &tr);
+		tracer = 0;
+
+		if (iTracerFreq != 0 && !(tracerCount++ % iTracerFreq))
+		{
+			Vector vecTracerSrc;
+
+			if (IsPlayer())
+			{
+				// adjust tracer position for player
+				vecTracerSrc = vecSrc + Vector(0, 0, -4) + gpGlobals->v_right * 2 + gpGlobals->v_forward * 16;
+			}
+			else
+			{
+				vecTracerSrc = vecSrc;
+			}
+
+			// guns that always trace also always decal
+			if (iTracerFreq != 1)
+				tracer = 1;
+
+			MESSAGE_BEGIN(MSG_PAS, SVC_TEMPENTITY, vecTracerSrc);
+				WRITE_BYTE(TE_TRACER);
+				WRITE_COORD(vecTracerSrc.x);
+				WRITE_COORD(vecTracerSrc.y);
+				WRITE_COORD(vecTracerSrc.z);
+				WRITE_COORD(tr.vecEndPos.x);
+				WRITE_COORD(tr.vecEndPos.y);
+				WRITE_COORD(tr.vecEndPos.z);
+			MESSAGE_END();
+		}
+
+		// do damage, paint decals
+		if (tr.flFraction != 1.0f)
+		{
+			CBaseEntity *pEntity = CBaseEntity::Instance(tr.pHit);
+
+			if (iDamage)
+			{
+				pEntity->TraceAttack(pevAttacker, iDamage, vecDir, &tr, DMG_BULLET | ((iDamage > 16) ? DMG_ALWAYSGIB : DMG_NEVERGIB));
+				TEXTURETYPE_PlaySound(&tr, vecSrc, vecEnd, iBulletType);
+				DecalGunshot(&tr, iBulletType, false, pev, false);
+			}
+			else
+			{
+				float flDamage;
+
+				switch (iBulletType)
+				{
+				case BULLET_PLAYER_MP5:
+					pEntity->TraceAttack(pevAttacker, gSkillData.plrDmgMP5, vecDir, &tr, DMG_BULLET);
+					break;
+				case BULLET_PLAYER_BUCKSHOT:
+					flDamage = ((1 - tr.flFraction) * 20);
+					pEntity->TraceAttack(pevAttacker, int(flDamage), vecDir, &tr, DMG_BULLET);
+					break;
+				case BULLET_PLAYER_357:
+					pEntity->TraceAttack(pevAttacker, gSkillData.plrDmg357, vecDir, &tr, DMG_BULLET);
+					break;
+				case BULLET_MONSTER_9MM:
+					pEntity->TraceAttack(pevAttacker, gSkillData.monDmg9MM, vecDir, &tr, DMG_BULLET);
+					TEXTURETYPE_PlaySound(&tr, vecSrc, vecEnd, iBulletType);
+					DecalGunshot(&tr, iBulletType, false, pev, false);
+					break;
+				case BULLET_MONSTER_MP5:
+					pEntity->TraceAttack(pevAttacker, gSkillData.monDmgMP5, vecDir, &tr, DMG_BULLET);
+					TEXTURETYPE_PlaySound(&tr, vecSrc, vecEnd, iBulletType);
+					DecalGunshot(&tr, iBulletType, false, pev, false);
+					break;
+				case BULLET_MONSTER_12MM:
+					pEntity->TraceAttack(pevAttacker, gSkillData.monDmg12MM, vecDir, &tr, DMG_BULLET);
+
+					if (!tracer)
+					{
+						TEXTURETYPE_PlaySound(&tr, vecSrc, vecEnd, iBulletType);
+						DecalGunshot(&tr, iBulletType, false, pev, false);
+					}
+					break;
+				case BULLET_NONE:
+					flDamage = 50;
+					pEntity->TraceAttack(pevAttacker, flDamage, vecDir, &tr, DMG_CLUB);
+					TEXTURETYPE_PlaySound(&tr, vecSrc, vecEnd, iBulletType);
+
+					// only decal glass
+					if (!FNullEnt(tr.pHit) && VARS(tr.pHit)->rendermode != kRenderNormal)
+					{
+						UTIL_DecalTrace(&tr, DECAL_GLASSBREAK1 + RANDOM_LONG(0, 2));
+					}
+					break;
+				default:
+					pEntity->TraceAttack(pevAttacker, gSkillData.monDmg9MM, vecDir, &tr, DMG_BULLET);
+					break;
+				}
+			}
+		}
+
+		// make bullet trails
+		UTIL_BubbleTrail(vecSrc, tr.vecEndPos, int((flDistance * tr.flFraction) / 64));
+	}
+
+	ApplyMultiDamage(pev, pevAttacker);
+}
+
+// Go to the trouble of combining multiple pellets into a single damage call.
+// This version is used by Players, uses the random seed generator to sync client and server side shots.
+Vector CBaseEntity::FireBullets3(Vector vecSrc, Vector vecDirShooting, float vecSpread, float flDistance, int iPenetration, int iBulletType, int iDamage, float flRangeModifier, entvars_t *pevAttacker, bool bPistol, int shared_rand)
+{
+	int iOriginalPenetration = iPenetration;
+	int iPenetrationPower;
+	float flPenetrationDistance;
+	int iCurrentDamage = iDamage;
+	float flCurrentDistance;
+
+	TraceResult tr, tr2;
+	Vector vecRight, vecUp;
+
+	bool bHitMetal = false;
+	int iSparksAmount = 1;
+
+	vecRight = gpGlobals->v_right;
+	vecUp = gpGlobals->v_up;
+
+	switch (iBulletType)
+	{
+	case BULLET_PLAYER_9MM:
+		iPenetrationPower = 21;
+		flPenetrationDistance = 800;
+		break;
+	case BULLET_PLAYER_45ACP:
+		iPenetrationPower = 15;
+		flPenetrationDistance = 500;
+		break;
+	case BULLET_PLAYER_50AE:
+		iPenetrationPower = 30;
+		flPenetrationDistance = 1000;
+		break;
+	case BULLET_PLAYER_762MM:
+		iPenetrationPower = 39;
+		flPenetrationDistance = 5000;
+		break;
+	case BULLET_PLAYER_556MM:
+		iPenetrationPower = 35;
+		flPenetrationDistance = 4000;
+		break;
+	case BULLET_PLAYER_338MAG:
+		iPenetrationPower = 45;
+		flPenetrationDistance = 8000;
+		break;
+	case BULLET_PLAYER_57MM:
+		iPenetrationPower = 30;
+		flPenetrationDistance = 2000;
+		break;
+	case BULLET_PLAYER_357SIG:
+		iPenetrationPower = 25;
+		flPenetrationDistance = 800;
+		break;
+	default:
+		iPenetrationPower = 0;
+		flPenetrationDistance = 0;
+		break;
+	}
+
+	if (!pevAttacker)
+	{
+		// the default attacker is ourselves
+		pevAttacker = pev;
+	}
+
+	gMultiDamage.type = (DMG_BULLET | DMG_NEVERGIB);
+
+	float x, y, z;
+
+	if (IsPlayer())
+	{
+		// Use player's random seed.
+		// get circular gaussian spread
+		x = UTIL_SharedRandomFloat(shared_rand, -0.5, 0.5) + UTIL_SharedRandomFloat(shared_rand + 1, -0.5, 0.5);
+		y = UTIL_SharedRandomFloat(shared_rand + 2, -0.5, 0.5) + UTIL_SharedRandomFloat(shared_rand + 3, -0.5, 0.5);
+	}
+	else
+	{
+		do
+		{
+			x = RANDOM_FLOAT(-0.5, 0.5) + RANDOM_FLOAT(-0.5, 0.5);
+			y = RANDOM_FLOAT(-0.5, 0.5) + RANDOM_FLOAT(-0.5, 0.5);
+			z = x * x + y * y;
+		}
+		while (z > 1);
+	}
+
+	Vector vecDir, vecEnd;
+	Vector vecOldSrc, vecNewSrc;
+
+	vecDir = vecDirShooting + x * vecSpread * vecRight + y * vecSpread * vecUp;
+	vecEnd = vecSrc + vecDir * flDistance;
+
+	float flDamageModifier = 0.5;
+
+	while (iPenetration != 0)
+	{
+		ClearMultiDamage();
+		UTIL_TraceLine(vecSrc, vecEnd, dont_ignore_monsters, ENT(pev), &tr);
+
+		if (TheBots && tr.flFraction != 1.0f)
+		{
+			TheBots->OnEvent(EVENT_BULLET_IMPACT, this, (CBaseEntity *)&tr.vecEndPos);
+		}
+
+		char cTextureType = UTIL_TextureHit(&tr, vecSrc, vecEnd);
+		bool bSparks = false;
+
+		switch (cTextureType)
+		{
+		case CHAR_TEX_METAL:
+			bHitMetal = true;
+			bSparks = true;
+
+			iPenetrationPower *= 0.15;
+			flDamageModifier = 0.2;
+			break;
+		case CHAR_TEX_CONCRETE:
+			iPenetrationPower *= 0.25;
+			break;
+		case CHAR_TEX_GRATE:
+			bHitMetal = true;
+			bSparks = true;
+
+			iPenetrationPower *= 0.5;
+			flDamageModifier = 0.4;
+			break;
+		case CHAR_TEX_VENT:
+			bHitMetal = true;
+			bSparks = true;
+
+			iPenetrationPower *= 0.5;
+			flDamageModifier = 0.45;
+			break;
+		case CHAR_TEX_TILE:
+			iPenetrationPower *= 0.65;
+			flDamageModifier = 0.3;
+			break;
+		case CHAR_TEX_COMPUTER:
+			bHitMetal = true;
+			bSparks = true;
+
+			iPenetrationPower *= 0.4;
+			flDamageModifier = 0.45;
+			break;
+		case CHAR_TEX_WOOD:
+			flDamageModifier = 0.6;
+			break;
+		default:
+			break;
+		}
+		if (tr.flFraction != 1.0f)
+		{
+			CBaseEntity *pEntity = CBaseEntity::Instance(tr.pHit);
+			iPenetration--;
+
+			flCurrentDistance = tr.flFraction * flDistance;
+			iCurrentDamage *= Q_pow(flRangeModifier, flCurrentDistance / 500);
+
+			if (flCurrentDistance > flPenetrationDistance)
+			{
+				iPenetration = 0;
+			}
+
+			if (tr.iHitgroup == HITGROUP_SHIELD)
+			{
+				EMIT_SOUND(pEntity->edict(), CHAN_VOICE, (RANDOM_LONG(0, 1) == 1) ? "weapons/ric_metal-1.wav" : "weapons/ric_metal-2.wav", VOL_NORM, ATTN_NORM);
+				UTIL_Sparks(tr.vecEndPos);
+
+				pEntity->pev->punchangle.x = iCurrentDamage * RANDOM_FLOAT(-0.15, 0.15);
+				pEntity->pev->punchangle.z = iCurrentDamage * RANDOM_FLOAT(-0.15, 0.15);
+
+				if (pEntity->pev->punchangle.x < 4)
+				{
+					pEntity->pev->punchangle.x = -4;
+				}
+
+				if (pEntity->pev->punchangle.z < -5)
+				{
+					pEntity->pev->punchangle.z = -5;
+				}
+				else if (pEntity->pev->punchangle.z > 5)
+				{
+					pEntity->pev->punchangle.z = 5;
+				}
+
+				break;
+			}
+
+			float flDistanceModifier;
+			if (VARS(tr.pHit)->solid != SOLID_BSP || !iPenetration)
+			{
+				iPenetrationPower = 42;
+				flDamageModifier = 0.75;
+				flDistanceModifier = 0.75;
+			}
+			else
+				flDistanceModifier = 0.5;
+
+			DecalGunshot(&tr, iBulletType, (!bPistol && RANDOM_LONG(0, 3)), pev, bHitMetal);
+
+			vecSrc = tr.vecEndPos + (vecDir * iPenetrationPower);
+			flDistance = (flDistance - flCurrentDistance) * flDistanceModifier;
+			vecEnd = vecSrc + (vecDir * flDistance);
+
+			pEntity->TraceAttack(pevAttacker, iCurrentDamage, vecDir, &tr, (DMG_BULLET | DMG_NEVERGIB));
+			iCurrentDamage *= flDamageModifier;
+		}
+		else
+			iPenetration = 0;
+
+		ApplyMultiDamage(pev, pevAttacker);
+	}
+
+	return Vector(x * vecSpread, y * vecSpread, 0);
+}
+
+void CBaseEntity::TraceBleed(float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType)
+{
+	if (BloodColor() == DONT_BLEED)
+		return;
+
+	if (!flDamage)
+		return;
+
+	if (!(bitsDamageType & (DMG_CRUSH | DMG_BULLET | DMG_SLASH | DMG_BLAST | DMG_CLUB | DMG_MORTAR)))
+		return;
+
+	// make blood decal on the wall!
+	TraceResult Bloodtr;
+	Vector vecTraceDir;
+	float flNoise;
+	int cCount;
+	int i;
+
+	if (flDamage < 10.0f)
+	{
+		flNoise = 0.1f;
+		cCount = 1;
+	}
+	else if (flDamage < 25.0f)
+	{
+		flNoise = 0.2f;
+		cCount = 2;
+	}
+	else
+	{
+		flNoise = 0.3f;
+		cCount = 4;
+	}
+
+	for (i = 0; i < cCount; ++i)
+	{
+		// trace in the opposite direction the shot came from (the direction the shot is going)
+		vecTraceDir = vecDir * -1.0f;
+
+		vecTraceDir.x += RANDOM_FLOAT(-flNoise, flNoise);
+		vecTraceDir.y += RANDOM_FLOAT(-flNoise, flNoise);
+		vecTraceDir.z += RANDOM_FLOAT(-flNoise, flNoise);
+
+		UTIL_TraceLine(ptr->vecEndPos, ptr->vecEndPos + vecTraceDir * -172.0f, ignore_monsters, ENT(pev), &Bloodtr);
+		if (Bloodtr.flFraction != 1.0f)
+		{
+			if (!RANDOM_LONG(0, 2))
+			{
+				UTIL_BloodDecalTrace(&Bloodtr, BloodColor());
+			}
+		}
+	}
+}
+
+void CBaseEntity::SUB_StartFadeOut()
+{
+	if (pev->rendermode == kRenderNormal)
+	{
+		pev->renderamt = 255.0f;
+		pev->rendermode = kRenderTransTexture;
+	}
+
+	pev->solid = SOLID_NOT;
+	pev->avelocity = g_vecZero;
+	pev->nextthink = gpGlobals->time + 0.1f;
+
+	SetThink(&CBaseEntity::SUB_FadeOut);
+}
+
+void CBaseEntity::SUB_FadeOut()
+{
+	if (pev->renderamt > 7)
+	{
+		pev->renderamt -= 7.0f;
+		pev->nextthink = gpGlobals->time + 0.1f;
+	}
+	else
+	{
+		pev->renderamt = 0.0f;
+		pev->nextthink = gpGlobals->time + 0.2f;
+		SetThink(&CBaseEntity::SUB_Remove);
+	}
+}
+
+void OnFreeEntPrivateData(edict_t *pEnt)
+{
+	CBaseEntity *pEntity = (CBaseEntity *)GET_PRIVATE(pEnt);
 	if (!pEntity)
 		return;
 
-	pEntity->UpdateOnRemove();
+#ifdef REGAMEDLL_API
+	pEntity->OnDestroy();
+#endif
+
 	RemoveEntityHashValue(pEntity->pev, STRING(pEntity->pev->classname), CLASSNAME);
 
 #ifdef REGAMEDLL_API
@@ -1061,3 +1470,14 @@ void EXT_FUNC OnFreeEntPrivateData(edict_t *pEnt)
 	}
 #endif
 }
+
+#ifdef REGAMEDLL_API
+void CBaseEntity::OnCreate()
+{
+}
+
+void CBaseEntity::OnDestroy()
+{
+	UpdateOnRemove();
+}
+#endif

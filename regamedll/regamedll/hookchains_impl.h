@@ -25,7 +25,9 @@
 *    version.
 *
 */
+
 #pragma once
+
 #include "hookchains.h"
 
 #define MAX_HOOKS_IN_CHAIN 30
@@ -52,7 +54,7 @@ public:
 	IHookChainImpl(void** hooks, origfunc_t orig) : m_Hooks(hooks), m_OriginalFunc(orig)
 	{
 		if (orig == NULL && !is_void(orig))
-			Sys_Error("%s: Non-void HookChain without original function.", __FUNCTION__);
+			Sys_Error("%s: Non-void HookChain without original function.", __func__);
 	}
 
 	virtual ~IHookChainImpl() {}
@@ -88,7 +90,7 @@ public:
 	IHookChainClassImpl(void** hooks, origfunc_t orig) : m_Hooks(hooks), m_OriginalFunc(orig)
 	{
 		if (orig == NULL && !is_void(orig))
-			Sys_Error("%s: Non-void HookChain without original function.", __FUNCTION__);
+			Sys_Error("%s: Non-void HookChain without original function.", __func__);
 	}
 
 	virtual ~IHookChainClassImpl() {}
@@ -124,7 +126,7 @@ public:
 	IHookChainClassEmptyImpl(void** hooks, origfunc_t orig, t_class *object) : m_Hooks(hooks), m_OriginalFunc(orig), m_Object(object)
 	{
 		if (orig == NULL && !is_void(orig))
-			Sys_Error("%s: Non-void HookChain without original function.", __FUNCTION__);
+			Sys_Error("%s: Non-void HookChain without original function.", __func__);
 	}
 
 	virtual ~IHookChainClassEmptyImpl() {}

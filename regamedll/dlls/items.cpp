@@ -1,45 +1,45 @@
 #include "precompiled.h"
 
 ItemInfo itemInfo[] = {
-	DEFINE_ITEMINFO(ITEM_SHIELDGUN,		"weapon_shield"),
-	DEFINE_ITEMINFO(ITEM_P228, 		"weapon_p228"),
-	DEFINE_ITEMINFO(ITEM_GLOCK,		"weapon_glock"),
-	DEFINE_ITEMINFO(ITEM_SCOUT,		"weapon_scout"),
-	DEFINE_ITEMINFO(ITEM_HEGRENADE,		"weapon_hegrenade"),
-	DEFINE_ITEMINFO(ITEM_XM1014,		"weapon_xm1014"),
-	DEFINE_ITEMINFO(ITEM_C4,		"weapon_c4"),
-	DEFINE_ITEMINFO(ITEM_MAC10,		"weapon_mac10"),
-	DEFINE_ITEMINFO(ITEM_AUG,		"weapon_aug"),
-	DEFINE_ITEMINFO(ITEM_SMOKEGRENADE,	"weapon_smokegrenade"),
-	DEFINE_ITEMINFO(ITEM_ELITE,		"weapon_elite"),
-	DEFINE_ITEMINFO(ITEM_FIVESEVEN,		"weapon_fiveseven"),
-	DEFINE_ITEMINFO(ITEM_UMP45,		"weapon_ump45"),
-	DEFINE_ITEMINFO(ITEM_SG550,		"weapon_sg550"),
-	DEFINE_ITEMINFO(ITEM_GALIL,		"weapon_galil"),
-	DEFINE_ITEMINFO(ITEM_FAMAS,		"weapon_famas"),
-	DEFINE_ITEMINFO(ITEM_USP,		"weapon_usp"),
-	DEFINE_ITEMINFO(ITEM_GLOCK18,		"weapon_glock18"),
-	DEFINE_ITEMINFO(ITEM_AWP,		"weapon_awp"),
-	DEFINE_ITEMINFO(ITEM_MP5N,		"weapon_mp5navy"),
-	DEFINE_ITEMINFO(ITEM_M249,		"weapon_m249"),
-	DEFINE_ITEMINFO(ITEM_M3,		"weapon_m3"),
-	DEFINE_ITEMINFO(ITEM_M4A1,		"weapon_m4a1"),
-	DEFINE_ITEMINFO(ITEM_TMP,		"weapon_tmp"),
-	DEFINE_ITEMINFO(ITEM_G3SG1,		"weapon_g3sg1"),
-	DEFINE_ITEMINFO(ITEM_FLASHBANG,		"weapon_flashbang"),
-	DEFINE_ITEMINFO(ITEM_DEAGLE,		"weapon_deagle"),
-	DEFINE_ITEMINFO(ITEM_SG552,		"weapon_sg552"),
-	DEFINE_ITEMINFO(ITEM_AK47,		"weapon_ak47"),
-	DEFINE_ITEMINFO(ITEM_KNIFE,		"weapon_knife"),
-	DEFINE_ITEMINFO(ITEM_P90,		"weapon_p90"),
-	DEFINE_ITEMINFO(ITEM_NVG,		""),
-	DEFINE_ITEMINFO(ITEM_DEFUSEKIT,		"item_thighpack"),
-	DEFINE_ITEMINFO(ITEM_KEVLAR,		"item_kevlar"),
-	DEFINE_ITEMINFO(ITEM_ASSAULT,		"item_assaultsuit"),
-	DEFINE_ITEMINFO(ITEM_LONGJUMP,		"item_longjump"),
-	DEFINE_ITEMINFO(ITEM_HEALTHKIT,		"item_healthkit"),
-	DEFINE_ITEMINFO(ITEM_ANTIDOTE,		"item_antidote"),
-	DEFINE_ITEMINFO(ITEM_BATTERY,		"item_battery"),
+	DEFINE_ITEMINFO(ITEM_SHIELDGUN,     "weapon_shield"),
+	DEFINE_ITEMINFO(ITEM_P228,          "weapon_p228"),
+	DEFINE_ITEMINFO(ITEM_GLOCK,         "weapon_glock"),
+	DEFINE_ITEMINFO(ITEM_SCOUT,         "weapon_scout"),
+	DEFINE_ITEMINFO(ITEM_HEGRENADE,     "weapon_hegrenade"),
+	DEFINE_ITEMINFO(ITEM_XM1014,        "weapon_xm1014"),
+	DEFINE_ITEMINFO(ITEM_C4,            "weapon_c4"),
+	DEFINE_ITEMINFO(ITEM_MAC10,         "weapon_mac10"),
+	DEFINE_ITEMINFO(ITEM_AUG,           "weapon_aug"),
+	DEFINE_ITEMINFO(ITEM_SMOKEGRENADE,  "weapon_smokegrenade"),
+	DEFINE_ITEMINFO(ITEM_ELITE,         "weapon_elite"),
+	DEFINE_ITEMINFO(ITEM_FIVESEVEN,     "weapon_fiveseven"),
+	DEFINE_ITEMINFO(ITEM_UMP45,         "weapon_ump45"),
+	DEFINE_ITEMINFO(ITEM_SG550,         "weapon_sg550"),
+	DEFINE_ITEMINFO(ITEM_GALIL,         "weapon_galil"),
+	DEFINE_ITEMINFO(ITEM_FAMAS,         "weapon_famas"),
+	DEFINE_ITEMINFO(ITEM_USP,           "weapon_usp"),
+	DEFINE_ITEMINFO(ITEM_GLOCK18,       "weapon_glock18"),
+	DEFINE_ITEMINFO(ITEM_AWP,           "weapon_awp"),
+	DEFINE_ITEMINFO(ITEM_MP5N,          "weapon_mp5navy"),
+	DEFINE_ITEMINFO(ITEM_M249,          "weapon_m249"),
+	DEFINE_ITEMINFO(ITEM_M3,            "weapon_m3"),
+	DEFINE_ITEMINFO(ITEM_M4A1,          "weapon_m4a1"),
+	DEFINE_ITEMINFO(ITEM_TMP,           "weapon_tmp"),
+	DEFINE_ITEMINFO(ITEM_G3SG1,         "weapon_g3sg1"),
+	DEFINE_ITEMINFO(ITEM_FLASHBANG,     "weapon_flashbang"),
+	DEFINE_ITEMINFO(ITEM_DEAGLE,        "weapon_deagle"),
+	DEFINE_ITEMINFO(ITEM_SG552,         "weapon_sg552"),
+	DEFINE_ITEMINFO(ITEM_AK47,          "weapon_ak47"),
+	DEFINE_ITEMINFO(ITEM_KNIFE,         "weapon_knife"),
+	DEFINE_ITEMINFO(ITEM_P90,           "weapon_p90"),
+	DEFINE_ITEMINFO(ITEM_NVG,           ""),
+	DEFINE_ITEMINFO(ITEM_DEFUSEKIT,     "item_thighpack"),
+	DEFINE_ITEMINFO(ITEM_KEVLAR,        "item_kevlar"),
+	DEFINE_ITEMINFO(ITEM_ASSAULT,       "item_assaultsuit"),
+	DEFINE_ITEMINFO(ITEM_LONGJUMP,      "item_longjump"),
+	DEFINE_ITEMINFO(ITEM_HEALTHKIT,     "item_healthkit"),
+	DEFINE_ITEMINFO(ITEM_ANTIDOTE,      "item_antidote"),
+	DEFINE_ITEMINFO(ITEM_BATTERY,       "item_battery"),
 };
 
 // NOTE: useless thing
@@ -54,12 +54,14 @@ void CWorldItem::KeyValue(KeyValueData *pkvd)
 		pkvd->fHandled = TRUE;
 	}
 	else
+	{
 		CBaseEntity::KeyValue(pkvd);
+	}
 }
 
 void CWorldItem::Spawn()
 {
-	CBaseEntity *pEntity = NULL;
+	CBaseEntity *pEntity = nullptr;
 
 	switch (m_iType)
 	{
@@ -129,7 +131,9 @@ void CItem::ItemTouch(CBaseEntity *pOther)
 			UTIL_Remove(this);
 	}
 	else if (gEvilImpulse101)
+	{
 		UTIL_Remove(this);
+	}
 }
 
 CBaseEntity *CItem::Respawn()
@@ -214,31 +218,41 @@ BOOL CItemBattery::MyTouch(CBasePlayer *pPlayer)
 
 	if (pPlayer->pev->armorvalue < MAX_NORMAL_BATTERY && (pPlayer->pev->weapons & (1 << WEAPON_SUIT)))
 	{
-		int pct;
-		char szcharge[64];
+		auto armorValue = gSkillData.batteryCapacity;
 
-		pPlayer->pev->armorvalue += gSkillData.batteryCapacity;
+#ifdef REGAMEDLL_FIXES
+		if (pev->armorvalue != 0.0f) {
+			armorValue = pev->armorvalue;
+		}
+
+		if (pPlayer->m_iKevlar == ARMOR_NONE)
+			pPlayer->m_iKevlar = ARMOR_KEVLAR;
+#endif
+
+		pPlayer->pev->armorvalue += armorValue;
 		pPlayer->pev->armorvalue = Q_min(pPlayer->pev->armorvalue, MAX_NORMAL_BATTERY);
 
 		EMIT_SOUND(pPlayer->edict(), CHAN_ITEM, "items/gunpickup2.wav", VOL_NORM, ATTN_NORM);
 
-		MESSAGE_BEGIN(MSG_ONE, gmsgItemPickup, NULL, pPlayer->pev);
+		MESSAGE_BEGIN(MSG_ONE, gmsgItemPickup, nullptr, pPlayer->pev);
 			WRITE_STRING(STRING(pev->classname));
 		MESSAGE_END();
 
 		// Suit reports new power level
 		// For some reason this wasn't working in release build -- round it.
-		pct = int(float(pPlayer->pev->armorvalue * 100.0f) * (1.0f / MAX_NORMAL_BATTERY) + 0.5f);
+		int pct = int(float(pPlayer->pev->armorvalue * 100.0f) * (1.0f / MAX_NORMAL_BATTERY) + 0.5f);
 		pct = (pct / 5);
 
 		if (pct > 0)
 			pct--;
 
+		char szcharge[64];
 		Q_sprintf(szcharge,"!HEV_%1dP", pct);
-		pPlayer->SetSuitUpdate(szcharge, FALSE, SUIT_NEXT_IN_30SEC);
+		pPlayer->SetSuitUpdate(szcharge, SUIT_SENTENCE, SUIT_NEXT_IN_30SEC);
 
 		return TRUE;
 	}
+
 	return FALSE;
 }
 
@@ -263,7 +277,7 @@ BOOL CItemAntidote::MyTouch(CBasePlayer *pPlayer)
 		return FALSE;
 #endif
 
-	pPlayer->SetSuitUpdate("!HEV_DET4", FALSE, SUIT_NEXT_IN_1MIN);
+	pPlayer->SetSuitUpdate("!HEV_DET4", SUIT_SENTENCE, SUIT_NEXT_IN_1MIN);
 	pPlayer->m_rgItems[ ITEM_ID_ANTIDOTE ] += 1;
 
 	return TRUE;
@@ -322,7 +336,7 @@ BOOL CItemLongJump::MyTouch(CBasePlayer *pPlayer)
 		pPlayer->m_fLongJump = TRUE;
 		SET_PHYSICS_KEY_VALUE(pPlayer->edict(), "slj", "1");
 
-		MESSAGE_BEGIN(MSG_ONE, gmsgItemPickup, NULL, pPlayer->pev);
+		MESSAGE_BEGIN(MSG_ONE, gmsgItemPickup, nullptr, pPlayer->pev);
 			WRITE_STRING(STRING(pev->classname));
 		MESSAGE_END();
 
@@ -361,11 +375,11 @@ BOOL CItemKevlar::MyTouch(CBasePlayer *pPlayer)
 	pPlayer->pev->armorvalue = 100;
 	EMIT_SOUND(pPlayer->edict(), CHAN_ITEM, "items/ammopickup2.wav", VOL_NORM, ATTN_NORM);
 
-	MESSAGE_BEGIN(MSG_ONE, gmsgItemPickup, NULL, pPlayer->pev);
+	MESSAGE_BEGIN(MSG_ONE, gmsgItemPickup, nullptr, pPlayer->pev);
 		WRITE_STRING(STRING(pev->classname));
 	MESSAGE_END();
 
-	MESSAGE_BEGIN(MSG_ONE, gmsgArmorType, NULL, pPlayer->pev);
+	MESSAGE_BEGIN(MSG_ONE, gmsgArmorType, nullptr, pPlayer->pev);
 		WRITE_BYTE(0);
 	MESSAGE_END();
 
@@ -403,11 +417,11 @@ BOOL CItemAssaultSuit::MyTouch(CBasePlayer *pPlayer)
 
 	EMIT_SOUND(pPlayer->edict(), CHAN_ITEM, "items/ammopickup2.wav", VOL_NORM, ATTN_NORM);
 
-	MESSAGE_BEGIN(MSG_ONE, gmsgItemPickup, NULL, pPlayer->pev);
+	MESSAGE_BEGIN(MSG_ONE, gmsgItemPickup, nullptr, pPlayer->pev);
 		WRITE_STRING(STRING(pev->classname));
 	MESSAGE_END();
 
-	MESSAGE_BEGIN(MSG_ONE, gmsgArmorType, NULL, pPlayer->pev);
+	MESSAGE_BEGIN(MSG_ONE, gmsgArmorType, nullptr, pPlayer->pev);
 		WRITE_BYTE(1);
 	MESSAGE_END();
 
@@ -448,7 +462,7 @@ BOOL CItemThighPack::MyTouch(CBasePlayer *pPlayer)
 
 	ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Got_defuser");
 
-	MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, NULL, pPlayer->pev);
+	MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pPlayer->pev);
 		WRITE_BYTE(STATUSICON_SHOW);
 		WRITE_STRING("defuser");
 		WRITE_BYTE(0);

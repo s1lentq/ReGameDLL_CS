@@ -5,10 +5,12 @@
 */
 #ifndef HOOK_GAMEDLL
 
-CSoundEnt *pSoundEnt = NULL;
+CSoundEnt *pSoundEnt = nullptr;
 
 #endif
 
+// The entity that spawns when the world spawns,
+// and handles the world's active and free sound lists.
 LINK_ENTITY_TO_CLASS(soundent, CSoundEnt, CCSSoundEnt)
 
 // CSound - Clear - zeros all fields for a sound
@@ -267,7 +269,7 @@ int CSoundEnt::ISoundsInList(int iListType)
 
 	while (iThisSound != SOUNDLIST_EMPTY)
 	{
-		++i;
+		i++;
 		iThisSound = m_SoundPool[ iThisSound ].m_iNext;
 	}
 
@@ -302,19 +304,19 @@ CSound *CSoundEnt::SoundPointerForIndex(int iIndex)
 {
 	if (!pSoundEnt)
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	if (iIndex > (MAX_WORLD_SOUNDS - 1))
 	{
 		ALERT(at_console, "SoundPointerForIndex() - Index too large!\n");
-		return NULL;
+		return nullptr;
 	}
 
 	if (iIndex < 0)
 	{
 		ALERT(at_console, "SoundPointerForIndex() - Index < 0!\n");
-		return NULL;
+		return nullptr;
 	}
 
 	return &pSoundEnt->m_SoundPool[ iIndex ];

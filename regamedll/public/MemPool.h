@@ -26,11 +26,7 @@
 *
 */
 
-#ifndef MEMPOOL_H
-#define MEMPOOL_H
-#ifdef _WIN32
 #pragma once
-#endif
 
 class CMemoryPool
 {
@@ -55,5 +51,3 @@ public:
 	int _peakAlloc;
 	int _blocksAllocated;
 };
-
-#endif	// MEMPOOL_H

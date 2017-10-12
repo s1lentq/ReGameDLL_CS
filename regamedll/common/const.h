@@ -283,13 +283,7 @@
 // volume values
 #define VOL_NORM				1.0
 
-// plats
-#define PLAT_LOW_TRIGGER			1
 
-// Trains
-#define SF_TRAIN_WAIT_RETRIGGER			1
-#define SF_TRAIN_START_ON			4	// Train is initially moving
-#define SF_TRAIN_PASSABLE			8	// Train is not solid -- used to make water trains
 
 // Break Model Defines
 #define BREAK_TYPEMASK				0x4F

@@ -659,9 +659,8 @@
 	spawnflags(flags) =
 	[
 		1 :  "Starts Open" : 0
-		4 :  "Don't link"  : 0
 		8 :  "Passable"    : 0
-	    	32:  "Toggle"      : 0
+	    32:  "Toggle"      : 0
 
 		// Normally a named door, or a door with "use only" selected, won't open when touched.
 		256:  "Use Only"          : 0
@@ -732,7 +731,6 @@
 	]
 	_minlight(string) : "Minimum light level"
 ]
-
 
 @BaseClass base(Targetname, Angles) size(-16 -16 -16, 16 16 16) = gibshooterbase
 [
@@ -1377,6 +1375,7 @@
 	[
 		1: "Remove On fire" : 0
 		2: "Reset On fire" : 1
+		4: "Fire if over limit" : 1
 	]
 	frags(integer) : "Initial Value" : 0
 	health(integer) : "Limit Value" : 10
@@ -1730,7 +1729,13 @@
 		1: "On"
 		2: "Toggle"
 	]
-	teamindex(integer) : "Team Index (-1 = no team)" : -1
+	teamindex(choices) : "Team" : -1 =
+	[
+		-1: "No Team"
+		1:  "Terrorist"
+		2:  "Counter-terrorist"
+		3:  "Specator"
+	]
 ]
 
 @PointClass base(Targetname, Master, Targetx) iconsprite("sprites/CS/game_team_set.spr") = game_team_set : "Sets team of team_master"
@@ -1773,11 +1778,15 @@
 
 @SolidClass base(Targetname) iconsprite("sprites/CS/game_zone_player.spr") = game_zone_player : "Player Zone brush"
 [
-	master(string) : "Master"
+	spawnflags(Flags) =
+	[
+		1 : "Ignore Dead Players" : 0
+	]
 	intarget(target_destination) : "Target for IN players"
 	outtarget(target_destination) : "Target for OUT players"
 	incount(target_destination) : "Counter for IN players"
 	outcount(target_destination) : "Counter for OUT players"
+	// master(string) : "Master"
 ]
 
 @PointClass base(gibshooterbase) iconsprite("sprites/CS/gibshooter.spr") = gibshooter : "Gib Shooter" []
@@ -1927,8 +1936,16 @@
 ]
 
 // items
-@PointClass size(-16 -16 0, 16 16 36) base(Weapon, Targetx, RenderFields) = item_battery : "HEV battery" []
-@PointClass size(-16 -16 0, 16 16 36) base(Weapon, Targetx, RenderFields) = item_healthkit : "Small Health Kit" []
+@PointClass size(-16 -16 0, 16 16 36) base(Weapon, Targetx, RenderFields) = item_battery : "HEV battery"
+[
+	armorvalue(string) : "Kevlar Points" : "15.0"
+]
+
+@PointClass size(-16 -16 0, 16 16 36) base(Weapon, Targetx, RenderFields) = item_healthkit : "Small Health Kit"
+[
+	health(string) : "Health Points" : "15.0"
+]
+
 @PointClass size(-16 -16 0, 16 16 36) base(Weapon, Targetx, RenderFields) = item_longjump : "Longjump Module" []
 @PointClass size(-16 -16 0, 16 16 36) base(Weapon, Targetx, RenderFields) = item_nvgs : "NightVision" []
 
@@ -2313,6 +2330,7 @@
 @SolidClass base(Global, RenderFields, ZHLT, TexLightType) = func_healthcharger: "Wall health recharger"
 [
 	// dmdelay may not work in CS
+	health(integer) : "Healthcharger Capacity" : 50
 	dmdelay(integer) : "Deathmatch recharge delay" : 0
 	_minlight(string) : "Minimum light level" : "0"
 ]
@@ -2361,6 +2379,7 @@
 	spawnflags(flags) =
 	[
 		1: "Start ON" : 0
+		2: "Rope swing" : 0
 		8: "Passable" : 0
 		16: "Auto-return" : 0
 		64: "X Axis" : 0
@@ -2419,7 +2438,8 @@
 
 @SolidClass base(Global, RenderFields, ZHLT, TexLightType) = func_recharge: "Battery recharger"
 [
-	 dmdelay(integer) : "Deathmatch recharge delay" : 0
+	armorvalue(integer) : "Suitcharger Capacity" : 30
+	dmdelay(integer) : "Deathmatch recharge delay" : 0
 	_minlight(string) : "Minimum light level" : "0"
 ]
 
@@ -2452,9 +2472,7 @@
 		1 : "Not solid" : 0
 		2 : "Reverse Dir" : 0
 		32: "Toggle" : 0
-		64: "X Axis" : 0
-		128: "Y Axis" : 0
-		256:"Touch Activates": 0
+		256: "Touch Activates": 0
 	]
 	_minlight(string) : "Minimum light level" : "0"
 ]
@@ -2481,8 +2499,8 @@
 	[
 		1 : "Start ON" 		: 0
 		2 : "Reverse Direction" : 0
-		4 : "X Axis" 		: 0
-		8 : "Y Axis" 		: 0
+		4 : "Z Axis" 		: 0
+		8 : "X Axis" 		: 0
 		16: "Acc/Dcc"		: 0
 		32: "Fan Pain"		: 0
 		64: "Not Solid"		: 0

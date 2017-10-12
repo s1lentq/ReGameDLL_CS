@@ -224,7 +224,7 @@ bool CCSBot::IsVisible(const Vector *pos, bool testFOV) const
 bool CCSBot::IsVisible(CBasePlayer *player, bool testFOV, unsigned char *visParts) const
 {
 	Vector spot = player->pev->origin;
-	VisiblePartType testVisParts = NONE;
+	unsigned char testVisParts = NONE;
 
 	// finish chest check
 	if (IsVisible(&spot, testFOV))
@@ -266,7 +266,7 @@ bool CCSBot::IsVisible(CBasePlayer *player, bool testFOV, unsigned char *visPart
 	if (IsVisible(&spot, testFOV))
 		testVisParts |= RIGHT_SIDE;
 
-	if (visParts != NULL)
+	if (visParts)
 		*visParts = testVisParts;
 
 	if (testVisParts != NONE)
@@ -295,7 +295,7 @@ void CCSBot::UpdateLookAt()
 // Look at the given point in space for the given duration (-1 means forever)
 void CCSBot::SetLookAt(const char *desc, const Vector *pos, PriorityType pri, float duration, bool clearIfClose, float angleTolerance)
 {
-	if (pos == NULL)
+	if (!pos)
 		return;
 
 	// if currently looking at a point in space with higher priority, ignore this request
@@ -344,14 +344,10 @@ void CCSBot::UpdatePeripheralVision()
 	if (m_spotEncounter)
 	{
 		// check LOS to all spots in case we see them with our "peripheral vision"
-		const SpotOrder *spotOrder = NULL;
 		Vector pos;
-
-		for (SpotOrderList::const_iterator iter = m_spotEncounter->spotList.begin(); iter != m_spotEncounter->spotList.end(); ++iter)
+		for (auto &spotOrder : m_spotEncounter->spotList)
 		{
-			spotOrder = &(*iter);
-
-			const Vector *spotPos = spotOrder->spot->GetPosition();
+			const Vector *spotPos = spotOrder.spot->GetPosition();
 
 			pos.x = spotPos->x;
 			pos.y = spotPos->y;
@@ -361,7 +357,7 @@ void CCSBot::UpdatePeripheralVision()
 				continue;
 
 			// can see hiding spot, remember when we saw it last
-			SetHidingSpotCheckTimestamp(spotOrder->spot);
+			SetHidingSpotCheckTimestamp(spotOrder.spot);
 		}
 	}
 }
@@ -434,7 +430,7 @@ void CCSBot::UpdateLookAround(bool updateNow)
 			}
 		}
 
-		if (m_lastKnownArea == NULL)
+		if (!m_lastKnownArea)
 			return;
 
 		if (gpGlobals->time < m_lookAroundStateTimestamp)
@@ -453,14 +449,12 @@ void CCSBot::UpdateLookAround(bool updateNow)
 		}
 
 		int which = RANDOM_LONG(0, m_approachPointCount - 1);
-		Vector spot = m_approachPoint[ which ];
+		Vector spot = m_approachPoint[which];
 
 		// don't look at the floor, look roughly at chest level
 		// TODO: If this approach point is very near, this will cause us to aim up in the air if were crouching
 		spot.z += HalfHumanHeight;
-
 		SetLookAt("Approach Point (Hiding)", &spot, PRIORITY_LOW);
-
 		return;
 	}
 
@@ -511,24 +505,22 @@ void CCSBot::UpdateLookAround(bool updateNow)
 			int dangerIndex = 0;
 
 			const float checkTime = 10.0f;
-			const SpotOrder *spotOrder;
 
-			for (SpotOrderList::iterator iter = m_spotEncounter->spotList.begin(); iter != m_spotEncounter->spotList.end(); ++iter)
+			for (auto &spotOrder : m_spotEncounter->spotList)
 			{
-				spotOrder = &(*iter);
-
 				// if we have seen this spot recently, we don't need to look at it
-				if (gpGlobals->time - GetHidingSpotCheckTimestamp(spotOrder->spot) <= checkTime)
+				if (gpGlobals->time - GetHidingSpotCheckTimestamp(spotOrder.spot) <= checkTime)
 					continue;
 
-				if (spotOrder->t > t)
+				if (spotOrder.t > t)
 					break;
 
-				dangerSpot[ dangerIndex++ ] = spotOrder->spot;
+				dangerSpot[dangerIndex++] = spotOrder.spot;
 				if (dangerIndex >= MAX_DANGER_SPOTS)
 					dangerIndex = 0;
+
 				if (dangerSpotCount < MAX_DANGER_SPOTS)
-					++dangerSpotCount;
+					dangerSpotCount++;
 			}
 
 			if (dangerSpotCount)
@@ -536,7 +528,7 @@ void CCSBot::UpdateLookAround(bool updateNow)
 				// pick one of the spots at random
 				int which = RANDOM_LONG(0, dangerSpotCount - 1);
 
-				const Vector *checkSpot = dangerSpot[ which ]->GetPosition();
+				const Vector *checkSpot = dangerSpot[which]->GetPosition();
 
 				Vector pos = *checkSpot;
 				pos.z += HalfHumanHeight;
@@ -576,9 +568,9 @@ bool CCSBot::BendLineOfSight(const Vector *eye, const Vector *point, Vector *ben
 	for (float angle = angleInc; angle <= 135.0f; angle += angleInc)
 	{
 		// check both sides at this angle offset
-		for (int side = 0; side < 2; ++side)
+		for (int side = 0; side < 2; side++)
 		{
-			float actualAngle = (side) ? (startAngle + angle) : (startAngle - angle);
+			float actualAngle = side ? (startAngle + angle) : (startAngle - angle);
 
 			float dx = BotCOS(actualAngle);
 			float dy = BotSIN(actualAngle);
@@ -635,31 +627,44 @@ bool CCSBot::BendLineOfSight(const Vector *eye, const Vector *point, Vector *ben
 CBasePlayer *CCSBot::FindMostDangerousThreat()
 {
 	// maximum number of simulataneously attendable threats
-	enum { MAX_THREATS = 16 };
+#ifdef REGAMEDLL_FIXES
+	const int MAX_THREATS = MAX_CLIENTS;
+#else
+	const int MAX_THREATS = 16;
+#endif
+
 	struct CloseInfo
 	{
 		CBasePlayer *enemy;
 		float range;
-	}
-	threat[ MAX_THREATS ];
+	};
+
+	CloseInfo threat[MAX_THREATS];
 	int threatCount = 0;
 
-	m_bomber = NULL;
+#ifdef REGAMEDLL_ADD
+	int prevIndex = m_enemyQueueIndex - 1;
+	if (prevIndex < 0)
+		prevIndex = MAX_ENEMY_QUEUE - 1;
 
-	m_closestVisibleFriend = NULL;
+	CBasePlayer *currentThreat = m_enemyQueue[ prevIndex ].player;
+#endif
+
+	m_bomber = nullptr;
+	m_closestVisibleFriend = nullptr;
+	m_closestVisibleHumanFriend = nullptr;
+
 	float closeFriendRange = 99999999999.9f;
-
-	m_closestVisibleHumanFriend = NULL;
 	float closeHumanFriendRange = 99999999999.9f;
 
 	int i;
 
 	{
-		for (i = 1; i <= gpGlobals->maxClients; ++i)
+		for (i = 1; i <= gpGlobals->maxClients; i++)
 		{
 			CBasePlayer *player = UTIL_PlayerByIndex(i);
 
-			if (player == NULL)
+			if (!player)
 				continue;
 
 			if (FNullEnt(player->pev))
@@ -710,8 +715,20 @@ CBasePlayer *CCSBot::FindMostDangerousThreat()
 			}
 
 			// check if this enemy is fully
-			if (!IsVisible(player, CHECK_FOV))
+			unsigned char visParts;
+			if (!IsVisible(player, CHECK_FOV, &visParts))
 				continue;
+
+#ifdef REGAMEDLL_ADD
+			// do we notice this enemy? (always notice current enemy)
+			if (player != currentThreat)
+			{
+				if (!IsNoticable(player, visParts))
+				{
+					continue;
+				}
+			}
+#endif
 
 			// update watch timestamp
 			int idx = player->entindex() - 1;
@@ -739,12 +756,11 @@ CBasePlayer *CCSBot::FindMostDangerousThreat()
 			{
 				// find insertion point
 				int j;
-				for (j = 0; j < threatCount; ++j)
+				for (j = 0; j < threatCount; j++)
 				{
 					if (distSq < threat[j].range)
 						break;
 				}
-
 
 				// shift lower half down a notch
 				for (int k = threatCount - 1; k >= j; --k)
@@ -755,7 +771,7 @@ CBasePlayer *CCSBot::FindMostDangerousThreat()
 				threat[j].range = distSq;
 
 				if (threatCount < MAX_THREATS)
-					++threatCount;
+					threatCount++;
 			}
 		}
 	}
@@ -766,7 +782,7 @@ CBasePlayer *CCSBot::FindMostDangerousThreat()
 		m_nearbyEnemyCount = 0;
 		m_nearbyFriendCount = 0;
 
-		for (i = 0; i < MAX_CLIENTS; ++i)
+		for (i = 0; i < MAX_CLIENTS; i++)
 		{
 			if (m_watchInfo[i].timestamp <= 0.0f)
 				continue;
@@ -775,9 +791,9 @@ CBasePlayer *CCSBot::FindMostDangerousThreat()
 			if (gpGlobals->time - m_watchInfo[i].timestamp < recentTime)
 			{
 				if (m_watchInfo[i].isEnemy)
-					++m_nearbyEnemyCount;
+					m_nearbyEnemyCount++;
 				else
-					++m_nearbyFriendCount;
+					m_nearbyFriendCount++;
 			}
 		}
 
@@ -799,14 +815,14 @@ CBasePlayer *CCSBot::FindMostDangerousThreat()
 			unsigned int place;
 			int count;
 		};
-		static PlaceRank placeRank[ MAX_PLACES_PER_MAP ];
+		static PlaceRank placeRank[MAX_PLACES_PER_MAP];
 		int locCount = 0;
 
 		PlaceRank common;
 		common.place = 0;
 		common.count = 0;
 
-		for (i = 0; i < threatCount; ++i)
+		for (i = 0; i < threatCount; i++)
 		{
 			// find the area the player/bot is standing on
 			CNavArea *area;
@@ -821,7 +837,7 @@ CBasePlayer *CCSBot::FindMostDangerousThreat()
 				area = TheNavAreaGrid.GetNearestNavArea(&threat[i].enemy->pev->origin);
 			}
 
-			if (area == NULL)
+			if (!area)
 				continue;
 
 			unsigned int threatLoc = area->GetPlace();
@@ -830,7 +846,7 @@ CBasePlayer *CCSBot::FindMostDangerousThreat()
 
 			// if place is already in set, increment count
 			int j;
-			for (j = 0; j < locCount; ++j)
+			for (j = 0; j < locCount; j++)
 			{
 				if (placeRank[j].place == threatLoc)
 					break;
@@ -841,19 +857,19 @@ CBasePlayer *CCSBot::FindMostDangerousThreat()
 				// new place
 				if (locCount < MAX_PLACES_PER_MAP)
 				{
-					placeRank[ locCount ].place = threatLoc;
-					placeRank[ locCount ].count = 1;
+					placeRank[locCount].place = threatLoc;
+					placeRank[locCount].count = 1;
 
 					if (common.count == 0)
 						common = placeRank[locCount];
 
-					++locCount;
+					locCount++;
 				}
 			}
 			else
 			{
 				// others are in that place, increment
-				++placeRank[j].count;
+				placeRank[j].count++;
 
 				// keep track of the most common place
 				if (placeRank[j].count > common.count)
@@ -867,11 +883,33 @@ CBasePlayer *CCSBot::FindMostDangerousThreat()
 
 	{
 		if (threatCount == 0)
-			return NULL;
+			return nullptr;
+
+		int t;
+
+#ifdef REGAMEDLL_ADD
+		bool sawCloserThreat = false;
+		bool sawCurrentThreat = false;
+		for (t = 0; t < threatCount; t++)
+		{
+			if (threat[t].enemy == currentThreat)
+			{
+				sawCurrentThreat = true;
+			}
+			else if (threat[t].enemy != currentThreat && IsSignificantlyCloser(threat[t].enemy, currentThreat))
+			{
+				sawCloserThreat = true;
+			}
+		}
+
+		if (sawCurrentThreat && !sawCloserThreat)
+		{
+			return currentThreat;
+		}
+#endif
 
 		// otherwise, find the closest threat that without using shield
-		int t;
-		for (t = 0; t < threatCount; ++t)
+		for (t = 0; t < threatCount; t++)
 		{
 			if (!threat[t].enemy->IsProtectedByShield())
 			{
@@ -896,18 +934,23 @@ void CCSBot::UpdateReactionQueue()
 
 	int now = m_enemyQueueIndex;
 
+#ifdef REGAMEDLL_ADD
+	// reset timer
+	m_attentionInterval.Start();
+#endif
+
 	// store a snapshot of its state at the end of the reaction time queue
-	if (threat != NULL)
+	if (threat)
 	{
-		m_enemyQueue[ now ].player = threat;
-		m_enemyQueue[ now ].isReloading = threat->IsReloading();
-		m_enemyQueue[ now ].isProtectedByShield = threat->IsProtectedByShield();
+		m_enemyQueue[now].player = threat;
+		m_enemyQueue[now].isReloading = threat->IsReloading();
+		m_enemyQueue[now].isProtectedByShield = threat->IsProtectedByShield();
 	}
 	else
 	{
-		m_enemyQueue[ now ].player = NULL;
-		m_enemyQueue[ now ].isReloading = false;
-		m_enemyQueue[ now ].isProtectedByShield = false;
+		m_enemyQueue[now].player = nullptr;
+		m_enemyQueue[now].isReloading = false;
+		m_enemyQueue[now].isProtectedByShield = false;
 	}
 
 	// queue is round-robin
@@ -915,7 +958,7 @@ void CCSBot::UpdateReactionQueue()
 		m_enemyQueueIndex = 0;
 
 	if (m_enemyQueueCount < MAX_ENEMY_QUEUE)
-		++m_enemyQueueCount;
+		m_enemyQueueCount++;
 
 	// clamp reaction time to enemy queue size
 	float reactionTime = GetProfile()->GetReactionTime();
@@ -937,9 +980,9 @@ void CCSBot::UpdateReactionQueue()
 CBasePlayer *CCSBot::GetRecognizedEnemy()
 {
 	if (m_enemyQueueAttendIndex >= m_enemyQueueCount)
-		return NULL;
+		return nullptr;
 
-	return (CBasePlayer *)m_enemyQueue[ m_enemyQueueAttendIndex ].player;
+	return m_enemyQueue[m_enemyQueueAttendIndex].player;
 }
 
 // Return true if the enemy we are "conscious" of is reloading
@@ -948,7 +991,7 @@ bool CCSBot::IsRecognizedEnemyReloading()
 	if (m_enemyQueueAttendIndex >= m_enemyQueueCount)
 		return false;
 
-	return m_enemyQueue[ m_enemyQueueAttendIndex ].isReloading;
+	return m_enemyQueue[m_enemyQueueAttendIndex].isReloading;
 }
 
 // Return true if the enemy we are "conscious" of is hiding behind a shield
@@ -957,17 +1000,17 @@ bool CCSBot::IsRecognizedEnemyProtectedByShield()
 	if (m_enemyQueueAttendIndex >= m_enemyQueueCount)
 		return false;
 
-	return m_enemyQueue[ m_enemyQueueAttendIndex ].isProtectedByShield;
+	return m_enemyQueue[m_enemyQueueAttendIndex].isProtectedByShield;
 }
 
 // Return distance to closest enemy we are "conscious" of
 float CCSBot::GetRangeToNearestRecognizedEnemy()
 {
-	const CBasePlayer *enemy = GetRecognizedEnemy();
+	const CBasePlayer *pEnemy = GetRecognizedEnemy();
 
-	if (enemy != NULL)
+	if (pEnemy)
 	{
-		return (pev->origin - enemy->pev->origin).Length();
+		return (pev->origin - pEnemy->pev->origin).Length();
 	}
 
 	return 99999999.9f;
@@ -995,3 +1038,139 @@ void CCSBot::Blind(float duration, float holdTime, float fadeTime, int alpha)
 	// no longer safe
 	AdjustSafeTime();
 }
+
+#ifdef REGAMEDLL_ADD
+bool CCSBot::IsNoticable(const CBasePlayer *player, unsigned char visibleParts) const
+{
+	float deltaT = m_attentionInterval.GetElapsedTime();
+
+	// all chances are specified in terms of a standard "quantum" of time
+	// in which a normal person would notice something
+	const float noticeQuantum = 0.25f;
+
+	// determine percentage of player that is visible
+	float coverRatio = 0.0f;
+
+	if (visibleParts & CHEST)
+	{
+		const float chance = 40.0f;
+		coverRatio += chance;
+	}
+
+	if (visibleParts & HEAD)
+	{
+		const float chance = 10.0f;
+		coverRatio += chance;
+	}
+
+	if (visibleParts & LEFT_SIDE)
+	{
+		const float chance = 20.0f;
+		coverRatio += chance;
+	}
+
+	if (visibleParts & RIGHT_SIDE)
+	{
+		const float chance = 20.0f;
+		coverRatio += chance;
+	}
+
+	if (visibleParts & FEET)
+	{
+		const float chance = 10.0f;
+		coverRatio += chance;
+	}
+
+	// compute range modifier - farther away players are harder to notice, depeding on what they are doing
+	float range = (player->pev->origin - pev->origin).Length();
+	const float closeRange = 300.0f;
+	const float farRange = 1000.0f;
+
+	float rangeModifier;
+	if (range < closeRange)
+	{
+		rangeModifier = 0.0f;
+	}
+	else if (range > farRange)
+	{
+		rangeModifier = 1.0f;
+	}
+	else
+	{
+		rangeModifier = (range - closeRange) / (farRange - closeRange);
+	}
+
+	// harder to notice when crouched
+	bool isCrouching = (player->pev->flags & FL_DUCKING) == FL_DUCKING;
+	// moving players are easier to spot
+	float playerSpeedSq = player->pev->velocity.LengthSquared();
+	const float runSpeed = 200.0f;
+	const float walkSpeed = 30.0f;
+	float farChance, closeChance;
+	if (playerSpeedSq > runSpeed * runSpeed)
+	{
+		// running players are always easy to spot (must be standing to run)
+		return true;
+	}
+	else if (playerSpeedSq > walkSpeed * walkSpeed)
+	{
+		// walking players are less noticable far away
+		if (isCrouching)
+		{
+			closeChance = 90.0f;
+			farChance = 60.0f;
+		}
+		// standing
+		else
+		{
+			closeChance = 100.0f;
+			farChance = 75.0f;
+		}
+	}
+	else
+	{
+		// motionless players are hard to notice
+		if (isCrouching)
+		{
+			// crouching and motionless - very tough to notice
+			closeChance = 80.0f;
+			farChance = 5.0f;		// takes about three seconds to notice (50% chance)
+		}
+		// standing
+		else
+		{
+			closeChance = 100.0f;
+			farChance = 10.0f;
+		}
+	}
+
+	// combine posture, speed, and range chances
+	float dispositionChance = closeChance + (farChance - closeChance) * rangeModifier;
+
+	// determine actual chance of noticing player
+	float noticeChance = dispositionChance * coverRatio/100.0f;
+
+	// scale by skill level
+	noticeChance *= (0.5f + 0.5f * GetProfile()->GetSkill());
+
+	// if we are alert, our chance of noticing is much higher
+	//if (IsAlert())
+	//{
+	//	const float alertBonus = 50.0f;
+	//	noticeChance += alertBonus;
+	//}
+
+	// scale by time quantum
+	noticeChance *= deltaT / noticeQuantum;
+
+	// there must always be a chance of detecting the enemy
+	const float minChance = 0.1f;
+	if (noticeChance < minChance)
+	{
+		noticeChance = minChance;
+	}
+
+	//PrintIfWatched("Notice chance = %3.2f\n", noticeChance);
+	return (RANDOM_FLOAT(0.0f, 100.0f) < noticeChance);
+}
+#endif

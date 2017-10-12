@@ -26,58 +26,9 @@
 *
 */
 
-#ifndef TRIGGERS_H
-#define TRIGGERS_H
-#ifdef _WIN32
 #pragma once
-#endif
 
 #include "utlmap.h"
-
-#define GRENADETYPE_SMOKE			1
-#define GRENADETYPE_FLASH			2
-
-#define SPAWNFLAG_NOMESSAGE			1
-#define SPAWNFLAG_NOTOUCH			1
-#define SPAWNFLAG_DROIDONLY			4
-
-#define MAX_ITEM_COUNTS				32
-#define MAX_ENTITY					512	// We can only ever move 512 entities across a transition
-
-// triggers
-#define SF_TRIGGER_ALLOWMONSTERS		1	// monsters allowed to fire this trigger
-#define SF_TRIGGER_NOCLIENTS			2	// players not allowed to fire this trigger
-#define SF_TRIGGER_PUSHABLES			4	// only pushables can fire this trigger
-#define SF_TRIGGER_NO_RESET			64	// it is not allowed to be resetting on a new round
-
-#define SF_TRIGGER_PUSH_ONCE			1
-#define SF_TRIGGER_PUSH_START_OFF		2	// spawnflag that makes trigger_push spawn turned OFF
-
-#define SF_TRIGGER_HURT_TARGETONCE		1	// Only fire hurt target once
-#define SF_TRIGGER_HURT_START_OFF		2	// spawnflag that makes trigger_push spawn turned OFF
-#define SF_TRIGGER_HURT_NO_CLIENTS		8	// spawnflag that makes trigger_push spawn turned OFF
-#define SF_TRIGGER_HURT_CLIENTONLYFIRE		16	// trigger hurt will only fire its target if it is hurting a client
-#define SF_TRIGGER_HURT_CLIENTONLYTOUCH		32	// only clients may touch this trigger.
-
-#define SF_AUTO_FIREONCE			0x0001
-#define SF_AUTO_NO_RESET			0x0002
-
-#define SF_RELAY_FIREONCE			0x0001
-#define SF_ENDSECTION_USEONLY			0x0001
-
-#define SF_MULTIMAN_CLONE			0x80000000
-#define SF_MULTIMAN_THREAD			0x00000001
-
-#define SF_CHANGELEVEL_USEONLY			0x0002
-#define SF_CAMERA_PLAYER_POSITION		1
-#define SF_CAMERA_PLAYER_TARGET			2
-#define SF_CAMERA_PLAYER_TAKECONTROL		4
-
-// Flags to indicate masking off various render parameters that are normally copied to the targets
-#define SF_RENDER_MASKFX	(1 << 0)
-#define SF_RENDER_MASKAMT	(1 << 1)
-#define SF_RENDER_MASKMODE	(1 << 2)
-#define SF_RENDER_MASKCOLOR	(1 << 3)
 
 class CFrictionModifier: public CBaseEntity
 {
@@ -95,8 +46,11 @@ public:
 	float m_frictionFraction;
 };
 
+#define SF_AUTO_FIREONCE BIT(0)
+#define SF_AUTO_NORESET  BIT(1)
+
 // This trigger will fire when the level spawns (or respawns if not fire once)
-// It will check a global state before firing.  It supports delay and killtargets
+// It will check a global state before firing. It supports delay and killtargets
 class CAutoTrigger: public CBaseDelay
 {
 public:
@@ -116,8 +70,10 @@ public:
 	static TYPEDESCRIPTION IMPL(m_SaveData)[2];
 
 	int m_globalstate;
-	USE_TYPE triggerType;
+	USE_TYPE m_triggerType;
 };
+
+#define SF_RELAY_FIREONCE BIT(0)
 
 class CTriggerRelay: public CBaseDelay
 {
@@ -132,10 +88,15 @@ public:
 public:
 	static TYPEDESCRIPTION IMPL(m_SaveData)[1];
 
-	USE_TYPE triggerType;
+	USE_TYPE m_triggerType;
 };
 
-// The Multimanager Entity - when fired, will fire up to 16 targets
+const int MAX_MM_TARGETS = 16; // maximum number of targets a single multi_manager entity may be assigned.
+
+#define SF_MULTIMAN_THREAD BIT(0)
+#define SF_MULTIMAN_CLONE  BIT(31)
+
+// This entity when fire, will fire up to 16 targets at specified times.
 // at specified times.
 // FLAG:		THREAD (create clones when triggered)
 // FLAG:		CLONE (this is a clone for a threaded execution)
@@ -186,12 +147,17 @@ public:
 	int m_cTargets;
 	int m_index;
 	float m_startTime;
-	int m_iTargetName[ MAX_MULTI_TARGETS ];
-	float m_flTargetDelay[ MAX_MULTI_TARGETS ];
+	int m_iTargetName[MAX_MM_TARGETS];
+	float m_flTargetDelay[MAX_MM_TARGETS];
 };
 
+// Flags to indicate masking off various render parameters that are normally copied to the targets
+#define SF_RENDER_MASKFX    BIT(0)
+#define SF_RENDER_MASKAMT   BIT(1)
+#define SF_RENDER_MASKMODE  BIT(2)
+#define SF_RENDER_MASKCOLOR BIT(3)
+
 // Render parameters trigger
-//
 // This entity will copy its render parameters (renderfx, rendermode, rendercolor, renderamt)
 // to its targets when triggered.
 class CRenderFxManager: public CBaseEntity
@@ -217,6 +183,11 @@ public:
 
 };
 
+#define SF_TRIGGER_ALLOWMONSTERS BIT(0) // monsters allowed to fire this trigger
+#define SF_TRIGGER_NOCLIENTS     BIT(1) // players not allowed to fire this trigger
+#define SF_TRIGGER_PUSHABLES     BIT(2) // only pushables can fire this trigger
+#define SF_TRIGGER_NORESET       BIT(6) // it is not allowed to be resetting on a new round
+
 class CBaseTrigger: public CBaseToggle
 {
 public:
@@ -235,8 +206,14 @@ public:
 	void InitTrigger();
 };
 
-// trigger_hurt - hurts anything that touches it. if the trigger has a targetname, firing it will toggle state
-// int gfToggleState = 0; // used to determine when all radiation trigger hurts have called 'RadiationThink'
+#define SF_TRIGGER_HURT_TARGETONCE      BIT(0) // Only fire hurt target once
+#define SF_TRIGGER_HURT_START_OFF       BIT(1) // spawnflag that makes trigger_push spawn turned OFF
+#define SF_TRIGGER_HURT_NO_CLIENTS      BIT(3) // spawnflag that makes trigger_push spawn turned OFF
+#define SF_TRIGGER_HURT_CLIENTONLYFIRE  BIT(4) // trigger hurt will only fire its target if it is hurting a client
+#define SF_TRIGGER_HURT_CLIENTONLYTOUCH BIT(5) // only clients may touch this trigger.
+
+// Hurts anything that touches it.
+// If the trigger has a targetname, firing it will toggle state
 class CTriggerHurt: public CBaseTrigger
 {
 public:
@@ -258,7 +235,7 @@ public:
 	virtual void Touch(CBaseEntity *pOther);
 };
 
-// trigger_cdaudio - starts/stops cd audio tracks
+// Starts/stops cd audio tracks
 class CTriggerCDAudio: public CBaseTrigger
 {
 public:
@@ -283,8 +260,9 @@ public:
 	void Play(edict_t *pEdict);
 };
 
-// QUAKED trigger_multiple (.5 .5 .5) ? notouch
-// Variable sized repeatable trigger.  Must be targeted at one or more entities.
+#define SF_TRIGGER_MULTIPLE_NOTOUCH BIT(0)
+
+// Variable sized repeatable trigger. Must be targeted at one or more entities.
 // If "health" is set, the trigger must be killed to activate each time.
 // If "delay" is set, the trigger waits some time after activating before firing.
 // "wait" : Seconds between triggerings. (.2 default)
@@ -303,12 +281,11 @@ public:
 	virtual void Spawn();
 };
 
-// QUAKED trigger_once (.5 .5 .5) ? notouch
-// Variable sized trigger. Triggers once, then removes itself.  You must set the key "target" to the name of another object in the level that has a matching
-// "targetname".  If "health" is set, the trigger must be killed to activate.
+// Variable sized trigger. Triggers once, then removes itself. You must set the key "target" to the name of another object in the level that has a matching
+// "targetname". If "health" is set, the trigger must be killed to activate.
 // If notouch is set, the trigger is only fired by other entities, not by touching.
 // if "killtarget" is set, any objects that have a matching "target" will be removed when the trigger is fired.
-// if "angle" is set, the trigger will only fire when someone is facing the direction of the angle.  Use "360" for an angle of 0.
+// if "angle" is set, the trigger will only fire when someone is facing the direction of the angle. Use "360" for an angle of 0.
 // sounds
 // 1)	secret
 // 2)	beep beep
@@ -324,10 +301,11 @@ public:
 #endif
 };
 
-// QUAKED trigger_counter (.5 .5 .5) ? nomessage
+#define SF_TRIGGER_COUNTER_NOMESSAGE BIT(0)
+
 // Acts as an intermediary for an action that takes multiple inputs.
 // If nomessage is not set, it will print "1 more.. " etc when triggered and
-// "sequence complete" when finished.  After the counter has been triggered "cTriggersLeft"
+// "sequence complete" when finished. After the counter has been triggered "cTriggersLeft"
 // times (default 2), it will fire all of it's targets and remove itself.
 class CTriggerCounter: public CBaseTrigger
 {
@@ -352,8 +330,10 @@ public:
 	virtual void Think();
 };
 
-// QUAKED trigger_changelevel (0.5 0.5 0.5) ? NO_INTERMISSION
-// When the player touches this, he gets sent to the map listed in the "map" variable.  Unless the NO_INTERMISSION flag is set, the view will go to the info_intermission spot and display stats.
+#define SF_CHANGELEVEL_USEONLY BIT(1)
+
+// When the player touches this, he gets sent to the map listed in the "map" variable.
+// Unless the NO_INTERMISSION flag is set, the view will go to the info_intermission spot and display stats.
 class CChangeLevel: public CBaseTrigger
 {
 public:
@@ -377,8 +357,8 @@ public:
 public:
 	static TYPEDESCRIPTION IMPL(m_SaveData)[4];
 
-	char m_szMapName[cchMapNameMost];		// trigger_changelevel only:  next map
-	char m_szLandmarkName[cchMapNameMost];		// trigger_changelevel only:  landmark on next map
+	char m_szMapName[MAX_MAPNAME_LENGHT];		// next map
+	char m_szLandmarkName[MAX_MAPNAME_LENGHT];	// landmark on next map
 	int m_changeTarget;
 	float m_changeTargetDelay;
 };
@@ -390,6 +370,9 @@ public:
 	virtual void Precache();
 	virtual void KeyValue(KeyValueData *pkvd);
 };
+
+#define SF_TRIGGER_PUSH_ONCE      BIT(0)
+#define SF_TRIGGER_PUSH_START_OFF BIT(1) // spawnflag that makes trigger_push spawn turned OFF
 
 class CTriggerPush: public CBaseTrigger
 {
@@ -460,6 +443,8 @@ public:
 	void EXPORT SaveTouch(CBaseEntity *pOther);
 };
 
+#define SF_ENDSECTION_USEONLY BIT(0)
+
 class CTriggerEndSection: public CBaseTrigger
 {
 public:
@@ -497,6 +482,10 @@ private:
 	int m_iszNewTarget;
 };
 
+#define SF_CAMERA_PLAYER_POSITION    BIT(0)
+#define SF_CAMERA_PLAYER_TARGET      BIT(1)
+#define SF_CAMERA_PLAYER_TAKECONTROL BIT(2)
+
 class CTriggerCamera: public CBaseDelay
 {
 public:
@@ -513,8 +502,8 @@ public:
 
 	static TYPEDESCRIPTION IMPL(m_SaveData)[13];
 
-	EHANDLE m_hPlayer;
-	EHANDLE m_hTarget;
+	EntityHandle<CBasePlayer> m_hPlayer;
+	EntityHandle<CBaseEntity> m_hTarget;
 	CBaseEntity *m_pentPath;
 	int m_sPath;
 	float m_flWait;
@@ -549,5 +538,3 @@ public:
 void PlayCDTrack(edict_t *pClient, int iTrack);
 int BuildChangeList(LEVELLIST *pLevelList, int maxList);
 void NextLevel();
-
-#endif // TRIGGERS_H

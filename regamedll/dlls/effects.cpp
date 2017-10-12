@@ -136,7 +136,9 @@ void CBubbling::KeyValue(KeyValueData *pkvd)
 		pkvd->fHandled = TRUE;
 	}
 	else
+	{
 		CBaseEntity::KeyValue(pkvd);
+	}
 }
 
 void CBubbling::FizzThink()
@@ -207,7 +209,7 @@ const Vector &CBeam::GetEndPos()
 	}
 
 	edict_t *pent = INDEXENT(GetEndEntity());
-	if (pent != NULL)
+	if (pent)
 	{
 		return pent->v.origin;
 	}
@@ -218,7 +220,7 @@ const Vector &CBeam::GetEndPos()
 CBeam *CBeam::BeamCreate(const char *pSpriteName, int width)
 {
 	// Create a new entity with CBeam private data
-	CBeam *pBeam = GetClassPtr<CCSBeam>((CBeam *)NULL);
+	CBeam *pBeam = GetClassPtr<CCSBeam>((CBeam *)nullptr);
 
 	MAKE_STRING_CLASS("beam", pBeam->pev);
 	pBeam->BeamInit(pSpriteName, width);
@@ -321,10 +323,10 @@ CBaseEntity *CBeam::RandomTargetname(const char *szName)
 {
 	int total = 0;
 
-	CBaseEntity *pEntity = NULL;
-	CBaseEntity *pNewEntity = NULL;
+	CBaseEntity *pEntity = nullptr;
+	CBaseEntity *pNewEntity = nullptr;
 
-	while ((pNewEntity = UTIL_FindEntityByTargetname(pNewEntity, szName)) != NULL)
+	while ((pNewEntity = UTIL_FindEntityByTargetname(pNewEntity, szName)))
 	{
 		total++;
 
@@ -475,7 +477,9 @@ void CLightning::KeyValue(KeyValueData *pkvd)
 		pkvd->fHandled = TRUE;
 	}
 	else
+	{
 		CBeam::KeyValue(pkvd);
+	}
 }
 
 void CLightning::ToggleUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
@@ -557,7 +561,7 @@ void CLightning::StrikeThink()
 		else
 		{
 			CBaseEntity *pStart = RandomTargetname(STRING(m_iszStartEntity));
-			if (pStart != NULL)
+			if (pStart)
 				RandomPoint(pStart->pev->origin);
 			else
 				ALERT(at_console, "env_beam: unknown entity \"%s\"\n", STRING(m_iszStartEntity));
@@ -568,7 +572,7 @@ void CLightning::StrikeThink()
 	CBaseEntity *pStart = RandomTargetname(STRING(m_iszStartEntity));
 	CBaseEntity *pEnd = RandomTargetname(STRING(m_iszEndEntity));
 
-	if (pStart != NULL && pEnd != NULL)
+	if (pStart && pEnd)
 	{
 		if (IsPointEntity(pStart) || IsPointEntity(pEnd))
 		{
@@ -642,7 +646,7 @@ void CLightning::StrikeThink()
 		if (pev->dmg > 0)
 		{
 			TraceResult tr;
-			UTIL_TraceLine(pStart->pev->origin, pEnd->pev->origin, dont_ignore_monsters, NULL, &tr);
+			UTIL_TraceLine(pStart->pev->origin, pEnd->pev->origin, dont_ignore_monsters, nullptr, &tr);
 			BeamDamageInstant(&tr, pev->dmg);
 		}
 	}
@@ -652,11 +656,11 @@ void CBeam::BeamDamage(TraceResult *ptr)
 {
 	RelinkBeam();
 
-	if (ptr->flFraction != 1.0f && ptr->pHit != NULL)
+	if (ptr->flFraction != 1.0f && ptr->pHit)
 	{
 		CBaseEntity *pHit = CBaseEntity::Instance(ptr->pHit);
 
-		if (pHit != NULL)
+		if (pHit)
 		{
 			ClearMultiDamage();
 			pHit->TraceAttack(pev, pev->dmg * (gpGlobals->time - pev->dmgtime), (ptr->vecEndPos - pev->origin).Normalize(), ptr, DMG_ENERGYBEAM);
@@ -680,7 +684,7 @@ void CLightning::DamageThink()
 	pev->nextthink = gpGlobals->time + 0.1f;
 
 	TraceResult tr;
-	UTIL_TraceLine(GetStartPos(), GetEndPos(), dont_ignore_monsters, NULL, &tr);
+	UTIL_TraceLine(GetStartPos(), GetEndPos(), dont_ignore_monsters, nullptr, &tr);
 	BeamDamage(&tr);
 }
 
@@ -778,8 +782,8 @@ void CLightning::BeamUpdateVars()
 	int beamType;
 	int pointStart, pointEnd;
 
-	edict_t *pStart = FIND_ENTITY_BY_TARGETNAME(NULL, STRING(m_iszStartEntity));
-	edict_t *pEnd = FIND_ENTITY_BY_TARGETNAME(NULL, STRING(m_iszEndEntity));
+	edict_t *pStart = FIND_ENTITY_BY_TARGETNAME(nullptr, STRING(m_iszStartEntity));
+	edict_t *pEnd = FIND_ENTITY_BY_TARGETNAME(nullptr, STRING(m_iszEndEntity));
 
 	pointStart = IsPointEntity(CBaseEntity::Instance(pStart));
 	pointEnd = IsPointEntity(CBaseEntity::Instance(pEnd));
@@ -869,7 +873,7 @@ void CLaser::Spawn()
 	if (!m_pSprite && m_iszSpriteName)
 		m_pSprite = CSprite::SpriteCreate(STRING(m_iszSpriteName), pev->origin, TRUE);
 	else
-		m_pSprite = NULL;
+		m_pSprite = nullptr;
 
 	if (m_pSprite)
 		m_pSprite->SetTransparency(kRenderGlow, pev->rendercolor.x, pev->rendercolor.y, pev->rendercolor.z, pev->renderamt, pev->renderfx);
@@ -933,7 +937,9 @@ void CLaser::KeyValue(KeyValueData *pkvd)
 		pkvd->fHandled = TRUE;
 	}
 	else
+	{
 		CBeam::KeyValue(pkvd);
+	}
 }
 
 int CLaser::IsOn()
@@ -1000,7 +1006,7 @@ void CLaser::StrikeThink()
 		m_firePosition = pEnd->pev->origin;
 
 	TraceResult tr;
-	UTIL_TraceLine(pev->origin, m_firePosition, dont_ignore_monsters, NULL, &tr);
+	UTIL_TraceLine(pev->origin, m_firePosition, dont_ignore_monsters, nullptr, &tr);
 	FireAtPoint(tr);
 	pev->nextthink = gpGlobals->time + 0.1f;
 }
@@ -1160,7 +1166,7 @@ void CSprite::SpriteInit(const char *pSpriteName, const Vector &origin)
 
 CSprite *CSprite::SpriteCreate(const char *pSpriteName, const Vector &origin, BOOL animate)
 {
-	CSprite *pSprite = GetClassPtr<CCSSprite>((CSprite *)NULL);
+	CSprite *pSprite = GetClassPtr<CCSSprite>((CSprite *)nullptr);
 	pSprite->SpriteInit(pSpriteName, origin);
 
 	MAKE_STRING_CLASS("env_sprite", pSprite->pev);
@@ -1310,7 +1316,9 @@ void CGibShooter::KeyValue(KeyValueData *pkvd)
 		pkvd->fHandled = TRUE;
 	}
 	else
+	{
 		CBaseDelay::KeyValue(pkvd);
+	}
 }
 
 void CGibShooter::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
@@ -1343,9 +1351,9 @@ void CGibShooter::Spawn()
 CGib *CGibShooter::CreateGib()
 {
 	if (CVAR_GET_FLOAT("violence_hgibs") == 0)
-		return NULL;
+		return nullptr;
 
-	CGib *pGib = GetClassPtr<CCSGib>((CGib *)NULL);
+	CGib *pGib = GetClassPtr<CCSGib>((CGib *)nullptr);
 
 	pGib->Spawn("models/hgibs.mdl");
 	pGib->m_bloodColor = BLOOD_COLOR_RED;
@@ -1463,7 +1471,9 @@ void CEnvShooter::KeyValue(KeyValueData *pkvd)
 		}
 	}
 	else
+	{
 		CGibShooter::KeyValue(pkvd);
+	}
 }
 
 void CEnvShooter::Precache()
@@ -1474,7 +1484,7 @@ void CEnvShooter::Precache()
 
 CGib *CEnvShooter::CreateGib()
 {
-	CGib *pGib = GetClassPtr<CCSGib>((CGib *)NULL);
+	CGib *pGib = GetClassPtr<CCSGib>((CGib *)nullptr);
 
 	pGib->Spawn(STRING(pev->model));
 
@@ -1606,7 +1616,9 @@ void CBlood::KeyValue(KeyValueData *pkvd)
 		pkvd->fHandled = TRUE;
 	}
 	else
+	{
 		CPointEntity::KeyValue(pkvd);
+	}
 }
 
 Vector CBlood::Direction()
@@ -1628,7 +1640,7 @@ Vector CBlood::BloodPosition(CBaseEntity *pActivator)
 		else
 			pPlayer = INDEXENT(1);
 
-		if (pPlayer != NULL)
+		if (pPlayer)
 		{
 			return (pPlayer->v.origin + pPlayer->v.view_ofs) + Vector(RANDOM_FLOAT(-10, 10), RANDOM_FLOAT(-10, 10), RANDOM_FLOAT(-10, 10));
 		}
@@ -1650,7 +1662,7 @@ void CBlood::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType
 		Vector start = BloodPosition(pActivator);
 
 		TraceResult tr;
-		UTIL_TraceLine(start, start + forward * BloodAmount() * 2, ignore_monsters, NULL, &tr);
+		UTIL_TraceLine(start, start + forward * BloodAmount() * 2, ignore_monsters, nullptr, &tr);
 
 		if (tr.flFraction != 1.0f)
 		{
@@ -1695,7 +1707,9 @@ void CShake::KeyValue(KeyValueData *pkvd)
 		pkvd->fHandled = TRUE;
 	}
 	else
+	{
 		CPointEntity::KeyValue(pkvd);
+	}
 }
 
 void CShake::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
@@ -1726,7 +1740,9 @@ void CFade::KeyValue(KeyValueData *pkvd)
 		pkvd->fHandled = TRUE;
 	}
 	else
+	{
 		CPointEntity::KeyValue(pkvd);
+	}
 }
 
 void CFade::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
@@ -1813,12 +1829,14 @@ void CMessage::KeyValue(KeyValueData *pkvd)
 		pkvd->fHandled = TRUE;
 	}
 	else
+	{
 		CPointEntity::KeyValue(pkvd);
+	}
 }
 
 void CMessage::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
-	CBaseEntity *pPlayer = NULL;
+	CBaseEntity *pPlayer = nullptr;
 
 	if (pev->spawnflags & SF_MESSAGE_ALL)
 		UTIL_ShowMessageAll(STRING(pev->message));
@@ -1831,7 +1849,7 @@ void CMessage::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useTy
 			pPlayer = CBaseEntity::Instance(INDEXENT(1));
 		}
 
-		if (pPlayer != NULL)
+		if (pPlayer)
 			UTIL_ShowMessage(STRING(pev->message), pPlayer);
 	}
 

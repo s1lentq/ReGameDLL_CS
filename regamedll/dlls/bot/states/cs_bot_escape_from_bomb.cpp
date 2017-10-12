@@ -14,7 +14,7 @@ void EscapeFromBombState::OnUpdate(CCSBot *me)
 	const Vector *bombPos = me->GetGameState()->GetBombPosition();
 
 	// if we don't know where the bomb is, we shouldn't be in this state
-	if (bombPos == NULL)
+	if (!bombPos)
 	{
 		me->Idle();
 		return;
@@ -33,7 +33,7 @@ void EscapeFromBombState::OnUpdate(CCSBot *me)
 		CNavArea *goalArea = FindMinimumCostArea(me->GetLastKnownArea(), func);
 
 		// if this fails, we'll try again next time
-		me->ComputePath(goalArea, NULL, FASTEST_ROUTE);
+		me->ComputePath(goalArea, nullptr, FASTEST_ROUTE);
 	}
 }
 
