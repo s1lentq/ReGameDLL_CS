@@ -26,6 +26,8 @@
 *
 */
 
+#pragma once
+
 class CItemAirBox: public CArmoury {
 public:
 	void Spawn();

@@ -36,7 +36,7 @@ void CItemAirBox::Spawn()
 
 	pev->movetype = MOVETYPE_NOCLIP;
 
-	if (!m_iszSpriteName.IsEmpty())
+	if (!m_iszSpriteName.IsNull())
 	{
 		m_pSprite = CSprite::SpriteCreate(m_iszSpriteName, pev->origin, FALSE);
 		m_pSprite->SetTransparency(m_rendermode, m_rendercolor.x, m_rendercolor.y, m_rendercolor.z, m_renderamt, m_renderfx);
@@ -75,7 +75,7 @@ void CItemAirBox::Precache()
 {
 	CArmoury::Precache();
 
-	if (!m_iszSpriteName.IsEmpty()) {
+	if (!m_iszSpriteName.IsNull()) {
 		PRECACHE_MODEL(m_iszSpriteName);
 	}
 }

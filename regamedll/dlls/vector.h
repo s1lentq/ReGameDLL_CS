@@ -38,36 +38,36 @@ public:
 	Vector2D(const Vector2D &v) { *(int *)&x = *(int *)&v.x; *(int *)&y = *(int *)&v.y; }
 
 	// Operators
-	inline decltype(auto) operator-()         const { return Vector2D(-x, -y); }
-	inline bool operator==(const Vector2D &v) const { return x == v.x && y == v.y; }
-	inline bool operator!=(const Vector2D &v) const { return !(*this == v); }
+	decltype(auto) operator-()         const { return Vector2D(-x, -y); }
+	bool operator==(const Vector2D &v) const { return x == v.x && y == v.y; }
+	bool operator!=(const Vector2D &v) const { return !(*this == v); }
 
-	inline decltype(auto) operator+(const Vector2D &v)  const { return Vector2D(x + v.x, y + v.y); }
-	inline decltype(auto) operator-(const Vector2D &v)  const { return Vector2D(x - v.x, y - v.y); }
-	inline decltype(auto) operator*(const Vector2D &v)  const { return Vector2D(x * v.x, y * v.y); }
-	inline decltype(auto) operator/(const Vector2D &v)  const { return Vector2D(x / v.x, y / v.y); }
+	decltype(auto) operator+(const Vector2D &v)  const { return Vector2D(x + v.x, y + v.y); }
+	decltype(auto) operator-(const Vector2D &v)  const { return Vector2D(x - v.x, y - v.y); }
+	decltype(auto) operator*(const Vector2D &v)  const { return Vector2D(x * v.x, y * v.y); }
+	decltype(auto) operator/(const Vector2D &v)  const { return Vector2D(x / v.x, y / v.y); }
 
-	inline decltype(auto) operator+=(const Vector2D &v) { return (*this = *this + v); }
-	inline decltype(auto) operator-=(const Vector2D &v) { return (*this = *this - v); }
-	inline decltype(auto) operator*=(const Vector2D &v) { return (*this = *this * v); }
-	inline decltype(auto) operator/=(const Vector2D &v) { return (*this = *this / v); }
+	decltype(auto) operator+=(const Vector2D &v) { return (*this = *this + v); }
+	decltype(auto) operator-=(const Vector2D &v) { return (*this = *this - v); }
+	decltype(auto) operator*=(const Vector2D &v) { return (*this = *this * v); }
+	decltype(auto) operator/=(const Vector2D &v) { return (*this = *this / v); }
 
-	inline decltype(auto) operator+(float fl) const { return Vector2D(x + fl, y + fl); }
-	inline decltype(auto) operator-(float fl) const { return Vector2D(x - fl, y - fl); }
+	decltype(auto) operator+(float fl) const { return Vector2D(x + fl, y + fl); }
+	decltype(auto) operator-(float fl) const { return Vector2D(x - fl, y - fl); }
 
 	// TODO: FIX ME!!
 #ifdef PLAY_GAMEDLL
-	inline decltype(auto) operator*(float fl) const { return Vector2D(vec_t(x * fl), vec_t(y * fl)); }
-	inline decltype(auto) operator/(float fl) const { return Vector2D(vec_t(x / fl), vec_t(y / fl)); }
+	decltype(auto) operator*(float fl) const { return Vector2D(vec_t(x * fl), vec_t(y * fl)); }
+	decltype(auto) operator/(float fl) const { return Vector2D(vec_t(x / fl), vec_t(y / fl)); }
 #else
-	inline decltype(auto) operator*(float fl) const { return Vector2D(x * fl, y * fl); }
-	inline decltype(auto) operator/(float fl) const { return Vector2D(x / fl, y / fl); }
+	decltype(auto) operator*(float fl) const { return Vector2D(x * fl, y * fl); }
+	decltype(auto) operator/(float fl) const { return Vector2D(x / fl, y / fl); }
 #endif
 
-	inline decltype(auto) operator+=(float fl) { return (*this = *this + fl); }
-	inline decltype(auto) operator-=(float fl) { return (*this = *this - fl); }
-	inline decltype(auto) operator*=(float fl) { return (*this = *this * fl); }
-	inline decltype(auto) operator/=(float fl) { return (*this = *this / fl); }
+	decltype(auto) operator+=(float fl) { return (*this = *this + fl); }
+	decltype(auto) operator-=(float fl) { return (*this = *this - fl); }
+	decltype(auto) operator*=(float fl) { return (*this = *this * fl); }
+	decltype(auto) operator/=(float fl) { return (*this = *this / fl); }
 
 	// Methods
 	inline void CopyToArray(float *rgfl) const { *(int *)&rgfl[0] = *(int *)&x; *(int *)&rgfl[1] = *(int *)&y; }
@@ -140,36 +140,36 @@ public:
 	Vector(const float rgfl[3]) { *(int *)&x = *(int *)&rgfl[0]; *(int *)&y = *(int *)&rgfl[1]; *(int *)&z = *(int *)&rgfl[2]; }
 
 	// Operators
-	inline decltype(auto) operator-()       const { return Vector(-x, -y, -z); }
-	inline bool operator==(const Vector &v) const { return x == v.x && y == v.y && z == v.z; }
-	inline bool operator!=(const Vector &v) const { return !(*this == v); }
+	decltype(auto) operator-()       const { return Vector(-x, -y, -z); }
+	bool operator==(const Vector &v) const { return x == v.x && y == v.y && z == v.z; }
+	bool operator!=(const Vector &v) const { return !(*this == v); }
 
-	inline decltype(auto) operator+(const Vector &v) const { return Vector(x + v.x, y + v.y, z + v.z); }
-	inline decltype(auto) operator-(const Vector &v) const { return Vector(x - v.x, y - v.y, z - v.z); }
-	inline decltype(auto) operator*(const Vector &v) const { return Vector(x * v.x, y * v.y, z * v.z); }
-	inline decltype(auto) operator/(const Vector &v) const { return Vector(x / v.x, y / v.y, z / v.z); }
+	decltype(auto) operator+(const Vector &v) const { return Vector(x + v.x, y + v.y, z + v.z); }
+	decltype(auto) operator-(const Vector &v) const { return Vector(x - v.x, y - v.y, z - v.z); }
+	decltype(auto) operator*(const Vector &v) const { return Vector(x * v.x, y * v.y, z * v.z); }
+	decltype(auto) operator/(const Vector &v) const { return Vector(x / v.x, y / v.y, z / v.z); }
 
-	inline decltype(auto) operator+=(const Vector &v) { return (*this = *this + v); }
-	inline decltype(auto) operator-=(const Vector &v) { return (*this = *this - v); }
-	inline decltype(auto) operator*=(const Vector &v) { return (*this = *this * v); }
-	inline decltype(auto) operator/=(const Vector &v) { return (*this = *this / v); }
+	decltype(auto) operator+=(const Vector &v) { return (*this = *this + v); }
+	decltype(auto) operator-=(const Vector &v) { return (*this = *this - v); }
+	decltype(auto) operator*=(const Vector &v) { return (*this = *this * v); }
+	decltype(auto) operator/=(const Vector &v) { return (*this = *this / v); }
 
-	inline decltype(auto) operator+(float fl) const { return Vector(x + fl, y + fl, z + fl); }
-	inline decltype(auto) operator-(float fl) const { return Vector(x - fl, y - fl, z - fl); }
+	decltype(auto) operator+(float fl) const { return Vector(x + fl, y + fl, z + fl); }
+	decltype(auto) operator-(float fl) const { return Vector(x - fl, y - fl, z - fl); }
 
 	// TODO: FIX ME!!
 #ifdef PLAY_GAMEDLL
-	inline decltype(auto) operator*(float fl) const { return Vector(vec_t(x * fl), vec_t(y * fl), vec_t(z * fl)); }
-	inline decltype(auto) operator/(float fl) const { return Vector(vec_t(x / fl), vec_t(y / fl), vec_t(z / fl)); }
+	decltype(auto) operator*(float fl) const { return Vector(vec_t(x * fl), vec_t(y * fl), vec_t(z * fl)); }
+	decltype(auto) operator/(float fl) const { return Vector(vec_t(x / fl), vec_t(y / fl), vec_t(z / fl)); }
 #else
-	inline decltype(auto) operator*(float fl) const { return Vector(x * fl, y * fl, z * fl); }
-	inline decltype(auto) operator/(float fl) const { return Vector(x / fl, y / fl, z / fl); }
+	decltype(auto) operator*(float fl) const { return Vector(x * fl, y * fl, z * fl); }
+	decltype(auto) operator/(float fl) const { return Vector(x / fl, y / fl, z / fl); }
 #endif
 
-	inline decltype(auto) operator+=(float fl) { return (*this = *this + fl); }
-	inline decltype(auto) operator-=(float fl) { return (*this = *this - fl); }
-	inline decltype(auto) operator*=(float fl) { return (*this = *this * fl); }
-	inline decltype(auto) operator/=(float fl) { return (*this = *this / fl); }
+	decltype(auto) operator+=(float fl) { return (*this = *this + fl); }
+	decltype(auto) operator-=(float fl) { return (*this = *this - fl); }
+	decltype(auto) operator*=(float fl) { return (*this = *this * fl); }
+	decltype(auto) operator/=(float fl) { return (*this = *this / fl); }
 
 	void CopyToArray(float *rgfl) const
 	{

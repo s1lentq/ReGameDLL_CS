@@ -30,19 +30,25 @@
 
 #define QSTRING_DEFINE
 
-constexpr auto iStringNull = 0u;
+constexpr unsigned int iStringNull = {0};
 
 // Quake string (helper class)
-template <typename T = unsigned int>
 class QString final
 {
 public:
-	QString(): m_string(iStringNull) {};
-	QString(T string): m_string(string) {};
+	using qstring_t = unsigned int;
 
-	bool IsEmpty() const;
-	bool operator==(T string) const;
-	bool operator==(const QString<T> &s) const;
+	QString(): m_string(iStringNull) {};
+	QString(qstring_t string): m_string(string) {};
+
+	bool IsNull() const;
+	bool IsNullOrEmpty() const;
+
+	// Copy the array
+	QString &operator=(const QString &other);
+
+	bool operator==(qstring_t string) const;
+	bool operator==(const QString &s) const;
 	bool operator==(const char *pszString) const;
 
 	operator const char *() const;
@@ -50,11 +56,11 @@ public:
 	const char *str() const;
 
 private:
-	T m_string;
+	qstring_t m_string;
 };
 
 #ifdef USE_QSTRING
-#define string_t QString<>
+#define string_t QString
 #endif
 
 #include "const.h"
@@ -68,44 +74,48 @@ extern globalvars_t *gpGlobals;
 #define MAKE_STRING(str) ((unsigned int)(str) - (unsigned int)(STRING(0)))
 
 // Inlines
-template <typename T>
-inline bool QString<T>::IsEmpty() const
+inline bool QString::IsNull() const
 {
 	return m_string == iStringNull;
 }
 
-template <typename T>
-inline bool QString<T>::operator==(T string) const
+inline bool QString::IsNullOrEmpty() const
+{
+	return IsNull() || (&gpGlobals->pStringBase[m_string])[0] == '\0';
+}
+
+inline QString &QString::operator=(const QString &other)
+{
+	m_string = other.m_string;
+	return (*this);
+}
+
+inline bool QString::operator==(qstring_t string) const
 {
 	return m_string == string;
 }
 
-template <typename T>
-inline bool QString<T>::operator==(const QString<T> &s) const
+inline bool QString::operator==(const QString &s) const
 {
 	return m_string == s.m_string;
 }
 
-template <typename T>
-inline bool QString<T>::operator==(const char *pszString) const
+inline bool QString::operator==(const char *pszString) const
 {
-	return FStrEq(&gpGlobals->pStringBase[m_string], pszString);
+	return Q_strcmp(&gpGlobals->pStringBase[m_string], pszString) == 0;
 }
 
-template <typename T>
-inline const char *QString<T>::str() const
+inline const char *QString::str() const
 {
 	return &gpGlobals->pStringBase[m_string];
 }
 
-template <typename T>
-inline QString<T>::operator const char *() const
+inline QString::operator const char *() const
 {
 	return str();
 }
 
-template <typename T>
-inline QString<T>::operator unsigned int() const
+inline QString::operator unsigned int() const
 {
 	return m_string;
 }

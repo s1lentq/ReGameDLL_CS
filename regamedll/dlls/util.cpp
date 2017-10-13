@@ -1547,20 +1547,14 @@ void UTIL_Remove(CBaseEntity *pEntity)
 	if (!pEntity)
 		return;
 
-#if 0
-	// TODO: Some safe checks.
-	if (pEntity == VARS(eoNullEntity))
+#ifdef REGAMEDLL_FIXES
+	if (pEntity->pev == VARS(eoNullEntity) || pEntity->IsPlayer() || (pEntity->pev->flags & FL_KILLME) == FL_KILLME)
 		return;
-
-	if (pEntity->IsPlayer())
-	{
-		pEntity->pev->health = 1.0f;
-		pEntity->TakeDamage(VARS(eoNullEntity), VARS(eoNullEntity), 9999, DMG_ALWAYSGIB);
-		return;
-	}
 #endif
 
 	pEntity->UpdateOnRemove();
+
+	pEntity->pev->solid = SOLID_NOT;
 	pEntity->pev->flags |= FL_KILLME;
 	pEntity->pev->targetname = 0;
 }
