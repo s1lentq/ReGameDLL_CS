@@ -1447,7 +1447,7 @@ void CBaseEntity::SUB_FadeOut()
 
 void OnFreeEntPrivateData(edict_t *pEnt)
 {
-	CBaseEntity *pEntity = (CBaseEntity *)GET_PRIVATE(pEnt);
+	CBaseEntity *pEntity = GET_PRIVATE<CBaseEntity>(pEnt);
 	if (!pEntity)
 		return;
 

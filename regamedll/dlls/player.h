@@ -950,7 +950,6 @@ void packPlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 bool CanSeeUseable(CBasePlayer *me, CBaseEntity *entity);
 void FixPlayerCrouchStuck(edict_t *pPlayer);
 BOOL IsSpawnPointValid(CBaseEntity *pPlayer, CBaseEntity *pSpot);
-CBaseEntity *FindZombieSpawn(CBaseEntity *player, bool forceSpawn);
 CBaseEntity *FindEntityForward(CBaseEntity *pMe);
 float_precision GetPlayerPitch(const edict_t *pEdict);
 float_precision GetPlayerYaw(const edict_t *pEdict);

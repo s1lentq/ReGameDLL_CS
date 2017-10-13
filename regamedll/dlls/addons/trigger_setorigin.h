@@ -26,6 +26,8 @@
 *
 */
 
+#pragma once
+
 #include "precompiled.h"
 
 #define SF_SETORIGIN_CONST_UPDATE BIT(0)  // The entity will constantly update position if set
