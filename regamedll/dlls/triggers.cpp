@@ -1246,6 +1246,14 @@ void CChangeLevel::KeyValue(KeyValueData *pkvd)
 		m_changeTargetDelay = Q_atof(pkvd->szValue);
 		pkvd->fHandled = TRUE;
 	}
+#ifdef REGAMEDLL_FIXES
+	else if (FStrEq(pkvd->szKeyName, "percent_of_players"))
+	{
+		m_flPercentOfPlayers = Q_atof(pkvd->szValue);
+		m_flPercentOfPlayers = clamp(m_flPercentOfPlayers, 0.0f, 1.0f);
+		pkvd->fHandled = TRUE;
+	}
+#endif
 	else
 	{
 		CBaseTrigger::KeyValue(pkvd);
@@ -1380,10 +1388,20 @@ void CChangeLevel::ChangeLevelNow(CBaseEntity *pActivator)
 
 void CChangeLevel::TouchChangeLevel(CBaseEntity *pOther)
 {
-	if (!FClassnameIs(pOther->pev, "player"))
-	{
+	if (!pOther->IsPlayer())
 		return;
+
+#ifdef REGAMEDLL_FIXES
+	if (m_flPercentOfPlayers > 0.0f)
+	{
+		int playersInCount = 0;
+		int playersOutCount = 0;
+		int playersCount = UTIL_CountPlayersInBrushVolume(true, this, playersInCount, playersOutCount);
+
+		if (m_flPercentOfPlayers > float(playersInCount / playersCount))
+			return;
 	}
+#endif
 
 	ChangeLevelNow(pOther);
 }

@@ -446,60 +446,6 @@ void CGamePlayerZone::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYP
 	{
 		FireTargets(STRING(m_iszOutCount), pActivator, this, USE_SET, playersOutCount);
 	}
-
-/*
-	int playersInCount = 0;
-	int playersOutCount = 0;
-
-	if (!CanFireForActivator(pActivator))
-		return;
-
-	for (int i = 1; i <= gpGlobals->maxClients; i++)
-	{
-		CBaseEntity *pPlayer = UTIL_PlayerByIndex(i);
-
-		if (!pPlayer)
-			continue;
-
-		TraceResult trace;
-		int hullNumber;
-
-		hullNumber = human_hull;
-		if (pPlayer->pev->flags & FL_DUCKING)
-		{
-			hullNumber = head_hull;
-		}
-
-		UTIL_TraceModel(pPlayer->pev->origin, pPlayer->pev->origin, hullNumber, edict(), &trace);
-
-		if (trace.fStartSolid)
-		{
-			playersInCount++;
-			if (!FStringNull(m_iszInTarget))
-			{
-				FireTargets(STRING(m_iszInTarget), pPlayer, pActivator, useType, value);
-			}
-		}
-		else
-		{
-			playersOutCount++;
-			if (!FStringNull(m_iszOutTarget))
-			{
-				FireTargets(STRING(m_iszOutTarget), pPlayer, pActivator, useType, value);
-			}
-		}
-	}
-
-	if (!FStringNull(m_iszInCount))
-	{
-		FireTargets(STRING(m_iszInCount), pActivator, this, USE_SET, playersInCount);
-	}
-
-	if (!FStringNull(m_iszOutCount))
-	{
-		FireTargets(STRING(m_iszOutCount), pActivator, this, USE_SET, playersOutCount);
-	}
-*/
 }
 
 LINK_ENTITY_TO_CLASS(game_player_hurt, CGamePlayerHurt, CCSGamePlayerHurt)

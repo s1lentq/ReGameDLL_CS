@@ -331,7 +331,7 @@ public:
 	virtual void PlayerDetected(const bool fInVolume, CBasePlayer *pPlayer) = 0;
 };
 
-int UTIL_CountPlayersInBrushVolume(bool bOnlyAlive, CBaseEntity *pBrushEntity, int &playersInCount, int &playersOutCount, CPlayerInVolumeAdapter *pAdapter);
+int UTIL_CountPlayersInBrushVolume(bool bOnlyAlive, CBaseEntity *pBrushEntity, int &playersInCount, int &playersOutCount, CPlayerInVolumeAdapter *pAdapter = nullptr);
 
 inline float_precision UTIL_FixupAngle(float_precision v)
 {
