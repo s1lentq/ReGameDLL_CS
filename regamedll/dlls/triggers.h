@@ -361,6 +361,10 @@ public:
 	char m_szLandmarkName[MAX_MAPNAME_LENGHT];	// landmark on next map
 	int m_changeTarget;
 	float m_changeTargetDelay;
+
+#ifdef REGAMEDLL_FIXES
+	float m_flPercentOfPlayers;
+#endif
 };
 
 class CLadder: public CBaseTrigger
