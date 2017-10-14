@@ -46,6 +46,7 @@ public:
 	edict_t *Get() const;
 	edict_t *Set(edict_t *pEdict);
 
+	void Remove();
 	bool IsValid() const;
 	int GetSerialNumber() const;
 
@@ -131,6 +132,18 @@ inline edict_t *EntityHandle<T>::Set(edict_t *pEdict)
 	}
 
 	return pEdict;
+}
+
+template <typename T>
+void EntityHandle<T>::Remove()
+{
+	if (IsValid())
+	{
+		UTIL_Remove(*this);
+	}
+
+	m_edict = nullptr;
+	m_serialnumber = 0;
 }
 
 // Returns whether this handle is valid.
