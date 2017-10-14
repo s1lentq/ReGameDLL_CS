@@ -38,21 +38,28 @@ void CItemAirBox::Spawn()
 
 	if (!m_iszSpriteName.IsNull())
 	{
-		m_pSprite = CSprite::SpriteCreate(m_iszSpriteName, pev->origin, FALSE);
-		m_pSprite->SetTransparency(m_rendermode, m_rendercolor.x, m_rendercolor.y, m_rendercolor.z, m_renderamt, m_renderfx);
-		m_pSprite->SetScale(m_scale);
-		m_pSprite->SetAttachment(edict(), pev->body);
-		m_pSprite->pev->spawnflags |= SF_SPRITE_STARTON;
+		m_hSprite.Remove();
 
-		m_pSprite->pev->framerate = m_frameRate;
-		m_pSprite->TurnOn();
+		m_hSprite = CSprite::SpriteCreate(m_iszSpriteName, pev->origin, FALSE);
+		m_hSprite->SetTransparency(m_rendermode, m_rendercolor.x, m_rendercolor.y, m_rendercolor.z, m_renderamt, m_renderfx);
+		m_hSprite->SetScale(m_scale);
+		m_hSprite->SetAttachment(edict(), pev->body);
+		m_hSprite->pev->spawnflags |= SF_SPRITE_STARTON;
+
+		m_hSprite->pev->framerate = m_frameRate;
+		m_hSprite->TurnOn();
 	}
 
-	if (m_flyup > 0 && m_delay > 0.01)
+	if (m_flyup > 0 && m_delay > 0.01f)
 	{
 		SetThink(&CItemAirBox::MoveUp);
 		pev->nextthink = gpGlobals->time + 1.0f;
 	}
+}
+
+void CItemAirBox::OnDestroy()
+{
+	m_hSprite.Remove();
 }
 
 void CItemAirBox::Touch(CBaseEntity *pOther)
@@ -61,7 +68,7 @@ void CItemAirBox::Touch(CBaseEntity *pOther)
 
 	// airbox was picked up, so sprite to turn off
 	if ((pev->effects & EF_NODRAW) == EF_NODRAW) {
-		m_pSprite->TurnOff();
+		m_hSprite->TurnOff();
 	}
 }
 
@@ -138,15 +145,4 @@ void CItemAirBox::MoveUp()
 	pev->velocity.z = m_flyup;
 	m_flyup = -m_flyup;
 	pev->nextthink = gpGlobals->time + m_delay;
-}
-
-void CItemAirBox::OnDestroy()
-{
-	if (m_pSprite)
-	{
-		m_pSprite->SetTouch(nullptr);
-		m_pSprite->SetThink(&CBaseEntity::SUB_Remove);
-		m_pSprite->pev->nextthink = gpGlobals->time + 0.1f;
-		m_pSprite = nullptr;
-	}
 }

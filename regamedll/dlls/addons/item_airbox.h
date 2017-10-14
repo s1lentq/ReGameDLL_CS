@@ -42,7 +42,7 @@ protected:
 	void EXPORT MoveUp();
 
 private:
-	CSprite *m_pSprite;
+	EntityHandle<CSprite> m_hSprite;
 
 	float m_flyup;
 	float m_delay;

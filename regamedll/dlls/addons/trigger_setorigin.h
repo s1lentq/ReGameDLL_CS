@@ -28,8 +28,6 @@
 
 #pragma once
 
-#include "precompiled.h"
-
 #define SF_SETORIGIN_CONST_UPDATE BIT(0)  // The entity will constantly update position if set
 #define SF_SETORIGIN_REMOVEFIRE   BIT(2)  // The entity will be removed after firing.
 
@@ -56,7 +54,6 @@ const int MAX_SETORIGIN_ENTITIES = 64;
 
 class CTriggerSetOrigin: public CBaseDelay {
 public:
-	void Spawn() {};
 	void KeyValue(KeyValueData *pkvd);
 	int ObjectCaps() { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 	void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
