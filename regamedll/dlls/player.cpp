@@ -1400,7 +1400,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 		GiveNamedItem(pszWeaponName);
 		const WeaponInfoStruct *info = GetWeaponInfo(pszWeaponName);
 		if (info) {
-			GiveAmmo(refill_bpammo_weapons.value != 0.0f ? info->maxRounds : ammo, info->ammoName + 5/*ammo_*/);
+			GiveAmmo(refill_bpammo_weapons.value != 0.0f ? info->maxRounds : ammo, info->ammoName2);
 		}
 	};
 

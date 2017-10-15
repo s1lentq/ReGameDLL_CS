@@ -409,7 +409,8 @@ struct WeaponInfoStruct
 	char *entityName;
 
 	// custom
-	const char *ammoName;
+	const char *ammoName1;
+	const char *ammoName2;
 };
 
 struct WeaponSlotInfo
@@ -435,6 +436,7 @@ void WeaponInfoReset();
 
 WeaponInfoStruct *GetWeaponInfo(int weaponID);
 WeaponInfoStruct *GetWeaponInfo(const char *weaponName);
+WeaponInfoStruct *GetAmmoInfo(const char *ammoName);
 
 WeaponSlotInfo *GetWeaponSlot(WeaponIdType weaponID);
 WeaponSlotInfo *GetWeaponSlot(const char *weaponName);

@@ -28,12 +28,23 @@
 
 #pragma once
 
+class CBasePlayerAmmo: public CBaseEntity
+{
+public:
+	virtual void Spawn();
+	virtual BOOL AddAmmo(CBaseEntity *pOther);
+	virtual CBaseEntity *Respawn();
+
+public:
+	void EXPORT DefaultTouch(CBaseEntity *pOther);
+	void EXPORT Materialize();
+};
+
 class C9MMAmmo: public CBasePlayerAmmo
 {
 public:
 	virtual void Spawn();
 	virtual void Precache();
-	virtual BOOL AddAmmo(CBaseEntity *pOther);
 };
 
 class CBuckShotAmmo: public CBasePlayerAmmo
@@ -41,7 +52,6 @@ class CBuckShotAmmo: public CBasePlayerAmmo
 public:
 	virtual void Spawn();
 	virtual void Precache();
-	virtual BOOL AddAmmo(CBaseEntity *pOther);
 };
 
 class C556NatoAmmo: public CBasePlayerAmmo
@@ -49,7 +59,6 @@ class C556NatoAmmo: public CBasePlayerAmmo
 public:
 	virtual void Spawn();
 	virtual void Precache();
-	virtual BOOL AddAmmo(CBaseEntity *pOther);
 };
 
 class C556NatoBoxAmmo: public CBasePlayerAmmo
@@ -57,7 +66,6 @@ class C556NatoBoxAmmo: public CBasePlayerAmmo
 public:
 	virtual void Spawn();
 	virtual void Precache();
-	virtual BOOL AddAmmo(CBaseEntity *pOther);
 };
 
 class C762NatoAmmo: public CBasePlayerAmmo
@@ -65,7 +73,6 @@ class C762NatoAmmo: public CBasePlayerAmmo
 public:
 	virtual void Spawn();
 	virtual void Precache();
-	virtual BOOL AddAmmo(CBaseEntity *pOther);
 };
 
 class C45ACPAmmo: public CBasePlayerAmmo
@@ -73,7 +80,6 @@ class C45ACPAmmo: public CBasePlayerAmmo
 public:
 	virtual void Spawn();
 	virtual void Precache();
-	virtual BOOL AddAmmo(CBaseEntity *pOther);
 };
 
 class C50AEAmmo: public CBasePlayerAmmo
@@ -81,7 +87,6 @@ class C50AEAmmo: public CBasePlayerAmmo
 public:
 	virtual void Spawn();
 	virtual void Precache();
-	virtual BOOL AddAmmo(CBaseEntity *pOther);
 };
 
 class C338MagnumAmmo: public CBasePlayerAmmo
@@ -89,7 +94,6 @@ class C338MagnumAmmo: public CBasePlayerAmmo
 public:
 	virtual void Spawn();
 	virtual void Precache();
-	virtual BOOL AddAmmo(CBaseEntity *pOther);
 };
 
 class C57MMAmmo: public CBasePlayerAmmo
@@ -97,7 +101,6 @@ class C57MMAmmo: public CBasePlayerAmmo
 public:
 	virtual void Spawn();
 	virtual void Precache();
-	virtual BOOL AddAmmo(CBaseEntity *pOther);
 };
 
 class C357SIGAmmo: public CBasePlayerAmmo
@@ -105,5 +108,4 @@ class C357SIGAmmo: public CBasePlayerAmmo
 public:
 	virtual void Spawn();
 	virtual void Precache();
-	virtual BOOL AddAmmo(CBaseEntity *pOther);
 };

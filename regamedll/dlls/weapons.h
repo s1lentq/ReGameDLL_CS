@@ -405,18 +405,6 @@ public:
 	float m_flLastFireTime;
 };
 
-class CBasePlayerAmmo: public CBaseEntity
-{
-public:
-	virtual void Spawn();
-	virtual BOOL AddAmmo(CBaseEntity *pOther) { return TRUE; }
-	virtual CBaseEntity *Respawn();
-
-public:
-	void EXPORT DefaultTouch(CBaseEntity *pOther);
-	void EXPORT Materialize();
-};
-
 class CWeaponBox: public CBaseEntity
 {
 public:
