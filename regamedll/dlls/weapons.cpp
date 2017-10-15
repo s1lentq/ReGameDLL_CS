@@ -65,15 +65,15 @@ MULTIDAMAGE gMultiDamage;
 // player can carry.
 int MaxAmmoCarry(const char *szName)
 {
-	for (int i = 0; i < MAX_WEAPONS; ++i)
+	for (int i = 0; i < MAX_WEAPONS; i++)
 	{
-		ItemInfo *info = &IMPL_CLASS(CBasePlayerItem, ItemInfoArray)[ i ];
-		if (info->pszAmmo1 && !Q_strcmp(szName, info->pszAmmo1))
+		ItemInfo *info = &IMPL_CLASS(CBasePlayerItem, ItemInfoArray)[i];
+		if (info->pszAmmo1 && !Q_stricmp(szName, info->pszAmmo1))
 		{
 			return info->iMaxAmmo1;
 		}
 
-		if (info->pszAmmo2 && !Q_strcmp(szName, info->pszAmmo2))
+		if (info->pszAmmo2 && !Q_stricmp(szName, info->pszAmmo2))
 		{
 			return info->iMaxAmmo2;
 		}
@@ -85,7 +85,7 @@ int MaxAmmoCarry(const char *szName)
 
 int MaxAmmoCarry(WeaponIdType weaponId)
 {
-	return IMPL_CLASS(CBasePlayerItem, ItemInfoArray)[ weaponId ].iMaxAmmo1;
+	return IMPL_CLASS(CBasePlayerItem, ItemInfoArray)[weaponId].iMaxAmmo1;
 }
 
 // ClearMultiDamage - resets the global multi damage accumulator
@@ -1422,81 +1422,6 @@ void CBasePlayerWeapon::Holster(int skiplocal)
 	m_fInReload = FALSE;
 	m_pPlayer->pev->viewmodel = 0;
 	m_pPlayer->pev->weaponmodel = 0;
-}
-
-void CBasePlayerAmmo::Spawn()
-{
-	pev->movetype = MOVETYPE_TOSS;
-	pev->solid = SOLID_TRIGGER;
-
-	UTIL_SetSize(pev, Vector(-16, -16, 0), Vector(16, 16, 16));
-	UTIL_SetOrigin(pev, pev->origin);
-
-	SetTouch(&CBasePlayerAmmo::DefaultTouch);
-
-	if (g_pGameRules->IsMultiplayer())
-	{
-		SetThink(&CBaseEntity::SUB_Remove);
-		pev->nextthink = gpGlobals->time + 2.0f;
-	}
-}
-
-CBaseEntity *CBasePlayerAmmo::Respawn()
-{
-	pev->effects |= EF_NODRAW;
-	SetTouch(NULL);
-
-	// move to wherever I'm supposed to repawn.
-	UTIL_SetOrigin(pev, g_pGameRules->VecAmmoRespawnSpot(this));
-
-	SetThink(&CBasePlayerAmmo::Materialize);
-	pev->nextthink = g_pGameRules->FlAmmoRespawnTime(this);
-
-	return this;
-}
-
-void CBasePlayerAmmo::Materialize()
-{
-	if (pev->effects & EF_NODRAW)
-	{
-		// changing from invisible state to visible.
-		if (g_pGameRules->IsMultiplayer())
-		{
-			EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "items/suitchargeok1.wav", VOL_NORM, ATTN_NORM, 0, 150);
-		}
-
-		pev->effects &= ~EF_NODRAW;
-		pev->effects |= EF_MUZZLEFLASH;
-	}
-
-	SetTouch(&CBasePlayerAmmo::DefaultTouch);
-}
-
-void CBasePlayerAmmo::DefaultTouch(CBaseEntity *pOther)
-{
-	if (!pOther->IsPlayer())
-		return;
-
-	if (AddAmmo(pOther))
-	{
-		if (g_pGameRules->AmmoShouldRespawn(this) == GR_AMMO_RESPAWN_YES)
-		{
-			Respawn();
-		}
-		else
-		{
-			SetTouch(NULL);
-			SetThink(&CBaseEntity::SUB_Remove);
-			pev->nextthink = gpGlobals->time + 0.1f;
-		}
-	}
-	else if (gEvilImpulse101)
-	{
-		// evil impulse 101 hack, kill always
-		SetTouch(NULL);
-		SetThink(&CBaseEntity::SUB_Remove);
-		pev->nextthink = gpGlobals->time + 0.1f;
-	}
 }
 
 // called by the new item with the existing item as parameter

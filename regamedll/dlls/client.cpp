@@ -2199,7 +2199,7 @@ bool EXT_FUNC __API_HOOK(BuyGunAmmo)(CBasePlayer *player, CBasePlayerItem *weapo
 	// Purchase the ammo if the player has enough money
 	if (player->m_iAccount >= info->clipCost)
 	{
-		player->GiveNamedItem(info->ammoName);
+		player->GiveNamedItem(info->ammoName1);
 		player->AddAccount(-info->clipCost, RT_PLAYER_BOUGHT_SOMETHING);
 		return true;
 	}
