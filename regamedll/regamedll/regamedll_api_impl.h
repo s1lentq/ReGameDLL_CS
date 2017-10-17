@@ -555,6 +555,8 @@ public:
 	virtual WeaponSlotInfo *GetWeaponSlot(const char *weaponName);
 	virtual ItemInfo *GetItemInfo(WeaponIdType weaponID);
 	virtual AmmoInfo *GetAmmoInfo(AmmoType ammoID);
+	virtual AmmoInfoStruct *GetAmmoInfoEx(AmmoType ammoID);
+	virtual AmmoInfoStruct *GetAmmoInfoEx(const char *ammoName);
 };
 
 void Regamedll_ChangeString_api(char *&dest, const char *source);

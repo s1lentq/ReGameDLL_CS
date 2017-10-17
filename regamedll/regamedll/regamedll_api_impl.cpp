@@ -178,8 +178,11 @@ playermove_t *EXT_FUNC CReGameApi::GetPlayerMove() {
 WeaponSlotInfo *EXT_FUNC CReGameApi::GetWeaponSlot(WeaponIdType weaponID) { return ::GetWeaponSlot(weaponID); }
 WeaponSlotInfo *EXT_FUNC CReGameApi::GetWeaponSlot(const char *weaponName) { return ::GetWeaponSlot(weaponName); }
 
-ItemInfo *EXT_FUNC CReGameApi::GetItemInfo(WeaponIdType weaponID) { return &IMPL_CLASS(CBasePlayerItem, ItemInfoArray)[ weaponID ]; }
-AmmoInfo *EXT_FUNC CReGameApi::GetAmmoInfo(AmmoType ammoID) { return &IMPL_CLASS(CBasePlayerItem, AmmoInfoArray)[ ammoID ]; }
+ItemInfo *EXT_FUNC CReGameApi::GetItemInfo(WeaponIdType weaponID) { return &IMPL_CLASS(CBasePlayerItem, m_ItemInfoArray)[weaponID]; }
+AmmoInfo *EXT_FUNC CReGameApi::GetAmmoInfo(AmmoType ammoID) { return &IMPL_CLASS(CBasePlayerItem, m_AmmoInfoArray)[ammoID]; }
+
+AmmoInfoStruct *EXT_FUNC CReGameApi::GetAmmoInfoEx(AmmoType ammoID) { return ::GetAmmoInfo(ammoID); }
+AmmoInfoStruct *EXT_FUNC CReGameApi::GetAmmoInfoEx(const char *ammoName) { return ::GetAmmoInfo(ammoName); }
 
 void EXT_FUNC Regamedll_ChangeString_api(char *&dest, const char *source)
 {

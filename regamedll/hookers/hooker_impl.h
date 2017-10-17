@@ -386,10 +386,10 @@ extern void (*pCCSBot__UpdateLookAngles)();
 
 // globals weapontype
 #define g_autoBuyInfo (*pg_autoBuyInfo)
-#define weaponAliasInfo (*pweaponAliasInfo)
-#define weaponBuyAliasInfo (*pweaponBuyAliasInfo)
-#define weaponClassAliasInfo (*pweaponClassAliasInfo)
-#define weaponInfo (*pweaponInfo)
+#define g_weaponAliasInfo (*pg_weaponAliasInfo)
+#define g_weaponBuyAliasInfo (*pg_weaponBuyAliasInfo)
+#define g_weaponClassAliasInfo (*pg_weaponClassAliasInfo)
+#define g_weaponInfo (*pg_weaponInfo)
 
 // globals wolrd
 #define g_pBodyQueueHead (*pg_pBodyQueueHead)
@@ -765,10 +765,10 @@ C_DLLEXPORT void grenade(entvars_t *pev);
 C_DLLEXPORT void world_items(entvars_t *pev);
 
 // externs
-extern struct WeaponAliasInfo weaponAliasInfo[39];
-extern struct WeaponBuyAliasInfo weaponBuyAliasInfo[43];
-extern struct WeaponClassAliasInfo weaponClassAliasInfo[46];
-extern struct WeaponInfoStruct weaponInfo[27];
+extern struct WeaponAliasInfo g_weaponAliasInfo[39];
+extern struct WeaponBuyAliasInfo g_weaponBuyAliasInfo[43];
+extern struct WeaponClassAliasInfo g_weaponClassAliasInfo[46];
+extern struct WeaponInfoStruct g_weaponInfo[27];
 extern edict_t *g_pBodyQueueHead;
 extern TYPEDESCRIPTION gGlobalEntitySaveData[3];
 extern TYPEDESCRIPTION gEntvarsDescription[86];
