@@ -285,20 +285,20 @@ public:
 	void CheckRespawn();
 
 public:
-	inline int iItemPosition() const { return IMPL(ItemInfoArray)[ m_iId ].iPosition; }
-	inline const char *pszAmmo1() const { return IMPL(ItemInfoArray)[ m_iId ].pszAmmo1; }
-	inline int iMaxAmmo1() const { return IMPL(ItemInfoArray)[ m_iId ].iMaxAmmo1; }
-	inline const char *pszAmmo2() const { return IMPL(ItemInfoArray)[ m_iId ].pszAmmo2; }
-	inline int iMaxAmmo2() const { return IMPL(ItemInfoArray)[ m_iId ].iMaxAmmo2; }
-	inline const char *pszName() const { return IMPL(ItemInfoArray)[ m_iId ].pszName; }
-	inline int iMaxClip() const { return IMPL(ItemInfoArray)[ m_iId ].iMaxClip; }
-	inline int iWeight() const { return IMPL(ItemInfoArray)[ m_iId ].iWeight; }
-	inline int iFlags() const { return IMPL(ItemInfoArray)[ m_iId ].iFlags; }
+	inline int iItemPosition()    const { return IMPL(m_ItemInfoArray)[m_iId].iPosition; }
+	inline const char *pszAmmo1() const { return IMPL(m_ItemInfoArray)[m_iId].pszAmmo1; }
+	inline int iMaxAmmo1()        const { return IMPL(m_ItemInfoArray)[m_iId].iMaxAmmo1; }
+	inline const char *pszAmmo2() const { return IMPL(m_ItemInfoArray)[m_iId].pszAmmo2; }
+	inline int iMaxAmmo2()        const { return IMPL(m_ItemInfoArray)[m_iId].iMaxAmmo2; }
+	inline const char *pszName()  const { return IMPL(m_ItemInfoArray)[m_iId].pszName; }
+	inline int iMaxClip()         const { return IMPL(m_ItemInfoArray)[m_iId].iMaxClip; }
+	inline int iWeight()          const { return IMPL(m_ItemInfoArray)[m_iId].iWeight; }
+	inline int iFlags()           const { return IMPL(m_ItemInfoArray)[m_iId].iFlags; }
 
 public:
 	static TYPEDESCRIPTION IMPL(m_SaveData)[3];
-	static ItemInfo IMPL(ItemInfoArray)[MAX_WEAPONS];
-	static AmmoInfo IMPL(AmmoInfoArray)[MAX_AMMO_SLOTS];
+	static ItemInfo IMPL(m_ItemInfoArray)[MAX_WEAPONS];
+	static AmmoInfo IMPL(m_AmmoInfoArray)[MAX_AMMO_SLOTS];
 
 	CBasePlayer *m_pPlayer;
 	CBasePlayerItem *m_pNext;

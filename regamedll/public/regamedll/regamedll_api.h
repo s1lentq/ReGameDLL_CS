@@ -37,7 +37,7 @@
 #include "client.h"
 
 #define REGAMEDLL_API_VERSION_MAJOR 5
-#define REGAMEDLL_API_VERSION_MINOR 3
+#define REGAMEDLL_API_VERSION_MINOR 4
 
 // CBasePlayer::Spawn hook
 typedef IHookChainClass<void, class CBasePlayer> IReGameHook_CBasePlayer_Spawn;
@@ -486,6 +486,8 @@ public:
 	virtual struct WeaponSlotInfo *GetWeaponSlot(const char *weaponName) = 0;
 	virtual struct ItemInfo *GetItemInfo(WeaponIdType weaponID) = 0;
 	virtual struct AmmoInfo *GetAmmoInfo(AmmoType ammoID) = 0;
+	virtual struct AmmoInfoStruct *GetAmmoInfoEx(AmmoType ammoID) = 0;
+	virtual struct AmmoInfoStruct *GetAmmoInfoEx(const char *ammoName) = 0;
 };
 
 #define VRE_GAMEDLL_API_VERSION "VRE_GAMEDLL_API_VERSION001"

@@ -5,8 +5,8 @@
 */
 #ifndef HOOK_GAMEDLL
 
-ItemInfo CBasePlayerItem::ItemInfoArray[MAX_WEAPONS];
-AmmoInfo CBasePlayerItem::AmmoInfoArray[MAX_AMMO_SLOTS];
+ItemInfo CBasePlayerItem::m_ItemInfoArray[MAX_WEAPONS];
+AmmoInfo CBasePlayerItem::m_AmmoInfoArray[MAX_AMMO_SLOTS];
 
 TYPEDESCRIPTION CBasePlayerItem::m_SaveData[] =
 {
@@ -67,7 +67,7 @@ int MaxAmmoCarry(const char *szName)
 {
 	for (int i = 0; i < MAX_WEAPONS; i++)
 	{
-		ItemInfo *info = &IMPL_CLASS(CBasePlayerItem, ItemInfoArray)[i];
+		ItemInfo *info = &IMPL_CLASS(CBasePlayerItem, m_ItemInfoArray)[i];
 		if (info->pszAmmo1 && !Q_stricmp(szName, info->pszAmmo1))
 		{
 			return info->iMaxAmmo1;
@@ -85,7 +85,7 @@ int MaxAmmoCarry(const char *szName)
 
 int MaxAmmoCarry(WeaponIdType weaponId)
 {
-	return IMPL_CLASS(CBasePlayerItem, ItemInfoArray)[weaponId].iMaxAmmo1;
+	return IMPL_CLASS(CBasePlayerItem, m_ItemInfoArray)[weaponId].iMaxAmmo1;
 }
 
 // ClearMultiDamage - resets the global multi damage accumulator
@@ -229,12 +229,12 @@ struct {
 void AddAmmoNameToAmmoRegistry(const char *szAmmoname)
 {
 	// make sure it's not already in the registry
-	for (int i = 0; i < MAX_AMMO_SLOTS; ++i)
+	for (int i = 0; i < MAX_AMMO_SLOTS; i++)
 	{
-		if (!IMPL_CLASS(CBasePlayerItem, AmmoInfoArray)[ i ].pszName)
+		if (!IMPL_CLASS(CBasePlayerItem, m_AmmoInfoArray)[i].pszName)
 			continue;
 
-		if (!Q_stricmp(IMPL_CLASS(CBasePlayerItem, AmmoInfoArray)[ i ].pszName, szAmmoname))
+		if (!Q_stricmp(IMPL_CLASS(CBasePlayerItem, m_AmmoInfoArray)[i].pszName, szAmmoname))
 		{
 			// ammo already in registry, just quite
 			return;
@@ -260,10 +260,10 @@ void AddAmmoNameToAmmoRegistry(const char *szAmmoname)
 	}
 #endif
 
-	IMPL_CLASS(CBasePlayerItem, AmmoInfoArray)[ giAmmoIndex ].pszName = szAmmoname;
+	IMPL_CLASS(CBasePlayerItem, m_AmmoInfoArray)[giAmmoIndex].pszName = szAmmoname;
 
 	// yes, this info is redundant
-	IMPL_CLASS(CBasePlayerItem, AmmoInfoArray)[ giAmmoIndex ].iId = giAmmoIndex;
+	IMPL_CLASS(CBasePlayerItem, m_AmmoInfoArray)[giAmmoIndex].iId = giAmmoIndex;
 }
 
 // Precaches the weapon and queues the weapon info for sending to clients
@@ -286,7 +286,7 @@ void UTIL_PrecacheOtherWeapon(const char *szClassname)
 		pEntity->Precache();
 		if (((CBasePlayerItem *)pEntity)->GetItemInfo(&II))
 		{
-			IMPL_CLASS(CBasePlayerItem, ItemInfoArray)[ II.iId ] = II;
+			IMPL_CLASS(CBasePlayerItem, m_ItemInfoArray)[ II.iId ] = II;
 
 			if (II.pszAmmo1 != NULL && *II.pszAmmo1 != '\0')
 			{
@@ -323,7 +323,7 @@ NOXREF void UTIL_PrecacheOtherWeapon2(const char *szClassname)
 		pEntity->Precache();
 		if (((CBasePlayerItem *)pEntity)->GetItemInfo(&II))
 		{
-			IMPL_CLASS(CBasePlayerItem, ItemInfoArray)[ II.iId ] = II;
+			IMPL_CLASS(CBasePlayerItem, m_ItemInfoArray)[ II.iId ] = II;
 
 			if (II.pszAmmo1 != NULL && *II.pszAmmo1 != '\0')
 			{
@@ -343,8 +343,8 @@ NOXREF void UTIL_PrecacheOtherWeapon2(const char *szClassname)
 // called by worldspawn
 void W_Precache()
 {
-	Q_memset(IMPL_CLASS(CBasePlayerItem, ItemInfoArray), 0, sizeof(IMPL_CLASS(CBasePlayerItem, ItemInfoArray)));
-	Q_memset(IMPL_CLASS(CBasePlayerItem, AmmoInfoArray), 0, sizeof(IMPL_CLASS(CBasePlayerItem, AmmoInfoArray)));
+	Q_memset(IMPL_CLASS(CBasePlayerItem, m_ItemInfoArray), 0, sizeof(IMPL_CLASS(CBasePlayerItem, m_ItemInfoArray)));
+	Q_memset(IMPL_CLASS(CBasePlayerItem, m_AmmoInfoArray), 0, sizeof(IMPL_CLASS(CBasePlayerItem, m_AmmoInfoArray)));
 
 	giAmmoIndex = 0;
 

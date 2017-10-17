@@ -235,7 +235,7 @@ void WriteSigonMessages()
 {
 	for (int i = 0; i < MAX_WEAPONS; ++i)
 	{
-		ItemInfo &II = IMPL_CLASS(CBasePlayerItem, ItemInfoArray)[i];
+		ItemInfo &II = IMPL_CLASS(CBasePlayerItem, m_ItemInfoArray)[i];
 
 		if (!II.iId)
 			continue;
@@ -294,9 +294,9 @@ NOXREF void set_suicide_frame(entvars_t *pev)
 	pev->nextthink = -1;
 }
 
-void BlinkAccount(CBasePlayer *player, int numBlinks)
+void BlinkAccount(CBasePlayer *pPlayer, int numBlinks)
 {
-	MESSAGE_BEGIN(MSG_ONE, gmsgBlinkAcct, nullptr, player->pev);
+	MESSAGE_BEGIN(MSG_ONE, gmsgBlinkAcct, nullptr, pPlayer->pev);
 		WRITE_BYTE(numBlinks);
 	MESSAGE_END();
 }
@@ -441,8 +441,8 @@ void EXT_FUNC __API_HOOK(ShowVGUIMenu)(CBasePlayer *pPlayer, int MenuType, int B
 NOXREF int CountTeams()
 {
 	int iNumCT = 0, iNumTerrorist = 0;
-	CBaseEntity *pEntity = nullptr;
 
+	CBaseEntity *pEntity = nullptr;
 	while ((pEntity = UTIL_FindEntityByClassname(pEntity, "player")))
 	{
 		if (FNullEnt(pEntity->edict()))
@@ -739,14 +739,14 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 	bool bSenderDead = false;
 
 	entvars_t *pev = &pEntity->v;
-	CBasePlayer *player = GetClassPtr<CCSPlayer>((CBasePlayer *)pev);
+	CBasePlayer *pPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pev);
 
-	if (player->m_flLastTalk != 0.0f && gpGlobals->time - player->m_flLastTalk < 0.66f)
+	if (pPlayer->m_flLastTalk != 0.0f && gpGlobals->time - pPlayer->m_flLastTalk < 0.66f)
 		return;
 
-	player->m_flLastTalk = gpGlobals->time;
+	pPlayer->m_flLastTalk = gpGlobals->time;
 
-	if (player->pev->deadflag != DEAD_NO)
+	if (pPlayer->pev->deadflag != DEAD_NO)
 		bSenderDead = true;
 
 	// We can get a raw string now, without the "say " prepended
@@ -807,10 +807,10 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 	// team only
 	if (teamonly)
 	{
-		if (AreRunningCZero() && (player->m_iTeam == CT || player->m_iTeam == TERRORIST))
+		if (AreRunningCZero() && (pPlayer->m_iTeam == CT || pPlayer->m_iTeam == TERRORIST))
 		{
 			// search the place name where is located the player
-			Place playerPlace = TheNavAreaGrid.GetPlace(&player->pev->origin);
+			Place playerPlace = TheNavAreaGrid.GetPlace(&pPlayer->pev->origin);
 			const BotPhraseList *placeList = TheBotPhrases->GetPlaceList();
 
 			for (auto it : *placeList)
@@ -823,7 +823,7 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 			}
 		}
 
-		if (player->m_iTeam == CT)
+		if (pPlayer->m_iTeam == CT)
 		{
 			if (bSenderDead)
 			{
@@ -842,7 +842,7 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 				pszConsoleFormat = "(Counter-Terrorist) %s : %s";
 			}
 		}
-		else if (player->m_iTeam == TERRORIST)
+		else if (pPlayer->m_iTeam == TERRORIST)
 		{
 			if (bSenderDead)
 			{
@@ -872,7 +872,7 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 	{
 		if (bSenderDead)
 		{
-			if (player->m_iTeam == SPECTATOR)
+			if (pPlayer->m_iTeam == SPECTATOR)
 			{
 				pszFormat = "#Cstrike_Chat_AllSpec";
 				pszConsoleFormat = "*SPEC* %s : %s";
@@ -939,19 +939,19 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 			continue;
 
 		// can the receiver hear the sender? or has he muted him?
-		if (gpGlobals->deathmatch != 0.0f && CSGameRules()->m_VoiceGameMgr.PlayerHasBlockedPlayer(client, player))
+		if (gpGlobals->deathmatch != 0.0f && CSGameRules()->m_VoiceGameMgr.PlayerHasBlockedPlayer(client, pPlayer))
 			continue;
 
-		if (teamonly && client->m_iTeam != player->m_iTeam)
+		if (teamonly && client->m_iTeam != pPlayer->m_iTeam)
 			continue;
 
 		if ((client->pev->deadflag != DEAD_NO && !bSenderDead) || (client->pev->deadflag == DEAD_NO && bSenderDead))
 		{
-			if (!(player->pev->flags & FL_PROXY))
+			if (!(pPlayer->pev->flags & FL_PROXY))
 				continue;
 		}
 
-		if ((client->m_iIgnoreGlobalChat == IGNOREMSG_ENEMY && client->m_iTeam == player->m_iTeam)
+		if ((client->m_iIgnoreGlobalChat == IGNOREMSG_ENEMY && client->m_iTeam == pPlayer->m_iTeam)
 			|| client->m_iIgnoreGlobalChat == IGNOREMSG_NONE)
 		{
 			MESSAGE_BEGIN(MSG_ONE, gmsgSayText, nullptr, client->pev);
@@ -989,9 +989,9 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 	if (pszConsoleFormat)
 	{
 		if (placeName && consoleUsesPlaceName)
-			SERVER_PRINT(UTIL_VarArgs(pszConsoleFormat, STRING(player->pev->netname), placeName, text));
+			SERVER_PRINT(UTIL_VarArgs(pszConsoleFormat, STRING(pPlayer->pev->netname), placeName, text));
 		else
-			SERVER_PRINT(UTIL_VarArgs(pszConsoleFormat, STRING(player->pev->netname), text));
+			SERVER_PRINT(UTIL_VarArgs(pszConsoleFormat, STRING(pPlayer->pev->netname), text));
 	}
 	else
 		SERVER_PRINT(text);
@@ -999,11 +999,11 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 	if (logmessages.value)
 	{
 		const char *temp = teamonly ? "say_team" : "say";
-		const char *deadText = (player->m_iTeam != SPECTATOR && bSenderDead) ? " (dead)" : "";
+		const char *deadText = (pPlayer->m_iTeam != SPECTATOR && bSenderDead) ? " (dead)" : "";
 
-		char *szTeam = GetTeam(player->m_iTeam);
+		char *szTeam = GetTeam(pPlayer->m_iTeam);
 
-		UTIL_LogPrintf("\"%s<%i><%s><%s>\" %s \"%s\"%s\n", STRING(player->pev->netname), GETPLAYERUSERID(player->edict()), GETPLAYERAUTHID(player->edict()),
+		UTIL_LogPrintf("\"%s<%i><%s><%s>\" %s \"%s\"%s\n", STRING(pPlayer->pev->netname), GETPLAYERUSERID(pPlayer->edict()), GETPLAYERAUTHID(pPlayer->edict()),
 			szTeam, temp, fullText, deadText);
 	}
 }
@@ -1527,9 +1527,9 @@ CBaseEntity *EXT_FUNC __API_HOOK(BuyWeaponByWeaponID)(CBasePlayer *pPlayer, Weap
 	return pEntity;
 }
 
-LINK_HOOK_VOID_CHAIN(HandleMenu_ChooseAppearance, (CBasePlayer *player, int slot), player, slot)
+LINK_HOOK_VOID_CHAIN(HandleMenu_ChooseAppearance, (CBasePlayer *pPlayer, int slot), pPlayer, slot)
 
-void EXT_FUNC __API_HOOK(HandleMenu_ChooseAppearance)(CBasePlayer *player, int slot)
+void EXT_FUNC __API_HOOK(HandleMenu_ChooseAppearance)(CBasePlayer *pPlayer, int slot)
 {
 	int numSkins = AreRunningCZero() ? CZ_NUM_SKIN : CS_NUM_SKIN;
 
@@ -1543,9 +1543,9 @@ void EXT_FUNC __API_HOOK(HandleMenu_ChooseAppearance)(CBasePlayer *player, int s
 
 	Q_memset(&appearance, 0, sizeof(appearance));
 
-	if (player->m_iTeam == TERRORIST)
+	if (pPlayer->m_iTeam == TERRORIST)
 	{
-		if ((slot > numSkins || slot < 1) && (!TheBotProfiles->GetCustomSkin(slot) || !player->IsBot()))
+		if ((slot > numSkins || slot < 1) && (!TheBotProfiles->GetCustomSkin(slot) || !pPlayer->IsBot()))
 		{
 			slot = RANDOM_LONG(1, numSkins);
 		}
@@ -1576,7 +1576,7 @@ void EXT_FUNC __API_HOOK(HandleMenu_ChooseAppearance)(CBasePlayer *player, int s
 				break;
 			}
 		default:
-			if (TheBotProfiles->GetCustomSkinModelname(slot) && player->IsBot())
+			if (TheBotProfiles->GetCustomSkinModelname(slot) && pPlayer->IsBot())
 			{
 				appearance.model_name = (char *)TheBotProfiles->GetCustomSkinModelname(slot);
 			}
@@ -1592,9 +1592,9 @@ void EXT_FUNC __API_HOOK(HandleMenu_ChooseAppearance)(CBasePlayer *player, int s
 		appearance.model_name_index = 8;
 
 	}
-	else if (player->m_iTeam == CT)
+	else if (pPlayer->m_iTeam == CT)
 	{
-		if ((slot > numSkins || slot < 1) && (!TheBotProfiles->GetCustomSkin(slot) || !player->IsBot()))
+		if ((slot > numSkins || slot < 1) && (!TheBotProfiles->GetCustomSkin(slot) || !pPlayer->IsBot()))
 		{
 			slot = RANDOM_LONG(1, numSkins);
 		}
@@ -1625,7 +1625,7 @@ void EXT_FUNC __API_HOOK(HandleMenu_ChooseAppearance)(CBasePlayer *player, int s
 				break;
 			}
 		default:
-			if (TheBotProfiles->GetCustomSkinModelname(slot) && player->IsBot())
+			if (TheBotProfiles->GetCustomSkinModelname(slot) && pPlayer->IsBot())
 			{
 				appearance.model_name = (char *)TheBotProfiles->GetCustomSkinModelname(slot);
 			}
@@ -1642,13 +1642,13 @@ void EXT_FUNC __API_HOOK(HandleMenu_ChooseAppearance)(CBasePlayer *player, int s
 	}
 
 #ifdef REGAMEDLL_FIXES
-	player->ResetMenu();
+	pPlayer->ResetMenu();
 #else
-	player->m_iMenu = Menu_OFF;
+	pPlayer->m_iMenu = Menu_OFF;
 #endif
 
 	// Reset the player's state
-	switch (player->m_iJoiningState)
+	switch (pPlayer->m_iJoiningState)
 	{
 	case JOINED:
 		CSGameRules()->CheckWinConditions();
@@ -1656,11 +1656,11 @@ void EXT_FUNC __API_HOOK(HandleMenu_ChooseAppearance)(CBasePlayer *player, int s
 
 	case PICKINGTEAM:
 	{
-		player->m_iJoiningState = GETINTOGAME;
+		pPlayer->m_iJoiningState = GETINTOGAME;
 
 		if (CSGameRules()->IsCareer())
 		{
-			if (!player->IsBot())
+			if (!pPlayer->IsBot())
 			{
 				CSGameRules()->CheckWinConditions();
 			}
@@ -1669,44 +1669,44 @@ void EXT_FUNC __API_HOOK(HandleMenu_ChooseAppearance)(CBasePlayer *player, int s
 	}
 	}
 
-	player->pev->body = 0;
-	player->m_iModelName = appearance.model_id;
+	pPlayer->pev->body = 0;
+	pPlayer->m_iModelName = appearance.model_id;
 
-	player->SetClientUserInfoModel(GET_INFO_BUFFER(player->edict()), appearance.model_name);
-	player->SetNewPlayerModel(sPlayerModelFiles[ appearance.model_name_index ]);
+	pPlayer->SetClientUserInfoModel(GET_INFO_BUFFER(pPlayer->edict()), appearance.model_name);
+	pPlayer->SetNewPlayerModel(sPlayerModelFiles[ appearance.model_name_index ]);
 
 	if (CSGameRules()->m_bMapHasVIPSafetyZone)
 	{
-		if (!CSGameRules()->m_pVIP && player->m_iTeam == CT)
+		if (!CSGameRules()->m_pVIP && pPlayer->m_iTeam == CT)
 		{
-			player->MakeVIP();
+			pPlayer->MakeVIP();
 		}
 	}
 }
 
-LINK_HOOK_CHAIN(BOOL, HandleMenu_ChooseTeam, (CBasePlayer *player, int slot), player, slot)
+LINK_HOOK_CHAIN(BOOL, HandleMenu_ChooseTeam, (CBasePlayer *pPlayer, int slot), pPlayer, slot)
 
 // returns true if the selection has been handled and the player's menu
 // can be closed...false if the menu should be displayed again
-BOOL EXT_FUNC __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *player, int slot)
+BOOL EXT_FUNC __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *pPlayer, int slot)
 {
 	// If this player is a VIP, don't allow him to switch teams/appearances unless the following conditions are met :
 	// a) There is another TEAM_CT player who is in the queue to be a VIP
 	// b) This player is dead
 
-	if (player->m_bIsVIP)
+	if (pPlayer->m_bIsVIP)
 	{
-		if (player->pev->deadflag == DEAD_NO)
+		if (pPlayer->pev->deadflag == DEAD_NO)
 		{
-			ClientPrint(player->pev, HUD_PRINTCENTER, "#Cannot_Switch_From_VIP");
-			CLIENT_COMMAND(ENT(player->pev), "slot10\n");
+			ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Cannot_Switch_From_VIP");
+			CLIENT_COMMAND(ENT(pPlayer->pev), "slot10\n");
 
 			return TRUE;
 		}
 		else if (CSGameRules()->IsVIPQueueEmpty())
 		{
-			ClientPrint(player->pev, HUD_PRINTCENTER, "#Cannot_Switch_From_VIP");
-			CLIENT_COMMAND(ENT(player->pev), "slot10\n");
+			ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Cannot_Switch_From_VIP");
+			CLIENT_COMMAND(ENT(pPlayer->pev), "slot10\n");
 
 			return TRUE;
 		}
@@ -1724,10 +1724,10 @@ BOOL EXT_FUNC __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *player, int slot)
 		break;
 	case MENU_SLOT_TEAM_VIP:
 	{
-		if (CSGameRules()->m_bMapHasVIPSafetyZone && player->m_iTeam == CT)
+		if (CSGameRules()->m_bMapHasVIPSafetyZone && pPlayer->m_iTeam == CT)
 		{
-			CSGameRules()->AddToVIPQueue(player);
-			CLIENT_COMMAND(ENT(player->pev), "slot10\n");
+			CSGameRules()->AddToVIPQueue(pPlayer);
+			CLIENT_COMMAND(ENT(pPlayer->pev), "slot10\n");
 			return TRUE;
 		}
 		else
@@ -1742,7 +1742,7 @@ BOOL EXT_FUNC __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *player, int slot)
 		team = CSGameRules()->SelectDefaultTeam();
 		if (team == UNASSIGNED)
 		{
-			if (cv_bot_auto_vacate.value > 0.0f && !player->IsBot())
+			if (cv_bot_auto_vacate.value > 0.0f && !pPlayer->IsBot())
 			{
 				team = (RANDOM_LONG(0, 1) == 0) ? TERRORIST : CT;
 
@@ -1766,55 +1766,55 @@ BOOL EXT_FUNC __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *player, int slot)
 	{
 		// Prevent this is the cvar is set
 		// spectator proxy
-		if (!allow_spectators.value && !(player->pev->flags & FL_PROXY))
+		if (!allow_spectators.value && !(pPlayer->pev->flags & FL_PROXY))
 		{
-			ClientPrint(player->pev, HUD_PRINTCENTER, "#Cannot_Be_Spectator");
-			CLIENT_COMMAND(ENT(player->pev), "slot10\n");
+			ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Cannot_Be_Spectator");
+			CLIENT_COMMAND(ENT(pPlayer->pev), "slot10\n");
 
 			return FALSE;
 		}
 
 		// are we already a spectator?
-		if (player->m_iTeam == SPECTATOR)
+		if (pPlayer->m_iTeam == SPECTATOR)
 		{
 			return TRUE;
 		}
 
 		// Only spectate if we are in the freeze period or dead.
 		// This is done here just in case.
-		if (g_pGameRules->IsFreezePeriod() || player->pev->deadflag != DEAD_NO)
+		if (g_pGameRules->IsFreezePeriod() || pPlayer->pev->deadflag != DEAD_NO)
 		{
-			if (player->m_iTeam != UNASSIGNED && player->pev->deadflag == DEAD_NO)
+			if (pPlayer->m_iTeam != UNASSIGNED && pPlayer->pev->deadflag == DEAD_NO)
 			{
-				ClientKill(player->edict());
+				ClientKill(pPlayer->edict());
 
 				// add 1 to frags to balance out the 1 subtracted for killing yourself
-				player->pev->frags++;
+				pPlayer->pev->frags++;
 			}
 
-			player->RemoveAllItems(TRUE);
-			player->m_bHasC4 = false;
+			pPlayer->RemoveAllItems(TRUE);
+			pPlayer->m_bHasC4 = false;
 
 #ifdef REGAMEDLL_FIXES
-			if (player->m_iTeam != SPECTATOR)
+			if (pPlayer->m_iTeam != SPECTATOR)
 #endif
 			{
 				// notify other clients of player joined to team spectator
-				UTIL_LogPrintf("\"%s<%i><%s><%s>\" joined team \"SPECTATOR\"\n", STRING(player->pev->netname),
-					GETPLAYERUSERID(player->edict()), GETPLAYERAUTHID(player->edict()), GetTeam(player->m_iTeam));
+				UTIL_LogPrintf("\"%s<%i><%s><%s>\" joined team \"SPECTATOR\"\n", STRING(pPlayer->pev->netname),
+					GETPLAYERUSERID(pPlayer->edict()), GETPLAYERAUTHID(pPlayer->edict()), GetTeam(pPlayer->m_iTeam));
 			}
 
-			player->m_iTeam = SPECTATOR;
-			player->m_iJoiningState = JOINED;
+			pPlayer->m_iTeam = SPECTATOR;
+			pPlayer->m_iJoiningState = JOINED;
 
 			// Reset money
 #ifdef REGAMEDLL_ADD
-			player->AddAccount(0, RT_PLAYER_SPEC_JOIN, false);
+			pPlayer->AddAccount(0, RT_PLAYER_SPEC_JOIN, false);
 #else
-			player->m_iAccount = 0;
+			pPlayer->m_iAccount = 0;
 
-			MESSAGE_BEGIN(MSG_ONE, gmsgMoney, nullptr, player->pev);
-				WRITE_LONG(player->m_iAccount);
+			MESSAGE_BEGIN(MSG_ONE, gmsgMoney, nullptr, pPlayer->pev);
+				WRITE_LONG(pPlayer->m_iAccount);
 				WRITE_BYTE(0);
 			MESSAGE_END();
 #endif
@@ -1824,45 +1824,45 @@ BOOL EXT_FUNC __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *player, int slot)
 #else
 			MESSAGE_BEGIN(MSG_ALL, gmsgScoreInfo);
 #endif
-				WRITE_BYTE(ENTINDEX(player->edict()));
-				WRITE_SHORT(int(player->pev->frags));
-				WRITE_SHORT(player->m_iDeaths);
+				WRITE_BYTE(ENTINDEX(pPlayer->edict()));
+				WRITE_SHORT(int(pPlayer->pev->frags));
+				WRITE_SHORT(pPlayer->m_iDeaths);
 				WRITE_SHORT(0);
 				WRITE_SHORT(0);
 			MESSAGE_END();
 
-			player->m_pIntroCamera = nullptr;
-			player->m_bTeamChanged = true;
+			pPlayer->m_pIntroCamera = nullptr;
+			pPlayer->m_bTeamChanged = true;
 
 			if (TheBots)
 			{
-				TheBots->OnEvent(EVENT_PLAYER_CHANGED_TEAM, player);
+				TheBots->OnEvent(EVENT_PLAYER_CHANGED_TEAM, pPlayer);
 			}
 
-			player->TeamChangeUpdate();
+			pPlayer->TeamChangeUpdate();
 
-			edict_t *pentSpawnSpot = g_pGameRules->GetPlayerSpawnSpot(player);
-			player->StartObserver(pentSpawnSpot->v.origin, pentSpawnSpot->v.angles);
+			edict_t *pentSpawnSpot = g_pGameRules->GetPlayerSpawnSpot(pPlayer);
+			pPlayer->StartObserver(pentSpawnSpot->v.origin, pentSpawnSpot->v.angles);
 
 #ifndef REGAMEDLL_FIXES
 			// TODO: it was already sent in StartObserver
 			MESSAGE_BEGIN(MSG_ALL, gmsgSpectator);
-				WRITE_BYTE(ENTINDEX(player->edict()));
+				WRITE_BYTE(ENTINDEX(pPlayer->edict()));
 				WRITE_BYTE(1);
 			MESSAGE_END();
 #endif
 			// do we have fadetoblack on? (need to fade their screen back in)
 			if (fadetoblack.value)
 			{
-				UTIL_ScreenFade(player, Vector(0, 0, 0), 0.001, 0, 0, FFADE_IN);
+				UTIL_ScreenFade(pPlayer, Vector(0, 0, 0), 0.001, 0, 0, FFADE_IN);
 			}
 
 			return TRUE;
 		}
 		else
 		{
-			ClientPrint(player->pev, HUD_PRINTCENTER, "#Cannot_Be_Spectator");
-			CLIENT_COMMAND(ENT(player->pev), "slot10\n");
+			ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Cannot_Be_Spectator");
+			CLIENT_COMMAND(ENT(pPlayer->pev), "slot10\n");
 
 			return FALSE;
 		}
@@ -1881,7 +1881,7 @@ BOOL EXT_FUNC __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *player, int slot)
 		// The specified team is full
 		// attempt to kick a bot to make room for this player
 		bool madeRoom = false;
-		if (cv_bot_auto_vacate.value > 0 && !player->IsBot())
+		if (cv_bot_auto_vacate.value > 0 && !pPlayer->IsBot())
 		{
 			if (UTIL_KickBotFromTeam(team))
 				madeRoom = true;
@@ -1889,20 +1889,20 @@ BOOL EXT_FUNC __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *player, int slot)
 
 		if (!madeRoom)
 		{
-			ClientPrint(player->pev, HUD_PRINTCENTER, (team == TERRORIST) ? "#Terrorists_Full" : "#CTs_Full");
+			ClientPrint(pPlayer->pev, HUD_PRINTCENTER, (team == TERRORIST) ? "#Terrorists_Full" : "#CTs_Full");
 			return FALSE;
 		}
 	}
 
 	// players are allowed to change to their own team so they can just change their model
-	if (CSGameRules()->TeamStacked(team, player->m_iTeam))
+	if (CSGameRules()->TeamStacked(team, pPlayer->m_iTeam))
 	{
 		// The specified team is full
-		ClientPrint(player->pev, HUD_PRINTCENTER, (team == TERRORIST) ? "#Too_Many_Terrorists" : "#Too_Many_CTs");
+		ClientPrint(pPlayer->pev, HUD_PRINTCENTER, (team == TERRORIST) ? "#Too_Many_Terrorists" : "#Too_Many_CTs");
 		return FALSE;
 	}
 
-	if (team != SPECTATOR && !player->IsBot()
+	if (team != SPECTATOR && !pPlayer->IsBot()
 #ifdef REGAMEDLL_ADD
 		&& auto_join_team.value != 1.0f
 #endif
@@ -1922,65 +1922,65 @@ BOOL EXT_FUNC __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *player, int slot)
 		{
 			// TODO: These localization strings are not defined on the client CS 1.6, only for CZero
 #ifdef REGAMEDLL_FIXES
-			ClientPrint(player->pev, HUD_PRINTCENTER, (team == TERRORIST) ? "Humans can only be CT!" : "Humans can only be terrorists!");
+			ClientPrint(pPlayer->pev, HUD_PRINTCENTER, (team == TERRORIST) ? "Humans can only be CT!" : "Humans can only be terrorists!");
 #else
-			ClientPrint(player->pev, HUD_PRINTCENTER, (team == TERRORIST) ? "#Humans_Join_Team_CT" : "#Humans_Join_Team_T");
+			ClientPrint(pPlayer->pev, HUD_PRINTCENTER, (team == TERRORIST) ? "#Humans_Join_Team_CT" : "#Humans_Join_Team_T");
 #endif
 			return FALSE;
 		}
 	}
 
 	// If we already died and changed teams once, deny
-	if (player->m_bTeamChanged)
+	if (pPlayer->m_bTeamChanged)
 	{
-		if (player->pev->deadflag != DEAD_NO)
+		if (pPlayer->pev->deadflag != DEAD_NO)
 		{
-			ClientPrint(player->pev, HUD_PRINTCENTER, "#Only_1_Team_Change");
+			ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Only_1_Team_Change");
 			return FALSE;
 		}
 	}
 
-	if (player->m_iTeam == SPECTATOR && team != SPECTATOR)
+	if (pPlayer->m_iTeam == SPECTATOR && team != SPECTATOR)
 	{
 		// If they're switching into spectator, setup spectator properties..
-		player->m_bNotKilled = true;
-		player->m_iIgnoreGlobalChat = IGNOREMSG_NONE;
-		player->m_iTeamKills = 0;
+		pPlayer->m_bNotKilled = true;
+		pPlayer->m_iIgnoreGlobalChat = IGNOREMSG_NONE;
+		pPlayer->m_iTeamKills = 0;
 
 		CheckStartMoney();
 
 		// all players start with "mp_startmoney" bucks
 #ifdef REGAMEDLL_ADD
-		player->AddAccount(startmoney.value, RT_PLAYER_SPEC_JOIN, false);
+		pPlayer->AddAccount(startmoney.value, RT_PLAYER_SPEC_JOIN, false);
 #else
-		player->m_iAccount = int(startmoney.value);
+		pPlayer->m_iAccount = int(startmoney.value);
 #endif
 
-		player->pev->solid = SOLID_NOT;
-		player->pev->movetype = MOVETYPE_NOCLIP;
-		player->pev->effects = (EF_NODRAW | EF_NOINTERP);
-		player->pev->takedamage = DAMAGE_NO;
-		player->pev->deadflag = DEAD_DEAD;
-		player->pev->punchangle = g_vecZero;
+		pPlayer->pev->solid = SOLID_NOT;
+		pPlayer->pev->movetype = MOVETYPE_NOCLIP;
+		pPlayer->pev->effects = (EF_NODRAW | EF_NOINTERP);
+		pPlayer->pev->takedamage = DAMAGE_NO;
+		pPlayer->pev->deadflag = DEAD_DEAD;
+		pPlayer->pev->punchangle = g_vecZero;
 
-		player->m_bHasNightVision = false;
-		player->m_iHostagesKilled = 0;
-		player->m_fDeadTime = 0;
-		player->has_disconnected = false;
+		pPlayer->m_bHasNightVision = false;
+		pPlayer->m_iHostagesKilled = 0;
+		pPlayer->m_fDeadTime = 0;
+		pPlayer->has_disconnected = false;
 
 #ifdef REGAMEDLL_ADD
-		player->m_iJoiningState = PICKINGTEAM;
+		pPlayer->m_iJoiningState = PICKINGTEAM;
 #else
-		player->pev->velocity = g_vecZero;
-		player->m_iJoiningState = GETINTOGAME;
+		pPlayer->pev->velocity = g_vecZero;
+		pPlayer->m_iJoiningState = GETINTOGAME;
 #endif
-		player->SendItemStatus();
+		pPlayer->SendItemStatus();
 
 #ifndef REGAMEDLL_ADD
-		SET_CLIENT_MAXSPEED(ENT(player->pev), 1);
+		SET_CLIENT_MAXSPEED(ENT(pPlayer->pev), 1);
 #endif
 
-		SET_MODEL(ENT(player->pev), "models/player.mdl");
+		SET_MODEL(ENT(pPlayer->pev), "models/player.mdl");
 	}
 
 #ifdef REGAMEDLL_ADD
@@ -1993,27 +1993,27 @@ BOOL EXT_FUNC __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *player, int slot)
 			{
 			case CT:
 				if (AreRunningCZero())
-					ShowVGUIMenu(player, VGUI_Menu_Class_CT, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6), "#CT_Select");
+					ShowVGUIMenu(pPlayer, VGUI_Menu_Class_CT, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6), "#CT_Select");
 				else
-					ShowVGUIMenu(player, VGUI_Menu_Class_CT, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5), "#CT_Select");
+					ShowVGUIMenu(pPlayer, VGUI_Menu_Class_CT, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5), "#CT_Select");
 				break;
 
 			case TERRORIST:
 				if (AreRunningCZero())
-					ShowVGUIMenu(player, VGUI_Menu_Class_T, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6), "#Terrorist_Select");
+					ShowVGUIMenu(pPlayer, VGUI_Menu_Class_T, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6), "#Terrorist_Select");
 				else
-					ShowVGUIMenu(player, VGUI_Menu_Class_T, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5), "#Terrorist_Select");
+					ShowVGUIMenu(pPlayer, VGUI_Menu_Class_T, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5), "#Terrorist_Select");
 				break;
 			}
 		}
 
-		player->m_iMenu = Menu_ChooseAppearance;
+		pPlayer->m_iMenu = Menu_ChooseAppearance;
 
 		// Show the appropriate Choose Appearance menu
 		// This must come before ClientKill() for CheckWinConditions() to function properly
-		if (player->pev->deadflag == DEAD_NO)
+		if (pPlayer->pev->deadflag == DEAD_NO)
 		{
-			ClientKill(player->edict());
+			ClientKill(pPlayer->edict());
 		}
 	}
 
@@ -2021,163 +2021,163 @@ BOOL EXT_FUNC __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *player, int slot)
 	char *szOldTeam, *szNewTeam;
 
 	// Switch their actual team...
-	player->m_bTeamChanged = true;
-	oldTeam = player->m_iTeam;
-	player->m_iTeam = team;
+	pPlayer->m_bTeamChanged = true;
+	oldTeam = pPlayer->m_iTeam;
+	pPlayer->m_iTeam = team;
 
 	if (TheBots)
 	{
-		TheBots->OnEvent(EVENT_PLAYER_CHANGED_TEAM, player);
+		TheBots->OnEvent(EVENT_PLAYER_CHANGED_TEAM, pPlayer);
 	}
 
-	player->TeamChangeUpdate();
+	pPlayer->TeamChangeUpdate();
 
 	szOldTeam = GetTeam(oldTeam);
 	szNewTeam = GetTeam(team);
 
 	// Notify others that this player has joined a new team
 	UTIL_ClientPrintAll(HUD_PRINTNOTIFY, (team == TERRORIST) ? "#Game_join_terrorist" : "#Game_join_ct",
-		(STRING(player->pev->netname) && STRING(player->pev->netname)[0] != 0) ? STRING(player->pev->netname) : "<unconnected>");
+		(STRING(pPlayer->pev->netname) && STRING(pPlayer->pev->netname)[0] != 0) ? STRING(pPlayer->pev->netname) : "<unconnected>");
 
-	UTIL_LogPrintf("\"%s<%i><%s><%s>\" joined team \"%s\"\n", STRING(player->pev->netname), GETPLAYERUSERID(player->edict()), GETPLAYERAUTHID(player->edict()), szOldTeam, szNewTeam);
+	UTIL_LogPrintf("\"%s<%i><%s><%s>\" joined team \"%s\"\n", STRING(pPlayer->pev->netname), GETPLAYERUSERID(pPlayer->edict()), GETPLAYERAUTHID(pPlayer->edict()), szOldTeam, szNewTeam);
 	return TRUE;
 }
 
-void Radio1(CBasePlayer *player, int slot)
+void Radio1(CBasePlayer *pPlayer, int slot)
 {
-	if (player->m_flRadioTime >= gpGlobals->time)
+	if (pPlayer->m_flRadioTime >= gpGlobals->time)
 		return;
 
-	if (player->m_iRadioMessages <= 0)
+	if (pPlayer->m_iRadioMessages <= 0)
 		return;
 
-	player->m_iRadioMessages--;
-	player->m_flRadioTime = gpGlobals->time + 1.5f;
+	pPlayer->m_iRadioMessages--;
+	pPlayer->m_flRadioTime = gpGlobals->time + 1.5f;
 
 	switch (slot)
 	{
 	case 1:
-		player->Radio("%!MRAD_COVERME", "#Cover_me");
+		pPlayer->Radio("%!MRAD_COVERME", "#Cover_me");
 		break;
 	case 2:
-		player->Radio("%!MRAD_TAKEPOINT", "#You_take_the_point");
+		pPlayer->Radio("%!MRAD_TAKEPOINT", "#You_take_the_point");
 		break;
 	case 3:
-		player->Radio("%!MRAD_POSITION", "#Hold_this_position");
+		pPlayer->Radio("%!MRAD_POSITION", "#Hold_this_position");
 		break;
 	case 4:
-		player->Radio("%!MRAD_REGROUP", "#Regroup_team");
+		pPlayer->Radio("%!MRAD_REGROUP", "#Regroup_team");
 		break;
 	case 5:
-		player->Radio("%!MRAD_FOLLOWME", "#Follow_me");
+		pPlayer->Radio("%!MRAD_FOLLOWME", "#Follow_me");
 		break;
 	case 6:
-		player->Radio("%!MRAD_HITASSIST", "#Taking_fire");
+		pPlayer->Radio("%!MRAD_HITASSIST", "#Taking_fire");
 		break;
 	}
 
 	if (TheBots)
 	{
-		TheBots->OnEvent((GameEventType)(EVENT_START_RADIO_1 + slot), player);
+		TheBots->OnEvent((GameEventType)(EVENT_START_RADIO_1 + slot), pPlayer);
 	}
 }
 
-void Radio2(CBasePlayer *player, int slot)
+void Radio2(CBasePlayer *pPlayer, int slot)
 {
-	if (player->m_flRadioTime >= gpGlobals->time)
+	if (pPlayer->m_flRadioTime >= gpGlobals->time)
 		return;
 
-	if (player->m_iRadioMessages <= 0)
+	if (pPlayer->m_iRadioMessages <= 0)
 		return;
 
-	player->m_iRadioMessages--;
-	player->m_flRadioTime = gpGlobals->time + 1.5f;
+	pPlayer->m_iRadioMessages--;
+	pPlayer->m_flRadioTime = gpGlobals->time + 1.5f;
 
 	switch (slot)
 	{
 	case 1:
-		player->Radio("%!MRAD_GO", "#Go_go_go");
+		pPlayer->Radio("%!MRAD_GO", "#Go_go_go");
 		break;
 	case 2:
-		player->Radio("%!MRAD_FALLBACK", "#Team_fall_back");
+		pPlayer->Radio("%!MRAD_FALLBACK", "#Team_fall_back");
 		break;
 	case 3:
-		player->Radio("%!MRAD_STICKTOG", "#Stick_together_team");
+		pPlayer->Radio("%!MRAD_STICKTOG", "#Stick_together_team");
 		break;
 	case 4:
-		player->Radio("%!MRAD_GETINPOS", "#Get_in_position_and_wait");
+		pPlayer->Radio("%!MRAD_GETINPOS", "#Get_in_position_and_wait");
 		break;
 	case 5:
-		player->Radio("%!MRAD_STORMFRONT", "#Storm_the_front");
+		pPlayer->Radio("%!MRAD_STORMFRONT", "#Storm_the_front");
 		break;
 	case 6:
-		player->Radio("%!MRAD_REPORTIN", "#Report_in_team");
+		pPlayer->Radio("%!MRAD_REPORTIN", "#Report_in_team");
 		break;
 	}
 
 	if (TheBots)
 	{
-		TheBots->OnEvent((GameEventType)(EVENT_START_RADIO_2 + slot), player);
+		TheBots->OnEvent((GameEventType)(EVENT_START_RADIO_2 + slot), pPlayer);
 	}
 }
 
-void Radio3(CBasePlayer *player, int slot)
+void Radio3(CBasePlayer *pPlayer, int slot)
 {
-	if (player->m_flRadioTime >= gpGlobals->time)
+	if (pPlayer->m_flRadioTime >= gpGlobals->time)
 		return;
 
-	if (player->m_iRadioMessages <= 0)
+	if (pPlayer->m_iRadioMessages <= 0)
 		return;
 
-	player->m_iRadioMessages--;
-	player->m_flRadioTime = gpGlobals->time + 1.5f;
+	pPlayer->m_iRadioMessages--;
+	pPlayer->m_flRadioTime = gpGlobals->time + 1.5f;
 
 	switch (slot)
 	{
 	case 1:
 		if (RANDOM_LONG(0, 1))
-			player->Radio("%!MRAD_AFFIRM", "#Affirmative");
+			pPlayer->Radio("%!MRAD_AFFIRM", "#Affirmative");
 		else
-			player->Radio("%!MRAD_ROGER", "#Roger_that");
+			pPlayer->Radio("%!MRAD_ROGER", "#Roger_that");
 
 		break;
 	case 2:
-		player->Radio("%!MRAD_ENEMYSPOT", "#Enemy_spotted");
+		pPlayer->Radio("%!MRAD_ENEMYSPOT", "#Enemy_spotted");
 		break;
 	case 3:
-		player->Radio("%!MRAD_BACKUP", "#Need_backup");
+		pPlayer->Radio("%!MRAD_BACKUP", "#Need_backup");
 		break;
 	case 4:
-		player->Radio("%!MRAD_CLEAR", "#Sector_clear");
+		pPlayer->Radio("%!MRAD_CLEAR", "#Sector_clear");
 		break;
 	case 5:
-		player->Radio("%!MRAD_INPOS", "#In_position");
+		pPlayer->Radio("%!MRAD_INPOS", "#In_position");
 		break;
 	case 6:
-		player->Radio("%!MRAD_REPRTINGIN", "#Reporting_in");
+		pPlayer->Radio("%!MRAD_REPRTINGIN", "#Reporting_in");
 		break;
 	case 7:
-		player->Radio("%!MRAD_BLOW", "#Get_out_of_there");
+		pPlayer->Radio("%!MRAD_BLOW", "#Get_out_of_there");
 		break;
 	case 8:
-		player->Radio("%!MRAD_NEGATIVE", "#Negative");
+		pPlayer->Radio("%!MRAD_NEGATIVE", "#Negative");
 		break;
 	case 9:
-		player->Radio("%!MRAD_ENEMYDOWN", "#Enemy_down");
+		pPlayer->Radio("%!MRAD_ENEMYDOWN", "#Enemy_down");
 		break;
 	}
 
 	if (TheBots)
 	{
-		TheBots->OnEvent((GameEventType)(EVENT_START_RADIO_3 + slot), player);
+		TheBots->OnEvent((GameEventType)(EVENT_START_RADIO_3 + slot), pPlayer);
 	}
 }
 
-LINK_HOOK_CHAIN(bool, BuyGunAmmo, (CBasePlayer *player, CBasePlayerItem *weapon, bool bBlinkMoney), player, weapon, bBlinkMoney)
+LINK_HOOK_CHAIN(bool, BuyGunAmmo, (CBasePlayer *pPlayer, CBasePlayerItem *weapon, bool bBlinkMoney), pPlayer, weapon, bBlinkMoney)
 
-bool EXT_FUNC __API_HOOK(BuyGunAmmo)(CBasePlayer *player, CBasePlayerItem *weapon, bool bBlinkMoney)
+bool EXT_FUNC __API_HOOK(BuyGunAmmo)(CBasePlayer *pPlayer, CBasePlayerItem *weapon, bool bBlinkMoney)
 {
-	if (!player->CanPlayerBuy(true))
+	if (!pPlayer->CanPlayerBuy(true))
 		return false;
 
 	// Ensure that the weapon uses ammo
@@ -2186,7 +2186,7 @@ bool EXT_FUNC __API_HOOK(BuyGunAmmo)(CBasePlayer *player, CBasePlayerItem *weapo
 		return false;
 
 	// Can only buy if the player does not already have full ammo
-	if (player->m_rgAmmo[ nAmmo ] >= weapon->iMaxAmmo1())
+	if (pPlayer->m_rgAmmo[nAmmo] >= weapon->iMaxAmmo1())
 		return false;
 
 	WeaponInfoStruct *info = GetWeaponInfo(weapon->m_iId);
@@ -2197,10 +2197,16 @@ bool EXT_FUNC __API_HOOK(BuyGunAmmo)(CBasePlayer *player, CBasePlayerItem *weapo
 	}
 
 	// Purchase the ammo if the player has enough money
-	if (player->m_iAccount >= info->clipCost)
+	if (pPlayer->m_iAccount >= info->clipCost)
 	{
-		player->GiveNamedItem(info->ammoName1);
-		player->AddAccount(-info->clipCost, RT_PLAYER_BOUGHT_SOMETHING);
+#ifdef REGAMEDLL_FIXES
+		if (pPlayer->GiveAmmo(info->buyClipSize, info->ammoName2, info->maxRounds) == -1)
+			return false;
+#else
+		pPlayer->GiveNamedItem(info->ammoName1);
+#endif
+
+		pPlayer->AddAccount(-info->clipCost, RT_PLAYER_BOUGHT_SOMETHING);
 		return true;
 	}
 
@@ -2209,17 +2215,17 @@ bool EXT_FUNC __API_HOOK(BuyGunAmmo)(CBasePlayer *player, CBasePlayerItem *weapo
 		if (g_bClientPrintEnable)
 		{
 			// Not enough money.. let the player know
-			ClientPrint(player->pev, HUD_PRINTCENTER, "#Not_Enough_Money");
-			BlinkAccount(player);
+			ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Not_Enough_Money");
+			BlinkAccount(pPlayer);
 		}
 	}
 
 	return false;
 }
 
-bool BuyAmmo(CBasePlayer *player, int nSlot, bool bBlinkMoney)
+bool BuyAmmo(CBasePlayer *pPlayer, int nSlot, bool bBlinkMoney)
 {
-	if (!player->CanPlayerBuy(true))
+	if (!pPlayer->CanPlayerBuy(true))
 		return false;
 
 	if (nSlot < PRIMARY_WEAPON_SLOT || nSlot > PISTOL_SLOT)
@@ -2230,17 +2236,17 @@ bool BuyAmmo(CBasePlayer *player, int nSlot, bool bBlinkMoney)
 	// nSlot == 1 : Primary weapons
 	// nSlot == 2 : Secondary weapons
 
-	CBasePlayerItem *pItem = player->m_rgpPlayerItems[ nSlot ];
+	CBasePlayerItem *pItem = pPlayer->m_rgpPlayerItems[ nSlot ];
 
-	if (player->HasShield())
+	if (pPlayer->HasShield())
 	{
-		if (player->m_rgpPlayerItems[ PISTOL_SLOT ])
-			pItem = player->m_rgpPlayerItems[ PISTOL_SLOT ];
+		if (pPlayer->m_rgpPlayerItems[ PISTOL_SLOT ])
+			pItem = pPlayer->m_rgpPlayerItems[ PISTOL_SLOT ];
 	}
 
 	if (pItem)
 	{
-		while (BuyGunAmmo(player, pItem, bBlinkMoney))
+		while (BuyGunAmmo(pPlayer, pItem, bBlinkMoney))
 		{
 			pItem = pItem->m_pNext;
 
@@ -2257,7 +2263,6 @@ bool BuyAmmo(CBasePlayer *player, int nSlot, bool bBlinkMoney)
 CBaseEntity *EntityFromUserID(int userID)
 {
 	CBaseEntity *pTempEntity = nullptr;
-
 	while ((pTempEntity = UTIL_FindEntityByClassname(pTempEntity, "player")))
 	{
 		if (FNullEnt(pTempEntity->edict()))
@@ -2278,7 +2283,6 @@ NOXREF int CountPlayersInServer()
 {
 	int count = 0;
 	CBaseEntity *pTempEntity = nullptr;
-
 	while ((pTempEntity = UTIL_FindEntityByClassname(pTempEntity, "player")))
 	{
 		if (FNullEnt(pTempEntity->edict()))
@@ -2491,47 +2495,47 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 {
 	const char *pstr = nullptr;
 	entvars_t *pev = &pEntity->v;
-	CBasePlayer *player = GetClassPtr<CCSPlayer>((CBasePlayer *)pev);
+	CBasePlayer *pPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pev);
 
 	if (FStrEq(pcmd, "say"))
 	{
-		if (gpGlobals->time >= player->m_flLastCommandTime[CMD_SAY])
+		if (gpGlobals->time >= pPlayer->m_flLastCommandTime[CMD_SAY])
 		{
-			player->m_flLastCommandTime[CMD_SAY] = gpGlobals->time + 0.3f;
+			pPlayer->m_flLastCommandTime[CMD_SAY] = gpGlobals->time + 0.3f;
 			Host_Say(pEntity, FALSE);
 		}
 	}
 	else if (FStrEq(pcmd, "say_team"))
 	{
-		if (gpGlobals->time >= player->m_flLastCommandTime[CMD_SAYTEAM])
+		if (gpGlobals->time >= pPlayer->m_flLastCommandTime[CMD_SAYTEAM])
 		{
-			player->m_flLastCommandTime[CMD_SAYTEAM] = gpGlobals->time + 0.3f;
+			pPlayer->m_flLastCommandTime[CMD_SAYTEAM] = gpGlobals->time + 0.3f;
 			Host_Say(pEntity, TRUE);
 		}
 	}
 	else if (FStrEq(pcmd, "fullupdate"))
 	{
-		if (gpGlobals->time >= player->m_flLastCommandTime[CMD_FULLUPDATE])
+		if (gpGlobals->time >= pPlayer->m_flLastCommandTime[CMD_FULLUPDATE])
 		{
-			player->m_flLastCommandTime[CMD_FULLUPDATE] = gpGlobals->time + 0.6f;
-			player->ForceClientDllUpdate();
+			pPlayer->m_flLastCommandTime[CMD_FULLUPDATE] = gpGlobals->time + 0.6f;
+			pPlayer->ForceClientDllUpdate();
 		}
 	}
 	else if (FStrEq(pcmd, "vote"))
 	{
-		if (gpGlobals->time >= player->m_flLastCommandTime[CMD_VOTE])
+		if (gpGlobals->time >= pPlayer->m_flLastCommandTime[CMD_VOTE])
 		{
-			player->m_flLastCommandTime[CMD_VOTE] = gpGlobals->time + 0.3f;
+			pPlayer->m_flLastCommandTime[CMD_VOTE] = gpGlobals->time + 0.3f;
 
-			if (gpGlobals->time < player->m_flNextVoteTime)
+			if (gpGlobals->time < pPlayer->m_flNextVoteTime)
 			{
-				ClientPrint(player->pev, HUD_PRINTCONSOLE, "#Wait_3_Seconds");
+				ClientPrint(pPlayer->pev, HUD_PRINTCONSOLE, "#Wait_3_Seconds");
 				return;
 			}
 
-			player->m_flNextVoteTime = gpGlobals->time + 3;
+			pPlayer->m_flNextVoteTime = gpGlobals->time + 3;
 
-			if (player->m_iTeam != UNASSIGNED)
+			if (pPlayer->m_iTeam != UNASSIGNED)
 			{
 				int iVoteID;
 				int iVoteFail = 0;
@@ -2551,14 +2555,14 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 
 				if (iVoteFail)
 				{
-					ListPlayers(player);
-					ClientPrint(player->pev, HUD_PRINTCONSOLE, "#Game_vote_usage");
+					ListPlayers(pPlayer);
+					ClientPrint(pPlayer->pev, HUD_PRINTCONSOLE, "#Game_vote_usage");
 					return;
 				}
 
-				if (CountTeamPlayers(player->m_iTeam) < 3)
+				if (CountTeamPlayers(pPlayer->m_iTeam) < 3)
 				{
-					ClientPrint(player->pev, HUD_PRINTCONSOLE, "#Cannot_Vote_With_Less_Than_Three");
+					ClientPrint(pPlayer->pev, HUD_PRINTCONSOLE, "#Cannot_Vote_With_Less_Than_Three");
 					return;
 				}
 
@@ -2567,57 +2571,57 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 				{
 					CBasePlayer *pKickPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pKickEntity->pev);
 
-					if (pKickPlayer->m_iTeam != player->m_iTeam)
+					if (pKickPlayer->m_iTeam != pPlayer->m_iTeam)
 					{
-						ClientPrint(player->pev, HUD_PRINTCONSOLE, "#Game_vote_players_on_your_team");
+						ClientPrint(pPlayer->pev, HUD_PRINTCONSOLE, "#Game_vote_players_on_your_team");
 						return;
 					}
 
-					if (pKickPlayer == player)
+					if (pKickPlayer == pPlayer)
 					{
-						ClientPrint(player->pev, HUD_PRINTCONSOLE, "#Game_vote_not_yourself");
+						ClientPrint(pPlayer->pev, HUD_PRINTCONSOLE, "#Game_vote_not_yourself");
 						return;
 					}
 
-					ClientPrint(player->pev, HUD_PRINTCONSOLE, "#Game_vote_cast", UTIL_dtos1(iVoteID));
-					player->m_iCurrentKickVote = iVoteID;
-					ProcessKickVote(player, pKickPlayer);
+					ClientPrint(pPlayer->pev, HUD_PRINTCONSOLE, "#Game_vote_cast", UTIL_dtos1(iVoteID));
+					pPlayer->m_iCurrentKickVote = iVoteID;
+					ProcessKickVote(pPlayer, pKickPlayer);
 				}
 				else
 				{
-					ListPlayers(player);
-					ClientPrint(player->pev, HUD_PRINTCONSOLE, "#Game_vote_player_not_found", UTIL_dtos1(iVoteID));
+					ListPlayers(pPlayer);
+					ClientPrint(pPlayer->pev, HUD_PRINTCONSOLE, "#Game_vote_player_not_found", UTIL_dtos1(iVoteID));
 				}
 			}
 		}
 	}
 	else if (FStrEq(pcmd, "listmaps"))
 	{
-		if (gpGlobals->time >= player->m_flLastCommandTime[CMD_LISTMAPS])
+		if (gpGlobals->time >= pPlayer->m_flLastCommandTime[CMD_LISTMAPS])
 		{
-			player->m_flLastCommandTime[CMD_LISTMAPS] = gpGlobals->time + 0.3f;
-			CSGameRules()->DisplayMaps(player, 0);
+			pPlayer->m_flLastCommandTime[CMD_LISTMAPS] = gpGlobals->time + 0.3f;
+			CSGameRules()->DisplayMaps(pPlayer, 0);
 		}
 	}
 	else if (FStrEq(pcmd, "votemap"))
 	{
-		if (gpGlobals->time >= player->m_flLastCommandTime[CMD_VOTEMAP])
+		if (gpGlobals->time >= pPlayer->m_flLastCommandTime[CMD_VOTEMAP])
 		{
-			player->m_flLastCommandTime[CMD_VOTEMAP] = gpGlobals->time + 0.3f;
+			pPlayer->m_flLastCommandTime[CMD_VOTEMAP] = gpGlobals->time + 0.3f;
 
-			if (gpGlobals->time < player->m_flNextVoteTime)
+			if (gpGlobals->time < pPlayer->m_flNextVoteTime)
 			{
-				ClientPrint(player->pev, HUD_PRINTCONSOLE, "#Wait_3_Seconds");
+				ClientPrint(pPlayer->pev, HUD_PRINTCONSOLE, "#Wait_3_Seconds");
 				return;
 			}
 
-			player->m_flNextVoteTime = gpGlobals->time + 3;
+			pPlayer->m_flNextVoteTime = gpGlobals->time + 3;
 
-			if (player->m_iTeam != UNASSIGNED)
+			if (pPlayer->m_iTeam != UNASSIGNED)
 			{
 				if (gpGlobals->time < 180)
 				{
-					ClientPrint(player->pev, HUD_PRINTCONSOLE, "#Cannot_Vote_Map");
+					ClientPrint(pPlayer->pev, HUD_PRINTCONSOLE, "#Cannot_Vote_Map");
 					return;
 				}
 
@@ -2643,40 +2647,40 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 
 				if (iFailed)
 				{
-					CSGameRules()->DisplayMaps(player, 0);
-					ClientPrint(player->pev, HUD_PRINTCONSOLE, "#Game_votemap_usage");
+					CSGameRules()->DisplayMaps(pPlayer, 0);
+					ClientPrint(pPlayer->pev, HUD_PRINTCONSOLE, "#Game_votemap_usage");
 					return;
 				}
 
-				if (CountTeamPlayers(player->m_iTeam) < 2)
+				if (CountTeamPlayers(pPlayer->m_iTeam) < 2)
 				{
-					ClientPrint(player->pev, HUD_PRINTCONSOLE, "#Cannot_Vote_Need_More_People");
+					ClientPrint(pPlayer->pev, HUD_PRINTCONSOLE, "#Cannot_Vote_Need_More_People");
 					return;
 				}
 
-				if (player->m_iMapVote)
+				if (pPlayer->m_iMapVote)
 				{
-					if (--CSGameRules()->m_iMapVotes[player->m_iMapVote] < 0)
+					if (--CSGameRules()->m_iMapVotes[pPlayer->m_iMapVote] < 0)
 					{
-						CSGameRules()->m_iMapVotes[player->m_iMapVote] = 0;
+						CSGameRules()->m_iMapVotes[pPlayer->m_iMapVote] = 0;
 					}
 				}
 
-				ClientPrint(player->pev, HUD_PRINTCONSOLE, "#Game_voted_for_map", UTIL_dtos1(iVoteID));
-				player->m_iMapVote = iVoteID;
-				CSGameRules()->ProcessMapVote(player, iVoteID);
+				ClientPrint(pPlayer->pev, HUD_PRINTCONSOLE, "#Game_voted_for_map", UTIL_dtos1(iVoteID));
+				pPlayer->m_iMapVote = iVoteID;
+				CSGameRules()->ProcessMapVote(pPlayer, iVoteID);
 			}
 		}
 	}
 	else if (FStrEq(pcmd, "timeleft"))
 	{
-		if (gpGlobals->time > player->m_iTimeCheckAllowed)
+		if (gpGlobals->time > pPlayer->m_iTimeCheckAllowed)
 		{
-			player->m_iTimeCheckAllowed = int(gpGlobals->time + 1.0f);
+			pPlayer->m_iTimeCheckAllowed = int(gpGlobals->time + 1.0f);
 
 			if (!timelimit.value)
 			{
-				ClientPrint(player->pev, HUD_PRINTTALK, "#Game_no_timelimit");
+				ClientPrint(pPlayer->pev, HUD_PRINTTALK, "#Game_no_timelimit");
 				return;
 			}
 
@@ -2703,25 +2707,25 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 				secs[2] = '\0';
 			}
 
-			ClientPrint(player->pev, HUD_PRINTTALK, "#Game_timelimit", UTIL_dtos1(iMinutes), secs);
+			ClientPrint(pPlayer->pev, HUD_PRINTTALK, "#Game_timelimit", UTIL_dtos1(iMinutes), secs);
 		}
 	}
 	else if (FStrEq(pcmd, "listplayers"))
 	{
-		if (gpGlobals->time >= player->m_flLastCommandTime[CMD_LISTPLAYERS])
+		if (gpGlobals->time >= pPlayer->m_flLastCommandTime[CMD_LISTPLAYERS])
 		{
-			player->m_flLastCommandTime[CMD_LISTPLAYERS] = gpGlobals->time + 0.3f;
-			ListPlayers(player);
+			pPlayer->m_flLastCommandTime[CMD_LISTPLAYERS] = gpGlobals->time + 0.3f;
+			ListPlayers(pPlayer);
 		}
 	}
 	else if (FStrEq(pcmd, "client_buy_open"))
 	{
-		if (player->m_iMenu == Menu_OFF)
+		if (pPlayer->m_iMenu == Menu_OFF)
 		{
-			player->m_iMenu = Menu_ClientBuy;
+			pPlayer->m_iMenu = Menu_ClientBuy;
 		}
 
-		if (player->m_signals.GetState() & SIGNAL_BUY)
+		if (pPlayer->m_signals.GetState() & SIGNAL_BUY)
 		{
 			if (TheTutor)
 			{
@@ -2730,72 +2734,72 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 		}
 		else
 		{
-			MESSAGE_BEGIN(MSG_ONE, gmsgBuyClose, nullptr, player->pev);
+			MESSAGE_BEGIN(MSG_ONE, gmsgBuyClose, nullptr, pPlayer->pev);
 			MESSAGE_END();
 		}
 	}
 	else if (FStrEq(pcmd, "client_buy_close"))
 	{
-		if (player->m_iMenu == Menu_ClientBuy)
+		if (pPlayer->m_iMenu == Menu_ClientBuy)
 		{
-			player->m_iMenu = Menu_OFF;
+			pPlayer->m_iMenu = Menu_OFF;
 		}
 	}
 	else if (FStrEq(pcmd, "menuselect"))
 	{
 		int slot = Q_atoi(parg1);
-		if (player->m_iJoiningState == JOINED || (player->m_iMenu != Menu_ChooseAppearance && player->m_iMenu != Menu_ChooseTeam))
+		if (pPlayer->m_iJoiningState == JOINED || (pPlayer->m_iMenu != Menu_ChooseAppearance && pPlayer->m_iMenu != Menu_ChooseTeam))
 		{
 			if (slot == 10)
 			{
-				player->m_iMenu = Menu_OFF;
+				pPlayer->m_iMenu = Menu_OFF;
 			}
 		}
 
 #ifdef REGAMEDLL_ADD
-		auto canOpenOldMenu = [player]()-> bool
+		auto canOpenOldMenu = [pPlayer]()-> bool
 		{
-			if (!player->m_bVGUIMenus || player->CSPlayer()->m_bForceShowMenu) {
-				player->CSPlayer()->m_bForceShowMenu = false;
+			if (!pPlayer->m_bVGUIMenus || pPlayer->CSPlayer()->m_bForceShowMenu) {
+				pPlayer->CSPlayer()->m_bForceShowMenu = false;
 				return true;
 			}
 
 			return false;
 		};
 #else
-		auto canOpenOldMenu = [player]()-> bool {
-			return player->m_bVGUIMenus == false;
+		auto canOpenOldMenu = [pPlayer]()-> bool {
+			return pPlayer->m_bVGUIMenus == false;
 		};
 #endif
 
-		switch (player->m_iMenu)
+		switch (pPlayer->m_iMenu)
 		{
 			case Menu_OFF:
 				break;
 
 			case Menu_ChooseTeam:
 			{
-				if (canOpenOldMenu() && !HandleMenu_ChooseTeam(player, slot))
+				if (canOpenOldMenu() && !HandleMenu_ChooseTeam(pPlayer, slot))
 				{
-					player->m_iMenu = Menu_ChooseTeam;
-					if (player->m_iJoiningState == JOINED)
-						ShowVGUIMenu(player, VGUI_Menu_Team, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_5 | MENU_KEY_0), "#IG_Team_Select");
+					pPlayer->m_iMenu = Menu_ChooseTeam;
+					if (pPlayer->m_iJoiningState == JOINED)
+						ShowVGUIMenu(pPlayer, VGUI_Menu_Team, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_5 | MENU_KEY_0), "#IG_Team_Select");
 					else
-						ShowVGUIMenu(player, VGUI_Menu_Team, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_5), "#Team_Select");
+						ShowVGUIMenu(pPlayer, VGUI_Menu_Team, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_5), "#Team_Select");
 				}
 				break;
 			}
 			case Menu_IGChooseTeam:
 			{
 				if (canOpenOldMenu()) {
-					HandleMenu_ChooseTeam(player, slot);
+					HandleMenu_ChooseTeam(pPlayer, slot);
 				}
 				break;
 			}
 			case Menu_ChooseAppearance:
 			{
 				if (canOpenOldMenu()) {
-					HandleMenu_ChooseAppearance(player, slot);
+					HandleMenu_ChooseAppearance(pPlayer, slot);
 				}
 				break;
 			}
@@ -2807,125 +2811,125 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 					{
 						case VGUI_MenuSlot_Buy_Pistol:
 						{
-							player->m_iMenu = Menu_BuyPistol;
-							if (player->m_iTeam == CT)
-								ShowVGUIMenu(player, VGUI_Menu_Buy_Pistol, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_0), "#CT_BuyPistol");
+							pPlayer->m_iMenu = Menu_BuyPistol;
+							if (pPlayer->m_iTeam == CT)
+								ShowVGUIMenu(pPlayer, VGUI_Menu_Buy_Pistol, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_0), "#CT_BuyPistol");
 							else
-								ShowVGUIMenu(player, VGUI_Menu_Buy_Pistol, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_0), "#T_BuyPistol");
+								ShowVGUIMenu(pPlayer, VGUI_Menu_Buy_Pistol, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_0), "#T_BuyPistol");
 							break;
 						}
 						case VGUI_MenuSlot_Buy_ShotGun:
 						{
-							player->m_iMenu = Menu_BuyShotgun;
-							if (CSGameRules()->m_bMapHasVIPSafetyZone && player->m_iTeam == TERRORIST)
-								ShowVGUIMenu(player, VGUI_Menu_Buy_ShotGun, MENU_KEY_0, "#AS_BuyShotgun");
+							pPlayer->m_iMenu = Menu_BuyShotgun;
+							if (CSGameRules()->m_bMapHasVIPSafetyZone && pPlayer->m_iTeam == TERRORIST)
+								ShowVGUIMenu(pPlayer, VGUI_Menu_Buy_ShotGun, MENU_KEY_0, "#AS_BuyShotgun");
 							else
-								ShowVGUIMenu(player, VGUI_Menu_Buy_ShotGun, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_0), "#BuyShotgun");
+								ShowVGUIMenu(pPlayer, VGUI_Menu_Buy_ShotGun, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_0), "#BuyShotgun");
 							break;
 						}
 						case VGUI_MenuSlot_Buy_SubMachineGun:
 						{
-							player->m_iMenu = Menu_BuySubMachineGun;
+							pPlayer->m_iMenu = Menu_BuySubMachineGun;
 							if (CSGameRules()->m_bMapHasVIPSafetyZone)
 							{
-								if (player->m_iTeam == CT)
-									ShowVGUIMenu(player, VGUI_Menu_Buy_SubMachineGun, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_0), "#AS_CT_BuySubMachineGun");
+								if (pPlayer->m_iTeam == CT)
+									ShowVGUIMenu(pPlayer, VGUI_Menu_Buy_SubMachineGun, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_0), "#AS_CT_BuySubMachineGun");
 								else
-									ShowVGUIMenu(player, VGUI_Menu_Buy_SubMachineGun, (MENU_KEY_1 | MENU_KEY_3 | MENU_KEY_0), "#AS_T_BuySubMachineGun");
+									ShowVGUIMenu(pPlayer, VGUI_Menu_Buy_SubMachineGun, (MENU_KEY_1 | MENU_KEY_3 | MENU_KEY_0), "#AS_T_BuySubMachineGun");
 							}
 							else
 							{
-								if (player->m_iTeam == CT)
-									ShowVGUIMenu(player, VGUI_Menu_Buy_SubMachineGun, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_0), "#CT_BuySubMachineGun");
+								if (pPlayer->m_iTeam == CT)
+									ShowVGUIMenu(pPlayer, VGUI_Menu_Buy_SubMachineGun, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_0), "#CT_BuySubMachineGun");
 								else
-									ShowVGUIMenu(player, VGUI_Menu_Buy_SubMachineGun, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_0), "#T_BuySubMachineGun");
+									ShowVGUIMenu(pPlayer, VGUI_Menu_Buy_SubMachineGun, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_0), "#T_BuySubMachineGun");
 							}
 							break;
 						}
 						case VGUI_MenuSlot_Buy_Rifle:
 						{
-							player->m_iMenu = Menu_BuyRifle;
+							pPlayer->m_iMenu = Menu_BuyRifle;
 							if (CSGameRules()->m_bMapHasVIPSafetyZone)
 							{
-								if (player->m_iTeam == CT)
-									ShowVGUIMenu(player, VGUI_Menu_Buy_Rifle, (MENU_KEY_1 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_0), "#AS_CT_BuyRifle");
+								if (pPlayer->m_iTeam == CT)
+									ShowVGUIMenu(pPlayer, VGUI_Menu_Buy_Rifle, (MENU_KEY_1 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_0), "#AS_CT_BuyRifle");
 								else
-									ShowVGUIMenu(player, VGUI_Menu_Buy_Rifle, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_5 | MENU_KEY_0), "#AS_T_BuyRifle");
+									ShowVGUIMenu(pPlayer, VGUI_Menu_Buy_Rifle, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_5 | MENU_KEY_0), "#AS_T_BuyRifle");
 							}
 							else
 							{
-								if (player->m_iTeam == CT)
-									ShowVGUIMenu(player, VGUI_Menu_Buy_Rifle, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_0), "#CT_BuyRifle");
+								if (pPlayer->m_iTeam == CT)
+									ShowVGUIMenu(pPlayer, VGUI_Menu_Buy_Rifle, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_0), "#CT_BuyRifle");
 								else
-									ShowVGUIMenu(player, VGUI_Menu_Buy_Rifle, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_0), "#T_BuyRifle");
+									ShowVGUIMenu(pPlayer, VGUI_Menu_Buy_Rifle, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_0), "#T_BuyRifle");
 							}
 							break;
 						}
 						case VGUI_MenuSlot_Buy_MachineGun:
 						{
-							player->m_iMenu = Menu_BuyMachineGun;
-							if (CSGameRules()->m_bMapHasVIPSafetyZone && player->m_iTeam == TERRORIST)
-								ShowVGUIMenu(player, VGUI_Menu_Buy_MachineGun, MENU_KEY_0, "#AS_T_BuyMachineGun");
+							pPlayer->m_iMenu = Menu_BuyMachineGun;
+							if (CSGameRules()->m_bMapHasVIPSafetyZone && pPlayer->m_iTeam == TERRORIST)
+								ShowVGUIMenu(pPlayer, VGUI_Menu_Buy_MachineGun, MENU_KEY_0, "#AS_T_BuyMachineGun");
 							else
-								ShowVGUIMenu(player, VGUI_Menu_Buy_MachineGun, (MENU_KEY_1 | MENU_KEY_0), "#BuyMachineGun");
+								ShowVGUIMenu(pPlayer, VGUI_Menu_Buy_MachineGun, (MENU_KEY_1 | MENU_KEY_0), "#BuyMachineGun");
 							break;
 						}
 						case VGUI_MenuSlot_Buy_PrimAmmo:
 						{
-							if (player->m_signals.GetState() & SIGNAL_BUY)
+							if (pPlayer->m_signals.GetState() & SIGNAL_BUY)
 							{
-								if (BuyAmmo(player, PRIMARY_WEAPON_SLOT, true))
+								if (BuyAmmo(pPlayer, PRIMARY_WEAPON_SLOT, true))
 								{
-									while (BuyAmmo(player, PRIMARY_WEAPON_SLOT, false))
+									while (BuyAmmo(pPlayer, PRIMARY_WEAPON_SLOT, false))
 										;
 
 									if (TheTutor)
 									{
-										TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, player);
+										TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, pPlayer);
 									}
 								}
 
-								player->BuildRebuyStruct();
+								pPlayer->BuildRebuyStruct();
 							}
 							break;
 						}
 						case VGUI_MenuSlot_Buy_SecAmmo:
 						{
-							if (player->m_signals.GetState() & SIGNAL_BUY)
+							if (pPlayer->m_signals.GetState() & SIGNAL_BUY)
 							{
-								if (BuyAmmo(player, PISTOL_SLOT, true))
+								if (BuyAmmo(pPlayer, PISTOL_SLOT, true))
 								{
-									while (BuyAmmo(player, PISTOL_SLOT, false))
+									while (BuyAmmo(pPlayer, PISTOL_SLOT, false))
 										;
 
 									if (TheTutor)
 									{
-										TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, player);
+										TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, pPlayer);
 									}
 								}
 
-								player->BuildRebuyStruct();
+								pPlayer->BuildRebuyStruct();
 							}
 							break;
 						}
 						case VGUI_MenuSlot_Buy_Item:
 						{
-							if (player->m_signals.GetState() & SIGNAL_BUY)
+							if (pPlayer->m_signals.GetState() & SIGNAL_BUY)
 							{
-								player->m_iMenu = Menu_BuyItem;
+								pPlayer->m_iMenu = Menu_BuyItem;
 								if (CSGameRules()->m_bMapHasBombTarget)
 								{
-									if (player->m_iTeam == CT)
-										ShowVGUIMenu(player, VGUI_Menu_Buy_Item, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_7 | MENU_KEY_8 | MENU_KEY_0), "#DCT_BuyItem");
+									if (pPlayer->m_iTeam == CT)
+										ShowVGUIMenu(pPlayer, VGUI_Menu_Buy_Item, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_7 | MENU_KEY_8 | MENU_KEY_0), "#DCT_BuyItem");
 									else
-										ShowVGUIMenu(player, VGUI_Menu_Buy_Item, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_0), "#DT_BuyItem");
+										ShowVGUIMenu(pPlayer, VGUI_Menu_Buy_Item, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_0), "#DT_BuyItem");
 								}
 								else
 								{
-									if (player->m_iTeam == CT)
-										ShowVGUIMenu(player, VGUI_Menu_Buy_Item, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_8 | MENU_KEY_0), "#CT_BuyItem");
+									if (pPlayer->m_iTeam == CT)
+										ShowVGUIMenu(pPlayer, VGUI_Menu_Buy_Item, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_8 | MENU_KEY_0), "#CT_BuyItem");
 									else
-										ShowVGUIMenu(player, VGUI_Menu_Buy_Item, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_0), "#T_BuyItem");
+										ShowVGUIMenu(pPlayer, VGUI_Menu_Buy_Item, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_0), "#T_BuyItem");
 								}
 							}
 							break;
@@ -2937,58 +2941,58 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 			case Menu_BuyPistol:
 			{
 				if (canOpenOldMenu()) {
-					BuyPistol(player, slot);
+					BuyPistol(pPlayer, slot);
 				}
 				break;
 			}
 			case Menu_BuyShotgun:
 			{
 				if (canOpenOldMenu()) {
-					BuyShotgun(player, slot);
+					BuyShotgun(pPlayer, slot);
 				}
 				break;
 			}
 			case Menu_BuySubMachineGun:
 			{
 				if (canOpenOldMenu()) {
-					BuySubMachineGun(player, slot);
+					BuySubMachineGun(pPlayer, slot);
 				}
 				break;
 			}
 			case Menu_BuyRifle:
 			{
 				if (canOpenOldMenu()) {
-					BuyRifle(player, slot);
+					BuyRifle(pPlayer, slot);
 				}
 				break;
 			}
 			case Menu_BuyMachineGun:
 			{
 				if (canOpenOldMenu()) {
-					BuyMachineGun(player, slot);
+					BuyMachineGun(pPlayer, slot);
 				}
 				break;
 			}
 			case Menu_BuyItem:
 			{
 				if (canOpenOldMenu()) {
-					BuyItem(player, slot);
+					BuyItem(pPlayer, slot);
 				}
 				break;
 			}
 			case Menu_Radio1:
 			{
-				Radio1(player, slot);
+				Radio1(pPlayer, slot);
 				break;
 			}
 			case Menu_Radio2:
 			{
-				Radio2(player, slot);
+				Radio2(pPlayer, slot);
 				break;
 			}
 			case Menu_Radio3:
 			{
-				Radio3(player, slot);
+				Radio3(pPlayer, slot);
 				break;
 			}
 			default:
@@ -2998,123 +3002,123 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 	}
 	else if (FStrEq(pcmd, "chooseteam"))
 	{
-		if (player->m_iMenu == Menu_ChooseAppearance)
+		if (pPlayer->m_iMenu == Menu_ChooseAppearance)
 			return;
 
-		if (player->m_bTeamChanged)
+		if (pPlayer->m_bTeamChanged)
 		{
-			if (player->pev->deadflag != DEAD_NO)
+			if (pPlayer->pev->deadflag != DEAD_NO)
 			{
-				ClientPrint(player->pev, HUD_PRINTCENTER, "#Only_1_Team_Change");
+				ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Only_1_Team_Change");
 				return;
 			}
 		}
 
 		if (!CSGameRules()->IsCareer())
 		{
-			player->m_iMenu = Menu_ChooseTeam;
-			if (CSGameRules()->m_bMapHasVIPSafetyZone && player->m_iJoiningState == JOINED && player->m_iTeam == CT)
+			pPlayer->m_iMenu = Menu_ChooseTeam;
+			if (CSGameRules()->m_bMapHasVIPSafetyZone && pPlayer->m_iJoiningState == JOINED && pPlayer->m_iTeam == CT)
 			{
-				if (CSGameRules()->IsFreezePeriod() || player->pev->deadflag != DEAD_NO)
-					ShowVGUIMenu(player, VGUI_Menu_Team, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_0), "#IG_VIP_Team_Select_Spect");
+				if (CSGameRules()->IsFreezePeriod() || pPlayer->pev->deadflag != DEAD_NO)
+					ShowVGUIMenu(pPlayer, VGUI_Menu_Team, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_0), "#IG_VIP_Team_Select_Spect");
 				else
-					ShowVGUIMenu(player, VGUI_Menu_Team, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_5 | MENU_KEY_0), "#IG_VIP_Team_Select");
+					ShowVGUIMenu(pPlayer, VGUI_Menu_Team, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_5 | MENU_KEY_0), "#IG_VIP_Team_Select");
 			}
 			else
 			{
-				if (CSGameRules()->IsFreezePeriod() || player->pev->deadflag != DEAD_NO)
-					ShowVGUIMenu(player, VGUI_Menu_Team, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_0), "#IG_Team_Select_Spect");
+				if (CSGameRules()->IsFreezePeriod() || pPlayer->pev->deadflag != DEAD_NO)
+					ShowVGUIMenu(pPlayer, VGUI_Menu_Team, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_0), "#IG_Team_Select_Spect");
 				else
-					ShowVGUIMenu(player, VGUI_Menu_Team, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_5 | MENU_KEY_0), "#IG_Team_Select");
+					ShowVGUIMenu(pPlayer, VGUI_Menu_Team, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_5 | MENU_KEY_0), "#IG_Team_Select");
 			}
 		}
 	}
 	else if (FStrEq(pcmd, "showbriefing"))
 	{
-		if (player->m_iMenu == Menu_OFF)
+		if (pPlayer->m_iMenu == Menu_OFF)
 		{
 			if (g_szMapBriefingText[0] != '\0')
 			{
-				if (player->m_iTeam != UNASSIGNED && !(player->m_afPhysicsFlags & PFLAG_OBSERVER))
+				if (pPlayer->m_iTeam != UNASSIGNED && !(pPlayer->m_afPhysicsFlags & PFLAG_OBSERVER))
 				{
-					player->MenuPrint(g_szMapBriefingText);
-					player->m_bMissionBriefing = true;
+					pPlayer->MenuPrint(g_szMapBriefingText);
+					pPlayer->m_bMissionBriefing = true;
 				}
 			}
 		}
 	}
 	else if (FStrEq(pcmd, "ignoremsg"))
 	{
-		if (player->m_iIgnoreGlobalChat == IGNOREMSG_NONE)
+		if (pPlayer->m_iIgnoreGlobalChat == IGNOREMSG_NONE)
 		{
-			player->m_iIgnoreGlobalChat = IGNOREMSG_ENEMY;
-			ClientPrint(player->pev, HUD_PRINTCENTER, "#Ignore_Broadcast_Messages");
+			pPlayer->m_iIgnoreGlobalChat = IGNOREMSG_ENEMY;
+			ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Ignore_Broadcast_Messages");
 		}
-		else if (player->m_iIgnoreGlobalChat == IGNOREMSG_ENEMY)
+		else if (pPlayer->m_iIgnoreGlobalChat == IGNOREMSG_ENEMY)
 		{
-			player->m_iIgnoreGlobalChat = IGNOREMSG_TEAM;
-			ClientPrint(player->pev, HUD_PRINTCENTER, "#Ignore_Broadcast_Team_Messages");
+			pPlayer->m_iIgnoreGlobalChat = IGNOREMSG_TEAM;
+			ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Ignore_Broadcast_Team_Messages");
 		}
-		else if (player->m_iIgnoreGlobalChat == IGNOREMSG_TEAM)
+		else if (pPlayer->m_iIgnoreGlobalChat == IGNOREMSG_TEAM)
 		{
-			player->m_iIgnoreGlobalChat = IGNOREMSG_NONE;
-			ClientPrint(player->pev, HUD_PRINTCENTER, "#Accept_All_Messages");
+			pPlayer->m_iIgnoreGlobalChat = IGNOREMSG_NONE;
+			ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Accept_All_Messages");
 		}
 	}
 	else if (FStrEq(pcmd, "ignorerad"))
 	{
-		player->m_bIgnoreRadio = !player->m_bIgnoreRadio;
-		ClientPrint(player->pev, HUD_PRINTCENTER, player->m_bIgnoreRadio ? "#Ignore_Radio" : "#Accept_Radio");
+		pPlayer->m_bIgnoreRadio = !pPlayer->m_bIgnoreRadio;
+		ClientPrint(pPlayer->pev, HUD_PRINTCENTER, pPlayer->m_bIgnoreRadio ? "#Ignore_Radio" : "#Accept_Radio");
 	}
 	else if (FStrEq(pcmd, "become_vip"))
 	{
-		if (player->m_iJoiningState != JOINED || player->m_iTeam != CT)
+		if (pPlayer->m_iJoiningState != JOINED || pPlayer->m_iTeam != CT)
 		{
-			ClientPrint(player->pev, HUD_PRINTCENTER, "#Command_Not_Available");
+			ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Command_Not_Available");
 			return;
 		}
 
-		CSGameRules()->AddToVIPQueue(player);
+		CSGameRules()->AddToVIPQueue(pPlayer);
 	}
-	else if (FStrEq(pcmd, "spectate") && (player->pev->flags & FL_PROXY)) // always allow proxies to become a spectator
+	else if (FStrEq(pcmd, "spectate") && (pPlayer->pev->flags & FL_PROXY)) // always allow proxies to become a spectator
 	{
 		// clients wants to become a spectator
-		HandleMenu_ChooseTeam(player, MENU_SLOT_TEAM_SPECT);
+		HandleMenu_ChooseTeam(pPlayer, MENU_SLOT_TEAM_SPECT);
 	}
 	else if (FStrEq(pcmd, "specmode"))
 	{
 		// new spectator mode
 		int mode = Q_atoi(parg1);
-		if (player->IsObserver() && player->CanSwitchObserverModes())
-			player->Observer_SetMode(mode);
+		if (pPlayer->IsObserver() && pPlayer->CanSwitchObserverModes())
+			pPlayer->Observer_SetMode(mode);
 		else
-			player->m_iObserverLastMode = mode;
+			pPlayer->m_iObserverLastMode = mode;
 
 		if (mode == OBS_CHASE_FREE)
 		{
-			MESSAGE_BEGIN(MSG_ONE, gmsgADStop, nullptr, player->pev);
+			MESSAGE_BEGIN(MSG_ONE, gmsgADStop, nullptr, pPlayer->pev);
 			MESSAGE_END();
 		}
 	}
 	else if (FStrEq(pcmd, "spec_set_ad"))
 	{
 		float val = Q_atof(parg1);
-		player->SetObserverAutoDirector(val > 0.0f);
+		pPlayer->SetObserverAutoDirector(val > 0.0f);
 	}
 	else if (FStrEq(pcmd, "follownext"))
 	{
 		// follow next player
 		int arg = Q_atoi(parg1);
-		if (player->IsObserver() && player->CanSwitchObserverModes())
+		if (pPlayer->IsObserver() && pPlayer->CanSwitchObserverModes())
 		{
-			player->Observer_FindNextPlayer(arg != 0);
+			pPlayer->Observer_FindNextPlayer(arg != 0);
 		}
 	}
 	else if (FStrEq(pcmd, "follow"))
 	{
-		if (player->IsObserver() && player->CanSwitchObserverModes())
+		if (pPlayer->IsObserver() && pPlayer->CanSwitchObserverModes())
 		{
-			player->Observer_FindNextPlayer(false, parg1);
+			pPlayer->Observer_FindNextPlayer(false, parg1);
 		}
 	}
 	else
@@ -3134,71 +3138,71 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 		}
 		else if (FStrEq(pcmd, "jointeam"))
 		{
-			if (player->m_iMenu == Menu_ChooseAppearance)
+			if (pPlayer->m_iMenu == Menu_ChooseAppearance)
 			{
-				ClientPrint(player->pev, HUD_PRINTCENTER, "#Command_Not_Available");
+				ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Command_Not_Available");
 				return;
 			}
 
 			int slot = Q_atoi(parg1);
-			if (HandleMenu_ChooseTeam(player, slot))
+			if (HandleMenu_ChooseTeam(pPlayer, slot))
 			{
-				if (slot == MENU_SLOT_TEAM_VIP || slot == MENU_SLOT_TEAM_SPECT || player->m_bIsVIP)
+				if (slot == MENU_SLOT_TEAM_VIP || slot == MENU_SLOT_TEAM_SPECT || pPlayer->m_bIsVIP)
 				{
 #ifdef REGAMEDLL_FIXES
-					player->ResetMenu();
+					pPlayer->ResetMenu();
 #else
-					player->m_iMenu = Menu_OFF;
+					pPlayer->m_iMenu = Menu_OFF;
 #endif
 				}
 				else
-					player->m_iMenu = Menu_ChooseAppearance;
+					pPlayer->m_iMenu = Menu_ChooseAppearance;
 			}
 			else
 			{
-				player->m_iMenu = Menu_ChooseTeam;
-				if (player->m_iJoiningState == JOINED)
-					ShowVGUIMenu(player, VGUI_Menu_Team, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_5 | MENU_KEY_0), "#IG_Team_Select");
+				pPlayer->m_iMenu = Menu_ChooseTeam;
+				if (pPlayer->m_iJoiningState == JOINED)
+					ShowVGUIMenu(pPlayer, VGUI_Menu_Team, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_5 | MENU_KEY_0), "#IG_Team_Select");
 				else
-					ShowVGUIMenu(player, VGUI_Menu_Team, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_5), "#Team_Select");
+					ShowVGUIMenu(pPlayer, VGUI_Menu_Team, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_5), "#Team_Select");
 			}
 		}
 		else if (FStrEq(pcmd, "joinclass"))
 		{
 			int slot = Q_atoi(parg1);
-			if (player->m_iMenu != Menu_ChooseAppearance)
+			if (pPlayer->m_iMenu != Menu_ChooseAppearance)
 			{
-				ClientPrint(player->pev, HUD_PRINTCENTER, "#Command_Not_Available");
+				ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Command_Not_Available");
 				return;
 			}
 
-			HandleMenu_ChooseAppearance(player, slot);
+			HandleMenu_ChooseAppearance(pPlayer, slot);
 		}
-		else if (player->pev->deadflag == DEAD_NO)
+		else if (pPlayer->pev->deadflag == DEAD_NO)
 		{
 			if (FStrEq(pcmd, "nightvision"))
 			{
-				if (gpGlobals->time >= player->m_flLastCommandTime[CMD_NIGHTVISION])
+				if (gpGlobals->time >= pPlayer->m_flLastCommandTime[CMD_NIGHTVISION])
 				{
-					player->m_flLastCommandTime[CMD_NIGHTVISION] = gpGlobals->time + 0.3f;
+					pPlayer->m_flLastCommandTime[CMD_NIGHTVISION] = gpGlobals->time + 0.3f;
 
-					if (!player->m_bHasNightVision)
+					if (!pPlayer->m_bHasNightVision)
 						return;
 
-					if (player->m_bNightVisionOn)
+					if (pPlayer->m_bNightVisionOn)
 					{
-						EMIT_SOUND(ENT(player->pev), CHAN_ITEM, "items/nvg_off.wav", RANDOM_FLOAT(0.92, 1), ATTN_NORM);
+						EMIT_SOUND(ENT(pPlayer->pev), CHAN_ITEM, "items/nvg_off.wav", RANDOM_FLOAT(0.92, 1), ATTN_NORM);
 
-						MESSAGE_BEGIN(MSG_ONE, gmsgNVGToggle, nullptr, player->pev);
+						MESSAGE_BEGIN(MSG_ONE, gmsgNVGToggle, nullptr, pPlayer->pev);
 							WRITE_BYTE(0); // disable nightvision
 						MESSAGE_END();
 
-						player->m_bNightVisionOn = false;
+						pPlayer->m_bNightVisionOn = false;
 
-						for (int i = 1; i <= gpGlobals->maxClients; ++i)
+						for (int i = 1; i <= gpGlobals->maxClients; i++)
 						{
 							CBasePlayer *pObserver = UTIL_PlayerByIndex(i);
-							if (pObserver && pObserver->IsObservingPlayer(player))
+							if (pObserver && pObserver->IsObservingPlayer(pPlayer))
 							{
 								EMIT_SOUND(ENT(pObserver->pev), CHAN_ITEM, "items/nvg_off.wav", RANDOM_FLOAT(0.92, 1), ATTN_NORM);
 
@@ -3212,18 +3216,18 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 					}
 					else
 					{
-						EMIT_SOUND(ENT(player->pev), CHAN_ITEM, "items/nvg_on.wav", RANDOM_FLOAT(0.92, 1), ATTN_NORM);
+						EMIT_SOUND(ENT(pPlayer->pev), CHAN_ITEM, "items/nvg_on.wav", RANDOM_FLOAT(0.92, 1), ATTN_NORM);
 
-						MESSAGE_BEGIN(MSG_ONE, gmsgNVGToggle, nullptr, player->pev);
+						MESSAGE_BEGIN(MSG_ONE, gmsgNVGToggle, nullptr, pPlayer->pev);
 							WRITE_BYTE(1); // enable nightvision
 						MESSAGE_END();
 
-						player->m_bNightVisionOn = true;
+						pPlayer->m_bNightVisionOn = true;
 
-						for (int i = 1; i <= gpGlobals->maxClients; ++i)
+						for (int i = 1; i <= gpGlobals->maxClients; i++)
 						{
 							CBasePlayer *pObserver = UTIL_PlayerByIndex(i);
-							if (pObserver && pObserver->IsObservingPlayer(player))
+							if (pObserver && pObserver->IsObservingPlayer(pPlayer))
 							{
 								EMIT_SOUND(ENT(pObserver->pev), CHAN_ITEM, "items/nvg_on.wav", RANDOM_FLOAT(0.92, 1), ATTN_NORM);
 
@@ -3239,34 +3243,34 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 			}
 			else if (FStrEq(pcmd, "radio1"))
 			{
-				ShowMenu(player, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_0), -1, FALSE, "#RadioA");
-				player->m_iMenu = Menu_Radio1;
+				ShowMenu(pPlayer, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_0), -1, FALSE, "#RadioA");
+				pPlayer->m_iMenu = Menu_Radio1;
 			}
 			else if (FStrEq(pcmd, "radio2"))
 			{
-				ShowMenu(player, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_0), -1, FALSE, "#RadioB");
-				player->m_iMenu = Menu_Radio2;
+				ShowMenu(pPlayer, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_0), -1, FALSE, "#RadioB");
+				pPlayer->m_iMenu = Menu_Radio2;
 				return;
 			}
 			else if (FStrEq(pcmd, "radio3"))
 			{
-				ShowMenu(player, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_7 | MENU_KEY_8 | MENU_KEY_9 | MENU_KEY_0), -1, FALSE, "#RadioC");
-				player->m_iMenu = Menu_Radio3;
+				ShowMenu(pPlayer, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_7 | MENU_KEY_8 | MENU_KEY_9 | MENU_KEY_0), -1, FALSE, "#RadioC");
+				pPlayer->m_iMenu = Menu_Radio3;
 			}
 			else if (FStrEq(pcmd, "drop"))
 			{
 				// player is dropping an item.
-				if (player->HasShield())
+				if (pPlayer->HasShield())
 				{
-					if (player->m_pActiveItem && player->m_pActiveItem->m_iId == WEAPON_C4)
+					if (pPlayer->m_pActiveItem && pPlayer->m_pActiveItem->m_iId == WEAPON_C4)
 					{
-						player->DropPlayerItem("weapon_c4");
+						pPlayer->DropPlayerItem("weapon_c4");
 					}
 					else
-						player->DropShield();
+						pPlayer->DropShield();
 				}
 				else
-					player->DropPlayerItem(parg1);
+					pPlayer->DropPlayerItem(parg1);
 			}
 			else if (FStrEq(pcmd, "fov"))
 			{
@@ -3291,58 +3295,58 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 			}
 			else if (FStrEq(pcmd, "buyammo1"))
 			{
-				if (player->m_signals.GetState() & SIGNAL_BUY)
+				if (pPlayer->m_signals.GetState() & SIGNAL_BUY)
 				{
-					BuyAmmo(player, PRIMARY_WEAPON_SLOT, true);
-					player->BuildRebuyStruct();
+					BuyAmmo(pPlayer, PRIMARY_WEAPON_SLOT, true);
+					pPlayer->BuildRebuyStruct();
 
 					if (TheTutor)
 					{
-						TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, player);
+						TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, pPlayer);
 					}
 				}
 			}
 			else if (FStrEq(pcmd, "buyammo2"))
 			{
-				if (player->m_signals.GetState() & SIGNAL_BUY)
+				if (pPlayer->m_signals.GetState() & SIGNAL_BUY)
 				{
-					BuyAmmo(player, PISTOL_SLOT, true);
-					player->BuildRebuyStruct();
+					BuyAmmo(pPlayer, PISTOL_SLOT, true);
+					pPlayer->BuildRebuyStruct();
 
 					if (TheTutor)
 					{
-						TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, player);
+						TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, pPlayer);
 					}
 				}
 			}
 			else if (FStrEq(pcmd, "buyequip"))
 			{
-				if (player->m_signals.GetState() & SIGNAL_BUY)
+				if (pPlayer->m_signals.GetState() & SIGNAL_BUY)
 				{
 					if (CSGameRules()->m_bMapHasBombTarget)
 					{
-						if (player->m_iTeam == CT)
-							ShowVGUIMenu(player, VGUI_Menu_Buy_Item, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_7 | MENU_KEY_8 | MENU_KEY_0), "#DCT_BuyItem");
+						if (pPlayer->m_iTeam == CT)
+							ShowVGUIMenu(pPlayer, VGUI_Menu_Buy_Item, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_7 | MENU_KEY_8 | MENU_KEY_0), "#DCT_BuyItem");
 						else
-							ShowVGUIMenu(player, VGUI_Menu_Buy_Item, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_0), "#DT_BuyItem");
+							ShowVGUIMenu(pPlayer, VGUI_Menu_Buy_Item, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_0), "#DT_BuyItem");
 					}
 					else
 					{
-						if (player->m_iTeam == CT)
-							ShowVGUIMenu(player, VGUI_Menu_Buy_Item, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_8 | MENU_KEY_0), "#CT_BuyItem");
+						if (pPlayer->m_iTeam == CT)
+							ShowVGUIMenu(pPlayer, VGUI_Menu_Buy_Item, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_8 | MENU_KEY_0), "#CT_BuyItem");
 						else
-							ShowVGUIMenu(player, VGUI_Menu_Buy_Item, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_0), "#T_BuyItem");
+							ShowVGUIMenu(pPlayer, VGUI_Menu_Buy_Item, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_0), "#T_BuyItem");
 					}
 
-					player->m_iMenu = Menu_BuyItem;
+					pPlayer->m_iMenu = Menu_BuyItem;
 				}
 			}
 			else if (FStrEq(pcmd, "buy"))
 			{
-				if (player->m_signals.GetState() & SIGNAL_BUY)
+				if (pPlayer->m_signals.GetState() & SIGNAL_BUY)
 				{
-					ShowVGUIMenu(player, VGUI_Menu_Buy, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_7 | MENU_KEY_8 | MENU_KEY_0), "#Buy");
-					player->m_iMenu = Menu_Buy;
+					ShowVGUIMenu(pPlayer, VGUI_Menu_Buy, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_7 | MENU_KEY_8 | MENU_KEY_0), "#Buy");
+					pPlayer->m_iMenu = Menu_Buy;
 
 					if (TheBots)
 					{
@@ -3352,60 +3356,60 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 			}
 			else if (FStrEq(pcmd, "cl_setautobuy"))
 			{
-				player->ClearAutoBuyData();
+				pPlayer->ClearAutoBuyData();
 
 				for (int i = 1; i < CMD_ARGC_(); ++i)
 				{
-					player->AddAutoBuyData(CMD_ARGV_(i));
+					pPlayer->AddAutoBuyData(CMD_ARGV_(i));
 				}
 
 				bool oldval = g_bClientPrintEnable;
 				g_bClientPrintEnable = false;
-				player->AutoBuy();
+				pPlayer->AutoBuy();
 				g_bClientPrintEnable = oldval;
 			}
 			else if (FStrEq(pcmd, "cl_setrebuy"))
 			{
 				if (CMD_ARGC_() == 2)
 				{
-					player->InitRebuyData(parg1);
+					pPlayer->InitRebuyData(parg1);
 
 					bool oldval = g_bClientPrintEnable;
 					g_bClientPrintEnable = false;
-					player->Rebuy();
+					pPlayer->Rebuy();
 					g_bClientPrintEnable = oldval;
 				}
 			}
 			else if (FStrEq(pcmd, "cl_autobuy"))
 			{
-				if (player->m_signals.GetState() & SIGNAL_BUY)
+				if (pPlayer->m_signals.GetState() & SIGNAL_BUY)
 				{
 					bool oldval = g_bClientPrintEnable;
 					g_bClientPrintEnable = false;
-					player->AutoBuy();
+					pPlayer->AutoBuy();
 					g_bClientPrintEnable = oldval;
 				}
 			}
 			else if (FStrEq(pcmd, "cl_rebuy"))
 			{
-				if (player->m_signals.GetState() & SIGNAL_BUY)
+				if (pPlayer->m_signals.GetState() & SIGNAL_BUY)
 				{
 					bool oldval = g_bClientPrintEnable;
 					g_bClientPrintEnable = false;
-					player->Rebuy();
+					pPlayer->Rebuy();
 					g_bClientPrintEnable = oldval;
 				}
 			}
 			else if (FStrEq(pcmd, "smartradio"))
 			{
-				player->SmartRadio();
+				pPlayer->SmartRadio();
 			}
 			else
 			{
-				if (HandleBuyAliasCommands(player, pcmd))
+				if (HandleBuyAliasCommands(pPlayer, pcmd))
 					return;
 
-				if (HandleRadioAliasCommands(player, pcmd))
+				if (HandleRadioAliasCommands(pPlayer, pcmd))
 					return;
 
 				if (!g_pGameRules->ClientCommand(GetClassPtr<CCSPlayer>((CBasePlayer *)pev), pcmd))
@@ -4369,7 +4373,7 @@ int EXT_FUNC AddToFullPack(struct entity_state_s *state, int e, edict_t *ent, ed
 }
 
 // Creates baselines used for network encoding, especially for player data since players are not spawned until connect time.
-void EXT_FUNC CreateBaseline(int player, int eindex, struct entity_state_s *baseline, struct edict_s *entity, int playermodelindex, Vector player_mins, Vector player_maxs)
+void EXT_FUNC CreateBaseline(int player, int eindex, struct entity_state_s *baseline, edict_t *entity, int playermodelindex, Vector player_mins, Vector player_maxs)
 {
 	baseline->origin = entity->v.origin;
 	baseline->angles = entity->v.angles;
@@ -4588,10 +4592,10 @@ void EXT_FUNC RegisterEncoders()
 	DELTA_ADDENCODER("Player_Encode", Player_Encode);
 }
 
-int EXT_FUNC GetWeaponData(edict_t *player, struct weapon_data_s *info)
+int EXT_FUNC GetWeaponData(edict_t *pEdict, struct weapon_data_s *info)
 {
 #ifdef CLIENT_WEAPONS
-	entvars_t *pev = &player->v;
+	entvars_t *pev = &pEdict->v;
 	CBasePlayer *pPlayer = CBasePlayer::Instance(pev);
 
 	Q_memset(info, 0, sizeof(weapon_data_t) * MAX_WEAPONS);
@@ -4646,7 +4650,7 @@ int EXT_FUNC GetWeaponData(edict_t *player, struct weapon_data_s *info)
 }
 
 // Data sent to current client only engine sets cd to 0 before calling.
-void EXT_FUNC UpdateClientData(const struct edict_s *ent, int sendweapons, struct clientdata_s *cd)
+void EXT_FUNC UpdateClientData(const edict_t *ent, int sendweapons, struct clientdata_s *cd)
 {
 	if (!ent || !ent->pvPrivateData)
 		return;
@@ -4764,9 +4768,9 @@ void EXT_FUNC UpdateClientData(const struct edict_s *ent, int sendweapons, struc
 	}
 }
 
-void EXT_FUNC CmdStart(const edict_t *player, const struct usercmd_s *cmd, unsigned int random_seed)
+void EXT_FUNC CmdStart(const edict_t *pEdict, const struct usercmd_s *cmd, unsigned int random_seed)
 {
-	entvars_t *pev = const_cast<entvars_t *>(&player->v);
+	entvars_t *pev = const_cast<entvars_t *>(&pEdict->v);
 	CBasePlayer *pPlayer = CBasePlayer::Instance(pev);
 
 	if (!pPlayer)
@@ -4778,9 +4782,9 @@ void EXT_FUNC CmdStart(const edict_t *player, const struct usercmd_s *cmd, unsig
 	pPlayer->random_seed = random_seed;
 }
 
-void EXT_FUNC CmdEnd(const edict_t *player)
+void EXT_FUNC CmdEnd(const edict_t *pEdict)
 {
-	entvars_t *pev = const_cast<entvars_t *>(&player->v);
+	entvars_t *pev = const_cast<entvars_t *>(&pEdict->v);
 	CBasePlayer *pPlayer = CBasePlayer::Instance(pev);
 
 	if (!pPlayer)
@@ -4867,7 +4871,7 @@ void EXT_FUNC CreateInstancedBaselines()
 #endif
 }
 
-int EXT_FUNC InconsistentFile(const edict_t *player, const char *filename, char *disconnect_message)
+int EXT_FUNC InconsistentFile(const edict_t *pEdict, const char *filename, char *disconnect_message)
 {
 	// Server doesn't care?
 	if (!CVAR_GET_FLOAT("mp_consistency"))
