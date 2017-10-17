@@ -1238,7 +1238,7 @@ void packPlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 		// pack the ammo
 		if (packAmmo)
 		{
-			pWeaponBox->PackAmmo(MAKE_STRING(IMPL_CLASS(CBasePlayerItem, ItemInfoArray)[pItem->m_iId].pszAmmo1), pPlayer->m_rgAmmo[pItem->PrimaryAmmoIndex()]);
+			pWeaponBox->PackAmmo(MAKE_STRING(IMPL_CLASS(CBasePlayerItem, m_ItemInfoArray)[pItem->m_iId].pszAmmo1), pPlayer->m_rgAmmo[pItem->PrimaryAmmoIndex()]);
 		}
 
 		SET_MODEL(ENT(pWeaponBox->pev), modelName);
@@ -1301,7 +1301,7 @@ void packPlayerNade(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 		// pack the ammo
 		if (packAmmo)
 		{
-			pWeaponBox->PackAmmo(MAKE_STRING(IMPL_CLASS(CBasePlayerItem, ItemInfoArray)[pItem->m_iId].pszAmmo1), pPlayer->m_rgAmmo[pItem->PrimaryAmmoIndex()]);
+			pWeaponBox->PackAmmo(MAKE_STRING(IMPL_CLASS(CBasePlayerItem, m_ItemInfoArray)[pItem->m_iId].pszAmmo1), pPlayer->m_rgAmmo[pItem->PrimaryAmmoIndex()]);
 		}
 
 		SET_MODEL(ENT(pWeaponBox->pev), modelName);
@@ -6439,10 +6439,10 @@ int CBasePlayer::GetAmmoIndex(const char *psz)
 
 	for (int i = 1; i < MAX_AMMO_SLOTS; i++)
 	{
-		if (!IMPL_CLASS(CBasePlayerItem, AmmoInfoArray)[ i ].pszName)
+		if (!IMPL_CLASS(CBasePlayerItem, m_AmmoInfoArray)[i].pszName)
 			continue;
 
-		if (!Q_stricmp(psz, IMPL_CLASS(CBasePlayerItem, AmmoInfoArray)[ i ].pszName))
+		if (!Q_stricmp(psz, IMPL_CLASS(CBasePlayerItem, m_AmmoInfoArray)[i].pszName))
 			return i;
 	}
 

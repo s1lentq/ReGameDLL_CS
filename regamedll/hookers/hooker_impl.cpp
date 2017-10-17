@@ -125,14 +125,14 @@ CSoundEnt *pSoundEnt;
 
 // globals weapons
 const char *g_pModelNameLaser;
-ItemInfo IMPL_CLASS(CBasePlayerItem, ItemInfoArray)[32];
-AmmoInfo IMPL_CLASS(CBasePlayerItem, AmmoInfoArray)[32];
+ItemInfo IMPL_CLASS(CBasePlayerItem, m_ItemInfoArray)[32];
+AmmoInfo IMPL_CLASS(CBasePlayerItem, m_AmmoInfoArray)[32];
 
 AutoBuyInfoStruct g_autoBuyInfo[35];
-WeaponAliasInfo weaponAliasInfo[39];
-WeaponBuyAliasInfo weaponBuyAliasInfo[43];
-WeaponClassAliasInfo weaponClassAliasInfo[46];
-WeaponInfoStruct weaponInfo[27];
+WeaponAliasInfo g_weaponAliasInfo[39];
+WeaponBuyAliasInfo g_weaponBuyAliasInfo[43];
+WeaponClassAliasInfo g_weaponClassAliasInfo[46];
+WeaponInfoStruct g_weaponInfo[27];
 
 // globals utils
 TYPEDESCRIPTION gEntvarsDescription[86];

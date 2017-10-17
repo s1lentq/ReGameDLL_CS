@@ -83,17 +83,32 @@ enum AutoBuyClassType
 	AUTOBUYCLASS_SHIELD         = BIT(13),
 };
 
+enum ItemCostType
+{
+	ASSAULTSUIT_PRICE   = 1000,
+	FLASHBANG_PRICE     = 200,
+	HEGRENADE_PRICE     = 300,
+	SMOKEGRENADE_PRICE  = 300,
+	KEVLAR_PRICE        = 650,
+	HELMET_PRICE        = 350,
+	NVG_PRICE           = 1250,
+	DEFUSEKIT_PRICE     = 200,
+};
+
 enum AmmoCostType
 {
-	AMMO_338MAG_PRICE   = 125,
-	AMMO_357SIG_PRICE   = 50,
-	AMMO_45ACP_PRICE    = 25,
-	AMMO_50AE_PRICE     = 40,
-	AMMO_556MM_PRICE    = 60,
-	AMMO_57MM_PRICE     = 50,
-	AMMO_762MM_PRICE    = 80,
-	AMMO_9MM_PRICE      = 20,
-	AMMO_BUCKSHOT_PRICE = 65,
+	AMMO_338MAG_PRICE       = 125,
+	AMMO_357SIG_PRICE       = 50,
+	AMMO_45ACP_PRICE        = 25,
+	AMMO_50AE_PRICE         = 40,
+	AMMO_556MM_PRICE        = 60,
+	AMMO_57MM_PRICE         = 50,
+	AMMO_762MM_PRICE        = 80,
+	AMMO_9MM_PRICE          = 20,
+	AMMO_BUCKSHOT_PRICE     = 65,
+	AMMO_FLASHBANG_PRICE    = FLASHBANG_PRICE,
+	AMMO_HEGRENADE_PRICE    = HEGRENADE_PRICE,
+	AMMO_SMOKEGRENADE_PRICE = SMOKEGRENADE_PRICE,
 };
 
 enum WeaponCostType
@@ -287,28 +302,19 @@ enum WeaponClassType
 
 enum AmmoBuyAmount
 {
-	AMMO_338MAG_BUY     = 10,
-	AMMO_357SIG_BUY     = 13,
-	AMMO_45ACP_BUY      = 12,
-	AMMO_50AE_BUY       = 7,
-	AMMO_556NATO_BUY    = 30,
-	AMMO_556NATOBOX_BUY = 30,
-	AMMO_57MM_BUY       = 50,
-	AMMO_762NATO_BUY    = 30,
-	AMMO_9MM_BUY        = 30,
-	AMMO_BUCKSHOT_BUY   = 8,
-};
-
-enum ItemCostType
-{
-	ASSAULTSUIT_PRICE   = 1000,
-	FLASHBANG_PRICE     = 200,
-	HEGRENADE_PRICE     = 300,
-	SMOKEGRENADE_PRICE  = 300,
-	KEVLAR_PRICE        = 650,
-	HELMET_PRICE        = 350,
-	NVG_PRICE           = 1250,
-	DEFUSEKIT_PRICE     = 200,
+	AMMO_338MAG_BUY       = 10,
+	AMMO_357SIG_BUY       = 13,
+	AMMO_45ACP_BUY        = 12,
+	AMMO_50AE_BUY         = 7,
+	AMMO_556NATO_BUY      = 30,
+	AMMO_556NATOBOX_BUY   = 30,
+	AMMO_57MM_BUY         = 50,
+	AMMO_762NATO_BUY      = 30,
+	AMMO_9MM_BUY          = 30,
+	AMMO_BUCKSHOT_BUY     = 8,
+	AMMO_FLASHBANG_BUY    = 1,
+	AMMO_HEGRENADE_BUY    = 1,
+	AMMO_SMOKEGRENADE_BUY = 1,
 };
 
 enum shieldgun_e
@@ -413,6 +419,18 @@ struct WeaponInfoStruct
 	const char *ammoName2;
 };
 
+struct AmmoInfoStruct
+{
+	AmmoType ammoType;
+
+	int clipCost;
+	int buyClipSize;
+	int maxRounds;
+
+	const char *ammoName1;
+	const char *ammoName2;
+};
+
 struct WeaponSlotInfo
 {
 	WeaponIdType id;
@@ -436,7 +454,9 @@ void WeaponInfoReset();
 
 WeaponInfoStruct *GetWeaponInfo(int weaponID);
 WeaponInfoStruct *GetWeaponInfo(const char *weaponName);
-WeaponInfoStruct *GetAmmoInfo(const char *ammoName);
+
+AmmoInfoStruct *GetAmmoInfo(AmmoType ammoID);
+AmmoInfoStruct *GetAmmoInfo(const char *ammoName);
 
 WeaponSlotInfo *GetWeaponSlot(WeaponIdType weaponID);
 WeaponSlotInfo *GetWeaponSlot(const char *weaponName);
