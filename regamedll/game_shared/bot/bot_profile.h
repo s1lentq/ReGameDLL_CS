@@ -28,6 +28,8 @@
 
 #pragma once
 
+#include "game_shared/simple_checksum.h"
+
 // long STL names get truncated in browse info.
 #pragma warning(disable : 4786)
 
@@ -80,9 +82,10 @@ public:
 	}
 	const char *GetName() const { return m_name; }
 	float GetAggression() const { return m_aggression; }
-	float GetSkill() const { return m_skill; }
-	float GetTeamwork() const { return m_teamwork; }
+	float GetSkill()      const { return m_skill; }
+	float GetTeamwork()   const { return m_teamwork; }
 	int GetWeaponPreference(int i) const { return m_weaponPreference[i]; }
+
 	const char *GetWeaponPreferenceAsString(int i) const;
 	int GetWeaponPreferenceCount() const { return m_weaponPreferenceCount; }
 	bool HasPrimaryPreference() const;
@@ -90,12 +93,12 @@ public:
 	int GetCost() const { return m_cost; }
 	int GetSkin() const { return m_skin; }
 	bool IsDifficulty(BotDifficultyType diff) const;
-	int GetVoicePitch() const { return m_voicePitch; }
+	int GetVoicePitch()     const { return m_voicePitch; }
 	float GetReactionTime() const { return m_reactionTime; }
-	float GetAttackDelay() const { return m_attackDelay; }
-	int GetVoiceBank() const { return m_voiceBank; }
+	float GetAttackDelay()  const { return m_attackDelay; }
+	int GetVoiceBank()      const { return m_voiceBank; }
 	bool IsValidForTeam(BotProfileTeamType team) const;
-	bool PrefersSilencer() const { return m_prefersSilencer; }
+	bool PrefersSilencer()  const { return m_prefersSilencer; }
 
 private:
 	void Inherit(const BotProfile *parent, const BotProfile *baseline);
@@ -107,7 +110,6 @@ private:
 	float m_teamwork;
 
 	enum { MAX_WEAPON_PREFS = 16 };
-
 	int m_weaponPreference[MAX_WEAPON_PREFS];
 	int m_weaponPreferenceCount;
 
@@ -142,8 +144,9 @@ inline void BotProfile::Inherit(const BotProfile *parent, const BotProfile *base
 	if (parent->m_weaponPreferenceCount != baseline->m_weaponPreferenceCount)
 	{
 		m_weaponPreferenceCount = parent->m_weaponPreferenceCount;
-		for (int i = 0; i < parent->m_weaponPreferenceCount; ++i)
+		for (int i = 0; i < parent->m_weaponPreferenceCount; i++) {
 			m_weaponPreference[i] = parent->m_weaponPreference[i];
+		}
 	}
 
 	if (parent->m_cost != baseline->m_cost)
@@ -171,7 +174,7 @@ inline void BotProfile::Inherit(const BotProfile *parent, const BotProfile *base
 		m_voiceBank = parent->m_voiceBank;
 }
 
-typedef std::STD_LIST<BotProfile *> BotProfileList;
+typedef std::list<BotProfile *> BotProfileList;
 
 class BotProfileManager
 {
@@ -184,10 +187,9 @@ public:
 
 	const BotProfile *GetProfile(const char *name, BotProfileTeamType team) const
 	{
-		for (BotProfileList::const_iterator iter = m_profileList.begin(); iter != m_profileList.end(); ++iter)
-		{
-			if (!Q_stricmp(name, (*iter)->GetName()) && (*iter)->IsValidForTeam(team))
-				return (*iter);
+		for (auto profile : m_profileList) {
+			if (!Q_stricmp(name, profile->GetName()) && profile->IsValidForTeam(team))
+				return profile;
 		}
 
 		return nullptr;
@@ -200,7 +202,7 @@ public:
 	const char *GetCustomSkinFname(int index);
 	int GetCustomSkinIndex(const char *name, const char *filename = nullptr);
 
-	typedef std::STD_VECTOR<char *> VoiceBankList;
+	typedef std::vector<char *> VoiceBankList;
 
 	const VoiceBankList *GetVoiceBanks() const { return &m_voiceBanks; }
 	int FindVoiceBankIndex(const char *filename);

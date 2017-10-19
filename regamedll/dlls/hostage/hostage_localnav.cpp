@@ -1,21 +1,44 @@
+/*
+*
+*   This program is free software; you can redistribute it and/or modify it
+*   under the terms of the GNU General Public License as published by the
+*   Free Software Foundation; either version 2 of the License, or (at
+*   your option) any later version.
+*
+*   This program is distributed in the hope that it will be useful, but
+*   WITHOUT ANY WARRANTY; without even the implied warranty of
+*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+*   General Public License for more details.
+*
+*   You should have received a copy of the GNU General Public License
+*   along with this program; if not, write to the Free Software Foundation,
+*   Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*
+*   In addition, as a special exception, the author gives permission to
+*   link the code of this program with the Half-Life Game Engine ("HL
+*   Engine") and Modified Game Libraries ("MODs") developed by Valve,
+*   L.L.C ("Valve").  You must obey the GNU General Public License in all
+*   respects for all of the code used other than the HL Engine and MODs
+*   from Valve.  If you modify this file, you may extend this exception
+*   to your version of the file, but you are not obligated to do so.  If
+*   you do not wish to do so, delete this exception statement from your
+*   version.
+*
+*/
+
 #include "precompiled.h"
 
-/*
-* Globals initialization
-*/
-#ifndef HOOK_GAMEDLL
+EntityHandle<CHostage> CLocalNav::m_hQueue[MAX_HOSTAGES_NAV];
+EntityHandle<CHostage> CLocalNav::m_hHostages[MAX_HOSTAGES_NAV];
 
-float CLocalNav::s_flStepSize;
-int CLocalNav::qptr;
-EHANDLE CLocalNav::_queue[MAX_HOSTAGES_NAV];
-int CLocalNav::tot_inqueue;
-float CLocalNav::nodeval;
-float CLocalNav::flNextCvarCheck;
-float CLocalNav::flLastThinkTime;
-EHANDLE CLocalNav::hostages[MAX_HOSTAGES_NAV];
-int CLocalNav::tot_hostages;
+int CLocalNav::m_CurRequest  = 0;
+int CLocalNav::m_NumRequest  = 0;
+int CLocalNav::m_NumHostages = 0;
+int CLocalNav::m_NodeValue   = 0;
 
-#endif
+float CLocalNav::m_flStepSize      = 18.0f; // sv_stepsize by default
+float CLocalNav::m_flNextCvarCheck = 0.0f;
+float CLocalNav::m_flLastThinkTime = 0.0f;
 
 CLocalNav::CLocalNav(CHostage *pOwner)
 {
@@ -23,12 +46,10 @@ CLocalNav::CLocalNav(CHostage *pOwner)
 	m_pTargetEnt = nullptr;
 	m_nodeArr = new localnode_t[MAX_NODES];
 
-	if (tot_hostages >= MAX_HOSTAGES_NAV)
-	{
+	if (m_NumHostages >= MAX_HOSTAGES_NAV)
 		return;
-	}
 
-	hostages[tot_hostages++] = pOwner;
+	m_hHostages[m_NumHostages++] = pOwner;
 }
 
 CLocalNav::~CLocalNav()
@@ -61,7 +82,7 @@ node_index_t CLocalNav::AddNode(node_index_t nindexParent, Vector &vecLoc, int o
 
 localnode_t *CLocalNav::GetNode(node_index_t nindex)
 {
-	return &m_nodeArr[ nindex ];
+	return &m_nodeArr[nindex];
 }
 
 node_index_t CLocalNav::NodeExists(int offsetX, int offsetY)
@@ -82,7 +103,7 @@ node_index_t CLocalNav::NodeExists(int offsetX, int offsetY)
 	return nindexCurrent;
 }
 
-void CLocalNav::AddPathNodes(node_index_t nindexSource, int fNoMonsters)
+void CLocalNav::AddPathNodes(node_index_t nindexSource, BOOL fNoMonsters)
 {
 	AddPathNode(nindexSource, 1, 0, fNoMonsters);
 	AddPathNode(nindexSource, -1, 0, fNoMonsters);
@@ -94,9 +115,9 @@ void CLocalNav::AddPathNodes(node_index_t nindexSource, int fNoMonsters)
 	AddPathNode(nindexSource, -1, -1, fNoMonsters);
 }
 
-void CLocalNav::AddPathNode(node_index_t nindexSource, int offsetX, int offsetY, int fNoMonsters)
+void CLocalNav::AddPathNode(node_index_t nindexSource, int offsetX, int offsetY, BOOL fNoMonsters)
 {
-	int bDepth;
+	byte bDepth;
 	Vector vecSource, vecDest;
 	int offsetXAbs, offsetYAbs;
 
@@ -173,7 +194,7 @@ void CLocalNav::AddPathNode(node_index_t nindexSource, int offsetX, int offsetY,
 					}
 				}
 
-				if (PathTraversable(nodeSource->vecLoc, vecDest, fNoMonsters) != PATH_TRAVERSABLE_EMPTY)
+				if (PathTraversable(nodeSource->vecLoc, vecDest, fNoMonsters) != PTRAVELS_EMPTY)
 				{
 					nodeCurrent = nodeSource;
 					nindexSource = nindexCurrent;
@@ -183,10 +204,10 @@ void CLocalNav::AddPathNode(node_index_t nindexSource, int offsetX, int offsetY,
 		}
 
 		vecSource = nodeCurrent->vecLoc;
-		bDepth = int(nodeCurrent->bDepth) + 1;
+		bDepth = (nodeCurrent->bDepth + 1) & 0xff;
 	}
 
-	if (PathTraversable(vecSource, vecDest, fNoMonsters) != PATH_TRAVERSABLE_EMPTY)
+	if (PathTraversable(vecSource, vecDest, fNoMonsters) != PTRAVELS_EMPTY)
 	{
 		AddNode(nindexSource, vecDest, offsetXAbs, offsetYAbs, bDepth);
 	}
@@ -225,7 +246,7 @@ node_index_t CLocalNav::GetBestNode(Vector &vecOrigin, Vector &vecDest)
 				flZDiff = 1.0;
 			}
 
-			if ((flDistToDest * flZDiff) <= s_flStepSize)
+			if ((flDistToDest * flZDiff) <= m_flStepSize)
 				flZDiff = 1.0;
 			else
 				flZDiff = 1.25;
@@ -238,13 +259,13 @@ node_index_t CLocalNav::GetBestNode(Vector &vecOrigin, Vector &vecDest)
 			}
 		}
 
-		++nindexCurrent;
+		nindexCurrent++;
 	}
 
 	return nindexBest;
 }
 
-int CLocalNav::SetupPathNodes(node_index_t nindex, Vector *vecNodes, int fNoMonsters)
+int CLocalNav::SetupPathNodes(node_index_t nindex, Vector *vecNodes, BOOL fNoMonsters)
 {
 	node_index_t nCurrentIndex = nindex;
 	int nNodeCount = 0;
@@ -253,7 +274,7 @@ int CLocalNav::SetupPathNodes(node_index_t nindex, Vector *vecNodes, int fNoMons
 	{
 		localnode_t *nodeCurrent = GetNode(nCurrentIndex);
 		Vector vecCurrentLoc = nodeCurrent->vecLoc;
-		vecNodes[ nNodeCount++ ] = vecCurrentLoc;
+		vecNodes[nNodeCount++] = vecCurrentLoc;
 
 		nCurrentIndex = nodeCurrent->nindexParent;
 	}
@@ -261,21 +282,21 @@ int CLocalNav::SetupPathNodes(node_index_t nindex, Vector *vecNodes, int fNoMons
 	return nNodeCount;
 }
 
-int CLocalNav::GetFurthestTraversableNode(Vector &vecStartingLoc, Vector *vecNodes, int nTotalNodes, int fNoMonsters)
+node_index_t CLocalNav::GetFurthestTraversableNode(Vector &vecStartingLoc, Vector *vecNodes, int nTotalNodes, BOOL fNoMonsters)
 {
 	int nCount = 0;
 	while (nCount < nTotalNodes)
 	{
-		if (PathTraversable(vecStartingLoc, vecNodes[nCount], fNoMonsters) != PATH_TRAVERSABLE_EMPTY)
+		if (PathTraversable(vecStartingLoc, vecNodes[nCount], fNoMonsters) != PTRAVELS_EMPTY)
 			return nCount;
 
-		++nCount;
+		nCount++;
 	}
 
-	return -1;
+	return NODE_INVALID_EMPTY;
 }
 
-node_index_t CLocalNav::FindPath(Vector &vecStart, Vector &vecDest, float flTargetRadius, int fNoMonsters)
+node_index_t CLocalNav::FindPath(Vector &vecStart, Vector &vecDest, float flTargetRadius, BOOL fNoMonsters)
 {
 	node_index_t nIndexBest = FindDirectPath(vecStart, vecDest, flTargetRadius, fNoMonsters);
 
@@ -320,92 +341,92 @@ node_index_t CLocalNav::FindPath(Vector &vecStart, Vector &vecDest, float flTarg
 	}
 
 	if (m_nindexAvailableNode <= 10)
-		nodeval += 2;
+		m_NodeValue += 2;
 
 	else if (m_nindexAvailableNode <= 20)
-		nodeval += 4;
+		m_NodeValue += 4;
 
 	else if (m_nindexAvailableNode <= 30)
-		nodeval += 8;
+		m_NodeValue += 8;
 
 	else if (m_nindexAvailableNode <= 40)
-		nodeval += 13;
+		m_NodeValue += 13;
 
 	else if (m_nindexAvailableNode <= 50)
-		nodeval += 19;
+		m_NodeValue += 19;
 
 	else if (m_nindexAvailableNode <= 60)
-		nodeval += 26;
+		m_NodeValue += 26;
 
 	else if (m_nindexAvailableNode <= 70)
-		nodeval += 34;
+		m_NodeValue += 34;
 
 	else if (m_nindexAvailableNode <= 80)
-		nodeval += 43;
+		m_NodeValue += 43;
 
 	else if (m_nindexAvailableNode <= 90)
-		nodeval += 53;
+		m_NodeValue += 53;
 
 	else if (m_nindexAvailableNode <= 100)
-		nodeval += 64;
+		m_NodeValue += 64;
 
 	else if (m_nindexAvailableNode <= 110)
-		nodeval += 76;
+		m_NodeValue += 76;
 
 	else if (m_nindexAvailableNode <= 120)
-		nodeval += 89;
+		m_NodeValue += 89;
 
 	else if (m_nindexAvailableNode <= 130)
-		nodeval += 103;
+		m_NodeValue += 103;
 
 	else if (m_nindexAvailableNode <= 140)
-		nodeval += 118;
+		m_NodeValue += 118;
 
 	else if (m_nindexAvailableNode <= 150)
-		nodeval += 134;
+		m_NodeValue += 134;
 
 	else if (m_nindexAvailableNode <= 160)
-		nodeval += 151;
+		m_NodeValue += 151;
 	else
-		nodeval += 169;
+		m_NodeValue += 169;
 
 	return nIndexBest;
 }
 
-node_index_t CLocalNav::FindDirectPath(Vector &vecStart, Vector &vecDest, float flTargetRadius, int fNoMonsters)
+node_index_t CLocalNav::FindDirectPath(Vector &vecStart, Vector &vecDest, float flTargetRadius, BOOL fNoMonsters)
 {
 	Vector vecActualDest;
 	Vector vecPathDir;
 	Vector vecNodeLoc;
-	node_index_t nindexLast;
+	node_index_t nIndexLast;
 
 	vecPathDir = NormalizeSubtract<float_precision, float, float, float_precision>(vecStart, vecDest);
 	vecActualDest = vecDest - (vecPathDir * flTargetRadius);
 
-	if (PathTraversable(vecStart, vecActualDest, fNoMonsters) == PATH_TRAVERSABLE_EMPTY)
+	if (PathTraversable(vecStart, vecActualDest, fNoMonsters) == PTRAVELS_EMPTY)
 	{
 		return NODE_INVALID_EMPTY;
 	}
 
-	nindexLast = NODE_INVALID_EMPTY;
+	nIndexLast = NODE_INVALID_EMPTY;
 	vecNodeLoc = vecStart;
 	m_nindexAvailableNode = 0;
 
 	while ((vecNodeLoc - vecActualDest).Length2D() >= HOSTAGE_STEPSIZE)
 	{
-		node_index_t nindexCurrent = nindexLast;
+		node_index_t nindexCurrent = nIndexLast;
 
 		vecNodeLoc = vecNodeLoc + (vecPathDir * HOSTAGE_STEPSIZE);
-		nindexLast = AddNode(nindexCurrent, vecNodeLoc);
+		nIndexLast = AddNode(nindexCurrent, vecNodeLoc);
 
-		if (nindexLast == NODE_INVALID_EMPTY)
+		if (nIndexLast == NODE_INVALID_EMPTY)
 			break;
 	}
 
-	return nindexLast;
+	return nIndexLast;
 }
 
-BOOL CLocalNav::PathClear(Vector &vecOrigin, Vector &vecDest, int fNoMonsters, TraceResult &tr)
+BOOL CLocalNav::PathClear(Vector &vecOrigin, Vector &vecDest, BOOL fNoMonsters, TraceResult &tr)
 {
 	TRACE_MONSTER_HULL(m_pOwner->edict(), vecOrigin, vecDest, fNoMonsters, m_pOwner->edict(), &tr);
 
@@ -424,14 +445,20 @@ BOOL CLocalNav::PathClear(Vector &vecOrigin, Vector &vecDest, int fNoMonsters, T
 	return FALSE;
 }
 
-int CLocalNav::PathTraversable(Vector &vecSource, Vector &vecDest, int fNoMonsters)
+BOOL CLocalNav::PathClear(Vector &vecSource, Vector &vecDest, BOOL fNoMonsters)
+{
+	TraceResult tr;
+	return PathClear(vecSource, vecDest, fNoMonsters, tr);
+}
+
+PathTraversAble CLocalNav::PathTraversable(Vector &vecSource, Vector &vecDest, BOOL fNoMonsters)
 {
 	TraceResult tr;
 	Vector vecSrcTmp;
 	Vector vecDestTmp;
 	Vector vecDir;
 	float_precision flTotal;
-	int retval = PATH_TRAVERSABLE_EMPTY;
+	auto retval = PTRAVELS_EMPTY;
 
 	vecSrcTmp = vecSource;
 	vecDestTmp = vecDest - vecSource;
@@ -443,15 +470,15 @@ int CLocalNav::PathTraversable(Vector &vecSource, Vector &vecDest, int fNoMonste
 
 	while (flTotal > 1.0f)
 	{
-		if (flTotal >= s_flStepSize)
+		if (flTotal >= m_flStepSize)
 		{
 #ifndef PLAY_GAMEDLL
-			vecDestTmp = vecSrcTmp + (vecDir * s_flStepSize);
+			vecDestTmp = vecSrcTmp + (vecDir * m_flStepSize);
 #else
 			// TODO: fix test demo
-			vecDestTmp[0] = vecSrcTmp[0] + (vecDir[0] * s_flStepSize);
-			vecDestTmp[1] = vecSrcTmp[1] + float(vecDir[1] * s_flStepSize);
-			vecDestTmp[2] = vecSrcTmp[2] + (vecDir[2] * s_flStepSize);
+			vecDestTmp[0] = vecSrcTmp[0] + (vecDir[0] * m_flStepSize);
+			vecDestTmp[1] = vecSrcTmp[1] + float(vecDir[1] * m_flStepSize);
+			vecDestTmp[2] = vecSrcTmp[2] + (vecDir[2] * m_flStepSize);
 #endif
 
 		}
@@ -464,23 +491,23 @@ int CLocalNav::PathTraversable(Vector &vecSource, Vector &vecDest, int fNoMonste
 		{
 			vecDestTmp = tr.vecEndPos;
 
-			if (retval == PATH_TRAVERSABLE_EMPTY)
+			if (retval == PTRAVELS_EMPTY)
 			{
-				retval = PATH_TRAVERSABLE_SLOPE;
+				retval = PTRAVELS_SLOPE;
 			}
 		}
 		else
 		{
 			if (tr.fStartSolid)
 			{
-				return PATH_TRAVERSABLE_EMPTY;
+				return PTRAVELS_EMPTY;
 			}
 
 			if (tr.pHit && !fNoMonsters && tr.pHit->v.classname)
 			{
 				if (FClassnameIs(tr.pHit, "hostage_entity"))
 				{
-					return PATH_TRAVERSABLE_EMPTY;
+					return PTRAVELS_EMPTY;
 				}
 			}
 
@@ -490,21 +517,21 @@ int CLocalNav::PathTraversable(Vector &vecSource, Vector &vecDest, int fNoMonste
 			{
 				if (StepTraversable(vecSrcTmp, vecDestTmp, fNoMonsters, tr))
 				{
-					if (retval == PATH_TRAVERSABLE_EMPTY)
+					if (retval == PTRAVELS_EMPTY)
 					{
-						retval = PATH_TRAVERSABLE_STEP;
+						retval = PTRAVELS_STEP;
 					}
 				}
 				else
 				{
 					if (!StepJumpable(vecSrcTmp, vecDestTmp, fNoMonsters, tr))
 					{
-						return PATH_TRAVERSABLE_EMPTY;
+						return PTRAVELS_EMPTY;
 					}
 
-					if (retval == PATH_TRAVERSABLE_EMPTY)
+					if (retval == PTRAVELS_EMPTY)
 					{
-						retval = PATH_TRAVERSABLE_STEPJUMPABLE;
+						retval = PTRAVELS_STEPJUMPABLE;
 					}
 				}
 			}
@@ -512,12 +539,12 @@ int CLocalNav::PathTraversable(Vector &vecSource, Vector &vecDest, int fNoMonste
 			{
 				if (!SlopeTraversable(vecSrcTmp, vecDestTmp, fNoMonsters, tr))
 				{
-					return PATH_TRAVERSABLE_EMPTY;
+					return PTRAVELS_EMPTY;
 				}
 
-				if (retval == PATH_TRAVERSABLE_EMPTY)
+				if (retval == PTRAVELS_EMPTY)
 				{
-					retval = PATH_TRAVERSABLE_SLOPE;
+					retval = PTRAVELS_SLOPE;
 				}
 			}
 		}
@@ -526,7 +553,7 @@ int CLocalNav::PathTraversable(Vector &vecSource, Vector &vecDest, int fNoMonste
 
 		if (PathClear(vecDestTmp, vecDropDest, fNoMonsters, tr))
 		{
-			return PATH_TRAVERSABLE_EMPTY;
+			return PTRAVELS_EMPTY;
 		}
 
 		if (!tr.fStartSolid)
@@ -548,7 +575,7 @@ int CLocalNav::PathTraversable(Vector &vecSource, Vector &vecDest, int fNoMonste
 	return retval;
 }
 
-BOOL CLocalNav::SlopeTraversable(Vector &vecSource, Vector &vecDest, int fNoMonsters, TraceResult &tr)
+BOOL CLocalNav::SlopeTraversable(Vector &vecSource, Vector &vecDest, BOOL fNoMonsters, TraceResult &tr)
 {
 	Vector vecSlopeEnd;
 	Vector vecDown;
@@ -572,7 +599,7 @@ BOOL CLocalNav::SlopeTraversable(Vector &vecSource, Vector &vecDest, int fNoMons
 	vecSlopeEnd = tr.vecEndPos;
 
 	vecDown = vecSlopeEnd;
-	vecDown.z -= s_flStepSize;
+	vecDown.z -= m_flStepSize;
 
 	if (!PathClear(vecSlopeEnd, vecDown, fNoMonsters, tr))
 	{
@@ -587,7 +614,7 @@ BOOL CLocalNav::SlopeTraversable(Vector &vecSource, Vector &vecDest, int fNoMons
 	return TRUE;
 }
 
-BOOL CLocalNav::LadderTraversable(Vector &vecSource, Vector &vecDest, int fNoMonsters, TraceResult &tr)
+BOOL CLocalNav::LadderTraversable(Vector &vecSource, Vector &vecDest, BOOL fNoMonsters, TraceResult &tr)
 {
 	Vector vecStepStart;
 	Vector vecStepDest;
@@ -611,7 +638,7 @@ BOOL CLocalNav::LadderTraversable(Vector &vecSource, Vector &vecDest, int fNoMon
 	return PathTraversable(vecStepStart, vecDest, fNoMonsters);
 }
 
-BOOL CLocalNav::StepTraversable(Vector &vecSource, Vector &vecDest, int fNoMonsters, TraceResult &tr)
+BOOL CLocalNav::StepTraversable(Vector &vecSource, Vector &vecDest, BOOL fNoMonsters, TraceResult &tr)
 {
 	Vector vecStepStart;
 	Vector vecStepDest;
@@ -621,7 +648,7 @@ BOOL CLocalNav::StepTraversable(Vector &vecSource, Vector &vecDest, int fNoMonst
 	vecStepStart = vecSource;
 	vecStepDest = vecDest;
 
-	vecStepStart.z += s_flStepSize;
+	vecStepStart.z += m_flStepSize;
 	vecStepDest.z = vecStepStart.z;
 
 	if (!PathClear(vecStepStart, vecStepDest, fNoMonsters, tr))
@@ -638,7 +665,7 @@ BOOL CLocalNav::StepTraversable(Vector &vecSource, Vector &vecDest, int fNoMonst
 	vecStepStart = tr.vecEndPos;
 
 	vecStepDest = vecStepStart;
-	vecStepDest.z -= s_flStepSize;
+	vecStepDest.z -= m_flStepSize;
 
 	if (!PathClear(vecStepStart, vecStepDest, fNoMonsters, tr))
 	{
@@ -653,12 +680,12 @@ BOOL CLocalNav::StepTraversable(Vector &vecSource, Vector &vecDest, int fNoMonst
 	return TRUE;
 }
 
-BOOL CLocalNav::StepJumpable(Vector &vecSource, Vector &vecDest, int fNoMonsters, TraceResult &tr)
+BOOL CLocalNav::StepJumpable(Vector &vecSource, Vector &vecDest, BOOL fNoMonsters, TraceResult &tr)
 {
 	Vector vecStepStart;
 	Vector vecStepDest;
 	float flFwdFraction;
-	float flJumpHeight = s_flStepSize + 1.0f;
+	float flJumpHeight = m_flStepSize + 1.0f;
 
 	vecStepStart = vecSource;
 	vecStepStart.z += flJumpHeight;
@@ -686,7 +713,7 @@ BOOL CLocalNav::StepJumpable(Vector &vecSource, Vector &vecDest, int fNoMonsters
 
 		vecStepStart = tr.vecEndPos;
 		vecStepDest = vecStepStart;
-		vecStepDest.z -= s_flStepSize;
+		vecStepDest.z -= m_flStepSize;
 
 		if (!PathClear(vecStepStart, vecStepDest, fNoMonsters, tr))
 		{
@@ -746,120 +773,107 @@ BOOL CLocalNav::LadderHit(Vector &vecSource, Vector &vecDest, TraceResult &tr)
 
 void CLocalNav::Think()
 {
-	EHANDLE hCallback;
-	static cvar_t *sv_stepsize = nullptr;
-
-	if (gpGlobals->time >= flNextCvarCheck)
+	static cvar_t *sv_stepsize = NULL;
+	if (gpGlobals->time >= m_flNextCvarCheck)
 	{
-		if (sv_stepsize)
-			s_flStepSize = sv_stepsize->value;
+		if (sv_stepsize != NULL)
+			m_flStepSize = sv_stepsize->value;
 		else
 		{
 			sv_stepsize = CVAR_GET_POINTER("sv_stepsize");
-			s_flStepSize = s_flStepSize ? sv_stepsize->value : HOSTAGE_STEPSIZE_DEFAULT;
+			m_flStepSize = sv_stepsize ? sv_stepsize->value : 18;
 		}
 
-		flNextCvarCheck = gpGlobals->time + 1.0f;
+		m_flNextCvarCheck = gpGlobals->time + 1.0f;
 	}
 
 	HostagePrethink();
 
-	float flElapsedTime = gpGlobals->time - flLastThinkTime;
-	nodeval -= flElapsedTime * 250;
-	flLastThinkTime = gpGlobals->time;
+	float flElapsedTime = gpGlobals->time - m_flLastThinkTime;
+	m_NodeValue -= flElapsedTime * 250;
+	m_flLastThinkTime = gpGlobals->time;
 
-	if (nodeval < 0)
-		nodeval = 0;
+	if (m_NodeValue < 0)
+		m_NodeValue = 0;
 
-	else if (nodeval > 17)
+	else if (m_NodeValue > 17)
 		return;
 
-	if (tot_inqueue)
+	if (m_NumRequest)
 	{
-		hCallback = _queue[qptr];
-
-		if (!hCallback)
+		auto hHostage = m_hQueue[m_CurRequest];
+		while (!hHostage.IsValid() && m_NumRequest > 0)
 		{
-			while (tot_inqueue > 0)
+			if (++m_CurRequest == MAX_HOSTAGES_NAV)
+				m_CurRequest = 0;
+
+			m_NumRequest--;
+			if (m_NumRequest <= 0)
 			{
-				if (++qptr == MAX_HOSTAGES_NAV)
-					qptr = 0;
-
-				tot_inqueue--;
-				if (!tot_inqueue)
-				{
-					hCallback = nullptr;
-					break;
-				}
-
-				hCallback = _queue[qptr];
-
-				if (hCallback)
-					break;
+				hHostage = nullptr;
+				break;
 			}
+
+			hHostage = m_hQueue[m_CurRequest];
 		}
 
-		if (hCallback)
+		if (hHostage.IsValid())
 		{
-			CHostage *pHostage = GetClassPtr<CCSHostage>((CHostage *)hCallback->pev);
+			if (++m_CurRequest == MAX_HOSTAGES_NAV)
+				m_CurRequest = 0;
 
-			if (++qptr == MAX_HOSTAGES_NAV)
-				qptr = 0;
-
-			tot_inqueue--;
-			pHostage->NavReady();
+			m_NumRequest--;
+			hHostage->NavReady();
 		}
 	}
 }
 
 void CLocalNav::RequestNav(CHostage *pCaller)
 {
-	int curr = qptr;
+	int curr = m_CurRequest;
 	int found = 0;
 
-	if (nodeval <= 17 && !tot_inqueue)
+	if (m_NodeValue <= 17 && !m_NumRequest)
 	{
 		pCaller->NavReady();
 		return;
 	}
 
-	if (tot_inqueue >= MAX_HOSTAGES_NAV)
+	if (m_NumRequest >= MAX_HOSTAGES_NAV)
 	{
 		return;
 	}
 
-	for (int i = 0; i < tot_inqueue; ++i)
+	for (int i = 0; i < m_NumRequest; i++)
 	{
-		CHostage *pQueueItem = GetClassPtr<CCSHostage>((CHostage *)_queue[curr]->pev);
-
-		if (pQueueItem == pCaller)
+		if (m_hQueue[curr] == pCaller)
 			return;
 
 		if (++curr == MAX_HOSTAGES_NAV)
 			curr = 0;
 	}
 
-	_queue[curr] = pCaller;
-	++tot_inqueue;
+	m_hQueue[curr] = pCaller;
+	m_NumRequest++;
 }
 
 void CLocalNav::Reset()
 {
-	flNextCvarCheck = 0;
-	flLastThinkTime = 0;
-	tot_inqueue = 0;
-	qptr = 0;
-	nodeval = 0;
-	tot_hostages = 0;
+	m_flNextCvarCheck = 0.0f;
+	m_flLastThinkTime = 0.0f;
+
+	m_NumRequest = 0;
+	m_CurRequest = 0;
+	m_NumHostages = 0;
+	m_NodeValue = 0;
 }
 
 void CLocalNav::HostagePrethink()
 {
-	for (int iCount = 0; iCount < tot_hostages; ++iCount)
+	for (int i = 0; i < m_NumHostages; i++)
 	{
-		if (hostages[ iCount ])
-		{
-			GetClassPtr<CCSHostage>((CHostage *)hostages[ iCount ]->pev)->PreThink();
+		if (m_hHostages[i].IsValid()) {
+			m_hHostages[i]->PreThink();
 		}
 	}
 }

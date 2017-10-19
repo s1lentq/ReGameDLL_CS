@@ -39,9 +39,6 @@
 
 #include "MemPool.h"
 
-// Hook stuff
-#include "hookers/hooklist.h"
-
 #include "engine.h"
 #include "RegameDLLRuntimeConfig.h"
 
@@ -54,5 +51,6 @@
 #include "hookchains_impl.h"
 #include "regamedll.h"
 
-#include "regamedll_interfaces.h"
-#include "regamedll_api_impl.h"
+// API
+#include "API/CSInterfaces.h"
+#include "API/CAPI_Impl.h"

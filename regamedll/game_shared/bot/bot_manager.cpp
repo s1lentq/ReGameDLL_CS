@@ -1,10 +1,5 @@
 #include "precompiled.h"
 
-/*
-* Globals initialization
-*/
-#ifndef HOOK_GAMEDLL
-
 const char *GameEventName[NUM_GAME_EVENTS + 1] =
 {
 	"EVENT_INVALID",
@@ -105,8 +100,6 @@ const char *GameEventName[NUM_GAME_EVENTS + 1] =
 	nullptr,
 };
 
-#endif // HOOK_GAMEDLL
-
 // STL uses exceptions, but we are not compiling with them - ignore warning
 #pragma warning(disable : 4530)
 
@@ -119,8 +112,9 @@ GameEventType NameToGameEvent(const char *name)
 	int index = 0;
 	for (auto event : GameEventName)
 	{
-		if (!Q_stricmp(event, name))
+		if (!Q_stricmp(event, name)) {
 			return static_cast<GameEventType>(index);
+		}
 
 		index++;
 	}

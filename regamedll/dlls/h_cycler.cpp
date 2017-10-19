@@ -1,34 +1,15 @@
 #include "precompiled.h"
 
-/*
-* Globals initialization
-*/
-#ifndef HOOK_GAMEDLL
-
 TYPEDESCRIPTION CCycler::m_SaveData[] =
 {
 	DEFINE_FIELD(CCycler, m_animate, FIELD_INTEGER),
 };
 
-TYPEDESCRIPTION CCyclerSprite::m_SaveData[] =
-{
-	DEFINE_FIELD(CCyclerSprite, m_animate, FIELD_INTEGER),
-	DEFINE_FIELD(CCyclerSprite, m_lastTime, FIELD_TIME),
-	DEFINE_FIELD(CCyclerSprite, m_maxFrame, FIELD_FLOAT),
-};
-
-TYPEDESCRIPTION CWreckage::m_SaveData[] =
-{
-	DEFINE_FIELD(CWreckage, m_flStartTime, FIELD_TIME),
-};
-
-#endif
-
 IMPLEMENT_SAVERESTORE(CCycler, CBaseToggle)
 
 void CGenericCycler::Spawn()
 {
-	GenericCyclerSpawn((char *)STRING(pev->model), Vector(-16, -16, 0), Vector(16, 16, 72));
+	GenericCyclerSpawn(pev->model, Vector(-16, -16, 0), Vector(16, 16, 72));
 }
 
 LINK_ENTITY_TO_CLASS(cycler, CGenericCycler, CCSGenericCycler)
@@ -41,7 +22,7 @@ void CCyclerProbe::Spawn()
 }
 
 // Cycler member functions
-void CCycler::GenericCyclerSpawn(char *szModel, Vector vecMin, Vector vecMax)
+void CCycler::GenericCyclerSpawn(const char *szModel, Vector vecMin, Vector vecMax)
 {
 	if (!szModel || !szModel[0])
 	{
@@ -161,6 +142,13 @@ BOOL CCycler::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float 
 	return FALSE;
 }
 
+TYPEDESCRIPTION CCyclerSprite::m_SaveData[] =
+{
+	DEFINE_FIELD(CCyclerSprite, m_animate, FIELD_INTEGER),
+	DEFINE_FIELD(CCyclerSprite, m_lastTime, FIELD_TIME),
+	DEFINE_FIELD(CCyclerSprite, m_maxFrame, FIELD_FLOAT),
+};
+
 LINK_ENTITY_TO_CLASS(cycler_sprite, CCyclerSprite, CCSCyclerSprite)
 IMPLEMENT_SAVERESTORE(CCyclerSprite, CBaseEntity)
 
@@ -176,8 +164,8 @@ void CCyclerSprite::Spawn()
 	m_animate = 1;
 	m_lastTime = gpGlobals->time;
 
-	PRECACHE_MODEL((char *)STRING(pev->model));
-	SET_MODEL(ENT(pev), STRING(pev->model));
+	PRECACHE_MODEL(pev->model);
+	SET_MODEL(ENT(pev), pev->model);
 
 	m_maxFrame = float(MODEL_FRAMES(pev->modelindex) - 1);
 
@@ -249,8 +237,8 @@ void CWeaponCycler::Spawn()
 	pev->solid = SOLID_SLIDEBOX;
 	pev->movetype = MOVETYPE_NONE;
 
-	PRECACHE_MODEL((char *)STRING(pev->model));
-	SET_MODEL(ENT(pev), STRING(pev->model));
+	PRECACHE_MODEL(pev->model);
+	SET_MODEL(ENT(pev), pev->model);
 
 	m_iszModel = pev->model;
 	m_iModel = pev->modelindex;
@@ -302,6 +290,11 @@ void CWeaponCycler::SecondaryAttack()
 	m_flNextSecondaryAttack = gpGlobals->time + 0.3f;
 }
 
+TYPEDESCRIPTION CWreckage::m_SaveData[] =
+{
+	DEFINE_FIELD(CWreckage, m_flStartTime, FIELD_TIME),
+};
+
 IMPLEMENT_SAVERESTORE(CWreckage, CBaseToggle)
 LINK_ENTITY_TO_CLASS(cycler_wreckage, CWreckage, CCSWreckage)
 
@@ -315,10 +308,10 @@ void CWreckage::Spawn()
 	pev->frame = 0;
 	pev->nextthink = gpGlobals->time + 0.1f;
 
-	if (!FStringNull(pev->model))
+	if (!pev->model.IsNull())
 	{
-		PRECACHE_MODEL((char *)STRING(pev->model));
-		SET_MODEL(ENT(pev), STRING(pev->model));
+		PRECACHE_MODEL(pev->model);
+		SET_MODEL(ENT(pev), pev->model);
 	}
 
 	// pev->scale = 5.0;
@@ -327,9 +320,9 @@ void CWreckage::Spawn()
 
 void CWreckage::Precache()
 {
-	if (!FStringNull(pev->model))
+	if (!pev->model.IsNull())
 	{
-		PRECACHE_MODEL((char *)STRING(pev->model));
+		PRECACHE_MODEL(pev->model);
 	}
 }
 

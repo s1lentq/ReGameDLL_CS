@@ -210,6 +210,7 @@ inline const char *GetTeamName(int team)
 extern int giPrecacheGrunt;
 extern int gmsgWeapPickup;
 extern int gmsgHudText;
+extern int gmsgHudTextPro;
 extern int gmsgHudTextArgs;
 extern int gmsgShake;
 extern int gmsgFade;

@@ -40,7 +40,7 @@ public:
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 public:
-	static TYPEDESCRIPTION IMPL(m_SaveData)[3];
+	static TYPEDESCRIPTION m_SaveData[];
 
 	string_t m_globalstate;
 	int m_triggermode;
@@ -59,8 +59,9 @@ public:
 	virtual void Restart();
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
+
 public:
-	static TYPEDESCRIPTION m_SaveData[1];
+	static TYPEDESCRIPTION m_SaveData[];
 	Vector m_vecSpawn;
 #endif
 
@@ -103,7 +104,7 @@ public:
 
 public:
 	static CMomentaryRotButton *Instance(edict_t *pent) { return (CMomentaryRotButton *)GET_PRIVATE(pent); }
-	static TYPEDESCRIPTION IMPL(m_SaveData)[6];
+	static TYPEDESCRIPTION m_SaveData[];
 
 	int m_lastUsed;
 	int m_direction;
@@ -131,7 +132,8 @@ public:
 	void EXPORT SparkStop(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 public:
-	static TYPEDESCRIPTION IMPL(m_SaveData)[1];
+	static TYPEDESCRIPTION m_SaveData[];
+
 	float m_flDelay;
 };
 

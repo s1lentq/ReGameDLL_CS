@@ -13,6 +13,7 @@ void CXM1014::Spawn()
 
 	// get ready to fall
 	FallInit();
+	CSPlayerItem()->SetItemInfo(&m_ItemInfoArray[m_iId]);
 }
 
 void CXM1014::Precache()

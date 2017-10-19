@@ -278,7 +278,7 @@ BOOL CItemAntidote::MyTouch(CBasePlayer *pPlayer)
 #endif
 
 	pPlayer->SetSuitUpdate("!HEV_DET4", SUIT_SENTENCE, SUIT_NEXT_IN_1MIN);
-	pPlayer->m_rgItems[ ITEM_ID_ANTIDOTE ] += 1;
+	pPlayer->m_rgItems[ITEM_ID_ANTIDOTE] += 1;
 
 	return TRUE;
 }
@@ -301,7 +301,7 @@ void CItemSecurity::Precache()
 
 BOOL CItemSecurity::MyTouch(CBasePlayer *pPlayer)
 {
-	pPlayer->m_rgItems[ ITEM_ID_SECURITY ] += 1;
+	pPlayer->m_rgItems[ITEM_ID_SECURITY] += 1;
 	return TRUE;
 }
 

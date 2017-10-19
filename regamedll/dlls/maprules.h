@@ -37,7 +37,7 @@ public:
 	virtual int Restore(CRestore &restore);
 
 public:
-	static TYPEDESCRIPTION IMPL(m_SaveData)[1];
+	static TYPEDESCRIPTION m_SaveData[];
 
 	void SetMaster(string_t iszMaster) { m_iszMaster = iszMaster; }
 
@@ -107,7 +107,7 @@ public:
 	const char *MessageGet() const { return STRING(pev->message); }
 
 public:
-	static TYPEDESCRIPTION IMPL(m_SaveData)[1];
+	static TYPEDESCRIPTION m_SaveData[];
 
 private:
 	hudtextparms_t m_textParms;
@@ -168,7 +168,7 @@ public:
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 public:
-	static TYPEDESCRIPTION IMPL(m_SaveData)[4];
+	static TYPEDESCRIPTION m_SaveData[];
 	bool HasOnlyAlive() const { return (pev->spawnflags & SF_GAME_PZONE_ONLY_ALIVE) == SF_GAME_PZONE_ONLY_ALIVE; }
 
 private:

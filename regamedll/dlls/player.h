@@ -299,23 +299,16 @@ public:
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 };
 
-// Multiplayer intermission spots.
-class CInfoIntermission: public CPointEntity {
-public:
-	virtual void Spawn();
-	virtual void Think();
-};
-
 // Dead HEV suit prop
 class CDeadHEV: public CBaseMonster {
 public:
 	virtual void Spawn();
 	virtual void KeyValue(KeyValueData *pkvd);
-	virtual int Classify();
+	virtual int Classify() { return CLASS_HUMAN_MILITARY; }
 
 public:
 	int m_iPose;				// which sequence to display -- temporary, don't need to save
-	static char *m_szPoses[4];
+	static const char *m_szPoses[];
 };
 
 class CSprayCan: public CBaseEntity {
@@ -427,7 +420,7 @@ public:
 #endif // REGAMEDLL_API
 
 public:
-	static CBasePlayer *Instance(edict_t *pent) { return (CBasePlayer *)GET_PRIVATE(pent ? pent : ENT(0)); }
+	static CBasePlayer *Instance(edict_t *pEdict) { return GET_PRIVATE<CBasePlayer>(pEdict ? pEdict : ENT(0)); }
 	static CBasePlayer *Instance(entvars_t *pev) { return Instance(ENT(pev)); }
 	static CBasePlayer *Instance(int offset) { return Instance(ENT(offset)); }
 
@@ -613,7 +606,7 @@ public:
 	template<typename T = CBasePlayerItem, typename Functor>
 	T *ForEachItem(int slot, const Functor &func) const
 	{
-		auto item = m_rgpPlayerItems[ slot ];
+		auto item = m_rgpPlayerItems[slot];
 		while (item)
 		{
 			if (func(static_cast<T *>(item)))
@@ -653,7 +646,7 @@ public:
 		{
 			while (item)
 			{
-				if (FClassnameIs(pszItemName, STRING(item->pev->classname)) && func(static_cast<T *>(item))) {
+				if (FClassnameIs(item->pev, pszItemName) && func(static_cast<T *>(item))) {
 					return static_cast<T *>(item);
 				}
 
@@ -776,7 +769,7 @@ public:
 	float m_flgeigerDelay;
 	int m_igeigerRangePrev;
 	int m_iStepLeft;
-	char m_szTextureName[CBTEXTURENAMEMAX];
+	char m_szTextureName[MAX_TEXTURENAME_LENGHT];
 	char m_chTextureType;
 	int m_idrowndmg;
 	int m_idrownrestored;
@@ -818,7 +811,7 @@ public:
 	float m_flNextDecalTime;
 	char m_szTeamName[MAX_TEAM_NAME_LENGTH];
 
-	static TYPEDESCRIPTION IMPL(m_playerSaveData)[40];
+	static TYPEDESCRIPTION m_playerSaveData[];
 
 /*protected:*/
 	int m_modelIndexPlayer;

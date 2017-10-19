@@ -90,10 +90,12 @@ void AbstractHookChainRegistry::removeHook(void* hookFunc) {
 			{
 				Q_memmove(&m_Hooks[i], &m_Hooks[i + 1], (m_NumHooks - i) * sizeof(m_Hooks[0]));
 				Q_memmove(&m_Priorities[i], &m_Priorities[i + 1], (m_NumHooks - i) * sizeof(m_Priorities[0]));
-				m_Hooks[m_NumHooks] = NULL;
+				m_Hooks[m_NumHooks] = nullptr;
 			}
 			else
-				m_Hooks[i] = NULL;
+			{
+				m_Hooks[i] = nullptr;
+			}
 
 			return;
 		}

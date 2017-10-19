@@ -21,31 +21,25 @@ task publishPrepareFiles {
 
 		pubRootDir.mkdirs()
 
-		// hookers binaries
-		//project.file('publish/publishRoot/bin/hookers').mkdirs()
-		//_copyFileToDir('publish/releaseRegamedllNofixes/filesystem_stdio.dll', 'publish/publishRoot/bin/hookers/')
-		//_copyFileToDir('publish/releaseRegamedllNofixes/filesystem_stdio.pdb', 'publish/publishRoot/bin/hookers/')
-		//_copyFile('publish/releaseRegamedllNofixes/libfilesystem_stdio.so', 'publish/publishRoot/bin/hookers/filesystem_stdio.so')
-
-		//bugfixed binaries
+		// bugfixed binaries
 		project.file('publish/publishRoot/bin/bugfixed').mkdirs()
 		_copyFileToDir('publish/releaseRegamedllFixes/mp.dll', 'publish/publishRoot/bin/bugfixed/')
 		_copyFileToDir('publish/releaseRegamedllFixes/mp.pdb', 'publish/publishRoot/bin/bugfixed/')
 		_copyFile('publish/releaseRegamedllFixes/libcs.so', 'publish/publishRoot/bin/bugfixed/cs.so')
 
-		//pure binaries
+		// pure binaries
 		project.file('publish/publishRoot/bin/pure').mkdirs()
 		_copyFileToDir('publish/releaseRegamedllNofixes/mp.dll', 'publish/publishRoot/bin/pure/')
 		_copyFileToDir('publish/releaseRegamedllNofixes/mp.pdb', 'publish/publishRoot/bin/pure/')
 		_copyFile('publish/releaseRegamedllNofixes/libcs.so', 'publish/publishRoot/bin/pure/cs.so')
 
-		//copy files from folder dist
+		// copy files from folder dist
 		copy {
 			from('dist')
 			into 'publish/publishRoot'
 		}
 
-		//cssdk
+		// cssdk
 		project.file('publish/publishRoot/cssdk').mkdirs()
 		copy {
 			from 'regamedll/extra/cssdk'

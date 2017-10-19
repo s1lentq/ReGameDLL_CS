@@ -1,14 +1,5 @@
 #include "precompiled.h"
 
-/*
-* Globals initialization
-*/
-#ifndef HOOK_GAMEDLL
-
-cvar_t *sv_clienttrace = nullptr;
-
-#endif
-
 CCStrikeGameMgrHelper g_GameMgrHelper;
 CHalfLifeMultiplay *g_pMPGameRules = nullptr;
 RewardAccount CHalfLifeMultiplay::m_rgRewardAccountRules[RR_END];
@@ -484,7 +475,6 @@ CHalfLifeMultiplay::CHalfLifeMultiplay()
 		CVAR_SET_FLOAT("mp_windifference", 1);
 	}
 
-	sv_clienttrace = CVAR_GET_POINTER("sv_clienttrace");
 	InstallTutor(CVAR_GET_FLOAT("tutor_enable") != 0.0f);
 
 	m_bSkipShowMenu = false;
@@ -2289,7 +2279,7 @@ void CHalfLifeMultiplay::Think()
 	MonitorTutorStatus();
 	m_VoiceGameMgr.Update(gpGlobals->frametime);
 
-	if (sv_clienttrace->value != 1.0f)
+	if (g_psv_clienttrace->value != 1.0f)
 	{
 		CVAR_SET_FLOAT("sv_clienttrace", 1);
 	}
@@ -3444,11 +3434,11 @@ void CHalfLifeMultiplay::ClientDisconnected(edict_t *pClient)
 
 			if (pPlayer->m_iMapVote)
 			{
-				--m_iMapVotes[ pPlayer->m_iMapVote ];
+				--m_iMapVotes[pPlayer->m_iMapVote];
 
-				if (m_iMapVotes[ pPlayer->m_iMapVote ] < 0)
+				if (m_iMapVotes[pPlayer->m_iMapVote] < 0)
 				{
-					m_iMapVotes[ pPlayer->m_iMapVote ] = 0;
+					m_iMapVotes[pPlayer->m_iMapVote] = 0;
 				}
 			}
 
@@ -4189,15 +4179,7 @@ int CHalfLifeMultiplay::PlayerRelationship(CBasePlayer *pPlayer, CBaseEntity *pT
 
 BOOL CHalfLifeMultiplay::FAllowFlashlight()
 {
-	static cvar_t *mp_flashlight = nullptr;
-
-	if (!mp_flashlight)
-		mp_flashlight = CVAR_GET_POINTER("mp_flashlight");
-
-	if (mp_flashlight)
-		return mp_flashlight->value != 0;
-
-	return FALSE;
+	return flashlight.value ? TRUE : FALSE;
 }
 
 BOOL CHalfLifeMultiplay::FAllowMonsters()

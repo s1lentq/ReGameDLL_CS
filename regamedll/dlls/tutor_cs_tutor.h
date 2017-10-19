@@ -258,7 +258,7 @@ struct ClientCorpseStruct
 	int m_team;
 };
 
-typedef std::STD_VECTOR<ClientCorpseStruct *> ClientCorpseList;
+typedef std::vector<ClientCorpseStruct *> ClientCorpseList;
 typedef ClientCorpseList::iterator ClientCorpseListIter;
 
 class CCSTutor: public CBaseTutor
@@ -389,6 +389,8 @@ public:
 	void ConstructRecentDeathsList(TeamName team, char *buf, int buflen, TutorMessageEvent *event);
 
 private:
+	static const char *m_TutorIdentifierList[];
+
 	float m_nextViewableCheckTime;
 	TutorMessageMap m_messageMap;
 	TutorMessageID m_currentlyShownMessageID;

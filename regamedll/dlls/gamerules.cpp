@@ -1,13 +1,6 @@
 #include "precompiled.h"
 
-/*
-* Globals initialization
-*/
-#ifndef HOOK_GAMEDLL
-
 CGameRules *g_pGameRules = nullptr;
-
-#endif
 
 CGameRules::CGameRules()
 {
@@ -19,13 +12,11 @@ CGameRules::CGameRules()
 	Q_strcpy(m_GameDesc, AreRunningCZero() ? "Condition Zero" : "Counter-Strike");
 }
 
-#ifndef HOOK_GAMEDLL
 CGameRules::~CGameRules()
 {
 	delete[] m_GameDesc;
 	m_GameDesc = nullptr;
 }
-#endif
 
 // this is the game name that gets seen in the server browser
 const char *CGameRules::GetGameDescription()

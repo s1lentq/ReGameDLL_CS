@@ -14,6 +14,7 @@ void CUMP45::Spawn()
 	m_bDelayFire = false;
 
 	FallInit();
+	CSPlayerItem()->SetItemInfo(&m_ItemInfoArray[m_iId]);
 }
 
 void CUMP45::Precache()

@@ -28,14 +28,16 @@
 
 #pragma once
 
-#define NODE_INVALID_EMPTY            -1
+enum PathTraversAble
+{
+	PTRAVELS_EMPTY,
+	PTRAVELS_SLOPE,
+	PTRAVELS_STEP,
+	PTRAVELS_STEPJUMPABLE,
+};
 
-#define PATH_TRAVERSABLE_EMPTY        0
-#define PATH_TRAVERSABLE_SLOPE        1
-#define PATH_TRAVERSABLE_STEP         2
-#define PATH_TRAVERSABLE_STEPJUMPABLE 3
-
-typedef int node_index_t;
+using node_index_t = int;
+constexpr node_index_t NODE_INVALID_EMPTY = {-1};
 
 typedef struct localnode_s
 {
@@ -47,10 +49,6 @@ typedef struct localnode_s
 	node_index_t nindexParent;
 
 } localnode_t;
-
-#ifndef HOOK_GAMEDLL
-#define s_flStepSize_LocalNav m_LocalNav->s_flStepSize
-#endif
 
 class CLocalNav
 {
@@ -66,44 +64,40 @@ public:
 			m_pTargetEnt = nullptr;
 	}
 
-	node_index_t FindPath(Vector &vecStart, Vector &vecDest, float flTargetRadius, int fNoMonsters);
-	int SetupPathNodes(node_index_t nindex, Vector *vecNodes, int fNoMonsters);
-	int GetFurthestTraversableNode(Vector &vecStartingLoc, Vector *vecNodes, int nTotalNodes, int fNoMonsters);
-	int PathTraversable(Vector &vecSource, Vector &vecDest, int fNoMonsters);
-	BOOL PathClear(Vector &vecOrigin, Vector &vecDest, int fNoMonsters, TraceResult &tr);
-	BOOL PathClear(Vector &vecSource, Vector &vecDest, BOOL fNoMonsters)
-	{
-		TraceResult tr;
-		return PathClear(vecSource, vecDest, fNoMonsters, tr);
-	}
+	node_index_t FindPath(Vector &vecStart, Vector &vecDest, float flTargetRadius, BOOL fNoMonsters);
+	int SetupPathNodes(node_index_t nindex, Vector *vecNodes, BOOL fNoMonsters);
+	node_index_t GetFurthestTraversableNode(Vector &vecStartingLoc, Vector *vecNodes, int nTotalNodes, BOOL fNoMonsters);
+	PathTraversAble PathTraversable(Vector &vecSource, Vector &vecDest, BOOL fNoMonsters);
+	BOOL PathClear(Vector &vecOrigin, Vector &vecDest, BOOL fNoMonsters, TraceResult &tr);
+	BOOL PathClear(Vector &vecSource, Vector &vecDest, BOOL fNoMonsters);
 	node_index_t AddNode(node_index_t nindexParent, Vector &vecLoc, int offsetX = 0, int offsetY = 0, byte bDepth = 0);
 	localnode_t *GetNode(node_index_t nindex);
 	node_index_t NodeExists(int offsetX, int offsetY);
-	void AddPathNodes(node_index_t nindexSource, int fNoMonsters);
-	void AddPathNode(node_index_t nindexSource, int offsetX, int offsetY, int fNoMonsters);
+	void AddPathNodes(node_index_t nindexSource, BOOL fNoMonsters);
+	void AddPathNode(node_index_t nindexSource, int offsetX, int offsetY, BOOL fNoMonsters);
 	node_index_t GetBestNode(Vector &vecOrigin, Vector &vecDest);
-	BOOL SlopeTraversable(Vector &vecSource, Vector &vecDest, int fNoMonsters, TraceResult &tr);
-	BOOL LadderTraversable(Vector &vecSource, Vector &vecDest, int fNoMonsters, TraceResult &tr);
-	BOOL StepTraversable(Vector &vecSource, Vector &vecDest, int fNoMonsters, TraceResult &tr);
-	BOOL StepJumpable(Vector &vecSource, Vector &vecDest, int fNoMonsters, TraceResult &tr);
-	node_index_t FindDirectPath(Vector &vecStart, Vector &vecDest, float flTargetRadius, int fNoMonsters);
+	BOOL SlopeTraversable(Vector &vecSource, Vector &vecDest, BOOL fNoMonsters, TraceResult &tr);
+	BOOL LadderTraversable(Vector &vecSource, Vector &vecDest, BOOL fNoMonsters, TraceResult &tr);
+	BOOL StepTraversable(Vector &vecSource, Vector &vecDest, BOOL fNoMonsters, TraceResult &tr);
+	BOOL StepJumpable(Vector &vecSource, Vector &vecDest, BOOL fNoMonsters, TraceResult &tr);
+	node_index_t FindDirectPath(Vector &vecStart, Vector &vecDest, float flTargetRadius, BOOL fNoMonsters);
 	BOOL LadderHit(Vector &vecSource, Vector &vecDest, TraceResult &tr);
 
 	static void Think();
 	static void RequestNav(CHostage *pCaller);
 	static void Reset();
 	static void HostagePrethink();
-	static float s_flStepSize;
+	static float m_flStepSize;
 
 private:
-	static EHANDLE _queue[MAX_HOSTAGES_NAV];
-	static int qptr;
-	static int tot_inqueue;
-	static float nodeval;
-	static float flNextCvarCheck;
-	static float flLastThinkTime;
-	static EHANDLE hostages[MAX_HOSTAGES_NAV];
-	static int tot_hostages;
+	static EntityHandle<CHostage> m_hQueue[MAX_HOSTAGES_NAV];
+	static EntityHandle<CHostage> m_hHostages[MAX_HOSTAGES_NAV];
+	static int m_CurRequest;
+	static int m_NumRequest;
+	static int m_NumHostages;
+	static int m_NodeValue;
+	static float m_flNextCvarCheck;
+	static float m_flLastThinkTime;
 
 	CHostage *m_pOwner;
 	edict_t *m_pTargetEnt;

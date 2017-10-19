@@ -39,15 +39,12 @@
 #include "strtools.h"
 
 #ifdef _WIN32
-	#define WIN32_LEAN_AND_MEAN
+	#define WIN32_LEAN_AND_MEAN // Exclude rarely-used stuff from Windows headers
 	#define NOWINRES
 	#define NOSERVICE
 	#define NOMCX
 	#define NOIME
-	#include "winsani_in.h"
-	#include "windows.h"
-	#include "winsani_out.h"
-	#undef PlaySound
+	#include <windows.h>
 #else
 	#include <limits.h>
 	#include <stdarg.h>

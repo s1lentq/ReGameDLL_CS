@@ -44,7 +44,7 @@ public:
 	virtual BOOL IsTogglePlat() { return (pev->spawnflags & SF_PLAT_TOGGLE) != 0; }
 
 public:
-	static TYPEDESCRIPTION IMPL(m_SaveData)[3];
+	static TYPEDESCRIPTION m_SaveData[];
 
 	byte m_bMoveSnd;
 	byte m_bStopSnd;
@@ -99,7 +99,7 @@ public:
 	void RotMove(Vector &destAngle, float time);
 
 public:
-	static TYPEDESCRIPTION IMPL(m_SaveData)[2];
+	static TYPEDESCRIPTION m_SaveData[];
 
 	Vector m_end;
 	Vector m_start;
@@ -128,7 +128,7 @@ public:
 	void EXPORT Next();
 
 public:
-	static TYPEDESCRIPTION IMPL(m_SaveData)[3];
+	static TYPEDESCRIPTION m_SaveData[];
 
 	Vector m_vStartPosition;
 	entvars_t *m_pevFirstTarget;
@@ -170,7 +170,7 @@ public:
 	virtual void OverrideReset();
 	virtual void Touch(CBaseEntity *pOther);
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-	virtual BOOL IsTogglePlat();
+	virtual BOOL IsTogglePlat() { return TRUE; };
 
 	virtual void EXPORT GoUp();
 	virtual void EXPORT GoDown();
@@ -190,7 +190,7 @@ public:
 	int UseEnabled() const { return m_use; }
 
 public:
-	static TYPEDESCRIPTION IMPL(m_SaveData)[9];
+	static TYPEDESCRIPTION m_SaveData[];
 
 	CPathTrack *m_trackTop;
 	CPathTrack *m_trackBottom;
@@ -239,7 +239,7 @@ public:
 	void Stop();
 
 public:
-	static TYPEDESCRIPTION IMPL(m_SaveData)[1];
+	static TYPEDESCRIPTION m_SaveData[];
 
 private:
 	BOOL m_on;

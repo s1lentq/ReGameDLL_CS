@@ -176,8 +176,8 @@ public:
 	CountCriteria m_count;
 };
 
-typedef std::STD_VECTOR<BotSpeakable *> BotSpeakableVector;
-typedef std::STD_VECTOR<BotSpeakableVector *> BotVoiceBankVector;
+typedef std::vector<BotSpeakable *> BotSpeakableVector;
+typedef std::vector<BotSpeakableVector *> BotVoiceBankVector;
 
 // The BotPhrase class is a collection of Speakables associated with a name, ID, and criteria
 class BotPhrase
@@ -210,8 +210,8 @@ private:
 	bool m_isImportant;							// mission-critical statement
 
 	mutable BotVoiceBankVector m_voiceBank;		// array of voice banks (arrays of speakables)
-	std::STD_VECTOR<int> m_count;				// number of speakables
-	mutable std::STD_VECTOR< int > m_index;		// index of next speakable to return
+	std::vector<int> m_count;					// number of speakables
+	mutable std::vector< int > m_index;			// index of next speakable to return
 	int m_numVoiceBanks;						// number of voice banks that have been initialized
 	void InitVoiceBank(int bankIndex);			// sets up the vector of voice banks for the first bankIndex voice banks
 
@@ -219,7 +219,7 @@ private:
 	mutable CountCriteria m_countCriteria;
 };
 
-typedef std::STD_LIST<BotPhrase *> BotPhraseList;
+typedef std::list<BotPhrase *> BotPhraseList;
 
 inline void BotPhrase::ClearCriteria() const
 {
@@ -538,7 +538,8 @@ private:
 
 	int m_pitch;
 
-	static IntervalTimer IMPL(m_radioSilenceInterval)[2];	// one timer for each team
+	static IntervalTimer m_radioSilenceInterval[];	// one timer for each team
+	static CountdownTimer m_encourageTimer;			// timer to know when we can "encourage" the human player again - shared by all bots
 
 	IntervalTimer m_needBackupInterval;
 	IntervalTimer m_spottedBomberInterval;
@@ -547,7 +548,6 @@ private:
 	CountdownTimer m_spottedLooseBombTimer;
 	CountdownTimer m_heardNoiseTimer;
 	CountdownTimer m_escortingHostageTimer;
-	static CountdownTimer IMPL(m_encourageTimer);			// timer to know when we can "encourage" the human player again - shared by all bots
 };
 
 inline BotChatterInterface::VerbosityType BotChatterInterface::GetVerbosity() const

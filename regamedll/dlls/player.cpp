@@ -1,17 +1,34 @@
+/*
+*
+*   This program is free software; you can redistribute it and/or modify it
+*   under the terms of the GNU General Public License as published by the
+*   Free Software Foundation; either version 2 of the License, or (at
+*   your option) any later version.
+*
+*   This program is distributed in the hope that it will be useful, but
+*   WITHOUT ANY WARRANTY; without even the implied warranty of
+*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+*   General Public License for more details.
+*
+*   You should have received a copy of the GNU General Public License
+*   along with this program; if not, write to the Free Software Foundation,
+*   Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*
+*   In addition, as a special exception, the author gives permission to
+*   link the code of this program with the Half-Life Game Engine ("HL
+*   Engine") and Modified Game Libraries ("MODs") developed by Valve,
+*   L.L.C ("Valve").  You must obey the GNU General Public License in all
+*   respects for all of the code used other than the HL Engine and MODs
+*   from Valve.  If you modify this file, you may extend this exception
+*   to your version of the file, but you are not obligated to do so.  If
+*   you do not wish to do so, delete this exception statement from your
+*   version.
+*
+*/
+
 #include "precompiled.h"
 
-/*
-* Globals initialization
-*/
-#ifndef HOOK_GAMEDLL
-
 BOOL gInitHUD = TRUE;
-
-TYPEDESCRIPTION CRevertSaved::m_SaveData[] =
-{
-	DEFINE_FIELD(CRevertSaved, m_messageTime, FIELD_FLOAT), // These are not actual times, but durations, so save as floats
-	DEFINE_FIELD(CRevertSaved, m_loadTime, FIELD_FLOAT),
-};
 
 TYPEDESCRIPTION CBasePlayer::m_playerSaveData[] =
 {
@@ -57,7 +74,7 @@ TYPEDESCRIPTION CBasePlayer::m_playerSaveData[] =
 	DEFINE_FIELD(CBasePlayer, m_iJoiningState, FIELD_INTEGER),
 };
 
-char *CDeadHEV::m_szPoses[] =
+const char *CDeadHEV::m_szPoses[] =
 {
 	"deadback",
 	"deadsitting",
@@ -65,10 +82,7 @@ char *CDeadHEV::m_szPoses[] =
 	"deadtable"
 };
 
-#endif // HOOK_GAMEDLL
-
 int gEvilImpulse101;
-
 entvars_t *g_pevLastInflictor;
 
 LINK_ENTITY_TO_CLASS(player, CBasePlayer, CCSPlayer)
@@ -924,11 +938,11 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 
 		// tell director about it
 		MESSAGE_BEGIN(MSG_SPEC, SVC_DIRECTOR);
-			WRITE_BYTE(9);			// command length in bytes
-			WRITE_BYTE(DRC_CMD_EVENT);	// take damage event
-			WRITE_SHORT(ENTINDEX(edict()));		// index number of primary entity
-			WRITE_SHORT(ENTINDEX(ENT(pevInflictor))); // index number of secondary entity
-			WRITE_LONG(5);			// eventflags (priority and flags)
+			WRITE_BYTE(9);								// command length in bytes
+			WRITE_BYTE(DRC_CMD_EVENT);					// take damage event
+			WRITE_SHORT(ENTINDEX(edict()));				// index number of primary entity
+			WRITE_SHORT(ENTINDEX(ENT(pevInflictor)));	// index number of secondary entity
+			WRITE_LONG(5);								// eventflags (priority and flags)
 		MESSAGE_END();
 
 		MESSAGE_BEGIN(MSG_SPEC, gmsgHLTV);
@@ -1172,11 +1186,11 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 
 	// tell director about it
 	MESSAGE_BEGIN(MSG_SPEC, SVC_DIRECTOR);
-		WRITE_BYTE(9);					// command length in bytes
-		WRITE_BYTE(DRC_CMD_EVENT);			// take damage event
-		WRITE_SHORT(ENTINDEX(edict()));			// index number of primary entity
+		WRITE_BYTE(9);								// command length in bytes
+		WRITE_BYTE(DRC_CMD_EVENT);					// take damage event
+		WRITE_SHORT(ENTINDEX(edict()));				// index number of primary entity
 		WRITE_SHORT(ENTINDEX(ENT(pevInflictor)));	// index number of secondary entity
-		WRITE_LONG(5);					// eventflags (priority and flags)
+		WRITE_LONG(5);								// eventflags (priority and flags)
 	MESSAGE_END();
 
 	MESSAGE_BEGIN(MSG_SPEC, gmsgHLTV);
@@ -1238,7 +1252,7 @@ void packPlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 		// pack the ammo
 		if (packAmmo)
 		{
-			pWeaponBox->PackAmmo(MAKE_STRING(IMPL_CLASS(CBasePlayerItem, m_ItemInfoArray)[pItem->m_iId].pszAmmo1), pPlayer->m_rgAmmo[pItem->PrimaryAmmoIndex()]);
+			pWeaponBox->PackAmmo(MAKE_STRING(CBasePlayerItem::m_ItemInfoArray[pItem->m_iId].pszAmmo1), pPlayer->m_rgAmmo[pItem->PrimaryAmmoIndex()]);
 		}
 
 		SET_MODEL(ENT(pWeaponBox->pev), modelName);
@@ -1268,7 +1282,7 @@ void packPlayerNade(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 			break;
 		}
 
-		auto& ammoNades = pPlayer->m_rgAmmo[ pItem->PrimaryAmmoIndex() ];
+		auto& ammoNades = pPlayer->m_rgAmmo[pItem->PrimaryAmmoIndex()];
 		if (pItem->m_flStartThrow != 0)
 		{
 			if (ammoNades < 2)
@@ -1301,7 +1315,7 @@ void packPlayerNade(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 		// pack the ammo
 		if (packAmmo)
 		{
-			pWeaponBox->PackAmmo(MAKE_STRING(IMPL_CLASS(CBasePlayerItem, m_ItemInfoArray)[pItem->m_iId].pszAmmo1), pPlayer->m_rgAmmo[pItem->PrimaryAmmoIndex()]);
+			pWeaponBox->PackAmmo(MAKE_STRING(CBasePlayerItem::m_ItemInfoArray[pItem->m_iId].pszAmmo1), pPlayer->m_rgAmmo[pItem->PrimaryAmmoIndex()]);
 		}
 
 		SET_MODEL(ENT(pWeaponBox->pev), modelName);
@@ -1333,7 +1347,7 @@ void CBasePlayer::PackDeadPlayerItems()
 		for (int n = 0; n < MAX_ITEM_TYPES; n++)
 		{
 			// there's a weapon here. Should I pack it?
-			CBasePlayerItem *pPlayerItem = m_rgpPlayerItems[ n ];
+			CBasePlayerItem *pPlayerItem = m_rgpPlayerItems[n];
 
 			while (pPlayerItem)
 			{
@@ -1933,7 +1947,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 		case WEAPON_HEGRENADE:
 		{
 			CHEGrenade *pHEGrenade = static_cast<CHEGrenade *>(m_pActiveItem);
-			if ((pev->button & IN_ATTACK) && m_rgAmmo[ pHEGrenade->m_iPrimaryAmmoType ])
+			if ((pev->button & IN_ATTACK) && m_rgAmmo[pHEGrenade->m_iPrimaryAmmoType])
 			{
 				CGrenade::ShootTimed2(pev, (pev->origin + pev->view_ofs), pev->angles, 1.5, m_iTeam, pHEGrenade->m_usCreateExplosion);
 			}
@@ -1941,7 +1955,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 		}
 		case WEAPON_FLASHBANG:
 		{
-			if ((pev->button & IN_ATTACK) && m_rgAmmo[ ((CBasePlayerWeapon *)m_pActiveItem)->m_iPrimaryAmmoType ])
+			if ((pev->button & IN_ATTACK) && m_rgAmmo[((CBasePlayerWeapon *)m_pActiveItem)->m_iPrimaryAmmoType])
 			{
 				CGrenade::ShootTimed(pev, (pev->origin + pev->view_ofs), pev->angles, 1.5);
 			}
@@ -1950,7 +1964,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 		case WEAPON_SMOKEGRENADE:
 		{
 			CSmokeGrenade *pSmoke = static_cast<CSmokeGrenade *>(m_pActiveItem);
-			if ((pev->button & IN_ATTACK) && m_rgAmmo[ pSmoke->m_iPrimaryAmmoType ])
+			if ((pev->button & IN_ATTACK) && m_rgAmmo[pSmoke->m_iPrimaryAmmoType])
 			{
 				CGrenade::ShootSmokeGrenade(pev, (pev->origin + pev->view_ofs), pev->angles, 1.5, pSmoke->m_usCreateSmoke);
 			}
@@ -2751,7 +2765,7 @@ void CBasePlayer::WaterMove()
 
 			// NOTE: this actually causes the count to continue restarting
 			// until all drowning damage is healed.
-			m_rgbTimeBasedDamage[ ITBD_DROWN_RECOVER ] = 0;
+			m_rgbTimeBasedDamage[ITBD_DROWN_RECOVER] = 0;
 			m_bitsDamageType |= DMG_DROWNRECOVER;
 			m_bitsDamageType &= ~DMG_DROWN;
 		}
@@ -2760,7 +2774,7 @@ void CBasePlayer::WaterMove()
 	{
 		// fully under water
 		// stop restoring damage while underwater
-		m_rgbTimeBasedDamage[ ITBD_DROWN_RECOVER ] = 0;
+		m_rgbTimeBasedDamage[ITBD_DROWN_RECOVER] = 0;
 		m_bitsDamageType &= ~DMG_DROWNRECOVER;
 
 		// drown!
@@ -2888,7 +2902,7 @@ void CWShield::Touch(CBaseEntity *pOther)
 
 	if (!pPlayer->m_bHasPrimary)
 	{
-		if (pPlayer->m_rgpPlayerItems[ PISTOL_SLOT ] && pPlayer->m_rgpPlayerItems[ PISTOL_SLOT ]->m_iId == WEAPON_ELITE)
+		if (pPlayer->m_rgpPlayerItems[PISTOL_SLOT] && pPlayer->m_rgpPlayerItems[PISTOL_SLOT]->m_iId == WEAPON_ELITE)
 			return;
 
 		if (pPlayer->m_pActiveItem)
@@ -2926,7 +2940,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveShield)(bool bDeploy)
 
 		if (bDeploy)
 		{
-			if (m_rgAmmo[ pWeapon->m_iPrimaryAmmoType ] > 0)
+			if (m_rgAmmo[pWeapon->m_iPrimaryAmmoType] > 0)
 				pWeapon->Holster();
 
 			if (!pWeapon->Deploy())
@@ -2966,7 +2980,7 @@ CBaseEntity *EXT_FUNC CBasePlayer::__API_HOOK(DropShield)(bool bDeploy)
 	{
 		if (pWeapon->m_iId == WEAPON_HEGRENADE || pWeapon->m_iId == WEAPON_FLASHBANG || pWeapon->m_iId == WEAPON_SMOKEGRENADE)
 		{
-			if (m_rgAmmo[ pWeapon->m_iPrimaryAmmoType ] <= 0)
+			if (m_rgAmmo[pWeapon->m_iPrimaryAmmoType] <= 0)
 				g_pGameRules->GetNextBestWeapon(this, pWeapon);
 		}
 	}
@@ -3208,7 +3222,7 @@ void CBasePlayer::MenuPrint(const char *msg)
 	while (Q_strlen(msg_portion) >= MAX_BUFFER_MENU_BRIEFING)
 	{
 		Q_strncpy(sbuf, msg_portion, MAX_BUFFER_MENU_BRIEFING);
-		sbuf[ MAX_BUFFER_MENU_BRIEFING ] = '\0';
+		sbuf[MAX_BUFFER_MENU_BRIEFING] = '\0';
 		msg_portion += MAX_BUFFER_MENU_BRIEFING;
 
 		MESSAGE_BEGIN(MSG_ONE, gmsgShowMenu, nullptr, pev);
@@ -3662,9 +3676,9 @@ bool CanSeeUseable(CBasePlayer *me, CBaseEntity *entity)
 
 	if (FClassnameIs(entity->pev, "hostage_entity"))
 	{
-		Vector chest	= entity->pev->origin + Vector(0, 0, HalfHumanHeight);
-		Vector head	= entity->pev->origin + Vector(0, 0, HumanHeight * 0.9);
-		Vector knees	= entity->pev->origin + Vector(0, 0, StepHeight);
+		Vector chest = entity->pev->origin + Vector(0, 0, HalfHumanHeight);
+		Vector head  = entity->pev->origin + Vector(0, 0, HumanHeight * 0.9);
+		Vector knees = entity->pev->origin + Vector(0, 0, StepHeight);
 
 		UTIL_TraceLine(eye, chest, ignore_monsters, ignore_glass, me->edict(), &result);
 		if (result.flFraction < 1.0f)
@@ -4501,7 +4515,7 @@ void CBasePlayer::CheckSuitUpdate()
 
 		if (isentence)
 		{
-			m_rgSuitPlayList[ isearch ] = 0;
+			m_rgSuitPlayList[isearch] = 0;
 
 			if (isentence > 0)
 			{
@@ -5113,7 +5127,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Spawn)()
 	m_lastLocation[0] = '\0';
 
 	m_bitsDamageType &= ~(DMG_DROWN | DMG_DROWNRECOVER);
-	m_rgbTimeBasedDamage[ ITBD_DROWN_RECOVER ] = 0;
+	m_rgbTimeBasedDamage[ITBD_DROWN_RECOVER] = 0;
 	m_idrowndmg = 0;
 	m_idrownrestored = 0;
 
@@ -5388,7 +5402,7 @@ int CBasePlayer::Save(CSave &save)
 	if (!CBaseMonster::Save(save))
 		return 0;
 
-	return save.WriteFields("PLAYER", this, IMPL_CLASS(CBasePlayer, m_playerSaveData), ARRAYSIZE(IMPL_CLASS(CBasePlayer, m_playerSaveData)));
+	return save.WriteFields("PLAYER", this, m_playerSaveData, ARRAYSIZE(m_playerSaveData));
 }
 
 void CBasePlayer::SetScoreboardAttributes(CBasePlayer *destination)
@@ -5419,7 +5433,7 @@ int CBasePlayer::Restore(CRestore &restore)
 	if (!CBaseMonster::Restore(restore))
 		return 0;
 
-	int status = restore.ReadFields("PLAYER", this, IMPL_CLASS(CBasePlayer, m_playerSaveData), ARRAYSIZE(IMPL_CLASS(CBasePlayer, m_playerSaveData)));
+	int status = restore.ReadFields("PLAYER", this, m_playerSaveData, ARRAYSIZE(m_playerSaveData));
 	SAVERESTOREDATA *pSaveData = (SAVERESTOREDATA *)gpGlobals->pSaveData;
 
 	// landmark isn't present.
@@ -6226,7 +6240,7 @@ LINK_HOOK_CLASS_CHAIN(BOOL, CBasePlayer, AddPlayerItem, (CBasePlayerItem *pItem)
 // Add a weapon to the player (Item == Weapon == Selectable Object)
 BOOL EXT_FUNC CBasePlayer::__API_HOOK(AddPlayerItem)(CBasePlayerItem *pItem)
 {
-	CBasePlayerItem *pInsert = m_rgpPlayerItems[ pItem->iItemSlot() ];
+	CBasePlayerItem *pInsert = m_rgpPlayerItems[pItem->iItemSlot()];
 	while (pInsert)
 	{
 		if (FClassnameIs(pInsert->pev, STRING(pItem->pev->classname)))
@@ -6261,8 +6275,8 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(AddPlayerItem)(CBasePlayerItem *pItem)
 			m_bHasPrimary = true;
 
 		pItem->CheckRespawn();
-		pItem->m_pNext = m_rgpPlayerItems[ pItem->iItemSlot() ];
-		m_rgpPlayerItems[ pItem->iItemSlot() ] = pItem;
+		pItem->m_pNext = m_rgpPlayerItems[pItem->iItemSlot()];
+		m_rgpPlayerItems[pItem->iItemSlot()] = pItem;
 
 		if (HasShield())
 			pev->gamestate = 0;
@@ -6439,10 +6453,10 @@ int CBasePlayer::GetAmmoIndex(const char *psz)
 
 	for (int i = 1; i < MAX_AMMO_SLOTS; i++)
 	{
-		if (!IMPL_CLASS(CBasePlayerItem, m_AmmoInfoArray)[i].pszName)
+		if (!CBasePlayerItem::m_AmmoInfoArray[i].pszName)
 			continue;
 
-		if (!Q_stricmp(psz, IMPL_CLASS(CBasePlayerItem, m_AmmoInfoArray)[i].pszName))
+		if (!Q_stricmp(CBasePlayerItem::m_AmmoInfoArray[i].pszName, psz))
 			return i;
 	}
 
@@ -6457,10 +6471,13 @@ void CBasePlayer::SendAmmoUpdate()
 		{
 			m_rgAmmoLast[i] = m_rgAmmo[i];
 
+			assert(m_rgAmmo[i] >= 0);
+			assert(m_rgAmmo[i] < 255);
+
 			// send "Ammo" update message
 			MESSAGE_BEGIN(MSG_ONE, gmsgAmmoX, nullptr, pev);
 				WRITE_BYTE(i);
-				WRITE_BYTE(Q_max(Q_min(m_rgAmmo[i], 254), 0)); // clamp the value to one byte
+				WRITE_BYTE(clamp(m_rgAmmo[i], 0, 254)); // clamp the value to one byte
 			MESSAGE_END();
 		}
 	}
@@ -7135,8 +7152,8 @@ void CBasePlayer::UpdateStatusBar()
 			{
 				CBasePlayer *pTarget = (CBasePlayer *)pEntity;
 
-				newSBarState[ SBAR_ID_TARGETNAME ] = ENTINDEX(pTarget->edict());
-				newSBarState[ SBAR_ID_TARGETTYPE ] = (pTarget->m_iTeam == m_iTeam) ? SBAR_TARGETTYPE_TEAMMATE : SBAR_TARGETTYPE_ENEMY;
+				newSBarState[SBAR_ID_TARGETNAME] = ENTINDEX(pTarget->edict());
+				newSBarState[SBAR_ID_TARGETTYPE] = (pTarget->m_iTeam == m_iTeam) ? SBAR_TARGETTYPE_TEAMMATE : SBAR_TARGETTYPE_ENEMY;
 
 				if (pTarget->m_iTeam == m_iTeam || IsObserver())
 				{
@@ -7145,7 +7162,7 @@ void CBasePlayer::UpdateStatusBar()
 					else
 						Q_strcpy(sbuf0, " ");
 
-					newSBarState[ SBAR_ID_TARGETHEALTH ] = int((pEntity->pev->health / pEntity->pev->max_health) * 100);
+					newSBarState[SBAR_ID_TARGETHEALTH] = int((pEntity->pev->health / pEntity->pev->max_health) * 100);
 
 					if (!(m_flDisplayHistory & DHF_FRIEND_SEEN) && !(pev->flags & FL_SPECTATOR))
 					{
@@ -7176,8 +7193,8 @@ void CBasePlayer::UpdateStatusBar()
 				else
 					Q_strcpy(sbuf0, " ");
 
-				newSBarState[ SBAR_ID_TARGETTYPE ] = SBAR_TARGETTYPE_HOSTAGE;
-				newSBarState[ SBAR_ID_TARGETHEALTH ] = int((pEntity->pev->health / pEntity->pev->max_health) * 100);
+				newSBarState[SBAR_ID_TARGETTYPE] = SBAR_TARGETTYPE_HOSTAGE;
+				newSBarState[SBAR_ID_TARGETHEALTH] = int((pEntity->pev->health / pEntity->pev->max_health) * 100);
 
 				if (!(m_flDisplayHistory & DHF_HOSTAGE_SEEN_FAR) && tr.flFraction > 0.1f)
 				{
@@ -7202,9 +7219,9 @@ void CBasePlayer::UpdateStatusBar()
 	else if (m_flStatusBarDisappearDelay > gpGlobals->time)
 	{
 		// hold the values for a short amount of time after viewing the object
-		newSBarState[ SBAR_ID_TARGETTYPE ] = m_izSBarState[ SBAR_ID_TARGETTYPE ];
-		newSBarState[ SBAR_ID_TARGETNAME ] = m_izSBarState[ SBAR_ID_TARGETNAME ];
-		newSBarState[ SBAR_ID_TARGETHEALTH ] = m_izSBarState[ SBAR_ID_TARGETHEALTH ];
+		newSBarState[SBAR_ID_TARGETTYPE] = m_izSBarState[SBAR_ID_TARGETTYPE];
+		newSBarState[SBAR_ID_TARGETNAME] = m_izSBarState[SBAR_ID_TARGETNAME];
+		newSBarState[SBAR_ID_TARGETHEALTH] = m_izSBarState[SBAR_ID_TARGETHEALTH];
 	}
 
 	bool bForceResend = false;
@@ -7397,7 +7414,7 @@ CBaseEntity *EXT_FUNC CBasePlayer::__API_HOOK(DropPlayerItem)(const char *pszIte
 // Does the player already have this item?
 bool CBasePlayer::HasPlayerItem(CBasePlayerItem *pCheckItem)
 {
-	auto item = m_rgpPlayerItems[ pCheckItem->iItemSlot() ];
+	auto item = m_rgpPlayerItems[pCheckItem->iItemSlot()];
 	while (item)
 	{
 		if (FClassnameIs(item->pev, STRING(pCheckItem->pev->classname)))
@@ -7648,24 +7665,6 @@ void CBasePlayer::TabulateAmmo()
 	ammo_357sig = AmmoInventory(GetAmmoIndex("357SIG"));
 }
 
-int CDeadHEV::Classify()
-{
-	return CLASS_HUMAN_MILITARY;
-}
-
-void CDeadHEV::KeyValue(KeyValueData *pkvd)
-{
-	if (FStrEq(pkvd->szKeyName, "pose"))
-	{
-		m_iPose = Q_atoi(pkvd->szValue);
-		pkvd->fHandled = TRUE;
-	}
-	else
-	{
-		CBaseMonster::KeyValue(pkvd);
-	}
-}
-
 LINK_ENTITY_TO_CLASS(monster_hevsuit_dead, CDeadHEV, CCSDeadHEV)
 
 void CDeadHEV::Spawn()
@@ -7680,7 +7679,7 @@ void CDeadHEV::Spawn()
 	pev->body = 1;
 
 	m_bloodColor = BLOOD_COLOR_RED;
-	pev->sequence = LookupSequence(m_szPoses[ m_iPose ]);
+	pev->sequence = LookupSequence(m_szPoses[m_iPose]);
 
 	if (pev->sequence == -1)
 	{
@@ -7692,6 +7691,19 @@ void CDeadHEV::Spawn()
 	// Corpses have less health
 	pev->health = 8;
 	MonsterInitDead();
+}
+
+void CDeadHEV::KeyValue(KeyValueData *pkvd)
+{
+	if (FStrEq(pkvd->szKeyName, "pose"))
+	{
+		m_iPose = Q_atoi(pkvd->szValue);
+		pkvd->fHandled = TRUE;
+	}
+	else
+	{
+		CBaseMonster::KeyValue(pkvd);
+	}
 }
 
 LINK_ENTITY_TO_CLASS(player_weaponstrip, CStripWeapons, CCSStripWeapons)
@@ -7713,88 +7725,6 @@ void CStripWeapons::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE 
 		pPlayer->RemoveAllItems(FALSE);
 	}
 }
-
-LINK_ENTITY_TO_CLASS(player_loadsaved, CRevertSaved, CCSRevertSaved)
-IMPLEMENT_SAVERESTORE(CRevertSaved, CPointEntity)
-
-void CRevertSaved::KeyValue(KeyValueData *pkvd)
-{
-	if (FStrEq(pkvd->szKeyName, "duration"))
-	{
-		SetDuration(Q_atof(pkvd->szValue));
-		pkvd->fHandled = TRUE;
-	}
-	else if (FStrEq(pkvd->szKeyName, "holdtime"))
-	{
-		SetHoldTime(Q_atof(pkvd->szValue));
-		pkvd->fHandled = TRUE;
-	}
-	else if (FStrEq(pkvd->szKeyName, "messagetime"))
-	{
-		SetMessageTime(Q_atof(pkvd->szValue));
-		pkvd->fHandled = TRUE;
-	}
-	else if (FStrEq(pkvd->szKeyName, "loadtime"))
-	{
-		SetLoadTime(Q_atof(pkvd->szValue));
-		pkvd->fHandled = TRUE;
-	}
-	else
-	{
-		CPointEntity::KeyValue(pkvd);
-	}
-}
-
-void CRevertSaved::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
-{
-	UTIL_ScreenFadeAll(pev->rendercolor, Duration(), HoldTime(), int(pev->renderamt), FFADE_OUT);
-	pev->nextthink = gpGlobals->time + MessageTime();
-	SetThink(&CRevertSaved::MessageThink);
-}
-
-void CRevertSaved::MessageThink()
-{
-	float nextThink = LoadTime() - MessageTime();
-	UTIL_ShowMessageAll(STRING(pev->message));
-
-	if (nextThink > 0)
-	{
-		pev->nextthink = gpGlobals->time + nextThink;
-		SetThink(&CRevertSaved::LoadThink);
-	}
-	else
-		LoadThink();
-}
-
-void CRevertSaved::LoadThink()
-{
-	if (!gpGlobals->deathmatch)
-		SERVER_COMMAND("reload\n");
-}
-
-void CInfoIntermission::Spawn()
-{
-	UTIL_SetOrigin(pev, pev->origin);
-
-	pev->solid = SOLID_NOT;
-	pev->effects = EF_NODRAW;
-	pev->v_angle = g_vecZero;
-	pev->nextthink = gpGlobals->time + 2.0f;	// let targets spawn!
-}
-
-void CInfoIntermission::Think()
-{
-	// find my target
-	edict_t *pTarget = FIND_ENTITY_BY_TARGETNAME(nullptr, STRING(pev->target));
-
-	if (!FNullEnt(pTarget))
-	{
-		pev->v_angle = UTIL_VecToAngles((pTarget->v.origin - pev->origin).Normalize());
-		pev->v_angle.x = -pev->v_angle.x;
-	}
-}
-
-LINK_ENTITY_TO_CLASS(info_intermission, CInfoIntermission, CCSInfoIntermission)
 
 void CBasePlayer::StudioEstimateGait()
 {
@@ -8206,11 +8136,9 @@ bool CBasePlayer::CanAffordPrimary()
 
 bool CBasePlayer::CanAffordPrimaryAmmo()
 {
-	CBasePlayerWeapon *primary = static_cast<CBasePlayerWeapon *>(m_rgpPlayerItems[ PRIMARY_WEAPON_SLOT ]);
-
-	for (auto& weapon : g_weaponStruct)
-	{
-		if (weapon.m_type == primary->m_iId && m_iAccount >= weapon.m_ammoPrice)
+	CBasePlayerWeapon *pPrimary = static_cast<CBasePlayerWeapon *>(m_rgpPlayerItems[PRIMARY_WEAPON_SLOT]);
+	for (auto& weapon : g_weaponStruct) {
+		if (weapon.m_type == pPrimary->m_iId && m_iAccount >= weapon.m_ammoPrice)
 			return true;
 	}
 
@@ -8219,11 +8147,9 @@ bool CBasePlayer::CanAffordPrimaryAmmo()
 
 bool CBasePlayer::CanAffordSecondaryAmmo()
 {
-	CBasePlayerWeapon *secondary = static_cast<CBasePlayerWeapon *>(m_rgpPlayerItems[ PISTOL_SLOT ]);
-
-	for (auto& weapon : g_weaponStruct)
-	{
-		if (weapon.m_type == secondary->m_iId && m_iAccount >= weapon.m_ammoPrice)
+	CBasePlayerWeapon *pSecondary = static_cast<CBasePlayerWeapon *>(m_rgpPlayerItems[PISTOL_SLOT]);
+	for (auto& weapon : g_weaponStruct) {
+		if (weapon.m_type == pSecondary->m_iId && m_iAccount >= weapon.m_ammoPrice)
 			return true;
 	}
 
@@ -8250,22 +8176,22 @@ bool CBasePlayer::CanAffordGrenade()
 
 bool CBasePlayer::NeedsPrimaryAmmo()
 {
-	CBasePlayerWeapon *primary = static_cast<CBasePlayerWeapon *>(m_rgpPlayerItems[ PRIMARY_WEAPON_SLOT ]);
-
-	if (!primary || primary->m_iId == WEAPON_SHIELDGUN)
+	CBasePlayerWeapon *pPrimary = static_cast<CBasePlayerWeapon *>(m_rgpPlayerItems[PRIMARY_WEAPON_SLOT]);
+	if (!pPrimary || pPrimary->m_iId == WEAPON_SHIELDGUN) {
 		return false;
+	}
 
-	return (m_rgAmmo[ primary->m_iPrimaryAmmoType ] < primary->iMaxAmmo1());
+	return (m_rgAmmo[pPrimary->m_iPrimaryAmmoType] < pPrimary->iMaxAmmo1());
 }
 
 bool CBasePlayer::NeedsSecondaryAmmo()
 {
-	CBasePlayerWeapon *secondary = static_cast<CBasePlayerWeapon *>(m_rgpPlayerItems[ PISTOL_SLOT ]);
-
-	if (!secondary)
+	CBasePlayerWeapon *pSecondary = static_cast<CBasePlayerWeapon *>(m_rgpPlayerItems[PISTOL_SLOT]);
+	if (!pSecondary) {
 		return false;
+	}
 
-	return (m_rgAmmo[ secondary->m_iPrimaryAmmoType ] < secondary->iMaxAmmo1());
+	return (m_rgAmmo[pSecondary->m_iPrimaryAmmoType] < pSecondary->iMaxAmmo1());
 }
 
 bool CBasePlayer::NeedsArmor()
@@ -8288,17 +8214,17 @@ bool CBasePlayer::NeedsGrenade()
 {
 	int iAmmoIndex = GetAmmoIndex("HEGrenade");
 
-	if (iAmmoIndex > 0 && m_rgAmmo[ iAmmoIndex ])
+	if (iAmmoIndex > 0 && m_rgAmmo[iAmmoIndex])
 		return false;
 
 	iAmmoIndex = GetAmmoIndex("Flashbang");
 
-	if (iAmmoIndex > 0 && m_rgAmmo[ iAmmoIndex ])
+	if (iAmmoIndex > 0 && m_rgAmmo[iAmmoIndex])
 		return false;
 
 	iAmmoIndex = GetAmmoIndex("SmokeGrenade");
 
-	if (iAmmoIndex > 0 && m_rgAmmo[ iAmmoIndex ])
+	if (iAmmoIndex > 0 && m_rgAmmo[iAmmoIndex])
 		return false;
 
 	return true;
@@ -8397,9 +8323,9 @@ void CBasePlayer::InitRebuyData(const char *str)
 		m_rebuyString = nullptr;
 	}
 
-	m_rebuyString = new char[ Q_strlen(str) + 1 ];
+	m_rebuyString = new char[Q_strlen(str) + 1];
 	Q_strcpy(m_rebuyString, str);
-	m_rebuyString[ Q_strlen(str) ] = '\0';
+	m_rebuyString[Q_strlen(str)] = '\0';
 }
 
 void CBasePlayer::AutoBuy()
@@ -8407,7 +8333,7 @@ void CBasePlayer::AutoBuy()
 	const char *c = nullptr;
 	bool boughtPrimary = false;
 	bool boughtSecondary = false;
-	char prioritizedString[ MAX_AUTOBUY_LENGTH ];
+	char prioritizedString[MAX_AUTOBUY_LENGTH];
 
 	c = PickFlashKillWeaponString();
 
@@ -8525,7 +8451,7 @@ const char *CBasePlayer::PickPrimaryCareerTaskWeapon()
 {
 	const int BufLen = 256;
 	static char buf[BufLen];
-	CBasePlayerWeapon *primary;
+	CBasePlayerWeapon *pPrimary;
 	std::vector<CCareerTask *> taskVector;
 
 	if (!TheCareerTasks)
@@ -8534,7 +8460,7 @@ const char *CBasePlayer::PickPrimaryCareerTaskWeapon()
 	}
 
 	buf[0] = '\0';
-	primary = static_cast<CBasePlayerWeapon *>(m_rgpPlayerItems[PRIMARY_WEAPON_SLOT]);
+	pPrimary = static_cast<CBasePlayerWeapon *>(m_rgpPlayerItems[PRIMARY_WEAPON_SLOT]);
 
 	for (auto pTask : *TheCareerTasks->GetTasks())
 	{
@@ -8549,9 +8475,9 @@ const char *CBasePlayer::PickPrimaryCareerTaskWeapon()
 			}
 		}
 
-		if (primary)
+		if (pPrimary)
 		{
-			if (CurrentWeaponSatisfies(primary, pTask->GetWeaponId(), pTask->GetWeaponClassId()))
+			if (CurrentWeaponSatisfies(pPrimary, pTask->GetWeaponId(), pTask->GetWeaponClassId()))
 			{
 				if (IsPrimaryWeaponId(pTask->GetWeaponId()))
 				{
@@ -8568,7 +8494,6 @@ const char *CBasePlayer::PickPrimaryCareerTaskWeapon()
 	}
 
 	int taskNum = taskVector.size();
-
 	if (taskNum > 1)
 	{
 		// randomize names weapons of list
@@ -8600,7 +8525,7 @@ const char *CBasePlayer::PickSecondaryCareerTaskWeapon()
 {
 	const int BufLen = 256;
 	static char buf[BufLen];
-	CBasePlayerWeapon *secondary;
+	CBasePlayerWeapon *pSecondary;
 	std::vector<CCareerTask *> taskVector;
 
 	if (!TheCareerTasks)
@@ -8608,7 +8533,7 @@ const char *CBasePlayer::PickSecondaryCareerTaskWeapon()
 		return nullptr;
 	}
 
-	secondary = static_cast<CBasePlayerWeapon *>(m_rgpPlayerItems[PISTOL_SLOT]);
+	pSecondary = static_cast<CBasePlayerWeapon *>(m_rgpPlayerItems[PISTOL_SLOT]);
 
 	for (auto pTask : *TheCareerTasks->GetTasks())
 	{
@@ -8623,9 +8548,9 @@ const char *CBasePlayer::PickSecondaryCareerTaskWeapon()
 			}
 		}
 
-		if (secondary)
+		if (pSecondary)
 		{
-			if (CurrentWeaponSatisfies(secondary, pTask->GetWeaponId(), pTask->GetWeaponClassId()))
+			if (CurrentWeaponSatisfies(pSecondary, pTask->GetWeaponId(), pTask->GetWeaponClassId()))
 			{
 				if (IsSecondaryWeaponId(pTask->GetWeaponId()))
 				{
@@ -8642,7 +8567,6 @@ const char *CBasePlayer::PickSecondaryCareerTaskWeapon()
 	}
 
 	int taskNum = taskVector.size();
-
 	if (taskNum > 1)
 	{
 		// randomize names weapons of list
@@ -8717,7 +8641,7 @@ const char *CBasePlayer::PickGrenadeKillWeaponString()
 // PostAutoBuyCommandProcessing - reorders the tokens in autobuyString based on the order of tokens in the priorityString.
 void CBasePlayer::PrioritizeAutoBuyString(char *autobuyString, const char *priorityString)
 {
-	char newString[ MAX_AUTOBUY_LENGTH ];
+	char newString[MAX_AUTOBUY_LENGTH];
 	int newStringPos = 0;
 	char priorityToken[32];
 
@@ -8777,7 +8701,7 @@ void CBasePlayer::PrioritizeAutoBuyString(char *autobuyString, const char *prior
 		// copy the token over to the new string.
 		while (*autobuyPosition != '\0' && *autobuyPosition != ' ')
 		{
-			newString[ newStringPos++ ] = *autobuyPosition;
+			newString[newStringPos++] = *autobuyPosition;
 			autobuyPosition++;
 		}
 
@@ -8892,20 +8816,20 @@ void CBasePlayer::PostAutoBuyCommandProcessing(AutoBuyInfoStruct *commandInfo, b
 		return;
 	}
 
-	CBasePlayerWeapon *primary = static_cast<CBasePlayerWeapon *>(m_rgpPlayerItems[ PRIMARY_WEAPON_SLOT ]);
-	CBasePlayerWeapon *secondary = static_cast<CBasePlayerWeapon *>(m_rgpPlayerItems[ PISTOL_SLOT ]);
+	CBasePlayerWeapon *pPrimary = static_cast<CBasePlayerWeapon *>(m_rgpPlayerItems[PRIMARY_WEAPON_SLOT]);
+	CBasePlayerWeapon *pSecondary = static_cast<CBasePlayerWeapon *>(m_rgpPlayerItems[PISTOL_SLOT]);
 
-	if (primary && FClassnameIs(primary->pev, commandInfo->m_classname))
+	if (pPrimary && FClassnameIs(pPrimary->pev, commandInfo->m_classname))
 	{
 		// I just bought the gun I was trying to buy.
 		boughtPrimary = true;
 	}
-	else if (!primary && ((commandInfo->m_class & AUTOBUYCLASS_SHIELD) == AUTOBUYCLASS_SHIELD) && HasShield())
+	else if (!pPrimary && ((commandInfo->m_class & AUTOBUYCLASS_SHIELD) == AUTOBUYCLASS_SHIELD) && HasShield())
 	{
 		// the shield is a primary weapon even though it isn't a "real" weapon.
 		boughtPrimary = true;
 	}
-	else if (secondary && FClassnameIs(secondary->pev, commandInfo->m_classname))
+	else if (pSecondary && FClassnameIs(pSecondary->pev, commandInfo->m_classname))
 	{
 		// I just bought the pistol I was trying to buy.
 		boughtSecondary = true;
@@ -8920,11 +8844,11 @@ void CBasePlayer::BuildRebuyStruct()
 		return;
 	}
 
-	CBasePlayerWeapon *primary = static_cast<CBasePlayerWeapon *>(m_rgpPlayerItems[ PRIMARY_WEAPON_SLOT ]);
-	CBasePlayerWeapon *secondary = static_cast<CBasePlayerWeapon *>(m_rgpPlayerItems[ PISTOL_SLOT ]);
+	CBasePlayerWeapon *pPrimary = static_cast<CBasePlayerWeapon *>(m_rgpPlayerItems[PRIMARY_WEAPON_SLOT]);
+	CBasePlayerWeapon *pSecondary = static_cast<CBasePlayerWeapon *>(m_rgpPlayerItems[PISTOL_SLOT]);
 
 	// do the primary weapon/ammo stuff.
-	if (!primary)
+	if (!pPrimary)
 	{
 		// count a shieldgun as a primary.
 		if (HasShield())
@@ -8940,27 +8864,27 @@ void CBasePlayer::BuildRebuyStruct()
 	}
 	else
 	{
-		m_rebuyStruct.m_primaryWeapon = primary->m_iId;
-		m_rebuyStruct.m_primaryAmmo = m_rgAmmo[ primary->m_iPrimaryAmmoType ];
+		m_rebuyStruct.m_primaryWeapon = pPrimary->m_iId;
+		m_rebuyStruct.m_primaryAmmo = m_rgAmmo[pPrimary->m_iPrimaryAmmoType];
 	}
 
 	// do the secondary weapon/ammo stuff.
-	if (!secondary)
+	if (!pSecondary)
 	{
 		m_rebuyStruct.m_secondaryWeapon = 0;
 		m_rebuyStruct.m_secondaryAmmo = 0;	// can't have ammo if we don't have a gun right?
 	}
 	else
 	{
-		m_rebuyStruct.m_secondaryWeapon = secondary->m_iId;
-		m_rebuyStruct.m_secondaryAmmo = m_rgAmmo[ secondary->m_iPrimaryAmmoType ];
+		m_rebuyStruct.m_secondaryWeapon = pSecondary->m_iId;
+		m_rebuyStruct.m_secondaryAmmo = m_rgAmmo[pSecondary->m_iPrimaryAmmoType];
 	}
 
 	// HE Grenade
 	int iAmmoIndex = GetAmmoIndex("HEGrenade");
 
 	if (iAmmoIndex != -1)
-		m_rebuyStruct.m_heGrenade = m_rgAmmo[ iAmmoIndex ];
+		m_rebuyStruct.m_heGrenade = m_rgAmmo[iAmmoIndex];
 	else
 		m_rebuyStruct.m_heGrenade = 0;
 
@@ -8968,7 +8892,7 @@ void CBasePlayer::BuildRebuyStruct()
 	iAmmoIndex = GetAmmoIndex("Flashbang");
 
 	if (iAmmoIndex != -1)
-		m_rebuyStruct.m_flashbang = m_rgAmmo[ iAmmoIndex ];
+		m_rebuyStruct.m_flashbang = m_rgAmmo[iAmmoIndex];
 	else
 		m_rebuyStruct.m_flashbang = 0;
 
@@ -8976,7 +8900,7 @@ void CBasePlayer::BuildRebuyStruct()
 	iAmmoIndex = GetAmmoIndex("SmokeGrenade");
 
 	if (iAmmoIndex != -1)
-		m_rebuyStruct.m_smokeGrenade = m_rgAmmo[ iAmmoIndex ];
+		m_rebuyStruct.m_smokeGrenade = m_rgAmmo[iAmmoIndex];
 	else
 		m_rebuyStruct.m_smokeGrenade = 0;
 
@@ -9034,7 +8958,7 @@ void CBasePlayer::Rebuy()
 
 void CBasePlayer::RebuyPrimaryWeapon()
 {
-	if (!m_rgpPlayerItems[ PRIMARY_WEAPON_SLOT ])
+	if (!m_rgpPlayerItems[PRIMARY_WEAPON_SLOT])
 	{
 		if (m_rebuyStruct.m_primaryWeapon)
 		{
@@ -9047,13 +8971,13 @@ void CBasePlayer::RebuyPrimaryWeapon()
 
 void CBasePlayer::RebuyPrimaryAmmo()
 {
-	CBasePlayerWeapon *primary = static_cast<CBasePlayerWeapon *>(m_rgpPlayerItems[ PRIMARY_WEAPON_SLOT ]);
-
-	if (primary)
+	CBasePlayerWeapon *pPrimary = static_cast<CBasePlayerWeapon *>(m_rgpPlayerItems[PRIMARY_WEAPON_SLOT]);
+	if (pPrimary)
 	{
 		// if we had more ammo before than we have now, buy more.
-		if (m_rebuyStruct.m_primaryAmmo > m_rgAmmo[ primary->m_iPrimaryAmmoType ])
+		if (m_rebuyStruct.m_primaryAmmo > m_rgAmmo[pPrimary->m_iPrimaryAmmoType]) {
 			ClientCommand("primammo");
+		}
 	}
 }
 
@@ -9062,19 +8986,20 @@ void CBasePlayer::RebuySecondaryWeapon()
 	if (m_rebuyStruct.m_secondaryWeapon)
 	{
 		const char *alias = WeaponIDToAlias(m_rebuyStruct.m_secondaryWeapon);
-		if (alias)
+		if (alias) {
 			ClientCommand(alias);
+		}
 	}
 }
 
 void CBasePlayer::RebuySecondaryAmmo()
 {
-	CBasePlayerWeapon *secondary = static_cast<CBasePlayerWeapon *>(m_rgpPlayerItems[ PISTOL_SLOT ]);
-
-	if (secondary)
+	CBasePlayerWeapon *pSecondary = static_cast<CBasePlayerWeapon *>(m_rgpPlayerItems[PISTOL_SLOT]);
+	if (pSecondary)
 	{
-		if (m_rebuyStruct.m_secondaryAmmo > m_rgAmmo[ secondary->m_iPrimaryAmmoType ])
+		if (m_rebuyStruct.m_secondaryAmmo > m_rgAmmo[pSecondary->m_iPrimaryAmmoType]) {
 			ClientCommand("secammo");
+		}
 	}
 }
 
@@ -9084,7 +9009,7 @@ void CBasePlayer::RebuyHEGrenade()
 	if (iAmmoIndex == -1)
 		return;
 
-	int numToBuy = m_rebuyStruct.m_heGrenade - m_rgAmmo[ iAmmoIndex ];
+	int numToBuy = m_rebuyStruct.m_heGrenade - m_rgAmmo[iAmmoIndex];
 	for (int i = 0; i < numToBuy; i++)
 		ClientCommand("hegren");
 }
@@ -9095,7 +9020,7 @@ void CBasePlayer::RebuyFlashbang()
 	if (iAmmoIndex == -1)
 		return;
 
-	int numToBuy = m_rebuyStruct.m_flashbang - m_rgAmmo[ iAmmoIndex ];
+	int numToBuy = m_rebuyStruct.m_flashbang - m_rgAmmo[iAmmoIndex];
 	for (int i = 0; i < numToBuy; i++)
 		ClientCommand("flash");
 }
@@ -9106,7 +9031,7 @@ void CBasePlayer::RebuySmokeGrenade()
 	if (iAmmoIndex == -1)
 		return;
 
-	int numToBuy = m_rebuyStruct.m_smokeGrenade - m_rgAmmo[ iAmmoIndex ];
+	int numToBuy = m_rebuyStruct.m_smokeGrenade - m_rgAmmo[iAmmoIndex];
 	for (int i = 0; i < numToBuy; i++)
 		ClientCommand("sgren");
 }
@@ -9234,7 +9159,7 @@ void CBasePlayer::ReloadWeapons(CBasePlayerItem *pWeapon, bool bForceReload, boo
 			if (pWeapon == nullptr || pWeapon == item)
 			{
 				if (bCanRefillBPAmmo) {
-					m_rgAmmo[ item->PrimaryAmmoIndex() ] = item->iMaxAmmo1();
+					m_rgAmmo[item->PrimaryAmmoIndex()] = item->iMaxAmmo1();
 				}
 				if (bCanAutoReload) {
 					((CBasePlayerWeapon *)item)->InstantReload(bCanRefillBPAmmo);
@@ -9289,7 +9214,7 @@ void CBasePlayer::DropSecondary()
 		return false;
 	});
 #else
-	auto item = m_rgpPlayerItems[ PISTOL_SLOT ];
+	auto item = m_rgpPlayerItems[PISTOL_SLOT];
 	if (item)
 	{
 		DropPlayerItem(STRING(item->pev->classname));
@@ -9311,7 +9236,7 @@ void CBasePlayer::DropPrimary()
 		return false;
 	});
 #else
-	auto item = m_rgpPlayerItems[ PRIMARY_WEAPON_SLOT ];
+	auto item = m_rgpPlayerItems[PRIMARY_WEAPON_SLOT];
 	if (item)
 	{
 		DropPlayerItem(STRING(item->pev->classname));

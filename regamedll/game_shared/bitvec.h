@@ -73,7 +73,7 @@ private:
 		NUM_DWORDS = NUM_BITS / 32 + !!(NUM_BITS & 31)
 	};
 
-	unsigned int m_DWords[ NUM_DWORDS ];
+	unsigned int m_DWords[NUM_DWORDS];
 };
 
 inline CBitVecAccessor::CBitVecAccessor(uint32 *pDWords, int iBit)

@@ -18,6 +18,7 @@ void CHEGrenade::Spawn()
 
 	// get ready to fall down.
 	FallInit();
+	CSPlayerItem()->SetItemInfo(&m_ItemInfoArray[m_iId]);
 }
 
 void CHEGrenade::Precache()

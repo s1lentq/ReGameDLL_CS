@@ -13,6 +13,7 @@ void CG3SG1::Spawn()
 	m_flLastFire = 0;
 
 	FallInit();
+	CSPlayerItem()->SetItemInfo(&m_ItemInfoArray[m_iId]);
 }
 
 void CG3SG1::Precache()

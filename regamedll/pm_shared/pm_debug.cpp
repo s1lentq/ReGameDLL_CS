@@ -38,7 +38,7 @@ void PM_ShowClipBox()
 		int i;
 		for (i = 0; i < pmove->numphysent; i++)
 		{
-			if (pmove->physents[ i ].info >= 1 && pmove->physents[ i ].info <= 4)
+			if (pmove->physents[i].info >= 1 && pmove->physents[i].info <= 4)
 			{
 			 	PM_DrawBBox(pmove->player_mins[pmove->usehull], pmove->player_maxs[pmove->usehull], pmove->physents[i].origin, 132, 0.1);
 			}

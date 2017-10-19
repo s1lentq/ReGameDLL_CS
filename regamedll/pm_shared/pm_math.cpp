@@ -1,14 +1,7 @@
 #include "precompiled.h"
 
-/*
-* Globals initialization
-*/
-#ifndef HOOK_GAMEDLL
-
 vec3_t vec3_origin = { 0, 0, 0 };
-int nanmask = 255 << 23;
-
-#endif
+const int nanmask = 255 << 23;
 
 float anglemod(float a)
 {

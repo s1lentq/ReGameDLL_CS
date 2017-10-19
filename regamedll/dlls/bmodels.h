@@ -144,7 +144,7 @@ public:
 	void RampPitchVol(BOOL fUp);
 
 public:
-	static TYPEDESCRIPTION IMPL(m_SaveData)[5];
+	static TYPEDESCRIPTION m_SaveData[];
 
 	float m_flFanFriction;
 	float m_flAttenuation;
@@ -183,7 +183,7 @@ public:
 	void EXPORT RopeTouch(CBaseEntity *pOther);
 
 public:
-	static TYPEDESCRIPTION IMPL(m_SaveData)[8];
+	static TYPEDESCRIPTION m_SaveData[];
 
 	float m_accel;		// acceleration
 	float m_distance;

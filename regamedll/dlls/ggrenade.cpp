@@ -1,10 +1,5 @@
 #include "precompiled.h"
 
-/*
-* Globals initialization
-*/
-#ifndef HOOK_GAMEDLL
-
 TYPEDESCRIPTION CGrenade::m_SaveData[] =
 {
 	DEFINE_FIELD(CGrenade, m_fAttenu, FIELD_FLOAT),
@@ -23,8 +18,6 @@ TYPEDESCRIPTION CGrenade::m_SaveData[] =
 	DEFINE_FIELD(CGrenade, m_bLightSmoke, FIELD_BOOLEAN),
 	DEFINE_FIELD(CGrenade, m_usEvent, FIELD_INTEGER),
 };
-
-#endif
 
 LINK_ENTITY_TO_CLASS(grenade, CGrenade, CCSGrenade)
 

@@ -42,11 +42,11 @@ public:
 	virtual void Think();
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
-public:
-	void GenericCyclerSpawn(char *szModel, Vector vecMin, Vector vecMax);
+protected:
+	void GenericCyclerSpawn(const char *szModel, Vector vecMin, Vector vecMax);
 
 public:
-	static TYPEDESCRIPTION IMPL(m_SaveData)[1];
+	static TYPEDESCRIPTION m_SaveData[];
 
 	int m_animate;
 };
@@ -82,7 +82,7 @@ public:
 	inline int ShouldAnimate() { return (m_animate && m_maxFrame > 1.0f); }
 
 public:
-	static TYPEDESCRIPTION IMPL(m_SaveData)[3];
+	static TYPEDESCRIPTION m_SaveData[];
 
 	int m_animate;
 	float m_lastTime;
@@ -120,7 +120,7 @@ public:
 	virtual void Think();
 
 public:
-	static TYPEDESCRIPTION IMPL(m_SaveData)[1];
+	static TYPEDESCRIPTION m_SaveData[];
 
 	int m_flStartTime;
 };

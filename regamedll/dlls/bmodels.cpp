@@ -1,33 +1,5 @@
 #include "precompiled.h"
 
-/*
-* Globals initialization
-*/
-#ifndef HOOK_GAMEDLL
-
-TYPEDESCRIPTION CFuncRotating::m_SaveData[] =
-{
-	DEFINE_FIELD(CFuncRotating, m_flFanFriction, FIELD_FLOAT),
-	DEFINE_FIELD(CFuncRotating, m_flAttenuation, FIELD_FLOAT),
-	DEFINE_FIELD(CFuncRotating, m_flVolume, FIELD_FLOAT),
-	DEFINE_FIELD(CFuncRotating, m_pitch, FIELD_FLOAT),
-	DEFINE_FIELD(CFuncRotating, m_sounds, FIELD_INTEGER)
-};
-
-TYPEDESCRIPTION CPendulum::m_SaveData[] =
-{
-	DEFINE_FIELD(CPendulum, m_accel, FIELD_FLOAT),
-	DEFINE_FIELD(CPendulum, m_distance, FIELD_FLOAT),
-	DEFINE_FIELD(CPendulum, m_time, FIELD_TIME),
-	DEFINE_FIELD(CPendulum, m_damp, FIELD_FLOAT),
-	DEFINE_FIELD(CPendulum, m_maxSpeed, FIELD_FLOAT),
-	DEFINE_FIELD(CPendulum, m_dampSpeed, FIELD_FLOAT),
-	DEFINE_FIELD(CPendulum, m_center, FIELD_VECTOR),
-	DEFINE_FIELD(CPendulum, m_start, FIELD_VECTOR),
-};
-
-#endif
-
 // BModelOrigin - calculates origin of a bmodel from absmin/size because all bmodel origins are 0 0 0
 Vector VecBModelOrigin(entvars_t *pevBModel)
 {
@@ -222,6 +194,15 @@ void CFuncMonsterClip::Spawn()
 
 	pev->flags |= FL_MONSTERCLIP;
 }
+
+TYPEDESCRIPTION CFuncRotating::m_SaveData[] =
+{
+	DEFINE_FIELD(CFuncRotating, m_flFanFriction, FIELD_FLOAT),
+	DEFINE_FIELD(CFuncRotating, m_flAttenuation, FIELD_FLOAT),
+	DEFINE_FIELD(CFuncRotating, m_flVolume, FIELD_FLOAT),
+	DEFINE_FIELD(CFuncRotating, m_pitch, FIELD_FLOAT),
+	DEFINE_FIELD(CFuncRotating, m_sounds, FIELD_INTEGER)
+};
 
 LINK_ENTITY_TO_CLASS(func_rotating, CFuncRotating, CCSFuncRotating)
 IMPLEMENT_SAVERESTORE(CFuncRotating, CBaseEntity)
@@ -686,6 +667,18 @@ void CFuncRotating::Blocked(CBaseEntity *pOther)
 {
 	pOther->TakeDamage(pev, pev, pev->dmg, DMG_CRUSH);
 }
+
+TYPEDESCRIPTION CPendulum::m_SaveData[] =
+{
+	DEFINE_FIELD(CPendulum, m_accel, FIELD_FLOAT),
+	DEFINE_FIELD(CPendulum, m_distance, FIELD_FLOAT),
+	DEFINE_FIELD(CPendulum, m_time, FIELD_TIME),
+	DEFINE_FIELD(CPendulum, m_damp, FIELD_FLOAT),
+	DEFINE_FIELD(CPendulum, m_maxSpeed, FIELD_FLOAT),
+	DEFINE_FIELD(CPendulum, m_dampSpeed, FIELD_FLOAT),
+	DEFINE_FIELD(CPendulum, m_center, FIELD_VECTOR),
+	DEFINE_FIELD(CPendulum, m_start, FIELD_VECTOR),
+};
 
 LINK_ENTITY_TO_CLASS(func_pendulum, CPendulum, CCSPendulum)
 IMPLEMENT_SAVERESTORE(CPendulum, CBaseEntity)

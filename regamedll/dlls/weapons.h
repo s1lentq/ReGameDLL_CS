@@ -217,7 +217,7 @@ public:
 	void EXPORT C4Think();
 
 public:
-	static TYPEDESCRIPTION IMPL(m_SaveData)[15];
+	static TYPEDESCRIPTION m_SaveData[];
 
 	bool m_bStartDefuse;
 	bool m_bIsC4;
@@ -245,6 +245,7 @@ public:
 	BOOL m_fRegisteredSound;
 };
 
+class CCSPlayerItem;
 class CBasePlayerItem: public CBaseAnimating
 {
 public:
@@ -285,25 +286,47 @@ public:
 	void CheckRespawn();
 
 public:
-	inline int iItemPosition()    const { return IMPL(m_ItemInfoArray)[m_iId].iPosition; }
-	inline const char *pszAmmo1() const { return IMPL(m_ItemInfoArray)[m_iId].pszAmmo1; }
-	inline int iMaxAmmo1()        const { return IMPL(m_ItemInfoArray)[m_iId].iMaxAmmo1; }
-	inline const char *pszAmmo2() const { return IMPL(m_ItemInfoArray)[m_iId].pszAmmo2; }
-	inline int iMaxAmmo2()        const { return IMPL(m_ItemInfoArray)[m_iId].iMaxAmmo2; }
-	inline const char *pszName()  const { return IMPL(m_ItemInfoArray)[m_iId].pszName; }
-	inline int iMaxClip()         const { return IMPL(m_ItemInfoArray)[m_iId].iMaxClip; }
-	inline int iWeight()          const { return IMPL(m_ItemInfoArray)[m_iId].iWeight; }
-	inline int iFlags()           const { return IMPL(m_ItemInfoArray)[m_iId].iFlags; }
+
+#ifdef REGAMEDLL_API
+	CCSPlayerItem *CSPlayerItem() const;
+
+	int iPosition() const;
+	const char *pszAmmo1() const;
+	int iMaxAmmo1() const;
+	const char *pszAmmo2() const;
+	int iMaxAmmo2() const;
+	const char *pszName() const;
+	int iMaxClip() const;
+	int iWeight() const;
+	int iFlags() const;
+#else
+	int iPosition()        const { return m_ItemInfoArray[m_iId].iPosition; }
+	const char *pszAmmo1() const { return m_ItemInfoArray[m_iId].pszAmmo1; }
+	int iMaxAmmo1()        const { return m_ItemInfoArray[m_iId].iMaxAmmo1; }
+	const char *pszAmmo2() const { return m_ItemInfoArray[m_iId].pszAmmo2; }
+	int iMaxAmmo2()        const { return m_ItemInfoArray[m_iId].iMaxAmmo2; }
+	const char *pszName()  const { return m_ItemInfoArray[m_iId].pszName; }
+	int iMaxClip()         const { return m_ItemInfoArray[m_iId].iMaxClip; }
+	int iWeight()          const { return m_ItemInfoArray[m_iId].iWeight; }
+	int iFlags()           const { return m_ItemInfoArray[m_iId].iFlags; }
+#endif
 
 public:
-	static TYPEDESCRIPTION IMPL(m_SaveData)[3];
-	static ItemInfo IMPL(m_ItemInfoArray)[MAX_WEAPONS];
-	static AmmoInfo IMPL(m_AmmoInfoArray)[MAX_AMMO_SLOTS];
+	static TYPEDESCRIPTION m_SaveData[];
+	static ItemInfo m_ItemInfoArray[MAX_WEAPONS];
+	static AmmoInfo m_AmmoInfoArray[MAX_AMMO_SLOTS];
 
 	CBasePlayer *m_pPlayer;
 	CBasePlayerItem *m_pNext;
 	int m_iId;							// WEAPON_???
 };
+
+#ifdef REGAMEDLL_API
+inline CCSPlayerItem *CBasePlayerItem::CSPlayerItem() const
+{
+	return reinterpret_cast<CCSPlayerItem *>(this->m_pEntity);
+}
+#endif
 
 // inventory items that
 class CBasePlayerWeapon: public CBasePlayerItem
@@ -364,7 +387,7 @@ public:
 	void InstantReload(bool bCanRefillBPAmmo = false);
 
 public:
-	static TYPEDESCRIPTION IMPL(m_SaveData)[7];
+	static TYPEDESCRIPTION m_SaveData[];
 
 	int m_iPlayEmptySound;
 	int m_fFireOnEmpty;
@@ -428,7 +451,7 @@ public:
 	BOOL PackAmmo(string_t iszName, int iCount);
 
 public:
-	static TYPEDESCRIPTION IMPL(m_SaveData)[4];
+	static TYPEDESCRIPTION m_SaveData[];
 
 	CBasePlayerItem *m_rgpPlayerItems[MAX_ITEM_TYPES];
 	string_t m_rgiszAmmo[MAX_AMMO_SLOTS];
@@ -1918,7 +1941,6 @@ public:
 };
 
 extern short g_sModelIndexLaser;
-extern const char *g_pModelNameLaser;
 extern short g_sModelIndexLaserDot;
 
 extern short g_sModelIndexFireball;
@@ -1954,6 +1976,5 @@ void EjectBrass(const Vector &vecOrigin, const Vector &vecLeft, const Vector &ve
 void EjectBrass2(const Vector &vecOrigin, const Vector &vecVelocity, float rotation, int model, int soundtype, entvars_t *pev);
 void AddAmmoNameToAmmoRegistry(const char *szAmmoname);
 void UTIL_PrecacheOtherWeapon(const char *szClassname);
-void UTIL_PrecacheOtherWeapon2(const char *szClassname);
 void W_Precache();
 BOOL CanAttack(float attack_time, float curtime, BOOL isPredicted);

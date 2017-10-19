@@ -14,6 +14,7 @@ void CMP5N::Spawn()
 	m_bDelayFire = false;
 
 	FallInit();
+	CSPlayerItem()->SetItemInfo(&m_ItemInfoArray[m_iId]);
 }
 
 void CMP5N::Precache()

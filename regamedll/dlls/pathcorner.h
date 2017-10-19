@@ -42,7 +42,7 @@ public:
 	virtual float GetDelay() { return m_flWait; }
 
 public:
-	static TYPEDESCRIPTION IMPL(m_SaveData)[1];
+	static TYPEDESCRIPTION m_SaveData[];
 
 private:
 	float m_flWait;

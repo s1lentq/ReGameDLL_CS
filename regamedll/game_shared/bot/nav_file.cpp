@@ -295,8 +295,8 @@ void CNavArea::Load(SteamFile *file, unsigned int version)
 	file->Read(&m_id, sizeof(unsigned int));
 
 	// update nextID to avoid collisions
-	if (m_id >= IMPL(m_nextID))
-		IMPL(m_nextID) = m_id + 1;
+	if (m_id >= m_nextID)
+		m_nextID = m_id + 1;
 
 	// load attribute flags
 	file->Read(&m_attributeFlags, sizeof(unsigned char));
@@ -766,7 +766,7 @@ NavErrorType LoadNavigationMap()
 	DestroyNavigationMap();
 	placeDirectory.Reset();
 
-	IMPL_CLASS(CNavArea, m_nextID) = 1;
+	CNavArea::m_nextID = 1;
 
 	SteamFile navFile(filename);
 

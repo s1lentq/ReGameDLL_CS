@@ -1,18 +1,9 @@
 #include "precompiled.h"
 
-/*
-* Globals initialization
-*/
-#ifndef HOOK_GAMEDLL
-
 NavDirType Opposite[NUM_DIRECTIONS] = { SOUTH, WEST, NORTH, EAST };
 
 CNavNode *CNavNode::m_list = nullptr;
 unsigned int CNavNode::m_listLength = 0;
-
-#endif
-
-//Extent NodeMapExtent;
 
 CNavNode::CNavNode(const Vector *pos, const Vector *normal, CNavNode *parent)
 {
@@ -28,9 +19,9 @@ CNavNode::CNavNode(const Vector *pos, const Vector *normal, CNavNode *parent)
 	m_visited = 0;
 	m_parent = parent;
 
-	m_next = IMPL(m_list);
-	IMPL(m_list) = this;
-	IMPL(m_listLength)++;
+	m_next = m_list;
+	m_list = this;
+	m_listLength++;
 
 	m_isCovered = FALSE;
 	m_area = nullptr;
@@ -49,12 +40,11 @@ void CNavNode::ConnectTo(CNavNode *node, NavDirType dir)
 const CNavNode *CNavNode::GetNode(const Vector *pos)
 {
 	const float tolerance = 0.45f * GenerationStepSize;
-
-	for (const CNavNode *node = IMPL(m_list); node; node = node->m_next)
+	for (const CNavNode *node = m_list; node; node = node->m_next)
 	{
-		float dx = ABS(node->m_pos.x - pos->x);
-		float dy = ABS(node->m_pos.y - pos->y);
-		float dz = ABS(node->m_pos.z - pos->z);
+		float dx = abs(node->m_pos.x - pos->x);
+		float dy = abs(node->m_pos.y - pos->y);
+		float dz = abs(node->m_pos.z - pos->z);
 
 		if (dx < tolerance && dy < tolerance && dz < tolerance)
 			return node;

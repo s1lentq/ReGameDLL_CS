@@ -43,7 +43,7 @@ public:
 	void EXPORT TankTouch(CBaseEntity *pOther);
 
 public:
-	static TYPEDESCRIPTION IMPL(m_SaveData)[1];
+	static TYPEDESCRIPTION m_SaveData[];
 
 private:
 	int m_state;

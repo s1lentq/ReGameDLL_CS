@@ -26,6 +26,7 @@ void CC4::Spawn()
 	FallInit();
 	SetThink(&CBasePlayerItem::FallThink);
 	pev->nextthink = UTIL_WeaponTimeBase() + 0.1f;
+	CSPlayerItem()->SetItemInfo(&m_ItemInfoArray[m_iId]);
 }
 
 void CC4::Precache()

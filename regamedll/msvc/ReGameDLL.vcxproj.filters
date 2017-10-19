@@ -78,19 +78,16 @@
     <Filter Include="dlls\addons">
       <UniqueIdentifier>{cc40695f-5d17-4ee9-b410-1be65c49c099}</UniqueIdentifier>
     </Filter>
+    <Filter Include="dlls\API">
+      <UniqueIdentifier>{23a8e38b-6719-4a8e-9861-12425a661001}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="public\regamedll\API">
+      <UniqueIdentifier>{46ec2f1d-1feb-46e2-a801-0c87d1212c5c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\hookers\memory.cpp">
-      <Filter>hookers</Filter>
-    </ClCompile>
-    <ClCompile Include="..\hookers\hooker.cpp">
-      <Filter>hookers</Filter>
-    </ClCompile>
     <ClCompile Include="..\version\version.cpp">
       <Filter>version</Filter>
-    </ClCompile>
-    <ClCompile Include="..\hookers\main.cpp">
-      <Filter>hookers</Filter>
     </ClCompile>
     <ClCompile Include="..\regamedll\precompiled.cpp">
       <Filter>regamedll</Filter>
@@ -265,9 +262,6 @@
     </ClCompile>
     <ClCompile Include="..\dlls\client.cpp">
       <Filter>dlls</Filter>
-    </ClCompile>
-    <ClCompile Include="..\hookers\main_mp.cpp">
-      <Filter>hookers</Filter>
     </ClCompile>
     <ClCompile Include="..\pm_shared\pm_debug.cpp">
       <Filter>pm_shared</Filter>
@@ -518,20 +512,11 @@
     <ClCompile Include="..\regamedll\hookchains_impl.cpp">
       <Filter>regamedll</Filter>
     </ClCompile>
-    <ClCompile Include="..\regamedll\regamedll_api_impl.cpp">
-      <Filter>regamedll</Filter>
-    </ClCompile>
-    <ClCompile Include="..\regamedll\regamedll_interfaces_impl.cpp">
-      <Filter>regamedll</Filter>
-    </ClCompile>
     <ClCompile Include="..\public\tier0\dbg.cpp">
       <Filter>public\tier0</Filter>
     </ClCompile>
     <ClCompile Include="..\regamedll\classes_dummy.cpp">
       <Filter>regamedll</Filter>
-    </ClCompile>
-    <ClCompile Include="..\hookers\hooker_impl.cpp">
-      <Filter>hookers</Filter>
     </ClCompile>
     <ClCompile Include="..\regamedll\regamedll.cpp">
       <Filter>regamedll</Filter>
@@ -541,9 +526,6 @@
     </ClCompile>
     <ClCompile Include="..\regamedll\RegameDLLRuntimeConfig.cpp">
       <Filter>regamedll</Filter>
-    </ClCompile>
-    <ClCompile Include="..\hookers\hooklist.cpp">
-      <Filter>hookers</Filter>
     </ClCompile>
     <ClCompile Include="..\dlls\cmdhandler.cpp">
       <Filter>dlls</Filter>
@@ -560,14 +542,26 @@
     <ClCompile Include="..\dlls\addons\item_airbox.cpp">
       <Filter>dlls\addons</Filter>
     </ClCompile>
+    <ClCompile Include="..\dlls\saverestore.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\revert_saved.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\API\CAPI_Impl.cpp">
+      <Filter>dlls\API</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\API\CSEntity.cpp">
+      <Filter>dlls\API</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\API\CSPlayer.cpp">
+      <Filter>dlls\API</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\API\CSPlayerItem.cpp">
+      <Filter>dlls\API</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\hookers\memory.h">
-      <Filter>hookers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\hookers\osconfig.h">
-      <Filter>hookers</Filter>
-    </ClInclude>
     <ClInclude Include="..\version\version.h">
       <Filter>version</Filter>
     </ClInclude>
@@ -576,9 +570,6 @@
     </ClInclude>
     <ClInclude Include="..\public\FileSystem.h">
       <Filter>public</Filter>
-    </ClInclude>
-    <ClInclude Include="..\hookers\hooker.h">
-      <Filter>hookers</Filter>
     </ClInclude>
     <ClInclude Include="..\public\basetypes.h">
       <Filter>public</Filter>
@@ -985,25 +976,13 @@
     <ClInclude Include="..\dlls\scriptevent.h">
       <Filter>dlls</Filter>
     </ClInclude>
-    <ClInclude Include="..\hookers\stl\use_ansi.h">
-      <Filter>hookers\stl</Filter>
-    </ClInclude>
     <ClInclude Include="..\regamedll\hookchains_impl.h">
-      <Filter>regamedll</Filter>
-    </ClInclude>
-    <ClInclude Include="..\regamedll\regamedll_api_impl.h">
-      <Filter>regamedll</Filter>
-    </ClInclude>
-    <ClInclude Include="..\regamedll\regamedll_interfaces_impl.h">
       <Filter>regamedll</Filter>
     </ClInclude>
     <ClInclude Include="..\public\regamedll\hookchains.h">
       <Filter>public\regamedll</Filter>
     </ClInclude>
     <ClInclude Include="..\public\regamedll\regamedll_api.h">
-      <Filter>public\regamedll</Filter>
-    </ClInclude>
-    <ClInclude Include="..\public\regamedll\regamedll_interfaces.h">
       <Filter>public\regamedll</Filter>
     </ClInclude>
     <ClInclude Include="..\public\tier0\dbg.h">
@@ -1014,9 +993,6 @@
     </ClInclude>
     <ClInclude Include="..\game_shared\bot\bot_constants.h">
       <Filter>game_shared\bot</Filter>
-    </ClInclude>
-    <ClInclude Include="..\hookers\hooker_impl.h">
-      <Filter>hookers</Filter>
     </ClInclude>
     <ClInclude Include="..\regamedll\engine.h">
       <Filter>regamedll</Filter>
@@ -1039,12 +1015,6 @@
     <ClInclude Include="..\regamedll\RegameDLLRuntimeConfig.h">
       <Filter>regamedll</Filter>
     </ClInclude>
-    <ClInclude Include="..\hookers\helper.h">
-      <Filter>hookers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\hookers\hooklist.h">
-      <Filter>hookers</Filter>
-    </ClInclude>
     <ClInclude Include="..\dlls\revert_saved.h">
       <Filter>dlls</Filter>
     </ClInclude>
@@ -1066,6 +1036,24 @@
     <ClInclude Include="..\dlls\addons\item_airbox.h">
       <Filter>dlls\addons</Filter>
     </ClInclude>
+    <ClInclude Include="..\dlls\bot\cs_bot_init.h">
+      <Filter>dlls\bot</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\API\CAPI_Impl.h">
+      <Filter>dlls\API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\regamedll\API\CSEntity.h">
+      <Filter>public\regamedll\API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\regamedll\API\CSInterfaces.h">
+      <Filter>public\regamedll\API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\regamedll\API\CSPlayer.h">
+      <Filter>public\regamedll\API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\regamedll\API\CSPlayerItem.h">
+      <Filter>public\regamedll\API</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\linux\appversion.sh">
@@ -1073,33 +1061,6 @@
     </None>
     <None Include="..\linux\Makefile">
       <Filter>linux</Filter>
-    </None>
-    <None Include="..\hookers\stl\iosfwd">
-      <Filter>hookers\stl</Filter>
-    </None>
-    <None Include="..\hookers\stl\iterator">
-      <Filter>hookers\stl</Filter>
-    </None>
-    <None Include="..\hookers\stl\list">
-      <Filter>hookers\stl</Filter>
-    </None>
-    <None Include="..\hookers\stl\memory">
-      <Filter>hookers\stl</Filter>
-    </None>
-    <None Include="..\hookers\stl\utility">
-      <Filter>hookers\stl</Filter>
-    </None>
-    <None Include="..\hookers\stl\vector">
-      <Filter>hookers\stl</Filter>
-    </None>
-    <None Include="..\hookers\stl\xmemory">
-      <Filter>hookers\stl</Filter>
-    </None>
-    <None Include="..\hookers\stl\xstddef">
-      <Filter>hookers\stl</Filter>
-    </None>
-    <None Include="..\hookers\stl\xutility">
-      <Filter>hookers\stl</Filter>
     </None>
   </ItemGroup>
 </Project>

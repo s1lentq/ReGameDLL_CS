@@ -1,10 +1,5 @@
 #include "precompiled.h"
 
-/*
-* Globals initialization
-*/
-#ifndef HOOK_GAMEDLL
-
 DLL_FUNCTIONS gFunctionTable =
 {
 	&GameDLLInit,
@@ -68,19 +63,7 @@ NEW_DLL_FUNCTIONS gNewDLLFunctions =
 	nullptr
 };
 
-// Global Savedata for Delay
-TYPEDESCRIPTION	CBaseEntity::m_SaveData[] =
-{
-	DEFINE_FIELD(CBaseEntity, m_pGoalEnt, FIELD_CLASSPTR),
-	DEFINE_FIELD(CBaseEntity, m_pfnThink, FIELD_FUNCTION),	// UNDONE: Build table of these!
-	DEFINE_FIELD(CBaseEntity, m_pfnTouch, FIELD_FUNCTION),
-	DEFINE_FIELD(CBaseEntity, m_pfnUse, FIELD_FUNCTION),
-	DEFINE_FIELD(CBaseEntity, m_pfnBlocked, FIELD_FUNCTION),
-};
-
 CMemoryPool hashItemMemPool(sizeof(hash_item_t), 64);
-
-#endif // HOOK_GAMEDLL
 
 int CaseInsensitiveHash(const char *string, int iBounds)
 {
@@ -107,7 +90,7 @@ void EmptyEntityHashTable()
 	int i;
 	hash_item_t *item, *temp, *free;
 
-	for (i = 0; i < stringsHashTable.Count(); ++i)
+	for (i = 0; i < stringsHashTable.Count(); i++)
 	{
 		item = &stringsHashTable[i];
 		temp = item->next;
@@ -292,7 +275,7 @@ C_DLLEXPORT int GetEntityAPI(DLL_FUNCTIONS *pFunctionTable, int interfaceVersion
 
 	Q_memcpy(pFunctionTable, &gFunctionTable, sizeof(DLL_FUNCTIONS));
 	stringsHashTable.AddMultipleToTail(2048);
-	for (int i = 0; i < stringsHashTable.Count(); ++i)
+	for (int i = 0; i < stringsHashTable.Count(); i++)
 	{
 		stringsHashTable[i].next = nullptr;
 	}
@@ -338,7 +321,7 @@ int DispatchSpawn(edict_t *pent)
 		// Try to get the pointer again, in case the spawn function deleted the entity.
 		// UNDONE: Spawn() should really return a code to ask that the entity be deleted, but
 		// that would touch too much code for me to do that right now.
-		pEntity = (CBaseEntity *)GET_PRIVATE(pent);
+		pEntity = GET_PRIVATE<CBaseEntity>(pent);
 
 		if (pEntity)
 		{
@@ -397,7 +380,7 @@ void DispatchKeyValue(edict_t *pentKeyvalue, KeyValueData *pkvd)
 		return;
 
 	// Get the actualy entity object
-	CBaseEntity *pEntity = (CBaseEntity *)GET_PRIVATE(pentKeyvalue);
+	CBaseEntity *pEntity = GET_PRIVATE<CBaseEntity>(pentKeyvalue);
 	if (!pEntity)
 		return;
 
@@ -408,8 +391,8 @@ void DispatchKeyValue(edict_t *pentKeyvalue, KeyValueData *pkvd)
 // while it builds the graph
 void DispatchTouch(edict_t *pentTouched, edict_t *pentOther)
 {
-	CBaseEntity *pEntity = (CBaseEntity *)GET_PRIVATE(pentTouched);
-	CBaseEntity *pOther = (CBaseEntity *)GET_PRIVATE(pentOther);
+	CBaseEntity *pEntity = GET_PRIVATE<CBaseEntity>(pentTouched);
+	CBaseEntity *pOther = GET_PRIVATE<CBaseEntity>(pentOther);
 
 	if (pEntity && pOther && !((pEntity->pev->flags | pOther->pev->flags) & FL_KILLME))
 		pEntity->Touch(pOther);
@@ -417,8 +400,8 @@ void DispatchTouch(edict_t *pentTouched, edict_t *pentOther)
 
 void DispatchUse(edict_t *pentUsed, edict_t *pentOther)
 {
-	CBaseEntity *pEntity = (CBaseEntity *)GET_PRIVATE(pentUsed);
-	CBaseEntity *pOther = (CBaseEntity *)GET_PRIVATE(pentOther);
+	CBaseEntity *pEntity = GET_PRIVATE<CBaseEntity>(pentUsed);
+	CBaseEntity *pOther = GET_PRIVATE<CBaseEntity>(pentOther);
 
 	if (pEntity && !(pEntity->pev->flags & FL_KILLME))
 		pEntity->Use(pOther, pOther, USE_TOGGLE, 0);
@@ -426,7 +409,7 @@ void DispatchUse(edict_t *pentUsed, edict_t *pentOther)
 
 void DispatchThink(edict_t *pent)
 {
-	CBaseEntity *pEntity = (CBaseEntity *)GET_PRIVATE(pent);
+	CBaseEntity *pEntity = GET_PRIVATE<CBaseEntity>(pent);
 
 	if (pEntity)
 	{
@@ -441,8 +424,8 @@ void DispatchThink(edict_t *pent)
 
 void DispatchBlocked(edict_t *pentBlocked, edict_t *pentOther)
 {
-	CBaseEntity *pEntity = (CBaseEntity *)GET_PRIVATE(pentBlocked);
-	CBaseEntity *pOther = (CBaseEntity *)GET_PRIVATE(pentOther);
+	CBaseEntity *pEntity = GET_PRIVATE<CBaseEntity>(pentBlocked);
+	CBaseEntity *pOther = GET_PRIVATE<CBaseEntity>(pentOther);
 
 	if (pEntity)
 	{
@@ -452,11 +435,11 @@ void DispatchBlocked(edict_t *pentBlocked, edict_t *pentOther)
 
 void DispatchSave(edict_t *pent, SAVERESTOREDATA *pSaveData)
 {
-	CBaseEntity *pEntity = (CBaseEntity *)GET_PRIVATE(pent);
+	CBaseEntity *pEntity = GET_PRIVATE<CBaseEntity>(pent);
 
 	if (pEntity && pSaveData)
 	{
-		ENTITYTABLE *pTable = &pSaveData->pTable[ pSaveData->currentIndex ];
+		ENTITYTABLE *pTable = &pSaveData->pTable[pSaveData->currentIndex];
 
 		if (pTable->pent != pent)
 		{
@@ -497,7 +480,7 @@ CBaseEntity *FindGlobalEntity(string_t classname, string_t globalname)
 
 	if (pReturn)
 	{
-		if (!FClassnameIs(pReturn->pev, STRING(classname)))
+		if (!FClassnameIs(pReturn->pev, classname))
 		{
 			ALERT(at_console, "Global entity found %s, wrong class %s\n", STRING(globalname), STRING(pReturn->pev->classname));
 			pReturn = nullptr;
@@ -509,7 +492,7 @@ CBaseEntity *FindGlobalEntity(string_t classname, string_t globalname)
 
 int DispatchRestore(edict_t *pent, SAVERESTOREDATA *pSaveData, int globalEntity)
 {
-	CBaseEntity *pEntity = (CBaseEntity *)GET_PRIVATE(pent);
+	CBaseEntity *pEntity = GET_PRIVATE<CBaseEntity>(pent);
 
 	if (pEntity && pSaveData)
 	{
@@ -578,7 +561,7 @@ int DispatchRestore(edict_t *pent, SAVERESTOREDATA *pSaveData, int globalEntity)
 		}
 
 		// Again, could be deleted, get the pointer again.
-		pEntity = (CBaseEntity *)GET_PRIVATE(pent);
+		pEntity = GET_PRIVATE<CBaseEntity>(pent);
 
 		// Is this an overriding global entity (coming over the transition), or one restoring in a level
 		if (globalEntity)
@@ -623,14 +606,14 @@ int DispatchRestore(edict_t *pent, SAVERESTOREDATA *pSaveData, int globalEntity)
 
 void DispatchObjectCollsionBox(edict_t *pent)
 {
-	CBaseEntity *pEntity = (CBaseEntity *)GET_PRIVATE(pent);
+	CBaseEntity *pEntity = GET_PRIVATE<CBaseEntity>(pent);
 	if (pEntity)
 	{
 		pEntity->SetObjectCollisionBox();
+		return;
 	}
-	else
-		SetObjectCollisionBox(&pent->v);
 
+	SetObjectCollisionBox(&pent->v);
 }
 
 void SaveWriteFields(SAVERESTOREDATA *pSaveData, const char *pname, void *pBaseData, TYPEDESCRIPTION *pFields, int fieldCount)
@@ -735,11 +718,21 @@ CBaseEntity *CBaseEntity::GetNextTarget()
 	return Instance(pTarget);
 }
 
+// Global Savedata for Delay
+TYPEDESCRIPTION	CBaseEntity::m_SaveData[] =
+{
+	DEFINE_FIELD(CBaseEntity, m_pGoalEnt, FIELD_CLASSPTR),
+	DEFINE_FIELD(CBaseEntity, m_pfnThink, FIELD_FUNCTION),	// UNDONE: Build table of these!
+	DEFINE_FIELD(CBaseEntity, m_pfnTouch, FIELD_FUNCTION),
+	DEFINE_FIELD(CBaseEntity, m_pfnUse, FIELD_FUNCTION),
+	DEFINE_FIELD(CBaseEntity, m_pfnBlocked, FIELD_FUNCTION),
+};
+
 int CBaseEntity::Save(CSave &save)
 {
 	if (save.WriteEntVars("ENTVARS", pev))
 	{
-		return save.WriteFields("BASE", this, IMPL(m_SaveData), ARRAYSIZE(IMPL(m_SaveData)));
+		return save.WriteFields("BASE", this, m_SaveData, ARRAYSIZE(m_SaveData));
 	}
 
 	return 0;
@@ -750,7 +743,7 @@ int CBaseEntity::Restore(CRestore &restore)
 	int status = restore.ReadEntVars("ENTVARS", pev);
 	if (status)
 	{
-		status = restore.ReadFields("BASE", this, IMPL(m_SaveData), ARRAYSIZE(IMPL(m_SaveData)));
+		status = restore.ReadFields("BASE", this, m_SaveData, ARRAYSIZE(m_SaveData));
 	}
 
 	if (pev->modelindex != 0 && !FStringNull(pev->model))
@@ -781,7 +774,7 @@ void SetObjectCollisionBox(entvars_t *pev)
 		int i;
 
 		max = 0;
-		for (i = 0; i < 3; ++i)
+		for (i = 0; i < 3; i++)
 		{
 			v = Q_fabs(float_precision(((float *)pev->mins)[i]));
 			if (v > max)
@@ -795,7 +788,7 @@ void SetObjectCollisionBox(entvars_t *pev)
 				max = v;
 			}
 		}
-		for (i = 0; i < 3; ++i)
+		for (i = 0; i < 3; i++)
 		{
 			((float *)pev->absmin)[i] = ((float *)pev->origin)[i] - max;
 			((float *)pev->absmax)[i] = ((float *)pev->origin)[i] + max;
@@ -907,7 +900,7 @@ int CBaseEntity::DamageDecal(int bitsDamageType)
 
 // NOTE: szName must be a pointer to constant memory, e.g. "monster_class" because the entity
 // will keep a pointer to it after this call.
-CBaseEntity *CBaseEntity::Create(char *szName, const Vector &vecOrigin, const Vector &vecAngles, edict_t *pentOwner)
+CBaseEntity *CBaseEntity::Create(const char *szName, const Vector &vecOrigin, const Vector &vecAngles, edict_t *pentOwner)
 {
 	edict_t	*pent = CREATE_NAMED_ENTITY(MAKE_STRING(szName));
 	if (FNullEnt(pent))
@@ -1021,7 +1014,7 @@ void CBaseEntity::FireBullets(ULONG cShots, Vector vecSrc, Vector vecDirShooting
 	ClearMultiDamage();
 	gMultiDamage.type = (DMG_BULLET | DMG_NEVERGIB);
 
-	for (ULONG iShot = 1; iShot <= cShots; ++iShot)
+	for (ULONG iShot = 1; iShot <= cShots; iShot++)
 	{
 		int spark = 0;
 
@@ -1395,7 +1388,7 @@ void CBaseEntity::TraceBleed(float flDamage, Vector vecDir, TraceResult *ptr, in
 		cCount = 4;
 	}
 
-	for (i = 0; i < cCount; ++i)
+	for (i = 0; i < cCount; i++)
 	{
 		// trace in the opposite direction the shot came from (the direction the shot is going)
 		vecTraceDir = vecDir * -1.0f;

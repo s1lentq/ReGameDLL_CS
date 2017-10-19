@@ -1,10 +1,5 @@
 #include "precompiled.h"
 
-/*
-* Globals initialization
-*/
-#ifndef HOOK_GAMEDLL
-
 TYPEDESCRIPTION CBubbling::m_SaveData[] =
 {
 	DEFINE_FIELD(CBubbling, m_density, FIELD_INTEGER),
@@ -12,56 +7,6 @@ TYPEDESCRIPTION CBubbling::m_SaveData[] =
 	DEFINE_FIELD(CBubbling, m_state, FIELD_INTEGER),
 };
 
-TYPEDESCRIPTION CLightning::m_SaveData[] =
-{
-	DEFINE_FIELD(CLightning, m_active, FIELD_INTEGER),
-	DEFINE_FIELD(CLightning, m_iszStartEntity, FIELD_STRING),
-	DEFINE_FIELD(CLightning, m_iszEndEntity, FIELD_STRING),
-	DEFINE_FIELD(CLightning, m_life, FIELD_FLOAT),
-	DEFINE_FIELD(CLightning, m_boltWidth, FIELD_INTEGER),
-	DEFINE_FIELD(CLightning, m_noiseAmplitude, FIELD_INTEGER),
-	DEFINE_FIELD(CLightning, m_brightness, FIELD_INTEGER),
-	DEFINE_FIELD(CLightning, m_speed, FIELD_INTEGER),
-	DEFINE_FIELD(CLightning, m_restrike, FIELD_FLOAT),
-	DEFINE_FIELD(CLightning, m_spriteTexture, FIELD_INTEGER),
-	DEFINE_FIELD(CLightning, m_iszSpriteName, FIELD_STRING),
-	DEFINE_FIELD(CLightning, m_frameStart, FIELD_INTEGER),
-	DEFINE_FIELD(CLightning, m_radius, FIELD_FLOAT),
-};
-
-TYPEDESCRIPTION CLaser::m_SaveData[] =
-{
-	DEFINE_FIELD(CLaser, m_pSprite, FIELD_CLASSPTR),
-	DEFINE_FIELD(CLaser, m_iszSpriteName, FIELD_STRING),
-	DEFINE_FIELD(CLaser, m_firePosition, FIELD_POSITION_VECTOR),
-};
-
-TYPEDESCRIPTION CGlow::m_SaveData[] =
-{
-	DEFINE_FIELD(CGlow, m_lastTime, FIELD_TIME),
-	DEFINE_FIELD(CGlow, m_maxFrame, FIELD_FLOAT),
-};
-
-TYPEDESCRIPTION CSprite::m_SaveData[] =
-{
-	DEFINE_FIELD(CSprite, m_lastTime, FIELD_TIME),
-	DEFINE_FIELD(CSprite, m_maxFrame, FIELD_FLOAT),
-};
-
-TYPEDESCRIPTION CGibShooter::m_SaveData[] =
-{
-	DEFINE_FIELD(CGibShooter, m_iGibs, FIELD_INTEGER),
-	DEFINE_FIELD(CGibShooter, m_iGibCapacity, FIELD_INTEGER),
-	DEFINE_FIELD(CGibShooter, m_iGibMaterial, FIELD_INTEGER),
-	DEFINE_FIELD(CGibShooter, m_iGibModelIndex, FIELD_INTEGER),
-	DEFINE_FIELD(CGibShooter, m_flGibVelocity, FIELD_FLOAT),
-	DEFINE_FIELD(CGibShooter, m_flVariance, FIELD_FLOAT),
-	DEFINE_FIELD(CGibShooter, m_flGibLife, FIELD_FLOAT),
-};
-
-#endif // HOOK_GAMEDLL
-
-LINK_ENTITY_TO_CLASS(info_target, CPointEntity, CCSPointEntity)
 LINK_ENTITY_TO_CLASS(env_bubbles, CBubbling, CCSBubbling)
 IMPLEMENT_SAVERESTORE(CBubbling, CBaseEntity)
 
@@ -351,6 +296,23 @@ void CBeam::DoSparks(const Vector &start, const Vector &end)
 		}
 	}
 }
+
+TYPEDESCRIPTION CLightning::m_SaveData[] =
+{
+	DEFINE_FIELD(CLightning, m_active, FIELD_INTEGER),
+	DEFINE_FIELD(CLightning, m_iszStartEntity, FIELD_STRING),
+	DEFINE_FIELD(CLightning, m_iszEndEntity, FIELD_STRING),
+	DEFINE_FIELD(CLightning, m_life, FIELD_FLOAT),
+	DEFINE_FIELD(CLightning, m_boltWidth, FIELD_INTEGER),
+	DEFINE_FIELD(CLightning, m_noiseAmplitude, FIELD_INTEGER),
+	DEFINE_FIELD(CLightning, m_brightness, FIELD_INTEGER),
+	DEFINE_FIELD(CLightning, m_speed, FIELD_INTEGER),
+	DEFINE_FIELD(CLightning, m_restrike, FIELD_FLOAT),
+	DEFINE_FIELD(CLightning, m_spriteTexture, FIELD_INTEGER),
+	DEFINE_FIELD(CLightning, m_iszSpriteName, FIELD_STRING),
+	DEFINE_FIELD(CLightning, m_frameStart, FIELD_INTEGER),
+	DEFINE_FIELD(CLightning, m_radius, FIELD_FLOAT),
+};
 
 LINK_ENTITY_TO_CLASS(env_lightning, CLightning, CCSLightning)
 LINK_ENTITY_TO_CLASS(env_beam, CLightning, CCSLightning)
@@ -850,6 +812,13 @@ void CLightning::BeamUpdateVars()
 	}
 }
 
+TYPEDESCRIPTION CLaser::m_SaveData[] =
+{
+	DEFINE_FIELD(CLaser, m_pSprite, FIELD_CLASSPTR),
+	DEFINE_FIELD(CLaser, m_iszSpriteName, FIELD_STRING),
+	DEFINE_FIELD(CLaser, m_firePosition, FIELD_POSITION_VECTOR),
+};
+
 LINK_ENTITY_TO_CLASS(env_laser, CLaser, CCSLaser)
 IMPLEMENT_SAVERESTORE(CLaser, CBeam)
 
@@ -1011,6 +980,12 @@ void CLaser::StrikeThink()
 	pev->nextthink = gpGlobals->time + 0.1f;
 }
 
+TYPEDESCRIPTION CGlow::m_SaveData[] =
+{
+	DEFINE_FIELD(CGlow, m_lastTime, FIELD_TIME),
+	DEFINE_FIELD(CGlow, m_maxFrame, FIELD_FLOAT),
+};
+
 LINK_ENTITY_TO_CLASS(env_glow, CGlow, CCSGlow)
 IMPLEMENT_SAVERESTORE(CGlow, CPointEntity)
 
@@ -1101,6 +1076,12 @@ void CBombGlow::Think()
 
 	pev->nextthink = gpGlobals->time + 0.05f;
 }
+
+TYPEDESCRIPTION CSprite::m_SaveData[] =
+{
+	DEFINE_FIELD(CSprite, m_lastTime, FIELD_TIME),
+	DEFINE_FIELD(CSprite, m_maxFrame, FIELD_FLOAT),
+};
 
 LINK_ENTITY_TO_CLASS(env_sprite, CSprite, CCSSprite)
 IMPLEMENT_SAVERESTORE(CSprite, CPointEntity)
@@ -1277,6 +1258,17 @@ void CSprite::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useTyp
 			TurnOn();
 	}
 }
+
+TYPEDESCRIPTION CGibShooter::m_SaveData[] =
+{
+	DEFINE_FIELD(CGibShooter, m_iGibs, FIELD_INTEGER),
+	DEFINE_FIELD(CGibShooter, m_iGibCapacity, FIELD_INTEGER),
+	DEFINE_FIELD(CGibShooter, m_iGibMaterial, FIELD_INTEGER),
+	DEFINE_FIELD(CGibShooter, m_iGibModelIndex, FIELD_INTEGER),
+	DEFINE_FIELD(CGibShooter, m_flGibVelocity, FIELD_FLOAT),
+	DEFINE_FIELD(CGibShooter, m_flVariance, FIELD_FLOAT),
+	DEFINE_FIELD(CGibShooter, m_flGibLife, FIELD_FLOAT),
+};
 
 IMPLEMENT_SAVERESTORE(CGibShooter, CBaseDelay)
 LINK_ENTITY_TO_CLASS(gibshooter, CGibShooter, CCSGibShooter)
@@ -2013,4 +2005,28 @@ void CItemSoda::CanTouch(CBaseEntity *pOther)
 	SetTouch(NULL);
 	SetThink(&CItemSoda::SUB_Remove);
 	pev->nextthink = gpGlobals->time;
+}
+
+LINK_ENTITY_TO_CLASS(info_intermission, CInfoIntermission, CCSInfoIntermission)
+
+void CInfoIntermission::Spawn()
+{
+	UTIL_SetOrigin(pev, pev->origin);
+
+	pev->solid = SOLID_NOT;
+	pev->effects = EF_NODRAW;
+	pev->v_angle = g_vecZero;
+	pev->nextthink = gpGlobals->time + 2.0f;	// let targets spawn!
+}
+
+void CInfoIntermission::Think()
+{
+	// find my target
+	edict_t *pTarget = FIND_ENTITY_BY_TARGETNAME(nullptr, STRING(pev->target));
+
+	if (!FNullEnt(pTarget))
+	{
+		pev->v_angle = UTIL_VecToAngles((pTarget->v.origin - pev->origin).Normalize());
+		pev->v_angle.x = -pev->v_angle.x;
+	}
 }

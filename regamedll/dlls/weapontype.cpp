@@ -1,10 +1,5 @@
 #include "precompiled.h"
 
-/*
-* Globals initialization
-*/
-#ifndef HOOK_GAMEDLL
-
 WeaponStruct g_weaponStruct[MAX_WEAPONS] =
 {
 	{ 0, 0, 0, 0, 0 },
@@ -274,8 +269,6 @@ WeaponInfoStruct g_weaponInfo_default[] =
 #endif
 };
 
-#endif // HOOK_GAMEDLL
-
 AmmoInfoStruct g_ammoInfo[14];
 AmmoInfoStruct g_ammoInfo_default[] =
 {
@@ -490,10 +483,8 @@ AmmoInfoStruct *GetAmmoInfo(AmmoType ammoID)
 
 void WeaponInfoReset()
 {
-#ifndef HOOK_GAMEDLL
 	Q_memcpy(g_weaponInfo, g_weaponInfo_default, sizeof(g_weaponInfo));
 	Q_memcpy(g_ammoInfo, g_ammoInfo_default, sizeof(g_ammoInfo));
-#endif
 }
 
 WeaponSlotInfo *GetWeaponSlot(WeaponIdType weaponID)

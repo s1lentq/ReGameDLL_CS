@@ -13,6 +13,7 @@ void CKnife::Spawn()
 	m_iClip = WEAPON_NOCLIP;
 
 	FallInit();
+	CSPlayerItem()->SetItemInfo(&m_ItemInfoArray[m_iId]);
 }
 
 void CKnife::Precache()

@@ -1,16 +1,37 @@
+/*
+*
+*   This program is free software; you can redistribute it and/or modify it
+*   under the terms of the GNU General Public License as published by the
+*   Free Software Foundation; either version 2 of the License, or (at
+*   your option) any later version.
+*
+*   This program is distributed in the hope that it will be useful, but
+*   WITHOUT ANY WARRANTY; without even the implied warranty of
+*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+*   General Public License for more details.
+*
+*   You should have received a copy of the GNU General Public License
+*   along with this program; if not, write to the Free Software Foundation,
+*   Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*
+*   In addition, as a special exception, the author gives permission to
+*   link the code of this program with the Half-Life Game Engine ("HL
+*   Engine") and Modified Game Libraries ("MODs") developed by Valve,
+*   L.L.C ("Valve").  You must obey the GNU General Public License in all
+*   respects for all of the code used other than the HL Engine and MODs
+*   from Valve.  If you modify this file, you may extend this exception
+*   to your version of the file, but you are not obligated to do so.  If
+*   you do not wish to do so, delete this exception statement from your
+*   version.
+*
+*/
+
 #include "precompiled.h"
 #include <algorithm>
 
-/*
-* Globals initialization
-*/
-#ifndef HOOK_GAMEDLL
-
 BotPhraseManager *TheBotPhrases = nullptr;
 CountdownTimer BotChatterInterface::m_encourageTimer;
-IntervalTimer BotChatterInterface::m_radioSilenceInterval[ 2 ];
-
-#endif
+IntervalTimer BotChatterInterface::m_radioSilenceInterval[2];
 
 const Vector *GetRandomSpotAtPlace(Place place)
 {
@@ -297,16 +318,16 @@ char *BotPhrase::GetSpeakable(int bankIndex, float *duration) const
 	}
 
 	// find phrase that meets the current criteria
-	int start = m_index[ bankIndex ];
+	int start = m_index[bankIndex];
 	while (true)
 	{
-		BotSpeakableVector *speakables = m_voiceBank[ bankIndex ];
-		int &index = m_index[ bankIndex ];
+		BotSpeakableVector *speakables = m_voiceBank[bankIndex];
+		int &index = m_index[bankIndex];
 
 		const BotSpeakable *speak = (*speakables)[index++];
 
-		if (m_index[ bankIndex ] >= m_count[ bankIndex ])
-			m_index[ bankIndex ] = 0;
+		if (m_index[bankIndex] >= m_count[bankIndex])
+			m_index[bankIndex] = 0;
 
 		// check place criteria
 		// if this speakable has a place criteria, it must match to be used
@@ -341,7 +362,6 @@ char *BotPhrase::GetSpeakable(int bankIndex, float *duration) const
 }
 
 // Randomly shuffle the speakable order
-#ifndef HOOK_GAMEDLL
 void BotPhrase::Randomize()
 {
 	for (size_t i = 0; i < m_voiceBank.size(); i++)
@@ -349,7 +369,6 @@ void BotPhrase::Randomize()
 		std::random_shuffle(m_voiceBank[i]->begin(), m_voiceBank[i]->end());
 	}
 }
-#endif
 
 BotPhraseManager::BotPhraseManager()
 {
@@ -617,10 +636,10 @@ bool BotPhraseManager::Initialize(const char *filename, int bankIndex)
 					speak->m_duration = 1.0f;
 				}
 
-				BotSpeakableVector *speakables = phrase->m_voiceBank[ bankIndex ];
+				BotSpeakableVector *speakables = phrase->m_voiceBank[bankIndex];
 				speakables->push_back(speak);
 
-				phrase->m_count[ bankIndex ]++;
+				phrase->m_count[bankIndex]++;
 			}
 
 			if (isDefault)
@@ -792,7 +811,7 @@ void BotStatement::AttachMeme(BotMeme *meme)
 void BotStatement::AddCondition(ConditionType condition)
 {
 	if (m_conditionCount < MAX_BOT_CONDITIONS)
-		m_condition[ m_conditionCount++ ] = condition;
+		m_condition[m_conditionCount++] = condition;
 }
 
 // Return true if this statement is "important" and not personality chatter
@@ -938,8 +957,9 @@ void BotStatement::AppendPhrase(const BotPhrase *phrase)
 
 	if (m_count < MAX_BOT_PHRASES)
 	{
-		m_statement[ m_count ].isPhrase = true;
-		m_statement[ m_count++ ].phrase = phrase;
+		m_statement[m_count].isPhrase = true;
+		m_statement[m_count].phrase = phrase;
+		m_count++;
 	}
 }
 
@@ -948,8 +968,9 @@ void BotStatement::AppendPhrase(ContextType contextPhrase)
 {
 	if (m_count < MAX_BOT_PHRASES)
 	{
-		m_statement[ m_count ].isPhrase = false;
-		m_statement[ m_count++ ].context = contextPhrase;
+		m_statement[m_count].isPhrase = false;
+		m_statement[m_count].context = contextPhrase;
+		m_count++;
 	}
 }
 
@@ -970,7 +991,7 @@ bool BotStatement::Update()
 	}
 
 	// special case - context dependent delay
-	if (m_index >= 0 && m_statement[ m_index ].context == ACCUMULATE_ENEMIES_DELAY)
+	if (m_index >= 0 && m_statement[m_index].context == ACCUMULATE_ENEMIES_DELAY)
 	{
 		// report if we see a lot of enemies, or if enough time has passed
 		const float reportTime = 2.0f;
@@ -999,15 +1020,15 @@ bool BotStatement::Update()
 		float duration = 0.0f;
 		const BotPhrase *phrase = nullptr;
 
-		if (m_statement[ m_index ].isPhrase)
+		if (m_statement[m_index].isPhrase)
 		{
 			// normal phrase
-			phrase = m_statement[ m_index ].phrase;
+			phrase = m_statement[m_index].phrase;
 		}
 		else
 		{
 			// context-dependant phrase
-			switch (m_statement[ m_index ].context)
+			switch (m_statement[m_index].context)
 			{
 				case CURRENT_ENEMY_COUNT:
 				{
@@ -1047,7 +1068,7 @@ bool BotStatement::Update()
 					}
 					else
 					{
-						phrase = TheBotPhrases->GetPhrase(speak[ enemyCount ]);
+						phrase = TheBotPhrases->GetPhrase(speak[enemyCount]);
 					}
 					break;
 				}
@@ -1247,7 +1268,7 @@ void BotChatterInterface::Reset()
 	m_heardNoiseTimer.Invalidate();
 	m_scaredInterval.Invalidate();
 	m_planInterval.Invalidate();
-	IMPL(m_encourageTimer).Invalidate();
+	m_encourageTimer.Invalidate();
 	m_escortingHostageTimer.Invalidate();
 }
 
@@ -1571,7 +1592,7 @@ float BotChatterInterface::GetRadioSilenceDuration()
 		return 0;
 #endif
 
-	return IMPL(m_radioSilenceInterval)[m_me->m_iTeam - 1].GetElapsedTime();
+	return m_radioSilenceInterval[m_me->m_iTeam - 1].GetElapsedTime();
 }
 
 void BotChatterInterface::ResetRadioSilenceDuration()
@@ -1581,7 +1602,7 @@ void BotChatterInterface::ResetRadioSilenceDuration()
 		return;
 #endif
 
-	IMPL(m_radioSilenceInterval)[m_me->m_iTeam - 1].Reset();
+	m_radioSilenceInterval[m_me->m_iTeam - 1].Reset();
 }
 
 inline void SayWhere(BotStatement *say, Place place)
@@ -2176,10 +2197,10 @@ NOXREF void BotChatterInterface::HostageDown()
 
 void BotChatterInterface::Encourage(const char *phraseName, float repeatInterval, float lifetime)
 {
-	if (IMPL(m_encourageTimer).IsElapsed())
+	if (m_encourageTimer.IsElapsed())
 	{
 		Say(phraseName, lifetime);
-		IMPL(m_encourageTimer).Start(repeatInterval);
+		m_encourageTimer.Start(repeatInterval);
 	}
 }
 

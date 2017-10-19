@@ -60,7 +60,7 @@ public:
 	virtual void Blocked(CBaseEntity *pOther);
 
 public:
-	static TYPEDESCRIPTION IMPL(m_SaveData)[7];
+	static TYPEDESCRIPTION m_SaveData[];
 
 	// used to selectivly override defaults
 	void EXPORT DoorTouch(CBaseEntity *pOther);
@@ -110,7 +110,7 @@ public:
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 public:
-	static TYPEDESCRIPTION IMPL(m_SaveData)[1];
+	static TYPEDESCRIPTION m_SaveData[];
 
 	byte m_bMoveSnd; // sound a door makes while moving
 };

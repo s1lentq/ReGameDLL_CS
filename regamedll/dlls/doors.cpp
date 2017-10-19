@@ -1,10 +1,5 @@
 #include "precompiled.h"
 
-/*
-* Globals initialization
-*/
-#ifndef HOOK_GAMEDLL
-
 TYPEDESCRIPTION CBaseDoor::m_SaveData[] =
 {
 	DEFINE_FIELD(CBaseDoor, m_bHealthValue, FIELD_CHARACTER),
@@ -15,13 +10,6 @@ TYPEDESCRIPTION CBaseDoor::m_SaveData[] =
 	DEFINE_FIELD(CBaseDoor, m_bUnlockedSound, FIELD_CHARACTER),
 	DEFINE_FIELD(CBaseDoor, m_bUnlockedSentence, FIELD_CHARACTER),
 };
-
-TYPEDESCRIPTION CMomentaryDoor::m_SaveData[] =
-{
-	DEFINE_FIELD(CMomentaryDoor, m_bMoveSnd, FIELD_CHARACTER),
-};
-
-#endif
 
 IMPLEMENT_SAVERESTORE(CBaseDoor, CBaseToggle)
 
@@ -956,6 +944,11 @@ void CRotDoor::SetToggleState(int state)
 
 	UTIL_SetOrigin(pev, pev->origin);
 }
+
+TYPEDESCRIPTION CMomentaryDoor::m_SaveData[] =
+{
+	DEFINE_FIELD(CMomentaryDoor, m_bMoveSnd, FIELD_CHARACTER),
+};
 
 LINK_ENTITY_TO_CLASS(momentary_door, CMomentaryDoor, CCSMomentaryDoor)
 IMPLEMENT_SAVERESTORE(CMomentaryDoor, CBaseToggle)

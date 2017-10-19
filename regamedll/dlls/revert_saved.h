@@ -52,7 +52,7 @@ public:
 	void SetLoadTime(float time) { m_loadTime = time; }
 
 public:
-	static TYPEDESCRIPTION IMPL(m_SaveData)[2];
+	static TYPEDESCRIPTION m_SaveData[];
 
 	float m_messageTime;
 	float m_loadTime;

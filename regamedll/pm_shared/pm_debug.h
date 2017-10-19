@@ -26,11 +26,7 @@
 *
 */
 
-#ifndef PM_DEBUG_H
-#define PM_DEBUG_H
-#ifdef _WIN32
 #pragma once
-#endif
 
 void PM_ShowClipBox();
 void PM_ParticleLine(vec3_t start, vec3_t end, int pcolor, float life, float vert);
@@ -38,5 +34,3 @@ void PM_DrawRectangle(vec3_t tl, vec3_t bl, vec3_t tr, vec3_t br, int pcolor, fl
 void PM_DrawPhysEntBBox(int num, int pcolor, float life);
 void PM_DrawBBox(vec3_t mins, vec3_t maxs, vec3_t origin, int pcolor, float life);
 void PM_ViewEntity();
-
-#endif // PM_DEBUG_H

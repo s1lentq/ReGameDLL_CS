@@ -56,7 +56,7 @@ private:
 	float m_dieTimestamp;
 };
 
-typedef std::STD_LIST<ActiveGrenade *> ActiveGrenadeList;
+typedef std::list<ActiveGrenade *> ActiveGrenadeList;
 
 class CBotManager
 {

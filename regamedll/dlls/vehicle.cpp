@@ -1,10 +1,5 @@
 #include "precompiled.h"
 
-/*
-* Globals initialization
-*/
-#ifndef HOOK_GAMEDLL
-
 TYPEDESCRIPTION CFuncVehicle::m_SaveData[] =
 {
 	DEFINE_FIELD(CFuncVehicle, m_ppath, FIELD_CLASSPTR),
@@ -20,8 +15,6 @@ TYPEDESCRIPTION CFuncVehicle::m_SaveData[] =
 	DEFINE_FIELD(CFuncVehicle, m_flBank, FIELD_FLOAT),
 	DEFINE_FIELD(CFuncVehicle, m_oldSpeed, FIELD_FLOAT),
 };
-
-#endif
 
 IMPLEMENT_SAVERESTORE(CFuncVehicle, CBaseEntity)
 LINK_ENTITY_TO_CLASS(func_vehicle, CFuncVehicle, CCSFuncVehicle)

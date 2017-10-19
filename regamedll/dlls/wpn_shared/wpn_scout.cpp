@@ -12,6 +12,7 @@ void CSCOUT::Spawn()
 	m_iDefaultAmmo = SCOUT_DEFAULT_GIVE;
 
 	FallInit();
+	CSPlayerItem()->SetItemInfo(&m_ItemInfoArray[m_iId]);
 }
 
 void CSCOUT::Precache()

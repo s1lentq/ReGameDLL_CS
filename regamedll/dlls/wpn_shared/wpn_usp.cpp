@@ -14,6 +14,7 @@ void CUSP::Spawn()
 	m_flAccuracy = 0.92f;
 
 	FallInit();
+	CSPlayerItem()->SetItemInfo(&m_ItemInfoArray[m_iId]);
 }
 
 void CUSP::Precache()

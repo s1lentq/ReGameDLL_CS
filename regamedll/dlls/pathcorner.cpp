@@ -1,25 +1,9 @@
 #include "precompiled.h"
 
-/*
-* Globals initialization
-*/
-#ifndef HOOK_GAMEDLL
-
 TYPEDESCRIPTION CPathCorner::m_SaveData[] =
 {
 	DEFINE_FIELD(CPathCorner, m_flWait, FIELD_FLOAT),
 };
-
-TYPEDESCRIPTION CPathTrack::m_SaveData[] =
-{
-	DEFINE_FIELD(CPathTrack, m_length, FIELD_FLOAT),
-	DEFINE_FIELD(CPathTrack, m_pnext, FIELD_CLASSPTR),
-	DEFINE_FIELD(CPathTrack, m_paltpath, FIELD_CLASSPTR),
-	DEFINE_FIELD(CPathTrack, m_pprevious, FIELD_CLASSPTR),
-	DEFINE_FIELD(CPathTrack, m_altName, FIELD_STRING),
-};
-
-#endif
 
 LINK_ENTITY_TO_CLASS(path_corner, CPathCorner, CCSPathCorner)
 IMPLEMENT_SAVERESTORE(CPathCorner, CPointEntity)
@@ -39,8 +23,17 @@ void CPathCorner::KeyValue(KeyValueData *pkvd)
 
 void CPathCorner::Spawn()
 {
-	assert(("path_corner without a targetname", !FStringNull(pev->targetname)));
+	assert(("path_corner without a targetname", !pev->targetname.IsNull()));
 }
+
+TYPEDESCRIPTION CPathTrack::m_SaveData[] =
+{
+	DEFINE_FIELD(CPathTrack, m_length, FIELD_FLOAT),
+	DEFINE_FIELD(CPathTrack, m_pnext, FIELD_CLASSPTR),
+	DEFINE_FIELD(CPathTrack, m_paltpath, FIELD_CLASSPTR),
+	DEFINE_FIELD(CPathTrack, m_pprevious, FIELD_CLASSPTR),
+	DEFINE_FIELD(CPathTrack, m_altName, FIELD_STRING),
+};
 
 IMPLEMENT_SAVERESTORE(CPathTrack, CBaseEntity)
 LINK_ENTITY_TO_CLASS(path_track, CPathTrack, CCSPathTrack)
@@ -89,7 +82,7 @@ void CPathTrack::Link()
 
 	if (!FStringNull(pev->target))
 	{
-		pentTarget = FIND_ENTITY_BY_TARGETNAME(nullptr, STRING(pev->target));
+		pentTarget = FIND_ENTITY_BY_TARGETNAME(nullptr, pev->target);
 		if (!FNullEnt(pentTarget))
 		{
 			m_pnext = CPathTrack::Instance(pentTarget);
@@ -109,7 +102,7 @@ void CPathTrack::Link()
 	// Find "alternate" path
 	if (!FStringNull(m_altName))
 	{
-		pentTarget = FIND_ENTITY_BY_TARGETNAME(nullptr, STRING(m_altName));
+		pentTarget = FIND_ENTITY_BY_TARGETNAME(nullptr, m_altName);
 		if (!FNullEnt(pentTarget))
 		{
 			m_paltpath = CPathTrack::Instance(pentTarget);
@@ -186,7 +179,7 @@ CPathTrack *CPathTrack::GetPrevious()
 void CPathTrack::SetPrevious(CPathTrack *pprev)
 {
 	// Only set previous if this isn't my alternate path
-	if (pprev && !FStrEq(STRING(pprev->pev->targetname), STRING(m_altName)))
+	if (pprev && !FStrEq(pprev->pev->targetname, m_altName))
 	{
 		m_pprevious = pprev;
 	}
@@ -340,11 +333,11 @@ CPathTrack *CPathTrack::Nearest(Vector origin)
 	return pnearest;
 }
 
-CPathTrack *CPathTrack::Instance(edict_t *pent)
+CPathTrack *CPathTrack::Instance(edict_t *pEdict)
 {
-	if (FClassnameIs(pent, "path_track"))
+	if (FClassnameIs(pEdict, "path_track"))
 	{
-		return (CPathTrack *)GET_PRIVATE(pent);
+		return GET_PRIVATE<CPathTrack>(pEdict);
 	}
 
 	return nullptr;

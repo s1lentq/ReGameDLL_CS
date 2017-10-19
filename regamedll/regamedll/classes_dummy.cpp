@@ -52,7 +52,7 @@ public:
 	virtual int PrimaryAmmoIndex() { return 0; };
 	virtual int SecondaryAmmoIndex() { return 0; };
 	virtual int UpdateClientData(CBasePlayer *pPlayer) { return 0; };
-	virtual CBasePlayerItem *GetWeaponPtr() { return NULL; }
+	virtual CBasePlayerItem *GetWeaponPtr() { return nullptr; }
 	virtual int ExtractAmmo(CBasePlayerWeapon *pWeapon) { return 0; };
 	virtual int ExtractClipAmmo(CBasePlayerWeapon *pWeapon) { return 0; };
 	virtual int AddWeapon() { return 0; }
@@ -86,7 +86,7 @@ public:
 	virtual int PrimaryAmmoIndex() { return 0; };
 	virtual int SecondaryAmmoIndex() { return 0; };
 	virtual int UpdateClientData(CBasePlayer *pPlayer) { return 0; };
-	virtual CBasePlayerItem *GetWeaponPtr() { return NULL; }
+	virtual CBasePlayerItem *GetWeaponPtr() { return nullptr; }
 	virtual int ExtractAmmo(CBasePlayerWeapon *pWeapon) { return 0; };
 	virtual int ExtractClipAmmo(CBasePlayerWeapon *pWeapon) { return 0; };
 	virtual int AddWeapon() { return 0; }

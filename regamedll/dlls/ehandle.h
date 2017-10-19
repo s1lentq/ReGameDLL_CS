@@ -189,7 +189,7 @@ inline bool EntityHandle<T>::operator==(T *pEntity) const
 template <typename T>
 inline EntityHandle<T>::operator bool() const
 {
-	return Get() != nullptr;
+	return IsValid();
 }
 
 // Gets the Entity this handle refers to.

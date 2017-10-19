@@ -42,10 +42,6 @@ public:
 
 void CopyToBodyQue(entvars_t *pev);
 void ClearBodyQue();
-void SaveGlobalState(SAVERESTOREDATA *pSaveData);
-void RestoreGlobalState(SAVERESTOREDATA *pSaveData);
-void ResetGlobalState();
 
-extern CGlobalState gGlobalState;
 extern float g_flWeaponCheat;
 extern char g_szMapBriefingText[512];

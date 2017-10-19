@@ -28,83 +28,11 @@
 
 #pragma once
 
-class CBaseEntity;
-class CBasePlayer;
+#include <API/CSEntity.h>
+#include <API/CSPlayer.h>
 
-// Implementation wrapper
-class CCSEntity {
-public:
-	virtual ~CCSEntity() {}
-	virtual void FireBullets(int iShots, Vector &vecSrc, Vector &vecDirShooting, Vector &vecSpread, float flDistance, int iBulletType, int iTracerFreq, int iDamage, entvars_t *pevAttacker);
-	virtual Vector FireBullets3(Vector &vecSrc, Vector &vecDirShooting, float vecSpread, float flDistance, int iPenetration, int iBulletType, int iDamage, float flRangeModifier, entvars_t *pevAttacker, bool bPistol, int shared_rand);
-public:
-	CBaseEntity *m_pContainingEntity;
-};
-
-class CCSDelay: public CCSEntity {};
-class CCSAnimating: public CCSDelay {};
-class CCSPlayerItem: public CCSAnimating {};
-class CCSToggle: public CCSAnimating {};
-class CCSMonster: public CCSToggle {};
 class CCSWeaponBox: public CCSEntity {};
 class CCSArmoury: public CCSEntity {};
-
-class CCSPlayer: public CCSMonster {
-public:
-	CCSPlayer() : m_bForceShowMenu(false), m_flRespawnPending(0)
-	{
-		m_szModel[0] = '\0';
-	}
-
-	virtual bool IsConnected() const;
-	virtual void SetAnimation(PLAYER_ANIM playerAnim);
-	virtual void AddAccount(int amount, RewardType type = RT_NONE, bool bTrackChange = true);
-	virtual CBaseEntity *GiveNamedItem(const char *pszName);
-	virtual CBaseEntity *GiveNamedItemEx(const char *pszName);
-	virtual void GiveDefaultItems();
-	virtual void GiveShield(bool bDeploy = true);
-	virtual void DropShield(bool bDeploy = true);
-	virtual void DropPlayerItem(const char *pszItemName);
-	virtual void RemoveShield();
-	virtual void RemoveAllItems(bool bRemoveSuit);
-	virtual bool RemovePlayerItem(const char* pszItemName);
-	virtual void SetPlayerModel(bool bHasC4);
-	virtual void SetPlayerModelEx(const char *modelName);
-	virtual void SetNewPlayerModel(const char *modelName);
-	virtual void ClientCommand(const char *cmd, const char *arg1 = nullptr, const char *arg2 = nullptr, const char *arg3 = nullptr);
-	virtual void SetProgressBarTime(int time);
-	virtual void SetProgressBarTime2(int time, float timeElapsed);
-	virtual struct edict_s *EntSelectSpawnPoint();
-	virtual void SetBombIcon(bool bFlash = false);
-	virtual void SetScoreAttrib(CBasePlayer *dest);
-	virtual void SendItemStatus();
-	virtual void ReloadWeapons(CBasePlayerItem *pWeapon = nullptr, bool bForceReload = false, bool bForceRefill = false);
-	virtual void Observer_SetMode(int iMode);
-	virtual bool SelectSpawnSpot(const char *pEntClassName, CBaseEntity* &pSpot);
-	virtual bool SwitchWeapon(CBasePlayerItem *pWeapon);
-	virtual void SwitchTeam();
-	virtual bool JoinTeam(TeamName team);
-	virtual void StartObserver(Vector& vecPosition, Vector& vecViewAngle);
-	virtual void TeamChangeUpdate();
-	virtual void DropSecondary();
-	virtual void DropPrimary();
-	virtual bool HasPlayerItem(CBasePlayerItem *pCheckItem);
-	virtual bool HasNamedPlayerItem(const char *pszItemName);
-	virtual CBasePlayerItem *GetItemById(WeaponIdType weaponID);
-	virtual CBasePlayerItem *GetItemByName(const char *itemName);
-	virtual void Disappear();
-	virtual void MakeVIP();
-	virtual bool MakeBomber();
-	virtual void ResetSequenceInfo();
-	virtual void StartDeathCam();
-
-	CBasePlayer *BasePlayer() const;
-public:
-	char m_szModel[32];
-	bool m_bForceShowMenu;
-	float m_flRespawnPending;
-};
-
 class CAPI_Bot: public CCSPlayer {};
 class CAPI_CSBot: public CAPI_Bot {};
 class CCSShield: public CCSEntity {};
@@ -300,7 +228,3 @@ class CCSWeather: public CCSTrigger {};
 class CCSClientFog: public CCSEntity {};
 class CCSTriggerSetOrigin: public CCSDelay {};
 class CCSItemAirBox: public CCSArmoury {};
-
-inline CBasePlayer *CCSPlayer::BasePlayer() const {
-	return reinterpret_cast<CBasePlayer *>(this->m_pContainingEntity);
-}

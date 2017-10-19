@@ -42,8 +42,8 @@ public:
 	const Vector *GetNormal() const { return &m_normal; }
 	unsigned int GetID() const { return m_id; }
 
-	static CNavNode *GetFirst() { return IMPL(m_list); }
-	static unsigned int GetListLength() { return IMPL(m_listLength); }
+	static CNavNode *GetFirst() { return m_list; }
+	static unsigned int GetListLength() { return m_listLength; }
 
 	CNavNode *GetNext() { return m_next; }
 
@@ -70,12 +70,12 @@ private:
 
 	Vector m_pos;						// position of this node in the world
 	Vector m_normal;					// surface normal at this location
-	CNavNode *m_to[ NUM_DIRECTIONS ];	// links to north, south, east, and west. NULL if no link
+	CNavNode *m_to[NUM_DIRECTIONS];	// links to north, south, east, and west. NULL if no link
 	unsigned int m_id;					// unique ID of this node
 	unsigned char m_attributeFlags;		// set of attribute bit flags (see NavAttributeType)
 
-	static CNavNode *IMPL(m_list);		// the master list of all nodes for this map
-	static unsigned int IMPL(m_listLength);
+	static CNavNode *m_list;			// the master list of all nodes for this map
+	static unsigned int m_listLength;
 
 	CNavNode *m_next;			// next link in master list
 
@@ -89,7 +89,7 @@ private:
 
 inline CNavNode *CNavNode::GetConnectedNode(NavDirType dir) const
 {
-	return m_to[ dir ];
+	return m_to[dir];
 }
 
 inline const Vector *CNavNode::GetPosition() const

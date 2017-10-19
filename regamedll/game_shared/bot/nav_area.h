@@ -81,7 +81,7 @@ union NavConnect
 	bool operator==(const NavConnect &other) const { return (area == other.area) ? true : false; }
 };
 
-typedef std::STD_LIST<NavConnect> NavConnectList;
+typedef std::list<NavConnect> NavConnectList;
 
 enum LadderDirectionType
 {
@@ -137,7 +137,7 @@ public:
 	}
 };
 
-typedef std::STD_LIST<CNavLadder *> NavLadderList;
+typedef std::list<CNavLadder *> NavLadderList;
 extern NavLadderList TheNavLadderList;
 
 class HidingSpot
@@ -166,10 +166,10 @@ public:
 	const Vector *GetPosition() const { return &m_pos; }
 	unsigned int GetID() const { return m_id; }
 
-	void Mark() { m_marker = IMPL(m_masterMarker); }
-	bool IsMarked() const { return (m_marker == IMPL(m_masterMarker)) ? true : false; }
+	void Mark() { m_marker = m_masterMarker; }
+	bool IsMarked() const { return (m_marker == m_masterMarker) ? true : false; }
 
-	static void ChangeMasterMarker() { IMPL(m_masterMarker)++; }
+	static void ChangeMasterMarker() { m_masterMarker++; }
 
 private:
 	friend void DestroyHidingSpots();
@@ -179,11 +179,11 @@ private:
 	unsigned int m_marker;
 	unsigned char m_flags;
 
-	static unsigned int IMPL(m_nextID);
-	static unsigned int IMPL(m_masterMarker);
+	static unsigned int m_nextID;
+	static unsigned int m_masterMarker;
 };
 
-typedef std::STD_LIST<HidingSpot *> HidingSpotList;
+typedef std::list<HidingSpot *> HidingSpotList;
 extern HidingSpotList TheHidingSpotList;
 
 struct SpotOrder
@@ -196,7 +196,7 @@ struct SpotOrder
 	};
 };
 
-typedef std::STD_LIST<SpotOrder> SpotOrderList;
+typedef std::list<SpotOrder> SpotOrderList;
 
 struct SpotEncounter
 {
@@ -208,8 +208,8 @@ struct SpotEncounter
 	SpotOrderList spotList;	// list of spots to look at, in order of occurrence
 };
 
-typedef std::STD_LIST<SpotEncounter> SpotEncounterList;
-typedef std::STD_LIST<CNavArea *> NavAreaList;
+typedef std::list<SpotEncounter> SpotEncounterList;
+typedef std::list<CNavArea *> NavAreaList;
 
 // A CNavArea is a rectangular region defining a walkable area in the map
 class CNavArea
@@ -304,11 +304,11 @@ public:
 	// A* pathfinding algorithm
 	static void MakeNewMarker()
 	{
-		if (++IMPL(m_masterMarker) == 0)
-			IMPL(m_masterMarker) = 1;
+		if (++m_masterMarker == 0)
+			m_masterMarker = 1;
 	}
-	void Mark() { m_marker = IMPL(m_masterMarker); }
-	BOOL IsMarked() const { return (m_marker == IMPL(m_masterMarker)) ? true : false; }
+	void Mark() { m_marker = m_masterMarker; }
+	BOOL IsMarked() const { return (m_marker == m_masterMarker) ? true : false; }
 	void SetParent(CNavArea *parent, NavTraverseType how = NUM_TRAVERSE_TYPES) { m_parent = parent; m_parentHow = how; }
 	CNavArea *GetParent() const { return m_parent; }
 	NavTraverseType GetParentHow() const { return m_parentHow; }
@@ -357,15 +357,14 @@ private:
 	friend class CNavAreaGrid;
 	friend class CCSBotManager;
 
-	void Initialize();				// to keep constructors consistent
-	static bool IMPL(m_isReset);	// if true, don't bother cleaning up in destructor since everything is going away
-
-	static unsigned int IMPL(m_nextID);		// used to allocate unique IDs
-	unsigned int m_id;						// unique area ID
-	Extent m_extent;						// extents of area in world coords (NOTE: lo.z is not necessarily the minimum Z, but corresponds to Z at point (lo.x, lo.y), etc
-	Vector m_center;						// centroid of area
-	unsigned char m_attributeFlags;			// set of attribute bit flags (see NavAttributeType)
-	Place m_place;							// place descriptor
+	void Initialize();					// to keep constructors consistent
+	static bool m_isReset;				// if true, don't bother cleaning up in destructor since everything is going away
+	static unsigned int m_nextID;		// used to allocate unique IDs
+	unsigned int m_id;					// unique area ID
+	Extent m_extent;					// extents of area in world coords (NOTE: lo.z is not necessarily the minimum Z, but corresponds to Z at point (lo.x, lo.y), etc
+	Vector m_center;					// centroid of area
+	unsigned char m_attributeFlags;		// set of attribute bit flags (see NavAttributeType)
+	Place m_place;						// place descriptor
 
 	// height of the implicit corners
 	float m_neZ;
@@ -397,14 +396,14 @@ private:
 	void Strip();						// remove "analyzed" data from nav area
 
 	// A* pathfinding algorithm
-	static unsigned int IMPL(m_masterMarker);
+	static unsigned int m_masterMarker;
 	unsigned int m_marker;				// used to flag the area as visited
 	CNavArea *m_parent;					// the area just prior to this on in the search path
 	NavTraverseType m_parentHow;		// how we get from parent to us
 	float m_totalCost;					// the distance so far plus an estimate of the distance left
 	float m_costSoFar;					// distance travelled so far
 
-	static CNavArea *IMPL(m_openList);
+	static CNavArea *m_openList;
 	CNavArea *m_nextOpen, *m_prevOpen;		// only valid if m_openMarker == m_masterMarker
 	unsigned int m_openMarker;				// if this equals the current marker value, we are on the open list
 
@@ -446,19 +445,19 @@ inline CNavArea *CNavArea::GetAdjacentArea(NavDirType dir, int i) const
 
 inline bool CNavArea::IsOpen() const
 {
-	return (m_openMarker == IMPL(m_masterMarker)) ? true : false;
+	return (m_openMarker == m_masterMarker) ? true : false;
 }
 
 inline bool CNavArea::IsOpenListEmpty()
 {
-	return (IMPL(m_openList) != nullptr) ? false : true;
+	return m_openList ? false : true;
 }
 
 inline CNavArea *CNavArea::PopOpenList()
 {
-	if (IMPL(m_openList))
+	if (m_openList)
 	{
-		CNavArea *area = IMPL(m_openList);
+		CNavArea *area = m_openList;
 
 		// disconnect from list
 		area->RemoveFromOpenList();

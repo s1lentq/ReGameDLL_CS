@@ -1,17 +1,10 @@
 #include "precompiled.h"
 
-/*
-* Globals initialization
-*/
-#ifndef HOOK_GAMEDLL
-
 TYPEDESCRIPTION CLight::m_SaveData[] =
 {
 	DEFINE_FIELD(CLight, m_iStyle, FIELD_INTEGER),
 	DEFINE_FIELD(CLight, m_iszPattern, FIELD_STRING),
 };
-
-#endif
 
 LINK_ENTITY_TO_CLASS(light, CLight, CCSLight)
 IMPLEMENT_SAVERESTORE(CLight, CPointEntity)

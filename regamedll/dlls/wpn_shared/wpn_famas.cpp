@@ -14,6 +14,7 @@ void CFamas::Spawn()
 	m_flFamasShoot = 0;
 
 	FallInit();
+	CSPlayerItem()->SetItemInfo(&m_ItemInfoArray[m_iId]);
 }
 
 void CFamas::Precache()

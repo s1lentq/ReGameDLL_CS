@@ -13,6 +13,7 @@ void CELITE::Spawn()
 	m_flAccuracy = 0.88f;
 
 	FallInit();
+	CSPlayerItem()->SetItemInfo(&m_ItemInfoArray[m_iId]);
 }
 
 void CELITE::Precache()

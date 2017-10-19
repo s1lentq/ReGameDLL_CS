@@ -101,7 +101,8 @@ public:
 	void ControllerPostFrame();
 
 public:
-	static TYPEDESCRIPTION IMPL(m_SaveData)[26];
+	static TYPEDESCRIPTION m_SaveData[];
+	static Vector m_TankSpread[];
 
 protected:
 	CBasePlayer *m_pController;
@@ -158,7 +159,7 @@ public:
 	CLaser *GetLaser();
 
 public:
-	static TYPEDESCRIPTION IMPL(m_SaveData)[2];
+	static TYPEDESCRIPTION m_SaveData[];
 
 private:
 	CLaser *m_pLaser;
@@ -190,6 +191,6 @@ public:
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 public:
-	static TYPEDESCRIPTION IMPL(m_SaveData)[1];
+	static TYPEDESCRIPTION m_SaveData[];
 	CFuncTank *m_pTank;
 };

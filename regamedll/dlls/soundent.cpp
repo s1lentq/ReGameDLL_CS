@@ -1,13 +1,6 @@
 #include "precompiled.h"
 
-/*
-* Globals initialization
-*/
-#ifndef HOOK_GAMEDLL
-
 CSoundEnt *pSoundEnt = nullptr;
-
-#endif
 
 // The entity that spawns when the world spawns,
 // and handles the world's active and free sound lists.
@@ -80,9 +73,9 @@ void CSoundEnt::Think()
 
 	while (iSound != SOUNDLIST_EMPTY)
 	{
-		if (m_SoundPool[ iSound ].m_flExpireTime <= gpGlobals->time && m_SoundPool[ iSound ].m_flExpireTime != SOUND_NEVER_EXPIRE)
+		if (m_SoundPool[iSound].m_flExpireTime <= gpGlobals->time && m_SoundPool[iSound].m_flExpireTime != SOUND_NEVER_EXPIRE)
 		{
-			int iNext = m_SoundPool[ iSound ].m_iNext;
+			int iNext = m_SoundPool[iSound].m_iNext;
 
 			// move this sound back into the free list
 			FreeSound(iSound, iPreviousSound);
@@ -92,7 +85,7 @@ void CSoundEnt::Think()
 		else
 		{
 			iPreviousSound = iSound;
-			iSound = m_SoundPool[ iSound ].m_iNext;
+			iSound = m_SoundPool[iSound].m_iNext;
 		}
 	}
 
@@ -124,17 +117,17 @@ void CSoundEnt::FreeSound(int iSound, int iPrevious)
 	{
 		// iSound is not the head of the active list, so
 		// must fix the index for the Previous sound
-		// pSoundEnt->m_SoundPool[ iPrevious ].m_iNext = m_SoundPool[ iSound ].m_iNext;
-		pSoundEnt->m_SoundPool[ iPrevious ].m_iNext = pSoundEnt->m_SoundPool[ iSound ].m_iNext;
+		// pSoundEnt->m_SoundPool[iPrevious].m_iNext = m_SoundPool[iSound].m_iNext;
+		pSoundEnt->m_SoundPool[iPrevious].m_iNext = pSoundEnt->m_SoundPool[iSound].m_iNext;
 	}
 	else
 	{
 		// the sound we're freeing IS the head of the active list.
-		pSoundEnt->m_iActiveSound = pSoundEnt->m_SoundPool[ iSound ].m_iNext;
+		pSoundEnt->m_iActiveSound = pSoundEnt->m_SoundPool[iSound].m_iNext;
 	}
 
 	// make iSound the head of the Free list.
-	pSoundEnt->m_SoundPool[ iSound ].m_iNext = pSoundEnt->m_iFreeSound;
+	pSoundEnt->m_SoundPool[iSound].m_iNext = pSoundEnt->m_iFreeSound;
 	pSoundEnt->m_iFreeSound = iSound;
 }
 
@@ -158,10 +151,10 @@ int CSoundEnt::IAllocSound()
 	iNewSound = m_iFreeSound;
 
 	// move the index down into the free list.
-	m_iFreeSound = m_SoundPool[ iNewSound ].m_iNext;
+	m_iFreeSound = m_SoundPool[iNewSound].m_iNext;
 
 	// point the new sound at the top of the active list.
-	m_SoundPool[ iNewSound ].m_iNext = m_iActiveSound;
+	m_SoundPool[iNewSound].m_iNext = m_iActiveSound;
 
 	// now make the new sound the top of the active list. You're done.
 	m_iActiveSound = iNewSound;
@@ -189,10 +182,10 @@ void CSoundEnt::InsertSound(int iType, const Vector &vecOrigin, int iVolume, flo
 		return;
 	}
 
-	pSoundEnt->m_SoundPool[ iThisSound ].m_vecOrigin = vecOrigin;
-	pSoundEnt->m_SoundPool[ iThisSound ].m_iType = iType;
-	pSoundEnt->m_SoundPool[ iThisSound ].m_iVolume = iVolume;
-	pSoundEnt->m_SoundPool[ iThisSound ].m_flExpireTime = gpGlobals->time + flDuration;
+	pSoundEnt->m_SoundPool[iThisSound].m_vecOrigin = vecOrigin;
+	pSoundEnt->m_SoundPool[iThisSound].m_iType = iType;
+	pSoundEnt->m_SoundPool[iThisSound].m_iVolume = iVolume;
+	pSoundEnt->m_SoundPool[iThisSound].m_flExpireTime = gpGlobals->time + flDuration;
 }
 
 // Initialize - clears all sounds and moves them into the
@@ -209,12 +202,12 @@ void CSoundEnt::Initialize()
 	// clear all sounds, and link them into the free sound list.
 	for (i = 0; i < MAX_WORLD_SOUNDS; ++i)
 	{
-		m_SoundPool[ i ].Clear();
-		m_SoundPool[ i ].m_iNext = i + 1;
+		m_SoundPool[i].Clear();
+		m_SoundPool[i].m_iNext = i + 1;
 	}
 
 	// terminate the list here.
-	m_SoundPool[ i - 1 ].m_iNext = SOUNDLIST_EMPTY;
+	m_SoundPool[i - 1].m_iNext = SOUNDLIST_EMPTY;
 
 	// now reserve enough sounds for each client
 	for (i = 0; i < gpGlobals->maxClients; ++i)
@@ -227,7 +220,7 @@ void CSoundEnt::Initialize()
 			return;
 		}
 
-		pSoundEnt->m_SoundPool[ iSound ].m_flExpireTime = SOUND_NEVER_EXPIRE;
+		pSoundEnt->m_SoundPool[iSound].m_flExpireTime = SOUND_NEVER_EXPIRE;
 	}
 
 	if (CVAR_GET_FLOAT("displaysoundlist") == 1)
@@ -270,7 +263,7 @@ int CSoundEnt::ISoundsInList(int iListType)
 	while (iThisSound != SOUNDLIST_EMPTY)
 	{
 		i++;
-		iThisSound = m_SoundPool[ iThisSound ].m_iNext;
+		iThisSound = m_SoundPool[iThisSound].m_iNext;
 	}
 
 	return i;
@@ -319,7 +312,7 @@ CSound *CSoundEnt::SoundPointerForIndex(int iIndex)
 		return nullptr;
 	}
 
-	return &pSoundEnt->m_SoundPool[ iIndex ];
+	return &pSoundEnt->m_SoundPool[iIndex];
 }
 
 // Clients are numbered from 1 to MAXCLIENTS, but the client
@@ -330,13 +323,11 @@ int CSoundEnt::ClientSoundIndex(edict_t *pClient)
 {
 	int iReturn = ENTINDEX(pClient) - 1;
 
-#if defined(_DEBUG) && !defined(HOOK_GAMEDLL)
-
+#ifdef _DEBUG
 	if (iReturn < 0 || iReturn > gpGlobals->maxClients)
 	{
 		ALERT(at_console, "** ClientSoundIndex returning a bogus value! **\n");
 	}
-
 #endif
 
 	return iReturn;

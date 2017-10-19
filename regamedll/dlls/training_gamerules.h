@@ -76,7 +76,7 @@ public:
 	virtual void Touch(CBaseEntity *pOther);
 
 public:
-	static TYPEDESCRIPTION IMPL(m_SaveData)[5];
+	static TYPEDESCRIPTION m_SaveData[];
 
 	GrenCatchType m_NeedGrenadeType;
 	string_t sTriggerOnGrenade;
@@ -97,7 +97,7 @@ public:
 	virtual void Touch(CBaseEntity *pOther);
 
 public:
-	static TYPEDESCRIPTION IMPL(m_SaveData)[6];
+	static TYPEDESCRIPTION m_SaveData[];
 
 private:
 	string_t sTriggerWithItems;

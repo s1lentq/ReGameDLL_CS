@@ -14,6 +14,7 @@ void CP228::Spawn()
 	m_flAccuracy = 0.9f;
 
 	FallInit();
+	CSPlayerItem()->SetItemInfo(&m_ItemInfoArray[m_iId]);
 }
 
 void CP228::Precache()

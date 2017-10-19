@@ -28,19 +28,17 @@
 
 #pragma once
 
-#define MAX_NODES                   100
-#define MAX_HOSTAGES                12
-#define MAX_HOSTAGES_NAV            20
+const int MAX_NODES                    = 100;
+const int MAX_HOSTAGES                 = 12;
+const int MAX_HOSTAGES_NAV             = 20;
 
-#define HOSTAGE_STEPSIZE            26.0f
-#define HOSTAGE_STEPSIZE_DEFAULT    18.0f
+const float HOSTAGE_STEPSIZE           = 26.0f;
+const float MAX_HOSTAGES_RESCUE_RADIUS = 256.0f; // rescue zones from legacy info_*
 
-#define VEC_HOSTAGE_VIEW            Vector(0, 0, 12)
-#define VEC_HOSTAGE_HULL_MIN        Vector(-10, -10, 0)
-#define VEC_HOSTAGE_HULL_MAX        Vector(10, 10, 62)
-
-#define VEC_HOSTAGE_CROUCH          Vector(10, 10, 30)
-#define RESCUE_HOSTAGES_RADIUS      256.0f	// rescue zones from legacy info_*
+#define VEC_HOSTAGE_VIEW               Vector(0, 0, 12)
+#define VEC_HOSTAGE_HULL_MIN           Vector(-10, -10, 0)
+#define VEC_HOSTAGE_HULL_MAX           Vector(10, 10, 62)
+#define VEC_HOSTAGE_CROUCH             Vector(10, 10, 30)
 
 class CHostage;
 class CLocalNav;
@@ -105,8 +103,8 @@ public:
 	void EXPORT IdleThink();
 	void EXPORT Remove();
 	void RePosition();
-	void SetActivity(int act);
-	int GetActivity() { return m_Activity; }
+	void SetActivity(Activity act);
+	Activity GetActivity() { return m_Activity; }
 	float GetModifiedDamage(float flDamage, int nHitGroup);
 	void SetFlinchActivity();
 	void SetDeathActivity();
@@ -150,13 +148,12 @@ public:
 		return true;
 	}
 
-	bool IsValid() const { return (pev->takedamage == DAMAGE_YES); }
-	bool IsDead() const { return (pev->deadflag == DEAD_DEAD); }
-	bool IsAtHome() const { return (pev->origin - m_vStart).IsLengthGreaterThan(20) != true; }
+	bool IsValid()  const { return (pev->takedamage == DAMAGE_YES); }
+	bool IsDead()   const { return (pev->deadflag == DEAD_DEAD); }
+	bool IsAtHome() const { return !(pev->origin - m_vStart).IsLengthGreaterThan(20); }
 	const Vector *GetHomePosition() const { return &m_vStart; }
 
 public:
-	int m_Activity;
 	BOOL m_bTouched;
 	BOOL m_bRescueMe;
 	float m_flFlinchTime;
@@ -165,17 +162,17 @@ public:
 	int m_iModel;
 	int m_iSkin;
 	float m_flNextRadarTime;
-	enum state { FOLLOW, STAND, DUCK, SCARED, IDLE, FOLLOWPATH }
-	m_State;
+	enum state { FOLLOW, STAND, DUCK, SCARED, IDLE, FOLLOWPATH };
+	state m_State;
 	Vector m_vStart;
 	Vector m_vStartAngles;
-	Vector m_vPathToFollow[20];
+	Vector m_vPathToFollow[MAX_HOSTAGES_NAV];
 	int m_iWaypoint;
 	CBasePlayer *m_target;
 	CLocalNav *m_LocalNav;
-	int nTargetNode;
+	int m_nTargetNode;
 	Vector vecNodes[MAX_NODES];
-	EHANDLE m_hStoppedTargetEnt;
+	EntityHandle<CBasePlayer> m_hStoppedTargetEnt;
 	float m_flNextFullThink;
 	float m_flPathCheckInterval;
 	float m_flLastPathCheck;
@@ -188,8 +185,8 @@ public:
 	float m_flStuckTime;
 	CHostageImprov *m_improv;
 
-	enum ModelType { REGULAR_GUY, OLD_GUY, BLACK_GUY, GOOFY_GUY }
-	m_whichModel;
+	enum ModelType { REGULAR_GUY, OLD_GUY, BLACK_GUY, GOOFY_GUY };
+	ModelType m_whichModel;
 };
 
 class SimpleChatter
@@ -218,7 +215,7 @@ public:
 	void Shuffle(ChatterSet *chatter);
 
 private:
-	ChatterSet m_chatter[21];
+	ChatterSet m_chatter[NUM_HOSTAGE_CHATTER_TYPES];
 };
 
 class CHostageManager
@@ -246,12 +243,12 @@ public:
 	{
 		for (int i = 0; i < m_hostageCount; i++)
 		{
-			CHostage *hostage = m_hostage[i];
+			CHostage *pHostage = m_hostage[i];
 
-			if (!hostage || hostage->pev->deadflag == DEAD_DEAD)
+			if (!pHostage || pHostage->pev->deadflag == DEAD_DEAD)
 				continue;
 
-			if (func(hostage) == false)
+			if (!func(pHostage))
 				return false;
 		}
 

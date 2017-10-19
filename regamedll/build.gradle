@@ -45,12 +45,10 @@ project.ext.dep_cppunitlite = project(':dep/cppunitlite')
 
 void createIntergrationTestTask(NativeBinarySpec b) {
 	boolean regamedllFixes = b.flavor.name.contains('regamedllFixes')
-	boolean mpLib = b.name.toLowerCase().contains('mp')
 
 	if (!(b instanceof SharedLibraryBinarySpec)) return
 	if (!GradleCppUtils.windows) return
 	if (regamedllFixes) return
-	if (!mpLib) return
 
 	String unitTestTask = b.hasProperty('cppUnitTestTask') ? b.cppUnitTestTask : null
 
@@ -93,11 +91,10 @@ void postEvaluate(NativeBinarySpec b) {
 void setupToolchain(NativeBinarySpec b)
 {
 	boolean unitTestExecutable = b.component.name.endsWith('_tests')
-	boolean mpLib = b.name.toLowerCase().contains('mp')
 	boolean regamedllFixes = b.flavor.name.contains('regamedllFixes')
 
 	ToolchainConfig cfg = rootProject.createToolchainConfig(b)
-	cfg.projectInclude(project, '', '/engine', '/common', '/dlls', '/game_shared', '/pm_shared', '/regamedll', '/hookers', '/public', '/public/regamedll')
+	cfg.projectInclude(project, '', '/engine', '/common', '/dlls', '/game_shared', '/pm_shared', '/regamedll', '/public', '/public/regamedll')
 
 	if (unitTestExecutable)
 	{
@@ -125,11 +122,6 @@ void setupToolchain(NativeBinarySpec b)
 			cfg.compilerOptions.args '/Oi', '/GF', '/GS-', '/GR-'
 		}
 
-		if (mpLib)
-		{
-			cfg.linkerOptions.randomizedBaseAddress = false
-			cfg.linkerOptions.baseAddress = '0x4970000'
-		}
 		cfg.projectLibpath(project, '/lib')
 		cfg.extraLibs 'libacof32.lib'
 	}
@@ -159,14 +151,12 @@ void setupToolchain(NativeBinarySpec b)
 		cfg.extraLibs 'dl', 'm', 'stdc++', 'aelf32'
 	}
 
-	if (mpLib && GradleCppUtils.windows && !unitTestExecutable) {
+	if (GradleCppUtils.windows && !unitTestExecutable) {
 		cfg.linkerOptions.definitionFile = "${projectDir}\\msvc\\mp.def";
 	}
 
 	if (unitTestExecutable) {
 		cfg.singleDefines 'REGAMEDLL_UNIT_TESTS'
-	} else if (!mpLib) {
-		cfg.singleDefines 'HOOK_GAMEDLL'
 	}
 
 	if (regamedllFixes) {
@@ -186,7 +176,7 @@ class RegamedllSrc {
 		h.regamedll_src(CppSourceSet) {
 
 			source {
-				srcDirs "engine", "dlls", "dlls/addons", "game_shared", "pm_shared", "regamedll", "public", "version"
+				srcDirs "engine", "dlls", "dlls/API", "dlls/addons", "game_shared", "pm_shared", "regamedll", "public", "version"
 
 				include "**/*.cpp"
 				exclude "precompiled.cpp"
@@ -210,24 +200,6 @@ class RegamedllSrc {
 			source {
 				srcDirs "regamedll"
 				include "precompiled.cpp"
-			}
-		}
-	}
-
-	static void regamedll_hooker_src(def h) {
-		h.regamedll_hooker_src(CppSourceSet) {
-			source {
-				srcDirs "hookers"
-				include "main.cpp", "6153_hooker.cpp", "hooker.cpp", "memory.cpp", "hooker_impl.cpp", "RegameDLLRuntimeConfig.cpp"
-			}
-		}
-	}
-
-	static void regamedll_mp_src(def h) {
-		h.regamedll_mp_src(CppSourceSet) {
-			source {
-				srcDirs "hookers"
-				include "main_mp.cpp"
 			}
 		}
 	}
@@ -267,18 +239,6 @@ model {
 	}
 
 	components {
-		regamedll_hooker_gamedll(NativeLibrarySpec) {
-			targetPlatform 'x86'
-			baseName 'filesystem_stdio'
-
-			sources {
-				RegamedllSrc.regamedll_pch(it)
-				RegamedllSrc.regamedll_src(it)
-				RegamedllSrc.regamedll_hooker_src(it)
-			}
-
-			binaries.all { NativeBinarySpec b -> project.setupToolchain(b) }
-		}
 
 		regamedll_mp_gamedll(NativeLibrarySpec) {
 			targetPlatform 'x86'
@@ -286,19 +246,7 @@ model {
 			sources {
 				RegamedllSrc.regamedll_pch(it)
 				RegamedllSrc.regamedll_src(it)
-				RegamedllSrc.regamedll_mp_src(it)
 			}
-			binaries.all { NativeBinarySpec b -> project.setupToolchain(b) }
-		}
-
-		regamedll_hooker_gamedll_tests(NativeExecutableSpec) {
-			targetPlatform 'x86'
-			sources {
-				RegamedllSrc.regamedll_pch(it)
-				RegamedllSrc.regamedll_src(it)
-				RegamedllSrc.regamedll_tests_src(it)
-			}
-
 			binaries.all { NativeBinarySpec b -> project.setupToolchain(b) }
 		}
 
@@ -317,7 +265,7 @@ model {
 
 task buildRelease {
 	dependsOn binaries.withType(SharedLibraryBinarySpec).matching { SharedLibraryBinarySpec blib ->
-		blib.buildable && blib.buildType.name == 'release' && !blib.name.contains('Regamedll_hooker_gamedll')
+		blib.buildable && blib.buildType.name == 'release'
 	}
 }
 

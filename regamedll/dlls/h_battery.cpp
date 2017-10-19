@@ -1,10 +1,5 @@
 #include "precompiled.h"
 
-/*
-* Globals initialization
-*/
-#ifndef HOOK_GAMEDLL
-
 TYPEDESCRIPTION CRecharge::m_SaveData[] =
 {
 	DEFINE_FIELD(CRecharge, m_flNextCharge, FIELD_TIME),
@@ -13,8 +8,6 @@ TYPEDESCRIPTION CRecharge::m_SaveData[] =
 	DEFINE_FIELD(CRecharge, m_iOn, FIELD_INTEGER),
 	DEFINE_FIELD(CRecharge, m_flSoundTime, FIELD_TIME),
 };
-
-#endif
 
 IMPLEMENT_SAVERESTORE(CRecharge, CBaseEntity)
 LINK_ENTITY_TO_CLASS(func_recharge, CRecharge, CCSRecharge)
