@@ -1,18 +1,5 @@
 #include "precompiled.h"
 
-/*
-* Globals initialization
-*/
-#ifndef HOOK_GAMEDLL
-
-TYPEDESCRIPTION CEnvExplosion::m_SaveData[] =
-{
-	DEFINE_FIELD(CEnvExplosion, m_iMagnitude, FIELD_INTEGER),
-	DEFINE_FIELD(CEnvExplosion, m_spriteScale, FIELD_INTEGER),
-};
-
-#endif
-
 LINK_ENTITY_TO_CLASS(spark_shower, CShower, CCSShower)
 
 void CShower::Spawn()
@@ -66,6 +53,12 @@ void CShower::Touch(CBaseEntity *pOther)
 		pev->speed = 0;
 	}
 }
+
+TYPEDESCRIPTION CEnvExplosion::m_SaveData[] =
+{
+	DEFINE_FIELD(CEnvExplosion, m_iMagnitude, FIELD_INTEGER),
+	DEFINE_FIELD(CEnvExplosion, m_spriteScale, FIELD_INTEGER),
+};
 
 IMPLEMENT_SAVERESTORE(CEnvExplosion, CBaseMonster)
 LINK_ENTITY_TO_CLASS(env_explosion, CEnvExplosion, CCSEnvExplosion)

@@ -41,7 +41,7 @@ public:
 
 public:
 	void EXPORT ChangeFriction(CBaseEntity *pOther);
-	static TYPEDESCRIPTION IMPL(m_SaveData)[1];
+	static TYPEDESCRIPTION m_SaveData[];
 
 	float m_frictionFraction;
 };
@@ -67,7 +67,7 @@ public:
 #endif
 
 public:
-	static TYPEDESCRIPTION IMPL(m_SaveData)[2];
+	static TYPEDESCRIPTION m_SaveData[];
 
 	int m_globalstate;
 	USE_TYPE m_triggerType;
@@ -86,7 +86,7 @@ public:
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 public:
-	static TYPEDESCRIPTION IMPL(m_SaveData)[1];
+	static TYPEDESCRIPTION m_SaveData[];
 
 	USE_TYPE m_triggerType;
 };
@@ -142,7 +142,7 @@ private:
 	CMultiManager *Clone();
 
 public:
-	static TYPEDESCRIPTION IMPL(m_SaveData)[5];
+	static TYPEDESCRIPTION m_SaveData[];
 
 	int m_cTargets;
 	int m_index;
@@ -355,7 +355,7 @@ public:
 	static int InTransitionVolume(CBaseEntity *pEntity, char *pVolumeName);
 
 public:
-	static TYPEDESCRIPTION IMPL(m_SaveData)[4];
+	static TYPEDESCRIPTION m_SaveData[];
 
 	char m_szMapName[MAX_MAPNAME_LENGHT];		// next map
 	char m_szLandmarkName[MAX_MAPNAME_LENGHT];	// landmark on next map
@@ -480,7 +480,7 @@ public:
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 public:
-	static TYPEDESCRIPTION IMPL(m_SaveData)[1];
+	static TYPEDESCRIPTION m_SaveData[];
 
 private:
 	int m_iszNewTarget;
@@ -504,7 +504,7 @@ public:
 	void EXPORT FollowTarget();
 	void Move();
 
-	static TYPEDESCRIPTION IMPL(m_SaveData)[13];
+	static TYPEDESCRIPTION m_SaveData[];
 
 	EntityHandle<CBasePlayer> m_hPlayer;
 	EntityHandle<CBaseEntity> m_hTarget;

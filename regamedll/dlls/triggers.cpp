@@ -1,70 +1,10 @@
 #include "precompiled.h"
 
-/*
-* Globals initialization
-*/
-#ifndef HOOK_GAMEDLL
-
 // Global Savedata for changelevel friction modifier
 TYPEDESCRIPTION CFrictionModifier::m_SaveData[] =
 {
 	DEFINE_FIELD(CFrictionModifier, m_frictionFraction, FIELD_FLOAT),
 };
-
-TYPEDESCRIPTION CAutoTrigger::m_SaveData[] =
-{
-	DEFINE_FIELD(CAutoTrigger, m_globalstate, FIELD_STRING),
-	DEFINE_FIELD(CAutoTrigger, m_triggerType, FIELD_INTEGER),
-};
-
-TYPEDESCRIPTION CTriggerRelay::m_SaveData[1] =
-{
-	DEFINE_FIELD(CTriggerRelay, m_triggerType, FIELD_INTEGER),
-};
-
-// Global Savedata for multi_manager
-TYPEDESCRIPTION CMultiManager::m_SaveData[] =
-{
-	DEFINE_FIELD(CMultiManager, m_cTargets, FIELD_INTEGER),
-	DEFINE_FIELD(CMultiManager, m_index, FIELD_INTEGER),
-	DEFINE_FIELD(CMultiManager, m_startTime, FIELD_TIME),
-	DEFINE_ARRAY(CMultiManager, m_iTargetName, FIELD_STRING, MAX_MM_TARGETS),
-	DEFINE_ARRAY(CMultiManager, m_flTargetDelay, FIELD_FLOAT, MAX_MM_TARGETS),
-};
-
-// Global Savedata for changelevel trigger
-TYPEDESCRIPTION CChangeLevel::m_SaveData[] =
-{
-	DEFINE_ARRAY(CChangeLevel, m_szMapName, FIELD_CHARACTER, MAX_MAPNAME_LENGHT),
-	DEFINE_ARRAY(CChangeLevel, m_szLandmarkName, FIELD_CHARACTER, MAX_MAPNAME_LENGHT),
-	DEFINE_FIELD(CChangeLevel, m_changeTarget, FIELD_STRING),
-	DEFINE_FIELD(CChangeLevel, m_changeTargetDelay, FIELD_FLOAT),
-};
-
-TYPEDESCRIPTION CTriggerChangeTarget::m_SaveData[] =
-{
-	DEFINE_FIELD(CTriggerChangeTarget, m_iszNewTarget, FIELD_STRING),
-};
-
-// Global Savedata for changelevel friction modifier
-TYPEDESCRIPTION CTriggerCamera::m_SaveData[] =
-{
-	DEFINE_FIELD(CTriggerCamera, m_hPlayer, FIELD_EHANDLE),
-	DEFINE_FIELD(CTriggerCamera, m_hTarget, FIELD_EHANDLE),
-	DEFINE_FIELD(CTriggerCamera, m_pentPath, FIELD_CLASSPTR),
-	DEFINE_FIELD(CTriggerCamera, m_sPath, FIELD_STRING),
-	DEFINE_FIELD(CTriggerCamera, m_flWait, FIELD_FLOAT),
-	DEFINE_FIELD(CTriggerCamera, m_flReturnTime, FIELD_TIME),
-	DEFINE_FIELD(CTriggerCamera, m_flStopTime, FIELD_TIME),
-	DEFINE_FIELD(CTriggerCamera, m_moveDistance, FIELD_FLOAT),
-	DEFINE_FIELD(CTriggerCamera, m_targetSpeed, FIELD_FLOAT),
-	DEFINE_FIELD(CTriggerCamera, m_initialSpeed, FIELD_FLOAT),
-	DEFINE_FIELD(CTriggerCamera, m_acceleration, FIELD_FLOAT),
-	DEFINE_FIELD(CTriggerCamera, m_deceleration, FIELD_FLOAT),
-	DEFINE_FIELD(CTriggerCamera, m_state, FIELD_INTEGER),
-};
-
-#endif // HOOK_GAMEDLL
 
 LINK_ENTITY_TO_CLASS(func_friction, CFrictionModifier, CCSFrictionModifier)
 IMPLEMENT_SAVERESTORE(CFrictionModifier, CBaseEntity)
@@ -102,6 +42,12 @@ void CFrictionModifier::KeyValue(KeyValueData *pkvd)
 		CBaseEntity::KeyValue(pkvd);
 	}
 }
+
+TYPEDESCRIPTION CAutoTrigger::m_SaveData[] =
+{
+	DEFINE_FIELD(CAutoTrigger, m_globalstate, FIELD_STRING),
+	DEFINE_FIELD(CAutoTrigger, m_triggerType, FIELD_INTEGER),
+};
 
 LINK_ENTITY_TO_CLASS(trigger_auto, CAutoTrigger, CCSAutoTrigger)
 IMPLEMENT_SAVERESTORE(CAutoTrigger, CBaseDelay)
@@ -173,6 +119,11 @@ void CAutoTrigger::Restart()
 }
 #endif
 
+TYPEDESCRIPTION CTriggerRelay::m_SaveData[] =
+{
+	DEFINE_FIELD(CTriggerRelay, m_triggerType, FIELD_INTEGER),
+};
+
 LINK_ENTITY_TO_CLASS(trigger_relay, CTriggerRelay, CCSTriggerRelay)
 IMPLEMENT_SAVERESTORE(CTriggerRelay, CBaseDelay)
 
@@ -214,6 +165,16 @@ void CTriggerRelay::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE 
 		UTIL_Remove(this);
 	}
 }
+
+// Global Savedata for multi_manager
+TYPEDESCRIPTION CMultiManager::m_SaveData[] =
+{
+	DEFINE_FIELD(CMultiManager, m_cTargets, FIELD_INTEGER),
+	DEFINE_FIELD(CMultiManager, m_index, FIELD_INTEGER),
+	DEFINE_FIELD(CMultiManager, m_startTime, FIELD_TIME),
+	DEFINE_ARRAY(CMultiManager, m_iTargetName, FIELD_STRING, MAX_MM_TARGETS),
+	DEFINE_ARRAY(CMultiManager, m_flTargetDelay, FIELD_FLOAT, MAX_MM_TARGETS),
+};
 
 LINK_ENTITY_TO_CLASS(multi_manager, CMultiManager, CCSMultiManager)
 IMPLEMENT_SAVERESTORE(CMultiManager, CBaseToggle)
@@ -330,9 +291,9 @@ void CMultiManager::ManagerThink()
 	float time;
 
 	time = gpGlobals->time - m_startTime;
-	while (m_index < m_cTargets && m_flTargetDelay[ m_index ] <= time)
+	while (m_index < m_cTargets && m_flTargetDelay[m_index] <= time)
 	{
-		FireTargets(STRING(m_iTargetName[ m_index ]), m_hActivator, this, USE_TOGGLE, 0);
+		FireTargets(STRING(m_iTargetName[m_index]), m_hActivator, this, USE_TOGGLE, 0);
 		m_index++;
 	}
 
@@ -350,7 +311,7 @@ void CMultiManager::ManagerThink()
 		SetUse(&CMultiManager::ManagerUse);
 	}
 	else
-		pev->nextthink = m_startTime + m_flTargetDelay[ m_index ];
+		pev->nextthink = m_startTime + m_flTargetDelay[m_index];
 }
 
 CMultiManager *CMultiManager::Clone()
@@ -433,7 +394,7 @@ void CRenderFxManager::Restart()
 			continue;
 		}
 
-		RenderGroup_t *pGroup = &m_RenderGroups[ index ];
+		RenderGroup_t *pGroup = &m_RenderGroups[index];
 		if (!(pev->spawnflags & SF_RENDER_MASKFX))
 			pevTarget->renderfx = pGroup->renderfx;
 
@@ -1210,6 +1171,15 @@ void CFireAndDie::Think()
 	UTIL_Remove(this);
 }
 
+// Global Savedata for changelevel trigger
+TYPEDESCRIPTION CChangeLevel::m_SaveData[] =
+{
+	DEFINE_ARRAY(CChangeLevel, m_szMapName, FIELD_CHARACTER, MAX_MAPNAME_LENGHT),
+	DEFINE_ARRAY(CChangeLevel, m_szLandmarkName, FIELD_CHARACTER, MAX_MAPNAME_LENGHT),
+	DEFINE_FIELD(CChangeLevel, m_changeTarget, FIELD_STRING),
+	DEFINE_FIELD(CChangeLevel, m_changeTargetDelay, FIELD_FLOAT),
+};
+
 LINK_ENTITY_TO_CLASS(trigger_changelevel, CChangeLevel, CCSChangeLevel)
 IMPLEMENT_SAVERESTORE(CChangeLevel, CBaseTrigger)
 
@@ -1424,11 +1394,11 @@ int CChangeLevel::AddTransitionToList(LEVELLIST *pLevelList, int listCount, cons
 		}
 	}
 
-	Q_strcpy(pLevelList[ listCount ].mapName, pMapName);
-	Q_strcpy(pLevelList[ listCount ].landmarkName, pLandmarkName);
+	Q_strcpy(pLevelList[listCount].mapName, pMapName);
+	Q_strcpy(pLevelList[listCount].landmarkName, pLandmarkName);
 
-	pLevelList[ listCount ].pentLandmark = pentLandmark;
-	pLevelList[ listCount ].vecLandmarkOrigin = VARS(pentLandmark)->origin;
+	pLevelList[listCount].pentLandmark = pentLandmark;
+	pLevelList[listCount].vecLandmarkOrigin = VARS(pentLandmark)->origin;
 
 	return 1;
 }
@@ -1554,8 +1524,8 @@ int CChangeLevel::ChangeList(LEVELLIST *pLevelList, int maxList)
 
 						if (flags)
 						{
-							pEntList[ entityCount ] = pEntity;
-							entityFlags[ entityCount ] = flags;
+							pEntList[entityCount] = pEntity;
+							entityFlags[entityCount] = flags;
 							entityCount++;
 
 							if (entityCount > MAX_ENTITY)
@@ -2070,6 +2040,11 @@ void CTriggerGravity::GravityTouch(CBaseEntity *pOther)
 	pOther->pev->gravity = pev->gravity;
 }
 
+TYPEDESCRIPTION CTriggerChangeTarget::m_SaveData[] =
+{
+	DEFINE_FIELD(CTriggerChangeTarget, m_iszNewTarget, FIELD_STRING),
+};
+
 LINK_ENTITY_TO_CLASS(trigger_changetarget, CTriggerChangeTarget, CCSTriggerChangeTarget)
 IMPLEMENT_SAVERESTORE(CTriggerChangeTarget, CBaseDelay)
 
@@ -2105,6 +2080,24 @@ void CTriggerChangeTarget::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, US
 		}
 	}
 }
+
+// Global Savedata for changelevel friction modifier
+TYPEDESCRIPTION CTriggerCamera::m_SaveData[] =
+{
+	DEFINE_FIELD(CTriggerCamera, m_hPlayer, FIELD_EHANDLE),
+	DEFINE_FIELD(CTriggerCamera, m_hTarget, FIELD_EHANDLE),
+	DEFINE_FIELD(CTriggerCamera, m_pentPath, FIELD_CLASSPTR),
+	DEFINE_FIELD(CTriggerCamera, m_sPath, FIELD_STRING),
+	DEFINE_FIELD(CTriggerCamera, m_flWait, FIELD_FLOAT),
+	DEFINE_FIELD(CTriggerCamera, m_flReturnTime, FIELD_TIME),
+	DEFINE_FIELD(CTriggerCamera, m_flStopTime, FIELD_TIME),
+	DEFINE_FIELD(CTriggerCamera, m_moveDistance, FIELD_FLOAT),
+	DEFINE_FIELD(CTriggerCamera, m_targetSpeed, FIELD_FLOAT),
+	DEFINE_FIELD(CTriggerCamera, m_initialSpeed, FIELD_FLOAT),
+	DEFINE_FIELD(CTriggerCamera, m_acceleration, FIELD_FLOAT),
+	DEFINE_FIELD(CTriggerCamera, m_deceleration, FIELD_FLOAT),
+	DEFINE_FIELD(CTriggerCamera, m_state, FIELD_INTEGER),
+};
 
 LINK_ENTITY_TO_CLASS(trigger_camera, CTriggerCamera, CCSTriggerCamera)
 IMPLEMENT_SAVERESTORE(CTriggerCamera, CBaseDelay)

@@ -28,6 +28,8 @@
 
 #pragma once
 
+#include "cs_bot_init.h"
+
 extern CBotManager *TheBots;
 
 // The manager for Counter-Strike specific bots
@@ -56,11 +58,11 @@ public:
 public:
 	void ValidateMapData();
 	void OnFreeEntPrivateData(CBaseEntity *pEntity);
-	bool IsLearningMap() const { return IMPL(m_isLearningMap); }
-	void SetLearningMapFlag() { IMPL(m_isLearningMap) = true; }
-	bool IsAnalysisRequested() const { return IMPL(m_isAnalysisRequested); }
-	void RequestAnalysis() { IMPL(m_isAnalysisRequested) = true; }
-	void AckAnalysisRequest() { IMPL(m_isAnalysisRequested) = false; }
+	bool IsLearningMap() const { return m_isLearningMap; }
+	void SetLearningMapFlag() { m_isLearningMap = true; }
+	bool IsAnalysisRequested() const { return m_isAnalysisRequested; }
+	void RequestAnalysis() { m_isAnalysisRequested = true; }
+	void AckAnalysisRequest() { m_isAnalysisRequested = false; }
 
 	// difficulty levels
 	static BotDifficultyType GetDifficultyLevel()
@@ -85,6 +87,7 @@ public:
 		SCENARIO_RESCUE_HOSTAGES,
 		SCENARIO_ESCORT_VIP
 	};
+
 	GameScenarioType GetScenario() const
 	{
 #ifdef REGAMEDLL_ADD
@@ -169,16 +172,16 @@ public:
 	CNavArea *GetLooseBombArea() const { return m_looseBombArea; }									// return area that bomb is in/near
 	void SetLooseBomb(CBaseEntity *bomb);
 
-	float GetRadioMessageTimestamp(GameEventType event, int teamID) const;					// return the last time the given radio message was sent for given team
-	float GetRadioMessageInterval(GameEventType event, int teamID) const;					// return the interval since the last time this message was sent
+	float GetRadioMessageTimestamp(GameEventType event, int teamID) const;							// return the last time the given radio message was sent for given team
+	float GetRadioMessageInterval(GameEventType event, int teamID) const;							// return the interval since the last time this message was sent
 	void SetRadioMessageTimestamp(GameEventType event, int teamID);
 	void ResetRadioMessageTimestamps();
 
-	float GetLastSeenEnemyTimestamp() const { return m_lastSeenEnemyTimestamp; }			// return the last time anyone has seen an enemy
+	float GetLastSeenEnemyTimestamp() const { return m_lastSeenEnemyTimestamp; }					// return the last time anyone has seen an enemy
 	void SetLastSeenEnemyTimestamp() { m_lastSeenEnemyTimestamp = gpGlobals->time; }
 
 	float GetRoundStartTime() const { return m_roundStartTimestamp; }
-	float GetElapsedRoundTime() const { return gpGlobals->time - m_roundStartTimestamp; }		// return the elapsed time since the current round began
+	float GetElapsedRoundTime() const { return gpGlobals->time - m_roundStartTimestamp; }			// return the elapsed time since the current round began
 
 	bool AllowRogues() const { return cv_bot_allow_rogues.value != 0.0f; }
 	bool AllowPistols() const { return cv_bot_allow_pistols.value != 0.0f; }
@@ -193,7 +196,7 @@ public:
 
 	bool IsWeaponUseable(CBasePlayerItem *item) const;						// return true if the bot can use this weapon
 
-	bool IsDefenseRushing() const { return m_isDefenseRushing; }				// returns true if defense team has "decided" to rush this round
+	bool IsDefenseRushing() const { return m_isDefenseRushing; }			// returns true if defense team has "decided" to rush this round
 	bool IsOnDefense(CBasePlayer *player) const;							// return true if this player is on "defense"
 	bool IsOnOffense(CBasePlayer *player) const;							// return true if this player is on "offense"
 
@@ -213,10 +216,10 @@ public:
 	bool BotAddCommand(BotProfileTeamType team, bool isFromConsole = false);	// process the "bot_add" console command
 
 private:
-	static float IMPL(m_flNextCVarCheck);
-	static bool IMPL(m_isMapDataLoaded);		// true if we've attempted to load map data
-	static bool IMPL(m_isLearningMap);
-	static bool IMPL(m_isAnalysisRequested);
+	static float m_flNextCVarCheck;
+	static bool m_isMapDataLoaded;		// true if we've attempted to load map data
+	static bool m_isLearningMap;
+	static bool m_isAnalysisRequested;
 
 	GameScenarioType m_gameScenario;			// what kind of game are we playing
 
@@ -239,7 +242,7 @@ private:
 
 	bool m_isDefenseRushing;					// whether defensive team is rushing this round or not
 
-	static NavEditCmdType IMPL(m_editCmd);
+	static NavEditCmdType m_editCmd;
 	unsigned int m_navPlace;
 	CountdownTimer m_respawnTimer;
 	bool m_isRespawnStarted;
@@ -264,4 +267,3 @@ inline bool AreBotsAllowed()
 }
 
 void PrintAllEntities();
-void UTIL_DrawBox(Extent *extent, int lifetime, int red, int green, int blue);

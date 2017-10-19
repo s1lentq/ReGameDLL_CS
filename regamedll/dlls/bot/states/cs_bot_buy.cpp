@@ -1,8 +1,36 @@
+/*
+*
+*   This program is free software; you can redistribute it and/or modify it
+*   under the terms of the GNU General Public License as published by the
+*   Free Software Foundation; either version 2 of the License, or (at
+*   your option) any later version.
+*
+*   This program is distributed in the hope that it will be useful, but
+*   WITHOUT ANY WARRANTY; without even the implied warranty of
+*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+*   General Public License for more details.
+*
+*   You should have received a copy of the GNU General Public License
+*   along with this program; if not, write to the Free Software Foundation,
+*   Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*
+*   In addition, as a special exception, the author gives permission to
+*   link the code of this program with the Half-Life Game Engine ("HL
+*   Engine") and Modified Game Libraries ("MODs") developed by Valve,
+*   L.L.C ("Valve").  You must obey the GNU General Public License in all
+*   respects for all of the code used other than the HL Engine and MODs
+*   from Valve.  If you modify this file, you may extend this exception
+*   to your version of the file, but you are not obligated to do so.  If
+*   you do not wish to do so, delete this exception statement from your
+*   version.
+*
+*/
+
 #include "precompiled.h"
 
 bool HasDefaultPistol(CCSBot *me)
 {
-	CBasePlayerWeapon *pSecondary = static_cast<CBasePlayerWeapon *>(me->m_rgpPlayerItems[ PISTOL_SLOT ]);
+	CBasePlayerWeapon *pSecondary = static_cast<CBasePlayerWeapon *>(me->m_rgpPlayerItems[PISTOL_SLOT]);
 
 	if (!pSecondary)
 		return false;
@@ -73,7 +101,7 @@ void BuyState::OnEnter(CCSBot *me)
 
 	if (TheCSBots()->AllowPistols())
 	{
-		CBasePlayerWeapon *pSecondary = static_cast<CBasePlayerWeapon *>(me->m_rgpPlayerItems[ PISTOL_SLOT ]);
+		CBasePlayerWeapon *pSecondary = static_cast<CBasePlayerWeapon *>(me->m_rgpPlayerItems[PISTOL_SLOT]);
 
 		// check if we have a pistol
 		if (pSecondary)
@@ -130,10 +158,7 @@ struct BuyInfo
 };
 
 // These tables MUST be kept in sync with the CT and T buy aliases
-
-#ifndef HOOK_GAMEDLL
-
-BuyInfo primaryWeaponBuyInfoCT[ MAX_BUY_WEAPON_PRIMARY ] =
+BuyInfo primaryWeaponBuyInfoCT[MAX_BUY_WEAPON_PRIMARY] =
 {
 	{ SHOTGUN,          false, "m3"     }, // WEAPON_M3
 	{ SHOTGUN,          false, "xm1014" }, // WEAPON_XM1014
@@ -150,7 +175,7 @@ BuyInfo primaryWeaponBuyInfoCT[ MAX_BUY_WEAPON_PRIMARY ] =
 	{ MACHINE_GUN,      false, "m249"   }, // WEAPON_M249
 };
 
-BuyInfo secondaryWeaponBuyInfoCT[ MAX_BUY_WEAPON_SECONDARY ] =
+BuyInfo secondaryWeaponBuyInfoCT[MAX_BUY_WEAPON_SECONDARY] =
 {
 //	{ PISTOL, false, "glock"  },
 //	{ PISTOL, false, "usp"    },
@@ -159,7 +184,7 @@ BuyInfo secondaryWeaponBuyInfoCT[ MAX_BUY_WEAPON_SECONDARY ] =
 	{ PISTOL, true,  "fn57"   },
 };
 
-BuyInfo primaryWeaponBuyInfoT[ MAX_BUY_WEAPON_PRIMARY ] =
+BuyInfo primaryWeaponBuyInfoT[MAX_BUY_WEAPON_PRIMARY] =
 {
 	{ SHOTGUN,          false, "m3"     }, // WEAPON_M3
 	{ SHOTGUN,          false, "xm1014" }, // WEAPON_XM1014
@@ -176,7 +201,7 @@ BuyInfo primaryWeaponBuyInfoT[ MAX_BUY_WEAPON_PRIMARY ] =
 	{ MACHINE_GUN,      false, "m249"   }, // WEAPON_M249
 };
 
-BuyInfo secondaryWeaponBuyInfoT[ MAX_BUY_WEAPON_SECONDARY ] =
+BuyInfo secondaryWeaponBuyInfoT[MAX_BUY_WEAPON_SECONDARY] =
 {
 //	{ PISTOL, false, "glock"  },
 //	{ PISTOL, false, "usp"    },
@@ -184,16 +209,6 @@ BuyInfo secondaryWeaponBuyInfoT[ MAX_BUY_WEAPON_SECONDARY ] =
 	{ PISTOL, true,  "deagle" },
 	{ PISTOL, true,  "elites" },
 };
-
-#else // HOOK_GAMEDLL
-
-BuyInfo primaryWeaponBuyInfoCT[ MAX_BUY_WEAPON_PRIMARY ];
-BuyInfo secondaryWeaponBuyInfoCT[ MAX_BUY_WEAPON_SECONDARY];
-
-BuyInfo primaryWeaponBuyInfoT[ MAX_BUY_WEAPON_PRIMARY ];
-BuyInfo secondaryWeaponBuyInfoT[ MAX_BUY_WEAPON_SECONDARY ];
-
-#endif // HOOK_GAMEDLL
 
 // Given a weapon alias, return the kind of weapon it is
 inline WeaponType GetWeaponType(const char *alias)
@@ -373,7 +388,7 @@ void BuyState::OnUpdate(CCSBot *me)
 			{
 				// build list of allowable weapons to buy
 				BuyInfo *masterPrimary = (me->m_iTeam == TERRORIST) ? primaryWeaponBuyInfoT : primaryWeaponBuyInfoCT;
-				BuyInfo *stockPrimary[ MAX_BUY_WEAPON_PRIMARY ];
+				BuyInfo *stockPrimary[MAX_BUY_WEAPON_PRIMARY];
 				int stockPrimaryCount = 0;
 
 				// dont choose sniper rifles as often
@@ -388,7 +403,7 @@ void BuyState::OnUpdate(CCSBot *me)
 						(masterPrimary[i].type == SNIPER_RIFLE && TheCSBots()->AllowSnipers() && wantSniper) ||
 						(masterPrimary[i].type == MACHINE_GUN && TheCSBots()->AllowMachineGuns()))
 					{
-						stockPrimary[ stockPrimaryCount++ ] = &masterPrimary[i];
+						stockPrimary[stockPrimaryCount++] = &masterPrimary[i];
 					}
 				}
 
@@ -428,8 +443,8 @@ void BuyState::OnUpdate(CCSBot *me)
 						which = RANDOM_LONG(0, stockPrimaryCount - 1);
 					}
 
-					me->ClientCommand(stockPrimary[ which ]->buyAlias);
-					me->PrintIfWatched("Tried to buy %s.\n", stockPrimary[ which ]->buyAlias);
+					me->ClientCommand(stockPrimary[which]->buyAlias);
+					me->PrintIfWatched("Tried to buy %s.\n", stockPrimary[which]->buyAlias);
 				}
 			}
 		}
@@ -455,9 +470,9 @@ void BuyState::OnUpdate(CCSBot *me)
 					int which = RANDOM_LONG(0, MAX_BUY_WEAPON_SECONDARY - 1);
 
 					if (me->m_iTeam == TERRORIST)
-						me->ClientCommand(secondaryWeaponBuyInfoT[ which ].buyAlias);
+						me->ClientCommand(secondaryWeaponBuyInfoT[which].buyAlias);
 					else
-						me->ClientCommand(secondaryWeaponBuyInfoCT[ which ].buyAlias);
+						me->ClientCommand(secondaryWeaponBuyInfoCT[which].buyAlias);
 
 					// only buy one pistol
 					m_buyPistol = false;

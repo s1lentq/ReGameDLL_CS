@@ -1,16 +1,9 @@
 #include "precompiled.h"
 
-/*
-* Globals initialization
-*/
-#ifndef HOOK_GAMEDLL
-
 TYPEDESCRIPTION CAirtank::m_SaveData[] =
 {
 	DEFINE_FIELD(CAirtank, m_state, FIELD_INTEGER)
 };
-
-#endif
 
 LINK_ENTITY_TO_CLASS(item_airtank, CAirtank, CCSAirtank)
 IMPLEMENT_SAVERESTORE(CAirtank, CGrenade)

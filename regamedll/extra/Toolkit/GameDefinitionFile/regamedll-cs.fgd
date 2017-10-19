@@ -144,7 +144,7 @@
 //     Master
 //     Target
 //     Trigger delay
-//     Pitch Yaw Roll (Y Z X)
+//     Pitch Yaw Roll (X Y Z)
 //     Render FX
 //     Render Mode
 //     FX Amount(1 - 255)
@@ -350,7 +350,7 @@
 
 @BaseClass = Angles
 [
-	angles(string) : "Pitch Yaw Roll (Y Z X)" : "0 0 0"
+	angles(string) : "Pitch Yaw Roll (X Y Z)" : "0 0 0"
 ]
 
 @BaseClass = Appearflags
@@ -1958,7 +1958,7 @@
 
 @PointClass base(Targetname, Target, Light) iconsprite("sprites/CS/light_environment.spr") = light_environment : "Environment"
 [
-	angles(string) : "Pitch Yaw Roll (Y Z X)" : "0 270 0"
+	angles(string) : "Pitch Yaw Roll (X Y Z)" : "0 270 0"
 	pitch(integer) : "Pitch" : -90
 // Shade is used only by Adam Foster's hack of HLRAD to vary the color of shade.
 	_diffuse_light(color255) : "Shade" : "255 255 128 200"
@@ -2697,7 +2697,7 @@
 	speed(integer) : "Speed (units per second)" : 64
 
 // avelocity is fixed speed of tumbling, cannot be changed in play
-	avelocity(string) : "Angular velocity (Y Z X)" : "0 0 0"
+	avelocity(string) : "Angular velocity (X Y Z)" : "0 0 0"
 	dmg(integer) : "Damage on crush" : 0
 	skin(choices) : "Contents (if not solid)" : 0 =
 	[
@@ -2931,8 +2931,8 @@
 
 @PointClass base(ArmouryEntity) size(-16 -16 0, 16 16 16) iconsprite("sprites/CS/armoury_entity.spr") = item_airbox : "Items in the armoury and float in the air"
 [
-    angles(string) : "Pitch Yaw Roll (Y Z X)" : "-90 0 0"
-    avelocity(string) : "Angular velocity (Y Z X)" : "0 150 0"
+    angles(string) : "Pitch Yaw Roll (X Y Z)" : "-90 0 0"
+    avelocity(string) : "Angular velocity (X Y Z)" : "0 150 0"
     flyup(string) : "Speed fly up" : "5"
     delay(string) : "Delay before fly down" : "1"
 	sprite_model(string) : "Sprite Name " : ""

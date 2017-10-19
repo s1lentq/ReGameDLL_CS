@@ -217,10 +217,7 @@ class CGameRules
 {
 public:
 	CGameRules();
-
-#ifndef HOOK_GAMEDLL
 	virtual ~CGameRules();
-#endif
 
 	virtual void RefreshSkillData();															// fill skill data struct with proper values
 	virtual void Think() = 0;																	// runs every server frame, should handle any timer tasks, periodic events, etc.
@@ -335,8 +332,8 @@ public:
 	BOOL m_bBombDropped;
 
 	// custom
-	CUSTOM_MEMBER char *m_GameDesc;
-	CUSTOM_MEMBER bool m_bGameOver; // intermission or finale (deprecated name g_fGameOver)
+	char *m_GameDesc;
+	bool m_bGameOver; // intermission or finale (deprecated name g_fGameOver)
 };
 
 // CHalfLifeRules - rules for the single player Half-Life game.
@@ -344,10 +341,7 @@ class CHalfLifeRules: public CGameRules
 {
 public:
 	CHalfLifeRules();
-
-#ifndef HOOK_GAMEDLL
 	virtual ~CHalfLifeRules() {};
-#endif
 
 	virtual void Think();
 	virtual BOOL IsAllowedToSpawn(CBaseEntity *pEntity);
@@ -773,11 +767,11 @@ protected:
 	bool m_bSkipSpawn;
 
 	// custom
-	CUSTOM_MEMBER bool m_bSkipShowMenu;
-	CUSTOM_MEMBER bool m_bNeededPlayers;
-	CUSTOM_MEMBER float m_flEscapeRatio;
-	CUSTOM_MEMBER float m_flTimeLimit;
-	CUSTOM_MEMBER float m_flGameStartTime;
+	bool m_bSkipShowMenu;
+	bool m_bNeededPlayers;
+	float m_flEscapeRatio;
+	float m_flTimeLimit;
+	float m_flGameStartTime;
 };
 
 typedef struct mapcycle_item_s

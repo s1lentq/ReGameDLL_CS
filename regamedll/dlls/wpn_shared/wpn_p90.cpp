@@ -15,6 +15,7 @@ void CP90::Spawn()
 	m_bDelayFire = false;
 
 	FallInit();
+	CSPlayerItem()->SetItemInfo(&m_ItemInfoArray[m_iId]);
 }
 
 void CP90::Precache()

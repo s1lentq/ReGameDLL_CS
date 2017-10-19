@@ -1,21 +1,5 @@
 #include "precompiled.h"
 
-/*
-* Globals initialization
-*/
-#ifndef HOOK_GAMEDLL
-
-TYPEDESCRIPTION CWallHealth::m_SaveData[] =
-{
-	DEFINE_FIELD(CWallHealth, m_flNextCharge, FIELD_TIME),
-	DEFINE_FIELD(CWallHealth, m_iReactivate, FIELD_INTEGER),
-	DEFINE_FIELD(CWallHealth, m_iJuice, FIELD_INTEGER),
-	DEFINE_FIELD(CWallHealth, m_iOn, FIELD_INTEGER),
-	DEFINE_FIELD(CWallHealth, m_flSoundTime, FIELD_TIME),
-};
-
-#endif
-
 LINK_ENTITY_TO_CLASS(item_healthkit, CHealthKit, CCSHealthKit)
 
 void CHealthKit::Spawn()
@@ -50,7 +34,7 @@ BOOL CHealthKit::MyTouch(CBasePlayer *pPlayer)
 	if (pPlayer->TakeHealth(healthValue, DMG_GENERIC))
 	{
 		MESSAGE_BEGIN(MSG_ONE, gmsgItemPickup, nullptr, pPlayer->pev);
-			WRITE_STRING(STRING(pev->classname));
+			WRITE_STRING(pev->classname);
 		MESSAGE_END();
 
 		EMIT_SOUND(ENT(pPlayer->pev), CHAN_ITEM, "items/smallmedkit1.wav", VOL_NORM, ATTN_NORM);
@@ -65,6 +49,15 @@ BOOL CHealthKit::MyTouch(CBasePlayer *pPlayer)
 
 	return FALSE;
 }
+
+TYPEDESCRIPTION CWallHealth::m_SaveData[] =
+{
+	DEFINE_FIELD(CWallHealth, m_flNextCharge, FIELD_TIME),
+	DEFINE_FIELD(CWallHealth, m_iReactivate, FIELD_INTEGER),
+	DEFINE_FIELD(CWallHealth, m_iJuice, FIELD_INTEGER),
+	DEFINE_FIELD(CWallHealth, m_iOn, FIELD_INTEGER),
+	DEFINE_FIELD(CWallHealth, m_flSoundTime, FIELD_TIME),
+};
 
 IMPLEMENT_SAVERESTORE(CWallHealth, CBaseEntity)
 LINK_ENTITY_TO_CLASS(func_healthcharger, CWallHealth, CCSWallHealth)
@@ -97,7 +90,7 @@ void CWallHealth::Spawn()
 	UTIL_SetOrigin(pev, pev->origin);
 	UTIL_SetSize(pev, pev->mins, pev->maxs);
 
-	SET_MODEL(ENT(pev), STRING(pev->model));
+	SET_MODEL(ENT(pev), pev->model);
 
 	int healthValue = (int)gSkillData.healthchargerCapacity;
 #ifdef REGAMEDLL_FIXES

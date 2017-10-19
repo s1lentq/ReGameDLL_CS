@@ -1,31 +1,5 @@
 #include "precompiled.h"
 
-/*
-* Globals initialization
-*/
-#ifndef HOOK_GAMEDLL
-
-TYPEDESCRIPTION CFuncWeaponCheck::m_SaveData[] =
-{
-	DEFINE_FIELD(CFuncWeaponCheck, sTriggerWithItems, FIELD_STRING),
-	DEFINE_FIELD(CFuncWeaponCheck, sTriggerNoItems, FIELD_STRING),
-	DEFINE_FIELD(CFuncWeaponCheck, iItemCount, FIELD_INTEGER),
-	DEFINE_FIELD(CFuncWeaponCheck, sMaster, FIELD_STRING),
-	DEFINE_ARRAY(CFuncWeaponCheck, sItemName, FIELD_STRING, MAX_ITEM_COUNTS),
-	DEFINE_FIELD(CFuncWeaponCheck, iAnyWeapon, FIELD_INTEGER),
-};
-
-TYPEDESCRIPTION CBaseGrenCatch::m_SaveData[] =
-{
-	DEFINE_FIELD(CBaseGrenCatch, m_NeedGrenadeType, FIELD_INTEGER),
-	DEFINE_FIELD(CBaseGrenCatch, m_fSmokeTouching, FIELD_BOOLEAN),
-	DEFINE_FIELD(CBaseGrenCatch, m_fFlashTouched, FIELD_BOOLEAN),
-	DEFINE_FIELD(CBaseGrenCatch, sTriggerOnGrenade, FIELD_STRING),
-	DEFINE_FIELD(CBaseGrenCatch, sDisableOnGrenade, FIELD_STRING),
-};
-
-#endif
-
 CHalfLifeTraining::CHalfLifeTraining()
 {
 	PRECACHE_MODEL("models/w_weaponbox.mdl");
@@ -108,7 +82,7 @@ void CHalfLifeTraining::PlayerThink(CBasePlayer *pPlayer)
 
 	if (pPlayer->HasNamedPlayerItem("weapon_c4"))
 	{
-		if (pPlayer->m_rgAmmo[ pPlayer->GetAmmoIndex("C4") ] <= 0)
+		if (pPlayer->m_rgAmmo[pPlayer->GetAmmoIndex("C4")] <= 0)
 		{
 			pPlayer->m_bHasC4 = false;
 
@@ -310,6 +284,15 @@ void CHalfLifeTraining::CheckWinConditions()
 	}
 }
 
+TYPEDESCRIPTION CBaseGrenCatch::m_SaveData[] =
+{
+	DEFINE_FIELD(CBaseGrenCatch, m_NeedGrenadeType, FIELD_INTEGER),
+	DEFINE_FIELD(CBaseGrenCatch, m_fSmokeTouching, FIELD_BOOLEAN),
+	DEFINE_FIELD(CBaseGrenCatch, m_fFlashTouched, FIELD_BOOLEAN),
+	DEFINE_FIELD(CBaseGrenCatch, sTriggerOnGrenade, FIELD_STRING),
+	DEFINE_FIELD(CBaseGrenCatch, sDisableOnGrenade, FIELD_STRING),
+};
+
 IMPLEMENT_SAVERESTORE(CBaseGrenCatch, CBaseEntity)
 LINK_ENTITY_TO_CLASS(func_grencatch, CBaseGrenCatch, CCSGrenCatch)
 
@@ -338,16 +321,14 @@ void CBaseGrenCatch::Touch(CBaseEntity *pOther)
 
 void CBaseGrenCatch::Think()
 {
-	CGrenade *pGrenade;
 	bool m_fSmokeTouchingLastFrame;
-	CBaseEntity *pTrigger;
 	Vector vMax, vMin;
 
 	m_fSmokeTouchingLastFrame = m_fSmokeTouching;
 	m_fSmokeTouching = false;
-	pGrenade = nullptr;
 
-	while ((pGrenade = (CGrenade *)UTIL_FindEntityByClassname(pGrenade, "grenade")))
+	CGrenade *pGrenade = nullptr;
+	while ((pGrenade = UTIL_FindEntityByClassname(pGrenade, "grenade")))
 	{
 		vMin = pGrenade->pev->mins;
 		vMax = pGrenade->pev->maxs;
@@ -371,8 +352,7 @@ void CBaseGrenCatch::Think()
 
 		if (m_NeedGrenadeType == GRENADETYPE_SMOKE)
 		{
-			pTrigger = nullptr;
-
+			CBaseEntity *pTrigger = nullptr;
 			while ((pTrigger = UTIL_FindEntityByTargetname(pTrigger, STRING(sDisableOnGrenade))))
 			{
 				// save solid
@@ -388,8 +368,7 @@ void CBaseGrenCatch::Think()
 
 	if (m_fSmokeTouchingLastFrame && !m_fSmokeTouching)
 	{
-		pTrigger = nullptr;
-
+		CBaseEntity *pTrigger = nullptr;
 		while ((pTrigger = UTIL_FindEntityByTargetname(pTrigger, STRING(sDisableOnGrenade))))
 		{
 			// restore solid
@@ -433,6 +412,19 @@ void CBaseGrenCatch::KeyValue(KeyValueData *pkvd)
 	}
 }
 
+TYPEDESCRIPTION CFuncWeaponCheck::m_SaveData[] =
+{
+	DEFINE_FIELD(CFuncWeaponCheck, sTriggerWithItems, FIELD_STRING),
+	DEFINE_FIELD(CFuncWeaponCheck, sTriggerNoItems, FIELD_STRING),
+	DEFINE_FIELD(CFuncWeaponCheck, iItemCount, FIELD_INTEGER),
+	DEFINE_FIELD(CFuncWeaponCheck, sMaster, FIELD_STRING),
+	DEFINE_ARRAY(CFuncWeaponCheck, sItemName, FIELD_STRING, MAX_ITEM_COUNTS),
+	DEFINE_FIELD(CFuncWeaponCheck, iAnyWeapon, FIELD_INTEGER),
+};
+
+IMPLEMENT_SAVERESTORE(CFuncWeaponCheck, CBaseEntity)
+LINK_ENTITY_TO_CLASS(func_weaponcheck, CFuncWeaponCheck, CCSFuncWeaponCheck)
+
 void CFuncWeaponCheck::Spawn()
 {
 	pev->dmgtime = 0;
@@ -443,8 +435,47 @@ void CFuncWeaponCheck::Spawn()
 	SET_MODEL(ENT(pev), STRING(pev->model));
 }
 
-IMPLEMENT_SAVERESTORE(CFuncWeaponCheck, CBaseEntity)
-LINK_ENTITY_TO_CLASS(func_weaponcheck, CFuncWeaponCheck, CCSFuncWeaponCheck)
+void CFuncWeaponCheck::KeyValue(KeyValueData *pkvd)
+{
+	if (FStrEq(pkvd->szKeyName, "trigger_items"))
+	{
+		sTriggerWithItems = ALLOC_STRING(pkvd->szValue);
+		pkvd->fHandled = TRUE;
+	}
+	else if (FStrEq(pkvd->szKeyName, "trigger_noitems"))
+	{
+		sTriggerNoItems = ALLOC_STRING(pkvd->szValue);
+		pkvd->fHandled = TRUE;
+	}
+	else if (FStrEq(pkvd->szKeyName, "trigger_noitems_delay"))
+	{
+		pev->speed = Q_atof(pkvd->szValue);
+		pkvd->fHandled = TRUE;
+	}
+	else if (Q_strstr(pkvd->szKeyName, "item"))
+	{
+		if (iItemCount < MAX_ITEM_COUNTS)
+		{
+			sItemName[iItemCount++] = ALLOC_STRING(pkvd->szValue);
+		}
+
+		pkvd->fHandled = TRUE;
+	}
+	else if (FStrEq(pkvd->szKeyName, "master"))
+	{
+		sMaster = ALLOC_STRING(pkvd->szValue);
+		pkvd->fHandled = TRUE;
+	}
+	else if (FStrEq(pkvd->szKeyName, "any_weapon"))
+	{
+		iAnyWeapon = Q_atoi(pkvd->szValue);
+		pkvd->fHandled = TRUE;
+	}
+	else
+	{
+		CBaseEntity::KeyValue(pkvd);
+	}
+}
 
 void CFuncWeaponCheck::Touch(CBaseEntity *pOther)
 {
@@ -458,7 +489,7 @@ void CFuncWeaponCheck::Touch(CBaseEntity *pOther)
 		return;
 
 	CBasePlayer *pPlayer = static_cast<CBasePlayer *>(pOther);
-	for (int i = 1; i <= iItemCount; ++i)
+	for (int i = 1; i <= iItemCount; i++)
 	{
 		if (iAnyWeapon)
 		{
@@ -490,46 +521,4 @@ void CFuncWeaponCheck::Touch(CBaseEntity *pOther)
 
 	FireTargets(STRING(sTriggerWithItems), pOther, pOther, USE_TOGGLE, 0);
 	SUB_Remove();
-}
-
-void CFuncWeaponCheck::KeyValue(KeyValueData *pkvd)
-{
-	if (FStrEq(pkvd->szKeyName, "trigger_items"))
-	{
-		sTriggerWithItems = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = TRUE;
-	}
-	else if (FStrEq(pkvd->szKeyName, "trigger_noitems"))
-	{
-		sTriggerNoItems = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = TRUE;
-	}
-	else if (FStrEq(pkvd->szKeyName, "trigger_noitems_delay"))
-	{
-		pev->speed = Q_atof(pkvd->szValue);
-		pkvd->fHandled = TRUE;
-	}
-	else if (Q_strstr(pkvd->szKeyName, "item"))
-	{
-		if (iItemCount < MAX_ITEM_COUNTS)
-		{
-			sItemName[ iItemCount++ ] = ALLOC_STRING(pkvd->szValue);
-		}
-
-		pkvd->fHandled = TRUE;
-	}
-	else if (FStrEq(pkvd->szKeyName, "master"))
-	{
-		sMaster = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = TRUE;
-	}
-	else if (FStrEq(pkvd->szKeyName, "any_weapon"))
-	{
-		iAnyWeapon = Q_atoi(pkvd->szValue);
-		pkvd->fHandled = TRUE;
-	}
-	else
-	{
-		CBaseEntity::KeyValue(pkvd);
-	}
 }

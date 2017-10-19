@@ -99,7 +99,7 @@ public:
 	void EXPORT AnimateUntilDead();
 	static CSprite *SpriteCreate(const char *pSpriteName, const Vector &origin, BOOL animate);
 
-	static TYPEDESCRIPTION IMPL(m_SaveData)[2];
+	static TYPEDESCRIPTION m_SaveData[];
 
 private:
 	float m_lastTime;
@@ -211,7 +211,7 @@ public:
 	void EXPORT StrikeThink();
 
 public:
-	static TYPEDESCRIPTION IMPL(m_SaveData)[3];
+	static TYPEDESCRIPTION m_SaveData[];
 
 	CSprite *m_pSprite;
 	int m_iszSpriteName;
@@ -235,7 +235,7 @@ public:
 	void EXPORT FizzThink();
 
 public:
-	static TYPEDESCRIPTION IMPL(m_SaveData)[3];
+	static TYPEDESCRIPTION m_SaveData[];
 
 	int m_density;
 	int m_frequency;
@@ -272,7 +272,7 @@ public:
 	void BeamUpdateVars();
 
 public:
-	static TYPEDESCRIPTION IMPL(m_SaveData)[13];
+	static TYPEDESCRIPTION m_SaveData[];
 
 	int m_active;
 	int m_iszStartEntity;
@@ -300,7 +300,7 @@ public:
 	void Animate(float frames);
 
 public:
-	static TYPEDESCRIPTION IMPL(m_SaveData)[2];
+	static TYPEDESCRIPTION m_SaveData[];
 
 	float m_lastTime;
 	float m_maxFrame;
@@ -335,7 +335,7 @@ public:
 	void EXPORT ShootThink();
 
 public:
-	static TYPEDESCRIPTION IMPL(m_SaveData)[7];
+	static TYPEDESCRIPTION m_SaveData[];
 
 	int m_iGibs;
 	int m_iGibCapacity;
@@ -485,6 +485,14 @@ public:
 public:
 	void EXPORT CanThink();
 	void EXPORT CanTouch(CBaseEntity *pOther);
+};
+
+// Multiplayer intermission spots.
+class CInfoIntermission: public CPointEntity
+{
+public:
+	virtual void Spawn();
+	virtual void Think();
 };
 
 int IsPointEntity(CBaseEntity *pEnt);

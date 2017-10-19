@@ -143,48 +143,48 @@ GAMEHOOK_REGISTRY(CSGameRules_OnRoundFreezeEnd);
 GAMEHOOK_REGISTRY(PM_UpdateStepSound);
 GAMEHOOK_REGISTRY(CBasePlayer_StartDeathCam);
 
-int EXT_FUNC CReGameApi::GetMajorVersion() {
+int CReGameApi::GetMajorVersion() {
 	return REGAMEDLL_API_VERSION_MAJOR;
 }
 
-int EXT_FUNC CReGameApi::GetMinorVersion() {
+int CReGameApi::GetMinorVersion() {
 	return REGAMEDLL_API_VERSION_MINOR;
 }
 
-const EXT_FUNC ReGameFuncs_t *CReGameApi::GetFuncs() {
+const ReGameFuncs_t *CReGameApi::GetFuncs() {
 	return &g_ReGameApiFuncs;
 }
 
-IReGameHookchains *EXT_FUNC CReGameApi::GetHookchains() {
+IReGameHookchains *CReGameApi::GetHookchains() {
 	return &g_ReGameHookchains;
 }
 
-CGameRules *EXT_FUNC CReGameApi::GetGameRules() {
+CGameRules *CReGameApi::GetGameRules() {
 	return g_pGameRules;
 }
 
-WeaponInfoStruct *EXT_FUNC CReGameApi::GetWeaponInfo(int weaponID) {
+WeaponInfoStruct *CReGameApi::GetWeaponInfo(int weaponID) {
 	return ::GetWeaponInfo(weaponID);
 }
 
-WeaponInfoStruct *EXT_FUNC CReGameApi::GetWeaponInfo(const char *weaponName) {
+WeaponInfoStruct *CReGameApi::GetWeaponInfo(const char *weaponName) {
 	return ::GetWeaponInfo(weaponName);
 }
 
-playermove_t *EXT_FUNC CReGameApi::GetPlayerMove() {
+playermove_t *CReGameApi::GetPlayerMove() {
 	return pmove;
 }
 
-WeaponSlotInfo *EXT_FUNC CReGameApi::GetWeaponSlot(WeaponIdType weaponID) { return ::GetWeaponSlot(weaponID); }
-WeaponSlotInfo *EXT_FUNC CReGameApi::GetWeaponSlot(const char *weaponName) { return ::GetWeaponSlot(weaponName); }
+WeaponSlotInfo *CReGameApi::GetWeaponSlot(WeaponIdType weaponID) { return ::GetWeaponSlot(weaponID); }
+WeaponSlotInfo *CReGameApi::GetWeaponSlot(const char *weaponName) { return ::GetWeaponSlot(weaponName); }
 
-ItemInfo *EXT_FUNC CReGameApi::GetItemInfo(WeaponIdType weaponID) { return &IMPL_CLASS(CBasePlayerItem, m_ItemInfoArray)[weaponID]; }
-AmmoInfo *EXT_FUNC CReGameApi::GetAmmoInfo(AmmoType ammoID) { return &IMPL_CLASS(CBasePlayerItem, m_AmmoInfoArray)[ammoID]; }
+ItemInfo *CReGameApi::GetItemInfo(WeaponIdType weaponID) { return &CBasePlayerItem::m_ItemInfoArray[weaponID]; }
+AmmoInfo *CReGameApi::GetAmmoInfo(AmmoType ammoID) { return &CBasePlayerItem::m_AmmoInfoArray[ammoID]; }
 
-AmmoInfoStruct *EXT_FUNC CReGameApi::GetAmmoInfoEx(AmmoType ammoID) { return ::GetAmmoInfo(ammoID); }
-AmmoInfoStruct *EXT_FUNC CReGameApi::GetAmmoInfoEx(const char *ammoName) { return ::GetAmmoInfo(ammoName); }
+AmmoInfoStruct *CReGameApi::GetAmmoInfoEx(AmmoType ammoID) { return ::GetAmmoInfo(ammoID); }
+AmmoInfoStruct *CReGameApi::GetAmmoInfoEx(const char *ammoName) { return ::GetAmmoInfo(ammoName); }
 
-void EXT_FUNC Regamedll_ChangeString_api(char *&dest, const char *source)
+EXT_FUNC void Regamedll_ChangeString_api(char *&dest, const char *source)
 {
 	size_t len = Q_strlen(source);
 	if (dest == nullptr || Q_strlen(dest) != len) {
@@ -195,22 +195,22 @@ void EXT_FUNC Regamedll_ChangeString_api(char *&dest, const char *source)
 	Q_strcpy(dest, source);
 }
 
-void EXT_FUNC RadiusDamage_api(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, float flRadius, int iClassIgnore, int bitsDamageType)
+EXT_FUNC void RadiusDamage_api(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, float flRadius, int iClassIgnore, int bitsDamageType)
 {
 	RadiusDamage(vecSrc, pevInflictor, pevAttacker, flDamage, flRadius, iClassIgnore, bitsDamageType);
 }
 
-void EXT_FUNC ClearMultiDamage_api()
+EXT_FUNC void ClearMultiDamage_api()
 {
 	ClearMultiDamage();
 }
 
-void EXT_FUNC ApplyMultiDamage_api(entvars_t *pevInflictor, entvars_t *pevAttacker)
+EXT_FUNC void ApplyMultiDamage_api(entvars_t *pevInflictor, entvars_t *pevAttacker)
 {
 	ApplyMultiDamage(pevInflictor, pevAttacker);
 }
 
-void EXT_FUNC AddMultiDamage_api(entvars_t *pevInflictor, CBaseEntity *pEntity, float flDamage, int bitsDamageType)
+EXT_FUNC void AddMultiDamage_api(entvars_t *pevInflictor, CBaseEntity *pEntity, float flDamage, int bitsDamageType)
 {
 	AddMultiDamage(pevInflictor, pEntity, flDamage, bitsDamageType);
 }

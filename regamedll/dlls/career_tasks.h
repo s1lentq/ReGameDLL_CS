@@ -35,6 +35,7 @@ class CCareerTask
 public:
 	CCareerTask() {};
 	CCareerTask(const char *taskName, GameEventType event, const char *weaponName, int n, bool mustLive, bool crossRounds, int id, bool isComplete);
+
 public:
 	virtual void OnEvent(GameEventType event, CBasePlayer *pAttacker, CBasePlayer *pVictim);
 	virtual void Reset();
@@ -72,15 +73,23 @@ private:
 	bool m_vip;
 };
 
-typedef std::STD_LIST<CCareerTask *> CareerTaskList;
+typedef std::list<CCareerTask *> CareerTaskList;
 typedef CareerTaskList::iterator CareerTaskListIt;
 
-typedef CCareerTask *(*TaskFactoryFunction)(const char *taskName, GameEventType event, const char *weaponName, int eventCount, bool mustLive, bool crossRounds, int nextId, bool isComplete);
+using TaskFactoryFunction = CCareerTask *(*)(const char *taskName, GameEventType event, const char *weaponName, int eventCount, bool mustLive, bool crossRounds, int nextId, bool isComplete);
+
+struct TaskInfo
+{
+	const char *taskName;
+	GameEventType event;
+	TaskFactoryFunction factory;
+};
 
 class CPreventDefuseTask: public CCareerTask
 {
 public:
 	CPreventDefuseTask(const char *taskName, GameEventType event, const char *weaponName, int n, bool mustLive, bool crossRounds, int id, bool isComplete);
+
 public:
 	virtual void OnEvent(GameEventType event, CBasePlayer *pAttacker, CBasePlayer *pVictim);
 	virtual void Reset();
@@ -124,6 +133,8 @@ public:
 	void UnlatchRoundEndMessage();
 
 private:
+	static const TaskInfo m_taskInfo[];
+
 	CareerTaskList m_tasks;
 
 	int m_nextId;
@@ -134,13 +145,6 @@ private:
 	int m_finishedTaskRound;
 	GameEventType m_roundEndMessage;
 	bool m_shouldLatchRoundEndMessage;
-};
-
-struct TaskInfo
-{
-	const char *taskName;
-	GameEventType event;
-	TaskFactoryFunction factory;
 };
 
 extern CCareerTaskManager *TheCareerTasks;

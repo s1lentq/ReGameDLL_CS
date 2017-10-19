@@ -1,15 +1,6 @@
 #include "precompiled.h"
-#include "game_shared/simple_checksum.h"
-
-/*
-* Globals initialization
-*/
-#ifndef HOOK_GAMEDLL
 
 BotProfileManager *TheBotProfiles = nullptr;
-char *BotDifficultyName[] = { "EASY", "NORMAL", "HARD", "EXPERT", nullptr };
-
-#endif
 
 // Generates a filename-decorated skin name
 const char *GetDecoratedSkinName(const char *name, const char *filename)
@@ -78,6 +69,8 @@ BotProfileManager::BotProfileManager()
 // Load the bot profile database
 void BotProfileManager::Init(const char *filename, unsigned int *checksum)
 {
+	static const char *BotDifficultyName[] = { "EASY", "NORMAL", "HARD", "EXPERT", nullptr };
+
 	int dataLength;
 	char *dataPointer = (char *)LOAD_FILE_FOR_ME(const_cast<char *>(filename), &dataLength);
 	char *dataFile = dataPointer;

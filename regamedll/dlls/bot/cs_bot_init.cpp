@@ -1,45 +1,66 @@
+/*
+*
+*   This program is free software; you can redistribute it and/or modify it
+*   under the terms of the GNU General Public License as published by the
+*   Free Software Foundation; either version 2 of the License, or (at
+*   your option) any later version.
+*
+*   This program is distributed in the hope that it will be useful, but
+*   WITHOUT ANY WARRANTY; without even the implied warranty of
+*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+*   General Public License for more details.
+*
+*   You should have received a copy of the GNU General Public License
+*   along with this program; if not, write to the Free Software Foundation,
+*   Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*
+*   In addition, as a special exception, the author gives permission to
+*   link the code of this program with the Half-Life Game Engine ("HL
+*   Engine") and Modified Game Libraries ("MODs") developed by Valve,
+*   L.L.C ("Valve").  You must obey the GNU General Public License in all
+*   respects for all of the code used other than the HL Engine and MODs
+*   from Valve.  If you modify this file, you may extend this exception
+*   to your version of the file, but you are not obligated to do so.  If
+*   you do not wish to do so, delete this exception statement from your
+*   version.
+*
+*/
+
 #include "precompiled.h"
 
-/*
-* Globals initialization
-*/
-#ifndef HOOK_GAMEDLL
-
-cvar_t cv_bot_traceview = { "bot_traceview", "0", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t cv_bot_stop = { "bot_stop", "0", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t cv_bot_show_nav = { "bot_show_nav", "0", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t cv_bot_show_danger = { "bot_show_danger", "0", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t cv_bot_nav_edit = { "bot_nav_edit", "0", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t cv_bot_nav_zdraw = { "bot_nav_zdraw", "4", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t cv_bot_walk = { "bot_walk", "0", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t cv_bot_difficulty = { "bot_difficulty", "0", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t cv_bot_debug = { "bot_debug", "0", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t cv_bot_quicksave = { "bot_quicksave", "0", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t cv_bot_quota = { "bot_quota", "0", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t cv_bot_quota_match = { "bot_quota_match", "0", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t cv_bot_prefix = { "bot_prefix", "", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t cv_bot_allow_rogues = { "bot_allow_rogues", "1", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t cv_bot_allow_pistols = { "bot_allow_pistols", "1", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t cv_bot_allow_shotguns = { "bot_allow_shotguns", "1", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_traceview              = { "bot_traceview", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_stop                   = { "bot_stop", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_show_nav               = { "bot_show_nav", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_show_danger            = { "bot_show_danger", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_nav_edit               = { "bot_nav_edit", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_nav_zdraw              = { "bot_nav_zdraw", "4", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_walk                   = { "bot_walk", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_difficulty             = { "bot_difficulty", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_debug                  = { "bot_debug", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_quicksave              = { "bot_quicksave", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_quota                  = { "bot_quota", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_quota_match            = { "bot_quota_match", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_prefix                 = { "bot_prefix", "", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_allow_rogues           = { "bot_allow_rogues", "1", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_allow_pistols          = { "bot_allow_pistols", "1", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_allow_shotguns         = { "bot_allow_shotguns", "1", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t cv_bot_allow_sub_machine_guns = { "bot_allow_sub_machine_guns", "1", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t cv_bot_allow_rifles = { "bot_allow_rifles", "1", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t cv_bot_allow_machine_guns = { "bot_allow_machine_guns", "1", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t cv_bot_allow_grenades = { "bot_allow_grenades", "1", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t cv_bot_allow_snipers = { "bot_allow_snipers", "1", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t cv_bot_allow_shield = { "bot_allow_shield", "1", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t cv_bot_join_team = { "bot_join_team", "any", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t cv_bot_join_after_player = { "bot_join_after_player", "1", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t cv_bot_auto_vacate = { "bot_auto_vacate", "1", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t cv_bot_zombie = { "bot_zombie", "0", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t cv_bot_defer_to_human = { "bot_defer_to_human", "0", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t cv_bot_chatter = { "bot_chatter", "normal", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t cv_bot_profile_db = { "bot_profile_db", "BotProfile.db", FCVAR_SERVER, 0.0f, nullptr };
-
-#endif
+cvar_t cv_bot_allow_rifles           = { "bot_allow_rifles", "1", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_allow_machine_guns     = { "bot_allow_machine_guns", "1", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_allow_grenades         = { "bot_allow_grenades", "1", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_allow_snipers          = { "bot_allow_snipers", "1", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_allow_shield           = { "bot_allow_shield", "1", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_join_team              = { "bot_join_team", "any", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_join_after_player      = { "bot_join_after_player", "1", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_auto_vacate            = { "bot_auto_vacate", "1", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_zombie                 = { "bot_zombie", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_defer_to_human         = { "bot_defer_to_human", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_chatter                = { "bot_chatter", "normal", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_profile_db             = { "bot_profile_db", "BotProfile.db", FCVAR_SERVER, 0.0f, nullptr };
 
 #ifdef REGAMEDLL_ADD
-cvar_t cv_bot_deathmatch = { "bot_deathmatch", "0", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t cv_bot_quota_mode = { "bot_quota_mode", "normal", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_deathmatch             = { "bot_deathmatch", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_quota_mode             = { "bot_quota_mode", "normal", FCVAR_SERVER, 0.0f, nullptr };
 #endif
 
 void InstallBotControl()

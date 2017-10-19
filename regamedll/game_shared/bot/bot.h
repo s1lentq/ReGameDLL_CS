@@ -30,6 +30,12 @@
 
 #include "gamerules.h"
 
+// 30 times per second, just like human clients
+constexpr float g_flBotCommandInterval = 1.0 / 30.0;
+
+// full AI only 10 times per second
+constexpr float g_flBotFullThinkInterval = 1.0 / 10.0;
+
 class BotProfile;
 
 template <class T, class TWrap>
@@ -407,9 +413,6 @@ inline CBot::BotRelationshipTeam CBot::BotRelationship(CBasePlayer *pTarget) con
 
 	return pTarget->m_iTeam == m_iTeam ? BOT_TEAMMATE : BOT_ENEMY;
 }
-
-extern float g_flBotCommandInterval;
-extern float g_flBotFullThinkInterval;
 
 extern const char *BotArgs[4];
 extern bool UseBotArgs;

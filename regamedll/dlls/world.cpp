@@ -4,11 +4,6 @@ edict_t *g_pBodyQueueHead;
 CGlobalState gGlobalState;
 float g_flWeaponCheat;
 
-/*
-* Globals initialization
-*/
-#ifndef HOOK_GAMEDLL
-
 DLL_DECALLIST gDecals[] =
 {
 	DEFINE_DECAL("{shot1"),		// DECAL_GUNSHOT1
@@ -54,20 +49,6 @@ DLL_DECALLIST gDecals[] =
 	DEFINE_DECAL("{mommablob"),	// DECAL_MOMMABIRTH		// BM Birth spray
 	DEFINE_DECAL("{mommablob"),	// DECAL_MOMMASPLAT		// BM Mortar spray?? need decal*/
 };
-
-TYPEDESCRIPTION CGlobalState::m_SaveData[] =
-{
-	DEFINE_FIELD(CGlobalState, m_listCount, FIELD_INTEGER)
-};
-
-TYPEDESCRIPTION gGlobalEntitySaveData[] =
-{
-	DEFINE_ARRAY(globalentity_t, name, FIELD_CHARACTER, 64),
-	DEFINE_ARRAY(globalentity_t, levelName, FIELD_CHARACTER, 32),
-	DEFINE_FIELD(globalentity_t, state, FIELD_INTEGER)
-};
-
-#endif // HOOK_GAMEDLL
 
 char g_szMapBriefingText[512];
 
@@ -225,193 +206,6 @@ void ClearBodyQue()
 	;
 }
 
-CGlobalState::CGlobalState()
-{
-	Reset();
-}
-
-void CGlobalState::Reset()
-{
-	m_pList = nullptr;
-	m_listCount = 0;
-}
-
-globalentity_t *CGlobalState::Find(string_t globalname)
-{
-	if (!globalname)
-		return nullptr;
-
-	globalentity_t *pTest = m_pList;
-	const char *pEntityName = STRING(globalname);
-
-	while (pTest)
-	{
-		if (!Q_strcmp(pEntityName, pTest->name))
-			break;
-
-		pTest = pTest->pNext;
-	}
-
-	return pTest;
-}
-
-// This is available all the time now on impulse 104, remove later
-void CGlobalState::DumpGlobals()
-{
-	static char *estates[] = { "Off", "On", "Dead" };
-	globalentity_t *pTest;
-
-	ALERT(at_console, "-- Globals --\n");
-	pTest = m_pList;
-
-	while (pTest)
-	{
-		ALERT(at_console, "%s: %s (%s)\n", pTest->name, pTest->levelName, estates[ pTest->state ]);
-		pTest = pTest->pNext;
-	}
-}
-
-void CGlobalState::EntityAdd(string_t globalname, string_t mapName, GLOBALESTATE state)
-{
-	assert(!Find(globalname));
-
-	globalentity_t *pNewEntity = (globalentity_t *)calloc(sizeof(globalentity_t), 1);
-	assert(pNewEntity != nullptr);
-
-	pNewEntity->pNext = m_pList;
-	m_pList = pNewEntity;
-	Q_strcpy(pNewEntity->name, STRING(globalname));
-	Q_strcpy(pNewEntity->levelName, STRING(mapName));
-	pNewEntity->state = state;
-
-	m_listCount++;
-}
-
-void CGlobalState::EntitySetState(string_t globalname, GLOBALESTATE state)
-{
-	globalentity_t *pEnt = Find(globalname);
-	if (pEnt)
-	{
-		pEnt->state = state;
-	}
-}
-
-const globalentity_t *CGlobalState::EntityFromTable(string_t globalname)
-{
-	globalentity_t *pEnt = Find(globalname);
-
-	return pEnt;
-}
-
-GLOBALESTATE CGlobalState::EntityGetState(string_t globalname)
-{
-	globalentity_t *pEnt = Find(globalname);
-	if (pEnt)
-	{
-		return pEnt->state;
-	}
-
-	return GLOBAL_OFF;
-}
-
-int CGlobalState::Save(CSave &save)
-{
-	int i;
-	globalentity_t *pEntity;
-
-	if (!save.WriteFields("GLOBAL", this, IMPL(m_SaveData), ARRAYSIZE(IMPL(m_SaveData))))
-	{
-		return 0;
-	}
-
-	pEntity = m_pList;
-	for (i = 0; i < m_listCount && pEntity; i++)
-	{
-		if (!save.WriteFields("GENT", pEntity, gGlobalEntitySaveData, ARRAYSIZE(gGlobalEntitySaveData)))
-		{
-			return 0;
-		}
-
-		pEntity = pEntity->pNext;
-	}
-
-	return 1;
-}
-
-int CGlobalState::Restore(CRestore &restore)
-{
-	int i, listCount;
-	globalentity_t tmpEntity;
-
-	ClearStates();
-
-	if (!restore.ReadFields("GLOBAL", this, IMPL(m_SaveData), ARRAYSIZE(IMPL(m_SaveData))))
-	{
-		return 0;
-	}
-
-	// Get new list count
-	listCount = m_listCount;
-
-	// Clear loaded data
-	m_listCount = 0;
-
-	for (i = 0; i < listCount; ++i)
-	{
-		if (!restore.ReadFields("GENT", &tmpEntity, gGlobalEntitySaveData, ARRAYSIZE(gGlobalEntitySaveData)))
-		{
-			return 0;
-		}
-
-		EntityAdd(MAKE_STRING(tmpEntity.name), MAKE_STRING(tmpEntity.levelName), tmpEntity.state);
-	}
-
-	return 1;
-}
-
-void CGlobalState::EntityUpdate(string_t globalname, string_t mapname)
-{
-	globalentity_t *pEnt = Find(globalname);
-	if (pEnt)
-	{
-		Q_strcpy(pEnt->levelName, STRING(mapname));
-	}
-}
-
-void CGlobalState::ClearStates()
-{
-	globalentity_t *pFree = m_pList;
-	while (pFree)
-	{
-		globalentity_t *pNext = pFree->pNext;
-
-		free(pFree);
-		pFree = pNext;
-	}
-
-	Reset();
-}
-
-void EXT_FUNC SaveGlobalState(SAVERESTOREDATA *pSaveData)
-{
-	CSave saveHelper(pSaveData);
-	gGlobalState.Save(saveHelper);
-}
-
-void EXT_FUNC RestoreGlobalState(SAVERESTOREDATA *pSaveData)
-{
-	CRestore restoreHelper(pSaveData);
-	gGlobalState.Restore(restoreHelper);
-}
-
-void EXT_FUNC ResetGlobalState()
-{
-	gGlobalState.ClearStates();
-
-	// Init the HUD on a new game / load game
-	gInitHUD = TRUE;
-}
-
 LINK_ENTITY_TO_CLASS(worldspawn, CWorld, CCSWorld)
 
 void CWorld::Spawn()
@@ -432,7 +226,7 @@ void CWorld::Spawn()
 	if (pFile && flength)
 	{
 		Q_strncpy(g_szMapBriefingText, pFile, ARRAYSIZE(g_szMapBriefingText) - 2);
-		g_szMapBriefingText[ ARRAYSIZE(g_szMapBriefingText) - 2 ] = '\0';
+		g_szMapBriefingText[ARRAYSIZE(g_szMapBriefingText) - 2] = '\0';
 
 		PRECACHE_GENERIC(szMapBriefingFile);
 	}
@@ -442,7 +236,7 @@ void CWorld::Spawn()
 		if (pFile && flength)
 		{
 			Q_strncpy(g_szMapBriefingText, pFile, ARRAYSIZE(g_szMapBriefingText) - 2);
-			g_szMapBriefingText[ ARRAYSIZE(g_szMapBriefingText) - 2 ] = '\0';
+			g_szMapBriefingText[ARRAYSIZE(g_szMapBriefingText) - 2] = '\0';
 
 			PRECACHE_GENERIC("maps/default.txt");
 		}

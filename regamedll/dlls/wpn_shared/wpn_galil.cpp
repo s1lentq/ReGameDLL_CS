@@ -12,6 +12,7 @@ void CGalil::Spawn()
 	m_iDefaultAmmo = GALIL_DEFAULT_GIVE;
 
 	FallInit();
+	CSPlayerItem()->SetItemInfo(&m_ItemInfoArray[m_iId]);
 }
 
 void CGalil::Precache()

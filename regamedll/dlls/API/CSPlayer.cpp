@@ -28,15 +28,7 @@
 
 #include "precompiled.h"
 
-void EXT_FUNC CCSEntity::FireBullets(int iShots, Vector &vecSrc, Vector &vecDirShooting, Vector &vecSpread, float flDistance, int iBulletType, int iTracerFreq, int iDamage, entvars_t *pevAttacker) {
-	m_pContainingEntity->FireBullets(iShots, vecSrc, vecDirShooting, vecSpread, flDistance, iBulletType, iTracerFreq, iDamage, pevAttacker);
-};
-
-Vector EXT_FUNC CCSEntity::FireBullets3(Vector &vecSrc, Vector &vecDirShooting, float vecSpread, float flDistance, int iPenetration, int iBulletType, int iDamage, float flRangeModifier, entvars_t *pevAttacker, bool bPistol, int shared_rand) {
-	return m_pContainingEntity->FireBullets3(vecSrc, vecDirShooting, vecSpread, flDistance, iPenetration, iBulletType, iDamage, flRangeModifier, pevAttacker, bPistol, shared_rand);
-};
-
-bool EXT_FUNC CCSPlayer::JoinTeam(TeamName team)
+EXT_FUNC bool CCSPlayer::JoinTeam(TeamName team)
 {
 	CBasePlayer *pPlayer = BasePlayer();
 	switch (team)
@@ -140,7 +132,7 @@ bool EXT_FUNC CCSPlayer::JoinTeam(TeamName team)
 	return true;
 }
 
-bool EXT_FUNC CCSPlayer::RemovePlayerItem(const char *pszItemName)
+EXT_FUNC bool CCSPlayer::RemovePlayerItem(const char *pszItemName)
 {
 	if (!pszItemName)
 		return false;
@@ -148,7 +140,8 @@ bool EXT_FUNC CCSPlayer::RemovePlayerItem(const char *pszItemName)
 	CBasePlayer *pPlayer = BasePlayer();
 
 	// if it item_ ?
-	if (pszItemName[0] == 'i') {
+	if (pszItemName[0] == 'i')
+	{
 		pszItemName += sizeof("item_") - 1;
 
 		// item_thighpack
@@ -208,7 +201,8 @@ bool EXT_FUNC CCSPlayer::RemovePlayerItem(const char *pszItemName)
 		return true;
 	}
 
-	else if (FStrEq(pszItemName, "weapon_shield")) {
+	else if (FStrEq(pszItemName, "weapon_shield"))
+	{
 		if (!pPlayer->HasShield())
 			return false;
 
@@ -223,7 +217,7 @@ bool EXT_FUNC CCSPlayer::RemovePlayerItem(const char *pszItemName)
 
 			if (pWeapon->m_iId == WEAPON_HEGRENADE || pWeapon->m_iId == WEAPON_FLASHBANG || pWeapon->m_iId == WEAPON_SMOKEGRENADE)
 			{
-				if (pPlayer->m_rgAmmo[ pWeapon->m_iPrimaryAmmoType ] <= 0)
+				if (pPlayer->m_rgAmmo[pWeapon->m_iPrimaryAmmoType] <= 0)
 					g_pGameRules->GetNextBestWeapon(pPlayer, pWeapon);
 			}
 
@@ -274,7 +268,7 @@ bool EXT_FUNC CCSPlayer::RemovePlayerItem(const char *pszItemName)
 	return false;
 }
 
-CBaseEntity *EXT_FUNC CCSPlayer::GiveNamedItemEx(const char *pszName)
+EXT_FUNC CBaseEntity *CCSPlayer::GiveNamedItemEx(const char *pszName)
 {
 	CBasePlayer *pPlayer = BasePlayer();
 
@@ -294,41 +288,192 @@ CBaseEntity *EXT_FUNC CCSPlayer::GiveNamedItemEx(const char *pszName)
 	return pPlayer->GiveNamedItemEx(pszName);
 }
 
-bool EXT_FUNC CCSPlayer::IsConnected() const { return m_pContainingEntity->has_disconnected == false; }
-void EXT_FUNC CCSPlayer::SetAnimation(PLAYER_ANIM playerAnim) { BasePlayer()->SetAnimation(playerAnim); }
-void EXT_FUNC CCSPlayer::AddAccount(int amount, RewardType type, bool bTrackChange) { BasePlayer()->AddAccount(amount, type, bTrackChange); }
-CBaseEntity *EXT_FUNC CCSPlayer::GiveNamedItem(const char *pszName) { return BasePlayer()->GiveNamedItem(pszName); }
-void EXT_FUNC CCSPlayer::GiveDefaultItems() { BasePlayer()->GiveDefaultItems(); }
-void EXT_FUNC CCSPlayer::GiveShield(bool bDeploy) { BasePlayer()->GiveShield(bDeploy); }
-void EXT_FUNC CCSPlayer::DropShield(bool bDeploy) { BasePlayer()->DropShield(bDeploy); }
-void EXT_FUNC CCSPlayer::DropPlayerItem(const char *pszItemName) { BasePlayer()->DropPlayerItem(pszItemName); }
-void EXT_FUNC CCSPlayer::RemoveShield() { BasePlayer()->RemoveShield(); }
-void EXT_FUNC CCSPlayer::RemoveAllItems(bool bRemoveSuit) { BasePlayer()->RemoveAllItems(bRemoveSuit ? TRUE : FALSE); }
-void EXT_FUNC CCSPlayer::SetPlayerModel(bool bHasC4) { BasePlayer()->SetPlayerModel(bHasC4 ? TRUE : FALSE); }
-void EXT_FUNC CCSPlayer::SetPlayerModelEx(const char *modelName) { Q_strncpy(m_szModel, modelName, sizeof(m_szModel) - 1); m_szModel[sizeof(m_szModel) - 1] = '\0'; };
-void EXT_FUNC CCSPlayer::SetNewPlayerModel(const char *modelName) { BasePlayer()->SetNewPlayerModel(STRING(ALLOC_STRING(modelName))); }
-void EXT_FUNC CCSPlayer::ClientCommand(const char *cmd, const char *arg1, const char *arg2, const char *arg3) { BasePlayer()->ClientCommand(cmd, arg1, arg2, arg3); }
-void EXT_FUNC CCSPlayer::SetProgressBarTime(int time) { BasePlayer()->SetProgressBarTime(time); }
-void EXT_FUNC CCSPlayer::SetProgressBarTime2(int time, float timeElapsed) { BasePlayer()->SetProgressBarTime2(time, timeElapsed); }
-edict_t *EXT_FUNC CCSPlayer::EntSelectSpawnPoint() { return BasePlayer()->EntSelectSpawnPoint(); }
-void EXT_FUNC CCSPlayer::SendItemStatus() { BasePlayer()->SendItemStatus(); }
-void EXT_FUNC CCSPlayer::SetBombIcon(bool bFlash) { BasePlayer()->SetBombIcon(bFlash ? TRUE : FALSE); }
-void EXT_FUNC CCSPlayer::SetScoreAttrib(CBasePlayer *dest) { BasePlayer()->SetScoreAttrib(dest); }
-void EXT_FUNC CCSPlayer::ReloadWeapons(CBasePlayerItem *pWeapon, bool bForceReload, bool bForceRefill) { BasePlayer()->ReloadWeapons(pWeapon, bForceReload, bForceRefill); }
-void EXT_FUNC CCSPlayer::Observer_SetMode(int iMode) { BasePlayer()->Observer_SetMode(iMode); }
-bool EXT_FUNC CCSPlayer::SelectSpawnSpot(const char *pEntClassName, CBaseEntity *&pSpot) { return BasePlayer()->SelectSpawnSpot(pEntClassName, pSpot); }
-bool EXT_FUNC CCSPlayer::SwitchWeapon(CBasePlayerItem *pWeapon) { return BasePlayer()->SwitchWeapon(pWeapon) != FALSE; }
-void EXT_FUNC CCSPlayer::SwitchTeam() { BasePlayer()->SwitchTeam(); }
-void EXT_FUNC CCSPlayer::StartObserver(Vector& vecPosition, Vector& vecViewAngle) { BasePlayer()->StartObserver(vecPosition, vecViewAngle); }
-void EXT_FUNC CCSPlayer::TeamChangeUpdate() { BasePlayer()->TeamChangeUpdate(); }
-void EXT_FUNC CCSPlayer::DropSecondary() { BasePlayer()->DropSecondary(); }
-void EXT_FUNC CCSPlayer::DropPrimary() { BasePlayer()->DropPrimary(); }
-bool EXT_FUNC CCSPlayer::HasPlayerItem(CBasePlayerItem *pCheckItem) { return BasePlayer()->HasPlayerItem(pCheckItem); }
-bool EXT_FUNC CCSPlayer::HasNamedPlayerItem(const char *pszItemName) { return BasePlayer()->HasNamedPlayerItem(pszItemName); }
-CBasePlayerItem *EXT_FUNC CCSPlayer::GetItemById(WeaponIdType weaponID) { return BasePlayer()->GetItemById(weaponID); }
-CBasePlayerItem *EXT_FUNC CCSPlayer::GetItemByName(const char *itemName) { return BasePlayer()->GetItemByName(itemName); }
-void EXT_FUNC CCSPlayer::Disappear() { BasePlayer()->Disappear(); }
-void EXT_FUNC CCSPlayer::MakeVIP() { BasePlayer()->MakeVIP(); }
-bool EXT_FUNC CCSPlayer::MakeBomber() { return BasePlayer()->MakeBomber(); }
-void EXT_FUNC CCSPlayer::ResetSequenceInfo() { BasePlayer()->ResetSequenceInfo(); }
-void EXT_FUNC CCSPlayer::StartDeathCam() { BasePlayer()->StartDeathCam(); }
+EXT_FUNC bool CCSPlayer::IsConnected() const
+{
+	return m_pContainingEntity->has_disconnected == false;
+}
+
+EXT_FUNC void CCSPlayer::SetAnimation(PLAYER_ANIM playerAnim)
+{
+	BasePlayer()->SetAnimation(playerAnim);
+}
+
+EXT_FUNC void CCSPlayer::AddAccount(int amount, RewardType type, bool bTrackChange)
+{
+	BasePlayer()->AddAccount(amount, type, bTrackChange);
+}
+
+EXT_FUNC CBaseEntity *CCSPlayer::GiveNamedItem(const char *pszName)
+{
+	return BasePlayer()->GiveNamedItem(pszName);
+}
+
+EXT_FUNC void CCSPlayer::GiveDefaultItems()
+{
+	BasePlayer()->GiveDefaultItems();
+}
+
+EXT_FUNC void CCSPlayer::GiveShield(bool bDeploy)
+{
+	BasePlayer()->GiveShield(bDeploy);
+}
+
+EXT_FUNC void CCSPlayer::DropShield(bool bDeploy)
+{
+	BasePlayer()->DropShield(bDeploy);
+}
+
+EXT_FUNC void CCSPlayer::DropPlayerItem(const char *pszItemName)
+{
+	BasePlayer()->DropPlayerItem(pszItemName);
+}
+
+EXT_FUNC void CCSPlayer::RemoveShield()
+{
+	BasePlayer()->RemoveShield();
+}
+
+EXT_FUNC void CCSPlayer::RemoveAllItems(bool bRemoveSuit)
+{
+	BasePlayer()->RemoveAllItems(bRemoveSuit ? TRUE : FALSE);
+}
+
+EXT_FUNC void CCSPlayer::SetPlayerModel(bool bHasC4)
+{
+	BasePlayer()->SetPlayerModel(bHasC4 ? TRUE : FALSE);
+}
+
+EXT_FUNC void CCSPlayer::SetPlayerModelEx(const char *modelName)
+{
+	Q_strlcpy(m_szModel, modelName);
+}
+
+EXT_FUNC void CCSPlayer::SetNewPlayerModel(const char *modelName)
+{
+	BasePlayer()->SetNewPlayerModel(STRING(ALLOC_STRING(modelName)));
+}
+
+EXT_FUNC void CCSPlayer::ClientCommand(const char *cmd, const char *arg1, const char *arg2, const char *arg3)
+{
+	BasePlayer()->ClientCommand(cmd, arg1, arg2, arg3);
+}
+
+EXT_FUNC void CCSPlayer::SetProgressBarTime(int time)
+{
+	BasePlayer()->SetProgressBarTime(time);
+}
+
+EXT_FUNC void CCSPlayer::SetProgressBarTime2(int time, float timeElapsed)
+{
+	BasePlayer()->SetProgressBarTime2(time, timeElapsed);
+}
+
+EXT_FUNC edict_t *CCSPlayer::EntSelectSpawnPoint()
+{
+	return BasePlayer()->EntSelectSpawnPoint();
+}
+
+EXT_FUNC void CCSPlayer::SendItemStatus()
+{
+	BasePlayer()->SendItemStatus();
+}
+
+EXT_FUNC void CCSPlayer::SetBombIcon(bool bFlash)
+{
+	BasePlayer()->SetBombIcon(bFlash ? TRUE : FALSE);
+}
+
+EXT_FUNC void CCSPlayer::SetScoreAttrib(CBasePlayer *dest)
+{
+	BasePlayer()->SetScoreAttrib(dest);
+}
+
+EXT_FUNC void CCSPlayer::ReloadWeapons(CBasePlayerItem *pWeapon, bool bForceReload, bool bForceRefill)
+{
+	BasePlayer()->ReloadWeapons(pWeapon, bForceReload, bForceRefill);
+}
+
+EXT_FUNC void CCSPlayer::Observer_SetMode(int iMode)
+{
+	BasePlayer()->Observer_SetMode(iMode);
+}
+
+EXT_FUNC bool CCSPlayer::SelectSpawnSpot(const char *pEntClassName, CBaseEntity *&pSpot)
+{
+	return BasePlayer()->SelectSpawnSpot(pEntClassName, pSpot);
+}
+
+EXT_FUNC bool CCSPlayer::SwitchWeapon(CBasePlayerItem *pWeapon)
+{
+	return BasePlayer()->SwitchWeapon(pWeapon) != FALSE;
+}
+
+EXT_FUNC void CCSPlayer::SwitchTeam()
+{
+	BasePlayer()->SwitchTeam();
+}
+
+EXT_FUNC void CCSPlayer::StartObserver(Vector& vecPosition, Vector& vecViewAngle)
+{
+	BasePlayer()->StartObserver(vecPosition, vecViewAngle);
+}
+
+EXT_FUNC void CCSPlayer::TeamChangeUpdate()
+{
+	BasePlayer()->TeamChangeUpdate();
+}
+
+EXT_FUNC void CCSPlayer::DropSecondary()
+{
+	BasePlayer()->DropSecondary();
+}
+
+EXT_FUNC void CCSPlayer::DropPrimary()
+{
+	BasePlayer()->DropPrimary();
+}
+
+EXT_FUNC bool CCSPlayer::HasPlayerItem(CBasePlayerItem *pCheckItem)
+{
+	return BasePlayer()->HasPlayerItem(pCheckItem);
+}
+
+EXT_FUNC bool CCSPlayer::HasNamedPlayerItem(const char *pszItemName)
+{
+	return BasePlayer()->HasNamedPlayerItem(pszItemName);
+}
+
+EXT_FUNC CBasePlayerItem *CCSPlayer::GetItemById(WeaponIdType weaponID)
+{
+	return BasePlayer()->GetItemById(weaponID);
+}
+
+EXT_FUNC CBasePlayerItem *CCSPlayer::GetItemByName(const char *itemName)
+{
+	return BasePlayer()->GetItemByName(itemName);
+}
+
+EXT_FUNC void CCSPlayer::Disappear()
+{
+	BasePlayer()->Disappear();
+}
+
+EXT_FUNC void CCSPlayer::MakeVIP()
+{
+	BasePlayer()->MakeVIP();
+}
+
+EXT_FUNC bool CCSPlayer::MakeBomber()
+{
+	return BasePlayer()->MakeBomber();
+}
+
+EXT_FUNC void CCSPlayer::ResetSequenceInfo()
+{
+	BasePlayer()->ResetSequenceInfo();
+}
+
+EXT_FUNC void CCSPlayer::StartDeathCam()
+{
+	BasePlayer()->StartDeathCam();
+}

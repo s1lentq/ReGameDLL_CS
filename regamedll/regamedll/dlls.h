@@ -28,21 +28,19 @@
 
 #include "extdll.h"
 
-#define CUSTOM_MEMBER
-
-#if defined(REGAMEDLL_ADD) && !defined(HOOK_GAMEDLL)
+#ifdef REGAMEDLL_ADD
 #define VFUNC virtual
 #else
 #define VFUNC
 #endif
 
-// declared virtual function's and globals for hooks
-#ifdef HOOK_GAMEDLL
-#include "hooker_impl.h"
+#ifdef REGAMEDLL_API
+using VectorRef = Vector&;
+using FloatRef = float&;
 #else
-typedef Vector& VectorRef;
-typedef float& FloatRef;
-#endif // HOOK_GAMEDLL
+using VectorRef = Vector;
+using FloatRef = float;
+#endif
 
 #include "archtypes.h"
 #include "enginecallback.h"
@@ -62,7 +60,7 @@ typedef float& FloatRef;
 // GameInit
 #include "game.h"
 
-//PM
+// PM
 #include "pm_shared/pm_defs.h"
 #include "pm_shared/pm_materials.h"
 #include "pm_shared/pm_movevars.h"

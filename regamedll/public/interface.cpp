@@ -220,7 +220,7 @@ void *InitializeInterface(char const *interfaceName, CreateInterfaceFn *factoryL
 
 	for (int i = 0; i < numFactories; i++)
 	{
-		CreateInterfaceFn factory = factoryList[ i ];
+		CreateInterfaceFn factory = factoryList[i];
 		if (!factory)
 			continue;
 

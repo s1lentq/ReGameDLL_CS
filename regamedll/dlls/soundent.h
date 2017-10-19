@@ -105,7 +105,7 @@ public:
 	BOOL m_fShowReport;			// if true, dump information about free/active sounds.
 
 private:
-	CSound m_SoundPool[ MAX_WORLD_SOUNDS ];
+	CSound m_SoundPool[MAX_WORLD_SOUNDS];
 };
 
 extern CSoundEnt *pSoundEnt;

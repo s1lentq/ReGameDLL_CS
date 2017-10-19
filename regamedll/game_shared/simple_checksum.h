@@ -26,11 +26,7 @@
 *
 */
 
-#ifndef SIMPLE_CHECKSUM_H
-#define SIMPLE_CHECKSUM_H
-#ifdef _WIN32
 #pragma once
-#endif
 
 // Compute a simple checksum for the given data.
 // Each byte in the data is multiplied by its position to track re-ordering changes
@@ -45,5 +41,3 @@ inline unsigned int ComputeSimpleChecksum(const unsigned char *dataPointer, int 
 
 	return checksum;
 }
-
-#endif // SIMPLE_CHECKSUM_H

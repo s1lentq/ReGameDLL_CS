@@ -12,6 +12,7 @@ void CM3::Spawn()
 	m_iDefaultAmmo = M3_DEFAULT_GIVE;
 
 	FallInit();
+	CSPlayerItem()->SetItemInfo(&m_ItemInfoArray[m_iId]);
 }
 
 void CM3::Precache()

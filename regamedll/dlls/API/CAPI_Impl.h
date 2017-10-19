@@ -30,7 +30,86 @@
 
 #include "archtypes.h"
 #include "regamedll_api.h"
-#include "regamedll_interfaces_impl.h"
+
+#ifdef REGAMEDLL_API
+
+#define __API_HOOK(fname)\
+	fname##_OrigFunc
+
+#define LINK_HOOK_CLASS_VOID_CHAIN(className, functionName, args, ...)\
+	void className::functionName args {\
+		g_ReGameHookchains.m_##className##_##functionName.callChain(&className::functionName##_OrigFunc, this, __VA_ARGS__);\
+	}
+#define LINK_HOOK_CLASS_VOID_CHAIN2(className, functionName)\
+	void EXT_FUNC className::functionName() {\
+		g_ReGameHookchains.m_##className##_##functionName.callChain(&className::functionName##_OrigFunc, this);\
+	}
+
+#define LINK_HOOK_CLASS_CHAIN(ret, className, functionName, args, ...)\
+	ret className::functionName args {\
+		return g_ReGameHookchains.m_##className##_##functionName.callChain(&className::functionName##_OrigFunc, this, __VA_ARGS__);\
+	}
+#define LINK_HOOK_CLASS_CHAIN2(ret, className, functionName)\
+	ret className::functionName() {\
+		return g_ReGameHookchains.m_##className##_##functionName.callChain(&className::functionName##_OrigFunc, this);\
+	}
+
+#define LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN(className, customPrefix, functionName, args, ...)\
+	void className::functionName args {\
+		g_ReGameHookchains.m_##customPrefix##_##functionName.callChain(&className::functionName##_OrigFunc, this, __VA_ARGS__);\
+	}
+#define LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN2(className, customPrefix, functionName)\
+	void className::functionName() {\
+		g_ReGameHookchains.m_##customPrefix##_##functionName.callChain(&className::functionName##_OrigFunc, this);\
+	}
+
+#define LINK_HOOK_CLASS_CUSTOM_CHAIN(ret, className, customPrefix, functionName, args, ...)\
+	ret className::functionName args {\
+		return g_ReGameHookchains.m_##customPrefix##_##functionName.callChain(&className::functionName##_OrigFunc, this, __VA_ARGS__);\
+	}
+#define LINK_HOOK_CLASS_CUSTOM_CHAIN2(ret, className, customPrefix, functionName)\
+	ret className::functionName() {\
+		return g_ReGameHookchains.m_##customPrefix##_##functionName.callChain(&className::functionName##_OrigFunc, this);\
+	}
+
+#define LINK_HOOK_VOID_CHAIN(functionName, args, ...)\
+	void functionName args {\
+		g_ReGameHookchains.m_##functionName.callChain(functionName##_OrigFunc, __VA_ARGS__);\
+	}
+
+#define LINK_HOOK_CHAIN(ret, functionName, args, ...)\
+	ret functionName args {\
+		return g_ReGameHookchains.m_##functionName.callChain(functionName##_OrigFunc, __VA_ARGS__);\
+	}
+
+#define LINK_HOOK_VOID_CHAIN2(functionName)\
+	void functionName() {\
+		g_ReGameHookchains.m_##functionName.callChain(functionName##_OrigFunc);\
+	}
+
+#define LINK_HOOK_CHAIN2(ret, functionName)\
+	ret functionName() {\
+		return g_ReGameHookchains.m_##functionName.callChain(functionName##_OrigFunc);\
+	}
+#else
+
+#define __API_HOOK(fname)\
+	fname
+
+#define LINK_HOOK_CLASS_VOID_CHAIN(...)
+#define LINK_HOOK_CLASS_VOID_CHAIN2(...)
+#define LINK_HOOK_CLASS_CHAIN(...)
+#define LINK_HOOK_CLASS_CHAIN2(...)
+#define LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN(...)
+#define LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN2(...)
+#define LINK_HOOK_CLASS_CUSTOM_CHAIN(...)
+#define LINK_HOOK_CLASS_CUSTOM_CHAIN2(...)
+#define LINK_HOOK_VOID_CHAIN(...)
+#define LINK_HOOK_VOID_CHAIN2(...)
+#define LINK_HOOK_CHAIN(...)
+#define LINK_HOOK_CHAIN2(...)
+
+#endif // REGAMEDLL_API
 
 #define GAMEHOOK_REGISTRY(func)\
 	IReGameHookRegistry_##func *CReGameHookchains::func() { return &m_##func; }
@@ -541,22 +620,22 @@ extern ReGameFuncs_t g_ReGameApiFuncs;
 
 class CReGameApi: public IReGameApi {
 public:
-	virtual int GetMajorVersion();
-	virtual int GetMinorVersion();
+	EXT_FUNC virtual int GetMajorVersion();
+	EXT_FUNC virtual int GetMinorVersion();
 
-	virtual const ReGameFuncs_t *GetFuncs();
-	virtual IReGameHookchains *GetHookchains();
+	EXT_FUNC virtual const ReGameFuncs_t *GetFuncs();
+	EXT_FUNC virtual IReGameHookchains *GetHookchains();
 
-	virtual CGameRules *GetGameRules();
-	virtual WeaponInfoStruct *GetWeaponInfo(int weaponID);
-	virtual WeaponInfoStruct *GetWeaponInfo(const char *weaponName);
-	virtual playermove_t *GetPlayerMove();
-	virtual WeaponSlotInfo *GetWeaponSlot(WeaponIdType weaponID);
-	virtual WeaponSlotInfo *GetWeaponSlot(const char *weaponName);
-	virtual ItemInfo *GetItemInfo(WeaponIdType weaponID);
-	virtual AmmoInfo *GetAmmoInfo(AmmoType ammoID);
-	virtual AmmoInfoStruct *GetAmmoInfoEx(AmmoType ammoID);
-	virtual AmmoInfoStruct *GetAmmoInfoEx(const char *ammoName);
+	EXT_FUNC virtual CGameRules *GetGameRules();
+	EXT_FUNC virtual WeaponInfoStruct *GetWeaponInfo(int weaponID);
+	EXT_FUNC virtual WeaponInfoStruct *GetWeaponInfo(const char *weaponName);
+	EXT_FUNC virtual playermove_t *GetPlayerMove();
+	EXT_FUNC virtual WeaponSlotInfo *GetWeaponSlot(WeaponIdType weaponID);
+	EXT_FUNC virtual WeaponSlotInfo *GetWeaponSlot(const char *weaponName);
+	EXT_FUNC virtual ItemInfo *GetItemInfo(WeaponIdType weaponID);
+	EXT_FUNC virtual AmmoInfo *GetAmmoInfo(AmmoType ammoID);
+	EXT_FUNC virtual AmmoInfoStruct *GetAmmoInfoEx(AmmoType ammoID);
+	EXT_FUNC virtual AmmoInfoStruct *GetAmmoInfoEx(const char *ammoName);
 };
 
 void Regamedll_ChangeString_api(char *&dest, const char *source);

@@ -155,13 +155,12 @@ public:
 	BOOL IsLockedByMaster() { return FALSE; }
 
 public:
-	static CBaseEntity *Instance(edict_t *pent)
+	static CBaseEntity *Instance(edict_t *pEdict)
 	{
-		if (!pent)
-			pent = ENT(0);
+		if (!pEdict)
+			pEdict = ENT(0);
 
-		CBaseEntity *pEntity = (CBaseEntity *)GET_PRIVATE(pent);
-		return pEntity;
+		return GET_PRIVATE<CBaseEntity>(pEdict);
 	}
 
 	static CBaseEntity *Instance(entvars_t *pev) { return Instance(ENT(pev)); }
@@ -185,7 +184,7 @@ public:
 
 		return nullptr;
 	}
-	static CBaseEntity *Create(char *szName, const Vector &vecOrigin, const Vector &vecAngles, edict_t *pentOwner = nullptr);
+	static CBaseEntity *Create(const char *szName, const Vector &vecOrigin, const Vector &vecAngles, edict_t *pentOwner = nullptr);
 	edict_t *edict() { return ENT(pev); }
 	EOFFSET eoffset() { return OFFSET(pev); }
 	int entindex() { return ENTINDEX(edict()); }
@@ -199,7 +198,7 @@ public:
 	CBaseEntity *m_pGoalEnt;		// path corner we are heading towards
 	CBaseEntity *m_pLink;			// used for temporary link-list operations.
 
-	static TYPEDESCRIPTION IMPL(m_SaveData)[5];
+	static TYPEDESCRIPTION m_SaveData[];
 
 	// fundamental callbacks
 	void (CBaseEntity::*m_pfnThink)();
@@ -330,7 +329,7 @@ public:
 	void SUB_UseTargets(CBaseEntity *pActivator, USE_TYPE useType, float value);
 	void EXPORT DelayThink();
 public:
-	static TYPEDESCRIPTION IMPL(m_SaveData)[2];
+	static TYPEDESCRIPTION m_SaveData[];
 
 	float m_flDelay;
 	string_t m_iszKillTarget;
@@ -370,7 +369,7 @@ public:
 #endif
 
 public:
-	static TYPEDESCRIPTION IMPL(m_SaveData)[5];
+	static TYPEDESCRIPTION m_SaveData[];
 
 	// animation needs
 	float m_flFrameRate;		// computed FPS for current sequence
@@ -402,7 +401,7 @@ public:
 	static float AxisDelta(int flags, const Vector &angle1, const Vector &angle2);
 
 public:
-	static TYPEDESCRIPTION IMPL(m_SaveData)[19];
+	static TYPEDESCRIPTION m_SaveData[];
 
 	TOGGLE_STATE m_toggle_state;
 	float m_flActivateFinished;	// like attack_finished, but for doors
@@ -501,7 +500,7 @@ public:
 	BUTTON_CODE ButtonResponseToTouch();
 
 public:
-	static TYPEDESCRIPTION IMPL(m_SaveData)[8];
+	static TYPEDESCRIPTION m_SaveData[];
 
 	BOOL m_fStayPushed;				// button stays pushed in until touched again?
 	BOOL m_fRotating;				// a rotating button?  default is a sliding button.
@@ -541,7 +540,7 @@ public:
 	void EXPORT Register();
 
 public:
-	static TYPEDESCRIPTION IMPL(m_SaveData)[4];
+	static TYPEDESCRIPTION m_SaveData[];
 
 	EHandle m_rgEntities[MAX_MS_TARGETS];
 	int m_rgTriggered[MAX_MS_TARGETS];
@@ -575,9 +574,6 @@ T *GetClassPtr(T *a)
 		a->m_pEntity->m_pContainingEntity = a;
 #endif
 
-#if defined(HOOK_GAMEDLL) && defined(_WIN32) && !defined(REGAMEDLL_UNIT_TESTS)
-		VirtualTableInit((void *)a, stripClass(typeid(T).name()));
-#endif
 	}
 
 	return a;

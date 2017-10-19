@@ -20,13 +20,6 @@
 #include <unistd.h>
 #endif // _WIN32
 
-enum { MAX_BLOCKED_AREAS = 256 };
-
-/*
-* Globals initialization
-*/
-#ifndef HOOK_GAMEDLL
-
 unsigned int CNavArea::m_nextID = 1;
 unsigned int CNavArea::m_masterMarker = 1;
 
@@ -59,20 +52,15 @@ bool isPlacePainting = false;
 
 float editTimestamp = 0.0f;
 
+const int MAX_BLOCKED_AREAS = 256;
 unsigned int BlockedID[MAX_BLOCKED_AREAS];
 int BlockedIDCount = 0;
-
-#endif // HOOK_GAMEDLL
 
 NOXREF void buildGoodSizedList()
 {
 	const float minSize = 200.0f;
-
-	NavAreaList::iterator iter;
-	for (iter = TheNavAreaList.begin(); iter != TheNavAreaList.end(); iter++)
+	for (auto area : TheNavAreaList)
 	{
-		CNavArea *area = (*iter);
-
 		// skip the small areas
 		const Extent *extent = area->GetExtent();
 		if (extent->SizeX() < minSize || extent->SizeY() < minSize)
@@ -85,17 +73,14 @@ NOXREF void buildGoodSizedList()
 void DestroyHidingSpots()
 {
 	// remove all hiding spot references from the nav areas
-	for (NavAreaList::iterator areaIter = TheNavAreaList.begin(); areaIter != TheNavAreaList.end(); areaIter++)
-	{
-		CNavArea *area = *areaIter;
+	for (auto area : TheNavAreaList)
 		area->m_hidingSpotList.clear();
-	}
 
-	IMPL_CLASS(HidingSpot, m_nextID) = 0;
+	HidingSpot::m_nextID = 0;
 
 	// free all the HidingSpots
-	for (HidingSpotList::iterator iter = TheHidingSpotList.begin(); iter != TheHidingSpotList.end(); iter++)
-		delete (*iter);
+	for (auto spot : TheHidingSpotList)
+		delete spot;
 
 	TheHidingSpotList.clear();
 }
@@ -114,7 +99,7 @@ HidingSpot::HidingSpot()
 HidingSpot::HidingSpot(const Vector *pos, unsigned char flags)
 {
 	m_pos = *pos;
-	m_id = IMPL(m_nextID)++;
+	m_id = m_nextID++;
 	m_flags = flags;
 
 	TheHidingSpotList.push_back(this);
@@ -134,8 +119,9 @@ void HidingSpot::Load(SteamFile *file, unsigned int version)
 	file->Read(&m_flags, sizeof(unsigned char));
 
 	// update next ID to avoid ID collisions by later spots
-	if (m_id >= IMPL(m_nextID))
-		IMPL(m_nextID) = m_id + 1;
+	if (m_id >= m_nextID) {
+		m_nextID = m_id + 1;
+	}
 }
 
 // Given a HidingSpot ID, return the associated HidingSpot
@@ -171,7 +157,7 @@ void CNavArea::Initialize()
 	m_approachCount = 0;
 
 	// set an ID for splitting and other interactive editing - loads will overwrite this
-	m_id = IMPL(m_nextID)++;
+	m_id = m_nextID++;
 
 	m_prevHash = nullptr;
 	m_nextHash = nullptr;
@@ -264,7 +250,7 @@ CNavArea::CNavArea(CNavNode *nwNode, class CNavNode *neNode, class CNavNode *seN
 CNavArea::~CNavArea()
 {
 	// if we are resetting the system, don't bother cleaning up - all areas are being destroyed
-	if (IMPL(m_isReset))
+	if (m_isReset)
 		return;
 
 	// tell the other areas we are going away
@@ -841,11 +827,11 @@ bool CNavArea::MergeEdit(CNavArea *adj)
 	// check that these areas can be merged
 	const float tolerance = 1.0f;
 	bool merge = false;
-	if (ABS(m_extent.lo.x - adj->m_extent.lo.x) < tolerance && ABS(m_extent.hi.x - adj->m_extent.hi.x) < tolerance)
+	if (abs(m_extent.lo.x - adj->m_extent.lo.x) < tolerance && abs(m_extent.hi.x - adj->m_extent.hi.x) < tolerance)
 		merge = true;
 
-	if (ABS(m_extent.lo.y - adj->m_extent.lo.y) < tolerance &&
-			ABS(m_extent.hi.y - adj->m_extent.hi.y) < tolerance)
+	if (abs(m_extent.lo.y - adj->m_extent.lo.y) < tolerance &&
+			abs(m_extent.hi.y - adj->m_extent.hi.y) < tolerance)
 		merge = true;
 
 	if (merge == false)
@@ -909,7 +895,7 @@ void DestroyLadders()
 // Free navigation map data
 void DestroyNavigationMap()
 {
-	IMPL_CLASS(CNavArea, m_isReset) = true;
+	CNavArea::m_isReset = true;
 
 	// remove each element of the list and delete them
 	while (!TheNavAreaList.empty())
@@ -919,7 +905,7 @@ void DestroyNavigationMap()
 		delete area;
 	}
 
-	IMPL_CLASS(CNavArea, m_isReset) = false;
+	CNavArea::m_isReset = false;
 
 	// destroy ladder representations
 	DestroyLadders();
@@ -929,13 +915,13 @@ void DestroyNavigationMap()
 
 	// destroy navigation nodes created during map learning
 	CNavNode *node, *next;
-	for (node = IMPL_CLASS(CNavNode, m_list); node; node = next)
+	for (node = CNavNode::m_list; node; node = next)
 	{
 		next = node->m_next;
 		delete node;
 	}
 
-	IMPL_CLASS(CNavNode, m_list) = nullptr;
+	CNavNode::m_list = nullptr;
 
 	// reset the grid
 	TheNavAreaGrid.Reset();
@@ -2427,12 +2413,12 @@ void CNavArea::DrawMarkedCorner(NavCornerType corner, byte red, byte green, byte
 void CNavArea::AddToOpenList()
 {
 	// mark as being on open list for quick check
-	m_openMarker = IMPL(m_masterMarker);
+	m_openMarker = m_masterMarker;
 
 	// if list is empty, add and return
-	if (!IMPL(m_openList))
+	if (!m_openList)
 	{
-		IMPL(m_openList) = this;
+		m_openList = this;
 		this->m_prevOpen = nullptr;
 		this->m_nextOpen = nullptr;
 		return;
@@ -2440,7 +2426,7 @@ void CNavArea::AddToOpenList()
 
 	// insert self in ascending cost order
 	CNavArea *area, *last = nullptr;
-	for (area = IMPL(m_openList); area; area = area->m_nextOpen)
+	for (area = m_openList; area; area = area->m_nextOpen)
 	{
 		if (this->GetTotalCost() < area->GetTotalCost())
 			break;
@@ -2455,7 +2441,7 @@ void CNavArea::AddToOpenList()
 		if (this->m_prevOpen)
 			this->m_prevOpen->m_nextOpen = this;
 		else
-			IMPL(m_openList) = this;
+			m_openList = this;
 
 		this->m_nextOpen = area;
 		area->m_prevOpen = this;
@@ -2491,7 +2477,7 @@ void CNavArea::UpdateOnOpenList()
 		if (before)
 			before->m_nextOpen = this;
 		else
-			IMPL(m_openList) = this;
+			m_openList = this;
 
 		if (after)
 			after->m_prevOpen = other;
@@ -2503,7 +2489,7 @@ void CNavArea::RemoveFromOpenList()
 	if (m_prevOpen)
 		m_prevOpen->m_nextOpen = m_nextOpen;
 	else
-		IMPL(m_openList) = m_nextOpen;
+		m_openList = m_nextOpen;
 
 	if (m_nextOpen)
 		m_nextOpen->m_prevOpen = m_prevOpen;
@@ -2516,7 +2502,7 @@ void CNavArea::RemoveFromOpenList()
 void CNavArea::ClearSearchLists()
 {
 	CNavArea::MakeNewMarker();
-	IMPL(m_openList) = nullptr;
+	m_openList = nullptr;
 }
 
 // Return the coordinates of the area's corner.

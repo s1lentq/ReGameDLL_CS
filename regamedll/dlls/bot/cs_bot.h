@@ -45,12 +45,6 @@ enum
 extern int _navAreaCount;
 extern int _currentIndex;
 
-extern struct BuyInfo primaryWeaponBuyInfoCT[MAX_BUY_WEAPON_PRIMARY];
-extern struct BuyInfo secondaryWeaponBuyInfoCT[MAX_BUY_WEAPON_SECONDARY];
-
-extern struct BuyInfo primaryWeaponBuyInfoT[MAX_BUY_WEAPON_PRIMARY];
-extern struct BuyInfo secondaryWeaponBuyInfoT[MAX_BUY_WEAPON_SECONDARY];
-
 class CCSBot;
 class BotChatterInterface;
 

@@ -122,7 +122,7 @@ public:
 	void InitModulationParms();
 
 public:
-	static TYPEDESCRIPTION IMPL(m_SaveData)[4];
+	static TYPEDESCRIPTION m_SaveData[];
 
 	float m_flAttenuation;	// Attenuation value
 	dynpitchvol_t m_dpv;
@@ -140,7 +140,7 @@ public:
 	virtual void Think();
 
 public:
-	static TYPEDESCRIPTION IMPL(m_SaveData)[2];
+	static TYPEDESCRIPTION m_SaveData[];
 
 	float m_flRadius;
 	float m_flRoomtype;
@@ -163,7 +163,7 @@ public:
 	void EXPORT SpeakerThink();
 
 public:
-	static TYPEDESCRIPTION IMPL(m_SaveData)[1];
+	static TYPEDESCRIPTION m_SaveData[];
 
 	int m_preset; // Preset number
 };

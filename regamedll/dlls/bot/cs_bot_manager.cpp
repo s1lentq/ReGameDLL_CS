@@ -1,9 +1,32 @@
-#include "precompiled.h"
-
 /*
-* Globals initialization
+*
+*   This program is free software; you can redistribute it and/or modify it
+*   under the terms of the GNU General Public License as published by the
+*   Free Software Foundation; either version 2 of the License, or (at
+*   your option) any later version.
+*
+*   This program is distributed in the hope that it will be useful, but
+*   WITHOUT ANY WARRANTY; without even the implied warranty of
+*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+*   General Public License for more details.
+*
+*   You should have received a copy of the GNU General Public License
+*   along with this program; if not, write to the Free Software Foundation,
+*   Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*
+*   In addition, as a special exception, the author gives permission to
+*   link the code of this program with the Half-Life Game Engine ("HL
+*   Engine") and Modified Game Libraries ("MODs") developed by Valve,
+*   L.L.C ("Valve").  You must obey the GNU General Public License in all
+*   respects for all of the code used other than the HL Engine and MODs
+*   from Valve.  If you modify this file, you may extend this exception
+*   to your version of the file, but you are not obligated to do so.  If
+*   you do not wish to do so, delete this exception statement from your
+*   version.
+*
 */
-#ifndef HOOK_GAMEDLL
+
+#include "precompiled.h"
 
 CBotManager *TheBots = nullptr;
 
@@ -13,11 +36,9 @@ bool CCSBotManager::m_isLearningMap = false;
 bool CCSBotManager::m_isAnalysisRequested = false;
 NavEditCmdType CCSBotManager::m_editCmd = EDIT_NONE;
 
-#endif
-
 CCSBotManager::CCSBotManager()
 {
-	IMPL(m_flNextCVarCheck) = 0.0f;
+	m_flNextCVarCheck = 0.0f;
 
 	m_zoneCount = 0;
 	SetLooseBomb(nullptr);
@@ -25,9 +46,9 @@ CCSBotManager::CCSBotManager()
 	m_isBombPlanted = false;
 	m_bombDefuser = nullptr;
 
-	IMPL(m_isLearningMap) = false;
-	IMPL(m_isAnalysisRequested) = false;
-	IMPL(m_editCmd) = EDIT_NONE;
+	m_isLearningMap = false;
+	m_isAnalysisRequested = false;
+	m_editCmd = EDIT_NONE;
 
 	m_navPlace = 0;
 	m_roundStartTimestamp = 0.0f;
@@ -96,7 +117,7 @@ void CCSBotManager::RestartRound()
 	m_earliestBombPlantTimestamp = gpGlobals->time + RANDOM_FLOAT(10.0f, 30.0f);
 	m_bombDefuser = nullptr;
 
-	IMPL(m_editCmd) = EDIT_NONE;
+	m_editCmd = EDIT_NONE;
 
 	ResetRadioMessageTimestamps();
 
@@ -114,59 +135,7 @@ void CCSBotManager::RestartRound()
 	m_canRespawn = true;
 }
 
-void UTIL_DrawBox(Extent *extent, int lifetime, int red, int green, int blue)
-{
-	Vector v[8];
-	v[0].x = extent->lo.x; v[0].y = extent->lo.y; v[0].z = extent->lo.z;
-	v[1].x = extent->hi.x; v[1].y = extent->lo.y; v[1].z = extent->lo.z;
-	v[2].x = extent->hi.x; v[2].y = extent->hi.y; v[2].z = extent->lo.z;
-	v[3].x = extent->lo.x; v[3].y = extent->hi.y; v[3].z = extent->lo.z;
-	v[4].x = extent->lo.x; v[4].y = extent->lo.y; v[4].z = extent->hi.z;
-	v[5].x = extent->hi.x; v[5].y = extent->lo.y; v[5].z = extent->hi.z;
-	v[6].x = extent->hi.x; v[6].y = extent->hi.y; v[6].z = extent->hi.z;
-	v[7].x = extent->lo.x; v[7].y = extent->hi.y; v[7].z = extent->hi.z;
-
-	static int edge[] =
-	{
-		1, 2, 3, 4, -1,
-		5, 6, 7, 8, -5,
-		1, -5,
-		2, -6,
-		3, -7,
-		4, -8,
-		0	// end iterator
-	};
-
-	Vector from, to;
-	bool restart = true;
-
-	for (int i = 0; edge[i] != 0; i++)
-	{
-		if (restart)
-		{
-			to = v[ edge[i] - 1 ];
-			restart = false;
-			continue;
-		}
-
-		from = to;
-
-		int index = edge[i];
-		if (index < 0)
-		{
-			restart = true;
-			index = -index;
-		}
-
-		to = v[ index - 1 ];
-
-		UTIL_DrawBeamPoints(from, to, lifetime, red, green, blue);
-		UTIL_DrawBeamPoints(to, from, lifetime, red, green, blue);
-	}
-}
-
 // Called each frame
-
 void CCSBotManager::StartFrame()
 {
 	// EXTEND
@@ -244,7 +213,7 @@ bool CCSBotManager::IsOnOffense(CBasePlayer *player) const
 void CCSBotManager::ServerActivate()
 {
 	DestroyNavigationMap();
-	IMPL(m_isMapDataLoaded) = false;
+	m_isMapDataLoaded = false;
 
 	m_zoneCount = 0;
 	m_gameScenario = SCENARIO_DEATHMATCH;
@@ -252,8 +221,8 @@ void CCSBotManager::ServerActivate()
 	ValidateMapData();
 	RestartRound();
 
-	IMPL(m_isLearningMap) = false;
-	IMPL(m_isAnalysisRequested) = false;
+	m_isLearningMap = false;
+	m_isAnalysisRequested = false;
 
 	m_bServerActive = true;
 	AddServerCommands();
@@ -510,59 +479,59 @@ void CCSBotManager::ServerCommand(const char *pcmd)
 	}
 	else if (FStrEq(pcmd, "bot_nav_delete"))
 	{
-		IMPL(m_editCmd) = EDIT_DELETE;
+		m_editCmd = EDIT_DELETE;
 	}
 	else if (FStrEq(pcmd, "bot_nav_split"))
 	{
-		IMPL(m_editCmd) = EDIT_SPLIT;
+		m_editCmd = EDIT_SPLIT;
 	}
 	else if (FStrEq(pcmd, "bot_nav_merge"))
 	{
-		IMPL(m_editCmd) = EDIT_MERGE;
+		m_editCmd = EDIT_MERGE;
 	}
 	else if (FStrEq(pcmd, "bot_nav_mark"))
 	{
-		IMPL(m_editCmd) = EDIT_MARK;
+		m_editCmd = EDIT_MARK;
 	}
 	else if (FStrEq(pcmd, "bot_nav_begin_area"))
 	{
-		IMPL(m_editCmd) = EDIT_BEGIN_AREA;
+		m_editCmd = EDIT_BEGIN_AREA;
 	}
 	else if (FStrEq(pcmd, "bot_nav_end_area"))
 	{
-		IMPL(m_editCmd) = EDIT_END_AREA;
+		m_editCmd = EDIT_END_AREA;
 	}
 	else if (FStrEq(pcmd, "bot_nav_connect"))
 	{
-		IMPL(m_editCmd) = EDIT_CONNECT;
+		m_editCmd = EDIT_CONNECT;
 	}
 	else if (FStrEq(pcmd, "bot_nav_disconnect"))
 	{
-		IMPL(m_editCmd) = EDIT_DISCONNECT;
+		m_editCmd = EDIT_DISCONNECT;
 	}
 	else if (FStrEq(pcmd, "bot_nav_splice"))
 	{
-		IMPL(m_editCmd) = EDIT_SPLICE;
+		m_editCmd = EDIT_SPLICE;
 	}
 	else if (FStrEq(pcmd, "bot_nav_crouch"))
 	{
-		IMPL(m_editCmd) = EDIT_ATTRIB_CROUCH;
+		m_editCmd = EDIT_ATTRIB_CROUCH;
 	}
 	else if (FStrEq(pcmd, "bot_nav_jump"))
 	{
-		IMPL(m_editCmd) = EDIT_ATTRIB_JUMP;
+		m_editCmd = EDIT_ATTRIB_JUMP;
 	}
 	else if (FStrEq(pcmd, "bot_nav_precise"))
 	{
-		IMPL(m_editCmd) = EDIT_ATTRIB_PRECISE;
+		m_editCmd = EDIT_ATTRIB_PRECISE;
 	}
 	else if (FStrEq(pcmd, "bot_nav_no_jump"))
 	{
-		IMPL(m_editCmd) = EDIT_ATTRIB_NO_JUMP;
+		m_editCmd = EDIT_ATTRIB_NO_JUMP;
 	}
 	else if (FStrEq(pcmd, "bot_nav_analyze"))
 	{
-		IMPL(m_isAnalysisRequested) = true;
+		m_isAnalysisRequested = true;
 	}
 	else if (FStrEq(pcmd, "bot_nav_strip"))
 	{
@@ -645,19 +614,19 @@ void CCSBotManager::ServerCommand(const char *pcmd)
 	}
 	else if (FStrEq(pcmd, "bot_nav_toggle_place_mode"))
 	{
-		IMPL(m_editCmd) = EDIT_TOGGLE_PLACE_MODE;
+		m_editCmd = EDIT_TOGGLE_PLACE_MODE;
 	}
 	else if (FStrEq(pcmd, "bot_nav_place_floodfill"))
 	{
-		IMPL(m_editCmd) = EDIT_PLACE_FLOODFILL;
+		m_editCmd = EDIT_PLACE_FLOODFILL;
 	}
 	else if (FStrEq(pcmd, "bot_nav_place_pick"))
 	{
-		IMPL(m_editCmd) = EDIT_PLACE_PICK;
+		m_editCmd = EDIT_PLACE_PICK;
 	}
 	else if (FStrEq(pcmd, "bot_nav_toggle_place_painting"))
 	{
-		IMPL(m_editCmd) = EDIT_TOGGLE_PLACE_PAINTING;
+		m_editCmd = EDIT_TOGGLE_PLACE_PAINTING;
 	}
 	else if (FStrEq(pcmd, "bot_goto_mark"))
 	{
@@ -716,23 +685,23 @@ void CCSBotManager::ServerCommand(const char *pcmd)
 	}
 	else if (FStrEq(pcmd, "bot_nav_mark_unnamed"))
 	{
-		IMPL(m_editCmd) = EDIT_MARK_UNNAMED;
+		m_editCmd = EDIT_MARK_UNNAMED;
 	}
 	else if (FStrEq(pcmd, "bot_nav_warp"))
 	{
-		IMPL(m_editCmd) = EDIT_WARP_TO_MARK;
+		m_editCmd = EDIT_WARP_TO_MARK;
 	}
 	else if (FStrEq(pcmd, "bot_nav_corner_select"))
 	{
-		IMPL(m_editCmd) = EDIT_SELECT_CORNER;
+		m_editCmd = EDIT_SELECT_CORNER;
 	}
 	else if (FStrEq(pcmd, "bot_nav_corner_raise"))
 	{
-		IMPL(m_editCmd) = EDIT_RAISE_CORNER;
+		m_editCmd = EDIT_RAISE_CORNER;
 	}
 	else if (FStrEq(pcmd, "bot_nav_corner_lower"))
 	{
-		IMPL(m_editCmd) = EDIT_LOWER_CORNER;
+		m_editCmd = EDIT_LOWER_CORNER;
 	}
 	else if (FStrEq(pcmd, "bot_nav_check_consistency"))
 	{
@@ -762,11 +731,10 @@ BOOL CCSBotManager::ClientCommand(CBasePlayer *pPlayer, const char *pcmd)
 bool CCSBotManager::BotAddCommand(BotProfileTeamType team, bool isFromConsole)
 {
 	// dont allow bots to join if the Navigation Area is being generated
-	if (IMPL(m_isLearningMap))
+	if (m_isLearningMap)
 		return false;
 
 	const BotProfile *profile = nullptr;
-
 	if (!isFromConsole || CMD_ARGC() < 2)
 	{
 		// if team not specified, check cv_bot_join_team cvar for preference
@@ -838,7 +806,7 @@ void CCSBotManager::MaintainBotQuota()
 		return;
 #endif
 
-	if (IMPL(m_isLearningMap))
+	if (m_isLearningMap)
 		return;
 
 	int totalHumansInGame = UTIL_HumansInGame();
@@ -961,17 +929,17 @@ void CCSBotManager::MonitorBotCVars()
 {
 	if (cv_bot_nav_edit.value != 0.0f)
 	{
-		EditNavAreas(IMPL(m_editCmd));
-		IMPL(m_editCmd) = EDIT_NONE;
+		EditNavAreas(m_editCmd);
+		m_editCmd = EDIT_NONE;
 	}
 
-	if (gpGlobals->time >= IMPL(m_flNextCVarCheck))
+	if (gpGlobals->time >= m_flNextCVarCheck)
 	{
 		if (cv_bot_show_danger.value != 0.0f)
 			DrawDanger();
 
 		MaintainBotQuota();
-		IMPL(m_flNextCVarCheck) = gpGlobals->time + 0.3f;
+		m_flNextCVarCheck = gpGlobals->time + 0.3f;
 	}
 }
 
@@ -993,7 +961,7 @@ public:
 			&& areaExtent->hi.z >= m_zone->m_extent.lo.z && areaExtent->lo.z <= m_zone->m_extent.hi.z)
 		{
 			// area overlaps m_zone
-			m_zone->m_area[ m_zone->m_areaCount++ ] = area;
+			m_zone->m_area[m_zone->m_areaCount++] = area;
 			if (m_zone->m_areaCount == CCSBotManager::MAX_ZONE_NAV_AREAS)
 			{
 				return false;
@@ -1010,10 +978,10 @@ private:
 // Search the map entities to determine the game scenario and define important zones.
 void CCSBotManager::ValidateMapData()
 {
-	if (IMPL(m_isMapDataLoaded) || !AreBotsAllowed())
+	if (m_isMapDataLoaded || !AreBotsAllowed())
 		return;
 
-	IMPL(m_isMapDataLoaded) = true;
+	m_isMapDataLoaded = true;
 
 	if (LoadNavigationMap())
 	{
@@ -1079,10 +1047,10 @@ void CCSBotManager::ValidateMapData()
 		{
 			if (m_zoneCount < MAX_ZONES)
 			{
-				m_zone[ m_zoneCount ].m_center = isLegacy ? pEntity->pev->origin : (pEntity->pev->absmax + pEntity->pev->absmin) / 2.0f;
-				m_zone[ m_zoneCount ].m_isLegacy = isLegacy;
-				m_zone[ m_zoneCount ].m_index = m_zoneCount;
-				m_zone[ m_zoneCount ].m_entity = pEntity;
+				m_zone[m_zoneCount].m_center = isLegacy ? pEntity->pev->origin : (pEntity->pev->absmax + pEntity->pev->absmin) / 2.0f;
+				m_zone[m_zoneCount].m_isLegacy = isLegacy;
+				m_zone[m_zoneCount].m_index = m_zoneCount;
+				m_zone[m_zoneCount].m_entity = pEntity;
 				m_zoneCount++;
 			}
 			else
@@ -1110,10 +1078,10 @@ void CCSBotManager::ValidateMapData()
 
 			if (m_zoneCount < MAX_ZONES)
 			{
-				m_zone[ m_zoneCount ].m_center = pEntity->pev->origin;
-				m_zone[ m_zoneCount ].m_isLegacy = true;
-				m_zone[ m_zoneCount ].m_index = m_zoneCount;
-				m_zone[ m_zoneCount ].m_entity = pEntity;
+				m_zone[m_zoneCount].m_center = pEntity->pev->origin;
+				m_zone[m_zoneCount].m_isLegacy = true;
+				m_zone[m_zoneCount].m_index = m_zoneCount;
+				m_zone[m_zoneCount].m_entity = pEntity;
 				m_zoneCount++;
 			}
 			else
@@ -1306,7 +1274,7 @@ CNavArea *CCSBotManager::GetRandomAreaInZone(const Zone *zone) const
 	if (!zone->m_areaCount)
 		return nullptr;
 
-	return zone->m_area[ RANDOM_LONG(0, zone->m_areaCount - 1) ];
+	return zone->m_area[RANDOM_LONG(0, zone->m_areaCount - 1)];
 }
 
 void CCSBotManager::OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
@@ -1455,7 +1423,7 @@ float CCSBotManager::GetRadioMessageTimestamp(GameEventType event, int teamID) c
 		return 0.0f;
 
 	int i = (teamID == TERRORIST) ? 0 : 1;
-	return m_radioMsgTimestamp[ event - EVENT_START_RADIO_1 ][ i ];
+	return m_radioMsgTimestamp[event - EVENT_START_RADIO_1][i];
 }
 
 // Return the interval since the last time this message was sent
@@ -1465,7 +1433,7 @@ float CCSBotManager::GetRadioMessageInterval(GameEventType event, int teamID) co
 		return 99999999.9f;
 
 	int i = (teamID == TERRORIST) ? 0 : 1;
-	return gpGlobals->time - m_radioMsgTimestamp[ event - EVENT_START_RADIO_1 ][ i ];
+	return gpGlobals->time - m_radioMsgTimestamp[event - EVENT_START_RADIO_1][i];
 }
 
 // Set the given radio message timestamp.
@@ -1476,7 +1444,7 @@ void CCSBotManager::SetRadioMessageTimestamp(GameEventType event, int teamID)
 		return;
 
 	int i = (teamID == TERRORIST) ? 0 : 1;
-	m_radioMsgTimestamp[ event - EVENT_START_RADIO_1 ][ i ] = gpGlobals->time;
+	m_radioMsgTimestamp[event - EVENT_START_RADIO_1][i] = gpGlobals->time;
 }
 
 // Reset all radio message timestamps

@@ -146,7 +146,7 @@ struct Extent
 	float SizeX() const { return hi.x - lo.x; }
 	float SizeY() const { return hi.y - lo.y; }
 	float SizeZ() const { return hi.z - lo.z; }
-	float Area() const { return SizeX() * SizeY(); }
+	float Area()  const { return SizeX() * SizeY(); }
 
 	// return true if 'pos' is inside of this extent
 	bool Contains(const Vector *pos) const

@@ -1,31 +1,9 @@
 #include "precompiled.h"
 
-/*
-* Globals initialization
-*/
-#ifndef HOOK_GAMEDLL
-
 TYPEDESCRIPTION CRuleEntity::m_SaveData[] =
 {
 	DEFINE_FIELD(CRuleEntity, m_iszMaster, FIELD_STRING),
 };
-
-// Save parms as a block.  Will break save/restore if the structure changes, but this entity didn't ship with Half-Life, so
-// it can't impact saved Half-Life games.
-TYPEDESCRIPTION CGameText::m_SaveData[] =
-{
-	DEFINE_ARRAY(CGameText, m_textParms, FIELD_CHARACTER, sizeof(hudtextparms_t)),
-};
-
-TYPEDESCRIPTION CGamePlayerZone::m_SaveData[] =
-{
-	DEFINE_FIELD(CGamePlayerZone, m_iszInTarget, FIELD_STRING),
-	DEFINE_FIELD(CGamePlayerZone, m_iszOutTarget, FIELD_STRING),
-	DEFINE_FIELD(CGamePlayerZone, m_iszInCount, FIELD_STRING),
-	DEFINE_FIELD(CGamePlayerZone, m_iszOutCount, FIELD_STRING),
-};
-
-#endif
 
 IMPLEMENT_SAVERESTORE(CRuleEntity, CBaseEntity)
 
@@ -120,6 +98,13 @@ void CGameEnd::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useTy
 
 	g_pGameRules->EndMultiplayerGame();
 }
+
+// Save parms as a block.  Will break save/restore if the structure changes, but this entity didn't ship with Half-Life, so
+// it can't impact saved Half-Life games.
+TYPEDESCRIPTION CGameText::m_SaveData[] =
+{
+	DEFINE_ARRAY(CGameText, m_textParms, FIELD_CHARACTER, sizeof(hudtextparms_t)),
+};
 
 LINK_ENTITY_TO_CLASS(game_text, CGameText, CCSGameText)
 IMPLEMENT_SAVERESTORE(CGameText, CRulePointEntity)
@@ -361,6 +346,14 @@ void CGameTeamSet::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE u
 		UTIL_Remove(this);
 	}
 }
+
+TYPEDESCRIPTION CGamePlayerZone::m_SaveData[] =
+{
+	DEFINE_FIELD(CGamePlayerZone, m_iszInTarget, FIELD_STRING),
+	DEFINE_FIELD(CGamePlayerZone, m_iszOutTarget, FIELD_STRING),
+	DEFINE_FIELD(CGamePlayerZone, m_iszInCount, FIELD_STRING),
+	DEFINE_FIELD(CGamePlayerZone, m_iszOutCount, FIELD_STRING),
+};
 
 LINK_ENTITY_TO_CLASS(game_zone_player, CGamePlayerZone, CCSGamePlayerZone)
 IMPLEMENT_SAVERESTORE(CGamePlayerZone, CRuleBrushEntity)

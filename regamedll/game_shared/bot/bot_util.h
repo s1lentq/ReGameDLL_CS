@@ -28,13 +28,8 @@
 
 #pragma once
 
-#define COS_TABLE_SIZE  256
-
 #define RAD_TO_DEG(deg) ((deg) * 180.0 / M_PI)
 #define DEG_TO_RAD(rad) ((rad) * M_PI / 180.0)
-
-#define SIGN(num)       (((num) < 0) ? -1 : 1)
-#define ABS(num)        (SIGN(num) * (num))
 
 class CBasePlayer;
 class BotProfile;
@@ -48,16 +43,16 @@ enum PriorityType
 class IntervalTimer
 {
 public:
-	IntervalTimer() { m_timestamp = -1.0f; }
-	void Reset() { m_timestamp = gpGlobals->time; }
-	void Start() { m_timestamp = gpGlobals->time; }
+	IntervalTimer()   { m_timestamp = -1.0f; }
+	void Reset()      { m_timestamp = gpGlobals->time; }
+	void Start()      { m_timestamp = gpGlobals->time; }
 	void Invalidate() { m_timestamp = -1.0f; }
 
 	bool HasStarted() const { return (m_timestamp > 0.0f); }
 
 	// if not started, elapsed time is very large
-	float GetElapsedTime() const { return (HasStarted()) ? (gpGlobals->time - m_timestamp) : 99999.9f; }
-	bool IsLessThen(float duration) const { return (gpGlobals->time - m_timestamp < duration) ? true : false; }
+	float GetElapsedTime()             const { return (HasStarted()) ? (gpGlobals->time - m_timestamp) : 99999.9f; }
+	bool IsLessThen(float duration)    const { return (gpGlobals->time - m_timestamp < duration) ? true : false; }
 	bool IsGreaterThen(float duration) const { return (gpGlobals->time - m_timestamp > duration) ? true : false; }
 
 private:
@@ -83,18 +78,18 @@ private:
 };
 
 // Return true if the given entity is valid
-inline bool IsEntityValid(CBaseEntity *entity)
+inline bool IsEntityValid(CBaseEntity *pEntity)
 {
-	if (!entity)
+	if (!pEntity)
 		return false;
 
-	if (FNullEnt(entity->pev))
+	if (FNullEnt(pEntity->pev))
 		return false;
 
-	if (FStrEq(STRING(entity->pev->netname), ""))
+	if (FStrEq(STRING(pEntity->pev->netname), ""))
 		return false;
 
-	if (entity->pev->flags & FL_DORMANT)
+	if (pEntity->pev->flags & FL_DORMANT)
 		return false;
 
 	return true;
@@ -150,64 +145,19 @@ bool ForEachPlayer(Functor &func)
 {
 	for (int i = 1; i <= gpGlobals->maxClients; ++i)
 	{
-		CBasePlayer *player = UTIL_PlayerByIndex(i);
-		if (!IsEntityValid((CBaseEntity *)player))
+		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
+		if (!IsEntityValid(pPlayer))
 			continue;
 
-		if (!player->IsPlayer())
+		if (!pPlayer->IsPlayer())
 			continue;
 
-		if (func(player) == false)
+		if (func(pPlayer) == false)
 			return false;
 	}
 
 	return true;
 }
-
-// For zombie game
-inline bool IsZombieGame()
-{
-#ifdef TERRORSTRIKE
-	return true;
-#else
-	return false;
-#endif // TERRORSTRIKE
-}
-
-extern cvar_t cv_bot_traceview;
-extern cvar_t cv_bot_stop;
-extern cvar_t cv_bot_show_nav;
-extern cvar_t cv_bot_show_danger;
-extern cvar_t cv_bot_nav_edit;
-extern cvar_t cv_bot_nav_zdraw;
-extern cvar_t cv_bot_walk;
-extern cvar_t cv_bot_difficulty;
-extern cvar_t cv_bot_debug;
-extern cvar_t cv_bot_quicksave;
-extern cvar_t cv_bot_quota;
-extern cvar_t cv_bot_quota_match;
-extern cvar_t cv_bot_prefix;
-extern cvar_t cv_bot_allow_rogues;
-extern cvar_t cv_bot_allow_pistols;
-extern cvar_t cv_bot_allow_shotguns;
-extern cvar_t cv_bot_allow_sub_machine_guns;
-extern cvar_t cv_bot_allow_rifles;
-extern cvar_t cv_bot_allow_machine_guns;
-extern cvar_t cv_bot_allow_grenades;
-extern cvar_t cv_bot_allow_snipers;
-extern cvar_t cv_bot_allow_shield;
-extern cvar_t cv_bot_join_team;
-extern cvar_t cv_bot_join_after_player;
-extern cvar_t cv_bot_auto_vacate;
-extern cvar_t cv_bot_zombie;
-extern cvar_t cv_bot_defer_to_human;
-extern cvar_t cv_bot_chatter;
-extern cvar_t cv_bot_profile_db;
-
-#ifdef REGAMEDLL_ADD
-extern cvar_t cv_bot_deathmatch;
-extern cvar_t cv_bot_quota_mode;
-#endif
 
 #define IS_ALIVE true
 int UTIL_HumansOnTeam(int teamID, bool isAlive = false);
@@ -232,6 +182,7 @@ Vector UTIL_ComputeOrigin(CBaseEntity *pEntity);
 Vector UTIL_ComputeOrigin(edict_t *pentEdict);
 void UTIL_DrawBeamFromEnt(int iIndex, Vector vecEnd, int iLifetime, byte bRed, byte bGreen, byte bBlue);
 void UTIL_DrawBeamPoints(Vector vecStart, Vector vecEnd, int iLifetime, byte bRed, byte bGreen, byte bBlue);
+void UTIL_DrawBox(struct Extent *extent, int lifetime, int red, int green, int blue);
 
 // Echos text to the console, and prints it on the client's screen.  This is NOT tied to the developer cvar.
 // If you are adding debugging output in cstrike, use UTIL_DPrintf() (debug.h) instead.

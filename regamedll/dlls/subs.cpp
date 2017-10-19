@@ -1,43 +1,5 @@
 #include "precompiled.h"
 
-/*
-* Globals initialization
-*/
-#ifndef HOOK_GAMEDLL
-
-// Global Savedata for Delay
-TYPEDESCRIPTION CBaseDelay::m_SaveData[] =
-{
-	DEFINE_FIELD(CBaseDelay, m_flDelay, FIELD_FLOAT),
-	DEFINE_FIELD(CBaseDelay, m_iszKillTarget, FIELD_STRING),
-};
-
-// Global Savedata for Toggle
-TYPEDESCRIPTION CBaseToggle::m_SaveData[] =
-{
-	DEFINE_FIELD(CBaseToggle, m_toggle_state, FIELD_INTEGER),
-	DEFINE_FIELD(CBaseToggle, m_flActivateFinished, FIELD_TIME),
-	DEFINE_FIELD(CBaseToggle, m_flMoveDistance, FIELD_FLOAT),
-	DEFINE_FIELD(CBaseToggle, m_flWait, FIELD_FLOAT),
-	DEFINE_FIELD(CBaseToggle, m_flLip, FIELD_FLOAT),
-	DEFINE_FIELD(CBaseToggle, m_flTWidth, FIELD_FLOAT),
-	DEFINE_FIELD(CBaseToggle, m_flTLength, FIELD_FLOAT),
-	DEFINE_FIELD(CBaseToggle, m_vecPosition1, FIELD_POSITION_VECTOR),
-	DEFINE_FIELD(CBaseToggle, m_vecPosition2, FIELD_POSITION_VECTOR),
-	DEFINE_FIELD(CBaseToggle, m_vecAngle1, FIELD_VECTOR),		// UNDONE: Position could go through transition, but also angle?
-	DEFINE_FIELD(CBaseToggle, m_vecAngle2, FIELD_VECTOR),		// UNDONE: Position could go through transition, but also angle?
-	DEFINE_FIELD(CBaseToggle, m_cTriggersLeft, FIELD_INTEGER),
-	DEFINE_FIELD(CBaseToggle, m_flHeight, FIELD_FLOAT),
-	DEFINE_FIELD(CBaseToggle, m_hActivator, FIELD_EHANDLE),
-	DEFINE_FIELD(CBaseToggle, m_pfnCallWhenMoveDone, FIELD_FUNCTION),
-	DEFINE_FIELD(CBaseToggle, m_vecFinalDest, FIELD_POSITION_VECTOR),
-	DEFINE_FIELD(CBaseToggle, m_vecFinalAngle, FIELD_VECTOR),
-	DEFINE_FIELD(CBaseToggle, m_sMaster, FIELD_STRING),
-	DEFINE_FIELD(CBaseToggle, m_bitsDamageInflict, FIELD_INTEGER),	// damage type inflicted
-};
-
-#endif
-
 // Landmark class
 void CPointEntity::Spawn()
 {
@@ -57,6 +19,7 @@ LINK_ENTITY_TO_CLASS(info_player_deathmatch, CBaseDMStart, CCSDMStart)
 LINK_ENTITY_TO_CLASS(info_player_start, CPointEntity, CCSPointEntity)
 LINK_ENTITY_TO_CLASS(info_vip_start, CBaseDMStart, CCSDMStart)
 LINK_ENTITY_TO_CLASS(info_landmark, CPointEntity, CCSPointEntity)
+LINK_ENTITY_TO_CLASS(info_target, CPointEntity, CCSPointEntity)
 LINK_ENTITY_TO_CLASS(info_hostage_rescue, CPointEntity, CCSPointEntity)
 LINK_ENTITY_TO_CLASS(info_bomb_target, CPointEntity, CCSPointEntity)
 
@@ -75,9 +38,7 @@ void CBaseDMStart::KeyValue(KeyValueData *pkvd)
 
 BOOL CBaseDMStart::IsTriggered(CBaseEntity *pEntity)
 {
-	BOOL master = UTIL_IsMasterTriggered(pev->netname, pEntity);
-
-	return master;
+	return UTIL_IsMasterTriggered(pev->netname, pEntity);
 }
 
 // This updates global tables that need to know about entities being removed
@@ -111,6 +72,13 @@ void CBaseEntity::SUB_DoNothing()
 {
 	;
 }
+
+// Global Savedata for Delay
+TYPEDESCRIPTION CBaseDelay::m_SaveData[] =
+{
+	DEFINE_FIELD(CBaseDelay, m_flDelay, FIELD_FLOAT),
+	DEFINE_FIELD(CBaseDelay, m_iszKillTarget, FIELD_STRING),
+};
 
 IMPLEMENT_SAVERESTORE(CBaseDelay, CBaseEntity)
 
@@ -282,6 +250,30 @@ void CBaseDelay::DelayThink()
 	SUB_UseTargets(pActivator, (USE_TYPE)pev->button, 0);
 	REMOVE_ENTITY(ENT(pev));
 }
+
+// Global Savedata for Toggle
+TYPEDESCRIPTION CBaseToggle::m_SaveData[] =
+{
+	DEFINE_FIELD(CBaseToggle, m_toggle_state, FIELD_INTEGER),
+	DEFINE_FIELD(CBaseToggle, m_flActivateFinished, FIELD_TIME),
+	DEFINE_FIELD(CBaseToggle, m_flMoveDistance, FIELD_FLOAT),
+	DEFINE_FIELD(CBaseToggle, m_flWait, FIELD_FLOAT),
+	DEFINE_FIELD(CBaseToggle, m_flLip, FIELD_FLOAT),
+	DEFINE_FIELD(CBaseToggle, m_flTWidth, FIELD_FLOAT),
+	DEFINE_FIELD(CBaseToggle, m_flTLength, FIELD_FLOAT),
+	DEFINE_FIELD(CBaseToggle, m_vecPosition1, FIELD_POSITION_VECTOR),
+	DEFINE_FIELD(CBaseToggle, m_vecPosition2, FIELD_POSITION_VECTOR),
+	DEFINE_FIELD(CBaseToggle, m_vecAngle1, FIELD_VECTOR),		// UNDONE: Position could go through transition, but also angle?
+	DEFINE_FIELD(CBaseToggle, m_vecAngle2, FIELD_VECTOR),		// UNDONE: Position could go through transition, but also angle?
+	DEFINE_FIELD(CBaseToggle, m_cTriggersLeft, FIELD_INTEGER),
+	DEFINE_FIELD(CBaseToggle, m_flHeight, FIELD_FLOAT),
+	DEFINE_FIELD(CBaseToggle, m_hActivator, FIELD_EHANDLE),
+	DEFINE_FIELD(CBaseToggle, m_pfnCallWhenMoveDone, FIELD_FUNCTION),
+	DEFINE_FIELD(CBaseToggle, m_vecFinalDest, FIELD_POSITION_VECTOR),
+	DEFINE_FIELD(CBaseToggle, m_vecFinalAngle, FIELD_VECTOR),
+	DEFINE_FIELD(CBaseToggle, m_sMaster, FIELD_STRING),
+	DEFINE_FIELD(CBaseToggle, m_bitsDamageInflict, FIELD_INTEGER),	// damage type inflicted
+};
 
 IMPLEMENT_SAVERESTORE(CBaseToggle, CBaseAnimating)
 

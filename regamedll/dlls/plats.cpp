@@ -1,65 +1,11 @@
 #include "precompiled.h"
 
-/*
-* Globals initialization
-*/
-#ifndef HOOK_GAMEDLL
-
 TYPEDESCRIPTION CBasePlatTrain::m_SaveData[] =
 {
 	DEFINE_FIELD(CBasePlatTrain, m_bMoveSnd, FIELD_CHARACTER),
 	DEFINE_FIELD(CBasePlatTrain, m_bStopSnd, FIELD_CHARACTER),
 	DEFINE_FIELD(CBasePlatTrain, m_volume, FIELD_FLOAT),
 };
-
-TYPEDESCRIPTION CFuncPlatRot::m_SaveData[] =
-{
-	DEFINE_FIELD(CFuncPlatRot, m_end, FIELD_VECTOR),
-	DEFINE_FIELD(CFuncPlatRot, m_start, FIELD_VECTOR),
-};
-
-TYPEDESCRIPTION CFuncTrain::m_SaveData[] =
-{
-	DEFINE_FIELD(CFuncTrain, m_sounds, FIELD_INTEGER),
-	DEFINE_FIELD(CFuncTrain, m_pevCurrentTarget, FIELD_EVARS),
-	DEFINE_FIELD(CFuncTrain, m_activated, FIELD_BOOLEAN),
-};
-
-TYPEDESCRIPTION CFuncTrackTrain::m_SaveData[] =
-{
-	DEFINE_FIELD(CFuncTrackTrain, m_ppath, FIELD_CLASSPTR),
-	DEFINE_FIELD(CFuncTrackTrain, m_length, FIELD_FLOAT),
-	DEFINE_FIELD(CFuncTrackTrain, m_height, FIELD_FLOAT),
-	DEFINE_FIELD(CFuncTrackTrain, m_speed, FIELD_FLOAT),
-	DEFINE_FIELD(CFuncTrackTrain, m_dir, FIELD_FLOAT),
-	DEFINE_FIELD(CFuncTrackTrain, m_startSpeed, FIELD_FLOAT),
-	DEFINE_FIELD(CFuncTrackTrain, m_controlMins, FIELD_VECTOR),
-	DEFINE_FIELD(CFuncTrackTrain, m_controlMaxs, FIELD_VECTOR),
-	DEFINE_FIELD(CFuncTrackTrain, m_sounds, FIELD_INTEGER),
-	DEFINE_FIELD(CFuncTrackTrain, m_flVolume, FIELD_FLOAT),
-	DEFINE_FIELD(CFuncTrackTrain, m_flBank, FIELD_FLOAT),
-	DEFINE_FIELD(CFuncTrackTrain, m_oldSpeed, FIELD_FLOAT),
-};
-
-TYPEDESCRIPTION CFuncTrackChange::m_SaveData[] =
-{
-	DEFINE_GLOBAL_FIELD(CFuncTrackChange, m_trackTop, FIELD_CLASSPTR),
-	DEFINE_GLOBAL_FIELD(CFuncTrackChange, m_trackBottom, FIELD_CLASSPTR),
-	DEFINE_GLOBAL_FIELD(CFuncTrackChange, m_train, FIELD_CLASSPTR),
-	DEFINE_GLOBAL_FIELD(CFuncTrackChange, m_trackTopName, FIELD_STRING),
-	DEFINE_GLOBAL_FIELD(CFuncTrackChange, m_trackBottomName, FIELD_STRING),
-	DEFINE_GLOBAL_FIELD(CFuncTrackChange, m_trainName, FIELD_STRING),
-	DEFINE_FIELD(CFuncTrackChange, m_code, FIELD_INTEGER),
-	DEFINE_FIELD(CFuncTrackChange, m_targetState, FIELD_INTEGER),
-	DEFINE_FIELD(CFuncTrackChange, m_use, FIELD_INTEGER),
-};
-
-TYPEDESCRIPTION CGunTarget::m_SaveData[] =
-{
-	DEFINE_FIELD(CGunTarget, m_on, FIELD_BOOLEAN),
-};
-
-#endif // HOOK_GAMEDLL
 
 IMPLEMENT_SAVERESTORE(CBasePlatTrain, CBaseToggle)
 
@@ -239,7 +185,7 @@ LINK_ENTITY_TO_CLASS(func_plat, CFuncPlat, CCSFuncPlat)
 #define noiseMovement noise
 #define noiseStopMoving noise1
 
-// QUAKED func_plat (0 .5 .8) ? PLAT_LOW_TRIGGER
+// QUAKED func_plat (0 .5 .8) ? SF_PLAT_TOGGLE
 // speed	default 150
 
 // Plats are always drawn in the extended position, so they will light correctly.
@@ -513,6 +459,12 @@ void CFuncPlat::Blocked(CBaseEntity *pOther)
 	}
 }
 
+TYPEDESCRIPTION CFuncPlatRot::m_SaveData[] =
+{
+	DEFINE_FIELD(CFuncPlatRot, m_end, FIELD_VECTOR),
+	DEFINE_FIELD(CFuncPlatRot, m_start, FIELD_VECTOR),
+};
+
 LINK_ENTITY_TO_CLASS(func_platrot, CFuncPlatRot, CCSFuncPlatRot)
 IMPLEMENT_SAVERESTORE(CFuncPlatRot, CFuncPlat)
 
@@ -589,6 +541,13 @@ void CFuncPlatRot::RotMove(Vector &destAngle, float time)
 		pev->nextthink = pev->ltime + 1.0f;
 	}
 }
+
+TYPEDESCRIPTION CFuncTrain::m_SaveData[] =
+{
+	DEFINE_FIELD(CFuncTrain, m_sounds, FIELD_INTEGER),
+	DEFINE_FIELD(CFuncTrain, m_pevCurrentTarget, FIELD_EVARS),
+	DEFINE_FIELD(CFuncTrain, m_activated, FIELD_BOOLEAN),
+};
 
 LINK_ENTITY_TO_CLASS(func_train, CFuncTrain, CCSFuncTrain)
 IMPLEMENT_SAVERESTORE(CFuncTrain, CBasePlatTrain)
@@ -921,6 +880,22 @@ void CFuncTrain::OverrideReset()
 		}
 	}
 }
+
+TYPEDESCRIPTION CFuncTrackTrain::m_SaveData[] =
+{
+	DEFINE_FIELD(CFuncTrackTrain, m_ppath, FIELD_CLASSPTR),
+	DEFINE_FIELD(CFuncTrackTrain, m_length, FIELD_FLOAT),
+	DEFINE_FIELD(CFuncTrackTrain, m_height, FIELD_FLOAT),
+	DEFINE_FIELD(CFuncTrackTrain, m_speed, FIELD_FLOAT),
+	DEFINE_FIELD(CFuncTrackTrain, m_dir, FIELD_FLOAT),
+	DEFINE_FIELD(CFuncTrackTrain, m_startSpeed, FIELD_FLOAT),
+	DEFINE_FIELD(CFuncTrackTrain, m_controlMins, FIELD_VECTOR),
+	DEFINE_FIELD(CFuncTrackTrain, m_controlMaxs, FIELD_VECTOR),
+	DEFINE_FIELD(CFuncTrackTrain, m_sounds, FIELD_INTEGER),
+	DEFINE_FIELD(CFuncTrackTrain, m_flVolume, FIELD_FLOAT),
+	DEFINE_FIELD(CFuncTrackTrain, m_flBank, FIELD_FLOAT),
+	DEFINE_FIELD(CFuncTrackTrain, m_oldSpeed, FIELD_FLOAT),
+};
 
 IMPLEMENT_SAVERESTORE(CFuncTrackTrain, CBaseEntity)
 LINK_ENTITY_TO_CLASS(func_tracktrain, CFuncTrackTrain, CCSFuncTrackTrain)
@@ -1596,10 +1571,18 @@ void CFuncTrainControls::Spawn()
 	pev->nextthink = gpGlobals->time;
 }
 
-BOOL CFuncTrackChange::IsTogglePlat()
+TYPEDESCRIPTION CFuncTrackChange::m_SaveData[] =
 {
-	return TRUE;
-}
+	DEFINE_GLOBAL_FIELD(CFuncTrackChange, m_trackTop, FIELD_CLASSPTR),
+	DEFINE_GLOBAL_FIELD(CFuncTrackChange, m_trackBottom, FIELD_CLASSPTR),
+	DEFINE_GLOBAL_FIELD(CFuncTrackChange, m_train, FIELD_CLASSPTR),
+	DEFINE_GLOBAL_FIELD(CFuncTrackChange, m_trackTopName, FIELD_STRING),
+	DEFINE_GLOBAL_FIELD(CFuncTrackChange, m_trackBottomName, FIELD_STRING),
+	DEFINE_GLOBAL_FIELD(CFuncTrackChange, m_trainName, FIELD_STRING),
+	DEFINE_FIELD(CFuncTrackChange, m_code, FIELD_INTEGER),
+	DEFINE_FIELD(CFuncTrackChange, m_targetState, FIELD_INTEGER),
+	DEFINE_FIELD(CFuncTrackChange, m_use, FIELD_INTEGER),
+};
 
 LINK_ENTITY_TO_CLASS(func_trackchange, CFuncTrackChange, CCSFuncTrackChange)
 IMPLEMENT_SAVERESTORE(CFuncTrackChange, CFuncPlatRot)
@@ -2028,6 +2011,11 @@ void CFuncTrackAuto::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE
 		UpdateAutoTargets(m_targetState);
 	}
 }
+
+TYPEDESCRIPTION CGunTarget::m_SaveData[] =
+{
+	DEFINE_FIELD(CGunTarget, m_on, FIELD_BOOLEAN),
+};
 
 LINK_ENTITY_TO_CLASS(func_guntarget, CGunTarget, CCSGunTarget)
 IMPLEMENT_SAVERESTORE(CGunTarget, CBaseMonster)

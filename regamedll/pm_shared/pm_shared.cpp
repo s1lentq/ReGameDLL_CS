@@ -1,23 +1,16 @@
 #include "precompiled.h"
 
-/*
-* Globals initialization
-*/
-#ifndef HOOK_GAMEDLL
-
-int pm_shared_initialized = 0;
+BOOL pm_shared_initialized = FALSE;
 
 vec3_t rgv3tStuckTable[54];
 int rgStuckLast[MAX_CLIENTS][2];
 
 int pm_gcTextures = 0;
-char pm_grgszTextureName[1024][17];
-char pm_grgchTextureType[1024];
+char pm_grgszTextureName[MAX_TEXTURES][MAX_TEXTURENAME_LENGHT];
+char pm_grgchTextureType[MAX_TEXTURES];
 
-playermove_t *pmove = NULL;
-int g_onladder = 0;
-
-#endif
+playermove_t *pmove = nullptr;
+BOOL g_onladder = FALSE;
 
 #ifdef CLIENT_DLL
 	int iJumpSpectator;
@@ -28,7 +21,7 @@ int g_onladder = 0;
 void PM_SwapTextures(int i, int j)
 {
 	char chTemp;
-	char szTemp[CBTEXTURENAMEMAX];
+	char szTemp[MAX_TEXTURENAME_LENGHT];
 
 	Q_strcpy(szTemp, pm_grgszTextureName[i]);
 	chTemp = pm_grgchTextureType[i];
@@ -55,8 +48,7 @@ void PM_SortTextures()
 {
 	// Bubble sort, yuck, but this only occurs at startup and it's only 512 elements...
 	int i, j;
-
-	for (i = 0; i < pm_gcTextures; ++i)
+	for (i = 0; i < pm_gcTextures; i++)
 	{
 		for (j = i + 1; j < pm_gcTextures; j++)
 		{
@@ -91,7 +83,7 @@ void PM_InitTextureTypes()
 		return;
 
 	// for each line in the file...
-	while (pmove->memfgets(pMemFile, fileSize, &filePos, buffer, sizeof(buffer) - 1) && (pm_gcTextures < CTEXTURESMAX))
+	while (pmove->memfgets(pMemFile, fileSize, &filePos, buffer, sizeof(buffer) - 1) && (pm_gcTextures < MAX_TEXTURES))
 	{
 		// skip whitespace
 		i = 0;
@@ -124,7 +116,7 @@ void PM_InitTextureTypes()
 			continue;
 
 		// null-terminate name and save in sentences array
-		j = Q_min(j, CBTEXTURENAMEMAX - 1 + i);
+		j = Q_min(j, MAX_TEXTURENAME_LENGHT - 1 + i);
 		buffer[j] = '\0';
 
 		Q_strcpy(&(pm_grgszTextureName[pm_gcTextures++][0]), &(buffer[i]));
@@ -151,7 +143,7 @@ char EXT_FUNC PM_FindTextureType(char *name)
 	{
 		pivot = (left + right) / 2;
 
-		val = Q_strnicmp(name, pm_grgszTextureName[pivot], CBTEXTURENAMEMAX - 1);
+		val = Q_strnicmp(name, pm_grgszTextureName[pivot], MAX_TEXTURENAME_LENGHT - 1);
 
 		if (val == 0)
 		{
@@ -367,7 +359,7 @@ void PM_CatagorizeTextureType()
 		pTextureName++;
 
 	Q_strcpy(pmove->sztexturename, pTextureName);
-	pmove->sztexturename[CBTEXTURENAMEMAX - 1] = 0;
+	pmove->sztexturename[MAX_TEXTURENAME_LENGHT - 1] = '\0';
 
 	// get texture type
 	pmove->chtexturetype = PM_FindTextureType(pmove->sztexturename);
@@ -428,13 +420,13 @@ void EXT_FUNC __API_HOOK(PM_UpdateStepSound)()
 			fvol = 0.35;
 			pmove->flTimeStepSound = 350;
 		}
-		else if (pmove->PM_PointContents(knee, NULL) == CONTENTS_WATER)
+		else if (pmove->PM_PointContents(knee, nullptr) == CONTENTS_WATER)
 		{
 			step = STEP_WADE;
 			fvol = 0.65;
 			pmove->flTimeStepSound = 600;
 		}
-		else if (pmove->PM_PointContents(feet, NULL) == CONTENTS_WATER)
+		else if (pmove->PM_PointContents(feet, nullptr) == CONTENTS_WATER)
 		{
 			step = STEP_SLOSH;
 			fvol = 0.5;
@@ -529,7 +521,7 @@ void PM_CheckVelocity()
 	int i;
 
 	// bound velocity
-	for (i = 0; i < 3; ++i)
+	for (i = 0; i < 3; i++)
 	{
 		// See if it's bogus.
 		if (IS_NAN(pmove->velocity[i]))
@@ -590,7 +582,7 @@ int PM_ClipVelocity(vec_t *in, vec_t *normal, vec_t *out, float overbounce)
 	// Scale by overbounce factor.
 	backoff = DotProduct(in, normal) * overbounce;
 
-	for (i = 0; i < 3; ++i)
+	for (i = 0; i < 3; i++)
 	{
 		change = in[i] - normal[i] * backoff;
 		out[i] = change;
@@ -677,7 +669,7 @@ int PM_FlyMove()
 
 		// Assume we can move all the way from the current origin to the
 		// end point.
-		for (i = 0; i < 3; ++i)
+		for (i = 0; i < 3; i++)
 		{
 			float_precision flScale = time_left * pmove->velocity[i];
 
@@ -778,7 +770,7 @@ int PM_FlyMove()
 		}
 		else
 		{
-			for (i = 0; i < numplanes; ++i)
+			for (i = 0; i < numplanes; i++)
 			{
 				PM_ClipVelocity(original_velocity, planes[i], pmove->velocity, 1);
 
@@ -905,7 +897,7 @@ void PM_WalkMove()
 	VectorNormalize(pmove->right);
 
 	// Determine x and y parts of velocity
-	for (i = 0; i < 2; ++i)
+	for (i = 0; i < 2; i++)
 	{
 		wishvel[i] = pmove->forward[i] * fmove + pmove->right[i] * smove;
 	}
@@ -1169,7 +1161,7 @@ void PM_AirAccelerate(vec_t *wishdir, float wishspeed, float accel)
 		accelspeed = addspeed;
 
 	// Adjust pmove vel.
-	for (i = 0; i < 3; ++i)
+	for (i = 0; i < 3; i++)
 	{
 		pmove->velocity[i] += accelspeed * wishdir[i];
 	}
@@ -1188,7 +1180,7 @@ void PM_WaterMove()
 	float newspeed, addspeed;
 
 	// user intentions
-	for (i = 0; i < 3; ++i)
+	for (i = 0; i < 3; i++)
 	{
 		wishvel[i] = (pmove->forward[i] * pmove->cmd.forwardmove) + (pmove->cmd.sidemove * pmove->right[i]);
 	}
@@ -1256,7 +1248,7 @@ void PM_WaterMove()
 			accelspeed = addspeed;
 		}
 
-		for (i = 0; i < 3; ++i)
+		for (i = 0; i < 3; i++)
 		{
 			pmove->velocity[i] += accelspeed * wishvel[i];
 		}
@@ -1310,7 +1302,7 @@ void PM_AirMove_internal()
 	VectorNormalize(pmove->right);
 
 	// Determine x and y parts of velocity
-	for (i = 0; i < 2; ++i)
+	for (i = 0; i < 2; i++)
 	{
 		wishvel[i] = pmove->forward[i] * fmove + pmove->right[i] * smove;
 	}
@@ -1383,7 +1375,7 @@ qboolean PM_CheckWater()
 
 		// Now check a point that is at the player hull midpoint.
 		point[2] = pmove->origin[2] + heightover2;
-		cont = pmove->PM_PointContents(point, NULL);
+		cont = pmove->PM_PointContents(point, nullptr);
 
 		// If that point is also under water...
 		if (cont <= CONTENTS_WATER && cont > CONTENTS_TRANSLUCENT)
@@ -1394,7 +1386,7 @@ qboolean PM_CheckWater()
 			// Now check the eye position.  (view_ofs is relative to the origin)
 			point[2] = pmove->origin[2] + pmove->view_ofs[2];
 
-			cont = pmove->PM_PointContents(point, NULL);
+			cont = pmove->PM_PointContents(point, nullptr);
 			if (cont <= CONTENTS_WATER && cont > CONTENTS_TRANSLUCENT)
 			{
 				// In over our eyes
@@ -1532,7 +1524,7 @@ qboolean PM_CheckStuck()
 	if (!pmove->server)
 	{
 		// World or BSP model
-		if (hitent == 0 || pmove->physents[hitent].model != NULL)
+		if (hitent == 0 || pmove->physents[hitent].model)
 		{
 			int nReps = 0;
 			PM_ResetStuckOffsets(pmove->player_index, pmove->server);
@@ -1575,7 +1567,7 @@ qboolean PM_CheckStuck()
 	i = PM_GetRandomStuckOffsets(pmove->player_index, pmove->server, offset);
 
 	VectorAdd(base, offset, test);
-	if ((hitent = pmove->PM_TestPlayerPosition(test, NULL)) == -1)
+	if ((hitent = pmove->PM_TestPlayerPosition(test, nullptr)) == -1)
 	{
 		PM_ResetStuckOffsets(pmove->player_index, pmove->server);
 
@@ -1609,7 +1601,7 @@ qboolean PM_CheckStuck()
 					test[1] += y;
 					test[2] += z;
 
-					if (pmove->PM_TestPlayerPosition(test, NULL) == -1)
+					if (pmove->PM_TestPlayerPosition(test, nullptr) == -1)
 					{
 						VectorCopy(test, pmove->origin);
 						return FALSE;
@@ -1685,7 +1677,7 @@ void PM_SpectatorMove()
 		VectorNormalize(pmove->forward);
 		VectorNormalize(pmove->right);
 
-		for (i = 0; i < 3; ++i)
+		for (i = 0; i < 3; i++)
 		{
 			wishvel[i] = pmove->forward[i] * fmove + pmove->right[i] * smove;
 		}
@@ -1716,7 +1708,7 @@ void PM_SpectatorMove()
 			accelspeed = addspeed;
 		}
 
-		for (i = 0; i < 3; ++i)
+		for (i = 0; i < 3; i++)
 		{
 			pmove->velocity[i] += accelspeed * wishdir[i];
 		}
@@ -1780,7 +1772,7 @@ void PM_FixPlayerCrouchStuck(int direction)
 	int i;
 	vec3_t test;
 
-	hitent = pmove->PM_TestPlayerPosition (pmove->origin, NULL);
+	hitent = pmove->PM_TestPlayerPosition (pmove->origin, nullptr);
 
 	if (hitent == -1)
 	{
@@ -1789,10 +1781,10 @@ void PM_FixPlayerCrouchStuck(int direction)
 
 	VectorCopy(pmove->origin, test);
 
-	for (i = 0; i < 36; i++)
+	for (i = 0; i < HalfHumanHeight; i++)
 	{
 		pmove->origin[2] += direction;
-		hitent = pmove->PM_TestPlayerPosition(pmove->origin, NULL);
+		hitent = pmove->PM_TestPlayerPosition(pmove->origin, nullptr);
 
 		if (hitent == -1)
 		{
@@ -1972,7 +1964,7 @@ void PM_LadderMove(physent_t *pLadder)
 	VectorCopy(pmove->origin, floor);
 	floor[2] += pmove->_player_mins[pmove->usehull][2] - 1;
 
-	if (pmove->PM_PointContents(floor, NULL) == CONTENTS_SOLID)
+	if (pmove->PM_PointContents(floor, nullptr) == CONTENTS_SOLID)
 		onFloor = true;
 	else
 		onFloor = false;
@@ -1992,7 +1984,7 @@ void PM_LadderMove(physent_t *pLadder)
 			flSpeed = pmove->maxspeed;
 		}
 
-		AngleVectors(pmove->angles, vpn, v_right, NULL);
+		AngleVectors(pmove->angles, vpn, v_right, nullptr);
 
 		if (pmove->flags & FL_DUCKING)
 		{
@@ -2049,7 +2041,7 @@ void PM_LadderMove(physent_t *pLadder)
 				// is roughly vertically perpendicular to the face of the ladder.
 				// NOTE: It IS possible to face up and move down or face down and move up
 				// because the velocity is a sum of the directional velocity and the converted
-				// velocity through the face of the ladder -- by design.
+				// velocity through the face of the ladder - by design.
 				CrossProduct(trace.plane.normal, perp, tmp);
 				VectorMA(lateral, -normal, tmp, pmove->velocity);
 
@@ -2097,7 +2089,7 @@ physent_t *PM_Ladder()
 		}
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 void PM_WaterJump()
@@ -2280,7 +2272,7 @@ void PM_NoClip()
 	VectorNormalize(pmove->right);
 
 	// Determine x and y parts of velocity
-	for (i = 0; i < 3; ++i)
+	for (i = 0; i < 3; i++)
 	{
 		wishvel[i] = pmove->forward[i] * fmove + pmove->right[i] * smove;
 	}
@@ -2428,12 +2420,12 @@ void PM_Jump()
 	if (pmove->bInDuck || (pmove->flags & FL_DUCKING))
 	{
 		// Adjust for super long jump module
-		// UNDONE -- note this should be based on forward angles, not current velocity.
+		// UNDONE: note this should be based on forward angles, not current velocity.
 		if (cansuperjump && (pmove->cmd.buttons & IN_DUCK) && pmove->flDuckTime > 0 && Length(pmove->velocity) > 50)
 		{
 			pmove->punchangle[0] = -5.0f;
 
-			for (int i  = 0; i < 2; ++i)
+			for (int i  = 0; i < 2; i++)
 			{
 				pmove->velocity[i] = pmove->forward[i] * PLAYER_LONGJUMP_SPEED * 1.6f;
 			}
@@ -2779,7 +2771,7 @@ qboolean PM_ShouldDoSpectMode()
 // were contacted during the move.
 void PM_PlayerMove(qboolean server)
 {
-	physent_t *pLadder = NULL;
+	physent_t *pLadder = nullptr;
 
 	// Are we running server code?
 	pmove->server = server;
@@ -2832,7 +2824,7 @@ void PM_PlayerMove(qboolean server)
 		pmove->flFallVelocity = -pmove->velocity[2];
 	}
 
-	g_onladder = 0;
+	g_onladder = FALSE;
 
 	// Don't run ladder code if dead or on a train
 	if (!pmove->dead && !(pmove->flags & FL_ONTRAIN))
@@ -2841,7 +2833,7 @@ void PM_PlayerMove(qboolean server)
 
 		if (pLadder)
 		{
-			g_onladder = 1;
+			g_onladder = TRUE;
 		}
 	}
 
@@ -3101,7 +3093,7 @@ void PM_CreateStuckTable()
 	zi[1] = 1.0f;
 	zi[2] = 6.0f;
 
-	for (i = 0; i < 3; ++i)
+	for (i = 0; i < 3; i++)
 	{
 		// Z moves
 		z = zi[i];
@@ -3140,7 +3132,7 @@ void PM_CreateStuckTable()
 	}
 
 	// Remaining multi axis nudges.
-	for (i = 0; i < 3; ++i)
+	for (i = 0; i < 3; i++)
 	{
 		z = zi[i];
 
@@ -3214,5 +3206,5 @@ void EXT_FUNC __API_HOOK(PM_Init)(struct playermove_s *ppmove)
 	PM_CreateStuckTable();
 	PM_InitTextureTypes();
 
-	pm_shared_initialized = 1;
+	pm_shared_initialized = TRUE;
 }

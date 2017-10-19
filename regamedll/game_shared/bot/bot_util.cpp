@@ -1,14 +1,9 @@
 #include "precompiled.h"
 
-/*
-* Globals initialization
-*/
-#ifndef HOOK_GAMEDLL
-
 short s_iBeamSprite = 0;
-float cosTable[COS_TABLE_SIZE];
 
-#endif
+constexpr int COS_TABLE_SIZE = 256;
+float cosTable[COS_TABLE_SIZE];
 
 bool UTIL_IsNameTaken(const char *name, bool ignoreHumans)
 {
@@ -468,6 +463,57 @@ void UTIL_DrawBeamPoints(Vector vecStart, Vector vecEnd, int iLifetime, byte bRe
 		WRITE_BYTE(255);
 		WRITE_BYTE(0);
 	MESSAGE_END();
+}
+
+void UTIL_DrawBox(Extent *extent, int lifetime, int red, int green, int blue)
+{
+	Vector v[8];
+	v[0].x = extent->lo.x; v[0].y = extent->lo.y; v[0].z = extent->lo.z;
+	v[1].x = extent->hi.x; v[1].y = extent->lo.y; v[1].z = extent->lo.z;
+	v[2].x = extent->hi.x; v[2].y = extent->hi.y; v[2].z = extent->lo.z;
+	v[3].x = extent->lo.x; v[3].y = extent->hi.y; v[3].z = extent->lo.z;
+	v[4].x = extent->lo.x; v[4].y = extent->lo.y; v[4].z = extent->hi.z;
+	v[5].x = extent->hi.x; v[5].y = extent->lo.y; v[5].z = extent->hi.z;
+	v[6].x = extent->hi.x; v[6].y = extent->hi.y; v[6].z = extent->hi.z;
+	v[7].x = extent->lo.x; v[7].y = extent->hi.y; v[7].z = extent->hi.z;
+
+	static int edge[] =
+	{
+		1, 2, 3, 4, -1,
+		5, 6, 7, 8, -5,
+		1, -5,
+		2, -6,
+		3, -7,
+		4, -8,
+		0	// end iterator
+	};
+
+	Vector from, to;
+	bool restart = true;
+
+	for (int i = 0; edge[i] != 0; i++)
+	{
+		if (restart)
+		{
+			to = v[edge[i] - 1];
+			restart = false;
+			continue;
+		}
+
+		from = to;
+
+		int index = edge[i];
+		if (index < 0)
+		{
+			restart = true;
+			index = -index;
+		}
+
+		to = v[index - 1];
+
+		UTIL_DrawBeamPoints(from, to, lifetime, red, green, blue);
+		UTIL_DrawBeamPoints(to, from, lifetime, red, green, blue);
+	}
 }
 
 void CONSOLE_ECHO(const char *pszMsg, ...)

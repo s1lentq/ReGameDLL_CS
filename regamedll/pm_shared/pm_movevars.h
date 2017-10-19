@@ -26,11 +26,7 @@
 *
 */
 
-#ifndef PM_MOVEVARS_H
-#define PM_MOVEVARS_H
-#ifdef _WIN32
 #pragma once
-#endif
 
 typedef struct movevars_s
 {
@@ -39,16 +35,16 @@ typedef struct movevars_s
 	float maxspeed;			// Max allowed speed
 	float spectatormaxspeed;
 	float accelerate;		// Acceleration factor
-	float airaccelerate;		// Same for when in open air
-	float wateraccelerate;		// Same for when in water
+	float airaccelerate;	// Same for when in open air
+	float wateraccelerate;	// Same for when in water
 	float friction;
 	float edgefriction;		// Extra friction near dropofs
-	float waterfriction;		// Less in water
+	float waterfriction;	// Less in water
 	float entgravity;		// 1.0
 	float bounce;			// Wall bounce value. 1.0
 	float stepsize;			// sv_stepsize;
 	float maxvelocity;		// maximum server velocity.
-	float zmax;			// Max z-buffer range (for GL)
+	float zmax;				// Max z-buffer range (for GL)
 	float waveHeight;		// Water wave height (for GL)
 	qboolean footsteps;		// Play footstep sounds
 	char skyName[32];		// Name of the sky map
@@ -62,5 +58,3 @@ typedef struct movevars_s
 	float skyvec_z;
 
 } movevars_t;
-
-#endif // PM_MOVEVARS_H

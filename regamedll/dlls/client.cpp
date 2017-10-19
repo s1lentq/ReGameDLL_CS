@@ -1,13 +1,9 @@
 #include "precompiled.h"
 
-/*
-* Globals initialization
-*/
-#ifndef HOOK_GAMEDLL
-
 int giPrecacheGrunt = 0;
 int gmsgWeapPickup = 0;
 int gmsgHudText = 0;
+int gmsgHudTextPro = 0;
 int gmsgHudTextArgs = 0;
 int gmsgShake = 0;
 int gmsgFade = 0;
@@ -137,8 +133,6 @@ static entity_field_alias_t custom_entity_field_alias[] =
 	{ "animtime",  0 },
 };
 
-#endif // HOOK_GAMEDLL
-
 bool g_bServerActive = false;
 PLAYERPVSSTATUS g_PVSStatus[MAX_CLIENTS];
 unsigned short m_usResetDecals;
@@ -149,113 +143,112 @@ void LinkUserMessages()
 	if (gmsgCurWeapon)
 		return;
 
-	gmsgCurWeapon = REG_USER_MSG("CurWeapon", 3);
-	gmsgGeigerRange = REG_USER_MSG("Geiger", 1);
-	gmsgFlashlight = REG_USER_MSG("Flashlight", 2);
-	gmsgFlashBattery = REG_USER_MSG("FlashBat", 1);
-	gmsgHealth = REG_USER_MSG("Health", 1);
-	gmsgDamage = REG_USER_MSG("Damage", 12);
-	gmsgBattery = REG_USER_MSG("Battery", 2);
-	gmsgTrain = REG_USER_MSG("Train", 1);
-	gmsgHudText = REG_USER_MSG("HudTextPro", -1);
-	REG_USER_MSG("HudText", -1);
-	gmsgSayText = REG_USER_MSG("SayText", -1);
-	gmsgTextMsg = REG_USER_MSG("TextMsg", -1);
-	gmsgWeaponList = REG_USER_MSG("WeaponList", -1);
-	gmsgResetHUD = REG_USER_MSG("ResetHUD", 0);
-	gmsgInitHUD = REG_USER_MSG("InitHUD", 0);
-	gmsgViewMode = REG_USER_MSG("ViewMode", 0);
+	gmsgCurWeapon     = REG_USER_MSG("CurWeapon", 3);
+	gmsgGeigerRange   = REG_USER_MSG("Geiger", 1);
+	gmsgFlashlight    = REG_USER_MSG("Flashlight", 2);
+	gmsgFlashBattery  = REG_USER_MSG("FlashBat", 1);
+	gmsgHealth        = REG_USER_MSG("Health", 1);
+	gmsgDamage        = REG_USER_MSG("Damage", 12);
+	gmsgBattery       = REG_USER_MSG("Battery", 2);
+	gmsgTrain         = REG_USER_MSG("Train", 1);
+	gmsgHudTextPro    = REG_USER_MSG("HudTextPro", -1);
+	gmsgHudText       = REG_USER_MSG("HudText", -1);
+	gmsgSayText       = REG_USER_MSG("SayText", -1);
+	gmsgTextMsg       = REG_USER_MSG("TextMsg", -1);
+	gmsgWeaponList    = REG_USER_MSG("WeaponList", -1);
+	gmsgResetHUD      = REG_USER_MSG("ResetHUD", 0);
+	gmsgInitHUD       = REG_USER_MSG("InitHUD", 0);
+	gmsgViewMode      = REG_USER_MSG("ViewMode", 0);
 	gmsgShowGameTitle = REG_USER_MSG("GameTitle", 1);
-	gmsgDeathMsg = REG_USER_MSG("DeathMsg", -1);
-	gmsgScoreAttrib = REG_USER_MSG("ScoreAttrib", 2);
-	gmsgScoreInfo = REG_USER_MSG("ScoreInfo", 9);
-	gmsgTeamInfo = REG_USER_MSG("TeamInfo", -1);
-	gmsgTeamScore = REG_USER_MSG("TeamScore", -1);
-	gmsgGameMode = REG_USER_MSG("GameMode", 1);
-	gmsgMOTD = REG_USER_MSG("MOTD", -1);
-	gmsgServerName = REG_USER_MSG("ServerName", -1);
-	gmsgAmmoPickup = REG_USER_MSG("AmmoPickup", 2);
-	gmsgWeapPickup = REG_USER_MSG("WeapPickup", 1);
-	gmsgItemPickup = REG_USER_MSG("ItemPickup", -1);
-	gmsgHideWeapon = REG_USER_MSG("HideWeapon", 1);
-	gmsgSetFOV = REG_USER_MSG("SetFOV", 1);
-	gmsgShowMenu = REG_USER_MSG("ShowMenu", -1);
-	gmsgShake = REG_USER_MSG("ScreenShake", 6);
-	gmsgFade = REG_USER_MSG("ScreenFade", 10);
-	gmsgAmmoX = REG_USER_MSG("AmmoX", 2);
-	gmsgSendAudio = REG_USER_MSG("SendAudio", -1);
-	gmsgRoundTime = REG_USER_MSG("RoundTime", 2);
-	gmsgMoney = REG_USER_MSG("Money", 5);
-	gmsgArmorType = REG_USER_MSG("ArmorType", 1);
-	gmsgBlinkAcct = REG_USER_MSG("BlinkAcct", 1);
-	gmsgStatusValue = REG_USER_MSG("StatusValue", -1);
-	gmsgStatusText = REG_USER_MSG("StatusText", -1);
-	gmsgStatusIcon = REG_USER_MSG("StatusIcon", -1);
-	gmsgBarTime = REG_USER_MSG("BarTime", 2);
-	gmsgReloadSound = REG_USER_MSG("ReloadSound", 2);
-	gmsgCrosshair = REG_USER_MSG("Crosshair", 1);
-	gmsgNVGToggle = REG_USER_MSG("NVGToggle", 1);
-	gmsgRadar = REG_USER_MSG("Radar", 7);
-	gmsgSpectator = REG_USER_MSG("Spectator", 2);
-	gmsgVGUIMenu = REG_USER_MSG("VGUIMenu", -1);
-	gmsgTutorText = REG_USER_MSG("TutorText", -1);
-	gmsgTutorLine = REG_USER_MSG("TutorLine", -1);
-	gmsgTutorState = REG_USER_MSG("TutorState", -1);
-	gmsgTutorClose = REG_USER_MSG("TutorClose", -1);
-	gmsgAllowSpec = REG_USER_MSG("AllowSpec", 1);
-	gmsgBombDrop = REG_USER_MSG("BombDrop", 7);
-	gmsgBombPickup = REG_USER_MSG("BombPickup", 0);
-	gmsgSendCorpse = REG_USER_MSG("ClCorpse", -1);
-	gmsgHostagePos = REG_USER_MSG("HostagePos", 8);
-	gmsgHostageK = REG_USER_MSG("HostageK", 1);
-	gmsgHLTV = REG_USER_MSG("HLTV", 2);
-	gmsgSpecHealth = REG_USER_MSG("SpecHealth", 1);
-	gmsgForceCam = REG_USER_MSG("ForceCam", 3);
-	gmsgADStop = REG_USER_MSG("ADStop", 0);
-	gmsgReceiveW = REG_USER_MSG("ReceiveW", 1);
-	gmsgCZCareer = REG_USER_MSG("CZCareer", -1);
-	gmsgCZCareerHUD = REG_USER_MSG("CZCareerHUD", -1);
-	gmsgShadowIdx = REG_USER_MSG("ShadowIdx", 4);
-	gmsgTaskTime = REG_USER_MSG("TaskTime", 4);
-	gmsgScenarioIcon = REG_USER_MSG("Scenario", -1);
-	gmsgBotVoice = REG_USER_MSG("BotVoice", 2);
-	gmsgBuyClose = REG_USER_MSG("BuyClose", 0);
-	gmsgSpecHealth2 = REG_USER_MSG("SpecHealth2", 2);
-	gmsgBarTime2 = REG_USER_MSG("BarTime2", 4);
-	gmsgItemStatus = REG_USER_MSG("ItemStatus", 1);
-	gmsgLocation = REG_USER_MSG("Location", -1);
-	gmsgBotProgress = REG_USER_MSG("BotProgress", -1);
-	gmsgBrass = REG_USER_MSG("Brass", -1);
-	gmsgFog = REG_USER_MSG("Fog", 7);
-	gmsgShowTimer = REG_USER_MSG("ShowTimer", 0);
-	gmsgHudTextArgs = REG_USER_MSG("HudTextArgs", -1);
+	gmsgDeathMsg      = REG_USER_MSG("DeathMsg", -1);
+	gmsgScoreAttrib   = REG_USER_MSG("ScoreAttrib", 2);
+	gmsgScoreInfo     = REG_USER_MSG("ScoreInfo", 9);
+	gmsgTeamInfo      = REG_USER_MSG("TeamInfo", -1);
+	gmsgTeamScore     = REG_USER_MSG("TeamScore", -1);
+	gmsgGameMode      = REG_USER_MSG("GameMode", 1);
+	gmsgMOTD          = REG_USER_MSG("MOTD", -1);
+	gmsgServerName    = REG_USER_MSG("ServerName", -1);
+	gmsgAmmoPickup    = REG_USER_MSG("AmmoPickup", 2);
+	gmsgWeapPickup    = REG_USER_MSG("WeapPickup", 1);
+	gmsgItemPickup    = REG_USER_MSG("ItemPickup", -1);
+	gmsgHideWeapon    = REG_USER_MSG("HideWeapon", 1);
+	gmsgSetFOV        = REG_USER_MSG("SetFOV", 1);
+	gmsgShowMenu      = REG_USER_MSG("ShowMenu", -1);
+	gmsgShake         = REG_USER_MSG("ScreenShake", 6);
+	gmsgFade          = REG_USER_MSG("ScreenFade", 10);
+	gmsgAmmoX         = REG_USER_MSG("AmmoX", 2);
+	gmsgSendAudio     = REG_USER_MSG("SendAudio", -1);
+	gmsgRoundTime     = REG_USER_MSG("RoundTime", 2);
+	gmsgMoney         = REG_USER_MSG("Money", 5);
+	gmsgArmorType     = REG_USER_MSG("ArmorType", 1);
+	gmsgBlinkAcct     = REG_USER_MSG("BlinkAcct", 1);
+	gmsgStatusValue   = REG_USER_MSG("StatusValue", -1);
+	gmsgStatusText    = REG_USER_MSG("StatusText", -1);
+	gmsgStatusIcon    = REG_USER_MSG("StatusIcon", -1);
+	gmsgBarTime       = REG_USER_MSG("BarTime", 2);
+	gmsgReloadSound   = REG_USER_MSG("ReloadSound", 2);
+	gmsgCrosshair     = REG_USER_MSG("Crosshair", 1);
+	gmsgNVGToggle     = REG_USER_MSG("NVGToggle", 1);
+	gmsgRadar         = REG_USER_MSG("Radar", 7);
+	gmsgSpectator     = REG_USER_MSG("Spectator", 2);
+	gmsgVGUIMenu      = REG_USER_MSG("VGUIMenu", -1);
+	gmsgTutorText     = REG_USER_MSG("TutorText", -1);
+	gmsgTutorLine     = REG_USER_MSG("TutorLine", -1);
+	gmsgTutorState    = REG_USER_MSG("TutorState", -1);
+	gmsgTutorClose    = REG_USER_MSG("TutorClose", -1);
+	gmsgAllowSpec     = REG_USER_MSG("AllowSpec", 1);
+	gmsgBombDrop      = REG_USER_MSG("BombDrop", 7);
+	gmsgBombPickup    = REG_USER_MSG("BombPickup", 0);
+	gmsgSendCorpse    = REG_USER_MSG("ClCorpse", -1);
+	gmsgHostagePos    = REG_USER_MSG("HostagePos", 8);
+	gmsgHostageK      = REG_USER_MSG("HostageK", 1);
+	gmsgHLTV          = REG_USER_MSG("HLTV", 2);
+	gmsgSpecHealth    = REG_USER_MSG("SpecHealth", 1);
+	gmsgForceCam      = REG_USER_MSG("ForceCam", 3);
+	gmsgADStop        = REG_USER_MSG("ADStop", 0);
+	gmsgReceiveW      = REG_USER_MSG("ReceiveW", 1);
+	gmsgCZCareer      = REG_USER_MSG("CZCareer", -1);
+	gmsgCZCareerHUD   = REG_USER_MSG("CZCareerHUD", -1);
+	gmsgShadowIdx     = REG_USER_MSG("ShadowIdx", 4);
+	gmsgTaskTime      = REG_USER_MSG("TaskTime", 4);
+	gmsgScenarioIcon  = REG_USER_MSG("Scenario", -1);
+	gmsgBotVoice      = REG_USER_MSG("BotVoice", 2);
+	gmsgBuyClose      = REG_USER_MSG("BuyClose", 0);
+	gmsgSpecHealth2   = REG_USER_MSG("SpecHealth2", 2);
+	gmsgBarTime2      = REG_USER_MSG("BarTime2", 4);
+	gmsgItemStatus    = REG_USER_MSG("ItemStatus", 1);
+	gmsgLocation      = REG_USER_MSG("Location", -1);
+	gmsgBotProgress   = REG_USER_MSG("BotProgress", -1);
+	gmsgBrass         = REG_USER_MSG("Brass", -1);
+	gmsgFog           = REG_USER_MSG("Fog", 7);
+	gmsgShowTimer     = REG_USER_MSG("ShowTimer", 0);
+	gmsgHudTextArgs   = REG_USER_MSG("HudTextArgs", -1);
 }
 
 void WriteSigonMessages()
 {
-	for (int i = 0; i < MAX_WEAPONS; ++i)
+	for (int i = 0; i < MAX_WEAPONS; i++)
 	{
-		ItemInfo &II = IMPL_CLASS(CBasePlayerItem, m_ItemInfoArray)[i];
-
-		if (!II.iId)
+		ItemInfo &info = CBasePlayerItem::m_ItemInfoArray[i];
+		if (!info.iId)
 			continue;
 
 		const char *pszName;
-		if (!II.pszName)
+		if (!info.pszName)
 			pszName = "Empty";
 		else
-			pszName = II.pszName;
+			pszName = info.pszName;
 
 		MESSAGE_BEGIN(MSG_INIT, gmsgWeaponList);
 			WRITE_STRING(pszName);
-			WRITE_BYTE(CBasePlayer::GetAmmoIndex(II.pszAmmo1));
-			WRITE_BYTE(II.iMaxAmmo1);
-			WRITE_BYTE(CBasePlayer::GetAmmoIndex(II.pszAmmo2));
-			WRITE_BYTE(II.iMaxAmmo2);
-			WRITE_BYTE(II.iSlot);
-			WRITE_BYTE(II.iPosition);
-			WRITE_BYTE(II.iId);
-			WRITE_BYTE(II.iFlags);
+			WRITE_BYTE(CBasePlayer::GetAmmoIndex(info.pszAmmo1));
+			WRITE_BYTE(info.iMaxAmmo1);
+			WRITE_BYTE(CBasePlayer::GetAmmoIndex(info.pszAmmo2));
+			WRITE_BYTE(info.iMaxAmmo2);
+			WRITE_BYTE(info.iSlot);
+			WRITE_BYTE(info.iPosition);
+			WRITE_BYTE(info.iId);
+			WRITE_BYTE(info.iFlags);
 		MESSAGE_END();
 	}
 }
@@ -1016,10 +1009,10 @@ bool CanBuyThis(CBasePlayer *pPlayer, int iWeapon)
 	if (pPlayer->HasShield() && iWeapon == WEAPON_SHIELDGUN)
 		return false;
 
-	if (pPlayer->m_rgpPlayerItems[ PISTOL_SLOT ] && pPlayer->m_rgpPlayerItems[ PISTOL_SLOT ]->m_iId == WEAPON_ELITE && iWeapon == WEAPON_SHIELDGUN)
+	if (pPlayer->m_rgpPlayerItems[PISTOL_SLOT] && pPlayer->m_rgpPlayerItems[PISTOL_SLOT]->m_iId == WEAPON_ELITE && iWeapon == WEAPON_SHIELDGUN)
 		return false;
 
-	if (pPlayer->m_rgpPlayerItems[ PRIMARY_WEAPON_SLOT ] && pPlayer->m_rgpPlayerItems[ PRIMARY_WEAPON_SLOT ]->m_iId == iWeapon)
+	if (pPlayer->m_rgpPlayerItems[PRIMARY_WEAPON_SLOT] && pPlayer->m_rgpPlayerItems[PRIMARY_WEAPON_SLOT]->m_iId == iWeapon)
 	{
 		if (g_bClientPrintEnable)
 		{
@@ -1029,7 +1022,7 @@ bool CanBuyThis(CBasePlayer *pPlayer, int iWeapon)
 		return false;
 	}
 
-	if (pPlayer->m_rgpPlayerItems[ PISTOL_SLOT ] && pPlayer->m_rgpPlayerItems[ PISTOL_SLOT ]->m_iId == iWeapon)
+	if (pPlayer->m_rgpPlayerItems[PISTOL_SLOT] && pPlayer->m_rgpPlayerItems[PISTOL_SLOT]->m_iId == iWeapon)
 	{
 		if (g_bClientPrintEnable)
 		{
@@ -1673,7 +1666,7 @@ void EXT_FUNC __API_HOOK(HandleMenu_ChooseAppearance)(CBasePlayer *pPlayer, int 
 	pPlayer->m_iModelName = appearance.model_id;
 
 	pPlayer->SetClientUserInfoModel(GET_INFO_BUFFER(pPlayer->edict()), appearance.model_name);
-	pPlayer->SetNewPlayerModel(sPlayerModelFiles[ appearance.model_name_index ]);
+	pPlayer->SetNewPlayerModel(sPlayerModelFiles[appearance.model_name_index]);
 
 	if (CSGameRules()->m_bMapHasVIPSafetyZone)
 	{
@@ -2236,12 +2229,12 @@ bool BuyAmmo(CBasePlayer *pPlayer, int nSlot, bool bBlinkMoney)
 	// nSlot == 1 : Primary weapons
 	// nSlot == 2 : Secondary weapons
 
-	CBasePlayerItem *pItem = pPlayer->m_rgpPlayerItems[ nSlot ];
+	CBasePlayerItem *pItem = pPlayer->m_rgpPlayerItems[nSlot];
 
 	if (pPlayer->HasShield())
 	{
-		if (pPlayer->m_rgpPlayerItems[ PISTOL_SLOT ])
-			pItem = pPlayer->m_rgpPlayerItems[ PISTOL_SLOT ];
+		if (pPlayer->m_rgpPlayerItems[PISTOL_SLOT])
+			pItem = pPlayer->m_rgpPlayerItems[PISTOL_SLOT];
 	}
 
 	if (pItem)
@@ -3625,19 +3618,8 @@ void EXT_FUNC StartFrame()
 
 	CLocalNav::Think();
 
-	static cvar_t *skill = nullptr;
-	if (!skill)
-	{
-		skill = CVAR_GET_POINTER("skill");
-	}
-
 	gpGlobals->teamplay = 1.0f;
-
-	if (skill)
-		g_iSkillLevel = int(skill->value);
-
-	else
-		g_iSkillLevel = 0;
+	g_iSkillLevel = g_pskill ? (int)g_pskill->value : 0;
 
 	if (TheBots) {
 		TheBots->StartFrame();
@@ -4422,12 +4404,12 @@ void EXT_FUNC CreateBaseline(int player, int eindex, struct entity_state_s *base
 
 void Entity_FieldInit(struct delta_s *pFields)
 {
-	entity_field_alias[ FIELD_ORIGIN0 ].field = DELTA_FINDFIELD(pFields, entity_field_alias[ FIELD_ORIGIN0 ].name);
-	entity_field_alias[ FIELD_ORIGIN1 ].field = DELTA_FINDFIELD(pFields, entity_field_alias[ FIELD_ORIGIN1 ].name);
-	entity_field_alias[ FIELD_ORIGIN2 ].field = DELTA_FINDFIELD(pFields, entity_field_alias[ FIELD_ORIGIN2 ].name);
-	entity_field_alias[ FIELD_ANGLES0 ].field = DELTA_FINDFIELD(pFields, entity_field_alias[ FIELD_ANGLES0 ].name);
-	entity_field_alias[ FIELD_ANGLES1 ].field = DELTA_FINDFIELD(pFields, entity_field_alias[ FIELD_ANGLES1 ].name);
-	entity_field_alias[ FIELD_ANGLES2 ].field = DELTA_FINDFIELD(pFields, entity_field_alias[ FIELD_ANGLES2 ].name);
+	entity_field_alias[FIELD_ORIGIN0].field = DELTA_FINDFIELD(pFields, entity_field_alias[FIELD_ORIGIN0].name);
+	entity_field_alias[FIELD_ORIGIN1].field = DELTA_FINDFIELD(pFields, entity_field_alias[FIELD_ORIGIN1].name);
+	entity_field_alias[FIELD_ORIGIN2].field = DELTA_FINDFIELD(pFields, entity_field_alias[FIELD_ORIGIN2].name);
+	entity_field_alias[FIELD_ANGLES0].field = DELTA_FINDFIELD(pFields, entity_field_alias[FIELD_ANGLES0].name);
+	entity_field_alias[FIELD_ANGLES1].field = DELTA_FINDFIELD(pFields, entity_field_alias[FIELD_ANGLES1].name);
+	entity_field_alias[FIELD_ANGLES2].field = DELTA_FINDFIELD(pFields, entity_field_alias[FIELD_ANGLES2].name);
 }
 
 // Callback for sending entity_state_t info over network.
@@ -4451,39 +4433,39 @@ void Entity_Encode(struct delta_s *pFields, const unsigned char *from, const uns
 
 	if (localplayer)
 	{
-		DELTA_UNSETBYINDEX(pFields, entity_field_alias[ FIELD_ORIGIN0 ].field);
-		DELTA_UNSETBYINDEX(pFields, entity_field_alias[ FIELD_ORIGIN1 ].field);
-		DELTA_UNSETBYINDEX(pFields, entity_field_alias[ FIELD_ORIGIN2 ].field);
+		DELTA_UNSETBYINDEX(pFields, entity_field_alias[FIELD_ORIGIN0].field);
+		DELTA_UNSETBYINDEX(pFields, entity_field_alias[FIELD_ORIGIN1].field);
+		DELTA_UNSETBYINDEX(pFields, entity_field_alias[FIELD_ORIGIN2].field);
 	}
 	if (t->impacttime != 0 && t->starttime != 0)
 	{
-		DELTA_UNSETBYINDEX(pFields, entity_field_alias[ FIELD_ORIGIN0 ].field);
-		DELTA_UNSETBYINDEX(pFields, entity_field_alias[ FIELD_ORIGIN1 ].field);
-		DELTA_UNSETBYINDEX(pFields, entity_field_alias[ FIELD_ORIGIN2 ].field);
+		DELTA_UNSETBYINDEX(pFields, entity_field_alias[FIELD_ORIGIN0].field);
+		DELTA_UNSETBYINDEX(pFields, entity_field_alias[FIELD_ORIGIN1].field);
+		DELTA_UNSETBYINDEX(pFields, entity_field_alias[FIELD_ORIGIN2].field);
 
-		DELTA_UNSETBYINDEX(pFields, entity_field_alias[ FIELD_ANGLES0 ].field);
-		DELTA_UNSETBYINDEX(pFields, entity_field_alias[ FIELD_ANGLES1 ].field);
-		DELTA_UNSETBYINDEX(pFields, entity_field_alias[ FIELD_ANGLES2 ].field);
+		DELTA_UNSETBYINDEX(pFields, entity_field_alias[FIELD_ANGLES0].field);
+		DELTA_UNSETBYINDEX(pFields, entity_field_alias[FIELD_ANGLES1].field);
+		DELTA_UNSETBYINDEX(pFields, entity_field_alias[FIELD_ANGLES2].field);
 	}
 	if (t->movetype == MOVETYPE_FOLLOW && t->aiment != 0)
 	{
-		DELTA_UNSETBYINDEX(pFields, entity_field_alias[ FIELD_ORIGIN0 ].field);
-		DELTA_UNSETBYINDEX(pFields, entity_field_alias[ FIELD_ORIGIN1 ].field);
-		DELTA_UNSETBYINDEX(pFields, entity_field_alias[ FIELD_ORIGIN2 ].field);
+		DELTA_UNSETBYINDEX(pFields, entity_field_alias[FIELD_ORIGIN0].field);
+		DELTA_UNSETBYINDEX(pFields, entity_field_alias[FIELD_ORIGIN1].field);
+		DELTA_UNSETBYINDEX(pFields, entity_field_alias[FIELD_ORIGIN2].field);
 	}
 	else if (t->aiment != f->aiment)
 	{
-		DELTA_SETBYINDEX(pFields, entity_field_alias[ FIELD_ORIGIN0 ].field);
-		DELTA_SETBYINDEX(pFields, entity_field_alias[ FIELD_ORIGIN1 ].field);
-		DELTA_SETBYINDEX(pFields, entity_field_alias[ FIELD_ORIGIN2 ].field);
+		DELTA_SETBYINDEX(pFields, entity_field_alias[FIELD_ORIGIN0].field);
+		DELTA_SETBYINDEX(pFields, entity_field_alias[FIELD_ORIGIN1].field);
+		DELTA_SETBYINDEX(pFields, entity_field_alias[FIELD_ORIGIN2].field);
 	}
 }
 
 void Player_FieldInit(struct delta_s *pFields)
 {
-	player_field_alias[ FIELD_ORIGIN0 ].field = DELTA_FINDFIELD(pFields, player_field_alias[ FIELD_ORIGIN0 ].name);
-	player_field_alias[ FIELD_ORIGIN1 ].field = DELTA_FINDFIELD(pFields, player_field_alias[ FIELD_ORIGIN1 ].name);
-	player_field_alias[ FIELD_ORIGIN2 ].field = DELTA_FINDFIELD(pFields, player_field_alias[ FIELD_ORIGIN2 ].name);
+	player_field_alias[FIELD_ORIGIN0].field = DELTA_FINDFIELD(pFields, player_field_alias[FIELD_ORIGIN0].name);
+	player_field_alias[FIELD_ORIGIN1].field = DELTA_FINDFIELD(pFields, player_field_alias[FIELD_ORIGIN1].name);
+	player_field_alias[FIELD_ORIGIN2].field = DELTA_FINDFIELD(pFields, player_field_alias[FIELD_ORIGIN2].name);
 }
 
 // Callback for sending entity_state_t for players info over network.
@@ -4507,35 +4489,35 @@ void Player_Encode(struct delta_s *pFields, const unsigned char *from, const uns
 
 	if (localplayer)
 	{
-		DELTA_UNSETBYINDEX(pFields, entity_field_alias[ FIELD_ORIGIN0 ].field);
-		DELTA_UNSETBYINDEX(pFields, entity_field_alias[ FIELD_ORIGIN1 ].field);
-		DELTA_UNSETBYINDEX(pFields, entity_field_alias[ FIELD_ORIGIN2 ].field);
+		DELTA_UNSETBYINDEX(pFields, entity_field_alias[FIELD_ORIGIN0].field);
+		DELTA_UNSETBYINDEX(pFields, entity_field_alias[FIELD_ORIGIN1].field);
+		DELTA_UNSETBYINDEX(pFields, entity_field_alias[FIELD_ORIGIN2].field);
 	}
 	if (t->movetype == MOVETYPE_FOLLOW && t->aiment != 0)
 	{
-		DELTA_UNSETBYINDEX(pFields, entity_field_alias[ FIELD_ORIGIN0 ].field);
-		DELTA_UNSETBYINDEX(pFields, entity_field_alias[ FIELD_ORIGIN1 ].field);
-		DELTA_UNSETBYINDEX(pFields, entity_field_alias[ FIELD_ORIGIN2 ].field);
+		DELTA_UNSETBYINDEX(pFields, entity_field_alias[FIELD_ORIGIN0].field);
+		DELTA_UNSETBYINDEX(pFields, entity_field_alias[FIELD_ORIGIN1].field);
+		DELTA_UNSETBYINDEX(pFields, entity_field_alias[FIELD_ORIGIN2].field);
 	}
 	else if (t->aiment != f->aiment)
 	{
-		DELTA_SETBYINDEX(pFields, entity_field_alias[ FIELD_ORIGIN0 ].field);
-		DELTA_SETBYINDEX(pFields, entity_field_alias[ FIELD_ORIGIN1 ].field);
-		DELTA_SETBYINDEX(pFields, entity_field_alias[ FIELD_ORIGIN2 ].field);
+		DELTA_SETBYINDEX(pFields, entity_field_alias[FIELD_ORIGIN0].field);
+		DELTA_SETBYINDEX(pFields, entity_field_alias[FIELD_ORIGIN1].field);
+		DELTA_SETBYINDEX(pFields, entity_field_alias[FIELD_ORIGIN2].field);
 	}
 }
 
 void Custom_Entity_FieldInit(delta_s *pFields)
 {
-	custom_entity_field_alias[ CUSTOMFIELD_ORIGIN0 ].field = DELTA_FINDFIELD(pFields, custom_entity_field_alias[ CUSTOMFIELD_ORIGIN0 ].name);
-	custom_entity_field_alias[ CUSTOMFIELD_ORIGIN1 ].field = DELTA_FINDFIELD(pFields, custom_entity_field_alias[ CUSTOMFIELD_ORIGIN1 ].name);
-	custom_entity_field_alias[ CUSTOMFIELD_ORIGIN2 ].field = DELTA_FINDFIELD(pFields, custom_entity_field_alias[ CUSTOMFIELD_ORIGIN2 ].name);
-	custom_entity_field_alias[ CUSTOMFIELD_ANGLES0 ].field = DELTA_FINDFIELD(pFields, custom_entity_field_alias[ CUSTOMFIELD_ANGLES0 ].name);
-	custom_entity_field_alias[ CUSTOMFIELD_ANGLES1 ].field = DELTA_FINDFIELD(pFields, custom_entity_field_alias[ CUSTOMFIELD_ANGLES1 ].name);
-	custom_entity_field_alias[ CUSTOMFIELD_ANGLES2 ].field = DELTA_FINDFIELD(pFields, custom_entity_field_alias[ CUSTOMFIELD_ANGLES2 ].name);
-	custom_entity_field_alias[ CUSTOMFIELD_SKIN ].field = DELTA_FINDFIELD(pFields, custom_entity_field_alias[ CUSTOMFIELD_SKIN ].name);
-	custom_entity_field_alias[ CUSTOMFIELD_SEQUENCE ].field = DELTA_FINDFIELD(pFields, custom_entity_field_alias[ CUSTOMFIELD_SEQUENCE ].name);
-	custom_entity_field_alias[ CUSTOMFIELD_ANIMTIME ].field = DELTA_FINDFIELD(pFields, custom_entity_field_alias[ CUSTOMFIELD_ANIMTIME ].name);
+	custom_entity_field_alias[CUSTOMFIELD_ORIGIN0].field = DELTA_FINDFIELD(pFields, custom_entity_field_alias[CUSTOMFIELD_ORIGIN0].name);
+	custom_entity_field_alias[CUSTOMFIELD_ORIGIN1].field = DELTA_FINDFIELD(pFields, custom_entity_field_alias[CUSTOMFIELD_ORIGIN1].name);
+	custom_entity_field_alias[CUSTOMFIELD_ORIGIN2].field = DELTA_FINDFIELD(pFields, custom_entity_field_alias[CUSTOMFIELD_ORIGIN2].name);
+	custom_entity_field_alias[CUSTOMFIELD_ANGLES0].field = DELTA_FINDFIELD(pFields, custom_entity_field_alias[CUSTOMFIELD_ANGLES0].name);
+	custom_entity_field_alias[CUSTOMFIELD_ANGLES1].field = DELTA_FINDFIELD(pFields, custom_entity_field_alias[CUSTOMFIELD_ANGLES1].name);
+	custom_entity_field_alias[CUSTOMFIELD_ANGLES2].field = DELTA_FINDFIELD(pFields, custom_entity_field_alias[CUSTOMFIELD_ANGLES2].name);
+	custom_entity_field_alias[CUSTOMFIELD_SKIN].field = DELTA_FINDFIELD(pFields, custom_entity_field_alias[CUSTOMFIELD_SKIN].name);
+	custom_entity_field_alias[CUSTOMFIELD_SEQUENCE].field = DELTA_FINDFIELD(pFields, custom_entity_field_alias[CUSTOMFIELD_SEQUENCE].name);
+	custom_entity_field_alias[CUSTOMFIELD_ANIMTIME].field = DELTA_FINDFIELD(pFields, custom_entity_field_alias[CUSTOMFIELD_ANIMTIME].name);
 }
 
 // Callback for sending entity_state_t info ( for custom entities ) over network.
@@ -4560,27 +4542,27 @@ void Custom_Encode(struct delta_s *pFields, const unsigned char *from, const uns
 	{
 		if (beamType != BEAM_ENTPOINT)
 		{
-			DELTA_UNSETBYINDEX(pFields, custom_entity_field_alias[ CUSTOMFIELD_ORIGIN0 ].field);
-			DELTA_UNSETBYINDEX(pFields, custom_entity_field_alias[ CUSTOMFIELD_ORIGIN1 ].field);
-			DELTA_UNSETBYINDEX(pFields, custom_entity_field_alias[ CUSTOMFIELD_ORIGIN2 ].field);
+			DELTA_UNSETBYINDEX(pFields, custom_entity_field_alias[CUSTOMFIELD_ORIGIN0].field);
+			DELTA_UNSETBYINDEX(pFields, custom_entity_field_alias[CUSTOMFIELD_ORIGIN1].field);
+			DELTA_UNSETBYINDEX(pFields, custom_entity_field_alias[CUSTOMFIELD_ORIGIN2].field);
 		}
 
-		DELTA_UNSETBYINDEX(pFields, custom_entity_field_alias[ CUSTOMFIELD_ANGLES0 ].field);
-		DELTA_UNSETBYINDEX(pFields, custom_entity_field_alias[ CUSTOMFIELD_ANGLES1 ].field);
-		DELTA_UNSETBYINDEX(pFields, custom_entity_field_alias[ CUSTOMFIELD_ANGLES2 ].field);
+		DELTA_UNSETBYINDEX(pFields, custom_entity_field_alias[CUSTOMFIELD_ANGLES0].field);
+		DELTA_UNSETBYINDEX(pFields, custom_entity_field_alias[CUSTOMFIELD_ANGLES1].field);
+		DELTA_UNSETBYINDEX(pFields, custom_entity_field_alias[CUSTOMFIELD_ANGLES2].field);
 	}
 
 	if (beamType != BEAM_ENTS && beamType != BEAM_ENTPOINT)
 	{
-		DELTA_UNSETBYINDEX(pFields, custom_entity_field_alias[ CUSTOMFIELD_SKIN ].field);
-		DELTA_UNSETBYINDEX(pFields, custom_entity_field_alias[ CUSTOMFIELD_SEQUENCE ].field);
+		DELTA_UNSETBYINDEX(pFields, custom_entity_field_alias[CUSTOMFIELD_SKIN].field);
+		DELTA_UNSETBYINDEX(pFields, custom_entity_field_alias[CUSTOMFIELD_SEQUENCE].field);
 	}
 
 	// animtime is compared by rounding first
 	// see if we really shouldn't actually send it
 	if (int(f->animtime) == int(t->animtime))
 	{
-		DELTA_UNSETBYINDEX(pFields, custom_entity_field_alias[ CUSTOMFIELD_ANIMTIME ].field);
+		DELTA_UNSETBYINDEX(pFields, custom_entity_field_alias[CUSTOMFIELD_ANIMTIME].field);
 	}
 }
 
@@ -4756,7 +4738,7 @@ void EXT_FUNC UpdateClientData(const edict_t *ent, int sendweapons, struct clien
 				if ((unsigned int)weapon->m_iPrimaryAmmoType < MAX_AMMO_SLOTS)
 				{
 					cd->vuser4.x = weapon->m_iPrimaryAmmoType;
-					cd->vuser4.y = pPlayer->m_rgAmmo[ weapon->m_iPrimaryAmmoType ];
+					cd->vuser4.y = pPlayer->m_rgAmmo[weapon->m_iPrimaryAmmoType];
 				}
 				else
 				{

@@ -44,7 +44,7 @@ public:
 	void EXPORT FieldUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 public:
-	static TYPEDESCRIPTION IMPL(m_SaveData)[6];
+	static TYPEDESCRIPTION m_SaveData[];
 
 	int m_iszXController;
 	int m_iszYController;

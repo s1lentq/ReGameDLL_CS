@@ -39,6 +39,6 @@ extern cvar_t cv_tutor_message_minimum_display_time;
 extern cvar_t cv_tutor_message_character_display_time_coefficient;
 extern cvar_t cv_tutor_hint_interval_time;
 
-void InstallTutor(bool start);
+void InstallTutor(bool bCreate);
 void Tutor_RegisterCVars();
 void MonitorTutorStatus();

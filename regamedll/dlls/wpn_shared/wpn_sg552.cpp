@@ -14,6 +14,7 @@ void CSG552::Spawn()
 	m_iShotsFired = 0;
 
 	FallInit();
+	CSPlayerItem()->SetItemInfo(&m_ItemInfoArray[m_iId]);
 }
 
 void CSG552::Precache()

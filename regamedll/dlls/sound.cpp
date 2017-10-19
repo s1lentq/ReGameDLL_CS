@@ -1,7 +1,5 @@
 #include "precompiled.h"
 
-#ifndef HOOK_GAMEDLL
-
 // presets for runtime pitch and vol modulation of ambient sounds
 dynpitchvol_t rgdpvpreset[MAX_SENTENCE_DPV_RESET] =
 {
@@ -35,6 +33,23 @@ dynpitchvol_t rgdpvpreset[MAX_SENTENCE_DPV_RESET] =
 	{ 27,   128,    90,     10,     10,     10,     1,      20,     40,     LFO_SQUARE,    5,      10,     20,     0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0 },
 };
 
+int gcallsentences = 0;
+BOOL fSentencesInit = FALSE;
+
+int gcTextures = 0;
+BOOL fTextureTypeInit = FALSE;
+
+// time delay until it's ok to speak: used so that two NPCs don't talk at once
+float CTalkMonster::g_talkWaitTime = 0;
+
+char gszallsentencenames[MAX_SENTENCE_VOXFILE][MAX_SENTENCE_NAME];
+sentenceg rgsentenceg[MAX_SENTENCE_GROUPS];
+
+// Used to detect the texture the player is standing on, map the
+// texture name to a material type. Play footstep sound based on material type.
+char grgszTextureName[MAX_TEXTURES][MAX_TEXTURENAME_LENGHT];
+char grgchTextureType[MAX_TEXTURES];
+
 TYPEDESCRIPTION CAmbientGeneric::m_SaveData[] =
 {
 	DEFINE_FIELD(CAmbientGeneric, m_flAttenuation, FIELD_FLOAT),
@@ -48,36 +63,6 @@ TYPEDESCRIPTION CAmbientGeneric::m_SaveData[] =
 	// struct in Precache(), but it's unlikely that the struct will change, so it's not worth the time right now.
 	DEFINE_ARRAY(CAmbientGeneric, m_dpv, FIELD_CHARACTER, sizeof(dynpitchvol_t)),
 };
-
-TYPEDESCRIPTION CEnvSound::m_SaveData[] =
-{
-	DEFINE_FIELD(CEnvSound, m_flRadius, FIELD_FLOAT),
-	DEFINE_FIELD(CEnvSound, m_flRoomtype, FIELD_FLOAT),
-};
-
-TYPEDESCRIPTION CSpeaker::m_SaveData[] =
-{
-	DEFINE_FIELD(CSpeaker, m_preset, FIELD_INTEGER),
-};
-
-int gcallsentences = 0;
-BOOL fSentencesInit = FALSE;
-
-int gcTextures = 0;
-BOOL fTextureTypeInit = FALSE;
-
-#endif // HOOK_GAMEDLL
-
-// time delay until it's ok to speak: used so that two NPCs don't talk at once
-float CTalkMonster::g_talkWaitTime = 0;
-
-char gszallsentencenames[MAX_SENTENCE_VOXFILE][MAX_SENTENCE_NAME];
-sentenceg rgsentenceg[MAX_SENTENCE_GROUPS];
-
-// Used to detect the texture the player is standing on, map the
-// texture name to a material type. Play footstep sound based on material type.
-char grgszTextureName[CTEXTURESMAX][CBTEXTURENAMEMAX];
-char grgchTextureType[CTEXTURESMAX];
 
 LINK_ENTITY_TO_CLASS(ambient_generic, CAmbientGeneric, CCSAmbientGeneric)
 IMPLEMENT_SAVERESTORE(CAmbientGeneric, CBaseEntity)
@@ -856,6 +841,12 @@ void CAmbientGeneric::KeyValue(KeyValueData *pkvd)
 	}
 }
 
+TYPEDESCRIPTION CEnvSound::m_SaveData[] =
+{
+	DEFINE_FIELD(CEnvSound, m_flRadius, FIELD_FLOAT),
+	DEFINE_FIELD(CEnvSound, m_flRoomtype, FIELD_FLOAT),
+};
+
 LINK_ENTITY_TO_CLASS(env_sound, CEnvSound, CCSEnvSound)
 IMPLEMENT_SAVERESTORE(CEnvSound, CBaseEntity)
 
@@ -1497,13 +1488,13 @@ char *memfgets(byte *pMemFile, int fileSize, int &filePos, char *pBuffer, int bu
 	if (last - filePos > (bufferSize - 1))
 		last = filePos + (bufferSize - 1);
 
-	int stop = 0;
+	bool bStop = false;
 
 	// Stop at the next newline (inclusive) or end of buffer
-	while (i < last && !stop)
+	while (i < last && !bStop)
 	{
 		if (pMemFile[i] == '\n')
-			stop = 1;
+			bStop = true;
 		i++;
 	}
 
@@ -1517,7 +1508,7 @@ char *memfgets(byte *pMemFile, int fileSize, int &filePos, char *pBuffer, int bu
 
 		// If the buffer isn't full, terminate (this is always true)
 		if (size < bufferSize)
-			pBuffer[size] = 0;
+			pBuffer[size] = '\0';
 
 		// Update file pointer
 		filePos = i;
@@ -1550,7 +1541,7 @@ void TEXTURETYPE_Init()
 		return;
 
 	// for each line in the file...
-	while (memfgets(pMemFile, fileSize, filePos, buffer, sizeof(buffer) - 1) && (gcTextures < CTEXTURESMAX))
+	while (memfgets(pMemFile, fileSize, filePos, buffer, sizeof(buffer) - 1) && (gcTextures < MAX_TEXTURES))
 	{
 		// skip whitespace
 		i = 0;
@@ -1583,8 +1574,9 @@ void TEXTURETYPE_Init()
 			continue;
 
 		// null-terminate name and save in sentences array
-		j = Q_min(j, CBTEXTURENAMEMAX - 1 + i);
-		buffer[j] = 0;
+		j = Q_min(j, MAX_TEXTURENAME_LENGHT - 1 + i);
+		buffer[j] = '\0';
+
 		Q_strcpy(&(grgszTextureName[gcTextures++][0]), &(buffer[i]));
 	}
 
@@ -1604,8 +1596,8 @@ char TEXTURETYPE_Find(char *name)
 
 	for (int i = 0; i < gcTextures; ++i)
 	{
-		if (!Q_strnicmp(name, &(grgszTextureName[ i ][0]), CBTEXTURENAMEMAX - 1))
-			return (grgchTextureType[ i ]);
+		if (!Q_strnicmp(name, &(grgszTextureName[i][0]), MAX_TEXTURENAME_LENGHT - 1))
+			return (grgchTextureType[i]);
 	}
 
 	return CHAR_TEX_CONCRETE;
@@ -1621,7 +1613,7 @@ float TEXTURETYPE_PlaySound(TraceResult *ptr, Vector vecSrc, Vector vecEnd, int 
 	char chTextureType;
 	float fvol;
 	float fvolbar;
-	char szbuffer[64];
+	char szBuffer[64];
 	const char *pTextureName;
 	float rgfl1[3];
 	float rgfl2[3];
@@ -1634,7 +1626,7 @@ float TEXTURETYPE_PlaySound(TraceResult *ptr, Vector vecSrc, Vector vecEnd, int 
 
 	CBaseEntity *pEntity = CBaseEntity::Instance(ptr->pHit);
 
-	chTextureType = 0;
+	chTextureType = '\0';
 
 	if (pEntity && pEntity->Classify() != CLASS_NONE && pEntity->Classify() != CLASS_MACHINE)
 	{
@@ -1667,11 +1659,11 @@ float TEXTURETYPE_PlaySound(TraceResult *ptr, Vector vecSrc, Vector vecEnd, int 
 				pTextureName++;
 
 			// '}}'
-			Q_strcpy(szbuffer, pTextureName);
-			szbuffer[CBTEXTURENAMEMAX - 1] = '\0';
+			Q_strcpy(szBuffer, pTextureName);
+			szBuffer[MAX_TEXTURENAME_LENGHT - 1] = '\0';
 
 			// get texture type
-			chTextureType = TEXTURETYPE_Find(szbuffer);
+			chTextureType = TEXTURETYPE_Find(szBuffer);
 		}
 	}
 
@@ -1813,9 +1805,13 @@ float TEXTURETYPE_PlaySound(TraceResult *ptr, Vector vecSrc, Vector vecEnd, int 
 
 	// play material hit sound
 	UTIL_EmitAmbientSound(ENT(0), ptr->vecEndPos, rgsz[RANDOM_LONG(0, cnt - 1)], fvol, fattn, 0, 96 + RANDOM_LONG(0, 0xf));
-
 	return fvolbar;
 }
+
+TYPEDESCRIPTION CSpeaker::m_SaveData[] =
+{
+	DEFINE_FIELD(CSpeaker, m_preset, FIELD_INTEGER),
+};
 
 LINK_ENTITY_TO_CLASS(speaker, CSpeaker, CCSSpeaker)
 IMPLEMENT_SAVERESTORE(CSpeaker, CBaseEntity)

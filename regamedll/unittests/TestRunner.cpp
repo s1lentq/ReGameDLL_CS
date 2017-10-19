@@ -1,7 +1,8 @@
 #include "precompiled.h"
 #include "cppunitlite/GradleAdapter.h"
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[])
+{
 	printf("TestRunner: main()\n");
 
 	GradleAdapter a;

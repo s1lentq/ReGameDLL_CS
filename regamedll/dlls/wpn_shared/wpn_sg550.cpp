@@ -17,6 +17,7 @@ void CSG550::Spawn()
 #endif
 
 	FallInit();
+	CSPlayerItem()->SetItemInfo(&m_ItemInfoArray[m_iId]);
 }
 
 void CSG550::Precache()

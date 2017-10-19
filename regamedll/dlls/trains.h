@@ -51,7 +51,7 @@ public:
 	CPathTrack *ValidPath(CPathTrack *ppath, int testFlag);
 	void Project(CPathTrack *pstart, CPathTrack *pend, Vector *origin, float dist);
 
-	static CPathTrack *Instance(edict_t *pent);
+	static CPathTrack *Instance(edict_t *pEdict);
 
 	CPathTrack *LookAhead(Vector *origin, float dist, int move);
 	CPathTrack *Nearest(Vector origin);
@@ -60,7 +60,7 @@ public:
 	CPathTrack *GetPrevious();
 
 public:
-	static TYPEDESCRIPTION IMPL(m_SaveData)[5];
+	static TYPEDESCRIPTION m_SaveData[];
 
 	float m_length;
 	string_t m_altName;
@@ -106,7 +106,7 @@ public:
 	void UpdateSound();
 
 	static CFuncTrackTrain *Instance(edict_t *pent);
-	static TYPEDESCRIPTION IMPL(m_SaveData)[12];
+	static TYPEDESCRIPTION m_SaveData[];
 
 	CPathTrack *m_ppath;
 	float m_length;
@@ -164,7 +164,7 @@ public:
 
 public:
 	static CFuncVehicle *Instance(edict_t *pent);
-	static TYPEDESCRIPTION IMPL(m_SaveData)[12];
+	static TYPEDESCRIPTION m_SaveData[];
 
 	CPathTrack *m_ppath;
 	float m_length;

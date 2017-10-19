@@ -97,14 +97,14 @@ public:
 	static void MaterialSoundRandom(edict_t *pEdict, Materials soundMaterial, float volume);
 	static const char **MaterialSoundList(Materials precacheMaterial, int &soundCount);
 
-	static const char *pSoundsWood[3];
-	static const char *pSoundsFlesh[6];
-	static const char *pSoundsGlass[3];
-	static const char *pSoundsMetal[3];
-	static const char *pSoundsConcrete[3];
-	static const char *pSpawnObjects[32];
+	static const char *m_pszSpawnObjects[32];
+	static const char *m_pszSoundsWood[3];
+	static const char *m_pszSoundsFlesh[6];
+	static const char *m_pszSoundsMetal[3];
+	static const char *m_pszSoundsConcrete[3];
+	static const char *m_pszSoundsGlass[3];
 
-	static TYPEDESCRIPTION IMPL(m_SaveData)[5];
+	static TYPEDESCRIPTION m_SaveData[];
 
 public:
 	Materials m_Material;
@@ -149,8 +149,8 @@ public:
 	float MaxSpeed() const { return m_maxSpeed; }
 
 public:
-	static TYPEDESCRIPTION IMPL(m_SaveData)[2];
-	static char *m_soundNames[3];
+	static TYPEDESCRIPTION m_SaveData[];
+	static const char *m_soundNames[];
 
 	int m_lastSound;
 	float m_maxSpeed;

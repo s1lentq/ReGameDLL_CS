@@ -57,7 +57,7 @@ public:
 	void EXPORT Smoke();
 
 public:
-	static TYPEDESCRIPTION IMPL(m_SaveData)[2];
+	static TYPEDESCRIPTION m_SaveData[];
 
 	int m_iMagnitude;
 	int m_spriteScale;

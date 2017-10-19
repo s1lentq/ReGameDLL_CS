@@ -1,14 +1,9 @@
 #include "precompiled.h"
 
-/*
-* Globals initialization
-*/
-#ifndef HOOK_GAMEDLL
-
 // Just add more items to the bottom of this array and they will automagically be supported
 // This is done instead of just a classname in the FGD so we can control which entities can
 // be spawned, and still remain fairly flexible
-const char *CBreakable::pSpawnObjects[] =
+const char *CBreakable::m_pszSpawnObjects[] =
 {
 	nullptr,
 	"item_battery",
@@ -44,14 +39,14 @@ const char *CBreakable::pSpawnObjects[] =
 	"weapon_flashbang"
 };
 
-const char *CBreakable::pSoundsWood[] =
+const char *CBreakable::m_pszSoundsWood[] =
 {
 	"debris/wood1.wav",
 	"debris/wood2.wav",
 	"debris/wood3.wav"
 };
 
-const char *CBreakable::pSoundsFlesh[] =
+const char *CBreakable::m_pszSoundsFlesh[] =
 {
 	"debris/flesh1.wav",
 	"debris/flesh2.wav",
@@ -61,32 +56,25 @@ const char *CBreakable::pSoundsFlesh[] =
 	"debris/flesh7.wav"
 };
 
-const char *CBreakable::pSoundsMetal[] =
+const char *CBreakable::m_pszSoundsMetal[] =
 {
 	"debris/metal1.wav",
 	"debris/metal2.wav",
 	"debris/metal3.wav"
 };
 
-const char *CBreakable::pSoundsConcrete[] =
+const char *CBreakable::m_pszSoundsConcrete[] =
 {
 	"debris/concrete1.wav",
 	"debris/concrete2.wav",
 	"debris/concrete3.wav"
 };
 
-const char *CBreakable::pSoundsGlass[] =
+const char *CBreakable::m_pszSoundsGlass[] =
 {
 	"debris/glass1.wav",
 	"debris/glass2.wav",
 	"debris/glass3.wav"
-};
-
-char *CPushable::m_soundNames[] =
-{
-	"debris/pushbox1.wav",
-	"debris/pushbox2.wav",
-	"debris/pushbox3.wav"
 };
 
 TYPEDESCRIPTION CBreakable::m_SaveData[] =
@@ -97,80 +85,6 @@ TYPEDESCRIPTION CBreakable::m_SaveData[] =
 	DEFINE_FIELD(CBreakable, m_iszGibModel, FIELD_STRING),
 	DEFINE_FIELD(CBreakable, m_iszSpawnObject, FIELD_STRING),
 };
-
-TYPEDESCRIPTION CPushable::m_SaveData[] =
-{
-	DEFINE_FIELD(CPushable, m_maxSpeed, FIELD_FLOAT),
-	DEFINE_FIELD(CPushable, m_soundTime, FIELD_TIME),
-};
-
-#endif // HOOK_GAMEDLL
-
-void CBreakable::KeyValue(KeyValueData *pkvd)
-{
-	// UNDONE_WC: explicitly ignoring these fields, but they shouldn't be in the map file!
-	if (FStrEq(pkvd->szKeyName, "explosion"))
-	{
-		if (!Q_stricmp(pkvd->szValue, "directed"))
-			m_Explosion = expDirected;
-
-		else if (!Q_stricmp(pkvd->szValue, "random"))
-			m_Explosion = expRandom;
-		else
-			m_Explosion = expRandom;
-
-		pkvd->fHandled = TRUE;
-	}
-	else if (FStrEq(pkvd->szKeyName, "material"))
-	{
-		Materials type = (Materials)Q_atoi(pkvd->szValue);
-
-		// 0:glass, 1:wood, 2:metal, 3:flesh etc
-		if (type < 0 || type >= matLastMaterial)
-			m_Material = matWood;
-		else
-			m_Material = type;
-
-		pkvd->fHandled = TRUE;
-	}
-	else if (FStrEq(pkvd->szKeyName, "deadmodel"))
-	{
-		pkvd->fHandled = TRUE;
-	}
-	else if (FStrEq(pkvd->szKeyName, "shards"))
-	{
-		//m_iShards = Q_atof(pkvd->szValue);
-		pkvd->fHandled = TRUE;
-	}
-	else if (FStrEq(pkvd->szKeyName, "gibmodel"))
-	{
-		m_iszGibModel = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = TRUE;
-	}
-	else if (FStrEq(pkvd->szKeyName, "spawnobject"))
-	{
-		int object = Q_atoi(pkvd->szValue);
-		if (object > 0 && object < ARRAYSIZE(pSpawnObjects))
-		{
-			m_iszSpawnObject = MAKE_STRING(pSpawnObjects[object]);
-		}
-
-		pkvd->fHandled = TRUE;
-	}
-	else if (FStrEq(pkvd->szKeyName, "explodemagnitude"))
-	{
-		ExplosionSetMagnitude(Q_atoi(pkvd->szValue));
-		pkvd->fHandled = TRUE;
-	}
-	else if (FStrEq(pkvd->szKeyName, "lip"))
-	{
-		pkvd->fHandled = TRUE;
-	}
-	else
-	{
-		CBaseDelay::KeyValue(pkvd);
-	}
-}
 
 LINK_ENTITY_TO_CLASS(func_breakable, CBreakable, CCSBreakable)
 IMPLEMENT_SAVERESTORE(CBreakable, CBaseEntity)
@@ -245,6 +159,72 @@ void CBreakable::Restart()
 	}
 }
 
+void CBreakable::KeyValue(KeyValueData *pkvd)
+{
+	// UNDONE_WC: explicitly ignoring these fields, but they shouldn't be in the map file!
+	if (FStrEq(pkvd->szKeyName, "explosion"))
+	{
+		if (!Q_stricmp(pkvd->szValue, "directed"))
+			m_Explosion = expDirected;
+
+		else if (!Q_stricmp(pkvd->szValue, "random"))
+			m_Explosion = expRandom;
+		else
+			m_Explosion = expRandom;
+
+		pkvd->fHandled = TRUE;
+	}
+	else if (FStrEq(pkvd->szKeyName, "material"))
+	{
+		Materials type = (Materials)Q_atoi(pkvd->szValue);
+
+		// 0:glass, 1:wood, 2:metal, 3:flesh etc
+		if (type < 0 || type >= matLastMaterial)
+			m_Material = matWood;
+		else
+			m_Material = type;
+
+		pkvd->fHandled = TRUE;
+	}
+	else if (FStrEq(pkvd->szKeyName, "deadmodel"))
+	{
+		pkvd->fHandled = TRUE;
+	}
+	else if (FStrEq(pkvd->szKeyName, "shards"))
+	{
+		//m_iShards = Q_atof(pkvd->szValue);
+		pkvd->fHandled = TRUE;
+	}
+	else if (FStrEq(pkvd->szKeyName, "gibmodel"))
+	{
+		m_iszGibModel = ALLOC_STRING(pkvd->szValue);
+		pkvd->fHandled = TRUE;
+	}
+	else if (FStrEq(pkvd->szKeyName, "spawnobject"))
+	{
+		int object = Q_atoi(pkvd->szValue);
+		if (object > 0 && object < ARRAYSIZE(m_pszSpawnObjects))
+		{
+			m_iszSpawnObject = MAKE_STRING(m_pszSpawnObjects[object]);
+		}
+
+		pkvd->fHandled = TRUE;
+	}
+	else if (FStrEq(pkvd->szKeyName, "explodemagnitude"))
+	{
+		ExplosionSetMagnitude(Q_atoi(pkvd->szValue));
+		pkvd->fHandled = TRUE;
+	}
+	else if (FStrEq(pkvd->szKeyName, "lip"))
+	{
+		pkvd->fHandled = TRUE;
+	}
+	else
+	{
+		CBaseDelay::KeyValue(pkvd);
+	}
+}
+
 const char **CBreakable::MaterialSoundList(Materials precacheMaterial, int &soundCount)
 {
 	const char **pSoundList;
@@ -253,35 +233,35 @@ const char **CBreakable::MaterialSoundList(Materials precacheMaterial, int &soun
 	{
 	case matWood:
 	{
-		pSoundList = pSoundsWood;
-		soundCount = ARRAYSIZE(pSoundsWood);
+		pSoundList = m_pszSoundsWood;
+		soundCount = ARRAYSIZE(m_pszSoundsWood);
 		break;
 	}
 	case matFlesh:
 	{
-		pSoundList = pSoundsFlesh;
-		soundCount = ARRAYSIZE(pSoundsFlesh);
+		pSoundList = m_pszSoundsFlesh;
+		soundCount = ARRAYSIZE(m_pszSoundsFlesh);
 		break;
 	}
 	case matGlass:
 	case matComputer:
 	case matUnbreakableGlass:
 	{
-		pSoundList = pSoundsGlass;
-		soundCount = ARRAYSIZE(pSoundsGlass);
+		pSoundList = m_pszSoundsGlass;
+		soundCount = ARRAYSIZE(m_pszSoundsGlass);
 		break;
 	}
 	case matMetal:
 	{
-		pSoundList = pSoundsMetal;
-		soundCount = ARRAYSIZE(pSoundsMetal);
+		pSoundList = m_pszSoundsMetal;
+		soundCount = ARRAYSIZE(m_pszSoundsMetal);
 		break;
 	}
 	case matCinderBlock:
 	case matRocks:
 	{
-		pSoundList = pSoundsConcrete;
-		soundCount = ARRAYSIZE(pSoundsConcrete);
+		pSoundList = m_pszSoundsConcrete;
+		soundCount = ARRAYSIZE(m_pszSoundsConcrete);
 		break;
 	}
 	case matCeilingTile:
@@ -315,7 +295,7 @@ void CBreakable::MaterialSoundRandom(edict_t *pEdict, Materials soundMaterial, f
 
 	if (soundCount)
 	{
-		EMIT_SOUND(pEdict, CHAN_BODY, pSoundList[ RANDOM_LONG(0, soundCount - 1) ], volume, 1.0);
+		EMIT_SOUND(pEdict, CHAN_BODY, pSoundList[RANDOM_LONG(0, soundCount - 1)], volume, 1.0);
 	}
 }
 
@@ -386,13 +366,13 @@ void CBreakable::Precache()
 
 	if (pGibName)
 	{
-		m_idShard = PRECACHE_MODEL((char *)pGibName);
+		m_idShard = PRECACHE_MODEL(pGibName);
 	}
 
 	// Precache the spawn item's data
 	if (m_iszSpawnObject)
 	{
-		UTIL_PrecacheOther((char *)STRING(m_iszSpawnObject));
+		UTIL_PrecacheOther(STRING(m_iszSpawnObject));
 	}
 }
 
@@ -863,6 +843,19 @@ int CBreakable::DamageDecal(int bitsDamageType)
 	return CBaseEntity::DamageDecal(bitsDamageType);
 }
 
+TYPEDESCRIPTION CPushable::m_SaveData[] =
+{
+	DEFINE_FIELD(CPushable, m_maxSpeed, FIELD_FLOAT),
+	DEFINE_FIELD(CPushable, m_soundTime, FIELD_TIME),
+};
+
+const char *CPushable::m_soundNames[] =
+{
+	"debris/pushbox1.wav",
+	"debris/pushbox2.wav",
+	"debris/pushbox3.wav"
+};
+
 LINK_ENTITY_TO_CLASS(func_pushable, CPushable, CCSPushable)
 IMPLEMENT_SAVERESTORE(CPushable, CBreakable)
 
@@ -903,7 +896,7 @@ void CPushable::Spawn()
 
 void CPushable::Precache()
 {
-	for (int i = 0; i < 3; ++i)
+	for (int i = 0; i < ARRAYSIZE(m_soundNames); i++)
 	{
 		PRECACHE_SOUND(m_soundNames[i]);
 	}

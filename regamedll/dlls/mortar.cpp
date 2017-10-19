@@ -1,10 +1,5 @@
 #include "precompiled.h"
 
-/*
-* Globals initialization
-*/
-#ifndef HOOK_GAMEDLL
-
 TYPEDESCRIPTION CFuncMortarField::m_SaveData[] =
 {
 	DEFINE_FIELD(CFuncMortarField, m_iszXController, FIELD_STRING),
@@ -14,8 +9,6 @@ TYPEDESCRIPTION CFuncMortarField::m_SaveData[] =
 	DEFINE_FIELD(CFuncMortarField, m_iCount, FIELD_INTEGER),
 	DEFINE_FIELD(CFuncMortarField, m_fControl, FIELD_INTEGER),
 };
-
-#endif
 
 LINK_ENTITY_TO_CLASS(func_mortar_field, CFuncMortarField, CCSFuncMortarField)
 IMPLEMENT_SAVERESTORE(CFuncMortarField, CBaseToggle)

@@ -1,10 +1,5 @@
 #include "precompiled.h"
 
-/*
-* Globals initialization
-*/
-#ifndef HOOK_GAMEDLL
-
 TYPEDESCRIPTION CBaseAnimating::m_SaveData[] =
 {
 	DEFINE_FIELD(CBaseMonster, m_flFrameRate, FIELD_FLOAT),
@@ -13,8 +8,6 @@ TYPEDESCRIPTION CBaseAnimating::m_SaveData[] =
 	DEFINE_FIELD(CBaseMonster, m_fSequenceFinished, FIELD_BOOLEAN),
 	DEFINE_FIELD(CBaseMonster, m_fSequenceLoops, FIELD_BOOLEAN),
 };
-
-#endif
 
 IMPLEMENT_SAVERESTORE(CBaseAnimating, CBaseDelay)
 

@@ -29,12 +29,13 @@
 #pragma once
 
 #include "archtypes.h"
-#include "regamedll_interfaces.h"
-#include "hookchains.h"
-#include "interface.h"
-#include "player.h"
-#include "gamerules.h"
-#include "client.h"
+
+#include <API/CSInterfaces.h>
+#include <hookchains.h>
+#include <interface.h>
+#include <player.h>
+#include <gamerules.h>
+#include <client.h>
 
 #define REGAMEDLL_API_VERSION_MAJOR 5
 #define REGAMEDLL_API_VERSION_MINOR 4

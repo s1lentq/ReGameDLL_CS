@@ -26,27 +26,22 @@
 *
 */
 
-#ifndef PM_MATERIALS_H
-#define PM_MATERIALS_H
-#ifdef _WIN32
 #pragma once
-#endif
 
-#define CTEXTURESMAX		1024	// max number of textures loaded
-#define CBTEXTURENAMEMAX	17	// only load first n chars of name
+const int MAX_TEXTURES           = 1024; // max number of textures loaded
+const int MAX_TEXTURENAME_LENGHT = 17;   // only load first n chars of name
 
-#define CHAR_TEX_CONCRETE	'C'	// texture types
-#define CHAR_TEX_METAL		'M'
-#define CHAR_TEX_DIRT		'D'
-#define CHAR_TEX_VENT		'V'
-#define CHAR_TEX_GRATE		'G'
-#define CHAR_TEX_TILE		'T'
-#define CHAR_TEX_SLOSH		'S'
-#define CHAR_TEX_WOOD		'W'
-#define CHAR_TEX_COMPUTER	'P'
-#define CHAR_TEX_GRASS		'X'
-#define CHAR_TEX_GLASS		'Y'
-#define CHAR_TEX_FLESH		'F'
-#define CHAR_TEX_SNOW		'N'
-
-#endif // PM_MATERIALS_H
+// Texture types
+const char CHAR_TEX_CONCRETE = 'C'; // Cinder block
+const char CHAR_TEX_METAL    = 'M'; // Metal
+const char CHAR_TEX_DIRT     = 'D';
+const char CHAR_TEX_VENT     = 'V';
+const char CHAR_TEX_GRATE    = 'G';
+const char CHAR_TEX_TILE     = 'T'; // Ceiling tile
+const char CHAR_TEX_SLOSH    = 'S';
+const char CHAR_TEX_WOOD     = 'W';
+const char CHAR_TEX_COMPUTER = 'P';
+const char CHAR_TEX_GRASS    = 'X';
+const char CHAR_TEX_GLASS    = 'Y';
+const char CHAR_TEX_FLESH    = 'F';
+const char CHAR_TEX_SNOW     = 'N';

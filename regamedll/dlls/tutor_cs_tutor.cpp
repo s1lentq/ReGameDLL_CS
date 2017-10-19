@@ -1,11 +1,6 @@
 #include "precompiled.h"
 
-/*
-* Globals initialization
-*/
-#ifndef HOOK_GAMEDLL
-
-const char *TutorIdentifierList[] =
+const char *CCSTutor::m_TutorIdentifierList[] =
 {
 	"YOU_FIRED_A_SHOT",
 	"YOU_SHOULD_RELOAD",
@@ -158,8 +153,6 @@ const char *TutorIdentifierList[] =
 	"INGAME_HINT_2",
 	"INGAME_HINT_3"
 };
-
-#endif // HOOK_GAMEDLL
 
 CCSTutor::CCSTutor()
 {
@@ -2423,7 +2416,7 @@ TutorMessage *CCSTutor::GetTutorMessageDefinition(int messageID)
 	if (messageID < 0 || messageID >= TUTOR_NUM_MESSAGES)
 		return nullptr;
 
-	TutorMessageMapIter iter = m_messageMap.find(TutorIdentifierList[messageID]);
+	TutorMessageMapIter iter = m_messageMap.find(m_TutorIdentifierList[messageID]);
 	if (iter != m_messageMap.end())
 	{
 		return (*iter).second;

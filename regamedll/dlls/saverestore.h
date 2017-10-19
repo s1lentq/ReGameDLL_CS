@@ -28,59 +28,46 @@
 
 #pragma once
 
-#define MAX_ENTITY_ARRAY	64
-
-#ifndef HOOK_GAMEDLL
-
-#define IMPL(var)\
-	var
-
-#define IMPL_CLASS(baseClass,var)\
-	baseClass::var
-
-#endif // HOOK_GAMEDLL
-
 #define IMPLEMENT_SAVERESTORE(derivedClass, baseClass)\
 	int derivedClass::Save(CSave &save)\
 	{\
 		if (!baseClass::Save(save))\
 			return 0;\
-		return save.WriteFields(#derivedClass, this, IMPL(m_SaveData), ARRAYSIZE(IMPL(m_SaveData)));\
+		return save.WriteFields(#derivedClass, this, m_SaveData, ARRAYSIZE(m_SaveData));\
 	}\
 	int derivedClass::Restore(CRestore &restore)\
 	{\
 		if (!baseClass::Restore(restore))\
 			return 0;\
-		return restore.ReadFields(#derivedClass, this, IMPL(m_SaveData), ARRAYSIZE(IMPL(m_SaveData)));\
+		return restore.ReadFields(#derivedClass, this, m_SaveData, ARRAYSIZE(m_SaveData));\
 	}
 
-typedef enum
+enum GLOBALESTATE
 {
 	GLOBAL_OFF,
 	GLOBAL_ON,
 	GLOBAL_DEAD
-
-} GLOBALESTATE;
+};
 
 typedef struct globalentity_s
 {
 	char name[64];
-	char levelName[32];
+	char levelName[MAX_MAPNAME_LENGHT];
 	GLOBALESTATE state;
 	struct globalentity_s *pNext;
 
 } globalentity_t;
 
-typedef struct
+struct HEADER
 {
 	unsigned short size;
 	unsigned short token;
 	char *pData;
+};
 
-} HEADER;
+const int MAX_ENTITY_ARRAY = 64;
 
 class CBaseEntity;
-
 class CSaveRestoreBuffer
 {
 public:
@@ -92,13 +79,34 @@ public:
 	int EntityIndex(edict_t *pentLookup);
 	int EntityIndex(EOFFSET eoLookup);
 	int EntityIndex(CBaseEntity *pEntity);
-	int EntityFlags(int entityIndex, int flags = 0) { return EntityFlagsSet(entityIndex, flags); }
+	int EntityFlags(int entityIndex, int flags);
 	int EntityFlagsSet(int entityIndex, int flags);
 	edict_t *EntityFromIndex(int entityIndex);
 	unsigned short TokenHash(const char *pszToken);
 
 protected:
-	SAVERESTOREDATA *m_pdata;
+	static constexpr int m_Sizes[] = {
+		sizeof(float),     // FIELD_FLOAT
+		sizeof(int),       // FIELD_STRING
+		sizeof(int),       // FIELD_ENTITY
+		sizeof(int),       // FIELD_CLASSPTR
+		sizeof(int),       // FIELD_EHANDLE
+		sizeof(int),       // FIELD_entvars_t
+		sizeof(int),       // FIELD_EDICT
+		sizeof(float) * 3, // FIELD_VECTOR
+		sizeof(float) * 3, // FIELD_POSITION_VECTOR
+		sizeof(int *),     // FIELD_POINTER
+		sizeof(int),       // FIELD_INTEGER
+		sizeof(int *),     // FIELD_FUNCTION
+		sizeof(int),       // FIELD_BOOLEAN
+		sizeof(short),     // FIELD_SHORT
+		sizeof(char),      // FIELD_CHARACTER
+		sizeof(float),     // FIELD_TIME
+		sizeof(int),       // FIELD_MODELNAME
+		sizeof(int),       // FIELD_SOUNDNAME
+	};
+
+	SAVERESTOREDATA *m_pData;
 	void BufferRewind(int size);
 	unsigned int HashString(const char *pszToken);
 };
@@ -136,7 +144,7 @@ class CRestore: public CSaveRestoreBuffer
 public:
 	CRestore(SAVERESTOREDATA *pdata) : CSaveRestoreBuffer(pdata)
 	{
-		m_global = 0;
+		m_global = FALSE;
 		m_precache = TRUE;
 	}
 	int ReadEntVars(const char *pname, entvars_t *pev);
@@ -147,8 +155,8 @@ public:
 	int ReadNamedInt(const char *pName);
 	char *ReadNamedString(const char *pName);
 
-	int Empty() const { return (m_pdata == NULL || ((m_pdata->pCurrentData - m_pdata->pBaseData) >= m_pdata->bufferSize)); }
-	void SetGlobalMode(int global) { m_global = global; }
+	bool Empty() const { return (!m_pData || ((m_pData->pCurrentData - m_pData->pBaseData) >= m_pData->bufferSize)); }
+	void SetGlobalMode(BOOL global) { m_global = global; }
 	void PrecacheMode(BOOL mode) { m_precache = mode; }
 
 private:
@@ -160,7 +168,7 @@ private:
 	void BufferReadHeader(HEADER *pheader);
 
 private:
-	int m_global;
+	BOOL m_global;
 	BOOL m_precache;
 };
 
@@ -177,12 +185,13 @@ public:
 	const globalentity_t *EntityFromTable(string_t globalname);
 	GLOBALESTATE EntityGetState(string_t globalname);
 
-	int EntityInTable(string_t globalname) { return (Find(globalname) != NULL) ? TRUE : FALSE; }
+	BOOL EntityInTable(string_t globalname) { return Find(globalname) ? TRUE : FALSE; }
 	int Save(CSave &save);
 	int Restore(CRestore &restore);
 	void DumpGlobals();
 
-	static TYPEDESCRIPTION IMPL(m_SaveData)[1];
+	static TYPEDESCRIPTION m_SaveData[];
+	static TYPEDESCRIPTION m_GlobalEntitySaveData[];
 
 private:
 	globalentity_t *Find(string_t globalname);
@@ -190,3 +199,9 @@ private:
 	globalentity_t *m_pList;
 	int m_listCount;
 };
+
+void SaveGlobalState(SAVERESTOREDATA *pSaveData);
+void RestoreGlobalState(SAVERESTOREDATA *pSaveData);
+void ResetGlobalState();
+
+extern CGlobalState gGlobalState;

@@ -1,10 +1,5 @@
 #include "precompiled.h"
 
-/*
-* Globals initialization
-*/
-#ifndef HOOK_GAMEDLL
-
 void EXT_FUNC SV_StudioSetupBones(model_t *pModel, float frame, int sequence, const vec_t *angles, const vec_t *origin, const byte *pcontroller, const byte *pblending, int iBone, const edict_t *pEdict);
 
 sv_blending_interface_t svBlending =
@@ -12,8 +7,6 @@ sv_blending_interface_t svBlending =
 	SV_BLENDING_INTERFACE_VERSION,
 	SV_StudioSetupBones
 };
-
-#endif
 
 server_studio_api_t IEngineStudio;
 studiohdr_t *g_pstudiohdr;
@@ -361,7 +354,7 @@ float SetController(void *pmodel, entvars_t *pev, int iController, float flValue
 	int setting = int64(255.0f * (flValue - pbonecontroller->start) / (pbonecontroller->end - pbonecontroller->start));
 	setting = Q_clamp(setting, 0, 255);
 
-	pev->controller[ iController ] = setting;
+	pev->controller[iController] = setting;
 
 	return setting * (1.0f / 255.0f) * (pbonecontroller->end - pbonecontroller->start) + pbonecontroller->start;
 }
@@ -693,12 +686,12 @@ mstudioanim_t *StudioGetAnim(model_t *m_pSubModel, mstudioseqdesc_t *pseqdesc)
 		m_pSubModel->submodels = (dmodel_t *)paSequences;
 	}
 
-	if (!IEngineStudio.Cache_Check((struct cache_user_s *)&(paSequences[ pseqdesc->seqgroup ])))
+	if (!IEngineStudio.Cache_Check((struct cache_user_s *)&(paSequences[pseqdesc->seqgroup])))
 	{
-		IEngineStudio.LoadCacheFile(pseqgroup->name, (struct cache_user_s *)&paSequences[ pseqdesc->seqgroup ]);
+		IEngineStudio.LoadCacheFile(pseqgroup->name, (struct cache_user_s *)&paSequences[pseqdesc->seqgroup]);
 	}
 
-	return (mstudioanim_t *)((byte *)paSequences[ pseqdesc->seqgroup ].data + pseqdesc->animindex);
+	return (mstudioanim_t *)((byte *)paSequences[pseqdesc->seqgroup].data + pseqdesc->animindex);
 }
 
 mstudioanim_t *LookupAnimation(model_t *model, mstudioseqdesc_t *pseqdesc, int index)

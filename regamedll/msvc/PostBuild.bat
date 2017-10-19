@@ -8,17 +8,23 @@
 ::
 
 SET targetDir=%~1
+SET targetDirPlay=%targetDir:Play=%
+
 SET targetName=%~2
 SET targetExt=%~3
 SET projectDir=%~4
-SET destination=
+SET destination=PublishPath
 
-IF NOT EXIST "%projectDir%\PublishPath.txt" (
-	ECHO 	No deployment path specified. Create PublishPath.txt near PostBuild.bat with paths on separate lines for auto deployment.
+IF NOT "%targetDir%"=="%targetDirPlay%" (
+	SET destination=PublishPath_play
+)
+
+IF NOT EXIST "%projectDir%\%destination%.txt" (
+	ECHO 	No deployment path specified. Create %destination%.txt near PostBuild.bat with paths on separate lines for auto deployment.
 	exit /B 0
 )
 
-FOR /f "tokens=* delims= usebackq" %%a IN ("%projectDir%\PublishPath.txt") DO (
+FOR /f "tokens=* delims= usebackq" %%a IN ("%projectDir%\%destination%.txt") DO (
 	ECHO Deploying to: %%a
 	IF NOT "%%a" == "" (
 		copy /Y "%targetDir%%targetName%%targetExt%" "%%a"

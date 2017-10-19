@@ -1,10 +1,5 @@
 #include "precompiled.h"
 
-/*
-* Globals initialization
-*/
-#ifndef HOOK_GAMEDLL
-
 DebugOutputLevel outputLevel[] =
 {
 	{ "bot",     DEBUG_BOT     },
@@ -16,9 +11,7 @@ DebugOutputLevel outputLevel[] =
 };
 
 unsigned int theDebugOutputTypes;
-static char theDebugBuffer[MAX_DEBUG_BUFF_SIZE];
-
-#endif
+char theDebugBuffer[MAX_DEBUG_BUFF_SIZE];
 
 bool IsDeveloper()
 {

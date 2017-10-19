@@ -32,20 +32,20 @@
 
 #define MAX_HOOKS_IN_CHAIN 30
 
-template<typename t_ret, typename t_class, typename ...t_args>
+template <typename t_ret, typename t_class, typename ...t_args>
 bool is_void(t_ret (t_class::*)(t_args...)) { return false; }
 
-template<typename t_ret, typename ...t_args>
+template <typename t_ret, typename ...t_args>
 bool is_void(t_ret (*)(t_args...)) { return false; }
 
-template<typename t_class, typename ...t_args>
+template <typename t_class, typename ...t_args>
 bool is_void(void (t_class::*)(t_args...)) { return true; }
 
-template<typename ...t_args>
+template <typename ...t_args>
 bool is_void(void (*)(t_args...)) { return true; }
 
 // Implementation for chains in modules
-template<typename t_ret, typename ...t_args>
+template <typename t_ret, typename ...t_args>
 class IHookChainImpl : public IHookChain<t_ret, t_args...> {
 public:
 	typedef t_ret(*hookfunc_t)(IHookChain<t_ret, t_args...>*, t_args...);
@@ -81,7 +81,7 @@ private:
 };
 
 // Implementation for chains in modules
-template<typename t_ret, typename t_class, typename ...t_args>
+template <typename t_ret, typename t_class, typename ...t_args>
 class IHookChainClassImpl : public IHookChainClass<t_ret, t_class, t_args...> {
 public:
 	typedef t_ret(*hookfunc_t)(IHookChainClass<t_ret, t_class, t_args...>*, t_class *, t_args...);
@@ -117,7 +117,7 @@ private:
 };
 
 // Implementation for chains in modules
-template<typename t_ret, typename t_class, typename ...t_args>
+template <typename t_ret, typename t_class, typename ...t_args>
 class IHookChainClassEmptyImpl : public IHookChain<t_ret, t_args...> {
 public:
 	typedef t_ret(*hookfunc_t)(IHookChain<t_ret, t_args...>*, t_args...);
@@ -168,8 +168,8 @@ public:
 	AbstractHookChainRegistry();
 };
 
-template<typename t_ret, typename ...t_args>
-class IHookChainRegistryImpl : public IHookChainRegistry < t_ret, t_args...>, public AbstractHookChainRegistry {
+template <typename t_ret, typename ...t_args>
+class IHookChainRegistryImpl : public IHookChainRegistry<t_ret, t_args...>, public AbstractHookChainRegistry {
 public:
 	typedef t_ret(*hookfunc_t)(IHookChain<t_ret, t_args...>*, t_args...);
 	typedef t_ret(*origfunc_t)(t_args...);
@@ -189,8 +189,8 @@ public:
 	}
 };
 
-template<typename t_ret, typename t_class, typename ...t_args>
-class IHookChainRegistryClassImpl : public IHookChainRegistryClass <t_ret, t_class, t_args...>, public AbstractHookChainRegistry {
+template <typename t_ret, typename t_class, typename ...t_args>
+class IHookChainRegistryClassImpl : public IHookChainRegistryClass<t_ret, t_class, t_args...>, public AbstractHookChainRegistry {
 public:
 	typedef t_ret(*hookfunc_t)(IHookChainClass<t_ret, t_class, t_args...>*, t_class *, t_args...);
 	typedef t_ret(t_class::*origfunc_t)(t_args...);
@@ -210,8 +210,8 @@ public:
 	}
 };
 
-template<typename t_ret, typename t_class, typename ...t_args>
-class IHookChainRegistryClassEmptyImpl : public IHookChainRegistry <t_ret, t_args...>, public AbstractHookChainRegistry {
+template <typename t_ret, typename t_class, typename ...t_args>
+class IHookChainRegistryClassEmptyImpl : public IHookChainRegistry<t_ret, t_args...>, public AbstractHookChainRegistry {
 public:
 	typedef t_ret(*hookfunc_t)(IHookChain<t_ret, t_args...>*, t_args...);
 	typedef t_ret(t_class::*origfunc_t)(t_args...);

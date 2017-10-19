@@ -66,6 +66,7 @@ public:
 	TutorStateType GetType() const;
 
 protected:
+	static const char *m_TutorStateStrings[];
 	TutorStateType m_type;
 };
 

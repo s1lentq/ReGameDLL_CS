@@ -1,38 +1,6 @@
 #include "precompiled.h"
 
-/*
-* Globals initialization
-*/
-#ifndef HOOK_GAMEDLL
-
 CCareerTaskManager *TheCareerTasks = nullptr;
-
-const TaskInfo taskInfo[] =
-{
-	{ "defuse",             EVENT_BOMB_DEFUSED,         &CCareerTask::NewTask },
-	{ "plant",              EVENT_BOMB_PLANTED,         &CCareerTask::NewTask },
-	{ "rescue",             EVENT_HOSTAGE_RESCUED,      &CCareerTask::NewTask },
-	{ "killall",            EVENT_KILL_ALL,             &CCareerTask::NewTask },
-	{ "kill",               EVENT_KILL,                 &CCareerTask::NewTask },
-	{ "killwith",           EVENT_KILL,                 &CCareerTask::NewTask },
-	{ "killblind",          EVENT_KILL_FLASHBANGED,     &CCareerTask::NewTask },
-	{ "killvip",            EVENT_KILL,                 &CCareerTask::NewTask },
-	{ "headshot",           EVENT_HEADSHOT,             &CCareerTask::NewTask },
-	{ "headshotwith",       EVENT_HEADSHOT,             &CCareerTask::NewTask },
-	{ "winfast",            EVENT_ROUND_WIN,            &CCareerTask::NewTask },
-	{ "rescue",             EVENT_HOSTAGE_RESCUED,      &CCareerTask::NewTask },
-	{ "rescueall",          EVENT_ALL_HOSTAGES_RESCUED, &CCareerTask::NewTask },
-	{ "injure",             EVENT_PLAYER_TOOK_DAMAGE,   &CCareerTask::NewTask },
-	{ "injurewith",         EVENT_PLAYER_TOOK_DAMAGE,   &CCareerTask::NewTask },
-	{ "killdefuser",        EVENT_KILL,                 &CCareerTask::NewTask },
-	{ "stoprescue",         EVENT_KILL,                 &CCareerTask::NewTask },
-	{ "defendhostages",     EVENT_ROUND_WIN,            &CCareerTask::NewTask },
-	{ "hostagessurvive",    EVENT_ROUND_WIN,            &CCareerTask::NewTask },
-	{ "preventdefuse",      EVENT_ROUND_WIN,            &CPreventDefuseTask::NewTask },
-	{ nullptr,              EVENT_INVALID,              &CCareerTask::NewTask },
-};
-
-#endif
 
 CCareerTask *CPreventDefuseTask::NewTask(const char *taskName, GameEventType event, const char *weaponName, int n, bool mustLive, bool crossRounds, int id, bool isComplete)
 {
@@ -439,22 +407,45 @@ void CCareerTaskManager::SetFinishedTaskTime(int val)
 	m_finishedTaskRound = CSGameRules()->m_iTotalRoundsPlayed;
 }
 
+const TaskInfo CCareerTaskManager::m_taskInfo[] =
+{
+	{ "defuse",             EVENT_BOMB_DEFUSED,         &CCareerTask::NewTask        },
+	{ "plant",              EVENT_BOMB_PLANTED,         &CCareerTask::NewTask        },
+	{ "rescue",             EVENT_HOSTAGE_RESCUED,      &CCareerTask::NewTask        },
+	{ "killall",            EVENT_KILL_ALL,             &CCareerTask::NewTask        },
+	{ "kill",               EVENT_KILL,                 &CCareerTask::NewTask        },
+	{ "killwith",           EVENT_KILL,                 &CCareerTask::NewTask        },
+	{ "killblind",          EVENT_KILL_FLASHBANGED,     &CCareerTask::NewTask        },
+	{ "killvip",            EVENT_KILL,                 &CCareerTask::NewTask        },
+	{ "headshot",           EVENT_HEADSHOT,             &CCareerTask::NewTask        },
+	{ "headshotwith",       EVENT_HEADSHOT,             &CCareerTask::NewTask        },
+	{ "winfast",            EVENT_ROUND_WIN,            &CCareerTask::NewTask        },
+	{ "rescue",             EVENT_HOSTAGE_RESCUED,      &CCareerTask::NewTask        },
+	{ "rescueall",          EVENT_ALL_HOSTAGES_RESCUED, &CCareerTask::NewTask        },
+	{ "injure",             EVENT_PLAYER_TOOK_DAMAGE,   &CCareerTask::NewTask        },
+	{ "injurewith",         EVENT_PLAYER_TOOK_DAMAGE,   &CCareerTask::NewTask        },
+	{ "killdefuser",        EVENT_KILL,                 &CCareerTask::NewTask        },
+	{ "stoprescue",         EVENT_KILL,                 &CCareerTask::NewTask        },
+	{ "defendhostages",     EVENT_ROUND_WIN,            &CCareerTask::NewTask        },
+	{ "hostagessurvive",    EVENT_ROUND_WIN,            &CCareerTask::NewTask        },
+	{ "preventdefuse",      EVENT_ROUND_WIN,            &CPreventDefuseTask::NewTask },
+	{ nullptr,              EVENT_INVALID,              &CCareerTask::NewTask        },
+};
+
 void CCareerTaskManager::AddTask(const char *taskName, const char *weaponName, int eventCount, bool mustLive, bool crossRounds, bool isComplete)
 {
-	++m_nextId;
+	m_nextId++;
 
-	for (int i = 0; i < ARRAYSIZE(taskInfo); ++i)
+	for (auto &taskInfo : m_taskInfo)
 	{
-		const TaskInfo *pTaskInfo = &taskInfo[ i ];
-
-		if (pTaskInfo->taskName)
+		if (taskInfo.taskName)
 		{
-			if (!Q_stricmp(pTaskInfo->taskName, taskName))
+			if (!Q_stricmp(taskInfo.taskName, taskName))
 			{
-				CCareerTask *newTask = pTaskInfo->factory
+				CCareerTask *newTask = taskInfo.factory
 				(
-					pTaskInfo->taskName,
-					pTaskInfo->event,
+					taskInfo.taskName,
+					taskInfo.event,
 					weaponName,
 					eventCount,
 					mustLive,
@@ -465,7 +456,7 @@ void CCareerTaskManager::AddTask(const char *taskName, const char *weaponName, i
 
 				m_tasks.push_back(newTask);
 
-				if (pTaskInfo->event == EVENT_ROUND_WIN && !Q_strcmp(taskName, "winfast"))
+				if (taskInfo.event == EVENT_ROUND_WIN && !Q_strcmp(taskName, "winfast"))
 				{
 					m_taskTime = eventCount;
 

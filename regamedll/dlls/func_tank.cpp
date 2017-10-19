@@ -1,10 +1,5 @@
 #include "precompiled.h"
 
-/*
-* Globals initialization
-*/
-#ifndef HOOK_GAMEDLL
-
 TYPEDESCRIPTION CFuncTank::m_SaveData[] =
 {
 	DEFINE_FIELD(CFuncTank, m_yawCenter, FIELD_FLOAT),
@@ -35,29 +30,16 @@ TYPEDESCRIPTION CFuncTank::m_SaveData[] =
 	DEFINE_FIELD(CFuncTank, m_iszMaster, FIELD_STRING),
 };
 
-TYPEDESCRIPTION CFuncTankLaser::m_SaveData[] =
+Vector CFuncTank::m_TankSpread[] =
 {
-	DEFINE_FIELD(CFuncTankLaser, m_pLaser, FIELD_CLASSPTR),
-	DEFINE_FIELD(CFuncTankLaser, m_laserTime, FIELD_TIME),
+	Vector(0, 0, 0),             // perfect
+	Vector(0.025, 0.025, 0.025), // small cone
+	Vector(0.05, 0.05, 0.05),    // medium cone
+	Vector(0.1, 0.1, 0.1),       // large cone
+	Vector(0.25, 0.25, 0.25),    // extra-large cone
 };
 
-TYPEDESCRIPTION CFuncTankControls::m_SaveData[] =
-{
-	DEFINE_FIELD(CFuncTankControls, m_pTank, FIELD_CLASSPTR),
-};
-
-Vector gTankSpread[] =
-{
-	Vector(0, 0, 0),				// perfect
-	Vector(0.025, 0.025, 0.025),	// small cone
-	Vector(0.05, 0.05, 0.05),		// medium cone
-	Vector(0.1, 0.1, 0.1),			// large cone
-	Vector(0.25, 0.25, 0.25),		// extra-large cone
-};
-
-#endif // HOOK_GAMEDLL
-
-const int MAX_FIRING_SPREADS = ARRAYSIZE(gTankSpread);
+constexpr int MAX_FIRING_SPREADS = ARRAYSIZE(CFuncTank::m_TankSpread);
 
 IMPLEMENT_SAVERESTORE(CFuncTank, CBaseEntity)
 
@@ -379,7 +361,7 @@ void CFuncTank::Think()
 	pev->avelocity = g_vecZero;
 	TrackTarget();
 
-	if (Q_fabs(float_precision(pev->avelocity.x)) > 1 || Q_fabs(float_precision(pev->avelocity.y)) > 1)
+	if (fabs(float_precision(pev->avelocity.x)) > 1 || fabs(float_precision(pev->avelocity.y)) > 1)
 		StartRotSound();
 	else
 		StopRotSound();
@@ -526,7 +508,7 @@ void CFuncTank::TrackTarget()
 		return;
 	}
 
-	if (CanFire() && ((Q_fabs(distX) < m_pitchTolerance && Q_fabs(distY) < m_yawTolerance) || (pev->spawnflags & SF_TANK_LINEOFSIGHT)))
+	if (CanFire() && ((fabs(distX) < m_pitchTolerance && fabs(distY) < m_yawTolerance) || (pev->spawnflags & SF_TANK_LINEOFSIGHT)))
 	{
 		bool fire = false;
 		Vector forward;
@@ -569,13 +551,13 @@ void CFuncTank::AdjustAnglesForBarrel(Vector &angles, float distance)
 		if (m_barrelPos.y)
 		{
 			r2 = m_barrelPos.y * m_barrelPos.y;
-			angles.y += (180.0f / M_PI) * Q_atan2(m_barrelPos.y, Q_sqrt(d2 - r2));
+			angles.y += (180.0f / M_PI) * atan2(m_barrelPos.y, Q_sqrt(d2 - r2));
 		}
 
 		if (m_barrelPos.z)
 		{
 			r2 = m_barrelPos.z * m_barrelPos.z;
-			angles.x += (180.0f / M_PI) * Q_atan2(-m_barrelPos.z, Q_sqrt(d2 - r2));
+			angles.x += (180.0f / M_PI) * atan2(-m_barrelPos.z, Q_sqrt(d2 - r2));
 		}
 	}
 }
@@ -665,7 +647,6 @@ void CFuncTankGun::Fire(const Vector &barrelEnd, const Vector &forward, entvars_
 		UTIL_MakeAimVectors(pev->angles);
 
 		int bulletCount = int((gpGlobals->time - m_fireLast) * m_fireRate);
-
 		if (bulletCount > 0)
 		{
 			for (int i = 0; i < bulletCount; i++)
@@ -673,13 +654,13 @@ void CFuncTankGun::Fire(const Vector &barrelEnd, const Vector &forward, entvars_
 				switch (m_bulletType)
 				{
 				case TANK_BULLET_9MM:
-					FireBullets(1, barrelEnd, forward, gTankSpread[m_spread], 4096, BULLET_MONSTER_9MM, 1, m_iBulletDamage, pevAttacker);
+					FireBullets(1, barrelEnd, forward, m_TankSpread[m_spread], 4096, BULLET_MONSTER_9MM, 1, m_iBulletDamage, pevAttacker);
 					break;
 				case TANK_BULLET_MP5:
-					FireBullets(1, barrelEnd, forward, gTankSpread[m_spread], 4096, BULLET_MONSTER_MP5, 1, m_iBulletDamage, pevAttacker);
+					FireBullets(1, barrelEnd, forward, m_TankSpread[m_spread], 4096, BULLET_MONSTER_MP5, 1, m_iBulletDamage, pevAttacker);
 					break;
 				case TANK_BULLET_12MM:
-					FireBullets(1, barrelEnd, forward, gTankSpread[m_spread], 4096, BULLET_MONSTER_12MM, 1, m_iBulletDamage, pevAttacker);
+					FireBullets(1, barrelEnd, forward, m_TankSpread[m_spread], 4096, BULLET_MONSTER_12MM, 1, m_iBulletDamage, pevAttacker);
 					break;
 				default:
 				case TANK_BULLET_NONE:
@@ -695,6 +676,12 @@ void CFuncTankGun::Fire(const Vector &barrelEnd, const Vector &forward, entvars_
 		CFuncTank::Fire(barrelEnd, forward, pevAttacker);
 	}
 }
+
+TYPEDESCRIPTION CFuncTankLaser::m_SaveData[] =
+{
+	DEFINE_FIELD(CFuncTankLaser, m_pLaser, FIELD_CLASSPTR),
+	DEFINE_FIELD(CFuncTankLaser, m_laserTime, FIELD_TIME),
+};
 
 LINK_ENTITY_TO_CLASS(func_tanklaser, CFuncTankLaser, CCSFuncTankLaser)
 IMPLEMENT_SAVERESTORE(CFuncTankLaser, CFuncTank)
@@ -761,22 +748,19 @@ void CFuncTankLaser::Think()
 
 void CFuncTankLaser::Fire(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker)
 {
-	int i;
-	TraceResult tr;
-
 	if (m_fireLast != 0.0f && GetLaser())
 	{
 		// TankTrace needs gpGlobals->v_up, etc.
 		UTIL_MakeAimVectors(pev->angles);
 
 		int bulletCount = int((gpGlobals->time - m_fireLast) * m_fireRate);
-
 		if (bulletCount)
 		{
-			for (i = 0; i < bulletCount; i++)
+			TraceResult tr;
+			for (int i = 0; i < bulletCount; i++)
 			{
 				m_pLaser->pev->origin = barrelEnd;
-				TankTrace(barrelEnd, forward, gTankSpread[m_spread], tr);
+				TankTrace(barrelEnd, forward, m_TankSpread[m_spread], tr);
 
 				m_laserTime = gpGlobals->time;
 				m_pLaser->TurnOn();
@@ -804,14 +788,12 @@ void CFuncTankRocket::Precache()
 
 void CFuncTankRocket::Fire(const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker)
 {
-	int i;
-
 	if (m_fireLast != 0.0f)
 	{
 		int bulletCount = int((gpGlobals->time - m_fireLast) * m_fireRate);
 		if (bulletCount > 0)
 		{
-			for (i = 0; i < bulletCount; i++)
+			for (int i = 0; i < bulletCount; i++)
 			{
 				CBaseEntity *pRocket = CBaseEntity::Create("rpg_rocket", barrelEnd, pev->angles, edict());
 			}
@@ -854,7 +836,7 @@ void CFuncTankMortar::Fire(const Vector &barrelEnd, const Vector &forward, entva
 			// TankTrace needs gpGlobals->v_up, etc.
 			UTIL_MakeAimVectors(pev->angles);
 
-			TankTrace(barrelEnd, forward, gTankSpread[m_spread], tr);
+			TankTrace(barrelEnd, forward, m_TankSpread[m_spread], tr);
 			ExplosionCreate(tr.vecEndPos, pev->angles, edict(), pev->impulse, TRUE);
 			CFuncTank::Fire(barrelEnd, forward, pev);
 		}
@@ -864,6 +846,11 @@ void CFuncTankMortar::Fire(const Vector &barrelEnd, const Vector &forward, entva
 		CFuncTank::Fire(barrelEnd, forward, pev);
 	}
 }
+
+TYPEDESCRIPTION CFuncTankControls::m_SaveData[] =
+{
+	DEFINE_FIELD(CFuncTankControls, m_pTank, FIELD_CLASSPTR),
+};
 
 LINK_ENTITY_TO_CLASS(func_tankcontrols, CFuncTankControls, CCSFuncTankControls)
 IMPLEMENT_SAVERESTORE(CFuncTankControls, CBaseEntity)

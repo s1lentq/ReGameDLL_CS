@@ -15,6 +15,7 @@ void CTMP::Spawn()
 	m_bDelayFire = false;
 
 	FallInit();
+	CSPlayerItem()->SetItemInfo(&m_ItemInfoArray[m_iId]);
 }
 
 void CTMP::Precache()

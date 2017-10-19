@@ -1,123 +1,119 @@
 #include "precompiled.h"
 
-/*
-* Globals initialization
-*/
-#ifndef HOOK_GAMEDLL
+cvar_t *g_pskill          = nullptr;
+cvar_t *g_psv_gravity     = nullptr;
+cvar_t *g_psv_aim         = nullptr;
+cvar_t *g_footsteps       = nullptr;
+cvar_t *g_psv_accelerate  = nullptr;
+cvar_t *g_psv_friction    = nullptr;
+cvar_t *g_psv_stopspeed   = nullptr;
+cvar_t *g_psv_stepsize    = nullptr;
+cvar_t *g_psv_clienttrace = nullptr;
 
-cvar_t *g_psv_gravity = NULL;
-cvar_t *g_psv_aim = NULL;
-cvar_t *g_footsteps = NULL;
-cvar_t *g_psv_accelerate = NULL;
-cvar_t *g_psv_friction = NULL;
-cvar_t *g_psv_stopspeed = NULL;
-cvar_t displaysoundlist = { "displaysoundlist", "0", 0, 0.0f, NULL };
-cvar_t timelimit = { "mp_timelimit", "0", FCVAR_SERVER, 0.0f, NULL };
-cvar_t flashlight = { "mp_flashlight", "0", FCVAR_SERVER, 0.0f, NULL };
-cvar_t decalfrequency = { "decalfrequency", "30", FCVAR_SERVER, 0.0f, NULL };
-cvar_t fadetoblack = { "mp_fadetoblack", "0", FCVAR_SERVER, 0.0f, NULL };
+cvar_t displaysoundlist      = { "displaysoundlist", "0", 0, 0.0f, nullptr };
+cvar_t timelimit             = { "mp_timelimit", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t flashlight            = { "mp_flashlight", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t decalfrequency        = { "decalfrequency", "30", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t fadetoblack           = { "mp_fadetoblack", "0", FCVAR_SERVER, 0.0f, nullptr };
 
-cvar_t fragsleft = { "mp_fragsleft", "0", FCVAR_SERVER | FCVAR_UNLOGGED, 0.0f, NULL };		// Don't spam console/log files/users with this changing
-cvar_t timeleft = { "mp_timeleft", "0", FCVAR_SERVER | FCVAR_UNLOGGED, 0.0f, NULL };
+cvar_t fragsleft             = { "mp_fragsleft", "0", FCVAR_SERVER | FCVAR_UNLOGGED, 0.0f, nullptr };		// Don't spam console/log files/users with this changing
+cvar_t timeleft              = { "mp_timeleft", "0", FCVAR_SERVER | FCVAR_UNLOGGED, 0.0f, nullptr };
 
-cvar_t friendlyfire = { "mp_friendlyfire", "0", FCVAR_SERVER, 0.0f, NULL };
-cvar_t allowmonsters = { "mp_allowmonsters", "0", FCVAR_SERVER, 0.0f, NULL };
-cvar_t roundtime = { "mp_roundtime", "5", FCVAR_SERVER, 0.0f, NULL };
-cvar_t buytime = { "mp_buytime", "1.5", FCVAR_SERVER, 0.0f, NULL };
-cvar_t freezetime = { "mp_freezetime", "6", FCVAR_SERVER, 0.0f, NULL };
-cvar_t c4timer = { "mp_c4timer", "45", FCVAR_SERVER, 0.0f, NULL };
-cvar_t ghostfrequency = { "mp_ghostfrequency", "0.1", FCVAR_SERVER, 0.0f, NULL };
-cvar_t autokick = { "mp_autokick", "1", FCVAR_SERVER, 0.0f, NULL };
-cvar_t autokick_timeout = { "mp_autokick_timeout", "-1", FCVAR_SERVER, 0.0f, NULL };
-cvar_t restartround = { "sv_restartround", "0", FCVAR_SERVER, 0.0f, NULL };
-cvar_t sv_restart = { "sv_restart", "0", FCVAR_SERVER, 0.0f, NULL };
-cvar_t limitteams = { "mp_limitteams", "2", FCVAR_SERVER, 0.0f, NULL };
-cvar_t autoteambalance = { "mp_autoteambalance", "1", FCVAR_SERVER, 0.0f, NULL };
-cvar_t tkpunish = { "mp_tkpunish", "0", FCVAR_SERVER, 0.0f, NULL };
-cvar_t hostagepenalty = { "mp_hostagepenalty", "13", FCVAR_SERVER, 0.0f, NULL };
-cvar_t mirrordamage = { "mp_mirrordamage", "0", FCVAR_SERVER, 0.0f, NULL };
-cvar_t logmessages = { "mp_logmessages", "1", FCVAR_SERVER, 0.0f, NULL };
-cvar_t forcecamera = { "mp_forcecamera", "0", FCVAR_SERVER, 0.0f, NULL };
-cvar_t forcechasecam = { "mp_forcechasecam", "0", FCVAR_SERVER, 0.0f, NULL };
-cvar_t mapvoteratio = { "mp_mapvoteratio", "0.66", FCVAR_SERVER, 0.0f, NULL };
-cvar_t logdetail = { "mp_logdetail", "0", FCVAR_SERVER, 0.0f, NULL };
-cvar_t startmoney = { "mp_startmoney", "800", FCVAR_SERVER, 0.0f, NULL };
-cvar_t maxrounds = { "mp_maxrounds", "0", FCVAR_SERVER, 0.0f, NULL };
-cvar_t winlimit = { "mp_winlimit", "0", FCVAR_SERVER, 0.0f, NULL };
-cvar_t windifference = { "mp_windifference", "1", FCVAR_SERVER, 0.0f, NULL };
-cvar_t playerid = { "mp_playerid", "0", FCVAR_SERVER, 0.0f, NULL };
-cvar_t allow_spectators = { "allow_spectators", "1.0", FCVAR_SERVER, 0.0f, NULL };
-cvar_t mp_chattime = { "mp_chattime", "10", FCVAR_SERVER, 0.0f, NULL };
-cvar_t kick_percent = { "mp_kickpercent", "0.66", FCVAR_SERVER, 0.0f, NULL };
-cvar_t humans_join_team = { "humans_join_team", "any", FCVAR_SERVER, 0.0f, NULL };
-cvar_t sk_plr_9mm_bullet1 = { "sk_plr_9mm_bullet1", "0", 0, 0.0f, NULL };
-cvar_t sk_plr_9mm_bullet2 = { "sk_plr_9mm_bullet2", "0", 0, 0.0f, NULL };
-cvar_t sk_plr_9mm_bullet3 = { "sk_plr_9mm_bullet3", "0", 0, 0.0f, NULL };
-cvar_t sk_plr_357_bullet1 = { "sk_plr_357_bullet1", "0", 0, 0.0f, NULL };
-cvar_t sk_plr_357_bullet2 = { "sk_plr_357_bullet2", "0", 0, 0.0f, NULL };
-cvar_t sk_plr_357_bullet3 = { "sk_plr_357_bullet3", "0", 0, 0.0f, NULL };
-cvar_t sk_plr_9mmAR_bullet1 = { "sk_plr_9mmAR_bullet1", "0", 0, 0.0f, NULL };
-cvar_t sk_plr_9mmAR_bullet2 = { "sk_plr_9mmAR_bullet2", "0", 0, 0.0f, NULL };
-cvar_t sk_plr_9mmAR_bullet3 = { "sk_plr_9mmAR_bullet3", "0", 0, 0.0f, NULL };
-cvar_t sk_plr_9mmAR_grenade1 = { "sk_plr_9mmAR_grenade1", "0", 0, 0.0f, NULL };
-cvar_t sk_plr_9mmAR_grenade2 = { "sk_plr_9mmAR_grenade2", "0", 0, 0.0f, NULL };
-cvar_t sk_plr_9mmAR_grenade3 = { "sk_plr_9mmAR_grenade3", "0", 0, 0.0f, NULL };
-cvar_t sk_plr_buckshot1 = { "sk_plr_buckshot1", "0", 0, 0.0f, NULL };
-cvar_t sk_plr_buckshot2 = { "sk_plr_buckshot2", "0", 0, 0.0f, NULL };
-cvar_t sk_plr_buckshot3 = { "sk_plr_buckshot3", "0", 0, 0.0f, NULL };
-cvar_t sk_plr_rpg1 = { "sk_plr_rpg1", "0", 0, 0.0f, NULL };
-cvar_t sk_plr_rpg2 = { "sk_plr_rpg2", "0", 0, 0.0f, NULL };
-cvar_t sk_plr_rpg3 = { "sk_plr_rpg3", "0", 0, 0.0f, NULL };
-cvar_t sk_12mm_bullet1 = { "sk_12mm_bullet1", "0", 0, 0.0f, NULL };
-cvar_t sk_12mm_bullet2 = { "sk_12mm_bullet2", "0", 0, 0.0f, NULL };
-cvar_t sk_12mm_bullet3 = { "sk_12mm_bullet3", "0", 0, 0.0f, NULL };
-cvar_t sk_9mmAR_bullet1 = { "sk_9mmAR_bullet1", "0", 0, 0.0f, NULL };
-cvar_t sk_9mmAR_bullet2 = { "sk_9mmAR_bullet2", "0", 0, 0.0f, NULL };
-cvar_t sk_9mmAR_bullet3 = { "sk_9mmAR_bullet3", "0", 0, 0.0f, NULL };
-cvar_t sk_9mm_bullet1 = { "sk_9mm_bullet1", "0", 0, 0.0f, NULL };
-cvar_t sk_9mm_bullet2 = { "sk_9mm_bullet2", "0", 0, 0.0f, NULL };
-cvar_t sk_9mm_bullet3 = { "sk_9mm_bullet3", "0", 0, 0.0f, NULL };
-cvar_t sk_suitcharger1 = { "sk_suitcharger1", "0", 0, 0.0f, NULL };
-cvar_t sk_suitcharger2 = { "sk_suitcharger2", "0", 0, 0.0f, NULL };
-cvar_t sk_suitcharger3 = { "sk_suitcharger3", "0", 0, 0.0f, NULL };
-cvar_t sk_battery1 = { "sk_battery1", "0", 0, 0.0f, NULL };
-cvar_t sk_battery2 = { "sk_battery2", "0", 0, 0.0f, NULL };
-cvar_t sk_battery3 = { "sk_battery3", "0", 0, 0.0f, NULL };
-cvar_t sk_healthcharger1 = { "sk_healthcharger1", "0", 0, 0.0f, NULL };
-cvar_t sk_healthcharger2 = { "sk_healthcharger2", "0", 0, 0.0f, NULL };
-cvar_t sk_healthcharger3 = { "sk_healthcharger3", "0", 0, 0.0f, NULL };
-cvar_t sk_healthkit1 = { "sk_healthkit1", "0", 0, 0.0f, NULL };
-cvar_t sk_healthkit2 = { "sk_healthkit2", "0", 0, 0.0f, NULL };
-cvar_t sk_healthkit3 = { "sk_healthkit3", "0", 0, 0.0f, NULL };
-cvar_t sk_scientist_heal1 = { "sk_scientist_heal1", "0", 0, 0.0f, NULL };
-cvar_t sk_scientist_heal2 = { "sk_scientist_heal2", "0", 0, 0.0f, NULL };
-cvar_t sk_scientist_heal3 = { "sk_scientist_heal3", "0", 0, 0.0f, NULL };
-
-#endif // HOOK_GAMEDLL
+cvar_t friendlyfire          = { "mp_friendlyfire", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t allowmonsters         = { "mp_allowmonsters", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t roundtime             = { "mp_roundtime", "5", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t buytime               = { "mp_buytime", "1.5", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t freezetime            = { "mp_freezetime", "6", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t c4timer               = { "mp_c4timer", "45", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t ghostfrequency        = { "mp_ghostfrequency", "0.1", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t autokick              = { "mp_autokick", "1", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t autokick_timeout      = { "mp_autokick_timeout", "-1", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t restartround          = { "sv_restartround", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t sv_restart            = { "sv_restart", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t limitteams            = { "mp_limitteams", "2", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t autoteambalance       = { "mp_autoteambalance", "1", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t tkpunish              = { "mp_tkpunish", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t hostagepenalty        = { "mp_hostagepenalty", "13", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t mirrordamage          = { "mp_mirrordamage", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t logmessages           = { "mp_logmessages", "1", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t forcecamera           = { "mp_forcecamera", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t forcechasecam         = { "mp_forcechasecam", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t mapvoteratio          = { "mp_mapvoteratio", "0.66", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t logdetail             = { "mp_logdetail", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t startmoney            = { "mp_startmoney", "800", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t maxrounds             = { "mp_maxrounds", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t winlimit              = { "mp_winlimit", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t windifference         = { "mp_windifference", "1", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t playerid              = { "mp_playerid", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t allow_spectators      = { "allow_spectators", "1.0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t mp_chattime           = { "mp_chattime", "10", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t kick_percent          = { "mp_kickpercent", "0.66", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t humans_join_team      = { "humans_join_team", "any", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t sk_plr_9mm_bullet1    = { "sk_plr_9mm_bullet1", "0", 0, 0.0f, nullptr };
+cvar_t sk_plr_9mm_bullet2    = { "sk_plr_9mm_bullet2", "0", 0, 0.0f, nullptr };
+cvar_t sk_plr_9mm_bullet3    = { "sk_plr_9mm_bullet3", "0", 0, 0.0f, nullptr };
+cvar_t sk_plr_357_bullet1    = { "sk_plr_357_bullet1", "0", 0, 0.0f, nullptr };
+cvar_t sk_plr_357_bullet2    = { "sk_plr_357_bullet2", "0", 0, 0.0f, nullptr };
+cvar_t sk_plr_357_bullet3    = { "sk_plr_357_bullet3", "0", 0, 0.0f, nullptr };
+cvar_t sk_plr_9mmAR_bullet1  = { "sk_plr_9mmAR_bullet1", "0", 0, 0.0f, nullptr };
+cvar_t sk_plr_9mmAR_bullet2  = { "sk_plr_9mmAR_bullet2", "0", 0, 0.0f, nullptr };
+cvar_t sk_plr_9mmAR_bullet3  = { "sk_plr_9mmAR_bullet3", "0", 0, 0.0f, nullptr };
+cvar_t sk_plr_9mmAR_grenade1 = { "sk_plr_9mmAR_grenade1", "0", 0, 0.0f, nullptr };
+cvar_t sk_plr_9mmAR_grenade2 = { "sk_plr_9mmAR_grenade2", "0", 0, 0.0f, nullptr };
+cvar_t sk_plr_9mmAR_grenade3 = { "sk_plr_9mmAR_grenade3", "0", 0, 0.0f, nullptr };
+cvar_t sk_plr_buckshot1      = { "sk_plr_buckshot1", "0", 0, 0.0f, nullptr };
+cvar_t sk_plr_buckshot2      = { "sk_plr_buckshot2", "0", 0, 0.0f, nullptr };
+cvar_t sk_plr_buckshot3      = { "sk_plr_buckshot3", "0", 0, 0.0f, nullptr };
+cvar_t sk_plr_rpg1           = { "sk_plr_rpg1", "0", 0, 0.0f, nullptr };
+cvar_t sk_plr_rpg2           = { "sk_plr_rpg2", "0", 0, 0.0f, nullptr };
+cvar_t sk_plr_rpg3           = { "sk_plr_rpg3", "0", 0, 0.0f, nullptr };
+cvar_t sk_12mm_bullet1       = { "sk_12mm_bullet1", "0", 0, 0.0f, nullptr };
+cvar_t sk_12mm_bullet2       = { "sk_12mm_bullet2", "0", 0, 0.0f, nullptr };
+cvar_t sk_12mm_bullet3       = { "sk_12mm_bullet3", "0", 0, 0.0f, nullptr };
+cvar_t sk_9mmAR_bullet1      = { "sk_9mmAR_bullet1", "0", 0, 0.0f, nullptr };
+cvar_t sk_9mmAR_bullet2      = { "sk_9mmAR_bullet2", "0", 0, 0.0f, nullptr };
+cvar_t sk_9mmAR_bullet3      = { "sk_9mmAR_bullet3", "0", 0, 0.0f, nullptr };
+cvar_t sk_9mm_bullet1        = { "sk_9mm_bullet1", "0", 0, 0.0f, nullptr };
+cvar_t sk_9mm_bullet2        = { "sk_9mm_bullet2", "0", 0, 0.0f, nullptr };
+cvar_t sk_9mm_bullet3        = { "sk_9mm_bullet3", "0", 0, 0.0f, nullptr };
+cvar_t sk_suitcharger1       = { "sk_suitcharger1", "0", 0, 0.0f, nullptr };
+cvar_t sk_suitcharger2       = { "sk_suitcharger2", "0", 0, 0.0f, nullptr };
+cvar_t sk_suitcharger3       = { "sk_suitcharger3", "0", 0, 0.0f, nullptr };
+cvar_t sk_battery1           = { "sk_battery1", "0", 0, 0.0f, nullptr };
+cvar_t sk_battery2           = { "sk_battery2", "0", 0, 0.0f, nullptr };
+cvar_t sk_battery3           = { "sk_battery3", "0", 0, 0.0f, nullptr };
+cvar_t sk_healthcharger1     = { "sk_healthcharger1", "0", 0, 0.0f, nullptr };
+cvar_t sk_healthcharger2     = { "sk_healthcharger2", "0", 0, 0.0f, nullptr };
+cvar_t sk_healthcharger3     = { "sk_healthcharger3", "0", 0, 0.0f, nullptr };
+cvar_t sk_healthkit1         = { "sk_healthkit1", "0", 0, 0.0f, nullptr };
+cvar_t sk_healthkit2         = { "sk_healthkit2", "0", 0, 0.0f, nullptr };
+cvar_t sk_healthkit3         = { "sk_healthkit3", "0", 0, 0.0f, nullptr };
+cvar_t sk_scientist_heal1    = { "sk_scientist_heal1", "0", 0, 0.0f, nullptr };
+cvar_t sk_scientist_heal2    = { "sk_scientist_heal2", "0", 0, 0.0f, nullptr };
+cvar_t sk_scientist_heal3    = { "sk_scientist_heal3", "0", 0, 0.0f, nullptr };
 
 #ifdef REGAMEDLL_ADD
 
-cvar_t game_version = { "game_version", APP_VERSION, FCVAR_SERVER, 0.0f, nullptr };
-cvar_t maxmoney = { "mp_maxmoney", "16000", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t round_infinite = { "mp_round_infinite", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t game_version          = { "game_version", APP_VERSION, FCVAR_SERVER, 0.0f, nullptr };
+cvar_t maxmoney              = { "mp_maxmoney", "16000", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t round_infinite        = { "mp_round_infinite", "0", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t hegrenade_penetration = { "mp_hegrenade_penetration", "0", 0, 0.0f, nullptr };
-cvar_t nadedrops = { "mp_nadedrops", "0", 0, 0.0f, nullptr };
-cvar_t roundrespawn_time = { "mp_roundrespawn_time", "20", 0, 20.0f, nullptr };
-cvar_t auto_reload_weapons = { "mp_auto_reload_weapons", "0", 0, 0.0f, nullptr };
-cvar_t refill_bpammo_weapons = { "mp_refill_bpammo_weapons", "0", 0, 0.0f, nullptr };		// Useful for mods like DeathMatch, GunGame, ZombieMod etc
-cvar_t freeforall = { "mp_freeforall", "0", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t auto_join_team = { "mp_auto_join_team", "0", 0, 0.0f, nullptr };
-cvar_t max_teamkills = { "mp_max_teamkills", "3", 0, 3.0f, nullptr };
-cvar_t fraglimit = { "mp_fraglimit", "0", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t round_restart_delay = { "mp_round_restart_delay", "5", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t nadedrops             = { "mp_nadedrops", "0", 0, 0.0f, nullptr };
+cvar_t roundrespawn_time     = { "mp_roundrespawn_time", "20", 0, 20.0f, nullptr };
+cvar_t auto_reload_weapons   = { "mp_auto_reload_weapons", "0", 0, 0.0f, nullptr };
+cvar_t refill_bpammo_weapons = { "mp_refill_bpammo_weapons", "0", 0, 0.0f, nullptr }; // Useful for mods like DeathMatch, GunGame, ZombieMod etc
+cvar_t freeforall            = { "mp_freeforall", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t auto_join_team        = { "mp_auto_join_team", "0", 0, 0.0f, nullptr };
+cvar_t max_teamkills         = { "mp_max_teamkills", "3", 0, 3.0f, nullptr };
+cvar_t fraglimit             = { "mp_fraglimit", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t round_restart_delay   = { "mp_round_restart_delay", "5", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t showtriggers          = { "showtriggers", "0", 0, 0.0f, nullptr }; // debug cvar shows triggers
+                                                                          // TODO: Maybe it's better to register in the engine?
 
-cvar_t showtriggers = { "showtriggers", "0", 0, 0.0f, nullptr };	// debug cvar shows triggers
-																	// TODO: Maybe it's better to register in the engine?
-
-cvar_t hostagehurtable = { "mp_hostage_hurtable", "1", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t roundover = { "mp_roundover", "0", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t forcerespawn = { "mp_forcerespawn", "0", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t show_radioicon = { "mp_show_radioicon", "1", FCVAR_SERVER, 1.0f, nullptr };
+cvar_t hostagehurtable       = { "mp_hostage_hurtable", "1", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t roundover             = { "mp_roundover", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t forcerespawn          = { "mp_forcerespawn", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t show_radioicon        = { "mp_show_radioicon", "1", FCVAR_SERVER, 1.0f, nullptr };
 
 void GameDLL_Version_f()
 {
@@ -141,12 +137,15 @@ void GameDLL_EndRound_f()
 
 void EXT_FUNC GameDLLInit()
 {
-	g_psv_gravity = CVAR_GET_POINTER("sv_gravity");
-	g_psv_aim = CVAR_GET_POINTER("sv_aim");
-	g_footsteps = CVAR_GET_POINTER("mp_footsteps");
-	g_psv_accelerate = CVAR_GET_POINTER("sv_accelerate");
-	g_psv_friction = CVAR_GET_POINTER("sv_friction");
-	g_psv_stopspeed = CVAR_GET_POINTER("sv_stopspeed");
+	g_pskill          = CVAR_GET_POINTER("skill");
+	g_psv_gravity     = CVAR_GET_POINTER("sv_gravity");
+	g_psv_aim         = CVAR_GET_POINTER("sv_aim");
+	g_footsteps       = CVAR_GET_POINTER("mp_footsteps");
+	g_psv_accelerate  = CVAR_GET_POINTER("sv_accelerate");
+	g_psv_friction    = CVAR_GET_POINTER("sv_friction");
+	g_psv_stopspeed   = CVAR_GET_POINTER("sv_stopspeed");
+	g_psv_stepsize    = CVAR_GET_POINTER("sv_stepsize");
+	g_psv_clienttrace = CVAR_GET_POINTER("sv_clienttrace");
 
 	CVAR_REGISTER(&displaysoundlist);
 	CVAR_REGISTER(&timelimit);

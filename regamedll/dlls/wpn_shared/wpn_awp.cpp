@@ -11,6 +11,7 @@ void CAWP::Spawn()
 
 	m_iDefaultAmmo = AWP_DEFAULT_GIVE;
 	FallInit();
+	CSPlayerItem()->SetItemInfo(&m_ItemInfoArray[m_iId]);
 }
 
 void CAWP::Precache()

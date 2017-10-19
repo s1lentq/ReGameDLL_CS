@@ -15,6 +15,7 @@ void CM4A1::Spawn()
 	m_bDelayFire = true;
 
 	FallInit();
+	CSPlayerItem()->SetItemInfo(&m_ItemInfoArray[m_iId]);
 }
 
 void CM4A1::Precache()
