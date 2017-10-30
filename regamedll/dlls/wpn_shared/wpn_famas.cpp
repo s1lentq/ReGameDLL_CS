@@ -13,8 +13,11 @@ void CFamas::Spawn()
 	m_iFamasShotsFired = 0;
 	m_flFamasShoot = 0;
 
+	// Get ready to fall down
 	FallInit();
-	CSPlayerItem()->SetItemInfo(&m_ItemInfoArray[m_iId]);
+
+	// extend
+	CBasePlayerWeapon::Spawn();
 }
 
 void CFamas::Precache()

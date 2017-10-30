@@ -11,8 +11,11 @@ void CGalil::Spawn()
 
 	m_iDefaultAmmo = GALIL_DEFAULT_GIVE;
 
+	// Get ready to fall down
 	FallInit();
-	CSPlayerItem()->SetItemInfo(&m_ItemInfoArray[m_iId]);
+
+	// extend
+	CBasePlayerWeapon::Spawn();
 }
 
 void CGalil::Precache()

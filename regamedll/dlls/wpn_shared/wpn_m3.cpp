@@ -11,8 +11,11 @@ void CM3::Spawn()
 
 	m_iDefaultAmmo = M3_DEFAULT_GIVE;
 
+	// Get ready to fall down
 	FallInit();
-	CSPlayerItem()->SetItemInfo(&m_ItemInfoArray[m_iId]);
+
+	// extend
+	CBasePlayerWeapon::Spawn();
 }
 
 void CM3::Precache()

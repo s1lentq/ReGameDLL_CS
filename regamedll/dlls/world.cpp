@@ -328,7 +328,7 @@ void CWorld::Precache()
 	// player precaches
 	// get weapon precaches
 
-	W_Precache();
+	WeaponsPrecache();
 	ClientPrecache();
 	BotPrecache();
 

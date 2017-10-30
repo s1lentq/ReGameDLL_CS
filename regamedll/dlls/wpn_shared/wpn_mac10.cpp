@@ -13,8 +13,11 @@ void CMAC10::Spawn()
 	m_flAccuracy = 0.15f;
 	m_bDelayFire = false;
 
+	// Get ready to fall down
 	FallInit();
-	CSPlayerItem()->SetItemInfo(&m_ItemInfoArray[m_iId]);
+
+	// extend
+	CBasePlayerWeapon::Spawn();
 }
 
 void CMAC10::Precache()

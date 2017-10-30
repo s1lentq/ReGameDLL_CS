@@ -311,6 +311,24 @@ inline T *UTIL_FindEntityByTargetname(T *pStartEntity, const char *szName)
 	return (T *)UTIL_FindEntityByString(pStartEntity, "targetname", szName);
 }
 
+template <typename T = CBaseEntity>
+inline T *UTIL_FindEntityInSphere(T *pStartEntity, const Vector &vecCenter, float flRadius)
+{
+	edict_t	*pentEntity;
+	if (pStartEntity)
+		pentEntity = pStartEntity->edict();
+	else
+		pentEntity = nullptr;
+
+	pentEntity = FIND_ENTITY_IN_SPHERE(pentEntity, vecCenter, flRadius);
+	if (!FNullEnt(pentEntity))
+	{
+		return (T *)CBaseEntity::Instance(pentEntity);
+	}
+
+	return nullptr;
+}
+
 template <size_t nSize>
 void UTIL_StripToken(const char *pKey, char (&pDest)[nSize])
 {

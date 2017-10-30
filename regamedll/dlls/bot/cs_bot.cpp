@@ -340,19 +340,19 @@ void CCSBot::BotDeathThink()
 
 CBasePlayer *CCSBot::FindNearbyPlayer()
 {
-	CBaseEntity *pEntity = nullptr;
+	CBasePlayer *pPlayer = nullptr;
 	Vector vecSrc = pev->origin;
 	const float flRadius = 800.0f;
 
-	while ((pEntity = UTIL_FindEntityInSphere(pEntity, vecSrc, flRadius)))
+	while ((pPlayer = UTIL_FindEntityInSphere(pPlayer, vecSrc, flRadius)))
 	{
-		if (!pEntity->IsPlayer())
+		if (!pPlayer->IsPlayer())
 			continue;
 
-		if (!(pEntity->pev->flags & FL_FAKECLIENT))
+		if (!(pPlayer->pev->flags & FL_FAKECLIENT))
 			continue;
 
-		return static_cast<CBasePlayer *>(pEntity);
+		return pPlayer;
 	}
 
 	return nullptr;

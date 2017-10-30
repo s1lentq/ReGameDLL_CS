@@ -177,7 +177,7 @@ void ResetPlayerPVS(edict_t *client, int clientnum);
 bool CheckPlayerPVSLeafChanged(edict_t *client, int clientnum);
 void MarkEntityInPVS(int clientnum, int entitynum, float time, bool inpvs);
 bool CheckEntityRecentlyInPVS(int clientnum, int entitynum, float currenttime);
-int AddToFullPack(struct entity_state_s *state, int e, edict_t *ent, edict_t *host, int hostflags, int player, unsigned char *pSet);
+BOOL AddToFullPack(struct entity_state_s *state, int e, edict_t *ent, edict_t *host, int hostflags, BOOL player, unsigned char *pSet);
 void CreateBaseline(int player, int eindex, struct entity_state_s *baseline, edict_t *entity, int playermodelindex, Vector player_mins, Vector player_maxs);
 void Entity_FieldInit(struct delta_s *pFields);
 void Entity_Encode(struct delta_s *pFields, const unsigned char *from, const unsigned char *to);

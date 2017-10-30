@@ -12,8 +12,11 @@ void CKnife::Spawn()
 	m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
 	m_iClip = WEAPON_NOCLIP;
 
+	// Get ready to fall down
 	FallInit();
-	CSPlayerItem()->SetItemInfo(&m_ItemInfoArray[m_iId]);
+
+	// extend
+	CBasePlayerWeapon::Spawn();
 }
 
 void CKnife::Precache()
@@ -46,10 +49,7 @@ int CKnife::GetItemInfo(ItemInfo *p)
 	p->iSlot = 2;
 	p->iPosition = 1;
 	p->iId = WEAPON_KNIFE;
-
-	// TODO: it is not being used
-	//p->iFlags = 0;
-
+	p->iFlags = 0;
 	p->iWeight = KNIFE_WEIGHT;
 
 	return 1;

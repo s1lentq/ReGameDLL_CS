@@ -286,11 +286,10 @@ public:
 	void CheckRespawn();
 
 public:
-
 #ifdef REGAMEDLL_API
 	CCSPlayerItem *CSPlayerItem() const;
+#endif
 
-	int iPosition() const;
 	const char *pszAmmo1() const;
 	int iMaxAmmo1() const;
 	const char *pszAmmo2() const;
@@ -299,17 +298,6 @@ public:
 	int iMaxClip() const;
 	int iWeight() const;
 	int iFlags() const;
-#else
-	int iPosition()        const { return m_ItemInfoArray[m_iId].iPosition; }
-	const char *pszAmmo1() const { return m_ItemInfoArray[m_iId].pszAmmo1; }
-	int iMaxAmmo1()        const { return m_ItemInfoArray[m_iId].iMaxAmmo1; }
-	const char *pszAmmo2() const { return m_ItemInfoArray[m_iId].pszAmmo2; }
-	int iMaxAmmo2()        const { return m_ItemInfoArray[m_iId].iMaxAmmo2; }
-	const char *pszName()  const { return m_ItemInfoArray[m_iId].pszName; }
-	int iMaxClip()         const { return m_ItemInfoArray[m_iId].iMaxClip; }
-	int iWeight()          const { return m_ItemInfoArray[m_iId].iWeight; }
-	int iFlags()           const { return m_ItemInfoArray[m_iId].iFlags; }
-#endif
 
 public:
 	static TYPEDESCRIPTION m_SaveData[];
@@ -332,6 +320,7 @@ inline CCSPlayerItem *CBasePlayerItem::CSPlayerItem() const
 class CBasePlayerWeapon: public CBasePlayerItem
 {
 public:
+	virtual void Spawn();
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
 
@@ -1960,6 +1949,7 @@ extern short g_sModelIndexC4Glow;
 extern short g_sModelIndexRadio;
 extern MULTIDAMAGE gMultiDamage;
 
+void WeaponsPrecache();
 void FindHullIntersection(const Vector &vecSrc, TraceResult &tr, float *mins, float *maxs, edict_t *pEntity);
 void AnnounceFlashInterval(float interval, float offset = 0);
 
@@ -1976,5 +1966,4 @@ void EjectBrass(const Vector &vecOrigin, const Vector &vecLeft, const Vector &ve
 void EjectBrass2(const Vector &vecOrigin, const Vector &vecVelocity, float rotation, int model, int soundtype, entvars_t *pev);
 void AddAmmoNameToAmmoRegistry(const char *szAmmoname);
 void UTIL_PrecacheOtherWeapon(const char *szClassname);
-void W_Precache();
 BOOL CanAttack(float attack_time, float curtime, BOOL isPredicted);

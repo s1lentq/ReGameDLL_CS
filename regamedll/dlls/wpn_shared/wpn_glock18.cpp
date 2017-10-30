@@ -17,8 +17,11 @@ void CGLOCK18::Spawn()
 	m_flGlock18Shoot = 0;
 	m_flAccuracy = 0.9f;
 
+	// Get ready to fall down
 	FallInit();
-	CSPlayerItem()->SetItemInfo(&m_ItemInfoArray[m_iId]);
+
+	// extend
+	CBasePlayerWeapon::Spawn();
 }
 
 void CGLOCK18::Precache()

@@ -10,8 +10,12 @@ void CAWP::Spawn()
 	SET_MODEL(ENT(pev), "models/w_awp.mdl");
 
 	m_iDefaultAmmo = AWP_DEFAULT_GIVE;
+
+	// Get ready to fall down
 	FallInit();
-	CSPlayerItem()->SetItemInfo(&m_ItemInfoArray[m_iId]);
+
+	// extend
+	CBasePlayerWeapon::Spawn();
 }
 
 void CAWP::Precache()

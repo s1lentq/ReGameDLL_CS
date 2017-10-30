@@ -11,9 +11,11 @@ void CXM1014::Spawn()
 
 	m_iDefaultAmmo = XM1014_DEFAULT_GIVE;
 
-	// get ready to fall
+	// Get ready to fall down
 	FallInit();
-	CSPlayerItem()->SetItemInfo(&m_ItemInfoArray[m_iId]);
+
+	// extend
+	CBasePlayerWeapon::Spawn();
 }
 
 void CXM1014::Precache()
