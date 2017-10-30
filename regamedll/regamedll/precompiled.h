@@ -40,7 +40,6 @@
 #include "MemPool.h"
 
 #include "engine.h"
-#include "RegameDLLRuntimeConfig.h"
 
 // Valve libs stuff
 #include "tier0/platform.h"

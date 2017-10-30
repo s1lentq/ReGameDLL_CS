@@ -14,8 +14,11 @@ void CM4A1::Spawn()
 	m_iShotsFired = 0;
 	m_bDelayFire = true;
 
+	// Get ready to fall down
 	FallInit();
-	CSPlayerItem()->SetItemInfo(&m_ItemInfoArray[m_iId]);
+
+	// extend
+	CBasePlayerWeapon::Spawn();
 }
 
 void CM4A1::Precache()

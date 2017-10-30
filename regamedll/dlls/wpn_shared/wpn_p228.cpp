@@ -13,8 +13,11 @@ void CP228::Spawn()
 	m_iDefaultAmmo = P228_DEFAULT_GIVE;
 	m_flAccuracy = 0.9f;
 
+	// Get ready to fall down
 	FallInit();
-	CSPlayerItem()->SetItemInfo(&m_ItemInfoArray[m_iId]);
+
+	// extend
+	CBasePlayerWeapon::Spawn();
 }
 
 void CP228::Precache()

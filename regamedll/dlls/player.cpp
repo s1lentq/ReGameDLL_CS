@@ -1252,7 +1252,7 @@ void packPlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 		// pack the ammo
 		if (packAmmo)
 		{
-			pWeaponBox->PackAmmo(MAKE_STRING(CBasePlayerItem::m_ItemInfoArray[pItem->m_iId].pszAmmo1), pPlayer->m_rgAmmo[pItem->PrimaryAmmoIndex()]);
+			pWeaponBox->PackAmmo(MAKE_STRING(pItem->pszAmmo1()), pPlayer->m_rgAmmo[pItem->PrimaryAmmoIndex()]);
 		}
 
 		SET_MODEL(ENT(pWeaponBox->pev), modelName);
@@ -1315,7 +1315,7 @@ void packPlayerNade(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 		// pack the ammo
 		if (packAmmo)
 		{
-			pWeaponBox->PackAmmo(MAKE_STRING(CBasePlayerItem::m_ItemInfoArray[pItem->m_iId].pszAmmo1), pPlayer->m_rgAmmo[pItem->PrimaryAmmoIndex()]);
+			pWeaponBox->PackAmmo(MAKE_STRING(pItem->pszAmmo1()), pPlayer->m_rgAmmo[pItem->PrimaryAmmoIndex()]);
 		}
 
 		SET_MODEL(ENT(pWeaponBox->pev), modelName);
@@ -1412,9 +1412,9 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 #ifdef REGAMEDLL_ADD
 	auto GiveWeapon = [&](int ammo, char* pszWeaponName) {
 		GiveNamedItem(pszWeaponName);
-		const WeaponInfoStruct *info = GetWeaponInfo(pszWeaponName);
-		if (info) {
-			GiveAmmo(refill_bpammo_weapons.value != 0.0f ? info->maxRounds : ammo, info->ammoName2);
+		const WeaponInfoStruct *pInfo = GetWeaponInfo(pszWeaponName);
+		if (pInfo) {
+			GiveAmmo(refill_bpammo_weapons.value != 0.0f ? pInfo->maxRounds : ammo, pInfo->ammoName2);
 		}
 	};
 

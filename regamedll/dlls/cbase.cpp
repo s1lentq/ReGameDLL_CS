@@ -361,7 +361,6 @@ int DispatchSpawn(edict_t *pent)
 				gGlobalState.EntityAdd(pEntity->pev->globalname, gpGlobals->mapname, GLOBAL_ON);
 			}
 		}
-
 	}
 
 	return 0;

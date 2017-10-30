@@ -773,7 +773,11 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 		p = szTemp;
 	}
 
-	// remove quotes if present
+#ifdef REGAMEDLL_FIXES
+	Q_StripPrecedingAndTrailingWhitespace(p);
+#endif
+
+	// remove quotes (leading & trailing) if present
 	if (*p == '"')
 	{
 		p++;
@@ -806,11 +810,11 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 			Place playerPlace = TheNavAreaGrid.GetPlace(&pPlayer->pev->origin);
 			const BotPhraseList *placeList = TheBotPhrases->GetPlaceList();
 
-			for (auto it : *placeList)
+			for (auto phrase : *placeList)
 			{
-				if (it->GetID() == playerPlace)
+				if (phrase->GetID() == playerPlace)
 				{
-					placeName = it->GetName();
+					placeName = phrase->GetName();
 					break;
 				}
 			}
@@ -4033,6 +4037,11 @@ void ClientPrecache()
 	PRECACHE_MODEL("sprites/black_smoke2.spr");
 	PRECACHE_MODEL("sprites/black_smoke3.spr");
 	PRECACHE_MODEL("sprites/black_smoke4.spr");
+
+#ifdef REGAMEDLL_FIXES
+	PRECACHE_MODEL("sprites/gas_puff_01.spr");
+#endif
+
 	PRECACHE_MODEL("sprites/fast_wallpuff1.spr");
 	PRECACHE_MODEL("sprites/pistol_smoke1.spr");
 	PRECACHE_MODEL("sprites/pistol_smoke2.spr");
@@ -4219,16 +4228,16 @@ bool CheckEntityRecentlyInPVS(int clientnum, int entitynum, float currenttime)
 	return false;
 }
 
-int EXT_FUNC AddToFullPack(struct entity_state_s *state, int e, edict_t *ent, edict_t *host, int hostflags, int player, unsigned char *pSet)
+BOOL EXT_FUNC AddToFullPack(struct entity_state_s *state, int e, edict_t *ent, edict_t *host, int hostflags, BOOL player, unsigned char *pSet)
 {
 	if ((ent->v.effects & EF_NODRAW) == EF_NODRAW && ent != host)
-		return 0;
+		return FALSE;
 
 	if (!ent->v.modelindex || !STRING(ent->v.model))
-		return 0;
+		return FALSE;
 
 	if ((ent->v.flags & FL_SPECTATOR) == FL_SPECTATOR && ent != host)
-		return 0;
+		return FALSE;
 
 	int i;
 	int hostnum = ENTINDEX(host) - 1;
@@ -4242,7 +4251,7 @@ int EXT_FUNC AddToFullPack(struct entity_state_s *state, int e, edict_t *ent, ed
 			if (!ENGINE_CHECK_VISIBILITY(ent, pSet))
 			{
 				MarkEntityInPVS(hostnum, e, 0, false);
-				return 0;
+				return FALSE;
 			}
 
 			MarkEntityInPVS(hostnum, e, gpGlobals->time, true);
@@ -4250,7 +4259,7 @@ int EXT_FUNC AddToFullPack(struct entity_state_s *state, int e, edict_t *ent, ed
 	}
 
 	if ((ent->v.flags & FL_SKIPLOCALHOST) == FL_SKIPLOCALHOST && (hostflags & 1) && ent->v.owner == host)
-		return 0;
+		return FALSE;
 
 	if (host->v.groupinfo)
 	{
@@ -4261,12 +4270,12 @@ int EXT_FUNC AddToFullPack(struct entity_state_s *state, int e, edict_t *ent, ed
 			if (g_groupop == GROUP_OP_AND)
 			{
 				if (!(ent->v.groupinfo & host->v.groupinfo))
-					return 0;
+					return FALSE;
 			}
 			else if (g_groupop == GROUP_OP_NAND)
 			{
 				if (ent->v.groupinfo & host->v.groupinfo)
-					return 0;
+					return FALSE;
 			}
 		}
 
@@ -4351,7 +4360,7 @@ int EXT_FUNC AddToFullPack(struct entity_state_s *state, int e, edict_t *ent, ed
 		state->playerclass = ent->v.playerclass;
 
 	state->iuser4 = ent->v.iuser4;
-	return 1;
+	return TRUE;
 }
 
 // Creates baselines used for network encoding, especially for player data since players are not spawned until connect time.

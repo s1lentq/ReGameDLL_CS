@@ -105,7 +105,7 @@ public:
 	void StopSound();
 	void UpdateSound();
 
-	static CFuncTrackTrain *Instance(edict_t *pent);
+	static CFuncTrackTrain *Instance(edict_t *pEdict);
 	static TYPEDESCRIPTION m_SaveData[];
 
 	CPathTrack *m_ppath;
@@ -163,7 +163,7 @@ public:
 	void UpdateSound();
 
 public:
-	static CFuncVehicle *Instance(edict_t *pent);
+	static CFuncVehicle *Instance(edict_t *pEdict);
 	static TYPEDESCRIPTION m_SaveData[];
 
 	CPathTrack *m_ppath;

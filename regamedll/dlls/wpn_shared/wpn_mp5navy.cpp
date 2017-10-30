@@ -13,8 +13,11 @@ void CMP5N::Spawn()
 	m_flAccuracy = 0.0f;
 	m_bDelayFire = false;
 
+	// Get ready to fall down
 	FallInit();
-	CSPlayerItem()->SetItemInfo(&m_ItemInfoArray[m_iId]);
+
+	// extend
+	CBasePlayerWeapon::Spawn();
 }
 
 void CMP5N::Precache()

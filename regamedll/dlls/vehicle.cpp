@@ -756,13 +756,14 @@ void CFuncVehicle::Find()
 
 void CFuncVehicle::NearestPath()
 {
-	CBaseEntity *pTrack = nullptr;
-	CBaseEntity *pNearest = nullptr;
+	CPathTrack *pTrack = nullptr;
+	CPathTrack *pNearest = nullptr;
 	float_precision dist;
-	float closest = 1024;
+	float closest = 1024.0f;
 
-	while ((pTrack = UTIL_FindEntityInSphere(pTrack, pev->origin, 1024)))
+	while ((pTrack = UTIL_FindEntityInSphere(pTrack, pev->origin, 1024.0f)))
 	{
+		// filter out non-tracks
 		if (!(pTrack->pev->flags & (FL_CLIENT | FL_MONSTER)) && FClassnameIs(pTrack->pev, "path_track"))
 		{
 			dist = (pev->origin - pTrack->pev->origin).Length();
@@ -784,7 +785,9 @@ void CFuncVehicle::NearestPath()
 
 	ALERT(at_aiconsole, "TRAIN: %s, Nearest track is %s\n", STRING(pev->targetname), STRING(pNearest->pev->targetname));
 
-	pTrack = ((CPathTrack *)pNearest)->GetNext();
+	// If I'm closer to the next path_track on this path, then it's my real path
+	pTrack = pNearest->GetNext();
+
 	if (pTrack)
 	{
 		if ((pev->origin - pTrack->pev->origin).Length() < (pev->origin - pNearest->pev->origin).Length())
@@ -793,10 +796,11 @@ void CFuncVehicle::NearestPath()
 		}
 	}
 
-	m_ppath = static_cast<CPathTrack *>(pNearest);
+	m_ppath = pNearest;
+
 	if (pev->speed != 0)
 	{
-		NextThink(pev->ltime + 0.1, FALSE);
+		NextThink(pev->ltime + 0.1f, FALSE);
 		SetThink(&CFuncVehicle::Next);
 	}
 }
@@ -807,11 +811,11 @@ void CFuncVehicle::OverrideReset()
 	SetThink(&CFuncVehicle::NearestPath);
 }
 
-CFuncVehicle *CFuncVehicle::Instance(edict_t *pent)
+CFuncVehicle *CFuncVehicle::Instance(edict_t *pEdict)
 {
-	if (FClassnameIs(pent, "func_vehicle"))
+	if (FClassnameIs(pEdict, "func_vehicle"))
 	{
-		return (CFuncVehicle *)GET_PRIVATE(pent);
+		return GET_PRIVATE<CFuncVehicle>(pEdict);
 	}
 
 	return nullptr;
@@ -860,13 +864,16 @@ void CFuncVehicle::Spawn()
 	UTIL_SetSize(pev, pev->mins, pev->maxs);
 	UTIL_SetOrigin(pev, pev->origin);
 
+	// Cache off placed origin for vehicle controls
 	pev->oldorigin = pev->origin;
 
 	m_controlMins = pev->mins;
 	m_controlMaxs = pev->maxs;
 	m_controlMaxs.z += 72;
 
-	NextThink(pev->ltime + 0.1, FALSE);
+	// start vehicle on the next frame, to make sure their targets have had
+	// a chance to spawn/activate
+	NextThink(pev->ltime + 0.1f, FALSE);
 	SetThink(&CFuncVehicle::Find);
 	Precache();
 }
@@ -878,11 +885,11 @@ void CFuncVehicle::Restart()
 	pev->speed = 0;
 	pev->velocity = g_vecZero;
 	pev->avelocity = g_vecZero;
-
 	pev->impulse = int(m_speed);
+
+	m_dir = 1;
 	m_flTurnStartTime = -1;
 	m_flUpdateSound = -1;
-	m_dir = 1;
 	m_pDriver = nullptr;
 
 	if (FStringNull(pev->target))
@@ -893,7 +900,7 @@ void CFuncVehicle::Restart()
 	UTIL_SetOrigin(pev, pev->oldorigin);
 	STOP_SOUND(ENT(pev), CHAN_STATIC, (char *)STRING(pev->noise));
 
-	NextThink(pev->ltime + 0.1, FALSE);
+	NextThink(pev->ltime + 0.1f, FALSE);
 	SetThink(&CFuncVehicle::Find);
 }
 
@@ -904,12 +911,12 @@ void CFuncVehicle::Precache()
 
 	switch (m_sounds)
 	{
-	case 1: PRECACHE_SOUND("plats/vehicle1.wav");pev->noise = MAKE_STRING("plats/vehicle1.wav"); break;
-	case 2: PRECACHE_SOUND("plats/vehicle2.wav");pev->noise = MAKE_STRING("plats/vehicle2.wav"); break;
-	case 3: PRECACHE_SOUND("plats/vehicle3.wav");pev->noise = MAKE_STRING("plats/vehicle3.wav"); break;
-	case 4: PRECACHE_SOUND("plats/vehicle4.wav");pev->noise = MAKE_STRING("plats/vehicle4.wav"); break;
-	case 5: PRECACHE_SOUND("plats/vehicle6.wav");pev->noise = MAKE_STRING("plats/vehicle6.wav"); break;
-	case 6: PRECACHE_SOUND("plats/vehicle7.wav");pev->noise = MAKE_STRING("plats/vehicle7.wav"); break;
+	case 1: PRECACHE_SOUND("plats/vehicle1.wav"); pev->noise = MAKE_STRING("plats/vehicle1.wav"); break;
+	case 2: PRECACHE_SOUND("plats/vehicle2.wav"); pev->noise = MAKE_STRING("plats/vehicle2.wav"); break;
+	case 3: PRECACHE_SOUND("plats/vehicle3.wav"); pev->noise = MAKE_STRING("plats/vehicle3.wav"); break;
+	case 4: PRECACHE_SOUND("plats/vehicle4.wav"); pev->noise = MAKE_STRING("plats/vehicle4.wav"); break;
+	case 5: PRECACHE_SOUND("plats/vehicle6.wav"); pev->noise = MAKE_STRING("plats/vehicle6.wav"); break;
+	case 6: PRECACHE_SOUND("plats/vehicle7.wav"); pev->noise = MAKE_STRING("plats/vehicle7.wav"); break;
 	}
 
 	PRECACHE_SOUND("plats/vehicle_brake1.wav");
@@ -922,23 +929,20 @@ LINK_ENTITY_TO_CLASS(func_vehiclecontrols, CFuncVehicleControls, CCSFuncVehicleC
 
 void CFuncVehicleControls::Find()
 {
-	edict_t *pTarget = nullptr;
-
-	do
+	CFuncVehicle *pVehicle = nullptr;
+	while ((pVehicle = UTIL_FindEntityByTargetname(pVehicle, pev->target)))
 	{
-		pTarget = FIND_ENTITY_BY_TARGETNAME(pTarget, STRING(pev->target));
+		if (FClassnameIs(pVehicle->pev, "func_vehicle"))
+			break;
 	}
-	while (!FNullEnt(pTarget) && !FClassnameIs(pTarget, "func_vehicle"));
 
-	if (FNullEnt(pTarget))
+	if (FNullEnt(pVehicle))
 	{
 		ALERT(at_console, "No vehicle %s\n", STRING(pev->target));
 		return;
 	}
 
-	CFuncVehicle *pvehicle = CFuncVehicle::Instance(pTarget);
-
-	pvehicle->SetControls(pev);
+	pVehicle->SetControls(pev);
 	UTIL_Remove(this);
 }
 
@@ -946,7 +950,7 @@ void CFuncVehicleControls::Spawn()
 {
 	pev->solid = SOLID_NOT;
 	pev->movetype = MOVETYPE_NONE;
-	SET_MODEL(ENT(pev), STRING(pev->model));
+	SET_MODEL(ENT(pev), pev->model);
 
 	UTIL_SetSize(pev, pev->mins, pev->maxs);
 	UTIL_SetOrigin(pev, pev->origin);

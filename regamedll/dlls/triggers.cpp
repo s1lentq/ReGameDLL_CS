@@ -2068,7 +2068,7 @@ void CTriggerChangeTarget::Spawn()
 
 void CTriggerChangeTarget::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
-	CBaseEntity *pTarget = UTIL_FindEntityByString(nullptr, "targetname", STRING(pev->target));
+	CBaseEntity *pTarget = UTIL_FindEntityByTargetname(nullptr, pev->target);
 	if (pTarget)
 	{
 		pTarget->pev->target = m_iszNewTarget;

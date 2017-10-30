@@ -102,7 +102,7 @@ void setupToolchain(NativeBinarySpec b)
 		b.lib LazyNativeDepSet.create(dep_cppunitlite, 'cppunitlite', b.buildType.name, true)
 	}
 
-	cfg.singleDefines 'USE_BREAKPAD_HANDLER', 'DEDICATED', 'REGAMEDLL_SELF', 'REGAMEDLL_API', 'CLIENT_WEAPONS', 'USE_QSTRING'
+	cfg.singleDefines 'USE_BREAKPAD_HANDLER', 'REGAMEDLL_SELF', 'REGAMEDLL_API', 'CLIENT_WEAPONS', 'USE_QSTRING'
 
 	if (cfg instanceof MsvcToolchainConfig)
 	{
@@ -160,7 +160,7 @@ void setupToolchain(NativeBinarySpec b)
 	}
 
 	if (regamedllFixes) {
-		cfg.singleDefines 'REGAMEDLL_FIXES', 'REGAMEDLL_CHECKS', 'REGAMEDLL_ADD', 'NDEBUG'
+		cfg.singleDefines 'REGAMEDLL_FIXES', 'REGAMEDLL_CHECKS', 'REGAMEDLL_ADD', 'UNICODE_FIXES', 'NDEBUG'
 	} else {
 		cfg.singleDefines 'PLAY_GAMEDLL'
 	}
@@ -173,12 +173,19 @@ void setupToolchain(NativeBinarySpec b)
 
 class RegamedllSrc {
 	static void regamedll_src(def h) {
-		h.regamedll_src(CppSourceSet) {
-
+		h.engine_src(CppSourceSet) {
 			source {
-				srcDirs "engine", "dlls", "dlls/API", "dlls/addons", "game_shared", "pm_shared", "regamedll", "public", "version"
+				srcDir "engine"
+				include "unicode_strtools.cpp"
+			}
+		}
+
+		h.shared_src(CppSourceSet) {
+			source {
+				srcDirs "game_shared", "pm_shared", "regamedll", "public", "version"
 
 				include "**/*.cpp"
+
 				exclude "precompiled.cpp"
 				exclude "tier0/dbg.cpp", "utlsymbol.cpp", "utlbuffer.cpp"
 
@@ -193,12 +200,19 @@ class RegamedllSrc {
 				}
 			}
 		}
+
+		h.gamedll_src(CppSourceSet) {
+			source {
+				srcDirs "dlls", "dlls/API", "dlls/addons"
+				include "**/*.cpp"
+			}
+		}
 	}
 
 	static void regamedll_pch(def h) {
 		h.regamedll_pch(CppSourceSet) {
 			source {
-				srcDirs "regamedll"
+				srcDir "regamedll"
 				include "precompiled.cpp"
 			}
 		}

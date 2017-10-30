@@ -32,15 +32,3 @@ EXT_FUNC void CCSPlayerItem::SetItemInfo(ItemInfo *pInfo)
 {
 	Q_memcpy(&m_ItemInfo, pInfo, sizeof(m_ItemInfo));
 }
-
-#ifdef REGAMEDLL_API
-int CBasePlayerItem::iPosition()        const { return CSPlayerItem()->m_ItemInfo.iPosition; }
-const char *CBasePlayerItem::pszAmmo1() const { return CSPlayerItem()->m_ItemInfo.pszAmmo1; }
-int CBasePlayerItem::iMaxAmmo1()        const { return CSPlayerItem()->m_ItemInfo.iMaxAmmo1; }
-const char *CBasePlayerItem::pszAmmo2() const { return CSPlayerItem()->m_ItemInfo.pszAmmo2; }
-int CBasePlayerItem::iMaxAmmo2()        const { return CSPlayerItem()->m_ItemInfo.iMaxAmmo2; }
-const char *CBasePlayerItem::pszName()  const { return CSPlayerItem()->m_ItemInfo.pszName; }
-int CBasePlayerItem::iMaxClip()         const { return CSPlayerItem()->m_ItemInfo.iMaxClip; }
-int CBasePlayerItem::iWeight()          const { return CSPlayerItem()->m_ItemInfo.iWeight; }
-int CBasePlayerItem::iFlags()           const { return CSPlayerItem()->m_ItemInfo.iFlags; }
-#endif

@@ -14,8 +14,11 @@ void CDEAGLE::Spawn()
 	m_fMaxSpeed = DEAGLE_MAX_SPEED;
 	m_flAccuracy = 0.9f;
 
+	// Get ready to fall down
 	FallInit();
-	CSPlayerItem()->SetItemInfo(&m_ItemInfoArray[m_iId]);
+
+	// extend
+	CBasePlayerWeapon::Spawn();
 }
 
 void CDEAGLE::Precache()

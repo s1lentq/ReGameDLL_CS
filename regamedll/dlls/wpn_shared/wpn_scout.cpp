@@ -11,8 +11,11 @@ void CSCOUT::Spawn()
 
 	m_iDefaultAmmo = SCOUT_DEFAULT_GIVE;
 
+	// Get ready to fall down
 	FallInit();
-	CSPlayerItem()->SetItemInfo(&m_ItemInfoArray[m_iId]);
+
+	// extend
+	CBasePlayerWeapon::Spawn();
 }
 
 void CSCOUT::Precache()

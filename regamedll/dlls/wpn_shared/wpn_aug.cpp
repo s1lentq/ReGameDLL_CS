@@ -13,8 +13,11 @@ void CAUG::Spawn()
 	m_flAccuracy = 0.2f;
 	m_iShotsFired = 0;
 
+	// Get ready to fall down
 	FallInit();
-	CSPlayerItem()->SetItemInfo(&m_ItemInfoArray[m_iId]);
+
+	// extend
+	CBasePlayerWeapon::Spawn();
 }
 
 void CAUG::Precache()

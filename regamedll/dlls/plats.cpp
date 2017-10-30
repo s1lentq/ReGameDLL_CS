@@ -1380,12 +1380,12 @@ void CFuncTrackTrain::Find()
 
 void CFuncTrackTrain::NearestPath()
 {
-	CBaseEntity *pTrack = nullptr;
-	CBaseEntity *pNearest = nullptr;
+	CPathTrack *pTrack = nullptr;
+	CPathTrack *pNearest = nullptr;
 	float_precision dist;
-	float closest = 1024;
+	float closest = 1024.0f;
 
-	while ((pTrack = UTIL_FindEntityInSphere(pTrack, pev->origin, 1024)))
+	while ((pTrack = UTIL_FindEntityInSphere(pTrack, pev->origin, 1024.0f)))
 	{
 		// filter out non-tracks
 		if (!(pTrack->pev->flags & (FL_CLIENT | FL_MONSTER)) && FClassnameIs(pTrack->pev, "path_track"))
@@ -1410,7 +1410,7 @@ void CFuncTrackTrain::NearestPath()
 	ALERT(at_aiconsole, "TRAIN: %s, Nearest track is %s\n", STRING(pev->targetname), STRING(pNearest->pev->targetname));
 
 	// If I'm closer to the next path_track on this path, then it's my real path
-	pTrack = ((CPathTrack *)pNearest)->GetNext();
+	pTrack = pNearest->GetNext();
 
 	if (pTrack)
 	{
@@ -1420,7 +1420,7 @@ void CFuncTrackTrain::NearestPath()
 		}
 	}
 
-	m_ppath = static_cast<CPathTrack *>(pNearest);
+	m_ppath = pNearest;
 
 	if (pev->speed != 0)
 	{
@@ -1435,11 +1435,11 @@ void CFuncTrackTrain::OverrideReset()
 	SetThink(&CFuncTrackTrain::NearestPath);
 }
 
-CFuncTrackTrain *CFuncTrackTrain::Instance(edict_t *pent)
+CFuncTrackTrain *CFuncTrackTrain::Instance(edict_t *pEdict)
 {
-	if (FClassnameIs(pent, "func_tracktrain"))
+	if (FClassnameIs(pEdict, "func_tracktrain"))
 	{
-		return (CFuncTrackTrain *)GET_PRIVATE(pent);
+		return GET_PRIVATE<CFuncTrackTrain>(pEdict);
 	}
 
 	return nullptr;
@@ -1471,8 +1471,8 @@ void CFuncTrackTrain::Spawn()
 		pev->solid = SOLID_BSP;
 
 	pev->movetype = MOVETYPE_PUSH;
-	SET_MODEL(ENT(pev), STRING(pev->model));
 
+	SET_MODEL(ENT(pev), STRING(pev->model));
 	UTIL_SetSize(pev, pev->mins, pev->maxs);
 	UTIL_SetOrigin(pev, pev->origin);
 
@@ -1498,6 +1498,7 @@ void CFuncTrackTrain::Restart()
 	pev->velocity = g_vecZero;
 	pev->avelocity = g_vecZero;
 	pev->impulse = int(m_speed);
+
 	m_dir = 1;
 
 	if (FStringNull(pev->target))
@@ -1506,6 +1507,7 @@ void CFuncTrackTrain::Restart()
 	}
 
 	UTIL_SetOrigin(pev, pev->oldorigin);
+
 	NextThink(pev->ltime + 0.1f, FALSE);
 	SetThink(&CFuncTrackTrain::Find);
 }
@@ -1539,22 +1541,20 @@ LINK_ENTITY_TO_CLASS(func_traincontrols, CFuncTrainControls, CCSFuncTrainControl
 
 void CFuncTrainControls::Find()
 {
-	edict_t *pTarget = nullptr;
-
-	do
+	CFuncTrackTrain *pTrain = nullptr;
+	while ((pTrain = UTIL_FindEntityByTargetname(pTrain, pev->target)))
 	{
-		pTarget = FIND_ENTITY_BY_TARGETNAME(pTarget, STRING(pev->target));
+		if (FClassnameIs(pTrain->pev, "func_tracktrain"))
+			break;
 	}
-	while (!FNullEnt(pTarget) && !FClassnameIs(pTarget, "func_tracktrain"));
 
-	if (FNullEnt(pTarget))
+	if (FNullEnt(pTrain))
 	{
 		ALERT(at_console, "No train %s\n", STRING(pev->target));
 		return;
 	}
 
-	CFuncTrackTrain *ptrain = CFuncTrackTrain::Instance(pTarget);
-	ptrain->SetControls(pev);
+	pTrain->SetControls(pev);
 	UTIL_Remove(this);
 }
 
@@ -1562,7 +1562,7 @@ void CFuncTrainControls::Spawn()
 {
 	pev->solid = SOLID_NOT;
 	pev->movetype = MOVETYPE_NONE;
-	SET_MODEL(ENT(pev), STRING(pev->model));
+	SET_MODEL(ENT(pev), pev->model);
 
 	UTIL_SetSize(pev, pev->mins, pev->maxs);
 	UTIL_SetOrigin(pev, pev->origin);
@@ -1668,47 +1668,48 @@ void CFuncTrackChange::OverrideReset()
 void CFuncTrackChange::Find()
 {
 	// Find track entities
-	edict_t *target;
-
-	target = FIND_ENTITY_BY_TARGETNAME(nullptr, STRING(m_trackTopName));
-	if (!FNullEnt(target))
+	edict_t *pTarget = FIND_ENTITY_BY_TARGETNAME(nullptr, STRING(m_trackTopName));
+	if (FNullEnt(pTarget))
 	{
-		m_trackTop = CPathTrack::Instance(target);
-		target = FIND_ENTITY_BY_TARGETNAME(nullptr, STRING(m_trackBottomName));
-
-		if (!FNullEnt(target))
-		{
-			m_trackBottom = CPathTrack::Instance(target);
-			target = FIND_ENTITY_BY_TARGETNAME(nullptr, STRING(m_trainName));
-
-			if (!FNullEnt(target))
-			{
-				m_train = CFuncTrackTrain::Instance(FIND_ENTITY_BY_TARGETNAME(nullptr, STRING(m_trainName)));
-
-				if (!m_train)
-				{
-					ALERT(at_error, "Can't find train for track change! %s\n", STRING(m_trainName));
-					return;
-				}
-
-				Vector center = (pev->absmin + pev->absmax) * 0.5f;
-				m_trackBottom = m_trackBottom->Nearest(center);
-				m_trackTop = m_trackTop->Nearest(center);
-				UpdateAutoTargets(m_toggle_state);
-				SetThink(NULL);
-				return;
-			}
-			else
-			{
-				ALERT(at_error, "Can't find train for track change! %s\n", STRING(m_trainName));
-				target = FIND_ENTITY_BY_TARGETNAME(nullptr, STRING(m_trainName));
-			}
-		}
-		else
-			ALERT(at_error, "Can't find bottom track for track change! %s\n", STRING(m_trackBottomName));
-	}
-	else
 		ALERT(at_error, "Can't find top track for track change! %s\n", STRING(m_trackTopName));
+		return;
+	}
+
+	m_trackTop = CPathTrack::Instance(pTarget);
+	pTarget = FIND_ENTITY_BY_TARGETNAME(nullptr, STRING(m_trackBottomName));
+
+	if (FNullEnt(pTarget))
+	{
+		ALERT(at_error, "Can't find bottom track for track change! %s\n", STRING(m_trackBottomName));
+		return;
+	}
+
+	m_trackBottom = CPathTrack::Instance(pTarget);
+	pTarget = FIND_ENTITY_BY_TARGETNAME(nullptr, STRING(m_trainName));
+
+	if (FNullEnt(pTarget))
+	{
+		ALERT(at_error, "Can't find train for track change! %s\n", STRING(m_trainName));
+
+		// TODO: this call has no effect
+		// pTarget = FIND_ENTITY_BY_TARGETNAME(nullptr, STRING(m_trainName));
+		return;
+	}
+
+	m_train = CFuncTrackTrain::Instance(FIND_ENTITY_BY_TARGETNAME(nullptr, STRING(m_trainName)));
+
+	if (!m_train)
+	{
+		ALERT(at_error, "Can't find train for track change! %s\n", STRING(m_trainName));
+		return;
+	}
+
+	Vector center = (pev->absmin + pev->absmax) * 0.5f;
+	m_trackBottom = m_trackBottom->Nearest(center);
+	m_trackTop = m_trackTop->Nearest(center);
+	UpdateAutoTargets(m_toggle_state);
+	SetThink(nullptr);
+	return;
 }
 
 TRAIN_CODE CFuncTrackChange::EvaluateTrain(CPathTrack *pcurrent)

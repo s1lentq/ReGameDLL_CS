@@ -130,7 +130,7 @@ void SV_LoopPerformance_f()
 
 	start = loopCounter.GetCurTime();
 
-	for (i = 0; i < 100; ++i)
+	for (i = 0; i < 100; i++)
 	{
 		CBaseEntity *pSpot;
 		for (pSpot = UTIL_FindEntityByString_Old(nullptr, "classname", "info_player_start"); pSpot; pSpot = UTIL_FindEntityByString_Old(pSpot, "classname", "info_player_start"))
@@ -152,19 +152,19 @@ void SV_LoopPerformance_f()
 	// check time new search loop
 	start = loopCounter.GetCurTime();
 
-	for (i = 0; i < 100; ++i)
+	for (i = 0; i < 100; i++)
 	{
 		CBaseEntity *pSpot;
-		for (pSpot = UTIL_FindEntityByString(nullptr, "classname", "info_player_start"); pSpot; pSpot = UTIL_FindEntityByString(pSpot, "classname", "info_player_start"))
+		for (pSpot = UTIL_FindEntityByClassname(nullptr, "info_player_start"); pSpot; pSpot = UTIL_FindEntityByClassname(pSpot, "info_player_start"))
 			;
 
-		for (pSpot = UTIL_FindEntityByString(nullptr, "classname", "info_player_deathmatch"); pSpot; pSpot = UTIL_FindEntityByString(pSpot, "classname", "info_player_deathmatch"))
+		for (pSpot = UTIL_FindEntityByClassname(nullptr, "info_player_deathmatch"); pSpot; pSpot = UTIL_FindEntityByClassname(pSpot, "info_player_deathmatch"))
 			;
 
-		for (pSpot = UTIL_FindEntityByString(nullptr, "classname", "player"); pSpot; pSpot = UTIL_FindEntityByString(pSpot, "classname", "player"))
+		for (pSpot = UTIL_FindEntityByClassname(nullptr, "player"); pSpot; pSpot = UTIL_FindEntityByClassname(pSpot, "player"))
 			;
 
-		for (pSpot = UTIL_FindEntityByString(nullptr, "classname", "bodyque"); pSpot; pSpot = UTIL_FindEntityByString(pSpot, "classname", "bodyque"))
+		for (pSpot = UTIL_FindEntityByClassname(nullptr, "bodyque"); pSpot; pSpot = UTIL_FindEntityByClassname(pSpot, "bodyque"))
 			;
 	}
 
@@ -174,7 +174,7 @@ void SV_LoopPerformance_f()
 
 void SV_PrintEntities_f()
 {
-	for (int i = 0; i < stringsHashTable.Count(); ++i)
+	for (int i = 0; i < stringsHashTable.Count(); i++)
 	{
 		hash_item_t *item = &stringsHashTable[i];
 

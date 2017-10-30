@@ -16,8 +16,11 @@ void CSG550::Spawn()
 	m_flAccuracy = 0.2f;
 #endif
 
+	// Get ready to fall down
 	FallInit();
-	CSPlayerItem()->SetItemInfo(&m_ItemInfoArray[m_iId]);
+
+	// extend
+	CBasePlayerWeapon::Spawn();
 }
 
 void CSG550::Precache()

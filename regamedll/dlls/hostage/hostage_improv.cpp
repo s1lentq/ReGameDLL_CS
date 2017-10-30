@@ -1066,15 +1066,13 @@ void CHostageImprov::UpdateGrenadeReactions()
 
 	if (m_grenadeTimer.IsElapsed())
 	{
-		CBaseEntity *pEntity = nullptr;
+		CGrenade *pGrenade = nullptr;
 		const float watchGrenadeRadius = 500.0f;
 
 		m_grenadeTimer.Start(RANDOM_FLOAT(0.4f, 0.6f));
 
-		while ((pEntity = UTIL_FindEntityInSphere(pEntity, GetCentroid(), watchGrenadeRadius)))
+		while ((pGrenade = UTIL_FindEntityInSphere(pGrenade, GetCentroid(), watchGrenadeRadius)))
 		{
-			CGrenade *pGrenade = static_cast<CGrenade *>(pEntity);
-
 			if (!FClassnameIs(pGrenade->pev, "grenade") || pGrenade->m_SGSmoke > 1)
 				continue;
 

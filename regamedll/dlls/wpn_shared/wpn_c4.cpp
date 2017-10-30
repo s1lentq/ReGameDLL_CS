@@ -23,10 +23,13 @@ void CC4::Spawn()
 		return;
 	}
 
+	// Get ready to fall down
 	FallInit();
 	SetThink(&CBasePlayerItem::FallThink);
 	pev->nextthink = UTIL_WeaponTimeBase() + 0.1f;
-	CSPlayerItem()->SetItemInfo(&m_ItemInfoArray[m_iId]);
+
+	// extend
+	CBasePlayerWeapon::Spawn();
 }
 
 void CC4::Precache()
@@ -329,7 +332,7 @@ void CC4::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, f
 		CGrenade::ShootSatchelCharge(pPlayer->pev, pev->origin, Vector(0, 0, 0));
 
 		CGrenade *pBomb = nullptr;
-		while ((pBomb = (CGrenade *)UTIL_FindEntityByClassname(pBomb, "grenade")))
+		while ((pBomb = UTIL_FindEntityByClassname(pBomb, "grenade")))
 		{
 			if (pBomb->m_bIsC4 && pBomb->m_flNextFreq == gpGlobals->time)
 			{

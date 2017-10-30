@@ -12,8 +12,11 @@ void CG3SG1::Spawn()
 	m_iDefaultAmmo = G3SG1_DEFAULT_GIVE;
 	m_flLastFire = 0;
 
+	// Get ready to fall down
 	FallInit();
-	CSPlayerItem()->SetItemInfo(&m_ItemInfoArray[m_iId]);
+
+	// extend
+	CBasePlayerWeapon::Spawn();
 }
 
 void CG3SG1::Precache()

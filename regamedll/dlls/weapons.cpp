@@ -260,7 +260,7 @@ void UTIL_PrecacheOtherWeapon(const char *szClassname)
 }
 
 // Called by worldspawn
-void W_Precache()
+void WeaponsPrecache()
 {
 	Q_memset(CBasePlayerItem::m_ItemInfoArray, 0, sizeof(CBasePlayerItem::m_ItemInfoArray));
 	Q_memset(CBasePlayerItem::m_AmmoInfoArray, 0, sizeof(CBasePlayerItem::m_AmmoInfoArray));
@@ -1076,6 +1076,16 @@ void CBasePlayerItem::AttachToPlayer(CBasePlayer *pPlayer)
 	SetTouch(nullptr);
 }
 
+void CBasePlayerWeapon::Spawn()
+{
+	ItemInfo info;
+	Q_memset(&info, 0, sizeof(info));
+
+	if (GetItemInfo(&info)) {
+		CSPlayerItem()->SetItemInfo(&info);
+	}
+}
+
 // CALLED THROUGH the newly-touched weapon's instance. The existing player weapon is pOriginal
 int CBasePlayerWeapon::AddDuplicate(CBasePlayerItem *pOriginal)
 {
@@ -1453,6 +1463,35 @@ float CBasePlayerWeapon::GetNextAttackDelay(float delay)
 	m_flPrevPrimaryAttack = flNextAttack - UTIL_WeaponTimeBase();
 
 	return flNextAttack;
+}
+
+// true - keep the amount of bpammo
+// false - let take away bpammo
+void CBasePlayerWeapon::InstantReload(bool bCanRefillBPAmmo)
+{
+	// if you already reload
+	//if (m_fInReload)
+	//	return;
+
+	if (m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
+		return;
+
+	m_fInReload = FALSE;
+	m_pPlayer->m_flNextAttack = 0;
+
+	// complete the reload.
+	int j = Q_min(iMaxClip() - m_iClip, m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]);
+	if (j == 0)
+		return;
+
+	// Add them to the clip
+	m_iClip += j;
+
+	if (!bCanRefillBPAmmo) {
+		m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] -= j;
+	}
+
+	m_pPlayer->TabulateAmmo();
 }
 
 TYPEDESCRIPTION CWeaponBox::m_SaveData[] =
@@ -2299,31 +2338,48 @@ void CArmoury::SetObjectCollisionBox()
 
 LINK_ENTITY_TO_CLASS(armoury_entity, CArmoury, CCSArmoury)
 
-// true - keep the amount of bpammo
-// false - let take away bpammo
-void CBasePlayerWeapon::InstantReload(bool bCanRefillBPAmmo)
+#ifdef REGAMEDLL_API
+#define m_ItemInfoEx CSPlayerItem()->m_ItemInfo
+#else
+#define m_ItemInfoEx m_ItemInfoArray[m_iId]
+#endif
+
+const char *CBasePlayerItem::pszAmmo1() const
 {
-	// if you already reload
-	//if (m_fInReload)
-	//	return;
+	return m_ItemInfoEx.pszAmmo1;
+}
 
-	if (m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
-		return;
+int CBasePlayerItem::iMaxAmmo1() const
+{
+	return m_ItemInfoEx.iMaxAmmo1;
+}
 
-	m_fInReload = FALSE;
-	m_pPlayer->m_flNextAttack = 0;
+const char *CBasePlayerItem::pszAmmo2() const
+{
+	return m_ItemInfoEx.pszAmmo2;
+}
 
-	// complete the reload.
-	int j = Q_min(iMaxClip() - m_iClip, m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]);
-	if (j == 0)
-		return;
+int CBasePlayerItem::iMaxAmmo2() const
+{
+	return m_ItemInfoEx.iMaxAmmo2;
+}
 
-	// Add them to the clip
-	m_iClip += j;
+const char *CBasePlayerItem::pszName() const
+{
+	return m_ItemInfoEx.pszName;
+}
 
-	if (!bCanRefillBPAmmo) {
-		m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] -= j;
-	}
+int CBasePlayerItem::iMaxClip() const
+{
+	return m_ItemInfoEx.iMaxClip;
+}
 
-	m_pPlayer->TabulateAmmo();
+int CBasePlayerItem::iWeight() const
+{
+	return m_ItemInfoEx.iWeight;
+}
+
+int CBasePlayerItem::iFlags() const
+{
+	return m_ItemInfoEx.iFlags;
 }

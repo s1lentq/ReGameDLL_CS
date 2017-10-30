@@ -145,9 +145,12 @@ inline char *_strlwr(char *start)
 #endif // #if defined(ASMLIB_H) && defined(HAVE_OPT_STRTOOLS)
 
 // a safe variant of strcpy that truncates the result to fit in the destination buffer
-template <size_t size>
-char *Q_strlcpy(char (&dest)[size], const char *src) {
-	Q_strncpy(dest, src, size - 1);
+template <typename T, size_t size>
+T *Q_strlcpy(T (&dest)[size], const char *src)
+{
+	static_assert(sizeof(T) == sizeof(char), "invalid size of type != sizeof(char)");
+
+	Q_strncpy((char *)dest, src, size - 1);
 	dest[size - 1] = '\0';
 	return dest;
 }
@@ -160,9 +163,11 @@ inline char *Q_strnlcpy(char *dest, const char *src, size_t n) {
 
 // safely concatenate two strings.
 // a variant of strcat that truncates the result to fit in the destination buffer
-template <size_t size>
-size_t Q_strlcat(char (&dest)[size], const char *src)
+template <typename T, size_t size>
+size_t Q_strlcat(T (&dest)[size], const char *src)
 {
+	static_assert(sizeof(T) == sizeof(char), "invalid size of type != sizeof(char)");
+
 	size_t srclen; // Length of source string
 	size_t dstlen; // Length of destination string
 

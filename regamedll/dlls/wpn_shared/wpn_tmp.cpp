@@ -14,8 +14,11 @@ void CTMP::Spawn()
 	m_iShotsFired = 0;
 	m_bDelayFire = false;
 
+	// Get ready to fall down
 	FallInit();
-	CSPlayerItem()->SetItemInfo(&m_ItemInfoArray[m_iId]);
+
+	// extend
+	CBasePlayerWeapon::Spawn();
 }
 
 void CTMP::Precache()
