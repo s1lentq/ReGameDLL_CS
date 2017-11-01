@@ -1,4 +1,4 @@
-# ReGameDLL_CS [![Build Status](http://teamcity.rehlds.org/app/rest/builds/buildType:(id:ReGameDLLCs_Publish)/statusIcon)](http://teamcity.rehlds.org/viewType.html?buildTypeId=ReGameDLLCs_Publish&guest=1) [![Download](http://rehlds.org/version/regamedll.svg)](http://teamcity.rehlds.org/guestAuth/downloadArtifacts.html?buildTypeId=ReGameDLL_Publish&buildId=lastSuccessful)
+# ReGameDLL_CS [![Build Status](http://teamcity.rehlds.org/app/rest/builds/buildType:(id:ReGameDLLCs_Publish)/statusIcon)](http://teamcity.rehlds.org/viewType.html?buildTypeId=ReGameDLLCs_Publish&guest=1) [![Download](http://rehlds.org/version/regamedll.svg)](http://teamcity.rehlds.org/guestAuth/downloadArtifacts.html?buildTypeId=ReGameDLL_Publish&buildId=lastSuccessful) [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 Reverse-engineered gamedll (mp.dll / Counter-Strike)
 
 ## What is this?
@@ -43,6 +43,7 @@ Archive's bin directory contains 2 subdirectories, 'bugfixed' and 'pure'
 | mp_hostage_hurtable           | 1       | 0   | 1            | The hostages can take the damage.<br/>`0` disabled<br/>`1` enabled |
 | mp_show_radioicon             | 1       | 0   | 1            | Show radio icon.<br/>`0` disabled<br/>`1` enabled |
 | showtriggers                  | 0       | 0   | 1            | Debug cvar shows triggers. |
+| sv_alltalk                    | 0       | 0   | 3            | When teammates can hear each other.<br/>`0` dead don't hear alive<br/>`1` no restrictions<br/>`2` teammates hear each other<br/>`3` Same as 2, but spectators hear everybody
 | bot_deathmatch                | 0       | 0   | 1            | Set's the mode for the zBot.<br/>`0` disabled<br/>`1` enable mode Deathmatch and not allow to do the scenario |
 | bot_quota_mode                | normal  | -   | -            | Determines the type of quota.<br/>`normal` default behaviour<br/>`fill` the server will adjust bots to keep `N` players in the game, where `N` is bot_quota |
 
