@@ -87,6 +87,18 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(ServerDeactivate)()
 
 bool CCStrikeGameMgrHelper::CanPlayerHearPlayer(CBasePlayer *pListener, CBasePlayer *pSender)
 {
+#ifdef REGAMEDLL_ADD
+	switch ((int)sv_alltalk.value)
+	{
+	case 2:
+		return (pListener->m_iTeam == pSender->m_iTeam);
+	case 3:
+		return (pListener->m_iTeam == pSender->m_iTeam || pListener->IsObserver());
+	default: // HLDS Behavior
+		break;
+	}
+#endif
+
 	if (
 #ifndef REGAMEDLL_FIXES
 		!pSender->IsPlayer() ||

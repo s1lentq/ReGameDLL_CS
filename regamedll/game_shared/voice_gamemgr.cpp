@@ -74,6 +74,7 @@ void CVoiceGameMgr::Update(double frametime)
 	// Only update periodically.
 	m_UpdateInterval += frametime;
 
+	const float UPDATE_INTERVAL = 0.3f;
 	if (m_UpdateInterval >= UPDATE_INTERVAL)
 		UpdateMasks();
 }
@@ -153,7 +154,7 @@ void CVoiceGameMgr::UpdateMasks()
 {
 	m_UpdateInterval = 0;
 
-	bool bAllTalk = !!(sv_alltalk.value);
+	bool bAllTalk = sv_alltalk.value != 0.0f;
 
 	for (int iClient = 0; iClient < m_nMaxPlayers; iClient++)
 	{

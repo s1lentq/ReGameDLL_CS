@@ -28,8 +28,6 @@
 
 #pragma once
 
-#define UPDATE_INTERVAL 0.3
-
 #include "voice_common.h"
 
 class CGameRules;
@@ -83,5 +81,7 @@ private:
 	int m_nMaxPlayers;
 	double m_UpdateInterval; // How long since the last update.
 };
+
+extern cvar_t sv_alltalk;
 
 void VoiceServerDebug(const char *pFmt, ...);
