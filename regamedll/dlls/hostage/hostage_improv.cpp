@@ -155,7 +155,7 @@ void CHostageImprov::MoveTowards(const Vector &pos, float deltaT)
 			Vector stepAhead = GetFeet() + farLookAheadRange * aheadRay;
 			stepAhead.z += HumanHeight;
 
-			if (GetSimpleGroundHeightWithFloor(&stepAhead, &ground, &normal ))
+			if (GetSimpleGroundHeightWithFloor(&stepAhead, &ground, &normal))
 			{
 				if (normal.z > 0.9f)
 					jumped = DiscontinuityJump(ground, HOSTAGE_ONLY_JUMP_DOWN);

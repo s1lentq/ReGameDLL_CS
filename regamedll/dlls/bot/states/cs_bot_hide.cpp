@@ -141,106 +141,106 @@ void HideState::OnUpdate(CCSBot *me)
 		// Scenario logic
 		switch (TheCSBots()->GetScenario())
 		{
-			case CCSBotManager::SCENARIO_DEFUSE_BOMB:
+		case CCSBotManager::SCENARIO_DEFUSE_BOMB:
+		{
+			if (me->m_iTeam == CT)
 			{
-				if (me->m_iTeam == CT)
+				// if we are just holding position (due to a radio order) and the bomb has just planted, go defuse it
+				if (me->GetTask() == CCSBot::HOLD_POSITION &&
+					TheCSBots()->IsBombPlanted() &&
+					TheCSBots()->GetBombPlantTimestamp() > me->GetStateTimestamp())
 				{
-					// if we are just holding position (due to a radio order) and the bomb has just planted, go defuse it
-					if (me->GetTask() == CCSBot::HOLD_POSITION &&
-						TheCSBots()->IsBombPlanted() &&
-						TheCSBots()->GetBombPlantTimestamp() > me->GetStateTimestamp())
-					{
-						me->Idle();
-						return;
-					}
-
-					// if we are guarding the defuser and he dies/gives up, stop hiding (to choose another defuser)
-					if (me->GetTask() == CCSBot::GUARD_BOMB_DEFUSER && !TheCSBots()->GetBombDefuser())
-					{
-						me->Idle();
-						return;
-					}
-
-					// if we are guarding the loose bomb and it is picked up, stop hiding
-					if (me->GetTask() == CCSBot::GUARD_LOOSE_BOMB && !TheCSBots()->GetLooseBomb())
-					{
-						me->GetChatter()->TheyPickedUpTheBomb();
-						me->Idle();
-						return;
-					}
-
-					// if we are guarding a bombsite and the bomb is dropped and we hear about it, stop guarding
-					if (me->GetTask() == CCSBot::GUARD_BOMB_ZONE && me->GetGameState()->IsLooseBombLocationKnown())
-					{
-						me->Idle();
-						return;
-					}
-
-					// if we are guarding (bombsite, initial encounter, etc) and the bomb is planted, go defuse it
-					if (me->IsDoingScenario() && me->GetTask() == CCSBot::GUARD_BOMB_ZONE && TheCSBots()->IsBombPlanted())
-					{
-						me->Idle();
-						return;
-					}
-
+					me->Idle();
+					return;
 				}
-				// TERRORIST
-				else
+
+				// if we are guarding the defuser and he dies/gives up, stop hiding (to choose another defuser)
+				if (me->GetTask() == CCSBot::GUARD_BOMB_DEFUSER && !TheCSBots()->GetBombDefuser())
 				{
-					// if we are near the ticking bomb and someone starts defusing it, attack!
-					if (TheCSBots()->GetBombDefuser())
-					{
-						Vector toDefuser = TheCSBots()->GetBombDefuser()->pev->origin;
-						const float hearDefuseRange = 2000.0f;
-						if ((toDefuser - me->pev->origin).IsLengthLessThan(hearDefuseRange))
-						{
-							// if we are nearby, attack, otherwise move to the bomb (which will cause us to attack when we see defuser)
-							if (me->CanSeePlantedBomb())
-							{
-								me->Attack(TheCSBots()->GetBombDefuser());
-							}
-							else
-							{
-								me->MoveTo(&toDefuser, FASTEST_ROUTE);
-								me->InhibitLookAround(10.0f);
-							}
-
-							return;
-						}
-					}
+					me->Idle();
+					return;
 				}
-				break;
+
+				// if we are guarding the loose bomb and it is picked up, stop hiding
+				if (me->GetTask() == CCSBot::GUARD_LOOSE_BOMB && !TheCSBots()->GetLooseBomb())
+				{
+					me->GetChatter()->TheyPickedUpTheBomb();
+					me->Idle();
+					return;
+				}
+
+				// if we are guarding a bombsite and the bomb is dropped and we hear about it, stop guarding
+				if (me->GetTask() == CCSBot::GUARD_BOMB_ZONE && me->GetGameState()->IsLooseBombLocationKnown())
+				{
+					me->Idle();
+					return;
+				}
+
+				// if we are guarding (bombsite, initial encounter, etc) and the bomb is planted, go defuse it
+				if (me->IsDoingScenario() && me->GetTask() == CCSBot::GUARD_BOMB_ZONE && TheCSBots()->IsBombPlanted())
+				{
+					me->Idle();
+					return;
+				}
+
 			}
-			case CCSBotManager::SCENARIO_RESCUE_HOSTAGES:
+			// TERRORIST
+			else
 			{
-				// if we're guarding the hostages and they all die or are taken, do something else
-				if (me->GetTask() == CCSBot::GUARD_HOSTAGES)
+				// if we are near the ticking bomb and someone starts defusing it, attack!
+				if (TheCSBots()->GetBombDefuser())
 				{
-					if (me->GetGameState()->AreAllHostagesBeingRescued() || me->GetGameState()->AreAllHostagesGone())
+					Vector toDefuser = TheCSBots()->GetBombDefuser()->pev->origin;
+					const float hearDefuseRange = 2000.0f;
+					if ((toDefuser - me->pev->origin).IsLengthLessThan(hearDefuseRange))
 					{
-						me->Idle();
-						return;
-					}
-				}
-				else if (me->GetTask() == CCSBot::GUARD_HOSTAGE_RESCUE_ZONE)
-				{
-					// if we stumble across a hostage, guard it
-					CHostage *pHostage = me->GetGameState()->GetNearestVisibleFreeHostage();
-					if (pHostage)
-					{
-						// we see a free hostage, guard it
-						CNavArea *area = TheNavAreaGrid.GetNearestNavArea(&pHostage->pev->origin);
-						if (area)
+						// if we are nearby, attack, otherwise move to the bomb (which will cause us to attack when we see defuser)
+						if (me->CanSeePlantedBomb())
 						{
-							me->SetTask(CCSBot::GUARD_HOSTAGES);
-							me->Hide(area);
-							me->PrintIfWatched("I'm guarding hostages I found\n");
-							// don't chatter here - he'll tell us when he's in his hiding spot
-							return;
+							me->Attack(TheCSBots()->GetBombDefuser());
 						}
+						else
+						{
+							me->MoveTo(&toDefuser, FASTEST_ROUTE);
+							me->InhibitLookAround(10.0f);
+						}
+
+						return;
 					}
 				}
 			}
+			break;
+		}
+		case CCSBotManager::SCENARIO_RESCUE_HOSTAGES:
+		{
+			// if we're guarding the hostages and they all die or are taken, do something else
+			if (me->GetTask() == CCSBot::GUARD_HOSTAGES)
+			{
+				if (me->GetGameState()->AreAllHostagesBeingRescued() || me->GetGameState()->AreAllHostagesGone())
+				{
+					me->Idle();
+					return;
+				}
+			}
+			else if (me->GetTask() == CCSBot::GUARD_HOSTAGE_RESCUE_ZONE)
+			{
+				// if we stumble across a hostage, guard it
+				CHostage *pHostage = me->GetGameState()->GetNearestVisibleFreeHostage();
+				if (pHostage)
+				{
+					// we see a free hostage, guard it
+					CNavArea *area = TheNavAreaGrid.GetNearestNavArea(&pHostage->pev->origin);
+					if (area)
+					{
+						me->SetTask(CCSBot::GUARD_HOSTAGES);
+						me->Hide(area);
+						me->PrintIfWatched("I'm guarding hostages I found\n");
+						// don't chatter here - he'll tell us when he's in his hiding spot
+						return;
+					}
+				}
+			}
+		}
 		}
 
 		bool isSettledInSniper = (me->IsSniper() && m_isAtSpot) ? true : false;

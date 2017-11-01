@@ -270,6 +270,7 @@ void CCSBotManager::AddServerCommands()
 	AddServerCommand("bot_nav_crouch");
 	AddServerCommand("bot_nav_jump");
 	AddServerCommand("bot_nav_precise");
+	AddServerCommand("bot_nav_walk");
 	AddServerCommand("bot_nav_no_jump");
 	AddServerCommand("bot_nav_analyze");
 	AddServerCommand("bot_nav_strip");
@@ -524,6 +525,10 @@ void CCSBotManager::ServerCommand(const char *pcmd)
 	else if (FStrEq(pcmd, "bot_nav_precise"))
 	{
 		m_editCmd = EDIT_ATTRIB_PRECISE;
+	}
+	else if (FStrEq(pcmd, "bot_nav_walk"))
+	{
+		m_editCmd = EDIT_ATTRIB_WALK;
 	}
 	else if (FStrEq(pcmd, "bot_nav_no_jump"))
 	{

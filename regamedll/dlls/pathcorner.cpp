@@ -262,7 +262,7 @@ CPathTrack *CPathTrack::LookAhead(Vector *origin, float dist, int move)
 			Vector dir = pcurrent->GetNext()->pev->origin - currentPos;
 			float_precision length = dir.Length();
 
-			if (!length  && !ValidPath(pcurrent->GetNext()->GetNext(), move))
+			if (!length && !ValidPath(pcurrent->GetNext()->GetNext(), move))
 			{
 				// HACK: up against a dead end
 				if (dist == originalDist)

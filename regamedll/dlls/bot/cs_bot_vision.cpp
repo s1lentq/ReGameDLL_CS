@@ -103,56 +103,56 @@ void CCSBot::UpdateLookAngles()
 		// adjust pitch to look up/down ladder as we ascend/descend
 		switch (m_pathLadderState)
 		{
-			case APPROACH_ASCENDING_LADDER:
-			{
-				Vector to = m_goalPosition - pev->origin;
-				useYaw = idealYaw;
+		case APPROACH_ASCENDING_LADDER:
+		{
+			Vector to = m_goalPosition - pev->origin;
+			useYaw = idealYaw;
 
-				if (to.IsLengthLessThan(lookAlongLadderRange))
-					usePitch = -ladderPitch;
-				break;
-			}
-			case APPROACH_DESCENDING_LADDER:
-			{
-				Vector to = m_goalPosition - pev->origin;
-				useYaw = idealYaw;
+			if (to.IsLengthLessThan(lookAlongLadderRange))
+				usePitch = -ladderPitch;
+			break;
+		}
+		case APPROACH_DESCENDING_LADDER:
+		{
+			Vector to = m_goalPosition - pev->origin;
+			useYaw = idealYaw;
 
-				if (to.IsLengthLessThan(lookAlongLadderRange))
-					usePitch = ladderPitch;
-				break;
-			}
-			case FACE_ASCENDING_LADDER:
-			{
-				useYaw = idealYaw;
-				usePitch = -ladderPitch;
-				break;
-			}
-			case FACE_DESCENDING_LADDER:
-			{
-				useYaw = idealYaw;
+			if (to.IsLengthLessThan(lookAlongLadderRange))
 				usePitch = ladderPitch;
-				break;
-			}
-			case MOUNT_ASCENDING_LADDER:
-			case ASCEND_LADDER:
-			{
-				useYaw = DirectionToAngle(faceDir) + StayOnLadderLine(this, m_pathLadder);
-				usePitch = -ladderPitch;
-				break;
-			}
-			case MOUNT_DESCENDING_LADDER:
-			case DESCEND_LADDER:
-			{
-				useYaw = DirectionToAngle(faceDir) + StayOnLadderLine(this, m_pathLadder);
-				usePitch = ladderPitch;
-				break;
-			}
-			case DISMOUNT_ASCENDING_LADDER:
-			case DISMOUNT_DESCENDING_LADDER:
-			{
-				useYaw = DirectionToAngle(faceDir);
-				break;
-			}
+			break;
+		}
+		case FACE_ASCENDING_LADDER:
+		{
+			useYaw = idealYaw;
+			usePitch = -ladderPitch;
+			break;
+		}
+		case FACE_DESCENDING_LADDER:
+		{
+			useYaw = idealYaw;
+			usePitch = ladderPitch;
+			break;
+		}
+		case MOUNT_ASCENDING_LADDER:
+		case ASCEND_LADDER:
+		{
+			useYaw = DirectionToAngle(faceDir) + StayOnLadderLine(this, m_pathLadder);
+			usePitch = -ladderPitch;
+			break;
+		}
+		case MOUNT_DESCENDING_LADDER:
+		case DESCEND_LADDER:
+		{
+			useYaw = DirectionToAngle(faceDir) + StayOnLadderLine(this, m_pathLadder);
+			usePitch = ladderPitch;
+			break;
+		}
+		case DISMOUNT_ASCENDING_LADDER:
+		case DISMOUNT_DESCENDING_LADDER:
+		{
+			useYaw = DirectionToAngle(faceDir);
+			break;
+		}
 		}
 	}
 

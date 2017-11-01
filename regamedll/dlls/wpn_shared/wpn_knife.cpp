@@ -248,9 +248,9 @@ void CKnife::WeaponIdle()
 	SendWeaponAnim(KNIFE_IDLE, UseDecrement() != FALSE);
 }
 
-int CKnife::Swing(int fFirst)
+BOOL CKnife::Swing(BOOL fFirst)
 {
-	int fDidHit = FALSE;
+	BOOL fDidHit = FALSE;
 	TraceResult tr;
 	Vector vecSrc, vecEnd;
 
@@ -422,9 +422,9 @@ int CKnife::Swing(int fFirst)
 	return fDidHit;
 }
 
-int CKnife::Stab(int fFirst)
+BOOL CKnife::Stab(BOOL fFirst)
 {
-	int fDidHit = FALSE;
+	BOOL fDidHit = FALSE;
 	TraceResult tr;
 	Vector vecSrc, vecEnd;
 

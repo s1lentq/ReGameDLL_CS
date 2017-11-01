@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-// BModelOrigin - calculates origin of a bmodel from absmin/size because all bmodel origins are 0 0 0
+// Calculates origin of a bmodel from absmin/size because all bmodel origins are 0 0 0
 Vector VecBModelOrigin(entvars_t *pevBModel)
 {
 	return pevBModel->absmin + (pevBModel->size * 0.5f);
@@ -477,7 +477,7 @@ void CFuncRotating::Precache()
 	}
 }
 
-// Touch - will hurt others based on how fast the brush is spinning
+// Will hurt others based on how fast the brush is spinning
 void CFuncRotating::HurtTouch(CBaseEntity *pOther)
 {
 	entvars_t *pevOther = pOther->pev;
@@ -494,7 +494,7 @@ void CFuncRotating::HurtTouch(CBaseEntity *pOther)
 	pevOther->velocity = (pevOther->origin - VecBModelOrigin(pev)).Normalize() * pev->dmg;
 }
 
-// RampPitchVol - ramp pitch and volume up to final values, based on difference
+// Ramp pitch and volume up to final values, based on difference
 // between how fast we're going vs how fast we plan to go
 void CFuncRotating::RampPitchVol(BOOL fUp)
 {
@@ -540,7 +540,7 @@ void CFuncRotating::RampPitchVol(BOOL fUp)
 	EMIT_SOUND_DYN(ENT(pev), CHAN_STATIC, (char *)STRING(pev->noiseRunning), fvol, m_flAttenuation, (SND_CHANGE_PITCH | SND_CHANGE_VOL), pitch);
 }
 
-// SpinUp - accelerates a non-moving func_rotating up to it's speed
+// Accelerates a non-moving func_rotating up to it's speed
 void CFuncRotating::SpinUp()
 {
 	// rotational velocity
@@ -616,7 +616,7 @@ void CFuncRotating::Rotate()
 	pev->nextthink = pev->ltime + 10;
 }
 
-// Rotating Use - when a rotating brush is triggered
+// When a rotating brush is triggered
 void CFuncRotating::RotatingUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	// is this a brush that should accelerate and decelerate when turned on/off (fan)?
@@ -662,7 +662,7 @@ void CFuncRotating::RotatingUse(CBaseEntity *pActivator, CBaseEntity *pCaller, U
 	}
 }
 
-// RotatingBlocked - An entity has blocked the brush
+// An entity has blocked the brush
 void CFuncRotating::Blocked(CBaseEntity *pOther)
 {
 	pOther->TakeDamage(pev, pev, pev->dmg, DMG_CRUSH);

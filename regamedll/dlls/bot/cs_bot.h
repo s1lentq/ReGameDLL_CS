@@ -729,7 +729,7 @@ private:
 	float m_jumpCrouchTimestamp;
 
 	// path navigation data
-	enum { 	MAX_PATH_LENGTH = 256 };
+	enum { MAX_PATH_LENGTH = 256 };
 	struct ConnectInfo
 	{
 		CNavArea *area;				// the area along the path
@@ -1641,6 +1641,15 @@ public:
 				}
 
 				cost += crouchPenalty * dist;
+			}
+
+			// if this is a "walk" area, add penalty
+			if (area->GetAttributes() & NAV_WALK)
+			{
+				// these areas are kinda slow to move through
+				float_precision walkPenalty = (m_route == FASTEST_ROUTE) ? 2.5f : 1.5f;
+
+				cost += walkPenalty * dist;
 			}
 
 			// if this is a "jump" area, add penalty

@@ -1127,8 +1127,8 @@ public:
 	void EXPORT Smack();
 
 	void WeaponAnimation(int iAnimation);
-	int Stab(int fFirst);
-	int Swing(int fFirst);
+	BOOL Stab(BOOL fFirst);
+	BOOL Swing(BOOL fFirst);
 
 public:
 	bool ShieldSecondaryFire(int iUpAnim, int iDownAnim);

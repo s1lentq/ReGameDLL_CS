@@ -969,7 +969,7 @@ void CMomentaryDoor::Spawn()
 	if (pev->dmg == 0)
 		pev->dmg = 2;
 
-	m_vecPosition1	= pev->origin;
+	m_vecPosition1 = pev->origin;
 
 	// Subtract 2 from size because the engine expands bboxes by 1 in all directions making the size too big
 	m_vecPosition2 = m_vecPosition1 + (pev->movedir * (Q_fabs(float_precision(pev->movedir.x * (pev->size.x - 2))) + Q_fabs(float_precision(pev->movedir.y * (pev->size.y - 2))) + Q_fabs(float_precision(pev->movedir.z * (pev->size.z - 2))) - m_flLip));

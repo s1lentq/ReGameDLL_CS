@@ -94,9 +94,9 @@ void CBreakable::Spawn()
 	Precache();
 
 	if (pev->spawnflags & SF_BREAK_TRIGGER_ONLY)
-		pev->takedamage	= DAMAGE_NO;
+		pev->takedamage = DAMAGE_NO;
 	else
-		pev->takedamage	= DAMAGE_YES;
+		pev->takedamage = DAMAGE_YES;
 
 	m_flHealth = pev->health;
 	pev->solid = SOLID_BSP;
@@ -541,26 +541,25 @@ void CBreakable::TraceAttack(entvars_t *pevAttacker, float flDamage, Vector vecD
 	{
 		switch (m_Material)
 		{
-			case matComputer:
+		case matComputer:
+		{
+			UTIL_Sparks(ptr->vecEndPos);
+
+			//random volume range
+			float flVolume = RANDOM_FLOAT(0.7 , 1.0);
+			switch (RANDOM_LONG(0, 1))
 			{
-				UTIL_Sparks(ptr->vecEndPos);
-
-				//random volume range
-				float flVolume = RANDOM_FLOAT(0.7 , 1.0);
-				switch (RANDOM_LONG(0, 1))
-				{
-				case 0: EMIT_SOUND(ENT(pev), CHAN_VOICE, "buttons/spark5.wav", flVolume, ATTN_NORM); break;
-				case 1: EMIT_SOUND(ENT(pev), CHAN_VOICE, "buttons/spark6.wav", flVolume, ATTN_NORM); break;
-				}
-
-				break;
+			case 0: EMIT_SOUND(ENT(pev), CHAN_VOICE, "buttons/spark5.wav", flVolume, ATTN_NORM); break;
+			case 1: EMIT_SOUND(ENT(pev), CHAN_VOICE, "buttons/spark6.wav", flVolume, ATTN_NORM); break;
 			}
 
-			case matUnbreakableGlass:
-			{
-				UTIL_Ricochet(ptr->vecEndPos, RANDOM_FLOAT(0.5, 1.5));
-				break;
-			}
+			break;
+		}
+		case matUnbreakableGlass:
+		{
+			UTIL_Ricochet(ptr->vecEndPos, RANDOM_FLOAT(0.5, 1.5));
+			break;
+		}
 		}
 	}
 

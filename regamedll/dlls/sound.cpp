@@ -1788,7 +1788,7 @@ float TEXTURETYPE_PlaySound(TraceResult *ptr, Vector vecSrc, Vector vecEnd, int 
 		{
 			UTIL_Sparks(ptr->vecEndPos);
 
-			//random volume range
+			// random volume range
 			float flVolume = RANDOM_FLOAT(0.7 , 1.0);
 
 			switch (RANDOM_LONG(0, 1))
