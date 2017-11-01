@@ -787,6 +787,7 @@ BOOL CanAttack(float attack_time, float curtime, BOOL isPredicted)
 	}
 }
 
+#ifndef REGAMEDLL_FIXES
 bool CBasePlayerWeapon::HasSecondaryAttack()
 {
 	if (m_pPlayer->HasShield())
@@ -817,15 +818,18 @@ bool CBasePlayerWeapon::HasSecondaryAttack()
 
 	return true;
 }
+#endif
 
 void CBasePlayerWeapon::ItemPostFrame()
 {
 	int usableButtons = m_pPlayer->pev->button;
 
+#ifndef REGAMEDLL_FIXES
 	if (!HasSecondaryAttack())
 	{
 		usableButtons &= ~IN_ATTACK2;
 	}
+#endif
 
 	if (m_flGlock18Shoot != 0)
 	{

@@ -368,7 +368,11 @@ public:
 	void ReloadSound();
 	float GetNextAttackDelay(float delay);
 	float GetNextAttackDelay2(float delay);
+	
+	#ifndef REGAMEDLL_FIXES
 	bool HasSecondaryAttack();
+	#endif
+	
 	BOOL IsPistol() { return (m_iId == WEAPON_USP || m_iId == WEAPON_GLOCK18 || m_iId == WEAPON_P228 || m_iId == WEAPON_DEAGLE || m_iId == WEAPON_ELITE || m_iId == WEAPON_FIVESEVEN); }
 	void SetPlayerShieldAnim();
 	void ResetPlayerShieldAnim();
