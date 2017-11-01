@@ -2523,6 +2523,9 @@ bool CHalfLifeMultiplay::CheckGameOver()
 		if (m_flIntermissionEndTime < gpGlobals->time && !IsCareer())
 		{
 			if (!UTIL_HumansInGame()				// if only bots, just change immediately
+#ifdef REGAMEDLL_FIXES
+				|| IsMultiplayer()
+#endif
 				|| m_iEndIntermissionButtonHit		// check that someone has pressed a key, or the max intermission time is over
 				|| ((m_flIntermissionStartTime + MAX_INTERMISSION_TIME) < gpGlobals->time))
 			{
