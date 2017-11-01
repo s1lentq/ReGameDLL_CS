@@ -1416,7 +1416,11 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 				pPlayer->pev->body = 1;
 				pPlayer->AddAccount(-DEFUSEKIT_PRICE, RT_PLAYER_BOUGHT_SOMETHING);
 
+#ifdef REGAMEDLL_FIXES
+				EMIT_SOUND(ENT(pPlayer->pev), CHAN_VOICE, "items/kevlar.wav", VOL_NORM, ATTN_NORM);
+#else
 				EMIT_SOUND(ENT(pPlayer->pev), CHAN_ITEM, "items/kevlar.wav", VOL_NORM, ATTN_NORM);
+#endif
 				pPlayer->SendItemStatus();
 			}
 			break;
