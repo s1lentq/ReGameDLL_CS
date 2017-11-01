@@ -2,7 +2,7 @@
 
 CMapInfo *g_pMapInfo = nullptr;
 
-CMapInfo::CMapInfo()
+void CMapInfo::OnCreate()
 {
 	m_flBombRadius = 500.0f;
 	m_iBuyingStatus = BUYING_EVERYONE;
@@ -18,6 +18,11 @@ CMapInfo::CMapInfo()
 	{
 		g_pMapInfo = this;
 	}
+}
+
+void CMapInfo::OnDestroy()
+{
+	g_pMapInfo = nullptr;
 }
 
 void CMapInfo::CheckMapInfo()
@@ -83,11 +88,6 @@ void CMapInfo::Spawn()
 	pev->movetype = MOVETYPE_NONE;
 	pev->solid = SOLID_NOT;
 	pev->effects |= EF_NODRAW;
-}
-
-void CMapInfo::UpdateOnRemove()
-{
-	g_pMapInfo = nullptr;
 }
 
 LINK_ENTITY_TO_CLASS(info_map_parameters, CMapInfo, CCSMapInfo)

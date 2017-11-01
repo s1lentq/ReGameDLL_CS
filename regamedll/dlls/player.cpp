@@ -87,6 +87,22 @@ entvars_t *g_pevLastInflictor;
 
 LINK_ENTITY_TO_CLASS(player, CBasePlayer, CCSPlayer)
 
+#ifdef REGAMEDLL_API
+void CBasePlayer::OnCreate()
+{
+	;
+}
+
+void CBasePlayer::OnDestroy()
+{
+	if (m_rebuyString)
+	{
+		delete[] m_rebuyString;
+		m_rebuyString = nullptr;
+	}
+}
+#endif
+
 void CBasePlayer::SendItemStatus()
 {
 	int itemStatus = 0;
@@ -9295,17 +9311,6 @@ void CBasePlayer::Disconnect()
 {
 	SetThink(nullptr);
 }
-
-#ifdef REGAMEDLL_FIXES
-void CBasePlayer::UpdateOnRemove()
-{
-	if (m_rebuyString)
-	{
-		delete[] m_rebuyString;
-		m_rebuyString = nullptr;
-	}
-}
-#endif
 
 LINK_HOOK_CLASS_VOID_CHAIN(CBasePlayer, OnSpawnEquip, (bool addDefault, bool equipGame), addDefault, equipGame)
 

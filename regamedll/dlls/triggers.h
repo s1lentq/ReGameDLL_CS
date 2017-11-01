@@ -168,7 +168,7 @@ public:
 
 #ifdef REGAMEDLL_FIXES
 	virtual void Restart();
-	virtual void UpdateOnRemove();
+	virtual void OnDestroy();
 
 public:
 	struct RenderGroup_t

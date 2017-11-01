@@ -343,12 +343,14 @@ public:
 	virtual BOOL AddPlayerItem(CBasePlayerItem *pItem);
 	virtual BOOL RemovePlayerItem(CBasePlayerItem *pItem);
 	virtual int GiveAmmo(int iAmount, const char *szName, int iMax = -1);
-	virtual void StartSneaking() { m_tSneaking = gpGlobals->time - 1; }
 
-#ifndef REGAMEDLL_FIXES
+#ifndef REGAMEDLL_API
+	virtual void StartSneaking() { m_tSneaking = gpGlobals->time - 1; }
 	virtual void StopSneaking() { m_tSneaking = gpGlobals->time + 30; }
 #else
-	virtual void UpdateOnRemove();
+	virtual void OnCreate();
+	virtual void OnDestroy();
+	void StartSneaking() { m_tSneaking = gpGlobals->time - 1; };
 #endif
 
 	virtual BOOL IsSneaking() { return m_tSneaking <= gpGlobals->time; }

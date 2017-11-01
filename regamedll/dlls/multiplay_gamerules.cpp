@@ -3454,7 +3454,7 @@ void CHalfLifeMultiplay::ClientDisconnected(edict_t *pClient)
 
 			if (pPlayer->m_iMapVote)
 			{
-				--m_iMapVotes[pPlayer->m_iMapVote];
+				m_iMapVotes[pPlayer->m_iMapVote]--;
 
 				if (m_iMapVotes[pPlayer->m_iMapVote] < 0)
 				{
@@ -3493,22 +3493,22 @@ void CHalfLifeMultiplay::ClientDisconnected(edict_t *pClient)
 				pPlayer->m_pObserver->SUB_Remove();
 			}
 
-			CBasePlayer *client = nullptr;
-			while ((client = (CBasePlayer *)UTIL_FindEntityByClassname(client, "player")))
+			CBasePlayer *pClient = nullptr;
+			while ((pClient = UTIL_FindEntityByClassname(pClient, "player")))
 			{
-				if (FNullEnt(client->edict()))
+				if (FNullEnt(pClient->edict()))
 					break;
 
-				if (!client->pev || client == pPlayer)
+				if (!pClient->pev || pClient == pPlayer)
 					continue;
 
 				// If a spectator was chasing this player, move him/her onto the next player
-				if (client->m_hObserverTarget == pPlayer)
+				if (pClient->m_hObserverTarget == pPlayer)
 				{
-					int iMode = client->pev->iuser1;
+					int iMode = pClient->pev->iuser1;
 
-					client->pev->iuser1 = OBS_NONE;
-					client->Observer_SetMode(iMode);
+					pClient->pev->iuser1 = OBS_NONE;
+					pClient->Observer_SetMode(iMode);
 				}
 			}
 		}

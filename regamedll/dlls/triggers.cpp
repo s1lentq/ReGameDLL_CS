@@ -369,7 +369,7 @@ void CRenderFxManager::Spawn()
 
 #ifdef REGAMEDLL_FIXES
 
-void CRenderFxManager::UpdateOnRemove()
+void CRenderFxManager::OnDestroy()
 {
 	m_RenderGroups.RemoveAll();
 }

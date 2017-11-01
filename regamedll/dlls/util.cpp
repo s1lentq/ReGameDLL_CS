@@ -23,8 +23,6 @@ unsigned int seed_table[256] =
 	25678U, 18555U, 13256U, 23316U, 22407U, 16727U, 991U, 9236U, 5373U, 29402U, 6117U, 15241U, 27715U, 19291U, 19888U, 19847U
 };
 
-
-
 int g_groupmask = 0;
 int g_groupop = 0;
 

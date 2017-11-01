@@ -1447,6 +1447,7 @@ void OnFreeEntPrivateData(edict_t *pEnt)
 	pEntity->OnDestroy();
 #endif
 
+	pEntity->UpdateOnRemove();
 	RemoveEntityHashValue(pEntity->pev, STRING(pEntity->pev->classname), CLASSNAME);
 
 #ifdef REGAMEDLL_API
@@ -1466,10 +1467,11 @@ void OnFreeEntPrivateData(edict_t *pEnt)
 #ifdef REGAMEDLL_API
 void CBaseEntity::OnCreate()
 {
+	;
 }
 
 void CBaseEntity::OnDestroy()
 {
-	UpdateOnRemove();
+	;
 }
 #endif

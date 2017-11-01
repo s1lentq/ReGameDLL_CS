@@ -33,10 +33,11 @@ const float MAX_BOMB_RADIUS = 2048.0f;
 class CMapInfo: public CPointEntity
 {
 public:
-	CMapInfo();
 	virtual void Spawn();
+	virtual void OnCreate();
+	virtual void OnDestroy();
 	virtual void KeyValue(KeyValueData *pkvd);
-	virtual void UpdateOnRemove();
+
 	void CheckMapInfo();
 
 public:
