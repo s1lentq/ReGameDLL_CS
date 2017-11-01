@@ -247,7 +247,7 @@ BOOL CItemBattery::MyTouch(CBasePlayer *pPlayer)
 			pct--;
 
 		char szcharge[64];
-		Q_sprintf(szcharge,"!HEV_%1dP", pct);
+		Q_sprintf(szcharge, "!HEV_%1dP", pct);
 		pPlayer->SetSuitUpdate(szcharge, SUIT_SENTENCE, SUIT_NEXT_IN_30SEC);
 
 		return TRUE;

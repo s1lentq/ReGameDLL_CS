@@ -474,7 +474,7 @@ void CFuncPlatRot::SetupRotation()
 	if (m_vecFinalAngle.x != 0)
 	{
 		CBaseToggle::AxisDir(pev);
-		m_start	= pev->angles;
+		m_start = pev->angles;
 		m_end = pev->angles + pev->movedir * m_vecFinalAngle.x;
 	}
 	else
@@ -1328,9 +1328,15 @@ BOOL CFuncTrackTrain::OnControls(entvars_t *pevTest)
 	local.y = -DotProduct(offset, gpGlobals->v_right);
 	local.z = DotProduct(offset, gpGlobals->v_up);
 
-	if (local.x >= m_controlMins.x && local.y >= m_controlMins.y && local.z >= m_controlMins.z &&
-		 local.x <= m_controlMaxs.x && local.y <= m_controlMaxs.y && local.z <= m_controlMaxs.z)
+	if (local.x >= m_controlMins.x
+		&& local.y >= m_controlMins.y
+		&& local.z >= m_controlMins.z
+		&& local.x <= m_controlMaxs.x
+		&& local.y <= m_controlMaxs.y
+		&& local.z <= m_controlMaxs.z)
+	{
 		return TRUE;
+	}
 
 	return FALSE;
 }
@@ -1718,8 +1724,9 @@ TRAIN_CODE CFuncTrackChange::EvaluateTrain(CPathTrack *pcurrent)
 	if (!pcurrent || !m_train)
 		return TRAIN_SAFE;
 
-	if (m_train->m_ppath == pcurrent || (pcurrent->m_pprevious && m_train->m_ppath == pcurrent->m_pprevious) ||
-		 (pcurrent->m_pnext && m_train->m_ppath == pcurrent->m_pnext))
+	if (m_train->m_ppath == pcurrent
+		|| (pcurrent->m_pprevious && m_train->m_ppath == pcurrent->m_pprevious)
+		|| (pcurrent->m_pnext && m_train->m_ppath == pcurrent->m_pnext))
 	{
 		if (m_train->pev->speed != 0)
 			return TRAIN_BLOCKING;

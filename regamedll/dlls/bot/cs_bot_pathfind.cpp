@@ -288,23 +288,23 @@ bool CCSBot::UpdateLadderMovement()
 	// check if somehow we totally missed the ladder
 	switch (m_pathLadderState)
 	{
-		case MOUNT_ASCENDING_LADDER:
-		case MOUNT_DESCENDING_LADDER:
-		case ASCEND_LADDER:
-		case DESCEND_LADDER:
+	case MOUNT_ASCENDING_LADDER:
+	case MOUNT_DESCENDING_LADDER:
+	case ASCEND_LADDER:
+	case DESCEND_LADDER:
+	{
+		const float farAway = 200.0f;
+		Vector2D d = (m_pathLadder->m_top - pev->origin).Make2D();
+		if (d.IsLengthGreaterThan(farAway))
 		{
-			const float farAway = 200.0f;
-			Vector2D d = (m_pathLadder->m_top - pev->origin).Make2D();
-			if (d.IsLengthGreaterThan(farAway))
-			{
-				PrintIfWatched("Missed ladder\n");
-				Jump(MUST_JUMP);
-				DestroyPath();
-				Run();
-				return false;
-			}
-			break;
+			PrintIfWatched("Missed ladder\n");
+			Jump(MUST_JUMP);
+			DestroyPath();
+			Run();
+			return false;
 		}
+		break;
+	}
 	}
 
 	m_areaEnteredTimestamp = gpGlobals->time;
@@ -314,12 +314,68 @@ bool CCSBot::UpdateLadderMovement()
 
 	switch (m_pathLadderState)
 	{
-		case APPROACH_ASCENDING_LADDER:
+	case APPROACH_ASCENDING_LADDER:
+	{
+		bool approached = false;
+		Vector2D d(pev->origin.x - m_goalPosition.x, pev->origin.y - m_goalPosition.y);
+
+		if (d.x * m_pathLadder->m_dirVector.x + d.y * m_pathLadder->m_dirVector.y < 0.0f)
+		{
+			Vector2D perp(-m_pathLadder->m_dirVector.y, m_pathLadder->m_dirVector.x);
+
+			if (Q_abs(int64(d.x * perp.x + d.y * perp.y)) < tolerance && d.Length() < closeToGoal)
+				approached = true;
+		}
+
+		// small radius will just slow them down a little for more accuracy in hitting their spot
+		const float walkRange = 50.0f;
+		if (d.IsLengthLessThan(walkRange))
+		{
+			Walk();
+			StandUp();
+		}
+
+		// TODO: Check that we are on the ladder we think we are
+		if (IsOnLadder())
+		{
+			m_pathLadderState = ASCEND_LADDER;
+			PrintIfWatched("ASCEND_LADDER\n");
+
+			// find actual top in case m_pathLadder penetrates the ceiling
+			ComputeLadderEndpoint(true);
+		}
+		else if (approached)
+		{
+			// face the m_pathLadder
+			m_pathLadderState = FACE_ASCENDING_LADDER;
+			PrintIfWatched("FACE_ASCENDING_LADDER\n");
+		}
+		else
+		{
+			// move toward ladder mount point
+			MoveTowardsPosition(&m_goalPosition);
+		}
+		break;
+	}
+	case APPROACH_DESCENDING_LADDER:
+	{
+		// fall check
+		if (GetFeetZ() <= m_pathLadder->m_bottom.z + HalfHumanHeight)
+		{
+			PrintIfWatched("Fell from ladder.\n");
+
+			m_pathLadderState = MOVE_TO_DESTINATION;
+			m_path[m_pathIndex].area->GetClosestPointOnArea(&m_pathLadder->m_bottom, &m_goalPosition);
+
+			AddDirectionVector(&m_goalPosition, m_pathLadder->m_dir, HalfHumanWidth);
+			PrintIfWatched("MOVE_TO_DESTINATION\n");
+		}
+		else
 		{
 			bool approached = false;
 			Vector2D d(pev->origin.x - m_goalPosition.x, pev->origin.y - m_goalPosition.y);
 
-			if (d.x * m_pathLadder->m_dirVector.x + d.y * m_pathLadder->m_dirVector.y < 0.0f)
+			if (d.x * m_pathLadder->m_dirVector.x + d.y * m_pathLadder->m_dirVector.y > 0.0f)
 			{
 				Vector2D perp(-m_pathLadder->m_dirVector.y, m_pathLadder->m_dirVector.x);
 
@@ -327,274 +383,218 @@ bool CCSBot::UpdateLadderMovement()
 					approached = true;
 			}
 
-			// small radius will just slow them down a little for more accuracy in hitting their spot
-			const float walkRange = 50.0f;
-			if (d.IsLengthLessThan(walkRange))
+			// if approaching ladder from the side or "ahead", walk
+			if (m_pathLadder->m_topBehindArea != m_lastKnownArea)
 			{
-				Walk();
-				StandUp();
+				const float walkRange = 150.0f;
+				if (!IsCrouching() && d.IsLengthLessThan(walkRange))
+					Walk();
 			}
 
 			// TODO: Check that we are on the ladder we think we are
 			if (IsOnLadder())
 			{
-				m_pathLadderState = ASCEND_LADDER;
-				PrintIfWatched("ASCEND_LADDER\n");
+				// we slipped onto the ladder - climb it
+				m_pathLadderState = DESCEND_LADDER;
+				Run();
+				PrintIfWatched("DESCEND_LADDER\n");
 
-				// find actual top in case m_pathLadder penetrates the ceiling
-				ComputeLadderEndpoint(true);
+				// find actual bottom in case m_pathLadder penetrates the floor
+				ComputeLadderEndpoint(false);
 			}
 			else if (approached)
 			{
-				// face the m_pathLadder
-				m_pathLadderState = FACE_ASCENDING_LADDER;
-				PrintIfWatched("FACE_ASCENDING_LADDER\n");
+				// face the ladder
+				m_pathLadderState = FACE_DESCENDING_LADDER;
+				PrintIfWatched("FACE_DESCENDING_LADDER\n");
 			}
 			else
 			{
 				// move toward ladder mount point
 				MoveTowardsPosition(&m_goalPosition);
 			}
-			break;
 		}
-		case APPROACH_DESCENDING_LADDER:
+		break;
+	}
+	case FACE_ASCENDING_LADDER:
+	{
+		// find yaw to directly aim at ladder
+		Vector to = m_pathLadder->m_bottom - pev->origin;
+		Vector idealAngle = UTIL_VecToAngles(to);
+
+		const float angleTolerance = 5.0f;
+		if (AnglesAreEqual(pev->v_angle.y, idealAngle.y, angleTolerance))
 		{
-			// fall check
-			if (GetFeetZ() <= m_pathLadder->m_bottom.z + HalfHumanHeight)
-			{
-				PrintIfWatched("Fell from ladder.\n");
-
-				m_pathLadderState = MOVE_TO_DESTINATION;
-				m_path[m_pathIndex].area->GetClosestPointOnArea(&m_pathLadder->m_bottom, &m_goalPosition);
-
-				AddDirectionVector(&m_goalPosition, m_pathLadder->m_dir, HalfHumanWidth);
-				PrintIfWatched("MOVE_TO_DESTINATION\n");
-			}
-			else
-			{
-				bool approached = false;
-				Vector2D d(pev->origin.x - m_goalPosition.x, pev->origin.y - m_goalPosition.y);
-
-				if (d.x * m_pathLadder->m_dirVector.x + d.y * m_pathLadder->m_dirVector.y > 0.0f)
-				{
-					Vector2D perp(-m_pathLadder->m_dirVector.y, m_pathLadder->m_dirVector.x);
-
-					if (Q_abs(int64(d.x * perp.x + d.y * perp.y)) < tolerance && d.Length() < closeToGoal)
-						approached = true;
-				}
-
-				// if approaching ladder from the side or "ahead", walk
-				if (m_pathLadder->m_topBehindArea != m_lastKnownArea)
-				{
-					const float walkRange = 150.0f;
-					if (!IsCrouching() && d.IsLengthLessThan(walkRange))
-						Walk();
-				}
-
-				// TODO: Check that we are on the ladder we think we are
-				if (IsOnLadder())
-				{
-					// we slipped onto the ladder - climb it
-					m_pathLadderState = DESCEND_LADDER;
-					Run();
-					PrintIfWatched("DESCEND_LADDER\n");
-
-					// find actual bottom in case m_pathLadder penetrates the floor
-					ComputeLadderEndpoint(false);
-				}
-				else if (approached)
-				{
-					// face the ladder
-					m_pathLadderState = FACE_DESCENDING_LADDER;
-					PrintIfWatched("FACE_DESCENDING_LADDER\n");
-				}
-				else
-				{
-					// move toward ladder mount point
-					MoveTowardsPosition(&m_goalPosition);
-				}
-			}
-			break;
+			// move toward ladder until we become "on" it
+			Run();
+			ResetStuckMonitor();
+			m_pathLadderState = MOUNT_ASCENDING_LADDER;
+			PrintIfWatched("MOUNT_ASCENDING_LADDER\n");
 		}
-		case FACE_ASCENDING_LADDER:
+		break;
+	}
+	case FACE_DESCENDING_LADDER:
+	{
+		// find yaw to directly aim at ladder
+		Vector to = m_pathLadder->m_top - pev->origin;
+		Vector idealAngle = UTIL_VecToAngles(to);
+
+		const float angleTolerance = 5.0f;
+		if (AnglesAreEqual(pev->v_angle.y, idealAngle.y, angleTolerance))
 		{
-			// find yaw to directly aim at ladder
-			Vector to = m_pathLadder->m_bottom - pev->origin;
-			Vector idealAngle = UTIL_VecToAngles(to);
-
-			const float angleTolerance = 5.0f;
-			if (AnglesAreEqual(pev->v_angle.y, idealAngle.y, angleTolerance))
-			{
-				// move toward ladder until we become "on" it
-				Run();
-				ResetStuckMonitor();
-				m_pathLadderState = MOUNT_ASCENDING_LADDER;
-				PrintIfWatched("MOUNT_ASCENDING_LADDER\n");
-			}
-			break;
+			// move toward ladder until we become "on" it
+			m_pathLadderState = MOUNT_DESCENDING_LADDER;
+			ResetStuckMonitor();
+			PrintIfWatched("MOUNT_DESCENDING_LADDER\n");
 		}
-		case FACE_DESCENDING_LADDER:
+		break;
+	}
+	case MOUNT_ASCENDING_LADDER:
+	{
+		if (IsOnLadder())
 		{
-			// find yaw to directly aim at ladder
-			Vector to = m_pathLadder->m_top - pev->origin;
-			Vector idealAngle = UTIL_VecToAngles(to);
+			m_pathLadderState = ASCEND_LADDER;
+			PrintIfWatched("ASCEND_LADDER\n");
 
-			const float angleTolerance = 5.0f;
-			if (AnglesAreEqual(pev->v_angle.y, idealAngle.y, angleTolerance))
-			{
-				// move toward ladder until we become "on" it
-				m_pathLadderState = MOUNT_DESCENDING_LADDER;
-				ResetStuckMonitor();
-				PrintIfWatched("MOUNT_DESCENDING_LADDER\n");
-			}
-			break;
+			// find actual top in case m_pathLadder penetrates the ceiling
+			ComputeLadderEndpoint(true);
 		}
-		case MOUNT_ASCENDING_LADDER:
+
+		MoveForward();
+		break;
+	}
+	case MOUNT_DESCENDING_LADDER:
+	{
+		// fall check
+		if (GetFeetZ() <= m_pathLadder->m_bottom.z + HalfHumanHeight)
+		{
+			PrintIfWatched("Fell from ladder.\n");
+
+			m_pathLadderState = MOVE_TO_DESTINATION;
+			m_path[m_pathIndex].area->GetClosestPointOnArea(&m_pathLadder->m_bottom, &m_goalPosition);
+
+			AddDirectionVector(&m_goalPosition, m_pathLadder->m_dir, HalfHumanWidth);
+			PrintIfWatched("MOVE_TO_DESTINATION\n");
+		}
+		else
 		{
 			if (IsOnLadder())
 			{
-				m_pathLadderState = ASCEND_LADDER;
-				PrintIfWatched("ASCEND_LADDER\n");
+				m_pathLadderState = DESCEND_LADDER;
+				PrintIfWatched("DESCEND_LADDER\n");
 
-				// find actual top in case m_pathLadder penetrates the ceiling
-				ComputeLadderEndpoint(true);
+				// find actual bottom in case m_pathLadder penetrates the floor
+				ComputeLadderEndpoint(false);
 			}
 
+			// move toward ladder mount point
 			MoveForward();
-			break;
 		}
-		case MOUNT_DESCENDING_LADDER:
+		break;
+	}
+	case ASCEND_LADDER:
+	{
+		// run, so we can make our dismount jump to the side, if necessary
+		Run();
+
+		// if our destination area requires us to crouch, do it
+		if (m_path[m_pathIndex].area->GetAttributes() & NAV_CROUCH)
+			Crouch();
+
+		// did we reach the top?
+		if (GetFeetZ() >= m_pathLadderEnd)
 		{
-			// fall check
-			if (GetFeetZ() <= m_pathLadder->m_bottom.z + HalfHumanHeight)
-			{
-				PrintIfWatched("Fell from ladder.\n");
+			// we reached the top - dismount
+			m_pathLadderState = DISMOUNT_ASCENDING_LADDER;
+			PrintIfWatched("DISMOUNT_ASCENDING_LADDER\n");
 
-				m_pathLadderState = MOVE_TO_DESTINATION;
-				m_path[m_pathIndex].area->GetClosestPointOnArea(&m_pathLadder->m_bottom, &m_goalPosition);
+			if (m_path[m_pathIndex].area == m_pathLadder->m_topForwardArea)
+				m_pathLadderDismountDir = FORWARD;
+			else if (m_path[m_pathIndex].area == m_pathLadder->m_topLeftArea)
+				m_pathLadderDismountDir = LEFT;
+			else if (m_path[m_pathIndex].area == m_pathLadder->m_topRightArea)
+				m_pathLadderDismountDir = RIGHT;
 
-				AddDirectionVector(&m_goalPosition, m_pathLadder->m_dir, HalfHumanWidth);
-				PrintIfWatched("MOVE_TO_DESTINATION\n");
-			}
-			else
-			{
-				if (IsOnLadder())
-				{
-					m_pathLadderState = DESCEND_LADDER;
-					PrintIfWatched("DESCEND_LADDER\n");
-
-					// find actual bottom in case m_pathLadder penetrates the floor
-					ComputeLadderEndpoint(false);
-				}
-
-				// move toward ladder mount point
-				MoveForward();
-			}
-			break;
+			m_pathLadderDismountTimestamp = gpGlobals->time;
 		}
-		case ASCEND_LADDER:
+		else if (!IsOnLadder())
 		{
-			// run, so we can make our dismount jump to the side, if necessary
-			Run();
-
-			// if our destination area requires us to crouch, do it
-			if (m_path[m_pathIndex].area->GetAttributes() & NAV_CROUCH)
-				Crouch();
-
-			// did we reach the top?
-			if (GetFeetZ() >= m_pathLadderEnd)
-			{
-				// we reached the top - dismount
-				m_pathLadderState = DISMOUNT_ASCENDING_LADDER;
-				PrintIfWatched("DISMOUNT_ASCENDING_LADDER\n");
-
-				if (m_path[m_pathIndex].area == m_pathLadder->m_topForwardArea)
-					m_pathLadderDismountDir = FORWARD;
-				else if (m_path[m_pathIndex].area == m_pathLadder->m_topLeftArea)
-					m_pathLadderDismountDir = LEFT;
-				else if (m_path[m_pathIndex].area == m_pathLadder->m_topRightArea)
-					m_pathLadderDismountDir = RIGHT;
-
-				m_pathLadderDismountTimestamp = gpGlobals->time;
-			}
-			else if (!IsOnLadder())
-			{
-				// we fall off the ladder, repath
-				DestroyPath();
-				return false;
-			}
-
-			// move up ladder
-			MoveForward();
-			break;
+			// we fall off the ladder, repath
+			DestroyPath();
+			return false;
 		}
-		case DESCEND_LADDER:
+
+		// move up ladder
+		MoveForward();
+		break;
+	}
+	case DESCEND_LADDER:
+	{
+		Run();
+
+		float destHeight = m_pathLadderEnd + HalfHumanHeight;
+		if (!IsOnLadder() || GetFeetZ() <= destHeight)
 		{
-			Run();
+			// we reached the bottom, or we fell off - dismount
+			m_pathLadderState = MOVE_TO_DESTINATION;
+			m_path[m_pathIndex].area->GetClosestPointOnArea(&m_pathLadder->m_bottom, &m_goalPosition);
 
-			float destHeight = m_pathLadderEnd + HalfHumanHeight;
-			if (!IsOnLadder() || GetFeetZ() <= destHeight)
-			{
-				// we reached the bottom, or we fell off - dismount
-				m_pathLadderState = MOVE_TO_DESTINATION;
-				m_path[m_pathIndex].area->GetClosestPointOnArea(&m_pathLadder->m_bottom, &m_goalPosition);
-
-				AddDirectionVector(&m_goalPosition, m_pathLadder->m_dir, HalfHumanWidth);
-				PrintIfWatched("MOVE_TO_DESTINATION\n");
-			}
-
-			// Move down ladder
-			MoveForward();
-			break;
+			AddDirectionVector(&m_goalPosition, m_pathLadder->m_dir, HalfHumanWidth);
+			PrintIfWatched("MOVE_TO_DESTINATION\n");
 		}
-		case DISMOUNT_ASCENDING_LADDER:
+
+		// Move down ladder
+		MoveForward();
+		break;
+	}
+	case DISMOUNT_ASCENDING_LADDER:
+	{
+		if (gpGlobals->time - m_pathLadderDismountTimestamp >= 0.4f)
 		{
-			if (gpGlobals->time - m_pathLadderDismountTimestamp >= 0.4f)
-			{
-				m_pathLadderState = MOVE_TO_DESTINATION;
-				m_path[m_pathIndex].area->GetClosestPointOnArea(&pev->origin, &m_goalPosition);
-				PrintIfWatched("MOVE_TO_DESTINATION\n");
-			}
-
-			// We should already be facing the dismount point
-			if (m_pathLadderFaceIn)
-			{
-				switch (m_pathLadderDismountDir)
-				{
-					case LEFT:	StrafeLeft();	break;
-					case RIGHT:	StrafeRight();	break;
-					case FORWARD:	MoveForward();	break;
-				}
-			}
-			else
-			{
-				switch (m_pathLadderDismountDir)
-				{
-					case LEFT:	StrafeRight();	break;
-					case RIGHT:	StrafeLeft();	break;
-					case FORWARD:	MoveBackward();	break;
-				}
-			}
-			break;
+			m_pathLadderState = MOVE_TO_DESTINATION;
+			m_path[m_pathIndex].area->GetClosestPointOnArea(&pev->origin, &m_goalPosition);
+			PrintIfWatched("MOVE_TO_DESTINATION\n");
 		}
-		case MOVE_TO_DESTINATION:
+
+		// We should already be facing the dismount point
+		if (m_pathLadderFaceIn)
 		{
-			if (m_path[m_pathIndex].area->Contains(&pev->origin))
+			switch (m_pathLadderDismountDir)
 			{
-				// successfully traversed ladder and reached destination area
-				// exit ladder state machine
-				PrintIfWatched("Ladder traversed.\n");
-				m_pathLadder = nullptr;
-
-				// incrememnt path index to next step beyond this ladder
-				SetPathIndex(m_pathIndex + 1);
-
-				return false;
+			case LEFT:    StrafeLeft(); break;
+			case RIGHT:   StrafeRight(); break;
+			case FORWARD: MoveForward(); break;
 			}
-
-			MoveTowardsPosition(&m_goalPosition);
-			break;
 		}
+		else
+		{
+			switch (m_pathLadderDismountDir)
+			{
+			case LEFT:    StrafeRight();  break;
+			case RIGHT:   StrafeLeft();   break;
+			case FORWARD: MoveBackward(); break;
+			}
+		}
+		break;
+	}
+	case MOVE_TO_DESTINATION:
+	{
+		if (m_path[m_pathIndex].area->Contains(&pev->origin))
+		{
+			// successfully traversed ladder and reached destination area
+			// exit ladder state machine
+			PrintIfWatched("Ladder traversed.\n");
+			m_pathLadder = nullptr;
+
+			// incrememnt path index to next step beyond this ladder
+			SetPathIndex(m_pathIndex + 1);
+
+			return false;
+		}
+
+		MoveTowardsPosition(&m_goalPosition);
+		break;
+	}
 	}
 
 	return true;
@@ -1352,9 +1352,10 @@ CCSBot::PathResult CCSBot::UpdatePathMovement(bool allowSpeedChange)
 		SetPathIndex(newIndex);
 	}
 
-	// Crouching
 	if (!IsUsingLadder())
 	{
+		// Crouching
+
 		// if we are approaching a crouch area, crouch
 		// if there are no crouch areas coming up, stand
 		const float crouchRange = 50.0f;
@@ -1388,6 +1389,29 @@ CCSBot::PathResult CCSBot::UpdatePathMovement(bool allowSpeedChange)
 			StandUp();
 		}
 		// end crouching logic
+
+		// Walking
+		bool didWalk = false;
+		for (int i = prevIndex; i < m_pathLength; ++i)
+		{
+			const CNavArea *to = m_path[i].area;
+
+			Vector close;
+			to->GetClosestPointOnArea(&pev->origin, &close);
+
+			if ((close - pev->origin).Make2D().IsLengthGreaterThan(crouchRange))
+				break;
+
+			if (to->GetAttributes() & NAV_WALK)
+			{
+				Walk();
+				didWalk = true;
+				break;
+			}
+		}
+
+		if (!didWalk)
+			Run();
 	}
 
 	// compute our forward facing angle

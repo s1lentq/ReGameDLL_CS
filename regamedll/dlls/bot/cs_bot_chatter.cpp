@@ -838,24 +838,24 @@ bool BotStatement::IsValid() const
 	{
 		switch (m_condition[i])
 		{
-			case IS_IN_COMBAT:
-			{
-				if (!GetOwner()->IsAttacking())
-					return false;
-				break;
-			}
-			/*case RADIO_SILENCE:
-			{
-				if (GetOwner()->GetChatter()->GetRadioSilenceDuration() < 10.0f)
-					return false;
-				break;
-			}*/
-			case ENEMIES_REMAINING:
-			{
-				if (GetOwner()->GetEnemiesRemaining() == 0)
-					return false;
-				break;
-			}
+		case IS_IN_COMBAT:
+		{
+			if (!GetOwner()->IsAttacking())
+				return false;
+			break;
+		}
+		/*case RADIO_SILENCE:
+		{
+			if (GetOwner()->GetChatter()->GetRadioSilenceDuration() < 10.0f)
+				return false;
+			break;
+		}*/
+		case ENEMIES_REMAINING:
+		{
+			if (GetOwner()->GetEnemiesRemaining() == 0)
+				return false;
+			break;
+		}
 		}
 	}
 

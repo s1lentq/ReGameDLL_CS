@@ -132,34 +132,34 @@ void CCSBot::Upkeep()
 
 		switch (m_lookAtSpotState)
 		{
-			case NOT_LOOKING_AT_SPOT:
-			{
-				// look ahead
-				SetLookAngles(m_lookAheadAngle, 0);
-				break;
-			}
-			case LOOK_TOWARDS_SPOT:
-			{
-				UpdateLookAt();
+		case NOT_LOOKING_AT_SPOT:
+		{
+			// look ahead
+			SetLookAngles(m_lookAheadAngle, 0);
+			break;
+		}
+		case LOOK_TOWARDS_SPOT:
+		{
+			UpdateLookAt();
 
-				if (IsLookingAtPosition(&m_lookAtSpot, m_lookAtSpotAngleTolerance))
-				{
-					m_lookAtSpotState = LOOK_AT_SPOT;
-					m_lookAtSpotTimestamp = gpGlobals->time;
-				}
-				break;
-			}
-			case LOOK_AT_SPOT:
+			if (IsLookingAtPosition(&m_lookAtSpot, m_lookAtSpotAngleTolerance))
 			{
-				UpdateLookAt();
-
-				if (m_lookAtSpotDuration >= 0.0f && gpGlobals->time - m_lookAtSpotTimestamp > m_lookAtSpotDuration)
-				{
-					m_lookAtSpotState = NOT_LOOKING_AT_SPOT;
-					m_lookAtSpotDuration = 0.0f;
-				}
-				break;
+				m_lookAtSpotState = LOOK_AT_SPOT;
+				m_lookAtSpotTimestamp = gpGlobals->time;
 			}
+			break;
+		}
+		case LOOK_AT_SPOT:
+		{
+			UpdateLookAt();
+
+			if (m_lookAtSpotDuration >= 0.0f && gpGlobals->time - m_lookAtSpotTimestamp > m_lookAtSpotDuration)
+			{
+				m_lookAtSpotState = NOT_LOOKING_AT_SPOT;
+				m_lookAtSpotDuration = 0.0f;
+			}
+			break;
+		}
 		}
 
 		float driftAmplitude = 2.0f;
@@ -189,10 +189,10 @@ void CCSBot::Update()
 
 	switch (m_processMode)
 	{
-	case PROCESS_LEARN:			UpdateLearnProcess();        return;
-	case PROCESS_ANALYZE_ALPHA:	UpdateAnalyzeAlphaProcess(); return;
-	case PROCESS_ANALYZE_BETA:	UpdateAnalyzeBetaProcess();  return;
-	case PROCESS_SAVE:			UpdateSaveProcess();         return;
+	case PROCESS_LEARN:         UpdateLearnProcess();        return;
+	case PROCESS_ANALYZE_ALPHA: UpdateAnalyzeAlphaProcess(); return;
+	case PROCESS_ANALYZE_BETA:  UpdateAnalyzeBetaProcess();  return;
+	case PROCESS_SAVE:          UpdateSaveProcess();         return;
 	}
 
 	// update our radio chatter
@@ -312,11 +312,11 @@ void CCSBot::Update()
 		{
 			switch (m_blindMoveDir)
 			{
-				case FORWARD:	MoveForward(); break;
-				case RIGHT:	StrafeRight(); break;
-				case BACKWARD:	MoveBackward(); break;
-				case LEFT:	StrafeLeft(); break;
-				default:	Crouch(); break;
+			case FORWARD:  MoveForward();  break;
+			case RIGHT:    StrafeRight();  break;
+			case BACKWARD: MoveBackward(); break;
+			case LEFT:     StrafeLeft();   break;
+			default:       Crouch();       break;
 			}
 		}
 
@@ -349,32 +349,32 @@ void CCSBot::Update()
 			bool doAttack = false;
 			switch (GetDisposition())
 			{
-				case IGNORE_ENEMIES:
-				{
-					// never attack
-					doAttack = false;
-					break;
-				}
-				case SELF_DEFENSE:
-				{
-					// attack if fired on
-					doAttack = IsPlayerLookingAtMe(threat);
+			case IGNORE_ENEMIES:
+			{
+				// never attack
+				doAttack = false;
+				break;
+			}
+			case SELF_DEFENSE:
+			{
+				// attack if fired on
+				doAttack = IsPlayerLookingAtMe(threat);
 
-					// attack if enemy very close
-					if (!doAttack)
-					{
-						const float selfDefenseRange = 750.0f;
-						doAttack = (pev->origin - threat->pev->origin).IsLengthLessThan(selfDefenseRange);
-					}
-					break;
-				}
-				case ENGAGE_AND_INVESTIGATE:
-				case OPPORTUNITY_FIRE:
+				// attack if enemy very close
+				if (!doAttack)
 				{
-					// normal combat range
-					doAttack = true;
-					break;
+					const float selfDefenseRange = 750.0f;
+					doAttack = (pev->origin - threat->pev->origin).IsLengthLessThan(selfDefenseRange);
 				}
+				break;
+			}
+			case ENGAGE_AND_INVESTIGATE:
+			case OPPORTUNITY_FIRE:
+			{
+				// normal combat range
+				doAttack = true;
+				break;
+			}
 			}
 
 			if (doAttack)
@@ -596,52 +596,52 @@ void CCSBot::Update()
 	// Scenario interrupts
 	switch (TheCSBots()->GetScenario())
 	{
-		case CCSBotManager::SCENARIO_DEFUSE_BOMB:
+	case CCSBotManager::SCENARIO_DEFUSE_BOMB:
+	{
+		// flee if the bomb is ready to blow and we aren't defusing it or attacking and we know where the bomb is
+		// (aggressive players wait until its almost too late)
+		float gonnaBlowTime = 8.0f - (2.0f * GetProfile()->GetAggression());
+
+		// if we have a defuse kit, can wait longer
+		if (m_bHasDefuser)
+			gonnaBlowTime *= 0.66f;
+
+		if (!IsEscapingFromBomb()								// we aren't already escaping the bomb
+			&& TheCSBots()->IsBombPlanted()						// is the bomb planted
+			&& GetGameState()->IsPlantedBombLocationKnown()		// we know where the bomb is
+			&& TheCSBots()->GetBombTimeLeft() < gonnaBlowTime	// is the bomb about to explode
+			&& !IsDefusingBomb()								// we aren't defusing the bomb
+			&& !IsAttacking())									// we aren't in the midst of a firefight
 		{
-			// flee if the bomb is ready to blow and we aren't defusing it or attacking and we know where the bomb is
-			// (aggressive players wait until its almost too late)
-			float gonnaBlowTime = 8.0f - (2.0f * GetProfile()->GetAggression());
-
-			// if we have a defuse kit, can wait longer
-			if (m_bHasDefuser)
-				gonnaBlowTime *= 0.66f;
-
-			if (!IsEscapingFromBomb()					// we aren't already escaping the bomb
-				&& TheCSBots()->IsBombPlanted()				// is the bomb planted
-				&& GetGameState()->IsPlantedBombLocationKnown()		// we know where the bomb is
-				&& TheCSBots()->GetBombTimeLeft() < gonnaBlowTime		// is the bomb about to explode
-				&& !IsDefusingBomb()					// we aren't defusing the bomb
-				&& !IsAttacking())					// we aren't in the midst of a firefight
-			{
-				EscapeFromBomb();
-				break;
-			}
+			EscapeFromBomb();
 			break;
 		}
-		case CCSBotManager::SCENARIO_RESCUE_HOSTAGES:
+		break;
+	}
+	case CCSBotManager::SCENARIO_RESCUE_HOSTAGES:
+	{
+		if (m_iTeam == CT)
 		{
-			if (m_iTeam == CT)
-			{
-				UpdateHostageEscortCount();
-			}
-			else
-			{
-				// Terrorists have imperfect information on status of hostages
-				CSGameState::ValidateStatusType status = GetGameState()->ValidateHostagePositions();
-
-				if (status & CSGameState::HOSTAGES_ALL_GONE)
-				{
-					GetChatter()->HostagesTaken();
-					Idle();
-				}
-				else if (status & CSGameState::HOSTAGE_GONE)
-				{
-					GetGameState()->HostageWasTaken();
-					Idle();
-				}
-			}
-			break;
+			UpdateHostageEscortCount();
 		}
+		else
+		{
+			// Terrorists have imperfect information on status of hostages
+			CSGameState::ValidateStatusType status = GetGameState()->ValidateHostagePositions();
+
+			if (status & CSGameState::HOSTAGES_ALL_GONE)
+			{
+				GetChatter()->HostagesTaken();
+				Idle();
+			}
+			else if (status & CSGameState::HOSTAGE_GONE)
+			{
+				GetGameState()->HostageWasTaken();
+				Idle();
+			}
+		}
+		break;
+	}
 	}
 
 	// Follow nearby humans if our co-op is high and we have nothing else to do

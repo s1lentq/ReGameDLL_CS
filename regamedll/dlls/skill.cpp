@@ -15,7 +15,7 @@ NOXREF float GetSkillCvar(char *pName)
 
 	if (flValue <= 0.0f)
 	{
-		ALERT(at_console, "\n\n** GetSkillCVar Got a zero for %s **\n\n",szBuffer);
+		ALERT(at_console, "\n\n** GetSkillCVar Got a zero for %s **\n\n", szBuffer);
 	}
 
 	return flValue;

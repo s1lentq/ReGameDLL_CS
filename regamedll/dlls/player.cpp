@@ -110,7 +110,7 @@ const char *GetCSModelName(int item_id)
 	case WEAPON_SCOUT:        modelName = "models/w_scout.mdl"; break;
 	case WEAPON_HEGRENADE:    modelName = "models/w_hegrenade.mdl"; break;
 	case WEAPON_XM1014:       modelName = "models/w_xm1014.mdl"; break;
- 	case WEAPON_C4:           modelName = "models/w_backpack.mdl"; break;
+	case WEAPON_C4:           modelName = "models/w_backpack.mdl"; break;
 	case WEAPON_MAC10:        modelName = "models/w_mac10.mdl"; break;
 	case WEAPON_AUG:          modelName = "models/w_aug.mdl"; break;
 	case WEAPON_SMOKEGRENADE: modelName = "models/w_smokegrenade.mdl"; break;
@@ -547,7 +547,7 @@ bool CBasePlayer::IsHittingShield(Vector &vecDirection, TraceResult *ptr)
 		return false;
 
 	if (ptr->iHitgroup == HITGROUP_SHIELD)
-		 return true;
+		return true;
 
 	if (m_bShieldDrawn)
 		UTIL_MakeVectors(pev->angles);
@@ -1228,7 +1228,7 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 	return bTookDamage;
 }
 
-void packPlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
+void PackPlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 {
 	if (!pItem)
 		return;
@@ -1260,7 +1260,7 @@ void packPlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 }
 
 #ifdef REGAMEDLL_ADD
-void packPlayerNade(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
+void PackPlayerNade(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 {
 	if (!pItem)
 		return;
@@ -1282,16 +1282,9 @@ void packPlayerNade(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 			break;
 		}
 
-		auto& ammoNades = pPlayer->m_rgAmmo[pItem->PrimaryAmmoIndex()];
-		if (pItem->m_flStartThrow != 0)
-		{
-			if (ammoNades < 2)
-				return;
-
-			ammoNades--;
-		}
-		else if (pItem->m_flReleaseThrow > 0 && ammoNades < 1)
+		if ((pPlayer->pev->button & IN_ATTACK) && pPlayer->m_rgAmmo[pItem->PrimaryAmmoIndex()] <= 0) {
 			return;
+		}
 
 		Vector vecAngles = pPlayer->pev->angles;
 		Vector dir(Q_cos(vecAngles.y) * flOffset, Q_sin(vecAngles.y) * flOffset, 0.0f);
@@ -1367,19 +1360,19 @@ void CBasePlayer::PackDeadPlayerItems()
 				else if (pPlayerItem->iItemSlot() == GRENADE_SLOT)
 				{
 					if (AreRunningCZero())
-						packPlayerItem(this, pPlayerItem, true);
+						PackPlayerItem(this, pPlayerItem, true);
 #ifdef REGAMEDLL_ADD
 					else
 					{
 						switch ((int)nadedrops.value)
 						{
 						case 1:
-							packPlayerNade(this, pPlayerItem, true);
+							PackPlayerNade(this, pPlayerItem, true);
 							break;
 						case 2:
 						{
 							CBasePlayerItem *pNext = pPlayerItem->m_pNext;
-							packPlayerNade(this, pPlayerItem, true);
+							PackPlayerNade(this, pPlayerItem, true);
 							pPlayerItem = pNext;
 							continue;
 						}
@@ -1392,7 +1385,7 @@ void CBasePlayer::PackDeadPlayerItems()
 			}
 		}
 
-		packPlayerItem(this, pBestItem, bPackAmmo);
+		PackPlayerItem(this, pBestItem, bPackAmmo);
 	}
 
 	RemoveAllItems(TRUE);
@@ -1950,6 +1943,10 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 			if ((pev->button & IN_ATTACK) && m_rgAmmo[pHEGrenade->m_iPrimaryAmmoType])
 			{
 				CGrenade::ShootTimed2(pev, (pev->origin + pev->view_ofs), pev->angles, 1.5, m_iTeam, pHEGrenade->m_usCreateExplosion);
+
+#ifdef REGAMEDLL_FIXES
+				m_rgAmmo[m_pActiveItem->PrimaryAmmoIndex()]--;
+#endif
 			}
 			break;
 		}
@@ -1958,6 +1955,10 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 			if ((pev->button & IN_ATTACK) && m_rgAmmo[((CBasePlayerWeapon *)m_pActiveItem)->m_iPrimaryAmmoType])
 			{
 				CGrenade::ShootTimed(pev, (pev->origin + pev->view_ofs), pev->angles, 1.5);
+
+#ifdef REGAMEDLL_FIXES
+				m_rgAmmo[m_pActiveItem->PrimaryAmmoIndex()]--;
+#endif
 			}
 			break;
 		}
@@ -1967,6 +1968,10 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 			if ((pev->button & IN_ATTACK) && m_rgAmmo[pSmoke->m_iPrimaryAmmoType])
 			{
 				CGrenade::ShootSmokeGrenade(pev, (pev->origin + pev->view_ofs), pev->angles, 1.5, pSmoke->m_usCreateSmoke);
+
+#ifdef REGAMEDLL_FIXES
+				m_rgAmmo[m_pActiveItem->PrimaryAmmoIndex()]--;
+#endif
 			}
 			break;
 		}
@@ -1997,7 +2002,9 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 		MESSAGE_END();
 	}
 	else
+	{
 		UTIL_ScreenFade(this, Vector(0, 0, 0), 3, 3, 255, (FFADE_OUT | FFADE_STAYOUT));
+	}
 
 	SetScoreboardAttributes();
 
@@ -2056,7 +2063,12 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 			break;
 		}
 
+#ifdef REGAMEDLL_FIXES
+		pev->angles.y = UTIL_VecToAngles(pev->velocity).y;
+#else
 		pev->angles.y = UTIL_VecToAngles(-pev->velocity).y;
+#endif
+
 		pev->v_angle.y = pev->angles.y;
 
 		m_iThrowDirection = THROW_NONE;
@@ -4728,6 +4740,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PostThink)()
 					// NOTE: play on item channel because we play footstep landing on body channel
 					EMIT_SOUND(ENT(pev), CHAN_ITEM, "common/bodysplat.wav", VOL_NORM, ATTN_NORM);
 				}
+
 #ifdef REGAMEDLL_FIXES
 				if (flFallDamage >= 1.0f)
 #else

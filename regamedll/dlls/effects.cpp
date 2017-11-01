@@ -1003,7 +1003,7 @@ void CGlow::Spawn()
 
 	if (m_maxFrame > 1.0f && pev->framerate != 0.0f)
 	{
-		pev->nextthink	= gpGlobals->time + 0.1f;
+		pev->nextthink = gpGlobals->time + 0.1f;
 	}
 
 	m_lastTime = gpGlobals->time;
