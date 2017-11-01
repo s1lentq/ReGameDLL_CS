@@ -575,20 +575,43 @@ void CHostage::RePosition()
 	m_flNextFullThink = gpGlobals->time + RANDOM_FLOAT(0.1, 0.2);
 }
 
+bool CHostage::CanTakeDamage(entvars_t *pevAttacker)
+{
+	bool bCanTakeDmg = true; // default behaviour
+
+#ifdef REGAMEDLL_ADD
+	CBasePlayer *pAttacker = CBasePlayer::Instance(pevAttacker);
+	switch ((int)hostagehurtable.value)
+	{
+	case 0:
+		bCanTakeDmg = false;
+		break;
+	case 2:
+		bCanTakeDmg = (pAttacker && pAttacker->IsPlayer() && pAttacker->m_iTeam == CT);
+		break;
+	case 3:
+		bCanTakeDmg = (pAttacker && pAttacker->IsPlayer() && pAttacker->m_iTeam == TERRORIST);
+		break;
+	default:
+		break;
+	}
+#endif
+
+	return bCanTakeDmg;
+}
+
 void CHostage::TraceAttack(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType)
 {
-#ifdef REGAMEDLL_ADD
-	if (hostagehurtable.value)
-#endif
-	{
-		CBaseMonster::TraceAttack(pevAttacker, flDamage, vecDir, ptr, bitsDamageType);
-	}
+	if (!CanTakeDamage(pevAttacker))
+		return;
+
+	CBaseMonster::TraceAttack(pevAttacker, flDamage, vecDir, ptr, bitsDamageType);
 }
 
 BOOL CHostage::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
 #ifdef REGAMEDLL_ADD
-	if (hostagehurtable.value <= 0)
+	if (!CanTakeDamage(pevAttacker))
 		return FALSE;
 #endif
 

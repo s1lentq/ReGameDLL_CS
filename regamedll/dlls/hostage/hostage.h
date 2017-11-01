@@ -122,6 +122,7 @@ public:
 	void NavReady();
 	void Wiggle();
 	void PreThink();
+	bool CanTakeDamage(entvars_t *pevAttacker);
 
 	// queries
 	bool IsFollowingSomeone() { return IsFollowing(); }
