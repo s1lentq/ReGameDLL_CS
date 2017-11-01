@@ -32,7 +32,8 @@ class CBasePlayerItem;
 class CCSPlayerItem: public CCSAnimating
 {
 public:
-	CCSPlayerItem()
+	CCSPlayerItem() :
+		m_bHasSecondaryAttack(false)
 	{
 		Q_memset(&m_ItemInfo, 0, sizeof(m_ItemInfo));
 	}
@@ -43,6 +44,7 @@ public:
 
 public:
 	ItemInfo m_ItemInfo;
+	bool m_bHasSecondaryAttack;
 };
 
 // Inlines

@@ -789,10 +789,17 @@ BOOL CanAttack(float attack_time, float curtime, BOOL isPredicted)
 
 bool CBasePlayerWeapon::HasSecondaryAttack()
 {
-	if (m_pPlayer->HasShield())
+	if (m_pPlayer && m_pPlayer->HasShield())
 	{
 		return true;
 	}
+
+#ifdef REGAMEDLL_API
+	if (CSPlayerItem()->m_bHasSecondaryAttack)
+	{
+		return true;
+	}
+#endif
 
 	switch (m_iId)
 	{
@@ -1084,6 +1091,8 @@ void CBasePlayerWeapon::Spawn()
 	if (GetItemInfo(&info)) {
 		CSPlayerItem()->SetItemInfo(&info);
 	}
+
+	CSPlayerItem()->m_bHasSecondaryAttack = HasSecondaryAttack();
 }
 
 // CALLED THROUGH the newly-touched weapon's instance. The existing player weapon is pOriginal
