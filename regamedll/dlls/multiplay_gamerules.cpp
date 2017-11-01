@@ -1223,6 +1223,11 @@ bool CHalfLifeMultiplay::Target_Bombed(float tmDelay)
 bool CHalfLifeMultiplay::Target_Defused(float tmDelay)
 {
 	Broadcast("ctwin");
+
+#ifdef REGAMEDLL_FIXES
+	Broadcast("BOMBDEF");
+#endif
+
 	m_iAccountCT += m_rgRewardAccountRules[RR_BOMB_DEFUSED];
 	m_iAccountTerrorist += m_rgRewardAccountRules[RR_BOMB_PLANTED];
 

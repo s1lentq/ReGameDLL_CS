@@ -1294,7 +1294,9 @@ void CGrenade::C4Think()
 		// if the defuse process has ended, kill the c4
 		else if (m_pBombDefuser->pev->deadflag == DEAD_NO)
 		{
+#ifndef REGAMEDLL_FIXES
 			Broadcast("BOMBDEF");
+#endif
 
 			if (TheBots)
 			{
