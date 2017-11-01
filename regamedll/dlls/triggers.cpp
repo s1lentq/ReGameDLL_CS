@@ -745,7 +745,15 @@ void CTriggerHurt::Spawn()
 #ifdef REGAMEDLL_FIXES
 void CTriggerHurt::Restart()
 {
+	Vector mins, maxs;
+
+	// Set model is about to destroy these
+	mins = pev->mins;
+	maxs = pev->maxs;
+
 	Spawn();
+
+	UTIL_SetSize(pev, mins, maxs);
 }
 #endif
 

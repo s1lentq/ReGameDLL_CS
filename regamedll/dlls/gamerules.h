@@ -50,10 +50,6 @@ const int MAX_INTERMISSION_TIME = 120;	// longest the intermission can last, in 
 // marked with the ITEM_FLAG_LIMITINWORLD will delay their respawn
 const int ENTITY_INTOLERANCE    = 100;
 
-// custom enum
-#define WINNER_NONE 0
-#define WINNER_DRAW 1
-
 enum
 {
 	WINSTATUS_NONE = 0,

@@ -319,7 +319,7 @@ CHalfLifeMultiplay::CHalfLifeMultiplay()
 	m_iAccountCT = 0;
 	m_iAccountTerrorist = 0;
 	m_iHostagesRescued = 0;
-	m_iRoundWinStatus = WINNER_NONE;
+	m_iRoundWinStatus = WINSTATUS_NONE;
 	m_iNumCTWins = 0;
 	m_iNumTerroristWins = 0;
 	m_pVIP = nullptr;
@@ -802,11 +802,11 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(CheckWinConditions)()
 
 #ifdef REGAMEDLL_FIXES
 	// If a winner has already been determined.. then get the heck out of here
-	if (m_iRoundWinStatus != WINNER_NONE)
+	if (m_iRoundWinStatus != WINSTATUS_NONE)
 		return;
 #else
 	// If a winner has already been determined and game of started.. then get the heck out of here
-	if (m_bGameStarted && m_iRoundWinStatus != WINNER_NONE)
+	if (m_bGameStarted && m_iRoundWinStatus != WINSTATUS_NONE)
 		return;
 #endif
 
@@ -1969,7 +1969,7 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(RestartRound)()
 	m_iAccountTerrorist = m_iAccountCT = 0;
 	m_iHostagesRescued = 0;
 	m_iHostagesTouched = 0;
-	m_iRoundWinStatus = WINNER_NONE;
+	m_iRoundWinStatus = WINSTATUS_NONE;
 	m_bTargetBombed = m_bBombDefused = false;
 	m_bLevelInitialized = false;
 	m_bCompleteReset = false;
@@ -3014,7 +3014,7 @@ bool CHalfLifeMultiplay::HasRoundTimeExpired()
 #endif
 
 	// We haven't completed other objectives, so go for this!.
-	if (GetRoundRemainingTime() > 0 || m_iRoundWinStatus != WINNER_NONE)
+	if (GetRoundRemainingTime() > 0 || m_iRoundWinStatus != WINSTATUS_NONE)
 	{
 		return false;
 	}
