@@ -977,14 +977,12 @@ void CFuncTrackTrain::Blocked(CBaseEntity *pOther)
 
 	ALERT(at_aiconsole, "TRAIN(%s): Blocked by %s (dmg:%.2f)\n", STRING(pev->targetname), STRING(pOther->pev->classname), pev->dmg);
 
-	// TODO: is missing?
-#if 0
+#ifdef REGAMEDLL_FIXES
 	if (pev->dmg <= 0)
 		return;
 
 	// we can't hurt this thing, so we're not concerned with it
 	pOther->TakeDamage(pev, pev, pev->dmg, DMG_CRUSH);
-
 #endif
 }
 
