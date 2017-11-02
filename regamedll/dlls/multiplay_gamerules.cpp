@@ -94,6 +94,8 @@ bool CCStrikeGameMgrHelper::CanPlayerHearPlayer(CBasePlayer *pListener, CBasePla
 		return (pListener->m_iTeam == pSender->m_iTeam);
 	case 3:
 		return (pListener->m_iTeam == pSender->m_iTeam || pListener->IsObserver());
+	case 4:
+		return (pListener->IsAlive() == pSender->IsAlive() || pSender->IsAlive());
 	default: // HLDS Behavior
 		break;
 	}
