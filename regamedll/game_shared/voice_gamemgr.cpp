@@ -154,7 +154,7 @@ void CVoiceGameMgr::UpdateMasks()
 {
 	m_UpdateInterval = 0;
 
-	bool bAllTalk = sv_alltalk.value != 0.0f;
+	bool bAllTalk = sv_alltalk.value == 1.0f;
 
 	for (int iClient = 0; iClient < m_nMaxPlayers; iClient++)
 	{
