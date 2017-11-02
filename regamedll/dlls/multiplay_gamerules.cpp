@@ -103,31 +103,20 @@ bool CCStrikeGameMgrHelper::CanPlayerHearPlayer(CBasePlayer *pListener, CBasePla
 #ifndef REGAMEDLL_FIXES
 		!pSender->IsPlayer() ||
 #endif
-		pListener->m_iTeam != pSender->m_iTeam)
+		pListener->m_iTeam != pSender->m_iTeam) // Different teams can't hear each other
 	{
 		return false;
+	}
+
+	if (pListener->IsObserver()) // 2 spectators don't need isAlive() checks.
+	{
+		return true;
 	}
 
 	BOOL bListenerAlive = pListener->IsAlive();
 	BOOL bSenderAlive = pSender->IsAlive();
 
-	if (pListener->IsObserver())
-	{
-		return true;
-	}
-
-	if (bListenerAlive)
-	{
-		if (!bSenderAlive)
-			return false;
-	}
-	else
-	{
-		if (bSenderAlive)
-			return true;
-	}
-
-	return (bListenerAlive == bSenderAlive);
+	return (bListenerAlive == bSenderAlive || bSenderAlive); // Dead/alive voice chats are separated, but dead can hear alive. 
 }
 
 void Broadcast(const char *sentence)
