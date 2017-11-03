@@ -3,7 +3,7 @@
 CCStrikeGameMgrHelper g_GameMgrHelper;
 CHalfLifeMultiplay *g_pMPGameRules = nullptr;
 RewardAccount CHalfLifeMultiplay::m_rgRewardAccountRules[RR_END];
-RewardAccount m_rgRewardAccountRules_default[] = {
+RewardAccount CHalfLifeMultiplay::m_rgRewardAccountRules_default[] = {
 	REWARD_CTS_WIN,                         // RR_CTS_WIN
 	REWARD_TERRORISTS_WIN,                  // RR_TERRORISTS_WIN
 	REWARD_TARGET_BOMB,                     // RR_TARGET_BOMB
@@ -118,7 +118,7 @@ bool CCStrikeGameMgrHelper::CanPlayerHearPlayer(CBasePlayer *pListener, CBasePla
 	BOOL bListenerAlive = pListener->IsAlive();
 	BOOL bSenderAlive = pSender->IsAlive();
 
-	return (bListenerAlive == bSenderAlive || bSenderAlive); // Dead/alive voice chats are separated, but dead can hear alive. 
+	return (bListenerAlive == bSenderAlive || bSenderAlive); // Dead/alive voice chats are separated, but dead can hear alive.
 }
 
 void Broadcast(const char *sentence)
