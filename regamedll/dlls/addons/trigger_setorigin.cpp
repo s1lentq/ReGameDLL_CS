@@ -129,7 +129,7 @@ void CTriggerSetOrigin::SetupEntities()
 	m_bSetupEntities = false;
 	m_entityNum = 0;
 
-	m_hCopyPointer = UTIL_FindEntityByTargetname(m_hCopyPointer, STRING(m_copyPointer));
+	m_hCopyPointer = UTIL_FindEntityByTargetname(m_hCopyPointer, m_copyPointer);
 
 	if (!m_hCopyPointer.IsValid() && hPrevEnt.IsValid())
 	{
@@ -137,7 +137,7 @@ void CTriggerSetOrigin::SetupEntities()
 	}
 
 	CBaseEntity *pEntity = nullptr;
-	while ((pEntity = UTIL_FindEntityByTargetname(pEntity, STRING(pev->target))))
+	while ((pEntity = UTIL_FindEntityByTargetname(pEntity, pev->target)))
 	{
 		if (m_entityNum > MAX_SETORIGIN_ENTITIES)
 			break;

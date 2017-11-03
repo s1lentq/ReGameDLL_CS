@@ -29,6 +29,7 @@
 #pragma once
 
 #include <API/CSPlayerItem.h>
+#include <API/CSPlayerWeapon.h>
 
 class CCSPlayer: public CCSMonster {
 public:

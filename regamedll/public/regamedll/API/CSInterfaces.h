@@ -39,7 +39,6 @@ class CCSShield: public CCSEntity {};
 class CCSDeadHEV: public CCSMonster {};
 class CCSSprayCan: public CCSEntity {};
 class CCSBloodSplat: public CCSEntity {};
-class CCSPlayerWeapon: public CCSPlayerItem {};
 class CCSWorld: public CCSEntity {};
 class CCSDecal: public CCSEntity {};
 class CCSCorpse: public CCSEntity {};

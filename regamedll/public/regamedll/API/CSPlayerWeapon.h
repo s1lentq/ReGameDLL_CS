@@ -28,25 +28,23 @@
 
 #pragma once
 
-class CBasePlayerItem;
-class CCSPlayerItem: public CCSAnimating
+class CBasePlayerWeapon;
+class CCSPlayerWeapon: public CCSPlayerItem
 {
 public:
-	CCSPlayerItem()
+	CCSPlayerWeapon() :
+		m_bHasSecondaryAttack(false)
 	{
-		Q_memset(&m_ItemInfo, 0, sizeof(m_ItemInfo));
 	}
 
-	virtual void SetItemInfo(ItemInfo *pInfo);
-
-	CBasePlayerItem *BasePlayerItem() const;
+	CBasePlayerWeapon *BasePlayerWeapon() const;
 
 public:
-	ItemInfo m_ItemInfo;
+	bool m_bHasSecondaryAttack;
 };
 
 // Inlines
-inline CBasePlayerItem *CCSPlayerItem::BasePlayerItem() const
+inline CBasePlayerWeapon *CCSPlayerWeapon::BasePlayerWeapon() const
 {
-	return reinterpret_cast<CBasePlayerItem *>(this->m_pContainingEntity);
+	return reinterpret_cast<CBasePlayerWeapon *>(this->m_pContainingEntity);
 }

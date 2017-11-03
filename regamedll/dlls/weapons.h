@@ -317,6 +317,7 @@ inline CCSPlayerItem *CBasePlayerItem::CSPlayerItem() const
 #endif
 
 // inventory items that
+class CCSPlayerWeapon;
 class CBasePlayerWeapon: public CBasePlayerItem
 {
 public:
@@ -375,6 +376,10 @@ public:
 	bool ShieldSecondaryFire(int iUpAnim, int iDownAnim);
 	void InstantReload(bool bCanRefillBPAmmo = false);
 
+#ifdef REGAMEDLL_API
+	CCSPlayerWeapon *CSPlayerWeapon() const;
+#endif
+
 public:
 	static TYPEDESCRIPTION m_SaveData[];
 
@@ -416,6 +421,13 @@ public:
 	float m_flPrevPrimaryAttack;
 	float m_flLastFireTime;
 };
+
+#ifdef REGAMEDLL_API
+inline CCSPlayerWeapon *CBasePlayerWeapon::CSPlayerWeapon() const
+{
+	return reinterpret_cast<CCSPlayerWeapon *>(this->m_pEntity);
+}
+#endif
 
 class CWeaponBox: public CBaseEntity
 {

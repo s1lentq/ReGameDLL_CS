@@ -169,10 +169,6 @@ bool CCSBotManager::IsWeaponUseable(CBasePlayerItem *item) const
 	if ((!AllowShotguns() && weaponClass == WEAPONCLASS_SHOTGUN)
 		|| (!AllowMachineGuns() && weaponClass == WEAPONCLASS_MACHINEGUN)
 		|| (!AllowRifles() && weaponClass == WEAPONCLASS_RIFLE)
-#ifndef REGAMEDLL_FIXES
-		// TODO: already is checked shotguns!
-		|| (!AllowShotguns() && weaponClass == WEAPONCLASS_SHOTGUN)
-#endif
 		|| (!AllowSnipers() && weaponClass == WEAPONCLASS_SNIPERRIFLE)
 		|| (!AllowSubMachineGuns() && weaponClass == WEAPONCLASS_SUBMACHINEGUN)
 		|| (!AllowTacticalShield() && item->m_iId == WEAPON_SHIELDGUN)
@@ -722,13 +718,6 @@ void CCSBotManager::ServerCommand(const char *pcmd)
 
 BOOL CCSBotManager::ClientCommand(CBasePlayer *pPlayer, const char *pcmd)
 {
-#ifndef REGAMEDLL_FIXES
-	if (pPlayer && UTIL_GetLocalPlayer())
-	{
-		UTIL_GetLocalPlayer();
-	}
-#endif
-
 	return FALSE;
 }
 

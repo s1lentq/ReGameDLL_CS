@@ -1298,7 +1298,7 @@ void PackPlayerNade(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 			break;
 		}
 
-		if ((pPlayer->pev->button & IN_ATTACK) && pPlayer->m_rgAmmo[pItem->PrimaryAmmoIndex()] <= 0) {
+		if (pItem->m_flStartThrow && pPlayer->m_rgAmmo[pItem->PrimaryAmmoIndex()] <= 0) {
 			return;
 		}
 

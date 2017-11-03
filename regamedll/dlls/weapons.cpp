@@ -795,7 +795,7 @@ bool CBasePlayerWeapon::HasSecondaryAttack()
 	}
 
 #ifdef REGAMEDLL_API
-	if (CSPlayerItem()->m_bHasSecondaryAttack)
+	if (CSPlayerWeapon()->m_bHasSecondaryAttack)
 	{
 		return true;
 	}
@@ -1092,7 +1092,7 @@ void CBasePlayerWeapon::Spawn()
 		CSPlayerItem()->SetItemInfo(&info);
 	}
 
-	CSPlayerItem()->m_bHasSecondaryAttack = HasSecondaryAttack();
+	CSPlayerWeapon()->m_bHasSecondaryAttack = HasSecondaryAttack();
 }
 
 // CALLED THROUGH the newly-touched weapon's instance. The existing player weapon is pOriginal

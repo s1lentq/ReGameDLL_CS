@@ -270,10 +270,14 @@ void BotProfileManager::Init(const char *filename, unsigned int *checksum)
 
 			profile->m_name = CloneString(SharedGetToken());
 
+#ifdef REGAMEDLL_FIXES
+			if (RANDOM_LONG(0, 2) == 2)
+#else
 			// HACK HACK
 			// Until we have a generalized means of storing bot preferences, we're going to hardcode the bot's
 			// preference towards silencers based on his name.
 			if (profile->m_name[0] % 2)
+#endif
 			{
 				profile->m_prefersSilencer = true;
 			}
