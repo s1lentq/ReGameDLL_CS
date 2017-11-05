@@ -1870,12 +1870,6 @@ void PM_Duck()
 
 	if (pmove->dead || !(pmove->cmd.buttons & IN_DUCK) && !pmove->bInDuck && !(pmove->flags & FL_DUCKING))
 	{
-#ifdef REGAMEDLL_FIXES
-		if (pmove->flags & FL_DUCKING)
-		{
-			PM_UnDuck();
-		}
-#endif
 		return;
 	}
 
