@@ -951,6 +951,14 @@ void CGrenade::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useTy
 		return;
 	}
 
+#ifdef REGAMEDLL_FIXES
+	if((player->pev->flags & FL_ONGROUND) != FL_ONGROUND) // Defuse should start only on ground
+	{
+		ClientPrint(player->pev, HUD_PRINTCENTER, "#C4_Defuse_Must_Be_On_Ground");
+		return;
+	}
+#endif
+
 	if (m_bStartDefuse)
 	{
 		m_fNextDefuse = gpGlobals->time + 0.5f;
