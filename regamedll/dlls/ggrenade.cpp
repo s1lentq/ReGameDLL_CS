@@ -965,12 +965,9 @@ void CGrenade::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useTy
 		TheBots->OnEvent(EVENT_BOMB_DEFUSING, pActivator);
 	}
 
-	if (CSGameRules()->IsCareer())
+	if (CSGameRules()->IsCareer() && TheCareerTasks)
 	{
-		if (TheCareerTasks)
-		{
-			TheCareerTasks->HandleEvent(EVENT_BOMB_DEFUSING);
-		}
+		TheCareerTasks->HandleEvent(EVENT_BOMB_DEFUSING);
 	}
 
 	if (player->m_bHasDefuser)
@@ -982,15 +979,8 @@ void CGrenade::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useTy
 
 		// TODO show messages on clients on event
 		ClientPrint(player->pev, HUD_PRINTCENTER, "#Defusing_Bomb_With_Defuse_Kit");
-#ifndef REGAMEDLL_FIXES
-		EMIT_SOUND(ENT(player->pev), CHAN_ITEM, "weapons/c4_disarm.wav", VOL_NORM, ATTN_NORM);
-#endif
 
-		player->m_bIsDefusing = true;
-		m_pBombDefuser = static_cast<CBasePlayer *>(pActivator);
-		m_bStartDefuse = true;
 		m_flDefuseCountDown = gpGlobals->time + 5.0f;
-		m_fNextDefuse = gpGlobals->time + 0.5f;
 
 		// start the progress bar
 		player->SetProgressBarTime(5);
@@ -1004,22 +994,22 @@ void CGrenade::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useTy
 
 		// TODO: show messages on clients on event
 		ClientPrint(player->pev, HUD_PRINTCENTER, "#Defusing_Bomb_Without_Defuse_Kit");
-#ifndef REGAMEDLL_FIXES
-		EMIT_SOUND(ENT(player->pev), CHAN_ITEM, "weapons/c4_disarm.wav", VOL_NORM, ATTN_NORM);
-#endif
 
-		player->m_bIsDefusing = true;
-		m_pBombDefuser = static_cast<CBasePlayer *>(pActivator);
-		m_bStartDefuse = true;
 		m_flDefuseCountDown = gpGlobals->time + 10.0f;
-		m_fNextDefuse = gpGlobals->time + 0.5f;
-
+		
 		// start the progress bar
 		player->SetProgressBarTime(10);
 	}
 
+	player->m_bIsDefusing = true;
+	m_pBombDefuser = static_cast<CBasePlayer *>(pActivator);
+	m_bStartDefuse = true;
+	m_fNextDefuse = gpGlobals->time + 0.5f;
+
 #ifdef REGAMEDLL_FIXES
 	EMIT_SOUND(edict(), CHAN_ITEM, "weapons/c4_disarm.wav", VOL_NORM, ATTN_NORM); // Emit sound using bomb.
+#else
+	EMIT_SOUND(ENT(player->pev), CHAN_ITEM, "weapons/c4_disarm.wav", VOL_NORM, ATTN_NORM);
 #endif
 }
 
