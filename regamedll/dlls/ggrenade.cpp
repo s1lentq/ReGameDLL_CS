@@ -1,5 +1,11 @@
 #include "precompiled.h"
 
+#ifdef REGAMEDLL_FIXES
+	constexpr float NEXT_DEFUSE_TIME = 0.033f;
+#else
+	constexpr float NEXT_DEFUSE_TIME = 0.5f;
+#endif
+
 TYPEDESCRIPTION CGrenade::m_SaveData[] =
 {
 	DEFINE_FIELD(CGrenade, m_fAttenu, FIELD_FLOAT),
@@ -953,7 +959,7 @@ void CGrenade::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useTy
 
 	if (m_bStartDefuse)
 	{
-		m_fNextDefuse = gpGlobals->time + 0.5f;
+		m_fNextDefuse = gpGlobals->time + NEXT_DEFUSE_TIME;
 		return;
 	}
 
@@ -990,7 +996,7 @@ void CGrenade::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useTy
 		m_pBombDefuser = static_cast<CBasePlayer *>(pActivator);
 		m_bStartDefuse = true;
 		m_flDefuseCountDown = gpGlobals->time + 5.0f;
-		m_fNextDefuse = gpGlobals->time + 0.5f;
+		m_fNextDefuse = gpGlobals->time + NEXT_DEFUSE_TIME;
 
 		// start the progress bar
 		player->SetProgressBarTime(5);
@@ -1012,7 +1018,7 @@ void CGrenade::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useTy
 		m_pBombDefuser = static_cast<CBasePlayer *>(pActivator);
 		m_bStartDefuse = true;
 		m_flDefuseCountDown = gpGlobals->time + 10.0f;
-		m_fNextDefuse = gpGlobals->time + 0.5f;
+		m_fNextDefuse = gpGlobals->time + NEXT_DEFUSE_TIME;
 
 		// start the progress bar
 		player->SetProgressBarTime(10);
@@ -1048,7 +1054,12 @@ CGrenade *CGrenade::ShootSatchelCharge(entvars_t *pevOwner, Vector vecStart, Vec
 	pGrenade->SetTouch(&CGrenade::C4Touch);
 	pGrenade->pev->spawnflags = SF_DETONATE;
 
+#ifdef REGAMEDLL_FIXES
+	pGrenade->pev->nextthink = gpGlobals->time + 0.01f;
+#else
 	pGrenade->pev->nextthink = gpGlobals->time + 0.1f;
+#endif
+
 	pGrenade->m_flC4Blow = gpGlobals->time + CSGameRules()->m_iC4Timer;
 	pGrenade->m_flNextFreqInterval = float(CSGameRules()->m_iC4Timer / 4);
 	pGrenade->m_flNextFreq = gpGlobals->time;
@@ -1136,7 +1147,11 @@ void CGrenade::C4Think()
 		return;
 	}
 
+#ifdef REGAMEDLL_FIXES
+	pev->nextthink = gpGlobals->time + 0.01f;
+#else
 	pev->nextthink = gpGlobals->time + 0.12f;
+#endif
 
 	if (gpGlobals->time >= m_flNextFreq)
 	{
