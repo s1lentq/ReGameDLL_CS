@@ -351,7 +351,11 @@ inline float AngleDifference(float a, float b)
 
 inline bool AnglesAreEqual(float a, float b, float tolerance = 5.0f)
 {
+#ifdef REGAMEDLL_FIXES
+	if (Q_abs(AngleDifference(a, b)) < tolerance)
+#else
 	if (Q_abs(int64(AngleDifference(a, b))) < tolerance)
+#endif
 		return true;
 
 	return false;

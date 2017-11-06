@@ -4396,7 +4396,11 @@ void CBasePlayer::CheckTimeBasedDamage()
 		return;
 
 	// only check for time based damage approx. every 2 seconds
+#ifdef REGAMEDLL_FIXES
+	if (Q_abs(gpGlobals->time - m_tbdPrev) < 2.0f)
+#else
 	if (Q_abs(int64(gpGlobals->time - m_tbdPrev)) < 2.0f)
+#endif
 		return;
 
 	m_tbdPrev = gpGlobals->time;
@@ -7817,7 +7821,11 @@ void CBasePlayer::StudioEstimateGait()
 		else
 			flYawDiff *= dt;
 
+#ifdef REGAMEDLL_FIXES
+		if (float_precision(Q_abs(flYawDiff)) < 0.1f)
+#else
 		if (float_precision(Q_abs(int64(flYawDiff))) < 0.1f)
+#endif
 			flYawDiff = 0;
 
 		m_flGaityaw += flYawDiff;

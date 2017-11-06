@@ -188,7 +188,11 @@ void HostageFollowState::OnUpdate(CHostageImprov *improv)
 
 				if (GetGroundHeight(&sideStepPos, &ground))
 				{
+#ifdef REGAMEDLL_FIXES
+					if (Q_abs(ground - improv->GetFeet().z) < 18.0f)
+#else
 					if (Q_abs(int(ground - improv->GetFeet().z)) < 18.0f)
+#endif
 					{
 						const float push = 20.0f;
 						Vector lat = cross * push;

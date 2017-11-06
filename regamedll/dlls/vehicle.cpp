@@ -117,7 +117,11 @@ void CFuncVehicle::Blocked(CBaseEntity *pOther)
 	float maxy = Q_max(vBackLeft.y, vBackRight.y);
 
 	float minz = pev->origin.z;
+#ifdef REGAMEDLL_FIXES
+	float maxz = pev->origin.z + (2 * Q_abs(pev->mins.z - pev->maxs.z));	
+#else
 	float maxz = pev->origin.z + (2 * Q_abs(int(pev->mins.z - pev->maxs.z)));
+#endif
 
 	if (pOther->pev->origin.x < minx
 		|| pOther->pev->origin.x > maxx
@@ -261,7 +265,11 @@ void CFuncVehicle::UpdateSound()
 	if (!pev->noise)
 		return;
 
+#ifdef REGAMEDLL_FIXES
+	float flpitch = VEHICLE_STARTPITCH + (Q_abs(pev->speed) * (VEHICLE_MAXPITCH - VEHICLE_STARTPITCH) / VEHICLE_MAXSPEED);
+#else
 	float flpitch = VEHICLE_STARTPITCH + (Q_abs(int(pev->speed)) * (VEHICLE_MAXPITCH - VEHICLE_STARTPITCH) / VEHICLE_MAXSPEED);
+#endif
 
 	if (flpitch > 200)
 		flpitch = 200;
