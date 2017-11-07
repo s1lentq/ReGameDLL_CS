@@ -1,11 +1,5 @@
 #include "precompiled.h"
 
-#ifdef REGAMEDLL_FIXES
-	constexpr float NEXT_DEFUSE_TIME = 0.033f;
-#else
-	constexpr float NEXT_DEFUSE_TIME = 0.5f;
-#endif
-
 TYPEDESCRIPTION CGrenade::m_SaveData[] =
 {
 	DEFINE_FIELD(CGrenade, m_fAttenu, FIELD_FLOAT),
@@ -943,6 +937,12 @@ CGrenade *CGrenade::ShootTimed(entvars_t *pevOwner, Vector vecStart, Vector vecV
 	return pGrenade;
 }
 
+#ifdef REGAMEDLL_FIXES
+	constexpr float NEXT_DEFUSE_TIME = 0.033f;
+#else
+	constexpr float NEXT_DEFUSE_TIME = 0.5f;
+#endif
+
 void CGrenade::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	if (!m_bIsC4)
@@ -956,6 +956,14 @@ void CGrenade::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useTy
 	{
 		return;
 	}
+
+#ifdef REGAMEDLL_FIXES
+	if((player->pev->flags & FL_ONGROUND) != FL_ONGROUND) // Defuse should start only on ground
+	{
+		ClientPrint(player->pev, HUD_PRINTCENTER, "#C4_Defuse_Must_Be_On_Ground");
+		return;
+	}
+#endif
 
 	if (m_bStartDefuse)
 	{
@@ -971,12 +979,9 @@ void CGrenade::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useTy
 		TheBots->OnEvent(EVENT_BOMB_DEFUSING, pActivator);
 	}
 
-	if (CSGameRules()->IsCareer())
+	if (CSGameRules()->IsCareer() && TheCareerTasks)
 	{
-		if (TheCareerTasks)
-		{
-			TheCareerTasks->HandleEvent(EVENT_BOMB_DEFUSING);
-		}
+		TheCareerTasks->HandleEvent(EVENT_BOMB_DEFUSING);
 	}
 
 	if (player->m_bHasDefuser)
@@ -988,15 +993,8 @@ void CGrenade::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useTy
 
 		// TODO show messages on clients on event
 		ClientPrint(player->pev, HUD_PRINTCENTER, "#Defusing_Bomb_With_Defuse_Kit");
-#ifndef REGAMEDLL_FIXES
-		EMIT_SOUND(ENT(player->pev), CHAN_ITEM, "weapons/c4_disarm.wav", VOL_NORM, ATTN_NORM);
-#endif
 
-		player->m_bIsDefusing = true;
-		m_pBombDefuser = static_cast<CBasePlayer *>(pActivator);
-		m_bStartDefuse = true;
 		m_flDefuseCountDown = gpGlobals->time + 5.0f;
-		m_fNextDefuse = gpGlobals->time + NEXT_DEFUSE_TIME;
 
 		// start the progress bar
 		player->SetProgressBarTime(5);
@@ -1010,22 +1008,22 @@ void CGrenade::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useTy
 
 		// TODO: show messages on clients on event
 		ClientPrint(player->pev, HUD_PRINTCENTER, "#Defusing_Bomb_Without_Defuse_Kit");
-#ifndef REGAMEDLL_FIXES
-		EMIT_SOUND(ENT(player->pev), CHAN_ITEM, "weapons/c4_disarm.wav", VOL_NORM, ATTN_NORM);
-#endif
 
-		player->m_bIsDefusing = true;
-		m_pBombDefuser = static_cast<CBasePlayer *>(pActivator);
-		m_bStartDefuse = true;
 		m_flDefuseCountDown = gpGlobals->time + 10.0f;
-		m_fNextDefuse = gpGlobals->time + NEXT_DEFUSE_TIME;
 
 		// start the progress bar
 		player->SetProgressBarTime(10);
 	}
 
+	player->m_bIsDefusing = true;
+	m_pBombDefuser = static_cast<CBasePlayer *>(pActivator);
+	m_bStartDefuse = true;
+	m_fNextDefuse = gpGlobals->time + NEXT_DEFUSE_TIME;
+
 #ifdef REGAMEDLL_FIXES
 	EMIT_SOUND(edict(), CHAN_ITEM, "weapons/c4_disarm.wav", VOL_NORM, ATTN_NORM); // Emit sound using bomb.
+#else
+	EMIT_SOUND(ENT(player->pev), CHAN_ITEM, "weapons/c4_disarm.wav", VOL_NORM, ATTN_NORM);
 #endif
 }
 
