@@ -937,6 +937,12 @@ CGrenade *CGrenade::ShootTimed(entvars_t *pevOwner, Vector vecStart, Vector vecV
 	return pGrenade;
 }
 
+#ifdef REGAMEDLL_FIXES
+	constexpr float NEXT_DEFUSE_TIME = 0.033f;
+#else
+	constexpr float NEXT_DEFUSE_TIME = 0.5f;
+#endif
+
 void CGrenade::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	if (!m_bIsC4)
@@ -961,7 +967,7 @@ void CGrenade::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useTy
 
 	if (m_bStartDefuse)
 	{
-		m_fNextDefuse = gpGlobals->time + 0.5f;
+		m_fNextDefuse = gpGlobals->time + NEXT_DEFUSE_TIME;
 		return;
 	}
 
@@ -1004,7 +1010,7 @@ void CGrenade::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useTy
 		ClientPrint(player->pev, HUD_PRINTCENTER, "#Defusing_Bomb_Without_Defuse_Kit");
 
 		m_flDefuseCountDown = gpGlobals->time + 10.0f;
-		
+
 		// start the progress bar
 		player->SetProgressBarTime(10);
 	}
@@ -1012,7 +1018,7 @@ void CGrenade::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useTy
 	player->m_bIsDefusing = true;
 	m_pBombDefuser = static_cast<CBasePlayer *>(pActivator);
 	m_bStartDefuse = true;
-	m_fNextDefuse = gpGlobals->time + 0.5f;
+	m_fNextDefuse = gpGlobals->time + NEXT_DEFUSE_TIME;
 
 #ifdef REGAMEDLL_FIXES
 	EMIT_SOUND(edict(), CHAN_ITEM, "weapons/c4_disarm.wav", VOL_NORM, ATTN_NORM); // Emit sound using bomb.
@@ -1046,7 +1052,12 @@ CGrenade *CGrenade::ShootSatchelCharge(entvars_t *pevOwner, Vector vecStart, Vec
 	pGrenade->SetTouch(&CGrenade::C4Touch);
 	pGrenade->pev->spawnflags = SF_DETONATE;
 
+#ifdef REGAMEDLL_FIXES
+	pGrenade->pev->nextthink = gpGlobals->time + 0.01f;
+#else
 	pGrenade->pev->nextthink = gpGlobals->time + 0.1f;
+#endif
+
 	pGrenade->m_flC4Blow = gpGlobals->time + CSGameRules()->m_iC4Timer;
 	pGrenade->m_flNextFreqInterval = float(CSGameRules()->m_iC4Timer / 4);
 	pGrenade->m_flNextFreq = gpGlobals->time;
@@ -1134,7 +1145,11 @@ void CGrenade::C4Think()
 		return;
 	}
 
+#ifdef REGAMEDLL_FIXES
+	pev->nextthink = gpGlobals->time + 0.01f;
+#else
 	pev->nextthink = gpGlobals->time + 0.12f;
+#endif
 
 	if (gpGlobals->time >= m_flNextFreq)
 	{
