@@ -190,49 +190,51 @@ void CCSBot::Killed(entvars_t *pevAttacker, int iGib)
 	CBasePlayer::Killed(pevAttacker, iGib);
 }
 
-#define HI_X 0x01
-#define LO_X 0x02
-#define HI_Y 0x04
-#define LO_Y 0x08
-#define HI_Z 0x10
-#define LO_Z 0x20
-
-// Return true if line segment intersects rectagular volume
-bool IsIntersectingBox(const Vector *start, const Vector *end, const Vector *boxMin, const Vector *boxMax)
+// Return true if line segment intersects rectangular volume
+bool IsIntersectingBox(const Vector &start, const Vector &end, const Vector &boxMin, const Vector &boxMax)
 {
+	constexpr auto HI_X = BIT(1);
+	constexpr auto LO_X = BIT(2);
+	
+	constexpr auto HI_Y = BIT(3);
+	constexpr auto LO_Y = BIT(4);
+	
+	constexpr auto HI_Z = BIT(5);
+	constexpr auto LO_Z = BIT(6);
+	
 	unsigned char startFlags = 0;
 	unsigned char endFlags = 0;
 
 	// classify start point
-	if (start->x < boxMin->x)
+	if (start.x < boxMin.x)
 		startFlags |= LO_X;
-	if (start->x > boxMax->x)
+	else if (start.x > boxMax.x)
 		startFlags |= HI_X;
 
-	if (start->y < boxMin->y)
+	if (start.y < boxMin.y)
 		startFlags |= LO_Y;
-	if (start->y > boxMax->y)
+	else if (start.y > boxMax.y)
 		startFlags |= HI_Y;
 
-	if (start->z < boxMin->z)
+	if (start.z < boxMin.z)
 		startFlags |= LO_Z;
-	if (start->z > boxMax->z)
+	else if (start.z > boxMax.z)
 		startFlags |= HI_Z;
 
 	// classify end point
-	if (end->x < boxMin->x)
+	if (end.x < boxMin.x)
 		endFlags |= LO_X;
-	if (end->x > boxMax->x)
+	else if (end.x > boxMax.x)
 		endFlags |= HI_X;
 
-	if (end->y < boxMin->y)
+	if (end.y < boxMin.y)
 		endFlags |= LO_Y;
-	if (end->y > boxMax->y)
+	else if (end.y > boxMax.y)
 		endFlags |= HI_Y;
 
-	if (end->z < boxMin->z)
+	if (end.z < boxMin.z)
 		endFlags |= LO_Z;
-	if (end->z > boxMax->z)
+	else if (end.z > boxMax.z)
 		endFlags |= HI_Z;
 
 	// trivial reject
@@ -299,7 +301,7 @@ void CCSBot::BotTouch(CBaseEntity *other)
 		if (m_pathLength)
 		{
 			Vector goal = m_goalPosition + Vector(0, 0, HalfHumanHeight);
-			breakIt = IsIntersectingBox(&pev->origin, &goal, &other->pev->absmin, &other->pev->absmax);
+			breakIt = IsIntersectingBox(pev->origin, goal, other->pev->absmin, other->pev->absmax);
 		}
 
 		if (breakIt)
