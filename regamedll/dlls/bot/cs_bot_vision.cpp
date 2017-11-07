@@ -506,8 +506,13 @@ void CCSBot::UpdateLookAround(bool updateNow)
 			// figure out how far along the path segment we are
 			Vector delta = m_spotEncounter->path.to - m_spotEncounter->path.from;
 			float_precision length = delta.Length();
+#ifdef REGAMEDLL_FIXES
+			float adx = Q_abs(delta.x);
+			float ady = Q_abs(delta.y);
+#else
 			float adx = float(Q_abs(int64(delta.x)));
 			float ady = float(Q_abs(int64(delta.y)));
+#endif
 			float_precision t;
 
 			if (adx > ady)

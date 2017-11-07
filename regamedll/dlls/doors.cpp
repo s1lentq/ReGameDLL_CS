@@ -546,14 +546,22 @@ void CBaseDoor::DoorGoUp()
 				{
 					if (toActivator.y < loY)
 					{
+#ifdef REGAMEDLL_FIXES
+						if (Q_abs(momentArmY) > Q_abs(momentArmX))
+#else
 						if (Q_abs(int(momentArmY)) > Q_abs(int(momentArmX)))
+#endif
 							sign = (momentArmY < 0) ? 1 : -1;
 						else
 							sign = (momentArmX > 0) ? 1 : -1;
 					}
 					else if (toActivator.y > hiY)
 					{
+#ifdef REGAMEDLL_FIXES
+						if (Q_abs(momentArmY) > Q_abs(momentArmX))
+#else
 						if (Q_abs(int(momentArmY)) > Q_abs(int(momentArmX)))
+#endif
 							sign = (momentArmY < 0) ? 1 : -1;
 						else
 							sign = (momentArmX < 0) ? 1 : -1;
@@ -572,14 +580,22 @@ void CBaseDoor::DoorGoUp()
 					}
 					else if (toActivator.y < loY)
 					{
+#ifdef REGAMEDLL_FIXES
+						if (Q_abs(momentArmY) > Q_abs(momentArmX))
+#else
 						if (Q_abs(int(momentArmY)) > Q_abs(int(momentArmX)))
+#endif
 							sign = (momentArmY > 0) ? 1 : -1;
 						else
 							sign = (momentArmX > 0) ? 1 : -1;
 					}
 					else if (toActivator.y > hiY)
 					{
+#ifdef REGAMEDLL_FIXES
+						if (Q_abs(momentArmY) > Q_abs(momentArmX))
+#else
 						if (Q_abs(int(momentArmY)) > Q_abs(int(momentArmX)))
+#endif
 							sign = (momentArmY > 0) ? 1 : -1;
 						else
 							sign = (momentArmX < 0) ? 1 : -1;

@@ -323,7 +323,11 @@ bool CCSBot::UpdateLadderMovement()
 		{
 			Vector2D perp(-m_pathLadder->m_dirVector.y, m_pathLadder->m_dirVector.x);
 
+#ifdef REGAMEDLL_FIXES
+			if (Q_abs(d.x * perp.x + d.y * perp.y) < tolerance && d.Length() < closeToGoal)
+#else
 			if (Q_abs(int64(d.x * perp.x + d.y * perp.y)) < tolerance && d.Length() < closeToGoal)
+#endif
 				approached = true;
 		}
 

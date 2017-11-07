@@ -1048,12 +1048,14 @@ void CFuncTrackTrain::StopSound()
 
 void CFuncTrackTrain::UpdateSound()
 {
-	float flpitch;
-
 	if (!pev->noise)
 		return;
 
-	flpitch = TRAIN_STARTPITCH + (Q_abs(int(pev->speed)) * (TRAIN_MAXPITCH - TRAIN_STARTPITCH) / TRAIN_MAXSPEED);
+#ifdef REGAMEDLL_FIXES
+	float flpitch = TRAIN_STARTPITCH + (Q_abs(pev->speed) * (TRAIN_MAXPITCH - TRAIN_STARTPITCH) / TRAIN_MAXSPEED);
+#else
+	float flpitch = TRAIN_STARTPITCH + (Q_abs(int(pev->speed)) * (TRAIN_MAXPITCH - TRAIN_STARTPITCH) / TRAIN_MAXSPEED);
+#endif
 
 	if (!m_soundPlaying)
 	{

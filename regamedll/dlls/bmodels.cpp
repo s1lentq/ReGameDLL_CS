@@ -507,12 +507,20 @@ void CFuncRotating::RampPitchVol(BOOL fUp)
 	int pitch;
 
 	// get current angular velocity
+#ifdef REGAMEDLL_FIXES
+	vecCur = Q_abs(vecAVel.x != 0 ? vecAVel.x : (vecAVel.y != 0 ? vecAVel.y : vecAVel.z));
+#else
 	vecCur = Q_abs(int(vecAVel.x != 0 ? vecAVel.x : (vecAVel.y != 0 ? vecAVel.y : vecAVel.z)));
+#endif
 
 	// get target angular velocity
 	vecFinal = (pev->movedir.x != 0 ? pev->movedir.x : (pev->movedir.y != 0 ? pev->movedir.y : pev->movedir.z));
 	vecFinal *= pev->speed;
+#ifdef REGAMEDLL_FIXES
+	vecFinal = Q_abs(vecFinal);
+#else
 	vecFinal = Q_abs(int(vecFinal));
+#endif
 
 	// calc volume and pitch as % of final vol and pitch
 	fpct = vecCur / vecFinal;
@@ -543,19 +551,22 @@ void CFuncRotating::RampPitchVol(BOOL fUp)
 // Accelerates a non-moving func_rotating up to it's speed
 void CFuncRotating::SpinUp()
 {
-	// rotational velocity
-	Vector vecAVel;
-
 	pev->nextthink = pev->ltime + 0.1;
 	pev->avelocity = pev->avelocity + (pev->movedir * (pev->speed * m_flFanFriction));
 
 	// cache entity's rotational velocity
-	vecAVel = pev->avelocity;
+	Vector vecAVel = pev->avelocity;
 
 	// if we've met or exceeded target speed, set target speed and stop thinking
-	if (Q_abs(int(vecAVel.x)) >= Q_abs(int(pev->movedir.x * pev->speed))
+#ifdef REGAMEDLL_FIXES
+	if (Q_abs(vecAVel.x) >= Q_abs(pev->movedir.x * pev->speed)
+		&& Q_abs(vecAVel.y) >= Q_abs(pev->movedir.y * pev->speed)
+		&& Q_abs(vecAVel.z) >= Q_abs(pev->movedir.z * pev->speed))
+#else
+	if (Q_abs(int(vecAVel.x)) >= Q_abs(int(pev->movedir.x * pev->speed))	
 		&& Q_abs(int(vecAVel.y)) >= Q_abs(int(pev->movedir.y * pev->speed))
 		&& Q_abs(int(vecAVel.z)) >= Q_abs(int(pev->movedir.z * pev->speed)))
+#endif
 	{
 		// set speed in case we overshot
 		pev->avelocity = pev->movedir * pev->speed;

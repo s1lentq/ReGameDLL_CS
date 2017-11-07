@@ -321,7 +321,11 @@ void CCSBot::Attack(CBasePlayer *victim)
 	Vector toEnemy = victim->pev->origin - pev->origin;
 	Vector idealAngle = UTIL_VecToAngles(toEnemy);
 
+#ifdef REGAMEDLL_FIXES
+	float_precision deltaYaw = float_precision(Q_abs(m_lookYaw - idealAngle.y));
+#else
 	float_precision deltaYaw = float_precision(Q_abs(int64(m_lookYaw - idealAngle.y)));
+#endif
 
 	while (deltaYaw > 180.0f)
 		deltaYaw -= 360.0f;
