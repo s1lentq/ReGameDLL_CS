@@ -667,6 +667,7 @@ public:
 
 	// has a style of gameplay when aren't any teams
 	bool IsFreeForAll() const;
+	bool CanPlayerBuy(CBasePlayer *pPlayer) const;
 
 	VFUNC bool HasRoundTimeExpired();
 	VFUNC bool IsBombPlanted();

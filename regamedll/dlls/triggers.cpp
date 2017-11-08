@@ -1812,6 +1812,11 @@ void CBuyZone::BuyTouch(CBaseEntity *pOther)
 
 	if (pev->team == UNASSIGNED || pev->team == p->m_iTeam)
 	{
+#ifdef REGAMEDLL_FIXES
+		if (!CSGameRules()->CanPlayerBuy(p))
+			return;
+#endif
+
 		p->m_signals.Signal(SIGNAL_BUY);
 	}
 }

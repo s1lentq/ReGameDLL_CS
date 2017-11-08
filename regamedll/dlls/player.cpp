@@ -6154,11 +6154,21 @@ void OLD_CheckBuyZone(CBasePlayer *player)
 {
 	const char *pszSpawnClass = nullptr;
 
-	if (player->m_iTeam == TERRORIST)
-		pszSpawnClass = "info_player_deathmatch";
+#ifdef REGAMEDLL_FIXES
+	if (!CSGameRules()->CanPlayerBuy(player))
+	{
+		return;
+	}
+#endif
 
+	if (player->m_iTeam == TERRORIST)
+	{
+		pszSpawnClass = "info_player_deathmatch";
+	}
 	else if (player->m_iTeam == CT)
+	{
 		pszSpawnClass = "info_player_start";
+	}
 
 	if (pszSpawnClass)
 	{

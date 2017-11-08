@@ -4928,3 +4928,21 @@ void CHalfLifeMultiplay::ChangePlayerTeam(CBasePlayer *pPlayer, const char *pTea
 		CSGameRules()->CheckWinConditions();
 	}
 }
+
+bool CHalfLifeMultiplay::CanPlayerBuy(CBasePlayer *pPlayer) const
+{
+	if (pPlayer->m_iTeam == CT && m_bCTCantBuy)
+	{
+		return false;
+	}
+	else if (pPlayer->m_iTeam == TERRORIST && m_bTCantBuy)
+	{
+		return false;
+	}
+	else if (m_bCTCantBuy && m_bTCantBuy)
+	{
+		return false;
+	}
+
+	return true;
+}
