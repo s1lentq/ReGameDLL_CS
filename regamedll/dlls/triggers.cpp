@@ -622,7 +622,7 @@ void PlayCDTrack(edict_t *pClient, int iTrack)
 
 	if (iTrack < -1 || iTrack > 30)
 	{
-		ALERT(at_console, "TriggerCDAudio - Track %d out of range\n");
+		ALERT(at_console, "TriggerCDAudio - Track %d out of range\n", iTrack);
 		return;
 	}
 
