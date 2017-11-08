@@ -622,11 +622,7 @@ void PlayCDTrack(edict_t *pClient, int iTrack)
 
 	if (iTrack < -1 || iTrack > 30)
 	{
-#ifdef REGAMEDLL_FIXES
 		ALERT(at_console, "TriggerCDAudio - Track %d out of range\n", iTrack);
-#else
-		ALERT(at_console, "TriggerCDAudio - Track %d out of range\n");
-#endif		
 		return;
 	}
 
