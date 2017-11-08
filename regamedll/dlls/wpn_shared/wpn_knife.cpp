@@ -460,6 +460,9 @@ BOOL CKnife::Stab(BOOL fFirst)
 		if (fFirst)
 		{
 			SendWeaponAnim(KNIFE_STABMISS, UseDecrement() != FALSE);
+#ifdef REGAMEDLL_FIXES
+			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.0f;
+#endif
 
 			m_flNextPrimaryAttack = GetNextAttackDelay(1.0);
 			m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 1.0f;
@@ -480,6 +483,9 @@ BOOL CKnife::Stab(BOOL fFirst)
 		fDidHit = TRUE;
 
 		SendWeaponAnim(KNIFE_STABHIT, UseDecrement() != FALSE);
+#ifdef REGAMEDLL_FIXES
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.0f;
+#endif
 
 		m_flNextPrimaryAttack = GetNextAttackDelay(1.1);
 		m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 1.1f;
