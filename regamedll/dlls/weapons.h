@@ -814,6 +814,9 @@ public:
 		return FALSE;
 	#endif
 	}
+#ifdef REGAMEDLL_FIXES
+	float GetGroundDistance();
+#endif
 
 public:
 	bool m_bStartedArming;

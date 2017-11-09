@@ -117,7 +117,11 @@ void CC4::PrimaryAttack()
 			return;
 		}
 
+#ifdef REGAMEDLL_FIXES
+		if (!onGround || GetGroundDistance() >= 46.0)
+#else
 		if (!onGround)
+#endif
 		{
 			ClientPrint(m_pPlayer->pev, HUD_PRINTCENTER, "#C4_Plant_Must_Be_On_Ground");
 			m_flNextPrimaryAttack = GetNextAttackDelay(1.0);
@@ -350,4 +354,14 @@ void CC4::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, f
 float CC4::GetMaxSpeed()
 {
 	return C4_MAX_SPEED;
+}
+
+// Source: fm_distance_to_floor
+float CC4::GetGroundDistance()
+{
+	Vector vecStart = m_pPlayer->pev->origin;
+	TraceResult tmpTrace;
+	UTIL_TraceLine(vecStart, Vector(vecStart[0], vecStart[1], -8191.0), dont_ignore_monsters, m_pPlayer->edict(), &tmpTrace);
+
+	return m_pPlayer->pev->absmin[2] - tmpTrace.vecEndPos[2];
 }
