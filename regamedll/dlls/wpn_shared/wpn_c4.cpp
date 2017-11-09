@@ -159,7 +159,12 @@ void CC4::PrimaryAttack()
 						CSGameRules()->m_iC4Timer = int(pev->speed);
 					}
 
-					CGrenade *pBomb = CGrenade::ShootSatchelCharge(m_pPlayer->pev, m_pPlayer->pev->origin, Vector(0, 0, 0));
+#ifdef REGAMEDLL_FIXES
+					Vector vBombAngles = Vector(0, m_pPlayer->pev->angles[1] + 90.0, 0);
+#else
+					Vector vBombAngles = Vector(0, 0, 0);
+#endif
+					CGrenade *pBomb = CGrenade::ShootSatchelCharge(m_pPlayer->pev, m_pPlayer->pev->origin, vBombAngles);
 
 					MESSAGE_BEGIN(MSG_SPEC, SVC_DIRECTOR);
 						WRITE_BYTE(9);
