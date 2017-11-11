@@ -938,7 +938,7 @@ CGrenade *CGrenade::ShootTimed(entvars_t *pevOwner, Vector vecStart, Vector vecV
 }
 
 #ifdef REGAMEDLL_FIXES
-	constexpr float NEXT_DEFUSE_TIME = 0.033f;
+	constexpr float NEXT_DEFUSE_TIME = 0.25f;
 #else
 	constexpr float NEXT_DEFUSE_TIME = 0.5f;
 #endif
