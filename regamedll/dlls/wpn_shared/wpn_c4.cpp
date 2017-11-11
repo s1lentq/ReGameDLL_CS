@@ -318,6 +318,7 @@ void CC4::KeyValue(KeyValueData *pkvd)
 
 void CC4::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
+#ifndef REGAMEDLL_FIXES
 	if (m_pPlayer)
 		return;
 
@@ -350,6 +351,7 @@ void CC4::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, f
 		pPlayer->m_pentCurBombTarget = m_pentOldCurBombTarget;
 		SUB_Remove();
 	}
+#endif
 }
 
 float CC4::GetMaxSpeed()
