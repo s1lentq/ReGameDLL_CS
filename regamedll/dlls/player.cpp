@@ -1258,11 +1258,9 @@ void PackPlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 		// don't let weaponbox tilt.
 		pWeaponBox->pev->angles.x = 0;
 		pWeaponBox->pev->angles.z = 0;
-
 		pWeaponBox->pev->velocity = pPlayer->pev->velocity * 0.75f;
-
 		pWeaponBox->SetThink(&CWeaponBox::Kill);
-		pWeaponBox->pev->nextthink = gpGlobals->time + 300.0f;
+		pWeaponBox->pev->nextthink = gpGlobals->time + CGameRules::GetItemKillDelay();
 		pWeaponBox->PackWeapon(pItem); // now pack all of the items in the lists
 
 		// pack the ammo
@@ -2117,7 +2115,16 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 	{
 		m_bHasDefuser = false;
 		pev->body = 0;
+
+#ifdef REGAMEDLL_FIXES
+		CItemThighPack *pDefuser = (CItemThighPack *)CBaseEntity::Create("item_thighpack", pev->origin, g_vecZero, ENT(pev));
+
+		pDefuser->SetThink(&CBaseEntity::SUB_Remove);
+		pDefuser->pev->nextthink = gpGlobals->time + CGameRules::GetItemKillDelay();
+		pDefuser->pev->spawnflags |= SF_NORESPAWN;
+#else
 		GiveNamedItem("item_thighpack");
+#endif
 
 		MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev);
 			WRITE_BYTE(STATUSICON_HIDE);
@@ -3043,7 +3050,7 @@ CBaseEntity *EXT_FUNC CBasePlayer::__API_HOOK(DropShield)(bool bDeploy)
 	pShield->pev->angles.z = 0;
 	pShield->pev->velocity = gpGlobals->v_forward * 400;
 	pShield->SetThink(&CBaseEntity::SUB_Remove);
-	pShield->pev->nextthink = gpGlobals->time + 300;
+	pShield->pev->nextthink = gpGlobals->time + CGameRules::GetItemKillDelay();
 	pShield->SetCantBePickedUpByUser(this, 2.0);
 
 	return pShield;
@@ -7399,7 +7406,7 @@ CBaseEntity *EXT_FUNC CBasePlayer::__API_HOOK(DropPlayerItem)(const char *pszIte
 		pWeaponBox->pev->angles.x = 0;
 		pWeaponBox->pev->angles.z = 0;
 		pWeaponBox->SetThink(&CWeaponBox::Kill);
-		pWeaponBox->pev->nextthink = gpGlobals->time + 300;
+		pWeaponBox->pev->nextthink = gpGlobals->time + CGameRules::GetItemKillDelay();
 		pWeaponBox->PackWeapon(pWeapon);
 		pWeaponBox->pev->velocity = gpGlobals->v_forward * 300 + gpGlobals->v_forward * 100;
 
