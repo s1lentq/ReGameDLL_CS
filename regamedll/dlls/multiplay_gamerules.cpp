@@ -2005,18 +2005,12 @@ BOOL CHalfLifeMultiplay::IsThereABomber()
 
 BOOL CHalfLifeMultiplay::IsThereABomb()
 {
-	CGrenade *pC4 = nullptr;
-	CBaseEntity *pWeaponC4 = nullptr;
+	CGrenade *pBomb = nullptr;
 	bool bFoundBomb = false;
 
-	while ((pWeaponC4 = UTIL_FindEntityByClassname(pWeaponC4, "grenade")))
+	while ((pBomb = UTIL_FindEntityByClassname(pBomb, "grenade")))
 	{
-		if (!pWeaponC4)
-			continue;
-
-		pC4 = static_cast<CGrenade *>(pWeaponC4);
-
-		if (pC4->m_bIsC4)
+		if (pBomb->m_bIsC4)
 		{
 			bFoundBomb = true;
 			break;
@@ -2027,7 +2021,6 @@ BOOL CHalfLifeMultiplay::IsThereABomb()
 		return TRUE;
 
 	return FALSE;
-
 }
 
 BOOL CHalfLifeMultiplay::TeamFull(int team_id)
@@ -2891,7 +2884,7 @@ bool CHalfLifeMultiplay::VIP_NotEscaped(float tmDelay)
 
 bool CHalfLifeMultiplay::RoundOver(float tmDelay)
 {
-	EndRoundMessage("Round is Over!", ROUND_GAME_OVER);
+	EndRoundMessage("#Cstrike_Tutor_Round_Over", ROUND_GAME_OVER);
 	Broadcast("rounddraw");
 	TerminateRound(tmDelay, WINSTATUS_DRAW);
 	return true;

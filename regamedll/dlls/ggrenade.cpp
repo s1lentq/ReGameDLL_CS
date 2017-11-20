@@ -1375,7 +1375,7 @@ void CGrenade::C4Think()
 			m_pBombDefuser = nullptr;
 
 #ifdef REGAMEDLL_FIXES
-			pPlayer->SetProgressBarTime(0);			
+			pPlayer->SetProgressBarTime(0);
 #endif
 
 			// tell the bots someone has aborted defusing
