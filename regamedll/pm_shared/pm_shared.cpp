@@ -1851,8 +1851,6 @@ void PM_UnDuck()
 
 void PM_Duck()
 {
-	float_precision duckFraction;
-
 	int buttonsChanged = (pmove->oldbuttons ^ pmove->cmd.buttons);	// These buttons have changed this frame
 	int nButtonPressed =  buttonsChanged & pmove->cmd.buttons;		// The changed ones still down are "pressed"
 
@@ -1867,6 +1865,20 @@ void PM_Duck()
 	{
 		pmove->oldbuttons &= ~IN_DUCK;
 	}
+
+#ifdef REGAMEDLL_FIXES
+	// Prevent ducking if the iuser3 variable is contain PLAYER_PREVENT_DUCK
+	if ((pmove->iuser3 & PLAYER_PREVENT_DUCK) == PLAYER_PREVENT_DUCK)
+	{
+		// Try to unduck
+		if (pmove->flags & FL_DUCKING)
+		{
+			PM_UnDuck();
+		}
+
+		return;
+	}
+#endif
 
 	if (pmove->dead || !(pmove->cmd.buttons & IN_DUCK) && !pmove->bInDuck && !(pmove->flags & FL_DUCKING))
 	{
@@ -1883,10 +1895,8 @@ void PM_Duck()
 		{
 			// Use 1 second so super long jump will work
 			pmove->flDuckTime = 1000;
-			pmove->bInDuck = true;
+			pmove->bInDuck = TRUE;
 		}
-
-		float_precision time = Q_max(0.0, (1.0 - pmove->flDuckTime / 1000.0));
 
 		if (pmove->bInDuck)
 		{
@@ -1918,13 +1928,20 @@ void PM_Duck()
 			}
 			else
 			{
+				float_precision duckFraction = PM_VEC_VIEW;
+				float_precision time = (1.0 - pmove->flDuckTime / 1000.0);
+
+				// Calc parametric time
+				if (time >= 0.0) {
+					duckFraction = PM_SplineFraction(time, (1.0 / TIME_TO_DUCK));
+				}
+
 #ifdef REGAMEDLL_FIXES
-				float fMore = (pmove->_player_mins[1] - pmove->_player_mins[0]);
+				float fMore = (pmove->_player_mins[1][2] - pmove->_player_mins[0][2]);
 #else
 				float fMore = (PM_VEC_DUCK_HULL_MIN - PM_VEC_HULL_MIN);
 #endif
-				// Calc parametric time
-				duckFraction = PM_SplineFraction(time, (1.0 / TIME_TO_DUCK));
+
 				pmove->view_ofs[2] = ((PM_VEC_DUCK_VIEW - fMore) * duckFraction) + (PM_VEC_VIEW * (1 - duckFraction));
 			}
 		}

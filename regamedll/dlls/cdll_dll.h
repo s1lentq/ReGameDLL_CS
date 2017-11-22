@@ -69,6 +69,7 @@ const int DEFAULT_FOV      = 90;	// the default field of view
 #define PLAYER_FREEZE_TIME_OVER BIT(1)
 #define PLAYER_IN_BOMB_ZONE     BIT(2)
 #define PLAYER_HOLDING_SHIELD   BIT(3)
+#define PLAYER_PREVENT_DUCK     BIT(4)
 
 #define MENU_KEY_1 BIT(0)
 #define MENU_KEY_2 BIT(1)
