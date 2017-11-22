@@ -129,7 +129,7 @@ bool CCSBot::DiscontinuityJump(float ground, bool onlyJumpDown, bool mustJump)
 	if (m_isJumpCrouching)
 		return false;
 
-	float_precision dz = ground - GetFeetZ();
+	real_t dz = ground - GetFeetZ();
 
 	if (dz > StepHeight && !onlyJumpDown)
 	{

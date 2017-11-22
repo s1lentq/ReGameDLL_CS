@@ -159,8 +159,8 @@ typedef struct playermove_s
 	pmtrace_t touchindex[MAX_PHYSENTS];
 	char physinfo[MAX_PHYSINFO_STRING];	// Physics info string
 	struct movevars_s *movevars;
-	vec_t _player_mins[4][3];
-	vec_t _player_maxs[4][3];
+	vec_t player_mins[4][3];
+	vec_t player_maxs[4][3];
 
 	const char *(*PM_Info_ValueForKey)(const char *s, const char *key);
 	void (*PM_Particle)(float *origin, int color, float life, int zpos, int zvel);

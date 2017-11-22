@@ -13,18 +13,18 @@ void AngleVectors(const vec_t *angles, vec_t *forward, vec_t *right, vec_t *up)
 {
 	float sr, sp, sy, cr, cp;
 
-	float_precision cy;
-	float_precision angle;
+	real_t cy;
+	real_t angle;
 
-	angle = float_precision(angles[YAW] * (M_PI * 2 / 360));
+	angle = real_t(angles[YAW] * (M_PI * 2 / 360));
 	sy = Q_sin(angle);
 	cy = Q_cos(angle);
 
-	angle = float_precision(angles[PITCH] * (M_PI * 2 / 360));
+	angle = real_t(angles[PITCH] * (M_PI * 2 / 360));
 	sp = Q_sin(angle);
 	cp = Q_cos(angle);
 
-	angle = float_precision(angles[ROLL] * (M_PI * 2 / 360));
+	angle = real_t(angles[ROLL] * (M_PI * 2 / 360));
 	sr = Q_sin(angle);
 	cr = Q_cos(angle);
 
@@ -85,18 +85,18 @@ void AngleVectorsTranspose(const vec_t *angles, vec_t *forward, vec_t *right, ve
 
 void AngleMatrix(const vec_t *angles, float (*matrix)[4])
 {
-	float_precision angle;
-	float_precision  sr, sp, sy, cr, cp, cy;
+	real_t angle;
+	real_t  sr, sp, sy, cr, cp, cy;
 
-	angle = float_precision(angles[ROLL] * (M_PI * 2 / 360));
+	angle = real_t(angles[ROLL] * (M_PI * 2 / 360));
 	sy = Q_sin(angle);
 	cy = Q_cos(angle);
 
-	angle = float_precision(angles[YAW] * (M_PI * 2 / 360));
+	angle = real_t(angles[YAW] * (M_PI * 2 / 360));
 	sp = Q_sin(angle);
 	cp = Q_cos(angle);
 
-	angle = float_precision(angles[PITCH] * (M_PI * 2 / 360));
+	angle = real_t(angles[PITCH] * (M_PI * 2 / 360));
 	sr = Q_sin(angle);
 	cr = Q_cos(angle);
 
@@ -149,9 +149,8 @@ void AngleIMatrix(const vec_t *angles, float (*matrix)[4])
 
 void NormalizeAngles(float *angles)
 {
-	int i;
 	// Normalize angles
-	for (i = 0; i < 3; ++i)
+	for (int i = 0; i < 3; i++)
 	{
 		if (angles[i] > 180.0)
 		{
@@ -176,7 +175,7 @@ void InterpolateAngles(float *start, float *end, float *output, float frac)
 	NormalizeAngles(start);
 	NormalizeAngles(end);
 
-	for (i = 0; i < 3; ++i)
+	for (i = 0; i < 3; i++)
 	{
 		ang1 = start[i];
 		ang2 = end[i];
@@ -221,7 +220,7 @@ void VectorTransform(const vec_t *in1, float (*in2)[4], vec_t *out)
 
 int VectorCompare(const vec_t *v1, const vec_t *v2)
 {
-	for (int i = 0; i < 3; ++i)
+	for (int i = 0; i < 3; i++)
 	{
 		if (v1[i] != v2[i])
 			return 0;
@@ -237,7 +236,7 @@ void VectorMA(const vec_t *veca, float scale, const vec_t *vecb, vec_t *vecc)
 	vecc[2] = veca[2] + scale * vecb[2];
 }
 
-float_precision _DotProduct(const vec_t *v1, const vec_t *v2)
+real_t _DotProduct(const vec_t *v1, const vec_t *v2)
 {
 	return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
 }
@@ -270,11 +269,11 @@ void CrossProduct(const vec_t *v1, const vec_t *v2, vec_t *cross)
 	cross[2] = v1[0] * v2[1] - v1[1] * v2[0];
 }
 
-float_precision Length(const vec_t *v)
+real_t Length(const vec_t *v)
 {
-	float_precision length = 0.0f;
+	real_t length = 0.0f;
 
-	for (int i = 0; i < 3; ++i)
+	for (int i = 0; i < 3; i++)
 		length += v[i] * v[i];
 
 	return Q_sqrt(length);
@@ -287,12 +286,12 @@ float Distance(const vec_t *v1, const vec_t *v2)
 	return Length(d);
 }
 
-float_precision VectorNormalize(vec_t *v)
+real_t VectorNormalize(vec_t *v)
 {
-	float_precision length;
-	float_precision ilength;
+	real_t length;
+	real_t ilength;
 
-	length = Q_sqrt(float_precision(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]));
+	length = Q_sqrt(real_t(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]));
 
 	if (length)
 	{
@@ -324,7 +323,7 @@ int Q_log2(int val)
 {
 	int answer = 0;
 	while (val >>= 1)
-		++answer;
+		answer++;
 
 	return answer;
 }

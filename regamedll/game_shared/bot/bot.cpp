@@ -316,20 +316,20 @@ void CBot::ClientCommand(const char *cmd, const char *arg1, const char *arg2, co
 #endif
 
 // Returns TRUE if given entity is our enemy
-bool CBot::IsEnemy(CBaseEntity *ent) const
+bool CBot::IsEnemy(CBaseEntity *pEntity) const
 {
 	// only Players (real and AI) can be enemies
-	if (!ent->IsPlayer())
+	if (!pEntity->IsPlayer())
 		return false;
 
 	// corpses are no threat
-	if (!ent->IsAlive())
+	if (!pEntity->IsAlive())
 		return false;
 
-	CBasePlayer *player = static_cast<CBasePlayer *>(ent);
+	CBasePlayer *pPlayer = static_cast<CBasePlayer *>(pEntity);
 
 	// if they are on our team, they are our friends
-	if (BotRelationship(player) == BOT_TEAMMATE)
+	if (BotRelationship(pPlayer) == BOT_TEAMMATE)
 		return false;
 
 	// yep, we hate 'em
@@ -340,25 +340,25 @@ bool CBot::IsEnemy(CBaseEntity *ent) const
 int CBot::GetEnemiesRemaining() const
 {
 	int count = 0;
-	for (int i = 1; i <= gpGlobals->maxClients; ++i)
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{
-		CBaseEntity *player = UTIL_PlayerByIndex(i);
-		if (!player)
+		CBaseEntity *pPlayer = UTIL_PlayerByIndex(i);
+		if (!pPlayer)
 			continue;
 
-		if (FNullEnt(player->pev))
+		if (FNullEnt(pPlayer->pev))
 			continue;
 
-		if (FStrEq(STRING(player->pev->netname), ""))
+		if (FStrEq(STRING(pPlayer->pev->netname), ""))
 			continue;
 
-		if (!IsEnemy(player))
+		if (!IsEnemy(pPlayer))
 			continue;
 
-		if (!player->IsAlive())
+		if (!pPlayer->IsAlive())
 			continue;
 
-		++count;
+		count++;
 	}
 
 	return count;
@@ -368,28 +368,28 @@ int CBot::GetEnemiesRemaining() const
 int CBot::GetFriendsRemaining() const
 {
 	int count = 0;
-	for (int i = 1; i <= gpGlobals->maxClients; ++i)
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{
-		CBaseEntity *player = UTIL_PlayerByIndex(i);
-		if (!player)
+		CBaseEntity *pPlayer = UTIL_PlayerByIndex(i);
+		if (!pPlayer)
 			continue;
 
-		if (FNullEnt(player->pev))
+		if (FNullEnt(pPlayer->pev))
 			continue;
 
-		if (FStrEq(STRING(player->pev->netname), ""))
+		if (FStrEq(STRING(pPlayer->pev->netname), ""))
 			continue;
 
-		if (IsEnemy(player))
+		if (IsEnemy(pPlayer))
 			continue;
 
-		if (!player->IsAlive())
+		if (!pPlayer->IsAlive())
 			continue;
 
-		if (player == static_cast<CBaseEntity *>(const_cast<CBot *>(this)))
+		if (pPlayer == static_cast<CBaseEntity *>(const_cast<CBot *>(this)))
 			continue;
 
-		++count;
+		count++;
 	}
 
 	return count;
@@ -403,13 +403,13 @@ bool CBot::IsLocalPlayerWatchingMe() const
 
 	int myIndex = const_cast<CBot *>(this)->entindex();
 
-	CBasePlayer *player = UTIL_GetLocalPlayer();
-	if (!player)
+	CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
+	if (!pPlayer)
 		return false;
 
-	if (((player->pev->flags & FL_SPECTATOR) || player->m_iTeam == SPECTATOR) && player->pev->iuser2 == myIndex)
+	if (((pPlayer->pev->flags & FL_SPECTATOR) || pPlayer->m_iTeam == SPECTATOR) && pPlayer->pev->iuser2 == myIndex)
 	{
-		switch (player->pev->iuser1)
+		switch (pPlayer->pev->iuser1)
 		{
 		case OBS_CHASE_LOCKED:
 		case OBS_CHASE_FREE:

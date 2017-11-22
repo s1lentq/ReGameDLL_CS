@@ -88,7 +88,7 @@
 #define VEC_DUCK_VIEW		Vector(0, 0, 12)
 
 #define PRECACHE_SOUND_ARRAY(a) \
-	{ for (int i = 0; i < ARRAYSIZE(a); ++i) PRECACHE_SOUND((char *)a[i]); }
+	{ for (int i = 0; i < ARRAYSIZE(a); i++) PRECACHE_SOUND((char *)a[i]); }
 
 #define PLAYBACK_EVENT(flags, who, index)\
 		PLAYBACK_EVENT_FULL(flags, who, index, 0, (float *)&g_vecZero, (float *)&g_vecZero, 0.0, 0.0, 0, 0, 0, 0)
@@ -251,8 +251,8 @@ float UTIL_VecToYaw(const Vector &vec);
 void UTIL_SetOrigin(entvars_t *pev, const Vector &vecOrigin);
 void UTIL_ParticleEffect(const Vector &vecOrigin, const Vector &vecDirection, ULONG ulColor, ULONG ulCount);
 float UTIL_Approach(float target, float value, float speed);
-float_precision UTIL_ApproachAngle(float target, float value, float speed);
-float_precision UTIL_AngleDistance(float next, float cur);
+real_t UTIL_ApproachAngle(float target, float value, float speed);
+real_t UTIL_AngleDistance(float next, float cur);
 float UTIL_SplineFraction(float value, float scale);
 char *UTIL_VarArgs(char *format, ...);
 Vector UTIL_GetAimVector(edict_t *pent, float flSpeed);
@@ -289,7 +289,7 @@ void EntvarsKeyvalue(entvars_t *pev, KeyValueData *pkvd);
 char UTIL_TextureHit(TraceResult *ptr, Vector vecSrc, Vector vecEnd);
 int GetPlayerTeam(int index);
 bool UTIL_IsGame(const char *pszGameName);
-float_precision UTIL_GetPlayerGaitYaw(int playerIndex);
+real_t UTIL_GetPlayerGaitYaw(int playerIndex);
 int UTIL_ReadFlags(const char *c);
 bool UTIL_AreBotsAllowed();
 bool UTIL_AreHostagesImprov();
@@ -351,9 +351,9 @@ public:
 
 int UTIL_CountPlayersInBrushVolume(bool bOnlyAlive, CBaseEntity *pBrushEntity, int &playersInCount, int &playersOutCount, CPlayerInVolumeAdapter *pAdapter = nullptr);
 
-inline float_precision UTIL_FixupAngle(float_precision v)
+inline real_t UTIL_FixupAngle(real_t v)
 {
-	float_precision angle = v;
+	real_t angle = v;
 
 	while (angle < 0)
 		angle += 360;

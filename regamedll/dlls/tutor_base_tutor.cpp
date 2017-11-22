@@ -135,10 +135,10 @@ CBaseTutor::~CBaseTutor()
 	}
 }
 
-void CBaseTutor::OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
+void CBaseTutor::OnEvent(GameEventType event, CBaseEntity *pEntity, CBaseEntity *pOther)
 {
-	CallEventHandler(event, entity, other);
-	CheckForStateTransition(event, entity, other);
+	CallEventHandler(event, pEntity, pOther);
+	CheckForStateTransition(event, pEntity, pOther);
 }
 
 void CBaseTutor::ShotFired(Vector source, Vector target)
@@ -146,9 +146,9 @@ void CBaseTutor::ShotFired(Vector source, Vector target)
 	HandleShotFired(source, target);
 }
 
-void CBaseTutor::CheckForStateTransition(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
+void CBaseTutor::CheckForStateTransition(GameEventType event, CBaseEntity *pEntity, CBaseEntity *pOther)
 {
-	if (m_stateSystem->UpdateState(event, entity, other))
+	if (m_stateSystem->UpdateState(event, pEntity, pOther))
 	{
 		DisplayNewStateDescriptionToPlayer();
 	}
@@ -159,7 +159,7 @@ void CBaseTutor::StartFrame(float time)
 	TutorThink(time);
 }
 
-void CBaseTutor::DisplayMessageToPlayer(CBasePlayer *player, int id, const char *szMessage, TutorMessageEvent *event)
+void CBaseTutor::DisplayMessageToPlayer(CBasePlayer *pPlayer, int id, const char *szMessage, TutorMessageEvent *event)
 {
 	TutorMessage *definition;
 	int numArgs;
@@ -168,7 +168,7 @@ void CBaseTutor::DisplayMessageToPlayer(CBasePlayer *player, int id, const char 
 	numArgs = event->GetNumParameters();
 	definition = GetTutorMessageDefinition(event->GetID());
 
-	MESSAGE_BEGIN(MSG_ONE, gmsgTutorText, nullptr, player->pev);
+	MESSAGE_BEGIN(MSG_ONE, gmsgTutorText, nullptr, pPlayer->pev);
 		WRITE_STRING(szMessage);
 		WRITE_BYTE(numArgs);
 
@@ -182,7 +182,7 @@ void CBaseTutor::DisplayMessageToPlayer(CBasePlayer *player, int id, const char 
 		}
 
 		WRITE_SHORT(id);
-		WRITE_SHORT(player->IsAlive() == FALSE);
+		WRITE_SHORT(pPlayer->IsAlive() == FALSE);
 
 		if (definition)
 			WRITE_SHORT(definition->m_type);
@@ -199,13 +199,13 @@ void CBaseTutor::DisplayMessageToPlayer(CBasePlayer *player, int id, const char 
 			switch (definition->m_type)
 			{
 			case TUTORMESSAGETYPE_FRIEND_DEATH:
-				EMIT_SOUND_DYN(ENT(player->pev), CHAN_ITEM, "events/friend_died.wav", VOL_NORM, ATTN_NORM, 0, 120);
+				EMIT_SOUND_DYN(ENT(pPlayer->pev), CHAN_ITEM, "events/friend_died.wav", VOL_NORM, ATTN_NORM, 0, 120);
 				break;
 			case TUTORMESSAGETYPE_ENEMY_DEATH:
-				EMIT_SOUND_DYN(ENT(player->pev), CHAN_ITEM, "events/enemy_died.wav", VOL_NORM, ATTN_NORM, 0, 85);
+				EMIT_SOUND_DYN(ENT(pPlayer->pev), CHAN_ITEM, "events/enemy_died.wav", VOL_NORM, ATTN_NORM, 0, 85);
 				break;
 			default:
-				EMIT_SOUND_DYN(ENT(player->pev), CHAN_ITEM, "events/tutor_msg.wav", VOL_NORM, ATTN_NORM, 0, 100);
+				EMIT_SOUND_DYN(ENT(pPlayer->pev), CHAN_ITEM, "events/tutor_msg.wav", VOL_NORM, ATTN_NORM, 0, 100);
 				break;
 			}
 		}
@@ -217,9 +217,9 @@ void CBaseTutor::DisplayMessageToPlayer(CBasePlayer *player, int id, const char 
 	}
 }
 
-NOXREF void CBaseTutor::DrawLineToEntity(CBasePlayer *player, int entindex, int id)
+NOXREF void CBaseTutor::DrawLineToEntity(CBasePlayer *pPlayer, int entindex, int id)
 {
-	MESSAGE_BEGIN(MSG_ONE, gmsgTutorLine, nullptr, player->pev);
+	MESSAGE_BEGIN(MSG_ONE, gmsgTutorLine, nullptr, pPlayer->pev);
 		WRITE_SHORT(entindex);
 		WRITE_SHORT(id);
 	MESSAGE_END();
@@ -254,25 +254,25 @@ void CBaseTutor::CloseCurrentWindow()
 	}
 }
 
-void CBaseTutor::CalculatePathForObjective(CBaseEntity *player)
+void CBaseTutor::CalculatePathForObjective(CBaseEntity *pPlayer)
 {
 	;
 }
 
-bool CBaseTutor::IsEntityInViewOfPlayer(CBaseEntity *entity, CBasePlayer *player)
+bool CBaseTutor::IsEntityInViewOfPlayer(CBaseEntity *pEntity, CBasePlayer *pPlayer)
 {
-	if (!entity || !player)
+	if (!pEntity || !pPlayer)
 		return false;
 
-	if (cv_tutor_view_distance.value < (entity->pev->origin - player->pev->origin).Length())
+	if (cv_tutor_view_distance.value < (pEntity->pev->origin - pPlayer->pev->origin).Length())
 		return false;
 
-	if (player->FInViewCone(entity))
+	if (pPlayer->FInViewCone(pEntity))
 	{
 		TraceResult result;
-		Vector eye = player->pev->view_ofs + player->pev->origin;
+		Vector eye = pPlayer->pev->view_ofs + pPlayer->pev->origin;
 
-		UTIL_TraceLine(eye, entity->pev->origin, ignore_monsters, ignore_glass, player->pev->pContainingEntity, &result);
+		UTIL_TraceLine(eye, pEntity->pev->origin, ignore_monsters, ignore_glass, pPlayer->pev->pContainingEntity, &result);
 
 		if (result.flFraction == 1.0f)
 		{
@@ -283,20 +283,20 @@ bool CBaseTutor::IsEntityInViewOfPlayer(CBaseEntity *entity, CBasePlayer *player
 	return false;
 }
 
-bool CBaseTutor::IsPlayerLookingAtPosition(Vector *origin, CBasePlayer *player)
+bool CBaseTutor::IsPlayerLookingAtPosition(Vector *origin, CBasePlayer *pPlayer)
 {
-	if (!origin || !player)
+	if (!origin || !pPlayer)
 		return false;
 
-	if (cv_tutor_look_distance.value < (*origin - player->pev->origin).Length())
+	if (cv_tutor_look_distance.value < (*origin - pPlayer->pev->origin).Length())
 		return false;
 
-	if (player->IsLookingAtPosition(origin, cv_tutor_look_angle.value))
+	if (pPlayer->IsLookingAtPosition(origin, cv_tutor_look_angle.value))
 	{
 		TraceResult result;
-		Vector eye = player->pev->origin + player->pev->view_ofs;
+		Vector eye = pPlayer->pev->origin + pPlayer->pev->view_ofs;
 
-		UTIL_TraceLine(eye, *origin, ignore_monsters, ignore_glass, ENT(player->pev), &result);
+		UTIL_TraceLine(eye, *origin, ignore_monsters, ignore_glass, ENT(pPlayer->pev), &result);
 
 		if (result.flFraction == 1.0f)
 			return true;
@@ -305,22 +305,22 @@ bool CBaseTutor::IsPlayerLookingAtPosition(Vector *origin, CBasePlayer *player)
 	return false;
 }
 
-bool CBaseTutor::IsPlayerLookingAtEntity(CBaseEntity *entity, CBasePlayer *player)
+bool CBaseTutor::IsPlayerLookingAtEntity(CBaseEntity *pEntity, CBasePlayer *pPlayer)
 {
-	if (!entity || !player)
+	if (!pEntity || !pPlayer)
 		return false;
 
-	UTIL_MakeVectors(player->pev->v_angle);
+	UTIL_MakeVectors(pPlayer->pev->v_angle);
 
-	Vector srcVec = player->pev->view_ofs + player->pev->origin;
+	Vector srcVec = pPlayer->pev->view_ofs + pPlayer->pev->origin;
 	Vector destVec = gpGlobals->v_forward * cv_tutor_look_distance.value + srcVec;
 
 	TraceResult result;
-	UTIL_TraceLine(srcVec, destVec, dont_ignore_monsters, ignore_glass, ENT(player->pev), &result);
+	UTIL_TraceLine(srcVec, destVec, dont_ignore_monsters, ignore_glass, ENT(pPlayer->pev), &result);
 
 	if (result.pHit)
 	{
-		if (!FNullEnt(result.pHit) && CBaseEntity::Instance(result.pHit) == entity)
+		if (!FNullEnt(result.pHit) && CBaseEntity::Instance(result.pHit) == pEntity)
 		{
 			return true;
 		}
@@ -329,22 +329,21 @@ bool CBaseTutor::IsPlayerLookingAtEntity(CBaseEntity *entity, CBasePlayer *playe
 	return false;
 }
 
-bool CBaseTutor::IsBombsiteInViewOfPlayer(CBaseEntity *entity, CBasePlayer *player)
+bool CBaseTutor::IsBombsiteInViewOfPlayer(CBaseEntity *pEntity, CBasePlayer *pPlayer)
 {
-	if (!entity || !player)
+	if (!pEntity || !pPlayer)
 		return false;
 
-	Vector bombSiteCenter = (entity->pev->absmax + entity->pev->absmin) * 0.5f;
-
-	if (cv_tutor_view_distance.value < (bombSiteCenter - player->pev->origin).Length())
+	Vector bombSiteCenter = pEntity->Center();
+	if (cv_tutor_view_distance.value < (bombSiteCenter - pPlayer->pev->origin).Length())
 		return false;
 
-	if (player->FInViewCone(entity))
+	if (pPlayer->FInViewCone(pEntity))
 	{
 		TraceResult result;
-		Vector eye = player->pev->origin + player->pev->view_ofs;
+		Vector eye = pPlayer->pev->origin + pPlayer->pev->view_ofs;
 
-		UTIL_TraceLine(eye, bombSiteCenter, ignore_monsters, ignore_glass, ENT(player->pev), &result);
+		UTIL_TraceLine(eye, bombSiteCenter, ignore_monsters, ignore_glass, ENT(pPlayer->pev), &result);
 
 		if (result.flFraction == 1.0f)
 		{
@@ -355,12 +354,12 @@ bool CBaseTutor::IsBombsiteInViewOfPlayer(CBaseEntity *entity, CBasePlayer *play
 	return false;
 }
 
-bool CBaseTutor::IsEntityInBombsite(CBaseEntity *bombsite, CBaseEntity *entity)
+bool CBaseTutor::IsEntityInBombsite(CBaseEntity *bombsite, CBaseEntity *pEntity)
 {
-	if (!bombsite || !entity)
+	if (!bombsite || !pEntity)
 		return false;
 
-	return bombsite->Intersects(entity);
+	return bombsite->Intersects(pEntity);
 }
 
 bool CBaseTutor::DoMessagesHaveSameID(int id1, int id2)

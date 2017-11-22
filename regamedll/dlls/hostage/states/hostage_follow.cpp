@@ -65,7 +65,7 @@ void HostageFollowState::OnUpdate(CHostageImprov *improv)
 		return;
 	}
 
-	float_precision range = (m_leader->pev->origin - improv->GetCentroid()).Length();
+	real_t range = (m_leader->pev->origin - improv->GetCentroid()).Length();
 
 	const float maxPathLength = 3000.0f;
 	const float giveUpRange = 1000.0f;

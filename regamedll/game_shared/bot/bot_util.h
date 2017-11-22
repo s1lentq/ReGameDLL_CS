@@ -89,7 +89,7 @@ inline bool IsEntityValid(CBaseEntity *pEntity)
 	if (FStrEq(STRING(pEntity->pev->netname), ""))
 		return false;
 
-	if (pEntity->pev->flags & FL_DORMANT)
+	if (pEntity->IsDormant())
 		return false;
 
 	return true;
@@ -143,7 +143,7 @@ inline bool IsIntersecting2D(const Vector &startA, const Vector &endA, const Vec
 template <typename Functor>
 bool ForEachPlayer(Functor &func)
 {
-	for (int i = 1; i <= gpGlobals->maxClients; ++i)
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{
 		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 		if (!IsEntityValid(pPlayer))
@@ -193,5 +193,5 @@ void BotPrecache();
 void InitBotTrig();
 float BotCOS(float angle);
 float BotSIN(float angle);
-bool IsGameEventAudible(enum GameEventType event, CBaseEntity *entity, CBaseEntity *other, float *range, PriorityType *priority, bool *isHostile);
+bool IsGameEventAudible(enum GameEventType event, CBaseEntity *pEntity, CBaseEntity *pOther, float *range, PriorityType *priority, bool *isHostile);
 void HintMessageToAllPlayers(const char *message);

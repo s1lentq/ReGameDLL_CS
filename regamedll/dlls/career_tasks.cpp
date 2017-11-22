@@ -129,22 +129,22 @@ void CCareerTask::OnWeaponKill(int weaponId, int weaponClassId, bool headshot, b
 
 	if (m_rescuer)
 	{
-		int hostages_ = 0;
-		CHostage *hostageEntity = nullptr;
+		int hostagesCount = 0;
+		CHostage *pHostage = nullptr;
 
-		while ((hostageEntity = (CHostage *)UTIL_FindEntityByClassname(hostageEntity, "hostage_entity")))
+		while ((pHostage = UTIL_FindEntityByClassname(pHostage, "hostage_entity")))
 		{
-			if (!hostageEntity->IsAlive())
+			if (!pHostage->IsAlive())
 				continue;
 
-			if (!hostageEntity->IsFollowingSomeone())
+			if (!pHostage->IsFollowingSomeone())
 				continue;
 
-			if (hostageEntity->m_target == pVictim)
-				++hostages_;
+			if (pHostage->m_target == pVictim)
+				hostagesCount++;
 		}
 
-		if (!hostages_)
+		if (!hostagesCount)
 			return;
 	}
 
@@ -164,7 +164,7 @@ void CCareerTask::OnWeaponKill(int weaponId, int weaponClassId, bool headshot, b
 			return;
 	}
 
-	++m_eventsSeen;
+	m_eventsSeen++;
 	SendPartialNotification();
 }
 
@@ -189,7 +189,7 @@ void CCareerTask::OnWeaponInjury(int weaponId, int weaponClassId, bool attackerH
 			return;
 	}
 
-	++m_eventsSeen;
+	m_eventsSeen++;
 	SendPartialNotification();
 }
 
@@ -205,25 +205,23 @@ void CCareerTask::OnEvent(GameEventType event, CBasePlayer *pVictim, CBasePlayer
 
 		if (m_rescuer)
 		{
-			int hostages_ = 0;
-			CHostage *hostageEntity = nullptr;
+			int hostagesCount = 0;
+			CHostage *pHostage = nullptr;
 
-			while ((hostageEntity = (CHostage *)UTIL_FindEntityByClassname(hostageEntity, "hostage_entity")))
+			while ((pHostage = UTIL_FindEntityByClassname(pHostage, "hostage_entity")))
 			{
-				if (!hostageEntity->IsAlive())
+				if (!pHostage->IsAlive())
 					continue;
 
-				if (!hostageEntity->IsFollowingSomeone())
+				if (!pHostage->IsFollowingSomeone())
 					continue;
 
-				if (hostageEntity->m_target == pAttacker)
-					++hostages_;
+				if (pHostage->m_target == pAttacker)
+					hostagesCount++;
 			}
 
-			if (!hostages_)
-			{
+			if (!hostagesCount)
 				return;
-			}
 		}
 
 		if ((m_event != EVENT_KILL || (!m_weaponId && !m_weaponClassId))
@@ -234,35 +232,35 @@ void CCareerTask::OnEvent(GameEventType event, CBasePlayer *pVictim, CBasePlayer
 			{
 				if (!Q_strcmp(m_name, "defendhostages"))
 				{
-					int hostages_ = 0;
-					CHostage *hostageEntity = nullptr;
+					int hostagesCount = 0;
+					CHostage *pHostage = nullptr;
 
-					while ((hostageEntity = (CHostage *)UTIL_FindEntityByClassname(hostageEntity, "hostage_entity")))
+					while ((pHostage = UTIL_FindEntityByClassname(pHostage, "hostage_entity")))
 					{
-						if (hostageEntity->pev->takedamage != DAMAGE_YES && hostageEntity->pev->deadflag != DEAD_DEAD)
-							++hostages_;
+						if (pHostage->pev->takedamage != DAMAGE_YES && pHostage->pev->deadflag != DEAD_DEAD)
+							hostagesCount++;
 					}
 
-					if (!hostages_)
+					if (!hostagesCount)
 					{
-						++m_eventsSeen;
+						m_eventsSeen++;
 						SendPartialNotification();
 					}
 				}
 				else if (!Q_strcmp(m_name, "hostagessurvive"))
 				{
-					int hostages_ = 0;
-					CHostage *hostageEntity = nullptr;
+					int hostagesCount = 0;
+					CHostage *pHostage = nullptr;
 
-					while ((hostageEntity = (CHostage *)UTIL_FindEntityByClassname(hostageEntity, "hostage_entity")))
+					while ((pHostage = UTIL_FindEntityByClassname(pHostage, "hostage_entity")))
 					{
-						if (hostageEntity && hostageEntity->IsDead())
-							++hostages_;
+						if (pHostage && pHostage->IsDead())
+							hostagesCount++;
 					}
 
-					if (!hostages_)
+					if (!hostagesCount)
 					{
-						++m_eventsSeen;
+						m_eventsSeen++;
 						SendPartialNotification();
 					}
 				}
@@ -276,22 +274,22 @@ void CCareerTask::OnEvent(GameEventType event, CBasePlayer *pVictim, CBasePlayer
 				}
 				else if (IsTaskCompletableThisRound())
 				{
-					++m_eventsSeen;
+					m_eventsSeen++;
 					SendPartialNotification();
 				}
 			}
 			else
 			{
-				++m_eventsSeen;
+				m_eventsSeen++;
 				SendPartialNotification();
 			}
 		}
 	}
 
+	CBasePlayer *pLocalPlayer = UTIL_GetLocalPlayer();
 	if (event == m_event && !m_mustLive && m_eventsSeen >= m_eventsNeeded && IsTaskCompletableThisRound())
 	{
-		CBasePlayer *player = UTIL_GetLocalPlayer();
-		EMIT_SOUND(ENT(player->pev), CHAN_VOICE, "events/task_complete.wav", VOL_NORM, ATTN_NORM);
+		EMIT_SOUND(ENT(pLocalPlayer->pev), CHAN_VOICE, "events/task_complete.wav", VOL_NORM, ATTN_NORM);
 
 		m_isComplete = true;
 		MESSAGE_BEGIN(MSG_ALL, gmsgCZCareer);
@@ -309,7 +307,7 @@ void CCareerTask::OnEvent(GameEventType event, CBasePlayer *pVictim, CBasePlayer
 		if (m_event == EVENT_ROUND_WIN && !Q_strcmp(m_name, "winfast"))
 		{
 			TheCareerTasks->SetFinishedTaskTime(int(TheCareerTasks->GetRoundElapsedTime()));
-			UTIL_GetLocalPlayer()->SyncRoundTimer();
+			pLocalPlayer->SyncRoundTimer();
 		}
 	}
 	else if (event >= EVENT_ROUND_DRAW)
@@ -327,8 +325,7 @@ void CCareerTask::OnEvent(GameEventType event, CBasePlayer *pVictim, CBasePlayer
 		{
 			if (m_eventsSeen >= m_eventsNeeded && !m_diedThisRound && IsTaskCompletableThisRound())
 			{
-				CBasePlayer *player = UTIL_GetLocalPlayer();
-				EMIT_SOUND(ENT(player->pev), CHAN_VOICE, "events/task_complete.wav", VOL_NORM, ATTN_NORM);
+				EMIT_SOUND(ENT(pLocalPlayer->pev), CHAN_VOICE, "events/task_complete.wav", VOL_NORM, ATTN_NORM);
 
 				m_isComplete = true;
 				MESSAGE_BEGIN(MSG_ALL, gmsgCZCareer);
@@ -341,7 +338,7 @@ void CCareerTask::OnEvent(GameEventType event, CBasePlayer *pVictim, CBasePlayer
 				if (m_event == EVENT_ROUND_WIN && !Q_strcmp(m_name, "winfast"))
 				{
 					TheCareerTasks->SetFinishedTaskTime(int(TheCareerTasks->GetRoundElapsedTime()));
-					UTIL_GetLocalPlayer()->SyncRoundTimer();
+					pLocalPlayer->SyncRoundTimer();
 				}
 
 				if (TheTutor)
@@ -539,11 +536,11 @@ void CCareerTaskManager::HandleDeath(int team, CBasePlayer *pAttacker)
 	if (enemyTeam != team)
 		return;
 
-	for (int i = 1; i <= gpGlobals->maxClients; ++i)
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{
 		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 		if (pPlayer && pPlayer->m_iTeam == enemyTeam && pPlayer->IsAlive())
-			++numEnemies;
+			numEnemies++;
 	}
 
 	if (!numEnemies)
@@ -564,13 +561,13 @@ bool CCareerTaskManager::AreAllTasksComplete()
 
 int CCareerTaskManager::GetNumRemainingTasks()
 {
-	int nCount = 0;
+	int nTasksCount = 0;
 	for (auto task : m_tasks) {
 		if (task->IsComplete())
-			++nCount;
+			nTasksCount++;
 	}
 
-	return nCount;
+	return nTasksCount;
 }
 
 float CCareerTaskManager::GetRoundElapsedTime()

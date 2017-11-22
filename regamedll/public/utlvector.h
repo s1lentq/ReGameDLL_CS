@@ -439,7 +439,7 @@ inline int CUtlVector<T>::InsertMultipleBefore(int elem, int num, const T *pToIn
 	ShiftElementsRight(elem, num);
 
 	// Invoke default constructors
-	for (int i = 0; i < num; ++i)
+	for (int i = 0; i < num; i++)
 	{
 		Construct(&Element(elem+i));
 	}

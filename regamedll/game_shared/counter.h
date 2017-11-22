@@ -174,7 +174,7 @@ inline double CCounter::GetCurTime()
 	struct timeval tp;
 	static int secbase = 0;
 
-	gettimeofday(&tp, NULL);
+	gettimeofday(&tp, nullptr);
 
 	if (!secbase)
 	{

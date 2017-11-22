@@ -93,7 +93,7 @@ void CSGameState::Reset()
 }
 
 // Update game state based on events we have received
-void CSGameState::OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
+void CSGameState::OnEvent(GameEventType event, CBaseEntity *pEntity, CBaseEntity *pOther)
 {
 	switch (event)
 	{
@@ -103,9 +103,9 @@ void CSGameState::OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity 
 		SetBombState(PLANTED);
 
 		// Terrorists always know where the bomb is
-		if (m_owner->m_iTeam == TERRORIST && other)
+		if (m_owner->m_iTeam == TERRORIST && pOther)
 		{
-			UpdatePlantedBomb(&other->pev->origin);
+			UpdatePlantedBomb(&pOther->pev->origin);
 		}
 		break;
 	}

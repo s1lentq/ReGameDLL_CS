@@ -88,7 +88,7 @@ public:
 	void SetColor(int r, int g, int b) { pev->rendercolor.x = r; pev->rendercolor.y = g; pev->rendercolor.z = b; }
 	void SetBrightness(int brightness) { pev->renderamt = brightness; }
 
-	void AnimateAndDie(float_precision framerate)
+	void AnimateAndDie(real_t framerate)
 	{
 		SetThink(&CSprite::AnimateUntilDead);
 		pev->framerate = framerate;

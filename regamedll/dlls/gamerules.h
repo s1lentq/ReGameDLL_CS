@@ -651,9 +651,9 @@ public:
 	VFUNC void SetAccountRules(RewardRules rules, int amount) { m_rgRewardAccountRules[rules] = static_cast<RewardAccount>(amount); }
 	VFUNC RewardAccount GetAccountRules(RewardRules rules) const { return m_rgRewardAccountRules[rules]; }
 
-	void DisplayMaps(CBasePlayer *player, int iVote);
+	void DisplayMaps(CBasePlayer *pPlayer, int iVote);
 	void ResetAllMapVotes();
-	void ProcessMapVote(CBasePlayer *player, int iVote);
+	void ProcessMapVote(CBasePlayer *pPlayer, int iVote);
 
 	// BOMB MAP FUNCTIONS
 	VFUNC BOOL IsThereABomber();

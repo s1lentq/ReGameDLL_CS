@@ -58,20 +58,20 @@ void CCSBot::EscapeFromBomb()
 	SetState(&m_escapeFromBombState);
 }
 
-void CCSBot::Follow(CBasePlayer *player)
+void CCSBot::Follow(CBasePlayer *pPlayer)
 {
-	if (!player)
+	if (!pPlayer)
 		return;
 
 	// note when we began following
-	if (!m_isFollowing || m_leader != player)
+	if (!m_isFollowing || m_leader != pPlayer)
 		m_followTimestamp = gpGlobals->time;
 
 	m_isFollowing = true;
-	m_leader = player;
+	m_leader = pPlayer;
 
 	SetTask(FOLLOW);
-	m_followState.SetLeader(player);
+	m_followState.SetLeader(pPlayer);
 	SetState(&m_followState);
 }
 
@@ -98,9 +98,9 @@ void CCSBot::RescueHostages()
 }
 
 // Use the entity
-void CCSBot::UseEntity(CBaseEntity *entity)
+void CCSBot::UseEntity(CBaseEntity *pEntity)
 {
-	m_useEntityState.SetEntity(entity);
+	m_useEntityState.SetEntity(pEntity);
 	SetState(&m_useEntityState);
 }
 
@@ -322,9 +322,9 @@ void CCSBot::Attack(CBasePlayer *victim)
 	Vector idealAngle = UTIL_VecToAngles(toEnemy);
 
 #ifdef REGAMEDLL_FIXES
-	float_precision deltaYaw = float_precision(Q_abs(m_lookYaw - idealAngle.y));
+	real_t deltaYaw = real_t(Q_abs(m_lookYaw - idealAngle.y));
 #else
-	float_precision deltaYaw = float_precision(Q_abs(int64(m_lookYaw - idealAngle.y)));
+	real_t deltaYaw = real_t(Q_abs(int64(m_lookYaw - idealAngle.y)));
 #endif
 
 	while (deltaYaw > 180.0f)

@@ -14,7 +14,7 @@ CCSTutorStateSystem::~CCSTutorStateSystem()
 	}
 }
 
-bool CCSTutorStateSystem::UpdateState(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
+bool CCSTutorStateSystem::UpdateState(GameEventType event, CBaseEntity *pEntity, CBaseEntity *pOther)
 {
 	if (!m_currentState)
 	{
@@ -23,7 +23,7 @@ bool CCSTutorStateSystem::UpdateState(GameEventType event, CBaseEntity *entity, 
 
 	if (m_currentState)
 	{
-		TutorStateType nextStateType = m_currentState->CheckForStateTransition(event, entity, other);
+		TutorStateType nextStateType = m_currentState->CheckForStateTransition(event, pEntity, pOther);
 		if (nextStateType != TUTORSTATE_UNDEFINED)
 		{
 			delete m_currentState;
@@ -67,22 +67,22 @@ CCSTutorUndefinedState::~CCSTutorUndefinedState()
 	;
 }
 
-TutorStateType CCSTutorUndefinedState::CheckForStateTransition(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
+TutorStateType CCSTutorUndefinedState::CheckForStateTransition(GameEventType event, CBaseEntity *pEntity, CBaseEntity *pOther)
 {
 	if (event == EVENT_PLAYER_SPAWNED)
 	{
-		return HandlePlayerSpawned(entity, other);
+		return HandlePlayerSpawned(pEntity, pOther);
 	}
 
 	return TUTORSTATE_UNDEFINED;
 }
 
-TutorStateType CCSTutorUndefinedState::HandlePlayerSpawned(CBaseEntity *entity, CBaseEntity *other)
+TutorStateType CCSTutorUndefinedState::HandlePlayerSpawned(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
 	CBasePlayer *pLocalPlayer = UTIL_GetLocalPlayer();
 	if (pLocalPlayer)
 	{
-		CBasePlayer *pPlayer = static_cast<CBasePlayer *>(entity);
+		CBasePlayer *pPlayer = static_cast<CBasePlayer *>(pEntity);
 		if (pPlayer && pPlayer->IsPlayer() && pPlayer == pLocalPlayer)
 		{
 			return TUTORSTATE_WAITING_FOR_START;
@@ -107,14 +107,14 @@ CCSTutorWaitingForStartState::~CCSTutorWaitingForStartState()
 	;
 }
 
-TutorStateType CCSTutorWaitingForStartState::CheckForStateTransition(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
+TutorStateType CCSTutorWaitingForStartState::CheckForStateTransition(GameEventType event, CBaseEntity *pEntity, CBaseEntity *pOther)
 {
 	switch (event)
 	{
 	case EVENT_PLAYER_SPAWNED:
-		return HandlePlayerSpawned(entity, other);
+		return HandlePlayerSpawned(pEntity, pOther);
 	case EVENT_BUY_TIME_START:
-		return HandleBuyTimeStart(entity, other);
+		return HandleBuyTimeStart(pEntity, pOther);
 	}
 
 	return TUTORSTATE_UNDEFINED;
@@ -132,12 +132,12 @@ const char *CCSTutorWaitingForStartState::GetStateString()
 	return m_TutorStateStrings[m_type];
 }
 
-TutorStateType CCSTutorWaitingForStartState::HandlePlayerSpawned(CBaseEntity *entity, CBaseEntity *other)
+TutorStateType CCSTutorWaitingForStartState::HandlePlayerSpawned(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
 	CBasePlayer *pLocalPlayer = UTIL_GetLocalPlayer();
 	if (pLocalPlayer)
 	{
-		CBasePlayer *pPlayer = static_cast<CBasePlayer *>(entity);
+		CBasePlayer *pPlayer = static_cast<CBasePlayer *>(pEntity);
 		if (pPlayer && pPlayer->IsPlayer() && pPlayer == pLocalPlayer)
 		{
 			return TUTORSTATE_WAITING_FOR_START;
@@ -147,7 +147,7 @@ TutorStateType CCSTutorWaitingForStartState::HandlePlayerSpawned(CBaseEntity *en
 	return TUTORSTATE_UNDEFINED;
 }
 
-TutorStateType CCSTutorWaitingForStartState::HandleBuyTimeStart(CBaseEntity *entity, CBaseEntity *other)
+TutorStateType CCSTutorWaitingForStartState::HandleBuyTimeStart(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
 	return TUTORSTATE_BUYTIME;
 }
@@ -162,11 +162,11 @@ CCSTutorBuyMenuState::~CCSTutorBuyMenuState()
 	;
 }
 
-TutorStateType CCSTutorBuyMenuState::CheckForStateTransition(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
+TutorStateType CCSTutorBuyMenuState::CheckForStateTransition(GameEventType event, CBaseEntity *pEntity, CBaseEntity *pOther)
 {
 	if (event == EVENT_ROUND_START)
 	{
-		return HandleRoundStart(entity, other);
+		return HandleRoundStart(pEntity, pOther);
 	}
 
 	return TUTORSTATE_UNDEFINED;
@@ -184,7 +184,7 @@ const char *CCSTutorBuyMenuState::GetStateString()
 	return m_TutorStateStrings[m_type];
 }
 
-TutorStateType CCSTutorBuyMenuState::HandleRoundStart(CBaseEntity *entity, CBaseEntity *other)
+TutorStateType CCSTutorBuyMenuState::HandleRoundStart(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
 	return TUTORSTATE_WAITING_FOR_START;
 }

@@ -318,7 +318,6 @@ CBasePlayer *CBasePlayer::GetNextRadioRecipient(CBasePlayer *pStartPlayer)
 		else if (pPlayer)
 		{
 			int iSpecMode = IsObserver();
-
 			if (iSpecMode != OBS_CHASE_LOCKED && iSpecMode != OBS_CHASE_FREE && iSpecMode != OBS_IN_EYE)
 				continue;
 
@@ -386,9 +385,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Radio)(const char *msg_id, const char *msg
 			if (!FNullEnt(pPlayer->m_hObserverTarget))
 				continue;
 
-			CBasePlayer *pTarget = static_cast<CBasePlayer *>(CBaseEntity::Instance(pPlayer->m_hObserverTarget->pev));
-
-			if (pTarget && pTarget->m_iTeam == m_iTeam)
+			if (m_hObserverTarget && m_hObserverTarget->m_iTeam == m_iTeam)
 			{
 				bSend = true;
 			}
@@ -440,9 +437,9 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Radio)(const char *msg_id, const char *msg
 					MESSAGE_BEGIN(MSG_ONE, SVC_TEMPENTITY, nullptr, pEntity->pev);
 						WRITE_BYTE(TE_PLAYERATTACHMENT);
 						WRITE_BYTE(ENTINDEX(edict()));		// byte	(entity index of player)
-						WRITE_COORD(35);			// coord (vertical offset) ( attachment origin.z = player origin.z + vertical offset)
+						WRITE_COORD(35);					// coord (vertical offset) ( attachment origin.z = player origin.z + vertical offset)
 						WRITE_SHORT(g_sModelIndexRadio);	// short (model index) of tempent
-						WRITE_SHORT(15);			// short (life * 10 ) e.g. 40 = 4 seconds
+						WRITE_SHORT(15);					// short (life * 10 ) e.g. 40 = 4 seconds
 					MESSAGE_END();
 				}
 			}
@@ -814,7 +811,6 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 	BOOL bTeamAttack = FALSE;
 	int armorHit = 0;
 	CBasePlayer *pAttack = nullptr;
-	CBaseEntity *pAttacker = nullptr;
 
 	if (bitsDamageType & (DMG_EXPLOSION | DMG_BLAST | DMG_FALL))
 		m_LastHitGroup = HITGROUP_GENERIC;
@@ -865,8 +861,8 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 
 		if (pev->armorvalue != 0.0f && IsArmored(m_LastHitGroup))
 		{
-			float_precision flNew = flRatio * flDamage;
-			float_precision flArmor = (flDamage - flNew) * flBonus;
+			real_t flNew = flRatio * flDamage;
+			real_t flArmor = (flDamage - flNew) * flBonus;
 
 			// Does this use more armor than we have?
 			if (flArmor > pev->armorvalue)
@@ -894,7 +890,9 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 			Pain(m_LastHitGroup, true);
 		}
 		else
+		{
 			Pain(m_LastHitGroup, false);
+		}
 
 		m_lastDamageAmount = flDamage;
 
@@ -922,23 +920,12 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 				TheBots->OnEvent(EVENT_PLAYER_TOOK_DAMAGE, this, pAttack);
 			}
 
-			if (CSGameRules()->IsCareer())
+			if (TheCareerTasks)
 			{
-				for (int i = 1; i <= gpGlobals->maxClients; i++)
+				CBasePlayer *pPlayerAttacker = CBasePlayer::Instance(pevAttacker);
+				if (pPlayerAttacker && !pPlayerAttacker->IsBot() && pPlayerAttacker->m_iTeam != m_iTeam)
 				{
-					CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
-
-					if (!pPlayer)
-						continue;
-
-					bool killedByHumanPlayer = (!pPlayer->IsBot() && pPlayer->pev == pevAttacker && pPlayer->m_iTeam != m_iTeam);
-					if (killedByHumanPlayer)
-					{
-						if (TheCareerTasks)
-						{
-							TheCareerTasks->HandleEnemyInjury(GetWeaponName(pevInflictor, pevAttacker), pPlayer->HasShield(), pPlayer);
-						}
-					}
+					TheCareerTasks->HandleEnemyInjury(GetWeaponName(pevInflictor, pevAttacker), pPlayerAttacker->HasShield(), pPlayerAttacker);
 				}
 			}
 		}
@@ -981,7 +968,7 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 		return bTookDamage;
 	}
 
-	pAttacker = CBaseEntity::Instance(pevAttacker);
+	CBaseEntity *pAttacker = CBaseEntity::Instance(pevAttacker);
 
 	if (!g_pGameRules->FPlayerCanTakeDamage(this, pAttacker) && !FClassnameIs(pevInflictor, "grenade"))
 	{
@@ -1028,17 +1015,17 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 			bTeamAttack = TRUE;
 			if (gpGlobals->time > pAttack->m_flLastAttackedTeammate + 0.6f)
 			{
-				CBaseEntity *pBasePlayer = nullptr;
-				while ((pBasePlayer = UTIL_FindEntityByClassname(pBasePlayer, "player")))
+				CBaseEntity *pEntity = nullptr;
+				while ((pEntity = UTIL_FindEntityByClassname(pEntity, "player")))
 				{
-					if (FNullEnt(pBasePlayer->edict()))
+					if (FNullEnt(pEntity->edict()))
 						break;
 
-					CBasePlayer *basePlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pBasePlayer->pev);
+					CBasePlayer *pPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev);
 
-					if (basePlayer->m_iTeam == m_iTeam)
+					if (pPlayer->m_iTeam == m_iTeam)
 					{
-						ClientPrint(basePlayer->pev, HUD_PRINTTALK, "#Game_teammate_attack", STRING(pAttack->pev->netname));
+						ClientPrint(pPlayer->pev, HUD_PRINTTALK, "#Game_teammate_attack", STRING(pAttack->pev->netname));
 					}
 				}
 
@@ -1113,6 +1100,7 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 
 				m_flVelocityModifier = 0.65f;
 			}
+
 			SetAnimation(PLAYER_LARGE_FLINCH);
 		}
 	}
@@ -1124,8 +1112,8 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 	// armor doesn't protect against fall or drown damage!
 	if (pev->armorvalue != 0.0f && !(bitsDamageType & (DMG_DROWN | DMG_FALL)) && IsArmored(m_LastHitGroup))
 	{
-		float_precision flNew = flRatio * flDamage;
-		float_precision flArmor = (flDamage - flNew) * flBonus;
+		real_t flNew = flRatio * flDamage;
+		real_t flArmor = (flDamage - flNew) * flBonus;
 
 		// Does this use more armor than we have?
 		if (flArmor > pev->armorvalue)
@@ -1155,7 +1143,9 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 		Pain(m_LastHitGroup, true);
 	}
 	else
+	{
 		Pain(m_LastHitGroup, false);
+	}
 
 	LogAttack(pAttack, this, bTeamAttack, flDamage, armorHit, pev->health - flDamage, pev->armorvalue, GetWeaponName(pevInflictor, pevAttacker));
 
@@ -1170,23 +1160,12 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 			TheBots->OnEvent(EVENT_PLAYER_TOOK_DAMAGE, this, pAttack);
 		}
 
-		if (CSGameRules()->IsCareer())
+		if (TheCareerTasks)
 		{
-			for (int i = 1; i <= gpGlobals->maxClients; i++)
+			CBasePlayer *pPlayerAttacker = CBasePlayer::Instance(pevAttacker);
+			if (pPlayerAttacker && !pPlayerAttacker->IsBot() && pPlayerAttacker->m_iTeam != m_iTeam)
 			{
-				CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
-
-				if (!pPlayer)
-					continue;
-
-				bool killedByHumanPlayer = (!pPlayer->IsBot() && pPlayer->pev == pevAttacker && pPlayer->m_iTeam != m_iTeam);
-				if (killedByHumanPlayer)
-				{
-					if (TheCareerTasks)
-					{
-						TheCareerTasks->HandleEnemyInjury(GetWeaponName(pevInflictor, pevAttacker), pPlayer->HasShield(), pPlayer);
-					}
-				}
+				TheCareerTasks->HandleEnemyInjury(GetWeaponName(pevInflictor, pevAttacker), pPlayerAttacker->HasShield(), pPlayerAttacker);
 			}
 		}
 	}
@@ -1598,19 +1577,19 @@ void CBasePlayer::SetProgressBarTime(int time)
 		WRITE_SHORT(time);
 	MESSAGE_END();
 
-	CBaseEntity *pPlayer = nullptr;
-	int myIndex = entindex();
+	int playerIndex = entindex();
+	CBaseEntity *pEntity = nullptr;
 
-	while ((pPlayer = UTIL_FindEntityByClassname(pPlayer, "player")))
+	while ((pEntity = UTIL_FindEntityByClassname(pEntity, "player")))
 	{
-		if (FNullEnt(pPlayer->edict()))
+		if (FNullEnt(pEntity->edict()))
 			break;
 
-		CBasePlayer *player = GetClassPtr<CCSPlayer>((CBasePlayer *)pPlayer->pev);
+		CBasePlayer *pPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev);
 
-		if (player->IsObserver() == OBS_IN_EYE && player->pev->iuser2 == myIndex)
+		if (pPlayer->IsObserver() == OBS_IN_EYE && pPlayer->pev->iuser2 == playerIndex)
 		{
-			MESSAGE_BEGIN(MSG_ONE, gmsgBarTime, nullptr, player->pev);
+			MESSAGE_BEGIN(MSG_ONE, gmsgBarTime, nullptr, pPlayer->pev);
 				WRITE_SHORT(time);
 			MESSAGE_END();
 		}
@@ -1638,19 +1617,19 @@ void CBasePlayer::SetProgressBarTime2(int time, float timeElapsed)
 		WRITE_SHORT(iTimeElapsed);
 	MESSAGE_END();
 
-	CBaseEntity *pPlayer = nullptr;
-	int myIndex = entindex();
+	int playerIndex = entindex();
+	CBaseEntity *pEntity = nullptr;
 
-	while ((pPlayer = UTIL_FindEntityByClassname(pPlayer, "player")))
+	while ((pEntity = UTIL_FindEntityByClassname(pEntity, "player")))
 	{
-		if (FNullEnt(pPlayer->edict()))
+		if (FNullEnt(pEntity->edict()))
 			break;
 
-		CBasePlayer *player = GetClassPtr<CCSPlayer>((CBasePlayer *)pPlayer->pev);
+		CBasePlayer *pPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev);
 
-		if (player->IsObserver() == OBS_IN_EYE && player->pev->iuser2 == myIndex)
+		if (pPlayer->IsObserver() == OBS_IN_EYE && pPlayer->pev->iuser2 == playerIndex)
 		{
-			MESSAGE_BEGIN(MSG_ONE, gmsgBarTime2, nullptr, player->pev);
+			MESSAGE_BEGIN(MSG_ONE, gmsgBarTime2, nullptr, pPlayer->pev);
 				WRITE_SHORT(time);
 				WRITE_SHORT(iTimeElapsed);
 			MESSAGE_END();
@@ -1658,9 +1637,9 @@ void CBasePlayer::SetProgressBarTime2(int time, float timeElapsed)
 	}
 }
 
-void BuyZoneIcon_Set(CBasePlayer *player)
+void BuyZoneIcon_Set(CBasePlayer *pPlayer)
 {
-	MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, player->pev);
+	MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pPlayer->pev);
 		WRITE_BYTE(STATUSICON_SHOW);
 		WRITE_STRING("buyzone");
 		WRITE_BYTE(0);
@@ -1669,45 +1648,46 @@ void BuyZoneIcon_Set(CBasePlayer *player)
 	MESSAGE_END();
 }
 
-void BuyZoneIcon_Clear(CBasePlayer *player)
+void BuyZoneIcon_Clear(CBasePlayer *pPlayer)
 {
-	MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, player->pev);
+	MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pPlayer->pev);
 		WRITE_BYTE(STATUSICON_HIDE);
 		WRITE_STRING("buyzone");
 	MESSAGE_END();
 
-	if (player->m_iMenu >= Menu_Buy)
+	if (pPlayer->m_iMenu >= Menu_Buy)
 	{
-		if (player->m_iMenu <= Menu_BuyItem)
+		if (pPlayer->m_iMenu <= Menu_BuyItem)
 		{
-			CLIENT_COMMAND(ENT(player->pev), "slot10\n");
+			CLIENT_COMMAND(ENT(pPlayer->pev), "slot10\n");
 		}
-		else if (player->m_iMenu == Menu_ClientBuy)
+		else if (pPlayer->m_iMenu == Menu_ClientBuy)
 		{
-			MESSAGE_BEGIN(MSG_ONE, gmsgBuyClose, nullptr, player->pev);
+			MESSAGE_BEGIN(MSG_ONE, gmsgBuyClose, nullptr, pPlayer->pev);
 			MESSAGE_END();
 		}
 	}
 }
 
-void BombTargetFlash_Set(CBasePlayer *player)
+void BombTargetFlash_Set(CBasePlayer *pPlayer)
 {
-	if (player->m_bHasC4 && !(player->m_flDisplayHistory & DHF_IN_TARGET_ZONE))
+	if (pPlayer->m_bHasC4 && !(pPlayer->m_flDisplayHistory & DHF_IN_TARGET_ZONE))
 	{
-		player->m_flDisplayHistory |= DHF_IN_TARGET_ZONE;
-		player->HintMessage("#Hint_you_are_in_targetzone");
+		pPlayer->m_flDisplayHistory |= DHF_IN_TARGET_ZONE;
+		pPlayer->HintMessage("#Hint_you_are_in_targetzone");
 	}
-	player->SetBombIcon(TRUE);
+
+	pPlayer->SetBombIcon(TRUE);
 }
 
-void BombTargetFlash_Clear(CBasePlayer *player)
+void BombTargetFlash_Clear(CBasePlayer *pPlayer)
 {
-	player->SetBombIcon(FALSE);
+	pPlayer->SetBombIcon(FALSE);
 }
 
-void RescueZoneIcon_Set(CBasePlayer *player)
+void RescueZoneIcon_Set(CBasePlayer *pPlayer)
 {
-	MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, player->pev);
+	MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pPlayer->pev);
 		WRITE_BYTE(STATUSICON_SHOW);
 		WRITE_STRING("rescue");
 		WRITE_BYTE(0);
@@ -1715,37 +1695,37 @@ void RescueZoneIcon_Set(CBasePlayer *player)
 		WRITE_BYTE(0);
 	MESSAGE_END();
 
-	if (player->m_iTeam == CT && !(player->m_flDisplayHistory & DHF_IN_RESCUE_ZONE))
+	if (pPlayer->m_iTeam == CT && !(pPlayer->m_flDisplayHistory & DHF_IN_RESCUE_ZONE))
 	{
-		player->m_flDisplayHistory |= DHF_IN_RESCUE_ZONE;
-		player->HintMessage("#Hint_hostage_rescue_zone");
+		pPlayer->m_flDisplayHistory |= DHF_IN_RESCUE_ZONE;
+		pPlayer->HintMessage("#Hint_hostage_rescue_zone");
 	}
 }
 
-void RescueZoneIcon_Clear(CBasePlayer *player)
+void RescueZoneIcon_Clear(CBasePlayer *pPlayer)
 {
-	MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, player->pev);
+	MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pPlayer->pev);
 		WRITE_BYTE(STATUSICON_HIDE);
 		WRITE_STRING("rescue");
 	MESSAGE_END();
 
-	if (player->m_iMenu >= Menu_Buy)
+	if (pPlayer->m_iMenu >= Menu_Buy)
 	{
-		if (player->m_iMenu <= Menu_BuyItem)
+		if (pPlayer->m_iMenu <= Menu_BuyItem)
 		{
-			CLIENT_COMMAND(ENT(player->pev), "slot10\n");
+			CLIENT_COMMAND(ENT(pPlayer->pev), "slot10\n");
 		}
-		else if (player->m_iMenu == Menu_ClientBuy)
+		else if (pPlayer->m_iMenu == Menu_ClientBuy)
 		{
-			MESSAGE_BEGIN(MSG_ONE, gmsgBuyClose, nullptr, player->pev);
+			MESSAGE_BEGIN(MSG_ONE, gmsgBuyClose, nullptr, pPlayer->pev);
 			MESSAGE_END();
 		}
 	}
 }
 
-void EscapeZoneIcon_Set(CBasePlayer *player)
+void EscapeZoneIcon_Set(CBasePlayer *pPlayer)
 {
-	MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, player->pev);
+	MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pPlayer->pev);
 		WRITE_BYTE(STATUSICON_SHOW);
 		WRITE_STRING("escape");
 		WRITE_BYTE(0);
@@ -1753,40 +1733,40 @@ void EscapeZoneIcon_Set(CBasePlayer *player)
 		WRITE_BYTE(0);
 	MESSAGE_END();
 
-	if (player->m_iTeam == CT)
+	if (pPlayer->m_iTeam == CT)
 	{
-		if (!(player->m_flDisplayHistory & DHF_IN_ESCAPE_ZONE))
+		if (!(pPlayer->m_flDisplayHistory & DHF_IN_ESCAPE_ZONE))
 		{
-			player->m_flDisplayHistory |= DHF_IN_ESCAPE_ZONE;
-			player->HintMessage("#Hint_terrorist_escape_zone");
+			pPlayer->m_flDisplayHistory |= DHF_IN_ESCAPE_ZONE;
+			pPlayer->HintMessage("#Hint_terrorist_escape_zone");
 		}
 	}
 }
 
-void EscapeZoneIcon_Clear(CBasePlayer *player)
+void EscapeZoneIcon_Clear(CBasePlayer *pPlayer)
 {
-	MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, player->pev);
+	MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pPlayer->pev);
 		WRITE_BYTE(STATUSICON_HIDE);
 		WRITE_STRING("escape");
 	MESSAGE_END();
 
-	if (player->m_iMenu >= Menu_Buy)
+	if (pPlayer->m_iMenu >= Menu_Buy)
 	{
-		if (player->m_iMenu <= Menu_BuyItem)
+		if (pPlayer->m_iMenu <= Menu_BuyItem)
 		{
-			CLIENT_COMMAND(player->edict(), "slot10\n");
+			CLIENT_COMMAND(pPlayer->edict(), "slot10\n");
 		}
-		else if (player->m_iMenu == Menu_ClientBuy)
+		else if (pPlayer->m_iMenu == Menu_ClientBuy)
 		{
-			MESSAGE_BEGIN(MSG_ONE, gmsgBuyClose, nullptr, player->pev);
+			MESSAGE_BEGIN(MSG_ONE, gmsgBuyClose, nullptr, pPlayer->pev);
 			MESSAGE_END();
 		}
 	}
 }
 
-void VIP_SafetyZoneIcon_Set(CBasePlayer *player)
+void VIP_SafetyZoneIcon_Set(CBasePlayer *pPlayer)
 {
-	MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, player->pev);
+	MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pPlayer->pev);
 		WRITE_BYTE(STATUSICON_SHOW);
 		WRITE_STRING("vipsafety");
 		WRITE_BYTE(0);
@@ -1794,37 +1774,37 @@ void VIP_SafetyZoneIcon_Set(CBasePlayer *player)
 		WRITE_BYTE(0);
 	MESSAGE_END();
 
-	if (!(player->m_flDisplayHistory & DHF_IN_VIPSAFETY_ZONE))
+	if (!(pPlayer->m_flDisplayHistory & DHF_IN_VIPSAFETY_ZONE))
 	{
-		if (player->m_iTeam == CT)
+		if (pPlayer->m_iTeam == CT)
 		{
-			player->m_flDisplayHistory |= DHF_IN_VIPSAFETY_ZONE;
-			player->HintMessage("#Hint_ct_vip_zone", TRUE);
+			pPlayer->m_flDisplayHistory |= DHF_IN_VIPSAFETY_ZONE;
+			pPlayer->HintMessage("#Hint_ct_vip_zone", TRUE);
 		}
-		else if (player->m_iTeam == TERRORIST)
+		else if (pPlayer->m_iTeam == TERRORIST)
 		{
-			player->m_flDisplayHistory |= DHF_IN_VIPSAFETY_ZONE;
-			player->HintMessage("#Hint_terrorist_vip_zone", TRUE);
+			pPlayer->m_flDisplayHistory |= DHF_IN_VIPSAFETY_ZONE;
+			pPlayer->HintMessage("#Hint_terrorist_vip_zone", TRUE);
 		}
 	}
 }
 
-void VIP_SafetyZoneIcon_Clear(CBasePlayer *player)
+void VIP_SafetyZoneIcon_Clear(CBasePlayer *pPlayer)
 {
-	MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, player->pev);
+	MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pPlayer->pev);
 		WRITE_BYTE(STATUSICON_HIDE);
 		WRITE_STRING("vipsafety");
 	MESSAGE_END();
 
-	if (player->m_iMenu >= Menu_Buy)
+	if (pPlayer->m_iMenu >= Menu_Buy)
 	{
-		if (player->m_iMenu <= Menu_BuyItem)
+		if (pPlayer->m_iMenu <= Menu_BuyItem)
 		{
-			CLIENT_COMMAND(player->edict(), "slot10\n");
+			CLIENT_COMMAND(pPlayer->edict(), "slot10\n");
 		}
-		else if (player->m_iMenu == Menu_ClientBuy)
+		else if (pPlayer->m_iMenu == Menu_ClientBuy)
 		{
-			MESSAGE_BEGIN(MSG_ONE, gmsgBuyClose, nullptr, player->pev);
+			MESSAGE_BEGIN(MSG_ONE, gmsgBuyClose, nullptr, pPlayer->pev);
 			MESSAGE_END();
 		}
 	}
@@ -1832,7 +1812,7 @@ void VIP_SafetyZoneIcon_Clear(CBasePlayer *player)
 
 void CBasePlayer::SendFOV(int fov)
 {
-	pev->fov = float_precision(fov);
+	pev->fov = real_t(fov);
 	m_iClientFOV = fov;
 	m_iFOV = fov;
 
@@ -3704,24 +3684,24 @@ void EXT_FUNC CBasePlayer::__API_HOOK(StartObserver)(Vector &vecPosition, Vector
 	MESSAGE_END();
 }
 
-bool CanSeeUseable(CBasePlayer *me, CBaseEntity *entity)
+bool CanSeeUseable(CBasePlayer *me, CBaseEntity *pEntity)
 {
 	TraceResult result;
 	Vector eye = me->pev->origin + me->pev->view_ofs;
 
-	if (FClassnameIs(entity->pev, "hostage_entity"))
+	if (FClassnameIs(pEntity->pev, "hostage_entity"))
 	{
-		Vector chest = entity->pev->origin + Vector(0, 0, HalfHumanHeight);
-		Vector head  = entity->pev->origin + Vector(0, 0, HumanHeight * 0.9);
-		Vector knees = entity->pev->origin + Vector(0, 0, StepHeight);
+		Vector chest = pEntity->pev->origin + Vector(0, 0, HalfHumanHeight);
+		Vector head  = pEntity->pev->origin + Vector(0, 0, HumanHeight * 0.9);
+		Vector knees = pEntity->pev->origin + Vector(0, 0, StepHeight);
 
 		UTIL_TraceLine(eye, chest, ignore_monsters, ignore_glass, me->edict(), &result);
 		if (result.flFraction < 1.0f)
 		{
-			UTIL_TraceLine(eye, head, ignore_monsters, ignore_glass, entity->edict(), &result);
+			UTIL_TraceLine(eye, head, ignore_monsters, ignore_glass, pEntity->edict(), &result);
 			if (result.flFraction < 1.0f)
 			{
-				UTIL_TraceLine(eye, knees, ignore_monsters, ignore_glass, entity->edict(), &result);
+				UTIL_TraceLine(eye, knees, ignore_monsters, ignore_glass, pEntity->edict(), &result);
 				if (result.flFraction < 1.0f)
 				{
 					return false;
@@ -4184,7 +4164,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 		// Slow down the player based on the velocity modifier
 		if (m_flVelocityModifier < 1.0f)
 		{
-			float_precision modvel = m_flVelocityModifier + 0.01;
+			real_t modvel = m_flVelocityModifier + 0.01;
 
 			m_flVelocityModifier = modvel;
 			pev->velocity = pev->velocity * modvel;
@@ -4199,7 +4179,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 		// check every 5 seconds
 		m_flIdleCheckTime = gpGlobals->time + 5.0;
 
-		float_precision flLastMove = gpGlobals->time - m_fLastMovement;
+		real_t flLastMove = gpGlobals->time - m_fLastMovement;
 
 		//check if this player has been inactive for 2 rounds straight
 		if (flLastMove > CSGameRules()->m_fMaxIdlePeriod)
@@ -5455,10 +5435,10 @@ void CBasePlayer::SetScoreboardAttributes(CBasePlayer *destination)
 
 	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{
-		CBasePlayer *player = UTIL_PlayerByIndex(i);
+		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
-		if (player && !FNullEnt(player->edict()))
-			SetScoreboardAttributes(player);
+		if (pPlayer && !FNullEnt(pPlayer->edict()))
+			SetScoreboardAttributes(pPlayer);
 	}
 }
 
@@ -6157,22 +6137,22 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 	}
 }
 
-void OLD_CheckBuyZone(CBasePlayer *player)
+void OLD_CheckBuyZone(CBasePlayer *pPlayer)
 {
 	const char *pszSpawnClass = nullptr;
 
 #ifdef REGAMEDLL_FIXES
-	if (!CSGameRules()->CanPlayerBuy(player))
+	if (!CSGameRules()->CanPlayerBuy(pPlayer))
 	{
 		return;
 	}
 #endif
 
-	if (player->m_iTeam == TERRORIST)
+	if (pPlayer->m_iTeam == TERRORIST)
 	{
 		pszSpawnClass = "info_player_deathmatch";
 	}
-	else if (player->m_iTeam == CT)
+	else if (pPlayer->m_iTeam == CT)
 	{
 		pszSpawnClass = "info_player_start";
 	}
@@ -6182,9 +6162,9 @@ void OLD_CheckBuyZone(CBasePlayer *player)
 		CBaseEntity *pSpot = nullptr;
 		while ((pSpot = UTIL_FindEntityByClassname(pSpot, pszSpawnClass)))
 		{
-			if ((pSpot->pev->origin - player->pev->origin).Length() < 200.0f)
+			if ((pSpot->pev->origin - pPlayer->pev->origin).Length() < 200.0f)
 			{
-				player->m_signals.Signal(SIGNAL_BUY);
+				pPlayer->m_signals.Signal(SIGNAL_BUY);
 #ifdef REGAMEDLL_FIXES
 				break;
 #endif
@@ -6193,14 +6173,14 @@ void OLD_CheckBuyZone(CBasePlayer *player)
 	}
 }
 
-void OLD_CheckBombTarget(CBasePlayer *player)
+void OLD_CheckBombTarget(CBasePlayer *pPlayer)
 {
 	CBaseEntity *pSpot = nullptr;
 	while ((pSpot = UTIL_FindEntityByClassname(pSpot, "info_bomb_target")))
 	{
-		if ((pSpot->pev->origin - player->pev->origin).Length() <= 256.0f)
+		if ((pSpot->pev->origin - pPlayer->pev->origin).Length() <= 256.0f)
 		{
-			player->m_signals.Signal(SIGNAL_BOMB);
+			pPlayer->m_signals.Signal(SIGNAL_BOMB);
 #ifdef REGAMEDLL_FIXES
 			break;
 #endif
@@ -6208,14 +6188,14 @@ void OLD_CheckBombTarget(CBasePlayer *player)
 	}
 }
 
-void OLD_CheckRescueZone(CBasePlayer *player)
+void OLD_CheckRescueZone(CBasePlayer *pPlayer)
 {
 	CBaseEntity *pSpot = nullptr;
 	while ((pSpot = UTIL_FindEntityByClassname(pSpot, "info_hostage_rescue")))
 	{
-		if ((pSpot->pev->origin - player->pev->origin).Length() <= 256.0f)
+		if ((pSpot->pev->origin - pPlayer->pev->origin).Length() <= 256.0f)
 		{
-			player->m_signals.Signal(SIGNAL_RESCUE);
+			pPlayer->m_signals.Signal(SIGNAL_RESCUE);
 #ifdef REGAMEDLL_FIXES
 			break;
 #endif
@@ -6552,25 +6532,25 @@ void CBasePlayer::SendHostagePos()
 
 void CBasePlayer::SendHostageIcons()
 {
-	CBaseEntity *pHostage = nullptr;
-	int numHostages = 0;
-	char buf[16];
-
 	if (!AreRunningCZero())
 		return;
+
+	int hostagesCount = 0;
+	CBaseEntity *pHostage = nullptr;
 
 	while ((pHostage = UTIL_FindEntityByClassname(pHostage, "hostage_entity")))
 	{
 		if (pHostage->IsAlive())
-			numHostages++;
+			hostagesCount++;
 	}
 
-	if (numHostages > MAX_HOSTAGE_ICON)
-		numHostages = MAX_HOSTAGE_ICON;
+	if (hostagesCount > MAX_HOSTAGE_ICON)
+		hostagesCount = MAX_HOSTAGE_ICON;
 
-	Q_snprintf(buf, ARRAYSIZE(buf), "hostage%d", numHostages);
+	char buf[16];
+	Q_snprintf(buf, ARRAYSIZE(buf), "hostage%d", hostagesCount);
 
-	if (numHostages)
+	if (hostagesCount)
 	{
 		MESSAGE_BEGIN(MSG_ONE, gmsgScenarioIcon, nullptr, pev);
 			WRITE_BYTE(1);		// active
@@ -7778,7 +7758,7 @@ void CStripWeapons::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE 
 
 void CBasePlayer::StudioEstimateGait()
 {
-	float_precision dt;
+	real_t dt;
 	Vector est_velocity;
 
 	dt = gpGlobals->frametime;
@@ -7810,8 +7790,8 @@ void CBasePlayer::StudioEstimateGait()
 
 	if (!est_velocity.x && !est_velocity.y)
 	{
-		float_precision flYawDiff = pev->angles.y - m_flGaityaw;
-		float_precision flYaw = Q_fmod(flYawDiff, 360);
+		real_t flYawDiff = pev->angles.y - m_flGaityaw;
+		real_t flYaw = Q_fmod(flYawDiff, 360);
 
 		flYawDiff = flYawDiff - int64(flYawDiff / 360) * 360;
 
@@ -7839,9 +7819,9 @@ void CBasePlayer::StudioEstimateGait()
 			flYawDiff *= dt;
 
 #ifdef REGAMEDLL_FIXES
-		if (float_precision(Q_abs(flYawDiff)) < 0.1f)
+		if (real_t(Q_abs(flYawDiff)) < 0.1f)
 #else
-		if (float_precision(Q_abs(int64(flYawDiff))) < 0.1f)
+		if (real_t(Q_abs(int64(flYawDiff))) < 0.1f)
 #endif
 			flYawDiff = 0;
 
@@ -7851,7 +7831,7 @@ void CBasePlayer::StudioEstimateGait()
 	}
 	else
 	{
-		m_flGaityaw = (Q_atan2(float_precision(est_velocity.y), float_precision(est_velocity.x)) * 180 / M_PI);
+		m_flGaityaw = (Q_atan2(real_t(est_velocity.y), real_t(est_velocity.x)) * 180 / M_PI);
 
 		if (m_flGaityaw > 180)
 			m_flGaityaw = 180;
@@ -7901,8 +7881,8 @@ void CBasePlayer::CalculateYawBlend()
 	float dt;
 	float maxyaw = 255.0f;
 
-	float_precision flYaw;		// view direction relative to movement
-	float_precision blend_yaw;
+	real_t flYaw;		// view direction relative to movement
+	real_t blend_yaw;
 
 	dt = gpGlobals->frametime;
 
@@ -7915,7 +7895,7 @@ void CBasePlayer::CalculateYawBlend()
 	StudioEstimateGait();
 
 	// calc side to side turning
-	flYaw = Q_fmod(float_precision(pev->angles.y - m_flGaityaw), 360);
+	flYaw = Q_fmod(real_t(pev->angles.y - m_flGaityaw), 360);
 
 	if (flYaw < -180)
 		flYaw += 360;
@@ -7956,7 +7936,7 @@ void CBasePlayer::CalculateYawBlend()
 void CBasePlayer::StudioProcessGait()
 {
 	mstudioseqdesc_t *pseqdesc;
-	float_precision dt = gpGlobals->frametime;
+	real_t dt = gpGlobals->frametime;
 
 	if (dt < 0.0)
 		dt = 0;
@@ -7994,7 +7974,7 @@ void CBasePlayer::ResetStamina()
 	pev->fuser2 = 0;
 }
 
-float_precision GetPlayerPitch(const edict_t *pEdict)
+real_t GetPlayerPitch(const edict_t *pEdict)
 {
 	if (!pEdict)
 		return 0.0f;
@@ -8008,7 +7988,7 @@ float_precision GetPlayerPitch(const edict_t *pEdict)
 	return pPlayer->m_flPitch;
 }
 
-float_precision GetPlayerYaw(const edict_t *pEdict)
+real_t GetPlayerYaw(const edict_t *pEdict)
 {
 	if (!pEdict)
 		return 0.0f;
@@ -8806,6 +8786,7 @@ void CBasePlayer::ParseAutoBuyString(const char *string, bool &boughtPrimary, bo
 				command[i] = '\0';
 				break;
 			}
+
 			i++;
 		}
 
@@ -9165,21 +9146,21 @@ void CBasePlayer::UpdateLocation(bool forceUpdate)
 
 	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{
-		CBasePlayer *player = UTIL_PlayerByIndex(i);
+		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
-		if (!player)
+		if (!pPlayer)
 			continue;
 
-		if (player->m_iTeam == m_iTeam || player->m_iTeam == SPECTATOR)
+		if (pPlayer->m_iTeam == m_iTeam || pPlayer->m_iTeam == SPECTATOR)
 		{
-			MESSAGE_BEGIN(MSG_ONE, gmsgLocation, nullptr, player->edict());
+			MESSAGE_BEGIN(MSG_ONE, gmsgLocation, nullptr, pPlayer->edict());
 				WRITE_BYTE(entindex());
 				WRITE_STRING(m_lastLocation);
 			MESSAGE_END();
 		}
 		else if (forceUpdate)
 		{
-			MESSAGE_BEGIN(MSG_ONE, gmsgLocation, nullptr, player->edict());
+			MESSAGE_BEGIN(MSG_ONE, gmsgLocation, nullptr, pPlayer->edict());
 				WRITE_BYTE(entindex());
 				WRITE_STRING("");
 			MESSAGE_END();

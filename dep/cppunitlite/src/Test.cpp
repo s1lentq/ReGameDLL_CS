@@ -1,5 +1,3 @@
-
-
 #include "cppunitlite/Test.h"
 #include "cppunitlite/TestRegistry.h"
 #include "cppunitlite/Failure.h"
@@ -7,20 +5,17 @@
 #include <exception>
 #include <sstream>
 
-
 Test::Test (const char* testName, const char* testGroup, int timeout) 
 	: name_ (testName), group_ (testGroup), timeout_(timeout)
 {
-	next_ = NULL;
+	next_ = nullptr;
 	TestRegistry::addTest(this);
 }
-
 
 Test *Test::getNext() const
 {
 	return next_;
 }
-
 
 void Test::setNext(Test *test)
 {	

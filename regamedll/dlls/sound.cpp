@@ -872,7 +872,7 @@ BOOL FEnvSoundInRange(entvars_t *pev, entvars_t *pevTarget, float *pflRange)
 	Vector vecSpot1 = pev->origin + pev->view_ofs;
 	Vector vecSpot2 = pevTarget->origin + pevTarget->view_ofs;
 	Vector vecRange;
-	float_precision flRange;
+	real_t flRange;
 	TraceResult tr;
 
 	UTIL_TraceLine(vecSpot1, vecSpot2, ignore_monsters, ENT(pev), &tr);
@@ -1017,11 +1017,11 @@ void USENTENCEG_InitLRU(unsigned char *plru, int count)
 	if (count > MAX_SENTENCE_LRU)
 		count = MAX_SENTENCE_LRU;
 
-	for (i = 0; i < count; ++i)
+	for (i = 0; i < count; i++)
 		plru[i] = (unsigned char)i;
 
 	// randomize array
-	for (i = 0; i < (count * 4); ++i)
+	for (i = 0; i < (count * 4); i++)
 	{
 		j = RANDOM_LONG(0, count - 1);
 		k = RANDOM_LONG(0, count - 1);
@@ -1103,7 +1103,7 @@ int USENTENCEG_Pick(int isentenceg, char *szfound)
 
 	while (!ffound)
 	{
-		for (i = 0; i < count; ++i)
+		for (i = 0; i < count; i++)
 		{
 			if (plru[i] != 0xFF)
 			{
@@ -1594,7 +1594,7 @@ char TEXTURETYPE_Find(char *name)
 {
 	// CONSIDER: pre-sort texture names and perform faster binary search here
 
-	for (int i = 0; i < gcTextures; ++i)
+	for (int i = 0; i < gcTextures; i++)
 	{
 		if (!Q_strnicmp(name, &(grgszTextureName[i][0]), MAX_TEXTURENAME_LENGHT - 1))
 			return (grgchTextureType[i]);

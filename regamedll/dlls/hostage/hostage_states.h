@@ -181,7 +181,7 @@ public:
 	virtual void UpdateStationaryAnimation(CHostageImprov *improv);
 
 public:
-	void SetLeader(CBasePlayer *leader) { m_leader = leader; }
+	void SetLeader(CBasePlayer *pLeader) { m_leader = pLeader; }
 	CBasePlayer *GetLeader() const { return m_leader; }
 
 private:

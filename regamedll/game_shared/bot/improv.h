@@ -83,7 +83,7 @@ public:
 	virtual void StartLadder(const CNavLadder *ladder, enum NavTraverseType how, const Vector *approachPos, const Vector *departPos) = 0;					// invoked when a ladder is encountered while following a path
 
 	virtual bool TraverseLadder(const CNavLadder *ladder, enum NavTraverseType how, const Vector *approachPos, const Vector *departPos, float deltaT) = 0;	// traverse given ladder
-	virtual bool GetSimpleGroundHeightWithFloor(const Vector *pos, float *height, Vector *normal = NULL) = 0;												// find "simple" ground height, treating current nav area as part of the floor
+	virtual bool GetSimpleGroundHeightWithFloor(const Vector *pos, float *height, Vector *normal = nullptr) = 0;											// find "simple" ground height, treating current nav area as part of the floor
 
 	virtual void Run() = 0;
 	virtual void Walk() = 0;
@@ -109,16 +109,16 @@ public:
 	virtual bool CanRun() const = 0;
 	virtual bool CanCrouch() const = 0;
 	virtual bool CanJump() const = 0;
-	virtual bool IsVisible(const Vector &pos, bool testFOV = false) const = 0;							// return true if improv can see position
-	virtual bool IsPlayerLookingAtMe(CBasePlayer *other, float cosTolerance = 0.95f) const = 0;			// return true if 'other' is looking right at me
-	virtual CBasePlayer *IsAnyPlayerLookingAtMe(int team = 0, float cosTolerance = 0.95f) const = 0;	// return player on given team that is looking right at me (team == 0 means any team), NULL otherwise
+	virtual bool IsVisible(const Vector &pos, bool testFOV = false) const = 0;								// return true if improv can see position
+	virtual bool IsPlayerLookingAtMe(CBasePlayer *pOther, float cosTolerance = 0.95f) const = 0;			// return true if 'other' is looking right at me
+	virtual CBasePlayer *IsAnyPlayerLookingAtMe(int team = 0, float cosTolerance = 0.95f) const = 0;		// return player on given team that is looking right at me (team == 0 means any team), NULL otherwise
 
-	virtual CBasePlayer *GetClosestPlayerByTravelDistance(int team = 0, float *range = NULL) const = 0;	// return actual travel distance to closest player on given team (team == 0 means any team)
+	virtual CBasePlayer *GetClosestPlayerByTravelDistance(int team = 0, float *range = nullptr) const = 0;	// return actual travel distance to closest player on given team (team == 0 means any team)
 	virtual CNavArea *GetLastKnownArea() const = 0;
 
 	virtual void OnUpdate(float deltaT) = 0;								// a less frequent, full update 'tick'
 	virtual void OnUpkeep(float deltaT) = 0;								// a frequent, lightweight update 'tick'
 	virtual void OnReset() = 0;												// reset improv to initial state
-	virtual void OnGameEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *other) = 0;		// invoked when an event occurs in the game
-	virtual void OnTouch(CBaseEntity *other) = 0;													// "other" has touched us
+	virtual void OnGameEvent(GameEventType event, CBaseEntity *pEntity, CBaseEntity *pOther) = 0;	// invoked when an event occurs in the game
+	virtual void OnTouch(CBaseEntity *pOther) = 0;													// "other" has touched us
 };

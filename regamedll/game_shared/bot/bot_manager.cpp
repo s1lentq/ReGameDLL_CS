@@ -216,41 +216,41 @@ const char *CBotManager::GetNavMapFilename() const
 // Invoked when given player does given event (some events have NULL player).
 // Events are propogated to all bots.
 // TODO: This has become the game-wide event dispatcher. We should restructure this.
-void CBotManager::OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
+void CBotManager::OnEvent(GameEventType event, CBaseEntity *pEntity, CBaseEntity *pOther)
 {
 	// propogate event to all bots
 	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{
-		CBasePlayer *player = UTIL_PlayerByIndex(i);
+		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
-		if (player == NULL)
+		if (!pPlayer)
 			continue;
 
-		if (FNullEnt(player->pev))
+		if (FNullEnt(pPlayer->pev))
 			continue;
 
-		if (FStrEq(STRING(player->pev->netname), ""))
+		if (FStrEq(STRING(pPlayer->pev->netname), ""))
 			continue;
 
-		if (!player->IsBot())
+		if (!pPlayer->IsBot())
 			continue;
 
 		// do not send self-generated event
-		if (entity == player)
+		if (pEntity == pPlayer)
 			continue;
 
-		CBot *bot = static_cast<CBot *>(player);
-		bot->OnEvent(event, entity, other);
+		CBot *bot = static_cast<CBot *>(pPlayer);
+		bot->OnEvent(event, pEntity, pOther);
 	}
 
-	if (TheTutor != NULL)
+	if (TheTutor)
 	{
-		TheTutor->OnEvent(event, entity, other);
+		TheTutor->OnEvent(event, pEntity, pOther);
 	}
 
-	if (g_pHostages != NULL)
+	if (g_pHostages)
 	{
-		g_pHostages->OnEvent(event, entity, other);
+		g_pHostages->OnEvent(event, pEntity, pOther);
 	}
 }
 
@@ -265,14 +265,12 @@ void CBotManager::AddGrenade(int type, CGrenade *grenade)
 // The grenade entity in the world is going away
 void CBotManager::RemoveGrenade(CGrenade *grenade)
 {
-	for (auto iter = m_activeGrenadeList.begin(); iter != m_activeGrenadeList.end(); iter++)
+	for (auto ag : m_activeGrenadeList)
 	{
-		ActiveGrenade *ag = (*iter);
-
 		if (ag->IsEntity(grenade))
 		{
 			ag->OnEntityGone();
-			return;
+			break;
 		}
 	}
 }

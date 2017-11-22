@@ -34,7 +34,7 @@ public:
 	CCSTutorStateSystem();
 
 	virtual ~CCSTutorStateSystem();
-	virtual bool UpdateState(GameEventType event, CBaseEntity *entity, CBaseEntity *other);
+	virtual bool UpdateState(GameEventType event, CBaseEntity *pEntity, CBaseEntity *pOther);
 	virtual const char *GetCurrentStateString();
 
 protected:
@@ -47,11 +47,11 @@ public:
 	CCSTutorUndefinedState();
 
 	virtual ~CCSTutorUndefinedState();
-	virtual TutorStateType CheckForStateTransition(GameEventType event, CBaseEntity *entity, CBaseEntity *other);
+	virtual TutorStateType CheckForStateTransition(GameEventType event, CBaseEntity *pEntity, CBaseEntity *pOther);
 	virtual const char *GetStateString();
 
 protected:
-	TutorStateType HandlePlayerSpawned(CBaseEntity *entity, CBaseEntity *other);
+	TutorStateType HandlePlayerSpawned(CBaseEntity *pEntity, CBaseEntity *pOther);
 };
 
 class CCSTutorWaitingForStartState: public CBaseTutorState
@@ -60,12 +60,12 @@ public:
 	CCSTutorWaitingForStartState();
 
 	virtual ~CCSTutorWaitingForStartState();
-	virtual TutorStateType CheckForStateTransition(GameEventType event, CBaseEntity *entity, CBaseEntity *other);
+	virtual TutorStateType CheckForStateTransition(GameEventType event, CBaseEntity *pEntity, CBaseEntity *pOther);
 	virtual const char *GetStateString();
 
 protected:
-	TutorStateType HandlePlayerSpawned(CBaseEntity *entity, CBaseEntity *other);
-	TutorStateType HandleBuyTimeStart(CBaseEntity *entity, CBaseEntity *other);
+	TutorStateType HandlePlayerSpawned(CBaseEntity *pEntity, CBaseEntity *pOther);
+	TutorStateType HandleBuyTimeStart(CBaseEntity *pEntity, CBaseEntity *pOther);
 };
 
 class CCSTutorBuyMenuState: public CBaseTutorState
@@ -74,9 +74,9 @@ public:
 	CCSTutorBuyMenuState();
 
 	virtual ~CCSTutorBuyMenuState();
-	virtual TutorStateType CheckForStateTransition(GameEventType event, CBaseEntity *entity, CBaseEntity *other);
+	virtual TutorStateType CheckForStateTransition(GameEventType event, CBaseEntity *pEntity, CBaseEntity *pOther);
 	virtual const char *GetStateString();
 
 protected:
-	TutorStateType HandleRoundStart(CBaseEntity *entity, CBaseEntity *other);
+	TutorStateType HandleRoundStart(CBaseEntity *pEntity, CBaseEntity *pOther);
 };

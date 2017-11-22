@@ -51,9 +51,9 @@ public:
 	virtual void RestartRound();											// (EXTEND) invoked when a new round begins
 	virtual void StartFrame();												// (EXTEND) called each frame
 
-	virtual void OnEvent(GameEventType event, CBaseEntity *entity = nullptr, CBaseEntity *other = nullptr);
-	virtual unsigned int GetPlayerPriority(CBasePlayer *player) const;		// return priority of player (0 = max pri)
-	virtual bool IsImportantPlayer(CBasePlayer *player) const;				// return true if player is important to scenario (VIP, bomb carrier, etc)
+	virtual void OnEvent(GameEventType event, CBaseEntity *pEntity = nullptr, CBaseEntity *pOther = nullptr);
+	virtual unsigned int GetPlayerPriority(CBasePlayer *pPlayer) const;		// return priority of pPlayer (0 = max pri)
+	virtual bool IsImportantPlayer(CBasePlayer *pPlayer) const;				// return true if pPlayer is important to scenario (VIP, bomb carrier, etc)
 
 public:
 	void ValidateMapData();
@@ -117,7 +117,7 @@ public:
 	const Zone *GetZone(int i) const { return &m_zone[i]; }
 	const Zone *GetZone(const Vector *pos) const;										// return the zone that contains the given position
 	const Zone *GetClosestZone(const Vector *pos) const;								// return the closest zone to the given position
-	const Zone *GetClosestZone(const CBaseEntity *entity) const { return GetClosestZone(&entity->pev->origin); }		// return the closest zone to the given entity
+	const Zone *GetClosestZone(const CBaseEntity *pEntity) const { return GetClosestZone(&pEntity->pev->origin); }		// return the closest zone to the given entity
 	int GetZoneCount() const { return m_zoneCount; }
 
 	const Vector *GetRandomPositionInZone(const Zone *zone) const;
@@ -139,9 +139,9 @@ public:
 				continue;
 
 			// just use the first overlapping nav area as a reasonable approximation
-			float_precision dist = NavAreaTravelDistance(startArea, m_zone[i].m_area[0], costFunc);
+			real_t dist = NavAreaTravelDistance(startArea, m_zone[i].m_area[0], costFunc);
 
-			if (/*dist >= 0.0f && */dist < closeDist)
+			if (dist >= 0.0f && dist < closeDist)
 			{
 				closeZone = &m_zone[i];
 				closeDist = dist;
@@ -180,25 +180,25 @@ public:
 	float GetLastSeenEnemyTimestamp() const { return m_lastSeenEnemyTimestamp; }					// return the last time anyone has seen an enemy
 	void SetLastSeenEnemyTimestamp() { m_lastSeenEnemyTimestamp = gpGlobals->time; }
 
-	float GetRoundStartTime() const { return m_roundStartTimestamp; }
-	float GetElapsedRoundTime() const { return gpGlobals->time - m_roundStartTimestamp; }			// return the elapsed time since the current round began
+	float GetRoundStartTime()      const { return m_roundStartTimestamp; }
+	float GetElapsedRoundTime()    const { return gpGlobals->time - m_roundStartTimestamp; }			// return the elapsed time since the current round began
 
-	bool AllowRogues() const { return cv_bot_allow_rogues.value != 0.0f; }
-	bool AllowPistols() const { return cv_bot_allow_pistols.value != 0.0f; }
-	bool AllowShotguns() const { return cv_bot_allow_shotguns.value != 0.0f; }
-	bool AllowSubMachineGuns() const { return cv_bot_allow_sub_machine_guns.value != 0.0f; }
-	bool AllowRifles() const { return cv_bot_allow_rifles.value != 0.0f; }
-	bool AllowMachineGuns() const { return cv_bot_allow_machine_guns.value != 0.0f; }
-	bool AllowGrenades() const { return cv_bot_allow_grenades.value != 0.0f; }
-	bool AllowSnipers() const { return cv_bot_allow_snipers.value != 0.0f; }
-	bool AllowTacticalShield() const { return cv_bot_allow_shield.value != 0.0f; }
+	bool AllowRogues()             const { return cv_bot_allow_rogues.value != 0.0f; }
+	bool AllowPistols()            const { return cv_bot_allow_pistols.value != 0.0f; }
+	bool AllowShotguns()           const { return cv_bot_allow_shotguns.value != 0.0f; }
+	bool AllowSubMachineGuns()     const { return cv_bot_allow_sub_machine_guns.value != 0.0f; }
+	bool AllowRifles()             const { return cv_bot_allow_rifles.value != 0.0f; }
+	bool AllowMachineGuns()        const { return cv_bot_allow_machine_guns.value != 0.0f; }
+	bool AllowGrenades()           const { return cv_bot_allow_grenades.value != 0.0f; }
+	bool AllowSnipers()            const { return cv_bot_allow_snipers.value != 0.0f; }
+	bool AllowTacticalShield()     const { return cv_bot_allow_shield.value != 0.0f; }
 	bool AllowFriendlyFireDamage() const { return friendlyfire.value != 0.0f; }
 
 	bool IsWeaponUseable(CBasePlayerItem *item) const;						// return true if the bot can use this weapon
 
 	bool IsDefenseRushing() const { return m_isDefenseRushing; }			// returns true if defense team has "decided" to rush this round
-	bool IsOnDefense(CBasePlayer *player) const;							// return true if this player is on "defense"
-	bool IsOnOffense(CBasePlayer *player) const;							// return true if this player is on "offense"
+	bool IsOnDefense(CBasePlayer *pPlayer) const;							// return true if this player is on "defense"
+	bool IsOnOffense(CBasePlayer *pPlayer) const;							// return true if this player is on "offense"
 
 	bool IsRoundOver() const { return m_isRoundOver; }						// return true if the round has ended
 

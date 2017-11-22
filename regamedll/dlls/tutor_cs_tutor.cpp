@@ -752,7 +752,7 @@ NOXREF void CCSTutor::LookupHotKey(TutorMessageID mid, int paramNum, wchar_t *bu
 #endif
 }
 
-TutorMessageEvent *CCSTutor::CreateTutorMessageEvent(TutorMessageID mid, CBaseEntity *entity, CBaseEntity *other)
+TutorMessageEvent *CCSTutor::CreateTutorMessageEvent(TutorMessageID mid, CBaseEntity *pEntity, CBaseEntity *pOther)
 {
 	char enemyList[2048];
 	char teammateList[2048];
@@ -892,9 +892,9 @@ void CCSTutor::AddToEventList(TutorMessageEvent *event)
 	}
 }
 
-void CCSTutor::CreateAndAddEventToList(TutorMessageID mid, CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::CreateAndAddEventToList(TutorMessageID mid, CBaseEntity *pEntity, CBaseEntity *pOther)
 {
-	auto event = CreateTutorMessageEvent(mid, entity, other);
+	auto event = CreateTutorMessageEvent(mid, pEntity, pOther);
 	if (event)
 	{
 		auto message = GetTutorMessageDefinition(mid);
@@ -906,7 +906,7 @@ void CCSTutor::CreateAndAddEventToList(TutorMessageID mid, CBaseEntity *entity, 
 				m_lastScenarioEvent = nullptr;
 			}
 
-			m_lastScenarioEvent = CreateTutorMessageEvent(mid, entity, other);
+			m_lastScenarioEvent = CreateTutorMessageEvent(mid, pEntity, pOther);
 		}
 
 		AddToEventList(event);
@@ -1093,197 +1093,197 @@ void CCSTutor::ConstructMessageAndDisplay()
 	}
 }
 
-void CCSTutor::CallEventHandler(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::CallEventHandler(GameEventType event, CBaseEntity *pEntity, CBaseEntity *pOther)
 {
 	switch (event)
 	{
 	case EVENT_WEAPON_FIRED:
-		HandleWeaponFired(entity, other);
+		HandleWeaponFired(pEntity, pOther);
 		break;
 	case EVENT_WEAPON_FIRED_ON_EMPTY:
-		HandleWeaponFiredOnEmpty(entity, other);
+		HandleWeaponFiredOnEmpty(pEntity, pOther);
 		break;
 	case EVENT_WEAPON_RELOADED:
-		HandleWeaponReloaded(entity, other);
+		HandleWeaponReloaded(pEntity, pOther);
 		break;
 	case EVENT_BEING_SHOT_AT:
-		HandleBeingShotAt(entity, other);
+		HandleBeingShotAt(pEntity, pOther);
 		break;
 	case EVENT_PLAYER_BLINDED_BY_FLASHBANG:
-		HandlePlayerBlindedByFlashbang(entity, other);
+		HandlePlayerBlindedByFlashbang(pEntity, pOther);
 		break;
 	case EVENT_PLAYER_DIED:
-		HandlePlayerDied(entity, other);
+		HandlePlayerDied(pEntity, pOther);
 		break;
 	case EVENT_PLAYER_TOOK_DAMAGE:
-		HandlePlayerTookDamage(entity, other);
+		HandlePlayerTookDamage(pEntity, pOther);
 		break;
 	case EVENT_HOSTAGE_DAMAGED:
-		HandleHostageDamaged(entity, other);
+		HandleHostageDamaged(pEntity, pOther);
 		break;
 	case EVENT_HOSTAGE_KILLED:
-		HandleHostageKilled(entity, other);
+		HandleHostageKilled(pEntity, pOther);
 		break;
 	case EVENT_BOMB_PLANTED:
-		HandleBombPlanted(entity, other);
+		HandleBombPlanted(pEntity, pOther);
 		break;
 	case EVENT_BOMB_DEFUSING:
-		HandleBombDefusing(entity, other);
+		HandleBombDefusing(pEntity, pOther);
 		break;
 	case EVENT_BOMB_DEFUSED:
-		HandleBombDefused(entity, other);
+		HandleBombDefused(pEntity, pOther);
 		break;
 	case EVENT_BOMB_EXPLODED:
-		HandleBombExploded(entity, other);
+		HandleBombExploded(pEntity, pOther);
 		break;
 	case EVENT_HOSTAGE_USED:
-		HandleHostageUsed(entity, other);
+		HandleHostageUsed(pEntity, pOther);
 		break;
 	case EVENT_HOSTAGE_RESCUED:
-		HandleHostageRescued(entity, other);
+		HandleHostageRescued(pEntity, pOther);
 		break;
 	case EVENT_ALL_HOSTAGES_RESCUED:
-		HandleAllHostagesRescued(entity, other);
+		HandleAllHostagesRescued(pEntity, pOther);
 		break;
 	case EVENT_TERRORISTS_WIN:
-		HandleTWin(entity, other);
+		HandleTWin(pEntity, pOther);
 		break;
 	case EVENT_CTS_WIN:
-		HandleCTWin(entity, other);
+		HandleCTWin(pEntity, pOther);
 		break;
 	case EVENT_ROUND_DRAW:
-		HandleRoundDraw(entity, other);
+		HandleRoundDraw(pEntity, pOther);
 		break;
 	case EVENT_ROUND_START:
-		HandleRoundStart(entity, other);
+		HandleRoundStart(pEntity, pOther);
 		break;
 	case EVENT_PLAYER_SPAWNED:
-		HandlePlayerSpawned(entity, other);
+		HandlePlayerSpawned(pEntity, pOther);
 		break;
 	case EVENT_PLAYER_LEFT_BUY_ZONE:
-		HandlePlayerLeftBuyZone(entity, other);
+		HandlePlayerLeftBuyZone(pEntity, pOther);
 		break;
 	case EVENT_DEATH_CAMERA_START:
-		HandleDeathCameraStart(entity, other);
+		HandleDeathCameraStart(pEntity, pOther);
 		break;
 	case EVENT_TUTOR_BUY_MENU_OPENNED:
-		HandleBuyMenuOpenned(entity, other);
+		HandleBuyMenuOpenned(pEntity, pOther);
 		break;
 	case EVENT_TUTOR_AUTOBUY:
-		HandleAutoBuy(entity, other);
+		HandleAutoBuy(pEntity, pOther);
 		break;
 	case EVENT_TUTOR_NOT_BUYING_ANYTHING:
-		HandleNotBuyingAnything(entity, other);
+		HandleNotBuyingAnything(pEntity, pOther);
 		break;
 	case EVENT_TUTOR_NEED_TO_BUY_PRIMARY_WEAPON:
-		HandleNeedToBuyPrimaryWeapon(entity, other);
+		HandleNeedToBuyPrimaryWeapon(pEntity, pOther);
 		break;
 	case EVENT_TUTOR_NEED_TO_BUY_PRIMARY_AMMO:
-		HandleNeedToBuyPrimaryAmmo(entity, other);
+		HandleNeedToBuyPrimaryAmmo(pEntity, pOther);
 		break;
 	case EVENT_TUTOR_NEED_TO_BUY_SECONDARY_AMMO:
-		HandleNeedToBuySecondaryAmmo(entity, other);
+		HandleNeedToBuySecondaryAmmo(pEntity, pOther);
 		break;
 	case EVENT_TUTOR_NEED_TO_BUY_ARMOR:
-		HandleNeedToBuyArmor(entity, other);
+		HandleNeedToBuyArmor(pEntity, pOther);
 		break;
 	case EVENT_TUTOR_NEED_TO_BUY_DEFUSE_KIT:
-		HandleNeedToBuyDefuseKit(entity, other);
+		HandleNeedToBuyDefuseKit(pEntity, pOther);
 		break;
 	case EVENT_TUTOR_NEED_TO_BUY_GRENADE:
-		HandleNeedToBuyGrenade(entity, other);
+		HandleNeedToBuyGrenade(pEntity, pOther);
 		break;
 	case EVENT_CAREER_TASK_DONE:
-		HandleCareerTaskDone(entity, other);
+		HandleCareerTaskDone(pEntity, pOther);
 		break;
 	case EVENT_RADIO_COVER_ME:
-		HandleRadioCoverMe(entity, other);
+		HandleRadioCoverMe(pEntity, pOther);
 		break;
 	case EVENT_RADIO_YOU_TAKE_THE_POINT:
-		HandleRadioYouTakeThePoint(entity, other);
+		HandleRadioYouTakeThePoint(pEntity, pOther);
 		break;
 	case EVENT_RADIO_HOLD_THIS_POSITION:
-		HandleRadioHoldThisPosition(entity, other);
+		HandleRadioHoldThisPosition(pEntity, pOther);
 		break;
 	case EVENT_RADIO_REGROUP_TEAM:
-		HandleRadioRegroupTeam(entity, other);
+		HandleRadioRegroupTeam(pEntity, pOther);
 		break;
 	case EVENT_RADIO_FOLLOW_ME:
-		HandleRadioFollowMe(entity, other);
+		HandleRadioFollowMe(pEntity, pOther);
 		break;
 	case EVENT_RADIO_TAKING_FIRE:
-		HandleRadioTakingFire(entity, other);
+		HandleRadioTakingFire(pEntity, pOther);
 		break;
 	case EVENT_RADIO_GO_GO_GO:
-		HandleRadioGoGoGo(entity, other);
+		HandleRadioGoGoGo(pEntity, pOther);
 		break;
 	case EVENT_RADIO_TEAM_FALL_BACK:
-		HandleRadioTeamFallBack(entity, other);
+		HandleRadioTeamFallBack(pEntity, pOther);
 		break;
 	case EVENT_RADIO_STICK_TOGETHER_TEAM:
-		HandleRadioStickTogetherTeam(entity, other);
+		HandleRadioStickTogetherTeam(pEntity, pOther);
 		break;
 	case EVENT_RADIO_GET_IN_POSITION_AND_WAIT:
-		HandleRadioGetInPositionAndWait(entity, other);
+		HandleRadioGetInPositionAndWait(pEntity, pOther);
 		break;
 	case EVENT_RADIO_STORM_THE_FRONT:
-		HandleRadioStormTheFront(entity, other);
+		HandleRadioStormTheFront(pEntity, pOther);
 		break;
 	case EVENT_RADIO_REPORT_IN_TEAM:
-		HandleRadioReportInTeam(entity, other);
+		HandleRadioReportInTeam(pEntity, pOther);
 		break;
 	case EVENT_RADIO_AFFIRMATIVE:
-		HandleRadioAffirmative(entity, other);
+		HandleRadioAffirmative(pEntity, pOther);
 		break;
 	case EVENT_RADIO_ENEMY_SPOTTED:
-		HandleRadioEnemySpotted(entity, other);
+		HandleRadioEnemySpotted(pEntity, pOther);
 		break;
 	case EVENT_RADIO_NEED_BACKUP:
-		HandleRadioNeedBackup(entity, other);
+		HandleRadioNeedBackup(pEntity, pOther);
 		break;
 	case EVENT_RADIO_SECTOR_CLEAR:
-		HandleRadioSectorClear(entity, other);
+		HandleRadioSectorClear(pEntity, pOther);
 		break;
 	case EVENT_RADIO_IN_POSITION:
-		HandleRadioInPosition(entity, other);
+		HandleRadioInPosition(pEntity, pOther);
 		break;
 	case EVENT_RADIO_REPORTING_IN:
-		HandleRadioReportingIn(entity, other);
+		HandleRadioReportingIn(pEntity, pOther);
 		break;
 	case EVENT_RADIO_GET_OUT_OF_THERE:
-		HandleRadioGetOutOfThere(entity, other);
+		HandleRadioGetOutOfThere(pEntity, pOther);
 		break;
 	case EVENT_RADIO_NEGATIVE:
-		HandleRadioNegative(entity, other);
+		HandleRadioNegative(pEntity, pOther);
 		break;
 	case EVENT_RADIO_ENEMY_DOWN:
-		HandleRadioEnemyDown(entity, other);
+		HandleRadioEnemyDown(pEntity, pOther);
 		break;
 	default:
 		break;
 	}
 }
 
-void CCSTutor::HandleWeaponFired(CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::HandleWeaponFired(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
 	CBasePlayer *pLocalPlayer = UTIL_GetLocalPlayer();
 	if (!pLocalPlayer || !pLocalPlayer->IsAlive())
 		return;
 
-	CBasePlayer *pPlayer = static_cast<CBasePlayer *>(entity);
+	CBasePlayer *pPlayer = static_cast<CBasePlayer *>(pEntity);
 	if (pPlayer && pPlayer == pLocalPlayer)
 	{
 		CheckForNeedToReload();
 	}
 }
 
-void CCSTutor::HandleWeaponFiredOnEmpty(CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::HandleWeaponFiredOnEmpty(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
 	CBasePlayer *pLocalPlayer = UTIL_GetLocalPlayer();
 	if (!pLocalPlayer)
 		return;
 
-	CBasePlayer *pPlayer = static_cast<CBasePlayer *>(entity);
+	CBasePlayer *pPlayer = static_cast<CBasePlayer *>(pEntity);
 	if (pPlayer && pPlayer->IsPlayer() && pPlayer == pLocalPlayer)
 	{
 		CBasePlayerWeapon *pCurrentWeapon = static_cast<CBasePlayerWeapon *>(pPlayer->m_pActiveItem);
@@ -1300,23 +1300,23 @@ void CCSTutor::HandleWeaponFiredOnEmpty(CBaseEntity *entity, CBaseEntity *other)
 	}
 }
 
-void CCSTutor::HandleWeaponReloaded(CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::HandleWeaponReloaded(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
-	CBasePlayer *pPlayer = static_cast<CBasePlayer *>(entity);
+	CBasePlayer *pPlayer = static_cast<CBasePlayer *>(pEntity);
 	if (pPlayer && pPlayer->IsPlayer() && pPlayer == UTIL_GetLocalPlayer())
 	{
 		CancelEvent(YOU_SHOULD_RELOAD);
 	}
 }
 
-void CCSTutor::HandlePlayerDied(CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::HandlePlayerDied(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
 	CBasePlayer *pLocalPlayer = UTIL_GetLocalPlayer();
 	if (!pLocalPlayer)
 		return;
 
-	CBasePlayer *pVictim = static_cast<CBasePlayer *>(entity);
-	CBasePlayer *pAttacker = static_cast<CBasePlayer *>(other);
+	CBasePlayer *pVictim = static_cast<CBasePlayer *>(pEntity);
+	CBasePlayer *pAttacker = static_cast<CBasePlayer *>(pOther);
 
 	if (pVictim && !pVictim->IsPlayer())
 	{
@@ -1332,7 +1332,7 @@ void CCSTutor::HandlePlayerDied(CBaseEntity *entity, CBaseEntity *other)
 	{
 		if (pLocalPlayer->m_bKilledByBomb)
 		{
-			CreateAndAddEventToList(YOU_DIED, entity, other);
+			CreateAndAddEventToList(YOU_DIED, pEntity, pOther);
 		}
 		else
 		{
@@ -1345,7 +1345,7 @@ void CCSTutor::HandlePlayerDied(CBaseEntity *entity, CBaseEntity *other)
 
 	if (pVictim == pAttacker && pVictim == pLocalPlayer)
 	{
-		CreateAndAddEventToList(YOU_DIED, entity, other);
+		CreateAndAddEventToList(YOU_DIED, pEntity, pOther);
 		return;
 	}
 
@@ -1356,7 +1356,7 @@ void CCSTutor::HandlePlayerDied(CBaseEntity *entity, CBaseEntity *other)
 	{
 		if (pVictim->m_iTeam == pAttacker->m_iTeam)
 		{
-			CreateAndAddEventToList(YOU_KILLED_A_TEAMMATE, entity, other);
+			CreateAndAddEventToList(YOU_KILLED_A_TEAMMATE, pEntity, pOther);
 			return;
 		}
 
@@ -1368,9 +1368,9 @@ void CCSTutor::HandlePlayerDied(CBaseEntity *entity, CBaseEntity *other)
 			{
 				switch (numT)
 				{
-				case 0: CreateAndAddEventToList(YOU_KILLED_LAST_ENEMY_HEADSHOT, entity, other); break;
-				case 1: CreateAndAddEventToList(YOU_KILLED_PLAYER_HEADSHOT_ONE_LEFT, entity, other); break;
-				default: CreateAndAddEventToList(YOU_KILLED_PLAYER_HEADSHOT, entity, other); break;
+				case 0: CreateAndAddEventToList(YOU_KILLED_LAST_ENEMY_HEADSHOT, pEntity, pOther); break;
+				case 1: CreateAndAddEventToList(YOU_KILLED_PLAYER_HEADSHOT_ONE_LEFT, pEntity, pOther); break;
+				default: CreateAndAddEventToList(YOU_KILLED_PLAYER_HEADSHOT, pEntity, pOther); break;
 				}
 				break;
 			}
@@ -1378,9 +1378,9 @@ void CCSTutor::HandlePlayerDied(CBaseEntity *entity, CBaseEntity *other)
 			{
 				switch (numCT)
 				{
-				case 0: CreateAndAddEventToList(YOU_KILLED_LAST_ENEMY_HEADSHOT, entity, other); break;
-				case 1: CreateAndAddEventToList(YOU_KILLED_PLAYER_HEADSHOT_ONE_LEFT, entity, other); break;
-				default: CreateAndAddEventToList(YOU_KILLED_PLAYER_HEADSHOT, entity, other); break;
+				case 0: CreateAndAddEventToList(YOU_KILLED_LAST_ENEMY_HEADSHOT, pEntity, pOther); break;
+				case 1: CreateAndAddEventToList(YOU_KILLED_PLAYER_HEADSHOT_ONE_LEFT, pEntity, pOther); break;
+				default: CreateAndAddEventToList(YOU_KILLED_PLAYER_HEADSHOT, pEntity, pOther); break;
 				}
 				break;
 			}
@@ -1394,9 +1394,9 @@ void CCSTutor::HandlePlayerDied(CBaseEntity *entity, CBaseEntity *other)
 			{
 				switch (numT)
 				{
-				case 0: CreateAndAddEventToList(YOU_KILLED_LAST_ENEMY, entity, other); break;
-				case 1: CreateAndAddEventToList(YOU_KILLED_PLAYER_ONE_LEFT, entity, other); break;
-				default: CreateAndAddEventToList(YOU_KILLED_PLAYER, entity, other); break;
+				case 0: CreateAndAddEventToList(YOU_KILLED_LAST_ENEMY, pEntity, pOther); break;
+				case 1: CreateAndAddEventToList(YOU_KILLED_PLAYER_ONE_LEFT, pEntity, pOther); break;
+				default: CreateAndAddEventToList(YOU_KILLED_PLAYER, pEntity, pOther); break;
 				}
 				break;
 			}
@@ -1404,9 +1404,9 @@ void CCSTutor::HandlePlayerDied(CBaseEntity *entity, CBaseEntity *other)
 			{
 				switch (numCT)
 				{
-				case 0: CreateAndAddEventToList(YOU_KILLED_LAST_ENEMY, entity, other); break;
-				case 1: CreateAndAddEventToList(YOU_KILLED_PLAYER_ONE_LEFT, entity, other); break;
-				default: CreateAndAddEventToList(YOU_KILLED_PLAYER, entity, other); break;
+				case 0: CreateAndAddEventToList(YOU_KILLED_LAST_ENEMY, pEntity, pOther); break;
+				case 1: CreateAndAddEventToList(YOU_KILLED_PLAYER_ONE_LEFT, pEntity, pOther); break;
+				default: CreateAndAddEventToList(YOU_KILLED_PLAYER, pEntity, pOther); break;
 				}
 				break;
 			}
@@ -1415,7 +1415,7 @@ void CCSTutor::HandlePlayerDied(CBaseEntity *entity, CBaseEntity *other)
 	}
 	else if (pVictim == pLocalPlayer)
 	{
-		CreateAndAddEventToList(pVictim->m_bHeadshotKilled ? YOU_DIED_HEADSHOT : YOU_DIED, entity, other);
+		CreateAndAddEventToList(pVictim->m_bHeadshotKilled ? YOU_DIED_HEADSHOT : YOU_DIED, pEntity, pOther);
 	}
 	else if (pVictim->m_iTeam == pLocalPlayer->m_iTeam)
 	{
@@ -1427,26 +1427,26 @@ void CCSTutor::HandlePlayerDied(CBaseEntity *entity, CBaseEntity *other)
 			{
 				if (numCT == 1)
 				{
-					CreateAndAddEventToList(LAST_TEAMMATE_KILLED, entity, other);
+					CreateAndAddEventToList(LAST_TEAMMATE_KILLED, pEntity, pOther);
 				}
 				else if (numCT == 2)
 				{
-					CreateAndAddEventToList(TEAMMATE_KILLED_ONE_LEFT, entity, other);
+					CreateAndAddEventToList(TEAMMATE_KILLED_ONE_LEFT, pEntity, pOther);
 				}
 				else
 				{
-					CreateAndAddEventToList(TEAMMATE_KILLED, entity, other);
+					CreateAndAddEventToList(TEAMMATE_KILLED, pEntity, pOther);
 				}
 			}
 			else
 			{
 				if (numCT == 1)
 				{
-					CreateAndAddEventToList(TEAMMATE_KILLED_ONE_LEFT, entity, other);
+					CreateAndAddEventToList(TEAMMATE_KILLED_ONE_LEFT, pEntity, pOther);
 				}
 				else if (numCT > 1)
 				{
-					CreateAndAddEventToList(TEAMMATE_KILLED, entity, other);
+					CreateAndAddEventToList(TEAMMATE_KILLED, pEntity, pOther);
 				}
 			}
 			break;
@@ -1457,26 +1457,26 @@ void CCSTutor::HandlePlayerDied(CBaseEntity *entity, CBaseEntity *other)
 			{
 				if (numT == 1)
 				{
-					CreateAndAddEventToList(LAST_TEAMMATE_KILLED, entity, other);
+					CreateAndAddEventToList(LAST_TEAMMATE_KILLED, pEntity, pOther);
 				}
 				else if (numT == 2)
 				{
-					CreateAndAddEventToList(TEAMMATE_KILLED_ONE_LEFT, entity, other);
+					CreateAndAddEventToList(TEAMMATE_KILLED_ONE_LEFT, pEntity, pOther);
 				}
 				else
 				{
-					CreateAndAddEventToList(TEAMMATE_KILLED, entity, other);
+					CreateAndAddEventToList(TEAMMATE_KILLED, pEntity, pOther);
 				}
 			}
 			else
 			{
 				if (numT == 1)
 				{
-					CreateAndAddEventToList(TEAMMATE_KILLED_ONE_LEFT, entity, other);
+					CreateAndAddEventToList(TEAMMATE_KILLED_ONE_LEFT, pEntity, pOther);
 				}
 				else if (numT > 1)
 				{
-					CreateAndAddEventToList(TEAMMATE_KILLED, entity, other);
+					CreateAndAddEventToList(TEAMMATE_KILLED, pEntity, pOther);
 				}
 			}
 			break;
@@ -1491,9 +1491,9 @@ void CCSTutor::HandlePlayerDied(CBaseEntity *entity, CBaseEntity *other)
 		{
 			switch (numT)
 			{
-			case 0: CreateAndAddEventToList(LAST_ENEMY_KILLED, entity, other); break;
-			case 1: CreateAndAddEventToList(ENEMY_KILLED_ONE_LEFT, entity, other); break;
-			default: CreateAndAddEventToList(ENEMY_KILLED, entity, other); break;
+			case 0: CreateAndAddEventToList(LAST_ENEMY_KILLED, pEntity, pOther); break;
+			case 1: CreateAndAddEventToList(ENEMY_KILLED_ONE_LEFT, pEntity, pOther); break;
+			default: CreateAndAddEventToList(ENEMY_KILLED, pEntity, pOther); break;
 			}
 			break;
 		}
@@ -1501,9 +1501,9 @@ void CCSTutor::HandlePlayerDied(CBaseEntity *entity, CBaseEntity *other)
 		{
 			switch (numCT)
 			{
-			case 0: CreateAndAddEventToList(LAST_ENEMY_KILLED, entity, other); break;
-			case 1: CreateAndAddEventToList(ENEMY_KILLED_ONE_LEFT, entity, other); break;
-			default: CreateAndAddEventToList(ENEMY_KILLED, entity, other); break;
+			case 0: CreateAndAddEventToList(LAST_ENEMY_KILLED, pEntity, pOther); break;
+			case 1: CreateAndAddEventToList(ENEMY_KILLED_ONE_LEFT, pEntity, pOther); break;
+			default: CreateAndAddEventToList(ENEMY_KILLED, pEntity, pOther); break;
 			}
 			break;
 		}
@@ -1511,14 +1511,14 @@ void CCSTutor::HandlePlayerDied(CBaseEntity *entity, CBaseEntity *other)
 	}
 }
 
-void CCSTutor::HandlePlayerTookDamage(CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::HandlePlayerTookDamage(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
 	CBasePlayer *pLocalPlayer = UTIL_GetLocalPlayer();
 	if (!pLocalPlayer)
 		return;
 
-	CBasePlayer *pVictim = static_cast<CBasePlayer *>(entity);
-	CBasePlayer *pAttacker = static_cast<CBasePlayer *>(other);
+	CBasePlayer *pVictim = static_cast<CBasePlayer *>(pEntity);
+	CBasePlayer *pAttacker = static_cast<CBasePlayer *>(pOther);
 
 	if (pVictim && !pVictim->IsPlayer())
 	{
@@ -1540,33 +1540,33 @@ void CCSTutor::HandlePlayerTookDamage(CBaseEntity *entity, CBaseEntity *other)
 	}
 }
 
-void CCSTutor::HandlePlayerBlindedByFlashbang(CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::HandlePlayerBlindedByFlashbang(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
 	CBasePlayer *pLocalPlayer = UTIL_GetLocalPlayer();
 	if (!pLocalPlayer)
 		return;
 
-	CBasePlayer *pPlayer = static_cast<CBasePlayer *>(entity);
+	CBasePlayer *pPlayer = static_cast<CBasePlayer *>(pEntity);
 	if (pPlayer && pPlayer->IsPlayer() && pPlayer == pLocalPlayer)
 	{
 		CreateAndAddEventToList(YOU_ARE_BLIND_FROM_FLASHBANG);
 	}
 }
 
-void CCSTutor::HandlePlayerSpawned(CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::HandlePlayerSpawned(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
-	CBasePlayer *pPlayer = static_cast<CBasePlayer *>(entity);
+	CBasePlayer *pPlayer = static_cast<CBasePlayer *>(pEntity);
 	if (!pPlayer || !pPlayer->IsPlayer() || pPlayer != UTIL_GetLocalPlayer())
 		return;
 
 	m_haveSpawned = true;
 	m_lastInGameHintShown = INGAME_HINT_BEGIN;
-	CreateAndAddEventToList(YOU_SPAWNED, entity, other);
+	CreateAndAddEventToList(YOU_SPAWNED, pEntity, pOther);
 }
 
-NOXREF void CCSTutor::HandleClientCorpseSpawned(CBaseEntity *entity, CBaseEntity *other)
+NOXREF void CCSTutor::HandleClientCorpseSpawned(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
-	CBasePlayer *pPlayer = static_cast<CBasePlayer *>(entity);
+	CBasePlayer *pPlayer = static_cast<CBasePlayer *>(pEntity);
 	if (!pPlayer || !pPlayer->IsPlayer())
 		return;
 
@@ -1578,7 +1578,7 @@ NOXREF void CCSTutor::HandleClientCorpseSpawned(CBaseEntity *entity, CBaseEntity
 	m_clientCorpseList.push_back(corpse);
 }
 
-void CCSTutor::HandleBuyMenuOpenned(CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::HandleBuyMenuOpenned(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
 	if (m_currentlyShownMessageID == BUY_TIME_BEGIN)
 	{
@@ -1587,7 +1587,7 @@ void CCSTutor::HandleBuyMenuOpenned(CBaseEntity *entity, CBaseEntity *other)
 	}
 }
 
-void CCSTutor::HandleAutoBuy(CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::HandleAutoBuy(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
 	if (m_currentlyShownMessageID == BUY_TIME_BEGIN)
 	{
@@ -1595,12 +1595,12 @@ void CCSTutor::HandleAutoBuy(CBaseEntity *entity, CBaseEntity *other)
 	}
 }
 
-NOXREF void CCSTutor::HandleBuyTimeStart(CBaseEntity *entity, CBaseEntity *other)
+NOXREF void CCSTutor::HandleBuyTimeStart(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
 	;
 }
 
-void CCSTutor::HandlePlayerLeftBuyZone(CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::HandlePlayerLeftBuyZone(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
 	m_messageTypeMask = (TUTORMESSAGETYPE_DEFAULT | TUTORMESSAGETYPE_FRIEND_DEATH | TUTORMESSAGETYPE_ENEMY_DEATH | TUTORMESSAGETYPE_SCENARIO | TUTORMESSAGETYPE_CAREER | TUTORMESSAGETYPE_INGAME_HINT | TUTORMESSAGETYPE_END_GAME);
 
@@ -1615,7 +1615,7 @@ void CCSTutor::HandlePlayerLeftBuyZone(CBaseEntity *entity, CBaseEntity *other)
 	}
 }
 
-void CCSTutor::HandleBombPlanted(CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::HandleBombPlanted(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
 	CBasePlayer *pLocalPlayer = UTIL_GetLocalPlayer();
 	if (!pLocalPlayer)
@@ -1623,21 +1623,21 @@ void CCSTutor::HandleBombPlanted(CBaseEntity *entity, CBaseEntity *other)
 
 	if (pLocalPlayer->IsAlive() && pLocalPlayer->m_iTeam == CT)
 	{
-		CreateAndAddEventToList(BOMB_PLANTED_CT, entity, other);
+		CreateAndAddEventToList(BOMB_PLANTED_CT, pEntity, pOther);
 	}
 	else
 	{
-		CreateAndAddEventToList(BOMB_PLANTED_T, entity, other);
+		CreateAndAddEventToList(BOMB_PLANTED_T, pEntity, pOther);
 	}
 }
 
-void CCSTutor::HandleBombDefused(CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::HandleBombDefused(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
 	CBasePlayer *pLocalPlayer = UTIL_GetLocalPlayer();
 	if (!pLocalPlayer)
 		return;
 
-	CBasePlayer *pDefuser = static_cast<CBasePlayer *>(entity);
+	CBasePlayer *pDefuser = static_cast<CBasePlayer *>(pEntity);
 	if (pDefuser && pDefuser->IsPlayer() && pDefuser == pLocalPlayer)
 	{
 		CreateAndAddEventToList(YOU_DEFUSED_BOMB);
@@ -1652,20 +1652,20 @@ void CCSTutor::HandleBombDefused(CBaseEntity *entity, CBaseEntity *other)
 	}
 }
 
-void CCSTutor::HandleBombDefusing(CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::HandleBombDefusing(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
 	CBasePlayer *pLocalPlayer = UTIL_GetLocalPlayer();
 	if (!pLocalPlayer)
 		return;
 
-	CBasePlayer *pPlayer = static_cast<CBasePlayer *>(entity);
+	CBasePlayer *pPlayer = static_cast<CBasePlayer *>(pEntity);
 	if (pPlayer && pPlayer->IsPlayer() && pPlayer == pLocalPlayer && !pPlayer->m_bHasDefuser)
 	{
 		CreateAndAddEventToList(DEFUSING_WITHOUT_KIT);
 	}
 }
 
-void CCSTutor::HandleBombExploded(CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::HandleBombExploded(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
 	CBasePlayer *pLocalPlayer = UTIL_GetLocalPlayer();
 	if (!pLocalPlayer)
@@ -1679,7 +1679,7 @@ void CCSTutor::HandleBombExploded(CBaseEntity *entity, CBaseEntity *other)
 	}
 }
 
-void CCSTutor::HandleRoundStart(CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::HandleRoundStart(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
 	CBasePlayer *pLocalPlayer = UTIL_GetLocalPlayer();
 
@@ -1697,7 +1697,7 @@ void CCSTutor::HandleRoundStart(CBaseEntity *entity, CBaseEntity *other)
 		case TERRORIST:
 		{
 			if (pLocalPlayer->m_bHasC4)
-				CreateAndAddEventToList(YOU_ARE_BOMB_CARRIER, entity, other);
+				CreateAndAddEventToList(YOU_ARE_BOMB_CARRIER, pEntity, pOther);
 			else
 				CreateAndAddEventToList(ROUND_START_DE_T);
 			break;
@@ -1714,26 +1714,26 @@ void CCSTutor::HandleRoundStart(CBaseEntity *entity, CBaseEntity *other)
 	}
 }
 
-void CCSTutor::HandleBeingShotAt(CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::HandleBeingShotAt(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
 	CBasePlayer *pLocalPlayer = UTIL_GetLocalPlayer();
 	if (!pLocalPlayer)
 		return;
 
-	CBasePlayer *pPlayer = static_cast<CBasePlayer *>(entity);
+	CBasePlayer *pPlayer = static_cast<CBasePlayer *>(pEntity);
 	if (pPlayer && pPlayer->IsPlayer() && pPlayer == pLocalPlayer && pLocalPlayer->IsAlive())
 	{
-		CreateAndAddEventToList(YOU_HAVE_BEEN_SHOT_AT, entity, other);
+		CreateAndAddEventToList(YOU_HAVE_BEEN_SHOT_AT, pEntity, pOther);
 	}
 }
 
-void CCSTutor::HandleHostageUsed(CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::HandleHostageUsed(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
 	CBasePlayer *pLocalPlayer = UTIL_GetLocalPlayer();
 	if (!pLocalPlayer)
 		return;
 
-	CBasePlayer *pActivator = static_cast<CBasePlayer *>(entity);
+	CBasePlayer *pActivator = static_cast<CBasePlayer *>(pEntity);
 	if (pActivator && pActivator->IsPlayer())
 	{
 		bool unusedHostages = !CheckForAllHostagesFollowingSomeone();
@@ -1752,13 +1752,13 @@ void CCSTutor::HandleHostageUsed(CBaseEntity *entity, CBaseEntity *other)
 	}
 }
 
-void CCSTutor::HandleHostageRescued(CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::HandleHostageRescued(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
 	CBasePlayer *pLocalPlayer = UTIL_GetLocalPlayer();
 	if (!pLocalPlayer)
 		return;
 
-	CBasePlayer *pRescuer = static_cast<CBasePlayer *>(entity);
+	CBasePlayer *pRescuer = static_cast<CBasePlayer *>(pEntity);
 	if (pRescuer && pRescuer->IsPlayer())
 	{
 		switch (pLocalPlayer->m_iTeam)
@@ -1769,7 +1769,7 @@ void CCSTutor::HandleHostageRescued(CBaseEntity *entity, CBaseEntity *other)
 	}
 }
 
-void CCSTutor::HandleAllHostagesRescued(CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::HandleAllHostagesRescued(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
 	CBasePlayer *pLocalPlayer = UTIL_GetLocalPlayer();
 	if (!pLocalPlayer)
@@ -1782,20 +1782,20 @@ void CCSTutor::HandleAllHostagesRescued(CBaseEntity *entity, CBaseEntity *other)
 	}
 }
 
-void CCSTutor::HandleHostageDamaged(CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::HandleHostageDamaged(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
 	CBasePlayer *pLocalPlayer = UTIL_GetLocalPlayer();
 	if (!pLocalPlayer)
 		return;
 
-	CBasePlayer *pAttacker = static_cast<CBasePlayer *>(other);
-	if (entity && pAttacker && pAttacker->IsPlayer() && pLocalPlayer == pAttacker)
+	CBasePlayer *pAttacker = static_cast<CBasePlayer *>(pOther);
+	if (pEntity && pAttacker && pAttacker->IsPlayer() && pLocalPlayer == pAttacker)
 	{
 		CreateAndAddEventToList(YOU_DAMAGED_HOSTAGE);
 	}
 }
 
-void CCSTutor::HandleHostageKilled(CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::HandleHostageKilled(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
 	CBasePlayer *pLocalPlayer = UTIL_GetLocalPlayer();
 	if (!pLocalPlayer)
@@ -1803,8 +1803,8 @@ void CCSTutor::HandleHostageKilled(CBaseEntity *entity, CBaseEntity *other)
 
 	CheckForAllHostagesDead();
 
-	CBasePlayer *pAttacker = static_cast<CBasePlayer *>(other);
-	if (entity && pAttacker && pAttacker->IsPlayer())
+	CBasePlayer *pAttacker = static_cast<CBasePlayer *>(pOther);
+	if (pEntity && pAttacker && pAttacker->IsPlayer())
 	{
 		bool unusedHostages = CheckForAllHostagesFollowingSomeone();
 		if (pLocalPlayer == pAttacker)
@@ -1823,7 +1823,7 @@ void CCSTutor::HandleHostageKilled(CBaseEntity *entity, CBaseEntity *other)
 	}
 }
 
-void CCSTutor::HandleRoundDraw(CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::HandleRoundDraw(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
 	if (CSGameRules()->m_iTotalRoundsPlayed)
 	{
@@ -1833,25 +1833,25 @@ void CCSTutor::HandleRoundDraw(CBaseEntity *entity, CBaseEntity *other)
 	ResetPlayerDeathInfo();
 }
 
-void CCSTutor::HandleCTWin(CBaseEntity *entith, CBaseEntity *other)
+void CCSTutor::HandleCTWin(CBaseEntity *entith, CBaseEntity *pOther)
 {
 	CreateAndAddEventToList(CT_WIN);
 	ResetPlayerDeathInfo();
 }
 
-void CCSTutor::HandleTWin(CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::HandleTWin(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
 	CreateAndAddEventToList(T_WIN);
 	ResetPlayerDeathInfo();
 }
 
-void CCSTutor::HandleDeathCameraStart(CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::HandleDeathCameraStart(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
 	CBasePlayer *pLocalPlayer = UTIL_GetLocalPlayer();
 	if (!pLocalPlayer)
 		return;
 
-	CBasePlayer *pPlayer = static_cast<CBasePlayer *>(entity);
+	CBasePlayer *pPlayer = static_cast<CBasePlayer *>(pEntity);
 	if (pPlayer && pPlayer->IsPlayer() && pPlayer == pLocalPlayer)
 	{
 		m_messageTypeMask = (TUTORMESSAGETYPE_FRIEND_DEATH | TUTORMESSAGETYPE_ENEMY_DEATH | TUTORMESSAGETYPE_HINT | TUTORMESSAGETYPE_END_GAME);
@@ -1859,147 +1859,147 @@ void CCSTutor::HandleDeathCameraStart(CBaseEntity *entity, CBaseEntity *other)
 	}
 }
 
-void CCSTutor::HandleRadioCoverMe(CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::HandleRadioCoverMe(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
-	CreateAndAddEventToList(RADIO_COVER_ME, entity, other);
+	CreateAndAddEventToList(RADIO_COVER_ME, pEntity, pOther);
 }
 
-void CCSTutor::HandleRadioYouTakeThePoint(CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::HandleRadioYouTakeThePoint(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
-	CreateAndAddEventToList(RADIO_YOU_TAKE_THE_POINT, entity, other);
+	CreateAndAddEventToList(RADIO_YOU_TAKE_THE_POINT, pEntity, pOther);
 }
 
-void CCSTutor::HandleRadioHoldThisPosition(CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::HandleRadioHoldThisPosition(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
-	CreateAndAddEventToList(RADIO_HOLD_THIS_POSITION, entity, other);
+	CreateAndAddEventToList(RADIO_HOLD_THIS_POSITION, pEntity, pOther);
 }
 
-void CCSTutor::HandleRadioRegroupTeam(CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::HandleRadioRegroupTeam(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
-	CreateAndAddEventToList(RADIO_REGROUP_TEAM, entity, other);
+	CreateAndAddEventToList(RADIO_REGROUP_TEAM, pEntity, pOther);
 }
 
-void CCSTutor::HandleRadioFollowMe(CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::HandleRadioFollowMe(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
-	CreateAndAddEventToList(RADIO_FOLLOW_ME, entity, other);
+	CreateAndAddEventToList(RADIO_FOLLOW_ME, pEntity, pOther);
 }
 
-void CCSTutor::HandleRadioTakingFire(CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::HandleRadioTakingFire(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
-	CreateAndAddEventToList(RADIO_TAKING_FIRE, entity, other);
+	CreateAndAddEventToList(RADIO_TAKING_FIRE, pEntity, pOther);
 }
 
-void CCSTutor::HandleRadioGoGoGo(CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::HandleRadioGoGoGo(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
-	CreateAndAddEventToList(RADIO_GO_GO_GO, entity, other);
+	CreateAndAddEventToList(RADIO_GO_GO_GO, pEntity, pOther);
 }
 
-void CCSTutor::HandleRadioTeamFallBack(CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::HandleRadioTeamFallBack(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
-	CreateAndAddEventToList(RADIO_TEAM_FALL_BACK, entity, other);
+	CreateAndAddEventToList(RADIO_TEAM_FALL_BACK, pEntity, pOther);
 }
 
-void CCSTutor::HandleRadioStickTogetherTeam(CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::HandleRadioStickTogetherTeam(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
-	CreateAndAddEventToList(RADIO_STICK_TOGETHER_TEAM, entity, other);
+	CreateAndAddEventToList(RADIO_STICK_TOGETHER_TEAM, pEntity, pOther);
 }
 
-void CCSTutor::HandleRadioGetInPositionAndWait(CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::HandleRadioGetInPositionAndWait(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
-	CreateAndAddEventToList(RADIO_GET_IN_POSITION_AND_WAIT, entity, other);
+	CreateAndAddEventToList(RADIO_GET_IN_POSITION_AND_WAIT, pEntity, pOther);
 }
 
-void CCSTutor::HandleRadioStormTheFront(CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::HandleRadioStormTheFront(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
-	CreateAndAddEventToList(RADIO_STORM_THE_FRONT, entity, other);
+	CreateAndAddEventToList(RADIO_STORM_THE_FRONT, pEntity, pOther);
 }
 
-void CCSTutor::HandleRadioReportInTeam(CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::HandleRadioReportInTeam(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
-	CreateAndAddEventToList(RADIO_REPORT_IN_TEAM, entity, other);
+	CreateAndAddEventToList(RADIO_REPORT_IN_TEAM, pEntity, pOther);
 }
 
-void CCSTutor::HandleRadioAffirmative(CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::HandleRadioAffirmative(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
-	CreateAndAddEventToList(RADIO_AFFIRMATIVE, entity, other);
+	CreateAndAddEventToList(RADIO_AFFIRMATIVE, pEntity, pOther);
 }
 
-void CCSTutor::HandleRadioEnemySpotted(CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::HandleRadioEnemySpotted(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
-	CreateAndAddEventToList(RADIO_ENEMY_SPOTTED, entity, other);
+	CreateAndAddEventToList(RADIO_ENEMY_SPOTTED, pEntity, pOther);
 }
 
-void CCSTutor::HandleRadioNeedBackup(CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::HandleRadioNeedBackup(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
-	CreateAndAddEventToList(RADIO_NEED_BACKUP, entity, other);
+	CreateAndAddEventToList(RADIO_NEED_BACKUP, pEntity, pOther);
 }
 
-void CCSTutor::HandleRadioSectorClear(CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::HandleRadioSectorClear(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
-	CreateAndAddEventToList(RADIO_SECTOR_CLEAR, entity, other);
+	CreateAndAddEventToList(RADIO_SECTOR_CLEAR, pEntity, pOther);
 }
 
-void CCSTutor::HandleRadioInPosition(CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::HandleRadioInPosition(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
-	CreateAndAddEventToList(RADIO_IN_POSITION, entity, other);
+	CreateAndAddEventToList(RADIO_IN_POSITION, pEntity, pOther);
 }
 
-void CCSTutor::HandleRadioReportingIn(CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::HandleRadioReportingIn(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
-	CreateAndAddEventToList(RADIO_REPORTING_IN, entity, other);
+	CreateAndAddEventToList(RADIO_REPORTING_IN, pEntity, pOther);
 }
 
-void CCSTutor::HandleRadioGetOutOfThere(CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::HandleRadioGetOutOfThere(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
-	CreateAndAddEventToList(RADIO_GET_OUT_OF_THERE, entity, other);
+	CreateAndAddEventToList(RADIO_GET_OUT_OF_THERE, pEntity, pOther);
 }
 
-void CCSTutor::HandleRadioNegative(CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::HandleRadioNegative(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
-	CreateAndAddEventToList(RADIO_NEGATIVE, entity, other);
+	CreateAndAddEventToList(RADIO_NEGATIVE, pEntity, pOther);
 }
 
-void CCSTutor::HandleRadioEnemyDown(CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::HandleRadioEnemyDown(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
-	CreateAndAddEventToList(RADIO_ENEMY_DOWN, entity, other);
+	CreateAndAddEventToList(RADIO_ENEMY_DOWN, pEntity, pOther);
 }
 
-void CCSTutor::HandleNotBuyingAnything(CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::HandleNotBuyingAnything(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
-	CreateAndAddEventToList(BUY_TIME_BEGIN, entity, other);
+	CreateAndAddEventToList(BUY_TIME_BEGIN, pEntity, pOther);
 }
 
-void CCSTutor::HandleNeedToBuyPrimaryWeapon(CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::HandleNeedToBuyPrimaryWeapon(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
-	CreateAndAddEventToList(BUY_NEED_PRIMARY, entity, other);
+	CreateAndAddEventToList(BUY_NEED_PRIMARY, pEntity, pOther);
 }
 
-void CCSTutor::HandleNeedToBuyPrimaryAmmo(CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::HandleNeedToBuyPrimaryAmmo(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
-	CreateAndAddEventToList(BUY_NEED_PRIMARY_AMMO, entity, other);
+	CreateAndAddEventToList(BUY_NEED_PRIMARY_AMMO, pEntity, pOther);
 }
 
-void CCSTutor::HandleNeedToBuySecondaryAmmo(CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::HandleNeedToBuySecondaryAmmo(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
-	CreateAndAddEventToList(BUY_NEED_SECONDARY_AMMO, entity, other);
+	CreateAndAddEventToList(BUY_NEED_SECONDARY_AMMO, pEntity, pOther);
 }
 
-void CCSTutor::HandleNeedToBuyArmor(CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::HandleNeedToBuyArmor(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
-	CreateAndAddEventToList(BUY_NEED_ARMOR, entity, other);
+	CreateAndAddEventToList(BUY_NEED_ARMOR, pEntity, pOther);
 }
 
-void CCSTutor::HandleNeedToBuyDefuseKit(CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::HandleNeedToBuyDefuseKit(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
-	CreateAndAddEventToList(BUY_NEED_DEFUSE_KIT, entity, other);
+	CreateAndAddEventToList(BUY_NEED_DEFUSE_KIT, pEntity, pOther);
 }
 
-void CCSTutor::HandleNeedToBuyGrenade(CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::HandleNeedToBuyGrenade(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
-	CreateAndAddEventToList(BUY_NEED_GRENADE, entity, other);
+	CreateAndAddEventToList(BUY_NEED_GRENADE, pEntity, pOther);
 }
 
-void CCSTutor::HandleCareerTaskDone(CBaseEntity *entity, CBaseEntity *other)
+void CCSTutor::HandleCareerTaskDone(CBaseEntity *pEntity, CBaseEntity *pOther)
 {
 	int numTasksRemaining = 0;
 
@@ -2263,7 +2263,7 @@ TutorMessageID CCSTutor::CheckForInBombZone()
 bool CCSTutor::IsBombPlantedInBombsite(CBaseEntity *bombTarget)
 {
 	CGrenade *pBomb = nullptr;
-	while ((pBomb = (CGrenade *)UTIL_FindEntityByClassname(pBomb, "grenade")))
+	while ((pBomb = UTIL_FindEntityByClassname(pBomb, "grenade")))
 	{
 		if (pBomb->m_bIsC4 && IsEntityInBombsite(pBomb, bombTarget))
 		{
@@ -2376,7 +2376,7 @@ void CCSTutor::CheckForAllHostagesDead()
 	bool foundLiveOne = false;
 	CHostage *pHostage = nullptr;
 
-	while ((pHostage = (CHostage *)UTIL_FindEntityByClassname(pHostage, "hostage_entity")))
+	while ((pHostage = UTIL_FindEntityByClassname(pHostage, "hostage_entity")))
 	{
 		if (pHostage->IsAlive())
 		{
@@ -2396,7 +2396,7 @@ bool CCSTutor::CheckForAllHostagesFollowingSomeone()
 	bool foundUnusedOne = false;
 	CHostage *pHostage = nullptr;
 
-	while ((pHostage = (CHostage *)UTIL_FindEntityByClassname(pHostage, "hostage_entity")))
+	while ((pHostage = UTIL_FindEntityByClassname(pHostage, "hostage_entity")))
 	{
 		if (pHostage->IsAlive())
 		{

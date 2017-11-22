@@ -38,7 +38,7 @@ enum HostageChatterType;
 class CHostageImprov: public CImprov
 {
 public:
-	CHostageImprov(CBaseEntity *entity = nullptr);
+	CHostageImprov(CBaseEntity *pEntity = nullptr);
 	~CHostageImprov() {};
 
 	// invoked when an improv reaches its MoveTo goal
@@ -98,18 +98,18 @@ public:
 	virtual bool CanCrouch() const { return true; }
 	virtual bool CanJump() const { return true; }
 	virtual bool IsVisible(const Vector &pos, bool testFOV = false) const;						// return true if hostage can see position
-	virtual bool IsPlayerLookingAtMe(CBasePlayer *other, float cosTolerance = 0.95f) const;
+	virtual bool IsPlayerLookingAtMe(CBasePlayer *pOther, float cosTolerance = 0.95f) const;
 	virtual CBasePlayer *IsAnyPlayerLookingAtMe(int team = 0, float cosTolerance = 0.95f) const;
 	virtual CBasePlayer *GetClosestPlayerByTravelDistance(int team = 0, float *range = nullptr) const;
 	virtual CNavArea *GetLastKnownArea() const { return m_lastKnownArea; }
 	virtual void OnUpdate(float deltaT);
 	virtual void OnUpkeep(float deltaT);
 	virtual void OnReset();
-	virtual void OnGameEvent(GameEventType event, CBaseEntity *entity = nullptr, CBaseEntity *other = nullptr);
-	virtual void OnTouch(CBaseEntity *other);									// in contact with "other"
+	virtual void OnGameEvent(GameEventType event, CBaseEntity *pEntity = nullptr, CBaseEntity *pOther = nullptr);
+	virtual void OnTouch(CBaseEntity *pOther);									// in contact with "other"
 
 #ifdef PLAY_GAMEDLL
-	void ApplyForce2(float_precision x, float_precision y);
+	void ApplyForce2(real_t x, real_t y);
 #endif
 
 public:
@@ -353,19 +353,19 @@ public:
 		m_velDir = improv->GetActualVelocity();
 		m_speed = m_velDir.NormalizeInPlace();
 	}
-	bool operator()(CBaseEntity *entity)
+	bool operator()(CBaseEntity *pEntity)
 	{
 		const float space = 1.0f;
 		Vector to;
 		float range;
 
-		if (entity == reinterpret_cast<CBaseEntity *>(m_improv->GetEntity()))
+		if (pEntity == reinterpret_cast<CBaseEntity *>(m_improv->GetEntity()))
 			return true;
 
-		if (entity->IsPlayer() && !entity->IsAlive())
+		if (pEntity->IsPlayer() && !pEntity->IsAlive())
 			return true;
 
-		to = entity->pev->origin - m_improv->GetCentroid();
+		to = pEntity->pev->origin - m_improv->GetCentroid();
 
 #ifdef PLAY_GAMEDLL
 		// TODO: fix test demo
@@ -374,7 +374,7 @@ public:
 		range = to.NormalizeInPlace();
 #endif
 
-		CBasePlayer *player = static_cast<CBasePlayer *>(entity);
+		CBasePlayer *pPlayer = static_cast<CBasePlayer *>(pEntity);
 
 		const float spring = 50.0f;
 		const float damper = 1.0f;
@@ -383,11 +383,11 @@ public:
 			return true;
 
 		const float cosTolerance = 0.8f;
-		if (entity->IsPlayer() && player->m_iTeam == CT && !m_improv->IsFollowing() && m_improv->IsPlayerLookingAtMe(player, cosTolerance))
+		if (pEntity->IsPlayer() && pPlayer->m_iTeam == CT && !m_improv->IsFollowing() && m_improv->IsPlayerLookingAtMe(pPlayer, cosTolerance))
 			return true;
 
 		const float minSpace = (spring - range);
-		float_precision ds = -minSpace;
+		real_t ds = -minSpace;
 
 #ifndef PLAY_GAMEDLL
 		m_improv->ApplyForce(to * ds);
@@ -417,16 +417,16 @@ public:
 		m_dir = Vector(BotCOS(me->GetMoveAngle()), BotSIN(me->GetMoveAngle()), 0.0f);
 		m_isBlocked = false;
 	}
-	bool operator()(CBaseEntity *entity)
+	bool operator()(CBaseEntity *pEntity)
 	{
 		Vector to;
-		float_precision range;
+		real_t range;
 		const float closeRange = 60.0f;
 		const float aheadTolerance = 0.95f;
 
-		if (entity != reinterpret_cast<CBaseEntity *>(m_me->GetEntity()))
+		if (pEntity != reinterpret_cast<CBaseEntity *>(m_me->GetEntity()))
 		{
-			to = (entity->Center() - m_me->GetCentroid());
+			to = (pEntity->Center() - m_me->GetCentroid());
 			range = to.NormalizeInPlace();
 
 			if (range <= closeRange && DotProduct(to, m_dir) >= aheadTolerance)
@@ -444,7 +444,7 @@ private:
 };
 
 #ifdef PLAY_GAMEDLL
-inline void CHostageImprov::ApplyForce2(float_precision x, float_precision y)
+inline void CHostageImprov::ApplyForce2(real_t x, real_t y)
 {
 	m_vel.x += x;
 	m_vel.y += y;

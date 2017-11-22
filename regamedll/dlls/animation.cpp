@@ -55,12 +55,12 @@ int LookupActivity(void *pmodel, entvars_t *pev, int activity)
 
 	pseqdesc = (mstudioseqdesc_t *)((byte *)pstudiohdr + pstudiohdr->seqindex);
 
-	for (i = 0; i < pstudiohdr->numseq; ++i)
+	for (i = 0; i < pstudiohdr->numseq; i++)
 	{
 		if (pseqdesc[i].activity == activity)
 		{
 			weightTotal += pseqdesc[i].actweight;
-			++activitySequenceCount;
+			activitySequenceCount++;
 		}
 	}
 
@@ -70,7 +70,7 @@ int LookupActivity(void *pmodel, entvars_t *pev, int activity)
 		{
 			int which = RANDOM_LONG(0, weightTotal - 1);
 
-			for (i = 0; i < pstudiohdr->numseq; ++i)
+			for (i = 0; i < pstudiohdr->numseq; i++)
 			{
 				if (pseqdesc[i].activity == activity)
 				{
@@ -87,7 +87,7 @@ int LookupActivity(void *pmodel, entvars_t *pev, int activity)
 		{
 			select = RANDOM_LONG(0, activitySequenceCount - 1);
 
-			for (i = 0; i < pstudiohdr->numseq; ++i)
+			for (i = 0; i < pstudiohdr->numseq; i++)
 			{
 				if (pseqdesc[i].activity == activity)
 				{
@@ -96,7 +96,7 @@ int LookupActivity(void *pmodel, entvars_t *pev, int activity)
 						return i;
 					}
 
-					--select;
+					select--;
 				}
 			}
 		}
@@ -118,7 +118,7 @@ int LookupActivityHeaviest(void *pmodel, entvars_t *pev, int activity)
 	int weight = 0;
 	int seq = ACT_INVALID;
 
-	for (int i = 0; i < pstudiohdr->numseq; ++i)
+	for (int i = 0; i < pstudiohdr->numseq; i++)
 	{
 		if (pseqdesc[i].activity == activity)
 		{
@@ -161,7 +161,7 @@ int LookupSequence(void *pmodel, const char *label)
 
 	// Look up by sequence name.
 	mstudioseqdesc_t *pseqdesc = (mstudioseqdesc_t *)((byte *)pstudiohdr + pstudiohdr->seqindex);
-	for (int i = 0; i < pstudiohdr->numseq; ++i)
+	for (int i = 0; i < pstudiohdr->numseq; i++)
 	{
 		if (!Q_stricmp(pseqdesc[i].label, label))
 			return i;
@@ -196,7 +196,7 @@ NOXREF void SequencePrecache(void *pmodel, const char *pSequenceName)
 		mstudioseqdesc_t *pseqdesc = (mstudioseqdesc_t *)((byte *)pstudiohdr + pstudiohdr->seqindex) + index;
 		mstudioevent_t *pevent = (mstudioevent_t *)((byte *)pstudiohdr + pseqdesc->eventindex);
 
-		for (int i = 0; i < pseqdesc->numevents; ++i)
+		for (int i = 0; i < pseqdesc->numevents; i++)
 		{
 			// Don't send client-side events to the server AI
 			if (pevent[i].event >= EVENT_CLIENT)
@@ -446,7 +446,7 @@ int FindTransition(void *pmodel, int iEndingAnim, int iGoalAnim, int *piDir)
 	}
 
 	// look for someone going
-	for (int i = 0; i < pstudiohdr->numseq; ++i)
+	for (int i = 0; i < pstudiohdr->numseq; i++)
 	{
 		if (pseqdesc[i].entrynode == iEndNode && pseqdesc[i].exitnode == iInternNode)
 		{
@@ -562,8 +562,8 @@ void AngleQuaternion(vec_t *angles, vec_t *quaternion)
 #else // REGAMEDLL_FIXES
 void AngleQuaternion(vec_t *angles, vec_t *quaternion)
 {
-	float_precision sy, cy, sp_, cp;
-	float_precision angle;
+	real_t sy, cy, sp_, cp;
+	real_t angle;
 	float sr, cr;
 
 	float ftmp0;
@@ -597,10 +597,10 @@ void AngleQuaternion(vec_t *angles, vec_t *quaternion)
 void QuaternionSlerp(vec_t *p, vec_t *q, float t, vec_t *qt)
 {
 	int i;
-	float_precision a = 0;
-	float_precision b = 0;
+	real_t a = 0;
+	real_t b = 0;
 
-	for (i = 0; i < 4; ++i)
+	for (i = 0; i < 4; i++)
 	{
 		a += (p[i] - q[i]) * (p[i] - q[i]);
 		b += (p[i] + q[i]) * (p[i] + q[i]);
@@ -608,7 +608,7 @@ void QuaternionSlerp(vec_t *p, vec_t *q, float t, vec_t *qt)
 
 	if (a > b)
 	{
-		for (i = 0; i < 4; ++i)
+		for (i = 0; i < 4; i++)
 			q[i] = -q[i];
 	}
 
@@ -619,13 +619,13 @@ void QuaternionSlerp(vec_t *p, vec_t *q, float t, vec_t *qt)
 	{
 		if ((1.0 - cosom) > 0.00000001)
 		{
-			float_precision cosomega = Q_acos(float_precision(cosom));
+			real_t cosomega = Q_acos(real_t(cosom));
 
 			float omega = cosomega;
 			float sinom = Q_sin(cosomega);
 
 			sclp = Q_sin((1.0 - t) * omega) / sinom;
-			sclq = Q_sin(float_precision(omega * t)) / sinom;
+			sclq = Q_sin(real_t(omega * t)) / sinom;
 		}
 		else
 		{
@@ -633,7 +633,7 @@ void QuaternionSlerp(vec_t *p, vec_t *q, float t, vec_t *qt)
 			sclp = 1.0 - t;
 		}
 
-		for (i = 0; i < 4; ++i)
+		for (i = 0; i < 4; i++)
 			qt[i] = sclp * p[i] + sclq * q[i];
 	}
 	else
@@ -646,7 +646,7 @@ void QuaternionSlerp(vec_t *p, vec_t *q, float t, vec_t *qt)
 		sclp = Q_sin((1.0 - t) * 0.5 * M_PI);
 		sclq = Q_sin(t * 0.5 * M_PI);
 
-		for (i = 0; i < 3; ++i)
+		for (i = 0; i < 3; i++)
 			qt[i] = sclp * p[i] + sclq * qt[i];
 	}
 }
@@ -908,7 +908,7 @@ void StudioSlerpBones(vec4_t *q1, float pos1[][3], vec4_t *q2, float pos2[][3], 
 	s = Q_clamp(s, 0.0f, 1.0f);
 	s1 = 1.0f - s;
 
-	for (i = 0; i < g_pstudiohdr->numbones; ++i)
+	for (i = 0; i < g_pstudiohdr->numbones; i++)
 	{
 		QuaternionSlerp(q1[i], q2[i], s, q3);
 
@@ -955,12 +955,12 @@ void ConcatTransforms(float in1[3][4], float in2[3][4], float out[3][4])
 	out[2][3] = in1[2][0] * in2[0][3] + in1[2][1] * in2[1][3] + in1[2][2] * in2[2][3] + in1[2][3];
 }
 
-float_precision StudioEstimateFrame(float frame, mstudioseqdesc_t *pseqdesc)
+real_t StudioEstimateFrame(float frame, mstudioseqdesc_t *pseqdesc)
 {
 	if (pseqdesc->numframes <= 1)
 		return 0;
 
-	return float_precision(pseqdesc->numframes - 1) * frame / 256;
+	return real_t(pseqdesc->numframes - 1) * frame / 256;
 }
 
 void SV_StudioSetupBones(model_t *pModel, float frame, int sequence, const vec_t *angles, const vec_t *origin, const byte *pcontroller, const byte *pblending, int iBone, const edict_t *pEdict)
@@ -997,7 +997,7 @@ void SV_StudioSetupBones(model_t *pModel, float frame, int sequence, const vec_t
 	{
 		chainlength = g_pstudiohdr->numbones;
 
-		for (i = 0; i < chainlength; ++i)
+		for (i = 0; i < chainlength; i++)
 			chain[(chainlength - i) - 1] = i;
 	}
 	else
@@ -1018,7 +1018,7 @@ void SV_StudioSetupBones(model_t *pModel, float frame, int sequence, const vec_t
 	{
 		if (pseqdesc->numblends > 1)
 		{
-			float b = float_precision(pblending[0]) / 255.0f;
+			float b = real_t(pblending[0]) / 255.0f;
 
 			panim = StudioGetAnim(pModel, pseqdesc);
 			panim += g_pstudiohdr->numbones;
@@ -1033,7 +1033,7 @@ void SV_StudioSetupBones(model_t *pModel, float frame, int sequence, const vec_t
 		/*static */float pos3[MAXSTUDIOBONES][3], pos4[MAXSTUDIOBONES][3];
 		/*static */float q3[MAXSTUDIOBONES][4], q4[MAXSTUDIOBONES][4];
 
-		float_precision s, t;
+		real_t s, t;
 		s = GetPlayerYaw(pEdict);
 		t = GetPlayerPitch(pEdict);
 
@@ -1136,7 +1136,7 @@ void SV_StudioSetupBones(model_t *pModel, float frame, int sequence, const vec_t
 		panim = StudioGetAnim(pModel, pseqdesc);
 		StudioCalcRotations(pbones, chain, chainlength, adj, pos2, q2, pseqdesc, panim, 0, 0);
 
-		for (i = 0; i < g_pstudiohdr->numbones; ++i)
+		for (i = 0; i < g_pstudiohdr->numbones; i++)
 		{
 			if (!Q_strcmp(pbones[i].name, "Bip01 Spine"))
 			{

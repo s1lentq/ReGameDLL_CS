@@ -94,14 +94,14 @@ void SV_Career_EndRound_f()
 
 		for (int i = 1; i <= gpGlobals->maxClients; i++)
 		{
-			CBasePlayer *player = UTIL_PlayerByIndex(i);
+			CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
-			if (!player || FNullEnt(player->pev))
+			if (!pPlayer || FNullEnt(pPlayer->pev))
 				continue;
 
-			if (player->IsBot() && player->m_iTeam == pLocalPlayer->m_iTeam)
+			if (pPlayer->IsBot() && pPlayer->m_iTeam == pLocalPlayer->m_iTeam)
 			{
-				SERVER_COMMAND(UTIL_VarArgs("bot_kill \"%s\"\n", STRING(player->pev->netname)));
+				SERVER_COMMAND(UTIL_VarArgs("bot_kill \"%s\"\n", STRING(pPlayer->pev->netname)));
 			}
 		}
 	}

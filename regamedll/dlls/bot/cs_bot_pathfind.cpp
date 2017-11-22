@@ -42,7 +42,7 @@ bool CCSBot::ComputePathPositions()
 	for (int i = 1; i < m_pathLength; i++)
 	{
 		const ConnectInfo *from = &m_path[i - 1];
-		ConnectInfo *to = &m_path[i ];
+		ConnectInfo *to = &m_path[i];
 
 		// walk along the floor to the next area
 		if (to->how <= GO_WEST)
@@ -669,11 +669,11 @@ int CCSBot::FindOurPositionOnPath(Vector *close, bool local) const
 	Vector eyes = feet + Vector(0, 0, HalfHumanHeight); // in case we're crouching
 	Vector pos;
 	const Vector *from, *to;
-	float_precision length;
+	real_t length;
 	float closeLength;
 	float closeDistSq = 9999999999.9;
 	int closeIndex = -1;
-	float_precision distSq;
+	real_t distSq;
 
 	int start, end;
 
@@ -1085,7 +1085,7 @@ float CCSBot::GetApproximateFallDamage(float height) const
 	const float slope = 0.2178f;
 	const float intercept = 26.0f;
 
-	float_precision damage = slope * height - intercept;
+	real_t damage = slope * height - intercept;
 
 	if (damage < 0.0f)
 		return 0.0f;
@@ -1116,26 +1116,26 @@ bool CCSBot::IsFriendInTheWay(const Vector *goalPos) const
 	// check if any friends are overlapping this linear path
 	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{
-		CBasePlayer *player = UTIL_PlayerByIndex(i);
+		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
-		if (!player)
+		if (!pPlayer)
 			continue;
 
-		if (FNullEnt(player->pev))
+		if (FNullEnt(pPlayer->pev))
 			continue;
 
-		if (!player->IsAlive())
+		if (!pPlayer->IsAlive())
 			continue;
 
 		// ignore enemies
-		if (BotRelationship(player) == BOT_ENEMY)
+		if (BotRelationship(pPlayer) == BOT_ENEMY)
 			continue;
 
-		if (player == this)
+		if (pPlayer == this)
 			continue;
 
 		// compute vector from us to our friend
-		Vector toFriend = player->pev->origin - pev->origin;
+		Vector toFriend = pPlayer->pev->origin - pev->origin;
 
 		// check if friend is in our "personal space"
 		const float personalSpace = 100.0f;
@@ -1158,7 +1158,7 @@ bool CCSBot::IsFriendInTheWay(const Vector *goalPos) const
 
 		// check if friend overlaps our intended line of movement
 		const float friendRadius = 30.0f;
-		if ((pos - player->pev->origin).IsLengthLessThan(friendRadius))
+		if ((pos - pPlayer->pev->origin).IsLengthLessThan(friendRadius))
 		{
 			// friend is in our personal space and overlaps our intended line of movement
 			m_isFriendInTheWay = true;
@@ -1393,29 +1393,6 @@ CCSBot::PathResult CCSBot::UpdatePathMovement(bool allowSpeedChange)
 			StandUp();
 		}
 		// end crouching logic
-
-		// Walking
-		bool didWalk = false;
-		for (int i = prevIndex; i < m_pathLength; ++i)
-		{
-			const CNavArea *to = m_path[i].area;
-
-			Vector close;
-			to->GetClosestPointOnArea(&pev->origin, &close);
-
-			if ((close - pev->origin).Make2D().IsLengthGreaterThan(crouchRange))
-				break;
-
-			if (to->GetAttributes() & NAV_WALK)
-			{
-				Walk();
-				didWalk = true;
-				break;
-			}
-		}
-
-		if (!didWalk)
-			Run();
 	}
 
 	// compute our forward facing angle

@@ -664,7 +664,7 @@ public:
 
 	int random_seed;
 	unsigned short m_usPlayerBleed;
-	EHANDLE m_hObserverTarget;
+	EntityHandle<CBasePlayer> m_hObserverTarget;
 	float m_flNextObserverInput;
 	int m_iObserverWeapon;
 	int m_iObserverC4State;
@@ -877,9 +877,11 @@ public:
 
 inline bool CBasePlayer::IsReloading() const
 {
-	CBasePlayerWeapon *weapon = static_cast<CBasePlayerWeapon *>(m_pActiveItem);
-	if (weapon && weapon->m_fInReload)
+	CBasePlayerWeapon *pCurrentWeapon = static_cast<CBasePlayerWeapon *>(m_pActiveItem);
+	if (pCurrentWeapon && pCurrentWeapon->m_fInReload)
+	{
 		return true;
+	}
 
 	return false;
 }
@@ -896,18 +898,18 @@ inline CCSPlayer *CBasePlayer::CSPlayer() const {
 // Index is 1 based
 inline CBasePlayer *UTIL_PlayerByIndex(int playerIndex)
 {
-	return (CBasePlayer *)GET_PRIVATE(INDEXENT(playerIndex));
+	return GET_PRIVATE<CBasePlayer>(INDEXENT(playerIndex));
 }
 
 #endif
 
 inline CBasePlayer *UTIL_PlayerByIndexSafe(int playerIndex)
 {
-	CBasePlayer *player = nullptr;
+	CBasePlayer *pPlayer = nullptr;
 	if (likely(playerIndex > 0 && playerIndex <= gpGlobals->maxClients))
-		player = UTIL_PlayerByIndex(playerIndex);
+		pPlayer = UTIL_PlayerByIndex(playerIndex);
 
-	return player;
+	return pPlayer;
 }
 
 extern int gEvilImpulse101;
@@ -918,22 +920,22 @@ extern CBaseEntity *g_pLastTerroristSpawn;
 extern BOOL gInitHUD;
 extern cvar_t *sv_aim;
 
-void OLD_CheckBuyZone(CBasePlayer *player);
-void OLD_CheckBombTarget(CBasePlayer *player);
-void OLD_CheckRescueZone(CBasePlayer *player);
+void OLD_CheckBuyZone(CBasePlayer *pPlayer);
+void OLD_CheckBombTarget(CBasePlayer *pPlayer);
+void OLD_CheckRescueZone(CBasePlayer *pPlayer);
 
-void BuyZoneIcon_Set(CBasePlayer *player);
-void BuyZoneIcon_Clear(CBasePlayer *player);
-void BombTargetFlash_Set(CBasePlayer *player);
-void BombTargetFlash_Clear(CBasePlayer *player);
-void RescueZoneIcon_Set(CBasePlayer *player);
-void RescueZoneIcon_Clear(CBasePlayer *player);
-void EscapeZoneIcon_Set(CBasePlayer *player);
-void EscapeZoneIcon_Clear(CBasePlayer *player);
-void EscapeZoneIcon_Set(CBasePlayer *player);
-void EscapeZoneIcon_Clear(CBasePlayer *player);
-void VIP_SafetyZoneIcon_Set(CBasePlayer *player);
-void VIP_SafetyZoneIcon_Clear(CBasePlayer *player);
+void BuyZoneIcon_Set(CBasePlayer *pPlayer);
+void BuyZoneIcon_Clear(CBasePlayer *pPlayer);
+void BombTargetFlash_Set(CBasePlayer *pPlayer);
+void BombTargetFlash_Clear(CBasePlayer *pPlayer);
+void RescueZoneIcon_Set(CBasePlayer *pPlayer);
+void RescueZoneIcon_Clear(CBasePlayer *pPlayer);
+void EscapeZoneIcon_Set(CBasePlayer *pPlayer);
+void EscapeZoneIcon_Clear(CBasePlayer *pPlayer);
+void EscapeZoneIcon_Set(CBasePlayer *pPlayer);
+void EscapeZoneIcon_Clear(CBasePlayer *pPlayer);
+void VIP_SafetyZoneIcon_Set(CBasePlayer *pPlayer);
+void VIP_SafetyZoneIcon_Clear(CBasePlayer *pPlayer);
 
 void SendItemStatus(CBasePlayer *pPlayer);
 const char *GetCSModelName(int item_id);
@@ -941,12 +943,12 @@ Vector VecVelocityForDamage(float flDamage);
 int TrainSpeed(int iSpeed, int iMax);
 const char *GetWeaponName(entvars_t *pevInflictor, entvars_t *pKiller);
 void LogAttack(CBasePlayer *pAttacker, CBasePlayer *pVictim, int teamAttack, int healthHit, int armorHit, int newHealth, int newArmor, const char *killer_weapon_name);
-bool CanSeeUseable(CBasePlayer *me, CBaseEntity *entity);
+bool CanSeeUseable(CBasePlayer *me, CBaseEntity *pEntity);
 void FixPlayerCrouchStuck(edict_t *pPlayer);
 BOOL IsSpawnPointValid(CBaseEntity *pPlayer, CBaseEntity *pSpot);
 CBaseEntity *FindEntityForward(CBaseEntity *pMe);
-float_precision GetPlayerPitch(const edict_t *pEdict);
-float_precision GetPlayerYaw(const edict_t *pEdict);
+real_t GetPlayerPitch(const edict_t *pEdict);
+real_t GetPlayerYaw(const edict_t *pEdict);
 int GetPlayerGaitsequence(const edict_t *pEdict);
 const char *GetBuyStringForWeaponClass(int weaponClass);
 bool IsPrimaryWeaponClass(int classId);

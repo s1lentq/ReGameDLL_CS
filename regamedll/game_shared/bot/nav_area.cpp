@@ -827,11 +827,12 @@ bool CNavArea::MergeEdit(CNavArea *adj)
 	// check that these areas can be merged
 	const float tolerance = 1.0f;
 	bool merge = false;
-	if (abs(m_extent.lo.x - adj->m_extent.lo.x) < tolerance && abs(m_extent.hi.x - adj->m_extent.hi.x) < tolerance)
+	if (Q_abs(m_extent.lo.x - adj->m_extent.lo.x) < tolerance &&
+		Q_abs(m_extent.hi.x - adj->m_extent.hi.x) < tolerance)
 		merge = true;
 
-	if (abs(m_extent.lo.y - adj->m_extent.lo.y) < tolerance &&
-			abs(m_extent.hi.y - adj->m_extent.hi.y) < tolerance)
+	if (Q_abs(m_extent.lo.y - adj->m_extent.lo.y) < tolerance &&
+		Q_abs(m_extent.hi.y - adj->m_extent.hi.y) < tolerance)
 		merge = true;
 
 	if (merge == false)
@@ -2363,19 +2364,6 @@ void CNavArea::Draw(byte red, byte green, byte blue, int duration)
 		UTIL_DrawBeamPoints(down, left, duration, red, green, blue);
 		UTIL_DrawBeamPoints(left, up, duration, red, green, blue);
 	}
-
-	if (GetAttributes() & NAV_WALK)
-	{
-		float size = 8.0f;
-		Vector up(m_center.x - size, m_center.y - size, m_center.z + cv_bot_nav_zdraw.value);
-		Vector down(m_center.x + size, m_center.y + size, m_center.z + cv_bot_nav_zdraw.value);
-		Vector left(m_center.x - size, m_center.y + size, m_center.z + cv_bot_nav_zdraw.value);
-		Vector right(m_center.x + size, m_center.y - size, m_center.z + cv_bot_nav_zdraw.value);
-		UTIL_DrawBeamPoints(up, right, duration, red, green, blue);
-		UTIL_DrawBeamPoints(right, down, duration, red, green, blue);
-		UTIL_DrawBeamPoints(down, left, duration, red, green, blue);
-		UTIL_DrawBeamPoints(left, up, duration, red, green, blue);
-	}
 }
 
 // Draw selected corner for debugging
@@ -3085,25 +3073,25 @@ void DrawDanger()
 }
 
 // If a player is at the given spot, return true
-bool IsSpotOccupied(CBaseEntity *me, const Vector *pos)
+bool IsSpotOccupied(CBaseEntity *pEntity, const Vector *pos)
 {
 	const float closeRange = 75.0f;
 
 	// is there a player in this spot
 	float range;
-	CBasePlayer *player = UTIL_GetClosestPlayer(pos, &range);
+	CBasePlayer *pClosest = UTIL_GetClosestPlayer(pos, &range);
 
-	if (player != me)
+	if (pEntity != pClosest)
 	{
-		if (player && range < closeRange)
+		if (pClosest && range < closeRange)
 			return true;
 	}
 
 	// is there is a hostage in this spot
 	if (g_pHostages)
 	{
-		CHostage *hostage = g_pHostages->GetClosestHostage(*pos, &range);
-		if (hostage && hostage != me && range < closeRange)
+		CHostage *pHostage = g_pHostages->GetClosestHostage(*pos, &range);
+		if (pHostage && pEntity != pHostage && range < closeRange)
 			return true;
 	}
 
@@ -3264,31 +3252,31 @@ const Vector *FindNearbyHidingSpot(CBaseEntity *me, const Vector *pos, CNavArea 
 // Return true if moving from "start" to "finish" will cross a player's line of fire
 // The path from "start" to "finish" is assumed to be a straight line
 // "start" and "finish" are assumed to be points on the ground
-bool IsCrossingLineOfFire(const Vector &start, const Vector &finish, CBaseEntity *ignore, int ignoreTeam)
+bool IsCrossingLineOfFire(const Vector &start, const Vector &finish, CBaseEntity *pEntIgnore, int ignoreTeam)
 {
-	for (int p = 1; p <= gpGlobals->maxClients; p++)
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{
-		CBasePlayer *player = UTIL_PlayerByIndex(p);
+		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
-		if (!IsEntityValid(player))
+		if (!IsEntityValid(pPlayer))
 			continue;
 
-		if (player == ignore)
+		if (pPlayer == pEntIgnore)
 			continue;
 
-		if (!player->IsAlive())
+		if (!pPlayer->IsAlive())
 			continue;
 
-		if (ignoreTeam && player->m_iTeam == ignoreTeam)
+		if (ignoreTeam && pPlayer->m_iTeam == ignoreTeam)
 			continue;
 
-		UTIL_MakeVectors(player->pev->v_angle + player->pev->punchangle);
+		UTIL_MakeVectors(pPlayer->pev->v_angle + pPlayer->pev->punchangle);
 
 		const float longRange = 5000.0f;
-		Vector playerTarget = player->pev->origin + longRange * gpGlobals->v_forward;
+		Vector playerTarget = pPlayer->pev->origin + longRange * gpGlobals->v_forward;
 
 		Vector result;
-		if (IsIntersecting2D(start, finish, player->pev->origin, playerTarget, &result))
+		if (IsIntersecting2D(start, finish, pPlayer->pev->origin, playerTarget, &result))
 		{
 			float loZ, hiZ;
 			if (start.z < finish.z)
@@ -3409,28 +3397,28 @@ const Vector *FindNearbyRetreatSpot(CBaseEntity *me, const Vector *start, CNavAr
 
 // Return number of players with given teamID in this area (teamID == 0 means any/all)
 // TODO: Keep pointers to contained Players to make this a zero-time query
-int CNavArea::GetPlayerCount(int teamID, CBasePlayer *ignore) const
+int CNavArea::GetPlayerCount(int teamID, CBasePlayer *pEntIgnore) const
 {
 	int nCount = 0;
 	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{
-		CBasePlayer *player = UTIL_PlayerByIndex(i);
+		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
-		if (player == ignore)
+		if (pPlayer == pEntIgnore)
 			continue;
 
-		if (!IsEntityValid(player))
+		if (!IsEntityValid(pPlayer))
 			continue;
 
-		if (!player->IsPlayer())
+		if (!pPlayer->IsPlayer())
 			continue;
 
-		if (!player->IsAlive())
+		if (!pPlayer->IsAlive())
 			continue;
 
-		if (teamID == UNASSIGNED || player->m_iTeam == teamID)
+		if (teamID == UNASSIGNED || pPlayer->m_iTeam == teamID)
 		{
-			if (Contains(&player->pev->origin))
+			if (Contains(&pPlayer->pev->origin))
 				nCount++;
 		}
 	}
@@ -3841,12 +3829,11 @@ void EditNavAreas(NavEditCmdType cmd)
 				}
 				else
 				{
-					Q_sprintf(attrib, "%s%s%s%s%s",
-						(area->GetAttributes() & NAV_CROUCH) ? "CROUCH " : "",
-						(area->GetAttributes() & NAV_JUMP) ? "JUMP " : "",
+					Q_sprintf(attrib, "%s%s%s%s",
+						(area->GetAttributes() & NAV_CROUCH)  ? "CROUCH "  : "",
+						(area->GetAttributes() & NAV_JUMP)    ? "JUMP "    : "",
 						(area->GetAttributes() & NAV_PRECISE) ? "PRECISE " : "",
-						(area->GetAttributes() & NAV_NO_JUMP) ? "NO_JUMP " : "",
-						(area->GetAttributes() & NAV_WALK) ? "WALK " : "");
+						(area->GetAttributes() & NAV_NO_JUMP) ? "NO_JUMP " : "");
 				}
 
 				Q_sprintf(buffer, "Area #%d %s %s\n", area->GetID(), locName, attrib);
@@ -3989,10 +3976,6 @@ void EditNavAreas(NavEditCmdType cmd)
 					case EDIT_ATTRIB_PRECISE:
 						EMIT_SOUND_DYN(ENT(pLocalPlayer->pev), CHAN_ITEM, "buttons/bell1.wav", 1, ATTN_NORM, 0, 100);
 						area->SetAttributes(area->GetAttributes() ^ NAV_PRECISE);
-						break;
-					case EDIT_ATTRIB_WALK:
-						EMIT_SOUND_DYN(ENT(UTIL_GetLocalPlayer()->pev), CHAN_ITEM, "buttons/bell1.wav", 1, ATTN_NORM, 0, 100);
-						area->SetAttributes(area->GetAttributes() ^ NAV_WALK);
 						break;
 					case EDIT_ATTRIB_NO_JUMP:
 						EMIT_SOUND_DYN(ENT(pLocalPlayer->pev), CHAN_ITEM, "buttons/bell1.wav", 1, ATTN_NORM, 0, 100);
@@ -4314,11 +4297,10 @@ bool GetGroundHeight(const Vector *pos, float *height, Vector *normal)
 
 		UTIL_TraceLine(from, to, ignore_monsters, dont_ignore_glass, ignore, &result);
 
-		if (result.pHit)
+		if (result.flFraction != 1.0f && result.pHit)
 		{
-			if (FClassnameIs(VARS(result.pHit), "func_door")
-				|| FClassnameIs(VARS(result.pHit), "func_door_rotating")
-				|| (FClassnameIs(VARS(result.pHit), "func_breakable") && VARS(result.pHit)->takedamage == DAMAGE_YES))
+			// ignoring any entities that we can walk through
+			if (IsEntityWalkable(VARS(result.pHit), WALK_THRU_DOORS | WALK_THRU_BREAKABLES))
 			{
 				ignore = result.pHit;
 				continue;

@@ -247,7 +247,7 @@ public:
 	virtual void OnExit(CCSBot *me);
 	virtual const char *GetName() const { return "Follow"; }
 
-	void SetLeader(CBasePlayer *leader) { m_leader = leader; }
+	void SetLeader(CBasePlayer *pLeader) { m_leader = pLeader; }
 
 private:
 	void ComputeLeaderMotionState(float leaderSpeed);
@@ -287,7 +287,7 @@ public:
 	virtual void OnExit(CCSBot *me);
 	virtual const char *GetName() const { return "UseEntity"; }
 
-	void SetEntity(CBaseEntity *entity) { m_entity = entity; }
+	void SetEntity(CBaseEntity *pEntity) { m_entity = pEntity; }
 
 private:
 	EntityHandle<CBaseEntity> m_entity;
@@ -313,13 +313,13 @@ public:
 	virtual void Walk();
 	virtual bool Jump(bool mustJump = false);								// returns true if jump was started
 
-	virtual void OnEvent(GameEventType event, CBaseEntity *entity = nullptr, CBaseEntity *other = nullptr);		// invoked when event occurs in the game (some events have NULL entity)
+	virtual void OnEvent(GameEventType event, CBaseEntity *pEntity = nullptr, CBaseEntity *pOther = nullptr);		// invoked when event occurs in the game (some events have NULL entity)
 
 	#define CHECK_FOV true
-	virtual bool IsVisible(const Vector *pos, bool testFOV = false) const;										// return true if we can see the point
-	virtual bool IsVisible(CBasePlayer *player, bool testFOV = false, unsigned char *visParts = nullptr) const;	// return true if we can see any part of the player
+	virtual bool IsVisible(const Vector *pos, bool testFOV = false) const;											// return true if we can see the point
+	virtual bool IsVisible(CBasePlayer *pPlayer, bool testFOV = false, unsigned char *visParts = nullptr) const;	// return true if we can see any part of the player
 
-	virtual bool IsEnemyPartVisible(VisiblePartType part) const;												// if enemy is visible, return the part we see for our current enemy
+	virtual bool IsEnemyPartVisible(VisiblePartType part) const;													// if enemy is visible, return the part we see for our current enemy
 
 public:
 	void Disconnect();
@@ -374,12 +374,12 @@ public:
 	bool IsEscapingFromBomb() const;					// return true if we are escaping from the bomb
 
 	void RescueHostages();
-	void UseEntity(CBaseEntity *entity);				// use the entity
+	void UseEntity(CBaseEntity *pEntity);				// use the entity
 
 	bool IsBuying() const;
 
-	void Panic(CBasePlayer *enemy);						// look around in panic
-	void Follow(CBasePlayer *player);					// begin following given Player
+	void Panic(CBasePlayer *pEnemy);					// look around in panic
+	void Follow(CBasePlayer *pPlayer);					// begin following given Player
 	void ContinueFollowing();							// continue following our leader after finishing what we were doing
 	void StopFollowing();								// stop following
 	bool IsFollowing() const;							// return true if we are following someone (not necessarily in the follow state)
@@ -437,7 +437,7 @@ public:
 		NUM_TASKS
 	};
 
-	void SetTask(TaskType task, CBaseEntity *entity = nullptr);				// set our current "task"
+	void SetTask(TaskType task, CBaseEntity *pEntity = nullptr);				// set our current "task"
 	TaskType GetTask() const;
 	CBaseEntity *GetTaskEntity();
 
@@ -495,7 +495,7 @@ public:
 	// enemies
 	// BOTPORT: GetEnemy() collides with GetEnemy() in CBaseEntity - need to use different nomenclature
 
-	void SetEnemy(CBasePlayer *enemy);							// set given player as our current enemy
+	void SetEnemy(CBasePlayer *pEnemy);							// set given player as our current enemy
 	CBasePlayer *GetEnemy();
 	int GetNearbyEnemyCount() const;							// return max number of nearby enemies we've seen recently
 	unsigned int GetEnemyPlace() const;							// return location where we see the majority of our enemies
@@ -563,7 +563,7 @@ public:
 	bool IsUsingLadder() const;											// returns true if we are in the process of negotiating a ladder
 	void GetOffLadder();
 
-	void SetGoalEntity(CBaseEntity *entity);
+	void SetGoalEntity(CBaseEntity *pEntity);
 
 	template <typename T = CBaseEntity>
 	T *GetGoalEntity();
@@ -654,7 +654,7 @@ public:
 	void BotDeathThink();
 	CBasePlayer *FindNearbyPlayer();
 	void AdjustSafeTime();							// called when enemy seen to adjust safe time for this round
-	void EXPORT BotTouch(CBaseEntity *other);
+	void EXPORT BotTouch(CBaseEntity *pOther);
 	bool HasAnyAmmo(CBasePlayerWeapon *weapon) const;
 
 private:
@@ -750,7 +750,7 @@ private:
 	void SetupLadderMovement();
 	void SetPathIndex(int newIndex);											// set the current index along the path
 	void DrawPath();
-	int FindOurPositionOnPath(Vector *close, bool local = false) const;							// compute the closest point to our current position on our path
+	int FindOurPositionOnPath(Vector *close, bool local = false) const;												// compute the closest point to our current position on our path
 	int FindPathPoint(float aheadRange, Vector *point, int *prevIndex = nullptr);									// compute a point a fixed distance ahead along our path.
 	bool FindClosestPointOnPath(const Vector *worldPos, int startIndex, int endIndex, Vector *close) const;			// compute closest point on path to given point
 	bool IsStraightLinePathWalkable(const Vector *goal) const;														// test for un-jumpable height change, or unrecoverable fall
@@ -1000,7 +1000,7 @@ private:
 	void StartNormalProcess();
 
 #ifdef REGAMEDLL_ADD
-	bool IsNoticable(const CBasePlayer *player, unsigned char visibleParts) const;	// return true if we "notice" given player
+	bool IsNoticable(const CBasePlayer *pPlayer, unsigned char visibleParts) const;	// return true if we "notice" given player
 #endif
 };
 
@@ -1124,10 +1124,10 @@ inline bool CCSBot::IsNoiseHeard() const
 	return false;
 }
 
-inline void CCSBot::SetTask(TaskType task, CBaseEntity *entity)
+inline void CCSBot::SetTask(TaskType task, CBaseEntity *pEntity)
 {
 	m_task = task;
-	m_taskEntity = entity;
+	m_taskEntity = pEntity;
 }
 
 inline CCSBot::TaskType CCSBot::GetTask() const
@@ -1281,9 +1281,9 @@ inline bool CCSBot::IsUsingLadder() const
 	return m_pathLadder != nullptr;
 }
 
-inline void CCSBot::SetGoalEntity(CBaseEntity *entity)
+inline void CCSBot::SetGoalEntity(CBaseEntity *pEntity)
 {
-	m_goalEntity = entity;
+	m_goalEntity = pEntity;
 }
 
 template <typename T>
@@ -1393,7 +1393,7 @@ inline int CCSBot::GetHostageEscortCount() const
 
 inline void CCSBot::IncreaseHostageEscortCount()
 {
-	++m_hostageEscortCount;
+	m_hostageEscortCount++;
 }
 
 inline void CCSBot::ResetWaitForHostagePatience()
@@ -1464,12 +1464,8 @@ public:
 	bool operator()(CNavArea *area)
 	{
 		// collect all the hiding spots in this area
-		const HidingSpotList *list = area->GetHidingSpotList();
-
-		for (HidingSpotList::const_iterator iter = list->begin(); iter != list->end(); ++iter)
+		for (auto const spot : *area->GetHidingSpotList())
 		{
-			const HidingSpot *spot = (*iter);
-
 			if (m_count >= MAX_SPOTS)
 				break;
 
@@ -1545,9 +1541,9 @@ public:
 class PathCost
 {
 public:
-	PathCost(CCSBot *bot, RouteType route = SAFEST_ROUTE)
+	PathCost(CCSBot *pBot, RouteType route = SAFEST_ROUTE)
 	{
-		m_bot = bot;
+		m_bot = pBot;
 		m_route = route;
 	}
 	float operator()(CNavArea *area, CNavArea *fromArea, const CNavLadder *ladder)
@@ -1632,7 +1628,7 @@ public:
 			if (area->GetAttributes() & NAV_CROUCH)
 			{
 				// these areas are very slow to move through
-				float_precision crouchPenalty = (m_route == FASTEST_ROUTE) ? 20.0f : 5.0f;
+				real_t crouchPenalty = (m_route == FASTEST_ROUTE) ? 20.0f : 5.0f;
 
 				// avoid crouch areas if we are rescuing hostages
 				if (m_bot->GetHostageEscortCount())
@@ -1641,15 +1637,6 @@ public:
 				}
 
 				cost += crouchPenalty * dist;
-			}
-
-			// if this is a "walk" area, add penalty
-			if (area->GetAttributes() & NAV_WALK)
-			{
-				// these areas are kinda slow to move through
-				float_precision walkPenalty = (m_route == FASTEST_ROUTE) ? 2.5f : 1.5f;
-
-				cost += walkPenalty * dist;
 			}
 
 			// if this is a "jump" area, add penalty
@@ -1696,19 +1683,19 @@ private:
 class FollowTargetCollector
 {
 public:
-	FollowTargetCollector(CBasePlayer *player)
+	FollowTargetCollector(CBasePlayer *pPlayer)
 	{
-		m_player = player;
-		m_forward.x = player->pev->velocity.x;
-		m_forward.y = player->pev->velocity.y;
+		m_player = pPlayer;
+		m_forward.x = pPlayer->pev->velocity.x;
+		m_forward.y = pPlayer->pev->velocity.y;
 
 		float speed = m_forward.NormalizeInPlace();
 
 		const float walkSpeed = 100.0f;
 		if (speed < walkSpeed)
 		{
-			m_cutoff.x = player->pev->origin.x;
-			m_cutoff.y = player->pev->origin.y;
+			m_cutoff.x = pPlayer->pev->origin.x;
+			m_cutoff.y = pPlayer->pev->origin.y;
 
 			m_forward.x = 0.0f;
 			m_forward.y = 0.0f;
@@ -1716,10 +1703,10 @@ public:
 		else
 		{
 			const float k = 1.5f;
-			float_precision trimSpeed = (speed < 200.0f) ? speed : 200.0f;
+			real_t trimSpeed = (speed < 200.0f) ? speed : 200.0f;
 
-			m_cutoff.x = player->pev->origin.x + k * trimSpeed * m_forward.x;
-			m_cutoff.y = player->pev->origin.y + k * trimSpeed * m_forward.y;
+			m_cutoff.x = pPlayer->pev->origin.x + k * trimSpeed * m_forward.x;
+			m_cutoff.y = pPlayer->pev->origin.y + k * trimSpeed * m_forward.y;
 		}
 
 		m_targetAreaCount = 0;
@@ -1744,9 +1731,10 @@ public:
 				Vector2D to(((*area->GetCenter()).x - m_cutoff.x), (*area->GetCenter()).y - m_cutoff.y);
 				to.NormalizeInPlace();
 
-				//if (DotProduct(to, m_forward) > 0.7071f)
-				if ((to.x * m_forward.x + to.y * m_forward.y) > 0.7071f)
+				if (DotProduct(to, m_forward) > 0.7071f)
+				{
 					m_targetArea[m_targetAreaCount++] = area;
+				}
 			}
 		}
 
@@ -1763,7 +1751,7 @@ public:
 void InstallBotControl();
 void Bot_ServerCommand();
 void Bot_RegisterCVars();
-int GetBotFollowCount(CBasePlayer *leader);
+int GetBotFollowCount(CBasePlayer *pLeader);
 const Vector *FindNearbyRetreatSpot(CCSBot *me, float maxRange);
 
 void drawProgressMeter(float progress, char *title);

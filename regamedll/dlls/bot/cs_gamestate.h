@@ -38,7 +38,7 @@ public:
 	CSGameState(CCSBot *owner);
 
 	void Reset();
-	void OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *other);		// Event handling
+	void OnEvent(GameEventType event, CBaseEntity *pEntity, CBaseEntity *pOther);	// Event handling
 	bool IsRoundOver() const;														// true if round has been won or lost (but not yet reset)
 
 	// bomb defuse scenario
@@ -79,7 +79,7 @@ public:
 	const Vector *GetBombPosition() const;			// return where we think the bomb is, or NULL if we don't know
 
 	// hostage rescue scenario
-	CHostage *GetNearestFreeHostage(Vector *knowPos = NULL) const;					// return the closest free hostage, and where we think it is (knowPos)
+	CHostage *GetNearestFreeHostage(Vector *knowPos = nullptr) const;				// return the closest free hostage, and where we think it is (knowPos)
 	const Vector *GetRandomFreeHostagePosition();
 	bool AreAllHostagesBeingRescued() const;					// return true if there are no free hostages
 	bool AreAllHostagesGone() const;							// all hostages have been rescued or are dead

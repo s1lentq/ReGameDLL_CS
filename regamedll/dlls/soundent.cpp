@@ -200,7 +200,7 @@ void CSoundEnt::Initialize()
 	m_iActiveSound = SOUNDLIST_EMPTY;
 
 	// clear all sounds, and link them into the free sound list.
-	for (i = 0; i < MAX_WORLD_SOUNDS; ++i)
+	for (i = 0; i < MAX_WORLD_SOUNDS; i++)
 	{
 		m_SoundPool[i].Clear();
 		m_SoundPool[i].m_iNext = i + 1;
@@ -210,7 +210,7 @@ void CSoundEnt::Initialize()
 	m_SoundPool[i - 1].m_iNext = SOUNDLIST_EMPTY;
 
 	// now reserve enough sounds for each client
-	for (i = 0; i < gpGlobals->maxClients; ++i)
+	for (i = 0; i < gpGlobals->maxClients; i++)
 	{
 		iSound = pSoundEnt->IAllocSound();
 

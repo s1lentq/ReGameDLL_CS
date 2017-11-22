@@ -361,7 +361,7 @@ void CFuncTank::Think()
 	pev->avelocity = g_vecZero;
 	TrackTarget();
 
-	if (fabs(float_precision(pev->avelocity.x)) > 1 || fabs(float_precision(pev->avelocity.y)) > 1)
+	if (Q_fabs(real_t(pev->avelocity.x)) > 1 || Q_fabs(real_t(pev->avelocity.y)) > 1)
 		StartRotSound();
 	else
 		StopRotSound();
@@ -468,7 +468,7 @@ void CFuncTank::TrackTarget()
 	}
 
 	// Move toward target at rate or less
-	float_precision distY = UTIL_AngleDistance(angles.y, pev->angles.y);
+	real_t distY = UTIL_AngleDistance(angles.y, pev->angles.y);
 	pev->avelocity.y = distY * 10.0f;
 
 	if (pev->avelocity.y > m_yawRate)
@@ -491,7 +491,7 @@ void CFuncTank::TrackTarget()
 	}
 
 	// Move toward target at rate or less
-	float_precision distX = UTIL_AngleDistance(angles.x, pev->angles.x);
+	real_t distX = UTIL_AngleDistance(angles.x, pev->angles.x);
 	pev->avelocity.x = distX  * 10.0f;
 
 	if (pev->avelocity.x > m_pitchRate)
@@ -508,7 +508,7 @@ void CFuncTank::TrackTarget()
 		return;
 	}
 
-	if (CanFire() && ((fabs(distX) < m_pitchTolerance && fabs(distY) < m_yawTolerance) || (pev->spawnflags & SF_TANK_LINEOFSIGHT)))
+	if (CanFire() && ((Q_fabs(distX) < m_pitchTolerance && Q_fabs(distY) < m_yawTolerance) || (pev->spawnflags & SF_TANK_LINEOFSIGHT)))
 	{
 		bool fire = false;
 		Vector forward;
@@ -541,7 +541,7 @@ void CFuncTank::TrackTarget()
 // If barrel is offset, add in additional rotation
 void CFuncTank::AdjustAnglesForBarrel(Vector &angles, float distance)
 {
-	float_precision r2, d2;
+	real_t r2, d2;
 
 	if (m_barrelPos.y != 0.0f || m_barrelPos.z != 0.0f)
 	{
@@ -599,7 +599,7 @@ void CFuncTank::TankTrace(const Vector &vecStart, const Vector &vecForward, cons
 {
 	// get circular gaussian spread
 	float x, z;
-	float_precision y;
+	real_t y;
 
 	do
 	{

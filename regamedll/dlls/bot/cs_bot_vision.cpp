@@ -247,9 +247,9 @@ bool CCSBot::IsVisible(const Vector *pos, bool testFOV) const
 
 // Return true if we can see any part of the player
 // Check parts in order of importance. Return the first part seen in "visParts" if it is non-NULL.
-bool CCSBot::IsVisible(CBasePlayer *player, bool testFOV, unsigned char *visParts) const
+bool CCSBot::IsVisible(CBasePlayer *pPlayer, bool testFOV, unsigned char *visParts) const
 {
-	Vector spot = player->pev->origin;
+	Vector spot = pPlayer->pev->origin;
 	unsigned char testVisParts = NONE;
 
 	// finish chest check
@@ -266,10 +266,10 @@ bool CCSBot::IsVisible(CBasePlayer *player, bool testFOV, unsigned char *visPart
 	const float standFeet = 34.0f;
 	const float crouchFeet = 14.0f;
 
-	if (player->pev->flags & FL_DUCKING)
-		spot.z = player->pev->origin.z - crouchFeet;
+	if (pPlayer->pev->flags & FL_DUCKING)
+		spot.z = pPlayer->pev->origin.z - crouchFeet;
 	else
-		spot.z = player->pev->origin.z - standFeet;
+		spot.z = pPlayer->pev->origin.z - standFeet;
 
 	// check feet
 	if (IsVisible(&spot, testFOV))
@@ -277,17 +277,17 @@ bool CCSBot::IsVisible(CBasePlayer *player, bool testFOV, unsigned char *visPart
 
 	// check "edges"
 	const float edgeOffset = 13.0f;
-	Vector2D dir = (player->pev->origin - pev->origin).Make2D();
+	Vector2D dir = (pPlayer->pev->origin - pev->origin).Make2D();
 	dir.NormalizeInPlace();
 
 	Vector2D perp(-dir.y, dir.x);
 
-	spot = player->pev->origin + Vector(perp.x * edgeOffset, perp.y * edgeOffset, 0);
+	spot = pPlayer->pev->origin + Vector(perp.x * edgeOffset, perp.y * edgeOffset, 0);
 
 	if (IsVisible(&spot, testFOV))
 		testVisParts |= LEFT_SIDE;
 
-	spot = player->pev->origin - Vector(perp.x * edgeOffset, perp.y * edgeOffset, 0);
+	spot = pPlayer->pev->origin - Vector(perp.x * edgeOffset, perp.y * edgeOffset, 0);
 
 	if (IsVisible(&spot, testFOV))
 		testVisParts |= RIGHT_SIDE;
@@ -497,7 +497,7 @@ void CCSBot::UpdateLookAround(bool updateNow)
 			// TODO: Use skill parameter instead of accuracy
 
 			// lower skills have exponentially longer delays
-			float_precision asleep = (1.0f - GetProfile()->GetSkill());
+			real_t asleep = (1.0f - GetProfile()->GetSkill());
 			asleep *= asleep;
 			asleep *= asleep;
 
@@ -505,7 +505,8 @@ void CCSBot::UpdateLookAround(bool updateNow)
 
 			// figure out how far along the path segment we are
 			Vector delta = m_spotEncounter->path.to - m_spotEncounter->path.from;
-			float_precision length = delta.Length();
+			real_t length = delta.Length();
+
 #ifdef REGAMEDLL_FIXES
 			float adx = Q_abs(delta.x);
 			float ady = Q_abs(delta.y);
@@ -513,7 +514,7 @@ void CCSBot::UpdateLookAround(bool updateNow)
 			float adx = float(Q_abs(int64(delta.x)));
 			float ady = float(Q_abs(int64(delta.y)));
 #endif
-			float_precision t;
+			real_t t;
 
 			if (adx > ady)
 				t = (pev->origin.x - m_spotEncounter->path.from.x) / delta.x;
@@ -693,51 +694,51 @@ CBasePlayer *CCSBot::FindMostDangerousThreat()
 	{
 		for (i = 1; i <= gpGlobals->maxClients; i++)
 		{
-			CBasePlayer *player = UTIL_PlayerByIndex(i);
+			CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
-			if (!player)
+			if (!pPlayer)
 				continue;
 
-			if (FNullEnt(player->pev))
+			if (FNullEnt(pPlayer->pev))
 				continue;
 
 			// is it a player?
-			if (!player->IsPlayer())
+			if (!pPlayer->IsPlayer())
 				continue;
 
 			// ignore self
-			if (player->entindex() == entindex())
+			if (pPlayer->entindex() == entindex())
 				continue;
 
 			// is it alive?
-			if (!player->IsAlive())
+			if (!pPlayer->IsAlive())
 				continue;
 
 			// is it an enemy?
-			if (BotRelationship(player) == BOT_TEAMMATE)
+			if (BotRelationship(pPlayer) == BOT_TEAMMATE)
 			{
 				TraceResult result;
-				UTIL_TraceLine(GetEyePosition(), player->pev->origin, ignore_monsters, ignore_glass, edict(), &result);
+				UTIL_TraceLine(GetEyePosition(), pPlayer->pev->origin, ignore_monsters, ignore_glass, edict(), &result);
 				if (result.flFraction == 1.0f)
 				{
 					// update watch timestamp
-					int idx = player->entindex() - 1;
+					int idx = pPlayer->entindex() - 1;
 					m_watchInfo[idx].timestamp = gpGlobals->time;
 					m_watchInfo[idx].isEnemy = false;
 
 					// keep track of our closest friend
-					Vector to = pev->origin - player->pev->origin;
+					Vector to = pev->origin - pPlayer->pev->origin;
 					float rangeSq = to.LengthSquared();
 					if (rangeSq < closeFriendRange)
 					{
-						m_closestVisibleFriend = player;
+						m_closestVisibleFriend = pPlayer;
 						closeFriendRange = rangeSq;
 					}
 
 					// keep track of our closest human friend
-					if (!player->IsBot() && rangeSq < closeHumanFriendRange)
+					if (!pPlayer->IsBot() && rangeSq < closeHumanFriendRange)
 					{
-						m_closestVisibleHumanFriend = player;
+						m_closestVisibleHumanFriend = pPlayer;
 						closeHumanFriendRange = rangeSq;
 					}
 				}
@@ -747,14 +748,14 @@ CBasePlayer *CCSBot::FindMostDangerousThreat()
 
 			// check if this enemy is fully
 			unsigned char visParts;
-			if (!IsVisible(player, CHECK_FOV, &visParts))
+			if (!IsVisible(pPlayer, CHECK_FOV, &visParts))
 				continue;
 
 #ifdef REGAMEDLL_ADD
 			// do we notice this enemy? (always notice current enemy)
-			if (player != currentThreat)
+			if (pPlayer != currentThreat)
 			{
-				if (!IsNoticable(player, visParts))
+				if (!IsNoticable(pPlayer, visParts))
 				{
 					continue;
 				}
@@ -762,24 +763,24 @@ CBasePlayer *CCSBot::FindMostDangerousThreat()
 #endif
 
 			// update watch timestamp
-			int idx = player->entindex() - 1;
+			int idx = pPlayer->entindex() - 1;
 			m_watchInfo[idx].timestamp = gpGlobals->time;
 			m_watchInfo[idx].isEnemy = true;
 
 			// note if we see the bomber
-			if (player->IsBombGuy())
+			if (pPlayer->IsBombGuy())
 			{
-				m_bomber = player;
+				m_bomber = pPlayer;
 			}
 
 			// keep track of all visible threats
-			Vector d = pev->origin - player->pev->origin;
+			Vector d = pev->origin - pPlayer->pev->origin;
 			float distSq = d.LengthSquared();
 
 			// maintain set of visible threats, sorted by increasing distance
 			if (threatCount == 0)
 			{
-				threat[0].enemy = player;
+				threat[0].enemy = pPlayer;
 				threat[0].range = distSq;
 				threatCount = 1;
 			}
@@ -794,11 +795,11 @@ CBasePlayer *CCSBot::FindMostDangerousThreat()
 				}
 
 				// shift lower half down a notch
-				for (int k = threatCount - 1; k >= j; --k)
+				for (int k = threatCount - 1; k >= j; k--)
 					threat[k + 1] = threat[k];
 
 				// insert threat into sorted list
-				threat[j].enemy = player;
+				threat[j].enemy = pPlayer;
 				threat[j].range = distSq;
 
 				if (threatCount < MAX_THREATS)
@@ -857,11 +858,11 @@ CBasePlayer *CCSBot::FindMostDangerousThreat()
 		{
 			// find the area the player/bot is standing on
 			CNavArea *area;
-			CCSBot *bot = reinterpret_cast<CCSBot *>(threat[i].enemy);
+			CCSBot *pBot = static_cast<CCSBot *>(threat[i].enemy);
 
-			if (bot->IsBot())
+			if (pBot->IsBot())
 			{
-				area = bot->GetLastKnownArea();
+				area = pBot->GetLastKnownArea();
 			}
 			else
 			{
@@ -1071,7 +1072,7 @@ void CCSBot::Blind(float duration, float holdTime, float fadeTime, int alpha)
 }
 
 #ifdef REGAMEDLL_ADD
-bool CCSBot::IsNoticable(const CBasePlayer *player, unsigned char visibleParts) const
+bool CCSBot::IsNoticable(const CBasePlayer *pPlayer, unsigned char visibleParts) const
 {
 	float deltaT = m_attentionInterval.GetElapsedTime();
 
@@ -1113,7 +1114,7 @@ bool CCSBot::IsNoticable(const CBasePlayer *player, unsigned char visibleParts) 
 	}
 
 	// compute range modifier - farther away players are harder to notice, depeding on what they are doing
-	float range = (player->pev->origin - pev->origin).Length();
+	float range = (pPlayer->pev->origin - pev->origin).Length();
 	const float closeRange = 300.0f;
 	const float farRange = 1000.0f;
 
@@ -1132,9 +1133,9 @@ bool CCSBot::IsNoticable(const CBasePlayer *player, unsigned char visibleParts) 
 	}
 
 	// harder to notice when crouched
-	bool isCrouching = (player->pev->flags & FL_DUCKING) == FL_DUCKING;
+	bool isCrouching = (pPlayer->pev->flags & FL_DUCKING) == FL_DUCKING;
 	// moving players are easier to spot
-	float playerSpeedSq = player->pev->velocity.LengthSquared();
+	float playerSpeedSq = pPlayer->pev->velocity.LengthSquared();
 	const float runSpeed = 200.0f;
 	const float walkSpeed = 30.0f;
 	float farChance, closeChance;

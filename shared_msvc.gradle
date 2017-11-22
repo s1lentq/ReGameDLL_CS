@@ -61,7 +61,7 @@ rootProject.ext.createMsvcConfig = { boolean release, BinaryKind binKind ->
 			generatePdb: true
 		)
 	} else {
-		//debug
+		// debug
 		cfg = new MsvcToolchainConfig(
 			compilerOptions: new MsvcToolchainConfig.CompilerOptions(
 				codeGeneration: CodeGenerationKind.MULTITHREADED_DEBUG,
@@ -89,7 +89,6 @@ rootProject.ext.createMsvcConfig = { boolean release, BinaryKind binKind ->
 					'WIN32': null,
 					'_MBCS': null,
 					'_DEBUG': null,
-					'_ITERATOR_DEBUG_LEVEL': 0,	// for std::list, disable debug iterator in debug mode
 				]
 			),
 			linkerOptions: new MsvcToolchainConfig.LinkerOptions(

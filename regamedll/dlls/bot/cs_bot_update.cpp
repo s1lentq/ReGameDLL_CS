@@ -659,17 +659,17 @@ void CCSBot::Update()
 		// chance of following is proportional to teamwork attribute
 		if (GetProfile()->GetTeamwork() > RANDOM_FLOAT(0.0f, 1.0f))
 		{
-			CBasePlayer *leader = GetClosestVisibleHumanFriend();
-			if (leader && leader->IsAutoFollowAllowed())
+			CBasePlayer *pLeader = GetClosestVisibleHumanFriend();
+			if (pLeader && pLeader->IsAutoFollowAllowed())
 			{
 				// count how many bots are already following this player
 				const float maxFollowCount = 2;
-				if (GetBotFollowCount(leader) < maxFollowCount)
+				if (GetBotFollowCount(pLeader) < maxFollowCount)
 				{
 					const float autoFollowRange = 300.0f;
-					if ((leader->pev->origin - pev->origin).IsLengthLessThan(autoFollowRange))
+					if ((pLeader->pev->origin - pev->origin).IsLengthLessThan(autoFollowRange))
 					{
-						CNavArea *leaderArea = TheNavAreaGrid.GetNavArea(&leader->pev->origin);
+						CNavArea *leaderArea = TheNavAreaGrid.GetNavArea(&pLeader->pev->origin);
 						if (leaderArea)
 						{
 							PathCost cost(this, FASTEST_ROUTE);
@@ -677,8 +677,8 @@ void CCSBot::Update()
 							if (/*travelRange >= 0.0f &&*/ travelRange < autoFollowRange)
 							{
 								// follow this human
-								Follow(leader);
-								PrintIfWatched("Auto-Following %s\n", STRING(leader->pev->netname));
+								Follow(pLeader);
+								PrintIfWatched("Auto-Following %s\n", STRING(pLeader->pev->netname));
 
 								if (CSGameRules()->IsCareer())
 								{

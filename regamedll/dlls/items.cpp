@@ -122,7 +122,7 @@ void CItem::ItemTouch(CBaseEntity *pOther)
 	if (MyTouch(pPlayer))
 	{
 		SUB_UseTargets(pOther, USE_TOGGLE, 0);
-		SetTouch(NULL);
+		SetTouch(nullptr);
 		g_pGameRules->PlayerGotItem(pPlayer, this);
 
 		if (g_pGameRules->ItemShouldRespawn(this) == GR_ITEM_RESPAWN_YES)
@@ -138,7 +138,7 @@ void CItem::ItemTouch(CBaseEntity *pOther)
 
 CBaseEntity *CItem::Respawn()
 {
-	SetTouch(NULL);
+	SetTouch(nullptr);
 
 	pev->effects |= EF_NODRAW;
 

@@ -50,7 +50,6 @@ enum NavEditCmdType
 	EDIT_ATTRIB_CROUCH,			// toggle crouch attribute on current area
 	EDIT_ATTRIB_JUMP,			// toggle jump attribute on current area
 	EDIT_ATTRIB_PRECISE,		// toggle precise attribute on current area
-	EDIT_ATTRIB_WALK,			// toggle walk attribute on current area
 	EDIT_ATTRIB_NO_JUMP,		// toggle inhibiting discontinuity jumping in current area
 	EDIT_BEGIN_AREA,			// begin creating a new nav area
 	EDIT_END_AREA,				// end creation of the new nav area
@@ -635,7 +634,7 @@ bool NavAreaBuildPath(CNavArea *startArea, CNavArea *goalArea, const Vector *goa
 	// TODO: Cost might work as "manhattan distance"
 	startArea->SetTotalCost((*startArea->GetCenter() - actualGoalPos).Length());
 
-	float_precision initCost = costFunc(startArea, nullptr, nullptr);
+	real_t initCost = costFunc(startArea, nullptr, nullptr);
 	if (initCost < 0.0f)
 		return false;
 
@@ -781,7 +780,7 @@ bool NavAreaBuildPath(CNavArea *startArea, CNavArea *goalArea, const Vector *goa
 			if (newArea == area)
 				continue;
 
-			float_precision newCostSoFar = costFunc(newArea, area, ladder);
+			real_t newCostSoFar = costFunc(newArea, area, ladder);
 
 			// check if cost functor says this area is a dead-end
 			if (newCostSoFar < 0.0f)
@@ -795,7 +794,7 @@ bool NavAreaBuildPath(CNavArea *startArea, CNavArea *goalArea, const Vector *goa
 			else
 			{
 				// compute estimate of distance left to go
-				float_precision newCostRemaining = (*newArea->GetCenter() - actualGoalPos).Length();
+				real_t newCostRemaining = (*newArea->GetCenter() - actualGoalPos).Length();
 
 				// track closest area to goal in case path fails
 				if (closestArea && newCostRemaining < closestAreaDist)
@@ -830,7 +829,7 @@ bool NavAreaBuildPath(CNavArea *startArea, CNavArea *goalArea, const Vector *goa
 
 // Compute distance between two areas. Return -1 if can't reach 'endArea' from 'startArea'.
 template <typename CostFunctor>
-float_precision NavAreaTravelDistance(CNavArea *startArea, CNavArea *endArea, CostFunctor &costFunc)
+real_t NavAreaTravelDistance(CNavArea *startArea, CNavArea *endArea, CostFunctor &costFunc)
 {
 	if (!startArea)
 		return -1.0f;
@@ -846,7 +845,7 @@ float_precision NavAreaTravelDistance(CNavArea *startArea, CNavArea *endArea, Co
 		return -1.0f;
 
 	// compute distance along path
-	float_precision distance = 0.0f;
+	real_t distance = 0.0f;
 	for (CNavArea *area = endArea; area->GetParent(); area = area->GetParent())
 	{
 		distance += (*area->GetCenter() - *area->GetParent()->GetCenter()).Length();
@@ -863,7 +862,7 @@ float NavAreaTravelDistance(const Vector *startPos, CNavArea *startArea, const V
 		return -1.0f;
 
 	// compute path between areas using given cost heuristic
-	CNavArea *goalArea = NULL;
+	CNavArea *goalArea = nullptr;
 	if (NavAreaBuildPath(startArea, TheNavAreaGrid.GetNearestNavArea(goalPos), goalPos, costFunc, &goalArea) == false)
 		return -1.0f;
 

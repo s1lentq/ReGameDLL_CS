@@ -104,14 +104,14 @@ inline int CBitVec<NUM_BITS>::GetNumBits()
 template<int NUM_BITS>
 inline CBitVec<NUM_BITS>::CBitVec()
 {
-	for (int i = 0; i < NUM_DWORDS; ++i)
+	for (int i = 0; i < NUM_DWORDS; i++)
 		m_DWords[i] = 0;
 }
 
 template<int NUM_BITS>
 inline void CBitVec<NUM_BITS>::Init(int val)
 {
-	for (int i = 0; i < GetNumBits(); ++i)
+	for (int i = 0; i < GetNumBits(); i++)
 	{
 		(*this)[i] = val;
 	}
@@ -134,7 +134,7 @@ inline CBitVecAccessor CBitVec<NUM_BITS>::operator[](int i)
 template<int NUM_BITS>
 inline bool CBitVec<NUM_BITS>::operator==(CBitVec<NUM_BITS> const &other)
 {
-	for (int i = 0; i < NUM_DWORDS; ++i)
+	for (int i = 0; i < NUM_DWORDS; i++)
 	{
 		if (m_DWords[i] != other.m_DWords[i])
 			return false;

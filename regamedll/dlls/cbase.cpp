@@ -412,7 +412,7 @@ void DispatchThink(edict_t *pent)
 
 	if (pEntity)
 	{
-		if (pEntity->pev->flags & FL_DORMANT)
+		if (pEntity->IsDormant())
 		{
 			ALERT(at_error, "Dormant entity %s is thinking!!\n", STRING(pEntity->pev->classname));
 		}
@@ -451,7 +451,7 @@ void DispatchSave(edict_t *pent, SAVERESTOREDATA *pSaveData)
 		// These don't use ltime & nextthink as times really, but we'll fudge around it.
 		if (pEntity->pev->movetype == MOVETYPE_PUSH)
 		{
-			float_precision delta = pEntity->pev->nextthink - pEntity->pev->ltime;
+			real_t delta = pEntity->pev->nextthink - pEntity->pev->ltime;
 			pEntity->pev->ltime = gpGlobals->time;
 			pEntity->pev->nextthink = pEntity->pev->ltime + delta;
 		}
@@ -677,7 +677,7 @@ BOOL CBaseEntity::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, fl
 		Vector vecDir = pev->origin - (pevInflictor->absmin + pevInflictor->absmax) * 0.5;
 		vecDir = vecDir.Normalize();
 
-		float_precision flForce = flDamage * ((32 * 32 * 72.0) / (pev->size.x * pev->size.y * pev->size.z)) * 5;
+		real_t flForce = flDamage * ((32 * 32 * 72.0) / (pev->size.x * pev->size.y * pev->size.z)) * 5;
 
 		if (flForce > 1000.0)
 			flForce = 1000.0;
@@ -769,19 +769,19 @@ void SetObjectCollisionBox(entvars_t *pev)
 	if (pev->solid == SOLID_BSP && (pev->angles.x || pev->angles.y || pev->angles.z))
 	{
 		// expand for rotation
-		float_precision max, v;
+		real_t max, v;
 		int i;
 
 		max = 0;
 		for (i = 0; i < 3; i++)
 		{
-			v = Q_fabs(float_precision(((float *)pev->mins)[i]));
+			v = Q_fabs(real_t(((float *)pev->mins)[i]));
 			if (v > max)
 			{
 				max = v;
 			}
 
-			v = Q_fabs(float_precision(((float *)pev->maxs)[i]));
+			v = Q_fabs(real_t(((float *)pev->maxs)[i]));
 			if (v > max)
 			{
 				max = v;
@@ -843,11 +843,6 @@ void CBaseEntity::MakeDormant()
 
 	// Relink
 	UTIL_SetOrigin(pev, pev->origin);
-}
-
-int CBaseEntity::IsDormant()
-{
-	return (pev->flags & FL_DORMANT) == FL_DORMANT;
 }
 
 BOOL CBaseEntity::IsInWorld()

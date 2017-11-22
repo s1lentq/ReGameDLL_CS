@@ -393,12 +393,44 @@ bool UTIL_IsVisibleToTeam(const Vector &spot, int team, float maxRange)
 	return false;
 }
 
+// Return the local player
 CBasePlayer *UTIL_GetLocalPlayer()
 {
-	if (!IS_DEDICATED_SERVER())
-		return UTIL_PlayerByIndex(1);
+	// no "local player" if this is a dedicated server or a single player game
+	if (IS_DEDICATED_SERVER())
+	{
+#ifdef _DEBUG
+		// just try to find any player
+		for (int iIndex = 1; iIndex <= gpGlobals->maxClients; iIndex++)
+		{
+			CBasePlayer *pPlayer = UTIL_PlayerByIndex(iIndex);
 
-	return nullptr;
+			if (!pPlayer)
+				continue;
+
+			if (FNullEnt(pPlayer->pev))
+				continue;
+
+			if (FStrEq(STRING(pPlayer->pev->netname), ""))
+				continue;
+
+			if (pPlayer->IsBot())
+				continue;
+
+			if (pPlayer->m_iTeam != TERRORIST && pPlayer->m_iTeam != CT)
+				continue;
+
+			if (pPlayer->m_iJoiningState != JOINED)
+				continue;
+
+			return pPlayer;
+		}
+#endif
+
+		return nullptr;
+	}
+
+	return UTIL_PlayerByIndex(1);
 }
 
 NOXREF Vector UTIL_ComputeOrigin(entvars_t *pevVars)
@@ -563,7 +595,7 @@ void InitBotTrig()
 {
 	for (int i = 0; i < COS_TABLE_SIZE; i++)
 	{
-		float_precision angle = 2.0f * M_PI * float(i) / float(COS_TABLE_SIZE - 1);
+		real_t angle = 2.0f * M_PI * float(i) / float(COS_TABLE_SIZE - 1);
 		cosTable[i] = Q_cos(angle);
 	}
 }
@@ -583,11 +615,11 @@ float BotSIN(float angle)
 }
 
 // Determine if this event is audible, and if so, return its audible range and priority
-bool IsGameEventAudible(GameEventType event, CBaseEntity *entity, CBaseEntity *other, float *range, PriorityType *priority, bool *isHostile)
+bool IsGameEventAudible(GameEventType event, CBaseEntity *pEntity, CBaseEntity *pOther, float *range, PriorityType *priority, bool *isHostile)
 {
-	CBasePlayer *pPlayer = static_cast<CBasePlayer *>(entity);
+	CBasePlayer *pPlayer = static_cast<CBasePlayer *>(pEntity);
 
-	if (!entity || !pPlayer->IsPlayer())
+	if (!pEntity || !pPlayer->IsPlayer())
 		pPlayer = nullptr;
 
 	const float ShortRange = 1000.0f;

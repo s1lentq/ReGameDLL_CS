@@ -262,7 +262,7 @@ void FollowState::OnUpdate(CCSBot *me)
 					area = collector.m_targetArea[a];
 					area->GetClosestPointOnArea(&me->pev->origin, &close);
 
-					float_precision rangeSq = (me->pev->origin - close).LengthSquared();
+					real_t rangeSq = (me->pev->origin - close).LengthSquared();
 					if (rangeSq < closeRangeSq)
 					{
 						target = area;

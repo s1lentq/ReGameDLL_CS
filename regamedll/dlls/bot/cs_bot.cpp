@@ -36,30 +36,30 @@ LINK_ENTITY_TO_CLASS(bot, CCSBot, CAPI_CSBot)
 #endif
 
 // Return the number of bots following the given player
-int GetBotFollowCount(CBasePlayer *leader)
+int GetBotFollowCount(CBasePlayer *pLeader)
 {
 	int count = 0;
 	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{
-		CBasePlayer *player = UTIL_PlayerByIndex(i);
+		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
-		if (!player)
+		if (!pPlayer)
 			continue;
 
-		if (FNullEnt(player->pev))
+		if (FNullEnt(pPlayer->pev))
 			continue;
 
-		if (FStrEq(STRING(player->pev->netname), ""))
+		if (FStrEq(STRING(pPlayer->pev->netname), ""))
 			continue;
 
-		if (!player->IsBot())
+		if (!pPlayer->IsBot())
 			continue;
 
- 		if (!player->IsAlive())
+ 		if (!pPlayer->IsAlive())
  			continue;
 
-		CCSBot *bot = reinterpret_cast<CCSBot *>(player);
-		if (bot->IsBot() && bot->GetFollowLeader() == leader)
+		CCSBot *pBot = static_cast<CCSBot *>(pPlayer);
+		if (pBot->IsBot() && pBot->GetFollowLeader() == pLeader)
 			count++;
 	}
 
@@ -195,13 +195,13 @@ bool IsIntersectingBox(const Vector &start, const Vector &end, const Vector &box
 {
 	constexpr auto HI_X = BIT(1);
 	constexpr auto LO_X = BIT(2);
-	
+
 	constexpr auto HI_Y = BIT(3);
 	constexpr auto LO_Y = BIT(4);
-	
+
 	constexpr auto HI_Z = BIT(5);
 	constexpr auto LO_Z = BIT(6);
-	
+
 	unsigned char startFlags = 0;
 	unsigned char endFlags = 0;
 
@@ -246,20 +246,20 @@ bool IsIntersectingBox(const Vector &start, const Vector &end, const Vector &box
 }
 
 // When bot is touched by another entity.
-void CCSBot::BotTouch(CBaseEntity *other)
+void CCSBot::BotTouch(CBaseEntity *pOther)
 {
 	// if we have touched a higher-priority player, make way
 	// TODO: Need to account for reaction time, etc.
-	if (other->IsPlayer())
+	if (pOther->IsPlayer())
 	{
 		// if we are defusing a bomb, don't move
 		if (IsDefusingBomb())
 			return;
 
-		CBasePlayer *player = static_cast<CBasePlayer *>(other);
+		CBasePlayer *pPlayer = static_cast<CBasePlayer *>(pOther);
 
 		// get priority of other player
-		unsigned int otherPri = TheCSBots()->GetPlayerPriority(player);
+		unsigned int otherPri = TheCSBots()->GetPlayerPriority(pPlayer);
 
 		// get our priority
 		unsigned int myPri = TheCSBots()->GetPlayerPriority(this);
@@ -274,34 +274,34 @@ void CCSBot::BotTouch(CBaseEntity *other)
 			unsigned int avoidPri = TheCSBots()->GetPlayerPriority(m_avoid);
 			if (avoidPri < otherPri)
 			{
-				// ignore 'other' because we're already avoiding someone better
+				// ignore 'pOther' because we're already avoiding someone better
 				return;
 			}
 		}
 
-		m_avoid = static_cast<CBasePlayer *>(other);
+		m_avoid = static_cast<CBasePlayer *>(pOther);
 		m_avoidTimestamp = gpGlobals->time;
 
 		return;
 	}
 
 	// If we won't be able to break it, don't try
-	if (other->pev->takedamage != DAMAGE_YES)
+	if (pOther->pev->takedamage != DAMAGE_YES)
 		return;
 
 	if (IsAttacking())
 		return;
 
 	// See if it's breakable
-	if (FClassnameIs(other->pev, "func_breakable"))
+	if (FClassnameIs(pOther->pev, "func_breakable"))
 	{
-		Vector center = (other->pev->absmax + other->pev->absmin) / 2.0f;
+		Vector center = (pOther->pev->absmax + pOther->pev->absmin) / 2.0f;
 		bool breakIt = true;
 
 		if (m_pathLength)
 		{
 			Vector goal = m_goalPosition + Vector(0, 0, HalfHumanHeight);
-			breakIt = IsIntersectingBox(pev->origin, goal, other->pev->absmin, other->pev->absmax);
+			breakIt = IsIntersectingBox(pev->origin, goal, pOther->pev->absmin, pOther->pev->absmax);
 		}
 
 		if (breakIt)
@@ -361,11 +361,11 @@ CBasePlayer *CCSBot::FindNearbyPlayer()
 }
 
 // Assign given player as our current enemy to attack
-void CCSBot::SetEnemy(CBasePlayer *enemy)
+void CCSBot::SetEnemy(CBasePlayer *pEnemy)
 {
-	if (m_enemy != enemy)
+	if (m_enemy != pEnemy)
 	{
-		m_enemy = enemy;
+		m_enemy = pEnemy;
 		m_currentEnemyAcquireTimestamp = gpGlobals->time;
 	}
 }
@@ -420,7 +420,7 @@ bool CCSBot::StayOnNavMesh()
 	return false;
 }
 
-void CCSBot::Panic(CBasePlayer *enemy)
+void CCSBot::Panic(CBasePlayer *pEnemy)
 {
 	if (IsSurprised())
 		return;
@@ -431,7 +431,7 @@ void CCSBot::Panic(CBasePlayer *enemy)
 
 	if (GetProfile()->GetSkill() >= 0.5f)
 	{
-		Vector2D toEnemy = (enemy->pev->origin - pev->origin).Make2D();
+		Vector2D toEnemy = (pEnemy->pev->origin - pev->origin).Make2D();
 		toEnemy.NormalizeInPlace();
 
 		float along = DotProduct(toEnemy, dir);
@@ -439,7 +439,7 @@ void CCSBot::Panic(CBasePlayer *enemy)
 		float c45 = 0.7071f;
 		float size = 100.0f;
 
-		float_precision shift = RANDOM_FLOAT(-75.0, 75.0);
+		real_t shift = RANDOM_FLOAT(-75.0, 75.0);
 
 		if (along > c45)
 		{
@@ -465,7 +465,7 @@ void CCSBot::Panic(CBasePlayer *enemy)
 	else
 	{
 		const float offset = 200.0f;
-		float_precision side = RANDOM_FLOAT(-offset, offset) * 2.0f;
+		real_t side = RANDOM_FLOAT(-offset, offset) * 2.0f;
 
 		spot.x = pev->origin.x - dir.x * offset + perp.x * side;
 		spot.y = pev->origin.y - dir.y * offset + perp.y * side;
@@ -619,18 +619,18 @@ void CCSBot::UpdateHostageEscortCount()
 	// recount the hostages in case we lost some
 	m_hostageEscortCount = 0;
 
-	CHostage *hostage = nullptr;
-	while ((hostage = UTIL_FindEntityByClassname(hostage, "hostage_entity")))
+	CHostage *pHostage = nullptr;
+	while ((pHostage = UTIL_FindEntityByClassname(pHostage, "hostage_entity")))
 	{
-		if (FNullEnt(hostage->edict()))
+		if (FNullEnt(pHostage->edict()))
 			break;
 
 		// skip dead or rescued hostages
-		if (!hostage->IsAlive())
+		if (!pHostage->IsAlive())
 			continue;
 
 		// check if hostage has targeted us, and is following
-		if (hostage->IsFollowing(this))
+		if (pHostage->IsFollowing(this))
 			m_hostageEscortCount++;
 	}
 }
@@ -660,43 +660,43 @@ CBasePlayer *CCSBot::GetImportantEnemy(bool checkVisibility) const
 
 	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{
-		CBasePlayer *player = UTIL_PlayerByIndex(i);
+		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
-		if (!player)
+		if (!pPlayer)
 			continue;
 
-		if (FNullEnt(player->pev))
+		if (FNullEnt(pPlayer->pev))
 			continue;
 
-		if (FStrEq(STRING(player->pev->netname), ""))
+		if (FStrEq(STRING(pPlayer->pev->netname), ""))
 			continue;
 
 		// is it a player?
-		if (!player->IsPlayer())
+		if (!pPlayer->IsPlayer())
 			continue;
 
 		// is it alive?
-		if (!player->IsAlive())
+		if (!pPlayer->IsAlive())
 			continue;
 
 		// skip friends
-		if (BotRelationship(player) == BOT_TEAMMATE)
+		if (BotRelationship(pPlayer) == BOT_TEAMMATE)
 			continue;
 
 		// is it "important"
-		if (!TheCSBots()->IsImportantPlayer(player))
+		if (!TheCSBots()->IsImportantPlayer(pPlayer))
 			continue;
 
 		// is it closest?
-		Vector d = pev->origin - player->pev->origin;
+		Vector d = pev->origin - pPlayer->pev->origin;
 
 		float distSq = d.x * d.x + d.y * d.y + d.z * d.z;
 		if (distSq < nearDist)
 		{
-			if (checkVisibility && !IsVisible(player, CHECK_FOV))
+			if (checkVisibility && !IsVisible(pPlayer, CHECK_FOV))
 				continue;
 
-			nearEnemy = player;
+			nearEnemy = pPlayer;
 			nearDist = distSq;
 		}
 	}

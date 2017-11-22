@@ -226,7 +226,7 @@ void CCyclerSprite::Animate(float frames)
 
 	if (m_maxFrame > 0)
 	{
-		pev->frame = Q_fmod(float_precision(pev->frame), float_precision(m_maxFrame));
+		pev->frame = Q_fmod(real_t(pev->frame), real_t(m_maxFrame));
 	}
 }
 

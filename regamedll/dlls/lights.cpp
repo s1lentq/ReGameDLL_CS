@@ -144,26 +144,16 @@ void CEnvLight::KeyValue(KeyValueData *pkvd)
 
 void CEnvLight::Spawn()
 {
-#ifdef HOOK_GAMEDLL
-// NOTE: fix negative the values for function sprintf from STD C++:
-// expected - sv_skyvec_y "0.000000"
-// with using sprintf from STD C++, got - sv_skyvec_y "-0.000000"
-// If we not doing it then the test will be failed!
-#define SPRINTF_OLD_STD_FIX + 0
-#else
-#define SPRINTF_OLD_STD_FIX
-#endif
-
 	char szVector[64];
 	UTIL_MakeAimVectors(pev->angles);
 
-	Q_sprintf(szVector, "%f", gpGlobals->v_forward.x SPRINTF_OLD_STD_FIX);
+	Q_sprintf(szVector, "%f", gpGlobals->v_forward.x);
 	CVAR_SET_STRING("sv_skyvec_x", szVector);
 
-	Q_sprintf(szVector, "%f", gpGlobals->v_forward.y SPRINTF_OLD_STD_FIX);
+	Q_sprintf(szVector, "%f", gpGlobals->v_forward.y);
 	CVAR_SET_STRING("sv_skyvec_y", szVector);
 
-	Q_sprintf(szVector, "%f", gpGlobals->v_forward.z SPRINTF_OLD_STD_FIX);
+	Q_sprintf(szVector, "%f", gpGlobals->v_forward.z);
 	CVAR_SET_STRING("sv_skyvec_z", szVector);
 
 	CLight::Spawn();

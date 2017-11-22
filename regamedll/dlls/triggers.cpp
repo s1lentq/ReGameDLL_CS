@@ -216,7 +216,7 @@ void CMultiManager::Spawn()
 	while (bSwapped)
 	{
 		bSwapped = false;
-		for (int i = 1; i < m_cTargets; ++i)
+		for (int i = 1; i < m_cTargets; i++)
 		{
 			if (m_flTargetDelay[i] < m_flTargetDelay[i - 1])
 			{
@@ -239,7 +239,7 @@ void CMultiManager::Restart()
 #ifndef REGAMEDLL_FIXES
 	edict_t *pentTarget = nullptr;
 
-	for (int i = 0; i < m_cTargets; ++i)
+	for (int i = 0; i < m_cTargets; i++)
 	{
 		const char *name = STRING(m_iTargetName[i]);
 
@@ -259,7 +259,7 @@ void CMultiManager::Restart()
 	}
 #endif
 
-	SetThink(NULL);
+	SetThink(nullptr);
 
 	if (IsClone())
 	{
@@ -273,7 +273,7 @@ void CMultiManager::Restart()
 
 BOOL CMultiManager::HasTarget(string_t targetname)
 {
-	for (int i = 0; i < m_cTargets; ++i)
+	for (int i = 0; i < m_cTargets; i++)
 	{
 		if (FStrEq(STRING(targetname), STRING(m_iTargetName[i])))
 		{
@@ -300,7 +300,7 @@ void CMultiManager::ManagerThink()
 	// have we fired all targets?
 	if (m_index >= m_cTargets)
 	{
-		SetThink(NULL);
+		SetThink(nullptr);
 		if (IsClone())
 		{
 			UTIL_Remove(this);
@@ -311,7 +311,9 @@ void CMultiManager::ManagerThink()
 		SetUse(&CMultiManager::ManagerUse);
 	}
 	else
+	{
 		pev->nextthink = m_startTime + m_flTargetDelay[m_index];
+	}
 }
 
 CMultiManager *CMultiManager::Clone()
@@ -354,7 +356,7 @@ void CMultiManager::ManagerUse(CBaseEntity *pActivator, CBaseEntity *pCaller, US
 	m_startTime = gpGlobals->time;
 
 	// disable use until all targets have fired
-	SetUse(NULL);
+	SetUse(nullptr);
 	SetThink(&CMultiManager::ManagerThink);
 
 	pev->nextthink = gpGlobals->time;
@@ -528,7 +530,7 @@ void CTriggerMonsterJump::Think()
 
 	// Unlink from trigger list
 	UTIL_SetOrigin(pev, pev->origin);
-	SetThink(NULL);
+	SetThink(nullptr);
 }
 
 void CTriggerMonsterJump::Touch(CBaseEntity *pOther)
@@ -651,7 +653,7 @@ void CTriggerCDAudio::PlayTrack(edict_t *pEdict)
 {
 	PlayCDTrack(pEdict, int(pev->health));
 
-	SetTouch(NULL);
+	SetTouch(nullptr);
 	UTIL_Remove(this);
 }
 
@@ -723,7 +725,7 @@ void CTriggerHurt::Spawn()
 	}
 	else
 	{
-		SetUse(NULL);
+		SetUse(nullptr);
 	}
 
 	if (m_bitsDamageInflict & DMG_RADIATION)
@@ -764,7 +766,7 @@ void CTriggerHurt::RadiationThink()
 {
 	edict_t *pentPlayer;
 	CBasePlayer *pPlayer = nullptr;
-	float_precision flRange;
+	real_t flRange;
 	entvars_t *pevTarget;
 	Vector vecSpot1;
 	Vector vecSpot2;
@@ -855,7 +857,7 @@ void CBaseTrigger::HurtTouch(CBaseEntity *pOther)
 		return;
 	}
 
-	// HACKHACK -- In multiplayer, players touch this based on packet receipt.
+	// HACKHACK: In multiplayer, players touch this based on packet receipt.
 	// So the players who send packets later aren't always hurt.  Keep track of
 	// how much time has passed and whether or not you've touched that player
 	if (g_pGameRules->IsMultiplayer())
@@ -901,7 +903,7 @@ void CBaseTrigger::HurtTouch(CBaseEntity *pOther)
 	}
 	else
 	{
-		// Original code -- single player
+		// Original code: single player
 #ifdef REGAMEDLL_FIXES
 		if (pev->dmgtime > gpGlobals->time && gpGlobals->time >= pev->pain_finished)
 #else
@@ -1073,12 +1075,12 @@ void CBaseTrigger::ActivateMultiTrigger(CBaseEntity *pActivator)
 	{
 		// we can't just remove (self) here, because this is a touch function
 		// called while C code is looping through area links...
-		SetTouch(NULL);
+		SetTouch(nullptr);
 		pev->nextthink = gpGlobals->time + 0.1f;
 
 #ifdef REGAMEDLL_FIXES
 		if (!(pev->spawnflags & SF_TRIGGER_NORESET) && m_flWait == -2)
-			SetThink(NULL);
+			SetThink(nullptr);
 		else
 #endif
 			SetThink(&CBaseTrigger::SUB_Remove);
@@ -1088,7 +1090,7 @@ void CBaseTrigger::ActivateMultiTrigger(CBaseEntity *pActivator)
 // the wait time has passed, so set back up for another activation
 void CBaseTrigger::MultiWaitOver()
 {
-	SetThink(NULL);
+	SetThink(nullptr);
 }
 
 void CBaseTrigger::CounterUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
@@ -1394,7 +1396,7 @@ int CChangeLevel::AddTransitionToList(LEVELLIST *pLevelList, int listCount, cons
 		return 0;
 	}
 
-	for (i = 0; i < listCount; ++i)
+	for (i = 0; i < listCount; i++)
 	{
 		if (pLevelList[i].pentLandmark == pentLandmark && Q_strcmp(pLevelList[i].mapName, pMapName) == 0)
 		{
@@ -1808,16 +1810,16 @@ void CBuyZone::BuyTouch(CBaseEntity *pOther)
 	if (!pOther->IsPlayer())
 		return;
 
-	CBasePlayer *p = static_cast<CBasePlayer *>(pOther);
+	CBasePlayer *pPlayer = static_cast<CBasePlayer *>(pOther);
 
-	if (pev->team == UNASSIGNED || pev->team == p->m_iTeam)
+	if (pev->team == UNASSIGNED || pev->team == pPlayer->m_iTeam)
 	{
 #ifdef REGAMEDLL_FIXES
-		if (!CSGameRules()->CanPlayerBuy(p))
+		if (!CSGameRules()->CanPlayerBuy(pPlayer))
 			return;
 #endif
 
-		p->m_signals.Signal(SIGNAL_BUY);
+		pPlayer->m_signals.Signal(SIGNAL_BUY);
 	}
 }
 
@@ -1836,12 +1838,12 @@ void CBombTarget::BombTargetTouch(CBaseEntity *pOther)
 	if (!pOther->IsPlayer())
 		return;
 
-	CBasePlayer *p = static_cast<CBasePlayer *>(pOther);
+	CBasePlayer *pPlayer = static_cast<CBasePlayer *>(pOther);
 
-	if (p->m_bHasC4)
+	if (pPlayer->m_bHasC4)
 	{
-		p->m_signals.Signal(SIGNAL_BOMB);
-		p->m_pentCurBombTarget = ENT(pev);
+		pPlayer->m_signals.Signal(SIGNAL_BOMB);
+		pPlayer->m_pentCurBombTarget = ENT(pev);
 	}
 }
 
@@ -1884,26 +1886,27 @@ void CEscapeZone::EscapeTouch(CBaseEntity *pOther)
 	if (!pOther->IsPlayer())
 		return;
 
-	CBasePlayer *p = static_cast<CBasePlayer *>(pOther);
+	CBasePlayer *pEscapee = static_cast<CBasePlayer *>(pOther);
 
-	switch (p->m_iTeam)
+	switch (pEscapee->m_iTeam)
 	{
 	case TERRORIST:
-		if (!p->m_bEscaped)
+		if (!pEscapee->m_bEscaped)
 		{
-			p->m_bEscaped = true;
+			pEscapee->m_bEscaped = true;
 			CSGameRules()->CheckWinConditions();
 
-			UTIL_LogPrintf("\"%s<%i><%s><TERRORIST>\" triggered \"Terrorist_Escaped\"\n", STRING(p->pev->netname), GETPLAYERUSERID(p->edict()), GETPLAYERAUTHID(p->edict()));
+			UTIL_LogPrintf("\"%s<%i><%s><TERRORIST>\" triggered \"Terrorist_Escaped\"\n",
+				STRING(pEscapee->pev->netname), GETPLAYERUSERID(pEscapee->edict()), GETPLAYERAUTHID(pEscapee->edict()));
 
-			for (int i = 1; i <= gpGlobals->maxClients; ++i)
+			for (int i = 1; i <= gpGlobals->maxClients; i++)
 			{
 				CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
 				if (!pPlayer || FNullEnt(pPlayer->pev))
 					continue;
 
-				if (pPlayer->m_iTeam == p->m_iTeam)
+				if (pPlayer->m_iTeam == pEscapee->m_iTeam)
 				{
 					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Terrorist_Escaped");
 				}
@@ -1911,7 +1914,7 @@ void CEscapeZone::EscapeTouch(CBaseEntity *pOther)
 		}
 		break;
 	case CT:
-		p->m_signals.Signal(SIGNAL_ESCAPE);
+		pEscapee->m_signals.Signal(SIGNAL_ESCAPE);
 		break;
 	}
 }
@@ -1929,18 +1932,18 @@ void CVIP_SafetyZone::VIP_SafetyTouch(CBaseEntity *pOther)
 	if (!pOther->IsPlayer())
 		return;
 
-	CBasePlayer *p = static_cast<CBasePlayer *>(pOther);
-	p->m_signals.Signal(SIGNAL_VIPSAFETY);
+	CBasePlayer *pEscapee = static_cast<CBasePlayer *>(pOther);
+	pEscapee->m_signals.Signal(SIGNAL_VIPSAFETY);
 
-	if (p->m_bIsVIP)
+	if (pEscapee->m_bIsVIP)
 	{
 		UTIL_LogPrintf("\"%s<%i><%s><CT>\" triggered \"Escaped_As_VIP\"\n",
-			STRING(p->pev->netname), GETPLAYERUSERID(p->edict()), GETPLAYERAUTHID(p->edict()));
+			STRING(pEscapee->pev->netname), GETPLAYERUSERID(pEscapee->edict()), GETPLAYERAUTHID(pEscapee->edict()));
 
-		p->m_bEscaped = true;
+		pEscapee->m_bEscaped = true;
 
-		p->Disappear();
-		p->AddAccount(REWARD_VIP_HAVE_SELF_RESCUED, RT_VIP_RESCUED_MYSELF);
+		pEscapee->Disappear();
+		pEscapee->AddAccount(REWARD_VIP_HAVE_SELF_RESCUED, RT_VIP_RESCUED_MYSELF);
 	}
 }
 
@@ -1967,7 +1970,7 @@ void CTriggerSave::SaveTouch(CBaseEntity *pOther)
 	if (!pOther->IsPlayer())
 		return;
 
-	SetTouch(NULL);
+	SetTouch(nullptr);
 	UTIL_Remove(this);
 	SERVER_COMMAND("autosave\n");
 }
@@ -1980,7 +1983,7 @@ void CTriggerEndSection::EndSectionUse(CBaseEntity *pActivator, CBaseEntity *pCa
 	if (pActivator && !pActivator->IsNetClient())
 		return;
 
-	SetUse(NULL);
+	SetUse(nullptr);
 	if (!FStringNull(pev->message))
 	{
 		END_SECTION(STRING(pev->message));
@@ -2013,7 +2016,7 @@ void CTriggerEndSection::EndSectionTouch(CBaseEntity *pOther)
 	if (!pOther->IsNetClient())
 		return;
 
-	SetTouch(NULL);
+	SetTouch(nullptr);
 	if (!FStringNull(pev->message))
 	{
 		END_SECTION(STRING(pev->message));
@@ -2295,8 +2298,8 @@ void CTriggerCamera::FollowTarget()
 	if (pev->angles.y < 0)
 		pev->angles.y += 360;
 
-	float_precision dx = vecGoal.x - pev->angles.x;
-	float_precision dy = vecGoal.y - pev->angles.y;
+	real_t dx = vecGoal.x - pev->angles.x;
+	real_t dy = vecGoal.y - pev->angles.y;
 
 	if (dx < -180)
 		dx += 360;
@@ -2379,7 +2382,7 @@ void CTriggerCamera::Move()
 		pev->speed = UTIL_Approach(m_targetSpeed, pev->speed, m_acceleration * gpGlobals->frametime);
 	}
 
-	float_precision fraction = 2 * gpGlobals->frametime;
+	real_t fraction = 2 * gpGlobals->frametime;
 	pev->velocity = ((pev->movedir * pev->speed) * fraction) + (pev->velocity * (1 - fraction));
 }
 

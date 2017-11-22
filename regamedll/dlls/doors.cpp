@@ -213,7 +213,7 @@ void CBaseDoor::Spawn()
 	m_vecPosition1 = pev->origin;
 
 	// Subtract 2 from size because the engine expands bboxes by 1 in all directions making the size too big
-	m_vecPosition2 = m_vecPosition1 + (pev->movedir * (Q_fabs(float_precision(pev->movedir.x * (pev->size.x - 2))) + Q_fabs(float_precision(pev->movedir.y * (pev->size.y - 2))) + Q_fabs(float_precision(pev->movedir.z * (pev->size.z - 2))) - m_flLip));
+	m_vecPosition2 = m_vecPosition1 + (pev->movedir * (Q_fabs(real_t(pev->movedir.x * (pev->size.x - 2))) + Q_fabs(real_t(pev->movedir.y * (pev->size.y - 2))) + Q_fabs(real_t(pev->movedir.z * (pev->size.z - 2))) - m_flLip));
 
 	assert(("door start/end positions are equal", m_vecPosition1 != m_vecPosition2));
 
@@ -230,7 +230,7 @@ void CBaseDoor::Spawn()
 	// if the door is flagged for USE button activation only, use NULL touch function
 	if (pev->spawnflags & SF_DOOR_USE_ONLY)
 	{
-		SetTouch(NULL);
+		SetTouch(nullptr);
 	}
 	else
 	{
@@ -248,7 +248,7 @@ void CBaseDoor::Restart()
 	DoorGoDown();
 
 	if (pev->spawnflags & SF_DOOR_USE_ONLY)
-		SetTouch(NULL);
+		SetTouch(nullptr);
 	else
 		SetTouch(&CBaseDoor::DoorTouch);
 }
@@ -442,7 +442,7 @@ void CBaseDoor::DoorTouch(CBaseEntity *pOther)
 	if (DoorActivate())
 	{
 		// Temporarily disable the touch function, until movement is finished.
-		SetTouch(NULL);
+		SetTouch(nullptr);
 	}
 }
 
@@ -717,7 +717,7 @@ void CBaseDoor::DoorHitBottom()
 	if (pev->spawnflags & SF_DOOR_USE_ONLY)
 	{
 		// use only door
-		SetTouch(NULL);
+		SetTouch(nullptr);
 	}
 	else
 	{
@@ -942,7 +942,7 @@ void CRotDoor::Spawn()
 
 	if (pev->spawnflags & SF_DOOR_USE_ONLY)
 	{
-		SetTouch(NULL);
+		SetTouch(nullptr);
 	}
 	else
 	{
@@ -988,7 +988,7 @@ void CMomentaryDoor::Spawn()
 	m_vecPosition1 = pev->origin;
 
 	// Subtract 2 from size because the engine expands bboxes by 1 in all directions making the size too big
-	m_vecPosition2 = m_vecPosition1 + (pev->movedir * (Q_fabs(float_precision(pev->movedir.x * (pev->size.x - 2))) + Q_fabs(float_precision(pev->movedir.y * (pev->size.y - 2))) + Q_fabs(float_precision(pev->movedir.z * (pev->size.z - 2))) - m_flLip));
+	m_vecPosition2 = m_vecPosition1 + (pev->movedir * (Q_fabs(real_t(pev->movedir.x * (pev->size.x - 2))) + Q_fabs(real_t(pev->movedir.y * (pev->size.y - 2))) + Q_fabs(real_t(pev->movedir.z * (pev->size.z - 2))) - m_flLip));
 	assert(("door start/end positions are equal", m_vecPosition1 != m_vecPosition2));
 
 	if (pev->spawnflags & SF_DOOR_START_OPEN)
@@ -1000,7 +1000,7 @@ void CMomentaryDoor::Spawn()
 		m_vecPosition1 = pev->origin;
 	}
 
-	SetTouch(NULL);
+	SetTouch(nullptr);
 	Precache();
 }
 

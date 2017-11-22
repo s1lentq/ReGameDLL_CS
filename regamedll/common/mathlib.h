@@ -29,17 +29,12 @@
 #pragma once
 
 #ifdef PLAY_GAMEDLL
-
-// probably gamedll compiled with flag /fpmath:fasted,
-// so we need to use type double, otherwise will be the test failed
-
-typedef double float_precision;
-
+// NOTE: In some cases we need high precision of floating-point,
+// so use double instead of float, otherwise unittest will fail
+typedef double real_t;
 #else
-
-typedef float float_precision;
-
-#endif // PLAY_GAMEDLL
+typedef float real_t;
+#endif
 
 typedef float vec_t;
 typedef vec_t vec3_t[3];

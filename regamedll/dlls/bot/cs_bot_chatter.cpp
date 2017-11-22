@@ -59,93 +59,93 @@ const Vector *GetRandomSpotAtPlace(Place place)
 }
 
 // Transmit meme to other bots
-void BotMeme::Transmit(CCSBot *sender) const
+void BotMeme::Transmit(CCSBot *pSender) const
 {
 	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{
-		CBasePlayer *player = UTIL_PlayerByIndex(i);
+		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
-		if (!player)
+		if (!pPlayer)
 			continue;
 
-		if (FNullEnt(player->pev))
+		if (FNullEnt(pPlayer->pev))
 			continue;
 
-		if (FStrEq(STRING(player->pev->netname), ""))
+		if (FStrEq(STRING(pPlayer->pev->netname), ""))
 			continue;
 
 		// skip self
-		if (sender == player)
+		if (pSender == pPlayer)
 			continue;
 
 		// ignore dead humans
-		if (!player->IsBot() && !player->IsAlive())
+		if (!pPlayer->IsBot() && !pPlayer->IsAlive())
 			continue;
 
 		// ignore enemies, since we can't hear them talk
-		if (sender->BotRelationship(player) == CCSBot::BOT_ENEMY)
+		if (pSender->BotRelationship(pPlayer) == CCSBot::BOT_ENEMY)
 			continue;
 
 		// if not a bot, fail the test
-		if (!player->IsBot())
+		if (!pPlayer->IsBot())
 			continue;
 
 		// allow bot to interpret our meme
-		Interpret(sender, (CCSBot *)player);
+		Interpret(pSender, (CCSBot *)pPlayer);
 	}
 }
 
 // A teammate called for help - respond
-void BotHelpMeme::Interpret(CCSBot *sender, CCSBot *receiver) const
+void BotHelpMeme::Interpret(CCSBot *pSender, CCSBot *pReceiver) const
 {
 	const float maxHelpRange = 3000.0f; // 2000
-	receiver->RespondToHelpRequest(sender, m_place, maxHelpRange);
+	pReceiver->RespondToHelpRequest(pSender, m_place, maxHelpRange);
 }
 
 // A teammate reported information about a bombsite
-void BotBombsiteStatusMeme::Interpret(CCSBot *sender, CCSBot *receiver) const
+void BotBombsiteStatusMeme::Interpret(CCSBot *pSender, CCSBot *pReceiver) const
 {
 	// remember this bombsite's status
 	if (m_status == CLEAR)
-		receiver->GetGameState()->ClearBombsite(m_zoneIndex);
+		pReceiver->GetGameState()->ClearBombsite(m_zoneIndex);
 	else
-		receiver->GetGameState()->MarkBombsiteAsPlanted(m_zoneIndex);
+		pReceiver->GetGameState()->MarkBombsiteAsPlanted(m_zoneIndex);
 
 	// if we were heading to the just-cleared bombsite, pick another one to search
 	// if our target bombsite wasn't cleared, will will continue going to it,
 	// because GetNextBombsiteToSearch() will return the same zone (since its not cleared)
 	// if the bomb was planted, we will head to that bombsite
-	if (receiver->GetTask() == CCSBot::FIND_TICKING_BOMB)
+	if (pReceiver->GetTask() == CCSBot::FIND_TICKING_BOMB)
 	{
-		receiver->Idle();
-		receiver->GetChatter()->Affirmative();
+		pReceiver->Idle();
+		pReceiver->GetChatter()->Affirmative();
 	}
 }
 
 // A teammate reported information about the bomb
-void BotBombStatusMeme::Interpret(CCSBot *sender, CCSBot *receiver) const
+void BotBombStatusMeme::Interpret(CCSBot *pSender, CCSBot *pReceiver) const
 {
 	// update our gamestate based on teammate's report
 	switch (m_state)
 	{
 		case CSGameState::MOVING:
 		{
-			receiver->GetGameState()->UpdateBomber(&m_pos);
+			pReceiver->GetGameState()->UpdateBomber(&m_pos);
 
 			// if we are hunting and see no enemies, respond
-			if (!receiver->IsRogue() && receiver->IsHunting() && receiver->GetNearbyEnemyCount() == 0)
-				receiver->RespondToHelpRequest(sender, TheNavAreaGrid.GetPlace(&m_pos));
+			if (!pReceiver->IsRogue() && pReceiver->IsHunting() && pReceiver->GetNearbyEnemyCount() == 0)
+				pReceiver->RespondToHelpRequest(pSender, TheNavAreaGrid.GetPlace(&m_pos));
 
 			break;
 		}
 		case CSGameState::LOOSE:
 		{
-			receiver->GetGameState()->UpdateLooseBomb(&m_pos);
+			pReceiver->GetGameState()->UpdateLooseBomb(&m_pos);
 
-			if (receiver->GetTask() == CCSBot::GUARD_BOMB_ZONE)
+			if (pReceiver->GetTask() == CCSBot::GUARD_BOMB_ZONE)
 			{
-				receiver->Idle();
-				receiver->GetChatter()->Affirmative();
+				pReceiver->Idle();
+				pReceiver->GetChatter()->Affirmative();
 			}
 			break;
 		}
@@ -153,17 +153,17 @@ void BotBombStatusMeme::Interpret(CCSBot *sender, CCSBot *receiver) const
 }
 
 // A teammate has asked that we follow him
-void BotFollowMeme::Interpret(CCSBot *sender, CCSBot *receiver) const
+void BotFollowMeme::Interpret(CCSBot *pSender, CCSBot *pReceiver) const
 {
-	if (receiver->IsRogue())
+	if (pReceiver->IsRogue())
 		return;
 
 	// if we're busy, ignore
-	if (receiver->IsBusy())
+	if (pReceiver->IsBusy())
 		return;
 
-	PathCost pathCost(receiver);
-	float travelDistance = NavAreaTravelDistance(receiver->GetLastKnownArea(), TheNavAreaGrid.GetNearestNavArea(&sender->pev->origin), pathCost);
+	PathCost pathCost(pReceiver);
+	float travelDistance = NavAreaTravelDistance(pReceiver->GetLastKnownArea(), TheNavAreaGrid.GetNearestNavArea(&pSender->pev->origin), pathCost);
 	if (travelDistance < 0.0f)
 		return;
 
@@ -172,80 +172,81 @@ void BotFollowMeme::Interpret(CCSBot *sender, CCSBot *receiver) const
 		return;
 
 	// begin following
-	receiver->Follow(sender);
+	pReceiver->Follow(pSender);
 
 	// acknowledge
-	receiver->GetChatter()->Say("CoveringFriend");
+	pReceiver->GetChatter()->Say("CoveringFriend");
 }
 
 // A teammate has asked us to defend a place
-void BotDefendHereMeme::Interpret(CCSBot *sender, CCSBot *receiver) const
+void BotDefendHereMeme::Interpret(CCSBot *pSender, CCSBot *pReceiver) const
 {
-	if (receiver->IsRogue())
+	if (pReceiver->IsRogue())
 		return;
 
 	// if we're busy, ignore
-	if (receiver->IsBusy())
+	if (pReceiver->IsBusy())
 		return;
 
 	Place place = TheNavAreaGrid.GetPlace(&m_pos);
 	if (place != UNDEFINED_PLACE)
 	{
 		// pick a random hiding spot in this place
-		const Vector *spot = FindRandomHidingSpot(receiver, place, receiver->IsSniper());
+		const Vector *spot = FindRandomHidingSpot(pReceiver, place, pReceiver->IsSniper());
 		if (spot)
 		{
-			receiver->SetTask(CCSBot::HOLD_POSITION);
-			receiver->Hide(spot);
+			pReceiver->SetTask(CCSBot::HOLD_POSITION);
+			pReceiver->Hide(spot);
 			return;
 		}
 	}
 
 	// hide nearby
-	receiver->SetTask(CCSBot::HOLD_POSITION);
-	receiver->Hide(TheNavAreaGrid.GetNearestNavArea(&m_pos));
+	pReceiver->SetTask(CCSBot::HOLD_POSITION);
+	pReceiver->Hide(TheNavAreaGrid.GetNearestNavArea(&m_pos));
 
 	// acknowledge
-	receiver->GetChatter()->Say("Affirmative");
+	pReceiver->GetChatter()->Say("Affirmative");
 }
 
 // A teammate has asked where the bomb is planted
-void BotWhereBombMeme::Interpret(CCSBot *sender, CCSBot *receiver) const
+void BotWhereBombMeme::Interpret(CCSBot *pSender, CCSBot *pReceiver) const
 {
-	int zone = receiver->GetGameState()->GetPlantedBombsite();
-
+	int zone = pReceiver->GetGameState()->GetPlantedBombsite();
 	if (zone != CSGameState::UNKNOWN)
-		receiver->GetChatter()->FoundPlantedBomb(zone);
+	{
+		pReceiver->GetChatter()->FoundPlantedBomb(zone);
+	}
 }
 
 // A teammate has asked us to report in
-void BotRequestReportMeme::Interpret(CCSBot *sender, CCSBot *receiver) const
+void BotRequestReportMeme::Interpret(CCSBot *pSender, CCSBot *pReceiver) const
 {
-	receiver->GetChatter()->ReportingIn();
+	pReceiver->GetChatter()->ReportingIn();
 }
 
 // A teammate told us all the hostages are gone
-void BotAllHostagesGoneMeme::Interpret(CCSBot *sender, CCSBot *receiver) const
+void BotAllHostagesGoneMeme::Interpret(CCSBot *pSender, CCSBot *pReceiver) const
 {
-	receiver->GetGameState()->AllHostagesGone();
+	pReceiver->GetGameState()->AllHostagesGone();
 
 	// acknowledge
-	receiver->GetChatter()->Say("Affirmative");
+	pReceiver->GetChatter()->Say("Affirmative");
 }
 
 // A teammate told us a CT is talking to a hostage
-void BotHostageBeingTakenMeme::Interpret(CCSBot *sender, CCSBot *receiver) const
+void BotHostageBeingTakenMeme::Interpret(CCSBot *pSender, CCSBot *pReceiver) const
 {
-	receiver->GetGameState()->HostageWasTaken();
+	pReceiver->GetGameState()->HostageWasTaken();
 
 	// if we're busy, ignore
-	if (receiver->IsBusy())
+	if (pReceiver->IsBusy())
 		return;
 
-	receiver->Idle();
+	pReceiver->Idle();
 
 	// acknowledge
-	receiver->GetChatter()->Say("Affirmative");
+	pReceiver->GetChatter()->Say("Affirmative");
 }
 
 BotSpeakable::BotSpeakable()
@@ -1405,7 +1406,7 @@ void BotChatterInterface::ReportEnemies()
 	}
 }
 
-void BotChatterInterface::OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
+void BotChatterInterface::OnEvent(GameEventType event, CBaseEntity *pEntity, CBaseEntity *pOther)
 {
 	;
 }
@@ -1521,32 +1522,32 @@ BotStatement *BotChatterInterface::GetActiveStatement()
 
 	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{
-		CBasePlayer *player = UTIL_PlayerByIndex(i);
+		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
-		if (!player)
+		if (!pPlayer)
 			continue;
 
-		if (FNullEnt(player->pev))
+		if (FNullEnt(pPlayer->pev))
 			continue;
 
-		if (FStrEq(STRING(player->pev->netname), ""))
+		if (FStrEq(STRING(pPlayer->pev->netname), ""))
 			continue;
 
 		// ignore dead humans
-		if (!player->IsBot() && !player->IsAlive())
+		if (!pPlayer->IsBot() && !pPlayer->IsAlive())
 			continue;
 
 		// ignore enemies, since we can't hear them talk
-		if (m_me->BotRelationship(player) == CCSBot::BOT_ENEMY)
+		if (m_me->BotRelationship(pPlayer) == CCSBot::BOT_ENEMY)
 			continue;
 
 		// if not a bot, fail the test
 		// TODO: Check if human is currently talking
-		if (!player->IsBot())
+		if (!pPlayer->IsBot())
 			continue;
 
-		CCSBot *bot = reinterpret_cast<CCSBot *>(player);
-		auto say = bot->GetChatter()->m_statementList;
+		CCSBot *pBot = static_cast<CCSBot *>(pPlayer);
+		auto say = pBot->GetChatter()->m_statementList;
 		while (say)
 		{
 			// if this statement is currently being spoken, return it

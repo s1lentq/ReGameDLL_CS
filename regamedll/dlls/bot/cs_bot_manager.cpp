@@ -104,6 +104,10 @@ CCSBotManager::CCSBotManager()
 	{
 		TheBotPhrases->Initialize((*pVoiceBanks)[i], i);
 	}
+
+#ifdef REGAMEDLL_FIXES
+	AddServerCommands();
+#endif
 }
 
 // Invoked when a new round begins
@@ -182,27 +186,27 @@ bool CCSBotManager::IsWeaponUseable(CBasePlayerItem *item) const
 }
 
 // Return true if this player is on "defense"
-bool CCSBotManager::IsOnDefense(CBasePlayer *player) const
+bool CCSBotManager::IsOnDefense(CBasePlayer *pPlayer) const
 {
 	switch (GetScenario())
 	{
-		case SCENARIO_DEFUSE_BOMB:
-			return (player->m_iTeam == CT);
+	case SCENARIO_DEFUSE_BOMB:
+		return (pPlayer->m_iTeam == CT);
 
-		case SCENARIO_RESCUE_HOSTAGES:
-			return (player->m_iTeam == TERRORIST);
+	case SCENARIO_RESCUE_HOSTAGES:
+		return (pPlayer->m_iTeam == TERRORIST);
 
-		case SCENARIO_ESCORT_VIP:
-			return (player->m_iTeam == TERRORIST);
+	case SCENARIO_ESCORT_VIP:
+		return (pPlayer->m_iTeam == TERRORIST);
 	}
 
 	return false;
 }
 
 // Return true if this player is on "offense"
-bool CCSBotManager::IsOnOffense(CBasePlayer *player) const
+bool CCSBotManager::IsOnOffense(CBasePlayer *pPlayer) const
 {
-	return !IsOnDefense(player);
+	return !IsOnDefense(pPlayer);
 }
 
 // Invoked when a map has just been loaded
@@ -221,7 +225,10 @@ void CCSBotManager::ServerActivate()
 	m_isAnalysisRequested = false;
 
 	m_bServerActive = true;
+
+#ifndef REGAMEDLL_FIXES
 	AddServerCommands();
+#endif
 
 	TheBotPhrases->OnMapChange();
 }
@@ -266,7 +273,6 @@ void CCSBotManager::AddServerCommands()
 	AddServerCommand("bot_nav_crouch");
 	AddServerCommand("bot_nav_jump");
 	AddServerCommand("bot_nav_precise");
-	AddServerCommand("bot_nav_walk");
 	AddServerCommand("bot_nav_no_jump");
 	AddServerCommand("bot_nav_analyze");
 	AddServerCommand("bot_nav_strip");
@@ -299,8 +305,8 @@ void CCSBotManager::ClientDisconnect(CBasePlayer *pPlayer)
 
 	auto pevTemp = VARS(pPlayer->edict());
 
-	CCSBot *bot = reinterpret_cast<CCSBot *>(pPlayer);
-	bot->Disconnect();
+	CCSBot *pBot = static_cast<CCSBot *>(pPlayer);
+	pBot->Disconnect();
 
 	if (!FStringNull(pPlayer->pev->classname))
 	{
@@ -309,9 +315,9 @@ void CCSBotManager::ClientDisconnect(CBasePlayer *pPlayer)
 
 	FREE_PRIVATE(pPlayer->edict());
 
-	auto player = GetClassPtr<CCSPlayer>((CBasePlayer *)pevTemp);
-	AddEntityHashValue(player->pev, STRING(player->pev->classname), CLASSNAME);
-	player->pev->flags = FL_DORMANT;
+	pPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pevTemp);
+	AddEntityHashValue(pPlayer->pev, STRING(pPlayer->pev->classname), CLASSNAME);
+	pPlayer->pev->flags = FL_DORMANT;
 }
 
 void PrintAllEntities()
@@ -337,7 +343,14 @@ void CCSBotManager::ServerCommand(const char *pcmd)
 
 	if (FStrEq(pcmd, "bot_about"))
 	{
-		Q_sprintf(buffer, "\n--------------------------------------------------------------------------\nThe Official Counter-Strike Bot V%d.%02d\nCreated by Michael S. Booth\nWeb: www.turtlerockstudios.com\\csbot\nE-mail: csbot@turtlerockstudios.com\n--------------------------------------------------------------------------\n\n", BOT_VERSION_MAJOR, BOT_VERSION_MINOR);
+		Q_snprintf(buffer, sizeof(buffer),
+			"\n--------------------------------------------------------------------------\n"
+			"The Official Counter-Strike Bot V%d.%02d\n"
+			"Created by Michael S. Booth\n"
+			"Web: www.turtlerockstudios.com\\csbot\n"
+			"E-mail: csbot@turtlerockstudios.com\n"
+			"--------------------------------------------------------------------------\n\n", BOT_VERSION_MAJOR, BOT_VERSION_MINOR);
+
 		CONSOLE_ECHO(buffer);
 		HintMessageToAllPlayers(buffer);
 	}
@@ -522,10 +535,6 @@ void CCSBotManager::ServerCommand(const char *pcmd)
 	{
 		m_editCmd = EDIT_ATTRIB_PRECISE;
 	}
-	else if (FStrEq(pcmd, "bot_nav_walk"))
-	{
-		m_editCmd = EDIT_ATTRIB_WALK;
-	}
 	else if (FStrEq(pcmd, "bot_nav_no_jump"))
 	{
 		m_editCmd = EDIT_ATTRIB_NO_JUMP;
@@ -641,17 +650,17 @@ void CCSBotManager::ServerCommand(const char *pcmd)
 				if (!pEntity->IsPlayer())
 					continue;
 
-				if ((pEntity->pev->flags & FL_DORMANT) == FL_DORMANT)
+				if (pEntity->IsDormant())
 					continue;
 
 				CBasePlayer *playerOrBot = GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev);
 
 				if (playerOrBot->IsBot())
 				{
-					CCSBot *bot = static_cast<CCSBot *>(playerOrBot);
-					if (bot)
+					CCSBot *pBot = static_cast<CCSBot *>(playerOrBot);
+					if (pBot)
 					{
-						bot->MoveTo(&area->m_center, FASTEST_ROUTE);
+						pBot->MoveTo(&area->m_center, FASTEST_ROUTE);
 					}
 
 					break;
@@ -1271,7 +1280,7 @@ CNavArea *CCSBotManager::GetRandomAreaInZone(const Zone *zone) const
 	return zone->m_area[RANDOM_LONG(0, zone->m_areaCount - 1)];
 }
 
-void CCSBotManager::OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
+void CCSBotManager::OnEvent(GameEventType event, CBaseEntity *pEntity, CBaseEntity *pOther)
 {
 	switch (event)
 	{
@@ -1281,7 +1290,7 @@ void CCSBotManager::OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntit
 		break;
 
 	case EVENT_BOMB_DEFUSING:
-		m_bombDefuser = (CBasePlayer *)entity;
+		m_bombDefuser = static_cast<CBasePlayer *>(pEntity);
 		break;
 
 	case EVENT_BOMB_DEFUSE_ABORTED:
@@ -1308,7 +1317,7 @@ void CCSBotManager::OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntit
 		break;
 	}
 
-	CBotManager::OnEvent(event, entity, other);
+	CBotManager::OnEvent(event, pEntity, pOther);
 }
 
 // Get the time remaining before the planted bomb explodes
@@ -1332,13 +1341,13 @@ void CCSBotManager::SetLooseBomb(CBaseEntity *bomb)
 }
 
 // Return true if player is important to scenario (VIP, bomb carrier, etc)
-bool CCSBotManager::IsImportantPlayer(CBasePlayer *player) const
+bool CCSBotManager::IsImportantPlayer(CBasePlayer *pPlayer) const
 {
 	switch (GetScenario())
 	{
 		case SCENARIO_DEFUSE_BOMB:
 		{
-			if (player->m_iTeam == TERRORIST && player->IsBombGuy())
+			if (pPlayer->m_iTeam == TERRORIST && pPlayer->IsBombGuy())
 				return true;
 
 			// TODO: TEAM_CT's defusing the bomb are important
@@ -1346,7 +1355,7 @@ bool CCSBotManager::IsImportantPlayer(CBasePlayer *player) const
 		}
 		case SCENARIO_ESCORT_VIP:
 		{
-			if (player->m_iTeam == CT && player->m_bIsVIP)
+			if (pPlayer->m_iTeam == CT && pPlayer->m_bIsVIP)
 				return true;
 
 			return false;
@@ -1363,50 +1372,50 @@ bool CCSBotManager::IsImportantPlayer(CBasePlayer *player) const
 }
 
 // Return priority of player (0 = max pri)
-unsigned int CCSBotManager::GetPlayerPriority(CBasePlayer *player) const
+unsigned int CCSBotManager::GetPlayerPriority(CBasePlayer *pPlayer) const
 {
 	const unsigned int lowestPriority = 0xFFFFFFFF;
 
-	if (!player->IsPlayer())
+	if (!pPlayer->IsPlayer())
 		return lowestPriority;
 
 	// human players have highest priority
-	if (!player->IsBot())
+	if (!pPlayer->IsBot())
 		return 0;
 
-	CCSBot *bot = reinterpret_cast<CCSBot *>(player);
+	CCSBot *pBot = static_cast<CCSBot *>(pPlayer);
 
 	// bots doing something important for the current scenario have high priority
 	switch (GetScenario())
 	{
-		case SCENARIO_DEFUSE_BOMB:
-		{
-			// the bomb carrier has high priority
-			if (bot->m_iTeam == TERRORIST && bot->m_bHasC4)
-				return 1;
+	case SCENARIO_DEFUSE_BOMB:
+	{
+		// the bomb carrier has high priority
+		if (pBot->m_iTeam == TERRORIST && pBot->m_bHasC4)
+			return 1;
 
-			break;
-		}
-		case SCENARIO_ESCORT_VIP:
-		{
-			// the VIP has high priority
-			if (bot->m_iTeam == CT && bot->m_bIsVIP)
-				return 1;
+		break;
+	}
+	case SCENARIO_ESCORT_VIP:
+	{
+		// the VIP has high priority
+		if (pBot->m_iTeam == CT && pBot->m_bIsVIP)
+			return 1;
 
-			break;
-		}
-		case SCENARIO_RESCUE_HOSTAGES:
-		{
-			// TEAM_CT's rescuing hostages have high priority
-			if (bot->m_iTeam == CT && bot->GetHostageEscortCount())
-				return 1;
+		break;
+	}
+	case SCENARIO_RESCUE_HOSTAGES:
+	{
+		// TEAM_CT's rescuing hostages have high priority
+		if (pBot->m_iTeam == CT && pBot->GetHostageEscortCount())
+			return 1;
 
-			break;
-		}
+		break;
+	}
 	}
 
 	// everyone else is ranked by their unique ID (which cannot be zero)
-	return 1 + bot->GetID();
+	return 1 + pBot->GetID();
 }
 
 // Return the last time the given radio message was sent for given team

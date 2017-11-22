@@ -159,10 +159,10 @@ void HostageEscapeState::OnUpdate(CHostageImprov *improv)
 	else
 		improv->Run();
 
-	CBasePlayer *player = improv->GetClosestVisiblePlayer(UNASSIGNED);
-	if (player)
+	CBasePlayer *pPlayer = improv->GetClosestVisiblePlayer(UNASSIGNED);
+	if (pPlayer)
 	{
-		if (player->m_iTeam != TERRORIST)
+		if (pPlayer->m_iTeam != TERRORIST)
 		{
 			improv->Stop();
 			improv->Idle();
@@ -170,7 +170,7 @@ void HostageEscapeState::OnUpdate(CHostageImprov *improv)
 		}
 
 		const float farRange = 750.0f;
-		if ((player->pev->origin - improv->GetCentroid()).IsLengthGreaterThan(farRange))
+		if ((pPlayer->pev->origin - improv->GetCentroid()).IsLengthGreaterThan(farRange))
 		{
 			improv->Frighten(CHostageImprov::NERVOUS);
 

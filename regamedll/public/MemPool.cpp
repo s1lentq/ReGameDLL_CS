@@ -74,7 +74,7 @@ void CMemoryPool::AddNewBlob()
 		newBlob = (void **)newBlob[0];
 	}
 
-	newBlob[0] = NULL;
+	newBlob[0] = nullptr;
 
 	_numElements += nElements;
 	_numBlobs++;
@@ -90,7 +90,7 @@ void *CMemoryPool::Alloc(unsigned int amount)
 {
 	void *returnBlock;
 	if (amount > (unsigned int)_blockSize)
-		return NULL;
+		return nullptr;
 
 	_blocksAllocated++;
 	_peakAlloc = Q_max(_peakAlloc, _blocksAllocated);

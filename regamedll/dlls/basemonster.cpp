@@ -18,6 +18,7 @@ void CBaseMonster::GibMonster()
 			// throw some human gibs.
 			CGib::SpawnRandomGibs(pev, 4, 1);
 		}
+
 		gibbed = true;
 	}
 	else if (HasAlienGibs())
@@ -28,6 +29,7 @@ void CBaseMonster::GibMonster()
 			// Throw alien gibs
 			CGib::SpawnRandomGibs(pev, 4, 0);
 		}
+
 		gibbed = true;
 	}
 
@@ -40,7 +42,9 @@ void CBaseMonster::GibMonster()
 			pev->nextthink = gpGlobals->time;
 		}
 		else
+		{
 			FadeMonster();
+		}
 	}
 }
 
@@ -350,7 +354,7 @@ void CBaseMonster::Killed(entvars_t *pevAttacker, int iGib)
 	}
 	else if (pev->flags & FL_MONSTER)
 	{
-		SetTouch(NULL);
+		SetTouch(nullptr);
 		BecomeDead();
 	}
 
@@ -444,9 +448,7 @@ BOOL CBaseMonster::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, f
 			vecDir = (pInflictor->Center() - Vector(0, 0, 10) - Center()).Normalize();
 #else
 			// TODO: fix test demo
-			vecDir = NormalizeSubtract<
-				float_precision, float, float_precision, float_precision
-				>(Center(), pInflictor->Center() - Vector(0, 0, 10));
+			vecDir = NormalizeSubtract<real_t, float, real_t, real_t>(Center(), pInflictor->Center() - Vector(0, 0, 10));
 #endif
 			vecDir = g_vecAttackDir = vecDir.Normalize();
 		}
@@ -568,12 +570,12 @@ BOOL CBaseMonster::DeadTakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacke
 
 float CBaseMonster::DamageForce(float damage)
 {
-	float_precision force = damage * ((32 * 32 * 72.0) / (pev->size.x * pev->size.y * pev->size.z)) * 5;
-
+	real_t force = damage * ((32 * 32 * 72.0) / (pev->size.x * pev->size.y * pev->size.z)) * 5;
 	if (force > 1000.0)
 	{
 		force = 1000.0;
 	}
+
 	return force;
 }
 
@@ -736,7 +738,7 @@ NOXREF void CBaseMonster::CorpseFallThink()
 {
 	if (pev->flags & FL_ONGROUND)
 	{
-		SetThink(NULL);
+		SetThink(nullptr);
 		SetSequenceBox();
 
 		// link into world.
@@ -830,10 +832,10 @@ void CBaseMonster::Look(int iDistance)
 	// DON'T let visibility information from last frame sit around!
 	ClearConditions(bits_COND_SEE_HATE | bits_COND_SEE_DISLIKE | bits_COND_SEE_ENEMY | bits_COND_SEE_FEAR | bits_COND_SEE_NEMESIS | bits_COND_SEE_CLIENT);
 
-	m_pLink = NULL;
+	m_pLink = nullptr;
 
 	// the current visible entity that we're dealing with
-	CBaseEntity *pSightEnt = NULL;
+	CBaseEntity *pSightEnt = nullptr;
 	CBaseEntity *pList[100];
 
 	Vector delta(iDistance, iDistance, iDistance);
@@ -909,10 +911,10 @@ CBaseEntity *CBaseMonster::BestVisibleEnemy()
 	// so first visible entity will become the closest.
 	iNearest = 8192;
 	pNextEnt = m_pLink;
-	pReturn = NULL;
+	pReturn = nullptr;
 	iBestRelationship = R_NO;
 
-	while (pNextEnt != NULL)
+	while (pNextEnt)
 	{
 		if (pNextEnt->IsAlive())
 		{
@@ -968,7 +970,7 @@ NOXREF void CBaseMonster::MakeDamageBloodDecal(int cCount, float flNoise, TraceR
 		}
 	}
 
-	for (i = 0; i < cCount; ++i)
+	for (i = 0; i < cCount; i++)
 	{
 		vecTraceDir = vecDir;
 

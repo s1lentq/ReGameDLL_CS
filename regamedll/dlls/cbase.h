@@ -151,7 +151,11 @@ public:
 	bool Intersects(CBaseEntity *pOther);
 	bool Intersects(const Vector &mins, const Vector &maxs);
 	void MakeDormant();
-	int IsDormant();
+
+	// This entity's classname.
+	const char *GetClassname() const { return pev->classname.str(); }
+
+	bool IsDormant() const { return (pev->flags & FL_DORMANT) == FL_DORMANT; }
 	BOOL IsLockedByMaster() { return FALSE; }
 
 public:
@@ -266,7 +270,7 @@ public:
 };
 
 // Inlines
-inline BOOL FNullEnt(CBaseEntity *ent) { return (ent == NULL || FNullEnt(ent->edict())); }
+inline BOOL FNullEnt(CBaseEntity *pEntity) { return (pEntity == nullptr || FNullEnt(pEntity->edict())); }
 
 template <typename T>
 inline void CBaseEntity::SetThink(void (T::*pfn)())

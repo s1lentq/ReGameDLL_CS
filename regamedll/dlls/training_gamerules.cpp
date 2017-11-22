@@ -108,7 +108,7 @@ void CHalfLifeTraining::PlayerThink(CBasePlayer *pPlayer)
 	}
 
 	CGrenade *pBomb = nullptr;
-	while ((pBomb = (CGrenade *)UTIL_FindEntityByClassname(pBomb, "grenade")))
+	while ((pBomb = UTIL_FindEntityByClassname(pBomb, "grenade")))
 	{
 		if (pBomb->m_pentCurBombTarget)
 			pBomb->m_bStartDefuse = true;
@@ -231,7 +231,7 @@ void CHalfLifeTraining::CheckWinConditions()
 	{
 		CGrenade *pBomb = nullptr;
 
-		while ((pBomb = (CGrenade *)UTIL_FindEntityByClassname(pBomb, "grenade")))
+		while ((pBomb = UTIL_FindEntityByClassname(pBomb, "grenade")))
 		{
 			if (!pBomb->m_bIsC4 || !pBomb->m_bJustBlew)
 				continue;
@@ -246,7 +246,7 @@ void CHalfLifeTraining::CheckWinConditions()
 	{
 		CGrenade *pBomb = nullptr;
 
-		while ((pBomb = (CGrenade *)UTIL_FindEntityByClassname(pBomb, "grenade")))
+		while ((pBomb = UTIL_FindEntityByClassname(pBomb, "grenade")))
 		{
 			if (!pBomb->m_bIsC4 || !pBomb->m_bJustBlew)
 				continue;

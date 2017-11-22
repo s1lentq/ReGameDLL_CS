@@ -129,7 +129,7 @@ void CLocalNav::AddPathNode(node_index_t nindexSource, int offsetX, int offsetY,
 		offsetYAbs = offsetY;
 
 		vecSource = m_vecStartingLoc;
-		vecDest = vecSource + Vector(float_precision(offsetX) * HOSTAGE_STEPSIZE, float_precision(offsetY) * HOSTAGE_STEPSIZE, 0);
+		vecDest = vecSource + Vector(real_t(offsetX) * HOSTAGE_STEPSIZE, real_t(offsetY) * HOSTAGE_STEPSIZE, 0);
 	}
 	else
 	{
@@ -149,7 +149,7 @@ void CLocalNav::AddPathNode(node_index_t nindexSource, int offsetX, int offsetY,
 		}
 
 		vecSource = nodeCurrent->vecLoc;
-		vecDest = vecSource + Vector((float_precision(offsetX) * HOSTAGE_STEPSIZE), (float_precision(offsetY) * HOSTAGE_STEPSIZE), 0);
+		vecDest = vecSource + Vector((real_t(offsetX) * HOSTAGE_STEPSIZE), (real_t(offsetY) * HOSTAGE_STEPSIZE), 0);
 
 		if (m_nindexAvailableNode)
 		{
@@ -230,15 +230,13 @@ node_index_t CLocalNav::GetBestNode(Vector &vecOrigin, Vector &vecDest)
 
 		if (!nodeCurrent->fSearched)
 		{
-			float_precision flCurrentVal;
-			float_precision flDistFromStart;
+			real_t flCurrentVal;
+			real_t flDistFromStart;
 
 			float flDistToDest;
-			float_precision flZDiff = -1.0;
+			real_t flZDiff = -1.0;
 
-			flDistFromStart = LengthSubtract
-				<float_precision, float_precision,
-				float_precision, float_precision>(vecDest, nodeCurrent->vecLoc);
+			flDistFromStart = LengthSubtract<real_t, real_t, real_t, real_t>(vecDest, nodeCurrent->vecLoc);
 
 			flDistToDest = nodeCurrent->vecLoc.z - vecDest.z;
 			if (flDistToDest >= 0.0)
@@ -251,7 +249,7 @@ node_index_t CLocalNav::GetBestNode(Vector &vecOrigin, Vector &vecDest)
 			else
 				flZDiff = 1.25;
 
-			flCurrentVal = flZDiff * (float_precision(nodeCurrent->bDepth) * HOSTAGE_STEPSIZE + flDistFromStart);
+			flCurrentVal = flZDiff * (real_t(nodeCurrent->bDepth) * HOSTAGE_STEPSIZE + flDistFromStart);
 			if (flCurrentVal < flBestVal)
 			{
 				flBestVal = flCurrentVal;
@@ -307,7 +305,7 @@ node_index_t CLocalNav::FindPath(Vector &vecStart, Vector &vecDest, float flTarg
 
 	localnode_t *node;
 	Vector vecNodeLoc;
-	float_precision flDistToDest;
+	real_t flDistToDest;
 
 	m_vecStartingLoc = vecStart;
 	m_nindexAvailableNode = 0;
@@ -400,7 +398,7 @@ node_index_t CLocalNav::FindDirectPath(Vector &vecStart, Vector &vecDest, float 
 	Vector vecNodeLoc;
 	node_index_t nIndexLast;
 
-	vecPathDir = NormalizeSubtract<float_precision, float, float, float_precision>(vecStart, vecDest);
+	vecPathDir = NormalizeSubtract<real_t, float, float, real_t>(vecStart, vecDest);
 	vecActualDest = vecDest - (vecPathDir * flTargetRadius);
 
 	if (PathTraversable(vecStart, vecActualDest, fNoMonsters) == PTRAVELS_EMPTY)
@@ -457,7 +455,7 @@ PathTraversAble CLocalNav::PathTraversable(Vector &vecSource, Vector &vecDest, B
 	Vector vecSrcTmp;
 	Vector vecDestTmp;
 	Vector vecDir;
-	float_precision flTotal;
+	real_t flTotal;
 	auto retval = PTRAVELS_EMPTY;
 
 	vecSrcTmp = vecSource;
@@ -585,7 +583,7 @@ BOOL CLocalNav::SlopeTraversable(Vector &vecSource, Vector &vecDest, BOOL fNoMon
 	vecDown = vecDest - vecSource;
 
 	vecAngles = UTIL_VecToAngles(tr.vecPlaneNormal);
-	vecSlopeEnd.z = vecDown.Length2D() * Q_tan(float_precision((90.0 - vecAngles.x) * (M_PI / 180))) + vecSource.z;
+	vecSlopeEnd.z = vecDown.Length2D() * Q_tan(real_t((90.0 - vecAngles.x) * (M_PI / 180))) + vecSource.z;
 
 	if (!PathClear(vecSource, vecSlopeEnd, fNoMonsters, tr))
 	{
@@ -773,15 +771,11 @@ BOOL CLocalNav::LadderHit(Vector &vecSource, Vector &vecDest, TraceResult &tr)
 
 void CLocalNav::Think()
 {
-	static cvar_t *sv_stepsize = NULL;
 	if (gpGlobals->time >= m_flNextCvarCheck)
 	{
-		if (sv_stepsize != NULL)
-			m_flStepSize = sv_stepsize->value;
-		else
+		if (g_psv_stepsize)
 		{
-			sv_stepsize = CVAR_GET_POINTER("sv_stepsize");
-			m_flStepSize = sv_stepsize ? sv_stepsize->value : 18;
+			m_flStepSize = g_psv_stepsize->value;
 		}
 
 		m_flNextCvarCheck = gpGlobals->time + 1.0f;

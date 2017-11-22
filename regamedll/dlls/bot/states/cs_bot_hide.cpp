@@ -115,22 +115,22 @@ void HideState::OnUpdate(CCSBot *me)
 		// if we are momentarily hiding while following someone, check to see if he has moved on
 		if (me->IsFollowing())
 		{
-			CBasePlayer *leader = me->GetFollowLeader();
+			CBasePlayer *pLeader = me->GetFollowLeader();
 
 			// BOTPORT: Determine walk/run velocity thresholds
 			float runThreshold = 200.0f;
-			if (leader->pev->velocity.IsLengthGreaterThan(runThreshold))
+			if (pLeader->pev->velocity.IsLengthGreaterThan(runThreshold))
 			{
 				// leader is running, stay with him
-				me->Follow(leader);
+				me->Follow(pLeader);
 				return;
 			}
 
 			// if leader has moved, stay with him
 			const float followRange = 250.0f;
-			if ((m_leaderAnchorPos - leader->pev->origin).IsLengthGreaterThan(followRange))
+			if ((m_leaderAnchorPos - pLeader->pev->origin).IsLengthGreaterThan(followRange))
 			{
-				me->Follow(leader);
+				me->Follow(pLeader);
 				return;
 			}
 		}

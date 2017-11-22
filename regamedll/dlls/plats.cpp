@@ -356,7 +356,7 @@ void CFuncPlat::PlatUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE 
 	}
 	else
 	{
-		SetUse(NULL);
+		SetUse(nullptr);
 
 		if (m_toggle_state == TS_AT_TOP)
 		{
@@ -829,7 +829,7 @@ void CFuncTrain::Restart()
 
 #ifdef REGAMEDLL_FIXES
 
-	SetThink(NULL);
+	SetThink(nullptr);
 	pev->velocity = g_vecZero;
 
 	// restore of first target
@@ -958,7 +958,7 @@ void CFuncTrackTrain::Blocked(CBaseEntity *pOther)
 	// Blocker is on-ground on the train
 	if ((pevOther->flags & FL_ONGROUND) && VARS(pevOther->groundentity) == pev)
 	{
-		float_precision deltaSpeed = Q_fabs(float_precision(pev->speed));
+		real_t deltaSpeed = Q_fabs(real_t(pev->speed));
 
 		if (deltaSpeed > 50)
 		{
@@ -1004,12 +1004,12 @@ void CFuncTrackTrain::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYP
 			pev->velocity = g_vecZero;
 			pev->avelocity = g_vecZero;
 			StopSound();
-			SetThink(NULL);
+			SetThink(nullptr);
 		}
 	}
 	else
 	{
-		float_precision delta = (int(pev->speed * 4.0f) / int(m_speed)) * 0.25 + 0.25 * value;
+		real_t delta = (int(pev->speed * 4.0f) / int(m_speed)) * 0.25 + 0.25 * value;
 
 		if (delta > 1)
 			delta = 1;
@@ -1115,8 +1115,8 @@ void CFuncTrackTrain::Next()
 	pev->velocity = (nextPos - pev->origin) * 10;
 #else
 	// TODO: fix test demo
-	pev->velocity.x = (float_precision(nextPos.x - pev->origin.x) * 10.0f);
-	pev->velocity.y = (float_precision(nextPos.y - pev->origin.y) * 10.0f);
+	pev->velocity.x = (real_t(nextPos.x - pev->origin.x) * 10.0f);
+	pev->velocity.y = (real_t(nextPos.y - pev->origin.y) * 10.0f);
 	pev->velocity.z = ((nextPos.z - pev->origin.z) * 10.0f);
 #endif
 
@@ -1140,7 +1140,7 @@ void CFuncTrackTrain::Next()
 	// TODO: All of this crap has to be done to make the angles not wrap around, revisit this.
 	UTIL_FixupAngles(angles);
 #else
-	float_precision fixAngleY = angles.y + 180.0f;
+	real_t fixAngleY = angles.y + 180.0f;
 
 	angles.x = UTIL_FixupAngle(angles.x);
 	angles.y = UTIL_FixupAngle(fixAngleY);	// TODO: fix test demo
@@ -1388,7 +1388,7 @@ void CFuncTrackTrain::NearestPath()
 {
 	CPathTrack *pTrack = nullptr;
 	CPathTrack *pNearest = nullptr;
-	float_precision dist;
+	real_t dist;
 	float closest = 1024.0f;
 
 	while ((pTrack = UTIL_FindEntityInSphere(pTrack, pev->origin, 1024.0f)))
@@ -1409,7 +1409,7 @@ void CFuncTrackTrain::NearestPath()
 	if (!pNearest)
 	{
 		ALERT(at_console, "Can't find a nearby track !!!\n");
-		SetThink(NULL);
+		SetThink(nullptr);
 		return;
 	}
 
@@ -1732,7 +1732,7 @@ TRAIN_CODE CFuncTrackChange::EvaluateTrain(CPathTrack *pcurrent)
 			return TRAIN_BLOCKING;
 
 		Vector dist = pev->origin - m_train->pev->origin;
-		float_precision length = dist.Length2D();
+		real_t length = dist.Length2D();
 
 		// Empirically determined close distance
 		if (length < m_train->m_length)
@@ -1750,7 +1750,7 @@ TRAIN_CODE CFuncTrackChange::EvaluateTrain(CPathTrack *pcurrent)
 
 void CFuncTrackChange::UpdateTrain(Vector &dest)
 {
-	float_precision time = (pev->nextthink - pev->ltime);
+	real_t time = (pev->nextthink - pev->ltime);
 
 	m_train->pev->velocity = pev->velocity;
 	m_train->pev->avelocity = pev->avelocity;
@@ -1904,7 +1904,7 @@ void CFuncTrackChange::HitBottom()
 		//UpdateTrain();
 		m_train->SetTrack(m_trackBottom);
 	}
-	SetThink(NULL);
+	SetThink(nullptr);
 	pev->nextthink = -1;
 
 	UpdateAutoTargets(m_toggle_state);
@@ -1922,7 +1922,7 @@ void CFuncTrackChange::HitTop()
 	}
 
 	// Don't let the plat go back down
-	SetThink(NULL);
+	SetThink(nullptr);
 	pev->nextthink = -1;
 
 	UpdateAutoTargets(m_toggle_state);
@@ -2076,7 +2076,7 @@ void CGunTarget::Start()
 
 void CGunTarget::Next()
 {
-	SetThink(NULL);
+	SetThink(nullptr);
 
 	m_hTargetEnt = GetNextTarget();
 	CBaseEntity *pTarget = m_hTargetEnt;

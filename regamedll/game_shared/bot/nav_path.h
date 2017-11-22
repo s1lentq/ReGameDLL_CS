@@ -153,7 +153,7 @@ private:
 
 	bool ComputePathPositions();									// determine actual path positions
 	bool BuildTrivialPath(const Vector *start, const Vector *goal);	// utility function for when start and goal are in the same area
-	int FindNextOccludedNode(int anchor_);							// used by Optimize()
+	int FindNextOccludedNode(int anchor);							// used by Optimize()
 };
 
 // Monitor improv movement and determine if it becomes stuck

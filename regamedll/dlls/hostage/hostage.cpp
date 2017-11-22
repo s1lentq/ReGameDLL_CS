@@ -398,7 +398,9 @@ void CHostage::IdleThink()
 				pPlayer = m_improv->GetFollowLeader();
 		}
 		else
+		{
 			pPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)m_hTargetEnt->pev);
+		}
 
 		if (!pPlayer || pPlayer->m_iTeam == CT)
 		{
@@ -1002,7 +1004,7 @@ void CHostage::Touch(CBaseEntity *pOther)
 	pev->velocity.y += vPush.y;
 #else
 	// TODO: fix test demo
-	pev->velocity = pev->velocity + NormalizeMulScalar<float_precision, float_precision, float>(vPush, pushForce);
+	pev->velocity = pev->velocity + NormalizeMulScalar<real_t, real_t, float>(vPush, pushForce);
 #endif
 }
 
@@ -1114,7 +1116,7 @@ void CHostage::MoveToward(const Vector &vecLoc)
 	Vector vecbigDest;
 	Vector vecMove;
 	CBaseEntity *pFollowing;
-	float_precision flDist;
+	real_t flDist;
 
 	pFollowing = GetClassPtr<CCSEntity>((CBaseEntity *)m_hTargetEnt->pev);
 	vecMove = vecLoc - pev->origin;
@@ -1132,7 +1134,7 @@ void CHostage::MoveToward(const Vector &vecLoc)
 	auto nFwdMove = m_LocalNav->PathTraversable(pev->origin, vecbigDest, FALSE);
 	if (nFwdMove != PTRAVELS_EMPTY)
 	{
-		float_precision flSpeed = 250;
+		real_t flSpeed = 250;
 
 		vecbigDest = pFollowing->pev->origin;
 		vecbigDest.z += pFollowing->pev->mins.z;
@@ -1480,15 +1482,15 @@ bool CHostageManager::IsNearbyHostageTalking(CHostageImprov *improv)
 	for (int i = 0; i < m_hostageCount; i++)
 	{
 		const float closeRange = 500.0f;
-		const CHostageImprov *other = m_hostage[i]->m_improv;
+		const CHostageImprov *pHostage = m_hostage[i]->m_improv;
 
-		if (!other)
+		if (!pHostage)
 			continue;
 
-		if (!other->IsAlive() || other == improv)
+		if (!pHostage->IsAlive() || pHostage == improv)
 			continue;
 
-		if (!(improv->GetCentroid() - other->GetCentroid()).IsLengthGreaterThan(closeRange) && !other->IsTalking())
+		if (!(improv->GetCentroid() - pHostage->GetCentroid()).IsLengthGreaterThan(closeRange) && !pHostage->IsTalking())
 		{
 			return true;
 		}
@@ -1501,16 +1503,16 @@ bool CHostageManager::IsNearbyHostageJumping(CHostageImprov *improv)
 {
 	for (int i = 0; i < m_hostageCount; i++)
 	{
-		const CHostageImprov *other = m_hostage[i]->m_improv;
+		const CHostageImprov *pHostage = m_hostage[i]->m_improv;
 
-		if (!other)
+		if (!pHostage)
 			continue;
 
-		if (!other->IsAlive() || other == improv)
+		if (!pHostage->IsAlive() || pHostage == improv)
 			continue;
 
 		const float closeRange = 500.0f;
-		if (!(improv->GetCentroid() - other->GetCentroid()).IsLengthGreaterThan(closeRange) && other->IsJumping())
+		if (!(improv->GetCentroid() - pHostage->GetCentroid()).IsLengthGreaterThan(closeRange) && pHostage->IsJumping())
 		{
 			return true;
 		}
@@ -1519,14 +1521,14 @@ bool CHostageManager::IsNearbyHostageJumping(CHostageImprov *improv)
 	return false;
 }
 
-void CHostageManager::OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *other)
+void CHostageManager::OnEvent(GameEventType event, CBaseEntity *pEntity, CBaseEntity *pOther)
 {
 	for (int i = 0; i < m_hostageCount; i++)
 	{
 		CHostageImprov *improv = m_hostage[i]->m_improv;
 		if (improv)
 		{
-			improv->OnGameEvent(event, entity, other);
+			improv->OnGameEvent(event, pEntity, pOther);
 		}
 	}
 }
@@ -1611,23 +1613,21 @@ char *SimpleChatter::GetSound(HostageChatterType type, float *duration)
 	return sound;
 }
 
-float SimpleChatter::PlaySound(CBaseEntity *entity, HostageChatterType type)
+float SimpleChatter::PlaySound(CBaseEntity *pEntity, HostageChatterType type)
 {
-	CHostage *hostage;
 	float duration;
-	char *sound;
-	int pitch;
-	int attenuation = 1;
+	char *pszSoundName = GetSound(type, &duration);
+	CHostage *pHostage = static_cast<CHostage *>(pEntity);
 
-	sound = GetSound(type, &duration);
-	hostage = static_cast<CHostage *>(entity);
-
-	if (!sound)
+	if (!pszSoundName)
 	{
 		return 0;
 	}
 
-	switch (hostage->m_whichModel)
+	int pitch;
+	int attenuation = 1;
+
+	switch (pHostage->m_whichModel)
 	{
 	case CHostage::REGULAR_GUY:
 		pitch = 92;
@@ -1644,13 +1644,13 @@ float SimpleChatter::PlaySound(CBaseEntity *entity, HostageChatterType type)
 		break;
 	}
 
-	EMIT_SOUND_DYN(ENT(hostage->pev), CHAN_VOICE, sound, VOL_NORM, attenuation, 0, pitch);
+	EMIT_SOUND_DYN(ENT(pHostage->pev), CHAN_VOICE, pszSoundName, VOL_NORM, attenuation, 0, pitch);
 
 	if (type == HOSTAGE_CHATTER_CALL_TO_RESCUER)
 	{
 		if (TheBots)
 		{
-			TheBots->OnEvent(EVENT_HOSTAGE_CALLED_FOR_HELP, hostage);
+			TheBots->OnEvent(EVENT_HOSTAGE_CALLED_FOR_HELP, pHostage);
 		}
 	}
 

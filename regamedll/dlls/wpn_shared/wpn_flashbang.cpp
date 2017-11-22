@@ -183,7 +183,7 @@ void CFlashbang::WeaponIdle()
 		else
 			angThrow.x = -10 + angThrow.x * ((90 + 10) / 90.0);
 
-		float_precision flVel = (90.0f - angThrow.x) * 6.0f;
+		real_t flVel = (90.0f - angThrow.x) * 6.0f;
 
 		if (flVel > 750.0f)
 			flVel = 750.0f;

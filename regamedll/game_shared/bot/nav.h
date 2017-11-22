@@ -69,7 +69,6 @@ enum NavAttributeType
 	NAV_JUMP    = 0x02, // must jump to traverse this area
 	NAV_PRECISE = 0x04, // do not adjust for obstacles, just move along area
 	NAV_NO_JUMP = 0x08, // inhibit discontinuity jumping
-	NAV_WALK    = 0x10, // must not run through this area
 };
 
 enum NavDirType
@@ -251,7 +250,7 @@ inline float DirectionToAngle(NavDirType dir)
 	return 0.0f;
 }
 
-inline NavDirType AngleToDirection(float_precision angle)
+inline NavDirType AngleToDirection(real_t angle)
 {
 	while (angle < 0.0f)
 		angle += 360.0f;
@@ -314,7 +313,7 @@ inline float SnapToGrid(float value)
 	return c * GenerationStepSize;
 }
 
-inline float_precision NormalizeAngle(float_precision angle)
+inline real_t NormalizeAngle(real_t angle)
 {
 	while (angle < -180.0f)
 		angle += 360.0f;
@@ -371,14 +370,14 @@ inline bool VectorsAreEqual(const Vector *a, const Vector *b, float tolerance = 
 	return false;
 }
 
-inline bool IsEntityWalkable(entvars_t *entity, unsigned int flags)
+inline bool IsEntityWalkable(entvars_t *pev, unsigned int flags)
 {
 	// if we hit a door, assume its walkable because it will open when we touch it
-	if (FClassnameIs(entity, "func_door") || FClassnameIs(entity, "func_door_rotating"))
+	if (FClassnameIs(pev, "func_door") || FClassnameIs(pev, "func_door_rotating"))
 		return (flags & WALK_THRU_DOORS) ? true : false;
 
 	// if we hit a breakable object, assume its walkable because we will shoot it when we touch it
-	if (FClassnameIs(entity, "func_breakable") && entity->takedamage == DAMAGE_YES)
+	else if (FClassnameIs(pev, "func_breakable") && pev->takedamage == DAMAGE_YES)
 		return (flags & WALK_THRU_BREAKABLES) ? true : false;
 
 	return false;
@@ -395,16 +394,20 @@ inline bool IsWalkableTraceLineClear(Vector &from, Vector &to, unsigned int flag
 	{
 		UTIL_TraceLine(useFrom, to, ignore_monsters, pEntIgnore, &result);
 
-		if (result.flFraction != 1.0f && IsEntityWalkable(VARS(result.pHit), flags))
+		// if we hit a walkable entity, try again
+		if (result.flFraction != 1.0f && (result.pHit && IsEntityWalkable(VARS(result.pHit), flags)))
 		{
 			pEntIgnore = result.pHit;
 
+			// start from just beyond where we hit to avoid infinite loops
 			Vector dir = to - from;
 			dir.NormalizeInPlace();
 			useFrom = result.vecEndPos + 5.0f * dir;
 		}
 		else
+		{
 			break;
+		}
 	}
 
 	if (result.flFraction == 1.0f)

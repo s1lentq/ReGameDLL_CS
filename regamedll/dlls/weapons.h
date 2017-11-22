@@ -272,7 +272,7 @@ public:
 	virtual int PrimaryAmmoIndex() { return -1; }
 	virtual int SecondaryAmmoIndex() { return -1; }
 	virtual int UpdateClientData(CBasePlayer *pPlayer) { return 0; }
-	virtual CBasePlayerItem *GetWeaponPtr() { return NULL; }
+	virtual CBasePlayerItem *GetWeaponPtr() { return nullptr; }
 	virtual float GetMaxSpeed() { return 260.0f; }
 	virtual int iItemSlot() { return 0; }									// return 0 to MAX_ITEMS_SLOTS, used in hud
 
@@ -443,7 +443,7 @@ public:
 
 public:
 	BOOL IsEmpty();
-	int GiveAmmo(int iCount, char *szName, int iMax, int *pIndex = NULL);
+	int GiveAmmo(int iCount, char *szName, int iMax, int *pIndex = nullptr);
 
 	void EXPORT Kill();
 	void EXPORT BombThink();

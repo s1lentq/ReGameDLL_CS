@@ -408,7 +408,7 @@ void EXT_FUNC __API_HOOK(PM_UpdateStepSound)()
 		VectorCopy(pmove->origin, knee);
 		VectorCopy(pmove->origin, feet);
 
-		height = pmove->_player_maxs[pmove->usehull][2] - pmove->_player_mins[pmove->usehull][2];
+		height = pmove->player_maxs[pmove->usehull][2] - pmove->player_mins[pmove->usehull][2];
 
 		knee[2] = pmove->origin[2] - 0.3 * height;
 		feet[2] = pmove->origin[2] - 0.5 * height;
@@ -557,8 +557,8 @@ void PM_CheckVelocity()
 int PM_ClipVelocity(vec_t *in, vec_t *normal, vec_t *out, float overbounce)
 {
 	float change;
-	float_precision angle;
-	float_precision backoff;
+	real_t angle;
+	real_t backoff;
 	int i, blocked;
 
 	angle = normal[2];
@@ -600,7 +600,7 @@ int PM_ClipVelocity(vec_t *in, vec_t *normal, vec_t *out, float overbounce)
 
 void PM_AddCorrectGravity()
 {
-	float_precision ent_gravity;
+	real_t ent_gravity;
 
 	if (pmove->waterjumptime)
 		return;
@@ -622,7 +622,7 @@ void PM_AddCorrectGravity()
 
 void PM_FixupGravityVelocity()
 {
-	float_precision ent_gravity;
+	real_t ent_gravity;
 
 	if (pmove->waterjumptime)
 		return;
@@ -671,7 +671,7 @@ int PM_FlyMove()
 		// end point.
 		for (i = 0; i < 3; i++)
 		{
-			float_precision flScale = time_left * pmove->velocity[i];
+			real_t flScale = time_left * pmove->velocity[i];
 
 			end[i] = pmove->origin[i] + flScale;
 		}
@@ -815,13 +815,13 @@ int PM_FlyMove()
 	return blocked;
 }
 
-void PM_Accelerate(vec_t *wishdir, float_precision wishspeed, float accel)
+void PM_Accelerate(vec_t *wishdir, real_t wishspeed, float accel)
 {
 	int i;
 	float addspeed;
 
-	float_precision currentspeed;
-	float_precision accelspeed;
+	real_t currentspeed;
+	real_t accelspeed;
 
 	// Dead player's don't accelerate
 	if (pmove->dead)
@@ -863,10 +863,10 @@ void PM_WalkMove()
 	int i;
 
 	vec3_t wishvel;
-	float_precision spd;
+	real_t spd;
 	float fmove, smove;
 	vec3_t wishdir;
-	float_precision wishspeed;
+	real_t wishspeed;
 
 	//vec3_t start;	// TODO: unused
 	vec3_t dest;
@@ -878,7 +878,7 @@ void PM_WalkMove()
 
 	if (pmove->fuser2 > 0.0)
 	{
-		float_precision flRatio = (100 - pmove->fuser2 * 0.001 * 19) * 0.01;
+		real_t flRatio = (100 - pmove->fuser2 * 0.001 * 19) * 0.01;
 
 		pmove->velocity[0] *= flRatio;
 		pmove->velocity[1] *= flRatio;
@@ -1048,7 +1048,7 @@ void PM_Friction()
 {
 	float *vel;
 	float speed;
-	float_precision newspeed, control, friction, drop;
+	real_t newspeed, control, friction, drop;
 	vec3_t newvel;
 
 	// If we are in water jump cycle, don't apply friction
@@ -1059,7 +1059,7 @@ void PM_Friction()
 	vel = pmove->velocity;
 
 	// Calculate speed
-	speed = Q_sqrt(float_precision(vel[0] * vel[0] + vel[1] * vel[1] + vel[2] * vel[2]));
+	speed = Q_sqrt(real_t(vel[0] * vel[0] + vel[1] * vel[1] + vel[2] * vel[2]));
 
 	// If too slow, return
 	if (speed < 0.1f)
@@ -1078,7 +1078,7 @@ void PM_Friction()
 
 		start[0] = stop[0] = pmove->origin[0] + vel[0] / speed * 16;
 		start[1] = stop[1] = pmove->origin[1] + vel[1] / speed * 16;
-		start[2] = pmove->origin[2] + pmove->_player_mins[pmove->usehull][2];
+		start[2] = pmove->origin[2] + pmove->player_mins[pmove->usehull][2];
 		stop[2] = start[2] - 34;
 
 		trace = pmove->PM_PlayerTrace(start, stop, PM_NORMAL, -1);
@@ -1133,8 +1133,8 @@ void PM_AirAccelerate(vec_t *wishdir, float wishspeed, float accel)
 	float addspeed;
 	float wishspd = wishspeed;
 
-	float_precision currentspeed;
-	float_precision accelspeed;
+	real_t currentspeed;
+	real_t accelspeed;
 
 	if (pmove->dead || pmove->waterjumptime)
 		return;
@@ -1176,7 +1176,7 @@ void PM_WaterMove()
 	vec3_t temp;
 	pmtrace_t trace;
 
-	float_precision speed, accelspeed, wishspeed;
+	real_t speed, accelspeed, wishspeed;
 	float newspeed, addspeed;
 
 	// user intentions
@@ -1350,9 +1350,9 @@ qboolean PM_CheckWater()
 	float heightover2;
 
 	// Pick a spot just above the players feet.
-	point[0] = pmove->origin[0] + (pmove->_player_mins[pmove->usehull][0] + pmove->_player_maxs[pmove->usehull][0]) * 0.5;
-	point[1] = pmove->origin[1] + (pmove->_player_mins[pmove->usehull][1] + pmove->_player_maxs[pmove->usehull][1]) * 0.5;
-	point[2] = pmove->origin[2] + pmove->_player_mins[pmove->usehull][2] + 1;
+	point[0] = pmove->origin[0] + (pmove->player_mins[pmove->usehull][0] + pmove->player_maxs[pmove->usehull][0]) * 0.5f;
+	point[1] = pmove->origin[1] + (pmove->player_mins[pmove->usehull][1] + pmove->player_maxs[pmove->usehull][1]) * 0.5f;
+	point[2] = pmove->origin[2] + pmove->player_mins[pmove->usehull][2] + 1;
 
 	// Assume that we are not in water at all.
 	pmove->waterlevel = 0;
@@ -1370,7 +1370,7 @@ qboolean PM_CheckWater()
 		// We are at least at level one
 		pmove->waterlevel = 1;
 
-		height = (pmove->_player_mins[pmove->usehull][2] + pmove->_player_maxs[pmove->usehull][2]);
+		height = (pmove->player_mins[pmove->usehull][2] + pmove->player_maxs[pmove->usehull][2]);
 		heightover2 = height * 0.5;
 
 		// Now check a point that is at the player hull midpoint.
@@ -1503,7 +1503,7 @@ qboolean PM_CheckStuck()
 	vec3_t test;
 	int hitent;
 	int idx;
-	float_precision fTime;
+	real_t fTime;
 	int i;
 	pmtrace_t traceresult;
 
@@ -1616,15 +1616,15 @@ qboolean PM_CheckStuck()
 
 void PM_SpectatorMove()
 {
-	float_precision speed, drop, friction;
-	float_precision control, newspeed;
+	real_t speed, drop, friction;
+	real_t control, newspeed;
 	float currentspeed, addspeed;
-	float_precision accelspeed;
+	real_t accelspeed;
 	int i;
 	vec3_t wishvel;
 	float fmove, smove;
 	vec3_t wishdir;
-	float_precision wishspeed;
+	real_t wishspeed;
 
 	// this routine keeps track of the spectators psoition
 	// there a two different main move types : track player or moce freely (OBS_ROAMING)
@@ -1748,7 +1748,7 @@ void PM_SpectatorMove()
 // Used by ducking code.
 float PM_SplineFraction(float value, float scale)
 {
-	float_precision valueSquared;
+	real_t valueSquared;
 
 	value = scale * value;
 	valueSquared = value * value;
@@ -1807,7 +1807,7 @@ void PM_UnDuck()
 	{
 #ifdef REGAMEDLL_FIXES
 		vec3_t offset;
-		VectorSubtract(pmove->_player_mins[1], pmove->_player_mins[0], offset);
+		VectorSubtract(pmove->player_mins[1], pmove->player_mins[0], offset);
 		VectorAdd(newOrigin, offset, newOrigin);
 #else
 		newOrigin[2] += 18.0;
@@ -1913,7 +1913,7 @@ void PM_Duck()
 				{
 #ifdef REGAMEDLL_FIXES
 					vec3_t newOrigin;
-					VectorSubtract(pmove->_player_mins[1], pmove->_player_mins[0], newOrigin);
+					VectorSubtract(pmove->player_mins[1], pmove->player_mins[0], newOrigin);
 					VectorSubtract(pmove->origin, newOrigin, pmove->origin);
 #else
 					pmove->origin[2] = pmove->origin[2] - 18.0;
@@ -1928,8 +1928,8 @@ void PM_Duck()
 			}
 			else
 			{
-				float_precision duckFraction = PM_VEC_VIEW;
-				float_precision time = (1.0 - pmove->flDuckTime / 1000.0);
+				real_t duckFraction = PM_VEC_VIEW;
+				real_t time = (1.0 - pmove->flDuckTime / 1000.0);
 
 				// Calc parametric time
 				if (time >= 0.0) {
@@ -1937,7 +1937,7 @@ void PM_Duck()
 				}
 
 #ifdef REGAMEDLL_FIXES
-				float fMore = (pmove->_player_mins[1][2] - pmove->_player_mins[0][2]);
+				float fMore = (pmove->player_mins[1][2] - pmove->player_mins[0][2]);
 #else
 				float fMore = (PM_VEC_DUCK_HULL_MIN - PM_VEC_HULL_MIN);
 #endif
@@ -1973,7 +1973,7 @@ void PM_LadderMove(physent_t *pLadder)
 
 	// On ladder, convert movement to be relative to the ladder
 	VectorCopy(pmove->origin, floor);
-	floor[2] += pmove->_player_mins[pmove->usehull][2] - 1;
+	floor[2] += pmove->player_mins[pmove->usehull][2] - 1;
 
 	if (pmove->PM_PointContents(floor, nullptr) == CONTENTS_SOLID)
 		onFloor = true;
@@ -2304,7 +2304,7 @@ void PM_NoClip()
 void PM_PreventMegaBunnyJumping()
 {
 	// Current player speed
-	float_precision spd;
+	real_t spd;
 	// If we have to crop, apply this cropping fraction to velocity
 	float fraction;
 	// Speed at which bunny jumping is limited
@@ -2414,7 +2414,7 @@ void PM_Jump()
 
 	PM_PreventMegaBunnyJumping();
 
-	float_precision fvel = Length(pmove->velocity);
+	real_t fvel = Length(pmove->velocity);
 	float fvol = 1.0f;
 
 	if (fvel >= 150.0f)
@@ -2458,7 +2458,7 @@ void PM_Jump()
 	if (pmove->fuser2 > 0.0f)
 	{
 		// NOTE: don't do it in .f (float)
-		float_precision flRatio = (100.0 - pmove->fuser2 * 0.001 * 19.0) * 0.01;
+		real_t flRatio = (100.0 - pmove->fuser2 * 0.001 * 19.0) * 0.01;
 		pmove->velocity[2] *= flRatio;
 	}
 
@@ -2524,9 +2524,9 @@ void PM_CheckWaterJump()
 	tr = pmove->PM_PlayerTrace(vecStart, vecEnd, PM_NORMAL, -1);
 
 	// Facing a near vertical wall?
-	if (tr.fraction < 1.0f && Q_fabs(float_precision(tr.plane.normal[2])) < 0.1f)
+	if (tr.fraction < 1.0f && Q_fabs(real_t(tr.plane.normal[2])) < 0.1f)
 	{
-		vecStart[2] += pmove->_player_maxs[savehull][2] - WJ_HEIGHT;
+		vecStart[2] += pmove->player_maxs[savehull][2] - WJ_HEIGHT;
 
 		VectorMA(vecStart, 24, flatforward, vecEnd);
 		VectorMA(vec3_origin, -50, tr.plane.normal, pmove->movedir);
@@ -2621,7 +2621,7 @@ void PM_PlayWaterSounds()
 float PM_CalcRoll(vec_t *angles, vec_t *velocity, float rollangle, float rollspeed)
 {
 	float sign;
-	float_precision side;
+	real_t side;
 	float value;
 	vec3_t forward, right, up;
 
@@ -2647,7 +2647,7 @@ float PM_CalcRoll(vec_t *angles, vec_t *velocity, float rollangle, float rollspe
 
 void PM_DropPunchAngle(vec_t *punchangle)
 {
-	float_precision len;
+	real_t len;
 
 	len = VectorNormalize(punchangle);
 	len -= (10.0 + len * 0.5) * pmove->frametime;
@@ -2662,21 +2662,21 @@ void PM_DropPunchAngle(vec_t *punchangle)
 void PM_CheckParameters()
 {
 	float spd;
-	float_precision maxspeed;
+	real_t maxspeed;
 	vec3_t v_angle;
 
-	spd = Q_sqrt(float_precision(pmove->cmd.sidemove * pmove->cmd.sidemove + pmove->cmd.forwardmove * pmove->cmd.forwardmove + pmove->cmd.upmove * pmove->cmd.upmove));
+	spd = Q_sqrt(real_t(pmove->cmd.sidemove * pmove->cmd.sidemove + pmove->cmd.forwardmove * pmove->cmd.forwardmove + pmove->cmd.upmove * pmove->cmd.upmove));
 
 	maxspeed = pmove->clientmaxspeed;
 
 	if (maxspeed != 0.0f)
 	{
-		pmove->maxspeed = Q_min(maxspeed, float_precision(pmove->maxspeed));
+		pmove->maxspeed = Q_min(maxspeed, real_t(pmove->maxspeed));
 	}
 
-	if (spd != 0.0f && spd > float_precision(pmove->maxspeed))
+	if (spd != 0.0f && spd > real_t(pmove->maxspeed))
 	{
-		float_precision fRatio = pmove->maxspeed / spd;
+		real_t fRatio = pmove->maxspeed / spd;
 
 		pmove->cmd.forwardmove *= fRatio;
 		pmove->cmd.sidemove *= fRatio;

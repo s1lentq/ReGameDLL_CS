@@ -79,6 +79,7 @@ void CGrenade::Explode(TraceResult *pTrace, int bitsDamageType)
 	pev->velocity = g_vecZero;
 	pev->nextthink = gpGlobals->time + 0.3f;
 
+	// draw sparks
 	if (iContents != CONTENTS_WATER)
 	{
 		int sparkCount = RANDOM_LONG(0, 3);
@@ -469,7 +470,7 @@ void CGrenade::SG_Smoke()
 	else
 	{
 		Vector origin, angle;
-		float_precision x_old, y_old, R_angle;
+		real_t x_old, y_old, R_angle;
 
 		UTIL_MakeVectors(pev->angles);
 
@@ -479,8 +480,8 @@ void CGrenade::SG_Smoke()
 
 		R_angle = m_angle / (180.00433335 / M_PI);
 
-		x_old = Q_cos(float_precision(R_angle));
-		y_old = Q_sin(float_precision(R_angle));
+		x_old = Q_cos(real_t(R_angle));
+		y_old = Q_sin(real_t(R_angle));
 
 		angle.x = origin.x * x_old - origin.y * y_old;
 		angle.y = origin.x * y_old + origin.y * x_old;
@@ -949,18 +950,18 @@ void CGrenade::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useTy
 		return;
 
 	// TODO: We must be sure that the activator is a player.
-	CBasePlayer *player = GetClassPtr<CCSPlayer>((CBasePlayer *)pActivator->pev);
+	CBasePlayer *pPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pActivator->pev);
 
 	// For CTs to defuse the c4
-	if (player->m_iTeam != CT)
+	if (pPlayer->m_iTeam != CT)
 	{
 		return;
 	}
 
 #ifdef REGAMEDLL_FIXES
-	if((player->pev->flags & FL_ONGROUND) != FL_ONGROUND) // Defuse should start only on ground
+	if((pPlayer->pev->flags & FL_ONGROUND) != FL_ONGROUND) // Defuse should start only on ground
 	{
-		ClientPrint(player->pev, HUD_PRINTCENTER, "#C4_Defuse_Must_Be_On_Ground");
+		ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#C4_Defuse_Must_Be_On_Ground");
 		return;
 	}
 #endif
@@ -972,7 +973,7 @@ void CGrenade::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useTy
 	}
 
 	// freeze the player in place while defusing
-	SET_CLIENT_MAXSPEED(player->edict(), 1);
+	SET_CLIENT_MAXSPEED(pPlayer->edict(), 1);
 
 	if (TheBots)
 	{
@@ -984,38 +985,38 @@ void CGrenade::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useTy
 		TheCareerTasks->HandleEvent(EVENT_BOMB_DEFUSING);
 	}
 
-	if (player->m_bHasDefuser)
+	if (pPlayer->m_bHasDefuser)
 	{
 		UTIL_LogPrintf("\"%s<%i><%s><CT>\" triggered \"Begin_Bomb_Defuse_With_Kit\"\n",
-			STRING(player->pev->netname),
-			GETPLAYERUSERID(player->edict()),
-			GETPLAYERAUTHID(player->edict()));
+			STRING(pPlayer->pev->netname),
+			GETPLAYERUSERID(pPlayer->edict()),
+			GETPLAYERAUTHID(pPlayer->edict()));
 
 		// TODO show messages on clients on event
-		ClientPrint(player->pev, HUD_PRINTCENTER, "#Defusing_Bomb_With_Defuse_Kit");
+		ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Defusing_Bomb_With_Defuse_Kit");
 
 		m_flDefuseCountDown = gpGlobals->time + 5.0f;
 
 		// start the progress bar
-		player->SetProgressBarTime(5);
+		pPlayer->SetProgressBarTime(5);
 	}
 	else
 	{
 		UTIL_LogPrintf("\"%s<%i><%s><CT>\" triggered \"Begin_Bomb_Defuse_Without_Kit\"\n",
-			STRING(player->pev->netname),
-			GETPLAYERUSERID(player->edict()),
-			GETPLAYERAUTHID(player->edict()));
+			STRING(pPlayer->pev->netname),
+			GETPLAYERUSERID(pPlayer->edict()),
+			GETPLAYERAUTHID(pPlayer->edict()));
 
 		// TODO: show messages on clients on event
-		ClientPrint(player->pev, HUD_PRINTCENTER, "#Defusing_Bomb_Without_Defuse_Kit");
+		ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Defusing_Bomb_Without_Defuse_Kit");
 
 		m_flDefuseCountDown = gpGlobals->time + 10.0f;
 
 		// start the progress bar
-		player->SetProgressBarTime(10);
+		pPlayer->SetProgressBarTime(10);
 	}
 
-	player->m_bIsDefusing = true;
+	pPlayer->m_bIsDefusing = true;
 	m_pBombDefuser = static_cast<CBasePlayer *>(pActivator);
 	m_bStartDefuse = true;
 	m_fNextDefuse = gpGlobals->time + NEXT_DEFUSE_TIME;
@@ -1023,7 +1024,7 @@ void CGrenade::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useTy
 #ifdef REGAMEDLL_FIXES
 	EMIT_SOUND(edict(), CHAN_ITEM, "weapons/c4_disarm.wav", VOL_NORM, ATTN_NORM); // Emit sound using bomb.
 #else
-	EMIT_SOUND(ENT(player->pev), CHAN_ITEM, "weapons/c4_disarm.wav", VOL_NORM, ATTN_NORM);
+	EMIT_SOUND(ENT(pPlayer->pev), CHAN_ITEM, "weapons/c4_disarm.wav", VOL_NORM, ATTN_NORM);
 #endif
 }
 

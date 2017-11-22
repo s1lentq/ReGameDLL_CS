@@ -677,7 +677,7 @@ bool CBasePlayerWeapon::ShieldSecondaryFire(int iUpAnim, int iDownAnim)
 
 void CBasePlayerWeapon::KickBack(float up_base, float lateral_base, float up_modifier, float lateral_modifier, float up_max, float lateral_max, int direction_change)
 {
-	float_precision flKickUp;
+	real_t flKickUp;
 	float flKickLateral;
 
 	if (m_iShotsFired == 1)
@@ -2083,7 +2083,7 @@ void CArmoury::Restart()
 				return;
 			}
 
-			float flRatio = float_precision(m_iInitialCount / CSGameRules()->m_iTotalGrenadeCount) * float_precision(CSGameRules()->m_iNumTerrorist) * 1.75;
+			float flRatio = real_t(m_iInitialCount / CSGameRules()->m_iTotalGrenadeCount) * real_t(CSGameRules()->m_iNumTerrorist) * 1.75;
 			m_iCount = int(flRatio);
 		}
 		else if (m_iItem == ARMOURY_KEVLAR || m_iItem == ARMOURY_ASSAULT)
@@ -2097,7 +2097,7 @@ void CArmoury::Restart()
 				return;
 			}
 
-			float flRatio = float_precision(m_iInitialCount / CSGameRules()->m_iTotalArmourCount) * float_precision(CSGameRules()->m_iNumTerrorist);
+			float flRatio = real_t(m_iInitialCount / CSGameRules()->m_iTotalArmourCount) * real_t(CSGameRules()->m_iNumTerrorist);
 			m_iCount = int(flRatio);
 		}
 		else
@@ -2111,7 +2111,7 @@ void CArmoury::Restart()
 				return;
 			}
 
-			float flRatio = float_precision(m_iInitialCount / CSGameRules()->m_iTotalGunCount) * float_precision(CSGameRules()->m_iNumTerrorist) * 0.85;
+			float flRatio = real_t(m_iInitialCount / CSGameRules()->m_iTotalGunCount) * real_t(CSGameRules()->m_iNumTerrorist) * 0.85;
 			m_iCount = int(flRatio);
 		}
 	}
@@ -2206,13 +2206,13 @@ void CArmoury::ArmouryTouch(CBaseEntity *pOther)
 	if (!pOther->IsPlayer())
 		return;
 
-	CBasePlayer *p = static_cast<CBasePlayer *>(pOther);
+	CBasePlayer *pToucher = static_cast<CBasePlayer *>(pOther);
 
-	if (p->m_bIsVIP)
+	if (pToucher->m_bIsVIP)
 		return;
 
 #ifdef REGAMEDLL_ADD
-	if (p->HasRestrictItem(GetItemIdByArmoury(m_iItem), ITEM_TYPE_TOUCHED))
+	if (pToucher->HasRestrictItem(GetItemIdByArmoury(m_iItem), ITEM_TYPE_TOUCHED))
 		return;
 #endif
 
@@ -2223,32 +2223,32 @@ void CArmoury::ArmouryTouch(CBaseEntity *pOther)
 #endif
 ))
 	{
-		if (p->m_bHasPrimary)
+		if (pToucher->m_bHasPrimary)
 			return;
 
 		m_iCount--;
 		auto item = &armouryItemInfo[m_iItem];
 
 #ifdef REGAMEDLL_FIXES
-		p->GiveNamedItemEx(item->entityName);
+		pToucher->GiveNamedItemEx(item->entityName);
 #else
-		p->GiveNamedItem(item->entityName);
+		pToucher->GiveNamedItem(item->entityName);
 #endif
 
-		p->GiveAmmo(item->giveAmount, item->ammoName, item->maxRounds);
+		pToucher->GiveAmmo(item->giveAmount, item->ammoName, item->maxRounds);
 	}
 #ifdef REGAMEDLL_ADD
 	// secondary weapons (pistols)
 	else if (m_iCount > 0 && m_iItem >= ARMOURY_GLOCK18)
 	{
-		if (p->m_rgpPlayerItems[PISTOL_SLOT])
+		if (pToucher->m_rgpPlayerItems[PISTOL_SLOT])
 			return;
 
 		m_iCount--;
 		auto item = &armouryItemInfo[m_iItem];
 
-		p->GiveNamedItemEx(item->entityName);
-		p->GiveAmmo(item->giveAmount, item->ammoName, item->maxRounds);
+		pToucher->GiveNamedItemEx(item->entityName);
+		pToucher->GiveAmmo(item->giveAmount, item->ammoName, item->maxRounds);
 	}
 #endif
 	// items & grenades
@@ -2258,56 +2258,56 @@ void CArmoury::ArmouryTouch(CBaseEntity *pOther)
 		{
 		case ARMOURY_FLASHBANG:
 		{
-			if (p->AmmoInventory(AMMO_FLASHBANG) >= MaxAmmoCarry(WEAPON_FLASHBANG))
+			if (pToucher->AmmoInventory(AMMO_FLASHBANG) >= MaxAmmoCarry(WEAPON_FLASHBANG))
 				return;
 
-			p->GiveNamedItem("weapon_flashbang");
+			pToucher->GiveNamedItem("weapon_flashbang");
 			m_iCount--;
 			break;
 		}
 		case ARMOURY_HEGRENADE:
 		{
-			if (p->AmmoInventory(AMMO_HEGRENADE) >= MaxAmmoCarry(WEAPON_HEGRENADE))
+			if (pToucher->AmmoInventory(AMMO_HEGRENADE) >= MaxAmmoCarry(WEAPON_HEGRENADE))
 				return;
 
-			p->GiveNamedItem("weapon_hegrenade");
+			pToucher->GiveNamedItem("weapon_hegrenade");
 			m_iCount--;
 			break;
 		}
 		case ARMOURY_KEVLAR:
 		{
-			if (p->m_iKevlar == ARMOR_KEVLAR)
+			if (pToucher->m_iKevlar == ARMOR_KEVLAR)
 				return;
 
-			p->GiveNamedItem("item_kevlar");
+			pToucher->GiveNamedItem("item_kevlar");
 			m_iCount--;
 			break;
 		}
 		case ARMOURY_ASSAULT:
 		{
-			if (p->m_iKevlar == ARMOR_VESTHELM)
+			if (pToucher->m_iKevlar == ARMOR_VESTHELM)
 				return;
 
-			p->GiveNamedItem("item_assaultsuit");
+			pToucher->GiveNamedItem("item_assaultsuit");
 			m_iCount--;
 			break;
 		}
 		case ARMOURY_SMOKEGRENADE:
 		{
-			if (p->AmmoInventory(AMMO_SMOKEGRENADE) >= MaxAmmoCarry(WEAPON_SMOKEGRENADE))
+			if (pToucher->AmmoInventory(AMMO_SMOKEGRENADE) >= MaxAmmoCarry(WEAPON_SMOKEGRENADE))
 				return;
 
-			p->GiveNamedItem("weapon_smokegrenade");
+			pToucher->GiveNamedItem("weapon_smokegrenade");
 			m_iCount--;
 			break;
 		}
 #ifdef REGAMEDLL_ADD
 		case ARMOURY_SHIELD:
 		{
-			if (p->m_bHasPrimary || (p->m_rgpPlayerItems[PISTOL_SLOT] && p->GetItemById(WEAPON_ELITE)))
+			if (pToucher->m_bHasPrimary || (pToucher->m_rgpPlayerItems[PISTOL_SLOT] && pToucher->GetItemById(WEAPON_ELITE)))
 				return;
 
-			p->GiveNamedItemEx("weapon_shield");
+			pToucher->GiveNamedItemEx("weapon_shield");
 			m_iCount--;
 			break;
 		}

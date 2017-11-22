@@ -307,22 +307,22 @@ void CNavPath::Draw()
 
 // Check line of sight from 'anchor' node on path to subsequent nodes until
 // we find a node that can't been seen from 'anchor'
-int CNavPath::FindNextOccludedNode(int anchor_)
+int CNavPath::FindNextOccludedNode(int anchor)
 {
-	int lastVisible = anchor_;
-	for (int i = anchor_ + 1; i < m_segmentCount; i++)
+	int lastVisible = anchor;
+	for (int i = anchor + 1; i < m_segmentCount; i++)
 	{
 		// don't remove ladder nodes
 		if (m_path[i].ladder)
 			return i;
 
-		if (!IsWalkableTraceLineClear(m_path[anchor_].pos, m_path[i].pos))
+		if (!IsWalkableTraceLineClear(m_path[anchor].pos, m_path[i].pos))
 		{
 			// cant see this node from anchor node
 			return i;
 		}
 
-		Vector anchorPlusHalf =  m_path[anchor_].pos + Vector(0, 0, HalfHumanHeight);
+		Vector anchorPlusHalf =  m_path[anchor].pos + Vector(0, 0, HalfHumanHeight);
 		Vector iPlusHalf =  m_path[i].pos + Vector(0, 0, HalfHumanHeight);
 		if (!IsWalkableTraceLineClear(anchorPlusHalf, iPlusHalf))
 		{
@@ -330,7 +330,7 @@ int CNavPath::FindNextOccludedNode(int anchor_)
 			return i;
 		}
 
-		Vector anchorPlusFull =  m_path[anchor_].pos + Vector(0, 0, HumanHeight);
+		Vector anchorPlusFull =  m_path[anchor].pos + Vector(0, 0, HumanHeight);
 		Vector iPlusFull = m_path[i].pos + Vector(0, 0, HumanHeight);
 		if (!IsWalkableTraceLineClear(anchorPlusFull, iPlusFull))
 		{
@@ -350,16 +350,16 @@ void CNavPath::Optimize()
 	if (m_segmentCount < 3)
 		return;
 
-	int anchor_ = 0;
-	while (anchor_ < m_segmentCount)
+	int anchor = 0;
+	while (anchor < m_segmentCount)
 	{
-		int occluded = FindNextOccludedNode(anchor_);
+		int occluded = FindNextOccludedNode(anchor);
 		int nextAnchor = occluded - 1;
 
-		if (nextAnchor > anchor_)
+		if (nextAnchor > anchor)
 		{
 			// remove redundant nodes between anchor and nextAnchor
-			int removeCount = nextAnchor - anchor_ - 1;
+			int removeCount = nextAnchor - anchor - 1;
 			if (removeCount > 0)
 			{
 				for (int i = nextAnchor; i < m_segmentCount; i++)
@@ -370,7 +370,7 @@ void CNavPath::Optimize()
 			}
 		}
 
-		anchor_++;
+		anchor++;
 	}
 #endif
 }
@@ -590,11 +590,11 @@ int CNavPathFollower::FindOurPositionOnPath(Vector *close, bool local) const
 	Vector eyes = m_improv->GetEyes();
 	Vector pos;
 	const Vector *from, *to;
-	float_precision length;
+	real_t length;
 	float closeLength;
 	float closeDistSq = 1.0e10;
 	int closeIndex = -1;
-	float_precision distSq;
+	real_t distSq;
 	int start, end;
 
 	if (!m_path->IsValid())
@@ -921,7 +921,7 @@ void CNavPathFollower::FeelerReflexAdjustment(Vector *goalPosition, float height
 	dir.NormalizeInPlace();
 #else
 	// TODO: fix test demo
-	float_precision flLen = dir.Length();
+	real_t flLen = dir.Length();
 
 	if (flLen > 0)
 		dir = dir * float(1 / flLen);
@@ -984,7 +984,7 @@ void CNavPathFollower::FeelerReflexAdjustment(Vector *goalPosition, float height
 			UTIL_DrawBeamPoints(from, to, 1, 255, 0, 0);
 	}
 
-	const float_precision avoidRange = (m_improv->IsCrouching()) ? 150.0f : 300.0f;
+	const real_t avoidRange = (m_improv->IsCrouching()) ? 150.0f : 300.0f;
 
 	if (!rightClear)
 	{

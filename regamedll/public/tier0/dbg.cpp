@@ -165,7 +165,7 @@ SpewRetval_t _SpewMessage(SpewType_t spewType, const char *pMsgFormat, va_list a
 	//	break;
 
 	case SPEW_ABORT:
-		// MessageBox(NULL,"Error in _SpewMessage","Error",MB_OK);
+		// MessageBox(nullptr, "Error in _SpewMessage", "Error", MB_OK);
 		exit(0);
 	default:
 		break;

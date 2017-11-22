@@ -178,7 +178,7 @@ void CMultiSource::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE u
 			useType = USE_ON;
 		}
 
-		SUB_UseTargets(NULL, useType, 0);
+		SUB_UseTargets(nullptr, useType, 0);
 	}
 }
 
@@ -385,7 +385,7 @@ BOOL CBaseButton::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, fl
 	}
 
 	// Temporarily disable the touch function, until movement is finished.
-	SetTouch(NULL);
+	SetTouch(nullptr);
 
 	m_hActivator = CBaseEntity::Instance(pevAttacker);
 	if (!m_hActivator)
@@ -482,7 +482,7 @@ void CBaseButton::Spawn()
 	m_vecPosition1 = pev->origin;
 
 	// Subtract 2 from size because the engine expands bboxes by 1 in all directions making the size too big
-	m_vecPosition2 = m_vecPosition1 + (pev->movedir * (Q_fabs(float_precision(pev->movedir.x * (pev->size.x - 2))) + Q_fabs(float_precision(pev->movedir.y * (pev->size.y - 2))) + Q_fabs(float_precision(pev->movedir.z * (pev->size.z - 2))) - m_flLip));
+	m_vecPosition2 = m_vecPosition1 + (pev->movedir * (Q_fabs(real_t(pev->movedir.x * (pev->size.x - 2))) + Q_fabs(real_t(pev->movedir.y * (pev->size.y - 2))) + Q_fabs(real_t(pev->movedir.z * (pev->size.z - 2))) - m_flLip));
 
 	// Is this a non-moving button?
 	if (((m_vecPosition2 - m_vecPosition1).Length() < 1) || (pev->spawnflags & SF_BUTTON_DONTMOVE))
@@ -501,7 +501,7 @@ void CBaseButton::Spawn()
 	}
 	else
 	{
-		SetTouch(NULL);
+		SetTouch(nullptr);
 		SetUse(&CBaseButton::ButtonUse);
 	}
 }
@@ -640,7 +640,7 @@ void CBaseButton::ButtonTouch(CBaseEntity *pOther)
 	}
 
 	// Temporarily disable the touch function, until movement is finished.
-	SetTouch(NULL);
+	SetTouch(nullptr);
 
 	if (code == BUTTON_RETURN)
 	{
@@ -703,10 +703,12 @@ void CBaseButton::TriggerAndWait()
 		if (!(pev->spawnflags & SF_BUTTON_TOUCH_ONLY))
 		{
 			// ALL buttons are now use only
-			SetTouch(NULL);
+			SetTouch(nullptr);
 		}
 		else
+		{
 			SetTouch(&CBaseButton::ButtonTouch);
+		}
 	}
 	else
 	{
@@ -752,7 +754,7 @@ void CBaseButton::Restart()
 	}
 	else
 	{
-		SetTouch(NULL);
+		SetTouch(nullptr);
 		SetUse(&CBaseButton::ButtonUse);
 	}
 }
@@ -799,10 +801,12 @@ void CBaseButton::ButtonBackHome()
 	if (!(pev->spawnflags & SF_BUTTON_TOUCH_ONLY))
 	{
 		// All buttons are now use only
-		SetTouch(NULL);
+		SetTouch(nullptr);
 	}
 	else
+	{
 		SetTouch(&CBaseButton::ButtonTouch);
+	}
 
 	// reset think for a sparking button
 	if (pev->spawnflags & SF_BUTTON_SPARK_IF_OFF)
@@ -884,11 +888,14 @@ void CRotButton::Spawn()
 	// if the button is flagged for USE button activation only, take away it's touch function and add a use function
 	if (!(pev->spawnflags & SF_BUTTON_TOUCH_ONLY))
 	{
-		SetTouch(NULL);
+		SetTouch(nullptr);
 		SetUse(&CRotButton::ButtonUse);
 	}
-	else // touchable button
+	// touchable button
+	else
+	{
 		SetTouch(&CRotButton::ButtonTouch);
+	}
 }
 
 #ifdef REGAMEDLL_FIXES
@@ -1092,7 +1099,9 @@ void CMomentaryRotButton::Off()
 		m_direction = -1;
 	}
 	else
-		SetThink(NULL);
+	{
+		SetThink(nullptr);
+	}
 }
 
 void CMomentaryRotButton::Return()
@@ -1115,7 +1124,7 @@ void CMomentaryRotButton::UpdateSelfReturn(float value)
 		pev->avelocity = g_vecZero;
 		pev->angles = m_start;
 		pev->nextthink = -1;
-		SetThink(NULL);
+		SetThink(nullptr);
 	}
 	else
 	{
@@ -1135,8 +1144,8 @@ LINK_ENTITY_TO_CLASS(env_debris, CEnvSpark, CCSEnvSpark)
 
 void CEnvSpark::Spawn()
 {
-	SetThink(NULL);
-	SetUse(NULL);
+	SetThink(nullptr);
+	SetUse(nullptr);
 
 	// Use for on/off
 	if (pev->spawnflags & SF_SPARK_TOOGLE)
@@ -1212,7 +1221,7 @@ void CEnvSpark::SparkStart(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TY
 void CEnvSpark::SparkStop(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	SetUse(&CEnvSpark::SparkStart);
-	SetThink(NULL);
+	SetThink(nullptr);
 }
 
 LINK_ENTITY_TO_CLASS(button_target, CButtonTarget, CCSButtonTarget)
@@ -1243,17 +1252,20 @@ void CButtonTarget::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE 
 		SUB_UseTargets(pActivator, USE_ON, 0);
 	}
 	else
+	{
 		SUB_UseTargets(pActivator, USE_OFF, 0);
+	}
 }
 
 int CButtonTarget::ObjectCaps()
 {
 	int caps = (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION);
-
 	if (pev->spawnflags & SF_BTARGET_USE)
-		return caps | FCAP_IMPULSE_USE;
-	else
-		return caps;
+	{
+		caps |= FCAP_IMPULSE_USE;
+	}
+
+	return caps;
 }
 
 BOOL CButtonTarget::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)

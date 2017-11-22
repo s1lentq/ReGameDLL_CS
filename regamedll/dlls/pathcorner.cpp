@@ -201,7 +201,7 @@ CPathTrack *CPathTrack::LookAhead(Vector *origin, float dist, int move)
 		while (dist > 0)
 		{
 			Vector dir = pcurrent->pev->origin - currentPos;
-			float_precision length = dir.Length();
+			real_t length = dir.Length();
 
 			if (!length)
 			{
@@ -260,7 +260,7 @@ CPathTrack *CPathTrack::LookAhead(Vector *origin, float dist, int move)
 			}
 
 			Vector dir = pcurrent->GetNext()->pev->origin - currentPos;
-			float_precision length = dir.Length();
+			real_t length = dir.Length();
 
 			if (!length && !ValidPath(pcurrent->GetNext()->GetNext(), move))
 			{

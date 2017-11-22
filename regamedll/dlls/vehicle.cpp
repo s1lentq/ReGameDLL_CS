@@ -154,7 +154,7 @@ void CFuncVehicle::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE u
 				pev->avelocity = g_vecZero;
 
 				StopSound();
-				SetThink(NULL);
+				SetThink(nullptr);
 			}
 		}
 
@@ -171,7 +171,7 @@ void CFuncVehicle::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE u
 			}
 		}
 
-		float_precision flSpeedRatio = delta;
+		real_t flSpeedRatio = delta;
 
 		if (delta > 0)
 		{
@@ -297,7 +297,7 @@ void CFuncVehicle::UpdateSound()
 
 void CFuncVehicle::CheckTurning()
 {
-	float_precision maxspeed;
+	real_t maxspeed;
 	TraceResult tr;
 	bool bTurnIntoWall = false;
 
@@ -566,7 +566,7 @@ void CFuncVehicle::Next()
 		Vector vTargetAngle, vAngle;
 
 		float vx;
-		float_precision vy;
+		real_t vy;
 
 		m_vVehicleDirection = CrossProduct(m_vSurfaceNormal, gpGlobals->v_forward);
 		m_vVehicleDirection = CrossProduct(m_vSurfaceNormal, m_vVehicleDirection);
@@ -766,7 +766,7 @@ void CFuncVehicle::NearestPath()
 {
 	CPathTrack *pTrack = nullptr;
 	CPathTrack *pNearest = nullptr;
-	float_precision dist;
+	real_t dist;
 	float closest = 1024.0f;
 
 	while ((pTrack = UTIL_FindEntityInSphere(pTrack, pev->origin, 1024.0f)))
@@ -787,7 +787,7 @@ void CFuncVehicle::NearestPath()
 	if (!pNearest)
 	{
 		ALERT(at_console, "Can't find a nearby track !!!\n");
-		SetThink(NULL);
+		SetThink(nullptr);
 		return;
 	}
 

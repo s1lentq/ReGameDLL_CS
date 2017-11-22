@@ -42,9 +42,9 @@ const CNavNode *CNavNode::GetNode(const Vector *pos)
 	const float tolerance = 0.45f * GenerationStepSize;
 	for (const CNavNode *node = m_list; node; node = node->m_next)
 	{
-		float dx = abs(node->m_pos.x - pos->x);
-		float dy = abs(node->m_pos.y - pos->y);
-		float dz = abs(node->m_pos.z - pos->z);
+		float dx = Q_abs(node->m_pos.x - pos->x);
+		float dy = Q_abs(node->m_pos.y - pos->y);
+		float dz = Q_abs(node->m_pos.z - pos->z);
 
 		if (dx < tolerance && dy < tolerance && dz < tolerance)
 			return node;

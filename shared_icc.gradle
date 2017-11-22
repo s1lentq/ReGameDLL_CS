@@ -33,7 +33,7 @@ rootProject.ext.createIccConfig = { boolean release, BinaryKind binKind ->
 			)
 		)
 	} else {
-		//debug
+		// debug
 		cfg = new GccToolchainConfig(
 			compilerOptions: new GccToolchainConfig.CompilerOptions(
 				optimizationLevel: OptimizationLevel.DISABLE,
@@ -45,7 +45,6 @@ rootProject.ext.createIccConfig = { boolean release, BinaryKind binKind ->
 				asmBlocks: true,
 
 				extraDefines: [
-					'_ITERATOR_DEBUG_LEVEL': 0,  // for std::list, disable debug iterator in debug mode
 					'_GLIBCXX_USE_CXX11_ABI': 0, // don't use specific c++11 features from GCC 5.X for backward compatibility to earlier version ABI libstdc++.so.6
 				]
 			),

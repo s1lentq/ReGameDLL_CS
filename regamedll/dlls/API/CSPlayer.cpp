@@ -49,7 +49,7 @@ EXT_FUNC bool CCSPlayer::JoinTeam(TeamName team)
 		pPlayer->m_iTeam = SPECTATOR;
 		pPlayer->m_iJoiningState = JOINED;
 
-		pPlayer->m_pIntroCamera = NULL;
+		pPlayer->m_pIntroCamera = nullptr;
 		pPlayer->m_bTeamChanged = true;
 
 		pPlayer->TeamChangeUpdate();
@@ -154,7 +154,7 @@ EXT_FUNC bool CCSPlayer::RemovePlayerItem(const char *pszItemName)
 			pPlayer->m_bHasDefuser = false;
 			pPlayer->pev->body = 0;
 
-			MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, NULL, pPlayer->pev);
+			MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pPlayer->pev);
 				WRITE_BYTE(STATUSICON_HIDE);
 				WRITE_STRING("defuser");
 			MESSAGE_END();
@@ -181,7 +181,7 @@ EXT_FUNC bool CCSPlayer::RemovePlayerItem(const char *pszItemName)
 			pPlayer->m_iKevlar = ARMOR_NONE;
 			pPlayer->pev->armorvalue = 0;
 
-			MESSAGE_BEGIN(MSG_ONE, gmsgArmorType, NULL, pPlayer->pev);
+			MESSAGE_BEGIN(MSG_ONE, gmsgArmorType, nullptr, pPlayer->pev);
 				WRITE_BYTE(0);
 			MESSAGE_END();
 		}

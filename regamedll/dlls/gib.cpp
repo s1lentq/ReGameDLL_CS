@@ -21,7 +21,7 @@ NOXREF void CGib::SpawnStickyGibs(entvars_t *pevVictim, Vector vecOrigin, int cG
 		return;
 	}
 
-	for (int i = 0; i < cGibs; ++i)
+	for (int i = 0; i < cGibs; i++)
 	{
 		CGib *pGib = GetClassPtr<CCSGib>((CGib *)nullptr);
 
@@ -67,7 +67,7 @@ NOXREF void CGib::SpawnStickyGibs(entvars_t *pevVictim, Vector vecOrigin, int cG
 			pGib->pev->solid = SOLID_BBOX;
 			UTIL_SetSize(pGib->pev, Vector(0, 0,0), Vector(0, 0, 0));
 			pGib->SetTouch(&CGib::StickyGibTouch);
-			pGib->SetThink(NULL);
+			pGib->SetThink(nullptr);
 		}
 
 		pGib->LimitVelocity();
@@ -136,8 +136,7 @@ void CGib::SpawnHeadGib(entvars_t *pevVictim)
 
 void CGib::SpawnRandomGibs(entvars_t *pevVictim, int cGibs, int human)
 {
-	int cSplat;
-	for (cSplat = 0; cSplat < cGibs; ++cSplat)
+	for (int cSplat = 0; cSplat < cGibs; cSplat++)
 	{
 		CGib *pGib = GetClassPtr<CCSGib>((CGib *)nullptr);
 

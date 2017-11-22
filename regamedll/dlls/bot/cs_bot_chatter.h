@@ -44,22 +44,22 @@ typedef unsigned int CountCriteria;
 class BotMeme
 {
 public:
-	void Transmit(CCSBot *sender) const; // transmit meme to other bots
+	void Transmit(CCSBot *pSender) const; // transmit meme to other bots
 
 	virtual ~BotMeme(){}
-	virtual void Interpret(CCSBot *sender, CCSBot *receiver) const = 0;		// cause the given bot to act on this meme
+	virtual void Interpret(CCSBot *pSender, CCSBot *pReceiver) const = 0;		// cause the given bot to act on this meme
 };
 
 class BotAllHostagesGoneMeme: public BotMeme
 {
 public:
-	virtual void Interpret(CCSBot *sender, CCSBot *receiver) const;			// cause the given bot to act on this meme
+	virtual void Interpret(CCSBot *pSender, CCSBot *pReceiver) const;			// cause the given bot to act on this meme
 };
 
 class BotHostageBeingTakenMeme: public BotMeme
 {
 public:
-	virtual void Interpret(CCSBot *sender, CCSBot *receiver) const;			// cause the given bot to act on this meme
+	virtual void Interpret(CCSBot *pSender, CCSBot *pReceiver) const;			// cause the given bot to act on this meme
 };
 
 class BotHelpMeme: public BotMeme
@@ -69,7 +69,7 @@ public:
 	{
 		m_place = place;
 	}
-	virtual void Interpret(CCSBot *sender, CCSBot *receiver) const;			// cause the given bot to act on this meme
+	virtual void Interpret(CCSBot *pSender, CCSBot *pReceiver) const;			// cause the given bot to act on this meme
 
 private:
 	Place m_place;
@@ -85,7 +85,7 @@ public:
 		m_zoneIndex = zoneIndex;
 		m_status = status;
 	}
-	virtual void Interpret(CCSBot *sender, CCSBot *receiver) const;			// cause the given bot to act on this meme
+	virtual void Interpret(CCSBot *pSender, CCSBot *pReceiver) const;			// cause the given bot to act on this meme
 
 private:
 	int m_zoneIndex;		// the bombsite
@@ -102,7 +102,7 @@ public:
 	}
 
 public:
-	virtual void Interpret(CCSBot *sender, CCSBot *receiver) const;			// cause the given bot to act on this meme
+	virtual void Interpret(CCSBot *pSender, CCSBot *pReceiver) const;			// cause the given bot to act on this meme
 
 private:
 	CSGameState::BombState m_state;
@@ -112,7 +112,7 @@ private:
 class BotFollowMeme: public BotMeme
 {
 public:
-	virtual void Interpret(CCSBot *sender, CCSBot *receiver) const;			// cause the given bot to act on this meme
+	virtual void Interpret(CCSBot *pSender, CCSBot *pReceiver) const;			// cause the given bot to act on this meme
 };
 
 class BotDefendHereMeme: public BotMeme
@@ -122,7 +122,7 @@ public:
 	{
 		m_pos = pos;
 	}
-	virtual void Interpret(CCSBot *sender, CCSBot *receiver) const;			// cause the given bot to act on this meme
+	virtual void Interpret(CCSBot *pSender, CCSBot *pReceiver) const;			// cause the given bot to act on this meme
 
 private:
 	Vector m_pos;
@@ -131,13 +131,13 @@ private:
 class BotWhereBombMeme: public BotMeme
 {
 public:
-	virtual void Interpret(CCSBot *sender, CCSBot *receiver) const;			// cause the given bot to act on this meme
+	virtual void Interpret(CCSBot *pSender, CCSBot *pReceiver) const;			// cause the given bot to act on this meme
 };
 
 class BotRequestReportMeme: public BotMeme
 {
 public:
-	virtual void Interpret(CCSBot *sender, CCSBot *receiver) const;			// cause the given bot to act on this meme
+	virtual void Interpret(CCSBot *pSender, CCSBot *pReceiver) const;			// cause the given bot to act on this meme
 };
 
 enum BotStatementType
@@ -296,7 +296,7 @@ private:
 
 inline int BotPhraseManager::FindPlaceIndex(Place where) const
 {
-	for (int i = 0; i < m_placeCount; ++i)
+	for (int i = 0; i < m_placeCount; i++)
 	{
 		if (m_placeStatementHistory[i].placeID == where)
 			return i;
@@ -449,7 +449,7 @@ public:
 	void Reset();										// reset to initial state
 	void Update();										// process ongoing chatter
 
-	void OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *other);		// invoked when event occurs in the game (some events have NULL entities)
+	void OnEvent(GameEventType event, CBaseEntity *pEntity, CBaseEntity *pOther);		// invoked when event occurs in the game (some events have NULL entities)
 	void OnDeath();										// invoked when we die
 
 	enum VerbosityType

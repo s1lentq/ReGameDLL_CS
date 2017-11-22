@@ -446,7 +446,7 @@ NOXREF int CountTeams()
 		if (pPlayer->m_iTeam == UNASSIGNED)
 			continue;
 
-		if (pPlayer->pev->flags & FL_DORMANT)
+		if (pPlayer->IsDormant())
 			continue;
 
 		if (pPlayer->m_iTeam == SPECTATOR)
@@ -472,7 +472,7 @@ void ListPlayers(CBasePlayer *current)
 		if (FNullEnt(pEntity->edict()))
 			break;
 
-		if (pEntity->pev->flags & FL_DORMANT)
+		if (pEntity->IsDormant())
 			continue;
 
 		CBasePlayer *pPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev);
@@ -499,7 +499,7 @@ int CountTeamPlayers(int iTeam)
 		if (FNullEnt(pEntity->edict()))
 			break;
 
-		if (pEntity->pev->flags & FL_DORMANT)
+		if (pEntity->IsDormant())
 			continue;
 
 		if (GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev)->m_iTeam == iTeam)
@@ -655,7 +655,7 @@ void EXT_FUNC ClientPutInServer(edict_t *pEntity)
 	SET_CLIENT_MAXSPEED(ENT(pPlayer->pev), 1);
 	SET_MODEL(ENT(pPlayer->pev), "models/player.mdl");
 
-	pPlayer->SetThink(NULL);
+	pPlayer->SetThink(nullptr);
 
 	CBaseEntity *pTarget = nullptr;
 	pPlayer->m_pIntroCamera = UTIL_FindEntityByClassname(nullptr, "trigger_camera");
@@ -721,7 +721,6 @@ void EXT_FUNC ClientPutInServer(edict_t *pEntity)
 
 void Host_Say(edict_t *pEntity, BOOL teamonly)
 {
-	CBasePlayer *client;
 	int j;
 	char *p;
 	char text[128];
@@ -919,39 +918,39 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 	// This may return the world in single player if the client types something between levels or during spawn
 	// so check it, or it will infinite loop
 
-	client = nullptr;
-	while ((client = (CBasePlayer *)UTIL_FindEntityByClassname(client, "player")))
+	CBasePlayer *pReceiver = nullptr;
+	while ((pReceiver = UTIL_FindEntityByClassname(pReceiver, "player")))
 	{
-		if (FNullEnt(client->edict()))
+		if (FNullEnt(pReceiver->edict()))
 			break;
 
-		if (!client->pev)
+		if (!pReceiver->pev)
 			continue;
 
-		if (client->edict() == pEntity)
+		if (pReceiver->edict() == pEntity)
 			continue;
 
 		// Not a client ? (should never be true)
-		if (!client->IsNetClient())
+		if (!pReceiver->IsNetClient())
 			continue;
 
 		// can the receiver hear the sender? or has he muted him?
-		if (gpGlobals->deathmatch != 0.0f && CSGameRules()->m_VoiceGameMgr.PlayerHasBlockedPlayer(client, pPlayer))
+		if (gpGlobals->deathmatch != 0.0f && CSGameRules()->m_VoiceGameMgr.PlayerHasBlockedPlayer(pReceiver, pPlayer))
 			continue;
 
-		if (teamonly && client->m_iTeam != pPlayer->m_iTeam)
+		if (teamonly && pReceiver->m_iTeam != pPlayer->m_iTeam)
 			continue;
 
-		if ((client->pev->deadflag != DEAD_NO && !bSenderDead) || (client->pev->deadflag == DEAD_NO && bSenderDead))
+		if ((pReceiver->pev->deadflag != DEAD_NO && !bSenderDead) || (pReceiver->pev->deadflag == DEAD_NO && bSenderDead))
 		{
 			if (!(pPlayer->pev->flags & FL_PROXY))
 				continue;
 		}
 
-		if ((client->m_iIgnoreGlobalChat == IGNOREMSG_ENEMY && client->m_iTeam == pPlayer->m_iTeam)
-			|| client->m_iIgnoreGlobalChat == IGNOREMSG_NONE)
+		if ((pReceiver->m_iIgnoreGlobalChat == IGNOREMSG_ENEMY && pReceiver->m_iTeam == pPlayer->m_iTeam)
+			|| pReceiver->m_iIgnoreGlobalChat == IGNOREMSG_NONE)
 		{
-			MESSAGE_BEGIN(MSG_ONE, gmsgSayText, nullptr, client->pev);
+			MESSAGE_BEGIN(MSG_ONE, gmsgSayText, nullptr, pReceiver->pev);
 				WRITE_BYTE(ENTINDEX(pEntity));
 				WRITE_STRING(pszFormat);
 				WRITE_STRING("");
@@ -965,8 +964,6 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 			MESSAGE_END();
 		}
 	}
-
-	char *fullText = p;
 
 	// print to the sending client
 	MESSAGE_BEGIN(MSG_ONE, gmsgSayText, nullptr, &pEntity->v);
@@ -991,7 +988,9 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 			SERVER_PRINT(UTIL_VarArgs(pszConsoleFormat, STRING(pPlayer->pev->netname), text));
 	}
 	else
+	{
 		SERVER_PRINT(text);
+	}
 
 	if (logmessages.value)
 	{
@@ -1001,7 +1000,7 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 		char *szTeam = GetTeam(pPlayer->m_iTeam);
 
 		UTIL_LogPrintf("\"%s<%i><%s><%s>\" %s \"%s\"%s\n", STRING(pPlayer->pev->netname), GETPLAYERUSERID(pPlayer->edict()), GETPLAYERAUTHID(pPlayer->edict()),
-			szTeam, temp, fullText, deadText);
+			szTeam, temp, p, deadText);
 	}
 }
 
@@ -3363,7 +3362,7 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 			{
 				pPlayer->ClearAutoBuyData();
 
-				for (int i = 1; i < CMD_ARGC_(); ++i)
+				for (int i = 1; i < CMD_ARGC_(); i++)
 				{
 					pPlayer->AddAutoBuyData(CMD_ARGV_(i));
 				}
@@ -3534,7 +3533,7 @@ void EXT_FUNC ServerActivate(edict_t *pEdictList, int edictCount, int clientMax)
 	EmptyEntityHashTable();
 
 	// Clients have not been initialized yet
-	for (i = 0; i < edictCount; ++i)
+	for (i = 0; i < edictCount; i++)
 	{
 		edict_t *pEdict = &pEdictList[i];
 
@@ -3548,13 +3547,15 @@ void EXT_FUNC ServerActivate(edict_t *pEdictList, int edictCount, int clientMax)
 		pClass = CBaseEntity::Instance(pEdict);
 
 		// Activate this entity if it's got a class & isn't dormant
-		if (pClass && !(pClass->pev->flags & FL_DORMANT))
+		if (pClass && !pClass->IsDormant())
 		{
 			AddEntityHashValue(&pEdict->v, STRING(pEdict->v.classname), CLASSNAME);
 			pClass->Activate();
 		}
 		else
+		{
 			ALERT(at_console, "Can't instance %s\n", STRING(pEdict->v.classname));
+		}
 	}
 
 	// Link user messages here to make sure first client can get them...
@@ -3771,12 +3772,12 @@ void ClientPrecache()
 	else
 		numPlayerModels = ARRAYSIZE(sPlayerModelFiles) - 2;
 
-	for (i = 0; i < numPlayerModels; ++i)
+	for (i = 0; i < numPlayerModels; i++)
 		PRECACHE_MODEL(sPlayerModelFiles[i]);
 
 	if (AreRunningCZero())
 	{
-		for (i = FirstCustomSkin; i <= LastCustomSkin; ++i)
+		for (i = FirstCustomSkin; i <= LastCustomSkin; i++)
 		{
 			const char *fname = TheBotProfiles->GetCustomSkinFname(i);
 
@@ -3836,12 +3837,12 @@ void ClientPrecache()
 	Vector vMin(-38, -24, -41);
 	Vector vMax(38, 24, 41);
 
-	for (i = 0; i < numPlayerModels; ++i)
+	for (i = 0; i < numPlayerModels; i++)
 		ENGINE_FORCE_UNMODIFIED(force_model_specifybounds, (float *)&vMin, (float *)&vMax, sPlayerModelFiles[i]);
 
 	if (AreRunningCZero())
 	{
-		for (i = FirstCustomSkin; i <= LastCustomSkin; ++i)
+		for (i = FirstCustomSkin; i <= LastCustomSkin; i++)
 		{
 			const char *fname = TheBotProfiles->GetCustomSkinFname(i);
 			if (!fname)
@@ -4198,11 +4199,12 @@ bool CheckPlayerPVSLeafChanged(edict_t *client, int clientnum)
 	if (pvs->headnode != client->headnode || pvs->num_leafs != client->num_leafs)
 		return true;
 
-	for (int i = 0; i < pvs->num_leafs; ++i)
+	for (int i = 0; i < pvs->num_leafs; i++)
 	{
 		if (client->leafnums[i] != pvs->leafnums[i])
 			return true;
 	}
+
 	return false;
 }
 
@@ -4325,10 +4327,10 @@ BOOL EXT_FUNC AddToFullPack(struct entity_state_s *state, int e, edict_t *ent, e
 	state->framerate = ent->v.framerate;
 	state->body = ent->v.body;
 
-	for (i = 0; i < 4; ++i)
+	for (i = 0; i < 4; i++)
 		state->controller[i] = ent->v.controller[i];
 
-	for (i = 0; i < 2; ++i)
+	for (i = 0; i < 2; i++)
 		state->blending[i] = ent->v.blending[i];
 
 	state->rendermode = ent->v.rendermode;

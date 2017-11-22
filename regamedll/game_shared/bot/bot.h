@@ -45,7 +45,7 @@ T *CreateBot(const BotProfile *profile)
 	if (UTIL_ClientsInGame() >= gpGlobals->maxClients)
 	{
 		CONSOLE_ECHO("Unable to create bot: Server is full (%d/%d clients).\n", UTIL_ClientsInGame(), gpGlobals->maxClients);
-		return NULL;
+		return nullptr;
 	}
 
 	char netname[64];
@@ -55,11 +55,11 @@ T *CreateBot(const BotProfile *profile)
 	if (FNullEnt(pentBot))
 	{
 		CONSOLE_ECHO("Unable to create bot: pfnCreateFakeClient() returned null.\n");
-		return NULL;
+		return nullptr;
 	}
 	else
 	{
-		T *pBot = NULL;
+		T *pBot = nullptr;
 		FREE_PRIVATE(pentBot);
 		pBot = GetClassPtr<TWrap>((T *)VARS(pentBot));
 		pBot->Initialize(profile);
@@ -131,13 +131,13 @@ public:
 	virtual void Reload();
 
 	// invoked when event occurs in the game (some events have NULL entities)
-	virtual void OnEvent(GameEventType event, CBaseEntity *entity = NULL, CBaseEntity *other = NULL) {};
+	virtual void OnEvent(GameEventType event, CBaseEntity *pEntity = nullptr, CBaseEntity *pOther = nullptr) {};
 
 	// return true if we can see the point
 	virtual bool IsVisible(const Vector *pos, bool testFOV = false) const = 0;
 
 	// return true if we can see any part of the player
-	virtual bool IsVisible(CBasePlayer *player, bool testFOV = false, unsigned char *visParts = NULL) const = 0;
+	virtual bool IsVisible(CBasePlayer *pPlayer, bool testFOV = false, unsigned char *visParts = nullptr) const = 0;
 
 	enum VisiblePartType : uint8
 	{
@@ -153,10 +153,10 @@ public:
 	virtual bool IsEnemyPartVisible(VisiblePartType part) const = 0;
 
 	// return true if player is facing towards us
-	virtual bool IsPlayerFacingMe(CBasePlayer *other) const;
+	virtual bool IsPlayerFacingMe(CBasePlayer *pOther) const;
 
 	// returns true if other player is pointing right at us
-	virtual bool IsPlayerLookingAtMe(CBasePlayer *other) const;
+	virtual bool IsPlayerLookingAtMe(CBasePlayer *pOther) const;
 	virtual void ExecuteCommand();
 	virtual void SetModel(const char *modelName);
 
@@ -197,7 +197,7 @@ public:
 	bool IsUsingScope() const;
 
 	// returns TRUE if given entity is our enemy
-	bool IsEnemy(CBaseEntity *ent) const;
+	bool IsEnemy(CBaseEntity *pEntity) const;
 
 	// return number of enemies left alive
 	int GetEnemiesRemaining() const;
@@ -238,7 +238,7 @@ public:
 protected:
 #ifndef REGAMEDLL_FIXES
 	// Do a "client command" - useful for invoking menu choices, etc.
-	void ClientCommand(const char *cmd, const char *arg1 = NULL, const char *arg2 = NULL, const char *arg3 = NULL);
+	void ClientCommand(const char *cmd, const char *arg1 = nullptr, const char *arg2 = nullptr, const char *arg3 = nullptr);
 #endif
 
 	// the "personality" profile of this bot
@@ -320,20 +320,20 @@ inline CBasePlayerWeapon *CBot::GetActiveWeapon() const
 
 inline bool CBot::IsActiveWeaponReloading() const
 {
-	CBasePlayerWeapon *weapon = GetActiveWeapon();
-	if (weapon == NULL)
+	CBasePlayerWeapon *pCurrentWeapon = GetActiveWeapon();
+	if (!pCurrentWeapon)
 		return false;
 
-	return (weapon->m_fInReload || weapon->m_fInSpecialReload) != 0;
+	return (pCurrentWeapon->m_fInReload || pCurrentWeapon->m_fInSpecialReload) != 0;
 }
 
 inline bool CBot::IsActiveWeaponRecoilHigh() const
 {
-	CBasePlayerWeapon *weapon = GetActiveWeapon();
-	if (weapon != NULL)
+	CBasePlayerWeapon *pCurrentWeapon = GetActiveWeapon();
+	if (pCurrentWeapon)
 	{
 		const float highRecoil = 0.4f;
-		return (weapon->m_flAccuracy > highRecoil) != 0;
+		return (pCurrentWeapon->m_flAccuracy > highRecoil) != 0;
 	}
 
 	return false;
@@ -343,40 +343,42 @@ inline void CBot::PushPostureContext()
 {
 	if (m_postureStackIndex == MAX_POSTURE_STACK)
 	{
-		if (pev != NULL)
+		if (pev)
 		{
 			PrintIfWatched("PushPostureContext() overflow error!\n");
 		}
+
 		return;
 	}
 
 	m_postureStack[m_postureStackIndex].isRunning = m_isRunning;
 	m_postureStack[m_postureStackIndex].isCrouching = m_isCrouching;
-	++m_postureStackIndex;
+	m_postureStackIndex++;
 }
 
 inline void CBot::PopPostureContext()
 {
 	if (m_postureStackIndex == 0)
 	{
-		if (pev != NULL)
+		if (pev)
 		{
 			PrintIfWatched("PopPostureContext() underflow error!\n");
 		}
+
 		m_isRunning = true;
 		m_isCrouching = false;
 		return;
 	}
 
-	--m_postureStackIndex;
+	m_postureStackIndex--;
 	m_isRunning = m_postureStack[m_postureStackIndex].isRunning;
 	m_isCrouching = m_postureStack[m_postureStackIndex].isCrouching;
 }
 
-inline bool CBot::IsPlayerFacingMe(CBasePlayer *other) const
+inline bool CBot::IsPlayerFacingMe(CBasePlayer *pOther) const
 {
-	Vector toOther = other->pev->origin - pev->origin;
-	UTIL_MakeVectors(other->pev->v_angle + other->pev->punchangle);
+	Vector toOther = pOther->pev->origin - pev->origin;
+	UTIL_MakeVectors(pOther->pev->v_angle + pOther->pev->punchangle);
 	Vector otherDir = gpGlobals->v_forward;
 
 	if (otherDir.x * toOther.x + otherDir.y * toOther.y < 0.0f)
@@ -385,18 +387,18 @@ inline bool CBot::IsPlayerFacingMe(CBasePlayer *other) const
 	return false;
 }
 
-inline bool CBot::IsPlayerLookingAtMe(CBasePlayer *other) const
+inline bool CBot::IsPlayerLookingAtMe(CBasePlayer *pOther) const
 {
-	Vector toOther = other->pev->origin - pev->origin;
+	Vector toOther = pOther->pev->origin - pev->origin;
 	toOther.NormalizeInPlace();
 
-	UTIL_MakeVectors(other->pev->v_angle + other->pev->punchangle);
+	UTIL_MakeVectors(pOther->pev->v_angle + pOther->pev->punchangle);
 	Vector otherDir = gpGlobals->v_forward;
 
 	const float lookAtCos = 0.9f;
 	if (otherDir.x * toOther.x + otherDir.y * toOther.y < -lookAtCos)
 	{
-		Vector vec(other->EyePosition());
+		Vector vec(pOther->EyePosition());
 		if (IsVisible(&vec))
 			return true;
 	}

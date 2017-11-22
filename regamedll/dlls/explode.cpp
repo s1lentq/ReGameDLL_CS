@@ -165,8 +165,7 @@ void CEnvExplosion::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE 
 	if (!(pev->spawnflags & SF_ENVEXPLOSION_NOSPARKS))
 	{
 		int sparkCount = RANDOM_LONG(0, 3);
-
-		for (int i = 0; i < sparkCount; ++i)
+		for (int i = 0; i < sparkCount; i++)
 		{
 			Create("spark_shower", pev->origin, tr.vecPlaneNormal, nullptr);
 		}
@@ -194,7 +193,7 @@ void CEnvExplosion::Smoke()
 	}
 }
 
-// HACKHACK -- create one of these and fake a keyvalue to get the right explosion setup
+// HACKHACK: create one of these and fake a keyvalue to get the right explosion setup
 void ExplosionCreate(const Vector &center, Vector &angles, edict_t *pOwner, int magnitude, BOOL doDamage)
 {
 	KeyValueData kvd;

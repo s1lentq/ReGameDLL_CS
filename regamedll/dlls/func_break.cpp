@@ -104,14 +104,14 @@ void CBreakable::Spawn()
 	m_angle = pev->angles.y;
 	pev->angles.y = 0;
 
-	// HACK:  matGlass can receive decals, we need the client to know about this
-	//  so use class to store the material flag
+	// HACK: matGlass can receive decals, we need the client to know about this
+	// so use class to store the material flag
 	if (m_Material == matGlass)
 	{
 		pev->playerclass = 1;
 	}
 
-	//set size and link into world.
+	// set size and link into world.
 	SET_MODEL(ENT(pev), STRING(pev->model));
 
 	SetTouch(&CBreakable::BreakTouch);
@@ -119,7 +119,7 @@ void CBreakable::Spawn()
 	// Only break on trigger
 	if (pev->spawnflags & SF_BREAK_TRIGGER_ONLY)
 	{
-		SetTouch(NULL);
+		SetTouch(nullptr);
 	}
 
 	// Flag unbreakable glass as "worldbrush" so it will block ALL tracelines
@@ -150,7 +150,7 @@ void CBreakable::Restart()
 
 	if (pev->spawnflags & SF_BREAK_TRIGGER_ONLY)
 	{
-		SetTouch(NULL);
+		SetTouch(nullptr);
 	}
 
 	if (!IsBreakable() && pev->rendermode != kRenderNormal)
@@ -282,7 +282,7 @@ void CBreakable::MaterialSoundPrecache(Materials precacheMaterial)
 
 	pSoundList = MaterialSoundList(precacheMaterial, soundCount);
 
-	for (i = 0; i < soundCount; ++i)
+	for (i = 0; i < soundCount; i++)
 	{
 		PRECACHE_SOUND((char *)pSoundList[i]);
 	}
@@ -487,7 +487,7 @@ void CBreakable::BreakTouch(CBaseEntity *pOther)
 
 		if (flDamage >= pev->health)
 		{
-			SetTouch(NULL);
+			SetTouch(nullptr);
 			TakeDamage(pevToucher, pevToucher, flDamage, DMG_CRUSH);
 
 			// do a little damage to player if we broke glass or computer
@@ -502,7 +502,7 @@ void CBreakable::BreakTouch(CBaseEntity *pOther)
 		DamageSound();
 
 		SetThink(&CBreakable::Die);
-		SetTouch(NULL);
+		SetTouch(nullptr);
 
 		// BUGBUG: why doesn't zero delay work?
 		if (m_flDelay == 0.0f)
@@ -803,15 +803,15 @@ void CBreakable::Die()
 	CBaseEntity *pList[256];
 	int count = UTIL_EntitiesInBox(pList, ARRAYSIZE(pList), mins, maxs, FL_ONGROUND);
 
-	for (int i = 0; i < count; ++i)
+	for (int i = 0; i < count; i++)
 	{
 		pList[i]->pev->flags &= ~FL_ONGROUND;
 		pList[i]->pev->groundentity = nullptr;
 	}
 
 	pev->solid = SOLID_NOT;
-	SUB_UseTargets(NULL, USE_TOGGLE, 0);
-	SetThink(NULL);
+	SUB_UseTargets(nullptr, USE_TOGGLE, 0);
+	SetThink(nullptr);
 
 	pev->nextthink = pev->ltime + 0.1f;
 
@@ -1023,7 +1023,7 @@ void CPushable::Move(CBaseEntity *pOther, int push)
 		bPlayerTouch = true;
 	}
 
-	float_precision factor;
+	real_t factor;
 
 	if (bPlayerTouch)
 	{
@@ -1039,12 +1039,14 @@ void CPushable::Move(CBaseEntity *pOther, int push)
 			factor = 1.0f;
 	}
 	else
+	{
 		factor = 0.25f;
+	}
 
 	pev->velocity.x += pevToucher->velocity.x * factor;
 	pev->velocity.y += pevToucher->velocity.y * factor;
 
-	float_precision length = Q_sqrt(pev->velocity.x * pev->velocity.x + pev->velocity.y * pev->velocity.y);
+	real_t length = Q_sqrt(pev->velocity.x * pev->velocity.x + pev->velocity.y * pev->velocity.y);
 
 	if (push && (length > MaxSpeed()))
 	{

@@ -6,7 +6,7 @@ void PlayerBlind(CBasePlayer *pPlayer, entvars_t *pevInflictor, entvars_t *pevAt
 
 	if (!fadetoblack.value)
 	{
-		for (int i = 1; i <= gpGlobals->maxClients; ++i)
+		for (int i = 1; i <= gpGlobals->maxClients; i++)
 		{
 			CBasePlayer *pObserver = UTIL_PlayerByIndex(i);
 			if (pObserver && pObserver->IsObservingPlayer(pPlayer))
@@ -132,7 +132,7 @@ void RadiusFlash(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker,
 	}
 }
 
-float GetAmountOfPlayerVisible(Vector vecSrc, CBaseEntity *entity)
+float GetAmountOfPlayerVisible(Vector vecSrc, CBaseEntity *pEntity)
 {
 	float retval = 0.0f;
 	TraceResult tr;
@@ -148,10 +148,10 @@ float GetAmountOfPlayerVisible(Vector vecSrc, CBaseEntity *entity)
 	const float damagePercentageRightSide = 0.10f;
 	const float damagePercentageLeftSide = 0.10f;
 
-	if (!entity->IsPlayer())
+	if (!pEntity->IsPlayer())
 	{
 		// the entity is not a player, so the damage is all or nothing.
-		UTIL_TraceLine(vecSrc, entity->pev->origin, ignore_monsters, nullptr, &tr);
+		UTIL_TraceLine(vecSrc, pEntity->pev->origin, ignore_monsters, nullptr, &tr);
 
 		if (tr.flFraction == 1.0f)
 			retval = 1.0f;
@@ -160,34 +160,34 @@ float GetAmountOfPlayerVisible(Vector vecSrc, CBaseEntity *entity)
 	}
 
 	// check chest
-	Vector vecChest = entity->pev->origin;
+	Vector vecChest = pEntity->pev->origin;
 	UTIL_TraceLine(vecSrc, vecChest, ignore_monsters, nullptr, &tr);
 
 	if (tr.flFraction == 1.0f)
 		retval += damagePercentageChest;
 
 	// check top of head
-	Vector vecHead = entity->pev->origin + Vector(0, 0, topOfHead);
+	Vector vecHead = pEntity->pev->origin + Vector(0, 0, topOfHead);
 	UTIL_TraceLine(vecSrc, vecHead, ignore_monsters, nullptr, &tr);
 
 	if (tr.flFraction == 1.0f)
 		retval += damagePercentageHead;
 
 	// check feet
-	Vector vecFeet = entity->pev->origin;
-	vecFeet.z -= (entity->pev->flags & FL_DUCKING) ? crouchFeet : standFeet;
+	Vector vecFeet = pEntity->pev->origin;
+	vecFeet.z -= (pEntity->pev->flags & FL_DUCKING) ? crouchFeet : standFeet;
 
 	UTIL_TraceLine(vecSrc, vecFeet, ignore_monsters, nullptr, &tr);
 
 	if (tr.flFraction == 1.0f)
 		retval += damagePercentageFeet;
 
-	Vector2D dir = (entity->pev->origin - vecSrc).Make2D();
+	Vector2D dir = (pEntity->pev->origin - vecSrc).Make2D();
 	dir.NormalizeInPlace();
 
 	Vector2D perp(-dir.y * edgeOffset, dir.x * edgeOffset);
-	Vector vecRightSide = entity->pev->origin + Vector(perp.x, perp.y, 0);
-	Vector vecLeftSide = entity->pev->origin - Vector(perp.x, perp.y, 0);
+	Vector vecRightSide = pEntity->pev->origin + Vector(perp.x, perp.y, 0);
+	Vector vecLeftSide = pEntity->pev->origin - Vector(perp.x, perp.y, 0);
 
 	// check right "edge"
 	UTIL_TraceLine(vecSrc, vecRightSide, ignore_monsters, nullptr, &tr);

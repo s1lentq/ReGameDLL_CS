@@ -65,29 +65,29 @@ public:
 	virtual ~CBaseTutor();
 	virtual void TutorThink(float time) = 0;
 	virtual void PurgeMessages() = 0;
-	virtual void CallEventHandler(GameEventType event, CBaseEntity *entity, CBaseEntity *other) = 0;
+	virtual void CallEventHandler(GameEventType event, CBaseEntity *pEntity, CBaseEntity *pOther) = 0;
 	virtual void ShowTutorMessage(TutorMessageEvent *event) = 0;
 
-	virtual bool IsEntityInViewOfPlayer(CBaseEntity *entity, CBasePlayer *player);
-	virtual bool IsBombsiteInViewOfPlayer(CBaseEntity *entity, CBasePlayer *player);
-	virtual bool IsEntityInBombsite(CBaseEntity *bombsite, CBaseEntity *entity);
-	virtual bool IsPlayerLookingAtPosition(Vector *origin, CBasePlayer *player);
-	virtual bool IsPlayerLookingAtEntity(CBaseEntity *entity, CBasePlayer *player);
+	virtual bool IsEntityInViewOfPlayer(CBaseEntity *pEntity, CBasePlayer *pPlayer);
+	virtual bool IsBombsiteInViewOfPlayer(CBaseEntity *pEntity, CBasePlayer *pPlayer);
+	virtual bool IsEntityInBombsite(CBaseEntity *bombsite, CBaseEntity *pEntity);
+	virtual bool IsPlayerLookingAtPosition(Vector *origin, CBasePlayer *pPlayer);
+	virtual bool IsPlayerLookingAtEntity(CBaseEntity *pEntity, CBasePlayer *pPlayer);
 
 	virtual void HandleShotFired(Vector source, Vector target) = 0;
 	virtual struct TutorMessage *GetTutorMessageDefinition(int messageID) = 0;
 
 public:
 	void StartFrame(float time);
-	void OnEvent(GameEventType event, CBaseEntity *entity = nullptr, CBaseEntity *other = nullptr);
+	void OnEvent(GameEventType event, CBaseEntity *pEntity = nullptr, CBaseEntity *pOther = nullptr);
 
 	void ShotFired(Vector source, Vector target);
-	void DisplayMessageToPlayer(CBasePlayer *player, int id, const char *szMessage, TutorMessageEvent *event);
-	void DrawLineToEntity(CBasePlayer *player, int entindex, int id);
+	void DisplayMessageToPlayer(CBasePlayer *pPlayer, int id, const char *szMessage, TutorMessageEvent *event);
+	void DrawLineToEntity(CBasePlayer *pPlayer, int entindex, int id);
 	void DisplayNewStateDescriptionToPlayer();
 	void CloseCurrentWindow();
-	void CheckForStateTransition(GameEventType event, CBaseEntity *entity, CBaseEntity *other);
-	void CalculatePathForObjective(CBaseEntity *player);
+	void CheckForStateTransition(GameEventType event, CBaseEntity *pEntity, CBaseEntity *pOther);
+	void CalculatePathForObjective(CBaseEntity *pPlayer);
 	bool DoMessagesHaveSameID(int id1, int id2);
 
 protected:

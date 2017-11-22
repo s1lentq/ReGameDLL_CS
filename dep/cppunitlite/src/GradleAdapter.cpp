@@ -6,18 +6,17 @@
 #include "cppunitlite/Test.h"
 #include "cppunitlite/TestRegistry.h"
 
-int GradleAdapter::writeAllTestsInfoToFile(const char* fname) {
-	FILE* outFile = fopen(fname, "w");
-	if (outFile == NULL) {
+int GradleAdapter::writeAllTestsInfoToFile(const char *fname) {
+	FILE *outFile = fopen(fname, "w");
+	if (!outFile) {
 		return 1;
 	}
 
 	fprintf(outFile, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-
 	fprintf(outFile, "<tests>\n");
 
-	Test* curTest = TestRegistry::getFirstTest();
-	while (curTest != NULL) {
+	Test *curTest = TestRegistry::getFirstTest();
+	while (curTest) {
 		fprintf(outFile, "<test ");
 
 		fprintf(outFile, " name=\"%s\" ", curTest->getName());
@@ -33,16 +32,16 @@ int GradleAdapter::writeAllTestsInfoToFile(const char* fname) {
 	return 0;
 }
 
-int GradleAdapter::runTest(const char* groupName, const char* testName) {
-	Test* curTest = TestRegistry::getFirstTest();
-	while (curTest != NULL) {
+int GradleAdapter::runTest(const char *groupName, const char *testName) {
+	Test *curTest = TestRegistry::getFirstTest();
+	while (curTest) {
 		if (!strcmp(groupName, curTest->getGroup()) && !strcmp(testName, curTest->getName())) {
 			break;
 		}
 		curTest = curTest->getNext();
 	}
 
-	if (curTest == NULL) {
+	if (!curTest) {
 		printf("Test group='%s' name='%s' not found\n", groupName, testName);
 		return 2;
 	}
@@ -58,10 +57,10 @@ int GradleAdapter::runTest(const char* groupName, const char* testName) {
 	}
 }
 
-int GradleAdapter::runGroup(const char* groupName) {
-	Test* curTest = TestRegistry::getFirstTest();
+int GradleAdapter::runGroup(const char *groupName) {
+	Test *curTest = TestRegistry::getFirstTest();
 	int ranTests = 0;
-	while (curTest != NULL) {
+	while (curTest) {
 		if (strcmp(groupName, curTest->getGroup())) {
 			curTest = curTest->getNext();
 			continue;
@@ -88,9 +87,9 @@ int GradleAdapter::runGroup(const char* groupName) {
 }
 
 int GradleAdapter::runAllTests() {
-	Test* curTest = TestRegistry::getFirstTest();
+	Test *curTest = TestRegistry::getFirstTest();
 	int ranTests = 0;
-	while (curTest != NULL) {
+	while (curTest) {
 		TestResult result;
 		curTest->run(result);
 		ranTests++;
@@ -106,7 +105,7 @@ int GradleAdapter::runAllTests() {
 	return 0;
 }
 
-int GradleAdapter::testsEntryPoint(int argc, char* argv[]) {
+int GradleAdapter::testsEntryPoint(int argc, char *argv[]) {
 	if (argc < 2 || !strcmp(argv[1], "-all")) {
 		return runAllTests();
 	}

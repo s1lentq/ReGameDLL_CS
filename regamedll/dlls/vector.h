@@ -71,15 +71,15 @@ public:
 
 	// Methods
 	inline void CopyToArray(float *rgfl) const { *(int *)&rgfl[0] = *(int *)&x; *(int *)&rgfl[1] = *(int *)&y; }
-	inline float_precision Length() const { return Q_sqrt(float_precision(x * x + y * y)); }		// Get the vector's magnitude
-	inline float LengthSquared() const { return (x * x + y * y); }									// Get the vector's magnitude squared
+	inline real_t Length() const { return Q_sqrt(real_t(x * x + y * y)); }		// Get the vector's magnitude
+	inline float LengthSquared() const { return (x * x + y * y); }				// Get the vector's magnitude squared
 
 	operator float*()             { return &x; } // Vectors will now automatically convert to float * when needed
 	operator const float*() const { return &x; } // Vectors will now automatically convert to float * when needed
 
 	Vector2D Normalize() const
 	{
-		float_precision flLen = Length();
+		real_t flLen = Length();
 		if (!flLen)
 			return Vector2D(0, 0);
 
@@ -93,9 +93,9 @@ public:
 	}
 	inline bool IsLengthLessThan   (float length) const { return (LengthSquared() < length * length); }
 	inline bool IsLengthGreaterThan(float length) const { return (LengthSquared() > length * length); }
-	float_precision NormalizeInPlace()
+	real_t NormalizeInPlace()
 	{
-		float_precision flLen = Length();
+		real_t flLen = Length();
 		if (flLen > 0.0)
 		{
 			x = vec_t(1 / flLen * x);
@@ -118,7 +118,7 @@ public:
 	vec_t x, y;
 };
 
-inline float_precision DotProduct(const Vector2D &a, const Vector2D &b)
+inline real_t DotProduct(const Vector2D &a, const Vector2D &b)
 {
 	return (a.x * b.x + a.y * b.y);
 }
@@ -179,17 +179,17 @@ public:
 	}
 
 	// Get the vector's magnitude
-	float_precision Length() const
+	real_t Length() const
 	{
-		float_precision x1 = float_precision(x);
-		float_precision y1 = float_precision(y);
-		float_precision z1 = float_precision(z);
+		real_t x1 = real_t(x);
+		real_t y1 = real_t(y);
+		real_t z1 = real_t(z);
 
 		return Q_sqrt(x1 * x1 + y1 * y1 + z1 * z1);
 	}
 
 	// Get the vector's magnitude squared
-	float_precision LengthSquared() const { return (x * x + y * y + z * z); }
+	real_t LengthSquared() const { return (x * x + y * y + z * z); }
 
 	operator float*()             { return &x; } // Vectors will now automatically convert to float * when needed
 	operator const float*() const { return &x; } // Vectors will now automatically convert to float * when needed
@@ -207,7 +207,7 @@ public:
 #else
 	Vector Normalize()
 	{
-		float_precision flLen = Length();
+		real_t flLen = Length();
 		if (flLen == 0)
 			return Vector(0, 0, 1);
 
@@ -221,7 +221,7 @@ public:
 #ifndef PLAY_GAMEDLL
 		return Normalize();
 #else
-		float_precision flLen = Length();
+		real_t flLen = Length();
 		if (flLen == 0)
 			return Vector(0, 0, 1);
 
@@ -237,14 +237,14 @@ public:
 		return Vec2;
 	}
 
-	float_precision Length2D() const { return Q_sqrt(float_precision(x * x + y * y)); }
+	real_t Length2D() const { return Q_sqrt(real_t(x * x + y * y)); }
 
 	inline bool IsLengthLessThan   (float length) const { return (LengthSquared() < length * length); }
 	inline bool IsLengthGreaterThan(float length) const { return (LengthSquared() > length * length); }
 
 #ifdef PLAY_GAMEDLL
-	template<typename T = float_precision>
-	float_precision NormalizeInPlace()
+	template<typename T = real_t>
+	real_t NormalizeInPlace()
 	{
 		T flLen = Length();
 
@@ -298,12 +298,12 @@ inline Vector operator*(float fl, const Vector &v)
 	return v * fl;
 }
 
-inline float_precision DotProduct(const Vector &a, const Vector &b)
+inline real_t DotProduct(const Vector &a, const Vector &b)
 {
 	return (a.x * b.x + a.y * b.y + a.z * b.z);
 }
 
-inline float_precision DotProduct2D(const Vector &a, const Vector &b)
+inline real_t DotProduct2D(const Vector &a, const Vector &b)
 {
 	return (a.x * b.x + a.y * b.y);
 }
@@ -325,7 +325,7 @@ inline LenType LengthSubtract(Vector vecStart, Vector vecDest)
 	Y floatY = (vecDest.y - vecStart.y);
 	Z floatZ = (vecDest.z - vecStart.z);
 
-	return Q_sqrt(float_precision(floatX * floatX + floatY * floatY + floatZ * floatZ));
+	return Q_sqrt(real_t(floatX * floatX + floatY * floatY + floatZ * floatZ));
 }
 
 template<
@@ -344,7 +344,7 @@ inline Vector NormalizeSubtract(Vector vecStart, Vector vecDest)
 	Y floatY = (vecDest.y - vecStart.y);
 	Z floatZ = (vecDest.z - vecStart.z);
 
-	LenType flLen = Q_sqrt(float_precision(floatX * floatX + floatY * floatY + floatZ * floatZ));
+	LenType flLen = Q_sqrt(real_t(floatX * floatX + floatY * floatY + floatZ * floatZ));
 
 	if (flLen == 0.0)
 	{

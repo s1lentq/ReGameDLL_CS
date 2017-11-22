@@ -33,20 +33,20 @@ const float updateTimesliceDuration = 0.5f;
 int _navAreaCount = 0;
 int _currentIndex = 0;
 
-inline CNavNode *LadderEndSearch(CBaseEntity *entity, const Vector *pos, NavDirType mountDir)
+inline CNavNode *LadderEndSearch(CBaseEntity *pEntity, const Vector *pos, NavDirType mountDir)
 {
 	Vector center = *pos;
 	AddDirectionVector(&center, mountDir, HalfHumanWidth);
 
 	// Test the ladder dismount point first, then each cardinal direction one and two steps away
-	for (int d = (-1); d < 2 * NUM_DIRECTIONS; ++d)
+	for (int dir = (-1); dir < 2 * NUM_DIRECTIONS; dir++)
 	{
 		Vector tryPos = center;
 
-		if (d >= NUM_DIRECTIONS)
-			AddDirectionVector(&tryPos, (NavDirType)(d - NUM_DIRECTIONS), GenerationStepSize * 2.0f);
-		else if (d >= 0)
-			AddDirectionVector(&tryPos, (NavDirType)d, GenerationStepSize);
+		if (dir >= NUM_DIRECTIONS)
+			AddDirectionVector(&tryPos, (NavDirType)(dir - NUM_DIRECTIONS), GenerationStepSize * 2.0f);
+		else if (dir >= 0)
+			AddDirectionVector(&tryPos, (NavDirType)dir, GenerationStepSize);
 
 		// step up a rung, to ensure adjacent floors are below us
 		tryPos.z += GenerationStepSize;
@@ -60,7 +60,7 @@ inline CNavNode *LadderEndSearch(CBaseEntity *entity, const Vector *pos, NavDirT
 		// make sure this point is not on the other side of a wall
 		const float fudge = 2.0f;
 		TraceResult result;
-		UTIL_TraceLine(center + Vector(0, 0, fudge), tryPos + Vector(0, 0, fudge), ignore_monsters, dont_ignore_glass, ENT(entity->pev), &result);
+		UTIL_TraceLine(center + Vector(0, 0, fudge), tryPos + Vector(0, 0, fudge), ignore_monsters, dont_ignore_glass, ENT(pEntity->pev), &result);
 
 		if (result.flFraction != 1.0f
 #ifdef REGAMEDLL_FIXES

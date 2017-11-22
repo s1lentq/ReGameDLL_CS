@@ -397,11 +397,11 @@ void BuyState::OnUpdate(CCSBot *me)
 
 				for (int i = 0; i < MAX_BUY_WEAPON_PRIMARY; i++)
 				{
-					if ((masterPrimary[i].type == SHOTGUN && TheCSBots()->AllowShotguns()) ||
-						(masterPrimary[i].type == SUB_MACHINE_GUN && TheCSBots()->AllowSubMachineGuns()) ||
-						(masterPrimary[i].type == RIFLE && TheCSBots()->AllowRifles()) ||
-						(masterPrimary[i].type == SNIPER_RIFLE && TheCSBots()->AllowSnipers() && wantSniper) ||
-						(masterPrimary[i].type == MACHINE_GUN && TheCSBots()->AllowMachineGuns()))
+					if ((masterPrimary[i].type == SHOTGUN && TheCSBots()->AllowShotguns())
+						|| (masterPrimary[i].type == SUB_MACHINE_GUN && TheCSBots()->AllowSubMachineGuns())
+						|| (masterPrimary[i].type == RIFLE && TheCSBots()->AllowRifles())
+						|| (masterPrimary[i].type == SNIPER_RIFLE && TheCSBots()->AllowSnipers() && wantSniper)
+						|| (masterPrimary[i].type == MACHINE_GUN && TheCSBots()->AllowMachineGuns()))
 					{
 						stockPrimary[stockPrimaryCount++] = &masterPrimary[i];
 					}

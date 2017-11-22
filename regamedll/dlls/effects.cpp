@@ -58,7 +58,7 @@ void CBubbling::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useT
 	}
 	else
 	{
-		SetThink(NULL);
+		SetThink(nullptr);
 		pev->nextthink = 0;
 	}
 }
@@ -334,7 +334,7 @@ void CLightning::Spawn()
 
 	if (ServerSide())
 	{
-		SetThink(NULL);
+		SetThink(nullptr);
 		if (pev->dmg > 0)
 		{
 			SetThink(&CLightning::DamageThink);
@@ -477,7 +477,7 @@ void CLightning::StrikeUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TY
 	if (m_active)
 	{
 		m_active = 0;
-		SetThink(NULL);
+		SetThink(nullptr);
 	}
 	else
 	{
@@ -486,7 +486,7 @@ void CLightning::StrikeUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TY
 	}
 
 	if (!(pev->spawnflags & SF_BEAM_TOGGLE))
-		SetUse(NULL);
+		SetUse(nullptr);
 }
 
 int IsPointEntity(CBaseEntity *pEnt)
@@ -1021,7 +1021,7 @@ void CGlow::Animate(float frames)
 {
 	if (m_maxFrame > 0)
 	{
-		pev->frame = Q_fmod(float_precision(pev->frame + frames), float_precision(m_maxFrame));
+		pev->frame = Q_fmod(real_t(pev->frame + frames), real_t(m_maxFrame));
 	}
 }
 
@@ -1222,7 +1222,7 @@ void CSprite::Animate(float frames)
 			TurnOff();
 
 		else if (m_maxFrame > 0)
-			pev->frame = Q_fmod(float_precision(pev->frame), float_precision(m_maxFrame));
+			pev->frame = Q_fmod(real_t(pev->frame), real_t(m_maxFrame));
 	}
 }
 
@@ -1414,7 +1414,7 @@ void CGibShooter::ShootThink()
 		if (pev->spawnflags & SF_GIBSHOOTER_REPEATABLE)
 		{
 			m_iGibs = m_iGibCapacity;
-			SetThink(NULL);
+			SetThink(nullptr);
 			pev->nextthink = gpGlobals->time;
 		}
 		else
@@ -1544,7 +1544,7 @@ void CTestEffect::TestThink()
 
 	if (t < 3.0)
 	{
-		for (i = 0; i < m_iBeam; ++i)
+		for (i = 0; i < m_iBeam; i++)
 		{
 			t = (gpGlobals->time - m_flBeamTime[i]) / (3.0f + m_flStartTime - m_flBeamTime[i]);
 			m_pBeam[i]->SetBrightness(int(255.0f * t));
@@ -1554,14 +1554,14 @@ void CTestEffect::TestThink()
 	}
 	else
 	{
-		for (i = 0; i < m_iBeam; ++i)
+		for (i = 0; i < m_iBeam; i++)
 		{
 			UTIL_Remove(m_pBeam[i]);
 		}
 
 		m_flStartTime = gpGlobals->time;
 		m_iBeam = 0;
-		SetThink(NULL);
+		SetThink(nullptr);
 	}
 }
 
@@ -1965,7 +1965,7 @@ void CItemSoda::CanThink()
 	pev->solid = SOLID_TRIGGER;
 	UTIL_SetSize(pev, Vector(-8, -8, 0), Vector(8, 8, 8));
 
-	SetThink(NULL);
+	SetThink(nullptr);
 	SetTouch(&CItemSoda::CanTouch);
 }
 
@@ -2002,7 +2002,7 @@ void CItemSoda::CanTouch(CBaseEntity *pOther)
 	pev->movetype = MOVETYPE_NONE;
 	pev->effects = EF_NODRAW;
 
-	SetTouch(NULL);
+	SetTouch(nullptr);
 	SetThink(&CItemSoda::SUB_Remove);
 	pev->nextthink = gpGlobals->time;
 }

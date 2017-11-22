@@ -39,7 +39,7 @@ int CG3SG1::GetItemInfo(ItemInfo *p)
 	p->pszName = STRING(pev->classname);
 	p->pszAmmo1 = "762Nato";
 	p->iMaxAmmo1 = MAX_AMMO_762NATO;
-	p->pszAmmo2 = NULL;
+	p->pszAmmo2 = nullptr;
 	p->iMaxAmmo2 = -1;
 	p->iMaxClip = G3SG1_MAX_CLIP;
 	p->iSlot = 0;
@@ -73,7 +73,7 @@ void CG3SG1::SecondaryAttack()
 
 	m_pPlayer->ResetMaxSpeed();
 
-	if (TheBots != NULL)
+	if (TheBots)
 	{
 		TheBots->OnEvent(EVENT_WEAPON_ZOOMED, m_pPlayer);
 	}
@@ -136,7 +136,7 @@ void CG3SG1::G3SG1Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 			m_flNextPrimaryAttack = GetNextAttackDelay(0.2);
 		}
 
-		if (TheBots != NULL)
+		if (TheBots)
 		{
 			TheBots->OnEvent(EVENT_WEAPON_FIRED_ON_EMPTY, m_pPlayer);
 		}

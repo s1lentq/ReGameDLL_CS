@@ -134,13 +134,13 @@ public:
 
 		return m_hTargetEnt;
 	}
-	bool IsFollowing(const CBaseEntity *entity = nullptr)
+	bool IsFollowing(const CBaseEntity *pEntity = nullptr)
 	{
 		if (m_improv) {
-			return m_improv->IsFollowing();
+			return m_improv->IsFollowing(pEntity);
 		}
 
-		if ((!entity && !m_hTargetEnt) || (entity && m_hTargetEnt != entity))
+		if ((!pEntity && !m_hTargetEnt) || (pEntity && m_hTargetEnt != pEntity))
 			return false;
 
 		if (m_State != FOLLOW)
@@ -211,7 +211,7 @@ public:
 	};
 
 	void AddSound(HostageChatterType type, char *filename);
-	float PlaySound(CBaseEntity *entity, HostageChatterType type);
+	float PlaySound(CBaseEntity *pEntity, HostageChatterType type);
 	char *GetSound(HostageChatterType type, float *duration);
 	void Shuffle(ChatterSet *chatter);
 
@@ -235,7 +235,7 @@ public:
 	}
 	bool IsNearbyHostageTalking(CHostageImprov *improv);
 	bool IsNearbyHostageJumping(CHostageImprov *improv);
-	void OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *other);
+	void OnEvent(GameEventType event, CBaseEntity *pEntity, CBaseEntity *pOther);
 
 	// Iterate over all active hostages in the game, invoking functor on each.
 	// If functor returns false, stop iteration and return false.

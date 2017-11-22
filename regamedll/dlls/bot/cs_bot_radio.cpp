@@ -260,7 +260,7 @@ bool CCSBot::RespondToHelpRequest(CBasePlayer *them, Place place, float maxRange
 	{
 		// compute actual travel distance
 		PathCost pc(this);
-		float_precision travelDistance = NavAreaTravelDistance(m_lastKnownArea, TheNavAreaGrid.GetNearestNavArea(&them->pev->origin), pc);
+		real_t travelDistance = NavAreaTravelDistance(m_lastKnownArea, TheNavAreaGrid.GetNearestNavArea(&them->pev->origin), pc);
 		if (travelDistance < 0.0f)
 			return false;
 

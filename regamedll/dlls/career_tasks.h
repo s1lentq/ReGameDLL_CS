@@ -114,10 +114,10 @@ public:
 	void Reset(bool deleteTasks = true);
 	void AddTask(const char *taskName, const char *weaponName, int eventCount, bool mustLive, bool crossRounds, bool isComplete);
 
-	void HandleEvent(GameEventType event, CBasePlayer *pAttacker = NULL, CBasePlayer *pVictim = NULL);
+	void HandleEvent(GameEventType event, CBasePlayer *pAttacker = nullptr, CBasePlayer *pVictim = nullptr);
 	void HandleEnemyKill(bool wasBlind, const char *weaponName, bool headshot, bool killerHasShield, CBasePlayer *pAttacker, CBasePlayer *pVictim);
 	void HandleWeaponKill(int weaponId, int weaponClassId, bool headshot, bool killerHasShield, CBasePlayer *pAttacker, CBasePlayer *pVictim);
-	void HandleDeath(int team, CBasePlayer *pAttacker = NULL);
+	void HandleDeath(int team, CBasePlayer *pAttacker = nullptr);
 	void HandleWeaponInjury(int weaponId, int weaponClassId, bool attackerHasShield, CBasePlayer *pAttacker);
 	void HandleEnemyInjury(const char *weaponName, bool attackerHasShield, CBasePlayer *pAttacker);
 

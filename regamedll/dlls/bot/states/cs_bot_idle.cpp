@@ -310,7 +310,7 @@ void IdleState::OnUpdate(CCSBot *me)
 
 						// just use the first overlapping nav area as a reasonable approximation
 						ShortestPathCost pathCost = ShortestPathCost();
-						float_precision dist = NavAreaTravelDistance(me->GetLastKnownArea(), TheNavAreaGrid.GetNearestNavArea(&TheCSBots()->GetZone(z)->m_center), pathCost);
+						real_t dist = NavAreaTravelDistance(me->GetLastKnownArea(), TheNavAreaGrid.GetNearestNavArea(&TheCSBots()->GetZone(z)->m_center), pathCost);
 
 #ifdef REGAMEDLL_FIXES
 						if (dist < 0.0f)

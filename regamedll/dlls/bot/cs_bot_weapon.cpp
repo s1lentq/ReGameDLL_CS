@@ -61,18 +61,18 @@ void CCSBot::FireWeaponAtEnemy()
 			Vector2D toAimSpot = (m_aimSpot - pev->origin).Make2D();
 			float rangeToEnemy = toAimSpot.NormalizeInPlace();
 
-			const float_precision halfPI = (M_PI / 180.0f);
-			float_precision yaw = pev->v_angle[YAW] * halfPI;
+			const real_t halfPI = (M_PI / 180.0f);
+			real_t yaw = pev->v_angle[YAW] * halfPI;
 
 			Vector2D dir(Q_cos(yaw), Q_sin(yaw));
-			float_precision onTarget = DotProduct(toAimSpot, dir);
+			real_t onTarget = DotProduct(toAimSpot, dir);
 
 			// aim more precisely with a sniper rifle
 			// because rifles' bullets spray, dont have to be very precise
-			const float_precision halfSize = (IsUsingSniperRifle()) ? HalfHumanWidth : 2.0f * HalfHumanWidth;
+			const real_t halfSize = (IsUsingSniperRifle()) ? HalfHumanWidth : 2.0f * HalfHumanWidth;
 
 			// aiming tolerance depends on how close the target is - closer targets subtend larger angles
-			float_precision aimTolerance = Q_cos(Q_atan(halfSize / rangeToEnemy));
+			real_t aimTolerance = Q_cos(Q_atan(halfSize / rangeToEnemy));
 
 			if (onTarget > aimTolerance)
 			{
@@ -205,7 +205,7 @@ void CCSBot::SetAimOffset(float accuracy)
 	PrintIfWatched("Accuracy = %4.3f\n", accuracy);
 
 	float range = (m_lastEnemyPosition - pev->origin).Length();
-	const float_precision maxOffset = range * (float_precision(m_iFOV) / DEFAULT_FOV) * 0.1;
+	const real_t maxOffset = range * (real_t(m_iFOV) / DEFAULT_FOV) * 0.1;
 	float error = maxOffset * (1 - accuracy);
 
 	m_aimOffsetGoal[0] = RANDOM_FLOAT(-error, error);
@@ -443,10 +443,6 @@ void CCSBot::EquipBestWeapon(bool mustEquip)
 		if ((TheCSBots()->AllowShotguns() && weaponClass == WEAPONCLASS_SHOTGUN)
 			|| (TheCSBots()->AllowMachineGuns() && weaponClass == WEAPONCLASS_MACHINEGUN)
 			|| (TheCSBots()->AllowRifles() && weaponClass == WEAPONCLASS_RIFLE)
-#ifndef REGAMEDLL_FIXES
-			// TODO: already is checked shotguns!
-			|| (TheCSBots()->AllowShotguns() && weaponClass == WEAPONCLASS_SHOTGUN)
-#endif
 			|| (TheCSBots()->AllowSnipers() && weaponClass == WEAPONCLASS_SNIPERRIFLE)
 			|| (TheCSBots()->AllowSubMachineGuns() && weaponClass == WEAPONCLASS_SUBMACHINEGUN)
 			|| (TheCSBots()->AllowTacticalShield() && pPrimary->m_iId == WEAPON_SHIELDGUN))
