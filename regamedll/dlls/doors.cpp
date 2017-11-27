@@ -522,7 +522,7 @@ void CBaseDoor::DoorGoUp()
 	// BUGBUG: Triggered doors don't work with this yet
 	if (FClassnameIs(pev, "func_door_rotating"))
 	{
-		float sign = 1.0;
+		float sign = 1.0f;
 
 		if (m_hActivator)
 		{
@@ -614,7 +614,9 @@ void CBaseDoor::DoorGoUp()
 		AngularMove(m_vecAngle2 * sign, pev->speed);
 	}
 	else
+	{
 		LinearMove(m_vecPosition2, pev->speed);
+	}
 }
 
 // The door has reached the "up" position.  Either go back down, or wait for another activation.
@@ -697,7 +699,9 @@ void CBaseDoor::DoorGoDown()
 		AngularMove(m_vecAngle1, pev->speed);
 	}
 	else
+	{
 		LinearMove(m_vecPosition1, pev->speed);
+	}
 }
 
 // The door has reached the "down" position.  Back to quiescence.
@@ -869,11 +873,11 @@ void CRotDoor::Restart()
 	if (pev->speed == 0)
 		pev->speed = 100;
 
+	// DOOR_START_OPEN is to allow an entity to be lighted in the closed position
+	// but spawn in the open position
 	if (pev->spawnflags & SF_DOOR_START_OPEN)
 	{
-#ifdef REGAMEDLL_FIXES
-		pev->angles = m_vecAngle1;
-#else
+#ifndef REGAMEDLL_FIXES
 		pev->angles = m_vecAngle2;
 
 		Vector vecSav = m_vecAngle1;
@@ -883,6 +887,10 @@ void CRotDoor::Restart()
 
 		pev->movedir = pev->movedir * -1;
 	}
+
+#ifdef REGAMEDLL_FIXES
+	pev->angles = m_vecAngle1;
+#endif
 
 	m_toggle_state = TS_AT_BOTTOM;
 	DoorGoDown();

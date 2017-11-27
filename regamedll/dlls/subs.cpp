@@ -108,7 +108,7 @@ void CBaseDelay::KeyValue(KeyValueData *pkvd)
 //
 // Search for (string)targetname in all entities that
 // match (string)self.target and call their .use function (if they have one)
-void CBaseEntity::SUB_UseTargets(CBaseEntity *pActivator, USE_TYPE useType, float value)
+NOINLINE void CBaseEntity::SUB_UseTargets(CBaseEntity *pActivator, USE_TYPE useType, float value)
 {
 	// fire targets
 	if (!FStringNull(pev->target))
@@ -367,7 +367,7 @@ void CBaseToggle::AngularMove(Vector vecDestAngle, float flSpeed)
 	m_vecFinalAngle = vecDestAngle;
 
 	// Already there?
-	if (vecDestAngle == pev->angles)
+	if (pev->angles == vecDestAngle)
 	{
 		AngularMoveDone();
 		return;
