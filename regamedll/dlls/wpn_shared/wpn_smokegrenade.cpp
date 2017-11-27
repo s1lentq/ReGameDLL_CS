@@ -76,9 +76,12 @@ void CSmokeGrenade::Holster(int skiplocal)
 
 	if (!m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType])
 	{
+#ifndef REGAMEDLL_FIXES
 		// no more smokegrenades!
 		// clear the smokegrenade of bits for HUD
+		// Moved DestroyItem()
 		m_pPlayer->pev->weapons &= ~(1 << WEAPON_SMOKEGRENADE);
+#endif
 		DestroyItem();
 	}
 
@@ -230,6 +233,9 @@ void CSmokeGrenade::WeaponIdle()
 		else
 		{
 			RetireWeapon();
+#ifdef REGAMEDLL_FIXES
+			DestroyItem();
+#endif
 			return;
 		}
 

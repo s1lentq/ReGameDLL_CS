@@ -88,7 +88,10 @@ void CC4::Holster(int skiplocal)
 
 	if (!m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType])
 	{
+#ifndef REGAMEDLL_FIXES
+		// Moved DestroyItem()
 		m_pPlayer->pev->weapons &= ~(1 << WEAPON_C4);
+#endif
 		DestroyItem();
 	}
 
@@ -214,6 +217,9 @@ void CC4::PrimaryAttack()
 					if (--m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
 					{
 						RetireWeapon();
+#ifdef REGAMEDLL_FIXES
+						DestroyItem();
+#endif
 						return;
 					}
 				}
