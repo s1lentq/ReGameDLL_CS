@@ -136,7 +136,7 @@ void Broadcast(const char *sentence)
 	MESSAGE_BEGIN(MSG_BROADCAST, gmsgSendAudio);
 		WRITE_BYTE(0);
 		WRITE_STRING(text);
-		WRITE_SHORT(100);
+		WRITE_SHORT(PITCH_NORM);
 	MESSAGE_END();
 }
 
@@ -596,8 +596,21 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(CleanUpMap)()
 	UTIL_RemoveOther("grenade", grenadesRemoveCount);
 
 	// Remove defuse kit
+#ifndef REGAMEDLL_FIXES
 	// Old code only removed 4 kits and stopped.
 	UTIL_RemoveOther("item_thighpack");
+#else
+	// Don't remove level items
+	CBaseEntity *pDefuser = NULL;
+	while ((pDefuser = UTIL_FindEntityByClassname(pDefuser, "item_thighpack")))
+	{
+		if (pDefuser->pev->spawnflags & SF_NORESPAWN)
+		{
+			pDefuser->SetThink(&CBaseEntity::SUB_Remove);
+			pDefuser->pev->nextthink = gpGlobals->time + 0.1;
+		}
+	}
+#endif
 
 #ifdef REGAMEDLL_FIXES
 	UTIL_RemoveOther("gib");

@@ -627,6 +627,10 @@ void EXT_FUNC ClientPutInServer(edict_t *pEntity)
 	pPlayer->m_iAccount = int(startmoney.value);
 #endif
 
+#ifdef REGAMEDLL_FIXES
+	pPlayer->m_bHasPrimary = false;
+#endif
+
 	pPlayer->m_fGameHUDInitialized = FALSE;
 	pPlayer->m_flDisplayHistory &= ~DHF_ROUND_STARTED;
 	pPlayer->pev->flags |= FL_SPECTATOR;
@@ -1514,8 +1518,13 @@ CBaseEntity *EXT_FUNC __API_HOOK(BuyWeaponByWeaponID)(CBasePlayer *pPlayer, Weap
 	pPlayer->AddAccount(-info->cost, RT_PLAYER_BOUGHT_SOMETHING);
 
 #ifdef REGAMEDLL_ADD
-	if (refill_bpammo_weapons.value > 1 && info->ammoType >= AMMO_338MAGNUM && info->ammoType <= AMMO_9MM) {
-		pPlayer->m_rgAmmo[info->ammoType] = info->maxRounds;
+	if (refill_bpammo_weapons.value > 1)
+	{
+		CBasePlayerItem *pItem = static_cast<CBasePlayerItem *>(pEntity);
+
+		if (pItem) {
+			pPlayer->GiveAmmo(pItem->iMaxAmmo1(), pItem->pszAmmo1(), pItem->iMaxAmmo1());
+		}
 	}
 #endif
 
@@ -2175,21 +2184,21 @@ void Radio3(CBasePlayer *pPlayer, int slot)
 
 LINK_HOOK_CHAIN(bool, BuyGunAmmo, (CBasePlayer *pPlayer, CBasePlayerItem *weapon, bool bBlinkMoney), pPlayer, weapon, bBlinkMoney)
 
-bool EXT_FUNC __API_HOOK(BuyGunAmmo)(CBasePlayer *pPlayer, CBasePlayerItem *weapon, bool bBlinkMoney)
+bool EXT_FUNC __API_HOOK(BuyGunAmmo)(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool bBlinkMoney)
 {
 	if (!pPlayer->CanPlayerBuy(true))
 		return false;
 
 	// Ensure that the weapon uses ammo
-	int nAmmo = weapon->PrimaryAmmoIndex();
+	int nAmmo = pItem->PrimaryAmmoIndex();
 	if (nAmmo == -1)
 		return false;
 
 	// Can only buy if the player does not already have full ammo
-	if (pPlayer->m_rgAmmo[nAmmo] >= weapon->iMaxAmmo1())
+	if (pPlayer->m_rgAmmo[nAmmo] >= pItem->iMaxAmmo1())
 		return false;
 
-	WeaponInfoStruct *info = GetWeaponInfo(weapon->m_iId);
+	WeaponInfoStruct *info = GetWeaponInfo(pItem->m_iId);
 	if (!info)
 	{
 		ALERT(at_console, "Tried to buy ammo for an unrecognized gun\n");
@@ -2200,10 +2209,10 @@ bool EXT_FUNC __API_HOOK(BuyGunAmmo)(CBasePlayer *pPlayer, CBasePlayerItem *weap
 	if (pPlayer->m_iAccount >= info->clipCost)
 	{
 #ifdef REGAMEDLL_FIXES
-		if (pPlayer->GiveAmmo(info->buyClipSize, info->ammoName2, weapon->iMaxAmmo1()) == -1)
+		if (pPlayer->GiveAmmo(info->buyClipSize, info->ammoName2, pItem->iMaxAmmo1()) == -1)
 			return false;
 
-		EMIT_SOUND(ENT(weapon->pev), CHAN_ITEM, "items/9mmclip1.wav", VOL_NORM, ATTN_NORM);
+		EMIT_SOUND(pItem->edict(), CHAN_ITEM, "items/9mmclip1.wav", VOL_NORM, ATTN_NORM);
 #else
 		if (!pPlayer->GiveNamedItemEx(info->ammoName1)) {
 			return false;
@@ -3125,6 +3134,41 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 			pPlayer->Observer_FindNextPlayer(false, parg1);
 		}
 	}
+#ifdef REGAMEDLL_FIXES
+	// Moved to above
+	else if (FStrEq(pcmd, "cl_setautobuy"))
+	{
+		pPlayer->ClearAutoBuyData();
+
+		for (int i = 1; i < CMD_ARGC_(); i++)
+		{
+			pPlayer->AddAutoBuyData(CMD_ARGV_(i));
+		}
+
+		if (pPlayer->m_signals.GetState() & SIGNAL_BUY)
+		{
+			bool oldval = g_bClientPrintEnable;
+			g_bClientPrintEnable = false;
+			pPlayer->AutoBuy();
+			g_bClientPrintEnable = oldval;
+		}
+	}
+	else if (FStrEq(pcmd, "cl_setrebuy"))
+	{
+		if (CMD_ARGC_() == 2)
+		{
+			pPlayer->InitRebuyData(parg1);
+
+			if (pPlayer->m_signals.GetState() & SIGNAL_BUY)
+			{
+				bool oldval = g_bClientPrintEnable;
+				g_bClientPrintEnable = false;
+				pPlayer->Rebuy();
+				g_bClientPrintEnable = oldval;
+			}
+		}
+	}
+#endif
 	else
 	{
 		if (g_pGameRules->ClientCommand_DeadOrAlive(GetClassPtr<CCSPlayer>((CBasePlayer *)pev), pcmd))
@@ -3358,6 +3402,8 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 					}
 				}
 			}
+#ifndef REGAMEDLL_FIXES
+			// Moved to above
 			else if (FStrEq(pcmd, "cl_setautobuy"))
 			{
 				pPlayer->ClearAutoBuyData();
@@ -3384,6 +3430,7 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 					g_bClientPrintEnable = oldval;
 				}
 			}
+#endif
 			else if (FStrEq(pcmd, "cl_autobuy"))
 			{
 				if (pPlayer->m_signals.GetState() & SIGNAL_BUY)
