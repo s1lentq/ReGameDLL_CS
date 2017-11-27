@@ -1017,21 +1017,27 @@
 @PointClass base(Targetname, Angles, Sequence) size(-16 -16 0, 16 16 72) studio() = cycler : "Monster Cycler"
 [
 	model(studio) : "Model"
+	body(integer) : "Skin" : 0
+	skin(integer) : "Body" : 0
 ]
 
 // line below edited by Dmitrich! -->
 // was: @PointClass base(Targetname, Angles, RenderFields) iconsprite("sprites/CS/cycler_sprite.spr") = cycler_sprite : "Sprite Cycler"
 @PointClass base(Targetname, Angles, RenderFields) size(-16 -16 0, 16 16 72) studio() = cycler_sprite : "Sprite Cycler"
 [
-	model(studio) : "Model / Sprite" : ""
-	sequence(string) : "Animation # sequence (Models only)" : ""
-	framerate(integer) : "Frames per second" : 10
+	model(sprite) : "Sprite name" : ""
+	model(studio) : "Model name" : ""
+	scale(string) : "Scale (Sprites only)" : "1.0"
+	body(integer) : "Skin (Models only)" : 0
+	skin(integer) : "Body (Models only)" : 0
+	sequence(integer) : "Animation # sequence (Models only)" : 0
+	framerate(string) : "Frames per second" : "10.0"
 ]
 
 @PointClass sprite() base(Targetname, Angles, RenderFields) size(-4 -4 -4, 4 4 4) iconsprite("sprites/CS/cycler_wreckage.spr") = cycler_wreckage : "Wreckage"
 [
-	framerate(string) : "Framerate" : "10.0"
 	model(sprite) : "Sprite Name" : "sprites/dot.spr"
+	framerate(string) : "Framerate" : "10.0"
 	scale(string) : "Scale" : "1.0"
 	spawnflags(flags) =
 	[
@@ -1726,6 +1732,7 @@
 	spawnflags(flags) =
 	[
 		1: "Remove On fire" : 0
+		2: "Any team" : 0
 	]
 	triggerstate(choices) : "Trigger State" : 0 =
 	[
@@ -1747,6 +1754,7 @@
 	spawnflags(flags) =
 	[
 		1: "Remove On fire" : 0
+		2: "Should clear team" : 0
 	]
 ]
 
@@ -1797,7 +1805,7 @@
 
 @PointClass iconsprite("sprites/CS/hostage_entity.spr") base(PlayerClass, RenderFields) = hostage_entity : "Hostage"
 [
-	model(string) : "Model" : "models/hostage.mdl"
+	model(studio) : "Model" : "models/hostage.mdl"
 	skin(choices) : "Skin" : 0 =
 	[
 		0: "Orange Suit Worker"
@@ -1917,7 +1925,7 @@
 
 @PointClass iconsprite("sprites/CS/info_map_parameters.spr") = info_map_parameters : "Miscellaneous mapping parameters"
 [
-	buying(choices)  : "Weapon_Buying" : 0 =
+	buying(choices)  : "Weapon Buying" : 0 =
 	[
 		0: "Both teams can buy guns"
 		1: "Only CT's can buy guns"
@@ -1951,7 +1959,7 @@
 ]
 
 @PointClass size(-16 -16 0, 16 16 36) base(Weapon, Targetx, RenderFields) = item_longjump : "Longjump Module" []
-@PointClass size(-16 -16 0, 16 16 36) base(Weapon, Targetx, RenderFields) = item_nvgs : "NightVision" []
+// @PointClass size(-16 -16 0, 16 16 36) base(Weapon, Targetx, RenderFields) = item_nvgs : "NightVision" []
 
 // Light entities
 @PointClass iconsprite("sprites/CS/light.spr") base(Targetname, Target, Light) = light : "Invisible lightsource" []
@@ -2384,9 +2392,8 @@
 
 @SolidClass base(Global, RenderFields, ZHLT, TexLightType) = func_healthcharger: "Wall health recharger"
 [
-	// dmdelay may not work in CS
 	health(integer) : "Healthcharger Capacity" : 50
-	dmdelay(integer) : "Deathmatch recharge delay" : 0
+	dmdelay(integer) : "Recharge delay (0 = default)" : 0
 	_minlight(string) : "Minimum light level" : "0"
 ]
 
@@ -2494,7 +2501,7 @@
 @SolidClass base(Global, RenderFields, ZHLT, TexLightType) = func_recharge: "Battery recharger"
 [
 	armorvalue(integer) : "Suitcharger Capacity" : 30
-	dmdelay(integer) : "Deathmatch recharge delay" : 0
+	dmdelay(integer) : "Recharge delay (0 = default)" : 0
 	_minlight(string) : "Minimum light level" : "0"
 ]
 

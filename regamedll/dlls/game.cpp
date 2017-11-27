@@ -131,7 +131,7 @@ void GameDLL_EndRound_f()
 {
 	CSGameRules()->EndRoundMessage("#Round_Draw", ROUND_END_DRAW);
 	Broadcast("rounddraw");
-	CSGameRules()->TerminateRound(5, WINSTATUS_DRAW);
+	CSGameRules()->TerminateRound(CSGameRules()->GetRoundRestartDelay(), WINSTATUS_DRAW);
 }
 
 #endif // REGAMEDLL_ADD
@@ -175,7 +175,11 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&autoteambalance);
 	CVAR_REGISTER(&tkpunish);
 	CVAR_REGISTER(&hostagepenalty);
+
+#ifndef REGAMEDLL_FIXES
 	CVAR_REGISTER(&mirrordamage);
+#endif
+
 	CVAR_REGISTER(&logmessages);
 	CVAR_REGISTER(&forcecamera);
 	CVAR_REGISTER(&forcechasecam);

@@ -1023,7 +1023,16 @@ void CBasePlayerItem::DestroyItem()
 	if (m_pPlayer)
 	{
 		// if attached to a player, remove.
-		m_pPlayer->RemovePlayerItem(this);
+		if (m_pPlayer->RemovePlayerItem(this))
+		{
+#ifdef REGAMEDLL_FIXES
+			m_pPlayer->pev->weapons &= ~(1 << m_iId);
+			// No more weapon
+			if (!m_pPlayer->pev->weapons || m_pPlayer->pev->weapons == (1 << WEAPON_SUIT)) {
+				m_pPlayer->m_iHideHUD |= HIDEHUD_WEAPONS;
+			}
+#endif
+		}
 	}
 
 	Kill();
@@ -1736,19 +1745,31 @@ void CWeaponBox::Touch(CBaseEntity *pOther)
 					int playerGrenades = pPlayer->m_rgAmmo[pGrenade->m_iPrimaryAmmoType];
 
 #ifdef REGAMEDLL_FIXES
-					auto info = GetWeaponInfo(pGrenade->m_iId);
-					if (info && playerGrenades < info->maxRounds)
-					{
-						auto pNext = m_rgpPlayerItems[i]->m_pNext;
-						if (pPlayer->AddPlayerItem(pItem))
-						{
-							pItem->AttachToPlayer(pPlayer);
-							bEmitSound = true;
-						}
+					const int firstAmmoSlot = 1;
 
-						// unlink this weapon from the box
-						m_rgpPlayerItems[i] = pItem = pNext;
-						continue;
+					if (playerGrenades < pGrenade->iMaxAmmo1())
+					{
+						if (playerGrenades >= 1 && m_rgAmmo[firstAmmoSlot] > 1)
+						{
+							if (!FStringNull(m_rgiszAmmo[firstAmmoSlot]) && pPlayer->GiveAmmo(1, STRING(m_rgiszAmmo[firstAmmoSlot]), pGrenade->iMaxAmmo1()) != -1)
+							{
+								EMIT_SOUND(pPlayer->edict(), CHAN_ITEM, "items/9mmclip1.wav", VOL_NORM, ATTN_NORM);
+								m_rgAmmo[firstAmmoSlot]--;
+							}
+						}
+						else
+						{
+							auto pNext = m_rgpPlayerItems[i]->m_pNext;
+							if (pPlayer->AddPlayerItem(pItem))
+							{
+								pItem->AttachToPlayer(pPlayer);
+								bEmitSound = true;
+							}
+
+							// unlink this weapon from the box
+							m_rgpPlayerItems[i] = pItem = pNext;
+							continue;
+						}
 					}
 #else
 
@@ -1822,7 +1843,13 @@ void CWeaponBox::Touch(CBaseEntity *pOther)
 			if (!FStringNull(m_rgiszAmmo[n]))
 			{
 				// there's some ammo of this type.
-				pPlayer->GiveAmmo(m_rgAmmo[n], (char *)STRING(m_rgiszAmmo[n]), MaxAmmoCarry(m_rgiszAmmo[n]));
+				pPlayer->GiveAmmo(m_rgAmmo[n], STRING(m_rgiszAmmo[n]), MaxAmmoCarry(m_rgiszAmmo[n]));
+
+#ifdef REGAMEDLL_FIXES
+				if (!bEmitSound) {
+					EMIT_SOUND(pPlayer->edict(), CHAN_ITEM, "items/9mmclip1.wav", VOL_NORM, ATTN_NORM);
+				}
+#endif
 
 				// now empty the ammo from the weaponbox since we just gave it to the player
 				m_rgiszAmmo[n] = iStringNull;
@@ -2169,36 +2196,36 @@ struct ArmouryItemStruct
 	int giveAmount;
 	int maxRounds;
 } armouryItemInfo[] = {
-	{ "weapon_mp5navy",   "9mm",        60, MAX_AMMO_9MM        }, // ARMOURY_MP5NAVY
-	{ "weapon_tmp",       "9mm",        60, MAX_AMMO_9MM        }, // ARMOURY_TMP
-	{ "weapon_p90",       "57mm",       50, MAX_AMMO_57MM       }, // ARMOURY_P90
-	{ "weapon_mac10",     "45acp",      60, MAX_AMMO_45ACP      }, // ARMOURY_MAC10
-	{ "weapon_ak47",      "762Nato",    60, MAX_AMMO_762NATO    }, // ARMOURY_AK47
-	{ "weapon_sg552",     "556Nato",    60, MAX_AMMO_556NATO    }, // ARMOURY_SG552
-	{ "weapon_m4a1",      "556Nato",    60, MAX_AMMO_556NATO    }, // ARMOURY_M4A1
-	{ "weapon_aug",       "556Nato",    60, MAX_AMMO_556NATO    }, // ARMOURY_AUG
-	{ "weapon_scout",     "762Nato",    30, MAX_AMMO_762NATO    }, // ARMOURY_SCOUT
-	{ "weapon_g3sg1",     "762Nato",    30, MAX_AMMO_762NATO    }, // ARMOURY_G3SG1
-	{ "weapon_awp",       "338Magnum",  20, MAX_AMMO_338MAGNUM  }, // ARMOURY_AWP
-	{ "weapon_m3",        "buckshot",   24, MAX_AMMO_BUCKSHOT   }, // ARMOURY_M3
-	{ "weapon_xm1014",    "buckshot",   24, MAX_AMMO_BUCKSHOT   }, // ARMOURY_XM1014
-	{ "weapon_m249",      "556NatoBox", 60, MAX_AMMO_556NATOBOX }, // ARMOURY_M249
+	{ "weapon_mp5navy",   "9mm",        MAX_AMMO_9MM,			MAX_AMMO_9MM        }, // ARMOURY_MP5NAVY
+	{ "weapon_tmp",       "9mm",        MAX_AMMO_9MM,			MAX_AMMO_9MM        }, // ARMOURY_TMP
+	{ "weapon_p90",       "57mm",       MAX_AMMO_57MM,			MAX_AMMO_57MM       }, // ARMOURY_P90
+	{ "weapon_mac10",     "45acp",      MAX_AMMO_45ACP,			MAX_AMMO_45ACP      }, // ARMOURY_MAC10
+	{ "weapon_ak47",      "762Nato",    MAX_AMMO_762NATO,		MAX_AMMO_762NATO    }, // ARMOURY_AK47
+	{ "weapon_sg552",     "556Nato",    MAX_AMMO_556NATO,		MAX_AMMO_556NATO    }, // ARMOURY_SG552
+	{ "weapon_m4a1",      "556Nato",    MAX_AMMO_556NATO,		MAX_AMMO_556NATO    }, // ARMOURY_M4A1
+	{ "weapon_aug",       "556Nato",    MAX_AMMO_556NATO,		MAX_AMMO_556NATO    }, // ARMOURY_AUG
+	{ "weapon_scout",     "762Nato",    MAX_AMMO_762NATO,		MAX_AMMO_762NATO    }, // ARMOURY_SCOUT
+	{ "weapon_g3sg1",     "762Nato",    MAX_AMMO_762NATO,		MAX_AMMO_762NATO    }, // ARMOURY_G3SG1
+	{ "weapon_awp",       "338Magnum",  MAX_AMMO_338MAGNUM,		MAX_AMMO_338MAGNUM  }, // ARMOURY_AWP
+	{ "weapon_m3",        "buckshot",   MAX_AMMO_BUCKSHOT,		MAX_AMMO_BUCKSHOT   }, // ARMOURY_M3
+	{ "weapon_xm1014",    "buckshot",   MAX_AMMO_BUCKSHOT,		MAX_AMMO_BUCKSHOT   }, // ARMOURY_XM1014
+	{ "weapon_m249",      "556NatoBox", MAX_AMMO_556NATOBOX,	MAX_AMMO_556NATOBOX }, // ARMOURY_M249
 	{ nullptr,            nullptr,      0,  0                   }, // ARMOURY_FLASHBANG
 	{ nullptr,            nullptr,      0,  0                   }, // ARMOURY_HEGRENADE
 	{ nullptr,            nullptr,      0,  0                   }, // ARMOURY_KEVLAR
 	{ nullptr,            nullptr,      0,  0                   }, // ARMOURY_ASSAULT
 	{ nullptr,            nullptr,      0,  0                   }, // ARMOURY_SMOKEGRENADE
 	{ nullptr,            nullptr,      0,  0                   }, // ARMOURY_SHIELD
-	{ "weapon_famas",     "556Nato",    90,  MAX_AMMO_556NATO   }, // ARMOURY_FAMAS
-	{ "weapon_sg550",     "556Nato",    90,  MAX_AMMO_556NATO   }, // ARMOURY_SG550
-	{ "weapon_galil",     "556Nato",    90,  MAX_AMMO_556NATO   }, // ARMOURY_GALIL
-	{ "weapon_ump45",     "45acp",      100, MAX_AMMO_45ACP     }, // ARMOURY_UMP45
-	{ "weapon_glock18",   "9mm",        120, MAX_AMMO_9MM       }, // ARMOURY_GLOCK18
-	{ "weapon_usp",       "45acp",      100, MAX_AMMO_45ACP     }, // ARMOURY_USP
-	{ "weapon_elite",     "9mm",        120, MAX_AMMO_9MM       }, // ARMOURY_ELITE
-	{ "weapon_fiveseven", "57mm",       100, MAX_AMMO_57MM      }, // ARMOURY_FIVESEVEN
-	{ "weapon_p228",      "357SIG",     52,  MAX_AMMO_357SIG    }, // ARMOURY_P228
-	{ "weapon_deagle",    "50AE",       35,  MAX_AMMO_50AE      }, // ARMOURY_DEAGLE
+	{ "weapon_famas",     "556Nato",    MAX_AMMO_556NATO,		MAX_AMMO_556NATO   }, // ARMOURY_FAMAS
+	{ "weapon_sg550",     "556Nato",    MAX_AMMO_556NATO,		MAX_AMMO_556NATO   }, // ARMOURY_SG550
+	{ "weapon_galil",     "556Nato",    MAX_AMMO_556NATO,		MAX_AMMO_556NATO   }, // ARMOURY_GALIL
+	{ "weapon_ump45",     "45acp",      MAX_AMMO_45ACP,			MAX_AMMO_45ACP     }, // ARMOURY_UMP45
+	{ "weapon_glock18",   "9mm",        MAX_AMMO_9MM,			MAX_AMMO_9MM       }, // ARMOURY_GLOCK18
+	{ "weapon_usp",       "45acp",      MAX_AMMO_45ACP,			MAX_AMMO_45ACP     }, // ARMOURY_USP
+	{ "weapon_elite",     "9mm",        MAX_AMMO_9MM,			MAX_AMMO_9MM       }, // ARMOURY_ELITE
+	{ "weapon_fiveseven", "57mm",       MAX_AMMO_57MM,			MAX_AMMO_57MM      }, // ARMOURY_FIVESEVEN
+	{ "weapon_p228",      "357SIG",     MAX_AMMO_357SIG,		MAX_AMMO_357SIG    }, // ARMOURY_P228
+	{ "weapon_deagle",    "50AE",       MAX_AMMO_50AE,			MAX_AMMO_50AE      }, // ARMOURY_DEAGLE
 };
 
 void CArmoury::ArmouryTouch(CBaseEntity *pOther)
@@ -2208,8 +2235,22 @@ void CArmoury::ArmouryTouch(CBaseEntity *pOther)
 
 	CBasePlayer *pToucher = static_cast<CBasePlayer *>(pOther);
 
-	if (pToucher->m_bIsVIP)
+	if (pToucher->m_bIsVIP
+#ifdef REGAMEDLL_FIXES
+		&& m_iItem != ARMOURY_KEVLAR && m_iItem != ARMOURY_ASSAULT
+#endif
+
+#ifdef REGAMEDLL_ADD
+		&& m_iItem != ARMOURY_USP
+		&& m_iItem != ARMOURY_GLOCK18
+		// && m_iItem != ARMOURY_FIVESEVEN ???
+		&& m_iItem != ARMOURY_P228
+		&& m_iItem != ARMOURY_DEAGLE
+#endif
+		)
+	{
 		return;
+	}
 
 #ifdef REGAMEDLL_ADD
 	if (pToucher->HasRestrictItem(GetItemIdByArmoury(m_iItem), ITEM_TYPE_TOUCHED))
@@ -2276,8 +2317,14 @@ void CArmoury::ArmouryTouch(CBaseEntity *pOther)
 		}
 		case ARMOURY_KEVLAR:
 		{
+#ifdef REGAMEDLL_FIXES
+			if (pToucher->m_iKevlar != ARMOR_NONE && pToucher->pev->armorvalue >= MAX_NORMAL_BATTERY)
+#else
 			if (pToucher->m_iKevlar == ARMOR_KEVLAR)
+#endif
+			{
 				return;
+			}
 
 			pToucher->GiveNamedItem("item_kevlar");
 			m_iCount--;
@@ -2285,8 +2332,14 @@ void CArmoury::ArmouryTouch(CBaseEntity *pOther)
 		}
 		case ARMOURY_ASSAULT:
 		{
-			if (pToucher->m_iKevlar == ARMOR_VESTHELM)
+			if (pToucher->m_iKevlar == ARMOR_VESTHELM
+#ifdef REGAMEDLL_FIXES
+				&& pToucher->pev->armorvalue >= MAX_NORMAL_BATTERY
+#endif
+				)
+			{
 				return;
+			}
 
 			pToucher->GiveNamedItem("item_assaultsuit");
 			m_iCount--;

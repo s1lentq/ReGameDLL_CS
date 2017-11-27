@@ -70,14 +70,22 @@ void CRecharge::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useT
 		return;
 
 	// if there is no juice left, turn it off
-	if (m_iJuice <= 0)
+	if (m_iJuice <= 0
+#ifdef REGAMEDLL_FIXES
+		&& pev->frame != 1.0f // don't update think
+#endif
+		)
 	{
 		pev->frame = 1.0f;
 		Off();
 	}
 
 	// if the player doesn't have the suit, or there is no juice left, make the deny noise
-	if (m_iJuice <= 0 || !(pActivator->pev->weapons & (1 << WEAPON_SUIT)))
+	if (m_iJuice <= 0 || !(pActivator->pev->weapons & (1 << WEAPON_SUIT))
+#ifdef REGAMEDLL_FIXES
+		|| pActivator->pev->armorvalue >= MAX_NORMAL_BATTERY
+#endif
+		)
 	{
 		if (m_flSoundTime <= gpGlobals->time)
 		{
@@ -99,9 +107,9 @@ void CRecharge::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useT
 	if (!pActivator)
 		return;
 
-	m_hActivator = pActivator;//EHANDLE::CBaseEntity *operator=
+	m_hActivator = pActivator; // EHANDLE::CBaseEntity *operator=
 
-	//only recharge the player
+	// Only recharge the player
 	if (!m_hActivator->IsPlayer())
 		return;
 
@@ -120,7 +128,9 @@ void CRecharge::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useT
 	}
 
 	// charge the player
-	if (m_hActivator->pev->armorvalue < 100)
+#ifndef REGAMEDLL_FIXES
+	if (m_hActivator->pev->armorvalue < MAX_NORMAL_BATTERY)
+#endif
 	{
 #ifdef REGAMEDLL_FIXES
 		CBasePlayer *pPlayer = m_hActivator.Get<CBasePlayer>();
@@ -131,8 +141,8 @@ void CRecharge::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useT
 		m_iJuice--;
 		m_hActivator->pev->armorvalue += 1.0f;
 
-		if (m_hActivator->pev->armorvalue > 100)
-			m_hActivator->pev->armorvalue = 100;
+		if (m_hActivator->pev->armorvalue > MAX_NORMAL_BATTERY)
+			m_hActivator->pev->armorvalue = MAX_NORMAL_BATTERY;
 	}
 
 	// govern the rate of charge
@@ -162,11 +172,17 @@ void CRecharge::Off()
 
 	m_iOn = 0;
 
-	if (!m_iJuice && (m_iReactivate = g_pGameRules->FlHEVChargerRechargeTime()) > 0)
+	if (!m_iJuice &&
+#ifdef REGAMEDLL_FIXES	 
+		(m_iReactivate > 0 ||	// "dmdelay" - 0 = default, > 0 = use my value
+#endif
+		(m_iReactivate = g_pGameRules->FlHEVChargerRechargeTime()) > 0)
+		)
 	{
 		pev->nextthink = pev->ltime + m_iReactivate;
 		SetThink(&CRecharge::Recharge);
 	}
+
 	else
 	{
 		SetThink(&CRecharge::SUB_DoNothing);
