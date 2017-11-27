@@ -44,6 +44,16 @@ CVoiceGameMgr::~CVoiceGameMgr()
 	;
 }
 
+void VoiceGameMgr_RegisterCVars()
+{
+	// register voice_serverdebug if it hasn't been registered already
+	if (!CVAR_GET_POINTER("voice_serverdebug"))
+		CVAR_REGISTER(&voice_serverdebug);
+
+	if (!CVAR_GET_POINTER("sv_alltalk"))
+		CVAR_REGISTER(&sv_alltalk);
+}
+
 bool CVoiceGameMgr::Init(IVoiceGameMgrHelper *pHelper, int maxClients)
 {
 	m_pHelper = pHelper;
@@ -54,12 +64,9 @@ bool CVoiceGameMgr::Init(IVoiceGameMgrHelper *pHelper, int maxClients)
 	m_msgPlayerVoiceMask = REG_USER_MSG("VoiceMask", VOICE_MAX_PLAYERS_DW * 4 * 2);
 	m_msgRequestState = REG_USER_MSG("ReqState", 0);
 
-	// register voice_serverdebug if it hasn't been registered already
-	if (!CVAR_GET_POINTER("voice_serverdebug"))
-		CVAR_REGISTER(&voice_serverdebug);
-
-	if (!CVAR_GET_POINTER("sv_alltalk"))
-		CVAR_REGISTER(&sv_alltalk);
+#ifndef REGAMEDLL_FIXES
+	VoiceGameMgr_RegisterCVars();
+#endif
 
 	return true;
 }

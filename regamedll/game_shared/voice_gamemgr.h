@@ -84,4 +84,5 @@ private:
 
 extern cvar_t sv_alltalk;
 
+void VoiceGameMgr_RegisterCVars();
 void VoiceServerDebug(const char *pFmt, ...);

@@ -276,4 +276,8 @@ void EXT_FUNC GameDLLInit()
 	Bot_RegisterCVars();
 	Tutor_RegisterCVars();
 	Hostage_RegisterCVars();
+
+#ifdef REGAMEDLL_FIXES
+	VoiceGameMgr_RegisterCVars();
+#endif
 }
