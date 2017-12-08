@@ -117,6 +117,8 @@ NOINLINE void CBaseEntity::SUB_UseTargets(CBaseEntity *pActivator, USE_TYPE useT
 	}
 }
 
+int g_iTargetRecursionLevel = 0;
+
 void FireTargets(const char *targetName, CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	edict_t *pentTarget = nullptr;
@@ -126,6 +128,24 @@ void FireTargets(const char *targetName, CBaseEntity *pActivator, CBaseEntity *p
 #ifdef REGAMEDLL_FIXES
 	if (targetName[0] == '\0')
 		return;
+
+	const int MAX_TARGET_RECURSION_LEVEL = 128;
+	if (pCaller)
+	{
+		if (FStrEq(pCaller->pev->targetname, targetName))
+		{
+			if (g_iTargetRecursionLevel++ > MAX_TARGET_RECURSION_LEVEL)
+			{
+				ALERT(at_warning, "Warning: %s \"%s\" triggered itself over %i times.\n", pCaller->pev->classname.str(), pCaller->pev->targetname.str(), MAX_TARGET_RECURSION_LEVEL);
+				g_iTargetRecursionLevel = 0;
+				return;
+			}
+		}
+	}
+	else
+	{
+		g_iTargetRecursionLevel = 0;
+	}
 #endif
 
 	ALERT(at_aiconsole, "Firing: (%s)\n", targetName);
@@ -142,6 +162,7 @@ void FireTargets(const char *targetName, CBaseEntity *pActivator, CBaseEntity *p
 		{
 			ALERT(at_aiconsole, "Found: %s, firing (%s)\n", STRING(pTarget->pev->classname), targetName);
 			pTarget->Use(pActivator, pCaller, useType, value);
+			g_iTargetRecursionLevel = 0;
 		}
 	}
 }
