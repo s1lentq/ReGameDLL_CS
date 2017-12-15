@@ -108,7 +108,7 @@ void CC4::PrimaryAttack()
 	int onGround = (m_pPlayer->pev->flags & FL_ONGROUND) == FL_ONGROUND;
 	
 #ifdef REGAMEDLL_FIXES
-	if(!onGround)
+	if (!onGround)
 	{
 		TraceResult tr;
 		UTIL_TraceLine(m_pPlayer->pev->origin, m_pPlayer->pev->origin + Vector(0, 0, -8192), ignore_monsters, m_pPlayer->edict(), &tr);
