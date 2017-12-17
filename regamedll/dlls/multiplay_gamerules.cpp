@@ -804,9 +804,6 @@ LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN2(CHalfLifeMultiplay, CSGameRules, CheckWinCond
 // Check if the scenario has been won/lost.
 void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(CheckWinConditions)()
 {
-	if (HasRoundInfinite())
-		return;
-
 #ifdef REGAMEDLL_FIXES
 	// If a winner has already been determined.. then get the heck out of here
 	if (m_iRoundWinStatus != WINSTATUS_NONE)
@@ -827,6 +824,9 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(CheckWinConditions)()
 	// Initialize the player counts..
 	int NumDeadCT, NumDeadTerrorist, NumAliveTerrorist, NumAliveCT;
 	InitializePlayerCounts(NumAliveTerrorist, NumAliveCT, NumDeadTerrorist, NumDeadCT);
+
+	if (HasRoundInfinite())
+		return;
 
 	// other player's check
 	m_bNeededPlayers = false;
