@@ -2057,12 +2057,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 			break;
 		}
 
-#ifdef REGAMEDLL_FIXES
-		pev->angles.y = UTIL_VecToAngles(pev->velocity).y;
-#else
 		pev->angles.y = UTIL_VecToAngles(-pev->velocity).y;
-#endif
-
 		pev->v_angle.y = pev->angles.y;
 
 		m_iThrowDirection = THROW_NONE;
@@ -2587,8 +2582,10 @@ void EXT_FUNC CBasePlayer::__API_HOOK(SetAnimation)(PLAYER_ANIM playerAnim)
 						break;
 					case 3:
 					case 4:
+#ifndef REGAMEDLL_FIXES
 						m_iThrowDirection = THROW_FORWARD;
 						break;
+#endif
 					case 5:
 					case 6:
 						m_iThrowDirection = THROW_HITVEL;
