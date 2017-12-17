@@ -797,6 +797,13 @@ bool CCSBotManager::BotAddCommand(BotProfileTeamType team, bool isFromConsole)
 			CVAR_SET_FLOAT("bot_quota", cv_bot_quota.value + 1);
 		}
 	}
+#ifdef REGAMEDLL_FIXES
+	else
+	{
+		// decrease the bot quota
+		CVAR_SET_FLOAT("bot_quota", cv_bot_quota.value - 1);
+	}
+#endif
 
 	return true;
 }
