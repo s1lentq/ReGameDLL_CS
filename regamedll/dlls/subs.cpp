@@ -136,7 +136,7 @@ void FireTargets(const char *targetName, CBaseEntity *pActivator, CBaseEntity *p
 		{
 			if (g_iTargetRecursionLevel++ > MAX_TARGET_RECURSION_LEVEL)
 			{
-				ALERT(at_warning, "Warning: %s \"%s\" triggered itself over %i times.\n", pCaller->pev->classname.str(), pCaller->pev->targetname.str(), MAX_TARGET_RECURSION_LEVEL);
+				ALERT(at_warning, "%s \"%s\" triggered itself over %i times.\n", pCaller->pev->classname.str(), pCaller->pev->targetname.str(), MAX_TARGET_RECURSION_LEVEL);
 				g_iTargetRecursionLevel = 0;
 				return;
 			}

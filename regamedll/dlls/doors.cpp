@@ -877,7 +877,9 @@ void CRotDoor::Restart()
 	// but spawn in the open position
 	if (pev->spawnflags & SF_DOOR_START_OPEN)
 	{
-#ifndef REGAMEDLL_FIXES
+#ifdef REGAMEDLL_FIXES
+		pev->angles = m_vecAngle1;
+#else
 		pev->angles = m_vecAngle2;
 
 		Vector vecSav = m_vecAngle1;
@@ -887,9 +889,11 @@ void CRotDoor::Restart()
 
 		pev->movedir = pev->movedir * -1;
 	}
-
 #ifdef REGAMEDLL_FIXES
-	pev->angles = m_vecAngle1;
+	else if (pev->netname.IsNull())
+	{
+		pev->angles = m_vecAngle1;
+	}
 #endif
 
 	m_toggle_state = TS_AT_BOTTOM;

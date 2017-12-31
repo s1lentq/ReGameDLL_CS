@@ -181,6 +181,18 @@ void CGameText::KeyValue(KeyValueData *pkvd)
 	}
 }
 
+void CGameText::Spawn()
+{
+#ifdef REGAMEDLL_FIXES
+	// Don't allow entity triggering itself
+	if (FStrEq(pev->target, pev->targetname))
+	{
+		ALERT(at_warning, "%s \"%s\" the target applies to itself.\n", STRING(pev->classname), STRING(pev->targetname));
+		pev->target = iStringNull;
+	}
+#endif
+}
+
 void CGameText::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	if (!CanFireForActivator(pActivator))

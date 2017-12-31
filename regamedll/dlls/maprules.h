@@ -96,6 +96,7 @@ public:
 class CGameText: public CRulePointEntity
 {
 public:
+	virtual void Spawn();
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual int Save(CSave &save);
 	virtual int Restore(CRestore &restore);
