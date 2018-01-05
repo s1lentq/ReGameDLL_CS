@@ -151,6 +151,7 @@ extern cvar_t roundover;
 extern cvar_t forcerespawn;
 extern cvar_t show_radioicon;
 extern cvar_t item_staytime;
+extern cvar_t legacy_bombtarget_touch;
 
 #endif
 

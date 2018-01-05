@@ -406,10 +406,10 @@ public:
 
 class CBombTarget: public CBaseTrigger
 {
+private:
+	bool IsPlayerInBombSite(CBasePlayer *pPlayer);
 public:
 	virtual void Spawn();
-
-public:
 	void EXPORT BombTargetTouch(CBaseEntity *pOther);
 	void EXPORT BombTargetUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 };
