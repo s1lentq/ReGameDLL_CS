@@ -1145,21 +1145,19 @@ void AnnounceFlashInterval(float interval, float offset)
 void CGrenade::C4Think()
 {
 	if (!IsInWorld())
-#ifdef REGAMEDLL_FIXES
 	{
+#ifdef REGAMEDLL_FIXES
 		pev->origin = pev->oldorigin;
 		
-		if(DROP_TO_FLOOR(edict()) > 0)
+		if (DROP_TO_FLOOR(edict()) > 0)
 		{
 			pev->velocity = g_vecZero;
 		}
-	}
 #else
-	{
 		UTIL_Remove(this);
 		return;
-	}
 #endif
+	}
 
 #ifdef REGAMEDLL_FIXES
 	pev->nextthink = gpGlobals->time + 0.01f;
