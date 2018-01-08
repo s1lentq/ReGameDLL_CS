@@ -7,7 +7,6 @@
 
 [![Percentage of issues still open](http://isitmaintained.com/badge/open/s1lentq/ReGameDLL_CS.svg)](http://isitmaintained.com/project/s1lentq/ReGameDLL_CS "Percentage of issues still open")
 [![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/s1lentq/ReGameDLL_CS.svg)](http://isitmaintained.com/project/s1lentq/ReGameDLL_CS "Average time to resolve an issue")
-[![Issue Stats](https://img.shields.io/issuestats/i/github/s1lentq/ReGameDLL_CS.svg)](https://github.com/s1lentq/ReGameDLL_CS)
 
 Reverse-engineered gamedll (mp.dll / Counter-Strike)
 
