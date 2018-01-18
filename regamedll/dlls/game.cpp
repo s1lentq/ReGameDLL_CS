@@ -94,27 +94,28 @@ cvar_t sk_scientist_heal3    = { "sk_scientist_heal3", "0", 0, 0.0f, nullptr };
 
 #ifdef REGAMEDLL_ADD
 
-cvar_t game_version          = { "game_version", APP_VERSION, FCVAR_SERVER, 0.0f, nullptr };
-cvar_t maxmoney              = { "mp_maxmoney", "16000", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t round_infinite        = { "mp_round_infinite", "0", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t hegrenade_penetration = { "mp_hegrenade_penetration", "0", 0, 0.0f, nullptr };
-cvar_t nadedrops             = { "mp_nadedrops", "0", 0, 0.0f, nullptr };
-cvar_t roundrespawn_time     = { "mp_roundrespawn_time", "20", 0, 20.0f, nullptr };
-cvar_t auto_reload_weapons   = { "mp_auto_reload_weapons", "0", 0, 0.0f, nullptr };
-cvar_t refill_bpammo_weapons = { "mp_refill_bpammo_weapons", "0", 0, 0.0f, nullptr }; // Useful for mods like DeathMatch, GunGame, ZombieMod etc
-cvar_t freeforall            = { "mp_freeforall", "0", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t auto_join_team        = { "mp_auto_join_team", "0", 0, 0.0f, nullptr };
-cvar_t max_teamkills         = { "mp_max_teamkills", "3", 0, 3.0f, nullptr };
-cvar_t fraglimit             = { "mp_fraglimit", "0", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t round_restart_delay   = { "mp_round_restart_delay", "5", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t showtriggers          = { "showtriggers", "0", 0, 0.0f, nullptr }; // debug cvar shows triggers
+cvar_t game_version           = { "game_version", APP_VERSION, FCVAR_SERVER, 0.0f, nullptr };
+cvar_t maxmoney               = { "mp_maxmoney", "16000", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t round_infinite         = { "mp_round_infinite", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t hegrenade_penetration  = { "mp_hegrenade_penetration", "0", 0, 0.0f, nullptr };
+cvar_t nadedrops              = { "mp_nadedrops", "0", 0, 0.0f, nullptr };
+cvar_t roundrespawn_time      = { "mp_roundrespawn_time", "20", 0, 20.0f, nullptr };
+cvar_t auto_reload_weapons    = { "mp_auto_reload_weapons", "0", 0, 0.0f, nullptr };
+cvar_t refill_bpammo_weapons  = { "mp_refill_bpammo_weapons", "0", 0, 0.0f, nullptr }; // Useful for mods like DeathMatch, GunGame, ZombieMod etc
+cvar_t freeforall             = { "mp_freeforall", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t auto_join_team         = { "mp_auto_join_team", "0", 0, 0.0f, nullptr };
+cvar_t max_teamkills          = { "mp_max_teamkills", "3", 0, 3.0f, nullptr };
+cvar_t fraglimit              = { "mp_fraglimit", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t round_restart_delay    = { "mp_round_restart_delay", "5", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t showtriggers           = { "showtriggers", "0", 0, 0.0f, nullptr }; // debug cvar shows triggers
                                                                           // TODO: Maybe it's better to register in the engine?
 
-cvar_t hostagehurtable       = { "mp_hostage_hurtable", "1", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t roundover             = { "mp_roundover", "0", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t forcerespawn          = { "mp_forcerespawn", "0", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t show_radioicon        = { "mp_show_radioicon", "1", FCVAR_SERVER, 1.0f, nullptr };
-cvar_t item_staytime         = { "mp_item_staytime", "300", FCVAR_SERVER, 300.0f, nullptr };
+cvar_t hostagehurtable        = { "mp_hostage_hurtable", "1", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t roundover              = { "mp_roundover", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t forcerespawn           = { "mp_forcerespawn", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t show_radioicon         = { "mp_show_radioicon", "1", FCVAR_SERVER, 1.0f, nullptr };
+cvar_t item_staytime          = { "mp_item_staytime", "300", FCVAR_SERVER, 300.0f, nullptr };
+cvar_t max_alive_name_changes = { "mp_max_alive_name_changes", "-1", FCVAR_SERVER, -1.0f, nullptr };
 
 void GameDLL_Version_f()
 {
@@ -267,6 +268,7 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&forcerespawn);
 	CVAR_REGISTER(&show_radioicon);
 	CVAR_REGISTER(&item_staytime);
+	CVAR_REGISTER(&max_alive_name_changes);
 
 	// print version
 	CONSOLE_ECHO("ReGameDLL version: " APP_VERSION "\n");

@@ -855,6 +855,9 @@ public:
 	float m_silentTimestamp;
 	MusicState m_musicState;
 	float m_flLastCommandTime[COMMANDS_TO_TRACK];
+#ifdef REGAMEDLL_ADD
+	int m_iNickChangesBeforeSpawn;
+#endif
 };
 
 class CWShield: public CBaseEntity
