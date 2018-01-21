@@ -52,7 +52,7 @@ Archive's bin directory contains 2 subdirectories, 'bugfixed' and 'pure'
 
 ## How to install zBot for CS 1.6?
 * Extract all the files from an [archive](regamedll/extra/zBot/bot_profiles.zip?raw=true)
-* Enter '-bots' option at the command line HLDS
+* Enter `-bots` option at the command line HLDS
 
 ## Build instructions
 There are several software requirements for building Regamedll_CS:
