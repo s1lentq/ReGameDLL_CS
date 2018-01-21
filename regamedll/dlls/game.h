@@ -150,6 +150,7 @@ extern cvar_t hostagehurtable;
 extern cvar_t roundover;
 extern cvar_t forcerespawn;
 extern cvar_t show_radioicon;
+extern cvar_t old_bomb_defused_sound;
 extern cvar_t item_staytime;
 
 #endif

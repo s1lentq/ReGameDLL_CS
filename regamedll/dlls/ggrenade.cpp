@@ -1304,9 +1304,12 @@ void CGrenade::C4Think()
 		// if the defuse process has ended, kill the c4
 		else if (m_pBombDefuser->pev->deadflag == DEAD_NO)
 		{
-#ifndef REGAMEDLL_FIXES
-			Broadcast("BOMBDEF");
+#ifdef REGAMEDLL_ADD
+			if (!old_bomb_defused_sound.value)
 #endif
+			{
+				Broadcast("BOMBDEF");
+			}
 
 			if (TheBots)
 			{

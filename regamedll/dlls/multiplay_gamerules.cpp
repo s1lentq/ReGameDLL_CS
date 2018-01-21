@@ -1213,8 +1213,11 @@ bool CHalfLifeMultiplay::Target_Defused(float tmDelay)
 {
 	Broadcast("ctwin");
 
-#ifdef REGAMEDLL_FIXES
-	Broadcast("BOMBDEF");
+#ifdef REGAMEDLL_ADD
+	if (old_bomb_defused_sound.value)
+	{
+		Broadcast("BOMBDEF");
+	}
 #endif
 
 	m_iAccountCT += m_rgRewardAccountRules[RR_BOMB_DEFUSED];
