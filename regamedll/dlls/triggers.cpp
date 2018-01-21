@@ -1833,6 +1833,28 @@ void CBombTarget::Spawn()
 	SetUse(&CBombTarget::BombTargetUse);
 }
 
+bool CBombTarget::IsPlayerInBombSite(CBasePlayer *pPlayer)
+{
+	// Player should at least intersect with func_bomb_target.
+	if (!Intersects(pPlayer->pev->origin, pPlayer->pev->origin))
+		return false;
+
+	const Vector &absmin = pPlayer->pev->absmin;
+	const Vector &absmax = pPlayer->pev->absmax;
+	
+	// Ensure that player's body is inside func_bomb_target's X,Y axes.
+	if (pev->absmin.x > absmin.x || pev->absmin.y > absmin.y)
+	{
+		return false;
+	}
+	if (pev->absmax.x < absmax.x || pev->absmax.y < absmax.y)
+	{
+		return false;
+	}
+	
+	return true;
+}
+
 void CBombTarget::BombTargetTouch(CBaseEntity *pOther)
 {
 	if (!pOther->IsPlayer())
@@ -1840,7 +1862,11 @@ void CBombTarget::BombTargetTouch(CBaseEntity *pOther)
 
 	CBasePlayer *pPlayer = static_cast<CBasePlayer *>(pOther);
 
-	if (pPlayer->m_bHasC4)
+	if (pPlayer->m_bHasC4
+#ifdef REGAMEDLL_FIXES
+		&& (legacy_bombtarget_touch.value || IsPlayerInBombSite(pPlayer))
+#endif
+	)
 	{
 		pPlayer->m_signals.Signal(SIGNAL_BOMB);
 		pPlayer->m_pentCurBombTarget = ENT(pev);
