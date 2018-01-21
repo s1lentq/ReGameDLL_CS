@@ -938,11 +938,7 @@ CGrenade *CGrenade::ShootTimed(entvars_t *pevOwner, Vector vecStart, Vector vecV
 	return pGrenade;
 }
 
-#ifdef REGAMEDLL_FIXES
-	constexpr float NEXT_DEFUSE_TIME = 0.25f;
-#else
-	constexpr float NEXT_DEFUSE_TIME = 0.5f;
-#endif
+constexpr float NEXT_DEFUSE_TIME = 0.5f;
 
 void CGrenade::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
@@ -1308,9 +1304,12 @@ void CGrenade::C4Think()
 		// if the defuse process has ended, kill the c4
 		else if (m_pBombDefuser->pev->deadflag == DEAD_NO)
 		{
-#ifndef REGAMEDLL_FIXES
-			Broadcast("BOMBDEF");
+#ifdef REGAMEDLL_ADD
+			if (!old_bomb_defused_sound.value)
 #endif
+			{
+				Broadcast("BOMBDEF");
+			}
 
 			if (TheBots)
 			{
