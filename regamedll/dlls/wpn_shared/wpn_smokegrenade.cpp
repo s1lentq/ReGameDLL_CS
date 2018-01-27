@@ -195,7 +195,7 @@ void CSmokeGrenade::WeaponIdle()
 		Vector vecSrc = m_pPlayer->pev->origin + m_pPlayer->pev->view_ofs + gpGlobals->v_forward * 16.0f;
 		Vector vecThrow = gpGlobals->v_forward * flVel + m_pPlayer->pev->velocity;
 
-		CGrenade::ShootSmokeGrenade(m_pPlayer->pev, vecSrc, vecThrow, 1.5, m_usCreateSmoke);
+		m_pPlayer->ThrowGrenade(this, vecSrc, vecThrow, 1.5, m_usCreateSmoke);
 
 		SendWeaponAnim(SMOKEGRENADE_THROW, UseDecrement() != FALSE);
 		SetPlayerShieldAnim();

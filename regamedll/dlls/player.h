@@ -417,6 +417,9 @@ public:
 	bool MakeBomber_OrigFunc();
 	bool GetIntoGame_OrigFunc();
 	void StartDeathCam_OrigFunc();
+	CGrenade *ThrowGrenade_OrigFunc(CBasePlayerWeapon *pWeapon, VectorRef vecSrc, VectorRef vecThrow, float time, unsigned short usEvent = 0);
+	void SwitchTeam_OrigFunc();
+	bool CanSwitchTeam_OrigFunc(TeamName teamToSwap);
 
 	CCSPlayer *CSPlayer() const;
 #endif // REGAMEDLL_API
@@ -442,10 +445,12 @@ public:
 	void SmartRadio();
 	void ThrowWeapon(char *pszItemName);
 	void ThrowPrimary();
+	CGrenade *ThrowGrenade(CBasePlayerWeapon *pWeapon, Vector vecSrc, Vector vecThrow, float time, unsigned short usEvent = 0);
 	void AddAccount(int amount, RewardType type = RT_NONE, bool bTrackChange = true);
 	void Disappear();
 	void MakeVIP();
 	bool CanPlayerBuy(bool display = false);
+	bool CanSwitchTeam(TeamName teamToSwap);
 	void SwitchTeam();
 	void TabulateAmmo();
 	void Pain(int iLastHitGroup, bool bHasArmour);

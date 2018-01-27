@@ -142,6 +142,21 @@ GAMEHOOK_REGISTRY(CSGameRules_BalanceTeams);
 GAMEHOOK_REGISTRY(CSGameRules_OnRoundFreezeEnd);
 GAMEHOOK_REGISTRY(PM_UpdateStepSound);
 GAMEHOOK_REGISTRY(CBasePlayer_StartDeathCam);
+GAMEHOOK_REGISTRY(CBasePlayer_SwitchTeam);
+GAMEHOOK_REGISTRY(CBasePlayer_CanSwitchTeam);
+GAMEHOOK_REGISTRY(CBasePlayer_ThrowGrenade);
+GAMEHOOK_REGISTRY(CSGameRules_CanPlayerHearPlayer);
+GAMEHOOK_REGISTRY(CWeaponBox_SetModel);
+GAMEHOOK_REGISTRY(CGrenade_DefuseBombStart);
+GAMEHOOK_REGISTRY(CGrenade_DefuseBombEnd);
+GAMEHOOK_REGISTRY(CGrenade_ExplodeHeGrenade);
+GAMEHOOK_REGISTRY(CGrenade_ExplodeFlashbang);
+GAMEHOOK_REGISTRY(CGrenade_ExplodeSmokeGrenade);
+GAMEHOOK_REGISTRY(CGrenade_ExplodeBomb);
+GAMEHOOK_REGISTRY(ThrowHeGrenade);
+GAMEHOOK_REGISTRY(ThrowFlashbang);
+GAMEHOOK_REGISTRY(ThrowSmokeGrenade);
+GAMEHOOK_REGISTRY(PlantBomb);
 
 int CReGameApi::GetMajorVersion() {
 	return REGAMEDLL_API_VERSION_MAJOR;

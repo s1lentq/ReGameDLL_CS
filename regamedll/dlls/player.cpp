@@ -1248,7 +1248,7 @@ void PackPlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 			pWeaponBox->PackAmmo(MAKE_STRING(pItem->pszAmmo1()), pPlayer->m_rgAmmo[pItem->PrimaryAmmoIndex()]);
 		}
 
-		SET_MODEL(ENT(pWeaponBox->pev), modelName);
+		pWeaponBox->SetModel(modelName);
 	}
 }
 
@@ -1304,7 +1304,7 @@ void PackPlayerNade(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 			pWeaponBox->PackAmmo(MAKE_STRING(pItem->pszAmmo1()), pPlayer->m_rgAmmo[pItem->PrimaryAmmoIndex()]);
 		}
 
-		SET_MODEL(ENT(pWeaponBox->pev), modelName);
+		pWeaponBox->SetModel(modelName);
 	}
 }
 #endif
@@ -1936,7 +1936,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 			CHEGrenade *pHEGrenade = static_cast<CHEGrenade *>(m_pActiveItem);
 			if ((pev->button & IN_ATTACK) && m_rgAmmo[pHEGrenade->m_iPrimaryAmmoType])
 			{
-				CGrenade::ShootTimed2(pev, (pev->origin + pev->view_ofs), pev->angles, 1.5, m_iTeam, pHEGrenade->m_usCreateExplosion);
+				ThrowGrenade(pHEGrenade, (pev->origin + pev->view_ofs), pev->angles, 1.5, pHEGrenade->m_usCreateExplosion);
 
 #ifdef REGAMEDLL_FIXES
 				m_rgAmmo[m_pActiveItem->PrimaryAmmoIndex()]--;
@@ -1946,9 +1946,10 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 		}
 		case WEAPON_FLASHBANG:
 		{
-			if ((pev->button & IN_ATTACK) && m_rgAmmo[((CBasePlayerWeapon *)m_pActiveItem)->m_iPrimaryAmmoType])
+			CFlashbang *pFlashbang = static_cast<CFlashbang *>(m_pActiveItem);
+			if ((pev->button & IN_ATTACK) && m_rgAmmo[pFlashbang->m_iPrimaryAmmoType])
 			{
-				CGrenade::ShootTimed(pev, (pev->origin + pev->view_ofs), pev->angles, 1.5);
+				ThrowGrenade(pFlashbang, (pev->origin + pev->view_ofs), pev->angles, 1.5);
 
 #ifdef REGAMEDLL_FIXES
 				m_rgAmmo[m_pActiveItem->PrimaryAmmoIndex()]--;
@@ -1961,7 +1962,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 			CSmokeGrenade *pSmoke = static_cast<CSmokeGrenade *>(m_pActiveItem);
 			if ((pev->button & IN_ATTACK) && m_rgAmmo[pSmoke->m_iPrimaryAmmoType])
 			{
-				CGrenade::ShootSmokeGrenade(pev, (pev->origin + pev->view_ofs), pev->angles, 1.5, pSmoke->m_usCreateSmoke);
+				ThrowGrenade(pSmoke, (pev->origin + pev->view_ofs), pev->angles, 1.5, pSmoke->m_usCreateSmoke);
 
 #ifdef REGAMEDLL_FIXES
 				m_rgAmmo[m_pActiveItem->PrimaryAmmoIndex()]--;
@@ -3056,6 +3057,20 @@ NOXREF void CBasePlayer::ThrowPrimary()
 	ThrowWeapon("weapon_famas");
 
 	DropShield();
+}
+
+LINK_HOOK_CLASS_CHAIN(CGrenade *, CBasePlayer, ThrowGrenade, (CBasePlayerWeapon *pWeapon, Vector vecSrc, Vector vecThrow, float time, unsigned short usEvent), pWeapon, vecSrc, vecThrow, time, usEvent)
+
+CGrenade *CBasePlayer::__API_HOOK(ThrowGrenade)(CBasePlayerWeapon *pWeapon, VectorRef vecSrc, VectorRef vecThrow, float time, unsigned short usEvent)
+{
+	switch (pWeapon->m_iId)
+	{
+	case WEAPON_HEGRENADE:    return CGrenade::ShootTimed2(pev, vecSrc, vecThrow, time, m_iTeam, usEvent);
+	case WEAPON_FLASHBANG:    return CGrenade::ShootTimed(pev, vecSrc, vecThrow, time);
+	case WEAPON_SMOKEGRENADE: return CGrenade::ShootSmokeGrenade(pev, vecSrc, vecThrow, time, usEvent);
+	}
+
+	return nullptr;
 }
 
 LINK_HOOK_CLASS_VOID_CHAIN(CBasePlayer, AddAccount, (int amount, RewardType type, bool bTrackChange), amount, type, bTrackChange)
@@ -7429,7 +7444,7 @@ CBaseEntity *EXT_FUNC CBasePlayer::__API_HOOK(DropPlayerItem)(const char *pszIte
 		const char *modelname = GetCSModelName(pWeapon->m_iId);
 		if (modelname)
 		{
-			SET_MODEL(ENT(pWeaponBox->pev), modelname);
+			pWeaponBox->SetModel(modelname);
 		}
 
 		return pWeaponBox;
@@ -7470,7 +7485,9 @@ bool CBasePlayer::HasNamedPlayerItem(const char *pszItemName)
 	return false;
 }
 
-void CBasePlayer::SwitchTeam()
+LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, SwitchTeam)
+
+void CBasePlayer::__API_HOOK(SwitchTeam)()
 {
 	int oldTeam;
 	char *szOldTeam;
@@ -9482,4 +9499,20 @@ void CBasePlayer::PlayerRespawnThink()
 		return;
 	}
 #endif
+}
+
+LINK_HOOK_CLASS_CHAIN(bool, CBasePlayer, CanSwitchTeam, (TeamName teamToSwap), teamToSwap)
+
+bool CBasePlayer::__API_HOOK(CanSwitchTeam)(TeamName teamToSwap)
+{
+	if (m_iTeam != teamToSwap)
+		return false;
+
+	// we won't VIP player to switch team
+	if (CSGameRules()->m_pVIP == this)
+	{
+		return false;
+	}
+
+	return true;
 }

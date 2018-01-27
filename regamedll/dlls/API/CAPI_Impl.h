@@ -63,6 +63,15 @@
 		g_ReGameHookchains.m_##customPrefix##_##functionName.callChain(&className::functionName##_OrigFunc, this);\
 	}
 
+#define LINK_HOOK_CLASS_VOID_CUSTOM2_CHAIN(className, customFuncName, functionName, args, ...)\
+	void className::functionName args {\
+		g_ReGameHookchains.m_##className##_##customFuncName.callChain(&className::functionName##_OrigFunc, this, __VA_ARGS__);\
+	}
+#define LINK_HOOK_CLASS_VOID_CUSTOM2_CHAIN2(className, customFuncName, functionName)\
+	void className::functionName() {\
+		g_ReGameHookchains.m_##className##_##customFuncName.callChain(&className::functionName##_OrigFunc, this);\
+	}
+
 #define LINK_HOOK_CLASS_CUSTOM_CHAIN(ret, className, customPrefix, functionName, args, ...)\
 	ret className::functionName args {\
 		return g_ReGameHookchains.m_##customPrefix##_##functionName.callChain(&className::functionName##_OrigFunc, this, __VA_ARGS__);\
@@ -70,6 +79,15 @@
 #define LINK_HOOK_CLASS_CUSTOM_CHAIN2(ret, className, customPrefix, functionName)\
 	ret className::functionName() {\
 		return g_ReGameHookchains.m_##customPrefix##_##functionName.callChain(&className::functionName##_OrigFunc, this);\
+	}
+
+#define LINK_HOOK_CLASS_CUSTOM2_CHAIN(ret, className, customFuncName, functionName, args, ...)\
+	ret className::functionName args {\
+		return g_ReGameHookchains.m_##className##_##customFuncName.callChain(&className::functionName##_OrigFunc, this, __VA_ARGS__);\
+	}
+#define LINK_HOOK_CLASS_CUSTOM2_CHAIN2(ret, className, customFuncName, functionName)\
+	ret className::functionName() {\
+		return g_ReGameHookchains.m_##className##_##customFuncName.callChain(&className::functionName##_OrigFunc, this);\
 	}
 
 #define LINK_HOOK_VOID_CHAIN(functionName, args, ...)\
@@ -80,6 +98,11 @@
 #define LINK_HOOK_CHAIN(ret, functionName, args, ...)\
 	ret functionName args {\
 		return g_ReGameHookchains.m_##functionName.callChain(functionName##_OrigFunc, __VA_ARGS__);\
+	}
+
+#define LINK_HOOK_CUSTOM2_CHAIN(ret, customFuncName, functionName, args, ...)\
+	ret functionName args {\
+		return g_ReGameHookchains.m_##customFuncName.callChain(functionName##_OrigFunc, __VA_ARGS__);\
 	}
 
 #define LINK_HOOK_VOID_CHAIN2(functionName)\
@@ -430,6 +453,10 @@ typedef IHookChainRegistryClassEmptyImpl<void, class CHalfLifeMultiplay> CReGame
 typedef IHookChainClassImpl<void, class CHalfLifeMultiplay> CReGameHook_CSGameRules_OnRoundFreezeEnd;
 typedef IHookChainRegistryClassEmptyImpl<void, class CHalfLifeMultiplay> CReGameHookRegistry_CSGameRules_OnRoundFreezeEnd;
 
+// CSGameRules::CanPlayerHearPlayer hook
+typedef IHookChainClassImpl<bool, CCStrikeGameMgrHelper, CBasePlayer *, CBasePlayer *> CReGameHook_CSGameRules_CanPlayerHearPlayer;
+typedef IHookChainRegistryClassEmptyImpl<bool, CCStrikeGameMgrHelper, CBasePlayer *, CBasePlayer *> CReGameHookRegistry_CSGameRules_CanPlayerHearPlayer;
+
 // PM_UpdateStepSound hook
 typedef IHookChainImpl<void> CReGameHook_PM_UpdateStepSound;
 typedef IHookChainRegistryImpl<void> CReGameHookRegistry_PM_UpdateStepSound;
@@ -437,6 +464,62 @@ typedef IHookChainRegistryImpl<void> CReGameHookRegistry_PM_UpdateStepSound;
 // CBasePlayer::StartDeathCam hook
 typedef IHookChainClassImpl<void, CBasePlayer> CReGameHook_CBasePlayer_StartDeathCam;
 typedef IHookChainRegistryClassImpl<void, CBasePlayer> CReGameHookRegistry_CBasePlayer_StartDeathCam;
+
+// CBasePlayer::SwitchTeam hook
+typedef IHookChainClassImpl<void, CBasePlayer> CReGameHook_CBasePlayer_SwitchTeam;
+typedef IHookChainRegistryClassImpl<void, CBasePlayer> CReGameHookRegistry_CBasePlayer_SwitchTeam;
+
+// CBasePlayer::CanSwitchTeam hook
+typedef IHookChainClassImpl<bool, CBasePlayer, TeamName> CReGameHook_CBasePlayer_CanSwitchTeam;
+typedef IHookChainRegistryClassImpl<bool, CBasePlayer, TeamName> CReGameHookRegistry_CBasePlayer_CanSwitchTeam;
+
+// CBasePlayer::ThrowGrenade hook
+typedef IHookChainClassImpl<CGrenade *, CBasePlayer, CBasePlayerWeapon *, Vector &, Vector &, float, unsigned short> CReGameHook_CBasePlayer_ThrowGrenade;
+typedef IHookChainRegistryClassImpl<CGrenade *, CBasePlayer, CBasePlayerWeapon *, Vector &, Vector &, float, unsigned short> CReGameHookRegistry_CBasePlayer_ThrowGrenade;
+
+// CWeaponBox::SetModel hook
+typedef IHookChainClassImpl<void, CWeaponBox, const char *> CReGameHook_CWeaponBox_SetModel;
+typedef IHookChainRegistryClassImpl<void, CWeaponBox, const char *> CReGameHookRegistry_CWeaponBox_SetModel;
+
+// CGrenade::DefuseBombStart hook
+typedef IHookChainClassImpl<void, CGrenade, CBasePlayer *> CReGameHook_CGrenade_DefuseBombStart;
+typedef IHookChainRegistryClassImpl<void, CGrenade, CBasePlayer *> CReGameHookRegistry_CGrenade_DefuseBombStart;
+
+// CGrenade::DefuseBombEnd hook
+typedef IHookChainClassImpl<void, CGrenade, CBasePlayer *, bool> CReGameHook_CGrenade_DefuseBombEnd;
+typedef IHookChainRegistryClassImpl<void, CGrenade, CBasePlayer *, bool> CReGameHookRegistry_CGrenade_DefuseBombEnd;
+
+// CGrenade::ExplodeHeGrenade hook
+typedef IHookChainClassImpl<void, CGrenade, TraceResult *, int> CReGameHook_CGrenade_ExplodeHeGrenade;
+typedef IHookChainRegistryClassImpl<void, CGrenade, TraceResult *, int> CReGameHookRegistry_CGrenade_ExplodeHeGrenade;
+
+// CGrenade::ExplodeFlashbang hook
+typedef IHookChainClassImpl<void, CGrenade, TraceResult *, int> CReGameHook_CGrenade_ExplodeFlashbang;
+typedef IHookChainRegistryClassImpl<void, CGrenade, TraceResult *, int> CReGameHookRegistry_CGrenade_ExplodeFlashbang;
+
+// CGrenade::ExplodeSmokeGrenade hook
+typedef IHookChainClassImpl<void, CGrenade> CReGameHook_CGrenade_ExplodeSmokeGrenade;
+typedef IHookChainRegistryClassImpl<void, CGrenade> CReGameHookRegistry_CGrenade_ExplodeSmokeGrenade;
+
+// CGrenade::ExplodeBomb hook
+typedef IHookChainClassImpl<void, CGrenade, TraceResult *, int> CReGameHook_CGrenade_ExplodeBomb;
+typedef IHookChainRegistryClassImpl<void, CGrenade, TraceResult *, int> CReGameHookRegistry_CGrenade_ExplodeBomb;
+
+// ThrowHeGrenade hook
+typedef IHookChainImpl<CGrenade *, entvars_t *, Vector &, Vector &, float, int, unsigned short> CReGameHook_ThrowHeGrenade;
+typedef IHookChainRegistryImpl<CGrenade *, entvars_t *, Vector &, Vector &, float, int, unsigned short> CReGameHookRegistry_ThrowHeGrenade;
+
+// ThrowFlashbang hook
+typedef IHookChainImpl<CGrenade *, entvars_t *, Vector &, Vector &, float> CReGameHook_ThrowFlashbang;
+typedef IHookChainRegistryImpl<CGrenade *, entvars_t *, Vector &, Vector &, float> CReGameHookRegistry_ThrowFlashbang;
+
+// ThrowSmokeGrenade hook
+typedef IHookChainImpl<CGrenade *, entvars_t *, Vector &, Vector &, float, unsigned short> CReGameHook_ThrowSmokeGrenade;
+typedef IHookChainRegistryImpl<CGrenade *, entvars_t *, Vector &, Vector &, float, unsigned short> CReGameHookRegistry_ThrowSmokeGrenade;
+
+// PlantBomb hook
+typedef IHookChainImpl<CGrenade *, entvars_t *, Vector &, Vector &> CReGameHook_PlantBomb;
+typedef IHookChainRegistryImpl<CGrenade *, entvars_t *, Vector &, Vector &> CReGameHookRegistry_PlantBomb;
 
 class CReGameHookchains: public IReGameHookchains {
 public:
@@ -526,7 +609,22 @@ public:
 	CReGameHookRegistry_CSGameRules_OnRoundFreezeEnd m_CSGameRules_OnRoundFreezeEnd;
 	CReGameHookRegistry_PM_UpdateStepSound m_PM_UpdateStepSound;
 	CReGameHookRegistry_CBasePlayer_StartDeathCam m_CBasePlayer_StartDeathCam;
+	CReGameHookRegistry_CBasePlayer_SwitchTeam m_CBasePlayer_SwitchTeam;
+	CReGameHookRegistry_CBasePlayer_CanSwitchTeam m_CBasePlayer_CanSwitchTeam;
+	CReGameHookRegistry_CBasePlayer_ThrowGrenade m_CBasePlayer_ThrowGrenade;
 
+	CReGameHookRegistry_CSGameRules_CanPlayerHearPlayer m_CSGameRules_CanPlayerHearPlayer;
+	CReGameHookRegistry_CWeaponBox_SetModel m_CWeaponBox_SetModel;
+	CReGameHookRegistry_CGrenade_DefuseBombStart m_CGrenade_DefuseBombStart;
+	CReGameHookRegistry_CGrenade_DefuseBombEnd m_CGrenade_DefuseBombEnd;
+	CReGameHookRegistry_CGrenade_ExplodeHeGrenade m_CGrenade_ExplodeHeGrenade;
+	CReGameHookRegistry_CGrenade_ExplodeFlashbang m_CGrenade_ExplodeFlashbang;
+	CReGameHookRegistry_CGrenade_ExplodeSmokeGrenade m_CGrenade_ExplodeSmokeGrenade;
+	CReGameHookRegistry_CGrenade_ExplodeBomb m_CGrenade_ExplodeBomb;
+	CReGameHookRegistry_ThrowHeGrenade m_ThrowHeGrenade;
+	CReGameHookRegistry_ThrowFlashbang m_ThrowFlashbang;
+	CReGameHookRegistry_ThrowSmokeGrenade m_ThrowSmokeGrenade;
+	CReGameHookRegistry_PlantBomb m_PlantBomb;
 public:
 	virtual IReGameHookRegistry_CBasePlayer_Spawn *CBasePlayer_Spawn();
 	virtual IReGameHookRegistry_CBasePlayer_Precache *CBasePlayer_Precache();
@@ -613,6 +711,22 @@ public:
 	virtual IReGameHookRegistry_CSGameRules_OnRoundFreezeEnd *CSGameRules_OnRoundFreezeEnd();
 	virtual IReGameHookRegistry_PM_UpdateStepSound *PM_UpdateStepSound();
 	virtual IReGameHookRegistry_CBasePlayer_StartDeathCam *CBasePlayer_StartDeathCam();
+	virtual IReGameHookRegistry_CBasePlayer_SwitchTeam *CBasePlayer_SwitchTeam();
+	virtual IReGameHookRegistry_CBasePlayer_CanSwitchTeam *CBasePlayer_CanSwitchTeam();
+	virtual IReGameHookRegistry_CBasePlayer_ThrowGrenade *CBasePlayer_ThrowGrenade();
+
+	virtual IReGameHookRegistry_CSGameRules_CanPlayerHearPlayer *CSGameRules_CanPlayerHearPlayer();
+	virtual IReGameHookRegistry_CWeaponBox_SetModel *CWeaponBox_SetModel();
+	virtual IReGameHookRegistry_CGrenade_DefuseBombStart *CGrenade_DefuseBombStart();
+	virtual IReGameHookRegistry_CGrenade_DefuseBombEnd *CGrenade_DefuseBombEnd();
+	virtual IReGameHookRegistry_CGrenade_ExplodeHeGrenade *CGrenade_ExplodeHeGrenade();
+	virtual IReGameHookRegistry_CGrenade_ExplodeFlashbang *CGrenade_ExplodeFlashbang();
+	virtual IReGameHookRegistry_CGrenade_ExplodeSmokeGrenade *CGrenade_ExplodeSmokeGrenade();
+	virtual IReGameHookRegistry_CGrenade_ExplodeBomb *CGrenade_ExplodeBomb();
+	virtual IReGameHookRegistry_ThrowHeGrenade *ThrowHeGrenade();
+	virtual IReGameHookRegistry_ThrowFlashbang *ThrowFlashbang();
+	virtual IReGameHookRegistry_ThrowSmokeGrenade *ThrowSmokeGrenade();
+	virtual IReGameHookRegistry_PlantBomb *PlantBomb();
 };
 
 extern CReGameHookchains g_ReGameHookchains;

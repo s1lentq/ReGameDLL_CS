@@ -28,8 +28,10 @@ void CGrenade::Explode(Vector vecSrc, Vector vecAim)
 	Explode(&tr, DMG_BLAST);
 }
 
+LINK_HOOK_CLASS_VOID_CUSTOM2_CHAIN(CGrenade, ExplodeFlashbang, Explode, (TraceResult *pTrace, int bitsDamageType), pTrace, bitsDamageType)
+
 // UNDONE: temporary scorching for PreAlpha - find a less sleazy permenant solution.
-void CGrenade::Explode(TraceResult *pTrace, int bitsDamageType)
+void CGrenade::__API_HOOK(Explode)(TraceResult *pTrace, int bitsDamageType)
 {
 	float flRndSound; // sound randomizer
 
@@ -90,7 +92,9 @@ void CGrenade::Explode(TraceResult *pTrace, int bitsDamageType)
 	}
 }
 
-void CGrenade::Explode2(TraceResult *pTrace, int bitsDamageType)
+LINK_HOOK_CLASS_VOID_CUSTOM2_CHAIN(CGrenade, ExplodeBomb, Explode2, (TraceResult *pTrace, int bitsDamageType), pTrace, bitsDamageType)
+
+void CGrenade::__API_HOOK(Explode2)(TraceResult *pTrace, int bitsDamageType)
 {
 	float flRndSound; // sound randomizer
 
@@ -221,7 +225,9 @@ void CGrenade::Explode2(TraceResult *pTrace, int bitsDamageType)
 	}
 }
 
-void CGrenade::Explode3(TraceResult *pTrace, int bitsDamageType)
+LINK_HOOK_CLASS_VOID_CUSTOM2_CHAIN(CGrenade, ExplodeHeGrenade, Explode3, (TraceResult *pTrace, int bitsDamageType), pTrace, bitsDamageType)
+
+void CGrenade::__API_HOOK(Explode3)(TraceResult *pTrace, int bitsDamageType)
 {
 	float flRndSound; // sound randomizer
 
@@ -541,7 +547,9 @@ void CGrenade::Detonate()
 	Explode(&tr, DMG_BLAST);
 }
 
-void CGrenade::SG_Detonate()
+LINK_HOOK_CLASS_VOID_CUSTOM2_CHAIN2(CGrenade, ExplodeSmokeGrenade, SG_Detonate)
+
+void CGrenade::__API_HOOK(SG_Detonate)()
 {
 	TraceResult tr;
 	Vector vecSpot;
@@ -863,7 +871,9 @@ NOXREF CGrenade *CGrenade::ShootContact(entvars_t *pevOwner, Vector vecStart, Ve
 	return pGrenade;
 }
 
-CGrenade *CGrenade::ShootTimed2(entvars_t *pevOwner, Vector vecStart, Vector vecVelocity, float time, int iTeam, unsigned short usEvent)
+LINK_HOOK_CUSTOM2_CHAIN(CGrenade *, ThrowHeGrenade, CGrenade::ShootTimed2, (entvars_t *pevOwner, Vector vecStart, Vector vecVelocity, float time, int iTeam, unsigned short usEvent), pevOwner, vecStart, vecVelocity, time, iTeam, usEvent)
+
+CGrenade *CGrenade::__API_HOOK(ShootTimed2)(entvars_t *pevOwner, VectorRef vecStart, VectorRef vecVelocity, float time, int iTeam, unsigned short usEvent)
 {
 	CGrenade *pGrenade = GetClassPtr<CCSGrenade>((CGrenade *)nullptr);
 	pGrenade->Spawn();
@@ -897,7 +907,9 @@ CGrenade *CGrenade::ShootTimed2(entvars_t *pevOwner, Vector vecStart, Vector vec
 	return pGrenade;
 }
 
-CGrenade *CGrenade::ShootTimed(entvars_t *pevOwner, Vector vecStart, Vector vecVelocity, float time)
+LINK_HOOK_CUSTOM2_CHAIN(CGrenade *, ThrowFlashbang, CGrenade::ShootTimed, (entvars_t *pevOwner, Vector vecStart, Vector vecVelocity, float time), pevOwner, vecStart, vecVelocity, time)
+
+CGrenade *CGrenade::__API_HOOK(ShootTimed)(entvars_t *pevOwner, VectorRef vecStart, VectorRef vecVelocity, float time)
 {
 	CGrenade *pGrenade = GetClassPtr<CCSGrenade>((CGrenade *)nullptr);
 	pGrenade->Spawn();
@@ -940,40 +952,16 @@ CGrenade *CGrenade::ShootTimed(entvars_t *pevOwner, Vector vecStart, Vector vecV
 
 constexpr float NEXT_DEFUSE_TIME = 0.5f;
 
-void CGrenade::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+LINK_HOOK_CLASS_VOID_CHAIN(CGrenade, DefuseBombStart, (CBasePlayer *pPlayer), pPlayer)
+
+void CGrenade::__API_HOOK(DefuseBombStart)(CBasePlayer *pPlayer)
 {
-	if (!m_bIsC4)
-		return;
-
-	// TODO: We must be sure that the activator is a player.
-	CBasePlayer *pPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pActivator->pev);
-
-	// For CTs to defuse the c4
-	if (pPlayer->m_iTeam != CT)
-	{
-		return;
-	}
-
-#ifdef REGAMEDLL_FIXES
-	if((pPlayer->pev->flags & FL_ONGROUND) != FL_ONGROUND) // Defuse should start only on ground
-	{
-		ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#C4_Defuse_Must_Be_On_Ground");
-		return;
-	}
-#endif
-
-	if (m_bStartDefuse)
-	{
-		m_fNextDefuse = gpGlobals->time + NEXT_DEFUSE_TIME;
-		return;
-	}
-
 	// freeze the player in place while defusing
 	SET_CLIENT_MAXSPEED(pPlayer->edict(), 1);
 
 	if (TheBots)
 	{
-		TheBots->OnEvent(EVENT_BOMB_DEFUSING, pActivator);
+		TheBots->OnEvent(EVENT_BOMB_DEFUSING, pPlayer);
 	}
 
 	if (CSGameRules()->IsCareer() && TheCareerTasks)
@@ -1013,7 +1001,7 @@ void CGrenade::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useTy
 	}
 
 	pPlayer->m_bIsDefusing = true;
-	m_pBombDefuser = static_cast<CBasePlayer *>(pActivator);
+	m_pBombDefuser = pPlayer;
 	m_bStartDefuse = true;
 	m_fNextDefuse = gpGlobals->time + NEXT_DEFUSE_TIME;
 
@@ -1024,7 +1012,156 @@ void CGrenade::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useTy
 #endif
 }
 
-CGrenade *CGrenade::ShootSatchelCharge(entvars_t *pevOwner, Vector vecStart, Vector vecAngles)
+LINK_HOOK_CLASS_VOID_CHAIN(CGrenade, DefuseBombEnd, (CBasePlayer *pPlayer, bool bDefused), pPlayer, bDefused)
+
+void CGrenade::__API_HOOK(DefuseBombEnd)(CBasePlayer *pPlayer, bool bDefused)
+{
+	if (bDefused)
+	{
+		// if the defuse process has ended, kill the c4
+		if (m_pBombDefuser->pev->deadflag == DEAD_NO)
+		{
+	#ifdef REGAMEDLL_ADD
+			if (!old_bomb_defused_sound.value)
+	#endif
+			{
+				Broadcast("BOMBDEF");
+			}
+
+			if (TheBots)
+			{
+				TheBots->OnEvent(EVENT_BOMB_DEFUSED, (CBaseEntity *)m_pBombDefuser);
+			}
+
+			MESSAGE_BEGIN(MSG_SPEC, SVC_DIRECTOR);
+				WRITE_BYTE(9);
+				WRITE_BYTE(DRC_CMD_EVENT);
+				WRITE_SHORT(ENTINDEX(m_pBombDefuser->edict()));
+				WRITE_SHORT(0);
+				WRITE_LONG(15 | DRC_FLAG_FINAL | DRC_FLAG_FACEPLAYER | DRC_FLAG_DRAMATIC);
+			MESSAGE_END();
+
+			UTIL_LogPrintf("\"%s<%i><%s><CT>\" triggered \"Defused_The_Bomb\"\n",
+				STRING(m_pBombDefuser->pev->netname),
+				GETPLAYERUSERID(m_pBombDefuser->edict()),
+				GETPLAYERAUTHID(m_pBombDefuser->edict()));
+
+			UTIL_EmitAmbientSound(ENT(pev), pev->origin, "weapons/c4_beep5.wav", 0, ATTN_NONE, SND_STOP, 0);
+			EMIT_SOUND(ENT(m_pBombDefuser->pev), CHAN_WEAPON, "weapons/c4_disarmed.wav", VOL_NORM, ATTN_NORM);
+			UTIL_Remove(this);
+
+			m_bJustBlew = true;
+
+			// release the player from being frozen
+			pPlayer->ResetMaxSpeed();
+			pPlayer->m_bIsDefusing = false;
+
+			MESSAGE_BEGIN(MSG_ALL, gmsgScenarioIcon);
+				WRITE_BYTE(0);
+			MESSAGE_END();
+
+			if (CSGameRules()->IsCareer() && !pPlayer->IsBot())
+			{
+				if (TheCareerTasks)
+				{
+					TheCareerTasks->HandleEvent(EVENT_BOMB_DEFUSED, pPlayer);
+				}
+			}
+
+			CSGameRules()->m_bBombDefused = true;
+			CSGameRules()->CheckWinConditions();
+
+			// give the defuser credit for defusing the bomb
+			m_pBombDefuser->pev->frags += 3.0f;
+
+			MESSAGE_BEGIN(MSG_ALL, gmsgBombPickup);
+			MESSAGE_END();
+
+			g_pGameRules->m_bBombDropped = FALSE;
+			m_pBombDefuser = nullptr;
+			m_bStartDefuse = false;
+		}
+		else
+		{
+			// if it gets here then the previouse defuser has taken off or been killed
+			// release the player from being frozen
+			pPlayer->ResetMaxSpeed();
+			pPlayer->m_bIsDefusing = false;
+
+			m_bStartDefuse = false;
+			m_pBombDefuser = nullptr;
+
+	#ifdef REGAMEDLL_FIXES
+			pPlayer->SetProgressBarTime(0);
+	#endif
+
+			// tell the bots someone has aborted defusing
+			if (TheBots)
+			{
+				TheBots->OnEvent(EVENT_BOMB_DEFUSE_ABORTED);
+			}
+		}
+	}
+	else
+	{
+		int iOnGround = ((m_pBombDefuser->pev->flags & FL_ONGROUND) == FL_ONGROUND);
+		if (!iOnGround)
+		{
+			ClientPrint(m_pBombDefuser->pev, HUD_PRINTCENTER, "#C4_Defuse_Must_Be_On_Ground");
+		}
+
+		// release the player from being frozen
+		pPlayer->ResetMaxSpeed();
+		pPlayer->m_bIsDefusing = false;
+
+		// cancel the progress bar
+		pPlayer->SetProgressBarTime(0);
+		m_pBombDefuser = nullptr;
+		m_bStartDefuse = false;
+		m_flDefuseCountDown = 0;
+
+		// tell the bots someone has aborted defusing
+		if (TheBots)
+		{
+			TheBots->OnEvent(EVENT_BOMB_DEFUSE_ABORTED);
+		}
+	}
+}
+
+void CGrenade::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+{
+	if (!m_bIsC4)
+		return;
+
+	// TODO: We must be sure that the activator is a player.
+	CBasePlayer *pPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pActivator->pev);
+
+	// For CTs to defuse the c4
+	if (pPlayer->m_iTeam != CT)
+	{
+		return;
+	}
+
+#ifdef REGAMEDLL_FIXES
+	if((pPlayer->pev->flags & FL_ONGROUND) != FL_ONGROUND) // Defuse should start only on ground
+	{
+		ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#C4_Defuse_Must_Be_On_Ground");
+		return;
+	}
+#endif
+
+	if (m_bStartDefuse)
+	{
+		m_fNextDefuse = gpGlobals->time + NEXT_DEFUSE_TIME;
+		return;
+	}
+
+	DefuseBombStart(pPlayer);
+}
+
+LINK_HOOK_CUSTOM2_CHAIN(CGrenade *, PlantBomb, CGrenade::ShootSatchelCharge, (entvars_t *pevOwner, Vector vecStart, Vector vecAngles), pevOwner, vecStart, vecAngles)
+
+CGrenade *CGrenade::__API_HOOK(ShootSatchelCharge)(entvars_t *pevOwner, VectorRef vecStart, VectorRef vecAngles)
 {
 	CGrenade *pGrenade = GetClassPtr<CCSGrenade>((CGrenade *)nullptr);
 	pGrenade->pev->movetype = MOVETYPE_TOSS;
@@ -1084,7 +1221,9 @@ CGrenade *CGrenade::ShootSatchelCharge(entvars_t *pevOwner, Vector vecStart, Vec
 	return pGrenade;
 }
 
-CGrenade *CGrenade::ShootSmokeGrenade(entvars_t *pevOwner, Vector vecStart, Vector vecVelocity, float time, unsigned short usEvent)
+LINK_HOOK_CUSTOM2_CHAIN(CGrenade *, ThrowSmokeGrenade, CGrenade::ShootSmokeGrenade, (entvars_t *pevOwner, Vector vecStart, Vector vecVelocity, float time, unsigned short usEvent), pevOwner, vecStart, vecVelocity, time, usEvent)
+
+CGrenade *CGrenade::__API_HOOK(ShootSmokeGrenade)(entvars_t *pevOwner, VectorRef vecStart, VectorRef vecVelocity, float time, unsigned short usEvent)
 {
 	CGrenade *pGrenade = GetClassPtr<CCSGrenade>((CGrenade *)nullptr);
 	pGrenade->Spawn();
@@ -1263,7 +1402,6 @@ void CGrenade::C4Think()
 		{
 			SetThink(&CGrenade::Detonate2);
 		}
-
 	}
 
 	// if the defusing process has started
@@ -1279,110 +1417,12 @@ void CGrenade::C4Think()
 			// if the bomb defuser has stopped defusing the bomb
 			if (gpGlobals->time > m_fNextDefuse || !iOnGround)
 			{
-				if (!iOnGround)
-				{
-					ClientPrint(m_pBombDefuser->pev, HUD_PRINTCENTER, "#C4_Defuse_Must_Be_On_Ground");
-				}
-
-				// release the player from being frozen
-				pPlayer->ResetMaxSpeed();
-				pPlayer->m_bIsDefusing = false;
-
-				// cancel the progress bar
-				pPlayer->SetProgressBarTime(0);
-				m_pBombDefuser = nullptr;
-				m_bStartDefuse = false;
-				m_flDefuseCountDown = 0;
-
-				// tell the bots someone has aborted defusing
-				if (TheBots)
-				{
-					TheBots->OnEvent(EVENT_BOMB_DEFUSE_ABORTED);
-				}
+				DefuseBombEnd(pPlayer, false);
 			}
-		}
-		// if the defuse process has ended, kill the c4
-		else if (m_pBombDefuser->pev->deadflag == DEAD_NO)
-		{
-#ifdef REGAMEDLL_ADD
-			if (!old_bomb_defused_sound.value)
-#endif
-			{
-				Broadcast("BOMBDEF");
-			}
-
-			if (TheBots)
-			{
-				TheBots->OnEvent(EVENT_BOMB_DEFUSED, (CBaseEntity *)m_pBombDefuser);
-			}
-
-			MESSAGE_BEGIN(MSG_SPEC, SVC_DIRECTOR);
-				WRITE_BYTE(9);
-				WRITE_BYTE(DRC_CMD_EVENT);
-				WRITE_SHORT(ENTINDEX(m_pBombDefuser->edict()));
-				WRITE_SHORT(0);
-				WRITE_LONG(15 | DRC_FLAG_FINAL | DRC_FLAG_FACEPLAYER | DRC_FLAG_DRAMATIC);
-			MESSAGE_END();
-
-			UTIL_LogPrintf("\"%s<%i><%s><CT>\" triggered \"Defused_The_Bomb\"\n",
-				STRING(m_pBombDefuser->pev->netname),
-				GETPLAYERUSERID(m_pBombDefuser->edict()),
-				GETPLAYERAUTHID(m_pBombDefuser->edict()));
-
-			UTIL_EmitAmbientSound(ENT(pev), pev->origin, "weapons/c4_beep5.wav", 0, ATTN_NONE, SND_STOP, 0);
-			EMIT_SOUND(ENT(m_pBombDefuser->pev), CHAN_WEAPON, "weapons/c4_disarmed.wav", VOL_NORM, ATTN_NORM);
-			UTIL_Remove(this);
-
-			m_bJustBlew = true;
-
-			// release the player from being frozen
-			pPlayer->ResetMaxSpeed();
-			pPlayer->m_bIsDefusing = false;
-
-			MESSAGE_BEGIN(MSG_ALL, gmsgScenarioIcon);
-				WRITE_BYTE(0);
-			MESSAGE_END();
-
-			if (CSGameRules()->IsCareer() && !pPlayer->IsBot())
-			{
-				if (TheCareerTasks)
-				{
-					TheCareerTasks->HandleEvent(EVENT_BOMB_DEFUSED, pPlayer);
-				}
-			}
-
-			CSGameRules()->m_bBombDefused = true;
-			CSGameRules()->CheckWinConditions();
-
-			// give the defuser credit for defusing the bomb
-			m_pBombDefuser->pev->frags += 3.0f;
-
-			MESSAGE_BEGIN(MSG_ALL, gmsgBombPickup);
-			MESSAGE_END();
-
-			g_pGameRules->m_bBombDropped = FALSE;
-			m_pBombDefuser = nullptr;
-			m_bStartDefuse = false;
 		}
 		else
 		{
-			// if it gets here then the previouse defuser has taken off or been killed
-			// release the player from being frozen
-			pPlayer->ResetMaxSpeed();
-			pPlayer->m_bIsDefusing = false;
-
-			m_bStartDefuse = false;
-			m_pBombDefuser = nullptr;
-
-#ifdef REGAMEDLL_FIXES
-			pPlayer->SetProgressBarTime(0);
-#endif
-
-			// tell the bots someone has aborted defusing
-			if (TheBots)
-			{
-				TheBots->OnEvent(EVENT_BOMB_DEFUSE_ABORTED);
-			}
+			DefuseBombEnd(pPlayer, true);
 		}
 	}
 }

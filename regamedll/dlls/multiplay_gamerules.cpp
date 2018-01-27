@@ -85,7 +85,9 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(ServerDeactivate)()
 	UTIL_LogPrintf("Career End\n");
 }
 
-bool CCStrikeGameMgrHelper::CanPlayerHearPlayer(CBasePlayer *pListener, CBasePlayer *pSender)
+LINK_HOOK_CLASS_CUSTOM_CHAIN(bool, CCStrikeGameMgrHelper, CSGameRules, CanPlayerHearPlayer, (CBasePlayer *pListener, CBasePlayer *pSender), pListener, pSender)
+
+bool CCStrikeGameMgrHelper::__API_HOOK(CanPlayerHearPlayer)(CBasePlayer *pListener, CBasePlayer *pSender)
 {
 #ifdef REGAMEDLL_ADD
 	switch ((int)sv_alltalk.value)
@@ -489,6 +491,7 @@ CHalfLifeMultiplay::CHalfLifeMultiplay()
 	m_flEscapeRatio = 0.0f;
 	m_flTimeLimit = 0.0f;
 	m_flGameStartTime = 0.0f;
+	m_bTeamBalanced = false;
 
 #ifndef REGAMEDLL_FIXES
 	g_pMPGameRules = this;
@@ -1446,8 +1449,10 @@ LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN2(CHalfLifeMultiplay, CSGameRules, BalanceTeams
 
 void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(BalanceTeams)()
 {
-	int iTeamToSwap = UNASSIGNED;
 	int iNumToSwap;
+	TeamName iTeamToSwap = UNASSIGNED;
+
+	m_bTeamBalanced = false;
 
 	// The ratio for teams is different for Assasination maps
 	if (m_bMapHasVIPSafetyZone)
@@ -1522,7 +1527,7 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(BalanceTeams)()
 
 			CBasePlayer *pPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev);
 
-			if (pPlayer->m_iTeam == iTeamToSwap && GETPLAYERUSERID(pPlayer->edict()) > iHighestUserID && m_pVIP != pPlayer)
+			if (pPlayer->CanSwitchTeam(iTeamToSwap) && GETPLAYERUSERID(pPlayer->edict()) > iHighestUserID)
 			{
 				iHighestUserID = GETPLAYERUSERID(pPlayer->edict());
 				toSwap = pPlayer;
@@ -1530,7 +1535,9 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(BalanceTeams)()
 		}
 
 		if (toSwap) {
+			m_bTeamBalanced = true;
 			toSwap->SwitchTeam();
+			m_bTeamBalanced = false;
 		}
 	}
 }

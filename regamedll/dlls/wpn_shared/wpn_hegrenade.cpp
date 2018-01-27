@@ -194,7 +194,7 @@ void CHEGrenade::WeaponIdle()
 		Vector vecSrc = m_pPlayer->pev->origin + m_pPlayer->pev->view_ofs + gpGlobals->v_forward * 16;
 		Vector vecThrow = gpGlobals->v_forward * flVel + m_pPlayer->pev->velocity;
 
-		CGrenade::ShootTimed2(m_pPlayer->pev, vecSrc, vecThrow, 1.5, m_pPlayer->m_iTeam, m_usCreateExplosion);
+		m_pPlayer->ThrowGrenade(this, vecSrc, vecThrow, 1.5, m_usCreateExplosion);
 
 		SendWeaponAnim(HEGRENADE_THROW, UseDecrement() != FALSE);
 		SetPlayerShieldAnim();

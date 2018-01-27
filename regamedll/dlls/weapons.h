@@ -182,6 +182,9 @@ public:
 		SATCHEL_RELEASE,
 	};
 public:
+	void DefuseBombStart(CBasePlayer *pPlayer);
+	void DefuseBombEnd(CBasePlayer *pPlayer, bool bDefused);
+
 	static CGrenade *ShootTimed(entvars_t *pevOwner, Vector vecStart, Vector vecVelocity, float time);
 	static CGrenade *ShootTimed2(entvars_t *pevOwner, Vector vecStart, Vector vecVelocity, float time, int iTeam, unsigned short usEvent);
 	static CGrenade *ShootContact(entvars_t *pevOwner, Vector vecStart, Vector vecVelocity);
@@ -194,6 +197,21 @@ public:
 	void Explode2(TraceResult *pTrace, int bitsDamageType);
 	void Explode3(TraceResult *pTrace, int bitsDamageType);
 	void SG_Explode(TraceResult *pTrace, int bitsDamageType);
+
+#ifdef REGAMEDLL_API
+	static CGrenade *ShootTimed_OrigFunc(entvars_t *pevOwner, VectorRef vecStart, VectorRef vecVelocity, float time);
+	static CGrenade *ShootTimed2_OrigFunc(entvars_t *pevOwner, VectorRef vecStart, VectorRef vecVelocity, float time, int iTeam, unsigned short usEvent);
+	static CGrenade *ShootSmokeGrenade_OrigFunc(entvars_t *pevOwner, VectorRef vecStart, VectorRef vecVelocity, float time, unsigned short usEvent);
+	static CGrenade *ShootSatchelCharge_OrigFunc(entvars_t *pevOwner, VectorRef vecStart, VectorRef vecVelocity);
+
+	void DefuseBombStart_OrigFunc(CBasePlayer *pPlayer);
+	void DefuseBombEnd_OrigFunc(CBasePlayer *pPlayer, bool bDefused);
+
+	void Explode_OrigFunc(TraceResult *pTrace, int bitsDamageType);
+	void Explode3_OrigFunc(TraceResult *pTrace, int bitsDamageType);
+	void Explode2_OrigFunc(TraceResult *pTrace, int bitsDamageType);
+	void SG_Detonate_OrigFunc();
+#endif
 
 	void EXPORT Smoke();
 	void EXPORT Smoke2();
@@ -447,10 +465,15 @@ public:
 
 	void EXPORT Kill();
 	void EXPORT BombThink();
+	void SetModel(const char *pszModelName);
 
 	BOOL HasWeapon(CBasePlayerItem *pCheckItem);
 	BOOL PackWeapon(CBasePlayerItem *pWeapon);
 	BOOL PackAmmo(string_t iszName, int iCount);
+
+#ifdef REGAMEDLL_API
+	void SetModel_OrigFunc(const char *pszModelName);
+#endif
 
 public:
 	static TYPEDESCRIPTION m_SaveData[];

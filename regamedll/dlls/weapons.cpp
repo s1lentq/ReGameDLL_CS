@@ -1564,6 +1564,13 @@ void CWeaponBox::BombThink()
 	pev->nextthink = gpGlobals->time + 1.0f;
 }
 
+LINK_HOOK_CLASS_VOID_CHAIN(CWeaponBox, SetModel, (const char *pszModelName), pszModelName)
+
+void CWeaponBox::__API_HOOK(SetModel)(const char *pszModelName)
+{
+	SET_MODEL(ENT(pev), pszModelName);
+}
+
 void CWeaponBox::Spawn()
 {
 	Precache();

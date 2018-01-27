@@ -193,7 +193,7 @@ void CFlashbang::WeaponIdle()
 		Vector vecSrc = m_pPlayer->pev->origin + m_pPlayer->pev->view_ofs + gpGlobals->v_forward * 16;
 		Vector vecThrow = gpGlobals->v_forward * flVel + m_pPlayer->pev->velocity;
 
-		CGrenade::ShootTimed(m_pPlayer->pev, vecSrc, vecThrow, 1.5);
+		m_pPlayer->ThrowGrenade(this, vecSrc, vecThrow, 1.5);
 
 		SendWeaponAnim(FLASHBANG_THROW, UseDecrement() != FALSE);
 		SetPlayerShieldAnim();

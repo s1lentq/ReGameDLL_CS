@@ -772,6 +772,7 @@ protected:
 	float m_flEscapeRatio;
 	float m_flTimeLimit;
 	float m_flGameStartTime;
+	bool m_bTeamBalanced;
 };
 
 typedef struct mapcycle_item_s
@@ -795,6 +796,10 @@ class CCStrikeGameMgrHelper: public IVoiceGameMgrHelper
 {
 public:
 	virtual bool CanPlayerHearPlayer(CBasePlayer *pListener, CBasePlayer *pSender);
+
+#ifdef REGAMEDLL_API
+	bool CanPlayerHearPlayer_OrigFunc(CBasePlayer *pListener, CBasePlayer *pSender);
+#endif
 };
 
 extern CGameRules DLLEXPORT *g_pGameRules;
