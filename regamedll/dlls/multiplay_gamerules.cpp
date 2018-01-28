@@ -89,19 +89,21 @@ LINK_HOOK_CLASS_CUSTOM_CHAIN(bool, CCStrikeGameMgrHelper, CSGameRules, CanPlayer
 
 bool CCStrikeGameMgrHelper::__API_HOOK(CanPlayerHearPlayer)(CBasePlayer *pListener, CBasePlayer *pSender)
 {
-#ifdef REGAMEDLL_ADD
 	switch ((int)sv_alltalk.value)
 	{
+	case 1: // allows everyone to talk
+		return true;
+#ifdef REGAMEDLL_ADD
 	case 2:
 		return (pListener->m_iTeam == pSender->m_iTeam);
 	case 3:
 		return (pListener->m_iTeam == pSender->m_iTeam || pListener->IsObserver());
 	case 4:
 		return (pListener->IsAlive() == pSender->IsAlive() || pSender->IsAlive());
-	default: // HLDS Behavior
+	default: // Default behavior
 		break;
-	}
 #endif
+	}
 
 	if (
 #ifndef REGAMEDLL_FIXES
