@@ -138,7 +138,7 @@ void Broadcast(const char *sentence)
 	MESSAGE_BEGIN(MSG_BROADCAST, gmsgSendAudio);
 		WRITE_BYTE(0);
 		WRITE_STRING(text);
-		WRITE_SHORT(100);
+		WRITE_SHORT(PITCH_NORM);
 	MESSAGE_END();
 }
 
@@ -575,6 +575,7 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(CleanUpMap)()
 	UTIL_RestartOther("func_button");
 	UTIL_RestartOther("func_rot_button");
 	UTIL_RestartOther("env_render");
+	UTIL_RestartOther("env_spark");
 	UTIL_RestartOther("trigger_push");
 #endif
 
@@ -590,7 +591,10 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(CleanUpMap)()
 #ifdef REGAMEDLL_FIXES
 	UTIL_RestartOther("trigger_once");
 	UTIL_RestartOther("func_wall_toggle");
+	UTIL_RestartOther("trigger_hurt");
 	UTIL_RestartOther("multisource");
+	UTIL_RestartOther("env_beam");
+	UTIL_RestartOther("env_laser");
 	UTIL_RestartOther("trigger_auto");
 #endif
 

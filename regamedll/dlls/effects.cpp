@@ -340,27 +340,32 @@ void CLightning::Spawn()
 			SetThink(&CLightning::DamageThink);
 			pev->nextthink = gpGlobals->time + 0.1f;
 		}
+
 		if (pev->targetname)
 		{
 			if (!(pev->spawnflags & SF_BEAM_STARTON))
 			{
+				m_active = FALSE;
 				pev->effects = EF_NODRAW;
-				m_active = 0;
 				pev->nextthink = 0;
 			}
 			else
-				m_active = 1;
+			{
+				m_active = TRUE;
+			}
 
 			SetUse(&CLightning::ToggleUse);
 		}
 	}
 	else
 	{
-		m_active = 0;
+		m_active = FALSE;
+
 		if (!FStringNull(pev->targetname))
 		{
 			SetUse(&CLightning::StrikeUse);
 		}
+
 		if (FStringNull(pev->targetname) || (pev->spawnflags & SF_BEAM_STARTON))
 		{
 			SetThink(&CLightning::StrikeThink);
@@ -368,6 +373,62 @@ void CLightning::Spawn()
 		}
 	}
 }
+
+#ifdef REGAMEDLL_FIXES
+void CLightning::Restart()
+{
+	if (FStringNull(m_iszSpriteName))
+	{
+		SetThink(&CLightning::SUB_Remove);
+		return;
+	}
+
+	// Remove model & collisions
+	pev->solid = SOLID_NOT;
+	pev->dmgtime = gpGlobals->time;
+
+	if (ServerSide())
+	{
+		SetThink(nullptr);
+		if (pev->dmg > 0)
+		{
+			SetThink(&CLightning::DamageThink);
+			pev->nextthink = gpGlobals->time + 0.1f;
+		}
+
+		if (pev->targetname)
+		{
+			if (!(pev->spawnflags & SF_BEAM_STARTON))
+			{
+				m_active = FALSE;
+				pev->effects |= EF_NODRAW;
+				pev->nextthink = 0;
+			}
+			else
+			{
+				m_active = TRUE;
+			}
+
+			SetUse(&CLightning::ToggleUse);
+		}
+	}
+	else
+	{
+		m_active = FALSE;
+
+		if (!FStringNull(pev->targetname))
+		{
+			SetUse(&CLightning::StrikeUse);
+		}
+
+		if (FStringNull(pev->targetname) || (pev->spawnflags & SF_BEAM_STARTON))
+		{
+			SetThink(&CLightning::StrikeThink);
+			pev->nextthink = gpGlobals->time + 1.0f;
+		}
+	}
+}
+#endif
 
 void CLightning::Precache()
 {
@@ -378,7 +439,9 @@ void CLightning::Precache()
 void CLightning::Activate()
 {
 	if (ServerSide())
+	{
 		BeamUpdateVars();
+	}
 }
 
 void CLightning::KeyValue(KeyValueData *pkvd)
@@ -451,13 +514,13 @@ void CLightning::ToggleUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TY
 
 	if (m_active)
 	{
-		m_active = 0;
+		m_active = FALSE;
 		pev->effects |= EF_NODRAW;
 		pev->nextthink = 0;
 	}
 	else
 	{
-		m_active = 1;
+		m_active = TRUE;
 		pev->effects &= ~EF_NODRAW;
 		DoSparks(GetStartPos(), GetEndPos());
 
@@ -476,7 +539,7 @@ void CLightning::StrikeUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TY
 
 	if (m_active)
 	{
-		m_active = 0;
+		m_active = FALSE;
 		SetThink(nullptr);
 	}
 	else
@@ -512,7 +575,7 @@ void CLightning::StrikeThink()
 			pev->nextthink = gpGlobals->time + m_life + m_restrike;
 	}
 
-	m_active = 1;
+	m_active = TRUE;
 
 	if (FStringNull(m_iszEndEntity))
 	{
@@ -842,7 +905,11 @@ void CLaser::Spawn()
 	if (!m_pSprite && m_iszSpriteName)
 		m_pSprite = CSprite::SpriteCreate(STRING(m_iszSpriteName), pev->origin, TRUE);
 	else
+	{
+		// TODO: Call CLaser::Spawn more than once may cause to a memory leaks,
+		// since env_sprite will be not released.
 		m_pSprite = nullptr;
+	}
 
 	if (m_pSprite)
 		m_pSprite->SetTransparency(kRenderGlow, pev->rendercolor.x, pev->rendercolor.y, pev->rendercolor.z, pev->renderamt, pev->renderfx);
@@ -852,6 +919,33 @@ void CLaser::Spawn()
 	else
 		TurnOn();
 }
+
+#ifdef REGAMEDLL_FIXES
+void CLaser::Restart()
+{
+	if (FStringNull(pev->model))
+	{
+		SetThink(&CLaser::SUB_Remove);
+		return;
+	}
+
+	// Remove model & collisions
+	pev->solid = SOLID_NOT;
+	pev->flags |= FL_CUSTOMENTITY;
+
+	SetThink(&CLaser::StrikeThink);
+
+	if (m_pSprite)
+	{
+		m_pSprite->SetTransparency(kRenderGlow, pev->rendercolor.x, pev->rendercolor.y, pev->rendercolor.z, pev->renderamt, pev->renderfx);
+	}
+
+	if (pev->targetname && !(pev->spawnflags & SF_BEAM_STARTON))
+		TurnOff();
+	else
+		TurnOn();
+}
+#endif
 
 void CLaser::Precache()
 {

@@ -221,7 +221,6 @@ public:
 
 #ifdef REGAMEDLL_FIXES
 	virtual void Restart();
-	virtual int ObjectCaps() { return (CBaseTrigger::ObjectCaps() | FCAP_MUST_RESET); }
 #endif
 
 	void EXPORT RadiationThink();

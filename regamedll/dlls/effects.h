@@ -202,6 +202,10 @@ public:
 	virtual int Restore(CRestore &restore);
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
+#ifdef REGAMEDLL_FIXES
+	virtual void Restart();
+#endif
+
 public:
 	void TurnOn();
 	void TurnOff();
@@ -253,6 +257,10 @@ public:
 	virtual int Restore(CRestore &restore);
 	virtual void Activate();
 
+#ifdef REGAMEDLL_FIXES
+	virtual void Restart();
+#endif
+
 public:
 	void EXPORT StrikeThink();
 	void EXPORT DamageThink();
@@ -274,7 +282,7 @@ public:
 public:
 	static TYPEDESCRIPTION m_SaveData[];
 
-	int m_active;
+	BOOL m_active;
 	int m_iszStartEntity;
 	int m_iszEndEntity;
 	float m_life;

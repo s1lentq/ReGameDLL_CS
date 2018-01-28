@@ -1160,10 +1160,14 @@ void CEnvSpark::Spawn()
 			SetUse(&CEnvSpark::SparkStop);
 		}
 		else
+		{
 			SetUse(&CEnvSpark::SparkStart);
+		}
 	}
 	else
+	{
 		SetThink(&CEnvSpark::SparkThink);
+	}
 
 	pev->nextthink = gpGlobals->time + (0.1f + RANDOM_FLOAT(0.0f, 1.5f));
 
@@ -1174,6 +1178,43 @@ void CEnvSpark::Spawn()
 
 	Precache();
 }
+
+#ifdef REGAMEDLL_FIXES
+void CEnvSpark::Restart()
+{
+	SetThink(nullptr);
+	SetUse(nullptr);
+
+	// Use for on/off
+	if (pev->spawnflags & SF_SPARK_TOOGLE)
+	{
+		// Start on
+		if (pev->spawnflags & SF_SPARK_IF_OFF)
+		{
+			// start sparking
+			SetThink(&CEnvSpark::SparkThink);
+
+			// set up +USE to stop sparking
+			SetUse(&CEnvSpark::SparkStop);
+		}
+		else
+		{
+			SetUse(&CEnvSpark::SparkStart);
+		}
+	}
+	else
+	{
+		SetThink(&CEnvSpark::SparkThink);
+	}
+
+	pev->nextthink = gpGlobals->time + (0.1f + RANDOM_FLOAT(0.0f, 1.5f));
+
+	if (m_flDelay <= 0.0f)
+	{
+		m_flDelay = 1.5f;
+	}
+}
+#endif
 
 void CEnvSpark::Precache()
 {
