@@ -160,7 +160,7 @@ void CC4::PrimaryAttack()
 					}
 
 #ifdef REGAMEDLL_FIXES
-					Vector vBombAngles = Vector(0, m_pPlayer->pev->angles[1] + 90.0, 0);
+					Vector vBombAngles = Vector(0, m_pPlayer->pev->angles[1] - 90.0, 0);
 #else
 					Vector vBombAngles = Vector(0, 0, 0);
 #endif
