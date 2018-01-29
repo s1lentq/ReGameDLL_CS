@@ -1835,10 +1835,6 @@ void CBombTarget::Spawn()
 
 bool CBombTarget::IsPlayerInBombSite(CBasePlayer *pPlayer)
 {
-	// Player should at least intersect with func_bomb_target.
-	if (!Intersects(pPlayer->pev->origin, pPlayer->pev->origin))
-		return false;
-
 	const Vector &absmin = pPlayer->pev->absmin;
 	const Vector &absmax = pPlayer->pev->absmax;
 	
