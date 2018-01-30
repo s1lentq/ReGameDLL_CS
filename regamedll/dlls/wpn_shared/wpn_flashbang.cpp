@@ -220,6 +220,15 @@ void CFlashbang::WeaponIdle()
 	{
 		// we've finished the throw, restart.
 		m_flStartThrow = 0;
+
+#ifdef REGAMEDLL_FIXES
+		if (m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType])
+		{
+			CFlashbang::Deploy();
+			return;
+		}
+#endif
+
 		RetireWeapon();
 	}
 	else if (m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType])
