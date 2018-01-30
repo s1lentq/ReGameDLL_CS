@@ -216,6 +216,11 @@ void CFlashbang::WeaponIdle()
 
 		ResetPlayerShieldAnim();
 	}
+	else if (m_flReleaseThrow > 0)
+	{
+		// we've finished the throw, restart.
+		m_flStartThrow = 0;
+
 #ifdef REGAMEDLL_FIXES
 		if (m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType])
 		{
