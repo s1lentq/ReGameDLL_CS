@@ -111,7 +111,7 @@ bool CCStrikeGameMgrHelper::__API_HOOK(CanPlayerHearPlayer)(CBasePlayer *pListen
 	default: // Default behavior
 		return (pListener->IsObserver() ||
 				(pListener->m_iTeam == pSender->m_iTeam && 
-				 (bSenderAlive || pListener->IsAlive() == pSender->IsAlive())));
+				 (pSender->IsAlive() || pListener->IsAlive() == pSender->IsAlive())));
 	}
 }
 
