@@ -104,12 +104,12 @@ bool CCStrikeGameMgrHelper::__API_HOOK(CanPlayerHearPlayer)(CBasePlayer *pListen
 	case 2:
 		return (pListener->m_iTeam == pSender->m_iTeam);
 	case 3:
-		return (pListener->IsObserver() || pListener->m_iTeam == pSender->m_iTeam);
+		return (pListener->m_iTeam == SPECTATOR || pListener->m_iTeam == pSender->m_iTeam);
 	case 4:
 		return (pSender->IsAlive() || pListener->IsAlive() == pSender->IsAlive());
 #endif
 	default: // Default behavior
-		return (pListener->IsObserver() ||
+		return (pListener->m_iTeam == SPECTATOR ||
 				(pListener->m_iTeam == pSender->m_iTeam && 
 				 (pSender->IsAlive() || pListener->IsAlive() == pSender->IsAlive())));
 	}
