@@ -29,7 +29,7 @@ CBasePlayer *CBasePlayer::__API_HOOK(Observer_IsValidTarget)(int iPlayerIndex, b
 	CBasePlayer *pPlayer = UTIL_PlayerByIndex(iPlayerIndex);
 
 	// Don't spec observers or players who haven't picked a class yet
-	if (!pPlayer || pPlayer == this || pPlayer->has_disconnected || pPlayer->IsObserver() || (pPlayer->pev->effects & EF_NODRAW) || pPlayer->m_iTeam == UNASSIGNED || (bSameTeam && pPlayer->m_iTeam != m_iTeam))
+	if (!pPlayer || pPlayer == this || pPlayer->has_disconnected || pPlayer->GetObserverMode() != OBS_NONE || (pPlayer->pev->effects & EF_NODRAW) || pPlayer->m_iTeam == UNASSIGNED || (bSameTeam && pPlayer->m_iTeam != m_iTeam))
 		return nullptr;
 
 	return pPlayer;
@@ -42,7 +42,7 @@ void UpdateClientEffects(CBasePlayer *pObserver, int oldMode)
 	bool blindnessOk = (fadetoblack.value == 0);
 	bool clearNightvision = false;
 
-	if (pObserver->IsObserver() == OBS_IN_EYE)
+	if (pObserver->GetObserverMode() == OBS_IN_EYE)
 	{
 		clearProgress = true;
 		clearBlindness = true;
@@ -455,7 +455,7 @@ void CBasePlayer::Observer_SetMode(int iMode)
 	{
 		CBaseEntity *pEnt = m_hObserverTarget;
 
-		if (pEnt == this || !pEnt || pEnt->has_disconnected || ((CBasePlayer *)pEnt)->IsObserver() || (pEnt->pev->effects & EF_NODRAW) || (_forcecamera != CAMERA_MODE_SPEC_ANYONE && ((CBasePlayer *)pEnt)->m_iTeam != m_iTeam))
+		if (pEnt == this || !pEnt || pEnt->has_disconnected || ((CBasePlayer *)pEnt)->GetObserverMode() != OBS_NONE || (pEnt->pev->effects & EF_NODRAW) || (_forcecamera != CAMERA_MODE_SPEC_ANYONE && ((CBasePlayer *)pEnt)->m_iTeam != m_iTeam))
 			m_hObserverTarget = nullptr;
 	}
 

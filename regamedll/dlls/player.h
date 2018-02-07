@@ -438,7 +438,7 @@ public:
 	void Observer_SetMode(int iMode);
 	void Observer_CheckTarget();
 	void Observer_CheckProperties();
-	int IsObserver() { return pev->iuser1; }
+	int GetObserverMode() { return pev->iuser1; }
 	void PlantC4();
 	void Radio(const char *msg_id, const char *msg_verbose = nullptr, short pitch = 100, bool showIcon = true);
 	CBasePlayer *GetNextRadioRecipient(CBasePlayer *pStartPlayer);
