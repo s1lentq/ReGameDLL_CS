@@ -362,7 +362,7 @@ void EXT_FUNC ClientKill(edict_t *pEntity)
 	entvars_t *pev = &pEntity->v;
 	CBasePlayer *pPlayer = CBasePlayer::Instance(pev);
 
-	if (pPlayer->IsObserver())
+	if (pPlayer->GetObserverMode() != OBS_NONE)
 		return;
 
 	if (pPlayer->m_iJoiningState != JOINED)
@@ -3093,7 +3093,7 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 	{
 		// new spectator mode
 		int mode = Q_atoi(parg1);
-		if (pPlayer->IsObserver() && pPlayer->CanSwitchObserverModes())
+		if (pPlayer->GetObserverMode() != OBS_NONE && pPlayer->CanSwitchObserverModes())
 			pPlayer->Observer_SetMode(mode);
 		else
 			pPlayer->m_iObserverLastMode = mode;
@@ -3113,14 +3113,14 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 	{
 		// follow next player
 		int arg = Q_atoi(parg1);
-		if (pPlayer->IsObserver() && pPlayer->CanSwitchObserverModes())
+		if (pPlayer->GetObserverMode() != OBS_NONE && pPlayer->CanSwitchObserverModes())
 		{
 			pPlayer->Observer_FindNextPlayer(arg != 0);
 		}
 	}
 	else if (FStrEq(pcmd, "follow"))
 	{
-		if (pPlayer->IsObserver() && pPlayer->CanSwitchObserverModes())
+		if (pPlayer->GetObserverMode() != OBS_NONE && pPlayer->CanSwitchObserverModes())
 		{
 			pPlayer->Observer_FindNextPlayer(false, parg1);
 		}

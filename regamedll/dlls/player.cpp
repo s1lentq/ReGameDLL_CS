@@ -317,7 +317,7 @@ CBasePlayer *CBasePlayer::GetNextRadioRecipient(CBasePlayer *pStartPlayer)
 		}
 		else if (pPlayer)
 		{
-			int iSpecMode = IsObserver();
+			int iSpecMode = GetObserverMode();
 			if (iSpecMode != OBS_CHASE_LOCKED && iSpecMode != OBS_CHASE_FREE && iSpecMode != OBS_IN_EYE)
 				continue;
 
@@ -378,7 +378,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Radio)(const char *msg_id, const char *msg
 		else
 		{
 			// do this when spectator mode is in
-			int iSpecMode = pPlayer->IsObserver();
+			int iSpecMode = pPlayer->GetObserverMode();
 			if (iSpecMode != OBS_CHASE_LOCKED && iSpecMode != OBS_CHASE_FREE && iSpecMode != OBS_IN_EYE)
 				continue;
 
@@ -1587,7 +1587,7 @@ void CBasePlayer::SetProgressBarTime(int time)
 
 		CBasePlayer *pPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev);
 
-		if (pPlayer->IsObserver() == OBS_IN_EYE && pPlayer->pev->iuser2 == playerIndex)
+		if (pPlayer->GetObserverMode() == OBS_IN_EYE && pPlayer->pev->iuser2 == playerIndex)
 		{
 			MESSAGE_BEGIN(MSG_ONE, gmsgBarTime, nullptr, pPlayer->pev);
 				WRITE_SHORT(time);
@@ -1627,7 +1627,7 @@ void CBasePlayer::SetProgressBarTime2(int time, float timeElapsed)
 
 		CBasePlayer *pPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev);
 
-		if (pPlayer->IsObserver() == OBS_IN_EYE && pPlayer->pev->iuser2 == playerIndex)
+		if (pPlayer->GetObserverMode() == OBS_IN_EYE && pPlayer->pev->iuser2 == playerIndex)
 		{
 			MESSAGE_BEGIN(MSG_ONE, gmsgBarTime2, nullptr, pPlayer->pev);
 				WRITE_SHORT(time);
@@ -3176,7 +3176,7 @@ void CBasePlayer::SyncRoundTimer()
 	if (!g_pGameRules->IsMultiplayer())
 		return;
 
-	if (bFreezePeriod && TheTutor && !IsObserver())
+	if (bFreezePeriod && TheTutor && GetObserverMode() == OBS_NONE)
 	{
 		MESSAGE_BEGIN(MSG_ONE, gmsgBlinkAcct, nullptr, pev);
 			WRITE_BYTE(MONEY_BLINK_AMOUNT);
@@ -3534,7 +3534,7 @@ void CBasePlayer::PlayerDeathThink()
 		if (pev->deadflag == DEAD_RESPAWNABLE)
 		{
 #ifdef REGAMEDLL_FIXES
-			if (IsObserver() && (m_iTeam == UNASSIGNED || m_iTeam == SPECTATOR))
+			if (GetObserverMode() != OBS_NONE && (m_iTeam == UNASSIGNED || m_iTeam == SPECTATOR))
 				return;
 
 			// Player cannot respawn while in the Choose Appearance menu
@@ -4230,7 +4230,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 #endif
 
 	// Observer Button Handling
-	if (IsObserver() && (m_afPhysicsFlags & PFLAG_OBSERVER))
+	if (GetObserverMode() != OBS_NONE && (m_afPhysicsFlags & PFLAG_OBSERVER))
 	{
 		Observer_Think();
 		return;
@@ -7011,7 +7011,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(ResetMaxSpeed)()
 {
 	float speed;
 
-	if (IsObserver())
+	if (GetObserverMode() != OBS_NONE)
 	{
 		// Player gets speed bonus in observer mode
 		speed = 900;
@@ -7197,9 +7197,9 @@ void CBasePlayer::UpdateStatusBar()
 				newSBarState[SBAR_ID_TARGETNAME] = ENTINDEX(pTarget->edict());
 				newSBarState[SBAR_ID_TARGETTYPE] = (pTarget->m_iTeam == m_iTeam) ? SBAR_TARGETTYPE_TEAMMATE : SBAR_TARGETTYPE_ENEMY;
 
-				if (pTarget->m_iTeam == m_iTeam || IsObserver())
+				if (pTarget->m_iTeam == m_iTeam || GetObserverMode() != OBS_NONE)
 				{
-					if (playerid.value != PLAYERID_MODE_OFF || IsObserver())
+					if (playerid.value != PLAYERID_MODE_OFF || GetObserverMode() != OBS_NONE)
 						Q_strcpy(sbuf0, "1 %c1: %p2\n2  %h: %i3%%");
 					else
 						Q_strcpy(sbuf0, " ");
@@ -7212,7 +7212,7 @@ void CBasePlayer::UpdateStatusBar()
 						HintMessage("#Hint_spotted_a_friend");
 					}
 				}
-				else if (!IsObserver())
+				else if (GetObserverMode() == OBS_NONE)
 				{
 					if (playerid.value != PLAYERID_MODE_TEAMONLY && playerid.value != PLAYERID_MODE_OFF)
 						Q_strcpy(sbuf0, "1 %c1: %p2");
@@ -7230,7 +7230,7 @@ void CBasePlayer::UpdateStatusBar()
 			}
 			else if (pEntity->Classify() == CLASS_HUMAN_PASSIVE)
 			{
-				if (playerid.value != PLAYERID_MODE_OFF || IsObserver())
+				if (playerid.value != PLAYERID_MODE_OFF || GetObserverMode() != OBS_NONE)
 					Q_strcpy(sbuf0, "1 %c1  %h: %i3%%");
 				else
 					Q_strcpy(sbuf0, " ");
@@ -9125,7 +9125,7 @@ bool CBasePlayer::IsObservingPlayer(CBasePlayer *pPlayer)
 	if (FNullEnt(pPlayer))
 		return false;
 
-	return (IsObserver() == OBS_IN_EYE && pev->iuser2 == pPlayer->entindex()) != 0;
+	return (GetObserverMode() == OBS_IN_EYE && pev->iuser2 == pPlayer->entindex()) != 0;
 }
 
 void CBasePlayer::UpdateLocation(bool forceUpdate)
@@ -9481,7 +9481,7 @@ bool EXT_FUNC CBasePlayer::__API_HOOK(GetIntoGame)()
 void CBasePlayer::PlayerRespawnThink()
 {
 #ifdef REGAMEDLL_ADD
-	if (IsObserver() && (m_iTeam == UNASSIGNED || m_iTeam == SPECTATOR))
+	if (GetObserverMode() != OBS_NONE && (m_iTeam == UNASSIGNED || m_iTeam == SPECTATOR))
 		return;
 
 	// Player cannot respawn while in the Choose Appearance menu
