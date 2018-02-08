@@ -424,14 +424,14 @@ void CBasePlayer::Observer_CheckProperties()
 // Attempt to change the observer mode
 void CBasePlayer::Observer_SetMode(int iMode)
 {
-	int _forcecamera;
+	int forcecamera;
 	int oldMode;
 
 	// Just abort if we're changing to the mode we're already in
 	if (iMode == pev->iuser1)
 		return;
 
-	_forcecamera = GetForceCamera(this);
+	forcecamera = GetForceCamera(this);
 
 	// is valid mode ?
 	if (iMode < OBS_CHASE_LOCKED || iMode > OBS_MAP_CHASE)
@@ -441,21 +441,21 @@ void CBasePlayer::Observer_SetMode(int iMode)
 
 	if (m_iTeam != SPECTATOR)
 	{
-		if (_forcecamera == CAMERA_MODE_SPEC_ONLY_TEAM)
+		if (forcecamera == CAMERA_MODE_SPEC_ONLY_TEAM)
 		{
 			if (iMode == OBS_ROAMING)
 				iMode = OBS_MAP_FREE;
 		}
-		else if (_forcecamera == CAMERA_MODE_SPEC_ONLY_FRIST_PERSON)
+		else if (forcecamera == CAMERA_MODE_SPEC_ONLY_FRIST_PERSON)
 			iMode = OBS_IN_EYE;
 	}
 
 	// verify observer target again
 	if (m_hObserverTarget)
 	{
-		CBaseEntity *pEnt = m_hObserverTarget;
+		CBasePlayer *pTarget = m_hObserverTarget;
 
-		if (pEnt == this || !pEnt || pEnt->has_disconnected || ((CBasePlayer *)pEnt)->GetObserverMode() != OBS_NONE || (pEnt->pev->effects & EF_NODRAW) || (_forcecamera != CAMERA_MODE_SPEC_ANYONE && ((CBasePlayer *)pEnt)->m_iTeam != m_iTeam))
+		if (pTarget == this || !pTarget || pTarget->has_disconnected || pTarget->GetObserverMode() != OBS_NONE || (pTarget->pev->effects & EF_NODRAW) || (forcecamera != CAMERA_MODE_SPEC_ANYONE && pTarget->m_iTeam != m_iTeam))
 			m_hObserverTarget = nullptr;
 	}
 
