@@ -58,8 +58,8 @@ Archive's bin directory contains 2 subdirectories, 'bugfixed' and 'pure'
 There are several software requirements for building Regamedll_CS:
 <ol>
 <li>Java Development Kit (JDK) 7+ (http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)</li>
-<li>For Windows: Visual Studio 2013 and later</li>
-<li>For Linux: Intel C++ Compiler 13 and later</li>
+<li>For Windows: Visual Studio 2015 and later</li>
+<li>For Linux: Intel C++ Compiler 15 and later</li>
 </ol>
 
 ### Checking requirements
