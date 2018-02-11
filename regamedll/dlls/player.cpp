@@ -4375,6 +4375,15 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 		m_flDisplayHistory |= DHF_ROUND_STARTED;
 	}
 
+#ifdef REGAMEDLL_ADD
+	if (spawnprotectiontime.value > 0
+		&& CSPlayer()->m_bProtected
+		&& gpGlobals->time > (CSPlayer()->m_flRemoveProtectionPending + spawnprotectiontime.value))
+	{
+		CSPlayer()->RemoveProtection();
+	}
+#endif
+
 	UpdateLocation();
 }
 
