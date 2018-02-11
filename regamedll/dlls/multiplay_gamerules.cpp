@@ -3638,7 +3638,7 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(PlayerSpawn)(CBasePlayer *pPlayer)
 
 #ifdef REGAMEDLL_ADD
 	if (spawnprotectiontime.value > 0)
-		pPlayer->CSPlayer()->SetProtection();
+		pPlayer->CSPlayer()->SetProtectionOnSpawn();
 #endif
 }
 

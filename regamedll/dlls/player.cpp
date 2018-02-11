@@ -4380,7 +4380,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 		&& CSPlayer()->m_bProtected
 		&& gpGlobals->time > (CSPlayer()->m_flRemoveProtectionPending + spawnprotectiontime.value))
 	{
-		CSPlayer()->RemoveProtection();
+		CSPlayer()->RemoveProtectionOnSpawn();
 	}
 #endif
 

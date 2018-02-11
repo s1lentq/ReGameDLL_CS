@@ -478,7 +478,7 @@ EXT_FUNC void CCSPlayer::StartDeathCam()
 	BasePlayer()->StartDeathCam();
 }
 
-EXT_FUNC void CCSPlayer::SetProtection()
+EXT_FUNC void CCSPlayer::SetProtectionOnSpawn()
 {
 	CBasePlayer *pPlayer = BasePlayer();
 
@@ -490,7 +490,7 @@ EXT_FUNC void CCSPlayer::SetProtection()
 	m_bProtected = true;
 }
 
-EXT_FUNC void CCSPlayer::RemoveProtection()
+EXT_FUNC void CCSPlayer::RemoveProtectionOnSpawn()
 {
 	CBasePlayer *pPlayer = BasePlayer();
 
