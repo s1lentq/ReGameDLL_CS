@@ -483,7 +483,7 @@ EXT_FUNC void CCSPlayer::SetProtectionOnSpawn()
 	CBasePlayer *pPlayer = BasePlayer();
 
 	pPlayer->pev->takedamage = DAMAGE_NO;
-	pPlayer->pev->rendermode = kRenderTransAlpha;
+	pPlayer->pev->rendermode = kRenderTransAdd;
 	pPlayer->pev->renderamt = 100.0;
 
 	m_flRemoveProtectionPending = gpGlobals->time;
