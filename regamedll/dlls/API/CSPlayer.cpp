@@ -486,8 +486,7 @@ EXT_FUNC void CCSPlayer::SetProtectionOnSpawn()
 	pPlayer->pev->rendermode = kRenderTransAdd;
 	pPlayer->pev->renderamt = 100.0;
 
-	m_flRemoveProtectionPending = gpGlobals->time;
-	m_bProtected = true;
+	m_flProtectionOnSpawnStartTime = gpGlobals->time;
 }
 
 EXT_FUNC void CCSPlayer::RemoveProtectionOnSpawn()
@@ -497,5 +496,5 @@ EXT_FUNC void CCSPlayer::RemoveProtectionOnSpawn()
 	pPlayer->pev->takedamage = DAMAGE_AIM;
 	pPlayer->pev->rendermode = kRenderNormal;
 
-	m_bProtected = false;
+	m_flProtectionOnSpawnStartTime = 0.0f;
 }

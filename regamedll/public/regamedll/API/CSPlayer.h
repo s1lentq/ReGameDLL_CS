@@ -88,8 +88,7 @@ public:
 	char m_szModel[32];
 	bool m_bForceShowMenu;
 	float m_flRespawnPending;
-	float m_flRemoveProtectionPending;
-	bool m_bProtected;
+	float m_flProtectionOnSpawnStartTime;
 };
 
 // Inlines

@@ -4376,9 +4376,9 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 	}
 
 #ifdef REGAMEDLL_ADD
-	if (spawnprotectiontime.value > 0
-		&& CSPlayer()->m_bProtected
-		&& gpGlobals->time > (CSPlayer()->m_flRemoveProtectionPending + spawnprotectiontime.value))
+	if (spawnprotectiontime.value > 0.0f
+		&& CSPlayer()->m_flProtectionOnSpawnStartTime > 0.0f
+		&& gpGlobals->time > (CSPlayer()->m_flProtectionOnSpawnStartTime + spawnprotectiontime.value))
 	{
 		CSPlayer()->RemoveProtectionOnSpawn();
 	}
