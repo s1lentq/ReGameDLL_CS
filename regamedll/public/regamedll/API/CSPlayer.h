@@ -79,8 +79,6 @@ public:
 	virtual bool MakeBomber();
 	virtual void ResetSequenceInfo();
 	virtual void StartDeathCam();
-	virtual void SetProtectionOnSpawn();
-	virtual void RemoveProtectionOnSpawn();
 
 	CBasePlayer *BasePlayer() const;
 

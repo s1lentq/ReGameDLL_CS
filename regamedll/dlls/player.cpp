@@ -4376,11 +4376,11 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 	}
 
 #ifdef REGAMEDLL_ADD
-	if (spawnprotectiontime.value > 0.0f
+	if (respawn_immunitytime.value > 0.0f
 		&& CSPlayer()->m_flProtectionOnSpawnStartTime > 0.0f
-		&& gpGlobals->time > (CSPlayer()->m_flProtectionOnSpawnStartTime + spawnprotectiontime.value))
+		&& gpGlobals->time > (CSPlayer()->m_flProtectionOnSpawnStartTime + respawn_immunitytime.value))
 	{
-		CSPlayer()->RemoveProtectionOnSpawn();
+		RemoveProtectionOnSpawn();
 	}
 #endif
 
@@ -9524,4 +9524,21 @@ bool CBasePlayer::__API_HOOK(CanSwitchTeam)(TeamName teamToSwap)
 	}
 
 	return true;
+}
+
+EXT_FUNC void CBasePlayer::SetProtectionOnSpawn()
+{
+	pev->takedamage = DAMAGE_NO;
+	pev->rendermode = kRenderTransAdd;
+	pev->renderamt = 100.0;
+
+	CSPlayer()->m_flProtectionOnSpawnStartTime = gpGlobals->time;
+}
+
+EXT_FUNC void CBasePlayer::RemoveProtectionOnSpawn()
+{
+	pev->takedamage = DAMAGE_AIM;
+	pev->rendermode = kRenderNormal;
+
+	CSPlayer()->m_flProtectionOnSpawnStartTime = 0.0f;
 }

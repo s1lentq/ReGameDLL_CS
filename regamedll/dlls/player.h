@@ -343,6 +343,8 @@ public:
 	virtual BOOL AddPlayerItem(CBasePlayerItem *pItem);
 	virtual BOOL RemovePlayerItem(CBasePlayerItem *pItem);
 	virtual int GiveAmmo(int iAmount, const char *szName, int iMax = -1);
+	virtual void SetProtectionOnSpawn();
+	virtual void RemoveProtectionOnSpawn();
 
 #ifndef REGAMEDLL_API
 	virtual void StartSneaking() { m_tSneaking = gpGlobals->time - 1; }

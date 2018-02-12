@@ -477,24 +477,3 @@ EXT_FUNC void CCSPlayer::StartDeathCam()
 {
 	BasePlayer()->StartDeathCam();
 }
-
-EXT_FUNC void CCSPlayer::SetProtectionOnSpawn()
-{
-	CBasePlayer *pPlayer = BasePlayer();
-
-	pPlayer->pev->takedamage = DAMAGE_NO;
-	pPlayer->pev->rendermode = kRenderTransAdd;
-	pPlayer->pev->renderamt = 100.0;
-
-	m_flProtectionOnSpawnStartTime = gpGlobals->time;
-}
-
-EXT_FUNC void CCSPlayer::RemoveProtectionOnSpawn()
-{
-	CBasePlayer *pPlayer = BasePlayer();
-
-	pPlayer->pev->takedamage = DAMAGE_AIM;
-	pPlayer->pev->rendermode = kRenderNormal;
-
-	m_flProtectionOnSpawnStartTime = 0.0f;
-}
