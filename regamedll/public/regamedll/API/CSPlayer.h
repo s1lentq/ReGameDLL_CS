@@ -33,7 +33,7 @@
 
 class CCSPlayer: public CCSMonster {
 public:
-	CCSPlayer() : m_bForceShowMenu(false), m_flRespawnPending(0)
+	CCSPlayer() : m_bForceShowMenu(false), m_flRespawnPending(0), m_flSpawnProtectionEndTime(0)
 	{
 		m_szModel[0] = '\0';
 	}
@@ -86,7 +86,7 @@ public:
 	char m_szModel[32];
 	bool m_bForceShowMenu;
 	float m_flRespawnPending;
-	float m_flProtectionOnSpawnStartTime;
+	float m_flSpawnProtectionEndTime;
 };
 
 // Inlines

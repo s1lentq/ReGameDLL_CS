@@ -343,9 +343,6 @@ public:
 	virtual BOOL AddPlayerItem(CBasePlayerItem *pItem);
 	virtual BOOL RemovePlayerItem(CBasePlayerItem *pItem);
 	virtual int GiveAmmo(int iAmount, const char *szName, int iMax = -1);
-	virtual void SetProtectionOnSpawn();
-	virtual void RemoveProtectionOnSpawn();
-
 #ifndef REGAMEDLL_API
 	virtual void StartSneaking() { m_tSneaking = gpGlobals->time - 1; }
 	virtual void StopSneaking() { m_tSneaking = gpGlobals->time + 30; }
@@ -422,6 +419,9 @@ public:
 	CGrenade *ThrowGrenade_OrigFunc(CBasePlayerWeapon *pWeapon, VectorRef vecSrc, VectorRef vecThrow, float time, unsigned short usEvent = 0);
 	void SwitchTeam_OrigFunc();
 	bool CanSwitchTeam_OrigFunc(TeamName teamToSwap);
+
+	void SetSpawnProtection(float flProtectionTime);
+	void RemoveSpawnProtection();
 
 	CCSPlayer *CSPlayer() const;
 #endif // REGAMEDLL_API
