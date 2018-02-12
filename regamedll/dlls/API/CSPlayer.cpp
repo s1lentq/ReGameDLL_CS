@@ -477,3 +477,13 @@ EXT_FUNC void CCSPlayer::StartDeathCam()
 {
 	BasePlayer()->StartDeathCam();
 }
+
+EXT_FUNC void CCSPlayer::SetSpawnProtection(float flProtectionTime)
+{
+	BasePlayer()->SetSpawnProtection(flProtectionTime);
+}
+
+EXT_FUNC void CCSPlayer::RemoveSpawnProtection()
+{
+	BasePlayer()->RemoveSpawnProtection();
+}

@@ -419,9 +419,8 @@ public:
 	CGrenade *ThrowGrenade_OrigFunc(CBasePlayerWeapon *pWeapon, VectorRef vecSrc, VectorRef vecThrow, float time, unsigned short usEvent = 0);
 	void SwitchTeam_OrigFunc();
 	bool CanSwitchTeam_OrigFunc(TeamName teamToSwap);
-
-	void SetSpawnProtection(float flProtectionTime);
-	void RemoveSpawnProtection();
+	void SetSpawnProtection_OrigFunc(float flProtectionTime);
+	void RemoveSpawnProtection_OrigFunc();
 
 	CCSPlayer *CSPlayer() const;
 #endif // REGAMEDLL_API
@@ -610,6 +609,9 @@ public:
 
 	CBasePlayerItem *GetItemByName(const char *itemName);
 	CBasePlayerItem *GetItemById(WeaponIdType weaponID);
+
+	void SetSpawnProtection(float flProtectionTime);
+	void RemoveSpawnProtection();
 
 	// templates
 	template<typename T = CBasePlayerItem, typename Functor>

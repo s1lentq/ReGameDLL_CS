@@ -9524,13 +9524,17 @@ bool CBasePlayer::__API_HOOK(CanSwitchTeam)(TeamName teamToSwap)
 	return true;
 }
 
-EXT_FUNC void CBasePlayer::SetSpawnProtection(float flProtectionTime)
+LINK_HOOK_CLASS_VOID_CHAIN(CBasePlayer, SetSpawnProtection, (float flProtectionTime), flProtectionTime)
+
+void EXT_FUNC CBasePlayer::__API_HOOK(SetSpawnProtection)(float flProtectionTime)
 {
 	pev->takedamage = DAMAGE_NO;
 	CSPlayer()->m_flSpawnProtectionEndTime = gpGlobals->time + flProtectionTime;
 }
 
-EXT_FUNC void CBasePlayer::RemoveSpawnProtection()
+LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, RemoveSpawnProtection)
+
+void CBasePlayer::__API_HOOK(RemoveSpawnProtection)()
 {
 	pev->takedamage = DAMAGE_AIM;
 	CSPlayer()->m_flSpawnProtectionEndTime = 0.0f;
