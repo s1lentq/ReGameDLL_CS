@@ -1438,6 +1438,28 @@ void OnFreeEntPrivateData(edict_t *pEnt)
 	if (!pEntity)
 		return;
 
+#ifdef REGAMEDLL_FIXES
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	{
+		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
+
+		if (!pPlayer)
+			continue;
+
+		if (FNullEnt(pPlayer->edict()))
+			continue;
+
+		if (pPlayer->IsDormant())
+			continue;
+
+		if (pPlayer->m_pActiveItem && pPlayer->m_pActiveItem == pEntity)
+		{
+			ALERT(at_warning, "Trying to release the entity: (%s : `%s`) without pre-reset m_pActiveItem\n", pEntity->GetClassname(), pEntity->pev->model.str());
+			pPlayer->m_pActiveItem = nullptr;
+		}
+	}
+#endif
+
 #ifdef REGAMEDLL_API
 	pEntity->OnDestroy();
 #endif

@@ -4610,8 +4610,19 @@ int EXT_FUNC GetWeaponData(edict_t *pEdict, struct weapon_data_s *info)
 		auto pPlayerItem = pPlayer->m_rgpPlayerItems[i];
 		while (pPlayerItem)
 		{
+#ifdef REGAMEDLL_FIXES
+			// Make sure that entity is CBasePlayerItem
+			auto pItem = dynamic_cast<CBasePlayerItem *>(pPlayerItem);
+			if (pItem = nullptr)
+			{
+				ALERT(at_error, "GetWeaponData: m_rgpPlayerItems[%i] is non-item, entity: (%s `%s`), (%s)\n", i, pPlayerItem->GetClassname(), pPlayerItem->pev->model.str(), typeid(pPlayer->m_pActiveItem).name());
+				return 0;
+			}
+#endif
+
 			// there's a weapon here. Should I pack it?
 			auto weapon = (CBasePlayerWeapon *)pPlayerItem->GetWeaponPtr();
+
 			if (weapon && weapon->UseDecrement())
 			{
 				// Get The ID
@@ -4748,6 +4759,16 @@ void EXT_FUNC UpdateClientData(const edict_t *ent, int sendweapons, struct clien
 		{
 			ItemInfo II;
 			Q_memset(&II, 0, sizeof(II));
+
+#ifdef REGAMEDLL_FIXES
+			// Make sure that entity is CBasePlayerItem
+			auto pItem = dynamic_cast<CBasePlayerItem *>(pPlayer->m_pActiveItem);
+			if (pItem = nullptr)
+			{
+				ALERT(at_error, "GetWeaponData: m_pActiveItem is non-item, entity: (%s `%s`), (%s)\n", pPlayer->m_pActiveItem->GetClassname(), pPlayer->m_pActiveItem->pev->model.str(), typeid(pPlayer->m_pActiveItem).name());
+				return;
+			}
+#endif
 
 			CBasePlayerWeapon *weapon = (CBasePlayerWeapon *)pPlayer->m_pActiveItem->GetWeaponPtr();
 			if (weapon && weapon->UseDecrement() && weapon->GetItemInfo(&II))

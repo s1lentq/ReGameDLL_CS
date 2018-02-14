@@ -119,7 +119,7 @@ void setupToolchain(NativeBinarySpec b)
 			cfg.compilerOptions.enhancedInstructionsSet = EnhancedInstructionsSet.DISABLED
 		}
 		else {
-			cfg.compilerOptions.args '/Oi', '/GF', '/GS-', '/GR-'
+			cfg.compilerOptions.args '/Oi', '/GF', '/GS-'
 		}
 
 		cfg.projectLibpath(project, '/lib')

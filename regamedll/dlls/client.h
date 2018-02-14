@@ -28,6 +28,8 @@
 
 #pragma once
 
+#include <typeinfo>
+
 // custom enum
 enum ChooseTeamMenuSlot
 {
