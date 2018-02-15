@@ -220,6 +220,16 @@ void CFlashbang::WeaponIdle()
 	{
 		// we've finished the throw, restart.
 		m_flStartThrow = 0;
+
+#ifdef REGAMEDLL_ADD
+		if (flashbang_activeitem_afterthrow.value > 0 && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType])
+		{
+			SendWeaponAnim(FLASHBANG_DRAW, UseDecrement() != FALSE);
+			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + RANDOM_FLOAT(10, 15);
+			m_flReleaseThrow = -1.0f;
+			return;
+		}
+#endif
 		RetireWeapon();
 	}
 	else if (m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType])
