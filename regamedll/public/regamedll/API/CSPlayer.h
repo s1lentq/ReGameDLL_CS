@@ -79,6 +79,7 @@ public:
 	virtual bool MakeBomber();
 	virtual void ResetSequenceInfo();
 	virtual void StartDeathCam();
+	virtual bool RemovePlayerItemEx(const char* pszItemName, bool bRemoveAmmo);
 
 	CBasePlayer *BasePlayer() const;
 
