@@ -79,7 +79,8 @@ public:
 	virtual bool MakeBomber();
 	virtual void ResetSequenceInfo();
 	virtual void StartDeathCam();
-	virtual void SetSpawnProtection(float flProtectionTime);
+	virtual bool RemovePlayerItemEx(const char* pszItemName, bool bRemoveAmmo);
+ 	virtual void SetSpawnProtection(float flProtectionTime);
 	virtual void RemoveSpawnProtection();
 
 	CBasePlayer *BasePlayer() const;

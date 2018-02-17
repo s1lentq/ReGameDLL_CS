@@ -132,7 +132,7 @@ EXT_FUNC bool CCSPlayer::JoinTeam(TeamName team)
 	return true;
 }
 
-EXT_FUNC bool CCSPlayer::RemovePlayerItem(const char *pszItemName)
+EXT_FUNC bool CCSPlayer::RemovePlayerItemEx(const char* pszItemName, bool bRemoveAmmo)
 {
 	if (!pszItemName)
 		return false;
@@ -249,8 +249,15 @@ EXT_FUNC bool CCSPlayer::RemovePlayerItem(const char *pszItemName)
 			pPlayer->SetProgressBarTime(0);
 		}
 
-		if (pItem->IsWeapon() && pItem == pPlayer->m_pActiveItem) {
-			((CBasePlayerWeapon *)pItem)->RetireWeapon();
+		if (pItem->IsWeapon())
+		{
+			if (pItem == pPlayer->m_pActiveItem) {
+				((CBasePlayerWeapon *)pItem)->RetireWeapon();
+			}
+
+			if (bRemoveAmmo) {
+				pPlayer->m_rgAmmo[ pItem->PrimaryAmmoIndex() ] = 0;
+			}
 		}
 
 		if (pPlayer->RemovePlayerItem(pItem)) {
@@ -266,6 +273,11 @@ EXT_FUNC bool CCSPlayer::RemovePlayerItem(const char *pszItemName)
 	}
 
 	return false;
+}
+
+EXT_FUNC bool CCSPlayer::RemovePlayerItem(const char *pszItemName)
+{
+	return RemovePlayerItemEx(pszItemName, false);
 }
 
 EXT_FUNC CBaseEntity *CCSPlayer::GiveNamedItemEx(const char *pszName)
