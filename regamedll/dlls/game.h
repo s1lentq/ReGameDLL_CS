@@ -153,7 +153,7 @@ extern cvar_t show_radioicon;
 extern cvar_t old_bomb_defused_sound;
 extern cvar_t item_staytime;
 extern cvar_t legacy_bombtarget_touch;
-extern cvar_t flashbang_activeitem_afterthrow;
+extern cvar_t flashbang_remain_active;
 
 #endif
 

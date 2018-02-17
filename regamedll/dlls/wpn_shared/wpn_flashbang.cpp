@@ -222,7 +222,7 @@ void CFlashbang::WeaponIdle()
 		m_flStartThrow = 0;
 
 #ifdef REGAMEDLL_ADD
-		if (flashbang_activeitem_afterthrow.value > 0 && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType])
+		if (flashbang_remain_active.value > 0 && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType])
 		{
 			SendWeaponAnim(FLASHBANG_DRAW, UseDecrement() != FALSE);
 			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + RANDOM_FLOAT(10, 15);
