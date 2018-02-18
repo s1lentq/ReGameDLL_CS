@@ -3635,6 +3635,11 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(PlayerSpawn)(CBasePlayer *pPlayer)
 	pPlayer->pev->weapons |= (1 << WEAPON_SUIT);
 	pPlayer->OnSpawnEquip();
 	pPlayer->SetPlayerModel(false);
+
+#ifdef REGAMEDLL_ADD
+	if (respawn_immunitytime.value > 0)
+		pPlayer->SetSpawnProtection(respawn_immunitytime.value);
+#endif
 }
 
 LINK_HOOK_CLASS_CUSTOM_CHAIN(BOOL, CHalfLifeMultiplay, CSGameRules, FPlayerCanRespawn, (CBasePlayer *pPlayer), pPlayer)
