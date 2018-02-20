@@ -176,10 +176,6 @@ void PM_PlayStepSound(int step, float fvol)
 
 	irand = pmove->RandomLong(0, 1) + (pmove->iStepLeft * 2);
 
-	// FIXME mp_footsteps needs to be a movevar
-	if (pmove->multiplayer && !pmove->movevars->footsteps)
-		return;
-
 	// irand - 0,1 for right foot, 2,3 for left foot
 	// used to alternate left and right foot
 	// FIXME, move to player state
