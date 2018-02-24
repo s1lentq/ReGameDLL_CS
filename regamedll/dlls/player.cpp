@@ -9529,9 +9529,6 @@ LINK_HOOK_CLASS_VOID_CHAIN(CBasePlayer, SetSpawnProtection, (float flProtectionT
 void EXT_FUNC CBasePlayer::__API_HOOK(SetSpawnProtection)(float flProtectionTime)
 {
 	pev->takedamage = DAMAGE_NO;
-	pev->rendermode = kRenderTransAdd;
-	pev->renderamt = 100.0;
-
 	CSPlayer()->m_flSpawnProtectionEndTime = gpGlobals->time + flProtectionTime;
 }
 
@@ -9540,7 +9537,5 @@ LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, RemoveSpawnProtection)
 void CBasePlayer::__API_HOOK(RemoveSpawnProtection)()
 {
 	pev->takedamage = DAMAGE_AIM;
-	pev->rendermode = kRenderNormal;
-
 	CSPlayer()->m_flSpawnProtectionEndTime = 0.0f;
 }
