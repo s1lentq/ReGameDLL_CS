@@ -116,6 +116,7 @@ cvar_t show_radioicon          = { "mp_show_radioicon", "1", FCVAR_SERVER, 1.0f,
 cvar_t old_bomb_defused_sound  = { "mp_old_bomb_defused_sound", "1", FCVAR_SERVER, 1.0f, nullptr };
 cvar_t item_staytime           = { "mp_item_staytime", "300", FCVAR_SERVER, 300.0f, nullptr };
 cvar_t legacy_bombtarget_touch = { "mp_legacy_bombtarget_touch", "1", FCVAR_SERVER, 1.0f, nullptr };
+cvar_t respawn_immunitytime    = { "mp_respawn_immunitytime", "0", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t flashbang_remain_active = { "mp_flashbang_remain_active", "0", FCVAR_SERVER, 0.0f, nullptr };
 
 void GameDLL_Version_f()
@@ -271,6 +272,7 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&old_bomb_defused_sound);
 	CVAR_REGISTER(&item_staytime);
 	CVAR_REGISTER(&legacy_bombtarget_touch);
+	CVAR_REGISTER(&respawn_immunitytime);
 	CVAR_REGISTER(&flashbang_remain_active);
 
 	// print version

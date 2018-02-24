@@ -38,7 +38,7 @@
 #include <API/CSInterfaces.h>
 
 #define REGAMEDLL_API_VERSION_MAJOR 5
-#define REGAMEDLL_API_VERSION_MINOR 5
+#define REGAMEDLL_API_VERSION_MINOR 7
 
 // CBasePlayer::Spawn hook
 typedef IHookChainClass<void, class CBasePlayer> IReGameHook_CBasePlayer_Spawn;
@@ -424,6 +424,14 @@ typedef IHookChainRegistry<class CGrenade *, entvars_t *, Vector &, Vector &, fl
 typedef IHookChain<class CGrenade *, entvars_t *, Vector &, Vector &> IReGameHook_PlantBomb;
 typedef IHookChainRegistry<class CGrenade *, entvars_t *, Vector &, Vector &> IReGameHookRegistry_PlantBomb;
 
+// CBasePlayer::SetSpawnProtection hook
+typedef IHookChainClass<void, class CBasePlayer, float> IReGameHook_CBasePlayer_SetSpawnProtection;
+typedef IHookChainRegistryClass<void, class CBasePlayer, float> IReGameHookRegistry_CBasePlayer_SetSpawnProtection;
+
+// CBasePlayer::RemoveSpawnProtection hook
+typedef IHookChainClass<void, class CBasePlayer> IReGameHook_CBasePlayer_RemoveSpawnProtection;
+typedef IHookChainRegistryClass<void, class CBasePlayer> IReGameHookRegistry_CBasePlayer_RemoveSpawnProtection;
+
 class IReGameHookchains {
 public:
 	virtual ~IReGameHookchains() {}
@@ -529,6 +537,8 @@ public:
 	virtual IReGameHookRegistry_ThrowFlashbang *ThrowFlashbang() = 0;
 	virtual IReGameHookRegistry_ThrowSmokeGrenade *ThrowSmokeGrenade() = 0;
 	virtual IReGameHookRegistry_PlantBomb *PlantBomb() = 0;
+	virtual IReGameHookRegistry_CBasePlayer_RemoveSpawnProtection *CBasePlayer_RemoveSpawnProtection() = 0;
+	virtual IReGameHookRegistry_CBasePlayer_SetSpawnProtection *CBasePlayer_SetSpawnProtection() = 0;
 };
 
 struct ReGameFuncs_t {

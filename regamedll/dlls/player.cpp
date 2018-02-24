@@ -4376,6 +4376,13 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 	}
 
 	UpdateLocation();
+
+#ifdef REGAMEDLL_ADD
+	if (CSPlayer()->m_flSpawnProtectionEndTime > 0 && gpGlobals->time > CSPlayer()->m_flSpawnProtectionEndTime)
+	{
+		RemoveSpawnProtection();
+	}
+#endif
 }
 
 // If player is taking time based damage, continue doing damage to player -
@@ -9515,4 +9522,25 @@ bool CBasePlayer::__API_HOOK(CanSwitchTeam)(TeamName teamToSwap)
 	}
 
 	return true;
+}
+
+LINK_HOOK_CLASS_VOID_CHAIN(CBasePlayer, SetSpawnProtection, (float flProtectionTime), flProtectionTime)
+
+void EXT_FUNC CBasePlayer::__API_HOOK(SetSpawnProtection)(float flProtectionTime)
+{
+	pev->takedamage = DAMAGE_NO;
+	pev->rendermode = kRenderTransAdd;
+	pev->renderamt = 100.0;
+
+	CSPlayer()->m_flSpawnProtectionEndTime = gpGlobals->time + flProtectionTime;
+}
+
+LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, RemoveSpawnProtection)
+
+void CBasePlayer::__API_HOOK(RemoveSpawnProtection)()
+{
+	pev->takedamage = DAMAGE_AIM;
+	pev->rendermode = kRenderNormal;
+
+	CSPlayer()->m_flSpawnProtectionEndTime = 0.0f;
 }

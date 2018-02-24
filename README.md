@@ -49,7 +49,8 @@ Archive's bin directory contains 2 subdirectories, 'bugfixed' and 'pure'
 | bot_quota_mode                | normal  | -   | -            | Determines the type of quota.<br/>`normal` default behaviour<br/>`fill` the server will adjust bots to keep `N` players in the game, where `N` is bot_quota |
 | mp_item_staytime              | 300     | -   | -            | Time to remove item that have been dropped from the players. |
 | mp_legacy_bombtarget_touch    | 1       | 0   | 1            | Legacy func_bomb_target touch. New one is more strict. <br/>`0` New behavior<br/>`1` Legacy behavior|
-| mp_flashbang_remain_active    | 0       | 0   | 1            | Flashbang should remain the active item after a throw. <br/>`0` disable<br/>`1` enable |
+| mp_respawn_immunitytime       | 0       | 0   | -            | Specifies the players defense time after respawn. (in seconds).<br/>`0` disabled<br/>`>0.00001` time delay to remove protection |
+| mp_flashbang_remain_active    | 0       | 0   | 1            | Flashbang should remain the active item after a throw. <br/>`0` disabled<br/>`1` enabled |
 
 ## How to install zBot for CS 1.6?
 * Extract all the files from an [archive](regamedll/extra/zBot/bot_profiles.zip?raw=true)

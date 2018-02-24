@@ -521,6 +521,14 @@ typedef IHookChainRegistryImpl<CGrenade *, entvars_t *, Vector &, Vector &, floa
 typedef IHookChainImpl<CGrenade *, entvars_t *, Vector &, Vector &> CReGameHook_PlantBomb;
 typedef IHookChainRegistryImpl<CGrenade *, entvars_t *, Vector &, Vector &> CReGameHookRegistry_PlantBomb;
 
+// CBasePlayer::SetSpawnProtection hook
+typedef IHookChainClassImpl<void, CBasePlayer, float> CReGameHook_CBasePlayer_SetSpawnProtection;
+typedef IHookChainRegistryClassImpl<void, CBasePlayer, float> CReGameHookRegistry_CBasePlayer_SetSpawnProtection;
+
+// CBasePlayer::RemoveSpawnProtection hook
+typedef IHookChainImpl<void, CBasePlayer> CReGameHook_CBasePlayer_RemoveSpawnProtection;
+typedef IHookChainRegistryClassImpl<void, CBasePlayer> CReGameHookRegistry_CBasePlayer_RemoveSpawnProtection;
+
 class CReGameHookchains: public IReGameHookchains {
 public:
 	// CBasePlayer virtual
@@ -625,6 +633,8 @@ public:
 	CReGameHookRegistry_ThrowFlashbang m_ThrowFlashbang;
 	CReGameHookRegistry_ThrowSmokeGrenade m_ThrowSmokeGrenade;
 	CReGameHookRegistry_PlantBomb m_PlantBomb;
+	CReGameHookRegistry_CBasePlayer_SetSpawnProtection m_CBasePlayer_SetSpawnProtection;
+	CReGameHookRegistry_CBasePlayer_RemoveSpawnProtection m_CBasePlayer_RemoveSpawnProtection;
 public:
 	virtual IReGameHookRegistry_CBasePlayer_Spawn *CBasePlayer_Spawn();
 	virtual IReGameHookRegistry_CBasePlayer_Precache *CBasePlayer_Precache();
@@ -727,6 +737,8 @@ public:
 	virtual IReGameHookRegistry_ThrowFlashbang *ThrowFlashbang();
 	virtual IReGameHookRegistry_ThrowSmokeGrenade *ThrowSmokeGrenade();
 	virtual IReGameHookRegistry_PlantBomb *PlantBomb();
+	virtual IReGameHookRegistry_CBasePlayer_SetSpawnProtection *CBasePlayer_SetSpawnProtection();
+	virtual IReGameHookRegistry_CBasePlayer_RemoveSpawnProtection *CBasePlayer_RemoveSpawnProtection();
 };
 
 extern CReGameHookchains g_ReGameHookchains;
