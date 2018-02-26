@@ -131,9 +131,23 @@ void GameDLL_Version_f()
 
 void GameDLL_EndRound_f()
 {
-	CSGameRules()->EndRoundMessage("#Round_Draw", ROUND_END_DRAW);
-	Broadcast("rounddraw");
-	CSGameRules()->TerminateRound(5, WINSTATUS_DRAW);
+	if (CMD_ARGC() == 2)
+	{
+		const char *pCmd = CMD_ARGV(1);
+
+		if (pCmd[0] == '1' || !Q_stricmp(pCmd, "T"))
+		{
+			CSGameRules()->OnRoundEnd_Intercept(WINSTATUS_TERRORISTS, ROUND_TERRORISTS_WIN, CSGameRules()->GetRoundRestartDelay());
+			return;
+		}
+		else if (pCmd[0] == '2' || !Q_stricmp(pCmd, "CT"))
+		{
+			CSGameRules()->OnRoundEnd_Intercept(WINSTATUS_CTS, ROUND_CTS_WIN, CSGameRules()->GetRoundRestartDelay());
+			return;
+		}
+	}
+
+	CSGameRules()->OnRoundEnd_Intercept(WINSTATUS_DRAW, ROUND_END_DRAW, CSGameRules()->GetRoundRestartDelay());
 }
 
 #endif // REGAMEDLL_ADD
