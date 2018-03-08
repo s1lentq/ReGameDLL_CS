@@ -1258,6 +1258,10 @@ void PackPlayerNade(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 	if (!pItem)
 		return;
 
+	if (pItem->m_flStartThrow || pPlayer->m_rgAmmo[pItem->PrimaryAmmoIndex()] <= 0) {
+		return;
+	}
+
 	const char *modelName = GetCSModelName(pItem->m_iId);
 	if (modelName)
 	{
@@ -1273,10 +1277,6 @@ void PackPlayerNade(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 		case WEAPON_SMOKEGRENADE:
 			flOffset = -14.0f;
 			break;
-		}
-
-		if (pItem->m_flStartThrow && pPlayer->m_rgAmmo[pItem->PrimaryAmmoIndex()] <= 0) {
-			return;
 		}
 
 		Vector vecAngles = pPlayer->pev->angles;
@@ -1295,7 +1295,7 @@ void PackPlayerNade(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 		pWeaponBox->pev->velocity = pPlayer->pev->velocity * 0.75f;
 
 		pWeaponBox->SetThink(&CWeaponBox::Kill);
-		pWeaponBox->pev->nextthink = gpGlobals->time + 300.0f;
+		pWeaponBox->pev->nextthink = gpGlobals->time + CGameRules::GetItemKillDelay();
 		pWeaponBox->PackWeapon(pItem); // now pack all of the items in the lists
 
 		// pack the ammo
@@ -1353,7 +1353,14 @@ void CBasePlayer::PackDeadPlayerItems()
 				else if (pPlayerItem->iItemSlot() == GRENADE_SLOT)
 				{
 					if (AreRunningCZero())
-						PackPlayerItem(this, pPlayerItem, true);
+					{
+#ifdef REGAMEDLL_FIXES
+						if (pPlayerItem->m_flStartThrow == 0.0f && m_rgAmmo[pPlayerItem->PrimaryAmmoIndex()] > 0)
+#endif
+						{
+							PackPlayerItem(this, pPlayerItem, true);
+						}
+					}
 #ifdef REGAMEDLL_ADD
 					else
 					{
