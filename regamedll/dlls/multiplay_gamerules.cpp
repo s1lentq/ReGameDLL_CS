@@ -2607,7 +2607,7 @@ bool CHalfLifeMultiplay::CheckFragLimit()
 #ifdef REGAMEDLL_ADD
 	int fragsRemaining = 0;
 
-	if (fraglimit.value)
+	if (fraglimit.value > 0)
 	{
 		int bestFrags = fraglimit.value;
 
