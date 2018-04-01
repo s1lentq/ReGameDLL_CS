@@ -1187,6 +1187,10 @@ CGrenade *CGrenade::__API_HOOK(ShootSatchelCharge)(entvars_t *pevOwner, VectorRe
 	pGrenade->pev->spawnflags = SF_DETONATE;
 
 #ifdef REGAMEDLL_FIXES
+	TraceResult tr;
+	UTIL_TraceLine(vecStart,  vecStart + Vector(0, 0, -8192), ignore_monsters, ENT(pevOwner), &tr);
+	pGrenade->pev->oldorigin = (tr.flFraction == 1.0) ? vecStart : tr.vecEndPos;
+	
 	pGrenade->pev->nextthink = gpGlobals->time + 0.01f;
 #else
 	pGrenade->pev->nextthink = gpGlobals->time + 0.1f;
@@ -1277,8 +1281,17 @@ void CGrenade::C4Think()
 {
 	if (!IsInWorld())
 	{
+#ifdef REGAMEDLL_FIXES
+		pev->origin = pev->oldorigin;
+		
+		if (DROP_TO_FLOOR(edict()) > 0)
+		{
+			pev->velocity = g_vecZero;
+		}
+#else
 		UTIL_Remove(this);
 		return;
+#endif
 	}
 
 #ifdef REGAMEDLL_FIXES
