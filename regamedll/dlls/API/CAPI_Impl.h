@@ -361,6 +361,10 @@ typedef IHookChainRegistryImpl<CBaseEntity *, CBasePlayer *, WeaponIdType> CReGa
 typedef IHookChainImpl<void, edict_t *, const char *, const char *> CReGameHook_InternalCommand;
 typedef IHookChainRegistryImpl<void, edict_t *, const char *, const char *> CReGameHookRegistry_InternalCommand;
 
+// IsPenetrableEntity hook
+typedef IHookChainImpl<bool, Vector &, Vector &, entvars_t *, edict_t *> CReGameHook_IsPenetrableEntity;
+typedef IHookChainRegistryImpl<bool, Vector &, Vector &, entvars_t *, edict_t *> CReGameHookRegistry_IsPenetrableEntity;
+
 // CHalfLifeMultiplay::FShouldSwitchWeapon hook
 typedef IHookChainClassImpl<BOOL, class CHalfLifeMultiplay, CBasePlayer *, CBasePlayerItem *> CReGameHook_CSGameRules_FShouldSwitchWeapon;
 typedef IHookChainRegistryClassEmptyImpl<BOOL, class CHalfLifeMultiplay, CBasePlayer *, CBasePlayerItem *> CReGameHookRegistry_CSGameRules_FShouldSwitchWeapon;
@@ -591,6 +595,7 @@ public:
 	CReGameHookRegistry_BuyGunAmmo m_BuyGunAmmo;
 	CReGameHookRegistry_BuyWeaponByWeaponID m_BuyWeaponByWeaponID;
 	CReGameHookRegistry_InternalCommand m_InternalCommand;
+	CReGameHookRegistry_IsPenetrableEntity m_IsPenetrableEntity;
 
 	CReGameHookRegistry_CSGameRules_FShouldSwitchWeapon m_CSGameRules_FShouldSwitchWeapon;
 	CReGameHookRegistry_CSGameRules_GetNextBestWeapon m_CSGameRules_GetNextBestWeapon;
@@ -695,7 +700,8 @@ public:
 	virtual IReGameHookRegistry_BuyGunAmmo *BuyGunAmmo();
 	virtual IReGameHookRegistry_BuyWeaponByWeaponID *BuyWeaponByWeaponID();
 	virtual IReGameHookRegistry_InternalCommand *InternalCommand();
-
+	virtual IReGameHookRegistry_IsPenetrableEntity *IsPenetrableEntity();
+	
 	virtual IReGameHookRegistry_CSGameRules_FShouldSwitchWeapon *CSGameRules_FShouldSwitchWeapon();
 	virtual IReGameHookRegistry_CSGameRules_GetNextBestWeapon *CSGameRules_GetNextBestWeapon();
 	virtual IReGameHookRegistry_CSGameRules_FlPlayerFallDamage *CSGameRules_FlPlayerFallDamage();

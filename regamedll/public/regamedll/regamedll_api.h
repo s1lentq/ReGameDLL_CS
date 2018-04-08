@@ -38,7 +38,7 @@
 #include <API/CSInterfaces.h>
 
 #define REGAMEDLL_API_VERSION_MAJOR 5
-#define REGAMEDLL_API_VERSION_MINOR 7
+#define REGAMEDLL_API_VERSION_MINOR 8
 
 // CBasePlayer::Spawn hook
 typedef IHookChainClass<void, class CBasePlayer> IReGameHook_CBasePlayer_Spawn;
@@ -263,6 +263,10 @@ typedef IHookChainRegistry<class CBaseEntity *, class CBasePlayer *, WeaponIdTyp
 // InternalCommand hook
 typedef IHookChain<void, edict_t *, const char *, const char *> IReGameHook_InternalCommand;
 typedef IHookChainRegistry<void, edict_t *, const char *, const char *> IReGameHookRegistry_InternalCommand;
+
+// IsPenetrableEntity hook
+typedef IHookChain<bool, Vector &, Vector &, entvars_t *, edict_t *> IReGameHook_IsPenetrableEntity;
+typedef IHookChainRegistry<bool, Vector &, Vector &, entvars_t *, edict_t *> IReGameHookRegistry_IsPenetrableEntity;
 
 // CHalfLifeMultiplay::FShouldSwitchWeapon hook
 typedef IHookChain<BOOL, class CBasePlayer *, class CBasePlayerItem *> IReGameHook_CSGameRules_FShouldSwitchWeapon;
@@ -496,6 +500,7 @@ public:
 	virtual IReGameHookRegistry_BuyGunAmmo *BuyGunAmmo() = 0;
 	virtual IReGameHookRegistry_BuyWeaponByWeaponID *BuyWeaponByWeaponID() = 0;
 	virtual IReGameHookRegistry_InternalCommand *InternalCommand() = 0;
+	virtual IReGameHookRegistry_IsPenetrableEntity *IsPenetrableEntity() = 0;
 
 	virtual IReGameHookRegistry_CSGameRules_FShouldSwitchWeapon *CSGameRules_FShouldSwitchWeapon() = 0;
 	virtual IReGameHookRegistry_CSGameRules_GetNextBestWeapon *CSGameRules_GetNextBestWeapon() = 0;
