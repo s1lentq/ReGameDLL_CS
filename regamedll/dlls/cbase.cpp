@@ -1131,6 +1131,11 @@ void CBaseEntity::FireBullets(ULONG cShots, Vector vecSrc, Vector vecDirShooting
 	ApplyMultiDamage(pev, pevAttacker);
 }
 
+bool EXT_FUNC IsPenetrableEntity_default(Vector &vecSrc, Vector &vecEnd, entvars_t *pevAttacker, edict_t *pHit)
+{
+	return true;
+}
+
 // Go to the trouble of combining multiple pellets into a single damage call.
 // This version is used by Players, uses the random seed generator to sync client and server side shots.
 Vector CBaseEntity::FireBullets3(Vector vecSrc, Vector vecDirShooting, float vecSpread, float flDistance, int iPenetration, int iBulletType, int iDamage, float flRangeModifier, entvars_t *pevAttacker, bool bPistol, int shared_rand)
@@ -1294,6 +1299,11 @@ Vector CBaseEntity::FireBullets3(Vector vecSrc, Vector vecDirShooting, float vec
 			{
 				iPenetration = 0;
 			}
+
+			bool bIsPenatrable = g_ReGameHookchains.m_IsPenetrableEntity.callChain(IsPenetrableEntity_default, vecSrc, tr.vecEndPos, pevAttacker, tr.pHit);
+
+			if (!bIsPenatrable)
+				iPenetration = 0;
 
 			if (tr.iHitgroup == HITGROUP_SHIELD)
 			{
