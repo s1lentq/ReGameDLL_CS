@@ -116,7 +116,6 @@ GAMEHOOK_REGISTRY(ShowVGUIMenu);
 GAMEHOOK_REGISTRY(BuyGunAmmo);
 GAMEHOOK_REGISTRY(BuyWeaponByWeaponID);
 GAMEHOOK_REGISTRY(InternalCommand);
-GAMEHOOK_REGISTRY(IsPenetrableEntity);
 
 GAMEHOOK_REGISTRY(CSGameRules_FShouldSwitchWeapon);
 GAMEHOOK_REGISTRY(CSGameRules_GetNextBestWeapon);
@@ -160,6 +159,7 @@ GAMEHOOK_REGISTRY(ThrowSmokeGrenade);
 GAMEHOOK_REGISTRY(PlantBomb);
 GAMEHOOK_REGISTRY(CBasePlayer_SetSpawnProtection);
 GAMEHOOK_REGISTRY(CBasePlayer_RemoveSpawnProtection);
+GAMEHOOK_REGISTRY(IsPenetrableEntity);
 
 int CReGameApi::GetMajorVersion() {
 	return REGAMEDLL_API_VERSION_MAJOR;

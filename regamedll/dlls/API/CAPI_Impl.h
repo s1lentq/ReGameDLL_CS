@@ -361,10 +361,6 @@ typedef IHookChainRegistryImpl<CBaseEntity *, CBasePlayer *, WeaponIdType> CReGa
 typedef IHookChainImpl<void, edict_t *, const char *, const char *> CReGameHook_InternalCommand;
 typedef IHookChainRegistryImpl<void, edict_t *, const char *, const char *> CReGameHookRegistry_InternalCommand;
 
-// IsPenetrableEntity hook
-typedef IHookChainImpl<bool, Vector &, Vector &, entvars_t *, edict_t *> CReGameHook_IsPenetrableEntity;
-typedef IHookChainRegistryImpl<bool, Vector &, Vector &, entvars_t *, edict_t *> CReGameHookRegistry_IsPenetrableEntity;
-
 // CHalfLifeMultiplay::FShouldSwitchWeapon hook
 typedef IHookChainClassImpl<BOOL, class CHalfLifeMultiplay, CBasePlayer *, CBasePlayerItem *> CReGameHook_CSGameRules_FShouldSwitchWeapon;
 typedef IHookChainRegistryClassEmptyImpl<BOOL, class CHalfLifeMultiplay, CBasePlayer *, CBasePlayerItem *> CReGameHookRegistry_CSGameRules_FShouldSwitchWeapon;
@@ -533,6 +529,10 @@ typedef IHookChainRegistryClassImpl<void, CBasePlayer, float> CReGameHookRegistr
 typedef IHookChainImpl<void, CBasePlayer> CReGameHook_CBasePlayer_RemoveSpawnProtection;
 typedef IHookChainRegistryClassImpl<void, CBasePlayer> CReGameHookRegistry_CBasePlayer_RemoveSpawnProtection;
 
+// IsPenetrableEntity hook
+typedef IHookChainImpl<bool, Vector &, Vector &, entvars_t *, edict_t *> CReGameHook_IsPenetrableEntity;
+typedef IHookChainRegistryImpl<bool, Vector &, Vector &, entvars_t *, edict_t *> CReGameHookRegistry_IsPenetrableEntity;
+
 class CReGameHookchains: public IReGameHookchains {
 public:
 	// CBasePlayer virtual
@@ -595,7 +595,6 @@ public:
 	CReGameHookRegistry_BuyGunAmmo m_BuyGunAmmo;
 	CReGameHookRegistry_BuyWeaponByWeaponID m_BuyWeaponByWeaponID;
 	CReGameHookRegistry_InternalCommand m_InternalCommand;
-	CReGameHookRegistry_IsPenetrableEntity m_IsPenetrableEntity;
 
 	CReGameHookRegistry_CSGameRules_FShouldSwitchWeapon m_CSGameRules_FShouldSwitchWeapon;
 	CReGameHookRegistry_CSGameRules_GetNextBestWeapon m_CSGameRules_GetNextBestWeapon;
@@ -640,6 +639,7 @@ public:
 	CReGameHookRegistry_PlantBomb m_PlantBomb;
 	CReGameHookRegistry_CBasePlayer_SetSpawnProtection m_CBasePlayer_SetSpawnProtection;
 	CReGameHookRegistry_CBasePlayer_RemoveSpawnProtection m_CBasePlayer_RemoveSpawnProtection;
+	CReGameHookRegistry_IsPenetrableEntity m_IsPenetrableEntity;
 public:
 	virtual IReGameHookRegistry_CBasePlayer_Spawn *CBasePlayer_Spawn();
 	virtual IReGameHookRegistry_CBasePlayer_Precache *CBasePlayer_Precache();
@@ -700,7 +700,6 @@ public:
 	virtual IReGameHookRegistry_BuyGunAmmo *BuyGunAmmo();
 	virtual IReGameHookRegistry_BuyWeaponByWeaponID *BuyWeaponByWeaponID();
 	virtual IReGameHookRegistry_InternalCommand *InternalCommand();
-	virtual IReGameHookRegistry_IsPenetrableEntity *IsPenetrableEntity();
 	
 	virtual IReGameHookRegistry_CSGameRules_FShouldSwitchWeapon *CSGameRules_FShouldSwitchWeapon();
 	virtual IReGameHookRegistry_CSGameRules_GetNextBestWeapon *CSGameRules_GetNextBestWeapon();
@@ -745,6 +744,7 @@ public:
 	virtual IReGameHookRegistry_PlantBomb *PlantBomb();
 	virtual IReGameHookRegistry_CBasePlayer_SetSpawnProtection *CBasePlayer_SetSpawnProtection();
 	virtual IReGameHookRegistry_CBasePlayer_RemoveSpawnProtection *CBasePlayer_RemoveSpawnProtection();
+	virtual IReGameHookRegistry_IsPenetrableEntity *IsPenetrableEntity();
 };
 
 extern CReGameHookchains g_ReGameHookchains;

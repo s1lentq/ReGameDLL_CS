@@ -264,10 +264,6 @@ typedef IHookChainRegistry<class CBaseEntity *, class CBasePlayer *, WeaponIdTyp
 typedef IHookChain<void, edict_t *, const char *, const char *> IReGameHook_InternalCommand;
 typedef IHookChainRegistry<void, edict_t *, const char *, const char *> IReGameHookRegistry_InternalCommand;
 
-// IsPenetrableEntity hook
-typedef IHookChain<bool, Vector &, Vector &, entvars_t *, edict_t *> IReGameHook_IsPenetrableEntity;
-typedef IHookChainRegistry<bool, Vector &, Vector &, entvars_t *, edict_t *> IReGameHookRegistry_IsPenetrableEntity;
-
 // CHalfLifeMultiplay::FShouldSwitchWeapon hook
 typedef IHookChain<BOOL, class CBasePlayer *, class CBasePlayerItem *> IReGameHook_CSGameRules_FShouldSwitchWeapon;
 typedef IHookChainRegistry<BOOL, class CBasePlayer *, class CBasePlayerItem *> IReGameHookRegistry_CSGameRules_FShouldSwitchWeapon;
@@ -436,6 +432,10 @@ typedef IHookChainRegistryClass<void, class CBasePlayer, float> IReGameHookRegis
 typedef IHookChainClass<void, class CBasePlayer> IReGameHook_CBasePlayer_RemoveSpawnProtection;
 typedef IHookChainRegistryClass<void, class CBasePlayer> IReGameHookRegistry_CBasePlayer_RemoveSpawnProtection;
 
+// IsPenetrableEntity hook
+typedef IHookChain<bool, Vector &, Vector &, entvars_t *, edict_t *> IReGameHook_IsPenetrableEntity;
+typedef IHookChainRegistry<bool, Vector &, Vector &, entvars_t *, edict_t *> IReGameHookRegistry_IsPenetrableEntity;
+
 class IReGameHookchains {
 public:
 	virtual ~IReGameHookchains() {}
@@ -500,7 +500,6 @@ public:
 	virtual IReGameHookRegistry_BuyGunAmmo *BuyGunAmmo() = 0;
 	virtual IReGameHookRegistry_BuyWeaponByWeaponID *BuyWeaponByWeaponID() = 0;
 	virtual IReGameHookRegistry_InternalCommand *InternalCommand() = 0;
-	virtual IReGameHookRegistry_IsPenetrableEntity *IsPenetrableEntity() = 0;
 
 	virtual IReGameHookRegistry_CSGameRules_FShouldSwitchWeapon *CSGameRules_FShouldSwitchWeapon() = 0;
 	virtual IReGameHookRegistry_CSGameRules_GetNextBestWeapon *CSGameRules_GetNextBestWeapon() = 0;
@@ -544,6 +543,7 @@ public:
 	virtual IReGameHookRegistry_PlantBomb *PlantBomb() = 0;
 	virtual IReGameHookRegistry_CBasePlayer_RemoveSpawnProtection *CBasePlayer_RemoveSpawnProtection() = 0;
 	virtual IReGameHookRegistry_CBasePlayer_SetSpawnProtection *CBasePlayer_SetSpawnProtection() = 0;
+	virtual IReGameHookRegistry_IsPenetrableEntity *IsPenetrableEntity() = 0;
 };
 
 struct ReGameFuncs_t {
