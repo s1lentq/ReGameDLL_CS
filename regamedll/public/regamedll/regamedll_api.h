@@ -38,7 +38,7 @@
 #include <API/CSInterfaces.h>
 
 #define REGAMEDLL_API_VERSION_MAJOR 5
-#define REGAMEDLL_API_VERSION_MINOR 7
+#define REGAMEDLL_API_VERSION_MINOR 8
 
 // CBasePlayer::Spawn hook
 typedef IHookChainClass<void, class CBasePlayer> IReGameHook_CBasePlayer_Spawn;
@@ -432,6 +432,10 @@ typedef IHookChainRegistryClass<void, class CBasePlayer, float> IReGameHookRegis
 typedef IHookChainClass<void, class CBasePlayer> IReGameHook_CBasePlayer_RemoveSpawnProtection;
 typedef IHookChainRegistryClass<void, class CBasePlayer> IReGameHookRegistry_CBasePlayer_RemoveSpawnProtection;
 
+// IsPenetrableEntity hook
+typedef IHookChain<bool, Vector &, Vector &, entvars_t *, edict_t *> IReGameHook_IsPenetrableEntity;
+typedef IHookChainRegistry<bool, Vector &, Vector &, entvars_t *, edict_t *> IReGameHookRegistry_IsPenetrableEntity;
+
 class IReGameHookchains {
 public:
 	virtual ~IReGameHookchains() {}
@@ -539,6 +543,7 @@ public:
 	virtual IReGameHookRegistry_PlantBomb *PlantBomb() = 0;
 	virtual IReGameHookRegistry_CBasePlayer_RemoveSpawnProtection *CBasePlayer_RemoveSpawnProtection() = 0;
 	virtual IReGameHookRegistry_CBasePlayer_SetSpawnProtection *CBasePlayer_SetSpawnProtection() = 0;
+	virtual IReGameHookRegistry_IsPenetrableEntity *IsPenetrableEntity() = 0;
 };
 
 struct ReGameFuncs_t {
