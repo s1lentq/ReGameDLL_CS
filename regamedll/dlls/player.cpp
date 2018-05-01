@@ -4344,15 +4344,19 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 	{
 		// If on a ladder, jump off the ladder
 		// else Jump
-		if(pev->euser1 != 1)
-		Jump();
+		if(pev->playerclass != 1)
+		{
+			Jump();
+		}
 	}
 
 	// If trying to duck, already ducked, or in the process of ducking
 	if ((pev->button & IN_DUCK) || (pev->flags & FL_DUCKING) || (m_afPhysicsFlags & PFLAG_DUCKING))
 	{
-		if(pev->euser1 != 1)
-		Duck();
+		if(pev->playerclass != 1)
+		{
+			Duck();
+		}
 	}
 
 	if (!(pev->flags & FL_ONGROUND))
