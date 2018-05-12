@@ -8312,7 +8312,7 @@ void CBasePlayer::ClientCommand(const char *cmd, const char *arg1, const char *a
 		"addl %%esp, $4\n\t"
 		::
 		"g" (pEntity),
-		"g" (ClientCommand_),
+		"g" (ClientCommand_)
 	);
 #endif // _MSC_VER || defined __INTEL_COMPILER
 #endif // NO_AMXX_HACKS
