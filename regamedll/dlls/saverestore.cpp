@@ -28,7 +28,7 @@
 
 #include "precompiled.h"
 
-static constexpr int CSaveRestoreBuffer::m_Sizes[];
+constexpr int CSaveRestoreBuffer::m_Sizes[];
 
 TYPEDESCRIPTION g_EntvarsDescription[] =
 {
