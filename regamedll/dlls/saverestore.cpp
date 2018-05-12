@@ -28,7 +28,10 @@
 
 #include "precompiled.h"
 
+// this should be defined(otherwise link will fail), but MSVC doesn't require it
+#ifndef _MSC_VER
 constexpr int CSaveRestoreBuffer::m_Sizes[];
+#endif
 
 TYPEDESCRIPTION g_EntvarsDescription[] =
 {

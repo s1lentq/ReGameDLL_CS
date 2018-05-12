@@ -324,7 +324,7 @@ inline T *UTIL_FindEntityInSphere(T *pStartEntity, const Vector &vecCenter, floa
 	if (!FNullEnt(pentEntity))
 	{
 		// a1ba: can't use CBaseEntity::Instance here, because circular dependency in cbase.h
-		return GET_PRIVATE<CBaseEntity>(pentEntity);
+		return GET_PRIVATE<T>(pentEntity);
 	}
 
 	return nullptr;
