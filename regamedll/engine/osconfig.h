@@ -47,6 +47,12 @@
 #include <deque>
 #include <functional>
 
+// enable SSE code only if it's enabled in compiler options
+#if defined(__SSE__) || _M_IX86_FP >= 1
+	// #error "SSE enabled"
+	#define HAVE_SSE
+#endif
+
 #ifdef _WIN32 // WINDOWS
 	#define WIN32_LEAN_AND_MEAN // Exclude rarely-used stuff from Windows headers
 	#include <windows.h>
@@ -87,9 +93,10 @@
 #include <fstream>
 #include <iomanip>
 
+#ifdef HAVE_SSE
 #include <smmintrin.h>
 #include <xmmintrin.h>
-
+#endif // HAVE_SSE
 
 #ifdef _WIN32 // WINDOWS
 	// Define __func__ on VS less than 2015

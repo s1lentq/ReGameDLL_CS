@@ -85,6 +85,7 @@ const T& clamp(const T& a, const T& min, const T& max) { return (a > max) ? max 
 #define clamp(val, min, max) (((val) > (max)) ? (max) : (((val) < (min)) ? (min) : (val)))
 #endif // __cplusplus
 
+#ifdef HAVE_SSE
 inline float M_sqrt(float value) {
 	return _mm_cvtss_f32(_mm_sqrt_ss(_mm_load_ss(&value)));
 }
@@ -93,12 +94,14 @@ inline double M_sqrt(double value) {
 	auto v = _mm_load_sd(&value);
 	return _mm_cvtsd_f64(_mm_sqrt_sd(v, v));
 }
+#endif
 
 template<typename T>
 inline double M_sqrt(T value) {
 	return sqrt(value);
 }
 
+#ifdef HAVE_SSE
 inline float M_min(float a, float b) {
 	return _mm_cvtss_f32(_mm_min_ss(_mm_load_ss(&a), _mm_load_ss(&b)));
 }
@@ -106,12 +109,14 @@ inline float M_min(float a, float b) {
 inline double M_min(double a, double b) {
 	return _mm_cvtsd_f64(_mm_min_sd(_mm_load_sd(&a), _mm_load_sd(&b)));
 }
+#endif
 
 template<typename T>
 inline T M_min(T a, T b) {
 	return min(a, b);
 }
 
+#ifdef HAVE_SSE
 inline float M_max(float a, float b) {
 	return _mm_cvtss_f32(_mm_max_ss(_mm_load_ss(&a), _mm_load_ss(&b)));
 }
@@ -119,12 +124,14 @@ inline float M_max(float a, float b) {
 inline double M_max(double a, double b) {
 	return _mm_cvtsd_f64(_mm_max_sd(_mm_load_sd(&a), _mm_load_sd(&b)));
 }
+#endif
 
 template<typename T>
 inline T M_max(T a, T b) {
 	return max(a, b);
 }
 
+#ifdef HAVE_SSE
 inline float M_clamp(float a, float min, float max) {
 	return _mm_cvtss_f32(_mm_min_ss(_mm_max_ss(_mm_load_ss(&a), _mm_load_ss(&min)), _mm_load_ss(&max)));
 }
@@ -132,6 +139,7 @@ inline float M_clamp(float a, float min, float max) {
 inline double M_clamp(double a, double min, double max) {
 	return _mm_cvtsd_f64(_mm_min_sd(_mm_max_sd(_mm_load_sd(&a), _mm_load_sd(&min)), _mm_load_sd(&max)));
 }
+#endif
 
 template<typename T>
 inline T M_clamp(T a, T min, T max) {

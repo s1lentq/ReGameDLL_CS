@@ -28,6 +28,8 @@
 
 #include "precompiled.h"
 
+static constexpr int CSaveRestoreBuffer::m_Sizes[];
+
 TYPEDESCRIPTION g_EntvarsDescription[] =
 {
 	DEFINE_ENTITY_FIELD(classname, FIELD_STRING),

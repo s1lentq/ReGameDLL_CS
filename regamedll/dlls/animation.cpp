@@ -527,7 +527,7 @@ C_DLLEXPORT int Server_GetBlendingInterface(int version, struct sv_blending_inte
 	return 1;
 }
 
-#ifdef REGAMEDLL_FIXES // SSE2 version
+#if defined(REGAMEDLL_FIXES) && defined(HAVE_SSE) // SSE2 version
 void AngleQuaternion(vec_t *angles, vec_t *quaternion)
 {
 	static const ALIGN16_BEG size_t ps_signmask[4] ALIGN16_END = { 0x80000000, 0, 0x80000000, 0 };
