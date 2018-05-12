@@ -29,8 +29,8 @@ misrepresented as being the original software.
 (this is the zlib license)
 */
 
-#ifdef HAVE_SSE
 #include "precompiled.h"
+#ifdef HAVE_SSE
 
 /* natural logarithm computed for 4 simultaneous float
 return NaN for x <= 0
