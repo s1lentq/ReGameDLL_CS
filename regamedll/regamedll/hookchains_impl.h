@@ -54,7 +54,7 @@ public:
 	IHookChainImpl(void** hooks, origfunc_t orig) : m_Hooks(hooks), m_OriginalFunc(orig)
 	{
 		if (orig == nullptr && !is_void(orig))
-			Sys_Error("%s: Non-void HookChain without original function.", __func__);
+			Sys_Error("%s: Non-void HookChain without original function.", __FUNC__);
 	}
 
 	virtual ~IHookChainImpl() {}
@@ -90,7 +90,7 @@ public:
 	IHookChainClassImpl(void** hooks, origfunc_t orig) : m_Hooks(hooks), m_OriginalFunc(orig)
 	{
 		if (orig == nullptr && !is_void(orig))
-			Sys_Error("%s: Non-void HookChain without original function.", __func__);
+			Sys_Error("%s: Non-void HookChain without original function.", __FUNC__);
 	}
 
 	virtual ~IHookChainClassImpl() {}
@@ -126,7 +126,7 @@ public:
 	IHookChainClassEmptyImpl(void** hooks, origfunc_t orig, t_class *object) : m_Hooks(hooks), m_OriginalFunc(orig), m_Object(object)
 	{
 		if (orig == nullptr && !is_void(orig))
-			Sys_Error("%s: Non-void HookChain without original function.", __func__);
+			Sys_Error("%s: Non-void HookChain without original function.", __FUNC__);
 	}
 
 	virtual ~IHookChainClassEmptyImpl() {}

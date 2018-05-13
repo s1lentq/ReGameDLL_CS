@@ -104,6 +104,8 @@
 		#define __func__ __FUNCTION__
 	#endif
 
+	// We'll not use __func__ on windows because we want 'A::foo' instead of 'foo'
+	#define __FUNC__ __FUNCTION__
 	#define _CRT_SECURE_NO_WARNINGS
 	#define WIN32_LEAN_AND_MEAN
 
@@ -158,6 +160,7 @@
 	typedef unsigned int UNINT32;
 
 	#define FASTCALL
+	#define __FUNC__ __func__
 	#define CDECL __attribute__ ((cdecl))
 	#define STDCALL __attribute__ ((stdcall))
 	#define HIDDEN __attribute__((visibility("hidden")))

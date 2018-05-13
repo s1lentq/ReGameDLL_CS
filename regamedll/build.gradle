@@ -24,6 +24,7 @@ import org.apache.commons.compress.archivers.ArchiveInputStream
 
 apply plugin: 'cpp'
 apply plugin: IccCompilerPlugin
+apply plugin: GccCompilerPlugin
 apply plugin: RegamedllPlayTestPlugin
 apply plugin: gradlecpp.CppUnitTestPlugin
 
@@ -59,11 +60,11 @@ void createIntergrationTestTask(NativeBinarySpec b) {
 		testDemos = project.configurations.regamedll_tests
 		testFor = b
 
-		//inputs/outputs for up-to-date check
+		// inputs/outputs for up-to-date check
 		inputs.files testDemos.files
 		outputs.dir regamedllTestLogs
 
-		//dependencies on test executable
+		// dependencies on test executable
 		if (unitTestTask) {
 			dependsOn unitTestTask
 		}
@@ -90,6 +91,7 @@ void postEvaluate(NativeBinarySpec b) {
 
 void setupToolchain(NativeBinarySpec b)
 {
+	boolean useGcc = project.hasProperty("useGcc")
 	boolean unitTestExecutable = b.component.name.endsWith('_tests')
 	boolean regamedllFixes = b.flavor.name.contains('regamedllFixes')
 
@@ -127,10 +129,13 @@ void setupToolchain(NativeBinarySpec b)
 	}
 	else if (cfg instanceof GccToolchainConfig)
 	{
-		cfg.compilerOptions.pchConfig = new GccToolchainConfig.PrecompilerHeaderOptions(
-			enabled: true,
-			pchSourceSet: 'regamedll_pch'
-		);
+		if (!useGcc)
+		{
+			cfg.compilerOptions.pchConfig = new GccToolchainConfig.PrecompilerHeaderOptions(
+				enabled: true,
+				pchSourceSet: 'regamedll_pch'
+			);
+		}
 
 		cfg.compilerOptions.languageStandard = 'c++14'
 		cfg.defines([
@@ -145,8 +150,22 @@ void setupToolchain(NativeBinarySpec b)
 			'_access' : 'access'
 		])
 
-		cfg.linkerOptions.args '-no-opt-class-analysis'
-		cfg.compilerOptions.args '-Qoption,cpp,--treat_func_as_string_literal_cpp', '-g0', '-fno-rtti', '-fno-exceptions'
+		if (useGcc) {
+			// Produce code optimized for the most common IA32/AMD64/EM64T processors.
+			// As new processors are deployed in the marketplace, the behavior of this option will change.
+			cfg.compilerOptions.args '-Wno-write-strings'
+		} else {
+			cfg.compilerOptions.args '-Qoption,cpp,--treat_func_as_string_literal_cpp'
+
+			// Not use c++ class hierarchy for analyze and resolve C++ virtual function calls at compile time.
+			//
+			// Example issue:
+			// Expected: FF .. call dword ptr + offset, pEntity->Spawn();
+			// Got:      E8 .. call CBaseEntity::Spawn();
+			cfg.linkerOptions.args '-qno-opt-class-analysis'
+		}
+
+		cfg.compilerOptions.args '-g0', '-fno-rtti', '-fno-exceptions'
 		cfg.projectLibpath(project, '/lib/linux32')
 		cfg.extraLibs 'dl', 'm', 'stdc++', 'aelf32'
 	}
@@ -243,7 +262,10 @@ model {
 	toolChains {
 		visualCpp(VisualCpp) {
 		}
-		icc(Icc) {
+		if (project.hasProperty("useGcc")) {
+			gcc(Gcc)
+		} else {
+			icc(Icc)
 		}
 	}
 
