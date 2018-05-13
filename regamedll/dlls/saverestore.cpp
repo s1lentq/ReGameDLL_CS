@@ -28,11 +28,6 @@
 
 #include "precompiled.h"
 
-// this should be defined(otherwise link will fail), but MSVC doesn't require it
-#ifndef _MSC_VER
-constexpr int CSaveRestoreBuffer::m_Sizes[];
-#endif
-
 TYPEDESCRIPTION g_EntvarsDescription[] =
 {
 	DEFINE_ENTITY_FIELD(classname, FIELD_STRING),
@@ -164,6 +159,28 @@ void EntvarsKeyvalue(entvars_t *pev, KeyValueData *pkvd)
 		}
 	}
 }
+
+const int CSaveRestoreBuffer::m_Sizes[] =
+{
+	sizeof(float),     // FIELD_FLOAT
+	sizeof(int),       // FIELD_STRING
+	sizeof(int),       // FIELD_ENTITY
+	sizeof(int),       // FIELD_CLASSPTR
+	sizeof(int),       // FIELD_EHANDLE
+	sizeof(int),       // FIELD_entvars_t
+	sizeof(int),       // FIELD_EDICT
+	sizeof(float) * 3, // FIELD_VECTOR
+	sizeof(float) * 3, // FIELD_POSITION_VECTOR
+	sizeof(int *),     // FIELD_POINTER
+	sizeof(int),       // FIELD_INTEGER
+	sizeof(int *),     // FIELD_FUNCTION
+	sizeof(int),       // FIELD_BOOLEAN
+	sizeof(short),     // FIELD_SHORT
+	sizeof(char),      // FIELD_CHARACTER
+	sizeof(float),     // FIELD_TIME
+	sizeof(int),       // FIELD_MODELNAME
+	sizeof(int),       // FIELD_SOUNDNAME
+};
 
 CSaveRestoreBuffer::CSaveRestoreBuffer()
 {

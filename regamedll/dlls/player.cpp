@@ -8296,7 +8296,9 @@ void CBasePlayer::ClientCommand(const char *cmd, const char *arg1, const char *a
 
 	auto pEntity = ENT(pev);
 
-#ifndef NO_AMXX_HACKS // a1ba: not needed for non-x86 port
+#ifdef NO_AMXX_HACKS // a1ba: not needed for non-x86 port
+	::ClientCommand_(pEntity);
+#else // NO_AMXX_HACKS
 	// NOTE: force __cdecl to allow cstrike amxx module to hook ClientCommand
 #if defined _MSC_VER || defined __INTEL_COMPILER
 	__asm
