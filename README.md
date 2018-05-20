@@ -88,11 +88,17 @@ On Windows:
 * For faster building without unit tests use this:exclamation:
 <pre>gradlew --max-workers=1 clean buildFixes</pre>
 
-On Linux:
+On Linux (ICC):
 <pre>./gradlew --max-workers=1 clean buildRelease</pre>
 
 * For faster building without unit tests use this:exclamation:
 <pre>./gradlew --max-workers=1 clean buildFixes</pre>
+
+On Linux (GCC):
+<pre>./gradlew --max-workers=1 clean -PuseGcc buildRelease</pre>
+
+* For faster building without unit tests use this:exclamation:
+<pre>./gradlew --max-workers=1 clean -PuseGcc buildFixes</pre>
 
 Compiled binaries will be placed in the build/binaries/ directory
 
