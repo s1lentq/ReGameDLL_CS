@@ -34,7 +34,9 @@
 #include "basetypes.h"
 
 #include "archtypes.h"
+#ifdef HAVE_SSE
 #include "sse_mathfun.h"
+#endif
 #include "asmlib.h"
 
 #include "MemPool.h"

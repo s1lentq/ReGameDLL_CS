@@ -47,6 +47,12 @@
 #include <deque>
 #include <functional>
 
+// enable SSE code only if it's enabled in compiler options
+#if defined(__SSE__) || defined(__SSE2__) || defined(_M_IX86_FP) || defined(_M_AMD64) || defined(_M_X64)
+	// #error "SSE enabled"
+	#define HAVE_SSE
+#endif
+
 #ifdef _WIN32 // WINDOWS
 	#define WIN32_LEAN_AND_MEAN // Exclude rarely-used stuff from Windows headers
 	#include <windows.h>
@@ -87,9 +93,10 @@
 #include <fstream>
 #include <iomanip>
 
+#ifdef HAVE_SSE
 #include <smmintrin.h>
 #include <xmmintrin.h>
-
+#endif // HAVE_SSE
 
 #ifdef _WIN32 // WINDOWS
 	// Define __func__ on VS less than 2015
@@ -97,6 +104,8 @@
 		#define __func__ __FUNCTION__
 	#endif
 
+	// We'll not use __func__ on windows because we want 'A::foo' instead of 'foo'
+	#define __FUNC__ __FUNCTION__
 	#define _CRT_SECURE_NO_WARNINGS
 	#define WIN32_LEAN_AND_MEAN
 
@@ -151,6 +160,7 @@
 	typedef unsigned int UNINT32;
 
 	#define FASTCALL
+	#define __FUNC__ __func__
 	#define CDECL __attribute__ ((cdecl))
 	#define STDCALL __attribute__ ((stdcall))
 	#define HIDDEN __attribute__((visibility("hidden")))
