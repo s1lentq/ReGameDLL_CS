@@ -2,11 +2,25 @@ import org.doomedsociety.gradlecpp.GradleCppUtils
 import org.apache.commons.io.FilenameUtils
 
 void _copyFileToDir(String from, String to) {
+	if (!project.file(from).exists()) {
+		println 'WARNING: Could not find: ' + from;
+		return;
+	}
+
+	if (!project.file(to).exists()) {
+		project.file(to).mkdirs();
+	}
+
 	def dst = new File(project.file(to), FilenameUtils.getName(from))
 	GradleCppUtils.copyFile(project.file(from), dst, false)
 }
 
 void _copyFile(String from, String to) {
+	if (!project.file(from).exists()) {
+		println 'WARNING: Could not find: ' + from;
+		return;
+	}
+
 	GradleCppUtils.copyFile(project.file(from), project.file(to), false)
 }
 
@@ -20,18 +34,12 @@ task publishPrepareFiles {
 		}
 
 		pubRootDir.mkdirs()
+		project.file('publish/publishRoot/bin/win32/cstrike/dlls').mkdirs()
+		project.file('publish/publishRoot/bin/linux32/cstrike/dlls').mkdirs()
 
 		// bugfixed binaries
-		project.file('publish/publishRoot/bin/bugfixed').mkdirs()
-		_copyFileToDir('publish/releaseRegamedllFixes/mp.dll', 'publish/publishRoot/bin/bugfixed/')
-		_copyFileToDir('publish/releaseRegamedllFixes/mp.pdb', 'publish/publishRoot/bin/bugfixed/')
-		_copyFile('publish/releaseRegamedllFixes/libcs.so', 'publish/publishRoot/bin/bugfixed/cs.so')
-
-		// pure binaries
-		project.file('publish/publishRoot/bin/pure').mkdirs()
-		_copyFileToDir('publish/releaseRegamedllNofixes/mp.dll', 'publish/publishRoot/bin/pure/')
-		_copyFileToDir('publish/releaseRegamedllNofixes/mp.pdb', 'publish/publishRoot/bin/pure/')
-		_copyFile('publish/releaseRegamedllNofixes/libcs.so', 'publish/publishRoot/bin/pure/cs.so')
+		_copyFile('publish/releaseRegamedllFixes/mp.dll', 'publish/publishRoot/bin/win32/cstrike/dlls/mp.dll')
+		_copyFile('publish/releaseRegamedllFixes/cs.so', 'publish/publishRoot/bin/linux32/cstrike/dlls/cs.so')
 
 		// copy files from folder dist
 		copy {
