@@ -270,14 +270,10 @@ void WeaponsPrecache()
 	// custom items...
 
 	// common world objects
-#ifndef REGAMEDLL_FIXES
 	UTIL_PrecacheOther("item_suit");
-#endif
 	UTIL_PrecacheOther("item_battery");
 	UTIL_PrecacheOther("item_antidote");
-#ifndef REGAMEDLL_FIXES
 	UTIL_PrecacheOther("item_security");
-#endif
 	UTIL_PrecacheOther("item_longjump");
 	UTIL_PrecacheOther("item_kevlar");
 	UTIL_PrecacheOther("item_assaultsuit");

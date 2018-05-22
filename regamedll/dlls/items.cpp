@@ -42,8 +42,6 @@ ItemInfo itemInfo[] = {
 	DEFINE_ITEMINFO(ITEM_BATTERY,       "item_battery"),
 };
 
-// NOTE: useless thing
-#ifndef REGAMEDLL_FIXES
 LINK_ENTITY_TO_CLASS(world_items, CWorldItem, CCSWorldItem)
 
 void CWorldItem::KeyValue(KeyValueData *pkvd)
@@ -90,7 +88,6 @@ void CWorldItem::Spawn()
 
 	REMOVE_ENTITY(edict());
 }
-#endif
 
 void CItem::Spawn()
 {
@@ -165,8 +162,6 @@ void CItem::Materialize()
 	SetTouch(&CItem::ItemTouch);
 }
 
-// NOTE: useless thing
-#ifndef REGAMEDLL_FIXES
 void CItemSuit::Spawn()
 {
 	Precache();
@@ -194,7 +189,6 @@ BOOL CItemSuit::MyTouch(CBasePlayer *pPlayer)
 }
 
 LINK_ENTITY_TO_CLASS(item_suit, CItemSuit, CCSItemSuit)
-#endif
 
 void CItemBattery::Spawn()
 {
@@ -285,8 +279,6 @@ BOOL CItemAntidote::MyTouch(CBasePlayer *pPlayer)
 
 LINK_ENTITY_TO_CLASS(item_antidote, CItemAntidote, CCSItemAntidote)
 
-// NOTE: useless thing
-#ifndef REGAMEDLL_FIXES
 void CItemSecurity::Spawn()
 {
 	Precache();
@@ -306,7 +298,6 @@ BOOL CItemSecurity::MyTouch(CBasePlayer *pPlayer)
 }
 
 LINK_ENTITY_TO_CLASS(item_security, CItemSecurity, CCSItemSecurity)
-#endif
 
 void CItemLongJump::Spawn()
 {
