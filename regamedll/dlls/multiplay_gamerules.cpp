@@ -155,7 +155,7 @@ char *GetTeam(int team)
 	}
 }
 
-void CHalfLifeMultiplay::EndRoundMessage(const char *sentence, int event)
+void CHalfLifeMultiplay::EndRoundMessage(const char *sentence, ScenarioEventEndRound event)
 {
 	char *team = nullptr;
 	const char *message = sentence;
@@ -1978,7 +1978,7 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(RestartRound)()
 	// Reset game variables
 	m_flIntermissionEndTime = 0;
 	m_flIntermissionStartTime = 0;
-	m_flRestartRoundTime = 0.0;
+	m_flRestartRoundTime = 0;
 	m_iAccountTerrorist = m_iAccountCT = 0;
 	m_iHostagesRescued = 0;
 	m_iHostagesTouched = 0;

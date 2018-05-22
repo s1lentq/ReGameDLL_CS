@@ -647,7 +647,7 @@ public:
 	VFUNC void BalanceTeams();
 	VFUNC void SwapAllPlayers();
 	VFUNC void UpdateTeamScores();
-	VFUNC void EndRoundMessage(const char *sentence, int event);
+	VFUNC void EndRoundMessage(const char *sentence, ScenarioEventEndRound event);
 	VFUNC void SetAccountRules(RewardRules rules, int amount) { m_rgRewardAccountRules[rules] = static_cast<RewardAccount>(amount); }
 	VFUNC RewardAccount GetAccountRules(RewardRules rules) const { return m_rgRewardAccountRules[rules]; }
 
@@ -890,7 +890,6 @@ void SV_CareerAddTask_f();
 void SV_CareerMatchLimit_f();
 void Broadcast(const char *sentence);
 char *GetTeam(int team);
-void EndRoundMessage(const char *sentence, int event);
 void DestroyMapCycle(mapcycle_t *cycle);
 int ReloadMapCycleFile(char *filename, mapcycle_t *cycle);
 int CountPlayers();

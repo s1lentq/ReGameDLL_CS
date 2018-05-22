@@ -106,7 +106,7 @@ void CC4::PrimaryAttack()
 
 	int inBombZone = (m_pPlayer->m_signals.GetState() & SIGNAL_BOMB) == SIGNAL_BOMB;
 	int onGround = (m_pPlayer->pev->flags & FL_ONGROUND) == FL_ONGROUND;
-	
+
 #ifdef REGAMEDLL_FIXES
 	if (!onGround)
 	{
@@ -114,8 +114,8 @@ void CC4::PrimaryAttack()
 		UTIL_TraceLine(m_pPlayer->pev->origin, m_pPlayer->pev->origin + Vector(0, 0, -8192), ignore_monsters, m_pPlayer->edict(), &tr);
 		onGround = tr.flFraction != 1.0;
 	}
-#endif	
-	
+#endif
+
 	bool bPlaceBomb = (onGround && inBombZone);
 
 	if (!m_bStartedArming)
