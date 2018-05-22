@@ -299,6 +299,19 @@ model {
 	}
 }
 
+task buildFinalize << {
+	if (GradleCppUtils.windows) {
+		return;
+	}
+
+	binaries.withType(SharedLibraryBinarySpec) {
+		def sharedBinary = it.getSharedLibraryFile();
+		if (sharedBinary.exists()) {
+			sharedBinary.renameTo(new File(sharedBinary.getParent() + "/" + sharedBinary.getName().replaceFirst("^lib", "")));
+		}
+	}
+}
+
 task buildRelease {
 	dependsOn binaries.withType(SharedLibraryBinarySpec).matching { SharedLibraryBinarySpec blib ->
 		blib.buildable && blib.buildType.name == 'release'
@@ -310,6 +323,9 @@ task buildFixes {
 		SharedLibraryBinarySpec blib -> blib.buildable && blib.buildType.name == 'release' && blib.flavor.name == 'regamedllFixes' && blib.component.name == 'regamedll_mp_gamedll'
 	}
 }
+
+buildFixes.finalizedBy(buildFinalize);
+buildRelease.finalizedBy(buildFinalize);
 
 gradle.taskGraph.whenReady { graph ->
 	if (!graph.hasTask(buildFixes)) {
