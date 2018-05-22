@@ -24,6 +24,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\dlls\addons\item_airbox.cpp" />
+    <ClCompile Include="..\dlls\addons\trigger_random.cpp" />
     <ClCompile Include="..\dlls\addons\trigger_setorigin.cpp" />
     <ClCompile Include="..\dlls\airtank.cpp" />
     <ClCompile Include="..\dlls\ammo.cpp" />
@@ -601,6 +602,7 @@
     <ClInclude Include="..\common\winsani_out.h" />
     <ClInclude Include="..\dlls\activity.h" />
     <ClInclude Include="..\dlls\addons\item_airbox.h" />
+    <ClInclude Include="..\dlls\addons\trigger_random.h" />
     <ClInclude Include="..\dlls\addons\trigger_setorigin.h" />
     <ClInclude Include="..\dlls\airtank.h" />
     <ClInclude Include="..\dlls\ammo.h" />

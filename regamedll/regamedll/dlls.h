@@ -132,6 +132,7 @@ using FloatRef = float;
 // Addons
 #include "addons/item_airbox.h"
 #include "addons/trigger_setorigin.h"
+#include "addons/trigger_random.h"
 
 // Tutor
 #include "tutor.h"

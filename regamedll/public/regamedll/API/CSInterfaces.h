@@ -226,4 +226,5 @@ class CCSTriggerCamera: public CCSDelay {};
 class CCSWeather: public CCSTrigger {};
 class CCSClientFog: public CCSEntity {};
 class CCSTriggerSetOrigin: public CCSDelay {};
+class CCSTriggerRandom: public CCSDelay {};
 class CCSItemAirBox: public CCSArmoury {};

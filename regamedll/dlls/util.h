@@ -152,6 +152,8 @@ inline bool FNullEnt(entvars_t *pev) { return (pev == nullptr || FNullEnt(OFFSET
 inline bool FNullEnt(const edict_t *pent) { return (pent == nullptr || pent->free || FNullEnt(OFFSET(pent))); }
 inline bool FStringNull(string_t iString) { return (iString == iStringNull); }
 inline bool FStrEq(const char *sz1, const char *sz2) { return (Q_strcmp(sz1, sz2) == 0); }
+inline bool FStrnEq(const char *sz1, const char *sz2, size_t elem) { return (Q_strncmp(sz1, sz2, elem) == 0); }
+
 inline bool FClassnameIs(entvars_t *pev, const char *szClassname) { return FStrEq(STRING(pev->classname), szClassname); }
 inline bool FClassnameIs(edict_t *pent, const char *szClassname) { return FStrEq(STRING(VARS(pent)->classname), szClassname); }
 inline void UTIL_MakeVectorsPrivate(Vector vecAngles, float *p_vForward, float *p_vRight, float *p_vUp) { g_engfuncs.pfnAngleVectors(vecAngles, p_vForward, p_vRight, p_vUp); }
