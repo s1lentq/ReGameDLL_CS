@@ -1295,7 +1295,7 @@ void PackPlayerNade(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 		pWeaponBox->pev->velocity = pPlayer->pev->velocity * 0.75f;
 
 		pWeaponBox->SetThink(&CWeaponBox::Kill);
-		pWeaponBox->pev->nextthink = gpGlobals->time + 300.0f;
+		pWeaponBox->pev->nextthink = gpGlobals->time + CGameRules::GetItemKillDelay();
 		pWeaponBox->PackWeapon(pItem); // now pack all of the items in the lists
 
 		// pack the ammo
@@ -6003,7 +6003,7 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 			else
 			{
 				UTIL_MakeVectors(Vector(0, pev->v_angle.y, 0));
-				Create("monster_human_grunt", pev->origin + gpGlobals->v_forward * 128, pev->angles);
+				CBaseEntity::Create("monster_human_grunt", pev->origin + gpGlobals->v_forward * 128, pev->angles);
 			}
 			break;
 		case 101:
@@ -6089,15 +6089,15 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 		}
 		case 195:
 			// show shortest paths for entire level to nearest node
-			Create("node_viewer_fly", pev->origin, pev->angles);
+			CBaseEntity::Create("node_viewer_fly", pev->origin, pev->angles);
 			break;
 		case 196:
 			// show shortest paths for entire level to nearest node
-			Create("node_viewer_large", pev->origin, pev->angles);
+			CBaseEntity::Create("node_viewer_large", pev->origin, pev->angles);
 			break;
 		case 197:
 			// show shortest paths for entire level to nearest node
-			Create("node_viewer_human", pev->origin, pev->angles);
+			CBaseEntity::Create("node_viewer_human", pev->origin, pev->angles);
 			break;
 		case 202:
 		{
@@ -7411,7 +7411,7 @@ CBaseEntity *EXT_FUNC CBasePlayer::__API_HOOK(DropPlayerItem)(const char *pszIte
 			}
 		}
 
-		CWeaponBox *pWeaponBox = (CWeaponBox *)Create("weaponbox", pev->origin + gpGlobals->v_forward * 10, pev->angles, edict());
+		CWeaponBox *pWeaponBox = (CWeaponBox *)CBaseEntity::Create("weaponbox", pev->origin + gpGlobals->v_forward * 10, pev->angles, edict());
 		pWeaponBox->pev->angles.x = 0;
 		pWeaponBox->pev->angles.z = 0;
 		pWeaponBox->SetThink(&CWeaponBox::Kill);
