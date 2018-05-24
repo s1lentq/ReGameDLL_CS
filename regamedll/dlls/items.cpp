@@ -282,13 +282,32 @@ LINK_ENTITY_TO_CLASS(item_antidote, CItemAntidote, CCSItemAntidote)
 void CItemSecurity::Spawn()
 {
 	Precache();
-	SET_MODEL(ENT(pev), "models/w_security.mdl");
+
+	if (pev->model.IsNullOrEmpty())
+	{
+		// default model
+		SET_MODEL(ENT(pev), "models/w_security.mdl");
+	}
+	else
+	{
+		// custom model
+		SET_MODEL(ENT(pev), pev->model);
+	}
+
 	CItem::Spawn();
 }
 
 void CItemSecurity::Precache()
 {
-	PRECACHE_MODEL("models/w_security.mdl");
+	if (pev->model.IsNullOrEmpty())
+	{
+		// default model
+		PRECACHE_MODEL("models/w_security.mdl");
+		return;
+	}
+
+	// custom model
+	PRECACHE_MODEL(pev->model);
 }
 
 BOOL CItemSecurity::MyTouch(CBasePlayer *pPlayer)
