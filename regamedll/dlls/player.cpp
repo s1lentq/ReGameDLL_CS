@@ -8293,31 +8293,7 @@ void CBasePlayer::ClientCommand(const char *cmd, const char *arg1, const char *a
 	BotArgs[3] = arg3;
 
 	UseBotArgs = true;
-
-	auto pEntity = ENT(pev);
-
-#ifdef NO_AMXX_HACKS // a1ba: not needed for non-x86 port
-	::ClientCommand_(pEntity);
-#else // NO_AMXX_HACKS
-	// NOTE: force __cdecl to allow cstrike amxx module to hook ClientCommand
-#if defined _MSC_VER || defined __INTEL_COMPILER
-	__asm
-	{
-		push pEntity
-		call ClientCommand_;
-		add esp, 4;
-	}
-#else
-	asm volatile (
-		"pushl %0\n\t"
-		"call *%1\n\t"
-		"addl $4, %%esp\n\t"
-		: /* no outputs */
-		: "g" (pEntity), "g" (ClientCommand_)
-	);
-#endif // _MSC_VER || defined __INTEL_COMPILER
-#endif // NO_AMXX_HACKS
-
+	::ClientCommand_(ENT(pev));
 	UseBotArgs = false;
 }
 
