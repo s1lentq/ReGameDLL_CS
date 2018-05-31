@@ -2534,7 +2534,7 @@
 		1 : "Only Trigger" : 0
 		2 : "Broken on touch is buggy" : 0
 		4 : "Pressure is buggy" : 0
-            128: "Breakable" : 1
+		128: "Breakable" : 1
 		256: "Instant Crowbar" : 1
 	]
 	friction(integer) : "Friction (0-400)" : 50

@@ -86,6 +86,16 @@ public:
 	CBasePlayer *BasePlayer() const;
 
 public:
+	enum EProtectionState
+	{
+		ProtectionSt_NoSet,
+		ProtectionSt_Active,
+		ProtectionSt_Expired,
+	};
+
+	EProtectionState GetProtectionState() const;
+
+public:
 	char m_szModel[32];
 	bool m_bForceShowMenu;
 	float m_flRespawnPending;
@@ -96,4 +106,18 @@ public:
 inline CBasePlayer *CCSPlayer::BasePlayer() const
 {
 	return reinterpret_cast<CBasePlayer *>(this->m_pContainingEntity);
+}
+
+inline CCSPlayer::EProtectionState CCSPlayer::GetProtectionState() const
+{
+	// no protection set
+	if (m_flSpawnProtectionEndTime <= 0.0f)
+		return ProtectionSt_NoSet;
+
+	// check if end time of protection isn't expired yet
+	if (m_flSpawnProtectionEndTime >= gpGlobals->time)
+		return ProtectionSt_Active;
+
+	// has expired
+	return ProtectionSt_Expired;
 }

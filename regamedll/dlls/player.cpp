@@ -577,9 +577,18 @@ void EXT_FUNC CBasePlayer::__API_HOOK(TraceAttack)(entvars_t *pevAttacker, float
 	bool bHitShield = IsHittingShield(vecDir, ptr);
 
 	CBasePlayer *pAttacker = CBasePlayer::Instance(pevAttacker);
+
 #ifdef REGAMEDLL_ADD
-	if (pAttacker && pAttacker->IsPlayer() && !CSGameRules()->FPlayerCanTakeDamage(this, pAttacker))
-		bShouldBleed = false;
+	if (pAttacker && pAttacker->IsPlayer())
+	{
+		// don't take damage if victim has protection
+		if (CSPlayer()->GetProtectionState() == CCSPlayer::ProtectionSt_Active)
+			return;
+
+		if (!CSGameRules()->FPlayerCanTakeDamage(this, pAttacker))
+			bShouldBleed = false;
+	}
+
 #else
 	if (pAttacker && pAttacker->IsPlayer() && m_iTeam == pAttacker->m_iTeam && !friendlyfire.value)
 		bShouldBleed = false;
@@ -811,6 +820,16 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 	BOOL bTeamAttack = FALSE;
 	int armorHit = 0;
 	CBasePlayer *pAttack = nullptr;
+
+#ifdef REGAMEDLL_ADD
+	{
+		CBaseEntity *pAttacker = GET_PRIVATE<CBaseEntity>(ENT(pevAttacker));
+
+		// don't take damage if victim has protection
+		if (((pAttacker && pAttacker->IsPlayer()) || (bitsDamageType & DMG_FALL))  && CSPlayer()->GetProtectionState() == CCSPlayer::ProtectionSt_Active)
+			return FALSE;
+	}
+#endif
 
 	if (bitsDamageType & (DMG_EXPLOSION | DMG_BLAST | DMG_FALL))
 		m_LastHitGroup = HITGROUP_GENERIC;
@@ -4378,7 +4397,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 	UpdateLocation();
 
 #ifdef REGAMEDLL_ADD
-	if (CSPlayer()->m_flSpawnProtectionEndTime > 0 && gpGlobals->time > CSPlayer()->m_flSpawnProtectionEndTime)
+	if (CSPlayer()->GetProtectionState() == CCSPlayer::ProtectionSt_Expired)
 	{
 		RemoveSpawnProtection();
 	}
@@ -5719,19 +5738,16 @@ void CSprayCan::Spawn(entvars_t *pevOwner)
 
 void CSprayCan::Think()
 {
-	TraceResult tr;
-	int playernum;
-	int nFrames;
-	CBasePlayer *pPlayer;
+	CBasePlayer *pPlayer = GET_PRIVATE<CBasePlayer>(pev->owner);
 
-	pPlayer = (CBasePlayer *)GET_PRIVATE(pev->owner);
-
+	int nFrames = -1;
 	if (pPlayer)
+	{
 		nFrames = pPlayer->GetCustomDecalFrames();
-	else
-		nFrames = -1;
+	}
 
-	playernum = ENTINDEX(pev->owner);
+	TraceResult tr;
+	int playernum = ENTINDEX(pev->owner);
 
 	UTIL_MakeVectors(pev->angles);
 	UTIL_TraceLine(pev->origin, pev->origin + gpGlobals->v_forward * 128, ignore_monsters, pev->owner, &tr);
@@ -5797,7 +5813,7 @@ CBaseEntity *EXT_FUNC CBasePlayer::__API_HOOK(GiveNamedItem)(const char *pszName
 	DispatchSpawn(pent);
 	DispatchTouch(pent, ENT(pev));
 
-	return (CBaseEntity *)GET_PRIVATE(pent);
+	return GET_PRIVATE<CBaseEntity>(pent);
 }
 
 // external function for 3rd-party
@@ -5818,7 +5834,7 @@ CBaseEntity *CBasePlayer::GiveNamedItemEx(const char *pszName)
 	DispatchSpawn(pent);
 	DispatchTouch(pent, ENT(pev));
 
-	CBaseEntity *pEntity = (CBaseEntity *)GET_PRIVATE(pent);
+	CBaseEntity *pEntity = GET_PRIVATE<CBaseEntity>(pent);
 
 #ifdef REGAMEDLL_FIXES
 	// not allow the item to fall to the ground.
@@ -9507,7 +9523,6 @@ LINK_HOOK_CLASS_VOID_CHAIN(CBasePlayer, SetSpawnProtection, (float flProtectionT
 
 void EXT_FUNC CBasePlayer::__API_HOOK(SetSpawnProtection)(float flProtectionTime)
 {
-	pev->takedamage = DAMAGE_NO;
 	pev->rendermode = kRenderTransAdd;
 	pev->renderamt = 100.0;
 
@@ -9518,7 +9533,6 @@ LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, RemoveSpawnProtection)
 
 void CBasePlayer::__API_HOOK(RemoveSpawnProtection)()
 {
-	pev->takedamage = DAMAGE_AIM;
 	pev->rendermode = kRenderNormal;
 
 	CSPlayer()->m_flSpawnProtectionEndTime = 0.0f;
