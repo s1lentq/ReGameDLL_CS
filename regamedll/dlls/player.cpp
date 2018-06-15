@@ -1225,8 +1225,23 @@ BOOL EXT_FUNC CBasePlayer::__API_VHOOK(TakeDamage)(entvars_t *pevInflictor, entv
 
 		if (!bAttackFFA && pAttack->m_iTeam == m_iTeam)
 		{
+#ifdef REGAMEDLL_ADD
+			// create a multiplier value based on friendly fire damage cvar
+			float flMultiplier;
+			flMultiplier = friendlyfire_damage.value;
+			
+			// make sure multiplier value is positive
+			if(flMultiplier < 0.0)
+				flMultiplier = 0.0;
+			
+			// TODO: Should we allow for players to gain health by damaging teammates ??
+			
+			// apply friendly fire multiplier to received damage
+			flDamage *= flMultiplier;
+#else
 			// bullets hurt teammates less
-			flDamage *= 0.35;
+			flDamage *= 0.35;		
+#endif
 		}
 
 		if (pAttack->m_pActiveItem)
