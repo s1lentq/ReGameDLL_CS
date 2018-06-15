@@ -39,6 +39,7 @@ Archive's bin directory contains 2 subdirectories, 'bugfixed' and 'pure'
 | mp_timeleft                   | -       | -   | -            | Is the number of time left before the map changes, if you have set mp_timelimit. You just type mp_timeleft in server console, and it tells you the number of time left depending of mp_timelimit. |
 | mp_timelimit                  | 0       | -   | -            | Period between map rotations.<br />`0` means no limit |
 | mp_forcerespawn               | 0       | 0   | -            | Players will automatically respawn when killed.<br/>`0` disabled<br/>`>0.00001` time delay to respawn |
+| mp_friendlyfire_damage           | 0.35       | 0.0   | -            | Friendly fire damage multiplier.<br/>`0` no damage<br/>`>0.00001` multiply damage by this amount |
 | mp_hostage_hurtable           | 1       | 0   | 1            | The hostages can take the damage.<br/>`0` disabled<br/>`1` enabled |
 | showtriggers                  | 0       | 0   | 1            | Debug cvar shows triggers. |
 | bot_deathmatch                | 0       | 0   | 1            | Set's the mode for the zBot.<br/>`0` disabled<br/>`1` enable mode Deathmatch and not allow to do the scenario |
