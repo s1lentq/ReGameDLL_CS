@@ -117,6 +117,8 @@ cvar_t hostagehurtable = { "mp_hostage_hurtable", "1", FCVAR_SERVER, 0.0f, nullp
 cvar_t roundover = { "mp_roundover", "0", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t forcerespawn = { "mp_forcerespawn", "0", FCVAR_SERVER, 0.0f, nullptr };
 
+cvar_t friendlyfire_damage = { "mp_friendlyfire_damage", "0.35", FCVAR_SERVER, 0.0f, NULL };
+
 void GameDLL_Version_f()
 {
 	if (Q_stricmp(CMD_ARGV(1), "version") != 0)
@@ -262,6 +264,8 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&hostagehurtable);
 	CVAR_REGISTER(&roundover);
 	CVAR_REGISTER(&forcerespawn);
+	
+	CVAR_REGISTER(&friendlyfire_damage);
 
 	// print version
 	CONSOLE_ECHO("ReGameDLL version: " APP_VERSION "\n");
