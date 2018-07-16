@@ -6008,6 +6008,16 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 	CBaseEntity *pEntity;
 	TraceResult tr;
 
+#ifdef REGAMEDLL_ADD
+	auto GiveFilledWeapon = [&](char* pszWeaponName) {
+		GiveNamedItem(pszWeaponName);
+		const WeaponInfoStruct *pInfo = GetWeaponInfo(pszWeaponName);
+		if (pInfo) {
+			GiveAmmo(pInfo->maxRounds, pInfo->ammoName2);
+		}
+	};
+#endif // REGAMEDLL_ADD
+
 	switch (iImpulse)
 	{
 		case 76:
@@ -6027,6 +6037,37 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 			AddAccount(16000);
 			ALERT(at_console, "Crediting %s with $16000\n", STRING(pev->netname));
 			break;
+#ifdef REGAMEDLL_ADD
+		case 255:
+			GiveFilledWeapon( "weapon_ak47" );
+			GiveFilledWeapon( "weapon_aug" );
+			GiveFilledWeapon( "weapon_awp" );
+			GiveFilledWeapon( "weapon_deagle" );
+			GiveFilledWeapon( "weapon_elite" );
+			GiveFilledWeapon( "weapon_famas" );
+			GiveFilledWeapon( "weapon_fiveseven" );
+			GiveFilledWeapon( "weapon_g3sg1" );
+			GiveFilledWeapon( "weapon_galil" );
+			GiveFilledWeapon( "weapon_glock18" );
+			GiveFilledWeapon( "weapon_m249" );
+			GiveFilledWeapon( "weapon_m3" );
+			GiveFilledWeapon( "weapon_m4a1" );
+			GiveFilledWeapon( "weapon_mac10" );
+			GiveFilledWeapon( "weapon_mp5navy" );
+			GiveFilledWeapon( "weapon_p228" );
+			GiveFilledWeapon( "weapon_p90" );
+			GiveFilledWeapon( "weapon_sg550" );
+			GiveFilledWeapon( "weapon_sg552" );
+			GiveFilledWeapon( "weapon_flashbang" );
+			GiveFilledWeapon( "weapon_smokegrenade" );
+			GiveFilledWeapon( "weapon_tmp" );
+			GiveFilledWeapon( "weapon_ump45" );
+			GiveFilledWeapon( "weapon_usp" );
+			GiveFilledWeapon( "weapon_hegrenade" );
+			GiveFilledWeapon( "weapon_shield" );
+			GiveFilledWeapon( "item_longjump" );
+			break;
+#endif // REGAMEDLL_ADD
 		case 102:
 			CGib::SpawnRandomGibs(pev, 1, 1);
 			break;
