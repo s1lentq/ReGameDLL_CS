@@ -3587,7 +3587,11 @@ void CHalfLifeMultiplay::PlayerThink(CBasePlayer *pPlayer)
 		pPlayer->m_iMenu = Menu_ChooseTeam;
 		pPlayer->m_iJoiningState = PICKINGTEAM;
 
-		if (slot != MENU_SLOT_TEAM_UNDEFINED && !pPlayer->IsBot())
+		if (slot != MENU_SLOT_TEAM_UNDEFINED && !pPlayer->IsBot()
+#ifdef REGAMEDLL_ADD
+			&& !(pPlayer->pev->flags & FL_FAKECLIENT)
+#endif
+			)
 		{
 #ifdef REGAMEDLL_ADD
 			m_bSkipShowMenu = (auto_join_team.value != 0.0f) && !(pPlayer->pev->flags & FL_FAKECLIENT);
