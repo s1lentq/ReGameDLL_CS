@@ -4954,7 +4954,7 @@ bool CBasePlayer::SelectSpawnSpot(const char *pEntClassName, CBaseEntity *&pSpot
 			// if ent is a client, kill em (unless they are ourselves)
 			if (pEntity->IsPlayer() && pEntity->edict() != pPlayer)
 #ifdef REGAMEDLL_ADD
-				if(kill_filled_spawn.value != 0.0)
+				if (kill_filled_spawn.value != 0.0)
 #endif
 					pEntity->TakeDamage(VARS(eoNullEntity), VARS(eoNullEntity), 200, DMG_GENERIC);
 		}
