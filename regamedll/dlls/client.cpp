@@ -1904,7 +1904,7 @@ BOOL EXT_FUNC __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *pPlayer, int slot)
 
 	if (team != SPECTATOR && !pPlayer->IsBot()
 #ifdef REGAMEDLL_ADD
-		&& auto_join_team.value != 1.0f
+		&& !(pPlayer->pev->flags & FL_FAKECLIENT) && auto_join_team.value != 1.0f
 #endif
 	)
 	{
