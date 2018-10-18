@@ -6008,16 +6008,6 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 	CBaseEntity *pEntity;
 	TraceResult tr;
 
-#ifdef REGAMEDLL_ADD
-	auto GiveFilledWeapon = [&](char* pszWeaponName) {
-		GiveNamedItem(pszWeaponName);
-		const WeaponInfoStruct *pInfo = GetWeaponInfo(pszWeaponName);
-		if (pInfo) {
-			GiveAmmo(pInfo->maxRounds, pInfo->ammoName2);
-		}
-	};
-#endif // REGAMEDLL_ADD
-
 	switch (iImpulse)
 	{
 		case 76:
@@ -6038,7 +6028,16 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 			ALERT(at_console, "Crediting %s with $16000\n", STRING(pev->netname));
 			break;
 #ifdef REGAMEDLL_ADD
-		case 255:
+		case 255: 
+		{
+			auto GiveFilledWeapon = [&](char* pszWeaponName) {
+				GiveNamedItem(pszWeaponName);
+				const WeaponInfoStruct *pInfo = GetWeaponInfo(pszWeaponName);
+				if (pInfo) {
+					GiveAmmo(pInfo->maxRounds, pInfo->ammoName2);
+				}
+			};
+
 			GiveFilledWeapon( "weapon_ak47" );
 			GiveFilledWeapon( "weapon_aug" );
 			GiveFilledWeapon( "weapon_awp" );
@@ -6067,6 +6066,7 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 			GiveFilledWeapon( "weapon_shield" );
 			GiveFilledWeapon( "item_longjump" );
 			break;
+		}
 #endif // REGAMEDLL_ADD
 		case 102:
 			CGib::SpawnRandomGibs(pev, 1, 1);
