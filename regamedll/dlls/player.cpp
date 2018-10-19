@@ -4521,7 +4521,7 @@ void CBasePlayer::UpdateGeigerCounter()
 	m_flgeigerDelay = gpGlobals->time + 0.25;
 
 	// send range to radition source to client
-	range = byte(m_flgeigerRange / 4.0);//* 0.25);		// TODO: ACHECK!
+	range = byte(m_flgeigerRange / 4.0);// * 0.25);		// TODO: ACHECK!
 
 	if (range != m_igeigerRangePrev)
 	{
@@ -6028,9 +6028,9 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 			ALERT(at_console, "Crediting %s with $16000\n", STRING(pev->netname));
 			break;
 #ifdef REGAMEDLL_ADD
-		case 255: 
+		case 255:
 		{
-			auto GiveFilledWeapon = [&](char* pszWeaponName) {
+			auto giveFilledWeapon = [&](const char* pszWeaponName) {
 				GiveNamedItem(pszWeaponName);
 				const WeaponInfoStruct *pInfo = GetWeaponInfo(pszWeaponName);
 				if (pInfo) {
@@ -6038,33 +6038,34 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 				}
 			};
 
-			GiveFilledWeapon( "weapon_ak47" );
-			GiveFilledWeapon( "weapon_aug" );
-			GiveFilledWeapon( "weapon_awp" );
-			GiveFilledWeapon( "weapon_deagle" );
-			GiveFilledWeapon( "weapon_elite" );
-			GiveFilledWeapon( "weapon_famas" );
-			GiveFilledWeapon( "weapon_fiveseven" );
-			GiveFilledWeapon( "weapon_g3sg1" );
-			GiveFilledWeapon( "weapon_galil" );
-			GiveFilledWeapon( "weapon_glock18" );
-			GiveFilledWeapon( "weapon_m249" );
-			GiveFilledWeapon( "weapon_m3" );
-			GiveFilledWeapon( "weapon_m4a1" );
-			GiveFilledWeapon( "weapon_mac10" );
-			GiveFilledWeapon( "weapon_mp5navy" );
-			GiveFilledWeapon( "weapon_p228" );
-			GiveFilledWeapon( "weapon_p90" );
-			GiveFilledWeapon( "weapon_sg550" );
-			GiveFilledWeapon( "weapon_sg552" );
-			GiveFilledWeapon( "weapon_flashbang" );
-			GiveFilledWeapon( "weapon_smokegrenade" );
-			GiveFilledWeapon( "weapon_tmp" );
-			GiveFilledWeapon( "weapon_ump45" );
-			GiveFilledWeapon( "weapon_usp" );
-			GiveFilledWeapon( "weapon_hegrenade" );
-			GiveFilledWeapon( "weapon_shield" );
-			GiveFilledWeapon( "item_longjump" );
+			giveFilledWeapon("weapon_ak47");
+			giveFilledWeapon("weapon_aug");
+			giveFilledWeapon("weapon_awp");
+			giveFilledWeapon("weapon_deagle");
+			giveFilledWeapon("weapon_elite");
+			giveFilledWeapon("weapon_famas");
+			giveFilledWeapon("weapon_fiveseven");
+			giveFilledWeapon("weapon_g3sg1");
+			giveFilledWeapon("weapon_galil");
+			giveFilledWeapon("weapon_glock18");
+			giveFilledWeapon("weapon_m249");
+			giveFilledWeapon("weapon_m3");
+			giveFilledWeapon("weapon_m4a1");
+			giveFilledWeapon("weapon_mac10");
+			giveFilledWeapon("weapon_mp5navy");
+			giveFilledWeapon("weapon_p228");
+			giveFilledWeapon("weapon_p90");
+			giveFilledWeapon("weapon_sg550");
+			giveFilledWeapon("weapon_sg552");
+			giveFilledWeapon("weapon_flashbang");
+			giveFilledWeapon("weapon_smokegrenade");
+			giveFilledWeapon("weapon_tmp");
+			giveFilledWeapon("weapon_ump45");
+			giveFilledWeapon("weapon_usp");
+			giveFilledWeapon("weapon_hegrenade");
+			giveFilledWeapon("weapon_shield");
+
+			GiveNamedItem("item_longjump");
 			break;
 		}
 #endif // REGAMEDLL_ADD
