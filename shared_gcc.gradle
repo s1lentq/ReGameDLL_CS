@@ -27,7 +27,7 @@ rootProject.ext.createGccConfig = { boolean release, BinaryKind binKind ->
 				)
 		)
 	} else {
-		//debug
+		// debug
 		cfg = new GccToolchainConfig(
 				compilerOptions: new GccToolchainConfig.CompilerOptions(
 						optimizationLevel: OptimizationLevel.DISABLE,

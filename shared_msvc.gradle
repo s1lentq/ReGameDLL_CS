@@ -129,6 +129,7 @@ rootProject.ext.createMsvcConfig = { boolean release, BinaryKind binKind ->
 
 	cfg.compilerOptions.args "/FS", "/I${kitPath}Include/${ucrtVersion}/ucrt";
 	cfg.linkerOptions.args("/LIBPATH:${kitPath}Lib/${ucrtVersion}/ucrt/x86");
+	cfg.singleDefines('REGAMEDLL_SSE')
 
 	return cfg
 }
