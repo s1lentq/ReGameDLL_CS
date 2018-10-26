@@ -4948,15 +4948,19 @@ bool CBasePlayer::SelectSpawnSpot(const char *pEntClassName, CBaseEntity *&pSpot
 	// we haven't found a place to spawn yet,  so kill any guy at the first spawn point and spawn there
 	if (!FNullEnt(pSpot))
 	{
-		CBaseEntity *pEntity = nullptr;
-		while ((pEntity = UTIL_FindEntityInSphere(pEntity, pSpot->pev->origin, MAX_PLAYER_USE_RADIUS)))
-		{
-			// if ent is a client, kill em (unless they are ourselves)
-			if (pEntity->IsPlayer() && pEntity->edict() != pPlayer)
 #ifdef REGAMEDLL_ADD
-				if (kill_filled_spawn.value != 0.0)
+		if (kill_filled_spawn.value != 0.0)
 #endif
+		{
+			CBaseEntity *pEntity = nullptr;
+			while ((pEntity = UTIL_FindEntityInSphere(pEntity, pSpot->pev->origin, MAX_PLAYER_USE_RADIUS)))
+			{
+				// if ent is a client, kill em (unless they are ourselves)
+				if (pEntity->IsPlayer() && pEntity->edict() != pPlayer)
+				{
 					pEntity->TakeDamage(VARS(eoNullEntity), VARS(eoNullEntity), 200, DMG_GENERIC);
+				}
+			}
 		}
 
 		// if so, go to pSpot
