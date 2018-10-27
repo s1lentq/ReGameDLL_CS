@@ -2,11 +2,13 @@ import org.doomedsociety.gradlecpp.cfg.ToolchainConfigUtils
 import org.doomedsociety.gradlecpp.msvc.MsvcToolchainConfig
 import org.doomedsociety.gradlecpp.toolchain.icc.Icc
 import org.doomedsociety.gradlecpp.toolchain.icc.IccCompilerPlugin
+import org.doomedsociety.gradlecpp.gcc.GccToolchainConfig
 import org.gradle.nativeplatform.NativeBinarySpec
 import org.gradle.nativeplatform.NativeLibrarySpec
 
 apply plugin: 'cpp'
 apply plugin: IccCompilerPlugin
+apply plugin: GccCompilerPlugin
 
 void setupToolchain(NativeBinarySpec b) {
 	def cfg = rootProject.createToolchainConfig(b)
@@ -27,9 +29,11 @@ model {
 	}
 
 	toolChains {
-		visualCpp(VisualCpp) {
-		}
-		icc(Icc) {
+		visualCpp(VisualCpp)
+		if (project.hasProperty("useGcc")) {
+			gcc(Gcc)
+		} else {
+			icc(Icc)
 		}
 	}
 

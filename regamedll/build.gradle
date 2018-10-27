@@ -237,6 +237,16 @@ class RegamedllSrc {
 		}
 	}
 
+	static void regamedll_tests_gcc_src(def h) {
+		h.regamedll_tests_gcc_src(CppSourceSet) {
+			source {
+				srcDir "unittests"
+				include "**/*.cpp"
+				exclude "mathfun_tests.cpp"
+			}
+		}
+	}
+
 	static void regamedll_tests_src(def h) {
 		h.regamedll_tests_src(CppSourceSet) {
 			source {
@@ -291,7 +301,12 @@ model {
 			sources {
 				RegamedllSrc.regamedll_pch(it)
 				RegamedllSrc.regamedll_src(it)
-				RegamedllSrc.regamedll_tests_src(it)
+
+				if (project.hasProperty("useGcc")) {
+					RegamedllSrc.regamedll_tests_gcc_src(it)
+				} else {
+					RegamedllSrc.regamedll_tests_src(it)
+				}
 			}
 
 			binaries.all { NativeBinarySpec b -> project.setupToolchain(b) }
