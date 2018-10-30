@@ -249,6 +249,11 @@ bool CCSBot::IsVisible(const Vector *pos, bool testFOV) const
 // Check parts in order of importance. Return the first part seen in "visParts" if it is non-NULL.
 bool CCSBot::IsVisible(CBasePlayer *pPlayer, bool testFOV, unsigned char *visParts) const
 {
+#ifdef REGAMEDLL_ADD // REGAMEDLL_FIXES ?
+	if ((pPlayer->pev->flags & FL_NOTARGET) || (pPlayer->pev->effects & EF_NODRAW))
+		return false;
+#endif
+	
 	Vector spot = pPlayer->pev->origin;
 	unsigned char testVisParts = NONE;
 
@@ -714,6 +719,10 @@ CBasePlayer *CCSBot::FindMostDangerousThreat()
 			if (!pPlayer->IsAlive())
 				continue;
 
+#ifdef REGAMEDLL_ADD // REGAMEDLL_FIXES ?
+			if ((pPlayer->pev->flags & FL_NOTARGET) || (pPlayer->pev->effects & EF_NODRAW))
+				continue;
+#endif
 			// is it an enemy?
 			if (BotRelationship(pPlayer) == BOT_TEAMMATE)
 			{
