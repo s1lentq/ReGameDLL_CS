@@ -1372,7 +1372,15 @@ void CBasePlayer::PackDeadPlayerItems()
 				else if (pPlayerItem->iItemSlot() == GRENADE_SLOT)
 				{
 					if (AreRunningCZero())
-						PackPlayerItem(this, pPlayerItem, true);
+					{
+#ifdef REGAMEDLL_FIXES
+						if (pPlayerItem->m_flStartThrow == 0.0f && m_rgAmmo[pPlayerItem->PrimaryAmmoIndex()] > 0)
+#endif
+						{
+							PackPlayerItem(this, pPlayerItem, true);
+						}
+					}
+
 #ifdef REGAMEDLL_ADD
 					else
 					{
