@@ -2987,21 +2987,25 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveShield)(bool bDeploy)
 	m_bOwnsShield = true;
 	m_bHasPrimary = true;
 
-	if (m_pActiveItem)
+#ifdef REGAMEDLL_FIXES
+	pev->gamestate = 0;
+#endif
+
+	if (bDeploy && m_pActiveItem)
 	{
 		CBasePlayerWeapon *pWeapon = static_cast<CBasePlayerWeapon *>(m_pActiveItem);
 
-		if (bDeploy)
-		{
-			if (m_rgAmmo[pWeapon->m_iPrimaryAmmoType] > 0)
-				pWeapon->Holster();
+		if (m_rgAmmo[pWeapon->m_iPrimaryAmmoType] > 0)
+			pWeapon->Holster();
 
-			if (!pWeapon->Deploy())
-				pWeapon->RetireWeapon();
-		}
+		if (!pWeapon->Deploy())
+			pWeapon->RetireWeapon();
 	}
 
+#ifndef REGAMEDLL_FIXES
 	pev->gamestate = 0;
+#endif
+
 }
 
 void CBasePlayer::RemoveShield()
