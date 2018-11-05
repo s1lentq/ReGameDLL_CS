@@ -2168,10 +2168,17 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 
 	if ((pev->health < -9000 && iGib != GIB_NEVER) || iGib == GIB_ALWAYS)
 	{
+
+#ifndef REGAMEDLL_FIXES
 		pev->solid = SOLID_NOT;
+#endif
 		GibMonster();
 		pev->effects |= EF_NODRAW;
+
+#ifndef REGAMEDLL_FIXES
 		CSGameRules()->CheckWinConditions();
+#endif
+
 		return;
 	}
 
@@ -2981,21 +2988,25 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveShield)(bool bDeploy)
 	m_bOwnsShield = true;
 	m_bHasPrimary = true;
 
-	if (m_pActiveItem)
+#ifdef REGAMEDLL_FIXES
+	pev->gamestate = 0;
+#endif
+
+	if (bDeploy && m_pActiveItem)
 	{
 		CBasePlayerWeapon *pWeapon = static_cast<CBasePlayerWeapon *>(m_pActiveItem);
 
-		if (bDeploy)
-		{
-			if (m_rgAmmo[pWeapon->m_iPrimaryAmmoType] > 0)
-				pWeapon->Holster();
+		if (m_rgAmmo[pWeapon->m_iPrimaryAmmoType] > 0)
+			pWeapon->Holster();
 
-			if (!pWeapon->Deploy())
-				pWeapon->RetireWeapon();
-		}
+		if (!pWeapon->Deploy())
+			pWeapon->RetireWeapon();
 	}
 
+#ifndef REGAMEDLL_FIXES
 	pev->gamestate = 0;
+#endif
+
 }
 
 void CBasePlayer::RemoveShield()
