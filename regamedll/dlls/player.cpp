@@ -2116,7 +2116,10 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 	if (m_bHasC4)
 	{
 		DropPlayerItem("weapon_c4");
+#ifndef REGAMEDLL_FIXES
+		// NOTE: It is already does reset inside DropPlayerItem
 		SetProgressBarTime(0);
+#endif
 	}
 	else if (m_bHasDefuser)
 	{
@@ -3448,7 +3451,10 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Disappear)()
 	if (m_bHasC4)
 	{
 		DropPlayerItem("weapon_c4");
+#ifndef REGAMEDLL_FIXES
+		// NOTE: It is already does reset inside DropPlayerItem
 		SetProgressBarTime(0);
+#endif
 	}
 	else if (m_bHasDefuser)
 	{
