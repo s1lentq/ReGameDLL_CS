@@ -2168,10 +2168,16 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 
 	if ((pev->health < -9000 && iGib != GIB_NEVER) || iGib == GIB_ALWAYS)
 	{
+#ifndef REGAMEDLL_FIXES
 		pev->solid = SOLID_NOT;
+#endif
 		GibMonster();
 		pev->effects |= EF_NODRAW;
+
+#ifndef REGAMEDLL_FIXES
 		CSGameRules()->CheckWinConditions();
+#endif
+
 		return;
 	}
 
