@@ -3263,6 +3263,15 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 			}
 			else if (FStrEq(pcmd, "drop"))
 			{
+
+#ifdef REGAMEDLL_ADD
+				if (block_cmd_drop.value > 0.0f)
+				{
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Weapon_Cannot_Be_Dropped");
+					return;
+				}
+#endif
+
 				// player is dropping an item.
 				if (pPlayer->HasShield())
 				{
