@@ -4316,6 +4316,13 @@ BOOL EXT_FUNC AddToFullPack(struct entity_state_s *state, int e, edict_t *ent, e
 	state->skin = ent->v.skin;
 	state->effects = ent->v.effects;
 
+#ifdef REGAMEDLL_ADD
+	if  (ent->v.skin == CONTENTS_LADDER &&
+		(host->v.iuser3 & PLAYER_PREVENT_CLIMB) == PLAYER_PREVENT_CLIMB) {
+		state->skin = CONTENTS_EMPTY;
+	}
+#endif
+
 	if (!player && ent->v.animtime && !ent->v.velocity.x && !ent->v.velocity.y && !ent->v.velocity.z)
 		state->eflags |= EFLAG_SLERP;
 

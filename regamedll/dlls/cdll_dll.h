@@ -70,6 +70,7 @@ const int DEFAULT_FOV      = 90;	// the default field of view
 #define PLAYER_IN_BOMB_ZONE     BIT(2)
 #define PLAYER_HOLDING_SHIELD   BIT(3)
 #define PLAYER_PREVENT_DUCK     BIT(4)
+#define PLAYER_PREVENT_CLIMB    BIT(5) // The player can't climb ladder
 
 #define MENU_KEY_1 BIT(0)
 #define MENU_KEY_2 BIT(1)
@@ -81,11 +82,6 @@ const int DEFAULT_FOV      = 90;	// the default field of view
 #define MENU_KEY_8 BIT(7)
 #define MENU_KEY_9 BIT(8)
 #define MENU_KEY_0 BIT(9)
-
-#define HUD_PRINTNOTIFY  1
-#define HUD_PRINTCONSOLE 2
-#define HUD_PRINTTALK    3
-#define HUD_PRINTCENTER  4
 
 #define WEAPON_SUIT       31
 #define WEAPON_ALLWEAPONS (~(1<<WEAPON_SUIT))
