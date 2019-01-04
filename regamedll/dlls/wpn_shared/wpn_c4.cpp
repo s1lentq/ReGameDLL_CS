@@ -142,7 +142,11 @@ void CC4::PrimaryAttack()
 		SendWeaponAnim(C4_ARM, UseDecrement() != FALSE);
 
 		// freeze the player in place while planting
+#ifdef REGAMEDLL_FIXES
+		m_pPlayer->ResetMaxSpeed();
+#else
 		SET_CLIENT_MAXSPEED(m_pPlayer->edict(), 1.0);
+#endif
 
 		m_pPlayer->SetAnimation(PLAYER_ATTACK1);
 		m_pPlayer->SetProgressBarTime(C4_ARMING_ON_TIME);
@@ -156,7 +160,9 @@ void CC4::PrimaryAttack()
 
 			if (m_fArmedTime <= gpGlobals->time)
 			{
+#ifndef REGAMEDLL_FIXES
 				if (m_bStartedArming)
+#endif
 				{
 					m_bStartedArming = false;
 					m_fArmedTime = 0;
@@ -366,5 +372,5 @@ void CC4::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, f
 
 float CC4::GetMaxSpeed()
 {
-	return C4_MAX_SPEED;
+	return m_bStartedArming ? 1.0f : C4_MAX_SPEED;
 }
