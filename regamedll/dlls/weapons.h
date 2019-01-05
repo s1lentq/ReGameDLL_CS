@@ -555,6 +555,10 @@ public:
 
 	int m_iShell;
 
+#ifdef REGAMEDLL_API
+	float m_flBaseDamageSil;
+#endif
+
 private:
 	unsigned short m_usFireUSP;
 };
@@ -1321,6 +1325,10 @@ public:
 	int m_iShell;
 	int iShellOn;
 
+#ifdef REGAMEDLL_API
+	float m_flBaseDamageSil;
+#endif
+
 private:
 	unsigned short m_usFireM4A1;
 };
@@ -1963,6 +1971,10 @@ public:
 public:
 	int m_iShell;
 	int iShellOn;
+
+#ifdef REGAMEDLL_API
+	float m_flBaseDamageBurst;
+#endif
 };
 
 extern short g_sModelIndexLaser;

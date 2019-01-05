@@ -15,7 +15,8 @@ void CM4A1::Spawn()
 	m_bDelayFire = true;
 
 #ifdef REGAMEDLL_API
-	CSPlayerWeapon()->m_flBaseDamage = (m_iWeaponState & WPNSTATE_M4A1_SILENCED) ? M4A1_DAMAGE_SIL : M4A1_DAMAGE;
+	CSPlayerWeapon()->m_flBaseDamage = M4A1_DAMAGE;
+	m_flBaseDamageSil = M4A1_DAMAGE_SIL;
 #endif
 
 	// Get ready to fall down
@@ -82,20 +83,12 @@ void CM4A1::SecondaryAttack()
 		m_iWeaponState &= ~WPNSTATE_M4A1_SILENCED;
 		SendWeaponAnim(M4A1_DETACH_SILENCER, UseDecrement() != FALSE);
 		Q_strcpy(m_pPlayer->m_szAnimExtention, "rifle");
-
-#ifdef REGAMEDLL_API
-		CSPlayerWeapon()->m_flBaseDamage = M4A1_DAMAGE;
-#endif
 	}
 	else
 	{
 		m_iWeaponState |= WPNSTATE_M4A1_SILENCED;
 		SendWeaponAnim(M4A1_ATTACH_SILENCER, UseDecrement() != FALSE);
 		Q_strcpy(m_pPlayer->m_szAnimExtention, "rifle");
-
-#ifdef REGAMEDLL_API
-		CSPlayerWeapon()->m_flBaseDamage = M4A1_DAMAGE_SIL;
-#endif
 	}
 
 	m_flTimeWeaponIdle = m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 2.0f;
@@ -177,7 +170,7 @@ void CM4A1::M4A1Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	vecAiming = gpGlobals->v_forward;
 
 #ifdef REGAMEDLL_API
-	float flBaseDamage = CSPlayerWeapon()->m_flBaseDamage;
+	float flBaseDamage = (m_iWeaponState & WPNSTATE_M4A1_SILENCED) ? m_flBaseDamageSil : CSPlayerWeapon()->m_flBaseDamage;
 #else
 	float flBaseDamage = (m_iWeaponState & WPNSTATE_M4A1_SILENCED) ? M4A1_DAMAGE_SIL : M4A1_DAMAGE;
 #endif

@@ -15,6 +15,7 @@ void CFamas::Spawn()
 
 #ifdef REGAMEDLL_API
 	CSPlayerWeapon()->m_flBaseDamage = FAMAS_DAMAGE;
+	m_flBaseDamageBurst = FAMAS_DAMAGE_BURST;
 #endif
 
 	// Get ready to fall down
@@ -77,19 +78,11 @@ void CFamas::SecondaryAttack()
 	{
 		ClientPrint(m_pPlayer->pev, HUD_PRINTCENTER, "#Switch_To_FullAuto");
 		m_iWeaponState &= ~WPNSTATE_FAMAS_BURST_MODE;
-
-#ifdef REGAMEDLL_API
-		CSPlayerWeapon()->m_flBaseDamage = FAMAS_DAMAGE;
-#endif
 	}
 	else
 	{
 		ClientPrint(m_pPlayer->pev, HUD_PRINTCENTER, "#Switch_To_BurstFire");
 		m_iWeaponState |= WPNSTATE_FAMAS_BURST_MODE;
-
-#ifdef REGAMEDLL_API
-		CSPlayerWeapon()->m_flBaseDamage = FAMAS_DAMAGE_BURST;
-#endif
 	}
 
 	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.3f;
@@ -172,7 +165,7 @@ void CFamas::FamasFire(float flSpread, float flCycleTime, BOOL fUseAutoAim, BOOL
 	vecAiming = gpGlobals->v_forward;
 
 #ifdef REGAMEDLL_API
-	float flBaseDamage = CSPlayerWeapon()->m_flBaseDamage;
+	float flBaseDamage = bFireBurst ? m_flBaseDamageBurst : CSPlayerWeapon()->m_flBaseDamage;
 #else
 	float flBaseDamage = bFireBurst ? FAMAS_DAMAGE_BURST : FAMAS_DAMAGE;
 #endif
