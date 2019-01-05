@@ -372,5 +372,10 @@ void CC4::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, f
 
 float CC4::GetMaxSpeed()
 {
-	return m_bStartedArming ? 1.0f : C4_MAX_SPEED;
+#ifdef REGAMEDLL_FIXES
+	if (m_bStartedArming)
+		return 1.0f;
+#endif
+
+	return C4_MAX_SPEED;
 }
