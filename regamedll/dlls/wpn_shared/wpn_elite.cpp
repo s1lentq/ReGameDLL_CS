@@ -11,7 +11,10 @@ void CELITE::Spawn()
 
 	m_iDefaultAmmo = ELITE_DEFAULT_GIVE;
 	m_flAccuracy = 0.88f;
-	m_flBaseDamage = ELITE_DAMAGE;
+
+#ifdef REGAMEDLL_API
+	CSPlayerWeapon()->m_flBaseDamage = ELITE_DAMAGE;
+#endif
 
 	// Get ready to fall down
 	FallInit();
@@ -160,13 +163,19 @@ void CELITE::ELITEFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 	flag = 0;
 #endif
 
+#ifdef REGAMEDLL_API
+	float flBaseDamage = CSPlayerWeapon()->m_flBaseDamage;
+#else
+	float flBaseDamage = ELITE_DAMAGE;
+#endif
+
 	if (m_iWeaponState & WPNSTATE_ELITE_LEFT)
 	{
 		m_pPlayer->SetAnimation(PLAYER_ATTACK1);
 		m_iWeaponState &= ~WPNSTATE_ELITE_LEFT;
 
 		vecDir = m_pPlayer->FireBullets3(vecSrc - gpGlobals->v_right * 5, vecAiming, flSpread,
-			8192, BULLET_PLAYER_9MM, 1, m_flBaseDamage, ELITE_RANGE_MODIFER, m_pPlayer->pev, true, m_pPlayer->random_seed);
+			8192, BULLET_PLAYER_9MM, 1, flBaseDamage, ELITE_RANGE_MODIFER, m_pPlayer->pev, true, m_pPlayer->random_seed);
 
 		PLAYBACK_EVENT_FULL(flag, m_pPlayer->edict(), m_usFireELITE_LEFT, 0, (float *)&g_vecZero, (float *)&g_vecZero, flTimeDiff, vecDir.x,
 			int(vecDir.y * 100), m_iClip, FALSE, FALSE);
@@ -177,7 +186,7 @@ void CELITE::ELITEFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 		m_iWeaponState |= WPNSTATE_ELITE_LEFT;
 
 		vecDir = m_pPlayer->FireBullets3(vecSrc + gpGlobals->v_right * 5, vecAiming, flSpread,
-			8192, BULLET_PLAYER_9MM, 1, m_flBaseDamage, ELITE_RANGE_MODIFER, m_pPlayer->pev, true, m_pPlayer->random_seed);
+			8192, BULLET_PLAYER_9MM, 1, flBaseDamage, ELITE_RANGE_MODIFER, m_pPlayer->pev, true, m_pPlayer->random_seed);
 
 		PLAYBACK_EVENT_FULL(flag, m_pPlayer->edict(), m_usFireELITE_RIGHT, 0, (float *)&g_vecZero, (float *)&g_vecZero, flTimeDiff, vecDir.x,
 			int(vecDir.y * 100), m_iClip, FALSE, FALSE);

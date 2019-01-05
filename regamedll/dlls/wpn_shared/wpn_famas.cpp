@@ -12,8 +12,11 @@ void CFamas::Spawn()
 	m_iDefaultAmmo = FAMAS_DEFAULT_GIVE;
 	m_iFamasShotsFired = 0;
 	m_flFamasShoot = 0;
-	m_flBaseDamage = FAMAS_DAMAGE;
-	m_flFamasBaseDamageBurst - FAMAS_DAMAGE_BURST;
+
+#ifdef REGAMEDLL_API
+	CSPlayerWeapon()->m_flBaseDamage = FAMAS_DAMAGE;
+	CSPlayerWeapon()->m_flFamasBaseDamageBurst = FAMAS_DAMAGE_BURST;
+#endif
 
 	// Get ready to fall down
 	FallInit();
@@ -161,8 +164,15 @@ void CFamas::FamasFire(float flSpread, float flCycleTime, BOOL fUseAutoAim, BOOL
 	vecSrc = m_pPlayer->GetGunPosition();
 	vecAiming = gpGlobals->v_forward;
 
+#ifdef REGAMEDLL_API
+	float flBaseDamage = CSPlayerWeapon()->m_flBaseDamage;
+	float flFamasBaseDamageBurst = CSPlayerWeapon()->m_flFamasBaseDamageBurst;
+#else
+	float flBaseDamage = FAMAS_DAMAGE;
+	float flFamasBaseDamageBurst = FAMAS_DAMAGE_BURST;
+#endif
 	vecDir = m_pPlayer->FireBullets3(vecSrc, vecAiming, flSpread, 8192, 2, BULLET_PLAYER_556MM,
-		bFireBurst ? m_flFamasBaseDamageBurst : m_flBaseDamage, FAMAS_RANGE_MODIFER, m_pPlayer->pev, false, m_pPlayer->random_seed);
+		bFireBurst ? flFamasBaseDamageBurst : flBaseDamage, FAMAS_RANGE_MODIFER, m_pPlayer->pev, false, m_pPlayer->random_seed);
 
 #ifdef CLIENT_WEAPONS
 	flag = FEV_NOTHOST;

@@ -14,6 +14,10 @@ void CTMP::Spawn()
 	m_iShotsFired = 0;
 	m_bDelayFire = false;
 
+#ifdef REGAMEDLL_API
+	CSPlayerWeapon()->m_flBaseDamage = TMP_DAMAGE;
+#endif
+
 	// Get ready to fall down
 	FallInit();
 
@@ -111,8 +115,13 @@ void CTMP::TMPFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	vecSrc = m_pPlayer->GetGunPosition();
 	vecAiming = gpGlobals->v_forward;
 
+#ifdef REGAMEDLL_API
+	float flBaseDamage = CSPlayerWeapon()->m_flBaseDamage;
+#else
+	float flBaseDamage = TMP_DAMAGE;
+#endif
 	vecDir = m_pPlayer->FireBullets3(vecSrc, vecAiming, flSpread, 8192, 1, BULLET_PLAYER_9MM,
-		TMP_DAMAGE, TMP_RANGE_MODIFER, m_pPlayer->pev, false, m_pPlayer->random_seed);
+		flBaseDamage, TMP_RANGE_MODIFER, m_pPlayer->pev, false, m_pPlayer->random_seed);
 
 #ifdef CLIENT_WEAPONS
 	flag = FEV_NOTHOST;

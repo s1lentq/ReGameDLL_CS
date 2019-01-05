@@ -13,6 +13,11 @@ void CUSP::Spawn()
 	m_iDefaultAmmo = USP_DEFAULT_GIVE;
 	m_flAccuracy = 0.92f;
 
+#ifdef REGAMEDLL_API
+	CSPlayerWeapon()->m_flBaseDamage = USP_DAMAGE;
+	CSPlayerWeapon()->m_flUSPBaseDamageSil = USP_DAMAGE_SIL;
+#endif
+
 	// Get ready to fall down
 	FallInit();
 
@@ -152,7 +157,6 @@ void CUSP::PrimaryAttack()
 void CUSP::USPFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 {
 	int flag;
-	int iDamage;
 	Vector vecAiming, vecSrc, vecDir;
 
 	flCycleTime -= 0.075f;
@@ -213,9 +217,12 @@ void CUSP::USPFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 	vecSrc = m_pPlayer->GetGunPosition();
 	vecAiming = gpGlobals->v_forward;
 
-	iDamage = (m_iWeaponState & WPNSTATE_USP_SILENCED) ? USP_DAMAGE_SIL : USP_DAMAGE;
-
-	vecDir = m_pPlayer->FireBullets3(vecSrc, vecAiming, flSpread, 4096, 1, BULLET_PLAYER_45ACP, iDamage, USP_RANGE_MODIFER, m_pPlayer->pev, true, m_pPlayer->random_seed);
+#ifdef REGAMEDLL_API
+	float flBaseDamage = (m_iWeaponState & WPNSTATE_USP_SILENCED) ? CSPlayerWeapon()->m_flUSPBaseDamageSil : CSPlayerWeapon()->m_flBaseDamage;
+#else
+	float flBaseDamage = (m_iWeaponState & WPNSTATE_USP_SILENCED) ? USP_DAMAGE_SIL : USP_DAMAGE;
+#endif
+	vecDir = m_pPlayer->FireBullets3(vecSrc, vecAiming, flSpread, 4096, 1, BULLET_PLAYER_45ACP, flBaseDamage, USP_RANGE_MODIFER, m_pPlayer->pev, true, m_pPlayer->random_seed);
 
 #ifdef CLIENT_WEAPONS
 	flag = FEV_NOTHOST;
