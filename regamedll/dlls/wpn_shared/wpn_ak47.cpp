@@ -12,6 +12,7 @@ void CAK47::Spawn()
 	m_iDefaultAmmo = AK47_DEFAULT_GIVE;
 	m_flAccuracy = 0.2f;
 	m_iShotsFired = 0;
+	m_flBaseDamage = AK47_DAMAGE;
 
 	// Get ready to fall down
 	FallInit();
@@ -121,7 +122,7 @@ void CAK47::AK47Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	vecAiming = gpGlobals->v_forward;
 
 	vecDir = m_pPlayer->FireBullets3(vecSrc, vecAiming, flSpread, 8192, 2, BULLET_PLAYER_762MM,
-		AK47_DAMAGE, AK47_RANGE_MODIFER, m_pPlayer->pev, false, m_pPlayer->random_seed);
+		m_flBaseDamage, AK47_RANGE_MODIFER, m_pPlayer->pev, false, m_pPlayer->random_seed);
 
 #ifdef CLIENT_WEAPONS
 	flag = FEV_NOTHOST;

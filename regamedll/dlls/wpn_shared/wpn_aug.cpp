@@ -12,6 +12,7 @@ void CAUG::Spawn()
 	m_iDefaultAmmo = AUG_DEFAULT_GIVE;
 	m_flAccuracy = 0.2f;
 	m_iShotsFired = 0;
+	m_flBaseDamage = AUG_DAMAGE;
 
 	// Get ready to fall down
 	FallInit();
@@ -134,7 +135,7 @@ void CAUG::AUGFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	vecAiming = gpGlobals->v_forward;
 
 	vecDir = m_pPlayer->FireBullets3(vecSrc, vecAiming, flSpread, 8192, 2, BULLET_PLAYER_556MM,
-		AUG_DAMAGE, AUG_RANGE_MODIFER, m_pPlayer->pev, false, m_pPlayer->random_seed);
+		m_flBaseDamage, AUG_RANGE_MODIFER, m_pPlayer->pev, false, m_pPlayer->random_seed);
 
 #ifdef CLIENT_WEAPONS
 	flag = FEV_NOTHOST;

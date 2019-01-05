@@ -12,6 +12,7 @@ void CFiveSeven::Spawn()
 	m_iDefaultAmmo = FIVESEVEN_DEFAULT_GIVE;
 	m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
 	m_flAccuracy = 0.92f;
+	m_flBaseDamage = FIVESEVEN_DAMAGE;
 
 	// Get ready to fall down
 	FallInit();
@@ -148,7 +149,7 @@ void CFiveSeven::FiveSevenFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 	vecSrc = m_pPlayer->GetGunPosition();
 	vecAiming = gpGlobals->v_forward;
 
-	vecDir = m_pPlayer->FireBullets3(vecSrc, vecAiming, flSpread, 4096, 1, BULLET_PLAYER_57MM, FIVESEVEN_DAMAGE, FIVESEVEN_RANGE_MODIFER, m_pPlayer->pev, false, m_pPlayer->random_seed);
+	vecDir = m_pPlayer->FireBullets3(vecSrc, vecAiming, flSpread, 4096, 1, BULLET_PLAYER_57MM, m_flBaseDamage, FIVESEVEN_RANGE_MODIFER, m_pPlayer->pev, false, m_pPlayer->random_seed);
 
 #ifdef CLIENT_WEAPONS
 	flag = FEV_NOTHOST;

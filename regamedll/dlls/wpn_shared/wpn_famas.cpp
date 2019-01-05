@@ -12,6 +12,8 @@ void CFamas::Spawn()
 	m_iDefaultAmmo = FAMAS_DEFAULT_GIVE;
 	m_iFamasShotsFired = 0;
 	m_flFamasShoot = 0;
+	m_flBaseDamage = FAMAS_DAMAGE;
+	m_flFamasBaseDamageBurst - FAMAS_DAMAGE_BURST;
 
 	// Get ready to fall down
 	FallInit();
@@ -160,7 +162,7 @@ void CFamas::FamasFire(float flSpread, float flCycleTime, BOOL fUseAutoAim, BOOL
 	vecAiming = gpGlobals->v_forward;
 
 	vecDir = m_pPlayer->FireBullets3(vecSrc, vecAiming, flSpread, 8192, 2, BULLET_PLAYER_556MM,
-		bFireBurst ? FAMAS_DAMAGE_BURST : FAMAS_DAMAGE, FAMAS_RANGE_MODIFER, m_pPlayer->pev, false, m_pPlayer->random_seed);
+		bFireBurst ? m_flFamasBaseDamageBurst : m_flBaseDamage, FAMAS_RANGE_MODIFER, m_pPlayer->pev, false, m_pPlayer->random_seed);
 
 #ifdef CLIENT_WEAPONS
 	flag = FEV_NOTHOST;
