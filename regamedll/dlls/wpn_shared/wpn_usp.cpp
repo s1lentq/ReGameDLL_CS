@@ -14,8 +14,7 @@ void CUSP::Spawn()
 	m_flAccuracy = 0.92f;
 
 #ifdef REGAMEDLL_API
-	CSPlayerWeapon()->m_flBaseDamage = USP_DAMAGE;
-	CSPlayerWeapon()->m_flUSPBaseDamageSil = USP_DAMAGE_SIL;
+	CSPlayerWeapon()->m_flBaseDamage = (m_iWeaponState & WPNSTATE_USP_SILENCED) ? USP_DAMAGE_SIL : USP_DAMAGE;
 #endif
 
 	// Get ready to fall down
@@ -99,6 +98,10 @@ void CUSP::SecondaryAttack()
 
 		SendWeaponAnim(USP_DETACH_SILENCER, UseDecrement() != FALSE);
 		Q_strcpy(m_pPlayer->m_szAnimExtention, "onehanded");
+
+#ifdef REGAMEDLL_API
+		CSPlayerWeapon()->m_flBaseDamage = USP_DAMAGE;
+#endif
 	}
 	else
 	{
@@ -106,6 +109,10 @@ void CUSP::SecondaryAttack()
 
 		SendWeaponAnim(USP_ATTACH_SILENCER, UseDecrement() != FALSE);
 		Q_strcpy(m_pPlayer->m_szAnimExtention, "onehanded");
+
+#ifdef REGAMEDLL_API
+		CSPlayerWeapon()->m_flBaseDamage = USP_DAMAGE_SIL;
+#endif
 	}
 
 	m_flNextSecondaryAttack = m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 3.0f;
@@ -218,7 +225,7 @@ void CUSP::USPFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 	vecAiming = gpGlobals->v_forward;
 
 #ifdef REGAMEDLL_API
-	float flBaseDamage = (m_iWeaponState & WPNSTATE_USP_SILENCED) ? CSPlayerWeapon()->m_flUSPBaseDamageSil : CSPlayerWeapon()->m_flBaseDamage;
+	float flBaseDamage = CSPlayerWeapon()->m_flBaseDamage;
 #else
 	float flBaseDamage = (m_iWeaponState & WPNSTATE_USP_SILENCED) ? USP_DAMAGE_SIL : USP_DAMAGE;
 #endif

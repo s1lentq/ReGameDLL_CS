@@ -78,11 +78,19 @@ void CFamas::SecondaryAttack()
 	{
 		ClientPrint(m_pPlayer->pev, HUD_PRINTCENTER, "#Switch_To_FullAuto");
 		m_iWeaponState &= ~WPNSTATE_FAMAS_BURST_MODE;
+
+#ifdef REGAMEDLL_API
+		CSPlayerWeapon()->m_flBaseDamage = FAMAS_DAMAGE;
+#endif
 	}
 	else
 	{
 		ClientPrint(m_pPlayer->pev, HUD_PRINTCENTER, "#Switch_To_BurstFire");
 		m_iWeaponState |= WPNSTATE_FAMAS_BURST_MODE;
+
+#ifdef REGAMEDLL_API
+		CSPlayerWeapon()->m_flBaseDamage = FAMAS_DAMAGE_BURST;
+#endif
 	}
 
 	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.3f;
@@ -166,13 +174,11 @@ void CFamas::FamasFire(float flSpread, float flCycleTime, BOOL fUseAutoAim, BOOL
 
 #ifdef REGAMEDLL_API
 	float flBaseDamage = CSPlayerWeapon()->m_flBaseDamage;
-	float flFamasBaseDamageBurst = CSPlayerWeapon()->m_flFamasBaseDamageBurst;
 #else
-	float flBaseDamage = FAMAS_DAMAGE;
-	float flFamasBaseDamageBurst = FAMAS_DAMAGE_BURST;
+	float flBaseDamage = bFireBurst ? FAMAS_DAMAGE_BURST : FAMAS_DAMAGE;
 #endif
 	vecDir = m_pPlayer->FireBullets3(vecSrc, vecAiming, flSpread, 8192, 2, BULLET_PLAYER_556MM,
-		bFireBurst ? flFamasBaseDamageBurst : flBaseDamage, FAMAS_RANGE_MODIFER, m_pPlayer->pev, false, m_pPlayer->random_seed);
+		flBaseDamage, FAMAS_RANGE_MODIFER, m_pPlayer->pev, false, m_pPlayer->random_seed);
 
 #ifdef CLIENT_WEAPONS
 	flag = FEV_NOTHOST;

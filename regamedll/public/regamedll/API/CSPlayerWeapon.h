@@ -42,9 +42,6 @@ public:
 public:
 	bool m_bHasSecondaryAttack;
 	float m_flBaseDamage;
-	float m_flFamasBaseDamageBurst;
-	float m_flM4A1BaseDamageSil;
-	float m_flUSPBaseDamageSil;
 };
 
 // Inlines
