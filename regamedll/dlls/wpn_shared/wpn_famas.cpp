@@ -15,7 +15,6 @@ void CFamas::Spawn()
 
 #ifdef REGAMEDLL_API
 	CSPlayerWeapon()->m_flBaseDamage = FAMAS_DAMAGE;
-	CSPlayerWeapon()->m_flFamasBaseDamageBurst = FAMAS_DAMAGE_BURST;
 #endif
 
 	// Get ready to fall down
