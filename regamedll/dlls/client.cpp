@@ -2542,14 +2542,9 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 			if (pPlayer->m_iTeam != UNASSIGNED)
 			{
 				int iVoteID;
-#ifdef REGAMEDLL_FIXES
 				bool bVoteFail = false;
-#else
-				int iVoteFail = 0;
-#endif
 				int iNumArgs = CMD_ARGC_();
 				int iVoteLength = Q_strlen(parg1);
-#ifdef REGAMEDLL_FIXES
 				if (iNumArgs != 2 || iVoteLength <= 0 || iVoteLength > 6)
 				{
 					bVoteFail = true;
@@ -2567,25 +2562,6 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 					ClientPrint(pPlayer->pev, HUD_PRINTCONSOLE, "#Game_vote_usage");
 					return;
 				}
-#else
-				if (iNumArgs != 2 || iVoteLength <= 0 || iVoteLength > 6)
-				{
-					iVoteFail = 1;
-				}
-
-				iVoteID = Q_atoi(parg1);
-				if (iVoteID <= 0)
-				{
-					iVoteFail = 1;
-				}
-
-				if (iVoteFail)
-				{
-					ListPlayers(pPlayer);
-					ClientPrint(pPlayer->pev, HUD_PRINTCONSOLE, "#Game_vote_usage");
-					return;
-				}
-#endif
 
 				if (CountTeamPlayers(pPlayer->m_iTeam) < 3)
 				{
@@ -2651,14 +2627,10 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 					ClientPrint(pPlayer->pev, HUD_PRINTCONSOLE, "#Cannot_Vote_Map");
 					return;
 				}
-#ifdef REGAMEDLL_FIXES
+				
 				bool bFailed = false;
-#else
-				int iFailed = 0;
-#endif
 				int iNumArgs = CMD_ARGC_();
 				int iVoteLength = Q_strlen(parg1);
-#ifdef REGAMEDLL_FIXES
 				if (iNumArgs != 2 || iVoteLength > 5)
 				{
 					bFailed = true;
@@ -2681,30 +2653,6 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 					ClientPrint(pPlayer->pev, HUD_PRINTCONSOLE, "#Game_votemap_usage");
 					return;
 				}
-#else
-				if (iNumArgs != 2 || iVoteLength > 5)
-				{
-					iFailed = 1;
-				}
-
-				int iVoteID = Q_atoi(parg1);
-				if (iVoteID < 1 || iVoteID > MAX_VOTE_MAPS)
-				{
-					iFailed = 1;
-				}
-
-				if (iVoteID > GetMapCount())
-				{
-					iFailed = 1;
-				}
-
-				if (iFailed)
-				{
-					CSGameRules()->DisplayMaps(pPlayer, 0);
-					ClientPrint(pPlayer->pev, HUD_PRINTCONSOLE, "#Game_votemap_usage");
-					return;
-				}
-#endif
 
 				if (CountTeamPlayers(pPlayer->m_iTeam) < 2)
 				{
