@@ -41,6 +41,7 @@ public:
 
 public:
 	bool m_bHasSecondaryAttack;
+	float m_flBaseDamage;
 };
 
 // Inlines

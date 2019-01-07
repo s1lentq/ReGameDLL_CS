@@ -14,6 +14,10 @@ void CP90::Spawn()
 	m_iShotsFired = 0;
 	m_bDelayFire = false;
 
+#ifdef REGAMEDLL_API
+	CSPlayerWeapon()->m_flBaseDamage = P90_DAMAGE;
+#endif
+
 	// Get ready to fall down
 	FallInit();
 
@@ -121,7 +125,12 @@ void CP90::P90Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	vecSrc = m_pPlayer->GetGunPosition();
 	vecAiming = gpGlobals->v_forward;
 
-	vecDir = m_pPlayer->FireBullets3(vecSrc, vecAiming, flSpread, 8192, 1, BULLET_PLAYER_57MM, P90_DAMAGE, P90_RANGE_MODIFER, m_pPlayer->pev, false, m_pPlayer->random_seed);
+#ifdef REGAMEDLL_API
+	float flBaseDamage = CSPlayerWeapon()->m_flBaseDamage;
+#else
+	float flBaseDamage = P90_DAMAGE;
+#endif
+	vecDir = m_pPlayer->FireBullets3(vecSrc, vecAiming, flSpread, 8192, 1, BULLET_PLAYER_57MM, flBaseDamage, P90_RANGE_MODIFER, m_pPlayer->pev, false, m_pPlayer->random_seed);
 
 #ifdef CLIENT_WEAPONS
 	flag = FEV_NOTHOST;
