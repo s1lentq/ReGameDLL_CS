@@ -2542,22 +2542,21 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 			if (pPlayer->m_iTeam != UNASSIGNED)
 			{
 				int iVoteID;
-				int iVoteFail = 0;
+				bool bVoteFail = false;
 				int iNumArgs = CMD_ARGC_();
 				int iVoteLength = Q_strlen(parg1);
-
 				if (iNumArgs != 2 || iVoteLength <= 0 || iVoteLength > 6)
 				{
-					iVoteFail = 1;
+					bVoteFail = true;
 				}
 
 				iVoteID = Q_atoi(parg1);
 				if (iVoteID <= 0)
 				{
-					iVoteFail = 1;
+					bVoteFail = true;
 				}
 
-				if (iVoteFail)
+				if (bVoteFail)
 				{
 					ListPlayers(pPlayer);
 					ClientPrint(pPlayer->pev, HUD_PRINTCONSOLE, "#Game_vote_usage");
@@ -2629,27 +2628,26 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 					return;
 				}
 
-				int iFailed = 0;
+				bool bFailed = false;
 				int iNumArgs = CMD_ARGC_();
 				int iVoteLength = Q_strlen(parg1);
-
 				if (iNumArgs != 2 || iVoteLength > 5)
 				{
-					iFailed = 1;
+					bFailed = true;
 				}
 
 				int iVoteID = Q_atoi(parg1);
 				if (iVoteID < 1 || iVoteID > MAX_VOTE_MAPS)
 				{
-					iFailed = 1;
+					bFailed = true;
 				}
 
 				if (iVoteID > GetMapCount())
 				{
-					iFailed = 1;
+					bFailed = true;
 				}
 
-				if (iFailed)
+				if (bFailed)
 				{
 					CSGameRules()->DisplayMaps(pPlayer, 0);
 					ClientPrint(pPlayer->pev, HUD_PRINTCONSOLE, "#Game_votemap_usage");
