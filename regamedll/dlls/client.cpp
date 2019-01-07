@@ -2627,7 +2627,7 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 					ClientPrint(pPlayer->pev, HUD_PRINTCONSOLE, "#Cannot_Vote_Map");
 					return;
 				}
-				
+
 				bool bFailed = false;
 				int iNumArgs = CMD_ARGC_();
 				int iVoteLength = Q_strlen(parg1);
