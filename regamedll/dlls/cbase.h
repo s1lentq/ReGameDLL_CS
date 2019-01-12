@@ -147,6 +147,9 @@ public:
 	int ShouldToggle(USE_TYPE useType, BOOL currentState);
 	void FireBullets(ULONG cShots, Vector vecSrc, Vector vecDirShooting, Vector vecSpread, float flDistance, int iBulletType, int iTracerFreq = 4, int iDamage = 0, entvars_t *pevAttacker = nullptr);
 	Vector FireBullets3(Vector vecSrc, Vector vecDirShooting, float vecSpread, float flDistance, int iPenetration, int iBulletType, int iDamage, float flRangeModifier, entvars_t *pevAttacker, bool bPistol, int shared_rand = 0);
+#ifdef REGAMEDLL_FIXES
+	void FireBuckshots(ULONG cShots, Vector vecSrc, Vector vecDirShooting, Vector vecSpread, float flDistance, int iTracerFreq, int iDamage, entvars_t *pevAttacker = nullptr);
+#endif
 	void SUB_UseTargets(CBaseEntity *pActivator, USE_TYPE useType, float value);
 	bool Intersects(CBaseEntity *pOther);
 	bool Intersects(const Vector &mins, const Vector &maxs);

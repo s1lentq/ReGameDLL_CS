@@ -11,6 +11,10 @@ void CXM1014::Spawn()
 
 	m_iDefaultAmmo = XM1014_DEFAULT_GIVE;
 
+#ifdef REGAMEDLL_API
+	CSPlayerWeapon()->m_flBaseDamage = XM1014_DAMAGE;
+#endif
+
 	// Get ready to fall down
 	FallInit();
 
@@ -98,7 +102,17 @@ void CXM1014::PrimaryAttack()
 	vecSrc = m_pPlayer->GetGunPosition();
 	vecAiming = gpGlobals->v_forward;
 
-	m_pPlayer->FireBullets(6, vecSrc, vecAiming, XM1014_CONE_VECTOR, 3048, BULLET_PLAYER_BUCKSHOT, 0);
+#ifdef REGAMEDLL_API
+	float flBaseDamage = CSPlayerWeapon()->m_flBaseDamage;
+#else
+	float flBaseDamage = XM1014_DAMAGE;
+#endif
+
+#ifdef REGAMEDLL_FIXES
+	m_pPlayer->FireBuckshots(9, vecSrc, vecAiming, XM1014_CONE_VECTOR, 3048, 0, flBaseDamage);
+#else
+	m_pPlayer->FireBullets(9, vecSrc, vecAiming, XM1014_CONE_VECTOR, 3048, BULLET_PLAYER_BUCKSHOT, 0);
+#endif
 
 #ifdef CLIENT_WEAPONS
 	flag = FEV_NOTHOST;
