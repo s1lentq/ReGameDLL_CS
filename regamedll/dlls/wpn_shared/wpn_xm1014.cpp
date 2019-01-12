@@ -109,9 +109,9 @@ void CXM1014::PrimaryAttack()
 #endif
 
 #ifdef REGAMEDLL_FIXES
-	m_pPlayer->FireBuckshots(9, vecSrc, vecAiming, XM1014_CONE_VECTOR, 3048, 0, flBaseDamage);
+	m_pPlayer->FireBuckshots(6, vecSrc, vecAiming, XM1014_CONE_VECTOR, 3048, 0, flBaseDamage);
 #else
-	m_pPlayer->FireBullets(9, vecSrc, vecAiming, XM1014_CONE_VECTOR, 3048, BULLET_PLAYER_BUCKSHOT, 0);
+	m_pPlayer->FireBullets(6, vecSrc, vecAiming, XM1014_CONE_VECTOR, 3048, BULLET_PLAYER_BUCKSHOT, 0);
 #endif
 
 #ifdef CLIENT_WEAPONS
