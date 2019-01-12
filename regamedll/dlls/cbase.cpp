@@ -1358,7 +1358,6 @@ Vector CBaseEntity::FireBullets3(Vector vecSrc, Vector vecDirShooting, float vec
 	return Vector(x * vecSpread, y * vecSpread, 0);
 }
 
-#ifdef REGAMEDLL_FIXES
 void CBaseEntity::FireBuckshots(ULONG cShots, Vector vecSrc, Vector vecDirShooting, Vector vecSpread, float flDistance, int iTracerFreq, int iDamage, entvars_t *pevAttacker)
 {
     static int tracerCount;
@@ -1443,7 +1442,6 @@ void CBaseEntity::FireBuckshots(ULONG cShots, Vector vecSrc, Vector vecDirShooti
  
     ApplyMultiDamage(pev, pevAttacker);
 }
-#endif
 
 void CBaseEntity::TraceBleed(float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType)
 {
