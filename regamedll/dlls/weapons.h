@@ -552,15 +552,14 @@ public:
 	void USPFire(float flSpread, float flCycleTime, BOOL fUseSemi);
 	void MakeBeam();
 	void BeamUpdate();
-
 	int m_iShell;
+
+private:
+	unsigned short m_usFireUSP;
 
 #ifdef REGAMEDLL_API
 	float m_flBaseDamageSil;
 #endif
-
-private:
-	unsigned short m_usFireUSP;
 };
 
 
@@ -1228,6 +1227,7 @@ private:
 
 
 const float M3_MAX_SPEED   = 230.0f;
+const float M3_DAMAGE      = 20.0f;
 const Vector M3_CONE_VECTOR = Vector(0.0675, 0.0675, 0.0); // special shotgun spreads
 
 enum m3_e
@@ -1325,12 +1325,12 @@ public:
 	int m_iShell;
 	int iShellOn;
 
+private:
+	unsigned short m_usFireM4A1;
+
 #ifdef REGAMEDLL_API
 	float m_flBaseDamageSil;
 #endif
-
-private:
-	unsigned short m_usFireM4A1;
 };
 
 
@@ -1633,6 +1633,7 @@ private:
 
 
 const float XM1014_MAX_SPEED   = 240.0f;
+const float XM1014_DAMAGE      = 20.0f;
 const Vector XM1014_CONE_VECTOR = Vector(0.0725, 0.0725, 0.0); // special shotgun spreads
 
 enum xm1014_e
