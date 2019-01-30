@@ -6254,8 +6254,25 @@ void CBasePlayer::HandleSignals()
 		if (buytime.value != 0.0f)
 #endif
 		{
-			if (!CSGameRules()->m_bMapHasBuyZone)
-				OLD_CheckBuyZone(this);
+
+#ifdef REGAMEDLL_ADD
+			if (buy_anywhere.value != 0.0f)
+			{
+				if (pev->deadflag == DEAD_NO && (m_iTeam == TERRORIST || m_iTeam == CT) && !(m_signals.GetSignal() & SIGNAL_BUY) && CSGameRules()->CanPlayerBuy(this))
+				{
+					if (buy_anywhere.value == 1.0f || (buy_anywhere.value == 2.0f && m_iTeam == TERRORIST) || (buy_anywhere.value == 3.0f && m_iTeam == CT))
+					{
+						m_signals.Signal(SIGNAL_BUY);
+
+					}
+				}
+			}
+			else
+#endif
+			{
+				if (!CSGameRules()->m_bMapHasBuyZone)
+					OLD_CheckBuyZone(this);
+			}
 		}
 
 		if (!CSGameRules()->m_bMapHasBombZone)
