@@ -1019,7 +1019,7 @@ void CGrenade::__API_HOOK(DefuseBombEnd)(CBasePlayer *pPlayer, bool bDefused)
 	if (bDefused)
 	{
 		// if the defuse process has ended, kill the c4
-		if (m_pBombDefuser->pev->deadflag == DEAD_NO)
+		if (pPlayer->pev->deadflag == DEAD_NO)
 		{
 	#ifdef REGAMEDLL_ADD
 			if (!old_bomb_defused_sound.value)
@@ -1030,24 +1030,24 @@ void CGrenade::__API_HOOK(DefuseBombEnd)(CBasePlayer *pPlayer, bool bDefused)
 
 			if (TheBots)
 			{
-				TheBots->OnEvent(EVENT_BOMB_DEFUSED, (CBaseEntity *)m_pBombDefuser);
+				TheBots->OnEvent(EVENT_BOMB_DEFUSED, (CBaseEntity *)pPlayer);
 			}
 
 			MESSAGE_BEGIN(MSG_SPEC, SVC_DIRECTOR);
 				WRITE_BYTE(9);
 				WRITE_BYTE(DRC_CMD_EVENT);
-				WRITE_SHORT(ENTINDEX(m_pBombDefuser->edict()));
+				WRITE_SHORT(ENTINDEX(pPlayer->edict()));
 				WRITE_SHORT(0);
 				WRITE_LONG(15 | DRC_FLAG_FINAL | DRC_FLAG_FACEPLAYER | DRC_FLAG_DRAMATIC);
 			MESSAGE_END();
 
 			UTIL_LogPrintf("\"%s<%i><%s><CT>\" triggered \"Defused_The_Bomb\"\n",
-				STRING(m_pBombDefuser->pev->netname),
-				GETPLAYERUSERID(m_pBombDefuser->edict()),
-				GETPLAYERAUTHID(m_pBombDefuser->edict()));
+				STRING(pPlayer->pev->netname),
+				GETPLAYERUSERID(pPlayer->edict()),
+				GETPLAYERAUTHID(pPlayer->edict()));
 
 			UTIL_EmitAmbientSound(ENT(pev), pev->origin, "weapons/c4_beep5.wav", 0, ATTN_NONE, SND_STOP, 0);
-			EMIT_SOUND(ENT(m_pBombDefuser->pev), CHAN_WEAPON, "weapons/c4_disarmed.wav", VOL_NORM, ATTN_NORM);
+			EMIT_SOUND(ENT(pPlayer->pev), CHAN_WEAPON, "weapons/c4_disarmed.wav", VOL_NORM, ATTN_NORM);
 			UTIL_Remove(this);
 
 			m_bJustBlew = true;
@@ -1072,7 +1072,7 @@ void CGrenade::__API_HOOK(DefuseBombEnd)(CBasePlayer *pPlayer, bool bDefused)
 			CSGameRules()->CheckWinConditions();
 
 			// give the defuser credit for defusing the bomb
-			m_pBombDefuser->pev->frags += 3.0f;
+			pPlayer->pev->frags += 3.0f;
 
 			MESSAGE_BEGIN(MSG_ALL, gmsgBombPickup);
 			MESSAGE_END();
@@ -1104,10 +1104,10 @@ void CGrenade::__API_HOOK(DefuseBombEnd)(CBasePlayer *pPlayer, bool bDefused)
 	}
 	else
 	{
-		int iOnGround = ((m_pBombDefuser->pev->flags & FL_ONGROUND) == FL_ONGROUND);
+		int iOnGround = ((pPlayer->pev->flags & FL_ONGROUND) == FL_ONGROUND);
 		if (!iOnGround)
 		{
-			ClientPrint(m_pBombDefuser->pev, HUD_PRINTCENTER, "#C4_Defuse_Must_Be_On_Ground");
+			ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#C4_Defuse_Must_Be_On_Ground");
 		}
 
 		// release the player from being frozen
