@@ -1143,7 +1143,7 @@ void CGrenade::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useTy
 	}
 
 #ifdef REGAMEDLL_FIXES
-	if((pPlayer->pev->flags & FL_ONGROUND) != FL_ONGROUND) // Defuse should start only on ground
+	if (!m_bStartDefuse && (pPlayer->pev->flags & FL_ONGROUND) != FL_ONGROUND) // Defuse should start only on ground
 	{
 		ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#C4_Defuse_Must_Be_On_Ground");
 		return;
@@ -1373,7 +1373,7 @@ void CGrenade::C4Think()
 
 	// If the timer has expired ! blow this bomb up!
 #ifdef REGAMEDLL_FIXES
-	if(gpGlobals->time >= m_flC4Blow && (!(m_bStartDefuse && m_pBombDefuser) || gpGlobals->time < m_flDefuseCountDown)) // Prevent exploding after defusing.
+	if (gpGlobals->time >= m_flC4Blow && (!(m_bStartDefuse && m_pBombDefuser) || gpGlobals->time < m_flDefuseCountDown)) // Prevent exploding after defusing.
 #else
 	if (gpGlobals->time >= m_flC4Blow)
 #endif
