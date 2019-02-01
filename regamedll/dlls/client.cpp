@@ -3078,7 +3078,10 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 	}
 	else if (FStrEq(pcmd, "become_vip"))
 	{
-		if (pPlayer->m_iJoiningState != JOINED || pPlayer->m_iTeam != CT)
+		if (pPlayer->m_iJoiningState != JOINED || pPlayer->m_iTeam != CT
+#ifdef REGAMEDLL_FIXES
+			|| !CSGameRules()->m_bMapHasVIPSafetyZone)
+#endif
 		{
 			ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Command_Not_Available");
 			return;
