@@ -5570,7 +5570,7 @@ NOXREF void CBasePlayer::SelectNextItem(int iItem)
 {
 	CBasePlayerItem *pItem = m_rgpPlayerItems[iItem];
 
-	if (!pItem)
+	if (!pItem || m_pActiveItem && !m_pActiveItem->CanHolster())
 	{
 		return;
 	}
@@ -5627,7 +5627,7 @@ void CBasePlayer::SelectItem(const char *pstr)
 	}
 
 	auto pItem = GetItemByName(pstr);
-	if (!pItem || pItem == m_pActiveItem)
+	if (!pItem || pItem == m_pActiveItem || m_pActiveItem && !m_pActiveItem->CanHolster())
 		return;
 
 	ResetAutoaim();
