@@ -3483,9 +3483,11 @@ void CBasePlayer::PlayerDeathThink()
 		PackDeadPlayerItems();
 	}
 	
+#ifdef REGAMEDLL_FIXES
 	// Clear inclination came from client view
 	pev->angles.x = 0;
-
+#endif
+	
 	if (pev->modelindex && !m_fSequenceFinished && pev->deadflag == DEAD_DYING)
 	{
 		StudioFrameAdvance();
