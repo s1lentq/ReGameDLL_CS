@@ -3482,6 +3482,9 @@ void CBasePlayer::PlayerDeathThink()
 		// we aren't calling into any of their code anymore through the player pointer.
 		PackDeadPlayerItems();
 	}
+	
+	// Clear inclination came from client view
+	pev->angles.x = 0;
 
 	if (pev->modelindex && !m_fSequenceFinished && pev->deadflag == DEAD_DYING)
 	{
