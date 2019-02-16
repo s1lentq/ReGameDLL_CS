@@ -16,6 +16,7 @@ void CGLOCK18::Spawn()
 	m_iGlock18ShotsFired = 0;
 	m_flGlock18Shoot = 0;
 	m_flAccuracy = 0.9f;
+	m_fMaxSpeed = GLOCK18_MAX_SPEED;
 
 #ifdef REGAMEDLL_API
 	CSPlayerWeapon()->m_flBaseDamage = GLOCK18_DAMAGE;
@@ -73,7 +74,10 @@ BOOL CGLOCK18::Deploy()
 	m_iGlock18ShotsFired = 0;
 	m_flGlock18Shoot = 0;
 	m_flAccuracy = 0.9f;
+
+#ifndef REGAMEDLL_FIXES
 	m_fMaxSpeed = GLOCK18_MAX_SPEED;
+#endif
 
 	m_pPlayer->m_bShieldDrawn = false;
 

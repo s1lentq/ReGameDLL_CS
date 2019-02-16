@@ -15,6 +15,7 @@ void CHEGrenade::Spawn()
 	m_flStartThrow = 0;
 	m_flReleaseThrow = -1.0f;
 	m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
+	m_fMaxSpeed = HEGRENADE_MAX_SPEED;
 
 	// Get ready to fall down
 	FallInit();
@@ -60,7 +61,11 @@ int CHEGrenade::GetItemInfo(ItemInfo *p)
 BOOL CHEGrenade::Deploy()
 {
 	m_flReleaseThrow = -1.0f;
+
+#ifndef REGAMEDLL_FIXES
 	m_fMaxSpeed = HEGRENADE_MAX_SPEED;
+#endif
+
 	m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
 
 	m_pPlayer->m_bShieldDrawn = false;

@@ -12,6 +12,7 @@ void CP228::Spawn()
 	m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
 	m_iDefaultAmmo = P228_DEFAULT_GIVE;
 	m_flAccuracy = 0.9f;
+	m_fMaxSpeed = P228_MAX_SPEED;
 
 #ifdef REGAMEDLL_API
 	CSPlayerWeapon()->m_flBaseDamage = P228_DAMAGE;
@@ -60,7 +61,11 @@ int CP228::GetItemInfo(ItemInfo *p)
 BOOL CP228::Deploy()
 {
 	m_flAccuracy = 0.9f;
+
+#ifndef REGAMEDLL_FIXES
 	m_fMaxSpeed = P228_MAX_SPEED;
+#endif
+
 	m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
 	m_pPlayer->m_bShieldDrawn = false;
 

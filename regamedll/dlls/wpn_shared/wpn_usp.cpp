@@ -12,6 +12,7 @@ void CUSP::Spawn()
 	m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
 	m_iDefaultAmmo = USP_DEFAULT_GIVE;
 	m_flAccuracy = 0.92f;
+	m_fMaxSpeed = USP_MAX_SPEED;
 
 #ifdef REGAMEDLL_API
 	CSPlayerWeapon()->m_flBaseDamage = USP_DAMAGE;
@@ -70,7 +71,10 @@ BOOL CUSP::Deploy()
 {
 	m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
 	m_flAccuracy = 0.92f;
+
+#ifdef REGAMEDLL_FIXES
 	m_fMaxSpeed = USP_MAX_SPEED;
+#endif
 	m_pPlayer->m_bShieldDrawn = false;
 
 	if (m_pPlayer->HasShield())

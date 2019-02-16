@@ -11,6 +11,7 @@ void CKnife::Spawn()
 
 	m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
 	m_iClip = WEAPON_NOCLIP;
+	m_fMaxSpeed = KNIFE_MAX_SPEED;
 
 	// Get ready to fall down
 	FallInit();
@@ -60,7 +61,10 @@ BOOL CKnife::Deploy()
 	EMIT_SOUND(m_pPlayer->edict(), CHAN_ITEM, "weapons/knife_deploy1.wav", 0.3, 2.4);
 
 	m_iSwing = 0;
+
+#ifndef REGAMEDLL_FIXES
 	m_fMaxSpeed = KNIFE_MAX_SPEED;
+#endif
 
 	m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
 	m_pPlayer->m_bShieldDrawn = false;

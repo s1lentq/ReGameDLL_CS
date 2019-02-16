@@ -11,6 +11,7 @@ void CELITE::Spawn()
 
 	m_iDefaultAmmo = ELITE_DEFAULT_GIVE;
 	m_flAccuracy = 0.88f;
+	m_fMaxSpeed = ELITE_MAX_SPEED;
 
 #ifdef REGAMEDLL_API
 	CSPlayerWeapon()->m_flBaseDamage = ELITE_DAMAGE;

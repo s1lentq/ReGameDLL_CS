@@ -61,7 +61,11 @@ int CDEAGLE::GetItemInfo(ItemInfo *p)
 BOOL CDEAGLE::Deploy()
 {
 	m_flAccuracy = 0.9f;
+
+#ifndef REGAMEDLL_FIXES
 	m_fMaxSpeed = DEAGLE_MAX_SPEED;
+#endif
+
 	m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
 	m_pPlayer->m_bShieldDrawn = false;
 

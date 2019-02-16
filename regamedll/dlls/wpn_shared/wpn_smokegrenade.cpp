@@ -15,6 +15,7 @@ void CSmokeGrenade::Spawn()
 	m_flStartThrow = 0;
 	m_flReleaseThrow = -1;
 	m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
+	m_fMaxSpeed = SMOKEGRENADE_MAX_SPEED;
 
 	// Get ready to fall down
 	FallInit();
@@ -60,7 +61,10 @@ BOOL CSmokeGrenade::Deploy()
 	m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
 
 	m_flReleaseThrow = -1;
+
+#ifndef REGAMEDLL_FIXES
 	m_fMaxSpeed = SMOKEGRENADE_MAX_SPEED;
+#endif
 
 	m_pPlayer->m_bShieldDrawn = false;
 

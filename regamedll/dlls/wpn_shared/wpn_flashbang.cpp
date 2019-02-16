@@ -15,6 +15,7 @@ void CFlashbang::Spawn()
 	m_flStartThrow = 0;
 	m_flReleaseThrow = -1.0f;
 	m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
+	m_fMaxSpeed = FLASHBANG_MAX_SPEED;
 
 	// Get ready to fall down
 	FallInit();
@@ -57,7 +58,10 @@ int CFlashbang::GetItemInfo(ItemInfo *p)
 BOOL CFlashbang::Deploy()
 {
 	m_flReleaseThrow = -1.0f;
+
+#ifndef REGAMEDLL_FIXES
 	m_fMaxSpeed = FLASHBANG_MAX_SPEED;
+#endif
 
 	m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
 	m_pPlayer->m_bShieldDrawn = false;

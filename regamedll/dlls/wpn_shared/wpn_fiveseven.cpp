@@ -12,6 +12,7 @@ void CFiveSeven::Spawn()
 	m_iDefaultAmmo = FIVESEVEN_DEFAULT_GIVE;
 	m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
 	m_flAccuracy = 0.92f;
+	m_fMaxSpeed = FIVESEVEN_MAX_SPEED;
 
 #ifdef REGAMEDLL_API
 	CSPlayerWeapon()->m_flBaseDamage = FIVESEVEN_DAMAGE;
@@ -60,7 +61,11 @@ int CFiveSeven::GetItemInfo(ItemInfo *p)
 BOOL CFiveSeven::Deploy()
 {
 	m_flAccuracy = 0.92f;
+
+#ifndef REGAMEDLL_FIXES
 	m_fMaxSpeed = FIVESEVEN_MAX_SPEED;
+#endif
+
 	m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
 	m_pPlayer->m_bShieldDrawn = false;
 
