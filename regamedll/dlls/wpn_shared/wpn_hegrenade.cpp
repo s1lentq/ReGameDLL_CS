@@ -115,7 +115,9 @@ bool CHEGrenade::ShieldSecondaryFire(int iUpAnim, int iDownAnim)
 		SendWeaponAnim(iDownAnim, UseDecrement() != FALSE);
 		Q_strcpy(m_pPlayer->m_szAnimExtention, "shieldgren");
 
+#ifndef REGAMEDLL_FIXES
 		m_fMaxSpeed = HEGRENADE_MAX_SPEED;
+#endif
 		m_pPlayer->m_bShieldDrawn = false;
 	}
 	else
@@ -124,7 +126,9 @@ bool CHEGrenade::ShieldSecondaryFire(int iUpAnim, int iDownAnim)
 		SendWeaponAnim(iUpAnim, UseDecrement() != FALSE);
 		Q_strcpy(m_pPlayer->m_szAnimExtention, "shielded");
 
+#ifndef REGAMEDLL_FIXES
 		m_fMaxSpeed = HEGRENADE_MAX_SPEED_SHIELD;
+#endif
 		m_pPlayer->m_bShieldDrawn = true;
 	}
 

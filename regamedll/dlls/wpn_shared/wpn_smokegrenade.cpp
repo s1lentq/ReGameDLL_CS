@@ -115,7 +115,9 @@ bool CSmokeGrenade::ShieldSecondaryFire(int iUpAnim, int iDownAnim)
 
 		Q_strcpy(m_pPlayer->m_szAnimExtention, "shieldgren");
 
+#ifndef REGAMEDLL_FIXES
 		m_fMaxSpeed = SMOKEGRENADE_MAX_SPEED;
+#endif
 		m_pPlayer->m_bShieldDrawn = false;
 	}
 	else
@@ -125,7 +127,9 @@ bool CSmokeGrenade::ShieldSecondaryFire(int iUpAnim, int iDownAnim)
 
 		Q_strcpy(m_pPlayer->m_szAnimExtention, "shielded");
 
+#ifndef REGAMEDLL_FIXES
 		m_fMaxSpeed = SMOKEGRENADE_MAX_SPEED_SHIELD;
+#endif
 		m_pPlayer->m_bShieldDrawn = true;
 	}
 

@@ -188,7 +188,9 @@ bool CKnife::ShieldSecondaryFire(int iUpAnim, int iDownAnim)
 
 		Q_strcpy(m_pPlayer->m_szAnimExtention, "shieldknife");
 
+#ifndef REGAMEDLL_FIXES
 		m_fMaxSpeed = KNIFE_MAX_SPEED;
+#endif
 		m_pPlayer->m_bShieldDrawn = false;
 	}
 	else
@@ -198,7 +200,9 @@ bool CKnife::ShieldSecondaryFire(int iUpAnim, int iDownAnim)
 
 		Q_strcpy(m_pPlayer->m_szAnimExtention, "shielded");
 
+#ifndef REGAMEDLL_FIXES
 		m_fMaxSpeed = KNIFE_MAX_SPEED_SHIELD;
+#endif
 		m_pPlayer->m_bShieldDrawn = true;
 	}
 
