@@ -7059,7 +7059,16 @@ void EXT_FUNC CBasePlayer::__API_HOOK(ResetMaxSpeed)()
 	else if (m_pActiveItem)
 	{
 		// Get player speed from selected weapon
-		speed = m_pActiveItem->GetMaxSpeed();
+#ifdef REGAMEDLL_FIXES
+		if (m_bShieldDrawn)
+		{
+			speed = 180;
+		}
+		else
+#endif
+		{
+			speed = m_pActiveItem->GetMaxSpeed();
+		}
 	}
 	else
 	{

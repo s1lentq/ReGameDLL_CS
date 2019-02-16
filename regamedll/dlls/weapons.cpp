@@ -649,7 +649,10 @@ bool CBasePlayerWeapon::ShieldSecondaryFire(int iUpAnim, int iDownAnim)
 		m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
 		SendWeaponAnim(iDownAnim, UseDecrement() != FALSE);
 		Q_strcpy(m_pPlayer->m_szAnimExtention, "shieldgun");
+
+#ifndef REGAMEDLL_FIXES
 		m_fMaxSpeed = 250.0f;
+#endif
 		m_pPlayer->m_bShieldDrawn = false;
 	}
 	else
@@ -657,7 +660,10 @@ bool CBasePlayerWeapon::ShieldSecondaryFire(int iUpAnim, int iDownAnim)
 		m_iWeaponState |= WPNSTATE_SHIELD_DRAWN;
 		SendWeaponAnim(iUpAnim, UseDecrement() != FALSE);
 		Q_strcpy(m_pPlayer->m_szAnimExtention, "shielded");
+
+#ifndef REGAMEDLL_FIXES
 		m_fMaxSpeed = 180.0f;
+#endif
 		m_pPlayer->m_bShieldDrawn = true;
 	}
 
