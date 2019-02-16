@@ -10,6 +10,7 @@ void CXM1014::Spawn()
 	SET_MODEL(edict(), "models/w_xm1014.mdl");
 
 	m_iDefaultAmmo = XM1014_DEFAULT_GIVE;
+	m_fMaxSpeed = XM1014_MAX_SPEED;
 
 #ifdef REGAMEDLL_API
 	CSPlayerWeapon()->m_flBaseDamage = XM1014_DAMAGE;

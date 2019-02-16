@@ -12,6 +12,7 @@ void CFamas::Spawn()
 	m_iDefaultAmmo = FAMAS_DEFAULT_GIVE;
 	m_iFamasShotsFired = 0;
 	m_flFamasShoot = 0;
+	m_fMaxSpeed = FAMAS_MAX_SPEED;
 
 #ifdef REGAMEDLL_API
 	CSPlayerWeapon()->m_flBaseDamage = FAMAS_DAMAGE;

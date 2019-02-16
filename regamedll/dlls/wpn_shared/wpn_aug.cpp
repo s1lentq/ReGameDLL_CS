@@ -12,6 +12,7 @@ void CAUG::Spawn()
 	m_iDefaultAmmo = AUG_DEFAULT_GIVE;
 	m_flAccuracy = 0.2f;
 	m_iShotsFired = 0;
+	m_fMaxSpeed = AUG_MAX_SPEED;
 
 #ifdef REGAMEDLL_API
 	CSPlayerWeapon()->m_flBaseDamage = AUG_DAMAGE;

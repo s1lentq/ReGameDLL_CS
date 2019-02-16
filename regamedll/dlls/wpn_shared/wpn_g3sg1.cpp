@@ -11,6 +11,7 @@ void CG3SG1::Spawn()
 
 	m_iDefaultAmmo = G3SG1_DEFAULT_GIVE;
 	m_flLastFire = 0;
+	m_fMaxSpeed = G3SG1_MAX_SPEED;
 
 #ifdef REGAMEDLL_API
 	CSPlayerWeapon()->m_flBaseDamage = G3SG1_DAMAGE;
@@ -224,5 +225,8 @@ void CG3SG1::WeaponIdle()
 
 float CG3SG1::GetMaxSpeed()
 {
-	return (m_pPlayer->m_iFOV == DEFAULT_FOV) ? G3SG1_MAX_SPEED : G3SG1_MAX_SPEED_ZOOM;
+	if (m_pPlayer->m_iFOV == DEFAULT_FOV)
+		return m_fMaxSpeed; 
+
+	return G3SG1_MAX_SPEED_ZOOM; // TODO: add a new member later
 }

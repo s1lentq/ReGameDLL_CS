@@ -12,6 +12,7 @@ void CMP5N::Spawn()
 	m_iDefaultAmmo = MP5NAVY_DEFAULT_GIVE;
 	m_flAccuracy = 0.0f;
 	m_bDelayFire = false;
+	m_fMaxSpeed = MP5N_MAX_SPEED;
 
 #ifdef REGAMEDLL_API
 	CSPlayerWeapon()->m_flBaseDamage = MP5N_DAMAGE;

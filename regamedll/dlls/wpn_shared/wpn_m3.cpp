@@ -10,6 +10,7 @@ void CM3::Spawn()
 	SET_MODEL(edict(), "models/w_m3.mdl");
 
 	m_iDefaultAmmo = M3_DEFAULT_GIVE;
+	m_fMaxSpeed = M3_MAX_SPEED;
 
 #ifdef REGAMEDLL_API
 	CSPlayerWeapon()->m_flBaseDamage = M3_DAMAGE;

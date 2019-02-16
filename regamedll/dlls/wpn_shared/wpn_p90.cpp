@@ -13,6 +13,7 @@ void CP90::Spawn()
 	m_flAccuracy = 0.2f;
 	m_iShotsFired = 0;
 	m_bDelayFire = false;
+	m_fMaxSpeed = P90_MAX_SPEED;
 
 #ifdef REGAMEDLL_API
 	CSPlayerWeapon()->m_flBaseDamage = P90_DAMAGE;
@@ -194,9 +195,4 @@ void CP90::WeaponIdle()
 
 	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20.0f;
 	SendWeaponAnim(P90_IDLE1, UseDecrement() != FALSE);
-}
-
-float CP90::GetMaxSpeed()
-{
-	return P90_MAX_SPEED;
 }

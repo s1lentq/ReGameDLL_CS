@@ -13,6 +13,7 @@ void CM4A1::Spawn()
 	m_flAccuracy = 0.2f;
 	m_iShotsFired = 0;
 	m_bDelayFire = true;
+	m_fMaxSpeed = M4A1_MAX_SPEED;
 
 #ifdef REGAMEDLL_API
 	CSPlayerWeapon()->m_flBaseDamage = M4A1_DAMAGE;
@@ -254,9 +255,4 @@ void CM4A1::WeaponIdle()
 
 	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20.0f;
 	SendWeaponAnim((m_iWeaponState & WPNSTATE_M4A1_SILENCED) == WPNSTATE_M4A1_SILENCED ? M4A1_IDLE : M4A1_UNSIL_IDLE, UseDecrement() != FALSE);
-}
-
-float CM4A1::GetMaxSpeed()
-{
-	return M4A1_MAX_SPEED;
 }

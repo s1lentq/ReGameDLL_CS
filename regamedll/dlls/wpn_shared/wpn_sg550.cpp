@@ -11,6 +11,7 @@ void CSG550::Spawn()
 
 	m_iDefaultAmmo = SG550_DEFAULT_GIVE;
 	m_flLastFire = 0;
+	m_fMaxSpeed = SG550_MAX_SPEED;
 
 #ifdef REGAMEDLL_FIXES
 	m_flAccuracy = 0.2f;
@@ -228,5 +229,8 @@ void CSG550::WeaponIdle()
 
 float CSG550::GetMaxSpeed()
 {
-	return (m_pPlayer->m_iFOV == DEFAULT_FOV) ? SG550_MAX_SPEED : SG550_MAX_SPEED_ZOOM;
+	if (m_pPlayer->m_iFOV == DEFAULT_FOV)
+		return m_fMaxSpeed;
+	
+	return SG550_MAX_SPEED_ZOOM; // TODO: add a new member later
 }

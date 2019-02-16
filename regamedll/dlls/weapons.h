@@ -585,7 +585,7 @@ public:
 	virtual void Precache();
 	virtual int GetItemInfo(ItemInfo *p);
 	virtual BOOL Deploy();
-	virtual float GetMaxSpeed() { return MP5N_MAX_SPEED; }
+	virtual float GetMaxSpeed() { return m_fMaxSpeed; }
 	virtual int iItemSlot() { return PRIMARY_WEAPON_SLOT; }
 	virtual void PrimaryAttack();
 	virtual void Reload();
@@ -681,7 +681,7 @@ public:
 	virtual void Precache();
 	virtual int GetItemInfo(ItemInfo *p);
 	virtual BOOL Deploy();
-	virtual float GetMaxSpeed() { return AK47_MAX_SPEED; }
+	virtual float GetMaxSpeed() { return m_fMaxSpeed; }
 	virtual int iItemSlot() { return PRIMARY_WEAPON_SLOT; }
 	virtual void PrimaryAttack();
 	virtual void SecondaryAttack();
@@ -729,7 +729,7 @@ public:
 	virtual void Precache();
 	virtual int GetItemInfo(ItemInfo *p);
 	virtual BOOL Deploy();
-	virtual float GetMaxSpeed() { return AUG_MAX_SPEED; }
+	virtual float GetMaxSpeed() { return m_fMaxSpeed; }
 	virtual int iItemSlot() { return PRIMARY_WEAPON_SLOT; }
 	virtual void PrimaryAttack();
 	virtual void SecondaryAttack();
@@ -1201,7 +1201,7 @@ public:
 	virtual void Precache();
 	virtual int GetItemInfo(ItemInfo *p);
 	virtual BOOL Deploy();
-	virtual float GetMaxSpeed() { return M249_MAX_SPEED; }
+	virtual float GetMaxSpeed() { return m_fMaxSpeed; }
 	virtual int iItemSlot() { return PRIMARY_WEAPON_SLOT; }
 	virtual void PrimaryAttack();
 	virtual void Reload();
@@ -1249,7 +1249,7 @@ public:
 	virtual void Precache();
 	virtual int GetItemInfo(ItemInfo *p);
 	virtual BOOL Deploy();
-	virtual float GetMaxSpeed() { return M3_MAX_SPEED; }
+	virtual float GetMaxSpeed() { return m_fMaxSpeed; }
 	virtual int iItemSlot() { return PRIMARY_WEAPON_SLOT; }
 	virtual void PrimaryAttack();
 	virtual void Reload();
@@ -1304,7 +1304,7 @@ public:
 	virtual void Precache();
 	virtual int GetItemInfo(ItemInfo *p);
 	virtual BOOL Deploy();
-	virtual float GetMaxSpeed();
+	virtual float GetMaxSpeed() { return m_fMaxSpeed; }
 	virtual int iItemSlot() { return PRIMARY_WEAPON_SLOT; }
 	virtual void PrimaryAttack();
 	virtual void SecondaryAttack();
@@ -1356,7 +1356,7 @@ public:
 	virtual void Precache();
 	virtual int GetItemInfo(ItemInfo *p);
 	virtual BOOL Deploy();
-	virtual float GetMaxSpeed() { return MAC10_MAX_SPEED; }
+	virtual float GetMaxSpeed() { return m_fMaxSpeed; }
 	virtual int iItemSlot() { return PRIMARY_WEAPON_SLOT; }
 	virtual void PrimaryAttack();
 	virtual void Reload();
@@ -1468,7 +1468,7 @@ public:
 	virtual void Precache();
 	virtual int GetItemInfo(ItemInfo *p);
 	virtual BOOL Deploy();
-	virtual float GetMaxSpeed();
+	virtual float GetMaxSpeed() { return m_fMaxSpeed; }
 	virtual int iItemSlot() { return PRIMARY_WEAPON_SLOT; }
 	virtual void PrimaryAttack();
 	virtual void Reload();
@@ -1606,7 +1606,7 @@ public:
 	virtual void Precache();
 	virtual int GetItemInfo(ItemInfo *p);
 	virtual BOOL Deploy();
-	virtual float GetMaxSpeed() { return TMP_MAX_SPEED; }
+	virtual float GetMaxSpeed() { return m_fMaxSpeed; }
 	virtual int iItemSlot() { return PRIMARY_WEAPON_SLOT; }
 	virtual void PrimaryAttack();
 	virtual void Reload();
@@ -1654,7 +1654,7 @@ public:
 	virtual void Precache();
 	virtual int GetItemInfo(ItemInfo *p);
 	virtual BOOL Deploy();
-	virtual float GetMaxSpeed() { return XM1014_MAX_SPEED; }
+	virtual float GetMaxSpeed() { return m_fMaxSpeed; }
 	virtual int iItemSlot() { return PRIMARY_WEAPON_SLOT; }
 	virtual void PrimaryAttack();
 	virtual void Reload();
@@ -1709,7 +1709,7 @@ public:
 	virtual void Precache();
 	virtual int GetItemInfo(ItemInfo *p);
 	virtual BOOL Deploy();
-	virtual float GetMaxSpeed() { return ELITE_MAX_SPEED; }
+	virtual float GetMaxSpeed() { return m_fMaxSpeed; }
 	virtual int iItemSlot() { return PISTOL_SLOT; }
 	virtual void PrimaryAttack();
 	virtual void Reload();
@@ -1808,7 +1808,7 @@ public:
 	virtual void Precache();
 	virtual int GetItemInfo(ItemInfo *p);
 	virtual BOOL Deploy();
-	virtual float GetMaxSpeed() { return UMP45_MAX_SPEED; }
+	virtual float GetMaxSpeed() { return m_fMaxSpeed; }
 	virtual int iItemSlot() { return PRIMARY_WEAPON_SLOT; }
 	virtual void PrimaryAttack();
 	virtual void Reload();
@@ -1901,7 +1901,7 @@ public:
 	virtual void Precache();
 	virtual int GetItemInfo(ItemInfo *p);
 	virtual BOOL Deploy();
-	virtual float GetMaxSpeed() { return GALIL_MAX_SPEED; }
+	virtual float GetMaxSpeed() { return m_fMaxSpeed; }
 	virtual int iItemSlot() { return PRIMARY_WEAPON_SLOT; }
 	virtual void PrimaryAttack();
 	virtual void SecondaryAttack();
@@ -1951,7 +1951,7 @@ public:
 	virtual void Precache();
 	virtual int GetItemInfo(ItemInfo *p);
 	virtual BOOL Deploy();
-	virtual float GetMaxSpeed() { return FAMAS_MAX_SPEED; }
+	virtual float GetMaxSpeed() { return m_fMaxSpeed; }
 	virtual int iItemSlot() { return PRIMARY_WEAPON_SLOT; }
 	virtual void PrimaryAttack();
 	virtual void SecondaryAttack();

@@ -13,6 +13,7 @@ void CTMP::Spawn()
 	m_flAccuracy = 0.2f;
 	m_iShotsFired = 0;
 	m_bDelayFire = false;
+	m_fMaxSpeed = TMP_MAX_SPEED;
 
 #ifdef REGAMEDLL_API
 	CSPlayerWeapon()->m_flBaseDamage = TMP_DAMAGE;

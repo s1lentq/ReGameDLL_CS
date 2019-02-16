@@ -12,6 +12,7 @@ void CUMP45::Spawn()
 	m_iDefaultAmmo = UMP45_DEFAULT_GIVE;
 	m_flAccuracy = 0.0f;
 	m_bDelayFire = false;
+	m_fMaxSpeed = UMP45_MAX_SPEED;
 
 #ifdef REGAMEDLL_API
 	CSPlayerWeapon()->m_flBaseDamage = UMP45_DAMAGE;

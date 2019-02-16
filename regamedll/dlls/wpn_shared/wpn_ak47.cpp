@@ -12,6 +12,7 @@ void CAK47::Spawn()
 	m_iDefaultAmmo = AK47_DEFAULT_GIVE;
 	m_flAccuracy = 0.2f;
 	m_iShotsFired = 0;
+	m_fMaxSpeed = AK47_MAX_SPEED;
 
 #ifdef REGAMEDLL_API
 	CSPlayerWeapon()->m_flBaseDamage = AK47_DAMAGE;

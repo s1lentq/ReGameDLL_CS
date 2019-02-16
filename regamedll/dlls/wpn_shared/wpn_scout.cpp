@@ -10,6 +10,7 @@ void CSCOUT::Spawn()
 	SET_MODEL(edict(), "models/w_scout.mdl");
 
 	m_iDefaultAmmo = SCOUT_DEFAULT_GIVE;
+	m_fMaxSpeed = SCOUT_MAX_SPEED;
 
 #ifdef REGAMEDLL_API
 	CSPlayerWeapon()->m_flBaseDamage = SCOUT_DAMAGE;
@@ -223,5 +224,8 @@ void CSCOUT::WeaponIdle()
 
 float CSCOUT::GetMaxSpeed()
 {
-	return (m_pPlayer->m_iFOV == DEFAULT_FOV) ? SCOUT_MAX_SPEED : SCOUT_MAX_SPEED_ZOOM;
+	if (m_pPlayer->m_iFOV == DEFAULT_FOV)
+		return m_fMaxSpeed;
+
+	return SCOUT_MAX_SPEED_ZOOM; // TODO: add a new member later
 }

@@ -10,6 +10,7 @@ void CGalil::Spawn()
 	SET_MODEL(edict(), "models/w_galil.mdl");
 
 	m_iDefaultAmmo = GALIL_DEFAULT_GIVE;
+	m_fMaxSpeed = GALIL_MAX_SPEED;
 
 #ifdef REGAMEDLL_API
 	CSPlayerWeapon()->m_flBaseDamage = GALIL_DAMAGE;

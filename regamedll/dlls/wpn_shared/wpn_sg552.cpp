@@ -12,6 +12,7 @@ void CSG552::Spawn()
 	m_iDefaultAmmo = SG552_DEFAULT_GIVE;
 	m_flAccuracy = 0.2f;
 	m_iShotsFired = 0;
+	m_fMaxSpeed = SG552_MAX_SPEED;
 
 #ifdef REGAMEDLL_API
 	CSPlayerWeapon()->m_flBaseDamage = SG552_DAMAGE;
@@ -216,7 +217,7 @@ void CSG552::WeaponIdle()
 float CSG552::GetMaxSpeed()
 {
 	if (m_pPlayer->m_iFOV == DEFAULT_FOV)
-		return SG552_MAX_SPEED;
+		return m_fMaxSpeed;
 
-	return SG552_MAX_SPEED_ZOOM;
+	return SG552_MAX_SPEED_ZOOM; // TODO: add a new member later
 }

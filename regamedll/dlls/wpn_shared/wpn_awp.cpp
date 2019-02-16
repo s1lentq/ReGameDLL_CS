@@ -10,6 +10,7 @@ void CAWP::Spawn()
 	SET_MODEL(ENT(pev), "models/w_awp.mdl");
 
 	m_iDefaultAmmo = AWP_DEFAULT_GIVE;
+	m_fMaxSpeed = AWP_MAX_SPEED;
 
 #ifdef REGAMEDLL_API
 	CSPlayerWeapon()->m_flBaseDamage = AWP_DAMAGE;
@@ -226,8 +227,8 @@ void CAWP::WeaponIdle()
 float CAWP::GetMaxSpeed()
 {
 	if (m_pPlayer->m_iFOV == DEFAULT_FOV)
-		return AWP_MAX_SPEED;
+		return m_fMaxSpeed;
 
 	// Slower speed when zoomed in.
-	return AWP_MAX_SPEED_ZOOM;
+	return AWP_MAX_SPEED_ZOOM; // TODO: add a new member later
 }

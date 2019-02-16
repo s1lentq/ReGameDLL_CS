@@ -12,6 +12,7 @@ void CMAC10::Spawn()
 	m_iDefaultAmmo = MAC10_DEFAULT_GIVE;
 	m_flAccuracy = 0.15f;
 	m_bDelayFire = false;
+	m_fMaxSpeed = MAC10_MAX_SPEED;
 
 #ifdef REGAMEDLL_API
 	CSPlayerWeapon()->m_flBaseDamage = MAC10_DAMAGE;
