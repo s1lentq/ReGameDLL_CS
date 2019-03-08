@@ -14,6 +14,11 @@ void CM4A1::Spawn()
 	m_iShotsFired = 0;
 	m_bDelayFire = true;
 
+#ifdef REGAMEDLL_API
+	CSPlayerWeapon()->m_flBaseDamage = M4A1_DAMAGE;
+	m_flBaseDamageSil = M4A1_DAMAGE_SIL;
+#endif
+
 	// Get ready to fall down
 	FallInit();
 
@@ -164,15 +169,20 @@ void CM4A1::M4A1Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	vecSrc = m_pPlayer->GetGunPosition();
 	vecAiming = gpGlobals->v_forward;
 
+#ifdef REGAMEDLL_API
+	float flBaseDamage = (m_iWeaponState & WPNSTATE_M4A1_SILENCED) ? m_flBaseDamageSil : CSPlayerWeapon()->m_flBaseDamage;
+#else
+	float flBaseDamage = (m_iWeaponState & WPNSTATE_M4A1_SILENCED) ? M4A1_DAMAGE_SIL : M4A1_DAMAGE;
+#endif
 	if (m_iWeaponState & WPNSTATE_M4A1_SILENCED)
 	{
 		vecDir = m_pPlayer->FireBullets3(vecSrc, vecAiming, flSpread, 8192, 2, BULLET_PLAYER_556MM,
-			M4A1_DAMAGE_SIL, M4A1_RANGE_MODIFER_SIL, m_pPlayer->pev, false, m_pPlayer->random_seed);
+			flBaseDamage, M4A1_RANGE_MODIFER_SIL, m_pPlayer->pev, false, m_pPlayer->random_seed);
 	}
 	else
 	{
 		vecDir = m_pPlayer->FireBullets3(vecSrc, vecAiming, flSpread, 8192, 2, BULLET_PLAYER_556MM,
-			M4A1_DAMAGE, M4A1_RANGE_MODIFER, m_pPlayer->pev, false, m_pPlayer->random_seed);
+			flBaseDamage, M4A1_RANGE_MODIFER, m_pPlayer->pev, false, m_pPlayer->random_seed);
 
 		m_pPlayer->pev->effects |= EF_MUZZLEFLASH;
 	}

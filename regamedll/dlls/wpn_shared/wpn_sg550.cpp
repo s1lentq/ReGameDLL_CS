@@ -16,6 +16,10 @@ void CSG550::Spawn()
 	m_flAccuracy = 0.2f;
 #endif
 
+#ifdef REGAMEDLL_API
+	CSPlayerWeapon()->m_flBaseDamage = SG550_DAMAGE;
+#endif
+
 	// Get ready to fall down
 	FallInit();
 
@@ -159,7 +163,12 @@ void CSG550::SG550Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	vecSrc = m_pPlayer->GetGunPosition();
 	vecAiming = gpGlobals->v_forward;
 
-	vecDir = m_pPlayer->FireBullets3(vecSrc, vecAiming, flSpread, 8192, 2, BULLET_PLAYER_556MM, SG550_DAMAGE, SG550_RANGE_MODIFER, m_pPlayer->pev, true, m_pPlayer->random_seed);
+#ifdef REGAMEDLL_API
+	float flBaseDamage = CSPlayerWeapon()->m_flBaseDamage;
+#else
+	float flBaseDamage = SG550_DAMAGE;
+#endif
+	vecDir = m_pPlayer->FireBullets3(vecSrc, vecAiming, flSpread, 8192, 2, BULLET_PLAYER_556MM, flBaseDamage, SG550_RANGE_MODIFER, m_pPlayer->pev, true, m_pPlayer->random_seed);
 
 #ifdef CLIENT_WEAPONS
 	flag = FEV_NOTHOST;
