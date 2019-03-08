@@ -2748,7 +2748,7 @@ void EXT_FUNC CHalfLifeMultiplay::OnRoundFreezeEnd()
 
 void CHalfLifeMultiplay::CheckFreezePeriodExpired()
 {
-	if (GetRoundRemainingTime() > 0)
+	if (GetRoundRemainingTimeReal() > 0)
 		return;
 
 	g_ReGameHookchains.m_CSGameRules_OnRoundFreezeEnd.callChain(&CHalfLifeMultiplay::OnRoundFreezeEnd, this);
@@ -3018,7 +3018,7 @@ bool CHalfLifeMultiplay::HasRoundTimeExpired()
 #endif
 
 	// We haven't completed other objectives, so go for this!.
-	if (GetRoundRemainingTime() > 0 || m_iRoundWinStatus != WINSTATUS_NONE)
+	if (GetRoundRemainingTimeReal() > 0 || m_iRoundWinStatus != WINSTATUS_NONE)
 	{
 		return false;
 	}
@@ -3385,7 +3385,7 @@ void CHalfLifeMultiplay::InitHUD(CBasePlayer *pl)
 				// if the bomb was planted, which will trigger the round timer to hide.
 				SendMsgBombDrop(BOMB_FLAG_PLANTED, bomb->pev->origin);
 
-				if (m_iRoundTime > 0 || GetRoundRemainingTime() >= 1.0f)
+				if (m_iRoundTime > 0 || GetRoundRemainingTimeReal() >= 1.0f)
 				{
 					MESSAGE_BEGIN(MSG_ONE, gmsgShowTimer, nullptr, pl->pev);
 					MESSAGE_END();
