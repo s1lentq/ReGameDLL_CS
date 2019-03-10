@@ -117,7 +117,8 @@ cvar_t old_bomb_defused_sound  = { "mp_old_bomb_defused_sound", "1", FCVAR_SERVE
 cvar_t item_staytime           = { "mp_item_staytime", "300", FCVAR_SERVER, 300.0f, nullptr };
 cvar_t legacy_bombtarget_touch = { "mp_legacy_bombtarget_touch", "1", FCVAR_SERVER, 1.0f, nullptr };
 cvar_t respawn_immunitytime    = { "mp_respawn_immunitytime", "0", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t kill_filled_spawn       = { "mp_kill_filled_spawn", "1", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t kill_filled_spawn       = { "mp_kill_filled_spawn", "1", FCVAR_SERVER, 1.0f, nullptr };
+cvar_t pushable_velocity_fix   = { "mp_pushable_velocity_fix", "1", FCVAR_SERVER, 1.0f, nullptr };
 
 void GameDLL_Version_f()
 {
@@ -288,6 +289,7 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&legacy_bombtarget_touch);
 	CVAR_REGISTER(&respawn_immunitytime);
 	CVAR_REGISTER(&kill_filled_spawn);
+	CVAR_REGISTER(&pushable_velocity_fix);
 
 	// print version
 	CONSOLE_ECHO("ReGameDLL version: " APP_VERSION "\n");
