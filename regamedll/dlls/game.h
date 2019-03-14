@@ -134,6 +134,7 @@ extern cvar_t sk_scientist_heal3;
 
 extern cvar_t maxmoney;
 extern cvar_t round_infinite;
+extern cvar_t boost_bug_enabled; // Added bug boost cvar
 extern cvar_t hegrenade_penetration;
 extern cvar_t nadedrops;
 extern cvar_t roundrespawn_time;

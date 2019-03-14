@@ -872,6 +872,19 @@ inline bool HasRoundInfinite(int flags = 0)
 	return false;
 }
 
+inline bool isBugBoostEnabled(int flags = 0) 
+{
+	#ifdef REGAMEDLL_ADD
+		if(bug_boost_enabled.string[0] == '1')
+			return true;
+	
+		if(flags && (UTIL_ReadFlags(bug_boost_enabled.string) & flags))
+			return true;
+			
+	#endif
+		return false;
+}
+
 inline float CGameRules::GetItemKillDelay()
 {
 #ifdef REGAMEDLL_ADD

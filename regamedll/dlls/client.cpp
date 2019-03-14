@@ -4820,43 +4820,46 @@ int EXT_FUNC ConnectionlessPacket(const struct netadr_s *net_from, const char *a
 // TODO: int -> qboolean or enum
 int EXT_FUNC GetHullBounds(int hullnumber, float *mins, float *maxs)
 {
-#ifdef REGAMEDLL_FIXES
-	switch (hullnumber)
-	{
-	case 0: // Normal player
-		Q_memcpy(mins, (float*)VEC_HULL_MIN, sizeof(vec3_t));
-		Q_memcpy(maxs, (float*)VEC_HULL_MAX, sizeof(vec3_t));
-		return TRUE;
-	case 1: // Crouched player
-		Q_memcpy(mins, (float*)VEC_DUCK_HULL_MIN, sizeof(vec3_t));
-		Q_memcpy(maxs, (float*)VEC_DUCK_HULL_MAX, sizeof(vec3_t));
-		return TRUE;
-	case 2: // Point based hull
-		Q_memcpy(mins, (float*)Vector(0, 0, 0), sizeof(vec3_t));
-		Q_memcpy(maxs, (float*)Vector(0, 0, 0), sizeof(vec3_t));
-		return TRUE;
-	default:
-		return FALSE;
-	}
-#else // REGAMEDLL_FIXES
-	switch (hullnumber)
-	{
-	case 0: // Normal player
-		mins = VEC_HULL_MIN;
-		maxs = VEC_HULL_MAX;
-		return TRUE;
-	case 1: // Crouched player
-		mins = VEC_DUCK_HULL_MIN;
-		maxs = VEC_DUCK_HULL_MAX;
-		return TRUE;
-	case 2: // Point based hull
-		mins = Vector(0, 0, 0);
-		maxs = Vector(0, 0, 0);
-		return TRUE;
-	default:
-		return FALSE;
-	}
-#endif // REGAMEDLL_FIXES
+	if(isBugBoostEnabled) {
+		#ifdef REGAMEDLL_FIXES
+			switch (hullnumber)
+			{
+			case 0: // Normal player
+				Q_memcpy(mins, (float*)VEC_HULL_MIN, sizeof(vec3_t));
+				Q_memcpy(maxs, (float*)VEC_HULL_MAX, sizeof(vec3_t));
+				return TRUE;
+			case 1: // Crouched player
+				Q_memcpy(mins, (float*)VEC_DUCK_HULL_MIN, sizeof(vec3_t));
+				Q_memcpy(maxs, (float*)VEC_DUCK_HULL_MAX, sizeof(vec3_t));
+				return TRUE;
+			case 2: // Point based hull
+				Q_memcpy(mins, (float*)Vector(0, 0, 0), sizeof(vec3_t));
+				Q_memcpy(maxs, (float*)Vector(0, 0, 0), sizeof(vec3_t));
+				return TRUE;
+			default:
+				return FALSE;
+			}
+		#else // REGAMEDLL_FIXES
+			switch (hullnumber)
+			{
+			case 0: // Normal player
+				mins = VEC_HULL_MIN;
+				maxs = VEC_HULL_MAX;
+				return TRUE;
+			case 1: // Crouched player
+				mins = VEC_DUCK_HULL_MIN;
+				maxs = VEC_DUCK_HULL_MAX;
+				return TRUE;
+			case 2: // Point based hull
+				mins = Vector(0, 0, 0);
+				maxs = Vector(0, 0, 0);
+				return TRUE;
+			default:
+				return FALSE;
+			}
+		#endif // REGAMEDLL_FIXES
+	} else
+		return hullnumber < 3;
 }
 
 // Create pseudo-baselines for items that aren't placed in the map at spawn time, but which are likely
