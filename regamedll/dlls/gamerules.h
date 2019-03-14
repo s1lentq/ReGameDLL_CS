@@ -872,15 +872,15 @@ inline bool HasRoundInfinite(int flags = 0)
 	return false;
 }
 
-inline bool isBugBoostEnabled(int flags = 0) 
+inline bool isBugBoostDisabled(int flags = 0) 
 {
 	#ifdef REGAMEDLL_ADD
-		if(bug_boost_enabled.string[0] == '1')
+		if(bug_boost_disabled.string[0] == '1')
 			return true;
 	
-		if(flags && (UTIL_ReadFlags(bug_boost_enabled.string) & flags))
+		if(flags && (UTIL_ReadFlags(bug_boost_disabled.string) & flags))
 			return true;
-			
+
 	#endif
 		return false;
 }
