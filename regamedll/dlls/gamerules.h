@@ -875,7 +875,7 @@ inline bool HasRoundInfinite(int flags = 0)
 inline bool isBugBoostDisabled() 
 {
 	#ifdef REGAMEDLL_ADD
-		if(bug_boost_disabled.string[0] == '1')
+		if(bug_boost_disabled.value == 1)
 			return true;
 			
 	#endif
