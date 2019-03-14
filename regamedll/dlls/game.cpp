@@ -268,7 +268,7 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&game_version);
 	CVAR_REGISTER(&maxmoney);
 	CVAR_REGISTER(&round_infinite);
-	CVAR_REGISTER(&bug_boost_enabled);
+	CVAR_REGISTER(&bug_boost_disabled);
 	CVAR_REGISTER(&hegrenade_penetration);
 	CVAR_REGISTER(&nadedrops);
 	CVAR_REGISTER(&roundrespawn_time);
