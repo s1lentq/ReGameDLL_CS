@@ -274,7 +274,7 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&item_staytime);
 	CVAR_REGISTER(&legacy_bombtarget_touch);
 	CVAR_REGISTER(&respawn_immunitytime);
-  CVAR_REGISTER(&kill_filled_spawn);
+	CVAR_REGISTER(&kill_filled_spawn);
 	CVAR_REGISTER(&dead_see_alive);
 
 	// print version
