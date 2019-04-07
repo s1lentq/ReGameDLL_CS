@@ -228,3 +228,6 @@ class CCSClientFog: public CCSEntity {};
 class CCSTriggerSetOrigin: public CCSDelay {};
 class CCSTriggerRandom: public CCSDelay {};
 class CCSItemAirBox: public CCSArmoury {};
+class CCSPointBaseCommand: public CCSPointEntity {};
+class CCSPointClientCommand: public CCSPointBaseCommand {};
+class CCSPointServerCommand: public CCSPointBaseCommand {};
