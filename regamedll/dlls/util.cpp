@@ -1248,7 +1248,7 @@ void UTIL_StringToVector(float *pVector, const char *pString)
 	char tempString[128];
 	int j;
 
-	Q_strcpy(tempString, pString);
+	Q_strlcpy(tempString, pString);
 
 	pstr = tempString;
 	pfront = tempString;
@@ -1315,7 +1315,7 @@ void UTIL_StringToIntArray(int *pVector, int count, const char *pString)
 	char tempString[128];
 	int j;
 
-	Q_strcpy(tempString, pString);
+	Q_strlcpy(tempString, pString);
 
 	pstr = tempString;
 	pfront = tempString;
