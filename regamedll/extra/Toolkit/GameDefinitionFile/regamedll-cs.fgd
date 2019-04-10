@@ -3026,3 +3026,15 @@
 	sprite_scale(string) : "Sprite scale" : "1.0"
 	sprite_framerate(string) : "Sprite framerate" : "10"
 ]
+
+@BaseClass base(Targetname) = BaseCommand
+[
+]
+
+@PointClass base(BaseCommand) size(-8 -8 -8, 8 8 8) = point_servercommand : "It issues commands to the server console"
+[
+]
+
+@PointClass base(BaseCommand) size(-8 -8 -8, 8 8 8) = point_clientcommand : "It issues commands to the client console"
+[
+]

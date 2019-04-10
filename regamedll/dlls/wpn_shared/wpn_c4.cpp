@@ -112,7 +112,7 @@ void CC4::PrimaryAttack()
 	{
 		TraceResult tr;
 		UTIL_TraceLine(m_pPlayer->pev->origin, m_pPlayer->pev->origin + Vector(0, 0, -8192), ignore_monsters, m_pPlayer->edict(), &tr);
-		onGround = tr.flFraction != 1.0;
+		onGround = (tr.flFraction != 1.0 && m_pPlayer->pev->velocity.z == 0.0f);
 	}
 #endif
 
