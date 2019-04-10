@@ -1056,11 +1056,11 @@ void CPushable::Move(CBaseEntity *pOther, int push)
 
 	if (bPlayerTouch)
 	{
-//do not push player along with entity
+// do not push player along with entity
 #ifndef REGAMEDLL_FIXES
 		pevToucher->velocity.x = pev->velocity.x;
 		pevToucher->velocity.y = pev->velocity.y;
-#endif //REGAMEDLL_FIXES
+#endif // REGAMEDLL_FIXES
 
 		if ((gpGlobals->time - m_soundTime) > 0.7f)
 		{
