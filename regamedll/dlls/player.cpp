@@ -3482,7 +3482,12 @@ void CBasePlayer::PlayerDeathThink()
 		// we aren't calling into any of their code anymore through the player pointer.
 		PackDeadPlayerItems();
 	}
-
+	
+#ifdef REGAMEDLL_FIXES
+	// Clear inclination came from client view
+	pev->angles.x = 0;
+#endif
+	
 	if (pev->modelindex && !m_fSequenceFinished && pev->deadflag == DEAD_DYING)
 	{
 		StudioFrameAdvance();

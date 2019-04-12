@@ -13,6 +13,10 @@ void CP228::Spawn()
 	m_iDefaultAmmo = P228_DEFAULT_GIVE;
 	m_flAccuracy = 0.9f;
 
+#ifdef REGAMEDLL_API
+	CSPlayerWeapon()->m_flBaseDamage = P228_DAMAGE;
+#endif
+
 	// Get ready to fall down
 	FallInit();
 
@@ -148,7 +152,12 @@ void CP228::P228Fire(float flSpread, float flCycleTime, BOOL fUseSemi)
 	vecSrc = m_pPlayer->GetGunPosition();
 	vecAiming = gpGlobals->v_forward;
 
-	vecDir = m_pPlayer->FireBullets3(vecSrc, vecAiming, flSpread, 4096, 1, BULLET_PLAYER_357SIG, P228_DAMAGE, P228_RANGE_MODIFER, m_pPlayer->pev, true, m_pPlayer->random_seed);
+#ifdef REGAMEDLL_API
+	float flBaseDamage = CSPlayerWeapon()->m_flBaseDamage;
+#else
+	float flBaseDamage = P228_DAMAGE;
+#endif
+	vecDir = m_pPlayer->FireBullets3(vecSrc, vecAiming, flSpread, 4096, 1, BULLET_PLAYER_357SIG, flBaseDamage, P228_RANGE_MODIFER, m_pPlayer->pev, true, m_pPlayer->random_seed);
 
 #ifdef CLIENT_WEAPONS
 	flag = FEV_NOTHOST;

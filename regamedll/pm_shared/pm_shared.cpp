@@ -2838,7 +2838,11 @@ void PM_PlayerMove(qboolean server)
 	g_onladder = FALSE;
 
 	// Don't run ladder code if dead or on a train
-	if (!pmove->dead && !(pmove->flags & FL_ONTRAIN))
+	if (!pmove->dead && !(pmove->flags & FL_ONTRAIN)
+#ifdef REGAMEDLL_ADD
+		&& !(pmove->iuser3 & PLAYER_PREVENT_CLIMB)
+#endif
+		)
 	{
 		pLadder = PM_Ladder();
 

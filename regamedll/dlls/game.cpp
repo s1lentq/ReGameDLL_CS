@@ -120,6 +120,8 @@ cvar_t respawn_immunitytime    = { "mp_respawn_immunitytime", "0", FCVAR_SERVER,
 cvar_t kill_filled_spawn       = { "mp_kill_filled_spawn", "1", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t dead_see_alive          = { "mp_chat_dead_see_alive", "0", FCVAR_SERVER, 0.0f, nullptr };
 
+cvar_t allow_point_servercommand = { "mp_allow_point_servercommand", "0", 0, 0.0f, nullptr };
+
 void GameDLL_Version_f()
 {
 	if (Q_stricmp(CMD_ARGV(1), "version") != 0)
@@ -133,9 +135,23 @@ void GameDLL_Version_f()
 
 void GameDLL_EndRound_f()
 {
-	CSGameRules()->EndRoundMessage("#Round_Draw", ROUND_END_DRAW);
-	Broadcast("rounddraw");
-	CSGameRules()->TerminateRound(5, WINSTATUS_DRAW);
+	if (CMD_ARGC() == 2)
+	{
+		const char *pCmd = CMD_ARGV(1);
+
+		if (pCmd[0] == '1' || !Q_stricmp(pCmd, "T"))
+		{
+			CSGameRules()->OnRoundEnd_Intercept(WINSTATUS_TERRORISTS, ROUND_TERRORISTS_WIN, CSGameRules()->GetRoundRestartDelay());
+			return;
+		}
+		else if (pCmd[0] == '2' || !Q_stricmp(pCmd, "CT"))
+		{
+			CSGameRules()->OnRoundEnd_Intercept(WINSTATUS_CTS, ROUND_CTS_WIN, CSGameRules()->GetRoundRestartDelay());
+			return;
+		}
+	}
+
+	CSGameRules()->OnRoundEnd_Intercept(WINSTATUS_DRAW, ROUND_END_DRAW, CSGameRules()->GetRoundRestartDelay());
 }
 
 #endif // REGAMEDLL_ADD
@@ -275,7 +291,8 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&legacy_bombtarget_touch);
 	CVAR_REGISTER(&respawn_immunitytime);
 	CVAR_REGISTER(&kill_filled_spawn);
-	CVAR_REGISTER(&dead_see_alive);
+	CVAR_REGISTER(&allow_point_servercommand);
+  CVAR_REGISTER(&dead_see_alive);
 
 	// print version
 	CONSOLE_ECHO("ReGameDLL version: " APP_VERSION "\n");
