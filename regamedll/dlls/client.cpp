@@ -4817,9 +4817,15 @@ int EXT_FUNC ConnectionlessPacket(const struct netadr_s *net_from, const char *a
 	return 0;
 }
 
-// TODO: int -> qboolean or enum
-int EXT_FUNC GetHullBounds(int hullnumber, float *mins, float *maxs)
+BOOL EXT_FUNC GetHullBounds(int hullnumber, float *mins, float *maxs)
 {
+#ifdef REGAMEDLL_ADD
+	if (hullbounds_sets.value == 0.0f)
+	{
+		return (hullnumber < 3) ? TRUE : FALSE;
+	}
+#endif
+
 #ifdef REGAMEDLL_FIXES
 	switch (hullnumber)
 	{
