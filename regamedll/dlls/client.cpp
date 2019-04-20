@@ -4266,7 +4266,7 @@ BOOL EXT_FUNC AddToFullPack(struct entity_state_s *state, int e, edict_t *ent, e
 		}
 	}
 
-	if ((ent->v.flags & FL_SKIPLOCALHOST) == FL_SKIPLOCALHOST && (hostflags & 1) && ent->v.owner == host)
+	if ((ent->v.flags & FL_SKIPLOCALHOST) == FL_SKIPLOCALHOST && ent->v.owner == host)
 		return FALSE;
 
 	if (host->v.groupinfo)
