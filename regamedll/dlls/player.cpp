@@ -3113,12 +3113,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(AddAccount)(int amount, RewardType type, b
 
 	if (bSendMoney)
 	{
-		auto nMax = int(maxmoney.value);
-		if (m_iAccount > nMax)
-			m_iAccount = nMax;
-
-		else if (m_iAccount < 0)
-			m_iAccount = 0;
+		m_iAccount = clamp<int>(m_iAccount, 0, maxmoney.value);
 
 		// Send money update to HUD
 		MESSAGE_BEGIN(MSG_ONE, gmsgMoney, nullptr, pev);
@@ -3482,12 +3477,12 @@ void CBasePlayer::PlayerDeathThink()
 		// we aren't calling into any of their code anymore through the player pointer.
 		PackDeadPlayerItems();
 	}
-	
+
 #ifdef REGAMEDLL_FIXES
 	// Clear inclination came from client view
 	pev->angles.x = 0;
 #endif
-	
+
 	if (pev->modelindex && !m_fSequenceFinished && pev->deadflag == DEAD_DYING)
 	{
 		StudioFrameAdvance();

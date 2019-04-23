@@ -34,6 +34,7 @@
 const int MAX_RULE_BUFFER       = 1024;
 const int MAX_VOTE_MAPS         = 100;
 const int MAX_VIP_QUEUES        = 5;
+const int MAX_MONEY_THRESHOLD   = 999999; // allowable money limit in the game that can be drawn on the HUD
 
 const int MAX_MOTD_CHUNK        = 60;
 const int MAX_MOTD_LENGTH       = 1536;	// (MAX_MOTD_CHUNK * 4)

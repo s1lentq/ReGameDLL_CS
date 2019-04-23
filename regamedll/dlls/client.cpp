@@ -588,6 +588,11 @@ void CheckStartMoney()
 		CVAR_SET_FLOAT("mp_startmoney", 800);
 #else
 	int max_money = int(maxmoney.value);
+	if (max_money > MAX_MONEY_THRESHOLD)
+	{
+		max_money = MAX_MONEY_THRESHOLD;
+		CVAR_SET_FLOAT("mp_maxmoney", MAX_MONEY_THRESHOLD);
+	}
 
 	if (money > max_money)
 		CVAR_SET_FLOAT("mp_startmoney", max_money);
