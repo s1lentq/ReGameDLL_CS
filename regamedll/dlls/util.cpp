@@ -772,6 +772,13 @@ char *UTIL_dtos1(int d)
 	return buf;
 }
 
+char *UTIL_dtos1(float d)
+{
+	static char buf[8];
+	Q_sprintf(buf, "%.2f", d);
+	return buf;
+}
+
 char *UTIL_dtos2(int d)
 {
 	static char buf[8];

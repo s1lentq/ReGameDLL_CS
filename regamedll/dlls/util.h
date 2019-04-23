@@ -237,6 +237,7 @@ void UTIL_PrintConsole(edict_t *pEdict, const char *fmt, ...);
 void UTIL_SayText(CBaseEntity *pEntity, const char *fmt, ...);
 void UTIL_SayTextAll(const char *pText, CBaseEntity *pEntity);
 char *UTIL_dtos1(int d);
+char* UTIL_dtos1(float d);
 char *UTIL_dtos2(int d);
 char *UTIL_dtos3(int d);
 char *UTIL_dtos4(int d);

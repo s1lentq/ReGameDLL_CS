@@ -2972,7 +2972,12 @@ void CHalfLifeMultiplay::CheckLevelInitialized()
 bool CHalfLifeMultiplay::RestartRoundCheck(float tmDelay)
 {
 	// log the restart
+
+#ifdef REGAMEDLL_ADD
+	UTIL_LogPrintf("World triggered \"Restart_Round_(%.2f_%s)\"\n", tmDelay, (tmDelay == 1) ? "second" : "seconds");
+#else
 	UTIL_LogPrintf("World triggered \"Restart_Round_(%i_%s)\"\n", (int)tmDelay, (tmDelay == 1) ? "second" : "seconds");
+#endif
 	UTIL_LogPrintf("Team \"CT\" scored \"%i\" with \"%i\" players\n", m_iNumCTWins, m_iNumCT);
 	UTIL_LogPrintf("Team \"TERRORIST\" scored \"%i\" with \"%i\" players\n", m_iNumTerroristWins, m_iNumTerrorist);
 
@@ -2983,8 +2988,8 @@ bool CHalfLifeMultiplay::RestartRoundCheck(float tmDelay)
 	m_flRestartRoundTime = gpGlobals->time + tmDelay;
 	m_bCompleteReset = true;
 
-	CVAR_SET_FLOAT("sv_restartround", 0);
-	CVAR_SET_FLOAT("sv_restart", 0);
+	CVAR_SET_FLOAT("sv_restartround", 0.0f);
+	CVAR_SET_FLOAT("sv_restart", 0.0f);
 
 	CareerRestart();
 	return true;
@@ -2993,20 +2998,19 @@ bool CHalfLifeMultiplay::RestartRoundCheck(float tmDelay)
 void CHalfLifeMultiplay::CheckRestartRound()
 {
 	// Restart the round if specified by the server
-	int iRestartDelay = int(restartround.value);
-	if (!iRestartDelay)
+	float fRestartDelay = restartround.value;
+	if (!fRestartDelay)
 	{
-		iRestartDelay = sv_restart.value;
+		fRestartDelay = sv_restart.value;
 	}
 
-	if (iRestartDelay > 0)
+	if (fRestartDelay > 0.0f)
 	{
 #ifndef REGAMEDLL_ADD
-		if (iRestartDelay > 60)
-			iRestartDelay = 60;
+		fRestartDelay = min(fRestartDelay, 60.0f);
 #endif
 
-		OnRoundEnd_Intercept(WINSTATUS_NONE, ROUND_GAME_RESTART, iRestartDelay);
+		OnRoundEnd_Intercept(WINSTATUS_NONE, ROUND_GAME_RESTART, fRestartDelay);
 	}
 }
 
