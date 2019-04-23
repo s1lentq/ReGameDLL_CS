@@ -133,6 +133,11 @@ LINK_HOOK_CHAIN2(CGameRules *, InstallGameRules)
 
 CGameRules *EXT_FUNC __API_HOOK(InstallGameRules)()
 {
+#ifdef REGAMEDLL_ADD
+	// execute post-configurations
+	SERVER_PRINT("Executing ReGameDLL Configuration File\n");
+#endif
+
 	SERVER_COMMAND("exec game.cfg\n");
 	SERVER_EXECUTE();
 

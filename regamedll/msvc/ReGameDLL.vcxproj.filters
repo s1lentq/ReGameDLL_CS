@@ -553,6 +553,9 @@
     <ClCompile Include="..\dlls\addons\trigger_random.cpp">
       <Filter>dlls\addons</Filter>
     </ClCompile>
+    <ClCompile Include="..\dlls\addons\point_command.cpp">
+      <Filter>dlls\addons</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\version\version.h">
@@ -1045,6 +1048,9 @@
       <Filter>public\regamedll\API</Filter>
     </ClInclude>
     <ClInclude Include="..\dlls\addons\trigger_random.h">
+      <Filter>dlls\addons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\addons\point_command.h">
       <Filter>dlls\addons</Filter>
     </ClInclude>
   </ItemGroup>

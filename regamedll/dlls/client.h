@@ -191,7 +191,7 @@ void UpdateClientData(const edict_t *ent, int sendweapons, struct clientdata_s *
 void CmdStart(const edict_t *pEdict, const struct usercmd_s *cmd, unsigned int random_seed);
 void CmdEnd(const edict_t *pEdict);
 int ConnectionlessPacket(const struct netadr_s *net_from, const char *args, char *response_buffer, int *response_buffer_size);
-int GetHullBounds(int hullnumber, float *mins, float *maxs);
+BOOL GetHullBounds(int hullnumber, float *mins, float *maxs);
 void CreateInstancedBaselines();
 int InconsistentFile(const edict_t *pEdict, const char *filename, char *disconnect_message);
 int AllowLagCompensation();
