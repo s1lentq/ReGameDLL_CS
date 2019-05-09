@@ -372,6 +372,13 @@ public:
 	virtual void Spawn();
 	virtual void Precache();
 	virtual void KeyValue(KeyValueData *pkvd);
+
+// Added toggle ladder feature
+#ifdef REGAMEDLL_FIXES
+	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	virtual void Restart();
+	virtual int ObjectCaps() { return (CBaseEntity::ObjectCaps() | FCAP_MUST_RESET); }
+#endif
 };
 
 #define SF_TRIGGER_PUSH_ONCE      BIT(0)
