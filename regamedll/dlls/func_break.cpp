@@ -97,8 +97,18 @@ void CBreakable::Spawn()
 		pev->takedamage = DAMAGE_NO;
 	else
 		pev->takedamage = DAMAGE_YES;
+#ifndef REGAMEDLL_FIXES
+	if (pev->spawnflags & SF_BREAK_USE_HEALTH2)
+	{
+		pev->health = m_flHealth2;
+		m_flHealth = m_flHealth2;
+	}
+	else
+#endif
+	{
+		m_flHealth = pev->health;
+	}
 
-	m_flHealth = pev->health;
 	pev->solid = SOLID_BSP;
 	pev->movetype = MOVETYPE_PUSH;
 	m_angle = pev->angles.y;
@@ -139,8 +149,13 @@ void CBreakable::Restart()
 		pev->takedamage = DAMAGE_NO;
 	else
 		pev->takedamage = DAMAGE_YES;
-
-	pev->health = m_flHealth;
+#ifndef REGAMEDLL_FIXES
+	if (pev->spawnflags & SF_BREAK_USE_HEALTH2)
+		pev->health = m_flHealth2;
+	else
+#endif
+		pev->health = m_flHealth;
+	
 	pev->effects &= ~EF_NODRAW;
 	m_angle = pev->angles.y;
 	pev->angles.y = 0;
@@ -219,6 +234,12 @@ void CBreakable::KeyValue(KeyValueData *pkvd)
 	{
 		pkvd->fHandled = TRUE;
 	}
+#ifndef REGAMEDLL_FIXES
+	else if (FStrEq(pkvd->szKeyName, "health2"))
+	{
+		m_flHealth2 = Q_atof(pkvd->szValue);
+	}
+#endif
 	else
 	{
 		CBaseDelay::KeyValue(pkvd);

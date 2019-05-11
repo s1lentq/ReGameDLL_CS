@@ -2289,8 +2289,10 @@
 		2 : "Touch"	   : 0
 		4 : "Stand on Pressure is buggy" : 0
 		256: "Instant Crowbar" : 1
+		512: "Use Health2 instead Strength" : 0
 	]
 	_minlight(string) : "Minimum light level" : "0"
+	health2(integer) : "Health2" : 0
 ]
 
 @SolidClass base(Targetname, Global, Master, Target, RenderFields, Angles, ZHLT, TexLightType) = func_button : "Button"
