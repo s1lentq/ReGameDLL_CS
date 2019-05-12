@@ -58,7 +58,7 @@ enum Materials
 #define SF_BREAK_PRESSURE     BIT(2) // can be broken by a player standing on it
 #define SF_BREAK_CROWBAR      BIT(8) // instant break if hit with crowbar
 // flag for make map compability with original gamedll
-#ifndef REGAMEDLL_FIXES
+#ifdef REGAMEDLL_FIXES
 #define SF_BREAK_USE_HEALTH2  BIT(9) // use health2 instead of health
 #endif 
 
@@ -118,7 +118,7 @@ public:
 	int m_iszGibModel;
 	int m_iszSpawnObject;
 	float m_flHealth;
-#ifndef REGAMEDLL_FIXES
+#ifdef REGAMEDLL_FIXES
 	float m_flHealth2;
 #endif
 };

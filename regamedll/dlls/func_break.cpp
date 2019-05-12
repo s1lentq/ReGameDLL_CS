@@ -97,7 +97,7 @@ void CBreakable::Spawn()
 		pev->takedamage = DAMAGE_NO;
 	else
 		pev->takedamage = DAMAGE_YES;
-#ifndef REGAMEDLL_FIXES
+#ifdef REGAMEDLL_FIXES
 	if (pev->spawnflags & SF_BREAK_USE_HEALTH2)
 	{
 		pev->health = m_flHealth2;
@@ -149,7 +149,7 @@ void CBreakable::Restart()
 		pev->takedamage = DAMAGE_NO;
 	else
 		pev->takedamage = DAMAGE_YES;
-#ifndef REGAMEDLL_FIXES
+#ifdef REGAMEDLL_FIXES
 	if (pev->spawnflags & SF_BREAK_USE_HEALTH2)
 		pev->health = m_flHealth2;
 	else
@@ -234,7 +234,7 @@ void CBreakable::KeyValue(KeyValueData *pkvd)
 	{
 		pkvd->fHandled = TRUE;
 	}
-#ifndef REGAMEDLL_FIXES
+#ifdef REGAMEDLL_FIXES
 	else if (FStrEq(pkvd->szKeyName, "health2"))
 	{
 		m_flHealth2 = Q_atof(pkvd->szValue);
