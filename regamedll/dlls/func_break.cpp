@@ -3,7 +3,7 @@
 // Just add more items to the bottom of this array and they will automagically be supported
 // This is done instead of just a classname in the FGD so we can control which entities can
 // be spawned, and still remain fairly flexible
-const char *CBreakable::m_pszSpawnObjects[] =
+const char *CBreakable::m_pszSpawnObjects[ ] =
 {
 	nullptr,
 	"item_battery",
@@ -39,14 +39,14 @@ const char *CBreakable::m_pszSpawnObjects[] =
 	"weapon_flashbang"
 };
 
-const char *CBreakable::m_pszSoundsWood[] =
+const char *CBreakable::m_pszSoundsWood[ ] =
 {
 	"debris/wood1.wav",
 	"debris/wood2.wav",
 	"debris/wood3.wav"
 };
 
-const char *CBreakable::m_pszSoundsFlesh[] =
+const char *CBreakable::m_pszSoundsFlesh[ ] =
 {
 	"debris/flesh1.wav",
 	"debris/flesh2.wav",
@@ -56,28 +56,28 @@ const char *CBreakable::m_pszSoundsFlesh[] =
 	"debris/flesh7.wav"
 };
 
-const char *CBreakable::m_pszSoundsMetal[] =
+const char *CBreakable::m_pszSoundsMetal[ ] =
 {
 	"debris/metal1.wav",
 	"debris/metal2.wav",
 	"debris/metal3.wav"
 };
 
-const char *CBreakable::m_pszSoundsConcrete[] =
+const char *CBreakable::m_pszSoundsConcrete[ ] =
 {
 	"debris/concrete1.wav",
 	"debris/concrete2.wav",
 	"debris/concrete3.wav"
 };
 
-const char *CBreakable::m_pszSoundsGlass[] =
+const char *CBreakable::m_pszSoundsGlass[ ] =
 {
 	"debris/glass1.wav",
 	"debris/glass2.wav",
 	"debris/glass3.wav"
 };
 
-TYPEDESCRIPTION CBreakable::m_SaveData[] =
+TYPEDESCRIPTION CBreakable::m_SaveData[ ] =
 {
 	DEFINE_FIELD(CBreakable, m_Material, FIELD_INTEGER),
 	DEFINE_FIELD(CBreakable, m_Explosion, FIELD_INTEGER),
@@ -160,7 +160,7 @@ void CBreakable::Restart()
 	else
 #endif
 		pev->health = m_flHealth;
-	
+
 	pev->effects &= ~EF_NODRAW;
 	m_angle = pev->angles.y;
 	pev->angles.y = 0;
@@ -486,7 +486,7 @@ void CBreakable::BreakTouch(CBaseEntity *pOther)
 	float flDamage;
 	entvars_t *pevToucher = pOther->pev;
 #ifdef REGAMEDLL_ADD
-	if (pev->spawnflags & SF_BREAK_USE_ATTACKER)
+	if (pev->spawnflags & SF_BREAK_USE_ATTACKER && pOther->IsPlayer())
 	{
 		pAttacker = pOther;
 	}
@@ -561,7 +561,7 @@ void CBreakable::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE use
 		pev->effects = EF_NODRAW;
 #endif
 #ifdef REGAMEDLL_ADD
-		if (pev->spawnflags & SF_BREAK_USE_ATTACKER)
+		if (pActivator && pev->spawnflags & SF_BREAK_USE_ATTACKER && pActivator->IsPlayer())
 		{
 			pAttacker = pActivator;
 		}
@@ -582,7 +582,7 @@ void CBreakable::TraceAttack(entvars_t *pevAttacker, float flDamage, Vector vecD
 			UTIL_Sparks(ptr->vecEndPos);
 
 			//random volume range
-			float flVolume = RANDOM_FLOAT(0.7 , 1.0);
+			float flVolume = RANDOM_FLOAT(0.7, 1.0);
 			switch (RANDOM_LONG(0, 1))
 			{
 			case 0: EMIT_SOUND(ENT(pev), CHAN_VOICE, "buttons/spark5.wav", flVolume, ATTN_NORM); break;
@@ -658,7 +658,11 @@ BOOL CBreakable::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, flo
 #ifdef REGAMEDLL_ADD
 		if (pev->spawnflags & SF_BREAK_USE_ATTACKER)
 		{
-			pAttacker = UTIL_FindEntityBy_entvars_t(pevAttacker);
+			CBaseEntity * pDamager = UTIL_FindEntityBy_entvars_t(pevAttacker);
+			if (pDamager && pDamager->IsPlayer())
+				pAttacker = pDamager;
+			else
+				pAttacker = nullptr;
 		}
 #endif
 		Die();
@@ -812,21 +816,21 @@ void CBreakable::Die()
 	vecSpot = pev->origin + (pev->mins + pev->maxs) * 0.5f;
 
 	MESSAGE_BEGIN(MSG_PVS, SVC_TEMPENTITY, vecSpot);
-		WRITE_BYTE(TE_BREAKMODEL);
-		WRITE_COORD(vecSpot.x);		// position
-		WRITE_COORD(vecSpot.y);
-		WRITE_COORD(vecSpot.z);
-		WRITE_COORD(pev->size.x);	// size
-		WRITE_COORD(pev->size.y);
-		WRITE_COORD(pev->size.z);
-		WRITE_COORD(vecVelocity.x);	// velocity
-		WRITE_COORD(vecVelocity.y);
-		WRITE_COORD(vecVelocity.z);
-		WRITE_BYTE(10);				// randomization
-		WRITE_SHORT(m_idShard);		// model id#
-		WRITE_BYTE(0);				// # of shards, let client decide
-		WRITE_BYTE(25);				// duration, 2.5 seconds
-		WRITE_BYTE(cFlag);			// flags
+	WRITE_BYTE(TE_BREAKMODEL);
+	WRITE_COORD(vecSpot.x);		// position
+	WRITE_COORD(vecSpot.y);
+	WRITE_COORD(vecSpot.z);
+	WRITE_COORD(pev->size.x);	// size
+	WRITE_COORD(pev->size.y);
+	WRITE_COORD(pev->size.z);
+	WRITE_COORD(vecVelocity.x);	// velocity
+	WRITE_COORD(vecVelocity.y);
+	WRITE_COORD(vecVelocity.z);
+	WRITE_BYTE(10);				// randomization
+	WRITE_SHORT(m_idShard);		// model id#
+	WRITE_BYTE(0);				// # of shards, let client decide
+	WRITE_BYTE(25);				// duration, 2.5 seconds
+	WRITE_BYTE(cFlag);			// flags
 	MESSAGE_END();
 
 	float size = pev->size.x;
@@ -884,13 +888,13 @@ int CBreakable::DamageDecal(int bitsDamageType)
 	return CBaseEntity::DamageDecal(bitsDamageType);
 }
 
-TYPEDESCRIPTION CPushable::m_SaveData[] =
+TYPEDESCRIPTION CPushable::m_SaveData[ ] =
 {
 	DEFINE_FIELD(CPushable, m_maxSpeed, FIELD_FLOAT),
 	DEFINE_FIELD(CPushable, m_soundTime, FIELD_TIME),
 };
 
-const char *CPushable::m_soundNames[] =
+const char *CPushable::m_soundNames[ ] =
 {
 	"debris/pushbox1.wav",
 	"debris/pushbox2.wav",
@@ -1098,7 +1102,7 @@ void CPushable::Move(CBaseEntity *pOther, int push)
 
 	if (bPlayerTouch)
 	{
-// do not push player along with entity
+		// do not push player along with entity
 #ifndef REGAMEDLL_FIXES
 		pevToucher->velocity.x = pev->velocity.x;
 		pevToucher->velocity.y = pev->velocity.y;
@@ -1119,7 +1123,7 @@ void CPushable::Move(CBaseEntity *pOther, int push)
 			else
 				STOP_SOUND(ENT(pev), CHAN_WEAPON, m_soundNames[m_lastSound]);
 		}
-	}
+}
 }
 
 BOOL CPushable::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
