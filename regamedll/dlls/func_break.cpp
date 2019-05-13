@@ -92,7 +92,9 @@ IMPLEMENT_SAVERESTORE(CBreakable, CBaseEntity)
 void CBreakable::Spawn()
 {
 	Precache();
-
+#ifdef REGAMEDLL_ADD
+	pAttacker = nullptr;
+#endif
 	if (pev->spawnflags & SF_BREAK_TRIGGER_ONLY)
 		pev->takedamage = DAMAGE_NO;
 	else
@@ -141,6 +143,9 @@ void CBreakable::Spawn()
 
 void CBreakable::Restart()
 {
+#ifdef REGAMEDLL_ADD
+	pAttacker = nullptr;
+#endif
 	pev->solid = SOLID_BSP;
 	pev->movetype = MOVETYPE_PUSH;
 	pev->deadflag = DEAD_NO;
@@ -480,7 +485,12 @@ void CBreakable::BreakTouch(CBaseEntity *pOther)
 {
 	float flDamage;
 	entvars_t *pevToucher = pOther->pev;
-
+#ifdef REGAMEDLL_ADD
+	if (pev->spawnflags & SF_BREAK_USE_ATTACKER)
+	{
+		pAttacker = pOther;
+	}
+#endif
 	// only players can break these right now
 	if (!pOther->IsPlayer() || !IsBreakable())
 	{
@@ -550,7 +560,12 @@ void CBreakable::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE use
 		pev->deadflag = DEAD_DEAD;
 		pev->effects = EF_NODRAW;
 #endif
-
+#ifdef REGAMEDLL_ADD
+		if (pev->spawnflags & SF_BREAK_USE_ATTACKER)
+		{
+			pAttacker = pActivator;
+		}
+#endif
 		Die();
 	}
 }
@@ -639,6 +654,12 @@ BOOL CBreakable::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, flo
 		pev->takedamage = DAMAGE_NO;
 		pev->deadflag = DEAD_DEAD;
 		pev->effects = EF_NODRAW;
+#endif
+#ifdef REGAMEDLL_ADD
+		if (pev->spawnflags & SF_BREAK_USE_ATTACKER)
+		{
+			pAttacker = UTIL_FindEntityBy_entvars_t(pevAttacker);
+		}
 #endif
 		Die();
 

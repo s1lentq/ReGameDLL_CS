@@ -441,7 +441,7 @@ CBaseEntity *UTIL_FindEntityBy_edict_t(edict_t  * value)
 		{
 			return pEntity;
 		}
-}
+	}
 
 	return nullptr;
 }

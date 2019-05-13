@@ -155,7 +155,23 @@ void CEnvExplosion::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE 
 	// do damage
 	if (!(pev->spawnflags & SF_ENVEXPLOSION_NODAMAGE))
 	{
-		RadiusDamage(pev, pev, m_iMagnitude, CLASS_NONE, DMG_BLAST);
+		bool FoundPlayerAttacker = false;
+#ifdef REGAMEDLL_ADD
+		CBaseEntity * pOwner = UTIL_FindEntityBy_edict_t(pev->owner);
+		if (pOwner && !Q_strcmp(pOwner->GetClassname(),"func_breakable"))
+		{
+			CBreakable * pOwnerBreak = static_cast<CBreakable *>(pOwner);
+			if (pOwnerBreak->pAttacker)
+			{
+				FoundPlayerAttacker = true;
+				RadiusDamage(pev, pOwnerBreak->pAttacker->pev, m_iMagnitude, CLASS_NONE, DMG_BLAST);
+			}
+		}
+#endif
+		if (!FoundPlayerAttacker)
+		{
+			RadiusDamage(pev, pev, m_iMagnitude, CLASS_NONE, DMG_BLAST);
+		}
 	}
 
 	SetThink(&CEnvExplosion::Smoke);
