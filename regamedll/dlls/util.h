@@ -212,6 +212,12 @@ CBaseEntity *UTIL_FindEntityByString(CBaseEntity *pStartEntity, const char *szKe
 CBaseEntity *UTIL_FindEntityByClassname(CBaseEntity *pStartEntity, const char *szName);
 CBaseEntity *UTIL_FindEntityByTargetname(CBaseEntity *pStartEntity, const char *szName);
 CBaseEntity *UTIL_FindEntityGeneric(const char *szWhatever, const Vector &vecSrc, float flRadius);
+
+#ifdef REGAMEDLL_ADD
+CBaseEntity *UTIL_FindEntityBy_entvars_t(entvars_t  *pStartEntity);
+CBaseEntity *UTIL_FindEntityBy_edict_t(edict_t  *pStartEntity);
+#endif
+
 #ifndef REGAMEDLL_FIXES
 CBasePlayer *UTIL_PlayerByIndex(int playerIndex);
 #endif

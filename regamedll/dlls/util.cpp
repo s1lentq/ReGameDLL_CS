@@ -416,6 +416,66 @@ CBaseEntity *UTIL_FindEntityGeneric(const char *szWhatever, const Vector &vecSrc
 	return pEntity;
 }
 
+#ifdef REGAMEDLL_ADD
+
+CBaseEntity *UTIL_FindEntityBy_edict_t(edict_t  * value)
+{
+	edict_t *pEdict = INDEXENT(1);
+	int count = 0;
+
+	if (!pEdict)
+		return  nullptr;
+	if (!value)
+		return nullptr;
+
+	for (int i = 1; i < gpGlobals->maxEntities; i++, pEdict++)
+	{
+		if (pEdict->free)
+			continue;
+
+		CBaseEntity *pEntity = CBaseEntity::Instance(pEdict);
+		if (!pEntity)
+			continue;
+
+		if (pEntity->edict() == value)
+		{
+			return pEntity;
+		}
+}
+
+	return nullptr;
+}
+
+CBaseEntity *UTIL_FindEntityBy_entvars_t(entvars_t  *value)
+{
+	edict_t *pEdict = INDEXENT(1);
+	int count = 0;
+
+	if (!pEdict)
+		return  nullptr;
+	if (!value)
+		return nullptr;
+
+	for (int i = 1; i < gpGlobals->maxEntities; i++, pEdict++)
+	{
+		if (pEdict->free)
+			continue;
+
+		CBaseEntity *pEntity = CBaseEntity::Instance(pEdict);
+		if (!pEntity)
+			continue;
+
+		if (pEntity->pev == value)
+		{
+			return pEntity;
+		}
+	}
+
+	return nullptr;
+}
+
+#endif
+
 #ifndef REGAMEDLL_FIXES
 CBasePlayer *EXT_FUNC UTIL_PlayerByIndex(int playerIndex)
 {
