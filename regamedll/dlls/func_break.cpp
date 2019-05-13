@@ -3,7 +3,7 @@
 // Just add more items to the bottom of this array and they will automagically be supported
 // This is done instead of just a classname in the FGD so we can control which entities can
 // be spawned, and still remain fairly flexible
-const char *CBreakable::m_pszSpawnObjects[ ] =
+const char *CBreakable::m_pszSpawnObjects[] =
 {
 	nullptr,
 	"item_battery",
@@ -39,14 +39,14 @@ const char *CBreakable::m_pszSpawnObjects[ ] =
 	"weapon_flashbang"
 };
 
-const char *CBreakable::m_pszSoundsWood[ ] =
+const char *CBreakable::m_pszSoundsWood[] =
 {
 	"debris/wood1.wav",
 	"debris/wood2.wav",
 	"debris/wood3.wav"
 };
 
-const char *CBreakable::m_pszSoundsFlesh[ ] =
+const char *CBreakable::m_pszSoundsFlesh[] =
 {
 	"debris/flesh1.wav",
 	"debris/flesh2.wav",
@@ -56,28 +56,28 @@ const char *CBreakable::m_pszSoundsFlesh[ ] =
 	"debris/flesh7.wav"
 };
 
-const char *CBreakable::m_pszSoundsMetal[ ] =
+const char *CBreakable::m_pszSoundsMetal[] =
 {
 	"debris/metal1.wav",
 	"debris/metal2.wav",
 	"debris/metal3.wav"
 };
 
-const char *CBreakable::m_pszSoundsConcrete[ ] =
+const char *CBreakable::m_pszSoundsConcrete[] =
 {
 	"debris/concrete1.wav",
 	"debris/concrete2.wav",
 	"debris/concrete3.wav"
 };
 
-const char *CBreakable::m_pszSoundsGlass[ ] =
+const char *CBreakable::m_pszSoundsGlass[] =
 {
 	"debris/glass1.wav",
 	"debris/glass2.wav",
 	"debris/glass3.wav"
 };
 
-TYPEDESCRIPTION CBreakable::m_SaveData[ ] =
+TYPEDESCRIPTION CBreakable::m_SaveData[] =
 {
 	DEFINE_FIELD(CBreakable, m_Material, FIELD_INTEGER),
 	DEFINE_FIELD(CBreakable, m_Explosion, FIELD_INTEGER),
@@ -888,13 +888,13 @@ int CBreakable::DamageDecal(int bitsDamageType)
 	return CBaseEntity::DamageDecal(bitsDamageType);
 }
 
-TYPEDESCRIPTION CPushable::m_SaveData[ ] =
+TYPEDESCRIPTION CPushable::m_SaveData[] =
 {
 	DEFINE_FIELD(CPushable, m_maxSpeed, FIELD_FLOAT),
 	DEFINE_FIELD(CPushable, m_soundTime, FIELD_TIME),
 };
 
-const char *CPushable::m_soundNames[ ] =
+const char *CPushable::m_soundNames[] =
 {
 	"debris/pushbox1.wav",
 	"debris/pushbox2.wav",
@@ -1123,7 +1123,7 @@ void CPushable::Move(CBaseEntity *pOther, int push)
 			else
 				STOP_SOUND(ENT(pev), CHAN_WEAPON, m_soundNames[m_lastSound]);
 		}
-}
+	}
 }
 
 BOOL CPushable::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
