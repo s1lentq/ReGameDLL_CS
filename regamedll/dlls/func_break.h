@@ -62,7 +62,7 @@ enum Materials
 #define SF_BREAK_USE_HEALTH2	BIT(9)  // use health2 instead of health
 #endif 
 #ifdef REGAMEDLL_ADD
-#define SF_BREAK_USE_ATTACKER	BIT(10) // use health2 instead of health
+#define SF_BREAK_NO_ATTACKER	BIT(10) // use health2 instead of health
 #endif
 class CBreakable: public CBaseDelay
 {

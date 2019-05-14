@@ -486,7 +486,7 @@ void CBreakable::BreakTouch(CBaseEntity *pOther)
 	float flDamage;
 	entvars_t *pevToucher = pOther->pev;
 #ifdef REGAMEDLL_ADD
-	if (pev->spawnflags & SF_BREAK_USE_ATTACKER && pOther->IsPlayer())
+	if ( !(pev->spawnflags & SF_BREAK_NO_ATTACKER) && pOther->IsPlayer())
 	{
 		pAttacker = pOther;
 	}
@@ -561,7 +561,7 @@ void CBreakable::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE use
 		pev->effects = EF_NODRAW;
 #endif
 #ifdef REGAMEDLL_ADD
-		if (pActivator && pev->spawnflags & SF_BREAK_USE_ATTACKER && pActivator->IsPlayer())
+		if (pActivator && !(pev->spawnflags & SF_BREAK_NO_ATTACKER) && pActivator->IsPlayer())
 		{
 			pAttacker = pActivator;
 		}
@@ -656,7 +656,7 @@ BOOL CBreakable::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, flo
 		pev->effects = EF_NODRAW;
 #endif
 #ifdef REGAMEDLL_ADD
-		if (pev->spawnflags & SF_BREAK_USE_ATTACKER)
+		if (!(pev->spawnflags & SF_BREAK_NO_ATTACKER))
 		{
 			CBaseEntity * pDamager = UTIL_FindEntityBy_entvars_t(pevAttacker);
 			if (pDamager && pDamager->IsPlayer())
@@ -679,6 +679,7 @@ BOOL CBreakable::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, flo
 	// Make a shard noise each time func breakable is hit.
 	// Don't play shard noise if cbreakable actually died.
 	DamageSound();
+
 	return TRUE;
 }
 
@@ -870,6 +871,10 @@ void CBreakable::Die()
 	{
 		ExplosionCreate(Center(), pev->angles, edict(), ExplosionMagnitude(), TRUE);
 	}
+
+#ifdef REGAMEDLL_ADD
+	pAttacker = nullptr;
+#endif
 }
 
 BOOL CBreakable::IsBreakable()

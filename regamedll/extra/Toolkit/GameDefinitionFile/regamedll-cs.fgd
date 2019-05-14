@@ -2290,7 +2290,7 @@
 		4 : "Stand on Pressure is buggy" : 0
 		256: "Instant Crowbar" : 1
 		512: "Use Health2 instead Strength" : 0
-		1024: "Use Player attacker to dmg" : 0
+		1024: "No damage source" : 0
 	]
 	_minlight(string) : "Minimum light level" : "0"
 	health2(integer) : "Health2" : 0
