@@ -292,6 +292,7 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&legacy_bombtarget_touch);
 	CVAR_REGISTER(&respawn_immunitytime);
 	CVAR_REGISTER(&kill_filled_spawn);
+	CVAR_REGISTER(&afk_bomb_drop_time);
 	CVAR_REGISTER(&allow_point_servercommand);
 	CVAR_REGISTER(&hullbounds_sets);
 
