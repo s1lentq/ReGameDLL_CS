@@ -4225,6 +4225,14 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 				m_fLastMovement = gpGlobals->time;
 			}
 		}
+		
+		if (m_bHasC4 && afk_bomb_drop_time.value > 0.0)
+		{
+			if (flLastMove > afk_bomb_drop_time.value)
+			{
+				DropPlayerItem("weapon_c4");
+			}
+		}
 	}
 
 	if (g_pGameRules && g_pGameRules->FAllowFlashlight())

@@ -118,6 +118,7 @@ cvar_t item_staytime           = { "mp_item_staytime", "300", FCVAR_SERVER, 300.
 cvar_t legacy_bombtarget_touch = { "mp_legacy_bombtarget_touch", "1", FCVAR_SERVER, 1.0f, nullptr };
 cvar_t respawn_immunitytime    = { "mp_respawn_immunitytime", "0", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t kill_filled_spawn       = { "mp_kill_filled_spawn", "1", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t afk_bomb_drop_time      = { "mp_afk_bomb_drop_time", "0", FCVAR_SERVER, 0.0f, nullptr };
 
 cvar_t allow_point_servercommand = { "mp_allow_point_servercommand", "0", 0, 0.0f, nullptr };
 cvar_t hullbounds_sets           = { "mp_hullbounds_sets", "1", 0, 0.0f, nullptr };
