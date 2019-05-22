@@ -4226,9 +4226,9 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 			}
 		}
 #ifdef REGAMEDLL_ADD
-		if (IsBombGuy() && afk_bomb_drop_time.value > 0.0)
+		if (afk_bomb_drop_time.value > 0.0 && IsBombGuy())
 		{
-			if (flLastMove > afk_bomb_drop_time.value)
+			if (flLastMove > afk_bomb_drop_time.value && !CSGameRules()->IsFreezePeriod())
 			{
 				DropPlayerItem("weapon_c4");
 			}
