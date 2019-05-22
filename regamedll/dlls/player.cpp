@@ -4226,7 +4226,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 			}
 		}
 #ifdef REGAMEDLL_ADD
-		if (m_bHasC4 && afk_bomb_drop_time.value > 0.0)
+		if (IsBombGuy() && afk_bomb_drop_time.value > 0.0)
 		{
 			if (flLastMove > afk_bomb_drop_time.value)
 			{
