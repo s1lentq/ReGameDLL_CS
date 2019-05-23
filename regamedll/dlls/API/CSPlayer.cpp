@@ -499,3 +499,13 @@ EXT_FUNC void CCSPlayer::RemoveSpawnProtection()
 {
 	BasePlayer()->RemoveSpawnProtection();
 }
+
+EXT_FUNC bool CCSPlayer::CheckActivityInGame()
+{
+	const CBasePlayer* pPlayer = BasePlayer();
+
+	const vec3_t vecAngleDelta = (m_vecOldvAngle - pPlayer->pev->v_angle);
+	m_vecOldvAngle = pPlayer->pev->v_angle;
+
+	return (vecAngleDelta != g_vecZero);
+}
