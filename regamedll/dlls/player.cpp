@@ -4154,12 +4154,6 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 	{
 		m_fLastMovement = gpGlobals->time;
 	}
-#ifdef REGAMEDLL_ADD
-	else if (CSPlayer()->CheckActivityInGame())
-	{
-		m_fLastMovement = gpGlobals->time;
-	}
-#endif
 
 	// Debounced button codes for pressed/released
 	// UNDONE: Do we need auto-repeat?
@@ -4215,6 +4209,13 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 	{
 		// check every 5 seconds
 		m_flIdleCheckTime = gpGlobals->time + 5.0;
+
+#ifdef REGAMEDLL_ADD
+		if (CSPlayer()->CheckActivityInGame())
+		{
+			m_fLastMovement = gpGlobals->time;
+		}
+#endif
 
 		real_t flLastMove = gpGlobals->time - m_fLastMovement;
 
