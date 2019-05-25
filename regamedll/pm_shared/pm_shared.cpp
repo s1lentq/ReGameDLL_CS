@@ -1880,7 +1880,7 @@ void PM_Duck()
 	}
 #endif
 
-	if (pmove->dead || !(pmove->cmd.buttons & IN_DUCK) && !pmove->bInDuck && !(pmove->flags & FL_DUCKING))
+	if (pmove->dead || (!(pmove->cmd.buttons & IN_DUCK) && !pmove->bInDuck && !(pmove->flags & FL_DUCKING)))
 	{
 		return;
 	}
