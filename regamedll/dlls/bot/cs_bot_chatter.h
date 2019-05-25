@@ -290,7 +290,7 @@ private:
 		IntervalTimer timer;
 	};
 
-	mutable PlaceTimeInfo m_placeStatementHistory[MAX_PLACES_PER_MAP];
+	mutable PlaceTimeInfo m_placeStatementHistory[MAX_PLACES_PER_MAP + 2];
 	mutable int m_placeCount;
 };
 
