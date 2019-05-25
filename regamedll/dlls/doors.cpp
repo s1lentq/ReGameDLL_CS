@@ -917,8 +917,6 @@ void CRotDoor::Spawn()
 	m_vecAngle1 = pev->angles;
 	m_vecAngle2 = pev->angles + pev->movedir * m_flMoveDistance;
 
-	assert(("rotating door start/end positions are equal", m_vecAngle1 != m_vecAngle2));
-
 	if (pev->spawnflags & SF_DOOR_PASSABLE)
 		pev->solid = SOLID_NOT;
 	else
