@@ -673,7 +673,7 @@ void CBaseDoor::DoorGoDown()
 		// water is silent
 		if (!(pev->spawnflags & SF_DOOR_ACTUALLY_WATER))
 		{
-			if (m_toggle_state != TS_GOING_UP && m_toggle_state != TS_GOING_DOWN)
+			if (m_toggle_state != TS_GOING_DOWN)
 			{
 				EMIT_SOUND(ENT(pev), CHAN_STATIC, (char *)STRING(pev->noiseMoving), VOL_NORM, ATTN_NORM);
 			}
