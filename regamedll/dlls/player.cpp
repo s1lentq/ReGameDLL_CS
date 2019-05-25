@@ -4288,7 +4288,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 			if (trainTrace.flFraction != 1.0f && trainTrace.pHit)
 				pTrain = Instance(trainTrace.pHit);
 
-			if (!pTrain || !(pTrain->ObjectCaps() & FCAP_DIRECTIONAL_USE) || !pTrain->OnControls(pev))
+			if (pTrain && (!(pTrain->ObjectCaps() & FCAP_DIRECTIONAL_USE) || !pTrain->OnControls(pev)))
 			{
 				m_afPhysicsFlags &= ~PFLAG_ONTRAIN;
 				m_iTrain = (TRAIN_NEW | TRAIN_OFF);
