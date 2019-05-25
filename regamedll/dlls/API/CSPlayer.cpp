@@ -507,5 +507,5 @@ EXT_FUNC bool CCSPlayer::CheckActivityInGame()
 	const vec3_t vecAngleDelta = (m_vecOldvAngle - pPlayer->pev->v_angle);
 	m_vecOldvAngle = pPlayer->pev->v_angle;
 
-	return abs(vecAngleDelta != g_vecZero) > 0.1;
+	return (vecAngleDelta.Length() > 0.1);
 }
