@@ -380,7 +380,7 @@ void CCareerTaskManager::Reset(bool deleteTasks)
 	if (deleteTasks)
 	{
 		for (auto task : m_tasks)
-			delete task;
+			delete task; // FIXME no destructor found, memory leak?
 
 		m_tasks.clear();
 		m_nextId = 0;
