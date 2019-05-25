@@ -3806,7 +3806,8 @@ void EditNavAreas(NavEditCmdType cmd)
 			{
 				lastSelectedArea = area;
 
-				char buffer[80];
+				char buffer[256];
+
 				char attrib[80];
 				char locName[80];
 
