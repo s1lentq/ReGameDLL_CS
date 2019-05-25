@@ -619,8 +619,8 @@ bool IsGameEventAudible(GameEventType event, CBaseEntity *pEntity, CBaseEntity *
 {
 	CBasePlayer *pPlayer = static_cast<CBasePlayer *>(pEntity);
 
-	if (!pEntity || !pPlayer->IsPlayer())
-		pPlayer = nullptr;
+	if (!pEntity || !pPlayer || !pPlayer->IsPlayer())
+		return false;
 
 	const float ShortRange = 1000.0f;
 	const float NormalRange = 2000.0f;
