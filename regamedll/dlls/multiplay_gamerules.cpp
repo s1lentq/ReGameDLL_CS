@@ -3612,8 +3612,6 @@ void CHalfLifeMultiplay::PlayerThink(CBasePlayer *pPlayer)
 				else
 					ShowVGUIMenu(pPlayer, VGUI_Menu_Team, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_5 | MENU_KEY_6), "#Team_Select_Spect");
 			}
-
-			m_bSkipShowMenu = false;
 #else
 			HandleMenu_ChooseTeam(pPlayer, slot);
 
