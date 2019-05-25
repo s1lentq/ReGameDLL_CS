@@ -321,28 +321,30 @@ void CCSBot::SendRadioMessage(GameEventType event)
 
 	m_lastRadioSentTimestamp = gpGlobals->time;
 
-	char slot[2];
-	slot[1] = '\0';
+	char szSlot[2];
+	int iSlot;
 
 	if (event > EVENT_START_RADIO_1 && event < EVENT_START_RADIO_2)
 	{
-		slot[0] = event - EVENT_START_RADIO_1;
+		iSlot = event - EVENT_START_RADIO_1;
 		ClientCommand("radio1");
-		//Radio1(this, event - EVENT_START_RADIO_3);
+		// Radio1(this, event - EVENT_START_RADIO_3);
 	}
 	else if (event > EVENT_START_RADIO_2 && event < EVENT_START_RADIO_3)
 	{
-		slot[0] = event - EVENT_START_RADIO_2;
+		iSlot = event - EVENT_START_RADIO_2;
 		ClientCommand("radio2");
-		//Radio2(this, event - EVENT_START_RADIO_3);
+		// Radio2(this, event - EVENT_START_RADIO_3);
 	}
 	else
 	{
-		slot[0] = event - EVENT_START_RADIO_3;
+		iSlot = event - EVENT_START_RADIO_3;
 		ClientCommand("radio3");
-		//Radio3(this, event - EVENT_START_RADIO_3);
+		// Radio3(this, event - EVENT_START_RADIO_3);
 	}
 
-	ClientCommand("menuselect", slot);
+	Q_sprintf(szSlot, "%d", iSlot);
+
+	ClientCommand("menuselect", szSlot);
 	ClientCommand("menuselect", "10");
 }
