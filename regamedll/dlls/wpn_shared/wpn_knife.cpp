@@ -496,6 +496,11 @@ BOOL CKnife::Stab(BOOL fFirst)
 
 		CBaseEntity *pEntity = CBaseEntity::Instance(tr.pHit);
 
+		if (!pEntity)
+		{
+			return FALSE;
+		}
+
 		// player "shoot" animation
 		m_pPlayer->SetAnimation(PLAYER_ATTACK1);
 
