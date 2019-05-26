@@ -6097,7 +6097,6 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 		}
 		case 107:
 		{
-			TraceResult tr;
 			edict_t *pWorld = INDEXENT(0);
 
 			Vector start = pev->origin + pev->view_ofs;
@@ -6153,7 +6152,6 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 		}
 		case 204:
 		{
-			TraceResult tr;
 			Vector dir(0, 0, 1);
 
 			UTIL_BloodDrips(pev->origin, dir, BLOOD_COLOR_RED, 2000);
