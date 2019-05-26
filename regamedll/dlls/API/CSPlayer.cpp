@@ -504,8 +504,10 @@ EXT_FUNC bool CCSPlayer::CheckActivityInGame()
 {
 	const CBasePlayer* pPlayer = BasePlayer();
 
-	const vec3_t vecAngleDelta = (m_vecOldvAngle - pPlayer->pev->v_angle);
+	const float deltaYaw = (m_vecOldvAngle.y - pPlayer->pev->v_angle.y);
+	const float deltaPitch = (m_vecOldvAngle.x - pPlayer->pev->v_angle.x);
+
 	m_vecOldvAngle = pPlayer->pev->v_angle;
 
-	return (vecAngleDelta.Length() > 0.1);
+	return (fabs(deltaYaw) >= 0.1f && fabs(deltaPitch) >= 0.1f);
 }
