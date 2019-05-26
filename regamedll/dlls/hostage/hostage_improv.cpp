@@ -348,7 +348,8 @@ bool CHostageImprov::IsFriendInTheWay(const Vector &goalPos) const
 
 		if (check.m_blocker)
 		{
-			return m_isFriendInTheWay = true;
+			m_isFriendInTheWay = true;
+			return true;
 		}
 	}
 
