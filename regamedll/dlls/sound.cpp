@@ -1700,7 +1700,12 @@ float TEXTURETYPE_PlaySound(TraceResult *ptr, Vector vecSrc, Vector vecEnd, int 
 		fvolbar = 0.3f;
 
 		rgsz[0] = "player/pl_duct1.wav";
+#ifdef REGAMEDLL_ADD
 		rgsz[1] = "player/pl_duct2.wav";
+#else 
+		// Two same sound
+		rgsz[1] = "player/pl_duct1.wav";
+#endif
 		cnt = 2;
 		break;
 	case CHAR_TEX_GRATE:
