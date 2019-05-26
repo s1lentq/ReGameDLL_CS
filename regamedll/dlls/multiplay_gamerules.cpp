@@ -4701,7 +4701,7 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(ChangeLevel)()
 	// Has the map cycle filename changed?
 	if (Q_stricmp(mapcfile, szPreviousMapCycleFile) != 0)
 	{
-		Q_strcpy(szPreviousMapCycleFile, mapcfile);
+		Q_snprintf(szPreviousMapCycleFile, sizeof(szPreviousMapCycleFile), "%s", mapcfile);
 
 		DestroyMapCycle(&mapcycle);
 
