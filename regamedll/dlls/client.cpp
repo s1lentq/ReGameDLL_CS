@@ -3451,7 +3451,7 @@ void EXT_FUNC ClientCommand_(edict_t *pEntity)
 		return;
 
 	static char command[128] = "";
-	Q_snprintf(command, 128, "%s", CMD_ARGV_(0));
+	Q_snprintf(command, sizeof(command), "%s", CMD_ARGV_(0));
 	g_ReGameHookchains.m_InternalCommand.callChain(InternalCommand, pEntity, command, CMD_ARGV_(1));
 }
 
