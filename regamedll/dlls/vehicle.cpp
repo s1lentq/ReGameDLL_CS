@@ -302,10 +302,7 @@ void CFuncVehicle::CheckTurning()
 	bool bTurnIntoWall = false;
 
 	if (pev->speed == 0)
-	{
-		m_iTurnAngle = 0;
 		return;
-	}
 
 	if (m_iTurnAngle < 0)
 	{
