@@ -3015,6 +3015,12 @@ CBaseEntity *EXT_FUNC CBasePlayer::__API_HOOK(DropShield)(bool bDeploy)
 			if (m_rgAmmo[pWeapon->m_iPrimaryAmmoType] <= 0)
 				g_pGameRules->GetNextBestWeapon(this, pWeapon);
 		}
+
+		if (IsReloading())
+		{
+			pWeapon->m_fInReload = FALSE;
+			m_flNextAttack = 0;
+		}
 	}
 
 	if (m_pActiveItem)
@@ -3023,11 +3029,6 @@ CBaseEntity *EXT_FUNC CBasePlayer::__API_HOOK(DropShield)(bool bDeploy)
 			m_pActiveItem->Holster();
 	}
 
-	if (IsReloading())
-	{
-		pWeapon->m_fInReload = FALSE;
-		m_flNextAttack = 0;
-	}
 
 	if (m_pActiveItem && IsProtectedByShield())
 		((CBasePlayerWeapon *)m_pActiveItem)->SecondaryAttack();
