@@ -82,9 +82,10 @@ int gmsgBotProgress = 0;
 int gmsgBrass = 0;
 int gmsgFog = 0;
 int gmsgShowTimer = 0;
+#ifdef REGAMEDLL_ADD
 int gmsgAccount = 0;
 int gmsgHealthInfo = 0;
-
+#endif
 bool g_bClientPrintEnable = true;
 
 char *sPlayerModelFiles[] =
