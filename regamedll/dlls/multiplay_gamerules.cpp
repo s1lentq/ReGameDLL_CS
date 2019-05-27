@@ -3354,7 +3354,7 @@ void CHalfLifeMultiplay::InitHUD(CBasePlayer *pl)
 				MESSAGE_END();
 			}
 		}
-
+#ifdef REGAMEDLL_ADD
 		int m_iAccount = -1;
 		int m_iHealth = -1;
 
@@ -3374,6 +3374,7 @@ void CHalfLifeMultiplay::InitHUD(CBasePlayer *pl)
 			WRITE_BYTE(plr->entindex());
 			WRITE_LONG(m_iAccount);
 		MESSAGE_END();
+#endif
 	}
 
 	auto SendMsgBombDrop = [&pl](const int flag, const Vector& pos)

@@ -6993,7 +6993,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(UpdateClientData)()
 				}
 			}
 		}
-
+#ifdef REGAMEDLL_ADD
 		for (int i = 1; i <= gpGlobals->maxClients; i++)
 		{
 			CBaseEntity *pEntity = UTIL_PlayerByIndex(i);
@@ -7026,7 +7026,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(UpdateClientData)()
 				WRITE_LONG(m_iAccount);
 			MESSAGE_END();
 		}
-
+#endif
 		m_vLastOrigin = pev->origin;
 	}
 }
