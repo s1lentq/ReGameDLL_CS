@@ -2664,19 +2664,19 @@ void EXT_FUNC CHalfLifeMultiplay::OnRoundFreezeEnd()
 	{
 	case 0:
 		Q_snprintf(CT_sentence, sizeof(CT_sentence), "%s", "%!MRAD_MOVEOUT");
-		Q_snprintf(T_sentence, sizeof(CT_sentence), "%s", "%!MRAD_MOVEOUT");
+		Q_snprintf(T_sentence, sizeof(T_sentence), "%s", "%!MRAD_MOVEOUT");
 		break;
 	case 1:
 		Q_snprintf(CT_sentence, sizeof(CT_sentence), "%s", "%!MRAD_LETSGO");
-		Q_snprintf(T_sentence, sizeof(CT_sentence), "%s", "%!MRAD_LETSGO");
+		Q_snprintf(T_sentence, sizeof(T_sentence), "%s", "%!MRAD_LETSGO");
 		break;
 	case 2:
 		Q_snprintf(CT_sentence, sizeof(CT_sentence), "%s", "%!MRAD_LOCKNLOAD");
-		Q_snprintf(T_sentence, sizeof(CT_sentence), "%s", "%!MRAD_LOCKNLOAD");
+		Q_snprintf(T_sentence, sizeof(T_sentence), "%s", "%!MRAD_LOCKNLOAD");
 		break;
 	default:
 		Q_snprintf(CT_sentence, sizeof(CT_sentence), "%s", "%!MRAD_GO");
-		Q_snprintf(T_sentence, sizeof(CT_sentence), "%s", "%!MRAD_GO");
+		Q_snprintf(T_sentence, sizeof(T_sentence), "%s", "%!MRAD_GO");
 		break;
 	}
 
@@ -2684,12 +2684,12 @@ void EXT_FUNC CHalfLifeMultiplay::OnRoundFreezeEnd()
 	if (m_bMapHasEscapeZone)
 	{
 		Q_snprintf(CT_sentence, sizeof(CT_sentence), "%s", "%!MRAD_ELIM");
-		Q_snprintf(T_sentence, sizeof(CT_sentence), "%s", "%!MRAD_GETOUT");
+		Q_snprintf(T_sentence, sizeof(T_sentence), "%s", "%!MRAD_GETOUT");
 	}
 	else if (m_bMapHasVIPSafetyZone)
 	{
 		Q_snprintf(CT_sentence, sizeof(CT_sentence), "%s", "%!MRAD_VIP");
-		Q_snprintf(T_sentence, sizeof(CT_sentence), "%s", "%!MRAD_LOCKNLOAD");
+		Q_snprintf(T_sentence, sizeof(T_sentence), "%s", "%!MRAD_LOCKNLOAD");
 	}
 
 	// Reset the round time
