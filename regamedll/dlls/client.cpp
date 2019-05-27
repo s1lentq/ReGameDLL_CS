@@ -225,8 +225,10 @@ void LinkUserMessages()
 	gmsgFog           = REG_USER_MSG("Fog", 7);
 	gmsgShowTimer     = REG_USER_MSG("ShowTimer", 0);
 	gmsgHudTextArgs   = REG_USER_MSG("HudTextArgs", -1);
+#ifdef REGAMEDLL_ADD
 	gmsgAccount		  = REG_USER_MSG("Account", 5);
 	gmsgHealthInfo	  = REG_USER_MSG("HealthInfo", 5);
+#endif
 }
 
 void WriteSigonMessages()

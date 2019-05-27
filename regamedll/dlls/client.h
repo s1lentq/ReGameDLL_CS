@@ -289,5 +289,7 @@ extern int gmsgBotProgress;
 extern int gmsgBrass;
 extern int gmsgFog;
 extern int gmsgShowTimer;
+#ifdef REGAMEDLL_ADD
 extern int gmsgAccount;
 extern int gmsgHealthInfo;
+#endif
