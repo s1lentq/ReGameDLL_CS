@@ -4624,13 +4624,13 @@ void CHalfLifeMultiplay::ProcessMapVote(CBasePlayer *pPlayer, int iVote)
 		if (FNullEnt(pEntity->edict()))
 			break;
 
-		pPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev);
+		CBasePlayer *pPlayer2 = GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev);
 
-		if (pPlayer->m_iTeam != UNASSIGNED)
+		if (pPlayer2->m_iTeam != UNASSIGNED)
 		{
 			iNumPlayers++;
 
-			if (pPlayer->m_iMapVote == iVote)
+			if (pPlayer2->m_iMapVote == iVote)
 				iValidVotes++;
 		}
 	}
