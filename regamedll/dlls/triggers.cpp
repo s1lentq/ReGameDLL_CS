@@ -621,8 +621,11 @@ void PlayCDTrack(edict_t *pClient, int iTrack)
 	// Can't play if the client is not connected!
 	if (!pClient)
 		return;
-
-	if (iTrack < -1 || iTrack > 29)
+#ifdef REGAMEDLL_FIXES
+	if (iTrack < -1 || iTrack >= 29)
+#else
+	if (iTrack < -1 || iTrack > 30)
+#endif	
 	{
 		ALERT(at_console, "TriggerCDAudio - Track %d out of range\n", iTrack);
 		return;
