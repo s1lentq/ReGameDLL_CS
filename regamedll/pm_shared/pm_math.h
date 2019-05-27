@@ -45,7 +45,7 @@ void AngleIMatrix(const vec_t *angles, float (*matrix)[4]);
 void NormalizeAngles(float *angles);
 void InterpolateAngles(float *start, float *end, float *output, float frac);
 float AngleBetweenVectors(const vec_t *v1, const vec_t *v2);
-void VectorTransform(const vec_t *in1, float *in2, vec_t *out);
+void VectorTransform(const vec_t *in1, float(*in2)[4], vec_t *out);
 int VectorCompare(const vec_t *v1, const vec_t *v2);
 void VectorMA(const vec_t *veca, float scale, const vec_t *vecb, vec_t *vecc);
 
