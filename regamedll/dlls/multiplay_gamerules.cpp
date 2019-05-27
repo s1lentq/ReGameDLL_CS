@@ -3354,6 +3354,26 @@ void CHalfLifeMultiplay::InitHUD(CBasePlayer *pl)
 				MESSAGE_END();
 			}
 		}
+
+		int m_iAccount = -1;
+		int m_iHealth = -1;
+
+		if (pl->m_iTeam == plr->m_iTeam || pl->m_iTeam == TeamName::SPECTATOR
+			|| pl->m_iTeam == TeamName::UNASSIGNED)
+		{
+			m_iAccount = plr->m_iAccount;
+			m_iHealth = plr->m_iClientHealth;
+		}
+
+		MESSAGE_BEGIN(MSG_ONE, gmsgHealthInfo, nullptr, pl->edict());
+			WRITE_BYTE(plr->entindex());
+			WRITE_LONG(m_iHealth);
+		MESSAGE_END();
+
+		MESSAGE_BEGIN(MSG_ONE, gmsgAccount, nullptr, pl->edict());
+			WRITE_BYTE(plr->entindex());
+			WRITE_LONG(m_iAccount);
+		MESSAGE_END();
 	}
 
 	auto SendMsgBombDrop = [&pl](const int flag, const Vector& pos)

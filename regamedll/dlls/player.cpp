@@ -6994,6 +6994,39 @@ void EXT_FUNC CBasePlayer::__API_HOOK(UpdateClientData)()
 			}
 		}
 
+		for (int i = 1; i <= gpGlobals->maxClients; i++)
+		{
+			CBaseEntity *pEntity = UTIL_PlayerByIndex(i);
+
+			if (!pEntity)
+				continue;
+
+			CBasePlayer *pPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev);
+
+			if (pPlayer->pev->flags == FL_DORMANT)
+				continue;
+	
+			int m_iAccount = -1;
+			int m_iHealth = -1;
+
+			if (m_iTeam == pPlayer->m_iTeam || m_iTeam == TeamName::SPECTATOR
+				|| m_iTeam == TeamName::UNASSIGNED)
+			{
+				m_iAccount = pPlayer->m_iAccount;
+				m_iHealth = pPlayer->m_iClientHealth;
+			}
+
+			MESSAGE_BEGIN(MSG_ONE, gmsgHealthInfo, nullptr, edict());
+				WRITE_BYTE(pPlayer->entindex());
+				WRITE_LONG(m_iHealth);
+			MESSAGE_END();
+
+			MESSAGE_BEGIN(MSG_ONE, gmsgAccount, nullptr, edict());
+				WRITE_BYTE(pPlayer->entindex());
+				WRITE_LONG(m_iAccount);
+			MESSAGE_END();
+		}
+
 		m_vLastOrigin = pev->origin;
 	}
 }
