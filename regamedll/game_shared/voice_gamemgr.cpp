@@ -201,6 +201,7 @@ void CVoiceGameMgr::UpdateMasks()
 			g_SentBanMasks[iClient] = g_BanMasks[iClient];
 
 			MESSAGE_BEGIN(MSG_ONE, m_msgPlayerVoiceMask, nullptr, pPlayer->pev);
+			{
 				for (int dw = 0; dw < VOICE_MAX_PLAYERS_DW; dw++)
 				{
 					WRITE_LONG(gameRulesMask.GetDWord(dw));
@@ -208,6 +209,7 @@ void CVoiceGameMgr::UpdateMasks()
 				}
 				// ServerModEnable +1 to buffer size
 				// WRITE_BYTE(1);
+			}
 			MESSAGE_END();
 		}
 

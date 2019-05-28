@@ -146,25 +146,34 @@ CNavNode *CCSBot::AddNode(const Vector *destPos, const Vector *normal, NavDirTyp
 void drawProgressMeter(float progress, char *title)
 {
 	MESSAGE_BEGIN(MSG_ALL, gmsgBotProgress);
+	{
 		WRITE_BYTE(BOT_PROGGRESS_DRAW);
 		WRITE_BYTE(int(progress * 100.0f));
 		WRITE_STRING(title);
+	}
 	MESSAGE_END();
+
 }
 
 void startProgressMeter(const char *title)
 {
 	MESSAGE_BEGIN(MSG_ALL, gmsgBotProgress);
+	{
 		WRITE_BYTE(BOT_PROGGRESS_START);
 		WRITE_STRING(title);
+	}
 	MESSAGE_END();
+
 }
 
 void hideProgressMeter()
 {
 	MESSAGE_BEGIN(MSG_ALL, gmsgBotProgress);
+	{
 		WRITE_BYTE(BOT_PROGGRESS_HIDE);
+	}
 	MESSAGE_END();
+
 }
 
 void CCSBot::StartLearnProcess()

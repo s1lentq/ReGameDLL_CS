@@ -226,9 +226,12 @@ void CCSBot::StartVoiceFeedback(float duration)
 	while ((pPlayer = GetNextRadioRecipient(pPlayer)))
 	{
 		MESSAGE_BEGIN(MSG_ONE, gmsgBotVoice, nullptr, pPlayer->pev);
+		{
 			WRITE_BYTE(1);				// active is talking
 			WRITE_BYTE(entindex());		// client index speaking
+		}
 		MESSAGE_END();
+
 	}
 }
 
@@ -240,9 +243,12 @@ void CCSBot::EndVoiceFeedback(bool force)
 	m_voiceFeedbackEndTimestamp = 0;
 
 	MESSAGE_BEGIN(MSG_ALL, gmsgBotVoice);
+	{
 		WRITE_BYTE(0);
 		WRITE_BYTE(ENTINDEX(edict()));
+	}
 	MESSAGE_END();
+
 }
 
 // Decide if we should move to help the player, return true if we will

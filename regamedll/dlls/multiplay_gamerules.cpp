@@ -138,10 +138,13 @@ void Broadcast(const char *sentence)
 	Q_strcat(text, UTIL_VarArgs("%s", sentence));
 
 	MESSAGE_BEGIN(MSG_BROADCAST, gmsgSendAudio);
+	{
 		WRITE_BYTE(0);
 		WRITE_STRING(text);
 		WRITE_SHORT(PITCH_NORM);
+	}
 	MESSAGE_END();
+
 }
 
 char *GetTeam(int team)
@@ -544,14 +547,20 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(RemoveGuns)()
 void CHalfLifeMultiplay::UpdateTeamScores()
 {
 	MESSAGE_BEGIN(MSG_ALL, gmsgTeamScore);
+	{
 		WRITE_STRING("CT");
 		WRITE_SHORT(m_iNumCTWins);
+	}
 	MESSAGE_END();
 
+
 	MESSAGE_BEGIN(MSG_ALL, gmsgTeamScore);
+	{
 		WRITE_STRING("TERRORIST");
 		WRITE_SHORT(m_iNumTerroristWins);
+	}
 	MESSAGE_END();
+
 }
 
 LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN2(CHalfLifeMultiplay, CSGameRules, CleanUpMap)
@@ -1027,12 +1036,15 @@ bool EXT_FUNC CHalfLifeMultiplay::VIP_Escaped(float tmDelay)
 	}
 
 	MESSAGE_BEGIN(MSG_SPEC, SVC_DIRECTOR);
+	{
 		WRITE_BYTE(9);							// command length in bytes
 		WRITE_BYTE(DRC_CMD_EVENT);				// VIP rescued
 		WRITE_SHORT(ENTINDEX(m_pVIP->edict()));	// index number of primary entity
 		WRITE_SHORT(0);							// index number of secondary entity
 		WRITE_LONG(15 | DRC_FLAG_FINAL);		// eventflags (priority and flags)
+	}
 	MESSAGE_END();
+
 
 	EndRoundMessage("#VIP_Escaped", ROUND_VIP_ESCAPED);
 	TerminateRound(tmDelay, WINSTATUS_CTS);
@@ -1635,15 +1647,21 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(RestartRound)()
 
 	// reset all players health for HLTV
 	MESSAGE_BEGIN(MSG_SPEC, gmsgHLTV);
+	{
 		WRITE_BYTE(0);							// 0 = all players
 		WRITE_BYTE(100 | DRC_FLAG_FACEPLAYER);	// 100 health + msg flag
+	}
 	MESSAGE_END();
+
 
 	// reset all players FOV for HLTV
 	MESSAGE_BEGIN(MSG_SPEC, gmsgHLTV);
+	{
 		WRITE_BYTE(0);		// all players
 		WRITE_BYTE(0);		// to default FOV value
+	}
 	MESSAGE_END();
+
 
 	auto shouldBalancedOnNextRound = []() -> bool
 	{
@@ -2296,10 +2314,13 @@ void CHalfLifeMultiplay::Think()
 		|| m_flFadeToBlackValue != fadetoblack.value)
 	{
 		MESSAGE_BEGIN(MSG_ALL, gmsgForceCam);
+		{
 			WRITE_BYTE(forcecamera.value != 0);
 			WRITE_BYTE(forcechasecam.value != 0);
 			WRITE_BYTE(fadetoblack.value != 0);
+		}
 		MESSAGE_END();
+
 
 		m_flForceCameraValue = forcecamera.value;
 		m_flForceChaseCamValue = forcechasecam.value;
@@ -2335,8 +2356,11 @@ void CHalfLifeMultiplay::Think()
 			m_iStoredSpectValue = allow_spectators.value;
 
 			MESSAGE_BEGIN(MSG_ALL, gmsgAllowSpec);
+			{
 				WRITE_BYTE(int(allow_spectators.value));
+			}
 			MESSAGE_END();
+
 		}
 
 		// Check for the end of the round.
@@ -2407,13 +2431,16 @@ void CHalfLifeMultiplay::Think()
 						if (pPlayer && !pPlayer->IsBot())
 						{
 							MESSAGE_BEGIN(MSG_ONE, gmsgCZCareerHUD, nullptr, pPlayer->pev);
+							{
 								WRITE_STRING("ROUND");
 								WRITE_LONG(m_iNumCTWins);
 								WRITE_LONG(m_iNumTerroristWins);
 								WRITE_BYTE(m_iCareerMatchWins);
 								WRITE_BYTE(m_iRoundWinDifference);
 								WRITE_BYTE(m_iRoundWinStatus);
+							}
 							MESSAGE_END();
+
 
 							pPlayer->m_iHideHUD |= HIDEHUD_ALL;
 							m_flRestartRoundTime = gpGlobals->time + 100000.0;
@@ -2479,19 +2506,25 @@ void CHalfLifeMultiplay::Think()
 			UTIL_CareerDPrintf("Ending career match...one team has won the specified number of rounds\n");
 
 			MESSAGE_BEGIN(MSG_ALL, gmsgCZCareer);
+			{
 				WRITE_STRING("MATCH");
 				WRITE_LONG(m_iNumCTWins);
 				WRITE_LONG(m_iNumTerroristWins);
+			}
 			MESSAGE_END();
 
+
 			MESSAGE_BEGIN(MSG_ALL, gmsgCZCareerHUD);
+			{
 				WRITE_STRING("MATCH");
 				WRITE_LONG(m_iNumCTWins);
 				WRITE_LONG(m_iNumTerroristWins);
 				WRITE_BYTE(m_iCareerMatchWins);
 				WRITE_BYTE(m_iRoundWinDifference);
 				WRITE_BYTE(m_iRoundWinStatus);
+			}
 			MESSAGE_END();
+
 
 			UTIL_LogPrintf("Career Match %d %d %d %d\n", m_iRoundWinStatus, m_iNumCTWins, m_iNumTerroristWins, TheCareerTasks->AreAllTasksComplete());
 			SERVER_COMMAND("setpause\n");
@@ -3230,8 +3263,11 @@ BOOL CHalfLifeMultiplay::ClientConnected(edict_t *pEntity, const char *pszName, 
 void CHalfLifeMultiplay::UpdateGameMode(CBasePlayer *pPlayer)
 {
 	MESSAGE_BEGIN(MSG_ONE, gmsgGameMode, nullptr, pPlayer->edict());
+	{
 		WRITE_BYTE(1);
+	}
 	MESSAGE_END();
+
 }
 
 void CHalfLifeMultiplay::InitHUD(CBasePlayer *pl)
@@ -3252,23 +3288,32 @@ void CHalfLifeMultiplay::InitHUD(CBasePlayer *pl)
 	// sending just one score makes the hud scoreboard active; otherwise
 	// it is just disabled for single play
 	MESSAGE_BEGIN(MSG_ONE, gmsgScoreInfo, nullptr, pl->edict());
+	{
 		WRITE_BYTE(ENTINDEX(pl->edict()));
 		WRITE_SHORT(0);
 		WRITE_SHORT(0);
 		WRITE_SHORT(0);
 		WRITE_SHORT(pl->m_iTeam);
+	}
 	MESSAGE_END();
 
+
 	MESSAGE_BEGIN(MSG_ONE, gmsgShadowIdx, nullptr, pl->edict());
+	{
 		WRITE_LONG(g_iShadowSprite);
+	}
 	MESSAGE_END();
+
 
 	if (IsCareer())
 	{
 		MESSAGE_BEGIN(MSG_ONE, gmsgCZCareer, nullptr, pl->edict());
+		{
 			WRITE_STRING("START");
 			WRITE_SHORT(m_iRoundTime);
+		}
 		MESSAGE_END();
+
 	}
 	else
 		SendMOTDToClient(pl->edict());
@@ -3286,38 +3331,54 @@ void CHalfLifeMultiplay::InitHUD(CBasePlayer *pl)
 			continue;
 #endif
 		MESSAGE_BEGIN(MSG_ONE, gmsgScoreInfo, nullptr, pl->edict());
+		{
 			WRITE_BYTE(i);	// client number
 			WRITE_SHORT(int(plr->pev->frags));
 			WRITE_SHORT(plr->m_iDeaths);
 			WRITE_SHORT(0);
 			WRITE_SHORT(plr->m_iTeam);
+		}
 		MESSAGE_END();
+
 	}
 
 	MESSAGE_BEGIN(MSG_ONE, gmsgTeamScore, nullptr, pl->edict());
+	{
 		WRITE_STRING("TERRORIST");
 		WRITE_SHORT(m_iNumTerroristWins);
+	}
 	MESSAGE_END();
+
 
 	MESSAGE_BEGIN(MSG_ONE, gmsgTeamScore, nullptr, pl->edict());
+	{
 		WRITE_STRING("CT");
 		WRITE_SHORT(m_iNumCTWins);
+	}
 	MESSAGE_END();
+
 
 	MESSAGE_BEGIN(MSG_ONE, gmsgAllowSpec, nullptr, pl->edict());
+	{
 		WRITE_BYTE(int(allow_spectators.value));
+	}
 	MESSAGE_END();
 
+
 	MESSAGE_BEGIN(MSG_ONE, gmsgForceCam, nullptr, pl->edict());
+	{
 		WRITE_BYTE(forcecamera.value != 0);
 		WRITE_BYTE(forcechasecam.value != 0);
 		WRITE_BYTE(fadetoblack.value != 0);
+	}
 	MESSAGE_END();
+
 
 	if (m_bGameOver)
 	{
 		MESSAGE_BEGIN(MSG_ONE, SVC_INTERMISSION, nullptr, pl->edict());
 		MESSAGE_END();
+
 	}
 
 	for (i = 1; i <= gpGlobals->maxClients; i++)
@@ -3332,9 +3393,12 @@ void CHalfLifeMultiplay::InitHUD(CBasePlayer *pl)
 #endif
 
 		MESSAGE_BEGIN(MSG_ONE, gmsgTeamInfo, nullptr, pl->edict());
+		{
 			WRITE_BYTE(plr->entindex());
 			WRITE_STRING(GetTeamName(plr->m_iTeam));
+		}
 		MESSAGE_END();
+
 
 		plr->SetScoreboardAttributes(pl);
 
@@ -3347,11 +3411,14 @@ void CHalfLifeMultiplay::InitHUD(CBasePlayer *pl)
 			if (plr->pev->deadflag == DEAD_NO)
 			{
 				MESSAGE_BEGIN(MSG_ONE, gmsgRadar, nullptr, pl->edict());
+				{
 					WRITE_BYTE(plr->entindex());
 					WRITE_COORD(plr->pev->origin.x);
 					WRITE_COORD(plr->pev->origin.y);
 					WRITE_COORD(plr->pev->origin.z);
+				}
 				MESSAGE_END();
+
 			}
 		}
 	}
@@ -3359,11 +3426,14 @@ void CHalfLifeMultiplay::InitHUD(CBasePlayer *pl)
 	auto SendMsgBombDrop = [&pl](const int flag, const Vector& pos)
 	{
 		MESSAGE_BEGIN(MSG_ONE, gmsgBombDrop, nullptr, pl->edict());
+		{
 			WRITE_COORD(pos.x);
 			WRITE_COORD(pos.y);
 			WRITE_COORD(pos.z);
 			WRITE_BYTE(flag);
+		}
 		MESSAGE_END();
+
 	};
 
 	if (m_bBombDropped)
@@ -3446,22 +3516,31 @@ void CHalfLifeMultiplay::ClientDisconnected(edict_t *pClient)
 			}
 
 			MESSAGE_BEGIN(MSG_ALL, gmsgScoreInfo);
+			{
 				WRITE_BYTE(ENTINDEX(pClient));
 				WRITE_SHORT(0);
 				WRITE_SHORT(0);
 				WRITE_SHORT(0);
 				WRITE_SHORT(0);
+			}
 			MESSAGE_END();
+
 
 			MESSAGE_BEGIN(MSG_ALL, gmsgTeamInfo);
+			{
 				WRITE_BYTE(ENTINDEX(pClient));
 				WRITE_STRING("UNASSIGNED");
+			}
 			MESSAGE_END();
 
+
 			MESSAGE_BEGIN(MSG_ALL, gmsgLocation);
+			{
 				WRITE_BYTE(ENTINDEX(pClient));
 				WRITE_STRING("");
+			}
 			MESSAGE_END();
+
 
 			char *team = GetTeam(pPlayer->m_iTeam);
 
@@ -3811,12 +3890,15 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(PlayerKilled)(CBasePlayer *pVictim,
 				killer->AddAccount(REWARD_KILLED_VIP, RT_VIP_KILLED);
 
 				MESSAGE_BEGIN(MSG_SPEC, SVC_DIRECTOR);
+				{
 					WRITE_BYTE(9);
 					WRITE_BYTE(DRC_CMD_EVENT);
 					WRITE_SHORT(ENTINDEX(pVictim->edict()));
 					WRITE_SHORT(ENTINDEX(ENT(pInflictor)));
 					WRITE_LONG(DRC_FLAG_PRIO_MASK | DRC_FLAG_DRAMATIC | DRC_FLAG_FINAL);
+				}
 				MESSAGE_END();
+
 
 				UTIL_LogPrintf("\"%s<%i><%s><TERRORIST>\" triggered \"Assassinated_The_VIP\"\n", STRING(killer->pev->netname), GETPLAYERUSERID(killer->edict()), GETPLAYERAUTHID(killer->edict()));
 			}
@@ -3842,15 +3924,19 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(PlayerKilled)(CBasePlayer *pVictim,
 	// killed scores
 #ifndef REGAMEDLL_FIXES
 	MESSAGE_BEGIN(MSG_BROADCAST, gmsgScoreInfo);
+	{
 #else
 	MESSAGE_BEGIN(MSG_ALL, gmsgScoreInfo);
+	{
 #endif
 		WRITE_BYTE(ENTINDEX(pVictim->edict()));
 		WRITE_SHORT(int(pVictim->pev->frags));
 		WRITE_SHORT(pVictim->m_iDeaths);
 		WRITE_SHORT(0);
 		WRITE_SHORT(pVictim->m_iTeam);
+	}
 	MESSAGE_END();
+
 
 	// killers score, if it's a player
 	CBaseEntity *ep = CBaseEntity::Instance(pKiller);
@@ -3860,12 +3946,15 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(PlayerKilled)(CBasePlayer *pVictim,
 		CBasePlayer *PK = static_cast<CBasePlayer *>(ep);
 
 		MESSAGE_BEGIN(MSG_ALL, gmsgScoreInfo);
+		{
 			WRITE_BYTE(ENTINDEX(PK->edict()));
 			WRITE_SHORT(int(PK->pev->frags));
 			WRITE_SHORT(PK->m_iDeaths);
 			WRITE_SHORT(0);
 			WRITE_SHORT(PK->m_iTeam);
+		}
 		MESSAGE_END();
+
 
 		// let the killer paint another decal as soon as he'd like.
 		PK->m_flNextDecalTime = gpGlobals->time;
@@ -3938,11 +4027,14 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(DeathNotice)(CBasePlayer *pVictim, 
 	if (!TheTutor)
 	{
 		MESSAGE_BEGIN(MSG_ALL, gmsgDeathMsg);
+		{
 			WRITE_BYTE(killer_index);				// the killer
 			WRITE_BYTE(ENTINDEX(pVictim->edict()));	// the victim
 			WRITE_BYTE(pVictim->m_bHeadshotKilled);	// is killed headshot
 			WRITE_STRING(killer_weapon_name);		// what they were killed by (should this be a string?)
+		}
 		MESSAGE_END();
+
 	}
 
 	// This weapons from HL isn't it?
@@ -3985,6 +4077,7 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(DeathNotice)(CBasePlayer *pVictim, 
 	CheckWinConditions();
 
 	MESSAGE_BEGIN(MSG_SPEC, SVC_DIRECTOR);
+	{
 		WRITE_BYTE(9);								// command length in bytes
 		WRITE_BYTE(DRC_CMD_EVENT);					// player killed
 		WRITE_SHORT(ENTINDEX(pVictim->edict()));	// index number of primary entity
@@ -3999,7 +4092,10 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(DeathNotice)(CBasePlayer *pVictim, 
 	else
 		WRITE_LONG(7 | DRC_FLAG_DRAMATIC);			// eventflags (priority and flags)
 
+	}
+
 	MESSAGE_END();
+
 }
 
 // Player has grabbed a weapon that was sitting in the world
@@ -4216,19 +4312,25 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(GoToIntermission)()
 	if (IsCareer())
 	{
 		MESSAGE_BEGIN(MSG_ALL, gmsgCZCareer);
+		{
 			WRITE_STRING("MATCH");
 			WRITE_LONG(m_iNumCTWins);
 			WRITE_LONG(m_iNumTerroristWins);
+		}
 		MESSAGE_END();
 
+
 		MESSAGE_BEGIN(MSG_ALL, gmsgCZCareerHUD);
+		{
 			WRITE_STRING("MATCH");
 			WRITE_LONG(m_iNumCTWins);
 			WRITE_LONG(m_iNumTerroristWins);
 			WRITE_BYTE(m_iCareerMatchWins);
 			WRITE_BYTE(m_iRoundWinDifference);
 			WRITE_BYTE(m_iRoundWinStatus);
+		}
 		MESSAGE_END();
+
 
 		if (TheCareerTasks)
 		{
@@ -4238,6 +4340,7 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(GoToIntermission)()
 
 	MESSAGE_BEGIN(MSG_ALL, SVC_INTERMISSION);
 	MESSAGE_END();
+
 
 	if (IsCareer())
 	{
@@ -4814,8 +4917,11 @@ void CHalfLifeMultiplay::SendMOTDToClient(edict_t *client)
 
 	// send the server name
 	MESSAGE_BEGIN(MSG_ONE, gmsgServerName, nullptr, client);
+	{
 		WRITE_STRING(CVAR_GET_STRING("hostname"));
+	}
 	MESSAGE_END();
+
 
 	// Send the message of the day
 	// read it chunk-by-chunk, and send it in parts
@@ -4842,9 +4948,12 @@ void CHalfLifeMultiplay::SendMOTDToClient(edict_t *client)
 			*pFileList = '\0';
 
 		MESSAGE_BEGIN(MSG_ONE, gmsgMOTD, nullptr, client);
+		{
 			WRITE_BYTE((*pFileList != '\0') ? FALSE : TRUE); // FALSE means there is still more message to come
 			WRITE_STRING(chunk);
+		}
 		MESSAGE_END();
+
 	}
 
 	FREE_FILE(aFileList);

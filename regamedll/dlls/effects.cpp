@@ -89,11 +89,14 @@ void CBubbling::KeyValue(KeyValueData *pkvd)
 void CBubbling::FizzThink()
 {
 	MESSAGE_BEGIN(MSG_PAS, SVC_TEMPENTITY, VecBModelOrigin(pev));
+	{
 		WRITE_BYTE(TE_FIZZ);
 		WRITE_SHORT(ENTINDEX(edict()));
 		WRITE_SHORT(m_bubbleModel);
 		WRITE_BYTE(m_density);
+	}
 	MESSAGE_END();
+
 
 	if (m_frequency > 19)
 		pev->nextthink = gpGlobals->time + 0.5f;
@@ -609,6 +612,7 @@ void CLightning::StrikeThink()
 		}
 
 		MESSAGE_BEGIN(MSG_BROADCAST, SVC_TEMPENTITY);
+		{
 
 		if (IsPointEntity(pStart) || IsPointEntity(pEnd))
 		{
@@ -664,7 +668,9 @@ void CLightning::StrikeThink()
 		WRITE_BYTE(int(pev->rendercolor.z));	// r, g, b
 		WRITE_BYTE(pev->renderamt);	// brightness
 		WRITE_BYTE(m_speed);		// speed
+		}
 		MESSAGE_END();
+
 
 		DoSparks(pStart->pev->origin, pEnd->pev->origin);
 
@@ -716,6 +722,7 @@ void CLightning::DamageThink()
 void CLightning::Zap(const Vector &vecSrc, const Vector &vecDest)
 {
 	MESSAGE_BEGIN(MSG_BROADCAST, SVC_TEMPENTITY);
+	{
 		WRITE_BYTE(TE_BEAMPOINTS);
 		WRITE_COORD(vecSrc.x);
 		WRITE_COORD(vecSrc.y);
@@ -734,7 +741,9 @@ void CLightning::Zap(const Vector &vecSrc, const Vector &vecDest)
 		WRITE_BYTE(int(pev->rendercolor.z));	// r, g, b
 		WRITE_BYTE(int(pev->renderamt));	// brightness
 		WRITE_BYTE(m_speed);		// speed
+	}
 	MESSAGE_END();
+
 
 	DoSparks(vecSrc, vecDest);
 }
@@ -1959,6 +1968,7 @@ void CEnvFunnel::Precache()
 void CEnvFunnel::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	MESSAGE_BEGIN(MSG_BROADCAST, SVC_TEMPENTITY);
+	{
 		WRITE_BYTE(TE_LARGEFUNNEL);
 		WRITE_COORD(pev->origin.x);
 		WRITE_COORD(pev->origin.y);
@@ -1976,7 +1986,11 @@ void CEnvFunnel::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE use
 		}
 
 
+	}
+
+
 	MESSAGE_END();
+
 
 	SetThink(&CEnvFunnel::SUB_Remove);
 	pev->nextthink = gpGlobals->time;

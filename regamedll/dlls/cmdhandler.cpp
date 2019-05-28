@@ -30,7 +30,9 @@ void SV_Continue_f()
 
 		// go continue
 		MESSAGE_BEGIN(MSG_ALL, gmsgCZCareer);
+		{
 			WRITE_STRING("GOGOGO");
+		}
 		MESSAGE_END();
 
 		for (int i = 1; i <= gpGlobals->maxClients; i++)

@@ -770,6 +770,7 @@ void CBreakable::Die()
 	vecSpot = pev->origin + (pev->mins + pev->maxs) * 0.5f;
 
 	MESSAGE_BEGIN(MSG_PVS, SVC_TEMPENTITY, vecSpot);
+	{
 		WRITE_BYTE(TE_BREAKMODEL);
 		WRITE_COORD(vecSpot.x);		// position
 		WRITE_COORD(vecSpot.y);
@@ -785,7 +786,9 @@ void CBreakable::Die()
 		WRITE_BYTE(0);				// # of shards, let client decide
 		WRITE_BYTE(25);				// duration, 2.5 seconds
 		WRITE_BYTE(cFlag);			// flags
+	}
 	MESSAGE_END();
+
 
 	float size = pev->size.x;
 

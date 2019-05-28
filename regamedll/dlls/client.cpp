@@ -240,6 +240,7 @@ void WriteSigonMessages()
 			pszName = info.pszName;
 
 		MESSAGE_BEGIN(MSG_INIT, gmsgWeaponList);
+		{
 			WRITE_STRING(pszName);
 			WRITE_BYTE(CBasePlayer::GetAmmoIndex(info.pszAmmo1));
 			WRITE_BYTE(info.iMaxAmmo1);
@@ -249,6 +250,7 @@ void WriteSigonMessages()
 			WRITE_BYTE(info.iPosition);
 			WRITE_BYTE(info.iId);
 			WRITE_BYTE(info.iFlags);
+		}
 		MESSAGE_END();
 	}
 }
@@ -290,7 +292,9 @@ NOXREF void set_suicide_frame(entvars_t *pev)
 void BlinkAccount(CBasePlayer *pPlayer, int numBlinks)
 {
 	MESSAGE_BEGIN(MSG_ONE, gmsgBlinkAcct, nullptr, pPlayer->pev);
+	{
 		WRITE_BYTE(numBlinks);
+	}
 	MESSAGE_END();
 }
 
@@ -392,10 +396,12 @@ LINK_HOOK_VOID_CHAIN(ShowMenu, (CBasePlayer *pPlayer, int bitsValidSlots, int nD
 void EXT_FUNC __API_HOOK(ShowMenu)(CBasePlayer *pPlayer, int bitsValidSlots, int nDisplayTime, BOOL fNeedMore, char *pszText)
 {
 	MESSAGE_BEGIN(MSG_ONE, gmsgShowMenu, nullptr, pPlayer->pev);
+	{
 		WRITE_SHORT(bitsValidSlots);
 		WRITE_CHAR(nDisplayTime);
 		WRITE_BYTE(fNeedMore);
 		WRITE_STRING(pszText);
+	}
 	MESSAGE_END();
 }
 
@@ -420,11 +426,13 @@ void EXT_FUNC __API_HOOK(ShowVGUIMenu)(CBasePlayer *pPlayer, int MenuType, int B
 	if (pPlayer->m_bVGUIMenus || MenuType > VGUI_Menu_Buy_Item)
 	{
 		MESSAGE_BEGIN(MSG_ONE, gmsgVGUIMenu, nullptr, pPlayer->pev);
+		{
 			WRITE_BYTE(MenuType);
 			WRITE_SHORT(BitMask);
 			WRITE_CHAR(-1);
 			WRITE_BYTE(0);
 			WRITE_STRING(" ");
+		}
 		MESSAGE_END();
 	}
 	else
@@ -956,6 +964,7 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 			|| pReceiver->m_iIgnoreGlobalChat == IGNOREMSG_NONE)
 		{
 			MESSAGE_BEGIN(MSG_ONE, gmsgSayText, nullptr, pReceiver->pev);
+			{
 				WRITE_BYTE(ENTINDEX(pEntity));
 				WRITE_STRING(pszFormat);
 				WRITE_STRING("");
@@ -966,12 +975,15 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 					WRITE_STRING(placeName);
 				}
 
+			}
+
 			MESSAGE_END();
 		}
 	}
 
 	// print to the sending client
 	MESSAGE_BEGIN(MSG_ONE, gmsgSayText, nullptr, &pEntity->v);
+	{
 		WRITE_BYTE(ENTINDEX(pEntity));
 		WRITE_STRING(pszFormat);
 		WRITE_STRING("");
@@ -981,6 +993,8 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 		{
 			WRITE_STRING(placeName);
 		}
+
+	}
 
 	MESSAGE_END();
 
@@ -1410,11 +1424,13 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 				pPlayer->m_bHasDefuser = true;
 
 				MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pPlayer->pev);
+				{
 					WRITE_BYTE(STATUSICON_SHOW);
 					WRITE_STRING("defuser");
 					WRITE_BYTE(0);
 					WRITE_BYTE(160);
 					WRITE_BYTE(0);
+				}
 				MESSAGE_END();
 
 				pPlayer->pev->body = 1;
@@ -1819,21 +1835,26 @@ BOOL EXT_FUNC __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *pPlayer, int slot)
 			pPlayer->m_iAccount = 0;
 
 			MESSAGE_BEGIN(MSG_ONE, gmsgMoney, nullptr, pPlayer->pev);
+			{
 				WRITE_LONG(pPlayer->m_iAccount);
 				WRITE_BYTE(0);
+			}
 			MESSAGE_END();
 #endif
 
 #ifndef REGAMEDLL_FIXES
 			MESSAGE_BEGIN(MSG_BROADCAST, gmsgScoreInfo);
+			{
 #else
 			MESSAGE_BEGIN(MSG_ALL, gmsgScoreInfo);
+			{
 #endif
 				WRITE_BYTE(ENTINDEX(pPlayer->edict()));
 				WRITE_SHORT(int(pPlayer->pev->frags));
 				WRITE_SHORT(pPlayer->m_iDeaths);
 				WRITE_SHORT(0);
 				WRITE_SHORT(0);
+			}
 			MESSAGE_END();
 
 			pPlayer->m_pIntroCamera = nullptr;
@@ -1852,8 +1873,10 @@ BOOL EXT_FUNC __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *pPlayer, int slot)
 #ifndef REGAMEDLL_FIXES
 			// TODO: it was already sent in StartObserver
 			MESSAGE_BEGIN(MSG_ALL, gmsgSpectator);
+			{
 				WRITE_BYTE(ENTINDEX(pPlayer->edict()));
 				WRITE_BYTE(1);
+			}
 			MESSAGE_END();
 #endif
 			// do we have fadetoblack on? (need to fade their screen back in)
@@ -3201,7 +3224,9 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 						EMIT_SOUND(ENT(pPlayer->pev), CHAN_ITEM, "items/nvg_off.wav", RANDOM_FLOAT(0.92, 1), ATTN_NORM);
 
 						MESSAGE_BEGIN(MSG_ONE, gmsgNVGToggle, nullptr, pPlayer->pev);
+						{
 							WRITE_BYTE(0); // disable nightvision
+						}
 						MESSAGE_END();
 
 						pPlayer->m_bNightVisionOn = false;
@@ -3214,7 +3239,9 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 								EMIT_SOUND(ENT(pObserver->pev), CHAN_ITEM, "items/nvg_off.wav", RANDOM_FLOAT(0.92, 1), ATTN_NORM);
 
 								MESSAGE_BEGIN(MSG_ONE, gmsgNVGToggle, nullptr, pObserver->pev);
+								{
 									WRITE_BYTE(0); // disable nightvision
+								}
 								MESSAGE_END();
 
 								pObserver->m_bNightVisionOn = false;
@@ -3226,7 +3253,9 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 						EMIT_SOUND(ENT(pPlayer->pev), CHAN_ITEM, "items/nvg_on.wav", RANDOM_FLOAT(0.92, 1), ATTN_NORM);
 
 						MESSAGE_BEGIN(MSG_ONE, gmsgNVGToggle, nullptr, pPlayer->pev);
+						{
 							WRITE_BYTE(1); // enable nightvision
+						}
 						MESSAGE_END();
 
 						pPlayer->m_bNightVisionOn = true;
@@ -3239,7 +3268,9 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 								EMIT_SOUND(ENT(pObserver->pev), CHAN_ITEM, "items/nvg_on.wav", RANDOM_FLOAT(0.92, 1), ATTN_NORM);
 
 								MESSAGE_BEGIN(MSG_ONE, gmsgNVGToggle, nullptr, pObserver->pev);
+								{
 									WRITE_BYTE(1);  // enable nightvision
+								}
 								MESSAGE_END();
 
 								pObserver->m_bNightVisionOn = true;

@@ -85,9 +85,12 @@ CCareerTask::CCareerTask(const char *taskName, GameEventType event, const char *
 	if (m_isComplete)
 	{
 		MESSAGE_BEGIN(MSG_ALL, gmsgCZCareer);
+		{
 			WRITE_STRING("TASKDONE");
 			WRITE_BYTE(m_id);
+		}
 		MESSAGE_END();
+
 	}
 }
 
@@ -97,24 +100,33 @@ void CCareerTask::Reset()
 	m_isComplete = false;
 
 	MESSAGE_BEGIN(MSG_ALL, gmsgCZCareer);
+	{
 		WRITE_STRING("TASKUNDONE");
 		WRITE_BYTE(m_id);
+	}
 	MESSAGE_END();
 
+
 	MESSAGE_BEGIN(MSG_ALL, gmsgCZCareer);
+	{
 		WRITE_STRING("TASKPART");
 		WRITE_BYTE(m_id);
 		WRITE_SHORT(m_eventsSeen);
+	}
 	MESSAGE_END();
+
 }
 
 void CCareerTask::SendPartialNotification()
 {
 	MESSAGE_BEGIN(MSG_ALL, gmsgCZCareer);
+	{
 		WRITE_STRING("TASKPART");
 		WRITE_BYTE(m_id);
 		WRITE_SHORT(m_eventsSeen);
+	}
 	MESSAGE_END();
+
 
 	UTIL_LogPrintf("Career Task Partial %d %d\n", m_id, m_eventsSeen);
 }
@@ -293,9 +305,12 @@ void CCareerTask::OnEvent(GameEventType event, CBasePlayer *pVictim, CBasePlayer
 
 		m_isComplete = true;
 		MESSAGE_BEGIN(MSG_ALL, gmsgCZCareer);
+		{
 			WRITE_STRING("TASKDONE");
 			WRITE_BYTE(m_id);
+		}
 		MESSAGE_END();
+
 
 		if (TheTutor)
 		{
@@ -329,9 +344,12 @@ void CCareerTask::OnEvent(GameEventType event, CBasePlayer *pVictim, CBasePlayer
 
 				m_isComplete = true;
 				MESSAGE_BEGIN(MSG_ALL, gmsgCZCareer);
+				{
 					WRITE_STRING("TASKDONE");
 					WRITE_BYTE(m_id);
+				}
 				MESSAGE_END();
+
 
 				UTIL_LogPrintf("Career Task Done %d\n", m_id);
 
@@ -469,9 +487,12 @@ void CCareerTaskManager::AddTask(const char *taskName, const char *weaponName, i
 	}
 
 	MESSAGE_BEGIN(MSG_ALL, gmsgCZCareer);
+	{
 		WRITE_STRING("TASKDONE");
 		WRITE_BYTE(m_nextId);
+	}
 	MESSAGE_END();
+
 }
 
 void CCareerTaskManager::HandleEvent(GameEventType event, CBasePlayer *pAttacker, CBasePlayer *pVictim)

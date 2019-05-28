@@ -1050,6 +1050,7 @@ void CBaseEntity::FireBullets(ULONG cShots, Vector vecSrc, Vector vecDirShooting
 				tracer = 1;
 
 			MESSAGE_BEGIN(MSG_PAS, SVC_TEMPENTITY, vecTracerSrc);
+			{
 				WRITE_BYTE(TE_TRACER);
 				WRITE_COORD(vecTracerSrc.x);
 				WRITE_COORD(vecTracerSrc.y);
@@ -1057,7 +1058,9 @@ void CBaseEntity::FireBullets(ULONG cShots, Vector vecSrc, Vector vecDirShooting
 				WRITE_COORD(tr.vecEndPos.x);
 				WRITE_COORD(tr.vecEndPos.y);
 				WRITE_COORD(tr.vecEndPos.z);
+			}
 			MESSAGE_END();
+
 		}
 
 		// do damage, paint decals
@@ -1191,6 +1194,7 @@ void CBaseEntity::FireBuckshots(ULONG cShots, Vector vecSrc, Vector vecDirShooti
                 tracer = 1;
  
             MESSAGE_BEGIN(MSG_PAS, SVC_TEMPENTITY, vecTracerSrc);
+            {
                 WRITE_BYTE(TE_TRACER);
                 WRITE_COORD(vecTracerSrc.x);
                 WRITE_COORD(vecTracerSrc.y);
@@ -1198,7 +1202,9 @@ void CBaseEntity::FireBuckshots(ULONG cShots, Vector vecSrc, Vector vecDirShooti
                 WRITE_COORD(tr.vecEndPos.x);
                 WRITE_COORD(tr.vecEndPos.y);
                 WRITE_COORD(tr.vecEndPos.z);
+            }
             MESSAGE_END();
+
         }
  
         // do damage, paint decals

@@ -460,12 +460,15 @@ void CHostage::IdleThink()
 				SendHostageEventMsg();
 
 				MESSAGE_BEGIN(MSG_SPEC, SVC_DIRECTOR);
+				{
 					WRITE_BYTE(9);
 					WRITE_BYTE(DRC_CMD_EVENT);
 					WRITE_SHORT(pPlayer ? pPlayer->entindex() : 0);
 					WRITE_SHORT(entindex());
 					WRITE_LONG(15);
+				}
 				MESSAGE_END();
+
 
 				pev->effects |= EF_NODRAW;
 				Remove();
@@ -831,12 +834,15 @@ void CHostage::AnnounceDeath(CBasePlayer *pAttacker)
 		GETPLAYERAUTHID(pAttacker->edict()), GetTeam(pAttacker->m_iTeam));
 
 	MESSAGE_BEGIN(MSG_SPEC, SVC_DIRECTOR);
+	{
 		WRITE_BYTE(9);
 		WRITE_BYTE(DRC_CMD_EVENT);
 		WRITE_SHORT(ENTINDEX(pAttacker->edict()));
 		WRITE_SHORT(ENTINDEX(edict()));
 		WRITE_LONG(15);
+	}
 	MESSAGE_END();
+
 }
 
 void CHostage::ApplyHostagePenalty(CBasePlayer *pAttacker)
@@ -1244,12 +1250,15 @@ void CHostage::SendHostagePositionMsg()
 		if (pTempPlayer->pev->deadflag == DEAD_NO && pTempPlayer->m_iTeam == CT)
 		{
 			MESSAGE_BEGIN(MSG_ONE, gmsgHostagePos, nullptr, pTempPlayer->pev);
+			{
 				WRITE_BYTE(0);
 				WRITE_BYTE(m_iHostageIndex);
 				WRITE_COORD(pev->origin.x);
 				WRITE_COORD(pev->origin.y);
 				WRITE_COORD(pev->origin.z);
+			}
 			MESSAGE_END();
+
 		}
 	}
 }
@@ -1273,8 +1282,11 @@ void CHostage::SendHostageEventMsg()
 		if (pTempPlayer->pev->deadflag == DEAD_NO && pTempPlayer->m_iTeam == CT)
 		{
 			MESSAGE_BEGIN(MSG_ONE, gmsgHostageK, nullptr, pTempPlayer->pev);
+			{
 				WRITE_BYTE(m_iHostageIndex);
+			}
 			MESSAGE_END();
+
 		}
 
 		if (pTempPlayer->pev->deadflag == DEAD_NO)

@@ -100,6 +100,7 @@ void CDecal::TriggerDecal(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYP
 	UTIL_TraceLine(pev->origin - Vector(5, 5, 5), pev->origin + Vector(5, 5, 5), ignore_monsters, ENT(pev), &trace);
 
 	MESSAGE_BEGIN(MSG_BROADCAST, SVC_TEMPENTITY);
+	{
 		WRITE_BYTE(TE_BSPDECAL);
 		WRITE_COORD(pev->origin.x);
 		WRITE_COORD(pev->origin.y);
@@ -111,7 +112,9 @@ void CDecal::TriggerDecal(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYP
 		{
 			WRITE_SHORT(int(VARS(trace.pHit)->modelindex));
 		}
+	}
 	MESSAGE_END();
+
 
 	SetThink(&CDecal::SUB_Remove);
 	pev->nextthink = gpGlobals->time + 0.1f;

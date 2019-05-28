@@ -996,6 +996,7 @@ void CBaseMonster::BloodSplat(const Vector &vecSrc, const Vector &vecDir, int Hi
 	UTIL_BloodStream(vecSrc, vecDir, BLOOD_COLOR_DARKRED, iVelocity + RANDOM_LONG(0, 100));
 #else
 	MESSAGE_BEGIN(MSG_PVS, SVC_TEMPENTITY, vecSrc);
+	{
 		WRITE_BYTE(TE_BLOODSTREAM);
 		WRITE_COORD(vecSrc.x);
 		WRITE_COORD(vecSrc.y);
@@ -1005,6 +1006,7 @@ void CBaseMonster::BloodSplat(const Vector &vecSrc, const Vector &vecDir, int Hi
 		WRITE_COORD(vecDir.z);
 		WRITE_BYTE(BLOOD_COLOR_DARKRED);
 		WRITE_BYTE(iVelocity + RANDOM_LONG(0, 100));
+	}
 	MESSAGE_END();
 #endif
 }

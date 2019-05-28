@@ -169,6 +169,7 @@ void CBaseTutor::DisplayMessageToPlayer(CBasePlayer *pPlayer, int id, const char
 	definition = GetTutorMessageDefinition(event->GetID());
 
 	MESSAGE_BEGIN(MSG_ONE, gmsgTutorText, nullptr, pPlayer->pev);
+	{
 		WRITE_STRING(szMessage);
 		WRITE_BYTE(numArgs);
 
@@ -188,7 +189,9 @@ void CBaseTutor::DisplayMessageToPlayer(CBasePlayer *pPlayer, int id, const char
 			WRITE_SHORT(definition->m_type);
 		else
 			WRITE_SHORT(TUTORMESSAGETYPE_DEFAULT);
+	}
 	MESSAGE_END();
+
 
 	m_deadAirStartTime = -1.0f;
 
@@ -220,9 +223,12 @@ void CBaseTutor::DisplayMessageToPlayer(CBasePlayer *pPlayer, int id, const char
 NOXREF void CBaseTutor::DrawLineToEntity(CBasePlayer *pPlayer, int entindex, int id)
 {
 	MESSAGE_BEGIN(MSG_ONE, gmsgTutorLine, nullptr, pPlayer->pev);
+	{
 		WRITE_SHORT(entindex);
 		WRITE_SHORT(id);
+	}
 	MESSAGE_END();
+
 }
 
 void CBaseTutor::DisplayNewStateDescriptionToPlayer()
@@ -237,8 +243,11 @@ void CBaseTutor::DisplayNewStateDescriptionToPlayer()
 	if (!desc)
 	{
 		MESSAGE_BEGIN(MSG_ONE, gmsgTutorState, nullptr, pLocalPlayer->pev);
+		{
 			WRITE_STRING(nullptr);
+		}
 		MESSAGE_END();
+
 	}
 }
 
@@ -248,7 +257,10 @@ void CBaseTutor::CloseCurrentWindow()
 	if (pLocalPlayer)
 	{
 		MESSAGE_BEGIN(MSG_ONE, gmsgTutorClose, nullptr, pLocalPlayer->pev);
+		{
+		}
 		MESSAGE_END();
+
 
 		m_deadAirStartTime = gpGlobals->time;
 	}

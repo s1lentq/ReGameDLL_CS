@@ -117,11 +117,13 @@ EXT_FUNC bool CCSPlayer::JoinTeam(TeamName team)
 	}
 
 	MESSAGE_BEGIN(MSG_ALL, gmsgScoreInfo);
+	{
 		WRITE_BYTE(ENTINDEX(pPlayer->edict()));
 		WRITE_SHORT(int(pPlayer->pev->frags));
 		WRITE_SHORT(pPlayer->m_iDeaths);
 		WRITE_SHORT(0);
 		WRITE_SHORT(0);
+	}
 	MESSAGE_END();
 
 	// Switch their actual team...
@@ -155,8 +157,10 @@ EXT_FUNC bool CCSPlayer::RemovePlayerItemEx(const char* pszItemName, bool bRemov
 			pPlayer->pev->body = 0;
 
 			MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pPlayer->pev);
+			{
 				WRITE_BYTE(STATUSICON_HIDE);
 				WRITE_STRING("defuser");
+			}
 			MESSAGE_END();
 
 			pPlayer->SendItemStatus();
@@ -182,7 +186,9 @@ EXT_FUNC bool CCSPlayer::RemovePlayerItemEx(const char* pszItemName, bool bRemov
 			pPlayer->pev->armorvalue = 0;
 
 			MESSAGE_BEGIN(MSG_ONE, gmsgArmorType, nullptr, pPlayer->pev);
+			{
 				WRITE_BYTE(0);
+			}
 			MESSAGE_END();
 		}
 		// item_kevlar

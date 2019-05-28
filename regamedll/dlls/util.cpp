@@ -137,7 +137,7 @@ NOXREF UTIL_GroupTrace::~UTIL_GroupTrace()
 
 NOXREF BOOL UTIL_GetNextBestWeapon(CBasePlayer *pPlayer, CBasePlayerItem *pCurrentWeapon)
 {
-	return g_pGameRules->GetNextBestWeapon(pPlayer,pCurrentWeapon);
+	return g_pGameRules->GetNextBestWeapon(pPlayer, pCurrentWeapon);
 }
 
 float UTIL_AngleMod(float a)
@@ -500,8 +500,8 @@ void UTIL_ScreenShake(const Vector &center, float amplitude, float frequency, fl
 	float localAmplitude;
 	ScreenShake shake;
 
-	shake.duration = FixedUnsigned16(duration, (1<<12));
-	shake.frequency = FixedUnsigned16(frequency, (1<<8));
+	shake.duration = FixedUnsigned16(duration, (1 << 12));
+	shake.frequency = FixedUnsigned16(frequency, (1 << 8));
 
 	for (i = 1; i <= gpGlobals->maxClients; i++)
 	{
@@ -523,13 +523,16 @@ void UTIL_ScreenShake(const Vector &center, float amplitude, float frequency, fl
 
 		if (localAmplitude)
 		{
-			shake.amplitude = FixedUnsigned16(localAmplitude, 1<<12);
+			shake.amplitude = FixedUnsigned16(localAmplitude, 1 << 12);
 
 			MESSAGE_BEGIN(MSG_ONE, gmsgShake, nullptr, pPlayer->edict());
+			{
 				WRITE_SHORT(shake.amplitude);
 				WRITE_SHORT(shake.duration);
 				WRITE_SHORT(shake.frequency);
+			}
 			MESSAGE_END();
+
 		}
 	}
 }
@@ -541,8 +544,8 @@ NOXREF void UTIL_ScreenShakeAll(const Vector &center, float amplitude, float fre
 
 void UTIL_ScreenFadeBuild(ScreenFade &fade, const Vector &color, float fadeTime, float fadeHold, int alpha, int flags)
 {
-	fade.duration = FixedUnsigned16(fadeTime, 1<<12);
-	fade.holdTime = FixedUnsigned16(fadeHold, 1<<12);
+	fade.duration = FixedUnsigned16(fadeTime, 1 << 12);
+	fade.holdTime = FixedUnsigned16(fadeHold, 1 << 12);
 	fade.r = int(color.x);
 	fade.g = int(color.y);
 	fade.b = int(color.z);
@@ -556,6 +559,7 @@ void UTIL_ScreenFadeWrite(const ScreenFade &fade, CBaseEntity *pEntity)
 		return;
 
 	MESSAGE_BEGIN(MSG_ONE, gmsgFade, nullptr, pEntity->edict());
+	{
 		WRITE_SHORT(fade.duration);
 		WRITE_SHORT(fade.holdTime);
 		WRITE_SHORT(fade.fadeFlags);
@@ -563,7 +567,9 @@ void UTIL_ScreenFadeWrite(const ScreenFade &fade, CBaseEntity *pEntity)
 		WRITE_BYTE(fade.g);
 		WRITE_BYTE(fade.b);
 		WRITE_BYTE(fade.a);
+	}
 	MESSAGE_END();
+
 }
 
 void UTIL_ScreenFadeAll(const Vector &color, float fadeTime, float fadeHold, int alpha, int flags)
@@ -591,10 +597,11 @@ void UTIL_HudMessage(CBaseEntity *pEntity, const hudtextparms_t &textparms, cons
 		return;
 
 	MESSAGE_BEGIN(MSG_ONE, SVC_TEMPENTITY, nullptr, pEntity->edict());
+	{
 		WRITE_BYTE(TE_TEXTMESSAGE);
 		WRITE_BYTE(textparms.channel & 0xFF);
-		WRITE_SHORT(FixedSigned16(textparms.x, (1<<13)));
-		WRITE_SHORT(FixedSigned16(textparms.y, (1<<13)));
+		WRITE_SHORT(FixedSigned16(textparms.x, (1 << 13)));
+		WRITE_SHORT(FixedSigned16(textparms.y, (1 << 13)));
 		WRITE_BYTE(textparms.effect);
 		WRITE_BYTE(textparms.r1);
 		WRITE_BYTE(textparms.g1);
@@ -604,12 +611,12 @@ void UTIL_HudMessage(CBaseEntity *pEntity, const hudtextparms_t &textparms, cons
 		WRITE_BYTE(textparms.g2);
 		WRITE_BYTE(textparms.b2);
 		WRITE_BYTE(textparms.a2);
-		WRITE_SHORT(FixedUnsigned16(textparms.fadeinTime, (1<<8)));
-		WRITE_SHORT(FixedUnsigned16(textparms.fadeoutTime, (1<<8)));
-		WRITE_SHORT(FixedUnsigned16(textparms.holdTime, (1<<8)));
+		WRITE_SHORT(FixedUnsigned16(textparms.fadeinTime, (1 << 8)));
+		WRITE_SHORT(FixedUnsigned16(textparms.fadeoutTime, (1 << 8)));
+		WRITE_SHORT(FixedUnsigned16(textparms.holdTime, (1 << 8)));
 
 		if (textparms.effect == 2)
-			WRITE_SHORT(FixedUnsigned16(textparms.fxTime, (1<<8)));
+			WRITE_SHORT(FixedUnsigned16(textparms.fxTime, (1 << 8)));
 
 		if (!pMessage)
 			WRITE_STRING(" ");
@@ -626,7 +633,9 @@ void UTIL_HudMessage(CBaseEntity *pEntity, const hudtextparms_t &textparms, cons
 				WRITE_STRING(pMessage);
 			}
 		}
+	}
 	MESSAGE_END();
+
 }
 
 void UTIL_HudMessageAll(const hudtextparms_t &textparms, const char *pMessage)
@@ -644,33 +653,39 @@ void UTIL_HudMessageAll(const hudtextparms_t &textparms, const char *pMessage)
 void UTIL_ClientPrintAll(int msg_dest, const char *msg_name, const char *param1, const char *param2, const char *param3, const char *param4)
 {
 	MESSAGE_BEGIN(MSG_ALL, gmsgTextMsg);
+	{
 		WRITE_BYTE(msg_dest);
 		WRITE_STRING(msg_name);
-	if (param1)
-		WRITE_STRING(param1);
-	if (param2)
-		WRITE_STRING(param2);
-	if (param3)
-		WRITE_STRING(param3);
-	if (param4)
-		WRITE_STRING(param4);
+		if (param1)
+			WRITE_STRING(param1);
+		if (param2)
+			WRITE_STRING(param2);
+		if (param3)
+			WRITE_STRING(param3);
+		if (param4)
+			WRITE_STRING(param4);
+	}
 	MESSAGE_END();
+
 }
 
 void ClientPrint(entvars_t *client, int msg_dest, const char *msg_name, const char *param1, const char *param2, const char *param3, const char *param4)
 {
 	MESSAGE_BEGIN(MSG_ONE, gmsgTextMsg, nullptr, client);
+	{
 		WRITE_BYTE(msg_dest);
 		WRITE_STRING(msg_name);
-	if (param1)
-		WRITE_STRING(param1);
-	if (param2)
-		WRITE_STRING(param2);
-	if (param3)
-		WRITE_STRING(param3);
-	if (param4)
-		WRITE_STRING(param4);
+		if (param1)
+			WRITE_STRING(param1);
+		if (param2)
+			WRITE_STRING(param2);
+		if (param3)
+			WRITE_STRING(param3);
+		if (param4)
+			WRITE_STRING(param4);
+	}
 	MESSAGE_END();
+
 }
 
 void UTIL_Log(const char *fmt, ...)
@@ -752,17 +767,23 @@ void UTIL_SayText(edict_t *pEdict, const char *fmt, ...)
 		string[Q_strlen(string) - 1] = '\n';
 
 	MESSAGE_BEGIN(MSG_ONE, gmsgSayText, nullptr, pEntity->edict());
+	{
 		WRITE_BYTE(pEntity->entindex());
 		WRITE_STRING(string);
+	}
 	MESSAGE_END();
+
 }
 
 void UTIL_SayTextAll(const char *pText, CBaseEntity *pEntity)
 {
 	MESSAGE_BEGIN(MSG_ALL, gmsgSayText);
+	{
 		WRITE_BYTE(pEntity->entindex());
 		WRITE_STRING(pText);
+	}
 	MESSAGE_END();
+
 }
 
 char *UTIL_dtos1(int d)
@@ -804,21 +825,28 @@ void UTIL_ShowMessageArgs(const char *pString, CBaseEntity *pPlayer, CUtlVector<
 	if (args)
 	{
 		MESSAGE_BEGIN(MSG_ONE, gmsgHudTextArgs, nullptr, pPlayer->pev);
+		{
 			WRITE_STRING(pString);
 			WRITE_BYTE(isHint);
 			WRITE_BYTE(args->Count());
 
-		for (int i = 0; i < args->Count(); i++)
-			WRITE_STRING((*args)[i]);
+			for (int i = 0; i < args->Count(); i++)
+				WRITE_STRING((*args)[i]);
+
+		}
 
 		MESSAGE_END();
+
 	}
 	else
 	{
 		MESSAGE_BEGIN(MSG_ONE, gmsgHudTextPro, nullptr, pPlayer->pev);
+		{
 			WRITE_STRING(pString);
 			WRITE_BYTE(isHint);
+		}
 		MESSAGE_END();
+
 	}
 }
 
@@ -828,9 +856,12 @@ void UTIL_ShowMessage(const char *pString, CBaseEntity *pEntity, bool isHint)
 		return;
 
 	MESSAGE_BEGIN(MSG_ONE, gmsgHudTextPro, nullptr, pEntity->edict());
+	{
 		WRITE_STRING(pString);
 		WRITE_BYTE(int(isHint));
+	}
 	MESSAGE_END();
+
 }
 
 void UTIL_ShowMessageAll(const char *pString, bool isHint)
@@ -1039,6 +1070,7 @@ void UTIL_BloodStream(const Vector &origin, const Vector &direction, int color, 
 		color = 0;
 
 	MESSAGE_BEGIN(MSG_PVS, SVC_TEMPENTITY, origin);
+	{
 		WRITE_BYTE(TE_BLOODSTREAM);
 		WRITE_COORD(origin.x);
 		WRITE_COORD(origin.y);
@@ -1048,7 +1080,9 @@ void UTIL_BloodStream(const Vector &origin, const Vector &direction, int color, 
 		WRITE_COORD(direction.z);
 		WRITE_BYTE(color);
 		WRITE_BYTE(Q_min(amount, 255));
+	}
 	MESSAGE_END();
+
 }
 
 void UTIL_BloodDrips(const Vector &origin, const Vector &direction, int color, int amount)
@@ -1069,6 +1103,7 @@ void UTIL_BloodDrips(const Vector &origin, const Vector &direction, int color, i
 		amount = 255;
 
 	MESSAGE_BEGIN(MSG_PVS, SVC_TEMPENTITY, origin);
+	{
 		WRITE_BYTE(TE_BLOODSPRITE);
 		WRITE_COORD(origin.x);
 		WRITE_COORD(origin.y);
@@ -1077,7 +1112,9 @@ void UTIL_BloodDrips(const Vector &origin, const Vector &direction, int color, i
 		WRITE_SHORT(g_sModelIndexBloodDrop);
 		WRITE_BYTE(color);
 		WRITE_BYTE(clamp(amount / 10, 3, 16));
+	}
 	MESSAGE_END();
+
 }
 
 Vector UTIL_RandomBloodVector()
@@ -1144,14 +1181,17 @@ void UTIL_DecalTrace(TraceResult *pTrace, int decalNumber)
 	}
 
 	MESSAGE_BEGIN(MSG_BROADCAST, SVC_TEMPENTITY);
+	{
 		WRITE_BYTE(message);
 		WRITE_COORD(pTrace->vecEndPos.x);
 		WRITE_COORD(pTrace->vecEndPos.y);
 		WRITE_COORD(pTrace->vecEndPos.z);
 		WRITE_BYTE(index);
-	if (entityIndex)
-		WRITE_SHORT(entityIndex);
+		if (entityIndex)
+			WRITE_SHORT(entityIndex);
+	}
 	MESSAGE_END();
+
 }
 
 void UTIL_PlayerDecalTrace(TraceResult *pTrace, int playernum, int decalNumber, BOOL bIsCustom)
@@ -1172,6 +1212,7 @@ void UTIL_PlayerDecalTrace(TraceResult *pTrace, int playernum, int decalNumber, 
 	if (pTrace->flFraction != 1.0f)
 	{
 		MESSAGE_BEGIN(MSG_BROADCAST, SVC_TEMPENTITY);
+		{
 			WRITE_BYTE(TE_PLAYERDECAL);
 			WRITE_BYTE(playernum);
 			WRITE_COORD(pTrace->vecEndPos.x);
@@ -1179,7 +1220,9 @@ void UTIL_PlayerDecalTrace(TraceResult *pTrace, int playernum, int decalNumber, 
 			WRITE_COORD(pTrace->vecEndPos.z);
 			WRITE_SHORT(int(ENTINDEX(pTrace->pHit)));
 			WRITE_BYTE(index);
+		}
 		MESSAGE_END();
+
 	}
 }
 
@@ -1192,39 +1235,46 @@ void UTIL_GunshotDecalTrace(TraceResult *pTrace, int decalNumber, bool ClientOnl
 	if (index < 0 || pTrace->flFraction == 1.0f)
 		return;
 
-	if (ClientOnly)
-		MESSAGE_BEGIN(MSG_ONE, SVC_TEMPENTITY, pTrace->vecEndPos, pShooter);
-	else
-		MESSAGE_BEGIN(MSG_PAS, SVC_TEMPENTITY, pTrace->vecEndPos);
 
-	WRITE_BYTE(TE_GUNSHOTDECAL);
+	MESSAGE_BEGIN(MSG_PAS, SVC_TEMPENTITY, pTrace->vecEndPos, ClientOnly ? pShooter : nullptr);
+	{
+
+		WRITE_BYTE(TE_GUNSHOTDECAL);
 		WRITE_COORD(pTrace->vecEndPos.x);
 		WRITE_COORD(pTrace->vecEndPos.y);
 		WRITE_COORD(pTrace->vecEndPos.z);
 		WRITE_SHORT(int(ENTINDEX(pTrace->pHit)));
 		WRITE_BYTE(index);
+	}
 	MESSAGE_END();
+
 }
 
 void UTIL_Sparks(const Vector &position)
 {
 	MESSAGE_BEGIN(MSG_PVS, SVC_TEMPENTITY, position);
+	{
 		WRITE_BYTE(TE_SPARKS);
 		WRITE_COORD(position.x);
 		WRITE_COORD(position.y);
 		WRITE_COORD(position.z);
+	}
 	MESSAGE_END();
+
 }
 
 void UTIL_Ricochet(const Vector &position, float scale)
 {
 	MESSAGE_BEGIN(MSG_PVS, SVC_TEMPENTITY, position);
+	{
 		WRITE_BYTE(TE_ARMOR_RICOCHET);
 		WRITE_COORD(position.x);
 		WRITE_COORD(position.y);
 		WRITE_COORD(position.z);
 		WRITE_BYTE(int(scale * 10.0f));
+	}
 	MESSAGE_END();
+
 }
 
 bool UTIL_TeamsMatch(const char *pTeamName1, const char *pTeamName2)
@@ -1398,6 +1448,7 @@ void UTIL_Bubbles(Vector mins, Vector maxs, int count)
 	float flHeight = UTIL_WaterLevel(mid, mid.z, mid.z + 1024.0f) - mins.z;
 
 	MESSAGE_BEGIN(MSG_PAS, SVC_TEMPENTITY, mid);
+	{
 		WRITE_BYTE(TE_BUBBLES);
 		WRITE_COORD(mins.x);
 		WRITE_COORD(mins.y);
@@ -1409,7 +1460,9 @@ void UTIL_Bubbles(Vector mins, Vector maxs, int count)
 		WRITE_SHORT(g_sModelIndexBubbles);
 		WRITE_BYTE(count);
 		WRITE_COORD(8);
+	}
 	MESSAGE_END();
+
 }
 
 void UTIL_BubbleTrail(Vector from, Vector to, int count)
@@ -1429,6 +1482,7 @@ void UTIL_BubbleTrail(Vector from, Vector to, int count)
 		count = 255;
 
 	MESSAGE_BEGIN(MSG_BROADCAST, SVC_TEMPENTITY);
+	{
 		WRITE_BYTE(TE_BUBBLETRAIL);
 		WRITE_COORD(from.x);
 		WRITE_COORD(from.y);
@@ -1440,7 +1494,9 @@ void UTIL_BubbleTrail(Vector from, Vector to, int count)
 		WRITE_SHORT(g_sModelIndexBubbles);
 		WRITE_BYTE(count);
 		WRITE_COORD(8);
+	}
 	MESSAGE_END();
+
 }
 
 void UTIL_Remove(CBaseEntity *pEntity)

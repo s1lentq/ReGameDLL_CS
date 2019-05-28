@@ -111,6 +111,7 @@ void EjectBrass(const Vector &vecOrigin, const Vector &vecLeft, const Vector &ve
 	bool useNewBehavior = AreRunningCZero();
 
 	MESSAGE_BEGIN(MSG_PVS, gmsgBrass, vecOrigin);
+	{
 		if (!useNewBehavior)
 		{
 			// noxref
@@ -139,12 +140,15 @@ void EjectBrass(const Vector &vecOrigin, const Vector &vecLeft, const Vector &ve
 			WRITE_BYTE(25);// 2.5 seconds
 		}
 		WRITE_BYTE(entityIndex);
+	}
 	MESSAGE_END();
+
 }
 
 NOXREF void EjectBrass2(const Vector &vecOrigin, const Vector &vecVelocity, float rotation, int model, int soundtype, entvars_t *pev)
 {
 	MESSAGE_BEGIN(MSG_ONE, SVC_TEMPENTITY, nullptr, pev);
+	{
 		WRITE_BYTE(TE_MODEL);
 		WRITE_COORD(vecOrigin.x);
 		WRITE_COORD(vecOrigin.y);
@@ -156,7 +160,9 @@ NOXREF void EjectBrass2(const Vector &vecOrigin, const Vector &vecVelocity, floa
 		WRITE_SHORT(model);
 		WRITE_BYTE(0);
 		WRITE_BYTE(5);// 0.5 seconds
+	}
 	MESSAGE_END();
+
 }
 
 #ifdef REGAMEDLL_ADD
@@ -1030,8 +1036,11 @@ int CBasePlayerItem::AddToPlayer(CBasePlayer *pPlayer)
 	m_pPlayer = pPlayer;
 
 	MESSAGE_BEGIN(MSG_ONE, gmsgWeapPickup, nullptr, pPlayer->pev);
+	{
 		WRITE_BYTE(m_iId);
+	}
 	MESSAGE_END();
+
 
 	return TRUE;
 }
@@ -1152,10 +1161,13 @@ int CBasePlayerWeapon::UpdateClientData(CBasePlayer *pPlayer)
 	if (bSend)
 	{
 		MESSAGE_BEGIN(MSG_ONE, gmsgCurWeapon, nullptr, pPlayer->pev);
+		{
 			WRITE_BYTE(state);
 			WRITE_BYTE(m_iId);
 			WRITE_BYTE(m_iClip);
+		}
 		MESSAGE_END();
+
 
 		m_iClientClip = m_iClip;
 		m_iClientWeaponState = state;
@@ -1180,9 +1192,12 @@ void CBasePlayerWeapon::SendWeaponAnim(int iAnim, int skiplocal)
 #endif
 
 	MESSAGE_BEGIN(MSG_ONE, SVC_WEAPONANIM, nullptr, m_pPlayer->pev);
+	{
 		WRITE_BYTE(iAnim);		// sequence number
 		WRITE_BYTE(pev->body);	// weaponmodel bodygroup.
+	}
 	MESSAGE_END();
+
 }
 
 BOOL CBasePlayerWeapon::AddPrimaryAmmo(int iCount, char *szName, int iMaxClip, int iMaxCarry)
@@ -1297,12 +1312,15 @@ void CBasePlayerWeapon::ReloadSound()
 		if (distance <= MAX_DIST_RELOAD_SOUND)
 		{
 			MESSAGE_BEGIN(MSG_ONE, gmsgReloadSound, nullptr, pPlayer->pev);
+			{
 				WRITE_BYTE(int((1.0f - (distance / MAX_DIST_RELOAD_SOUND)) * 255.0f));
 			if (!Q_strcmp(STRING(pev->classname), "weapon_m3") || !Q_strcmp(STRING(pev->classname), "weapon_xm1014"))
 				WRITE_BYTE(0);
 			else
 				WRITE_BYTE(1);
+			}
 			MESSAGE_END();
+
 		}
 	}
 }
@@ -1549,11 +1567,14 @@ void CWeaponBox::BombThink()
 		if (pTempPlayer->pev->deadflag == DEAD_NO && pTempPlayer->m_iTeam == TERRORIST)
 		{
 			MESSAGE_BEGIN(MSG_ONE, gmsgBombDrop, nullptr, pTempPlayer->edict());
+			{
 				WRITE_COORD(pev->origin.x);
 				WRITE_COORD(pev->origin.y);
 				WRITE_COORD(pev->origin.z);
 				WRITE_BYTE(BOMB_FLAG_DROPPED);
+			}
 			MESSAGE_END();
+
 		}
 	}
 
@@ -1679,12 +1700,15 @@ void CWeaponBox::Touch(CBaseEntity *pOther)
 				g_pGameRules->m_bBombDropped = FALSE;
 
 				MESSAGE_BEGIN(MSG_SPEC, SVC_DIRECTOR);
+				{
 					WRITE_BYTE(9);
 					WRITE_BYTE(DRC_CMD_EVENT);
 					WRITE_SHORT(ENTINDEX(pPlayer->edict()));
 					WRITE_SHORT(ENTINDEX(edict()));
 					WRITE_LONG(6);
+				}
 				MESSAGE_END();
+
 
 				pPlayer->m_bHasC4 = true;
 				pPlayer->SetBombIcon(FALSE);
@@ -1712,7 +1736,10 @@ void CWeaponBox::Touch(CBaseEntity *pOther)
 						}
 
 						MESSAGE_BEGIN(MSG_ONE, gmsgBombPickup, nullptr, pTempPlayer->pev);
+						{
+						}
 						MESSAGE_END();
+
 					}
 				}
 

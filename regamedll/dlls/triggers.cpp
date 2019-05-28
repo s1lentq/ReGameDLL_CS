@@ -1267,12 +1267,18 @@ void CChangeLevel::Spawn()
 void CChangeLevel::ExecuteChangeLevel()
 {
 	MESSAGE_BEGIN(MSG_ALL, SVC_CDTRACK);
+	{
 		WRITE_BYTE(3);
 		WRITE_BYTE(3);
+	}
 	MESSAGE_END();
 
+
 	MESSAGE_BEGIN(MSG_ALL, SVC_INTERMISSION);
+	{
+	}
 	MESSAGE_END();
+
 }
 
 edict_t *CChangeLevel::FindLandmark(const char *pLandmarkName)

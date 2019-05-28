@@ -168,6 +168,7 @@ void CMortar::MortarExplode()
 {
 	// mortar beam
 	MESSAGE_BEGIN(MSG_BROADCAST, SVC_TEMPENTITY);
+	{
 		WRITE_BYTE(TE_BEAMPOINTS);
 		WRITE_COORD(pev->origin.x);
 		WRITE_COORD(pev->origin.y);
@@ -186,7 +187,9 @@ void CMortar::MortarExplode()
 		WRITE_BYTE(100);	// r, g, b
 		WRITE_BYTE(128);	// brightness
 		WRITE_BYTE(0);		// speed
+	}
 	MESSAGE_END();
+
 
 	TraceResult tr;
 	UTIL_TraceLine(pev->origin + Vector(0, 0, 1024), pev->origin - Vector(0, 0, 1024), dont_ignore_monsters, ENT(pev), &tr);

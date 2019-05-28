@@ -229,8 +229,11 @@ BOOL CItemBattery::MyTouch(CBasePlayer *pPlayer)
 		EMIT_SOUND(pPlayer->edict(), CHAN_ITEM, "items/gunpickup2.wav", VOL_NORM, ATTN_NORM);
 
 		MESSAGE_BEGIN(MSG_ONE, gmsgItemPickup, nullptr, pPlayer->pev);
+		{
 			WRITE_STRING(STRING(pev->classname));
+		}
 		MESSAGE_END();
+
 
 		// Suit reports new power level
 		// For some reason this wasn't working in release build -- round it.
@@ -347,8 +350,11 @@ BOOL CItemLongJump::MyTouch(CBasePlayer *pPlayer)
 		SET_PHYSICS_KEY_VALUE(pPlayer->edict(), "slj", "1");
 
 		MESSAGE_BEGIN(MSG_ONE, gmsgItemPickup, nullptr, pPlayer->pev);
+		{
 			WRITE_STRING(STRING(pev->classname));
+		}
 		MESSAGE_END();
+
 
 		// Play the longjump sound UNDONE: Kelly? correct sound?
 		EMIT_SOUND_SUIT(pPlayer->edict(), "!HEV_A1");
@@ -386,12 +392,18 @@ BOOL CItemKevlar::MyTouch(CBasePlayer *pPlayer)
 	EMIT_SOUND(pPlayer->edict(), CHAN_ITEM, "items/ammopickup2.wav", VOL_NORM, ATTN_NORM);
 
 	MESSAGE_BEGIN(MSG_ONE, gmsgItemPickup, nullptr, pPlayer->pev);
+	{
 		WRITE_STRING(STRING(pev->classname));
+	}
 	MESSAGE_END();
 
+
 	MESSAGE_BEGIN(MSG_ONE, gmsgArmorType, nullptr, pPlayer->pev);
+	{
 		WRITE_BYTE(0);
+	}
 	MESSAGE_END();
+
 
 	if (TheTutor)
 	{
@@ -428,12 +440,18 @@ BOOL CItemAssaultSuit::MyTouch(CBasePlayer *pPlayer)
 	EMIT_SOUND(pPlayer->edict(), CHAN_ITEM, "items/ammopickup2.wav", VOL_NORM, ATTN_NORM);
 
 	MESSAGE_BEGIN(MSG_ONE, gmsgItemPickup, nullptr, pPlayer->pev);
+	{
 		WRITE_STRING(STRING(pev->classname));
+	}
 	MESSAGE_END();
 
+
 	MESSAGE_BEGIN(MSG_ONE, gmsgArmorType, nullptr, pPlayer->pev);
+	{
 		WRITE_BYTE(1);
+	}
 	MESSAGE_END();
+
 
 	if (TheTutor)
 	{
@@ -473,12 +491,15 @@ BOOL CItemThighPack::MyTouch(CBasePlayer *pPlayer)
 	ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Got_defuser");
 
 	MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pPlayer->pev);
+	{
 		WRITE_BYTE(STATUSICON_SHOW);
 		WRITE_STRING("defuser");
 		WRITE_BYTE(0);
 		WRITE_BYTE(160);
 		WRITE_BYTE(0);
+	}
 	MESSAGE_END();
+
 
 	pPlayer->SendItemStatus();
 	EMIT_SOUND(pPlayer->edict(), CHAN_VOICE, "items/kevlar.wav", VOL_NORM, ATTN_NORM);

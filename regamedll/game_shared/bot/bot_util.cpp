@@ -454,6 +454,7 @@ NOXREF Vector UTIL_ComputeOrigin(edict_t *pentEdict)
 NOXREF void UTIL_DrawBeamFromEnt(int iIndex, Vector vecEnd, int iLifetime, byte bRed, byte bGreen, byte bBlue)
 {
 	MESSAGE_BEGIN(MSG_PVS, SVC_TEMPENTITY, vecEnd);
+	{
 		WRITE_BYTE(TE_BEAMENTPOINT);
 		WRITE_SHORT(iIndex);
 		WRITE_COORD(vecEnd.x);
@@ -470,12 +471,14 @@ NOXREF void UTIL_DrawBeamFromEnt(int iIndex, Vector vecEnd, int iLifetime, byte 
 		WRITE_BYTE(bBlue);
 		WRITE_BYTE(255);
 		WRITE_BYTE(0);
+	}
 	MESSAGE_END();
 }
 
 void UTIL_DrawBeamPoints(Vector vecStart, Vector vecEnd, int iLifetime, byte bRed, byte bGreen, byte bBlue)
 {
 	MESSAGE_BEGIN(MSG_PVS, SVC_TEMPENTITY, vecStart);
+	{
 		WRITE_BYTE(TE_BEAMPOINTS);
 		WRITE_COORD(vecStart.x);
 		WRITE_COORD(vecStart.y);
@@ -494,6 +497,7 @@ void UTIL_DrawBeamPoints(Vector vecStart, Vector vecEnd, int iLifetime, byte bRe
 		WRITE_BYTE(bBlue);
 		WRITE_BYTE(255);
 		WRITE_BYTE(0);
+	}
 	MESSAGE_END();
 }
 

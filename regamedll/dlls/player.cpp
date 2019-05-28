@@ -113,7 +113,9 @@ void CBasePlayer::SendItemStatus()
 		itemStatus |= ITEM_STATUS_DEFUSER;
 
 	MESSAGE_BEGIN(MSG_ONE, gmsgItemStatus, nullptr, pev);
+	{
 		WRITE_BYTE(itemStatus);
+	}
 	MESSAGE_END();
 }
 
@@ -176,10 +178,12 @@ bool EXT_FUNC CBasePlayer::__API_HOOK(SetClientUserInfoName)(char *infobuffer, c
 	SET_CLIENT_KEY_VALUE(nClientIndex, infobuffer, "name", szNewName);
 
 	MESSAGE_BEGIN(MSG_BROADCAST, gmsgSayText);
+	{
 		WRITE_BYTE(nClientIndex);
 		WRITE_STRING("#Cstrike_Name_Change");
 		WRITE_STRING(STRING(pev->netname));
 		WRITE_STRING(szNewName);
+	}
 	MESSAGE_END();
 
 	UTIL_LogPrintf("\"%s<%i><%s><%s>\" changed name to \"%s\"\n", STRING(pev->netname), GETPLAYERUSERID(edict()), GETPLAYERAUTHID(edict()), GetTeam(m_iTeam), szNewName);
@@ -397,9 +401,11 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Radio)(const char *msg_id, const char *msg
 			if (!pPlayer->m_bIgnoreRadio)
 			{
 				MESSAGE_BEGIN(MSG_ONE, gmsgSendAudio, nullptr, pEntity->pev);
+				{
 					WRITE_BYTE(ENTINDEX(edict()));
 					WRITE_STRING(msg_id);
 					WRITE_SHORT(pitch);
+				}
 				MESSAGE_END();
 
 				// radio message icon
@@ -435,11 +441,13 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Radio)(const char *msg_id, const char *msg
 				{
 					// put an icon over this guys head to show that he used the radio
 					MESSAGE_BEGIN(MSG_ONE, SVC_TEMPENTITY, nullptr, pEntity->pev);
+					{
 						WRITE_BYTE(TE_PLAYERATTACHMENT);
 						WRITE_BYTE(ENTINDEX(edict()));		// byte	(entity index of player)
 						WRITE_COORD(35);					// coord (vertical offset) ( attachment origin.z = player origin.z + vertical offset)
 						WRITE_SHORT(g_sModelIndexRadio);	// short (model index) of tempent
 						WRITE_SHORT(15);					// short (life * 10 ) e.g. 40 = 4 seconds
+					}
 					MESSAGE_END();
 				}
 			}
@@ -715,6 +723,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(TraceAttack)(entvars_t *pevAttacker, float
 	else if (ptr->iHitgroup == HITGROUP_HEAD && bShouldSpark)
 	{
 		MESSAGE_BEGIN(MSG_PVS, SVC_TEMPENTITY, ptr->vecEndPos);
+		{
 			WRITE_BYTE(TE_STREAK_SPLASH);
 			WRITE_COORD(ptr->vecEndPos.x);
 			WRITE_COORD(ptr->vecEndPos.y);
@@ -726,6 +735,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(TraceAttack)(entvars_t *pevAttacker, float
 			WRITE_SHORT(22); // count
 			WRITE_SHORT(25); // base speed
 			WRITE_SHORT(65); // ramdon velocity
+		}
 		MESSAGE_END();
 	}
 
@@ -960,16 +970,20 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 
 		// tell director about it
 		MESSAGE_BEGIN(MSG_SPEC, SVC_DIRECTOR);
+		{
 			WRITE_BYTE(9);								// command length in bytes
 			WRITE_BYTE(DRC_CMD_EVENT);					// take damage event
 			WRITE_SHORT(ENTINDEX(edict()));				// index number of primary entity
 			WRITE_SHORT(ENTINDEX(ENT(pevInflictor)));	// index number of secondary entity
 			WRITE_LONG(5);								// eventflags (priority and flags)
+		}
 		MESSAGE_END();
 
 		MESSAGE_BEGIN(MSG_SPEC, gmsgHLTV);
+		{
 			WRITE_BYTE(ENTINDEX(edict()));
 			WRITE_BYTE(int(Q_max(pev->health, 0.0f)) | DRC_FLAG_FACEPLAYER);
+		}
 		MESSAGE_END();
 
 		for (int i = 1; i <= gpGlobals->maxClients; i++)
@@ -980,7 +994,9 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 				continue;
 
 			MESSAGE_BEGIN(MSG_ONE, gmsgSpecHealth, nullptr, pPlayer->edict());
+			{
 				WRITE_BYTE(int(Q_max(pev->health, 0.0f)));
+			}
 			MESSAGE_END();
 		}
 
@@ -1200,16 +1216,20 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 
 	// tell director about it
 	MESSAGE_BEGIN(MSG_SPEC, SVC_DIRECTOR);
+	{
 		WRITE_BYTE(9);								// command length in bytes
 		WRITE_BYTE(DRC_CMD_EVENT);					// take damage event
 		WRITE_SHORT(ENTINDEX(edict()));				// index number of primary entity
 		WRITE_SHORT(ENTINDEX(ENT(pevInflictor)));	// index number of secondary entity
 		WRITE_LONG(5);								// eventflags (priority and flags)
+	}
 	MESSAGE_END();
 
 	MESSAGE_BEGIN(MSG_SPEC, gmsgHLTV);
+	{
 		WRITE_BYTE(ENTINDEX(edict()));
 		WRITE_BYTE(int(Q_max(pev->health, 0.0f)) | DRC_FLAG_FACEPLAYER);
+	}
 	MESSAGE_END();
 
 	for (int i = 1; i <= gpGlobals->maxClients; i++)
@@ -1222,7 +1242,9 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 		if (pPlayer->m_hObserverTarget == this)
 		{
 			MESSAGE_BEGIN(MSG_ONE, gmsgSpecHealth, nullptr, pPlayer->edict());
+			{
 				WRITE_BYTE(int(Q_max(pev->health, 0.0f)));
+			}
 			MESSAGE_END();
 		}
 	}
@@ -1477,8 +1499,10 @@ void CBasePlayer::RemoveAllItems(BOOL removeSuit)
 		pev->body = 0;
 
 		MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev);
+		{
 			WRITE_BYTE(STATUSICON_HIDE);
 			WRITE_STRING("defuser");
+		}
 		MESSAGE_END();
 
 		SendItemStatus();
@@ -1491,8 +1515,10 @@ void CBasePlayer::RemoveAllItems(BOOL removeSuit)
 		pev->body = 0;
 
 		MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev);
+		{
 			WRITE_BYTE(STATUSICON_HIDE);
 			WRITE_STRING("c4");
+		}
 		MESSAGE_END();
 
 		bKillProgBar = true;
@@ -1550,9 +1576,11 @@ void CBasePlayer::RemoveAllItems(BOOL removeSuit)
 
 	// send Selected Weapon Message to our client
 	MESSAGE_BEGIN(MSG_ONE, gmsgCurWeapon, nullptr, pev);
+	{
 		WRITE_BYTE(0);
 		WRITE_BYTE(0);
 		WRITE_BYTE(0);
+	}
 	MESSAGE_END();
 }
 
@@ -1561,18 +1589,22 @@ void CBasePlayer::SetBombIcon(BOOL bFlash)
 	if (m_bHasC4)
 	{
 		MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev);
+		{
 			WRITE_BYTE(bFlash ? STATUSICON_FLASH : STATUSICON_SHOW);
 			WRITE_STRING("c4");
 			WRITE_BYTE(0);
 			WRITE_BYTE(160);
 			WRITE_BYTE(0);
+		}
 		MESSAGE_END();
 	}
 	else
 	{
 		MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev);
+		{
 			WRITE_BYTE(STATUSICON_HIDE);
 			WRITE_STRING("c4");
+		}
 		MESSAGE_END();
 	}
 
@@ -1593,7 +1625,9 @@ void CBasePlayer::SetProgressBarTime(int time)
 	}
 
 	MESSAGE_BEGIN(MSG_ONE, gmsgBarTime, nullptr, pev);
+	{
 		WRITE_SHORT(time);
+	}
 	MESSAGE_END();
 
 	int playerIndex = entindex();
@@ -1609,7 +1643,9 @@ void CBasePlayer::SetProgressBarTime(int time)
 		if (pPlayer->GetObserverMode() == OBS_IN_EYE && pPlayer->pev->iuser2 == playerIndex)
 		{
 			MESSAGE_BEGIN(MSG_ONE, gmsgBarTime, nullptr, pPlayer->pev);
+			{
 				WRITE_SHORT(time);
+			}
 			MESSAGE_END();
 		}
 	}
@@ -1632,8 +1668,10 @@ void CBasePlayer::SetProgressBarTime2(int time, float timeElapsed)
 	short iTimeElapsed = (timeElapsed * 100.0 / (m_progressEnd - m_progressStart));
 
 	MESSAGE_BEGIN(MSG_ONE, gmsgBarTime2, nullptr, pev);
+	{
 		WRITE_SHORT(time);
 		WRITE_SHORT(iTimeElapsed);
+	}
 	MESSAGE_END();
 
 	int playerIndex = entindex();
@@ -1649,8 +1687,10 @@ void CBasePlayer::SetProgressBarTime2(int time, float timeElapsed)
 		if (pPlayer->GetObserverMode() == OBS_IN_EYE && pPlayer->pev->iuser2 == playerIndex)
 		{
 			MESSAGE_BEGIN(MSG_ONE, gmsgBarTime2, nullptr, pPlayer->pev);
+			{
 				WRITE_SHORT(time);
 				WRITE_SHORT(iTimeElapsed);
+			}
 			MESSAGE_END();
 		}
 	}
@@ -1659,19 +1699,23 @@ void CBasePlayer::SetProgressBarTime2(int time, float timeElapsed)
 void BuyZoneIcon_Set(CBasePlayer *pPlayer)
 {
 	MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pPlayer->pev);
+	{
 		WRITE_BYTE(STATUSICON_SHOW);
 		WRITE_STRING("buyzone");
 		WRITE_BYTE(0);
 		WRITE_BYTE(160);
 		WRITE_BYTE(0);
+	}
 	MESSAGE_END();
 }
 
 void BuyZoneIcon_Clear(CBasePlayer *pPlayer)
 {
 	MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pPlayer->pev);
+	{
 		WRITE_BYTE(STATUSICON_HIDE);
 		WRITE_STRING("buyzone");
+	}
 	MESSAGE_END();
 
 	if (pPlayer->m_iMenu >= Menu_Buy)
@@ -1707,11 +1751,13 @@ void BombTargetFlash_Clear(CBasePlayer *pPlayer)
 void RescueZoneIcon_Set(CBasePlayer *pPlayer)
 {
 	MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pPlayer->pev);
+	{
 		WRITE_BYTE(STATUSICON_SHOW);
 		WRITE_STRING("rescue");
 		WRITE_BYTE(0);
 		WRITE_BYTE(160);
 		WRITE_BYTE(0);
+	}
 	MESSAGE_END();
 
 	if (pPlayer->m_iTeam == CT && !(pPlayer->m_flDisplayHistory & DHF_IN_RESCUE_ZONE))
@@ -1724,8 +1770,10 @@ void RescueZoneIcon_Set(CBasePlayer *pPlayer)
 void RescueZoneIcon_Clear(CBasePlayer *pPlayer)
 {
 	MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pPlayer->pev);
+	{
 		WRITE_BYTE(STATUSICON_HIDE);
 		WRITE_STRING("rescue");
+	}
 	MESSAGE_END();
 
 	if (pPlayer->m_iMenu >= Menu_Buy)
@@ -1745,11 +1793,13 @@ void RescueZoneIcon_Clear(CBasePlayer *pPlayer)
 void EscapeZoneIcon_Set(CBasePlayer *pPlayer)
 {
 	MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pPlayer->pev);
+	{
 		WRITE_BYTE(STATUSICON_SHOW);
 		WRITE_STRING("escape");
 		WRITE_BYTE(0);
 		WRITE_BYTE(160);
 		WRITE_BYTE(0);
+	}
 	MESSAGE_END();
 
 	if (pPlayer->m_iTeam == CT)
@@ -1765,8 +1815,10 @@ void EscapeZoneIcon_Set(CBasePlayer *pPlayer)
 void EscapeZoneIcon_Clear(CBasePlayer *pPlayer)
 {
 	MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pPlayer->pev);
+	{
 		WRITE_BYTE(STATUSICON_HIDE);
 		WRITE_STRING("escape");
+	}
 	MESSAGE_END();
 
 	if (pPlayer->m_iMenu >= Menu_Buy)
@@ -1786,11 +1838,13 @@ void EscapeZoneIcon_Clear(CBasePlayer *pPlayer)
 void VIP_SafetyZoneIcon_Set(CBasePlayer *pPlayer)
 {
 	MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pPlayer->pev);
+	{
 		WRITE_BYTE(STATUSICON_SHOW);
 		WRITE_STRING("vipsafety");
 		WRITE_BYTE(0);
 		WRITE_BYTE(160);
 		WRITE_BYTE(0);
+	}
 	MESSAGE_END();
 
 	if (!(pPlayer->m_flDisplayHistory & DHF_IN_VIPSAFETY_ZONE))
@@ -1811,8 +1865,10 @@ void VIP_SafetyZoneIcon_Set(CBasePlayer *pPlayer)
 void VIP_SafetyZoneIcon_Clear(CBasePlayer *pPlayer)
 {
 	MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pPlayer->pev);
+	{
 		WRITE_BYTE(STATUSICON_HIDE);
 		WRITE_STRING("vipsafety");
+	}
 	MESSAGE_END();
 
 	if (pPlayer->m_iMenu >= Menu_Buy)
@@ -1836,7 +1892,9 @@ void CBasePlayer::SendFOV(int fov)
 	m_iFOV = fov;
 
 	MESSAGE_BEGIN(MSG_ONE, gmsgSetFOV, nullptr, pev);
+	{
 		WRITE_BYTE(fov);
+	}
 	MESSAGE_END();
 }
 
@@ -1908,7 +1966,9 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 	}
 
 	MESSAGE_BEGIN(MSG_ONE, gmsgNVGToggle, nullptr, pev);
+	{
 		WRITE_BYTE(0);
+	}
 	MESSAGE_END();
 
 	m_bNightVisionOn = false;
@@ -1923,7 +1983,9 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 		if (pObserver->IsObservingPlayer(this))
 		{
 			MESSAGE_BEGIN(MSG_ONE, gmsgNVGToggle, nullptr, pObserver->pev);
+			{
 				WRITE_BYTE(0);
+			}
 			MESSAGE_END();
 
 			pObserver->m_bNightVisionOn = false;
@@ -2087,13 +2149,17 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 	m_iClientHealth = 0;
 
 	MESSAGE_BEGIN(MSG_ONE, gmsgHealth, nullptr, pev);
+	{
 		WRITE_BYTE(m_iClientHealth);
+	}
 	MESSAGE_END();
 
 	MESSAGE_BEGIN(MSG_ONE, gmsgCurWeapon, nullptr, pev);
+	{
 		WRITE_BYTE(0);
 		WRITE_BYTE(0xFF);
 		WRITE_BYTE(0xFF);
+	}
 	MESSAGE_END();
 
 	SendFOV(0);
@@ -2122,8 +2188,10 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 #endif
 
 		MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev);
+		{
 			WRITE_BYTE(STATUSICON_HIDE);
 			WRITE_STRING("defuser");
+		}
 		MESSAGE_END();
 
 		SendItemStatus();
@@ -3117,8 +3185,10 @@ void EXT_FUNC CBasePlayer::__API_HOOK(AddAccount)(int amount, RewardType type, b
 
 		// Send money update to HUD
 		MESSAGE_BEGIN(MSG_ONE, gmsgMoney, nullptr, pev);
+		{
 			WRITE_LONG(m_iAccount);
 			WRITE_BYTE(bTrackChange);
+		}
 		MESSAGE_END();
 	}
 }
@@ -3135,8 +3205,10 @@ void EXT_FUNC CBasePlayer::__API_HOOK(AddAccount)(int amount, RewardType type, b
 
 	// Send money update to HUD
 	MESSAGE_BEGIN(MSG_ONE, gmsgMoney, nullptr, pev);
+	{
 		WRITE_LONG(m_iAccount);
 		WRITE_BYTE(bTrackChange);
+	}
 	MESSAGE_END();
 }
 #endif
@@ -3148,10 +3220,12 @@ void CBasePlayer::ResetMenu()
 #endif
 
 	MESSAGE_BEGIN(MSG_ONE, gmsgShowMenu, nullptr, pev);
+	{
 		WRITE_SHORT(0);
 		WRITE_CHAR(0);
 		WRITE_BYTE(0);
 		WRITE_STRING("");
+	}
 	MESSAGE_END();
 }
 
@@ -3184,7 +3258,9 @@ void CBasePlayer::SyncRoundTimer()
 		tmRemaining = 0;
 
 	MESSAGE_BEGIN(MSG_ONE, gmsgRoundTime, nullptr, pev);
+	{
 		WRITE_SHORT(int(tmRemaining));
+	}
 	MESSAGE_END();
 
 	if (!g_pGameRules->IsMultiplayer())
@@ -3193,7 +3269,9 @@ void CBasePlayer::SyncRoundTimer()
 	if (bFreezePeriod && TheTutor && GetObserverMode() == OBS_NONE)
 	{
 		MESSAGE_BEGIN(MSG_ONE, gmsgBlinkAcct, nullptr, pev);
+		{
 			WRITE_BYTE(MONEY_BLINK_AMOUNT);
+		}
 		MESSAGE_END();
 	}
 
@@ -3232,9 +3310,11 @@ void CBasePlayer::SyncRoundTimer()
 		if (!TheCareerTasks->GetFinishedTaskTime() || TheCareerTasks->GetFinishedTaskRound() == CSGameRules()->m_iTotalRoundsPlayed)
 		{
 			MESSAGE_BEGIN(MSG_ONE, gmsgTaskTime, nullptr, pev);
+			{
 				WRITE_SHORT(remaining);			// remaining of time, -1 the timer is disappears
 				WRITE_BYTE(shouldCountDown);	// timer counts down
 				WRITE_BYTE(fadeOutDelay); 		// fade in time, hide HUD timer after the expiration time
+			}
 			MESSAGE_END();
 		}
 	}
@@ -3248,10 +3328,12 @@ void CBasePlayer::RemoveLevelText()
 void ShowMenu2(CBasePlayer *pPlayer, int bitsValidSlots, int nDisplayTime, int fNeedMore, char *pszText)
 {
 	MESSAGE_BEGIN(MSG_ONE, gmsgShowMenu, nullptr, pPlayer->pev);
+	{
 		WRITE_SHORT(bitsValidSlots);
 		WRITE_CHAR(nDisplayTime);
 		WRITE_BYTE(fNeedMore);
 		WRITE_STRING(pszText);
+	}
 	MESSAGE_END();
 }
 
@@ -3267,18 +3349,22 @@ void CBasePlayer::MenuPrint(const char *msg)
 		msg_portion += MAX_BUFFER_MENU_BRIEFING;
 
 		MESSAGE_BEGIN(MSG_ONE, gmsgShowMenu, nullptr, pev);
+		{
 			WRITE_SHORT(0xFFFF);
 			WRITE_CHAR(-1);
 			WRITE_BYTE(1);	// multipart
 			WRITE_STRING(sbuf);
+		}
 		MESSAGE_END();
 	}
 
 	MESSAGE_BEGIN(MSG_ONE, gmsgShowMenu, nullptr, pev);
+	{
 		WRITE_SHORT(0xFFFF);
 		WRITE_CHAR(-1);
 		WRITE_BYTE(0);	// multipart
 		WRITE_STRING(msg_portion);
+	}
 	MESSAGE_END();
 }
 
@@ -3314,8 +3400,10 @@ void CBasePlayer::JoiningThink()
 			m_iJoiningState = SHOWTEAMSELECT;
 
 			MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev);
+			{
 				WRITE_BYTE(STATUSICON_HIDE);
 				WRITE_STRING("defuser");
+			}
 			MESSAGE_END();
 
 			m_bHasDefuser = false;
@@ -3410,13 +3498,17 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Disappear)()
 
 	m_iClientHealth = 0;
 	MESSAGE_BEGIN(MSG_ONE, gmsgHealth, nullptr, pev);
+	{
 		WRITE_BYTE(m_iClientHealth);
+	}
 	MESSAGE_END();
 
 	MESSAGE_BEGIN(MSG_ONE, gmsgCurWeapon, nullptr, pev);
+	{
 		WRITE_BYTE(0);
 		WRITE_BYTE(0xFF);
 		WRITE_BYTE(0xFF);
+	}
 	MESSAGE_END();
 
 	SendFOV(0);
@@ -3436,8 +3528,10 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Disappear)()
 		GiveNamedItem("item_thighpack");
 
 		MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev);
+		{
 			WRITE_BYTE(STATUSICON_HIDE);
 			WRITE_STRING("defuser");
+		}
 		MESSAGE_END();
 
 		SendItemStatus();
@@ -3640,8 +3734,10 @@ void EXT_FUNC CBasePlayer::__API_HOOK(StartObserver)(Vector &vecPosition, Vector
 {
 	// clear any clientside entities attached to this player
 	MESSAGE_BEGIN(MSG_PAS, SVC_TEMPENTITY, pev->origin);
+	{
 		WRITE_BYTE(TE_KILLPLAYERATTACHMENTS);
 		WRITE_BYTE(entindex());
+	}
 	MESSAGE_END();
 
 	// Holster weapon immediately, to allow it to cleanup
@@ -3659,9 +3755,11 @@ void EXT_FUNC CBasePlayer::__API_HOOK(StartObserver)(Vector &vecPosition, Vector
 
 	// Tell Ammo Hud that the player is dead
 	MESSAGE_BEGIN(MSG_ONE, gmsgCurWeapon, nullptr, pev);
+	{
 		WRITE_BYTE(0);
 		WRITE_BYTE(0xFF);
 		WRITE_BYTE(0xFF);
+	}
 	MESSAGE_END();
 
 	// reset FOV
@@ -3710,8 +3808,10 @@ void EXT_FUNC CBasePlayer::__API_HOOK(StartObserver)(Vector &vecPosition, Vector
 
 	// Tell all clients this player is now a spectator
 	MESSAGE_BEGIN(MSG_ALL, gmsgSpectator);
+	{
 		WRITE_BYTE(entindex());
 		WRITE_BYTE(1);
+	}
 	MESSAGE_END();
 }
 
@@ -4038,14 +4138,17 @@ void EXT_FUNC CBasePlayer::__API_HOOK(AddPoints)(int score, BOOL bAllowNegativeS
 
 #ifdef REGAMEDLL_FIXES
 	MESSAGE_BEGIN(MSG_ALL, gmsgScoreInfo);
+	{
 #else
 	MESSAGE_BEGIN(MSG_BROADCAST, gmsgScoreInfo);
+	{
 #endif
 		WRITE_BYTE(ENTINDEX(edict()));
 		WRITE_SHORT(int(pev->frags));
 		WRITE_SHORT(m_iDeaths);
 		WRITE_SHORT(0);
 		WRITE_SHORT(m_iTeam);
+	}
 	MESSAGE_END();
 }
 
@@ -4528,7 +4631,9 @@ void CBasePlayer::UpdateGeigerCounter()
 		m_igeigerRangePrev = range;
 
 		MESSAGE_BEGIN(MSG_ONE, gmsgGeigerRange, nullptr, pev);
+		{
 			WRITE_BYTE(range);
+		}
 		MESSAGE_END();
 	}
 
@@ -5072,8 +5177,10 @@ void CBasePlayer::SetScoreAttrib(CBasePlayer *dest)
 	if (gmsgScoreAttrib)
 	{
 		MESSAGE_BEGIN(MSG_ONE, gmsgScoreAttrib, nullptr, dest->pev);
+		{
 			WRITE_BYTE(entindex());
 			WRITE_BYTE(state);
+		}
 		MESSAGE_END();
 	}
 }
@@ -5201,8 +5308,10 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Spawn)()
 		m_iObserverC4State = 0;
 
 		MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev);
+		{
 			WRITE_BYTE(STATUSICON_HIDE);
 			WRITE_STRING("c4");
+		}
 		MESSAGE_END();
 	}
 
@@ -5211,13 +5320,17 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Spawn)()
 		m_bObserverHasDefuser = false;
 
 		MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev);
+		{
 			WRITE_BYTE(STATUSICON_HIDE);
 			WRITE_STRING("defuser");
+		}
 		MESSAGE_END();
 	}
 
 	MESSAGE_BEGIN(MSG_ONE, SVC_ROOMTYPE, nullptr, pev);
+	{
 		WRITE_SHORT(int(CVAR_GET_FLOAT("room_type")));
+	}
 	MESSAGE_END();
 
 	if (g_pGameRules->IsFreezePeriod())
@@ -5344,7 +5457,9 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Spawn)()
 	}
 
 	MESSAGE_BEGIN(MSG_ONE, gmsgNVGToggle, nullptr, pev);
+	{
 		WRITE_BYTE(0);
+	}
 	MESSAGE_END();
 
 	m_bNightVisionOn = false;
@@ -5356,7 +5471,9 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Spawn)()
 		if (pObserver && pObserver->IsObservingPlayer(this))
 		{
 			MESSAGE_BEGIN(MSG_ONE, gmsgNVGToggle, nullptr, pObserver->pev);
+			{
 				WRITE_BYTE(0);
+			}
 			MESSAGE_END();
 
 			pObserver->m_bNightVisionOn = false;
@@ -5386,18 +5503,22 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Spawn)()
 	SetScoreboardAttributes();
 
 	MESSAGE_BEGIN(MSG_ALL, gmsgTeamInfo);
+	{
 		WRITE_BYTE(entindex());
 		WRITE_STRING(GetTeamName(m_iTeam));
+	}
 	MESSAGE_END();
 
 	UpdateLocation(true);
 
 	MESSAGE_BEGIN(MSG_ALL, gmsgScoreInfo);
+	{
 		WRITE_BYTE(ENTINDEX(edict()));
 		WRITE_SHORT(int(pev->frags));
 		WRITE_SHORT(m_iDeaths);
 		WRITE_SHORT(0);
 		WRITE_SHORT(m_iTeam);
+	}
 	MESSAGE_END();
 
 	if (m_bHasChangedName)
@@ -5546,8 +5667,10 @@ void CBasePlayer::Reset()
 
 #ifndef REGAMEDLL_FIXES
 	MESSAGE_BEGIN(MSG_ONE, gmsgMoney, nullptr, pev);
+	{
 		WRITE_LONG(m_iAccount);
 		WRITE_BYTE(0);
+	}
 	MESSAGE_END();
 #endif
 
@@ -5558,11 +5681,13 @@ void CBasePlayer::Reset()
 	AddAccount(startmoney.value, RT_PLAYER_RESET);
 
 	MESSAGE_BEGIN(MSG_ALL, gmsgScoreInfo);
+	{
 		WRITE_BYTE(ENTINDEX(edict()));
 		WRITE_SHORT(0);
 		WRITE_SHORT(0);
 		WRITE_SHORT(0);
 		WRITE_SHORT(m_iTeam);
+	}
 	MESSAGE_END();
 }
 
@@ -5890,8 +6015,10 @@ void CBasePlayer::FlashlightTurnOn()
 		pev->effects |= EF_DIMLIGHT;
 
 		MESSAGE_BEGIN(MSG_ONE, gmsgFlashlight, nullptr, pev);
+		{
 			WRITE_BYTE(1);
 			WRITE_BYTE(m_iFlashBattery);
+		}
 		MESSAGE_END();
 
 		m_flFlashLightTime = gpGlobals->time + FLASH_DRAIN_TIME;
@@ -5904,8 +6031,10 @@ void CBasePlayer::FlashlightTurnOff()
 
 	pev->effects &= ~EF_DIMLIGHT;
 	MESSAGE_BEGIN(MSG_ONE, gmsgFlashlight, nullptr, pev);
+	{
 		WRITE_BYTE(0);
 		WRITE_BYTE(m_iFlashBattery);
+	}
 	MESSAGE_END();
 
 	m_flFlashLightTime = gpGlobals->time + FLASH_CHARGE_TIME;
@@ -5960,7 +6089,9 @@ void EXT_FUNC CBasePlayer::__API_HOOK(ImpulseCommands)()
 			assert(gmsgLogo > 0);
 
 			MESSAGE_BEGIN(MSG_ONE, gmsgLogo, nullptr, pev);
+			{
 				WRITE_BYTE(iOn);
+			}
 			MESSAGE_END();
 
 			if (!iOn)
@@ -6453,8 +6584,10 @@ int EXT_FUNC CBasePlayer::__API_HOOK(GiveAmmo)(int iCount, const char *szName, i
 	{
 		// Send the message that ammo has been picked up
 		MESSAGE_BEGIN(MSG_ONE, gmsgAmmoPickup, nullptr, pev);
+		{
 			WRITE_BYTE(GetAmmoIndex(szName)); // ammo ID
 			WRITE_BYTE(iAdd); // amount
+		}
 		MESSAGE_END();
 	}
 
@@ -6548,8 +6681,10 @@ void CBasePlayer::SendAmmoUpdate()
 
 			// send "Ammo" update message
 			MESSAGE_BEGIN(MSG_ONE, gmsgAmmoX, nullptr, pev);
+			{
 				WRITE_BYTE(i);
 				WRITE_BYTE(clamp(m_rgAmmo[i], 0, 254)); // clamp the value to one byte
+			}
 			MESSAGE_END();
 		}
 	}
@@ -6561,11 +6696,13 @@ void CBasePlayer::SendHostagePos()
 	while ((pHostage = UTIL_FindEntityByClassname(pHostage, "hostage_entity")))
 	{
 		MESSAGE_BEGIN(MSG_ONE, gmsgHostagePos, nullptr, pev);
+		{
 			WRITE_BYTE(1);
 			WRITE_BYTE(((CHostage *)pHostage)->m_iHostageIndex);
 			WRITE_COORD(pHostage->pev->origin.x);
 			WRITE_COORD(pHostage->pev->origin.y);
 			WRITE_COORD(pHostage->pev->origin.z);
+		}
 		MESSAGE_END();
 	}
 
@@ -6595,15 +6732,19 @@ void CBasePlayer::SendHostageIcons()
 	if (hostagesCount)
 	{
 		MESSAGE_BEGIN(MSG_ONE, gmsgScenarioIcon, nullptr, pev);
+		{
 			WRITE_BYTE(1);		// active
 			WRITE_STRING(buf);	// sprite
 			WRITE_BYTE(0);
+		}
 		MESSAGE_END();
 	}
 	else
 	{
 		MESSAGE_BEGIN(MSG_ONE, gmsgScenarioIcon, nullptr, pev);
+		{
 			WRITE_BYTE(0);		// active
+		}
 		MESSAGE_END();
 	}
 }
@@ -6615,7 +6756,9 @@ void CBasePlayer::SendWeatherInfo()
 	auto SendReceiveW = [&](BYTE byte)
 	{
 		MESSAGE_BEGIN(MSG_ONE, gmsgReceiveW, nullptr, pev);
+		{
 				WRITE_BYTE(byte);
+		}
 		MESSAGE_END();
 	};
 
@@ -6676,6 +6819,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(UpdateClientData)()
 				density.f = pFog->m_fDensity;
 
 				MESSAGE_BEGIN(MSG_ONE, gmsgFog, nullptr, pev);
+				{
 					WRITE_BYTE(r);
 					WRITE_BYTE(g);
 					WRITE_BYTE(b);
@@ -6683,6 +6827,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(UpdateClientData)()
 					WRITE_BYTE(density.b[1]);
 					WRITE_BYTE(density.b[2]);
 					WRITE_BYTE(density.b[3]);
+				}
 				MESSAGE_END();
 			}
 
@@ -6704,18 +6849,22 @@ void EXT_FUNC CBasePlayer::__API_HOOK(UpdateClientData)()
 		FireTargets("game_playerspawn", this, this, USE_TOGGLE, 0);
 #endif
 		MESSAGE_BEGIN(MSG_ONE, gmsgMoney, nullptr, pev);
+		{
 			WRITE_LONG(m_iAccount);
 			WRITE_BYTE(0);
+		}
 		MESSAGE_END();
 
 		if (m_bHasDefuser)
 		{
 			MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev);
+			{
 				WRITE_BYTE(STATUSICON_SHOW);
 				WRITE_STRING("defuser");
 				WRITE_BYTE(0);
 				WRITE_BYTE(160);
 				WRITE_BYTE(0);
+			}
 			MESSAGE_END();
 		}
 
@@ -6727,13 +6876,17 @@ void EXT_FUNC CBasePlayer::__API_HOOK(UpdateClientData)()
 		if (g_pGameRules->IsMultiplayer())
 		{
 			MESSAGE_BEGIN(MSG_ONE, gmsgTeamScore, nullptr, pev);
+			{
 				WRITE_STRING(GetTeam(CT));
 				WRITE_SHORT(CSGameRules()->m_iNumCTWins);
+			}
 			MESSAGE_END();
 
 			MESSAGE_BEGIN(MSG_ONE, gmsgTeamScore, nullptr, pev);
+			{
 				WRITE_STRING(GetTeam(TERRORIST));
 				WRITE_SHORT(CSGameRules()->m_iNumTerroristWins);
+			}
 			MESSAGE_END();
 		}
 
@@ -6742,8 +6895,10 @@ void EXT_FUNC CBasePlayer::__API_HOOK(UpdateClientData)()
 		if (FlashlightIsOn())
 		{
 			MESSAGE_BEGIN(MSG_ONE, gmsgFlashlight, nullptr, pev);
+			{
 				WRITE_BYTE(1);
 				WRITE_BYTE(m_iFlashBattery);
+			}
 			MESSAGE_END();
 		}
 #endif
@@ -6752,7 +6907,9 @@ void EXT_FUNC CBasePlayer::__API_HOOK(UpdateClientData)()
 	if (m_iHideHUD != m_iClientHideHUD)
 	{
 		MESSAGE_BEGIN(MSG_ONE, gmsgHideWeapon, nullptr, pev);
+		{
 			WRITE_BYTE(m_iHideHUD);
+		}
 		MESSAGE_END();
 
 #ifdef REGAMEDLL_FIXES
@@ -6765,7 +6922,9 @@ void EXT_FUNC CBasePlayer::__API_HOOK(UpdateClientData)()
 			if (hudChanged & (HIDEHUD_FLASHLIGHT | HIDEHUD_HEALTH | HIDEHUD_TIMER | HIDEHUD_MONEY))
 			{
 				MESSAGE_BEGIN(MSG_ONE, gmsgCrosshair, nullptr, pev);
+				{
 					WRITE_BYTE(0);
+				}
 				MESSAGE_END();
 			}
 		}
@@ -6780,12 +6939,16 @@ void EXT_FUNC CBasePlayer::__API_HOOK(UpdateClientData)()
 		pev->fov = m_iFOV;
 
 		MESSAGE_BEGIN(MSG_ONE, gmsgSetFOV, nullptr, pev);
+		{
 			WRITE_BYTE(m_iFOV);
+		}
 		MESSAGE_END();
 
 		MESSAGE_BEGIN(MSG_SPEC, gmsgHLTV);
+		{
 			WRITE_BYTE(ENTINDEX(edict()));
 			WRITE_BYTE(m_iFOV);
+		}
 		MESSAGE_END();
 	}
 
@@ -6793,7 +6956,9 @@ void EXT_FUNC CBasePlayer::__API_HOOK(UpdateClientData)()
 	if (gDisplayTitle)
 	{
 		MESSAGE_BEGIN(MSG_ONE, gmsgShowGameTitle, nullptr, pev);
+		{
 			WRITE_BYTE(0);
+		}
 		MESSAGE_END();
 
 		gDisplayTitle = FALSE;
@@ -6808,7 +6973,9 @@ void EXT_FUNC CBasePlayer::__API_HOOK(UpdateClientData)()
 
 		// send "health" update message
 		MESSAGE_BEGIN(MSG_ONE, gmsgHealth, nullptr, pev);
+		{
 			WRITE_BYTE(iHealth);
+		}
 		MESSAGE_END();
 
 		m_iClientHealth = int(pev->health);
@@ -6822,7 +6989,9 @@ void EXT_FUNC CBasePlayer::__API_HOOK(UpdateClientData)()
 
 		// send "armor" update message
 		MESSAGE_BEGIN(MSG_ONE, gmsgBattery, nullptr, pev);
+		{
 			WRITE_SHORT(int(pev->armorvalue));
+		}
 		MESSAGE_END();
 	}
 
@@ -6849,12 +7018,14 @@ void EXT_FUNC CBasePlayer::__API_HOOK(UpdateClientData)()
 		int visibleDamageBits = m_bitsDamageType & DMG_SHOWNHUD;
 
 		MESSAGE_BEGIN(MSG_ONE, gmsgDamage, nullptr, pev);
+		{
 			WRITE_BYTE(int(pev->dmg_save));
 			WRITE_BYTE(int(pev->dmg_take));
 			WRITE_LONG(visibleDamageBits);
 			WRITE_COORD(damageOrigin.x);
 			WRITE_COORD(damageOrigin.y);
 			WRITE_COORD(damageOrigin.z);
+		}
 		MESSAGE_END();
 
 		pev->dmg_take = 0;
@@ -6892,7 +7063,9 @@ void EXT_FUNC CBasePlayer::__API_HOOK(UpdateClientData)()
 		}
 
 		MESSAGE_BEGIN(MSG_ONE, gmsgFlashBattery, nullptr, pev);
+		{
 			WRITE_BYTE(m_iFlashBattery);
+		}
 		MESSAGE_END();
 	}
 
@@ -6902,7 +7075,9 @@ void EXT_FUNC CBasePlayer::__API_HOOK(UpdateClientData)()
 
 		// send "train hud" update message
 		MESSAGE_BEGIN(MSG_ONE, gmsgTrain, nullptr, pev);
+		{
 			WRITE_BYTE(m_iTrain & 0xF);
+		}
 		MESSAGE_END();
 
 		m_iTrain &= ~TRAIN_NEW;
@@ -6985,10 +7160,12 @@ void EXT_FUNC CBasePlayer::__API_HOOK(UpdateClientData)()
 				if (pPlayer->m_iTeam == m_iTeam)
 				{
 					MESSAGE_BEGIN(MSG_ONE, gmsgRadar, nullptr, pPlayer->pev);
+					{
 						WRITE_BYTE(entindex());
 						WRITE_COORD(vecOrigin.x);
 						WRITE_COORD(vecOrigin.y);
 						WRITE_COORD(vecOrigin.z);
+					}
 					MESSAGE_END();
 				}
 			}
@@ -7301,8 +7478,10 @@ void CBasePlayer::UpdateStatusBar()
 	if (Q_strcmp(sbuf0, m_SbarString0) != 0)
 	{
 		MESSAGE_BEGIN(MSG_ONE, gmsgStatusText, nullptr, pev);
+		{
 			WRITE_BYTE(0);
 			WRITE_STRING(sbuf0);
+		}
 		MESSAGE_END();
 
 		Q_strcpy(m_SbarString0, sbuf0);
@@ -7317,8 +7496,10 @@ void CBasePlayer::UpdateStatusBar()
 		if (newSBarState[i] != m_izSBarState[i] || bForceResend)
 		{
 			MESSAGE_BEGIN(MSG_ONE, gmsgStatusValue, nullptr, pev);
+			{
 				WRITE_BYTE(i);
 				WRITE_SHORT(newSBarState[i]);
+			}
 			MESSAGE_END();
 
 			m_izSBarState[i] = newSBarState[i];
@@ -7423,10 +7604,12 @@ CBaseEntity *EXT_FUNC CBasePlayer::__API_HOOK(DropPlayerItem)(const char *pszIte
 							ClientPrint(pOther->pev, HUD_PRINTCENTER, "#Game_bomb_drop", STRING(pev->netname));
 
 							MESSAGE_BEGIN(MSG_ONE, gmsgBombDrop, nullptr, pOther->pev);
+							{
 								WRITE_COORD(pev->origin.x);
 								WRITE_COORD(pev->origin.y);
 								WRITE_COORD(pev->origin.z);
 								WRITE_BYTE(BOMB_FLAG_DROPPED);
+							}
 							MESSAGE_END();
 						}
 					}
@@ -7602,8 +7785,10 @@ void CBasePlayer::__API_HOOK(SwitchTeam)()
 	SetClientUserInfoModel(GET_INFO_BUFFER(edict()), szNewModel);
 
 	MESSAGE_BEGIN(MSG_ALL, gmsgTeamInfo);
+	{
 		WRITE_BYTE(entindex());
 		WRITE_STRING(GetTeamName(m_iTeam));
+	}
 	MESSAGE_END();
 
 	if (TheBots)
@@ -7636,8 +7821,10 @@ void CBasePlayer::__API_HOOK(SwitchTeam)()
 		pev->body = 0;
 
 		MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev);
+		{
 			WRITE_BYTE(STATUSICON_HIDE);
 			WRITE_STRING("defuser");
+		}
 		MESSAGE_END();
 
 		SendItemStatus();
@@ -8081,6 +8268,7 @@ void CBasePlayer::SpawnClientSideCorpse()
 	char *pModel = GET_KEY_VALUE(infobuffer, "model");
 
 	MESSAGE_BEGIN(MSG_ALL, gmsgSendCorpse);
+	{
 		WRITE_STRING(pModel);
 		WRITE_LONG(pev->origin.x * 128);
 		WRITE_LONG(pev->origin.y * 128);
@@ -8093,6 +8281,7 @@ void CBasePlayer::SpawnClientSideCorpse()
 		WRITE_BYTE(pev->body);
 		WRITE_BYTE(m_iTeam);
 		WRITE_BYTE(entindex());
+	}
 	MESSAGE_END();
 
 	m_canSwitchObserverModes = true;
@@ -9177,15 +9366,19 @@ void CBasePlayer::UpdateLocation(bool forceUpdate)
 		if (pPlayer->m_iTeam == m_iTeam || pPlayer->m_iTeam == SPECTATOR)
 		{
 			MESSAGE_BEGIN(MSG_ONE, gmsgLocation, nullptr, pPlayer->edict());
+			{
 				WRITE_BYTE(entindex());
 				WRITE_STRING(m_lastLocation);
+			}
 			MESSAGE_END();
 		}
 		else if (forceUpdate)
 		{
 			MESSAGE_BEGIN(MSG_ONE, gmsgLocation, nullptr, pPlayer->edict());
+			{
 				WRITE_BYTE(entindex());
 				WRITE_STRING("");
+			}
 			MESSAGE_END();
 		}
 	}
@@ -9239,8 +9432,10 @@ void CBasePlayer::ReloadWeapons(CBasePlayerItem *pWeapon, bool bForceReload, boo
 void CBasePlayer::TeamChangeUpdate()
 {
 	MESSAGE_BEGIN(MSG_ALL, gmsgTeamInfo);
+	{
 		WRITE_BYTE(entindex());
 		WRITE_STRING(GetTeamName(m_iTeam));
+	}
 	MESSAGE_END();
 
 	if (m_iTeam != UNASSIGNED)
@@ -9368,10 +9563,12 @@ void CBasePlayer::HideTimer()
 {
 	// HACK HACK, we need to hide only the timer.
 	MESSAGE_BEGIN(MSG_ONE, gmsgBombDrop, nullptr, pev);
+	{
 		WRITE_COORD(0);
 		WRITE_COORD(0);
 		WRITE_COORD(0);
 		WRITE_BYTE(BOMB_FLAG_PLANTED);
+	}
 	MESSAGE_END();
 
 	MESSAGE_BEGIN(MSG_ONE, gmsgBombPickup, nullptr, pev);
@@ -9460,21 +9657,27 @@ bool EXT_FUNC CBasePlayer::__API_HOOK(GetIntoGame)()
 		CSGameRules()->CheckWinConditions();
 
 		MESSAGE_BEGIN(MSG_ALL, gmsgTeamInfo);
+		{
 			WRITE_BYTE(entindex());
 			WRITE_STRING(GetTeamName(m_iTeam));
+		}
 		MESSAGE_END();
 
 		MESSAGE_BEGIN(MSG_ALL, gmsgLocation);
+		{
 			WRITE_BYTE(entindex());
 			WRITE_STRING("");
+		}
 		MESSAGE_END();
 
 		MESSAGE_BEGIN(MSG_ALL, gmsgScoreInfo);
+		{
 			WRITE_BYTE(ENTINDEX(edict()));
 			WRITE_SHORT(int(pev->frags));
 			WRITE_SHORT(m_iDeaths);
 			WRITE_SHORT(0);
 			WRITE_SHORT(m_iTeam);
+		}
 		MESSAGE_END();
 
 		if (!(m_flDisplayHistory & DHF_SPEC_DUCK))

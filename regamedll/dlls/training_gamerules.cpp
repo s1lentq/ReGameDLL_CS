@@ -123,12 +123,15 @@ void CHalfLifeTraining::PlayerThink(CBasePlayer *pPlayer)
 			if (!fVisitedBuyArea)
 			{
 				MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pPlayer->pev);
+				{
 					WRITE_BYTE(STATUSICON_FLASH);
 					WRITE_STRING("buyzone");
 					WRITE_BYTE(0);
 					WRITE_BYTE(160);
 					WRITE_BYTE(0);
+				}
 				MESSAGE_END();
+
 			}
 		}
 
@@ -142,16 +145,22 @@ void CHalfLifeTraining::PlayerThink(CBasePlayer *pPlayer)
 			if (!fVisitedBuyArea)
 			{
 				MESSAGE_BEGIN(MSG_ONE, gmsgBlinkAcct, nullptr, pPlayer->pev);
+				{
 					WRITE_BYTE(3);
+				}
 				MESSAGE_END();
 
+
 				MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pPlayer->pev);
+				{
 					WRITE_BYTE(STATUSICON_SHOW);
 					WRITE_STRING("buyzone");
 					WRITE_BYTE(0);
 					WRITE_BYTE(160);
 					WRITE_BYTE(0);
+				}
 				MESSAGE_END();
+
 
 				fVisitedBuyArea = TRUE;
 			}

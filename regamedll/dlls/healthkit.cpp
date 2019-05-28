@@ -34,8 +34,11 @@ BOOL CHealthKit::MyTouch(CBasePlayer *pPlayer)
 	if (pPlayer->TakeHealth(healthValue, DMG_GENERIC))
 	{
 		MESSAGE_BEGIN(MSG_ONE, gmsgItemPickup, nullptr, pPlayer->pev);
+		{
 			WRITE_STRING(pev->classname);
+		}
 		MESSAGE_END();
+
 
 		EMIT_SOUND(ENT(pPlayer->pev), CHAN_ITEM, "items/smallmedkit1.wav", VOL_NORM, ATTN_NORM);
 

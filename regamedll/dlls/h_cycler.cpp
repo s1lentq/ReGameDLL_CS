@@ -350,6 +350,7 @@ void CWreckage::Think()
 	vecSrc.z = RANDOM_FLOAT(pev->absmin.z, pev->absmax.z);
 
 	MESSAGE_BEGIN(MSG_PVS, SVC_TEMPENTITY, vecSrc);
+	{
 		WRITE_BYTE(TE_SMOKE);
 		WRITE_COORD(vecSrc.x);
 		WRITE_COORD(vecSrc.y);
@@ -357,5 +358,7 @@ void CWreckage::Think()
 		WRITE_SHORT(g_sModelIndexSmoke);
 		WRITE_BYTE(RANDOM_LONG(0, 49) + 50);	// scale * 10
 		WRITE_BYTE(RANDOM_LONG(0, 3) + 8);		// framerate
+	}
 	MESSAGE_END();
+
 }
