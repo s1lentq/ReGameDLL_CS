@@ -3355,27 +3355,31 @@ void CHalfLifeMultiplay::InitHUD(CBasePlayer *pl)
 			}
 		}
 #ifdef REGAMEDLL_ADD
-		int m_iAccount = -1;
 		int m_iHealth = -1;
+		int m_iAccount = -1;
 
 		if (pl->m_iTeam == plr->m_iTeam || pl->m_iTeam == TeamName::SPECTATOR
 			|| pl->m_iTeam == TeamName::UNASSIGNED)
 		{
-			if (scoreboard_showmoney.value > 0.0f)
-				m_iAccount = plr->m_iAccount;
 			if (scoreboard_showhealth.value > 0.0f)
 				m_iHealth = plr->m_iClientHealth;
+			if (scoreboard_showmoney.value > 0.0f)
+				m_iAccount = plr->m_iAccount;
 		}
-
-		MESSAGE_BEGIN(MSG_ONE, gmsgHealthInfo, nullptr, pl->edict());
-			WRITE_BYTE(plr->entindex());
-			WRITE_LONG(m_iHealth);
-		MESSAGE_END();
-
-		MESSAGE_BEGIN(MSG_ONE, gmsgAccount, nullptr, pl->edict());
-			WRITE_BYTE(plr->entindex());
-			WRITE_LONG(m_iAccount);
-		MESSAGE_END();
+		if (scoreboard_showhealth.value > 0.0f)
+		{
+			MESSAGE_BEGIN(MSG_ONE, gmsgHealthInfo, nullptr, pl->edict());
+				WRITE_BYTE(plr->entindex());
+				WRITE_LONG(m_iHealth);
+			MESSAGE_END();
+		}
+		if (scoreboard_showmoney.value > 0.0f)
+		{
+			MESSAGE_BEGIN(MSG_ONE, gmsgAccount, nullptr, pl->edict());
+				WRITE_BYTE(plr->entindex());
+				WRITE_LONG(m_iAccount);
+			MESSAGE_END();
+		}
 #endif
 	}
 

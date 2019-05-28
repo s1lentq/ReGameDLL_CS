@@ -7006,27 +7006,31 @@ void EXT_FUNC CBasePlayer::__API_HOOK(UpdateClientData)()
 			if (pPlayer->pev->flags == FL_DORMANT)
 				continue;
 	
-			int m_iAccount = -1;
 			int m_iHealth = -1;
+			int m_iAccount = -1;
 
 			if (m_iTeam == pPlayer->m_iTeam || m_iTeam == TeamName::SPECTATOR
 				|| m_iTeam == TeamName::UNASSIGNED)
 			{
-				if (scoreboard_showmoney.value > 0.0f)
-					m_iAccount = pPlayer->m_iAccount;
 				if (scoreboard_showhealth.value > 0.0f)
 					m_iHealth = pPlayer->m_iClientHealth;
+				if (scoreboard_showmoney.value > 0.0f)
+					m_iAccount = pPlayer->m_iAccount;
 			}
-
-			MESSAGE_BEGIN(MSG_ONE, gmsgHealthInfo, nullptr, edict());
-				WRITE_BYTE(pPlayer->entindex());
-				WRITE_LONG(m_iHealth);
-			MESSAGE_END();
-
-			MESSAGE_BEGIN(MSG_ONE, gmsgAccount, nullptr, edict());
-				WRITE_BYTE(pPlayer->entindex());
-				WRITE_LONG(m_iAccount);
-			MESSAGE_END();
+			if (scoreboard_showhealth.value > 0.0f)
+			{
+				MESSAGE_BEGIN(MSG_ONE, gmsgHealthInfo, nullptr, edict());
+					WRITE_BYTE(pPlayer->entindex());
+					WRITE_LONG(m_iHealth);
+				MESSAGE_END();
+			}
+			if (scoreboard_showmoney.value > 0.0f)
+			{
+				MESSAGE_BEGIN(MSG_ONE, gmsgAccount, nullptr, edict());
+					WRITE_BYTE(pPlayer->entindex());
+					WRITE_LONG(m_iAccount);
+				MESSAGE_END();
+			}
 		}
 #endif
 		m_vLastOrigin = pev->origin;
