@@ -1878,6 +1878,15 @@ BOOL EXT_FUNC __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *pPlayer, int slot)
 		return FALSE;
 	}
 
+#ifdef REGAMEDLL_FIXES
+	if (team != UNASSIGNED && team != SPECTATOR)
+	{
+		// Tabulate the number of players on each team.
+		CSGameRules()->m_iNumCT = CountTeamPlayers(CT);
+		CSGameRules()->m_iNumTerrorist = CountTeamPlayers(TERRORIST);
+	}
+#endif
+
 	// If the code gets this far, the team is not TEAM_UNASSIGNED
 	// Player is switching to a new team (It is possible to switch to the
 	// same team just to choose a new appearance)
