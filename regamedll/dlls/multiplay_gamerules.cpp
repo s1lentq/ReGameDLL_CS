@@ -3361,8 +3361,10 @@ void CHalfLifeMultiplay::InitHUD(CBasePlayer *pl)
 		if (pl->m_iTeam == plr->m_iTeam || pl->m_iTeam == TeamName::SPECTATOR
 			|| pl->m_iTeam == TeamName::UNASSIGNED)
 		{
-			m_iAccount = plr->m_iAccount;
-			m_iHealth = plr->m_iClientHealth;
+			if (scoreboard_showmoney.value > 0.0f)
+				m_iAccount = plr->m_iAccount;
+			if (scoreboard_showhealth.value > 0.0f)
+				m_iHealth = plr->m_iClientHealth;
 		}
 
 		MESSAGE_BEGIN(MSG_ONE, gmsgHealthInfo, nullptr, pl->edict());

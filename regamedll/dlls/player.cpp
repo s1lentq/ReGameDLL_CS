@@ -7012,8 +7012,10 @@ void EXT_FUNC CBasePlayer::__API_HOOK(UpdateClientData)()
 			if (m_iTeam == pPlayer->m_iTeam || m_iTeam == TeamName::SPECTATOR
 				|| m_iTeam == TeamName::UNASSIGNED)
 			{
-				m_iAccount = pPlayer->m_iAccount;
-				m_iHealth = pPlayer->m_iClientHealth;
+				if (scoreboard_showmoney.value > 0.0f)
+					m_iAccount = pPlayer->m_iAccount;
+				if (scoreboard_showhealth.value > 0.0f)
+					m_iHealth = pPlayer->m_iClientHealth;
 			}
 
 			MESSAGE_BEGIN(MSG_ONE, gmsgHealthInfo, nullptr, edict());

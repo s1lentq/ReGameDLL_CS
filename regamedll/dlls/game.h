@@ -158,6 +158,8 @@ extern cvar_t kill_filled_spawn;
 extern cvar_t allow_point_servercommand;
 extern cvar_t hullbounds_sets;
 
+extern cvar_t scoreboard_showmoney;
+extern cvar_t scoreboard_showhealth;
 #endif
 
 void GameDLLInit();
