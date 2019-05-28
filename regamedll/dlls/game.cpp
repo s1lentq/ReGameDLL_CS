@@ -121,6 +121,7 @@ cvar_t kill_filled_spawn       = { "mp_kill_filled_spawn", "1", FCVAR_SERVER, 0.
 cvar_t dead_see_alive          = { "mp_chat_dead_see_alive", "0", FCVAR_SERVER, 0.0f, nullptr };
 
 cvar_t allow_point_servercommand = { "mp_allow_point_servercommand", "0", 0, 0.0f, nullptr };
+cvar_t hullbounds_sets           = { "mp_hullbounds_sets", "1", 0, 0.0f, nullptr };
 
 void GameDLL_Version_f()
 {
@@ -291,8 +292,9 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&legacy_bombtarget_touch);
 	CVAR_REGISTER(&respawn_immunitytime);
 	CVAR_REGISTER(&kill_filled_spawn);
+	CVAR_REGISTER(&dead_see_alive);
 	CVAR_REGISTER(&allow_point_servercommand);
-  CVAR_REGISTER(&dead_see_alive);
+	CVAR_REGISTER(&hullbounds_sets);
 
 	// print version
 	CONSOLE_ECHO("ReGameDLL version: " APP_VERSION "\n");
@@ -306,4 +308,11 @@ void EXT_FUNC GameDLLInit()
 #ifdef REGAMEDLL_FIXES
 	VoiceGameMgr_RegisterCVars();
 #endif
+
+#ifdef REGAMEDLL_ADD
+	// execute initial pre-configurations
+	SERVER_COMMAND("exec game.cfg\n");
+	SERVER_EXECUTE();
+#endif
+
 }
