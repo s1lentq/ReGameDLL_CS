@@ -797,13 +797,6 @@ bool CCSBotManager::BotAddCommand(BotProfileTeamType team, bool isFromConsole)
 			CVAR_SET_FLOAT("bot_quota", cv_bot_quota.value + 1);
 		}
 	}
-#ifdef REGAMEDLL_FIXES
-	else
-	{
-		// decrease the bot quota
-		CVAR_SET_FLOAT("bot_quota", cv_bot_quota.value - 1);
-	}
-#endif
 
 	return true;
 }
@@ -855,7 +848,11 @@ void CCSBotManager::MaintainBotQuota()
 	if (desiredBotCount > occupiedBotSlots)
 	{
 		// don't try to add a bot if all teams are full
+#ifndef REGAMEDLL_FIXES
 		if (!CSGameRules()->TeamFull(TERRORIST) || !CSGameRules()->TeamFull(CT))
+#else
+		if (!CSGameRules()->TeamFull(TERRORIST) && !CSGameRules()->TeamFull(CT))
+#endif
 		{
 #ifndef REGAMEDLL_FIXES
 			if (AreBotsAllowed())
