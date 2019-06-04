@@ -5068,7 +5068,10 @@ void CBasePlayer::SetScoreAttrib(CBasePlayer *dest)
 
 	if (m_bIsVIP)
 		state |= SCORE_STATUS_VIP;
-
+#ifdef REGAMEDLL_ADD
+	if (m_bHasDefuser)
+		state |= SCORE_STATUS_DEFUSER;
+#endif
 	if (gmsgScoreAttrib)
 	{
 		MESSAGE_BEGIN(MSG_ONE, gmsgScoreAttrib, nullptr, dest->pev);
