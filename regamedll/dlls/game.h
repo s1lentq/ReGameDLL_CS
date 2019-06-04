@@ -160,4 +160,7 @@ extern cvar_t hullbounds_sets;
 
 #endif
 
+extern cvar_t scoreboard_showmoney;
+extern cvar_t scoreboard_showhealth;
+
 void GameDLLInit();

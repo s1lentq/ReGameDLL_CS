@@ -82,7 +82,8 @@ int gmsgBotProgress = 0;
 int gmsgBrass = 0;
 int gmsgFog = 0;
 int gmsgShowTimer = 0;
-
+int gmsgAccount = 0;
+int gmsgHealthInfo = 0;
 bool g_bClientPrintEnable = true;
 
 char *sPlayerModelFiles[] =
@@ -223,6 +224,11 @@ void LinkUserMessages()
 	gmsgFog           = REG_USER_MSG("Fog", 7);
 	gmsgShowTimer     = REG_USER_MSG("ShowTimer", 0);
 	gmsgHudTextArgs   = REG_USER_MSG("HudTextArgs", -1);
+
+#ifdef BUILD_LATEST
+	gmsgAccount       = REG_USER_MSG("Account", 5);
+	gmsgHealthInfo    = REG_USER_MSG("HealthInfo", 5);
+#endif
 }
 
 void WriteSigonMessages()
@@ -1426,6 +1432,10 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 				EMIT_SOUND(ENT(pPlayer->pev), CHAN_ITEM, "items/kevlar.wav", VOL_NORM, ATTN_NORM);
 #endif
 				pPlayer->SendItemStatus();
+
+#ifdef BUILD_LATEST
+				pPlayer->SetScoreboardAttributes();
+#endif
 			}
 			break;
 		}

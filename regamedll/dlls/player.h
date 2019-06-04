@@ -606,6 +606,8 @@ public:
 	void HideTimer();
 	bool MakeBomber();
 	bool GetIntoGame();
+	bool ShouldToShowAccount(CBasePlayer *pReceiver) const;
+	bool ShouldToShowHealthInfo(CBasePlayer *pReceiver) const;
 
 	CBasePlayerItem *GetItemByName(const char *itemName);
 	CBasePlayerItem *GetItemById(WeaponIdType weaponID);
@@ -864,6 +866,12 @@ public:
 	float m_silentTimestamp;
 	MusicState m_musicState;
 	float m_flLastCommandTime[COMMANDS_TO_TRACK];
+
+#ifdef BUILD_LATEST
+	int m_iLastAccount;
+	int m_iLastClientHealth;
+	float m_tmNextAccountHealthUpdate;
+#endif
 };
 
 class CWShield: public CBaseEntity

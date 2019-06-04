@@ -122,6 +122,9 @@ cvar_t kill_filled_spawn       = { "mp_kill_filled_spawn", "1", FCVAR_SERVER, 0.
 cvar_t allow_point_servercommand = { "mp_allow_point_servercommand", "0", 0, 0.0f, nullptr };
 cvar_t hullbounds_sets           = { "mp_hullbounds_sets", "1", 0, 0.0f, nullptr };
 
+cvar_t scoreboard_showmoney      = { "mp_scoreboard_showmoney", "3", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t scoreboard_showhealth     = { "mp_scoreboard_showhealth", "3", FCVAR_SERVER, 0.0f, nullptr };
+
 void GameDLL_Version_f()
 {
 	if (Q_stricmp(CMD_ARGV(1), "version") != 0)
@@ -213,6 +216,11 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&fragsleft);
 	CVAR_REGISTER(&timeleft);
 	CVAR_REGISTER(&humans_join_team);
+
+#ifdef BUILD_LATEST
+	CVAR_REGISTER(&scoreboard_showhealth);
+	CVAR_REGISTER(&scoreboard_showmoney);
+#endif
 
 // Remove unused cvars
 #ifndef REGAMEDLL_FIXES
