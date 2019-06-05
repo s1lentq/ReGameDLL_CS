@@ -861,6 +861,10 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 						bTeamAttack = TRUE;
 
 					pAttack = CBasePlayer::Instance(pevAttacker);
+
+					flDamage *= clamp((pAttack == this) ?
+						ff_damage_reduction_grenade_self.value :
+						ff_damage_reduction_grenade.value, 0.0f, 1.0f);
 				}
 #ifdef REGAMEDLL_ADD
 				else if (CSGameRules()->IsFreeForAll())
@@ -868,9 +872,18 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 					pAttack = CBasePlayer::Instance(pevAttacker);
 				}
 #endif
-				else if (pGrenade->m_iTeam == m_iTeam && (&edict()->v != pevAttacker))
+				else if (pGrenade->m_iTeam == m_iTeam)
 				{
-					return FALSE;
+					// if cvar friendlyfire is disabled
+					// and if the victim is teammate then ignore this damage
+					if (&edict()->v != pevAttacker)
+					{
+						return FALSE;
+					}
+
+#ifdef REGAMEDLL_ADD
+					flDamage *= clamp(ff_damage_reduction_grenade_self.value, 0.0f, 1.0f);
+#endif
 				}
 			}
 		}
@@ -1054,8 +1067,14 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 
 		if (!bAttackFFA && pAttack->m_iTeam == m_iTeam)
 		{
+#ifdef REGAMEDLL_ADD
 			// bullets hurt teammates less
+			flDamage *= clamp((bitsDamageType & DMG_BULLET) ?
+				ff_damage_reduction_bullets.value :
+				ff_damage_reduction_other.value, 0.0f, 1.0f);
+#else
 			flDamage *= 0.35;
+#endif // #ifdef REGAMEDLL_ADD
 		}
 
 		if (pAttack->m_pActiveItem)
@@ -7199,7 +7218,7 @@ bool EXT_FUNC CBasePlayer::__API_HOOK(HintMessageEx)(const char *pMessage, float
 
 bool EXT_FUNC CBasePlayer::HintMessage(const char *pMessage, BOOL bDisplayIfPlayerDead, BOOL bOverride)
 {
-	return HintMessageEx(pMessage, 6.0f, bDisplayIfPlayerDead, bOverride);
+	return HintMessageEx(pMessage, 6.0f, bDisplayIfPlayerDead == TRUE, bOverride == TRUE);
 }
 
 Vector CBasePlayer::GetAutoaimVector(float flDelta)
