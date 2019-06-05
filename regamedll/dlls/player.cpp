@@ -862,9 +862,11 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 
 					pAttack = CBasePlayer::Instance(pevAttacker);
 
-					flDamage *= clamp((pAttack == this) ?
+#ifdef REGAMEDLL_ADD
+					flDamage *= clamp(((pAttack == this) ?
 						ff_damage_reduction_grenade_self.value :
-						ff_damage_reduction_grenade.value, 0.0f, 1.0f);
+						ff_damage_reduction_grenade.value), 0.0f, 1.0f);
+#endif
 				}
 #ifdef REGAMEDLL_ADD
 				else if (CSGameRules()->IsFreeForAll())
@@ -1069,9 +1071,9 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 		{
 #ifdef REGAMEDLL_ADD
 			// bullets hurt teammates less
-			flDamage *= clamp((bitsDamageType & DMG_BULLET) ?
+			flDamage *= clamp(((bitsDamageType & DMG_BULLET) ?
 				ff_damage_reduction_bullets.value :
-				ff_damage_reduction_other.value, 0.0f, 1.0f);
+				ff_damage_reduction_other.value), 0.0f, 1.0f);
 #else
 			flDamage *= 0.35;
 #endif // #ifdef REGAMEDLL_ADD
