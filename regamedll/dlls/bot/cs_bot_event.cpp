@@ -291,7 +291,8 @@ void CCSBot::OnEvent(GameEventType event, CBaseEntity *pEntity, CBaseEntity *pOt
 		if ((pEntity->pev->origin - pev->origin).IsLengthGreaterThan(1000.0f))
 			return;
 
-		if (IsVisible(&pEntity->Center()))
+		Vector vecHostageOrigin = pEntity->Center();
+		if (IsVisible(&vecHostageOrigin))
 		{
 			m_task = COLLECT_HOSTAGES;
 			m_taskEntity = nullptr;

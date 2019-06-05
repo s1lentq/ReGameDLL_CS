@@ -127,7 +127,7 @@ void CFuncVehicle::Blocked(CBaseEntity *pOther)
 		|| pOther->pev->origin.x > maxx
 		|| pOther->pev->origin.y < miny
 		|| pOther->pev->origin.y > maxy
-		|| pOther->pev->origin.z < pev->origin.z
+		|| pOther->pev->origin.z < minz
 		|| pOther->pev->origin.z > maxz)
 	{
 		pOther->TakeDamage(pev, pev, 150, DMG_CRUSH);
