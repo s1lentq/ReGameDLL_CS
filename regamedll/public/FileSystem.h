@@ -199,3 +199,8 @@ public:
 #define IBaseFileSystem IFileSystem
 
 #define FILESYSTEM_INTERFACE_VERSION "VFileSystem009"
+
+bool FileSystem_Init();
+void FileSystem_Shutdown();
+
+extern IBaseFileSystem *g_pFileSystem;

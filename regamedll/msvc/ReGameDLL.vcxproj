@@ -521,6 +521,7 @@
     <ClCompile Include="..\pm_shared\pm_debug.cpp" />
     <ClCompile Include="..\pm_shared\pm_math.cpp" />
     <ClCompile Include="..\pm_shared\pm_shared.cpp" />
+    <ClCompile Include="..\public\FileSystem.cpp" />
     <ClCompile Include="..\public\interface.cpp" />
     <ClCompile Include="..\public\MemPool.cpp" />
     <ClCompile Include="..\public\tier0\dbg.cpp">

@@ -990,17 +990,23 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 
 	MESSAGE_END();
 
-	// echo to server console
-	if (pszConsoleFormat)
+#ifdef REGAMEDLL_FIXES
+	// don't to type for listenserver
+	if (IS_DEDICATED_SERVER())
+#endif
 	{
-		if (placeName && consoleUsesPlaceName)
-			SERVER_PRINT(UTIL_VarArgs(pszConsoleFormat, STRING(pPlayer->pev->netname), placeName, text));
+		// echo to server console
+		if (pszConsoleFormat)
+		{
+			if (placeName && consoleUsesPlaceName)
+				SERVER_PRINT(UTIL_VarArgs(pszConsoleFormat, STRING(pPlayer->pev->netname), placeName, text));
+			else
+				SERVER_PRINT(UTIL_VarArgs(pszConsoleFormat, STRING(pPlayer->pev->netname), text));
+		}
 		else
-			SERVER_PRINT(UTIL_VarArgs(pszConsoleFormat, STRING(pPlayer->pev->netname), text));
-	}
-	else
-	{
-		SERVER_PRINT(text);
+		{
+			SERVER_PRINT(text);
+		}
 	}
 
 	if (logmessages.value)
