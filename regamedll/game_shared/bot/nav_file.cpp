@@ -84,7 +84,7 @@ void PlaceDirectory::Save(int fd)
 	_write(fd, &count, sizeof(EntryType));
 
 	// store entries
-	for (auto id : m_directory)
+	for (auto &id : m_directory)
 	{
 		auto placeName = TheBotPhrases->IDToName(id);
 
@@ -161,7 +161,7 @@ void CNavArea::Save(int fd, unsigned int version)
 		size_t count = m_connect[d].size();
 		_write(fd, &count, sizeof(size_t));
 
-		for (auto connect : m_connect[d]) {
+		for (auto &connect : m_connect[d]) {
 			_write(fd, &connect.area->m_id, sizeof(unsigned int));
 		}
 	}
@@ -236,7 +236,7 @@ void CNavArea::Save(int fd, unsigned int version)
 		if (cv_bot_debug.value > 0.0f)
 			CONSOLE_ECHO("  m_spotEncounterList.size() = %d\n", count);
 
-		for (auto spote : m_spotEncounterList)
+		for (auto &spote : m_spotEncounterList)
 		{
 			if (spote.from.area)
 				_write(fd, &spote.from.area->m_id, sizeof(unsigned int));
@@ -268,7 +268,7 @@ void CNavArea::Save(int fd, unsigned int version)
 			_write(fd, &spotCount, sizeof(unsigned char));
 
 			saveCount = 0;
-			for (auto order : spote.spotList)
+			for (auto &order : spote.spotList)
 			{
 				// order->spot may be NULL if we've loaded a nav mesh that has been edited but not re-analyzed
 				unsigned int id = (order.spot) ? order.spot->GetID() : 0;

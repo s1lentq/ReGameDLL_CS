@@ -82,7 +82,8 @@ int gmsgBotProgress = 0;
 int gmsgBrass = 0;
 int gmsgFog = 0;
 int gmsgShowTimer = 0;
-
+int gmsgAccount = 0;
+int gmsgHealthInfo = 0;
 bool g_bClientPrintEnable = true;
 
 char *sPlayerModelFiles[] =
@@ -223,6 +224,11 @@ void LinkUserMessages()
 	gmsgFog           = REG_USER_MSG("Fog", 7);
 	gmsgShowTimer     = REG_USER_MSG("ShowTimer", 0);
 	gmsgHudTextArgs   = REG_USER_MSG("HudTextArgs", -1);
+
+#ifdef BUILD_LATEST
+	gmsgAccount       = REG_USER_MSG("Account", 5);
+	gmsgHealthInfo    = REG_USER_MSG("HealthInfo", 5);
+#endif
 }
 
 void WriteSigonMessages()
@@ -984,17 +990,23 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 
 	MESSAGE_END();
 
-	// echo to server console
-	if (pszConsoleFormat)
+#ifdef REGAMEDLL_FIXES
+	// don't to type for listenserver
+	if (IS_DEDICATED_SERVER())
+#endif
 	{
-		if (placeName && consoleUsesPlaceName)
-			SERVER_PRINT(UTIL_VarArgs(pszConsoleFormat, STRING(pPlayer->pev->netname), placeName, text));
+		// echo to server console
+		if (pszConsoleFormat)
+		{
+			if (placeName && consoleUsesPlaceName)
+				SERVER_PRINT(UTIL_VarArgs(pszConsoleFormat, STRING(pPlayer->pev->netname), placeName, text));
+			else
+				SERVER_PRINT(UTIL_VarArgs(pszConsoleFormat, STRING(pPlayer->pev->netname), text));
+		}
 		else
-			SERVER_PRINT(UTIL_VarArgs(pszConsoleFormat, STRING(pPlayer->pev->netname), text));
-	}
-	else
-	{
-		SERVER_PRINT(text);
+		{
+			SERVER_PRINT(text);
+		}
 	}
 
 	if (logmessages.value)
@@ -1426,6 +1438,10 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 				EMIT_SOUND(ENT(pPlayer->pev), CHAN_ITEM, "items/kevlar.wav", VOL_NORM, ATTN_NORM);
 #endif
 				pPlayer->SendItemStatus();
+
+#ifdef BUILD_LATEST
+				pPlayer->SetScoreboardAttributes();
+#endif
 			}
 			break;
 		}

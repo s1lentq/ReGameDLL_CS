@@ -533,6 +533,10 @@ typedef IHookChainRegistryClassImpl<void, CBasePlayer> CReGameHookRegistry_CBase
 typedef IHookChainImpl<bool, Vector &, Vector &, entvars_t *, edict_t *> CReGameHook_IsPenetrableEntity;
 typedef IHookChainRegistryImpl<bool, Vector &, Vector &, entvars_t *, edict_t *> CReGameHookRegistry_IsPenetrableEntity;
 
+// CBasePlayer::HintMessage hook
+typedef IHookChainClassImpl<bool, CBasePlayer, const char *, float, bool, bool> CReGameHook_CBasePlayer_HintMessageEx;
+typedef IHookChainRegistryClassImpl<bool, CBasePlayer, const char *, float, bool, bool> CReGameHookRegistry_CBasePlayer_HintMessageEx;
+
 class CReGameHookchains: public IReGameHookchains {
 public:
 	// CBasePlayer virtual
@@ -640,6 +644,8 @@ public:
 	CReGameHookRegistry_CBasePlayer_SetSpawnProtection m_CBasePlayer_SetSpawnProtection;
 	CReGameHookRegistry_CBasePlayer_RemoveSpawnProtection m_CBasePlayer_RemoveSpawnProtection;
 	CReGameHookRegistry_IsPenetrableEntity m_IsPenetrableEntity;
+	CReGameHookRegistry_CBasePlayer_HintMessageEx m_CBasePlayer_HintMessageEx;
+
 public:
 	virtual IReGameHookRegistry_CBasePlayer_Spawn *CBasePlayer_Spawn();
 	virtual IReGameHookRegistry_CBasePlayer_Precache *CBasePlayer_Precache();
@@ -700,7 +706,7 @@ public:
 	virtual IReGameHookRegistry_BuyGunAmmo *BuyGunAmmo();
 	virtual IReGameHookRegistry_BuyWeaponByWeaponID *BuyWeaponByWeaponID();
 	virtual IReGameHookRegistry_InternalCommand *InternalCommand();
-	
+
 	virtual IReGameHookRegistry_CSGameRules_FShouldSwitchWeapon *CSGameRules_FShouldSwitchWeapon();
 	virtual IReGameHookRegistry_CSGameRules_GetNextBestWeapon *CSGameRules_GetNextBestWeapon();
 	virtual IReGameHookRegistry_CSGameRules_FlPlayerFallDamage *CSGameRules_FlPlayerFallDamage();
@@ -745,6 +751,7 @@ public:
 	virtual IReGameHookRegistry_CBasePlayer_SetSpawnProtection *CBasePlayer_SetSpawnProtection();
 	virtual IReGameHookRegistry_CBasePlayer_RemoveSpawnProtection *CBasePlayer_RemoveSpawnProtection();
 	virtual IReGameHookRegistry_IsPenetrableEntity *IsPenetrableEntity();
+	virtual IReGameHookRegistry_CBasePlayer_HintMessageEx *CBasePlayer_HintMessageEx();
 };
 
 extern CReGameHookchains g_ReGameHookchains;

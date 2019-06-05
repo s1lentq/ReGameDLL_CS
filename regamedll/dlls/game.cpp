@@ -123,6 +123,14 @@ cvar_t afk_bomb_drop_time      = { "mp_afk_bomb_drop_time", "0", 0, 0.0f, nullpt
 cvar_t allow_point_servercommand = { "mp_allow_point_servercommand", "0", 0, 0.0f, nullptr };
 cvar_t hullbounds_sets           = { "mp_hullbounds_sets", "1", 0, 0.0f, nullptr };
 
+cvar_t scoreboard_showmoney      = { "mp_scoreboard_showmoney", "3", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t scoreboard_showhealth     = { "mp_scoreboard_showhealth", "3", FCVAR_SERVER, 0.0f, nullptr };
+
+cvar_t ff_damage_reduction_bullets      = { "ff_damage_reduction_bullets",      "0.35", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t ff_damage_reduction_grenade      = { "ff_damage_reduction_grenade",      "0.25", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t ff_damage_reduction_grenade_self = { "ff_damage_reduction_grenade_self", "1",    FCVAR_SERVER, 0.0f, nullptr };
+cvar_t ff_damage_reduction_other        = { "ff_damage_reduction_other",        "0.25", FCVAR_SERVER, 0.0f, nullptr };
+
 void GameDLL_Version_f()
 {
 	if (Q_stricmp(CMD_ARGV(1), "version") != 0)
@@ -215,6 +223,11 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&timeleft);
 	CVAR_REGISTER(&humans_join_team);
 
+#ifdef BUILD_LATEST
+	CVAR_REGISTER(&scoreboard_showhealth);
+	CVAR_REGISTER(&scoreboard_showmoney);
+#endif
+
 // Remove unused cvars
 #ifndef REGAMEDLL_FIXES
 
@@ -296,6 +309,11 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&allow_point_servercommand);
 	CVAR_REGISTER(&hullbounds_sets);
 
+	CVAR_REGISTER(&ff_damage_reduction_bullets);
+	CVAR_REGISTER(&ff_damage_reduction_grenade);
+	CVAR_REGISTER(&ff_damage_reduction_grenade_self);
+	CVAR_REGISTER(&ff_damage_reduction_other);
+
 	// print version
 	CONSOLE_ECHO("ReGameDLL version: " APP_VERSION "\n");
 
@@ -311,7 +329,7 @@ void EXT_FUNC GameDLLInit()
 
 #ifdef REGAMEDLL_ADD
 	// execute initial pre-configurations
-	SERVER_COMMAND("exec game.cfg\n");
+	SERVER_COMMAND("exec game_init.cfg\n");
 	SERVER_EXECUTE();
 #endif
 
