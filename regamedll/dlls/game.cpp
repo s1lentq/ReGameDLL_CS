@@ -317,7 +317,7 @@ void EXT_FUNC GameDLLInit()
 
 #ifdef REGAMEDLL_ADD
 	// execute initial pre-configurations
-	SERVER_COMMAND("exec game.cfg\n");
+	SERVER_COMMAND("exec game_init.cfg\n");
 	SERVER_EXECUTE();
 #endif
 
