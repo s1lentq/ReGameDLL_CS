@@ -421,6 +421,7 @@ public:
 	bool CanSwitchTeam_OrigFunc(TeamName teamToSwap);
 	void SetSpawnProtection_OrigFunc(float flProtectionTime);
 	void RemoveSpawnProtection_OrigFunc();
+	bool HintMessageEx_OrigFunc(const char *pMessage, float duration = 6.0f, bool bDisplayIfPlayerDead = false, bool bOverride = false);
 
 	CCSPlayer *CSPlayer() const;
 #endif // REGAMEDLL_API
@@ -510,6 +511,7 @@ public:
 	CBaseEntity *GiveNamedItemEx(const char *pszName);
 	void EnableControl(BOOL fControl);
 	bool HintMessage(const char *pMessage, BOOL bDisplayIfPlayerDead = FALSE, BOOL bOverride = FALSE);
+	bool HintMessageEx(const char *pMessage, float duration = 6.0f, bool bDisplayIfPlayerDead = false, bool bOverride = false);
 	void SendAmmoUpdate();
 	void SendFOV(int fov);
 	void WaterMove();

@@ -7184,15 +7184,22 @@ void EXT_FUNC CBasePlayer::__API_HOOK(ResetMaxSpeed)()
 	pev->maxspeed = speed;
 }
 
-bool CBasePlayer::HintMessage(const char *pMessage, BOOL bDisplayIfPlayerDead, BOOL bOverride)
+LINK_HOOK_CLASS_CHAIN(bool, CBasePlayer, HintMessageEx, (const char *pMessage, float duration, bool bDisplayIfPlayerDead, bool bOverride), pMessage, duration, bDisplayIfPlayerDead, bOverride)
+
+bool EXT_FUNC CBasePlayer::__API_HOOK(HintMessageEx)(const char *pMessage, float duration, bool bDisplayIfPlayerDead, bool bOverride)
 {
 	if (!bDisplayIfPlayerDead && !IsAlive())
 		return false;
 
 	if (bOverride || m_bShowHints)
-		return m_hintMessageQueue.AddMessage(pMessage, 6.0, true, nullptr);
+		return m_hintMessageQueue.AddMessage(pMessage, duration, true, nullptr);
 
 	return true;
+}
+
+bool EXT_FUNC CBasePlayer::HintMessage(const char *pMessage, BOOL bDisplayIfPlayerDead, BOOL bOverride)
+{
+	return HintMessageEx(pMessage, 6.0f, bDisplayIfPlayerDead, bOverride);
 }
 
 Vector CBasePlayer::GetAutoaimVector(float flDelta)
