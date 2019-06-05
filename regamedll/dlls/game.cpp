@@ -112,15 +112,23 @@ cvar_t showtriggers          = { "showtriggers", "0", 0, 0.0f, nullptr }; // deb
 cvar_t hostagehurtable         = { "mp_hostage_hurtable", "1", FCVAR_SERVER, 1.0f, nullptr };
 cvar_t roundover               = { "mp_roundover", "0", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t forcerespawn            = { "mp_forcerespawn", "0", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t show_radioicon          = { "mp_show_radioicon", "1", FCVAR_SERVER, 1.0f, nullptr };
-cvar_t old_bomb_defused_sound  = { "mp_old_bomb_defused_sound", "1", FCVAR_SERVER, 1.0f, nullptr };
+cvar_t show_radioicon          = { "mp_show_radioicon", "1", 0, 1.0f, nullptr };
+cvar_t old_bomb_defused_sound  = { "mp_old_bomb_defused_sound", "1", 0, 1.0f, nullptr };
 cvar_t item_staytime           = { "mp_item_staytime", "300", FCVAR_SERVER, 300.0f, nullptr };
-cvar_t legacy_bombtarget_touch = { "mp_legacy_bombtarget_touch", "1", FCVAR_SERVER, 1.0f, nullptr };
+cvar_t legacy_bombtarget_touch = { "mp_legacy_bombtarget_touch", "1", 0, 1.0f, nullptr };
 cvar_t respawn_immunitytime    = { "mp_respawn_immunitytime", "0", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t kill_filled_spawn       = { "mp_kill_filled_spawn", "1", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t kill_filled_spawn       = { "mp_kill_filled_spawn", "1", 0, 0.0f, nullptr };
 
 cvar_t allow_point_servercommand = { "mp_allow_point_servercommand", "0", 0, 0.0f, nullptr };
 cvar_t hullbounds_sets           = { "mp_hullbounds_sets", "1", 0, 0.0f, nullptr };
+
+cvar_t scoreboard_showmoney      = { "mp_scoreboard_showmoney", "3", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t scoreboard_showhealth     = { "mp_scoreboard_showhealth", "3", FCVAR_SERVER, 0.0f, nullptr };
+
+cvar_t ff_damage_reduction_bullets      = { "ff_damage_reduction_bullets",      "0.35", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t ff_damage_reduction_grenade      = { "ff_damage_reduction_grenade",      "0.25", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t ff_damage_reduction_grenade_self = { "ff_damage_reduction_grenade_self", "1",    FCVAR_SERVER, 0.0f, nullptr };
+cvar_t ff_damage_reduction_other        = { "ff_damage_reduction_other",        "0.25", FCVAR_SERVER, 0.0f, nullptr };
 
 void GameDLL_Version_f()
 {
@@ -214,6 +222,11 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&timeleft);
 	CVAR_REGISTER(&humans_join_team);
 
+#ifdef BUILD_LATEST
+	CVAR_REGISTER(&scoreboard_showhealth);
+	CVAR_REGISTER(&scoreboard_showmoney);
+#endif
+
 // Remove unused cvars
 #ifndef REGAMEDLL_FIXES
 
@@ -294,6 +307,11 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&allow_point_servercommand);
 	CVAR_REGISTER(&hullbounds_sets);
 
+	CVAR_REGISTER(&ff_damage_reduction_bullets);
+	CVAR_REGISTER(&ff_damage_reduction_grenade);
+	CVAR_REGISTER(&ff_damage_reduction_grenade_self);
+	CVAR_REGISTER(&ff_damage_reduction_other);
+
 	// print version
 	CONSOLE_ECHO("ReGameDLL version: " APP_VERSION "\n");
 
@@ -309,7 +327,7 @@ void EXT_FUNC GameDLLInit()
 
 #ifdef REGAMEDLL_ADD
 	// execute initial pre-configurations
-	SERVER_COMMAND("exec game.cfg\n");
+	SERVER_COMMAND("exec game_init.cfg\n");
 	SERVER_EXECUTE();
 #endif
 

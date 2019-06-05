@@ -44,7 +44,12 @@ task publishPrepareFiles {
 		// copy files from folder dist
 		copy {
 			from('dist')
-			into 'publish/publishRoot'
+			into 'publish/publishRoot/bin/win32/cstrike'
+		}
+
+		copy {
+			from('dist')
+			into 'publish/publishRoot/bin/linux32/cstrike'
 		}
 
 		// cssdk

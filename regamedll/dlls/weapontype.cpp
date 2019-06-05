@@ -219,7 +219,6 @@ WeaponClassAliasInfo g_weaponClassAliasInfo[] =
 	{ nullptr,      WEAPONCLASS_NONE            },
 };
 
-WeaponInfoStruct g_weaponInfo[31];
 WeaponInfoStruct g_weaponInfo_default[] =
 {
 	{ WEAPON_P228,      P228_PRICE,         AMMO_357SIG_PRICE,                           AMMO_357SIG_BUY,       P228_MAX_CLIP,      MAX_AMMO_357SIG,        AMMO_357SIG,        "weapon_p228",         "ammo_357sig",     "357SIG"       },
@@ -269,7 +268,8 @@ WeaponInfoStruct g_weaponInfo_default[] =
 #endif
 };
 
-AmmoInfoStruct g_ammoInfo[14];
+WeaponInfoStruct g_weaponInfo[ARRAYSIZE(g_weaponInfo_default)];
+
 AmmoInfoStruct g_ammoInfo_default[] =
 {
 	{ AMMO_338MAGNUM,    AMMO_338MAG_PRICE,       AMMO_338MAG_BUY,       MAX_AMMO_338MAGNUM,    "ammo_338magnum",  "338Magnum"    },
@@ -287,6 +287,8 @@ AmmoInfoStruct g_ammoInfo_default[] =
 	{ AMMO_SMOKEGRENADE, AMMO_SMOKEGRENADE_PRICE, AMMO_SMOKEGRENADE_BUY, MAX_AMMO_SMOKEGRENADE, nullptr,           "SmokeGrenade" },
 	{ AMMO_C4,           0,                       0,                     0,                     nullptr,           "C4"           },
 };
+
+AmmoInfoStruct g_ammoInfo[ARRAYSIZE(g_ammoInfo_default)];
 
 WeaponSlotInfo g_weaponSlotInfo[] = {
 	{ WEAPON_C4,            C4_SLOT,                "weapon_c4"             },

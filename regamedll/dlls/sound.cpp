@@ -918,72 +918,75 @@ void CEnvSound::Think()
 		goto env_sound_Think_slow;
 	}
 
-	CBasePlayer *pPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)VARS(pentPlayer));
-	float flRange;
-
-	// check to see if this is the sound entity that is
-	// currently affecting this player
-
-	if (!FNullEnt(pPlayer->m_pentSndLast) && pPlayer->m_pentSndLast == ENT(pev))
 	{
-		// this is the entity currently affecting player, check
-		// for validity
-		if (pPlayer->m_flSndRoomtype != 0 && pPlayer->m_flSndRange != 0)
+		CBasePlayer *pPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)VARS(pentPlayer));
+		float flRange;
+
+		// check to see if this is the sound entity that is
+		// currently affecting this player
+
+		if (!FNullEnt(pPlayer->m_pentSndLast) && pPlayer->m_pentSndLast == ENT(pev))
 		{
-			// we're looking at a valid sound entity affecting
-			// player, make sure it's still valid, update range
-			if (FEnvSoundInRange(pev, VARS(pentPlayer), &flRange))
+			// this is the entity currently affecting player, check
+			// for validity
+			if (pPlayer->m_flSndRoomtype != 0 && pPlayer->m_flSndRange != 0)
 			{
-				pPlayer->m_flSndRange = flRange;
-				goto env_sound_Think_fast;
+				// we're looking at a valid sound entity affecting
+				// player, make sure it's still valid, update range
+				if (FEnvSoundInRange(pev, VARS(pentPlayer), &flRange))
+				{
+					pPlayer->m_flSndRange = flRange;
+					goto env_sound_Think_fast;
+				}
+				else
+				{
+					// current sound entity affecting player is no longer valid,
+					// flag this state by clearing room_type and range.
+					// NOTE: we do not actually change the player's room_type
+					// NOTE: until we have a new valid room_type to change it to.
+
+					pPlayer->m_flSndRange = 0;
+					pPlayer->m_flSndRoomtype = 0;
+					goto env_sound_Think_slow;
+				}
 			}
 			else
 			{
-				// current sound entity affecting player is no longer valid,
-				// flag this state by clearing room_type and range.
-				// NOTE: we do not actually change the player's room_type
-				// NOTE: until we have a new valid room_type to change it to.
-
-				pPlayer->m_flSndRange = 0;
-				pPlayer->m_flSndRoomtype = 0;
+				// entity is affecting player but is out of range,
+				// wait passively for another entity to usurp it...
 				goto env_sound_Think_slow;
 			}
 		}
-		else
+
+		// if we got this far, we're looking at an entity that is contending
+		// for current player sound. the closest entity to player wins.
+		if (FEnvSoundInRange(pev, VARS(pentPlayer), &flRange))
 		{
-			// entity is affecting player but is out of range,
-			// wait passively for another entity to usurp it...
-			goto env_sound_Think_slow;
+			if (flRange < pPlayer->m_flSndRange || pPlayer->m_flSndRange == 0)
+			{
+				// new entity is closer to player, so it wins.
+				pPlayer->m_pentSndLast = ENT(pev);
+				pPlayer->m_flSndRoomtype = m_flRoomtype;
+				pPlayer->m_flSndRange = flRange;
+
+				// send room_type command to player's server.
+				// this should be a rare event - once per change of room_type
+				// only!
+
+				//CLIENT_COMMAND(pentPlayer, "room_type %f", m_flRoomtype);
+				MESSAGE_BEGIN(MSG_ONE, SVC_ROOMTYPE, nullptr, pentPlayer);	// use the magic #1 for "one client"
+					WRITE_SHORT((short)m_flRoomtype);						// sequence number
+				MESSAGE_END();
+
+				// crank up nextthink rate for new active sound entity
+				// by falling through to think_fast...
+			}
+
+			// player is not closer to the contending sound entity,
+			// just fall through to think_fast. this effectively
+			// cranks up the think_rate of entities near the player.
 		}
-	}
-
-	// if we got this far, we're looking at an entity that is contending
-	// for current player sound. the closest entity to player wins.
-	if (FEnvSoundInRange(pev, VARS(pentPlayer), &flRange))
-	{
-		if (flRange < pPlayer->m_flSndRange || pPlayer->m_flSndRange == 0)
-		{
-			// new entity is closer to player, so it wins.
-			pPlayer->m_pentSndLast = ENT(pev);
-			pPlayer->m_flSndRoomtype = m_flRoomtype;
-			pPlayer->m_flSndRange = flRange;
-
-			// send room_type command to player's server.
-			// this should be a rare event - once per change of room_type
-			// only!
-
-			//CLIENT_COMMAND(pentPlayer, "room_type %f", m_flRoomtype);
-			MESSAGE_BEGIN(MSG_ONE, SVC_ROOMTYPE, nullptr, pentPlayer);	// use the magic #1 for "one client"
-				WRITE_SHORT((short)m_flRoomtype);						// sequence number
-			MESSAGE_END();
-
-			// crank up nextthink rate for new active sound entity
-			// by falling through to think_fast...
-		}
-		// player is not closer to the contending sound entity,
-		// just fall through to think_fast. this effectively
-		// cranks up the think_rate of entities near the player.
-	}
+}
 
 	// player is in pvs of sound entity, but either not visible or
 	// not in range. do nothing, fall through to think_fast...

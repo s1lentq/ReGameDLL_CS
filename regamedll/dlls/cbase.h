@@ -610,6 +610,7 @@ EXT_FUNC void DispatchObjectCollsionBox(edict_t *pent);
 EXT_FUNC void SaveWriteFields(SAVERESTOREDATA *pSaveData, const char *pname, void *pBaseData, TYPEDESCRIPTION *pFields, int fieldCount);
 EXT_FUNC void SaveReadFields(SAVERESTOREDATA *pSaveData, const char *pname, void *pBaseData, TYPEDESCRIPTION *pFields, int fieldCount);
 EXT_FUNC void OnFreeEntPrivateData(edict_t *pEnt);
+EXT_FUNC void OnGameShutdown();
 
 void SetObjectCollisionBox(entvars_t *pev);
 CBaseEntity *FindGlobalEntity(string_t classname, string_t globalname);

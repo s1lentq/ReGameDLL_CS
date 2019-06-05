@@ -36,6 +36,8 @@ public:
 	CCareerTask() {};
 	CCareerTask(const char *taskName, GameEventType event, const char *weaponName, int n, bool mustLive, bool crossRounds, int id, bool isComplete);
 
+	virtual ~CCareerTask() {}
+
 public:
 	virtual void OnEvent(GameEventType event, CBasePlayer *pAttacker, CBasePlayer *pVictim);
 	virtual void Reset();

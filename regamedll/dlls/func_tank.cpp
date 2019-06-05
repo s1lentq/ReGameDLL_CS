@@ -239,8 +239,12 @@ BOOL CFuncTank::StartControl(CBasePlayer *pController)
 	{
 		m_pController->m_pActiveItem->Holster();
 		m_pController->pev->weaponmodel = 0;
-#ifdef REGAMEDLL_FIXES
+
+#ifdef BUILD_LATEST_FIXES
 		m_pController->pev->viewmodel = 0;
+#endif
+
+#ifdef REGAMEDLL_FIXES
 		m_pController->m_iFOV = DEFAULT_FOV;
 #endif
 	}

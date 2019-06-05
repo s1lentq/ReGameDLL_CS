@@ -499,3 +499,8 @@ EXT_FUNC void CCSPlayer::RemoveSpawnProtection()
 {
 	BasePlayer()->RemoveSpawnProtection();
 }
+
+EXT_FUNC bool CCSPlayer::HintMessageEx(const char *pMessage, float duration, bool bDisplayIfPlayerDead, bool bOverride)
+{
+	return BasePlayer()->HintMessageEx(pMessage, duration, bDisplayIfPlayerDead, bOverride);
+}

@@ -179,7 +179,7 @@ void setupToolchain(NativeBinarySpec b)
 	}
 
 	if (regamedllFixes) {
-		cfg.singleDefines 'REGAMEDLL_FIXES', 'REGAMEDLL_CHECKS', 'REGAMEDLL_ADD', 'UNICODE_FIXES', 'NDEBUG'
+		cfg.singleDefines 'REGAMEDLL_FIXES', 'BUILD_LATEST', 'BUILD_LATEST_FIXES', 'REGAMEDLL_CHECKS', 'REGAMEDLL_ADD', 'UNICODE_FIXES', 'NDEBUG'
 	} else {
 		cfg.singleDefines 'PLAY_GAMEDLL'
 	}
