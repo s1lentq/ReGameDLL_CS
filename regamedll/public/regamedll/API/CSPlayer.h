@@ -82,6 +82,7 @@ public:
 	virtual bool RemovePlayerItemEx(const char* pszItemName, bool bRemoveAmmo);
  	virtual void SetSpawnProtection(float flProtectionTime);
 	virtual void RemoveSpawnProtection();
+	virtual bool HintMessageEx(const char *pMessage, float duration = 6.0f, bool bDisplayIfPlayerDead = false, bool bOverride = false);
 
 	CBasePlayer *BasePlayer() const;
 

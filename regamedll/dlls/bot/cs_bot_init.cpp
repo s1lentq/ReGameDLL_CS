@@ -126,7 +126,7 @@ void Bot_RegisterCVars()
 }
 
 // Constructor
-CCSBot::CCSBot() : m_chatter(this), m_gameState(this)
+CCSBot::CCSBot() : m_gameState(this), m_chatter(this)
 {
 	;
 }

@@ -160,6 +160,7 @@ GAMEHOOK_REGISTRY(PlantBomb);
 GAMEHOOK_REGISTRY(CBasePlayer_SetSpawnProtection);
 GAMEHOOK_REGISTRY(CBasePlayer_RemoveSpawnProtection);
 GAMEHOOK_REGISTRY(IsPenetrableEntity);
+GAMEHOOK_REGISTRY(CBasePlayer_HintMessageEx);
 
 int CReGameApi::GetMajorVersion() {
 	return REGAMEDLL_API_VERSION_MAJOR;

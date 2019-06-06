@@ -12,6 +12,7 @@ C_DLLEXPORT void WINAPI GiveFnptrsToDll(enginefuncs_t *pEnginefuncsTable, global
 	Q_memcpy(&g_engfuncs, pEnginefuncsTable, sizeof(enginefuncs_t));
 	gpGlobals = pGlobals;
 
+	FileSystem_Init();
 	Regamedll_Game_Init();
 }
 

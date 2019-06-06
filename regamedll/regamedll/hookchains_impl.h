@@ -123,7 +123,7 @@ public:
 	typedef t_ret(*hookfunc_t)(IHookChain<t_ret, t_args...>*, t_args...);
 	typedef t_ret(t_class::*origfunc_t)(t_args...);
 
-	IHookChainClassEmptyImpl(void** hooks, origfunc_t orig, t_class *object) : m_Hooks(hooks), m_OriginalFunc(orig), m_Object(object)
+	IHookChainClassEmptyImpl(void** hooks, origfunc_t orig, t_class *object) : m_Hooks(hooks), m_Object(object), m_OriginalFunc(orig)
 	{
 		if (orig == nullptr && !is_void(orig))
 			Sys_Error("%s: Non-void HookChain without original function.", __FUNC__);
