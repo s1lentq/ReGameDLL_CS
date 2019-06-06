@@ -326,19 +326,19 @@ void CCSBot::SendRadioMessage(GameEventType event)
 
 	if (event > EVENT_START_RADIO_1 && event < EVENT_START_RADIO_2)
 	{
-		slot[0] = event - EVENT_START_RADIO_1;
+		slot[0] = '0' + event - EVENT_START_RADIO_1;
 		ClientCommand("radio1");
-		//Radio1(this, event - EVENT_START_RADIO_3);
+		//Radio1(this, event - EVENT_START_RADIO_1);
 	}
 	else if (event > EVENT_START_RADIO_2 && event < EVENT_START_RADIO_3)
 	{
-		slot[0] = event - EVENT_START_RADIO_2;
+		slot[0] = '0' + event - EVENT_START_RADIO_2;
 		ClientCommand("radio2");
-		//Radio2(this, event - EVENT_START_RADIO_3);
+		//Radio2(this, event - EVENT_START_RADIO_2);
 	}
 	else
 	{
-		slot[0] = event - EVENT_START_RADIO_3;
+		slot[0] = '0' + event - EVENT_START_RADIO_3;
 		ClientCommand("radio3");
 		//Radio3(this, event - EVENT_START_RADIO_3);
 	}

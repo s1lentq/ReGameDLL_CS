@@ -73,6 +73,19 @@ void CXM1014::PrimaryAttack()
 
 	if (m_iClip <= 0)
 	{
+#ifdef BUILD_LATEST_FIXES
+		if (!m_fInSpecialReload)
+		{
+			PlayEmptySound();
+
+			if (TheBots)
+			{
+				TheBots->OnEvent(EVENT_WEAPON_FIRED_ON_EMPTY, m_pPlayer);
+			}
+		}
+
+		Reload();
+#else
 		Reload();
 
 		if (!m_iClip)
@@ -86,6 +99,8 @@ void CXM1014::PrimaryAttack()
 		}
 
 		m_flNextPrimaryAttack = GetNextAttackDelay(1);
+#endif // #ifdef BUILD_LATEST_FIXES
+
 		return;
 	}
 
@@ -187,6 +202,9 @@ void CXM1014::Reload()
 		m_flTimeWeaponIdle = m_flNextReload = UTIL_WeaponTimeBase() + 0.3f;
 	}
 	else
+#ifdef BUILD_LATEST_FIXES
+		if (m_flTimeWeaponIdle <= UTIL_WeaponTimeBase())
+#endif
 	{
 		m_iClip++;
 

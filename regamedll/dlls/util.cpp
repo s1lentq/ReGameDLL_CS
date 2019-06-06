@@ -697,9 +697,11 @@ void UTIL_Log(const char *fmt, ...)
 
 void UTIL_ServerPrint(const char *fmt, ...)
 {
+#ifdef PLAY_GAMEDLL
 	// Check is null, test the demo started before than searches pointer to refs
 	if (&g_engfuncs == nullptr || g_engfuncs.pfnServerPrint == nullptr)
 		return;
+#endif
 
 	static char string[1024];
 	va_list ap;
@@ -1770,6 +1772,7 @@ void NORETURN Sys_Error(const char *error, ...)
 		fprintf(fl, "%s\n", text);
 		fclose(fl);
 	}
+
 	CONSOLE_ECHO("FATAL ERROR (shutting down): %s\n", text);
 
 	//TerminateProcess(GetCurrentProcess(), 1);

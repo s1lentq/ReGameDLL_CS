@@ -3344,7 +3344,11 @@ void CHalfLifeMultiplay::InitHUD(CBasePlayer *pl)
 			if (plr->pev->flags == FL_DORMANT)
 				continue;
 #endif
-			if (plr->pev->deadflag == DEAD_NO)
+			if (plr->pev->deadflag == DEAD_NO
+#ifdef BUILD_LATEST_FIXES
+				&& plr->m_iTeam == pl->m_iTeam
+#endif
+				)
 			{
 				MESSAGE_BEGIN(MSG_ONE, gmsgRadar, nullptr, pl->edict());
 					WRITE_BYTE(plr->entindex());
@@ -3354,6 +3358,18 @@ void CHalfLifeMultiplay::InitHUD(CBasePlayer *pl)
 				MESSAGE_END();
 			}
 		}
+
+#ifdef BUILD_LATEST
+		MESSAGE_BEGIN(MSG_ONE, gmsgHealthInfo, nullptr, pl->edict());
+			WRITE_BYTE(plr->entindex());
+			WRITE_LONG(plr->ShouldToShowHealthInfo(pl) ? plr->m_iClientHealth : -1 /* means that 'HP' field will be hidden */);
+		MESSAGE_END();
+
+		MESSAGE_BEGIN(MSG_ONE, gmsgAccount, nullptr, pl->edict());
+			WRITE_BYTE(plr->entindex());
+			WRITE_LONG(plr->ShouldToShowAccount(pl) ? plr->m_iAccount : -1 /* means that this 'Money' will be hidden */);
+		MESSAGE_END();
+#endif // BUILD_LATEST
 	}
 
 	auto SendMsgBombDrop = [&pl](const int flag, const Vector& pos)

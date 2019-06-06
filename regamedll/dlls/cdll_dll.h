@@ -60,9 +60,10 @@ const int DEFAULT_FOV      = 90;	// the default field of view
 #define ITEM_STATUS_NIGHTVISION BIT(0)
 #define ITEM_STATUS_DEFUSER     BIT(1)
 
-#define SCORE_STATUS_DEAD BIT(0)
-#define SCORE_STATUS_BOMB BIT(1)
-#define SCORE_STATUS_VIP  BIT(2)
+#define SCORE_STATUS_DEAD       BIT(0)
+#define SCORE_STATUS_BOMB       BIT(1)
+#define SCORE_STATUS_VIP        BIT(2)
+#define SCORE_STATUS_DEFKIT     BIT(3)
 
 // player data iuser3
 #define PLAYER_CAN_SHOOT        BIT(0)

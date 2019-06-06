@@ -142,7 +142,11 @@ void CC4::PrimaryAttack()
 		SendWeaponAnim(C4_ARM, UseDecrement() != FALSE);
 
 		// freeze the player in place while planting
+#ifdef REGAMEDLL_FIXES
+		m_pPlayer->ResetMaxSpeed();
+#else
 		SET_CLIENT_MAXSPEED(m_pPlayer->edict(), 1.0);
+#endif
 
 		m_pPlayer->SetAnimation(PLAYER_ATTACK1);
 		m_pPlayer->SetProgressBarTime(C4_ARMING_ON_TIME);
@@ -156,76 +160,73 @@ void CC4::PrimaryAttack()
 
 			if (m_fArmedTime <= gpGlobals->time)
 			{
-				if (m_bStartedArming)
+				m_bStartedArming = false;
+				m_fArmedTime = 0;
+
+				Broadcast("BOMBPL");
+				m_pPlayer->m_bHasC4 = false;
+
+				if (pev->speed != 0 && CSGameRules())
 				{
-					m_bStartedArming = false;
-					m_fArmedTime = 0;
-
-					Broadcast("BOMBPL");
-					m_pPlayer->m_bHasC4 = false;
-
-					if (pev->speed != 0 && CSGameRules())
-					{
-						CSGameRules()->m_iC4Timer = int(pev->speed);
-					}
+					CSGameRules()->m_iC4Timer = int(pev->speed);
+				}
 
 #ifdef REGAMEDLL_FIXES
-					Vector vBombAngles = Vector(0, m_pPlayer->pev->angles[1] - 90.0, 0);
+				Vector vBombAngles = Vector(0, m_pPlayer->pev->angles[1] - 90.0, 0);
 #else
-					Vector vBombAngles = Vector(0, 0, 0);
+				Vector vBombAngles = Vector(0, 0, 0);
 #endif
-					CGrenade *pBomb = CGrenade::ShootSatchelCharge(m_pPlayer->pev, m_pPlayer->pev->origin, vBombAngles);
+				CGrenade *pBomb = CGrenade::ShootSatchelCharge(m_pPlayer->pev, m_pPlayer->pev->origin, vBombAngles);
 
-					MESSAGE_BEGIN(MSG_SPEC, SVC_DIRECTOR);
-						WRITE_BYTE(9);
-						WRITE_BYTE(DRC_CMD_EVENT);
-						WRITE_SHORT(m_pPlayer->entindex());
-						WRITE_SHORT(0);
-						WRITE_LONG(DRC_FLAG_FACEPLAYER | 11);
-					MESSAGE_END();
+				MESSAGE_BEGIN(MSG_SPEC, SVC_DIRECTOR);
+					WRITE_BYTE(9);
+					WRITE_BYTE(DRC_CMD_EVENT);
+					WRITE_SHORT(m_pPlayer->entindex());
+					WRITE_SHORT(0);
+					WRITE_LONG(DRC_FLAG_FACEPLAYER | 11);
+				MESSAGE_END();
 
-					MESSAGE_BEGIN(MSG_ALL, gmsgBombDrop);
-						WRITE_COORD(pBomb->pev->origin.x);
-						WRITE_COORD(pBomb->pev->origin.y);
-						WRITE_COORD(pBomb->pev->origin.z);
-						WRITE_BYTE(BOMB_FLAG_PLANTED);
-					MESSAGE_END();
+				MESSAGE_BEGIN(MSG_ALL, gmsgBombDrop);
+					WRITE_COORD(pBomb->pev->origin.x);
+					WRITE_COORD(pBomb->pev->origin.y);
+					WRITE_COORD(pBomb->pev->origin.z);
+					WRITE_BYTE(BOMB_FLAG_PLANTED);
+				MESSAGE_END();
 
-					UTIL_ClientPrintAll(HUD_PRINTCENTER, "#Bomb_Planted");
-					if (TheBots)
-					{
-						TheBots->OnEvent(EVENT_BOMB_PLANTED, m_pPlayer, pBomb);
-					}
+				UTIL_ClientPrintAll(HUD_PRINTCENTER, "#Bomb_Planted");
+				if (TheBots)
+				{
+					TheBots->OnEvent(EVENT_BOMB_PLANTED, m_pPlayer, pBomb);
+				}
 
-					if (TheCareerTasks && CSGameRules()->IsCareer() && !m_pPlayer->IsBot())
-					{
-						TheCareerTasks->HandleEvent(EVENT_BOMB_PLANTED, m_pPlayer);
-					}
+				if (TheCareerTasks && CSGameRules()->IsCareer() && !m_pPlayer->IsBot())
+				{
+					TheCareerTasks->HandleEvent(EVENT_BOMB_PLANTED, m_pPlayer);
+				}
 
-					UTIL_LogPrintf("\"%s<%i><%s><TERRORIST>\" triggered \"Planted_The_Bomb\"\n",
-						STRING(m_pPlayer->pev->netname),
-						GETPLAYERUSERID(m_pPlayer->edict()),
-						GETPLAYERAUTHID(m_pPlayer->edict()));
+				UTIL_LogPrintf("\"%s<%i><%s><TERRORIST>\" triggered \"Planted_The_Bomb\"\n",
+					STRING(m_pPlayer->pev->netname),
+					GETPLAYERUSERID(m_pPlayer->edict()),
+					GETPLAYERAUTHID(m_pPlayer->edict()));
 
-					g_pGameRules->m_bBombDropped = FALSE;
+				g_pGameRules->m_bBombDropped = FALSE;
 
-					// Play the plant sound.
-					EMIT_SOUND(edict(), CHAN_WEAPON, "weapons/c4_plant.wav", VOL_NORM, ATTN_NORM);
+				// Play the plant sound.
+				EMIT_SOUND(edict(), CHAN_WEAPON, "weapons/c4_plant.wav", VOL_NORM, ATTN_NORM);
 
-					// hide the backpack in Terrorist's models.
-					m_pPlayer->pev->body = 0;
+				// hide the backpack in Terrorist's models.
+				m_pPlayer->pev->body = 0;
 
-					// release the player from being frozen
-					m_pPlayer->ResetMaxSpeed();
+				// release the player from being frozen
+				m_pPlayer->ResetMaxSpeed();
 
-					// No more c4!
-					m_pPlayer->SetBombIcon(FALSE);
+				// No more c4!
+				m_pPlayer->SetBombIcon(FALSE);
 
-					if (--m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
-					{
-						RetireWeapon();
-						return;
-					}
+				if (--m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
+				{
+					RetireWeapon();
+					return;
 				}
 			}
 			else
@@ -366,5 +367,10 @@ void CC4::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, f
 
 float CC4::GetMaxSpeed()
 {
+#ifdef REGAMEDLL_FIXES
+	if (m_bStartedArming)
+		return 1.0f;
+#endif
+
 	return C4_MAX_SPEED;
 }

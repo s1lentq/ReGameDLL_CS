@@ -556,6 +556,9 @@
     <ClCompile Include="..\dlls\addons\point_command.cpp">
       <Filter>dlls\addons</Filter>
     </ClCompile>
+    <ClCompile Include="..\public\FileSystem.cpp">
+      <Filter>public</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\version\version.h">

@@ -805,6 +805,9 @@ bool CBasePlayerWeapon::HasSecondaryAttack()
 	case WEAPON_ELITE:
 	case WEAPON_FIVESEVEN:
 	case WEAPON_MP5N:
+#ifdef BUILD_LATEST_FIXES
+	case WEAPON_UMP45:
+#endif
 	case WEAPON_M249:
 	case WEAPON_M3:
 	case WEAPON_TMP:

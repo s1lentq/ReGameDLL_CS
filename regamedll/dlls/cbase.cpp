@@ -57,7 +57,7 @@ DLL_FUNCTIONS gFunctionTable =
 NEW_DLL_FUNCTIONS gNewDLLFunctions =
 {
 	&OnFreeEntPrivateData,
-	nullptr,
+	&OnGameShutdown,
 	nullptr,
 	nullptr,
 	nullptr
@@ -1135,27 +1135,27 @@ void CBaseEntity::FireBuckshots(ULONG cShots, Vector vecSrc, Vector vecDirShooti
 {
     static int tracerCount;
     int tracer;
- 
+
     TraceResult tr;
     Vector vecRight, vecUp;
- 
+
     vecRight = gpGlobals->v_right;
     vecUp = gpGlobals->v_up;
- 
+
     if (!pevAttacker)
     {
         // the default attacker is ourselves
         pevAttacker = pev;
     }
- 
+
     ClearMultiDamage();
     gMultiDamage.type = (DMG_BULLET | DMG_NEVERGIB);
- 
+
     for (ULONG iShot = 1; iShot <= cShots; iShot++)
     {
         // get circular gaussian spread
         float x, y, z;
- 
+
         do
         {
             x = RANDOM_FLOAT(-0.5, 0.5) + RANDOM_FLOAT(-0.5, 0.5);
@@ -1163,19 +1163,19 @@ void CBaseEntity::FireBuckshots(ULONG cShots, Vector vecSrc, Vector vecDirShooti
             z = x * x + y * y;
         }
         while (z > 1);
- 
+
         Vector vecDir, vecEnd;
- 
+
         vecDir = vecDirShooting + x * vecSpread.x * vecRight + y * vecSpread.y * vecUp;
         vecEnd = vecSrc + vecDir * flDistance;
- 
+
         UTIL_TraceLine(vecSrc, vecEnd, dont_ignore_monsters, ENT(pev), &tr);
         tracer = 0;
- 
+
         if (iTracerFreq != 0 && !(tracerCount++ % iTracerFreq))
         {
             Vector vecTracerSrc;
- 
+
             if (IsPlayer())
             {
                 // adjust tracer position for player
@@ -1185,11 +1185,11 @@ void CBaseEntity::FireBuckshots(ULONG cShots, Vector vecSrc, Vector vecDirShooti
             {
                 vecTracerSrc = vecSrc;
             }
- 
+
             // guns that always trace also always decal
             if (iTracerFreq != 1)
                 tracer = 1;
- 
+
             MESSAGE_BEGIN(MSG_PAS, SVC_TEMPENTITY, vecTracerSrc);
                 WRITE_BYTE(TE_TRACER);
                 WRITE_COORD(vecTracerSrc.x);
@@ -1200,7 +1200,7 @@ void CBaseEntity::FireBuckshots(ULONG cShots, Vector vecSrc, Vector vecDirShooti
                 WRITE_COORD(tr.vecEndPos.z);
             MESSAGE_END();
         }
- 
+
         // do damage, paint decals
         if (tr.flFraction != 1.0f)
         {
@@ -1208,11 +1208,11 @@ void CBaseEntity::FireBuckshots(ULONG cShots, Vector vecSrc, Vector vecDirShooti
             float flDamage = ((1 - tr.flFraction) * iDamage);
             pEntity->TraceAttack(pevAttacker, int(flDamage), vecDir, &tr, DMG_BULLET);
         }
- 
+
         // make bullet trails
         UTIL_BubbleTrail(vecSrc, tr.vecEndPos, int((flDistance * tr.flFraction) / 64));
     }
- 
+
     ApplyMultiDamage(pev, pevAttacker);
 }
 
@@ -1525,6 +1525,11 @@ void CBaseEntity::SUB_FadeOut()
 		pev->nextthink = gpGlobals->time + 0.2f;
 		SetThink(&CBaseEntity::SUB_Remove);
 	}
+}
+
+void OnGameShutdown()
+{
+	FileSystem_Shutdown();
 }
 
 void OnFreeEntPrivateData(edict_t *pEnt)

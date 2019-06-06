@@ -861,6 +861,12 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 						bTeamAttack = TRUE;
 
 					pAttack = CBasePlayer::Instance(pevAttacker);
+
+#ifdef REGAMEDLL_ADD
+					flDamage *= clamp(((pAttack == this) ?
+						ff_damage_reduction_grenade_self.value :
+						ff_damage_reduction_grenade.value), 0.0f, 1.0f);
+#endif
 				}
 #ifdef REGAMEDLL_ADD
 				else if (CSGameRules()->IsFreeForAll())
@@ -868,9 +874,18 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 					pAttack = CBasePlayer::Instance(pevAttacker);
 				}
 #endif
-				else if (pGrenade->m_iTeam == m_iTeam && (&edict()->v != pevAttacker))
+				else if (pGrenade->m_iTeam == m_iTeam)
 				{
-					return FALSE;
+					// if cvar friendlyfire is disabled
+					// and if the victim is teammate then ignore this damage
+					if (&edict()->v != pevAttacker)
+					{
+						return FALSE;
+					}
+
+#ifdef REGAMEDLL_ADD
+					flDamage *= clamp(ff_damage_reduction_grenade_self.value, 0.0f, 1.0f);
+#endif
 				}
 			}
 		}
@@ -1054,8 +1069,14 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 
 		if (!bAttackFFA && pAttack->m_iTeam == m_iTeam)
 		{
+#ifdef REGAMEDLL_ADD
 			// bullets hurt teammates less
+			flDamage *= clamp(((bitsDamageType & DMG_BULLET) ?
+				ff_damage_reduction_bullets.value :
+				ff_damage_reduction_other.value), 0.0f, 1.0f);
+#else
 			flDamage *= 0.35;
+#endif // #ifdef REGAMEDLL_ADD
 		}
 
 		if (pAttack->m_pActiveItem)
@@ -5073,6 +5094,11 @@ void CBasePlayer::SetScoreAttrib(CBasePlayer *dest)
 	if (m_bIsVIP)
 		state |= SCORE_STATUS_VIP;
 
+#ifdef BUILD_LATEST
+	if (m_bHasDefuser)
+		state |= SCORE_STATUS_DEFKIT;
+#endif
+
 	if (gmsgScoreAttrib)
 	{
 		MESSAGE_BEGIN(MSG_ONE, gmsgScoreAttrib, nullptr, dest->pev);
@@ -5169,6 +5195,11 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Spawn)()
 	m_iChaseTarget = 1;
 	m_bEscaped = false;
 	m_tmNextRadarUpdate = gpGlobals->time;
+
+#ifdef BUILD_LATEST
+	m_tmNextAccountHealthUpdate = gpGlobals->time;
+#endif
+
 	m_vLastOrigin = Vector(0, 0, 0);
 	m_iCurrentKickVote = 0;
 	m_flNextVoteTime = 0;
@@ -5532,6 +5563,10 @@ int CBasePlayer::Restore(CRestore &restore)
 		UTIL_SetSize(pev, VEC_DUCK_HULL_MIN, VEC_DUCK_HULL_MAX);
 	else
 		UTIL_SetSize(pev, VEC_HULL_MIN, VEC_HULL_MAX);
+
+#ifdef BUILD_LATEST_FIXES
+	TabulateAmmo();
+#endif
 
 	m_flDisplayHistory &= ~DHM_CONNECT_CLEAR;
 	SetScoreboardAttributes();
@@ -6998,6 +7033,106 @@ void EXT_FUNC CBasePlayer::__API_HOOK(UpdateClientData)()
 
 		m_vLastOrigin = pev->origin;
 	}
+
+#ifdef BUILD_LATEST
+	if ((m_iTeam == CT || m_iTeam == TERRORIST) &&
+		(m_iLastAccount != m_iAccount || m_iLastClientHealth != m_iClientHealth || m_tmNextAccountHealthUpdate < gpGlobals->time))
+	{
+		m_tmNextAccountHealthUpdate = gpGlobals->time + 5.0f;
+
+		for (int playerIndex = 1; playerIndex <= gpGlobals->maxClients; playerIndex++)
+		{
+			CBaseEntity *pEntity = UTIL_PlayerByIndex(playerIndex);
+
+			if (!pEntity)
+				continue;
+
+			CBasePlayer *pPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev);
+
+#ifdef REGAMEDLL_FIXES
+			if (pPlayer->IsDormant())
+				continue;
+#endif // REGAMEDLL_FIXES
+
+			MESSAGE_BEGIN(MSG_ONE, gmsgHealthInfo, nullptr, pPlayer->edict());
+				WRITE_BYTE(entindex());
+				WRITE_LONG(ShouldToShowHealthInfo(pPlayer) ? m_iClientHealth : -1 /* means that 'HP' field will be hidden */);
+			MESSAGE_END();
+
+			MESSAGE_BEGIN(MSG_ONE, gmsgAccount, nullptr, pPlayer->edict());
+				WRITE_BYTE(entindex());
+				WRITE_LONG(ShouldToShowAccount(pPlayer) ? m_iAccount : -1 /* means that this 'Money' will be hidden */);
+			MESSAGE_END();
+		}
+
+		m_iLastAccount = m_iAccount;
+		m_iLastClientHealth = m_iClientHealth;
+	}
+#endif // #ifdef BUILD_LATEST
+}
+
+bool CBasePlayer::ShouldToShowAccount(CBasePlayer *pReceiver) const
+{
+#ifdef BUILD_LATEST
+	int iShowAccount = static_cast<int>(scoreboard_showmoney.value);
+
+#ifdef REGAMEDLL_FIXES
+	if (iShowAccount == 0)
+		return false; // don't send any update for this field to any clients
+#endif
+
+	// show only Terrorist or CT 'Money' field to all clients
+	if (m_iTeam == iShowAccount)
+		return true;
+
+	switch (iShowAccount)
+	{
+	// show field to teammates
+	case 3: return pReceiver->m_iTeam == m_iTeam;
+
+	// show field to all clients
+	case 4: return true;
+
+	// show field to teammates and spectators
+	case 5: return (pReceiver->m_iTeam == m_iTeam || pReceiver->m_iTeam == SPECTATOR);
+	default:
+		break;
+	}
+#endif // #ifdef BUILD_LATEST
+
+	return false;
+}
+
+bool CBasePlayer::ShouldToShowHealthInfo(CBasePlayer *pReceiver) const
+{
+#ifdef BUILD_LATEST
+	int iShowHealth = static_cast<int>(scoreboard_showhealth.value);
+
+#ifdef REGAMEDLL_FIXES
+	if (iShowHealth == 0)
+		return false; // don't send any update for this field to any clients
+#endif
+
+	// show only Terrorist or CT 'HP' fields to all clients
+	if (m_iTeam == iShowHealth)
+		return true;
+
+	switch (iShowHealth)
+	{
+	// show field to teammates
+	case 3: return pReceiver->m_iTeam == m_iTeam;
+
+	// show field to all clients
+	case 4: return true;
+
+	// show field to teammates and spectators
+	case 5: return (pReceiver->m_iTeam == m_iTeam || pReceiver->m_iTeam == SPECTATOR);
+	default:
+		break;
+	}
+#endif // #ifdef BUILD_LATEST
+
+	return false;
 }
 
 BOOL CBasePlayer::FBecomeProne()
@@ -7072,15 +7207,22 @@ void EXT_FUNC CBasePlayer::__API_HOOK(ResetMaxSpeed)()
 	pev->maxspeed = speed;
 }
 
-bool CBasePlayer::HintMessage(const char *pMessage, BOOL bDisplayIfPlayerDead, BOOL bOverride)
+LINK_HOOK_CLASS_CHAIN(bool, CBasePlayer, HintMessageEx, (const char *pMessage, float duration, bool bDisplayIfPlayerDead, bool bOverride), pMessage, duration, bDisplayIfPlayerDead, bOverride)
+
+bool EXT_FUNC CBasePlayer::__API_HOOK(HintMessageEx)(const char *pMessage, float duration, bool bDisplayIfPlayerDead, bool bOverride)
 {
 	if (!bDisplayIfPlayerDead && !IsAlive())
 		return false;
 
 	if (bOverride || m_bShowHints)
-		return m_hintMessageQueue.AddMessage(pMessage, 6.0, true, nullptr);
+		return m_hintMessageQueue.AddMessage(pMessage, duration, true, nullptr);
 
 	return true;
+}
+
+bool EXT_FUNC CBasePlayer::HintMessage(const char *pMessage, BOOL bDisplayIfPlayerDead, BOOL bOverride)
+{
+	return HintMessageEx(pMessage, 6.0f, bDisplayIfPlayerDead == TRUE, bOverride == TRUE);
 }
 
 Vector CBasePlayer::GetAutoaimVector(float flDelta)
