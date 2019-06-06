@@ -290,7 +290,7 @@ private:
 		IntervalTimer timer;
 	};
 
-	mutable PlaceTimeInfo m_placeStatementHistory[MAX_PLACES_PER_MAP + 2];
+	mutable PlaceTimeInfo m_placeStatementHistory[MAX_PLACES_PER_MAP];
 	mutable int m_placeCount;
 };
 
@@ -304,8 +304,15 @@ inline int BotPhraseManager::FindPlaceIndex(Place where) const
 
 	if (m_placeCount < MAX_PLACES_PER_MAP)
 	{
+#ifdef REGAMEDLL_FIXES
+		m_placeStatementHistory[m_placeCount].placeID = where;
+		m_placeStatementHistory[m_placeCount].timer.Invalidate();
+		m_placeCount++;
+#else
 		m_placeStatementHistory[++m_placeCount].placeID = where;
 		m_placeStatementHistory[++m_placeCount].timer.Invalidate();
+#endif // #ifdef REGAMEDLL_FIXES
+
 		return m_placeCount - 1;
 	}
 
