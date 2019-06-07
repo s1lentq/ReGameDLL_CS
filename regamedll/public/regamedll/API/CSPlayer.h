@@ -102,7 +102,7 @@ public:
 	bool m_bForceShowMenu;
 	float m_flRespawnPending;
 	float m_flSpawnProtectionEndTime;
-	vec3_t m_vecOldvAngle;
+	Vector m_vecOldvAngle;
 };
 
 // Inlines
