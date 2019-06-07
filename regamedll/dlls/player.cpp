@@ -4231,6 +4231,13 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 		// check every 5 seconds
 		m_flIdleCheckTime = gpGlobals->time + 5.0;
 
+#ifdef REGAMEDLL_ADD
+		if (CSPlayer()->CheckActivityInGame())
+		{
+			m_fLastMovement = gpGlobals->time;
+		}
+#endif
+
 		real_t flLastMove = gpGlobals->time - m_fLastMovement;
 
 		//check if this player has been inactive for 2 rounds straight
@@ -4246,6 +4253,15 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 				m_fLastMovement = gpGlobals->time;
 			}
 		}
+#ifdef REGAMEDLL_ADD
+		if (afk_bomb_drop_time.value > 0.0 && IsBombGuy())
+		{
+			if (flLastMove > afk_bomb_drop_time.value && !CSGameRules()->IsFreezePeriod())
+			{
+				DropPlayerItem("weapon_c4");
+			}
+		}
+#endif
 	}
 
 	if (g_pGameRules && g_pGameRules->FAllowFlashlight())

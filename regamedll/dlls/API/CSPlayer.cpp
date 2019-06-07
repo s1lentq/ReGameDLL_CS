@@ -504,3 +504,15 @@ EXT_FUNC bool CCSPlayer::HintMessageEx(const char *pMessage, float duration, boo
 {
 	return BasePlayer()->HintMessageEx(pMessage, duration, bDisplayIfPlayerDead, bOverride);
 }
+
+EXT_FUNC bool CCSPlayer::CheckActivityInGame()
+{
+	const CBasePlayer* pPlayer = BasePlayer();
+
+	const float deltaYaw = (m_vecOldvAngle.y - pPlayer->pev->v_angle.y);
+	const float deltaPitch = (m_vecOldvAngle.x - pPlayer->pev->v_angle.x);
+
+	m_vecOldvAngle = pPlayer->pev->v_angle;
+
+	return (fabs(deltaYaw) >= 0.1f && fabs(deltaPitch) >= 0.1f);
+}
