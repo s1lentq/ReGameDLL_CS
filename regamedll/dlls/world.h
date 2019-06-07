@@ -43,5 +43,4 @@ public:
 void CopyToBodyQue(entvars_t *pev);
 void ClearBodyQue();
 
-extern float g_flWeaponCheat;
 extern char g_szMapBriefingText[512];

@@ -2,7 +2,6 @@
 
 edict_t *g_pBodyQueueHead;
 CGlobalState gGlobalState;
-float g_flWeaponCheat;
 
 DLL_DECALLIST gDecals[] =
 {
@@ -216,7 +215,6 @@ void CWorld::Spawn()
 	EmptyEntityHashTable();
 	Precache();
 
-	g_flWeaponCheat = CVAR_GET_FLOAT("sv_cheats");
 	g_szMapBriefingText[0] = '\0';
 	Q_sprintf(szMapBriefingFile, "maps/%s.txt", STRING(gpGlobals->mapname));
 
@@ -251,7 +249,6 @@ void CWorld::Spawn()
 	EmptyEntityHashTable();
 	Precache();
 
-	g_flWeaponCheat = CVAR_GET_FLOAT("sv_cheats");
 	g_szMapBriefingText[0] = '\0';
 
 	int flength = 0;

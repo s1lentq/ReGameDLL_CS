@@ -6060,7 +6060,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(ImpulseCommands)()
 
 void CBasePlayer::CheatImpulseCommands(int iImpulse)
 {
-	if (!g_flWeaponCheat)
+	if (!CVAR_GET_FLOAT("sv_cheats"))
 		return;
 
 	CBaseEntity *pEntity;

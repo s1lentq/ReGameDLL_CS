@@ -3243,7 +3243,7 @@ void CHalfLifeMultiplay::InitHUD(CBasePlayer *pl)
 
 	UpdateGameMode(pl);
 
-	if (!g_flWeaponCheat)
+	if (!CVAR_GET_FLOAT("sv_cheats"))
 	{
 		MESSAGE_BEGIN(MSG_ONE, gmsgViewMode, nullptr, pl->edict());
 		MESSAGE_END();
