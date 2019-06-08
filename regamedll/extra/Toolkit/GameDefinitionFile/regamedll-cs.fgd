@@ -3029,6 +3029,10 @@
 
 @BaseClass base(Targetname) = BaseCommand
 [
+	spawnflags(flags) =
+	[
+		1 : "No reset cmd on remove an entity or change level" : 0
+	]
 ]
 
 @PointClass base(BaseCommand) size(-8 -8 -8, 8 8 8) = point_servercommand : "It issues commands to the server console"

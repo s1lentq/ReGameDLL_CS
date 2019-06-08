@@ -18,16 +18,41 @@
 
 #pragma once
 
+#include <utlvector.h>
+
 const int MAX_POINT_CMDS = 16; // maximum number of commands a single point_[server/client]command entity may be assigned
+
+#define SF_POINT_CMD_NORESET BIT(0) // it is not allowed to be resetting to initial value on remove an entity or change level
 
 class CPointBaseCommand: public CPointEntity {
 public:
+	virtual void OnDestroy();
 	virtual void KeyValue(KeyValueData *pkvd);
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value) = 0;
+	virtual void Execute(edict_t *pEdict, const char *pszFmt, ...) = 0;
 
 protected:
-	size_t m_uiCommandsCount;
-	string_t m_iszCommands[MAX_POINT_CMDS];
+
+	template <size_t SIZE>
+	struct command_t
+	{
+		command_t(const char *_name, const char *_value = nullptr)
+		{
+			value[0] = '\0';
+			valueInitial[0] = '\0';
+
+			Q_strlcpy(name, _name);
+
+			if (_value)
+			{
+				Q_strlcpy(value, _value);
+			}
+		}
+
+		char name[SIZE], value[SIZE], valueInitial[SIZE];
+	};
+
+	CUtlVector<command_t<64u>> m_vecCommands;
 };
 
 // It issues commands to the client console
@@ -36,7 +61,7 @@ public:
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 private:
-	void Execute(edict_t *pEdict, const char *command);
+	void Execute(edict_t *pEdict, const char *pszFmt, ...);
 };
 
 // It issues commands to the server console
@@ -45,5 +70,5 @@ public:
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 
 private:
-	void Execute(const char *command);
+	void Execute(edict_t *pEdict, const char *pszFmt, ...);
 };
