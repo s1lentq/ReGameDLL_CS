@@ -95,12 +95,14 @@ public:
 	};
 
 	EProtectionState GetProtectionState() const;
+	bool CheckActivityInGame();
 
 public:
 	char m_szModel[32];
 	bool m_bForceShowMenu;
 	float m_flRespawnPending;
 	float m_flSpawnProtectionEndTime;
+	Vector m_vecOldvAngle;
 };
 
 // Inlines

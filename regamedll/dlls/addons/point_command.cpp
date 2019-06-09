@@ -21,19 +21,18 @@
 void CPointBaseCommand::KeyValue(KeyValueData *pkvd)
 {
 	// add this field to the command list
-	if (m_uiCommandsCount < MAX_POINT_CMDS)
+	if (m_vecCommands.Count() < MAX_POINT_CMDS)
 	{
-		char command[128];
-		if (pkvd->szValue[0] != '\0' &&	Q_strcmp(pkvd->szValue, "-") != 0)
+		if (pkvd->szValue[0] != '\0' &&
+			Q_strcmp(pkvd->szValue, "-") != 0)
 		{
-			Q_snprintf(command, sizeof(command), "%s \"%s\"", pkvd->szKeyName, pkvd->szValue);
+			m_vecCommands.AddToTail({ pkvd->szKeyName, pkvd->szValue });
 		}
 		else
 		{
-			Q_strlcpy(command, pkvd->szKeyName);
+			m_vecCommands.AddToTail(pkvd->szKeyName);
 		}
 
-		m_iszCommands[m_uiCommandsCount++] = ALLOC_STRING(command);
 		pkvd->fHandled = TRUE;
 		return;
 	}
@@ -61,10 +60,22 @@ void CPointClientCommand::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE
 
 	if (pClient)
 	{
-		for (size_t cmd = 0; cmd < m_uiCommandsCount; cmd++) {
-			CLIENT_COMMAND(pClient, UTIL_VarArgs("%s\n", m_iszCommands[cmd].str()));
+		for (auto &cmd : m_vecCommands) {
+			Execute(pClient, "%s \"%s\"\n", cmd.name, cmd.value);
 		}
 	}
+}
+
+void CPointClientCommand::Execute(edict_t *pEdict, const char *pszFmt, ...)
+{
+	va_list argptr;
+	char command[128];
+
+	va_start(argptr, pszFmt);
+	Q_vsnprintf(command, sizeof(command), pszFmt, argptr);
+	va_end(argptr);
+
+	CLIENT_COMMAND(pEdict, command);
 }
 
 LINK_ENTITY_TO_CLASS(point_servercommand, CPointServerCommand, CCSPointServerCommand)
@@ -78,20 +89,66 @@ void CPointServerCommand::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE
 	}
 #endif
 
-	for (size_t cmd = 0; cmd < m_uiCommandsCount; cmd++) {
-		Execute(m_iszCommands[cmd]);
+	for (auto &cmd : m_vecCommands)
+	{
+		cvar_t *pCVar = CVAR_GET_POINTER(cmd.name);
+		if (pCVar &&
+			pCVar->string &&
+			pCVar->string[0] != '\0' &&
+			Q_stricmp(cmd.value, pCVar->string) != 0) {
+			Q_strlcpy(cmd.valueInitial, pCVar->string);
+		}
+
+		if (cmd.value[0] != '\0')
+		{
+			Execute(nullptr, "%s \"%s\"\n", cmd.name, cmd.value);
+		}
+		else
+		{
+			Execute(nullptr, "%s\n", cmd.name);
+		}
 	}
 }
 
-void CPointServerCommand::Execute(const char *command)
+void CPointServerCommand::Execute(edict_t *pEdict, const char *pszFmt, ...)
 {
+	va_list argptr;
+	char command[128];
+
+	va_start(argptr, pszFmt);
+	Q_vsnprintf(command, sizeof(command), pszFmt, argptr);
+	va_end(argptr);
+
 	if (!IS_DEDICATED_SERVER())
 	{
 		// potentially dangerous for untrusted maps
 		// so try to use it for passing through filtered svc_stufftext
-		CLIENT_COMMAND(INDEXENT(1), UTIL_VarArgs("%s\n", command));
+		CLIENT_COMMAND(pEdict ? pEdict : INDEXENT(1), command);
 		return;
 	}
 
-	SERVER_COMMAND(UTIL_VarArgs("%s\n", command));
+	SERVER_COMMAND(command);
+}
+
+void CPointBaseCommand::OnDestroy()
+{
+	if (!(pev->spawnflags & SF_POINT_CMD_NORESET))
+	{
+		bool bAtLeastOneCmdReset = false;
+		for (auto &cmd : m_vecCommands)
+		{
+			if (cmd.valueInitial[0] != '\0')
+			{
+				Execute(nullptr, "%s \"%s\"\n", cmd.name, cmd.valueInitial);
+				bAtLeastOneCmdReset = true;
+			}
+		}
+
+		if (bAtLeastOneCmdReset)
+		{
+			SERVER_EXECUTE();
+		}
+	}
+
+	m_vecCommands.RemoveAll();
 }

@@ -855,37 +855,35 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 			{
 				CGrenade *pGrenade = GetClassPtr<CCSGrenade>((CGrenade *)pevInflictor);
 
-				if (friendlyfire.value)
-				{
-					if (pGrenade->m_iTeam == m_iTeam)
-						bTeamAttack = TRUE;
+				pAttack = CBasePlayer::Instance(pevAttacker);
 
-					pAttack = CBasePlayer::Instance(pevAttacker);
-
+				if (
 #ifdef REGAMEDLL_ADD
-					flDamage *= clamp(((pAttack == this) ?
-						ff_damage_reduction_grenade_self.value :
-						ff_damage_reduction_grenade.value), 0.0f, 1.0f);
+					!CSGameRules()->IsFreeForAll() &&
 #endif
-				}
-#ifdef REGAMEDLL_ADD
-				else if (CSGameRules()->IsFreeForAll())
+					pGrenade->m_iTeam == m_iTeam)
 				{
-					pAttack = CBasePlayer::Instance(pevAttacker);
-				}
-#endif
-				else if (pGrenade->m_iTeam == m_iTeam)
-				{
-					// if cvar friendlyfire is disabled
-					// and if the victim is teammate then ignore this damage
-					if (&edict()->v != pevAttacker)
+					if (friendlyfire.value)
 					{
+						bTeamAttack = TRUE;
+#ifdef REGAMEDLL_ADD
+						flDamage *= clamp(((pAttack == this) ?
+							ff_damage_reduction_grenade_self.value :
+							ff_damage_reduction_grenade.value), 0.0f, 1.0f);
+#endif
+					}
+					else if (pAttack == this)
+					{
+#ifdef REGAMEDLL_ADD
+						flDamage *= clamp(ff_damage_reduction_grenade_self.value, 0.0f, 1.0f);
+#endif
+					}
+					else
+					{
+						// if cvar friendlyfire is disabled
+						// and if the victim is teammate then ignore this damage
 						return FALSE;
 					}
-
-#ifdef REGAMEDLL_ADD
-					flDamage *= clamp(ff_damage_reduction_grenade_self.value, 0.0f, 1.0f);
-#endif
 				}
 			}
 		}
@@ -1026,49 +1024,46 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 	{
 		pAttack = GetClassPtr<CCSPlayer>((CBasePlayer *)pevAttacker);
 
-		bool bAttackFFA = CSGameRules()->IsFreeForAll();
-
 		// warn about team attacks
-		if (!bAttackFFA && pAttack != this && pAttack->m_iTeam == m_iTeam)
+		if (!CSGameRules()->IsFreeForAll() && pAttack->m_iTeam == m_iTeam)
 		{
+			if (pAttack != this)
+			{
 #ifndef REGAMEDLL_FIXES
-			// TODO: this->m_flDisplayHistory!
-			if (!(m_flDisplayHistory & DHF_FRIEND_INJURED))
-			{
-				m_flDisplayHistory |= DHF_FRIEND_INJURED;
-				pAttack->HintMessage("#Hint_try_not_to_injure_teammates");
-			}
+				if (!(m_flDisplayHistory & DHF_FRIEND_INJURED))
+				{
+					m_flDisplayHistory |= DHF_FRIEND_INJURED;
+					pAttack->HintMessage("#Hint_try_not_to_injure_teammates");
+				}
 #else
-			if (!(pAttack->m_flDisplayHistory & DHF_FRIEND_INJURED))
-			{
-				pAttack->m_flDisplayHistory |= DHF_FRIEND_INJURED;
-				pAttack->HintMessage("#Hint_try_not_to_injure_teammates");
-			}
+				if (!(pAttack->m_flDisplayHistory & DHF_FRIEND_INJURED))
+				{
+					pAttack->m_flDisplayHistory |= DHF_FRIEND_INJURED;
+					pAttack->HintMessage("#Hint_try_not_to_injure_teammates");
+				}
 #endif
 
-			bTeamAttack = TRUE;
-			if (gpGlobals->time > pAttack->m_flLastAttackedTeammate + 0.6f)
-			{
-				CBaseEntity *pEntity = nullptr;
-				while ((pEntity = UTIL_FindEntityByClassname(pEntity, "player")))
+				bTeamAttack = TRUE;
+				if (gpGlobals->time > pAttack->m_flLastAttackedTeammate + 0.6f)
 				{
-					if (FNullEnt(pEntity->edict()))
-						break;
-
-					CBasePlayer *pPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev);
-
-					if (pPlayer->m_iTeam == m_iTeam)
+					CBaseEntity *pEntity = nullptr;
+					while ((pEntity = UTIL_FindEntityByClassname(pEntity, "player")))
 					{
-						ClientPrint(pPlayer->pev, HUD_PRINTTALK, "#Game_teammate_attack", STRING(pAttack->pev->netname));
+						if (FNullEnt(pEntity->edict()))
+							break;
+
+						CBasePlayer *pPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev);
+
+						if (pPlayer->m_iTeam == m_iTeam)
+						{
+							ClientPrint(pPlayer->pev, HUD_PRINTTALK, "#Game_teammate_attack", STRING(pAttack->pev->netname));
+						}
 					}
+
+					pAttack->m_flLastAttackedTeammate = gpGlobals->time;
 				}
-
-				pAttack->m_flLastAttackedTeammate = gpGlobals->time;
 			}
-		}
 
-		if (!bAttackFFA && pAttack->m_iTeam == m_iTeam)
-		{
 #ifdef REGAMEDLL_ADD
 			// bullets hurt teammates less
 			flDamage *= clamp(((bitsDamageType & DMG_BULLET) ?
@@ -4231,6 +4226,13 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 		// check every 5 seconds
 		m_flIdleCheckTime = gpGlobals->time + 5.0;
 
+#ifdef REGAMEDLL_ADD
+		if (CSPlayer()->CheckActivityInGame())
+		{
+			m_fLastMovement = gpGlobals->time;
+		}
+#endif
+
 		real_t flLastMove = gpGlobals->time - m_fLastMovement;
 
 		//check if this player has been inactive for 2 rounds straight
@@ -4246,6 +4248,15 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 				m_fLastMovement = gpGlobals->time;
 			}
 		}
+#ifdef REGAMEDLL_ADD
+		if (afk_bomb_drop_time.value > 0.0 && IsBombGuy())
+		{
+			if (flLastMove > afk_bomb_drop_time.value && !CSGameRules()->IsFreezePeriod())
+			{
+				DropPlayerItem("weapon_c4");
+			}
+		}
+#endif
 	}
 
 	if (g_pGameRules && g_pGameRules->FAllowFlashlight())
@@ -6044,7 +6055,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(ImpulseCommands)()
 
 void CBasePlayer::CheatImpulseCommands(int iImpulse)
 {
-	if (!g_flWeaponCheat)
+	if (!CVAR_GET_FLOAT("sv_cheats"))
 		return;
 
 	CBaseEntity *pEntity;
