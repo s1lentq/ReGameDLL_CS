@@ -6316,6 +6316,20 @@ void CBasePlayer::HandleSignals()
 
 	m_signals.Update();
 
+#ifdef REGAMEDLL_ADD
+	if (buy_anywhere.value)
+	{
+		// 0 = default. 1 = both teams. 2 = Terrorists. 3 = Counter-Terrorists.
+		if (buy_anywhere.value == 1 
+		|| (buy_anywhere.value == 2 && m_iTeam == TERRORIST)
+		|| (buy_anywhere.value == 3 && m_iTeam == CT)
+		)
+		{
+			m_signals.Signal(SIGNAL_BUY);
+		}
+	}
+#endif
+
 	if (changed & SIGNAL_BUY)
 	{
 		if (state & SIGNAL_BUY)
