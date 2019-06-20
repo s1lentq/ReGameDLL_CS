@@ -900,14 +900,21 @@ void CCSBotManager::MaintainBotQuota()
 		}
 
 		// attempt to kick a bot from the given team
-		if (UTIL_KickBotFromTeam(kickTeam))
-			return;
+		bool atLeastOneKicked = UTIL_KickBotFromTeam(kickTeam);
 
-		// if there were no bots on the team, kick a bot from the other team
-		if (kickTeam == TERRORIST)
-			UTIL_KickBotFromTeam(CT);
-		else
-			UTIL_KickBotFromTeam(TERRORIST);
+		if (!atLeastOneKicked)
+		{
+			// if there were no bots on the team, kick a bot from the other team
+			if (kickTeam == TERRORIST)
+				atLeastOneKicked = UTIL_KickBotFromTeam(CT);
+			else
+				atLeastOneKicked = UTIL_KickBotFromTeam(TERRORIST);
+		}
+
+		if (atLeastOneKicked)
+		{
+			CONSOLE_ECHO("These bots kicked to maintain quota.\n");
+		}
 	}
 	else
 	{

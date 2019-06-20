@@ -4244,7 +4244,16 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 				UTIL_LogPrintf("\"%s<%i><%s><%s>\" triggered \"Game_idle_kick\" (auto)\n", STRING(pev->netname), GETPLAYERUSERID(edict()), GETPLAYERAUTHID(edict()), GetTeam(m_iTeam));
 				UTIL_ClientPrintAll(HUD_PRINTCONSOLE, "#Game_idle_kick", STRING(pev->netname));
 
+#ifdef REGAMEDLL_FIXES
+				int iUserID = GETPLAYERUSERID(edict());
+				if (iUserID != -1)
+				{
+					SERVER_COMMAND(UTIL_VarArgs("kick #%d \"Player idle\"\n", iUserID));
+				}
+#else
 				SERVER_COMMAND(UTIL_VarArgs("kick \"%s\"\n", STRING(pev->netname)));
+#endif // #ifdef REGAMEDLL_FIXES
+
 				m_fLastMovement = gpGlobals->time;
 			}
 		}
