@@ -890,6 +890,40 @@ void CCSBotManager::MaintainBotQuota()
 	else
 		desiredBotCount = Q_min(desiredBotCount, gpGlobals->maxClients - totalHumansInGame);
 
+#ifdef REGAMEDLL_FIXES
+	// Try to balance teams, if we are in the first specified seconds of a round and bots can join either team.
+	if (occupiedBotSlots > 0 && desiredBotCount == occupiedBotSlots && CSGameRules()->IsGameStarted())
+	{
+		if (CSGameRules()->GetRoundElapsedTime() < CSGameRules()->GetRoundRespawnTime()) // new bots can still spawn during this time
+		{
+			if (autoteambalance.value > 0.0f)
+			{
+				int numAliveTerrorist;
+				int numAliveCT;
+				int numDeadTerrorist;
+				int numDeadCT;
+
+				CSGameRules()->InitializePlayerCounts(numAliveTerrorist, numAliveCT, numDeadTerrorist, numDeadCT);
+
+				if (!FStrEq(cv_bot_join_team.string, "T") &&
+					!FStrEq(cv_bot_join_team.string, "CT"))
+				{
+					if (numAliveTerrorist > CSGameRules()->m_iNumCT + 1)
+					{
+						if (UTIL_KickBotFromTeam(TERRORIST))
+							return;
+					}
+					else if (numAliveCT > CSGameRules()->m_iNumTerrorist + 1)
+					{
+						if (UTIL_KickBotFromTeam(CT))
+							return;
+					}
+				}
+			}
+		}
+	}
+#endif // #ifdef REGAMEDLL_FIXES
+
 	// add bots if necessary
 	if (desiredBotCount > occupiedBotSlots)
 	{
