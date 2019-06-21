@@ -1489,8 +1489,7 @@ void CBasePlayer::RemoveAllItems(BOOL removeSuit)
 
 	if (m_bHasDefuser)
 	{
-		m_bHasDefuser = false;
-		pev->body = 0;
+		RemoveDefuser();
 
 		MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev);
 			WRITE_BYTE(STATUSICON_HIDE);
@@ -2124,8 +2123,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 	}
 	else if (m_bHasDefuser)
 	{
-		m_bHasDefuser = false;
-		pev->body = 0;
+		RemoveDefuser();
 
 #ifdef REGAMEDLL_FIXES
 		CItemThighPack *pDefuser = (CItemThighPack *)CBaseEntity::Create("item_thighpack", pev->origin, g_vecZero, ENT(pev));
@@ -3447,8 +3445,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Disappear)()
 	}
 	else if (m_bHasDefuser)
 	{
-		m_bHasDefuser = false;
-		pev->body = 0;
+		RemoveDefuser();
 		GiveNamedItem("item_thighpack");
 
 		MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev);
@@ -7794,8 +7791,7 @@ void CBasePlayer::__API_HOOK(SwitchTeam)()
 
 	if (m_bHasDefuser)
 	{
-		m_bHasDefuser = false;
-		pev->body = 0;
+		RemoveDefuser();
 
 		MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev);
 			WRITE_BYTE(STATUSICON_HIDE);
@@ -9496,6 +9492,12 @@ void CBasePlayer::RemoveBomb()
 		pev->weapons &= ~(1 << pBomb->m_iId);
 		pBomb->Kill();
 	}
+}
+
+void CBasePlayer::RemoveDefuser()
+{
+	m_bHasDefuser = false;
+	pev->body = 0;
 }
 
 void CBasePlayer::Disconnect()

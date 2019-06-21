@@ -605,6 +605,7 @@ public:
 	void DropPrimary();
 	void OnSpawnEquip(bool addDefault = true, bool equipGame = true);
 	void RemoveBomb();
+	void RemoveDefuser();
 	void HideTimer();
 	bool MakeBomber();
 	bool GetIntoGame();
