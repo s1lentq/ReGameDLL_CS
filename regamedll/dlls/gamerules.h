@@ -635,6 +635,7 @@ public:
 	float GetRoundRemainingTimeReal() const;
 	float GetTimeLeft() const { return m_flTimeLimit - gpGlobals->time; }
 	float GetRoundElapsedTime() const { return gpGlobals->time - m_fRoundStartTime; }
+	float GetMapElapsedTime() const { return gpGlobals->time; }
 
 	BOOL TeamFull(int team_id);
 	BOOL TeamStacked(int newTeam_id, int curTeam_id);

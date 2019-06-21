@@ -875,6 +875,15 @@ void CCSBotManager::MaintainBotQuota()
 			desiredBotCount = 0;
 	}
 
+#ifdef REGAMEDLL_ADD
+	// wait until the map has been loaded for a bit, to allow players to transition across
+	// the transition without missing the pistol round
+	if (static_cast<int>(cv_bot_join_delay.value) > CSGameRules()->GetMapElapsedTime())
+	{
+		desiredBotCount = 0;
+	}
+#endif
+
 	// if bots will auto-vacate, we need to keep one slot open to allow players to join
 	if (cv_bot_auto_vacate.value > 0.0)
 		desiredBotCount = Q_min(desiredBotCount, gpGlobals->maxClients - (totalHumansInGame + 1));
