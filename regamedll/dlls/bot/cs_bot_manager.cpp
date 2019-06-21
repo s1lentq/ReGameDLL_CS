@@ -829,14 +829,37 @@ void CCSBotManager::MaintainBotQuota()
 	int desiredBotCount = int(cv_bot_quota.value);
 	int occupiedBotSlots = UTIL_BotsInGame();
 
+	// isRoundInProgress is true if the round has progressed far enough that new players will join as dead.
+	bool isRoundInProgress = CSGameRules()->IsGameStarted() &&
+							 !TheCSBots()->IsRoundOver() &&
+							 (CSGameRules()->GetRoundElapsedTime() >= CSGameRules()->GetRoundRespawnTime());
+
 #ifdef REGAMEDLL_ADD
 	if (FStrEq(cv_bot_quota_mode.string, "fill"))
 	{
-		desiredBotCount = Q_max(0, desiredBotCount - humanPlayersInGame);
+		// If bot_quota_mode is 'fill', we want the number of bots and humans together to equal bot_quota
+		// unless the round is already in progress, in which case we play with what we've been dealt
+		if (!isRoundInProgress)
+		{
+			desiredBotCount = Q_max(0, desiredBotCount - humanPlayersInGame);
+		}
+		else
+		{
+			desiredBotCount = occupiedBotSlots;
+		}
 	}
 	else if (FStrEq(cv_bot_quota_mode.string, "match"))
 	{
-		desiredBotCount = Q_max<int>(0, cv_bot_quota.value * humanPlayersInGame);
+		// If bot_quota_mode is 'match', we want the number of bots to be bot_quota * total humans
+		// unless the round is already in progress, in which case we play with what we've been dealt
+		if (!isRoundInProgress)
+		{
+			desiredBotCount = Q_max<int>(0, cv_bot_quota.value * humanPlayersInGame);
+		}
+		else
+		{
+			desiredBotCount = occupiedBotSlots;
+		}
 	}
 #else // #ifdef REGAMEDLL_ADD
 	if (cv_bot_quota_match.value > 0.0)

@@ -634,6 +634,7 @@ public:
 	float GetRoundRemainingTime() const { return m_iRoundTimeSecs - gpGlobals->time + m_fRoundStartTime; }
 	float GetRoundRemainingTimeReal() const;
 	float GetTimeLeft() const { return m_flTimeLimit - gpGlobals->time; }
+	float GetRoundElapsedTime() const { return gpGlobals->time - m_fRoundStartTime; }
 
 	BOOL TeamFull(int team_id);
 	BOOL TeamStacked(int newTeam_id, int curTeam_id);
@@ -667,6 +668,8 @@ public:
 	void TerminateRound(float tmDelay, int iWinStatus);
 	float GetRoundRespawnTime() const;
 	float GetRoundRestartDelay() const;
+
+	bool IsGameStarted() const { return m_bGameStarted; }
 
 	// has a style of gameplay when aren't any teams
 	bool IsFreeForAll() const;
