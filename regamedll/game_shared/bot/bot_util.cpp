@@ -112,7 +112,7 @@ int UTIL_HumansInGame(bool ignoreSpectators)
 			continue;
 
 #ifdef REGAMEDLL_FIXES
-		if (pPlayer->IsProxy())
+		if (ignoreSpectators && pPlayer->IsProxy())
 			continue;
 #endif
 

@@ -39,7 +39,6 @@ extern cvar_t cv_bot_difficulty;
 extern cvar_t cv_bot_debug;
 extern cvar_t cv_bot_quicksave;
 extern cvar_t cv_bot_quota;
-extern cvar_t cv_bot_quota_match;
 extern cvar_t cv_bot_prefix;
 extern cvar_t cv_bot_allow_rogues;
 extern cvar_t cv_bot_allow_pistols;
@@ -61,4 +60,6 @@ extern cvar_t cv_bot_profile_db;
 #ifdef REGAMEDLL_ADD
 extern cvar_t cv_bot_deathmatch;
 extern cvar_t cv_bot_quota_mode;
+#else
+extern cvar_t cv_bot_quota_match;
 #endif

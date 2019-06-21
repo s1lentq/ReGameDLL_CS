@@ -828,15 +828,22 @@ void CCSBotManager::MaintainBotQuota()
 
 	int desiredBotCount = int(cv_bot_quota.value);
 	int occupiedBotSlots = UTIL_BotsInGame();
-#ifdef REGAMEDLL_ADD
-	if (Q_stricmp(cv_bot_quota_mode.string, "fill") == 0)
-		occupiedBotSlots += humanPlayersInGame;
-#endif
 
+#ifdef REGAMEDLL_ADD
+	if (FStrEq(cv_bot_quota_mode.string, "fill"))
+	{
+		desiredBotCount = Q_max(0, desiredBotCount - humanPlayersInGame);
+	}
+	else if (FStrEq(cv_bot_quota_mode.string, "match"))
+	{
+		desiredBotCount = Q_max<int>(0, cv_bot_quota.value * humanPlayersInGame);
+	}
+#else // #ifdef REGAMEDLL_ADD
 	if (cv_bot_quota_match.value > 0.0)
 	{
 		desiredBotCount = int(humanPlayersInGame * cv_bot_quota_match.value);
 	}
+#endif // #ifdef REGAMEDLL_ADD
 
 	// wait for a player to join, if necessary
 	if (cv_bot_join_after_player.value > 0.0)

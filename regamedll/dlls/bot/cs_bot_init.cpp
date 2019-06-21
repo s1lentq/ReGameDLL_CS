@@ -39,7 +39,6 @@ cvar_t cv_bot_difficulty             = { "bot_difficulty", "0", FCVAR_SERVER, 0.
 cvar_t cv_bot_debug                  = { "bot_debug", "0", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t cv_bot_quicksave              = { "bot_quicksave", "0", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t cv_bot_quota                  = { "bot_quota", "0", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t cv_bot_quota_match            = { "bot_quota_match", "0", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t cv_bot_prefix                 = { "bot_prefix", "", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t cv_bot_allow_rogues           = { "bot_allow_rogues", "1", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t cv_bot_allow_pistols          = { "bot_allow_pistols", "1", FCVAR_SERVER, 0.0f, nullptr };
@@ -61,6 +60,9 @@ cvar_t cv_bot_profile_db             = { "bot_profile_db", "BotProfile.db", FCVA
 #ifdef REGAMEDLL_ADD
 cvar_t cv_bot_deathmatch             = { "bot_deathmatch", "0", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t cv_bot_quota_mode             = { "bot_quota_mode", "normal", FCVAR_SERVER, 0.0f, nullptr };
+#else
+// Migrated to bot_quota_mode, use "match"
+cvar_t cv_bot_quota_match            = { "bot_quota_match", "0", FCVAR_SERVER, 0.0f, nullptr };
 #endif
 
 void InstallBotControl()
@@ -99,7 +101,11 @@ void Bot_RegisterCVars()
 	CVAR_REGISTER(&cv_bot_debug);
 	CVAR_REGISTER(&cv_bot_quicksave);
 	CVAR_REGISTER(&cv_bot_quota);
+
+#ifndef REGAMEDLL_ADD
 	CVAR_REGISTER(&cv_bot_quota_match);
+#endif
+
 	CVAR_REGISTER(&cv_bot_prefix);
 	CVAR_REGISTER(&cv_bot_allow_rogues);
 	CVAR_REGISTER(&cv_bot_allow_pistols);
