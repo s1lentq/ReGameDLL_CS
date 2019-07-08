@@ -3836,7 +3836,7 @@ void EditNavAreas(NavEditCmdType cmd)
 						(area->GetAttributes() & NAV_NO_JUMP) ? "NO_JUMP " : "");
 				}
 
-				Q_sprintf(buffer, "Area #%d %s %s\n", area->GetID(), locName, attrib);
+				Q_sprintf(buffer, "Area #%u %s %s\n", area->GetID(), locName, attrib);
 				UTIL_SayTextAll(buffer, pLocalPlayer);
 
 				// do "place painting"

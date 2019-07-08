@@ -130,7 +130,7 @@ void CNavArea::Save(FILE *fp) const
 	fprintf(fp, "v  %f %f %f\n", m_extent.lo.x, m_extent.hi.y, m_swZ);
 
 	static int base = 1;
-	fprintf(fp, "\n\ng %04dArea%s%s%s%s\n", m_id,
+	fprintf(fp, "\n\ng %04uArea%s%s%s%s\n", m_id,
 			(GetAttributes() & NAV_CROUCH) ? "CROUCH" : "", (GetAttributes() & NAV_JUMP) ? "JUMP" : "",
 			(GetAttributes() & NAV_PRECISE) ? "PRECISE" : "", (GetAttributes() & NAV_NO_JUMP) ? "NO_JUMP" : "");
 
