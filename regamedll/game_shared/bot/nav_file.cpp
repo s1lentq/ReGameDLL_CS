@@ -68,7 +68,7 @@ Place PlaceDirectory::EntryToPlace(EntryType entry) const
 		return UNDEFINED_PLACE;
 
 	unsigned int i = entry - 1;
-	if (i > m_directory.size())
+	if (i >= m_directory.size())
 	{
 		assert(false && "PlaceDirectory::EntryToPlace: Invalid entry");
 		return UNDEFINED_PLACE;
