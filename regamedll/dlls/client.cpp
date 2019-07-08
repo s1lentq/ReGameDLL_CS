@@ -563,8 +563,16 @@ void ProcessKickVote(CBasePlayer *pVotingPlayer, CBasePlayer *pKickPlayer)
 
 	if (iVotesNeeded >= int(fKickPercent))
 	{
+#ifdef REGAMEDLL_FIXES
+		SERVER_COMMAND(UTIL_VarArgs("kick #%d \"You have been voted off.\"\n", iVoteID));
+		SERVER_EXECUTE();
+#endif
+
 		UTIL_ClientPrintAll(HUD_PRINTCENTER, "#Game_kicked", STRING(pKickPlayer->pev->netname));
+
+#ifndef REGAMEDLL_FIXES
 		SERVER_COMMAND(UTIL_VarArgs("kick # %d\n", iVoteID));
+#endif
 		pTempEntity = nullptr;
 
 		while ((pTempEntity = UTIL_FindEntityByClassname(pTempEntity, "player")))
@@ -1767,16 +1775,25 @@ BOOL EXT_FUNC __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *pPlayer, int slot)
 			{
 				team = (RANDOM_LONG(0, 1) == 0) ? TERRORIST : CT;
 
-				if (!UTIL_KickBotFromTeam(team))
+				bool atLeastOneLeft = UTIL_KickBotFromTeam(team);
+
+				if (!atLeastOneLeft)
 				{
 					// no bots on that team, try the other
 					team = (team == CT) ? TERRORIST : CT;
 
-					if (!UTIL_KickBotFromTeam(team))
+					atLeastOneLeft = UTIL_KickBotFromTeam(team);
+
+					if (!atLeastOneLeft)
 					{
 						// couldn't kick any bots, fail
 						team = UNASSIGNED;
 					}
+				}
+
+				if (atLeastOneLeft)
+				{
+					CONSOLE_ECHO("These bots has left the game to make room for human players.\n");
 				}
 			}
 		}
@@ -1905,7 +1922,10 @@ BOOL EXT_FUNC __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *pPlayer, int slot)
 		if (cv_bot_auto_vacate.value > 0 && !pPlayer->IsBot())
 		{
 			if (UTIL_KickBotFromTeam(team))
+			{
+				CONSOLE_ECHO("These bots has left the game to make room for human players.\n");
 				madeRoom = true;
+			}
 		}
 
 		if (!madeRoom)

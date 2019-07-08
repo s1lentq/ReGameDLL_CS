@@ -111,6 +111,11 @@ int UTIL_HumansInGame(bool ignoreSpectators)
 		if (FStrEq(STRING(pPlayer->pev->netname), ""))
 			continue;
 
+#ifdef REGAMEDLL_FIXES
+		if (ignoreSpectators && pPlayer->IsProxy())
+			continue;
+#endif
+
 		if (pPlayer->IsBot())
 			continue;
 

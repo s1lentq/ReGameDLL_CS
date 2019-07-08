@@ -3806,7 +3806,11 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(PlayerKilled)(CBasePlayer *pVictim,
 				int iUserID = GETPLAYERUSERID(killer->edict());
 				if (iUserID != -1)
 				{
+#ifdef REGAMEDLL_FIXES
+					SERVER_COMMAND(UTIL_VarArgs("kick #%d \"For killing too many teammates\"\n", iUserID));
+#else
 					SERVER_COMMAND(UTIL_VarArgs("kick # %d\n", iUserID));
+#endif
 				}
 			}
 
