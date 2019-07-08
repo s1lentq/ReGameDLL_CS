@@ -622,7 +622,11 @@ void PlayCDTrack(edict_t *pClient, int iTrack)
 	if (!pClient)
 		return;
 
+#ifdef REGAMEDLL_FIXES
+	if (iTrack < -1 || iTrack >= (int)ARRAYSIZE(g_szMP3trackFileMap))
+#else
 	if (iTrack < -1 || iTrack > 30)
+#endif
 	{
 		ALERT(at_console, "TriggerCDAudio - Track %d out of range\n", iTrack);
 		return;
