@@ -4218,7 +4218,11 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 			m_flVelocityModifier = 1;
 	}
 
-	if (m_flIdleCheckTime <= (double)gpGlobals->time || m_flIdleCheckTime == 0.0f)
+	if (
+#ifdef REGAMEDLL_FIXES
+		IsAlive() &&
+#endif
+		m_flIdleCheckTime <= (double)gpGlobals->time || m_flIdleCheckTime == 0.0f)
 	{
 		// check every 5 seconds
 		m_flIdleCheckTime = gpGlobals->time + 5.0;
