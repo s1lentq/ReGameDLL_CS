@@ -1489,8 +1489,7 @@ void CBasePlayer::RemoveAllItems(BOOL removeSuit)
 
 	if (m_bHasDefuser)
 	{
-		m_bHasDefuser = false;
-		pev->body = 0;
+		RemoveDefuser();
 
 		MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev);
 			WRITE_BYTE(STATUSICON_HIDE);
@@ -2124,8 +2123,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 	}
 	else if (m_bHasDefuser)
 	{
-		m_bHasDefuser = false;
-		pev->body = 0;
+		RemoveDefuser();
 
 #ifdef REGAMEDLL_FIXES
 		CItemThighPack *pDefuser = (CItemThighPack *)CBaseEntity::Create("item_thighpack", pev->origin, g_vecZero, ENT(pev));
@@ -3447,8 +3445,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Disappear)()
 	}
 	else if (m_bHasDefuser)
 	{
-		m_bHasDefuser = false;
-		pev->body = 0;
+		RemoveDefuser();
 		GiveNamedItem("item_thighpack");
 
 		MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev);
@@ -4221,7 +4218,11 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 			m_flVelocityModifier = 1;
 	}
 
-	if (m_flIdleCheckTime <= (double)gpGlobals->time || m_flIdleCheckTime == 0.0f)
+	if (
+#ifdef REGAMEDLL_FIXES
+		IsAlive() &&
+#endif
+		m_flIdleCheckTime <= (double)gpGlobals->time || m_flIdleCheckTime == 0.0f)
 	{
 		// check every 5 seconds
 		m_flIdleCheckTime = gpGlobals->time + 5.0;
@@ -4244,7 +4245,16 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 				UTIL_LogPrintf("\"%s<%i><%s><%s>\" triggered \"Game_idle_kick\" (auto)\n", STRING(pev->netname), GETPLAYERUSERID(edict()), GETPLAYERAUTHID(edict()), GetTeam(m_iTeam));
 				UTIL_ClientPrintAll(HUD_PRINTCONSOLE, "#Game_idle_kick", STRING(pev->netname));
 
+#ifdef REGAMEDLL_FIXES
+				int iUserID = GETPLAYERUSERID(edict());
+				if (iUserID != -1)
+				{
+					SERVER_COMMAND(UTIL_VarArgs("kick #%d \"Player idle\"\n", iUserID));
+				}
+#else
 				SERVER_COMMAND(UTIL_VarArgs("kick \"%s\"\n", STRING(pev->netname)));
+#endif // #ifdef REGAMEDLL_FIXES
+
 				m_fLastMovement = gpGlobals->time;
 			}
 		}
@@ -7799,8 +7809,7 @@ void CBasePlayer::__API_HOOK(SwitchTeam)()
 
 	if (m_bHasDefuser)
 	{
-		m_bHasDefuser = false;
-		pev->body = 0;
+		RemoveDefuser();
 
 		MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev);
 			WRITE_BYTE(STATUSICON_HIDE);
@@ -9501,6 +9510,12 @@ void CBasePlayer::RemoveBomb()
 		pev->weapons &= ~(1 << pBomb->m_iId);
 		pBomb->Kill();
 	}
+}
+
+void CBasePlayer::RemoveDefuser()
+{
+	m_bHasDefuser = false;
+	pev->body = 0;
 }
 
 void CBasePlayer::Disconnect()

@@ -828,15 +828,45 @@ void CCSBotManager::MaintainBotQuota()
 
 	int desiredBotCount = int(cv_bot_quota.value);
 	int occupiedBotSlots = UTIL_BotsInGame();
-#ifdef REGAMEDLL_ADD
-	if (Q_stricmp(cv_bot_quota_mode.string, "fill") == 0)
-		occupiedBotSlots += humanPlayersInGame;
-#endif
 
+	// isRoundInProgress is true if the round has progressed far enough that new players will join as dead.
+	bool isRoundInProgress = CSGameRules()->IsGameStarted() &&
+							 !TheCSBots()->IsRoundOver() &&
+							 (CSGameRules()->GetRoundElapsedTime() >= CSGameRules()->GetRoundRespawnTime());
+
+#ifdef REGAMEDLL_ADD
+	if (FStrEq(cv_bot_quota_mode.string, "fill"))
+	{
+		// If bot_quota_mode is 'fill', we want the number of bots and humans together to equal bot_quota
+		// unless the round is already in progress, in which case we play with what we've been dealt
+		if (!isRoundInProgress)
+		{
+			desiredBotCount = Q_max(0, desiredBotCount - humanPlayersInGame);
+		}
+		else
+		{
+			desiredBotCount = occupiedBotSlots;
+		}
+	}
+	else if (FStrEq(cv_bot_quota_mode.string, "match"))
+	{
+		// If bot_quota_mode is 'match', we want the number of bots to be bot_quota * total humans
+		// unless the round is already in progress, in which case we play with what we've been dealt
+		if (!isRoundInProgress)
+		{
+			desiredBotCount = Q_max<int>(0, cv_bot_quota.value * humanPlayersInGame);
+		}
+		else
+		{
+			desiredBotCount = occupiedBotSlots;
+		}
+	}
+#else // #ifdef REGAMEDLL_ADD
 	if (cv_bot_quota_match.value > 0.0)
 	{
 		desiredBotCount = int(humanPlayersInGame * cv_bot_quota_match.value);
 	}
+#endif // #ifdef REGAMEDLL_ADD
 
 	// wait for a player to join, if necessary
 	if (cv_bot_join_after_player.value > 0.0)
@@ -845,11 +875,54 @@ void CCSBotManager::MaintainBotQuota()
 			desiredBotCount = 0;
 	}
 
+#ifdef REGAMEDLL_ADD
+	// wait until the map has been loaded for a bit, to allow players to transition across
+	// the transition without missing the pistol round
+	if (static_cast<int>(cv_bot_join_delay.value) > CSGameRules()->GetMapElapsedTime())
+	{
+		desiredBotCount = 0;
+	}
+#endif
+
 	// if bots will auto-vacate, we need to keep one slot open to allow players to join
 	if (cv_bot_auto_vacate.value > 0.0)
 		desiredBotCount = Q_min(desiredBotCount, gpGlobals->maxClients - (totalHumansInGame + 1));
 	else
 		desiredBotCount = Q_min(desiredBotCount, gpGlobals->maxClients - totalHumansInGame);
+
+#ifdef REGAMEDLL_FIXES
+	// Try to balance teams, if we are in the first specified seconds of a round and bots can join either team.
+	if (occupiedBotSlots > 0 && desiredBotCount == occupiedBotSlots && CSGameRules()->IsGameStarted())
+	{
+		if (CSGameRules()->GetRoundElapsedTime() < CSGameRules()->GetRoundRespawnTime()) // new bots can still spawn during this time
+		{
+			if (autoteambalance.value > 0.0f)
+			{
+				int numAliveTerrorist;
+				int numAliveCT;
+				int numDeadTerrorist;
+				int numDeadCT;
+
+				CSGameRules()->InitializePlayerCounts(numAliveTerrorist, numAliveCT, numDeadTerrorist, numDeadCT);
+
+				if (!FStrEq(cv_bot_join_team.string, "T") &&
+					!FStrEq(cv_bot_join_team.string, "CT"))
+				{
+					if (numAliveTerrorist > CSGameRules()->m_iNumCT + 1)
+					{
+						if (UTIL_KickBotFromTeam(TERRORIST))
+							return;
+					}
+					else if (numAliveCT > CSGameRules()->m_iNumTerrorist + 1)
+					{
+						if (UTIL_KickBotFromTeam(CT))
+							return;
+					}
+				}
+			}
+		}
+	}
+#endif // #ifdef REGAMEDLL_FIXES
 
 	// add bots if necessary
 	if (desiredBotCount > occupiedBotSlots)
@@ -900,14 +973,21 @@ void CCSBotManager::MaintainBotQuota()
 		}
 
 		// attempt to kick a bot from the given team
-		if (UTIL_KickBotFromTeam(kickTeam))
-			return;
+		bool atLeastOneKicked = UTIL_KickBotFromTeam(kickTeam);
 
-		// if there were no bots on the team, kick a bot from the other team
-		if (kickTeam == TERRORIST)
-			UTIL_KickBotFromTeam(CT);
-		else
-			UTIL_KickBotFromTeam(TERRORIST);
+		if (!atLeastOneKicked)
+		{
+			// if there were no bots on the team, kick a bot from the other team
+			if (kickTeam == TERRORIST)
+				atLeastOneKicked = UTIL_KickBotFromTeam(CT);
+			else
+				atLeastOneKicked = UTIL_KickBotFromTeam(TERRORIST);
+		}
+
+		if (atLeastOneKicked)
+		{
+			CONSOLE_ECHO("These bots kicked to maintain quota.\n");
+		}
 	}
 	else
 	{

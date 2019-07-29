@@ -156,6 +156,7 @@ public:
 	// This entity's classname.
 	const char *GetClassname() const { return pev->classname.str(); }
 
+	bool IsProxy()   const { return (pev->flags & FL_PROXY) == FL_PROXY; }
 	bool IsDormant() const { return (pev->flags & FL_DORMANT) == FL_DORMANT; }
 	BOOL IsLockedByMaster() { return FALSE; }
 
