@@ -2093,7 +2093,7 @@ void Radio1(CBasePlayer *pPlayer, int slot)
 		return;
 
 	pPlayer->m_iRadioMessages--;
-	pPlayer->m_flRadioTime = gpGlobals->time + 1.5f;
+	pPlayer->m_flRadioTime = gpGlobals->time + CGameRules::GetRadioTimeout();
 
 	switch (slot)
 	{
@@ -2132,7 +2132,7 @@ void Radio2(CBasePlayer *pPlayer, int slot)
 		return;
 
 	pPlayer->m_iRadioMessages--;
-	pPlayer->m_flRadioTime = gpGlobals->time + 1.5f;
+	pPlayer->m_flRadioTime = gpGlobals->time + CGameRules::GetRadioTimeout();
 
 	switch (slot)
 	{
@@ -2171,7 +2171,7 @@ void Radio3(CBasePlayer *pPlayer, int slot)
 		return;
 
 	pPlayer->m_iRadioMessages--;
-	pPlayer->m_flRadioTime = gpGlobals->time + 1.5f;
+	pPlayer->m_flRadioTime = gpGlobals->time + CGameRules::GetRadioTimeout();
 
 	switch (slot)
 	{

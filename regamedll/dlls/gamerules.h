@@ -45,6 +45,7 @@ const float AMMO_RESPAWN_TIME   = 20;
 const float ROUND_RESPAWN_TIME  = 20;
 const float ROUND_BEGIN_DELAY   = 5;	// delay before beginning new round
 const float ITEM_KILL_DELAY     = 300;
+const float RADIO_TIMEOUT       = 1.5;
 
 const int MAX_INTERMISSION_TIME = 120;	// longest the intermission can last, in seconds
 
@@ -325,6 +326,7 @@ public:
 	inline bool IsGameOver() const { return m_bGameOver; }
 	inline void SetGameOver() { m_bGameOver = true; }
 	static float GetItemKillDelay();
+	static float GetRadioTimeout();
 
 public:
 	BOOL m_bFreezePeriod;	// TRUE at beginning of round, set to FALSE when the period expires
@@ -883,6 +885,15 @@ inline float CGameRules::GetItemKillDelay()
 	return item_staytime.value;
 #else
 	return ITEM_KILL_DELAY;
+#endif
+}
+
+inline float CGameRules::GetRadioTimeout()
+{
+#ifdef REGAMEDLL_ADD
+	return radio_timeout.value;
+#else
+	return RADIO_TIMEOUT;
 #endif
 }
 
