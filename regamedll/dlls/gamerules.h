@@ -39,13 +39,13 @@ const int MAX_MONEY_THRESHOLD   = 999999; // allowable money limit in the game t
 const int MAX_MOTD_CHUNK        = 60;
 const int MAX_MOTD_LENGTH       = 1536;	// (MAX_MOTD_CHUNK * 4)
 
-const float ITEM_RESPAWN_TIME   = 30;
-const float WEAPON_RESPAWN_TIME = 20;
-const float AMMO_RESPAWN_TIME   = 20;
-const float ROUND_RESPAWN_TIME  = 20;
-const float ROUND_BEGIN_DELAY   = 5;	// delay before beginning new round
-const float ITEM_KILL_DELAY     = 300;
-const float RADIO_TIMEOUT       = 1.5;
+const float ITEM_RESPAWN_TIME   = 30.0f;
+const float WEAPON_RESPAWN_TIME = 20.0f;
+const float AMMO_RESPAWN_TIME   = 20.0f;
+const float ROUND_RESPAWN_TIME  = 20.0f;
+const float ROUND_BEGIN_DELAY   = 5.0f;	// delay before beginning new round
+const float ITEM_KILL_DELAY     = 300.0f;
+const float RADIO_TIMEOUT       = 1.5f;
 
 const int MAX_INTERMISSION_TIME = 120;	// longest the intermission can last, in seconds
 
