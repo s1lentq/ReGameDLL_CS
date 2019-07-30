@@ -5202,7 +5202,11 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Spawn)()
 	m_flLastTalk = 0;
 	m_flIdleCheckTime = 0;
 	m_flRadioTime = 0;
+#ifdef REGAMEDLL_ADD
+	m_iRadioMessages = int(radio_maxinround.value);
+#else
 	m_iRadioMessages = 60;
+#endif
 	m_bHasC4 = false;
 	m_bKilledByBomb = false;
 	m_bKilledByGrenade = false;
