@@ -319,6 +319,9 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&ff_damage_reduction_grenade_self);
 	CVAR_REGISTER(&ff_damage_reduction_other);
 
+	CVAR_REGISTER(&radio_timeout);
+	CVAR_REGISTER(&radio_maxinround);
+
 	// print version
 	CONSOLE_ECHO("ReGameDLL version: " APP_VERSION "\n");
 
