@@ -156,6 +156,7 @@ extern cvar_t legacy_bombtarget_touch;
 extern cvar_t respawn_immunitytime;
 extern cvar_t kill_filled_spawn;
 extern cvar_t afk_bomb_drop_time;
+extern cvar_t buy_anywhere;
 extern cvar_t allow_point_servercommand;
 extern cvar_t hullbounds_sets;
 extern cvar_t ff_damage_reduction_bullets;
