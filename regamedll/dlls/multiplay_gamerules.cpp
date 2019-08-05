@@ -2220,7 +2220,7 @@ void CHalfLifeMultiplay::PickNextVIP()
 
 		while ((pEntity = UTIL_FindEntityByClassname(pEntity, "player")))
 		{
-			if (!FNullEnt(pEntity->edict()))
+			if (FNullEnt(pEntity->edict()))
 				break;
 
 			if (pEntity->IsDormant())
@@ -2258,7 +2258,7 @@ void CHalfLifeMultiplay::PickNextVIP()
 
 		while ((pEntity = UTIL_FindEntityByClassname(pEntity, "player")))
 		{
-			if (!FNullEnt(pEntity->edict()))
+			if (FNullEnt(pEntity->edict()))
 				break;
 
 			if (pEntity->IsDormant())
