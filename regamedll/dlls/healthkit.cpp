@@ -103,6 +103,23 @@ void CWallHealth::Spawn()
 	pev->frame = 0.0f;
 }
 
+#ifdef REGAMEDLL_FIXES
+void CWallHealth::Restart()
+{
+	pev->solid = SOLID_BSP;
+	pev->movetype = MOVETYPE_PUSH;
+
+	// set size and link into world
+	UTIL_SetOrigin(pev, pev->origin);
+	UTIL_SetSize(pev, pev->mins, pev->maxs);
+
+	SET_MODEL(ENT(pev), pev->model);
+
+	pev->nextthink = pev->ltime + 0.1f;
+	SetThink(&CWallHealth::Recharge);
+}
+#endif // #ifdef REGAMEDLL_FIXES
+
 void CWallHealth::Precache()
 {
 	PRECACHE_SOUND("items/medshot4.wav");
@@ -128,13 +145,18 @@ void CWallHealth::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE us
 	}
 
 	// if the player doesn't have the suit, or there is no juice left, make the deny noise
-	if (m_iJuice <= 0 || !(pActivator->pev->weapons & (1 << WEAPON_SUIT)))
+	if (m_iJuice <= 0 || !(pActivator->pev->weapons & (1 << WEAPON_SUIT))
+#ifdef REGAMEDLL_FIXES
+		|| !pActivator->CanTakeHealth(AMOUNT_CHARGE_HEALTH) // don't charge health if we can't more, prevent thinking entity
+#endif // REGAMEDLL_FIXES
+		)
 	{
 		if (gpGlobals->time >= m_flSoundTime)
 		{
 			m_flSoundTime = gpGlobals->time + 0.62f;
 			EMIT_SOUND(ENT(pev), CHAN_ITEM, "items/medshotno1.wav", VOL_NORM, ATTN_NORM);
 		}
+
 		return;
 	}
 
@@ -153,6 +175,7 @@ void CWallHealth::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE us
 		EMIT_SOUND(ENT(pev), CHAN_ITEM, "items/medshot4.wav", VOL_NORM, ATTN_NORM);
 		m_flSoundTime = gpGlobals->time + 0.56f;
 	}
+
 	if (m_iOn == 1 && gpGlobals->time >= m_flSoundTime)
 	{
 		m_iOn++;
@@ -160,7 +183,7 @@ void CWallHealth::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE us
 	}
 
 	// charge the player
-	if (pActivator->TakeHealth(1, DMG_GENERIC))
+	if (pActivator->TakeHealth(AMOUNT_CHARGE_HEALTH, DMG_GENERIC))
 		m_iJuice--;
 
 	// govern the rate of charge
@@ -192,8 +215,21 @@ void CWallHealth::Off()
 
 	m_iOn = 0;
 
-	if (!m_iJuice && ((m_iReactivate = g_pGameRules->FlHealthChargerRechargeTime()) > 0))
+	if (!m_iJuice)
 	{
+		int iReactivate = m_iReactivate;
+
+#ifdef REGAMEDLL_FIXES
+		if (iReactivate <= 0)
+#endif // #ifdef REGAMEDLL_FIXES
+		{
+			if ((iReactivate = g_pGameRules->FlHealthChargerRechargeTime()) <= 0)
+				return;
+		}
+
+		if (m_iReactivate <= 0)
+			m_iReactivate = iReactivate;
+
 		pev->nextthink = pev->ltime + m_iReactivate;
 		SetThink(&CWallHealth::Recharge);
 	}

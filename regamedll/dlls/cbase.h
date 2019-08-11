@@ -151,6 +151,7 @@ public:
 	void SUB_UseTargets(CBaseEntity *pActivator, USE_TYPE useType, float value);
 	bool Intersects(CBaseEntity *pOther);
 	bool Intersects(const Vector &mins, const Vector &maxs);
+	bool CanTakeHealth(float flHealth = 0.0f) const;
 	void MakeDormant();
 
 	// This entity's classname.

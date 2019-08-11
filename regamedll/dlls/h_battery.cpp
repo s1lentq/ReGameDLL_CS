@@ -56,6 +56,27 @@ void CRecharge::Spawn()
 	pev->frame = 0;
 }
 
+#ifdef REGAMEDLL_FIXES
+void CRecharge::Restart()
+{
+	pev->solid = SOLID_BSP;
+	pev->movetype = MOVETYPE_PUSH;
+
+	// set size and link into world
+	UTIL_SetOrigin(pev, pev->origin);
+	UTIL_SetSize(pev, pev->mins, pev->maxs);
+	SET_MODEL(ENT(pev), STRING(pev->model));
+
+	int armorValue = (int)gSkillData.suitchargerCapacity;
+	if (pev->armorvalue != 0.0f) {
+		armorValue = (int)pev->armorvalue;
+	}
+
+	pev->nextthink = pev->ltime + 0.1f;
+	SetThink(&CRecharge::Recharge);
+}
+
+#endif
 void CRecharge::Precache()
 {
 	PRECACHE_SOUND("items/suitcharge1.wav");
@@ -77,7 +98,11 @@ void CRecharge::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useT
 	}
 
 	// if the player doesn't have the suit, or there is no juice left, make the deny noise
-	if (m_iJuice <= 0 || !(pActivator->pev->weapons & (1 << WEAPON_SUIT)))
+	if (m_iJuice <= 0 || !(pActivator->pev->weapons & (1 << WEAPON_SUIT))
+#ifdef REGAMEDLL_FIXES
+		|| pActivator->pev->armorvalue >= MAX_CHARGE_ARMOR // don't charge health if we can't more, prevent thinking entity
+#endif
+		)
 	{
 		if (m_flSoundTime <= gpGlobals->time)
 		{
@@ -120,7 +145,7 @@ void CRecharge::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useT
 	}
 
 	// charge the player
-	if (m_hActivator->pev->armorvalue < 100)
+	if (m_hActivator->pev->armorvalue < MAX_CHARGE_ARMOR)
 	{
 #ifdef REGAMEDLL_FIXES
 		CBasePlayer *pPlayer = m_hActivator.Get<CBasePlayer>();
@@ -129,10 +154,10 @@ void CRecharge::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useT
 #endif
 
 		m_iJuice--;
-		m_hActivator->pev->armorvalue += 1.0f;
+		m_hActivator->pev->armorvalue += AMOUNT_CHARGE_ARMOR;
 
-		if (m_hActivator->pev->armorvalue > 100)
-			m_hActivator->pev->armorvalue = 100;
+		if (m_hActivator->pev->armorvalue > MAX_CHARGE_ARMOR)
+			m_hActivator->pev->armorvalue = MAX_CHARGE_ARMOR;
 	}
 
 	// govern the rate of charge
@@ -162,8 +187,21 @@ void CRecharge::Off()
 
 	m_iOn = 0;
 
-	if (!m_iJuice && (m_iReactivate = g_pGameRules->FlHEVChargerRechargeTime()) > 0)
+	if (!m_iJuice)
 	{
+		int iReactivate = m_iReactivate;
+
+#ifdef REGAMEDLL_FIXES
+		if (iReactivate <= 0)
+#endif // #ifdef REGAMEDLL_FIXES
+		{
+			if ((iReactivate = g_pGameRules->FlHEVChargerRechargeTime()) <= 0)
+				return;
+		}
+
+		if (m_iReactivate <= 0)
+			m_iReactivate = iReactivate;
+
 		pev->nextthink = pev->ltime + m_iReactivate;
 		SetThink(&CRecharge::Recharge);
 	}

@@ -645,6 +645,14 @@ BOOL CBaseEntity::TakeHealth(float flHealth, int bitsDamageType)
 	return TRUE;
 }
 
+bool CBaseEntity::CanTakeHealth(float flHealth) const
+{
+	if ((pev->health + flHealth) > pev->max_health)
+		return false;
+
+	return true;
+}
+
 BOOL CBaseEntity::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
 	Vector vecTemp;

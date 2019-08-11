@@ -2435,9 +2435,8 @@
 
 @SolidClass base(Global, RenderFields, ZHLT, TexLightType) = func_healthcharger: "Wall health recharger"
 [
-	// dmdelay may not work in CS
 	health(integer) : "Healthcharger Capacity" : 50
-	dmdelay(integer) : "Deathmatch recharge delay" : 0
+	dmdelay(integer) : "Deathmatch recharge delay" : 60
 	_minlight(string) : "Minimum light level" : "0"
 ]
 
@@ -2545,7 +2544,7 @@
 @SolidClass base(Global, RenderFields, ZHLT, TexLightType) = func_recharge: "Battery recharger"
 [
 	armorvalue(integer) : "Suitcharger Capacity" : 30
-	dmdelay(integer) : "Deathmatch recharge delay" : 0
+	dmdelay(integer) : "Deathmatch recharge delay" : 30
 	_minlight(string) : "Minimum light level" : "0"
 ]
 
