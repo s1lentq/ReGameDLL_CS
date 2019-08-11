@@ -164,6 +164,15 @@ LINK_HOOK_CLASS_CHAIN(bool, CBasePlayer, SetClientUserInfoName, (char *infobuffe
 bool EXT_FUNC CBasePlayer::__API_HOOK(SetClientUserInfoName)(char *infobuffer, char *szNewName)
 {
 	int nClientIndex = entindex();
+
+#ifdef REGAMEDLL_FIXES
+	if (IsProxy())
+	{
+		SET_CLIENT_KEY_VALUE(nClientIndex, infobuffer, "name", szNewName);
+		return true;
+	}
+#endif
+
 	if (pev->deadflag != DEAD_NO)
 	{
 		m_bHasChangedName = true;
