@@ -300,6 +300,11 @@ typedef struct enginefuncs_s
 
 	// Added 2009/06/19 (no SDK update):
 	int(*pfnEngCheckParm)				(const char *pchCmdLineToken, char **ppnext);
+
+	// Added 2019/06/26 (no SDK update):
+	// Commented out this for backward compatibility
+	//edict_t *(*pfnPEntityOfEntIndexAllEntities)(int iEntIndex);
+
 } enginefuncs_t;
 
 
