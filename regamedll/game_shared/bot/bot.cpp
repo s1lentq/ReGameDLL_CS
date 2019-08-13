@@ -273,6 +273,15 @@ void CBot::ExecuteCommand()
 		m_buttonFlags |= IN_DUCK;
 	}
 
+#ifdef REGAMEDLL_FIXES
+	// don't move if frozen state present
+	if (pev->flags & FL_FROZEN)
+	{
+		adjustedMSec = 0;
+		ResetCommand();
+	}
+#endif
+
 	// Run the command
 	PLAYER_RUN_MOVE(edict(), pev->v_angle, m_forwardSpeed, m_strafeSpeed, m_verticalSpeed, m_buttonFlags, 0, adjustedMSec);
 }
