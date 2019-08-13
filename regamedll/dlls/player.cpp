@@ -5646,6 +5646,11 @@ NOXREF void CBasePlayer::SelectNextItem(int iItem)
 		return;
 	}
 
+#ifdef REGAMEDLL_FIXES
+	if (m_pActiveItem && !m_pActiveItem->CanHolster())
+		return;
+#endif
+
 	if (pItem == m_pActiveItem)
 	{
 		pItem = m_pActiveItem->m_pNext;
@@ -5696,6 +5701,11 @@ void CBasePlayer::SelectItem(const char *pstr)
 	{
 		return;
 	}
+
+#ifdef REGAMEDLL_FIXES
+	if (m_pActiveItem && !m_pActiveItem->CanHolster())
+		return;
+#endif
 
 	auto pItem = GetItemByName(pstr);
 	if (!pItem || pItem == m_pActiveItem)
