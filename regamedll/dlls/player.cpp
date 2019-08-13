@@ -6089,6 +6089,7 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 	switch (iImpulse)
 	{
 		case 76:
+		{
 			if (!giPrecacheGrunt)
 			{
 				giPrecacheGrunt = 1;
@@ -6100,6 +6101,7 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 				CBaseEntity::Create("monster_human_grunt", pev->origin + gpGlobals->v_forward * 128, pev->angles);
 			}
 			break;
+		}
 		case 101:
 			gEvilImpulse101 = TRUE;
 			AddAccount(16000);
@@ -6247,6 +6249,35 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 			}
 			break;
 		}
+#ifdef REGAMEDLL_ADD
+		case 255:
+		{
+			// Give weapons
+			for (int wpnid = WEAPON_NONE + 1; wpnid < MAX_WEAPONS; wpnid++)
+			{
+				// unwanted candidates
+				if (wpnid == WEAPON_GLOCK
+					|| wpnid == WEAPON_C4
+					|| wpnid == WEAPON_KNIFE)
+					continue;
+
+				// If by some case the weapon got invalid
+				const auto pInfo = GetWeaponInfo(wpnid);
+				if (pInfo) {
+					GiveNamedItemEx(pInfo->entityName);
+					GiveAmmo(pInfo->maxRounds, pInfo->ammoName2);
+				}
+			}
+
+#ifdef REGAMEDLL_API
+			CSPlayer()->m_iWeaponInfiniteAmmo = WPNMODE_INFINITE_BPAMMO;
+#endif
+			GiveNamedItemEx("item_longjump");
+			GiveNamedItemEx("item_thighpack");
+			GiveNamedItemEx("item_kevlar");
+			break;
+		}
+#endif
 	}
 }
 
