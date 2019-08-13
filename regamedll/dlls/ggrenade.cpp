@@ -1021,9 +1021,9 @@ void CGrenade::__API_HOOK(DefuseBombEnd)(CBasePlayer *pPlayer, bool bDefused)
 		// if the defuse process has ended, kill the c4
 		if (m_pBombDefuser->pev->deadflag == DEAD_NO)
 		{
-	#ifdef REGAMEDLL_ADD
+#ifdef REGAMEDLL_ADD
 			if (!old_bomb_defused_sound.value)
-	#endif
+#endif
 			{
 				Broadcast("BOMBDEF");
 			}
@@ -1091,9 +1091,9 @@ void CGrenade::__API_HOOK(DefuseBombEnd)(CBasePlayer *pPlayer, bool bDefused)
 			m_bStartDefuse = false;
 			m_pBombDefuser = nullptr;
 
-	#ifdef REGAMEDLL_FIXES
+#ifdef REGAMEDLL_FIXES
 			pPlayer->SetProgressBarTime(0);
-	#endif
+#endif
 
 			// tell the bots someone has aborted defusing
 			if (TheBots)
@@ -1143,7 +1143,7 @@ void CGrenade::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useTy
 	}
 
 #ifdef REGAMEDLL_FIXES
-	if((pPlayer->pev->flags & FL_ONGROUND) != FL_ONGROUND) // Defuse should start only on ground
+	if ((pPlayer->pev->flags & FL_ONGROUND) != FL_ONGROUND) // Defuse should start only on ground
 	{
 		ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#C4_Defuse_Must_Be_On_Ground");
 		return;
@@ -1152,7 +1152,12 @@ void CGrenade::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useTy
 
 	if (m_bStartDefuse)
 	{
-		m_fNextDefuse = gpGlobals->time + NEXT_DEFUSE_TIME;
+#ifdef REGAMEDLL_FIXES
+		if (m_pBombDefuser == pPlayer)
+#endif
+		{
+			m_fNextDefuse = gpGlobals->time + NEXT_DEFUSE_TIME;
+		}
 		return;
 	}
 
