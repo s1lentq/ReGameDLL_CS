@@ -150,5 +150,5 @@ void CPointBaseCommand::OnDestroy()
 		}
 	}
 
-	m_vecCommands.RemoveAll();
+	m_vecCommands.Purge();
 }

@@ -148,6 +148,7 @@ public:
 	void RemoveAt(I i);
 	bool Remove(T const &remove);
 	void RemoveAll();
+	void Purge();
 
 	// Allocation, deletion
 	void FreeNode(I i);
@@ -846,6 +847,15 @@ void CUtlRBTree<T, I, L, M>::RemoveAll()
 	m_FirstFree = m_TotalElements ? (I)0 : InvalidIndex();
 	m_Root = InvalidIndex();
 	m_NumElements = 0;
+}
+
+template <class T, class I, typename L, class M>
+void CUtlRBTree<T, I, L, M>::Purge()
+{
+	RemoveAll();
+	m_FirstFree = InvalidIndex();
+	m_TotalElements = 0;
+	m_Elements.Purge();
 }
 
 // Iteration

@@ -373,7 +373,7 @@ void CRenderFxManager::Spawn()
 
 void CRenderFxManager::OnDestroy()
 {
-	m_RenderGroups.RemoveAll();
+	m_RenderGroups.Purge();
 }
 
 void CRenderFxManager::Restart()
@@ -1837,7 +1837,7 @@ bool CBombTarget::IsPlayerInBombSite(CBasePlayer *pPlayer)
 {
 	const Vector &absmin = pPlayer->pev->absmin;
 	const Vector &absmax = pPlayer->pev->absmax;
-	
+
 	// Ensure that player's body is inside func_bomb_target's X,Y axes.
 	if (pev->absmin.x > absmin.x || pev->absmin.y > absmin.y)
 	{
@@ -1847,7 +1847,7 @@ bool CBombTarget::IsPlayerInBombSite(CBasePlayer *pPlayer)
 	{
 		return false;
 	}
-	
+
 	return true;
 }
 
