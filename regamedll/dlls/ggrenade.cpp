@@ -1021,9 +1021,9 @@ void CGrenade::__API_HOOK(DefuseBombEnd)(CBasePlayer *pPlayer, bool bDefused)
 		// if the defuse process has ended, kill the c4
 		if (m_pBombDefuser->pev->deadflag == DEAD_NO)
 		{
-	#ifdef REGAMEDLL_ADD
+#ifdef REGAMEDLL_ADD
 			if (!old_bomb_defused_sound.value)
-	#endif
+#endif
 			{
 				Broadcast("BOMBDEF");
 			}
@@ -1091,9 +1091,9 @@ void CGrenade::__API_HOOK(DefuseBombEnd)(CBasePlayer *pPlayer, bool bDefused)
 			m_bStartDefuse = false;
 			m_pBombDefuser = nullptr;
 
-	#ifdef REGAMEDLL_FIXES
+#ifdef REGAMEDLL_FIXES
 			pPlayer->SetProgressBarTime(0);
-	#endif
+#endif
 
 			// tell the bots someone has aborted defusing
 			if (TheBots)
@@ -1153,7 +1153,7 @@ void CGrenade::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useTy
 	if (m_bStartDefuse)
 	{
 #ifdef REGAMEDLL_FIXES
-		if (pPlayer == m_pBombDefuser)
+		if (m_pBombDefuser == pPlayer)
 #endif
 		{
 			m_fNextDefuse = gpGlobals->time + NEXT_DEFUSE_TIME;
