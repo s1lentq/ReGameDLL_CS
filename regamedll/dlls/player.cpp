@@ -4179,7 +4179,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 
 	// Debounced button codes for pressed/released
 	// UNDONE: Do we need auto-repeat?
-	m_afButtonPressed = (buttonsChanged & pev->button);		// The changed ones still down are "pressed"
+	m_afButtonPressed  = (buttonsChanged & pev->button);		// The changed ones still down are "pressed"
 	m_afButtonReleased = (buttonsChanged & (~pev->button));		// The ones not down are "released"
 
 	// Hint messages should be updated even if the game is over
@@ -4448,7 +4448,9 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 	UpdateLocation();
 
 #ifdef REGAMEDLL_ADD
-	if (CSPlayer()->GetProtectionState() == CCSPlayer::ProtectionSt_Expired)
+	auto protectStateCurrent = CSPlayer()->GetProtectionState();
+	if (protectStateCurrent  == CCSPlayer::ProtectionSt_Expired ||
+		(protectStateCurrent == CCSPlayer::ProtectionSt_Active && (m_afButtonPressed & IN_ACTIVE)))
 	{
 		RemoveSpawnProtection();
 	}
@@ -9733,8 +9735,13 @@ LINK_HOOK_CLASS_VOID_CHAIN(CBasePlayer, SetSpawnProtection, (float flProtectionT
 
 void EXT_FUNC CBasePlayer::__API_HOOK(SetSpawnProtection)(float flProtectionTime)
 {
-	pev->rendermode = kRenderTransAdd;
-	pev->renderamt = 100.0;
+#ifdef REGAMEDLL_ADD
+	if (respawn_immunity_effects.value > 0)
+#endif
+	{
+		pev->rendermode = kRenderTransAdd;
+		pev->renderamt  = 100.0f;
+	}
 
 	CSPlayer()->m_flSpawnProtectionEndTime = gpGlobals->time + flProtectionTime;
 }
@@ -9743,7 +9750,17 @@ LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, RemoveSpawnProtection)
 
 void CBasePlayer::__API_HOOK(RemoveSpawnProtection)()
 {
-	pev->rendermode = kRenderNormal;
+#ifdef REGAMEDLL_ADD
+	if (respawn_immunity_effects.value > 0)
+#endif
+	{
+		if (pev->rendermode == kRenderTransAdd &&
+			pev->renderamt == 100.0f)
+		{
+			pev->renderamt  = 255.0f;
+			pev->rendermode = kRenderNormal;
+		}
+	}
 
 	CSPlayer()->m_flSpawnProtectionEndTime = 0.0f;
 }

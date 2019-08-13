@@ -49,4 +49,6 @@
 #define IN_ALT1		(1<<14)
 #define IN_SCORE	(1<<15)	// Used by client.dll for when scoreboard is held down
 
+#define IN_ACTIVE	(IN_ATTACK | IN_ATTACK2 | IN_JUMP | IN_DUCK | IN_FORWARD | IN_BACK | IN_MOVELEFT | IN_MOVERIGHT)
+
 #endif // IN_BUTTONS_H
