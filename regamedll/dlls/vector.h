@@ -64,12 +64,14 @@ public:
 	decltype(auto) operator/(float fl) const { return Vector2D(x / fl, y / fl); }
 #endif
 
+	decltype(auto) operator=(std::nullptr_t) { return Vector2D(0, 0); }
 	decltype(auto) operator+=(float fl) { return (*this = *this + fl); }
 	decltype(auto) operator-=(float fl) { return (*this = *this - fl); }
 	decltype(auto) operator*=(float fl) { return (*this = *this * fl); }
 	decltype(auto) operator/=(float fl) { return (*this = *this / fl); }
 
 	// Methods
+	inline void Clear() { x = 0; y = 0; }
 	inline void CopyToArray(float *rgfl) const { *(int *)&rgfl[0] = *(int *)&x; *(int *)&rgfl[1] = *(int *)&y; }
 	inline real_t Length() const { return Q_sqrt(real_t(x * x + y * y)); }		// Get the vector's magnitude
 	inline float LengthSquared() const { return (x * x + y * y); }				// Get the vector's magnitude squared
@@ -166,10 +168,19 @@ public:
 	decltype(auto) operator/(float fl) const { return Vector(x / fl, y / fl, z / fl); }
 #endif
 
+	decltype(auto) operator=(std::nullptr_t) { return Vector(0, 0, 0); }
 	decltype(auto) operator+=(float fl) { return (*this = *this + fl); }
 	decltype(auto) operator-=(float fl) { return (*this = *this - fl); }
 	decltype(auto) operator*=(float fl) { return (*this = *this * fl); }
 	decltype(auto) operator/=(float fl) { return (*this = *this / fl); }
+
+	// Methods
+	void Clear()
+	{
+		x = 0;
+		y = 0;
+		z = 0;
+	}
 
 	void CopyToArray(float *rgfl) const
 	{
