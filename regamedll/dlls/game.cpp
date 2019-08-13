@@ -20,6 +20,7 @@ cvar_t fragsleft             = { "mp_fragsleft", "0", FCVAR_SERVER | FCVAR_UNLOG
 cvar_t timeleft              = { "mp_timeleft", "0", FCVAR_SERVER | FCVAR_UNLOGGED, 0.0f, nullptr };
 
 cvar_t friendlyfire          = { "mp_friendlyfire", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t infiniteAmmo          = { "mp_infinite_ammo", "0", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t allowmonsters         = { "mp_allowmonsters", "0", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t roundtime             = { "mp_roundtime", "5", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t buytime               = { "mp_buytime", "1.5", FCVAR_SERVER, 0.0f, nullptr };
@@ -184,6 +185,11 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&displaysoundlist);
 	CVAR_REGISTER(&timelimit);
 	CVAR_REGISTER(&friendlyfire);
+
+#ifdef BUILD_LATEST
+	CVAR_REGISTER(&infiniteAmmo);
+#endif
+
 	CVAR_REGISTER(&flashlight);
 	CVAR_REGISTER(&decalfrequency);
 

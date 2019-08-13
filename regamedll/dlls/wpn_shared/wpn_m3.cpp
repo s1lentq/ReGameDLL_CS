@@ -60,6 +60,13 @@ BOOL CM3::Deploy()
 	return DefaultDeploy("models/v_m3.mdl", "models/p_m3.mdl", M3_DRAW, "shotgun", UseDecrement() != FALSE);
 }
 
+BOOL CM3::PlayEmptySound()
+{
+	BOOL result = CBasePlayerWeapon::PlayEmptySound();
+	m_iPlayEmptySound = 0;
+	return result;
+}
+
 void CM3::PrimaryAttack()
 {
 	Vector vecAiming, vecSrc, vecDir;
@@ -204,15 +211,8 @@ void CM3::Reload()
 #endif
 	{
 		m_iClip++;
-
-#ifdef REGAMEDLL_ADD
-		if (refill_bpammo_weapons.value < 3.0f)
-#endif
-		{
-			m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]--;
-			m_pPlayer->ammo_buckshot--;
-		}
-
+		m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]--;
+		m_pPlayer->ammo_buckshot--;
 		m_fInSpecialReload = 1;
 	}
 }

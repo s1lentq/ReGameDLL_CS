@@ -824,6 +824,35 @@ bool CBasePlayerWeapon::HasSecondaryAttack()
 	return true;
 }
 
+void CBasePlayerWeapon::HandleInfiniteAmmo()
+{
+	int nInfiniteAmmo = 0;
+
+#ifdef REGAMEDLL_API
+	nInfiniteAmmo = m_pPlayer->CSPlayer()->m_iWeaponInfiniteAmmo;
+#endif
+
+	if (!nInfiniteAmmo)
+		nInfiniteAmmo = static_cast<int>(infiniteAmmo.value);
+
+	if (nInfiniteAmmo == WPNMODE_INFINITE_CLIP)
+	{
+		m_iClip = iMaxClip();
+	}
+	else if (nInfiniteAmmo == WPNMODE_INFINITE_BPAMMO)
+	{
+		if (pszAmmo1())
+		{
+			m_pPlayer->m_rgAmmo[PrimaryAmmoIndex()] = iMaxAmmo1();
+		}
+
+		if (pszAmmo2())
+		{
+			m_pPlayer->m_rgAmmo[SecondaryAmmoIndex()] = iMaxAmmo2();
+		}
+	}
+}
+
 void CBasePlayerWeapon::ItemPostFrame()
 {
 	int usableButtons = m_pPlayer->pev->button;
@@ -888,16 +917,7 @@ void CBasePlayerWeapon::ItemPostFrame()
 
 		// Add them to the clip
 		m_iClip += j;
-
-#ifdef REGAMEDLL_ADD
-		// Do not remove bpammo of the player,
-		// if cvar allows to refill bpammo on during reloading the weapons
-		if (refill_bpammo_weapons.value < 3.0f) {
-			m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] -= j;
-		}
-#else
 		m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] -= j;
-#endif
 
 		m_pPlayer->TabulateAmmo();
 		m_fInReload = FALSE;
@@ -1006,9 +1026,17 @@ void CBasePlayerWeapon::ItemPostFrame()
 			}
 		}
 
+#ifdef BUILD_LATEST
+		HandleInfiniteAmmo();
+#endif
+
 		WeaponIdle();
 		return;
 	}
+
+#ifdef BUILD_LATEST
+	HandleInfiniteAmmo();
+#endif
 
 	// catch all
 	if (ShouldWeaponIdle())

@@ -31,9 +31,19 @@
 #include <API/CSPlayerItem.h>
 #include <API/CSPlayerWeapon.h>
 
+enum WeaponInfiniteAmmoMode
+{
+	WPNMODE_INFINITE_CLIP = 1,
+	WPNMODE_INFINITE_BPAMMO
+};
+
 class CCSPlayer: public CCSMonster {
 public:
-	CCSPlayer() : m_bForceShowMenu(false), m_flRespawnPending(0), m_flSpawnProtectionEndTime(0)
+	CCSPlayer() :
+		m_bForceShowMenu(false),
+		m_flRespawnPending(0),
+		m_flSpawnProtectionEndTime(0),
+		m_iWeaponInfiniteAmmo(0)
 	{
 		m_szModel[0] = '\0';
 	}
@@ -84,6 +94,7 @@ public:
 	virtual void RemoveSpawnProtection();
 	virtual bool HintMessageEx(const char *pMessage, float duration = 6.0f, bool bDisplayIfPlayerDead = false, bool bOverride = false);
 
+	void Reset();
 	CBasePlayer *BasePlayer() const;
 
 public:
@@ -103,6 +114,7 @@ public:
 	float m_flRespawnPending;
 	float m_flSpawnProtectionEndTime;
 	Vector m_vecOldvAngle;
+	int m_iWeaponInfiniteAmmo;
 };
 
 // Inlines

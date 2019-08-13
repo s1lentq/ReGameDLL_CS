@@ -393,6 +393,7 @@ public:
 	void SetPlayerShieldAnim();
 	void ResetPlayerShieldAnim();
 	bool ShieldSecondaryFire(int iUpAnim, int iDownAnim);
+	void HandleInfiniteAmmo();
 	void InstantReload(bool bCanRefillBPAmmo = false);
 
 #ifdef REGAMEDLL_API
@@ -1251,6 +1252,7 @@ public:
 	virtual BOOL Deploy();
 	virtual float GetMaxSpeed() { return M3_MAX_SPEED; }
 	virtual int iItemSlot() { return PRIMARY_WEAPON_SLOT; }
+	virtual BOOL PlayEmptySound();
 	virtual void PrimaryAttack();
 	virtual void Reload();
 	virtual void WeaponIdle();
@@ -1656,6 +1658,7 @@ public:
 	virtual BOOL Deploy();
 	virtual float GetMaxSpeed() { return XM1014_MAX_SPEED; }
 	virtual int iItemSlot() { return PRIMARY_WEAPON_SLOT; }
+	virtual BOOL PlayEmptySound();
 	virtual void PrimaryAttack();
 	virtual void Reload();
 	virtual void WeaponIdle();

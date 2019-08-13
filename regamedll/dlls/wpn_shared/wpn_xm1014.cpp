@@ -58,6 +58,13 @@ BOOL CXM1014::Deploy()
 	return DefaultDeploy("models/v_xm1014.mdl", "models/p_xm1014.mdl", XM1014_DRAW, "m249", UseDecrement() != FALSE);
 }
 
+BOOL CXM1014::PlayEmptySound()
+{
+	BOOL result = CBasePlayerWeapon::PlayEmptySound();
+	m_iPlayEmptySound = 0;
+	return result;
+}
+
 void CXM1014::PrimaryAttack()
 {
 	Vector vecAiming, vecSrc, vecDir;
@@ -207,15 +214,8 @@ void CXM1014::Reload()
 #endif
 	{
 		m_iClip++;
-
-#ifdef REGAMEDLL_ADD
-		if (refill_bpammo_weapons.value < 3.0f)
-#endif
-		{
-			m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]--;
-			m_pPlayer->ammo_buckshot--;
-		}
-
+		m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]--;
+		m_pPlayer->ammo_buckshot--;
 		m_fInSpecialReload = 1;
 	}
 }
