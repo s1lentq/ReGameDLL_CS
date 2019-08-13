@@ -71,7 +71,13 @@ void RadiusFlash(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker,
 		if (!bInWater && pPlayer->pev->waterlevel == 3)
 			continue;
 
+#ifdef REGAMEDLL_FIXES
+		vecSpot = pPlayer->EyePosition();
+#else
+		// NOTE: See CBasePlayer::BodyTarget
 		vecSpot = pPlayer->BodyTarget(vecSrc);
+#endif
+
 		g_ReGameHookchains.m_RadiusFlash_TraceLine.callChain(RadiusFlash_TraceLine_hook, pPlayer, pevInflictor, pevAttacker, vecSrc, vecSpot, &tr);
 
 		if (tr.flFraction != 1.0f && tr.pHit != pPlayer->pev->pContainingEntity)

@@ -358,6 +358,8 @@ public:
 	virtual BOOL IsNetClient() { return TRUE; }
 	virtual const char *TeamID();
 	virtual BOOL FBecomeProne();
+
+	// TODO: Need to investigate for what purposes used random to get relative eyes position
 	virtual Vector BodyTarget(const Vector &posSrc) { return Center() + pev->view_ofs * RANDOM_FLOAT(0.5, 1.1); }
 	virtual int Illumination();
 	virtual BOOL ShouldFadeOnDeath() { return FALSE; }
