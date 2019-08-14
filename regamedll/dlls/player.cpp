@@ -1496,6 +1496,14 @@ void CBasePlayer::RemoveAllItems(BOOL removeSuit)
 	bool bKillProgBar = false;
 	int i;
 
+#ifdef REGAMEDLL_FIXES
+	if (m_pTank)
+	{
+		m_pTank->Use(this, this, USE_OFF, 0);
+		m_pTank = nullptr;
+	}
+#endif	
+	
 	if (m_bHasDefuser)
 	{
 		RemoveDefuser();
