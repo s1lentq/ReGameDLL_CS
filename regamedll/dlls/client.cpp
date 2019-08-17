@@ -973,6 +973,7 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 #else			
 		if (bReceiverDead != bSenderDead)
 #endif
+		{
 			if (!(pPlayer->pev->flags & FL_PROXY))
 				continue;
 		}
