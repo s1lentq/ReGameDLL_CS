@@ -752,6 +752,7 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 	const char *cpSayTeam = "say_team";
 	const char *pcmd = CMD_ARGV_(0);
 	bool bSenderDead = false;
+	bool bReceiverDead = false;
 
 	entvars_t *pev = &pEntity->v;
 	CBasePlayer *pPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pev);
@@ -963,9 +964,15 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 
 		if (teamonly && pReceiver->m_iTeam != pPlayer->m_iTeam)
 			continue;
+		
+		if (pReceiver->pev->deadflag != DEAD_NO)
+			bReceiverDead = true;
 
-		if ((pReceiver->pev->deadflag != DEAD_NO && !bSenderDead) || (pReceiver->pev->deadflag == DEAD_NO && bSenderDead))
-		{
+#ifdef REGAMEDLL_ADD
+		if (((bReceiverDead && !bSenderDead) && dead_see_alive.value != 1.0f) || (!bReceiverDead && bSenderDead))
+#else			
+		if (bReceiverDead != bSenderDead)
+#endif
 			if (!(pPlayer->pev->flags & FL_PROXY))
 				continue;
 		}

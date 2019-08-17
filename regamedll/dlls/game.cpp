@@ -122,6 +122,7 @@ cvar_t respawn_immunity_effects  = { "mp_respawn_immunity_effects", "1", FCVAR_S
 cvar_t kill_filled_spawn         = { "mp_kill_filled_spawn", "1", 0, 0.0f, nullptr };
 cvar_t afk_bomb_drop_time        = { "mp_afk_bomb_drop_time", "0", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t buy_anywhere              = { "mp_buy_anywhere", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t dead_see_alive            = { "mp_chat_dead_see_alive", "0", FCVAR_SERVER, 0.0f, nullptr };
 
 cvar_t allow_point_servercommand = { "mp_allow_point_servercommand", "0", 0, 0.0f, nullptr };
 cvar_t hullbounds_sets           = { "mp_hullbounds_sets", "1", 0, 0.0f, nullptr };
@@ -319,6 +320,7 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&kill_filled_spawn);
 	CVAR_REGISTER(&afk_bomb_drop_time);
 	CVAR_REGISTER(&buy_anywhere);
+	CVAR_REGISTER(&dead_see_alive);
 	CVAR_REGISTER(&allow_point_servercommand);
 	CVAR_REGISTER(&hullbounds_sets);
 
