@@ -817,7 +817,20 @@ void CBreakable::Die()
 
 	if (m_iszSpawnObject)
 	{
+#ifndef REGAMEDLL_FIXES
 		CBaseEntity::Create((char *)STRING(m_iszSpawnObject), VecBModelOrigin(pev), pev->angles, edict());
+#else
+		// FIX: entity leak!
+		auto pItem = CBaseEntity::Create((char *)STRING(m_iszSpawnObject), VecBModelOrigin(pev), pev->angles, edict());
+
+		if (pItem)
+		{
+			pItem->pev->spawnflags |= SF_NORESPAWN;
+			pItem->SetThink(&CBaseEntity::SUB_Remove);
+			pItem->pev->nextthink = gpGlobals->time + CGameRules::GetItemKillDelay();
+		}
+#endif
+
 	}
 
 	if (Explodable())
