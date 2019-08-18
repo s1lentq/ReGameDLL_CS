@@ -74,7 +74,7 @@ void CMapInfo::KeyValue(KeyValueData *pkvd)
 	}
 	else if (FStrEq(pkvd->szKeyName, "bombradius"))
 	{
-		m_flBombRadius = (float)Q_atoi(pkvd->szValue);
+		m_flBombRadius = Q_atof(pkvd->szValue);
 
 		if (m_flBombRadius > MAX_BOMB_RADIUS)
 			m_flBombRadius = MAX_BOMB_RADIUS;
