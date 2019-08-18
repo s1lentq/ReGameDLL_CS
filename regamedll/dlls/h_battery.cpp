@@ -67,11 +67,6 @@ void CRecharge::Restart()
 	UTIL_SetSize(pev, pev->mins, pev->maxs);
 	SET_MODEL(ENT(pev), STRING(pev->model));
 
-	int armorValue = (int)gSkillData.suitchargerCapacity;
-	if (pev->armorvalue != 0.0f) {
-		armorValue = (int)pev->armorvalue;
-	}
-
 	pev->nextthink = pev->ltime + 0.1f;
 	SetThink(&CRecharge::Recharge);
 }
@@ -91,7 +86,11 @@ void CRecharge::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useT
 		return;
 
 	// if there is no juice left, turn it off
-	if (m_iJuice <= 0)
+	if (m_iJuice <= 0
+#ifdef REGAMEDLL_FIXES
+		&& pev->frame != 1.0f // recharging... don't reset think
+#endif
+		)
 	{
 		pev->frame = 1.0f;
 		Off();
@@ -126,7 +125,7 @@ void CRecharge::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useT
 
 	m_hActivator = pActivator;//EHANDLE::CBaseEntity *operator=
 
-	//only recharge the player
+	// only recharge the player
 	if (!m_hActivator->IsPlayer())
 		return;
 
