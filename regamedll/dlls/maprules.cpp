@@ -185,7 +185,7 @@ void CGameText::Spawn()
 {
 #ifdef REGAMEDLL_FIXES
 	// Don't allow entity triggering itself
-	if (FStrEq(STRING(pev->target), STRING(pev->targetname)))
+	if (FStrEq(pev->target, pev->targetname))
 	{
 		ALERT(at_warning, "%s \"%s\" the target applies to itself.\n", STRING(pev->classname), STRING(pev->targetname));
 		pev->target = iStringNull;
