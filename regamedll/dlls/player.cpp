@@ -3922,11 +3922,18 @@ void CBasePlayer::PlayerUse()
 			}
 		}
 	}
-	else
+	else if (m_afButtonPressed & IN_USE)
 	{
-		if (m_afButtonPressed & IN_USE)
-			EMIT_SOUND(ENT(pev), CHAN_ITEM, "common/wpn_denyselect.wav", 0.4, ATTN_NORM);
+		PlayerUseEx();
 	}
+	
+}
+
+LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, PlayerUseEx)
+
+void EXT_FUNC CBasePlayer::__API_HOOK(PlayerUseEx)()
+{
+	EMIT_SOUND(ENT(pev), CHAN_ITEM, "common/wpn_denyselect.wav", 0.4, ATTN_NORM);
 }
 
 void CBasePlayer::HostageUsed()
