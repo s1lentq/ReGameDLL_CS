@@ -440,9 +440,9 @@ typedef IHookChainRegistry<bool, Vector &, Vector &, entvars_t *, edict_t *> IRe
 typedef IHookChainClass<bool, class CBasePlayer, const char *, float, bool, bool> IReGameHook_CBasePlayer_HintMessageEx;
 typedef IHookChainRegistryClass<bool, class CBasePlayer, const char *, float, bool, bool> IReGameHookRegistry_CBasePlayer_HintMessageEx;
 
-// CBasePlayer::PlayerUseEx hook
-typedef IHookChainClass<void, class CBasePlayer> IReGameHook_CBasePlayer_PlayerUseEx;
-typedef IHookChainRegistryClass<void, class CBasePlayer> IReGameHookRegistry_CBasePlayer_PlayerUseEx;
+// CBasePlayer::DenyUse hook
+typedef IHookChainClass<void, class CBasePlayer> IReGameHook_CBasePlayer_DenyUse;
+typedef IHookChainRegistryClass<void, class CBasePlayer> IReGameHookRegistry_CBasePlayer_DenyUse;
 
 class IReGameHookchains {
 public:
@@ -553,7 +553,7 @@ public:
 	virtual IReGameHookRegistry_CBasePlayer_SetSpawnProtection *CBasePlayer_SetSpawnProtection() = 0;
 	virtual IReGameHookRegistry_IsPenetrableEntity *IsPenetrableEntity() = 0;
 	virtual IReGameHookRegistry_CBasePlayer_HintMessageEx *CBasePlayer_HintMessageEx() = 0;
-	virtual IReGameHookRegistry_CBasePlayer_PlayerUseEx *CBasePlayer_PlayerUseEx() = 0;
+	virtual IReGameHookRegistry_CBasePlayer_DenyUse *CBasePlayer_DenyUse() = 0;
 };
 
 struct ReGameFuncs_t {

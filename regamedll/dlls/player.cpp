@@ -3924,14 +3924,13 @@ void CBasePlayer::PlayerUse()
 	}
 	else if (m_afButtonPressed & IN_USE)
 	{
-		PlayerUseEx();
+		DenyUse();
 	}
-	
 }
 
-LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, PlayerUseEx)
+LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, DenyUse)
 
-void EXT_FUNC CBasePlayer::__API_HOOK(PlayerUseEx)()
+void EXT_FUNC CBasePlayer::__API_HOOK(DenyUse)()
 {
 	EMIT_SOUND(ENT(pev), CHAN_ITEM, "common/wpn_denyselect.wav", 0.4, ATTN_NORM);
 }

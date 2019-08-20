@@ -537,9 +537,9 @@ typedef IHookChainRegistryImpl<bool, Vector &, Vector &, entvars_t *, edict_t *>
 typedef IHookChainClassImpl<bool, CBasePlayer, const char *, float, bool, bool> CReGameHook_CBasePlayer_HintMessageEx;
 typedef IHookChainRegistryClassImpl<bool, CBasePlayer, const char *, float, bool, bool> CReGameHookRegistry_CBasePlayer_HintMessageEx;
 
-// CBasePlayer::PlayerUseEx hook
-typedef IHookChainClassImpl<void, CBasePlayer> CReGameHook_CBasePlayer_PlayerUseEx;
-typedef IHookChainRegistryClassImpl<void, CBasePlayer> CReGameHookRegistry_CBasePlayer_PlayerUseEx;
+// CBasePlayer::DenyUse hook
+typedef IHookChainClassImpl<void, CBasePlayer> CReGameHook_CBasePlayer_DenyUse;
+typedef IHookChainRegistryClassImpl<void, CBasePlayer> CReGameHookRegistry_CBasePlayer_DenyUse;
 
 class CReGameHookchains: public IReGameHookchains {
 public:
@@ -649,7 +649,7 @@ public:
 	CReGameHookRegistry_CBasePlayer_RemoveSpawnProtection m_CBasePlayer_RemoveSpawnProtection;
 	CReGameHookRegistry_IsPenetrableEntity m_IsPenetrableEntity;
 	CReGameHookRegistry_CBasePlayer_HintMessageEx m_CBasePlayer_HintMessageEx;
-	CReGameHookRegistry_CBasePlayer_PlayerUseEx m_CBasePlayer_PlayerUseEx;
+	CReGameHookRegistry_CBasePlayer_DenyUse m_CBasePlayer_DenyUse;
 
 public:
 	virtual IReGameHookRegistry_CBasePlayer_Spawn *CBasePlayer_Spawn();
@@ -757,7 +757,7 @@ public:
 	virtual IReGameHookRegistry_CBasePlayer_RemoveSpawnProtection *CBasePlayer_RemoveSpawnProtection();
 	virtual IReGameHookRegistry_IsPenetrableEntity *IsPenetrableEntity();
 	virtual IReGameHookRegistry_CBasePlayer_HintMessageEx *CBasePlayer_HintMessageEx();
-	virtual IReGameHookRegistry_CBasePlayer_PlayerUseEx *CBasePlayer_PlayerUseEx();
+	virtual IReGameHookRegistry_CBasePlayer_DenyUse *CBasePlayer_DenyUse();
 };
 
 extern CReGameHookchains g_ReGameHookchains;
