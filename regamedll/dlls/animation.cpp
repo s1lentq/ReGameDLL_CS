@@ -615,9 +615,9 @@ void QuaternionSlerp(vec_t *p, vec_t *q, float t, vec_t *qt)
 	float sclp, sclq;
 	float cosom = (p[0] * q[0] + p[1] * q[1] + p[2] * q[2] + p[3] * q[3]);
 
-	if ((1.0f + cosom) > 0.000001f)
+	if ((1.0 + cosom) > 0.000001)
 	{
-		if ((1.0f - cosom) > 0.000001f)
+		if ((1.0 - cosom) > 0.000001)
 		{
 			real_t cosomega = Q_acos(real_t(cosom));
 
