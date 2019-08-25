@@ -6281,7 +6281,9 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 
 #ifdef REGAMEDLL_API
 			CSPlayer()->m_iWeaponInfiniteAmmo = WPNMODE_INFINITE_BPAMMO;
+			CSPlayer()->m_iWeaponInfiniteIds  = WEAPON_ALLWEAPONS;
 #endif
+
 			GiveNamedItemEx("item_longjump");
 			GiveNamedItemEx("item_thighpack");
 			GiveNamedItemEx("item_kevlar");

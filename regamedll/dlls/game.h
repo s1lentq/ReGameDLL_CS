@@ -59,6 +59,7 @@ extern cvar_t fragsleft;
 extern cvar_t timeleft;
 extern cvar_t friendlyfire;
 extern cvar_t infiniteAmmo;
+extern cvar_t infiniteGrenades;
 extern cvar_t allowmonsters;
 extern cvar_t roundtime;
 extern cvar_t buytime;

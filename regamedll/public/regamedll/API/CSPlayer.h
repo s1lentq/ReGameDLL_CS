@@ -115,6 +115,7 @@ public:
 	float m_flSpawnProtectionEndTime;
 	Vector m_vecOldvAngle;
 	int m_iWeaponInfiniteAmmo;
+	int m_iWeaponInfiniteIds;
 };
 
 // Inlines
