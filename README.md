@@ -19,10 +19,13 @@ Archive's bin directory contains 2 subdirectories, 'bugfixed' and 'pure'
 <b>Warning!</b> ReGameDLL_CS is not binary compatible with original hlds since it's compiled with compilers other than ones used for original mod CS. This means that plugins that do binary code analysis (Orpheu for example) probably will not work with ReGameDLL_CS.
 
 ## How can use beta?
-ReGameDLL_CS also have beta version with latest changes from official version of Counter-Strike,
-therefore for this enter `-beta` option at the command line HLDS.
+<pre>ReGameDLL_CS also have beta version with latest changes from official version of Counter-Strike.</pre>
+* Enter `-beta` option at the command line HLDS.
 
 ## Configuration (cvars)
+<details>
+<summary>Click to expand</summary>
+
 | CVar                               | Default | Min | Max          | Description                                    |
 | :--------------------------------- | :-----: | :-: | :----------: | :--------------------------------------------- |
 | mp_freeforall                      | 0       | 0   | 1            | The style of gameplay where there aren't any teams (FFA mode)<br/>`0` disabled <br/>`1` enabled |
@@ -71,6 +74,7 @@ therefore for this enter `-beta` option at the command line HLDS.
 | mp_radio_timeout                   | 1.5     | 0.0 | -            | Delay between player Radio messages. (in seconds).<br/>`0` disable delay |
 | mp_radio_maxinround                | 60      | -   | -            | Maximum Radio messages count for player per round.<br/>`0` disable radio messages |
 | mp_buy_anywhere                    | 0       | 0   | 3            | When set, players can buy anywhere, not only in buyzones.<br/> `0` disabled.<br/>`1` both teams <br/>`2` only Terrorists team <br/>`3` only CT team |
+</details>
 
 ## How to install zBot for CS 1.6?
 * Extract all the files from an [archive](regamedll/extra/zBot/bot_profiles.zip?raw=true)
