@@ -8,6 +8,7 @@ int g_iSkillLevel;
 Vector g_vecAttackDir;
 BOOL gDisplayTitle;
 
+bool g_bIsBeta = false;
 bool g_bIsCzeroGame = false;
 bool g_bAllowedCSBot = false;
 bool g_bHostageImprov = false;

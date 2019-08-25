@@ -1691,6 +1691,28 @@ bool UTIL_AreBotsAllowed()
 	return false;
 }
 
+bool UTIL_IsBeta()
+{
+#ifdef BUILD_LATEST
+	if (g_engfuncs.pfnEngCheckParm == nullptr)
+		return false;
+
+	// always beta from listen server
+	if (!IS_DEDICATED_SERVER())
+	{
+		return true;
+	}
+
+	int beta = ENG_CHECK_PARM("-beta", nullptr);
+	if (beta)
+	{
+		return true;
+	}
+#endif // #ifdef BUILD_LATEST
+
+	return false;
+}
+
 bool UTIL_AreHostagesImprov()
 {
 	if (AreRunningCZero())

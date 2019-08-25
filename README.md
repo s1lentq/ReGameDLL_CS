@@ -18,6 +18,10 @@ Archive's bin directory contains 2 subdirectories, 'bugfixed' and 'pure'
 
 <b>Warning!</b> ReGameDLL_CS is not binary compatible with original hlds since it's compiled with compilers other than ones used for original mod CS. This means that plugins that do binary code analysis (Orpheu for example) probably will not work with ReGameDLL_CS.
 
+## How can use beta?
+ReGameDLL_CS also have beta version with latest changes from official version of Counter-Strike,
+therefore for this enter `-beta` option at the command line HLDS.
+
 ## Configuration (cvars)
 | CVar                               | Default | Min | Max          | Description                                    |
 | :--------------------------------- | :-----: | :-: | :----------: | :--------------------------------------------- |
@@ -56,8 +60,8 @@ Archive's bin directory contains 2 subdirectories, 'bugfixed' and 'pure'
 | mp_kill_filled_spawn               | 1       | 0   | 1            | Kill the player in filled spawn before spawning some one else (Prevents players stucking in each other).<br />Only disable this if you have semiclip or other plugins that prevents stucking.<br/>`0` disabled<br/>`1` enabled |
 | mp_allow_point_servercommand       | 0       | 0   | 1            | Allow use of point_servercommand entities in map.<br/>`0` disallow<br/>`1` allow<br/>`NOTE`: Potentially dangerous for untrusted maps.|
 | mp_hullbounds_sets                 | 1       | 0   | 1            | Sets mins/maxs hull bounds for the player.<br/>`0` disabled<br/>`1` enabled |
-| mp_scoreboard_showhealth           | 3       | 0   | 5            | Show `HP` field into a scoreboard.<br/>`0` don't send any update for `HP` field to any clients<br/>`1` show only Terrorist `HP` field to all clients<br/>`2` show only CT `HP` field to all clients<br/>`3` show `HP` field to teammates<br/>`4` show `HP` field to all clients<br/>`5` show `HP` field to teammates and spectators |
-| mp_scoreboard_showmoney            | 3       | 0   | 5            | Show `Money` field into a scoreboard.<br/>`0` don't send any update for `Money` field to any clients<br/>`1` show only Terrorist `Money` field to all clients<br/>`2` show only CT `Money` field to all clients<br/>`3` show `Money` field to teammates<br/>`4` show `Money` field to all clients<br/>`5` show `Money` field to teammates and spectators |
+| mp_scoreboard_showhealth           | 3       | 0   | 5            | Show `HP` field into a scoreboard.<br/>`0` don't send any update for `HP` field to any clients<br/>`1` show only Terrorist `HP` field to all clients<br/>`2` show only CT `HP` field to all clients<br/>`3` show `HP` field to teammates<br/>`4` show `HP` field to all clients<br/>`5` show `HP` field to teammates and spectators<br/><br/>`Note this CVar are work in beta only.` |
+| mp_scoreboard_showmoney            | 3       | 0   | 5            | Show `Money` field into a scoreboard.<br/>`0` don't send any update for `Money` field to any clients<br/>`1` show only Terrorist `Money` field to all clients<br/>`2` show only CT `Money` field to all clients<br/>`3` show `Money` field to teammates<br/>`4` show `Money` field to all clients<br/>`5` show `Money` field to teammates and spectators<br/><br/>`Note this CVar are work in beta only.`  |
 | ff_damage_reduction_bullets        | 0.35    | 0.0 | 1.0          | How much to reduce damage done to teammates when shot.<br/> Range is from `0` - `1` (with 1 being damage equal to what is done to an enemy) |
 | ff_damage_reduction_grenade        | 0.25    | 0.0 | 1.0          | How much to reduce damage done to teammates by a thrown grenade.<br/> Range is from `0` - `1` (with 1 being damage equal to what is done to an enemy) |
 | ff_damage_reduction_grenade_self   | 1.0     | 0.0 | 1.0          | How much to damage a player does to himself with his own grenade.<br/> Range is from `0` - `1` (with 1 being damage equal to what is done to an enemy) |

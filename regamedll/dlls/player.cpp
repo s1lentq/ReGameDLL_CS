@@ -5123,7 +5123,7 @@ void CBasePlayer::SetScoreAttrib(CBasePlayer *dest)
 		state |= SCORE_STATUS_VIP;
 
 #ifdef BUILD_LATEST
-	if (m_bHasDefuser)
+	if (AreRunningBeta() && m_bHasDefuser)
 		state |= SCORE_STATUS_DEFKIT;
 #endif
 
@@ -7132,38 +7132,41 @@ void EXT_FUNC CBasePlayer::__API_HOOK(UpdateClientData)()
 	}
 
 #ifdef BUILD_LATEST
-	if ((m_iTeam == CT || m_iTeam == TERRORIST) &&
-		(m_iLastAccount != m_iAccount || m_iLastClientHealth != m_iClientHealth || m_tmNextAccountHealthUpdate < gpGlobals->time))
+	if (AreRunningBeta())
 	{
-		m_tmNextAccountHealthUpdate = gpGlobals->time + 5.0f;
-
-		for (int playerIndex = 1; playerIndex <= gpGlobals->maxClients; playerIndex++)
+		if ((m_iTeam == CT || m_iTeam == TERRORIST) &&
+			(m_iLastAccount != m_iAccount || m_iLastClientHealth != m_iClientHealth || m_tmNextAccountHealthUpdate < gpGlobals->time))
 		{
-			CBaseEntity *pEntity = UTIL_PlayerByIndex(playerIndex);
+			m_tmNextAccountHealthUpdate = gpGlobals->time + 5.0f;
 
-			if (!pEntity)
-				continue;
+			for (int playerIndex = 1; playerIndex <= gpGlobals->maxClients; playerIndex++)
+			{
+				CBaseEntity *pEntity = UTIL_PlayerByIndex(playerIndex);
 
-			CBasePlayer *pPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev);
+				if (!pEntity)
+					continue;
+
+				CBasePlayer *pPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev);
 
 #ifdef REGAMEDLL_FIXES
-			if (pPlayer->IsDormant())
-				continue;
+				if (pPlayer->IsDormant())
+					continue;
 #endif // REGAMEDLL_FIXES
 
-			MESSAGE_BEGIN(MSG_ONE, gmsgHealthInfo, nullptr, pPlayer->edict());
-				WRITE_BYTE(entindex());
-				WRITE_LONG(ShouldToShowHealthInfo(pPlayer) ? m_iClientHealth : -1 /* means that 'HP' field will be hidden */);
-			MESSAGE_END();
+				MESSAGE_BEGIN(MSG_ONE, gmsgHealthInfo, nullptr, pPlayer->edict());
+					WRITE_BYTE(entindex());
+					WRITE_LONG(ShouldToShowHealthInfo(pPlayer) ? m_iClientHealth : -1 /* means that 'HP' field will be hidden */);
+				MESSAGE_END();
 
-			MESSAGE_BEGIN(MSG_ONE, gmsgAccount, nullptr, pPlayer->edict());
-				WRITE_BYTE(entindex());
-				WRITE_LONG(ShouldToShowAccount(pPlayer) ? m_iAccount : -1 /* means that this 'Money' will be hidden */);
-			MESSAGE_END();
+				MESSAGE_BEGIN(MSG_ONE, gmsgAccount, nullptr, pPlayer->edict());
+					WRITE_BYTE(entindex());
+					WRITE_LONG(ShouldToShowAccount(pPlayer) ? m_iAccount : -1 /* means that this 'Money' will be hidden */);
+				MESSAGE_END();
+			}
+
+			m_iLastAccount = m_iAccount;
+			m_iLastClientHealth = m_iClientHealth;
 		}
-
-		m_iLastAccount = m_iAccount;
-		m_iLastClientHealth = m_iClientHealth;
 	}
 #endif // #ifdef BUILD_LATEST
 }
