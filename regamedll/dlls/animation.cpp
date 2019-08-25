@@ -977,8 +977,8 @@ void SV_StudioSetupBones(model_t *pModel, float frame, int sequence, const vec_t
 	float bonematrix[3][4];
 	vec3_t temp_angles;
 
-	/*static */float pos[MAXSTUDIOBONES][3], pos2[MAXSTUDIOBONES][3];
-	/*static */float q[MAXSTUDIOBONES][4], q2[MAXSTUDIOBONES][4];
+	static float pos[MAXSTUDIOBONES][3] = {}, pos2[MAXSTUDIOBONES][3] = {};
+	static float q[MAXSTUDIOBONES][4] = {}, q2[MAXSTUDIOBONES][4] = {};
 
 	g_pstudiohdr = (studiohdr_t *)IEngineStudio.Mod_Extradata(pModel);
 
@@ -1030,8 +1030,8 @@ void SV_StudioSetupBones(model_t *pModel, float frame, int sequence, const vec_t
 	// This game knows how to do nine way blending
 	else
 	{
-		/*static */float pos3[MAXSTUDIOBONES][3], pos4[MAXSTUDIOBONES][3];
-		/*static */float q3[MAXSTUDIOBONES][4], q4[MAXSTUDIOBONES][4];
+		static float pos3[MAXSTUDIOBONES][3] = {}, pos4[MAXSTUDIOBONES][3] = {};
+		static float q3[MAXSTUDIOBONES][4] = {}, q4[MAXSTUDIOBONES][4] = {};
 
 		real_t s, t;
 		s = GetPlayerYaw(pEdict);
