@@ -4301,7 +4301,11 @@ BOOL EXT_FUNC AddToFullPack(struct entity_state_s *state, int e, edict_t *ent, e
 	{
 		if (!CheckEntityRecentlyInPVS(hostnum, e, gpGlobals->time))
 		{
-			if (!ENGINE_CHECK_VISIBILITY(ent, pSet))
+			if (!ENGINE_CHECK_VISIBILITY(ent, pSet)
+#ifdef REGAMEDLL_ADD
+				&& (ent->v.effects & EF_FORCEVISIBILITY) != EF_FORCEVISIBILITY
+#endif
+			)
 			{
 				MarkEntityInPVS(hostnum, e, 0, false);
 				return FALSE;
@@ -4357,7 +4361,7 @@ BOOL EXT_FUNC AddToFullPack(struct entity_state_s *state, int e, edict_t *ent, e
 	state->modelindex = ent->v.modelindex;
 	state->frame = ent->v.frame;
 	state->skin = ent->v.skin;
-	state->effects = ent->v.effects;
+	state->effects = ent->v.effects & ~EF_FORCEVISIBILITY;
 
 #ifdef REGAMEDLL_ADD
 	if  (ent->v.skin == CONTENTS_LADDER &&
