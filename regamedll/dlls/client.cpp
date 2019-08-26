@@ -4361,9 +4361,12 @@ BOOL EXT_FUNC AddToFullPack(struct entity_state_s *state, int e, edict_t *ent, e
 	state->modelindex = ent->v.modelindex;
 	state->frame = ent->v.frame;
 	state->skin = ent->v.skin;
-	state->effects = ent->v.effects & ~EF_FORCEVISIBILITY;
+	state->effects = ent->v.effects;
 
 #ifdef REGAMEDLL_ADD
+	// don't send unhandled custom bit to client
+	state->effects &= ~EF_FORCEVISIBILITY;
+
 	if  (ent->v.skin == CONTENTS_LADDER &&
 		(host->v.iuser3 & PLAYER_PREVENT_CLIMB) == PLAYER_PREVENT_CLIMB) {
 		state->skin = CONTENTS_EMPTY;
