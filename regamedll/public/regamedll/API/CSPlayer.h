@@ -43,7 +43,8 @@ public:
 		m_bForceShowMenu(false),
 		m_flRespawnPending(0),
 		m_flSpawnProtectionEndTime(0),
-		m_iWeaponInfiniteAmmo(0)
+		m_iWeaponInfiniteAmmo(0),
+		m_iWeaponInfiniteIds(0)
 	{
 		m_szModel[0] = '\0';
 	}
