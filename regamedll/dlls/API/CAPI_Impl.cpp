@@ -161,7 +161,7 @@ GAMEHOOK_REGISTRY(CBasePlayer_SetSpawnProtection);
 GAMEHOOK_REGISTRY(CBasePlayer_RemoveSpawnProtection);
 GAMEHOOK_REGISTRY(IsPenetrableEntity);
 GAMEHOOK_REGISTRY(CBasePlayer_HintMessageEx);
-GAMEHOOK_REGISTRY(CBasePlayer_DenyUse);
+GAMEHOOK_REGISTRY(CBasePlayer_UseEmpty);
 
 int CReGameApi::GetMajorVersion() {
 	return REGAMEDLL_API_VERSION_MAJOR;
