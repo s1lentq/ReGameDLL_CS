@@ -204,6 +204,26 @@ AmmoInfo *CReGameApi::GetAmmoInfo(AmmoType ammoID) { return &CBasePlayerItem::m_
 AmmoInfoStruct *CReGameApi::GetAmmoInfoEx(AmmoType ammoID) { return ::GetAmmoInfo(ammoID); }
 AmmoInfoStruct *CReGameApi::GetAmmoInfoEx(const char *ammoName) { return ::GetAmmoInfo(ammoName); }
 
+bool CReGameApi::BGetICSEntity(const char *pchVersion) const
+{
+	if (!Q_stricmp(pchVersion, CSENTITY_API_INTERFACE_VERSION))
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool CReGameApi::BGetIGameRules(const char *pchVersion) const
+{
+	if (!Q_stricmp(pchVersion, GAMERULES_API_INTERFACE_VERSION))
+	{
+		return true;
+	}
+
+	return false;
+}
+
 EXT_FUNC void Regamedll_ChangeString_api(char *&dest, const char *source)
 {
 	size_t len = Q_strlen(source);

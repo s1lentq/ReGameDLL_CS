@@ -781,6 +781,8 @@ public:
 	EXT_FUNC virtual AmmoInfo *GetAmmoInfo(AmmoType ammoID);
 	EXT_FUNC virtual AmmoInfoStruct *GetAmmoInfoEx(AmmoType ammoID);
 	EXT_FUNC virtual AmmoInfoStruct *GetAmmoInfoEx(const char *ammoName);
+	EXT_FUNC virtual bool BGetICSEntity(const char *pchVersion) const;
+	EXT_FUNC virtual bool BGetIGameRules(const char *pchVersion) const;
 };
 
 void Regamedll_ChangeString_api(char *&dest, const char *source);
