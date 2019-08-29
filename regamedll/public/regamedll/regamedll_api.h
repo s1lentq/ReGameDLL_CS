@@ -38,7 +38,7 @@
 #include <API/CSInterfaces.h>
 
 #define REGAMEDLL_API_VERSION_MAJOR 5
-#define REGAMEDLL_API_VERSION_MINOR 9
+#define REGAMEDLL_API_VERSION_MINOR 10
 
 // CBasePlayer::Spawn hook
 typedef IHookChainClass<void, class CBasePlayer> IReGameHook_CBasePlayer_Spawn;
@@ -440,6 +440,10 @@ typedef IHookChainRegistry<bool, Vector &, Vector &, entvars_t *, edict_t *> IRe
 typedef IHookChainClass<bool, class CBasePlayer, const char *, float, bool, bool> IReGameHook_CBasePlayer_HintMessageEx;
 typedef IHookChainRegistryClass<bool, class CBasePlayer, const char *, float, bool, bool> IReGameHookRegistry_CBasePlayer_HintMessageEx;
 
+// CBasePlayer::UseEmpty hook
+typedef IHookChainClass<void, class CBasePlayer> IReGameHook_CBasePlayer_UseEmpty;
+typedef IHookChainRegistryClass<void, class CBasePlayer> IReGameHookRegistry_CBasePlayer_UseEmpty;
+
 class IReGameHookchains {
 public:
 	virtual ~IReGameHookchains() {}
@@ -549,6 +553,7 @@ public:
 	virtual IReGameHookRegistry_CBasePlayer_SetSpawnProtection *CBasePlayer_SetSpawnProtection() = 0;
 	virtual IReGameHookRegistry_IsPenetrableEntity *IsPenetrableEntity() = 0;
 	virtual IReGameHookRegistry_CBasePlayer_HintMessageEx *CBasePlayer_HintMessageEx() = 0;
+	virtual IReGameHookRegistry_CBasePlayer_UseEmpty *CBasePlayer_UseEmpty() = 0;
 };
 
 struct ReGameFuncs_t {
