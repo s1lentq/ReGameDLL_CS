@@ -130,17 +130,18 @@
 #define DAMAGE_AIM				2
 
 // entity effects
-#define EF_BRIGHTFIELD				1	// swirling cloud of particles
-#define EF_MUZZLEFLASH 				2	// single frame ELIGHT on entity attachment 0
-#define EF_BRIGHTLIGHT 				4	// DLIGHT centered at entity origin
-#define EF_DIMLIGHT 				8	// player flashlight
-#define EF_INVLIGHT				16	// get lighting from ceiling
-#define EF_NOINTERP				32	// don't interpolate the next frame
-#define EF_LIGHT				64	// rocket flare glow sprite
-#define EF_NODRAW				128	// don't draw entity
-#define EF_NIGHTVISION				256	// player nightvision
-#define EF_SNIPERLASER				512	// sniper laser effect
-#define EF_FIBERCAMERA				1024	// fiber camera
+#define EF_BRIGHTFIELD				(1<<0)	// swirling cloud of particles
+#define EF_MUZZLEFLASH 			(1<<1)	// single frame ELIGHT on entity attachment 0
+#define EF_BRIGHTLIGHT 			(1<<2)	// DLIGHT centered at entity origin
+#define EF_DIMLIGHT 				(1<<3)	// player flashlight
+#define EF_INVLIGHT				(1<<4)	// get lighting from ceiling
+#define EF_NOINTERP				(1<<5)	// don't interpolate the next frame
+#define EF_LIGHT					(1<<6)	// rocket flare glow sprite
+#define EF_NODRAW					(1<<7)	// don't draw entity
+#define EF_NIGHTVISION				(1<<8)	// player nightvision
+#define EF_SNIPERLASER				(1<<9)	// sniper laser effect
+#define EF_FIBERCAMERA				(1<<10)	// fiber camera
+#define EF_FORCEVISIBILITY			(1<<11)	// force visibility
 
 // entity flags
 #define EFLAG_SLERP				1	// do studio interpolation of this entity

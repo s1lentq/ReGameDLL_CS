@@ -4300,17 +4300,22 @@ BOOL EXT_FUNC AddToFullPack(struct entity_state_s *state, int e, edict_t *ent, e
 	if (CheckPlayerPVSLeafChanged(host, hostnum))
 		ResetPlayerPVS(host, hostnum);
 
-	if (ent != host)
+#ifdef REGAMEDLL_ADD
+	if ((ent->v.effects & EF_FORCEVISIBILITY) != EF_FORCEVISIBILITY)
+#endif
 	{
-		if (!CheckEntityRecentlyInPVS(hostnum, e, gpGlobals->time))
+		if (ent != host)
 		{
-			if (!ENGINE_CHECK_VISIBILITY(ent, pSet))
+			if (!CheckEntityRecentlyInPVS(hostnum, e, gpGlobals->time))
 			{
-				MarkEntityInPVS(hostnum, e, 0, false);
-				return FALSE;
-			}
+				if (!ENGINE_CHECK_VISIBILITY(ent, pSet))
+				{
+					MarkEntityInPVS(hostnum, e, 0, false);
+					return FALSE;
+				}
 
-			MarkEntityInPVS(hostnum, e, gpGlobals->time, true);
+				MarkEntityInPVS(hostnum, e, gpGlobals->time, true);
+			}
 		}
 	}
 
@@ -4363,6 +4368,9 @@ BOOL EXT_FUNC AddToFullPack(struct entity_state_s *state, int e, edict_t *ent, e
 	state->effects = ent->v.effects;
 
 #ifdef REGAMEDLL_ADD
+	// don't send unhandled custom bit to client
+	state->effects &= ~EF_FORCEVISIBILITY;
+
 	if  (ent->v.skin == CONTENTS_LADDER &&
 		(host->v.iuser3 & PLAYER_PREVENT_CLIMB) == PLAYER_PREVENT_CLIMB) {
 		state->skin = CONTENTS_EMPTY;
