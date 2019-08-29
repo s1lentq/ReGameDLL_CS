@@ -142,6 +142,8 @@
 #define EF_SNIPERLASER				(1<<9)	// sniper laser effect
 #define EF_FIBERCAMERA				(1<<10)	// fiber camera
 #define EF_FORCEVISIBILITY			(1<<11)	// force visibility
+#define EF_OWNER_VISIBILITY			(1<<12)	// visibility for owner
+#define EF_OWNER_NO_VISIBILITY		(1<<13)	// no visibility for owner
 
 // entity flags
 #define EFLAG_SLERP				1	// do studio interpolation of this entity

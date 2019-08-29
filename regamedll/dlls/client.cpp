@@ -4286,8 +4286,23 @@ bool CheckEntityRecentlyInPVS(int clientnum, int entitynum, float currenttime)
 
 BOOL EXT_FUNC AddToFullPack(struct entity_state_s *state, int e, edict_t *ent, edict_t *host, int hostflags, BOOL player, unsigned char *pSet)
 {
-	if ((ent->v.effects & EF_NODRAW) == EF_NODRAW && ent != host)
-		return FALSE;
+	if (ent != host)
+	{
+		if ((ent->v.effects & EF_NODRAW) == EF_NODRAW)
+			return FALSE;
+
+#ifdef REGAMEDLL_ADD
+		if (ent->v.owner == host)
+		{
+			// the owner can't see this entity
+			if ((ent->v.effects & EF_OWNER_NO_VISIBILITY) == EF_OWNER_NO_VISIBILITY)
+				return FALSE;
+		}
+		// no one can't see this entity except the owner
+		else if ((ent->v.effects & EF_OWNER_VISIBILITY) == EF_OWNER_VISIBILITY)
+			return FALSE;
+#endif
+	}
 
 	if (!ent->v.modelindex || !STRING(ent->v.model))
 		return FALSE;
@@ -4368,8 +4383,8 @@ BOOL EXT_FUNC AddToFullPack(struct entity_state_s *state, int e, edict_t *ent, e
 	state->effects = ent->v.effects;
 
 #ifdef REGAMEDLL_ADD
-	// don't send unhandled custom bit to client
-	state->effects &= ~EF_FORCEVISIBILITY;
+	// don't send unhandled custom bits to client
+	state->effects &= ~(EF_FORCEVISIBILITY | EF_OWNER_VISIBILITY | EF_OWNER_NO_VISIBILITY);
 
 	if  (ent->v.skin == CONTENTS_LADDER &&
 		(host->v.iuser3 & PLAYER_PREVENT_CLIMB) == PLAYER_PREVENT_CLIMB) {
