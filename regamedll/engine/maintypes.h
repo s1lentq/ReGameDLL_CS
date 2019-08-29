@@ -44,17 +44,33 @@
 // Function is doubt reversed
 #define TODOBODY
 
-
 #define BIT(n) (1<<(n))
 
+#ifdef HAVE_STRONG_TYPEDEF
+enum class string_t: unsigned int {};
+#else
 typedef unsigned int string_t;
+#endif
+
 typedef int EOFFSET;
 typedef int BOOL;
+typedef unsigned char byte;
+typedef unsigned short word;
+#define _DEF_BYTE_
 
 #ifndef __cplusplus
-	typedef enum { false, true }	qboolean;
+	#undef true
+	#undef false
+	typedef enum {false, true} qboolean;
 #else
 	typedef int qboolean;
-#endif
+#endif // #ifndef __cplusplus
+
+// From engine/server.h
+typedef enum sv_delta_s
+{
+	sv_packet_nodelta,
+	sv_packet_delta,
+} sv_delta_t;
 
 #endif // MAINTYPES_H
