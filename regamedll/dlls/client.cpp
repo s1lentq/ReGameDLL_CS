@@ -4297,21 +4297,22 @@ BOOL EXT_FUNC AddToFullPack(struct entity_state_s *state, int e, edict_t *ent, e
 	if (CheckPlayerPVSLeafChanged(host, hostnum))
 		ResetPlayerPVS(host, hostnum);
 
-	if (ent != host)
-	{
-		if (!CheckEntityRecentlyInPVS(hostnum, e, gpGlobals->time))
-		{
-			if (!ENGINE_CHECK_VISIBILITY(ent, pSet)
 #ifdef REGAMEDLL_ADD
-				&& (ent->v.effects & EF_FORCEVISIBILITY) != EF_FORCEVISIBILITY
+	if ((ent->v.effects & EF_FORCEVISIBILITY) != EF_FORCEVISIBILITY)
 #endif
-			)
+	{
+		if (ent != host)
+		{
+			if (!CheckEntityRecentlyInPVS(hostnum, e, gpGlobals->time))
 			{
-				MarkEntityInPVS(hostnum, e, 0, false);
-				return FALSE;
-			}
+				if (!ENGINE_CHECK_VISIBILITY(ent, pSet))
+				{
+					MarkEntityInPVS(hostnum, e, 0, false);
+					return FALSE;
+				}
 
-			MarkEntityInPVS(hostnum, e, gpGlobals->time, true);
+				MarkEntityInPVS(hostnum, e, gpGlobals->time, true);
+			}
 		}
 	}
 
