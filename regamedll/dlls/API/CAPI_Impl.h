@@ -541,6 +541,10 @@ typedef IHookChainRegistryClassImpl<bool, CBasePlayer, const char *, float, bool
 typedef IHookChainClassImpl<void, CBasePlayer> CReGameHook_CBasePlayer_UseEmpty;
 typedef IHookChainRegistryClassImpl<void, CBasePlayer> CReGameHookRegistry_CBasePlayer_UseEmpty;
 
+// CBasePlayer::DropIdlePlayer hook
+typedef IHookChainClassImpl<void, CBasePlayer> CReGameHook_CBasePlayer_DropIdlePlayer;
+typedef IHookChainRegistryClassImpl<void, CBasePlayer> CReGameHookRegistry_CBasePlayer_DropIdlePlayer;
+
 class CReGameHookchains: public IReGameHookchains {
 public:
 	// CBasePlayer virtual
@@ -650,7 +654,8 @@ public:
 	CReGameHookRegistry_IsPenetrableEntity m_IsPenetrableEntity;
 	CReGameHookRegistry_CBasePlayer_HintMessageEx m_CBasePlayer_HintMessageEx;
 	CReGameHookRegistry_CBasePlayer_UseEmpty m_CBasePlayer_UseEmpty;
-
+	CReGameHookRegistry_CBasePlayer_DropIdlePlayer m_CBasePlayer_DropIdlePlayer;
+	
 public:
 	virtual IReGameHookRegistry_CBasePlayer_Spawn *CBasePlayer_Spawn();
 	virtual IReGameHookRegistry_CBasePlayer_Precache *CBasePlayer_Precache();
@@ -758,6 +763,7 @@ public:
 	virtual IReGameHookRegistry_IsPenetrableEntity *IsPenetrableEntity();
 	virtual IReGameHookRegistry_CBasePlayer_HintMessageEx *CBasePlayer_HintMessageEx();
 	virtual IReGameHookRegistry_CBasePlayer_UseEmpty *CBasePlayer_UseEmpty();
+	virtual IReGameHookRegistry_CBasePlayer_DropIdlePlayer *CBasePlayer_DropIdlePlayer();
 };
 
 extern CReGameHookchains g_ReGameHookchains;

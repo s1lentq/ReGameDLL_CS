@@ -4264,21 +4264,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 		{
 			if (!IsBot() && autokick.value)
 			{
-				// Log the kick
-				UTIL_LogPrintf("\"%s<%i><%s><%s>\" triggered \"Game_idle_kick\" (auto)\n", STRING(pev->netname), GETPLAYERUSERID(edict()), GETPLAYERAUTHID(edict()), GetTeam(m_iTeam));
-				UTIL_ClientPrintAll(HUD_PRINTCONSOLE, "#Game_idle_kick", STRING(pev->netname));
-
-#ifdef REGAMEDLL_FIXES
-				int iUserID = GETPLAYERUSERID(edict());
-				if (iUserID != -1)
-				{
-					SERVER_COMMAND(UTIL_VarArgs("kick #%d \"Player idle\"\n", iUserID));
-				}
-#else
-				SERVER_COMMAND(UTIL_VarArgs("kick \"%s\"\n", STRING(pev->netname)));
-#endif // #ifdef REGAMEDLL_FIXES
-
-				m_fLastMovement = gpGlobals->time;
+				DropIdlePlayer();
 			}
 		}
 #ifdef REGAMEDLL_ADD
@@ -9823,4 +9809,27 @@ void CBasePlayer::__API_HOOK(RemoveSpawnProtection)()
 	}
 
 	CSPlayer()->m_flSpawnProtectionEndTime = 0.0f;
+}
+
+LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, DropIdlePlayer)
+
+void EXT_FUNC CBasePlayer::__API_HOOK(DropIdlePlayer)()
+{
+	edict_t *pEntity = edict();
+
+	// Log the kick
+	UTIL_LogPrintf("\"%s<%i><%s><%s>\" triggered \"Game_idle_kick\" (auto)\n", STRING(pev->netname), GETPLAYERUSERID(pEntity), GETPLAYERAUTHID(pEntity), GetTeam(m_iTeam));
+	UTIL_ClientPrintAll(HUD_PRINTCONSOLE, "#Game_idle_kick", STRING(pev->netname));
+
+#ifdef REGAMEDLL_FIXES
+	int iUserID = GETPLAYERUSERID(pEntity);
+	if (iUserID != -1)
+	{
+		SERVER_COMMAND(UTIL_VarArgs("kick #%d \"Player idle\"\n", iUserID));
+	}
+#else
+	SERVER_COMMAND(UTIL_VarArgs("kick \"%s\"\n", STRING(pev->netname)));
+#endif // #ifdef REGAMEDLL_FIXES
+
+	m_fLastMovement = gpGlobals->time;	
 }

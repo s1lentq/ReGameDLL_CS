@@ -425,6 +425,7 @@ public:
 	void RemoveSpawnProtection_OrigFunc();
 	bool HintMessageEx_OrigFunc(const char *pMessage, float duration = 6.0f, bool bDisplayIfPlayerDead = false, bool bOverride = false);
 	void UseEmpty_OrigFunc();
+	void DropIdlePlayer_OrigFunc();
 
 	CCSPlayer *CSPlayer() const;
 #endif // REGAMEDLL_API
@@ -621,6 +622,7 @@ public:
 	void SetSpawnProtection(float flProtectionTime);
 	void RemoveSpawnProtection();
 	void UseEmpty();
+	void DropIdlePlayer();
 
 	// templates
 	template<typename T = CBasePlayerItem, typename Functor>

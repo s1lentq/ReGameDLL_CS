@@ -444,6 +444,10 @@ typedef IHookChainRegistryClass<bool, class CBasePlayer, const char *, float, bo
 typedef IHookChainClass<void, class CBasePlayer> IReGameHook_CBasePlayer_UseEmpty;
 typedef IHookChainRegistryClass<void, class CBasePlayer> IReGameHookRegistry_CBasePlayer_UseEmpty;
 
+// CBasePlayer::DropIdlePlayer hook
+typedef IHookChainClass<void, CBasePlayer> IReGameHook_CBasePlayer_DropIdlePlayer;
+typedef IHookChainRegistryClass<void, CBasePlayer> IReGameHookRegistry_CBasePlayer_DropIdlePlayer;
+
 class IReGameHookchains {
 public:
 	virtual ~IReGameHookchains() {}
@@ -554,6 +558,7 @@ public:
 	virtual IReGameHookRegistry_IsPenetrableEntity *IsPenetrableEntity() = 0;
 	virtual IReGameHookRegistry_CBasePlayer_HintMessageEx *CBasePlayer_HintMessageEx() = 0;
 	virtual IReGameHookRegistry_CBasePlayer_UseEmpty *CBasePlayer_UseEmpty() = 0;
+	virtual IReGameHookRegistry_CBasePlayer_DropIdlePlayer *CBasePlayer_DropIdlePlayer() = 0;
 };
 
 struct ReGameFuncs_t {
