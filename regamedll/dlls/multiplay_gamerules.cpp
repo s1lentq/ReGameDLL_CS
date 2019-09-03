@@ -3362,15 +3362,18 @@ void CHalfLifeMultiplay::InitHUD(CBasePlayer *pl)
 		}
 
 #ifdef BUILD_LATEST
-		MESSAGE_BEGIN(MSG_ONE, gmsgHealthInfo, nullptr, pl->edict());
-			WRITE_BYTE(plr->entindex());
-			WRITE_LONG(plr->ShouldToShowHealthInfo(pl) ? plr->m_iClientHealth : -1 /* means that 'HP' field will be hidden */);
-		MESSAGE_END();
+		if (AreRunningBeta())
+		{
+			MESSAGE_BEGIN(MSG_ONE, gmsgHealthInfo, nullptr, pl->edict());
+				WRITE_BYTE(plr->entindex());
+				WRITE_LONG(plr->ShouldToShowHealthInfo(pl) ? plr->m_iClientHealth : -1 /* means that 'HP' field will be hidden */);
+			MESSAGE_END();
 
-		MESSAGE_BEGIN(MSG_ONE, gmsgAccount, nullptr, pl->edict());
-			WRITE_BYTE(plr->entindex());
-			WRITE_LONG(plr->ShouldToShowAccount(pl) ? plr->m_iAccount : -1 /* means that this 'Money' will be hidden */);
-		MESSAGE_END();
+			MESSAGE_BEGIN(MSG_ONE, gmsgAccount, nullptr, pl->edict());
+				WRITE_BYTE(plr->entindex());
+				WRITE_LONG(plr->ShouldToShowAccount(pl) ? plr->m_iAccount : -1 /* means that this 'Money' will be hidden */);
+			MESSAGE_END();
+		}
 #endif // BUILD_LATEST
 	}
 

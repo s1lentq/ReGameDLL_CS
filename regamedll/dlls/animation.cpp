@@ -613,24 +613,24 @@ void QuaternionSlerp(vec_t *p, vec_t *q, float t, vec_t *qt)
 	}
 
 	float sclp, sclq;
-	float cosom = (p[0] * q[0] + p[1] * q[1] + p[2] * q[2] + p[3] * q[3]);
+	real_t cosom = (p[0] * q[0] + p[1] * q[1] + p[2] * q[2] + p[3] * q[3]);
 
-	if ((1.0 + cosom) > 0.00000001)
+	if ((1.0 + cosom) > 0.000001)
 	{
-		if ((1.0 - cosom) > 0.00000001)
+		if ((1.0 - cosom) > 0.000001)
 		{
 			real_t cosomega = Q_acos(real_t(cosom));
 
 			float omega = cosomega;
 			float sinom = Q_sin(cosomega);
 
-			sclp = Q_sin((1.0 - t) * omega) / sinom;
+			sclp = Q_sin((1.0f - t) * omega) / sinom;
 			sclq = Q_sin(real_t(omega * t)) / sinom;
 		}
 		else
 		{
 			sclq = t;
-			sclp = 1.0 - t;
+			sclp = 1.0f - t;
 		}
 
 		for (i = 0; i < 4; i++)
@@ -643,8 +643,8 @@ void QuaternionSlerp(vec_t *p, vec_t *q, float t, vec_t *qt)
 		qt[2] = -q[3];
 		qt[3] = q[2];
 
-		sclp = Q_sin((1.0 - t) * 0.5 * M_PI);
-		sclq = Q_sin(t * 0.5 * M_PI);
+		sclp = Q_sin((1.0f - t) * (0.5f * M_PI));
+		sclq = Q_sin(t * (0.5f * M_PI));
 
 		for (i = 0; i < 3; i++)
 			qt[i] = sclp * p[i] + sclq * qt[i];
@@ -977,8 +977,8 @@ void SV_StudioSetupBones(model_t *pModel, float frame, int sequence, const vec_t
 	float bonematrix[3][4];
 	vec3_t temp_angles;
 
-	/*static */float pos[MAXSTUDIOBONES][3], pos2[MAXSTUDIOBONES][3];
-	/*static */float q[MAXSTUDIOBONES][4], q2[MAXSTUDIOBONES][4];
+	static float pos[MAXSTUDIOBONES][3] = {}, pos2[MAXSTUDIOBONES][3] = {};
+	static float q[MAXSTUDIOBONES][4] = {}, q2[MAXSTUDIOBONES][4] = {};
 
 	g_pstudiohdr = (studiohdr_t *)IEngineStudio.Mod_Extradata(pModel);
 
@@ -1030,8 +1030,8 @@ void SV_StudioSetupBones(model_t *pModel, float frame, int sequence, const vec_t
 	// This game knows how to do nine way blending
 	else
 	{
-		/*static */float pos3[MAXSTUDIOBONES][3], pos4[MAXSTUDIOBONES][3];
-		/*static */float q3[MAXSTUDIOBONES][4], q4[MAXSTUDIOBONES][4];
+		static float pos3[MAXSTUDIOBONES][3] = {}, pos4[MAXSTUDIOBONES][3] = {};
+		static float q3[MAXSTUDIOBONES][4] = {}, q4[MAXSTUDIOBONES][4] = {};
 
 		real_t s, t;
 		s = GetPlayerYaw(pEdict);

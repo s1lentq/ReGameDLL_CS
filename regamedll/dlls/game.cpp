@@ -21,6 +21,7 @@ cvar_t timeleft              = { "mp_timeleft", "0", FCVAR_SERVER | FCVAR_UNLOGG
 
 cvar_t friendlyfire          = { "mp_friendlyfire", "0", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t infiniteAmmo          = { "mp_infinite_ammo", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t infiniteGrenades      = { "mp_infinite_grenades", "0", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t allowmonsters         = { "mp_allowmonsters", "0", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t roundtime             = { "mp_roundtime", "5", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t buytime               = { "mp_buytime", "1.5", FCVAR_SERVER, 0.0f, nullptr };
@@ -189,6 +190,7 @@ void EXT_FUNC GameDLLInit()
 
 #ifdef BUILD_LATEST
 	CVAR_REGISTER(&infiniteAmmo);
+	CVAR_REGISTER(&infiniteGrenades);
 #endif
 
 	CVAR_REGISTER(&flashlight);
@@ -235,8 +237,11 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&humans_join_team);
 
 #ifdef BUILD_LATEST
-	CVAR_REGISTER(&scoreboard_showhealth);
-	CVAR_REGISTER(&scoreboard_showmoney);
+	if (AreRunningBeta())
+	{
+		CVAR_REGISTER(&scoreboard_showhealth);
+		CVAR_REGISTER(&scoreboard_showmoney);
+	}
 #endif
 
 // Remove unused cvars

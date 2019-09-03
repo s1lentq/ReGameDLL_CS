@@ -439,6 +439,22 @@ bool IsSecondaryWeapon(int id)
 	return false;
 }
 
+// Return true if given weapon ID is a grenade
+bool IsGrenadeWeapon(int id)
+{
+	switch (id)
+	{
+	case WEAPON_HEGRENADE:
+	case WEAPON_FLASHBANG:
+	case WEAPON_SMOKEGRENADE:
+		return true;
+	default:
+		break;
+	}
+
+	return false;
+}
+
 WeaponInfoStruct *GetWeaponInfo(int weaponID)
 {
 	for (auto& info : g_weaponInfo) {

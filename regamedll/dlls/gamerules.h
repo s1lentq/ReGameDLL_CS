@@ -337,6 +337,8 @@ public:
 	bool m_bGameOver; // intermission or finale (deprecated name g_fGameOver)
 };
 
+#define GAMERULES_API_INTERFACE_VERSION "GAMERULES_API_INTERFACE_VERSION001"
+
 // CHalfLifeRules - rules for the single player Half-Life game.
 class CHalfLifeRules: public CGameRules
 {

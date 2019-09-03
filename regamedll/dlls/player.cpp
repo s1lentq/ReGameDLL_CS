@@ -1496,6 +1496,14 @@ void CBasePlayer::RemoveAllItems(BOOL removeSuit)
 	bool bKillProgBar = false;
 	int i;
 
+#ifdef REGAMEDLL_FIXES
+	if (m_pTank)
+	{
+		m_pTank->Use(this, this, USE_OFF, 0);
+		m_pTank = nullptr;
+	}
+#endif	
+	
 	if (m_bHasDefuser)
 	{
 		RemoveDefuser();
@@ -3922,11 +3930,17 @@ void CBasePlayer::PlayerUse()
 			}
 		}
 	}
-	else
+	else if (m_afButtonPressed & IN_USE)
 	{
-		if (m_afButtonPressed & IN_USE)
-			EMIT_SOUND(ENT(pev), CHAN_ITEM, "common/wpn_denyselect.wav", 0.4, ATTN_NORM);
+		UseEmpty();
 	}
+}
+
+LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, UseEmpty)
+
+void EXT_FUNC CBasePlayer::__API_HOOK(UseEmpty)()
+{
+	EMIT_SOUND(ENT(pev), CHAN_ITEM, "common/wpn_denyselect.wav", 0.4, ATTN_NORM);
 }
 
 void CBasePlayer::HostageUsed()
@@ -5123,7 +5137,7 @@ void CBasePlayer::SetScoreAttrib(CBasePlayer *dest)
 		state |= SCORE_STATUS_VIP;
 
 #ifdef BUILD_LATEST
-	if (m_bHasDefuser)
+	if (AreRunningBeta() && m_bHasDefuser)
 		state |= SCORE_STATUS_DEFKIT;
 #endif
 
@@ -6281,7 +6295,9 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 
 #ifdef REGAMEDLL_API
 			CSPlayer()->m_iWeaponInfiniteAmmo = WPNMODE_INFINITE_BPAMMO;
+			CSPlayer()->m_iWeaponInfiniteIds  = WEAPON_ALLWEAPONS;
 #endif
+
 			GiveNamedItemEx("item_longjump");
 			GiveNamedItemEx("item_thighpack");
 			GiveNamedItemEx("item_kevlar");
@@ -7132,38 +7148,41 @@ void EXT_FUNC CBasePlayer::__API_HOOK(UpdateClientData)()
 	}
 
 #ifdef BUILD_LATEST
-	if ((m_iTeam == CT || m_iTeam == TERRORIST) &&
-		(m_iLastAccount != m_iAccount || m_iLastClientHealth != m_iClientHealth || m_tmNextAccountHealthUpdate < gpGlobals->time))
+	if (AreRunningBeta())
 	{
-		m_tmNextAccountHealthUpdate = gpGlobals->time + 5.0f;
-
-		for (int playerIndex = 1; playerIndex <= gpGlobals->maxClients; playerIndex++)
+		if ((m_iTeam == CT || m_iTeam == TERRORIST) &&
+			(m_iLastAccount != m_iAccount || m_iLastClientHealth != m_iClientHealth || m_tmNextAccountHealthUpdate < gpGlobals->time))
 		{
-			CBaseEntity *pEntity = UTIL_PlayerByIndex(playerIndex);
+			m_tmNextAccountHealthUpdate = gpGlobals->time + 5.0f;
 
-			if (!pEntity)
-				continue;
+			for (int playerIndex = 1; playerIndex <= gpGlobals->maxClients; playerIndex++)
+			{
+				CBaseEntity *pEntity = UTIL_PlayerByIndex(playerIndex);
 
-			CBasePlayer *pPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev);
+				if (!pEntity)
+					continue;
+
+				CBasePlayer *pPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev);
 
 #ifdef REGAMEDLL_FIXES
-			if (pPlayer->IsDormant())
-				continue;
+				if (pPlayer->IsDormant())
+					continue;
 #endif // REGAMEDLL_FIXES
 
-			MESSAGE_BEGIN(MSG_ONE, gmsgHealthInfo, nullptr, pPlayer->edict());
-				WRITE_BYTE(entindex());
-				WRITE_LONG(ShouldToShowHealthInfo(pPlayer) ? m_iClientHealth : -1 /* means that 'HP' field will be hidden */);
-			MESSAGE_END();
+				MESSAGE_BEGIN(MSG_ONE, gmsgHealthInfo, nullptr, pPlayer->edict());
+					WRITE_BYTE(entindex());
+					WRITE_LONG(ShouldToShowHealthInfo(pPlayer) ? m_iClientHealth : -1 /* means that 'HP' field will be hidden */);
+				MESSAGE_END();
 
-			MESSAGE_BEGIN(MSG_ONE, gmsgAccount, nullptr, pPlayer->edict());
-				WRITE_BYTE(entindex());
-				WRITE_LONG(ShouldToShowAccount(pPlayer) ? m_iAccount : -1 /* means that this 'Money' will be hidden */);
-			MESSAGE_END();
+				MESSAGE_BEGIN(MSG_ONE, gmsgAccount, nullptr, pPlayer->edict());
+					WRITE_BYTE(entindex());
+					WRITE_LONG(ShouldToShowAccount(pPlayer) ? m_iAccount : -1 /* means that this 'Money' will be hidden */);
+				MESSAGE_END();
+			}
+
+			m_iLastAccount = m_iAccount;
+			m_iLastClientHealth = m_iClientHealth;
 		}
-
-		m_iLastAccount = m_iAccount;
-		m_iLastClientHealth = m_iClientHealth;
 	}
 #endif // #ifdef BUILD_LATEST
 }

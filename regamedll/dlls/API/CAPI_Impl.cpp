@@ -161,6 +161,7 @@ GAMEHOOK_REGISTRY(CBasePlayer_SetSpawnProtection);
 GAMEHOOK_REGISTRY(CBasePlayer_RemoveSpawnProtection);
 GAMEHOOK_REGISTRY(IsPenetrableEntity);
 GAMEHOOK_REGISTRY(CBasePlayer_HintMessageEx);
+GAMEHOOK_REGISTRY(CBasePlayer_UseEmpty);
 
 int CReGameApi::GetMajorVersion() {
 	return REGAMEDLL_API_VERSION_MAJOR;
@@ -202,6 +203,26 @@ AmmoInfo *CReGameApi::GetAmmoInfo(AmmoType ammoID) { return &CBasePlayerItem::m_
 
 AmmoInfoStruct *CReGameApi::GetAmmoInfoEx(AmmoType ammoID) { return ::GetAmmoInfo(ammoID); }
 AmmoInfoStruct *CReGameApi::GetAmmoInfoEx(const char *ammoName) { return ::GetAmmoInfo(ammoName); }
+
+bool CReGameApi::BGetICSEntity(const char *pchVersion) const
+{
+	if (!Q_stricmp(pchVersion, CSENTITY_API_INTERFACE_VERSION))
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool CReGameApi::BGetIGameRules(const char *pchVersion) const
+{
+	if (!Q_stricmp(pchVersion, GAMERULES_API_INTERFACE_VERSION))
+	{
+		return true;
+	}
+
+	return false;
+}
 
 EXT_FUNC void Regamedll_ChangeString_api(char *&dest, const char *source)
 {

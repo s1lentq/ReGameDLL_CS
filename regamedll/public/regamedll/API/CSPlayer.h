@@ -43,7 +43,8 @@ public:
 		m_bForceShowMenu(false),
 		m_flRespawnPending(0),
 		m_flSpawnProtectionEndTime(0),
-		m_iWeaponInfiniteAmmo(0)
+		m_iWeaponInfiniteAmmo(0),
+		m_iWeaponInfiniteIds(0)
 	{
 		m_szModel[0] = '\0';
 	}
@@ -90,7 +91,7 @@ public:
 	virtual void ResetSequenceInfo();
 	virtual void StartDeathCam();
 	virtual bool RemovePlayerItemEx(const char* pszItemName, bool bRemoveAmmo);
- 	virtual void SetSpawnProtection(float flProtectionTime);
+	virtual void SetSpawnProtection(float flProtectionTime);
 	virtual void RemoveSpawnProtection();
 	virtual bool HintMessageEx(const char *pMessage, float duration = 6.0f, bool bDisplayIfPlayerDead = false, bool bOverride = false);
 
@@ -115,6 +116,7 @@ public:
 	float m_flSpawnProtectionEndTime;
 	Vector m_vecOldvAngle;
 	int m_iWeaponInfiniteAmmo;
+	int m_iWeaponInfiniteIds;
 };
 
 // Inlines

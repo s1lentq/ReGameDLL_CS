@@ -226,8 +226,11 @@ void LinkUserMessages()
 	gmsgHudTextArgs   = REG_USER_MSG("HudTextArgs", -1);
 
 #ifdef BUILD_LATEST
-	gmsgAccount       = REG_USER_MSG("Account", 5);
-	gmsgHealthInfo    = REG_USER_MSG("HealthInfo", 5);
+	if (AreRunningBeta())
+	{
+		gmsgAccount       = REG_USER_MSG("Account", 5);
+		gmsgHealthInfo    = REG_USER_MSG("HealthInfo", 5);
+	}
 #endif
 }
 
@@ -4283,8 +4286,23 @@ bool CheckEntityRecentlyInPVS(int clientnum, int entitynum, float currenttime)
 
 BOOL EXT_FUNC AddToFullPack(struct entity_state_s *state, int e, edict_t *ent, edict_t *host, int hostflags, BOOL player, unsigned char *pSet)
 {
-	if ((ent->v.effects & EF_NODRAW) == EF_NODRAW && ent != host)
-		return FALSE;
+	if (ent != host)
+	{
+		if ((ent->v.effects & EF_NODRAW) == EF_NODRAW)
+			return FALSE;
+
+#ifdef REGAMEDLL_ADD
+		if (ent->v.owner == host)
+		{
+			// the owner can't see this entity
+			if ((ent->v.effects & EF_OWNER_NO_VISIBILITY) == EF_OWNER_NO_VISIBILITY)
+				return FALSE;
+		}
+		// no one can't see this entity except the owner
+		else if ((ent->v.effects & EF_OWNER_VISIBILITY) == EF_OWNER_VISIBILITY)
+			return FALSE;
+#endif
+	}
 
 	if (!ent->v.modelindex || !STRING(ent->v.model))
 		return FALSE;
@@ -4297,17 +4315,22 @@ BOOL EXT_FUNC AddToFullPack(struct entity_state_s *state, int e, edict_t *ent, e
 	if (CheckPlayerPVSLeafChanged(host, hostnum))
 		ResetPlayerPVS(host, hostnum);
 
-	if (ent != host)
+#ifdef REGAMEDLL_ADD
+	if ((ent->v.effects & EF_FORCEVISIBILITY) != EF_FORCEVISIBILITY)
+#endif
 	{
-		if (!CheckEntityRecentlyInPVS(hostnum, e, gpGlobals->time))
+		if (ent != host)
 		{
-			if (!ENGINE_CHECK_VISIBILITY(ent, pSet))
+			if (!CheckEntityRecentlyInPVS(hostnum, e, gpGlobals->time))
 			{
-				MarkEntityInPVS(hostnum, e, 0, false);
-				return FALSE;
-			}
+				if (!ENGINE_CHECK_VISIBILITY(ent, pSet))
+				{
+					MarkEntityInPVS(hostnum, e, 0, false);
+					return FALSE;
+				}
 
-			MarkEntityInPVS(hostnum, e, gpGlobals->time, true);
+				MarkEntityInPVS(hostnum, e, gpGlobals->time, true);
+			}
 		}
 	}
 
@@ -4360,6 +4383,9 @@ BOOL EXT_FUNC AddToFullPack(struct entity_state_s *state, int e, edict_t *ent, e
 	state->effects = ent->v.effects;
 
 #ifdef REGAMEDLL_ADD
+	// don't send unhandled custom bits to client
+	state->effects &= ~(EF_FORCEVISIBILITY | EF_OWNER_VISIBILITY | EF_OWNER_NO_VISIBILITY);
+
 	if  (ent->v.skin == CONTENTS_LADDER &&
 		(host->v.iuser3 & PLAYER_PREVENT_CLIMB) == PLAYER_PREVENT_CLIMB) {
 		state->skin = CONTENTS_EMPTY;

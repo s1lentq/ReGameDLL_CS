@@ -839,7 +839,12 @@ void CBasePlayerWeapon::HandleInfiniteAmmo()
 	{
 		m_iClip = iMaxClip();
 	}
-	else if (nInfiniteAmmo == WPNMODE_INFINITE_BPAMMO)
+	else if ((nInfiniteAmmo == WPNMODE_INFINITE_BPAMMO &&
+#ifdef REGAMEDLL_API
+		((m_pPlayer->CSPlayer()->m_iWeaponInfiniteIds & (1 << m_iId)) || (m_pPlayer->CSPlayer()->m_iWeaponInfiniteIds <= 0 && !IsGrenadeWeapon(m_iId)))
+#endif
+		)
+		|| (IsGrenadeWeapon(m_iId) && infiniteGrenades.value == 1.0f))
 	{
 		if (pszAmmo1())
 		{

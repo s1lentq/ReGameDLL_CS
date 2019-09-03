@@ -449,6 +449,7 @@ WeaponClassType AliasToWeaponClass(const char *alias);
 WeaponClassType WeaponIDToWeaponClass(int id);
 bool IsPrimaryWeapon(int id);
 bool IsSecondaryWeapon(int id);
+bool IsGrenadeWeapon(int id);
 bool CanBuyWeaponByMaptype(int playerTeam, WeaponIdType weaponID, bool useAssasinationRestrictions);
 void WeaponInfoReset();
 
