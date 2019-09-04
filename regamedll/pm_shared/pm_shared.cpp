@@ -1795,6 +1795,23 @@ void PM_FixPlayerCrouchStuck(int direction)
 
 void PM_UnDuck()
 {
+#ifdef REGAMEDLL_ADD
+	if (unduck_method.value)
+#endif
+	{
+#ifdef REGAMEDLL_FIXES
+		// if ducking isn't finished yet, so don't unduck
+		if (pmove->bInDuck || !(pmove->flags & FL_DUCKING))
+		{
+			pmove->usehull = 0;
+			pmove->flDuckTime = 0;
+			pmove->bInDuck = FALSE;
+			pmove->view_ofs[2] = PM_VEC_VIEW;
+			return;
+		}
+#endif // #ifdef REGAMEDLL_FIXES
+	}
+
 	pmtrace_t trace;
 	vec3_t newOrigin;
 
