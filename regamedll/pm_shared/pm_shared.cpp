@@ -2400,6 +2400,14 @@ void PM_Jump()
 		return;
 	}
 
+#ifdef REGAMEDLL_FIXES
+	// Prevent jumping if the iuser3 variable is contain PLAYER_PREVENT_JUMP
+	if ((pmove->iuser3 & PLAYER_PREVENT_JUMP) == PLAYER_PREVENT_JUMP)
+	{
+		return;
+	}
+#endif
+
 	// No more effect
 	// in air, so no effect
  	if (pmove->onground == -1)
