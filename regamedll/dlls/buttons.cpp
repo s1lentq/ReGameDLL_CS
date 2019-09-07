@@ -882,7 +882,7 @@ void CRotButton::Spawn()
 
 	assert(("rotating button start/end positions are equal", m_vecAngle1 != m_vecAngle2));
 
-	m_fStayPushed = (m_flWait == -1 ? TRUE : FALSE);
+	m_fStayPushed = (m_flWait == -1) ? TRUE : FALSE;
 	m_fRotating = TRUE;
 
 	// if the button is flagged for USE button activation only, take away it's touch function and add a use function
