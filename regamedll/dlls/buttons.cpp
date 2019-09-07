@@ -490,7 +490,7 @@ void CBaseButton::Spawn()
 		m_vecPosition2 = m_vecPosition1;
 	}
 
-	m_fStayPushed = (m_flWait == -1 ? TRUE : FALSE);
+	m_fStayPushed = (m_flWait == -1) ? TRUE : FALSE;
 	m_fRotating = FALSE;
 
 	// if the button is flagged for USE button activation only, take away it's touch function and add a use function
