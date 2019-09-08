@@ -835,7 +835,7 @@ void CBasePlayerWeapon::HandleInfiniteAmmo()
 	if (!nInfiniteAmmo)
 		nInfiniteAmmo = static_cast<int>(infiniteAmmo.value);
 
-	if (nInfiniteAmmo == WPNMODE_INFINITE_CLIP)
+	if (nInfiniteAmmo == WPNMODE_INFINITE_CLIP && !IsGrenadeWeapon(m_iId))
 	{
 		m_iClip = iMaxClip();
 	}
