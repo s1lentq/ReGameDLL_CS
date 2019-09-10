@@ -2255,6 +2255,11 @@ void CArmoury::ArmouryTouch(CBaseEntity *pOther)
 		return;
 #endif
 
+#ifdef REGAMEDLL_FIXES
+	if (pToucher->IsBot() && TheCSBots() && !TheCSBots()->IsWeaponUseable(m_iItem))
+		return;
+#endif
+
 	// primary weapons
 	if (m_iCount > 0 && (m_iItem <= ARMOURY_M249
 #ifdef REGAMEDLL_ADD

@@ -388,6 +388,58 @@ WeaponClassType WeaponIDToWeaponClass(int id)
 	return AliasToWeaponClass(WeaponIDToAlias(id));
 }
 
+WeaponClassType WeaponIDToWeaponClass(ArmouryItemPack id)
+{
+	switch (id)
+	{
+	case ARMOURY_AUG:
+	case ARMOURY_GALIL:
+	case ARMOURY_M4A1:
+	case ARMOURY_SG552:
+	case ARMOURY_AK47:
+	case ARMOURY_FAMAS:
+		return WEAPONCLASS_RIFLE;
+
+	case ARMOURY_GLOCK18:
+	case ARMOURY_USP:
+	case ARMOURY_ELITE:
+	case ARMOURY_FIVESEVEN:
+	case ARMOURY_P228:
+	case ARMOURY_DEAGLE:
+		return WEAPONCLASS_PISTOL;
+
+	case ARMOURY_MP5NAVY:
+	case ARMOURY_MAC10:
+	case ARMOURY_TMP:
+	case ARMOURY_UMP45:
+	case ARMOURY_P90:
+		return WEAPONCLASS_SUBMACHINEGUN;
+
+	case ARMOURY_SCOUT:
+	case ARMOURY_SG550:
+	case ARMOURY_AWP:
+	case ARMOURY_G3SG1:
+		return WEAPONCLASS_SNIPERRIFLE;
+
+	case ARMOURY_FLASHBANG:
+	case ARMOURY_HEGRENADE:
+	case ARMOURY_SMOKEGRENADE:
+		return WEAPONCLASS_GRENADE;
+
+	case ARMOURY_M3:
+	case ARMOURY_XM1014:
+		return WEAPONCLASS_SHOTGUN;
+
+	case ARMOURY_M249:
+		return WEAPONCLASS_MACHINEGUN;
+
+	default:
+		break;
+	}
+
+	return WEAPONCLASS_NONE;
+}
+
 // Return true if given weapon ID is a primary weapon
 bool IsPrimaryWeapon(int id)
 {
