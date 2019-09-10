@@ -1679,7 +1679,7 @@ void CWeaponBox::Touch(CBaseEntity *pOther)
 		while (pItem)
 		{
 			if ((pPlayer->HasShield() && pItem->m_iId == WEAPON_ELITE)
-				|| (pPlayer->IsBot() && (TheCSBots() != nullptr && !TheCSBots()->IsWeaponUseable(pItem))))
+				|| (pPlayer->IsBot() && TheCSBots() && !TheCSBots()->IsWeaponUseable(pItem)))
 			{
 				return;
 			}
@@ -2095,7 +2095,7 @@ void CArmoury::Spawn()
 		m_iCount = 1;
 	}
 
-#ifdef REGAMEDLL_ADD
+#ifdef REGAMEDLL_FIXES
 	// Cache the placed origin of source point
 	pev->oldorigin = pev->origin;
 #endif
@@ -2167,7 +2167,7 @@ void CArmoury::Restart()
 
 	Draw();
 
-#ifdef REGAMEDLL_ADD
+#ifdef REGAMEDLL_FIXES
 	// Restored origin from the cache
 	UTIL_SetOrigin(pev, pev->oldorigin);
 	DROP_TO_FLOOR(edict());
@@ -2288,6 +2288,9 @@ void CArmoury::ArmouryTouch(CBaseEntity *pOther)
 		if (pToucher->m_rgpPlayerItems[PISTOL_SLOT])
 			return;
 
+		if (pToucher->HasShield() && m_iItem == ARMOURY_ELITE)
+			return;
+
 		m_iCount--;
 		auto item = &armouryItemInfo[m_iItem];
 
@@ -2381,7 +2384,7 @@ void CArmoury::KeyValue(KeyValueData *pkvd)
 	}
 }
 
-#ifdef REGAMEDLL_ADD
+#ifdef REGAMEDLL_FIXES
 void CArmoury::SetObjectCollisionBox()
 {
 	pev->absmin = pev->origin + Vector(-16, -16, 0);

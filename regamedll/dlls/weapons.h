@@ -143,7 +143,7 @@ public:
 	virtual void Precache();
 	virtual void Restart();
 	virtual void KeyValue(KeyValueData *pkvd);
-#ifdef REGAMEDLL_ADD
+#ifdef REGAMEDLL_FIXES
 	virtual void SetObjectCollisionBox();
 #endif
 
