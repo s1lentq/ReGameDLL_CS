@@ -1880,7 +1880,7 @@ void PM_Duck()
 		pmove->oldbuttons &= ~IN_DUCK;
 	}
 
-#ifdef REGAMEDLL_FIXES
+#ifdef REGAMEDLL_ADD
 	// Prevent ducking if the iuser3 variable is contain PLAYER_PREVENT_DUCK
 	if ((pmove->iuser3 & PLAYER_PREVENT_DUCK) == PLAYER_PREVENT_DUCK)
 	{
@@ -2399,6 +2399,14 @@ void PM_Jump()
 
 		return;
 	}
+
+#ifdef REGAMEDLL_ADD
+	// Prevent jumping if the iuser3 variable is contain PLAYER_PREVENT_JUMP
+	if ((pmove->iuser3 & PLAYER_PREVENT_JUMP) == PLAYER_PREVENT_JUMP)
+	{
+		return;
+	}
+#endif
 
 	// No more effect
 	// in air, so no effect
