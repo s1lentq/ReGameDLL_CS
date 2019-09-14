@@ -383,15 +383,15 @@ bool CCSBot::StayOnNavMesh()
 	// if we have no lastKnownArea, we probably started off
 	// of the nav mesh - find the closest nav area and use it
 	CNavArea *goalArea;
-	if (!m_currentArea && !m_lastKnownArea)
-	{
-		goalArea = TheNavAreaGrid.GetNearestNavArea(&pev->origin);
-		PrintIfWatched("Started off the nav mesh - moving to closest nav area...\n");
-	}
-	else
+	if (m_lastKnownArea)
 	{
 		goalArea = m_lastKnownArea;
 		PrintIfWatched("Getting out of NULL area...\n");
+	}
+	else
+	{
+		goalArea = TheNavAreaGrid.GetNearestNavArea(&pev->origin);
+		PrintIfWatched("Started off the nav mesh - moving to closest nav area...\n");
 	}
 
 	if (goalArea)

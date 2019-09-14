@@ -171,7 +171,7 @@ void CMultiSource::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE u
 	if (IsTriggered(pActivator))
 	{
 		ALERT(at_aiconsole, "Multisource %s enabled (%d inputs)\n", STRING(pev->targetname), m_iTotal);
-		USE_TYPE useType = USE_TOGGLE;
+		useType = USE_TOGGLE;
 
 		if (!FStringNull(m_globalstate))
 		{

@@ -634,7 +634,7 @@ void CCSBotManager::ServerCommand(const char *pcmd)
 			{
 				CONSOLE_ECHO("Ambiguous\n");
 			}
-			else
+			else if (found)
 			{
 				CONSOLE_ECHO("Current place set to '%s'\n", found->GetName());
 				SetNavPlace(found->GetID());

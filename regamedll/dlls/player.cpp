@@ -3054,11 +3054,15 @@ CBaseEntity *EXT_FUNC CBasePlayer::__API_HOOK(DropShield)(bool bDeploy)
 			m_pActiveItem->Holster();
 	}
 
-	if (IsReloading())
+	if (pWeapon)
 	{
-		pWeapon->m_fInReload = FALSE;
-		m_flNextAttack = 0;
+		if (IsReloading())
+		{
+			pWeapon->m_fInReload = FALSE;
+			m_flNextAttack = 0;
+		}
 	}
+
 
 	if (m_pActiveItem && IsProtectedByShield())
 		((CBasePlayerWeapon *)m_pActiveItem)->SecondaryAttack();
@@ -4353,7 +4357,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 			if (trainTrace.flFraction != 1.0f && trainTrace.pHit)
 				pTrain = Instance(trainTrace.pHit);
 
-			if (!pTrain || !(pTrain->ObjectCaps() & FCAP_DIRECTIONAL_USE) || !pTrain->OnControls(pev))
+			if (pTrain && (!(pTrain->ObjectCaps() & FCAP_DIRECTIONAL_USE) || !pTrain->OnControls(pev)))
 			{
 				m_afPhysicsFlags &= ~PFLAG_ONTRAIN;
 				m_iTrain = (TRAIN_NEW | TRAIN_OFF);
@@ -6190,7 +6194,6 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 		}
 		case 107:
 		{
-			TraceResult tr;
 			edict_t *pWorld = INDEXENT(0);
 
 			Vector start = pev->origin + pev->view_ofs;
@@ -6246,7 +6249,6 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 		}
 		case 204:
 		{
-			TraceResult tr;
 			Vector dir(0, 0, 1);
 
 			UTIL_BloodDrips(pev->origin, dir, BLOOD_COLOR_RED, 2000);

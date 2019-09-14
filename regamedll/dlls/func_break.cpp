@@ -754,6 +754,11 @@ void CBreakable::Die()
 	case matCeilingTile:
 		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "debris/bustceiling.wav", fvol, ATTN_NORM, 0, pitch);
 		break;
+#ifdef REGAMEDLL_ADD
+	case matUnbreakableGlass:
+		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "debris/metal4.wav", fvol, ATTN_NORM, 0, pitch);
+		break;
+#endif
 	}
 
 	if (m_Explosion == expDirected)

@@ -1232,11 +1232,8 @@ BOOL CBasePlayerWeapon::AddPrimaryAmmo(int iCount, char *szName, int iMaxClip, i
 	}
 	else if (m_iClip == 0)
 	{
-		int i;
-		i = Q_min(m_iClip + iCount, iMaxClip);
-		m_iClip += i;
-
-		iIdAmmo = m_pPlayer->GiveAmmo(iCount - i, szName, iMaxCarry);
+		m_iClip = Q_min(iCount, iMaxClip);
+		iIdAmmo = m_pPlayer->GiveAmmo(iCount - m_iClip, szName, iMaxCarry);
 	}
 	else
 	{

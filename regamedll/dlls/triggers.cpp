@@ -321,7 +321,7 @@ CMultiManager *CMultiManager::Clone()
 	CMultiManager *pMulti = GetClassPtr<CCSMultiManager>((CMultiManager *)nullptr);
 
 	edict_t *pEdict = pMulti->pev->pContainingEntity;
-	Q_memcpy(pMulti->pev, pev, sizeof(*pev));
+	Q_memcpy(pMulti->pev, pev, sizeof(entvars_s));
 
 	pMulti->pev->pContainingEntity = pEdict;
 	pMulti->pev->spawnflags |= SF_MULTIMAN_CLONE;
@@ -621,8 +621,11 @@ void PlayCDTrack(edict_t *pClient, int iTrack)
 	// Can't play if the client is not connected!
 	if (!pClient)
 		return;
-
+#ifdef REGAMEDLL_FIXES
+	if (iTrack < -1 || iTrack >= 29)
+#else
 	if (iTrack < -1 || iTrack > 30)
+#endif	
 	{
 		ALERT(at_console, "TriggerCDAudio - Track %d out of range\n", iTrack);
 		return;

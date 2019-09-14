@@ -178,14 +178,17 @@ void SV_PrintEntities_f()
 	{
 		hash_item_t *item = &stringsHashTable[i];
 
-		if (item->pev)
+		if (item)
 		{
-			UTIL_LogPrintf("Print: %s %i %p\n", STRING(stringsHashTable[i].pev->classname), ENTINDEX(ENT(item->pev)), item->pev);
-		}
+			if (item->pev)
+			{
+				UTIL_LogPrintf("Print: %s %i %p\n", STRING(stringsHashTable[i].pev->classname), ENTINDEX(ENT(item->pev)), item->pev);
+			}
 
-		for (item = stringsHashTable[i].next; item; item = item->next)
-		{
-			UTIL_LogPrintf("Print: %s %i %p\n", STRING(item->pev->classname), ENTINDEX(ENT(item->pev)), item->pev);
+			for (item = stringsHashTable[i].next; item; item = item->next)
+			{
+				UTIL_LogPrintf("Print: %s %i %p\n", STRING(item->pev->classname), ENTINDEX(ENT(item->pev)), item->pev);
+			}
 		}
 	}
 }

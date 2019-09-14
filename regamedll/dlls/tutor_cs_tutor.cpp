@@ -2690,7 +2690,7 @@ void CCSTutor::CheckExamineMessages(float time)
 			if (i == YOU_SEE_FRIEND)
 			{
 				CBasePlayer *pPlayer = static_cast<CBasePlayer *>(pEntity);
-				if (pPlayer->IsPlayer() && pPlayer->IsAlive() && pPlayer->m_iTeam == pLocalPlayer->m_iTeam)
+				if (pPlayer && pPlayer->IsPlayer() && pPlayer->IsAlive() && pPlayer->m_iTeam == pLocalPlayer->m_iTeam)
 				{
 					validEntity = true;
 				}

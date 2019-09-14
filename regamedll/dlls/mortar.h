@@ -49,7 +49,6 @@ public:
 	int m_iszXController;
 	int m_iszYController;
 	float m_flSpread;
-	float m_flDelay;
 	int m_iCount;
 	int m_fControl;
 };

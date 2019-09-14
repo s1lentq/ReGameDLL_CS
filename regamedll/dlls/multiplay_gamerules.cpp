@@ -2665,33 +2665,33 @@ void EXT_FUNC CHalfLifeMultiplay::OnRoundFreezeEnd()
 	switch (RANDOM_LONG(0, 3))
 	{
 	case 0:
-		Q_strncpy(CT_sentence, "%!MRAD_MOVEOUT", sizeof(CT_sentence));
-		Q_strncpy(T_sentence, "%!MRAD_MOVEOUT", sizeof(T_sentence));
+		Q_snprintf(CT_sentence, sizeof(CT_sentence), "%s", "%!MRAD_MOVEOUT");
+		Q_snprintf(T_sentence, sizeof(T_sentence), "%s", "%!MRAD_MOVEOUT");
 		break;
 	case 1:
-		Q_strncpy(CT_sentence, "%!MRAD_LETSGO", sizeof(CT_sentence));
-		Q_strncpy(T_sentence, "%!MRAD_LETSGO", sizeof(T_sentence));
+		Q_snprintf(CT_sentence, sizeof(CT_sentence), "%s", "%!MRAD_LETSGO");
+		Q_snprintf(T_sentence, sizeof(T_sentence), "%s", "%!MRAD_LETSGO");
 		break;
 	case 2:
-		Q_strncpy(CT_sentence, "%!MRAD_LOCKNLOAD", sizeof(CT_sentence));
-		Q_strncpy(T_sentence, "%!MRAD_LOCKNLOAD", sizeof(T_sentence));
+		Q_snprintf(CT_sentence, sizeof(CT_sentence), "%s", "%!MRAD_LOCKNLOAD");
+		Q_snprintf(T_sentence, sizeof(T_sentence), "%s", "%!MRAD_LOCKNLOAD");
 		break;
 	default:
-		Q_strncpy(CT_sentence, "%!MRAD_GO", sizeof(CT_sentence));
-		Q_strncpy(T_sentence, "%!MRAD_GO", sizeof(T_sentence));
+		Q_snprintf(CT_sentence, sizeof(CT_sentence), "%s", "%!MRAD_GO");
+		Q_snprintf(T_sentence, sizeof(T_sentence), "%s", "%!MRAD_GO");
 		break;
 	}
 
 	// More specific radio commands for the new scenarios : Prison & Assasination
 	if (m_bMapHasEscapeZone)
 	{
-		Q_strncpy(CT_sentence, "%!MRAD_ELIM", sizeof(CT_sentence));
-		Q_strncpy(T_sentence, "%!MRAD_GETOUT", sizeof(T_sentence));
+		Q_snprintf(CT_sentence, sizeof(CT_sentence), "%s", "%!MRAD_ELIM");
+		Q_snprintf(T_sentence, sizeof(T_sentence), "%s", "%!MRAD_GETOUT");
 	}
 	else if (m_bMapHasVIPSafetyZone)
 	{
-		Q_strncpy(CT_sentence, "%!MRAD_VIP", sizeof(CT_sentence));
-		Q_strncpy(T_sentence, "%!MRAD_LOCKNLOAD", sizeof(T_sentence));
+		Q_snprintf(CT_sentence, sizeof(CT_sentence), "%s", "%!MRAD_VIP");
+		Q_snprintf(T_sentence, sizeof(T_sentence), "%s", "%!MRAD_LOCKNLOAD");
 	}
 
 	// Reset the round time
@@ -4649,13 +4649,13 @@ void CHalfLifeMultiplay::ProcessMapVote(CBasePlayer *pPlayer, int iVote)
 		if (FNullEnt(pEntity->edict()))
 			break;
 
-		CBasePlayer *pPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev);
+		CBasePlayer *pPlayer2 = GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev);
 
-		if (pPlayer->m_iTeam != UNASSIGNED)
+		if (pPlayer2->m_iTeam != UNASSIGNED)
 		{
 			iNumPlayers++;
 
-			if (pPlayer->m_iMapVote == iVote)
+			if (pPlayer2->m_iMapVote == iVote)
 				iValidVotes++;
 		}
 	}
@@ -4728,7 +4728,7 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(ChangeLevel)()
 	// Has the map cycle filename changed?
 	if (Q_stricmp(mapcfile, szPreviousMapCycleFile) != 0)
 	{
-		Q_strcpy(szPreviousMapCycleFile, mapcfile);
+		Q_snprintf(szPreviousMapCycleFile, sizeof(szPreviousMapCycleFile), "%s", mapcfile);
 
 		DestroyMapCycle(&mapcycle);
 

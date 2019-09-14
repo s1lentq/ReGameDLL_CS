@@ -547,8 +547,6 @@ public:
 		return FALSE;
 	#endif
 	}
-	virtual BOOL IsPistol() { return TRUE; }
-
 public:
 	void USPFire(float flSpread, float flCycleTime, BOOL fUseSemi);
 	void MakeBeam();
@@ -889,8 +887,6 @@ public:
 		return FALSE;
 	#endif
 	}
-	virtual BOOL IsPistol() { return TRUE; }
-
 public:
 	void DEAGLEFire(float flSpread, float flCycleTime, BOOL fUseSemi);
 
@@ -933,15 +929,6 @@ public:
 		return TRUE;
 	#else
 		return FALSE;
-	#endif
-	}
-	virtual BOOL IsPistol()
-	{
-	#ifdef REGAMEDLL_FIXES
-		return FALSE;
-	#else
-		// TODO: why the object flashbang is IsPistol?
-		return TRUE;
 	#endif
 	}
 
@@ -1055,8 +1042,6 @@ public:
 		return FALSE;
 	#endif
 	}
-	virtual BOOL IsPistol() { return TRUE; }
-
 public:
 	void GLOCK18Fire(float flSpread, float flCycleTime, BOOL bFireBurst);
 
@@ -1433,8 +1418,6 @@ public:
 		return FALSE;
 	#endif
 	}
-	virtual BOOL IsPistol() { return TRUE; }
-
 public:
 	void P228Fire(float flSpread, float flCycleTime, BOOL fUseSemi);
 	void MakeBeam();
@@ -1725,8 +1708,6 @@ public:
 		return FALSE;
 	#endif
 	}
-	virtual BOOL IsPistol() { return TRUE; }
-
 public:
 	void ELITEFire(float flSpread, float flCycleTime, BOOL fUseSemi);
 
@@ -1774,8 +1755,6 @@ public:
 		return FALSE;
 	#endif
 	}
-	virtual BOOL IsPistol() { return TRUE; }
-
 public:
 	void FiveSevenFire(float flSpread, float flCycleTime, BOOL fUseSemi);
 	void MakeBeam();

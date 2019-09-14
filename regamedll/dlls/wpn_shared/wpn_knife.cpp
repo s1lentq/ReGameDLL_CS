@@ -495,13 +495,18 @@ BOOL CKnife::Stab(BOOL fFirst)
 		int fHitWorld = TRUE;
 
 		CBaseEntity *pEntity = CBaseEntity::Instance(tr.pHit);
-
+#ifdef REGAMEDLL_FIXES
+		if (!pEntity)
+		{
+			return FALSE;
+		}
+#endif
 		// player "shoot" animation
 		m_pPlayer->SetAnimation(PLAYER_ATTACK1);
 
 		float flDamage = 65.0f;
 
-		if (pEntity && pEntity->IsPlayer())
+		if (pEntity->IsPlayer())
 		{
 			Vector2D vec2LOS;
 			float flDot;
@@ -527,23 +532,21 @@ BOOL CKnife::Stab(BOOL fFirst)
 		pEntity->TraceAttack(m_pPlayer->pev, flDamage, gpGlobals->v_forward, &tr, (DMG_NEVERGIB | DMG_BULLET));
 		ApplyMultiDamage(m_pPlayer->pev, m_pPlayer->pev);
 
-#ifndef REGAMEDLL_FIXES
-		if (pEntity)	// -V595
-#endif
+
+		
+		if (pEntity->Classify() != CLASS_NONE && pEntity->Classify() != CLASS_MACHINE)
 		{
-			if (pEntity->Classify() != CLASS_NONE && pEntity->Classify() != CLASS_MACHINE)
-			{
-				EMIT_SOUND(m_pPlayer->edict(), CHAN_WEAPON, "weapons/knife_stab.wav", VOL_NORM, ATTN_NORM);
-				m_pPlayer->m_iWeaponVolume = KNIFE_BODYHIT_VOLUME;
+			EMIT_SOUND(m_pPlayer->edict(), CHAN_WEAPON, "weapons/knife_stab.wav", VOL_NORM, ATTN_NORM);
+			m_pPlayer->m_iWeaponVolume = KNIFE_BODYHIT_VOLUME;
 
-				if (!pEntity->IsAlive())
-					return TRUE;
-				else
-					flVol = 0.1f;
+			if (!pEntity->IsAlive())
+				return TRUE;
+			else
+				flVol = 0.1f;
 
-				fHitWorld = FALSE;
-			}
+			fHitWorld = FALSE;
 		}
+		
 
 		// play texture hit sound
 		// UNDONE: Calculate the correct point of intersection when we hit with the hull instead of the line

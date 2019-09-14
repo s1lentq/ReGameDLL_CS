@@ -843,11 +843,11 @@ void CLightning::BeamUpdateVars()
 	}
 
 	SetType(beamType);
-	if (beamType == BEAM_POINTS || beamType == BEAM_ENTPOINT || beamType == BEAM_HOSE)
+	if (beamType == BEAM_POINTS || beamType == BEAM_ENTPOINT)
 	{
 		SetStartPos(pStart->v.origin);
 
-		if (beamType == BEAM_POINTS || beamType == BEAM_HOSE)
+		if (beamType == BEAM_POINTS)
 			SetEndPos(pEnd->v.origin);
 		else
 			SetEndEntity(ENTINDEX(pEnd));
