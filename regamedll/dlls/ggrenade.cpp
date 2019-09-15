@@ -1270,20 +1270,22 @@ CGrenade *CGrenade::__API_HOOK(ShootSmokeGrenade)(entvars_t *pevOwner, VectorRef
 
 void AnnounceFlashInterval(float interval, float offset)
 {
-	if (AreRunningCZero() 
+	if (!AreRunningCZero()
 #ifdef REGAMEDLL_ADD
-		|| show_scenarioicon.value != 0.0f
+		&& !show_scenarioicon.value
 #endif
 		)
 	{
-		MESSAGE_BEGIN(MSG_ALL, gmsgScenarioIcon);
-			WRITE_BYTE(1);
-			WRITE_STRING("bombticking");
-			WRITE_BYTE(255);
-			WRITE_SHORT(int(interval));	// interval
-			WRITE_SHORT(int(offset));
-		MESSAGE_END();
+		return;
 	}
+
+	MESSAGE_BEGIN(MSG_ALL, gmsgScenarioIcon);
+		WRITE_BYTE(1);
+		WRITE_STRING("bombticking");
+		WRITE_BYTE(255);
+		WRITE_SHORT(int(interval));	// interval
+		WRITE_SHORT(int(offset));
+	MESSAGE_END();
 }
 
 void CGrenade::C4Think()

@@ -6724,41 +6724,43 @@ void CBasePlayer::SendHostagePos()
 
 void CBasePlayer::SendHostageIcons()
 {
-	if (AreRunningCZero()
+	if (!AreRunningCZero()
 #ifdef REGAMEDLL_ADD
-		|| show_scenarioicon.value != 0.0f
+		&& !show_scenarioicon.value
 #endif
 		)
 	{
-		int hostagesCount = 0;
-		CBaseEntity *pHostage = nullptr;
+		return;
+	}
 
-		while ((pHostage = UTIL_FindEntityByClassname(pHostage, "hostage_entity")))
-		{
-			if (pHostage->IsAlive())
-				hostagesCount++;
-		}
+	int hostagesCount = 0;
+	CBaseEntity *pHostage = nullptr;
 
-		if (hostagesCount > MAX_HOSTAGE_ICON)
-			hostagesCount = MAX_HOSTAGE_ICON;
+	while ((pHostage = UTIL_FindEntityByClassname(pHostage, "hostage_entity")))
+	{
+		if (pHostage->IsAlive())
+			hostagesCount++;
+	}
 
-		char buf[16];
-		Q_snprintf(buf, ARRAYSIZE(buf), "hostage%d", hostagesCount);
+	if (hostagesCount > MAX_HOSTAGE_ICON)
+		hostagesCount = MAX_HOSTAGE_ICON;
 
-		if (hostagesCount)
-		{
-			MESSAGE_BEGIN(MSG_ONE, gmsgScenarioIcon, nullptr, pev);
-				WRITE_BYTE(1);		// active
-				WRITE_STRING(buf);	// sprite
-				WRITE_BYTE(0);
-			MESSAGE_END();
-		}
-		else
-		{
-			MESSAGE_BEGIN(MSG_ONE, gmsgScenarioIcon, nullptr, pev);
-				WRITE_BYTE(0);		// active
-			MESSAGE_END();
-		}
+	char buf[16];
+	Q_snprintf(buf, ARRAYSIZE(buf), "hostage%d", hostagesCount);
+
+	if (hostagesCount)
+	{
+		MESSAGE_BEGIN(MSG_ONE, gmsgScenarioIcon, nullptr, pev);
+			WRITE_BYTE(1);		// active
+			WRITE_STRING(buf);	// sprite
+			WRITE_BYTE(0);
+		MESSAGE_END();
+	}
+	else
+	{
+		MESSAGE_BEGIN(MSG_ONE, gmsgScenarioIcon, nullptr, pev);
+			WRITE_BYTE(0);		// active
+		MESSAGE_END();
 	}
 }
 
