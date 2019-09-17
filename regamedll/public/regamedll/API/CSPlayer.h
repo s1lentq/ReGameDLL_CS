@@ -58,7 +58,7 @@ public:
 	virtual void GiveShield(bool bDeploy = true);
 	virtual void DropShield(bool bDeploy = true);
 	virtual void DropPlayerItem(const char *pszItemName);
-	virtual void RemoveShield();
+	virtual bool RemoveShield();
 	virtual void RemoveAllItems(bool bRemoveSuit);
 	virtual bool RemovePlayerItem(const char* pszItemName);
 	virtual void SetPlayerModel(bool bHasC4);
