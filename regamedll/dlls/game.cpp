@@ -318,7 +318,12 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&roundover);
 	CVAR_REGISTER(&forcerespawn);
 	CVAR_REGISTER(&show_radioicon);
-	CVAR_REGISTER(&show_scenarioicon);
+
+	if (!AreRunningCZero())
+	{
+		CVAR_REGISTER(&show_scenarioicon);
+	}
+	
 	CVAR_REGISTER(&old_bomb_defused_sound);
 	CVAR_REGISTER(&item_staytime);
 	CVAR_REGISTER(&legacy_bombtarget_touch);
