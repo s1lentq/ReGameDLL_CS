@@ -138,7 +138,11 @@ void CWallHealth::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE us
 		return;
 
 	// if there is no juice left, turn it off
-	if (m_iJuice <= 0)
+	if (m_iJuice <= 0
+#ifdef REGAMEDLL_FIXES
+		&& pev->frame != 1.0f // recharging... don't reset think
+#endif
+		)
 	{
 		pev->frame = 1.0f;
 		Off();
