@@ -81,10 +81,19 @@ void CRecharge::Precache()
 
 void CRecharge::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
-	// if it's not a player, ignore
-	if (!FClassnameIs(pActivator->pev, "player"))
+#ifdef REGAMEDLL_FIXES
+	// Make sure that we have a caller
+	if (!pActivator)
 		return;
-
+	
+	// if it's not a player, ignore
+	if (!pActivator->IsPlayer())
+		return;
+#else
+	if (!FClassnameIs(pActivator->pev, "player"))
+		return;	
+#endif // #ifdef REGAMEDLL_FIXES
+	
 	// if there is no juice left, turn it off
 	if (m_iJuice <= 0
 #ifdef REGAMEDLL_FIXES
