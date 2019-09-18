@@ -541,6 +541,14 @@ typedef IHookChainRegistryClassImpl<bool, CBasePlayer, const char *, float, bool
 typedef IHookChainClassImpl<void, CBasePlayer> CReGameHook_CBasePlayer_UseEmpty;
 typedef IHookChainRegistryClassImpl<void, CBasePlayer> CReGameHookRegistry_CBasePlayer_UseEmpty;
 
+// CBasePlayerWeapon::CanDeploy hook
+typedef IHookChainClassImpl<BOOL, CBasePlayerWeapon> CReGameHook_CBasePlayerWeapon_CanDeploy;
+typedef IHookChainRegistryClassImpl<BOOL, CBasePlayerWeapon> CReGameHookRegistry_CBasePlayerWeapon_CanDeploy;
+
+// CBasePlayerWeapon::DefaultDeploy hook
+typedef IHookChainClassImpl<BOOL, CBasePlayerWeapon, char *, char *, int, char *, int> CReGameHook_CBasePlayerWeapon_DefaultDeploy;
+typedef IHookChainRegistryClassImpl<BOOL, CBasePlayerWeapon, char *, char *, int, char *, int> CReGameHookRegistry_CBasePlayerWeapon_DefaultDeploy;
+
 class CReGameHookchains: public IReGameHookchains {
 public:
 	// CBasePlayer virtual
@@ -650,6 +658,8 @@ public:
 	CReGameHookRegistry_IsPenetrableEntity m_IsPenetrableEntity;
 	CReGameHookRegistry_CBasePlayer_HintMessageEx m_CBasePlayer_HintMessageEx;
 	CReGameHookRegistry_CBasePlayer_UseEmpty m_CBasePlayer_UseEmpty;
+	CReGameHookRegistry_CBasePlayerWeapon_CanDeploy m_CBasePlayerWeapon_CanDeploy;
+	CReGameHookRegistry_CBasePlayerWeapon_DefaultDeploy m_CBasePlayerWeapon_DefaultDeploy;
 
 public:
 	virtual IReGameHookRegistry_CBasePlayer_Spawn *CBasePlayer_Spawn();
@@ -758,6 +768,8 @@ public:
 	virtual IReGameHookRegistry_IsPenetrableEntity *IsPenetrableEntity();
 	virtual IReGameHookRegistry_CBasePlayer_HintMessageEx *CBasePlayer_HintMessageEx();
 	virtual IReGameHookRegistry_CBasePlayer_UseEmpty *CBasePlayer_UseEmpty();
+	virtual IReGameHookRegistry_CBasePlayerWeapon_CanDeploy *CBasePlayerWeapon_CanDeploy();
+	virtual IReGameHookRegistry_CBasePlayerWeapon_DefaultDeploy *CBasePlayerWeapon_DefaultDeploy();
 };
 
 extern CReGameHookchains g_ReGameHookchains;

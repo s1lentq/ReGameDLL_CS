@@ -397,6 +397,9 @@ public:
 	void InstantReload(bool bCanRefillBPAmmo = false);
 
 #ifdef REGAMEDLL_API
+	BOOL CanDeploy_OrigFunc();
+	BOOL DefaultDeploy_OrigFunc(char *szViewModel, char *szWeaponModel, int iAnim, char *szAnimExt, int skiplocal);
+
 	CCSPlayerWeapon *CSPlayerWeapon() const;
 #endif
 

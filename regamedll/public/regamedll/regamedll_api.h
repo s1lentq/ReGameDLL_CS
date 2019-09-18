@@ -444,6 +444,14 @@ typedef IHookChainRegistryClass<bool, class CBasePlayer, const char *, float, bo
 typedef IHookChainClass<void, class CBasePlayer> IReGameHook_CBasePlayer_UseEmpty;
 typedef IHookChainRegistryClass<void, class CBasePlayer> IReGameHookRegistry_CBasePlayer_UseEmpty;
 
+// CBasePlayerWeapon::CanDeploy hook
+typedef IHookChainClass<BOOL, class CBasePlayerWeapon> IReGameHook_CBasePlayerWeapon_CanDeploy;
+typedef IHookChainRegistryClass<BOOL, class CBasePlayerWeapon> IReGameHookRegistry_CBasePlayerWeapon_CanDeploy;
+
+// CBasePlayerWeapon::DefaultDeploy hook
+typedef IHookChainClass<BOOL, class CBasePlayerWeapon, char *, char *, int, char *, int> IReGameHook_CBasePlayerWeapon_DefaultDeploy;
+typedef IHookChainRegistryClass<BOOL, class CBasePlayerWeapon, char *, char *, int, char *, int> IReGameHookRegistry_CBasePlayerWeapon_DefaultDeploy;
+
 class IReGameHookchains {
 public:
 	virtual ~IReGameHookchains() {}
@@ -554,6 +562,8 @@ public:
 	virtual IReGameHookRegistry_IsPenetrableEntity *IsPenetrableEntity() = 0;
 	virtual IReGameHookRegistry_CBasePlayer_HintMessageEx *CBasePlayer_HintMessageEx() = 0;
 	virtual IReGameHookRegistry_CBasePlayer_UseEmpty *CBasePlayer_UseEmpty() = 0;
+	virtual IReGameHookRegistry_CBasePlayerWeapon_CanDeploy *CBasePlayerWeapon_CanDeploy() = 0;
+	virtual IReGameHookRegistry_CBasePlayerWeapon_DefaultDeploy *CBasePlayerWeapon_DefaultDeploy() = 0;
 };
 
 struct ReGameFuncs_t {

@@ -1288,12 +1288,16 @@ BOOL CBasePlayerWeapon::IsUseable()
 	return TRUE;
 }
 
-BOOL CBasePlayerWeapon::CanDeploy()
+LINK_HOOK_CLASS_CHAIN2(BOOL, CBasePlayerWeapon, CanDeploy)
+
+BOOL EXT_FUNC CBasePlayerWeapon::__API_HOOK(CanDeploy)()
 {
 	return TRUE;
 }
 
-BOOL CBasePlayerWeapon::DefaultDeploy(char *szViewModel, char *szWeaponModel, int iAnim, char *szAnimExt, int skiplocal)
+LINK_HOOK_CLASS_CHAIN(BOOL, CBasePlayerWeapon, DefaultDeploy, (char *szViewModel, char *szWeaponModel, int iAnim, char *szAnimExt, int skiplocal), szViewModel, szWeaponModel, iAnim, szAnimExt, skiplocal)
+
+BOOL EXT_FUNC CBasePlayerWeapon::__API_HOOK(DefaultDeploy)(char *szViewModel, char *szWeaponModel, int iAnim, char *szAnimExt, int skiplocal)
 {
 	if (!CanDeploy())
 		return FALSE;
