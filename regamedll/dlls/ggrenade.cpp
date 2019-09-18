@@ -1270,8 +1270,14 @@ CGrenade *CGrenade::__API_HOOK(ShootSmokeGrenade)(entvars_t *pevOwner, VectorRef
 
 void AnnounceFlashInterval(float interval, float offset)
 {
-	if (!AreRunningCZero())
+	if (!AreRunningCZero()
+#ifdef REGAMEDLL_ADD
+		&& !show_scenarioicon.value
+#endif
+		)
+	{
 		return;
+	}
 
 	MESSAGE_BEGIN(MSG_ALL, gmsgScenarioIcon);
 		WRITE_BYTE(1);

@@ -6724,8 +6724,14 @@ void CBasePlayer::SendHostagePos()
 
 void CBasePlayer::SendHostageIcons()
 {
-	if (!AreRunningCZero())
+	if (!AreRunningCZero()
+#ifdef REGAMEDLL_ADD
+		&& !show_scenarioicon.value
+#endif
+		)
+	{
 		return;
+	}
 
 	int hostagesCount = 0;
 	CBaseEntity *pHostage = nullptr;
