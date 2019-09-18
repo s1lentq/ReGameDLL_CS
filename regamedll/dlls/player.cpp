@@ -1302,6 +1302,10 @@ void PackPlayerNade(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 	if (!pItem)
 		return;
 
+	if (pItem->m_flStartThrow != 0.0f || pPlayer->m_rgAmmo[pItem->PrimaryAmmoIndex()] <= 0) {
+		return;
+	}
+
 	const char *modelName = GetCSModelName(pItem->m_iId);
 	if (modelName)
 	{
@@ -1317,10 +1321,6 @@ void PackPlayerNade(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 		case WEAPON_SMOKEGRENADE:
 			flOffset = -14.0f;
 			break;
-		}
-
-		if (pItem->m_flStartThrow && pPlayer->m_rgAmmo[pItem->PrimaryAmmoIndex()] <= 0) {
-			return;
 		}
 
 		Vector vecAngles = pPlayer->pev->angles;
@@ -1397,7 +1397,15 @@ void CBasePlayer::PackDeadPlayerItems()
 				else if (pPlayerItem->iItemSlot() == GRENADE_SLOT)
 				{
 					if (AreRunningCZero())
-						PackPlayerItem(this, pPlayerItem, true);
+					{
+
+#ifdef REGAMEDLL_FIXES
+						if (pPlayerItem->m_flStartThrow == 0.0f && m_rgAmmo[pPlayerItem->PrimaryAmmoIndex()] > 0)
+#endif
+						{
+							PackPlayerItem(this, pPlayerItem, true);
+						}
+					}
 #ifdef REGAMEDLL_ADD
 					else
 					{
@@ -1991,6 +1999,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 
 #ifdef REGAMEDLL_FIXES
 				m_rgAmmo[m_pActiveItem->PrimaryAmmoIndex()]--;
+				pHEGrenade->m_flStartThrow = 0;
 #endif
 			}
 			break;
@@ -2004,6 +2013,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 
 #ifdef REGAMEDLL_FIXES
 				m_rgAmmo[m_pActiveItem->PrimaryAmmoIndex()]--;
+				pFlashbang->m_flStartThrow = 0;
 #endif
 			}
 			break;
@@ -2017,6 +2027,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 
 #ifdef REGAMEDLL_FIXES
 				m_rgAmmo[m_pActiveItem->PrimaryAmmoIndex()]--;
+				pSmoke->m_flStartThrow = 0;
 #endif
 			}
 			break;
