@@ -2060,6 +2060,11 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 
 	pev->flags &= ~FL_ONGROUND;
 
+#ifdef REGAMEDLL_FIXES
+	// FlashlightTurnOff()
+	pev->effects &= ~EF_DIMLIGHT;
+#endif
+
 	if (fadetoblack.value == 0.0)
 	{
 		pev->iuser1 = OBS_CHASE_FREE;
@@ -3470,6 +3475,11 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Disappear)()
 	pev->deadflag = DEAD_DYING;
 	pev->solid = SOLID_NOT;
 	pev->flags &= ~FL_ONGROUND;
+
+#ifdef REGAMEDLL_FIXES
+	// FlashlightTurnOff()
+	pev->effects &= ~EF_DIMLIGHT;
+#endif
 
 	SetSuitUpdate(nullptr, SUIT_SENTENCE, SUIT_REPEAT_OK);
 
