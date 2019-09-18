@@ -7908,6 +7908,8 @@ void CBasePlayer::__API_HOOK(SwitchTeam)()
 		SendItemStatus();
 		SetProgressBarTime(0);
 
+#ifndef REGAMEDLL_FIXES
+		// NOTE: unreachable code - Vaqtincha
 		for (int i = 0; i < MAX_ITEM_TYPES; i++)
 		{
 			m_pActiveItem = m_rgpPlayerItems[i];
@@ -7918,6 +7920,8 @@ void CBasePlayer::__API_HOOK(SwitchTeam)()
 				m_rgpPlayerItems[i] = nullptr;
 			}
 		}
+#endif
+
 	}
 
 	szOldTeam = GetTeam(oldTeam);
