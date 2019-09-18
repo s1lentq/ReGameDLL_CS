@@ -51,7 +51,7 @@ Archive's bin directory contains 2 subdirectories, 'bugfixed' and 'pure'
 | mp_forcerespawn                    | 0       | 0   | -            | Players will automatically respawn when killed.<br/>`0` disabled<br/>`>0.00001` time delay to respawn |
 | mp_hostage_hurtable                | 1       | 0   | 1            | The hostages can take damage.<br/>`0` disabled<br/>`1` from any team<br/>`2` only from `CT`<br/>`3` only from `T` |
 | mp_show_radioicon                  | 1       | 0   | 1            | Show radio icon.<br/>`0` disabled<br/>`1` enabled |
-| mp_show_scenarioicon               | 0       | 0   | 1            | Show scenario icon.<br/>`0` disabled<br/>`1` enabled |
+| mp_show_scenarioicon               | 0       | 0   | 1            | Show scenario icon in HUD such as count of alive hostages or ticking bomb.<br/>`0` disabled<br/>`1` enabled |
 | mp_old_bomb_defused_sound          | 1       | 0   | 1            | Play "Bomb has been defused" sound instead of "Counter-Terrorists win" when bomb was defused<br/>`0` disabled<br/>`1` enabled |
 | showtriggers                       | 0       | 0   | 1            | Debug cvar shows triggers. |
 | sv_alltalk                         | 0       | 0   | 4            | When players can hear each other ([further explanation](../../wiki/sv_alltalk)).<br/>`0` dead don't hear alive<br/>`1` no restrictions<br/>`2` teammates hear each other<br/>`3` Same as 2, but spectators hear everybody<br/>`4` alive hear alive, dead hear dead and alive.
