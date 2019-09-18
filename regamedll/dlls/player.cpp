@@ -2147,7 +2147,11 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 	if (m_bHasC4)
 	{
 		DropPlayerItem("weapon_c4");
+
+#ifndef REGAMEDLL_FIXES
+		// NOTE: It is already does reset inside DropPlayerItem
 		SetProgressBarTime(0);
+#endif
 	}
 	else if (m_bHasDefuser)
 	{
@@ -2195,10 +2199,16 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 
 	if ((pev->health < -9000 && iGib != GIB_NEVER) || iGib == GIB_ALWAYS)
 	{
+
+#ifndef REGAMEDLL_FIXES
 		pev->solid = SOLID_NOT;
+#endif
 		GibMonster();
 		pev->effects |= EF_NODRAW;
+
+#ifndef REGAMEDLL_FIXES
 		CSGameRules()->CheckWinConditions();
+#endif
 		return;
 	}
 
@@ -3469,7 +3479,11 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Disappear)()
 	if (m_bHasC4)
 	{
 		DropPlayerItem("weapon_c4");
+
+#ifndef REGAMEDLL_FIXES
+		// NOTE: It is already does reset inside DropPlayerItem
 		SetProgressBarTime(0);
+#endif
 	}
 	else if (m_bHasDefuser)
 	{
@@ -5649,7 +5663,13 @@ void CBasePlayer::Reset()
 
 	m_bNotKilled = false;
 
+#ifdef REGAMEDLL_FIXES
+	// RemoveShield() included
+	RemoveAllItems(TRUE);
+#else
 	RemoveShield();
+#endif
+
 	CheckStartMoney();
 	AddAccount(startmoney.value, RT_PLAYER_RESET);
 
@@ -6382,7 +6402,7 @@ void OLD_CheckRescueZone(CBasePlayer *pPlayer)
 	CBaseEntity *pSpot = nullptr;
 	while ((pSpot = UTIL_FindEntityByClassname(pSpot, "info_hostage_rescue")))
 	{
-		if ((pSpot->pev->origin - pPlayer->pev->origin).Length() <= 256.0f)
+		if ((pSpot->pev->origin - pPlayer->pev->origin).Length() <= MAX_HOSTAGES_RESCUE_RADIUS)
 		{
 			pPlayer->m_signals.Signal(SIGNAL_RESCUE);
 #ifdef REGAMEDLL_FIXES
@@ -6622,7 +6642,12 @@ int EXT_FUNC CBasePlayer::__API_HOOK(GiveAmmo)(int iCount, const char *szName, i
 	{
 		// Send the message that ammo has been picked up
 		MESSAGE_BEGIN(MSG_ONE, gmsgAmmoPickup, nullptr, pev);
+
+#ifdef REGAMEDLL_FIXES
+			WRITE_BYTE(i); // ammo ID
+#else
 			WRITE_BYTE(GetAmmoIndex(szName)); // ammo ID
+#endif
 			WRITE_BYTE(iAdd); // amount
 		MESSAGE_END();
 	}
