@@ -4721,7 +4721,7 @@ void CBasePlayer::UpdatePlayerSound()
 		// weapon recoil, or anything shoves the player abnormally fast.
 		// NOTE: 512 units is a pretty large radius for a sound made by the player's body.
 		// then again, I think some materials are pretty loud.
-		if (iBodyVolume> 512)
+		if (iBodyVolume > 512)
 		{
 			iBodyVolume = 512;
 		}
@@ -6112,6 +6112,7 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 
 	switch (iImpulse)
 	{
+#ifndef REGAMEDLL_FIXES
 		case 76:
 		{
 			if (!giPrecacheGrunt)
@@ -6126,6 +6127,7 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 			}
 			break;
 		}
+#endif
 		case 101:
 			gEvilImpulse101 = TRUE;
 			AddAccount(16000);
@@ -6134,6 +6136,7 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 		case 102:
 			CGib::SpawnRandomGibs(pev, 1, 1);
 			break;
+#ifndef REGAMEDLL_FIXES
 		case 103:
 		{
 			// What the hell are you doing?
@@ -6148,10 +6151,12 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 			}
 			break;
 		}
+#endif
 		case 104:
 			// Dump all of the global state varaibles (and global entity names)
 			gGlobalState.DumpGlobals();
 			break;
+#ifndef REGAMEDLL_FIXES
 		case 105:
 		{
 			// player makes no sound for monsters to hear.
@@ -6167,6 +6172,7 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 			}
 			break;
 		}
+#endif
 		case 106:
 		{
 			// Give me the classname and targetname of this entity.
@@ -6207,6 +6213,7 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 
 			break;
 		}
+#ifndef REGAMEDLL_FIXES
 		case 195:
 			// show shortest paths for entire level to nearest node
 			CBaseEntity::Create("node_viewer_fly", pev->origin, pev->angles);
@@ -6219,6 +6226,7 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 			// show shortest paths for entire level to nearest node
 			CBaseEntity::Create("node_viewer_human", pev->origin, pev->angles);
 			break;
+#endif
 		case 202:
 		{
 			// Random blood splatter
