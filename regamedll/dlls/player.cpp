@@ -1721,6 +1721,16 @@ void BuyZoneIcon_Clear(CBasePlayer *pPlayer)
 	{
 		if (pPlayer->m_iMenu <= Menu_BuyItem)
 		{
+
+#ifdef REGAMEDLL_FIXES
+			// NOTE: is client-side bug
+			if (pPlayer->m_bVGUIMenus)
+			{
+				MESSAGE_BEGIN(MSG_ONE, gmsgBuyClose, nullptr, pPlayer->pev);
+				MESSAGE_END();
+			}
+#endif
+
 			CLIENT_COMMAND(ENT(pPlayer->pev), "slot10\n");
 		}
 		else if (pPlayer->m_iMenu == Menu_ClientBuy)
