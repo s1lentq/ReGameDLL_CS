@@ -1586,6 +1586,9 @@ void CBasePlayer::RemoveAllItems(BOOL removeSuit)
 
 #ifdef REGAMEDLL_FIXES
 	m_iHideHUD |= HIDEHUD_WEAPONS;
+
+	m_bHasNightVision = false;
+	SendItemStatus();
 #endif
 
 	// send Selected Weapon Message to our client
@@ -3488,7 +3491,10 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Disappear)()
 	else if (m_bHasDefuser)
 	{
 		RemoveDefuser();
+
+#ifndef REGAMEDLL_FIXES
 		GiveNamedItem("item_thighpack");
+#endif
 
 		MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev);
 			WRITE_BYTE(STATUSICON_HIDE);
@@ -5441,6 +5447,10 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Spawn)()
 		m_bHasPrimary = false;
 		m_bHasNightVision = false;
 
+#ifdef REGAMEDLL_FIXES
+		m_iHideHUD |= HIDEHUD_WEAPONS;
+#endif
+
 		SendItemStatus();
 	}
 	else
@@ -6738,12 +6748,12 @@ void CBasePlayer::SendAmmoUpdate()
 			m_rgAmmoLast[i] = m_rgAmmo[i];
 
 			assert(m_rgAmmo[i] >= 0);
-			assert(m_rgAmmo[i] < 255);
+			assert(m_rgAmmo[i] <= 255);
 
 			// send "Ammo" update message
 			MESSAGE_BEGIN(MSG_ONE, gmsgAmmoX, nullptr, pev);
 				WRITE_BYTE(i);
-				WRITE_BYTE(clamp(m_rgAmmo[i], 0, 254)); // clamp the value to one byte
+				WRITE_BYTE(clamp(m_rgAmmo[i], 0, 255)); // clamp the value to one byte
 			MESSAGE_END();
 		}
 	}
@@ -6751,12 +6761,13 @@ void CBasePlayer::SendAmmoUpdate()
 
 void CBasePlayer::SendHostagePos()
 {
-	CBaseEntity *pHostage = nullptr;
+	CHostage *pHostage = nullptr;
+
 	while ((pHostage = UTIL_FindEntityByClassname(pHostage, "hostage_entity")))
 	{
 		MESSAGE_BEGIN(MSG_ONE, gmsgHostagePos, nullptr, pev);
 			WRITE_BYTE(1);
-			WRITE_BYTE(((CHostage *)pHostage)->m_iHostageIndex);
+			WRITE_BYTE(pHostage->m_iHostageIndex);
 			WRITE_COORD(pHostage->pev->origin.x);
 			WRITE_COORD(pHostage->pev->origin.y);
 			WRITE_COORD(pHostage->pev->origin.z);
@@ -6778,7 +6789,7 @@ void CBasePlayer::SendHostageIcons()
 	}
 
 	int hostagesCount = 0;
-	CBaseEntity *pHostage = nullptr;
+	CHostage *pHostage = nullptr;
 
 	while ((pHostage = UTIL_FindEntityByClassname(pHostage, "hostage_entity")))
 	{
@@ -6810,8 +6821,6 @@ void CBasePlayer::SendHostageIcons()
 
 void CBasePlayer::SendWeatherInfo()
 {
-	CBaseEntity *pEnt;
-
 	auto SendReceiveW = [&](BYTE byte)
 	{
 		MESSAGE_BEGIN(MSG_ONE, gmsgReceiveW, nullptr, pev);
@@ -6820,17 +6829,17 @@ void CBasePlayer::SendWeatherInfo()
 	};
 
 	/* Rain */
-	if ((pEnt = UTIL_FindEntityByClassname(nullptr, "env_rain")))
+	if (UTIL_FindEntityByClassname(nullptr, "env_rain"))
 		return SendReceiveW(1);
 
-	if ((pEnt = UTIL_FindEntityByClassname(nullptr, "func_rain")))
+	if (UTIL_FindEntityByClassname(nullptr, "func_rain"))
 		return SendReceiveW(1);
 
 	/* Snow */
-	if ((pEnt = UTIL_FindEntityByClassname(nullptr, "env_snow")))
+	if (UTIL_FindEntityByClassname(nullptr, "env_snow"))
 		return SendReceiveW(2);
 
-	if ((pEnt = UTIL_FindEntityByClassname(nullptr, "func_snow")))
+	if (UTIL_FindEntityByClassname(nullptr, "func_snow"))
 		return SendReceiveW(2);
 }
 
@@ -7697,6 +7706,14 @@ CBaseEntity *EXT_FUNC CBasePlayer::__API_HOOK(DropPlayerItem)(const char *pszIte
 
 		// take item off hud
 		pev->weapons &= ~(1 << pWeapon->m_iId);
+
+#ifdef REGAMEDLL_FIXES
+		// No more weapon
+		if (!pev->weapons || pev->weapons == (1 << WEAPON_SUIT)) {
+			m_iHideHUD |= HIDEHUD_WEAPONS;
+		}
+#endif
+
 		g_pGameRules->GetNextBestWeapon(this, pWeapon);
 		UTIL_MakeVectors(pev->angles);
 
