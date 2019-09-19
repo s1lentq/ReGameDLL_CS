@@ -5737,14 +5737,17 @@ void CBasePlayer::SelectItem(const char *pstr)
 		return;
 	}
 
-#ifdef REGAMEDLL_FIXES
-	if (m_pActiveItem && !m_pActiveItem->CanHolster())
-		return;
-#endif
-
 	auto pItem = GetItemByName(pstr);
 	if (!pItem || pItem == m_pActiveItem)
 		return;
+
+#ifdef REGAMEDLL_FIXES
+	if (m_pActiveItem && !m_pActiveItem->CanHolster())
+		return;
+
+	if (!pItem->CanDeploy())
+		return;
+#endif
 
 	ResetAutoaim();
 
@@ -5771,9 +5774,6 @@ void CBasePlayer::SelectItem(const char *pstr)
 
 void CBasePlayer::SelectLastItem()
 {
-	if (m_pActiveItem && !m_pActiveItem->CanHolster())
-		return;
-
 	if (!m_pLastItem || m_pLastItem == m_pActiveItem)
 	{
 		for (int i = PRIMARY_WEAPON_SLOT; i <= KNIFE_SLOT; i++)
@@ -5789,6 +5789,14 @@ void CBasePlayer::SelectLastItem()
 
 	if (!m_pLastItem || m_pLastItem == m_pActiveItem)
 		return;
+
+	if (m_pActiveItem && !m_pActiveItem->CanHolster())
+		return;
+
+#ifdef REGAMEDLL_FIXES
+	if (!m_pLastItem->CanDeploy())
+		return;
+#endif
 
 	ResetAutoaim();
 
