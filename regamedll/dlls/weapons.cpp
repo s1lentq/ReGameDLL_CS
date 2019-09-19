@@ -1347,7 +1347,9 @@ void CBasePlayerWeapon::ReloadSound()
 	}
 }
 
-int CBasePlayerWeapon::DefaultReload(int iClipSize, int iAnim, float fDelay)
+LINK_HOOK_CLASS_CHAIN(int, CBasePlayerWeapon, DefaultReload, (int iClipSize, int iAnim, float fDelay), iClipSize, iAnim, fDelay)
+
+int EXT_FUNC CBasePlayerWeapon::__API_HOOK(DefaultReload)(int iClipSize, int iAnim, float fDelay)
 {
 	if (m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
 		return FALSE;

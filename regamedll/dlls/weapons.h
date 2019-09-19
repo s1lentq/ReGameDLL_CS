@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
 *
 *   This program is free software; you can redistribute it and/or modify it
@@ -399,6 +400,7 @@ public:
 #ifdef REGAMEDLL_API
 	BOOL CanDeploy_OrigFunc();
 	BOOL DefaultDeploy_OrigFunc(char *szViewModel, char *szWeaponModel, int iAnim, char *szAnimExt, int skiplocal);
+	BOOL DefaultReload_OrigFunc(int iClipSize, int iAnim, float fDelay);
 
 	CCSPlayerWeapon *CSPlayerWeapon() const;
 #endif

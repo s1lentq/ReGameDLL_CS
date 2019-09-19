@@ -164,6 +164,7 @@ GAMEHOOK_REGISTRY(CBasePlayer_HintMessageEx);
 GAMEHOOK_REGISTRY(CBasePlayer_UseEmpty);
 GAMEHOOK_REGISTRY(CBasePlayerWeapon_CanDeploy);
 GAMEHOOK_REGISTRY(CBasePlayerWeapon_DefaultDeploy);
+GAMEHOOK_REGISTRY(CBasePlayerWeapon_DefaultReload);
 
 int CReGameApi::GetMajorVersion() {
 	return REGAMEDLL_API_VERSION_MAJOR;
