@@ -1838,7 +1838,11 @@ BOOL EXT_FUNC __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *pPlayer, int slot)
 			}
 
 			pPlayer->RemoveAllItems(TRUE);
+
+#ifndef REGAMEDLL_FIXES
+			// NOTE: It is already does reset inside RemoveAllItems
 			pPlayer->m_bHasC4 = false;
+#endif
 
 #ifdef REGAMEDLL_FIXES
 			if (pPlayer->m_iTeam != SPECTATOR)
