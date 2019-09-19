@@ -6146,8 +6146,14 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 		}
 		case 101:
 			gEvilImpulse101 = TRUE;
+
+#ifdef REGAMEDLL_ADD
+			AddAccount(int(maxmoney.value));
+			ALERT(at_console, "Crediting %s with $%i\n", STRING(pev->netname), int(maxmoney.value));
+#else
 			AddAccount(16000);
 			ALERT(at_console, "Crediting %s with $16000\n", STRING(pev->netname));
+#endif
 			break;
 		case 102:
 			CGib::SpawnRandomGibs(pev, 1, 1);
