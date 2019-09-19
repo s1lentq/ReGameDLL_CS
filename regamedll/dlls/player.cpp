@@ -2173,6 +2173,10 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 	if (forcerespawn.value > 0) {
 		CSPlayer()->m_flRespawnPending = gpGlobals->time + forcerespawn.value;
 	}
+
+	if (CSPlayer()->GetProtectionState() == CCSPlayer::ProtectionSt_Active) {
+		RemoveSpawnProtection();
+	}
 #endif
 
 	SetThink(&CBasePlayer::PlayerDeathThink);
@@ -5652,6 +5656,12 @@ void CBasePlayer::Reset()
 		WRITE_SHORT(0);
 		WRITE_SHORT(m_iTeam);
 	MESSAGE_END();
+
+#ifdef REGAMEDLL_ADD
+	if (CSPlayer()->GetProtectionState() == CCSPlayer::ProtectionSt_Active) {
+		RemoveSpawnProtection();
+	}
+#endif
 }
 
 NOXREF void CBasePlayer::SelectNextItem(int iItem)
