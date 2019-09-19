@@ -1550,8 +1550,13 @@ CBaseEntity *EXT_FUNC __API_HOOK(BuyWeaponByWeaponID)(CBasePlayer *pPlayer, Weap
 	pPlayer->AddAccount(-info->cost, RT_PLAYER_BOUGHT_SOMETHING);
 
 #ifdef REGAMEDLL_ADD
-	if (refill_bpammo_weapons.value > 1 && info->ammoType >= AMMO_338MAGNUM && info->ammoType <= AMMO_9MM) {
-		pPlayer->m_rgAmmo[info->ammoType] = info->maxRounds;
+	if (refill_bpammo_weapons.value > 1)
+	{
+		CBasePlayerItem *pItem = static_cast<CBasePlayerItem *>(pEntity);
+
+		if (pItem) {
+			pPlayer->GiveAmmo(pItem->iMaxAmmo1(), pItem->pszAmmo1(), pItem->iMaxAmmo1());
+		}
 	}
 #endif
 
