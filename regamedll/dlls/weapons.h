@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 /*
 *
 *   This program is free software; you can redistribute it and/or modify it
@@ -950,6 +949,10 @@ public:
 	#endif
 	}
 
+#ifdef REGAMEDLL_API
+	BOOL CanDeploy_OrigFunc();
+#endif
+
 public:
 	bool ShieldSecondaryFire(int iUpAnim, int iDownAnim);
 	void SetPlayerShieldAnim();
@@ -1105,6 +1108,10 @@ public:
 		return FALSE;
 	#endif
 	}
+
+#ifdef REGAMEDLL_API
+	BOOL CanDeploy_OrigFunc();
+#endif
 
 public:
 	bool ShieldSecondaryFire(int iUpAnim, int iDownAnim);
@@ -1580,6 +1587,10 @@ public:
 		return FALSE;
 	#endif
 	}
+
+#ifdef REGAMEDLL_API
+	BOOL CanDeploy_OrigFunc();
+#endif
 
 public:
 	bool ShieldSecondaryFire(int iUpAnim, int iDownAnim);

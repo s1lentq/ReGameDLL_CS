@@ -54,6 +54,11 @@
 		return g_ReGameHookchains.m_##className##_##functionName.callChain(&className::functionName##_OrigFunc, this);\
 	}
 
+#define LINK_HOOK_CLASS_CHAIN3(ret, className, subClassName, functionName)\
+	ret subClassName::functionName() {\
+		return g_ReGameHookchains.m_##className##_##functionName.callChain(reinterpret_cast<ret (className::*)()>(&subClassName::functionName##_OrigFunc), this);\
+	}
+
 #define LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN(className, customPrefix, functionName, args, ...)\
 	void className::functionName args {\
 		g_ReGameHookchains.m_##customPrefix##_##functionName.callChain(&className::functionName##_OrigFunc, this, __VA_ARGS__);\
@@ -123,6 +128,7 @@
 #define LINK_HOOK_CLASS_VOID_CHAIN2(...)
 #define LINK_HOOK_CLASS_CHAIN(...)
 #define LINK_HOOK_CLASS_CHAIN2(...)
+#define LINK_HOOK_CLASS_CHAIN3(...)
 #define LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN(...)
 #define LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN2(...)
 #define LINK_HOOK_CLASS_CUSTOM_CHAIN(...)
