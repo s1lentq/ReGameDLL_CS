@@ -576,11 +576,12 @@ void CBasePlayerItem::DefaultTouch(CBaseEntity *pOther)
 	// can I have this?
 	if (!g_pGameRules->CanHavePlayerItem(pPlayer, this))
 	{
+#ifndef REGAMEDLL_FIXES
 		if (gEvilImpulse101)
 		{
 			UTIL_Remove(this);
 		}
-
+#endif
 		return;
 	}
 

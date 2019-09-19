@@ -6549,9 +6549,10 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(AddPlayerItem)(CBasePlayerItem *pItem)
 
 				pItem->Kill();
 			}
+#ifndef REGAMEDLL_FIXES
 			else if (gEvilImpulse101)
 				pItem->Kill();
-
+#endif
 			return FALSE;
 		}
 
@@ -6586,10 +6587,12 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(AddPlayerItem)(CBasePlayerItem *pItem)
 
 		return TRUE;
 	}
+#ifndef REGAMEDLL_FIXES
 	else if (gEvilImpulse101)
 	{
 		pItem->Kill();
 	}
+#endif
 
 	return FALSE;
 }

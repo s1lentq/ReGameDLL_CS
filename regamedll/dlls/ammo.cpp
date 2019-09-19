@@ -81,6 +81,7 @@ void CBasePlayerAmmo::DefaultTouch(CBaseEntity *pOther)
 #endif
 		}
 	}
+#ifndef REGAMEDLL_FIXES
 	else if (gEvilImpulse101)
 	{
 		// evil impulse 101 hack, kill always
@@ -88,6 +89,7 @@ void CBasePlayerAmmo::DefaultTouch(CBaseEntity *pOther)
 		SetThink(&CBaseEntity::SUB_Remove);
 		pev->nextthink = gpGlobals->time + 0.1f;
 	}
+#endif
 }
 
 void C9MMAmmo::Spawn()
