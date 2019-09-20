@@ -2990,43 +2990,67 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 			}
 			case Menu_BuyPistol:
 			{
-				if (canOpenOldMenu()) {
+				if (canOpenOldMenu())
+				{
 					BuyPistol(pPlayer, slot);
+#ifdef REGAMEDLL_FIXES
+					pPlayer->BuildRebuyStruct();
+#endif
 				}
 				break;
 			}
 			case Menu_BuyShotgun:
 			{
-				if (canOpenOldMenu()) {
+				if (canOpenOldMenu())
+				{
 					BuyShotgun(pPlayer, slot);
+#ifdef REGAMEDLL_FIXES
+					pPlayer->BuildRebuyStruct();
+#endif
 				}
 				break;
 			}
 			case Menu_BuySubMachineGun:
 			{
-				if (canOpenOldMenu()) {
+				if (canOpenOldMenu())
+				{
 					BuySubMachineGun(pPlayer, slot);
+#ifdef REGAMEDLL_FIXES
+					pPlayer->BuildRebuyStruct();
+#endif
 				}
 				break;
 			}
 			case Menu_BuyRifle:
 			{
-				if (canOpenOldMenu()) {
+				if (canOpenOldMenu())
+				{
 					BuyRifle(pPlayer, slot);
+#ifdef REGAMEDLL_FIXES
+					pPlayer->BuildRebuyStruct();
+#endif
 				}
 				break;
 			}
 			case Menu_BuyMachineGun:
 			{
-				if (canOpenOldMenu()) {
+				if (canOpenOldMenu())
+				{
 					BuyMachineGun(pPlayer, slot);
+#ifdef REGAMEDLL_FIXES
+					pPlayer->BuildRebuyStruct();
+#endif
 				}
 				break;
 			}
 			case Menu_BuyItem:
 			{
-				if (canOpenOldMenu()) {
+				if (canOpenOldMenu())
+				{
 					BuyItem(pPlayer, slot);
+#ifdef REGAMEDLL_FIXES
+					pPlayer->BuildRebuyStruct();
+#endif
 				}
 				break;
 			}
