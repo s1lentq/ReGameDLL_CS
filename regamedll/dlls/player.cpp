@@ -2997,6 +2997,10 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveShield)(bool bDeploy)
 	m_bOwnsShield = true;
 	m_bHasPrimary = true;
 
+#ifdef REGAMEDLL_FIXES
+	pev->gamestate = HITGROUP_SHIELD_ENABLED;
+#endif
+
 	if (m_pActiveItem)
 	{
 		CBasePlayerWeapon *pWeapon = static_cast<CBasePlayerWeapon *>(m_pActiveItem);
@@ -3011,7 +3015,9 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveShield)(bool bDeploy)
 		}
 	}
 
+#ifndef REGAMEDLL_FIXES
 	pev->gamestate = HITGROUP_SHIELD_ENABLED;
+#endif
 }
 
 void CBasePlayer::RemoveShield()
