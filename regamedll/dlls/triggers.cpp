@@ -1627,6 +1627,27 @@ void CLadder::Spawn()
 	pev->movetype = MOVETYPE_PUSH;
 }
 
+// Added toggle ladder feature
+#ifdef REGAMEDLL_FIXES
+void CLadder::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+{
+	if (pev->skin == CONTENTS_LADDER)
+	{
+		pev->skin = CONTENTS_SOLID;
+	}
+	else
+	{
+		pev->skin = CONTENTS_LADDER;
+	}
+}
+
+void CLadder::Restart()
+{
+	pev->skin = CONTENTS_LADDER;
+}
+#endif
+
+
 LINK_ENTITY_TO_CLASS(trigger_push, CTriggerPush, CCSTriggerPush)
 
 void CTriggerPush::KeyValue(KeyValueData *pkvd)

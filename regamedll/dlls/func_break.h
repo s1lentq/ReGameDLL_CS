@@ -57,6 +57,10 @@ enum Materials
 #define SF_BREAK_TOUCH        BIT(1) // can be 'crashed through' by running player (plate glass)
 #define SF_BREAK_PRESSURE     BIT(2) // can be broken by a player standing on it
 #define SF_BREAK_CROWBAR      BIT(8) // instant break if hit with crowbar
+// flag for make map compability with original gamedll
+#ifdef REGAMEDLL_FIXES
+#define SF_BREAK_USE_HEALTH2  BIT(9) // use health2 instead of health
+#endif 
 
 class CBreakable: public CBaseDelay
 {
@@ -114,6 +118,9 @@ public:
 	int m_iszGibModel;
 	int m_iszSpawnObject;
 	float m_flHealth;
+#ifdef REGAMEDLL_FIXES
+	float m_flHealth2;
+#endif
 };
 
 #define SF_PUSH_BREAKABLE BIT(7) // func_pushable (it's also func_breakable, so don't collide with those flags)
