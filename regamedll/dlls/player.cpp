@@ -1502,8 +1502,8 @@ void CBasePlayer::RemoveAllItems(BOOL removeSuit)
 		m_pTank->Use(this, this, USE_OFF, 0);
 		m_pTank = nullptr;
 	}
-#endif	
-	
+#endif
+
 	if (m_bHasDefuser)
 	{
 		RemoveDefuser();
