@@ -3457,10 +3457,9 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 #ifdef REGAMEDLL_ADD
 			else if (FStrEq(pcmd, "give"))
 			{
-				if (CVAR_GET_FLOAT("sv_cheats") != 0.0f && CMD_ARGC() > 1 && Q_strstr(parg1, "weapon_"))
+				if (CVAR_GET_FLOAT("sv_cheats") != 0.0f && CMD_ARGC() > 1 && FStrnEq(parg1, "weapon_", sizeof("weapon_") - 1))
 				{
 					const auto pInfo = GetWeaponInfo(parg1);
-
 					if (pInfo)
 					{
 						if (pInfo->id != WEAPON_GLOCK && pInfo->id != WEAPON_C4 /* && pInfo->id != WEAPON_KNIFE */)
