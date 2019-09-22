@@ -1440,11 +1440,10 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 #endif
 
 #ifdef REGAMEDLL_ADD
-	auto GiveWeapon = [&](int ammo, char* pszWeaponName) {
-		GiveNamedItem(pszWeaponName);
-		const WeaponInfoStruct *pInfo = GetWeaponInfo(pszWeaponName);
-		if (pInfo) {
-			GiveAmmo(refill_bpammo_weapons.value != 0.0f ? pInfo->maxRounds : ammo, pInfo->ammoName2);
+	auto GiveWeapon = [&](int ammo, char *pszWeaponName) {
+		auto pItem = static_cast<CBasePlayerItem *>(GiveNamedItemEx(pszWeaponName));
+		if (pItem) {
+			GiveAmmo(refill_bpammo_weapons.value != 0.0f ? pItem->iMaxAmmo1() : ammo, pItem->pszAmmo1(), pItem->iMaxAmmo1());
 		}
 	};
 
@@ -2169,7 +2168,13 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 	BuyZoneIcon_Clear(this);
 
 #ifdef REGAMEDLL_ADD
-	CSPlayer()->m_flRespawnPending = gpGlobals->time;
+	if (forcerespawn.value > 0) {
+		CSPlayer()->m_flRespawnPending = gpGlobals->time + forcerespawn.value;
+	}
+
+	if (CSPlayer()->GetProtectionState() == CCSPlayer::ProtectionSt_Active) {
+		RemoveSpawnProtection();
+	}
 #endif
 
 	SetThink(&CBasePlayer::PlayerDeathThink);
@@ -4969,6 +4974,11 @@ BOOL IsSpawnPointValid(CBaseEntity *pPlayer, CBaseEntity *pSpot)
 	if (!pSpot->IsTriggered(pPlayer))
 		return FALSE;
 
+#ifdef REGAMEDLL_ADD
+	if (!kill_filled_spawn.value)
+		return TRUE;
+#endif
+
 	CBaseEntity *pEntity = nullptr;
 	while ((pEntity = UTIL_FindEntityInSphere(pEntity, pSpot->pev->origin, MAX_PLAYER_USE_RADIUS)))
 	{
@@ -5656,6 +5666,12 @@ void CBasePlayer::Reset()
 		WRITE_SHORT(0);
 		WRITE_SHORT(m_iTeam);
 	MESSAGE_END();
+
+#ifdef REGAMEDLL_ADD
+	if (CSPlayer()->GetProtectionState() == CCSPlayer::ProtectionSt_Active) {
+		RemoveSpawnProtection();
+	}
+#endif
 }
 
 NOXREF void CBasePlayer::SelectNextItem(int iItem)
@@ -6135,8 +6151,14 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 		}
 		case 101:
 			gEvilImpulse101 = TRUE;
+
+#ifdef REGAMEDLL_ADD
+			AddAccount(int(maxmoney.value));
+			ALERT(at_console, "Crediting %s with $%i\n", STRING(pev->netname), int(maxmoney.value));
+#else
 			AddAccount(16000);
 			ALERT(at_console, "Crediting %s with $16000\n", STRING(pev->netname));
+#endif
 			break;
 		case 102:
 			CGib::SpawnRandomGibs(pev, 1, 1);
@@ -9778,7 +9800,7 @@ void CBasePlayer::PlayerRespawnThink()
 	if (pev->deadflag < DEAD_DYING)
 		return;
 
-	if (forcerespawn.value > 0 && gpGlobals->time > (CSPlayer()->m_flRespawnPending + forcerespawn.value))
+	if (forcerespawn.value > 0 && gpGlobals->time > CSPlayer()->m_flRespawnPending)
 	{
 		Spawn();
 		pev->button = 0;
