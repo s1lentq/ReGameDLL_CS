@@ -1151,21 +1151,20 @@ void CGrenade::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useTy
 	{
 #ifdef REGAMEDLL_FIXES
 		if (m_pBombDefuser == pPlayer)
+#endif
 		{
-			if ((pPlayer->pev->flags & FL_ONGROUND) != FL_ONGROUND) // Defuse should start only on ground
-			{
-				ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#C4_Defuse_Must_Be_On_Ground");
-				return;
-			}
-
 			m_fNextDefuse = gpGlobals->time + NEXT_DEFUSE_TIME;
 		}
-#else
-		m_fNextDefuse = gpGlobals->time + NEXT_DEFUSE_TIME;
-#endif // #ifdef REGAMEDLL_FIXES
 
 		return;
 	}
+#ifdef REGAMEDLL_FIXES
+	else if ((pPlayer->pev->flags & FL_ONGROUND) != FL_ONGROUND) // Defuse should start only on ground
+	{
+		ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#C4_Defuse_Must_Be_On_Ground");
+		return;
+	}
+#endif
 
 	DefuseBombStart(pPlayer);
 }
