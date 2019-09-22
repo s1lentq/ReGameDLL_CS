@@ -379,10 +379,15 @@ BOOL CItemKevlar::MyTouch(CBasePlayer *pPlayer)
 		return FALSE;
 #endif
 
+#ifdef REGAMEDLL_FIXES
+	if (pPlayer->m_iKevlar != ARMOR_NONE && pPlayer->pev->armorvalue >= MAX_NORMAL_BATTERY)
+		return FALSE;
+#endif
+
 	if (pPlayer->m_iKevlar == ARMOR_NONE)
 		pPlayer->m_iKevlar = ARMOR_KEVLAR;
 
-	pPlayer->pev->armorvalue = 100;
+	pPlayer->pev->armorvalue = MAX_NORMAL_BATTERY;
 	EMIT_SOUND(pPlayer->edict(), CHAN_ITEM, "items/ammopickup2.wav", VOL_NORM, ATTN_NORM);
 
 	MESSAGE_BEGIN(MSG_ONE, gmsgItemPickup, nullptr, pPlayer->pev);
@@ -390,7 +395,11 @@ BOOL CItemKevlar::MyTouch(CBasePlayer *pPlayer)
 	MESSAGE_END();
 
 	MESSAGE_BEGIN(MSG_ONE, gmsgArmorType, nullptr, pPlayer->pev);
+#ifdef REGAMEDLL_FIXES
+		WRITE_BYTE(pPlayer->m_iKevlar == ARMOR_KEVLAR ? 0 : 1); // 0 = ARMOR_KEVLAR, 1 = ARMOR_VESTHELM
+#else
 		WRITE_BYTE(0);
+#endif
 	MESSAGE_END();
 
 	if (TheTutor)
@@ -422,8 +431,13 @@ BOOL CItemAssaultSuit::MyTouch(CBasePlayer *pPlayer)
 		return FALSE;
 #endif
 
+#ifdef REGAMEDLL_FIXES
+	if (pPlayer->m_iKevlar == ARMOR_VESTHELM && pPlayer->pev->armorvalue >= MAX_NORMAL_BATTERY)
+		return FALSE;
+#endif
+
 	pPlayer->m_iKevlar = ARMOR_VESTHELM;
-	pPlayer->pev->armorvalue = 100;
+	pPlayer->pev->armorvalue = MAX_NORMAL_BATTERY;
 
 	EMIT_SOUND(pPlayer->edict(), CHAN_ITEM, "items/ammopickup2.wav", VOL_NORM, ATTN_NORM);
 
@@ -432,7 +446,7 @@ BOOL CItemAssaultSuit::MyTouch(CBasePlayer *pPlayer)
 	MESSAGE_END();
 
 	MESSAGE_BEGIN(MSG_ONE, gmsgArmorType, nullptr, pPlayer->pev);
-		WRITE_BYTE(1);
+		WRITE_BYTE(1); // 0 = ARMOR_KEVLAR, 1 = ARMOR_VESTHELM
 	MESSAGE_END();
 
 	if (TheTutor)
