@@ -1440,10 +1440,8 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 #endif
 
 #ifdef REGAMEDLL_ADD
-	auto GiveWeapon = [&](int ammo, char* pszWeaponName) {
-		auto pEntity = GiveNamedItemEx(pszWeaponName);
-		CBasePlayerItem *pItem = static_cast<CBasePlayerItem *>(pEntity);
-
+	auto GiveWeapon = [&](int ammo, char *pszWeaponName) {
+		auto pItem = static_cast<CBasePlayerItem *>(GiveNamedItemEx(pszWeaponName));
 		if (pItem) {
 			GiveAmmo(refill_bpammo_weapons.value != 0.0f ? pItem->iMaxAmmo1() : ammo, pItem->pszAmmo1(), pItem->iMaxAmmo1());
 		}
