@@ -3218,7 +3218,7 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 	}
 	else if (FStrEq(pcmd, "cl_setrebuy"))
 	{
-		if (pPlayer->pev->deadflag != DEAD_NO && m_rebuyString)
+		if (pPlayer->pev->deadflag != DEAD_NO && pPlayer->m_rebuyString)
 			return;
 		
 		if (CMD_ARGC_() == 2)
