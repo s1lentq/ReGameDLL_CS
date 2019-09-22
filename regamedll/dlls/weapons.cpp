@@ -1371,6 +1371,63 @@ int EXT_FUNC CBasePlayerWeapon::__API_HOOK(DefaultReload)(int iClipSize, int iAn
 	return TRUE;
 }
 
+LINK_HOOK_CLASS_CHAIN(bool, CBasePlayerWeapon, DefaultShotgunReload, (int iAnim, int iStartAnim, float fDelay, float fStartDelay, const char *pszReloadSound1, const char *pszReloadSound2), iAnim, iStartAnim, fDelay, fStartDelay, pszReloadSound1, pszReloadSound2)
+
+bool EXT_FUNC CBasePlayerWeapon::__API_HOOK(DefaultShotgunReload)(int iAnim, int iStartAnim, float fDelay, float fStartDelay, const char *pszReloadSound1, const char *pszReloadSound2)
+{
+	if (m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0 || m_iClip == iMaxClip())
+		return false;
+
+	// don't reload until recoil is done
+	if (m_flNextPrimaryAttack > UTIL_WeaponTimeBase())
+		return false;
+
+	// check to see if we're ready to reload
+	if (m_fInSpecialReload == 0)
+	{
+		m_pPlayer->SetAnimation(PLAYER_RELOAD);
+		SendWeaponAnim(iStartAnim, UseDecrement() != FALSE);
+
+		m_fInSpecialReload = 1;
+		m_flNextSecondaryAttack = m_flTimeWeaponIdle = m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + fStartDelay;
+		m_flNextPrimaryAttack = GetNextAttackDelay(fStartDelay);
+	}
+	else if (m_fInSpecialReload == 1)
+	{
+		if (m_flTimeWeaponIdle > UTIL_WeaponTimeBase())
+			return false;
+
+		// was waiting for gun to move to side
+		m_fInSpecialReload = 2;
+
+		const char *pszReloadSound = nullptr;
+		if (pszReloadSound1 && pszReloadSound2) pszReloadSound = RANDOM_LONG(0, 1) ? pszReloadSound1 : pszReloadSound2;
+		else if (pszReloadSound1)               pszReloadSound = pszReloadSound1;
+		else if (pszReloadSound2)               pszReloadSound = pszReloadSound2;
+
+		if (pszReloadSound && pszReloadSound[0] != '\0')
+		{
+			EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_ITEM, pszReloadSound, VOL_NORM, ATTN_NORM, 0, 85 + RANDOM_LONG(0, 31));
+		}
+
+		SendWeaponAnim(iAnim, UseDecrement());
+
+		m_flTimeWeaponIdle = m_flNextReload = UTIL_WeaponTimeBase() + fDelay;
+	}
+	else
+#ifdef BUILD_LATEST_FIXES
+		if (m_flTimeWeaponIdle <= UTIL_WeaponTimeBase())
+#endif
+	{
+		m_iClip++;
+		m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]--;
+		m_pPlayer->ammo_buckshot--;
+		m_fInSpecialReload = 1;
+	}
+
+	return true;
+}
+
 BOOL CBasePlayerWeapon::PlayEmptySound()
 {
 	if (m_iPlayEmptySound)

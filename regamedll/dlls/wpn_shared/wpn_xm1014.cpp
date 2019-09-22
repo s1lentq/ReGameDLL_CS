@@ -174,49 +174,9 @@ void CXM1014::PrimaryAttack()
 
 void CXM1014::Reload()
 {
-	if (m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0 || m_iClip == iMaxClip())
-		return;
-
-	// don't reload until recoil is done
-	if (m_flNextPrimaryAttack > UTIL_WeaponTimeBase())
-		return;
-
-	// check to see if we're ready to reload
-	if (m_fInSpecialReload == 0)
+	if (!DefaultShotgunReload(XM1014_RELOAD, XM1014_START_RELOAD, 0.3f, 0.55f, "weapons/reload1.wav", "weapons/reload3.wav"))
 	{
-		m_pPlayer->SetAnimation(PLAYER_RELOAD);
-		SendWeaponAnim(XM1014_START_RELOAD, UseDecrement() != FALSE);
-
-		m_fInSpecialReload = 1;
-		m_flNextSecondaryAttack = m_flTimeWeaponIdle = m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.55f;
-		m_flNextPrimaryAttack = GetNextAttackDelay(0.55);
-	}
-	else if (m_fInSpecialReload == 1)
-	{
-		if (m_flTimeWeaponIdle > UTIL_WeaponTimeBase())
-			return;
-
-		// was waiting for gun to move to side
-		m_fInSpecialReload = 2;
-
-		if (RANDOM_LONG(0, 1))
-			EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_ITEM, "weapons/reload1.wav", VOL_NORM, ATTN_NORM, 0, 85 + RANDOM_LONG(0, 31));
-		else
-			EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_ITEM, "weapons/reload3.wav", VOL_NORM, ATTN_NORM, 0, 85 + RANDOM_LONG(0, 31));
-
-		SendWeaponAnim(XM1014_RELOAD, UseDecrement());
-
-		m_flTimeWeaponIdle = m_flNextReload = UTIL_WeaponTimeBase() + 0.3f;
-	}
-	else
-#ifdef BUILD_LATEST_FIXES
-		if (m_flTimeWeaponIdle <= UTIL_WeaponTimeBase())
-#endif
-	{
-		m_iClip++;
-		m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]--;
-		m_pPlayer->ammo_buckshot--;
-		m_fInSpecialReload = 1;
+		/* do nothing */
 	}
 }
 
