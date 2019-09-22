@@ -2168,13 +2168,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 	BuyZoneIcon_Clear(this);
 
 #ifdef REGAMEDLL_ADD
-	if (forcerespawn.value > 0) {
-		CSPlayer()->m_flRespawnPending = gpGlobals->time + forcerespawn.value;
-	}
-
-	if (CSPlayer()->GetProtectionState() == CCSPlayer::ProtectionSt_Active) {
-		RemoveSpawnProtection();
-	}
+	CSPlayer()->OnKilled();
 #endif
 
 	SetThink(&CBasePlayer::PlayerDeathThink);
@@ -5293,6 +5287,10 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Spawn)()
 	m_rgbTimeBasedDamage[ITBD_DROWN_RECOVER] = 0;
 	m_idrowndmg = 0;
 	m_idrownrestored = 0;
+
+#ifdef REGAMEDLL_ADD
+	CSPlayer()->OnSpawn();
+#endif
 
 	if (m_iObserverC4State)
 	{
@@ -9800,7 +9798,9 @@ void CBasePlayer::PlayerRespawnThink()
 	if (pev->deadflag < DEAD_DYING)
 		return;
 
-	if (forcerespawn.value > 0 && gpGlobals->time > CSPlayer()->m_flRespawnPending)
+	if (forcerespawn.value > 0 &&
+		CSPlayer()->m_flRespawnPending > 0 &&
+		CSPlayer()->m_flRespawnPending <= gpGlobals->time)
 	{
 		Spawn();
 		pev->button = 0;
