@@ -538,3 +538,23 @@ void CCSPlayer::Reset()
 	m_iWeaponInfiniteAmmo = 0;
 	m_iWeaponInfiniteIds = 0;
 }
+
+void CCSPlayer::OnSpawn()
+{
+	m_flRespawnPending = 0.0f;
+}
+
+void CCSPlayer::OnKilled()
+{
+#ifdef REGAMEDLL_ADD
+	if (forcerespawn.value > 0)
+	{
+		m_flRespawnPending = gpGlobals->time + forcerespawn.value;
+	}
+
+	if (GetProtectionState() == ProtectionSt_Active)
+	{
+		BasePlayer()->RemoveSpawnProtection();
+	}
+#endif
+}

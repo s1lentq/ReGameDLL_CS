@@ -96,6 +96,10 @@ public:
 	virtual bool HintMessageEx(const char *pMessage, float duration = 6.0f, bool bDisplayIfPlayerDead = false, bool bOverride = false);
 
 	void Reset();
+
+	void OnSpawn();
+	void OnKilled();
+
 	CBasePlayer *BasePlayer() const;
 
 public:

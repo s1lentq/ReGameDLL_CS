@@ -1448,11 +1448,10 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 #endif
 
 #ifdef REGAMEDLL_ADD
-	auto GiveWeapon = [&](int ammo, char* pszWeaponName) {
-		GiveNamedItem(pszWeaponName);
-		const WeaponInfoStruct *pInfo = GetWeaponInfo(pszWeaponName);
-		if (pInfo) {
-			GiveAmmo(refill_bpammo_weapons.value != 0.0f ? pInfo->maxRounds : ammo, pInfo->ammoName2);
+	auto GiveWeapon = [&](int ammo, char *pszWeaponName) {
+		auto pItem = static_cast<CBasePlayerItem *>(GiveNamedItemEx(pszWeaponName));
+		if (pItem) {
+			GiveAmmo(refill_bpammo_weapons.value != 0.0f ? pItem->iMaxAmmo1() : ammo, pItem->pszAmmo1(), pItem->iMaxAmmo1());
 		}
 	};
 
@@ -1510,8 +1509,8 @@ void CBasePlayer::RemoveAllItems(BOOL removeSuit)
 		m_pTank->Use(this, this, USE_OFF, 0);
 		m_pTank = nullptr;
 	}
-#endif	
-	
+#endif
+
 	if (m_bHasDefuser)
 	{
 		RemoveDefuser();
@@ -2055,7 +2054,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 	pev->movetype = MOVETYPE_TOSS;
 	pev->takedamage = DAMAGE_NO;
 
-	pev->gamestate = 1;
+	pev->gamestate = HITGROUP_SHIELD_DISABLED;
 	m_bShieldDrawn = false;
 
 	pev->flags &= ~FL_ONGROUND;
@@ -2202,7 +2201,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 	BuyZoneIcon_Clear(this);
 
 #ifdef REGAMEDLL_ADD
-	CSPlayer()->m_flRespawnPending = gpGlobals->time;
+	CSPlayer()->OnKilled();
 #endif
 
 	SetThink(&CBasePlayer::PlayerDeathThink);
@@ -3036,6 +3035,10 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveShield)(bool bDeploy)
 	m_bOwnsShield = true;
 	m_bHasPrimary = true;
 
+#ifdef REGAMEDLL_FIXES
+	pev->gamestate = HITGROUP_SHIELD_ENABLED;
+#endif
+
 	if (m_pActiveItem)
 	{
 		CBasePlayerWeapon *pWeapon = static_cast<CBasePlayerWeapon *>(m_pActiveItem);
@@ -3050,7 +3053,10 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveShield)(bool bDeploy)
 		}
 	}
 
-	pev->gamestate = 0;
+#ifndef REGAMEDLL_FIXES
+	// NOTE: Moved above, because CC4::Deploy can reset hitbox of shield
+	pev->gamestate = HITGROUP_SHIELD_ENABLED;
+#endif
 }
 
 void CBasePlayer::RemoveShield()
@@ -3060,7 +3066,7 @@ void CBasePlayer::RemoveShield()
 		m_bOwnsShield = false;
 		m_bHasPrimary = false;
 		m_bShieldDrawn = false;
-		pev->gamestate = 1;
+		pev->gamestate = HITGROUP_SHIELD_DISABLED;
 
 		UpdateShieldCrosshair(true);
 	}
@@ -5013,6 +5019,11 @@ BOOL IsSpawnPointValid(CBaseEntity *pPlayer, CBaseEntity *pSpot)
 	if (!pSpot->IsTriggered(pPlayer))
 		return FALSE;
 
+#ifdef REGAMEDLL_ADD
+	if (!kill_filled_spawn.value)
+		return TRUE;
+#endif
+
 	CBaseEntity *pEntity = nullptr;
 	while ((pEntity = UTIL_FindEntityInSphere(pEntity, pSpot->pev->origin, MAX_PLAYER_USE_RADIUS)))
 	{
@@ -5261,9 +5272,9 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Spawn)()
 	m_pentCurBombTarget = nullptr;
 
 	if (m_bOwnsShield)
-		pev->gamestate = 0;
+		pev->gamestate = HITGROUP_SHIELD_ENABLED;
 	else
-		pev->gamestate = 1;
+		pev->gamestate = HITGROUP_SHIELD_DISABLED;
 
 	ResetStamina();
 	pev->friction = 1;
@@ -5327,6 +5338,10 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Spawn)()
 	m_rgbTimeBasedDamage[ITBD_DROWN_RECOVER] = 0;
 	m_idrowndmg = 0;
 	m_idrownrestored = 0;
+
+#ifdef REGAMEDLL_ADD
+	CSPlayer()->OnSpawn();
+#endif
 
 	if (m_iObserverC4State)
 	{
@@ -5710,6 +5725,12 @@ void CBasePlayer::Reset()
 		WRITE_SHORT(0);
 		WRITE_SHORT(m_iTeam);
 	MESSAGE_END();
+
+#ifdef REGAMEDLL_ADD
+	if (CSPlayer()->GetProtectionState() == CCSPlayer::ProtectionSt_Active) {
+		RemoveSpawnProtection();
+	}
+#endif
 }
 
 NOXREF void CBasePlayer::SelectNextItem(int iItem)
@@ -6191,8 +6212,14 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 #endif
 		case 101:
 			gEvilImpulse101 = TRUE;
+
+#ifdef REGAMEDLL_ADD
+			AddAccount(int(maxmoney.value));
+			ALERT(at_console, "Crediting %s with $%i\n", STRING(pev->netname), int(maxmoney.value));
+#else
 			AddAccount(16000);
 			ALERT(at_console, "Crediting %s with $16000\n", STRING(pev->netname));
+#endif
 			break;
 		case 102:
 			CGib::SpawnRandomGibs(pev, 1, 1);
@@ -6571,7 +6598,7 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(AddPlayerItem)(CBasePlayerItem *pItem)
 		m_rgpPlayerItems[pItem->iItemSlot()] = pItem;
 
 		if (HasShield())
-			pev->gamestate = 0;
+			pev->gamestate = HITGROUP_SHIELD_ENABLED;
 
 		// should we switch to this item?
 		if (g_pGameRules->FShouldSwitchWeapon(this, pItem))
@@ -9859,7 +9886,9 @@ void CBasePlayer::PlayerRespawnThink()
 	if (pev->deadflag < DEAD_DYING)
 		return;
 
-	if (forcerespawn.value > 0 && gpGlobals->time > (CSPlayer()->m_flRespawnPending + forcerespawn.value))
+	if (forcerespawn.value > 0 &&
+		CSPlayer()->m_flRespawnPending > 0 &&
+		CSPlayer()->m_flRespawnPending <= gpGlobals->time)
 	{
 		Spawn();
 		pev->button = 0;

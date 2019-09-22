@@ -2324,8 +2324,15 @@ void CArmoury::ArmouryTouch(CBaseEntity *pOther)
 		}
 		case ARMOURY_KEVLAR:
 		{
+
+#ifdef REGAMEDLL_FIXES
+			if (pToucher->m_iKevlar != ARMOR_NONE && pToucher->pev->armorvalue >= MAX_NORMAL_BATTERY)
+#else
 			if (pToucher->m_iKevlar == ARMOR_KEVLAR)
+#endif
+			{
 				return;
+			}
 
 			pToucher->GiveNamedItem("item_kevlar");
 			m_iCount--;
@@ -2333,8 +2340,14 @@ void CArmoury::ArmouryTouch(CBaseEntity *pOther)
 		}
 		case ARMOURY_ASSAULT:
 		{
-			if (pToucher->m_iKevlar == ARMOR_VESTHELM)
+			if (pToucher->m_iKevlar == ARMOR_VESTHELM
+#ifdef REGAMEDLL_FIXES
+				&& pToucher->pev->armorvalue >= MAX_NORMAL_BATTERY
+#endif
+				)
+			{
 				return;
+			}
 
 			pToucher->GiveNamedItem("item_assaultsuit");
 			m_iCount--;
