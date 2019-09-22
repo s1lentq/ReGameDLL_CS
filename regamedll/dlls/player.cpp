@@ -3016,6 +3016,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveShield)(bool bDeploy)
 	}
 
 #ifndef REGAMEDLL_FIXES
+	// NOTE: Moved above, because CC4::Deploy can reset hitbox of shield
 	pev->gamestate = HITGROUP_SHIELD_ENABLED;
 #endif
 }
