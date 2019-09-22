@@ -2,26 +2,45 @@
 # Set default behavior to automatically normalize line endings.
 ###############################################################################
 * text=auto
-*.sh -lf
-gradlew -lf
 
 # Sources
-*.c     text diff=c
-*.cc    text diff=cpp
-*.cxx   text diff=cpp
-*.cpp   text diff=cpp
-*.c++   text diff=cpp
-*.hpp   text diff=cpp
-*.h     text diff=c
-*.h++   text diff=cpp
-*.hh    text diff=cpp
+*.c               text eol=crlf diff=c
+*.cc              text eol=crlf diff=cpp
+*.cxx             text eol=crlf diff=cpp
+*.cpp             text eol=crlf diff=cpp
+*.c++             text eol=crlf diff=cpp
+*.hpp             text eol=crlf diff=cpp
+*.h               text eol=crlf diff=c
+*.h++             text eol=crlf diff=cpp
+*.hh              text eol=crlf diff=cpp
+
+# Scripts
+*.sh              text eol=lf
+gradlew           text eol=lf
+*.bat             text eol=crlf
+*.gradle          text eol=crlf
+*.groovy          text eol=crlf
+*.def             text eol=crlf
+*.fgd             text eol=crlf
+*.cfg             text eol=crlf
+*.properties      text eol=crlf
+*.vm              text eol=crlf
 
 # Compiled Object files
-*.o     binary
-*.a     binary
-*.obj   binary
-*.lib   binary
+*.o               binary
+*.a               binary
+*.obj             binary
+*.lib             binary
+*.jar             binary
+
+# Resources files
+*.spr             binary
+*.zip             binary
+*.wad             binary
+*.bsp             binary
+*.rmf             binary
 
 # Project files
-#*.sln     merge=binary
-#*.vcxproj merge=binary
+*.sln             text eol=crlf
+*.vcxproj         text eol=crlf
+*.vcxproj.filters text eol=crlf
