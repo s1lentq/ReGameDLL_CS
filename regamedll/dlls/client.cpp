@@ -2990,43 +2990,67 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 			}
 			case Menu_BuyPistol:
 			{
-				if (canOpenOldMenu()) {
+				if (canOpenOldMenu())
+				{
 					BuyPistol(pPlayer, slot);
+#ifdef REGAMEDLL_FIXES
+					pPlayer->BuildRebuyStruct();
+#endif
 				}
 				break;
 			}
 			case Menu_BuyShotgun:
 			{
-				if (canOpenOldMenu()) {
+				if (canOpenOldMenu())
+				{
 					BuyShotgun(pPlayer, slot);
+#ifdef REGAMEDLL_FIXES
+					pPlayer->BuildRebuyStruct();
+#endif
 				}
 				break;
 			}
 			case Menu_BuySubMachineGun:
 			{
-				if (canOpenOldMenu()) {
+				if (canOpenOldMenu())
+				{
 					BuySubMachineGun(pPlayer, slot);
+#ifdef REGAMEDLL_FIXES
+					pPlayer->BuildRebuyStruct();
+#endif
 				}
 				break;
 			}
 			case Menu_BuyRifle:
 			{
-				if (canOpenOldMenu()) {
+				if (canOpenOldMenu())
+				{
 					BuyRifle(pPlayer, slot);
+#ifdef REGAMEDLL_FIXES
+					pPlayer->BuildRebuyStruct();
+#endif
 				}
 				break;
 			}
 			case Menu_BuyMachineGun:
 			{
-				if (canOpenOldMenu()) {
+				if (canOpenOldMenu())
+				{
 					BuyMachineGun(pPlayer, slot);
+#ifdef REGAMEDLL_FIXES
+					pPlayer->BuildRebuyStruct();
+#endif
 				}
 				break;
 			}
 			case Menu_BuyItem:
 			{
-				if (canOpenOldMenu()) {
+				if (canOpenOldMenu())
+				{
 					BuyItem(pPlayer, slot);
+#ifdef REGAMEDLL_FIXES
+					pPlayer->BuildRebuyStruct();
+#endif
 				}
 				break;
 			}
@@ -3171,6 +3195,46 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 			pPlayer->Observer_FindNextPlayer(false, parg1);
 		}
 	}
+#ifdef REGAMEDLL_FIXES
+	else if (FStrEq(pcmd, "cl_setautobuy"))
+	{
+		if (pPlayer->pev->deadflag != DEAD_NO && pPlayer->m_autoBuyString[0] != '\0')
+			return;
+		
+		pPlayer->ClearAutoBuyData();
+
+		for (int i = 1; i < CMD_ARGC_(); i++)
+		{
+			pPlayer->AddAutoBuyData(CMD_ARGV_(i));
+		}
+
+		if (pPlayer->m_signals.GetState() & SIGNAL_BUY)
+		{
+			bool oldval = g_bClientPrintEnable;
+			g_bClientPrintEnable = false;
+			pPlayer->AutoBuy();
+			g_bClientPrintEnable = oldval;
+		}
+	}
+	else if (FStrEq(pcmd, "cl_setrebuy"))
+	{
+		if (pPlayer->pev->deadflag != DEAD_NO && m_rebuyString)
+			return;
+		
+		if (CMD_ARGC_() == 2)
+		{
+			pPlayer->InitRebuyData(parg1);
+
+			if (pPlayer->m_signals.GetState() & SIGNAL_BUY)
+			{
+				bool oldval = g_bClientPrintEnable;
+				g_bClientPrintEnable = false;
+				pPlayer->Rebuy();
+				g_bClientPrintEnable = oldval;
+			}
+		}
+	}
+#endif
 	else
 	{
 		if (g_pGameRules->ClientCommand_DeadOrAlive(GetClassPtr<CCSPlayer>((CBasePlayer *)pev), pcmd))
@@ -3404,6 +3468,8 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 					}
 				}
 			}
+#ifndef REGAMEDLL_FIXES
+			// Moved to above
 			else if (FStrEq(pcmd, "cl_setautobuy"))
 			{
 				pPlayer->ClearAutoBuyData();
@@ -3430,6 +3496,7 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 					g_bClientPrintEnable = oldval;
 				}
 			}
+#endif
 			else if (FStrEq(pcmd, "cl_autobuy"))
 			{
 				if (pPlayer->m_signals.GetState() & SIGNAL_BUY)
