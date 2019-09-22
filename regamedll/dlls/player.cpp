@@ -2031,7 +2031,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 	pev->movetype = MOVETYPE_TOSS;
 	pev->takedamage = DAMAGE_NO;
 
-	pev->gamestate = 1;
+	pev->gamestate = HITGROUP_SHIELD_DISABLED;
 	m_bShieldDrawn = false;
 
 	pev->flags &= ~FL_ONGROUND;
@@ -2997,6 +2997,10 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveShield)(bool bDeploy)
 	m_bOwnsShield = true;
 	m_bHasPrimary = true;
 
+#ifdef REGAMEDLL_FIXES
+	pev->gamestate = HITGROUP_SHIELD_ENABLED;
+#endif
+
 	if (m_pActiveItem)
 	{
 		CBasePlayerWeapon *pWeapon = static_cast<CBasePlayerWeapon *>(m_pActiveItem);
@@ -3011,7 +3015,10 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveShield)(bool bDeploy)
 		}
 	}
 
-	pev->gamestate = 0;
+#ifndef REGAMEDLL_FIXES
+	// NOTE: Moved above, because CC4::Deploy can reset hitbox of shield
+	pev->gamestate = HITGROUP_SHIELD_ENABLED;
+#endif
 }
 
 void CBasePlayer::RemoveShield()
@@ -3021,7 +3028,7 @@ void CBasePlayer::RemoveShield()
 		m_bOwnsShield = false;
 		m_bHasPrimary = false;
 		m_bShieldDrawn = false;
-		pev->gamestate = 1;
+		pev->gamestate = HITGROUP_SHIELD_DISABLED;
 
 		UpdateShieldCrosshair(true);
 	}
@@ -5210,9 +5217,9 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Spawn)()
 	m_pentCurBombTarget = nullptr;
 
 	if (m_bOwnsShield)
-		pev->gamestate = 0;
+		pev->gamestate = HITGROUP_SHIELD_ENABLED;
 	else
-		pev->gamestate = 1;
+		pev->gamestate = HITGROUP_SHIELD_DISABLED;
 
 	ResetStamina();
 	pev->friction = 1;
@@ -6501,7 +6508,7 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(AddPlayerItem)(CBasePlayerItem *pItem)
 		m_rgpPlayerItems[pItem->iItemSlot()] = pItem;
 
 		if (HasShield())
-			pev->gamestate = 0;
+			pev->gamestate = HITGROUP_SHIELD_ENABLED;
 
 		// should we switch to this item?
 		if (g_pGameRules->FShouldSwitchWeapon(this, pItem))
