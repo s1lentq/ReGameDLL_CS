@@ -3198,6 +3198,9 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 #ifdef REGAMEDLL_FIXES
 	else if (FStrEq(pcmd, "cl_setautobuy"))
 	{
+		if (pPlayer->pev->deadflag != DEAD_NO && pPlayer->m_autoBuyString[0] != '\0')
+			return;
+		
 		pPlayer->ClearAutoBuyData();
 
 		for (int i = 1; i < CMD_ARGC_(); i++)
@@ -3215,6 +3218,9 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 	}
 	else if (FStrEq(pcmd, "cl_setrebuy"))
 	{
+		if (pPlayer->pev->deadflag != DEAD_NO && m_rebuyString)
+			return;
+		
 		if (CMD_ARGC_() == 2)
 		{
 			pPlayer->InitRebuyData(parg1);
