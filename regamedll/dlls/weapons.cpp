@@ -1050,7 +1050,19 @@ void CBasePlayerItem::DestroyItem()
 	if (m_pPlayer)
 	{
 		// if attached to a player, remove.
-		m_pPlayer->RemovePlayerItem(this);
+		if (m_pPlayer->RemovePlayerItem(this))
+		{
+
+#ifdef REGAMEDLL_FIXES
+			m_pPlayer->pev->weapons &= ~(1 << m_iId);
+
+			// No more weapon
+			if ((m_pPlayer->pev->weapons & ~(1 << WEAPON_SUIT)) == 0) {
+				m_pPlayer->m_iHideHUD |= HIDEHUD_WEAPONS;
+			}
+#endif
+
+		}
 	}
 
 	Kill();

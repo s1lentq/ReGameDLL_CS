@@ -9665,6 +9665,14 @@ void CBasePlayer::RemoveBomb()
 
 	if (RemovePlayerItem(pBomb)) {
 		pev->weapons &= ~(1 << pBomb->m_iId);
+
+#ifdef REGAMEDLL_FIXES
+		// No more weapon
+		if ((pev->weapons & ~(1 << WEAPON_SUIT)) == 0) {
+			m_iHideHUD |= HIDEHUD_WEAPONS;
+		}
+#endif
+
 		pBomb->Kill();
 	}
 }
