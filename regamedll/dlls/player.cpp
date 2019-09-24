@@ -6282,20 +6282,6 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 
 			break;
 		}
-#ifndef REGAMEDLL_FIXES
-		case 195:
-			// show shortest paths for entire level to nearest node
-			CBaseEntity::Create("node_viewer_fly", pev->origin, pev->angles);
-			break;
-		case 196:
-			// show shortest paths for entire level to nearest node
-			CBaseEntity::Create("node_viewer_large", pev->origin, pev->angles);
-			break;
-		case 197:
-			// show shortest paths for entire level to nearest node
-			CBaseEntity::Create("node_viewer_human", pev->origin, pev->angles);
-			break;
-#endif
 		case 202:
 		{
 			// Random blood splatter
