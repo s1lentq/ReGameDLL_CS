@@ -127,12 +127,6 @@ void CItem::ItemTouch(CBaseEntity *pOther)
 		else
 			UTIL_Remove(this);
 	}
-#ifndef REGAMEDLL_FIXES
-	else if (gEvilImpulse101)
-	{
-		UTIL_Remove(this);
-	}
-#endif
 }
 
 CBaseEntity *CItem::Respawn()

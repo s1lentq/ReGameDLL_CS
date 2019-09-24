@@ -82,7 +82,6 @@ const char *CDeadHEV::m_szPoses[] =
 	"deadtable"
 };
 
-int gEvilImpulse101;
 entvars_t *g_pevLastInflictor;
 
 LINK_ENTITY_TO_CLASS(player, CBasePlayer, CCSPlayer)
@@ -6211,8 +6210,6 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 		}
 #endif
 		case 101:
-			gEvilImpulse101 = TRUE;
-
 #ifdef REGAMEDLL_ADD
 			AddAccount(int(maxmoney.value));
 			ALERT(at_console, "Crediting %s with $%i\n", STRING(pev->netname), int(maxmoney.value));
@@ -6576,10 +6573,7 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(AddPlayerItem)(CBasePlayerItem *pItem)
 
 				pItem->Kill();
 			}
-#ifndef REGAMEDLL_FIXES
-			else if (gEvilImpulse101)
-				pItem->Kill();
-#endif
+
 			return FALSE;
 		}
 
@@ -6614,12 +6608,6 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(AddPlayerItem)(CBasePlayerItem *pItem)
 
 		return TRUE;
 	}
-#ifndef REGAMEDLL_FIXES
-	else if (gEvilImpulse101)
-	{
-		pItem->Kill();
-	}
-#endif
 
 	return FALSE;
 }

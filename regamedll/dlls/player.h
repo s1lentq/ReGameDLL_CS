@@ -940,7 +940,6 @@ inline CBasePlayer *UTIL_PlayerByIndexSafe(int playerIndex)
 	return pPlayer;
 }
 
-extern int gEvilImpulse101;
 extern entvars_t *g_pevLastInflictor;
 extern CBaseEntity *g_pLastSpawn;
 extern CBaseEntity *g_pLastCTSpawn;
