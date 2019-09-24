@@ -6193,22 +6193,6 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 
 	switch (iImpulse)
 	{
-#ifndef REGAMEDLL_FIXES
-		case 76:
-		{
-			if (!giPrecacheGrunt)
-			{
-				giPrecacheGrunt = 1;
-				ALERT(at_console, "You must now restart to use Grunt-o-matic.\n");
-			}
-			else
-			{
-				UTIL_MakeVectors(Vector(0, pev->v_angle.y, 0));
-				CBaseEntity::Create("monster_human_grunt", pev->origin + gpGlobals->v_forward * 128, pev->angles);
-			}
-			break;
-		}
-#endif
 		case 101:
 #ifdef REGAMEDLL_ADD
 			AddAccount(int(maxmoney.value));

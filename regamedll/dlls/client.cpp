@@ -1,6 +1,5 @@
 #include "precompiled.h"
 
-int giPrecacheGrunt = 0;
 int gmsgWeapPickup = 0;
 int gmsgHudText = 0;
 int gmsgHudTextPro = 0;
@@ -4175,9 +4174,6 @@ void ClientPrecache()
 	PRECACHE_SOUND("player/geiger3.wav");
 	PRECACHE_SOUND("player/geiger2.wav");
 	PRECACHE_SOUND("player/geiger1.wav");
-
-	if (giPrecacheGrunt)
-		UTIL_PrecacheOther("enemy_terrorist");
 
 	g_iShadowSprite = PRECACHE_MODEL("sprites/shadow_circle.spr");
 
