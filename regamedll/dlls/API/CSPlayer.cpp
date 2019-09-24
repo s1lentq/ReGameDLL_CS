@@ -230,7 +230,7 @@ EXT_FUNC bool CCSPlayer::RemovePlayerItemEx(const char* pszItemName, bool bRemov
 		if (pPlayer->RemovePlayerItem(pItem)) {
 			pPlayer->pev->weapons &= ~(1 << pItem->m_iId);
 			// No more weapon
-			if (!pPlayer->pev->weapons || pPlayer->pev->weapons == (1 << WEAPON_SUIT)) {
+			if ((pPlayer->pev->weapons & ~(1 << WEAPON_SUIT)) == 0) {
 				pPlayer->m_iHideHUD |= HIDEHUD_WEAPONS;
 			}
 

@@ -6660,12 +6660,7 @@ int EXT_FUNC CBasePlayer::__API_HOOK(GiveAmmo)(int iCount, const char *szName, i
 	{
 		// Send the message that ammo has been picked up
 		MESSAGE_BEGIN(MSG_ONE, gmsgAmmoPickup, nullptr, pev);
-
-#ifdef REGAMEDLL_FIXES
 			WRITE_BYTE(i); // ammo ID
-#else
-			WRITE_BYTE(GetAmmoIndex(szName)); // ammo ID
-#endif
 			WRITE_BYTE(iAdd); // amount
 		MESSAGE_END();
 	}
@@ -7717,7 +7712,7 @@ CBaseEntity *EXT_FUNC CBasePlayer::__API_HOOK(DropPlayerItem)(const char *pszIte
 
 #ifdef REGAMEDLL_FIXES
 		// No more weapon
-		if (!pev->weapons || pev->weapons == (1 << WEAPON_SUIT)) {
+		if ((pev->weapons & ~(1 << WEAPON_SUIT)) == 0) {
 			m_iHideHUD |= HIDEHUD_WEAPONS;
 		}
 #endif
