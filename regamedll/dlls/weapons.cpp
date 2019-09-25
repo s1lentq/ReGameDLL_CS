@@ -1775,19 +1775,44 @@ void CWeaponBox::Touch(CBaseEntity *pOther)
 					int playerGrenades = pPlayer->m_rgAmmo[pGrenade->m_iPrimaryAmmoType];
 
 #ifdef REGAMEDLL_FIXES
-					auto info = GetWeaponInfo(pGrenade->m_iId);
-					if (info && playerGrenades < info->maxRounds)
-					{
-						auto pNext = m_rgpPlayerItems[i]->m_pNext;
-						if (pPlayer->AddPlayerItem(pItem))
-						{
-							pItem->AttachToPlayer(pPlayer);
-							bEmitSound = true;
-						}
+					const int boxAmmoSlot = 1;
 
-						// unlink this weapon from the box
-						m_rgpPlayerItems[i] = pItem = pNext;
-						continue;
+					if (playerGrenades < pGrenade->iMaxAmmo1())
+					{
+						if (m_rgAmmo[boxAmmoSlot] > 1 && playerGrenades > 0)
+						{
+							if (!FStringNull(m_rgiszAmmo[boxAmmoSlot])
+								&& pPlayer->GiveAmmo(1, STRING(m_rgiszAmmo[boxAmmoSlot]), pGrenade->iMaxAmmo1()) != -1)
+							{
+								m_rgAmmo[boxAmmoSlot]--;
+
+								EMIT_SOUND(pPlayer->edict(), CHAN_ITEM, "items/9mmclip1.wav", VOL_NORM, ATTN_NORM);
+							}
+						}
+						else
+						{
+							auto pNext = m_rgpPlayerItems[i]->m_pNext;
+
+							if (pPlayer->AddPlayerItem(pItem))
+							{
+								pItem->AttachToPlayer(pPlayer);
+								bEmitSound = true;
+							}
+							else
+							{
+								if (m_rgAmmo[boxAmmoSlot] >= 1 && !FStringNull(m_rgiszAmmo[boxAmmoSlot])
+									&& pPlayer->GiveAmmo(1, STRING(m_rgiszAmmo[boxAmmoSlot]), pGrenade->iMaxAmmo1()) != -1)
+								{
+									m_rgAmmo[boxAmmoSlot]--;
+
+									EMIT_SOUND(pPlayer->edict(), CHAN_ITEM, "items/9mmclip1.wav", VOL_NORM, ATTN_NORM);
+								}
+							}
+
+							// unlink this weapon from the box
+							m_rgpPlayerItems[i] = pItem = pNext;
+							continue;
+						}
 					}
 #else
 
