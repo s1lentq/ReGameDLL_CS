@@ -58,7 +58,7 @@ public:
 	virtual void GiveShield(bool bDeploy = true);
 	virtual void DropShield(bool bDeploy = true);
 	virtual void DropPlayerItem(const char *pszItemName);
-	virtual void RemoveShield();
+	virtual bool RemoveShield();
 	virtual void RemoveAllItems(bool bRemoveSuit);
 	virtual bool RemovePlayerItem(const char* pszItemName);
 	virtual void SetPlayerModel(bool bHasC4);
@@ -96,6 +96,10 @@ public:
 	virtual bool HintMessageEx(const char *pMessage, float duration = 6.0f, bool bDisplayIfPlayerDead = false, bool bOverride = false);
 
 	void Reset();
+
+	void OnSpawn();
+	void OnKilled();
+
 	CBasePlayer *BasePlayer() const;
 
 public:
