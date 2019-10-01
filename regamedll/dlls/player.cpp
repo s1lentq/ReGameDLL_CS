@@ -5261,6 +5261,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Spawn)()
 #ifdef REGAMEDLL_FIXES
 	pev->watertype = CONTENTS_EMPTY;
 	pev->waterlevel = 0;
+	pev->basevelocity = g_vecZero;	// pushed by trigger_push
 #endif
 
 	m_bitsHUDDamage = -1;
