@@ -3885,7 +3885,7 @@ void CBasePlayer::PlayerUse()
 		}
 	}
 
-	bool useNewHostages = !TheNavAreaList.empty();
+	bool useNewHostages = !TheNavAreaList.empty() && AreImprovAllowed();
 	CBaseEntity *pObject = nullptr;
 	CBaseEntity *pClosest = nullptr;
 	Vector vecLOS;
