@@ -808,7 +808,7 @@ private:
 #define BOMB_FLAG_DROPPED	0 // if the bomb was dropped due to voluntary dropping or death/disconnect
 #define BOMB_FLAG_PLANTED	1 // if the bomb has been planted will also trigger the round timer to hide will also show where the dropped bomb on the Terrorist team's radar.
 
-const float C4_MAX_AMMO       = 1.0f;
+const int C4_MAX_AMMO         = 1;
 const float C4_MAX_SPEED      = 250.0f;
 const float C4_ARMING_ON_TIME = 3.0f;
 

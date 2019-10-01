@@ -1234,7 +1234,7 @@ BOOL CBasePlayerWeapon::AddPrimaryAmmo(int iCount, char *szName, int iMaxClip, i
 
 	if (iMaxClip < 1)
 	{
-		m_iClip = -1;
+		m_iClip = WEAPON_NOCLIP;
 		iIdAmmo = m_pPlayer->GiveAmmo(iCount, szName, iMaxCarry);
 	}
 	else if (m_iClip == 0)
@@ -1457,7 +1457,7 @@ int CBasePlayerWeapon::ExtractClipAmmo(CBasePlayerWeapon *pWeapon)
 		iAmmo = m_iClip;
 	}
 
-	return pWeapon->m_pPlayer->GiveAmmo(iAmmo, (char *)pszAmmo1(), iMaxAmmo1());
+	return pWeapon->m_pPlayer->GiveAmmo(iAmmo, pszAmmo1(), iMaxAmmo1());
 }
 
 // RetireWeapon - no more ammo for this gun, put it away.
