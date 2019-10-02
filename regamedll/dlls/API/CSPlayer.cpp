@@ -203,40 +203,7 @@ EXT_FUNC bool CCSPlayer::RemovePlayerItemEx(const char* pszItemName, bool bRemov
 
 	else if (FStrEq(pszItemName, "weapon_shield"))
 	{
-		if (!pPlayer->HasShield())
-			return false;
-
-		bool bIsProtectedShield = pPlayer->IsProtectedByShield();
-		pPlayer->RemoveShield();
-
-		CBasePlayerWeapon *pWeapon = static_cast<CBasePlayerWeapon *>(pPlayer->m_pActiveItem);
-		if (pWeapon)
-		{
-			if (!pWeapon->CanHolster())
-				return false;
-
-			if (pWeapon->m_iId == WEAPON_HEGRENADE || pWeapon->m_iId == WEAPON_FLASHBANG || pWeapon->m_iId == WEAPON_SMOKEGRENADE)
-			{
-				if (pPlayer->m_rgAmmo[pWeapon->m_iPrimaryAmmoType] <= 0)
-					g_pGameRules->GetNextBestWeapon(pPlayer, pWeapon);
-			}
-
-			if (pWeapon->m_flStartThrow != 0.0f)
-				pWeapon->Holster();
-
-			if (pPlayer->IsReloading())
-			{
-				pWeapon->m_fInReload = FALSE;
-				pPlayer->m_flNextAttack = 0;
-			}
-
-			if (bIsProtectedShield)
-				pWeapon->SecondaryAttack();
-
-			pWeapon->Deploy();
-		}
-
-		return true;
+		return RemoveShield();
 	}
 
 	auto pItem = GetItemByName(pszItemName);
@@ -293,6 +260,7 @@ EXT_FUNC CBaseEntity *CCSPlayer::GiveNamedItemEx(const char *pszName)
 		}
 	} else if (FStrEq(pszName, "weapon_shield")) {
 		pPlayer->DropPrimary();
+		pPlayer->DropPlayerItem("weapon_elite");
 		pPlayer->GiveShield();
 		return nullptr;
 	}
@@ -340,9 +308,45 @@ EXT_FUNC void CCSPlayer::DropPlayerItem(const char *pszItemName)
 	BasePlayer()->DropPlayerItem(pszItemName);
 }
 
-EXT_FUNC void CCSPlayer::RemoveShield()
+EXT_FUNC bool CCSPlayer::RemoveShield()
 {
-	BasePlayer()->RemoveShield();
+	CBasePlayer *pPlayer = BasePlayer();
+
+	if (!pPlayer->HasShield())
+		return false;
+
+	bool bIsProtectedShield = pPlayer->IsProtectedByShield();
+	pPlayer->RemoveShield();
+
+	CBasePlayerWeapon *pWeapon = static_cast<CBasePlayerWeapon *>(pPlayer->m_pActiveItem);
+	if (pWeapon && pWeapon->IsWeapon())
+	{
+		if (!pWeapon->CanHolster())
+			return false;
+
+		if (pWeapon->m_iId == WEAPON_HEGRENADE || pWeapon->m_iId == WEAPON_FLASHBANG || pWeapon->m_iId == WEAPON_SMOKEGRENADE)
+		{
+			if (pPlayer->m_rgAmmo[pWeapon->m_iPrimaryAmmoType] <= 0)
+				g_pGameRules->GetNextBestWeapon(pPlayer, pWeapon);
+		}
+
+		if (pWeapon->m_flStartThrow != 0.0f)
+			pWeapon->Holster();
+
+		if (pPlayer->IsReloading())
+		{
+			pWeapon->m_fInReload = FALSE;
+			pPlayer->m_flNextAttack = 0;
+		}
+
+		if (bIsProtectedShield)
+			pWeapon->SecondaryAttack();
+
+		if (!pWeapon->Deploy())
+			return false;
+	}
+
+	return true;
 }
 
 EXT_FUNC void CCSPlayer::RemoveAllItems(bool bRemoveSuit)
@@ -528,4 +532,24 @@ void CCSPlayer::Reset()
 	m_vecOldvAngle = g_vecZero;
 	m_iWeaponInfiniteAmmo = 0;
 	m_iWeaponInfiniteIds = 0;
+}
+
+void CCSPlayer::OnSpawn()
+{
+	m_flRespawnPending = 0.0f;
+}
+
+void CCSPlayer::OnKilled()
+{
+#ifdef REGAMEDLL_ADD
+	if (forcerespawn.value > 0)
+	{
+		m_flRespawnPending = gpGlobals->time + forcerespawn.value;
+	}
+
+	if (GetProtectionState() == ProtectionSt_Active)
+	{
+		BasePlayer()->RemoveSpawnProtection();
+	}
+#endif
 }

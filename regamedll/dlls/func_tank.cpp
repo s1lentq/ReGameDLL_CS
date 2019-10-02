@@ -275,7 +275,12 @@ void CFuncTank::StopControl()
 
 	ALERT(at_console, "stopped using TANK\n");
 
-	m_pController->m_iHideHUD &= ~HIDEHUD_WEAPONS;
+#ifdef REGAMEDLL_FIXES
+	if (m_pController->m_pActiveItem)
+#endif
+	{
+		m_pController->m_iHideHUD &= ~HIDEHUD_WEAPONS;
+	}
 
 	pev->nextthink = 0;
 	m_pController = nullptr;

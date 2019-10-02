@@ -168,16 +168,35 @@ bool CCSBotManager::IsWeaponUseable(CBasePlayerItem *item) const
 	if (item->m_iId == WEAPON_C4)
 		return true;
 
-	int weaponClass = WeaponIDToWeaponClass(item->m_iId);
+	WeaponClassType weaponClass = WeaponIDToWeaponClass(item->m_iId);
 
-	if ((!AllowShotguns() && weaponClass == WEAPONCLASS_SHOTGUN)
-		|| (!AllowMachineGuns() && weaponClass == WEAPONCLASS_MACHINEGUN)
-		|| (!AllowRifles() && weaponClass == WEAPONCLASS_RIFLE)
-		|| (!AllowSnipers() && weaponClass == WEAPONCLASS_SNIPERRIFLE)
+	if ((!AllowShotguns()          && weaponClass == WEAPONCLASS_SHOTGUN)
+		|| (!AllowMachineGuns()    && weaponClass == WEAPONCLASS_MACHINEGUN)
+		|| (!AllowRifles()         && weaponClass == WEAPONCLASS_RIFLE)
+		|| (!AllowSnipers()        && weaponClass == WEAPONCLASS_SNIPERRIFLE)
 		|| (!AllowSubMachineGuns() && weaponClass == WEAPONCLASS_SUBMACHINEGUN)
 		|| (!AllowTacticalShield() && item->m_iId == WEAPON_SHIELDGUN)
-		|| (!AllowPistols() && weaponClass == WEAPONCLASS_PISTOL)
-		|| (!AllowGrenades() && weaponClass == WEAPONCLASS_GRENADE))
+		|| (!AllowPistols()        && weaponClass == WEAPONCLASS_PISTOL)
+		|| (!AllowGrenades()       && weaponClass == WEAPONCLASS_GRENADE))
+	{
+		return false;
+	}
+
+	return true;
+}
+
+bool CCSBotManager::IsWeaponUseable(ArmouryItemPack item) const
+{
+	WeaponClassType weaponClass = WeaponIDToWeaponClass(item);
+
+	if ((!AllowShotguns()          && weaponClass == WEAPONCLASS_SHOTGUN)
+		|| (!AllowMachineGuns()    && weaponClass == WEAPONCLASS_MACHINEGUN)
+		|| (!AllowRifles()         && weaponClass == WEAPONCLASS_RIFLE)
+		|| (!AllowSnipers()        && weaponClass == WEAPONCLASS_SNIPERRIFLE)
+		|| (!AllowSubMachineGuns() && weaponClass == WEAPONCLASS_SUBMACHINEGUN)
+		|| (!AllowTacticalShield() && item == ARMOURY_SHIELD)
+		|| (!AllowPistols()        && weaponClass == WEAPONCLASS_PISTOL)
+		|| (!AllowGrenades()       && weaponClass == WEAPONCLASS_GRENADE))
 	{
 		return false;
 	}

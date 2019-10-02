@@ -835,7 +835,7 @@ void CBasePlayerWeapon::HandleInfiniteAmmo()
 	if (!nInfiniteAmmo)
 		nInfiniteAmmo = static_cast<int>(infiniteAmmo.value);
 
-	if (nInfiniteAmmo == WPNMODE_INFINITE_CLIP)
+	if (nInfiniteAmmo == WPNMODE_INFINITE_CLIP && !IsGrenadeWeapon(m_iId))
 	{
 		m_iClip = iMaxClip();
 	}
@@ -1679,7 +1679,7 @@ void CWeaponBox::Touch(CBaseEntity *pOther)
 		while (pItem)
 		{
 			if ((pPlayer->HasShield() && pItem->m_iId == WEAPON_ELITE)
-				|| (pPlayer->IsBot() && (TheCSBots() != nullptr && !TheCSBots()->IsWeaponUseable(pItem))))
+				|| (pPlayer->IsBot() && TheCSBots() && !TheCSBots()->IsWeaponUseable(pItem)))
 			{
 				return;
 			}
@@ -2095,7 +2095,7 @@ void CArmoury::Spawn()
 		m_iCount = 1;
 	}
 
-#ifdef REGAMEDLL_ADD
+#ifdef REGAMEDLL_FIXES
 	// Cache the placed origin of source point
 	pev->oldorigin = pev->origin;
 #endif
@@ -2167,7 +2167,7 @@ void CArmoury::Restart()
 
 	Draw();
 
-#ifdef REGAMEDLL_ADD
+#ifdef REGAMEDLL_FIXES
 	// Restored origin from the cache
 	UTIL_SetOrigin(pev, pev->oldorigin);
 	DROP_TO_FLOOR(edict());
@@ -2255,6 +2255,11 @@ void CArmoury::ArmouryTouch(CBaseEntity *pOther)
 		return;
 #endif
 
+#ifdef REGAMEDLL_FIXES
+	if (pToucher->IsBot() && TheCSBots() && !TheCSBots()->IsWeaponUseable(m_iItem))
+		return;
+#endif
+
 	// primary weapons
 	if (m_iCount > 0 && (m_iItem <= ARMOURY_M249
 #ifdef REGAMEDLL_ADD
@@ -2281,6 +2286,9 @@ void CArmoury::ArmouryTouch(CBaseEntity *pOther)
 	else if (m_iCount > 0 && m_iItem >= ARMOURY_GLOCK18)
 	{
 		if (pToucher->m_rgpPlayerItems[PISTOL_SLOT])
+			return;
+
+		if (pToucher->HasShield() && m_iItem == ARMOURY_ELITE)
 			return;
 
 		m_iCount--;
@@ -2315,8 +2323,15 @@ void CArmoury::ArmouryTouch(CBaseEntity *pOther)
 		}
 		case ARMOURY_KEVLAR:
 		{
+
+#ifdef REGAMEDLL_FIXES
+			if (pToucher->m_iKevlar != ARMOR_NONE && pToucher->pev->armorvalue >= MAX_NORMAL_BATTERY)
+#else
 			if (pToucher->m_iKevlar == ARMOR_KEVLAR)
+#endif
+			{
 				return;
+			}
 
 			pToucher->GiveNamedItem("item_kevlar");
 			m_iCount--;
@@ -2324,8 +2339,14 @@ void CArmoury::ArmouryTouch(CBaseEntity *pOther)
 		}
 		case ARMOURY_ASSAULT:
 		{
-			if (pToucher->m_iKevlar == ARMOR_VESTHELM)
+			if (pToucher->m_iKevlar == ARMOR_VESTHELM
+#ifdef REGAMEDLL_FIXES
+				&& pToucher->pev->armorvalue >= MAX_NORMAL_BATTERY
+#endif
+				)
+			{
 				return;
+			}
 
 			pToucher->GiveNamedItem("item_assaultsuit");
 			m_iCount--;
@@ -2376,7 +2397,7 @@ void CArmoury::KeyValue(KeyValueData *pkvd)
 	}
 }
 
-#ifdef REGAMEDLL_ADD
+#ifdef REGAMEDLL_FIXES
 void CArmoury::SetObjectCollisionBox()
 {
 	pev->absmin = pev->origin + Vector(-16, -16, 0);

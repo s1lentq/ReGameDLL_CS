@@ -259,12 +259,12 @@ void PM_PlayStepSound(int step, float fvol)
 	case STEP_SLOSH:
 		switch (irand)
 		{
-			// right foot
-			case 0: pmove->PM_PlaySound(CHAN_BODY, "player/pl_slosh1.wav", fvol, ATTN_NORM, 0, PITCH_NORM); break;
-			case 1: pmove->PM_PlaySound(CHAN_BODY, "player/pl_slosh3.wav", fvol, ATTN_NORM, 0, PITCH_NORM); break;
-			// left foot
-			case 2: pmove->PM_PlaySound(CHAN_BODY, "player/pl_slosh2.wav", fvol, ATTN_NORM, 0, PITCH_NORM); break;
-			case 3: pmove->PM_PlaySound(CHAN_BODY, "player/pl_slosh4.wav", fvol, ATTN_NORM, 0, PITCH_NORM); break;
+		// right foot
+		case 0: pmove->PM_PlaySound(CHAN_BODY, "player/pl_slosh1.wav", fvol, ATTN_NORM, 0, PITCH_NORM); break;
+		case 1: pmove->PM_PlaySound(CHAN_BODY, "player/pl_slosh3.wav", fvol, ATTN_NORM, 0, PITCH_NORM); break;
+		// left foot
+		case 2: pmove->PM_PlaySound(CHAN_BODY, "player/pl_slosh2.wav", fvol, ATTN_NORM, 0, PITCH_NORM); break;
+		case 3: pmove->PM_PlaySound(CHAN_BODY, "player/pl_slosh4.wav", fvol, ATTN_NORM, 0, PITCH_NORM); break;
 		}
 		break;
 	case STEP_WADE:
@@ -1480,12 +1480,9 @@ void PM_CategorizePosition()
 int PM_GetRandomStuckOffsets(int nIndex, int server, vec_t *offset)
 {
 	// Last time we did a full
-	int idx;
-	idx = rgStuckLast[nIndex][server]++;
-
-	VectorCopy(rgv3tStuckTable[idx % 54], offset);
-
-	return (idx % 54);
+	int idx = rgStuckLast[nIndex][server]++;
+	VectorCopy(rgv3tStuckTable[idx % ARRAYSIZE(rgv3tStuckTable)], offset);
+	return (idx % ARRAYSIZE(rgv3tStuckTable));
 }
 
 void PM_ResetStuckOffsets(int nIndex, int server)
@@ -1542,7 +1539,7 @@ qboolean PM_CheckStuck()
 
 				nReps++;
 			}
-			while (nReps < 54);
+			while (nReps < ARRAYSIZE(rgv3tStuckTable));
 		}
 	}
 
@@ -1571,7 +1568,7 @@ qboolean PM_CheckStuck()
 	{
 		PM_ResetStuckOffsets(pmove->player_index, pmove->server);
 
-		if (i >= 27)
+		if (i >= (ARRAYSIZE(rgv3tStuckTable) / 2))
 		{
 			VectorCopy(test, pmove->origin);
 		}
@@ -1772,7 +1769,7 @@ void PM_FixPlayerCrouchStuck(int direction)
 	int i;
 	vec3_t test;
 
-	hitent = pmove->PM_TestPlayerPosition (pmove->origin, nullptr);
+	hitent = pmove->PM_TestPlayerPosition(pmove->origin, nullptr);
 
 	if (hitent == -1)
 	{
@@ -1798,6 +1795,23 @@ void PM_FixPlayerCrouchStuck(int direction)
 
 void PM_UnDuck()
 {
+#ifdef REGAMEDLL_ADD
+	if (unduck_method.value)
+#endif
+	{
+#ifdef REGAMEDLL_FIXES
+		// if ducking isn't finished yet, so don't unduck
+		if (pmove->bInDuck || !(pmove->flags & FL_DUCKING))
+		{
+			pmove->usehull = 0;
+			pmove->flDuckTime = 0;
+			pmove->bInDuck = FALSE;
+			pmove->view_ofs[2] = PM_VEC_VIEW;
+			return;
+		}
+#endif // #ifdef REGAMEDLL_FIXES
+	}
+
 	pmtrace_t trace;
 	vec3_t newOrigin;
 
@@ -1866,7 +1880,7 @@ void PM_Duck()
 		pmove->oldbuttons &= ~IN_DUCK;
 	}
 
-#ifdef REGAMEDLL_FIXES
+#ifdef REGAMEDLL_ADD
 	// Prevent ducking if the iuser3 variable is contain PLAYER_PREVENT_DUCK
 	if ((pmove->iuser3 & PLAYER_PREVENT_DUCK) == PLAYER_PREVENT_DUCK)
 	{
@@ -2385,6 +2399,14 @@ void PM_Jump()
 
 		return;
 	}
+
+#ifdef REGAMEDLL_ADD
+	// Prevent jumping if the iuser3 variable is contain PLAYER_PREVENT_JUMP
+	if ((pmove->iuser3 & PLAYER_PREVENT_JUMP) == PLAYER_PREVENT_JUMP)
+	{
+		return;
+	}
+#endif
 
 	// No more effect
 	// in air, so no effect

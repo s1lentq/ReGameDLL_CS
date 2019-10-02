@@ -1136,19 +1136,16 @@ void CGrenade::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useTy
 	// TODO: We must be sure that the activator is a player.
 	CBasePlayer *pPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pActivator->pev);
 
+#ifdef REGAMEDLL_FIXES
+	if (!pPlayer->IsPlayer())
+		return;
+#endif
+
 	// For CTs to defuse the c4
 	if (pPlayer->m_iTeam != CT)
 	{
 		return;
 	}
-
-#ifdef REGAMEDLL_FIXES
-	if ((pPlayer->pev->flags & FL_ONGROUND) != FL_ONGROUND) // Defuse should start only on ground
-	{
-		ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#C4_Defuse_Must_Be_On_Ground");
-		return;
-	}
-#endif
 
 	if (m_bStartDefuse)
 	{
@@ -1158,8 +1155,16 @@ void CGrenade::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useTy
 		{
 			m_fNextDefuse = gpGlobals->time + NEXT_DEFUSE_TIME;
 		}
+
 		return;
 	}
+#ifdef REGAMEDLL_FIXES
+	else if ((pPlayer->pev->flags & FL_ONGROUND) != FL_ONGROUND) // Defuse should start only on ground
+	{
+		ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#C4_Defuse_Must_Be_On_Ground");
+		return;
+	}
+#endif
 
 	DefuseBombStart(pPlayer);
 }
@@ -1270,8 +1275,14 @@ CGrenade *CGrenade::__API_HOOK(ShootSmokeGrenade)(entvars_t *pevOwner, VectorRef
 
 void AnnounceFlashInterval(float interval, float offset)
 {
-	if (!AreRunningCZero())
+	if (!AreRunningCZero()
+#ifdef REGAMEDLL_ADD
+		&& !show_scenarioicon.value
+#endif
+		)
+	{
 		return;
+	}
 
 	MESSAGE_BEGIN(MSG_ALL, gmsgScenarioIcon);
 		WRITE_BYTE(1);
@@ -1378,7 +1389,7 @@ void CGrenade::C4Think()
 
 	// If the timer has expired ! blow this bomb up!
 #ifdef REGAMEDLL_FIXES
-	if(gpGlobals->time >= m_flC4Blow && (!(m_bStartDefuse && m_pBombDefuser) || gpGlobals->time < m_flDefuseCountDown)) // Prevent exploding after defusing.
+	if (gpGlobals->time >= m_flC4Blow && (!(m_bStartDefuse && m_pBombDefuser) || gpGlobals->time < m_flDefuseCountDown)) // Prevent exploding after defusing.
 #else
 	if (gpGlobals->time >= m_flC4Blow)
 #endif

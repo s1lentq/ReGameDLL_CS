@@ -115,6 +115,7 @@ cvar_t hostagehurtable           = { "mp_hostage_hurtable", "1", FCVAR_SERVER, 1
 cvar_t roundover                 = { "mp_roundover", "0", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t forcerespawn              = { "mp_forcerespawn", "0", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t show_radioicon            = { "mp_show_radioicon", "1", 0, 1.0f, nullptr };
+cvar_t show_scenarioicon         = { "mp_show_scenarioicon", "0", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t old_bomb_defused_sound    = { "mp_old_bomb_defused_sound", "1", 0, 1.0f, nullptr };
 cvar_t item_staytime             = { "mp_item_staytime", "300", FCVAR_SERVER, 300.0f, nullptr };
 cvar_t legacy_bombtarget_touch   = { "mp_legacy_bombtarget_touch", "1", 0, 1.0f, nullptr };
@@ -126,6 +127,7 @@ cvar_t buy_anywhere              = { "mp_buy_anywhere", "0", FCVAR_SERVER, 0.0f,
 
 cvar_t allow_point_servercommand = { "mp_allow_point_servercommand", "0", 0, 0.0f, nullptr };
 cvar_t hullbounds_sets           = { "mp_hullbounds_sets", "1", 0, 0.0f, nullptr };
+cvar_t unduck_method             = { "mp_unduck_method", "0", 0, 0.0f, nullptr };
 
 cvar_t scoreboard_showmoney      = { "mp_scoreboard_showmoney", "3", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t scoreboard_showhealth     = { "mp_scoreboard_showhealth", "3", FCVAR_SERVER, 0.0f, nullptr };
@@ -316,6 +318,12 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&roundover);
 	CVAR_REGISTER(&forcerespawn);
 	CVAR_REGISTER(&show_radioicon);
+
+	if (!AreRunningCZero())
+	{
+		CVAR_REGISTER(&show_scenarioicon);
+	}
+	
 	CVAR_REGISTER(&old_bomb_defused_sound);
 	CVAR_REGISTER(&item_staytime);
 	CVAR_REGISTER(&legacy_bombtarget_touch);
@@ -326,6 +334,7 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&buy_anywhere);
 	CVAR_REGISTER(&allow_point_servercommand);
 	CVAR_REGISTER(&hullbounds_sets);
+	CVAR_REGISTER(&unduck_method);
 
 	CVAR_REGISTER(&ff_damage_reduction_bullets);
 	CVAR_REGISTER(&ff_damage_reduction_grenade);

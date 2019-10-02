@@ -447,6 +447,7 @@ const char *BuyAliasToWeaponID(const char *alias, WeaponIdType &id);
 const char *WeaponIDToAlias(int id);
 WeaponClassType AliasToWeaponClass(const char *alias);
 WeaponClassType WeaponIDToWeaponClass(int id);
+WeaponClassType WeaponIDToWeaponClass(ArmouryItemPack id);
 bool IsPrimaryWeapon(int id);
 bool IsSecondaryWeapon(int id);
 bool IsGrenadeWeapon(int id);

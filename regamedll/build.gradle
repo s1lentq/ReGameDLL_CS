@@ -165,9 +165,13 @@ void setupToolchain(NativeBinarySpec b)
 			cfg.linkerOptions.args '-qno-opt-class-analysis'
 		}
 
+		if (cfg.linkerOptions.staticLibStdCpp) {
+			cfg.singleDefines 'BUILD_STATIC_LIBSTDC'
+		}
+
 		cfg.compilerOptions.args '-g0', '-fno-rtti', '-fno-exceptions'
 		cfg.projectLibpath(project, '/lib/linux32')
-		cfg.extraLibs 'dl', 'm', 'stdc++', 'aelf32'
+		cfg.extraLibs 'dl', 'm', 'aelf32'
 	}
 
 	if (GradleCppUtils.windows && !unitTestExecutable) {
