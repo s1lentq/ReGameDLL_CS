@@ -263,7 +263,7 @@ enum MaxAmmoType
 	MAX_AMMO_SMOKEGRENADE = 1,
 	MAX_AMMO_HEGRENADE    = 1,
 	MAX_AMMO_FLASHBANG    = 2,
-	MAX_AMMO_C4 = 1,
+	MAX_AMMO_C4           = 1,
 };
 
 enum AmmoType
