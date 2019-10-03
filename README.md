@@ -22,6 +22,13 @@ Archive's bin directory contains 2 subdirectories, 'bugfixed' and 'pure'
 <pre>ReGameDLL_CS also have beta version with latest changes from official version of Counter-Strike.</pre>
 * Enter `-beta` option at the command line HLDS.
 
+## Commands
+| Command                             | Description                                     |
+| :---------------------------------- | :---------------------------------------------- |
+| game version                        | Will show GameDLL build version, date & URL. |
+| endround                            | Args:<br/>`T` force round end with Terrorists win. <br/>`CT` force round end with Counter-Terrorists win. <br/> or terminate round draw when called without arguments. |
+| mp_swapteams                        | Swap the teams and restart the game. |
+
 ## Configuration (cvars)
 <details>
 <summary>Click to expand</summary>
