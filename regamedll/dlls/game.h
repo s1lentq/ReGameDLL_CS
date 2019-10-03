@@ -171,6 +171,8 @@ extern cvar_t ff_damage_reduction_other;
 extern cvar_t radio_timeout;
 extern cvar_t radio_maxinround;
 
+extern cvar_t ct_default_weapons;
+
 #endif
 
 extern cvar_t scoreboard_showmoney;

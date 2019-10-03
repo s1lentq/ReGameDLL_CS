@@ -1454,9 +1454,24 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 		if (!HasRestrictItem(ITEM_KNIFE, ITEM_TYPE_EQUIPPED)) {
 			GiveNamedItem("weapon_knife");
 		}
+
+#ifdef REGAMEDLL_ADD
+		char* szWeaponName;
+		char* rest = ct_default_weapons.string;
+
+		while ((szWeaponName = strtok_r(rest, " ", &rest)))
+		{
+			ItemID const iItemID = GetItemIdByName(szWeaponName);
+
+			if (iItemID != ITEM_NONE && !HasRestrictItem(iItemID, ITEM_TYPE_EQUIPPED)) {
+				GiveNamedItem(szWeaponName);
+			}
+		}
+#else
 		if (!HasRestrictItem(ITEM_USP, ITEM_TYPE_EQUIPPED)) {
 			GiveWeapon(m_bIsVIP ? 12 : 24, "weapon_usp");
 		}
+#endif
 
 		break;
 	}
