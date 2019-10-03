@@ -623,6 +623,11 @@ LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN2(CHalfLifeMultiplay, CSGameRules, GiveC4)
 
 void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(GiveC4)()
 {
+	if (!give_player_c4.value)
+	{
+		return;
+	}
+
 	int iTeamCount;
 	int iTemp = 0;
 	int humansPresent = 0;
