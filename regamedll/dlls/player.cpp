@@ -1451,39 +1451,126 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 	{
 	case CT:
 	{
+#ifdef REGAMEDLL_ADD
+		const char s[2] = " ";
+		char* token;
+
+		token = strtok(ct_default_weapons_melee.string, s); // Getting melee list for CT
+		while (token != NULL) {
+			ItemID const iItemID = GetItemIdByName(token); // TODO: GetWeaponInfo
+
+			if (iItemID != ITEM_NONE && !HasRestrictItem(iItemID, ITEM_TYPE_EQUIPPED)
+				&& (iItemID == ITEM_KNIFE)
+				) {
+				GiveNamedItemEx(token); // TODO: GetWeaponInfo
+			}
+
+			token = strtok(NULL, s);
+		}
+
+		token = strtok(ct_default_weapons_secondary.string, s); // Getting secondary list for CT
+		while (token != NULL) {
+			ItemID const iItemID = GetItemIdByName(token); // TODO: GetWeaponInfo
+
+			if (iItemID != ITEM_NONE && !HasRestrictItem(iItemID, ITEM_TYPE_EQUIPPED)
+				&& (iItemID == ITEM_P228 || iItemID == ITEM_DEAGLE || iItemID == ITEM_ELITE || iItemID == ITEM_FIVESEVEN
+					|| iItemID == ITEM_GLOCK || iItemID == ITEM_GLOCK18 || iItemID == ITEM_USP
+					)
+				) {
+				GiveWeapon(m_bIsVIP ? 12 : 24, token); // TODO: GetWeaponInfo
+			}
+
+			token = strtok(NULL, s);
+		}
+
+		token = strtok(ct_default_weapons_primary.string, s); // Getting primary list for CT
+		while (token != NULL) {
+			ItemID const iItemID = GetItemIdByName(token); // TODO: GetWeaponInfo
+
+			if (iItemID != ITEM_NONE && !HasRestrictItem(iItemID, ITEM_TYPE_EQUIPPED)
+				&& (iItemID == ITEM_AK47 || iItemID == ITEM_AUG || iItemID == ITEM_AWP || iItemID == ITEM_FAMAS
+					|| iItemID == ITEM_G3SG1 || iItemID == ITEM_GALIL || iItemID == ITEM_M249 || iItemID == ITEM_M3
+					|| iItemID == ITEM_M4A1 || iItemID == ITEM_MAC10 || iItemID == ITEM_MP5N || iItemID == ITEM_P90
+					|| iItemID == ITEM_SCOUT || iItemID == ITEM_SG550 || iItemID == ITEM_SG552 || iItemID == ITEM_UMP45
+					|| iItemID == ITEM_XM1014
+					)
+				) {
+				GiveNamedItemEx(token); // TODO: GetWeaponInfo
+			}
+
+			token = strtok(NULL, s);
+		}
+
+		// TODO: Also add this for grenades
+#else
 		if (!HasRestrictItem(ITEM_KNIFE, ITEM_TYPE_EQUIPPED)) {
 			GiveNamedItem("weapon_knife");
 		}
-
-#ifdef REGAMEDLL_ADD
-		char* szWeaponName;
-		char* rest = ct_default_weapons.string;
-
-		while ((szWeaponName = strtok_r(rest, " ", &rest)))
-		{
-			ItemID const iItemID = GetItemIdByName(szWeaponName);
-
-			if (iItemID != ITEM_NONE && !HasRestrictItem(iItemID, ITEM_TYPE_EQUIPPED)) {
-				GiveNamedItem(szWeaponName);
-			}
-		}
-#else
 		if (!HasRestrictItem(ITEM_USP, ITEM_TYPE_EQUIPPED)) {
 			GiveWeapon(m_bIsVIP ? 12 : 24, "weapon_usp");
 		}
-#endif
-
+#endif // REGAMEDLL_ADD
 		break;
 	}
 	case TERRORIST:
 	{
+#ifdef REGAMEDLL_ADD
+		const char s[2] = " ";
+		char* token;
+
+		token = strtok(t_default_weapons_melee.string, s); // Getting melee list for T
+		while (token != NULL) {
+			ItemID const iItemID = GetItemIdByName(token); // TODO: GetWeaponInfo
+
+			if (iItemID != ITEM_NONE && !HasRestrictItem(iItemID, ITEM_TYPE_EQUIPPED)
+				&& (iItemID == ITEM_KNIFE)
+				) {
+				GiveNamedItemEx(token); // TODO: GetWeaponInfo
+			}
+
+			token = strtok(NULL, s);
+		}
+
+		token = strtok(t_default_weapons_secondary.string, s); // Getting secondary list for T
+		while (token != NULL) {
+			ItemID const iItemID = GetItemIdByName(token); // TODO: GetWeaponInfo
+
+			if (iItemID != ITEM_NONE && !HasRestrictItem(iItemID, ITEM_TYPE_EQUIPPED)
+				&& (iItemID == ITEM_P228 || iItemID == ITEM_DEAGLE || iItemID == ITEM_ELITE || iItemID == ITEM_FIVESEVEN || iItemID == ITEM_GLOCK || iItemID == ITEM_GLOCK18 || iItemID == ITEM_USP)
+				) {
+				GiveWeapon(m_bIsVIP ? 12 : 12 * 2, token); // TODO: GetWeaponInfo
+			}
+
+			token = strtok(NULL, s);
+		}
+
+		token = strtok(t_default_weapons_primary.string, s); // Getting primary list for T
+		while (token != NULL) {
+			ItemID const iItemID = GetItemIdByName(token); // TODO: GetWeaponInfo
+
+			if (iItemID != ITEM_NONE && !HasRestrictItem(iItemID, ITEM_TYPE_EQUIPPED)
+				&& (iItemID == ITEM_AK47 || iItemID == ITEM_AUG || iItemID == ITEM_AWP || iItemID == ITEM_FAMAS
+					|| iItemID == ITEM_G3SG1 || iItemID == ITEM_GALIL || iItemID == ITEM_M249 || iItemID == ITEM_M3
+					|| iItemID == ITEM_M4A1 || iItemID == ITEM_MAC10 || iItemID == ITEM_MP5N || iItemID == ITEM_P90
+					|| iItemID == ITEM_SCOUT || iItemID == ITEM_SG550 || iItemID == ITEM_SG552 || iItemID == ITEM_UMP45
+					|| iItemID == ITEM_XM1014
+					)
+				) {
+				GiveNamedItemEx(token); // TODO: GetWeaponInfo
+			}
+
+			token = strtok(NULL, s);
+		}
+
+		// TODO: Also add this for grenades
+#else
 		if (!HasRestrictItem(ITEM_KNIFE, ITEM_TYPE_EQUIPPED)) {
 			GiveNamedItem("weapon_knife");
 		}
 		if (!HasRestrictItem(ITEM_GLOCK18, ITEM_TYPE_EQUIPPED)) {
 			GiveWeapon(40, "weapon_glock18");
 		}
-
+#endif // REGAMEDLL_ADD
 		break;
 	}
 	}
@@ -1502,7 +1589,6 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 		break;
 	}
 #endif
-
 }
 
 void CBasePlayer::RemoveAllItems(BOOL removeSuit)

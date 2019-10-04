@@ -171,7 +171,14 @@ extern cvar_t ff_damage_reduction_other;
 extern cvar_t radio_timeout;
 extern cvar_t radio_maxinround;
 
-extern cvar_t ct_default_weapons;
+extern cvar_t ct_default_grenades;
+extern cvar_t ct_default_weapons_melee;
+extern cvar_t ct_default_weapons_secondary;
+extern cvar_t ct_default_weapons_primary;
+extern cvar_t t_default_grenades;
+extern cvar_t t_default_weapons_melee;
+extern cvar_t t_default_weapons_secondary;
+extern cvar_t t_default_weapons_primary;
 
 #endif
 
