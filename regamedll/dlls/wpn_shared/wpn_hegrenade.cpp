@@ -258,5 +258,10 @@ void CHEGrenade::WeaponIdle()
 
 BOOL CHEGrenade::CanDeploy()
 {
+#ifndef REGAMEDLL_FIXES
 	return m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] != 0;
+#else
+	return TRUE;
+#endif
+
 }
