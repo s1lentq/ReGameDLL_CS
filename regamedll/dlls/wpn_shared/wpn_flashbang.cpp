@@ -232,6 +232,7 @@ void CFlashbang::WeaponIdle()
 		else
 		{
 			RetireWeapon();
+			DestroyItem();
 			return;
 		}
 

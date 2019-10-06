@@ -229,6 +229,9 @@ void CHEGrenade::WeaponIdle()
 		else
 		{
 			RetireWeapon();
+#ifdef REGAMEDLL_FIXES
+			DestroyItem();
+#endif
 			return;
 		}
 

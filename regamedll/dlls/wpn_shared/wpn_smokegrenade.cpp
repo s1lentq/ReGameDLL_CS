@@ -230,6 +230,9 @@ void CSmokeGrenade::WeaponIdle()
 		else
 		{
 			RetireWeapon();
+#ifdef REGAMEDLL_FIXES
+			DestroyItem();
+#endif
 			return;
 		}
 
