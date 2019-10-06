@@ -226,6 +226,9 @@ void CC4::PrimaryAttack()
 				if (--m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
 				{
 					RetireWeapon();
+#ifdef REGAMEDLL_FIXES
+					DestroyItem();
+#endif
 					return;
 				}
 			}
