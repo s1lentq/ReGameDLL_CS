@@ -563,6 +563,10 @@ typedef IHookChainRegistryClassImpl<int, CBasePlayerWeapon, int, int, float> CRe
 typedef IHookChainClassImpl<bool, CBasePlayerWeapon, int, int, float, float, const char *, const char *> CReGameHook_CBasePlayerWeapon_DefaultShotgunReload;
 typedef IHookChainRegistryClassImpl<bool, CBasePlayerWeapon, int, int, float, float, const char *, const char *> CReGameHookRegistry_CBasePlayerWeapon_DefaultShotgunReload;
 
+// CBasePlayer::DropIdlePlayer hook
+typedef IHookChainClassImpl<void, CBasePlayer> CReGameHook_CBasePlayer_DropIdlePlayer;
+typedef IHookChainRegistryClassImpl<void, CBasePlayer> CReGameHookRegistry_CBasePlayer_DropIdlePlayer;
+
 class CReGameHookchains: public IReGameHookchains {
 public:
 	// CBasePlayer virtual
@@ -676,6 +680,7 @@ public:
 	CReGameHookRegistry_CBasePlayerWeapon_DefaultDeploy m_CBasePlayerWeapon_DefaultDeploy;
 	CReGameHookRegistry_CBasePlayerWeapon_DefaultReload m_CBasePlayerWeapon_DefaultReload;
 	CReGameHookRegistry_CBasePlayerWeapon_DefaultShotgunReload m_CBasePlayerWeapon_DefaultShotgunReload;
+	CReGameHookRegistry_CBasePlayer_DropIdlePlayer m_CBasePlayer_DropIdlePlayer;
 
 public:
 	virtual IReGameHookRegistry_CBasePlayer_Spawn *CBasePlayer_Spawn();
@@ -788,6 +793,7 @@ public:
 	virtual IReGameHookRegistry_CBasePlayerWeapon_DefaultDeploy *CBasePlayerWeapon_DefaultDeploy();
 	virtual IReGameHookRegistry_CBasePlayerWeapon_DefaultReload *CBasePlayerWeapon_DefaultReload();
 	virtual IReGameHookRegistry_CBasePlayerWeapon_DefaultShotgunReload *CBasePlayerWeapon_DefaultShotgunReload();
+	virtual IReGameHookRegistry_CBasePlayer_DropIdlePlayer *CBasePlayer_DropIdlePlayer();
 };
 
 extern CReGameHookchains g_ReGameHookchains;
