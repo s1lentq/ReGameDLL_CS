@@ -606,9 +606,23 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(CleanUpMap)()
 	const int grenadesRemoveCount = 20;
 	UTIL_RemoveOther("grenade", grenadesRemoveCount);
 
+#ifndef REGAMEDLL_FIXES
 	// Remove defuse kit
 	// Old code only removed 4 kits and stopped.
 	UTIL_RemoveOther("item_thighpack");
+#else
+	// Don't remove level items
+	CItemThighPack *pDefuser = nullptr;
+
+	while ((pDefuser = UTIL_FindEntityByClassname(pDefuser, "item_thighpack")))
+	{
+		if (pDefuser->pev->spawnflags & SF_NORESPAWN)
+		{
+			pDefuser->SetThink(&CBaseEntity::SUB_Remove);
+			pDefuser->pev->nextthink = gpGlobals->time + 0.1;
+		}
+	}
+#endif
 
 #ifdef REGAMEDLL_FIXES
 	UTIL_RemoveOther("gib");

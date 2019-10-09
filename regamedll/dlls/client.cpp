@@ -1,6 +1,5 @@
 #include "precompiled.h"
 
-int giPrecacheGrunt = 0;
 int gmsgWeapPickup = 0;
 int gmsgHudText = 0;
 int gmsgHudTextPro = 0;
@@ -1843,7 +1842,11 @@ BOOL EXT_FUNC __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *pPlayer, int slot)
 			}
 
 			pPlayer->RemoveAllItems(TRUE);
+
+#ifndef REGAMEDLL_FIXES
+			// NOTE: It is already does reset inside RemoveAllItems
 			pPlayer->m_bHasC4 = false;
+#endif
 
 #ifdef REGAMEDLL_FIXES
 			if (pPlayer->m_iTeam != SPECTATOR)
@@ -3151,7 +3154,11 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 	}
 	else if (FStrEq(pcmd, "become_vip"))
 	{
-		if (pPlayer->m_iJoiningState != JOINED || pPlayer->m_iTeam != CT)
+		if (pPlayer->m_iJoiningState != JOINED || pPlayer->m_iTeam != CT
+#ifdef REGAMEDLL_FIXES
+			|| !CSGameRules()->m_bMapHasVIPSafetyZone
+#endif
+			)
 		{
 			ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Command_Not_Available");
 			return;
@@ -4167,9 +4174,6 @@ void ClientPrecache()
 	PRECACHE_SOUND("player/geiger3.wav");
 	PRECACHE_SOUND("player/geiger2.wav");
 	PRECACHE_SOUND("player/geiger1.wav");
-
-	if (giPrecacheGrunt)
-		UTIL_PrecacheOther("enemy_terrorist");
 
 	g_iShadowSprite = PRECACHE_MODEL("sprites/shadow_circle.spr");
 

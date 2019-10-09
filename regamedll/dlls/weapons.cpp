@@ -576,11 +576,6 @@ void CBasePlayerItem::DefaultTouch(CBaseEntity *pOther)
 	// can I have this?
 	if (!g_pGameRules->CanHavePlayerItem(pPlayer, this))
 	{
-		if (gEvilImpulse101)
-		{
-			UTIL_Remove(this);
-		}
-
 		return;
 	}
 
@@ -1055,7 +1050,19 @@ void CBasePlayerItem::DestroyItem()
 	if (m_pPlayer)
 	{
 		// if attached to a player, remove.
-		m_pPlayer->RemovePlayerItem(this);
+		if (m_pPlayer->RemovePlayerItem(this))
+		{
+
+#ifdef REGAMEDLL_FIXES
+			m_pPlayer->pev->weapons &= ~(1 << m_iId);
+
+			// No more weapon
+			if ((m_pPlayer->pev->weapons & ~(1 << WEAPON_SUIT)) == 0) {
+				m_pPlayer->m_iHideHUD |= HIDEHUD_WEAPONS;
+			}
+#endif
+
+		}
 	}
 
 	Kill();
@@ -1227,7 +1234,7 @@ BOOL CBasePlayerWeapon::AddPrimaryAmmo(int iCount, char *szName, int iMaxClip, i
 
 	if (iMaxClip < 1)
 	{
-		m_iClip = -1;
+		m_iClip = WEAPON_NOCLIP;
 		iIdAmmo = m_pPlayer->GiveAmmo(iCount, szName, iMaxCarry);
 	}
 	else if (m_iClip == 0)
@@ -1450,7 +1457,7 @@ int CBasePlayerWeapon::ExtractClipAmmo(CBasePlayerWeapon *pWeapon)
 		iAmmo = m_iClip;
 	}
 
-	return pWeapon->m_pPlayer->GiveAmmo(iAmmo, (char *)pszAmmo1(), iMaxAmmo1());
+	return pWeapon->m_pPlayer->GiveAmmo(iAmmo, pszAmmo1(), iMaxAmmo1());
 }
 
 // RetireWeapon - no more ammo for this gun, put it away.

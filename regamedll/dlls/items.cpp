@@ -127,10 +127,6 @@ void CItem::ItemTouch(CBaseEntity *pOther)
 		else
 			UTIL_Remove(this);
 	}
-	else if (gEvilImpulse101)
-	{
-		UTIL_Remove(this);
-	}
 }
 
 CBaseEntity *CItem::Respawn()

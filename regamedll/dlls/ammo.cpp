@@ -81,13 +81,6 @@ void CBasePlayerAmmo::DefaultTouch(CBaseEntity *pOther)
 #endif
 		}
 	}
-	else if (gEvilImpulse101)
-	{
-		// evil impulse 101 hack, kill always
-		SetTouch(nullptr);
-		SetThink(&CBaseEntity::SUB_Remove);
-		pev->nextthink = gpGlobals->time + 0.1f;
-	}
 }
 
 void C9MMAmmo::Spawn()
