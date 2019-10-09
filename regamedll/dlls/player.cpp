@@ -7237,13 +7237,13 @@ bool CBasePlayer::ShouldToShowAccount(CBasePlayer *pReceiver) const
 	switch (iShowAccount)
 	{
 	// show field to teammates
-	case 3: return pReceiver->m_iTeam == m_iTeam;
+	case 3: return !CSGameRules()->IsFreeForAll() && pReceiver->m_iTeam == m_iTeam;
 
 	// show field to all clients
 	case 4: return true;
 
 	// show field to teammates and spectators
-	case 5: return (pReceiver->m_iTeam == m_iTeam || pReceiver->m_iTeam == SPECTATOR);
+	case 5: return ((!CSGameRules()->IsFreeForAll() && pReceiver->m_iTeam == m_iTeam) || pReceiver->m_iTeam == SPECTATOR);
 	default:
 		break;
 	}
@@ -7269,13 +7269,13 @@ bool CBasePlayer::ShouldToShowHealthInfo(CBasePlayer *pReceiver) const
 	switch (iShowHealth)
 	{
 	// show field to teammates
-	case 3: return pReceiver->m_iTeam == m_iTeam;
+	case 3: return !CSGameRules()->IsFreeForAll() && pReceiver->m_iTeam == m_iTeam;
 
 	// show field to all clients
 	case 4: return true;
 
 	// show field to teammates and spectators
-	case 5: return (pReceiver->m_iTeam == m_iTeam || pReceiver->m_iTeam == SPECTATOR);
+	case 5: return ((!CSGameRules()->IsFreeForAll() && pReceiver->m_iTeam == m_iTeam) || pReceiver->m_iTeam == SPECTATOR);
 	default:
 		break;
 	}
@@ -7517,10 +7517,12 @@ void CBasePlayer::UpdateStatusBar()
 			{
 				CBasePlayer *pTarget = (CBasePlayer *)pEntity;
 
-				newSBarState[SBAR_ID_TARGETNAME] = ENTINDEX(pTarget->edict());
-				newSBarState[SBAR_ID_TARGETTYPE] = (pTarget->m_iTeam == m_iTeam) ? SBAR_TARGETTYPE_TEAMMATE : SBAR_TARGETTYPE_ENEMY;
+				bool sameTeam = !CSGameRules()->IsFreeForAll() && pTarget->m_iTeam == m_iTeam;
 
-				if (pTarget->m_iTeam == m_iTeam || GetObserverMode() != OBS_NONE)
+				newSBarState[SBAR_ID_TARGETNAME] = ENTINDEX(pTarget->edict());
+				newSBarState[SBAR_ID_TARGETTYPE] = sameTeam ? SBAR_TARGETTYPE_TEAMMATE : SBAR_TARGETTYPE_ENEMY;
+
+				if (sameTeam || GetObserverMode() != OBS_NONE)
 				{
 					if (playerid.value != PLAYERID_MODE_OFF || GetObserverMode() != OBS_NONE)
 						Q_strcpy(sbuf0, "1 %c1: %p2\n2  %h: %i3%%");
