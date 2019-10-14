@@ -48,7 +48,7 @@ CSGameState::CSGameState(CCSBot *owner)
 		HostageInfo *info = &m_hostage[i];
 
 		info->hostage = nullptr;
-		info->knownPos = Vector(0, 0, 0);
+		info->knownPos = g_vecZero;
 		info->isValid = false;
 		info->isAlive = false;
 		info->isFree = true;

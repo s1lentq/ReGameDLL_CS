@@ -65,7 +65,7 @@ NOXREF void CGib::SpawnStickyGibs(entvars_t *pevVictim, Vector vecOrigin, int cG
 
 			pGib->pev->movetype = MOVETYPE_TOSS;
 			pGib->pev->solid = SOLID_BBOX;
-			UTIL_SetSize(pGib->pev, Vector(0, 0,0), Vector(0, 0, 0));
+			UTIL_SetSize(pGib->pev, g_vecZero, g_vecZero);
 			pGib->SetTouch(&CGib::StickyGibTouch);
 			pGib->SetThink(nullptr);
 		}
@@ -196,7 +196,7 @@ void CGib::SpawnRandomGibs(entvars_t *pevVictim, int cGibs, int human)
 				pGib->pev->velocity = pGib->pev->velocity * 4;
 
 			pGib->pev->solid = SOLID_BBOX;
-			UTIL_SetSize(pGib->pev, Vector(0, 0, 0), Vector(0, 0, 0));
+			UTIL_SetSize(pGib->pev, g_vecZero, g_vecZero);
 		}
 		pGib->LimitVelocity();
 	}
@@ -279,7 +279,7 @@ void CGib::Spawn(const char *szGibModel)
 	MAKE_STRING_CLASS("gib", pev);
 
 	SET_MODEL(ENT(pev), szGibModel);
-	UTIL_SetSize(pev, Vector(0, 0, 0), Vector(0, 0, 0));
+	UTIL_SetSize(pev, g_vecZero, g_vecZero);
 
 	pev->nextthink = gpGlobals->time + 4.0f;
 	m_lifeTime = 25.0f;

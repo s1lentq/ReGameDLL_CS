@@ -213,7 +213,7 @@ void CHostage::Spawn()
 	pev->health = pev->max_health;
 	pev->gravity = 1;
 	pev->view_ofs = VEC_HOSTAGE_VIEW;
-	pev->velocity = Vector(0, 0, 0);
+	pev->velocity = g_vecZero;
 
 	if (pev->spawnflags & SF_MONSTER_HITMONSTERCLIP)
 		pev->flags |= FL_MONSTERCLIP;
@@ -228,7 +228,7 @@ void CHostage::Spawn()
 	m_State = STAND;
 	m_hTargetEnt = nullptr;
 	m_hStoppedTargetEnt = nullptr;
-	m_vPathToFollow[0] = Vector(0, 0, 0);
+	m_vPathToFollow[0] = g_vecZero;
 	m_flFlinchTime = 0;
 	m_bRescueMe = FALSE;
 
@@ -377,7 +377,7 @@ void CHostage::IdleThink()
 
 	if (pev->deadflag == DEAD_DEAD)
 	{
-		UTIL_SetSize(pev, Vector(0, 0, 0), Vector(0, 0, 0));
+		UTIL_SetSize(pev, g_vecZero, g_vecZero);
 		return;
 	}
 
@@ -534,7 +534,7 @@ void CHostage::Remove()
 	pev->deadflag = DEAD_DEAD;
 #endif
 
-	UTIL_SetSize(pev, Vector(0, 0, 0), Vector(0, 0, 0));
+	UTIL_SetSize(pev, g_vecZero, g_vecZero);
 	pev->nextthink = -1;
 	m_flNextFullThink = -1;
 }
@@ -546,7 +546,7 @@ void CHostage::RePosition()
 	pev->solid = SOLID_SLIDEBOX;
 	pev->takedamage = DAMAGE_YES;
 	pev->deadflag = DEAD_NO;
-	pev->velocity = Vector(0, 0, 0);
+	pev->velocity = g_vecZero;
 	pev->angles = m_vStartAngles;
 	pev->effects &= ~EF_NODRAW;
 

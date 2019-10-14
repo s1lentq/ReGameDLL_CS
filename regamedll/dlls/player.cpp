@@ -5056,7 +5056,7 @@ bool CBasePlayer::SelectSpawnSpot(const char *pEntClassName, CBaseEntity *&pSpot
 			// check if pSpot is valid
 			if (IsSpawnPointValid(this, pSpot))
 			{
-				if (pSpot->pev->origin == Vector(0, 0, 0))
+				if (pSpot->pev->origin == g_vecZero)
 				{
 					pSpot = UTIL_FindEntityByClassname(pSpot, pEntClassName);
 					continue;
@@ -5229,7 +5229,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Spawn)()
 	m_flGaitframe = 0;
 	m_flGaityaw = 0;
 	m_flGaitMovement = 0;
-	m_prevgaitorigin = Vector(0, 0, 0);
+	m_prevgaitorigin = g_vecZero;
 	m_progressStart = 0;
 	m_progressEnd = 0;
 
@@ -5308,7 +5308,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Spawn)()
 	m_tmNextAccountHealthUpdate = gpGlobals->time;
 #endif
 
-	m_vLastOrigin = Vector(0, 0, 0);
+	m_vLastOrigin = g_vecZero;
 	m_iCurrentKickVote = 0;
 	m_flNextVoteTime = 0;
 	m_bJustKilledTeammate = false;
@@ -5376,7 +5376,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Spawn)()
 	InitStatusBar();
 
 	for (i = 0; i < MAX_RECENT_PATH; i++)
-		m_vRecentPath[i] = Vector(0, 0, 0);
+		m_vRecentPath[i] = g_vecZero;
 
 	if (m_pActiveItem && !pev->viewmodel)
 	{
@@ -7418,7 +7418,7 @@ Vector CBasePlayer::GetAutoaimVector(float flDelta)
 
 	vecSrc = GetGunPosition();
 	m_fOldTargeting = m_fOnTarget;
-	m_vecAutoAim = Vector(0, 0, 0);
+	m_vecAutoAim = g_vecZero;
 	angles = AutoaimDeflection(vecSrc, 8192, flDelta);
 
 	if (g_pGameRules->AllowAutoTargetCrosshair())
@@ -7479,7 +7479,7 @@ void CBasePlayer::ResetAutoaim()
 {
 	if (m_vecAutoAim.x != 0.0f || m_vecAutoAim.y != 0.0f)
 	{
-		m_vecAutoAim = Vector(0, 0, 0);
+		m_vecAutoAim = g_vecZero;
 		SET_CROSSHAIRANGLE(ENT(pev), 0, 0);
 	}
 	m_fOnTarget = FALSE;

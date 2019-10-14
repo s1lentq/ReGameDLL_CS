@@ -2276,7 +2276,7 @@ void CTriggerCamera::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE
 	}
 	else
 	{
-		pev->velocity = Vector(0, 0, 0);
+		pev->velocity = g_vecZero;
 	}
 
 	SET_VIEW(pActivator->edict(), edict());
@@ -2306,7 +2306,7 @@ void CTriggerCamera::FollowTarget()
 		}
 
 		SUB_UseTargets(this, USE_TOGGLE, 0);
-		pev->avelocity = Vector(0, 0, 0);
+		pev->avelocity = g_vecZero;
 		m_state = 0;
 		return;
 	}

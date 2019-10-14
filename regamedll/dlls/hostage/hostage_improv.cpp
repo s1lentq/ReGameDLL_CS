@@ -484,7 +484,7 @@ void CHostageImprov::Walk()
 void CHostageImprov::Stop()
 {
 	MoveTo(GetFeet());
-	m_hostage->pev->velocity = Vector(0, 0, 0);
+	m_hostage->pev->velocity = g_vecZero;
 
 	if (m_moveLimit > Stopped)
 		m_moveType = Stopped;
@@ -616,7 +616,7 @@ void CHostageImprov::OnReset()
 	m_vel.x = 0;
 	m_vel.y = 0;
 
-	m_actualVel = Vector(0, 0, 0);
+	m_actualVel = g_vecZero;
 	m_checkNearbyTerroristTimer.Invalidate();
 
 	m_lastKnownArea = nullptr;
@@ -753,7 +753,7 @@ void CHostageImprov::ResetToKnownGoodPosition()
 		m_knownGoodPos = m_hostage->m_vStart;
 
 	m_hostage->pev->origin = m_knownGoodPos;
-	m_hostage->pev->velocity = Vector(0, 0, 0);
+	m_hostage->pev->velocity = g_vecZero;
 	m_path.Invalidate();
 
 	Stop();

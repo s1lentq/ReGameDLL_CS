@@ -253,7 +253,7 @@ void CCSBot::ResetValues()
 	m_avgVelIndex = 0;
 	m_avgVelCount = 0;
 
-	m_lastOrigin = pev ? pev->origin : Vector(0, 0, 0);
+	m_lastOrigin = pev ? pev->origin : g_vecZero;
 
 	m_lastRadioCommand = EVENT_INVALID;
 	m_lastRadioRecievedTimestamp = 0.0f;
@@ -264,7 +264,7 @@ void CCSBot::ResetValues()
 	m_hostageEscortCount = 0;
 	m_hostageEscortCountTimestamp = 0.0f;
 
-	m_noisePosition = Vector(0, 0, 0);
+	m_noisePosition = g_vecZero;
 	m_noiseTimestamp = 0.0f;
 	m_noiseCheckTimestamp = 0.0f;
 	m_isNoiseTravelRangeChecked = false;
@@ -274,7 +274,7 @@ void CCSBot::ResetValues()
 	m_taskEntity = nullptr;
 
 	m_approachPointCount = 0;
-	m_approachPointViewPosition = Vector(0, 0, 0);
+	m_approachPointViewPosition = g_vecZero;
 
 	m_checkedHidingSpotCount = 0;
 	m_isJumpCrouching = false;

@@ -837,7 +837,7 @@ void CGrenade::Spawn()
 	pev->solid = SOLID_BBOX;
 
 	SET_MODEL(ENT(pev), "models/grenade.mdl");
-	UTIL_SetSize(pev, Vector(0, 0, 0), Vector(0, 0, 0));
+	UTIL_SetSize(pev, g_vecZero, g_vecZero);
 
 	pev->dmg = 30.0f;
 	m_fRegisteredSound = FALSE;
@@ -933,7 +933,7 @@ CGrenade *CGrenade::__API_HOOK(ShootTimed)(entvars_t *pevOwner, VectorRef vecSta
 	if (time < 0.1f)
 	{
 		pGrenade->pev->nextthink = gpGlobals->time;
-		pGrenade->pev->velocity = Vector(0, 0, 0);
+		pGrenade->pev->velocity = g_vecZero;
 	}
 
 	pGrenade->pev->sequence = RANDOM_LONG(3, 6);
@@ -1257,7 +1257,7 @@ CGrenade *CGrenade::__API_HOOK(ShootSmokeGrenade)(entvars_t *pevOwner, VectorRef
 	if (time < 0.1)
 	{
 		pGrenade->pev->nextthink = gpGlobals->time;
-		pGrenade->pev->velocity = Vector(0, 0, 0);
+		pGrenade->pev->velocity = g_vecZero;
 	}
 
 	pGrenade->pev->sequence = RANDOM_LONG(3, 6);

@@ -134,7 +134,7 @@ void CFuncMortarField::FieldUse(CBaseEntity *pActivator, CBaseEntity *pCaller, U
 			pentOwner = pActivator->edict();
 		}
 
-		CBaseEntity *pMortar = Create("monster_mortar", tr.vecEndPos, Vector(0, 0, 0), pentOwner);
+		CBaseEntity *pMortar = Create("monster_mortar", tr.vecEndPos, g_vecZero, pentOwner);
 		pMortar->pev->nextthink = gpGlobals->time + t;
 		t += RANDOM_FLOAT(0.2, 0.5);
 #ifndef REGAMEDLL_FIXES

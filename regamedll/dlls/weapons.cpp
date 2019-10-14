@@ -421,7 +421,7 @@ void CBasePlayerItem::FallInit()
 	UTIL_SetOrigin(pev, pev->origin);
 
 	// pointsize until it lands on the ground.
-	UTIL_SetSize(pev, Vector(0, 0, 0), Vector(0, 0, 0));
+	UTIL_SetSize(pev, g_vecZero, g_vecZero);
 
 	SetTouch(&CBasePlayerItem::DefaultTouch);
 	SetThink(&CBasePlayerItem::FallThink);

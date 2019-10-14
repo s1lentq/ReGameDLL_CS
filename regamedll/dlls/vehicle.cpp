@@ -619,7 +619,7 @@ void CFuncVehicle::Next()
 		else
 		{
 			m_flLaunchTime = gpGlobals->time;
-			vGravityVector = Vector(0, 0, 0);
+			vGravityVector = g_vecZero;
 			pev->velocity = pev->velocity * 1.5;
 		}
 

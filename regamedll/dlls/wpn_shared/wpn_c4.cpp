@@ -178,7 +178,7 @@ void CC4::PrimaryAttack()
 #ifdef REGAMEDLL_FIXES
 				Vector vBombAngles = Vector(0, m_pPlayer->pev->angles[1] - 90.0, 0);
 #else
-				Vector vBombAngles = Vector(0, 0, 0);
+				Vector vBombAngles = g_vecZero;
 #endif
 				CGrenade *pBomb = CGrenade::ShootSatchelCharge(m_pPlayer->pev, m_pPlayer->pev->origin, vBombAngles);
 
@@ -350,7 +350,7 @@ void CC4::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, f
 
 		EMIT_SOUND(edict(), CHAN_WEAPON, "weapons/c4_plant.wav", VOL_NORM, ATTN_NORM);
 
-		CGrenade::ShootSatchelCharge(pPlayer->pev, pev->origin, Vector(0, 0, 0));
+		CGrenade::ShootSatchelCharge(pPlayer->pev, pev->origin, g_vecZero);
 
 		CGrenade *pBomb = nullptr;
 		while ((pBomb = UTIL_FindEntityByClassname(pBomb, "grenade")))

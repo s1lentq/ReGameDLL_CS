@@ -2046,7 +2046,7 @@ void CItemSoda::Spawn()
 	pev->movetype = MOVETYPE_TOSS;
 
 	SET_MODEL(ENT(pev), "models/can.mdl");
-	UTIL_SetSize(pev, Vector(0, 0, 0), Vector(0, 0, 0));
+	UTIL_SetSize(pev, g_vecZero, g_vecZero);
 
 	SetThink(&CItemSoda::CanThink);
 	pev->nextthink = gpGlobals->time + 0.5f;
