@@ -2215,36 +2215,36 @@ struct ArmouryItemStruct
 	int giveAmount;
 	int maxRounds;
 } armouryItemInfo[] = {
-	{ "weapon_mp5navy",   "9mm",        60, MAX_AMMO_9MM        }, // ARMOURY_MP5NAVY
-	{ "weapon_tmp",       "9mm",        60, MAX_AMMO_9MM        }, // ARMOURY_TMP
-	{ "weapon_p90",       "57mm",       50, MAX_AMMO_57MM       }, // ARMOURY_P90
-	{ "weapon_mac10",     "45acp",      60, MAX_AMMO_45ACP      }, // ARMOURY_MAC10
-	{ "weapon_ak47",      "762Nato",    60, MAX_AMMO_762NATO    }, // ARMOURY_AK47
-	{ "weapon_sg552",     "556Nato",    60, MAX_AMMO_556NATO    }, // ARMOURY_SG552
-	{ "weapon_m4a1",      "556Nato",    60, MAX_AMMO_556NATO    }, // ARMOURY_M4A1
-	{ "weapon_aug",       "556Nato",    60, MAX_AMMO_556NATO    }, // ARMOURY_AUG
-	{ "weapon_scout",     "762Nato",    30, MAX_AMMO_762NATO    }, // ARMOURY_SCOUT
-	{ "weapon_g3sg1",     "762Nato",    30, MAX_AMMO_762NATO    }, // ARMOURY_G3SG1
-	{ "weapon_awp",       "338Magnum",  20, MAX_AMMO_338MAGNUM  }, // ARMOURY_AWP
-	{ "weapon_m3",        "buckshot",   24, MAX_AMMO_BUCKSHOT   }, // ARMOURY_M3
-	{ "weapon_xm1014",    "buckshot",   24, MAX_AMMO_BUCKSHOT   }, // ARMOURY_XM1014
-	{ "weapon_m249",      "556NatoBox", 60, MAX_AMMO_556NATOBOX }, // ARMOURY_M249
-	{ nullptr,            nullptr,      0,  0                   }, // ARMOURY_FLASHBANG
-	{ nullptr,            nullptr,      0,  0                   }, // ARMOURY_HEGRENADE
-	{ nullptr,            nullptr,      0,  0                   }, // ARMOURY_KEVLAR
-	{ nullptr,            nullptr,      0,  0                   }, // ARMOURY_ASSAULT
-	{ nullptr,            nullptr,      0,  0                   }, // ARMOURY_SMOKEGRENADE
-	{ nullptr,            nullptr,      0,  0                   }, // ARMOURY_SHIELD
-	{ "weapon_famas",     "556Nato",    90,  MAX_AMMO_556NATO   }, // ARMOURY_FAMAS
-	{ "weapon_sg550",     "556Nato",    90,  MAX_AMMO_556NATO   }, // ARMOURY_SG550
-	{ "weapon_galil",     "556Nato",    90,  MAX_AMMO_556NATO   }, // ARMOURY_GALIL
-	{ "weapon_ump45",     "45acp",      100, MAX_AMMO_45ACP     }, // ARMOURY_UMP45
-	{ "weapon_glock18",   "9mm",        120, MAX_AMMO_9MM       }, // ARMOURY_GLOCK18
-	{ "weapon_usp",       "45acp",      100, MAX_AMMO_45ACP     }, // ARMOURY_USP
-	{ "weapon_elite",     "9mm",        120, MAX_AMMO_9MM       }, // ARMOURY_ELITE
-	{ "weapon_fiveseven", "57mm",       100, MAX_AMMO_57MM      }, // ARMOURY_FIVESEVEN
-	{ "weapon_p228",      "357SIG",     52,  MAX_AMMO_357SIG    }, // ARMOURY_P228
-	{ "weapon_deagle",    "50AE",       35,  MAX_AMMO_50AE      }, // ARMOURY_DEAGLE
+	{ "weapon_mp5navy",   "9mm",        MAX_AMMO_9MM,        MAX_AMMO_9MM        }, // ARMOURY_MP5NAVY
+	{ "weapon_tmp",       "9mm",        MAX_AMMO_9MM,        MAX_AMMO_9MM        }, // ARMOURY_TMP
+	{ "weapon_p90",       "57mm",       MAX_AMMO_57MM,       MAX_AMMO_57MM       }, // ARMOURY_P90
+	{ "weapon_mac10",     "45acp",      MAX_AMMO_45ACP,      MAX_AMMO_45ACP      }, // ARMOURY_MAC10
+	{ "weapon_ak47",      "762Nato",    MAX_AMMO_762NATO,    MAX_AMMO_762NATO    }, // ARMOURY_AK47
+	{ "weapon_sg552",     "556Nato",    MAX_AMMO_556NATO,    MAX_AMMO_556NATO    }, // ARMOURY_SG552
+	{ "weapon_m4a1",      "556Nato",    MAX_AMMO_556NATO,    MAX_AMMO_556NATO    }, // ARMOURY_M4A1
+	{ "weapon_aug",       "556Nato",    MAX_AMMO_556NATO,    MAX_AMMO_556NATO    }, // ARMOURY_AUG
+	{ "weapon_scout",     "762Nato",    MAX_AMMO_762NATO,    MAX_AMMO_762NATO    }, // ARMOURY_SCOUT
+	{ "weapon_g3sg1",     "762Nato",    MAX_AMMO_762NATO,    MAX_AMMO_762NATO    }, // ARMOURY_G3SG1
+	{ "weapon_awp",       "338Magnum",  MAX_AMMO_338MAGNUM,  MAX_AMMO_338MAGNUM  }, // ARMOURY_AWP
+	{ "weapon_m3",        "buckshot",   MAX_AMMO_BUCKSHOT,   MAX_AMMO_BUCKSHOT   }, // ARMOURY_M3
+	{ "weapon_xm1014",    "buckshot",   MAX_AMMO_BUCKSHOT,   MAX_AMMO_BUCKSHOT   }, // ARMOURY_XM1014
+	{ "weapon_m249",      "556NatoBox", MAX_AMMO_556NATOBOX, MAX_AMMO_556NATOBOX }, // ARMOURY_M249
+	{ nullptr,            nullptr,      0,  0                                    }, // ARMOURY_FLASHBANG
+	{ nullptr,            nullptr,      0,  0                                    }, // ARMOURY_HEGRENADE
+	{ nullptr,            nullptr,      0,  0                                    }, // ARMOURY_KEVLAR
+	{ nullptr,            nullptr,      0,  0                                    }, // ARMOURY_ASSAULT
+	{ nullptr,            nullptr,      0,  0                                    }, // ARMOURY_SMOKEGRENADE
+	{ nullptr,            nullptr,      0,  0                                    }, // ARMOURY_SHIELD
+	{ "weapon_famas",     "556Nato",    MAX_AMMO_556NATO,     MAX_AMMO_556NATO   }, // ARMOURY_FAMAS
+	{ "weapon_sg550",     "556Nato",    MAX_AMMO_556NATO,     MAX_AMMO_556NATO   }, // ARMOURY_SG550
+	{ "weapon_galil",     "556Nato",    MAX_AMMO_556NATO,     MAX_AMMO_556NATO   }, // ARMOURY_GALIL
+	{ "weapon_ump45",     "45acp",      MAX_AMMO_45ACP,       MAX_AMMO_45ACP     }, // ARMOURY_UMP45
+	{ "weapon_glock18",   "9mm",        MAX_AMMO_9MM,         MAX_AMMO_9MM       }, // ARMOURY_GLOCK18
+	{ "weapon_usp",       "45acp",      MAX_AMMO_45ACP,       MAX_AMMO_45ACP     }, // ARMOURY_USP
+	{ "weapon_elite",     "9mm",        MAX_AMMO_9MM,         MAX_AMMO_9MM       }, // ARMOURY_ELITE
+	{ "weapon_fiveseven", "57mm",       MAX_AMMO_57MM,        MAX_AMMO_57MM      }, // ARMOURY_FIVESEVEN
+	{ "weapon_p228",      "357SIG",     MAX_AMMO_357SIG,      MAX_AMMO_357SIG    }, // ARMOURY_P228
+	{ "weapon_deagle",    "50AE",       MAX_AMMO_50AE,        MAX_AMMO_50AE      }, // ARMOURY_DEAGLE
 };
 
 void CArmoury::ArmouryTouch(CBaseEntity *pOther)
