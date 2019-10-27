@@ -2110,7 +2110,6 @@ void CArmoury::Restart()
 	if (!weapons_allow_map_placed.value)
 	{
 		Hide();
-
 		return;
 	}
 
