@@ -5807,6 +5807,11 @@ void CBasePlayer::SelectItem(const char *pstr)
 	if (!pItem || pItem == m_pActiveItem)
 		return;
 
+#ifdef REGAMEDLL_FIXES
+	if (!pItem->CanDeploy())
+		return;
+#endif
+
 	ResetAutoaim();
 
 	// FIX, this needs to queue them up and delay
@@ -5850,6 +5855,11 @@ void CBasePlayer::SelectLastItem()
 
 	if (!m_pLastItem || m_pLastItem == m_pActiveItem)
 		return;
+
+#ifdef REGAMEDLL_FIXES
+	if (!m_pLastItem->CanDeploy())
+		return;
+#endif
 
 	ResetAutoaim();
 

@@ -395,8 +395,14 @@ public:
 	bool ShieldSecondaryFire(int iUpAnim, int iDownAnim);
 	void HandleInfiniteAmmo();
 	void InstantReload(bool bCanRefillBPAmmo = false);
+	bool DefaultShotgunReload(int iAnim, int iStartAnim, float fDelay, float fStartDelay, const char *pszReloadSound1 = nullptr, const char *pszReloadSound2 = nullptr);
 
 #ifdef REGAMEDLL_API
+	BOOL CanDeploy_OrigFunc();
+	BOOL DefaultDeploy_OrigFunc(char *szViewModel, char *szWeaponModel, int iAnim, char *szAnimExt, int skiplocal);
+	BOOL DefaultReload_OrigFunc(int iClipSize, int iAnim, float fDelay);
+	bool DefaultShotgunReload_OrigFunc(int iAnim, int iStartAnim, float fDelay, float fStartDelay, const char *pszReloadSound1, const char *pszReloadSound2);
+
 	CCSPlayerWeapon *CSPlayerWeapon() const;
 #endif
 
@@ -944,6 +950,10 @@ public:
 	#endif
 	}
 
+#ifdef REGAMEDLL_API
+	BOOL CanDeploy_OrigFunc();
+#endif
+
 public:
 	bool ShieldSecondaryFire(int iUpAnim, int iDownAnim);
 	void SetPlayerShieldAnim();
@@ -1099,6 +1109,10 @@ public:
 		return FALSE;
 	#endif
 	}
+
+#ifdef REGAMEDLL_API
+	BOOL CanDeploy_OrigFunc();
+#endif
 
 public:
 	bool ShieldSecondaryFire(int iUpAnim, int iDownAnim);
@@ -1574,6 +1588,10 @@ public:
 		return FALSE;
 	#endif
 	}
+
+#ifdef REGAMEDLL_API
+	BOOL CanDeploy_OrigFunc();
+#endif
 
 public:
 	bool ShieldSecondaryFire(int iUpAnim, int iDownAnim);

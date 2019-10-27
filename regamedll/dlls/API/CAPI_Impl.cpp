@@ -162,6 +162,10 @@ GAMEHOOK_REGISTRY(CBasePlayer_RemoveSpawnProtection);
 GAMEHOOK_REGISTRY(IsPenetrableEntity);
 GAMEHOOK_REGISTRY(CBasePlayer_HintMessageEx);
 GAMEHOOK_REGISTRY(CBasePlayer_UseEmpty);
+GAMEHOOK_REGISTRY(CBasePlayerWeapon_CanDeploy);
+GAMEHOOK_REGISTRY(CBasePlayerWeapon_DefaultDeploy);
+GAMEHOOK_REGISTRY(CBasePlayerWeapon_DefaultReload);
+GAMEHOOK_REGISTRY(CBasePlayerWeapon_DefaultShotgunReload);
 
 int CReGameApi::GetMajorVersion() {
 	return REGAMEDLL_API_VERSION_MAJOR;

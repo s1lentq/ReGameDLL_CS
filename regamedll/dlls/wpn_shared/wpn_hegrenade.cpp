@@ -260,7 +260,9 @@ void CHEGrenade::WeaponIdle()
 	}
 }
 
-BOOL CHEGrenade::CanDeploy()
+LINK_HOOK_CLASS_CHAIN3(BOOL, CBasePlayerWeapon, CHEGrenade, CanDeploy)
+
+BOOL EXT_FUNC CHEGrenade::__API_HOOK(CanDeploy)()
 {
 	return m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] != 0;
 }

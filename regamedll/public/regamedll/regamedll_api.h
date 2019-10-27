@@ -38,7 +38,7 @@
 #include <API/CSInterfaces.h>
 
 #define REGAMEDLL_API_VERSION_MAJOR 5
-#define REGAMEDLL_API_VERSION_MINOR 11
+#define REGAMEDLL_API_VERSION_MINOR 12
 
 // CBasePlayer::Spawn hook
 typedef IHookChainClass<void, class CBasePlayer> IReGameHook_CBasePlayer_Spawn;
@@ -444,6 +444,22 @@ typedef IHookChainRegistryClass<bool, class CBasePlayer, const char *, float, bo
 typedef IHookChainClass<void, class CBasePlayer> IReGameHook_CBasePlayer_UseEmpty;
 typedef IHookChainRegistryClass<void, class CBasePlayer> IReGameHookRegistry_CBasePlayer_UseEmpty;
 
+// CBasePlayerWeapon::CanDeploy hook
+typedef IHookChainClass<BOOL, class CBasePlayerWeapon> IReGameHook_CBasePlayerWeapon_CanDeploy;
+typedef IHookChainRegistryClass<BOOL, class CBasePlayerWeapon> IReGameHookRegistry_CBasePlayerWeapon_CanDeploy;
+
+// CBasePlayerWeapon::DefaultDeploy hook
+typedef IHookChainClass<BOOL, class CBasePlayerWeapon, char *, char *, int, char *, int> IReGameHook_CBasePlayerWeapon_DefaultDeploy;
+typedef IHookChainRegistryClass<BOOL, class CBasePlayerWeapon, char *, char *, int, char *, int> IReGameHookRegistry_CBasePlayerWeapon_DefaultDeploy;
+
+// CBasePlayerWeapon::DefaultReload hook
+typedef IHookChainClass<int, class CBasePlayerWeapon, int, int, float> IReGameHook_CBasePlayerWeapon_DefaultReload;
+typedef IHookChainRegistryClass<int, class CBasePlayerWeapon, int, int, float> IReGameHookRegistry_CBasePlayerWeapon_DefaultReload;
+
+// CBasePlayerWeapon::DefaultShotgunReload hook
+typedef IHookChainClass<bool, class CBasePlayerWeapon, int, int, float, float, const char *, const char *> IReGameHook_CBasePlayerWeapon_DefaultShotgunReload;
+typedef IHookChainRegistryClass<bool, class CBasePlayerWeapon, int, int, float, float, const char *, const char *> IReGameHookRegistry_CBasePlayerWeapon_DefaultShotgunReload;
+
 class IReGameHookchains {
 public:
 	virtual ~IReGameHookchains() {}
@@ -554,6 +570,10 @@ public:
 	virtual IReGameHookRegistry_IsPenetrableEntity *IsPenetrableEntity() = 0;
 	virtual IReGameHookRegistry_CBasePlayer_HintMessageEx *CBasePlayer_HintMessageEx() = 0;
 	virtual IReGameHookRegistry_CBasePlayer_UseEmpty *CBasePlayer_UseEmpty() = 0;
+	virtual IReGameHookRegistry_CBasePlayerWeapon_CanDeploy *CBasePlayerWeapon_CanDeploy() = 0;
+	virtual IReGameHookRegistry_CBasePlayerWeapon_DefaultDeploy *CBasePlayerWeapon_DefaultDeploy() = 0;
+	virtual IReGameHookRegistry_CBasePlayerWeapon_DefaultReload *CBasePlayerWeapon_DefaultReload() = 0;
+	virtual IReGameHookRegistry_CBasePlayerWeapon_DefaultShotgunReload *CBasePlayerWeapon_DefaultShotgunReload() = 0;
 };
 
 struct ReGameFuncs_t {
