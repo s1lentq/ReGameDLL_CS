@@ -2114,6 +2114,12 @@ void CArmoury::Spawn()
 void CArmoury::Restart()
 {
 #ifdef REGAMEDLL_FIXES
+	if (!weapons_allow_map_placed.value)
+	{
+		Hide();
+		return;
+	}
+
 	// This code refers to the mode of Escape. (Because there is relationship to the team Terrorists)
 	if (CSGameRules()->m_bMapHasEscapeZone)
 #endif
