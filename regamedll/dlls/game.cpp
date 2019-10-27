@@ -172,6 +172,12 @@ void GameDLL_EndRound_f()
 	CSGameRules()->OnRoundEnd_Intercept(WINSTATUS_DRAW, ROUND_END_DRAW, CSGameRules()->GetRoundRestartDelay());
 }
 
+void GameDLL_SwapTeams_f()
+{
+	CSGameRules()->SwapAllPlayers();
+	CVAR_SET_FLOAT("sv_restartround", 1.0);
+}
+
 #endif // REGAMEDLL_ADD
 
 void EXT_FUNC GameDLLInit()
@@ -298,6 +304,7 @@ void EXT_FUNC GameDLLInit()
 
 	ADD_SERVER_COMMAND("game", GameDLL_Version_f);
 	ADD_SERVER_COMMAND("endround", GameDLL_EndRound_f);
+	ADD_SERVER_COMMAND("mp_swapteams", GameDLL_SwapTeams_f);
 
 	CVAR_REGISTER(&game_version);
 	CVAR_REGISTER(&maxmoney);
