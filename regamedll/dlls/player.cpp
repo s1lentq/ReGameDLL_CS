@@ -6176,6 +6176,7 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 #else
 			AddAccount(16000);
 			ALERT(at_console, "Crediting %s with $16000\n", STRING(pev->netname));
+#endif
 			break;
 		case 102:
 			CGib::SpawnRandomGibs(pev, 1, 1);

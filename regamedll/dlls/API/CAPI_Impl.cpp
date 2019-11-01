@@ -162,14 +162,11 @@ GAMEHOOK_REGISTRY(CBasePlayer_RemoveSpawnProtection);
 GAMEHOOK_REGISTRY(IsPenetrableEntity);
 GAMEHOOK_REGISTRY(CBasePlayer_HintMessageEx);
 GAMEHOOK_REGISTRY(CBasePlayer_UseEmpty);
-<<<<<<< HEAD
 GAMEHOOK_REGISTRY(CBasePlayerWeapon_CanDeploy);
 GAMEHOOK_REGISTRY(CBasePlayerWeapon_DefaultDeploy);
 GAMEHOOK_REGISTRY(CBasePlayerWeapon_DefaultReload);
 GAMEHOOK_REGISTRY(CBasePlayerWeapon_DefaultShotgunReload);
-=======
 GAMEHOOK_REGISTRY(CBasePlayer_DropIdlePlayer);
->>>>>>> Implement RG_CBasePlayer_DropIdlePlayer hook
 
 int CReGameApi::GetMajorVersion() {
 	return REGAMEDLL_API_VERSION_MAJOR;
