@@ -1447,10 +1447,11 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 #endif
 
 #ifdef REGAMEDLL_ADD
-	auto GiveWeapon = [&](int ammo, char *pszWeaponName) {
-		auto pItem = static_cast<CBasePlayerItem *>(GiveNamedItemEx(pszWeaponName));
-		if (pItem) {
-			GiveAmmo(refill_bpammo_weapons.value != 0.0f ? pItem->iMaxAmmo1() : ammo, pItem->pszAmmo1(), pItem->iMaxAmmo1());
+	auto GiveWeapon = [&](int ammo, char* pszWeaponName) {
+		GiveNamedItem(pszWeaponName);
+		const WeaponInfoStruct *pInfo = GetWeaponInfo(pszWeaponName);
+		if (pInfo) {
+			GiveAmmo(refill_bpammo_weapons.value != 0.0f ? pInfo->maxRounds : ammo, pInfo->ammoName2);
 		}
 	};
 
@@ -1508,8 +1509,8 @@ void CBasePlayer::RemoveAllItems(BOOL removeSuit)
 		m_pTank->Use(this, this, USE_OFF, 0);
 		m_pTank = nullptr;
 	}
-#endif
-
+#endif	
+	
 	if (m_bHasDefuser)
 	{
 		RemoveDefuser();
@@ -2053,7 +2054,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 	pev->movetype = MOVETYPE_TOSS;
 	pev->takedamage = DAMAGE_NO;
 
-	pev->gamestate = HITGROUP_SHIELD_DISABLED;
+	pev->gamestate = 1;
 	m_bShieldDrawn = false;
 
 	pev->flags &= ~FL_ONGROUND;
@@ -2200,7 +2201,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 	BuyZoneIcon_Clear(this);
 
 #ifdef REGAMEDLL_ADD
-	CSPlayer()->OnKilled();
+	CSPlayer()->m_flRespawnPending = gpGlobals->time;
 #endif
 
 	SetThink(&CBasePlayer::PlayerDeathThink);
@@ -3034,10 +3035,6 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveShield)(bool bDeploy)
 	m_bOwnsShield = true;
 	m_bHasPrimary = true;
 
-#ifdef REGAMEDLL_FIXES
-	pev->gamestate = HITGROUP_SHIELD_ENABLED;
-#endif
-
 	if (m_pActiveItem)
 	{
 		CBasePlayerWeapon *pWeapon = static_cast<CBasePlayerWeapon *>(m_pActiveItem);
@@ -3052,10 +3049,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveShield)(bool bDeploy)
 		}
 	}
 
-#ifndef REGAMEDLL_FIXES
-	// NOTE: Moved above, because CC4::Deploy can reset hitbox of shield
-	pev->gamestate = HITGROUP_SHIELD_ENABLED;
-#endif
+	pev->gamestate = 0;
 }
 
 void CBasePlayer::RemoveShield()
@@ -3065,7 +3059,7 @@ void CBasePlayer::RemoveShield()
 		m_bOwnsShield = false;
 		m_bHasPrimary = false;
 		m_bShieldDrawn = false;
-		pev->gamestate = HITGROUP_SHIELD_DISABLED;
+		pev->gamestate = 1;
 
 		UpdateShieldCrosshair(true);
 	}
@@ -4316,10 +4310,12 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 		real_t flLastMove = gpGlobals->time - m_fLastMovement;
 
 		//check if this player has been inactive for 2 rounds straight
-		if (flLastMove > CSGameRules()->m_fMaxIdlePeriod)
+		if (!IsBot() && flLastMove > CSGameRules()->m_fMaxIdlePeriod)
 		{
-			DropIdlePlayer();
-		}	
+			DropIdlePlayer("Player idle");
+			
+			m_fLastMovement = gpGlobals->time;
+		}
 
 #ifdef REGAMEDLL_ADD
 		if (afk_bomb_drop_time.value > 0.0 && IsBombGuy())
@@ -5002,11 +4998,6 @@ BOOL IsSpawnPointValid(CBaseEntity *pPlayer, CBaseEntity *pSpot)
 	if (!pSpot->IsTriggered(pPlayer))
 		return FALSE;
 
-#ifdef REGAMEDLL_ADD
-	if (!kill_filled_spawn.value)
-		return TRUE;
-#endif
-
 	CBaseEntity *pEntity = nullptr;
 	while ((pEntity = UTIL_FindEntityInSphere(pEntity, pSpot->pev->origin, MAX_PLAYER_USE_RADIUS)))
 	{
@@ -5256,9 +5247,9 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Spawn)()
 	m_pentCurBombTarget = nullptr;
 
 	if (m_bOwnsShield)
-		pev->gamestate = HITGROUP_SHIELD_ENABLED;
+		pev->gamestate = 0;
 	else
-		pev->gamestate = HITGROUP_SHIELD_DISABLED;
+		pev->gamestate = 1;
 
 	ResetStamina();
 	pev->friction = 1;
@@ -5322,10 +5313,6 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Spawn)()
 	m_rgbTimeBasedDamage[ITBD_DROWN_RECOVER] = 0;
 	m_idrowndmg = 0;
 	m_idrownrestored = 0;
-
-#ifdef REGAMEDLL_ADD
-	CSPlayer()->OnSpawn();
-#endif
 
 	if (m_iObserverC4State)
 	{
@@ -5709,12 +5696,6 @@ void CBasePlayer::Reset()
 		WRITE_SHORT(0);
 		WRITE_SHORT(m_iTeam);
 	MESSAGE_END();
-
-#ifdef REGAMEDLL_ADD
-	if (CSPlayer()->GetProtectionState() == CCSPlayer::ProtectionSt_Active) {
-		RemoveSpawnProtection();
-	}
-#endif
 }
 
 NOXREF void CBasePlayer::SelectNextItem(int iItem)
@@ -6195,7 +6176,6 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 #else
 			AddAccount(16000);
 			ALERT(at_console, "Crediting %s with $16000\n", STRING(pev->netname));
-#endif
 			break;
 		case 102:
 			CGib::SpawnRandomGibs(pev, 1, 1);
@@ -6557,7 +6537,7 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(AddPlayerItem)(CBasePlayerItem *pItem)
 		m_rgpPlayerItems[pItem->iItemSlot()] = pItem;
 
 		if (HasShield())
-			pev->gamestate = HITGROUP_SHIELD_ENABLED;
+			pev->gamestate = 0;
 
 		// should we switch to this item?
 		if (g_pGameRules->FShouldSwitchWeapon(this, pItem))
@@ -6777,14 +6757,8 @@ void CBasePlayer::SendHostagePos()
 
 void CBasePlayer::SendHostageIcons()
 {
-	if (!AreRunningCZero()
-#ifdef REGAMEDLL_ADD
-		&& !show_scenarioicon.value
-#endif
-		)
-	{
+	if (!AreRunningCZero())
 		return;
-	}
 
 	int hostagesCount = 0;
 	CHostage *pHostage = nullptr;
@@ -9844,9 +9818,7 @@ void CBasePlayer::PlayerRespawnThink()
 	if (pev->deadflag < DEAD_DYING)
 		return;
 
-	if (forcerespawn.value > 0 &&
-		CSPlayer()->m_flRespawnPending > 0 &&
-		CSPlayer()->m_flRespawnPending <= gpGlobals->time)
+	if (forcerespawn.value > 0 && gpGlobals->time > (CSPlayer()->m_flRespawnPending + forcerespawn.value))
 	{
 		Spawn();
 		pev->button = 0;
@@ -9906,28 +9878,27 @@ void CBasePlayer::__API_HOOK(RemoveSpawnProtection)()
 	CSPlayer()->m_flSpawnProtectionEndTime = 0.0f;
 }
 
-LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, DropIdlePlayer)
+LINK_HOOK_CLASS_VOID_CHAIN(CBasePlayer, DropIdlePlayer, (const char *reason), reason)
 
-void EXT_FUNC CBasePlayer::__API_HOOK(DropIdlePlayer)()
+void EXT_FUNC CBasePlayer::__API_HOOK(DropIdlePlayer)(const char *reason)
 {
-	if (!IsBot() && autokick.value)
+	if (!autokick.value)
+		return;
+
+	edict_t *pEntity = edict();
+
+	int iUserID = GETPLAYERUSERID(pEntity);
+
+	// Log the kick
+	UTIL_LogPrintf("\"%s<%i><%s><%s>\" triggered \"Game_idle_kick\" (auto)\n", STRING(pev->netname), iUserID , GETPLAYERAUTHID(pEntity), GetTeam(m_iTeam));
+	UTIL_ClientPrintAll(HUD_PRINTCONSOLE, "#Game_idle_kick", STRING(pev->netname));
+
+#ifdef REGAMEDLL_FIXES
+	if (iUserID != -1)
 	{
-		edict_t *pEntity = edict();
-
-		// Log the kick
-		UTIL_LogPrintf("\"%s<%i><%s><%s>\" triggered \"Game_idle_kick\" (auto)\n", STRING(pev->netname), GETPLAYERUSERID(pEntity), GETPLAYERAUTHID(pEntity), GetTeam(m_iTeam));
-		UTIL_ClientPrintAll(HUD_PRINTCONSOLE, "#Game_idle_kick", STRING(pev->netname));
-
-	#ifdef REGAMEDLL_FIXES
-		int iUserID = GETPLAYERUSERID(pEntity);
-		if (iUserID != -1)
-		{
-			SERVER_COMMAND(UTIL_VarArgs("kick #%d \"Player idle\"\n", iUserID));
-		}
-	#else
-		SERVER_COMMAND(UTIL_VarArgs("kick \"%s\"\n", STRING(pev->netname)));
-	#endif // #ifdef REGAMEDLL_FIXES
-
-		m_fLastMovement = gpGlobals->time;
-	}	
+		SERVER_COMMAND(UTIL_VarArgs("kick #%d \"%s\"\n", iUserID, reason));
+	}
+#else
+	SERVER_COMMAND(UTIL_VarArgs("kick \"%s\"\n", STRING(pev->netname)));
+#endif // #ifdef REGAMEDLL_FIXES
 }

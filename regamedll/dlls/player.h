@@ -112,10 +112,6 @@ const int MONEY_BLINK_AMOUNT = 30;
 #define PFLAG_USING             BIT(4) // Using a continuous entity
 #define PFLAG_OBSERVER          BIT(5) // Player is locked in stationary cam mode. Spectators can move, observers can't.
 
-// Player gamestate flags
-#define HITGROUP_SHIELD_ENABLED     0
-#define HITGROUP_SHIELD_DISABLED    1
-
 #define TRAIN_OFF               0x00
 #define TRAIN_NEUTRAL           0x01
 #define TRAIN_SLOW              0x02
@@ -429,7 +425,7 @@ public:
 	void RemoveSpawnProtection_OrigFunc();
 	bool HintMessageEx_OrigFunc(const char *pMessage, float duration = 6.0f, bool bDisplayIfPlayerDead = false, bool bOverride = false);
 	void UseEmpty_OrigFunc();
-	void DropIdlePlayer_OrigFunc();
+	void DropIdlePlayer_OrigFunc(const char *reason);
 
 	CCSPlayer *CSPlayer() const;
 #endif // REGAMEDLL_API
@@ -626,7 +622,7 @@ public:
 	void SetSpawnProtection(float flProtectionTime);
 	void RemoveSpawnProtection();
 	void UseEmpty();
-	void DropIdlePlayer();
+	void DropIdlePlayer(const char *reason);
 
 	// templates
 	template<typename T = CBasePlayerItem, typename Functor>

@@ -461,8 +461,8 @@ typedef IHookChainClass<bool, class CBasePlayerWeapon, int, int, float, float, c
 typedef IHookChainRegistryClass<bool, class CBasePlayerWeapon, int, int, float, float, const char *, const char *> IReGameHookRegistry_CBasePlayerWeapon_DefaultShotgunReload;
 
 // CBasePlayer::DropIdlePlayer hook
-typedef IHookChainClass<void, CBasePlayer> IReGameHook_CBasePlayer_DropIdlePlayer;
-typedef IHookChainRegistryClass<void, CBasePlayer> IReGameHookRegistry_CBasePlayer_DropIdlePlayer;
+typedef IHookChainClass<void, CBasePlayer, const char *> IReGameHook_CBasePlayer_DropIdlePlayer;
+typedef IHookChainRegistryClass<void, CBasePlayer, const char *> IReGameHookRegistry_CBasePlayer_DropIdlePlayer;
 
 class IReGameHookchains {
 public:
