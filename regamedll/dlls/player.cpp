@@ -9734,7 +9734,11 @@ bool EXT_FUNC CBasePlayer::__API_HOOK(GetIntoGame)()
 		Spawn();
 		CSGameRules()->CheckWinConditions();
 
-		if (!CSGameRules()->m_flRestartRoundTime && CSGameRules()->m_bMapHasBombTarget && !CSGameRules()->IsThereABomber() && !CSGameRules()->IsThereABomb())
+		if (!CSGameRules()->m_flRestartRoundTime && CSGameRules()->m_bMapHasBombTarget && !CSGameRules()->IsThereABomber() && !CSGameRules()->IsThereABomb()
+#ifdef REGAMEDLL_ADD
+			&& give_player_c4.value
+#endif
+			)
 		{
 			CSGameRules()->GiveC4();
 		}
