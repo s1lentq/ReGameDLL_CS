@@ -4316,26 +4316,11 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 		real_t flLastMove = gpGlobals->time - m_fLastMovement;
 
 		//check if this player has been inactive for 2 rounds straight
-		if (flLastMove > CSGameRules()->m_fMaxIdlePeriod)
+		if (!IsBot() && flLastMove > CSGameRules()->m_fMaxIdlePeriod)
 		{
-			if (!IsBot() && autokick.value)
-			{
-				// Log the kick
-				UTIL_LogPrintf("\"%s<%i><%s><%s>\" triggered \"Game_idle_kick\" (auto)\n", STRING(pev->netname), GETPLAYERUSERID(edict()), GETPLAYERAUTHID(edict()), GetTeam(m_iTeam));
-				UTIL_ClientPrintAll(HUD_PRINTCONSOLE, "#Game_idle_kick", STRING(pev->netname));
-
-#ifdef REGAMEDLL_FIXES
-				int iUserID = GETPLAYERUSERID(edict());
-				if (iUserID != -1)
-				{
-					SERVER_COMMAND(UTIL_VarArgs("kick #%d \"Player idle\"\n", iUserID));
-				}
-#else
-				SERVER_COMMAND(UTIL_VarArgs("kick \"%s\"\n", STRING(pev->netname)));
-#endif // #ifdef REGAMEDLL_FIXES
-
-				m_fLastMovement = gpGlobals->time;
-			}
+			DropIdlePlayer("Player idle");
+			
+			m_fLastMovement = gpGlobals->time;
 		}
 #ifdef REGAMEDLL_ADD
 		if (afk_bomb_drop_time.value > 0.0 && IsBombGuy())
@@ -9920,4 +9905,29 @@ void CBasePlayer::__API_HOOK(RemoveSpawnProtection)()
 	}
 
 	CSPlayer()->m_flSpawnProtectionEndTime = 0.0f;
+}
+
+LINK_HOOK_CLASS_VOID_CHAIN(CBasePlayer, DropIdlePlayer, (const char *reason), reason)
+
+void EXT_FUNC CBasePlayer::__API_HOOK(DropIdlePlayer)(const char *reason)
+{
+	if (!autokick.value)
+		return;
+
+	edict_t *pEntity = edict();
+
+	int iUserID = GETPLAYERUSERID(pEntity);
+
+	// Log the kick
+	UTIL_LogPrintf("\"%s<%i><%s><%s>\" triggered \"Game_idle_kick\" (auto)\n", STRING(pev->netname), iUserID , GETPLAYERAUTHID(pEntity), GetTeam(m_iTeam));
+	UTIL_ClientPrintAll(HUD_PRINTCONSOLE, "#Game_idle_kick", STRING(pev->netname));
+
+#ifdef REGAMEDLL_FIXES
+	if (iUserID != -1)
+	{
+		SERVER_COMMAND(UTIL_VarArgs("kick #%d \"%s\"\n", iUserID, reason));
+	}
+#else
+	SERVER_COMMAND(UTIL_VarArgs("kick \"%s\"\n", STRING(pev->netname)));
+#endif // #ifdef REGAMEDLL_FIXES
 }
