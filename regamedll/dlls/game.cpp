@@ -176,7 +176,7 @@ void GameDLL_EndRound_f()
 void GameDLL_SwapTeams_f()
 {
 	CSGameRules()->SwapAllPlayers();
-	CVAR_SET_FLOAT("sv_restartround", 1.0);
+	CVAR_SET_FLOAT("sv_restartround", 1.0f);
 }
 
 #endif // REGAMEDLL_ADD
