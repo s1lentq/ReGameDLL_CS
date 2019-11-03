@@ -1931,8 +1931,11 @@ void CWeaponBox::Touch(CBaseEntity *pOther)
 			if (!FStringNull(m_rgiszAmmo[n]))
 			{
 				// there's some ammo of this type.
+#ifdef REGAMEDLL_FIXES
+				pPlayer->GiveAmmo(m_rgAmmo[n], STRING(m_rgiszAmmo[n]), m_rgAmmo[n]);
+#else
 				pPlayer->GiveAmmo(m_rgAmmo[n], (char *)STRING(m_rgiszAmmo[n]), MaxAmmoCarry(m_rgiszAmmo[n]));
-
+#endif
 				// now empty the ammo from the weaponbox since we just gave it to the player
 				m_rgiszAmmo[n] = iStringNull;
 				m_rgAmmo[n] = 0;
@@ -2004,6 +2007,55 @@ BOOL CWeaponBox::PackWeapon(CBasePlayerItem *pWeapon)
 
 	return TRUE;
 }
+
+#ifdef REGAMEDLL_FIXES
+int CWeaponBox::PackAmmoEx(string_t iszName, int iCount, int iMaxCarry)
+{
+	if (!iszName)
+	{
+		// ALERT(at_console, "[%s] NULL string!\n", __FUNCTION__);
+		return -1;
+	}
+
+	// Duplicate -- int CBasePlayer::GetAmmoIndex
+	auto GetAmmoIndex = [&](const char *pszAmmoName)->int
+	{
+		for (auto& ammo : ammoIndex)
+		{
+			if (!Q_stricmp(ammo.name, pszAmmoName)) {
+				return ammo.type;
+			}
+		}
+
+		return -1;
+	};
+
+	int iAmmoIndex = GetAmmoIndex(iszName);
+
+	if (iAmmoIndex < 0 || iAmmoIndex >= MAX_AMMO_SLOTS)
+	{
+		// ALERT(at_console, "[%s] out of named ammo slots!\n", __FUNCTION__);
+		return -1;
+	}
+
+	if (iMaxCarry == -1)
+		iMaxCarry = MaxAmmoCarry(iszName);
+
+	int iAdd = Q_min(iCount, iMaxCarry - m_rgAmmo[iAmmoIndex]);
+
+	if (iAdd < 1)
+		return iAmmoIndex;
+
+	if (FStringNull(m_rgiszAmmo[iAmmoIndex]))
+	{
+		m_rgiszAmmo[iAmmoIndex] = iszName;
+	}
+
+	m_rgAmmo[iAmmoIndex] += iAdd;
+
+	return iAmmoIndex;
+}
+#endif
 
 BOOL CWeaponBox::PackAmmo(string_t iszName, int iCount)
 {
