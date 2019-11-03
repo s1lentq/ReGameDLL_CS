@@ -478,6 +478,10 @@ public:
 	BOOL PackWeapon(CBasePlayerItem *pWeapon);
 	BOOL PackAmmo(string_t iszName, int iCount);
 
+#ifdef REGAMEDLL_FIXES
+	int PackAmmoEx(string_t iszName, int iCount, int iMaxCarry = -1);
+#endif
+
 #ifdef REGAMEDLL_API
 	void SetModel_OrigFunc(const char *pszModelName);
 #endif
