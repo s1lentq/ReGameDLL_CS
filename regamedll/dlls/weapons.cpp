@@ -1370,7 +1370,13 @@ int EXT_FUNC CBasePlayerWeapon::__API_HOOK(DefaultReload)(int iClipSize, int iAn
 	m_pPlayer->m_flNextAttack = fDelay;
 
 	ReloadSound();
+
+#ifndef REGAMEDLL_FIXES
 	SendWeaponAnim(iAnim, UseDecrement() ? 1 : 0);
+#else
+	// force send
+	SendWeaponAnim(iAnim);
+#endif
 
 	m_fInReload = TRUE;
 	m_flTimeWeaponIdle = fDelay + 0.5f;
