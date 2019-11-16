@@ -353,6 +353,7 @@ void EXT_FUNC GameDLLInit()
 
 	CVAR_REGISTER(&radio_timeout);
 	CVAR_REGISTER(&radio_maxinround);
+	CVAR_REGISTER(&friendlyblind);
 
 	// print version
 	CONSOLE_ECHO("ReGameDLL version: " APP_VERSION "\n");
