@@ -65,6 +65,11 @@ void RadiusFlash(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker,
 		if (pPlayer->pev->takedamage == DAMAGE_NO || pPlayer->pev->deadflag != DEAD_NO)
 			continue;
 
+#ifdef REGAMEDLL_ADD
+		if (!friendlyblind.value && pPlayer->edict() != ENT(pevAttacker) && g_pGameRules->PlayerRelationship(CBasePlayer::Instance(pevAttacker), pPlayer) == GR_TEAMMATE)
+			continue;
+#endif
+
 		if (bInWater && pPlayer->pev->waterlevel == 0)
 			continue;
 
