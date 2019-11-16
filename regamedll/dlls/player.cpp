@@ -1289,7 +1289,7 @@ void PackPlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 		if (packAmmo)
 		{
 
-#ifdef REGAMEDLL_FIXES		
+#ifdef REGAMEDLL_ADD		
 			pWeaponBox->PackAmmoEx(MAKE_STRING(pItem->pszAmmo1()), pPlayer->m_rgAmmo[pItem->PrimaryAmmoIndex()], pItem->iMaxAmmo1());
 #else
 			pWeaponBox->PackAmmo(MAKE_STRING(pItem->pszAmmo1()), pPlayer->m_rgAmmo[pItem->PrimaryAmmoIndex()]);
@@ -1351,7 +1351,7 @@ void PackPlayerNade(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 		if (packAmmo)
 		{
 
-#ifdef REGAMEDLL_FIXES		
+#ifdef REGAMEDLL_ADD
 			pWeaponBox->PackAmmoEx(MAKE_STRING(pItem->pszAmmo1()), pPlayer->m_rgAmmo[pItem->PrimaryAmmoIndex()], pItem->iMaxAmmo1());
 #else
 			pWeaponBox->PackAmmo(MAKE_STRING(pItem->pszAmmo1()), pPlayer->m_rgAmmo[pItem->PrimaryAmmoIndex()]);
@@ -7801,11 +7801,16 @@ CBaseEntity *EXT_FUNC CBasePlayer::__API_HOOK(DropPlayerItem)(const char *pszIte
 			if (iAmmoIndex != -1)
 			{
 #ifdef REGAMEDLL_FIXES
-				// why not pack the ammo more than one?
+
+#ifdef REGAMEDLL_ADD
 				pWeaponBox->PackAmmoEx(MAKE_STRING(pWeapon->pszAmmo1()), m_rgAmmo[iAmmoIndex], pWeapon->iMaxAmmo1());
+#else  // REGAMEDLL_ADD
+				// why not pack the ammo more than one?
+				pWeaponBox->PackAmmo(MAKE_STRING(pWeapon->pszAmmo1()), m_rgAmmo[iAmmoIndex]);
+#endif // REGAMEDLL_ADD
 #else
 				pWeaponBox->PackAmmo(MAKE_STRING(pWeapon->pszAmmo1()), m_rgAmmo[iAmmoIndex] > 0);
-#endif
+#endif // REGAMEDLL_FIXES
 				m_rgAmmo[iAmmoIndex] = 0;
 			}
 		}

@@ -1931,7 +1931,7 @@ void CWeaponBox::Touch(CBaseEntity *pOther)
 			if (!FStringNull(m_rgiszAmmo[n]))
 			{
 				// there's some ammo of this type.
-#ifdef REGAMEDLL_FIXES
+#ifdef REGAMEDLL_ADD
 				pPlayer->GiveAmmo(m_rgAmmo[n], STRING(m_rgiszAmmo[n]), m_rgAmmo[n]);
 #else
 				pPlayer->GiveAmmo(m_rgAmmo[n], (char *)STRING(m_rgiszAmmo[n]), MaxAmmoCarry(m_rgiszAmmo[n]));
@@ -2008,7 +2008,7 @@ BOOL CWeaponBox::PackWeapon(CBasePlayerItem *pWeapon)
 	return TRUE;
 }
 
-#ifdef REGAMEDLL_FIXES
+#ifdef REGAMEDLL_ADD
 int CWeaponBox::PackAmmoEx(string_t iszName, int iCount, int iMaxCarry)
 {
 	if (!iszName)
