@@ -1859,7 +1859,7 @@ void CBombTarget::BombTargetTouch(CBaseEntity *pOther)
 	CBasePlayer *pPlayer = static_cast<CBasePlayer *>(pOther);
 
 	if (pPlayer->m_bHasC4
-#ifdef REGAMEDLL_FIXES
+#ifdef REGAMEDLL_ADD
 		&& (legacy_bombtarget_touch.value || IsPlayerInBombSite(pPlayer))
 #endif
 	)
