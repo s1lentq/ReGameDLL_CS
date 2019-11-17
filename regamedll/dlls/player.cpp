@@ -7800,17 +7800,19 @@ CBaseEntity *EXT_FUNC CBasePlayer::__API_HOOK(DropPlayerItem)(const char *pszIte
 			int iAmmoIndex = GetAmmoIndex(pWeapon->pszAmmo1());
 			if (iAmmoIndex != -1)
 			{
-#ifdef REGAMEDLL_FIXES
 
 #ifdef REGAMEDLL_ADD
 				pWeaponBox->PackAmmoEx(MAKE_STRING(pWeapon->pszAmmo1()), m_rgAmmo[iAmmoIndex], pWeapon->iMaxAmmo1());
-#else  // REGAMEDLL_ADD
+#else // REGAMEDLL_ADD
+
+#ifdef REGAMEDLL_FIXES
 				// why not pack the ammo more than one?
 				pWeaponBox->PackAmmo(MAKE_STRING(pWeapon->pszAmmo1()), m_rgAmmo[iAmmoIndex]);
-#endif // REGAMEDLL_ADD
-#else
+#else // REGAMEDLL_FIXES
 				pWeaponBox->PackAmmo(MAKE_STRING(pWeapon->pszAmmo1()), m_rgAmmo[iAmmoIndex] > 0);
 #endif // REGAMEDLL_FIXES
+
+#endif // REGAMEDLL_ADD
 				m_rgAmmo[iAmmoIndex] = 0;
 			}
 		}
