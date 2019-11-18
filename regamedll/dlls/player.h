@@ -968,6 +968,7 @@ void VIP_SafetyZoneIcon_Clear(CBasePlayer *pPlayer);
 
 void SendItemStatus(CBasePlayer *pPlayer);
 const char *GetCSModelName(int item_id);
+const char *GetCSModelName(CBasePlayerItem *pItem);
 Vector VecVelocityForDamage(float flDamage);
 int TrainSpeed(int iSpeed, int iMax);
 const char *GetWeaponName(entvars_t *pevInflictor, entvars_t *pKiller);

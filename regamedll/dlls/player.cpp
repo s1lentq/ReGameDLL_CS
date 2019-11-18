@@ -116,6 +116,16 @@ void CBasePlayer::SendItemStatus()
 	MESSAGE_END();
 }
 
+const char *GetCSModelName(CBasePlayerItem *pItem)
+{
+	if (pItem->pev->modelindex != 0 && !pItem->pev->model.IsNullOrEmpty())
+	{
+		return STRING(pItem->pev->model);
+	}
+
+	return GetCSModelName(pItem->m_iId);
+}
+
 const char *GetCSModelName(int item_id)
 {
 	const char *modelName = nullptr;
@@ -1271,7 +1281,7 @@ void PackPlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 	if (!pItem)
 		return;
 
-	const char *modelName = GetCSModelName(pItem->m_iId);
+	const char *modelName = GetCSModelName(pItem);
 	if (modelName)
 	{
 		// create a box to pack the stuff into.
@@ -1305,7 +1315,7 @@ void PackPlayerNade(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 		return;
 	}
 
-	const char *modelName = GetCSModelName(pItem->m_iId);
+	const char *modelName = GetCSModelName(pItem);
 	if (modelName)
 	{
 		float flOffset = 0.0f;
@@ -7799,7 +7809,7 @@ CBaseEntity *EXT_FUNC CBasePlayer::__API_HOOK(DropPlayerItem)(const char *pszIte
 			}
 		}
 
-		const char *modelname = GetCSModelName(pWeapon->m_iId);
+		const char *modelname = GetCSModelName(pWeapon);
 		if (modelname)
 		{
 			pWeaponBox->SetModel(modelname);
