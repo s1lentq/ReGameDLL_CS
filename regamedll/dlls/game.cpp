@@ -140,7 +140,7 @@ cvar_t ff_damage_reduction_other        = { "ff_damage_reduction_other",        
 
 cvar_t radio_timeout           = { "mp_radio_timeout", "1.5", FCVAR_SERVER, 1.5f, nullptr };
 cvar_t radio_maxinround        = { "mp_radio_maxinround", "60", FCVAR_SERVER, 60.0f, nullptr };
-cvar_t friendlyblind           = { "mp_friendlyblind", "1", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t friendlyflash_damage    = { "mp_friendlyflash_damage", "4", FCVAR_SERVER, 0.0f, nullptr };
 
 void GameDLL_Version_f()
 {
@@ -353,7 +353,7 @@ void EXT_FUNC GameDLLInit()
 
 	CVAR_REGISTER(&radio_timeout);
 	CVAR_REGISTER(&radio_maxinround);
-	CVAR_REGISTER(&friendlyblind);
+	CVAR_REGISTER(&friendlyflash_damage);
 
 	// print version
 	CONSOLE_ECHO("ReGameDLL version: " APP_VERSION "\n");
