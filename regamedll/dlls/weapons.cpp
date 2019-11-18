@@ -1106,9 +1106,12 @@ void CBasePlayerItem::AttachToPlayer(CBasePlayer *pPlayer)
 	pev->aiment = pPlayer->edict();
 	pev->effects = EF_NODRAW;
 
+#ifndef REGAMEDLL_ADD
 	// server won't send down to clients if modelindex == 0
 	pev->modelindex = 0;
 	pev->model = 0;
+#endif
+
 	pev->owner = pPlayer->edict();
 
 #ifndef REGAMEDLL_FIXES
@@ -1995,8 +1998,12 @@ BOOL CWeaponBox::PackWeapon(CBasePlayerItem *pWeapon)
 	pWeapon->pev->movetype = MOVETYPE_NONE;
 	pWeapon->pev->solid = SOLID_NOT;
 	pWeapon->pev->effects = EF_NODRAW;
+
+#ifndef REGAMEDLL_ADD
 	pWeapon->pev->modelindex = 0;
 	pWeapon->pev->model = 0;
+#endif
+
 	pWeapon->pev->owner = ENT(pev);
 	pWeapon->SetThink(nullptr);
 	pWeapon->SetTouch(nullptr);
