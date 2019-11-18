@@ -1312,6 +1312,14 @@ BOOL EXT_FUNC CBasePlayerWeapon::__API_HOOK(DefaultDeploy)(char *szViewModel, ch
 	if (!CanDeploy())
 		return FALSE;
 
+#ifdef REGAMEDLL_ADD
+	if (!pev->viewmodel.IsNullOrEmpty())
+		szViewModel = (char *)STRING(pev->viewmodel);
+
+	if (!pev->weaponmodel.IsNullOrEmpty())
+		szWeaponModel = (char *)STRING(pev->weaponmodel);
+#endif
+
 	m_pPlayer->TabulateAmmo();
 	m_pPlayer->pev->viewmodel = MAKE_STRING(szViewModel);
 	m_pPlayer->pev->weaponmodel = MAKE_STRING(szWeaponModel);
