@@ -2045,6 +2045,8 @@ BOOL CHalfLifeMultiplay::IsThereABomb()
 
 BOOL CHalfLifeMultiplay::TeamFull(int team_id)
 {
+	if (ignore_spawnpoints.value == 1.0f)
+		return TRUE;
 	switch (team_id)
 	{
 	case TERRORIST:
