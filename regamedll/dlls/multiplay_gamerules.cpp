@@ -2047,7 +2047,7 @@ BOOL CHalfLifeMultiplay::TeamFull(int team_id)
 {
 #ifdef REGAMEDLL_FIXES
 	if (ignore_spawnpoints.value == 1.0f)
-		return TRUE;
+		return FALSE;
 #endif
 	switch (team_id)
 	{
