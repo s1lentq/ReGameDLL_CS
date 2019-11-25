@@ -1942,11 +1942,6 @@ BOOL EXT_FUNC __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *pPlayer, int slot)
 				madeRoom = true;
 			}
 		}
-#ifdef REGAMEDLL_FIXES
-		if (ignore_spawnpoints.value == 1.0f)
-			;
-		else
-#endif
 		if (!madeRoom)
 		{
 			ClientPrint(pPlayer->pev, HUD_PRINTCENTER, (team == TERRORIST) ? "#Terrorists_Full" : "#CTs_Full");

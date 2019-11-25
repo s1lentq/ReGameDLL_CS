@@ -2981,6 +2981,15 @@ void CHalfLifeMultiplay::CheckLevelInitialized()
 		while ((pEnt = UTIL_FindEntityByClassname(pEnt, "info_player_start")))
 			m_iSpawnPointCount_CT++;
 
+
+#ifdef REGAMEDLL_FIXES
+		if (ignore_spawnpoints.value == 1.0f)
+		{
+			m_iSpawnPointCount_Terrorist = 20;
+			m_iSpawnPointCount_CT = 20;
+		}
+#endif
+
 		m_bLevelInitialized = true;
 	}
 }
@@ -4932,11 +4941,6 @@ TeamName CHalfLifeMultiplay::SelectDefaultTeam()
 		// Teams and scores are equal, pick a random team
 		team = (RANDOM_LONG(0, 1) == 0) ? CT : TERRORIST;
 	}
-#ifdef REGAMEDLL_FIXES
-	if (ignore_spawnpoints.value == 1.0f)
-		;
-	else
-#endif
 	if (TeamFull(team))
 	{
 		// Pick the opposite team
