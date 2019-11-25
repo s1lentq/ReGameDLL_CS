@@ -1942,6 +1942,7 @@ BOOL EXT_FUNC __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *pPlayer, int slot)
 				madeRoom = true;
 			}
 		}
+		
 		if (!madeRoom)
 		{
 			ClientPrint(pPlayer->pev, HUD_PRINTCENTER, (team == TERRORIST) ? "#Terrorists_Full" : "#CTs_Full");
