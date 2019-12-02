@@ -576,11 +576,6 @@ void CBasePlayerItem::DefaultTouch(CBaseEntity *pOther)
 	// can I have this?
 	if (!g_pGameRules->CanHavePlayerItem(pPlayer, this))
 	{
-		if (gEvilImpulse101)
-		{
-			UTIL_Remove(this);
-		}
-
 		return;
 	}
 
@@ -1055,7 +1050,19 @@ void CBasePlayerItem::DestroyItem()
 	if (m_pPlayer)
 	{
 		// if attached to a player, remove.
-		m_pPlayer->RemovePlayerItem(this);
+		if (m_pPlayer->RemovePlayerItem(this))
+		{
+
+#ifdef REGAMEDLL_FIXES
+			m_pPlayer->pev->weapons &= ~(1 << m_iId);
+
+			// No more weapon
+			if ((m_pPlayer->pev->weapons & ~(1 << WEAPON_SUIT)) == 0) {
+				m_pPlayer->m_iHideHUD |= HIDEHUD_WEAPONS;
+			}
+#endif
+
+		}
 	}
 
 	Kill();
@@ -1227,7 +1234,7 @@ BOOL CBasePlayerWeapon::AddPrimaryAmmo(int iCount, char *szName, int iMaxClip, i
 
 	if (iMaxClip < 1)
 	{
-		m_iClip = -1;
+		m_iClip = WEAPON_NOCLIP;
 		iIdAmmo = m_pPlayer->GiveAmmo(iCount, szName, iMaxCarry);
 	}
 	else if (m_iClip == 0)
@@ -1288,12 +1295,16 @@ BOOL CBasePlayerWeapon::IsUseable()
 	return TRUE;
 }
 
-BOOL CBasePlayerWeapon::CanDeploy()
+LINK_HOOK_CLASS_CHAIN2(BOOL, CBasePlayerWeapon, CanDeploy)
+
+BOOL EXT_FUNC CBasePlayerWeapon::__API_HOOK(CanDeploy)()
 {
 	return TRUE;
 }
 
-BOOL CBasePlayerWeapon::DefaultDeploy(char *szViewModel, char *szWeaponModel, int iAnim, char *szAnimExt, int skiplocal)
+LINK_HOOK_CLASS_CHAIN(BOOL, CBasePlayerWeapon, DefaultDeploy, (char *szViewModel, char *szWeaponModel, int iAnim, char *szAnimExt, int skiplocal), szViewModel, szWeaponModel, iAnim, szAnimExt, skiplocal)
+
+BOOL EXT_FUNC CBasePlayerWeapon::__API_HOOK(DefaultDeploy)(char *szViewModel, char *szWeaponModel, int iAnim, char *szAnimExt, int skiplocal)
 {
 	if (!CanDeploy())
 		return FALSE;
@@ -1343,7 +1354,9 @@ void CBasePlayerWeapon::ReloadSound()
 	}
 }
 
-int CBasePlayerWeapon::DefaultReload(int iClipSize, int iAnim, float fDelay)
+LINK_HOOK_CLASS_CHAIN(int, CBasePlayerWeapon, DefaultReload, (int iClipSize, int iAnim, float fDelay), iClipSize, iAnim, fDelay)
+
+int EXT_FUNC CBasePlayerWeapon::__API_HOOK(DefaultReload)(int iClipSize, int iAnim, float fDelay)
 {
 	if (m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
 		return FALSE;
@@ -1363,6 +1376,63 @@ int CBasePlayerWeapon::DefaultReload(int iClipSize, int iAnim, float fDelay)
 	m_flTimeWeaponIdle = fDelay + 0.5f;
 
 	return TRUE;
+}
+
+LINK_HOOK_CLASS_CHAIN(bool, CBasePlayerWeapon, DefaultShotgunReload, (int iAnim, int iStartAnim, float fDelay, float fStartDelay, const char *pszReloadSound1, const char *pszReloadSound2), iAnim, iStartAnim, fDelay, fStartDelay, pszReloadSound1, pszReloadSound2)
+
+bool EXT_FUNC CBasePlayerWeapon::__API_HOOK(DefaultShotgunReload)(int iAnim, int iStartAnim, float fDelay, float fStartDelay, const char *pszReloadSound1, const char *pszReloadSound2)
+{
+	if (m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0 || m_iClip == iMaxClip())
+		return false;
+
+	// don't reload until recoil is done
+	if (m_flNextPrimaryAttack > UTIL_WeaponTimeBase())
+		return false;
+
+	// check to see if we're ready to reload
+	if (m_fInSpecialReload == 0)
+	{
+		m_pPlayer->SetAnimation(PLAYER_RELOAD);
+		SendWeaponAnim(iStartAnim, UseDecrement() != FALSE);
+
+		m_fInSpecialReload = 1;
+		m_flNextSecondaryAttack = m_flTimeWeaponIdle = m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + fStartDelay;
+		m_flNextPrimaryAttack = GetNextAttackDelay(fStartDelay);
+	}
+	else if (m_fInSpecialReload == 1)
+	{
+		if (m_flTimeWeaponIdle > UTIL_WeaponTimeBase())
+			return false;
+
+		// was waiting for gun to move to side
+		m_fInSpecialReload = 2;
+
+		const char *pszReloadSound = nullptr;
+		if (pszReloadSound1 && pszReloadSound2) pszReloadSound = RANDOM_LONG(0, 1) ? pszReloadSound1 : pszReloadSound2;
+		else if (pszReloadSound1)               pszReloadSound = pszReloadSound1;
+		else if (pszReloadSound2)               pszReloadSound = pszReloadSound2;
+
+		if (pszReloadSound && pszReloadSound[0] != '\0')
+		{
+			EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_ITEM, pszReloadSound, VOL_NORM, ATTN_NORM, 0, 85 + RANDOM_LONG(0, 31));
+		}
+
+		SendWeaponAnim(iAnim, UseDecrement());
+
+		m_flTimeWeaponIdle = m_flNextReload = UTIL_WeaponTimeBase() + fDelay;
+	}
+	else
+#ifdef BUILD_LATEST_FIXES
+		if (m_flTimeWeaponIdle <= UTIL_WeaponTimeBase())
+#endif
+	{
+		m_iClip++;
+		m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]--;
+		m_pPlayer->ammo_buckshot--;
+		m_fInSpecialReload = 1;
+	}
+
+	return true;
 }
 
 BOOL CBasePlayerWeapon::PlayEmptySound()
@@ -1450,7 +1520,7 @@ int CBasePlayerWeapon::ExtractClipAmmo(CBasePlayerWeapon *pWeapon)
 		iAmmo = m_iClip;
 	}
 
-	return pWeapon->m_pPlayer->GiveAmmo(iAmmo, (char *)pszAmmo1(), iMaxAmmo1());
+	return pWeapon->m_pPlayer->GiveAmmo(iAmmo, pszAmmo1(), iMaxAmmo1());
 }
 
 // RetireWeapon - no more ammo for this gun, put it away.
@@ -2107,6 +2177,12 @@ void CArmoury::Spawn()
 void CArmoury::Restart()
 {
 #ifdef REGAMEDLL_FIXES
+	if (!weapons_allow_map_placed.value)
+	{
+		Hide();
+		return;
+	}
+
 	// This code refers to the mode of Escape. (Because there is relationship to the team Terrorists)
 	if (CSGameRules()->m_bMapHasEscapeZone)
 #endif
