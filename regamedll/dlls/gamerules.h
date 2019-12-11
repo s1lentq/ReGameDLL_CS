@@ -806,8 +806,19 @@ class CCStrikeGameMgrHelper: public IVoiceGameMgrHelper
 public:
 	virtual bool CanPlayerHearPlayer(CBasePlayer *pListener, CBasePlayer *pSender);
 
+#ifdef REGAMEDLL_ADD
+	virtual void ResetCanHearPlayer(int index);
+	virtual void SetCanHearPlayer(CBasePlayer* pListener, CBasePlayer* pSender, bool bCanHear);
+	virtual bool GetCanHearPlayer(CBasePlayer* pListener, CBasePlayer* pSender);
+#endif
+
 #ifdef REGAMEDLL_API
 	bool CanPlayerHearPlayer_OrigFunc(CBasePlayer *pListener, CBasePlayer *pSender);
+#endif
+
+public:
+#ifdef REGAMEDLL_ADD
+	CBitVec<VOICE_MAX_PLAYERS> m_iCanHearMasks[VOICE_MAX_PLAYERS];
 #endif
 };
 

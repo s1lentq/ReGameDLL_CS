@@ -41,6 +41,11 @@ public:
 	// Called each frame to determine which players are allowed to hear each other.	This overrides
 	// whatever squelch settings players have.
 	virtual bool CanPlayerHearPlayer(CBasePlayer *pListener, CBasePlayer *pTalker) = 0;
+#ifdef REGAMEDLL_ADD
+	virtual void ResetCanHearPlayer(int index) = 0;
+	virtual void SetCanHearPlayer(CBasePlayer* pListener, CBasePlayer* pSender, bool bCanHear) = 0;
+	virtual bool GetCanHearPlayer(CBasePlayer* pListener, CBasePlayer* pSender) = 0;
+#endif
 };
 
 // CVoiceGameMgr manages which clients can hear which other clients.

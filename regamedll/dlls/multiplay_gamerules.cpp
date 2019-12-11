@@ -125,6 +125,43 @@ bool CCStrikeGameMgrHelper::__API_HOOK(CanPlayerHearPlayer)(CBasePlayer *pListen
 	}
 }
 
+#ifdef REGAMEDLL_ADD
+void CCStrikeGameMgrHelper::ResetCanHearPlayer(int index)
+{
+	m_iCanHearMasks[index].Init(true);
+	for (int iOtherClient = 0; iOtherClient < VOICE_MAX_PLAYERS; iOtherClient++)
+	{
+		if (index != iOtherClient) {
+			m_iCanHearMasks[iOtherClient][index] = true;
+		}
+	}
+}
+
+void CCStrikeGameMgrHelper::SetCanHearPlayer(CBasePlayer* pListener, CBasePlayer* pSender, bool bCanHear)
+{
+	if (!pListener->IsPlayer() || !pSender->IsPlayer())
+	{
+		return;
+	}
+
+	int listener = pListener->entindex() - 1;
+	int sender = pSender->entindex() - 1;
+	m_iCanHearMasks[listener][sender] = bCanHear;
+}
+
+bool CCStrikeGameMgrHelper::GetCanHearPlayer(CBasePlayer* pListener, CBasePlayer* pSender)
+{
+	if (!pListener->IsPlayer() || !pSender->IsPlayer())
+	{
+		return true;
+	}
+
+	int listener = pListener->entindex() - 1;
+	int sender = pSender->entindex() - 1;
+	return m_iCanHearMasks[listener][sender];
+}
+#endif
+
 void Broadcast(const char *sentence)
 {
 	char text[32];

@@ -94,6 +94,10 @@ void CVoiceGameMgr::ClientConnected(edict_t *pEdict)
 	g_bWantModEnable[index] = true;
 	g_SentGameRulesMasks[index].Init(0);
 	g_SentBanMasks[index].Init(0);
+
+#ifdef REGAMEDLL_ADD
+	m_pHelper->ResetCanHearPlayer(index);
+#endif
 }
 
 // Called to determine if the Receiver has muted (blocked) the Sender
@@ -187,7 +191,13 @@ void CVoiceGameMgr::UpdateMasks()
 			for (int iOtherClient = 0; iOtherClient < m_nMaxPlayers; iOtherClient++)
 			{
 				CBasePlayer *pSender = UTIL_PlayerByIndex(iOtherClient + 1);
-				if (pSender && m_pHelper->CanPlayerHearPlayer(pPlayer, pSender))
+
+				if (pSender
+#ifdef REGAMEDLL_ADD
+					&& m_pHelper->GetCanHearPlayer(pPlayer, pSender)
+#endif
+					&& m_pHelper->CanPlayerHearPlayer(pPlayer, pSender)
+				)
 				{
 					gameRulesMask[iOtherClient] = true;
 				}
