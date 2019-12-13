@@ -807,7 +807,7 @@ public:
 	virtual bool CanPlayerHearPlayer(CBasePlayer *pListener, CBasePlayer *pSender);
 
 #ifdef REGAMEDLL_ADD
-	virtual void ResetCanHearPlayer(int index);
+	virtual void ResetCanHearPlayer(edict_t* pEdict);
 	virtual void SetCanHearPlayer(CBasePlayer* pListener, CBasePlayer* pSender, bool bCanHear);
 	virtual bool GetCanHearPlayer(CBasePlayer* pListener, CBasePlayer* pSender);
 #endif

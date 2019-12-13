@@ -91,12 +91,12 @@ void CVoiceGameMgr::ClientConnected(edict_t *pEdict)
 	int index = ENTINDEX(pEdict) - 1;
 
 	// Clear out everything we use for deltas on this guy.
-	g_bWantModEnable[index] = true;
+	g_bWantModEnable[index] = TRUE;
 	g_SentGameRulesMasks[index].Init(0);
 	g_SentBanMasks[index].Init(0);
 
 #ifdef REGAMEDLL_ADD
-	m_pHelper->ResetCanHearPlayer(index);
+	m_pHelper->ResetCanHearPlayer(pEdict);
 #endif
 }
 
@@ -153,7 +153,7 @@ bool CVoiceGameMgr::ClientCommand(CBasePlayer *pPlayer, const char *cmd)
 		VoiceServerDebug("CVoiceGameMgr::ClientCommand: VModEnable (%d)\n", !!Q_atoi(CMD_ARGV(1)));
 
 		g_PlayerModEnable[playerClientIndex] = !!Q_atoi(CMD_ARGV(1));
-		g_bWantModEnable[playerClientIndex] = false;
+		g_bWantModEnable[playerClientIndex] = FALSE;
 		//UpdateMasks();
 		return true;
 	}
@@ -192,14 +192,9 @@ void CVoiceGameMgr::UpdateMasks()
 			{
 				CBasePlayer *pSender = UTIL_PlayerByIndex(iOtherClient + 1);
 
-				if (pSender
-#ifdef REGAMEDLL_ADD
-					&& m_pHelper->GetCanHearPlayer(pPlayer, pSender)
-#endif
-					&& m_pHelper->CanPlayerHearPlayer(pPlayer, pSender)
-				)
+				if (pSender && m_pHelper->CanPlayerHearPlayer(pPlayer, pSender))
 				{
-					gameRulesMask[iOtherClient] = true;
+					gameRulesMask[iOtherClient] = TRUE;
 				}
 			}
 		}

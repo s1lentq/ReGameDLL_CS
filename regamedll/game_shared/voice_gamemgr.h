@@ -42,7 +42,7 @@ public:
 	// whatever squelch settings players have.
 	virtual bool CanPlayerHearPlayer(CBasePlayer *pListener, CBasePlayer *pTalker) = 0;
 #ifdef REGAMEDLL_ADD
-	virtual void ResetCanHearPlayer(int index) = 0;
+	virtual void ResetCanHearPlayer(edict_t* pEdict) = 0;
 	virtual void SetCanHearPlayer(CBasePlayer* pListener, CBasePlayer* pSender, bool bCanHear) = 0;
 	virtual bool GetCanHearPlayer(CBasePlayer* pListener, CBasePlayer* pSender) = 0;
 #endif
