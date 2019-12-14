@@ -89,6 +89,13 @@ LINK_HOOK_CLASS_CUSTOM_CHAIN(bool, CCStrikeGameMgrHelper, CSGameRules, CanPlayer
 
 bool CCStrikeGameMgrHelper::__API_HOOK(CanPlayerHearPlayer)(CBasePlayer *pListener, CBasePlayer *pSender)
 {
+#ifdef REGAMEDLL_ADD
+	if (!GetCanHearPlayer(pListener, pSender))
+	{
+		return false;
+	}
+#endif
+
 	switch ((int)sv_alltalk.value)
 	{
 	case 1: // allows everyone to talk
@@ -124,6 +131,45 @@ bool CCStrikeGameMgrHelper::__API_HOOK(CanPlayerHearPlayer)(CBasePlayer *pListen
 	}
 	}
 }
+
+#ifdef REGAMEDLL_ADD
+void CCStrikeGameMgrHelper::ResetCanHearPlayer(edict_t* pEdict)
+{
+	int index = ENTINDEX(pEdict) - 1;
+
+	m_iCanHearMasks[index].Init(TRUE);
+	for (int iOtherClient = 0; iOtherClient < VOICE_MAX_PLAYERS; iOtherClient++)
+	{
+		if (index != iOtherClient) {
+			m_iCanHearMasks[iOtherClient][index] = TRUE;
+		}
+	}
+}
+
+void CCStrikeGameMgrHelper::SetCanHearPlayer(CBasePlayer* pListener, CBasePlayer* pSender, bool bCanHear)
+{
+	if (!pListener->IsPlayer() || !pSender->IsPlayer())
+	{
+		return;
+	}
+
+	int listener = pListener->entindex() - 1;
+	int sender = pSender->entindex() - 1;
+	m_iCanHearMasks[listener][sender] = bCanHear ? TRUE : FALSE;
+}
+
+bool CCStrikeGameMgrHelper::GetCanHearPlayer(CBasePlayer* pListener, CBasePlayer* pSender)
+{
+	if (!pListener->IsPlayer() || !pSender->IsPlayer())
+	{
+		return true;
+	}
+
+	int listener = pListener->entindex() - 1;
+	int sender = pSender->entindex() - 1;
+	return m_iCanHearMasks[listener][sender] == TRUE;
+}
+#endif
 
 void Broadcast(const char *sentence)
 {
