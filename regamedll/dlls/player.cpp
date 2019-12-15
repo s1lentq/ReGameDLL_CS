@@ -82,7 +82,6 @@ const char *CDeadHEV::m_szPoses[] =
 	"deadtable"
 };
 
-int gEvilImpulse101;
 entvars_t *g_pevLastInflictor;
 
 LINK_ENTITY_TO_CLASS(player, CBasePlayer, CCSPlayer)
@@ -1302,6 +1301,10 @@ void PackPlayerNade(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 	if (!pItem)
 		return;
 
+	if (pItem->m_flStartThrow != 0.0f || pPlayer->m_rgAmmo[pItem->PrimaryAmmoIndex()] <= 0) {
+		return;
+	}
+
 	const char *modelName = GetCSModelName(pItem->m_iId);
 	if (modelName)
 	{
@@ -1317,10 +1320,6 @@ void PackPlayerNade(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 		case WEAPON_SMOKEGRENADE:
 			flOffset = -14.0f;
 			break;
-		}
-
-		if (pItem->m_flStartThrow && pPlayer->m_rgAmmo[pItem->PrimaryAmmoIndex()] <= 0) {
-			return;
 		}
 
 		Vector vecAngles = pPlayer->pev->angles;
@@ -1397,7 +1396,15 @@ void CBasePlayer::PackDeadPlayerItems()
 				else if (pPlayerItem->iItemSlot() == GRENADE_SLOT)
 				{
 					if (AreRunningCZero())
-						PackPlayerItem(this, pPlayerItem, true);
+					{
+
+#ifdef REGAMEDLL_FIXES
+						if (pPlayerItem->m_flStartThrow == 0.0f && m_rgAmmo[pPlayerItem->PrimaryAmmoIndex()] > 0)
+#endif
+						{
+							PackPlayerItem(this, pPlayerItem, true);
+						}
+					}
 #ifdef REGAMEDLL_ADD
 					else
 					{
@@ -1577,6 +1584,9 @@ void CBasePlayer::RemoveAllItems(BOOL removeSuit)
 
 #ifdef REGAMEDLL_FIXES
 	m_iHideHUD |= HIDEHUD_WEAPONS;
+
+	m_bHasNightVision = false;
+	SendItemStatus();
 #endif
 
 	// send Selected Weapon Message to our client
@@ -1709,6 +1719,16 @@ void BuyZoneIcon_Clear(CBasePlayer *pPlayer)
 	{
 		if (pPlayer->m_iMenu <= Menu_BuyItem)
 		{
+
+#ifdef REGAMEDLL_FIXES
+			// NOTE: is client-side bug
+			if (pPlayer->m_bVGUIMenus)
+			{
+				MESSAGE_BEGIN(MSG_ONE, gmsgBuyClose, nullptr, pPlayer->pev);
+				MESSAGE_END();
+			}
+#endif
+
 			CLIENT_COMMAND(ENT(pPlayer->pev), "slot10\n");
 		}
 		else if (pPlayer->m_iMenu == Menu_ClientBuy)
@@ -1990,6 +2010,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 
 #ifdef REGAMEDLL_FIXES
 				m_rgAmmo[m_pActiveItem->PrimaryAmmoIndex()]--;
+				pHEGrenade->m_flStartThrow = 0;
 #endif
 			}
 			break;
@@ -2003,6 +2024,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 
 #ifdef REGAMEDLL_FIXES
 				m_rgAmmo[m_pActiveItem->PrimaryAmmoIndex()]--;
+				pFlashbang->m_flStartThrow = 0;
 #endif
 			}
 			break;
@@ -2016,6 +2038,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 
 #ifdef REGAMEDLL_FIXES
 				m_rgAmmo[m_pActiveItem->PrimaryAmmoIndex()]--;
+				pSmoke->m_flStartThrow = 0;
 #endif
 			}
 			break;
@@ -2034,6 +2057,11 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 	m_bShieldDrawn = false;
 
 	pev->flags &= ~FL_ONGROUND;
+
+#ifdef REGAMEDLL_FIXES
+	// FlashlightTurnOff()
+	pev->effects &= ~EF_DIMLIGHT;
+#endif
 
 	if (fadetoblack.value == 0.0)
 	{
@@ -2135,7 +2163,11 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 	if (m_bHasC4)
 	{
 		DropPlayerItem("weapon_c4");
+
+#ifndef REGAMEDLL_FIXES
+		// NOTE: It is already does reset inside DropPlayerItem
 		SetProgressBarTime(0);
+#endif
 	}
 	else if (m_bHasDefuser)
 	{
@@ -2183,10 +2215,16 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 
 	if ((pev->health < -9000 && iGib != GIB_NEVER) || iGib == GIB_ALWAYS)
 	{
+
+#ifndef REGAMEDLL_FIXES
 		pev->solid = SOLID_NOT;
+#endif
 		GibMonster();
 		pev->effects |= EF_NODRAW;
+
+#ifndef REGAMEDLL_FIXES
 		CSGameRules()->CheckWinConditions();
+#endif
 		return;
 	}
 
@@ -3443,6 +3481,11 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Disappear)()
 	pev->solid = SOLID_NOT;
 	pev->flags &= ~FL_ONGROUND;
 
+#ifdef REGAMEDLL_FIXES
+	// FlashlightTurnOff()
+	pev->effects &= ~EF_DIMLIGHT;
+#endif
+
 	SetSuitUpdate(nullptr, SUIT_SENTENCE, SUIT_REPEAT_OK);
 
 	m_iClientHealth = 0;
@@ -3464,12 +3507,19 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Disappear)()
 	if (m_bHasC4)
 	{
 		DropPlayerItem("weapon_c4");
+
+#ifndef REGAMEDLL_FIXES
+		// NOTE: It is already does reset inside DropPlayerItem
 		SetProgressBarTime(0);
+#endif
 	}
 	else if (m_bHasDefuser)
 	{
 		RemoveDefuser();
+
+#ifndef REGAMEDLL_FIXES
 		GiveNamedItem("item_thighpack");
+#endif
 
 		MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev);
 			WRITE_BYTE(STATUSICON_HIDE);
@@ -3835,7 +3885,7 @@ void CBasePlayer::PlayerUse()
 		}
 	}
 
-	bool useNewHostages = !TheNavAreaList.empty();
+	bool useNewHostages = !TheNavAreaList.empty() && AreImprovAllowed();
 	CBaseEntity *pObject = nullptr;
 	CBaseEntity *pClosest = nullptr;
 	Vector vecLOS;
@@ -4266,26 +4316,11 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 		real_t flLastMove = gpGlobals->time - m_fLastMovement;
 
 		//check if this player has been inactive for 2 rounds straight
-		if (flLastMove > CSGameRules()->m_fMaxIdlePeriod)
+		if (!IsBot() && flLastMove > CSGameRules()->m_fMaxIdlePeriod)
 		{
-			if (!IsBot() && autokick.value)
-			{
-				// Log the kick
-				UTIL_LogPrintf("\"%s<%i><%s><%s>\" triggered \"Game_idle_kick\" (auto)\n", STRING(pev->netname), GETPLAYERUSERID(edict()), GETPLAYERAUTHID(edict()), GetTeam(m_iTeam));
-				UTIL_ClientPrintAll(HUD_PRINTCONSOLE, "#Game_idle_kick", STRING(pev->netname));
-
-#ifdef REGAMEDLL_FIXES
-				int iUserID = GETPLAYERUSERID(edict());
-				if (iUserID != -1)
-				{
-					SERVER_COMMAND(UTIL_VarArgs("kick #%d \"Player idle\"\n", iUserID));
-				}
-#else
-				SERVER_COMMAND(UTIL_VarArgs("kick \"%s\"\n", STRING(pev->netname)));
-#endif // #ifdef REGAMEDLL_FIXES
-
-				m_fLastMovement = gpGlobals->time;
-			}
+			DropIdlePlayer("Player idle");
+			
+			m_fLastMovement = gpGlobals->time;
 		}
 #ifdef REGAMEDLL_ADD
 		if (afk_bomb_drop_time.value > 0.0 && IsBombGuy())
@@ -4727,7 +4762,7 @@ void CBasePlayer::UpdatePlayerSound()
 		// weapon recoil, or anything shoves the player abnormally fast.
 		// NOTE: 512 units is a pretty large radius for a sound made by the player's body.
 		// then again, I think some materials are pretty loud.
-		if (iBodyVolume> 512)
+		if (iBodyVolume > 512)
 		{
 			iBodyVolume = 512;
 		}
@@ -5211,6 +5246,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Spawn)()
 #ifdef REGAMEDLL_FIXES
 	pev->watertype = CONTENTS_EMPTY;
 	pev->waterlevel = 0;
+	pev->basevelocity = g_vecZero;	// pushed by trigger_push
 #endif
 
 	m_bitsHUDDamage = -1;
@@ -5430,6 +5466,10 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Spawn)()
 
 		m_bHasPrimary = false;
 		m_bHasNightVision = false;
+
+#ifdef REGAMEDLL_FIXES
+		m_iHideHUD |= HIDEHUD_WEAPONS;
+#endif
 
 		SendItemStatus();
 	}
@@ -5653,7 +5693,13 @@ void CBasePlayer::Reset()
 
 	m_bNotKilled = false;
 
+#ifdef REGAMEDLL_FIXES
+	// RemoveShield() included
+	RemoveAllItems(TRUE);
+#else
 	RemoveShield();
+#endif
+
 	CheckStartMoney();
 	AddAccount(startmoney.value, RT_PLAYER_RESET);
 
@@ -5746,6 +5792,11 @@ void CBasePlayer::SelectItem(const char *pstr)
 	if (!pItem || pItem == m_pActiveItem)
 		return;
 
+#ifdef REGAMEDLL_FIXES
+	if (!pItem->CanDeploy())
+		return;
+#endif
+
 	ResetAutoaim();
 
 	// FIX, this needs to queue them up and delay
@@ -5789,6 +5840,11 @@ void CBasePlayer::SelectLastItem()
 
 	if (!m_pLastItem || m_pLastItem == m_pActiveItem)
 		return;
+
+#ifdef REGAMEDLL_FIXES
+	if (!m_pLastItem->CanDeploy())
+		return;
+#endif
 
 	ResetAutoaim();
 
@@ -6133,23 +6189,7 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 
 	switch (iImpulse)
 	{
-		case 76:
-		{
-			if (!giPrecacheGrunt)
-			{
-				giPrecacheGrunt = 1;
-				ALERT(at_console, "You must now restart to use Grunt-o-matic.\n");
-			}
-			else
-			{
-				UTIL_MakeVectors(Vector(0, pev->v_angle.y, 0));
-				CBaseEntity::Create("monster_human_grunt", pev->origin + gpGlobals->v_forward * 128, pev->angles);
-			}
-			break;
-		}
 		case 101:
-			gEvilImpulse101 = TRUE;
-
 #ifdef REGAMEDLL_ADD
 			AddAccount(int(maxmoney.value));
 			ALERT(at_console, "Crediting %s with $%i\n", STRING(pev->netname), int(maxmoney.value));
@@ -6161,6 +6201,7 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 		case 102:
 			CGib::SpawnRandomGibs(pev, 1, 1);
 			break;
+#ifndef REGAMEDLL_FIXES
 		case 103:
 		{
 			// What the hell are you doing?
@@ -6175,10 +6216,12 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 			}
 			break;
 		}
+#endif
 		case 104:
 			// Dump all of the global state varaibles (and global entity names)
 			gGlobalState.DumpGlobals();
 			break;
+#ifndef REGAMEDLL_FIXES
 		case 105:
 		{
 			// player makes no sound for monsters to hear.
@@ -6194,6 +6237,7 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 			}
 			break;
 		}
+#endif
 		case 106:
 		{
 			// Give me the classname and targetname of this entity.
@@ -6234,18 +6278,6 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 
 			break;
 		}
-		case 195:
-			// show shortest paths for entire level to nearest node
-			CBaseEntity::Create("node_viewer_fly", pev->origin, pev->angles);
-			break;
-		case 196:
-			// show shortest paths for entire level to nearest node
-			CBaseEntity::Create("node_viewer_large", pev->origin, pev->angles);
-			break;
-		case 197:
-			// show shortest paths for entire level to nearest node
-			CBaseEntity::Create("node_viewer_human", pev->origin, pev->angles);
-			break;
 		case 202:
 		{
 			// Random blood splatter
@@ -6390,7 +6422,7 @@ void OLD_CheckRescueZone(CBasePlayer *pPlayer)
 	CBaseEntity *pSpot = nullptr;
 	while ((pSpot = UTIL_FindEntityByClassname(pSpot, "info_hostage_rescue")))
 	{
-		if ((pSpot->pev->origin - pPlayer->pev->origin).Length() <= 256.0f)
+		if ((pSpot->pev->origin - pPlayer->pev->origin).Length() <= MAX_HOSTAGES_RESCUE_RADIUS)
 		{
 			pPlayer->m_signals.Signal(SIGNAL_RESCUE);
 #ifdef REGAMEDLL_FIXES
@@ -6507,8 +6539,6 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(AddPlayerItem)(CBasePlayerItem *pItem)
 
 				pItem->Kill();
 			}
-			else if (gEvilImpulse101)
-				pItem->Kill();
 
 			return FALSE;
 		}
@@ -6543,10 +6573,6 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(AddPlayerItem)(CBasePlayerItem *pItem)
 #endif
 
 		return TRUE;
-	}
-	else if (gEvilImpulse101)
-	{
-		pItem->Kill();
 	}
 
 	return FALSE;
@@ -6630,7 +6656,7 @@ int EXT_FUNC CBasePlayer::__API_HOOK(GiveAmmo)(int iCount, const char *szName, i
 	{
 		// Send the message that ammo has been picked up
 		MESSAGE_BEGIN(MSG_ONE, gmsgAmmoPickup, nullptr, pev);
-			WRITE_BYTE(GetAmmoIndex(szName)); // ammo ID
+			WRITE_BYTE(i); // ammo ID
 			WRITE_BYTE(iAdd); // amount
 		MESSAGE_END();
 	}
@@ -6721,12 +6747,12 @@ void CBasePlayer::SendAmmoUpdate()
 			m_rgAmmoLast[i] = m_rgAmmo[i];
 
 			assert(m_rgAmmo[i] >= 0);
-			assert(m_rgAmmo[i] < 255);
+			assert(m_rgAmmo[i] <= 255);
 
 			// send "Ammo" update message
 			MESSAGE_BEGIN(MSG_ONE, gmsgAmmoX, nullptr, pev);
 				WRITE_BYTE(i);
-				WRITE_BYTE(clamp(m_rgAmmo[i], 0, 254)); // clamp the value to one byte
+				WRITE_BYTE(clamp(m_rgAmmo[i], 0, 255)); // clamp the value to one byte
 			MESSAGE_END();
 		}
 	}
@@ -6734,12 +6760,13 @@ void CBasePlayer::SendAmmoUpdate()
 
 void CBasePlayer::SendHostagePos()
 {
-	CBaseEntity *pHostage = nullptr;
+	CHostage *pHostage = nullptr;
+
 	while ((pHostage = UTIL_FindEntityByClassname(pHostage, "hostage_entity")))
 	{
 		MESSAGE_BEGIN(MSG_ONE, gmsgHostagePos, nullptr, pev);
 			WRITE_BYTE(1);
-			WRITE_BYTE(((CHostage *)pHostage)->m_iHostageIndex);
+			WRITE_BYTE(pHostage->m_iHostageIndex);
 			WRITE_COORD(pHostage->pev->origin.x);
 			WRITE_COORD(pHostage->pev->origin.y);
 			WRITE_COORD(pHostage->pev->origin.z);
@@ -6761,7 +6788,7 @@ void CBasePlayer::SendHostageIcons()
 	}
 
 	int hostagesCount = 0;
-	CBaseEntity *pHostage = nullptr;
+	CHostage *pHostage = nullptr;
 
 	while ((pHostage = UTIL_FindEntityByClassname(pHostage, "hostage_entity")))
 	{
@@ -6793,8 +6820,6 @@ void CBasePlayer::SendHostageIcons()
 
 void CBasePlayer::SendWeatherInfo()
 {
-	CBaseEntity *pEnt;
-
 	auto SendReceiveW = [&](BYTE byte)
 	{
 		MESSAGE_BEGIN(MSG_ONE, gmsgReceiveW, nullptr, pev);
@@ -6803,17 +6828,17 @@ void CBasePlayer::SendWeatherInfo()
 	};
 
 	/* Rain */
-	if ((pEnt = UTIL_FindEntityByClassname(nullptr, "env_rain")))
+	if (UTIL_FindEntityByClassname(nullptr, "env_rain"))
 		return SendReceiveW(1);
 
-	if ((pEnt = UTIL_FindEntityByClassname(nullptr, "func_rain")))
+	if (UTIL_FindEntityByClassname(nullptr, "func_rain"))
 		return SendReceiveW(1);
 
 	/* Snow */
-	if ((pEnt = UTIL_FindEntityByClassname(nullptr, "env_snow")))
+	if (UTIL_FindEntityByClassname(nullptr, "env_snow"))
 		return SendReceiveW(2);
 
-	if ((pEnt = UTIL_FindEntityByClassname(nullptr, "func_snow")))
+	if (UTIL_FindEntityByClassname(nullptr, "func_snow"))
 		return SendReceiveW(2);
 }
 
@@ -7237,13 +7262,13 @@ bool CBasePlayer::ShouldToShowAccount(CBasePlayer *pReceiver) const
 	switch (iShowAccount)
 	{
 	// show field to teammates
-	case 3: return pReceiver->m_iTeam == m_iTeam;
+	case 3: return !CSGameRules()->IsFreeForAll() && pReceiver->m_iTeam == m_iTeam;
 
 	// show field to all clients
 	case 4: return true;
 
 	// show field to teammates and spectators
-	case 5: return (pReceiver->m_iTeam == m_iTeam || pReceiver->m_iTeam == SPECTATOR);
+	case 5: return ((!CSGameRules()->IsFreeForAll() && pReceiver->m_iTeam == m_iTeam) || pReceiver->m_iTeam == SPECTATOR);
 	default:
 		break;
 	}
@@ -7269,13 +7294,13 @@ bool CBasePlayer::ShouldToShowHealthInfo(CBasePlayer *pReceiver) const
 	switch (iShowHealth)
 	{
 	// show field to teammates
-	case 3: return pReceiver->m_iTeam == m_iTeam;
+	case 3: return !CSGameRules()->IsFreeForAll() && pReceiver->m_iTeam == m_iTeam;
 
 	// show field to all clients
 	case 4: return true;
 
 	// show field to teammates and spectators
-	case 5: return (pReceiver->m_iTeam == m_iTeam || pReceiver->m_iTeam == SPECTATOR);
+	case 5: return ((!CSGameRules()->IsFreeForAll() && pReceiver->m_iTeam == m_iTeam) || pReceiver->m_iTeam == SPECTATOR);
 	default:
 		break;
 	}
@@ -7517,10 +7542,12 @@ void CBasePlayer::UpdateStatusBar()
 			{
 				CBasePlayer *pTarget = (CBasePlayer *)pEntity;
 
-				newSBarState[SBAR_ID_TARGETNAME] = ENTINDEX(pTarget->edict());
-				newSBarState[SBAR_ID_TARGETTYPE] = (pTarget->m_iTeam == m_iTeam) ? SBAR_TARGETTYPE_TEAMMATE : SBAR_TARGETTYPE_ENEMY;
+				bool sameTeam = !CSGameRules()->IsFreeForAll() && pTarget->m_iTeam == m_iTeam;
 
-				if (pTarget->m_iTeam == m_iTeam || GetObserverMode() != OBS_NONE)
+				newSBarState[SBAR_ID_TARGETNAME] = ENTINDEX(pTarget->edict());
+				newSBarState[SBAR_ID_TARGETTYPE] = sameTeam ? SBAR_TARGETTYPE_TEAMMATE : SBAR_TARGETTYPE_ENEMY;
+
+				if (sameTeam || GetObserverMode() != OBS_NONE)
 				{
 					if (playerid.value != PLAYERID_MODE_OFF || GetObserverMode() != OBS_NONE)
 						Q_strcpy(sbuf0, "1 %c1: %p2\n2  %h: %i3%%");
@@ -7680,6 +7707,14 @@ CBaseEntity *EXT_FUNC CBasePlayer::__API_HOOK(DropPlayerItem)(const char *pszIte
 
 		// take item off hud
 		pev->weapons &= ~(1 << pWeapon->m_iId);
+
+#ifdef REGAMEDLL_FIXES
+		// No more weapon
+		if ((pev->weapons & ~(1 << WEAPON_SUIT)) == 0) {
+			m_iHideHUD |= HIDEHUD_WEAPONS;
+		}
+#endif
+
 		g_pGameRules->GetNextBestWeapon(this, pWeapon);
 		UTIL_MakeVectors(pev->angles);
 
@@ -7935,6 +7970,8 @@ void CBasePlayer::__API_HOOK(SwitchTeam)()
 		SendItemStatus();
 		SetProgressBarTime(0);
 
+#ifndef REGAMEDLL_FIXES
+		// NOTE: unreachable code - Vaqtincha
 		for (int i = 0; i < MAX_ITEM_TYPES; i++)
 		{
 			m_pActiveItem = m_rgpPlayerItems[i];
@@ -7945,6 +7982,8 @@ void CBasePlayer::__API_HOOK(SwitchTeam)()
 				m_rgpPlayerItems[i] = nullptr;
 			}
 		}
+#endif
+
 	}
 
 	szOldTeam = GetTeam(oldTeam);
@@ -9624,6 +9663,14 @@ void CBasePlayer::RemoveBomb()
 
 	if (RemovePlayerItem(pBomb)) {
 		pev->weapons &= ~(1 << pBomb->m_iId);
+
+#ifdef REGAMEDLL_FIXES
+		// No more weapon
+		if ((pev->weapons & ~(1 << WEAPON_SUIT)) == 0) {
+			m_iHideHUD |= HIDEHUD_WEAPONS;
+		}
+#endif
+
 		pBomb->Kill();
 	}
 }
@@ -9862,4 +9909,29 @@ void CBasePlayer::__API_HOOK(RemoveSpawnProtection)()
 	}
 
 	CSPlayer()->m_flSpawnProtectionEndTime = 0.0f;
+}
+
+LINK_HOOK_CLASS_VOID_CHAIN(CBasePlayer, DropIdlePlayer, (const char *reason), reason)
+
+void EXT_FUNC CBasePlayer::__API_HOOK(DropIdlePlayer)(const char *reason)
+{
+	if (!autokick.value)
+		return;
+
+	edict_t *pEntity = edict();
+
+	int iUserID = GETPLAYERUSERID(pEntity);
+
+	// Log the kick
+	UTIL_LogPrintf("\"%s<%i><%s><%s>\" triggered \"Game_idle_kick\" (auto)\n", STRING(pev->netname), iUserID , GETPLAYERAUTHID(pEntity), GetTeam(m_iTeam));
+	UTIL_ClientPrintAll(HUD_PRINTCONSOLE, "#Game_idle_kick", STRING(pev->netname));
+
+#ifdef REGAMEDLL_FIXES
+	if (iUserID != -1)
+	{
+		SERVER_COMMAND(UTIL_VarArgs("kick #%d \"%s\"\n", iUserID, reason));
+	}
+#else
+	SERVER_COMMAND(UTIL_VarArgs("kick \"%s\"\n", STRING(pev->netname)));
+#endif // #ifdef REGAMEDLL_FIXES
 }

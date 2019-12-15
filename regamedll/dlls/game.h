@@ -162,6 +162,7 @@ extern cvar_t kill_filled_spawn;
 extern cvar_t afk_bomb_drop_time;
 extern cvar_t buy_anywhere;
 extern cvar_t give_player_c4;
+extern cvar_t weapons_allow_map_placed;
 extern cvar_t allow_point_servercommand;
 extern cvar_t hullbounds_sets;
 extern cvar_t unduck_method;
