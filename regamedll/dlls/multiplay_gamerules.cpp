@@ -2027,7 +2027,11 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(RestartRound)()
 #endif
 
 	// Give C4 to the terrorists
-	if (m_bMapHasBombTarget)
+	if (m_bMapHasBombTarget
+#ifdef REGAMEDLL_ADD
+		&& give_player_c4.value
+#endif
+		)
 	{
 		GiveC4();
 	}
