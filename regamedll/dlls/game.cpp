@@ -251,11 +251,8 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&humans_join_team);
 
 #ifdef BUILD_LATEST
-	if (AreRunningBeta())
-	{
-		CVAR_REGISTER(&scoreboard_showhealth);
-		CVAR_REGISTER(&scoreboard_showmoney);
-	}
+	CVAR_REGISTER(&scoreboard_showhealth);
+	CVAR_REGISTER(&scoreboard_showmoney);
 #endif
 
 // Remove unused cvars

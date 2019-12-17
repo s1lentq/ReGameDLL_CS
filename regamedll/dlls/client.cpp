@@ -225,11 +225,8 @@ void LinkUserMessages()
 	gmsgHudTextArgs   = REG_USER_MSG("HudTextArgs", -1);
 
 #ifdef BUILD_LATEST
-	if (AreRunningBeta())
-	{
-		gmsgAccount       = REG_USER_MSG("Account", 5);
-		gmsgHealthInfo    = REG_USER_MSG("HealthInfo", 5);
-	}
+	gmsgAccount       = REG_USER_MSG("Account", 5);
+	gmsgHealthInfo    = REG_USER_MSG("HealthInfo", 5);
 #endif
 }
 
