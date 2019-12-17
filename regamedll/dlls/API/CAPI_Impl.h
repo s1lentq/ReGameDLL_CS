@@ -54,6 +54,11 @@
 		return g_ReGameHookchains.m_##className##_##functionName.callChain(&className::functionName##_OrigFunc, this);\
 	}
 
+#define LINK_HOOK_CLASS_CHAIN3(ret, className, subClassName, functionName)\
+	ret subClassName::functionName() {\
+		return g_ReGameHookchains.m_##className##_##functionName.callChain(reinterpret_cast<ret (className::*)()>(&subClassName::functionName##_OrigFunc), this);\
+	}
+
 #define LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN(className, customPrefix, functionName, args, ...)\
 	void className::functionName args {\
 		g_ReGameHookchains.m_##customPrefix##_##functionName.callChain(&className::functionName##_OrigFunc, this, __VA_ARGS__);\
@@ -123,6 +128,7 @@
 #define LINK_HOOK_CLASS_VOID_CHAIN2(...)
 #define LINK_HOOK_CLASS_CHAIN(...)
 #define LINK_HOOK_CLASS_CHAIN2(...)
+#define LINK_HOOK_CLASS_CHAIN3(...)
 #define LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN(...)
 #define LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN2(...)
 #define LINK_HOOK_CLASS_CUSTOM_CHAIN(...)
@@ -537,6 +543,30 @@ typedef IHookChainRegistryImpl<bool, Vector &, Vector &, entvars_t *, edict_t *>
 typedef IHookChainClassImpl<bool, CBasePlayer, const char *, float, bool, bool> CReGameHook_CBasePlayer_HintMessageEx;
 typedef IHookChainRegistryClassImpl<bool, CBasePlayer, const char *, float, bool, bool> CReGameHookRegistry_CBasePlayer_HintMessageEx;
 
+// CBasePlayer::UseEmpty hook
+typedef IHookChainClassImpl<void, CBasePlayer> CReGameHook_CBasePlayer_UseEmpty;
+typedef IHookChainRegistryClassImpl<void, CBasePlayer> CReGameHookRegistry_CBasePlayer_UseEmpty;
+
+// CBasePlayerWeapon::CanDeploy hook
+typedef IHookChainClassImpl<BOOL, CBasePlayerWeapon> CReGameHook_CBasePlayerWeapon_CanDeploy;
+typedef IHookChainRegistryClassImpl<BOOL, CBasePlayerWeapon> CReGameHookRegistry_CBasePlayerWeapon_CanDeploy;
+
+// CBasePlayerWeapon::DefaultDeploy hook
+typedef IHookChainClassImpl<BOOL, CBasePlayerWeapon, char *, char *, int, char *, int> CReGameHook_CBasePlayerWeapon_DefaultDeploy;
+typedef IHookChainRegistryClassImpl<BOOL, CBasePlayerWeapon, char *, char *, int, char *, int> CReGameHookRegistry_CBasePlayerWeapon_DefaultDeploy;
+
+// CBasePlayerWeapon::DefaultReload hook
+typedef IHookChainClassImpl<int, CBasePlayerWeapon, int, int, float> CReGameHook_CBasePlayerWeapon_DefaultReload;
+typedef IHookChainRegistryClassImpl<int, CBasePlayerWeapon, int, int, float> CReGameHookRegistry_CBasePlayerWeapon_DefaultReload;
+
+// CBasePlayerWeapon::DefaultShotgunReload hook
+typedef IHookChainClassImpl<bool, CBasePlayerWeapon, int, int, float, float, const char *, const char *> CReGameHook_CBasePlayerWeapon_DefaultShotgunReload;
+typedef IHookChainRegistryClassImpl<bool, CBasePlayerWeapon, int, int, float, float, const char *, const char *> CReGameHookRegistry_CBasePlayerWeapon_DefaultShotgunReload;
+
+// CBasePlayer::DropIdlePlayer hook
+typedef IHookChainClassImpl<void, CBasePlayer, const char *> CReGameHook_CBasePlayer_DropIdlePlayer;
+typedef IHookChainRegistryClassImpl<void, CBasePlayer, const char *> CReGameHookRegistry_CBasePlayer_DropIdlePlayer;
+
 class CReGameHookchains: public IReGameHookchains {
 public:
 	// CBasePlayer virtual
@@ -645,6 +675,12 @@ public:
 	CReGameHookRegistry_CBasePlayer_RemoveSpawnProtection m_CBasePlayer_RemoveSpawnProtection;
 	CReGameHookRegistry_IsPenetrableEntity m_IsPenetrableEntity;
 	CReGameHookRegistry_CBasePlayer_HintMessageEx m_CBasePlayer_HintMessageEx;
+	CReGameHookRegistry_CBasePlayer_UseEmpty m_CBasePlayer_UseEmpty;
+	CReGameHookRegistry_CBasePlayerWeapon_CanDeploy m_CBasePlayerWeapon_CanDeploy;
+	CReGameHookRegistry_CBasePlayerWeapon_DefaultDeploy m_CBasePlayerWeapon_DefaultDeploy;
+	CReGameHookRegistry_CBasePlayerWeapon_DefaultReload m_CBasePlayerWeapon_DefaultReload;
+	CReGameHookRegistry_CBasePlayerWeapon_DefaultShotgunReload m_CBasePlayerWeapon_DefaultShotgunReload;
+	CReGameHookRegistry_CBasePlayer_DropIdlePlayer m_CBasePlayer_DropIdlePlayer;
 
 public:
 	virtual IReGameHookRegistry_CBasePlayer_Spawn *CBasePlayer_Spawn();
@@ -752,6 +788,12 @@ public:
 	virtual IReGameHookRegistry_CBasePlayer_RemoveSpawnProtection *CBasePlayer_RemoveSpawnProtection();
 	virtual IReGameHookRegistry_IsPenetrableEntity *IsPenetrableEntity();
 	virtual IReGameHookRegistry_CBasePlayer_HintMessageEx *CBasePlayer_HintMessageEx();
+	virtual IReGameHookRegistry_CBasePlayer_UseEmpty *CBasePlayer_UseEmpty();
+	virtual IReGameHookRegistry_CBasePlayerWeapon_CanDeploy *CBasePlayerWeapon_CanDeploy();
+	virtual IReGameHookRegistry_CBasePlayerWeapon_DefaultDeploy *CBasePlayerWeapon_DefaultDeploy();
+	virtual IReGameHookRegistry_CBasePlayerWeapon_DefaultReload *CBasePlayerWeapon_DefaultReload();
+	virtual IReGameHookRegistry_CBasePlayerWeapon_DefaultShotgunReload *CBasePlayerWeapon_DefaultShotgunReload();
+	virtual IReGameHookRegistry_CBasePlayer_DropIdlePlayer *CBasePlayer_DropIdlePlayer();
 };
 
 extern CReGameHookchains g_ReGameHookchains;
@@ -775,6 +817,8 @@ public:
 	EXT_FUNC virtual AmmoInfo *GetAmmoInfo(AmmoType ammoID);
 	EXT_FUNC virtual AmmoInfoStruct *GetAmmoInfoEx(AmmoType ammoID);
 	EXT_FUNC virtual AmmoInfoStruct *GetAmmoInfoEx(const char *ammoName);
+	EXT_FUNC virtual bool BGetICSEntity(const char *pchVersion) const;
+	EXT_FUNC virtual bool BGetIGameRules(const char *pchVersion) const;
 };
 
 void Regamedll_ChangeString_api(char *&dest, const char *source);

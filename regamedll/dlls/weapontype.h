@@ -263,6 +263,7 @@ enum MaxAmmoType
 	MAX_AMMO_SMOKEGRENADE = 1,
 	MAX_AMMO_HEGRENADE    = 1,
 	MAX_AMMO_FLASHBANG    = 2,
+	MAX_AMMO_C4           = 1,
 };
 
 enum AmmoType
@@ -447,8 +448,10 @@ const char *BuyAliasToWeaponID(const char *alias, WeaponIdType &id);
 const char *WeaponIDToAlias(int id);
 WeaponClassType AliasToWeaponClass(const char *alias);
 WeaponClassType WeaponIDToWeaponClass(int id);
+WeaponClassType WeaponIDToWeaponClass(ArmouryItemPack id);
 bool IsPrimaryWeapon(int id);
 bool IsSecondaryWeapon(int id);
+bool IsGrenadeWeapon(int id);
 bool CanBuyWeaponByMaptype(int playerTeam, WeaponIdType weaponID, bool useAssasinationRestrictions);
 void WeaponInfoReset();
 

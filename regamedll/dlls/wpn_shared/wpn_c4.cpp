@@ -44,7 +44,7 @@ int CC4::GetItemInfo(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
 	p->pszAmmo1 = "C4";
-	p->iMaxAmmo1 = C4_MAX_AMMO;
+	p->iMaxAmmo1 = MAX_AMMO_C4;
 	p->pszAmmo2 = nullptr;
 	p->iMaxAmmo2 = -1;
 	p->iMaxClip = WEAPON_NOCLIP;
@@ -67,7 +67,7 @@ BOOL CC4::Deploy()
 	if (m_pPlayer->HasShield())
 	{
 		m_bHasShield = true;
-		m_pPlayer->pev->gamestate = 1;
+		m_pPlayer->pev->gamestate = HITGROUP_SHIELD_DISABLED;
 	}
 
 	return DefaultDeploy("models/v_c4.mdl", "models/p_c4.mdl", C4_DRAW, "c4", UseDecrement() != FALSE);
@@ -88,13 +88,17 @@ void CC4::Holster(int skiplocal)
 
 	if (!m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType])
 	{
+#ifndef REGAMEDLL_FIXES
+		// Moved to DestroyItem()
 		m_pPlayer->pev->weapons &= ~(1 << WEAPON_C4);
+#endif
+
 		DestroyItem();
 	}
 
 	if (m_bHasShield)
 	{
-		m_pPlayer->pev->gamestate = 0;
+		m_pPlayer->pev->gamestate = HITGROUP_SHIELD_ENABLED;
 		m_bHasShield = false;
 	}
 }

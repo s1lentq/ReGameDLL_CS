@@ -337,6 +337,8 @@ public:
 	bool m_bGameOver; // intermission or finale (deprecated name g_fGameOver)
 };
 
+#define GAMERULES_API_INTERFACE_VERSION "GAMERULES_API_INTERFACE_VERSION001"
+
 // CHalfLifeRules - rules for the single player Half-Life game.
 class CHalfLifeRules: public CGameRules
 {
@@ -804,8 +806,19 @@ class CCStrikeGameMgrHelper: public IVoiceGameMgrHelper
 public:
 	virtual bool CanPlayerHearPlayer(CBasePlayer *pListener, CBasePlayer *pSender);
 
+#ifdef REGAMEDLL_ADD
+	virtual void ResetCanHearPlayer(edict_t* pEdict);
+	virtual void SetCanHearPlayer(CBasePlayer* pListener, CBasePlayer* pSender, bool bCanHear);
+	virtual bool GetCanHearPlayer(CBasePlayer* pListener, CBasePlayer* pSender);
+#endif
+
 #ifdef REGAMEDLL_API
 	bool CanPlayerHearPlayer_OrigFunc(CBasePlayer *pListener, CBasePlayer *pSender);
+#endif
+
+public:
+#ifdef REGAMEDLL_ADD
+	CBitVec<VOICE_MAX_PLAYERS> m_iCanHearMasks[VOICE_MAX_PLAYERS];
 #endif
 };
 

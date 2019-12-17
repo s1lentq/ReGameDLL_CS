@@ -255,7 +255,7 @@ WeaponInfoStruct g_weaponInfo_default[] =
 	{ WEAPON_P90,       P90_PRICE,          AMMO_57MM_PRICE,                             AMMO_57MM_BUY,         P90_MAX_CLIP,       MAX_AMMO_57MM,          AMMO_57MM,          "weapon_p90",          "ammo_57mm",       "57mm"         },
 
 #ifdef REGAMEDLL_FIXES
-	{ WEAPON_C4,            0,                                  0,                       0,                     0,                  0,                      AMMO_C4,            "weapon_c4",           nullptr,           "C4"           },
+	{ WEAPON_C4,            0,                                  0,                       0,                     0,                  MAX_AMMO_C4,            AMMO_C4,            "weapon_c4",           nullptr,           "C4"           },
 	{ WEAPON_KNIFE,         0,                                  0,                       0,                     0,                  0,                      AMMO_NONE,          "weapon_knife",        nullptr,           nullptr        },
 	{ WEAPON_HEGRENADE,     (WeaponCostType)HEGRENADE_PRICE,    AMMO_HEGRENADE_PRICE,    AMMO_HEGRENADE_BUY,    0,                  MAX_AMMO_HEGRENADE,     AMMO_HEGRENADE,     "weapon_hegrenade",    nullptr,           "HEGrenade"    },
 	{ WEAPON_SMOKEGRENADE,  (WeaponCostType)SMOKEGRENADE_PRICE, AMMO_SMOKEGRENADE_PRICE, AMMO_SMOKEGRENADE_BUY, 0,                  MAX_AMMO_SMOKEGRENADE,  AMMO_SMOKEGRENADE,  "weapon_smokegrenade", nullptr,           "SmokeGrenade" },
@@ -285,7 +285,7 @@ AmmoInfoStruct g_ammoInfo_default[] =
 	{ AMMO_FLASHBANG,    AMMO_FLASHBANG_PRICE,    AMMO_FLASHBANG_BUY,    MAX_AMMO_FLASHBANG,    nullptr,           "Flashbang"    },
 	{ AMMO_HEGRENADE,    AMMO_HEGRENADE_PRICE,    AMMO_HEGRENADE_BUY,    MAX_AMMO_HEGRENADE,    nullptr,           "HEGrenade"    },
 	{ AMMO_SMOKEGRENADE, AMMO_SMOKEGRENADE_PRICE, AMMO_SMOKEGRENADE_BUY, MAX_AMMO_SMOKEGRENADE, nullptr,           "SmokeGrenade" },
-	{ AMMO_C4,           0,                       0,                     0,                     nullptr,           "C4"           },
+	{ AMMO_C4,           0,                       0,                     MAX_AMMO_C4,           nullptr,           "C4"           },
 };
 
 AmmoInfoStruct g_ammoInfo[ARRAYSIZE(g_ammoInfo_default)];
@@ -388,6 +388,58 @@ WeaponClassType WeaponIDToWeaponClass(int id)
 	return AliasToWeaponClass(WeaponIDToAlias(id));
 }
 
+WeaponClassType WeaponIDToWeaponClass(ArmouryItemPack id)
+{
+	switch (id)
+	{
+	case ARMOURY_AUG:
+	case ARMOURY_GALIL:
+	case ARMOURY_M4A1:
+	case ARMOURY_SG552:
+	case ARMOURY_AK47:
+	case ARMOURY_FAMAS:
+		return WEAPONCLASS_RIFLE;
+
+	case ARMOURY_GLOCK18:
+	case ARMOURY_USP:
+	case ARMOURY_ELITE:
+	case ARMOURY_FIVESEVEN:
+	case ARMOURY_P228:
+	case ARMOURY_DEAGLE:
+		return WEAPONCLASS_PISTOL;
+
+	case ARMOURY_MP5NAVY:
+	case ARMOURY_MAC10:
+	case ARMOURY_TMP:
+	case ARMOURY_UMP45:
+	case ARMOURY_P90:
+		return WEAPONCLASS_SUBMACHINEGUN;
+
+	case ARMOURY_SCOUT:
+	case ARMOURY_SG550:
+	case ARMOURY_AWP:
+	case ARMOURY_G3SG1:
+		return WEAPONCLASS_SNIPERRIFLE;
+
+	case ARMOURY_FLASHBANG:
+	case ARMOURY_HEGRENADE:
+	case ARMOURY_SMOKEGRENADE:
+		return WEAPONCLASS_GRENADE;
+
+	case ARMOURY_M3:
+	case ARMOURY_XM1014:
+		return WEAPONCLASS_SHOTGUN;
+
+	case ARMOURY_M249:
+		return WEAPONCLASS_MACHINEGUN;
+
+	default:
+		break;
+	}
+
+	return WEAPONCLASS_NONE;
+}
+
 // Return true if given weapon ID is a primary weapon
 bool IsPrimaryWeapon(int id)
 {
@@ -431,6 +483,22 @@ bool IsSecondaryWeapon(int id)
 	case WEAPON_USP:
 	case WEAPON_GLOCK18:
 	case WEAPON_DEAGLE:
+		return true;
+	default:
+		break;
+	}
+
+	return false;
+}
+
+// Return true if given weapon ID is a grenade
+bool IsGrenadeWeapon(int id)
+{
+	switch (id)
+	{
+	case WEAPON_HEGRENADE:
+	case WEAPON_FLASHBANG:
+	case WEAPON_SMOKEGRENADE:
 		return true;
 	default:
 		break;

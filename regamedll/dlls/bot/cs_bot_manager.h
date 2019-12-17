@@ -195,6 +195,7 @@ public:
 	bool AllowFriendlyFireDamage() const { return friendlyfire.value != 0.0f; }
 
 	bool IsWeaponUseable(CBasePlayerItem *item) const;						// return true if the bot can use this weapon
+	bool IsWeaponUseable(ArmouryItemPack item) const;
 
 	bool IsDefenseRushing() const { return m_isDefenseRushing; }			// returns true if defense team has "decided" to rush this round
 	bool IsOnDefense(CBasePlayer *pPlayer) const;							// return true if this player is on "defense"

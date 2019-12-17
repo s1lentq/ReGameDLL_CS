@@ -44,7 +44,10 @@
 	#define NOSERVICE
 	#define NOMCX
 	#define NOIME
-	#include <windows.h>
+	#include "winsani_in.h"
+	#include "windows.h"
+	#include "winsani_out.h"
+	#undef PlaySound
 #else
 	#include <limits.h>
 	#include <stdarg.h>
@@ -57,11 +60,13 @@
 #include "math.h"
 
 // Header file containing definition of globalvars_t and entvars_t
+typedef int EOFFSET;					// More explicit than "int"
 typedef unsigned int func_t;
 typedef float vec_t;					// needed before including progdefs.h
 
 // Vector class
 #include "vector.h"
+
 // Defining it as a (bogus) struct helps enforce type-checking
 #define vec3_t Vector
 
@@ -74,6 +79,7 @@ typedef float vec_t;					// needed before including progdefs.h
 
 // Shared header describing protocol between engine and DLLs
 #include "eiface.h"
+
 // Shared header between the client DLL and the game DLLs
 #include "cdll_dll.h"
 #include "extdef.h"

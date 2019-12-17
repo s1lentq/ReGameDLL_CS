@@ -294,6 +294,7 @@ bool UTIL_IsGame(const char *pszGameName);
 real_t UTIL_GetPlayerGaitYaw(int playerIndex);
 int UTIL_ReadFlags(const char *c);
 bool UTIL_AreBotsAllowed();
+bool UTIL_IsBeta();
 bool UTIL_AreHostagesImprov();
 int UTIL_GetNumPlayers();
 bool UTIL_IsSpawnPointOccupied(CBaseEntity *pSpot);
