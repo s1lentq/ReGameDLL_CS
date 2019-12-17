@@ -94,6 +94,13 @@ cvar_t sk_scientist_heal1    = { "sk_scientist_heal1", "0", 0, 0.0f, nullptr };
 cvar_t sk_scientist_heal2    = { "sk_scientist_heal2", "0", 0, 0.0f, nullptr };
 cvar_t sk_scientist_heal3    = { "sk_scientist_heal3", "0", 0, 0.0f, nullptr };
 
+#ifdef BUILD_LATEST
+
+cvar_t scoreboard_showmoney  = { "mp_scoreboard_showmoney", "3", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t scoreboard_showhealth = { "mp_scoreboard_showhealth", "3", FCVAR_SERVER, 0.0f, nullptr };
+
+#endif
+
 #ifdef REGAMEDLL_ADD
 
 cvar_t game_version          = { "game_version", APP_VERSION, FCVAR_SERVER, 0.0f, nullptr };
@@ -130,9 +137,6 @@ cvar_t weapons_allow_map_placed  = { "mp_weapons_allow_map_placed", "1", FCVAR_S
 cvar_t allow_point_servercommand = { "mp_allow_point_servercommand", "0", 0, 0.0f, nullptr };
 cvar_t hullbounds_sets           = { "mp_hullbounds_sets", "1", 0, 0.0f, nullptr };
 cvar_t unduck_method             = { "mp_unduck_method", "0", 0, 0.0f, nullptr };
-
-cvar_t scoreboard_showmoney      = { "mp_scoreboard_showmoney", "3", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t scoreboard_showhealth     = { "mp_scoreboard_showhealth", "3", FCVAR_SERVER, 0.0f, nullptr };
 
 cvar_t ff_damage_reduction_bullets      = { "ff_damage_reduction_bullets",      "0.35", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t ff_damage_reduction_grenade      = { "ff_damage_reduction_grenade",      "0.25", FCVAR_SERVER, 0.0f, nullptr };
@@ -332,7 +336,7 @@ void EXT_FUNC GameDLLInit()
 	{
 		CVAR_REGISTER(&show_scenarioicon);
 	}
-	
+
 	CVAR_REGISTER(&old_bomb_defused_sound);
 	CVAR_REGISTER(&item_staytime);
 	CVAR_REGISTER(&legacy_bombtarget_touch);
