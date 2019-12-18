@@ -167,7 +167,7 @@ bool CCStrikeGameMgrHelper::GetCanHearPlayer(CBasePlayer* pListener, CBasePlayer
 
 	int listener = pListener->entindex() - 1;
 	int sender = pSender->entindex() - 1;
-	return m_iCanHearMasks[listener][sender] == TRUE;
+	return m_iCanHearMasks[listener][sender] != FALSE;
 }
 #endif
 
