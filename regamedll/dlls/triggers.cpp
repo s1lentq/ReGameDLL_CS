@@ -1858,12 +1858,19 @@ void CBombTarget::BombTargetTouch(CBaseEntity *pOther)
 
 	CBasePlayer *pPlayer = static_cast<CBasePlayer *>(pOther);
 
-	if (pPlayer->m_bHasC4
-#ifdef REGAMEDLL_FIXES
-		&& (legacy_bombtarget_touch.value || IsPlayerInBombSite(pPlayer))
-#endif
-	)
+	if (pPlayer->m_bHasC4)
 	{
+#ifdef REGAMEDLL_ADD
+		if (!legacy_bombtarget_touch.value)
+#endif
+		{
+
+#ifdef REGAMEDLL_FIXES
+			if (!IsPlayerInBombSite(pPlayer))
+				return;
+#endif
+		}
+
 		pPlayer->m_signals.Signal(SIGNAL_BOMB);
 		pPlayer->m_pentCurBombTarget = ENT(pev);
 	}

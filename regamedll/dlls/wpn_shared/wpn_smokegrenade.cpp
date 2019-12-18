@@ -78,7 +78,11 @@ void CSmokeGrenade::Holster(int skiplocal)
 	{
 		// no more smokegrenades!
 		// clear the smokegrenade of bits for HUD
+#ifndef REGAMEDLL_FIXES
+		// Moved to DestroyItem()
 		m_pPlayer->pev->weapons &= ~(1 << WEAPON_SMOKEGRENADE);
+#endif
+
 		DestroyItem();
 	}
 
@@ -270,7 +274,9 @@ void CSmokeGrenade::WeaponIdle()
 	}
 }
 
-BOOL CSmokeGrenade::CanDeploy()
+LINK_HOOK_CLASS_CHAIN3(BOOL, CBasePlayerWeapon, CSmokeGrenade, CanDeploy)
+
+BOOL EXT_FUNC CSmokeGrenade::__API_HOOK(CanDeploy)()
 {
 	return m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] != 0;
 }

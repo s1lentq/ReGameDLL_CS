@@ -89,6 +89,13 @@ LINK_HOOK_CLASS_CUSTOM_CHAIN(bool, CCStrikeGameMgrHelper, CSGameRules, CanPlayer
 
 bool CCStrikeGameMgrHelper::__API_HOOK(CanPlayerHearPlayer)(CBasePlayer *pListener, CBasePlayer *pSender)
 {
+#ifdef REGAMEDLL_ADD
+	if (!GetCanHearPlayer(pListener, pSender))
+	{
+		return false;
+	}
+#endif
+
 	switch ((int)sv_alltalk.value)
 	{
 	case 1: // allows everyone to talk
@@ -124,6 +131,45 @@ bool CCStrikeGameMgrHelper::__API_HOOK(CanPlayerHearPlayer)(CBasePlayer *pListen
 	}
 	}
 }
+
+#ifdef REGAMEDLL_ADD
+void CCStrikeGameMgrHelper::ResetCanHearPlayer(edict_t* pEdict)
+{
+	int index = ENTINDEX(pEdict) - 1;
+
+	m_iCanHearMasks[index].Init(TRUE);
+	for (int iOtherClient = 0; iOtherClient < VOICE_MAX_PLAYERS; iOtherClient++)
+	{
+		if (index != iOtherClient) {
+			m_iCanHearMasks[iOtherClient][index] = TRUE;
+		}
+	}
+}
+
+void CCStrikeGameMgrHelper::SetCanHearPlayer(CBasePlayer* pListener, CBasePlayer* pSender, bool bCanHear)
+{
+	if (!pListener->IsPlayer() || !pSender->IsPlayer())
+	{
+		return;
+	}
+
+	int listener = pListener->entindex() - 1;
+	int sender = pSender->entindex() - 1;
+	m_iCanHearMasks[listener][sender] = bCanHear ? TRUE : FALSE;
+}
+
+bool CCStrikeGameMgrHelper::GetCanHearPlayer(CBasePlayer* pListener, CBasePlayer* pSender)
+{
+	if (!pListener->IsPlayer() || !pSender->IsPlayer())
+	{
+		return true;
+	}
+
+	int listener = pListener->entindex() - 1;
+	int sender = pSender->entindex() - 1;
+	return m_iCanHearMasks[listener][sender] == TRUE;
+}
+#endif
 
 void Broadcast(const char *sentence)
 {
@@ -606,9 +652,23 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(CleanUpMap)()
 	const int grenadesRemoveCount = 20;
 	UTIL_RemoveOther("grenade", grenadesRemoveCount);
 
+#ifndef REGAMEDLL_FIXES
 	// Remove defuse kit
 	// Old code only removed 4 kits and stopped.
 	UTIL_RemoveOther("item_thighpack");
+#else
+	// Don't remove level items
+	CItemThighPack *pDefuser = nullptr;
+
+	while ((pDefuser = UTIL_FindEntityByClassname(pDefuser, "item_thighpack")))
+	{
+		if (pDefuser->pev->spawnflags & SF_NORESPAWN)
+		{
+			pDefuser->SetThink(&CBaseEntity::SUB_Remove);
+			pDefuser->pev->nextthink = gpGlobals->time + 0.1;
+		}
+	}
+#endif
 
 #ifdef REGAMEDLL_FIXES
 	UTIL_RemoveOther("gib");
@@ -1967,7 +2027,11 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(RestartRound)()
 #endif
 
 	// Give C4 to the terrorists
-	if (m_bMapHasBombTarget)
+	if (m_bMapHasBombTarget
+#ifdef REGAMEDLL_ADD
+		&& give_player_c4.value
+#endif
+		)
 	{
 		GiveC4();
 	}
@@ -3362,18 +3426,15 @@ void CHalfLifeMultiplay::InitHUD(CBasePlayer *pl)
 		}
 
 #ifdef BUILD_LATEST
-		if (AreRunningBeta())
-		{
-			MESSAGE_BEGIN(MSG_ONE, gmsgHealthInfo, nullptr, pl->edict());
-				WRITE_BYTE(plr->entindex());
-				WRITE_LONG(plr->ShouldToShowHealthInfo(pl) ? plr->m_iClientHealth : -1 /* means that 'HP' field will be hidden */);
-			MESSAGE_END();
+		MESSAGE_BEGIN(MSG_ONE, gmsgHealthInfo, nullptr, pl->edict());
+			WRITE_BYTE(plr->entindex());
+			WRITE_LONG(plr->ShouldToShowHealthInfo(pl) ? plr->m_iClientHealth : -1 /* means that 'HP' field will be hidden */);
+		MESSAGE_END();
 
-			MESSAGE_BEGIN(MSG_ONE, gmsgAccount, nullptr, pl->edict());
-				WRITE_BYTE(plr->entindex());
-				WRITE_LONG(plr->ShouldToShowAccount(pl) ? plr->m_iAccount : -1 /* means that this 'Money' will be hidden */);
-			MESSAGE_END();
-		}
+		MESSAGE_BEGIN(MSG_ONE, gmsgAccount, nullptr, pl->edict());
+			WRITE_BYTE(plr->entindex());
+			WRITE_LONG(plr->ShouldToShowAccount(pl) ? plr->m_iAccount : -1 /* means that this 'Money' will be hidden */);
+		MESSAGE_END();
 #endif // BUILD_LATEST
 	}
 

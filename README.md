@@ -22,6 +22,13 @@ Archive's bin directory contains 2 subdirectories, 'bugfixed' and 'pure'
 <pre>ReGameDLL_CS also have beta version with latest changes from official version of Counter-Strike.</pre>
 * Enter `-beta` option at the command line HLDS.
 
+## Commands
+| Command                             | Description                                     |
+| :---------------------------------- | :---------------------------------------------- |
+| game version                        | Will show GameDLL build version, date & URL. |
+| endround                            | Args:<br/>`T` force round end with Terrorists win. <br/>`CT` force round end with Counter-Terrorists win. <br/> or terminate round draw when called without arguments. |
+| mp_swapteams                        | Swap the teams and restart the game. |
+
 ## Configuration (cvars)
 <details>
 <summary>Click to expand</summary>
@@ -66,8 +73,8 @@ Archive's bin directory contains 2 subdirectories, 'bugfixed' and 'pure'
 | mp_allow_point_servercommand       | 0       | 0   | 1            | Allow use of point_servercommand entities in map.<br/>`0` disallow<br/>`1` allow<br/>`NOTE`: Potentially dangerous for untrusted maps. |
 | mp_hullbounds_sets                 | 1       | 0   | 1            | Sets mins/maxs hull bounds for the player.<br/>`0` disabled<br/>`1` enabled |
 | mp_unduck_method                   | 0       | 0   | 1            | Don't unduck if ducking isn't finished yet.<br/>`0` disabled<br/>`1` enabled<br/>`NOTE`: This also prevents double duck. |
-| mp_scoreboard_showhealth           | 3       | 0   | 5            | Show `HP` field into a scoreboard.<br/>`0` don't send any update for `HP` field to any clients<br/>`1` show only Terrorist `HP` field to all clients<br/>`2` show only CT `HP` field to all clients<br/>`3` show `HP` field to teammates<br/>`4` show `HP` field to all clients<br/>`5` show `HP` field to teammates and spectators<br/><br/>`Note this CVar are work in beta only.` |
-| mp_scoreboard_showmoney            | 3       | 0   | 5            | Show `Money` field into a scoreboard.<br/>`0` don't send any update for `Money` field to any clients<br/>`1` show only Terrorist `Money` field to all clients<br/>`2` show only CT `Money` field to all clients<br/>`3` show `Money` field to teammates<br/>`4` show `Money` field to all clients<br/>`5` show `Money` field to teammates and spectators<br/><br/>`Note this CVar are work in beta only.`  |
+| mp_scoreboard_showhealth           | 3       | 0   | 5            | Show `HP` field into a scoreboard.<br/>`0` don't send any update for `HP` field to any clients<br/>`1` show only Terrorist `HP` field to all clients<br/>`2` show only CT `HP` field to all clients<br/>`3` show `HP` field to teammates<br/>`4` show `HP` field to all clients<br/>`5` show `HP` field to teammates and spectators |
+| mp_scoreboard_showmoney            | 3       | 0   | 5            | Show `Money` field into a scoreboard.<br/>`0` don't send any update for `Money` field to any clients<br/>`1` show only Terrorist `Money` field to all clients<br/>`2` show only CT `Money` field to all clients<br/>`3` show `Money` field to teammates<br/>`4` show `Money` field to all clients<br/>`5` show `Money` field to teammates and spectators  |
 | ff_damage_reduction_bullets        | 0.35    | 0.0 | 1.0          | How much to reduce damage done to teammates when shot.<br/> Range is from `0` - `1` (with 1 being damage equal to what is done to an enemy) |
 | ff_damage_reduction_grenade        | 0.25    | 0.0 | 1.0          | How much to reduce damage done to teammates by a thrown grenade.<br/> Range is from `0` - `1` (with 1 being damage equal to what is done to an enemy) |
 | ff_damage_reduction_grenade_self   | 1.0     | 0.0 | 1.0          | How much to damage a player does to himself with his own grenade.<br/> Range is from `0` - `1` (with 1 being damage equal to what is done to an enemy) |
@@ -84,7 +91,8 @@ Archive's bin directory contains 2 subdirectories, 'bugfixed' and 'pure'
 | mp_ct_default_melee                | "weapon_knife"   | "" | -    | The default melee weapon that the CTs will spawn with. |
 | mp_ct_default_primary              | ""               | "" | -    | The default primary (rifle) weapon that the CTs will spawn with. |
 | mp_ct_default_secondary            | "weapon_usp"     | "" | -    | The default secondary (pistol) weapon that the CTs will spawn with. |
-
+| mp_give_player_c4                  | 1       | 0   | 1            | Whether this map should spawn a C4 bomb for a player or not.<br/> `0` disabled<br/>`1` enabled |
+| mp_weapons_allow_map_placed        | 1       | 0   | 1            | When set, map weapons (located on the floor by map) will be shown.<br/> `0` hide all map weapons.<br/>`1` enabled<br/>`NOTE`: Effect will work after round restart. |
 </details>
 
 ## How to install zBot for CS 1.6?
