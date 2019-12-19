@@ -2118,7 +2118,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 
 			if (pObserver == this || pObserver && pObserver->IsObservingPlayer(this))
 			{
-				UTIL_ScreenFade(pObserver, Vector(0, 0, 0), 2, 2, 255, (FFADE_OUT));
+				UTIL_ScreenFade(pObserver, Vector(0, 0, 0), 1, 4, 255, (FFADE_OUT));
 			}
 		}
 
