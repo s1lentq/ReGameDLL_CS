@@ -372,6 +372,10 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Radio)(const char *msg_id, const char *msg
 		if (!pPlayer)
 			continue;
 
+		// ignorerad command
+		if (pPlayer->m_bIgnoreRadio)
+			continue;
+
 		// are we a regular player? (not spectator)
 		if (pPlayer->IsPlayer())
 		{
@@ -401,46 +405,43 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Radio)(const char *msg_id, const char *msg
 
 		if (bSend)
 		{
-			// ignorerad command
-			if (!pPlayer->m_bIgnoreRadio)
-			{
-				MESSAGE_BEGIN(MSG_ONE, gmsgSendAudio, nullptr, pEntity->pev);
-					WRITE_BYTE(ENTINDEX(edict()));
-					WRITE_STRING(msg_id);
-					WRITE_SHORT(pitch);
-				MESSAGE_END();
+			MESSAGE_BEGIN(MSG_ONE, gmsgSendAudio, nullptr, pEntity->pev);
+				WRITE_BYTE(ENTINDEX(edict()));
+				WRITE_STRING(msg_id);
+				WRITE_SHORT(pitch);
+			MESSAGE_END();
 
-				// radio message icon
-				if (msg_verbose)
+			// radio message icon
+			if (msg_verbose)
+			{
+				// search the place name where is located the player
+				const char *placeName = nullptr;
+				if (AreRunningCZero() && TheBotPhrases)
 				{
-					// search the place name where is located the player
-					const char *placeName = nullptr;
-					if (AreRunningCZero() && TheBotPhrases)
+					Place playerPlace = TheNavAreaGrid.GetPlace(&pev->origin);
+					const BotPhraseList *placeList = TheBotPhrases->GetPlaceList();
+					for (auto phrase : *placeList)
 					{
-						Place playerPlace = TheNavAreaGrid.GetPlace(&pev->origin);
-						const BotPhraseList *placeList = TheBotPhrases->GetPlaceList();
-						for (auto phrase : *placeList)
+						if (phrase->GetID() == playerPlace)
 						{
-							if (phrase->GetID() == playerPlace)
-							{
-								placeName = phrase->GetName();
-								break;
-							}
+							placeName = phrase->GetName();
+							break;
 						}
 					}
-					if (placeName)
-						ClientPrint(pEntity->pev, HUD_PRINTRADIO, NumAsString(entindex()), "#Game_radio_location", STRING(pev->netname), placeName, msg_verbose);
-					else
-						ClientPrint(pEntity->pev, HUD_PRINTRADIO, NumAsString(entindex()), "#Game_radio", STRING(pev->netname), msg_verbose);
 				}
+				if (placeName)
+					ClientPrint(pEntity->pev, HUD_PRINTRADIO, NumAsString(entindex()), "#Game_radio_location", STRING(pev->netname), placeName, msg_verbose);
+				else
+					ClientPrint(pEntity->pev, HUD_PRINTRADIO, NumAsString(entindex()), "#Game_radio", STRING(pev->netname), msg_verbose);
+			}
 
-				// icon over the head for teammates
+			// icon over the head for teammates
 #ifdef REGAMEDLL_ADD
-				if (showIcon && show_radioicon.value)
+			if (showIcon && show_radioicon.value)
 #else
-				if (showIcon)
+			if (showIcon)
 #endif
-				{
+			{
 					// put an icon over this guys head to show that he used the radio
 					MESSAGE_BEGIN(MSG_ONE, SVC_TEMPENTITY, nullptr, pEntity->pev);
 						WRITE_BYTE(TE_PLAYERATTACHMENT);
@@ -449,7 +450,6 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Radio)(const char *msg_id, const char *msg
 						WRITE_SHORT(g_sModelIndexRadio);	// short (model index) of tempent
 						WRITE_SHORT(15);					// short (life * 10 ) e.g. 40 = 4 seconds
 					MESSAGE_END();
-				}
 			}
 		}
 	}
