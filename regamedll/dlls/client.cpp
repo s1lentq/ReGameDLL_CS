@@ -570,7 +570,7 @@ void ProcessKickVote(CBasePlayer *pVotingPlayer, CBasePlayer *pKickPlayer)
 		UTIL_ClientPrintAll(HUD_PRINTCENTER, "#Game_kicked", STRING(pKickPlayer->pev->netname));
 
 #ifndef REGAMEDLL_FIXES
-		SERVER_COMMAND(UTIL_VarArgs("kick # %d\n", iVoteID));
+		SERVER_COMMAND(UTIL_VarArgs("kick #%d\n", iVoteID));
 #endif
 		pTempEntity = nullptr;
 
