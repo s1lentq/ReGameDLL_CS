@@ -903,7 +903,11 @@ inline float CGameRules::GetRadioTimeout()
 
 inline float CGameRules::GetDyingTime()
 {
+#ifdef REGAMEDLL_ADD
+	return dying_time.value;
+#else
 	return DYING_TIME;
+#endif
 }
 
 bool IsBotSpeaking();
