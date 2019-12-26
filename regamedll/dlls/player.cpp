@@ -394,10 +394,10 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Radio)(const char *msg_id, const char *msg
 			if (iSpecMode != OBS_CHASE_LOCKED && iSpecMode != OBS_CHASE_FREE && iSpecMode != OBS_IN_EYE)
 				continue;
 
-			if (!FNullEnt(pPlayer->m_hObserverTarget))
+			if (FNullEnt(pPlayer->m_hObserverTarget))
 				continue;
 
-			if (m_hObserverTarget && m_hObserverTarget->m_iTeam == m_iTeam)
+			if (pPlayer->m_hObserverTarget && pPlayer->m_hObserverTarget->m_iTeam == m_iTeam)
 			{
 				bSend = true;
 			}
