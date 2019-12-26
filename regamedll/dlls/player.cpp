@@ -398,7 +398,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Radio)(const char *msg_id, const char *msg
 				bSend = true;
 			}
 		}
-		
+
 		if (bSend)
 		{
 			// ignorerad command
