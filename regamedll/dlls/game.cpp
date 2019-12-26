@@ -141,6 +141,8 @@ cvar_t ff_damage_reduction_other        = { "ff_damage_reduction_other",        
 cvar_t radio_timeout           = { "mp_radio_timeout", "1.5", FCVAR_SERVER, 1.5f, nullptr };
 cvar_t radio_maxinround        = { "mp_radio_maxinround", "60", FCVAR_SERVER, 60.0f, nullptr };
 
+cvar_t dying_time              = { "mp_dying_time", "3.0", FCVAR_SERVER, 3.0f, nullptr };
+
 void GameDLL_Version_f()
 {
 	if (Q_stricmp(CMD_ARGV(1), "version") != 0)
@@ -352,6 +354,8 @@ void EXT_FUNC GameDLLInit()
 
 	CVAR_REGISTER(&radio_timeout);
 	CVAR_REGISTER(&radio_maxinround);
+
+	CVAR_REGISTER(&dying_time);
 
 	// print version
 	CONSOLE_ECHO("ReGameDLL version: " APP_VERSION "\n");
