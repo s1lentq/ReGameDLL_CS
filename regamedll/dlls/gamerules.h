@@ -46,6 +46,7 @@ const float ROUND_RESPAWN_TIME  = 20.0f;
 const float ROUND_BEGIN_DELAY   = 5.0f;	// delay before beginning new round
 const float ITEM_KILL_DELAY     = 300.0f;
 const float RADIO_TIMEOUT       = 1.5f;
+const float DYING_TIME   = 3.0f;
 
 const int MAX_INTERMISSION_TIME = 120;	// longest the intermission can last, in seconds
 
@@ -327,6 +328,7 @@ public:
 	inline void SetGameOver() { m_bGameOver = true; }
 	static float GetItemKillDelay();
 	static float GetRadioTimeout();
+	static float GetDyingTime();
 
 public:
 	BOOL m_bFreezePeriod;	// TRUE at beginning of round, set to FALSE when the period expires
@@ -897,6 +899,11 @@ inline float CGameRules::GetRadioTimeout()
 #else
 	return RADIO_TIMEOUT;
 #endif
+}
+
+inline float CGameRules::GetDyingTime()
+{
+	return DYING_TIME;
 }
 
 bool IsBotSpeaking();
