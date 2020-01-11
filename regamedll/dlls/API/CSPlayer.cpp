@@ -229,6 +229,11 @@ EXT_FUNC bool CCSPlayer::RemovePlayerItemEx(const char* pszItemName, bool bRemov
 
 		if (pPlayer->RemovePlayerItem(pItem)) {
 			pPlayer->pev->weapons &= ~(1 << pItem->m_iId);
+			// No more weapon
+			if ((pPlayer->pev->weapons & ~(1 << WEAPON_SUIT)) == 0) {
+				pPlayer->m_iHideHUD |= HIDEHUD_WEAPONS;
+			}
+
 			pItem->Kill();
 
 			if (!pPlayer->m_rgpPlayerItems[PRIMARY_WEAPON_SLOT]) {
@@ -532,4 +537,24 @@ void CCSPlayer::Reset()
 	m_vecOldvAngle = g_vecZero;
 	m_iWeaponInfiniteAmmo = 0;
 	m_iWeaponInfiniteIds = 0;
+}
+
+void CCSPlayer::OnSpawn()
+{
+	m_flRespawnPending = 0.0f;
+}
+
+void CCSPlayer::OnKilled()
+{
+#ifdef REGAMEDLL_ADD
+	if (forcerespawn.value > 0)
+	{
+		m_flRespawnPending = gpGlobals->time + forcerespawn.value;
+	}
+
+	if (GetProtectionState() == ProtectionSt_Active)
+	{
+		BasePlayer()->RemoveSpawnProtection();
+	}
+#endif
 }

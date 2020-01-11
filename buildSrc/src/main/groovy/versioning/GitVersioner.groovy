@@ -9,6 +9,7 @@ import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.lib.ObjectId
 import org.eclipse.jgit.lib.Repository
 import org.eclipse.jgit.lib.StoredConfig
+import org.eclipse.jgit.submodule.SubmoduleWalk;
 import org.eclipse.jgit.revwalk.RevCommit
 import org.eclipse.jgit.revwalk.RevWalk
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
@@ -58,10 +59,8 @@ class GitVersioner {
 	// check uncommited changes
 	static boolean getUncommittedChanges(Repository repo) {
 		Git git = new Git(repo);
-		Status status = git.status().call();
-
-		Set<String> uncommittedChanges = status.getUncommittedChanges();
-		for(String uncommitted : uncommittedChanges) {
+		Status status = git.status().setIgnoreSubmodules(SubmoduleWalk.IgnoreSubmoduleMode.ALL).call();
+		if (!status.getUncommittedChanges().isEmpty()) {
 			return true;
 		}
 

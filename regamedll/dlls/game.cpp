@@ -94,6 +94,13 @@ cvar_t sk_scientist_heal1    = { "sk_scientist_heal1", "0", 0, 0.0f, nullptr };
 cvar_t sk_scientist_heal2    = { "sk_scientist_heal2", "0", 0, 0.0f, nullptr };
 cvar_t sk_scientist_heal3    = { "sk_scientist_heal3", "0", 0, 0.0f, nullptr };
 
+#ifdef BUILD_LATEST
+
+cvar_t scoreboard_showmoney  = { "mp_scoreboard_showmoney", "3", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t scoreboard_showhealth = { "mp_scoreboard_showhealth", "3", FCVAR_SERVER, 0.0f, nullptr };
+
+#endif
+
 #ifdef REGAMEDLL_ADD
 
 cvar_t game_version          = { "game_version", APP_VERSION, FCVAR_SERVER, 0.0f, nullptr };
@@ -115,6 +122,7 @@ cvar_t hostagehurtable           = { "mp_hostage_hurtable", "1", FCVAR_SERVER, 1
 cvar_t roundover                 = { "mp_roundover", "0", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t forcerespawn              = { "mp_forcerespawn", "0", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t show_radioicon            = { "mp_show_radioicon", "1", 0, 1.0f, nullptr };
+cvar_t show_scenarioicon         = { "mp_show_scenarioicon", "0", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t old_bomb_defused_sound    = { "mp_old_bomb_defused_sound", "1", 0, 1.0f, nullptr };
 cvar_t item_staytime             = { "mp_item_staytime", "300", FCVAR_SERVER, 300.0f, nullptr };
 cvar_t legacy_bombtarget_touch   = { "mp_legacy_bombtarget_touch", "1", 0, 1.0f, nullptr };
@@ -123,13 +131,12 @@ cvar_t respawn_immunity_effects  = { "mp_respawn_immunity_effects", "1", FCVAR_S
 cvar_t kill_filled_spawn         = { "mp_kill_filled_spawn", "1", 0, 0.0f, nullptr };
 cvar_t afk_bomb_drop_time        = { "mp_afk_bomb_drop_time", "0", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t buy_anywhere              = { "mp_buy_anywhere", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t give_player_c4            = { "mp_give_player_c4", "1", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t weapons_allow_map_placed  = { "mp_weapons_allow_map_placed", "1", FCVAR_SERVER, 0.0f, nullptr };
 
 cvar_t allow_point_servercommand = { "mp_allow_point_servercommand", "0", 0, 0.0f, nullptr };
 cvar_t hullbounds_sets           = { "mp_hullbounds_sets", "1", 0, 0.0f, nullptr };
 cvar_t unduck_method             = { "mp_unduck_method", "0", 0, 0.0f, nullptr };
-
-cvar_t scoreboard_showmoney      = { "mp_scoreboard_showmoney", "3", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t scoreboard_showhealth     = { "mp_scoreboard_showhealth", "3", FCVAR_SERVER, 0.0f, nullptr };
 
 cvar_t ff_damage_reduction_bullets      = { "ff_damage_reduction_bullets",      "0.35", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t ff_damage_reduction_grenade      = { "ff_damage_reduction_grenade",      "0.25", FCVAR_SERVER, 0.0f, nullptr };
@@ -169,6 +176,12 @@ void GameDLL_EndRound_f()
 	}
 
 	CSGameRules()->OnRoundEnd_Intercept(WINSTATUS_DRAW, ROUND_END_DRAW, CSGameRules()->GetRoundRestartDelay());
+}
+
+void GameDLL_SwapTeams_f()
+{
+	CSGameRules()->SwapAllPlayers();
+	CVAR_SET_FLOAT("sv_restartround", 1.0);
 }
 
 #endif // REGAMEDLL_ADD
@@ -238,11 +251,8 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&humans_join_team);
 
 #ifdef BUILD_LATEST
-	if (AreRunningBeta())
-	{
-		CVAR_REGISTER(&scoreboard_showhealth);
-		CVAR_REGISTER(&scoreboard_showmoney);
-	}
+	CVAR_REGISTER(&scoreboard_showhealth);
+	CVAR_REGISTER(&scoreboard_showmoney);
 #endif
 
 // Remove unused cvars
@@ -297,6 +307,7 @@ void EXT_FUNC GameDLLInit()
 
 	ADD_SERVER_COMMAND("game", GameDLL_Version_f);
 	ADD_SERVER_COMMAND("endround", GameDLL_EndRound_f);
+	ADD_SERVER_COMMAND("mp_swapteams", GameDLL_SwapTeams_f);
 
 	CVAR_REGISTER(&game_version);
 	CVAR_REGISTER(&maxmoney);
@@ -317,6 +328,12 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&roundover);
 	CVAR_REGISTER(&forcerespawn);
 	CVAR_REGISTER(&show_radioicon);
+
+	if (!AreRunningCZero())
+	{
+		CVAR_REGISTER(&show_scenarioicon);
+	}
+
 	CVAR_REGISTER(&old_bomb_defused_sound);
 	CVAR_REGISTER(&item_staytime);
 	CVAR_REGISTER(&legacy_bombtarget_touch);
@@ -325,9 +342,11 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&kill_filled_spawn);
 	CVAR_REGISTER(&afk_bomb_drop_time);
 	CVAR_REGISTER(&buy_anywhere);
+	CVAR_REGISTER(&give_player_c4);
 	CVAR_REGISTER(&allow_point_servercommand);
 	CVAR_REGISTER(&hullbounds_sets);
 	CVAR_REGISTER(&unduck_method);
+	CVAR_REGISTER(&weapons_allow_map_placed);
 
 	CVAR_REGISTER(&ff_damage_reduction_bullets);
 	CVAR_REGISTER(&ff_damage_reduction_grenade);

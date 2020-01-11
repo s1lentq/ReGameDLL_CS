@@ -1568,11 +1568,7 @@ char UTIL_TextureHit(TraceResult *ptr, Vector vecSrc, Vector vecEnd)
 	char szbuffer[64];
 	CBaseEntity *pEntity = CBaseEntity::Instance(ptr->pHit);
 
-#ifdef REGAMEDLL_FIXES
-	if (pEntity && pEntity->Classify() != CLASS_NONE && pEntity->Classify() != CLASS_MACHINE && pEntity->Classify() != CLASS_VEHICLE)
-#else
 	if (pEntity && pEntity->Classify() != CLASS_NONE && pEntity->Classify() != CLASS_MACHINE)
-#endif
 		return CHAR_TEX_FLESH;
 
 	vecSrc.CopyToArray(rgfl1);

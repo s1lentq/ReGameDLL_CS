@@ -77,7 +77,11 @@ void CHEGrenade::Holster(int skiplocal)
 
 	if (!m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType])
 	{
+#ifndef REGAMEDLL_FIXES
+		// Moved to DestroyItem()
 		m_pPlayer->pev->weapons &= ~(1 << WEAPON_HEGRENADE);
+#endif
+
 		DestroyItem();
 	}
 
@@ -256,7 +260,9 @@ void CHEGrenade::WeaponIdle()
 	}
 }
 
-BOOL CHEGrenade::CanDeploy()
+LINK_HOOK_CLASS_CHAIN3(BOOL, CBasePlayerWeapon, CHEGrenade, CanDeploy)
+
+BOOL EXT_FUNC CHEGrenade::__API_HOOK(CanDeploy)()
 {
 	return m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] != 0;
 }
