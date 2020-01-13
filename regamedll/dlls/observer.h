@@ -30,7 +30,7 @@
 
 #define CAMERA_MODE_SPEC_ANYONE            0
 #define CAMERA_MODE_SPEC_ONLY_TEAM         1
-#define CAMERA_MODE_SPEC_ONLY_FIRST_PERSON 2
+#define CAMERA_MODE_SPEC_ONLY_FRIST_PERSON 2
 
 int GetForceCamera(CBasePlayer *pObserver);
 void UpdateClientEffects(CBasePlayer *pObserver, int oldMode);

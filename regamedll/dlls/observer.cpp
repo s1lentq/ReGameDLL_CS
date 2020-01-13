@@ -14,7 +14,7 @@ int __API_HOOK(GetForceCamera)(CBasePlayer *pObserver)
 			retVal = int(CVAR_GET_FLOAT("mp_forcecamera"));
 	}
 	else
-		retVal = CAMERA_MODE_SPEC_ONLY_FIRST_PERSON;
+		retVal = CAMERA_MODE_SPEC_ONLY_FRIST_PERSON;
 
 	return retVal;
 }
@@ -446,7 +446,7 @@ void CBasePlayer::Observer_SetMode(int iMode)
 			if (iMode == OBS_ROAMING)
 				iMode = OBS_MAP_FREE;
 		}
-		else if (forcecamera == CAMERA_MODE_SPEC_ONLY_FIRST_PERSON)
+		else if (forcecamera == CAMERA_MODE_SPEC_ONLY_FRIST_PERSON)
 			iMode = OBS_IN_EYE;
 	}
 
