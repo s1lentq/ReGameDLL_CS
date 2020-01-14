@@ -475,6 +475,7 @@ void CHostage::IdleThink()
 #ifdef REGAMEDLL_FIXES
 				SendHostageEventMsg();
 #endif
+
 				CSGameRules()->m_iHostagesRescued++;
 				CSGameRules()->CheckWinConditions();
 

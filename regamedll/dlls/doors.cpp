@@ -510,7 +510,12 @@ void CBaseDoor::DoorGoUp()
 
 			if (TheBots)
 			{
-				TheBots->OnEvent(EVENT_DOOR, m_hActivator);
+#ifdef REGAMEDLL_FIXES
+				if (m_hActivator && m_hActivator->IsPlayer())
+#endif
+				{
+					TheBots->OnEvent(EVENT_DOOR, m_hActivator);
+				}
 			}
 		}
 	}
@@ -680,7 +685,12 @@ void CBaseDoor::DoorGoDown()
 
 			if (TheBots)
 			{
-				TheBots->OnEvent(EVENT_DOOR, m_hActivator);
+#ifdef REGAMEDLL_FIXES
+				if (m_hActivator && m_hActivator->IsPlayer())
+#endif
+				{
+					TheBots->OnEvent(EVENT_DOOR, m_hActivator);
+				}
 			}
 		}
 	}

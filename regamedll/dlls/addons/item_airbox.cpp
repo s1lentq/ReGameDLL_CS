@@ -57,8 +57,12 @@ void CItemAirBox::Touch(CBaseEntity *pOther)
 	CArmoury::Touch(pOther);
 
 	// airbox was picked up, so sprite to turn off
-	if ((pev->effects & EF_NODRAW) == EF_NODRAW) {
+	if ((pev->effects & EF_NODRAW) == EF_NODRAW) 
+	{
 		m_hSprite->TurnOff();
+
+		pev->nextthink = 0;
+		SetThink(nullptr);
 	}
 }
 
@@ -66,6 +70,12 @@ void CItemAirBox::Restart()
 {
 	CArmoury::Restart();
 	UTIL_SetOrigin(pev, pev->oldorigin);
+
+	if (m_flyup > 0 && m_delay > 0.01f)
+	{
+		SetThink(&CItemAirBox::MoveUp);
+		pev->nextthink = gpGlobals->time + 0.1f;
+	}
 }
 
 void CItemAirBox::Precache()
