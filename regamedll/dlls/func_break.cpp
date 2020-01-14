@@ -168,7 +168,7 @@ void CBreakable::Restart()
 			if (!FNullEnt(pEntity->pev->owner) && FClassnameIs(pEntity->pev->owner, "func_breakable"))
 			{
 				pEntity->SetThink(&CBaseEntity::SUB_Remove);
-				pEntity->pev->nextthink = gpGlobals->time + 0.1;
+				pEntity->pev->nextthink = gpGlobals->time + 0.1f;
 			}
 		}
 	}
