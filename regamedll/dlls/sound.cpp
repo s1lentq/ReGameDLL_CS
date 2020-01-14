@@ -1631,7 +1631,11 @@ float TEXTURETYPE_PlaySound(TraceResult *ptr, Vector vecSrc, Vector vecEnd, int 
 
 	chTextureType = '\0';
 
+#ifdef REGAMEDLL_FIXES
+	if (pEntity && pEntity->Classify() != CLASS_NONE && pEntity->Classify() != CLASS_MACHINE && pEntity->Classify() != CLASS_VEHICLE)
+#else
 	if (pEntity && pEntity->Classify() != CLASS_NONE && pEntity->Classify() != CLASS_MACHINE)
+#endif
 	{
 		// hit body
 		chTextureType = CHAR_TEX_FLESH;
