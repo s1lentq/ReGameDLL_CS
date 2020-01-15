@@ -2063,6 +2063,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 	pev->effects &= ~EF_DIMLIGHT;
 #endif
 
+#ifndef REGAMEDLL_ADD
 	if (fadetoblack.value == 0.0)
 	{
 		pev->iuser1 = OBS_CHASE_FREE;
@@ -2078,6 +2079,53 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 	{
 		UTIL_ScreenFade(this, Vector(0, 0, 0), 3, 3, 255, (FFADE_OUT | FFADE_STAYOUT));
 	}
+#else
+	switch ((int)fadetoblack.value)
+	{
+	default:
+	{
+		pev->iuser1 = OBS_CHASE_FREE;
+		pev->iuser2 = ENTINDEX(edict());
+		pev->iuser3 = ENTINDEX(ENT(pevAttacker));
+
+		m_hObserverTarget = UTIL_PlayerByIndexSafe(pev->iuser3);
+
+		MESSAGE_BEGIN(MSG_ONE, gmsgADStop, nullptr, pev);
+		MESSAGE_END();
+
+		break;
+	}
+	case 1:
+	{
+		UTIL_ScreenFade(this, Vector(0, 0, 0), 3, 3, 255, (FFADE_OUT | FFADE_STAYOUT));
+
+		break;
+	}
+	case 2:
+	{
+		pev->iuser1 = OBS_CHASE_FREE;
+		pev->iuser2 = ENTINDEX(edict());
+		pev->iuser3 = ENTINDEX(ENT(pevAttacker));
+
+		m_hObserverTarget = UTIL_PlayerByIndexSafe(pev->iuser3);
+
+		MESSAGE_BEGIN(MSG_ONE, gmsgADStop, nullptr, pev);
+		MESSAGE_END();
+
+		for (int i = 1; i <= gpGlobals->maxClients; i++)
+		{
+			CBasePlayer* pObserver = UTIL_PlayerByIndex(i);
+
+			if (pObserver == this || pObserver && pObserver->IsObservingPlayer(this))
+			{
+				UTIL_ScreenFade(pObserver, Vector(0, 0, 0), 1, 4, 255, (FFADE_OUT));
+			}
+		}
+
+		break;
+	}
+	}
+#endif // REGAMEDLL_ADD
 
 	SetScoreboardAttributes();
 
