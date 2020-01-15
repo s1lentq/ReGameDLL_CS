@@ -98,6 +98,7 @@ cvar_t sk_scientist_heal3    = { "sk_scientist_heal3", "0", 0, 0.0f, nullptr };
 
 cvar_t scoreboard_showmoney  = { "mp_scoreboard_showmoney", "3", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t scoreboard_showhealth = { "mp_scoreboard_showhealth", "3", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t scoreboard_showdefkit = { "mp_scoreboard_showdefkit", "1", FCVAR_SERVER, 0.0f, nullptr };
 
 #endif
 
@@ -253,6 +254,7 @@ void EXT_FUNC GameDLLInit()
 #ifdef BUILD_LATEST
 	CVAR_REGISTER(&scoreboard_showhealth);
 	CVAR_REGISTER(&scoreboard_showmoney);
+	CVAR_REGISTER(&scoreboard_showdefkit);
 #endif
 
 // Remove unused cvars

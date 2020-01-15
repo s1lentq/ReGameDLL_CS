@@ -4319,7 +4319,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 		if (!IsBot() && flLastMove > CSGameRules()->m_fMaxIdlePeriod)
 		{
 			DropIdlePlayer("Player idle");
-			
+
 			m_fLastMovement = gpGlobals->time;
 		}
 #ifdef REGAMEDLL_ADD
@@ -5183,8 +5183,24 @@ void CBasePlayer::SetScoreAttrib(CBasePlayer *dest)
 		state |= SCORE_STATUS_VIP;
 
 #ifdef BUILD_LATEST
-	if (m_bHasDefuser)
-		state |= SCORE_STATUS_DEFKIT;
+
+#ifdef REGAMEDLL_FIXES
+	if (scoreboard_showdefkit.value)
+#endif
+	{
+		if (m_bHasDefuser)
+			state |= SCORE_STATUS_DEFKIT;
+	}
+
+#endif
+
+#ifdef REGAMEDLL_FIXES
+	// TODO: Remove these fixes when they are implemented on the client side
+	if (state & (SCORE_STATUS_BOMB | SCORE_STATUS_DEFKIT) && GetForceCamera(dest) != CAMERA_MODE_SPEC_ANYONE)
+	{
+		if (CSGameRules()->PlayerRelationship(this, dest) != GR_TEAMMATE)
+			state &= ~(SCORE_STATUS_BOMB | SCORE_STATUS_DEFKIT);
+	}
 #endif
 
 	if (gmsgScoreAttrib)
@@ -7206,7 +7222,12 @@ void EXT_FUNC CBasePlayer::__API_HOOK(UpdateClientData)()
 	}
 
 #ifdef BUILD_LATEST
-	if ((m_iTeam == CT || m_iTeam == TERRORIST) &&
+
+	if (
+#ifdef REGAMEDLL_FIXES
+		(scoreboard_showmoney.value != -1.0f || scoreboard_showhealth.value != -1.0f) &&
+#endif
+		(m_iTeam == CT || m_iTeam == TERRORIST) &&
 		(m_iLastAccount != m_iAccount || m_iLastClientHealth != m_iClientHealth || m_tmNextAccountHealthUpdate < gpGlobals->time))
 	{
 		m_tmNextAccountHealthUpdate = gpGlobals->time + 5.0f;
@@ -7225,15 +7246,25 @@ void EXT_FUNC CBasePlayer::__API_HOOK(UpdateClientData)()
 				continue;
 #endif // REGAMEDLL_FIXES
 
-			MESSAGE_BEGIN(MSG_ONE, gmsgHealthInfo, nullptr, pPlayer->edict());
-				WRITE_BYTE(entindex());
-				WRITE_LONG(ShouldToShowHealthInfo(pPlayer) ? m_iClientHealth : -1 /* means that 'HP' field will be hidden */);
-			MESSAGE_END();
+#ifdef REGAMEDLL_FIXES
+			if (scoreboard_showmoney.value != -1.0f)
+#endif
+			{
+				MESSAGE_BEGIN(MSG_ONE, gmsgHealthInfo, nullptr, pPlayer->edict());
+					WRITE_BYTE(entindex());
+					WRITE_LONG(ShouldToShowHealthInfo(pPlayer) ? m_iClientHealth : -1 /* means that 'HP' field will be hidden */);
+				MESSAGE_END();
+			}
 
-			MESSAGE_BEGIN(MSG_ONE, gmsgAccount, nullptr, pPlayer->edict());
-				WRITE_BYTE(entindex());
-				WRITE_LONG(ShouldToShowAccount(pPlayer) ? m_iAccount : -1 /* means that this 'Money' will be hidden */);
-			MESSAGE_END();
+#ifdef REGAMEDLL_FIXES
+			if (scoreboard_showhealth.value != -1.0f)
+#endif
+			{
+				MESSAGE_BEGIN(MSG_ONE, gmsgAccount, nullptr, pPlayer->edict());
+					WRITE_BYTE(entindex());
+					WRITE_LONG(ShouldToShowAccount(pPlayer) ? m_iAccount : -1 /* means that this 'Money' will be hidden */);
+				MESSAGE_END();
+			}
 		}
 
 		m_iLastAccount = m_iAccount;

@@ -177,5 +177,6 @@ extern cvar_t radio_maxinround;
 
 extern cvar_t scoreboard_showmoney;
 extern cvar_t scoreboard_showhealth;
+extern cvar_t scoreboard_showdefkit;
 
 void GameDLLInit();
