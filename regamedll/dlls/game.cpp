@@ -119,25 +119,26 @@ cvar_t fraglimit             = { "mp_fraglimit", "0", FCVAR_SERVER, 0.0f, nullpt
 cvar_t round_restart_delay   = { "mp_round_restart_delay", "5", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t showtriggers          = { "showtriggers", "0", 0, 0.0f, nullptr }; // debug cvar shows triggers
                                                                           // TODO: Maybe it's better to register in the engine?
-cvar_t hostagehurtable           = { "mp_hostage_hurtable", "1", FCVAR_SERVER, 1.0f, nullptr };
-cvar_t roundover                 = { "mp_roundover", "0", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t forcerespawn              = { "mp_forcerespawn", "0", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t show_radioicon            = { "mp_show_radioicon", "1", 0, 1.0f, nullptr };
-cvar_t show_scenarioicon         = { "mp_show_scenarioicon", "0", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t old_bomb_defused_sound    = { "mp_old_bomb_defused_sound", "1", 0, 1.0f, nullptr };
-cvar_t item_staytime             = { "mp_item_staytime", "300", FCVAR_SERVER, 300.0f, nullptr };
-cvar_t legacy_bombtarget_touch   = { "mp_legacy_bombtarget_touch", "1", 0, 1.0f, nullptr };
-cvar_t respawn_immunitytime      = { "mp_respawn_immunitytime", "0", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t respawn_immunity_effects  = { "mp_respawn_immunity_effects", "1", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t kill_filled_spawn         = { "mp_kill_filled_spawn", "1", 0, 0.0f, nullptr };
-cvar_t afk_bomb_drop_time        = { "mp_afk_bomb_drop_time", "0", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t buy_anywhere              = { "mp_buy_anywhere", "0", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t give_player_c4            = { "mp_give_player_c4", "1", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t weapons_allow_map_placed  = { "mp_weapons_allow_map_placed", "1", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t hostagehurtable              = { "mp_hostage_hurtable", "1", FCVAR_SERVER, 1.0f, nullptr };
+cvar_t roundover                    = { "mp_roundover", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t forcerespawn                 = { "mp_forcerespawn", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t show_radioicon               = { "mp_show_radioicon", "1", 0, 1.0f, nullptr };
+cvar_t show_scenarioicon            = { "mp_show_scenarioicon", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t old_bomb_defused_sound       = { "mp_old_bomb_defused_sound", "1", 0, 1.0f, nullptr };
+cvar_t item_staytime                = { "mp_item_staytime", "300", FCVAR_SERVER, 300.0f, nullptr };
+cvar_t legacy_bombtarget_touch      = { "mp_legacy_bombtarget_touch", "1", 0, 1.0f, nullptr };
+cvar_t respawn_immunitytime         = { "mp_respawn_immunitytime", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t respawn_immunity_effects     = { "mp_respawn_immunity_effects", "1", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t respawn_immunity_force_unset = { "mp_respawn_immunity_force_unset", "1", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t kill_filled_spawn            = { "mp_kill_filled_spawn", "1", 0, 0.0f, nullptr };
+cvar_t afk_bomb_drop_time           = { "mp_afk_bomb_drop_time", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t buy_anywhere                 = { "mp_buy_anywhere", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t give_player_c4               = { "mp_give_player_c4", "1", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t weapons_allow_map_placed     = { "mp_weapons_allow_map_placed", "1", FCVAR_SERVER, 0.0f, nullptr };
 
-cvar_t allow_point_servercommand = { "mp_allow_point_servercommand", "0", 0, 0.0f, nullptr };
-cvar_t hullbounds_sets           = { "mp_hullbounds_sets", "1", 0, 0.0f, nullptr };
-cvar_t unduck_method             = { "mp_unduck_method", "0", 0, 0.0f, nullptr };
+cvar_t allow_point_servercommand    = { "mp_allow_point_servercommand", "0", 0, 0.0f, nullptr };
+cvar_t hullbounds_sets              = { "mp_hullbounds_sets", "1", 0, 0.0f, nullptr };
+cvar_t unduck_method                = { "mp_unduck_method", "0", 0, 0.0f, nullptr };
 
 cvar_t ff_damage_reduction_bullets      = { "ff_damage_reduction_bullets",      "0.35", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t ff_damage_reduction_grenade      = { "ff_damage_reduction_grenade",      "0.25", FCVAR_SERVER, 0.0f, nullptr };
@@ -341,6 +342,7 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&legacy_bombtarget_touch);
 	CVAR_REGISTER(&respawn_immunitytime);
 	CVAR_REGISTER(&respawn_immunity_effects);
+	CVAR_REGISTER(&respawn_immunity_force_unset);
 	CVAR_REGISTER(&kill_filled_spawn);
 	CVAR_REGISTER(&afk_bomb_drop_time);
 	CVAR_REGISTER(&buy_anywhere);
