@@ -223,6 +223,19 @@ void CGrenade::__API_HOOK(Explode2)(TraceResult *pTrace, int bitsDamageType)
 			Create("spark_shower", pev->origin, pTrace->vecPlaneNormal, nullptr);
 		}
 	}
+
+#ifdef REGAMEDLL_FIXES
+	// A bomb has exploded so let's to trigger other explosive targets
+	if (m_pentCurBombTarget)
+	{
+		auto pBombTarget = CBaseEntity::Instance(m_pentCurBombTarget);
+		if (pBombTarget)
+		{
+			pBombTarget->Use(CBaseEntity::Instance(pevOwner), this, USE_TOGGLE, 0);
+		}
+	}
+#endif
+
 }
 
 LINK_HOOK_CLASS_VOID_CUSTOM2_CHAIN(CGrenade, ExplodeHeGrenade, Explode3, (TraceResult *pTrace, int bitsDamageType), pTrace, bitsDamageType)
@@ -1403,14 +1416,17 @@ void CGrenade::C4Think()
 			WRITE_BYTE(0);
 		MESSAGE_END();
 
+#ifndef REGAMEDLL_FIXES
+		// BUG: Don't trigger targets until main bomb explodes (Moved to CGrenade::Explode2)
 		if (m_pentCurBombTarget)
 		{
-			CBaseEntity *pBombTarget = CBaseEntity::Instance(m_pentCurBombTarget);
+			auto pBombTarget = CBaseEntity::Instance(m_pentCurBombTarget);
 			if (pBombTarget)
 			{
 				pBombTarget->Use(CBaseEntity::Instance(pev->owner), this, USE_TOGGLE, 0);
 			}
 		}
+#endif // #ifndef REGAMEDLL_FIXES
 
 		CBasePlayer *pBombOwner = CBasePlayer::Instance(pev->owner);
 		if (pBombOwner)

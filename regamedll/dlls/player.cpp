@@ -372,6 +372,10 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Radio)(const char *msg_id, const char *msg
 		if (!pPlayer)
 			continue;
 
+		// ignorerad command
+		if (pPlayer->m_bIgnoreRadio)
+			continue;
+
 		// are we a regular player? (not spectator)
 		if (pPlayer->IsPlayer())
 		{
@@ -390,10 +394,10 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Radio)(const char *msg_id, const char *msg
 			if (iSpecMode != OBS_CHASE_LOCKED && iSpecMode != OBS_CHASE_FREE && iSpecMode != OBS_IN_EYE)
 				continue;
 
-			if (!FNullEnt(pPlayer->m_hObserverTarget))
+			if (FNullEnt(pPlayer->m_hObserverTarget))
 				continue;
 
-			if (m_hObserverTarget && m_hObserverTarget->m_iTeam == m_iTeam)
+			if (pPlayer->m_hObserverTarget && pPlayer->m_hObserverTarget->m_iTeam == m_iTeam)
 			{
 				bSend = true;
 			}
@@ -401,46 +405,43 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Radio)(const char *msg_id, const char *msg
 
 		if (bSend)
 		{
-			// ignorerad command
-			if (!pPlayer->m_bIgnoreRadio)
-			{
-				MESSAGE_BEGIN(MSG_ONE, gmsgSendAudio, nullptr, pEntity->pev);
-					WRITE_BYTE(ENTINDEX(edict()));
-					WRITE_STRING(msg_id);
-					WRITE_SHORT(pitch);
-				MESSAGE_END();
+			MESSAGE_BEGIN(MSG_ONE, gmsgSendAudio, nullptr, pEntity->pev);
+				WRITE_BYTE(ENTINDEX(edict()));
+				WRITE_STRING(msg_id);
+				WRITE_SHORT(pitch);
+			MESSAGE_END();
 
-				// radio message icon
-				if (msg_verbose)
+			// radio message icon
+			if (msg_verbose)
+			{
+				// search the place name where is located the player
+				const char *placeName = nullptr;
+				if (AreRunningCZero() && TheBotPhrases)
 				{
-					// search the place name where is located the player
-					const char *placeName = nullptr;
-					if (AreRunningCZero() && TheBotPhrases)
+					Place playerPlace = TheNavAreaGrid.GetPlace(&pev->origin);
+					const BotPhraseList *placeList = TheBotPhrases->GetPlaceList();
+					for (auto phrase : *placeList)
 					{
-						Place playerPlace = TheNavAreaGrid.GetPlace(&pev->origin);
-						const BotPhraseList *placeList = TheBotPhrases->GetPlaceList();
-						for (auto phrase : *placeList)
+						if (phrase->GetID() == playerPlace)
 						{
-							if (phrase->GetID() == playerPlace)
-							{
-								placeName = phrase->GetName();
-								break;
-							}
+							placeName = phrase->GetName();
+							break;
 						}
 					}
-					if (placeName)
-						ClientPrint(pEntity->pev, HUD_PRINTRADIO, NumAsString(entindex()), "#Game_radio_location", STRING(pev->netname), placeName, msg_verbose);
-					else
-						ClientPrint(pEntity->pev, HUD_PRINTRADIO, NumAsString(entindex()), "#Game_radio", STRING(pev->netname), msg_verbose);
 				}
+				if (placeName)
+					ClientPrint(pEntity->pev, HUD_PRINTRADIO, NumAsString(entindex()), "#Game_radio_location", STRING(pev->netname), placeName, msg_verbose);
+				else
+					ClientPrint(pEntity->pev, HUD_PRINTRADIO, NumAsString(entindex()), "#Game_radio", STRING(pev->netname), msg_verbose);
+			}
 
-				// icon over the head for teammates
+			// icon over the head for teammates
 #ifdef REGAMEDLL_ADD
-				if (showIcon && show_radioicon.value)
+			if (showIcon && show_radioicon.value)
 #else
-				if (showIcon)
+			if (showIcon)
 #endif
-				{
+			{
 					// put an icon over this guys head to show that he used the radio
 					MESSAGE_BEGIN(MSG_ONE, SVC_TEMPENTITY, nullptr, pEntity->pev);
 						WRITE_BYTE(TE_PLAYERATTACHMENT);
@@ -449,7 +450,6 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Radio)(const char *msg_id, const char *msg
 						WRITE_SHORT(g_sModelIndexRadio);	// short (model index) of tempent
 						WRITE_SHORT(15);					// short (life * 10 ) e.g. 40 = 4 seconds
 					MESSAGE_END();
-				}
 			}
 		}
 	}
@@ -2063,6 +2063,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 	pev->effects &= ~EF_DIMLIGHT;
 #endif
 
+#ifndef REGAMEDLL_ADD
 	if (fadetoblack.value == 0.0)
 	{
 		pev->iuser1 = OBS_CHASE_FREE;
@@ -2078,6 +2079,53 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 	{
 		UTIL_ScreenFade(this, Vector(0, 0, 0), 3, 3, 255, (FFADE_OUT | FFADE_STAYOUT));
 	}
+#else
+	switch ((int)fadetoblack.value)
+	{
+	default:
+	{
+		pev->iuser1 = OBS_CHASE_FREE;
+		pev->iuser2 = ENTINDEX(edict());
+		pev->iuser3 = ENTINDEX(ENT(pevAttacker));
+
+		m_hObserverTarget = UTIL_PlayerByIndexSafe(pev->iuser3);
+
+		MESSAGE_BEGIN(MSG_ONE, gmsgADStop, nullptr, pev);
+		MESSAGE_END();
+
+		break;
+	}
+	case 1:
+	{
+		UTIL_ScreenFade(this, Vector(0, 0, 0), 3, 3, 255, (FFADE_OUT | FFADE_STAYOUT));
+
+		break;
+	}
+	case 2:
+	{
+		pev->iuser1 = OBS_CHASE_FREE;
+		pev->iuser2 = ENTINDEX(edict());
+		pev->iuser3 = ENTINDEX(ENT(pevAttacker));
+
+		m_hObserverTarget = UTIL_PlayerByIndexSafe(pev->iuser3);
+
+		MESSAGE_BEGIN(MSG_ONE, gmsgADStop, nullptr, pev);
+		MESSAGE_END();
+
+		for (int i = 1; i <= gpGlobals->maxClients; i++)
+		{
+			CBasePlayer* pObserver = UTIL_PlayerByIndex(i);
+
+			if (pObserver == this || pObserver && pObserver->IsObservingPlayer(this))
+			{
+				UTIL_ScreenFade(pObserver, Vector(0, 0, 0), 1, 4, 255, (FFADE_OUT));
+			}
+		}
+
+		break;
+	}
+	}
+#endif // REGAMEDLL_ADD
 
 	SetScoreboardAttributes();
 
@@ -4319,7 +4367,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 		if (!IsBot() && flLastMove > CSGameRules()->m_fMaxIdlePeriod)
 		{
 			DropIdlePlayer("Player idle");
-			
+
 			m_fLastMovement = gpGlobals->time;
 		}
 #ifdef REGAMEDLL_ADD
@@ -4504,8 +4552,8 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 
 #ifdef REGAMEDLL_ADD
 	auto protectStateCurrent = CSPlayer()->GetProtectionState();
-	if (protectStateCurrent  == CCSPlayer::ProtectionSt_Expired ||
-		(protectStateCurrent == CCSPlayer::ProtectionSt_Active && (m_afButtonPressed & IN_ACTIVE)))
+	if (protectStateCurrent  == CCSPlayer::ProtectionSt_Expired || (respawn_immunity_force_unset.value &&
+		(protectStateCurrent == CCSPlayer::ProtectionSt_Active && (m_afButtonPressed & IN_ACTIVE))))
 	{
 		RemoveSpawnProtection();
 	}
@@ -5183,8 +5231,24 @@ void CBasePlayer::SetScoreAttrib(CBasePlayer *dest)
 		state |= SCORE_STATUS_VIP;
 
 #ifdef BUILD_LATEST
-	if (AreRunningBeta() && m_bHasDefuser)
-		state |= SCORE_STATUS_DEFKIT;
+
+#ifdef REGAMEDLL_FIXES
+	if (scoreboard_showdefkit.value)
+#endif
+	{
+		if (m_bHasDefuser)
+			state |= SCORE_STATUS_DEFKIT;
+	}
+
+#endif
+
+#ifdef REGAMEDLL_FIXES
+	// TODO: Remove these fixes when they are implemented on the client side
+	if (state & (SCORE_STATUS_BOMB | SCORE_STATUS_DEFKIT) && GetForceCamera(dest) != CAMERA_MODE_SPEC_ANYONE)
+	{
+		if (CSGameRules()->PlayerRelationship(this, dest) != GR_TEAMMATE)
+			state &= ~(SCORE_STATUS_BOMB | SCORE_STATUS_DEFKIT);
+	}
 #endif
 
 	if (gmsgScoreAttrib)
@@ -7206,41 +7270,53 @@ void EXT_FUNC CBasePlayer::__API_HOOK(UpdateClientData)()
 	}
 
 #ifdef BUILD_LATEST
-	if (AreRunningBeta())
+
+	if (
+#ifdef REGAMEDLL_FIXES
+		(scoreboard_showmoney.value != -1.0f || scoreboard_showhealth.value != -1.0f) &&
+#endif
+		(m_iTeam == CT || m_iTeam == TERRORIST) &&
+		(m_iLastAccount != m_iAccount || m_iLastClientHealth != m_iClientHealth || m_tmNextAccountHealthUpdate < gpGlobals->time))
 	{
-		if ((m_iTeam == CT || m_iTeam == TERRORIST) &&
-			(m_iLastAccount != m_iAccount || m_iLastClientHealth != m_iClientHealth || m_tmNextAccountHealthUpdate < gpGlobals->time))
+		m_tmNextAccountHealthUpdate = gpGlobals->time + 5.0f;
+
+		for (int playerIndex = 1; playerIndex <= gpGlobals->maxClients; playerIndex++)
 		{
-			m_tmNextAccountHealthUpdate = gpGlobals->time + 5.0f;
+			CBaseEntity *pEntity = UTIL_PlayerByIndex(playerIndex);
 
-			for (int playerIndex = 1; playerIndex <= gpGlobals->maxClients; playerIndex++)
-			{
-				CBaseEntity *pEntity = UTIL_PlayerByIndex(playerIndex);
+			if (!pEntity)
+				continue;
 
-				if (!pEntity)
-					continue;
-
-				CBasePlayer *pPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev);
+			CBasePlayer *pPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev);
 
 #ifdef REGAMEDLL_FIXES
-				if (pPlayer->IsDormant())
-					continue;
+			if (pPlayer->IsDormant())
+				continue;
 #endif // REGAMEDLL_FIXES
 
+#ifdef REGAMEDLL_FIXES
+			if (scoreboard_showmoney.value != -1.0f)
+#endif
+			{
 				MESSAGE_BEGIN(MSG_ONE, gmsgHealthInfo, nullptr, pPlayer->edict());
 					WRITE_BYTE(entindex());
 					WRITE_LONG(ShouldToShowHealthInfo(pPlayer) ? m_iClientHealth : -1 /* means that 'HP' field will be hidden */);
 				MESSAGE_END();
+			}
 
+#ifdef REGAMEDLL_FIXES
+			if (scoreboard_showhealth.value != -1.0f)
+#endif
+			{
 				MESSAGE_BEGIN(MSG_ONE, gmsgAccount, nullptr, pPlayer->edict());
 					WRITE_BYTE(entindex());
 					WRITE_LONG(ShouldToShowAccount(pPlayer) ? m_iAccount : -1 /* means that this 'Money' will be hidden */);
 				MESSAGE_END();
 			}
-
-			m_iLastAccount = m_iAccount;
-			m_iLastClientHealth = m_iClientHealth;
 		}
+
+		m_iLastAccount = m_iAccount;
+		m_iLastClientHealth = m_iClientHealth;
 	}
 #endif // #ifdef BUILD_LATEST
 }
@@ -9781,7 +9857,11 @@ bool EXT_FUNC CBasePlayer::__API_HOOK(GetIntoGame)()
 		Spawn();
 		CSGameRules()->CheckWinConditions();
 
-		if (!CSGameRules()->m_flRestartRoundTime && CSGameRules()->m_bMapHasBombTarget && !CSGameRules()->IsThereABomber() && !CSGameRules()->IsThereABomb())
+		if (!CSGameRules()->m_flRestartRoundTime && CSGameRules()->m_bMapHasBombTarget && !CSGameRules()->IsThereABomber() && !CSGameRules()->IsThereABomb()
+#ifdef REGAMEDLL_ADD
+			&& give_player_c4.value
+#endif
+			)
 		{
 			CSGameRules()->GiveC4();
 		}
