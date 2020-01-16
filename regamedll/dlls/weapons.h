@@ -493,11 +493,17 @@ public:
 };
 
 
-const float USP_MAX_SPEED     = 250.0f;
-const float USP_DAMAGE        = 34.0f;
-const float USP_DAMAGE_SIL    = 30.0f;
-const float USP_RANGE_MODIFER = 0.79f;
-const float USP_RELOAD_TIME   = 2.7f;
+const float USP_MAX_SPEED       = 250.0f;
+const float USP_DAMAGE          = 34.0f;
+const float USP_DAMAGE_SIL      = 30.0f;
+const float USP_RANGE_MODIFER   = 0.79f;
+const float USP_RELOAD_TIME     = 2.7f;
+
+#ifdef REGAMEDLL_FIXES
+const float USP_ADJUST_SIL_TIME = 3.13f;
+#else
+const float USP_ADJUST_SIL_TIME = 3.0f;
+#endif
 
 enum usp_e
 {

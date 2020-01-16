@@ -457,7 +457,9 @@ void CHostage::IdleThink()
 						GETPLAYERUSERID(pPlayer->edict()), GETPLAYERAUTHID(pPlayer->edict()));
 				}
 
+#ifndef REGAMEDLL_FIXES
 				SendHostageEventMsg();
+#endif
 
 				MESSAGE_BEGIN(MSG_SPEC, SVC_DIRECTOR);
 					WRITE_BYTE(9);
@@ -469,6 +471,10 @@ void CHostage::IdleThink()
 
 				pev->effects |= EF_NODRAW;
 				Remove();
+
+#ifdef REGAMEDLL_FIXES
+				SendHostageEventMsg();
+#endif
 
 				CSGameRules()->m_iHostagesRescued++;
 				CSGameRules()->CheckWinConditions();

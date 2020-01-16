@@ -1310,8 +1310,13 @@ BOOL EXT_FUNC CBasePlayerWeapon::__API_HOOK(DefaultDeploy)(char *szViewModel, ch
 		return FALSE;
 
 	m_pPlayer->TabulateAmmo();
+#ifdef REGAMEDLL_API
+	m_pPlayer->pev->viewmodel = ALLOC_STRING(szViewModel);
+	m_pPlayer->pev->weaponmodel = ALLOC_STRING(szWeaponModel);
+#else
 	m_pPlayer->pev->viewmodel = MAKE_STRING(szViewModel);
 	m_pPlayer->pev->weaponmodel = MAKE_STRING(szWeaponModel);
+#endif
 	model_name = m_pPlayer->pev->viewmodel;
 	Q_strcpy(m_pPlayer->m_szAnimExtention, szAnimExt);
 	SendWeaponAnim(iAnim, skiplocal);
@@ -2176,13 +2181,15 @@ void CArmoury::Spawn()
 
 void CArmoury::Restart()
 {
-#ifdef REGAMEDLL_FIXES
+#ifdef REGAMEDLL_ADD
 	if (!weapons_allow_map_placed.value)
 	{
 		Hide();
 		return;
 	}
+#endif
 
+#ifdef REGAMEDLL_FIXES
 	// This code refers to the mode of Escape. (Because there is relationship to the team Terrorists)
 	if (CSGameRules()->m_bMapHasEscapeZone)
 #endif

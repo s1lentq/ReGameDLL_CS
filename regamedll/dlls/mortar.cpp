@@ -191,6 +191,11 @@ void CMortar::MortarExplode()
 	TraceResult tr;
 	UTIL_TraceLine(pev->origin + Vector(0, 0, 1024), pev->origin - Vector(0, 0, 1024), dont_ignore_monsters, ENT(pev), &tr);
 
+#ifdef REGAMEDLL_FIXES
+	Explode3(&tr, (DMG_BLAST | DMG_MORTAR));
+#else
 	Explode(&tr, (DMG_BLAST | DMG_MORTAR));
+#endif
+
 	UTIL_ScreenShake(tr.vecEndPos, 25.0, 150.0, 1.0, 750);
 }

@@ -158,9 +158,11 @@ extern cvar_t item_staytime;
 extern cvar_t legacy_bombtarget_touch;
 extern cvar_t respawn_immunitytime;
 extern cvar_t respawn_immunity_effects;
+extern cvar_t respawn_immunity_force_unset;
 extern cvar_t kill_filled_spawn;
 extern cvar_t afk_bomb_drop_time;
 extern cvar_t buy_anywhere;
+extern cvar_t give_player_c4;
 extern cvar_t weapons_allow_map_placed;
 extern cvar_t allow_point_servercommand;
 extern cvar_t hullbounds_sets;
@@ -177,5 +179,6 @@ extern cvar_t dying_time;
 
 extern cvar_t scoreboard_showmoney;
 extern cvar_t scoreboard_showhealth;
+extern cvar_t scoreboard_showdefkit;
 
 void GameDLLInit();
