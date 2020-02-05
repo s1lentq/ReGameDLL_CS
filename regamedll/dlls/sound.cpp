@@ -772,7 +772,7 @@ void CAmbientGeneric::KeyValue(KeyValueData *pkvd)
 	// lfotype
 	else if (FStrEq(pkvd->szKeyName, "lfotype"))
 	{
-		m_dpv.lfotype = (LowFreqOsc)Q_atoi(pkvd->szValue);
+		m_dpv.lfotype = Q_atoi(pkvd->szValue);
 
 		if (m_dpv.lfotype > 4)
 			m_dpv.lfotype = LFO_TRIANGLE;

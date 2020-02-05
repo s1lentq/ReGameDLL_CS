@@ -238,7 +238,7 @@ void CSoundEnt::Initialize()
 int CSoundEnt::ISoundsInList(int iListType)
 {
 	int i;
-	int iThisSound;
+	int iThisSound = SOUNDLIST_EMPTY;
 
 	if (iListType == SOUNDLISTTYPE_FREE)
 	{
@@ -251,6 +251,7 @@ int CSoundEnt::ISoundsInList(int iListType)
 	else
 	{
 		ALERT(at_console, "Unknown Sound List Type!\n");
+		iThisSound = iListType;
 	}
 
 	if (iThisSound == SOUNDLIST_EMPTY)
