@@ -158,6 +158,7 @@ void setupToolchain(NativeBinarySpec b)
 
 			if (useGcc) {
 				cfg.compilerOptions.args '-fno-devirtualize'
+			}
 			else {
 				cfg.compilerOptions.args '-fno-strict-vtable-pointers', '-Wno-overloaded-virtual'
 			}
