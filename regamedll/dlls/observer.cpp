@@ -9,7 +9,7 @@ int __API_HOOK(GetForceCamera)(CBasePlayer *pObserver)
 #ifndef REGAMEDLL_ADD
 	if (!fadetoblack.value)
 #else
-	if ((int)fadetoblack.value == FADETOBLACK_STAY)
+	if (fadetoblack.value == FADETOBLACK_STAY)
 #endif
 	{
 		retVal = int(CVAR_GET_FLOAT("mp_forcechasecam"));
@@ -58,7 +58,7 @@ void UpdateClientEffects(CBasePlayer *pObserver, int oldMode)
 #ifndef REGAMEDLL_ADD
 	bool blindnessOk = (fadetoblack.value == 0);
 #else
-	bool blindnessOk = ((int)fadetoblack.value != FADETOBLACK_STAY);
+	bool blindnessOk = (fadetoblack.value != FADETOBLACK_STAY);
 #endif
 	bool clearNightvision = false;
 
