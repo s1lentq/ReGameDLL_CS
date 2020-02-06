@@ -4,7 +4,11 @@ void PlayerBlind(CBasePlayer *pPlayer, entvars_t *pevInflictor, entvars_t *pevAt
 {
 	UTIL_ScreenFade(pPlayer, color, fadeTime, fadeHold, alpha, 0);
 
+#ifndef REGAMEDLL_ADD
 	if (!fadetoblack.value)
+#else
+	if ((int)fadetoblack.value != 1)
+#endif
 	{
 		for (int i = 1; i <= gpGlobals->maxClients; i++)
 		{
