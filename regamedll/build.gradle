@@ -92,6 +92,7 @@ void postEvaluate(NativeBinarySpec b) {
 void setupToolchain(NativeBinarySpec b)
 {
 	boolean useGcc = project.hasProperty("useGcc")
+	boolean useClang = project.hasProperty("useClang")
 	boolean unitTestExecutable = b.component.name.endsWith('_tests')
 	boolean regamedllFixes = b.flavor.name.contains('regamedllFixes')
 
@@ -121,7 +122,7 @@ void setupToolchain(NativeBinarySpec b)
 			cfg.compilerOptions.enhancedInstructionsSet = EnhancedInstructionsSet.DISABLED
 		}
 		else {
-			cfg.compilerOptions.args '/Oi', '/GF', '/GS-', '/GR-'
+			cfg.compilerOptions.args '/Oi', '/GF', '/GS', '/GR'
 		}
 
 		cfg.projectLibpath(project, '/lib')
@@ -129,7 +130,7 @@ void setupToolchain(NativeBinarySpec b)
 	}
 	else if (cfg instanceof GccToolchainConfig)
 	{
-		if (!useGcc)
+		if (!useGcc && !useClang)
 		{
 			cfg.compilerOptions.pchConfig = new GccToolchainConfig.PrecompilerHeaderOptions(
 				enabled: true,
@@ -150,10 +151,18 @@ void setupToolchain(NativeBinarySpec b)
 			'_access' : 'access'
 		])
 
-		if (useGcc) {
+		if (useGcc || useClang) {
 			// Produce code optimized for the most common IA32/AMD64/EM64T processors.
 			// As new processors are deployed in the marketplace, the behavior of this option will change.
-			cfg.compilerOptions.args '-mtune=generic', '-msse3', '-Wno-write-strings', '-Wno-invalid-offsetof', '-fpermissive', '-fno-devirtualize'
+			cfg.compilerOptions.args '-mtune=generic', '-msse3', '-Wno-write-strings', '-Wno-invalid-offsetof', '-fpermissive', '-Wno-switch', '-Wno-unused-value', '-Wno-enum-compare'
+
+			if (useGcc) {
+				cfg.compilerOptions.args '-fno-devirtualize'
+			}
+			else {
+				cfg.compilerOptions.args '-fno-strict-vtable-pointers', '-Wno-overloaded-virtual'
+			}
+
 		} else {
 			cfg.compilerOptions.args '-Qoption,cpp,--treat_func_as_string_literal_cpp'
 
@@ -169,7 +178,7 @@ void setupToolchain(NativeBinarySpec b)
 			cfg.singleDefines 'BUILD_STATIC_LIBSTDC'
 		}
 
-		cfg.compilerOptions.args '-g0', '-fno-rtti', '-fno-exceptions'
+		cfg.compilerOptions.args '-g0', '-fno-exceptions'
 		cfg.projectLibpath(project, '/lib/linux32')
 		cfg.extraLibs 'dl', 'm', 'aelf32'
 	}
@@ -276,7 +285,10 @@ model {
 	toolChains {
 		visualCpp(VisualCpp) {
 		}
-		if (project.hasProperty("useGcc")) {
+		if (project.hasProperty("useClang")) {
+			clang(Clang)
+		}
+		else if (project.hasProperty("useGcc")) {
 			gcc(Gcc)
 		} else {
 			icc(Icc)
@@ -343,11 +355,18 @@ task buildFixes {
 	}
 }
 
+task buildDebug {
+	dependsOn binaries.withType(SharedLibraryBinarySpec).matching {
+		SharedLibraryBinarySpec blib -> blib.buildable && blib.buildType.name == 'debug' && blib.flavor.name == 'regamedllFixes' && blib.component.name == 'regamedll_mp_gamedll'
+	}
+}
+
 buildFixes.finalizedBy(buildFinalize);
+buildDebug.finalizedBy(buildFinalize);
 buildRelease.finalizedBy(buildFinalize);
 
 gradle.taskGraph.whenReady { graph ->
-	if (!graph.hasTask(buildFixes)) {
+	if (!graph.hasTask(buildFixes) && !graph.hasTask(buildDebug)) {
 		return;
 	}
 
@@ -396,7 +415,7 @@ tasks.clean.doLast {
 
 task generateAppVersion {
 
-	RegamedllVersionInfo verInfo = (RegamedllVersionInfo) rootProject.regamedllVersionInfo
+	RegamedllVersionInfo verInfo = (RegamedllVersionInfo)rootProject.regamedllVersionInfo
 	def tplFile = project.file('version/appversion.vm')
 	def renderedFile = project.file('version/appversion.h')
 

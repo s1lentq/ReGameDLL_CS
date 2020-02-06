@@ -8,6 +8,7 @@ import org.gradle.nativeplatform.toolchain.VisualCpp
 
 apply from: 'shared_msvc.gradle'
 apply from: 'shared_icc.gradle'
+apply from: 'shared_clang.gradle'
 apply from: 'shared_gcc.gradle'
 
 rootProject.ext.createToolchainConfig = { NativeBinarySpec bin ->
@@ -37,6 +38,10 @@ rootProject.ext.createToolchainConfig = { NativeBinarySpec bin ->
 	else if (bin.toolChain instanceof Icc)
 	{
 		return rootProject.createIccConfig(releaseBuild, binaryKind)
+	}
+	else if (bin.toolChain instanceof Clang)
+	{
+		return rootProject.createClangConfig(releaseBuild, binaryKind)
 	}
 	else if (bin.toolChain instanceof Gcc)
 	{

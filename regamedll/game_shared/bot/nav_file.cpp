@@ -331,7 +331,7 @@ void CNavArea::Load(SteamFile *file, unsigned int version)
 
 	// Load hiding spots
 	// load number of hiding spots
-	unsigned char hidingSpotCount;
+	unsigned char hidingSpotCount = 0;
 	file->Read(&hidingSpotCount, sizeof(unsigned char));
 
 	if (version == 1)
@@ -366,13 +366,13 @@ void CNavArea::Load(SteamFile *file, unsigned int version)
 	file->Read(&m_approachCount, sizeof(unsigned char));
 
 	// load approach area info (IDs)
-	unsigned char type;
+	unsigned char type = 0;
 	for (int a = 0; a < m_approachCount; a++)
 	{
 		file->Read(&m_approach[a].here.id, sizeof(unsigned int));
 
 		file->Read(&m_approach[a].prev.id, sizeof(unsigned int));
-		file->Read(&type, sizeof(unsigned char) );
+		file->Read(&type, sizeof(unsigned char));
 		m_approach[a].prevToHereHow = (NavTraverseType)type;
 
 		file->Read(&m_approach[a].next.id, sizeof(unsigned int));
@@ -398,7 +398,7 @@ void CNavArea::Load(SteamFile *file, unsigned int version)
 			file->Read(&encounter.path.to.x, 3 * sizeof(float));
 
 			// read list of spots along this path
-			unsigned char spotCount;
+			unsigned char spotCount = 0;
 			file->Read(&spotCount, sizeof(unsigned char));
 
 			for (int s = 0; s < spotCount; s++)
@@ -418,7 +418,7 @@ void CNavArea::Load(SteamFile *file, unsigned int version)
 
 		file->Read(&encounter.from.id, sizeof(unsigned int));
 
-		unsigned char dir;
+		unsigned char dir = 0;
 		file->Read(&dir, sizeof(unsigned char));
 		encounter.fromDir = static_cast<NavDirType>(dir);
 
@@ -428,7 +428,7 @@ void CNavArea::Load(SteamFile *file, unsigned int version)
 		encounter.toDir = static_cast<NavDirType>(dir);
 
 		// read list of spots along this path
-		unsigned char spotCount;
+		unsigned char spotCount = 0;
 		file->Read(&spotCount, sizeof(unsigned char));
 
 		SpotOrder order;
@@ -436,7 +436,7 @@ void CNavArea::Load(SteamFile *file, unsigned int version)
 		{
 			file->Read(&order.id, sizeof(unsigned int));
 
-			unsigned char t;
+			unsigned char t = 0;
 			file->Read(&t, sizeof(unsigned char));
 
 			order.t = float(t) / 255.0f;
@@ -733,7 +733,7 @@ void SanityCheckNavigationMap(const char *mapName)
 		navFile.Read(&saveBspSize, sizeof(unsigned int));
 
 		// verify size
-		if (!bspFilename)
+		if (saveBspSize == 0)
 		{
 			CONSOLE_ECHO("ERROR: No map corresponds to navigation file %s.\n", navFilename);
 			return;

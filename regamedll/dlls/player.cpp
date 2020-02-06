@@ -2098,7 +2098,6 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 	case 1:
 	{
 		UTIL_ScreenFade(this, Vector(0, 0, 0), 3, 3, 255, (FFADE_OUT | FFADE_STAYOUT));
-
 		break;
 	}
 	case 2:
@@ -2116,7 +2115,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 		{
 			CBasePlayer* pObserver = UTIL_PlayerByIndex(i);
 
-			if (pObserver == this || pObserver && pObserver->IsObservingPlayer(this))
+			if (pObserver == this || (pObserver && pObserver->IsObservingPlayer(this)))
 			{
 				UTIL_ScreenFade(pObserver, Vector(0, 0, 0), 1, 4, 255, (FFADE_OUT));
 			}
@@ -2677,9 +2676,6 @@ void EXT_FUNC CBasePlayer::__API_HOOK(SetAnimation)(PLAYER_ANIM playerAnim)
 						animDesired = LookupActivity(ACT_DIE_BACKSHOT);
 						m_iThrowDirection = THROW_HITVEL;
 						break;
-					case 3:
-						animDesired = LookupActivity(ACT_DIESIMPLE);
-						break;
 					case 4:
 						animDesired = LookupActivity(ACT_DIEBACKWARD);
 						m_iThrowDirection = THROW_HITVEL;
@@ -2698,6 +2694,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(SetAnimation)(PLAYER_ANIM playerAnim)
 						animDesired = LookupActivity(ACT_DIE_HEADSHOT);
 						break;
 					default:
+						animDesired = LookupActivity(ACT_DIESIMPLE);
 						break;
 					}
 					break;
@@ -2750,11 +2747,10 @@ void EXT_FUNC CBasePlayer::__API_HOOK(SetAnimation)(PLAYER_ANIM playerAnim)
 					break;
 				}
 				default:
-				{
 					animDesired = LookupActivity(ACT_DIESIMPLE);
 					break;
-				}
 			}
+
 			if (pev->flags & FL_DUCKING)
 			{
 				animDesired = LookupSequence("crouch_die");
@@ -4349,7 +4345,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 #ifdef REGAMEDLL_FIXES
 		IsAlive() &&
 #endif
-		m_flIdleCheckTime <= (double)gpGlobals->time || m_flIdleCheckTime == 0.0f)
+		(m_flIdleCheckTime <= (double)gpGlobals->time || m_flIdleCheckTime == 0.0f))
 	{
 		// check every 5 seconds
 		m_flIdleCheckTime = gpGlobals->time + 5.0;

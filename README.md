@@ -100,7 +100,7 @@ There are several software requirements for building Regamedll_CS:
 <ol>
 <li>Java Development Kit (JDK) 7+ (http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)</li>
 <li>For Windows: Visual Studio 2015 and later</li>
-<li>For Linux: Intel C++ Compiler 15 and later</li>
+<li>For Linux: GCC/Clang/Intel C++ Compiler 15 and later</li>
 </ol>
 
 ### Checking requirements
@@ -122,25 +122,45 @@ Help -> About
 icc (ICC) 15.0.1 20141023
 </pre>
 
-### Building
-On Windows:
+### Building and run unit tests using gradle
+#### On Windows:
 <pre>gradlew --max-workers=1 clean buildRelease</pre>
 * For faster building without unit tests use this:exclamation:
 <pre>gradlew --max-workers=1 clean buildFixes</pre>
 
-On Linux (ICC):
+#### On Linux (ICC):
 <pre>./gradlew --max-workers=1 clean buildRelease</pre>
 
 * For faster building without unit tests use this:exclamation:
 <pre>./gradlew --max-workers=1 clean buildFixes</pre>
 
-On Linux (GCC):
+#### On Linux (Clang):
+<pre>./gradlew --max-workers=1 clean -PuseClang buildRelease</pre>
+
+* For faster building without unit tests use this:exclamation:
+<pre>./gradlew --max-workers=1 clean -PuseClang buildFixes</pre>
+
+#### On Linux (GCC):
 <pre>./gradlew --max-workers=1 clean -PuseGcc buildRelease</pre>
 
 * For faster building without unit tests use this:exclamation:
 <pre>./gradlew --max-workers=1 clean -PuseGcc buildFixes</pre>
 
 Compiled binaries will be placed in the build/binaries/ directory
+
+### Simplified building using CMake 3.1 and later
+#### On Windows:
+<pre>Open solution msvc\ReGameDLL.sln and build it</pre>
+
+#### On Linux:
+* Run script `regamedll/compile.sh`
+* Options using `regamedll/compile.sh -D[option]=[ON or OFF]` (without square brackets)
+<pre>
+DEBUG              - Enables debugging mode
+USE_INTEL_COMPILER - Switch main compiler to ICC
+USE_CLANG_COMPILER - Switch main compiler to Clang
+USE_STATIC_LIBSTDC - Enables static linking library libstdc++
+</pre>
 
 ### Credits
 Thanks to the project [ReHLDS](https://github.com/dreamstalker/rehlds) ( ReGameDLL_CS was created on the basis of ReHLDS )
