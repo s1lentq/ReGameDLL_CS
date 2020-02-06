@@ -1043,7 +1043,11 @@ void CCSBotManager::MonitorBotAutoKill()
 		return;
 
 	if (m_isRoundOver)
+	{
+		m_flNextAutoKillCheck = 0.0f;
 		return;
+	}
+		
 
 	for (int iIndex = 1; iIndex <= gpGlobals->maxClients; iIndex++)
 	{
@@ -1078,7 +1082,6 @@ void CCSBotManager::MonitorBotAutoKill()
 	if (gpGlobals->time >= m_flNextAutoKillCheck)
 	{
 		SERVER_COMMAND("bot_kill\n");
-		m_flNextAutoKillCheck = 0.0f;
 	}
 
 
