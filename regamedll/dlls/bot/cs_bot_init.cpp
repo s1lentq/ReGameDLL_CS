@@ -62,6 +62,8 @@ cvar_t cv_bot_deathmatch             = { "bot_deathmatch", "0", FCVAR_SERVER, 0.
 cvar_t cv_bot_quota_mode             = { "bot_quota_mode", "normal", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t cv_bot_join_delay             = { "bot_join_delay", "0", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t cv_bot_freeze                 = { "bot_freeze", "0", 0, 0.0f, nullptr };
+cvar_t cv_bot_autokill				 = { "bot_autokill", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t cv_bot_autokill_delay		 = { "bot_autokill_delay", "0", FCVAR_SERVER, 0.0f, nullptr };
 #else
 // Migrated to bot_quota_mode, use "match"
 cvar_t cv_bot_quota_match            = { "bot_quota_match", "0", FCVAR_SERVER, 0.0f, nullptr };
@@ -131,6 +133,8 @@ void Bot_RegisterCVars()
 	CVAR_REGISTER(&cv_bot_quota_mode);
 	CVAR_REGISTER(&cv_bot_join_delay);
 	CVAR_REGISTER(&cv_bot_freeze);
+	CVAR_REGISTER(&cv_bot_autokill);
+	CVAR_REGISTER(&cv_bot_autokill_delay);
 #endif
 
 }

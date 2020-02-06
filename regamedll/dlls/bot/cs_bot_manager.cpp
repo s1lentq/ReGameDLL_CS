@@ -31,6 +31,7 @@
 CBotManager *TheBots = nullptr;
 
 float CCSBotManager::m_flNextCVarCheck = 0.0f;
+float CCSBotManager::m_flNextAutoKillCheck = 0.0f;
 bool CCSBotManager::m_isMapDataLoaded = false;
 bool CCSBotManager::m_isLearningMap = false;
 bool CCSBotManager::m_isAnalysisRequested = false;
@@ -39,6 +40,7 @@ NavEditCmdType CCSBotManager::m_editCmd = EDIT_NONE;
 CCSBotManager::CCSBotManager()
 {
 	m_flNextCVarCheck = 0.0f;
+	m_flNextAutoKillCheck = 0.0f;
 
 	m_zoneCount = 0;
 	SetLooseBomb(nullptr);
@@ -145,6 +147,7 @@ void CCSBotManager::StartFrame()
 	// EXTEND
 	CBotManager::StartFrame();
 	MonitorBotCVars();
+	MonitorBotAutoKill();
 
 	// debug zone extent visualization
 	if (cv_bot_debug.value == 5.0f)
@@ -1045,6 +1048,53 @@ void CCSBotManager::MaintainBotQuota()
 
 		CVAR_SET_FLOAT("bot_quota", cv_bot_quota.value - 1.0f);
 	}
+}
+
+void CCSBotManager::MonitorBotAutoKill()
+{
+	if (cv_bot_autokill.value == 0.0f)
+		return;
+
+	if (m_isRoundOver)
+		return;
+
+	for (int iIndex = 1; iIndex <= gpGlobals->maxClients; iIndex++)
+	{
+		CBasePlayer* pPlayer = UTIL_PlayerByIndex(iIndex);
+
+		if (!pPlayer)
+			continue;
+
+		if (FNullEnt(pPlayer->pev))
+			continue;
+
+		if (FStrEq(STRING(pPlayer->pev->netname), ""))
+			continue;
+
+		// ignore spectators
+		if (pPlayer->m_iTeam != TERRORIST && pPlayer->m_iTeam != CT)
+			continue;
+
+		if (pPlayer->m_iJoiningState != JOINED)
+			continue;
+
+		if (pPlayer->IsBot())
+			continue;
+
+		if (pPlayer->IsAlive())
+			return;
+	}
+
+	if (m_flNextAutoKillCheck == 0.0f)
+		m_flNextAutoKillCheck = gpGlobals->time + cv_bot_autokill_delay.value;
+
+	if (gpGlobals->time >= m_flNextAutoKillCheck)
+	{
+		SERVER_COMMAND("bot_kill\n");
+		m_flNextAutoKillCheck = 0.0f;
+	}
+
+
 }
 
 void CCSBotManager::MonitorBotCVars()
