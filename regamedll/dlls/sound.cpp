@@ -1044,7 +1044,7 @@ int USENTENCEG_PickSequential(int isentenceg, char *szfound, int ipick, int fres
 {
 	char *szgroupname;
 	unsigned char count;
-	char sznum[8];
+	char sznum[12];
 
 	if (!fSentencesInit)
 		return -1;
@@ -1063,7 +1063,7 @@ int USENTENCEG_PickSequential(int isentenceg, char *szfound, int ipick, int fres
 
 	Q_strcpy(szfound, "!");
 	Q_strcat(szfound, szgroupname);
-	Q_sprintf(sznum, "%d", ipick);
+	Q_snprintf(sznum, sizeof(sznum), "%d", ipick);
 	Q_strcat(szfound, sznum);
 
 	if (ipick >= count)
@@ -1090,7 +1090,7 @@ int USENTENCEG_Pick(int isentenceg, char *szfound)
 	unsigned char *plru;
 	unsigned char i;
 	unsigned char count;
-	char sznum[8];
+	char sznum[12];
 	unsigned char ipick = 0xFF;
 	BOOL ffound = FALSE;
 
@@ -1121,7 +1121,7 @@ int USENTENCEG_Pick(int isentenceg, char *szfound)
 		{
 			Q_strcpy(szfound, "!");
 			Q_strcat(szfound, szgroupname);
-			Q_sprintf(sznum, "%d", ipick);
+			Q_snprintf(sznum, sizeof(sznum), "%d", ipick);
 			Q_strcat(szfound, sznum);
 
 			return ipick;
@@ -1243,7 +1243,7 @@ int SENTENCEG_PlaySequentialSz(edict_t *entity, const char *szgroupname, float v
 NOXREF void SENTENCEG_Stop(edict_t *entity, int isentenceg, int ipick)
 {
 	char buffer[64];
-	char sznum[8];
+	char sznum[12];
 
 	if (!fSentencesInit)
 		return;
@@ -1251,10 +1251,10 @@ NOXREF void SENTENCEG_Stop(edict_t *entity, int isentenceg, int ipick)
 	if (isentenceg < 0 || ipick < 0)
 		return;
 
-	Q_strcpy(buffer, "!");
-	Q_strcat(buffer, rgsentenceg[isentenceg].szgroupname);
-	Q_sprintf(sznum, "%d", ipick);
-	Q_strcat(buffer, sznum);
+	Q_strlcpy(buffer, "!");
+	Q_strlcat(buffer, rgsentenceg[isentenceg].szgroupname);
+	Q_snprintf(sznum, sizeof(sznum), "%d", ipick);
+	Q_strlcat(buffer, sznum);
 
 	STOP_SOUND(entity, CHAN_VOICE, buffer);
 }
@@ -1387,7 +1387,7 @@ void SENTENCEG_Init()
 // convert sentence (sample) name to !sentencenum, return !sentencenum
 int SENTENCEG_Lookup(const char *sample, char *sentencenum)
 {
-	char sznum[8];
+	char sznum[12];
 	int i;
 
 	// this is a sentence name; lookup sentence number
@@ -1399,7 +1399,7 @@ int SENTENCEG_Lookup(const char *sample, char *sentencenum)
 			if (sentencenum)
 			{
 				Q_strcpy(sentencenum, "!");
-				Q_sprintf(sznum, "%d", i);
+				Q_snprintf(sznum, sizeof(sznum), "%d", i);
 				Q_strcat(sentencenum, sznum);
 			}
 

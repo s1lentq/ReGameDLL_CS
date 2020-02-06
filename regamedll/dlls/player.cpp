@@ -6859,7 +6859,7 @@ void CBasePlayer::SendHostageIcons()
 	if (hostagesCount > MAX_HOSTAGE_ICON)
 		hostagesCount = MAX_HOSTAGE_ICON;
 
-	char buf[16];
+	char buf[18];
 	Q_snprintf(buf, ARRAYSIZE(buf), "hostage%d", hostagesCount);
 
 	if (hostagesCount)

@@ -59,7 +59,7 @@ else()
 endif()
 
 if (NOT DEBUG AND USE_STATIC_LIBSTDC)
-	set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-gc-sections -Wl,--version-script=${PROJECT_SOURCE_DIR}/../version_script.lds")
+	set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-gc-sections -Wl,--version-script=\"${PROJECT_SOURCE_DIR}/../version_script.lds\"")
 endif()
 
 if (USE_STATIC_LIBSTDC)
@@ -142,7 +142,7 @@ add_definitions(
 
 add_library(regamedll SHARED ${appversion.sh} ${GAMEDLL_SRCS} ${ENGINE_SRCS} ${SHARED_SRCS})
 set_property(TARGET regamedll PROPERTY LIBRARY_OUTPUT_NAME cs)
-add_custom_target(appversion COMMAND ${PROJECT_SOURCE_DIR}/version/appversion.sh ${PROJECT_SOURCE_DIR} regamedll)
+add_custom_target(appversion DEPENDS COMMAND "${PROJECT_SOURCE_DIR}/version/appversion.sh" "${PROJECT_SOURCE_DIR}")
 set_target_properties(regamedll PROPERTIES PREFIX "" COMPILE_FLAGS "-m32" LINK_FLAGS "-m32" POSITION_INDEPENDENT_CODE ON)
 target_link_libraries(regamedll dl aelf32)
 add_dependencies(regamedll appversion)
