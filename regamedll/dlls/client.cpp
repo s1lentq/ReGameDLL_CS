@@ -1905,7 +1905,7 @@ BOOL EXT_FUNC __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *pPlayer, int slot)
 #ifndef REGAMEDLL_ADD
 			if (fadetoblack.value)
 #else
-			if ((int)fadetoblack.value == FADETOBLACK_STAY)
+			if (fadetoblack.value == FADETOBLACK_STAY)
 #endif
 			{
 				UTIL_ScreenFade(pPlayer, Vector(0, 0, 0), 0.001, 0, 0, FFADE_IN);
