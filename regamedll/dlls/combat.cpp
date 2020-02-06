@@ -7,7 +7,7 @@ void PlayerBlind(CBasePlayer *pPlayer, entvars_t *pevInflictor, entvars_t *pevAt
 #ifndef REGAMEDLL_ADD
 	if (!fadetoblack.value)
 #else
-	if ((int)fadetoblack.value != 1)
+	if ((int)fadetoblack.value != FADETOBLACK_STAY)
 #endif
 	{
 		for (int i = 1; i <= gpGlobals->maxClients; i++)

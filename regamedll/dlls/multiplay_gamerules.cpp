@@ -2396,7 +2396,7 @@ void CHalfLifeMultiplay::Think()
 #ifndef REGAMEDLL_ADD
 			WRITE_BYTE(fadetoblack.value != 0);
 #else
-			WRITE_BYTE((int)fadetoblack.value == 1);
+			WRITE_BYTE((int)fadetoblack.value == FADETOBLACK_STAY);
 #endif
 		MESSAGE_END();
 
@@ -3463,7 +3463,7 @@ void CHalfLifeMultiplay::InitHUD(CBasePlayer *pl)
 #ifndef REGAMEDLL_ADD
 		WRITE_BYTE(fadetoblack.value != 0);
 #else
-		WRITE_BYTE((int)fadetoblack.value == 1);
+		WRITE_BYTE((int)fadetoblack.value == FADETOBLACK_STAY);
 #endif
 	MESSAGE_END();
 
@@ -3885,7 +3885,7 @@ BOOL EXT_FUNC CHalfLifeMultiplay::__API_HOOK(FPlayerCanRespawn)(CBasePlayer *pPl
 #ifndef REGAMEDLL_ADD
 					if (fadetoblack.value != 0.0f)
 #else
-					if ((int)fadetoblack.value == 1)
+					if ((int)fadetoblack.value == FADETOBLACK_STAY)
 #endif
 					{
 						UTIL_ScreenFade(pPlayer, Vector(0, 0, 0), 3, 3, 255, (FFADE_OUT | FFADE_STAYOUT));
