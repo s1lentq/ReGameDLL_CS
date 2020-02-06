@@ -2095,12 +2095,12 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 
 		break;
 	}
-	case 1:
+	case FADETOBLACK_STAY:
 	{
 		UTIL_ScreenFade(this, Vector(0, 0, 0), 3, 3, 255, (FFADE_OUT | FFADE_STAYOUT));
 		break;
 	}
-	case 2:
+	case FADETOBLACK_AT_DIYING:
 	{
 		pev->iuser1 = OBS_CHASE_FREE;
 		pev->iuser2 = ENTINDEX(edict());
