@@ -2080,7 +2080,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 		UTIL_ScreenFade(this, Vector(0, 0, 0), 3, 3, 255, (FFADE_OUT | FFADE_STAYOUT));
 	}
 #else
-	switch (fadetoblack.value)
+	switch ((int)fadetoblack.value)
 	{
 	default:
 	{
