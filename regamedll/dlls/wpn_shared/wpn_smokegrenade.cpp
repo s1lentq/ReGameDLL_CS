@@ -13,7 +13,7 @@ void CSmokeGrenade::Spawn()
 
 	m_iDefaultAmmo = SMOKEGRENADE_DEFAULT_GIVE;
 	m_flStartThrow = 0;
-	m_flReleaseThrow = -1;
+	m_flReleaseThrow = -1.0f;
 	m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
 
 	// Get ready to fall down
