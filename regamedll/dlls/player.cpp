@@ -1383,7 +1383,11 @@ void CBasePlayer::PackDeadPlayerItems()
 				ItemInfo info;
 				if (pPlayerItem->iItemSlot() < KNIFE_SLOT && !bShieldDropped)
 				{
+#ifdef REGAMEDLL_API
+					if (pPlayerItem->CSPlayerItem()->GetItemInfo(&info))
+#else
 					if (pPlayerItem->GetItemInfo(&info))
+#endif
 					{
 						if (info.iWeight > nBestWeight)
 						{

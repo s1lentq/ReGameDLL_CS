@@ -32,3 +32,9 @@ EXT_FUNC void CCSPlayerItem::SetItemInfo(ItemInfo *pInfo)
 {
 	Q_memcpy(&m_ItemInfo, pInfo, sizeof(m_ItemInfo));
 }
+
+EXT_FUNC int CCSPlayerItem::GetItemInfo(ItemInfo *pInfo)
+{
+	Q_memcpy(pInfo, &m_ItemInfo, sizeof(*pInfo));
+	return 1;
+}

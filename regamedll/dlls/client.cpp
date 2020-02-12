@@ -4783,7 +4783,12 @@ int EXT_FUNC GetWeaponData(edict_t *pEdict, struct weapon_data_s *info)
 				// Get The ID
 				ItemInfo II;
 				Q_memset(&II, 0, sizeof(II));
+
+#ifdef REGAMEDLL_API
+				pPlayerItem->CSPlayerItem()->GetItemInfo(&II);
+#else
 				weapon->GetItemInfo(&II);
+#endif
 
 				if (II.iId >= 0 && II.iId < MAX_WEAPONS)
 				{
@@ -4916,7 +4921,13 @@ void EXT_FUNC UpdateClientData(const edict_t *ent, int sendweapons, struct clien
 			Q_memset(&II, 0, sizeof(II));
 
 			CBasePlayerWeapon *weapon = (CBasePlayerWeapon *)pPlayer->m_pActiveItem->GetWeaponPtr();
-			if (weapon && weapon->UseDecrement() && weapon->GetItemInfo(&II))
+			if (weapon && weapon->UseDecrement() &&
+#ifdef REGAMEDLL_API
+				weapon->CSPlayerItem()->GetItemInfo(&II)
+#else
+				weapon->GetItemInfo(&II)
+#endif
+				)
 			{
 				cd->m_iId = II.iId;
 
