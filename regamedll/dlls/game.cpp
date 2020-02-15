@@ -233,7 +233,11 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&autoteambalance);
 	CVAR_REGISTER(&tkpunish);
 	CVAR_REGISTER(&hostagepenalty);
+
+#ifndef REGAMEDLL_FIXES
 	CVAR_REGISTER(&mirrordamage);
+#endif
+
 	CVAR_REGISTER(&logmessages);
 	CVAR_REGISTER(&forcecamera);
 	CVAR_REGISTER(&forcechasecam);
