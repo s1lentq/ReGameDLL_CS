@@ -32,6 +32,11 @@ if (gitInfo && gitInfo.tag && gitInfo.tag[0] == 'v') {
 		commitURL: gitInfo.commitURL
 	)
 } else {
+
+	if (!gitInfo) {
+		System.err.println "WARNING! couldn't get gitInfo";
+	}
+
 	versionInfo = new RegamedllVersionInfo(
 		majorVersion: project.majorVersion as int,
 		minorVersion: project.minorVersion as int,
