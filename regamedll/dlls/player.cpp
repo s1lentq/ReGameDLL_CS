@@ -7295,7 +7295,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(UpdateClientData)()
 #endif // REGAMEDLL_FIXES
 
 #ifdef REGAMEDLL_FIXES
-			if (scoreboard_showmoney.value != -1.0f)
+			if (scoreboard_showhealth.value != -1.0f)
 #endif
 			{
 				MESSAGE_BEGIN(MSG_ONE, gmsgHealthInfo, nullptr, pPlayer->edict());
@@ -7305,7 +7305,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(UpdateClientData)()
 			}
 
 #ifdef REGAMEDLL_FIXES
-			if (scoreboard_showhealth.value != -1.0f)
+			if (scoreboard_showmoney.value != -1.0f)
 #endif
 			{
 				MESSAGE_BEGIN(MSG_ONE, gmsgAccount, nullptr, pPlayer->edict());
