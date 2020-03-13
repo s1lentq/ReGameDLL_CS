@@ -8,10 +8,10 @@ int __API_HOOK(GetForceCamera)(CBasePlayer *pObserver)
 
 	if (!fadetoblack.value)
 	{
-		retVal = int(CVAR_GET_FLOAT("mp_forcechasecam"));
+		retVal = forcechasecam.value;
 
 		if (retVal == CAMERA_MODE_SPEC_ANYONE)
-			retVal = int(CVAR_GET_FLOAT("mp_forcecamera"));
+			retVal = forcecamera.value;
 	}
 	else
 		retVal = CAMERA_MODE_SPEC_ONLY_FIRST_PERSON;
