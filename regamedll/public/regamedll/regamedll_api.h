@@ -464,6 +464,10 @@ typedef IHookChainRegistryClass<bool, class CBasePlayerWeapon, int, int, float, 
 typedef IHookChainClass<void, CBasePlayer, const char *> IReGameHook_CBasePlayer_DropIdlePlayer;
 typedef IHookChainRegistryClass<void, CBasePlayer, const char *> IReGameHookRegistry_CBasePlayer_DropIdlePlayer;
 
+// SpawnWeaponBox hook
+typedef IHookChain<class CWeaponBox *, class CBasePlayerItem *, class CBasePlayer *, const char *, const Vector &, const Vector &, const Vector &, float, bool> IReGameHook_SpawnWeaponBox;
+typedef IHookChainRegistry<class CWeaponBox *, class CBasePlayerItem *, class CBasePlayer *, const char *, const Vector &, const Vector &, const Vector &, float, bool> IReGameHookRegistry_SpawnWeaponBox;
+
 class IReGameHookchains {
 public:
 	virtual ~IReGameHookchains() {}
@@ -579,6 +583,7 @@ public:
 	virtual IReGameHookRegistry_CBasePlayerWeapon_DefaultReload *CBasePlayerWeapon_DefaultReload() = 0;
 	virtual IReGameHookRegistry_CBasePlayerWeapon_DefaultShotgunReload *CBasePlayerWeapon_DefaultShotgunReload() = 0;
 	virtual IReGameHookRegistry_CBasePlayer_DropIdlePlayer *CBasePlayer_DropIdlePlayer() = 0;
+	virtual IReGameHookRegistry_SpawnWeaponBox *SpawnWeaponBox() = 0;
 };
 
 struct ReGameFuncs_t {

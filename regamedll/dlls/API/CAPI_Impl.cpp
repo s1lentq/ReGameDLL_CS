@@ -168,6 +168,8 @@ GAMEHOOK_REGISTRY(CBasePlayerWeapon_DefaultReload);
 GAMEHOOK_REGISTRY(CBasePlayerWeapon_DefaultShotgunReload);
 GAMEHOOK_REGISTRY(CBasePlayer_DropIdlePlayer);
 
+GAMEHOOK_REGISTRY(SpawnWeaponBox);
+
 int CReGameApi::GetMajorVersion() {
 	return REGAMEDLL_API_VERSION_MAJOR;
 }

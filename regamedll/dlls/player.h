@@ -887,6 +887,11 @@ public:
 #endif
 };
 
+CWeaponBox *SpawnWeaponBox(CBasePlayerItem *pItem, CBasePlayer *pPlayerOwner, const char *modelName, const Vector &origin, const Vector &angles, const Vector &velocity, float lifeTime, bool packAmmo);
+#ifdef REGAMEDLL_API
+CWeaponBox *SpawnWeaponBox_OrigFunc(CBasePlayerItem *pItem, CBasePlayer *pPlayerOwner, const char *modelName, const Vector &origin, const Vector &angles, const Vector &velocity, float lifeTime, bool packAmmo);
+#endif
+
 class CWShield: public CBaseEntity
 {
 public:
