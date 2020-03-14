@@ -567,9 +567,9 @@ typedef IHookChainRegistryClassImpl<bool, CBasePlayerWeapon, int, int, float, fl
 typedef IHookChainClassImpl<void, CBasePlayer, const char *> CReGameHook_CBasePlayer_DropIdlePlayer;
 typedef IHookChainRegistryClassImpl<void, CBasePlayer, const char *> CReGameHookRegistry_CBasePlayer_DropIdlePlayer;
 
-// SpawnWeaponBox hook
-typedef IHookChainImpl<CWeaponBox *, CBasePlayerItem *, CBasePlayer *, const char *, const Vector &, const Vector &, const Vector &, float, bool> CReGameHook_SpawnWeaponBox;
-typedef IHookChainRegistryImpl<CWeaponBox *, CBasePlayerItem *, CBasePlayer *, const char *, const Vector &, const Vector &, const Vector &, float, bool> CReGameHookRegistry_SpawnWeaponBox;
+// CreateWeaponBox hook
+typedef IHookChainImpl<CWeaponBox *, CBasePlayerItem *, CBasePlayer *, const char *, const Vector &, const Vector &, const Vector &, float, bool> CReGameHook_CreateWeaponBox;
+typedef IHookChainRegistryImpl<CWeaponBox *, CBasePlayerItem *, CBasePlayer *, const char *, const Vector &, const Vector &, const Vector &, float, bool> CReGameHookRegistry_CreateWeaponBox;
 
 class CReGameHookchains: public IReGameHookchains {
 public:
@@ -685,7 +685,7 @@ public:
 	CReGameHookRegistry_CBasePlayerWeapon_DefaultReload m_CBasePlayerWeapon_DefaultReload;
 	CReGameHookRegistry_CBasePlayerWeapon_DefaultShotgunReload m_CBasePlayerWeapon_DefaultShotgunReload;
 	CReGameHookRegistry_CBasePlayer_DropIdlePlayer m_CBasePlayer_DropIdlePlayer;
-	CReGameHookRegistry_SpawnWeaponBox m_SpawnWeaponBox;
+	CReGameHookRegistry_CreateWeaponBox m_CreateWeaponBox;
 
 public:
 	virtual IReGameHookRegistry_CBasePlayer_Spawn *CBasePlayer_Spawn();
@@ -799,7 +799,7 @@ public:
 	virtual IReGameHookRegistry_CBasePlayerWeapon_DefaultReload *CBasePlayerWeapon_DefaultReload();
 	virtual IReGameHookRegistry_CBasePlayerWeapon_DefaultShotgunReload *CBasePlayerWeapon_DefaultShotgunReload();
 	virtual IReGameHookRegistry_CBasePlayer_DropIdlePlayer *CBasePlayer_DropIdlePlayer();
-	virtual IReGameHookRegistry_SpawnWeaponBox *SpawnWeaponBox();
+	virtual IReGameHookRegistry_CreateWeaponBox *CreateWeaponBox();
 };
 
 extern CReGameHookchains g_ReGameHookchains;
