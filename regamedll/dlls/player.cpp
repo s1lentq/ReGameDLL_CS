@@ -1266,6 +1266,41 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 	return bTookDamage;
 }
 
+LINK_HOOK_CHAIN(CWeaponBox *, CreateWeaponBox, (CBasePlayerItem *pItem, CBasePlayer *pPlayerOwner, const char *modelName, const Vector &origin, const Vector &angles, const Vector &velocity, float lifeTime, bool packAmmo), pItem, pPlayerOwner, modelName, origin, angles, velocity, lifeTime, packAmmo)
+
+CWeaponBox *EXT_FUNC __API_HOOK(CreateWeaponBox)(CBasePlayerItem *pItem, CBasePlayer *pPlayerOwner, const char *modelName, const Vector &origin, const Vector &angles, const Vector &velocity, float lifeTime, bool packAmmo)
+{
+	// create a box to pack the stuff into.
+	CWeaponBox *pWeaponBox = (CWeaponBox *)CBaseEntity::Create("weaponbox", origin, angles, ENT(pPlayerOwner->pev));
+
+	if (pWeaponBox)
+	{
+		// don't let weaponbox tilt.
+		pWeaponBox->pev->angles.x = 0;
+		pWeaponBox->pev->angles.z = 0;
+		pWeaponBox->pev->velocity = velocity;
+		pWeaponBox->SetThink(&CWeaponBox::Kill);
+		pWeaponBox->pev->nextthink = gpGlobals->time + lifeTime;
+		pWeaponBox->PackWeapon(pItem); // now pack all of the items in the lists
+
+		// pack the ammo
+		bool exhaustibleAmmo = (pItem->iFlags() & ITEM_FLAG_EXHAUSTIBLE) == ITEM_FLAG_EXHAUSTIBLE;
+		if (exhaustibleAmmo || packAmmo)
+		{
+			pWeaponBox->PackAmmo(MAKE_STRING(pItem->pszAmmo1()), pPlayerOwner->m_rgAmmo[pItem->PrimaryAmmoIndex()]);
+
+			if (exhaustibleAmmo)
+			{
+				pPlayerOwner->m_rgAmmo[pItem->PrimaryAmmoIndex()] = 0;
+			}
+		}
+
+		pWeaponBox->SetModel(modelName);
+	}
+
+	return pWeaponBox;
+}
+
 void PackPlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 {
 	if (!pItem)
@@ -1274,24 +1309,14 @@ void PackPlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 	const char *modelName = GetCSModelName(pItem->m_iId);
 	if (modelName)
 	{
-		// create a box to pack the stuff into.
-		CWeaponBox *pWeaponBox = (CWeaponBox *)CBaseEntity::Create("weaponbox", pPlayer->pev->origin, pPlayer->pev->angles, ENT(pPlayer->pev));
-
-		// don't let weaponbox tilt.
-		pWeaponBox->pev->angles.x = 0;
-		pWeaponBox->pev->angles.z = 0;
-		pWeaponBox->pev->velocity = pPlayer->pev->velocity * 0.75f;
-		pWeaponBox->SetThink(&CWeaponBox::Kill);
-		pWeaponBox->pev->nextthink = gpGlobals->time + CGameRules::GetItemKillDelay();
-		pWeaponBox->PackWeapon(pItem); // now pack all of the items in the lists
-
-		// pack the ammo
-		if (packAmmo)
-		{
-			pWeaponBox->PackAmmo(MAKE_STRING(pItem->pszAmmo1()), pPlayer->m_rgAmmo[pItem->PrimaryAmmoIndex()]);
-		}
-
-		pWeaponBox->SetModel(modelName);
+		// create a box to pack the stuff into
+		CreateWeaponBox(pItem, pPlayer,
+			modelName,
+			pPlayer->pev->origin,
+			pPlayer->pev->angles,
+			pPlayer->pev->velocity * 0.75f,
+			CGameRules::GetItemKillDelay(), packAmmo
+		);
 	}
 }
 
@@ -1329,25 +1354,13 @@ void PackPlayerNade(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 		vecAngles.y += 45.0f;
 
 		// create a box to pack the stuff into.
-		CWeaponBox *pWeaponBox = (CWeaponBox *)CBaseEntity::Create("weaponbox", pPlayer->pev->origin + dir, vecAngles, ENT(pPlayer->pev));
-
-		// don't let weaponbox tilt.
-		pWeaponBox->pev->angles.x = 0;
-		pWeaponBox->pev->angles.z = 0;
-
-		pWeaponBox->pev->velocity = pPlayer->pev->velocity * 0.75f;
-
-		pWeaponBox->SetThink(&CWeaponBox::Kill);
-		pWeaponBox->pev->nextthink = gpGlobals->time + CGameRules::GetItemKillDelay();
-		pWeaponBox->PackWeapon(pItem); // now pack all of the items in the lists
-
-		// pack the ammo
-		if (packAmmo)
-		{
-			pWeaponBox->PackAmmo(MAKE_STRING(pItem->pszAmmo1()), pPlayer->m_rgAmmo[pItem->PrimaryAmmoIndex()]);
-		}
-
-		pWeaponBox->SetModel(modelName);
+		CreateWeaponBox(pItem, pPlayer,
+			modelName,
+			pPlayer->pev->origin + dir,
+			vecAngles,
+			pPlayer->pev->velocity * 0.75f,
+			CGameRules::GetItemKillDelay(),
+			packAmmo);
 	}
 }
 #endif
@@ -7838,13 +7851,12 @@ CBaseEntity *EXT_FUNC CBasePlayer::__API_HOOK(DropPlayerItem)(const char *pszIte
 			}
 		}
 
-		CWeaponBox *pWeaponBox = (CWeaponBox *)CBaseEntity::Create("weaponbox", pev->origin + gpGlobals->v_forward * 10, pev->angles, edict());
-		pWeaponBox->pev->angles.x = 0;
-		pWeaponBox->pev->angles.z = 0;
-		pWeaponBox->SetThink(&CWeaponBox::Kill);
-		pWeaponBox->pev->nextthink = gpGlobals->time + CGameRules::GetItemKillDelay();
-		pWeaponBox->PackWeapon(pWeapon);
-		pWeaponBox->pev->velocity = gpGlobals->v_forward * 300 + gpGlobals->v_forward * 100;
+		const char *modelname = GetCSModelName(pWeapon->m_iId);
+		CWeaponBox *pWeaponBox = CreateWeaponBox(pWeapon, this, modelname, pev->origin + gpGlobals->v_forward * 10, pev->angles, gpGlobals->v_forward * 300 + gpGlobals->v_forward * 100, CGameRules::GetItemKillDelay(), false);
+		if (!pWeaponBox)
+		{
+			return nullptr;
+		}
 
 		if (FClassnameIs(pWeapon->pev, "weapon_c4"))
 		{
@@ -7858,27 +7870,6 @@ CBaseEntity *EXT_FUNC CBasePlayer::__API_HOOK(DropPlayerItem)(const char *pszIte
 				TheCSBots()->SetLooseBomb(pWeaponBox);
 				TheCSBots()->OnEvent(EVENT_BOMB_DROPPED);
 			}
-		}
-
-		if (pWeapon->iFlags() & ITEM_FLAG_EXHAUSTIBLE)
-		{
-			int iAmmoIndex = GetAmmoIndex(pWeapon->pszAmmo1());
-			if (iAmmoIndex != -1)
-			{
-#ifdef REGAMEDLL_FIXES
-				// why not pack the ammo more than one?
-				pWeaponBox->PackAmmo(MAKE_STRING(pWeapon->pszAmmo1()), m_rgAmmo[iAmmoIndex]);
-#else
-				pWeaponBox->PackAmmo(MAKE_STRING(pWeapon->pszAmmo1()), m_rgAmmo[iAmmoIndex] > 0);
-#endif
-				m_rgAmmo[iAmmoIndex] = 0;
-			}
-		}
-
-		const char *modelname = GetCSModelName(pWeapon->m_iId);
-		if (modelname)
-		{
-			pWeaponBox->SetModel(modelname);
 		}
 
 		return pWeaponBox;
