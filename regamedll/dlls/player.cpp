@@ -1266,9 +1266,9 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 	return bTookDamage;
 }
 
-LINK_HOOK_CHAIN(CWeaponBox *, CreateWeaponBox, (CBasePlayerItem *pItem, CBasePlayer *pPlayerOwner, const char *modelName, const Vector &origin, const Vector &angles, const Vector &velocity, float lifeTime, bool packAmmo), pItem, pPlayerOwner, modelName, origin, angles, velocity, lifeTime, packAmmo)
+LINK_HOOK_CHAIN(CWeaponBox *, CreateWeaponBox, (CBasePlayerItem *pItem, CBasePlayer *pPlayerOwner, const char *modelName, Vector &origin, Vector &angles, Vector &velocity, float lifeTime, bool packAmmo), pItem, pPlayerOwner, modelName, origin, angles, velocity, lifeTime, packAmmo)
 
-CWeaponBox *EXT_FUNC __API_HOOK(CreateWeaponBox)(CBasePlayerItem *pItem, CBasePlayer *pPlayerOwner, const char *modelName, const Vector &origin, const Vector &angles, const Vector &velocity, float lifeTime, bool packAmmo)
+CWeaponBox *EXT_FUNC __API_HOOK(CreateWeaponBox)(CBasePlayerItem *pItem, CBasePlayer *pPlayerOwner, const char *modelName, Vector &origin, Vector &angles, Vector &velocity, float lifeTime, bool packAmmo)
 {
 	// create a box to pack the stuff into.
 	CWeaponBox *pWeaponBox = (CWeaponBox *)CBaseEntity::Create("weaponbox", origin, angles, ENT(pPlayerOwner->pev));
@@ -1309,12 +1309,16 @@ void PackPlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 	const char *modelName = GetCSModelName(pItem->m_iId);
 	if (modelName)
 	{
+		Vector vecOrigin   = pPlayer->pev->origin;
+		Vector vecAngles   = pPlayer->pev->angles;
+		Vector vecVelocity = pPlayer->pev->velocity * 0.75f;
+
 		// create a box to pack the stuff into
 		CreateWeaponBox(pItem, pPlayer,
 			modelName,
-			pPlayer->pev->origin,
-			pPlayer->pev->angles,
-			pPlayer->pev->velocity * 0.75f,
+			vecOrigin,
+			vecAngles,
+			vecVelocity,
 			CGameRules::GetItemKillDelay(), packAmmo
 		);
 	}
@@ -1353,12 +1357,15 @@ void PackPlayerNade(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 		vecAngles.x = 0.0f;
 		vecAngles.y += 45.0f;
 
+		Vector vecOrigin   = pPlayer->pev->origin + dir;
+		Vector vecVelocity = pPlayer->pev->velocity * 0.75f;
+
 		// create a box to pack the stuff into.
 		CreateWeaponBox(pItem, pPlayer,
 			modelName,
-			pPlayer->pev->origin + dir,
+			vecOrigin,
 			vecAngles,
-			pPlayer->pev->velocity * 0.75f,
+			vecVelocity,
 			CGameRules::GetItemKillDelay(),
 			packAmmo);
 	}
@@ -7852,7 +7859,19 @@ CBaseEntity *EXT_FUNC CBasePlayer::__API_HOOK(DropPlayerItem)(const char *pszIte
 		}
 
 		const char *modelname = GetCSModelName(pWeapon->m_iId);
-		CWeaponBox *pWeaponBox = CreateWeaponBox(pWeapon, this, modelname, pev->origin + gpGlobals->v_forward * 10, pev->angles, gpGlobals->v_forward * 300 + gpGlobals->v_forward * 100, CGameRules::GetItemKillDelay(), false);
+
+		Vector vecOrigin   = pev->origin + gpGlobals->v_forward * 10;
+		Vector vecAngles   = pev->angles;
+		Vector vecVelocity = gpGlobals->v_forward * 300 + gpGlobals->v_forward * 100;
+
+		CWeaponBox *pWeaponBox = CreateWeaponBox(pWeapon, this,
+			modelname,
+			vecOrigin,
+			vecAngles,
+			vecVelocity,
+			CGameRules::GetItemKillDelay(),
+			false);
+
 		if (!pWeaponBox)
 		{
 			return nullptr;

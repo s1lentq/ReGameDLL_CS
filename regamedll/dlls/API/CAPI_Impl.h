@@ -568,8 +568,8 @@ typedef IHookChainClassImpl<void, CBasePlayer, const char *> CReGameHook_CBasePl
 typedef IHookChainRegistryClassImpl<void, CBasePlayer, const char *> CReGameHookRegistry_CBasePlayer_DropIdlePlayer;
 
 // CreateWeaponBox hook
-typedef IHookChainImpl<CWeaponBox *, CBasePlayerItem *, CBasePlayer *, const char *, const Vector &, const Vector &, const Vector &, float, bool> CReGameHook_CreateWeaponBox;
-typedef IHookChainRegistryImpl<CWeaponBox *, CBasePlayerItem *, CBasePlayer *, const char *, const Vector &, const Vector &, const Vector &, float, bool> CReGameHookRegistry_CreateWeaponBox;
+typedef IHookChainImpl<CWeaponBox *, CBasePlayerItem *, CBasePlayer *, const char *, Vector &, Vector &, Vector &, float, bool> CReGameHook_CreateWeaponBox;
+typedef IHookChainRegistryImpl<CWeaponBox *, CBasePlayerItem *, CBasePlayer *, const char *, Vector &, Vector &, Vector &, float, bool> CReGameHookRegistry_CreateWeaponBox;
 
 class CReGameHookchains: public IReGameHookchains {
 public:

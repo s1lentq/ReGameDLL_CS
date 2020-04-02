@@ -887,8 +887,8 @@ public:
 #endif
 };
 
-CWeaponBox *CreateWeaponBox(CBasePlayerItem *pItem, CBasePlayer *pPlayerOwner, const char *modelName, const Vector &origin, const Vector &angles, const Vector &velocity, float lifeTime, bool packAmmo);
-CWeaponBox *CreateWeaponBox_OrigFunc(CBasePlayerItem *pItem, CBasePlayer *pPlayerOwner, const char *modelName, const Vector &origin, const Vector &angles, const Vector &velocity, float lifeTime, bool packAmmo);
+CWeaponBox *CreateWeaponBox(CBasePlayerItem *pItem, CBasePlayer *pPlayerOwner, const char *modelName, Vector &origin, Vector &angles, Vector &velocity, float lifeTime, bool packAmmo);
+CWeaponBox *CreateWeaponBox_OrigFunc(CBasePlayerItem *pItem, CBasePlayer *pPlayerOwner, const char *modelName, Vector &origin, Vector &angles, Vector &velocity, float lifeTime, bool packAmmo);
 
 class CWShield: public CBaseEntity
 {
