@@ -948,11 +948,11 @@ void CBasePlayerWeapon::ItemPostFrame()
 
 		// Can't shoot during the freeze period
 		// Always allow firing in single player
-		if ((m_pPlayer->m_bCanShoot && g_pGameRules->IsMultiplayer() && !g_pGameRules->IsFreezePeriod() && !m_pPlayer->m_bIsDefusing) || !g_pGameRules->IsMultiplayer()
+		if (
 #ifdef REGAMEDLL_API
-			|| m_pPlayer->CSPlayer()->m_bCanShootOverride
+			m_pPlayer->CSPlayer()->m_bCanShootOverride ||
 #endif
-			)
+			(m_pPlayer->m_bCanShoot && g_pGameRules->IsMultiplayer() && !g_pGameRules->IsFreezePeriod() && !m_pPlayer->m_bIsDefusing) || !g_pGameRules->IsMultiplayer())
 		{
 			PrimaryAttack();
 		}
