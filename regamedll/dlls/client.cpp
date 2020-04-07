@@ -4899,7 +4899,7 @@ void EXT_FUNC UpdateClientData(const edict_t *ent, int sendweapons, struct clien
 #ifdef REGAMEDLL_API
 			pPlayer->CSPlayer()->m_bCanShootOverride ||
 #endif
-			pPlayer->m_bCanShoot && !pPlayer->m_bIsDefusing)
+			(pPlayer->m_bCanShoot && !pPlayer->m_bIsDefusing))
 			iUser3 |= PLAYER_CAN_SHOOT;
 
 		if (g_pGameRules->IsFreezePeriod())
