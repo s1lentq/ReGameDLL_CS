@@ -537,6 +537,7 @@ void CCSPlayer::Reset()
 	m_vecOldvAngle = g_vecZero;
 	m_iWeaponInfiniteAmmo = 0;
 	m_iWeaponInfiniteIds = 0;
+	m_bCanShootOverride = false;
 }
 
 void CCSPlayer::OnSpawn()

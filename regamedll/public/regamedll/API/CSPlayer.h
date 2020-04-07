@@ -44,7 +44,8 @@ public:
 		m_flRespawnPending(0),
 		m_flSpawnProtectionEndTime(0),
 		m_iWeaponInfiniteAmmo(0),
-		m_iWeaponInfiniteIds(0)
+		m_iWeaponInfiniteIds(0),
+		m_bCanShootOverride(false)
 	{
 		m_szModel[0] = '\0';
 	}
@@ -121,6 +122,7 @@ public:
 	Vector m_vecOldvAngle;
 	int m_iWeaponInfiniteAmmo;
 	int m_iWeaponInfiniteIds;
+	bool m_bCanShootOverride;
 };
 
 // Inlines
