@@ -772,28 +772,28 @@ void UTIL_SayTextAll(const char *pText, CBaseEntity *pEntity)
 
 char *UTIL_dtos1(int d)
 {
-	static char buf[8];
+	static char buf[12];
 	Q_sprintf(buf, "%d", d);
 	return buf;
 }
 
 char *UTIL_dtos2(int d)
 {
-	static char buf[8];
+	static char buf[12];
 	Q_sprintf(buf, "%d", d);
 	return buf;
 }
 
 NOXREF char *UTIL_dtos3(int d)
 {
-	static char buf[8];
+	static char buf[12];
 	Q_sprintf(buf, "%d", d);
 	return buf;
 }
 
 NOXREF char *UTIL_dtos4(int d)
 {
-	static char buf[8];
+	static char buf[12];
 	Q_sprintf(buf, "%d", d);
 	return buf;
 }
