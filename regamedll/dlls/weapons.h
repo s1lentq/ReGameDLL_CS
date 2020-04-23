@@ -35,11 +35,12 @@ const float MAX_DIST_RELOAD_SOUND = 512.0f;
 
 #define MAX_WEAPONS                 32
 
-#define ITEM_FLAG_SELECTONEMPTY     1
-#define ITEM_FLAG_NOAUTORELOAD      2
-#define ITEM_FLAG_NOAUTOSWITCHEMPTY 4
-#define ITEM_FLAG_LIMITINWORLD      8
-#define ITEM_FLAG_EXHAUSTIBLE       16 // A player can totally exhaust their ammo supply and lose this weapon
+#define ITEM_FLAG_SELECTONEMPTY     BIT(0)
+#define ITEM_FLAG_NOAUTORELOAD      BIT(1)
+#define ITEM_FLAG_NOAUTOSWITCHEMPTY BIT(2)
+#define ITEM_FLAG_LIMITINWORLD      BIT(3)
+#define ITEM_FLAG_EXHAUSTIBLE       BIT(4) // A player can totally exhaust their ammo supply and lose this weapon
+#define ITEM_FLAG_CANTDROP          BIT(5)
 
 #define WEAPON_IS_ONTARGET          0x40
 
@@ -276,7 +277,7 @@ public:
 	virtual int AddDuplicate(CBasePlayerItem *pItem) { return FALSE; }		// return TRUE if you want your duplicate removed from world
 	virtual int GetItemInfo(ItemInfo *p) { return 0; }						// returns 0 if struct not filled out
 	virtual BOOL CanDeploy() { return TRUE; }
-	virtual BOOL CanDrop() { return TRUE; }									// returns is deploy was successful
+	virtual BOOL CanDrop();		 	              						    // returns is deploy was successful
 	virtual BOOL Deploy() { return TRUE; }
 	virtual BOOL IsWeapon() { return FALSE; }
 	virtual BOOL CanHolster() { return TRUE; }								// can this weapon be put away right now?

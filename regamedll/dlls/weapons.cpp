@@ -1079,6 +1079,18 @@ int CBasePlayerItem::AddToPlayer(CBasePlayer *pPlayer)
 	return TRUE;
 }
 
+BOOL CBasePlayerItem::CanDrop()
+{
+#ifdef REGAMEDLL_ADD
+	if (iFlags() & ITEM_FLAG_CANTDROP)
+	{
+		return FALSE;
+	}
+#endif
+
+	return TRUE;
+}
+
 void CBasePlayerItem::Drop()
 {
 	SetTouch(nullptr);
