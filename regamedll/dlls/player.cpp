@@ -7806,8 +7806,10 @@ CBaseEntity *EXT_FUNC CBasePlayer::__API_HOOK(DropPlayerItem)(const char *pszIte
 
 #ifdef REGAMEDLL_FIXES
 		// No more weapon
-		if ((pev->weapons & ~(1 << WEAPON_SUIT)) == 0) {
+		if ((pev->weapons & ~(1 << WEAPON_SUIT)) == 0) 
+		{
 			m_iHideHUD |= HIDEHUD_WEAPONS;
+			m_iFOV = DEFAULT_FOV;
 		}
 #endif
 
