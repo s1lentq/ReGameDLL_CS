@@ -834,7 +834,7 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 		CBaseEntity *pAttacker = GET_PRIVATE<CBaseEntity>(ENT(pevAttacker));
 
 		// don't take damage if victim has protection
-		if (((pAttacker && pAttacker->IsPlayer()) || (bitsDamageType & DMG_FALL))  && CSPlayer()->GetProtectionState() == CCSPlayer::ProtectionSt_Active)
+		if (((pAttacker && pAttacker->IsPlayer()) || (bitsDamageType & DMG_FALL)) && CSPlayer()->GetProtectionState() == CCSPlayer::ProtectionSt_Active)
 			return FALSE;
 	}
 #endif
