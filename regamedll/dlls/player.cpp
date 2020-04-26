@@ -1287,8 +1287,11 @@ CWeaponBox *EXT_FUNC __API_HOOK(CreateWeaponBox)(CBasePlayerItem *pItem, CBasePl
 		bool exhaustibleAmmo = (pItem->iFlags() & ITEM_FLAG_EXHAUSTIBLE) == ITEM_FLAG_EXHAUSTIBLE;
 		if (exhaustibleAmmo || packAmmo)
 		{
+#ifndef REGAMEDLL_ADD
 			pWeaponBox->PackAmmo(MAKE_STRING(pItem->pszAmmo1()), pPlayerOwner->m_rgAmmo[pItem->PrimaryAmmoIndex()]);
-
+#else
+			pWeaponBox->GiveAmmo(pPlayerOwner->m_rgAmmo[pItem->PrimaryAmmoIndex()], (char *)pItem->pszAmmo1(), pItem->iMaxAmmo1());
+#endif
 			if (exhaustibleAmmo)
 			{
 				pPlayerOwner->m_rgAmmo[pItem->PrimaryAmmoIndex()] = 0;
