@@ -1097,16 +1097,6 @@ void CBasePlayerItem::Holster(int skiplocal)
 {
 	m_pPlayer->pev->viewmodel = 0;
 	m_pPlayer->pev->weaponmodel = 0;
-
-#ifdef REGAMEDLL_FIXES
-	if (m_pPlayer->m_iFOV != DEFAULT_FOV)
-	{
-		m_pPlayer->m_iFOV = DEFAULT_FOV;
-		m_pPlayer->m_bResumeZoom = false;
-
-		m_pPlayer->ResetMaxSpeed();
-	}
-#endif
 }
 
 void CBasePlayerItem::AttachToPlayer(CBasePlayer *pPlayer)
@@ -1494,6 +1484,16 @@ void CBasePlayerWeapon::Holster(int skiplocal)
 	m_fInReload = FALSE;
 	m_pPlayer->pev->viewmodel = 0;
 	m_pPlayer->pev->weaponmodel = 0;
+
+#ifdef REGAMEDLL_FIXES
+	// if (m_pPlayer->m_iFOV != DEFAULT_FOV)
+	{
+		m_pPlayer->pev->fov = m_pPlayer->m_iFOV = m_pPlayer->m_iLastZoom = DEFAULT_FOV;
+		m_pPlayer->m_bResumeZoom = false;
+
+		m_pPlayer->ResetMaxSpeed();
+	}
+#endif
 }
 
 // called by the new item with the existing item as parameter
