@@ -1611,6 +1611,8 @@ void CBasePlayer::RemoveAllItems(BOOL removeSuit)
 
 	m_bHasNightVision = false;
 	SendItemStatus();
+
+	ResetMaxSpeed();
 #endif
 
 	// send Selected Weapon Message to our client
