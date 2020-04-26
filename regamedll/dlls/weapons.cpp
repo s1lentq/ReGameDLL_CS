@@ -1097,6 +1097,16 @@ void CBasePlayerItem::Holster(int skiplocal)
 {
 	m_pPlayer->pev->viewmodel = 0;
 	m_pPlayer->pev->weaponmodel = 0;
+
+#ifdef REGAMEDLL_FIXES
+	if (m_pPlayer->m_iFOV != DEFAULT_FOV)
+	{
+		m_pPlayer->m_iFOV = DEFAULT_FOV;
+		m_pPlayer->m_bResumeZoom = false;
+
+		m_pPlayer->ResetMaxSpeed();
+	}
+#endif
 }
 
 void CBasePlayerItem::AttachToPlayer(CBasePlayer *pPlayer)

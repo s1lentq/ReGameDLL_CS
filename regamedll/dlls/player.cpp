@@ -7816,7 +7816,6 @@ CBaseEntity *EXT_FUNC CBasePlayer::__API_HOOK(DropPlayerItem)(const char *pszIte
 		if ((pev->weapons & ~(1 << WEAPON_SUIT)) == 0) 
 		{
 			m_iHideHUD |= HIDEHUD_WEAPONS;
-			m_iFOV = DEFAULT_FOV;
 		}
 #endif
 
