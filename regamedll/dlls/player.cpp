@@ -6669,6 +6669,11 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(RemovePlayerItem)(CBasePlayerItem *pItem)
 	if (m_pActiveItem == pItem)
 	{
 		ResetAutoaim();
+
+#ifdef REGAMEDLL_FIXES
+		pItem->Holster();
+#endif
+
 		pItem->pev->nextthink = 0;
 
 		pItem->SetThink(nullptr);
