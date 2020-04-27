@@ -6673,7 +6673,13 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(RemovePlayerItem)(CBasePlayerItem *pItem)
 		ResetAutoaim();
 
 #ifdef REGAMEDLL_FIXES
-		pItem->Holster();
+		// if (m_pPlayer->m_iFOV != DEFAULT_FOV)
+		{
+			pev->fov = m_iFOV = m_iLastZoom = DEFAULT_FOV;
+			m_bResumeZoom = false;
+
+			ResetMaxSpeed();
+		}
 #endif
 
 		pItem->pev->nextthink = 0;
