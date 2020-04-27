@@ -241,11 +241,8 @@ BOOL CFuncTank::StartControl(CBasePlayer *pController)
 		m_pController->pev->weaponmodel = 0;
 
 #ifdef BUILD_LATEST_FIXES
+		// why ? already reset in CBasePlayerItem::Holster 
 		m_pController->pev->viewmodel = 0;
-#endif
-
-#ifdef REGAMEDLL_FIXES
-		m_pController->m_iFOV = DEFAULT_FOV;
 #endif
 	}
 
