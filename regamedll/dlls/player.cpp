@@ -1596,6 +1596,14 @@ void CBasePlayer::RemoveAllItems(BOOL removeSuit)
 	pev->viewmodel = 0;
 	pev->weaponmodel = 0;
 
+#ifdef REGAMEDLL_FIXES
+	// if (m_iFOV != DEFAULT_FOV)
+	{
+		pev->fov = m_iFOV = m_iLastZoom = DEFAULT_FOV;
+		m_bResumeZoom = false;
+	}
+#endif
+
 	if (removeSuit)
 		pev->weapons = 0;
 	else
@@ -6673,7 +6681,7 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(RemovePlayerItem)(CBasePlayerItem *pItem)
 		ResetAutoaim();
 
 #ifdef REGAMEDLL_FIXES
-		// if (m_pPlayer->m_iFOV != DEFAULT_FOV)
+		// if (m_iFOV != DEFAULT_FOV)
 		{
 			pev->fov = m_iFOV = m_iLastZoom = DEFAULT_FOV;
 			m_bResumeZoom = false;

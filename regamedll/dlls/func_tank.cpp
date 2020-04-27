@@ -246,7 +246,7 @@ BOOL CFuncTank::StartControl(CBasePlayer *pController)
 #endif
 
 #ifdef REGAMEDLL_FIXES
-		// if (m_pPlayer->m_iFOV != DEFAULT_FOV)
+		// if (m_pController->m_iFOV != DEFAULT_FOV)
 		{
 			m_pController->pev->fov = m_pController->m_iFOV = m_pController->m_iLastZoom = DEFAULT_FOV;
 			m_pController->m_bResumeZoom = false;
