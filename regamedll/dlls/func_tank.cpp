@@ -244,6 +244,14 @@ BOOL CFuncTank::StartControl(CBasePlayer *pController)
 		// why ? already reset in CBasePlayerItem::Holster 
 		m_pController->pev->viewmodel = 0;
 #endif
+
+#ifdef REGAMEDLL_FIXES
+		// if (m_pPlayer->m_iFOV != DEFAULT_FOV)
+		{
+			m_pController->pev->fov = m_pController->m_iFOV = m_pController->m_iLastZoom = DEFAULT_FOV;
+			m_pController->m_bResumeZoom = false;
+		}
+#endif
 	}
 
 	m_pController->m_iHideHUD |= HIDEHUD_WEAPONS;
