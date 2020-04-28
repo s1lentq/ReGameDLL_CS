@@ -783,6 +783,15 @@ bool CCSBotManager::BotAddCommand(BotProfileTeamType team, bool isFromConsole)
 		if (!profile)
 		{
 			CONSOLE_ECHO("All bot profiles at this difficulty level are in use.\n");
+
+#ifdef REGAMEDLL_FIXES
+			// decrease the bot quota
+			if (!isFromConsole)
+			{
+				CVAR_SET_FLOAT("bot_quota", cv_bot_quota.value - 1);
+			}
+#endif
+
 			return true;
 		}
 	}
