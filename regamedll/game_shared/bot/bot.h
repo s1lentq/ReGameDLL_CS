@@ -64,6 +64,10 @@ T *CreateBot(const BotProfile *profile)
 		pBot = GetClassPtr<TWrap>((T *)VARS(pentBot));
 		pBot->Initialize(profile);
 
+#ifdef REGAMEDLL_FIXES
+		pentBot->v.frags = 0;
+#endif
+
 		return pBot;
 	}
 }
