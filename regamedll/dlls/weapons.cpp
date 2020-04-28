@@ -950,7 +950,18 @@ void CBasePlayerWeapon::ItemPostFrame()
 		// Always allow firing in single player
 		if ((m_pPlayer->m_bCanShoot && g_pGameRules->IsMultiplayer() && !g_pGameRules->IsFreezePeriod() && !m_pPlayer->m_bIsDefusing) || !g_pGameRules->IsMultiplayer())
 		{
-			PrimaryAttack();
+
+#ifdef REGAMEDLL_ADD
+			if ((iFlags() & ITEM_FLAG_CANTSHOTONWATER) && m_pPlayer->pev->waterlevel == 3)
+			{
+				PlayEmptySound();
+				m_flNextPrimaryAttack = GetNextAttackDelay(0.15);
+			}
+			else
+#endif
+			{
+				PrimaryAttack();
+			}
 		}
 	}
 	else if ((m_pPlayer->pev->button & IN_RELOAD) && iMaxClip() != WEAPON_NOCLIP && !m_fInReload && m_flNextPrimaryAttack < UTIL_WeaponTimeBase())

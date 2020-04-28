@@ -41,6 +41,7 @@ const float MAX_DIST_RELOAD_SOUND = 512.0f;
 #define ITEM_FLAG_LIMITINWORLD      BIT(3)
 #define ITEM_FLAG_EXHAUSTIBLE       BIT(4) // A player can totally exhaust their ammo supply and lose this weapon
 #define ITEM_FLAG_CANTDROP          BIT(5)
+#define ITEM_FLAG_CANTSHOTONWATER   BIT(6)
 
 #define WEAPON_IS_ONTARGET          0x40
 
