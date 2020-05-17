@@ -380,7 +380,7 @@ void EXT_FUNC ClientKill(edict_t *pEntity)
 	pPlayer->m_LastHitGroup = HITGROUP_GENERIC;
 
 	// don't let them suicide for 5 seconds after suiciding
-	pPlayer->m_fNextSuicideTime = gpGlobals->time + 1.0f;
+	pPlayer->m_fNextSuicideTime = gpGlobals->time + 5.0f;
 
 	// have the player kill themself
 	pEntity->v.health = 0;
