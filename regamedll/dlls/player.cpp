@@ -6679,6 +6679,17 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(RemovePlayerItem)(CBasePlayerItem *pItem)
 	if (m_pActiveItem == pItem)
 	{
 		ResetAutoaim();
+
+#ifdef REGAMEDLL_FIXES
+		// if (m_iFOV != DEFAULT_FOV)
+		{
+			pev->fov = m_iFOV = m_iLastZoom = DEFAULT_FOV;
+			m_bResumeZoom = false;
+
+			ResetMaxSpeed();
+		}
+#endif
+
 		pItem->pev->nextthink = 0;
 
 		pItem->SetThink(nullptr);
