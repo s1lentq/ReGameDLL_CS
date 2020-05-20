@@ -9935,8 +9935,7 @@ void CBasePlayer::PlayerRespawnThink()
 	if (pev->deadflag < DEAD_DYING)
 		return;
 
-	if (forcerespawn.value > 0 &&
-		CSPlayer()->m_flRespawnPending > 0 &&
+	if (CSPlayer()->m_flRespawnPending > 0 &&
 		CSPlayer()->m_flRespawnPending <= gpGlobals->time)
 	{
 		Spawn();
