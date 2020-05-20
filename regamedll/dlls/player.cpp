@@ -1596,6 +1596,14 @@ void CBasePlayer::RemoveAllItems(BOOL removeSuit)
 	pev->viewmodel = 0;
 	pev->weaponmodel = 0;
 
+#ifdef REGAMEDLL_FIXES
+	// if (m_iFOV != DEFAULT_FOV)
+	{
+		pev->fov = m_iFOV = m_iLastZoom = DEFAULT_FOV;
+		m_bResumeZoom = false;
+	}
+#endif
+
 	if (removeSuit)
 		pev->weapons = 0;
 	else
