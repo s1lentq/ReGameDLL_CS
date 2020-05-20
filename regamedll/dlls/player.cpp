@@ -2073,7 +2073,14 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 	}
 
 	pev->modelindex = m_modelIndexPlayer;
+
+#ifdef REGAMEDLL_ADD
+	constexpr float DYING_MIN_TIME = 2.0f;
+	pev->deadflag = (CGameRules::GetDyingTime() <= DYING_MIN_TIME) ? DEAD_DEAD : DEAD_DYING;
+#else
 	pev->deadflag = DEAD_DYING;
+#endif
+
 	pev->movetype = MOVETYPE_TOSS;
 	pev->takedamage = DAMAGE_NO;
 
@@ -3667,7 +3674,7 @@ void CBasePlayer::PlayerDeathThink()
 	{
 		// if the player has been dead for one second longer than allowed by forcerespawn,
 		// forcerespawn isn't on. Send the player off to an intermission camera until they choose to respawn.
-		if (g_pGameRules->IsMultiplayer() && gpGlobals->time > m_fDeadTime + 3 && !(m_afPhysicsFlags & PFLAG_OBSERVER))
+		if (g_pGameRules->IsMultiplayer() && gpGlobals->time > m_fDeadTime + CGameRules::GetDyingTime() && !(m_afPhysicsFlags & PFLAG_OBSERVER))
 		{
 			// Send message to everybody to spawn a corpse.
 			SpawnClientSideCorpse();
