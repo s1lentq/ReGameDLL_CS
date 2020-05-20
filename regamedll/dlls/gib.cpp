@@ -1,5 +1,7 @@
 #include "precompiled.h"
 
+LINK_ENTITY_TO_CLASS(gib, CGib, CCSGib)
+
 void CGib::LimitVelocity()
 {
 	float length = pev->velocity.Length();
@@ -25,7 +27,7 @@ NOXREF void CGib::SpawnStickyGibs(entvars_t *pevVictim, Vector vecOrigin, int cG
 	{
 		CGib *pGib = GetClassPtr<CCSGib>((CGib *)nullptr);
 
-		pGib->Spawn("models/stickygib.mdl");
+		pGib->SpawnGib("models/stickygib.mdl");
 		pGib->pev->body = RANDOM_LONG(0, 2);
 
 		if (pevVictim)
@@ -74,20 +76,22 @@ NOXREF void CGib::SpawnStickyGibs(entvars_t *pevVictim, Vector vecOrigin, int cG
 	}
 }
 
-void CGib::SpawnHeadGib(entvars_t *pevVictim)
+LINK_HOOK_GLOB_CLASS_CHAIN(CGib *, CGib, SpawnHeadGib, (entvars_t *pevVictim), pevVictim)
+
+CGib *CGib::__API_HOOK(SpawnHeadGib)(entvars_t *pevVictim)
 {
 	CGib *pGib = GetClassPtr<CCSGib>((CGib *)nullptr);
 
 	if (g_Language == LANGUAGE_GERMAN)
 	{
 		// throw one head
-		pGib->Spawn("models/germangibs.mdl");
+		pGib->SpawnGib("models/germangibs.mdl");
 		pGib->pev->body = 0;
 	}
 	else
 	{
 		// throw one head
-		pGib->Spawn("models/hgibs.mdl");
+		pGib->SpawnGib("models/hgibs.mdl");
 		pGib->pev->body = 0;
 	}
 
@@ -132,9 +136,13 @@ void CGib::SpawnHeadGib(entvars_t *pevVictim)
 	}
 
 	pGib->LimitVelocity();
+
+	return pGib;
 }
 
-void CGib::SpawnRandomGibs(entvars_t *pevVictim, int cGibs, int human)
+LINK_HOOK_GLOB_CLASS_VOID_CHAIN(CGib, SpawnRandomGibs, (entvars_t *pevVictim, int cGibs, int human), pevVictim, cGibs, human)
+
+void CGib::__API_HOOK(SpawnRandomGibs)(entvars_t *pevVictim, int cGibs, int human)
 {
 	for (int cSplat = 0; cSplat < cGibs; cSplat++)
 	{
@@ -142,7 +150,7 @@ void CGib::SpawnRandomGibs(entvars_t *pevVictim, int cGibs, int human)
 
 		if (g_Language == LANGUAGE_GERMAN)
 		{
-			pGib->Spawn("models/germangibs.mdl");
+			pGib->SpawnGib("models/germangibs.mdl");
 			pGib->pev->body = RANDOM_LONG(0, GERMAN_GIB_COUNT - 1);
 		}
 		else
@@ -150,14 +158,14 @@ void CGib::SpawnRandomGibs(entvars_t *pevVictim, int cGibs, int human)
 			if (human)
 			{
 				// human pieces
-				pGib->Spawn("models/hgibs.mdl");
+				pGib->SpawnGib("models/hgibs.mdl");
 				// start at one to avoid throwing random amounts of skulls (0th gib)
 				pGib->pev->body = RANDOM_LONG(1, HUMAN_GIB_COUNT - 1);
 			}
 			else
 			{
 				// aliens
-				pGib->Spawn("models/agibs.mdl");
+				pGib->SpawnGib("models/agibs.mdl");
 				pGib->pev->body = RANDOM_LONG(0, ALIEN_GIB_COUNT - 1);
 			}
 		}
@@ -198,11 +206,14 @@ void CGib::SpawnRandomGibs(entvars_t *pevVictim, int cGibs, int human)
 			pGib->pev->solid = SOLID_BBOX;
 			UTIL_SetSize(pGib->pev, Vector(0, 0, 0), Vector(0, 0, 0));
 		}
+
 		pGib->LimitVelocity();
 	}
 }
 
-void CGib::BounceGibTouch(CBaseEntity *pOther)
+LINK_HOOK_CLASS_VOID_CHAIN(CGib, BounceGibTouch, (CBaseEntity *pOther), pOther)
+
+void CGib::__API_HOOK(BounceGibTouch)(CBaseEntity *pOther)
 {
 	if (pev->flags & FL_ONGROUND)
 	{
@@ -260,7 +271,9 @@ void CGib::StickyGibTouch(CBaseEntity *pOther)
 	pev->movetype = MOVETYPE_NONE;
 }
 
-void CGib::Spawn(const char *szGibModel)
+LINK_HOOK_CLASS_VOID_CHAIN(CGib, SpawnGib, (const char *szGibModel), szGibModel)
+
+void CGib::__API_HOOK(SpawnGib)(const char *szGibModel)
 {
 	pev->movetype = MOVETYPE_BOUNCE;
 
@@ -284,11 +297,39 @@ void CGib::Spawn(const char *szGibModel)
 	pev->nextthink = gpGlobals->time + 4.0f;
 	m_lifeTime = 25.0f;
 
-	SetThink(&CGib::WaitTillLand);
+	SetThink(&CGib::WaitGibTillLand);
 	SetTouch(&CGib::BounceGibTouch);
 
 	m_material = matNone;
 
 	// how many blood decals this gib can place (1 per bounce until none remain).
 	m_cBloodDecals = 5;
+}
+
+LINK_HOOK_CLASS_VOID_CHAIN(CGib, WaitGibTillLand, ())
+
+void CGib::__API_HOOK(WaitGibTillLand)()
+{
+	if (!IsInWorld())
+	{
+		UTIL_Remove(this);
+		return;
+	}
+
+	if (pev->velocity == g_vecZero)
+	{
+		SetThink(&CBaseEntity::SUB_StartFadeOut);
+		pev->nextthink = gpGlobals->time + m_lifeTime;
+
+#ifndef REGAMEDLL_FIXES
+		if (m_bloodColor != DONT_BLEED)
+		{
+			CSoundEnt::InsertSound(bits_SOUND_MEAT, pev->origin, 384, 25);
+		}
+#endif
+	}
+	else
+	{
+		pev->nextthink = gpGlobals->time + 0.5f;
+	}
 }

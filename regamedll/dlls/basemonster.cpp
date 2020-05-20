@@ -368,32 +368,6 @@ void CBaseMonster::Killed(entvars_t *pevAttacker, int iGib)
 	m_IdealMonsterState = MONSTERSTATE_DEAD;
 }
 
-void CGib::WaitTillLand()
-{
-	if (!IsInWorld())
-	{
-		UTIL_Remove(this);
-		return;
-	}
-
-	if (pev->velocity == g_vecZero)
-	{
-		SetThink(&CBaseEntity::SUB_StartFadeOut);
-		pev->nextthink = gpGlobals->time + m_lifeTime;
-
-#ifndef REGAMEDLL_FIXES
-		if (m_bloodColor != DONT_BLEED)
-		{
-			CSoundEnt::InsertSound(bits_SOUND_MEAT, pev->origin, 384, 25);
-		}
-#endif
-	}
-	else
-	{
-		pev->nextthink = gpGlobals->time + 0.5f;
-	}
-}
-
 BOOL CBaseMonster::TakeHealth(float flHealth, int bitsDamageType)
 {
 	if (pev->takedamage == DAMAGE_NO)

@@ -116,6 +116,8 @@ GAMEHOOK_REGISTRY(ShowVGUIMenu);
 GAMEHOOK_REGISTRY(BuyGunAmmo);
 GAMEHOOK_REGISTRY(BuyWeaponByWeaponID);
 GAMEHOOK_REGISTRY(InternalCommand);
+GAMEHOOK_REGISTRY(SpawnHeadGib);
+GAMEHOOK_REGISTRY(SpawnRandomGibs);
 
 GAMEHOOK_REGISTRY(CSGameRules_FShouldSwitchWeapon);
 GAMEHOOK_REGISTRY(CSGameRules_GetNextBestWeapon);
@@ -169,6 +171,10 @@ GAMEHOOK_REGISTRY(CBasePlayerWeapon_DefaultShotgunReload);
 GAMEHOOK_REGISTRY(CBasePlayer_DropIdlePlayer);
 
 GAMEHOOK_REGISTRY(CreateWeaponBox);
+
+GAMEHOOK_REGISTRY(CGib_SpawnGib);
+GAMEHOOK_REGISTRY(CGib_BounceGibTouch);
+GAMEHOOK_REGISTRY(CGib_WaitGibTillLand);
 
 int CReGameApi::GetMajorVersion() {
 	return REGAMEDLL_API_VERSION_MAJOR;

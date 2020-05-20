@@ -38,7 +38,7 @@
 #include <API/CSInterfaces.h>
 
 #define REGAMEDLL_API_VERSION_MAJOR 5
-#define REGAMEDLL_API_VERSION_MINOR 16
+#define REGAMEDLL_API_VERSION_MINOR 17
 
 // CBasePlayer::Spawn hook
 typedef IHookChainClass<void, class CBasePlayer> IReGameHook_CBasePlayer_Spawn;
@@ -461,12 +461,32 @@ typedef IHookChainClass<bool, class CBasePlayerWeapon, int, int, float, float, c
 typedef IHookChainRegistryClass<bool, class CBasePlayerWeapon, int, int, float, float, const char *, const char *> IReGameHookRegistry_CBasePlayerWeapon_DefaultShotgunReload;
 
 // CBasePlayer::DropIdlePlayer hook
-typedef IHookChainClass<void, CBasePlayer, const char *> IReGameHook_CBasePlayer_DropIdlePlayer;
-typedef IHookChainRegistryClass<void, CBasePlayer, const char *> IReGameHookRegistry_CBasePlayer_DropIdlePlayer;
+typedef IHookChainClass<void, class CBasePlayer, const char *> IReGameHook_CBasePlayer_DropIdlePlayer;
+typedef IHookChainRegistryClass<void, class CBasePlayer, const char *> IReGameHookRegistry_CBasePlayer_DropIdlePlayer;
 
 // CreateWeaponBox hook
 typedef IHookChain<class CWeaponBox *, class CBasePlayerItem *, class CBasePlayer *, const char *, Vector &, Vector &, Vector &, float, bool> IReGameHook_CreateWeaponBox;
 typedef IHookChainRegistry<class CWeaponBox *, class CBasePlayerItem *, class CBasePlayer *, const char *, Vector &, Vector &, Vector &, float, bool> IReGameHookRegistry_CreateWeaponBox;
+
+// SpawnHeadGib hook
+typedef IHookChain<class CGib *, entvars_t *> IReGameHook_SpawnHeadGib;
+typedef IHookChainRegistry<class CGib *, entvars_t *> IReGameHookRegistry_SpawnHeadGib;
+
+// SpawnRandomGibs hook
+typedef IHookChain<void, entvars_t *, int, int> IReGameHook_SpawnRandomGibs;
+typedef IHookChainRegistry<void, entvars_t *, int, int> IReGameHookRegistry_SpawnRandomGibs;
+
+// CGib::SpawnGib hook
+typedef IHookChainClass<void, class CGib, const char *> IReGameHook_CGib_SpawnGib;
+typedef IHookChainRegistryClass<void, class CGib, const char *> IReGameHookRegistry_CGib_SpawnGib;
+
+// CGib::BounceGibTouch hook
+typedef IHookChainClass<void, class CGib, CBaseEntity *> IReGameHook_CGib_BounceGibTouch;
+typedef IHookChainRegistryClass<void, class CGib, CBaseEntity *> IReGameHookRegistry_CGib_BounceGibTouch;
+
+// CGib::WaitGibTillLand hook
+typedef IHookChainClass<void, class CGib> IReGameHook_CGib_WaitGibTillLand;
+typedef IHookChainRegistryClass<void, class CGib> IReGameHookRegistry_CGib_WaitGibTillLand;
 
 class IReGameHookchains {
 public:
@@ -532,6 +552,8 @@ public:
 	virtual IReGameHookRegistry_BuyGunAmmo *BuyGunAmmo() = 0;
 	virtual IReGameHookRegistry_BuyWeaponByWeaponID *BuyWeaponByWeaponID() = 0;
 	virtual IReGameHookRegistry_InternalCommand *InternalCommand() = 0;
+	virtual IReGameHookRegistry_SpawnHeadGib *SpawnHeadGib() = 0;
+	virtual IReGameHookRegistry_SpawnRandomGibs *SpawnRandomGibs() = 0;
 
 	virtual IReGameHookRegistry_CSGameRules_FShouldSwitchWeapon *CSGameRules_FShouldSwitchWeapon() = 0;
 	virtual IReGameHookRegistry_CSGameRules_GetNextBestWeapon *CSGameRules_GetNextBestWeapon() = 0;
@@ -584,6 +606,10 @@ public:
 	virtual IReGameHookRegistry_CBasePlayerWeapon_DefaultShotgunReload *CBasePlayerWeapon_DefaultShotgunReload() = 0;
 	virtual IReGameHookRegistry_CBasePlayer_DropIdlePlayer *CBasePlayer_DropIdlePlayer() = 0;
 	virtual IReGameHookRegistry_CreateWeaponBox *CreateWeaponBox() = 0;
+
+	virtual IReGameHookRegistry_CGib_SpawnGib *CGib_SpawnGib() = 0;
+	virtual IReGameHookRegistry_CGib_BounceGibTouch *CGib_BounceGibTouch() = 0;
+	virtual IReGameHookRegistry_CGib_WaitGibTillLand *CGib_WaitGibTillLand() = 0;
 };
 
 struct ReGameFuncs_t {
