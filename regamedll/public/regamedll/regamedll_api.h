@@ -552,8 +552,6 @@ public:
 	virtual IReGameHookRegistry_BuyGunAmmo *BuyGunAmmo() = 0;
 	virtual IReGameHookRegistry_BuyWeaponByWeaponID *BuyWeaponByWeaponID() = 0;
 	virtual IReGameHookRegistry_InternalCommand *InternalCommand() = 0;
-	virtual IReGameHookRegistry_SpawnHeadGib *SpawnHeadGib() = 0;
-	virtual IReGameHookRegistry_SpawnRandomGibs *SpawnRandomGibs() = 0;
 
 	virtual IReGameHookRegistry_CSGameRules_FShouldSwitchWeapon *CSGameRules_FShouldSwitchWeapon() = 0;
 	virtual IReGameHookRegistry_CSGameRules_GetNextBestWeapon *CSGameRules_GetNextBestWeapon() = 0;
@@ -607,6 +605,8 @@ public:
 	virtual IReGameHookRegistry_CBasePlayer_DropIdlePlayer *CBasePlayer_DropIdlePlayer() = 0;
 	virtual IReGameHookRegistry_CreateWeaponBox *CreateWeaponBox() = 0;
 
+	virtual IReGameHookRegistry_SpawnHeadGib *SpawnHeadGib() = 0;
+	virtual IReGameHookRegistry_SpawnRandomGibs *SpawnRandomGibs() = 0;
 	virtual IReGameHookRegistry_CGib_Spawn *CGib_Spawn() = 0;
 	virtual IReGameHookRegistry_CGib_BounceGibTouch *CGib_BounceGibTouch() = 0;
 	virtual IReGameHookRegistry_CGib_WaitTillLand *CGib_WaitTillLand() = 0;

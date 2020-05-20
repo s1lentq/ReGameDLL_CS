@@ -665,8 +665,6 @@ public:
 	CReGameHookRegistry_BuyGunAmmo m_BuyGunAmmo;
 	CReGameHookRegistry_BuyWeaponByWeaponID m_BuyWeaponByWeaponID;
 	CReGameHookRegistry_InternalCommand m_InternalCommand;
-	CReGameHookRegistry_SpawnHeadGib m_SpawnHeadGib;
-	CReGameHookRegistry_SpawnRandomGibs m_SpawnRandomGibs;
 
 	CReGameHookRegistry_CSGameRules_FShouldSwitchWeapon m_CSGameRules_FShouldSwitchWeapon;
 	CReGameHookRegistry_CSGameRules_GetNextBestWeapon m_CSGameRules_GetNextBestWeapon;
@@ -721,6 +719,8 @@ public:
 	CReGameHookRegistry_CBasePlayer_DropIdlePlayer m_CBasePlayer_DropIdlePlayer;
 	CReGameHookRegistry_CreateWeaponBox m_CreateWeaponBox;
 
+	CReGameHookRegistry_SpawnHeadGib m_SpawnHeadGib;
+	CReGameHookRegistry_SpawnRandomGibs m_SpawnRandomGibs;
 	CReGameHookRegistry_CGib_Spawn m_CGib_Spawn;
 	CReGameHookRegistry_CGib_BounceGibTouch m_CGib_BounceGibTouch;
 	CReGameHookRegistry_CGib_WaitTillLand m_CGib_WaitTillLand;
@@ -785,8 +785,6 @@ public:
 	virtual IReGameHookRegistry_BuyGunAmmo *BuyGunAmmo();
 	virtual IReGameHookRegistry_BuyWeaponByWeaponID *BuyWeaponByWeaponID();
 	virtual IReGameHookRegistry_InternalCommand *InternalCommand();
-	virtual IReGameHookRegistry_SpawnHeadGib *SpawnHeadGib();
-	virtual IReGameHookRegistry_SpawnRandomGibs *SpawnRandomGibs();
 
 	virtual IReGameHookRegistry_CSGameRules_FShouldSwitchWeapon *CSGameRules_FShouldSwitchWeapon();
 	virtual IReGameHookRegistry_CSGameRules_GetNextBestWeapon *CSGameRules_GetNextBestWeapon();
@@ -841,6 +839,8 @@ public:
 	virtual IReGameHookRegistry_CBasePlayer_DropIdlePlayer *CBasePlayer_DropIdlePlayer();
 	virtual IReGameHookRegistry_CreateWeaponBox *CreateWeaponBox();
 
+	virtual IReGameHookRegistry_SpawnHeadGib *SpawnHeadGib();
+	virtual IReGameHookRegistry_SpawnRandomGibs *SpawnRandomGibs();
 	virtual IReGameHookRegistry_CGib_Spawn *CGib_Spawn();
 	virtual IReGameHookRegistry_CGib_BounceGibTouch *CGib_BounceGibTouch();
 	virtual IReGameHookRegistry_CGib_WaitTillLand *CGib_WaitTillLand();
