@@ -35,14 +35,14 @@ public:
 
 public:
 #ifdef REGAMEDLL_API
-	void SpawnGib_OrigFunc(const char *szGibModel);
+	void Spawn_OrigFunc(const char *szGibModel);
 	void EXPORT BounceGibTouch_OrigFunc(CBaseEntity *pOther);
-	void EXPORT WaitGibTillLand_OrigFunc();
+	void EXPORT WaitTillLand_OrigFunc();
 #endif
-	void SpawnGib(const char *szGibModel);
+	void Spawn(const char *szGibModel);
 	void EXPORT BounceGibTouch(CBaseEntity *pOther);
 	void EXPORT StickyGibTouch(CBaseEntity *pOther);
-	void EXPORT WaitGibTillLand();
+	void EXPORT WaitTillLand();
 	void LimitVelocity();
 
 public:

@@ -1441,7 +1441,7 @@ CGib *CGibShooter::CreateGib()
 
 	CGib *pGib = GetClassPtr<CCSGib>((CGib *)nullptr);
 
-	pGib->SpawnGib("models/hgibs.mdl");
+	pGib->Spawn("models/hgibs.mdl");
 	pGib->m_bloodColor = BLOOD_COLOR_RED;
 
 	if (pev->body <= 1)
@@ -1572,7 +1572,7 @@ CGib *CEnvShooter::CreateGib()
 {
 	CGib *pGib = GetClassPtr<CCSGib>((CGib *)nullptr);
 
-	pGib->SpawnGib(STRING(pev->model));
+	pGib->Spawn(STRING(pev->model));
 
 	int bodyPart = 0;
 

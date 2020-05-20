@@ -172,9 +172,9 @@ GAMEHOOK_REGISTRY(CBasePlayer_DropIdlePlayer);
 
 GAMEHOOK_REGISTRY(CreateWeaponBox);
 
-GAMEHOOK_REGISTRY(CGib_SpawnGib);
+GAMEHOOK_REGISTRY(CGib_Spawn);
 GAMEHOOK_REGISTRY(CGib_BounceGibTouch);
-GAMEHOOK_REGISTRY(CGib_WaitGibTillLand);
+GAMEHOOK_REGISTRY(CGib_WaitTillLand);
 
 int CReGameApi::GetMajorVersion() {
 	return REGAMEDLL_API_VERSION_MAJOR;

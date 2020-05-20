@@ -476,17 +476,17 @@ typedef IHookChainRegistry<class CGib *, entvars_t *> IReGameHookRegistry_SpawnH
 typedef IHookChain<void, entvars_t *, int, int> IReGameHook_SpawnRandomGibs;
 typedef IHookChainRegistry<void, entvars_t *, int, int> IReGameHookRegistry_SpawnRandomGibs;
 
-// CGib::SpawnGib hook
-typedef IHookChainClass<void, class CGib, const char *> IReGameHook_CGib_SpawnGib;
-typedef IHookChainRegistryClass<void, class CGib, const char *> IReGameHookRegistry_CGib_SpawnGib;
+// CGib::Spawn hook
+typedef IHookChainClass<void, class CGib, const char *> IReGameHook_CGib_Spawn;
+typedef IHookChainRegistryClass<void, class CGib, const char *> IReGameHookRegistry_CGib_Spawn;
 
 // CGib::BounceGibTouch hook
 typedef IHookChainClass<void, class CGib, CBaseEntity *> IReGameHook_CGib_BounceGibTouch;
 typedef IHookChainRegistryClass<void, class CGib, CBaseEntity *> IReGameHookRegistry_CGib_BounceGibTouch;
 
-// CGib::WaitGibTillLand hook
-typedef IHookChainClass<void, class CGib> IReGameHook_CGib_WaitGibTillLand;
-typedef IHookChainRegistryClass<void, class CGib> IReGameHookRegistry_CGib_WaitGibTillLand;
+// CGib::WaitTillLand hook
+typedef IHookChainClass<void, class CGib> IReGameHook_CGib_WaitTillLand;
+typedef IHookChainRegistryClass<void, class CGib> IReGameHookRegistry_CGib_WaitTillLand;
 
 class IReGameHookchains {
 public:
@@ -607,9 +607,9 @@ public:
 	virtual IReGameHookRegistry_CBasePlayer_DropIdlePlayer *CBasePlayer_DropIdlePlayer() = 0;
 	virtual IReGameHookRegistry_CreateWeaponBox *CreateWeaponBox() = 0;
 
-	virtual IReGameHookRegistry_CGib_SpawnGib *CGib_SpawnGib() = 0;
+	virtual IReGameHookRegistry_CGib_Spawn *CGib_Spawn() = 0;
 	virtual IReGameHookRegistry_CGib_BounceGibTouch *CGib_BounceGibTouch() = 0;
-	virtual IReGameHookRegistry_CGib_WaitGibTillLand *CGib_WaitGibTillLand() = 0;
+	virtual IReGameHookRegistry_CGib_WaitTillLand *CGib_WaitTillLand() = 0;
 };
 
 struct ReGameFuncs_t {

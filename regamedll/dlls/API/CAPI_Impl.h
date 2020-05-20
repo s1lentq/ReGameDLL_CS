@@ -591,17 +591,17 @@ typedef IHookChainRegistryImpl<class CGib *, entvars_t *> CReGameHookRegistry_Sp
 typedef IHookChainImpl<void, entvars_t *, int, int> CReGameHook_SpawnRandomGibs;
 typedef IHookChainRegistryImpl<void, entvars_t *, int, int> CReGameHookRegistry_SpawnRandomGibs;
 
-// CGib::SpawnGib hook
-typedef IHookChainClassImpl<void, class CGib, const char *> CReGameHook_CGib_SpawnGib;
-typedef IHookChainRegistryClassImpl<void, class CGib, const char *> CReGameHookRegistry_CGib_SpawnGib;
+// CGib::Spawn hook
+typedef IHookChainClassImpl<void, class CGib, const char *> CReGameHook_CGib_Spawn;
+typedef IHookChainRegistryClassImpl<void, class CGib, const char *> CReGameHookRegistry_CGib_Spawn;
 
 // CGib::BounceGibTouch hook
 typedef IHookChainClassImpl<void, class CGib, CBaseEntity *> CReGameHook_CGib_BounceGibTouch;
 typedef IHookChainRegistryClassImpl<void, class CGib, CBaseEntity *> CReGameHookRegistry_CGib_BounceGibTouch;
 
-// CGib::WaitGibTillLand hook
-typedef IHookChainClassImpl<void, class CGib> CReGameHook_CGib_WaitGibTillLand;
-typedef IHookChainRegistryClassImpl<void, class CGib> CReGameHookRegistry_CGib_WaitGibTillLand;
+// CGib::WaitTillLand hook
+typedef IHookChainClassImpl<void, class CGib> CReGameHook_CGib_WaitTillLand;
+typedef IHookChainRegistryClassImpl<void, class CGib> CReGameHookRegistry_CGib_WaitTillLand;
 
 class CReGameHookchains: public IReGameHookchains {
 public:
@@ -721,9 +721,9 @@ public:
 	CReGameHookRegistry_CBasePlayer_DropIdlePlayer m_CBasePlayer_DropIdlePlayer;
 	CReGameHookRegistry_CreateWeaponBox m_CreateWeaponBox;
 
-	CReGameHookRegistry_CGib_SpawnGib m_CGib_SpawnGib;
+	CReGameHookRegistry_CGib_Spawn m_CGib_Spawn;
 	CReGameHookRegistry_CGib_BounceGibTouch m_CGib_BounceGibTouch;
-	CReGameHookRegistry_CGib_WaitGibTillLand m_CGib_WaitGibTillLand;
+	CReGameHookRegistry_CGib_WaitTillLand m_CGib_WaitTillLand;
 
 public:
 	virtual IReGameHookRegistry_CBasePlayer_Spawn *CBasePlayer_Spawn();
@@ -841,9 +841,9 @@ public:
 	virtual IReGameHookRegistry_CBasePlayer_DropIdlePlayer *CBasePlayer_DropIdlePlayer();
 	virtual IReGameHookRegistry_CreateWeaponBox *CreateWeaponBox();
 
-	virtual IReGameHookRegistry_CGib_SpawnGib *CGib_SpawnGib();
+	virtual IReGameHookRegistry_CGib_Spawn *CGib_Spawn();
 	virtual IReGameHookRegistry_CGib_BounceGibTouch *CGib_BounceGibTouch();
-	virtual IReGameHookRegistry_CGib_WaitGibTillLand *CGib_WaitGibTillLand();
+	virtual IReGameHookRegistry_CGib_WaitTillLand *CGib_WaitTillLand();
 };
 
 extern CReGameHookchains g_ReGameHookchains;

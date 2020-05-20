@@ -27,7 +27,7 @@ NOXREF void CGib::SpawnStickyGibs(entvars_t *pevVictim, Vector vecOrigin, int cG
 	{
 		CGib *pGib = GetClassPtr<CCSGib>((CGib *)nullptr);
 
-		pGib->SpawnGib("models/stickygib.mdl");
+		pGib->Spawn("models/stickygib.mdl");
 		pGib->pev->body = RANDOM_LONG(0, 2);
 
 		if (pevVictim)
@@ -85,13 +85,13 @@ CGib *CGib::__API_HOOK(SpawnHeadGib)(entvars_t *pevVictim)
 	if (g_Language == LANGUAGE_GERMAN)
 	{
 		// throw one head
-		pGib->SpawnGib("models/germangibs.mdl");
+		pGib->Spawn("models/germangibs.mdl");
 		pGib->pev->body = 0;
 	}
 	else
 	{
 		// throw one head
-		pGib->SpawnGib("models/hgibs.mdl");
+		pGib->Spawn("models/hgibs.mdl");
 		pGib->pev->body = 0;
 	}
 
@@ -150,7 +150,7 @@ void CGib::__API_HOOK(SpawnRandomGibs)(entvars_t *pevVictim, int cGibs, int huma
 
 		if (g_Language == LANGUAGE_GERMAN)
 		{
-			pGib->SpawnGib("models/germangibs.mdl");
+			pGib->Spawn("models/germangibs.mdl");
 			pGib->pev->body = RANDOM_LONG(0, GERMAN_GIB_COUNT - 1);
 		}
 		else
@@ -158,14 +158,14 @@ void CGib::__API_HOOK(SpawnRandomGibs)(entvars_t *pevVictim, int cGibs, int huma
 			if (human)
 			{
 				// human pieces
-				pGib->SpawnGib("models/hgibs.mdl");
+				pGib->Spawn("models/hgibs.mdl");
 				// start at one to avoid throwing random amounts of skulls (0th gib)
 				pGib->pev->body = RANDOM_LONG(1, HUMAN_GIB_COUNT - 1);
 			}
 			else
 			{
 				// aliens
-				pGib->SpawnGib("models/agibs.mdl");
+				pGib->Spawn("models/agibs.mdl");
 				pGib->pev->body = RANDOM_LONG(0, ALIEN_GIB_COUNT - 1);
 			}
 		}
@@ -271,9 +271,9 @@ void CGib::StickyGibTouch(CBaseEntity *pOther)
 	pev->movetype = MOVETYPE_NONE;
 }
 
-LINK_HOOK_CLASS_VOID_CHAIN(CGib, SpawnGib, (const char *szGibModel), szGibModel)
+LINK_HOOK_CLASS_VOID_CHAIN(CGib, Spawn, (const char *szGibModel), szGibModel)
 
-void CGib::__API_HOOK(SpawnGib)(const char *szGibModel)
+void CGib::__API_HOOK(Spawn)(const char *szGibModel)
 {
 	pev->movetype = MOVETYPE_BOUNCE;
 
@@ -297,7 +297,7 @@ void CGib::__API_HOOK(SpawnGib)(const char *szGibModel)
 	pev->nextthink = gpGlobals->time + 4.0f;
 	m_lifeTime = 25.0f;
 
-	SetThink(&CGib::WaitGibTillLand);
+	SetThink(&CGib::WaitTillLand);
 	SetTouch(&CGib::BounceGibTouch);
 
 	m_material = matNone;
@@ -306,9 +306,9 @@ void CGib::__API_HOOK(SpawnGib)(const char *szGibModel)
 	m_cBloodDecals = 5;
 }
 
-LINK_HOOK_CLASS_VOID_CHAIN(CGib, WaitGibTillLand, ())
+LINK_HOOK_CLASS_VOID_CHAIN2(CGib, WaitTillLand)
 
-void CGib::__API_HOOK(WaitGibTillLand)()
+void CGib::__API_HOOK(WaitTillLand)()
 {
 	if (!IsInWorld())
 	{
