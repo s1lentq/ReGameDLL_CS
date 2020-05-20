@@ -834,7 +834,7 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 		CBaseEntity *pAttacker = GET_PRIVATE<CBaseEntity>(ENT(pevAttacker));
 
 		// don't take damage if victim has protection
-		if (((pAttacker && pAttacker->IsPlayer()) || (bitsDamageType & DMG_FALL))  && CSPlayer()->GetProtectionState() == CCSPlayer::ProtectionSt_Active)
+		if (((pAttacker && pAttacker->IsPlayer()) || (bitsDamageType & DMG_FALL)) && CSPlayer()->GetProtectionState() == CCSPlayer::ProtectionSt_Active)
 			return FALSE;
 	}
 #endif
@@ -4552,7 +4552,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 
 #ifdef REGAMEDLL_ADD
 	auto protectStateCurrent = CSPlayer()->GetProtectionState();
-	if (protectStateCurrent  == CCSPlayer::ProtectionSt_Expired || (respawn_immunity_force_unset.value &&
+	if (protectStateCurrent == CCSPlayer::ProtectionSt_Expired || (respawn_immunity_force_unset.value &&
 		(protectStateCurrent == CCSPlayer::ProtectionSt_Active && (m_afButtonPressed & IN_ACTIVE))))
 	{
 		RemoveSpawnProtection();
