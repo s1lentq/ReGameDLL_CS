@@ -3546,6 +3546,25 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 					}
 				}
 			}
+			else if (FStrEq(pcmd, "hurtme"))
+			{
+				// if (CVAR_GET_FLOAT("sv_cheats") != 1.0f) // cheat command ?
+				{
+					int iDamage = 10;
+
+					if (CMD_ARGC() > 1)
+					{
+						iDamage = Q_atof(parg1);
+
+						if (iDamage >= int(pPlayer->pev->health))
+						{
+							iDamage = int(pPlayer->pev->health);
+						}
+					}
+
+					pPlayer->TakeDamage(pPlayer->pev, pPlayer->pev, float(iDamage), DMG_GENERIC | DMG_NEVERGIB);
+				}
+			}
 #endif
 			else
 			{
