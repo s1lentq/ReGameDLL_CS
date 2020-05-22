@@ -3562,7 +3562,7 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 						}
 					}
 
-					pPlayer->TakeDamage(pPlayer->pev, pPlayer->pev, float(iDamage), DMG_GENERIC | DMG_NEVERGIB);
+					pPlayer->TakeDamage(pPlayer->pev, pPlayer->pev, float(iDamage), DMG_GENERIC | DMG_NEVERGIB | DMG_NOMODIFIER);
 				}
 			}
 #endif
