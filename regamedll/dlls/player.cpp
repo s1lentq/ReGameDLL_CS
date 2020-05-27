@@ -1596,6 +1596,14 @@ void CBasePlayer::RemoveAllItems(BOOL removeSuit)
 	pev->viewmodel = 0;
 	pev->weaponmodel = 0;
 
+#ifdef REGAMEDLL_FIXES
+	// if (m_iFOV != DEFAULT_FOV)
+	{
+		pev->fov = m_iFOV = m_iLastZoom = DEFAULT_FOV;
+		m_bResumeZoom = false;
+	}
+#endif
+
 	if (removeSuit)
 		pev->weapons = 0;
 	else
@@ -1611,6 +1619,8 @@ void CBasePlayer::RemoveAllItems(BOOL removeSuit)
 
 	m_bHasNightVision = false;
 	SendItemStatus();
+
+	ResetMaxSpeed();
 #endif
 
 	// send Selected Weapon Message to our client
@@ -6669,6 +6679,17 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(RemovePlayerItem)(CBasePlayerItem *pItem)
 	if (m_pActiveItem == pItem)
 	{
 		ResetAutoaim();
+
+#ifdef REGAMEDLL_FIXES
+		// if (m_iFOV != DEFAULT_FOV)
+		{
+			pev->fov = m_iFOV = m_iLastZoom = DEFAULT_FOV;
+			m_bResumeZoom = false;
+
+			ResetMaxSpeed();
+		}
+#endif
+
 		pItem->pev->nextthink = 0;
 
 		pItem->SetThink(nullptr);
