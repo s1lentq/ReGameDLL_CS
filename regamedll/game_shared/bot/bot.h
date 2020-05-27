@@ -52,14 +52,6 @@ T *CreateBot(const BotProfile *profile)
 	UTIL_ConstructBotNetName(netname, sizeof(netname), profile);
 	pentBot = CREATE_FAKE_CLIENT(netname);
 
-#ifdef REGAMEDLL_FIXES
-	auto name = pentBot->v.netname;
-	auto flags = pentBot->v.flags;
-	auto pContainingEntity = pentBot->v.pContainingEntity;
-
-	Q_memset(&pentBot->v, 0, sizeof(pentBot->v));
-#endif
-
 	if (FNullEnt(pentBot))
 	{
 		CONSOLE_ECHO("Unable to create bot: pfnCreateFakeClient() returned null.\n");
@@ -70,9 +62,11 @@ T *CreateBot(const BotProfile *profile)
 		T *pBot = nullptr;
 
 #ifdef REGAMEDLL_FIXES
+		auto name = pentBot->v.netname;
+		Q_memset(&pentBot->v, 0, sizeof(pentBot->v)); // Reset entvars data
 		pentBot->v.netname = name;
-		pentBot->v.flags = flags;
-		pentBot->v.pContainingEntity = pContainingEntity;
+		pentBot->v.flags = FL_FAKECLIENT | FL_CLIENT;
+		pentBot->v.pContainingEntity = pentBot;
 #endif
 
 		FREE_PRIVATE(pentBot);
