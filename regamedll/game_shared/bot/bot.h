@@ -60,6 +60,15 @@ T *CreateBot(const BotProfile *profile)
 	else
 	{
 		T *pBot = nullptr;
+
+#ifdef REGAMEDLL_FIXES
+		auto name = pentBot->v.netname;
+		Q_memset(&pentBot->v, 0, sizeof(pentBot->v)); // Reset entvars data
+		pentBot->v.netname = name;
+		pentBot->v.flags = FL_FAKECLIENT | FL_CLIENT;
+		pentBot->v.pContainingEntity = pentBot;
+#endif
+
 		FREE_PRIVATE(pentBot);
 		pBot = GetClassPtr<TWrap>((T *)VARS(pentBot));
 		pBot->Initialize(profile);
