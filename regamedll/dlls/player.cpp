@@ -9935,10 +9935,13 @@ void CBasePlayer::PlayerRespawnThink()
 	if (pev->deadflag < DEAD_DYING)
 		return;
 
-	if (forcerespawn.value > 0 &&
-		CSPlayer()->m_flRespawnPending > 0 &&
+	if (CSPlayer()->m_flRespawnPending > 0 &&
 		CSPlayer()->m_flRespawnPending <= gpGlobals->time)
 	{
+		// Pending respawn caused by game doesn't respawn with disabled CVar
+		if (CSPlayer()->m_bGameForcingRespawn && !forcerespawn.value)
+			return;
+
 		Spawn();
 		pev->button = 0;
 		pev->nextthink = -1;
