@@ -34,11 +34,10 @@ public:
 	virtual int ObjectCaps() { return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | FCAP_DONT_SAVE; }
 
 public:
-#ifdef REGAMEDLL_API
 	void Spawn_OrigFunc(const char *szGibModel);
-	void EXPORT BounceGibTouch_OrigFunc(CBaseEntity *pOther);
-	void EXPORT WaitTillLand_OrigFunc();
-#endif
+	void BounceGibTouch_OrigFunc(CBaseEntity *pOther);
+	void WaitTillLand_OrigFunc();
+	
 	void Spawn(const char *szGibModel);
 	void EXPORT BounceGibTouch(CBaseEntity *pOther);
 	void EXPORT StickyGibTouch(CBaseEntity *pOther);
@@ -46,10 +45,9 @@ public:
 	void LimitVelocity();
 
 public:
-#ifdef REGAMEDLL_API
 	static CGib *SpawnHeadGib_OrigFunc(entvars_t *pevVictim);
 	static void SpawnRandomGibs_OrigFunc(entvars_t *pevVictim, int cGibs, int human);
-#endif
+	
 	static CGib *SpawnHeadGib(entvars_t *pevVictim);
 	static void SpawnRandomGibs(entvars_t *pevVictim, int cGibs, int human);
 	static void SpawnStickyGibs(entvars_t *pevVictim, Vector vecOrigin, int cGibs);
