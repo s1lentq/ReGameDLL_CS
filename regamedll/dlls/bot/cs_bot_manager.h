@@ -268,3 +268,19 @@ inline bool AreBotsAllowed()
 }
 
 void PrintAllEntities();
+
+
+#define MAX_RANDOM_SPAWNS          64
+#define MIN_AREA_SIZE              64.0f
+
+
+extern Vector randomLocations[MAX_RANDOM_SPAWNS];
+extern int randomLocationsCount;
+
+inline bool IsFreeSpace(Vector vecOrigin, int iHullNumber, edict_t *pSkipEnt = nullptr)
+{
+	TraceResult trace;
+	UTIL_TraceHull(vecOrigin, vecOrigin, dont_ignore_monsters, iHullNumber, pSkipEnt, &trace);
+
+	return (!trace.fStartSolid && !trace.fAllSolid && trace.fInOpen);
+}

@@ -36,6 +36,9 @@ bool CCSBotManager::m_isLearningMap = false;
 bool CCSBotManager::m_isAnalysisRequested = false;
 NavEditCmdType CCSBotManager::m_editCmd = EDIT_NONE;
 
+Vector randomLocations[MAX_RANDOM_SPAWNS];
+int randomLocationsCount = 0;
+
 CCSBotManager::CCSBotManager()
 {
 	m_flNextCVarCheck = 0.0f;
@@ -1084,6 +1087,74 @@ private:
 	CCSBotManager::Zone *m_zone;
 };
 
+
+void GetDMSpawnPositions()
+{
+	for (NavAreaList::iterator iter = TheNavAreaList.begin(); iter != TheNavAreaList.end(); iter++)
+	{
+		if (randomLocationsCount >= MAX_RANDOM_SPAWNS)
+			break;
+
+		CNavArea *area = *iter;
+
+		if (!area)
+			continue;
+
+		// without attributes
+		/* if (area->GetAttributes())
+		continue; */
+
+		if (UTIL_PointContents(*area->GetCenter()) != CONTENTS_EMPTY)
+			continue;
+
+		if (area->GetSizeX() > MIN_AREA_SIZE && area->GetSizeY() > MIN_AREA_SIZE)
+		{
+			// check that we can path from the nav area to a ct spawner to confirm it isn't orphaned.
+			CBaseEntity *CTSpawn = UTIL_FindEntityByClassname(NULL, "info_player_start");
+
+			if (CTSpawn)
+			{
+				CNavArea *CTSpawnArea = TheNavAreaGrid.GetNearestNavArea(&CTSpawn->pev->origin);
+
+				ShortestPathCost cost;
+				bool bNotOrphaned = NavAreaBuildPath(area, CTSpawnArea, NULL, cost);
+
+				if (!bNotOrphaned)
+				{
+					// double check that we can path from the nav area to a t spawner to confirm it isn't orphaned.
+					CBaseEntity *TSpawn = UTIL_FindEntityByClassname(NULL, "info_player_deathmatch");
+					if (TSpawn)
+					{
+						CNavArea *TSpawnArea = TheNavAreaGrid.GetNearestNavArea(&TSpawn->pev->origin);
+						ShortestPathCost cost2;
+						bNotOrphaned = NavAreaBuildPath(area, TSpawnArea, NULL, cost2);
+
+						if (!bNotOrphaned)
+						{
+							continue;
+						}
+					}
+				}
+			}
+
+			Vector vecOrigin = *area->GetCenter() + Vector(0, 0, HalfHumanHeight + 5);
+
+			if (IsFreeSpace(vecOrigin, human_hull))
+			{
+				randomLocations[randomLocationsCount++] = vecOrigin;
+				//CONSOLE_ECHO("Add spawn. at x:%f y:%f z:%f\n", vecOrigin.x, vecOrigin.y, vecOrigin.z);
+			}
+			/* else
+			{
+			CONSOLE_ECHO("Invalid spawn. at x:%f y:%f z:%f\n", vecOrigin.x, vecOrigin.y, vecOrigin.z);
+			} */
+		}
+	}
+
+	CONSOLE_ECHO("Tatal spawns added %i.\n", randomLocationsCount);
+}
+
+
 // Search the map entities to determine the game scenario and define important zones.
 void CCSBotManager::ValidateMapData()
 {
@@ -1099,6 +1170,13 @@ void CCSBotManager::ValidateMapData()
 	}
 
 	CONSOLE_ECHO("Navigation map loaded.\n");
+
+#ifdef REGAMEDLL_ADD
+	randomLocationsCount = 0;
+	Q_memset(randomLocations, 0, MAX_RANDOM_SPAWNS);
+
+	GetDMSpawnPositions();
+#endif
 
 	m_zoneCount = 0;
 	m_gameScenario = SCENARIO_DEATHMATCH;
