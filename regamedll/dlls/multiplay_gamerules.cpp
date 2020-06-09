@@ -167,7 +167,7 @@ bool CCStrikeGameMgrHelper::GetCanHearPlayer(CBasePlayer* pListener, CBasePlayer
 
 	int listener = pListener->entindex() - 1;
 	int sender = pSender->entindex() - 1;
-	return m_iCanHearMasks[listener][sender] == TRUE;
+	return m_iCanHearMasks[listener][sender] != FALSE;
 }
 #endif
 
@@ -3586,6 +3586,14 @@ LINK_HOOK_CLASS_CUSTOM_CHAIN(float, CHalfLifeMultiplay, CSGameRules, FlPlayerFal
 
 float EXT_FUNC CHalfLifeMultiplay::__API_HOOK(FlPlayerFallDamage)(CBasePlayer *pPlayer)
 {
+
+#ifdef REGAMEDLL_ADD	
+	if (!falldamage.value)
+	{
+		return 0.0f;
+	}
+#endif
+
 	pPlayer->m_flFallVelocity -= MAX_PLAYER_SAFE_FALL_SPEED;
 	return pPlayer->m_flFallVelocity * DAMAGE_FOR_FALL_SPEED * 1.25;
 }

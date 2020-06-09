@@ -365,7 +365,11 @@ BOOL CKnife::Swing(BOOL fFirst)
 		if (pEntity)	// -V595
 #endif
 		{
+#ifdef REGAMEDLL_FIXES
+			if (pEntity->Classify() != CLASS_NONE && pEntity->Classify() != CLASS_MACHINE && pEntity->Classify() != CLASS_VEHICLE)
+#else
 			if (pEntity->Classify() != CLASS_NONE && pEntity->Classify() != CLASS_MACHINE)
+#endif
 			{
 				// play thwack or smack sound
 				switch (RANDOM_LONG(0, 3))
@@ -531,7 +535,11 @@ BOOL CKnife::Stab(BOOL fFirst)
 		if (pEntity)	// -V595
 #endif
 		{
+#ifdef REGAMEDLL_FIXES
+			if (pEntity->Classify() != CLASS_NONE && pEntity->Classify() != CLASS_MACHINE && pEntity->Classify() != CLASS_VEHICLE)
+#else
 			if (pEntity->Classify() != CLASS_NONE && pEntity->Classify() != CLASS_MACHINE)
+#endif
 			{
 				EMIT_SOUND(m_pPlayer->edict(), CHAN_WEAPON, "weapons/knife_stab.wav", VOL_NORM, ATTN_NORM);
 				m_pPlayer->m_iWeaponVolume = KNIFE_BODYHIT_VOLUME;

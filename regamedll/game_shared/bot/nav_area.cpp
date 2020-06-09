@@ -3806,7 +3806,7 @@ void EditNavAreas(NavEditCmdType cmd)
 			{
 				lastSelectedArea = area;
 
-				char buffer[80];
+				char buffer[190];
 				char attrib[80];
 				char locName[80];
 
@@ -3829,14 +3829,14 @@ void EditNavAreas(NavEditCmdType cmd)
 				}
 				else
 				{
-					Q_sprintf(attrib, "%s%s%s%s",
+					Q_snprintf(attrib, sizeof(attrib), "%s%s%s%s",
 						(area->GetAttributes() & NAV_CROUCH)  ? "CROUCH "  : "",
 						(area->GetAttributes() & NAV_JUMP)    ? "JUMP "    : "",
 						(area->GetAttributes() & NAV_PRECISE) ? "PRECISE " : "",
 						(area->GetAttributes() & NAV_NO_JUMP) ? "NO_JUMP " : "");
 				}
 
-				Q_sprintf(buffer, "Area #%d %s %s\n", area->GetID(), locName, attrib);
+				Q_snprintf(buffer, sizeof(buffer), "Area #%d %s %s\n", area->GetID(), locName, attrib);
 				UTIL_SayTextAll(buffer, pLocalPlayer);
 
 				// do "place painting"
@@ -4018,8 +4018,8 @@ void EditNavAreas(NavEditCmdType cmd)
 							connected += markedArea->GetAdjacentCount(EAST);
 							connected += markedArea->GetAdjacentCount(WEST);
 
-							char buffer[80];
-							Q_sprintf(buffer, "Marked Area is connected to %d other Areas\n", connected);
+							char buffer[190];
+							Q_snprintf(buffer, sizeof(buffer), "Marked Area is connected to %d other Areas\n", connected);
 							UTIL_SayTextAll(buffer, pLocalPlayer);
 						}
 						break;
@@ -4065,8 +4065,8 @@ void EditNavAreas(NavEditCmdType cmd)
 									}
 								}
 
-								char buffer[80];
-								Q_sprintf(buffer, "Marked Area is connected to %d other Areas - there are %d total unnamed areas\n", connected, totalUnnamedAreas);
+								char buffer[190];
+								Q_snprintf(buffer, sizeof(buffer), "Marked Area is connected to %d other Areas - there are %d total unnamed areas\n", connected, totalUnnamedAreas);
 								UTIL_SayTextAll(buffer, pLocalPlayer);
 							}
 						}

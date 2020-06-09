@@ -38,7 +38,7 @@ const int MAX_SENTENCE_DPV_RESET = 27;		// Max number of dynamic pitch volumes
 const float MAX_ANNOUNCE_MINS    = 2.25f;
 const float MIN_ANNOUNCE_MINS    = 0.25f;
 
-enum LowFreqOsc : int
+enum
 {
 	LFO_OFF = 0,
 	LFO_SQUARE,		// Square
@@ -75,7 +75,7 @@ typedef struct dynpitchvol
 	int fadeout;		// Volume fade out time 0 - 100
 
 	// Low Frequency Oscillator
-	LowFreqOsc lfotype;	// 0) off 1) square 2) triangle 3) random
+	int lfotype;		// 0) off 1) square 2) triangle 3) random
 	int lforate;		// 0 - 1000, how fast lfo osciallates
 
 	int lfomodpitch;	// 0-100 mod of current pitch. 0 is off.

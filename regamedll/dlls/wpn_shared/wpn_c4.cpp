@@ -303,7 +303,11 @@ void CC4::WeaponIdle()
 			return;
 		}
 
+#ifdef REGAMEDLL_FIXES
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20.0f;
+#else
 		SendWeaponAnim(C4_DRAW, UseDecrement() != FALSE);
+#endif
 		SendWeaponAnim(C4_IDLE1, UseDecrement() != FALSE);
 	}
 }

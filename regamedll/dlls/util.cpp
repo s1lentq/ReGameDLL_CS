@@ -772,28 +772,28 @@ void UTIL_SayTextAll(const char *pText, CBaseEntity *pEntity)
 
 char *UTIL_dtos1(int d)
 {
-	static char buf[8];
+	static char buf[12];
 	Q_sprintf(buf, "%d", d);
 	return buf;
 }
 
 char *UTIL_dtos2(int d)
 {
-	static char buf[8];
+	static char buf[12];
 	Q_sprintf(buf, "%d", d);
 	return buf;
 }
 
 NOXREF char *UTIL_dtos3(int d)
 {
-	static char buf[8];
+	static char buf[12];
 	Q_sprintf(buf, "%d", d);
 	return buf;
 }
 
 NOXREF char *UTIL_dtos4(int d)
 {
-	static char buf[8];
+	static char buf[12];
 	Q_sprintf(buf, "%d", d);
 	return buf;
 }
@@ -1568,7 +1568,11 @@ char UTIL_TextureHit(TraceResult *ptr, Vector vecSrc, Vector vecEnd)
 	char szbuffer[64];
 	CBaseEntity *pEntity = CBaseEntity::Instance(ptr->pHit);
 
+#ifdef REGAMEDLL_FIXES
+	if (pEntity && pEntity->Classify() != CLASS_NONE && pEntity->Classify() != CLASS_MACHINE && pEntity->Classify() != CLASS_VEHICLE)
+#else
 	if (pEntity && pEntity->Classify() != CLASS_NONE && pEntity->Classify() != CLASS_MACHINE)
+#endif
 		return CHAR_TEX_FLESH;
 
 	vecSrc.CopyToArray(rgfl1);

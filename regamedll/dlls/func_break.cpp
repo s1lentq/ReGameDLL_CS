@@ -157,6 +157,22 @@ void CBreakable::Restart()
 	{
 		pev->flags |= FL_WORLDBRUSH;
 	}
+
+#ifdef REGAMEDLL_FIXES
+	if (m_iszSpawnObject)
+	{
+		CBaseEntity *pEntity = nullptr;
+
+		while ((pEntity = UTIL_FindEntityByClassname(pEntity, STRING(m_iszSpawnObject))))
+		{
+			if (!FNullEnt(pEntity->pev->owner) && FClassnameIs(pEntity->pev->owner, "func_breakable"))
+			{
+				pEntity->SetThink(&CBaseEntity::SUB_Remove);
+				pEntity->pev->nextthink = gpGlobals->time + 0.1f;
+			}
+		}
+	}
+#endif
 }
 
 void CBreakable::KeyValue(KeyValueData *pkvd)
@@ -381,7 +397,7 @@ void CBreakable::DamageSound()
 	int pitch;
 	float fvol;
 	char *rgpsz[6];
-	int i;
+	int i = 0;
 	int material = m_Material;
 
 	if (RANDOM_LONG(0, 2))
@@ -821,12 +837,9 @@ void CBreakable::Die()
 		auto pItem = CBaseEntity::Create((char *)STRING(m_iszSpawnObject), VecBModelOrigin(pev), pev->angles, edict());
 
 #ifdef REGAMEDLL_FIXES
-		// FIX: entity leak!
 		if (pItem)
 		{
 			pItem->pev->spawnflags |= SF_NORESPAWN;
-			pItem->SetThink(&CBaseEntity::SUB_Remove);
-			pItem->pev->nextthink = gpGlobals->time + CGameRules::GetItemKillDelay();
 		}
 #endif
 

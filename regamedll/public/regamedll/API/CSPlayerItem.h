@@ -38,6 +38,7 @@ public:
 	}
 
 	virtual void SetItemInfo(ItemInfo *pInfo);
+	virtual int GetItemInfo(ItemInfo *pInfo);
 
 	CBasePlayerItem *BasePlayerItem() const;
 

@@ -168,6 +168,14 @@ GAMEHOOK_REGISTRY(CBasePlayerWeapon_DefaultReload);
 GAMEHOOK_REGISTRY(CBasePlayerWeapon_DefaultShotgunReload);
 GAMEHOOK_REGISTRY(CBasePlayer_DropIdlePlayer);
 
+GAMEHOOK_REGISTRY(CreateWeaponBox);
+
+GAMEHOOK_REGISTRY(SpawnHeadGib);
+GAMEHOOK_REGISTRY(SpawnRandomGibs);
+GAMEHOOK_REGISTRY(CGib_Spawn);
+GAMEHOOK_REGISTRY(CGib_BounceGibTouch);
+GAMEHOOK_REGISTRY(CGib_WaitTillLand);
+
 int CReGameApi::GetMajorVersion() {
 	return REGAMEDLL_API_VERSION_MAJOR;
 }

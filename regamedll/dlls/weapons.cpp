@@ -948,7 +948,11 @@ void CBasePlayerWeapon::ItemPostFrame()
 
 		// Can't shoot during the freeze period
 		// Always allow firing in single player
-		if ((m_pPlayer->m_bCanShoot && g_pGameRules->IsMultiplayer() && !g_pGameRules->IsFreezePeriod() && !m_pPlayer->m_bIsDefusing) || !g_pGameRules->IsMultiplayer())
+		if (
+#ifdef REGAMEDLL_API
+			m_pPlayer->CSPlayer()->m_bCanShootOverride ||
+#endif
+			(m_pPlayer->m_bCanShoot && g_pGameRules->IsMultiplayer() && !g_pGameRules->IsFreezePeriod() && !m_pPlayer->m_bIsDefusing) || !g_pGameRules->IsMultiplayer())
 		{
 			PrimaryAttack();
 		}
@@ -1310,8 +1314,13 @@ BOOL EXT_FUNC CBasePlayerWeapon::__API_HOOK(DefaultDeploy)(char *szViewModel, ch
 		return FALSE;
 
 	m_pPlayer->TabulateAmmo();
+#ifdef REGAMEDLL_API
+	m_pPlayer->pev->viewmodel = ALLOC_STRING(szViewModel);
+	m_pPlayer->pev->weaponmodel = ALLOC_STRING(szWeaponModel);
+#else
 	m_pPlayer->pev->viewmodel = MAKE_STRING(szViewModel);
 	m_pPlayer->pev->weaponmodel = MAKE_STRING(szWeaponModel);
+#endif
 	model_name = m_pPlayer->pev->viewmodel;
 	Q_strcpy(m_pPlayer->m_szAnimExtention, szAnimExt);
 	SendWeaponAnim(iAnim, skiplocal);

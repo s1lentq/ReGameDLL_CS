@@ -379,7 +379,7 @@ void EXT_FUNC ClientKill(edict_t *pEntity)
 
 	pPlayer->m_LastHitGroup = HITGROUP_GENERIC;
 
-	// don't let them suicide for 5 seconds after suiciding
+	// don't let them suicide for 1 second after suiciding
 	pPlayer->m_fNextSuicideTime = gpGlobals->time + 1.0f;
 
 	// have the player kill themself
@@ -570,7 +570,7 @@ void ProcessKickVote(CBasePlayer *pVotingPlayer, CBasePlayer *pKickPlayer)
 		UTIL_ClientPrintAll(HUD_PRINTCENTER, "#Game_kicked", STRING(pKickPlayer->pev->netname));
 
 #ifndef REGAMEDLL_FIXES
-		SERVER_COMMAND(UTIL_VarArgs("kick # %d\n", iVoteID));
+		SERVER_COMMAND(UTIL_VarArgs("kick #%d\n", iVoteID));
 #endif
 		pTempEntity = nullptr;
 
@@ -3209,7 +3209,7 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 	{
 		if (pPlayer->pev->deadflag != DEAD_NO && pPlayer->m_autoBuyString[0] != '\0')
 			return;
-		
+
 		pPlayer->ClearAutoBuyData();
 
 		for (int i = 1; i < CMD_ARGC_(); i++)
@@ -3229,7 +3229,7 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 	{
 		if (pPlayer->pev->deadflag != DEAD_NO && pPlayer->m_rebuyString)
 			return;
-		
+
 		if (CMD_ARGC_() == 2)
 		{
 			pPlayer->InitRebuyData(parg1);
@@ -4783,7 +4783,12 @@ int EXT_FUNC GetWeaponData(edict_t *pEdict, struct weapon_data_s *info)
 				// Get The ID
 				ItemInfo II;
 				Q_memset(&II, 0, sizeof(II));
+
+#ifdef REGAMEDLL_API
+				pPlayerItem->CSPlayerItem()->GetItemInfo(&II);
+#else
 				weapon->GetItemInfo(&II);
+#endif
 
 				if (II.iId >= 0 && II.iId < MAX_WEAPONS)
 				{
@@ -4889,7 +4894,12 @@ void EXT_FUNC UpdateClientData(const edict_t *ent, int sendweapons, struct clien
 		cd->m_flNextAttack = pPlayer->m_flNextAttack;
 
 		int iUser3 = 0;
-		if (pPlayer->m_bCanShoot && !pPlayer->m_bIsDefusing)
+
+		if (
+#ifdef REGAMEDLL_API
+			pPlayer->CSPlayer()->m_bCanShootOverride ||
+#endif
+			(pPlayer->m_bCanShoot && !pPlayer->m_bIsDefusing))
 			iUser3 |= PLAYER_CAN_SHOOT;
 
 		if (g_pGameRules->IsFreezePeriod())
@@ -4916,7 +4926,13 @@ void EXT_FUNC UpdateClientData(const edict_t *ent, int sendweapons, struct clien
 			Q_memset(&II, 0, sizeof(II));
 
 			CBasePlayerWeapon *weapon = (CBasePlayerWeapon *)pPlayer->m_pActiveItem->GetWeaponPtr();
-			if (weapon && weapon->UseDecrement() && weapon->GetItemInfo(&II))
+			if (weapon && weapon->UseDecrement() &&
+#ifdef REGAMEDLL_API
+				weapon->CSPlayerItem()->GetItemInfo(&II)
+#else
+				weapon->GetItemInfo(&II)
+#endif
+				)
 			{
 				cd->m_iId = II.iId;
 

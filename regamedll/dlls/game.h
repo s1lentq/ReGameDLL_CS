@@ -158,6 +158,7 @@ extern cvar_t item_staytime;
 extern cvar_t legacy_bombtarget_touch;
 extern cvar_t respawn_immunitytime;
 extern cvar_t respawn_immunity_effects;
+extern cvar_t respawn_immunity_force_unset;
 extern cvar_t kill_filled_spawn;
 extern cvar_t afk_bomb_drop_time;
 extern cvar_t buy_anywhere;
@@ -172,6 +173,7 @@ extern cvar_t ff_damage_reduction_grenade_self;
 extern cvar_t ff_damage_reduction_other;
 extern cvar_t radio_timeout;
 extern cvar_t radio_maxinround;
+extern cvar_t falldamage;
 
 extern cvar_t ct_default_grenades;
 extern cvar_t ct_default_weapons_melee;
@@ -186,5 +188,6 @@ extern cvar_t t_default_weapons_primary;
 
 extern cvar_t scoreboard_showmoney;
 extern cvar_t scoreboard_showhealth;
+extern cvar_t scoreboard_showdefkit;
 
 void GameDLLInit();

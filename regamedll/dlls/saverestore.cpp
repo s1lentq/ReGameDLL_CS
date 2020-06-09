@@ -282,8 +282,8 @@ extern "C"
 {
 	inline unsigned _rotr(unsigned val, int shift)
 	{
-		register unsigned lobit;
-		register unsigned num = val;
+		unsigned lobit;
+		unsigned num = val;
 
 		shift &= 0x1f;
 

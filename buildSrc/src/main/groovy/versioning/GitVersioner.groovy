@@ -60,7 +60,23 @@ class GitVersioner {
 	static boolean getUncommittedChanges(Repository repo) {
 		Git git = new Git(repo);
 		Status status = git.status().setIgnoreSubmodules(SubmoduleWalk.IgnoreSubmoduleMode.ALL).call();
-		if (!status.getUncommittedChanges().isEmpty()) {
+		Set<String> uncommittedChanges = status.getUncommittedChanges();
+		System.err.println ' UncommittedChanges: ' + uncommittedChanges
+
+		if (!uncommittedChanges.isEmpty()) {
+			System.err.println 'getUncommittedChanges details'
+			System.err.println '  Added: ' + status.getAdded()
+			System.err.println '  Changed: ' + status.getChanged()
+			System.err.println '  Removed: ' + status.getRemoved()
+			System.err.println '  Missing: ' + status.getMissing()
+			System.err.println '  Modified: ' + status.getModified()
+			System.err.println '  Conflicting: ' + status.getConflicting()
+
+			System.err.println '  ConflictingStageState: ' + status.getConflictingStageState()
+			System.err.println '  IgnoredNotInIndex: ' + status.getIgnoredNotInIndex()
+			System.err.println '  Untracked: ' + status.getUntracked()
+			System.err.println '  UntrackedFolders: ' + status.getUntrackedFolders()
+
 			return true;
 		}
 
