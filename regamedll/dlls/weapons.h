@@ -1130,10 +1130,15 @@ public:
 };
 
 
-const float KNIFE_BODYHIT_VOLUME   = 128.0f;
-const float KNIFE_WALLHIT_VOLUME   = 512.0f;
-const float KNIFE_MAX_SPEED        = 250.0f;
-const float KNIFE_MAX_SPEED_SHIELD = 180.0f;
+const float KNIFE_BODYHIT_VOLUME    = 128.0f;
+const float KNIFE_WALLHIT_VOLUME    = 512.0f;
+const float KNIFE_MAX_SPEED         = 250.0f;
+const float KNIFE_MAX_SPEED_SHIELD  = 180.0f;
+const float KNIFE_STAB_DAMAGE       = 65.0f;
+const float KNIFE_SWING_DAMAGE      = 15.0f;
+const float KNIFE_SWING_DAMAGE_FAST = 20.0f;
+const float KNIFE_STAB_DISTANCE     = 32.0f;
+const float KNIFE_SWING_DISTANCE    = 48.0f;
 
 enum knife_e
 {
@@ -1194,9 +1199,17 @@ public:
 	void SetPlayerShieldAnim();
 	void ResetPlayerShieldAnim();
 
-public:
+private:
 	TraceResult m_trHit;
 	unsigned short m_usKnife;
+
+	// Extra RegameDLL features
+	float m_flStabBaseDamage;
+	float m_flSwingBaseDamage;
+	float m_flSwingBaseDamage_Fast;
+
+	float m_flStabDistance;
+	float m_flSwingDistance;
 };
 
 
