@@ -1512,7 +1512,16 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 			token = strtok(NULL, s);
 		}
 
-		// TODO: Also add this for grenades
+		token = strtok(ct_default_grenades.string, s); // Getting grenades list for CT
+		while (token != NULL) {
+			ItemID const iItemID = GetItemIdByName(token); // TODO: GetWeaponInfo
+
+			if (iItemID != ITEM_NONE && !HasRestrictItem(iItemID, ITEM_TYPE_EQUIPPED) && IsGrenadeWeapon(iItemID)) {
+				GiveNamedItemEx(token); // TODO: GetWeaponInfo
+			}
+
+			token = strtok(NULL, s);
+		}
 #else
 		if (!HasRestrictItem(ITEM_KNIFE, ITEM_TYPE_EQUIPPED)) {
 			GiveNamedItem("weapon_knife");
@@ -1564,7 +1573,16 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 			token = strtok(NULL, s);
 		}
 
-		// TODO: Also add this for grenades
+		token = strtok(t_default_grenades.string, s); // Getting grenades list for CT
+		while (token != NULL) {
+			ItemID const iItemID = GetItemIdByName(token); // TODO: GetWeaponInfo
+
+			if (iItemID != ITEM_NONE && !HasRestrictItem(iItemID, ITEM_TYPE_EQUIPPED) && IsGrenadeWeapon(iItemID)) {
+				GiveNamedItemEx(token); // TODO: GetWeaponInfo
+			}
+
+			token = strtok(NULL, s);
+		}
 #else
 		if (!HasRestrictItem(ITEM_KNIFE, ITEM_TYPE_EQUIPPED)) {
 			GiveNamedItem("weapon_knife");
