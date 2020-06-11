@@ -1482,15 +1482,17 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 		GiveNamedItemEx("weapon_knife");
 	}
 
+	const int iAmountOfBPAmmo = m_bIsVIP ? 1 : 2;
+
 	const char s[2] = " ";
 	char* token;
 
 	token = strtok(m_iTeam == CT ? ct_default_weapons_secondary.string : t_default_weapons_secondary.string, s);
 	while (token != NULL) {
-		ItemID const iItemID = GetItemIdByName(token); // TODO: GetWeaponInfo
+		ItemID const iItemID = GetItemIdByName(token);
 
 		if (iItemID != ITEM_NONE && !HasRestrictItem(iItemID, ITEM_TYPE_EQUIPPED) && IsSecondaryWeapon(iItemID)) {
-			GiveWeapon(m_bIsVIP ? 12 : 24, token); // TODO: GetWeaponInfo
+			GiveWeapon(GetWeaponInfo(iItemID)->gunClipSize * iAmountOfBPAmmo, token);
 		}
 
 		token = strtok(NULL, s);
@@ -1498,21 +1500,21 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 
 	token = strtok(m_iTeam == CT ? ct_default_weapons_primary.string : t_default_weapons_primary.string, s);
 	while (token != NULL) {
-		ItemID const iItemID = GetItemIdByName(token); // TODO: GetWeaponInfo
+		ItemID const iItemID = GetItemIdByName(token);
 
 		if (iItemID != ITEM_NONE && !HasRestrictItem(iItemID, ITEM_TYPE_EQUIPPED) && IsPrimaryWeapon(iItemID)) {
-			GiveNamedItemEx(token); // TODO: GetWeaponInfo
+			GiveWeapon(GetWeaponInfo(iItemID)->gunClipSize * iAmountOfBPAmmo, token);
 		}
 
 		token = strtok(NULL, s);
 	}
 
-	token = strtok(m_iTeam == CT ? ct_default_grenades.string : t_default_grenades.string, s); // Getting grenades list for CT
+	token = strtok(m_iTeam == CT ? ct_default_grenades.string : t_default_grenades.string, s);
 	while (token != NULL) {
-		ItemID const iItemID = GetItemIdByName(token); // TODO: GetWeaponInfo
+		ItemID const iItemID = GetItemIdByName(token);
 
 		if (iItemID != ITEM_NONE && !HasRestrictItem(iItemID, ITEM_TYPE_EQUIPPED) && IsGrenadeWeapon(iItemID)) {
-			GiveNamedItemEx(token); // TODO: GetWeaponInfo
+			GiveNamedItemEx(token);
 		}
 
 		token = strtok(NULL, s);
