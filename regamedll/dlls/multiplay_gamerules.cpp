@@ -28,6 +28,8 @@ RewardAccount CHalfLifeMultiplay::m_rgRewardAccountRules_default[] = {
 	REWARD_TOOK_HOSTAGE,                    // RR_TOOK_HOSTAGE
 };
 
+int lastSpawn[MAX_CLIENTS];
+
 bool IsBotSpeaking()
 {
 	for (int i = 1; i <= gpGlobals->maxClients; i++)
@@ -428,6 +430,7 @@ CHalfLifeMultiplay::CHalfLifeMultiplay()
 	}
 
 	Q_memset(m_iMapVotes, 0, sizeof(m_iMapVotes));
+	Q_memset(lastSpawn, 0, MAX_CLIENTS);
 
 	m_iLastPick = 1;
 	m_bMapHasEscapeZone = false;
@@ -4235,6 +4238,61 @@ int CHalfLifeMultiplay::DeadPlayerAmmo(CBasePlayer *pPlayer)
 	return GR_PLR_DROP_AMMO_ACTIVE;
 }
 
+#ifdef REGAMEDLL_ADD
+inline bool PlayersInRadius(CBasePlayer *pPlayer, Vector vecOrigin)
+{
+	CBaseEntity *pEntity = nullptr;
+	const float flRadius = randomSpawnsCount * 4;
+
+	while ((pEntity = UTIL_FindEntityInSphere(pEntity, vecOrigin, flRadius)))
+	{
+		if (pEntity != pPlayer && pEntity->IsPlayer() && pEntity->IsAlive())
+			return true;
+	}
+
+	return false;
+}
+
+bool RandomSpawn(CBasePlayer *pPlayer)
+{
+	if (!pPlayer || randomSpawnsCount <= 0 || TheNavAreaList.empty())
+	{
+		return false;
+	}
+
+	const float flRadius = randomSpawnsCount * 6;
+	const int MAX_ATTEMPTS = 10;
+
+	int last = lastSpawn[pPlayer->entindex() - 1];
+
+	for (int attempts = 0; attempts < MAX_ATTEMPTS; attempts++)
+	{
+		int which = RANDOM_LONG(0, randomSpawnsCount - 1);
+
+		if (last != which && (g_randomSpawns[last].vecOrigin - g_randomSpawns[which].vecOrigin).Length() > flRadius
+			&& IsFreeSpace(g_randomSpawns[which].vecOrigin, human_hull, pPlayer->edict()) && !PlayersInRadius(pPlayer, g_randomSpawns[which].vecOrigin))
+		{
+			UTIL_SetOrigin(pPlayer->pev, g_randomSpawns[which].vecOrigin);
+
+			pPlayer->pev->v_angle = g_vecZero;
+			pPlayer->pev->velocity = g_vecZero;
+			pPlayer->pev->angles = g_randomSpawns[which].vecAngle;
+			pPlayer->pev->punchangle = g_vecZero;
+			pPlayer->pev->fixangle = 1;
+
+			lastSpawn[pPlayer->entindex() - 1] = which;
+
+			// CONSOLE_ECHO("Area %i | Angle %0.1f\n", g_randomSpawns[which].cur_area->GetID(), pPlayer->pev->angles.y);
+
+			return true;
+		}
+	}
+
+	return false;
+}
+
+#endif // REGAMEDLL_ADD
+
 LINK_HOOK_CLASS_CUSTOM_CHAIN(edict_t *, CHalfLifeMultiplay, CSGameRules, GetPlayerSpawnSpot, (CBasePlayer *pPlayer), pPlayer)
 
 edict_t *EXT_FUNC CHalfLifeMultiplay::__API_HOOK(GetPlayerSpawnSpot)(CBasePlayer *pPlayer)
@@ -4248,6 +4306,12 @@ edict_t *EXT_FUNC CHalfLifeMultiplay::__API_HOOK(GetPlayerSpawnSpot)(CBasePlayer
 		{
 			FireTargets(STRING(pentSpawnSpot->v.target), pPlayer, pPlayer, USE_TOGGLE, 0);
 		}
+#ifdef REGAMEDLL_ADD
+		if (randomspawn.value && pPlayer->pev->deadflag == DEAD_NO && RandomSpawn(pPlayer))
+		{
+			return pPlayer->edict();
+		}
+#endif
 	}
 
 	return pentSpawnSpot;

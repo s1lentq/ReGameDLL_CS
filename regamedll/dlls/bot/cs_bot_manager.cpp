@@ -36,6 +36,10 @@ bool CCSBotManager::m_isLearningMap = false;
 bool CCSBotManager::m_isAnalysisRequested = false;
 NavEditCmdType CCSBotManager::m_editCmd = EDIT_NONE;
 
+int randomSpawnsCount = 0;
+RandomSpawnStruct g_randomSpawns[MAX_RANDOM_SPAWNS];
+
+
 CCSBotManager::CCSBotManager()
 {
 	m_flNextCVarCheck = 0.0f;
@@ -1096,6 +1100,122 @@ private:
 	CCSBotManager::Zone *m_zone;
 };
 
+inline bool IsValidArea(CNavArea *area)
+{
+	ShortestPathCost cost;
+	bool bNotOrphaned;
+
+	// check that we can path from the nav area to a ct spawner to confirm it isn't orphaned.
+	CBaseEntity *CTSpawn = UTIL_FindEntityByClassname(nullptr, "info_player_start");
+
+	if (CTSpawn)
+	{
+		CNavArea *CTSpawnArea = TheNavAreaGrid.GetNearestNavArea(&CTSpawn->pev->origin);
+		bNotOrphaned = NavAreaBuildPath(area, CTSpawnArea, nullptr, cost);
+
+		if (bNotOrphaned)
+			return true;
+	}
+
+	// double check that we can path from the nav area to a t spawner to confirm it isn't orphaned.
+	CBaseEntity *TSpawn = UTIL_FindEntityByClassname(nullptr, "info_player_deathmatch");
+
+	if (TSpawn)
+	{
+		CNavArea *TSpawnArea = TheNavAreaGrid.GetNearestNavArea(&TSpawn->pev->origin);
+		bNotOrphaned = NavAreaBuildPath(area, TSpawnArea, nullptr, cost);
+
+		if (bNotOrphaned)
+			return true;
+	}
+
+	return false;
+}
+
+void GetDMSpawnPositions()
+{
+	const float MIN_AREA_SIZE = 64.0f;
+	const float ANGLE_STEP = 45.0f;
+
+	randomSpawnsCount = 0;
+	Q_memset(g_randomSpawns, 0, MAX_RANDOM_SPAWNS);
+
+	for (NavAreaList::iterator iter = TheNavAreaList.begin(); iter != TheNavAreaList.end(); iter++)
+	{
+		if (randomSpawnsCount >= MAX_RANDOM_SPAWNS)
+			break;
+
+		CNavArea *area = *iter;
+
+		if (!area)
+			continue;
+
+		// without attributes
+		/* 
+		if (area->GetAttributes())
+			continue;
+		*/
+
+		if (UTIL_PointContents(*area->GetCenter()) != CONTENTS_EMPTY)
+			continue;
+
+		if (area->GetSizeX() < MIN_AREA_SIZE || area->GetSizeY() < MIN_AREA_SIZE)
+			continue;
+
+		if (!IsValidArea(area))
+			continue;
+
+		Vector vecOrigin = *area->GetCenter() + Vector(0, 0, HalfHumanHeight + 5);
+
+		if (IsFreeSpace(vecOrigin, human_hull))
+		{
+			Vector vecTempAngle;
+			float bestvecAngle;
+			float bestDistance = 0.0f;
+			
+			// CONSOLE_ECHO("==============================\n");
+			
+			for (float AngleYaw = 0.0f; AngleYaw <= 360.0f; AngleYaw += ANGLE_STEP)
+			{
+				TraceResult tr;
+
+				vecTempAngle.y = AngleYaw;
+				UTIL_MakeVectors(vecTempAngle);
+
+				Vector vecEnd(vecOrigin + vecTempAngle + gpGlobals->v_forward * 8192);
+				UTIL_TraceLine(vecOrigin, vecEnd, ignore_monsters, nullptr, &tr);
+
+				if ((vecOrigin - tr.vecEndPos).Length() > bestDistance)
+				{
+					bestDistance = (vecOrigin - tr.vecEndPos).Length();
+					bestvecAngle = vecTempAngle.y;
+				}
+
+				// CONSOLE_ECHO("Current: %0.f | Distance: %0.2f \n", vecTempAngle.y, (vecOrigin - tr.vecEndPos).Length());
+			}
+
+			if (bestDistance < 100.0f)
+			{
+				continue;
+			}
+
+			{
+				vecTempAngle.y = bestvecAngle;
+				g_randomSpawns[randomSpawnsCount].vecAngle = vecTempAngle;
+				// CONSOLE_ECHO("Area %i | Best angle %0.2f | Distance: %0.2f\n", area->GetID(), bestvecAngle, bestDistance);
+			}
+
+			g_randomSpawns[randomSpawnsCount].vecOrigin = vecOrigin;
+			g_randomSpawns[randomSpawnsCount].area = area;
+			randomSpawnsCount++;
+			// CONSOLE_ECHO("Add spawn. at x:%f y:%f z:%f\n", vecOrigin.x, vecOrigin.y, vecOrigin.z);
+		}
+	}
+
+	CONSOLE_ECHO("Tatal random spawns: %i.\n", randomSpawnsCount);
+}
+
+
 // Search the map entities to determine the game scenario and define important zones.
 void CCSBotManager::ValidateMapData()
 {
@@ -1111,6 +1231,10 @@ void CCSBotManager::ValidateMapData()
 	}
 
 	CONSOLE_ECHO("Navigation map loaded.\n");
+
+#ifdef REGAMEDLL_ADD
+	GetDMSpawnPositions();
+#endif
 
 	m_zoneCount = 0;
 	m_gameScenario = SCENARIO_DEATHMATCH;
