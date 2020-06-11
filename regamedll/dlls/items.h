@@ -175,3 +175,4 @@ public:
 
 ItemID GetItemIdByName(const char *pszName);
 ItemID GetItemIdByArmoury(ArmouryItemPack armoury);
+ItemID GetItemIdByWeaponId(int weaponId);
