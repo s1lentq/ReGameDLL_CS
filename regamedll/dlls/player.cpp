@@ -1490,9 +1490,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 		while (token != NULL) {
 			ItemID const iItemID = GetItemIdByName(token); // TODO: GetWeaponInfo
 
-			if (iItemID != ITEM_NONE && !HasRestrictItem(iItemID, ITEM_TYPE_EQUIPPED)
-				&& (iItemID == ITEM_KNIFE)
-				) {
+			if (iItemID == ITEM_KNIFE && !HasRestrictItem(iItemID, ITEM_TYPE_EQUIPPED)) {
 				GiveNamedItemEx(token); // TODO: GetWeaponInfo
 			}
 
@@ -1503,11 +1501,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 		while (token != NULL) {
 			ItemID const iItemID = GetItemIdByName(token); // TODO: GetWeaponInfo
 
-			if (iItemID != ITEM_NONE && !HasRestrictItem(iItemID, ITEM_TYPE_EQUIPPED)
-				&& (iItemID == ITEM_P228 || iItemID == ITEM_DEAGLE || iItemID == ITEM_ELITE || iItemID == ITEM_FIVESEVEN
-					|| iItemID == ITEM_GLOCK || iItemID == ITEM_GLOCK18 || iItemID == ITEM_USP
-					)
-				) {
+			if (iItemID != ITEM_NONE && !HasRestrictItem(iItemID, ITEM_TYPE_EQUIPPED) && IsSecondaryWeapon(iItemID)) {
 				GiveWeapon(m_bIsVIP ? 12 : 24, token); // TODO: GetWeaponInfo
 			}
 
@@ -1518,14 +1512,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 		while (token != NULL) {
 			ItemID const iItemID = GetItemIdByName(token); // TODO: GetWeaponInfo
 
-			if (iItemID != ITEM_NONE && !HasRestrictItem(iItemID, ITEM_TYPE_EQUIPPED)
-				&& (iItemID == ITEM_AK47 || iItemID == ITEM_AUG || iItemID == ITEM_AWP || iItemID == ITEM_FAMAS
-					|| iItemID == ITEM_G3SG1 || iItemID == ITEM_GALIL || iItemID == ITEM_M249 || iItemID == ITEM_M3
-					|| iItemID == ITEM_M4A1 || iItemID == ITEM_MAC10 || iItemID == ITEM_MP5N || iItemID == ITEM_P90
-					|| iItemID == ITEM_SCOUT || iItemID == ITEM_SG550 || iItemID == ITEM_SG552 || iItemID == ITEM_UMP45
-					|| iItemID == ITEM_XM1014
-					)
-				) {
+			if (iItemID != ITEM_NONE && !HasRestrictItem(iItemID, ITEM_TYPE_EQUIPPED) && IsPrimaryWeapon(iItemID)) {
 				GiveNamedItemEx(token); // TODO: GetWeaponInfo
 			}
 
