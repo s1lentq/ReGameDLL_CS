@@ -1484,11 +1484,17 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 
 	const int iAmountOfBPAmmo = m_bIsVIP ? 1 : 2;
 
-	const char s[2] = " ";
+	char* buffer;
 	char* token;
 
-	token = strtok(m_iTeam == CT ? ct_default_weapons_secondary.string : t_default_weapons_secondary.string, s);
-	while (token != NULL) {
+	buffer = m_iTeam == CT ? ct_default_weapons_secondary.string : t_default_weapons_secondary.string;
+	while (true) {
+		buffer = SharedParse(buffer);
+		token = SharedGetToken();
+
+		if (Q_strlen(token) <= 0)
+			break;
+
 		WeaponInfoStruct* weaponInfo = GetWeaponInfo(token);
 		if (weaponInfo) {
 			ItemID const iItemID = GetItemIdByWeaponId(weaponInfo->id);
@@ -1496,12 +1502,16 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 				GiveWeapon(weaponInfo->gunClipSize * iAmountOfBPAmmo, token);
 			}
 		}
-
-		token = strtok(NULL, s);
 	}
 
-	token = strtok(m_iTeam == CT ? ct_default_weapons_primary.string : t_default_weapons_primary.string, s);
-	while (token != NULL) {
+	buffer = m_iTeam == CT ? ct_default_weapons_primary.string : t_default_weapons_primary.string;
+	while (buffer != nullptr) {
+		buffer = SharedParse(buffer);
+		token = SharedGetToken();
+
+		if (Q_strlen(token) <= 0)
+			break;
+
 		WeaponInfoStruct* weaponInfo = GetWeaponInfo(token);
 		if (weaponInfo) {
 			ItemID const iItemID = GetItemIdByWeaponId(weaponInfo->id);
@@ -1509,12 +1519,16 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 				GiveWeapon(weaponInfo->gunClipSize * iAmountOfBPAmmo, token);
 			}
 		}
-
-		token = strtok(NULL, s);
 	}
 
-	token = strtok(m_iTeam == CT ? ct_default_grenades.string : t_default_grenades.string, s);
-	while (token != NULL) {
+	buffer = m_iTeam == CT ? ct_default_grenades.string : t_default_grenades.string;
+	while (buffer != nullptr) {
+		buffer = SharedParse(buffer);
+		token = SharedGetToken();
+
+		if (Q_strlen(token) <= 0)
+			break;
+
 		WeaponInfoStruct* weaponInfo = GetWeaponInfo(token);
 		if (weaponInfo) {
 			ItemID const iItemID = GetItemIdByWeaponId(weaponInfo->id);
@@ -1522,8 +1536,6 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 				GiveNamedItemEx(token);
 			}
 		}
-
-		token = strtok(NULL, s);
 	}
 #else
 	switch (m_iTeam)
