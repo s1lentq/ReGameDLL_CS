@@ -1465,94 +1465,129 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 {
 	RemoveAllItems(FALSE);
 
-// NOTE: It is already does reset inside RemoveAllItems
+	// NOTE: It is already does reset inside RemoveAllItems
 #ifndef REGAMEDLL_FIXES
 	m_bHasPrimary = false;
 #endif
 
 #ifdef REGAMEDLL_ADD
-	auto GiveWeapon = [&](int ammo, char *pszWeaponName) {
-		auto pItem = static_cast<CBasePlayerItem *>(GiveNamedItemEx(pszWeaponName));
+	auto GiveWeapon = [&](int ammo, const char* pszWeaponName) {
+		auto pItem = static_cast<CBasePlayerItem*>(GiveNamedItemEx(pszWeaponName));
 		if (pItem) {
 			GiveAmmo(refill_bpammo_weapons.value != 0.0f ? pItem->iMaxAmmo1() : ammo, pItem->pszAmmo1(), pItem->iMaxAmmo1());
 		}
 	};
 
-	if (m_iTeam == CT ? ct_give_player_knife.value : t_default_weapons_secondary.string && !HasRestrictItem(ITEM_KNIFE, ITEM_TYPE_EQUIPPED)) {
+	bool bGiveKnife = false;
+	if (m_iTeam == CT)
+		bGiveKnife = ct_give_player_knife.value != 0;
+	else if (m_iTeam == TERRORIST)
+		bGiveKnife = t_default_weapons_secondary.value != 0;
+
+	if (bGiveKnife && !HasRestrictItem(ITEM_KNIFE, ITEM_TYPE_EQUIPPED)) {
 		GiveNamedItemEx("weapon_knife");
 	}
 
-	const int iAmountOfBPAmmo = m_bIsVIP ? 1 : 2;
+	const int iAmountOfBPAmmo = m_bIsVIP ? 1 : 2; // Give regular the player backpack ammo twice more than to VIP the player
 
-	char* buffer;
-	char* token;
-	const char cut_weapon[] = "weapon_";
+	// Give default secondary equipment
+	{
+		char* secondaryString = NULL;
+		if (m_iTeam == CT)
+			secondaryString = ct_default_weapons_secondary.string;
+		else if (m_iTeam == TERRORIST)
+			secondaryString = t_default_weapons_secondary.string;
 
-	buffer = m_iTeam == CT ? ct_default_weapons_secondary.string : t_default_weapons_secondary.string;
-	while (true) {
-		buffer = SharedParse(buffer);
-		token = SharedGetToken();
+		if (secondaryString && secondaryString[0] != '\0')
+		{
+			secondaryString = SharedParse(secondaryString);
 
-		if (Q_strlen(token) <= 0)
-			break;
+			while (secondaryString)
+			{
+				WeaponInfoStruct* weaponInfo;
+				WeaponIdType weaponId = AliasToWeaponID(SharedGetToken());
+				if (weaponId != WEAPON_NONE)
+					weaponInfo = GetWeaponInfo(weaponId);
+				else
+					weaponInfo = GetWeaponInfo(SharedGetToken());
 
-		bool hasPrefix = Q_strncmp(token, cut_weapon, sizeof(cut_weapon) - 1) == 0;
-		if (!hasPrefix) {
-			Q_snprintf(token, sizeof(token), "%s%s", cut_weapon, token);
-		}
+				if (weaponInfo) {
+					const auto iItemID = GetItemIdByWeaponId(weaponInfo->id);
+					if (iItemID != ITEM_NONE && !HasRestrictItem(iItemID, ITEM_TYPE_EQUIPPED) && IsSecondaryWeapon(iItemID)) {
+						GiveWeapon(weaponInfo->gunClipSize * iAmountOfBPAmmo, weaponInfo->entityName);
+					}
+				}
 
-		WeaponInfoStruct* weaponInfo = GetWeaponInfo(token);
-		if (weaponInfo) {
-			ItemID const iItemID = GetItemIdByWeaponId(weaponInfo->id);
-			if (iItemID != ITEM_NONE && !HasRestrictItem(iItemID, ITEM_TYPE_EQUIPPED) && IsSecondaryWeapon(iItemID)) {
-				GiveWeapon(weaponInfo->gunClipSize * iAmountOfBPAmmo, token);
+				secondaryString = SharedParse(secondaryString);
 			}
 		}
 	}
 
-	buffer = m_iTeam == CT ? ct_default_weapons_primary.string : t_default_weapons_primary.string;
-	while (buffer != nullptr) {
-		buffer = SharedParse(buffer);
-		token = SharedGetToken();
+	// Give default primary equipment
+	{
+		char* primaryString = NULL;
 
-		if (Q_strlen(token) <= 0)
-			break;
+		if (m_iTeam == CT)
+			primaryString = ct_default_weapons_primary.string;
+		else if (m_iTeam == TERRORIST)
+			primaryString = t_default_weapons_primary.string;
 
-		bool hasPrefix = Q_strncmp(token, cut_weapon, sizeof(cut_weapon) - 1) == 0;
-		if (!hasPrefix) {
-			Q_snprintf(token, sizeof(token), "%s%s", cut_weapon, token);
-		}
+		if (primaryString && primaryString[0] != '\0')
+		{
+			primaryString = SharedParse(primaryString);
 
-		WeaponInfoStruct* weaponInfo = GetWeaponInfo(token);
-		if (weaponInfo) {
-			ItemID const iItemID = GetItemIdByWeaponId(weaponInfo->id);
-			if (iItemID != ITEM_NONE && !HasRestrictItem(iItemID, ITEM_TYPE_EQUIPPED) && IsPrimaryWeapon(iItemID)) {
-				GiveWeapon(weaponInfo->gunClipSize * iAmountOfBPAmmo, token);
+			while (primaryString)
+			{
+				WeaponInfoStruct* weaponInfo;
+				WeaponIdType weaponId = AliasToWeaponID(SharedGetToken());
+				if (weaponId != WEAPON_NONE)
+					weaponInfo = GetWeaponInfo(weaponId);
+				else
+					weaponInfo = GetWeaponInfo(SharedGetToken());
+
+				if (weaponInfo) {
+					const auto iItemID = GetItemIdByWeaponId(weaponInfo->id);
+					if (iItemID != ITEM_NONE && !HasRestrictItem(iItemID, ITEM_TYPE_EQUIPPED) && IsPrimaryWeapon(iItemID)) {
+						GiveWeapon(weaponInfo->gunClipSize * iAmountOfBPAmmo, weaponInfo->entityName);
+					}
+				}
+
+				primaryString = SharedParse(primaryString);
 			}
 		}
 	}
 
-	buffer = m_iTeam == CT ? ct_default_grenades.string : t_default_grenades.string;
-	while (buffer != nullptr) {
-		buffer = SharedParse(buffer);
-		token = SharedGetToken();
+	// Give the player grenades if he needs them
+	char* grenadeString = NULL;
+	if (m_iTeam == CT)
+		grenadeString = ct_default_grenades.string;
+	else if (m_iTeam == TERRORIST)
+		grenadeString = t_default_grenades.string;
 
-		if (Q_strlen(token) <= 0)
-			break;
+	if (grenadeString && grenadeString[0] != '\0')
+	{
+		grenadeString = SharedParse(grenadeString);
 
-		bool hasPrefix = Q_strncmp(token, cut_weapon, sizeof(cut_weapon) - 1) == 0;
-		if (!hasPrefix) {
-			Q_snprintf(token, sizeof(token), "%s%s", cut_weapon, token);
-		}
+		while (grenadeString)
+		{
+			WeaponInfoStruct* weaponInfo;
+			WeaponIdType weaponId = AliasToWeaponID(SharedGetToken());
+			if (weaponId != WEAPON_NONE)
+				weaponInfo = GetWeaponInfo(weaponId);
+			else
+				weaponInfo = GetWeaponInfo(SharedGetToken());
 
-		WeaponInfoStruct* weaponInfo = GetWeaponInfo(token);
-		if (weaponInfo) {
-			ItemID const iItemID = GetItemIdByWeaponId(weaponInfo->id);
-			if (iItemID != ITEM_NONE && !HasRestrictItem(iItemID, ITEM_TYPE_EQUIPPED) && IsGrenadeWeapon(iItemID)) {
-				GiveNamedItemEx(token);
+			if (weaponInfo) {
+				const auto iItemID = GetItemIdByWeaponId(weaponInfo->id);
+				if (iItemID != ITEM_NONE && !HasRestrictItem(iItemID, ITEM_TYPE_EQUIPPED) && IsGrenadeWeapon(iItemID)) {
+					GiveNamedItemEx(weaponInfo->entityName);
+				}
 			}
+
+			grenadeString = SharedParse(grenadeString);
 		}
 	}
+
 #else
 	switch (m_iTeam)
 	{
