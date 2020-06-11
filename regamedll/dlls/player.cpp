@@ -1486,6 +1486,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 
 	char* buffer;
 	char* token;
+	const char cut_weapon[] = "weapon_";
 
 	buffer = m_iTeam == CT ? ct_default_weapons_secondary.string : t_default_weapons_secondary.string;
 	while (true) {
@@ -1494,6 +1495,11 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 
 		if (Q_strlen(token) <= 0)
 			break;
+
+		bool hasPrefix = Q_strncmp(token, cut_weapon, sizeof(cut_weapon) - 1) == 0;
+		if (!hasPrefix) {
+			Q_snprintf(token, sizeof(token), "%s%s", cut_weapon, token);
+		}
 
 		WeaponInfoStruct* weaponInfo = GetWeaponInfo(token);
 		if (weaponInfo) {
@@ -1512,6 +1518,11 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 		if (Q_strlen(token) <= 0)
 			break;
 
+		bool hasPrefix = Q_strncmp(token, cut_weapon, sizeof(cut_weapon) - 1) == 0;
+		if (!hasPrefix) {
+			Q_snprintf(token, sizeof(token), "%s%s", cut_weapon, token);
+		}
+
 		WeaponInfoStruct* weaponInfo = GetWeaponInfo(token);
 		if (weaponInfo) {
 			ItemID const iItemID = GetItemIdByWeaponId(weaponInfo->id);
@@ -1528,6 +1539,11 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 
 		if (Q_strlen(token) <= 0)
 			break;
+
+		bool hasPrefix = Q_strncmp(token, cut_weapon, sizeof(cut_weapon) - 1) == 0;
+		if (!hasPrefix) {
+			Q_snprintf(token, sizeof(token), "%s%s", cut_weapon, token);
+		}
 
 		WeaponInfoStruct* weaponInfo = GetWeaponInfo(token);
 		if (weaponInfo) {
