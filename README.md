@@ -87,11 +87,11 @@ Archive's bin directory contains 2 subdirectories, 'bugfixed' and 'pure'
 | mp_radio_maxinround                | 60      | -   | -            | Maximum Radio messages count for player per round.<br/>`0` disable radio messages |
 | mp_buy_anywhere                    | 0       | 0   | 3            | When set, players can buy anywhere, not only in buyzones.<br/> `0` disabled.<br/>`1` both teams <br/>`2` only Terrorists team <br/>`3` only CT team |
 | mp_t_default_grenades              | ""               | "" | -    | The default grenades that the Ts will spawn with. |
-| mp_t_default_melee                 | "weapon_knife"   | "" | -    | The default melee weapon that the Ts will spawn with. |
+| mp_t_give_player_knife             | 1                | 0  | 1    | Whether Terrorist player spawn with knife. |
 | mp_t_default_primary               | ""               | "" | -    | The default primary (rifle) weapon that the Ts will spawn with. |
 | mp_t_default_secondary             | "weapon_glock18" | "" | -    | The default secondary (pistol) weapon that the Ts will spawn with. |
 | mp_ct_default_grenades             | ""               | "" | -    | The default grenades that the CTs will spawn with. |
-| mp_ct_default_melee                | "weapon_knife"   | "" | -    | The default melee weapon that the CTs will spawn with. |
+| mp_ct_give_player_knife            | 1                | 0  | 1    | Whether Counter-Terrorist player spawn with knife. |
 | mp_ct_default_primary              | ""               | "" | -    | The default primary (rifle) weapon that the CTs will spawn with. |
 | mp_ct_default_secondary            | "weapon_usp"     | "" | -    | The default secondary (pistol) weapon that the CTs will spawn with. |
 | mp_give_player_c4                  | 1       | 0   | 1            | Whether this map should spawn a C4 bomb for a player or not.<br/> `0` disabled<br/>`1` enabled |
