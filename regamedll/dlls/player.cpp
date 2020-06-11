@@ -1489,10 +1489,12 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 
 	token = strtok(m_iTeam == CT ? ct_default_weapons_secondary.string : t_default_weapons_secondary.string, s);
 	while (token != NULL) {
-		ItemID const iItemID = GetItemIdByName(token);
-
-		if (iItemID != ITEM_NONE && !HasRestrictItem(iItemID, ITEM_TYPE_EQUIPPED) && IsSecondaryWeapon(iItemID)) {
-			GiveWeapon(GetWeaponInfo(iItemID)->gunClipSize * iAmountOfBPAmmo, token);
+		WeaponInfoStruct* weaponInfo = GetWeaponInfo(token);
+		if (weaponInfo) {
+			ItemID const iItemID = GetItemIdByWeaponId(weaponInfo->id);
+			if (iItemID != ITEM_NONE && !HasRestrictItem(iItemID, ITEM_TYPE_EQUIPPED) && IsSecondaryWeapon(iItemID)) {
+				GiveWeapon(weaponInfo->gunClipSize * iAmountOfBPAmmo, token);
+			}
 		}
 
 		token = strtok(NULL, s);
@@ -1500,10 +1502,12 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 
 	token = strtok(m_iTeam == CT ? ct_default_weapons_primary.string : t_default_weapons_primary.string, s);
 	while (token != NULL) {
-		ItemID const iItemID = GetItemIdByName(token);
-
-		if (iItemID != ITEM_NONE && !HasRestrictItem(iItemID, ITEM_TYPE_EQUIPPED) && IsPrimaryWeapon(iItemID)) {
-			GiveWeapon(GetWeaponInfo(iItemID)->gunClipSize * iAmountOfBPAmmo, token);
+		WeaponInfoStruct* weaponInfo = GetWeaponInfo(token);
+		if (weaponInfo) {
+			ItemID const iItemID = GetItemIdByWeaponId(weaponInfo->id);
+			if (iItemID != ITEM_NONE && !HasRestrictItem(iItemID, ITEM_TYPE_EQUIPPED) && IsPrimaryWeapon(iItemID)) {
+				GiveWeapon(weaponInfo->gunClipSize * iAmountOfBPAmmo, token);
+			}
 		}
 
 		token = strtok(NULL, s);
@@ -1511,10 +1515,12 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 
 	token = strtok(m_iTeam == CT ? ct_default_grenades.string : t_default_grenades.string, s);
 	while (token != NULL) {
-		ItemID const iItemID = GetItemIdByName(token);
-
-		if (iItemID != ITEM_NONE && !HasRestrictItem(iItemID, ITEM_TYPE_EQUIPPED) && IsGrenadeWeapon(iItemID)) {
-			GiveNamedItemEx(token);
+		WeaponInfoStruct* weaponInfo = GetWeaponInfo(token);
+		if (weaponInfo) {
+			ItemID const iItemID = GetItemIdByWeaponId(weaponInfo->id);
+			if (iItemID != ITEM_NONE && !HasRestrictItem(iItemID, ITEM_TYPE_EQUIPPED) && IsGrenadeWeapon(iItemID)) {
+				GiveNamedItemEx(token);
+			}
 		}
 
 		token = strtok(NULL, s);
