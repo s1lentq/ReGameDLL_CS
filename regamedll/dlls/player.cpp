@@ -1483,19 +1483,12 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 	case CT:
 	{
 #ifdef REGAMEDLL_ADD
+		if (ct_give_player_knife.value && !HasRestrictItem(ITEM_KNIFE, ITEM_TYPE_EQUIPPED)) {
+			GiveNamedItemEx("weapon_knife");
+		}
+
 		const char s[2] = " ";
 		char* token;
-
-		token = strtok(ct_default_weapons_melee.string, s); // Getting melee list for CT
-		while (token != NULL) {
-			ItemID const iItemID = GetItemIdByName(token); // TODO: GetWeaponInfo
-
-			if (iItemID == ITEM_KNIFE && !HasRestrictItem(iItemID, ITEM_TYPE_EQUIPPED)) {
-				GiveNamedItemEx(token); // TODO: GetWeaponInfo
-			}
-
-			token = strtok(NULL, s);
-		}
 
 		token = strtok(ct_default_weapons_secondary.string, s); // Getting secondary list for CT
 		while (token != NULL) {
@@ -1533,21 +1526,12 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 	case TERRORIST:
 	{
 #ifdef REGAMEDLL_ADD
+		if (t_give_player_knife.value && !HasRestrictItem(ITEM_KNIFE, ITEM_TYPE_EQUIPPED)) {
+			GiveNamedItemEx("weapon_knife");
+		}
+
 		const char s[2] = " ";
 		char* token;
-
-		token = strtok(t_default_weapons_melee.string, s); // Getting melee list for T
-		while (token != NULL) {
-			ItemID const iItemID = GetItemIdByName(token); // TODO: GetWeaponInfo
-
-			if (iItemID != ITEM_NONE && !HasRestrictItem(iItemID, ITEM_TYPE_EQUIPPED)
-				&& (iItemID == ITEM_KNIFE)
-				) {
-				GiveNamedItemEx(token); // TODO: GetWeaponInfo
-			}
-
-			token = strtok(NULL, s);
-		}
 
 		token = strtok(t_default_weapons_secondary.string, s); // Getting secondary list for T
 		while (token != NULL) {
