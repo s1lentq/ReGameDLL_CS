@@ -277,7 +277,7 @@ struct RandomSpawnStruct
 {
 	Vector vecOrigin;
 	Vector vecAngle;
-	CNavArea *cur_area;
+	CNavArea *area;
 };
 
 extern RandomSpawnStruct g_randomSpawns[MAX_RANDOM_SPAWNS];
