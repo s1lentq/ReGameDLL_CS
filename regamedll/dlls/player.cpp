@@ -1478,112 +1478,44 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 		}
 	};
 
-	switch (m_iTeam)
-	{
-	case CT:
-	{
-#ifdef REGAMEDLL_ADD
-		if (ct_give_player_knife.value && !HasRestrictItem(ITEM_KNIFE, ITEM_TYPE_EQUIPPED)) {
-			GiveNamedItemEx("weapon_knife");
-		}
-
-		const char s[2] = " ";
-		char* token;
-
-		token = strtok(ct_default_weapons_secondary.string, s); // Getting secondary list for CT
-		while (token != NULL) {
-			ItemID const iItemID = GetItemIdByName(token); // TODO: GetWeaponInfo
-
-			if (iItemID != ITEM_NONE && !HasRestrictItem(iItemID, ITEM_TYPE_EQUIPPED) && IsSecondaryWeapon(iItemID)) {
-				GiveWeapon(m_bIsVIP ? 12 : 24, token); // TODO: GetWeaponInfo
-			}
-
-			token = strtok(NULL, s);
-		}
-
-		token = strtok(ct_default_weapons_primary.string, s); // Getting primary list for CT
-		while (token != NULL) {
-			ItemID const iItemID = GetItemIdByName(token); // TODO: GetWeaponInfo
-
-			if (iItemID != ITEM_NONE && !HasRestrictItem(iItemID, ITEM_TYPE_EQUIPPED) && IsPrimaryWeapon(iItemID)) {
-				GiveNamedItemEx(token); // TODO: GetWeaponInfo
-			}
-
-			token = strtok(NULL, s);
-		}
-
-		token = strtok(ct_default_grenades.string, s); // Getting grenades list for CT
-		while (token != NULL) {
-			ItemID const iItemID = GetItemIdByName(token); // TODO: GetWeaponInfo
-
-			if (iItemID != ITEM_NONE && !HasRestrictItem(iItemID, ITEM_TYPE_EQUIPPED) && IsGrenadeWeapon(iItemID)) {
-				GiveNamedItemEx(token); // TODO: GetWeaponInfo
-			}
-
-			token = strtok(NULL, s);
-		}
-#else
-		if (!HasRestrictItem(ITEM_KNIFE, ITEM_TYPE_EQUIPPED)) {
-			GiveNamedItem("weapon_knife");
-		}
-		if (!HasRestrictItem(ITEM_USP, ITEM_TYPE_EQUIPPED)) {
-			GiveWeapon(m_bIsVIP ? 12 : 24, "weapon_usp");
-		}
-#endif // REGAMEDLL_ADD
-		break;
+	if (m_iTeam == CT ? ct_give_player_knife.value : t_default_weapons_secondary.string && !HasRestrictItem(ITEM_KNIFE, ITEM_TYPE_EQUIPPED)) {
+		GiveNamedItemEx("weapon_knife");
 	}
-	case TERRORIST:
-	{
-#ifdef REGAMEDLL_ADD
-		if (t_give_player_knife.value && !HasRestrictItem(ITEM_KNIFE, ITEM_TYPE_EQUIPPED)) {
-			GiveNamedItemEx("weapon_knife");
+
+	const char s[2] = " ";
+	char* token;
+
+	token = strtok(m_iTeam == CT ? ct_default_weapons_secondary.string : t_default_weapons_secondary.string, s);
+	while (token != NULL) {
+		ItemID const iItemID = GetItemIdByName(token); // TODO: GetWeaponInfo
+
+		if (iItemID != ITEM_NONE && !HasRestrictItem(iItemID, ITEM_TYPE_EQUIPPED) && IsSecondaryWeapon(iItemID)) {
+			GiveWeapon(m_bIsVIP ? 12 : 24, token); // TODO: GetWeaponInfo
 		}
 
-		const char s[2] = " ";
-		char* token;
-
-		token = strtok(t_default_weapons_secondary.string, s); // Getting secondary list for T
-		while (token != NULL) {
-			ItemID const iItemID = GetItemIdByName(token); // TODO: GetWeaponInfo
-
-			if (iItemID != ITEM_NONE && !HasRestrictItem(iItemID, ITEM_TYPE_EQUIPPED) && IsSecondaryWeapon(iItemID)) {
-				GiveWeapon(m_bIsVIP ? 12 : 24, token); // TODO: GetWeaponInfo
-			}
-
-			token = strtok(NULL, s);
-		}
-
-		token = strtok(t_default_weapons_primary.string, s); // Getting primary list for T
-		while (token != NULL) {
-			ItemID const iItemID = GetItemIdByName(token); // TODO: GetWeaponInfo
-
-			if (iItemID != ITEM_NONE && !HasRestrictItem(iItemID, ITEM_TYPE_EQUIPPED) && IsPrimaryWeapon(iItemID)) {
-				GiveNamedItemEx(token); // TODO: GetWeaponInfo
-			}
-
-			token = strtok(NULL, s);
-		}
-
-		token = strtok(t_default_grenades.string, s); // Getting grenades list for CT
-		while (token != NULL) {
-			ItemID const iItemID = GetItemIdByName(token); // TODO: GetWeaponInfo
-
-			if (iItemID != ITEM_NONE && !HasRestrictItem(iItemID, ITEM_TYPE_EQUIPPED) && IsGrenadeWeapon(iItemID)) {
-				GiveNamedItemEx(token); // TODO: GetWeaponInfo
-			}
-
-			token = strtok(NULL, s);
-		}
-#else
-		if (!HasRestrictItem(ITEM_KNIFE, ITEM_TYPE_EQUIPPED)) {
-			GiveNamedItem("weapon_knife");
-		}
-		if (!HasRestrictItem(ITEM_GLOCK18, ITEM_TYPE_EQUIPPED)) {
-			GiveWeapon(40, "weapon_glock18");
-		}
-#endif // REGAMEDLL_ADD
-		break;
+		token = strtok(NULL, s);
 	}
+
+	token = strtok(m_iTeam == CT ? ct_default_weapons_primary.string : t_default_weapons_primary.string, s);
+	while (token != NULL) {
+		ItemID const iItemID = GetItemIdByName(token); // TODO: GetWeaponInfo
+
+		if (iItemID != ITEM_NONE && !HasRestrictItem(iItemID, ITEM_TYPE_EQUIPPED) && IsPrimaryWeapon(iItemID)) {
+			GiveNamedItemEx(token); // TODO: GetWeaponInfo
+		}
+
+		token = strtok(NULL, s);
+	}
+
+	token = strtok(m_iTeam == CT ? ct_default_grenades.string : t_default_grenades.string, s); // Getting grenades list for CT
+	while (token != NULL) {
+		ItemID const iItemID = GetItemIdByName(token); // TODO: GetWeaponInfo
+
+		if (iItemID != ITEM_NONE && !HasRestrictItem(iItemID, ITEM_TYPE_EQUIPPED) && IsGrenadeWeapon(iItemID)) {
+			GiveNamedItemEx(token); // TODO: GetWeaponInfo
+		}
+
+		token = strtok(NULL, s);
 	}
 #else
 	switch (m_iTeam)
