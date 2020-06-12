@@ -1482,7 +1482,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 	if (m_iTeam == CT)
 		bGiveKnife = ct_give_player_knife.value != 0;
 	else if (m_iTeam == TERRORIST)
-		bGiveKnife = t_default_weapons_secondary.value != 0;
+		bGiveKnife = t_give_player_knife.value != 0;
 
 	if (bGiveKnife && !HasRestrictItem(ITEM_KNIFE, ITEM_TYPE_EQUIPPED)) {
 		GiveNamedItemEx("weapon_knife");
