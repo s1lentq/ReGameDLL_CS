@@ -2980,23 +2980,30 @@ void CHalfLifeMultiplay::CheckRoundTimeExpired()
 	}
 #endif
 
+#ifdef REGAMEDLL_ADD
+	int scenarioFlags = UTIL_ReadFlags(round_infinite.string);
+#else
+	// the icc compiler will cut out all of the code which refers to it
+	int scenarioFlags = 0;
+#endif
+
 	// New code to get rid of round draws!!
-	if (m_bMapHasBombTarget)
+	if (!(scenarioFlags & SCENARIO_BLOCK_BOMB_TIME) && m_bMapHasBombTarget)
 	{
 		if (!OnRoundEnd_Intercept(WINSTATUS_CTS, ROUND_TARGET_SAVED, GetRoundRestartDelay()))
 			return;
 	}
-	else if (UTIL_FindEntityByClassname(nullptr, "hostage_entity"))
+	else if (!(scenarioFlags & SCENARIO_BLOCK_HOSTAGE_RESCUE) && UTIL_FindEntityByClassname(nullptr, "hostage_entity"))
 	{
 		if (!OnRoundEnd_Intercept(WINSTATUS_TERRORISTS, ROUND_HOSTAGE_NOT_RESCUED, GetRoundRestartDelay()))
 			return;
 	}
-	else if (m_bMapHasEscapeZone)
+	else if (!(scenarioFlags & SCENARIO_BLOCK_PRISON_ESCAPE_TIME) && m_bMapHasEscapeZone)
 	{
 		if (!OnRoundEnd_Intercept(WINSTATUS_CTS, ROUND_TERRORISTS_NOT_ESCAPED, GetRoundRestartDelay()))
 			return;
 	}
-	else if (m_bMapHasVIPSafetyZone)
+	else if (!(scenarioFlags & SCENARIO_BLOCK_VIP_ESCAPE_TIME) && m_bMapHasVIPSafetyZone)
 	{
 		if (!OnRoundEnd_Intercept(WINSTATUS_TERRORISTS, ROUND_VIP_NOT_ESCAPED, GetRoundRestartDelay()))
 			return;
