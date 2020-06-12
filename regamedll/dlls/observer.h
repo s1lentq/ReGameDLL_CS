@@ -34,7 +34,7 @@
 
 #define FADETOBLACK_OFF       0
 #define FADETOBLACK_STAY      1
-#define FADETOBLACK_AT_DIYING 2
+#define FADETOBLACK_AT_DYING 2
 
 int GetForceCamera(CBasePlayer *pObserver);
 void UpdateClientEffects(CBasePlayer *pObserver, int oldMode);
