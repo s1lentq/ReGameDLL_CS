@@ -2364,11 +2364,7 @@ void CHalfLifeMultiplay::Think()
 		MESSAGE_BEGIN(MSG_ALL, gmsgForceCam);
 			WRITE_BYTE(forcecamera.value != 0);
 			WRITE_BYTE(forcechasecam.value != 0);
-#ifndef REGAMEDLL_ADD
 			WRITE_BYTE(fadetoblack.value != 0);
-#else
-			WRITE_BYTE(fadetoblack.value == FADETOBLACK_STAY);
-#endif
 		MESSAGE_END();
 
 		m_flForceCameraValue = forcecamera.value;
@@ -3381,11 +3377,7 @@ void CHalfLifeMultiplay::InitHUD(CBasePlayer *pl)
 	MESSAGE_BEGIN(MSG_ONE, gmsgForceCam, nullptr, pl->edict());
 		WRITE_BYTE(forcecamera.value != 0);
 		WRITE_BYTE(forcechasecam.value != 0);
-#ifndef REGAMEDLL_ADD
 		WRITE_BYTE(fadetoblack.value != 0);
-#else
-		WRITE_BYTE(fadetoblack.value == FADETOBLACK_STAY);
-#endif
 	MESSAGE_END();
 
 	if (m_bGameOver)
