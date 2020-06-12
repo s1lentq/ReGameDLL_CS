@@ -1170,9 +1170,10 @@ void GetDMSpawnPositions()
 		if (IsFreeSpace(vecOrigin, human_hull))
 		{
 			Vector vecTempAngle;
-			float bestvecAngle;
+			float bestAngleYaw;
 			float bestDistance = 0.0f;
-			
+			float fDistance;
+
 			// CONSOLE_ECHO("==============================\n");
 			
 			for (float AngleYaw = 0.0f; AngleYaw <= 360.0f; AngleYaw += ANGLE_STEP)
@@ -1182,16 +1183,18 @@ void GetDMSpawnPositions()
 				vecTempAngle.y = AngleYaw;
 				UTIL_MakeVectors(vecTempAngle);
 
-				Vector vecEnd(vecOrigin + vecTempAngle + gpGlobals->v_forward * 8192);
+				Vector vecEnd(vecOrigin + gpGlobals->v_forward * 8192);
 				UTIL_TraceLine(vecOrigin, vecEnd, ignore_monsters, nullptr, &tr);
 
-				if ((vecOrigin - tr.vecEndPos).Length() > bestDistance)
+				fDistance = (vecOrigin - tr.vecEndPos).Length();
+
+				if (fDistance > bestDistance)
 				{
-					bestDistance = (vecOrigin - tr.vecEndPos).Length();
-					bestvecAngle = vecTempAngle.y;
+					bestDistance = fDistance;
+					bestAngleYaw = vecTempAngle.y;
 				}
 
-				// CONSOLE_ECHO("Current: %0.f | Distance: %0.2f \n", vecTempAngle.y, (vecOrigin - tr.vecEndPos).Length());
+				// CONSOLE_ECHO("Current: %0.f | Distance: %0.2f \n", vecTempAngle.y, fDistance);
 			}
 
 			if (bestDistance < 100.0f)
@@ -1200,7 +1203,7 @@ void GetDMSpawnPositions()
 			}
 
 			{
-				vecTempAngle.y = bestvecAngle;
+				vecTempAngle.y = bestAngleYaw;
 				g_randomSpawns[randomSpawnsCount].vecAngle = vecTempAngle;
 				// CONSOLE_ECHO("Area %i | Best angle %0.2f | Distance: %0.2f\n", area->GetID(), bestvecAngle, bestDistance);
 			}
