@@ -9,7 +9,7 @@ int __API_HOOK(GetForceCamera)(CBasePlayer *pObserver)
 #ifndef REGAMEDLL_ADD
 	if (!fadetoblack.value)
 #else
-	if (fadetoblack.value == FADETOBLACK_STAY)
+	if (fadetoblack.value != FADETOBLACK_STAY)
 #endif
 	{
 		retVal = int(CVAR_GET_FLOAT("mp_forcechasecam"));
