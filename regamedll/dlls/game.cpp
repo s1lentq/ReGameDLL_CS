@@ -149,14 +149,14 @@ cvar_t radio_timeout           = { "mp_radio_timeout", "1.5", FCVAR_SERVER, 1.5f
 cvar_t radio_maxinround        = { "mp_radio_maxinround", "60", FCVAR_SERVER, 60.0f, nullptr };
 cvar_t falldamage              = { "mp_falldamage", "1", FCVAR_SERVER, 1.0f, nullptr };
 
-cvar_t ct_default_grenades               = { "mp_ct_default_grenades", "", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t ct_give_player_knife              = { "mp_ct_give_player_knife", "1", FCVAR_SERVER, 1.0f, nullptr };
-cvar_t ct_default_weapons_secondary      = { "mp_ct_default_weapons_secondary", "weapon_usp", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t ct_default_weapons_primary        = { "mp_ct_default_weapons_primary", "", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t t_default_grenades                = { "mp_t_default_grenades", "", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t t_give_player_knife               = { "mp_t_give_player_knife", "1", FCVAR_SERVER, 1.0f, nullptr };
-cvar_t t_default_weapons_secondary       = { "mp_t_default_weapons_secondary", "weapon_glock18", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t t_default_weapons_primary         = { "mp_t_default_weapons_primary", "", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t ct_default_grenades               = { "mp_ct_default_grenades", "", 0, 0.0f, nullptr };
+cvar_t ct_give_player_knife              = { "mp_ct_give_player_knife", "1", 0, 1.0f, nullptr };
+cvar_t ct_default_weapons_secondary      = { "mp_ct_default_weapons_secondary", "weapon_usp", 0, 0.0f, nullptr };
+cvar_t ct_default_weapons_primary        = { "mp_ct_default_weapons_primary", "", 0, 0.0f, nullptr };
+cvar_t t_default_grenades                = { "mp_t_default_grenades", "", 0, 0.0f, nullptr };
+cvar_t t_give_player_knife               = { "mp_t_give_player_knife", "1", 0, 1.0f, nullptr };
+cvar_t t_default_weapons_secondary       = { "mp_t_default_weapons_secondary", "weapon_glock18", 0, 0.0f, nullptr };
+cvar_t t_default_weapons_primary         = { "mp_t_default_weapons_primary", "", 0, 0.0f, nullptr };
 
 void GameDLL_Version_f()
 {
@@ -379,7 +379,7 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&t_give_player_knife);
 	CVAR_REGISTER(&t_default_weapons_secondary);
 	CVAR_REGISTER(&t_default_weapons_primary);
-	
+
 	// print version
 	CONSOLE_ECHO("ReGameDLL version: " APP_VERSION "\n");
 
