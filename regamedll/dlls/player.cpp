@@ -1465,7 +1465,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 {
 	RemoveAllItems(FALSE);
 
-	// NOTE: It is already does reset inside RemoveAllItems
+    // NOTE: It is already does reset inside RemoveAllItems
 #ifndef REGAMEDLL_FIXES
 	m_bHasPrimary = false;
 #endif
