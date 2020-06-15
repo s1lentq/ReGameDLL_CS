@@ -1492,7 +1492,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 
 	// Give default secondary equipment
 	{
-		char* secondaryString = NULL;
+		char *secondaryString = NULL;
 		if (m_iTeam == CT)
 			secondaryString = ct_default_weapons_secondary.string;
 		else if (m_iTeam == TERRORIST)
@@ -1504,7 +1504,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 
 			while (secondaryString)
 			{
-				WeaponInfoStruct* weaponInfo;
+				WeaponInfoStruct *weaponInfo;
 				WeaponIdType weaponId = AliasToWeaponID(SharedGetToken());
 				if (weaponId != WEAPON_NONE)
 					weaponInfo = GetWeaponInfo(weaponId);
@@ -1525,7 +1525,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 
 	// Give default primary equipment
 	{
-		char* primaryString = NULL;
+		char *primaryString = NULL;
 
 		if (m_iTeam == CT)
 			primaryString = ct_default_weapons_primary.string;
@@ -1538,7 +1538,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 
 			while (primaryString)
 			{
-				WeaponInfoStruct* weaponInfo;
+				WeaponInfoStruct *weaponInfo;
 				WeaponIdType weaponId = AliasToWeaponID(SharedGetToken());
 				if (weaponId != WEAPON_NONE)
 					weaponInfo = GetWeaponInfo(weaponId);
@@ -1558,7 +1558,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 	}
 
 	// Give the player grenades if he needs them
-	char* grenadeString = NULL;
+	char *grenadeString = NULL;
 	if (m_iTeam == CT)
 		grenadeString = ct_default_grenades.string;
 	else if (m_iTeam == TERRORIST)
@@ -1570,7 +1570,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 
 		while (grenadeString)
 		{
-			WeaponInfoStruct* weaponInfo;
+			WeaponInfoStruct *weaponInfo;
 			WeaponIdType weaponId = AliasToWeaponID(SharedGetToken());
 			if (weaponId != WEAPON_NONE)
 				weaponInfo = GetWeaponInfo(weaponId);
