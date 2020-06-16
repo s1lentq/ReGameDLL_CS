@@ -86,14 +86,14 @@ Archive's bin directory contains 2 subdirectories, 'bugfixed' and 'pure'
 | mp_radio_timeout                   | 1.5     | 0.0 | -            | Delay between player Radio messages. (in seconds).<br/>`0` disable delay |
 | mp_radio_maxinround                | 60      | -   | -            | Maximum Radio messages count for player per round.<br/>`0` disable radio messages |
 | mp_buy_anywhere                    | 0       | 0   | 3            | When set, players can buy anywhere, not only in buyzones.<br/> `0` disabled.<br/>`1` both teams <br/>`2` only Terrorists team <br/>`3` only CT team |
-| mp_t_default_grenades              | ""               | "" | -    | The default grenades that the Ts will spawn with. |
-| mp_t_give_player_knife             | 1                | 0  | 1    | Whether Terrorist player spawn with knife. |
-| mp_t_default_primary               | ""               | "" | -    | The default primary (rifle) weapon that the Ts will spawn with. |
-| mp_t_default_secondary             | "weapon_glock18" | "" | -    | The default secondary (pistol) weapon that the Ts will spawn with. |
-| mp_ct_default_grenades             | ""               | "" | -    | The default grenades that the CTs will spawn with. |
-| mp_ct_give_player_knife            | 1                | 0  | 1    | Whether Counter-Terrorist player spawn with knife. |
-| mp_ct_default_primary              | ""               | "" | -    | The default primary (rifle) weapon that the CTs will spawn with. |
-| mp_ct_default_secondary            | "weapon_usp"     | "" | -    | The default secondary (pistol) weapon that the CTs will spawn with. |
+| mp_t_default_grenades              | ""        | "" | -           | The default grenades that the Ts will spawn with. |
+| mp_t_give_player_knife             | 1         | 0  | 1           | Whether Terrorist player spawn with knife. |
+| mp_t_default_weapons_primary       | ""        | "" | -           | The default primary (rifle) weapon that the Ts will spawn with. |
+| mp_t_default_weapons_secondary     | "glock18" | "" | -           | The default secondary (pistol) weapon that the Ts will spawn with. |
+| mp_ct_default_grenades             | ""        | "" | -           | The default grenades that the CTs will spawn with. |
+| mp_ct_give_player_knife            | 1         | 0  | 1           | Whether Counter-Terrorist player spawn with knife. |
+| mp_ct_default_weapons_primary      | ""        | "" | -           | The default primary (rifle) weapon that the CTs will spawn with. |
+| mp_ct_default_weapons_secondary    | "usp"     | "" | -           | The default secondary (pistol) weapon that the CTs will spawn with. |
 | mp_give_player_c4                  | 1       | 0   | 1            | Whether this map should spawn a C4 bomb for a player or not.<br/> `0` disabled<br/>`1` enabled |
 | mp_weapons_allow_map_placed        | 1       | 0   | 1            | When set, map weapons (located on the floor by map) will be shown.<br/> `0` hide all map weapons.<br/>`1` enabled<br/>`NOTE`: Effect will work after round restart. |
 | mp_fadetoblack                     | 0       | 0   | 2            | Observer's screen will fade to black on kill event or permanent.<br/> `0` No fade.<br/>`1` Fade to black and won't be able to watch anybody.<br/>`2` fade to black only on kill moment. |
