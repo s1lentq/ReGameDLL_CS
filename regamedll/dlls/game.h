@@ -175,6 +175,15 @@ extern cvar_t radio_timeout;
 extern cvar_t radio_maxinround;
 extern cvar_t falldamage;
 
+extern cvar_t ct_default_grenades;
+extern cvar_t ct_give_player_knife;
+extern cvar_t ct_default_weapons_secondary;
+extern cvar_t ct_default_weapons_primary;
+extern cvar_t t_default_grenades;
+extern cvar_t t_give_player_knife;
+extern cvar_t t_default_weapons_secondary;
+extern cvar_t t_default_weapons_primary;
+
 #endif
 
 extern cvar_t scoreboard_showmoney;

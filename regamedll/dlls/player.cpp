@@ -1471,38 +1471,123 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 #endif
 
 #ifdef REGAMEDLL_ADD
-	auto GiveWeapon = [&](int ammo, char *pszWeaponName) {
+	auto GiveWeapon = [&](int ammo, const char *pszWeaponName) {
 		auto pItem = static_cast<CBasePlayerItem *>(GiveNamedItemEx(pszWeaponName));
 		if (pItem) {
 			GiveAmmo(refill_bpammo_weapons.value != 0.0f ? pItem->iMaxAmmo1() : ammo, pItem->pszAmmo1(), pItem->iMaxAmmo1());
 		}
 	};
 
-	switch (m_iTeam)
-	{
-	case CT:
-	{
-		if (!HasRestrictItem(ITEM_KNIFE, ITEM_TYPE_EQUIPPED)) {
-			GiveNamedItem("weapon_knife");
-		}
-		if (!HasRestrictItem(ITEM_USP, ITEM_TYPE_EQUIPPED)) {
-			GiveWeapon(m_bIsVIP ? 12 : 24, "weapon_usp");
-		}
+	bool bGiveKnife = false;
+	if (m_iTeam == CT)
+		bGiveKnife = ct_give_player_knife.value != 0;
+	else if (m_iTeam == TERRORIST)
+		bGiveKnife = t_give_player_knife.value != 0;
 
-		break;
+	if (bGiveKnife && !HasRestrictItem(ITEM_KNIFE, ITEM_TYPE_EQUIPPED)) {
+		GiveNamedItemEx("weapon_knife");
 	}
-	case TERRORIST:
-	{
-		if (!HasRestrictItem(ITEM_KNIFE, ITEM_TYPE_EQUIPPED)) {
-			GiveNamedItem("weapon_knife");
-		}
-		if (!HasRestrictItem(ITEM_GLOCK18, ITEM_TYPE_EQUIPPED)) {
-			GiveWeapon(40, "weapon_glock18");
-		}
 
-		break;
+	const int iAmountOfBPAmmo = m_bIsVIP ? 1 : 2; // Give regular the player backpack ammo twice more than to VIP the player
+
+	// Give default secondary equipment
+	{
+		char *secondaryString = NULL;
+		if (m_iTeam == CT)
+			secondaryString = ct_default_weapons_secondary.string;
+		else if (m_iTeam == TERRORIST)
+			secondaryString = t_default_weapons_secondary.string;
+
+		if (secondaryString && secondaryString[0] != '\0')
+		{
+			secondaryString = SharedParse(secondaryString);
+
+			while (secondaryString)
+			{
+				WeaponInfoStruct *weaponInfo;
+				WeaponIdType weaponId = AliasToWeaponID(SharedGetToken());
+				if (weaponId != WEAPON_NONE)
+					weaponInfo = GetWeaponInfo(weaponId);
+				else
+					weaponInfo = GetWeaponInfo(SharedGetToken());
+
+				if (weaponInfo) {
+					const auto iItemID = GetItemIdByWeaponId(weaponInfo->id);
+					if (iItemID != ITEM_NONE && !HasRestrictItem(iItemID, ITEM_TYPE_EQUIPPED) && IsSecondaryWeapon(iItemID)) {
+						GiveWeapon(weaponInfo->gunClipSize * iAmountOfBPAmmo, weaponInfo->entityName);
+					}
+				}
+
+				secondaryString = SharedParse(secondaryString);
+			}
+		}
 	}
+
+	// Give default primary equipment
+	{
+		char *primaryString = NULL;
+
+		if (m_iTeam == CT)
+			primaryString = ct_default_weapons_primary.string;
+		else if (m_iTeam == TERRORIST)
+			primaryString = t_default_weapons_primary.string;
+
+		if (primaryString && primaryString[0] != '\0')
+		{
+			primaryString = SharedParse(primaryString);
+
+			while (primaryString)
+			{
+				WeaponInfoStruct *weaponInfo;
+				WeaponIdType weaponId = AliasToWeaponID(SharedGetToken());
+				if (weaponId != WEAPON_NONE)
+					weaponInfo = GetWeaponInfo(weaponId);
+				else
+					weaponInfo = GetWeaponInfo(SharedGetToken());
+
+				if (weaponInfo) {
+					const auto iItemID = GetItemIdByWeaponId(weaponInfo->id);
+					if (iItemID != ITEM_NONE && !HasRestrictItem(iItemID, ITEM_TYPE_EQUIPPED) && IsPrimaryWeapon(iItemID)) {
+						GiveWeapon(weaponInfo->gunClipSize * iAmountOfBPAmmo, weaponInfo->entityName);
+					}
+				}
+
+				primaryString = SharedParse(primaryString);
+			}
+		}
 	}
+
+	// Give the player grenades if he needs them
+	char *grenadeString = NULL;
+	if (m_iTeam == CT)
+		grenadeString = ct_default_grenades.string;
+	else if (m_iTeam == TERRORIST)
+		grenadeString = t_default_grenades.string;
+
+	if (grenadeString && grenadeString[0] != '\0')
+	{
+		grenadeString = SharedParse(grenadeString);
+
+		while (grenadeString)
+		{
+			WeaponInfoStruct *weaponInfo;
+			WeaponIdType weaponId = AliasToWeaponID(SharedGetToken());
+			if (weaponId != WEAPON_NONE)
+				weaponInfo = GetWeaponInfo(weaponId);
+			else
+				weaponInfo = GetWeaponInfo(SharedGetToken());
+
+			if (weaponInfo) {
+				const auto iItemID = GetItemIdByWeaponId(weaponInfo->id);
+				if (iItemID != ITEM_NONE && !HasRestrictItem(iItemID, ITEM_TYPE_EQUIPPED) && IsGrenadeWeapon(iItemID)) {
+					GiveNamedItemEx(weaponInfo->entityName);
+				}
+			}
+
+			grenadeString = SharedParse(grenadeString);
+		}
+	}
+
 #else
 	switch (m_iTeam)
 	{
@@ -1518,7 +1603,6 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 		break;
 	}
 #endif
-
 }
 
 void CBasePlayer::RemoveAllItems(BOOL removeSuit)
