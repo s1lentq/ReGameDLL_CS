@@ -134,6 +134,7 @@ static entity_field_alias_t custom_entity_field_alias[] =
 };
 
 bool g_bServerActive = false;
+bool g_bItemCreatedByBuying = false;
 PLAYERPVSSTATUS g_PVSStatus[MAX_CLIENTS];
 unsigned short m_usResetDecals;
 unsigned short g_iShadowSprite;
@@ -1493,7 +1494,10 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 
 	if (pszItem)
 	{
+		g_bItemCreatedByBuying = true;
 		pPlayer->GiveNamedItem(pszItem);
+		g_bItemCreatedByBuying = false;
+
 		pPlayer->AddAccount(-iItemPrice, RT_PLAYER_BOUGHT_SOMETHING);
 	}
 

@@ -371,8 +371,10 @@ void CItemKevlar::Precache()
 BOOL CItemKevlar::MyTouch(CBasePlayer *pPlayer)
 {
 #ifdef REGAMEDLL_ADD
-	if (pPlayer->HasRestrictItem(ITEM_KEVLAR, ITEM_TYPE_TOUCHED))
+	if (!g_bItemCreatedByBuying && pPlayer->HasRestrictItem(ITEM_KEVLAR, ITEM_TYPE_TOUCHED))
 		return FALSE;
+
+	g_bItemCreatedByBuying = false;
 #endif
 
 #ifdef REGAMEDLL_FIXES
@@ -423,8 +425,10 @@ void CItemAssaultSuit::Precache()
 BOOL CItemAssaultSuit::MyTouch(CBasePlayer *pPlayer)
 {
 #ifdef REGAMEDLL_ADD
-	if (pPlayer->HasRestrictItem(ITEM_ASSAULT, ITEM_TYPE_TOUCHED))
+	if (!g_bItemCreatedByBuying && pPlayer->HasRestrictItem(ITEM_ASSAULT, ITEM_TYPE_TOUCHED))
 		return FALSE;
+
+	g_bItemCreatedByBuying = false;
 #endif
 
 #ifdef REGAMEDLL_FIXES
