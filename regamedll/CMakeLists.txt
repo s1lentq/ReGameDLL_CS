@@ -9,6 +9,7 @@ option(USE_STATIC_LIBSTDC "Enables static linking libstdc++." OFF)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+
 if (USE_INTEL_COMPILER)
 	set(CMAKE_C_COMPILER	"/opt/intel/bin/icc")
 	set(CMAKE_CXX_COMPILER	"/opt/intel/bin/icpc")
