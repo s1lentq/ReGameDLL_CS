@@ -266,7 +266,16 @@ void CCSBot::OnEvent(GameEventType event, CBaseEntity *pEntity, CBaseEntity *pOt
 		break;
 	}
 	default:
+	{
+#ifdef REGAMEDLL_FIXES
+		// Make sure that the entity is a player,
+		// because here the entity can come as CBreakable with event EVENT_BREAK_METAL
+		if (pPlayer && !pPlayer->IsPlayer())
+			return;
+#endif
+
 		break;
+	}
 	}
 
 	// Process radio events from our team
