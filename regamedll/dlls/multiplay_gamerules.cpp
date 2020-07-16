@@ -3583,6 +3583,12 @@ void CHalfLifeMultiplay::ClientDisconnected(edict_t *pClient)
 					pObserver->Observer_SetMode(iMode);
 				}
 			}
+
+#ifdef REGAMEDLL_FIXES
+			// Client is gone, make sure that his body disappeared and became not solid
+			pPlayer->MakeDormant();
+#endif
+
 		}
 	}
 
@@ -3594,7 +3600,7 @@ LINK_HOOK_CLASS_CUSTOM_CHAIN(float, CHalfLifeMultiplay, CSGameRules, FlPlayerFal
 float EXT_FUNC CHalfLifeMultiplay::__API_HOOK(FlPlayerFallDamage)(CBasePlayer *pPlayer)
 {
 
-#ifdef REGAMEDLL_ADD	
+#ifdef REGAMEDLL_ADD
 	if (!falldamage.value)
 	{
 		return 0.0f;
