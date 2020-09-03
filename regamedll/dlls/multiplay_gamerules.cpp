@@ -3212,7 +3212,9 @@ BOOL EXT_FUNC CHalfLifeMultiplay::__API_HOOK(FShouldSwitchWeapon)(CBasePlayer *p
 		return TRUE;
 	}
 
-	if (!pPlayer->m_iAutoWepSwitch)
+	CBasePlayerWeapon* weapon = static_cast<CBasePlayerWeapon*>(pPlayer->m_pActiveItem);
+
+	if (!pPlayer->m_iAutoWepSwitch || (pPlayer->m_iAutoWepSwitch == 2 && (weapon->m_flNextPrimaryAttack > UTIL_WeaponTimeBase() || weapon->m_flNextSecondaryAttack > UTIL_WeaponTimeBase())))
 		return FALSE;
 
 	if (!pPlayer->m_pActiveItem->CanHolster())
