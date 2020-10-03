@@ -98,6 +98,7 @@ Archive's bin directory contains 2 subdirectories, 'bugfixed' and 'pure'
 | mp_weapons_allow_map_placed        | 1       | 0   | 1            | When set, map weapons (located on the floor by map) will be shown.<br/> `0` hide all map weapons.<br/>`1` enabled<br/>`NOTE`: Effect will work after round restart. |
 | mp_fadetoblack                     | 0       | 0   | 2            | Observer's screen will fade to black on kill event or permanent.<br/> `0` No fade.<br/>`1` Fade to black and won't be able to watch anybody.<br/>`2` fade to black only on kill moment. |
 | mp_falldamage                      | 1       | 0   | 1            | Damage from falling.<br/>`0` disabled <br/>`1` enabled |
+| mp_use_buttons_through_walls       | 0       | 0 | 1           | Enable using buttons through walls.<br/>`0` disabled <br/>`1` enabled |
 </details>
 
 ## How to install zBot for CS 1.6?
