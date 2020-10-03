@@ -3988,7 +3988,18 @@ bool CanSeeUseable(CBasePlayer *me, CBaseEntity *pEntity)
 			}
 		}
 	}
+#ifdef REGAMEDLL_FIXES
+	else if (FClassnameIs(pEntity->pev, "func_button"))
+	{
+		Vector vecOrigin;
+		vecOrigin = VecBModelOrigin(pEntity->pev);
 
+		TraceResult Tr;
+		UTIL_TraceLine(me->pev->origin, vecOrigin, ignore_monsters, ignore_glass, me->edict(), &Tr);
+
+		return (Tr.flFraction >= 0.8f);
+	}
+#endif
 	return true;
 }
 
@@ -4126,7 +4137,6 @@ void CBasePlayer::PlayerUse()
 	{
 		if (!useNewHostages || CanSeeUseable(this, pObject))
 		{
-			// TODO: traceline here to prevent +USEing buttons through walls
 			int caps = pObject->ObjectCaps();
 
 			if (m_afButtonPressed & IN_USE)
