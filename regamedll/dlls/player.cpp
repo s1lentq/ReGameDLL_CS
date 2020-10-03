@@ -3995,7 +3995,7 @@ bool CanSeeUseable(CBasePlayer *me, CBaseEntity *pEntity)
 		vecOrigin = VecBModelOrigin(pEntity->pev);
 
 		TraceResult Tr;
-		UTIL_TraceLine(me->pev->origin, vecOrigin, ignore_monsters, ignore_glass, me->edict(), &Tr);
+		UTIL_TraceLine(eye, vecOrigin, ignore_monsters, ignore_glass, me->edict(), &Tr);
 
 		return (Tr.flFraction >= 0.8f);
 	}
