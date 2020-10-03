@@ -3988,8 +3988,8 @@ bool CanSeeUseable(CBasePlayer *me, CBaseEntity *pEntity)
 			}
 		}
 	}
-#ifdef REGAMEDLL_FIXES
-	else if (FClassnameIs(pEntity->pev, "func_button"))
+#ifdef REGAMEDLL_ADD
+	else if (use_buttons_through_walls.value != 0 && FClassnameIs(pEntity->pev, "func_button"))
 	{
 		Vector vecOrigin;
 		vecOrigin = VecBModelOrigin(pEntity->pev);
