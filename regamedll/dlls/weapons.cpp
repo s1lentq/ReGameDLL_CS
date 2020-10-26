@@ -917,7 +917,15 @@ void CBasePlayerWeapon::ItemPostFrame()
 
 		// Add them to the clip
 		m_iClip += j;
-		m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] -= j;
+
+#ifdef REGAMEDLL_ADD
+		// Do not remove bpammo of the player,
+		// if cvar allows to refill bpammo on during reloading the weapons
+		if (refill_bpammo_weapons.value < 3.0f)
+#endif
+		{
+			m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] -= j;
+		}
 
 		m_pPlayer->TabulateAmmo();
 		m_fInReload = FALSE;
@@ -1436,8 +1444,15 @@ bool EXT_FUNC CBasePlayerWeapon::__API_HOOK(DefaultShotgunReload)(int iAnim, int
 #endif
 	{
 		m_iClip++;
-		m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]--;
-		m_pPlayer->ammo_buckshot--;
+
+#ifdef REGAMEDLL_ADD
+		if (refill_bpammo_weapons.value < 3.0f)
+#endif
+		{
+			m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]--;
+			m_pPlayer->ammo_buckshot--;
+		}
+
 		m_fInSpecialReload = 1;
 	}
 
