@@ -4420,7 +4420,7 @@ int ReloadMapCycleFile(char *filename, mapcycle_t *cycle)
 
 #ifdef REGAMEDLL_FIXES
 			Q_strncpy(szMap, pToken, sizeof(szMap) - 1);
-			szMap[sizeof(szMap) - 1] = 0;
+			szMap[sizeof(szMap) - 1] = '\0';
 #else
 			Q_strcpy(szMap, pToken);
 #endif
