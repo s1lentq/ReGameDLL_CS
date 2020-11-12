@@ -1819,6 +1819,16 @@ void CBuyZone::BuyTouch(CBaseEntity *pOther)
 			return;
 #endif
 
+#ifdef REGAMEDLL_ADD
+		if (buy_anywhere.value == 1
+			|| (buy_anywhere.value == 2 && pPlayer->m_iTeam == TERRORIST)
+			|| (buy_anywhere.value == 3 && pPlayer->m_iTeam == CT)
+			)
+		{
+			return;
+		}
+#endif
+
 		pPlayer->m_signals.Signal(SIGNAL_BUY);
 	}
 }
