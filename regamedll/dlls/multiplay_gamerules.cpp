@@ -4418,7 +4418,12 @@ int ReloadMapCycleFile(char *filename, mapcycle_t *cycle)
 			if (Q_strlen(pToken) <= 0)
 				break;
 
+#ifdef REGAMEDLL_FIXES
+			Q_strncpy(szMap, pToken, sizeof(szMap) - 1);
+			szMap[sizeof(szMap) - 1] = '\0';
+#else
 			Q_strcpy(szMap, pToken);
+#endif
 
 			// Any more tokens on this line?
 			if (SharedTokenWaiting(pFileList))
