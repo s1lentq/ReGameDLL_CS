@@ -29,11 +29,14 @@ void CHintMessage::Send(CBaseEntity *client)
 void CHintMessageQueue::Reset()
 {
 	m_tmMessageEnd = 0;
-
+#ifdef REGAMEDLL_FIXES
+	m_messages.PurgeAndDeleteElements();
+#else
 	for (int i = 0; i < m_messages.Count(); i++)
 		delete m_messages[i];
 
 	m_messages.RemoveAll();
+#endif
 }
 
 void CHintMessageQueue::Update(CBaseEntity *client)

@@ -99,6 +99,7 @@ void CBasePlayer::OnDestroy()
 		delete[] m_rebuyString;
 		m_rebuyString = nullptr;
 	}
+	m_hintMessageQueue.Reset();
 }
 #endif
 
