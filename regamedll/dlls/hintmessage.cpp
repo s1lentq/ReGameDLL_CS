@@ -15,10 +15,7 @@ CHintMessage::CHintMessage(const char *hintString, bool isHint, CUtlVector<const
 
 CHintMessage::~CHintMessage()
 {
-	for (int i = 0; i < m_args.Count(); i++)
-		delete[] m_args[i];
-
-	m_args.RemoveAll();
+	m_args.PurgeAndDeleteArrays();
 }
 
 void CHintMessage::Send(CBaseEntity *client)
@@ -29,11 +26,7 @@ void CHintMessage::Send(CBaseEntity *client)
 void CHintMessageQueue::Reset()
 {
 	m_tmMessageEnd = 0;
-
-	for (int i = 0; i < m_messages.Count(); i++)
-		delete m_messages[i];
-
-	m_messages.RemoveAll();
+	m_messages.PurgeAndDeleteElements();
 }
 
 void CHintMessageQueue::Update(CBaseEntity *client)
