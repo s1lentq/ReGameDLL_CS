@@ -20,7 +20,7 @@ CHintMessage::~CHintMessage()
 
 void CHintMessage::Send(CBaseEntity *client)
 {
-	UTIL_ShowMessageArgs(m_hintString, client, &m_args, m_isHint);
+	UTIL_ShowMessageArgs(m_hintString.c_str(), client, &m_args, m_isHint);
 }
 
 void CHintMessageQueue::Reset()
