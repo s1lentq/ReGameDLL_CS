@@ -176,6 +176,10 @@ GAMEHOOK_REGISTRY(CGib_Spawn);
 GAMEHOOK_REGISTRY(CGib_BounceGibTouch);
 GAMEHOOK_REGISTRY(CGib_WaitTillLand);
 
+GAMEHOOK_REGISTRY(CBaseEntity_FireBullets);
+GAMEHOOK_REGISTRY(CBaseEntity_FireBuckshots);
+GAMEHOOK_REGISTRY(CBaseEntity_FireBullets3);
+
 int CReGameApi::GetMajorVersion() {
 	return REGAMEDLL_API_VERSION_MAJOR;
 }
