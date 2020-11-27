@@ -110,12 +110,7 @@ public:
 
 	virtual t_ret callOriginal(t_class *object, t_args... args)
 	{
-		if (m_OriginalFunc)
-		{
-			return (object->*m_OriginalFunc)(args...);
-		}
-
-		return GetDefaultValue<t_ret>();
+		return m_OriginalFunc ? (object->*m_OriginalFunc)(args...) : GetDefaultValue<t_ret>();
 	}
 
 	template <typename T>
