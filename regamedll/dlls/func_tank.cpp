@@ -659,6 +659,8 @@ void CFuncTankGun::Fire(const Vector &barrelEnd, const Vector &forward, entvars_
 		// FireBullets needs gpGlobals->v_up, etc.
 		UTIL_MakeAimVectors(pev->angles);
 
+		Vector vecBarrelEnd(barrelEnd), vecForward(forward);
+
 		int bulletCount = int((gpGlobals->time - m_fireLast) * m_fireRate);
 		if (bulletCount > 0)
 		{
@@ -667,13 +669,13 @@ void CFuncTankGun::Fire(const Vector &barrelEnd, const Vector &forward, entvars_
 				switch (m_bulletType)
 				{
 				case TANK_BULLET_9MM:
-					FireBullets(1, barrelEnd, forward, m_TankSpread[m_spread], 4096, BULLET_MONSTER_9MM, 1, m_iBulletDamage, pevAttacker);
+					FireBullets(1, vecBarrelEnd, vecForward, m_TankSpread[m_spread], 4096, BULLET_MONSTER_9MM, 1, m_iBulletDamage, pevAttacker);
 					break;
 				case TANK_BULLET_MP5:
-					FireBullets(1, barrelEnd, forward, m_TankSpread[m_spread], 4096, BULLET_MONSTER_MP5, 1, m_iBulletDamage, pevAttacker);
+					FireBullets(1, vecBarrelEnd, vecForward, m_TankSpread[m_spread], 4096, BULLET_MONSTER_MP5, 1, m_iBulletDamage, pevAttacker);
 					break;
 				case TANK_BULLET_12MM:
-					FireBullets(1, barrelEnd, forward, m_TankSpread[m_spread], 4096, BULLET_MONSTER_12MM, 1, m_iBulletDamage, pevAttacker);
+					FireBullets(1, vecBarrelEnd, vecForward, m_TankSpread[m_spread], 4096, BULLET_MONSTER_12MM, 1, m_iBulletDamage, pevAttacker);
 					break;
 				default:
 				case TANK_BULLET_NONE:
@@ -681,7 +683,7 @@ void CFuncTankGun::Fire(const Vector &barrelEnd, const Vector &forward, entvars_
 				}
 			}
 
-			CFuncTank::Fire(barrelEnd, forward, pevAttacker);
+			CFuncTank::Fire(vecBarrelEnd, vecForward, pevAttacker);
 		}
 	}
 	else

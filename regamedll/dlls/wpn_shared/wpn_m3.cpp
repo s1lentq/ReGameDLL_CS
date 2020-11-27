@@ -132,10 +132,12 @@ void CM3::PrimaryAttack()
 	float flBaseDamage = M3_DAMAGE;
 #endif
 
+	Vector vecCone(M3_CONE_VECTOR);
+
 #ifdef REGAMEDLL_FIXES
-	m_pPlayer->FireBuckshots(9, vecSrc, vecAiming, M3_CONE_VECTOR, 3000, 0, flBaseDamage);
+	m_pPlayer->FireBuckshots(9, vecSrc, vecAiming, vecCone, 3000.0f, 0, flBaseDamage, m_pPlayer->pev);
 #else
-	m_pPlayer->FireBullets(9, vecSrc, vecAiming, M3_CONE_VECTOR, 3000, BULLET_PLAYER_BUCKSHOT, 0);
+	m_pPlayer->FireBullets(9, vecSrc, vecAiming, vecCone, 3000, BULLET_PLAYER_BUCKSHOT, 0, 0, NULL);
 #endif
 
 #ifdef CLIENT_WEAPONS

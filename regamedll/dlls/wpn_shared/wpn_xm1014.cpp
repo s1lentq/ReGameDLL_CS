@@ -130,10 +130,12 @@ void CXM1014::PrimaryAttack()
 	float flBaseDamage = XM1014_DAMAGE;
 #endif
 
+	Vector vecCone(XM1014_CONE_VECTOR);
+
 #ifdef REGAMEDLL_FIXES
-	m_pPlayer->FireBuckshots(6, vecSrc, vecAiming, XM1014_CONE_VECTOR, 3048, 0, flBaseDamage);
+	m_pPlayer->FireBuckshots(6, vecSrc, vecAiming, vecCone, 3048.0f, 0, flBaseDamage, m_pPlayer->pev);
 #else
-	m_pPlayer->FireBullets(6, vecSrc, vecAiming, XM1014_CONE_VECTOR, 3048, BULLET_PLAYER_BUCKSHOT, 0);
+	m_pPlayer->FireBullets(6, vecSrc, vecAiming, vecCone, 3048, BULLET_PLAYER_BUCKSHOT, 0, 0, NULL);
 #endif
 
 #ifdef CLIENT_WEAPONS

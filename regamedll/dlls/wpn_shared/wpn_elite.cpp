@@ -174,7 +174,8 @@ void CELITE::ELITEFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 		m_pPlayer->SetAnimation(PLAYER_ATTACK1);
 		m_iWeaponState &= ~WPNSTATE_ELITE_LEFT;
 
-		vecDir = m_pPlayer->FireBullets3(vecSrc - gpGlobals->v_right * 5, vecAiming, flSpread,
+		vecSrc -= gpGlobals->v_right * 5;
+		vecDir = m_pPlayer->FireBullets3(vecSrc, vecAiming, flSpread,
 			8192, BULLET_PLAYER_9MM, 1, flBaseDamage, ELITE_RANGE_MODIFER, m_pPlayer->pev, true, m_pPlayer->random_seed);
 
 		PLAYBACK_EVENT_FULL(flag, m_pPlayer->edict(), m_usFireELITE_LEFT, 0, (float *)&g_vecZero, (float *)&g_vecZero, flTimeDiff, vecDir.x,
@@ -185,7 +186,8 @@ void CELITE::ELITEFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 		m_pPlayer->SetAnimation(PLAYER_ATTACK2);
 		m_iWeaponState |= WPNSTATE_ELITE_LEFT;
 
-		vecDir = m_pPlayer->FireBullets3(vecSrc + gpGlobals->v_right * 5, vecAiming, flSpread,
+		vecSrc += gpGlobals->v_right * 5;
+		vecDir = m_pPlayer->FireBullets3(vecSrc, vecAiming, flSpread,
 			8192, BULLET_PLAYER_9MM, 1, flBaseDamage, ELITE_RANGE_MODIFER, m_pPlayer->pev, true, m_pPlayer->random_seed);
 
 		PLAYBACK_EVENT_FULL(flag, m_pPlayer->edict(), m_usFireELITE_RIGHT, 0, (float *)&g_vecZero, (float *)&g_vecZero, flTimeDiff, vecDir.x,

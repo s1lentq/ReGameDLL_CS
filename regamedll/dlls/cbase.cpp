@@ -995,7 +995,10 @@ void CBaseEntity::TraceAttack(entvars_t *pevAttacker, float flDamage, Vector vec
 	}
 }
 
-void CBaseEntity::FireBullets(ULONG cShots, Vector vecSrc, Vector vecDirShooting, Vector vecSpread, float flDistance, int iBulletType, int iTracerFreq, int iDamage, entvars_t *pevAttacker)
+
+LINK_HOOK_CLASS_VOID_CHAIN(CBaseEntity, FireBullets, (ULONG cShots, VectorRef vecSrc, VectorRef vecDirShooting, VectorRef vecSpread, float flDistance, int iBulletType, int iTracerFreq, int iDamage, entvars_t *pevAttacker), cShots, vecSrc, vecDirShooting, vecSpread, flDistance, iBulletType, iTracerFreq, iDamage, pevAttacker)
+
+void CBaseEntity::__API_HOOK(FireBullets)(ULONG cShots, VectorRef vecSrc, VectorRef vecDirShooting, VectorRef vecSpread, float flDistance, int iBulletType, int iTracerFreq, int iDamage, entvars_t *pevAttacker)
 {
 	static int tracerCount;
 	int tracer;
@@ -1139,7 +1142,9 @@ void CBaseEntity::FireBullets(ULONG cShots, Vector vecSrc, Vector vecDirShooting
 	ApplyMultiDamage(pev, pevAttacker);
 }
 
-void CBaseEntity::FireBuckshots(ULONG cShots, Vector vecSrc, Vector vecDirShooting, Vector vecSpread, float flDistance, int iTracerFreq, int iDamage, entvars_t *pevAttacker)
+LINK_HOOK_CLASS_VOID_CHAIN(CBaseEntity, FireBuckshots, (ULONG cShots, VectorRef vecSrc, VectorRef vecDirShooting, VectorRef vecSpread, float flDistance, int iTracerFreq, int iDamage, entvars_t *pevAttacker), cShots, vecSrc, vecDirShooting, vecSpread, flDistance, iTracerFreq, iDamage, pevAttacker)
+
+void CBaseEntity::__API_HOOK(FireBuckshots)(ULONG cShots, VectorRef vecSrc, VectorRef vecDirShooting, VectorRef vecSpread, float flDistance, int iTracerFreq, int iDamage, entvars_t *pevAttacker)
 {
     static int tracerCount;
     int tracer;
@@ -1229,10 +1234,15 @@ bool EXT_FUNC IsPenetrableEntity_default(Vector &vecSrc, Vector &vecEnd, entvars
 	return true;
 }
 
+
+LINK_HOOK_CLASS_CHAIN(VectorRef, CBaseEntity, FireBullets3, (VectorRef vecSrc, VectorRef vecDirShooting, float vecSpread, float flDistance, int iPenetration, int iBulletType, int iDamage, float flRangeModifier, entvars_t *pevAttacker, bool bPistol, int shared_rand), vecSrc, vecDirShooting, vecSpread, flDistance, iPenetration, iBulletType, iDamage, flRangeModifier, pevAttacker, bPistol, shared_rand)
+	
 // Go to the trouble of combining multiple pellets into a single damage call.
 // This version is used by Players, uses the random seed generator to sync client and server side shots.
-Vector CBaseEntity::FireBullets3(Vector vecSrc, Vector vecDirShooting, float vecSpread, float flDistance, int iPenetration, int iBulletType, int iDamage, float flRangeModifier, entvars_t *pevAttacker, bool bPistol, int shared_rand)
+VectorRef CBaseEntity::__API_HOOK(FireBullets3)(VectorRef vecSrc, VectorRef vecDirShooting, float vecSpread, float flDistance, int iPenetration, int iBulletType, int iDamage, float flRangeModifier, entvars_t *pevAttacker, bool bPistol, int shared_rand)
 {
+	static Vector vecRet;
+
 	int iOriginalPenetration = iPenetration;
 	int iPenetrationPower;
 	float flPenetrationDistance;
@@ -1448,7 +1458,11 @@ Vector CBaseEntity::FireBullets3(Vector vecSrc, Vector vecDirShooting, float vec
 		ApplyMultiDamage(pev, pevAttacker);
 	}
 
-	return Vector(x * vecSpread, y * vecSpread, 0);
+	vecRet.x = x * vecSpread;
+	vecRet.y = y * vecSpread;
+	vecRet.z = 0;
+
+	return vecRet;
 }
 
 void CBaseEntity::TraceBleed(float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType)

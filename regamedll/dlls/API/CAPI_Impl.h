@@ -603,6 +603,18 @@ typedef IHookChainRegistryClassImpl<void, class CGib, CBaseEntity *> CReGameHook
 typedef IHookChainClassImpl<void, class CGib> CReGameHook_CGib_WaitTillLand;
 typedef IHookChainRegistryClassImpl<void, class CGib> CReGameHookRegistry_CGib_WaitTillLand;
 
+// CBaseEntity::FireBullets hook
+typedef IHookChainClassImpl<void, class CBaseEntity, ULONG, Vector &, Vector &, Vector &, float, int, int, int, entvars_t *> CReGameHook_CBaseEntity_FireBullets;
+typedef IHookChainRegistryClassImpl<void, class CBaseEntity, ULONG, Vector &, Vector &, Vector &, float, int, int, int, entvars_t *> CReGameHookRegistry_CBaseEntity_FireBullets;
+
+// CBaseEntity::FireBuckshots hook
+typedef IHookChainClassImpl<void, class CBaseEntity, ULONG, Vector &, Vector &, Vector &, float, int, int, entvars_t *> CReGameHook_CBaseEntity_FireBuckshots;
+typedef IHookChainRegistryClassImpl<void, class CBaseEntity, ULONG, Vector &, Vector &, Vector &, float, int, int, entvars_t *> CReGameHookRegistry_CBaseEntity_FireBuckshots;
+
+// CBaseEntity::FireBullets3 hook
+typedef IHookChainClassImpl<Vector &, class CBaseEntity, Vector &, Vector &, float, float, int, int, int, float, entvars_t *, bool, int> CReGameHook_CBaseEntity_FireBullets3;
+typedef IHookChainRegistryClassImpl<Vector &, class CBaseEntity, Vector &, Vector &, float, float, int, int, int, float, entvars_t *, bool, int> CReGameHookRegistry_CBaseEntity_FireBullets3;
+
 class CReGameHookchains: public IReGameHookchains {
 public:
 	// CBasePlayer virtual
@@ -725,6 +737,10 @@ public:
 	CReGameHookRegistry_CGib_BounceGibTouch m_CGib_BounceGibTouch;
 	CReGameHookRegistry_CGib_WaitTillLand m_CGib_WaitTillLand;
 
+	CReGameHookRegistry_CBaseEntity_FireBullets m_CBaseEntity_FireBullets;
+	CReGameHookRegistry_CBaseEntity_FireBuckshots m_CBaseEntity_FireBuckshots;
+	CReGameHookRegistry_CBaseEntity_FireBullets3 m_CBaseEntity_FireBullets3;
+
 public:
 	virtual IReGameHookRegistry_CBasePlayer_Spawn *CBasePlayer_Spawn();
 	virtual IReGameHookRegistry_CBasePlayer_Precache *CBasePlayer_Precache();
@@ -844,6 +860,10 @@ public:
 	virtual IReGameHookRegistry_CGib_Spawn *CGib_Spawn();
 	virtual IReGameHookRegistry_CGib_BounceGibTouch *CGib_BounceGibTouch();
 	virtual IReGameHookRegistry_CGib_WaitTillLand *CGib_WaitTillLand();
+
+	virtual IReGameHookRegistry_CBaseEntity_FireBullets *CBaseEntity_FireBullets();
+	virtual IReGameHookRegistry_CBaseEntity_FireBuckshots *CBaseEntity_FireBuckshots();
+	virtual IReGameHookRegistry_CBaseEntity_FireBullets3 *CBaseEntity_FireBullets3();
 };
 
 extern CReGameHookchains g_ReGameHookchains;
