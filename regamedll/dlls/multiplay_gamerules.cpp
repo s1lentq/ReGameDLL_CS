@@ -3580,6 +3580,9 @@ void CHalfLifeMultiplay::ClientDisconnected(edict_t *pClient)
 					int iMode = pObserver->pev->iuser1;
 
 					pObserver->pev->iuser1 = OBS_NONE;
+#ifdef REGAMEDLL_FIXES
+					pObserver->m_flNextFollowTime = 0.0;
+#endif
 					pObserver->Observer_SetMode(iMode);
 				}
 			}
