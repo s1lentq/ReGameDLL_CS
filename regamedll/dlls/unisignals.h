@@ -39,7 +39,7 @@ class CUnifiedSignals
 public:
 	CUnifiedSignals()
 	{
-		Clear();
+		Reset();
 	}
 public:
 	void Update()
@@ -51,7 +51,7 @@ public:
 	int GetSignal() const { return m_flSignal; }
 	int GetState() const { return m_flState; }
 
-	void Clear()
+	void Reset()
 	{
 		m_flState = 0;
 		m_flSignal = 0;

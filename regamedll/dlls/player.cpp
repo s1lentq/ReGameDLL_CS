@@ -7045,7 +7045,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(UpdateClientData)()
 		m_fInitHUD = FALSE;
 		gInitHUD = FALSE;
 #ifdef REGAMEDLL_FIXES
-		m_signals.Clear();
+		m_signals.Reset();
 #else
 		m_signals.Update();
 #endif
