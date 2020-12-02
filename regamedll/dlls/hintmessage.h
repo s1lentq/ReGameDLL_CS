@@ -65,7 +65,7 @@ public:
 	void Send(CBaseEntity *client);
 
 private:
-	const char *m_hintString;
+	char *m_hintString;
 	bool m_isHint;
 	CUtlVector<char *> m_args;
 	float m_duration;
