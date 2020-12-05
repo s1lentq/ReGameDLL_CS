@@ -3212,10 +3212,13 @@ BOOL EXT_FUNC CHalfLifeMultiplay::__API_HOOK(FShouldSwitchWeapon)(CBasePlayer *p
 		return TRUE;
 	}
 
-	CBasePlayerWeapon* weapon = static_cast<CBasePlayerWeapon*>(pPlayer->m_pActiveItem);
-
-	if (!pPlayer->m_iAutoWepSwitch || (pPlayer->m_iAutoWepSwitch == 2 && (weapon->m_flNextPrimaryAttack > UTIL_WeaponTimeBase() || weapon->m_flNextSecondaryAttack > UTIL_WeaponTimeBase())))
+	if (pPlayer->m_iAutoWepSwitch == 0)
 		return FALSE;
+
+#ifdef REGAMEDLL_ADD
+	if (pPlayer->m_iAutoWepSwitch == 2 && (pPlayer->m_afButtonLast & (IN_ATTACK | IN_ATTACK2)))
+		return FALSE;
+#endif
 
 	if (!pPlayer->m_pActiveItem->CanHolster())
 	{
@@ -3741,9 +3744,18 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(PlayerSpawn)(CBasePlayer *pPlayer)
 	if (pPlayer->m_bJustConnected)
 		return;
 
+#ifdef REGAMEDLL_ADD
+	int iAutoWepSwitch = pPlayer->m_iAutoWepSwitch;
+	pPlayer->m_iAutoWepSwitch = 1;
+#endif
+
 	pPlayer->pev->weapons |= (1 << WEAPON_SUIT);
 	pPlayer->OnSpawnEquip();
 	pPlayer->SetPlayerModel(false);
+
+#ifdef REGAMEDLL_ADD
+	pPlayer->m_iAutoWepSwitch = iAutoWepSwitch;
+#endif
 
 #ifdef REGAMEDLL_ADD
 	if (respawn_immunitytime.value > 0)
