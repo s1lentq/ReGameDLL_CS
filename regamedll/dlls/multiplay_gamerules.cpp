@@ -2093,6 +2093,11 @@ BOOL CHalfLifeMultiplay::IsThereABomb()
 	return FALSE;
 }
 
+CGrenade* CHalfLifeMultiplay::CreateBomb(entvars_t* pevOwner, Vector vecOrigin, Vector vecAngles)
+{
+	return CGrenade::ShootSatchelCharge(pevOwner, vecOrigin, vecAngles);
+}
+
 BOOL CHalfLifeMultiplay::TeamFull(int team_id)
 {
 	switch (team_id)

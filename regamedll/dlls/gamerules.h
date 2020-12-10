@@ -671,6 +671,7 @@ public:
 	VFUNC BOOL IsThereABomber();
 	VFUNC BOOL IsThereABomb();
 	VFUNC TeamName SelectDefaultTeam();
+	VFUNC CGrenade* CreateBomb(entvars_t* pevOwner, Vector vecOrigin, Vector vecAngles);
 
 	bool IsMatchStarted() { return (m_flRestartRoundTime != 0.0f || m_fCareerRoundMenuTime != 0.0f || m_fCareerMatchMenuTime != 0.0f); }
 	void SendMOTDToClient(edict_t *client);
