@@ -806,8 +806,16 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 		p[Q_strlen(p) - 1] = '\0';
 	}
 
+	// Check if buffer contains an invalid unicode sequence
+	// This can happen after truncation up to 127 chars into SV_ParseStringCommand
+	if (!Q_UnicodeValidate(p))
+	{
+		// Try fix invalid sequence in UTF-8
+		Q_UnicodeRepair(p);
+	}
+
 	// make sure the text has content
-	if (/*!p || */!p[0] || !Q_UnicodeValidate(p))
+	if (!p[0])
 	{
 		// no character found, so say nothing
 		return;
