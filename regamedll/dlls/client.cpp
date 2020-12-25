@@ -772,7 +772,8 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 	{
 		if (CMD_ARGC_() >= 2)
 		{
-			p = (char *)CMD_ARGS();
+			Q_strlcpy(szTemp, CMD_ARGS());
+			p = szTemp;
 		}
 		else
 		{
