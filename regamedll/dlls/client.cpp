@@ -785,12 +785,12 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 	{
 		if (CMD_ARGC_() >= 2)
 		{
-			Q_sprintf(szTemp, "%s %s", (char *)pcmd, (char *)CMD_ARGS());
+			Q_sprintf(szTemp, "%s %s", pcmd, CMD_ARGS());
 		}
 		else
 		{
 			// Just a one word command, use the first word...sigh
-			Q_sprintf(szTemp, "%s", (char *)pcmd);
+			Q_sprintf(szTemp, "%s", pcmd);
 		}
 
 		p = szTemp;
@@ -3637,7 +3637,7 @@ void EXT_FUNC ClientUserInfoChanged(edict_t *pEntity, char *infobuffer)
 		if (!pPlayer->SetClientUserInfoName(infobuffer, szName))
 		{
 			// so to back old name into buffer
-			SET_CLIENT_KEY_VALUE(pPlayer->entindex(), infobuffer, "name", (char *)STRING(pPlayer->pev->netname));
+			SET_CLIENT_KEY_VALUE(pPlayer->entindex(), infobuffer, "name", STRING(pPlayer->pev->netname));
 		}
 	}
 
@@ -3936,7 +3936,7 @@ void ClientPrecache()
 			if (!fname)
 				break;
 
-			PRECACHE_MODEL((char *)fname);
+			PRECACHE_MODEL(fname);
 		}
 	}
 
