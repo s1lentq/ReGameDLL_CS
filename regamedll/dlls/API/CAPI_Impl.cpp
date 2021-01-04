@@ -38,6 +38,10 @@ const char *EXT_FUNC Cmd_Argv_api(int i) {
 	return CMD_ARGV_(i);
 }
 
+CGrenade *PlantBomb_api(entvars_t *pevOwner, Vector &vecStart, Vector &vecVelocity) {
+	return CGrenade::ShootSatchelCharge(pevOwner, vecStart, vecVelocity);
+}
+
 ReGameFuncs_t g_ReGameApiFuncs = {
 	&CREATE_NAMED_ENTITY,
 
@@ -54,7 +58,9 @@ ReGameFuncs_t g_ReGameApiFuncs = {
 	&RemoveEntityHashValue,
 
 	Cmd_Argc_api,
-	Cmd_Argv_api
+	Cmd_Argv_api,
+
+	PlantBomb_api
 };
 
 GAMEHOOK_REGISTRY(CBasePlayer_Spawn);

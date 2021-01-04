@@ -38,7 +38,7 @@
 #include <API/CSInterfaces.h>
 
 #define REGAMEDLL_API_VERSION_MAJOR 5
-#define REGAMEDLL_API_VERSION_MINOR 19
+#define REGAMEDLL_API_VERSION_MINOR 20
 
 // CBasePlayer::Spawn hook
 typedef IHookChainClass<void, class CBasePlayer> IReGameHook_CBasePlayer_Spawn;
@@ -641,6 +641,7 @@ struct ReGameFuncs_t {
 	void (*RemoveEntityHashValue)(entvars_t *pev, const char *value, hash_types_e fieldType);
 	int (*Cmd_Argc)();
 	const char *(*Cmd_Argv)(int i);
+	class CGrenade *(*PlantBomb)(entvars_t *pevOwner, Vector &vecStart, Vector &vecVelocity);
 };
 
 class IReGameApi {
