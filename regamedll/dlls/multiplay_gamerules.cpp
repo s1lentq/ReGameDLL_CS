@@ -1502,6 +1502,12 @@ void CHalfLifeMultiplay::SwapAllPlayers()
 		if (pEntity->IsDormant())
 			continue;
 
+#ifdef REGAMEDLL_FIXES
+		// ignore HLTV
+		if (pEntity->IsProxy())
+			continue;
+#endif
+
 		CBasePlayer *pPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev);
 		pPlayer->SwitchTeam();
 	}
