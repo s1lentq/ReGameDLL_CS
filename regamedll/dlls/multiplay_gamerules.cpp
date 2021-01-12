@@ -3017,9 +3017,18 @@ void CHalfLifeMultiplay::CheckRoundTimeExpired()
 #ifdef REGAMEDLL_ADD
 	else if (roundover.value)
 	{
-		// round is over
-		if (!OnRoundEnd_Intercept(WINSTATUS_DRAW, ROUND_GAME_OVER, GetRoundRestartDelay()))
-			return;
+		switch ((int)roundover.value)
+		{
+		case 1:
+			if (!OnRoundEnd_Intercept(WINSTATUS_TERRORISTS, ROUND_TERRORISTS_WIN, CSGameRules()->GetRoundRestartDelay()))
+				return;
+		case 2:
+			if(!OnRoundEnd_Intercept(WINSTATUS_CTS, ROUND_CTS_WIN, CSGameRules()->GetRoundRestartDelay()))
+				return;
+		default:
+			if (!OnRoundEnd_Intercept(WINSTATUS_DRAW, ROUND_GAME_OVER, GetRoundRestartDelay()))
+				return;
+		}	
 	}
 #endif
 
