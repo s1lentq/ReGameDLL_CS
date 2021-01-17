@@ -54,6 +54,13 @@ enum BuyItemMenuSlot
 	MENU_SLOT_ITEM_SHIELD,
 };
 
+// custom enum
+enum
+{
+	BLOCK_VOTE		= BIT(0),
+	BLOCK_VOTEMAP	= BIT(1),
+};
+
 #define CS_NUM_SKIN				4
 #define CZ_NUM_SKIN				5
 
@@ -207,6 +214,21 @@ inline const char *GetTeamName(int team)
 	default:        return "UNASSIGNED";
 	}
 }
+
+#ifdef REGAMEDLL_ADD
+inline const bool HasBlockedCommand(const int flags = 0)
+{
+	if (block_votecommands.value)
+		return true;
+
+	if (flags && (flags & UTIL_ReadFlags(block_votecommands.string)))
+		return true;
+
+	return false;
+}
+#endif 
+
+
 
 extern int gmsgWeapPickup;
 extern int gmsgHudText;

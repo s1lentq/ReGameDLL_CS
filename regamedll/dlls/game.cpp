@@ -148,6 +148,7 @@ cvar_t ff_damage_reduction_other        = { "ff_damage_reduction_other",        
 cvar_t radio_timeout           = { "mp_radio_timeout", "1.5", FCVAR_SERVER, 1.5f, nullptr };
 cvar_t radio_maxinround        = { "mp_radio_maxinround", "60", FCVAR_SERVER, 60.0f, nullptr };
 cvar_t falldamage              = { "mp_falldamage", "1", FCVAR_SERVER, 1.0f, nullptr };
+cvar_t block_votecommands      = { "sv_block_votecommands", "0", FCVAR_SERVER, 0.0f, nullptr };
 
 cvar_t ct_default_grenades               = { "mp_ct_default_grenades", "", 0, 0.0f, nullptr };
 cvar_t ct_give_player_knife              = { "mp_ct_give_player_knife", "1", 0, 1.0f, nullptr };
@@ -370,6 +371,7 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&radio_timeout);
 	CVAR_REGISTER(&radio_maxinround);
 	CVAR_REGISTER(&falldamage);
+	CVAR_REGISTER(&block_votecommands);
 
 	CVAR_REGISTER(&ct_default_grenades);
 	CVAR_REGISTER(&ct_give_player_knife);

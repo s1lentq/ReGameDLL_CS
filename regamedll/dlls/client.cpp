@@ -2593,6 +2593,14 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 	}
 	else if (FStrEq(pcmd, "vote"))
 	{
+#ifdef REGAMEDLL_ADD
+		if (HasBlockedCommand(BLOCK_VOTE))
+		{
+			ClientPrint(pPlayer->pev, HUD_PRINTCONSOLE, "Comando bloqueado por el servidor");
+			return;
+		}
+#endif // REGAMEDLL_ADD
+
 		if (gpGlobals->time >= pPlayer->m_flLastCommandTime[CMD_VOTE])
 		{
 			pPlayer->m_flLastCommandTime[CMD_VOTE] = gpGlobals->time + 0.3f;
@@ -2674,6 +2682,13 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 	}
 	else if (FStrEq(pcmd, "votemap"))
 	{
+#ifdef REGAMEDLL_ADD
+		if (HasBlockedCommand(BLOCK_VOTEMAP))
+		{
+			ClientPrint(pPlayer->pev, HUD_PRINTCONSOLE, "Comando bloqueado por el servidor");
+			return;
+		}
+#endif // REGAMEDLL_ADD
 		if (gpGlobals->time >= pPlayer->m_flLastCommandTime[CMD_VOTEMAP])
 		{
 			pPlayer->m_flLastCommandTime[CMD_VOTEMAP] = gpGlobals->time + 0.3f;
