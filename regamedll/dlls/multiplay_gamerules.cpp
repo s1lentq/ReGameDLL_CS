@@ -3021,7 +3021,7 @@ void CHalfLifeMultiplay::CheckRoundTimeExpired()
 		{
 		case 1:
 		{
-			if (!OnRoundEnd_Intercept(WINSTATUS_TERRORISTS, ROUND_TERRORISTS_WIN, GetRoundRestartDelay()))
+			if (!OnRoundEnd_Intercept(WINSTATUS_DRAW, ROUND_GAME_OVER, GetRoundRestartDelay()))
 			{
 				return;
 			}
@@ -3030,16 +3030,16 @@ void CHalfLifeMultiplay::CheckRoundTimeExpired()
 		}
 		case 2:
 		{
-			if (!OnRoundEnd_Intercept(WINSTATUS_CTS, ROUND_CTS_WIN, GetRoundRestartDelay()))
+			if (!OnRoundEnd_Intercept(WINSTATUS_TERRORISTS, ROUND_TERRORISTS_WIN, GetRoundRestartDelay()))
 			{
 				return;
 			}
 
 			break;
 		}
-		default:
+		case 3:
 		{
-			if (!OnRoundEnd_Intercept(WINSTATUS_DRAW, ROUND_GAME_OVER, GetRoundRestartDelay()))
+			if (!OnRoundEnd_Intercept(WINSTATUS_CTS, ROUND_CTS_WIN, GetRoundRestartDelay()))
 			{
 				return;
 			}
