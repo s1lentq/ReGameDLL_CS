@@ -1629,6 +1629,47 @@ void CBasePlayerWeapon::InstantReload(bool bCanRefillBPAmmo)
 	m_pPlayer->TabulateAmmo();
 }
 
+LINK_HOOK_CLASS_CHAIN(float, CBasePlayerWeapon, GetArmorPenetrationRatio, (WeaponIdType weaponId), weaponId)
+
+float EXT_FUNC CBasePlayerWeapon::__API_HOOK(GetArmorPenetrationRatio)(WeaponIdType weaponId)
+{
+	float flRatio = 1.0f;
+
+	switch (weaponId)
+	{
+	case WEAPON_FAMAS:
+	case WEAPON_SG552:
+	case WEAPON_AUG:
+	case WEAPON_M4A1:		flRatio = 1.4;  break;
+	case WEAPON_AWP:		flRatio = 1.95; break;
+	case WEAPON_G3SG1:		flRatio = 1.65; break;
+	case WEAPON_SG550:		flRatio = 1.45; break;
+	case WEAPON_M249:		flRatio = 1.5;  break;
+	case WEAPON_ELITE:		flRatio = 1.05; break;
+	case WEAPON_DEAGLE:		flRatio = 1.5;  break;
+	case WEAPON_GLOCK18:	flRatio = 1.05; break;
+	case WEAPON_FIVESEVEN:
+	case WEAPON_P90:
+		flRatio = 1.5;
+		break;
+	case WEAPON_MAC10:
+		flRatio = 0.95;
+		break;
+	case WEAPON_P228:
+		flRatio = 1.25;
+		break;
+	case WEAPON_SCOUT:
+	case WEAPON_KNIFE:
+		flRatio = 1.7;
+		break;
+	case WEAPON_GALIL:
+	case WEAPON_AK47:
+		flRatio = 1.55;
+		break;
+	}
+
+	return flRatio;
+}
 TYPEDESCRIPTION CWeaponBox::m_SaveData[] =
 {
 	DEFINE_ARRAY(CWeaponBox, m_rgAmmo, FIELD_INTEGER, MAX_AMMO_SLOTS),
