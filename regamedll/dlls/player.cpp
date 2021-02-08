@@ -1088,8 +1088,7 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 			CBasePlayerWeapon *pWeapon = static_cast<CBasePlayerWeapon *>(pAttack->m_pActiveItem);
 			
 			iGunType = pWeapon->m_iId;
-			flRatio += flShieldRatio;
-			flRatio *= pWeapon->GetArmorPenetrationRatio((WeaponIdType)iGunType);
+			flRatio = pWeapon->GetArmorDamageFactor(flRatio, flShieldRatio);
 		}
 
 		if (!ShouldDoLargeFlinch(m_LastHitGroup, iGunType))

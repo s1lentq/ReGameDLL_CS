@@ -1629,47 +1629,50 @@ void CBasePlayerWeapon::InstantReload(bool bCanRefillBPAmmo)
 	m_pPlayer->TabulateAmmo();
 }
 
-LINK_HOOK_CLASS_CHAIN(float, CBasePlayerWeapon, GetArmorPenetrationRatio, (WeaponIdType weaponId), weaponId)
+LINK_HOOK_CLASS_CHAIN(float, CBasePlayerWeapon, GetArmorDamageFactor, (float flRatio, float flShieldRatio), flRatio, flShieldRatio)
 
-float EXT_FUNC CBasePlayerWeapon::__API_HOOK(GetArmorPenetrationRatio)(WeaponIdType weaponId)
+float EXT_FUNC CBasePlayerWeapon::__API_HOOK(GetArmorDamageFactor)(float flRatio, float flShieldRatio)
 {
-	float flRatio = 1.0f;
+	float flNewRatio = flRatio;
 
-	switch (weaponId)
+	flNewRatio += flShieldRatio;
+
+	switch (m_iId)
 	{
 	case WEAPON_FAMAS:
 	case WEAPON_SG552:
 	case WEAPON_AUG:
-	case WEAPON_M4A1:		flRatio = 1.4;  break;
-	case WEAPON_AWP:		flRatio = 1.95; break;
-	case WEAPON_G3SG1:		flRatio = 1.65; break;
-	case WEAPON_SG550:		flRatio = 1.45; break;
-	case WEAPON_M249:		flRatio = 1.5;  break;
-	case WEAPON_ELITE:		flRatio = 1.05; break;
-	case WEAPON_DEAGLE:		flRatio = 1.5;  break;
-	case WEAPON_GLOCK18:	flRatio = 1.05; break;
+	case WEAPON_M4A1:		flNewRatio *= 1.4;  break;
+	case WEAPON_AWP:		flNewRatio *= 1.95; break;
+	case WEAPON_G3SG1:		flNewRatio *= 1.65; break;
+	case WEAPON_SG550:		flNewRatio *= 1.45; break;
+	case WEAPON_M249:		flNewRatio *= 1.5;  break;
+	case WEAPON_ELITE:		flNewRatio *= 1.05; break;
+	case WEAPON_DEAGLE:		flNewRatio *= 1.5;  break;
+	case WEAPON_GLOCK18:	flNewRatio *= 1.05; break;
 	case WEAPON_FIVESEVEN:
 	case WEAPON_P90:
-		flRatio = 1.5;
+		flNewRatio *= 1.5;
 		break;
 	case WEAPON_MAC10:
-		flRatio = 0.95;
+		flNewRatio *= 0.95;
 		break;
 	case WEAPON_P228:
-		flRatio = 1.25;
+		flNewRatio *= 1.25;
 		break;
 	case WEAPON_SCOUT:
 	case WEAPON_KNIFE:
-		flRatio = 1.7;
+		flNewRatio *= 1.7;
 		break;
 	case WEAPON_GALIL:
 	case WEAPON_AK47:
-		flRatio = 1.55;
+		flNewRatio *= 1.55;
 		break;
 	}
 
-	return flRatio;
+	return flNewRatio;
 }
+
 TYPEDESCRIPTION CWeaponBox::m_SaveData[] =
 {
 	DEFINE_ARRAY(CWeaponBox, m_rgAmmo, FIELD_INTEGER, MAX_AMMO_SLOTS),

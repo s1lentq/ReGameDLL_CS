@@ -575,9 +575,9 @@ typedef IHookChainRegistryClassImpl<int, CBasePlayerWeapon, int, int, float> CRe
 typedef IHookChainClassImpl<bool, CBasePlayerWeapon, int, int, float, float, const char *, const char *> CReGameHook_CBasePlayerWeapon_DefaultShotgunReload;
 typedef IHookChainRegistryClassImpl<bool, CBasePlayerWeapon, int, int, float, float, const char *, const char *> CReGameHookRegistry_CBasePlayerWeapon_DefaultShotgunReload;
 
-// CBasePlayerWeapon::GetArmorPenetrationRatio hook
-typedef IHookChainClassImpl<float, class CBasePlayerWeapon, WeaponIdType> CReGameHook_CBasePlayerWeapon_GetArmorPenetrationRatio;
-typedef IHookChainRegistryClassImpl<float, class CBasePlayerWeapon, WeaponIdType> CReGameHookRegistry_CBasePlayerWeapon_GetArmorPenetrationRatio;
+// CBasePlayerWeapon::GetArmorDamageFactor hook
+typedef IHookChainClassImpl<float, class CBasePlayerWeapon, float, float> CReGameHook_CBasePlayerWeapon_GetArmorDamageFactor;
+typedef IHookChainRegistryClassImpl<float, class CBasePlayerWeapon, float, float> CReGameHookRegistry_CBasePlayerWeapon_GetArmorDamageFactor;
 
 // CBasePlayer::DropIdlePlayer hook
 typedef IHookChainClassImpl<void, class CBasePlayer, const char *> CReGameHook_CBasePlayer_DropIdlePlayer;
@@ -732,7 +732,7 @@ public:
 	CReGameHookRegistry_CBasePlayerWeapon_DefaultDeploy m_CBasePlayerWeapon_DefaultDeploy;
 	CReGameHookRegistry_CBasePlayerWeapon_DefaultReload m_CBasePlayerWeapon_DefaultReload;
 	CReGameHookRegistry_CBasePlayerWeapon_DefaultShotgunReload m_CBasePlayerWeapon_DefaultShotgunReload;
-	CReGameHookRegistry_CBasePlayerWeapon_GetArmorPenetrationRatio m_CBasePlayerWeapon_GetArmorPenetrationRatio;
+	CReGameHookRegistry_CBasePlayerWeapon_GetArmorDamageFactor m_CBasePlayerWeapon_GetArmorDamageFactor;
 	CReGameHookRegistry_CBasePlayer_DropIdlePlayer m_CBasePlayer_DropIdlePlayer;
 	CReGameHookRegistry_CreateWeaponBox m_CreateWeaponBox;
 
@@ -857,7 +857,7 @@ public:
 	virtual IReGameHookRegistry_CBasePlayerWeapon_DefaultDeploy *CBasePlayerWeapon_DefaultDeploy();
 	virtual IReGameHookRegistry_CBasePlayerWeapon_DefaultReload *CBasePlayerWeapon_DefaultReload();
 	virtual IReGameHookRegistry_CBasePlayerWeapon_DefaultShotgunReload *CBasePlayerWeapon_DefaultShotgunReload();
-	virtual IReGameHookRegistry_CBasePlayerWeapon_GetArmorPenetrationRatio *CBasePlayerWeapon_GetArmorPenetrationRatio();
+	virtual IReGameHookRegistry_CBasePlayerWeapon_GetArmorDamageFactor *CBasePlayerWeapon_GetArmorDamageFactor();
 	virtual IReGameHookRegistry_CBasePlayer_DropIdlePlayer *CBasePlayer_DropIdlePlayer();
 	virtual IReGameHookRegistry_CreateWeaponBox *CreateWeaponBox();
 
