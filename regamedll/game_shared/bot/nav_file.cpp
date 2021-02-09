@@ -68,7 +68,11 @@ Place PlaceDirectory::EntryToPlace(EntryType entry) const
 		return UNDEFINED_PLACE;
 
 	unsigned int i = entry - 1;
+#ifdef REGAMEDLL_FIXES
+	if (i >= m_directory.size())
+#else
 	if (i > m_directory.size())
+#endif
 	{
 		assert(false && "PlaceDirectory::EntryToPlace: Invalid entry");
 		return UNDEFINED_PLACE;
