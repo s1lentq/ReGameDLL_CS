@@ -1380,7 +1380,7 @@ void SENTENCEG_Init()
 #ifdef REGAMEDLL_FIXES
 	while (i < MAX_SENTENCE_GROUPS && rgsentenceg[i].count)
 #else
-	while (rgsentenceg[i].count && i < MAX_SENTENCE_GROUPS) // overflow
+	while (rgsentenceg[i].count/* array index out of bounds*/ && i < MAX_SENTENCE_GROUPS)
 #endif
 	{
 		USENTENCEG_InitLRU(&(rgsentenceg[i].rgblru[0]), rgsentenceg[i].count);
