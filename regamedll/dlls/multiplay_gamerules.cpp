@@ -4914,7 +4914,10 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(ChangeLevel)()
 		ExtractCommandString(item->rulebuffer, szCommands);
 		Q_strcpy(szRules, item->rulebuffer);
 	}
-
+#ifdef REGAMEDLL_FIXES
+	else Q_strcpy(szNextMap, szFirstMapInList);
+#endif
+	
 	if (!IS_MAP_VALID(szNextMap))
 	{
 		Q_strcpy(szNextMap, szFirstMapInList);
