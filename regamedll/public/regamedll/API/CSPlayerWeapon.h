@@ -33,7 +33,8 @@ class CCSPlayerWeapon: public CCSPlayerItem
 {
 public:
 	CCSPlayerWeapon() :
-		m_bHasSecondaryAttack(false)
+		m_bHasSecondaryAttack(false),
+		m_flArmorDamageFactor(0)
 	{
 	}
 
@@ -42,6 +43,7 @@ public:
 public:
 	bool m_bHasSecondaryAttack;
 	float m_flBaseDamage;
+	float m_flArmorDamageFactor;
 };
 
 // Inlines

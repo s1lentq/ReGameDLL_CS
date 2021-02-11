@@ -1144,6 +1144,7 @@ void CBasePlayerWeapon::Spawn()
 	}
 
 	CSPlayerWeapon()->m_bHasSecondaryAttack = HasSecondaryAttack();
+	CSPlayerWeapon()->m_flArmorDamageFactor == 0.0f;
 }
 
 // CALLED THROUGH the newly-touched weapon's instance. The existing player weapon is pOriginal
@@ -1636,6 +1637,15 @@ float EXT_FUNC CBasePlayerWeapon::__API_HOOK(GetArmorDamageFactor)(float flRatio
 	float flNewRatio = flRatio;
 
 	flNewRatio += flShieldRatio;
+
+#ifdef REGAMEDLL_API
+	if (CSPlayerWeapon()->m_flArmorDamageFactor != 0.0f)
+	{
+		flNewRatio *= CSPlayerWeapon()->m_flArmorDamageFactor;
+
+		return flNewRatio;
+	}
+#endif
 
 	switch (m_iId)
 	{
