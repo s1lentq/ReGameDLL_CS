@@ -5877,7 +5877,7 @@ void CBasePlayer::Reset()
 #endif
 
 #ifdef REGAMEDLL_ADD
-	m_lastCmdTime = 0.0f;
+	m_lastCmdTime = gpGlobals->time;
 #endif
 
 #ifndef REGAMEDLL_FIXES
