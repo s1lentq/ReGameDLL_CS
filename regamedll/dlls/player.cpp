@@ -4677,7 +4677,6 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 
 	UpdateLocation();
 
-
 #ifdef REGAMEDLL_ADD
 	auto protectStateCurrent = CSPlayer()->GetProtectionState();
 	if (protectStateCurrent  == CCSPlayer::ProtectionSt_Expired || (respawn_immunity_force_unset.value &&
