@@ -383,7 +383,7 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&t_default_weapons_secondary);
 	CVAR_REGISTER(&t_default_weapons_primary);
 
-	CVAR_REGISTER(&timeout);
+	CVAR_REGISTER(&cl_timeout);
 
 	// print version
 	CONSOLE_ECHO("ReGameDLL version: " APP_VERSION "\n");
