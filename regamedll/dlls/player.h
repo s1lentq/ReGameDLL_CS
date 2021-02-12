@@ -885,6 +885,10 @@ public:
 	int m_iLastClientHealth;
 	float m_tmNextAccountHealthUpdate;
 #endif
+
+#ifdef REGAMEDLL_ADD
+	float m_lastCmdTime;
+#endif
 };
 
 CWeaponBox *CreateWeaponBox(CBasePlayerItem *pItem, CBasePlayer *pPlayerOwner, const char *modelName, Vector &origin, Vector &angles, Vector &velocity, float lifeTime, bool packAmmo);

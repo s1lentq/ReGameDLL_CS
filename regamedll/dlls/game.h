@@ -184,6 +184,9 @@ extern cvar_t t_give_player_knife;
 extern cvar_t t_default_weapons_secondary;
 extern cvar_t t_default_weapons_primary;
 
+
+extern cvar_t cl_timeout;
+
 #endif
 
 extern cvar_t scoreboard_showmoney;

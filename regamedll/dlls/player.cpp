@@ -4426,7 +4426,19 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 	}
 
 	if (m_iJoiningState != JOINED)
+	{
 		JoiningThink();
+#ifdef REGAMEDLL_ADD
+		m_lastCmdTime = 0.0f;
+#endif
+	}
+#ifdef REGAMEDLL_ADD
+	else if (!IsBot() && m_lastCmdTime - gpGlobals->time > cl_timeout.value)
+	{
+		DropIdlePlayer("Player cmd idle");
+		m_lastCmdTime = 0.0f;
+	}
+#endif
 
 	// Mission Briefing text, remove it when the player hits an important button
 	if (m_bMissionBriefing)
@@ -4664,6 +4676,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 	}
 
 	UpdateLocation();
+
 
 #ifdef REGAMEDLL_ADD
 	auto protectStateCurrent = CSPlayer()->GetProtectionState();
@@ -5861,6 +5874,10 @@ void CBasePlayer::Reset()
 
 #ifndef REGAMEDLL_ADD
 	m_iAccount = 0;
+#endif
+
+#ifdef REGAMEDLL_ADD
+	m_lastCmdTime = 0.0f;
 #endif
 
 #ifndef REGAMEDLL_FIXES
