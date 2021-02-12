@@ -4429,11 +4429,11 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 	{
 		JoiningThink();
 #ifdef REGAMEDLL_ADD
-		m_lastCmdTime = 0.0f;
+		m_lastCmdTime = gpGlobals->time;
 #endif
 	}
 #ifdef REGAMEDLL_ADD
-	else if (!IsBot() && m_lastCmdTime - gpGlobals->time > cl_timeout.value)
+	else if (!IsBot() && gpGlobals->time - m_lastCmdTime > cl_timeout.value)
 	{
 		DropIdlePlayer("Player cmd idle");
 		m_lastCmdTime = 0.0f;
