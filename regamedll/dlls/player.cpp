@@ -822,8 +822,8 @@ LINK_HOOK_CLASS_CHAIN(BOOL, CBasePlayer, TakeDamage, (entvars_t *pevInflictor, e
 BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, FloatRef flDamage, int bitsDamageType)
 {
 	BOOL bTookDamage;
-	float flRatio = ARMOR_RATIO;
-	float flBonus = ARMOR_BONUS;
+	float flRatio;
+	float flBonus;
 	int iGunType = 0;
 	float flShieldRatio = 0;
 	BOOL bTeamAttack = FALSE;
@@ -846,11 +846,7 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 	else if (m_LastHitGroup == HITGROUP_SHIELD && (bitsDamageType & DMG_BULLET))
 		return FALSE;
 
-	if (HasShield())
-		flShieldRatio = 0.2;
-
-	if (m_bIsVIP)
-		flRatio *= 0.5;
+	flRatio = GetArmorDamageFactor(pevAttacker, pevInflictor, flBonus, bitsDamageType);
 
 	if (bitsDamageType & (DMG_EXPLOSION | DMG_BLAST))
 	{
@@ -1085,10 +1081,7 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 
 		if (pAttack->m_pActiveItem)
 		{
-			CBasePlayerWeapon *pWeapon = static_cast<CBasePlayerWeapon *>(pAttack->m_pActiveItem);
-			
-			iGunType = pWeapon->m_iId;
-			flRatio = pWeapon->GetArmorDamageFactor(flRatio, flShieldRatio);
+			iGunType = pAttack->m_pActiveItem->m_iId;
 		}
 
 		if (!ShouldDoLargeFlinch(m_LastHitGroup, iGunType))
@@ -10100,4 +10093,78 @@ void EXT_FUNC CBasePlayer::__API_HOOK(DropIdlePlayer)(const char *reason)
 #else
 	SERVER_COMMAND(UTIL_VarArgs("kick \"%s\"\n", STRING(pev->netname)));
 #endif // #ifdef REGAMEDLL_FIXES
+}
+
+LINK_HOOK_CLASS_CHAIN(float, CBasePlayer, GetArmorDamageFactor, (entvars_t *pevAttacker, entvars_t *pevInflictor, float &flBonus, int bitsDamageType), pevAttacker, pevInflictor, flBonus, bitsDamageType)
+
+float EXT_FUNC CBasePlayer::__API_HOOK(GetArmorDamageFactor)(entvars_t *pevAttacker, entvars_t *pevInflictor, float &flBonus, int bitsDamageType)
+{
+	float flRatio = ARMOR_RATIO;
+	float flShieldRatio = 0;
+
+	flBonus = ARMOR_BONUS;
+
+	if (HasShield())
+		flShieldRatio = 0.2;
+
+	if (m_bIsVIP)
+		flRatio *= 0.5;
+
+	flRatio += flShieldRatio;
+
+	CBaseEntity *pAttacker = GET_PRIVATE<CBaseEntity>(ENT(pevAttacker));
+
+	if (pAttacker && pAttacker->IsPlayer())
+	{
+		CBasePlayer *pAttack = GetClassPtr<CCSPlayer>((CBasePlayer *)pAttacker->pev);
+
+		if (pAttack->m_pActiveItem)
+		{
+			CBasePlayerWeapon *pWeapon = static_cast<CBasePlayerWeapon *>(pAttack->m_pActiveItem);
+
+#ifdef REGAMEDLL_API
+			if (pWeapon->CSPlayerWeapon()->m_flArmorDamageFactor != 0.0f)
+			{
+				flRatio *= pWeapon->CSPlayerWeapon()->m_flArmorDamageFactor;
+
+				return flRatio;
+			}
+#endif
+
+			switch (pWeapon->m_iId)
+			{
+			case WEAPON_FAMAS:
+			case WEAPON_SG552:
+			case WEAPON_AUG:
+			case WEAPON_M4A1:		flRatio *= 1.4;  break;
+			case WEAPON_AWP:		flRatio *= 1.95; break;
+			case WEAPON_G3SG1:		flRatio *= 1.65; break;
+			case WEAPON_SG550:		flRatio *= 1.45; break;
+			case WEAPON_M249:		flRatio *= 1.5;  break;
+			case WEAPON_ELITE:		flRatio *= 1.05; break;
+			case WEAPON_DEAGLE:		flRatio *= 1.5;  break;
+			case WEAPON_GLOCK18:	flRatio *= 1.05; break;
+			case WEAPON_FIVESEVEN:
+			case WEAPON_P90:
+				flRatio *= 1.5;
+				break;
+			case WEAPON_MAC10:
+				flRatio *= 0.95;
+				break;
+			case WEAPON_P228:
+				flRatio *= 1.25;
+				break;
+			case WEAPON_SCOUT:
+			case WEAPON_KNIFE:
+				flRatio *= 1.7;
+				break;
+			case WEAPON_GALIL:
+			case WEAPON_AK47:
+				flRatio *= 1.55;
+				break;
+			}
+		}
+	}
+
+	return flRatio;
 }

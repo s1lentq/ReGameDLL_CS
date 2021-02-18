@@ -396,14 +396,12 @@ public:
 	void HandleInfiniteAmmo();
 	void InstantReload(bool bCanRefillBPAmmo = false);
 	bool DefaultShotgunReload(int iAnim, int iStartAnim, float fDelay, float fStartDelay, const char *pszReloadSound1 = nullptr, const char *pszReloadSound2 = nullptr);
-	float GetArmorDamageFactor(float flRatio, float flShieldRatio);
 
 #ifdef REGAMEDLL_API
 	BOOL CanDeploy_OrigFunc();
 	BOOL DefaultDeploy_OrigFunc(char *szViewModel, char *szWeaponModel, int iAnim, char *szAnimExt, int skiplocal);
 	BOOL DefaultReload_OrigFunc(int iClipSize, int iAnim, float fDelay);
 	bool DefaultShotgunReload_OrigFunc(int iAnim, int iStartAnim, float fDelay, float fStartDelay, const char *pszReloadSound1, const char *pszReloadSound2);
-	float GetArmorDamageFactor_OrigFunc(float flRatio, float flShieldRatio);
 
 	CCSPlayerWeapon *CSPlayerWeapon() const;
 #endif

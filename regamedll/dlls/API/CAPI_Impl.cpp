@@ -172,7 +172,7 @@ GAMEHOOK_REGISTRY(CBasePlayerWeapon_CanDeploy);
 GAMEHOOK_REGISTRY(CBasePlayerWeapon_DefaultDeploy);
 GAMEHOOK_REGISTRY(CBasePlayerWeapon_DefaultReload);
 GAMEHOOK_REGISTRY(CBasePlayerWeapon_DefaultShotgunReload);
-GAMEHOOK_REGISTRY(CBasePlayerWeapon_GetArmorDamageFactor);
+GAMEHOOK_REGISTRY(CBasePlayer_GetArmorDamageFactor);
 GAMEHOOK_REGISTRY(CBasePlayer_DropIdlePlayer);
 
 GAMEHOOK_REGISTRY(CreateWeaponBox);

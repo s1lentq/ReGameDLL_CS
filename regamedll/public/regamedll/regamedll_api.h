@@ -460,9 +460,9 @@ typedef IHookChainRegistryClass<int, class CBasePlayerWeapon, int, int, float> I
 typedef IHookChainClass<bool, class CBasePlayerWeapon, int, int, float, float, const char *, const char *> IReGameHook_CBasePlayerWeapon_DefaultShotgunReload;
 typedef IHookChainRegistryClass<bool, class CBasePlayerWeapon, int, int, float, float, const char *, const char *> IReGameHookRegistry_CBasePlayerWeapon_DefaultShotgunReload;
 
-// CBasePlayerWeapon::GetArmorDamageFactor hook
-typedef IHookChainClass<float, class CBasePlayerWeapon, float, float> IReGameHook_CBasePlayerWeapon_GetArmorDamageFactor;
-typedef IHookChainRegistryClass<float, class CBasePlayerWeapon, float, float> IReGameHookRegistry_CBasePlayerWeapon_GetArmorDamageFactor;
+// CBasePlayer::GetArmorDamageFactor hook
+typedef IHookChainClass<float, class CBasePlayer, struct entvars_s *, struct entvars_s *, float &, int> IReGameHook_CBasePlayer_GetArmorDamageFactor;
+typedef IHookChainRegistryClass<float, class CBasePlayer, struct entvars_s *, struct entvars_s *, float &, int> IReGameHookRegistry_CBasePlayer_GetArmorDamageFactor;
 
 // CBasePlayer::DropIdlePlayer hook
 typedef IHookChainClass<void, class CBasePlayer, const char *> IReGameHook_CBasePlayer_DropIdlePlayer;
@@ -619,7 +619,7 @@ public:
 	virtual IReGameHookRegistry_CBasePlayerWeapon_DefaultDeploy *CBasePlayerWeapon_DefaultDeploy() = 0;
 	virtual IReGameHookRegistry_CBasePlayerWeapon_DefaultReload *CBasePlayerWeapon_DefaultReload() = 0;
 	virtual IReGameHookRegistry_CBasePlayerWeapon_DefaultShotgunReload *CBasePlayerWeapon_DefaultShotgunReload() = 0;
-	virtual IReGameHookRegistry_CBasePlayerWeapon_GetArmorDamageFactor *CBasePlayerWeapon_GetArmorDamageFactor() = 0;
+	virtual IReGameHookRegistry_CBasePlayer_GetArmorDamageFactor *CBasePlayer_GetArmorDamageFactor() = 0;
 	virtual IReGameHookRegistry_CBasePlayer_DropIdlePlayer *CBasePlayer_DropIdlePlayer() = 0;
 	virtual IReGameHookRegistry_CreateWeaponBox *CreateWeaponBox() = 0;
 

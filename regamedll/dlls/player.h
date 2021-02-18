@@ -430,6 +430,7 @@ public:
 	bool HintMessageEx_OrigFunc(const char *pMessage, float duration = 6.0f, bool bDisplayIfPlayerDead = false, bool bOverride = false);
 	void UseEmpty_OrigFunc();
 	void DropIdlePlayer_OrigFunc(const char *reason);
+	float GetArmorDamageFactor_OrigFunc(entvars_t *pevAttacker, entvars_t *pevInflictor, float &flBonus, int bitsDamageType);
 
 	CCSPlayer *CSPlayer() const;
 #endif // REGAMEDLL_API
@@ -627,6 +628,7 @@ public:
 	void RemoveSpawnProtection();
 	void UseEmpty();
 	void DropIdlePlayer(const char *reason);
+	float GetArmorDamageFactor(entvars_t *pevAttacker, entvars_t *pevInflictor, float &flBonus, int bitsDamageType);
 
 	// templates
 	template<typename T = CBasePlayerItem, typename Functor>

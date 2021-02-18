@@ -1630,59 +1630,6 @@ void CBasePlayerWeapon::InstantReload(bool bCanRefillBPAmmo)
 	m_pPlayer->TabulateAmmo();
 }
 
-LINK_HOOK_CLASS_CHAIN(float, CBasePlayerWeapon, GetArmorDamageFactor, (float flRatio, float flShieldRatio), flRatio, flShieldRatio)
-
-float EXT_FUNC CBasePlayerWeapon::__API_HOOK(GetArmorDamageFactor)(float flRatio, float flShieldRatio)
-{
-	float flNewRatio = flRatio;
-
-	flNewRatio += flShieldRatio;
-
-#ifdef REGAMEDLL_API
-	if (CSPlayerWeapon()->m_flArmorDamageFactor != 0.0f)
-	{
-		flNewRatio *= CSPlayerWeapon()->m_flArmorDamageFactor;
-
-		return flNewRatio;
-	}
-#endif
-
-	switch (m_iId)
-	{
-	case WEAPON_FAMAS:
-	case WEAPON_SG552:
-	case WEAPON_AUG:
-	case WEAPON_M4A1:		flNewRatio *= 1.4;  break;
-	case WEAPON_AWP:		flNewRatio *= 1.95; break;
-	case WEAPON_G3SG1:		flNewRatio *= 1.65; break;
-	case WEAPON_SG550:		flNewRatio *= 1.45; break;
-	case WEAPON_M249:		flNewRatio *= 1.5;  break;
-	case WEAPON_ELITE:		flNewRatio *= 1.05; break;
-	case WEAPON_DEAGLE:		flNewRatio *= 1.5;  break;
-	case WEAPON_GLOCK18:	flNewRatio *= 1.05; break;
-	case WEAPON_FIVESEVEN:
-	case WEAPON_P90:
-		flNewRatio *= 1.5;
-		break;
-	case WEAPON_MAC10:
-		flNewRatio *= 0.95;
-		break;
-	case WEAPON_P228:
-		flNewRatio *= 1.25;
-		break;
-	case WEAPON_SCOUT:
-	case WEAPON_KNIFE:
-		flNewRatio *= 1.7;
-		break;
-	case WEAPON_GALIL:
-	case WEAPON_AK47:
-		flNewRatio *= 1.55;
-		break;
-	}
-
-	return flNewRatio;
-}
-
 TYPEDESCRIPTION CWeaponBox::m_SaveData[] =
 {
 	DEFINE_ARRAY(CWeaponBox, m_rgAmmo, FIELD_INTEGER, MAX_AMMO_SLOTS),
