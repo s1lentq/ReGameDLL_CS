@@ -576,8 +576,8 @@ typedef IHookChainClassImpl<bool, CBasePlayerWeapon, int, int, float, float, con
 typedef IHookChainRegistryClassImpl<bool, CBasePlayerWeapon, int, int, float, float, const char *, const char *> CReGameHookRegistry_CBasePlayerWeapon_DefaultShotgunReload;
 
 // CBasePlayer::GetArmorDamageFactor hook
-typedef IHookChainClassImpl<float, class CBasePlayer, struct entvars_s *, struct entvars_s *, float &, int> CReGameHook_CBasePlayer_GetArmorDamageFactor;
-typedef IHookChainRegistryClassImpl<float, class CBasePlayer, struct entvars_s *, struct entvars_s *, float &, int> CReGameHookRegistry_CBasePlayer_GetArmorDamageFactor;
+typedef IHookChainClassImpl<float, class CBasePlayer, struct entvars_s *, struct entvars_s *, float &, float, int> CReGameHook_CBasePlayer_GetArmorDamageFactor;
+typedef IHookChainRegistryClassImpl<float, class CBasePlayer, struct entvars_s *, struct entvars_s *, float &, float, int> CReGameHookRegistry_CBasePlayer_GetArmorDamageFactor;
 
 // CBasePlayer::DropIdlePlayer hook
 typedef IHookChainClassImpl<void, class CBasePlayer, const char *> CReGameHook_CBasePlayer_DropIdlePlayer;

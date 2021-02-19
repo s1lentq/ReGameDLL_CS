@@ -823,7 +823,7 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 {
 	BOOL bTookDamage;
 	float flRatio;
-	float flBonus;
+	float flBonus = ARMOR_BONUS;
 	int iGunType = 0;
 	float flShieldRatio = 0;
 	BOOL bTeamAttack = FALSE;
@@ -846,7 +846,7 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 	else if (m_LastHitGroup == HITGROUP_SHIELD && (bitsDamageType & DMG_BULLET))
 		return FALSE;
 
-	flRatio = GetArmorDamageFactor(pevAttacker, pevInflictor, flBonus, bitsDamageType);
+	flRatio = GetArmorDamageFactor(pevAttacker, pevInflictor, flBonus, ARMOR_RATIO, bitsDamageType);
 
 	if (bitsDamageType & (DMG_EXPLOSION | DMG_BLAST))
 	{
@@ -10095,14 +10095,12 @@ void EXT_FUNC CBasePlayer::__API_HOOK(DropIdlePlayer)(const char *reason)
 #endif // #ifdef REGAMEDLL_FIXES
 }
 
-LINK_HOOK_CLASS_CHAIN(float, CBasePlayer, GetArmorDamageFactor, (entvars_t *pevAttacker, entvars_t *pevInflictor, float &flBonus, int bitsDamageType), pevAttacker, pevInflictor, flBonus, bitsDamageType)
+LINK_HOOK_CLASS_CHAIN(float, CBasePlayer, GetArmorDamageFactor, (entvars_t *pevAttacker, entvars_t *pevInflictor, float &flBonus, float flBaseRatio, int bitsDamageType), pevAttacker, pevInflictor, flBonus, flBaseRatio, bitsDamageType)
 
-float EXT_FUNC CBasePlayer::__API_HOOK(GetArmorDamageFactor)(entvars_t *pevAttacker, entvars_t *pevInflictor, float &flBonus, int bitsDamageType)
+float EXT_FUNC CBasePlayer::__API_HOOK(GetArmorDamageFactor)(entvars_t *pevAttacker, entvars_t *pevInflictor, float &flBonus, float flBaseRatio, int bitsDamageType)
 {
-	float flRatio = ARMOR_RATIO;
+	float flRatio = flBaseRatio;
 	float flShieldRatio = 0;
-
-	flBonus = ARMOR_BONUS;
 
 	if (HasShield())
 		flShieldRatio = 0.2;
