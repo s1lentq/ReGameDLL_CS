@@ -575,10 +575,6 @@ typedef IHookChainRegistryClassImpl<int, CBasePlayerWeapon, int, int, float> CRe
 typedef IHookChainClassImpl<bool, CBasePlayerWeapon, int, int, float, float, const char *, const char *> CReGameHook_CBasePlayerWeapon_DefaultShotgunReload;
 typedef IHookChainRegistryClassImpl<bool, CBasePlayerWeapon, int, int, float, float, const char *, const char *> CReGameHookRegistry_CBasePlayerWeapon_DefaultShotgunReload;
 
-// CBasePlayer::GetArmorDamageFactor hook
-typedef IHookChainClassImpl<float, class CBasePlayer, struct entvars_s *, struct entvars_s *, float &, float, int> CReGameHook_CBasePlayer_GetArmorDamageFactor;
-typedef IHookChainRegistryClassImpl<float, class CBasePlayer, struct entvars_s *, struct entvars_s *, float &, float, int> CReGameHookRegistry_CBasePlayer_GetArmorDamageFactor;
-
 // CBasePlayer::DropIdlePlayer hook
 typedef IHookChainClassImpl<void, class CBasePlayer, const char *> CReGameHook_CBasePlayer_DropIdlePlayer;
 typedef IHookChainRegistryClassImpl<void, class CBasePlayer, const char *> CReGameHookRegistry_CBasePlayer_DropIdlePlayer;
@@ -618,6 +614,10 @@ typedef IHookChainRegistryClassImpl<void, class CBaseEntity, ULONG, Vector &, Ve
 // CBaseEntity::FireBullets3 hook
 typedef IHookChainClassImpl<Vector &, class CBaseEntity, Vector &, Vector &, float, float, int, int, int, float, entvars_t *, bool, int> CReGameHook_CBaseEntity_FireBullets3;
 typedef IHookChainRegistryClassImpl<Vector &, class CBaseEntity, Vector &, Vector &, float, float, int, int, int, float, entvars_t *, bool, int> CReGameHookRegistry_CBaseEntity_FireBullets3;
+
+// CBasePlayer::GetArmorDamageFactor hook
+typedef IHookChainClassImpl<float, class CBasePlayer, struct entvars_s *, struct entvars_s *, float &, float, int> CReGameHook_CBasePlayer_GetArmorDamageFactor;
+typedef IHookChainRegistryClassImpl<float, class CBasePlayer, struct entvars_s *, struct entvars_s *, float &, float, int> CReGameHookRegistry_CBasePlayer_GetArmorDamageFactor;
 
 class CReGameHookchains: public IReGameHookchains {
 public:
@@ -732,7 +732,6 @@ public:
 	CReGameHookRegistry_CBasePlayerWeapon_DefaultDeploy m_CBasePlayerWeapon_DefaultDeploy;
 	CReGameHookRegistry_CBasePlayerWeapon_DefaultReload m_CBasePlayerWeapon_DefaultReload;
 	CReGameHookRegistry_CBasePlayerWeapon_DefaultShotgunReload m_CBasePlayerWeapon_DefaultShotgunReload;
-	CReGameHookRegistry_CBasePlayer_GetArmorDamageFactor m_CBasePlayer_GetArmorDamageFactor;
 	CReGameHookRegistry_CBasePlayer_DropIdlePlayer m_CBasePlayer_DropIdlePlayer;
 	CReGameHookRegistry_CreateWeaponBox m_CreateWeaponBox;
 
@@ -745,6 +744,7 @@ public:
 	CReGameHookRegistry_CBaseEntity_FireBullets m_CBaseEntity_FireBullets;
 	CReGameHookRegistry_CBaseEntity_FireBuckshots m_CBaseEntity_FireBuckshots;
 	CReGameHookRegistry_CBaseEntity_FireBullets3 m_CBaseEntity_FireBullets3;
+	CReGameHookRegistry_CBasePlayer_GetArmorDamageFactor m_CBasePlayer_GetArmorDamageFactor;
 
 public:
 	virtual IReGameHookRegistry_CBasePlayer_Spawn *CBasePlayer_Spawn();
@@ -857,7 +857,6 @@ public:
 	virtual IReGameHookRegistry_CBasePlayerWeapon_DefaultDeploy *CBasePlayerWeapon_DefaultDeploy();
 	virtual IReGameHookRegistry_CBasePlayerWeapon_DefaultReload *CBasePlayerWeapon_DefaultReload();
 	virtual IReGameHookRegistry_CBasePlayerWeapon_DefaultShotgunReload *CBasePlayerWeapon_DefaultShotgunReload();
-	virtual IReGameHookRegistry_CBasePlayer_GetArmorDamageFactor *CBasePlayer_GetArmorDamageFactor();
 	virtual IReGameHookRegistry_CBasePlayer_DropIdlePlayer *CBasePlayer_DropIdlePlayer();
 	virtual IReGameHookRegistry_CreateWeaponBox *CreateWeaponBox();
 
@@ -870,6 +869,7 @@ public:
 	virtual IReGameHookRegistry_CBaseEntity_FireBullets *CBaseEntity_FireBullets();
 	virtual IReGameHookRegistry_CBaseEntity_FireBuckshots *CBaseEntity_FireBuckshots();
 	virtual IReGameHookRegistry_CBaseEntity_FireBullets3 *CBaseEntity_FireBullets3();
+	virtual IReGameHookRegistry_CBasePlayer_GetArmorDamageFactor *CBasePlayer_GetArmorDamageFactor();
 };
 
 extern CReGameHookchains g_ReGameHookchains;

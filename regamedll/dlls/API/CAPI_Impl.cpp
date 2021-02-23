@@ -172,7 +172,6 @@ GAMEHOOK_REGISTRY(CBasePlayerWeapon_CanDeploy);
 GAMEHOOK_REGISTRY(CBasePlayerWeapon_DefaultDeploy);
 GAMEHOOK_REGISTRY(CBasePlayerWeapon_DefaultReload);
 GAMEHOOK_REGISTRY(CBasePlayerWeapon_DefaultShotgunReload);
-GAMEHOOK_REGISTRY(CBasePlayer_GetArmorDamageFactor);
 GAMEHOOK_REGISTRY(CBasePlayer_DropIdlePlayer);
 
 GAMEHOOK_REGISTRY(CreateWeaponBox);
@@ -186,6 +185,7 @@ GAMEHOOK_REGISTRY(CGib_WaitTillLand);
 GAMEHOOK_REGISTRY(CBaseEntity_FireBullets);
 GAMEHOOK_REGISTRY(CBaseEntity_FireBuckshots);
 GAMEHOOK_REGISTRY(CBaseEntity_FireBullets3);
+GAMEHOOK_REGISTRY(CBasePlayer_GetArmorDamageFactor);
 
 int CReGameApi::GetMajorVersion() {
 	return REGAMEDLL_API_VERSION_MAJOR;
