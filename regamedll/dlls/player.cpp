@@ -461,7 +461,9 @@ void CBasePlayer::SmartRadio()
 	;
 }
 
-void CBasePlayer::Pain(int iLastHitGroup, bool bHasArmour)
+LINK_HOOK_CLASS_VOID_CHAIN(CBasePlayer, Pain, (int iLastHitGroup, bool bHasArmour), iLastHitGroup, bHasArmour)
+
+void EXT_FUNC CBasePlayer::__API_HOOK(Pain)(int iLastHitGroup, bool bHasArmour)
 {
 	int temp = RANDOM_LONG(0, 2);
 
@@ -537,7 +539,9 @@ int TrainSpeed(int iSpeed, int iMax)
 	return iRet;
 }
 
-void CBasePlayer::DeathSound()
+LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, DeathSound)
+
+void EXT_FUNC CBasePlayer::__API_HOOK(DeathSound)()
 {
 	// temporarily using pain sounds for death sounds
 	switch (RANDOM_LONG(1, 4))
@@ -3538,7 +3542,9 @@ void EXT_FUNC CBasePlayer::__API_HOOK(MakeVIP)()
 	CSGameRules()->m_iConsecutiveVIP = 1;
 }
 
-void CBasePlayer::JoiningThink()
+LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, JoiningThink)
+
+void EXT_FUNC CBasePlayer::__API_HOOK(JoiningThink)()
 {
 	switch (m_iJoiningState)
 	{

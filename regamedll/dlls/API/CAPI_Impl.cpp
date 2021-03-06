@@ -186,6 +186,10 @@ GAMEHOOK_REGISTRY(CBaseEntity_FireBullets);
 GAMEHOOK_REGISTRY(CBaseEntity_FireBuckshots);
 GAMEHOOK_REGISTRY(CBaseEntity_FireBullets3);
 
+GAMEHOOK_REGISTRY(CBasePlayer_Pain);
+GAMEHOOK_REGISTRY(CBasePlayer_DeathSound);
+GAMEHOOK_REGISTRY(CBasePlayer_JoiningThink);
+
 int CReGameApi::GetMajorVersion() {
 	return REGAMEDLL_API_VERSION_MAJOR;
 }
