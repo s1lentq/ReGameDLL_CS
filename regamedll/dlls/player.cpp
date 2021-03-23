@@ -1491,19 +1491,6 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 
 	const int iAmountOfBPAmmo = m_bIsVIP ? 1 : 2; // Give regular the player backpack ammo twice more than to VIP the player
 
-	// Give free armor
-	{
-		switch ((int)free_armor.value)
-							{
-								case 1:
-									GiveNamedItem("item_kevlar");
-									break;
-								case 2:
-									GiveNamedItem("item_assaultsuit");
-									break;
-							}
-	}
-
 	// Give default secondary equipment
 	{
 		char *secondaryString = NULL;
@@ -9915,6 +9902,17 @@ void EXT_FUNC CBasePlayer::__API_HOOK(OnSpawnEquip)(bool addDefault, bool equipG
 	if (addDefault || m_bIsVIP)
 	{
 		GiveDefaultItems();
+
+		// Give free armor from cvar mp_free_armor 0/1/2
+		switch ((int)free_armor.value && !m_bIsVIP)
+			{
+				case 1:
+					GiveNamedItem("item_kevlar");
+					break;
+				case 2:
+					GiveNamedItem("item_assaultsuit");
+					break;
+			}
 	}
 }
 
