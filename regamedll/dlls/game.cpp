@@ -157,6 +157,7 @@ cvar_t t_default_grenades                = { "mp_t_default_grenades", "", 0, 0.0
 cvar_t t_give_player_knife               = { "mp_t_give_player_knife", "1", 0, 1.0f, nullptr };
 cvar_t t_default_weapons_secondary       = { "mp_t_default_weapons_secondary", "glock18", 0, 0.0f, nullptr };
 cvar_t t_default_weapons_primary         = { "mp_t_default_weapons_primary", "", 0, 0.0f, nullptr };
+cvar_t free_armor 						 = { "mp_free_armor", "0", FCVAR_SERVER, 0.0f, nullptr };
 
 void GameDLL_Version_f()
 {
@@ -379,7 +380,8 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&t_give_player_knife);
 	CVAR_REGISTER(&t_default_weapons_secondary);
 	CVAR_REGISTER(&t_default_weapons_primary);
-
+	CVAR_REGISTER(&free_armor);
+	
 	// print version
 	CONSOLE_ECHO("ReGameDLL version: " APP_VERSION "\n");
 
