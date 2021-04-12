@@ -105,71 +105,80 @@ Archive's bin directory contains 2 subdirectories, 'bugfixed' and 'pure'
 * Enter `-bots` option at the command line HLDS
 
 ## Build instructions
-There are several software requirements for building Regamedll_CS:
-<ol>
-<li>Java Development Kit (JDK) 7+ (http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)</li>
-<li>For Windows: Visual Studio 2015 and later</li>
-<li>For Linux: GCC/Clang/Intel C++ Compiler 15 and later</li>
-</ol>
-
 ### Checking requirements
-#### JDK version
-Windows<pre>&gt; %JAVA_HOME%\bin\javac -version
-javac 1.8.0_25
+There are several software requirements for building ReGameDLL_CS:
+
+#### Windows
+<pre>
+Visual Studio 2013 and later
 </pre>
 
-Linux
-<pre>$ javac -version
-javac 1.7.0_65
+#### Linux
+<pre>
+git >= 1.8.5
+cmake >= 3.10
+GCC >= 4.9.2 (Optional)
+ICC >= 15.0.1 20141023 (Optional)
+LLVM (Clang) >= 6.0 (Optional)
 </pre>
 
-#### Visual Studio
-Help -> About
+### Building
 
-#### ICC
-<pre>$ icc --version
-icc (ICC) 15.0.1 20141023
+#### Windows
+Use `Visual Studio` to build, open `msvc/ReGameDLL.sln` and just select from the solution configurations list `Release` or `Debug`
+
+#### Linux
+
+* Optional options using `build.sh --compiler=[gcc] --jobs=[4]` (without square brackets)
+<pre>
+-c=|--compiler=[icc|gcc|clang]  - Select preferred C/C++ compiler to build
+-j=|--jobs=[N]                  - Specifies the number of jobs (commands) to run simultaneously (For faster building)
 </pre>
 
-### Building and run unit tests using gradle
-#### On Windows:
-<pre>gradlew --max-workers=1 clean buildRelease</pre>
-* For faster building without unit tests use this:exclamation:
-<pre>gradlew --max-workers=1 clean buildFixes</pre>
-
-#### On Linux (ICC):
-<pre>./gradlew --max-workers=1 clean buildRelease</pre>
-
-* For faster building without unit tests use this:exclamation:
-<pre>./gradlew --max-workers=1 clean buildFixes</pre>
-
-#### On Linux (Clang):
-<pre>./gradlew --max-workers=1 clean -PuseClang buildRelease</pre>
-
-* For faster building without unit tests use this:exclamation:
-<pre>./gradlew --max-workers=1 clean -PuseClang buildFixes</pre>
-
-#### On Linux (GCC):
-<pre>./gradlew --max-workers=1 clean -PuseGcc buildRelease</pre>
-
-* For faster building without unit tests use this:exclamation:
-<pre>./gradlew --max-workers=1 clean -PuseGcc buildFixes</pre>
-
-Compiled binaries will be placed in the build/binaries/ directory
-
-### Simplified building using CMake 3.1 and later
-#### On Windows:
-<pre>Open solution msvc\ReGameDLL.sln and build it</pre>
-
-#### On Linux:
-* Run script `regamedll/compile.sh`
-* Options using `regamedll/compile.sh -D[option]=[ON or OFF]` (without square brackets)
+* Optional definitions using `build.sh -D[option]=[ON or OFF]` (without square brackets)
 <pre>
 DEBUG              - Enables debugging mode
-USE_INTEL_COMPILER - Switch main compiler to ICC
-USE_CLANG_COMPILER - Switch main compiler to Clang
 USE_STATIC_LIBSTDC - Enables static linking library libstdc++
 </pre>
+
+<ul>
+<li>
+ICC:
+<pre>./build.sh --compiler=intel</pre>
+</li>
+
+<li>
+LLVM (Clang):
+<pre>./build.sh --compiler=clang</pre>
+</li>
+
+<li>
+GCC:
+<pre>./build.sh --compiler=gcc</pre>
+</li>
+</ul>
+
+##### Checking build environment (Debian / Ubuntu)
+
+<details>
+<summary>Click to expand</summary>
+
+* Installing required packages
+<pre>
+sudo dpkg --add-architecture i386
+sudo apt-get update
+sudo apt-get install -y gcc-multilib g++-multilib
+sudo apt-get install -y build-essential
+sudo apt-get install -y libc6-dev libc6-dev-i386
+</pre>
+
+* Select the preferred C/C++ Compiler installation
+<pre>
+1) sudo apt-get install -y gcc g++
+2) sudo apt-get install -y clang
+</pre>
+
+</details>
 
 ### Credits
 Thanks to the project [ReHLDS](https://github.com/dreamstalker/rehlds) ( ReGameDLL_CS was created on the basis of ReHLDS )
