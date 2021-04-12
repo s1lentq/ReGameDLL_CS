@@ -243,7 +243,11 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&autoteambalance);
 	CVAR_REGISTER(&tkpunish);
 	CVAR_REGISTER(&hostagepenalty);
+
+#ifndef REGAMEDLL_FIXES
 	CVAR_REGISTER(&mirrordamage);
+#endif
+
 	CVAR_REGISTER(&logmessages);
 	CVAR_REGISTER(&forcecamera);
 	CVAR_REGISTER(&forcechasecam);
@@ -320,7 +324,7 @@ void EXT_FUNC GameDLLInit()
 
 	ADD_SERVER_COMMAND("game", GameDLL_Version_f);
 	ADD_SERVER_COMMAND("endround", GameDLL_EndRound_f);
-	ADD_SERVER_COMMAND("mp_swapteams", GameDLL_SwapTeams_f);
+	ADD_SERVER_COMMAND("swapteams", GameDLL_SwapTeams_f);
 
 	CVAR_REGISTER(&game_version);
 	CVAR_REGISTER(&maxmoney);
