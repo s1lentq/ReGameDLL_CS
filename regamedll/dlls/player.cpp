@@ -10082,13 +10082,13 @@ void EXT_FUNC CBasePlayer::__API_HOOK(SetSpawnProtection)(float flProtectionTime
 {
 #ifdef REGAMEDLL_ADD
 	if (respawn_immunity_effects.value > 0)
-#endif
 	{
 		pev->rendermode = kRenderTransAdd;
 		pev->renderamt  = 100.0f;
 	}
 
 	CSPlayer()->m_flSpawnProtectionEndTime = gpGlobals->time + flProtectionTime;
+#endif
 }
 
 LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, RemoveSpawnProtection)
@@ -10097,7 +10097,6 @@ void CBasePlayer::__API_HOOK(RemoveSpawnProtection)()
 {
 #ifdef REGAMEDLL_ADD
 	if (respawn_immunity_effects.value > 0)
-#endif
 	{
 		if (pev->rendermode == kRenderTransAdd &&
 			pev->renderamt == 100.0f)
@@ -10108,6 +10107,7 @@ void CBasePlayer::__API_HOOK(RemoveSpawnProtection)()
 	}
 
 	CSPlayer()->m_flSpawnProtectionEndTime = 0.0f;
+#endif
 }
 
 LINK_HOOK_CLASS_VOID_CHAIN(CBasePlayer, DropIdlePlayer, (const char *reason), reason)

@@ -425,7 +425,7 @@ public:
 	int m_iShellId;
 	float m_fMaxSpeed;
 	bool m_bDelayFire;
-	int m_iDirection;
+	BOOL m_iDirection;
 	bool m_bSecondarySilencerOn;
 	float m_flAccuracy;
 	float m_flLastFire;

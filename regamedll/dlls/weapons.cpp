@@ -834,8 +834,9 @@ void CBasePlayerWeapon::HandleInfiniteAmmo()
 	{
 		m_iClip = iMaxClip();
 	}
-	else if ((nInfiniteAmmo == WPNMODE_INFINITE_BPAMMO &&
+	else if ((nInfiniteAmmo == WPNMODE_INFINITE_BPAMMO
 #ifdef REGAMEDLL_API
+		&&
 		((m_pPlayer->CSPlayer()->m_iWeaponInfiniteIds & (1 << m_iId)) || (m_pPlayer->CSPlayer()->m_iWeaponInfiniteIds <= 0 && !IsGrenadeWeapon(m_iId)))
 #endif
 		)
@@ -1136,6 +1137,7 @@ void CBasePlayerItem::AttachToPlayer(CBasePlayer *pPlayer)
 
 void CBasePlayerWeapon::Spawn()
 {
+#ifdef REGAMEDLL_API
 	ItemInfo info;
 	Q_memset(&info, 0, sizeof(info));
 
@@ -1144,6 +1146,7 @@ void CBasePlayerWeapon::Spawn()
 	}
 
 	CSPlayerWeapon()->m_bHasSecondaryAttack = HasSecondaryAttack();
+#endif
 }
 
 // CALLED THROUGH the newly-touched weapon's instance. The existing player weapon is pOriginal

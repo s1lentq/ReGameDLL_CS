@@ -100,9 +100,19 @@
 		g_ReGameHookchains.m_##functionName.callChain(functionName##_OrigFunc, __VA_ARGS__);\
 	}
 
+#define LINK_HOOK_VOID_CHAIN2(functionName)\
+	void functionName() {\
+		g_ReGameHookchains.m_##functionName.callChain(functionName##_OrigFunc);\
+	}
+
 #define LINK_HOOK_CHAIN(ret, functionName, args, ...)\
 	ret functionName args {\
 		return g_ReGameHookchains.m_##functionName.callChain(functionName##_OrigFunc, __VA_ARGS__);\
+	}
+
+#define LINK_HOOK_CHAIN2(ret, functionName)\
+	ret functionName() {\
+		return g_ReGameHookchains.m_##functionName.callChain(functionName##_OrigFunc);\
 	}
 
 #define LINK_HOOK_GLOB_CLASS_VOID_CHAIN(className, functionName, args, ...)\
@@ -120,16 +130,7 @@
 		return g_ReGameHookchains.m_##customFuncName.callChain(functionName##_OrigFunc, __VA_ARGS__);\
 	}
 
-#define LINK_HOOK_VOID_CHAIN2(functionName)\
-	void functionName() {\
-		g_ReGameHookchains.m_##functionName.callChain(functionName##_OrigFunc);\
-	}
-
-#define LINK_HOOK_CHAIN2(ret, functionName)\
-	ret functionName() {\
-		return g_ReGameHookchains.m_##functionName.callChain(functionName##_OrigFunc);\
-	}
-#else
+#else // REGAMEDLL_API
 
 #define __API_HOOK(fname)\
 	fname
@@ -141,14 +142,19 @@
 #define LINK_HOOK_CLASS_CHAIN3(...)
 #define LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN(...)
 #define LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN2(...)
+#define LINK_HOOK_CLASS_VOID_CUSTOM2_CHAIN(...)
+#define LINK_HOOK_CLASS_VOID_CUSTOM2_CHAIN2(...)
 #define LINK_HOOK_CLASS_CUSTOM_CHAIN(...)
 #define LINK_HOOK_CLASS_CUSTOM_CHAIN2(...)
+#define LINK_HOOK_CLASS_CUSTOM2_CHAIN(...)
+#define LINK_HOOK_CLASS_CUSTOM2_CHAIN2(...)
 #define LINK_HOOK_VOID_CHAIN(...)
 #define LINK_HOOK_VOID_CHAIN2(...)
 #define LINK_HOOK_CHAIN(...)
 #define LINK_HOOK_CHAIN2(...)
 #define LINK_HOOK_GLOB_CLASS_VOID_CHAIN(...)
 #define LINK_HOOK_GLOB_CLASS_CHAIN(...)
+#define LINK_HOOK_CUSTOM2_CHAIN(...)
 
 #endif // REGAMEDLL_API
 

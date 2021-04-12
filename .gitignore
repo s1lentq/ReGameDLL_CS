@@ -1,7 +1,4 @@
 **/build
-**/.gradle
-.idea
-*.iml
 *.bat
 *.log
 *.lnk
@@ -15,12 +12,11 @@
 **/msvc/*.db
 **/msvc/*.opendb
 **/msvc/*.txt
+**/msvc/*.aps
 **/msvc/*.amplxeproj
 **/msvc/.vs
 **/msvc/ipch
 
 regamedll/version/appversion.h
 regamedll/msvc/PublishPath*.txt
-regamedll/_regamedllTestImg
-regamedll/_dev
 publish
