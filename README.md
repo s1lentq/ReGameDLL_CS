@@ -129,41 +129,29 @@ Use `Visual Studio` to build, open `msvc/ReGameDLL.sln` and just select from the
 
 #### Linux
 
-* Optional options using `build.sh --compiler=[gcc] --jobs=[4]` (without square brackets)
+* Optional options using `build.sh --compiler=[gcc] --jobs=[N] -D[option]=[ON or OFF]` (without square brackets)
+
 <pre>
 -c=|--compiler=[icc|gcc|clang]  - Select preferred C/C++ compiler to build
 -j=|--jobs=[N]                  - Specifies the number of jobs (commands) to run simultaneously (For faster building)
+
+<sub>Definitions (-D)</sub>
+DEBUG                           - Enables debugging mode
+USE_STATIC_LIBSTDC              - Enables static linking library libstdc++
 </pre>
 
-* Optional definitions using `build.sh -D[option]=[ON or OFF]` (without square brackets)
-<pre>
-DEBUG              - Enables debugging mode
-USE_STATIC_LIBSTDC - Enables static linking library libstdc++
-</pre>
-
-<ul>
-<li>
-ICC:
-<pre>./build.sh --compiler=intel</pre>
-</li>
-
-<li>
-LLVM (Clang):
-<pre>./build.sh --compiler=clang</pre>
-</li>
-
-<li>
-GCC:
-<pre>./build.sh --compiler=gcc</pre>
-</li>
-</ul>
+* ICC          <pre>./build.sh --compiler=intel</pre>
+* LLVM (Clang) <pre>./build.sh --compiler=clang</pre>
+* GCC          <pre>./build.sh --compiler=gcc</pre>
 
 ##### Checking build environment (Debian / Ubuntu)
 
 <details>
 <summary>Click to expand</summary>
 
-* Installing required packages
+<ul>
+<li>
+Installing required packages
 <pre>
 sudo dpkg --add-architecture i386
 sudo apt-get update
@@ -171,12 +159,16 @@ sudo apt-get install -y gcc-multilib g++-multilib
 sudo apt-get install -y build-essential
 sudo apt-get install -y libc6-dev libc6-dev-i386
 </pre>
+</li>
 
-* Select the preferred C/C++ Compiler installation
+<li>
+Select the preferred C/C++ Compiler installation
 <pre>
 1) sudo apt-get install -y gcc g++
 2) sudo apt-get install -y clang
 </pre>
+</li>
+</ul>
 
 </details>
 
