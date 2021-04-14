@@ -46,15 +46,28 @@ endif()
 
 # Check Intel C++ compiler
 if ("$ENV{CXX}" MATCHES "icpc")
+	#
 	# -fp-model=precise
 	# ICC uses -fp-model fast=1 by default for more aggressive optimizations on floating-point calculations
 	# https://software.intel.com/content/www/us/en/develop/documentation/cpp-compiler-developer-guide-and-reference/top/compiler-reference/compiler-options/compiler-option-details/floating-point-options/fp-model-fp.html#fp-model-fp_GUID-99936BBA-1508-4E9F-AC09-FA98613CE2F5
+	#
 	set(COMPILE_FLAGS "${COMPILE_FLAGS} \
 		-fp-model=precise\
 		-fasm-blocks\
 		-Qoption,cpp,--treat_func_as_string_literal_cpp")
 
-	set(LINK_FLAGS "${LINK_FLAGS} -static-intel -no-intel-extensions")
+	#
+	# -qno-opt-class-analysis
+	# Don't use c++ class hierarchy for analyze and resolve C++ virtual function calls at compile time
+	#
+	# Example issue:
+	# Expected: FF .. call dword ptr + offset, pEntity->Spawn();
+	# Got:      E8 .. call CBaseEntity::Spawn();
+	#
+	set(LINK_FLAGS "${LINK_FLAGS} \
+		-qno-opt-class-analysis\
+		-static-intel\
+		-no-intel-extensions")
 
 	if (NOT DEBUG)
 		set(COMPILE_FLAGS "${COMPILE_FLAGS} -ipo")
@@ -297,7 +310,6 @@ if (CMAKE_BUILD_TYPE MATCHES Unittests)
 
 	set(LINK_FLAGS "${LINK_FLAGS} -no-pie -Wl,--no-export-dynamic")
 	add_executable(regamedll ${appversion.sh})
-	target_link_libraries(regamedll PRIVATE cppunitlite)
 else()
 	add_library(regamedll SHARED ${appversion.sh})
 endif()
@@ -349,6 +361,8 @@ target_sources(regamedll PRIVATE
 target_link_libraries(regamedll PRIVATE
 	dl
 	aelf32
+
+	$<$<CONFIG:Unittests>:cppunitlite>
 )
 
 if (USE_STATIC_LIBSTDC)
