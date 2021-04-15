@@ -2999,7 +2999,7 @@ void CHalfLifeMultiplay::CheckRoundTimeExpired()
 		if (!OnRoundEnd_Intercept(WINSTATUS_CTS, ROUND_TARGET_SAVED, GetRoundRestartDelay()))
 			return;
 	}
-	else if (!(scenarioFlags & SCENARIO_BLOCK_HOSTAGE_RESCUE) && UTIL_FindEntityByClassname(nullptr, "hostage_entity"))
+	else if (!(scenarioFlags & SCENARIO_BLOCK_HOSTAGE_RESCUE_TIME) && UTIL_FindEntityByClassname(nullptr, "hostage_entity"))
 	{
 		if (!OnRoundEnd_Intercept(WINSTATUS_TERRORISTS, ROUND_HOSTAGE_NOT_RESCUED, GetRoundRestartDelay()))
 			return;
