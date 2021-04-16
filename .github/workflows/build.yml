@@ -192,6 +192,7 @@ jobs:
           mv build-icc/regamedll/cs.so publish/bin/linux32/cstrike/dlls/cs.so
           mv build-gcc/regamedll/cs.so publish/cs-gcc.so
           mv regamedll/version/appversion.h publish/appversion.h
+          mv dist/ publish/
 
       - name: Run GLIBC/ABI version compat test
         run: |
@@ -248,13 +249,15 @@ jobs:
           fi
           rm -f appversion.h
 
-      - name: Packaging bin/dbg
+      - name: Packaging binaries
         id: packaging-job
         if: |
           github.event_name == 'release' &&
           github.event.action == 'published' &&
           startsWith(github.ref, 'refs/tags/')
         run: |
+          rsync -a dist/ bin/win32/cstrike
+          rsync -a dist/ bin/linux32/cstrike
           7z a -tzip regamedll-bin-${{ env.APP_VERSION }}.zip bin/ cssdk/
 
       - name: Publish artifacts
@@ -272,5 +275,5 @@ jobs:
       - name: Cleanup temporary artifacts
         if: success() && steps.publish-job.outcome == 'success'
         run: |
-          rm -rf bin debug cssdk
+          rm -rf bin dist debug cssdk
           rm -f *.zip appversion.h
