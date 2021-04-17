@@ -95,7 +95,7 @@ jobs:
       - name: Play demos
         run: |
           chown root ~
-          cp -r deps/regamedll/* .
+          rsync -a deps/regamedll/* .
           mv $GITHUB_WORKSPACE/tests/mp.dll cstrike/dlls/mp.dll
 
           descs=(

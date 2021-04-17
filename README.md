@@ -10,13 +10,12 @@ Regamedll_CS is a result of reverse engineering of original library mod HLDS (bu
 ## How can use it?
 ReGameDLL_CS is fully compatible with official mod CS 1.6 / CZero by Valve. All you have to do is to download binaries and replace original mp.dll/cs.so
 
-Compiled binaries are available here: [link](https://github.com/s1lentq/ReGameDLL_CS/releases)
+## Downloads
+* [Release builds](https://github.com/s1lentq/ReGameDLL_CS/releases)
+* [Dev builds](https://github.com/s1lentq/ReGameDLL_CS/actions/workflows/build.yml)
 
-Archive's bin directory contains 2 subdirectories, 'bugfixed' and 'pure'
-* 'pure' version is designed to work exactly as official mod CS
-* 'bugfixed' version contains some fixes and improvements
-
-<b>Warning!</b> ReGameDLL_CS is not binary compatible with original hlds since it's compiled with compilers other than ones used for original mod CS. This means that plugins that do binary code analysis (Orpheu for example) probably will not work with ReGameDLL_CS.
+<b>Warning!</b> ReGameDLL_CS is not binary compatible with original hlds since it's compiled with compilers other than ones used for original mod CS.
+This means that plugins that do binary code analysis (Orpheu for example) probably will not work with ReGameDLL_CS.
 
 ## How can use beta?
 <pre>ReGameDLL_CS also have beta version with latest changes from official version of Counter-Strike.</pre>
@@ -104,13 +103,17 @@ Archive's bin directory contains 2 subdirectories, 'bugfixed' and 'pure'
 * Extract all the files from an [archive](regamedll/extra/zBot/bot_profiles.zip?raw=true)
 * Enter `-bots` option at the command line HLDS
 
+## How to install CSCZ hostage AI for CS 1.6?
+* Extract all the files from an [archive](regamedll/extra/HostageImprov/host_improv.zip?raw=true)
+* Enter `-host-improv` option at the command line HLDS
+
 ## Build instructions
 ### Checking requirements
 There are several software requirements for building ReGameDLL_CS:
 
 #### Windows
 <pre>
-Visual Studio 2013 and later
+Visual Studio 2015 (C++14 standard) and later
 </pre>
 
 #### Linux
