@@ -580,6 +580,12 @@ void CGamePlayerEquip::EquipPlayer(CBaseEntity *pEntity)
 		return;
 
 	CBasePlayer *pPlayer = static_cast<CBasePlayer *>(pEntity);
+
+	if (RemoveWeapons())
+	{
+		pPlayer->RemoveAllItems(FALSE);
+	}
+
 	for (int i = 0; i < MAX_EQUIP; i++)
 	{
 		if (FStringNull(m_weaponNames[i]))

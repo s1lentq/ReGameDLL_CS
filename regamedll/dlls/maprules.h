@@ -245,6 +245,7 @@ public:
 #define MAX_EQUIP 32
 #define SF_PLAYEREQUIP_USEONLY BIT(0) // If set, the game_player_equip entity will not equip respawning players,
                                       // but only react to direct triggering, equipping its activator. This makes its master obsolete.
+#define SF_PLAYEREQUIP_REMOVEWEAPONS BIT(1) // Remove all weapons before give.
 
 // Sets the default player equipment
 class CGamePlayerEquip: public CRulePointEntity
@@ -256,6 +257,7 @@ public:
 
 public:
 	bool UseOnly() const { return (pev->spawnflags & SF_PLAYEREQUIP_USEONLY) == SF_PLAYEREQUIP_USEONLY; }
+	bool RemoveWeapons() const { return (pev->spawnflags & SF_PLAYEREQUIP_REMOVEWEAPONS) == SF_PLAYEREQUIP_REMOVEWEAPONS; }
 
 private:
 	void EquipPlayer(CBaseEntity *pPlayer);
