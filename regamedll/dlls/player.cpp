@@ -4667,8 +4667,9 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 
 #ifdef REGAMEDLL_ADD
 	auto protectStateCurrent = CSPlayer()->GetProtectionState();
-	if (protectStateCurrent  == CCSPlayer::ProtectionSt_Expired || (respawn_immunity_force_unset.value &&
-		(protectStateCurrent == CCSPlayer::ProtectionSt_Active && (m_afButtonPressed & IN_ACTIVE))))
+	if (protectStateCurrent  == CCSPlayer::ProtectionSt_Expired ||
+		(protectStateCurrent == CCSPlayer::ProtectionSt_Active &&
+		((respawn_immunity_force_unset.value == 1 && (m_afButtonPressed & IN_ACTIVE)) || (respawn_immunity_force_unset.value == 2 && (m_afButtonPressed & (IN_ATTACK | IN_ATTACK2))))))
 	{
 		RemoveSpawnProtection();
 	}
