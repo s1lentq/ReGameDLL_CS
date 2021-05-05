@@ -10086,6 +10086,14 @@ void EXT_FUNC CBasePlayer::__API_HOOK(SetSpawnProtection)(float flProtectionTime
 	{
 		pev->rendermode = kRenderTransAdd;
 		pev->renderamt  = 100.0f;
+
+		MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev);
+			WRITE_BYTE(STATUSICON_FLASH);
+			WRITE_STRING("suithelmet_full");
+			WRITE_BYTE(0);
+			WRITE_BYTE(160);
+			WRITE_BYTE(0);
+		MESSAGE_END();
 	}
 
 	CSPlayer()->m_flSpawnProtectionEndTime = gpGlobals->time + flProtectionTime;
@@ -10105,6 +10113,11 @@ void CBasePlayer::__API_HOOK(RemoveSpawnProtection)()
 			pev->renderamt  = 255.0f;
 			pev->rendermode = kRenderNormal;
 		}
+
+		MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev);
+			WRITE_BYTE(STATUSICON_HIDE);
+			WRITE_STRING("suithelmet_full");
+		MESSAGE_END();
 	}
 
 	CSPlayer()->m_flSpawnProtectionEndTime = 0.0f;
