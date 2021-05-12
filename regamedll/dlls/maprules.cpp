@@ -565,13 +565,10 @@ void CGamePlayerEquip::KeyValue(KeyValueData *pkvd)
 
 void CGamePlayerEquip::Touch(CBaseEntity *pOther)
 {
-	if (!CanFireForActivator(pOther))
-		return;
-
-	if (UseOnly())
-		return;
-
-	EquipPlayer(pOther);
+	if (CanEquipOverTouch(pOther))
+	{
+		EquipPlayer(pOther);
+	}
 }
 
 void CGamePlayerEquip::EquipPlayer(CBaseEntity *pEntity)
