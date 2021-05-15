@@ -10057,6 +10057,12 @@ void CBasePlayer::PlayerRespawnThink()
 		pev->nextthink = -1;
 		return;
 	}
+	else if (pev->deadflag == DEAD_DEAD && forcerespawn.value != 0 && !CSPlayer()->m_flRespawnPending)
+	{
+		CSPlayer()->m_bGameForcingRespawn = true;
+		CSPlayer()->m_flRespawnPending = gpGlobals->time + forcerespawn.value;
+	}
+
 #endif
 }
 
