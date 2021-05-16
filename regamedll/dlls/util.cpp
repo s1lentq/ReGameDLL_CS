@@ -1725,6 +1725,9 @@ bool UTIL_AreHostagesImprov()
 	}
 
 #ifdef REGAMEDLL_ADD
+	if (g_engfuncs.pfnEngCheckParm == nullptr)
+		return false;
+	
 	// someday in CS 1.6
 	int improv = ENG_CHECK_PARM("-host-improv", nullptr);
 	if (improv)
