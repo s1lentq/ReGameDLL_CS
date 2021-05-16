@@ -10050,7 +10050,10 @@ void CBasePlayer::PlayerRespawnThink()
 	{
 		// Pending respawn caused by game doesn't respawn with disabled CVar
 		if (CSPlayer()->m_bGameForcingRespawn && !forcerespawn.value)
+		{
+			CSPlayer()->m_flRespawnPending = 0.0f;
 			return;
+		}
 
 		Spawn();
 		pev->button = 0;
