@@ -3254,6 +3254,17 @@ BOOL EXT_FUNC CHalfLifeMultiplay::__API_HOOK(FShouldSwitchWeapon)(CBasePlayer *p
 		return FALSE;
 	}
 
+#ifdef REGAMEDLL_FIXES	
+	if (pPlayer->pev->waterlevel == 3)
+	{
+		if (pWeapon->iFlags() & ITEM_FLAG_NOFIREUNDERWATER)
+			return FALSE;
+		
+		if (pPlayer->m_pActiveItem->iFlags() & ITEM_FLAG_NOFIREUNDERWATER)
+			return TRUE;
+	}
+#endif
+
 	if (pWeapon->iWeight() > pPlayer->m_pActiveItem->iWeight())
 		return TRUE;
 
@@ -3268,6 +3279,7 @@ BOOL EXT_FUNC CHalfLifeMultiplay::__API_HOOK(GetNextBestWeapon)(CBasePlayer *pPl
 	CBasePlayerItem *pBest; // this will be used in the event that we don't find a weapon in the same category.
 	int iBestWeight;
 	int i;
+	bool inWater = pPlayer->pev->waterlevel == 3;
 
 	if (!pCurrentWeapon->CanHolster())
 	{
@@ -3285,7 +3297,11 @@ BOOL EXT_FUNC CHalfLifeMultiplay::__API_HOOK(GetNextBestWeapon)(CBasePlayer *pPl
 		while (pCheck)
 		{
 			// don't reselect the weapon we're trying to get rid of
-			if (pCheck->iWeight() > iBestWeight && pCheck != pCurrentWeapon)
+			if (pCheck->iWeight() > iBestWeight && pCheck != pCurrentWeapon
+#ifdef REGAMEDLL_FIXES				
+			&& (!inWater || (inWater && !(pCheck->iFlags() & ITEM_FLAG_NOFIREUNDERWATER)))
+#endif
+				)
 			{
 				//ALERT (at_console, "Considering %s\n", STRING(pCheck->pev->classname));
 				// we keep updating the 'best' weapon just in case we can't find a weapon of the same weight
