@@ -3688,7 +3688,11 @@ void CHalfLifeMultiplay::PlayerThink(CBasePlayer *pPlayer)
 	if (pPlayer->m_pActiveItem && pPlayer->m_pActiveItem->IsWeapon())
 	{
 		CBasePlayerWeapon *pWeapon = static_cast<CBasePlayerWeapon *>(pPlayer->m_pActiveItem->GetWeaponPtr());
-		if (pWeapon->m_iWeaponState & WPNSTATE_SHIELD_DRAWN)
+		if (pWeapon->m_iWeaponState & WPNSTATE_SHIELD_DRAWN
+#ifdef REGAMEDLL_ADD
+			|| ((pWeapon->iFlags() & ITEM_FLAG_NOFIREUNDERWATER) && pPlayer->pev->waterlevel == 3)
+#endif
+			)
 		{
 			pPlayer->m_bCanShoot = false;
 		}

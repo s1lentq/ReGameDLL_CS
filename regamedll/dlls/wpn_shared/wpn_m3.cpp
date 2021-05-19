@@ -49,7 +49,7 @@ int CM3::GetItemInfo(ItemInfo *p)
 	p->iSlot = 0;
 	p->iPosition = 5;
 	p->iId = m_iId = WEAPON_M3;
-	p->iFlags = 0;
+	p->iFlags = ITEM_FLAG_NOFIREUNDERWATER;
 	p->iWeight = M3_WEIGHT;
 
 	return 1;
@@ -71,14 +71,6 @@ void CM3::PrimaryAttack()
 {
 	Vector vecAiming, vecSrc, vecDir;
 	int flag;
-
-	// don't fire underwater
-	if (m_pPlayer->pev->waterlevel == 3)
-	{
-		PlayEmptySound();
-		m_flNextPrimaryAttack = GetNextAttackDelay(0.15);
-		return;
-	}
 
 	if (m_iClip <= 0)
 	{
@@ -144,6 +136,12 @@ void CM3::PrimaryAttack()
 	flag = FEV_NOTHOST;
 #else
 	flag = 0;
+#endif
+
+#ifdef REGAMEDLL_ADD
+	// HACKHACK: client-side weapon prediction fix
+	if (!(iFlags() & ITEM_FLAG_NOFIREUNDERWATER) && m_pPlayer->pev->waterlevel == 3)
+		flag = 0;
 #endif
 
 	PLAYBACK_EVENT_FULL(flag, m_pPlayer->edict(), m_usFireM3, 0, (float *)&g_vecZero, (float *)&g_vecZero, 0, 0, 0, 0, FALSE, FALSE);
