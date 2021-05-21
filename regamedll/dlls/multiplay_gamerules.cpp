@@ -3298,8 +3298,8 @@ BOOL EXT_FUNC CHalfLifeMultiplay::__API_HOOK(GetNextBestWeapon)(CBasePlayer *pPl
 		{
 			// don't reselect the weapon we're trying to get rid of
 			if (pCheck->iWeight() > iBestWeight && pCheck != pCurrentWeapon
-#ifdef REGAMEDLL_FIXES				
-			&& (!inWater || (inWater && !(pCheck->iFlags() & ITEM_FLAG_NOFIREUNDERWATER)))
+#ifdef REGAMEDLL_FIXES
+				&& !(inWater && (pCheck->iFlags() & ITEM_FLAG_NOFIREUNDERWATER))
 #endif
 				)
 			{

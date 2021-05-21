@@ -245,6 +245,13 @@ void WriteSigonMessages()
 		else
 			pszName = info.pszName;
 
+		int iFlags = info.iFlags;
+
+#ifdef PLAY_GAMEDLL
+		// TODO: fix test demo
+		iFlags &= ~ITEM_FLAG_NOFIREUNDERWATER;
+#endif
+
 		MESSAGE_BEGIN(MSG_INIT, gmsgWeaponList);
 			WRITE_STRING(pszName);
 			WRITE_BYTE(CBasePlayer::GetAmmoIndex(info.pszAmmo1));
@@ -254,7 +261,7 @@ void WriteSigonMessages()
 			WRITE_BYTE(info.iSlot);
 			WRITE_BYTE(info.iPosition);
 			WRITE_BYTE(info.iId);
-			WRITE_BYTE(info.iFlags);
+			WRITE_BYTE(iFlags);
 		MESSAGE_END();
 	}
 }
