@@ -13,7 +13,7 @@ void CSG550::Spawn()
 	m_flLastFire = 0;
 
 #ifdef REGAMEDLL_FIXES
-	m_flAccuracy = 0.2f;
+	m_flAccuracy = 0.9f;
 #endif
 
 #ifdef REGAMEDLL_API
@@ -62,7 +62,7 @@ int CSG550::GetItemInfo(ItemInfo *p)
 BOOL CSG550::Deploy()
 {
 #ifdef REGAMEDLL_FIXES
-	m_flAccuracy = 0.2f;
+	m_flAccuracy = 0.9f;
 #endif
 
 	return DefaultDeploy("models/v_sg550.mdl", "models/p_sg550.mdl", SG550_DRAW, "rifle", UseDecrement() != FALSE);
