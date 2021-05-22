@@ -196,6 +196,8 @@ public:
 	// is the weapon in the middle of a reload
 	bool IsActiveWeaponReloading() const;
 
+	bool IsActiveWeaponCanShootUnderwater() const;
+
 	// return true if active weapon's bullet spray has become large and inaccurate
 	bool IsActiveWeaponRecoilHigh() const;
 
@@ -325,6 +327,15 @@ inline void CBot::Walk()
 inline CBasePlayerWeapon *CBot::GetActiveWeapon() const
 {
 	return static_cast<CBasePlayerWeapon *>(m_pActiveItem);
+}
+
+inline bool CBot::IsActiveWeaponCanShootUnderwater() const
+{
+	CBasePlayerWeapon *pCurrentWeapon = GetActiveWeapon();
+	if (pCurrentWeapon && !(pCurrentWeapon->iFlags() & ITEM_FLAG_NOFIREUNDERWATER))
+		return true;
+
+	return false;
 }
 
 inline bool CBot::IsActiveWeaponReloading() const
