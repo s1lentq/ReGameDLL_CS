@@ -3254,7 +3254,7 @@ BOOL EXT_FUNC CHalfLifeMultiplay::__API_HOOK(FShouldSwitchWeapon)(CBasePlayer *p
 		return FALSE;
 	}
 
-#ifdef REGAMEDLL_FIXES	
+#ifdef REGAMEDLL_FIXES
 	if (pPlayer->pev->waterlevel == 3)
 	{
 		if (pWeapon->iFlags() & ITEM_FLAG_NOFIREUNDERWATER)
