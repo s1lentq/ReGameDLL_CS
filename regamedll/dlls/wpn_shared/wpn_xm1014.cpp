@@ -47,7 +47,7 @@ int CXM1014::GetItemInfo(ItemInfo *p)
 	p->iSlot = 0;
 	p->iPosition = 12;
 	p->iId = m_iId = WEAPON_XM1014;
-	p->iFlags = 0;
+	p->iFlags = ITEM_FLAG_NOFIREUNDERWATER;
 	p->iWeight = XM1014_WEIGHT;
 
 	return 1;
@@ -69,14 +69,6 @@ void CXM1014::PrimaryAttack()
 {
 	Vector vecAiming, vecSrc, vecDir;
 	int flag;
-
-	// don't fire underwater
-	if (m_pPlayer->pev->waterlevel == 3)
-	{
-		PlayEmptySound();
-		m_flNextPrimaryAttack = GetNextAttackDelay(0.15);
-		return;
-	}
 
 	if (m_iClip <= 0)
 	{
@@ -142,6 +134,12 @@ void CXM1014::PrimaryAttack()
 	flag = FEV_NOTHOST;
 #else
 	flag = 0;
+#endif
+
+#ifdef REGAMEDLL_ADD
+	// HACKHACK: client-side weapon prediction fix
+	if (!(iFlags() & ITEM_FLAG_NOFIREUNDERWATER) && m_pPlayer->pev->waterlevel == 3)
+		flag = 0;
 #endif
 
 	PLAYBACK_EVENT_FULL(flag, m_pPlayer->edict(), m_usFireXM1014, 0, (float *)&g_vecZero, (float *)&g_vecZero, m_vVecAiming.x, m_vVecAiming.y, 7,

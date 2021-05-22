@@ -35,11 +35,12 @@ const float MAX_DIST_RELOAD_SOUND = 512.0f;
 
 #define MAX_WEAPONS                 32
 
-#define ITEM_FLAG_SELECTONEMPTY     1
-#define ITEM_FLAG_NOAUTORELOAD      2
-#define ITEM_FLAG_NOAUTOSWITCHEMPTY 4
-#define ITEM_FLAG_LIMITINWORLD      8
-#define ITEM_FLAG_EXHAUSTIBLE       16 // A player can totally exhaust their ammo supply and lose this weapon
+#define ITEM_FLAG_SELECTONEMPTY     BIT(0)
+#define ITEM_FLAG_NOAUTORELOAD      BIT(1)
+#define ITEM_FLAG_NOAUTOSWITCHEMPTY BIT(2)
+#define ITEM_FLAG_LIMITINWORLD      BIT(3)
+#define ITEM_FLAG_EXHAUSTIBLE       BIT(4) // A player can totally exhaust their ammo supply and lose this weapon
+#define ITEM_FLAG_NOFIREUNDERWATER  BIT(5)
 
 #define WEAPON_IS_ONTARGET          0x40
 
