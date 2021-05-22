@@ -9889,11 +9889,18 @@ void EXT_FUNC CBasePlayer::__API_HOOK(OnSpawnEquip)(bool addDefault, bool equipG
 {
 	if (equipGame)
 	{
-		CBaseEntity *pWeaponEntity = nullptr;
+		CGamePlayerEquip *pWeaponEntity = nullptr;
 		while ((pWeaponEntity = UTIL_FindEntityByClassname(pWeaponEntity, "game_player_equip")))
 		{
-			pWeaponEntity->Touch(this);
-			addDefault = false;
+
+#ifdef REGAMEDLL_FIXES
+			if (pWeaponEntity->CanEquipOverTouch(this))
+#endif
+			{
+				pWeaponEntity->Touch(this);
+
+				addDefault = false;
+			}
 		}
 	}
 

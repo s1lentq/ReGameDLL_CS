@@ -565,13 +565,10 @@ void CGamePlayerEquip::KeyValue(KeyValueData *pkvd)
 
 void CGamePlayerEquip::Touch(CBaseEntity *pOther)
 {
-	if (!CanFireForActivator(pOther))
-		return;
-
-	if (UseOnly())
-		return;
-
-	EquipPlayer(pOther);
+	if (CanEquipOverTouch(pOther))
+	{
+		EquipPlayer(pOther);
+	}
 }
 
 void CGamePlayerEquip::EquipPlayer(CBaseEntity *pEntity)
@@ -580,6 +577,12 @@ void CGamePlayerEquip::EquipPlayer(CBaseEntity *pEntity)
 		return;
 
 	CBasePlayer *pPlayer = static_cast<CBasePlayer *>(pEntity);
+
+	if (RemoveWeapons())
+	{
+		pPlayer->RemoveAllItems(FALSE);
+	}
+
 	for (int i = 0; i < MAX_EQUIP; i++)
 	{
 		if (FStringNull(m_weaponNames[i]))

@@ -1407,6 +1407,7 @@
 	spawnflags(flags) =
 	[
 		1: "Use Only" : 0
+		2: "Remove Weapons" : 0
 	]
 	weapon_knife (choices) : "Give Knife" : 0 =
 	[
