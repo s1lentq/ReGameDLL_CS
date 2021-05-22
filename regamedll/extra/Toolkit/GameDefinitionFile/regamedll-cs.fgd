@@ -1524,12 +1524,12 @@
 		0: "No"
 		1: "Yes"
 	]
-	weapon_famas (choices) : "CS 1.6 Famas (762nato)" : 0 =
+	weapon_famas (choices) : "CS 1.6 Famas (556nato Calibre)" : 0 =
 	[
 		0: "No"
 		1: "Yes"
 	]
-	weapon_galil (choices) : "CS 1.6 Galil (556natobox)"  : 0 =
+	weapon_galil (choices) : "CS 1.6 Galil (556natobox Calibre)"  : 0 =
 	[
 		0: "No"
 		1: "Yes"
@@ -1580,8 +1580,8 @@
 		0: "No"
 		1: "1 Clip (30 Bullets Per Clip)"
 		2: "2 Clips"
-		3: "3 Clips (Fill Glock 18)"
-		4: "4 Clips (Fill Elites, MP5 & TMP)"
+		3: "3 Clips"
+		4: "4 Clips (Fill Elites, MP5, TMP, Glock 18)"
 	]
 	ammo_45acp (choices) : "Give .45 ACP Ammo" : 0 =
 	[
@@ -1589,12 +1589,12 @@
 		1: "1 Clip (12 Bullets Per Clip)"
 		2: "2 Clips"
 		3: "3 Clips"
-		4: "4 Clips (Fill USP45)"
+		4: "4 Clips"
 		5: "5 Clips"
 		6: "6 Clips"
 		7: "7 Clips"
-		8: "8 Clips (Fill Mac-10)"
-		9: "9 Clips (Fill UMP 45)"
+		8: "8 Clips"
+		9: "9 Clips (Fill UMP 45, Mac-10, USP45)"
 	]
 	ammo_50ae (choices) : "Give .50 Deagle Ammo" : 0 =
 	[
@@ -1609,7 +1609,7 @@
 	[
 		0: "No"
 		1: "1 Clip (50 Bullets Per Clip)"
-		2: "2 Clips (Fill Five-Seven & P90)"
+		2: "2 Clips (Fill Five-Seven, P90)"
 	]
 	ammo_357sig (choices) : "Give .357 SIG Ammo" : 0 =
 	[
@@ -1631,15 +1631,15 @@
 	[
 		0: "No"
 		1: "1 Clip (30 Bullets Per Clip)"
-		2: "2 Clips (Fill Scout & G3/S-G1)"
-		3: "3 Clips (Fill AK-47)"
+		2: "2 Clips"
+		3: "3 Clips (Fill AK-47, Scout, G3/S-G1)"
 	]
 	ammo_556nato (choices) : "Give 5.56mm NATO Ammo" : 0 =
 	[
 		0: "No"
 		1: "1 Clip (30 Bullets Per Clip)"
 		2: "2 Clips"
-		3: "3 Fill SG552 M4A1 Aug SG550"
+		3: "3 Fill SG552, M4A1, Aug, SG550, Famas"
 	]
 	ammo_556natobox (choices) : "Give 5.56mm NATO Box Ammo" : 0 =
 	[
