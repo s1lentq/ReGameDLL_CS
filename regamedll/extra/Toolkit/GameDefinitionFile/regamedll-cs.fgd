@@ -1017,21 +1017,27 @@
 @PointClass base(Targetname, Angles, Sequence) size(-16 -16 0, 16 16 72) studio() = cycler : "Monster Cycler"
 [
 	model(studio) : "Model"
+	body(integer) : "Skin" : 0
+	skin(integer) : "Body" : 0
 ]
 
 // line below edited by Dmitrich! -->
 // was: @PointClass base(Targetname, Angles, RenderFields) iconsprite("sprites/CS/cycler_sprite.spr") = cycler_sprite : "Sprite Cycler"
 @PointClass base(Targetname, Angles, RenderFields) size(-16 -16 0, 16 16 72) studio() = cycler_sprite : "Sprite Cycler"
 [
-	model(studio) : "Model / Sprite" : ""
-	sequence(string) : "Animation # sequence (Models only)" : ""
-	framerate(integer) : "Frames per second" : 10
+	model(sprite) : "Sprite name" : ""
+	model(studio) : "Model name" : ""
+	scale(string) : "Scale (Sprites only)" : "1.0"
+	body(integer) : "Skin (Models only)" : 0
+	skin(integer) : "Body (Models only)" : 0
+	sequence(integer) : "Animation # sequence (Models only)" : 0
+	framerate(string) : "Frames per second" : "10.0"
 ]
 
 @PointClass sprite() base(Targetname, Angles, RenderFields) size(-4 -4 -4, 4 4 4) iconsprite("sprites/CS/cycler_wreckage.spr") = cycler_wreckage : "Wreckage"
 [
-	framerate(string) : "Framerate" : "10.0"
 	model(sprite) : "Sprite Name" : "sprites/dot.spr"
+	framerate(string) : "Framerate" : "10.0"
 	scale(string) : "Scale" : "1.0"
 	spawnflags(flags) =
 	[
