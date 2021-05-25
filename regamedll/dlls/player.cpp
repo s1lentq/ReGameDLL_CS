@@ -4313,12 +4313,9 @@ void EXT_FUNC CBasePlayer::__API_HOOK(AddPointsToTeam)(int score, BOOL bAllowNeg
 	{
 		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
-		if (pPlayer && i != index)
+		if (pPlayer && (i == index || g_pGameRules->PlayerRelationship(this, pPlayer) == GR_TEAMMATE))
 		{
-			if (g_pGameRules->PlayerRelationship(this, pPlayer) == GR_TEAMMATE)
-			{
-				pPlayer->AddPoints(score, bAllowNegativeScore);
-			}
+			pPlayer->AddPoints(score, bAllowNegativeScore);
 		}
 	}
 }
