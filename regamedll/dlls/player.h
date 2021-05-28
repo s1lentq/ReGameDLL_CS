@@ -298,9 +298,18 @@ enum MusicState { SILENT, CALM, INTENSE };
 
 class CCSPlayer;
 
+#define ALL_OTHER_ITEMS        6
+
 class CStripWeapons: public CPointEntity {
 public:
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+#ifdef REGAMEDLL_ADD
+	virtual void KeyValue(KeyValueData *pkvd);
+
+public:
+	int m_bitsIgnoreSlots;
+	int m_iszSpecialItem;
+#endif
 };
 
 // Dead HEV suit prop
