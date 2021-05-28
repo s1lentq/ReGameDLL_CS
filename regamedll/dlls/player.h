@@ -303,9 +303,9 @@ class CCSPlayer;
 class CStripWeapons: public CPointEntity {
 public:
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-#ifdef REGAMEDLL_ADD
 	virtual void KeyValue(KeyValueData *pkvd);
 
+#ifdef REGAMEDLL_ADD
 public:
 	int m_bitsIgnoreSlots;
 	int m_iszSpecialItem;

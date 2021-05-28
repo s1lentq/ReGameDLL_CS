@@ -8312,6 +8312,7 @@ LINK_ENTITY_TO_CLASS(player_weaponstrip, CStripWeapons, CCSStripWeapons)
 
 void CStripWeapons::KeyValue(KeyValueData *pkvd)
 {
+#ifdef REGAMEDLL_ADD
 	if (FStrEq(pkvd->szKeyName, "primary") && Q_atoi(pkvd->szValue) > 0)
 	{
 		m_bitsIgnoreSlots |= (1 << PRIMARY_WEAPON_SLOT);
@@ -8347,6 +8348,7 @@ void CStripWeapons::KeyValue(KeyValueData *pkvd)
 		m_iszSpecialItem = ALLOC_STRING(pkvd->szValue);
 	}
 	else
+#endif
 	{
 		CPointEntity::KeyValue(pkvd);
 	}
