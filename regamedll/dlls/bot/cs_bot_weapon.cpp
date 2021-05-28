@@ -415,7 +415,7 @@ bool CCSBot::DoEquip(CBasePlayerWeapon *pWeapon)
 		return false;
 
 #ifdef REGAMEDLL_FIXES
-	if (pev->waterlevel == 3 && (pWeapon->iFlags() & ITEM_FLAG_NOFIREUNDERWATER))
+	if (GetProfile()->GetSkill() > 0.4f && pev->waterlevel == 3 && (pWeapon->iFlags() & ITEM_FLAG_NOFIREUNDERWATER))
 		return false;
 #endif
 
