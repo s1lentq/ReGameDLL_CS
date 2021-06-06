@@ -8310,6 +8310,50 @@ void CDeadHEV::KeyValue(KeyValueData *pkvd)
 
 LINK_ENTITY_TO_CLASS(player_weaponstrip, CStripWeapons, CCSStripWeapons)
 
+void CStripWeapons::KeyValue(KeyValueData *pkvd)
+{
+#ifdef REGAMEDLL_ADD
+	if (FStrEq(pkvd->szKeyName, "primary") && Q_atoi(pkvd->szValue) > 0)
+	{
+		m_bitsIgnoreSlots |= (1 << PRIMARY_WEAPON_SLOT);
+		pkvd->fHandled = TRUE;
+	}
+	else if (FStrEq(pkvd->szKeyName, "secondary") && Q_atoi(pkvd->szValue) > 0)
+	{
+		m_bitsIgnoreSlots |= (1 << PISTOL_SLOT);
+		pkvd->fHandled = TRUE;
+	}
+	else if (FStrEq(pkvd->szKeyName, "knife") && Q_atoi(pkvd->szValue) > 0)
+	{
+		m_bitsIgnoreSlots |= (1 << KNIFE_SLOT);
+		pkvd->fHandled = TRUE;
+	}
+	else if (FStrEq(pkvd->szKeyName, "grenade") && Q_atoi(pkvd->szValue) > 0)
+	{
+		m_bitsIgnoreSlots |= (1 << GRENADE_SLOT);
+		pkvd->fHandled = TRUE;
+	}
+	else if (FStrEq(pkvd->szKeyName, "bomb") && Q_atoi(pkvd->szValue) > 0)
+	{
+		m_bitsIgnoreSlots |= (1 << C4_SLOT);
+		pkvd->fHandled = TRUE;
+	}
+	else if (FStrEq(pkvd->szKeyName, "items") && Q_atoi(pkvd->szValue) > 0)
+	{
+		m_bitsIgnoreSlots |= (1 << ALL_OTHER_ITEMS);
+		pkvd->fHandled = TRUE;
+	}
+	else if (FStrEq(pkvd->szKeyName, "special"))
+	{
+		m_iszSpecialItem = ALLOC_STRING(pkvd->szValue);
+	}
+	else
+#endif
+	{
+		CPointEntity::KeyValue(pkvd);
+	}
+}
+
 void CStripWeapons::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	CBasePlayer *pPlayer = nullptr;
@@ -8324,7 +8368,43 @@ void CStripWeapons::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE 
 
 	if (pPlayer)
 	{
-		pPlayer->RemoveAllItems(FALSE);
+#ifdef REGAMEDLL_ADD
+		if (m_bitsIgnoreSlots != 0 || m_iszSpecialItem)
+		{
+			if (m_iszSpecialItem)
+			{
+				pPlayer->CSPlayer()->RemovePlayerItem(STRING(m_iszSpecialItem));
+			}
+
+			for (int slot = PRIMARY_WEAPON_SLOT; slot <= ALL_OTHER_ITEMS; slot++)
+			{
+				if (m_bitsIgnoreSlots & (1 << slot))
+					continue;
+
+				if (slot == ALL_OTHER_ITEMS)
+				{
+					pPlayer->CSPlayer()->RemovePlayerItem("item_thighpack");
+					pPlayer->CSPlayer()->RemovePlayerItem("item_longjump");
+					pPlayer->CSPlayer()->RemovePlayerItem("item_assaultsuit");
+					pPlayer->CSPlayer()->RemovePlayerItem("item_kevlar");
+					pPlayer->CSPlayer()->RemovePlayerItem("item_thighpack");
+					pPlayer->CSPlayer()->RemovePlayerItem("weapon_shield");
+				}
+				else
+				{
+					pPlayer->ForEachItem(slot, [pPlayer](CBasePlayerItem *pItem)
+					{
+						pPlayer->CSPlayer()->RemovePlayerItem(STRING(pItem->pev->classname));
+						return false;
+					});
+				}
+			}
+		}
+		else
+#endif
+		{
+			pPlayer->RemoveAllItems(FALSE);
+		}
 	}
 }
 

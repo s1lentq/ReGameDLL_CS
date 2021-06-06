@@ -2039,7 +2039,40 @@
 	speed(integer) : "New Train Speed" : 0
 ]
 
-@PointClass base(Targetname) size(-16 -16 -16, 16 16 16) iconsprite("sprites/CS/player_weaponstrip.spr") = player_weaponstrip : "Strips player's weapons" []
+@PointClass base(Targetname) size(-16 -16 -16, 16 16 16) iconsprite("sprites/CS/player_weaponstrip.spr") = player_weaponstrip : "Strips player's weapons"
+[
+	primary(choices) : "Ignore primary weapons" : 0 =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	secondary(choices) : "Ignore pistols" : 0 =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	knife(choices) : "Ignore knife" : 0 =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	grenade(choices) : "Ignore grenades" : 0 =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	bomb(choices) : "Ignore bomb" : 0 =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	items(choices) : "Ignore other items (shield, defuser, kevlar etc)" : 0 =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	special(string) : "Special item to strip"
+]
 
 // Monsters
 @PointClass iconsprite("sprites/CS/hostage_entity.spr") base(PlayerClass, RenderFields) size(-16 -16 0, 16 16 72) = monster_scientist : "Scientist Hostage"
