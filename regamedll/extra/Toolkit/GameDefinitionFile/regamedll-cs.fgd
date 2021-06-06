@@ -2268,6 +2268,11 @@
 @SolidClass = func_bomb_target : "Bomb target zone"
 [
 	target(target_destination) : "Target (when bomb blows)"
+	strict_touch(choices) : "Touch mode" : 0 = 
+	[
+		0: "Legacy"
+		1: "New one (is more strict)"
+	]
 ]
 
 @SolidClass base(Targetname) = trigger_cdaudio : "Trigger CD Audio"
