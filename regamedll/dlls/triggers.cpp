@@ -1825,6 +1825,21 @@ void CBuyZone::BuyTouch(CBaseEntity *pOther)
 
 LINK_ENTITY_TO_CLASS(func_bomb_target, CBombTarget, CCSBombTarget)
 
+void CBombTarget::KeyValue(KeyValueData *pkvd)
+{
+#ifdef REGAMEDLL_ADD
+	if (FStrEq(pkvd->szKeyName, "strict_touch") && Q_atoi(pkvd->szValue) > 0)
+	{
+		m_bStrictTouch = true;
+		pkvd->fHandled = TRUE;
+	}
+	else
+#endif
+	{
+		CBaseTrigger::KeyValue(pkvd);
+	}
+}
+
 void CBombTarget::Spawn()
 {
 	InitTrigger();
@@ -1861,7 +1876,7 @@ void CBombTarget::BombTargetTouch(CBaseEntity *pOther)
 	if (pPlayer->m_bHasC4)
 	{
 #ifdef REGAMEDLL_ADD
-		if (!legacy_bombtarget_touch.value)
+		if (!legacy_bombtarget_touch.value || m_bStrictTouch)
 #endif
 		{
 
