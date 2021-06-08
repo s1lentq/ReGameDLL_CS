@@ -67,29 +67,38 @@ void CCSBot::OnEvent(GameEventType event, CBaseEntity *pEntity, CBaseEntity *pOt
 	// automatically acquire our dead friend's killer
 	if (!IsAttacking() && (GetDisposition() == ENGAGE_AND_INVESTIGATE || GetDisposition() == OPPORTUNITY_FIRE))
 	{
-		if (event == EVENT_PLAYER_DIED)
+		if (event == EVENT_PLAYER_DIED ||
+#ifdef REGAMEDLL_ADD
+			event == EVENT_PLAYER_TOOK_DAMAGE
+#endif
+			)
 		{
 			if (BotRelationship(pPlayer) == BOT_TEAMMATE)
 			{
-				CBasePlayer *pKiller = static_cast<CBasePlayer *>(pOther);
-
-				// check that attacker is an enemy (for friendly fire, etc)
-				if (pKiller && pKiller->IsPlayer())
+#ifdef REGAMEDLL_ADD
+				if ((event == EVENT_PLAYER_DIED && cv_bot_agressive.value != 0) || (event == EVENT_PLAYER_TOOK_DAMAGE && cv_bot_agressive.value > 1))
+#endif
 				{
-					// check if we saw our friend die - dont check FOV - assume we're aware of our surroundings in combat
-					// snipers stay put
-					if (!IsSniper() && IsVisible(&pPlayer->pev->origin))
-					{
-						// people are dying - we should hurry
-						Hurry(RANDOM_FLOAT(10.0f, 15.0f));
+					CBasePlayer *pKiller = static_cast<CBasePlayer *>(pOther);
 
-						// if we're hiding with only our knife, be a little more cautious
-						const float knifeAmbushChance = 50.0f;
-						if (!IsHiding() || !IsUsingKnife() || RANDOM_FLOAT(0, 100) < knifeAmbushChance)
+					// check that attacker is an enemy (for friendly fire, etc)
+					if (pKiller && pKiller->IsPlayer())
+					{
+						// check if we saw our friend die - dont check FOV - assume we're aware of our surroundings in combat
+						// snipers stay put
+						if (!IsSniper() && IsVisible(&pPlayer->pev->origin))
 						{
-							PrintIfWatched("Attacking our friend's killer!\n");
-							Attack(pKiller);
-							return;
+							// people are dying - we should hurry
+							Hurry(RANDOM_FLOAT(10.0f, 15.0f));
+
+							// if we're hiding with only our knife, be a little more cautious
+							const float knifeAmbushChance = 50.0f;
+							if (!IsHiding() || !IsUsingKnife() || RANDOM_FLOAT(0, 100) < knifeAmbushChance)
+							{
+								PrintIfWatched("Attacking our friend's killer!\n");
+								Attack(pKiller);
+								return;
+							}
 						}
 					}
 				}
