@@ -2622,8 +2622,8 @@
 		1 : "Not solid" : 0
 		2 : "Reverse Dir" : 0
 		32: "Toggle" : 0
-		64: "X Axis" : 0
-		128: "Y Axis" : 0
+		64: "Z Axis" : 0
+		128: "X Axis" : 0
 		256: "Touch Activates": 0
 	]
 	_minlight(string) : "Minimum light level" : "0"
