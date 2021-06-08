@@ -67,9 +67,9 @@ void CCSBot::OnEvent(GameEventType event, CBaseEntity *pEntity, CBaseEntity *pOt
 	// automatically acquire our dead friend's killer
 	if (!IsAttacking() && (GetDisposition() == ENGAGE_AND_INVESTIGATE || GetDisposition() == OPPORTUNITY_FIRE))
 	{
-		if (event == EVENT_PLAYER_DIED ||
+		if (event == EVENT_PLAYER_DIED
 #ifdef REGAMEDLL_ADD
-			event == EVENT_PLAYER_TOOK_DAMAGE
+			|| event == EVENT_PLAYER_TOOK_DAMAGE
 #endif
 			)
 		{
