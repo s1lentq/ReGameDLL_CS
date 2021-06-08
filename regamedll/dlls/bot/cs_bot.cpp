@@ -295,27 +295,33 @@ void CCSBot::BotTouch(CBaseEntity *pOther)
 	// See if it's breakable
 	if (FClassnameIs(pOther->pev, "func_breakable"))
 	{
-		Vector center = (pOther->pev->absmax + pOther->pev->absmin) / 2.0f;
-		bool breakIt = true;
-
-		if (m_pathLength)
+#ifdef REGAMEDLL_FIXES
+		// Is breakable ? spawnflags has SF_BREAK_TRIGGER_ONLY or material type matUnbreakableGlass
+		if (pOther->pev->takedamage != DAMAGE_NO || !(pOther->pev->flags |= FL_WORLDBRUSH))
+#endif
 		{
-			Vector goal = m_goalPosition + Vector(0, 0, HalfHumanHeight);
-			breakIt = IsIntersectingBox(pev->origin, goal, pOther->pev->absmin, pOther->pev->absmax);
-		}
+			Vector center = (pOther->pev->absmax + pOther->pev->absmin) / 2.0f;
+			bool breakIt = true;
 
-		if (breakIt)
-		{
-			// it's breakable - try to shoot it.
-			SetLookAt("Breakable", &center, PRIORITY_HIGH, 0.2, 0, 5.0);
-
-			if (IsUsingGrenade())
+			if (m_pathLength)
 			{
-				EquipBestWeapon();
-				return;
+				Vector goal = m_goalPosition + Vector(0, 0, HalfHumanHeight);
+				breakIt = IsIntersectingBox(pev->origin, goal, pOther->pev->absmin, pOther->pev->absmax);
 			}
 
-			PrimaryAttack();
+			if (breakIt)
+			{
+				// it's breakable - try to shoot it.
+				SetLookAt("Breakable", &center, PRIORITY_HIGH, 0.2, 0, 5.0);
+
+				if (IsUsingGrenade())
+				{
+					EquipBestWeapon();
+					return;
+				}
+
+				PrimaryAttack();
+			}
 		}
 	}
 }
