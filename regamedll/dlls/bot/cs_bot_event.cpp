@@ -82,7 +82,12 @@ void CCSBot::OnEvent(GameEventType event, CBaseEntity *pEntity, CBaseEntity *pOt
 					CBasePlayer *pKiller = static_cast<CBasePlayer *>(pOther);
 
 					// check that attacker is an enemy (for friendly fire, etc)
-					if (pKiller && pKiller->IsPlayer())
+					if (pKiller && pKiller->IsPlayer()
+#ifdef REGAMEDLL_FIXES
+						// why should they kill each other because of aggression
+						&& !pKiller->IsBot()
+#endif
+					)
 					{
 						// check if we saw our friend die - dont check FOV - assume we're aware of our surroundings in combat
 						// snipers stay put
