@@ -67,31 +67,32 @@ void CCSBot::OnEvent(GameEventType event, CBaseEntity *pEntity, CBaseEntity *pOt
 	// automatically acquire our dead friend's killer
 	if (!IsAttacking() && (GetDisposition() == ENGAGE_AND_INVESTIGATE || GetDisposition() == OPPORTUNITY_FIRE))
 	{
-		if (event == EVENT_PLAYER_DIED
+		if ((event == EVENT_PLAYER_DIED
 #ifdef REGAMEDLL_ADD
-			|| event == EVENT_PLAYER_TOOK_DAMAGE
+			&&
+			cv_bot_agressive.value == 0) ||
+			(cv_bot_agressive.value == 1 && event == EVENT_PLAYER_DIED) ||
+			(cv_bot_agressive.value == 2 && event == EVENT_PLAYER_TOOK_DAMAGE
 #endif
-			)
+				))
 		{
-			if (BotRelationship(pPlayer) == BOT_TEAMMATE)
+			CBasePlayer *pVictim = pPlayer;
+			if (BotRelationship(pVictim) == BOT_TEAMMATE)
 			{
-#ifdef REGAMEDLL_ADD
-				if ((event == EVENT_PLAYER_DIED && cv_bot_agressive.value != 0) || (event == EVENT_PLAYER_TOOK_DAMAGE && cv_bot_agressive.value > 1))
-#endif
-				{
-					CBasePlayer *pKiller = static_cast<CBasePlayer *>(pOther);
+				CBasePlayer *pKiller = static_cast<CBasePlayer *>(pOther);
 
-					// check that attacker is an enemy (for friendly fire, etc)
-					if (pKiller && pKiller->IsPlayer()
-#ifdef REGAMEDLL_FIXES
-						// why should they kill each other because of aggression
-						&& !pKiller->IsBot()
+				// check that attacker is an enemy (for friendly fire, etc)
+				if (pKiller && pKiller->IsPlayer() && !pKiller->IsBot())
+				{
+					if (
+#ifdef REGAMEDLL_ADD
+						cv_bot_agressive.value > 0 ||
 #endif
-					)
+						BotRelationship(pKiller) == BOT_ENEMY)
 					{
 						// check if we saw our friend die - dont check FOV - assume we're aware of our surroundings in combat
 						// snipers stay put
-						if (!IsSniper() && IsVisible(&pPlayer->pev->origin))
+						if (!IsSniper() && IsVisible(&pVictim->pev->origin))
 						{
 							// people are dying - we should hurry
 							Hurry(RANDOM_FLOAT(10.0f, 15.0f));

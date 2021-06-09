@@ -65,7 +65,7 @@ This means that plugins that do binary code analysis (Orpheu for example) probab
 | bot_quota_mode                     | normal  | -   | -            | Determines the type of quota.<br/>`normal` default behaviour<br/>`fill` the server will adjust bots to keep `N` players in the game, where `N` is bot_quota<br/>`match` the server will maintain a `1:N` ratio of humans to bots, where `N` is bot_quota |
 | bot_join_delay                     | 0       | -   | -            | Prevents bots from joining the server for this many seconds after a map change. |
 | bot_freeze                         | 0       | 0   | 1            | Prevents bots on your server from moving.<br/>`0` disabled<br/>`1` enabled |
-| bot_agressive                      | 1       | 0   | 2            | Bots can chastise friendly fire from humans.<br/>`0` disabled<br/>`1` only hunt due to teammate death<br/>`2` same as 1, but also when injuring |
+| bot_agressive                      | 0       | 0   | 2            | Bots can chastise friendly fire from humans.<br/>`0` disabled<br/>`1` only hunt due to teammate death<br/>`2` same as 1, but also when injuring |
 | mp_item_staytime                   | 300     | -   | -            | Time to remove item that have been dropped from the players. |
 | mp_legacy_bombtarget_touch         | 1       | 0   | 1            | Legacy func_bomb_target touch. New one is more strict. <br/>`0` New behavior<br/>`1` Legacy behavior|
 | mp_respawn_immunitytime            | 0       | 0   | -            | Specifies the players defense time after respawn. (in seconds).<br/>`0` disabled<br/>`>0.00001` time delay to remove protection |
