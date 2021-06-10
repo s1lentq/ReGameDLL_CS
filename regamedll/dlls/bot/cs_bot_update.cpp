@@ -741,7 +741,7 @@ void CCSBot::Update()
 	{
 		if (GetMorale() < NEUTRAL && IsSafe() && GetSafeTimeRemaining() < 2.0f && IsHunting())
 		{
-			if (GetMorale() * -40.0 > RANDOM_FLOAT(0.0f, 100.0f))
+			if (GetMorale() * -40.0f > RANDOM_FLOAT(0.0f, 100.0f))
 			{
 				if (TheCSBots()->IsOnOffense(this) || !TheCSBots()->IsDefenseRushing())
 				{
@@ -751,6 +751,19 @@ void CCSBot::Update()
 				}
 			}
 		}
+
+#ifdef REGAMEDLL_ADD
+		if (gpGlobals->time > m_flNextDecalTime && HasNotSeenEnemyForLongTime() && !IsBusy()
+			&& !IsUsingScope() && GetMorale() * 40.0f > RANDOM_FLOAT(0.0f, 100.0f))
+		{
+			float yaw = pev->v_angle.y;
+			Vector2D dir(BotCOS(yaw), BotSIN(yaw));
+
+			Vector down(pev->origin.x + 10.0f * dir.x, pev->origin.y + 10.0f * dir.y, GetFeetZ());
+			SetLookAt("Spray", &down, PRIORITY_LOW);
+			pev->impulse = 201;
+		}
+#endif
 	}
 
 	// Execute state machine
