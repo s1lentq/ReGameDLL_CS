@@ -285,6 +285,17 @@ void CCSBot::BotTouch(CBaseEntity *pOther)
 		return;
 	}
 
+#ifdef REGAMEDLL_ADD
+	if ((FClassnameIs(pOther->pev, "func_door") || FClassnameIs(pOther->pev, "func_door_rotating")) && (pOther->pev->spawnflags & SF_DOOR_USE_ONLY))
+	{
+		Vector pos = pOther->Center();
+		SetLookAt("Open Door", &pos, PRIORITY_HIGH);
+		IsLookingAtPosition(&pos);
+		UseEnvironment();
+		Idle();
+	}
+#endif
+
 	// If we won't be able to break it, don't try
 	if (pOther->pev->takedamage != DAMAGE_YES)
 		return;
