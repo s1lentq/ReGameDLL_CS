@@ -219,13 +219,19 @@ const char *CBotManager::GetNavMapFilename() const
 void CBotManager::OnEvent(GameEventType event, CBaseEntity *pEntity, CBaseEntity *pOther)
 {
 #ifdef REGAMEDLL_ADD
-	if (event == EVENT_PLAYER_TOOK_DAMAGE)
+	if (event == EVENT_PLAYER_TOOK_DAMAGE && pOther->IsPlayer())
 	{
 		CBasePlayer *pAttacker = static_cast<CBasePlayer *>(pOther);
+
 		if (pAttacker && !pAttacker->IsBot())
 		{
-			CBot *bot = static_cast<CBot *>(pEntity);
-			bot->OnEvent(event, pEntity, pOther);
+			CBasePlayer *pPlayer = static_cast<CBasePlayer *>(pEntity);
+
+			if (pPlayer && pPlayer->IsBot())
+			{
+				CBot *bot = static_cast<CBot *>(pPlayer);
+				bot->OnEvent(event, pEntity, pOther);
+			}
 		}
 	}
 	else
