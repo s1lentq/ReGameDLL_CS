@@ -218,49 +218,37 @@ const char *CBotManager::GetNavMapFilename() const
 // TODO: This has become the game-wide event dispatcher. We should restructure this.
 void CBotManager::OnEvent(GameEventType event, CBaseEntity *pEntity, CBaseEntity *pOther)
 {
+	// propogate event to all bots
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	{
+		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
+
+		if (!pPlayer)
+			continue;
+
+		if (FNullEnt(pPlayer->pev))
+			continue;
+
+		if (FStrEq(STRING(pPlayer->pev->netname), ""))
+			continue;
+
+		if (!pPlayer->IsBot())
+			continue;
+
 #ifdef REGAMEDLL_ADD
-	if (event == EVENT_PLAYER_TOOK_DAMAGE && pOther->IsPlayer())
-	{
-		CBasePlayer *pAttacker = static_cast<CBasePlayer *>(pOther);
-
-		if (pAttacker && !pAttacker->IsBot())
+		if ((event != EVENT_PLAYER_TOOK_DAMAGE && pEntity == pPlayer)
+			|| (event == EVENT_PLAYER_TOOK_DAMAGE && pEntity != pPlayer))
 		{
-			CBasePlayer *pPlayer = static_cast<CBasePlayer *>(pEntity);
-
-			if (pPlayer && pPlayer->IsBot())
-			{
-				CBot *bot = static_cast<CBot *>(pPlayer);
-				bot->OnEvent(event, pEntity, pOther);
-			}
+			continue;
 		}
-	}
-	else
+#else
+		// do not send self-generated event
+		if (pEntity == pPlayer)
+			continue;
 #endif
-	{
-		// propogate event to all bots
-		for (int i = 1; i <= gpGlobals->maxClients; i++)
-		{
-			CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
-			if (!pPlayer)
-				continue;
-
-			if (FNullEnt(pPlayer->pev))
-				continue;
-
-			if (FStrEq(STRING(pPlayer->pev->netname), ""))
-				continue;
-
-			if (!pPlayer->IsBot())
-				continue;
-
-			// do not send self-generated event
-			if (pEntity == pPlayer)
-				continue;
-
-			CBot *bot = static_cast<CBot *>(pPlayer);
-			bot->OnEvent(event, pEntity, pOther);
-		}
+		CBot *bot = static_cast<CBot *>(pPlayer);
+		bot->OnEvent(event, pEntity, pOther);
 	}
 
 	if (TheTutor)
