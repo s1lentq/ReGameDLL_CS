@@ -71,7 +71,7 @@ void CCSBot::OnEvent(GameEventType event, CBaseEntity *pEntity, CBaseEntity *pOt
 #ifdef REGAMEDLL_ADD
 			&&
 			cv_bot_agressive.value == 0) ||
-			(cv_bot_agressive.value == 1 && event == EVENT_PLAYER_DIED) ||
+			(cv_bot_agressive.value >= 1 && event == EVENT_PLAYER_DIED) ||
 			(cv_bot_agressive.value == 2 && event == EVENT_PLAYER_TOOK_DAMAGE
 #endif
 				))
