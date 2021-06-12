@@ -10124,7 +10124,15 @@ void CBasePlayer::PlayerRespawnThink()
 {
 #ifdef REGAMEDLL_ADD
 	if (GetObserverMode() != OBS_NONE && (m_iTeam == UNASSIGNED || m_iTeam == SPECTATOR))
+	{
+		if (CSPlayer()->m_flRespawnPending > 0)
+		{
+			CSPlayer()->m_flRespawnPending = 0.0f;
+			CSPlayer()->m_bGameForcingRespawn = false;
+		}
+
 		return;
+	}
 
 	// Player cannot respawn while in the Choose Appearance menu
 	if (m_iMenu == Menu_ChooseAppearance || m_iJoiningState == SHOWTEAMSELECT)
