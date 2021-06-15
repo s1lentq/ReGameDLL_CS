@@ -107,6 +107,8 @@ bool CCStrikeGameMgrHelper::__API_HOOK(CanPlayerHearPlayer)(CBasePlayer *pListen
 		return (pListener->m_iTeam == pSender->m_iTeam || pListener->m_iTeam == SPECTATOR || pListener->m_iTeam == UNASSIGNED);
 	case 4:
 		return (pListener->IsAlive() == pSender->IsAlive() || pSender->IsAlive());
+	case 5:
+		return ((pListener->IsAlive() == pSender->IsAlive() && pListener->m_iTeam == pSender->m_iTeam) || !pListener->IsAlive());
 #endif
 	default:
 	{
@@ -3259,7 +3261,7 @@ BOOL EXT_FUNC CHalfLifeMultiplay::__API_HOOK(FShouldSwitchWeapon)(CBasePlayer *p
 	{
 		if (pWeapon->iFlags() & ITEM_FLAG_NOFIREUNDERWATER)
 			return FALSE;
-		
+
 		if (pPlayer->m_pActiveItem->iFlags() & ITEM_FLAG_NOFIREUNDERWATER)
 			return TRUE;
 	}
