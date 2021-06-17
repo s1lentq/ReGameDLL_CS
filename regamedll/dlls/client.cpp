@@ -4983,6 +4983,9 @@ void EXT_FUNC CmdStart(const edict_t *pEdict, const struct usercmd_s *cmd, unsig
 		UTIL_SetGroupTrace(pPlayer->pev->groupinfo, GROUP_OP_AND);
 
 	pPlayer->random_seed = random_seed;
+#ifdef REGAMEDLL_ADD
+	pPlayer->m_lastCmdTime = gpGlobals->time;
+#endif
 }
 
 void EXT_FUNC CmdEnd(const edict_t *pEdict)

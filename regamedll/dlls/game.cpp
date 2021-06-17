@@ -158,6 +158,9 @@ cvar_t t_give_player_knife               = { "mp_t_give_player_knife", "1", 0, 1
 cvar_t t_default_weapons_secondary       = { "mp_t_default_weapons_secondary", "glock18", 0, 0.0f, nullptr };
 cvar_t t_default_weapons_primary         = { "mp_t_default_weapons_primary", "", 0, 0.0f, nullptr };
 
+
+cvar_t cl_timeout = { "mp_timeout", "60", FCVAR_SERVER, 0.0f, nullptr };
+
 void GameDLL_Version_f()
 {
 	if (Q_stricmp(CMD_ARGV(1), "version") != 0)
@@ -383,6 +386,8 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&t_give_player_knife);
 	CVAR_REGISTER(&t_default_weapons_secondary);
 	CVAR_REGISTER(&t_default_weapons_primary);
+
+	CVAR_REGISTER(&cl_timeout);
 
 	// print version
 	CONSOLE_ECHO("ReGameDLL version: " APP_VERSION "\n");
