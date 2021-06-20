@@ -281,12 +281,21 @@ void CBasePlayer::Observer_CheckTarget()
 			CBasePlayer *target = UTIL_PlayerByIndex(m_hObserverTarget->entindex());
 
 			// check taget
-			if (!target || target->pev->deadflag == DEAD_RESPAWNABLE || (target->pev->effects & EF_NODRAW))
+			if (!target || target->pev->deadflag == DEAD_RESPAWNABLE)
+			{
 				Observer_FindNextPlayer(false);
-
+			}
+			else if (target->pev->effects & EF_NODRAW)
+			{
+#ifdef REGAMEDLL_FIXES
+				bool bStillDying = (target->pev->deadflag == DEAD_DYING || (target->pev->deadflag == DEAD_DEAD && (gpGlobals->time <= target->m_fDeadTime + 2.0f)));
+				if (!bStillDying || (target->m_afPhysicsFlags & PFLAG_OBSERVER)) // keep observing to victim until dying, even if it is invisible
+#endif
+					Observer_FindNextPlayer(false);
+			}
 			else if (target->pev->deadflag == DEAD_DEAD && gpGlobals->time > target->m_fDeadTime + 2.0f)
 			{
-				// 3 secs after death change target
+				// 2 secs after death change target
 				Observer_FindNextPlayer(false);
 
 				if (!m_hObserverTarget)
