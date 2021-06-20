@@ -29,7 +29,19 @@ CBasePlayer *CBasePlayer::__API_HOOK(Observer_IsValidTarget)(int iPlayerIndex, b
 	CBasePlayer *pPlayer = UTIL_PlayerByIndex(iPlayerIndex);
 
 	// Don't spec observers or players who haven't picked a class yet
-	if (!pPlayer || pPlayer == this || pPlayer->has_disconnected || pPlayer->GetObserverMode() != OBS_NONE || (pPlayer->pev->effects & EF_NODRAW) || pPlayer->m_iTeam == UNASSIGNED || (bSameTeam && pPlayer->m_iTeam != m_iTeam))
+	if (!pPlayer || pPlayer == this)
+		return nullptr;
+
+	if (pPlayer->has_disconnected)
+		return nullptr;
+
+	if (pPlayer->GetObserverMode() != OBS_NONE)
+		return nullptr;
+
+	if (pPlayer->pev->effects & EF_NODRAW)
+		return nullptr;
+
+	if (pPlayer->m_iTeam == UNASSIGNED || (bSameTeam && pPlayer->m_iTeam != m_iTeam))
 		return nullptr;
 
 	return pPlayer;
