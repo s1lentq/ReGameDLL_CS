@@ -29,7 +29,19 @@ CBasePlayer *CBasePlayer::__API_HOOK(Observer_IsValidTarget)(int iPlayerIndex, b
 	CBasePlayer *pPlayer = UTIL_PlayerByIndex(iPlayerIndex);
 
 	// Don't spec observers or players who haven't picked a class yet
-	if (!pPlayer || pPlayer == this || pPlayer->has_disconnected || pPlayer->GetObserverMode() != OBS_NONE || (pPlayer->pev->effects & EF_NODRAW) || pPlayer->m_iTeam == UNASSIGNED || (bSameTeam && pPlayer->m_iTeam != m_iTeam))
+	if (!pPlayer || pPlayer == this)
+		return nullptr;
+
+	if (pPlayer->has_disconnected)
+		return nullptr;
+
+	if (pPlayer->GetObserverMode() != OBS_NONE)
+		return nullptr;
+
+	if (pPlayer->pev->effects & EF_NODRAW)
+		return nullptr;
+
+	if (pPlayer->m_iTeam == UNASSIGNED || (bSameTeam && pPlayer->m_iTeam != m_iTeam))
 		return nullptr;
 
 	return pPlayer;
@@ -269,12 +281,21 @@ void CBasePlayer::Observer_CheckTarget()
 			CBasePlayer *target = UTIL_PlayerByIndex(m_hObserverTarget->entindex());
 
 			// check taget
-			if (!target || target->pev->deadflag == DEAD_RESPAWNABLE || (target->pev->effects & EF_NODRAW))
+			if (!target || target->pev->deadflag == DEAD_RESPAWNABLE)
+			{
 				Observer_FindNextPlayer(false);
-
+			}
+			else if (target->pev->effects & EF_NODRAW)
+			{
+#ifdef REGAMEDLL_FIXES
+				bool bStillDying = (target->pev->deadflag == DEAD_DYING || (target->pev->deadflag == DEAD_DEAD && (gpGlobals->time <= target->m_fDeadTime + 2.0f)));
+				if (!bStillDying || (target->m_afPhysicsFlags & PFLAG_OBSERVER)) // keep observing to victim until dying, even if it is invisible
+#endif
+					Observer_FindNextPlayer(false);
+			}
 			else if (target->pev->deadflag == DEAD_DEAD && gpGlobals->time > target->m_fDeadTime + 2.0f)
 			{
-				// 3 secs after death change target
+				// 2 secs after death change target
 				Observer_FindNextPlayer(false);
 
 				if (!m_hObserverTarget)
