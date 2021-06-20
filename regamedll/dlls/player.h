@@ -578,6 +578,7 @@ public:
 	bool IsHittingShield(Vector &vecDirection, TraceResult *ptr);
 	bool SelectSpawnSpot(const char *pEntClassName, CBaseEntity* &pSpot);
 	bool IsReloading() const;
+	bool HasTimePassedSinceDied(float duration) const;
 	bool IsBlind() const { return (m_blindUntilTime > gpGlobals->time); }
 	bool IsAutoFollowAllowed() const { return (gpGlobals->time > m_allowAutoFollowTime); }
 	void InhibitAutoFollow(float duration) { m_allowAutoFollowTime = gpGlobals->time + duration; }
@@ -926,6 +927,11 @@ inline bool CBasePlayer::IsReloading() const
 	}
 
 	return false;
+}
+
+inline bool CBasePlayer::HasTimePassedSinceDied(float duration) const
+{
+	return gpGlobals->time > (m_fDeadTime + duration);
 }
 
 #ifdef REGAMEDLL_API
