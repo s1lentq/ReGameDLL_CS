@@ -9909,7 +9909,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(OnSpawnEquip)(bool addDefault, bool equipG
 	{
 		switch ((int)free_armor.value)
 		{
-		case 1:	GiveNamedItem("item_kevlar"); break;
+		case 1: GiveNamedItem("item_kevlar"); break;
 		case 2: GiveNamedItem("item_assaultsuit"); break;
 		}
 	}
