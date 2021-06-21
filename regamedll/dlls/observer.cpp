@@ -288,12 +288,12 @@ void CBasePlayer::Observer_CheckTarget()
 			else if (target->pev->effects & EF_NODRAW)
 			{
 #ifdef REGAMEDLL_FIXES
-				bool bStillDying = (target->pev->deadflag == DEAD_DYING || (target->pev->deadflag == DEAD_DEAD && (gpGlobals->time <= target->m_fDeadTime + 2.0f)));
+				bool bStillDying = (target->pev->deadflag == DEAD_DYING || (target->pev->deadflag == DEAD_DEAD && !target->HasTimePassedSinceDeath(2.0f)));
 				if (!bStillDying || (target->m_afPhysicsFlags & PFLAG_OBSERVER)) // keep observing to victim until dying, even if it is invisible
 #endif
 					Observer_FindNextPlayer(false);
 			}
-			else if (target->pev->deadflag == DEAD_DEAD && gpGlobals->time > target->m_fDeadTime + 2.0f)
+			else if (target->pev->deadflag == DEAD_DEAD && target->HasTimePassedSinceDeath(2.0f))
 			{
 				// 2 secs after death change target
 				Observer_FindNextPlayer(false);
