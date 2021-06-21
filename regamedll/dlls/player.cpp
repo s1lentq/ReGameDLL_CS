@@ -9904,18 +9904,14 @@ void EXT_FUNC CBasePlayer::__API_HOOK(OnSpawnEquip)(bool addDefault, bool equipG
 		GiveDefaultItems();
 	}
 
-	// Give free armor from cvar mp_free_armor 0/1/2
-	switch ((int)free_armor.value)
+	if(!m_bIsVIP)
+	{
+		switch ((int)free_armor.value)
 		{
-			case 1:
-				if(!m_bIsVIP)
-					GiveNamedItem("item_kevlar");
-				break;
-			case 2:
-				if(!m_bIsVIP)
-					GiveNamedItem("item_assaultsuit");
-				break;
+		case 1:	GiveNamedItem("item_kevlar"); break;
+		case 2: GiveNamedItem("item_assaultsuit"); break;
 		}
+	}
 }
 
 void CBasePlayer::HideTimer()
