@@ -9907,10 +9907,10 @@ void EXT_FUNC CBasePlayer::__API_HOOK(OnSpawnEquip)(bool addDefault, bool equipG
 #ifdef REGAMEDLL_ADD
 	if(!m_bIsVIP)
 	{
-		switch ((int)free_armor.value)
+		switch (static_cast<ArmorType>(free_armor.value))
 		{
-		case 1: GiveNamedItem("item_kevlar"); break;
-		case 2: GiveNamedItem("item_assaultsuit"); break;
+		case ARMOR_KEVLAR: GiveNamedItem("item_kevlar"); break;
+		case ARMOR_VESTHELM: GiveNamedItem("item_assaultsuit"); break;
 		}
 	}
 #endif
