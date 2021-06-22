@@ -9978,9 +9978,15 @@ void EXT_FUNC CBasePlayer::__API_HOOK(OnSpawnEquip)(bool addDefault, bool equipG
 #endif
 			{
 				pWeaponEntity->Touch(this);
-
 				addDefault = false;
 			}
+#ifdef REGAMEDLL_FIXES
+			// TODO: Remove me someday!
+			// Check buggy map and spew message about it!
+			// 'game_player_equip' may be call twice on player spawn and 'game_playerspawn' event
+			else if (pWeaponEntity->HasBuggyMap())
+				addDefault = false; // Don't give default items now, because we have a deferred equipment
+#endif
 		}
 	}
 

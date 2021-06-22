@@ -563,6 +563,33 @@ void CGamePlayerEquip::KeyValue(KeyValueData *pkvd)
 	}
 }
 
+bool CGamePlayerEquip::HasBuggyMap() const
+{
+	if (!UseOnly())
+		return false;
+
+	CBaseEntity *pEntity = NULL;
+	while ((pEntity = UTIL_FindEntityByClassname(pEntity, "multi_manager")))
+	{
+		if (FNullEnt(pEntity))
+			break;
+
+		// Consider case with game_playerspawn only
+		if (!FStrEq(pEntity->pev->targetname, "game_playerspawn"))
+			continue;
+
+		// Lookup 'game_player_equip' into multi_manager
+		if (pEntity->HasTarget(pev->targetname))
+		{
+			ALERT(at_warning, "%s is BUGGY! 'game_player_equip' may be called twice, this has only direct actiavte behavior.\nTriggered by (#%d) %s.\n",
+				STRING(gpGlobals->mapname), ENTINDEX(pEntity->pev), STRING(pEntity->pev->classname));
+			return true;
+		}
+	}
+
+	return false;
+}
+
 void CGamePlayerEquip::Touch(CBaseEntity *pOther)
 {
 	if (CanEquipOverTouch(pOther))

@@ -258,7 +258,8 @@ public:
 public:
 	bool UseOnly() const { return (pev->spawnflags & SF_PLAYEREQUIP_USEONLY) == SF_PLAYEREQUIP_USEONLY; }
 	bool RemoveWeapons() const { return (pev->spawnflags & SF_PLAYEREQUIP_REMOVEWEAPONS) == SF_PLAYEREQUIP_REMOVEWEAPONS; }
-	
+	bool HasBuggyMap() const;
+
 	bool CanEquipOverTouch(CBaseEntity *pOther)
 	{
 		if (!CanFireForActivator(pOther))
