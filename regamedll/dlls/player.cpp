@@ -9991,6 +9991,17 @@ void EXT_FUNC CBasePlayer::__API_HOOK(OnSpawnEquip)(bool addDefault, bool equipG
 	{
 		GiveDefaultItems();
 	}
+
+#ifdef REGAMEDLL_ADD
+	if(!m_bIsVIP)
+	{
+		switch (static_cast<ArmorType>((int)free_armor.value))
+		{
+		case ARMOR_KEVLAR: GiveNamedItem("item_kevlar"); break;
+		case ARMOR_VESTHELM: GiveNamedItem("item_assaultsuit"); break;
+		}
+	}
+#endif
 }
 
 void CBasePlayer::HideTimer()
