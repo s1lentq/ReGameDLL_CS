@@ -886,8 +886,9 @@ void CBasePlayerWeapon::ItemPostFrame()
 		{
 			m_pPlayer->m_iFOV = m_pPlayer->m_iLastZoom;
 			m_pPlayer->pev->fov = m_pPlayer->m_iFOV;
-
+#ifndef REGAMEDLL_FIXES // reverse-engineering mistake ?
 			if (m_pPlayer->m_iFOV == m_pPlayer->m_iLastZoom)
+#endif
 			{
 				// return the fade level in zoom.
 				m_pPlayer->m_bResumeZoom = false;

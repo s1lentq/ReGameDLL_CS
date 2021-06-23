@@ -367,7 +367,10 @@ BOOL CKnife::Swing(BOOL fFirst)
 		// player "shoot" animation
 		m_pPlayer->SetAnimation(PLAYER_ATTACK1);
 		ClearMultiDamage();
-
+		
+#ifndef REGAMEDLL_FIXES
+		if (pEntity)
+#endif
 		if (m_flNextPrimaryAttack + 0.4f < UTIL_WeaponTimeBase())
 			pEntity->TraceAttack(m_pPlayer->pev, m_flSwingBaseDamage_Fast, gpGlobals->v_forward, &tr, (DMG_NEVERGIB | DMG_BULLET));
 		else
@@ -541,7 +544,9 @@ BOOL CKnife::Stab(BOOL fFirst)
 
 		UTIL_MakeVectors(m_pPlayer->pev->v_angle);
 		ClearMultiDamage();
-
+#ifndef REGAMEDLL_FIXES
+		if (pEntity)
+#endif
 		pEntity->TraceAttack(m_pPlayer->pev, flDamage, gpGlobals->v_forward, &tr, (DMG_NEVERGIB | DMG_BULLET));
 		ApplyMultiDamage(m_pPlayer->pev, m_pPlayer->pev);
 

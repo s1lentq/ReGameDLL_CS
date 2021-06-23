@@ -3774,8 +3774,9 @@ void CHalfLifeMultiplay::PlayerThink(CBasePlayer *pPlayer)
 					ShowVGUIMenu(pPlayer, VGUI_Menu_Team, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_5 | MENU_KEY_6), "#Team_Select_Spect");
 			}
 
-			m_bSkipShowMenu = false;
+			
 #else
+			m_bSkipShowMenu = false; // mp_auto_join_team mistake ??
 			HandleMenu_ChooseTeam(pPlayer, slot);
 
 			if (slot != MENU_SLOT_TEAM_SPECT && IsCareer())
@@ -4957,7 +4958,10 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(ChangeLevel)()
 		ExtractCommandString(item->rulebuffer, szCommands);
 		Q_strcpy(szRules, item->rulebuffer);
 	}
-
+#ifdef REGAMEDLL_FIXES
+	else Q_strcpy(szNextMap, szFirstMapInList);
+#endif
+	
 	if (!IS_MAP_VALID(szNextMap))
 	{
 		Q_strcpy(szNextMap, szFirstMapInList);

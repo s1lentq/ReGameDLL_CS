@@ -612,7 +612,8 @@ const char *g_szMP3trackFileMap[] =
 	"media/Half-Life17.mp3",
 	"media/Prospero05.mp3",
 	"media/Suspense05.mp3",
-	"media/Suspense07.mp3"
+	"media/Suspense07.mp3",
+	"media/Suspense07.mp3" /* fix overflow iTrack == 30*/
 };
 #endif
 
