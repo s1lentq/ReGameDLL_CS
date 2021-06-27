@@ -2105,6 +2105,10 @@ BOOL EXT_FUNC __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *pPlayer, int slot)
 
 	pPlayer->TeamChangeUpdate();
 
+#ifdef REGAMEDLL_FIXES
+	pPlayer->SetPlayerModel(pPlayer->m_bHasC4);
+#endif
+
 	szOldTeam = GetTeam(oldTeam);
 	szNewTeam = GetTeam(team);
 
