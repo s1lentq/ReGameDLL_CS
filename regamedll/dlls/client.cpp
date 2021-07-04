@@ -410,12 +410,65 @@ void EXT_FUNC __API_HOOK(ShowMenu)(CBasePlayer *pPlayer, int bitsValidSlots, int
 		WRITE_BYTE(fNeedMore);
 		WRITE_STRING(pszText);
 	MESSAGE_END();
+
+	if(Q_strcmp(pszText, "#RadioA"))
+	{
+		pPlayer->m_iMenu = Menu_Radio1;
+	}
+	else if (Q_strcmp(pszText, "#RadioB"))
+	{
+		pPlayer->m_iMenu = Menu_Radio2;
+	}
+	else if (Q_strcmp(pszText, "#RadioC"))
+	{
+		pPlayer->m_iMenu = Menu_Radio3;
+	}
 }
 
 LINK_HOOK_VOID_CHAIN(ShowVGUIMenu, (CBasePlayer *pPlayer, int MenuType, int BitMask, char *szOldMenu), pPlayer, MenuType, BitMask, szOldMenu);
 
 void EXT_FUNC __API_HOOK(ShowVGUIMenu)(CBasePlayer *pPlayer, int MenuType, int BitMask, char *szOldMenu)
 {
+	switch (MenuType)
+	{
+	case VGUI_Menu_Class_CT:
+	case VGUI_Menu_Class_T:
+		pPlayer->m_iMenu = Menu_ChooseAppearance;
+		break;
+
+	case VGUI_Menu_Team:
+		pPlayer->m_iMenu = Menu_ChooseTeam;
+		break;
+
+	case VGUI_Menu_Buy:
+		pPlayer->m_iMenu = Menu_Buy;
+		break;
+
+	case VGUI_Menu_Buy_Pistol:
+		pPlayer->m_iMenu = Menu_BuyPistol;
+		break;
+
+	case VGUI_Menu_Buy_Rifle:
+		pPlayer->m_iMenu = Menu_BuyRifle;
+		break;
+
+	case VGUI_Menu_Buy_ShotGun:
+		pPlayer->m_iMenu = Menu_BuyShotgun;
+		break;
+
+	case VGUI_Menu_Buy_SubMachineGun:
+		pPlayer->m_iMenu = Menu_BuySubMachineGun;
+		break;
+
+	case VGUI_Menu_Buy_MachineGun:
+		pPlayer->m_iMenu = Menu_BuyMachineGun;
+		break;
+
+	case VGUI_Menu_Buy_Item:
+		pPlayer->m_iMenu = Menu_BuyItem;
+		break;
+	}
+
 #ifdef REGAMEDLL_ADD
 	if (CSGameRules()->ShouldSkipShowMenu()) {
 		CSGameRules()->MarkShowMenuSkipped();
@@ -2080,8 +2133,6 @@ BOOL EXT_FUNC __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *pPlayer, int slot)
 			}
 		}
 
-		pPlayer->m_iMenu = Menu_ChooseAppearance;
-
 		// Show the appropriate Choose Appearance menu
 		// This must come before ClientKill() for CheckWinConditions() to function properly
 		if (pPlayer->pev->deadflag == DEAD_NO)
@@ -2856,7 +2907,6 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 			{
 				if (canOpenOldMenu() && !HandleMenu_ChooseTeam(pPlayer, slot))
 				{
-					pPlayer->m_iMenu = Menu_ChooseTeam;
 					if (pPlayer->m_iJoiningState == JOINED)
 						ShowVGUIMenu(pPlayer, VGUI_Menu_Team, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_5 | MENU_KEY_0), "#IG_Team_Select");
 					else
@@ -2886,7 +2936,6 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 					{
 						case VGUI_MenuSlot_Buy_Pistol:
 						{
-							pPlayer->m_iMenu = Menu_BuyPistol;
 							if (pPlayer->m_iTeam == CT)
 								ShowVGUIMenu(pPlayer, VGUI_Menu_Buy_Pistol, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_0), "#CT_BuyPistol");
 							else
@@ -2895,7 +2944,6 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 						}
 						case VGUI_MenuSlot_Buy_ShotGun:
 						{
-							pPlayer->m_iMenu = Menu_BuyShotgun;
 							if (CSGameRules()->m_bMapHasVIPSafetyZone && pPlayer->m_iTeam == TERRORIST)
 								ShowVGUIMenu(pPlayer, VGUI_Menu_Buy_ShotGun, MENU_KEY_0, "#AS_BuyShotgun");
 							else
@@ -2904,7 +2952,6 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 						}
 						case VGUI_MenuSlot_Buy_SubMachineGun:
 						{
-							pPlayer->m_iMenu = Menu_BuySubMachineGun;
 							if (CSGameRules()->m_bMapHasVIPSafetyZone)
 							{
 								if (pPlayer->m_iTeam == CT)
@@ -2923,7 +2970,6 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 						}
 						case VGUI_MenuSlot_Buy_Rifle:
 						{
-							pPlayer->m_iMenu = Menu_BuyRifle;
 							if (CSGameRules()->m_bMapHasVIPSafetyZone)
 							{
 								if (pPlayer->m_iTeam == CT)
@@ -2942,7 +2988,6 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 						}
 						case VGUI_MenuSlot_Buy_MachineGun:
 						{
-							pPlayer->m_iMenu = Menu_BuyMachineGun;
 							if (CSGameRules()->m_bMapHasVIPSafetyZone && pPlayer->m_iTeam == TERRORIST)
 								ShowVGUIMenu(pPlayer, VGUI_Menu_Buy_MachineGun, MENU_KEY_0, "#AS_T_BuyMachineGun");
 							else
@@ -2991,7 +3036,6 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 						{
 							if (pPlayer->m_signals.GetState() & SIGNAL_BUY)
 							{
-								pPlayer->m_iMenu = Menu_BuyItem;
 								if (CSGameRules()->m_bMapHasBombTarget)
 								{
 									if (pPlayer->m_iTeam == CT)
@@ -3115,7 +3159,6 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 
 		if (!CSGameRules()->IsCareer())
 		{
-			pPlayer->m_iMenu = Menu_ChooseTeam;
 			if (CSGameRules()->m_bMapHasVIPSafetyZone && pPlayer->m_iJoiningState == JOINED && pPlayer->m_iTeam == CT)
 			{
 				if (CSGameRules()->IsFreezePeriod() || pPlayer->pev->deadflag != DEAD_NO)
@@ -3303,7 +3346,6 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 			}
 			else
 			{
-				pPlayer->m_iMenu = Menu_ChooseTeam;
 				if (pPlayer->m_iJoiningState == JOINED)
 					ShowVGUIMenu(pPlayer, VGUI_Menu_Team, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_5 | MENU_KEY_0), "#IG_Team_Select");
 				else
@@ -3387,18 +3429,14 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 			else if (FStrEq(pcmd, "radio1"))
 			{
 				ShowMenu(pPlayer, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_0), -1, FALSE, "#RadioA");
-				pPlayer->m_iMenu = Menu_Radio1;
 			}
 			else if (FStrEq(pcmd, "radio2"))
 			{
 				ShowMenu(pPlayer, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_0), -1, FALSE, "#RadioB");
-				pPlayer->m_iMenu = Menu_Radio2;
-				return;
 			}
 			else if (FStrEq(pcmd, "radio3"))
 			{
 				ShowMenu(pPlayer, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_7 | MENU_KEY_8 | MENU_KEY_9 | MENU_KEY_0), -1, FALSE, "#RadioC");
-				pPlayer->m_iMenu = Menu_Radio3;
 			}
 			else if (FStrEq(pcmd, "drop"))
 			{
@@ -3480,8 +3518,6 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 						else
 							ShowVGUIMenu(pPlayer, VGUI_Menu_Buy_Item, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_0), "#T_BuyItem");
 					}
-
-					pPlayer->m_iMenu = Menu_BuyItem;
 				}
 			}
 			else if (FStrEq(pcmd, "buy"))
@@ -3489,7 +3525,6 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 				if (pPlayer->m_signals.GetState() & SIGNAL_BUY)
 				{
 					ShowVGUIMenu(pPlayer, VGUI_Menu_Buy, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6 | MENU_KEY_7 | MENU_KEY_8 | MENU_KEY_0), "#Buy");
-					pPlayer->m_iMenu = Menu_Buy;
 
 					if (TheBots)
 					{
