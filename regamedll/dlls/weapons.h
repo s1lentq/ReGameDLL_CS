@@ -35,11 +35,12 @@ const float MAX_DIST_RELOAD_SOUND = 512.0f;
 
 #define MAX_WEAPONS                 32
 
-#define ITEM_FLAG_SELECTONEMPTY     1
-#define ITEM_FLAG_NOAUTORELOAD      2
-#define ITEM_FLAG_NOAUTOSWITCHEMPTY 4
-#define ITEM_FLAG_LIMITINWORLD      8
-#define ITEM_FLAG_EXHAUSTIBLE       16 // A player can totally exhaust their ammo supply and lose this weapon
+#define ITEM_FLAG_SELECTONEMPTY     BIT(0)
+#define ITEM_FLAG_NOAUTORELOAD      BIT(1)
+#define ITEM_FLAG_NOAUTOSWITCHEMPTY BIT(2)
+#define ITEM_FLAG_LIMITINWORLD      BIT(3)
+#define ITEM_FLAG_EXHAUSTIBLE       BIT(4) // A player can totally exhaust their ammo supply and lose this weapon
+#define ITEM_FLAG_NOFIREUNDERWATER  BIT(5)
 
 #define WEAPON_IS_ONTARGET          0x40
 
@@ -425,7 +426,7 @@ public:
 	int m_iShellId;
 	float m_fMaxSpeed;
 	bool m_bDelayFire;
-	int m_iDirection;
+	BOOL m_iDirection;
 	bool m_bSecondarySilencerOn;
 	float m_flAccuracy;
 	float m_flLastFire;
@@ -1130,10 +1131,15 @@ public:
 };
 
 
-const float KNIFE_BODYHIT_VOLUME   = 128.0f;
-const float KNIFE_WALLHIT_VOLUME   = 512.0f;
-const float KNIFE_MAX_SPEED        = 250.0f;
-const float KNIFE_MAX_SPEED_SHIELD = 180.0f;
+const float KNIFE_BODYHIT_VOLUME    = 128.0f;
+const float KNIFE_WALLHIT_VOLUME    = 512.0f;
+const float KNIFE_MAX_SPEED         = 250.0f;
+const float KNIFE_MAX_SPEED_SHIELD  = 180.0f;
+const float KNIFE_STAB_DAMAGE       = 65.0f;
+const float KNIFE_SWING_DAMAGE      = 15.0f;
+const float KNIFE_SWING_DAMAGE_FAST = 20.0f;
+const float KNIFE_STAB_DISTANCE     = 32.0f;
+const float KNIFE_SWING_DISTANCE    = 48.0f;
 
 enum knife_e
 {
@@ -1194,9 +1200,17 @@ public:
 	void SetPlayerShieldAnim();
 	void ResetPlayerShieldAnim();
 
-public:
+private:
 	TraceResult m_trHit;
 	unsigned short m_usKnife;
+
+	// Extra RegameDLL features
+	float m_flStabBaseDamage;
+	float m_flSwingBaseDamage;
+	float m_flSwingBaseDamage_Fast;
+
+	float m_flStabDistance;
+	float m_flSwingDistance;
 };
 
 

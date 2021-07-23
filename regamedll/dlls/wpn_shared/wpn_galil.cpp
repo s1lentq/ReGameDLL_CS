@@ -48,7 +48,7 @@ int CGalil::GetItemInfo(ItemInfo *p)
 	p->iSlot = 0;
 	p->iPosition = 17;
 	p->iId = m_iId = WEAPON_GALIL;
-	p->iFlags = 0;
+	p->iFlags = ITEM_FLAG_NOFIREUNDERWATER;
 	p->iWeight = GALIL_WEIGHT;
 
 	return 1;
@@ -70,13 +70,6 @@ void CGalil::SecondaryAttack()
 
 void CGalil::PrimaryAttack()
 {
-	if (m_pPlayer->pev->waterlevel == 3)
-	{
-		PlayEmptySound();
-		m_flNextPrimaryAttack = GetNextAttackDelay(0.15);
-		return;
-	}
-
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
 	{
 		GalilFire(0.04 + (0.3 * m_flAccuracy), 0.0875, FALSE);
@@ -143,6 +136,11 @@ void CGalil::GalilFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	flag = 0;
 #endif
 
+#ifdef REGAMEDLL_ADD
+	// HACKHACK: client-side weapon prediction fix
+	if (!(iFlags() & ITEM_FLAG_NOFIREUNDERWATER) && m_pPlayer->pev->waterlevel == 3)
+		flag = 0;
+#endif
 	PLAYBACK_EVENT_FULL(flag, m_pPlayer->edict(), m_usFireGalil, 0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y,
 		int(m_pPlayer->pev->punchangle.x * 10000000), int(m_pPlayer->pev->punchangle.y * 10000000), FALSE, FALSE);
 

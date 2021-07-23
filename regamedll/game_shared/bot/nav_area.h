@@ -695,7 +695,7 @@ bool NavAreaBuildPath(CNavArea *startArea, CNavArea *goalArea, const Vector *goa
 				{
 					dir++;
 
-					if (dir == NUM_DIRECTIONS)
+					if (dir >= NUM_DIRECTIONS)
 					{
 						// checked all directions on floor - check ladders next
 						searchFloor = false;

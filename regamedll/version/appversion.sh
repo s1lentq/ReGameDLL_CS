@@ -3,9 +3,9 @@
 init()
 {
 	SOURCE_DIR="$@"
-	GIT_DIR="$SOURCE_DIR/.."
-	VERSION_FILE="$GIT_DIR/gradle.properties"
-	APPVERSION_FILE="$SOURCE_DIR/version/appversion.h"
+	GIT_DIR=$SOURCE_DIR
+	VERSION_FILE=$SOURCE_DIR/regamedll/version/version.h
+	APPVERSION_FILE=$SOURCE_DIR/regamedll/version/appversion.h
 
 	if test -z "`git --version`"; then
 		echo "Please install git client"
@@ -25,17 +25,17 @@ init()
 	fi
 
 	# Get major, minor and maintenance information from gradle.properties
-	MAJOR=$(sed -nr -e '/majorVersion/ s/.*\= *//p' "$VERSION_FILE" | tr -d '\n\r')
+	MAJOR=$(cat "$VERSION_FILE" | grep -wi 'VERSION_MAJOR' | sed -e 's/.*VERSION_MAJOR.*[^0-9]\([0-9][0-9]*\).*/\1/i' -e 's/\r//g')
 	if [ $? -ne 0 -o "$MAJOR" = "" ]; then
 		MAJOR=0
 	fi
 
-	MINOR=$(sed -nr -e '/minorVersion/ s/.*\= *//p' "$VERSION_FILE" | tr -d '\n\r')
+	MINOR=$(cat "$VERSION_FILE" | grep -wi 'VERSION_MINOR' | sed -e 's/.*VERSION_MINOR.*[^0-9]\([0-9][0-9]*\).*/\1/i' -e 's/\r//g')
 	if [ $? -ne 0 -o "$MINOR" = "" ]; then
 		MINOR=0
 	fi
 
-	MAINTENANCE=$(sed -nr -e '/maintenanceVersion/ s/.*\= *//p' "$VERSION_FILE" | tr -d '\n\r')
+	MAINTENANCE=$(cat "$VERSION_FILE" | grep -i 'VERSION_MAINTENANCE' | sed -e 's/.*VERSION_MAINTENANCE.*[^0-9]\([0-9][0-9]*\).*/\1/i' -e 's/\r//g')
 	if [ $? -ne 0 -o "$MAINTENANCE" = "" ]; then
 		MAINTENANCE=0
 	fi
@@ -66,20 +66,37 @@ init()
 	# Get remote url
 	COMMIT_URL=$(git -C "$GIT_DIR/" config remote.$BRANCH_REMOTE.url)
 
-	# Strip prefix 'git@'
-	COMMIT_URL=${COMMIT_URL#git@}
+	URL_CONSTRUCT=0
 
-	# Strip postfix '.git'
-	COMMIT_URL=${COMMIT_URL%.git}
+	if [[ "$COMMIT_URL" == *"git@"* ]]; then
+		URL_CONSTRUCT=1
 
-	# Replace ':' to '/'
-	COMMIT_URL=${COMMIT_URL/:/\/}
+		# Strip prefix 'git@'
+		COMMIT_URL=${COMMIT_URL#git@}
 
-	# Append extra string
-	if [ $? -ne 0 -o "$COMMIT_URL" = "${COMMIT_URL/bitbucket.org}" ]; then
-		COMMIT_URL=$(echo https://$COMMIT_URL/commits/)
-	else
-		COMMIT_URL=$(echo https://$COMMIT_URL/commit/)
+		# Strip postfix '.git'
+		COMMIT_URL=${COMMIT_URL%.git}
+
+		# Replace ':' to '/'
+		COMMIT_URL=${COMMIT_URL/:/\/}
+
+	elif [[ "$COMMIT_URL" == *"https://"* ]]; then
+		URL_CONSTRUCT=1
+
+		# Strip prefix 'https://'
+		COMMIT_URL=${COMMIT_URL#https://}
+
+		# Strip postfix '.git'
+		COMMIT_URL=${COMMIT_URL%.git}
+	fi
+
+	if test "$URL_CONSTRUCT" -eq 1; then
+		# Append extra string
+		if [[ "$COMMIT_URL" == *"bitbucket.org"* ]]; then
+			COMMIT_URL=$(echo https://$COMMIT_URL/commits/)
+		else
+			COMMIT_URL=$(echo https://$COMMIT_URL/commit/)
+		fi
 	fi
 
 	#
@@ -101,7 +118,7 @@ init()
 
 update_appversion()
 {
-	day=$(date +%m)
+	day=$(date +%d)
 	year=$(date +%Y)
 	hours=$(date +%H:%M:%S)
 	month=$(LANG=en_us_88591; date +"%b")

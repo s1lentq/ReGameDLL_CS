@@ -99,6 +99,7 @@ void CBasePlayer::OnDestroy()
 		delete[] m_rebuyString;
 		m_rebuyString = nullptr;
 	}
+	m_hintMessageQueue.Reset();
 }
 #endif
 
@@ -834,7 +835,7 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 		CBaseEntity *pAttacker = GET_PRIVATE<CBaseEntity>(ENT(pevAttacker));
 
 		// don't take damage if victim has protection
-		if (((pAttacker && pAttacker->IsPlayer()) || (bitsDamageType & DMG_FALL))  && CSPlayer()->GetProtectionState() == CCSPlayer::ProtectionSt_Active)
+		if (((pAttacker && pAttacker->IsPlayer()) || (bitsDamageType & DMG_FALL)) && CSPlayer()->GetProtectionState() == CCSPlayer::ProtectionSt_Active)
 			return FALSE;
 	}
 #endif
@@ -1033,7 +1034,7 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 		pAttack = GetClassPtr<CCSPlayer>((CBasePlayer *)pevAttacker);
 
 		// warn about team attacks
-		if (!CSGameRules()->IsFreeForAll() && pAttack->m_iTeam == m_iTeam)
+		if (g_pGameRules->PlayerRelationship(this, pAttack) == GR_TEAMMATE)
 		{
 			if (pAttack != this)
 			{
@@ -1266,6 +1267,41 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 	return bTookDamage;
 }
 
+LINK_HOOK_CHAIN(CWeaponBox *, CreateWeaponBox, (CBasePlayerItem *pItem, CBasePlayer *pPlayerOwner, const char *modelName, Vector &origin, Vector &angles, Vector &velocity, float lifeTime, bool packAmmo), pItem, pPlayerOwner, modelName, origin, angles, velocity, lifeTime, packAmmo)
+
+CWeaponBox *EXT_FUNC __API_HOOK(CreateWeaponBox)(CBasePlayerItem *pItem, CBasePlayer *pPlayerOwner, const char *modelName, Vector &origin, Vector &angles, Vector &velocity, float lifeTime, bool packAmmo)
+{
+	// create a box to pack the stuff into.
+	CWeaponBox *pWeaponBox = (CWeaponBox *)CBaseEntity::Create("weaponbox", origin, angles, ENT(pPlayerOwner->pev));
+
+	if (pWeaponBox)
+	{
+		// don't let weaponbox tilt.
+		pWeaponBox->pev->angles.x = 0;
+		pWeaponBox->pev->angles.z = 0;
+		pWeaponBox->pev->velocity = velocity;
+		pWeaponBox->SetThink(&CWeaponBox::Kill);
+		pWeaponBox->pev->nextthink = gpGlobals->time + lifeTime;
+		pWeaponBox->PackWeapon(pItem); // now pack all of the items in the lists
+
+		// pack the ammo
+		bool exhaustibleAmmo = (pItem->iFlags() & ITEM_FLAG_EXHAUSTIBLE) == ITEM_FLAG_EXHAUSTIBLE;
+		if (exhaustibleAmmo || packAmmo)
+		{
+			pWeaponBox->PackAmmo(MAKE_STRING(pItem->pszAmmo1()), pPlayerOwner->m_rgAmmo[pItem->PrimaryAmmoIndex()]);
+
+			if (exhaustibleAmmo)
+			{
+				pPlayerOwner->m_rgAmmo[pItem->PrimaryAmmoIndex()] = 0;
+			}
+		}
+
+		pWeaponBox->SetModel(modelName);
+	}
+
+	return pWeaponBox;
+}
+
 void PackPlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 {
 	if (!pItem)
@@ -1274,24 +1310,18 @@ void PackPlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 	const char *modelName = GetCSModelName(pItem->m_iId);
 	if (modelName)
 	{
-		// create a box to pack the stuff into.
-		CWeaponBox *pWeaponBox = (CWeaponBox *)CBaseEntity::Create("weaponbox", pPlayer->pev->origin, pPlayer->pev->angles, ENT(pPlayer->pev));
+		Vector vecOrigin   = pPlayer->pev->origin;
+		Vector vecAngles   = pPlayer->pev->angles;
+		Vector vecVelocity = pPlayer->pev->velocity * 0.75f;
 
-		// don't let weaponbox tilt.
-		pWeaponBox->pev->angles.x = 0;
-		pWeaponBox->pev->angles.z = 0;
-		pWeaponBox->pev->velocity = pPlayer->pev->velocity * 0.75f;
-		pWeaponBox->SetThink(&CWeaponBox::Kill);
-		pWeaponBox->pev->nextthink = gpGlobals->time + CGameRules::GetItemKillDelay();
-		pWeaponBox->PackWeapon(pItem); // now pack all of the items in the lists
-
-		// pack the ammo
-		if (packAmmo)
-		{
-			pWeaponBox->PackAmmo(MAKE_STRING(pItem->pszAmmo1()), pPlayer->m_rgAmmo[pItem->PrimaryAmmoIndex()]);
-		}
-
-		pWeaponBox->SetModel(modelName);
+		// create a box to pack the stuff into
+		CreateWeaponBox(pItem, pPlayer,
+			modelName,
+			vecOrigin,
+			vecAngles,
+			vecVelocity,
+			CGameRules::GetItemKillDelay(), packAmmo
+		);
 	}
 }
 
@@ -1328,26 +1358,17 @@ void PackPlayerNade(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 		vecAngles.x = 0.0f;
 		vecAngles.y += 45.0f;
 
+		Vector vecOrigin   = pPlayer->pev->origin + dir;
+		Vector vecVelocity = pPlayer->pev->velocity * 0.75f;
+
 		// create a box to pack the stuff into.
-		CWeaponBox *pWeaponBox = (CWeaponBox *)CBaseEntity::Create("weaponbox", pPlayer->pev->origin + dir, vecAngles, ENT(pPlayer->pev));
-
-		// don't let weaponbox tilt.
-		pWeaponBox->pev->angles.x = 0;
-		pWeaponBox->pev->angles.z = 0;
-
-		pWeaponBox->pev->velocity = pPlayer->pev->velocity * 0.75f;
-
-		pWeaponBox->SetThink(&CWeaponBox::Kill);
-		pWeaponBox->pev->nextthink = gpGlobals->time + CGameRules::GetItemKillDelay();
-		pWeaponBox->PackWeapon(pItem); // now pack all of the items in the lists
-
-		// pack the ammo
-		if (packAmmo)
-		{
-			pWeaponBox->PackAmmo(MAKE_STRING(pItem->pszAmmo1()), pPlayer->m_rgAmmo[pItem->PrimaryAmmoIndex()]);
-		}
-
-		pWeaponBox->SetModel(modelName);
+		CreateWeaponBox(pItem, pPlayer,
+			modelName,
+			vecOrigin,
+			vecAngles,
+			vecVelocity,
+			CGameRules::GetItemKillDelay(),
+			packAmmo);
 	}
 }
 #endif
@@ -1383,7 +1404,11 @@ void CBasePlayer::PackDeadPlayerItems()
 				ItemInfo info;
 				if (pPlayerItem->iItemSlot() < KNIFE_SLOT && !bShieldDropped)
 				{
+#ifdef REGAMEDLL_API
+					if (pPlayerItem->CSPlayerItem()->GetItemInfo(&info))
+#else
 					if (pPlayerItem->GetItemInfo(&info))
+#endif
 					{
 						if (info.iWeight > nBestWeight)
 						{
@@ -1447,38 +1472,123 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 #endif
 
 #ifdef REGAMEDLL_ADD
-	auto GiveWeapon = [&](int ammo, char *pszWeaponName) {
+	auto GiveWeapon = [&](int ammo, const char *pszWeaponName) {
 		auto pItem = static_cast<CBasePlayerItem *>(GiveNamedItemEx(pszWeaponName));
 		if (pItem) {
 			GiveAmmo(refill_bpammo_weapons.value != 0.0f ? pItem->iMaxAmmo1() : ammo, pItem->pszAmmo1(), pItem->iMaxAmmo1());
 		}
 	};
 
-	switch (m_iTeam)
-	{
-	case CT:
-	{
-		if (!HasRestrictItem(ITEM_KNIFE, ITEM_TYPE_EQUIPPED)) {
-			GiveNamedItem("weapon_knife");
-		}
-		if (!HasRestrictItem(ITEM_USP, ITEM_TYPE_EQUIPPED)) {
-			GiveWeapon(m_bIsVIP ? 12 : 24, "weapon_usp");
-		}
+	bool bGiveKnife = false;
+	if (m_iTeam == CT)
+		bGiveKnife = ct_give_player_knife.value != 0;
+	else if (m_iTeam == TERRORIST)
+		bGiveKnife = t_give_player_knife.value != 0;
 
-		break;
+	if (bGiveKnife && !HasRestrictItem(ITEM_KNIFE, ITEM_TYPE_EQUIPPED)) {
+		GiveNamedItemEx("weapon_knife");
 	}
-	case TERRORIST:
-	{
-		if (!HasRestrictItem(ITEM_KNIFE, ITEM_TYPE_EQUIPPED)) {
-			GiveNamedItem("weapon_knife");
-		}
-		if (!HasRestrictItem(ITEM_GLOCK18, ITEM_TYPE_EQUIPPED)) {
-			GiveWeapon(40, "weapon_glock18");
-		}
 
-		break;
+	const int iAmountOfBPAmmo = m_bIsVIP ? 1 : 2; // Give regular the player backpack ammo twice more than to VIP the player
+
+	// Give default secondary equipment
+	{
+		char *secondaryString = NULL;
+		if (m_iTeam == CT)
+			secondaryString = ct_default_weapons_secondary.string;
+		else if (m_iTeam == TERRORIST)
+			secondaryString = t_default_weapons_secondary.string;
+
+		if (secondaryString && secondaryString[0] != '\0')
+		{
+			secondaryString = SharedParse(secondaryString);
+
+			while (secondaryString)
+			{
+				WeaponInfoStruct *weaponInfo;
+				WeaponIdType weaponId = AliasToWeaponID(SharedGetToken());
+				if (weaponId != WEAPON_NONE)
+					weaponInfo = GetWeaponInfo(weaponId);
+				else
+					weaponInfo = GetWeaponInfo(SharedGetToken());
+
+				if (weaponInfo) {
+					const auto iItemID = GetItemIdByWeaponId(weaponInfo->id);
+					if (iItemID != ITEM_NONE && !HasRestrictItem(iItemID, ITEM_TYPE_EQUIPPED) && IsSecondaryWeapon(iItemID)) {
+						GiveWeapon(weaponInfo->gunClipSize * iAmountOfBPAmmo, weaponInfo->entityName);
+					}
+				}
+
+				secondaryString = SharedParse(secondaryString);
+			}
+		}
 	}
+
+	// Give default primary equipment
+	{
+		char *primaryString = NULL;
+
+		if (m_iTeam == CT)
+			primaryString = ct_default_weapons_primary.string;
+		else if (m_iTeam == TERRORIST)
+			primaryString = t_default_weapons_primary.string;
+
+		if (primaryString && primaryString[0] != '\0')
+		{
+			primaryString = SharedParse(primaryString);
+
+			while (primaryString)
+			{
+				WeaponInfoStruct *weaponInfo;
+				WeaponIdType weaponId = AliasToWeaponID(SharedGetToken());
+				if (weaponId != WEAPON_NONE)
+					weaponInfo = GetWeaponInfo(weaponId);
+				else
+					weaponInfo = GetWeaponInfo(SharedGetToken());
+
+				if (weaponInfo) {
+					const auto iItemID = GetItemIdByWeaponId(weaponInfo->id);
+					if (iItemID != ITEM_NONE && !HasRestrictItem(iItemID, ITEM_TYPE_EQUIPPED) && IsPrimaryWeapon(iItemID)) {
+						GiveWeapon(weaponInfo->gunClipSize * iAmountOfBPAmmo, weaponInfo->entityName);
+					}
+				}
+
+				primaryString = SharedParse(primaryString);
+			}
+		}
 	}
+
+	// Give the player grenades if he needs them
+	char *grenadeString = NULL;
+	if (m_iTeam == CT)
+		grenadeString = ct_default_grenades.string;
+	else if (m_iTeam == TERRORIST)
+		grenadeString = t_default_grenades.string;
+
+	if (grenadeString && grenadeString[0] != '\0')
+	{
+		grenadeString = SharedParse(grenadeString);
+
+		while (grenadeString)
+		{
+			WeaponInfoStruct *weaponInfo;
+			WeaponIdType weaponId = AliasToWeaponID(SharedGetToken());
+			if (weaponId != WEAPON_NONE)
+				weaponInfo = GetWeaponInfo(weaponId);
+			else
+				weaponInfo = GetWeaponInfo(SharedGetToken());
+
+			if (weaponInfo) {
+				const auto iItemID = GetItemIdByWeaponId(weaponInfo->id);
+				if (iItemID != ITEM_NONE && !HasRestrictItem(iItemID, ITEM_TYPE_EQUIPPED) && IsGrenadeWeapon(iItemID)) {
+					GiveNamedItemEx(weaponInfo->entityName);
+				}
+			}
+
+			grenadeString = SharedParse(grenadeString);
+		}
+	}
+
 #else
 	switch (m_iTeam)
 	{
@@ -1494,7 +1604,6 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 		break;
 	}
 #endif
-
 }
 
 void CBasePlayer::RemoveAllItems(BOOL removeSuit)
@@ -1572,6 +1681,14 @@ void CBasePlayer::RemoveAllItems(BOOL removeSuit)
 	pev->viewmodel = 0;
 	pev->weaponmodel = 0;
 
+#ifdef REGAMEDLL_FIXES
+	// if (m_iFOV != DEFAULT_FOV)
+	{
+		pev->fov = m_iFOV = m_iLastZoom = DEFAULT_FOV;
+		m_bResumeZoom = false;
+	}
+#endif
+
 	if (removeSuit)
 		pev->weapons = 0;
 	else
@@ -1587,6 +1704,8 @@ void CBasePlayer::RemoveAllItems(BOOL removeSuit)
 
 	m_bHasNightVision = false;
 	SendItemStatus();
+
+	ResetMaxSpeed();
 #endif
 
 	// send Selected Weapon Message to our client
@@ -3643,7 +3762,7 @@ void CBasePlayer::PlayerDeathThink()
 	{
 		// if the player has been dead for one second longer than allowed by forcerespawn,
 		// forcerespawn isn't on. Send the player off to an intermission camera until they choose to respawn.
-		if (g_pGameRules->IsMultiplayer() && gpGlobals->time > m_fDeadTime + 3 && !(m_afPhysicsFlags & PFLAG_OBSERVER))
+		if (g_pGameRules->IsMultiplayer() && HasTimePassedSinceDeath(3.0f) && !(m_afPhysicsFlags & PFLAG_OBSERVER))
 		{
 			// Send message to everybody to spawn a corpse.
 			SpawnClientSideCorpse();
@@ -4548,8 +4667,9 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 
 #ifdef REGAMEDLL_ADD
 	auto protectStateCurrent = CSPlayer()->GetProtectionState();
-	if (protectStateCurrent  == CCSPlayer::ProtectionSt_Expired || (respawn_immunity_force_unset.value &&
-		(protectStateCurrent == CCSPlayer::ProtectionSt_Active && (m_afButtonPressed & IN_ACTIVE))))
+	if (protectStateCurrent  == CCSPlayer::ProtectionSt_Expired ||
+		(protectStateCurrent == CCSPlayer::ProtectionSt_Active &&
+		((respawn_immunity_force_unset.value == 1 && (m_afButtonPressed & IN_ACTIVE)) || (respawn_immunity_force_unset.value == 2 && (m_afButtonPressed & (IN_ATTACK | IN_ATTACK2))))))
 	{
 		RemoveSpawnProtection();
 	}
@@ -6645,6 +6765,17 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(RemovePlayerItem)(CBasePlayerItem *pItem)
 	if (m_pActiveItem == pItem)
 	{
 		ResetAutoaim();
+
+#ifdef REGAMEDLL_FIXES
+		// if (m_iFOV != DEFAULT_FOV)
+		{
+			pev->fov = m_iFOV = m_iLastZoom = DEFAULT_FOV;
+			m_bResumeZoom = false;
+
+			ResetMaxSpeed();
+		}
+#endif
+
 		pItem->pev->nextthink = 0;
 
 		pItem->SetThink(nullptr);
@@ -6915,7 +7046,11 @@ void EXT_FUNC CBasePlayer::__API_HOOK(UpdateClientData)()
 	{
 		m_fInitHUD = FALSE;
 		gInitHUD = FALSE;
+#ifdef REGAMEDLL_FIXES
+		m_signals.Reset();
+#else
 		m_signals.Update();
+#endif
 
 		MESSAGE_BEGIN(MSG_ONE, gmsgResetHUD, nullptr, pev);
 		MESSAGE_END();
@@ -7291,7 +7426,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(UpdateClientData)()
 #endif // REGAMEDLL_FIXES
 
 #ifdef REGAMEDLL_FIXES
-			if (scoreboard_showmoney.value != -1.0f)
+			if (scoreboard_showhealth.value != -1.0f)
 #endif
 			{
 				MESSAGE_BEGIN(MSG_ONE, gmsgHealthInfo, nullptr, pPlayer->edict());
@@ -7301,7 +7436,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(UpdateClientData)()
 			}
 
 #ifdef REGAMEDLL_FIXES
-			if (scoreboard_showhealth.value != -1.0f)
+			if (scoreboard_showmoney.value != -1.0f)
 #endif
 			{
 				MESSAGE_BEGIN(MSG_ONE, gmsgAccount, nullptr, pPlayer->edict());
@@ -7614,7 +7749,7 @@ void CBasePlayer::UpdateStatusBar()
 			{
 				CBasePlayer *pTarget = (CBasePlayer *)pEntity;
 
-				bool sameTeam = !CSGameRules()->IsFreeForAll() && pTarget->m_iTeam == m_iTeam;
+				bool sameTeam = g_pGameRules->PlayerRelationship(this, pTarget) == GR_TEAMMATE;
 
 				newSBarState[SBAR_ID_TARGETNAME] = ENTINDEX(pTarget->edict());
 				newSBarState[SBAR_ID_TARGETTYPE] = sameTeam ? SBAR_TARGETTYPE_TEAMMATE : SBAR_TARGETTYPE_ENEMY;
@@ -7834,13 +7969,24 @@ CBaseEntity *EXT_FUNC CBasePlayer::__API_HOOK(DropPlayerItem)(const char *pszIte
 			}
 		}
 
-		CWeaponBox *pWeaponBox = (CWeaponBox *)CBaseEntity::Create("weaponbox", pev->origin + gpGlobals->v_forward * 10, pev->angles, edict());
-		pWeaponBox->pev->angles.x = 0;
-		pWeaponBox->pev->angles.z = 0;
-		pWeaponBox->SetThink(&CWeaponBox::Kill);
-		pWeaponBox->pev->nextthink = gpGlobals->time + CGameRules::GetItemKillDelay();
-		pWeaponBox->PackWeapon(pWeapon);
-		pWeaponBox->pev->velocity = gpGlobals->v_forward * 300 + gpGlobals->v_forward * 100;
+		const char *modelname = GetCSModelName(pWeapon->m_iId);
+
+		Vector vecOrigin   = pev->origin + gpGlobals->v_forward * 10;
+		Vector vecAngles   = pev->angles;
+		Vector vecVelocity = gpGlobals->v_forward * 300 + gpGlobals->v_forward * 100;
+
+		CWeaponBox *pWeaponBox = CreateWeaponBox(pWeapon, this,
+			modelname,
+			vecOrigin,
+			vecAngles,
+			vecVelocity,
+			CGameRules::GetItemKillDelay(),
+			false);
+
+		if (!pWeaponBox)
+		{
+			return nullptr;
+		}
 
 		if (FClassnameIs(pWeapon->pev, "weapon_c4"))
 		{
@@ -7854,27 +8000,6 @@ CBaseEntity *EXT_FUNC CBasePlayer::__API_HOOK(DropPlayerItem)(const char *pszIte
 				TheCSBots()->SetLooseBomb(pWeaponBox);
 				TheCSBots()->OnEvent(EVENT_BOMB_DROPPED);
 			}
-		}
-
-		if (pWeapon->iFlags() & ITEM_FLAG_EXHAUSTIBLE)
-		{
-			int iAmmoIndex = GetAmmoIndex(pWeapon->pszAmmo1());
-			if (iAmmoIndex != -1)
-			{
-#ifdef REGAMEDLL_FIXES
-				// why not pack the ammo more than one?
-				pWeaponBox->PackAmmo(MAKE_STRING(pWeapon->pszAmmo1()), m_rgAmmo[iAmmoIndex]);
-#else
-				pWeaponBox->PackAmmo(MAKE_STRING(pWeapon->pszAmmo1()), m_rgAmmo[iAmmoIndex] > 0);
-#endif
-				m_rgAmmo[iAmmoIndex] = 0;
-			}
-		}
-
-		const char *modelname = GetCSModelName(pWeapon->m_iId);
-		if (modelname)
-		{
-			pWeaponBox->SetModel(modelname);
 		}
 
 		return pWeaponBox;
@@ -8185,6 +8310,50 @@ void CDeadHEV::KeyValue(KeyValueData *pkvd)
 
 LINK_ENTITY_TO_CLASS(player_weaponstrip, CStripWeapons, CCSStripWeapons)
 
+void CStripWeapons::KeyValue(KeyValueData *pkvd)
+{
+#ifdef REGAMEDLL_ADD
+	if (FStrEq(pkvd->szKeyName, "primary") && Q_atoi(pkvd->szValue) > 0)
+	{
+		m_bitsIgnoreSlots |= (1 << PRIMARY_WEAPON_SLOT);
+		pkvd->fHandled = TRUE;
+	}
+	else if (FStrEq(pkvd->szKeyName, "secondary") && Q_atoi(pkvd->szValue) > 0)
+	{
+		m_bitsIgnoreSlots |= (1 << PISTOL_SLOT);
+		pkvd->fHandled = TRUE;
+	}
+	else if (FStrEq(pkvd->szKeyName, "knife") && Q_atoi(pkvd->szValue) > 0)
+	{
+		m_bitsIgnoreSlots |= (1 << KNIFE_SLOT);
+		pkvd->fHandled = TRUE;
+	}
+	else if (FStrEq(pkvd->szKeyName, "grenade") && Q_atoi(pkvd->szValue) > 0)
+	{
+		m_bitsIgnoreSlots |= (1 << GRENADE_SLOT);
+		pkvd->fHandled = TRUE;
+	}
+	else if (FStrEq(pkvd->szKeyName, "bomb") && Q_atoi(pkvd->szValue) > 0)
+	{
+		m_bitsIgnoreSlots |= (1 << C4_SLOT);
+		pkvd->fHandled = TRUE;
+	}
+	else if (FStrEq(pkvd->szKeyName, "items") && Q_atoi(pkvd->szValue) > 0)
+	{
+		m_bitsIgnoreSlots |= (1 << ALL_OTHER_ITEMS);
+		pkvd->fHandled = TRUE;
+	}
+	else if (FStrEq(pkvd->szKeyName, "special"))
+	{
+		m_iszSpecialItem = ALLOC_STRING(pkvd->szValue);
+	}
+	else
+#endif
+	{
+		CPointEntity::KeyValue(pkvd);
+	}
+}
+
 void CStripWeapons::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	CBasePlayer *pPlayer = nullptr;
@@ -8199,7 +8368,43 @@ void CStripWeapons::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE 
 
 	if (pPlayer)
 	{
-		pPlayer->RemoveAllItems(FALSE);
+#ifdef REGAMEDLL_ADD
+		if (m_bitsIgnoreSlots != 0 || m_iszSpecialItem)
+		{
+			if (m_iszSpecialItem)
+			{
+				pPlayer->CSPlayer()->RemovePlayerItem(STRING(m_iszSpecialItem));
+			}
+
+			for (int slot = PRIMARY_WEAPON_SLOT; slot <= ALL_OTHER_ITEMS; slot++)
+			{
+				if (m_bitsIgnoreSlots & (1 << slot))
+					continue;
+
+				if (slot == ALL_OTHER_ITEMS)
+				{
+					pPlayer->CSPlayer()->RemovePlayerItem("item_thighpack");
+					pPlayer->CSPlayer()->RemovePlayerItem("item_longjump");
+					pPlayer->CSPlayer()->RemovePlayerItem("item_assaultsuit");
+					pPlayer->CSPlayer()->RemovePlayerItem("item_kevlar");
+					pPlayer->CSPlayer()->RemovePlayerItem("item_thighpack");
+					pPlayer->CSPlayer()->RemovePlayerItem("weapon_shield");
+				}
+				else
+				{
+					pPlayer->ForEachItem(slot, [pPlayer](CBasePlayerItem *pItem)
+					{
+						pPlayer->CSPlayer()->RemovePlayerItem(STRING(pItem->pev->classname));
+						return false;
+					});
+				}
+			}
+		}
+		else
+#endif
+		{
+			pPlayer->RemoveAllItems(FALSE);
+		}
 	}
 }
 
@@ -9764,11 +9969,18 @@ void EXT_FUNC CBasePlayer::__API_HOOK(OnSpawnEquip)(bool addDefault, bool equipG
 {
 	if (equipGame)
 	{
-		CBaseEntity *pWeaponEntity = nullptr;
+		CGamePlayerEquip *pWeaponEntity = nullptr;
 		while ((pWeaponEntity = UTIL_FindEntityByClassname(pWeaponEntity, "game_player_equip")))
 		{
-			pWeaponEntity->Touch(this);
-			addDefault = false;
+
+#ifdef REGAMEDLL_FIXES
+			if (pWeaponEntity->CanEquipOverTouch(this))
+#endif
+			{
+				pWeaponEntity->Touch(this);
+
+				addDefault = false;
+			}
 		}
 	}
 
@@ -9779,6 +9991,17 @@ void EXT_FUNC CBasePlayer::__API_HOOK(OnSpawnEquip)(bool addDefault, bool equipG
 	{
 		GiveDefaultItems();
 	}
+
+#ifdef REGAMEDLL_ADD
+	if(!m_bIsVIP)
+	{
+		switch (static_cast<ArmorType>((int)free_armor.value))
+		{
+		case ARMOR_KEVLAR: GiveNamedItem("item_kevlar"); break;
+		case ARMOR_VESTHELM: GiveNamedItem("item_assaultsuit"); break;
+		}
+	}
+#endif
 }
 
 void CBasePlayer::HideTimer()
@@ -9921,15 +10144,30 @@ void CBasePlayer::PlayerRespawnThink()
 	if (pev->deadflag < DEAD_DYING)
 		return;
 
-	if (forcerespawn.value > 0 &&
-		CSPlayer()->m_flRespawnPending > 0 &&
-		CSPlayer()->m_flRespawnPending <= gpGlobals->time)
+	if (CSPlayer()->m_flRespawnPending > 0)
 	{
-		Spawn();
-		pev->button = 0;
-		pev->nextthink = -1;
-		return;
+		if (CSPlayer()->m_flRespawnPending <= gpGlobals->time)
+		{
+			// Pending respawn caused by game doesn't respawn with disabled CVar
+			if (CSPlayer()->m_bGameForcingRespawn && !forcerespawn.value)
+			{
+				CSPlayer()->m_flRespawnPending = 0.0f;
+				CSPlayer()->m_bGameForcingRespawn = false;
+				return;
+			}
+
+			Spawn();
+			pev->button = 0;
+			pev->nextthink = -1;
+			return;
+		}
 	}
+	else if (pev->deadflag == DEAD_DEAD && forcerespawn.value > 0)
+	{
+		CSPlayer()->m_bGameForcingRespawn = true;
+		CSPlayer()->m_flRespawnPending = gpGlobals->time + forcerespawn.value;
+	}
+
 #endif
 }
 
@@ -9955,13 +10193,21 @@ void EXT_FUNC CBasePlayer::__API_HOOK(SetSpawnProtection)(float flProtectionTime
 {
 #ifdef REGAMEDLL_ADD
 	if (respawn_immunity_effects.value > 0)
-#endif
 	{
 		pev->rendermode = kRenderTransAdd;
 		pev->renderamt  = 100.0f;
+
+		MESSAGE_BEGIN(MSG_ONE_UNRELIABLE, gmsgStatusIcon, nullptr, pev);
+			WRITE_BYTE(STATUSICON_FLASH);
+			WRITE_STRING("suithelmet_full");
+			WRITE_BYTE(0);
+			WRITE_BYTE(160);
+			WRITE_BYTE(0);
+		MESSAGE_END();
 	}
 
 	CSPlayer()->m_flSpawnProtectionEndTime = gpGlobals->time + flProtectionTime;
+#endif
 }
 
 LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, RemoveSpawnProtection)
@@ -9970,7 +10216,6 @@ void CBasePlayer::__API_HOOK(RemoveSpawnProtection)()
 {
 #ifdef REGAMEDLL_ADD
 	if (respawn_immunity_effects.value > 0)
-#endif
 	{
 		if (pev->rendermode == kRenderTransAdd &&
 			pev->renderamt == 100.0f)
@@ -9978,9 +10223,15 @@ void CBasePlayer::__API_HOOK(RemoveSpawnProtection)()
 			pev->renderamt  = 255.0f;
 			pev->rendermode = kRenderNormal;
 		}
+
+		MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev);
+			WRITE_BYTE(STATUSICON_HIDE);
+			WRITE_STRING("suithelmet_full");
+		MESSAGE_END();
 	}
 
 	CSPlayer()->m_flSpawnProtectionEndTime = 0.0f;
+#endif
 }
 
 LINK_HOOK_CLASS_VOID_CHAIN(CBasePlayer, DropIdlePlayer, (const char *reason), reason)

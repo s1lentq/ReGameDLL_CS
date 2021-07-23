@@ -10,10 +10,6 @@
     <Filter Include="common">
       <UniqueIdentifier>{fe7a8e81-b7d4-4540-ab5b-457ed93672ce}</UniqueIdentifier>
     </Filter>
-    <Filter Include="linux">
-      <UniqueIdentifier>{9de0de20-070f-4fae-a9df-3dca942e65a7}</UniqueIdentifier>
-      <ParseFiles>false</ParseFiles>
-    </Filter>
     <Filter Include="public">
       <UniqueIdentifier>{d74cb79e-afd5-4215-af0e-029e38925be0}</UniqueIdentifier>
     </Filter>
@@ -76,9 +72,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\version\version.cpp">
-      <Filter>version</Filter>
-    </ClCompile>
     <ClCompile Include="..\regamedll\precompiled.cpp">
       <Filter>regamedll</Filter>
     </ClCompile>
@@ -1056,13 +1049,5 @@
     <ClInclude Include="..\dlls\addons\point_command.h">
       <Filter>dlls\addons</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\linux\appversion.sh">
-      <Filter>linux</Filter>
-    </None>
-    <None Include="..\linux\Makefile">
-      <Filter>linux</Filter>
-    </None>
   </ItemGroup>
 </Project>

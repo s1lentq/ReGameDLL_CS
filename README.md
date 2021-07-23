@@ -1,4 +1,4 @@
-# ReGameDLL_CS [![Build Status](http://teamcity.rehlds.org/app/rest/builds/buildType:(id:ReGameDLLCs_Publish)/statusIcon)](http://teamcity.rehlds.org/viewType.html?buildTypeId=ReGameDLLCs_Publish&guest=1) [![Download](http://rehlds.org/version/regamedll.svg)](http://teamcity.rehlds.org/guestAuth/downloadArtifacts.html?buildTypeId=ReGameDLL_Publish&buildId=lastSuccessful) [![Percentage of issues still open](http://isitmaintained.com/badge/open/s1lentq/ReGameDLL_CS.svg)](http://isitmaintained.com/project/s1lentq/ReGameDLL_CS "Percentage of issues still open") [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) <img align="right" src="https://cloud.githubusercontent.com/assets/5860435/20008568/b3623150-a2d3-11e6-85f3-0d6571045fc9.png" alt="Counter-Strike 1.6 GameDLL" />
+# ReGameDLL_CS [![Download](https://camo.githubusercontent.com/0c15c5ed5da356288ad4bb69ed24267fb48498f2/68747470733a2f2f696d672e736869656c64732e696f2f6769746875622f72656c656173652f73316c656e74712f526547616d65444c4c5f43532e737667)](https://github.com/s1lentq/ReGameDLL_CS/releases/latest) [![Downloads](https://camo.githubusercontent.com/7eb895bf12d373df1d7c2bd2af3eb7d6328cdf6c02eee380fa93f81365c32d41/68747470733a2f2f696d672e736869656c64732e696f2f6769746875622f646f776e6c6f6164732f73316c656e74712f526547616d65444c4c5f43532f746f74616c3f636f6c6f723d696d706f7274616e74)]() [![Percentage of issues still open](http://isitmaintained.com/badge/open/s1lentq/ReGameDLL_CS.svg)](http://isitmaintained.com/project/s1lentq/ReGameDLL_CS "Percentage of issues still open") [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) <img align="right" src="https://cloud.githubusercontent.com/assets/5860435/20008568/b3623150-a2d3-11e6-85f3-0d6571045fc9.png" alt="Counter-Strike 1.6 GameDLL" />
 Reverse-engineered gamedll (mp.dll / Counter-Strike)
 
 ## What is this?
@@ -10,13 +10,12 @@ Regamedll_CS is a result of reverse engineering of original library mod HLDS (bu
 ## How can use it?
 ReGameDLL_CS is fully compatible with official mod CS 1.6 / CZero by Valve. All you have to do is to download binaries and replace original mp.dll/cs.so
 
-Compiled binaries are available here: [link](http://nexus.rehlds.org/nexus/content/repositories/regamedll-dev/regamedll/regamedll/)
+## Downloads
+* [Release builds](https://github.com/s1lentq/ReGameDLL_CS/releases)
+* [Dev builds](https://github.com/s1lentq/ReGameDLL_CS/actions/workflows/build.yml)
 
-Archive's bin directory contains 2 subdirectories, 'bugfixed' and 'pure'
-* 'pure' version is designed to work exactly as official mod CS
-* 'bugfixed' version contains some fixes and improvements
-
-<b>Warning!</b> ReGameDLL_CS is not binary compatible with original hlds since it's compiled with compilers other than ones used for original mod CS. This means that plugins that do binary code analysis (Orpheu for example) probably will not work with ReGameDLL_CS.
+<b>Warning!</b> ReGameDLL_CS is not binary compatible with original hlds since it's compiled with compilers other than ones used for original mod CS.
+This means that plugins that do binary code analysis (Orpheu for example) probably will not work with ReGameDLL_CS.
 
 ## How can use beta?
 <pre>ReGameDLL_CS also have beta version with latest changes from official version of Counter-Strike.</pre>
@@ -27,7 +26,8 @@ Archive's bin directory contains 2 subdirectories, 'bugfixed' and 'pure'
 | :---------------------------------- | :---------------------------------------------- |
 | game version                        | Will show GameDLL build version, date & URL. |
 | endround                            | Args:<br/>`T` force round end with Terrorists win. <br/>`CT` force round end with Counter-Terrorists win. <br/> or terminate round draw when called without arguments. |
-| mp_swapteams                        | Swap the teams and restart the game. |
+| swapteams                           | Swap the teams and restart the game. |
+| give                                | Give weapon command.<br/> Args:<br/><weapon_name><br/>Usage:<br/>`give weapon_ak47`<br/>`give weapon_usp`<br/><br/>NOTE: `sv_cheats 1` required. |
 
 ## Configuration (cvars)
 <details>
@@ -39,12 +39,12 @@ Archive's bin directory contains 2 subdirectories, 'bugfixed' and 'pure'
 | mp_autoteambalance                 | 1       | 0   | 2            | Auto balancing of teams.<br/>`0` disabled <br/>`1` on after next round<br/>`2` on next round |
 | mp_buytime                         | 1.5     | 0.0 | -            | Designate the desired amount of buy time for each round. (in minutes)<br />`-1` means no time limit<br />`0` disable buy |
 | mp_maxmoney                        | 16000   | 0   | `999999`     | The maximum allowable amount of money in the game |
-| mp_round_infinite                  | 0       | 0   | 1            | Flags for fine grained control (choose as many as needed)<br/>`0` disabled<br/>`1` enabled<br/><br/>or flags<br/>`a` block round time round end check<br/>`b` block needed players round end check<br/>`c` block VIP assassination/success round end check<br/>`d` block prison escape round end check<br/>`e` block bomb round end check<br/>`f` block team extermination round end check<br/>`g` block hostage rescue round end check<br/><br/>`Example setting:` "ae" blocks round time and bomb round end checks |
-| mp_roundover                       | 0       | -   | -            | The round by expired time will be over, if on a map it does not have the scenario of the game.<br/>`0` disabled<br/>`1` enabled |
+| mp_round_infinite                  | 0       | 0   | 1            | Flags for fine grained control (choose as many as needed)<br/>`0` disabled<br/>`1` enabled<br/><br/>or flags<br/>`a` block round time round end check<br/>`b` block needed players round end check<br/>`c` block VIP assassination/success round end check<br/>`d` block prison escape round end check<br/>`e` block bomb round end check<br/>`f` block team extermination round end check<br/>`g` block hostage rescue round end check<br/>`h` block VIP assassination/success round time end check<br/>`i` block prison escape round time end check<br/>`j` block bomb round time end check<br/>`k` block hostage rescue round time end check<br/><br/>`Example setting:` "ae" blocks round time and bomb round end checks |
+| mp_roundover                       | 0       | 0   | 3            | The round by expired time will be over, if on a map it does not have the scenario of the game.<br/>`0` disabled<br/>`1` end of the round with a draw<br/>`2` round end with Terrorists win<br/>`3` round end with Counter-Terrorists win |
 | mp_round_restart_delay             | 5       | -   | -            | Number of seconds to delay before restarting a round after a win. |
 | mp_hegrenade_penetration           | 0       | 0   | 1            | Disable grenade damage through walls.<br/>`0` disabled<br/>`1` enabled |
-| mp_nadedrops                       | 0       | 0   | 2            | Drop a grenade after player death.<br/>`0` disabled<br/>`1` drop one the grenade<br/>`2` drop an everyone grenades |
-| mp_roundrespawn_time               | 20      | 0   | -            | Player cannot respawn until next round if more than N seconds has elapsed since the beginning round |
+| mp_nadedrops                       | 0       | 0   | 2            | Drop a grenade after player death.<br/>`0` disabled<br/>`1` drop first available grenade<br/>`2` drop all grenades |
+| mp_roundrespawn_time               | 20      | 0   | -            | Player cannot respawn until next round if more than N seconds has elapsed since the beginning round.<br />`-1` means no time limit<br /> |
 | mp_auto_reload_weapons             | 0       | 0   | 1            | Automatically reload each weapon on player spawn.<br/>`0` disabled<br/>`1` enabled |
 | mp_refill_bpammo_weapons           | 0       | 0   | 2            | Refill amount of backpack ammo up to the max.<br/>`0` disabled<br/>`1` refill backpack ammo on player spawn<br/>`2` refill backpack ammo on player spawn and on the purchase of the item |
 | mp_infinite_ammo                   | 0       | 0   | 2            | Sets the mode infinite ammo for weapons.<br/>`0` disabled<br/>`1` weapon clip infinite<br/>`2` weapon bpammo infinite (This means for reloading) |
@@ -61,7 +61,7 @@ Archive's bin directory contains 2 subdirectories, 'bugfixed' and 'pure'
 | mp_show_scenarioicon               | 0       | 0   | 1            | Show scenario icon in HUD such as count of alive hostages or ticking bomb.<br/>`0` disabled<br/>`1` enabled |
 | mp_old_bomb_defused_sound          | 1       | 0   | 1            | Play "Bomb has been defused" sound instead of "Counter-Terrorists win" when bomb was defused<br/>`0` disabled<br/>`1` enabled |
 | showtriggers                       | 0       | 0   | 1            | Debug cvar shows triggers. |
-| sv_alltalk                         | 0       | 0   | 4            | When players can hear each other ([further explanation](../../wiki/sv_alltalk)).<br/>`0` dead don't hear alive<br/>`1` no restrictions<br/>`2` teammates hear each other<br/>`3` Same as 2, but spectators hear everybody<br/>`4` alive hear alive, dead hear dead and alive.
+| sv_alltalk                         | 0       | 0   | 5            | When players can hear each other ([further explanation](../../wiki/sv_alltalk)).<br/>`0` dead don't hear alive<br/>`1` no restrictions<br/>`2` teammates hear each other<br/>`3` Same as 2, but spectators hear everybody<br/>`4` alive hear alive, dead hear dead and alive.<br/>`5` alive hear alive teammates, dead hear dead and alive.
 | bot_deathmatch                     | 0       | 0   | 1            | Sets the mode for the zBot.<br/>`0` disabled<br/>`1` enable mode Deathmatch and not allow to do the scenario |
 | bot_quota_mode                     | normal  | -   | -            | Determines the type of quota.<br/>`normal` default behaviour<br/>`fill` the server will adjust bots to keep `N` players in the game, where `N` is bot_quota<br/>`match` the server will maintain a `1:N` ratio of humans to bots, where `N` is bot_quota |
 | bot_join_delay                     | 0       | -   | -            | Prevents bots from joining the server for this many seconds after a map change. |
@@ -70,7 +70,7 @@ Archive's bin directory contains 2 subdirectories, 'bugfixed' and 'pure'
 | mp_legacy_bombtarget_touch         | 1       | 0   | 1            | Legacy func_bomb_target touch. New one is more strict. <br/>`0` New behavior<br/>`1` Legacy behavior|
 | mp_respawn_immunitytime            | 0       | 0   | -            | Specifies the players defense time after respawn. (in seconds).<br/>`0` disabled<br/>`>0.00001` time delay to remove protection |
 | mp_respawn_immunity_effects        | 1       | 0   | 1            | Enable effects on player spawn protection.<br/>`0` disabled<br/>`1` enable (Use in conjunction with the cvar mp_respawn_immunitytime) |
-| mp_respawn_immunity_force_unset    | 1       | 0   | 1            | Force unset spawn protection if the player doing any action.<br/>`0` disabled<br/>`1` enabled |
+| mp_respawn_immunity_force_unset    | 1       | 0   | 2            | Force unset spawn protection if the player doing any action.<br/>`0` disabled<br/>`1` when moving and attacking<br/>`2` only when attacking |
 | mp_kill_filled_spawn               | 1       | 0   | 1            | Kill the player in filled spawn before spawning some one else (Prevents players stucking in each other).<br />Only disable this if you have semiclip or other plugins that prevents stucking.<br/>`0` disabled<br/>`1` enabled |
 | mp_allow_point_servercommand       | 0       | 0   | 1            | Allow use of point_servercommand entities in map.<br/>`0` disallow<br/>`1` allow<br/>`NOTE`: Potentially dangerous for untrusted maps. |
 | mp_hullbounds_sets                 | 1       | 0   | 1            | Sets mins/maxs hull bounds for the player.<br/>`0` disabled<br/>`1` enabled |
@@ -86,81 +86,96 @@ Archive's bin directory contains 2 subdirectories, 'bugfixed' and 'pure'
 | mp_radio_timeout                   | 1.5     | 0.0 | -            | Delay between player Radio messages. (in seconds).<br/>`0` disable delay |
 | mp_radio_maxinround                | 60      | -   | -            | Maximum Radio messages count for player per round.<br/>`0` disable radio messages |
 | mp_buy_anywhere                    | 0       | 0   | 3            | When set, players can buy anywhere, not only in buyzones.<br/> `0` disabled.<br/>`1` both teams <br/>`2` only Terrorists team <br/>`3` only CT team |
+| mp_t_default_grenades              | ""        | "" | -           | The default grenades that the Ts will spawn with. |
+| mp_t_give_player_knife             | 1         | 0  | 1           | Whether Terrorist player spawn with knife. |
+| mp_t_default_weapons_primary       | ""        | "" | -           | The default primary (rifle) weapon that the Ts will spawn with. |
+| mp_t_default_weapons_secondary     | "glock18" | "" | -           | The default secondary (pistol) weapon that the Ts will spawn with. |
+| mp_ct_default_grenades             | ""        | "" | -           | The default grenades that the CTs will spawn with. |
+| mp_ct_give_player_knife            | 1         | 0  | 1           | Whether Counter-Terrorist player spawn with knife. |
+| mp_ct_default_weapons_primary      | ""        | "" | -           | The default primary (rifle) weapon that the CTs will spawn with. |
+| mp_ct_default_weapons_secondary    | "usp"     | "" | -           | The default secondary (pistol) weapon that the CTs will spawn with. |
 | mp_give_player_c4                  | 1       | 0   | 1            | Whether this map should spawn a C4 bomb for a player or not.<br/> `0` disabled<br/>`1` enabled |
 | mp_weapons_allow_map_placed        | 1       | 0   | 1            | When set, map weapons (located on the floor by map) will be shown.<br/> `0` hide all map weapons.<br/>`1` enabled<br/>`NOTE`: Effect will work after round restart. |
+| mp_free_armor                      | 0       | 0   | 2            | Give free armor on player spawn.<br/>`0` disabled <br/>`1` Give Kevlar <br/>`2` Give Kevlar + Helmet |
 | mp_fadetoblack                     | 0       | 0   | 2            | Observer's screen will fade to black on kill event or permanent.<br/> `0` No fade.<br/>`1` Fade to black and won't be able to watch anybody.<br/>`2` fade to black only on kill moment. |
+| mp_falldamage                      | 1       | 0   | 1            | Damage from falling.<br/>`0` disabled <br/>`1` enabled |
 </details>
 
 ## How to install zBot for CS 1.6?
 * Extract all the files from an [archive](regamedll/extra/zBot/bot_profiles.zip?raw=true)
 * Enter `-bots` option at the command line HLDS
 
+## How to install CSCZ hostage AI for CS 1.6?
+* Extract all the files from an [archive](regamedll/extra/HostageImprov/host_improv.zip?raw=true)
+* Enter `-host-improv` option at the command line HLDS
+
 ## Build instructions
-There are several software requirements for building Regamedll_CS:
-<ol>
-<li>Java Development Kit (JDK) 7+ (http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)</li>
-<li>For Windows: Visual Studio 2015 and later</li>
-<li>For Linux: GCC/Clang/Intel C++ Compiler 15 and later</li>
-</ol>
-
 ### Checking requirements
-#### JDK version
-Windows<pre>&gt; %JAVA_HOME%\bin\javac -version
-javac 1.8.0_25
-</pre>
+There are several software requirements for building ReGameDLL_CS:
 
-Linux
-<pre>$ javac -version
-javac 1.7.0_65
-</pre>
-
-#### Visual Studio
-Help -> About
-
-#### ICC
-<pre>$ icc --version
-icc (ICC) 15.0.1 20141023
-</pre>
-
-### Building and run unit tests using gradle
-#### On Windows:
-<pre>gradlew --max-workers=1 clean buildRelease</pre>
-* For faster building without unit tests use this:exclamation:
-<pre>gradlew --max-workers=1 clean buildFixes</pre>
-
-#### On Linux (ICC):
-<pre>./gradlew --max-workers=1 clean buildRelease</pre>
-
-* For faster building without unit tests use this:exclamation:
-<pre>./gradlew --max-workers=1 clean buildFixes</pre>
-
-#### On Linux (Clang):
-<pre>./gradlew --max-workers=1 clean -PuseClang buildRelease</pre>
-
-* For faster building without unit tests use this:exclamation:
-<pre>./gradlew --max-workers=1 clean -PuseClang buildFixes</pre>
-
-#### On Linux (GCC):
-<pre>./gradlew --max-workers=1 clean -PuseGcc buildRelease</pre>
-
-* For faster building without unit tests use this:exclamation:
-<pre>./gradlew --max-workers=1 clean -PuseGcc buildFixes</pre>
-
-Compiled binaries will be placed in the build/binaries/ directory
-
-### Simplified building using CMake 3.1 and later
-#### On Windows:
-<pre>Open solution msvc\ReGameDLL.sln and build it</pre>
-
-#### On Linux:
-* Run script `regamedll/compile.sh`
-* Options using `regamedll/compile.sh -D[option]=[ON or OFF]` (without square brackets)
+#### Windows
 <pre>
-DEBUG              - Enables debugging mode
-USE_INTEL_COMPILER - Switch main compiler to ICC
-USE_CLANG_COMPILER - Switch main compiler to Clang
-USE_STATIC_LIBSTDC - Enables static linking library libstdc++
+Visual Studio 2015 (C++14 standard) and later
 </pre>
+
+#### Linux
+<pre>
+git >= 1.8.5
+cmake >= 3.10
+GCC >= 4.9.2 (Optional)
+ICC >= 15.0.1 20141023 (Optional)
+LLVM (Clang) >= 6.0 (Optional)
+</pre>
+
+### Building
+
+#### Windows
+Use `Visual Studio` to build, open `msvc/ReGameDLL.sln` and just select from the solution configurations list `Release` or `Debug`
+
+#### Linux
+
+* Optional options using `build.sh --compiler=[gcc] --jobs=[N] -D[option]=[ON or OFF]` (without square brackets)
+
+<pre>
+-c=|--compiler=[icc|gcc|clang]  - Select preferred C/C++ compiler to build
+-j=|--jobs=[N]                  - Specifies the number of jobs (commands) to run simultaneously (For faster building)
+
+<sub>Definitions (-D)</sub>
+DEBUG                           - Enables debugging mode
+USE_STATIC_LIBSTDC              - Enables static linking library libstdc++
+</pre>
+
+* ICC          <pre>./build.sh --compiler=intel</pre>
+* LLVM (Clang) <pre>./build.sh --compiler=clang</pre>
+* GCC          <pre>./build.sh --compiler=gcc</pre>
+
+##### Checking build environment (Debian / Ubuntu)
+
+<details>
+<summary>Click to expand</summary>
+
+<ul>
+<li>
+Installing required packages
+<pre>
+sudo dpkg --add-architecture i386
+sudo apt-get update
+sudo apt-get install -y gcc-multilib g++-multilib
+sudo apt-get install -y build-essential
+sudo apt-get install -y libc6-dev libc6-dev-i386
+</pre>
+</li>
+
+<li>
+Select the preferred C/C++ Compiler installation
+<pre>
+1) sudo apt-get install -y gcc g++
+2) sudo apt-get install -y clang
+</pre>
+</li>
+</ul>
+
+</details>
 
 ### Credits
 Thanks to the project [ReHLDS](https://github.com/dreamstalker/rehlds) ( ReGameDLL_CS was created on the basis of ReHLDS )

@@ -16,14 +16,10 @@
 
 # Scripts
 *.sh              text eol=lf
-gradlew           text eol=lf
 *.bat             text eol=crlf
-*.gradle          text eol=crlf
-*.groovy          text eol=crlf
 *.def             text eol=crlf
 *.fgd             text eol=crlf
 *.cfg             text eol=crlf
-*.properties      text eol=crlf
 *.vm              text eol=crlf
 
 # Compiled Object files

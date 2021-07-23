@@ -134,6 +134,7 @@ static entity_field_alias_t custom_entity_field_alias[] =
 };
 
 bool g_bServerActive = false;
+bool g_bItemCreatedByBuying = false;
 PLAYERPVSSTATUS g_PVSStatus[MAX_CLIENTS];
 unsigned short m_usResetDecals;
 unsigned short g_iShadowSprite;
@@ -244,6 +245,13 @@ void WriteSigonMessages()
 		else
 			pszName = info.pszName;
 
+		int iFlags = info.iFlags;
+
+#ifdef PLAY_GAMEDLL
+		// TODO: fix test demo
+		iFlags &= ~ITEM_FLAG_NOFIREUNDERWATER;
+#endif
+
 		MESSAGE_BEGIN(MSG_INIT, gmsgWeaponList);
 			WRITE_STRING(pszName);
 			WRITE_BYTE(CBasePlayer::GetAmmoIndex(info.pszAmmo1));
@@ -253,7 +261,7 @@ void WriteSigonMessages()
 			WRITE_BYTE(info.iSlot);
 			WRITE_BYTE(info.iPosition);
 			WRITE_BYTE(info.iId);
-			WRITE_BYTE(info.iFlags);
+			WRITE_BYTE(iFlags);
 		MESSAGE_END();
 	}
 }
@@ -379,7 +387,7 @@ void EXT_FUNC ClientKill(edict_t *pEntity)
 
 	pPlayer->m_LastHitGroup = HITGROUP_GENERIC;
 
-	// don't let them suicide for 5 seconds after suiciding
+	// don't let them suicide for 1 second after suiciding
 	pPlayer->m_fNextSuicideTime = gpGlobals->time + 1.0f;
 
 	// have the player kill themself
@@ -771,7 +779,8 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 	{
 		if (CMD_ARGC_() >= 2)
 		{
-			p = (char *)CMD_ARGS();
+			Q_strlcpy(szTemp, CMD_ARGS());
+			p = szTemp;
 		}
 		else
 		{
@@ -783,12 +792,12 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 	{
 		if (CMD_ARGC_() >= 2)
 		{
-			Q_sprintf(szTemp, "%s %s", (char *)pcmd, (char *)CMD_ARGS());
+			Q_sprintf(szTemp, "%s %s", pcmd, CMD_ARGS());
 		}
 		else
 		{
 			// Just a one word command, use the first word...sigh
-			Q_sprintf(szTemp, "%s", (char *)pcmd);
+			Q_sprintf(szTemp, "%s", pcmd);
 		}
 
 		p = szTemp;
@@ -805,8 +814,16 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 		p[Q_strlen(p) - 1] = '\0';
 	}
 
+	// Check if buffer contains an invalid unicode sequence
+	// This can happen after truncation up to 127 chars into SV_ParseStringCommand
+	if (!Q_UnicodeValidate(p))
+	{
+		// Try fix invalid sequence in UTF-8
+		Q_UnicodeRepair(p);
+	}
+
 	// make sure the text has content
-	if (/*!p || */!p[0] || !Q_UnicodeValidate(p))
+	if (!p[0])
 	{
 		// no character found, so say nothing
 		return;
@@ -1493,7 +1510,10 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 
 	if (pszItem)
 	{
+		g_bItemCreatedByBuying = true;
 		pPlayer->GiveNamedItem(pszItem);
+		g_bItemCreatedByBuying = false;
+
 		pPlayer->AddAccount(-iItemPrice, RT_PLAYER_BOUGHT_SOMETHING);
 	}
 
@@ -3624,7 +3644,7 @@ void EXT_FUNC ClientUserInfoChanged(edict_t *pEntity, char *infobuffer)
 		if (!pPlayer->SetClientUserInfoName(infobuffer, szName))
 		{
 			// so to back old name into buffer
-			SET_CLIENT_KEY_VALUE(pPlayer->entindex(), infobuffer, "name", (char *)STRING(pPlayer->pev->netname));
+			SET_CLIENT_KEY_VALUE(pPlayer->entindex(), infobuffer, "name", STRING(pPlayer->pev->netname));
 		}
 	}
 
@@ -3923,7 +3943,7 @@ void ClientPrecache()
 			if (!fname)
 				break;
 
-			PRECACHE_MODEL((char *)fname);
+			PRECACHE_MODEL(fname);
 		}
 	}
 
@@ -4783,7 +4803,12 @@ int EXT_FUNC GetWeaponData(edict_t *pEdict, struct weapon_data_s *info)
 				// Get The ID
 				ItemInfo II;
 				Q_memset(&II, 0, sizeof(II));
+
+#ifdef REGAMEDLL_API
+				pPlayerItem->CSPlayerItem()->GetItemInfo(&II);
+#else
 				weapon->GetItemInfo(&II);
+#endif
 
 				if (II.iId >= 0 && II.iId < MAX_WEAPONS)
 				{
@@ -4889,7 +4914,12 @@ void EXT_FUNC UpdateClientData(const edict_t *ent, int sendweapons, struct clien
 		cd->m_flNextAttack = pPlayer->m_flNextAttack;
 
 		int iUser3 = 0;
-		if (pPlayer->m_bCanShoot && !pPlayer->m_bIsDefusing)
+
+		if (
+#ifdef REGAMEDLL_API
+			pPlayer->CSPlayer()->m_bCanShootOverride ||
+#endif
+			(pPlayer->m_bCanShoot && !pPlayer->m_bIsDefusing))
 			iUser3 |= PLAYER_CAN_SHOOT;
 
 		if (g_pGameRules->IsFreezePeriod())
@@ -4916,7 +4946,13 @@ void EXT_FUNC UpdateClientData(const edict_t *ent, int sendweapons, struct clien
 			Q_memset(&II, 0, sizeof(II));
 
 			CBasePlayerWeapon *weapon = (CBasePlayerWeapon *)pPlayer->m_pActiveItem->GetWeaponPtr();
-			if (weapon && weapon->UseDecrement() && weapon->GetItemInfo(&II))
+			if (weapon && weapon->UseDecrement() &&
+#ifdef REGAMEDLL_API
+				weapon->CSPlayerItem()->GetItemInfo(&II)
+#else
+				weapon->GetItemInfo(&II)
+#endif
+				)
 			{
 				cd->m_iId = II.iId;
 

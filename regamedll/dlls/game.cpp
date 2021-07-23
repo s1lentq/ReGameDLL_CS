@@ -147,6 +147,17 @@ cvar_t ff_damage_reduction_other        = { "ff_damage_reduction_other",        
 
 cvar_t radio_timeout           = { "mp_radio_timeout", "1.5", FCVAR_SERVER, 1.5f, nullptr };
 cvar_t radio_maxinround        = { "mp_radio_maxinround", "60", FCVAR_SERVER, 60.0f, nullptr };
+cvar_t falldamage              = { "mp_falldamage", "1", FCVAR_SERVER, 1.0f, nullptr };
+
+cvar_t ct_default_grenades               = { "mp_ct_default_grenades", "", 0, 0.0f, nullptr };
+cvar_t ct_give_player_knife              = { "mp_ct_give_player_knife", "1", 0, 1.0f, nullptr };
+cvar_t ct_default_weapons_secondary      = { "mp_ct_default_weapons_secondary", "usp", 0, 0.0f, nullptr };
+cvar_t ct_default_weapons_primary        = { "mp_ct_default_weapons_primary", "", 0, 0.0f, nullptr };
+cvar_t t_default_grenades                = { "mp_t_default_grenades", "", 0, 0.0f, nullptr };
+cvar_t t_give_player_knife               = { "mp_t_give_player_knife", "1", 0, 1.0f, nullptr };
+cvar_t t_default_weapons_secondary       = { "mp_t_default_weapons_secondary", "glock18", 0, 0.0f, nullptr };
+cvar_t t_default_weapons_primary         = { "mp_t_default_weapons_primary", "", 0, 0.0f, nullptr };
+cvar_t free_armor                        = { "mp_free_armor", "0", 0, 0.0f, nullptr };
 
 void GameDLL_Version_f()
 {
@@ -233,7 +244,11 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&autoteambalance);
 	CVAR_REGISTER(&tkpunish);
 	CVAR_REGISTER(&hostagepenalty);
+
+#ifndef REGAMEDLL_FIXES
 	CVAR_REGISTER(&mirrordamage);
+#endif
+
 	CVAR_REGISTER(&logmessages);
 	CVAR_REGISTER(&forcecamera);
 	CVAR_REGISTER(&forcechasecam);
@@ -310,7 +325,7 @@ void EXT_FUNC GameDLLInit()
 
 	ADD_SERVER_COMMAND("game", GameDLL_Version_f);
 	ADD_SERVER_COMMAND("endround", GameDLL_EndRound_f);
-	ADD_SERVER_COMMAND("mp_swapteams", GameDLL_SwapTeams_f);
+	ADD_SERVER_COMMAND("swapteams", GameDLL_SwapTeams_f);
 
 	CVAR_REGISTER(&game_version);
 	CVAR_REGISTER(&maxmoney);
@@ -359,6 +374,17 @@ void EXT_FUNC GameDLLInit()
 
 	CVAR_REGISTER(&radio_timeout);
 	CVAR_REGISTER(&radio_maxinround);
+	CVAR_REGISTER(&falldamage);
+
+	CVAR_REGISTER(&ct_default_grenades);
+	CVAR_REGISTER(&ct_give_player_knife);
+	CVAR_REGISTER(&ct_default_weapons_secondary);
+	CVAR_REGISTER(&ct_default_weapons_primary);
+	CVAR_REGISTER(&t_default_grenades);
+	CVAR_REGISTER(&t_give_player_knife);
+	CVAR_REGISTER(&t_default_weapons_secondary);
+	CVAR_REGISTER(&t_default_weapons_primary);
+	CVAR_REGISTER(&free_armor);
 
 	// print version
 	CONSOLE_ECHO("ReGameDLL version: " APP_VERSION "\n");

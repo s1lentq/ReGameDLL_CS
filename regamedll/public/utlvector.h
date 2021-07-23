@@ -121,6 +121,7 @@ public:
 
 	// Purges the list and calls delete on each element in it.
 	void PurgeAndDeleteElements();
+	void PurgeAndDeleteArrays();
 
 	// Set the size by which it grows when it needs to allocate more memory.
 	void SetGrowSize(int size);
@@ -543,6 +544,15 @@ inline void CUtlVector<T>::PurgeAndDeleteElements()
 {
 	for (int i = 0; i < m_Size; i++)
 		delete Element(i);
+
+	Purge();
+}
+
+template <class T>
+inline void CUtlVector<T>::PurgeAndDeleteArrays()
+{
+	for (int i = 0; i < m_Size; i++)
+		delete[] Element(i);
 
 	Purge();
 }

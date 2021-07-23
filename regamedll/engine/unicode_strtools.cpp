@@ -748,7 +748,7 @@ int Q_UnicodeConvertT(const SrcType *pIn, int nInChars, DstType *pOut, int nOutB
 	{
 		while (bStopAtNull ? (*pIn) : (nInChars-- > 0))
 		{
-			uchar32 uVal;
+			uchar32 uVal = '?';
 			bool bErr = false; // Initialize in order to avoid /analyze warnings.
 
 			pIn += DecodeSrc(pIn, uVal, bErr);
@@ -782,7 +782,7 @@ int Q_UnicodeConvertT(const SrcType *pIn, int nInChars, DstType *pOut, int nOutB
 		int nMaxOut = nOutElems - 1; // print symbols count
 		while (bStopAtNull ? (*pIn) : (nInChars-- > 0))
 		{
-			uchar32 uVal;
+			uchar32 uVal = '?';
 			bool bErr = false; // Initialize in order to avoid /analyze warnings.
 
 			pIn += DecodeSrc(pIn, uVal, bErr);

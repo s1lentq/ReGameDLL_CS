@@ -191,13 +191,18 @@ enum
 // custom enum
 enum
 {
-	SCENARIO_BLOCK_TIME_EXPRIRED      = BIT(0), // flag "a"
-	SCENARIO_BLOCK_NEED_PLAYERS       = BIT(1), // flag "b"
-	SCENARIO_BLOCK_VIP_ESCAPE         = BIT(2), // flag "c"
-	SCENARIO_BLOCK_PRISON_ESCAPE      = BIT(3), // flag "d"
-	SCENARIO_BLOCK_BOMB               = BIT(4), // flag "e"
-	SCENARIO_BLOCK_TEAM_EXTERMINATION = BIT(5), // flag "f"
-	SCENARIO_BLOCK_HOSTAGE_RESCUE     = BIT(6), // flag "g"
+	SCENARIO_BLOCK_TIME_EXPRIRED           = BIT(0), // flag "a"
+	SCENARIO_BLOCK_NEED_PLAYERS            = BIT(1), // flag "b"
+	SCENARIO_BLOCK_VIP_ESCAPE              = BIT(2), // flag "c"
+	SCENARIO_BLOCK_PRISON_ESCAPE           = BIT(3), // flag "d"
+	SCENARIO_BLOCK_BOMB                    = BIT(4), // flag "e"
+	SCENARIO_BLOCK_TEAM_EXTERMINATION      = BIT(5), // flag "f"
+	SCENARIO_BLOCK_HOSTAGE_RESCUE          = BIT(6), // flag "g"
+	SCENARIO_BLOCK_VIP_ESCAPE_TIME         = BIT(7), // flag "h"
+	SCENARIO_BLOCK_PRISON_ESCAPE_TIME      = BIT(8), // flag "i"
+	SCENARIO_BLOCK_BOMB_TIME               = BIT(9), // flag "j"
+	SCENARIO_BLOCK_HOSTAGE_RESCUE_TIME     = BIT(10), // flag "k"
+	
 };
 
 // Player relationship return codes

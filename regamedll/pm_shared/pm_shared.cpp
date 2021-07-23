@@ -23,13 +23,13 @@ void PM_SwapTextures(int i, int j)
 	char chTemp;
 	char szTemp[MAX_TEXTURENAME_LENGHT];
 
-	Q_strcpy(szTemp, pm_grgszTextureName[i]);
+	Q_strlcpy(szTemp, pm_grgszTextureName[i]);
 	chTemp = pm_grgchTextureType[i];
 
-	Q_strcpy(pm_grgszTextureName[i], pm_grgszTextureName[j]);
+	Q_strcpy_s(pm_grgszTextureName[i], pm_grgszTextureName[j]);
 	pm_grgchTextureType[i] = pm_grgchTextureType[j];
 
-	Q_strcpy(pm_grgszTextureName[j], szTemp);
+	Q_strlcpy(pm_grgszTextureName[j], szTemp);
 	pm_grgchTextureType[j] = chTemp;
 }
 

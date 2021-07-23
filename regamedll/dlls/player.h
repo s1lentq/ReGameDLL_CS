@@ -298,9 +298,18 @@ enum MusicState { SILENT, CALM, INTENSE };
 
 class CCSPlayer;
 
+#define ALL_OTHER_ITEMS        6
+
 class CStripWeapons: public CPointEntity {
 public:
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	virtual void KeyValue(KeyValueData *pkvd);
+
+#ifdef REGAMEDLL_ADD
+public:
+	int m_bitsIgnoreSlots;
+	int m_iszSpecialItem;
+#endif
 };
 
 // Dead HEV suit prop
@@ -569,6 +578,7 @@ public:
 	bool IsHittingShield(Vector &vecDirection, TraceResult *ptr);
 	bool SelectSpawnSpot(const char *pEntClassName, CBaseEntity* &pSpot);
 	bool IsReloading() const;
+	bool HasTimePassedSinceDeath(float duration) const;
 	bool IsBlind() const { return (m_blindUntilTime > gpGlobals->time); }
 	bool IsAutoFollowAllowed() const { return (gpGlobals->time > m_allowAutoFollowTime); }
 	void InhibitAutoFollow(float duration) { m_allowAutoFollowTime = gpGlobals->time + duration; }
@@ -887,6 +897,9 @@ public:
 #endif
 };
 
+CWeaponBox *CreateWeaponBox(CBasePlayerItem *pItem, CBasePlayer *pPlayerOwner, const char *modelName, Vector &origin, Vector &angles, Vector &velocity, float lifeTime, bool packAmmo);
+CWeaponBox *CreateWeaponBox_OrigFunc(CBasePlayerItem *pItem, CBasePlayer *pPlayerOwner, const char *modelName, Vector &origin, Vector &angles, Vector &velocity, float lifeTime, bool packAmmo);
+
 class CWShield: public CBaseEntity
 {
 public:
@@ -914,6 +927,11 @@ inline bool CBasePlayer::IsReloading() const
 	}
 
 	return false;
+}
+
+inline bool CBasePlayer::HasTimePassedSinceDeath(float duration) const
+{
+	return gpGlobals->time > (m_fDeadTime + duration);
 }
 
 #ifdef REGAMEDLL_API

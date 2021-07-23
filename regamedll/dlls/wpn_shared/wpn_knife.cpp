@@ -12,6 +12,13 @@ void CKnife::Spawn()
 	m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
 	m_iClip = WEAPON_NOCLIP;
 
+	m_flStabBaseDamage = KNIFE_STAB_DAMAGE;
+	m_flSwingBaseDamage = KNIFE_SWING_DAMAGE;
+	m_flSwingBaseDamage_Fast = KNIFE_SWING_DAMAGE_FAST;
+
+	m_flStabDistance = KNIFE_STAB_DISTANCE;
+	m_flSwingDistance = KNIFE_SWING_DISTANCE;
+
 	// Get ready to fall down
 	FallInit();
 
@@ -36,6 +43,13 @@ void CKnife::Precache()
 	PRECACHE_SOUND("weapons/knife_hitwall1.wav");
 
 	m_usKnife = PRECACHE_EVENT(1, "events/knife.sc");
+
+	m_flStabBaseDamage = KNIFE_STAB_DAMAGE;
+	m_flSwingBaseDamage = KNIFE_SWING_DAMAGE;
+	m_flSwingBaseDamage_Fast = KNIFE_SWING_DAMAGE_FAST;
+
+	m_flStabDistance = KNIFE_STAB_DISTANCE;
+	m_flSwingDistance = KNIFE_SWING_DISTANCE;
 }
 
 int CKnife::GetItemInfo(ItemInfo *p)
@@ -257,7 +271,7 @@ BOOL CKnife::Swing(BOOL fFirst)
 	UTIL_MakeVectors(m_pPlayer->pev->v_angle);
 
 	vecSrc = m_pPlayer->GetGunPosition();
-	vecEnd = vecSrc + gpGlobals->v_forward * 48.0f;
+	vecEnd = vecSrc + gpGlobals->v_forward * m_flSwingDistance;
 
 	UTIL_TraceLine(vecSrc, vecEnd, dont_ignore_monsters, m_pPlayer->edict(), &tr);
 
@@ -355,9 +369,9 @@ BOOL CKnife::Swing(BOOL fFirst)
 		ClearMultiDamage();
 
 		if (m_flNextPrimaryAttack + 0.4f < UTIL_WeaponTimeBase())
-			pEntity->TraceAttack(m_pPlayer->pev, 20, gpGlobals->v_forward, &tr, (DMG_NEVERGIB | DMG_BULLET));
+			pEntity->TraceAttack(m_pPlayer->pev, m_flSwingBaseDamage_Fast, gpGlobals->v_forward, &tr, (DMG_NEVERGIB | DMG_BULLET));
 		else
-			pEntity->TraceAttack(m_pPlayer->pev, 15, gpGlobals->v_forward, &tr, (DMG_NEVERGIB | DMG_BULLET));
+			pEntity->TraceAttack(m_pPlayer->pev, m_flSwingBaseDamage, gpGlobals->v_forward, &tr, (DMG_NEVERGIB | DMG_BULLET));
 
 		ApplyMultiDamage(m_pPlayer->pev, m_pPlayer->pev);
 
@@ -435,7 +449,7 @@ BOOL CKnife::Stab(BOOL fFirst)
 	UTIL_MakeVectors(m_pPlayer->pev->v_angle);
 
 	vecSrc = m_pPlayer->GetGunPosition();
-	vecEnd = vecSrc + gpGlobals->v_forward * 32.0f;
+	vecEnd = vecSrc + gpGlobals->v_forward * m_flStabDistance;
 
 	UTIL_TraceLine(vecSrc, vecEnd, dont_ignore_monsters, m_pPlayer->edict(), &tr);
 
@@ -503,7 +517,7 @@ BOOL CKnife::Stab(BOOL fFirst)
 		// player "shoot" animation
 		m_pPlayer->SetAnimation(PLAYER_ATTACK1);
 
-		float flDamage = 65.0f;
+		float flDamage = m_flStabBaseDamage;
 
 		if (pEntity && pEntity->IsPlayer())
 		{
