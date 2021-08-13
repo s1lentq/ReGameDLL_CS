@@ -49,6 +49,29 @@ int MaxAmmoCarry(WeaponIdType weaponId)
 	return CBasePlayerItem::m_ItemInfoArray[weaponId].iMaxAmmo1;
 }
 
+// All automatic weapons are represented here
+float GetBaseAccuracy(WeaponIdType id)
+{
+	switch (id)
+	{
+	case WEAPON_M4A1:
+	case WEAPON_AK47:
+	case WEAPON_AUG:
+	case WEAPON_SG552:
+	case WEAPON_FAMAS:
+	case WEAPON_GALIL:
+	case WEAPON_M249:
+	case WEAPON_P90:
+	case WEAPON_TMP:
+		return 0.2f;
+	case WEAPON_MAC10:
+		return 0.15f;
+	case WEAPON_UMP45:
+	case WEAPON_MP5N:
+		return 0.0f;
+	}
+}
+
 // Resets the global multi damage accumulator
 void ClearMultiDamage()
 {
@@ -1024,6 +1047,14 @@ void CBasePlayerWeapon::ItemPostFrame()
 			{
 				m_flDecreaseShotsFired = gpGlobals->time + 0.0225f;
 				m_iShotsFired--;
+
+#ifdef REGAMEDLL_FIXES
+				// Reset accuracy
+				if (m_iShotsFired == 0)
+				{
+					m_flAccuracy = GetBaseAccuracy((WeaponIdType)m_iId);
+				}
+#endif
 			}
 		}
 
