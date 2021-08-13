@@ -12,7 +12,10 @@ void CFamas::Spawn()
 	m_iDefaultAmmo = FAMAS_DEFAULT_GIVE;
 	m_iFamasShotsFired = 0;
 	m_flFamasShoot = 0;
+
+#ifdef REGAMEDLL_FIXES
 	m_flAccuracy = FAMAS_BASE_ACCURACY;
+#endif
 
 #ifdef REGAMEDLL_API
 	CSPlayerWeapon()->m_flBaseDamage = FAMAS_DAMAGE;

@@ -201,7 +201,10 @@ void CSG550::Reload()
 
 	if (DefaultReload(iMaxClip(), SG550_RELOAD, SG550_RELOAD_TIME))
 	{
+#ifdef REGAMEDLL_FIXES
 		m_flAccuracy = GetBaseAccuracy();
+#endif
+
 		m_pPlayer->SetAnimation(PLAYER_RELOAD);
 
 		if (m_pPlayer->pev->fov != DEFAULT_FOV)

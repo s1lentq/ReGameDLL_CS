@@ -11,7 +11,10 @@ void CG3SG1::Spawn()
 
 	m_iDefaultAmmo = G3SG1_DEFAULT_GIVE;
 	m_flLastFire = 0;
+
+#ifdef REGAMEDLL_FIXES
 	m_flAccuracy = G3SG1_BASE_ACCURACY;
+#endif
 
 #ifdef REGAMEDLL_API
 	CSPlayerWeapon()->m_flBaseDamage = G3SG1_DAMAGE;

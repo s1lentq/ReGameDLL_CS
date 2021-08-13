@@ -10,7 +10,10 @@ void CGalil::Spawn()
 	SET_MODEL(edict(), "models/w_galil.mdl");
 
 	m_iDefaultAmmo = GALIL_DEFAULT_GIVE;
+
+#ifdef REGAMEDLL_FIXES
 	m_flAccuracy = GALIL_BASE_ACCURACY;
+#endif
 
 #ifdef REGAMEDLL_API
 	CSPlayerWeapon()->m_flBaseDamage = GALIL_DAMAGE;
