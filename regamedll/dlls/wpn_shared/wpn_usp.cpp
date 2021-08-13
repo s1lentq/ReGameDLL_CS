@@ -11,10 +11,12 @@ void CUSP::Spawn()
 
 	m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
 	m_iDefaultAmmo = USP_DEFAULT_GIVE;
-	m_flAccuracy = 0.92f;
+	m_flAccuracy = USP_BASE_ACCURACY;
 
 #ifdef REGAMEDLL_API
 	CSPlayerWeapon()->m_flBaseDamage = USP_DAMAGE;
+	CSPlayerWeapon()->m_flBaseAccuracy = USP_BASE_ACCURACY;
+	CSPlayerWeapon()->m_flMaxInaccuracy = USP_MAX_INACCURACY;
 	m_flBaseDamageSil = USP_DAMAGE_SIL;
 #endif
 
@@ -69,7 +71,7 @@ int CUSP::GetItemInfo(ItemInfo *p)
 BOOL CUSP::Deploy()
 {
 	m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
-	m_flAccuracy = 0.92f;
+	m_flAccuracy = GetBaseAccuracy();
 	m_fMaxSpeed = USP_MAX_SPEED;
 	m_pPlayer->m_bShieldDrawn = false;
 
@@ -170,13 +172,13 @@ void CUSP::USPFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 	{
 		m_flAccuracy -= (0.3f - (gpGlobals->time - m_flLastFire)) * 0.275f;
 
-		if (m_flAccuracy > 0.92f)
+		if (m_flAccuracy > GetBaseAccuracy())
 		{
-			m_flAccuracy = 0.92f;
+			m_flAccuracy = GetBaseAccuracy();
 		}
-		else if (m_flAccuracy < 0.6f)
+		else if (m_flAccuracy < GetMaxInaccuracy())
 		{
-			m_flAccuracy = 0.6f;
+			m_flAccuracy = GetMaxInaccuracy();
 		}
 	}
 
@@ -259,7 +261,7 @@ void CUSP::Reload()
 	if (DefaultReload(iMaxClip(), iAnim, USP_RELOAD_TIME))
 	{
 		m_pPlayer->SetAnimation(PLAYER_RELOAD);
-		m_flAccuracy = 0.92f;
+		m_flAccuracy = GetBaseAccuracy();
 	}
 }
 
@@ -289,4 +291,22 @@ void CUSP::WeaponIdle()
 		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 60.0f;
 		SendWeaponAnim(iAnim, UseDecrement());
 	}
+}
+
+float CUSP::GetBaseAccuracy()
+{
+#ifdef REGAMEDLL_API
+	return CSPlayerWeapon()->m_flBaseAccuracy;
+#else
+	return USP_BASE_ACCURACY;
+#endif
+}
+
+float CUSP::GetMaxInaccuracy()
+{
+#ifdef REGAMEDLL_API
+	return CSPlayerWeapon()->m_flMaxInaccuracy;
+#else
+	return USP_MAX_INACCURACY;
+#endif
 }

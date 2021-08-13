@@ -15,10 +15,12 @@ void CGLOCK18::Spawn()
 
 	m_iGlock18ShotsFired = 0;
 	m_flGlock18Shoot = 0;
-	m_flAccuracy = 0.9f;
+	m_flAccuracy = GLOCK18_BASE_ACCURACY;
 
 #ifdef REGAMEDLL_API
 	CSPlayerWeapon()->m_flBaseDamage = GLOCK18_DAMAGE;
+	CSPlayerWeapon()->m_flBaseAccuracy = GLOCK18_BASE_ACCURACY;
+	CSPlayerWeapon()->m_flMaxInaccuracy = GLOCK18_MAX_INACCURACY;
 #endif
 
 	// Get ready to fall down
@@ -72,7 +74,7 @@ BOOL CGLOCK18::Deploy()
 	m_bBurstFire = false;
 	m_iGlock18ShotsFired = 0;
 	m_flGlock18Shoot = 0;
-	m_flAccuracy = 0.9f;
+	m_flAccuracy = GetBaseAccuracy();
 	m_fMaxSpeed = GLOCK18_MAX_SPEED;
 
 	m_pPlayer->m_bShieldDrawn = false;
@@ -177,13 +179,13 @@ void CGLOCK18::GLOCK18Fire(float flSpread, float flCycleTime, BOOL bFireBurst)
 		// Mark the time of this shot and determine the accuracy modifier based on the last shot fired...
 		m_flAccuracy -= (0.325f - (gpGlobals->time - m_flLastFire)) * 0.275f;
 
-		if (m_flAccuracy > 0.9f)
+		if (m_flAccuracy > GetBaseAccuracy())
 		{
-			m_flAccuracy = 0.9f;
+			m_flAccuracy = GetBaseAccuracy();
 		}
-		else if (m_flAccuracy < 0.6f)
+		else if (m_flAccuracy < GetMaxInaccuracy())
 		{
-			m_flAccuracy = 0.6f;
+			m_flAccuracy = GetMaxInaccuracy();
 		}
 	}
 
@@ -272,7 +274,7 @@ void CGLOCK18::Reload()
 	if (DefaultReload(iMaxClip(), iResult, GLOCK18_RELOAD_TIME))
 	{
 		m_pPlayer->SetAnimation(PLAYER_RELOAD);
-		m_flAccuracy = 0.9;
+		m_flAccuracy = GetBaseAccuracy();
 	}
 }
 
@@ -321,4 +323,22 @@ void CGLOCK18::WeaponIdle()
 
 		SendWeaponAnim(iAnim, UseDecrement() != FALSE);
 	}
+}
+
+float CGLOCK18::GetBaseAccuracy()
+{
+#ifdef REGAMEDLL_API
+	return CSPlayerWeapon()->m_flBaseAccuracy;
+#else
+	return GLOCK18_BASE_ACCURACY;
+#endif
+}
+
+float CGLOCK18::GetMaxInaccuracy()
+{
+#ifdef REGAMEDLL_API
+	return CSPlayerWeapon()->m_flMaxInaccuracy;
+#else
+	return GLOCK18_MAX_INACCURACY;
+#endif
 }

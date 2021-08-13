@@ -494,11 +494,13 @@ public:
 };
 
 
-const float USP_MAX_SPEED       = 250.0f;
-const float USP_DAMAGE          = 34.0f;
-const float USP_DAMAGE_SIL      = 30.0f;
-const float USP_RANGE_MODIFER   = 0.79f;
-const float USP_RELOAD_TIME     = 2.7f;
+const float USP_MAX_SPEED      = 250.0f;
+const float USP_DAMAGE         = 34.0f;
+const float USP_DAMAGE_SIL     = 30.0f;
+const float USP_RANGE_MODIFER  = 0.79f;
+const float USP_RELOAD_TIME    = 2.7f;
+const float USP_BASE_ACCURACY  = 0.92f;
+const float USP_MAX_INACCURACY = 0.6f;
 
 #ifdef REGAMEDLL_FIXES
 const float USP_ADJUST_SIL_TIME = 3.13f;
@@ -566,6 +568,9 @@ public:
 	void USPFire(float flSpread, float flCycleTime, BOOL fUseSemi);
 	void MakeBeam();
 	void BeamUpdate();
+	float GetBaseAccuracy();
+	float GetMaxInaccuracy();
+
 	int m_iShell;
 
 private:
@@ -577,10 +582,12 @@ private:
 };
 
 
-const float MP5N_MAX_SPEED     = 250.0f;
-const float MP5N_DAMAGE        = 26.0f;
-const float MP5N_RANGE_MODIFER = 0.84f;
-const float MP5N_RELOAD_TIME   = 2.63f;
+const float MP5N_MAX_SPEED      = 250.0f;
+const float MP5N_DAMAGE         = 26.0f;
+const float MP5N_RANGE_MODIFER  = 0.84f;
+const float MP5N_RELOAD_TIME    = 2.63f;
+const float MP5N_BASE_ACCURACY  = 0.0f;
+const float MP5N_MAX_INACCURACY = 0.75f;
 
 enum mp5n_e
 {
@@ -615,6 +622,8 @@ public:
 
 public:
 	void MP5NFire(float flSpread, float flCycleTime, BOOL fUseAutoAim);
+	float GetBaseAccuracy();
+	float GetMaxInaccuracy();
 
 	int m_iShell;
 	int iShellOn;
@@ -629,6 +638,8 @@ const float SG552_MAX_SPEED_ZOOM = 200.0f;
 const float SG552_DAMAGE         = 33.0f;
 const float SG552_RANGE_MODIFER  = 0.955f;
 const float SG552_RELOAD_TIME    = 3.0f;
+const float SG552_BASE_ACCURACY  = 0.2f;
+const float SG552_MAX_INACCURACY = 1.0f;
 
 enum sg552_e
 {
@@ -664,6 +675,8 @@ public:
 
 public:
 	void SG552Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim);
+	float GetBaseAccuracy();
+	float GetMaxInaccuracy();
 
 	int m_iShell;
 	int iShellOn;
@@ -673,10 +686,12 @@ private:
 };
 
 
-const float AK47_MAX_SPEED     = 221.0f;
-const float AK47_DAMAGE        = 36.0f;
-const float AK47_RANGE_MODIFER = 0.98f;
-const float AK47_RELOAD_TIME   = 2.45f;
+const float AK47_MAX_SPEED      = 221.0f;
+const float AK47_DAMAGE         = 36.0f;
+const float AK47_RANGE_MODIFER  = 0.98f;
+const float AK47_RELOAD_TIME    = 2.45f;
+const float AK47_BASE_ACCURACY  = 0.2f;
+const float AK47_MAX_INACCURACY = 1.25f;
 
 enum ak47_e
 {
@@ -712,6 +727,8 @@ public:
 
 public:
 	void AK47Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim);
+	float GetBaseAccuracy();
+	float GetMaxInaccuracy();
 
 	int m_iShell;
 	int iShellOn;
@@ -721,10 +738,12 @@ private:
 };
 
 
-const float AUG_MAX_SPEED     = 240.0f;
-const float AUG_DAMAGE        = 32.0f;
-const float AUG_RANGE_MODIFER = 0.96f;
-const float AUG_RELOAD_TIME   = 3.3f;
+const float AUG_MAX_SPEED      = 240.0f;
+const float AUG_DAMAGE         = 32.0f;
+const float AUG_RANGE_MODIFER  = 0.96f;
+const float AUG_RELOAD_TIME    = 3.3f;
+const float AUG_BASE_ACCURACY  = 0.2f;
+const float AUG_MAX_INACCURACY = 1.0f;
 
 enum aug_e
 {
@@ -760,6 +779,8 @@ public:
 
 public:
 	void AUGFire(float flSpread, float flCycleTime, BOOL fUseAutoAim);
+	float GetBaseAccuracy();
+	float GetMaxInaccuracy();
 
 	int m_iShell;
 	int iShellOn;
@@ -865,10 +886,12 @@ private:
 };
 
 
-const float DEAGLE_MAX_SPEED     = 250.0f;
-const float DEAGLE_DAMAGE        = 54.0f;
-const float DEAGLE_RANGE_MODIFER = 0.81f;
-const float DEAGLE_RELOAD_TIME   = 2.2f;
+const float DEAGLE_MAX_SPEED      = 250.0f;
+const float DEAGLE_DAMAGE         = 54.0f;
+const float DEAGLE_RANGE_MODIFER  = 0.81f;
+const float DEAGLE_RELOAD_TIME    = 2.2f;
+const float DEAGLE_BASE_ACCURACY  = 0.9f;
+const float DEAGLE_MAX_INACCURACY = 0.55f;
 
 enum deagle_e
 {
@@ -905,6 +928,8 @@ public:
 
 public:
 	void DEAGLEFire(float flSpread, float flCycleTime, BOOL fUseSemi);
+	float GetBaseAccuracy();
+	float GetMaxInaccuracy();
 
 	int m_iShell;
 
@@ -973,6 +998,8 @@ const float G3SG1_MAX_SPEED_ZOOM = 150.0f;
 const float G3SG1_DAMAGE         = 80.0f;
 const float G3SG1_RANGE_MODIFER  = 0.98f;
 const float G3SG1_RELOAD_TIME    = 3.5f;
+const float G3SG1_BASE_ACCURACY  = 0.98f;
+const float G3SG1_MAX_INACCURACY = 0.98f;
 
 enum g3sg1_e
 {
@@ -1007,6 +1034,8 @@ public:
 
 public:
 	void G3SG1Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim);
+	float GetBaseAccuracy();
+	float GetMaxInaccuracy();
 
 	int m_iShell;
 
@@ -1015,10 +1044,12 @@ private:
 };
 
 
-const float GLOCK18_MAX_SPEED     = 250.0f;
-const float GLOCK18_DAMAGE        = 25.0f;
-const float GLOCK18_RANGE_MODIFER = 0.75f;
-const float GLOCK18_RELOAD_TIME   = 2.2f;
+const float GLOCK18_MAX_SPEED      = 250.0f;
+const float GLOCK18_DAMAGE         = 25.0f;
+const float GLOCK18_RANGE_MODIFER  = 0.75f;
+const float GLOCK18_RELOAD_TIME    = 2.2f;
+const float GLOCK18_BASE_ACCURACY  = 0.9f;
+const float GLOCK18_MAX_INACCURACY = 0.6f;
 
 enum glock18_e
 {
@@ -1075,6 +1106,8 @@ public:
 
 public:
 	void GLOCK18Fire(float flSpread, float flCycleTime, BOOL bFireBurst);
+	float GetBaseAccuracy();
+	float GetMaxInaccuracy();
 
 public:
 	int m_iShell;
@@ -1214,10 +1247,12 @@ private:
 };
 
 
-const float M249_MAX_SPEED     = 220.0f;
-const float M249_DAMAGE        = 32.0f;
-const float M249_RANGE_MODIFER = 0.97f;
-const float M249_RELOAD_TIME   = 4.7f;
+const float M249_MAX_SPEED      = 220.0f;
+const float M249_DAMAGE         = 32.0f;
+const float M249_RANGE_MODIFER  = 0.97f;
+const float M249_RELOAD_TIME    = 4.7f;
+const float M249_BASE_ACCURACY  = 0.2f;
+const float M249_MAX_INACCURACY = 0.9f;
 
 enum m249_e
 {
@@ -1251,6 +1286,8 @@ public:
 
 public:
 	void M249Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim);
+	float GetBaseAccuracy();
+	float GetMaxInaccuracy();
 
 	int m_iShell;
 	int iShellOn;
@@ -1313,6 +1350,8 @@ const float M4A1_DAMAGE_SIL        = 33.0f;
 const float M4A1_RANGE_MODIFER     = 0.97f;
 const float M4A1_RANGE_MODIFER_SIL = 0.95f;
 const float M4A1_RELOAD_TIME       = 3.05f;
+const float M4A1_BASE_ACCURACY     = 0.2f;
+const float M4A1_MAX_INACCURACY    = 1.0f;
 
 enum m4a1_e
 {
@@ -1356,6 +1395,8 @@ public:
 
 public:
 	void M4A1Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim);
+	float GetBaseAccuracy();
+	float GetMaxInaccuracy();
 
 	int m_iShell;
 	int iShellOn;
@@ -1369,10 +1410,12 @@ private:
 };
 
 
-const float MAC10_MAX_SPEED     = 250.0f;
-const float MAC10_DAMAGE        = 29.0f;
-const float MAC10_RANGE_MODIFER = 0.82f;
-const float MAC10_RELOAD_TIME   = 3.15f;
+const float MAC10_MAX_SPEED      = 250.0f;
+const float MAC10_DAMAGE         = 29.0f;
+const float MAC10_RANGE_MODIFER  = 0.82f;
+const float MAC10_RELOAD_TIME    = 3.15f;
+const float MAC10_BASE_ACCURACY  = 0.15f;
+const float MAC10_MAX_INACCURACY = 1.65f;
 
 enum mac10_e
 {
@@ -1407,6 +1450,8 @@ public:
 
 public:
 	void MAC10Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim);
+	float GetBaseAccuracy();
+	float GetMaxInaccuracy();
 
 	int m_iShell;
 	int iShellOn;
@@ -1416,10 +1461,12 @@ private:
 };
 
 
-const float P228_MAX_SPEED     = 250.0f;
-const float P228_DAMAGE        = 32.0f;
-const float P228_RANGE_MODIFER = 0.8f;
-const float P228_RELOAD_TIME   = 2.7f;
+const float P228_MAX_SPEED      = 250.0f;
+const float P228_DAMAGE         = 32.0f;
+const float P228_RANGE_MODIFER  = 0.8f;
+const float P228_RELOAD_TIME    = 2.7f;
+const float P228_BASE_ACCURACY  = 0.9f;
+const float P228_MAX_INACCURACY = 0.6f;
 
 enum p228_e
 {
@@ -1472,6 +1519,8 @@ public:
 	void P228Fire(float flSpread, float flCycleTime, BOOL fUseSemi);
 	void MakeBeam();
 	void BeamUpdate();
+	float GetBaseAccuracy();
+	float GetMaxInaccuracy();
 
 public:
 	int m_iShell;
@@ -1481,10 +1530,12 @@ private:
 };
 
 
-const float P90_MAX_SPEED     = 245.0f;
-const float P90_DAMAGE        = 21.0f;
-const float P90_RANGE_MODIFER = 0.885f;
-const float P90_RELOAD_TIME   = 3.4f;
+const float P90_MAX_SPEED      = 245.0f;
+const float P90_DAMAGE         = 21.0f;
+const float P90_RANGE_MODIFER  = 0.885f;
+const float P90_RELOAD_TIME    = 3.4f;
+const float P90_BASE_ACCURACY  = 0.2f;
+const float P90_MAX_INACCURACY = 1.0f;
 
 enum p90_e
 {
@@ -1519,6 +1570,8 @@ public:
 
 public:
 	void P90Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim);
+	float GetBaseAccuracy();
+	float GetMaxInaccuracy();
 
 	int m_iShell;
 	int iShellOn;
@@ -1623,10 +1676,12 @@ public:
 };
 
 
-const float TMP_MAX_SPEED     = 250.0f;
-const float TMP_DAMAGE        = 20.0f;
-const float TMP_RANGE_MODIFER = 0.85f;
-const float TMP_RELOAD_TIME   = 2.12f;
+const float TMP_MAX_SPEED      = 250.0f;
+const float TMP_DAMAGE         = 20.0f;
+const float TMP_RANGE_MODIFER  = 0.85f;
+const float TMP_RELOAD_TIME    = 2.12f;
+const float TMP_BASE_ACCURACY  = 0.2f;
+const float TMP_MAX_INACCURACY = 1.4f;
 
 enum tmp_e
 {
@@ -1661,6 +1716,8 @@ public:
 
 public:
 	void TMPFire(float flSpread, float flCycleTime, BOOL fUseAutoAim);
+	float GetBaseAccuracy();
+	float GetMaxInaccuracy();
 
 public:
 	int m_iShell;
@@ -1717,10 +1774,12 @@ private:
 };
 
 
-const float ELITE_MAX_SPEED     = 250.0f;
-const float ELITE_RELOAD_TIME   = 4.5f;
-const float ELITE_DAMAGE        = 36.0f;
-const float ELITE_RANGE_MODIFER = 0.75f;
+const float ELITE_MAX_SPEED      = 250.0f;
+const float ELITE_RELOAD_TIME    = 4.5f;
+const float ELITE_DAMAGE         = 36.0f;
+const float ELITE_RANGE_MODIFER  = 0.75f;
+const float ELITE_BASE_ACCURACY  = 0.88f;
+const float ELITE_MAX_INACCURACY = 0.55f;
 
 enum elite_e
 {
@@ -1766,6 +1825,8 @@ public:
 
 public:
 	void ELITEFire(float flSpread, float flCycleTime, BOOL fUseSemi);
+	float GetBaseAccuracy();
+	float GetMaxInaccuracy();
 
 public:
 	int m_iShell;
@@ -1775,10 +1836,12 @@ private:
 };
 
 
-const float FIVESEVEN_MAX_SPEED     = 250.0f;
-const float FIVESEVEN_DAMAGE        = 20.0f;
-const float FIVESEVEN_RANGE_MODIFER = 0.885f;
-const float FIVESEVEN_RELOAD_TIME   = 2.7f;
+const float FIVESEVEN_MAX_SPEED      = 250.0f;
+const float FIVESEVEN_DAMAGE         = 20.0f;
+const float FIVESEVEN_RANGE_MODIFER  = 0.885f;
+const float FIVESEVEN_RELOAD_TIME    = 2.7f;
+const float FIVESEVEN_BASE_ACCURACY  = 0.92f;
+const float FIVESEVEN_MAX_INACCURACY = 0.725f;
 
 enum fiveseven_e
 {
@@ -1817,6 +1880,8 @@ public:
 	void FiveSevenFire(float flSpread, float flCycleTime, BOOL fUseSemi);
 	void MakeBeam();
 	void BeamUpdate();
+	float GetBaseAccuracy();
+	float GetMaxInaccuracy();
 
 public:
 	int m_iShell;
@@ -1826,10 +1891,12 @@ private:
 };
 
 
-const float UMP45_MAX_SPEED     = 250.0f;
-const float UMP45_DAMAGE        = 30.0f;
-const float UMP45_RANGE_MODIFER = 0.82f;
-const float UMP45_RELOAD_TIME   = 3.5f;
+const float UMP45_MAX_SPEED      = 250.0f;
+const float UMP45_DAMAGE         = 30.0f;
+const float UMP45_RANGE_MODIFER  = 0.82f;
+const float UMP45_RELOAD_TIME    = 3.5f;
+const float UMP45_BASE_ACCURACY  = 0.0f;
+const float UMP45_MAX_INACCURACY = 1.0f;
 
 enum ump45_e
 {
@@ -1864,6 +1931,8 @@ public:
 
 public:
 	void UMP45Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim);
+	float GetBaseAccuracy();
+	float GetMaxInaccuracy();
 
 	int m_iShell;
 	int iShellOn;
@@ -1878,6 +1947,8 @@ const float SG550_MAX_SPEED_ZOOM = 150.0f;
 const float SG550_DAMAGE         = 70.0f;
 const float SG550_RANGE_MODIFER  = 0.98f;
 const float SG550_RELOAD_TIME    = 3.35f;
+const float SG550_BASE_ACCURACY  = 0.9f;
+const float SG550_MAX_INACCURACY = 0.98f;
 
 enum sg550_e
 {
@@ -1912,6 +1983,9 @@ public:
 
 public:
 	void SG550Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim);
+	float GetBaseAccuracy();
+	float GetMaxInaccuracy();
+
 	int m_iShell;
 
 private:
@@ -1919,10 +1993,12 @@ private:
 };
 
 
-const float GALIL_MAX_SPEED     = 240.0f;
-const float GALIL_DAMAGE        = 30.0f;
-const float GALIL_RANGE_MODIFER = 0.98f;
-const float GALIL_RELOAD_TIME   = 2.45f;
+const float GALIL_MAX_SPEED      = 240.0f;
+const float GALIL_DAMAGE         = 30.0f;
+const float GALIL_RANGE_MODIFER  = 0.98f;
+const float GALIL_RELOAD_TIME    = 2.45f;
+const float GALIL_BASE_ACCURACY  = 0.2f;
+const float GALIL_MAX_INACCURACY = 1.25f;
 
 enum galil_e
 {
@@ -1958,6 +2034,8 @@ public:
 
 public:
 	void GalilFire(float flSpread, float flCycleTime, BOOL fUseAutoAim);
+	float GetBaseAccuracy();
+	float GetMaxInaccuracy();
 
 public:
 	int m_iShell;
@@ -1968,11 +2046,13 @@ private:
 };
 
 
-const float FAMAS_MAX_SPEED     = 240.0f;
-const float FAMAS_RELOAD_TIME   = 3.3f;
-const float FAMAS_DAMAGE        = 30.0f;
-const float FAMAS_DAMAGE_BURST  = 34.0f;
-const float FAMAS_RANGE_MODIFER = 0.96f;
+const float FAMAS_MAX_SPEED      = 240.0f;
+const float FAMAS_RELOAD_TIME    = 3.3f;
+const float FAMAS_DAMAGE         = 30.0f;
+const float FAMAS_DAMAGE_BURST   = 34.0f;
+const float FAMAS_RANGE_MODIFER  = 0.96f;
+const float FAMAS_BASE_ACCURACY  = 0.2f;
+const float FAMAS_MAX_INACCURACY = 1.0f;
 
 enum famas_e
 {
@@ -2008,6 +2088,8 @@ public:
 
 public:
 	void FamasFire(float flSpread, float flCycleTime, BOOL fUseAutoAim, BOOL bFireBurst);
+	float GetBaseAccuracy();
+	float GetMaxInaccuracy();
 
 public:
 	int m_iShell;

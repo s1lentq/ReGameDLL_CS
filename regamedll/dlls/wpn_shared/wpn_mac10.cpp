@@ -10,11 +10,13 @@ void CMAC10::Spawn()
 	SET_MODEL(edict(), "models/w_mac10.mdl");
 
 	m_iDefaultAmmo = MAC10_DEFAULT_GIVE;
-	m_flAccuracy = 0.15f;
+	m_flAccuracy = MAC10_BASE_ACCURACY;
 	m_bDelayFire = false;
 
 #ifdef REGAMEDLL_API
 	CSPlayerWeapon()->m_flBaseDamage = MAC10_DAMAGE;
+	CSPlayerWeapon()->m_flBaseAccuracy = MAC10_BASE_ACCURACY;
+	CSPlayerWeapon()->m_flMaxInaccuracy = MAC10_MAX_INACCURACY;
 #endif
 
 	// Get ready to fall down
@@ -57,7 +59,7 @@ int CMAC10::GetItemInfo(ItemInfo *p)
 
 BOOL CMAC10::Deploy()
 {
-	m_flAccuracy = 0.15f;
+	m_flAccuracy = GetBaseAccuracy();
 	iShellOn = 1;
 	m_bDelayFire = false;
 
@@ -86,8 +88,8 @@ void CMAC10::MAC10Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 
 	m_flAccuracy = ((m_iShotsFired * m_iShotsFired * m_iShotsFired) / 200) + 0.6f;
 
-	if (m_flAccuracy > 1.65f)
-		m_flAccuracy = 1.65f;
+	if (m_flAccuracy > GetMaxInaccuracy())
+		m_flAccuracy = GetMaxInaccuracy();
 
 	if (m_iClip <= 0)
 	{
@@ -170,7 +172,7 @@ void CMAC10::Reload()
 	{
 		m_pPlayer->SetAnimation(PLAYER_RELOAD);
 
-		m_flAccuracy = 0;
+		m_flAccuracy = GetBaseAccuracy();
 		m_iShotsFired = 0;
 	}
 }
@@ -187,4 +189,22 @@ void CMAC10::WeaponIdle()
 
 	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20.0f;
 	SendWeaponAnim(MAC10_IDLE1, UseDecrement() != FALSE);
+}
+
+float CMAC10::GetBaseAccuracy()
+{
+#ifdef REGAMEDLL_API
+	return CSPlayerWeapon()->m_flBaseAccuracy;
+#else
+	return MAC10_BASE_ACCURACY;
+#endif
+}
+
+float CMAC10::GetMaxInaccuracy()
+{
+#ifdef REGAMEDLL_API
+	return CSPlayerWeapon()->m_flMaxInaccuracy;
+#else
+	return MAC10_MAX_INACCURACY;
+#endif
 }

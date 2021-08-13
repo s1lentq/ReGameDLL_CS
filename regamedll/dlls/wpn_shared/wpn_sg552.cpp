@@ -10,11 +10,13 @@ void CSG552::Spawn()
 	SET_MODEL(edict(), "models/w_sg552.mdl");
 
 	m_iDefaultAmmo = SG552_DEFAULT_GIVE;
-	m_flAccuracy = 0.2f;
+	m_flAccuracy = SG552_BASE_ACCURACY;
 	m_iShotsFired = 0;
 
 #ifdef REGAMEDLL_API
 	CSPlayerWeapon()->m_flBaseDamage = SG552_DAMAGE;
+	CSPlayerWeapon()->m_flBaseAccuracy = SG552_BASE_ACCURACY;
+	CSPlayerWeapon()->m_flMaxInaccuracy = SG552_MAX_INACCURACY;
 #endif
 
 	// Get ready to fall down
@@ -58,7 +60,7 @@ int CSG552::GetItemInfo(ItemInfo *p)
 
 BOOL CSG552::Deploy()
 {
-	m_flAccuracy = 0.2f;
+	m_flAccuracy = GetBaseAccuracy();
 	m_iShotsFired = 0;
 	iShellOn = 1;
 
@@ -105,8 +107,8 @@ void CSG552::SG552Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 
 	m_flAccuracy = ((m_iShotsFired * m_iShotsFired * m_iShotsFired) / 220) + 0.3f;
 
-	if (m_flAccuracy > 1.0f)
-		m_flAccuracy = 1.0f;
+	if (m_flAccuracy > GetMaxInaccuracy())
+		m_flAccuracy = GetMaxInaccuracy();
 
 	if (m_iClip <= 0)
 	{
@@ -193,7 +195,7 @@ void CSG552::Reload()
 		}
 
 		m_pPlayer->SetAnimation(PLAYER_RELOAD);
-		m_flAccuracy = 0.2f;
+		m_flAccuracy = GetBaseAccuracy();
 		m_iShotsFired = 0;
 		m_bDelayFire = false;
 	}
@@ -219,4 +221,22 @@ float CSG552::GetMaxSpeed()
 		return SG552_MAX_SPEED;
 
 	return SG552_MAX_SPEED_ZOOM;
+}
+
+float CSG552::GetBaseAccuracy()
+{
+#ifdef REGAMEDLL_API
+	return CSPlayerWeapon()->m_flBaseAccuracy;
+#else
+	return SG552_BASE_ACCURACY;
+#endif
+}
+
+float CSG552::GetMaxInaccuracy()
+{
+#ifdef REGAMEDLL_API
+	return CSPlayerWeapon()->m_flMaxInaccuracy;
+#else
+	return SG552_MAX_INACCURACY;
+#endif
 }

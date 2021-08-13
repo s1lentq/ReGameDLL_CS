@@ -10,11 +10,13 @@ void CMP5N::Spawn()
 	SET_MODEL(edict(), "models/w_mp5.mdl");
 
 	m_iDefaultAmmo = MP5NAVY_DEFAULT_GIVE;
-	m_flAccuracy = 0.0f;
+	m_flAccuracy = MP5N_BASE_ACCURACY;
 	m_bDelayFire = false;
 
 #ifdef REGAMEDLL_API
 	CSPlayerWeapon()->m_flBaseDamage = MP5N_DAMAGE;
+	CSPlayerWeapon()->m_flBaseAccuracy = MP5N_BASE_ACCURACY;
+	CSPlayerWeapon()->m_flMaxInaccuracy = MP5N_MAX_INACCURACY;
 #endif
 
 	// Get ready to fall down
@@ -58,7 +60,7 @@ int CMP5N::GetItemInfo(ItemInfo *p)
 
 BOOL CMP5N::Deploy()
 {
-	m_flAccuracy = 0.0f;
+	m_flAccuracy = GetBaseAccuracy();
 	m_bDelayFire = false;
 	iShellOn = 1;
 
@@ -87,8 +89,8 @@ void CMP5N::MP5NFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 
 	m_flAccuracy = ((m_iShotsFired * m_iShotsFired) / 220.1) + 0.45f;
 
-	if (m_flAccuracy > 0.75f)
-		m_flAccuracy = 0.75f;
+	if (m_flAccuracy > GetMaxInaccuracy())
+		m_flAccuracy = GetMaxInaccuracy();
 
 	if (m_iClip <= 0)
 	{
@@ -171,7 +173,7 @@ void CMP5N::Reload()
 	{
 		m_pPlayer->SetAnimation(PLAYER_RELOAD);
 
-		m_flAccuracy = 0;
+		m_flAccuracy = GetBaseAccuracy();
 		m_iShotsFired = 0;
 	}
 }
@@ -188,4 +190,22 @@ void CMP5N::WeaponIdle()
 
 	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20.0f;
 	SendWeaponAnim(MP5N_IDLE1, UseDecrement() != FALSE);
+}
+
+float CMP5N::GetBaseAccuracy()
+{
+#ifdef REGAMEDLL_API
+	return CSPlayerWeapon()->m_flBaseAccuracy;
+#else
+	return MP5N_BASE_ACCURACY;
+#endif
+}
+
+float CMP5N::GetMaxInaccuracy()
+{
+#ifdef REGAMEDLL_API
+	return CSPlayerWeapon()->m_flMaxInaccuracy;
+#else
+	return MP5N_MAX_INACCURACY;
+#endif
 }

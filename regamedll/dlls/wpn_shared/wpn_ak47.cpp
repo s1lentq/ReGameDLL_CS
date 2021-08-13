@@ -10,11 +10,13 @@ void CAK47::Spawn()
 	SET_MODEL(edict(), "models/w_ak47.mdl");
 
 	m_iDefaultAmmo = AK47_DEFAULT_GIVE;
-	m_flAccuracy = 0.2f;
+	m_flAccuracy = AK47_BASE_ACCURACY;
 	m_iShotsFired = 0;
 
 #ifdef REGAMEDLL_API
 	CSPlayerWeapon()->m_flBaseDamage = AK47_DAMAGE;
+	CSPlayerWeapon()->m_flBaseAccuracy = AK47_BASE_ACCURACY;
+	CSPlayerWeapon()->m_flMaxInaccuracy = AK47_MAX_INACCURACY;
 #endif
 
 	// Get ready to fall down
@@ -58,7 +60,7 @@ int CAK47::GetItemInfo(ItemInfo *p)
 
 BOOL CAK47::Deploy()
 {
-	m_flAccuracy = 0.2f;
+	m_flAccuracy = GetBaseAccuracy();
 	m_iShotsFired = 0;
 	iShellOn = 1;
 
@@ -96,8 +98,8 @@ void CAK47::AK47Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 
 	m_flAccuracy = ((m_iShotsFired * m_iShotsFired * m_iShotsFired) / 200) + 0.35f;
 
-	if (m_flAccuracy > 1.25f)
-		m_flAccuracy = 1.25f;
+	if (m_flAccuracy > GetMaxInaccuracy())
+		m_flAccuracy = GetMaxInaccuracy();
 
 	if (m_iClip <= 0)
 	{
@@ -183,7 +185,7 @@ void CAK47::Reload()
 	{
 		m_pPlayer->SetAnimation(PLAYER_RELOAD);
 
-		m_flAccuracy = 0.2f;
+		m_flAccuracy = GetBaseAccuracy();
 		m_iShotsFired = 0;
 		m_bDelayFire = false;
 	}
@@ -199,4 +201,22 @@ void CAK47::WeaponIdle()
 		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20.0f;
 		SendWeaponAnim(AK47_IDLE1, UseDecrement() != FALSE);
 	}
+}
+
+float CAK47::GetBaseAccuracy()
+{
+#ifdef REGAMEDLL_API
+	return CSPlayerWeapon()->m_flBaseAccuracy;
+#else
+	return AK47_BASE_ACCURACY;
+#endif
+}
+
+float CAK47::GetMaxInaccuracy()
+{
+#ifdef REGAMEDLL_API
+	return CSPlayerWeapon()->m_flMaxInaccuracy;
+#else
+	return AK47_MAX_INACCURACY;
+#endif
 }

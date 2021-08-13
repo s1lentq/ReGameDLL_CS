@@ -11,10 +11,12 @@ void CP228::Spawn()
 
 	m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
 	m_iDefaultAmmo = P228_DEFAULT_GIVE;
-	m_flAccuracy = 0.9f;
+	m_flAccuracy = P228_BASE_ACCURACY;
 
 #ifdef REGAMEDLL_API
 	CSPlayerWeapon()->m_flBaseDamage = P228_DAMAGE;
+	CSPlayerWeapon()->m_flBaseAccuracy = P228_BASE_ACCURACY;
+	CSPlayerWeapon()->m_flMaxInaccuracy = P228_MAX_INACCURACY;
 #endif
 
 	// Get ready to fall down
@@ -59,7 +61,7 @@ int CP228::GetItemInfo(ItemInfo *p)
 
 BOOL CP228::Deploy()
 {
-	m_flAccuracy = 0.9f;
+	m_flAccuracy = GetBaseAccuracy();
 	m_fMaxSpeed = P228_MAX_SPEED;
 	m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
 	m_pPlayer->m_bShieldDrawn = false;
@@ -111,13 +113,13 @@ void CP228::P228Fire(float flSpread, float flCycleTime, BOOL fUseSemi)
 	{
 		m_flAccuracy -= (0.325f - (gpGlobals->time - m_flLastFire)) * 0.3f;
 
-		if (m_flAccuracy > 0.9f)
+		if (m_flAccuracy > GetBaseAccuracy())
 		{
-			m_flAccuracy = 0.9f;
+			m_flAccuracy = GetBaseAccuracy();
 		}
-		else if (m_flAccuracy < 0.6f)
+		else if (m_flAccuracy < GetMaxInaccuracy())
 		{
-			m_flAccuracy = 0.6f;
+			m_flAccuracy = GetMaxInaccuracy();
 		}
 	}
 
@@ -188,7 +190,7 @@ void CP228::Reload()
 	if (DefaultReload(iMaxClip(), m_pPlayer->HasShield() ? P228_SHIELD_RELOAD : P228_RELOAD, P228_RELOAD_TIME))
 	{
 		m_pPlayer->SetAnimation(PLAYER_RELOAD);
-		m_flAccuracy = 0.9f;
+		m_flAccuracy = GetBaseAccuracy();
 	}
 }
 
@@ -216,4 +218,22 @@ void CP228::WeaponIdle()
 		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 3.0625f;
 		SendWeaponAnim(P228_IDLE, UseDecrement() != FALSE);
 	}
+}
+
+float CP228::GetBaseAccuracy()
+{
+#ifdef REGAMEDLL_API
+	return CSPlayerWeapon()->m_flBaseAccuracy;
+#else
+	return P228_BASE_ACCURACY;
+#endif
+}
+
+float CP228::GetMaxInaccuracy()
+{
+#ifdef REGAMEDLL_API
+	return CSPlayerWeapon()->m_flMaxInaccuracy;
+#else
+	return P228_MAX_INACCURACY;
+#endif
 }

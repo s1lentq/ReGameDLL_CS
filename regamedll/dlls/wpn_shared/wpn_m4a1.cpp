@@ -10,12 +10,14 @@ void CM4A1::Spawn()
 	SET_MODEL(edict(), "models/w_m4a1.mdl");
 
 	m_iDefaultAmmo = M4A1_DEFAULT_GIVE;
-	m_flAccuracy = 0.2f;
+	m_flAccuracy = M4A1_BASE_ACCURACY;
 	m_iShotsFired = 0;
 	m_bDelayFire = true;
 
 #ifdef REGAMEDLL_API
 	CSPlayerWeapon()->m_flBaseDamage = M4A1_DAMAGE;
+	CSPlayerWeapon()->m_flBaseAccuracy = M4A1_BASE_ACCURACY;
+	CSPlayerWeapon()->m_flMaxInaccuracy = M4A1_MAX_INACCURACY;
 	m_flBaseDamageSil = M4A1_DAMAGE_SIL;
 #endif
 
@@ -65,7 +67,7 @@ int CM4A1::GetItemInfo(ItemInfo *p)
 BOOL CM4A1::Deploy()
 {
 	m_bDelayFire = true;
-	m_flAccuracy = 0.2f;
+	m_flAccuracy = GetBaseAccuracy();
 	m_iShotsFired = 0;
 
 	iShellOn = 1;
@@ -139,8 +141,8 @@ void CM4A1::M4A1Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 
 	m_flAccuracy = ((m_iShotsFired * m_iShotsFired * m_iShotsFired) / 220) + 0.3f;
 
-	if (m_flAccuracy > 1)
-		m_flAccuracy = 1;
+	if (m_flAccuracy > GetMaxInaccuracy())
+		m_flAccuracy = GetMaxInaccuracy();
 
 	if (m_iClip <= 0)
 	{
@@ -236,7 +238,7 @@ void CM4A1::Reload()
 	{
 		m_pPlayer->SetAnimation(PLAYER_RELOAD);
 
-		m_flAccuracy = 0.2f;
+		m_flAccuracy = GetBaseAccuracy();
 		m_iShotsFired = 0;
 		m_bDelayFire = false;
 	}
@@ -259,4 +261,22 @@ void CM4A1::WeaponIdle()
 float CM4A1::GetMaxSpeed()
 {
 	return M4A1_MAX_SPEED;
+}
+
+float CM4A1::GetBaseAccuracy()
+{
+#ifdef REGAMEDLL_API
+	return CSPlayerWeapon()->m_flBaseAccuracy;
+#else
+	return M4A1_BASE_ACCURACY;
+#endif
+}
+
+float CM4A1::GetMaxInaccuracy()
+{
+#ifdef REGAMEDLL_API
+	return CSPlayerWeapon()->m_flMaxInaccuracy;
+#else
+	return M4A1_MAX_INACCURACY;
+#endif
 }

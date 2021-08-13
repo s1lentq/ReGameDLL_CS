@@ -13,11 +13,13 @@ void CSG550::Spawn()
 	m_flLastFire = 0;
 
 #ifdef REGAMEDLL_FIXES
-	m_flAccuracy = 0.9f;
+	m_flAccuracy = SG550_BASE_ACCURACY;
 #endif
 
 #ifdef REGAMEDLL_API
 	CSPlayerWeapon()->m_flBaseDamage = SG550_DAMAGE;
+	CSPlayerWeapon()->m_flBaseAccuracy = SG550_BASE_ACCURACY;
+	CSPlayerWeapon()->m_flMaxInaccuracy = SG550_MAX_INACCURACY;
 #endif
 
 	// Get ready to fall down
@@ -62,7 +64,7 @@ int CSG550::GetItemInfo(ItemInfo *p)
 BOOL CSG550::Deploy()
 {
 #ifdef REGAMEDLL_FIXES
-	m_flAccuracy = 0.9f;
+	m_flAccuracy = GetBaseAccuracy();
 #endif
 
 	return DefaultDeploy("models/v_sg550.mdl", "models/p_sg550.mdl", SG550_DRAW, "rifle", UseDecrement() != FALSE);
@@ -127,9 +129,9 @@ void CSG550::SG550Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	{
 		m_flAccuracy = (gpGlobals->time - m_flLastFire) * 0.35f + 0.65f;
 
-		if (m_flAccuracy > 0.98f)
+		if (m_flAccuracy > GetMaxInaccuracy())
 		{
-			m_flAccuracy = 0.98f;
+			m_flAccuracy = GetMaxInaccuracy();
 		}
 	}
 
@@ -199,6 +201,7 @@ void CSG550::Reload()
 
 	if (DefaultReload(iMaxClip(), SG550_RELOAD, SG550_RELOAD_TIME))
 	{
+		m_flAccuracy = GetBaseAccuracy();
 		m_pPlayer->SetAnimation(PLAYER_RELOAD);
 
 		if (m_pPlayer->pev->fov != DEFAULT_FOV)
@@ -229,4 +232,22 @@ void CSG550::WeaponIdle()
 float CSG550::GetMaxSpeed()
 {
 	return (m_pPlayer->m_iFOV == DEFAULT_FOV) ? SG550_MAX_SPEED : SG550_MAX_SPEED_ZOOM;
+}
+
+float CSG550::GetBaseAccuracy()
+{
+#ifdef REGAMEDLL_API
+	return CSPlayerWeapon()->m_flBaseAccuracy;
+#else
+	return SG550_BASE_ACCURACY;
+#endif
+}
+
+float CSG550::GetMaxInaccuracy()
+{
+#ifdef REGAMEDLL_API
+	return CSPlayerWeapon()->m_flMaxInaccuracy;
+#else
+	return SG550_MAX_INACCURACY;
+#endif
 }

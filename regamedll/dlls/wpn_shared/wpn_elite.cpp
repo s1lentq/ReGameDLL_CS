@@ -10,10 +10,12 @@ void CELITE::Spawn()
 	SET_MODEL(edict(), "models/w_elite.mdl");
 
 	m_iDefaultAmmo = ELITE_DEFAULT_GIVE;
-	m_flAccuracy = 0.88f;
+	m_flAccuracy = ELITE_BASE_ACCURACY;
 
 #ifdef REGAMEDLL_API
 	CSPlayerWeapon()->m_flBaseDamage = ELITE_DAMAGE;
+	CSPlayerWeapon()->m_flBaseAccuracy = ELITE_BASE_ACCURACY;
+	CSPlayerWeapon()->m_flMaxInaccuracy = ELITE_MAX_INACCURACY;
 #endif
 
 	// Get ready to fall down
@@ -61,7 +63,7 @@ int CELITE::GetItemInfo(ItemInfo *p)
 
 BOOL CELITE::Deploy()
 {
-	m_flAccuracy = 0.88f;
+	m_flAccuracy = GetBaseAccuracy();
 
 	if (!(m_iClip & 1))
 	{
@@ -116,13 +118,13 @@ void CELITE::ELITEFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 	{
 		m_flAccuracy -= (0.325f - flTimeDiff) * 0.275f;
 
-		if (m_flAccuracy > 0.88f)
+		if (m_flAccuracy > GetBaseAccuracy())
 		{
-			m_flAccuracy = 0.88f;
+			m_flAccuracy = GetBaseAccuracy();
 		}
-		else if (m_flAccuracy < 0.55f)
+		else if (m_flAccuracy < GetMaxInaccuracy())
 		{
-			m_flAccuracy = 0.55f;
+			m_flAccuracy = GetMaxInaccuracy();
 		}
 	}
 
@@ -211,7 +213,7 @@ void CELITE::Reload()
 	if (DefaultReload(iMaxClip(), ELITE_RELOAD, ELITE_RELOAD_TIME))
 	{
 		m_pPlayer->SetAnimation(PLAYER_RELOAD);
-		m_flAccuracy = 0.88f;
+		m_flAccuracy = GetBaseAccuracy();
 	}
 }
 
@@ -229,4 +231,22 @@ void CELITE::WeaponIdle()
 			SendWeaponAnim(iAnim, UseDecrement() != FALSE);
 		}
 	}
+}
+
+float CELITE::GetBaseAccuracy()
+{
+#ifdef REGAMEDLL_API
+	return CSPlayerWeapon()->m_flBaseAccuracy;
+#else
+	return ELITE_BASE_ACCURACY;
+#endif
+}
+
+float CELITE::GetMaxInaccuracy()
+{
+#ifdef REGAMEDLL_API
+	return CSPlayerWeapon()->m_flMaxInaccuracy;
+#else
+	return ELITE_MAX_INACCURACY;
+#endif
 }

@@ -10,11 +10,13 @@ void CM249::Spawn()
 	SET_MODEL(edict(), "models/w_m249.mdl");
 
 	m_iDefaultAmmo = M249_DEFAULT_GIVE;
-	m_flAccuracy = 0.2f;
+	m_flAccuracy = M249_BASE_ACCURACY;
 	m_iShotsFired = 0;
 
 #ifdef REGAMEDLL_API
 	CSPlayerWeapon()->m_flBaseDamage = M249_DAMAGE;
+	CSPlayerWeapon()->m_flBaseAccuracy = M249_BASE_ACCURACY;
+	CSPlayerWeapon()->m_flMaxInaccuracy = M249_MAX_INACCURACY;
 #endif
 
 	// Get ready to fall down
@@ -60,7 +62,7 @@ int CM249::GetItemInfo(ItemInfo *p)
 
 BOOL CM249::Deploy()
 {
-	m_flAccuracy = 0.2f;
+	m_flAccuracy = GetBaseAccuracy();
 	m_iShotsFired = 0;
 	iShellOn = 1;
 
@@ -93,8 +95,8 @@ void CM249::M249Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 
 	m_flAccuracy = ((m_iShotsFired * m_iShotsFired * m_iShotsFired) / 175) + 0.4f;
 
-	if (m_flAccuracy > 0.9f)
-		m_flAccuracy = 0.9f;
+	if (m_flAccuracy > GetMaxInaccuracy())
+		m_flAccuracy = GetMaxInaccuracy();
 
 	if (m_iClip <= 0)
 	{
@@ -180,7 +182,7 @@ void CM249::Reload()
 	{
 		m_pPlayer->SetAnimation(PLAYER_RELOAD);
 
-		m_flAccuracy = 0.2f;
+		m_flAccuracy = GetBaseAccuracy();
 		m_bDelayFire = false;
 		m_iShotsFired = 0;
 	}
@@ -198,4 +200,22 @@ void CM249::WeaponIdle()
 
 	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20.0f;
 	SendWeaponAnim(M249_IDLE1, UseDecrement() != FALSE);
+}
+
+float CM249::GetBaseAccuracy()
+{
+#ifdef REGAMEDLL_API
+	return CSPlayerWeapon()->m_flBaseAccuracy;
+#else
+	return M249_BASE_ACCURACY;
+#endif
+}
+
+float CM249::GetMaxInaccuracy()
+{
+#ifdef REGAMEDLL_API
+	return CSPlayerWeapon()->m_flMaxInaccuracy;
+#else
+	return M249_MAX_INACCURACY;
+#endif
 }

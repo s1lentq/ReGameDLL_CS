@@ -11,10 +11,12 @@ void CFiveSeven::Spawn()
 
 	m_iDefaultAmmo = FIVESEVEN_DEFAULT_GIVE;
 	m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
-	m_flAccuracy = 0.92f;
+	m_flAccuracy = FIVESEVEN_BASE_ACCURACY;
 
 #ifdef REGAMEDLL_API
 	CSPlayerWeapon()->m_flBaseDamage = FIVESEVEN_DAMAGE;
+	CSPlayerWeapon()->m_flBaseAccuracy = FIVESEVEN_BASE_ACCURACY;
+	CSPlayerWeapon()->m_flMaxInaccuracy = FIVESEVEN_MAX_INACCURACY;
 #endif
 
 	// Get ready to fall down
@@ -59,7 +61,7 @@ int CFiveSeven::GetItemInfo(ItemInfo *p)
 
 BOOL CFiveSeven::Deploy()
 {
-	m_flAccuracy = 0.92f;
+	m_flAccuracy = GetBaseAccuracy();
 	m_fMaxSpeed = FIVESEVEN_MAX_SPEED;
 	m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
 	m_pPlayer->m_bShieldDrawn = false;
@@ -111,13 +113,13 @@ void CFiveSeven::FiveSevenFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 	{
 		m_flAccuracy -= (0.275f - (gpGlobals->time - m_flLastFire)) * 0.25f;
 
-		if (m_flAccuracy > 0.92f)
+		if (m_flAccuracy > GetBaseAccuracy())
 		{
-			m_flAccuracy = 0.92f;
+			m_flAccuracy = GetBaseAccuracy();
 		}
-		else if (m_flAccuracy < 0.725f)
+		else if (m_flAccuracy < GetMaxInaccuracy())
 		{
-			m_flAccuracy = 0.725f;
+			m_flAccuracy = GetMaxInaccuracy();
 		}
 	}
 
@@ -188,7 +190,7 @@ void CFiveSeven::Reload()
 	if (DefaultReload(iMaxClip(), FIVESEVEN_RELOAD, FIVESEVEN_RELOAD_TIME))
 	{
 		m_pPlayer->SetAnimation(PLAYER_RELOAD);
-		m_flAccuracy = 0.92f;
+		m_flAccuracy = GetBaseAccuracy();
 	}
 }
 
@@ -216,4 +218,22 @@ void CFiveSeven::WeaponIdle()
 		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 3.0625f;
 		SendWeaponAnim(FIVESEVEN_IDLE, UseDecrement() != FALSE);
 	}
+}
+
+float CFiveSeven::GetBaseAccuracy()
+{
+#ifdef REGAMEDLL_API
+	return CSPlayerWeapon()->m_flBaseAccuracy;
+#else
+	return FIVESEVEN_BASE_ACCURACY;
+#endif
+}
+
+float CFiveSeven::GetMaxInaccuracy()
+{
+#ifdef REGAMEDLL_API
+	return CSPlayerWeapon()->m_flMaxInaccuracy;
+#else
+	return FIVESEVEN_MAX_INACCURACY;
+#endif
 }

@@ -10,12 +10,14 @@ void CTMP::Spawn()
 	SET_MODEL(edict(), "models/w_tmp.mdl");
 
 	m_iDefaultAmmo = TMP_DEFAULT_GIVE;
-	m_flAccuracy = 0.2f;
+	m_flAccuracy = TMP_BASE_ACCURACY;
 	m_iShotsFired = 0;
 	m_bDelayFire = false;
 
 #ifdef REGAMEDLL_API
 	CSPlayerWeapon()->m_flBaseDamage = TMP_DAMAGE;
+	CSPlayerWeapon()->m_flBaseAccuracy = TMP_BASE_ACCURACY;
+	CSPlayerWeapon()->m_flMaxInaccuracy = TMP_MAX_INACCURACY;
 #endif
 
 	// Get ready to fall down
@@ -56,7 +58,7 @@ int CTMP::GetItemInfo(ItemInfo *p)
 
 BOOL CTMP::Deploy()
 {
-	m_flAccuracy = 0.2f;
+	m_flAccuracy = GetBaseAccuracy();
 	m_iShotsFired = 0;
 	m_bDelayFire = false;
 	iShellOn = 1;
@@ -86,8 +88,8 @@ void CTMP::TMPFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 
 	m_flAccuracy = ((m_iShotsFired * m_iShotsFired * m_iShotsFired) / 200) + 0.55f;
 
-	if (m_flAccuracy > 1.4f)
-		m_flAccuracy = 1.4f;
+	if (m_flAccuracy > GetMaxInaccuracy())
+		m_flAccuracy = GetMaxInaccuracy();
 
 	if (m_iClip <= 0)
 	{
@@ -171,7 +173,7 @@ void CTMP::Reload()
 	{
 		m_pPlayer->SetAnimation(PLAYER_RELOAD);
 
-		m_flAccuracy = 0.2f;
+		m_flAccuracy = GetBaseAccuracy();
 		m_iShotsFired = 0;
 	}
 }
@@ -188,4 +190,22 @@ void CTMP::WeaponIdle()
 
 	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20.0f;
 	SendWeaponAnim(TMP_IDLE1, UseDecrement() != FALSE);
+}
+
+float CTMP::GetBaseAccuracy()
+{
+#ifdef REGAMEDLL_API
+	return CSPlayerWeapon()->m_flBaseAccuracy;
+#else
+	return TMP_BASE_ACCURACY;
+#endif
+}
+
+float CTMP::GetMaxInaccuracy()
+{
+#ifdef REGAMEDLL_API
+	return CSPlayerWeapon()->m_flMaxInaccuracy;
+#else
+	return TMP_MAX_INACCURACY;
+#endif
 }

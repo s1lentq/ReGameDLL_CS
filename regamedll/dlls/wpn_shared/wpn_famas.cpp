@@ -12,9 +12,12 @@ void CFamas::Spawn()
 	m_iDefaultAmmo = FAMAS_DEFAULT_GIVE;
 	m_iFamasShotsFired = 0;
 	m_flFamasShoot = 0;
+	m_flAccuracy = FAMAS_BASE_ACCURACY;
 
 #ifdef REGAMEDLL_API
 	CSPlayerWeapon()->m_flBaseDamage = FAMAS_DAMAGE;
+	CSPlayerWeapon()->m_flBaseAccuracy = FAMAS_BASE_ACCURACY;
+	CSPlayerWeapon()->m_flMaxInaccuracy = FAMAS_MAX_INACCURACY;
 	m_flBaseDamageBurst = FAMAS_DAMAGE_BURST;
 #endif
 
@@ -65,7 +68,7 @@ BOOL CFamas::Deploy()
 	m_iShotsFired = 0;
 	m_iFamasShotsFired = 0;
 	m_flFamasShoot = 0;
-	m_flAccuracy = 0.2f;
+	m_flAccuracy = GetBaseAccuracy();
 
 	iShellOn = 1;
 
@@ -126,8 +129,8 @@ void CFamas::FamasFire(float flSpread, float flCycleTime, BOOL fUseAutoAim, BOOL
 
 	m_flAccuracy = (m_iShotsFired * m_iShotsFired * m_iShotsFired / 215) + 0.3f;
 
-	if (m_flAccuracy > 1.0f)
-		m_flAccuracy = 1.0f;
+	if (m_flAccuracy > GetBaseAccuracy())
+		m_flAccuracy = GetBaseAccuracy();
 
 	if (m_iClip <= 0)
 	{
@@ -228,7 +231,7 @@ void CFamas::Reload()
 			SecondaryAttack();
 		}
 
-		m_flAccuracy = 0;
+		m_flAccuracy = GetBaseAccuracy();
 		m_iShotsFired = 0;
 		m_bDelayFire = false;
 	}
@@ -244,4 +247,22 @@ void CFamas::WeaponIdle()
 		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20.0f;
 		SendWeaponAnim(FAMAS_IDLE1, UseDecrement() != FALSE);
 	}
+}
+
+float CFamas::GetBaseAccuracy()
+{
+#ifdef REGAMEDLL_API
+	return CSPlayerWeapon()->m_flBaseAccuracy;
+#else
+	return FAMAS_BASE_ACCURACY;
+#endif
+}
+
+float CFamas::GetMaxInaccuracy()
+{
+#ifdef REGAMEDLL_API
+	return CSPlayerWeapon()->m_flMaxInaccuracy;
+#else
+	return FAMAS_MAX_INACCURACY;
+#endif
 }

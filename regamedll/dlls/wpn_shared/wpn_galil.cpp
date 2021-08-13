@@ -10,9 +10,12 @@ void CGalil::Spawn()
 	SET_MODEL(edict(), "models/w_galil.mdl");
 
 	m_iDefaultAmmo = GALIL_DEFAULT_GIVE;
+	m_flAccuracy = GALIL_BASE_ACCURACY;
 
 #ifdef REGAMEDLL_API
 	CSPlayerWeapon()->m_flBaseDamage = GALIL_DAMAGE;
+	CSPlayerWeapon()->m_flBaseAccuracy = GALIL_BASE_ACCURACY;
+	CSPlayerWeapon()->m_flMaxInaccuracy = GALIL_MAX_INACCURACY;
 #endif
 
 	// Get ready to fall down
@@ -56,7 +59,7 @@ int CGalil::GetItemInfo(ItemInfo *p)
 
 BOOL CGalil::Deploy()
 {
-	m_flAccuracy = 0.2f;
+	m_flAccuracy = GetBaseAccuracy();
 	m_iShotsFired = 0;
 	iShellOn = 1;
 
@@ -94,8 +97,8 @@ void CGalil::GalilFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 
 	m_flAccuracy = ((m_iShotsFired * m_iShotsFired * m_iShotsFired) / 200) + 0.35f;
 
-	if (m_flAccuracy > 1.25f)
-		m_flAccuracy = 1.25f;
+	if (m_flAccuracy > GetMaxInaccuracy())
+		m_flAccuracy = GetMaxInaccuracy();
 
 	if (m_iClip <= 0)
 	{
@@ -186,7 +189,7 @@ void CGalil::Reload()
 	{
 		m_pPlayer->SetAnimation(PLAYER_RELOAD);
 
-		m_flAccuracy = 0.2f;
+		m_flAccuracy = GetBaseAccuracy();
 		m_iShotsFired = 0;
 		m_bDelayFire = false;
 	}
@@ -202,4 +205,22 @@ void CGalil::WeaponIdle()
 		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20.0f;
 		SendWeaponAnim(GALIL_IDLE1, UseDecrement() != FALSE);
 	}
+}
+
+float CGalil::GetBaseAccuracy()
+{
+#ifdef REGAMEDLL_API
+	return CSPlayerWeapon()->m_flBaseAccuracy;
+#else
+	return GALIL_BASE_ACCURACY;
+#endif
+}
+
+float CGalil::GetMaxInaccuracy()
+{
+#ifdef REGAMEDLL_API
+	return CSPlayerWeapon()->m_flMaxInaccuracy;
+#else
+	return GALIL_MAX_INACCURACY;
+#endif
 }

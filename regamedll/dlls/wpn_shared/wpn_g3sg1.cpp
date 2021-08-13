@@ -11,9 +11,12 @@ void CG3SG1::Spawn()
 
 	m_iDefaultAmmo = G3SG1_DEFAULT_GIVE;
 	m_flLastFire = 0;
+	m_flAccuracy = G3SG1_BASE_ACCURACY;
 
 #ifdef REGAMEDLL_API
 	CSPlayerWeapon()->m_flBaseDamage = G3SG1_DAMAGE;
+	CSPlayerWeapon()->m_flBaseAccuracy = G3SG1_BASE_ACCURACY;
+	CSPlayerWeapon()->m_flMaxInaccuracy = G3SG1_MAX_INACCURACY;
 #endif
 
 	// Get ready to fall down
@@ -57,7 +60,7 @@ int CG3SG1::GetItemInfo(ItemInfo *p)
 
 BOOL CG3SG1::Deploy()
 {
-	m_flAccuracy = 0.2f;
+	m_flAccuracy = GetBaseAccuracy();
 	return DefaultDeploy("models/v_g3sg1.mdl", "models/p_g3sg1.mdl", G3SG1_DRAW, "mp5", UseDecrement() != FALSE);
 }
 
@@ -120,14 +123,14 @@ void CG3SG1::G3SG1Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	{
 		m_flAccuracy = (gpGlobals->time - m_flLastFire) * 0.3f + 0.55f;
 
-		if (m_flAccuracy > 0.98f)
+		if (m_flAccuracy > GetMaxInaccuracy())
 		{
-			m_flAccuracy = 0.98f;
+			m_flAccuracy = GetMaxInaccuracy();
 		}
 	}
 	else
 	{
-		m_flAccuracy = 0.98f;
+		m_flAccuracy = GetBaseAccuracy();
 	}
 
 	m_flLastFire = gpGlobals->time;
@@ -196,7 +199,7 @@ void CG3SG1::Reload()
 
 	if (DefaultReload(iMaxClip(), G3SG1_RELOAD, G3SG1_RELOAD_TIME))
 	{
-		m_flAccuracy = 0.2f;
+		m_flAccuracy = GetBaseAccuracy();
 		m_pPlayer->SetAnimation(PLAYER_RELOAD);
 
 		if (m_pPlayer->pev->fov != DEFAULT_FOV)
@@ -225,4 +228,22 @@ void CG3SG1::WeaponIdle()
 float CG3SG1::GetMaxSpeed()
 {
 	return (m_pPlayer->m_iFOV == DEFAULT_FOV) ? G3SG1_MAX_SPEED : G3SG1_MAX_SPEED_ZOOM;
+}
+
+float CG3SG1::GetBaseAccuracy()
+{
+#ifdef REGAMEDLL_API
+	return CSPlayerWeapon()->m_flBaseAccuracy;
+#else
+	return G3SG1_BASE_ACCURACY;
+#endif
+}
+
+float CG3SG1::GetMaxInaccuracy()
+{
+#ifdef REGAMEDLL_API
+	return CSPlayerWeapon()->m_flMaxInaccuracy;
+#else
+	return G3SG1_MAX_INACCURACY;
+#endif
 }

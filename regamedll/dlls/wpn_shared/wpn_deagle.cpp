@@ -12,10 +12,12 @@ void CDEAGLE::Spawn()
 	m_iDefaultAmmo = DEAGLE_DEFAULT_GIVE;
 	m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
 	m_fMaxSpeed = DEAGLE_MAX_SPEED;
-	m_flAccuracy = 0.9f;
+	m_flAccuracy = DEAGLE_BASE_ACCURACY;
 
 #ifdef REGAMEDLL_API
 	CSPlayerWeapon()->m_flBaseDamage = DEAGLE_DAMAGE;
+	CSPlayerWeapon()->m_flBaseAccuracy = DEAGLE_BASE_ACCURACY;
+	CSPlayerWeapon()->m_flMaxInaccuracy = DEAGLE_MAX_INACCURACY;
 #endif
 
 	// Get ready to fall down
@@ -60,7 +62,7 @@ int CDEAGLE::GetItemInfo(ItemInfo *p)
 
 BOOL CDEAGLE::Deploy()
 {
-	m_flAccuracy = 0.9f;
+	m_flAccuracy = GetBaseAccuracy();
 	m_fMaxSpeed = DEAGLE_MAX_SPEED;
 	m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
 	m_pPlayer->m_bShieldDrawn = false;
@@ -112,13 +114,13 @@ void CDEAGLE::DEAGLEFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 	{
 		m_flAccuracy -= (0.4f - (gpGlobals->time - m_flLastFire)) * 0.35f;
 
-		if (m_flAccuracy > 0.9f)
+		if (m_flAccuracy > GetBaseAccuracy())
 		{
-			m_flAccuracy = 0.9f;
+			m_flAccuracy = GetBaseAccuracy();;
 		}
-		else if (m_flAccuracy < 0.55f)
+		else if (m_flAccuracy < GetMaxInaccuracy())
 		{
-			m_flAccuracy = 0.55f;
+			m_flAccuracy = GetMaxInaccuracy();
 		}
 	}
 
@@ -189,7 +191,7 @@ void CDEAGLE::Reload()
 	if (DefaultReload(iMaxClip(), DEAGLE_RELOAD, DEAGLE_RELOAD_TIME))
 	{
 		m_pPlayer->SetAnimation(PLAYER_RELOAD);
-		m_flAccuracy = 0.9f;
+		m_flAccuracy = GetBaseAccuracy();
 	}
 }
 
@@ -207,4 +209,22 @@ void CDEAGLE::WeaponIdle()
 			SendWeaponAnim(SHIELDGUN_DRAWN_IDLE, UseDecrement() != FALSE);
 		}
 	}
+}
+
+float CDEAGLE::GetBaseAccuracy()
+{
+#ifdef REGAMEDLL_API
+	return CSPlayerWeapon()->m_flBaseAccuracy;
+#else
+	return DEAGLE_BASE_ACCURACY;
+#endif
+}
+
+float CDEAGLE::GetMaxInaccuracy()
+{
+#ifdef REGAMEDLL_API
+	return CSPlayerWeapon()->m_flMaxInaccuracy;
+#else
+	return DEAGLE_MAX_INACCURACY;
+#endif
 }

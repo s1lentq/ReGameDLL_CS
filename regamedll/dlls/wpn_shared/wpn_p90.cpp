@@ -10,12 +10,14 @@ void CP90::Spawn()
 	SET_MODEL(edict(), "models/w_p90.mdl");
 
 	m_iDefaultAmmo = P90_DEFAULT_GIVE;
-	m_flAccuracy = 0.2f;
+	m_flAccuracy = P90_BASE_ACCURACY;
 	m_iShotsFired = 0;
 	m_bDelayFire = false;
 
 #ifdef REGAMEDLL_API
 	CSPlayerWeapon()->m_flBaseDamage = P90_DAMAGE;
+	CSPlayerWeapon()->m_flBaseAccuracy = P90_BASE_ACCURACY;
+	CSPlayerWeapon()->m_flMaxInaccuracy = P90_MAX_INACCURACY;
 #endif
 
 	// Get ready to fall down
@@ -61,7 +63,7 @@ BOOL CP90::Deploy()
 {
 	m_iShotsFired = 0;
 	m_bDelayFire = false;
-	m_flAccuracy = 0.2f;
+	m_flAccuracy = GetBaseAccuracy();
 
 	iShellOn = 1;
 
@@ -94,8 +96,8 @@ void CP90::P90Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 
 	m_flAccuracy = (m_iShotsFired * m_iShotsFired / 175) + 0.45f;
 
-	if (m_flAccuracy > 1)
-		m_flAccuracy = 1;
+	if (m_flAccuracy > GetMaxInaccuracy())
+		m_flAccuracy = GetMaxInaccuracy();
 
 	if (m_iClip <= 0)
 	{
@@ -177,7 +179,7 @@ void CP90::Reload()
 	{
 		m_pPlayer->SetAnimation(PLAYER_RELOAD);
 
-		m_flAccuracy = 0.2f;
+		m_flAccuracy = GetBaseAccuracy();
 		m_iShotsFired = 0;
 	}
 }
@@ -199,4 +201,22 @@ void CP90::WeaponIdle()
 float CP90::GetMaxSpeed()
 {
 	return P90_MAX_SPEED;
+}
+
+float CP90::GetBaseAccuracy()
+{
+#ifdef REGAMEDLL_API
+	return CSPlayerWeapon()->m_flBaseAccuracy;
+#else
+	return P90_BASE_ACCURACY;
+#endif
+}
+
+float CP90::GetMaxInaccuracy()
+{
+#ifdef REGAMEDLL_API
+	return CSPlayerWeapon()->m_flMaxInaccuracy;
+#else
+	return P90_MAX_INACCURACY;
+#endif
 }

@@ -10,11 +10,13 @@ void CUMP45::Spawn()
 	SET_MODEL(edict(), "models/w_ump45.mdl");
 
 	m_iDefaultAmmo = UMP45_DEFAULT_GIVE;
-	m_flAccuracy = 0.0f;
+	m_flAccuracy = UMP45_BASE_ACCURACY;
 	m_bDelayFire = false;
 
 #ifdef REGAMEDLL_API
 	CSPlayerWeapon()->m_flBaseDamage = UMP45_DAMAGE;
+	CSPlayerWeapon()->m_flBaseAccuracy = UMP45_BASE_ACCURACY;
+	CSPlayerWeapon()->m_flMaxInaccuracy = UMP45_MAX_INACCURACY;
 #endif
 
 	// Get ready to fall down
@@ -61,7 +63,7 @@ int CUMP45::GetItemInfo(ItemInfo *p)
 
 BOOL CUMP45::Deploy()
 {
-	m_flAccuracy = 0.0f;
+	m_flAccuracy = GetBaseAccuracy();
 	m_bDelayFire = false;
 	iShellOn = 1;
 
@@ -90,8 +92,8 @@ void CUMP45::UMP45Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 
 	m_flAccuracy = ((m_iShotsFired * m_iShotsFired) / 210) + 0.5f;
 
-	if (m_flAccuracy > 1.0f)
-		m_flAccuracy = 1.0f;
+	if (m_flAccuracy > GetMaxInaccuracy())
+		m_flAccuracy = GetMaxInaccuracy();
 
 	if (m_iClip <= 0)
 	{
@@ -174,7 +176,7 @@ void CUMP45::Reload()
 	{
 		m_pPlayer->SetAnimation(PLAYER_RELOAD);
 
-		m_flAccuracy = 0.0f;
+		m_flAccuracy = GetBaseAccuracy();
 		m_iShotsFired = 0;
 	}
 }
@@ -191,4 +193,22 @@ void CUMP45::WeaponIdle()
 
 	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20.0f;
 	SendWeaponAnim(UMP45_IDLE1, UseDecrement() != FALSE);
+}
+
+float CUMP45::GetBaseAccuracy()
+{
+#ifdef REGAMEDLL_API
+	return CSPlayerWeapon()->m_flBaseAccuracy;
+#else
+	return UMP45_BASE_ACCURACY;
+#endif
+}
+
+float CUMP45::GetMaxInaccuracy()
+{
+#ifdef REGAMEDLL_API
+	return CSPlayerWeapon()->m_flMaxInaccuracy;
+#else
+	return UMP45_MAX_INACCURACY;
+#endif
 }

@@ -10,11 +10,13 @@ void CAUG::Spawn()
 	SET_MODEL(edict(), "models/w_aug.mdl");
 
 	m_iDefaultAmmo = AUG_DEFAULT_GIVE;
-	m_flAccuracy = 0.2f;
+	m_flAccuracy = AUG_BASE_ACCURACY;
 	m_iShotsFired = 0;
 
 #ifdef REGAMEDLL_API
 	CSPlayerWeapon()->m_flBaseDamage = AUG_DAMAGE;
+	CSPlayerWeapon()->m_flBaseAccuracy = AUG_BASE_ACCURACY;
+	CSPlayerWeapon()->m_flMaxInaccuracy = AUG_MAX_INACCURACY;
 #endif
 
 	// Get ready to fall down
@@ -59,7 +61,7 @@ int CAUG::GetItemInfo(ItemInfo *p)
 
 BOOL CAUG::Deploy()
 {
-	m_flAccuracy = 0.2f;
+	m_flAccuracy = GetBaseAccuracy();
 	m_iShotsFired = 0;
 	iShellOn = 1;
 
@@ -106,8 +108,8 @@ void CAUG::AUGFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 
 	m_flAccuracy = ((m_iShotsFired * m_iShotsFired * m_iShotsFired) / 215) + 0.3f;
 
-	if (m_flAccuracy > 1.0f)
-		m_flAccuracy = 1.0f;
+	if (m_flAccuracy > GetMaxInaccuracy())
+		m_flAccuracy = GetMaxInaccuracy();
 
 	if (m_iClip <= 0)
 	{
@@ -195,7 +197,7 @@ void CAUG::Reload()
 			SecondaryAttack();
 		}
 
-		m_flAccuracy = 0;
+		m_flAccuracy = GetBaseAccuracy();
 		m_iShotsFired = 0;
 		m_bDelayFire = false;
 	}
@@ -213,4 +215,22 @@ void CAUG::WeaponIdle()
 
 	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20.0f;
 	SendWeaponAnim(AUG_IDLE1, UseDecrement() != FALSE);
+}
+
+float CAUG::GetBaseAccuracy()
+{
+#ifdef REGAMEDLL_API
+	return CSPlayerWeapon()->m_flBaseAccuracy;
+#else
+	return AUG_BASE_ACCURACY;
+#endif
+}
+
+float CAUG::GetMaxInaccuracy()
+{
+#ifdef REGAMEDLL_API
+	return CSPlayerWeapon()->m_flMaxInaccuracy;
+#else
+	return AUG_MAX_INACCURACY;
+#endif
 }
