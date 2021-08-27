@@ -980,7 +980,11 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 		if (teamonly && pReceiver->m_iTeam != pPlayer->m_iTeam)
 			continue;
 
-		if ((pReceiver->pev->deadflag != DEAD_NO && !bSenderDead) || (pReceiver->pev->deadflag == DEAD_NO && bSenderDead))
+		if (
+#ifdef REGAMEDLL_ADD
+			!(bool)allchat.value &&
+#endif
+			((pReceiver->pev->deadflag != DEAD_NO && !bSenderDead) || (pReceiver->pev->deadflag == DEAD_NO && bSenderDead)))
 		{
 			if (!(pPlayer->pev->flags & FL_PROXY))
 				continue;
