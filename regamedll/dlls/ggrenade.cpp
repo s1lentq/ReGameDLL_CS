@@ -510,7 +510,7 @@ void CGrenade::SG_Smoke()
 		PLAYBACK_EVENT_FULL(0, nullptr, m_usEvent, 0, pev->origin, m_vSmokeDetonate, angle.x, angle.y, flSmokeInterval, 4, m_bLightSmoke, 6);
 	}
 
-	if (m_SGSmoke <= 20)
+	if (m_SGSmoke <= smokepufftime.value)
 	{
 		pev->nextthink = gpGlobals->time + 1.0f;
 		SetThink(&CGrenade::SG_Smoke);
