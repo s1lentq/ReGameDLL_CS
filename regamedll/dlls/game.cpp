@@ -160,6 +160,8 @@ cvar_t t_default_weapons_primary         = { "mp_t_default_weapons_primary", "",
 cvar_t free_armor                        = { "mp_free_armor", "0", 0, 0.0f, nullptr };
 cvar_t allchat                           = { "sv_allchat", "0", 0, 0.0f, nullptr };
 
+cvar_t smokepufftime					   = { "mp_smokepufftime", "20", 0, 30.0f, nullptr };
+
 void GameDLL_Version_f()
 {
 	if (Q_stricmp(CMD_ARGV(1), "version") != 0)
@@ -387,6 +389,7 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&t_default_weapons_primary);
 	CVAR_REGISTER(&free_armor);
 	CVAR_REGISTER(&allchat);
+	CVAR_REGISTER(&smokepufftime);
 
 	// print version
 	CONSOLE_ECHO("ReGameDLL version: " APP_VERSION "\n");
