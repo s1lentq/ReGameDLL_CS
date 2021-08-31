@@ -443,7 +443,9 @@ void CBasePlayer::Observer_CheckProperties()
 }
 
 // Attempt to change the observer mode
-void CBasePlayer::Observer_SetMode(int iMode)
+LINK_HOOK_CLASS_VOID_CHAIN(CBasePlayer, Observer_SetMode, (int iMode), iMode)
+
+void EXT_FUNC CBasePlayer::__API_HOOK(Observer_SetMode)(int iMode)
 {
 	int forcecamera;
 	int oldMode;
