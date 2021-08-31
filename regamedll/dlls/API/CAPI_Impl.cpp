@@ -87,6 +87,7 @@ GAMEHOOK_REGISTRY(CBasePlayer_RoundRespawn);
 GAMEHOOK_REGISTRY(CBasePlayer_Blind);
 
 GAMEHOOK_REGISTRY(CBasePlayer_Observer_IsValidTarget);
+GAMEHOOK_REGISTRY(CBasePlayer_Observer_FindNextPlayer);
 GAMEHOOK_REGISTRY(CBasePlayer_SetAnimation);
 GAMEHOOK_REGISTRY(CBasePlayer_GiveDefaultItems);
 GAMEHOOK_REGISTRY(CBasePlayer_GiveNamedItem);

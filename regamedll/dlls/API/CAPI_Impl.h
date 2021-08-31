@@ -253,6 +253,10 @@ typedef IHookChainRegistryClassImpl<void, CBasePlayer, float, float, float, int>
 typedef IHookChainClassImpl<CBasePlayer *, CBasePlayer, int, bool> CReGameHook_CBasePlayer_Observer_IsValidTarget;
 typedef IHookChainRegistryClassImpl<CBasePlayer *, CBasePlayer, int, bool> CReGameHookRegistry_CBasePlayer_Observer_IsValidTarget;
 
+// CBasePlayer::Observer_FindNextPlayer hook
+typedef IHookChainClassImpl<void, CBasePlayer, bool, const char *> CReGameHook_CBasePlayer_Observer_FindNextPlayer;
+typedef IHookChainRegistryClassImpl<void, CBasePlayer, bool, const char *> CReGameHookRegistry_CBasePlayer_Observer_FindNextPlayer;
+
 // CBasePlayer::SetAnimation hook
 typedef IHookChainClassImpl<void, CBasePlayer, PLAYER_ANIM> CReGameHook_CBasePlayer_SetAnimation;
 typedef IHookChainRegistryClassImpl<void, CBasePlayer, PLAYER_ANIM> CReGameHookRegistry_CBasePlayer_SetAnimation;
@@ -660,6 +664,7 @@ public:
 	CReGameHookRegistry_CBasePlayer_Blind m_CBasePlayer_Blind;
 
 	CReGameHookRegistry_CBasePlayer_Observer_IsValidTarget m_CBasePlayer_Observer_IsValidTarget;
+	CReGameHookRegistry_CBasePlayer_Observer_FindNextPlayer m_CBasePlayer_Observer_FindNextPlayer;
 	CReGameHookRegistry_CBasePlayer_SetAnimation m_CBasePlayer_SetAnimation;
 	CReGameHookRegistry_CBasePlayer_GiveDefaultItems m_CBasePlayer_GiveDefaultItems;
 	CReGameHookRegistry_CBasePlayer_GiveNamedItem m_CBasePlayer_GiveNamedItem;
@@ -788,6 +793,7 @@ public:
 	virtual IReGameHookRegistry_CBasePlayer_Blind *CBasePlayer_Blind();
 
 	virtual IReGameHookRegistry_CBasePlayer_Observer_IsValidTarget *CBasePlayer_Observer_IsValidTarget();
+	virtual IReGameHookRegistry_CBasePlayer_Observer_FindNextPlayer *CBasePlayer_Observer_FindNextPlayer();
 	virtual IReGameHookRegistry_CBasePlayer_SetAnimation *CBasePlayer_SetAnimation();
 	virtual IReGameHookRegistry_CBasePlayer_GiveDefaultItems *CBasePlayer_GiveDefaultItems();
 	virtual IReGameHookRegistry_CBasePlayer_GiveNamedItem *CBasePlayer_GiveNamedItem();

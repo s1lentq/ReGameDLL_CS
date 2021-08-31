@@ -38,7 +38,7 @@
 #include <API/CSInterfaces.h>
 
 #define REGAMEDLL_API_VERSION_MAJOR 5
-#define REGAMEDLL_API_VERSION_MINOR 21
+#define REGAMEDLL_API_VERSION_MINOR 22
 
 // CBasePlayer::Spawn hook
 typedef IHookChainClass<void, class CBasePlayer> IReGameHook_CBasePlayer_Spawn;
@@ -131,6 +131,10 @@ typedef IHookChainRegistryClass<void, class CBasePlayer, float, float, float, in
 // CBasePlayer::Observer_IsValidTarget hook
 typedef IHookChainClass<class CBasePlayer *, class CBasePlayer, int, bool> IReGameHook_CBasePlayer_Observer_IsValidTarget;
 typedef IHookChainRegistryClass<class CBasePlayer *, class CBasePlayer, int, bool> IReGameHookRegistry_CBasePlayer_Observer_IsValidTarget;
+
+// CBasePlayer::Observer_FindNextPlayer hook
+typedef IHookChainClass<void, class CBasePlayer, bool, const char *> IReGameHook_CBasePlayer_Observer_FindNextPlayer;
+typedef IHookChainRegistryClass<void, class CBasePlayer, bool, const char *> IReGameHookRegistry_CBasePlayer_Observer_FindNextPlayer;
 
 // CBasePlayer::SetAnimation hook
 typedef IHookChainClass<void, class CBasePlayer, PLAYER_ANIM> IReGameHook_CBasePlayer_SetAnimation;
@@ -541,6 +545,7 @@ public:
 	virtual IReGameHookRegistry_CBasePlayer_Blind *CBasePlayer_Blind() = 0;
 
 	virtual IReGameHookRegistry_CBasePlayer_Observer_IsValidTarget *CBasePlayer_Observer_IsValidTarget() = 0;
+	virtual IReGameHookRegistry_CBasePlayer_Observer_FindNextPlayer *CBasePlayer_Observer_FindNextPlayer() = 0;
 	virtual IReGameHookRegistry_CBasePlayer_SetAnimation *CBasePlayer_SetAnimation() = 0;
 	virtual IReGameHookRegistry_CBasePlayer_GiveDefaultItems *CBasePlayer_GiveDefaultItems() = 0;
 	virtual IReGameHookRegistry_CBasePlayer_GiveNamedItem *CBasePlayer_GiveNamedItem() = 0;

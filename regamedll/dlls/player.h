@@ -414,6 +414,7 @@ public:
 	void RoundRespawn_OrigFunc();
 	void Blind_OrigFunc(float flUntilTime, float flHoldTime, float flFadeTime, int iAlpha);
 	EXT_FUNC CBasePlayer *Observer_IsValidTarget_OrigFunc(int iPlayerIndex, bool bSameTeam);
+	EXT_FUNC void Observer_FindNextPlayer_OrigFunc(bool bReverse, const char* name = nullptr);
 	void Radio_OrigFunc(const char *msg_id, const char *msg_verbose = nullptr, short pitch = 100, bool showIcon = true);
 	void AddAccount_OrigFunc(int amount, RewardType type = RT_NONE, bool bTrackChange = true);
 	void Disappear_OrigFunc();
@@ -452,7 +453,7 @@ public:
 	static CBasePlayer *Instance(int offset) { return Instance(ENT(offset)); }
 
 	void SpawnClientSideCorpse();
-	void Observer_FindNextPlayer(bool bReverse, const char *name = nullptr);
+	virtual void Observer_FindNextPlayer(bool bReverse, const char *name = nullptr);
 	CBasePlayer *Observer_IsValidTarget(int iPlayerIndex, bool bSameTeam);
 	void Disconnect();
 	void Observer_Think();
