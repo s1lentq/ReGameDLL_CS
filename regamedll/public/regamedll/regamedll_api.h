@@ -663,6 +663,8 @@ struct ReGameFuncs_t {
 	int (*Cmd_Argc)();
 	const char *(*Cmd_Argv)(int i);
 	class CGrenade *(*PlantBomb)(entvars_t *pevOwner, Vector &vecStart, Vector &vecVelocity);
+	class CGib *(*SpawnHeadGib)(entvars_t* pevVictim);
+	void (*SpawnRandomGibs)(entvars_t* pevVictim, int cGibs, int human);
 };
 
 class IReGameApi {
