@@ -2056,3 +2056,4 @@ void EjectBrass2(const Vector &vecOrigin, const Vector &vecVelocity, float rotat
 void AddAmmoNameToAmmoRegistry(const char *szAmmoname);
 void UTIL_PrecacheOtherWeapon(const char *szClassname);
 BOOL CanAttack(float attack_time, float curtime, BOOL isPredicted);
+float GetBaseAccuracy(WeaponIdType id);
