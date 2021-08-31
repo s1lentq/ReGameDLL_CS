@@ -500,6 +500,10 @@ typedef IHookChainRegistryClass<void, class CBaseEntity, ULONG, Vector &, Vector
 typedef IHookChainClass<Vector &, class CBaseEntity, Vector &, Vector &, float, float, int, int, int, float, entvars_t *, bool, int> IReGameHook_CBaseEntity_FireBullets3;
 typedef IHookChainRegistryClass<Vector &, class CBaseEntity, Vector &, Vector &, float, float, int, int, int, float, entvars_t *, bool, int> IReGameHookRegistry_CBaseEntity_FireBullets3;
 
+// CBasePlayer::Observer_SetMode hook
+typedef IHookChainClass<void, class CBasePlayer, int> IReGameHook_CBasePlayer_Observer_SetMode;
+typedef IHookChainRegistryClass<void, class CBasePlayer, int> IReGameHookRegistry_CBasePlayer_Observer_SetMode;
+
 // CBasePlayer::Pain hook
 typedef IHookChainClass<void, class CBasePlayer, int, bool> IReGameHook_CBasePlayer_Pain;
 typedef IHookChainRegistryClass<void, class CBasePlayer, int, bool> IReGameHookRegistry_CBasePlayer_Pain;
@@ -638,7 +642,9 @@ public:
 	virtual IReGameHookRegistry_CBaseEntity_FireBullets *CBaseEntity_FireBullets() = 0;
 	virtual IReGameHookRegistry_CBaseEntity_FireBuckshots *CBaseEntity_FireBuckshots() = 0;
 	virtual IReGameHookRegistry_CBaseEntity_FireBullets3 *CBaseEntity_FireBullets3() = 0;
-	
+
+	virtual IReGameHookRegistry_CBasePlayer_Observer_SetMode *CBasePlayer_Observer_SetMode() = 0;
+
 	virtual IReGameHookRegistry_CBasePlayer_Pain *CBasePlayer_Pain() = 0;
 	virtual IReGameHookRegistry_CBasePlayer_DeathSound *CBasePlayer_DeathSound() = 0;
 	virtual IReGameHookRegistry_CBasePlayer_JoiningThink *CBasePlayer_JoiningThink() = 0;
