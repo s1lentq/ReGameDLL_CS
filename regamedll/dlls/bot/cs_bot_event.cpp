@@ -69,16 +69,18 @@ void CCSBot::OnEvent(GameEventType event, CBaseEntity *pEntity, CBaseEntity *pOt
 	{
 		if (event == EVENT_PLAYER_DIED)
 		{
-			if (BotRelationship(pPlayer) == BOT_TEAMMATE)
+			CBasePlayer *pVictim = pPlayer;
+
+			if (BotRelationship(pVictim) == BOT_TEAMMATE)
 			{
 				CBasePlayer *pKiller = static_cast<CBasePlayer *>(pOther);
 
 				// check that attacker is an enemy (for friendly fire, etc)
-				if (pKiller && pKiller->IsPlayer())
+				if (pKiller && pKiller->IsPlayer() && BotRelationship(pKiller) == BOT_ENEMY)
 				{
 					// check if we saw our friend die - dont check FOV - assume we're aware of our surroundings in combat
 					// snipers stay put
-					if (!IsSniper() && IsVisible(&pPlayer->pev->origin))
+					if (!IsSniper() && IsVisible(&pVictim->pev->origin))
 					{
 						// people are dying - we should hurry
 						Hurry(RANDOM_FLOAT(10.0f, 15.0f));

@@ -295,6 +295,15 @@ void CCSBot::BotTouch(CBaseEntity *pOther)
 	// See if it's breakable
 	if (FClassnameIs(pOther->pev, "func_breakable"))
 	{
+
+#ifdef REGAMEDLL_FIXES
+		CBreakable *pBreak = static_cast<CBreakable *>(pOther);
+
+		// Material is "UnbreakableGlass"
+		if (!pBreak->IsBreakable())
+			return;
+#endif
+
 		Vector center = (pOther->pev->absmax + pOther->pev->absmin) / 2.0f;
 		bool breakIt = true;
 
