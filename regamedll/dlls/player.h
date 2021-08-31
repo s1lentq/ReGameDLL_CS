@@ -453,7 +453,7 @@ public:
 	static CBasePlayer *Instance(int offset) { return Instance(ENT(offset)); }
 
 	void SpawnClientSideCorpse();
-	virtual void Observer_FindNextPlayer(bool bReverse, const char *name = nullptr);
+	void Observer_FindNextPlayer(bool bReverse, const char *name = nullptr);
 	CBasePlayer *Observer_IsValidTarget(int iPlayerIndex, bool bSameTeam);
 	void Disconnect();
 	void Observer_Think();
