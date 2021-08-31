@@ -198,6 +198,7 @@ GAMEHOOK_REGISTRY(CBaseEntity_FireBuckshots);
 GAMEHOOK_REGISTRY(CBaseEntity_FireBullets3);
 
 GAMEHOOK_REGISTRY(CBasePlayer_Observer_SetMode);
+GAMEHOOK_REGISTRY(CBasePlayer_Observer_FindNextPlayer);
 
 GAMEHOOK_REGISTRY(CBasePlayer_Pain);
 GAMEHOOK_REGISTRY(CBasePlayer_DeathSound);

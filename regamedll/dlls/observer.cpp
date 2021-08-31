@@ -137,8 +137,10 @@ void UpdateClientEffects(CBasePlayer *pObserver, int oldMode)
 	}
 }
 
+LINK_HOOK_CLASS_VOID_CHAIN(CBasePlayer, Observer_FindNextPlayer, (bool bReverse, const char *name), bReverse, name)
+
 // Find the next client in the game for this player to spectate
-void CBasePlayer::Observer_FindNextPlayer(bool bReverse, const char *name)
+void CBasePlayer::__API_HOOK(Observer_FindNextPlayer)(bool bReverse, const char *name)
 {
 	int iStart;
 	int iCurrent;

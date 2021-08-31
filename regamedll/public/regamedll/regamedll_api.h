@@ -504,6 +504,10 @@ typedef IHookChainRegistryClass<Vector &, class CBaseEntity, Vector &, Vector &,
 typedef IHookChainClass<void, class CBasePlayer, int> IReGameHook_CBasePlayer_Observer_SetMode;
 typedef IHookChainRegistryClass<void, class CBasePlayer, int> IReGameHookRegistry_CBasePlayer_Observer_SetMode;
 
+// CBasePlayer::Observer_FindNextPlayer hook
+typedef IHookChainClass<void, class CBasePlayer, bool, const char *> IReGameHook_CBasePlayer_Observer_FindNextPlayer;
+typedef IHookChainRegistryClass<void, class CBasePlayer, bool, const char *> IReGameHookRegistry_CBasePlayer_Observer_FindNextPlayer;
+
 // CBasePlayer::Pain hook
 typedef IHookChainClass<void, class CBasePlayer, int, bool> IReGameHook_CBasePlayer_Pain;
 typedef IHookChainRegistryClass<void, class CBasePlayer, int, bool> IReGameHookRegistry_CBasePlayer_Pain;
@@ -644,6 +648,7 @@ public:
 	virtual IReGameHookRegistry_CBaseEntity_FireBullets3 *CBaseEntity_FireBullets3() = 0;
 
 	virtual IReGameHookRegistry_CBasePlayer_Observer_SetMode *CBasePlayer_Observer_SetMode() = 0;
+	virtual IReGameHookRegistry_CBasePlayer_Observer_FindNextPlayer *CBasePlayer_Observer_FindNextPlayer() = 0;
 
 	virtual IReGameHookRegistry_CBasePlayer_Pain *CBasePlayer_Pain() = 0;
 	virtual IReGameHookRegistry_CBasePlayer_DeathSound *CBasePlayer_DeathSound() = 0;
