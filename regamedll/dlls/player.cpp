@@ -173,7 +173,11 @@ bool EXT_FUNC CBasePlayer::__API_HOOK(SetClientUserInfoName)(char *infobuffer, c
 	}
 #endif
 
-	if (pev->deadflag != DEAD_NO)
+	if (IsAlive()
+#ifdef REGAMEDLL_ADD
+	|| CSPlayer()->CanChangeNickname()
+#endif
+	)
 	{
 		m_bHasChangedName = true;
 		Q_snprintf(m_szNewName, sizeof(m_szNewName), "%s", szNewName);
@@ -190,6 +194,10 @@ bool EXT_FUNC CBasePlayer::__API_HOOK(SetClientUserInfoName)(char *infobuffer, c
 		WRITE_STRING(STRING(pev->netname));
 		WRITE_STRING(szNewName);
 	MESSAGE_END();
+
+#ifdef REGAMEDLL_ADD
+	CSPlayer()->OnNicknameChanged();
+#endif
 
 	UTIL_LogPrintf("\"%s<%i><%s><%s>\" changed name to \"%s\"\n", STRING(pev->netname), GETPLAYERUSERID(edict()), GETPLAYERAUTHID(edict()), GetTeam(m_iTeam), szNewName);
 	return true;
@@ -3841,6 +3849,10 @@ void EXT_FUNC CBasePlayer::__API_HOOK(RoundRespawn)()
 		CLIENT_COMMAND(edict(), "kill\n");
 #endif
 	}
+
+#ifdef REGAMEDLL_ADD
+	CSPlayer()->OnRoundRespawn();
+#endif
 
 	if (m_iMenu != Menu_ChooseAppearance)
 	{
