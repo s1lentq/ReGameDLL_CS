@@ -571,7 +571,11 @@ EXT_FUNC void CCSPlayer::OnRoundRespawn()
 
 EXT_FUNC bool CCSPlayer::CanChangeNickname()
 {
+#ifdef REGAMEDLL_ADD
 	return (max_alive_name_changes.value >= 0 && m_iNickChangesBeforeSpawn > max_alive_name_changes.value);
+#else
+	return false;
+#endif
 }
 
 EXT_FUNC void CCSPlayer::OnNicknameChanged()
