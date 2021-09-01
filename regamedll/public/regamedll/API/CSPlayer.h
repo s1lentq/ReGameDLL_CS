@@ -46,7 +46,8 @@ public:
 		m_iWeaponInfiniteAmmo(0),
 		m_iWeaponInfiniteIds(0),
 		m_bCanShootOverride(false),
-		m_bGameForcingRespawn(false)
+		m_bGameForcingRespawn(false),
+		m_iNickChangesBeforeSpawn(-1)
 	{
 		m_szModel[0] = '\0';
 	}
@@ -101,6 +102,9 @@ public:
 
 	void OnSpawn();
 	void OnKilled();
+	void OnRoundRespawn();
+	bool CanChangeNickname();
+	void OnNicknameChanged();
 
 	CBasePlayer *BasePlayer() const;
 
@@ -125,6 +129,7 @@ public:
 	int m_iWeaponInfiniteIds;
 	bool m_bCanShootOverride;
 	bool m_bGameForcingRespawn;
+	int m_iNickChangesBeforeSpawn;
 };
 
 // Inlines

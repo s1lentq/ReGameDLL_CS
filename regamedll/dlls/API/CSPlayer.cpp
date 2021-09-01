@@ -539,6 +539,7 @@ void CCSPlayer::Reset()
 	m_iWeaponInfiniteIds = 0;
 	m_bCanShootOverride = false;
 	m_bGameForcingRespawn = false;
+	m_iNickChangesBeforeSpawn = -1;
 }
 
 void CCSPlayer::OnSpawn()
@@ -561,4 +562,19 @@ void CCSPlayer::OnKilled()
 		BasePlayer()->RemoveSpawnProtection();
 	}
 #endif
+}
+
+EXT_FUNC void CCSPlayer::OnRoundRespawn()
+{
+	m_iNickChangesBeforeSpawn = 0;
+}
+
+EXT_FUNC bool CCSPlayer::CanChangeNickname()
+{
+	return (max_alive_name_changes.value >= 0 && m_iNickChangesBeforeSpawn > max_alive_name_changes.value);
+}
+
+EXT_FUNC void CCSPlayer::OnNicknameChanged()
+{
+	m_iNickChangesBeforeSpawn++;
 }
