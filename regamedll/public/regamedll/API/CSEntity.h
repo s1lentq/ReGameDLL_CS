@@ -42,6 +42,10 @@ public:
 	virtual void FireBuckshots(ULONG cShots, Vector &vecSrc, Vector &vecDirShooting, Vector &vecSpread, float flDistance, int iTracerFreq, int iDamage, entvars_t *pevAttacker);
 	virtual Vector FireBullets3(Vector &vecSrc, Vector &vecDirShooting, float vecSpread, float flDistance, int iPenetration, int iBulletType, int iDamage, float flRangeModifier, entvars_t *pevAttacker, bool bPistol, int shared_rand);
 
+public:
+	CBaseEntity *m_pContainingEntity;
+
+private:
 #if defined(_MSC_VER)
 #pragma region reserve_vfuncs_Region
 #endif
@@ -78,9 +82,6 @@ public:
 #if defined(_MSC_VER)
 #pragma endregion
 #endif
-
-public:
-	CBaseEntity *m_pContainingEntity;
 };
 
 class CCSDelay: public CCSEntity
