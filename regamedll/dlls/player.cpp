@@ -7171,7 +7171,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(UpdateClientData)()
 				m_iClientHideHUD = 0;
 
 			int hudChanged = m_iClientHideHUD ^ m_iHideHUD;
-			if (hudChanged & (HIDEHUD_FLASHLIGHT | HIDEHUD_HEALTH | HIDEHUD_TIMER | HIDEHUD_MONEY))
+			if (hudChanged & (HIDEHUD_FLASHLIGHT | HIDEHUD_HEALTH | HIDEHUD_TIMER | HIDEHUD_MONEY | HIDEHUD_CROSSHAIR))
 			{
 				MESSAGE_BEGIN(MSG_ONE, gmsgCrosshair, nullptr, pev);
 					WRITE_BYTE(0);
