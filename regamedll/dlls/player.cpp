@@ -5342,7 +5342,7 @@ ReturnSpot:
 
 void CBasePlayer::SetScoreAttrib(CBasePlayer *dest)
 {
-	int state = 0;
+	int state = SCORE_STATUS_NONE;
 	if (pev->deadflag != DEAD_NO)
 		state |= SCORE_STATUS_DEAD;
 
