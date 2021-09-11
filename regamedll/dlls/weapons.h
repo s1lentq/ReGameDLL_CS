@@ -581,7 +581,11 @@ const float MP5N_MAX_SPEED     = 250.0f;
 const float MP5N_DAMAGE        = 26.0f;
 const float MP5N_RANGE_MODIFER = 0.84f;
 const float MP5N_RELOAD_TIME   = 2.63f;
-const float MP5N_ACCURACY_DIVISOR = 200.1f;
+#ifdef REGAMEDLL_FIXES
+const float MP5N_ACCURACY_DIVISOR = 220.1f;
+#else
+const double MP5N_ACCURACY_DIVISOR = 220.1;
+#endif
 
 enum mp5n_e
 {

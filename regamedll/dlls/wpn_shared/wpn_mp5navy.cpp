@@ -85,7 +85,7 @@ void CMP5N::MP5NFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	m_bDelayFire = true;
 	m_iShotsFired++;
 
-	m_flAccuracy = ((m_iShotsFired * m_iShotsFired) / 220.1) + 0.45f;
+	m_flAccuracy = ((m_iShotsFired * m_iShotsFired) / MP5N_ACCURACY_DIVISOR) + 0.45f;
 
 	if (m_flAccuracy > 0.75f)
 		m_flAccuracy = 0.75f;

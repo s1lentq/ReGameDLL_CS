@@ -104,7 +104,7 @@ void CAUG::AUGFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	m_bDelayFire = true;
 	m_iShotsFired++;
 
-	m_flAccuracy = ((m_iShotsFired * m_iShotsFired * m_iShotsFired) / 215) + 0.3f;
+	m_flAccuracy = ((m_iShotsFired * m_iShotsFired * m_iShotsFired) / AUG_ACCURACY_DIVISOR) + 0.3f;
 
 	if (m_flAccuracy > 1.0f)
 		m_flAccuracy = 1.0f;
