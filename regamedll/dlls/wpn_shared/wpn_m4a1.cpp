@@ -137,7 +137,7 @@ void CM4A1::M4A1Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	m_bDelayFire = true;
 	m_iShotsFired++;
 
-	m_flAccuracy = ((m_iShotsFired * m_iShotsFired * m_iShotsFired) / 220) + 0.3f;
+	m_flAccuracy = ((m_iShotsFired * m_iShotsFired * m_iShotsFired) / M4A1_ACCURACY_DIVISOR) + 0.3f;
 
 	if (m_flAccuracy > 1)
 		m_flAccuracy = 1;
