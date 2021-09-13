@@ -650,10 +650,11 @@ public:
 		auto item = m_rgpPlayerItems[slot];
 		while (item)
 		{
+			auto next = item->m_pNext;
 			if (func(static_cast<T *>(item)))
 				return static_cast<T *>(item);
 
-			item = item->m_pNext;
+			item = next;
 		}
 
 		return nullptr;
@@ -666,10 +667,11 @@ public:
 		{
 			while (item)
 			{
+				auto next = item->m_pNext;
 				if (func(static_cast<T *>(item)))
 					return static_cast<T *>(item);
 
-				item = item->m_pNext;
+				item = next;
 			}
 		}
 
