@@ -100,6 +100,7 @@ This means that plugins that do binary code analysis (Orpheu for example) probab
 | mp_fadetoblack                     | 0       | 0   | 2            | Observer's screen will fade to black on kill event or permanent.<br/> `0` No fade.<br/>`1` Fade to black and won't be able to watch anybody.<br/>`2` fade to black only on kill moment. |
 | mp_falldamage                      | 1       | 0   | 1            | Damage from falling.<br/>`0` disabled <br/>`1` enabled |
 | sv_allchat                         | 1       | 0   | 1            | Players can receive all other players text chat, team restrictions apply<br/>`0` disabled <br/>`1` enabled |
+| mp_disconnect_kills_players        | 0       | 0   | 1            | Turning this command on causes players to die in game if they disconnect. This means rather than just vanishing, they'll drop items they have equipped and a death will be added to the scoreboard for them.<br/>`0` disabled <br/>`1` enabled |
 </details>
 
 ## How to install zBot for CS 1.6?

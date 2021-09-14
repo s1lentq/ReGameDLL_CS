@@ -185,6 +185,7 @@ extern cvar_t t_default_weapons_secondary;
 extern cvar_t t_default_weapons_primary;
 extern cvar_t free_armor;
 extern cvar_t allchat;
+extern cvar_t disconnect_kills_players;
 
 #endif
 
