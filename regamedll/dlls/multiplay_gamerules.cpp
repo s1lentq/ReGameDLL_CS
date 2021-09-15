@@ -3551,6 +3551,17 @@ void CHalfLifeMultiplay::ClientDisconnected(edict_t *pClient)
 		CBasePlayer *pPlayer = CBasePlayer::Instance(pClient);
 		if (pPlayer)
 		{
+#ifdef REGAMEDLL_ADD
+			if (disconnect_kills_players.value)
+			{
+				pPlayer->PackDeadPlayerItems();
+
+				// have the player kill themself
+				pPlayer->pev->health = 0;
+				pPlayer->Killed(pPlayer->pev, GIB_NEVER);
+			}
+#endif
+
 			pPlayer->has_disconnected = true;
 			pPlayer->pev->deadflag = DEAD_DEAD;
 			pPlayer->SetScoreboardAttributes();
