@@ -2419,7 +2419,11 @@ void PM_Jump()
 	}
 
 	// don't pogo stick
-	if (pmove->oldbuttons & IN_JUMP)
+	if (pmove->oldbuttons & IN_JUMP
+#ifdef REGAMEDLL_ADD
+		&& sv_autobunnyhopping.value <= 0.0
+#endif
+		)
 	{
 		return;
 	}
@@ -2434,7 +2438,12 @@ void PM_Jump()
 	// In the air now.
 	pmove->onground = -1;
 
-	PM_PreventMegaBunnyJumping();
+#ifdef REGAMEDLL_ADD
+	if (sv_enablebunnyhopping.value <= 0.0)
+#endif
+	{
+		PM_PreventMegaBunnyJumping();
+	}
 
 	real_t fvel = Length(pmove->velocity);
 	float fvol = 1.0f;
