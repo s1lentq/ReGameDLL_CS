@@ -390,6 +390,7 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&free_armor);
 	CVAR_REGISTER(&allchat);
 	CVAR_REGISTER(&sv_autobunnyhopping);
+	CVAR_REGISTER(&sv_enablebunnyhopping);
 
 	// print version
 	CONSOLE_ECHO("ReGameDLL version: " APP_VERSION "\n");
