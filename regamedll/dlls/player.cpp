@@ -4005,7 +4005,7 @@ inline bool CanUseThroughWalls(CBasePlayer *pPlayer, CBaseEntity *pEntity)
 	if (!use_through_walls.value)
 	{
 		TraceResult Tr;
-		UTIL_TraceLine(pPlayer->EyePosition(), VecBModelOrigin(pEntity->pev), ignore_monsters, ignore_glass, me->edict(), &Tr);
+		UTIL_TraceLine(pPlayer->EyePosition(), VecBModelOrigin(pEntity->pev), ignore_monsters, ignore_glass, pPlayer->edict(), &Tr);
 
 		return (Tr.flFraction >= 1.0f);
 	}
