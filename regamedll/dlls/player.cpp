@@ -4002,7 +4002,7 @@ bool CanSeeUseable(CBasePlayer *me, CBaseEntity *pEntity)
 #ifdef REGAMEDLL_ADD
 inline bool CanUseThroughWalls(CBasePlayer *pPlayer, CBaseEntity *pEntity)
 {
-	if (use_through_walls.value != 0)
+	if (!use_through_walls.value)
 	{
 		TraceResult Tr;
 		UTIL_TraceLine(pPlayer->EyePosition(), VecBModelOrigin(pEntity->pev), ignore_monsters, ignore_glass, me->edict(), &Tr);
