@@ -159,8 +159,8 @@ cvar_t t_default_weapons_secondary       = { "mp_t_default_weapons_secondary", "
 cvar_t t_default_weapons_primary         = { "mp_t_default_weapons_primary", "", 0, 0.0f, nullptr };
 cvar_t free_armor                        = { "mp_free_armor", "0", 0, 0.0f, nullptr };
 cvar_t allchat                           = { "sv_allchat", "0", 0, 0.0f, nullptr };
-cvar_t sv_autobunnyhopping				 = { "sv_autobunnyhopping", "0", 0, 0.0f, nullptr };
-cvar_t sv_enablebunnyhopping			 = { "sv_enablebunnyhopping", "0", 0, 0.0f, nullptr };
+cvar_t sv_autobunnyhopping               = { "sv_autobunnyhopping", "0", 0, 0.0f, nullptr };
+cvar_t sv_enablebunnyhopping             = { "sv_enablebunnyhopping", "0", 0, 0.0f, nullptr };
 
 void GameDLL_Version_f()
 {
