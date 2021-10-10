@@ -388,6 +388,7 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&t_default_weapons_primary);
 	CVAR_REGISTER(&free_armor);
 	CVAR_REGISTER(&allchat);
+	CVAR_REGISTER(&use_buttons_through_walls);
 
 	// print version
 	CONSOLE_ECHO("ReGameDLL version: " APP_VERSION "\n");
