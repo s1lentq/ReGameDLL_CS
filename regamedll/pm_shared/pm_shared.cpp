@@ -2418,10 +2418,17 @@ void PM_Jump()
 		return;
 	}
 
+#if defined REGAMEDLL_API && defined REGAMEDLL_ADD
+	const CCSPlayer* player = UTIL_PlayerByIndex(pmove->player_index + 1)->CSPlayer();
+#endif
+
 	// don't pogo stick
 	if (pmove->oldbuttons & IN_JUMP
 #ifdef REGAMEDLL_ADD
 		&& sv_autobunnyhopping.value <= 0.0
+#ifdef REGAMEDLL_API
+		&& !player->m_bAutoBunnyHopping
+#endif
 #endif
 		)
 	{
@@ -2439,7 +2446,11 @@ void PM_Jump()
 	pmove->onground = -1;
 
 #ifdef REGAMEDLL_ADD
-	if (sv_enablebunnyhopping.value <= 0.0)
+	if (sv_enablebunnyhopping.value <= 0.0
+#ifdef REGAMEDLL_API
+		&& !player->m_bMegaBunnyJumping
+#endif
+		)
 #endif
 	{
 		PM_PreventMegaBunnyJumping();
