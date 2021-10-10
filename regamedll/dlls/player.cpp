@@ -4000,7 +4000,7 @@ bool CanSeeUseable(CBasePlayer *me, CBaseEntity *pEntity)
 }
 
 #ifdef REGAMEDLL_ADD
-bool CanUseThroughWalls(CBasePlayer *pPlayer, CBaseEntity *pEntity)
+inline bool CanUseThroughWalls(CBasePlayer *pPlayer, CBaseEntity *pEntity)
 {
 	if (use_through_walls.value != 0)
 	{
