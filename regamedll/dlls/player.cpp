@@ -3973,7 +3973,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(StartObserver)(Vector &vecPosition, Vector
 bool CanSeeUseable(CBasePlayer *me, CBaseEntity *pEntity)
 {
 	TraceResult result;
-	Vector eye = me->pev->origin + me->pev->view_ofs;
+	Vector eye = me->EyePosition();
 
 	if (FClassnameIs(pEntity->pev, "hostage_entity"))
 	{
@@ -3995,20 +3995,24 @@ bool CanSeeUseable(CBasePlayer *me, CBaseEntity *pEntity)
 			}
 		}
 	}
-#ifdef REGAMEDLL_ADD
-	else if (use_buttons_through_walls.value != 0 && FClassnameIs(pEntity->pev, "func_button"))
-	{
-		Vector vecOrigin;
-		vecOrigin = VecBModelOrigin(pEntity->pev);
 
+	return true;
+}
+
+#ifdef REGAMEDLL_ADD
+bool CanUseThroughWalls(CBasePlayer *pPlayer, CBaseEntity *pEntity)
+{
+	if (use_through_walls.value != 0)
+	{
 		TraceResult Tr;
-		UTIL_TraceLine(eye, vecOrigin, ignore_monsters, ignore_glass, me->edict(), &Tr);
+		UTIL_TraceLine(pPlayer->EyePosition(), VecBModelOrigin(pEntity->pev), ignore_monsters, ignore_glass, me->edict(), &Tr);
 
 		return (Tr.flFraction >= 1.0f);
 	}
-#endif
+
 	return true;
 }
+#endif
 
 void CBasePlayer::PlayerUse()
 {
@@ -4144,24 +4148,29 @@ void CBasePlayer::PlayerUse()
 	{
 		if (!useNewHostages || CanSeeUseable(this, pObject))
 		{
-			int caps = pObject->ObjectCaps();
-
-			if (m_afButtonPressed & IN_USE)
-				EMIT_SOUND(ENT(pev), CHAN_ITEM, "common/wpn_select.wav", 0.4, ATTN_NORM);
-
-			if (((pev->button & IN_USE) && (caps & FCAP_CONTINUOUS_USE))
-				|| ((m_afButtonPressed & IN_USE) && (caps & (FCAP_IMPULSE_USE | FCAP_ONOFF_USE))))
+#ifdef REGAMEDLL_ADD
+			if (CanUseThroughWalls(this, pObject))
+#endif
 			{
-				if (caps & FCAP_CONTINUOUS_USE)
-					m_afPhysicsFlags |= PFLAG_USING;
+				int caps = pObject->ObjectCaps();
 
-				pObject->Use(this, this, USE_SET, 1);
-			}
-			// UNDONE: Send different USE codes for ON/OFF.  Cache last ONOFF_USE object to send 'off' if you turn away
-			// BUGBUG This is an "off" use
-			else if ((m_afButtonReleased & IN_USE) && (pObject->ObjectCaps() & FCAP_ONOFF_USE))
-			{
-				pObject->Use(this, this, USE_SET, 0);
+				if (m_afButtonPressed & IN_USE)
+					EMIT_SOUND(ENT(pev), CHAN_ITEM, "common/wpn_select.wav", 0.4, ATTN_NORM);
+
+				if (((pev->button & IN_USE) && (caps & FCAP_CONTINUOUS_USE))
+					|| ((m_afButtonPressed & IN_USE) && (caps & (FCAP_IMPULSE_USE | FCAP_ONOFF_USE))))
+				{
+					if (caps & FCAP_CONTINUOUS_USE)
+						m_afPhysicsFlags |= PFLAG_USING;
+
+					pObject->Use(this, this, USE_SET, 1);
+				}
+				// UNDONE: Send different USE codes for ON/OFF. Cache last ONOFF_USE object to send 'off' if you turn away
+				// BUGBUG This is an "off" use
+				else if ((m_afButtonReleased & IN_USE) && (pObject->ObjectCaps() & FCAP_ONOFF_USE))
+				{
+					pObject->Use(this, this, USE_SET, 0);
+				}
 			}
 		}
 	}
