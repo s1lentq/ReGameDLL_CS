@@ -2418,7 +2418,7 @@ void PM_Jump()
 		return;
 	}
 
-#if defined REGAMEDLL_API && defined REGAMEDLL_ADD
+#ifdef REGAMEDLL_API
 	const CCSPlayer* player = UTIL_PlayerByIndex(pmove->player_index + 1)->CSPlayer();
 #endif
 
