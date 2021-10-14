@@ -1842,6 +1842,11 @@ void CWeaponBox::Touch(CBaseEntity *pOther)
 					return;
 #endif
 
+#ifdef REGAMEDLL_FIXES
+				if (pPlayer->m_bHasC4)
+					return;
+#endif
+
 				if (pPlayer->m_bShowHints && !(pPlayer->m_flDisplayHistory & DHF_BOMB_RETRIEVED))
 				{
 					pPlayer->m_flDisplayHistory |= DHF_BOMB_RETRIEVED;
