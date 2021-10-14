@@ -8216,6 +8216,12 @@ void CBasePlayer::__API_HOOK(SwitchTeam)()
 			}
 		}
 	}
+
+#ifdef REGAMEDLL_FIXES
+	// Initialize the player counts now that a player has switched teams
+	int NumDeadCT, NumDeadTerrorist, NumAliveTerrorist, NumAliveCT;
+	CSGameRules()->InitializePlayerCounts(NumAliveTerrorist, NumAliveCT, NumDeadTerrorist, NumDeadCT);
+#endif
 }
 
 void CBasePlayer::UpdateShieldCrosshair(bool draw)
