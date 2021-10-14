@@ -4,7 +4,7 @@ cvar_t voice_serverdebug = { "voice_serverdebug", "0", 0, 0.0f, nullptr };
 
 // Set game rules to allow all clients to talk to each other.
 // Muted players still can't talk to each other.
-cvar_t sv_alltalk        = { "sv_alltalk", "0", FCVAR_SERVER, 0.0f, nullptr };
+cvar_t sv_alltalk        = { "sv_alltalk", "1", FCVAR_SERVER, 0.0f, nullptr };
 
 // These are stored off as CVoiceGameMgr is created and deleted.
 CPlayerBitVec g_PlayerModEnable; // Set to 1 for each player if the player wants to use voice in this mod.
