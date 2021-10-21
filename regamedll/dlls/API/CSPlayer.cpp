@@ -110,19 +110,21 @@ EXT_FUNC bool CCSPlayer::JoinTeam(TeamName team)
 	}
 	}
 
-	if (pPlayer->pev->deadflag == DEAD_NO)
+	if (pPlayer->IsAlive())
 	{
 		ClientKill(pPlayer->edict());
-		pPlayer->pev->frags++;
+		pPlayer->AddPoints(1, TRUE);
+		// pPlayer->pev->frags++;
 	}
 
-	MESSAGE_BEGIN(MSG_ALL, gmsgScoreInfo);
+	
+	/*MESSAGE_BEGIN(MSG_ALL, gmsgScoreInfo);
 		WRITE_BYTE(ENTINDEX(pPlayer->edict()));
 		WRITE_SHORT(int(pPlayer->pev->frags));
 		WRITE_SHORT(pPlayer->m_iDeaths);
 		WRITE_SHORT(0);
 		WRITE_SHORT(0);
-	MESSAGE_END();
+	MESSAGE_END();*/
 
 	// Switch their actual team...
 	pPlayer->m_bTeamChanged = true;
