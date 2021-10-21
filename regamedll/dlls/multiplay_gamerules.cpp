@@ -3928,6 +3928,10 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(PlayerKilled)(CBasePlayer *pVictim,
 
 	FireTargets("game_playerdie", pVictim, pVictim, USE_TOGGLE, 0);
 
+#ifdef REGAMEDLL_ADD
+	bool bSendVictimScoreInfo = false;
+#endif
+
 	// Did the player kill himself?
 	if (pVictim->pev == pKiller)
 	{
@@ -3948,6 +3952,7 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(PlayerKilled)(CBasePlayer *pVictim,
 			// if a player dies by from teammate
 #ifdef REGAMEDLL_ADD
 			killer->AddPoints(-IPointsForKill(peKiller, pVictim), TRUE);
+			bSendVictimScoreInfo = true;
 #else
 			pKiller->frags -= IPointsForKill(peKiller, pVictim);
 #endif
@@ -3992,6 +3997,7 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(PlayerKilled)(CBasePlayer *pVictim,
 			// if a player dies in a deathmatch game and the killer is a client, award the killer some points
 #ifdef REGAMEDLL_ADD
 			killer->AddPoints(IPointsForKill(peKiller, pVictim), TRUE);
+			bSendVictimScoreInfo = true;
 #else
 			pKiller->frags += IPointsForKill(peKiller, pVictim);
 #endif
@@ -4039,19 +4045,22 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(PlayerKilled)(CBasePlayer *pVictim,
 
 	// update the scores
 	// killed scores
-#ifndef REGAMEDLL_ADD
+#ifdef REGAMEDLL_ADD
+	if (bSendVictimScoreInfo)
+#endif
+	{
 #ifndef REGAMEDLL_FIXES
-	MESSAGE_BEGIN(MSG_BROADCAST, gmsgScoreInfo);
+		MESSAGE_BEGIN(MSG_BROADCAST, gmsgScoreInfo);
 #else
-	MESSAGE_BEGIN(MSG_ALL, gmsgScoreInfo);
+		MESSAGE_BEGIN(MSG_ALL, gmsgScoreInfo);
 #endif
-		WRITE_BYTE(ENTINDEX(pVictim->edict()));
-		WRITE_SHORT(int(pVictim->pev->frags));
-		WRITE_SHORT(pVictim->m_iDeaths);
-		WRITE_SHORT(0);
-		WRITE_SHORT(pVictim->m_iTeam);
-	MESSAGE_END();
-#endif
+			WRITE_BYTE(ENTINDEX(pVictim->edict()));
+			WRITE_SHORT(int(pVictim->pev->frags));
+			WRITE_SHORT(pVictim->m_iDeaths);
+			WRITE_SHORT(0);
+			WRITE_SHORT(pVictim->m_iTeam);
+		MESSAGE_END();
+	}
 
 	// killers score, if it's a player
 	CBaseEntity *ep = CBaseEntity::Instance(pKiller);
