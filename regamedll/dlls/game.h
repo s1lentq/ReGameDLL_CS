@@ -187,6 +187,7 @@ extern cvar_t free_armor;
 extern cvar_t allchat;
 extern cvar_t sv_autobunnyhopping;
 extern cvar_t sv_enablebunnyhopping;
+extern cvar_t plant_c4_anywhere_delay;
 
 #endif
 
