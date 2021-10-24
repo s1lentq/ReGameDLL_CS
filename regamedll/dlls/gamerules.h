@@ -683,7 +683,8 @@ public:
 
 	// has a style of gameplay when aren't any teams
 	bool IsFreeForAll() const;
-	bool CanPlayerBuy(CBasePlayer *pPlayer) const;
+	EXPORT bool CanPlayerBuy(CBasePlayer *pPlayer);
+	EXPORT float GetPlantC4AnywhereDelay(CBasePlayer *pPlayer);
 
 	VFUNC bool HasRoundTimeExpired();
 	VFUNC bool IsBombPlanted();
