@@ -162,6 +162,7 @@ extern cvar_t respawn_immunity_force_unset;
 extern cvar_t kill_filled_spawn;
 extern cvar_t afk_bomb_drop_time;
 extern cvar_t buy_anywhere;
+extern cvar_t plant_anywhere;
 extern cvar_t give_player_c4;
 extern cvar_t weapons_allow_map_placed;
 extern cvar_t allow_point_servercommand;

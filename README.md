@@ -86,6 +86,7 @@ This means that plugins that do binary code analysis (Orpheu for example) probab
 | mp_radio_timeout                   | 1.5     | 0.0 | -            | Delay between player Radio messages. (in seconds).<br/>`0` disable delay |
 | mp_radio_maxinround                | 60      | -   | -            | Maximum Radio messages count for player per round.<br/>`0` disable radio messages |
 | mp_buy_anywhere                    | 0       | 0   | 3            | When set, players can buy anywhere, not only in buyzones.<br/> `0` disabled.<br/>`1` both teams <br/>`2` only Terrorists team <br/>`3` only CT team |
+| mp_plant_anywhere                  | 0         | 0  | 1           | When set, players can plant anywhere, not only in bombsites.<br/>`0` disabled <br/>`1` enabled |
 | mp_t_default_grenades              | ""        | "" | -           | The default grenades that the Ts will spawn with. |
 | mp_t_give_player_knife             | 1         | 0  | 1           | Whether Terrorist player spawn with knife. |
 | mp_t_default_weapons_primary       | ""        | "" | -           | The default primary (rifle) weapon that the Ts will spawn with. |
