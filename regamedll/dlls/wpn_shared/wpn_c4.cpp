@@ -108,8 +108,19 @@ void CC4::PrimaryAttack()
 	if (m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
 		return;
 
-	int inBombZone = (m_pPlayer->m_signals.GetState() & SIGNAL_BOMB) == SIGNAL_BOMB;
-	int onGround = (m_pPlayer->pev->flags & FL_ONGROUND) == FL_ONGROUND;
+	int inBombZone = ((m_pPlayer->m_signals.GetState() & SIGNAL_BOMB) == SIGNAL_BOMB);
+	int onGround   = ((m_pPlayer->pev->flags & FL_ONGROUND) == FL_ONGROUND);
+
+#ifdef REGAMEDLL_ADD
+	float flPlantC4AnywhereDelay = 0.0f;
+
+	if(!inBombZone)
+	{
+		flPlantC4AnywhereDelay = CSGameRules()->GetPlantC4AnywhereDelay(m_pPlayer);
+
+		inBombZone = (flPlantC4AnywhereDelay < 0.0f || (flPlantC4AnywhereDelay && (flPlantC4AnywhereDelay < (gpGlobals->time - CSGameRules()->m_fRoundStartTime))));
+	}
+#endif
 
 #ifdef REGAMEDLL_FIXES
 	if (!onGround)
@@ -126,7 +137,21 @@ void CC4::PrimaryAttack()
 	{
 		if (!inBombZone)
 		{
+#ifdef REGAMEDLL_ADD
+			if(flPlantC4AnywhereDelay == 0.0f)
+			{
+				ClientPrint(m_pPlayer->pev, HUD_PRINTCENTER, "#C4_Plant_At_Bomb_Spot");
+			}
+			else
+			{
+				// Inform the player "he can plant anywhere but he currently has to wait a bit"!
+				// Sorry, no localization on the client for this message (so no translations).
+				int iRemainingTime = Q_max((int)(flPlantC4AnywhereDelay - (gpGlobals->time - CSGameRules()->m_fRoundStartTime)), 1);
+				ClientPrint(m_pPlayer->pev, HUD_PRINTCENTER, UTIL_VarArgs("You must wait %s %s before planting anywhere on the map!", UTIL_dtos1(iRemainingTime), (iRemainingTime == 1) ? "second" : "seconds"));
+			}
+#else
 			ClientPrint(m_pPlayer->pev, HUD_PRINTCENTER, "#C4_Plant_At_Bomb_Spot");
+#endif
 			m_flNextPrimaryAttack = GetNextAttackDelay(1.0);
 			return;
 		}
