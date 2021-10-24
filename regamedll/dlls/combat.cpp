@@ -91,11 +91,11 @@ void RadiusFlash(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker,
 			switch ((int)teamflash.value)
 			{
 			case 0:
-				if (pPlayer->pev != pevAttacker && g_pGameRules->PlayerRelationship(pPlayer, (CBaseEntity*)pevAttacker) == GR_TEAMMATE)
+				if (pPlayer->pev != pevAttacker && g_pGameRules->PlayerRelationship(pPlayer, CBaseEntity::Instance(pevAttacker)) == GR_TEAMMATE)
 					continue;
 				break;
 			case -1:
-				if (pPlayer->pev == pevAttacker || g_pGameRules->PlayerRelationship(pPlayer, (CBaseEntity*)pevAttacker) == GR_TEAMMATE)
+				if (pPlayer->pev == pevAttacker || g_pGameRules->PlayerRelationship(pPlayer, CBaseEntity::Instance(pevAttacker)) == GR_TEAMMATE)
 					continue;
 				break;
 			}		
