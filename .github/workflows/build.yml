@@ -2,7 +2,7 @@ name: C/C++ CI
 
 on:
   push:
-    branches: [master]
+    branches: [master, CItemAirBox-Fix-flight-to-the-moon!]
     paths-ignore:
       - '**.md'
 
