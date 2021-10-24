@@ -532,7 +532,7 @@ void CCSPlayer::Reset()
 
 	m_bForceShowMenu = false;
 	m_flRespawnPending =
-		m_flSpawnProtectionEndTime = 0.0f;
+	m_flSpawnProtectionEndTime = 0.0f;
 
 	m_vecOldvAngle = g_vecZero;
 	m_iWeaponInfiniteAmmo = 0;
@@ -541,6 +541,7 @@ void CCSPlayer::Reset()
 	m_bGameForcingRespawn = false;
 	m_bAutoBunnyHopping = false;
 	m_bMegaBunnyJumping = false;
+	m_flPlantC4AnywhereDelay = -2.0f;
 }
 
 void CCSPlayer::OnSpawn()
