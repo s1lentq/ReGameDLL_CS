@@ -5141,7 +5141,7 @@ void CHalfLifeMultiplay::ChangePlayerTeam(CBasePlayer *pPlayer, const char *pTea
 	}
 }
 
-bool CHalfLifeMultiplay::CanPlayerBuy(CBasePlayer *pPlayer) const
+bool CHalfLifeMultiplay::CanPlayerBuy(CBasePlayer *pPlayer)
 {
 	if (pPlayer->m_iTeam == CT && m_bCTCantBuy)
 	{
@@ -5157,4 +5157,27 @@ bool CHalfLifeMultiplay::CanPlayerBuy(CBasePlayer *pPlayer) const
 	}
 
 	return true;
+}
+
+float CHalfLifeMultiplay::GetPlantC4AnywhereDelay(CBasePlayer *pPlayer)
+{
+#ifdef REGAMEDLL_ADD
+	float flPlantC4AnywhereDelay = -2.0f;
+
+	#ifdef REGAMEDLL_API
+	if(pPlayer && pPlayer->IsPlayer())
+	{
+		flPlantC4AnywhereDelay = pPlayer->CSPlayer()->m_flPlantC4AnywhereDelay;
+	}
+	#endif
+
+	if(flPlantC4AnywhereDelay <= -2.0f)
+	{
+		flPlantC4AnywhereDelay = plant_c4_anywhere_delay.value;
+	}
+
+	return flPlantC4AnywhereDelay;
+#else
+	return 0.0f;
+#endif	
 }
