@@ -10209,7 +10209,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(SetSpawnProtection)(float flProtectionTime
 		pev->rendermode = kRenderTransAdd;
 		pev->renderamt  = 100.0f;
 
-		MESSAGE_BEGIN(MSG_ONE_UNRELIABLE, gmsgStatusIcon, nullptr, pev);
+		MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev);
 			WRITE_BYTE(STATUSICON_FLASH);
 			WRITE_STRING("suithelmet_full");
 			WRITE_BYTE(0);
