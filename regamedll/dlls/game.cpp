@@ -160,6 +160,8 @@ cvar_t t_default_weapons_primary         = { "mp_t_default_weapons_primary", "",
 cvar_t free_armor                        = { "mp_free_armor", "0", 0, 0.0f, nullptr };
 cvar_t allchat                           = { "sv_allchat", "0", 0, 0.0f, nullptr };
 cvar_t use_through_walls                 = { "mp_use_through_walls", "1", 0, 0.0f, nullptr };
+cvar_t sv_autobunnyhopping               = { "sv_autobunnyhopping", "0", 0, 0.0f, nullptr };
+cvar_t sv_enablebunnyhopping             = { "sv_enablebunnyhopping", "0", 0, 0.0f, nullptr };
 
 void GameDLL_Version_f()
 {
@@ -389,7 +391,9 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&free_armor);
 	CVAR_REGISTER(&allchat);
 	CVAR_REGISTER(&use_through_walls);
-
+	CVAR_REGISTER(&sv_autobunnyhopping);
+	CVAR_REGISTER(&sv_enablebunnyhopping);
+  
 	// print version
 	CONSOLE_ECHO("ReGameDLL version: " APP_VERSION "\n");
 

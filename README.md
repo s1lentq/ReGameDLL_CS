@@ -101,6 +101,8 @@ This means that plugins that do binary code analysis (Orpheu for example) probab
 | mp_falldamage                      | 1       | 0   | 1            | Damage from falling.<br/>`0` disabled <br/>`1` enabled |
 | sv_allchat                         | 1       | 0   | 1            | Players can receive all other players text chat, team restrictions apply<br/>`0` disabled <br/>`1` enabled |
 | mp_use_through_walls               | 1       | 0   | 1            | Enable using entities through walls.<br/>`0` disabled <br/>`1` enabled |
+| sv_autobunnyhopping                | 0       | 0   | 1            | Players automatically re-jump while holding jump button.<br/>`0` disabled <br/>`1` enabled |
+| sv_enablebunnyhopping              | 0       | 0   | 1            | Allow player speed to exceed maximum running speed.<br/>`0` disabled <br/>`1` enabled |
 </details>
 
 ## How to install zBot for CS 1.6?

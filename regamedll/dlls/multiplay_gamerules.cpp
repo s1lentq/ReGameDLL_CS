@@ -880,7 +880,13 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(CheckWinConditions)()
 #ifdef REGAMEDLL_FIXES
 	// If a winner has already been determined.. then get the heck out of here
 	if (m_iRoundWinStatus != WINSTATUS_NONE)
+	{
+		// still check if we lost players to where we need to do a full reset next round...
+		int NumDeadCT, NumDeadTerrorist, NumAliveTerrorist, NumAliveCT;
+		InitializePlayerCounts(NumAliveTerrorist, NumAliveCT, NumDeadTerrorist, NumDeadCT);
+
 		return;
+	}
 #else
 	// If a winner has already been determined and game of started.. then get the heck out of here
 	if (m_bGameStarted && m_iRoundWinStatus != WINSTATUS_NONE)

@@ -852,6 +852,7 @@ void CCSBotManager::MaintainBotQuota()
 
 	int totalHumansInGame = UTIL_HumansInGame();
 	int humanPlayersInGame = UTIL_HumansInGame(IGNORE_SPECTATORS);
+	int spectatorPlayersInGame = UTIL_SpectatorsInGame();
 
 	// don't add bots until local player has been registered, to make sure he's player ID #1
 	if (!IS_DEDICATED_SERVER() && totalHumansInGame == 0)
@@ -872,7 +873,7 @@ void CCSBotManager::MaintainBotQuota()
 		// unless the round is already in progress, in which case we play with what we've been dealt
 		if (!isRoundInProgress)
 		{
-			desiredBotCount = Q_max(0, desiredBotCount - humanPlayersInGame);
+			desiredBotCount = Q_max(0, desiredBotCount - humanPlayersInGame + spectatorPlayersInGame);
 		}
 		else
 		{
@@ -902,7 +903,7 @@ void CCSBotManager::MaintainBotQuota()
 	// wait for a player to join, if necessary
 	if (cv_bot_join_after_player.value > 0.0)
 	{
-		if (humanPlayersInGame == 0)
+		if (humanPlayersInGame == 0 && spectatorPlayersInGame == 0)
 			desiredBotCount = 0;
 	}
 
@@ -917,9 +918,9 @@ void CCSBotManager::MaintainBotQuota()
 
 	// if bots will auto-vacate, we need to keep one slot open to allow players to join
 	if (cv_bot_auto_vacate.value > 0.0)
-		desiredBotCount = Q_min(desiredBotCount, gpGlobals->maxClients - (totalHumansInGame + 1));
+		desiredBotCount = Q_min(desiredBotCount, gpGlobals->maxClients - (humanPlayersInGame + 1));
 	else
-		desiredBotCount = Q_min(desiredBotCount, gpGlobals->maxClients - totalHumansInGame);
+		desiredBotCount = Q_min(desiredBotCount, gpGlobals->maxClients - humanPlayersInGame + spectatorPlayersInGame);
 
 #ifdef REGAMEDLL_FIXES
 	// Try to balance teams, if we are in the first specified seconds of a round and bots can join either team.

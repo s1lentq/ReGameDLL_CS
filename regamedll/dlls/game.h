@@ -186,6 +186,8 @@ extern cvar_t t_default_weapons_primary;
 extern cvar_t free_armor;
 extern cvar_t allchat;
 extern cvar_t use_through_walls;
+extern cvar_t sv_autobunnyhopping;
+extern cvar_t sv_enablebunnyhopping;
 
 #endif
 

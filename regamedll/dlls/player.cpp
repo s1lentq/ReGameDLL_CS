@@ -8235,6 +8235,12 @@ void CBasePlayer::__API_HOOK(SwitchTeam)()
 			}
 		}
 	}
+
+#ifdef REGAMEDLL_FIXES
+	// Initialize the player counts now that a player has switched teams
+	int NumDeadCT, NumDeadTerrorist, NumAliveTerrorist, NumAliveCT;
+	CSGameRules()->InitializePlayerCounts(NumAliveTerrorist, NumAliveCT, NumDeadTerrorist, NumDeadCT);
+#endif
 }
 
 void CBasePlayer::UpdateShieldCrosshair(bool draw)
@@ -10022,8 +10028,8 @@ void EXT_FUNC CBasePlayer::__API_HOOK(OnSpawnEquip)(bool addDefault, bool equipG
 	{
 		switch (static_cast<ArmorType>((int)free_armor.value))
 		{
-		case ARMOR_KEVLAR: GiveNamedItem("item_kevlar"); break;
-		case ARMOR_VESTHELM: GiveNamedItem("item_assaultsuit"); break;
+		case ARMOR_KEVLAR: GiveNamedItemEx("item_kevlar"); break;
+		case ARMOR_VESTHELM: GiveNamedItemEx("item_assaultsuit"); break;
 		}
 	}
 #endif
