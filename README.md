@@ -102,7 +102,7 @@ This means that plugins that do binary code analysis (Orpheu for example) probab
 | sv_allchat                         | 1       | 0   | 1            | Players can receive all other players text chat, team restrictions apply<br/>`0` disabled <br/>`1` enabled |
 | sv_autobunnyhopping                | 0       | 0   | 1            | Players automatically re-jump while holding jump button.<br/>`0` disabled <br/>`1` enabled |
 | sv_enablebunnyhopping              | 0       | 0   | 1            | Allow player speed to exceed maximum running speed.<br/>`0` disabled <br/>`1` enabled |
-| mp_plant_c4_anywhere_delay         | 0       | -1  | -            | When set, players can plant the C4 anywhere (according to the delay in seconds when > 0), not only in bomb sites.<br/>`<0` - no delay<br/>`0` - disabled (default behaviour, a player must be on a bomb site in order to plant)<br/>`>0` - delay to wait |
+| mp_plant_c4_anywhere_delay         | 0       | -1  | -            | When set, players can plant the C4 anywhere (according to the delay in seconds when > 0, and from the round start), not only in bomb sites.<br/>`<0` - no delay<br/>`0` - disabled (default behaviour, a player must be on a bomb site in order to plant)<br/>`>0` - delay to wait |
 </details>
 
 ## How to install zBot for CS 1.6?
