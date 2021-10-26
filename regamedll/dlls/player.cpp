@@ -3973,7 +3973,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(StartObserver)(Vector &vecPosition, Vector
 bool CanSeeUseable(CBasePlayer *me, CBaseEntity *pEntity)
 {
 	TraceResult result;
-	Vector eye = me->EyePosition();
+	Vector eye = me->pev->origin + me->pev->view_ofs;
 
 	if (FClassnameIs(pEntity->pev, "hostage_entity"))
 	{
