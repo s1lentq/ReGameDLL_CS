@@ -393,7 +393,6 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&use_through_walls);
 	CVAR_REGISTER(&sv_autobunnyhopping);
 	CVAR_REGISTER(&sv_enablebunnyhopping);
-  
 	// print version
 	CONSOLE_ECHO("ReGameDLL version: " APP_VERSION "\n");
 
