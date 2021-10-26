@@ -6622,7 +6622,6 @@ void CBasePlayer::HandleSignals()
 {
 	if (CSGameRules()->IsMultiplayer())
 	{
-
 #ifdef REGAMEDLL_ADD
 		if (buytime.value != 0.0f)
 #endif
@@ -6630,17 +6629,15 @@ void CBasePlayer::HandleSignals()
 #ifdef REGAMEDLL_ADD
 			if (buy_anywhere.value)
 			{
-				if (pev->deadflag == DEAD_NO && (m_iTeam == TERRORIST || m_iTeam == CT)
-					&& !(m_signals.GetSignal() & SIGNAL_BUY)
-					// Restricted by map rules
-					&& CSGameRules()->CanPlayerBuy(this)
-					)
+				if (IsAlive() && (m_iTeam == TERRORIST || m_iTeam == CT)
+				&& !(m_signals.GetSignal() & SIGNAL_BUY)
+				// Restricted by map rules
+				&& CSGameRules()->CanPlayerBuy(this))
 				{
 					// 0 = default. 1 = both teams. 2 = Terrorists. 3 = Counter-Terrorists.
 					if (buy_anywhere.value == 1
-						|| (buy_anywhere.value == 2 && m_iTeam == TERRORIST)
-						|| (buy_anywhere.value == 3 && m_iTeam == CT)
-						)
+					|| (buy_anywhere.value == 2 && m_iTeam == TERRORIST)
+					|| (buy_anywhere.value == 3 && m_iTeam == CT))
 					{
 						m_signals.Signal(SIGNAL_BUY);
 					}
@@ -6653,7 +6650,21 @@ void CBasePlayer::HandleSignals()
 			}
 		}
 
+#ifdef REGAMEDLL_ADD
+		if(m_bHasC4 && IsAlive() && (m_iTeam == TERRORIST || m_iTeam == CT))
+		{
+			float flPlantC4AnywhereDelay = CSGameRules()->GetPlantC4AnywhereDelay(this);
+
+			if(flPlantC4AnywhereDelay < 0.0f || (flPlantC4AnywhereDelay && ((gpGlobals->time - CSGameRules()->m_fRoundStartTime) > flPlantC4AnywhereDelay)))
+			{
+				m_signals.Signal(SIGNAL_BOMB);
+			}
+		}
+
+		if (!(m_signals.GetSignal() & SIGNAL_BOMB) && !CSGameRules()->m_bMapHasBombZone)
+#else
 		if (!CSGameRules()->m_bMapHasBombZone)
+#endif
 			OLD_CheckBombTarget(this);
 
 		if (!CSGameRules()->m_bMapHasRescueZone)
