@@ -63,6 +63,7 @@ void CItemAirBox::Touch(CBaseEntity *pOther)
 
 		pev->nextthink = 0;
 		SetThink(nullptr);
+		pev->velocity.z = 0;
 	}
 }
 
