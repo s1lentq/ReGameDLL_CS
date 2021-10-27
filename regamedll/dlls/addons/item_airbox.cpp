@@ -63,7 +63,7 @@ void CItemAirBox::Touch(CBaseEntity *pOther)
 
 		pev->nextthink = 0;
 		SetThink(nullptr);
-		pev->velocity.z = 0;
+		pev->velocity = g_vecZero;
 	}
 }
 
@@ -71,7 +71,7 @@ void CItemAirBox::Restart()
 {
 	CArmoury::Restart();
 	UTIL_SetOrigin(pev, pev->oldorigin);
-	pev->velocity.z = 0;
+	pev->velocity = g_vecZero;
 
 	if(m_flyup < 0)
 	{
