@@ -4146,31 +4146,29 @@ void CBasePlayer::PlayerUse()
 	// Found an object
 	if (pObject)
 	{
-		if (!useNewHostages || CanSeeUseable(this, pObject))
-		{
+		if (!useNewHostages || CanSeeUseable(this, pObject) 
 #ifdef REGAMEDLL_ADD
-			if (CanUseThroughWalls(this, pObject))
+			 || CanUseThroughWalls(this, pObject))
 #endif
+		{
+			int caps = pObject->ObjectCaps();
+
+			if (m_afButtonPressed & IN_USE)
+				EMIT_SOUND(ENT(pev), CHAN_ITEM, "common/wpn_select.wav", 0.4, ATTN_NORM);
+
+			if (((pev->button & IN_USE) && (caps & FCAP_CONTINUOUS_USE))
+				|| ((m_afButtonPressed & IN_USE) && (caps & (FCAP_IMPULSE_USE | FCAP_ONOFF_USE))))
 			{
-				int caps = pObject->ObjectCaps();
+				if (caps & FCAP_CONTINUOUS_USE)
+					m_afPhysicsFlags |= PFLAG_USING;
 
-				if (m_afButtonPressed & IN_USE)
-					EMIT_SOUND(ENT(pev), CHAN_ITEM, "common/wpn_select.wav", 0.4, ATTN_NORM);
-
-				if (((pev->button & IN_USE) && (caps & FCAP_CONTINUOUS_USE))
-					|| ((m_afButtonPressed & IN_USE) && (caps & (FCAP_IMPULSE_USE | FCAP_ONOFF_USE))))
-				{
-					if (caps & FCAP_CONTINUOUS_USE)
-						m_afPhysicsFlags |= PFLAG_USING;
-
-					pObject->Use(this, this, USE_SET, 1);
-				}
-				// UNDONE: Send different USE codes for ON/OFF. Cache last ONOFF_USE object to send 'off' if you turn away
-				// BUGBUG This is an "off" use
-				else if ((m_afButtonReleased & IN_USE) && (pObject->ObjectCaps() & FCAP_ONOFF_USE))
-				{
-					pObject->Use(this, this, USE_SET, 0);
-				}
+				pObject->Use(this, this, USE_SET, 1);
+			}
+			// UNDONE: Send different USE codes for ON/OFF. Cache last ONOFF_USE object to send 'off' if you turn away
+			// BUGBUG This is an "off" use
+			else if ((m_afButtonReleased & IN_USE) && (pObject->ObjectCaps() & FCAP_ONOFF_USE))
+			{
+				pObject->Use(this, this, USE_SET, 0);
 			}
 		}
 	}
