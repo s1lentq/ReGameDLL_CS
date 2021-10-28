@@ -6654,7 +6654,7 @@ void CBasePlayer::HandleSignals()
 		}
 
 #ifdef REGAMEDLL_ADD
-		if (m_bHasC4 && (plant_anywhere.value || CSPlayer()->m_bPlantC4Anywhere))
+		if (m_bHasC4 && (plant_c4_anywhere.value || CSPlayer()->m_bPlantC4Anywhere))
 		{
 			if (IsAlive() && (m_iTeam == TERRORIST || m_iTeam == CT)
 				&& !(m_signals.GetSignal() & SIGNAL_BOMB))
