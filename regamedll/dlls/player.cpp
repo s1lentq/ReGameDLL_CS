@@ -4148,8 +4148,9 @@ void CBasePlayer::PlayerUse()
 	{
 		if (!useNewHostages || CanSeeUseable(this, pObject)
 #ifdef REGAMEDLL_ADD
-			|| CanUseThroughWalls(this, pObject))
+			|| CanUseThroughWalls(this, pObject)
 #endif
+		)
 		{
 			int caps = pObject->ObjectCaps();
 
