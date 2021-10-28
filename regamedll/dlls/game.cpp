@@ -365,7 +365,6 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&kill_filled_spawn);
 	CVAR_REGISTER(&afk_bomb_drop_time);
 	CVAR_REGISTER(&buy_anywhere);
-	CVAR_REGISTER(&plant_anywhere);
 	CVAR_REGISTER(&give_player_c4);
 	CVAR_REGISTER(&allow_point_servercommand);
 	CVAR_REGISTER(&hullbounds_sets);
@@ -393,6 +392,7 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&allchat);
 	CVAR_REGISTER(&sv_autobunnyhopping);
 	CVAR_REGISTER(&sv_enablebunnyhopping);
+	CVAR_REGISTER(&plant_anywhere);
 
 	// print version
 	CONSOLE_ECHO("ReGameDLL version: " APP_VERSION "\n");
