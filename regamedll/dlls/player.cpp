@@ -6653,6 +6653,17 @@ void CBasePlayer::HandleSignals()
 			}
 		}
 
+#ifdef REGAMEDLL_ADD
+		if (m_bHasC4 && (plant_c4_anywhere.value || CSPlayer()->m_bPlantC4Anywhere))
+		{
+			if (IsAlive() && (m_iTeam == TERRORIST || m_iTeam == CT)
+				&& !(m_signals.GetSignal() & SIGNAL_BOMB))
+			{
+				m_signals.Signal(SIGNAL_BOMB);
+			}
+		}
+#endif 
+
 		if (!CSGameRules()->m_bMapHasBombZone)
 			OLD_CheckBombTarget(this);
 
