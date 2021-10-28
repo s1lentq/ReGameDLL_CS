@@ -133,7 +133,6 @@ cvar_t respawn_immunity_force_unset = { "mp_respawn_immunity_force_unset", "1", 
 cvar_t kill_filled_spawn            = { "mp_kill_filled_spawn", "1", 0, 0.0f, nullptr };
 cvar_t afk_bomb_drop_time           = { "mp_afk_bomb_drop_time", "0", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t buy_anywhere                 = { "mp_buy_anywhere", "0", FCVAR_SERVER, 0.0f, nullptr };
-cvar_t plant_anywhere               = { "mp_plant_anywhere", "0", 0, 0.0f, nullptr };
 cvar_t give_player_c4               = { "mp_give_player_c4", "1", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t weapons_allow_map_placed     = { "mp_weapons_allow_map_placed", "1", FCVAR_SERVER, 0.0f, nullptr };
 
@@ -162,6 +161,7 @@ cvar_t free_armor                        = { "mp_free_armor", "0", 0, 0.0f, null
 cvar_t allchat                           = { "sv_allchat", "0", 0, 0.0f, nullptr };
 cvar_t sv_autobunnyhopping               = { "sv_autobunnyhopping", "0", 0, 0.0f, nullptr };
 cvar_t sv_enablebunnyhopping             = { "sv_enablebunnyhopping", "0", 0, 0.0f, nullptr };
+cvar_t plant_anywhere                    = { "mp_plant_c4_anywhere", "0", 0, 0.0f, nullptr };
 
 void GameDLL_Version_f()
 {
