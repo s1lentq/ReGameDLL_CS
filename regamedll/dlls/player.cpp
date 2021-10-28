@@ -4146,9 +4146,9 @@ void CBasePlayer::PlayerUse()
 	// Found an object
 	if (pObject)
 	{
-		if (!useNewHostages || CanSeeUseable(this, pObject) 
+		if (!useNewHostages || CanSeeUseable(this, pObject)
 #ifdef REGAMEDLL_ADD
-			 || CanUseThroughWalls(this, pObject))
+			|| CanUseThroughWalls(this, pObject))
 #endif
 		{
 			int caps = pObject->ObjectCaps();
