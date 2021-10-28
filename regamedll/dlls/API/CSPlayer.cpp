@@ -536,7 +536,7 @@ void CCSPlayer::Reset()
 	m_szModel[0] = '\0';
 
 	m_bForceShowMenu = false;
-	m_flRespawnPending =
+	m_flRespawnPending = 0.0f;
 	m_flSpawnProtectionEndTime = 0.0f;
 
 	m_vecOldvAngle = g_vecZero;
