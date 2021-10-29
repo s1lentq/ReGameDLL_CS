@@ -4926,7 +4926,7 @@ void EXT_FUNC UpdateClientData(const edict_t *ent, int sendweapons, struct clien
 			(pPlayer->m_bCanShoot && !pPlayer->m_bIsDefusing))
 			iUser3 |= PLAYER_CAN_SHOOT;
 
-		if (!g_pGameRules->IsFreezePeriod())
+		if (g_pGameRules->IsFreezePeriod())
 			iUser3 |= PLAYER_FREEZE_TIME_OVER;
 
 		if (pPlayer->m_signals.GetState() & SIGNAL_BOMB)
