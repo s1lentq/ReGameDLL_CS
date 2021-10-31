@@ -906,8 +906,8 @@ public:
 	virtual IReGameHookRegistry_CBasePlayer_JoiningThink *CBasePlayer_JoiningThink();
 };
 
-extern CReGameHookchains g_ReGameHookchains;
-extern ReGameFuncs_t g_ReGameApiFuncs;
+C_DLLEXPORT CReGameHookchains g_ReGameHookchains;
+C_DLLEXPORT ReGameFuncs_t g_ReGameApiFuncs;
 
 class CReGameApi: public IReGameApi {
 public:
