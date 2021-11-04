@@ -205,7 +205,6 @@ EXT_FUNC bool CCSPlayer::RemovePlayerItemEx(const char* pszItemName, bool bRemov
 
 		return true;
 	}
-
 	else if (FStrEq(pszItemName, "weapon_shield"))
 	{
 		return RemoveShield();
@@ -214,32 +213,34 @@ EXT_FUNC bool CCSPlayer::RemovePlayerItemEx(const char* pszItemName, bool bRemov
 	auto pItem = GetItemByName(pszItemName);
 	if (pItem)
 	{
-		if (FClassnameIs(pItem->pev, "weapon_c4")) {
-			pPlayer->m_bHasC4 = false;
-			pPlayer->pev->body = 0;
-			pPlayer->SetBombIcon(FALSE);
-			pPlayer->SetProgressBarTime(0);
-		}
-
-		if (pItem->IsWeapon())
-		{
-			if (pItem == pPlayer->m_pActiveItem) {
-				((CBasePlayerWeapon *)pItem)->RetireWeapon();
-			}
-
-			if (bRemoveAmmo) {
-				pPlayer->m_rgAmmo[ pItem->PrimaryAmmoIndex() ] = 0;
-			}
-		}
+		CBasePlayerItem *pActiveItem = pPlayer->m_pActiveItem;
 
 		if (pPlayer->RemovePlayerItem(pItem)) {
 			pPlayer->pev->weapons &= ~(1 << pItem->m_iId);
-			// No more weapon
+			// No more weapon.
 			if ((pPlayer->pev->weapons & ~(1 << WEAPON_SUIT)) == 0) {
 				pPlayer->m_iHideHUD |= HIDEHUD_WEAPONS;
 			}
 
 			pItem->Kill();
+
+			if (pItem->IsWeapon()) {
+				if (pItem == pActiveItem) {
+					g_pGameRules->GetNextBestWeapon(pPlayer, pActiveItem);
+				}
+
+				// Critical if we share BP ammo with others, a mode like <0|1|2> where "1" check if no other weapon use such ammo type would have been better.
+				if (bRemoveAmmo || (pItem->iFlags() & ITEM_FLAG_EXHAUSTIBLE)) {
+					pPlayer->m_rgAmmo[ pItem->PrimaryAmmoIndex() ] = 0;
+				}
+			}
+
+			if (FClassnameIs(pItem->pev, "weapon_c4")) {
+				pPlayer->m_bHasC4 = false;
+				pPlayer->pev->body = 0;
+				pPlayer->SetBombIcon(FALSE);
+				pPlayer->SetProgressBarTime(0);
+			}
 
 			if (!pPlayer->m_rgpPlayerItems[PRIMARY_WEAPON_SLOT]) {
 				pPlayer->m_bHasPrimary = false;
