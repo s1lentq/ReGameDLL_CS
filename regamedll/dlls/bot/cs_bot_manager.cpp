@@ -1095,7 +1095,20 @@ void CCSBotManager::MonitorBotAutoKill()
 
 	if (gpGlobals->time >= m_flNextAutoKillCheck)
 	{
-		SERVER_COMMAND("bot_kill\n");
+		for (int i = 1; i <= gpGlobals->maxClients; i++)
+		{
+			CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
+			if (!pPlayer)
+				continue;
+
+			if (FNullEnt(pPlayer->pev))
+				continue;
+
+			if (pPlayer->IsBot())
+			{
+				ClientKill(pPlayer->edict());
+			}
+		}
 	}
 #endif
 	return;
