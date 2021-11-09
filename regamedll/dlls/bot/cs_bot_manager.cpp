@@ -1052,6 +1052,7 @@ void CCSBotManager::MaintainBotQuota()
 
 void CCSBotManager::MonitorBotAutoKill()
 {
+#ifdef REGAMEDLL_ADD
 	if (cv_bot_autokill.value == 0.0f)
 		return;
 
@@ -1096,7 +1097,8 @@ void CCSBotManager::MonitorBotAutoKill()
 	{
 		SERVER_COMMAND("bot_kill\n");
 	}
-
+#endif
+	return;
 
 }
 
