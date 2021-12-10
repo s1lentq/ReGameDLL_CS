@@ -124,7 +124,7 @@ void CFamas::FamasFire(float flSpread, float flCycleTime, BOOL fUseAutoAim, BOOL
 	m_bDelayFire = true;
 	m_iShotsFired++;
 
-	m_flAccuracy = (m_iShotsFired * m_iShotsFired * m_iShotsFired / 215) + 0.3f;
+	m_flAccuracy = (m_iShotsFired * m_iShotsFired * m_iShotsFired / FAMAS_ACCURACY_DIVISOR) + 0.3f;
 
 	if (m_flAccuracy > 1.0f)
 		m_flAccuracy = 1.0f;

@@ -94,7 +94,7 @@ void CAK47::AK47Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	m_bDelayFire = true;
 	m_iShotsFired++;
 
-	m_flAccuracy = ((m_iShotsFired * m_iShotsFired * m_iShotsFired) / 200) + 0.35f;
+	m_flAccuracy = ((m_iShotsFired * m_iShotsFired * m_iShotsFired) / AK47_ACCURACY_DIVISOR) + 0.35f;
 
 	if (m_flAccuracy > 1.25f)
 		m_flAccuracy = 1.25f;

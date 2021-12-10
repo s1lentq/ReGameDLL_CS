@@ -539,6 +539,8 @@ void CCSPlayer::Reset()
 	m_iWeaponInfiniteIds = 0;
 	m_bCanShootOverride = false;
 	m_bGameForcingRespawn = false;
+	m_bAutoBunnyHopping = false;
+	m_bMegaBunnyJumping = false;
 }
 
 void CCSPlayer::OnSpawn()

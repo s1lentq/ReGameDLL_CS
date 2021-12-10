@@ -84,7 +84,7 @@ void CTMP::TMPFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	m_bDelayFire = true;
 	m_iShotsFired++;
 
-	m_flAccuracy = ((m_iShotsFired * m_iShotsFired * m_iShotsFired) / 200) + 0.55f;
+	m_flAccuracy = ((m_iShotsFired * m_iShotsFired * m_iShotsFired) / TMP_ACCURACY_DIVISOR) + 0.55f;
 
 	if (m_flAccuracy > 1.4f)
 		m_flAccuracy = 1.4f;

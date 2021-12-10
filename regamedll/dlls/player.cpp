@@ -5342,7 +5342,7 @@ ReturnSpot:
 
 void CBasePlayer::SetScoreAttrib(CBasePlayer *dest)
 {
-	int state = 0;
+	int state = SCORE_STATUS_NONE;
 	if (pev->deadflag != DEAD_NO)
 		state |= SCORE_STATUS_DEAD;
 
@@ -6652,6 +6652,17 @@ void CBasePlayer::HandleSignals()
 					OLD_CheckBuyZone(this);
 			}
 		}
+
+#ifdef REGAMEDLL_ADD
+		if (m_bHasC4 && (plant_c4_anywhere.value || CSPlayer()->m_bPlantC4Anywhere))
+		{
+			if (IsAlive() && (m_iTeam == TERRORIST || m_iTeam == CT)
+				&& !(m_signals.GetSignal() & SIGNAL_BOMB))
+			{
+				m_signals.Signal(SIGNAL_BOMB);
+			}
+		}
+#endif 
 
 		if (!CSGameRules()->m_bMapHasBombZone)
 			OLD_CheckBombTarget(this);
@@ -8216,6 +8227,12 @@ void CBasePlayer::__API_HOOK(SwitchTeam)()
 			}
 		}
 	}
+
+#ifdef REGAMEDLL_FIXES
+	// Initialize the player counts now that a player has switched teams
+	int NumDeadCT, NumDeadTerrorist, NumAliveTerrorist, NumAliveCT;
+	CSGameRules()->InitializePlayerCounts(NumAliveTerrorist, NumAliveCT, NumDeadTerrorist, NumDeadCT);
+#endif
 }
 
 void CBasePlayer::UpdateShieldCrosshair(bool draw)
@@ -10003,8 +10020,8 @@ void EXT_FUNC CBasePlayer::__API_HOOK(OnSpawnEquip)(bool addDefault, bool equipG
 	{
 		switch (static_cast<ArmorType>((int)free_armor.value))
 		{
-		case ARMOR_KEVLAR: GiveNamedItem("item_kevlar"); break;
-		case ARMOR_VESTHELM: GiveNamedItem("item_assaultsuit"); break;
+		case ARMOR_KEVLAR: GiveNamedItemEx("item_kevlar"); break;
+		case ARMOR_VESTHELM: GiveNamedItemEx("item_assaultsuit"); break;
 		}
 	}
 #endif

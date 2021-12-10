@@ -91,7 +91,7 @@ void CM249::M249Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	m_bDelayFire = true;
 	m_iShotsFired++;
 
-	m_flAccuracy = ((m_iShotsFired * m_iShotsFired * m_iShotsFired) / 175) + 0.4f;
+	m_flAccuracy = ((m_iShotsFired * m_iShotsFired * m_iShotsFired) / M249_ACCURACY_DIVISOR) + 0.4f;
 
 	if (m_flAccuracy > 0.9f)
 		m_flAccuracy = 0.9f;

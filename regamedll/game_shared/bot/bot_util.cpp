@@ -131,6 +131,39 @@ int UTIL_HumansInGame(bool ignoreSpectators)
 	return iCount;
 }
 
+// Returns the number of human spectators in the game
+int UTIL_SpectatorsInGame()
+{
+	int iCount = 0;
+
+	for (int iIndex = 1; iIndex <= gpGlobals->maxClients; iIndex++)
+	{
+		CBasePlayer* pPlayer = UTIL_PlayerByIndex(iIndex);
+
+		if (!pPlayer)
+			continue;
+
+		if (FNullEnt(pPlayer->pev))
+			continue;
+
+		if (FStrEq(STRING(pPlayer->pev->netname), ""))
+			continue;
+
+		if (pPlayer->IsProxy())
+			continue;
+
+		if (pPlayer->IsBot())
+			continue;
+
+		if (pPlayer->m_iTeam != SPECTATOR)
+			continue;
+
+		iCount++;
+	}
+
+	return iCount;
+}
+
 int UTIL_HumansOnTeam(int teamID, bool isAlive)
 {
 	int iCount = 0;
