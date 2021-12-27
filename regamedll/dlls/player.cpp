@@ -2105,9 +2105,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 
 #ifdef REGAMEDLL_FIXES
 		if (pObserver->m_hObserverTarget == this)
-		{
 			pObserver->m_flNextFollowTime = 0.0f;
-		}
 #endif
 	}
 
