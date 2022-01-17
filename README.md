@@ -186,5 +186,4 @@ Select the preferred C/C++ Compiler installation
 Thanks to the project [ReHLDS](https://github.com/dreamstalker/rehlds) ( ReGameDLL_CS was created on the basis of ReHLDS )
 
 ## How can I help the project?
-Just install it on your game server and report problems you faced.<br />
-Merge requests are also welcome :shipit:
+Just install it on your game server and don't report problems you faced.
