@@ -79,11 +79,25 @@ void CSG552::PrimaryAttack()
 {
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
 	{
-		SG552Fire(0.035 + (0.45 * m_flAccuracy), 0.0825, FALSE);
+		if (m_pPlayer->pev->fov == DEFAULT_FOV)
+		{
+			SG552Fire(0.035 + (0.45 * m_flAccuracy), 0.0825, FALSE);
+		}
+		else
+		{
+			SG552Fire(0.035 + (0.45 * m_flAccuracy), 0.135, FALSE);
+		}
 	}
 	else if (m_pPlayer->pev->velocity.Length2D() > 140)
 	{
-		SG552Fire(0.035 + (0.075 * m_flAccuracy), 0.0825, FALSE);
+		if (m_pPlayer->pev->fov == DEFAULT_FOV)
+		{
+			SG552Fire(0.035 + (0.075 * m_flAccuracy), 0.0825, FALSE);
+		}
+		else
+		{
+			SG552Fire(0.035 + (0.075 * m_flAccuracy), 0.135, FALSE);
+		}
 	}
 	else if (m_pPlayer->pev->fov == DEFAULT_FOV)
 	{
