@@ -8402,8 +8402,9 @@ void CStripWeapons::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE 
 			if (m_iszSpecialItem)
 			{
 				const char *weaponName = STRING(m_iszSpecialItem);
+				WeaponSlotInfo *slotInfo = GetWeaponSlot(weaponName);
 
-				if (GetWeaponSlot(weaponName)->slot == GRENADE_SLOT)
+				if (slotInfo != nullptr && slotInfo->slot == GRENADE_SLOT)
 					pPlayer->CSPlayer()->RemovePlayerItemEx(weaponName, true);
 				else
 					pPlayer->CSPlayer()->RemovePlayerItem(weaponName);
