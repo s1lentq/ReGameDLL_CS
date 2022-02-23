@@ -1752,29 +1752,39 @@ void CBaseTrigger::TeleportTouch(CBaseEntity *pOther)
 		return;
 	}
 
-	Vector tmp = VARS(pentTarget)->origin;
-
-	if (pOther->IsPlayer())
+	if (IsSpawnPointValid(pOther, CBaseEntity::Instance(pentTarget))
 	{
-		// make origin adjustments in case the teleportee is a player. (origin in center, not at feet)
-		tmp.z -= pOther->pev->mins.z;
+		Vector tmp = VARS(pentTarget)->origin;
+
+		if (pOther->IsPlayer())
+		{
+			// make origin adjustments in case the teleportee is a player. (origin in center, not at feet)
+			tmp.z -= pOther->pev->mins.z;
+		}
+
+		tmp.z++;
+
+		pevToucher->flags &= ~FL_ONGROUND;
+
+		UTIL_SetOrigin(pevToucher, tmp);
+
+		pevToucher->angles = pentTarget->v.angles;
+
+		if (pOther->IsPlayer())
+		{
+			pevToucher->v_angle = pentTarget->v.angles;
+		} 
+
+		pevToucher->fixangle = 1;
+		pevToucher->velocity = pevToucher->basevelocity = g_vecZero;
 	}
-
-	tmp.z++;
-
-	pevToucher->flags &= ~FL_ONGROUND;
-
-	UTIL_SetOrigin(pevToucher, tmp);
-
-	pevToucher->angles = pentTarget->v.angles;
-
-	if (pOther->IsPlayer())
+	else
 	{
-		pevToucher->v_angle = pentTarget->v.angles;
+		if (pOther->IsPlayer)
+		{
+			ClientPrint(pOther->pev, HUD_PRINTCENTER, "Spawn point isn't valid!");
+		}
 	}
-
-	pevToucher->fixangle = 1;
-	pevToucher->velocity = pevToucher->basevelocity = g_vecZero;
 }
 
 LINK_ENTITY_TO_CLASS(trigger_teleport, CTriggerTeleport, CCSTriggerTeleport)
