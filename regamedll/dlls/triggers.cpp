@@ -1752,7 +1752,7 @@ void CBaseTrigger::TeleportTouch(CBaseEntity *pOther)
 		return;
 	}
 
-	if (IsSpawnPointValid(pOther, CBaseEntity::Instance(pentTarget))
+	if (IsSpawnPointValid(pOther, CBaseEntity::Instance(pentTarget)))
 	{
 		Vector tmp = VARS(pentTarget)->origin;
 
