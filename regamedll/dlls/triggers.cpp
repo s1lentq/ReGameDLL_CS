@@ -1780,7 +1780,7 @@ void CBaseTrigger::TeleportTouch(CBaseEntity *pOther)
 	}
 	else
 	{
-		if (pOther->IsPlayer)
+		if (pOther->IsPlayer())
 		{
 			ClientPrint(pOther->pev, HUD_PRINTCENTER, "Spawn point isn't valid!");
 		}
