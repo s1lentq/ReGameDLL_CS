@@ -995,7 +995,10 @@ void CBaseEntity::TraceAttack(entvars_t *pevAttacker, float flDamage, Vector vec
 	}
 }
 
-void CBaseEntity::FireBullets(ULONG cShots, Vector vecSrc, Vector vecDirShooting, Vector vecSpread, float flDistance, int iBulletType, int iTracerFreq, int iDamage, entvars_t *pevAttacker)
+
+LINK_HOOK_CLASS_VOID_CHAIN(CBaseEntity, FireBullets, (ULONG cShots, VectorRef vecSrc, VectorRef vecDirShooting, VectorRef vecSpread, float flDistance, int iBulletType, int iTracerFreq, int iDamage, entvars_t *pevAttacker), cShots, vecSrc, vecDirShooting, vecSpread, flDistance, iBulletType, iTracerFreq, iDamage, pevAttacker)
+
+void CBaseEntity::__API_HOOK(FireBullets)(ULONG cShots, VectorRef vecSrc, VectorRef vecDirShooting, VectorRef vecSpread, float flDistance, int iBulletType, int iTracerFreq, int iDamage, entvars_t *pevAttacker)
 {
 	static int tracerCount;
 	int tracer;
@@ -1139,89 +1142,91 @@ void CBaseEntity::FireBullets(ULONG cShots, Vector vecSrc, Vector vecDirShooting
 	ApplyMultiDamage(pev, pevAttacker);
 }
 
-void CBaseEntity::FireBuckshots(ULONG cShots, Vector vecSrc, Vector vecDirShooting, Vector vecSpread, float flDistance, int iTracerFreq, int iDamage, entvars_t *pevAttacker)
+LINK_HOOK_CLASS_VOID_CHAIN(CBaseEntity, FireBuckshots, (ULONG cShots, VectorRef vecSrc, VectorRef vecDirShooting, VectorRef vecSpread, float flDistance, int iTracerFreq, int iDamage, entvars_t *pevAttacker), cShots, vecSrc, vecDirShooting, vecSpread, flDistance, iTracerFreq, iDamage, pevAttacker)
+
+void CBaseEntity::__API_HOOK(FireBuckshots)(ULONG cShots, VectorRef vecSrc, VectorRef vecDirShooting, VectorRef vecSpread, float flDistance, int iTracerFreq, int iDamage, entvars_t *pevAttacker)
 {
-    static int tracerCount;
-    int tracer;
+	static int tracerCount;
+	int tracer;
 
-    TraceResult tr;
-    Vector vecRight, vecUp;
+	TraceResult tr;
+	Vector vecRight, vecUp;
 
-    vecRight = gpGlobals->v_right;
-    vecUp = gpGlobals->v_up;
+	vecRight = gpGlobals->v_right;
+	vecUp = gpGlobals->v_up;
 
-    if (!pevAttacker)
-    {
-        // the default attacker is ourselves
-        pevAttacker = pev;
-    }
+	if (!pevAttacker)
+	{
+		// the default attacker is ourselves
+		pevAttacker = pev;
+	}
 
-    ClearMultiDamage();
-    gMultiDamage.type = (DMG_BULLET | DMG_NEVERGIB);
+	ClearMultiDamage();
+	gMultiDamage.type = (DMG_BULLET | DMG_NEVERGIB);
 
-    for (ULONG iShot = 1; iShot <= cShots; iShot++)
-    {
-        // get circular gaussian spread
-        float x, y, z;
+	for (ULONG iShot = 1; iShot <= cShots; iShot++)
+	{
+		// get circular gaussian spread
+		float x, y, z;
 
-        do
-        {
-            x = RANDOM_FLOAT(-0.5, 0.5) + RANDOM_FLOAT(-0.5, 0.5);
-            y = RANDOM_FLOAT(-0.5, 0.5) + RANDOM_FLOAT(-0.5, 0.5);
-            z = x * x + y * y;
-        }
-        while (z > 1);
+		do
+		{
+			x = RANDOM_FLOAT(-0.5, 0.5) + RANDOM_FLOAT(-0.5, 0.5);
+			y = RANDOM_FLOAT(-0.5, 0.5) + RANDOM_FLOAT(-0.5, 0.5);
+			z = x * x + y * y;
+		}
+		while (z > 1);
 
-        Vector vecDir, vecEnd;
+		Vector vecDir, vecEnd;
 
-        vecDir = vecDirShooting + x * vecSpread.x * vecRight + y * vecSpread.y * vecUp;
-        vecEnd = vecSrc + vecDir * flDistance;
+		vecDir = vecDirShooting + x * vecSpread.x * vecRight + y * vecSpread.y * vecUp;
+		vecEnd = vecSrc + vecDir * flDistance;
 
-        UTIL_TraceLine(vecSrc, vecEnd, dont_ignore_monsters, ENT(pev), &tr);
-        tracer = 0;
+		UTIL_TraceLine(vecSrc, vecEnd, dont_ignore_monsters, ENT(pev), &tr);
+		tracer = 0;
 
-        if (iTracerFreq != 0 && !(tracerCount++ % iTracerFreq))
-        {
-            Vector vecTracerSrc;
+		if (iTracerFreq != 0 && !(tracerCount++ % iTracerFreq))
+		{
+			Vector vecTracerSrc;
 
-            if (IsPlayer())
-            {
-                // adjust tracer position for player
-                vecTracerSrc = vecSrc + Vector(0, 0, -4) + gpGlobals->v_right * 2 + gpGlobals->v_forward * 16;
-            }
-            else
-            {
-                vecTracerSrc = vecSrc;
-            }
+			if (IsPlayer())
+			{
+				// adjust tracer position for player
+				vecTracerSrc = vecSrc + Vector(0, 0, -4) + gpGlobals->v_right * 2 + gpGlobals->v_forward * 16;
+			}
+			else
+			{
+				vecTracerSrc = vecSrc;
+			}
 
-            // guns that always trace also always decal
-            if (iTracerFreq != 1)
-                tracer = 1;
+			// guns that always trace also always decal
+			if (iTracerFreq != 1)
+				tracer = 1;
 
-            MESSAGE_BEGIN(MSG_PAS, SVC_TEMPENTITY, vecTracerSrc);
-                WRITE_BYTE(TE_TRACER);
-                WRITE_COORD(vecTracerSrc.x);
-                WRITE_COORD(vecTracerSrc.y);
-                WRITE_COORD(vecTracerSrc.z);
-                WRITE_COORD(tr.vecEndPos.x);
-                WRITE_COORD(tr.vecEndPos.y);
-                WRITE_COORD(tr.vecEndPos.z);
-            MESSAGE_END();
-        }
+			MESSAGE_BEGIN(MSG_PAS, SVC_TEMPENTITY, vecTracerSrc);
+				WRITE_BYTE(TE_TRACER);
+				WRITE_COORD(vecTracerSrc.x);
+				WRITE_COORD(vecTracerSrc.y);
+				WRITE_COORD(vecTracerSrc.z);
+				WRITE_COORD(tr.vecEndPos.x);
+				WRITE_COORD(tr.vecEndPos.y);
+				WRITE_COORD(tr.vecEndPos.z);
+			MESSAGE_END();
+		}
 
-        // do damage, paint decals
-        if (tr.flFraction != 1.0f)
-        {
-            CBaseEntity *pEntity = CBaseEntity::Instance(tr.pHit);
-            float flDamage = ((1 - tr.flFraction) * iDamage);
-            pEntity->TraceAttack(pevAttacker, int(flDamage), vecDir, &tr, DMG_BULLET);
-        }
+		// do damage, paint decals
+		if (tr.flFraction != 1.0f)
+		{
+			CBaseEntity *pEntity = CBaseEntity::Instance(tr.pHit);
+			float flDamage = ((1 - tr.flFraction) * iDamage);
+			pEntity->TraceAttack(pevAttacker, int(flDamage), vecDir, &tr, DMG_BULLET);
+		}
 
-        // make bullet trails
-        UTIL_BubbleTrail(vecSrc, tr.vecEndPos, int((flDistance * tr.flFraction) / 64));
-    }
+		// make bullet trails
+		UTIL_BubbleTrail(vecSrc, tr.vecEndPos, int((flDistance * tr.flFraction) / 64));
+	}
 
-    ApplyMultiDamage(pev, pevAttacker);
+	ApplyMultiDamage(pev, pevAttacker);
 }
 
 bool EXT_FUNC IsPenetrableEntity_default(Vector &vecSrc, Vector &vecEnd, entvars_t *pevAttacker, edict_t *pHit)
@@ -1229,10 +1234,15 @@ bool EXT_FUNC IsPenetrableEntity_default(Vector &vecSrc, Vector &vecEnd, entvars
 	return true;
 }
 
+
+LINK_HOOK_CLASS_CHAIN(VectorRef, CBaseEntity, FireBullets3, (VectorRef vecSrc, VectorRef vecDirShooting, float vecSpread, float flDistance, int iPenetration, int iBulletType, int iDamage, float flRangeModifier, entvars_t *pevAttacker, bool bPistol, int shared_rand), vecSrc, vecDirShooting, vecSpread, flDistance, iPenetration, iBulletType, iDamage, flRangeModifier, pevAttacker, bPistol, shared_rand)
+	
 // Go to the trouble of combining multiple pellets into a single damage call.
 // This version is used by Players, uses the random seed generator to sync client and server side shots.
-Vector CBaseEntity::FireBullets3(Vector vecSrc, Vector vecDirShooting, float vecSpread, float flDistance, int iPenetration, int iBulletType, int iDamage, float flRangeModifier, entvars_t *pevAttacker, bool bPistol, int shared_rand)
+VectorRef CBaseEntity::__API_HOOK(FireBullets3)(VectorRef vecSrc, VectorRef vecDirShooting, float vecSpread, float flDistance, int iPenetration, int iBulletType, int iDamage, float flRangeModifier, entvars_t *pevAttacker, bool bPistol, int shared_rand)
 {
+	static Vector vecRet;
+
 	int iOriginalPenetration = iPenetration;
 	int iPenetrationPower;
 	float flPenetrationDistance;
@@ -1448,7 +1458,11 @@ Vector CBaseEntity::FireBullets3(Vector vecSrc, Vector vecDirShooting, float vec
 		ApplyMultiDamage(pev, pevAttacker);
 	}
 
-	return Vector(x * vecSpread, y * vecSpread, 0);
+	vecRet.x = x * vecSpread;
+	vecRet.y = y * vecSpread;
+	vecRet.z = 0;
+
+	return vecRet;
 }
 
 void CBaseEntity::TraceBleed(float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType)

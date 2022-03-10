@@ -38,6 +38,18 @@ const char *EXT_FUNC Cmd_Argv_api(int i) {
 	return CMD_ARGV_(i);
 }
 
+CGrenade *PlantBomb_api(entvars_t *pevOwner, Vector &vecStart, Vector &vecVelocity) {
+	return CGrenade::ShootSatchelCharge(pevOwner, vecStart, vecVelocity);
+}
+
+CGib *SpawnHeadGib_api(entvars_t *pevVictim) {
+	return CGib::SpawnHeadGib(pevVictim);
+}
+
+void SpawnRandomGibs_api(entvars_t *pevVictim, int cGibs, int human) {
+	CGib::SpawnRandomGibs(pevVictim, cGibs, human);
+}
+
 ReGameFuncs_t g_ReGameApiFuncs = {
 	&CREATE_NAMED_ENTITY,
 
@@ -54,7 +66,12 @@ ReGameFuncs_t g_ReGameApiFuncs = {
 	&RemoveEntityHashValue,
 
 	Cmd_Argc_api,
-	Cmd_Argv_api
+	Cmd_Argv_api,
+
+	PlantBomb_api,
+
+	SpawnHeadGib_api,
+	SpawnRandomGibs_api
 };
 
 GAMEHOOK_REGISTRY(CBasePlayer_Spawn);
@@ -167,6 +184,25 @@ GAMEHOOK_REGISTRY(CBasePlayerWeapon_DefaultDeploy);
 GAMEHOOK_REGISTRY(CBasePlayerWeapon_DefaultReload);
 GAMEHOOK_REGISTRY(CBasePlayerWeapon_DefaultShotgunReload);
 GAMEHOOK_REGISTRY(CBasePlayer_DropIdlePlayer);
+
+GAMEHOOK_REGISTRY(CreateWeaponBox);
+
+GAMEHOOK_REGISTRY(SpawnHeadGib);
+GAMEHOOK_REGISTRY(SpawnRandomGibs);
+GAMEHOOK_REGISTRY(CGib_Spawn);
+GAMEHOOK_REGISTRY(CGib_BounceGibTouch);
+GAMEHOOK_REGISTRY(CGib_WaitTillLand);
+
+GAMEHOOK_REGISTRY(CBaseEntity_FireBullets);
+GAMEHOOK_REGISTRY(CBaseEntity_FireBuckshots);
+GAMEHOOK_REGISTRY(CBaseEntity_FireBullets3);
+
+GAMEHOOK_REGISTRY(CBasePlayer_Observer_SetMode);
+GAMEHOOK_REGISTRY(CBasePlayer_Observer_FindNextPlayer);
+
+GAMEHOOK_REGISTRY(CBasePlayer_Pain);
+GAMEHOOK_REGISTRY(CBasePlayer_DeathSound);
+GAMEHOOK_REGISTRY(CBasePlayer_JoiningThink);
 
 int CReGameApi::GetMajorVersion() {
 	return REGAMEDLL_API_VERSION_MAJOR;

@@ -23,13 +23,13 @@ void PM_SwapTextures(int i, int j)
 	char chTemp;
 	char szTemp[MAX_TEXTURENAME_LENGHT];
 
-	Q_strcpy(szTemp, pm_grgszTextureName[i]);
+	Q_strlcpy(szTemp, pm_grgszTextureName[i]);
 	chTemp = pm_grgchTextureType[i];
 
-	Q_strcpy(pm_grgszTextureName[i], pm_grgszTextureName[j]);
+	Q_strcpy_s(pm_grgszTextureName[i], pm_grgszTextureName[j]);
 	pm_grgchTextureType[i] = pm_grgchTextureType[j];
 
-	Q_strcpy(pm_grgszTextureName[j], szTemp);
+	Q_strlcpy(pm_grgszTextureName[j], szTemp);
 	pm_grgchTextureType[j] = chTemp;
 }
 
@@ -2418,8 +2418,19 @@ void PM_Jump()
 		return;
 	}
 
+#ifdef REGAMEDLL_API
+	const CCSPlayer* player = UTIL_PlayerByIndex(pmove->player_index + 1)->CSPlayer();
+#endif
+
 	// don't pogo stick
-	if (pmove->oldbuttons & IN_JUMP)
+	if (pmove->oldbuttons & IN_JUMP
+#ifdef REGAMEDLL_ADD
+		&& sv_autobunnyhopping.value <= 0.0
+#ifdef REGAMEDLL_API
+		&& !player->m_bAutoBunnyHopping
+#endif
+#endif
+		)
 	{
 		return;
 	}
@@ -2434,7 +2445,16 @@ void PM_Jump()
 	// In the air now.
 	pmove->onground = -1;
 
-	PM_PreventMegaBunnyJumping();
+#ifdef REGAMEDLL_ADD
+	if (sv_enablebunnyhopping.value <= 0.0
+#ifdef REGAMEDLL_API
+		&& !player->m_bMegaBunnyJumping
+#endif
+		)
+#endif
+	{
+		PM_PreventMegaBunnyJumping();
+	}
 
 	real_t fvel = Length(pmove->velocity);
 	float fvol = 1.0f;

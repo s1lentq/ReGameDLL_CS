@@ -44,7 +44,12 @@ public:
 		m_flRespawnPending(0),
 		m_flSpawnProtectionEndTime(0),
 		m_iWeaponInfiniteAmmo(0),
-		m_iWeaponInfiniteIds(0)
+		m_iWeaponInfiniteIds(0),
+		m_bCanShootOverride(false),
+		m_bGameForcingRespawn(false),
+		m_bAutoBunnyHopping(false),
+		m_bMegaBunnyJumping(false),
+		m_bPlantC4Anywhere(false)
 	{
 		m_szModel[0] = '\0';
 	}
@@ -121,6 +126,11 @@ public:
 	Vector m_vecOldvAngle;
 	int m_iWeaponInfiniteAmmo;
 	int m_iWeaponInfiniteIds;
+	bool m_bCanShootOverride;
+	bool m_bGameForcingRespawn;
+	bool m_bAutoBunnyHopping;
+	bool m_bMegaBunnyJumping;
+	bool m_bPlantC4Anywhere;
 };
 
 // Inlines

@@ -20,7 +20,7 @@ public:
 	void			setNext(Test *test);
 	Test			*getNext () const;
 	void run(TestResult& result);
-	
+
 	const char* getName() {
 		return name_.c_str();
 	}
@@ -28,7 +28,7 @@ public:
 	const char* getGroup() {
 		return group_.c_str();
 	}
-	
+
 	int getTimeout() {
 		return timeout_;
 	}
@@ -47,7 +47,7 @@ protected:
 	{ public: testGroup##testName##Test () : Test (#testName , #testGroup , testTimeout) {} \
             void runInternal (); } \
     testGroup##testName##Instance; \
-	void testGroup##testName##Test::runInternal() 
+	void testGroup##testName##Test::runInternal()
 
 
 
@@ -55,6 +55,9 @@ protected:
 	} \
 }
 
+#define CHECK_WARNING_OUT(msg, condition) { if (!(condition)) { Assertions::ConditionFailed(msg,#condition, __FILE__, __LINE__, true); return; \
+	} \
+}
 
 #define ZSTR_EQUAL(msg,expected,actual) { \
 	Assertions::StringEquals((msg), (expected), (actual), __FILE__, __LINE__); \

@@ -77,14 +77,6 @@ IF EXIST "%srcdir%\version.h" (
 			IF %%j==VERSION_MAINTENANCE set version_maintenance=%%k
 		)
 	)
-) ELSE (
-	FOR /F "usebackq tokens=1,2,3,* delims==" %%i in ("%repodir%..\gradle.properties") do (
-		IF NOT [%%j] == [] (
-			IF %%i==majorVersion set version_major=%%j
-			IF %%i==minorVersion set version_minor=%%j
-			IF %%i==maintenanceVersion set version_maintenance=%%j
-		)
-	)
 )
 
 ::
@@ -209,12 +201,6 @@ echo.>>"%srcdir%\appversion.h"
 
 echo #endif //__APPVERSION_H__>>"%srcdir%\appversion.h"
 echo.>>"%srcdir%\appversion.h"
-
-::
-:: Do update of version.cpp file last modify time to force it recompile
-::
-copy /b "%srcdir%\version.cpp"+,, "%srcdir%\version.cpp"
-endlocal
 
 :_exit
 exit /B 0

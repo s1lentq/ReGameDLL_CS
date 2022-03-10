@@ -201,6 +201,7 @@ void CHostageImprov::MoveTowards(const Vector &pos, float deltaT)
 	switch (m_moveType)
 	{
 	case Stopped:
+	default:
 		accelRate = 0;
 		break;
 	case Walking:

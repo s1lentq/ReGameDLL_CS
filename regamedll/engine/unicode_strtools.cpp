@@ -563,7 +563,7 @@ int Q_UChar32ToUTF8(uchar32 uVal, char *pUTF8Out)
 	if (uVal <= 0xFFFF)
 	{
 		pUTF8Out[0] = (unsigned char)(uVal >> 12) | 0xE0;
-		pUTF8Out[1] = (unsigned char)(uVal >> 6) & 0x3F | 0x80;
+		pUTF8Out[1] = (unsigned char)((uVal >> 6) & 0x3F) | 0x80;
 		pUTF8Out[2] = (unsigned char)(uVal & 0x3F) | 0x80;
 		return 3;
 	}
@@ -748,7 +748,7 @@ int Q_UnicodeConvertT(const SrcType *pIn, int nInChars, DstType *pOut, int nOutB
 	{
 		while (bStopAtNull ? (*pIn) : (nInChars-- > 0))
 		{
-			uchar32 uVal;
+			uchar32 uVal = '?';
 			bool bErr = false; // Initialize in order to avoid /analyze warnings.
 
 			pIn += DecodeSrc(pIn, uVal, bErr);
@@ -782,7 +782,7 @@ int Q_UnicodeConvertT(const SrcType *pIn, int nInChars, DstType *pOut, int nOutB
 		int nMaxOut = nOutElems - 1; // print symbols count
 		while (bStopAtNull ? (*pIn) : (nInChars-- > 0))
 		{
-			uchar32 uVal;
+			uchar32 uVal = '?';
 			bool bErr = false; // Initialize in order to avoid /analyze warnings.
 
 			pIn += DecodeSrc(pIn, uVal, bErr);

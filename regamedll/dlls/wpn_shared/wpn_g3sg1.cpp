@@ -204,6 +204,12 @@ void CG3SG1::Reload()
 			m_pPlayer->m_iFOV = m_pPlayer->pev->fov = 15;
 			SecondaryAttack();
 		}
+
+#ifdef REGAMEDLL_FIXES
+		// G3SG1_RELOAD_TIME == 3.5 default model "reload" animation time 4.7 (frames 141 / fps 30)
+		m_flTimeWeaponIdle = m_flTimeWeaponIdle + 1.2f;
+#endif
+
 	}
 }
 

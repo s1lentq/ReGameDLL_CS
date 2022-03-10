@@ -92,7 +92,7 @@ void CP90::P90Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	m_bDelayFire = true;
 	m_iShotsFired++;
 
-	m_flAccuracy = (m_iShotsFired * m_iShotsFired / 175) + 0.45f;
+	m_flAccuracy = (m_iShotsFired * m_iShotsFired / P90_ACCURACY_DIVISOR) + 0.45f;
 
 	if (m_flAccuracy > 1)
 		m_flAccuracy = 1;

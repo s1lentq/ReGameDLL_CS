@@ -39,10 +39,49 @@ public:
 
 	virtual ~CCSEntity() {}
 	virtual void FireBullets(int iShots, Vector &vecSrc, Vector &vecDirShooting, Vector &vecSpread, float flDistance, int iBulletType, int iTracerFreq, int iDamage, entvars_t *pevAttacker);
+	virtual void FireBuckshots(ULONG cShots, Vector &vecSrc, Vector &vecDirShooting, Vector &vecSpread, float flDistance, int iTracerFreq, int iDamage, entvars_t *pevAttacker);
 	virtual Vector FireBullets3(Vector &vecSrc, Vector &vecDirShooting, float vecSpread, float flDistance, int iPenetration, int iBulletType, int iDamage, float flRangeModifier, entvars_t *pevAttacker, bool bPistol, int shared_rand);
 
 public:
 	CBaseEntity *m_pContainingEntity;
+
+private:
+#if defined(_MSC_VER)
+#pragma region reserve_vfuncs_Region
+#endif
+	virtual void func_reserve1() {};
+	virtual void func_reserve2() {};
+	virtual void func_reserve3() {};
+	virtual void func_reserve4() {};
+	virtual void func_reserve5() {};
+	virtual void func_reserve6() {};
+	virtual void func_reserve7() {};
+	virtual void func_reserve8() {};
+	virtual void func_reserve9() {};
+	virtual void func_reserve10() {};
+	virtual void func_reserve11() {};
+	virtual void func_reserve12() {};
+	virtual void func_reserve13() {};
+	virtual void func_reserve14() {};
+	virtual void func_reserve15() {};
+	virtual void func_reserve16() {};
+	virtual void func_reserve17() {};
+	virtual void func_reserve18() {};
+	virtual void func_reserve19() {};
+	virtual void func_reserve20() {};
+	virtual void func_reserve21() {};
+	virtual void func_reserve22() {};
+	virtual void func_reserve23() {};
+	virtual void func_reserve24() {};
+	virtual void func_reserve25() {};
+	virtual void func_reserve26() {};
+	virtual void func_reserve27() {};
+	virtual void func_reserve28() {};
+	virtual void func_reserve29() {};
+	virtual void func_reserve30() {};
+#if defined(_MSC_VER)
+#pragma endregion
+#endif
 };
 
 class CCSDelay: public CCSEntity
@@ -69,4 +108,4 @@ public:
 
 };
 
-#define CSENTITY_API_INTERFACE_VERSION "CSENTITY_API_INTERFACE_VERSION001"
+#define CSENTITY_API_INTERFACE_VERSION "CSENTITY_API_INTERFACE_VERSION002"
