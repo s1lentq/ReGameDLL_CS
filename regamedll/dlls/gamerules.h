@@ -46,7 +46,7 @@ const float ROUND_RESPAWN_TIME  = 20.0f;
 const float ROUND_BEGIN_DELAY   = 5.0f;	// delay before beginning new round
 const float ITEM_KILL_DELAY     = 300.0f;
 const float RADIO_TIMEOUT       = 1.5f;
-const float DYING_TIME   = 3.0f;
+const float DYING_TIME          = 3.0f;
 
 const int MAX_INTERMISSION_TIME = 120;	// longest the intermission can last, in seconds
 
@@ -203,7 +203,7 @@ enum
 	SCENARIO_BLOCK_PRISON_ESCAPE_TIME      = BIT(8), // flag "i"
 	SCENARIO_BLOCK_BOMB_TIME               = BIT(9), // flag "j"
 	SCENARIO_BLOCK_HOSTAGE_RESCUE_TIME     = BIT(10), // flag "k"
-	
+
 };
 
 // Player relationship return codes

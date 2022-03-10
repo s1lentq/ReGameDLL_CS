@@ -163,7 +163,7 @@ cvar_t sv_autobunnyhopping               = { "sv_autobunnyhopping", "0", 0, 0.0f
 cvar_t sv_enablebunnyhopping             = { "sv_enablebunnyhopping", "0", 0, 0.0f, nullptr };
 cvar_t plant_c4_anywhere                 = { "mp_plant_c4_anywhere", "0", 0, 0.0f, nullptr };
 
-cvar_t dying_time              = { "mp_dying_time", "3.0", FCVAR_SERVER, 3.0f, nullptr };
+cvar_t dying_time              = { "mp_dying_time", "3.0", 0, 3.0f, nullptr };
 
 void GameDLL_Version_f()
 {
