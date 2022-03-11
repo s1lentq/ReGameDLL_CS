@@ -2177,14 +2177,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 	}
 
 	pev->modelindex = m_modelIndexPlayer;
-
-#ifdef REGAMEDLL_ADD
-	constexpr float DYING_MIN_TIME = 2.0f;
-	pev->deadflag = (CGameRules::GetDyingTime() <= DYING_MIN_TIME) ? DEAD_DEAD : DEAD_DYING;
-#else
 	pev->deadflag = DEAD_DYING;
-#endif
-
 	pev->movetype = MOVETYPE_TOSS;
 	pev->takedamage = DAMAGE_NO;
 
