@@ -2102,6 +2102,11 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 
 			pObserver->m_bNightVisionOn = false;
 		}
+
+#ifdef REGAMEDLL_FIXES
+		if (pObserver->m_hObserverTarget == this)
+			pObserver->m_flNextFollowTime = 0.0f;
+#endif
 	}
 
 	if (m_pTank)
@@ -5342,7 +5347,7 @@ ReturnSpot:
 
 void CBasePlayer::SetScoreAttrib(CBasePlayer *dest)
 {
-	int state = 0;
+	int state = SCORE_STATUS_NONE;
 	if (pev->deadflag != DEAD_NO)
 		state |= SCORE_STATUS_DEAD;
 
@@ -6653,6 +6658,17 @@ void CBasePlayer::HandleSignals()
 			}
 		}
 
+#ifdef REGAMEDLL_ADD
+		if (m_bHasC4 && (plant_c4_anywhere.value || CSPlayer()->m_bPlantC4Anywhere))
+		{
+			if (IsAlive() && (m_iTeam == TERRORIST || m_iTeam == CT)
+				&& !(m_signals.GetSignal() & SIGNAL_BOMB))
+			{
+				m_signals.Signal(SIGNAL_BOMB);
+			}
+		}
+#endif 
+
 		if (!CSGameRules()->m_bMapHasBombZone)
 			OLD_CheckBombTarget(this);
 
@@ -7171,7 +7187,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(UpdateClientData)()
 				m_iClientHideHUD = 0;
 
 			int hudChanged = m_iClientHideHUD ^ m_iHideHUD;
-			if (hudChanged & (HIDEHUD_FLASHLIGHT | HIDEHUD_HEALTH | HIDEHUD_TIMER | HIDEHUD_MONEY))
+			if (hudChanged & (HIDEHUD_FLASHLIGHT | HIDEHUD_HEALTH | HIDEHUD_TIMER | HIDEHUD_MONEY | HIDEHUD_CROSSHAIR))
 			{
 				MESSAGE_BEGIN(MSG_ONE, gmsgCrosshair, nullptr, pev);
 					WRITE_BYTE(0);

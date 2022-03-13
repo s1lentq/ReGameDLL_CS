@@ -28,6 +28,7 @@ This means that plugins that do binary code analysis (Orpheu for example) probab
 | endround                            | Args:<br/>`T` force round end with Terrorists win. <br/>`CT` force round end with Counter-Terrorists win. <br/> or terminate round draw when called without arguments. |
 | swapteams                           | Swap the teams and restart the game. |
 | give                                | Give weapon command.<br/> Args:<br/><weapon_name><br/>Usage:<br/>`give weapon_ak47`<br/>`give weapon_usp`<br/><br/>NOTE: `sv_cheats 1` required. |
+| impulse 255                         | Give all weapons.<br/><br/>NOTE: `sv_cheats 1` required. |
 
 ## Configuration (cvars)
 <details>
@@ -102,6 +103,7 @@ This means that plugins that do binary code analysis (Orpheu for example) probab
 | sv_allchat                         | 1       | 0   | 1            | Players can receive all other players text chat, team restrictions apply<br/>`0` disabled <br/>`1` enabled |
 | sv_autobunnyhopping                | 0       | 0   | 1            | Players automatically re-jump while holding jump button.<br/>`0` disabled <br/>`1` enabled |
 | sv_enablebunnyhopping              | 0       | 0   | 1            | Allow player speed to exceed maximum running speed.<br/>`0` disabled <br/>`1` enabled |
+| mp_plant_c4_anywhere               | 0       | 0   | 1            | When set, players can plant anywhere, not only in bombsites.<br/>`0` disabled <br/>`1` enabled |
 </details>
 
 ## How to install zBot for CS 1.6?
