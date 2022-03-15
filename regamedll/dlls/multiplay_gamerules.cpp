@@ -3574,17 +3574,6 @@ void CHalfLifeMultiplay::ClientDisconnected(edict_t *pClient)
 			}
 #endif
 
-#ifdef REGAMEDLL_FIXES
-			// Clear m_pDriver if player disconnected
-			CFuncVehicle* pVehicle = nullptr;
-
-			while ((pVehicle = UTIL_FindEntityByClassname(pVehicle, "func_vehicle")))
-			{
-				if (pVehicle->m_pDriver == pPlayer)
-					pVehicle->m_pDriver = nullptr;
-			}
-#endif
-
 			if (pPlayer->m_bIsVIP)
 			{
 				m_pVIP = nullptr;
@@ -3930,7 +3919,11 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(PlayerKilled)(CBasePlayer *pVictim,
 	else if (ktmp && ktmp->Classify() == CLASS_VEHICLE)
 	{
 		CBasePlayer *pDriver = static_cast<CBasePlayer *>(((CFuncVehicle *)ktmp)->m_pDriver);
+#ifdef REGAMEDLL_FIXES
+		if (pDriver && !pDriver->has_disconnected)
+#else
 		if (pDriver)
+#endif
 		{
 			pKiller = pDriver->pev;
 			peKiller = static_cast<CBasePlayer *>(pDriver);
