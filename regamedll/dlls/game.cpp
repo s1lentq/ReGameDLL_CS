@@ -163,6 +163,8 @@ cvar_t sv_autobunnyhopping               = { "sv_autobunnyhopping", "0", 0, 0.0f
 cvar_t sv_enablebunnyhopping             = { "sv_enablebunnyhopping", "0", 0, 0.0f, nullptr };
 cvar_t plant_c4_anywhere                 = { "mp_plant_c4_anywhere", "0", 0, 0.0f, nullptr };
 
+cvar_t legacy_vehicle_block                = { "mp_legacy_vehicle_block", "1", 0, 0.0f, nullptr };
+
 void GameDLL_Version_f()
 {
 	if (Q_stricmp(CMD_ARGV(1), "version") != 0)
@@ -393,6 +395,8 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&sv_autobunnyhopping);
 	CVAR_REGISTER(&sv_enablebunnyhopping);
 	CVAR_REGISTER(&plant_c4_anywhere);
+
+	CVAR_REGISTER(&legacy_vehicle_block);
 
 	// print version
 	CONSOLE_ECHO("ReGameDLL version: " APP_VERSION "\n");

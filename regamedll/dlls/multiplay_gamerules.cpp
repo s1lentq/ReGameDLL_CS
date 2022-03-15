@@ -3574,6 +3574,17 @@ void CHalfLifeMultiplay::ClientDisconnected(edict_t *pClient)
 			}
 #endif
 
+#ifdef REGAMEDLL_FIXES
+			// Clear m_pDriver if player disconnected
+			CFuncVehicle* pVehicle = nullptr;
+
+			while ((pVehicle = UTIL_FindEntityByClassname(pVehicle, "func_vehicle")))
+			{
+				if (pVehicle->m_pDriver == pPlayer)
+					pVehicle->m_pDriver = nullptr;
+			}
+#endif
+
 			if (pPlayer->m_bIsVIP)
 			{
 				m_pVIP = nullptr;
