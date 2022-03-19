@@ -460,6 +460,10 @@ typedef IHookChainRegistryClass<int, class CBasePlayerWeapon, int, int, float> I
 typedef IHookChainClass<bool, class CBasePlayerWeapon, int, int, float, float, const char *, const char *> IReGameHook_CBasePlayerWeapon_DefaultShotgunReload;
 typedef IHookChainRegistryClass<bool, class CBasePlayerWeapon, int, int, float, float, const char *, const char *> IReGameHookRegistry_CBasePlayerWeapon_DefaultShotgunReload;
 
+// CBasePlayerWeapon::KickBack hook
+typedef IHookChainClass<void, class CBasePlayerWeapon, float, float, float, float, float, float, int> IReGameHook_CBasePlayerWeapon_KickBack;
+typedef IHookChainRegistryClass<void, class CBasePlayerWeapon, float, float, float, float, float, float, int> IReGameHookRegistry_CBasePlayerWeapon_KickBack;
+
 // CBasePlayer::DropIdlePlayer hook
 typedef IHookChainClass<void, class CBasePlayer, const char *> IReGameHook_CBasePlayer_DropIdlePlayer;
 typedef IHookChainRegistryClass<void, class CBasePlayer, const char *> IReGameHookRegistry_CBasePlayer_DropIdlePlayer;
@@ -634,6 +638,7 @@ public:
 	virtual IReGameHookRegistry_CBasePlayerWeapon_DefaultDeploy *CBasePlayerWeapon_DefaultDeploy() = 0;
 	virtual IReGameHookRegistry_CBasePlayerWeapon_DefaultReload *CBasePlayerWeapon_DefaultReload() = 0;
 	virtual IReGameHookRegistry_CBasePlayerWeapon_DefaultShotgunReload *CBasePlayerWeapon_DefaultShotgunReload() = 0;
+	virtual IReGameHookRegistry_CBasePlayerWeapon_KickBack *CBasePlayerWeapon_KickBack() = 0;
 	virtual IReGameHookRegistry_CBasePlayer_DropIdlePlayer *CBasePlayer_DropIdlePlayer() = 0;
 	virtual IReGameHookRegistry_CreateWeaponBox *CreateWeaponBox() = 0;
 

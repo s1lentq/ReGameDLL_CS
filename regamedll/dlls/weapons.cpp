@@ -54,22 +54,24 @@ float GetBaseAccuracy(WeaponIdType id)
 {
 	switch (id)
 	{
-	case WEAPON_M4A1:
-	case WEAPON_AK47:
-	case WEAPON_AUG:
-	case WEAPON_SG552:
-	case WEAPON_FAMAS:
-	case WEAPON_GALIL:
-	case WEAPON_M249:
-	case WEAPON_P90:
-	case WEAPON_TMP:
-		return 0.2f;
-	case WEAPON_MAC10:
-		return 0.15f;
-	case WEAPON_UMP45:
-	case WEAPON_MP5N:
-		return 0.0f;
+		case WEAPON_M4A1:
+		case WEAPON_AK47:
+		case WEAPON_AUG:
+		case WEAPON_SG552:
+		case WEAPON_FAMAS:
+		case WEAPON_GALIL:
+		case WEAPON_M249:
+		case WEAPON_P90:
+		case WEAPON_TMP:
+			return 0.2f;
+		case WEAPON_MAC10:
+			return 0.15f;
+		case WEAPON_UMP45:
+		case WEAPON_MP5N:
+			return 0.0f;
 	}
+	
+	return 0.0f;
 }
 
 // Resets the global multi damage accumulator
@@ -689,7 +691,9 @@ bool CBasePlayerWeapon::ShieldSecondaryFire(int iUpAnim, int iDownAnim)
 	return true;
 }
 
-void CBasePlayerWeapon::KickBack(float up_base, float lateral_base, float up_modifier, float lateral_modifier, float up_max, float lateral_max, int direction_change)
+LINK_HOOK_CLASS_VOID_CHAIN(CBasePlayerWeapon, KickBack, (float up_base, float lateral_base, float up_modifier, float lateral_modifier, float up_max, float lateral_max, int direction_change), up_base, lateral_base, up_modifier, lateral_modifier, up_max, lateral_max, direction_change)
+
+void EXT_FUNC CBasePlayerWeapon::__API_HOOK(KickBack)(float up_base, float lateral_base, float up_modifier, float lateral_modifier, float up_max, float lateral_max, int direction_change)
 {
 	real_t flKickUp;
 	float flKickLateral;
