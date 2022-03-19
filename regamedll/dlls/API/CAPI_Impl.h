@@ -758,7 +758,6 @@ public:
 	CReGameHookRegistry_CBasePlayerWeapon_DefaultDeploy m_CBasePlayerWeapon_DefaultDeploy;
 	CReGameHookRegistry_CBasePlayerWeapon_DefaultReload m_CBasePlayerWeapon_DefaultReload;
 	CReGameHookRegistry_CBasePlayerWeapon_DefaultShotgunReload m_CBasePlayerWeapon_DefaultShotgunReload;
-	CReGameHookRegistry_CBasePlayerWeapon_KickBack m_CBasePlayerWeapon_KickBack;
 	CReGameHookRegistry_CBasePlayer_DropIdlePlayer m_CBasePlayer_DropIdlePlayer;
 	CReGameHookRegistry_CreateWeaponBox m_CreateWeaponBox;
 
@@ -778,6 +777,8 @@ public:
 	CReGameHookRegistry_CBasePlayer_Pain m_CBasePlayer_Pain;
 	CReGameHookRegistry_CBasePlayer_DeathSound m_CBasePlayer_DeathSound;
 	CReGameHookRegistry_CBasePlayer_JoiningThink m_CBasePlayer_JoiningThink;
+	
+	CReGameHookRegistry_CBasePlayerWeapon_KickBack m_CBasePlayerWeapon_KickBack;
 
 public:
 	virtual IReGameHookRegistry_CBasePlayer_Spawn *CBasePlayer_Spawn();
@@ -890,7 +891,6 @@ public:
 	virtual IReGameHookRegistry_CBasePlayerWeapon_DefaultDeploy *CBasePlayerWeapon_DefaultDeploy();
 	virtual IReGameHookRegistry_CBasePlayerWeapon_DefaultReload *CBasePlayerWeapon_DefaultReload();
 	virtual IReGameHookRegistry_CBasePlayerWeapon_DefaultShotgunReload *CBasePlayerWeapon_DefaultShotgunReload();
-	virtual IReGameHookRegistry_CBasePlayerWeapon_KickBack *CBasePlayerWeapon_KickBack();
 	virtual IReGameHookRegistry_CBasePlayer_DropIdlePlayer *CBasePlayer_DropIdlePlayer();
 	virtual IReGameHookRegistry_CreateWeaponBox *CreateWeaponBox();
 
@@ -910,6 +910,8 @@ public:
 	virtual IReGameHookRegistry_CBasePlayer_Pain *CBasePlayer_Pain();
 	virtual IReGameHookRegistry_CBasePlayer_DeathSound *CBasePlayer_DeathSound();
 	virtual IReGameHookRegistry_CBasePlayer_JoiningThink *CBasePlayer_JoiningThink();
+	
+	virtual IReGameHookRegistry_CBasePlayerWeapon_KickBack *CBasePlayerWeapon_KickBack();
 };
 
 extern CReGameHookchains g_ReGameHookchains;
