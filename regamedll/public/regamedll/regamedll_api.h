@@ -638,7 +638,6 @@ public:
 	virtual IReGameHookRegistry_CBasePlayerWeapon_DefaultDeploy *CBasePlayerWeapon_DefaultDeploy() = 0;
 	virtual IReGameHookRegistry_CBasePlayerWeapon_DefaultReload *CBasePlayerWeapon_DefaultReload() = 0;
 	virtual IReGameHookRegistry_CBasePlayerWeapon_DefaultShotgunReload *CBasePlayerWeapon_DefaultShotgunReload() = 0;
-	virtual IReGameHookRegistry_CBasePlayerWeapon_KickBack *CBasePlayerWeapon_KickBack() = 0;
 	virtual IReGameHookRegistry_CBasePlayer_DropIdlePlayer *CBasePlayer_DropIdlePlayer() = 0;
 	virtual IReGameHookRegistry_CreateWeaponBox *CreateWeaponBox() = 0;
 
@@ -658,6 +657,8 @@ public:
 	virtual IReGameHookRegistry_CBasePlayer_Pain *CBasePlayer_Pain() = 0;
 	virtual IReGameHookRegistry_CBasePlayer_DeathSound *CBasePlayer_DeathSound() = 0;
 	virtual IReGameHookRegistry_CBasePlayer_JoiningThink *CBasePlayer_JoiningThink() = 0;
+	
+	virtual IReGameHookRegistry_CBasePlayerWeapon_KickBack *CBasePlayerWeapon_KickBack() = 0;
 };
 
 struct ReGameFuncs_t {
