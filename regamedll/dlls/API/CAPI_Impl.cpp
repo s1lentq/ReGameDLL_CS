@@ -183,7 +183,6 @@ GAMEHOOK_REGISTRY(CBasePlayerWeapon_CanDeploy);
 GAMEHOOK_REGISTRY(CBasePlayerWeapon_DefaultDeploy);
 GAMEHOOK_REGISTRY(CBasePlayerWeapon_DefaultReload);
 GAMEHOOK_REGISTRY(CBasePlayerWeapon_DefaultShotgunReload);
-GAMEHOOK_REGISTRY(CBasePlayerWeapon_KickBack);
 GAMEHOOK_REGISTRY(CBasePlayer_DropIdlePlayer);
 
 GAMEHOOK_REGISTRY(CreateWeaponBox);
@@ -204,6 +203,8 @@ GAMEHOOK_REGISTRY(CBasePlayer_Observer_FindNextPlayer);
 GAMEHOOK_REGISTRY(CBasePlayer_Pain);
 GAMEHOOK_REGISTRY(CBasePlayer_DeathSound);
 GAMEHOOK_REGISTRY(CBasePlayer_JoiningThink);
+
+GAMEHOOK_REGISTRY(CBasePlayerWeapon_KickBack);
 
 int CReGameApi::GetMajorVersion() {
 	return REGAMEDLL_API_VERSION_MAJOR;
