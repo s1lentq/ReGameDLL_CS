@@ -197,7 +197,7 @@ void GameDLL_EndRound_f()
 
 void GameDLL_SwapTeams_f()
 {
-	if (CMD_ARGC() == 1)
+	if (CMD_ARGC() == 2)
 	{
 		const char *pCmd = CMD_ARGV(1);
 		
