@@ -1872,7 +1872,7 @@ void EXT_FUNC __API_HOOK(PM_Duck)()
 {
 	int buttonsChanged = (pmove->oldbuttons ^ pmove->cmd.buttons);	// These buttons have changed this frame
 	int nButtonPressed =  buttonsChanged & pmove->cmd.buttons;		// The changed ones still down are "pressed"
- 
+
 	int duckchange = buttonsChanged & IN_DUCK ? 1 : 0;
 	int duckpressed = nButtonPressed & IN_DUCK ? 1 : 0;
 
