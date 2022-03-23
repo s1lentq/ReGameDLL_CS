@@ -364,6 +364,14 @@ typedef IHookChainRegistry<bool, class CBasePlayer *, class CBasePlayer *> IReGa
 typedef IHookChain<void> IReGameHook_PM_UpdateStepSound;
 typedef IHookChainRegistry<void> IReGameHookRegistry_PM_UpdateStepSound;
 
+// PM_Duck hook
+typedef IHookChain<void> IReGameHook_PM_Duck;
+typedef IHookChainRegistry<void> IReGameHookRegistry_PM_Duck;
+
+// PM_UnDuck hook
+typedef IHookChain<void> IReGameHook_PM_UnDuck;
+typedef IHookChainRegistry<void> IReGameHookRegistry_PM_UnDuck;
+
 // CBasePlayer::StartDeathCam hook
 typedef IHookChainClass<void, class CBasePlayer> IReGameHook_CBasePlayer_StartDeathCam;
 typedef IHookChainRegistryClass<void, class CBasePlayer> IReGameHookRegistry_CBasePlayer_StartDeathCam;
@@ -653,6 +661,8 @@ public:
 	virtual IReGameHookRegistry_CBasePlayer_Pain *CBasePlayer_Pain() = 0;
 	virtual IReGameHookRegistry_CBasePlayer_DeathSound *CBasePlayer_DeathSound() = 0;
 	virtual IReGameHookRegistry_CBasePlayer_JoiningThink *CBasePlayer_JoiningThink() = 0;
+	virtual IReGameHookRegistry_PM_Duck *PM_Duck() = 0;
+	virtual IReGameHookRegistry_PM_UnDuck *PM_UnDuck() = 0;
 };
 
 struct ReGameFuncs_t {

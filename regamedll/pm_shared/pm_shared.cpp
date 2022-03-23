@@ -1793,7 +1793,9 @@ void PM_FixPlayerCrouchStuck(int direction)
 	VectorCopy(test, pmove->origin);
 }
 
-void PM_UnDuck()
+LINK_HOOK_VOID_CHAIN2(PM_UnDuck);
+
+void EXT_FUNC __API_HOOK(PM_UnDuck)()
 {
 #ifdef REGAMEDLL_ADD
 	if (unduck_method.value)
@@ -1863,7 +1865,10 @@ void PM_UnDuck()
 	}
 }
 
-void PM_Duck()
+
+LINK_HOOK_VOID_CHAIN2(PM_Duck);
+
+void EXT_FUNC __API_HOOK(PM_Duck)()
 {
 	int buttonsChanged = (pmove->oldbuttons ^ pmove->cmd.buttons);	// These buttons have changed this frame
 	int nButtonPressed =  buttonsChanged & pmove->cmd.buttons;		// The changed ones still down are "pressed"
