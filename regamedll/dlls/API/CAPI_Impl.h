@@ -485,10 +485,6 @@ typedef IHookChainRegistryClassEmptyImpl<bool, CCStrikeGameMgrHelper, CBasePlaye
 typedef IHookChainImpl<void> CReGameHook_PM_UpdateStepSound;
 typedef IHookChainRegistryImpl<void> CReGameHookRegistry_PM_UpdateStepSound;
 
-// PM_Duck hook
-typedef IHookChainImpl<void> CReGameHook_PM_Duck;
-typedef IHookChainRegistryImpl<void> CReGameHookRegistry_PM_Duck;
-
 // PM_UnDuck hook
 typedef IHookChainImpl<void> CReGameHook_PM_UnDuck;
 typedef IHookChainRegistryImpl<void> CReGameHookRegistry_PM_UnDuck;
@@ -736,7 +732,6 @@ public:
 	CReGameHookRegistry_CSGameRules_BalanceTeams m_CSGameRules_BalanceTeams;
 	CReGameHookRegistry_CSGameRules_OnRoundFreezeEnd m_CSGameRules_OnRoundFreezeEnd;
 	CReGameHookRegistry_PM_UpdateStepSound m_PM_UpdateStepSound;
-	CReGameHookRegistry_PM_Duck m_PM_Duck;
 	CReGameHookRegistry_PM_UnDuck m_PM_UnDuck;
 	CReGameHookRegistry_CBasePlayer_StartDeathCam m_CBasePlayer_StartDeathCam;
 	CReGameHookRegistry_CBasePlayer_SwitchTeam m_CBasePlayer_SwitchTeam;
@@ -914,8 +909,7 @@ public:
 	virtual IReGameHookRegistry_CBasePlayer_Pain *CBasePlayer_Pain();
 	virtual IReGameHookRegistry_CBasePlayer_DeathSound *CBasePlayer_DeathSound();
 	virtual IReGameHookRegistry_CBasePlayer_JoiningThink *CBasePlayer_JoiningThink();
-	
-	virtual IReGameHookRegistry_PM_Duck *PM_Duck();
+
 	virtual IReGameHookRegistry_PM_UnDuck *PM_UnDuck();
 };
 

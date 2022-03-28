@@ -83,7 +83,6 @@ void PM_Init_OrigFunc(struct playermove_s *ppmove);
 void PM_Move_OrigFunc(struct playermove_s *ppmove, int server);
 void PM_AirMove_OrigFunc(int playerIndex = 0);
 void PM_UpdateStepSound_OrigFunc();
-void PM_Duck_OrigFunc();
 void PM_UnDuck_OrigFunc();
 #else
 void PM_AirMove(int playerIndex = 0);
