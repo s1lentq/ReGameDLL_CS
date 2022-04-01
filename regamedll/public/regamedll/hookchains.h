@@ -67,6 +67,7 @@ public:
 
 	virtual void registerHook(hookfunc_t hook, int priority = HC_PRIORITY_DEFAULT) = 0;
 	virtual void unregisterHook(hookfunc_t hook) = 0;
+	virtual void findHook(hookfunc_t hook) = 0;
 };
 
 // Hook chain registry(for hooks [un]registration)
@@ -77,4 +78,5 @@ public:
 
 	virtual void registerHook(hookfunc_t hook, int priority = HC_PRIORITY_DEFAULT) = 0;
 	virtual void unregisterHook(hookfunc_t hook) = 0;
+	virtual void findHook(hookfunc_t hook) = 0;
 };
