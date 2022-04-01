@@ -205,6 +205,9 @@ public:
 	virtual void unregisterHook(hookfunc_t hook) {
 		removeHook((void*)hook);
 	}
+	virtual bool findHook(hookfunc_t hook) {
+		return findHook((void*)hook);
+	}
 };
 
 template <typename t_ret, typename t_class, typename ...t_args>
@@ -226,6 +229,9 @@ public:
 	virtual void unregisterHook(hookfunc_t hook) {
 		removeHook((void*)hook);
 	}
+	virtual bool findHook(hookfunc_t hook) {
+		return findHook((void*)hook);
+	}
 };
 
 template <typename t_ret, typename t_class, typename ...t_args>
@@ -246,5 +252,8 @@ public:
 	}
 	virtual void unregisterHook(hookfunc_t hook) {
 		removeHook((void*)hook);
+	}
+	virtual bool findHook(hookfunc_t hook) {
+		return findHook((void*)hook);
 	}
 };
