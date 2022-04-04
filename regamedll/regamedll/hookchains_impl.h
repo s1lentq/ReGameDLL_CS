@@ -179,7 +179,7 @@ protected:
 
 protected:
 	void addHook(void* hookFunc, int priority);
-	bool findHook(void* hookFunc) const;
+	bool findHook(void* hookFunc);
 	void removeHook(void* hookFunc);
 
 public:
