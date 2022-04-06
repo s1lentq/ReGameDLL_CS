@@ -53,7 +53,7 @@ void AbstractHookChainRegistry::addHook(void* hookFunc, int priority)
 	}
 
 	if (findHook(hookFunc)) {
-		Sys_Error("%s: The same handler can't be used twice on the hookchain.", __FUNC__);
+		return;
 	}
 
 	for (auto i = 0; i < MAX_HOOKS_IN_CHAIN; i++)
