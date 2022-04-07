@@ -179,7 +179,7 @@ protected:
 
 protected:
 	void addHook(void* hookFunc, int priority);
-	bool findHook(void* hookFunc);
+	bool findHook(void* hookFunc) const;
 	void removeHook(void* hookFunc);
 
 public:
@@ -202,11 +202,11 @@ public:
 	virtual void registerHook(hookfunc_t hook, int priority) {
 		addHook((void*)hook, priority);
 	}
+	virtual bool checkHook(hookfunc_t hook) {
+		return findHook((void*)hook);
+	}
 	virtual void unregisterHook(hookfunc_t hook) {
 		removeHook((void*)hook);
-	}
-	virtual bool findHook(hookfunc_t hook) {
-		return findHook((void*)hook);
 	}
 };
 
@@ -226,11 +226,11 @@ public:
 	virtual void registerHook(hookfunc_t hook, int priority) {
 		addHook((void*)hook, priority);
 	}
+	virtual bool checkHook(hookfunc_t hook) {
+		return findHook((void*)hook);
+	}
 	virtual void unregisterHook(hookfunc_t hook) {
 		removeHook((void*)hook);
-	}
-	virtual bool findHook(hookfunc_t hook) {
-		return findHook((void*)hook);
 	}
 };
 
@@ -250,10 +250,10 @@ public:
 	virtual void registerHook(hookfunc_t hook, int priority) {
 		addHook((void*)hook, priority);
 	}
+	virtual bool checkHook(hookfunc_t hook) {
+		return findHook((void*)hook);
+	}
 	virtual void unregisterHook(hookfunc_t hook) {
 		removeHook((void*)hook);
-	}
-	virtual bool findHook(hookfunc_t hook) {
-		return findHook((void*)hook);
 	}
 };
