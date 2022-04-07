@@ -1712,6 +1712,10 @@ void CTriggerPush::Touch(CBaseEntity *pOther)
 	}
 }
 
+#define SF_TELEPORT_KEEP_ANGLES 256
+#define SF_TELEPORT_KEEP_VELOCITY 512
+#define SF_TELEPORT_REDIRECT_VELOCITY_WITH_YAW_DESTINATION 1024
+
 void CBaseTrigger::TeleportTouch(CBaseEntity *pOther)
 {
 	entvars_t *pevToucher = pOther->pev;
@@ -1766,15 +1770,57 @@ void CBaseTrigger::TeleportTouch(CBaseEntity *pOther)
 
 	UTIL_SetOrigin(pevToucher, tmp);
 
-	pevToucher->angles = pentTarget->v.angles;
+	#ifdef REGAMEDLL_ADD
+		if (!(pev->spawnflags & SF_TELEPORT_KEEP_ANGLES))
+		{
+	#endif
+			pevToucher->angles = pentTarget->v.angles;
 
-	if (pOther->IsPlayer())
-	{
-		pevToucher->v_angle = pentTarget->v.angles;
-	}
+			if (pOther->IsPlayer())
+			{
+				pevToucher->v_angle = pentTarget->v.angles;
+			}
 
-	pevToucher->fixangle = 1;
-	pevToucher->velocity = pevToucher->basevelocity = g_vecZero;
+			pevToucher->fixangle = 1;
+	#ifdef REGAMEDLL_ADD
+		}
+	#endif
+
+	#ifdef REGAMEDLL_ADD
+		if (!(pev->spawnflags & SF_TELEPORT_KEEP_VELOCITY))
+		{
+	#endif
+			pevToucher->velocity = pevToucher->basevelocity = g_vecZero;
+	#ifdef REGAMEDLL_ADD
+		}
+	#endif
+
+	#ifdef REGAMEDLL_ADD
+		if ((pev->spawnflags & SF_TELEPORT_REDIRECT_VELOCITY_WITH_YAW_DESTINATION) && (pev->spawnflags & SF_TELEPORT_KEEP_VELOCITY))
+		{
+			int xy_vel_before_teleport = std::round(std::hypot(pevToucher->velocity.x, pevToucher->velocity.y));
+			int yaw_destination = pentTarget->v.angles.y;
+			switch (yaw_destination)
+			{
+				case 0:
+					pevToucher->velocity.x = pevToucher->basevelocity.x = xy_vel_before_teleport / 2;
+					pevToucher->velocity.y = pevToucher->basevelocity.y = 0;
+					break;
+				case 90:
+					pevToucher->velocity.y = pevToucher->basevelocity.y = xy_vel_before_teleport / 2;
+					pevToucher->velocity.x = pevToucher->basevelocity.x = 0;
+					break;
+				case 180:
+					pevToucher->velocity.x = pevToucher->basevelocity.x = -xy_vel_before_teleport / 2;
+					pevToucher->velocity.y = pevToucher->basevelocity.y = 0;
+					break;
+				case 270:
+					pevToucher->velocity.y = pevToucher->basevelocity.y = -xy_vel_before_teleport / 2;
+					pevToucher->velocity.x = pevToucher->basevelocity.x = 0;
+					break;
+			}
+		}
+	#endif
 }
 
 LINK_ENTITY_TO_CLASS(trigger_teleport, CTriggerTeleport, CCSTriggerTeleport)
