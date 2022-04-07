@@ -37,7 +37,7 @@ AbstractHookChainRegistry::AbstractHookChainRegistry()
 	m_NumHooks = 0;
 }
 
-bool AbstractHookChainRegistry::findHook(void* hookFunc)
+bool AbstractHookChainRegistry::findHook(void* hookFunc) const
 {
 	for (auto i = 0; i < m_NumHooks; i++) {
 		if (m_Hooks[i] == hookFunc)
