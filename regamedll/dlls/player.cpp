@@ -4720,7 +4720,7 @@ void CBasePlayer::CheckTimeBasedDamage()
 		{
 			switch (i)
 			{
-			case ITBD_PARALLYZE:
+			case ITBD_PARALYZE:
 				// UNDONE - flag movement as half-speed
 				bDuration = PARALYZE_DURATION;
 				break;
