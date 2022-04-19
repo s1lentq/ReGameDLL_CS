@@ -357,6 +357,10 @@ typedef IHookChainRegistryImpl<void, struct playermove_s *, int> CReGameHookRegi
 typedef IHookChainImpl<void, int> CReGameHook_PM_AirMove;
 typedef IHookChainRegistryImpl<void, int> CReGameHookRegistry_PM_AirMove;
 
+// PM_Jump hook
+typedef IHookChainImpl<void> CReGameHook_PM_Jump;
+typedef IHookChainRegistryImpl<void> CReGameHookRegistry_PM_Jump;
+
 // HandleMenu_ChooseAppearance hook
 typedef IHookChainImpl<void, CBasePlayer *, int> CReGameHook_HandleMenu_ChooseAppearance;
 typedef IHookChainRegistryImpl<void, CBasePlayer *, int> CReGameHookRegistry_HandleMenu_ChooseAppearance;
@@ -773,6 +777,8 @@ public:
 	CReGameHookRegistry_CBasePlayer_Pain m_CBasePlayer_Pain;
 	CReGameHookRegistry_CBasePlayer_DeathSound m_CBasePlayer_DeathSound;
 	CReGameHookRegistry_CBasePlayer_JoiningThink m_CBasePlayer_JoiningThink;
+	
+	CReGameHookRegistry_PM_Jump m_PM_Jump;
 
 public:
 	virtual IReGameHookRegistry_CBasePlayer_Spawn *CBasePlayer_Spawn();
@@ -904,6 +910,8 @@ public:
 	virtual IReGameHookRegistry_CBasePlayer_Pain *CBasePlayer_Pain();
 	virtual IReGameHookRegistry_CBasePlayer_DeathSound *CBasePlayer_DeathSound();
 	virtual IReGameHookRegistry_CBasePlayer_JoiningThink *CBasePlayer_JoiningThink();
+	
+	virtual IReGameHookRegistry_PM_Jump *PM_Jump();
 };
 
 extern CReGameHookchains g_ReGameHookchains;

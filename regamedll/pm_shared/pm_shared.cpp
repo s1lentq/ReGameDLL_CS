@@ -2342,7 +2342,9 @@ void PM_PreventMegaBunnyJumping()
 	VectorScale(pmove->velocity, fraction, pmove->velocity);
 }
 
-void PM_Jump()
+LINK_HOOK_VOID_CHAIN2(PM_Jump);
+
+void EXT_FUNC __API_HOOK(PM_Jump)()
 {
 	if (pmove->dead)
 	{
