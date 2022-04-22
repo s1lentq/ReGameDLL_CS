@@ -1798,7 +1798,7 @@ void CBaseTrigger::TeleportTouch(CBaseEntity *pOther)
 	#ifdef REGAMEDLL_ADD
 		if ((pev->spawnflags & SF_TELEPORT_REDIRECT_VELOCITY_WITH_YAW_DESTINATION) && (pev->spawnflags & SF_TELEPORT_KEEP_VELOCITY))
 		{
-			float xy_vel = std::hypot(pevToucher->velocity.x, pevToucher->velocity.y);
+			float xy_vel = pevToucher->velocity.Length2D();
 
 			Vector vecAngles = Vector(0, pentTarget->v.angles.y, 0);
 			Vector vecForward;
