@@ -1798,27 +1798,14 @@ void CBaseTrigger::TeleportTouch(CBaseEntity *pOther)
 	#ifdef REGAMEDLL_ADD
 		if ((pev->spawnflags & SF_TELEPORT_REDIRECT_VELOCITY_WITH_YAW_DESTINATION) && (pev->spawnflags & SF_TELEPORT_KEEP_VELOCITY))
 		{
-			int xy_vel_before_teleport = std::round(std::hypot(pevToucher->velocity.x, pevToucher->velocity.y));
-			int yaw_destination = pentTarget->v.angles.y;
-			switch (yaw_destination)
-			{
-				case 0:
-					pevToucher->velocity.x = pevToucher->basevelocity.x = xy_vel_before_teleport / 2;
-					pevToucher->velocity.y = pevToucher->basevelocity.y = 0;
-					break;
-				case 90:
-					pevToucher->velocity.y = pevToucher->basevelocity.y = xy_vel_before_teleport / 2;
-					pevToucher->velocity.x = pevToucher->basevelocity.x = 0;
-					break;
-				case 180:
-					pevToucher->velocity.x = pevToucher->basevelocity.x = -xy_vel_before_teleport / 2;
-					pevToucher->velocity.y = pevToucher->basevelocity.y = 0;
-					break;
-				case 270:
-					pevToucher->velocity.y = pevToucher->basevelocity.y = -xy_vel_before_teleport / 2;
-					pevToucher->velocity.x = pevToucher->basevelocity.x = 0;
-					break;
-			}
+			float xy_vel = std::hypot(pevToucher->velocity.x, pevToucher->velocity.y);
+
+			Vector vecAngles = Vector(0, pentTarget->v.angles.y, 0);
+			Vector vecForward;
+			AngleVectors(vecAngles, vecForward, nullptr, nullptr);
+
+			pevToucher->velocity.x = vecForward.x * xy_vel;
+			pevToucher->velocity.y = vecForward.y * xy_vel;
 		}
 	#endif
 }
