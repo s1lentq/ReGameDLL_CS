@@ -1770,44 +1770,40 @@ void CBaseTrigger::TeleportTouch(CBaseEntity *pOther)
 
 	UTIL_SetOrigin(pevToucher, tmp);
 
-	#ifdef REGAMEDLL_ADD
-		if (!(pev->spawnflags & SF_TELEPORT_KEEP_ANGLES))
+#ifdef REGAMEDLL_ADD
+	if (!(pev->spawnflags & SF_TELEPORT_KEEP_ANGLES))
+#endif
+	{
+		pevToucher->angles = pentTarget->v.angles;
+
+		if (pOther->IsPlayer())
 		{
-	#endif
-			pevToucher->angles = pentTarget->v.angles;
-
-			if (pOther->IsPlayer())
-			{
-				pevToucher->v_angle = pentTarget->v.angles;
-			}
-
-			pevToucher->fixangle = 1;
-	#ifdef REGAMEDLL_ADD
+			pevToucher->v_angle = pentTarget->v.angles;
 		}
-	#endif
 
-	#ifdef REGAMEDLL_ADD
-		if (!(pev->spawnflags & SF_TELEPORT_KEEP_VELOCITY))
-		{
-	#endif
-			pevToucher->velocity = pevToucher->basevelocity = g_vecZero;
-	#ifdef REGAMEDLL_ADD
-		}
-	#endif
+		pevToucher->fixangle = 1;
+	}
 
-	#ifdef REGAMEDLL_ADD
-		if ((pev->spawnflags & SF_TELEPORT_REDIRECT_VELOCITY_WITH_YAW_DESTINATION) && (pev->spawnflags & SF_TELEPORT_KEEP_VELOCITY))
-		{
-			float xy_vel = pevToucher->velocity.Length2D();
+#ifdef REGAMEDLL_ADD
+	if (!(pev->spawnflags & SF_TELEPORT_KEEP_VELOCITY))
+#endif
+	{
+		pevToucher->velocity = pevToucher->basevelocity = g_vecZero;
+	}
 
-			Vector vecAngles = Vector(0, pentTarget->v.angles.y, 0);
-			Vector vecForward;
-			AngleVectors(vecAngles, vecForward, nullptr, nullptr);
+#ifdef REGAMEDLL_ADD
+	if ((pev->spawnflags & SF_TELEPORT_REDIRECT_VELOCITY_WITH_YAW_DESTINATION) && (pev->spawnflags & SF_TELEPORT_KEEP_VELOCITY))
+	{
+		float xy_vel = pevToucher->velocity.Length2D();
 
-			pevToucher->velocity.x = vecForward.x * xy_vel;
-			pevToucher->velocity.y = vecForward.y * xy_vel;
-		}
-	#endif
+		Vector vecAngles = Vector(0, pentTarget->v.angles.y, 0);
+		Vector vecForward;
+		AngleVectors(vecAngles, vecForward, nullptr, nullptr);
+
+		pevToucher->velocity.x = vecForward.x * xy_vel;
+		pevToucher->velocity.y = vecForward.y * xy_vel;
+	}
+#endif
 }
 
 LINK_ENTITY_TO_CLASS(trigger_teleport, CTriggerTeleport, CCSTriggerTeleport)
