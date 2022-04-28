@@ -2028,6 +2028,8 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(RestartRound)()
 #endif
 
 			pPlayer->RoundRespawn();
+			
+			FireTargets("game_round_start", pPlayer, nullptr, USE_TOGGLE, 0.0);
 		}
 
 		// Gooseman : The following code fixes the HUD icon bug

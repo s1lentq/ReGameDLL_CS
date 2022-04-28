@@ -1497,6 +1497,8 @@ void UTIL_RestartOther(const char *szClassname)
 	while ((pEntity = UTIL_FindEntityByClassname(pEntity, szClassname)))
 	{
 		pEntity->Restart();
+		
+		FireTargets("game_round_start", pEntity, nullptr, USE_TOGGLE, 0.0);
 	}
 }
 
