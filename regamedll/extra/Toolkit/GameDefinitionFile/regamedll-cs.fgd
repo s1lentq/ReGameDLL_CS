@@ -2262,15 +2262,7 @@
 	]
 ]
 
-@SolidClass base(Trigger) = trigger_teleport : "Trigger teleport" 
-[
-	spawnflags(flags) =
-	[
-		256: "Keep angles" : 0
-		512: "Keep velocity" : 0
-		1024: "Redirect velocity with yaw from destination" : 0
-	]
-]
+@SolidClass base(Trigger) = trigger_teleport : "Trigger teleport" []
 
 // Function entities
 @SolidClass = func_bomb_target : "Bomb target zone"
