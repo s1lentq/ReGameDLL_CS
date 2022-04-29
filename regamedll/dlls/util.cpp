@@ -1499,7 +1499,7 @@ void UTIL_RestartOther(const char *szClassname)
 		pEntity->Restart();
 		
 #ifdef REGAMEDLL_ADD
-		FireTargets("game_round_start", pEntity, nullptr, USE_TOGGLE, 0.0);
+		FireTargets("game_entity_restart", pEntity, nullptr, USE_TOGGLE, 0.0);
 #endif
 	}
 }
