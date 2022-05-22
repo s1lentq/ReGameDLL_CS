@@ -2811,7 +2811,7 @@ void PM_ReduceTimers()
 	}
 
 	if (pmove->fuser2 > 0.0)
-	{	
+	{
 		pmove->fuser2 -= frame_msec;
 
 		if (pmove->fuser2 < 0.0)
