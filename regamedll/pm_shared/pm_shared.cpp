@@ -2771,16 +2771,20 @@ void PM_CheckParameters()
 	}
 }
 
-#if defined REGAMEDLL_FIXES
 void PM_ReduceTimers()
 {
-	float frame_msec = 1000.0f * pmove->frametime;
+	float frame_msec = 2000.0f * pmove->frametime;
+
+	if(sv_legacy_movement.value <= 0.0)
+	{
+		frame_msec = pmove->cmd.msec;
+	}
 	
 	if (pmove->flTimeStepSound > 0.0)
 	{
 		pmove->flTimeStepSound -= frame_msec;
 
-		if (pmove->flTimeStepSound < 0)
+		if (pmove->flTimeStepSound < 0.0)
 		{
 			pmove->flTimeStepSound = 0.0;
 		}
@@ -2790,7 +2794,7 @@ void PM_ReduceTimers()
 	{
 		pmove->flDuckTime -= frame_msec;
 
-		if (pmove->flDuckTime < 0)
+		if (pmove->flDuckTime < 0.0)
 		{
 			pmove->flDuckTime = 0.0;
 		}
@@ -2800,7 +2804,7 @@ void PM_ReduceTimers()
 	{
 		pmove->flSwimTime -= frame_msec;
 
-		if (pmove->flSwimTime < 0)
+		if (pmove->flSwimTime < 0.0)
 		{
 			pmove->flSwimTime = 0.0;
 		}
@@ -2816,50 +2820,6 @@ void PM_ReduceTimers()
 		}
 	}
 }
-#else
-void PM_ReduceTimers()
-{
-	if (pmove->flTimeStepSound > 0)
-	{
-		pmove->flTimeStepSound -= pmove->cmd.msec;
-
-		if (pmove->flTimeStepSound < 0)
-		{
-			pmove->flTimeStepSound = 0;
-		}
-	}
-
-	if (pmove->flDuckTime > 0)
-	{
-		pmove->flDuckTime -= pmove->cmd.msec;
-
-		if (pmove->flDuckTime < 0)
-		{
-			pmove->flDuckTime = 0;
-		}
-	}
-
-	if (pmove->flSwimTime > 0)
-	{
-		pmove->flSwimTime -= pmove->cmd.msec;
-
-		if (pmove->flSwimTime < 0)
-		{
-			pmove->flSwimTime = 0;
-		}
-	}
-
-	if (pmove->fuser2 > 0.0)
-	{
-		pmove->fuser2 -= pmove->cmd.msec;
-
-		if (pmove->fuser2 < 0.0)
-		{
-			pmove->fuser2 = 0;
-		}
-	}
-}
-#endif
 
 qboolean PM_ShouldDoSpectMode()
 {
