@@ -2782,6 +2782,10 @@ void PM_ReduceTimers()
 		{
 			frame_msec *= 1.65f;
 		}
+		else
+		{
+			frame_msec *= 1.45f;
+		}
 	}
 #endif
 	
