@@ -2774,7 +2774,17 @@ void PM_CheckParameters()
 void PM_ReduceTimers()
 {
 	float frame_msec = pmove->cmd.msec;
+	
+	if (pmove->flTimeStepSound > 0.0)
+	{
+		pmove->flTimeStepSound -= frame_msec;
 
+		if (pmove->flTimeStepSound < 0.0)
+		{
+			pmove->flTimeStepSound = 0.0;
+		}
+	}
+	
 #ifdef REGAMEDLL_ADD
 	if(sv_legacy_movement.value > 0.0)
 	{
@@ -2788,16 +2798,6 @@ void PM_ReduceTimers()
 		}
 	}
 #endif
-	
-	if (pmove->flTimeStepSound > 0.0)
-	{
-		pmove->flTimeStepSound -= frame_msec;
-
-		if (pmove->flTimeStepSound < 0.0)
-		{
-			pmove->flTimeStepSound = 0.0;
-		}
-	}
 
 	if (pmove->flDuckTime > 0.0)
 	{
