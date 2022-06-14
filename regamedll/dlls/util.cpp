@@ -1502,10 +1502,10 @@ void UTIL_RestartOther(const char *szClassname)
 
 void UTIL_ResetEntities()
 {
-	edict_t *pEdict = INDEXENT(1);
-	for (int i = 1; i < gpGlobals->maxEntities; i++, pEdict++)
+	for (int i = 1; i < gpGlobals->maxEntities; i++)
 	{
-		if (pEdict->free)
+		edict_t *pEdict = INDEXENT(i);
+		if (!pEdict || pEdict->free)
 			continue;
 
 		CBaseEntity *pEntity = CBaseEntity::Instance(pEdict);
