@@ -46,7 +46,7 @@ const float ROUND_RESPAWN_TIME  = 20.0f;
 const float ROUND_BEGIN_DELAY   = 5.0f;	// delay before beginning new round
 const float ITEM_KILL_DELAY     = 300.0f;
 const float RADIO_TIMEOUT       = 1.5f;
-const float DYING_TIME          = 3.0f;
+const float DEATH_ANIMATION_TIME = 3.0f;
 
 const int MAX_INTERMISSION_TIME = 120;	// longest the intermission can last, in seconds
 
@@ -922,7 +922,7 @@ inline float CGameRules::GetDyingTime()
 #ifdef REGAMEDLL_ADD
 	return dying_time.value;
 #else
-	return DYING_TIME;
+	return DEATH_ANIMATION_TIME;
 #endif
 }
 
