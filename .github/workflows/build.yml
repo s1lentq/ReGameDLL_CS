@@ -152,7 +152,7 @@ jobs:
 
       - name: Build and Run unittests
         run: |
-          rm -rf build && CC=icc CXX=icpc cmake -DCMAKE_BUILD_TYPE=Unittests -B build && cmake --build build -j8
+          rm -rf build && CC=gcc CXX=g++ cmake -DCMAKE_BUILD_TYPE=Unittests -B build && cmake --build build -j8
           retVal=0
           ./build/regamedll/cs 2> /dev/null > result.log || retVal=$?
           while read line; do
@@ -175,7 +175,7 @@ jobs:
 
       - name: Build using Intel C++ Compiler 19.0
         run: |
-          rm -rf build-icc && CC=icc CXX=icpc cmake -B build-icc && cmake --build build-icc -j8
+          rm -rf build-icc && CC=gcc CXX=g++ cmake -B build-icc && cmake --build build-icc -j8
 
       - name: Build using GCC Compiler 9.3
         run: |
