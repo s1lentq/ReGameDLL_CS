@@ -197,16 +197,17 @@ void GameDLL_EndRound_f()
 
 void GameDLL_SwapTeams_f()
 {
-	if (CMD_ARGC() == 2)
+	CSGameRules()->SwapAllPlayers();
+
+	float value = 1.0f;
+	if(CMD_ARGC() >= 2)
 	{
-		const char *pCmd = CMD_ARGV(1);
-		
-		CSGameRules()->SwapAllPlayers();
-		
-		if (pCmd[0] == '1' || !Q_stricmp(pCmd, "true"))
-		{
-			CVAR_SET_FLOAT("sv_restartround", 1.0);
-		}
+		value = Q_atof(CMD_ARGV(1));
+	}
+
+	if (value > 0.0f)
+	{
+		CVAR_SET_FLOAT("sv_restartround", value);
 	}
 }
 
