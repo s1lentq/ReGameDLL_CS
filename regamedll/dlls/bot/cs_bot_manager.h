@@ -210,6 +210,7 @@ public:
 	const char *GetRandomBotName(SkillType skill);
 
 	void MonitorBotCVars();
+	void MonitorBotAutoKill();
 	void MaintainBotQuota();
 	bool AddBot(const BotProfile *profile, BotProfileTeamType team);
 
@@ -217,6 +218,7 @@ public:
 	bool BotAddCommand(BotProfileTeamType team, bool isFromConsole = false);	// process the "bot_add" console command
 
 private:
+	static float m_flNextAutoKillCheck;
 	static float m_flNextCVarCheck;
 	static bool m_isMapDataLoaded;		// true if we've attempted to load map data
 	static bool m_isLearningMap;
