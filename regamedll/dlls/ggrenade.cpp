@@ -1083,6 +1083,7 @@ void CGrenade::__API_HOOK(DefuseBombEnd)(CBasePlayer *pPlayer, bool bDefused)
 
 			CSGameRules()->m_bBombDefused = true;
 			CSGameRules()->CheckWinConditions();
+
 #ifdef REGAMEDLL_ADD
 			if (give_c4_frags.value)
 #endif
