@@ -1083,9 +1083,13 @@ void CGrenade::__API_HOOK(DefuseBombEnd)(CBasePlayer *pPlayer, bool bDefused)
 
 			CSGameRules()->m_bBombDefused = true;
 			CSGameRules()->CheckWinConditions();
-
-			// give the defuser credit for defusing the bomb
-			m_pBombDefuser->pev->frags += 3.0f;
+#ifdef REGAMEDLL_ADD
+			if (give_c4_frags.value)
+#endif
+			{
+				// give the defuser credit for defusing the bomb
+				m_pBombDefuser->pev->frags += 3.0f;
+			}
 
 			MESSAGE_BEGIN(MSG_ALL, gmsgBombPickup);
 			MESSAGE_END();
@@ -1432,10 +1436,15 @@ void CGrenade::C4Think()
 		}
 #endif // #ifndef REGAMEDLL_FIXES
 
-		CBasePlayer *pBombOwner = CBasePlayer::Instance(pev->owner);
-		if (pBombOwner)
+#ifdef REGAMEDLL_ADD
+		if (give_c4_frags.value)
+#endif
 		{
-			pBombOwner->pev->frags += 3.0f;
+			CBasePlayer *pBombOwner = CBasePlayer::Instance(pev->owner);
+			if (pBombOwner)
+			{
+				pBombOwner->pev->frags += 3.0f;
+			}
 		}
 
 		MESSAGE_BEGIN(MSG_ALL, gmsgBombPickup);
