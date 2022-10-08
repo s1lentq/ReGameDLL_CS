@@ -5410,7 +5410,12 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Spawn)()
 	m_progressEnd = 0;
 
 	MAKE_STRING_CLASS("player", pev);
+
+#ifdef REGAMEDLL_ADD
 	pev->health = Q_max((int)default_health.value, 1);
+#else
+	pev->health = 100;
+#endif
 
 	if (!m_bNotKilled)
 	{
