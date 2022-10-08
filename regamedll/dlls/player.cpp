@@ -6667,7 +6667,7 @@ void CBasePlayer::HandleSignals()
 				m_signals.Signal(SIGNAL_BOMB);
 			}
 		}
-#endif 
+#endif
 
 		if (!CSGameRules()->m_bMapHasBombZone)
 			OLD_CheckBombTarget(this);
@@ -8401,7 +8401,13 @@ void CStripWeapons::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE 
 		{
 			if (m_iszSpecialItem)
 			{
-				pPlayer->CSPlayer()->RemovePlayerItem(STRING(m_iszSpecialItem));
+				const char *weaponName = STRING(m_iszSpecialItem);
+				WeaponSlotInfo *slotInfo = GetWeaponSlot(weaponName);
+
+				if (slotInfo != nullptr && slotInfo->slot == GRENADE_SLOT)
+					pPlayer->CSPlayer()->RemovePlayerItemEx(weaponName, true);
+				else
+					pPlayer->CSPlayer()->RemovePlayerItem(weaponName);
 			}
 
 			for (int slot = PRIMARY_WEAPON_SLOT; slot <= ALL_OTHER_ITEMS; slot++)
@@ -8422,7 +8428,11 @@ void CStripWeapons::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE 
 				{
 					pPlayer->ForEachItem(slot, [pPlayer](CBasePlayerItem *pItem)
 					{
-						pPlayer->CSPlayer()->RemovePlayerItem(STRING(pItem->pev->classname));
+						if (pItem->iItemSlot() == GRENADE_SLOT)
+							pPlayer->CSPlayer()->RemovePlayerItemEx(STRING(pItem->pev->classname), true);
+						else
+							pPlayer->CSPlayer()->RemovePlayerItem(STRING(pItem->pev->classname));
+
 						return false;
 					});
 				}
@@ -10225,7 +10235,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(SetSpawnProtection)(float flProtectionTime
 		pev->rendermode = kRenderTransAdd;
 		pev->renderamt  = 100.0f;
 
-		MESSAGE_BEGIN(MSG_ONE_UNRELIABLE, gmsgStatusIcon, nullptr, pev);
+		MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev);
 			WRITE_BYTE(STATUSICON_FLASH);
 			WRITE_STRING("suithelmet_full");
 			WRITE_BYTE(0);

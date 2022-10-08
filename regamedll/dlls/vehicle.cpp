@@ -52,6 +52,14 @@ void CFuncVehicle::KeyValue(KeyValueData *pkvd)
 		m_flVolume = Q_atoi(pkvd->szValue);
 		m_flVolume *= 0.1f;
 
+#ifdef REGAMEDLL_FIXES
+		if (m_flVolume > 1.0)
+			m_flVolume = 1.0;
+
+		if (m_flVolume < 0.0)
+			m_flVolume = 0.0;
+#endif
+
 		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "bank"))
