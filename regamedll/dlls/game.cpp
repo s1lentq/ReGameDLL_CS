@@ -162,6 +162,7 @@ cvar_t allchat                           = { "sv_allchat", "0", 0, 0.0f, nullptr
 cvar_t sv_autobunnyhopping               = { "sv_autobunnyhopping", "0", 0, 0.0f, nullptr };
 cvar_t sv_enablebunnyhopping             = { "sv_enablebunnyhopping", "0", 0, 0.0f, nullptr };
 cvar_t plant_c4_anywhere                 = { "mp_plant_c4_anywhere", "0", 0, 0.0f, nullptr };
+cvar_t plant_c4_anywhere                 = { "mp_default_health", "100", 0, 0.0f, nullptr };
 
 void GameDLL_Version_f()
 {
