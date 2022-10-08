@@ -105,7 +105,7 @@ This means that plugins that do binary code analysis (Orpheu for example) probab
 | sv_enablebunnyhopping              | 0       | 0   | 1            | Allow player speed to exceed maximum running speed.<br/>`0` disabled <br/>`1` enabled |
 | mp_plant_c4_anywhere               | 0       | 0   | 1            | When set, players can plant anywhere, not only in bombsites.<br/>`0` disabled <br/>`1` enabled |
 | mp_give_c4_frags                   | 3       | -   | -            | How many bonuses (frags) will get the player who defused or exploded the bomb. |
-| mp_fix_semiclip_names               | 0       | 0   | 1            | Fix showing names of aimed players according to mp_playerid (when using solidtype semiclip plugins).<br/>`0` disabled <br/>`1` enabled |
+| mp_fix_semiclip_names              | 0       | 0   | 1            | Fix showing names of aimed players according to mp_playerid (when using solidtype semiclip plugins).<br/>`0` disabled <br/>`1` enabled |
 </details>
 
 ## How to install zBot for CS 1.6?
