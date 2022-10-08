@@ -163,7 +163,7 @@ cvar_t sv_autobunnyhopping               = { "sv_autobunnyhopping", "0", 0, 0.0f
 cvar_t sv_enablebunnyhopping             = { "sv_enablebunnyhopping", "0", 0, 0.0f, nullptr };
 cvar_t plant_c4_anywhere                 = { "mp_plant_c4_anywhere", "0", 0, 0.0f, nullptr };
 cvar_t give_c4_frags                     = { "mp_give_c4_frags", "3", 0, 3.0f, nullptr };
-cvar_t default_health                 	 = { "mp_default_health", "100", 0, 0.0f, nullptr };
+cvar_t default_health                 	 = { "mp_default_health", "100", 0, 100.0f, nullptr };
 
 void GameDLL_Version_f()
 {
