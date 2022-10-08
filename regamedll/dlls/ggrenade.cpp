@@ -1085,7 +1085,7 @@ void CGrenade::__API_HOOK(DefuseBombEnd)(CBasePlayer *pPlayer, bool bDefused)
 			CSGameRules()->CheckWinConditions();
 
 #ifdef REGAMEDLL_ADD
-				m_pBombDefuser->pev->frags += give_c4_frags.value;
+				m_pBombDefuser->pev->frags += (int)give_c4_frags.value;
 #else
 				// give the defuser credit for defusing the bomb
 				m_pBombDefuser->pev->frags += 3.0f;
