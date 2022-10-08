@@ -1440,7 +1440,7 @@ void CGrenade::C4Think()
 		if (pBombOwner)
 		{
 #ifdef REGAMEDLL_ADD
-			pBombOwner->pev->frags += give_c4_frags.value;
+			pBombOwner->pev->frags += (int)give_c4_frags.value;
 #else
 			pBombOwner->pev->frags += 3.0f;
 #endif
