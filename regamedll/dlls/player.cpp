@@ -5411,7 +5411,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Spawn)()
 
 	MAKE_STRING_CLASS("player", pev);
 	
-	pev->health = real32(Q_max(default_health.value, 1.0f));
+	pev->health = Q_max(real_t(default_health.value), 1.0f);
 
 	if (!m_bNotKilled)
 	{
