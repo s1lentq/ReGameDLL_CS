@@ -495,6 +495,8 @@ BOOL CItemThighPack::MyTouch(CBasePlayer *pPlayer)
 	MESSAGE_END();
 
 	pPlayer->SendItemStatus();
+	pPlayer->SetScoreboardAttributes();
+
 	EMIT_SOUND(pPlayer->edict(), CHAN_VOICE, "items/kevlar.wav", VOL_NORM, ATTN_NORM);
 
 	if (TheTutor)

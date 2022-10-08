@@ -26,7 +26,7 @@ This means that plugins that do binary code analysis (Orpheu for example) probab
 | :---------------------------------- | :---------------------------------------------- |
 | game version                        | Will show GameDLL build version, date & URL. |
 | endround                            | Args:<br/>`T` force round end with Terrorists win. <br/>`CT` force round end with Counter-Terrorists win. <br/> or terminate round draw when called without arguments. |
-| swapteams                           | Swap the teams and restart the game. |
+| swapteams                           | Swap the teams and restart the game (1 sec delay to restart by default).<br/> Args: <br/>`0` - swap teams without restart. <br/> `>0.001` - time delay in seconds to restart the round after swap. |
 | give                                | Give weapon command.<br/> Args:<br/><weapon_name><br/>Usage:<br/>`give weapon_ak47`<br/>`give weapon_usp`<br/><br/>NOTE: `sv_cheats 1` required. |
 | impulse 255                         | Give all weapons.<br/><br/>NOTE: `sv_cheats 1` required. |
 
@@ -104,6 +104,7 @@ This means that plugins that do binary code analysis (Orpheu for example) probab
 | sv_autobunnyhopping                | 0       | 0   | 1            | Players automatically re-jump while holding jump button.<br/>`0` disabled <br/>`1` enabled |
 | sv_enablebunnyhopping              | 0       | 0   | 1            | Allow player speed to exceed maximum running speed.<br/>`0` disabled <br/>`1` enabled |
 | mp_plant_c4_anywhere               | 0       | 0   | 1            | When set, players can plant anywhere, not only in bombsites.<br/>`0` disabled <br/>`1` enabled |
+| mp_give_c4_frags                   | 3       | -   | -            | How many bonuses (frags) will get the player who defused or exploded the bomb. |
 | sv_legacy_movement                 | 0       | 0   | 1            | Legacy movement. The new one fixes FPS based jump and movement.<br/>`0` Legacy behaviour <br/>`1` New behaviour |
 </details>
 
