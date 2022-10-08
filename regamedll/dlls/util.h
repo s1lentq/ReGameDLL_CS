@@ -354,6 +354,9 @@ public:
 };
 
 int UTIL_CountPlayersInBrushVolume(bool bOnlyAlive, CBaseEntity *pBrushEntity, int &playersInCount, int &playersOutCount, CPlayerInVolumeAdapter *pAdapter = nullptr);
+#ifdef REGAMEDLL_FIXES
+int UTIL_ManageClientsSolidity(bool bStore, int iSetMode, int iSolidityType, int iSolidityTypeArray[MAX_CLIENTS + 1] = nullptr);
+#endif
 
 inline real_t UTIL_FixupAngle(real_t v)
 {

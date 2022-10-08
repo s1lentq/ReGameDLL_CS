@@ -132,6 +132,12 @@ extern cvar_t sk_scientist_heal1;
 extern cvar_t sk_scientist_heal2;
 extern cvar_t sk_scientist_heal3;
 
+#ifdef REGAMEDLL_FIXES
+
+extern cvar_t fix_semiclip_names;
+
+#endif
+
 #ifdef REGAMEDLL_ADD
 
 extern cvar_t maxmoney;

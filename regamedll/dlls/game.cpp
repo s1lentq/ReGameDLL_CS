@@ -102,6 +102,12 @@ cvar_t scoreboard_showdefkit = { "mp_scoreboard_showdefkit", "1", FCVAR_SERVER, 
 
 #endif
 
+#ifdef REGAMEDLL_FIXES
+
+cvar_t fix_semiclip_names    = { "mp_fix_semiclip_names", "0", 0, 0.0f, nullptr };
+
+#endif
+
 #ifdef REGAMEDLL_ADD
 
 cvar_t game_version          = { "game_version", APP_VERSION, FCVAR_SERVER, 0.0f, nullptr };
@@ -335,6 +341,10 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&sk_scientist_heal3);
 
 #endif // REGAMEDLL_FIXES
+
+#ifdef REGAMEDLL_FIXES
+	CVAR_REGISTER(&fix_semiclip_names);
+#endif
 
 #ifdef REGAMEDLL_ADD
 

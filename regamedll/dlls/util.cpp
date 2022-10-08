@@ -1853,3 +1853,45 @@ int UTIL_CountPlayersInBrushVolume(bool bOnlyAlive, CBaseEntity *pBrushEntity, i
 
 	return playersInCount + playersOutCount;
 }
+
+#ifdef REGAMEDLL_FIXES
+// Set modes (iSetMode):
+//   0 - Do not set solidity.
+//   1 - Set solidity from the value of the variable "iSolidityType".
+//   2 - Set solidity from the value of the array "iSolidityTypeArray".
+int UTIL_ManageClientsSolidity(bool bStore, int iSetMode, int iSolidityType, int iSolidityTypeArray[MAX_CLIENTS + 1]) {
+	iSetMode = clamp(iSetMode, 0, 2);
+
+	// Note: Can not store to array & set from it at the same time! Not made for such goal!
+	if(bStore && iSetMode == 2) {
+		iSetMode = 0;
+	}
+	else if(iSetMode == 0)
+			return 0;
+
+	if(bStore) {
+		Q_memset(iSolidityTypeArray, SOLID_NOT, sizeof(iSolidityTypeArray));
+	}
+
+	int iClientsBitsFound = 0;
+	for(int iClientID = 1; iClientID <= gpGlobals->maxClients; iClientID++)
+	{
+		CBasePlayer *pPlayer = UTIL_PlayerByIndex(iClientID);
+
+		if (!pPlayer || pPlayer->has_disconnected || !pPlayer->IsAlive())
+			continue;
+
+		if(bStore) {
+			iSolidityTypeArray[iClientID] = pPlayer->pev->solid;
+		}
+
+		if(iSetMode) {
+			pPlayer->pev->solid = (iSetMode == 1) ? iSolidityType : iSolidityTypeArray[iClientID];
+		}
+
+		iClientsBitsFound |= (1<<(iClientID - 1));
+	}
+
+	return iClientsBitsFound;
+}
+#endif
