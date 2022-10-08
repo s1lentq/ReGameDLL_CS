@@ -7763,13 +7763,12 @@ void CBasePlayer::UpdateStatusBar()
 	{
 		int iSolidityTypeArray[MAX_CLIENTS + 1];
 		UTIL_ManageClientsSolidity(true, 1, SOLID_SLIDEBOX, iSolidityTypeArray); // Store in array & set solidity from variable.
-	}
-	
-	UTIL_TraceLine(vecSrc, vecEnd, dont_ignore_monsters, edict(), &tr);
-	
-	if (fix_semiclip_names.value)
-	{
+		UTIL_TraceLine(vecSrc, vecEnd, dont_ignore_monsters, edict(), &tr);
 		UTIL_ManageClientsSolidity(false, 2, 0, iSolidityTypeArray); // Restore solidity from array.
+	}
+	else
+	{
+		UTIL_TraceLine(vecSrc, vecEnd, dont_ignore_monsters, edict(), &tr);
 	}
 	#else
 	UTIL_TraceLine(vecSrc, vecEnd, dont_ignore_monsters, edict(), &tr);
