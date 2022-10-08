@@ -104,6 +104,7 @@ This means that plugins that do binary code analysis (Orpheu for example) probab
 | sv_autobunnyhopping                | 0       | 0   | 1            | Players automatically re-jump while holding jump button.<br/>`0` disabled <br/>`1` enabled |
 | sv_enablebunnyhopping              | 0       | 0   | 1            | Allow player speed to exceed maximum running speed.<br/>`0` disabled <br/>`1` enabled |
 | mp_plant_c4_anywhere               | 0       | 0   | 1            | When set, players can plant anywhere, not only in bombsites.<br/>`0` disabled <br/>`1` enabled |
+| mp_give_c4_frags                   | 3       | -   | -            | How many bonuses (frags) will get the player who defused or exploded the bomb. |
 | mp_default_health              	 | 100     | 1   | -            | Player health at spawn.<br/>Default: 100 |
 </details>
 
