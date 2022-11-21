@@ -1486,6 +1486,12 @@ bool CHalfLifeMultiplay::HostageRescueRoundEndCheck()
 		}
 	}
 
+#ifdef REGAMEDLL_ADD
+	if (hostagesCount > 0 && m_iHostagesRescued >= (hostagesCount * hostages_rescued_ratio.value))
+	{
+		return OnRoundEnd_Intercept(WINSTATUS_CTS, ROUND_ALL_HOSTAGES_RESCUED, GetRoundRestartDelay());
+	}
+#else
 	// There are no hostages alive.. check to see if the CTs have rescued atleast 50% of them.
 	if (!bHostageAlive && hostagesCount > 0)
 	{
@@ -1494,6 +1500,7 @@ bool CHalfLifeMultiplay::HostageRescueRoundEndCheck()
 			return OnRoundEnd_Intercept(WINSTATUS_CTS, ROUND_ALL_HOSTAGES_RESCUED, GetRoundRestartDelay());
 		}
 	}
+#endif
 
 	return false;
 }
