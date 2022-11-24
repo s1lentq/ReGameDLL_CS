@@ -1487,7 +1487,7 @@ bool CHalfLifeMultiplay::HostageRescueRoundEndCheck()
 	}
 
 #ifdef REGAMEDLL_ADD
-	if (hostagesCount > 0 && m_iHostagesRescued >= (hostagesCount * hostages_rescued_ratio.value))
+	if (hostagesCount > 0 && m_iHostagesRescued >= (hostagesCount * Q_min(hostages_rescued_ratio.value, 1.0f)))
 	{
 		return OnRoundEnd_Intercept(WINSTATUS_CTS, ROUND_ALL_HOSTAGES_RESCUED, GetRoundRestartDelay());
 	}
