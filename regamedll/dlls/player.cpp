@@ -10031,7 +10031,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(OnSpawnEquip)(bool addDefault, bool equipG
 	}
 
 #ifdef REGAMEDLL_ADD
-	if(!m_bIsVIP)
+	if (!m_bIsVIP)
 	{
 		switch (static_cast<ArmorType>((int)free_armor.value))
 		{
