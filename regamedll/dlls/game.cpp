@@ -203,7 +203,7 @@ void GameDLL_SwapTeams_f()
 	CSGameRules()->SwapAllPlayers();
 
 	float value = 1.0f;
-	if(CMD_ARGC() >= 2)
+	if (CMD_ARGC() >= 2)
 	{
 		value = Q_atof(CMD_ARGV(1));
 	}
