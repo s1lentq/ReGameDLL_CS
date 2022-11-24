@@ -165,6 +165,8 @@ cvar_t plant_c4_anywhere                 = { "mp_plant_c4_anywhere", "0", 0, 0.0
 cvar_t give_c4_frags                     = { "mp_give_c4_frags", "3", 0, 3.0f, nullptr };
 cvar_t drop_grenade_enable               = { "mp_drop_grenade_enable", "0", 0, 0.0f, nullptr };
 
+cvar_t hostages_rescued_ratio = { "mp_hostages_rescued_ratio", "1.0", 0, 1.0f, nullptr };
+
 void GameDLL_Version_f()
 {
 	if (Q_stricmp(CMD_ARGV(1), "version") != 0)
@@ -202,7 +204,7 @@ void GameDLL_SwapTeams_f()
 	CSGameRules()->SwapAllPlayers();
 
 	float value = 1.0f;
-	if(CMD_ARGC() >= 2)
+	if (CMD_ARGC() >= 2)
 	{
 		value = Q_atof(CMD_ARGV(1));
 	}
@@ -407,6 +409,8 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&plant_c4_anywhere);
 	CVAR_REGISTER(&give_c4_frags);
 	CVAR_REGISTER(&drop_grenade_enable);
+
+	CVAR_REGISTER(&hostages_rescued_ratio);
 
 	// print version
 	CONSOLE_ECHO("ReGameDLL version: " APP_VERSION "\n");
