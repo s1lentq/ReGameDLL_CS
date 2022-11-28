@@ -7930,7 +7930,7 @@ CBaseEntity *EXT_FUNC CBasePlayer::__API_HOOK(DropPlayerItem)(const char *pszIte
 	{
 		if (!pWeapon->CanDrop()
 #ifdef REGAMEDLL_ADD
-		|| (!drop_grenade_enable.value && IsGrenadeWeapon(pWeapon->m_iId))
+		|| (!drop_grenade_enable.value && IsGrenadeWeapon(pWeapon->m_iId)) || (IsGrenadeWeapon(pWeapon->m_iId) && m_rgAmmo[pWeapon->PrimaryAmmoIndex()] <= 0)
 #endif
 		)
 		{
