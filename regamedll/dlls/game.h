@@ -190,6 +190,7 @@ extern cvar_t sv_enablebunnyhopping;
 extern cvar_t plant_c4_anywhere;
 extern cvar_t give_c4_frags;
 extern cvar_t hostages_rescued_ratio;
+extern cvar_t drop_grenade_enable;
 
 #endif
 

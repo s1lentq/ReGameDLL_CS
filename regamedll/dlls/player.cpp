@@ -7928,7 +7928,11 @@ CBaseEntity *EXT_FUNC CBasePlayer::__API_HOOK(DropPlayerItem)(const char *pszIte
 #endif
 	if (pWeapon)
 	{
-		if (!pWeapon->CanDrop())
+		if (!pWeapon->CanDrop()
+#ifdef REGAMEDLL_ADD
+		|| (!drop_grenade_enable.value && IsGrenadeWeapon(pWeapon->m_iId)) || (IsGrenadeWeapon(pWeapon->m_iId) && m_rgAmmo[pWeapon->PrimaryAmmoIndex()] <= 0)
+#endif
+		)
 		{
 			ClientPrint(pev, HUD_PRINTCENTER, "#Weapon_Cannot_Be_Dropped");
 			return nullptr;
