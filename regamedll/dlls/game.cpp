@@ -166,6 +166,8 @@ cvar_t give_c4_frags                     = { "mp_give_c4_frags", "3", 0, 3.0f, n
 
 cvar_t hostages_rescued_ratio = { "mp_hostages_rescued_ratio", "1.0", 0, 1.0f, nullptr };
 
+cvar_t legacy_vehicle_block               = { "mp_legacy_vehicle_block", "1", 0, 0.0f, nullptr };
+
 void GameDLL_Version_f()
 {
 	if (Q_stricmp(CMD_ARGV(1), "version") != 0)
@@ -409,6 +411,8 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&give_c4_frags);
 
 	CVAR_REGISTER(&hostages_rescued_ratio);
+
+	CVAR_REGISTER(&legacy_vehicle_block);
 
 	// print version
 	CONSOLE_ECHO("ReGameDLL version: " APP_VERSION "\n");

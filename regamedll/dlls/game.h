@@ -191,6 +191,7 @@ extern cvar_t plant_c4_anywhere;
 extern cvar_t give_c4_frags;
 extern cvar_t hostages_rescued_ratio;
 
+extern cvar_t legacy_vehicle_block;
 #endif
 
 extern cvar_t scoreboard_showmoney;

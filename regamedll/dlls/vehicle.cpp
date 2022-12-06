@@ -109,7 +109,7 @@ void CFuncVehicle::Blocked(CBaseEntity *pOther)
 	pevOther->velocity.z += 300;
 	pev->velocity = pev->velocity * 0.85;
 
-	ALERT(at_aiconsole, "TRAIN(%s): Blocked by %s (dmg:%.2f)\n", STRING(pev->targetname), STRING(pOther->pev->classname), pev->dmg);
+	ALERT(at_aiconsole, "TRAIN(%s): Blocked by %s (dmg:%.2f)\n", STRING(pev->targetname), STRING(pevOther->classname), pev->dmg);
 	UTIL_MakeVectors(pev->angles);
 
 	Vector forward, right, vOrigin;
@@ -131,13 +131,42 @@ void CFuncVehicle::Blocked(CBaseEntity *pOther)
 	float maxz = pev->origin.z + (2 * Q_abs(int(pev->mins.z - pev->maxs.z)));
 #endif
 
-	if (pOther->pev->origin.x < minx
-		|| pOther->pev->origin.x > maxx
-		|| pOther->pev->origin.y < miny
-		|| pOther->pev->origin.y > maxy
-		|| pOther->pev->origin.z < minz
-		|| pOther->pev->origin.z > maxz)
+	if (pevOther->origin.x < minx
+		|| pevOther->origin.x > maxx
+		|| pevOther->origin.y < miny
+		|| pevOther->origin.y > maxy
+		|| pevOther->origin.z < minz
+		|| pevOther->origin.z > maxz)
 	{
+#ifdef REGAMEDLL_ADD
+		if (legacy_vehicle_block.value)
+		{
+			pOther->TakeDamage(pev, pev, 150, DMG_CRUSH);
+			return;
+		}
+
+		CBasePlayer* playerDriver = static_cast<CBasePlayer*>(m_pDriver);
+
+		if (pOther->Classify() == CLASS_PLAYER)
+		{
+			CBasePlayer* playerOther = static_cast<CBasePlayer*>(pOther);
+			if (!playerDriver || (!friendlyfire.value && playerDriver->m_iTeam == playerOther->m_iTeam))
+			{
+				// Just kick player
+				return;
+			}
+			else
+			{
+				playerOther->TakeDamage(pev, playerDriver->pev, 150, DMG_CRUSH);
+				return;
+			}
+		}
+		else if (FClassnameIs(pevOther, "hostage_entity") && playerDriver)
+		{
+			pOther->TakeDamage(playerDriver->pev, playerDriver->pev, 150, DMG_CRUSH);
+			return;
+		}
+#endif
 		pOther->TakeDamage(pev, pev, 150, DMG_CRUSH);
 	}
 }

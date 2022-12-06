@@ -4030,7 +4030,12 @@ void CBasePlayer::PlayerUse()
 			CBaseEntity *pTrain = Instance(pev->groundentity);
 			if (pTrain && pTrain->Classify() == CLASS_VEHICLE)
 			{
+#ifdef REGAMEDLL_ADD
+				if (legacy_vehicle_block.value)
+					((CFuncVehicle *)pTrain)->m_pDriver = nullptr;
+#else
 				((CFuncVehicle *)pTrain)->m_pDriver = nullptr;
+#endif
 			}
 			return;
 		}
@@ -4572,7 +4577,12 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 			{
 				m_afPhysicsFlags &= ~PFLAG_ONTRAIN;
 				m_iTrain = (TRAIN_NEW | TRAIN_OFF);
+#ifdef REGAMEDLL_ADD
+				if (legacy_vehicle_block.value)
+					((CFuncVehicle *)pTrain)->m_pDriver = nullptr;
+#else
 				((CFuncVehicle *)pTrain)->m_pDriver = nullptr;
+#endif
 				return;
 			}
 		}
@@ -4581,7 +4591,12 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 			// Turn off the train if you jump, strafe, or the train controls go dead
 			m_afPhysicsFlags &= ~PFLAG_ONTRAIN;
 			m_iTrain = (TRAIN_NEW | TRAIN_OFF);
+#ifdef REGAMEDLL_ADD
+			if (legacy_vehicle_block.value)
+				((CFuncVehicle *)pTrain)->m_pDriver = nullptr;
+#else
 			((CFuncVehicle *)pTrain)->m_pDriver = nullptr;
+#endif
 			return;
 		}
 
