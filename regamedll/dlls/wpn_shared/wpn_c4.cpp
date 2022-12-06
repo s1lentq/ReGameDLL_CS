@@ -78,7 +78,7 @@ void CC4::Holster(int skiplocal)
 	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5f;
 
 #ifdef REGAMEDLL_FIXES
-	if(m_bStartedArming)
+	if (m_bStartedArming)
 	{
 		m_pPlayer->SetProgressBarTime(0);
 	}

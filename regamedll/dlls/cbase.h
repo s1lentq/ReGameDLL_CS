@@ -585,9 +585,9 @@ T *GetClassPtr(T *a)
 		a->pev = pev;
 
 #ifdef REGAMEDLL_API
-		a->OnCreate();
 		a->m_pEntity = new W();
 		a->m_pEntity->m_pContainingEntity = a;
+		a->OnCreate();
 #endif
 
 	}
