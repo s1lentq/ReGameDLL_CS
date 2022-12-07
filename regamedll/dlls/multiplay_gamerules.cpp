@@ -4066,15 +4066,14 @@ LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN(CHalfLifeMultiplay, CSGameRules, DeathNotice, 
 
 void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(DeathNotice)(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pevInflictor)
 {
+#ifndef REGAMEDLL_FIXES
 	// by default, the player is killed by the world
 	const char *killer_weapon_name = "world";
 	int killer_index = 0;
 
-#ifndef REGAMEDLL_FIXES
 	// Hack to fix name change
 	char *tau = "tau_cannon";
 	char *gluon = "gluon gun";
-#endif
 
 	// Is the killer a client?
 	if (pKiller->flags & FL_CLIENT)
@@ -4103,9 +4102,6 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(DeathNotice)(CBasePlayer *pVictim, 
 		}
 	}
 	else
-#ifdef REGAMEDLL_FIXES
-		if (pevInflictor)
-#endif
 	{
 		killer_weapon_name = STRING(pevInflictor->classname);
 	}
@@ -4135,13 +4131,23 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(DeathNotice)(CBasePlayer *pVictim, 
 		MESSAGE_END();
 	}
 
-	// This weapons from HL isn't it?
-#ifndef REGAMEDLL_FIXES
 	if (!Q_strcmp(killer_weapon_name, "egon"))
 		killer_weapon_name = gluon;
 
 	else if (!Q_strcmp(killer_weapon_name, "gauss"))
 		killer_weapon_name = tau;
+#else
+	const char* killer_weapon_name = GetWeaponName(pevInflictor, pKiller);
+
+	if (!TheTutor)
+	{
+		MESSAGE_BEGIN(MSG_ALL, gmsgDeathMsg);
+			WRITE_BYTE((pKiller->flags & FL_CLIENT) ? ENTINDEX(ENT(pKiller)) : 0);	// the killer
+			WRITE_BYTE(ENTINDEX(pVictim->edict()));									// the victim
+			WRITE_BYTE(pVictim->m_bHeadshotKilled);									// is killed headshot
+			WRITE_STRING(killer_weapon_name);										// what they were killed by (should this be a string?)
+		MESSAGE_END();
+	}
 #endif
 
 	// Did he kill himself?
