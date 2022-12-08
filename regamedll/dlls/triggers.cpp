@@ -1814,6 +1814,27 @@ void CTriggerTeleport::Spawn()
 	SetTouch(&CTriggerTeleport::TeleportTouch);
 }
 
+LINK_ENTITY_TO_CLASS(trigger_bomb_reset, CTriggerBombReset, CCSTriggerBombReset)
+
+void CTriggerBombReset::Spawn()
+{
+	InitTrigger();
+	SetTouch(&CTriggerBombReset::Touch);
+}
+
+void CTriggerBombReset::Touch(CBaseEntity *pOther)
+{
+	CWeaponBox *pWeaponBox = static_cast<CWeaponBox *>(pOther);
+
+	if (pWeaponBox && !pWeaponBox->m_bIsBomb)
+	{
+		return;
+	}
+
+	// If the bomb touches this trigger, tell it to reset to its last known valid position.
+	// TODO...
+}
+
 LINK_ENTITY_TO_CLASS(info_teleport_destination, CPointEntity, CCSPointEntity)
 LINK_ENTITY_TO_CLASS(func_buyzone, CBuyZone, CCSBuyZone)
 
