@@ -216,7 +216,9 @@ const char *CBotManager::GetNavMapFilename() const
 // Invoked when given player does given event (some events have NULL player).
 // Events are propogated to all bots.
 // TODO: This has become the game-wide event dispatcher. We should restructure this.
-void CBotManager::OnEvent(GameEventType event, CBaseEntity *pEntity, CBaseEntity *pOther)
+LINK_HOOK_CLASS_VOID_CHAIN(CBotManager, OnEvent, (GameEventType event, CBaseEntity* pEntity, CBaseEntity* pOther), event, pEntity, pOther)
+
+void CBotManager::__API_HOOK(OnEvent)(GameEventType event, CBaseEntity* pEntity, CBaseEntity* pOther)
 {
 	// propogate event to all bots
 	for (int i = 1; i <= gpGlobals->maxClients; i++)

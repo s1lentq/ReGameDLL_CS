@@ -520,6 +520,10 @@ typedef IHookChainRegistryClass<void, class CBasePlayer> IReGameHookRegistry_CBa
 typedef IHookChainClass<void, class CBasePlayer> IReGameHook_CBasePlayer_JoiningThink;
 typedef IHookChainRegistryClass<void, class CBasePlayer> IReGameHookRegistry_CBasePlayer_JoiningThink;
 
+// CBotManager::OnEvent hook
+typedef IHookChainClass<void, class CBotManager, GameEventType, class CBaseEntity*, class CBaseEntity*> IReGameHook_CBotManager_OnEvent;
+typedef IHookChainRegistryClass<void, class CBotManager, GameEventType, class CBaseEntity*, class CBaseEntity*> IReGameHookRegistry_CBotManager_OnEvent;
+
 class IReGameHookchains {
 public:
 	virtual ~IReGameHookchains() {}
@@ -653,6 +657,8 @@ public:
 	virtual IReGameHookRegistry_CBasePlayer_Pain *CBasePlayer_Pain() = 0;
 	virtual IReGameHookRegistry_CBasePlayer_DeathSound *CBasePlayer_DeathSound() = 0;
 	virtual IReGameHookRegistry_CBasePlayer_JoiningThink *CBasePlayer_JoiningThink() = 0;
+
+	virtual IReGameHookRegistry_CBotManager_OnEvent* CBotManager_OnEvent() = 0;
 };
 
 struct ReGameFuncs_t {
