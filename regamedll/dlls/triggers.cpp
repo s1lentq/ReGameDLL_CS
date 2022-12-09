@@ -1824,15 +1824,13 @@ void CTriggerBombReset::Spawn()
 
 void CTriggerBombReset::Touch(CBaseEntity *pOther)
 {
-	CWeaponBox *pWeaponBox = static_cast<CWeaponBox *>(pOther);
+	CWeaponBox *pWeaponBox = dynamic_cast<CWeaponBox *>(pOther);
 
-	if (pWeaponBox && !pWeaponBox->m_bIsBomb)
+	if (pWeaponBox && pWeaponBox->m_bIsBomb)
 	{
-		return;
+		// If the bomb touches this trigger, tell it to reset to its last known valid position.
+		pWeaponBox->ResetToLastValidPlayerHeldPosition();
 	}
-
-	// If the bomb touches this trigger, tell it to reset to its last known valid position.
-	// TODO...
 }
 
 LINK_ENTITY_TO_CLASS(info_teleport_destination, CPointEntity, CCSPointEntity)

@@ -2179,6 +2179,24 @@ void CWeaponBox::SetObjectCollisionBox()
 	pev->absmax = pev->origin + Vector(16, 16, 16);
 }
 
+void CWeaponBox::ResetToLastValidPlayerHeldPosition()
+{
+	if (pev->origin == m_vecLastValidPlayerHeldPosition)
+	{
+		return;
+	}
+
+	Vector const vecResetPos = m_vecLastValidPlayerHeldPosition + Vector(0.0f, 0.0f, 8.0f);
+	Vector const angResetAng = Vector(0.0f, RANDOM_FLOAT(0.0f, 360.0f), 0.0f);
+
+	// Teleport
+	pev->velocity = Vector(0.0f, 0.0f, 0.0f);
+	pev->movetype = MOVETYPE_NONE;
+	pev->flags |= FL_ONGROUND;
+	pev->angles = angResetAng;
+	UTIL_SetOrigin(pev, vecResetPos);
+}
+
 char *CArmoury::m_ItemModels[] = {
 	"models/w_mp5.mdl",
 	"models/w_tmp.mdl",
