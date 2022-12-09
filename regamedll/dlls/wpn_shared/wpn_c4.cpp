@@ -390,6 +390,12 @@ void CC4::AttachToPlayer(CBasePlayer* pPlayer)
 #ifdef REGAMEDLL_ADD
 	SetThink(&CC4::Think);
 	pev->nextthink = gpGlobals->time + WEAPON_C4_UPDATE_LAST_VALID_PLAYER_HELD_POSITION_INTERVAL;
+
+	if (pPlayer->IsPlayer() && pPlayer->IsAlive())
+	{
+		entvars_t* pevPlayer = pPlayer->pev;
+		m_vecLastValidPlayerHeldPosition = pevPlayer->origin + pevPlayer->mins;
+	}
 #endif
 }
 
