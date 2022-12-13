@@ -395,13 +395,6 @@ public:
 	virtual void Spawn();
 };
 
-class CTriggerBombReset: public CBaseTrigger
-{
-public:
-	virtual void Spawn();
-	virtual void Touch(CBaseEntity *pOther);
-};
-
 class CBuyZone: public CBaseTrigger
 {
 public:
