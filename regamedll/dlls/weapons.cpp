@@ -70,6 +70,8 @@ float GetBaseAccuracy(WeaponIdType id)
 	case WEAPON_MP5N:
 		return 0.0f;
 	}
+
+	return 0.0f;
 }
 
 // Resets the global multi damage accumulator
