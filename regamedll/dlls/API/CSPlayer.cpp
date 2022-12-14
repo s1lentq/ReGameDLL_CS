@@ -541,6 +541,7 @@ void CCSPlayer::Reset()
 	m_bGameForcingRespawn = false;
 	m_bAutoBunnyHopping = false;
 	m_bMegaBunnyJumping = false;
+	m_bSpawnProtectionEffects = false;
 }
 
 void CCSPlayer::OnSpawn()

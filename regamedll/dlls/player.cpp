@@ -10232,6 +10232,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(SetSpawnProtection)(float flProtectionTime
 #ifdef REGAMEDLL_ADD
 	if (respawn_immunity_effects.value > 0)
 	{
+		CSPlayer()->m_bSpawnProtectionEffects = true;
 		pev->rendermode = kRenderTransAdd;
 		pev->renderamt  = 100.0f;
 
@@ -10253,16 +10254,21 @@ LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, RemoveSpawnProtection)
 void CBasePlayer::__API_HOOK(RemoveSpawnProtection)()
 {
 #ifdef REGAMEDLL_ADD
-	if (pev->rendermode == kRenderTransAdd && pev->renderamt == 100.0f)
+	if (CSPlayer()->m_bSpawnProtectionEffects)
 	{
-		pev->renderamt  = 255.0f;
-		pev->rendermode = kRenderNormal;
-	}
+		if (pev->rendermode == kRenderTransAdd && pev->renderamt == 100.0f)
+		{
+			pev->renderamt = 255.0f;
+			pev->rendermode = kRenderNormal;
+		}
 
-	MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev);
-		WRITE_BYTE(STATUSICON_HIDE);
-		WRITE_STRING("suithelmet_full");
-	MESSAGE_END();
+		MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev);
+			WRITE_BYTE(STATUSICON_HIDE);
+			WRITE_STRING("suithelmet_full");
+		MESSAGE_END();
+
+		CSPlayer()->m_bSpawnProtectionEffects = false;
+	}
 
 	CSPlayer()->m_flSpawnProtectionEndTime = 0.0f;
 #endif
