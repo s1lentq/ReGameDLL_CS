@@ -483,8 +483,8 @@ public:
 	void SetModel_OrigFunc(const char *pszModelName);
 #endif
 
-	void SetLastValidHeldPosition(const Vector &vecPositon) { m_vecLastValidPlayerHeldPosition = vecPositon; }
-	void ResetToLastValidPlayerHeldPosition();
+	void SetLastValidHeldC4Position(const Vector &vecPositon) { m_vecLastValidPlayerHeldC4Position = vecPositon; }
+	void ResetToLastValidPlayerHeldC4Position();
 
 public:
 	static TYPEDESCRIPTION m_SaveData[];
@@ -496,7 +496,7 @@ public:
 	bool m_bIsBomb;
 
 private:
-	Vector m_vecLastValidPlayerHeldPosition;
+	Vector m_vecLastValidPlayerHeldC4Position;
 };
 
 

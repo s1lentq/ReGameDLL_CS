@@ -2179,14 +2179,14 @@ void CWeaponBox::SetObjectCollisionBox()
 	pev->absmax = pev->origin + Vector(16, 16, 16);
 }
 
-void CWeaponBox::ResetToLastValidPlayerHeldPosition()
+void CWeaponBox::ResetToLastValidPlayerHeldC4Position()
 {
-	if (pev->origin == m_vecLastValidPlayerHeldPosition)
+	if (pev->origin == m_vecLastValidPlayerHeldC4Position)
 	{
 		return;
 	}
 
-	Vector const vecResetPos = m_vecLastValidPlayerHeldPosition + Vector(0.0f, 0.0f, 8.0f);
+	Vector const vecResetPos = m_vecLastValidPlayerHeldC4Position + Vector(0.0f, 0.0f, 8.0f);
 	Vector const angResetAng = Vector(0.0f, RANDOM_FLOAT(0.0f, 360.0f), 0.0f);
 
 	// Teleport

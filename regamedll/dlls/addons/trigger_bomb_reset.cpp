@@ -33,6 +33,6 @@ void CTriggerBombReset::Touch(CBaseEntity *pOther)
 	if (pWeaponBox && pWeaponBox->m_bIsBomb)
 	{
 		// If the bomb touches this trigger, tell it to reset to its last known valid position.
-		pWeaponBox->ResetToLastValidPlayerHeldPosition();
+		pWeaponBox->ResetToLastValidPlayerHeldC4Position();
 	}
 }
