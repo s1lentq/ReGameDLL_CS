@@ -73,7 +73,7 @@ jobs:
 
   testdemos:
     name: 'Test demos'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     container: s1lentq/testdemos:latest
     needs: [windows]
 
@@ -140,7 +140,7 @@ jobs:
 
   linux:
     name: 'Linux'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     container: s1lentq/linux86buildtools:latest
 
     steps:
@@ -221,7 +221,7 @@ jobs:
 
   publish:
     name: 'Publish'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     needs: [windows, testdemos, linux]
 
     steps:
