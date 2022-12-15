@@ -150,7 +150,7 @@ void CFuncVehicle::Blocked(CBaseEntity *pOther)
 		if (pOther->Classify() == CLASS_PLAYER)
 		{
 			CBasePlayer* playerOther = static_cast<CBasePlayer*>(pOther);
-			if (!playerDriver || (!friendlyfire.value && playerDriver->m_iTeam == playerOther->m_iTeam))
+			if (!playerDriver || g_pGameRules->PlayerRelationship(playerDriver, playerOther) == GR_TEAMMATE)
 			{
 				// Just kick player
 				return;
