@@ -1852,6 +1852,10 @@ BOOL EXT_FUNC __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *pPlayer, int slot)
 		{
 			if (pPlayer->m_iTeam != UNASSIGNED && pPlayer->pev->deadflag == DEAD_NO)
 			{
+#ifdef REGAMEDLL_FIXES
+				pPlayer->m_fNextSuicideTime = 0.0f;
+#endif
+
 				ClientKill(pPlayer->edict());
 
 				// add 1 to frags to balance out the 1 subtracted for killing yourself
@@ -2086,6 +2090,10 @@ BOOL EXT_FUNC __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *pPlayer, int slot)
 		// This must come before ClientKill() for CheckWinConditions() to function properly
 		if (pPlayer->pev->deadflag == DEAD_NO)
 		{
+#ifdef REGAMEDLL_FIXES
+			pPlayer->m_fNextSuicideTime = 0.0f;
+#endif
+
 			ClientKill(pPlayer->edict());
 		}
 	}

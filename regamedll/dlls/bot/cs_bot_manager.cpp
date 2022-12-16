@@ -411,6 +411,7 @@ void CCSBotManager::ServerCommand(const char *pcmd)
 				if (killThemAll || FStrEq(name, msg))
 				{
 #ifdef REGAMEDLL_FIXES
+					pPlayer->m_fNextSuicideTime = 0.0f;
 					ClientKill(pPlayer->edict());
 #else
 					pPlayer->TakeDamage(pPlayer->pev, pPlayer->pev, 9999.9f, DMG_CRUSH);

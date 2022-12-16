@@ -3852,6 +3852,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(RoundRespawn)()
 #ifdef REGAMEDLL_FIXES
 	if (m_bPunishedForTK && pev->health > 0)
 	{
+		m_fNextSuicideTime = 0.0f;
 		ClientKill(ENT(pev));
 	}
 #endif
