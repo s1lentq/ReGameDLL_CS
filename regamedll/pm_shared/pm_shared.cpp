@@ -2418,8 +2418,19 @@ void PM_Jump()
 		return;
 	}
 
+#ifdef REGAMEDLL_API
+	const CCSPlayer* player = UTIL_PlayerByIndex(pmove->player_index + 1)->CSPlayer();
+#endif
+
 	// don't pogo stick
-	if (pmove->oldbuttons & IN_JUMP)
+	if (pmove->oldbuttons & IN_JUMP
+#ifdef REGAMEDLL_ADD
+		&& sv_autobunnyhopping.value <= 0.0
+#ifdef REGAMEDLL_API
+		&& !player->m_bAutoBunnyHopping
+#endif
+#endif
+		)
 	{
 		return;
 	}
@@ -2434,7 +2445,16 @@ void PM_Jump()
 	// In the air now.
 	pmove->onground = -1;
 
-	PM_PreventMegaBunnyJumping();
+#ifdef REGAMEDLL_ADD
+	if (sv_enablebunnyhopping.value <= 0.0
+#ifdef REGAMEDLL_API
+		&& !player->m_bMegaBunnyJumping
+#endif
+		)
+#endif
+	{
+		PM_PreventMegaBunnyJumping();
+	}
 
 	real_t fvel = Length(pmove->velocity);
 	float fvol = 1.0f;

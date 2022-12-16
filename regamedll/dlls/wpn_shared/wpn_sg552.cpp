@@ -103,7 +103,7 @@ void CSG552::SG552Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	m_bDelayFire = true;
 	m_iShotsFired++;
 
-	m_flAccuracy = ((m_iShotsFired * m_iShotsFired * m_iShotsFired) / 220) + 0.3f;
+	m_flAccuracy = ((m_iShotsFired * m_iShotsFired * m_iShotsFired) / SG552_ACCURACY_DIVISOR) + 0.3f;
 
 	if (m_flAccuracy > 1.0f)
 		m_flAccuracy = 1.0f;

@@ -621,6 +621,26 @@ typedef IHookChainRegistryClassImpl<void, class CBaseEntity, ULONG, Vector &, Ve
 typedef IHookChainClassImpl<Vector &, class CBaseEntity, Vector &, Vector &, float, float, int, int, int, float, entvars_t *, bool, int> CReGameHook_CBaseEntity_FireBullets3;
 typedef IHookChainRegistryClassImpl<Vector &, class CBaseEntity, Vector &, Vector &, float, float, int, int, int, float, entvars_t *, bool, int> CReGameHookRegistry_CBaseEntity_FireBullets3;
 
+// CBasePlayer::Observer_SetMode hook
+typedef IHookChainClassImpl<void, CBasePlayer, int> CReGameHook_CBasePlayer_Observer_SetMode;
+typedef IHookChainRegistryClassImpl<void, CBasePlayer, int> CReGameHookRegistry_CBasePlayer_Observer_SetMode;
+
+// CBasePlayer::Observer_FindNextPlayer hook
+typedef IHookChainClassImpl<void, CBasePlayer, bool, const char *> CReGameHook_CBasePlayer_Observer_FindNextPlayer;
+typedef IHookChainRegistryClassImpl<void, CBasePlayer, bool, const char *> CReGameHookRegistry_CBasePlayer_Observer_FindNextPlayer;
+
+// CBasePlayer::Pain hook
+typedef IHookChainClassImpl<void, CBasePlayer, int, bool> CReGameHook_CBasePlayer_Pain;
+typedef IHookChainRegistryClassImpl<void, CBasePlayer, int, bool> CReGameHookRegistry_CBasePlayer_Pain;
+
+// CBasePlayer::DeathSound hook
+typedef IHookChainClassImpl<void, CBasePlayer> CReGameHook_CBasePlayer_DeathSound;
+typedef IHookChainRegistryClassImpl<void, CBasePlayer> CReGameHookRegistry_CBasePlayer_DeathSound;
+
+// CBasePlayer::JoiningThink hook
+typedef IHookChainClassImpl<void, CBasePlayer> CReGameHook_CBasePlayer_JoiningThink;
+typedef IHookChainRegistryClassImpl<void, CBasePlayer> CReGameHookRegistry_CBasePlayer_JoiningThink;
+
 class CReGameHookchains: public IReGameHookchains {
 public:
 	// CBasePlayer virtual
@@ -747,6 +767,13 @@ public:
 	CReGameHookRegistry_CBaseEntity_FireBuckshots m_CBaseEntity_FireBuckshots;
 	CReGameHookRegistry_CBaseEntity_FireBullets3 m_CBaseEntity_FireBullets3;
 
+	CReGameHookRegistry_CBasePlayer_Observer_SetMode m_CBasePlayer_Observer_SetMode;
+	CReGameHookRegistry_CBasePlayer_Observer_FindNextPlayer m_CBasePlayer_Observer_FindNextPlayer;
+
+	CReGameHookRegistry_CBasePlayer_Pain m_CBasePlayer_Pain;
+	CReGameHookRegistry_CBasePlayer_DeathSound m_CBasePlayer_DeathSound;
+	CReGameHookRegistry_CBasePlayer_JoiningThink m_CBasePlayer_JoiningThink;
+
 public:
 	virtual IReGameHookRegistry_CBasePlayer_Spawn *CBasePlayer_Spawn();
 	virtual IReGameHookRegistry_CBasePlayer_Precache *CBasePlayer_Precache();
@@ -870,6 +897,13 @@ public:
 	virtual IReGameHookRegistry_CBaseEntity_FireBullets *CBaseEntity_FireBullets();
 	virtual IReGameHookRegistry_CBaseEntity_FireBuckshots *CBaseEntity_FireBuckshots();
 	virtual IReGameHookRegistry_CBaseEntity_FireBullets3 *CBaseEntity_FireBullets3();
+
+	virtual IReGameHookRegistry_CBasePlayer_Observer_SetMode *CBasePlayer_Observer_SetMode();
+	virtual IReGameHookRegistry_CBasePlayer_Observer_FindNextPlayer *CBasePlayer_Observer_FindNextPlayer();
+
+	virtual IReGameHookRegistry_CBasePlayer_Pain *CBasePlayer_Pain();
+	virtual IReGameHookRegistry_CBasePlayer_DeathSound *CBasePlayer_DeathSound();
+	virtual IReGameHookRegistry_CBasePlayer_JoiningThink *CBasePlayer_JoiningThink();
 };
 
 extern CReGameHookchains g_ReGameHookchains;

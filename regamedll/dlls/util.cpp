@@ -1497,15 +1497,19 @@ void UTIL_RestartOther(const char *szClassname)
 	while ((pEntity = UTIL_FindEntityByClassname(pEntity, szClassname)))
 	{
 		pEntity->Restart();
+		
+#ifdef REGAMEDLL_ADD
+		FireTargets("game_entity_restart", pEntity, nullptr, USE_TOGGLE, 0.0);
+#endif
 	}
 }
 
 void UTIL_ResetEntities()
 {
-	edict_t *pEdict = INDEXENT(1);
-	for (int i = 1; i < gpGlobals->maxEntities; i++, pEdict++)
+	for (int i = 1; i < gpGlobals->maxEntities; i++)
 	{
-		if (pEdict->free)
+		edict_t *pEdict = INDEXENT(i);
+		if (!pEdict || pEdict->free)
 			continue;
 
 		CBaseEntity *pEntity = CBaseEntity::Instance(pEdict);

@@ -439,6 +439,11 @@ public:
 	bool HintMessageEx_OrigFunc(const char *pMessage, float duration = 6.0f, bool bDisplayIfPlayerDead = false, bool bOverride = false);
 	void UseEmpty_OrigFunc();
 	void DropIdlePlayer_OrigFunc(const char *reason);
+	void Observer_SetMode_OrigFunc(int iMode);
+	EXT_FUNC void Observer_FindNextPlayer_OrigFunc(bool bReverse, const char* name = nullptr);
+	void Pain_OrigFunc(int iLastHitGroup, bool bHasArmour);
+	void DeathSound_OrigFunc();
+	void JoiningThink_OrigFunc();
 
 	CCSPlayer *CSPlayer() const;
 #endif // REGAMEDLL_API
@@ -645,10 +650,11 @@ public:
 		auto item = m_rgpPlayerItems[slot];
 		while (item)
 		{
+			auto next = item->m_pNext;
 			if (func(static_cast<T *>(item)))
 				return static_cast<T *>(item);
 
-			item = item->m_pNext;
+			item = next;
 		}
 
 		return nullptr;
@@ -661,10 +667,11 @@ public:
 		{
 			while (item)
 			{
+				auto next = item->m_pNext;
 				if (func(static_cast<T *>(item)))
 					return static_cast<T *>(item);
 
-				item = item->m_pNext;
+				item = next;
 			}
 		}
 

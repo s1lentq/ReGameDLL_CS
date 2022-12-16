@@ -430,7 +430,7 @@ int CUtlVector<T>::AddVectorToTail(CUtlVector const &src)
 template <class T>
 inline int CUtlVector<T>::InsertMultipleBefore(int elem, int num, const T *pToInsert)
 {
-	if(num == 0)
+	if (num == 0)
 		return elem;
 
 	// Can insert at the end

@@ -461,7 +461,9 @@ void CBasePlayer::SmartRadio()
 	;
 }
 
-void CBasePlayer::Pain(int iLastHitGroup, bool bHasArmour)
+LINK_HOOK_CLASS_VOID_CHAIN(CBasePlayer, Pain, (int iLastHitGroup, bool bHasArmour), iLastHitGroup, bHasArmour)
+
+void EXT_FUNC CBasePlayer::__API_HOOK(Pain)(int iLastHitGroup, bool bHasArmour)
 {
 	int temp = RANDOM_LONG(0, 2);
 
@@ -537,7 +539,9 @@ int TrainSpeed(int iSpeed, int iMax)
 	return iRet;
 }
 
-void CBasePlayer::DeathSound()
+LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, DeathSound)
+
+void EXT_FUNC CBasePlayer::__API_HOOK(DeathSound)()
 {
 	// temporarily using pain sounds for death sounds
 	switch (RANDOM_LONG(1, 4))
@@ -2098,6 +2102,11 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 
 			pObserver->m_bNightVisionOn = false;
 		}
+
+#ifdef REGAMEDLL_FIXES
+		if (pObserver->m_hObserverTarget == this)
+			pObserver->m_flNextFollowTime = 0.0f;
+#endif
 	}
 
 	if (m_pTank)
@@ -3538,7 +3547,9 @@ void EXT_FUNC CBasePlayer::__API_HOOK(MakeVIP)()
 	CSGameRules()->m_iConsecutiveVIP = 1;
 }
 
-void CBasePlayer::JoiningThink()
+LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, JoiningThink)
+
+void EXT_FUNC CBasePlayer::__API_HOOK(JoiningThink)()
 {
 	switch (m_iJoiningState)
 	{
@@ -4020,7 +4031,12 @@ void CBasePlayer::PlayerUse()
 			CBaseEntity *pTrain = Instance(pev->groundentity);
 			if (pTrain && pTrain->Classify() == CLASS_VEHICLE)
 			{
+#ifdef REGAMEDLL_ADD
+				if (legacy_vehicle_block.value)
+					((CFuncVehicle *)pTrain)->m_pDriver = nullptr;
+#else
 				((CFuncVehicle *)pTrain)->m_pDriver = nullptr;
+#endif
 			}
 			return;
 		}
@@ -4562,7 +4578,12 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 			{
 				m_afPhysicsFlags &= ~PFLAG_ONTRAIN;
 				m_iTrain = (TRAIN_NEW | TRAIN_OFF);
+#ifdef REGAMEDLL_ADD
+				if (legacy_vehicle_block.value)
+					((CFuncVehicle *)pTrain)->m_pDriver = nullptr;
+#else
 				((CFuncVehicle *)pTrain)->m_pDriver = nullptr;
+#endif
 				return;
 			}
 		}
@@ -4571,7 +4592,12 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 			// Turn off the train if you jump, strafe, or the train controls go dead
 			m_afPhysicsFlags &= ~PFLAG_ONTRAIN;
 			m_iTrain = (TRAIN_NEW | TRAIN_OFF);
+#ifdef REGAMEDLL_ADD
+			if (legacy_vehicle_block.value)
+				((CFuncVehicle *)pTrain)->m_pDriver = nullptr;
+#else
 			((CFuncVehicle *)pTrain)->m_pDriver = nullptr;
+#endif
 			return;
 		}
 
@@ -4710,7 +4736,7 @@ void CBasePlayer::CheckTimeBasedDamage()
 		{
 			switch (i)
 			{
-			case ITBD_PARALLYZE:
+			case ITBD_PARALYZE:
 				// UNDONE - flag movement as half-speed
 				bDuration = PARALYZE_DURATION;
 				break;
@@ -5337,7 +5363,7 @@ ReturnSpot:
 
 void CBasePlayer::SetScoreAttrib(CBasePlayer *dest)
 {
-	int state = 0;
+	int state = SCORE_STATUS_NONE;
 	if (pev->deadflag != DEAD_NO)
 		state |= SCORE_STATUS_DEAD;
 
@@ -6648,6 +6674,17 @@ void CBasePlayer::HandleSignals()
 			}
 		}
 
+#ifdef REGAMEDLL_ADD
+		if (m_bHasC4 && (plant_c4_anywhere.value || CSPlayer()->m_bPlantC4Anywhere))
+		{
+			if (IsAlive() && (m_iTeam == TERRORIST || m_iTeam == CT)
+				&& !(m_signals.GetSignal() & SIGNAL_BOMB))
+			{
+				m_signals.Signal(SIGNAL_BOMB);
+			}
+		}
+#endif
+
 		if (!CSGameRules()->m_bMapHasBombZone)
 			OLD_CheckBombTarget(this);
 
@@ -7166,7 +7203,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(UpdateClientData)()
 				m_iClientHideHUD = 0;
 
 			int hudChanged = m_iClientHideHUD ^ m_iHideHUD;
-			if (hudChanged & (HIDEHUD_FLASHLIGHT | HIDEHUD_HEALTH | HIDEHUD_TIMER | HIDEHUD_MONEY))
+			if (hudChanged & (HIDEHUD_FLASHLIGHT | HIDEHUD_HEALTH | HIDEHUD_TIMER | HIDEHUD_MONEY | HIDEHUD_CROSSHAIR))
 			{
 				MESSAGE_BEGIN(MSG_ONE, gmsgCrosshair, nullptr, pev);
 					WRITE_BYTE(0);
@@ -8211,6 +8248,12 @@ void CBasePlayer::__API_HOOK(SwitchTeam)()
 			}
 		}
 	}
+
+#ifdef REGAMEDLL_FIXES
+	// Initialize the player counts now that a player has switched teams
+	int NumDeadCT, NumDeadTerrorist, NumAliveTerrorist, NumAliveCT;
+	CSGameRules()->InitializePlayerCounts(NumAliveTerrorist, NumAliveCT, NumDeadTerrorist, NumDeadCT);
+#endif
 }
 
 void CBasePlayer::UpdateShieldCrosshair(bool draw)
@@ -8374,7 +8417,13 @@ void CStripWeapons::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE 
 		{
 			if (m_iszSpecialItem)
 			{
-				pPlayer->CSPlayer()->RemovePlayerItem(STRING(m_iszSpecialItem));
+				const char *weaponName = STRING(m_iszSpecialItem);
+				WeaponSlotInfo *slotInfo = GetWeaponSlot(weaponName);
+
+				if (slotInfo != nullptr && slotInfo->slot == GRENADE_SLOT)
+					pPlayer->CSPlayer()->RemovePlayerItemEx(weaponName, true);
+				else
+					pPlayer->CSPlayer()->RemovePlayerItem(weaponName);
 			}
 
 			for (int slot = PRIMARY_WEAPON_SLOT; slot <= ALL_OTHER_ITEMS; slot++)
@@ -8395,7 +8444,11 @@ void CStripWeapons::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE 
 				{
 					pPlayer->ForEachItem(slot, [pPlayer](CBasePlayerItem *pItem)
 					{
-						pPlayer->CSPlayer()->RemovePlayerItem(STRING(pItem->pev->classname));
+						if (pItem->iItemSlot() == GRENADE_SLOT)
+							pPlayer->CSPlayer()->RemovePlayerItemEx(STRING(pItem->pev->classname), true);
+						else
+							pPlayer->CSPlayer()->RemovePlayerItem(STRING(pItem->pev->classname));
+
 						return false;
 					});
 				}
@@ -9994,12 +10047,12 @@ void EXT_FUNC CBasePlayer::__API_HOOK(OnSpawnEquip)(bool addDefault, bool equipG
 	}
 
 #ifdef REGAMEDLL_ADD
-	if(!m_bIsVIP)
+	if (!m_bIsVIP)
 	{
 		switch (static_cast<ArmorType>((int)free_armor.value))
 		{
-		case ARMOR_KEVLAR: GiveNamedItem("item_kevlar"); break;
-		case ARMOR_VESTHELM: GiveNamedItem("item_assaultsuit"); break;
+		case ARMOR_KEVLAR: GiveNamedItemEx("item_kevlar"); break;
+		case ARMOR_VESTHELM: GiveNamedItemEx("item_assaultsuit"); break;
 		}
 	}
 #endif
@@ -10195,10 +10248,11 @@ void EXT_FUNC CBasePlayer::__API_HOOK(SetSpawnProtection)(float flProtectionTime
 #ifdef REGAMEDLL_ADD
 	if (respawn_immunity_effects.value > 0)
 	{
+		CSPlayer()->m_bSpawnProtectionEffects = true;
 		pev->rendermode = kRenderTransAdd;
 		pev->renderamt  = 100.0f;
 
-		MESSAGE_BEGIN(MSG_ONE_UNRELIABLE, gmsgStatusIcon, nullptr, pev);
+		MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev);
 			WRITE_BYTE(STATUSICON_FLASH);
 			WRITE_STRING("suithelmet_full");
 			WRITE_BYTE(0);
@@ -10216,12 +10270,11 @@ LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, RemoveSpawnProtection)
 void CBasePlayer::__API_HOOK(RemoveSpawnProtection)()
 {
 #ifdef REGAMEDLL_ADD
-	if (respawn_immunity_effects.value > 0)
+	if (CSPlayer()->m_bSpawnProtectionEffects)
 	{
-		if (pev->rendermode == kRenderTransAdd &&
-			pev->renderamt == 100.0f)
+		if (pev->rendermode == kRenderTransAdd && pev->renderamt == 100.0f)
 		{
-			pev->renderamt  = 255.0f;
+			pev->renderamt = 255.0f;
 			pev->rendermode = kRenderNormal;
 		}
 
@@ -10229,6 +10282,8 @@ void CBasePlayer::__API_HOOK(RemoveSpawnProtection)()
 			WRITE_BYTE(STATUSICON_HIDE);
 			WRITE_STRING("suithelmet_full");
 		MESSAGE_END();
+
+		CSPlayer()->m_bSpawnProtectionEffects = false;
 	}
 
 	CSPlayer()->m_flSpawnProtectionEndTime = 0.0f;
