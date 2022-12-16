@@ -3862,10 +3862,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(RoundRespawn)()
 
 #ifdef REGAMEDLL_FIXES
 	if (m_bPunishedForTK && pev->health > 0)
-	{
-		m_fNextSuicideTime = 0.0f;
-		ClientKill(ENT(pev));
-	}
+		Kill();
 #endif
 
 }
@@ -10313,4 +10310,24 @@ void EXT_FUNC CBasePlayer::__API_HOOK(DropIdlePlayer)(const char *reason)
 #else
 	SERVER_COMMAND(UTIL_VarArgs("kick \"%s\"\n", STRING(pev->netname)));
 #endif // #ifdef REGAMEDLL_FIXES
+}
+
+bool CBasePlayer::Kill()
+{
+	if (GetObserverMode() != OBS_NONE)
+		return false;
+	
+	if (m_iJoiningState != JOINED)
+		return false;
+	
+	m_LastHitGroup = HITGROUP_GENERIC;
+
+	// have the player kill himself
+	pev->health = 0.0f;
+	Killed(pev, GIB_NEVER);
+
+	if (CSGameRules()->m_pVIP == this)
+		CSGameRules()->m_iConsecutiveVIP = 10;
+	
+	return true;
 }

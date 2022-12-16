@@ -113,11 +113,13 @@ EXT_FUNC bool CCSPlayer::JoinTeam(TeamName team)
 	if (pPlayer->pev->deadflag == DEAD_NO)
 	{
 #ifdef REGAMEDLL_FIXES
-		pPlayer->m_fNextSuicideTime = 0.0f;
-#endif
-
+		pPlayer->Kill();
+#else
 		ClientKill(pPlayer->edict());
-		pPlayer->pev->frags++;
+#endif
+		{
+			pPlayer->pev->frags++;
+		}
 	}
 
 	MESSAGE_BEGIN(MSG_ALL, gmsgScoreInfo);
