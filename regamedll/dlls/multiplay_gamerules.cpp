@@ -2035,6 +2035,10 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(RestartRound)()
 #endif
 
 			pPlayer->RoundRespawn();
+			
+#ifdef REGAMEDLL_ADD
+			FireTargets("game_entity_restart", pPlayer, nullptr, USE_TOGGLE, 0.0);
+#endif
 		}
 
 		// Gooseman : The following code fixes the HUD icon bug
@@ -2073,6 +2077,10 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(RestartRound)()
 	m_bTargetBombed = m_bBombDefused = false;
 	m_bLevelInitialized = false;
 	m_bCompleteReset = false;
+
+#ifdef REGAMEDLL_ADD
+	FireTargets("game_round_start", nullptr, nullptr, USE_TOGGLE, 0.0);
+#endif
 }
 
 BOOL CHalfLifeMultiplay::IsThereABomber()

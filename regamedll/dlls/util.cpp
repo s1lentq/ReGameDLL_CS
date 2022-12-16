@@ -1497,6 +1497,10 @@ void UTIL_RestartOther(const char *szClassname)
 	while ((pEntity = UTIL_FindEntityByClassname(pEntity, szClassname)))
 	{
 		pEntity->Restart();
+		
+#ifdef REGAMEDLL_ADD
+		FireTargets("game_entity_restart", pEntity, nullptr, USE_TOGGLE, 0.0);
+#endif
 	}
 }
 
