@@ -8028,6 +8028,7 @@ CBaseEntity *EXT_FUNC CBasePlayer::__API_HOOK(DropPlayerItem)(const char *pszIte
 			pWeaponBox->m_bIsBomb = true;
 			pWeaponBox->SetThink(&CWeaponBox::BombThink);
 			pWeaponBox->pev->nextthink = gpGlobals->time + 1.0f;
+			pWeaponBox->SetLastValidHeldC4Position(((CC4 *)pWeapon)->GetLastValidHeldPosition());
 
 			if (TheCSBots())
 			{

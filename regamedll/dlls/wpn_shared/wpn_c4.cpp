@@ -382,3 +382,37 @@ float CC4::GetMaxSpeed()
 
 	return C4_MAX_SPEED;
 }
+
+void CC4::AttachToPlayer(CBasePlayer* pPlayer)
+{
+	CBasePlayerWeapon::AttachToPlayer(pPlayer);
+
+#ifdef REGAMEDLL_ADD
+	SetThink(&CC4::Think);
+	pev->nextthink = gpGlobals->time + WEAPON_C4_UPDATE_LAST_VALID_PLAYER_HELD_POSITION_INTERVAL;
+
+	if (pPlayer->IsPlayer() && pPlayer->IsAlive())
+	{
+		entvars_t* pevPlayer = pPlayer->pev;
+		m_vecLastValidPlayerHeldPosition = pevPlayer->origin + pevPlayer->mins;
+	}
+#endif
+}
+
+void CC4::Think()
+{
+#ifdef REGAMEDLL_ADD
+	pev->nextthink = gpGlobals->time + WEAPON_C4_UPDATE_LAST_VALID_PLAYER_HELD_POSITION_INTERVAL;
+
+	// If the bomb is held by an alive player standing on the ground, then we can use this
+	// position as the last known valid position to respawn the bomb if it gets reset.
+
+	if (m_pPlayer && m_pPlayer->IsPlayer() && m_pPlayer->IsAlive() && (m_pPlayer->pev->flags & FL_ONGROUND))
+	{
+		entvars_t* pevPlayer = m_pPlayer->pev;
+		m_vecLastValidPlayerHeldPosition = pevPlayer->origin + pevPlayer->mins;
+	}
+#else
+	CBasePlayerWeapon::Think();
+#endif
+}
