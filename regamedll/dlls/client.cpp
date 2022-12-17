@@ -1840,11 +1840,7 @@ BOOL EXT_FUNC __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *pPlayer, int slot)
 		{
 			if (pPlayer->m_iTeam != UNASSIGNED && pPlayer->pev->deadflag == DEAD_NO)
 			{
-#ifdef REGAMEDLL_FIXES
 				if (pPlayer->Kill())
-#else
-				ClientKill(pPlayer->edict());
-#endif
 				{
 					// add 1 to frags to balance out the 1 subtracted for killing yourself
 					pPlayer->pev->frags++;
@@ -2076,14 +2072,10 @@ BOOL EXT_FUNC __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *pPlayer, int slot)
 		pPlayer->m_iMenu = Menu_ChooseAppearance;
 
 		// Show the appropriate Choose Appearance menu
-		// This must come before ClientKill() for CheckWinConditions() to function properly
+		// This must come before pPlayer->Kill() for CheckWinConditions() to function properly
 		if (pPlayer->pev->deadflag == DEAD_NO)
 		{
-#ifdef REGAMEDLL_FIXES
 			pPlayer->Kill();
-#else
-			ClientKill(pPlayer->edict());
-#endif
 		}
 	}
 
