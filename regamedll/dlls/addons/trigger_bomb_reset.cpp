@@ -24,6 +24,7 @@ void CTriggerBombReset::Spawn()
 {
 	InitTrigger();
 	SetTouch(&CTriggerBombReset::Touch);
+	SetUse(&CTriggerBombReset::ToggleUse);
 }
 
 void CTriggerBombReset::Touch(CBaseEntity *pOther)
