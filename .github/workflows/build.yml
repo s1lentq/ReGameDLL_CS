@@ -193,7 +193,7 @@ jobs:
       - name: Move files
         run: |
           mkdir -p publish/bin/linux32/cstrike/dlls
-          mv build-icc/regamedll/cs.so publish/bin/linux32/cstrike/dlls/cs.so
+          mv build-icc/regamedll/cs.so publish/bin/linux32/cstrike/dlls/cs.so 2>/dev/null || true
           mv build-gcc/regamedll/cs.so publish/cs-gcc.so
           mv regamedll/version/appversion.h publish/appversion.h
           mv dist/ publish/
