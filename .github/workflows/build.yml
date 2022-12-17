@@ -173,6 +173,10 @@ jobs:
           fi
         shell: bash
 
+      - name: Create publish directory
+        run: |
+          mkdir -p publish/bin/linux32/cstrike/dlls
+
       - name: Build using Intel C++ Compiler 19.0 (only for release)
         if: |
           github.event_name == 'release' &&
@@ -180,10 +184,12 @@ jobs:
           startsWith(github.ref, 'refs/tags/')
         run: |
           rm -rf build-icc && CC=icc CXX=icpc cmake -B build-icc && cmake --build build-icc -j8
+          mv build-icc/regamedll/cs.so publish/bin/linux32/cstrike/dlls/cs.so
 
       - name: Build using GCC Compiler 9.3
         run: |
           rm -rf build-gcc && CC=gcc CXX=g++ cmake -B build-gcc && cmake --build build-gcc -j8
+          mv build-gcc/regamedll/cs.so publish/cs-gcc.so
 
       - name: Prepare CSSDK
         run: |
@@ -192,9 +198,6 @@ jobs:
 
       - name: Move files
         run: |
-          mkdir -p publish/bin/linux32/cstrike/dlls
-          mv build-icc/regamedll/cs.so publish/bin/linux32/cstrike/dlls/cs.so
-          mv build-gcc/regamedll/cs.so publish/cs-gcc.so
           mv regamedll/version/appversion.h publish/appversion.h
           mv dist/ publish/
 
