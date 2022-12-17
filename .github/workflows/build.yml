@@ -173,7 +173,11 @@ jobs:
           fi
         shell: bash
 
-      - name: Build using Intel C++ Compiler 19.0
+      - name: Build using Intel C++ Compiler 19.0 (only for release)
+        if: |
+          github.event_name == 'release' &&
+          github.event.action == 'published' &&
+          startsWith(github.ref, 'refs/tags/')
         run: |
           rm -rf build-icc && CC=icc CXX=icpc cmake -B build-icc && cmake --build build-icc -j8
 
