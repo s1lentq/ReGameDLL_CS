@@ -112,8 +112,10 @@ EXT_FUNC bool CCSPlayer::JoinTeam(TeamName team)
 
 	if (pPlayer->pev->deadflag == DEAD_NO)
 	{
-		ClientKill(pPlayer->edict());
-		pPlayer->pev->frags++;
+		if (pPlayer->Kill())
+		{
+			pPlayer->pev->frags++;
+		}
 	}
 
 	MESSAGE_BEGIN(MSG_ALL, gmsgScoreInfo);
