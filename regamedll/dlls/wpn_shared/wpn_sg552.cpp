@@ -77,39 +77,19 @@ void CSG552::SecondaryAttack()
 
 void CSG552::PrimaryAttack()
 {
+	const float flCycleTime = (m_pPlayer->pev->fov == DEFAULT_FOV) ? 0.0825f : 0.135f;
+
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
 	{
-#ifdef REGAMEDLL_FIXES
-		if (m_pPlayer->pev->fov != DEFAULT_FOV)
-		{
-			SG552Fire(0.035 + (0.45 * m_flAccuracy), 0.135, FALSE);
-		}
-		else
-#endif
-		{
-			SG552Fire(0.035 + (0.45 * m_flAccuracy), 0.0825, FALSE);
-		}
+		SG552Fire(0.035 + (0.45 * m_flAccuracy), flCycleTime, FALSE);
 	}
 	else if (m_pPlayer->pev->velocity.Length2D() > 140)
 	{
-#ifdef REGAMEDLL_FIXES
-		if (m_pPlayer->pev->fov != DEFAULT_FOV)
-		{
-			SG552Fire(0.035 + (0.075 * m_flAccuracy), 0.135, FALSE);
-		}
-		else
-#endif
-		{
-			SG552Fire(0.035 + (0.075 * m_flAccuracy), 0.0825, FALSE);
-		}
-	}
-	else if (m_pPlayer->pev->fov == DEFAULT_FOV)
-	{
-		SG552Fire(0.02 * m_flAccuracy, 0.0825, FALSE);
+		SG552Fire(0.035 + (0.075 * m_flAccuracy), flCycleTime, FALSE);
 	}
 	else
 	{
-		SG552Fire(0.02 * m_flAccuracy, 0.135, FALSE);
+		SG552Fire(0.02 * m_flAccuracy, flCycleTime, FALSE);
 	}
 }
 
