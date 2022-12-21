@@ -388,7 +388,7 @@ void CC4::AttachToPlayer(CBasePlayer* pPlayer)
 	CBasePlayerWeapon::AttachToPlayer(pPlayer);
 
 #ifdef REGAMEDLL_ADD
-	SetThink(&CC4::Think);
+	SetThink(&CC4::TrackPlayerHeldPosition);
 	pev->nextthink = gpGlobals->time + WEAPON_C4_UPDATE_LAST_VALID_PLAYER_HELD_POSITION_INTERVAL;
 
 	if (pPlayer->IsPlayer() && pPlayer->IsAlive())
@@ -399,9 +399,8 @@ void CC4::AttachToPlayer(CBasePlayer* pPlayer)
 #endif
 }
 
-void CC4::Think()
+void CC4::TrackPlayerHeldPosition()
 {
-#ifdef REGAMEDLL_ADD
 	pev->nextthink = gpGlobals->time + WEAPON_C4_UPDATE_LAST_VALID_PLAYER_HELD_POSITION_INTERVAL;
 
 	// If the bomb is held by an alive player standing on the ground, then we can use this
@@ -412,7 +411,4 @@ void CC4::Think()
 		entvars_t* pevPlayer = m_pPlayer->pev;
 		m_vecLastValidPlayerHeldPosition = pevPlayer->origin + pevPlayer->mins;
 	}
-#else
-	CBasePlayerWeapon::Think();
-#endif
 }
