@@ -7928,7 +7928,7 @@ CBaseEntity *EXT_FUNC CBasePlayer::__API_HOOK(DropPlayerItem)(const char *pszIte
 			break;
 	}
 #else
-	auto pWeapon = pszItemName ? GetItemByName(pszItemName) : m_hActiveItem;
+	CBasePlayerItem *pWeapon = pszItemName ? GetItemByName(pszItemName) : m_hActiveItem.GetPtr();
 #endif
 	if (pWeapon)
 	{

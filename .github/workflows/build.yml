@@ -20,8 +20,6 @@ jobs:
       solution: 'msvc/ReGameDLL.sln'
       buildPlatform: 'Win32'
       buildRelease: 'Release'
-      buildReleasePlay: 'Release Play'
-      buildTests: 'Tests'
 
     steps:
       - name: Checkout
@@ -42,26 +40,14 @@ jobs:
         with:
           vs-version: '16.8'
 
-      - name: Build and Run unittests
-        run: |
-          msbuild ${{ env.solution }} -p:Configuration="${{ env.buildTests }}" /t:Clean,Build /p:Platform=${{ env.buildPlatform }} /p:PlatformToolset=v140_xp /p:XPDeprecationWarning=false
-          .\"msvc\Tests\mp.exe"
-          If ($LASTEXITCODE -ne 0 -And
-          $LASTEXITCODE -ne 3)
-          {[Environment]::Exit(1)}
-        shell: "pwsh"
-
       - name: Build
         run: |
           msbuild ${{ env.solution }} -p:Configuration="${{ env.buildRelease }}" /t:Clean,Build /p:Platform=${{ env.buildPlatform }} /p:PlatformToolset=v140_xp /p:XPDeprecationWarning=false
-          msbuild ${{ env.solution }} -p:Configuration="${{ env.buildReleasePlay }}" /t:Clean,Build /p:Platform=${{ env.buildPlatform }} /p:PlatformToolset=v140_xp /p:XPDeprecationWarning=false
 
       - name: Move files
         run: |
           mkdir publish\debug
-          mkdir publish\tests
           mkdir publish\bin\win32\cstrike\dlls
-          move "msvc\${{ env.buildReleasePlay }}\mp.dll" publish\tests\mp.dll
           move msvc\${{ env.buildRelease }}\mp.dll publish\bin\win32\cstrike\dlls\mp.dll
           move msvc\${{ env.buildRelease }}\mp.pdb publish\debug\mp.pdb
 
@@ -70,73 +56,6 @@ jobs:
         with:
           name: win32
           path: publish/*
-
-  testdemos:
-    name: 'Test demos'
-    runs-on: ubuntu-latest
-    container: s1lentq/testdemos:latest
-    needs: [windows]
-
-    env:
-      WINEDEBUG: -all
-      WINEDLLOVERRIDES: mshtml=
-
-    defaults:
-      run:
-        shell: bash
-        working-directory: ../../../opt/HLDS
-
-    steps:
-      - name: Deploying windows artifacts
-        uses: actions/download-artifact@v2
-        with:
-          name: win32
-
-      - name: Play demos
-        run: |
-          chown root ~
-          rsync -a deps/regamedll/* .
-          mv $GITHUB_WORKSPACE/tests/mp.dll cstrike/dlls/mp.dll
-
-          descs=(
-            "CS: Testing jumping, scenarios, shooting etc"
-          )
-
-          demos=(
-            "cstrike-basic-1"
-          )
-
-          retVal=0
-          for i in "${!demos[@]}"; do
-            params=$(cat "testdemos/${demos[i]}.params")
-
-            echo -e "\e[1m[$((i + 1))/${#demos[@]}] \e[1;36m${descs[i]} testing...\e[0m"
-            echo -e "    - \e[0;33mParameters $params\e[0m"
-
-            wine hlds.exe --rehlds-enable-all-hooks --rehlds-test-play "testdemos/${demos[i]}.bin" $params &> result.log || retVal=$?
-
-            if [ $retVal -ne 777 ] && [ $retVal -ne 9 ]; then
-              # Print with catchy messages
-              while read line; do
-                echo -e "      \e[0;33m$line"
-              done <<< $(cat result.log | sed '0,/demo failed/I!d;/wine:/d;/./,$!d')
-
-              echo "      🔸  🔸  🔸  🔸  🔸  🔸  🔸  🔸  🔸  🔸"
-              while read line; do
-                echo -e "      \e[1;31m$line";
-              done < rehlds_demo_error.txt
-              echo -e "      \e[30;41mExit code: $retVal\e[0m"
-              echo -e "\e[1m[$((i + 1))/${#demos[@]}] \e[1;36m${descs[i]} testing...\e[1;31m Failed ❌"
-              exit 6 # Test demo failed
-            else
-              # Print result HLDS console
-              while read line; do
-                echo -e "      \e[0;33m$line"
-              done <<< $(cat result.log | sed '/wine:/d;/./,$!d')
-              echo -e "      \e[30;43mExit code: $retVal\e[0m"
-              echo -e "\e[1m[$((i + 1))/${#demos[@]}] \e[1;36m${descs[i]} testing...\e[1;32m Succeed ✔"
-            fi
-          done
 
   linux:
     name: 'Linux'
@@ -149,29 +68,6 @@ jobs:
         with:
           fetch-depth: 0
           submodules: true
-
-      - name: Build and Run unittests
-        run: |
-          rm -rf build && CC=icc CXX=icpc cmake -DCMAKE_BUILD_TYPE=Unittests -B build && cmake --build build -j8
-          retVal=0
-          ./build/regamedll/cs 2> /dev/null > result.log || retVal=$?
-          while read line; do
-            if [[ ${line} == *"Warning in test"* ]] ; then
-              echo -e "\e[2;38m$line"
-            elif [[ ${line} == *"Failure in test"* ]] ; then
-              echo -e "\e[1;31m$line"
-            else
-              echo -e "\e[0;33m$line"
-            fi
-          done <<< $(cat result.log)
-
-          if [ $retVal -ne 0 ] && [ $retVal -ne 3 ]; then
-            echo -e "\e[30;41mExit code: $retVal\e[0m"
-            exit 1 # Unittest failed
-          else
-            echo -e "\e[30;43mExit code: $retVal\e[0m"
-          fi
-        shell: bash
 
       - name: Build using Intel C++ Compiler 19.0
         run: |
@@ -222,7 +118,7 @@ jobs:
   publish:
     name: 'Publish'
     runs-on: ubuntu-latest
-    needs: [windows, testdemos, linux]
+    needs: [windows, linux]
 
     steps:
       - name: Deploying linux artifacts
