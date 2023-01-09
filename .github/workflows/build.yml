@@ -2,7 +2,7 @@ name: C/C++ CI
 
 on:
   push:
-    branches: [master]
+    branches: [experimental_with_safe_pointer, master]
     paths-ignore:
       - '**.md'
 
